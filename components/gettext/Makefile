@@ -26,15 +26,15 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gettext
-COMPONENT_VERSION=	0.19.3
+COMPONENT_VERSION=	0.19.8
 IPS_PKG_NAME=		text/gnu-gettext
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f6fdb29c9ee8ce85c7e574f60ff64fa91cf0f4f018437dfe800227d15595db46
+    sha256:9c1781328238caa1685d7bc7a2e1dcf1c6c134e86b42ed554066734b621bd12f
 COMPONENT_BUGDB=	utility/gnu-gettext
 COMPONENT_ANITYA_ID=	898
 
-TPNO=			20141
+TPNO=			35547
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
@@ -52,12 +52,17 @@ CONFIGURE_OPTIONS  +=		ac_cv_func_newlocale=no
 COMPONENT_TEST_ENV =	-i
 COMPONENT_TEST_ENV +=	PATH=${PATH}:$(SPRO_VROOT)/bin
 
-# Strip compilation lines from test output
 COMPONENT_TEST_TRANSFORMS += \
-    '-e "s|^.*$(CC).*$$|XXX_CC_XXX|g" ' \
-    '-e "s|^.*source=.*libtool=no.*$$|XXX_CC_XXX|g" ' \
-    '-e "s|^.*DEPDIR=.deps.*$$|XXX_CC_XXX|g" ' \
-    '-e "/^XXX_CC_XXX$$/d" '
+	'-e "s/^make\[[0-9]\{1,\}\]/make/g"' \
+	'-n ' \
+	'-e "/Testsuite /p" ' \
+	'-e "/PASS/p" ' \
+	'-e "/FAIL/p" ' \
+	'-e "/SKIP/p" ' \
+	'-e "/ERROR/p" ' \
+	'-e "/=====/p" ' \
+	'-e "/TOTAL/p" '
+
 
 REQUIRED_PACKAGES += developer/icu
 REQUIRED_PACKAGES += developer/vala
