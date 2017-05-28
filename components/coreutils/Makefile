@@ -71,6 +71,12 @@ COMPONENT_TEST_DIR =	$(@D)/tests
 
 # Always show the build and link lines for easier debugging.
 COMPONENT_TEST_ARGS +=	V=1
+# Deny any color coding of the test output
+COMPONENT_TEST_ARGS +=	AM_COLOR_TESTS=no
+
+# Coreutils tests can't pass if they don't have tty available. This script
+# makes sure to provide a tty if we are missing one
+COMPONENT_TEST_CMD = $(COMPONENT_DIR)/coreutils_test_wrapper
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
@@ -80,8 +86,18 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/FAIL/p" ' \
 	'-e "/ERROR/p" '
 
+# If the tests decided they need to execute in screen(1) then move the
+# resulting file to final location where the rest of userland infrastructure
+# will process it
+COMPONENT_POST_TEST_ACTION += \
+    if [ -e "$(COMPONENT_TEST_DIR)/outfile" ]; then \
+	mv $(COMPONENT_TEST_DIR)/outfile $(COMPONENT_TEST_OUTPUT); \
+    fi
+
+
 # Get the binaries to test from their installed locations.
 COMPONENT_SYSTEM_TEST_ENV +=	PATH=/usr/gnu/bin:/usr/bin
 COMPONENT_SYSTEM_TEST_DIR =	$(@D)/tests
 
 REQUIRED_PACKAGES += library/gmp
+REQUIRED_PACKAGES += terminal/screen

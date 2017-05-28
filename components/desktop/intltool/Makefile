@@ -48,6 +48,9 @@ include $(WS_MAKE_RULES)/common.mk
 CONFIGURE_ENV += PERL="$(PERL)"
 PKG_MACROS += PERLVER="$(PERL_VERSION)"
 
+COMPONENT_TEST_TRANSFORMS += \
+	'-e "/^cp selftest.pl/d" ' \
+
 PERL_XML_PARSER_PKG = $(PERL_VERSION:5.%=library/perl-5/xml-parser-5%) 
 
 REQUIRED_PACKAGES += $(PERL_PKG)

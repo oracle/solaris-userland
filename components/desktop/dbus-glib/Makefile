@@ -35,6 +35,14 @@ COMPONENT_ANITYA_ID=	1979
 
 TPNO=			25523
 
+COMPONENT_TEST_ARGS += -k
+COMPONENT_TEST_TRANSFORMS += \
+	'-n ' \
+	'-e "/^PASS:/p" ' \
+	'-e "/^FAIL:/p" ' \
+	'-e "/^SKIP:/p" ' \
+	'-e "/^\# /p" ' \
+
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 include $(WS_MAKE_RULES)/common.mk
 

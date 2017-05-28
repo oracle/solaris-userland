@@ -46,6 +46,7 @@ COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 COMPONENT_TEST_TRANSFORMS += '-e "/bin\/gcc/d" '
 COMPONENT_TEST_TRANSFORMS += '-e "/bin\/g++/d" '
 COMPONENT_TEST_TRANSFORMS += '-e "/^Test Run By /d" '
+COMPONENT_TEST_TRANSFORMS += '-e "/^Test run by /d" '
 
 PARCH =		$(MACH:i386=x86_64-pc)
 GNU_ARCH =	$(PARCH:sparc=sparcv9-sun)-solaris$(SOLARIS_VERSION)

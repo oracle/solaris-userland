@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -x
+if tty -s; then
+	# If we have a tty, just run the tests
+	gmake "$@"
+else
+	# If we don't have tty, these tests are passed and so the userland considers it as failed:
+	# tests/misc/stty-invalid.sh
+	# tests/misc/stty-row-col.sh
+	# tests/mv/i-3.sh
+	# If we run the tests just from the python pty, only stt-row-col fails
+	# In screen the tests pass successfully
+	#
+	# If I just pass "$@" the tests are not executed at all. The parameters
+	# are not passed correctly to gmake. Assigning the tests to variable
+	# first makes all the tests pass.
+	PARAM="$@"
+	python -c '
+import pty;
+import sys;
+
+pty.spawn(sys.argv[1:])
+' env TERM=xterm /usr/bin/screen -c /dev/null bash -c "gmake $PARAM 2>&1 | tee outfile"
+fi

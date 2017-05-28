@@ -34,23 +34,6 @@ Making all in po
 Making all in runtime-po
 Making all in .
 $(SOURCE_DIR)/tests/testsuite -C tests 
-In file included from /usr/include/sys/time.h:467:0,
-                 from $(@D)/lib/sys/time.h:39,
-                 from /usr/include/sys/select.h:27,
-                 from /usr/include/sys/types.h:645,
-                 from $(@D)/lib/sys/types.h:28,
-                 from $(@D)/lib/stdio.h:58,
-                 from $(@D)/lib/wchar.h:71,
-                 from /usr/gcc/4.8/include/c++/4.8.2/cwchar:44,
-                 from /usr/gcc/4.8/include/c++/4.8.2/bits/postypes.h:40,
-                 from /usr/gcc/4.8/include/c++/4.8.2/iosfwd:40,
-                 from /usr/gcc/4.8/include/c++/4.8.2/ios:38,
-                 from /usr/gcc/4.8/include/c++/4.8.2/ostream:38,
-                 from /usr/gcc/4.8/include/c++/4.8.2/iostream:39,
-                 from conftest.cc:6:
-$(@D)/lib/stdio.h:1039:1: error: 'char* gets(char*)' conflicts with previous using declaration 'char* std::gets(char*)'
- _GL_WARN_ON_USE (gets, "gets is a security hole - use fgets instead");
- ^
 ## --------------------------- ##
 ## GNU Bison 3.0.4 test suite. ##
 ## --------------------------- ##
@@ -157,15 +140,15 @@ Output file names.
  92: Conflicting output files: %defines "foo.output" -v ok
  93: Conflicting output files: lalr1.cc %defines %locations --graph="location.hh" ok
  94: Conflicting output files:  -o foo.y             ok
- 95: Output file name: `~!@#$%^&*()-=_+{}[]|\:;<>, .' skipped (output.at:264)
- 96: Output file name: (                             skipped (output.at:271)
- 97: Output file name: )                             skipped (output.at:272)
- 98: Output file name: #                             skipped (output.at:273)
- 99: Output file name: @@                            skipped (output.at:274)
-100: Output file name: @{                            skipped (output.at:275)
-101: Output file name: @}                            skipped (output.at:276)
-102: Output file name: [                             skipped (output.at:277)
-103: Output file name: ]                             skipped (output.at:278)
+ 95: Output file name: `~!@#$%^&*()-=_+{}[]|\:;<>, .' ok
+ 96: Output file name: (                             ok
+ 97: Output file name: )                             ok
+ 98: Output file name: #                             ok
+ 99: Output file name: @@                            ok
+100: Output file name: @{                            ok
+101: Output file name: @}                            ok
+102: Output file name: [                             ok
+103: Output file name: ]                             ok
 104: Graph with no conflicts                         ok
 105: Graph with unsolved S/R                         ok
 106: Graph with solved S/R                           ok
@@ -228,7 +211,7 @@ Conflicts.
 151: %nonassoc and eof                               ok
 152: parse.error=verbose and consistent errors: lr.type=ielr ok
 153: parse.error=verbose and consistent errors: lr.type=ielr %glr-parser ok
-154: parse.error=verbose and consistent errors: lr.type=ielr c++ skipped (conflicts.at:531)
+154: parse.error=verbose and consistent errors: lr.type=ielr c++ ok
 155: parse.error=verbose and consistent errors: lr.type=ielr java ok
 156: parse.error=verbose and consistent errors: lr.type=ielr lr.default-reduction=consistent ok
 157: parse.error=verbose and consistent errors: lr.type=ielr lr.default-reduction=accepting ok
@@ -283,7 +266,7 @@ Parser Headers.
 200: Invalid CPP guards: %glr-parser --defines=input/input.h ok
 201: Invalid CPP guards: %glr-parser --defines=9foo.h ok
 202: export YYLTYPE                                  ok
-203: Several parsers                                 skipped (headers.at:209)
+203: Several parsers                                 ok
 
 User Actions.
 
@@ -298,19 +281,19 @@ User Actions.
 212: Initial location: yacc.c api.push-pull=both api.pure=full ok
 213: Initial location: glr.c                         ok
 214: Initial location: glr.c api.pure                ok
-215: Initial location: lalr1.cc                      skipped (actions.at:248)
-216: Initial location: glr.cc                        skipped (actions.at:249)
+215: Initial location: lalr1.cc                      ok
+216: Initial location: glr.cc                        ok
 217: Initial location: yacc.c api.pure=full          ok
 218: Initial location: yacc.c api.pure=full          ok
 219: Location print: yacc.c                          ok
 220: Location print: glr.c                           ok
-221: Location print: lalr1.cc                        skipped (actions.at:354)
-222: Location print: glr.cc                          skipped (actions.at:355)
+221: Location print: lalr1.cc                        ok
+222: Location print: glr.cc                          ok
 223: Exotic Dollars                                  ok
 224: Printers and Destructors                        ok
 225: Printers and Destructors with union             ok
-226: Printers and Destructors: %defines lalr1.cc     skipped (actions.at:853)
-227: Printers and Destructors with union: %defines lalr1.cc skipped (actions.at:854)
+226: Printers and Destructors: %defines lalr1.cc     ok
+227: Printers and Destructors with union: %defines lalr1.cc ok
 228: Printers and Destructors: %glr-parser           ok
 229: Printers and Destructors with union: %glr-parser ok
 230: Default tagless %printer and %destructor        ok
@@ -324,8 +307,8 @@ User Actions.
 238: @$ in %printer implies %locations               ok
 239: Qualified $$ in actions: yacc.c                 ok
 240: Qualified $$ in actions: glr.c                  ok
-241: Qualified $$ in actions: lalr1.cc               skipped (actions.at:1608)
-242: Qualified $$ in actions: glr.cc                 skipped (actions.at:1609)
+241: Qualified $$ in actions: lalr1.cc               ok
+242: Qualified $$ in actions: glr.cc                 ok
 243: Destroying lookahead assigned by semantic action ok
 244: YYBACKUP                                        ok
 
@@ -369,36 +352,36 @@ Value type tests.
 280: glr.c api.value.union.name=foo; %union { float fval; int ival; }; %defines ok
 281: glr.c api.value.type=union                      ok
 282: glr.c api.value.type=union %defines             ok
-283: lalr1.cc api.value.type={double}                skipped (types.at:128)
-284: lalr1.cc api.value.type={double} %defines       skipped (types.at:128)
-285: lalr1.cc api.value.type={variant}               skipped (types.at:128)
-286: lalr1.cc api.value.type={variant} %defines      skipped (types.at:128)
-287: lalr1.cc api.value.type={struct foo}            skipped (types.at:128)
-288: lalr1.cc api.value.type={struct foo} %defines   skipped (types.at:128)
-289: lalr1.cc api.value.type={struct bar}            skipped (types.at:128)
-290: lalr1.cc api.value.type={struct bar} %defines   skipped (types.at:128)
-291: lalr1.cc api.value.type={union foo}             skipped (types.at:128)
-292: lalr1.cc api.value.type={union foo} %defines    skipped (types.at:128)
-293: lalr1.cc %union { float fval; int ival; };      skipped (types.at:128)
-294: lalr1.cc %union { float fval; int ival; }; %defines skipped (types.at:128)
-295: lalr1.cc api.value.type=union                   skipped (types.at:128)
-296: lalr1.cc api.value.type=union %defines          skipped (types.at:128)
-297: lalr1.cc api.value.type=variant                 skipped (types.at:128)
-298: lalr1.cc api.value.type=variant %defines        skipped (types.at:128)
-299: glr.cc api.value.type={double}                  skipped (types.at:128)
-300: glr.cc api.value.type={double} %defines         skipped (types.at:128)
-301: glr.cc api.value.type={variant}                 skipped (types.at:128)
-302: glr.cc api.value.type={variant} %defines        skipped (types.at:128)
-303: glr.cc api.value.type={struct foo}              skipped (types.at:128)
-304: glr.cc api.value.type={struct foo} %defines     skipped (types.at:128)
-305: glr.cc api.value.type={struct bar}              skipped (types.at:128)
-306: glr.cc api.value.type={struct bar} %defines     skipped (types.at:128)
-307: glr.cc api.value.type={union foo}               skipped (types.at:128)
-308: glr.cc api.value.type={union foo} %defines      skipped (types.at:128)
-309: glr.cc %union { float fval; int ival; };        skipped (types.at:128)
-310: glr.cc %union { float fval; int ival; }; %defines skipped (types.at:128)
-311: glr.cc api.value.type=union                     skipped (types.at:128)
-312: glr.cc api.value.type=union %defines            skipped (types.at:128)
+283: lalr1.cc api.value.type={double}                ok
+284: lalr1.cc api.value.type={double} %defines       ok
+285: lalr1.cc api.value.type={variant}               ok
+286: lalr1.cc api.value.type={variant} %defines      ok
+287: lalr1.cc api.value.type={struct foo}            ok
+288: lalr1.cc api.value.type={struct foo} %defines   ok
+289: lalr1.cc api.value.type={struct bar}            ok
+290: lalr1.cc api.value.type={struct bar} %defines   ok
+291: lalr1.cc api.value.type={union foo}             ok
+292: lalr1.cc api.value.type={union foo} %defines    ok
+293: lalr1.cc %union { float fval; int ival; };      ok
+294: lalr1.cc %union { float fval; int ival; }; %defines ok
+295: lalr1.cc api.value.type=union                   ok
+296: lalr1.cc api.value.type=union %defines          ok
+297: lalr1.cc api.value.type=variant                 ok
+298: lalr1.cc api.value.type=variant %defines        ok
+299: glr.cc api.value.type={double}                  ok
+300: glr.cc api.value.type={double} %defines         ok
+301: glr.cc api.value.type={variant}                 ok
+302: glr.cc api.value.type={variant} %defines        ok
+303: glr.cc api.value.type={struct foo}              ok
+304: glr.cc api.value.type={struct foo} %defines     ok
+305: glr.cc api.value.type={struct bar}              ok
+306: glr.cc api.value.type={struct bar} %defines     ok
+307: glr.cc api.value.type={union foo}               ok
+308: glr.cc api.value.type={union foo} %defines      ok
+309: glr.cc %union { float fval; int ival; };        ok
+310: glr.cc %union { float fval; int ival; }; %defines ok
+311: glr.cc api.value.type=union                     ok
+312: glr.cc api.value.type=union %defines            ok
 313: lalr1.cc: Named %union                          ok
 314: glr.cc: Named %union                            ok
 
@@ -445,32 +428,32 @@ Simple GLR Calculator.
 
 Simple LALR(1) C++ Calculator.
 
-350: Calculator lalr1.cc %defines                    skipped (calc.at:669)
-351: Calculator C++                                  skipped (calc.at:678)
-352: Calculator C++ %locations                       skipped (calc.at:679)
-353: Calculator C++ %locations api.location.type={Span} skipped (calc.at:680)
-354: Calculator C++ %defines %locations parse.error=verbose %name-prefix "calc" %verbose %yacc skipped (calc.at:681)
-355: Calculator C++ %locations parse.error=verbose api.prefix={calc} %verbose %yacc skipped (calc.at:683)
-356: Calculator C++ %locations parse.error=verbose %debug %name-prefix "calc" %verbose %yacc skipped (calc.at:684)
-357: Calculator C++ %locations parse.error=verbose %debug api.prefix={calc} %verbose %yacc skipped (calc.at:686)
-358: Calculator C++ %locations parse.error=verbose %debug api.prefix={calc} api.token.prefix={TOK_} %verbose %yacc skipped (calc.at:687)
-359: Calculator C++ %defines %locations parse.error=verbose %debug %name-prefix "calc" %verbose %yacc %parse-param {semantic_value *result} %parse-param {int *count} skipped (calc.at:689)
-360: Calculator C++ parse.error=verbose %debug api.prefix={calc} %verbose %yacc %parse-param {semantic_value *result} %parse-param {int *count} skipped (calc.at:691)
-361: Calculator C++ %defines %locations parse.error=verbose %debug api.prefix={calc} %verbose %yacc %parse-param {semantic_value *result} %parse-param {int *count} skipped (calc.at:692)
+350: Calculator lalr1.cc %defines                    ok
+351: Calculator C++                                  ok
+352: Calculator C++ %locations                       ok
+353: Calculator C++ %locations api.location.type={Span} ok
+354: Calculator C++ %defines %locations parse.error=verbose %name-prefix "calc" %verbose %yacc ok
+355: Calculator C++ %locations parse.error=verbose api.prefix={calc} %verbose %yacc ok
+356: Calculator C++ %locations parse.error=verbose %debug %name-prefix "calc" %verbose %yacc ok
+357: Calculator C++ %locations parse.error=verbose %debug api.prefix={calc} %verbose %yacc ok
+358: Calculator C++ %locations parse.error=verbose %debug api.prefix={calc} api.token.prefix={TOK_} %verbose %yacc ok
+359: Calculator C++ %defines %locations parse.error=verbose %debug %name-prefix "calc" %verbose %yacc %parse-param {semantic_value *result} %parse-param {int *count} ok
+360: Calculator C++ parse.error=verbose %debug api.prefix={calc} %verbose %yacc %parse-param {semantic_value *result} %parse-param {int *count} ok
+361: Calculator C++ %defines %locations parse.error=verbose %debug api.prefix={calc} %verbose %yacc %parse-param {semantic_value *result} %parse-param {int *count} ok
 
 Simple GLR C++ Calculator.
 
-362: Calculator glr.cc                               skipped (calc.at:703)
-363: Calculator C++ %glr-parser                      skipped (calc.at:712)
-364: Calculator C++ %glr-parser %locations           skipped (calc.at:713)
-365: Calculator C++ %glr-parser %locations api.location.type={Span} skipped (calc.at:714)
-366: Calculator C++ %glr-parser %defines parse.error=verbose %name-prefix "calc" %verbose %yacc skipped (calc.at:715)
-367: Calculator C++ %glr-parser parse.error=verbose api.prefix={calc} %verbose %yacc skipped (calc.at:716)
-368: Calculator C++ %glr-parser %debug               skipped (calc.at:718)
-369: Calculator C++ %glr-parser parse.error=verbose %debug %name-prefix "calc" %verbose %yacc skipped (calc.at:720)
-370: Calculator C++ %glr-parser parse.error=verbose %debug %name-prefix "calc" api.token.prefix={TOK_} %verbose %yacc skipped (calc.at:721)
-371: Calculator C++ %glr-parser %locations %defines parse.error=verbose %debug %name-prefix "calc" %verbose %yacc %parse-param {semantic_value *result} %parse-param {int *count} skipped (calc.at:723)
-372: Calculator C++ %glr-parser %locations %defines parse.error=verbose %debug api.prefix={calc} %verbose %yacc %parse-param {semantic_value *result} %parse-param {int *count} skipped (calc.at:724)
+362: Calculator glr.cc                               ok
+363: Calculator C++ %glr-parser                      ok
+364: Calculator C++ %glr-parser %locations           ok
+365: Calculator C++ %glr-parser %locations api.location.type={Span} ok
+366: Calculator C++ %glr-parser %defines parse.error=verbose %name-prefix "calc" %verbose %yacc ok
+367: Calculator C++ %glr-parser parse.error=verbose api.prefix={calc} %verbose %yacc ok
+368: Calculator C++ %glr-parser %debug               ok
+369: Calculator C++ %glr-parser parse.error=verbose %debug %name-prefix "calc" %verbose %yacc ok
+370: Calculator C++ %glr-parser parse.error=verbose %debug %name-prefix "calc" api.token.prefix={TOK_} %verbose %yacc ok
+371: Calculator C++ %glr-parser %locations %defines parse.error=verbose %debug %name-prefix "calc" %verbose %yacc %parse-param {semantic_value *result} %parse-param {int *count} ok
+372: Calculator C++ %glr-parser %locations %defines parse.error=verbose %debug api.prefix={calc} %verbose %yacc %parse-param {semantic_value *result} %parse-param {int *count} ok
 
 Torture Tests.
 
@@ -510,10 +493,10 @@ Regression tests.
 400: Web2c Actions                                   ok
 401: Dancer                                          ok
 402: Dancer %glr-parser                              ok
-403: Dancer lalr1.cc                                 skipped (regression.at:908)
+403: Dancer lalr1.cc                                 ok
 404: Expecting two tokens                            ok
 405: Expecting two tokens %glr-parser                ok
-406: Expecting two tokens lalr1.cc                   skipped (regression.at:985)
+406: Expecting two tokens lalr1.cc                   ok
 407: Braced code in declaration in rules section     ok
 408: String alias declared after use                 ok
 409: Extra lookahead sets in report                  ok
@@ -525,8 +508,8 @@ Regression tests.
 415: LAC: Memory exhaustion                          ok
 416: Lex and parse params: yacc.c                    ok
 417: Lex and parse params: glr.c                     ok
-418: Lex and parse params: lalr1.cc                  skipped (regression.at:1595)
-419: Lex and parse params: glr.cc                    skipped (regression.at:1596)
+418: Lex and parse params: lalr1.cc                  ok
+419: Lex and parse params: glr.cc                    ok
 420: stdio.h is not needed                           ok
 
 Push Parsing Tests
@@ -537,27 +520,27 @@ Push Parsing Tests
 
 C++ Features.
 
-424: C++ Locations                                   skipped (c++.at:84)
-425: C++ Variant-based Symbols                       skipped (c++.at:164)
-426: Variants lalr1.cc                               skipped (c++.at:370)
-427: Variants lalr1.cc parse.assert                  skipped (c++.at:371)
-428: Variants lalr1.cc parse.assert %locations       skipped (c++.at:372)
-429: Variants lalr1.cc parse.assert %code {\n#define TWO_STAGE_BUILD\n} skipped (c++.at:373)
-430: Variants lalr1.cc parse.assert api.token.constructor skipped (c++.at:374)
-431: Variants lalr1.cc parse.assert api.token.constructor api.token.prefix={TOK_} skipped (c++.at:375)
-432: Variants lalr1.cc parse.assert api.token.constructor api.token.prefix={TOK_} %locations skipped (c++.at:376)
+424: C++ Locations                                   ok
+425: C++ Variant-based Symbols                       ok
+426: Variants lalr1.cc                               ok
+427: Variants lalr1.cc parse.assert                  ok
+428: Variants lalr1.cc parse.assert %locations       ok
+429: Variants lalr1.cc parse.assert %code {\n#define TWO_STAGE_BUILD\n} ok
+430: Variants lalr1.cc parse.assert api.token.constructor ok
+431: Variants lalr1.cc parse.assert api.token.constructor api.token.prefix={TOK_} ok
+432: Variants lalr1.cc parse.assert api.token.constructor api.token.prefix={TOK_} %locations ok
 433: Doxygen Public Documentation                    ok
 434: Doxygen Private Documentation                   ok
-435: Relative namespace references                   skipped (c++.at:516)
-436: Absolute namespace references                   skipped (c++.at:522)
+435: Relative namespace references                   ok
+436: Absolute namespace references                   ok
 437: Syntactically invalid namespace references      ok
-438: Syntax error discarding no lookahead            skipped (c++.at:607)
-439: Syntax error as exception                       skipped (c++.at:682)
-440: Exception safety with error recovery            skipped (c++.at:973)
-441: Exception safety without error recovery         skipped (c++.at:974)
-442: Exception safety with error recovery api.value.type=variant skipped (c++.at:975)
-443: Exception safety without error recovery api.value.type=variant skipped (c++.at:976)
-444: C++ GLR parser identifier shadowing             skipped (c++.at:1023)
+438: Syntax error discarding no lookahead            ok
+439: Syntax error as exception                       ok
+440: Exception safety with error recovery            ok
+441: Exception safety without error recovery         ok
+442: Exception safety with error recovery api.value.type=variant ok
+443: Exception safety without error recovery api.value.type=variant ok
+444: C++ GLR parser identifier shadowing             ok
 
 Java Calculator.
 
@@ -627,5 +610,4 @@ GLR Regression Tests
 ## Test results. ##
 ## ------------- ##
 
-399 tests were successful.
-94 tests were skipped.
+All 493 tests were successful.

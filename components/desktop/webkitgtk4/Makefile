@@ -55,6 +55,9 @@ INSTALL_64=
 PUBLISH_STAMP=
 endif
 
+# We don't have JHbuild needed for tests
+TEST_TARGET= $(NO_TESTS)
+
 BUILD_STYLE= justmake
 include $(WS_MAKE_RULES)/common.mk
 
