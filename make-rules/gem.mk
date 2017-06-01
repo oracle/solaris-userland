@@ -20,11 +20,15 @@
 #
 
 #
-# Copyright (c) 2014, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 GEM=/usr/ruby/$(RUBY_VERSION)/bin/gem
 
-VENDOR_GEM_DIR=/usr/ruby/$(RUBY_VERSION)/lib/ruby/vendor_ruby/gems/$(RUBY_LIB_VERSION)
+VENDOR_GEM_DIR=usr/ruby/$(RUBY_VERSION)/lib/ruby/vendor_ruby/gems/$(RUBY_LIB_VERSION)
+PKG_MACROS += VENDOR_GEM_DIR=$(VENDOR_GEM_DIR)
+
+VENDOR_GEM_EXT_DIR=$(VENDOR_GEM_DIR)/extensions/$(MACH64)-solaris-$(SOLARIS_VERSION)/$(RUBY_LIB_VERSION)
+PKG_MACROS += VENDOR_GEM_EXT_DIR=$(VENDOR_GEM_EXT_DIR)
 
 # Name of the gem spec to use.  This will typically be
 # <component_name>.gemspec

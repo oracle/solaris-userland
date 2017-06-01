@@ -20,10 +20,11 @@
 #
 
 #
-# Copyright (c) 2013, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 
-VENDOR_RUBY = /usr/ruby/$(RUBY_VERSION)/lib/ruby/vendor_ruby/$(RUBY_LIB_VERSION)
+# Get VENDOR_RUBY etc
+include $(WS_MAKE_RULES)/ruby.mk
 
 # install into proto area
 INSTALL_RB_DESTDIR_OPTION = --destdir=$(PROTO_DIR)
@@ -33,7 +34,7 @@ INSTALL_RB_RUBY_OPTION = --ruby=$(RUBY)
 # Ruby-version-specific directory
 INSTALL_RB_BINDIR_OPTION = --bindir=$(USRBINDIR)
 # install into vendor_ruby instead of site_ruby
-INSTALL_RB_SITELIBDIR_OPTION = --sitelibdir=$(VENDOR_RUBY)
+INSTALL_RB_SITELIBDIR_OPTION = --sitelibdir=/$(VENDOR_RUBY)
 # install into standard man directory
 INSTALL_RB_MANDIR_OPTION = --mandir=$(USRSHAREMANDIR)
 # ensure the sbin dir is not a

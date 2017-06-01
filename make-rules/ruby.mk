@@ -29,8 +29,12 @@
 PKG_MACROS += RUBY_VERSION=$(RUBY_VERSION)
 PKG_MACROS += RUBY_LIB_VERSION=$(RUBY_LIB_VERSION)
 PKG_MACROS += RUBYV=$(subst .,,$(RUBY_VERSION))
-VENDOR_RUBY = /usr/ruby/$(RUBY_VERSION)/lib/ruby/vendor_ruby/$(RUBY_LIB_VERSION)
-VENDOR_RUBY_ARCH = /usr/ruby/$(RUBY_VERSION)/lib/ruby/vendor_ruby/$(RUBY_LIB_VERSION)/$(MACH64)-solaris$(SOLARIS_VERSION)
+
+VENDOR_RUBY = usr/ruby/$(RUBY_VERSION)/lib/ruby/vendor_ruby/$(RUBY_LIB_VERSION)
+PKG_MACROS += VENDOR_RUBY=$(VENDOR_RUBY)
+
+VENDOR_RUBY_ARCH = $(VENDOR_RUBY)/$(MACH64)-solaris$(SOLARIS_VERSION)
+PKG_MACROS += VENDOR_RUBY_ARCH=$(VENDOR_RUBY_ARCH)
 
 # Modify ruby scripts in the ruby-version-specific path of the proto area,
 # under usr/ruby/$(RUBY_VERSION), containing "#!/usr/bin/env ruby" to
