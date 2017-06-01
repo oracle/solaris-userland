@@ -48,6 +48,18 @@ if [ "$PUP4_X" == "false" ]; then
       set -e
     done
   done
+  if [ -d "/etc/puppetlabs/puppet/environments" ] ; then
+    echo "Moving salvaged environments/* directory"
+    mv /etc/puppetlabs/puppet/environments/* /etc/puppetlabs/code/environments
+    rmdir /etc/puppetlabs/puppet/environments
+  elif [ -d "/etc/puppetlabs/puppet/manifests" -a ! -d "/etc/puppetlabs/code/environments/production" ]; then
+    echo "Moving salvaged manifests and modules directories to production environment"
+    mkdir -p /etc/puppetlabs/code/environments/production
+    mv /etc/puppetlabs/puppet/manifests /etc/puppetlabs/code/environments/production
+    mv /etc/puppetlabs/puppet/modules /etc/puppetlabs/code/environments/production
+  else
+    echo "Did not find environments to migrate"
+  fi
 fi
 svccfg -s $SMF_FMRI setprop upgrade/4.x = true
 svccfg -s $SMF_FMRI refresh
