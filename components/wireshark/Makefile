@@ -26,19 +26,21 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		wireshark
-COMPONENT_VERSION=	2.2.6
+COMPONENT_VERSION=	2.2.7
 COMPONENT_PROJECT_URL=	http://www.wireshark.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f627d51eda85f5ae5f5c8c9fc1f6539ffc2a270dd7500dc7f67490a8534ca849
+    sha256:689ddf62221b152779d8846ab5b2063cc7fd41ec1a9f04eefab09b5d5486dbb5
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/src/all-versions/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	5137
 
-TPNO=			34793
+TPNO=			35790
 
-# Enable adiheap and adistack security extensions
+# Enable adiheap security extension
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
-ADISTACK_MODE =	$(ADISTACK_ENABLE)
+
+# adistack needs to stay disabled because of 26288117
+ADISTACK_MODE =	$(ADISTACK_DISABLE)
 
 TEST_TARGET= $(NO_TESTS)
 
