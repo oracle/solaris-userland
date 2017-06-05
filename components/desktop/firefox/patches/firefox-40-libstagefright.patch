@@ -1,14 +1,14 @@
-https://openindiana.org/pipermail/openindiana-discuss/2015-November/018284.html
+https://bugzilla.mozilla.org/show_bug.cgi?id=1367775
 
---- firefox-51.0b14/media/libstagefright/moz.build.orig	2017-01-30 06:12:50.139883632 +0000
-+++ firefox-51.0b14/media/libstagefright/moz.build	2017-01-30 06:13:16.250697404 +0000
-@@ -7,9 +7,6 @@
+diff --git a/media/libstagefright/moz.build b/media/libstagefright/moz.build
+--- a/media/libstagefright/moz.build
++++ b/media/libstagefright/moz.build
+@@ -7,7 +7,7 @@
  DEFINES['ANDROID_SMP'] = 0
  DEFINES['LOG_NDEBUG'] = 1
  
 -if CONFIG['OS_TARGET'] != 'WINNT':
--   DEFINES['_GLIBCXX_OS_DEFINES'] = True
--
++if CONFIG['OS_TARGET'] != 'WINNT' and CONFIG['OS_TARGET'] != 'SunOS':
+    DEFINES['_GLIBCXX_OS_DEFINES'] = True
+ 
  if CONFIG['OS_TARGET'] == 'WINNT':
-     if CONFIG['_MSC_VER']:
-         DEFINES['ssize_t'] = 'intptr_t'

@@ -1,5 +1,4 @@
-ipc fixes.
-Will not send upstream.
+https://bugzilla.mozilla.org/show_bug.cgi?id=1357451
 
 diff --git a/ipc/glue/BrowserProcessSubThread.cpp b/ipc/glue/BrowserProcessSubThread.cpp
 --- a/ipc/glue/BrowserProcessSubThread.cpp
@@ -37,7 +36,7 @@ diff --git a/ipc/glue/BrowserProcessSubThread.h b/ipc/glue/BrowserProcessSubThre
 diff --git a/ipc/glue/GeckoChildProcessHost.cpp b/ipc/glue/GeckoChildProcessHost.cpp
 --- a/ipc/glue/GeckoChildProcessHost.cpp
 +++ b/ipc/glue/GeckoChildProcessHost.cpp
-@@ -742,7 +742,7 @@
+@@ -744,7 +744,7 @@
    // and passing wstrings from one config to the other is unsafe.  So
    // we split the logic here.
  
@@ -46,7 +45,7 @@ diff --git a/ipc/glue/GeckoChildProcessHost.cpp b/ipc/glue/GeckoChildProcessHost
    base::environment_map newEnvVars;
    ChildPrivileges privs = mPrivileges;
    if (privs == base::PRIVILEGES_DEFAULT) {
-@@ -881,7 +881,7 @@
+@@ -903,7 +903,7 @@
    childArgv.push_back(pidstring);
  
  #if defined(MOZ_CRASHREPORTER)
@@ -55,7 +54,7 @@ diff --git a/ipc/glue/GeckoChildProcessHost.cpp b/ipc/glue/GeckoChildProcessHost
    int childCrashFd, childCrashRemapFd;
    if (!CrashReporter::CreateNotificationPipeForChild(
          &childCrashFd, &childCrashRemapFd))
-@@ -897,7 +897,7 @@
+@@ -919,7 +919,7 @@
    }
  #  elif defined(MOZ_WIDGET_COCOA)
    childArgv.push_back(CrashReporter::GetChildNotificationPipe());
@@ -64,12 +63,12 @@ diff --git a/ipc/glue/GeckoChildProcessHost.cpp b/ipc/glue/GeckoChildProcessHost
  #endif
  
  #ifdef MOZ_WIDGET_COCOA
-@@ -916,6 +916,8 @@
+@@ -936,7 +936,7 @@
+   childArgv.push_back(childProcessType);
+ 
    base::LaunchApp(childArgv, mFileMap,
- #if defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_BSD)
+-#if defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_BSD)
++#if defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_BSD) || defined(OS_SOLARIS)
                    newEnvVars, privs,
-+#elif defined(OS_SOLARIS)
-+                  base::environment_map(), privs,
  #endif
                    false, &process, arch);
- 

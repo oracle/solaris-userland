@@ -1,10 +1,20 @@
-ipc fixes.
-Will not send upstream.
+
+# HG changeset patch
+# User Petr Sumbera <petr.sumbera@oracle.com>
+# Date 1495815059 25200
+# Node ID c74f1584dec6bbfdf36331699b5cbad18c05be85
+# Parent  dbeac19df1fe7823e856dd1404542a1f118076f8
+Bug 1368093 - Fix name collision between Solaris queue(9F) and C++ std::queue. r=billm
 
 diff --git a/ipc/glue/MessageLink.cpp b/ipc/glue/MessageLink.cpp
 --- a/ipc/glue/MessageLink.cpp
 +++ b/ipc/glue/MessageLink.cpp
-@@ -350,7 +354,7 @@
+@@ -278,34 +278,34 @@ ProcessLink::OnChannelOpened()
+     AssertIOThread();
+ 
+     {
+         MonitorAutoLock lock(*mChan->mMonitor);
+ 
          mExistingListener = mTransport->set_listener(this);
  #ifdef DEBUG
          if (mExistingListener) {
@@ -13,7 +23,11 @@ diff --git a/ipc/glue/MessageLink.cpp b/ipc/glue/MessageLink.cpp
              mExistingListener->GetQueuedMessages(pending);
              MOZ_ASSERT(pending.empty());
          }
-@@ -366,17 +366,17 @@ ProcessLink::OnChannelOpened()
+ #endif  // DEBUG
+ 
+         mChan->mChannelState = ChannelOpening;
+         lock.Notify();
+     }
      /*assert*/mTransport->Connect();
  }
  
@@ -32,3 +46,4 @@ diff --git a/ipc/glue/MessageLink.cpp b/ipc/glue/MessageLink.cpp
          mExistingListener = mTransport->set_listener(this);
          if (mExistingListener) {
              mExistingListener->GetQueuedMessages(pending);
+
