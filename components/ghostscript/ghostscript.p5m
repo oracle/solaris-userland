@@ -24,6 +24,7 @@
 set name=pkg.fmri \
     value=pkg:/print/filter/ghostscript@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="GPL Ghostscript desktop utilities"
+set name=pkg.human-version value=$(HUMAN_VERSION)
 set name=pkg.linted.pkglint.dupaction001.1 value=true
 set name=pkg.linted.pkglint.dupaction010.2 value=true
 set name=com.oracle.info.description \
@@ -37,5 +38,8 @@ set name=org.opensolaris.arc-caseid value=PSARC/2010/010
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/bin/$(MACH64)/gsx pkg.depend.bypass-generate=libgs.so.9
 file path=usr/bin/gsx pkg.depend.bypass-generate=libgs.so.9
+file path=usr/bin/pv.sh
+link path=usr/sfw/bin/pv.sh target=../../bin/pv.sh
+file Solaris/pv.sh.1 path=usr/share/man/man1/pv.sh.1
 license ghostscript.license license=GPLv3
 depend type=require fmri=pkg:/print/filter/ghostscript-core
