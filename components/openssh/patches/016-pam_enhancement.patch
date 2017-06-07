@@ -173,12 +173,9 @@ diff -pur old/auth.h new/auth.h
 diff -pur old/auth2.c new/auth2.c
 --- old/auth2.c
 +++ new/auth2.c
-@@ -243,10 +243,21 @@ input_userauth_request(int type, u_int32
- 			PRIVSEP(audit_event(SSH_INVALID_USER));
+@@ -246,9 +246,18 @@ input_userauth_request(int type, u_int32
  #endif
  		}
-+
-+
  #ifdef USE_PAM
 +#ifdef PAM_ENHANCEMENT
 +		/*
@@ -191,11 +188,11 @@ diff -pur old/auth2.c new/auth2.c
  		if (options.use_pam)
  			PRIVSEP(start_pam(authctxt));
  #endif
-+#endif
++#endif		
+ 		ssh_packet_set_log_preamble(ssh, "%suser %s",
+ 		    authctxt->valid ? "authenticating " : "invalid ", user);
  		setproctitle("%s%s", authctxt->valid ? user : "unknown",
- 		    use_privsep ? " [net]" : "");
- 		authctxt->service = xstrdup(service);
-@@ -277,6 +288,18 @@ input_userauth_request(int type, u_int32
+@@ -281,6 +290,18 @@ input_userauth_request(int type, u_int32
  	/* try to authenticate user */
  	m = authmethod_lookup(authctxt, method);
  	if (m != NULL && authctxt->failures < options.max_authtries) {
@@ -214,7 +211,7 @@ diff -pur old/auth2.c new/auth2.c
  		debug2("input_userauth_request: try method %s", method);
  		authenticated =	m->userauth(authctxt);
  	}
-@@ -295,6 +318,10 @@ userauth_finish(Authctxt *authctxt, int
+@@ -300,6 +321,10 @@ userauth_finish(Authctxt *authctxt, int
  	char *methods;
  	int partial = 0;
  
@@ -225,7 +222,7 @@ diff -pur old/auth2.c new/auth2.c
  	if (!authctxt->valid && authenticated)
  		fatal("INTERNAL ERROR: authenticated invalid user %s",
  		    authctxt->user);
-@@ -311,6 +338,25 @@ userauth_finish(Authctxt *authctxt, int
+@@ -316,6 +341,25 @@ userauth_finish(Authctxt *authctxt, int
  	}
  
  	if (authenticated && options.num_auth_methods != 0) {
@@ -251,7 +248,7 @@ diff -pur old/auth2.c new/auth2.c
  		if (!auth2_update_methods_lists(authctxt, method, submethod)) {
  			authenticated = 0;
  			partial = 1;
-@@ -324,7 +370,20 @@ userauth_finish(Authctxt *authctxt, int
+@@ -329,7 +373,20 @@ userauth_finish(Authctxt *authctxt, int
  		return;
  
  #ifdef USE_PAM
@@ -272,7 +269,7 @@ diff -pur old/auth2.c new/auth2.c
  		if (!PRIVSEP(do_pam_account())) {
  			/* if PAM returned a message, send it to the user */
  			if (buffer_len(&loginmsg) > 0) {
-@@ -615,5 +674,3 @@ auth2_update_methods_lists(Authctxt *aut
+@@ -621,5 +678,3 @@ auth2_update_methods_lists(Authctxt *aut
  		fatal("%s: method not in AuthenticationMethods", __func__);
  	return 0;
  }
@@ -309,7 +306,7 @@ diff -pur old/monitor.c new/monitor.c
      {MONITOR_REQ_PAM_ACCOUNT, 0, mm_answer_pam_account},
      {MONITOR_REQ_PAM_INIT_CTX, MON_ONCE, mm_answer_pam_init_ctx},
      {MONITOR_REQ_PAM_QUERY, 0, mm_answer_pam_query},
-@@ -311,6 +321,23 @@ monitor_child_preauth(Authctxt *_authctx
+@@ -312,6 +322,23 @@ monitor_child_preauth(Authctxt *_authctx
  
  		/* Special handling for multiple required authentications */
  		if (options.num_auth_methods != 0) {
@@ -333,7 +330,7 @@ diff -pur old/monitor.c new/monitor.c
  			if (authenticated &&
  			    !auth2_update_methods_lists(authctxt,
  			    auth_method, auth_submethod)) {
-@@ -329,8 +356,21 @@ monitor_child_preauth(Authctxt *_authctx
+@@ -330,8 +357,21 @@ monitor_child_preauth(Authctxt *_authctx
  			    !auth_root_allowed(auth_method))
  				authenticated = 0;
  #ifdef USE_PAM
@@ -355,7 +352,7 @@ diff -pur old/monitor.c new/monitor.c
  				Buffer m;
  
  				buffer_init(&m);
-@@ -770,6 +810,10 @@ mm_answer_pwnamallow(int sock, Buffer *m
+@@ -775,6 +815,10 @@ mm_answer_pwnamallow(int sock, Buffer *m
  	/* Allow service/style information on the auth context */
  	monitor_permit(mon_dispatch, MONITOR_REQ_AUTHSERV, 1);
  	monitor_permit(mon_dispatch, MONITOR_REQ_AUTH2_READ_BANNER, 1);
@@ -366,7 +363,7 @@ diff -pur old/monitor.c new/monitor.c
  
  #ifdef USE_PAM
  	if (options.use_pam)
-@@ -810,6 +854,24 @@ mm_answer_authserv(int sock, Buffer *m)
+@@ -815,6 +859,24 @@ mm_answer_authserv(int sock, Buffer *m)
  	return (0);
  }
  
@@ -488,7 +485,7 @@ diff -pur old/servconf.c new/servconf.c
  	{ "revokedkeys", sRevokedKeys, SSHCFG_ALL },
  	{ "trustedusercakeys", sTrustedUserCAKeys, SSHCFG_ALL },
  	{ "authorizedprincipalsfile", sAuthorizedPrincipalsFile, SSHCFG_ALL },
-@@ -1854,6 +1879,37 @@ process_server_config_line(ServerOptions
+@@ -1860,6 +1885,37 @@ process_server_config_line(ServerOptions
  			options->fingerprint_hash = value;
  		break;
  
@@ -593,7 +590,7 @@ diff -pur old/sshd.8 new/sshd.8
 diff -pur old/sshd_config.5 new/sshd_config.5
 --- old/sshd_config.5
 +++ new/sshd_config.5
-@@ -813,6 +813,21 @@ is set to
+@@ -821,6 +821,21 @@ is set to
  .Cm yes ) .
  .It Cm KerberosAuthentication
  Specifies whether the password provided by the user for
@@ -615,13 +612,13 @@ diff -pur old/sshd_config.5 new/sshd_config.5
  .Cm PasswordAuthentication
  will be validated through the Kerberos KDC.
  To use this option, the server needs a
-@@ -1472,8 +1487,7 @@ If
+@@ -1492,8 +1507,7 @@ If
  is enabled, you will not be able to run
  .Xr sshd 8
  as a non-root user.
 -The default is
 -.Cm no .
-++On Solaris, the option is always enabled.
- .It Cm UsePrivilegeSeparation
- Specifies whether
- .Xr sshd 8
++On Solaris, this option is always enabled.
+ .It Cm VersionAddendum
+ Optionally specifies additional text to append to the SSH protocol banner
+ sent by the server upon connection.

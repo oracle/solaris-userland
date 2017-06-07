@@ -495,7 +495,7 @@ diff -pur old/ssh-agent.1 new/ssh-agent.1
 diff -pur old/ssh-agent.c new/ssh-agent.c
 --- old/ssh-agent.c
 +++ new/ssh-agent.c
-@@ -1214,6 +1214,7 @@ main(int ac, char **av)
+@@ -1222,6 +1222,7 @@ main(int ac, char **av)
  	struct timeval *tvp = NULL;
  	size_t len;
  	mode_t prev_mask;
@@ -503,7 +503,7 @@ diff -pur old/ssh-agent.c new/ssh-agent.c
  
  	ssh_malloc_init();	/* must be called before any mallocs */
  	/* Ensure that fds 0, 1 and 2 are open or directed to /dev/null */
-@@ -1225,6 +1226,9 @@ main(int ac, char **av)
+@@ -1233,6 +1234,9 @@ main(int ac, char **av)
  
  	platform_disable_tracing(0);	/* strict=no */
  
@@ -513,7 +513,7 @@ diff -pur old/ssh-agent.c new/ssh-agent.c
  #ifdef WITH_OPENSSL
  	OpenSSL_add_all_algorithms();
  #endif
-@@ -1363,8 +1367,19 @@ main(int ac, char **av)
+@@ -1371,8 +1375,19 @@ main(int ac, char **av)
  		printf(format, SSH_AUTHSOCKET_ENV_NAME, socket_name,
  		    SSH_AUTHSOCKET_ENV_NAME);
  		printf("echo Agent pid %ld;\n", (long)parent_pid);
@@ -548,7 +548,7 @@ diff -pur old/ssh-keygen.1 new/ssh-keygen.1
 diff -pur old/ssh-keygen.c new/ssh-keygen.c
 --- old/ssh-keygen.c
 +++ new/ssh-keygen.c
-@@ -2273,11 +2273,18 @@ main(int argc, char **argv)
+@@ -2285,11 +2285,18 @@ main(int argc, char **argv)
  
  	__progname = ssh_get_progname(argv[0]);
  
@@ -566,7 +566,7 @@ diff -pur old/ssh-keygen.c new/ssh-keygen.c
 +
  	seed_rng();
  
- 	/* we need this for the home * directory.  */
+ 	msetlocale();
 diff -pur old/ssh-keysign.c new/ssh-keysign.c
 --- old/ssh-keysign.c
 +++ new/ssh-keysign.c
@@ -651,7 +651,7 @@ diff -pur old/ssh_api.c new/ssh_api.c
 diff -pur old/ssh_config.5 new/ssh_config.5
 --- old/ssh_config.5
 +++ new/ssh_config.5
-@@ -442,6 +442,13 @@ aes128-gcm@openssh.com,aes256-gcm@openss
+@@ -446,6 +446,13 @@ aes128-gcm@openssh.com,aes256-gcm@openss
  aes128-cbc,aes192-cbc,aes256-cbc
  .Ed
  .Pp
@@ -665,7 +665,7 @@ diff -pur old/ssh_config.5 new/ssh_config.5
  The list of available ciphers may also be obtained using
  .Qq ssh -Q cipher .
  .It Cm ClearAllForwardings
-@@ -665,6 +672,8 @@ Valid options are:
+@@ -669,6 +676,8 @@ Valid options are:
  and
  .Cm sha256
  (the default).
@@ -674,7 +674,7 @@ diff -pur old/ssh_config.5 new/ssh_config.5
  .It Cm ForwardAgent
  Specifies whether the connection to the authentication agent (if any)
  will be forwarded to the remote machine.
-@@ -1129,6 +1138,16 @@ umac-64@openssh.com,umac-128@openssh.com
+@@ -1149,6 +1158,16 @@ umac-64@openssh.com,umac-128@openssh.com
  hmac-sha2-256,hmac-sha2-512,hmac-sha1
  .Ed
  .Pp
@@ -730,21 +730,21 @@ diff -pur old/sshd.c new/sshd.c
  	char remote_version[256];	/* Must be at least as big as buf. */
  
 +#ifdef ENABLE_OPENSSL_FIPS
-+	xasprintf(&server_version_string, "SSH-%d.%d-%.100s%s%s%s%s",
++	xasprintf(&server_version_string, "SSH-%d.%d-%.100s%s%s%s\r\n",
 +	    PROTOCOL_MAJOR_2, PROTOCOL_MINOR_2, SSH_VERSION,
-+	    ssh_FIPS_mode() ? " FIPS" : " ",
++            ssh_FIPS_mode() ? " FIPS" : " ",
 +	    *options.version_addendum == '\0' ? "" : " ",
-+	    options.version_addendum, newline);
++	    options.version_addendum);
 +#else
- 	xasprintf(&server_version_string, "SSH-%d.%d-%.100s%s%s%s",
+ 	xasprintf(&server_version_string, "SSH-%d.%d-%.100s%s%s\r\n",
  	    PROTOCOL_MAJOR_2, PROTOCOL_MINOR_2, SSH_VERSION,
  	    *options.version_addendum == '\0' ? "" : " ",
- 	    options.version_addendum, newline);
+ 	    options.version_addendum);
 +#endif
  
  	/* Send our protocol version identification. */
  	if (atomicio(vwrite, sock_out, server_version_string,
-@@ -1395,6 +1403,10 @@ main(int ac, char **av)
+@@ -1400,6 +1408,10 @@ main(int ac, char **av)
  	/* Ensure that fds 0, 1 and 2 are open or directed to /dev/null */
  	sanitise_stdfd();
  
@@ -755,7 +755,7 @@ diff -pur old/sshd.c new/sshd.c
  	/* Initialize configuration options to their default values. */
  	initialize_server_options(&options);
  
-@@ -1541,6 +1553,10 @@ main(int ac, char **av)
+@@ -1546,6 +1558,10 @@ main(int ac, char **av)
  	    SYSLOG_FACILITY_AUTH : options.log_facility,
  	    log_stderr || !inetd_flag);
  
@@ -769,7 +769,7 @@ diff -pur old/sshd.c new/sshd.c
 diff -pur old/sshd_config.5 new/sshd_config.5
 --- old/sshd_config.5
 +++ new/sshd_config.5
-@@ -478,6 +478,13 @@ aes128-ctr,aes192-ctr,aes256-ctr,
+@@ -482,6 +482,13 @@ aes128-ctr,aes192-ctr,aes256-ctr,
  aes128-gcm@openssh.com,aes256-gcm@openssh.com
  .Ed
  .Pp
@@ -783,7 +783,7 @@ diff -pur old/sshd_config.5 new/sshd_config.5
  The list of available ciphers may also be obtained using
  .Qq ssh -Q cipher .
  .It Cm ClientAliveCountMax
-@@ -576,6 +583,8 @@ and
+@@ -580,6 +587,8 @@ and
  .Cm sha256 .
  The default is
  .Cm sha256 .
@@ -792,7 +792,7 @@ diff -pur old/sshd_config.5 new/sshd_config.5
  .It Cm ForceCommand
  Forces the execution of the command specified by
  .Cm ForceCommand ,
-@@ -1006,6 +1015,16 @@ umac-64@openssh.com,umac-128@openssh.com
+@@ -1022,6 +1031,16 @@ umac-64@openssh.com,umac-128@openssh.com
  hmac-sha2-256,hmac-sha2-512,hmac-sha1
  .Ed
  .Pp

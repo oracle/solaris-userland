@@ -752,7 +752,7 @@ diff -pur old/monitor.c new/monitor.c
  #ifdef WITH_OPENSSL
      {MONITOR_REQ_MODULI, 0, mm_answer_moduli},
  #endif
-@@ -311,6 +318,10 @@ monitor_child_preauth(Authctxt *_authctx
+@@ -312,6 +319,10 @@ monitor_child_preauth(Authctxt *_authctx
  	/* Permit requests for moduli and signatures */
  	monitor_permit(mon_dispatch, MONITOR_REQ_MODULI, 1);
  	monitor_permit(mon_dispatch, MONITOR_REQ_SIGN, 1);
@@ -763,7 +763,7 @@ diff -pur old/monitor.c new/monitor.c
  
  	/* The first few requests do not require asynchronous access */
  	while (!authenticated) {
-@@ -440,6 +451,10 @@ monitor_child_postauth(struct monitor *p
+@@ -442,6 +453,10 @@ monitor_child_postauth(struct monitor *p
  	monitor_permit(mon_dispatch, MONITOR_REQ_MODULI, 1);
  	monitor_permit(mon_dispatch, MONITOR_REQ_SIGN, 1);
  	monitor_permit(mon_dispatch, MONITOR_REQ_TERM, 1);
@@ -774,7 +774,7 @@ diff -pur old/monitor.c new/monitor.c
  
  	if (!no_pty_flag) {
  		monitor_permit(mon_dispatch, MONITOR_REQ_PTY, 1);
-@@ -1663,6 +1678,13 @@ monitor_apply_keystate(struct monitor *p
+@@ -1668,6 +1683,13 @@ monitor_apply_keystate(struct monitor *p
  # endif
  #endif /* WITH_OPENSSL */
  		kex->kex[KEX_C25519_SHA256] = kexc25519_server;
@@ -788,7 +788,7 @@ diff -pur old/monitor.c new/monitor.c
  		kex->load_host_public_key=&get_hostkey_public_by_type;
  		kex->load_host_private_key=&get_hostkey_private_by_type;
  		kex->host_key_index=&get_hostkey_index;
-@@ -1742,8 +1764,8 @@ mm_answer_gss_setup_ctx(int sock, Buffer
+@@ -1747,8 +1769,8 @@ mm_answer_gss_setup_ctx(int sock, Buffer
  	OM_uint32 major;
  	u_int len;
  
@@ -799,7 +799,7 @@ diff -pur old/monitor.c new/monitor.c
  
  	goid.elements = buffer_get_string(m, &len);
  	goid.length = len;
-@@ -1772,8 +1794,8 @@ mm_answer_gss_accept_ctx(int sock, Buffe
+@@ -1777,8 +1799,8 @@ mm_answer_gss_accept_ctx(int sock, Buffe
  	OM_uint32 flags = 0; /* GSI needs this */
  	u_int len;
  
@@ -810,7 +810,7 @@ diff -pur old/monitor.c new/monitor.c
  
  	in.value = buffer_get_string(m, &len);
  	in.length = len;
-@@ -1792,6 +1814,7 @@ mm_answer_gss_accept_ctx(int sock, Buffe
+@@ -1797,6 +1819,7 @@ mm_answer_gss_accept_ctx(int sock, Buffe
  		monitor_permit(mon_dispatch, MONITOR_REQ_GSSSTEP, 0);
  		monitor_permit(mon_dispatch, MONITOR_REQ_GSSUSEROK, 1);
  		monitor_permit(mon_dispatch, MONITOR_REQ_GSSCHECKMIC, 1);
@@ -818,7 +818,7 @@ diff -pur old/monitor.c new/monitor.c
  	}
  	return (0);
  }
-@@ -1803,8 +1826,8 @@ mm_answer_gss_checkmic(int sock, Buffer
+@@ -1808,8 +1831,8 @@ mm_answer_gss_checkmic(int sock, Buffer
  	OM_uint32 ret;
  	u_int len;
  
@@ -829,7 +829,7 @@ diff -pur old/monitor.c new/monitor.c
  
  	gssbuf.value = buffer_get_string(m, &len);
  	gssbuf.length = len;
-@@ -1832,8 +1855,8 @@ mm_answer_gss_userok(int sock, Buffer *m
+@@ -1837,8 +1860,8 @@ mm_answer_gss_userok(int sock, Buffer *m
  {
  	int authenticated;
  
@@ -840,7 +840,7 @@ diff -pur old/monitor.c new/monitor.c
  
  	authenticated = authctxt->valid && ssh_gssapi_userok(authctxt->user);
  
-@@ -1848,5 +1871,47 @@ mm_answer_gss_userok(int sock, Buffer *m
+@@ -1853,5 +1876,47 @@ mm_answer_gss_userok(int sock, Buffer *m
  	/* Monitor loop will terminate if authenticated */
  	return (authenticated);
  }
@@ -955,23 +955,23 @@ diff -pur old/readconf.c new/readconf.c
  	oServerAliveInterval, oServerAliveCountMax, oIdentitiesOnly,
  	oSendEnv, oControlPath, oControlMaster, oControlPersist,
  	oHashKnownHosts,
-@@ -211,11 +212,15 @@ static struct {
+@@ -202,11 +203,15 @@ static struct {
  	{ "gssauthentication", oGssAuthentication },                /* alias */
  	{ "gssapidelegatecredentials", oGssDelegateCreds },
  	{ "gssdelegatecreds", oGssDelegateCreds },                  /* alias */
 +	{ "gssapikeyexchange", oGssKeyEx },
-+	{ "gsskeyex", oGssKeyEx },                                  /* alias */
- #else
++	{ "gsskeyex", oGssKeyEx },                                  /* alias */	
+ # else
  	{ "gssapiauthentication", oUnsupported },
  	{ "gssauthentication", oUnsupported },
  	{ "gssapidelegatecredentials", oUnsupported },
  	{ "gssdelegatecreds", oUnsupported },
 +	{ "gssapikeyexchange", oUnsupported },
-+	{ "gsskeyex", oUnsupported },
++	{ "gsskeyex", oUnsupported },	
  #endif
- 	{ "fallbacktorsh", oDeprecated },
- 	{ "usersh", oDeprecated },
-@@ -1001,6 +1006,10 @@ parse_time:
+ #ifdef ENABLE_PKCS11
+ 	{ "smartcarddevice", oPKCS11Provider },
+@@ -1012,6 +1017,10 @@ parse_time:
  		intptr = &options->gss_authentication;
  		goto parse_flag;
  
@@ -982,7 +982,7 @@ diff -pur old/readconf.c new/readconf.c
  	case oGssDelegateCreds:
  		intptr = &options->gss_deleg_creds;
  		goto parse_flag;
-@@ -1823,6 +1832,7 @@ initialize_options(Options * options)
+@@ -1844,6 +1853,7 @@ initialize_options(Options * options)
  	options->pubkey_authentication = -1;
  	options->challenge_response_authentication = -1;
  	options->gss_authentication = -1;
@@ -990,7 +990,7 @@ diff -pur old/readconf.c new/readconf.c
  	options->gss_deleg_creds = -1;
  	options->password_authentication = -1;
  	options->kbd_interactive_authentication = -1;
-@@ -1978,6 +1988,12 @@ fill_default_options(Options * options)
+@@ -1999,6 +2009,12 @@ fill_default_options(Options * options)
  #else
  		options->gss_authentication = 0;
  #endif
@@ -1064,7 +1064,7 @@ diff -pur old/servconf.c new/servconf.c
  	{ "gssapicleanupcredentials", sUnsupported, SSHCFG_GLOBAL },
  	{ "gssapistrictacceptorcheck", sUnsupported, SSHCFG_GLOBAL },
  #endif
-@@ -1284,6 +1296,10 @@ process_server_config_line(ServerOptions
+@@ -1294,6 +1306,10 @@ process_server_config_line(ServerOptions
  		intptr = &options->gss_authentication;
  		goto parse_flag;
  
@@ -1075,7 +1075,7 @@ diff -pur old/servconf.c new/servconf.c
  	case sGssCleanupCreds:
  		intptr = &options->gss_cleanup_creds;
  		goto parse_flag;
-@@ -2356,6 +2372,7 @@ dump_config(ServerOptions *o)
+@@ -2358,6 +2374,7 @@ dump_config(ServerOptions *o)
  #endif
  #ifdef GSSAPI
  	dump_cfg_fmtint(sGssAuthentication, o->gss_authentication);
@@ -1147,7 +1147,7 @@ diff -pur old/ssh-gss.h new/ssh-gss.h
 diff -pur old/ssh_config.5 new/ssh_config.5
 --- old/ssh_config.5
 +++ new/ssh_config.5
-@@ -755,6 +755,12 @@ The default is
+@@ -759,6 +759,12 @@ The default is
  Specifies whether user authentication based on GSSAPI is allowed.
  The default on Solaris is
  .Cm yes .
@@ -1216,8 +1216,8 @@ diff -pur old/sshconnect2.c new/sshconnect2.c
 +#endif
 +
  	if (options.rekey_limit || options.rekey_interval)
- 		packet_set_rekey_limits((u_int32_t)options.rekey_limit,
- 		    (time_t)options.rekey_interval);
+ 		packet_set_rekey_limits(options.rekey_limit,
+ 		    options.rekey_interval);
 @@ -217,9 +252,22 @@ ssh_kex2(char *host, struct sockaddr *ho
  # endif
  #endif
@@ -1336,7 +1336,7 @@ diff -pur old/sshconnect2.c new/sshconnect2.c
 diff -pur old/sshd.c new/sshd.c
 --- old/sshd.c
 +++ new/sshd.c
-@@ -1705,10 +1705,13 @@ main(int ac, char **av)
+@@ -1719,10 +1719,13 @@ main(int ac, char **av)
  		    key ? "private" : "agent", i, sshkey_ssh_name(pubkey), fp);
  		free(fp);
  	}
@@ -1350,7 +1350,7 @@ diff -pur old/sshd.c new/sshd.c
  
  	/*
  	 * Load certificates. They are stored in an array at identical
-@@ -2179,6 +2182,48 @@ do_ssh2_kex(void)
+@@ -2193,6 +2196,48 @@ do_ssh2_kex(void)
  	myproposal[PROPOSAL_SERVER_HOST_KEY_ALGS] = compat_pkalg_proposal(
  	    list_hostkey_types());
  
@@ -1399,7 +1399,7 @@ diff -pur old/sshd.c new/sshd.c
  	/* start key exchange */
  	if ((r = kex_setup(active_state, myproposal)) != 0)
  		fatal("kex_setup: %s", ssh_err(r));
-@@ -2196,6 +2241,13 @@ do_ssh2_kex(void)
+@@ -2210,6 +2255,13 @@ do_ssh2_kex(void)
  # endif
  #endif
  	kex->kex[KEX_C25519_SHA256] = kexc25519_server;
@@ -1416,7 +1416,7 @@ diff -pur old/sshd.c new/sshd.c
 diff -pur old/sshd_config.5 new/sshd_config.5
 --- old/sshd_config.5
 +++ new/sshd_config.5
-@@ -623,6 +623,11 @@ The default is
+@@ -627,6 +627,11 @@ The default is
  Specifies whether user authentication based on GSSAPI is allowed.
  The default on Solaris is
  .Cm yes .
@@ -1431,7 +1431,7 @@ diff -pur old/sshd_config.5 new/sshd_config.5
 diff -pur old/sshkey.c new/sshkey.c
 --- old/sshkey.c
 +++ new/sshkey.c
-@@ -114,6 +114,7 @@ static const struct keytype keytypes[] =
+@@ -116,6 +116,7 @@ static const struct keytype keytypes[] =
  #  endif /* OPENSSL_HAS_NISTP521 */
  # endif /* OPENSSL_HAS_ECC */
  #endif /* WITH_OPENSSL */
