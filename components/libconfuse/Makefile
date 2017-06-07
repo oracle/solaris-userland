@@ -39,6 +39,10 @@ TPNO=			35781
 
 TEST_TARGET= install $(TEST_32_and_64)
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_32_and_64)
+
+# Depends on S12-only function in ON.
+include $(WS_MAKE_RULES)/no-evaluation.mk
+
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS +=	--disable-static
