@@ -3,6 +3,15 @@ Patch will potentially be submitted upstream.
 
 --- libopenusb-1.1.11/src/Makefile.in_orig	2016-11-15 10:56:29.737793492 +0000
 +++ libopenusb-1.1.11/src/Makefile.in	2016-11-15 10:58:21.991252260 +0000
+@@ -325,7 +325,7 @@
+ @SUNOS_API_TRUE@sunos_la_LIBADD = -ldevinfo -ldbus-1 -lhal -ldbus-glib-1 -lglib-2.0 -lgthread-2.0 -lopenusb
+ 
+ #to use hal for hotplug event support
+-@SUNOS_API_TRUE@sunos_la_CFLAGS = -I/usr/include/dbus-1.0 -I/usr/lib/dbus-1.0/include -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/hal
++@SUNOS_API_TRUE@sunos_la_CFLAGS = $(DBUSGLIB_CFLAGS) $(GLIB_CFLAGS) -I/usr/include/hal
+ 
+ # add libopenusb.so as a dependency for sunos.so, to avoid parallel building errors
+ @SUNOS_API_TRUE@sunos_la_DEPENDENCIES = $(lib_LTLIBRARIES)
 @@ -428,6 +428,9 @@
  	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 "$(DESTDIR)$(usblibdir)"; \
  	}

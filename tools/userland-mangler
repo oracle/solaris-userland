@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 #
 # userland-mangler - a file mangling utility
@@ -213,6 +213,30 @@ def mangle_elf(manifest, action, src, dest):
 def mangle_script(manifest, action, text):
 	return text
 
+lib_includes32bit_guard = """
+/* Solaris specific check for correct build usage. */
+#if defined(__amd64) || defined(__sparcv9)
+#error "32-bits header file used for 64-bits build. You may need to set PKG_CONFIG_PATH=/usr/lib/64/pkgconfig."
+#endif
+"""
+
+lib_includes64bit_guard = """
+/* Solaris specific check for correct build usage. */
+#if (!defined(__amd64) && !defined(__sparcv9))
+#error "64-bits header file used for 32-bits build. You may need to set PKG_CONFIG_PATH=/usr/lib/pkgconfig."
+#endif
+"""
+#
+# mangler.guard_lib_includes =
+#
+def mangle_lib_includes(manifest, action, text):
+	guard_lib_includes = action.attrs.pop('mangler.guard_lib_includes', 'false')
+	if guard_lib_includes is 'false':
+		return text
+	if any(x in action.attrs["path"] for x in ['/sparcv9/', '/amd64/']):
+		return text + lib_includes64bit_guard
+	return text + lib_includes32bit_guard
+
 #
 # mangler.strip_cddl = false
 #
@@ -240,6 +264,8 @@ def mangle_path(manifest, action, src, dest):
 		 	result = mangle_manpage(manifest, action, result)
 		elif 'mode' in action.attrs and int(action.attrs['mode'], 8) & 0111 != 0:
 			result = mangle_script(manifest, action, result)
+		elif re.match(r'usr/lib/.*/include/.*\.h$', action.attrs["path"]):
+			result = mangle_lib_includes(manifest, action, result)
 
 		if text != result:
 			destdir = os.path.dirname(dest)

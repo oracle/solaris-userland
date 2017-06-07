@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -46,6 +46,8 @@ BUILD_STYLE= justmake
 include $(WS_MAKE_RULES)/common.mk
 
 LDFLAGS += $(CC_BITS)
+
+COMPONENT_BUILD_ENV += PKG_CONFIG_PATH="$(PKG_CONFIG_PATH)"
 
 COMPONENT_INSTALL_ARGS += LUA_VERSION=5.2 PREFIX=$(USRDIR)
 COMPONENT_INSTALL_ARGS.64 += LUA_LIBDIR=$(USRDIR)/lib/lua/5.2/64
