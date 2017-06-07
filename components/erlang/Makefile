@@ -30,13 +30,14 @@ include ../../make-rules/shared-macros.mk
 PATH=$(JAVA_HOME)/bin:$(USRBINDIR)
 
 COMPONENT_NAME=			erlang
-COMPONENT_VERSION=		17.5
+COMPONENT_VERSION=		19.3
 COMPONENT_PROJECT_URL=	http://www.erlang.org/
 COMPONENT_SRC_NAME=	otp_src
 COMPONENT_SRC=		$(COMPONENT_SRC_NAME)_$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:3c28820c981b30c50df8ac2a4a238e5813454fa3ed2ad530bc7948a282846474
+    sha256:fe4a00651db39b8542b04530a48d24b2f2e7e0b77cbe93d728c9f05325bdfe83
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE)
+COMPONENT_BUGDB=	utility/erlang
 COMPONENT_ANITYA_ID=	707
 
 # manpages
@@ -44,7 +45,7 @@ COMPONENT_NAME_1=	otp_doc_man
 COMPONENT_SRC_1=	$(COMPONENT_NAME_1)_$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_1=	$(COMPONENT_SRC_1).tar.gz
 COMPONENT_ARCHIVE_HASH_1=	\
-    sha256:85b1b2a1011fc01af550f1fe9e5a599a4c5f2a35d264d2804af1d05590a857c3
+    sha256:f8192ffdd7367083c055695eeddf198155da43dcc221aed1d870d1e3871dd95c
 COMPONENT_ARCHIVE_URL_1=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE_1)
 UNPACK_ARGS_1=	-r $(COMPONENT_SRC_1)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_1)
@@ -54,12 +55,12 @@ COMPONENT_NAME_2=	otp_doc_html
 COMPONENT_SRC_2=	$(COMPONENT_NAME_2)_$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_2=	$(COMPONENT_SRC_2).tar.gz
 COMPONENT_ARCHIVE_HASH_2=	\
-    sha256:baba1d373c1faacf4a1a6ec1220d57d0cb2b977edb74f32cd58dc786361c6cf5
+    sha256:dc3e3a82d1aba7f0deac1ddb81b7d6f8dee9a75e1d42b90c677a2b645f19a00c
 COMPONENT_ARCHIVE_URL_2=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE_2)
 UNPACK_ARGS_2=	-r $(COMPONENT_SRC_2)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_2)
 
-TPNO=			18548
+TPNO=			35510
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/common.mk
@@ -77,6 +78,11 @@ CONFIGURE_OPTIONS += --enable-threads
 CONFIGURE_OPTIONS += --enable-hipe
 CONFIGURE_OPTIONS += --with-ssl
 CONFIGURE_OPTIONS += --enable-dynamic-ssl-lib
+
+# Erlang doesn't appear to like ASLR: it uses mmap() with MAP_FIXED, and
+# makes assumptions about memory layout that aren't true on Solaris x86,
+# leading to segmentation faults in erlc.
+ASLR_MODE =	$(ASLR_DISABLE)
 
 # Use cp(1) instead of cloney because erlang's 'install' target uses 'tar'
 # to copy files and our tar doesn't handle long links by default.  Between
@@ -99,7 +105,7 @@ COMPONENT_POST_CONFIGURE_ACTION = \
 		./configure $(CONFIGURE_OPTIONS))
 
 # Always show the build and link lines for easier debugging.
-COMPONENT_BUILD_ARGS +=		V=1
+COMPONENT_BUILD_ARGS +=	V=1
 
 COMPONENT_INSTALL_ARGS += INSTALL_PREFIX=$(PROTO_DIR)
 

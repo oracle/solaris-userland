@@ -24,23 +24,23 @@
 #
 
 # Note that the use of this module itself is discouraged in new code.
-# Other modules like XML::LibXML is highly recommended.
+# Other modules like XML::LibXML are highly recommended.
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		XML-Simple
-COMPONENT_VERSION=	2.22
+COMPONENT_VERSION=	2.24
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b9450ef22ea9644ae5d6ada086dc4300fa105be050a2030ebd4efd28c198eb49
+    sha256:9a14819fd17c75fbb90adcec0446ceab356cab0ccaff870f2e1659205dc2424f
 COMPONENT_ARCHIVE_URL=	\
     http://www.cpan.org/authors/id/G/GR/GRANTM/$(COMPONENT_ARCHIVE)
-COMPONENT_PROJECT_URL=	http://search.cpan.org/~grantm/
+COMPONENT_PROJECT_URL=	http://search.cpan.org/dist/XML-Simple/
 COMPONENT_BUGDB=	perl-mod/xml-parser
 COMPONENT_ANITYA_ID=	3537
 
-TPNO=			31845
+TPNO=			35762
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
