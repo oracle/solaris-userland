@@ -63,6 +63,10 @@ PKG_PROTO_DIRS +=	$(COMPONENT_SRC_2)
 TPNO=			35510
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
+
+# Multiple issues building on 11.3
+include $(WS_MAKE_RULES)/no-evaluation.mk
+
 include $(WS_MAKE_RULES)/common.mk
 
 # Fix 64-bit linking.
