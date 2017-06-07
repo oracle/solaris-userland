@@ -28,16 +28,16 @@ include ../../make-rules/shared-macros.mk
 PATH=$(SPRO_VROOT)/bin:$(USRBINDIR):$(GNUBIN):$(USRSBINDIR)
 
 COMPONENT_NAME=		unrar
-COMPONENT_VERSION=	5.4.5
+COMPONENT_VERSION=	5.5.3
 COMPONENT_SRC=		$(COMPONENT_NAME)
 COMPONENT_PROJECT_URL=	http://www.rarlabs.com/rar_add.htm
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)src-$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e470c584332422893fb52e049f2cbd99e24dc6c6da971008b4e2ae4284f8796c
+    sha256:d1d9ef4a9247db088f825666de8f8bb69006d8d8b0e004ff366b3e04c103a2b3
 COMPONENT_ARCHIVE_URL=	http://www.rarlab.com/rar/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	13306
 
-TPNO=			33955
+TPNO=			35479
 
 # We need this before the default PKG_PROTO_DIRS, so set it before we include
 # common.mk, which will append the default set.
