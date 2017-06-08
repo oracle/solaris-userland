@@ -23,6 +23,7 @@
 # Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
+COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 # Separate build for test with --enable-test configured
@@ -49,10 +50,6 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=	http://download.oracle.com/berkeley-db/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	database/berkeley
 COMPONENT_ANITYA_ID=	1587
-
-# Userland default optimization level is 4, but that causes test failures.
-# Upstream recommends level 2, which allows the tests to run, so we use that.
-studio_OPT = -xO2
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -86,6 +83,10 @@ CXX +=	$($(COMPILER)_NORUNPATH)
 CFLAGS += $(CPP_LARGEFILES) $(CC_PIC)
 CXXFLAGS += $(CPP_LARGEFILES)
 
+# Prevent: #error "Compiler or options invalid for pre-UNIX 03 X/Open
+# applications.
+CFLAGS += -D_XOPEN_SOURCE=600
+
 # BerkeleyDB < 6 does not support Java 8. Java 7 is EOL & removed.
 CONFIGURE_OPTIONS += --disable-java
 CONFIGURE_OPTIONS += --disable-jdbc
@@ -117,4 +118,5 @@ RUN=run_std
 
 
 REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/library/c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
