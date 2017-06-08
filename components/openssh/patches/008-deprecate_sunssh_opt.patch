@@ -1,3 +1,4 @@
+
 #
 # To make the transition from SunSSH to OpenSSH as smooth as possible, we
 # added SunSSH-only options as deprecated options in OpenSSH. Note that this
@@ -6,27 +7,26 @@
 # changed from deprecated to supported. Since this is for Solaris only, we will
 # not contribute back this change to the upstream community.
 #
-diff -pur old/readconf.c new/readconf.c
---- old/readconf.c
-+++ new/readconf.c
-@@ -192,10 +192,14 @@ static struct {
- 	{ "afstokenpassing", oUnsupported },
+--- orig/readconf.c	2017-03-24 17:50:46.940073125 -0700
++++ new/readconf.c	2017-03-24 17:56:01.403994460 -0700
+@@ -196,10 +196,14 @@
+ 	/* Sometimes-unsupported options */
  #if defined(GSSAPI)
  	{ "gssapiauthentication", oGssAuthentication },
 +	{ "gssauthentication", oGssAuthentication },                /* alias */
  	{ "gssapidelegatecredentials", oGssDelegateCreds },
 +	{ "gssdelegatecreds", oGssDelegateCreds },                  /* alias */
- #else
+ # else
  	{ "gssapiauthentication", oUnsupported },
 +	{ "gssauthentication", oUnsupported },
  	{ "gssapidelegatecredentials", oUnsupported },
 +	{ "gssdelegatecreds", oUnsupported },
  #endif
- 	{ "fallbacktorsh", oDeprecated },
- 	{ "usersh", oDeprecated },
-@@ -279,6 +283,24 @@ static struct {
- 	{ "pubkeyacceptedkeytypes", oPubkeyAcceptedKeyTypes },
+ #ifdef ENABLE_PKCS11
+ 	{ "smartcarddevice", oPKCS11Provider },
+@@ -309,6 +313,23 @@
  	{ "ignoreunknown", oIgnoreUnknown },
+ 	{ "proxyjump", oProxyJump },
  
 +#ifdef DEPRECATE_SUNSSH_OPT
 +        /*
@@ -45,7 +45,6 @@ diff -pur old/readconf.c new/readconf.c
 +        { "usefips140", oDeprecated },
 +        { "useopensslengine", oDeprecated },
 +#endif
-+
  	{ NULL, oBadOption }
  };
  

@@ -27,20 +27,20 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		openssh
-COMPONENT_VERSION=	7.4p1
+COMPONENT_VERSION=	7.5p1
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_ANITYA_ID=	2565
 
 # Version for IPS.  The encoding rules are:
 #   OpenSSH <x>.<y>p<n>     => IPS <x>.<y>.0.<n>
 #   OpenSSH <x>.<y>.<z>p<n> => IPS <x>.<y>.<z>.<n>
-IPS_COMPONENT_VERSION=	7.4.0.1
+IPS_COMPONENT_VERSION=	7.5.0.1
 
 COMPONENT_PROJECT_URL=	http://www.openssh.org/
-COMPONENT_ARCHIVE_HASH=	sha256:1b1fc4a14e2024293181924ed24872e6f2e06293f3e8926a376b8aec481f19d1
+COMPONENT_ARCHIVE_HASH=	sha256:9846e3c5fab9f0547400b4d2c017992f914222b3fd1f8eee6c7dc6bc5e59f9f0
 COMPONENT_ARCHIVE_URL=	http://mirrors.sonic.net/pub/OpenBSD/OpenSSH/portable/$(COMPONENT_ARCHIVE)
 
-TPNO_OPENSSH=		33237
+TPNO_OPENSSH=		34574
 TPNO_GSSKEX=		20377
 
 # Because of set up requirements, test suite is in stc gate.
@@ -69,8 +69,7 @@ CFLAGS += -DOPENSSL_NO_CAST
 CFLAGS += -DENABLE_OPENSSL_FIPS
 CFLAGS += -DOPENSSL_NO_RC4
 CFLAGS += -DWITHOUT_HMAC_MD5
-CFLAGS += -DDEFAULT_PKCS11_WHITELIST='\"/usr/lib/sparcv9/*,/lib/sparcv9/*,/usr/lib/amd64/*,/lib/amd64/*\"'
-
+CFLAGS += -DDEFAULT_PKCS11_WHITELIST='\"/lib/$(MACH64)/*,/usr/lib/$(MACH64)/*,/usr/lib/security/$(MACH64)/*\"'
 
 # We need to disable lazyloading of dynamic dependent libraries. During the
 # pre-authentication phase, sshd will chroot to /var/empty which doesn't
@@ -93,7 +92,8 @@ CONFIGURE_OPTIONS += --with-audit=solaris
 CONFIGURE_OPTIONS += --with-libedit
 CONFIGURE_OPTIONS += --with-kerberos5
 CONFIGURE_OPTIONS += --with-pam
-CONFIGURE_OPTIONS += --with-sandbox=no
+CONFIGURE_OPTIONS += --with-sandbox=solaris
+CONFIGURE_OPTIONS += --with-solaris-privs
 CONFIGURE_OPTIONS += --with-solaris-contracts
 CONFIGURE_OPTIONS += --with-4in6
 CONFIGURE_OPTIONS += --with-xauth=$(USRBINDIR)/xauth

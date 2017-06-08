@@ -76,6 +76,8 @@ CONFIGURE_OPTIONS += "curl_disallow_getifaddrs=yes"
 
 LINT_FLAGS += -I$(SOURCE_DIR)/include
 
+COMPONENT_TEST_ENV += PATH="$(GCC_ROOT)/bin:$(PATH)"
+
 # The additional curl specific set of transforms to be applied to the
 # test results to try to normalize them.
 COMPONENT_TEST_TRANSFORMS += \
@@ -89,7 +91,7 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "s|\(^/bin/bash ../../libtool\).*|\1|" ' \
 	'-e "s|\(^libtool: link:\).*|\1|" ' \
 	'-e "s|remaining: ..:..|remaining: xx:xx|" ' \
-	'-e "s|\(^TESTDONE: 994 tests were considered during\).*|\1|" ' \
+	'-e "s|\(^TESTDONE: 997 tests were considered during\).*|\1|" ' \
 	'-e "s|\(^\* curl $(COMPONENT_VERSION)\).*|\1|" ' \
 	'-e "s|\(^\* Host:\).*|\1|" ' \
 	'-e "s|\(^\* System: SunOS\).*|\1|" ' \
