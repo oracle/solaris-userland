@@ -54,6 +54,11 @@ CXXFLAGS += -std=c++11
 # it seems that --with-pic doesn't get PIC flags to the C++ compiler
 CXXFLAGS += $(CC_PIC)
 
+# Apply git-formatted (because of binary data) patches.
+COMPONENT_POST_UNPACK_ACTION += \
+	(cd $(COMPONENT_SRC); git apply -p2 < ../patches/*.git)
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH$(BITS)).master
 COMPONENT_TEST_TRANSFORMS += \
      '-e "s^-L$(CONFIGURE_LIBDIR.$(BITS))^^g"' \
      '-e "/libtool/d"' \
