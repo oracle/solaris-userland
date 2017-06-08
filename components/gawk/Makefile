@@ -26,11 +26,13 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gawk
-COMPONENT_VERSION=	4.1.3
+COMPONENT_VERSION=	4.1.4
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:e3cf55e91e31ea2845f8338bedd91e40671fc30e4d82ea147d220e687abda625
+    sha256:53e184e2d0f90def9207860531802456322be091c7b48f23fdc79cda65adc266
 COMPONENT_ANITYA_ID=	868
+
+TPNO=			35767
 
 # Adjust references to section 3am to be section 3 in the extensions man pages.
 COMPONENT_POST_CONFIGURE_ACTION = \
@@ -47,8 +49,6 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/Leaving directory/d"' \
 	'-e "/Entering directory/d"' \
         '-e "s|\(^/usr/gnu/bin/make\).*|\1|" ' 
-
-TPNO=			26217	
 
 # must build tests before using
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_64)
