@@ -63,3 +63,6 @@ COMPONENT_SYSTEM_TEST_DIR =	$(BUILD_DIR_64)
 COMPONENT_SYSTEM_TEST_ENV =	CONFLICT_BIN=/usr/bin/conflict
 COMPONENT_SYSTEM_TEST_CMD =	./run_test.sh
 COMPONENT_SYSTEM_TEST_TARGETS =
+
+# Conflict needs to be installed for its test suite to work
+REQUIRED_PACKAGES += shell/conflict

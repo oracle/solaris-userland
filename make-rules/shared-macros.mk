@@ -349,6 +349,7 @@ COMPONENT_TEST_TRANSFORMS = \
 	'-e "s|$(PERL)|\\$$(PERL)|g" ' \
 	'-e "s|$(SOURCE_DIR)|\\$$(SOURCE_DIR)|g" ' \
 	'-e "/^gmake: warning: jobserver unavailable:/d" ' \
+	'-e "/^make\[.* jobserver unavailable:/d" ' \
 	'-e "/^make: Warning: Ignoring DistributedMake -j option/d" '
 
 # set the default commands used to generate the file containing the set

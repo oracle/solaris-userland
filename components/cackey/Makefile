@@ -62,6 +62,8 @@ COMPONENT_BUGDB=        library/smartcard
 
 TPNO =                  25489
 
+TEST_TARGET= $(NO_TESTS)
+
 include $(WS_MAKE_RULES)/common.mk
 
 # does not use typical FOSS dir layout, source is at top level

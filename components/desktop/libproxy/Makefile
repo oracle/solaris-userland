@@ -85,3 +85,8 @@ REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+
+COMPONENT_TEST_TARGETS = test
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS += '-e "s/Passed .*/Passed/" '
+COMPONENT_TEST_TRANSFORMS += '-e "/Total Test time/d" '

@@ -67,7 +67,6 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/SKIP:/p" ' \
         '-e "/PASS:/p" ' \
         '-e "/FAIL:/p" ' \
-        '-e "/ok/p" ' \
         '-e "/ERROR:/p" '
 
 REQUIRED_PACKAGES += developer/build/automake-115

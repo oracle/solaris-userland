@@ -46,16 +46,15 @@ CONFIGURE_OPTIONS  +=	ac_cv_func_newlocale=no
 # field is incorrect on ZFS file systems.
 CONFIGURE_OPTIONS +=	--disable-leaf-optimisation
 
+# Run all the tests even if there is a failure
+COMPONENT_TEST_ARGS += -k
 COMPONENT_TEST_ENV +=	PATH="$(GNUBIN):$(PATH)"
-
 COMPONENT_TEST_TRANSFORMS += \
-	'-e "s|^.*$(CC).*$$|XXX_CC_XXX|g" ' \
-	'-e "s|^.*source=.*libtool=no.*$$|XXX_CC_XXX|g" ' \
-	'-e "s|^.*DEPDIR=.deps.*$$|XXX_CC_XXX|g" ' \
-	'-e "s|^.*(core dumped).*$$|XXX_CC_XXX|g" ' \
-	'-e "/^XXX_CC_XXX$$/d" ' \
-	'-e "s|\(Test Run By\).*|\1|" ' \
-	'-e "s|\(Native configuration is\).*|\1|" '
+	'-n ' \
+	'-e "/^PASS:/p" ' \
+	'-e "/^FAIL:/p" ' \
+	'-e "/^SKIP:/p" ' \
+	'-e "/^\# /p" ' \
 
 # Needed for "gmake test" to work successfully.
 # Otherwise we see errors such as:

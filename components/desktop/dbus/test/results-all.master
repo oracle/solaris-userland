@@ -41,45 +41,119 @@ PASS: test-printf 4
 PASS: test-printf 5
 PASS: test-printf 6
 PASS: test-printf 7
-ERROR: test-corrupt - missing test plan
-ERROR: test-dbus-daemon - missing test plan
-ERROR: test-dbus-daemon-eavesdrop - missing test plan
-ERROR: test-fdpass - missing test plan
-ERROR: test-monitor - missing test plan
-ERROR: test-loopback - missing test plan
-ERROR: test-marshal - missing test plan
-ERROR: test-refs - missing test plan
-ERROR: test-relay - missing test plan
-ERROR: test-sd-activation - missing test plan
-ERROR: test-syntax - missing test plan
-ERROR: test-syslog - missing test plan
-ERROR: test-uid-permissions - missing test plan
+PASS: test-corrupt 1 /corrupt/tcp
+PASS: test-corrupt 2 /corrupt/unix
+PASS: test-corrupt 3 /corrupt/byte-order/tcp
+PASS: test-dbus-daemon 1 /creds
+PASS: test-dbus-daemon 2 /processid
+PASS: test-dbus-daemon 3 /unix-runtime-is-default
+PASS: test-dbus-daemon 4 /echo/session
+PASS: test-dbus-daemon 5 /echo/limited
+PASS: test-dbus-daemon 6 /no-reply/disconnect
+PASS: test-dbus-daemon 7 /no-reply/timeout
+PASS: test-dbus-daemon 8 /canonical-path/uae
+PASS: test-dbus-daemon-eavesdrop 1 /eavedrop/match_keyword/broadcast
+PASS: test-dbus-daemon-eavesdrop 2 /eavedrop/match_keyword/unicast_to_receiver
+PASS: test-dbus-daemon-eavesdrop 3 /eavedrop/match_keyword/unicast_to_sender
+PASS: test-fdpass 1 /relay
+PASS: test-fdpass 2 /limit
+PASS: test-fdpass 3 /too-many/plus1
+PASS: test-fdpass 4 /too-many/plus2
+PASS: test-fdpass 5 /too-many/plus17
+PASS: test-fdpass 6 /too-many/split
+PASS: test-fdpass 7 /flood/1
+PASS: test-fdpass 8 /flood/half-limit
+PASS: test-fdpass 9 /flood/over-half-limit
+PASS: test-fdpass 10 /flood/limit
+PASS: test-fdpass 11 /odd-limit/minus1
+PASS: test-fdpass 12 /odd-limit/at
+PASS: test-fdpass 13 /odd-limit/plus1
+PASS: test-fdpass 14 /odd-limit/plus2
+PASS: test-monitor 1 /monitor/become
+PASS: test-monitor 2 /monitor/broadcast
+PASS: test-monitor 3 /monitor/forbidden-broadcast
+PASS: test-monitor 4 /monitor/unicast-signal
+PASS: test-monitor 5 /monitor/forbidden
+PASS: test-monitor 6 /monitor/method-call
+PASS: test-monitor 7 /monitor/forbidden-method
+PASS: test-monitor 8 /monitor/dbus-daemon
+PASS: test-monitor 9 /monitor/selective
+PASS: test-monitor 10 /monitor/wildcard
+PASS: test-monitor 11 /monitor/no-rule
+PASS: test-monitor 12 /monitor/eavesdrop
+PASS: test-monitor 13 /monitor/no-eavesdrop
+PASS: test-monitor 14 /monitor/activation
+PASS: test-loopback 1 /connect/tcp
+PASS: test-loopback 2 /connect/nonce-tcp
+PASS: test-loopback 3 /connect/unix
+PASS: test-loopback 4 /connect/unix/runtime
+PASS: test-loopback 5 /connect/unix/no-runtime
+PASS: test-loopback 6 /message/tcp
+PASS: test-loopback 7 /message/nonce-tcp
+PASS: test-loopback 8 /message/unix
+PASS: test-loopback 9 /message/bad-guid
+PASS: test-marshal 1 /demarshal/le
+PASS: test-marshal 2 /demarshal/be
+PASS: test-marshal 3 /demarshal/needed/le
+PASS: test-marshal 4 /demarshal/needed/be
+PASS: test-refs 1 /refs/connection
+PASS: test-refs 2 /refs/message
+PASS: test-refs 3 /refs/pending-call
+PASS: test-refs 4 /refs/server
+PASS: test-relay 1 /connect
+PASS: test-relay 2 /relay
+PASS: test-relay 3 /limit
+PASS: test-sd-activation 1 /sd-activation
+PASS: test-syntax 1 /syntax/path
+PASS: test-syntax 2 /syntax/interface
+PASS: test-syntax 3 /syntax/error
+PASS: test-syntax 4 /syntax/member
+PASS: test-syntax 5 /syntax/bus-name
+PASS: test-syntax 6 /syntax/signature
+PASS: test-syntax 7 /syntax/single-signature
+PASS: test-syntax 8 /syntax/utf8
+PASS: test-syslog 1 /syslog
+SKIP: test-uid-permissions 1 /uid-permissions/uae/root # SKIP cannot use alternative uid when not uid 0
+SKIP: test-uid-permissions 2 /uid-permissions/uae/messagebus # SKIP cannot use alternative uid when not uid 0
+SKIP: test-uid-permissions 3 /uid-permissions/uae/other # SKIP cannot use alternative uid when not uid 0
 ============================================================================
 Testsuite summary for dbus 1.10.0
 ============================================================================
-# TOTAL: 31
-# PASS:  18
+# TOTAL: 93
+# PASS:  90
+# SKIP:  3
+# XFAIL: 0
+# FAIL:  0
+# XPASS: 0
+# ERROR: 0
+============================================================================
+make[5]: Leaving directory '$(@D)/test'
+make[4]: Leaving directory '$(@D)/test'
+make[3]: Leaving directory '$(@D)/test'
+Making check in name-test
+make[3]: Entering directory '$(@D)/test/name-test'
+/usr/gnu/bin/make  check-TESTS
+make[4]: Entering directory '$(@D)/test/name-test'
+make[5]: Entering directory '$(@D)/test/name-test'
+============================================================================
+Testsuite summary for dbus 1.10.0
+============================================================================
+# TOTAL: 0
+# PASS:  0
 # SKIP:  0
 # XFAIL: 0
 # FAIL:  0
 # XPASS: 0
-# ERROR: 13
+# ERROR: 0
 ============================================================================
-See test/test-suite.log
-Please report to https://bugs.freedesktop.org/enter_bug.cgi?product=dbus
-============================================================================
-Makefile:1526: recipe for target 'test-suite.log' failed
-make[5]: *** [test-suite.log] Error 1
-make[5]: Leaving directory '$(@D)/test'
-Makefile:1632: recipe for target 'check-TESTS' failed
-make[4]: *** [check-TESTS] Error 2
-make[4]: Leaving directory '$(@D)/test'
-Makefile:1828: recipe for target 'check-am' failed
-make[3]: *** [check-am] Error 2
-make[3]: Leaving directory '$(@D)/test'
-Makefile:1419: recipe for target 'check-recursive' failed
-make[2]: *** [check-recursive] Error 1
+make[5]: Leaving directory '$(@D)/test/name-test'
+make[4]: Leaving directory '$(@D)/test/name-test'
+make[3]: Leaving directory '$(@D)/test/name-test'
 make[2]: Leaving directory '$(@D)/test'
-Makefile:628: recipe for target 'check-recursive' failed
-make[1]: *** [check-recursive] Error 1
+Making check in doc
+make[2]: Entering directory '$(@D)/doc'
+make[2]: Nothing to be done for 'check'.
+make[2]: Leaving directory '$(@D)/doc'
+make[2]: Entering directory '$(@D)'
+make[2]: Leaving directory '$(@D)'
 make[1]: Leaving directory '$(@D)'
