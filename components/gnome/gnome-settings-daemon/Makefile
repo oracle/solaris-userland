@@ -119,6 +119,7 @@ CONFIGURE_OPTIONS += --with-pic
 # Required due to patches.
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 
+REQUIRED_PACKAGES += desktop/xdg/desktop-file-utils
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/audio/pulseaudio
 REQUIRED_PACKAGES += library/desktop/cairo
@@ -136,6 +137,7 @@ REQUIRED_PACKAGES += library/lcms2
 REQUIRED_PACKAGES += library/nspr
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/security/nss
+REQUIRED_PACKAGES += service/gnome/desktop-cache
 REQUIRED_PACKAGES += service/image/colord
 REQUIRED_PACKAGES += shell/expect
 REQUIRED_PACKAGES += system/library/fontconfig

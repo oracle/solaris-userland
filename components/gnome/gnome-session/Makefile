@@ -67,12 +67,14 @@ COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
 
+REQUIRED_PACKAGES += desktop/xdg/desktop-file-utils
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
 REQUIRED_PACKAGES += library/json-glib
 REQUIRED_PACKAGES += library/libxslt
 REQUIRED_PACKAGES += library/xdg/consolekit
+REQUIRED_PACKAGES += service/gnome/desktop-cache
 REQUIRED_PACKAGES += service/opengl/ogl-select
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/libdbus-glib

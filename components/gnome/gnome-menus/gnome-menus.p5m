@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 <transform file path=usr.*/man/.+ -> \
     default mangler.man.stability "pass-through volatile">
@@ -176,3 +176,10 @@ license COPYING.LIB license=LGPLv2
 # The usr/share/desktop-directories files in this package were previously
 # delivered in the gnome-panel package, so we avoid conflicts with this:
 depend type=optional fmri=pkg:/gnome/gnome-panel@2.30.2-5.12.0.0.0.112.0
+# Indirect dependencies - uses GDesktopAppInfo to get info from desktop db
+depend type=require fmri=__TBD pkg.debug.depend.file=desktop-mime-cache.xml \
+    pkg.debug.depend.path=lib/svc/manifest/application/desktop-cache \
+    pkg.debug.depend.reason=libmenu/desktop-entries.c
+depend type=require fmri=__TBD \
+    pkg.debug.depend.file=usr/bin/update-desktop-database \
+    pkg.debug.depend.reason=libmenu/desktop-entries.c

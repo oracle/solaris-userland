@@ -543,9 +543,8 @@ file files/glib-compile-schemas.8s \
     path=usr/share/man/man8s/glib-compile-schemas.8s
 license COPYING license=LGPLv2
 # code in gio/gdesktopappinfo.c execs update-desktop-database
-# disabled until update-desktop-database is split out of control-center so
-# we don't suck half of gnome into the text install cd and fill the ramdisk
-#depend type=require fmri=__TBD
-#    pkg.debug.depend.file=usr/bin/update-desktop-database
+depend type=require fmri=__TBD \
+    pkg.debug.depend.file=usr/bin/update-desktop-database \
+    pkg.debug.depend.reason=gio/gdesktopappinfo.c
 # shared-mime-info data files are required by libgio code
 depend type=require fmri=pkg:/data/shared-mime-info
