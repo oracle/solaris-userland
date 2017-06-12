@@ -126,12 +126,12 @@ REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/network
 
 # This is a convenience method for the package maintainer
-new-files: install
+new-files:
 	    $(PKGSEND) generate $(PROTO_DIR) | \
 		$(GSED) -e 's|group=.*||' -e s'|^file |file path=|' | \
 		$(CAT) *.p5m - | $(PKGFMT) -u |\
 		$(GSED) \
 		  -e '/~[0-9]\+~$$/d' \
-		  -e 's|usr/ruby/$(RUBY_VERSION)/lib/ruby/vendor_ruby/$(RUBY_LIB_VERSION)|__ruby__|' | \
+		  -e 's|$(VENDOR_RUBY)|$$$$(VENDOR_RUBY)|' | \
 		sort | uniq -c | \
 		$(GSED) -e '/ 2 /d' -e 's/   1 //' -e '/^file/!d'
