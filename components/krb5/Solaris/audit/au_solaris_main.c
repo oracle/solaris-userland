@@ -20,7 +20,7 @@
  */
 
 /*
- * Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
  */
 
 /*
@@ -81,6 +81,7 @@ close_au(krb5_audit_moddata auctx)
 	adt_session_data_t	*ah = auctx->ah;
 
 	(void) adt_end_session(ah);
+	free(auctx);
 
 	return (0);
 }
@@ -153,7 +154,7 @@ as_req(krb5_audit_moddata auctx, krb5_boolean ev_success,
 	int			status = ev_success ? ADT_SUCCESS : ADT_FAILURE;
 	krb5_error_code		ret = 0;
 	char			*cprinc = NULL, *sprinc = NULL;
-	krb5_context		context;
+	krb5_context		context = NULL;
 
 	if (ah == NULL)
 		return (KRB5_PLUGIN_NO_HANDLE);
@@ -192,9 +193,9 @@ as_req(krb5_audit_moddata auctx, krb5_boolean ev_success,
 			syslog(LOG_AUTH | LOG_ALERT, "krb5_unparse_name(): %m");
 			goto error;
 		}
-		event->adt_as_req.client = strdup(cprinc);
+		event->adt_as_req.client = cprinc;
 	} else
-		event->adt_as_req.client = strdup("<none>");
+		event->adt_as_req.client = "<none>";
 	if (event->adt_as_req.client == NULL) {
 		ret = ENOMEM;
 		goto error;
@@ -206,18 +207,18 @@ as_req(krb5_audit_moddata auctx, krb5_boolean ev_success,
 			syslog(LOG_AUTH | LOG_ALERT, "krb5_unparse_name(): %m");
 			goto error;
 		}
-		event->adt_as_req.service = strdup(sprinc);
+		event->adt_as_req.service = sprinc;
 	} else
-		event->adt_as_req.service = strdup("<none>");
+		event->adt_as_req.service = "<none>";
 	if (event->adt_as_req.service == NULL) {
 		ret = ENOMEM;
 		goto error;
 	}
 
 	if (state->status != NULL)
-		event->adt_as_req.status = strdup(state->status);
+		event->adt_as_req.status = (char *)state->status;
 	else
-		event->adt_as_req.status = strdup("SUCCESS");
+		event->adt_as_req.status = "SUCCESS";
 	if (event->adt_as_req.status == NULL) {
 		ret = ENOMEM;
 		goto error;
@@ -232,11 +233,12 @@ error:
 	if (event != NULL)
 		adt_free_event(event);
 	if (cprinc != NULL)
-		free(cprinc);
+		krb5_free_unparsed_name(context, cprinc);
 	if (sprinc != NULL)
-		free(sprinc);
+		krb5_free_unparsed_name(context, sprinc);
 	if (ret != 0)
 		(void) adt_end_session(ah);
+	krb5_free_context(context);
 
 	return (ret);
 }
@@ -251,7 +253,7 @@ tgs_req(krb5_audit_moddata auctx, krb5_boolean ev_success,
 	int			status = ev_success ? ADT_SUCCESS : ADT_FAILURE;
 	krb5_error_code		ret = 0;
 	char			*cprinc = NULL, *sprinc = NULL;
-	krb5_context		context;
+	krb5_context		context = NULL;
 
 	if (ah == NULL)
 		return (KRB5_PLUGIN_NO_HANDLE);
@@ -290,9 +292,9 @@ tgs_req(krb5_audit_moddata auctx, krb5_boolean ev_success,
 			syslog(LOG_AUTH | LOG_ALERT, "krb5_unparse_name(): %m");
 			goto error;
 		}
-		event->adt_tgs_req.client = strdup(cprinc);
+		event->adt_tgs_req.client = cprinc;
 	} else
-		event->adt_tgs_req.client = strdup("<none>");
+		event->adt_tgs_req.client = "<none>";
 	if (event->adt_tgs_req.client == NULL) {
 		ret = ENOMEM;
 		goto error;
@@ -304,18 +306,18 @@ tgs_req(krb5_audit_moddata auctx, krb5_boolean ev_success,
 			syslog(LOG_AUTH | LOG_ALERT, "krb5_unparse_name(): %m");
 			goto error;
 		}
-		event->adt_tgs_req.service = strdup(sprinc);
+		event->adt_tgs_req.service = sprinc;
 	} else
-		event->adt_tgs_req.service = strdup("<none>");
+		event->adt_tgs_req.service = "<none>";
 	if (event->adt_tgs_req.service == NULL) {
 		ret = ENOMEM;
 		goto error;
 	}
 
 	if (state->status != NULL)
-		event->adt_tgs_req.status = strdup(state->status);
+		event->adt_tgs_req.status = (char *)state->status;
 	else
-		event->adt_tgs_req.status = strdup("SUCCESS");
+		event->adt_tgs_req.status = "SUCCESS";
 	if (event->adt_tgs_req.status == NULL) {
 		ret = ENOMEM;
 		goto error;
@@ -330,11 +332,12 @@ error:
 	if (event != NULL)
 		adt_free_event(event);
 	if (cprinc != NULL)
-		free(cprinc);
+		krb5_free_unparsed_name(context, cprinc);
 	if (sprinc != NULL)
-		free(sprinc);
+		krb5_free_unparsed_name(context, sprinc);
 	if (ret != 0)
 		(void) adt_end_session(ah);
+	krb5_free_context(context);
 
 	return (ret);
 }
@@ -349,7 +352,7 @@ tgs_s4u2self(krb5_audit_moddata auctx, krb5_boolean ev_success,
 	int			status = ev_success ? ADT_SUCCESS : ADT_FAILURE;
 	krb5_error_code		ret = 0;
 	char			*cprinc = NULL, *sprinc = NULL;
-	krb5_context		context;
+	krb5_context		context = NULL;
 
 	if (ah == NULL)
 		return (KRB5_PLUGIN_NO_HANDLE);
@@ -388,9 +391,9 @@ tgs_s4u2self(krb5_audit_moddata auctx, krb5_boolean ev_success,
 			syslog(LOG_AUTH | LOG_ALERT, "krb5_unparse_name(): %m");
 			goto error;
 		}
-		event->adt_tgs_s4u2self.client = strdup(cprinc);
+		event->adt_tgs_s4u2self.client = cprinc;
 	} else
-		event->adt_tgs_s4u2self.client = strdup("<none>");
+		event->adt_tgs_s4u2self.client = "<none>";
 	if (event->adt_tgs_s4u2self.client == NULL) {
 		ret = ENOMEM;
 		goto error;
@@ -402,18 +405,18 @@ tgs_s4u2self(krb5_audit_moddata auctx, krb5_boolean ev_success,
 			syslog(LOG_AUTH | LOG_ALERT, "krb5_unparse_name(): %m");
 			goto error;
 		}
-		event->adt_tgs_s4u2self.service = strdup(sprinc);
+		event->adt_tgs_s4u2self.service = sprinc;
 	} else
-		event->adt_tgs_s4u2self.service = strdup("<none>");
+		event->adt_tgs_s4u2self.service = "<none>";
 	if (event->adt_tgs_s4u2self.service == NULL) {
 		ret = ENOMEM;
 		goto error;
 	}
 
 	if (state->status != NULL)
-		event->adt_tgs_s4u2self.status = strdup(state->status);
+		event->adt_tgs_s4u2self.status = (char *)state->status;
 	else
-		event->adt_tgs_s4u2self.status = strdup("SUCCESS");
+		event->adt_tgs_s4u2self.status = "SUCCESS";
 	if (event->adt_tgs_s4u2self.status == NULL) {
 		ret = ENOMEM;
 		goto error;
@@ -428,11 +431,12 @@ error:
 	if (event != NULL)
 		adt_free_event(event);
 	if (cprinc != NULL)
-		free(cprinc);
+		krb5_free_unparsed_name(context, cprinc);
 	if (sprinc != NULL)
-		free(sprinc);
+		krb5_free_unparsed_name(context, sprinc);
 	if (ret != 0)
 		(void) adt_end_session(ah);
+	krb5_free_context(context);
 
 	return (ret);
 }
@@ -447,7 +451,7 @@ tgs_s4u2proxy(krb5_audit_moddata auctx, krb5_boolean ev_success,
 	int			status = ev_success ? ADT_SUCCESS : ADT_FAILURE;
 	krb5_error_code		ret = 0;
 	char			*cprinc = NULL, *sprinc = NULL;
-	krb5_context		context;
+	krb5_context		context = NULL;
 
 	if (ah == NULL)
 		return (KRB5_PLUGIN_NO_HANDLE);
@@ -486,9 +490,9 @@ tgs_s4u2proxy(krb5_audit_moddata auctx, krb5_boolean ev_success,
 			syslog(LOG_AUTH | LOG_ALERT, "krb5_unparse_name(): %m");
 			goto error;
 		}
-		event->adt_tgs_s4u2proxy.client = strdup(cprinc);
+		event->adt_tgs_s4u2proxy.client = cprinc;
 	} else
-		event->adt_tgs_s4u2proxy.client = strdup("<none>");
+		event->adt_tgs_s4u2proxy.client = "<none>";
 	if (event->adt_tgs_s4u2proxy.client == NULL) {
 		ret = ENOMEM;
 		goto error;
@@ -500,18 +504,18 @@ tgs_s4u2proxy(krb5_audit_moddata auctx, krb5_boolean ev_success,
 			syslog(LOG_AUTH | LOG_ALERT, "krb5_unparse_name(): %m");
 			goto error;
 		}
-		event->adt_tgs_s4u2proxy.service = strdup(sprinc);
+		event->adt_tgs_s4u2proxy.service = sprinc;
 	} else
-		event->adt_tgs_s4u2proxy.service = strdup("<none>");
+		event->adt_tgs_s4u2proxy.service = "<none>";
 	if (event->adt_tgs_s4u2proxy.service == NULL) {
 		ret = ENOMEM;
 		goto error;
 	}
 
 	if (state->status != NULL)
-		event->adt_tgs_s4u2proxy.status = strdup(state->status);
+		event->adt_tgs_s4u2proxy.status = (char *)state->status;
 	else
-		event->adt_tgs_s4u2proxy.status = strdup("SUCCESS");
+		event->adt_tgs_s4u2proxy.status = "SUCCESS";
 	if (event->adt_tgs_s4u2proxy.status == NULL) {
 		ret = ENOMEM;
 		goto error;
@@ -526,11 +530,12 @@ error:
 	if (event != NULL)
 		adt_free_event(event);
 	if (cprinc != NULL)
-		free(cprinc);
+		krb5_free_unparsed_name(context, cprinc);
 	if (sprinc != NULL)
-		free(sprinc);
+		krb5_free_unparsed_name(context, sprinc);
 	if (ret != 0)
 		(void) adt_end_session(ah);
+	krb5_free_context(context);
 
 	return (ret);
 }
@@ -545,7 +550,7 @@ tgs_u2u(krb5_audit_moddata auctx, krb5_boolean ev_success,
 	int			status = ev_success ? ADT_SUCCESS : ADT_FAILURE;
 	krb5_error_code		ret = 0;
 	char			*cprinc = NULL, *sprinc = NULL;
-	krb5_context		context;
+	krb5_context		context = NULL;
 
 	if (ah == NULL)
 		return (KRB5_PLUGIN_NO_HANDLE);
@@ -584,9 +589,9 @@ tgs_u2u(krb5_audit_moddata auctx, krb5_boolean ev_success,
 			syslog(LOG_AUTH | LOG_ALERT, "krb5_unparse_name(): %m");
 			goto error;
 		}
-		event->adt_tgs_u2u.client = strdup(cprinc);
+		event->adt_tgs_u2u.client = cprinc;
 	} else
-		event->adt_tgs_u2u.client = strdup("<none>");
+		event->adt_tgs_u2u.client = "<none>";
 	if (event->adt_tgs_u2u.client == NULL) {
 		ret = ENOMEM;
 		goto error;
@@ -598,18 +603,18 @@ tgs_u2u(krb5_audit_moddata auctx, krb5_boolean ev_success,
 			syslog(LOG_AUTH | LOG_ALERT, "krb5_unparse_name(): %m");
 			goto error;
 		}
-		event->adt_tgs_u2u.service = strdup(sprinc);
+		event->adt_tgs_u2u.service = sprinc;
 	} else
-		event->adt_tgs_u2u.service = strdup("<none>");
+		event->adt_tgs_u2u.service = (char *)"<none>";
 	if (event->adt_tgs_u2u.service == NULL) {
 		ret = ENOMEM;
 		goto error;
 	}
 
 	if (state->status != NULL)
-		event->adt_tgs_u2u.status = strdup(state->status);
+		event->adt_tgs_u2u.status = (char *)state->status;
 	else
-		event->adt_tgs_u2u.status = strdup("SUCCESS");
+		event->adt_tgs_u2u.status = "SUCCESS";
 	if (event->adt_tgs_u2u.status == NULL) {
 		ret = ENOMEM;
 		goto error;
@@ -624,11 +629,12 @@ error:
 	if (event != NULL)
 		adt_free_event(event);
 	if (cprinc != NULL)
-		free(cprinc);
+		krb5_free_unparsed_name(context, cprinc);
 	if (sprinc != NULL)
-		free(sprinc);
+		krb5_free_unparsed_name(context, sprinc);
 	if (ret != 0)
 		(void) adt_end_session(ah);
+	krb5_free_context(context);
 
 	return (ret);
 }
