@@ -37,8 +37,6 @@ COMPONENT_ANITYA_ID=	1637
 
 TPNO=			24898
 
-TEST_TARGET = $(NO_TESTS)
-
 # Uses gobject-introspection, not available on S11.
 include $(WS_MAKE_RULES)/no-evaluation.mk
 
@@ -69,5 +67,11 @@ COMPONENT_BUILD_ENV += CXXFLAGS="$(CXXFLAGS)"
 
 # Tell g-ir-scanner not to cache results in homedir of user running the build
 COMPONENT_BUILD_ENV += GI_SCANNER_DISABLE_CACHE=""
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TARGETS = test
+
+# Remove time measurements from results when comparing
+COMPONENT_TEST_TRANSFORMS += '-e "s|[\.0-9]* sec||g" '
 
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
