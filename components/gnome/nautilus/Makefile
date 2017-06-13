@@ -69,6 +69,7 @@ CONFIGURE_OPTIONS += --enable-shared
 # CONFIGURE_OPTIONS += --enable-tracker
 CONFIGURE_OPTIONS += --enable-xmp
 
+REQUIRED_PACKAGES += desktop/xdg/desktop-file-utils
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += image/library/libexif
@@ -82,5 +83,6 @@ REQUIRED_PACKAGES += library/exempi
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
 REQUIRED_PACKAGES += library/libxml2
+REQUIRED_PACKAGES += service/gnome/desktop-cache
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11

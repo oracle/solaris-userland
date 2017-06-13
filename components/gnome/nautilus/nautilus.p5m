@@ -209,6 +209,13 @@ file path=usr/share/man/man1/nautilus.1
 license COPYING license=GPLv2
 license COPYING.LIB license=LGPLv2
 license COPYING.EXTENSIONS license=nautilus-extensions
+# Indirect dependencies - uses GDesktopAppInfo to get info from desktop db
+depend type=require fmri=__TBD pkg.debug.depend.file=desktop-mime-cache.xml \
+    pkg.debug.depend.path=lib/svc/manifest/application/desktop-cache \
+    pkg.debug.depend.reason=src/nautilus-program-choosing.c
+depend type=require fmri=__TBD \
+    pkg.debug.depend.file=usr/bin/update-desktop-database \
+    pkg.debug.depend.reason=src/nautilus-program-choosing.c
 depend type=require fmri=__TBD \
     pkg.debug.depend.reason=libnautilus-private/nautilus-global-preferences.c \
     pkg.tmp.gsettings-schema=org.gnome.desktop.background

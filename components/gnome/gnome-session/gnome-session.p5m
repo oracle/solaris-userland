@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -174,4 +174,11 @@ file path=usr/share/man/man1/gnome-session.1
 file path=usr/share/wayland-sessions/gnome-wayland.desktop
 file path=usr/share/xsessions/gnome.desktop
 license COPYING license=GPLv2
+# Indirect dependencies - uses GDesktopAppInfo to get info from desktop db
+depend type=require fmri=__TBD pkg.debug.depend.file=desktop-mime-cache.xml \
+    pkg.debug.depend.path=lib/svc/manifest/application/desktop-cache \
+    pkg.debug.depend.reason=gnome-session/gsm-autostart-app.c
+depend type=require fmri=__TBD \
+    pkg.debug.depend.file=usr/bin/update-desktop-database \
+    pkg.debug.depend.reason=gnome-session/gsm-autostart-app.c
 depend type=require fmri=service/opengl/ogl-select

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -222,6 +222,13 @@ license COPYING.LIB license=LGPLv2.1
 # This package was split out of the GNOME 2 control-center package, so we
 # depend on the post-split GNOME 3 package to avoid conflicts.
 depend type=optional fmri=gnome/preferences/control-center@3.18.2
+# Indirect dependencies - uses GDesktopAppInfo to get info from desktop db
+depend type=require fmri=__TBD pkg.debug.depend.file=desktop-mime-cache.xml \
+    pkg.debug.depend.path=lib/svc/manifest/application/desktop-cache \
+    pkg.debug.depend.reason=plugins/media-keys/gsd-media-keys-manager.c
+depend type=require fmri=__TBD \
+    pkg.debug.depend.file=usr/bin/update-desktop-database \
+    pkg.debug.depend.reason=plugins/media-keys/gsd-media-keys-manager.c
 depend type=require fmri=__TBD \
     pkg.debug.depend.file=usr/share/dbus-1/system-services/org.freedesktop.GeoClue2.service \
     pkg.debug.depend.reason=plugins/datetime/timedated.c
