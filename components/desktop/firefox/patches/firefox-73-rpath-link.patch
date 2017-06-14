@@ -1,29 +1,32 @@
-rpath-link should be avoided on Solaris. Adds -R,$ORIGIN to solve some dependency issues.
-Will not send upstream.
+rpath-link should be avoided on Solaris:
+https://bugzilla.mozilla.org/show_bug.cgi?id=1365620
 
---- firefox-51.0b14/old-configure.in.orig	2017-01-17 04:46:07.497661759 +0000
-+++ firefox-51.0b14/old-configure.in	2017-01-17 05:13:25.291980513 +0000
-@@ -587,7 +587,11 @@
- DIRENT_INO=d_ino
- MOZ_USER_DIR=".mozilla"
+Adds -R,$ORIGIN to solve some dependency issue during gmake publish (not needed to run FF)
+Should be more inverstigated.
+
+--- firefox-52.1.0esr/old-configure.in.orig	2017-05-12 06:26:13.859030311 +0000
++++ firefox-52.1.0esr/old-configure.in	2017-05-12 06:27:43.071305404 +0000
+@@ -1275,6 +1275,10 @@
+     fi
+     ;;
  
--MOZ_FIX_LINK_PATHS="-Wl,-rpath-link,${DIST}/bin -Wl,-rpath-link,${prefix}/lib"
-+if test "$OS_TARGET" = SunOS ; then
-+  MOZ_FIX_LINK_PATHS="-Wl,-R,'\$\$ORIGIN:\$\$ORIGIN/..'"
-+else
-+  MOZ_FIX_LINK_PATHS="-Wl,-rpath-link,${DIST}/bin -Wl,-rpath-link,${prefix}/lib"
-+fi
++*-solaris*)
++    MOZ_FIX_LINK_PATHS="-Wl,-R,'\$\$ORIGIN'"
++    ;;
++
+ esac
  
- MOZ_FS_LAYOUT=unix
+ AC_SUBST_LIST(MMX_FLAGS)
+--- firefox-52.1.0esr/js/src/old-configure.in.orig	2017-05-12 06:41:32.909798681 +0000
++++ firefox-52.1.0esr/js/src/old-configure.in	2017-05-12 06:42:53.309730714 +0000
+@@ -931,6 +931,10 @@
+     fi
+     ;;
  
---- a/js/src/old-configure.in	2017-03-27 10:30:03.549219848 +0000
-+++ b/js/src/old-configure.in	2017-03-27 10:31:00.169061425 +0000
-@@ -441,7 +441,7 @@
- DIRENT_INO=d_ino
- MOZ_USER_DIR=".mozilla"
++*-solaris*)
++    MOZ_FIX_LINK_PATHS="-Wl,-R,'\$\$ORIGIN'"
++    ;;
++
+ esac
  
--MOZ_FIX_LINK_PATHS="-Wl,-rpath-link,${DIST}/bin -Wl,-rpath-link,${prefix}/lib"
-+MOZ_FIX_LINK_PATHS="-Wl,-R,'\$\$ORIGIN:\$\$ORIGIN/..'"
- 
- dnl Configure platform-specific CPU architecture compiler options.
- dnl ==============================================================
+ dnl Only one oddball right now (QNX), but this gives us flexibility

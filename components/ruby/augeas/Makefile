@@ -25,7 +25,7 @@
 include ../../../make-rules/shared-macros.mk
 RUBY_VERSION=2.1
 RUBY_LIB_VERSION=2.1.0
-RUBY_VERSIONS=2.1.0 
+RUBY_VERSIONS=2.1.0
 
 COMPONENT_NAME=		ruby-augeas
 COMPONENT_VERSION=	0.5.0
@@ -39,8 +39,6 @@ COMPONENT_BUGDB=	utility/augeas
 COMPONENT_ANITYA_ID=	7017
 
 TPNO=                   21871
-
-PKG_MACROS += VENDOR_RUBY=$(VENDOR_GEM_DIR:/%=%)
 
 # No gemspec is shipped with the gem. Create one
 COMPONENT_POST_UNPACK_ACTION= \

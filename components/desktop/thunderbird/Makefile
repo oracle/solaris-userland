@@ -74,7 +74,7 @@ CLEAN_PATHS += $(COMPONENT_DIR)/xpi-lightning
 
 # Firefox and Thunderbird share the same firefox*.patch patches. Copy these 
 # patches from the Firefox patches directory and the Thunderbird patches to a 
-# directory of all files (patches-all), except for Firefox patches 42, 
+# directory of all files (patches-all), except for Firefox patches 42 and 68,
 # which don't get applied in Thunderbird. (dtrace patch)
 PATCH_DIR=patches-all
 CLEAN_PATHS += $(PATCH_DIR)
@@ -82,7 +82,7 @@ COPY_COMMON_FILES_1:= $(shell mkdir -p $(PATCH_DIR))
 COPY_COMMON_FILES_2:=  \
     $(shell /usr/bin/rsync -ac patches/* ../firefox/patches/* $(PATCH_DIR))
 COPY_COMMON_FILES_3:= \
-    $(shell /usr/bin/rm -f $(PATCH_DIR)/firefox*42*.patch)
+    $(shell $(RM) $(PATCH_DIR)/firefox*42*.patch $(PATCH_DIR)/firefox*68*.patch)
 
 # Depends on libsmbclient but samba is on the do-not-publish list, so this
 # must be too.
@@ -190,7 +190,7 @@ TB_XPI = $(MOZILLA_FTP)/linux-i686/xpi
 LN_XPI = http://ftp.mozilla.org/pub/calendar/lightning/candidates/$(LIGHTNING_VERSION)-candidates/build1/linux-i686
 
 # Run gmake download-xpis and gmake download-lightning-xpis to download tarballs of xpi
-# for thunderbird and lightning seprarately.
+# for thunderbird and lightning separately.
 # The resulting archives should be uploaded to userland internal archive.
 download-xpis:
 	@echo "download-xpis"
@@ -230,6 +230,7 @@ $(SOURCE_DIR)/.patched-firefox-%: GPATCH_FLAGS += -d $(@D)/mozilla
 
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += database/sqlite-3
+REQUIRED_PACKAGES += developer/build/autoconf-213
 ifneq ($(MACH), sparc)
 REQUIRED_PACKAGES += developer/yasm
 endif
