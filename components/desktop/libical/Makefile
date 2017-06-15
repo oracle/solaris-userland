@@ -37,8 +37,6 @@ COMPONENT_ANITYA_ID=	1637
 
 TPNO=			24898
 
-TEST_TARGET = $(NO_TESTS)
-
 # Uses gobject-introspection, not available on S11.
 include $(WS_MAKE_RULES)/no-evaluation.mk
 
@@ -69,5 +67,31 @@ COMPONENT_BUILD_ENV += CXXFLAGS="$(CXXFLAGS)"
 
 # Tell g-ir-scanner not to cache results in homedir of user running the build
 COMPONENT_BUILD_ENV += GI_SCANNER_DISABLE_CACHE=""
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TARGETS = test
+
+# Enable libadimalloc or libumem (only ADI caught the heap-use-after-free case)
+ISA_EXTENSIONS.64	= $(shell isainfo -x | grep '^$(MACH64):')
+TEST_MEMCHECK_ENV.32	= LD_PRELOAD=libumem.so UMEM_DEBUG=default,verbose
+ifeq ($(filter adi, $(ISA_EXTENSIONS.64)), adi)
+TEST_MEMCHECK_ENV.64	= LD_PRELOAD_64=libadimalloc.so.1
+TEST_MEMCHECK_ENV.64	+= ADIMALLOC_DEBUG=default,verbose,adi_precise
+else
+TEST_MEMCHECK_ENV.64	= $(TEST_MEMCHECK_ENV.32)
+endif
+TEST_MEMCHECK_ENV	= $(TEST_MEMCHECK_ENV.$(BITS))
+
+# Check upstream test case from https://github.com/libical/libical/issues/253
+COMPONENT_POST_TEST_ACTION += \
+	(cd $(COMPONENT_TEST_DIR) ; \
+	  printf 'Extra Test: parser-heap-use-after-free ...........   ' ; \
+	  $(COMPONENT_TEST_ENV_CMD) $(COMPONENT_TEST_ENV) $(TEST_MEMCHECK_ENV) \
+	  ./src/test/parser \
+	  $(COMPONENT_DIR)/files/test-data/heap-use-after-free.ics \
+	  >> /dev/null && print 'Passed' ) &>> $(COMPONENT_TEST_OUTPUT)
+
+# Remove time measurements from results when comparing
+COMPONENT_TEST_TRANSFORMS += '-e "s|[\.0-9]* sec||g" '
 
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
