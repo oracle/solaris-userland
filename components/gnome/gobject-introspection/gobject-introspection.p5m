@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -38,27 +38,39 @@ set name=info.classification \
     value="org.opensolaris.category.2008:Desktop (GNOME)/Libraries"
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2016/290
+set name=org.opensolaris.arc-caseid value=PSARC/2016/290 value=PSARC/2017/159
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 file path=usr/bin/$(MACH64)/g-ir-annotation-tool \
-    pkg.depend.bypass-generate=.*pydevd.* \
-    pkg.depend.runpath=$PKGDEPEND_RUNPATH:/usr/lib/gobject-introspection
+    pkg.depend.runpath=$PKGDEPEND_RUNPATH:/usr/lib/gobject-introspection \
+    pkg.depend.bypass-generate=.*builtins.* \
+    pkg.depend.bypass-generate=.*pydevd.*
 file path=usr/bin/$(MACH64)/g-ir-compiler
 file path=usr/bin/$(MACH64)/g-ir-doc-tool \
-    pkg.depend.bypass-generate=.*pydevd.* \
-    pkg.depend.runpath=$PKGDEPEND_RUNPATH:/usr/lib/gobject-introspection
+    pkg.depend.runpath=$PKGDEPEND_RUNPATH:/usr/lib/gobject-introspection \
+    pkg.depend.bypass-generate=.*builtins.* \
+    pkg.depend.bypass-generate=.*pydevd.*
 file path=usr/bin/$(MACH64)/g-ir-generate
-file path=usr/bin/$(MACH64)/g-ir-scanner pkg.depend.bypass-generate=.*pydevd.* \
-    pkg.depend.runpath=$PKGDEPEND_RUNPATH:/usr/lib/gobject-introspection
-file path=usr/bin/g-ir-annotation-tool pkg.depend.bypass-generate=.*pydevd.* \
-    pkg.depend.runpath=$PKGDEPEND_RUNPATH:/usr/lib/gobject-introspection
+file path=usr/bin/$(MACH64)/g-ir-inspect
+file path=usr/bin/$(MACH64)/g-ir-scanner \
+    pkg.depend.runpath=$PKGDEPEND_RUNPATH:/usr/lib/gobject-introspection \
+    pkg.depend.bypass-generate=.*builtins.* \
+    pkg.depend.bypass-generate=.*pydevd.*
+file path=usr/bin/g-ir-annotation-tool \
+    pkg.depend.runpath=$PKGDEPEND_RUNPATH:/usr/lib/gobject-introspection \
+    pkg.depend.bypass-generate=.*builtins.* \
+    pkg.depend.bypass-generate=.*pydevd.*
 file path=usr/bin/g-ir-compiler
-file path=usr/bin/g-ir-doc-tool pkg.depend.bypass-generate=.*pydevd.* \
-    pkg.depend.runpath=$PKGDEPEND_RUNPATH:/usr/lib/gobject-introspection
+file path=usr/bin/g-ir-doc-tool \
+    pkg.depend.runpath=$PKGDEPEND_RUNPATH:/usr/lib/gobject-introspection \
+    pkg.depend.bypass-generate=.*builtins.* \
+    pkg.depend.bypass-generate=.*pydevd.*
 file path=usr/bin/g-ir-generate
-file path=usr/bin/g-ir-scanner pkg.depend.bypass-generate=.*pydevd.* \
-    pkg.depend.runpath=$PKGDEPEND_RUNPATH:/usr/lib/gobject-introspection
+file path=usr/bin/g-ir-inspect
+file path=usr/bin/g-ir-scanner \
+    pkg.depend.runpath=$PKGDEPEND_RUNPATH:/usr/lib/gobject-introspection \
+    pkg.depend.bypass-generate=.*builtins.* \
+    pkg.depend.bypass-generate=.*pydevd.*
 file path=usr/include/gobject-introspection-1.0/giarginfo.h
 file path=usr/include/gobject-introspection-1.0/gibaseinfo.h
 file path=usr/include/gobject-introspection-1.0/gicallableinfo.h
