@@ -31,13 +31,13 @@ BUILD_BITS =		32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gobject-introspection
-COMPONENT_VERSION=	1.46.0
+COMPONENT_VERSION=	1.52.0
 COMPONENT_ARCHIVE_HASH= \
-    sha256:6658bd3c2b8813eb3e2511ee153238d09ace9d309e4574af27443d87423e4233
+    sha256:9fc6d1ebce5ad98942cb21e2fe8dd67b722dcc01981840632a1b233f7d0e2c1e
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	1223
 
-TPNO=			25403
+TPNO=			34486
 
 # Requires newer version of library/glib2, not buildable on 11.3, so do not
 # publish.

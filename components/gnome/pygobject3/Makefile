@@ -30,14 +30,14 @@ BUILD_BITS =		64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pygobject
-COMPONENT_VERSION=	3.18.2
+COMPONENT_VERSION=	3.24.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/PyGObject
 COMPONENT_ARCHIVE_HASH= \
-	sha256:2a3cad1517916b74e131e6002c3824361aee0671ffb0d55ded119477fc1c2c5f
+	sha256:a628a95aa0909e13fb08230b1b98fc48adef10b220932f76d62f6821b3fdbffd
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13158
 
-TPNO=			25832
+TPNO=			35809
 
 # Needs gobject-introspection >= 1.39.0, which is not available on S11.
 ifeq ($(BUILD_TYPE), evaluation)
