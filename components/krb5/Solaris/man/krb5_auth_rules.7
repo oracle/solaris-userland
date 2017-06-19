@@ -1,5 +1,5 @@
 '\" te
-.\" Copyright (c) 2006, 2013, Oracle and/or its affiliates. All rights reserved.
+.\" Copyright (c) 2006, 2017, Oracle and/or its affiliates. All rights reserved.
 .TH krb5_auth_rules 5 "5 Jun 2012" "SunOS 5.11" "Standards, Environments, and Macros"
 .SH NAME
 krb5_auth_rules \- overview of Kerberos V5 authorization
@@ -15,7 +15,7 @@ To avoid security problems, the \fB~/.k5login\fR file must be owned by the remot
 When no \fB~/.k5login\fR file is found in the remote user's login account, the Kerberos V5 principal name associated with the originating user is checked against the \fBgsscred\fR table. If a \fBgsscred\fR table exists and the principal name is matched in the table, access is granted if the Unix user ID listed in the table corresponds to the user account the client is attempting to access. If the Unix user ID does not match, access is denied. See \fBgsscred\fR(1M).
 .sp
 .LP
-For example, an originating user listed in the \fBgsscred\fR table with the principal name \fBjdb@ENG.ACME.COM\fR and the \fBuid\fR  \fB23154\fR is granted access to the \fBjdb-user\fR account if \fB23154\fR is also the \fBuid\fR of \fBjdb-user\fR listed in the user account database. See \fBpasswd\fR(4).
+For example, an originating user listed in the \fBgsscred\fR table with the principal name \fBjdb@ENG.ACME.COM\fR and the \fBuid\fR  \fB23154\fR is granted access to the \fBjdb-user\fR account if \fB23154\fR is also the \fBuid\fR of \fBjdb-user\fR listed in the user account database. See \fBpasswd\fR(5).
 .sp
 .LP
 Finally, if there is no \fB~/.k5login\fR file and the Kerberos V5 identity of the originating user is not in the \fBgsscred\fR table, or if the \fBgsscred\fR table does not exist, the client is granted access to the account under the following conditions (default GSS/Kerberos auth rules):
@@ -66,10 +66,10 @@ Per user-account authorization file.
 .ad
 .RS 15n
 .rt
-System account file. This information may also be in a directory service. See \fBpasswd\fR(4).
+System account file. This information may also be in a directory service. See \fBpasswd\fR(5).
 .RE
 
 .SH SEE ALSO
 .sp
 .LP
-\fBftp\fR(1), \fBrcp\fR(1), \fBrsh\fR(1), \fBtelnet\fR(1), \fBgsscred\fR(1M), \fBkadm5.acl\fR(4), \fBkrb5.conf\fR(4), \fBpasswd\fR(4), \fBattributes\fR(5), \fBgss_auth_rules\fR(5)
+\fBftp\fR(1), \fBrcp\fR(1), \fBrsh\fR(1), \fBtelnet\fR(1), \fBgsscred\fR(1M), \fBkadm5.acl\fR(4), \fBkrb5.conf\fR(4), \fBpasswd\fR(5), \fBattributes\fR(7), \fBgss_auth_rules\fR(5)

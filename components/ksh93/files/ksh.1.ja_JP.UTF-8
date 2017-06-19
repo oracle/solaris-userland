@@ -1,7 +1,7 @@
 '\" te
 .\" Copyright (c) 1982-2007 AT&T Knowledge Ventures
 .\" To view license terms, see http://www.opensource.org/licenses/cpl1.0.txt
-.\" Portions Copyright (c) 2009, 2011, Oracle and/or its affiliates. All rights reserved.
+.\" Portions Copyright (c) 2009, 2017, Oracle and/or its affiliates. All rights reserved.
 .TH ksh 1 "2011 年 7 月 9 日" "SunOS 5.11" "ユーザーコマンド"
 .SH 名前
 ksh, ksh93, rksh \- Korn シェル。標準および制限付きコマンドとプログラミング言語
@@ -2684,7 +2684,7 @@ exec [\fIn\fR]<\fIfile\fR
 .SS "環境"
 .sp
 .LP
-環境とは、実行されるプログラムに渡される、名前と値が対になったリストのことです。通常の引数リストと同様の方法で指定します\fI\fR (\fBenviron\fR(5) 参照)。
+環境とは、実行されるプログラムに渡される、名前と値が対になったリストのことです。通常の引数リストと同様の方法で指定します\fI\fR (\fBenviron\fR(7) 参照)。
 .sp
 .LP
 名前は識別子、値は文字列である必要があります。\fI\fRシェルが環境と対話する方法はいくつかあります。シェルは、起動されると、環境を走査して、見つけた名前ごとに変数を作成し、対応する値および属性を設定し、さらに \fBexport\fR というマークを付けます。実行されるコマンドは環境を引き継ぎます。ユーザーがこれらの変数の値を変更するか、新しい変数を作成した場合は、\fBexport\fR コマンドまたは \fBtypeset\fR \fB-x\fR コマンドを使用すれば、それらの値が環境の一部になります。したがって、実行されるコマンドが参照する環境は、シェルが最初に引き継いだ名前と値のペア (その値は現在のシェルで変更可能) に、\fBexport\fR コマンドまたは \fBtypeset\fR \fB-x\fR コマンドで指定した変数を加えたものになります。1 つまたは複数の変数代入を先頭に付加すれば、単純コマンドまたは関数の環境を拡張できます。変数代入引数は、\fIidentifier\fR\fB=\fR\fIvalue\fR という形式のワードです。したがって、
@@ -6069,7 +6069,7 @@ print は、引数をこれ以上処理せず、復帰改行を追加せずに�
 .SH 使用法
 .sp
 .LP
-ファイルが 2G バイト (2^31 バイト) 以上ある場合の \fBksh\fR と \fBrksh\fR の動作については、\fBlargefile\fR(5) を参照してください。
+ファイルが 2G バイト (2^31 バイト) 以上ある場合の \fBksh\fR と \fBrksh\fR の動作については、\fBlfcompile\fR(7) を参照してください。
 .SH 終了ステータス
 .sp
 .LP
@@ -6176,7 +6176,7 @@ David Korn、\fBdgk@research.att.com\fR
 .SH 属性
 .sp
 .LP
-属性についての詳細は、\fBattributes\fR(5) を参照してください。
+属性についての詳細は、\fBattributes\fR(7) を参照してください。
 .sp
 
 .sp
@@ -6198,7 +6198,7 @@ _
 .SH 関連項目
 .sp
 .LP
-\fBcat\fR(1), \fBcd\fR(1), \fBchmod\fR(1), \fBcut\fR(1), \fBdate\fR(1), \fBegrep\fR(1), \fBecho\fR(1), \fBegrep\fR(1), \fBenv\fR(1), \fBfgrep\fR(1), \fBgrep\fR(1), \fBlogin\fR(1), \fBnewgrp\fR(1), \fBpaste\fR(1), \fBprintf\fR(1), \fBshell_builtins\fR(1), \fBstty\fR(1), \fBtest\fR(1), \fBumask\fR(1), \fBvi\fR(1), \fBdup\fR(2), \fBexec\fR(2), \fBfork\fR(2), \fBioctl\fR(2), \fBlseek\fR(2), \fBpathconf\fR(2), \fBpipe\fR(2), \fBsysconf\fR(3C), \fBulimit\fR(2), \fBumask\fR(2), \fBrand\fR(3C), \fBtcgetattr\fR(3C), \fBwait\fR(3C), \fBa.out\fR(4), \fBprofile\fR(4), \fBattributes\fR(5), \fBenviron\fR(5), \fBlargefile\fR(5), \fBstandards\fR(5)
+\fBcat\fR(1), \fBcd\fR(1), \fBchmod\fR(1), \fBcut\fR(1), \fBdate\fR(1), \fBegrep\fR(1), \fBecho\fR(1), \fBegrep\fR(1), \fBenv\fR(1), \fBfgrep\fR(1), \fBgrep\fR(1), \fBlogin\fR(1), \fBnewgrp\fR(1), \fBpaste\fR(1), \fBprintf\fR(1), \fBshell_builtins\fR(1), \fBstty\fR(1), \fBtest\fR(1), \fBumask\fR(1), \fBvi\fR(1), \fBdup\fR(2), \fBexec\fR(2), \fBfork\fR(2), \fBioctl\fR(2), \fBlseek\fR(2), \fBpathconf\fR(2), \fBpipe\fR(2), \fBsysconf\fR(3C), \fBulimit\fR(2), \fBumask\fR(2), \fBrand\fR(3C), \fBtcgetattr\fR(3C), \fBwait\fR(3C), \fBa.out\fR(4), \fBprofile\fR(5), \fBattributes\fR(7), \fBenviron\fR(7), \fBlfcompile\fR(7), \fBstandards\fR(7)
 .sp
 .LP
 『\fIThe New KornShell Command and Programming Language\fR』、Bolsky, Morris I.、Korn, David G. 共著、PrenticeHall 発行、1995 年
