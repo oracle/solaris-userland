@@ -30,16 +30,13 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		geocode-glib
-COMPONENT_VERSION=	3.18.0
+COMPONENT_VERSION=	3.23.90
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:8fb7f0d569e3e6696aaa1fdf275cb3094527ec5e9fa36fd88dd633dfec63495d
+	sha256:f6b536a3b225ede73ef0592ad841640c5cde2a0e4bf3f416c893e8262b1dd7dc
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13123
 
-TPNO=			25283
-
-# Test require libsoup
-TEST_TARGET = $(SKIP_TEST)
+TPNO=			34505
 
 # Needs gobject-introspection, not available on S11.
 include $(WS_MAKE_RULES)/no-evaluation.mk
@@ -51,6 +48,21 @@ CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += --enable-introspection
 CONFIGURE_OPTIONS += --enable-shared
 CONFIGURE_OPTIONS += --with-pic
+
+# for tests to run
+unexport SHELLOPTS
+COMPONENT_TEST_ENV +=   libtool_install_magic='%%%MAGIC variable%%%'
+COMPONENT_TEST_ENV +=   libtool_execute_magic='%%%MAGIC variable%%%'
+COMPONENT_TEST_DIR =  $(BUILD_DIR)/$(MACH$(BITS))/geocode-glib
+COMPONENT_TEST_CMD = cd $(COMPONENT_TEST_DIR); gmake check;
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/TOTAL:/p" ' \
+        '-e "/SKIP:/p" ' \
+        '-e "/PASS:/p" ' \
+        '-e "/FAIL:/p" ' \
+        '-e "/ERROR:/p" '
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
