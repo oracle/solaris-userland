@@ -1,5 +1,5 @@
 '\" te
-.\" Copyright (c) 2006， 2013， Oracle and/or its affiliates。All rights reserved.
+.\" Copyright (c) 2006, 2017, Oracle and/or its affiliates. All rights reserved.
 .TH krb5_auth_rules 5 "2012 年 6 月 5 日" "{ENT：release}" "{ENT：man5}"
 .SH 名称
 krb5_auth_rules \- Kerberos V5 授权概述
@@ -15,7 +15,7 @@ krb5_auth_rules \- Kerberos V5 授权概述
 当远程用户的登录帐户中找不到 \fB~/.k5login\fR 文件时，会针对 \fBgsscred\fR 表检查与发起方用户相关联的 Kerberos V5 主体名称。如果 \fBgsscred\fR 表存在且主体名称在表中有匹配项目，并且表中列出的 Unix 用户 ID 对应于客户机尝试访问的用户帐户，则会授予访问权。如果 Unix 用户 ID 不匹配，则会拒绝访问权。请参见 \fBgsscred\fR(1M)。
 .sp
 .LP
-例如，如果 \fB23154\fR 也是用户帐户数据库中列出的 \fBjdb-user\fR 的 \fBuid\fR，则会授予 \fBgsscred\fR 表中列出的具有主体名称 \fBjdb@ENG.ACME.COM\fR 和 \fBuid\fR  \fB23154\fR 的发起方用户对 \fBjdb-user\fR 帐户的访问权。请参见 \fBpasswd\fR(4)。
+例如，如果 \fB23154\fR 也是用户帐户数据库中列出的 \fBjdb-user\fR 的 \fBuid\fR，则会授予 \fBgsscred\fR 表中列出的具有主体名称 \fBjdb@ENG.ACME.COM\fR 和 \fBuid\fR  \fB23154\fR 的发起方用户对 \fBjdb-user\fR 帐户的访问权。请参见 \fBpasswd\fR(5)。
 .sp
 .LP
 最后，如果不存在 \fB~/.k5login\fR 文件且发起方用户的 Kerberos V5 身份不在 \fBgsscred\fR 表中，或 \fBgsscred\fR 表不存在，则在以下情况下会授予客户机对帐户的访问权（缺省 GSS/Kerberos 验证规则）：
@@ -66,13 +66,13 @@ Unix 帐户名存在于服务器上。
 .ad
 .RS 15n
 .rt
-系统帐户文件。此信息也可在目录服务中。请参见 \fBpasswd\fR(4)。
+系统帐户文件。此信息也可在目录服务中。请参见 \fBpasswd\fR(5)。
 .RE
 
 .SH 属性
 .sp
 .LP
-有关以下属性的说明，请参见 \fBattributes\fR(5)：
+有关以下属性的说明，请参见 \fBattributes\fR(7)：
 .sp
 .TS
 tab() box;
@@ -87,4 +87,4 @@ _
 .SH 另请参见
 .sp
 .LP
-\fBftp\fR(1)、\fBrcp\fR(1)、\fBrsh\fR(1)、\fBtelnet\fR(1)、\fBgsscred\fR(1M)、\fBkadm5.acl\fR(4)、\fBkrb5.conf\fR(4)、\fBpasswd\fR(4)、\fBattributes\fR(5)、\fBgss_auth_rules\fR(5)
+\fBftp\fR(1)、\fBrcp\fR(1)、\fBrsh\fR(1)、\fBtelnet\fR(1)、\fBgsscred\fR(1M)、\fBkadm5.acl\fR(4)、\fBkrb5.conf\fR(4)、\fBpasswd\fR(5)、\fBattributes\fR(7)、\fBgss_auth_rules\fR(5)

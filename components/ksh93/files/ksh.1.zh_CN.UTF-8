@@ -1,7 +1,7 @@
 '\" te
 .\" Copyright (c) 1982-2007 AT&T Knowledge Ventures
 .\" To view license terms, see http://www.opensource.org/licenses/cpl1.0.txt
-.\" Portions Copyright (c) 2009, 2011, Oracle and/or its affiliates. 保留所有权利。
+.\" Portions Copyright (c) 2009, 2017, Oracle and/or its affiliates. All rights reserved.
 .TH ksh 1 "2011 年 7 月 9 日" "SunOS 5.11" "用户命令"
 .SH 名称
 ksh, ksh93, rksh \- Korn Shell，一种标准和受限的命令与编程语言
@@ -2684,7 +2684,7 @@ exec [\fIn\fR]<\fIfile\fR
 .SS "环境"
 .sp
 .LP
-\fI环境\fR是按照标准参数列表的相同传递方式传递给执行程序的名称-值对列表。请参见 \fBenviron\fR(5)。
+\fI环境\fR是按照标准参数列表的相同传递方式传递给执行程序的名称-值对列表。请参见 \fBenviron\fR(7)。
 .sp
 .LP
 这些名称必须是\fI标识符\fR，值必须是字符串。shell 采用多种方式与环境交互。shell 在调用时扫描环境，为找到的每个名称创建一个变量，为变量指定相应值和属性，并将其标记为 \fBexport\fR。执行命令继承此环境。如果用户使用 \fBexport\fR 或 \fBtypeset\fR \fB-x\fR 命令修改了这些变量的值或创建了新的变量，这些变量将成为环境的一部分。因此，向任何执行命令显示的环境包括 shell 最初继承的所有名称-值对（当前 shell 可修改这些名称-值对的值）以及必须在 \fBexport\fR 或 \fBtypeset\fR \fB-x\fR 命令中说明的所有添加内容。通过在任何简单命令或函数前面添加一个或多个变量赋值作为前缀，可以扩展这些简单命令或函数的环境。变量赋值参数是\fI标识符\fR\fB=\fR\fI值\fR格式的单词。因此：
@@ -6069,7 +6069,7 @@ shell 输入机制。读取一行并使用 IFS 中的字符作为分隔符将该
 .SH 用法
 .sp
 .LP
-有关在遇到大小大于或等于 2 GB（2^31 字节）的文件时 \fBksh\fR 和 \fBrksh\fR 的行为的说明，请参见 \fBlargefile\fR(5)。
+有关在遇到大小大于或等于 2 GB（2^31 字节）的文件时 \fBksh\fR 和 \fBrksh\fR 的行为的说明，请参见 \fBlfcompile\fR(7)。
 .SH 退出状态
 .sp
 .LP
@@ -6176,7 +6176,7 @@ David Korn，\fBdgk@research.att.com\fR
 .SH 属性
 .sp
 .LP
-有关下列属性的描述，请参见 \fBattributes\fR(5)：
+有关下列属性的描述，请参见 \fBattributes\fR(7)：
 .sp
 
 .sp
@@ -6198,7 +6198,7 @@ _
 .SH 另请参见
 .sp
 .LP
-\fBcat\fR(1)、\fBcd\fR(1)、\fBchmod\fR(1)、\fBcut\fR(1)、\fBdate\fR(1)、\fBegrep\fR(1)、\fBecho\fR(1)、\fBegrep\fR(1)、\fBenv\fR(1)、\fBfgrep\fR(1)、\fBgrep\fR(1)、\fBlogin\fR(1)、\fBnewgrp\fR(1)、\fBpaste\fR(1)、\fBprintf\fR(1)、\fBshell_builtins\fR(1)、\fBstty\fR(1)、\fBtest\fR(1)、\fBumask\fR(1)、\fBvi\fR(1)、\fBdup\fR(2)、\fBexec\fR(2)、\fBfork\fR(2)、\fBioctl\fR(2)、\fBlseek\fR(2)、\fBpathconf\fR(2)、\fBpipe\fR(2)、\fBsysconf\fR(3C)、\fBulimit\fR(2)、\fBumask\fR(2)、\fBrand\fR(3C)、\fBtcgetattr\fR(3C)、\fBwait\fR(3C)、\fBa.out\fR(4)、\fBprofile\fR(4)、\fBattributes\fR(5)、\fBenviron\fR(5)、\fBlargefile\fR(5)、\fBstandards\fR(5)
+\fBcat\fR(1)、\fBcd\fR(1)、\fBchmod\fR(1)、\fBcut\fR(1)、\fBdate\fR(1)、\fBegrep\fR(1)、\fBecho\fR(1)、\fBegrep\fR(1)、\fBenv\fR(1)、\fBfgrep\fR(1)、\fBgrep\fR(1)、\fBlogin\fR(1)、\fBnewgrp\fR(1)、\fBpaste\fR(1)、\fBprintf\fR(1)、\fBshell_builtins\fR(1)、\fBstty\fR(1)、\fBtest\fR(1)、\fBumask\fR(1)、\fBvi\fR(1)、\fBdup\fR(2)、\fBexec\fR(2)、\fBfork\fR(2)、\fBioctl\fR(2)、\fBlseek\fR(2)、\fBpathconf\fR(2)、\fBpipe\fR(2)、\fBsysconf\fR(3C)、\fBulimit\fR(2)、\fBumask\fR(2)、\fBrand\fR(3C)、\fBtcgetattr\fR(3C)、\fBwait\fR(3C)、\fBa.out\fR(4)、\fBprofile\fR(5)、\fBattributes\fR(7)、\fBenviron\fR(7)、\fBlfcompile\fR(7)、\fBstandards\fR(7)
 .sp
 .LP
 由 Bolsky, Morris I. 和 Korn, David G. 合住的\fIThe New K rnS ell Comma d and P ogr mming Langu ge\fR，Prentice Hall 出版，1995。

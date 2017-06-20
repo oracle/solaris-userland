@@ -10,7 +10,7 @@
 #
 --- a/src/kadmin/cli/kadmin.c
 +++ b/src/kadmin/cli/kadmin.c
-@@ -255,7 +255,7 @@ kadmin_startup(int argc, char *argv[], char **request_out, char ***args_out)
+@@ -299,7 +299,7 @@ kadmin_startup(int argc, char *argv[], char **request_out, char ***args_out)
      char **db_args = NULL;
      int db_args_size = 0;
      char *db_name = NULL;
@@ -19,7 +19,7 @@
  
      memset(&params, 0, sizeof(params));
  
-@@ -370,11 +370,6 @@ kadmin_startup(int argc, char *argv[], char **request_out, char ***args_out)
+@@ -414,11 +414,6 @@ kadmin_startup(int argc, char *argv[], char **request_out, char ***args_out)
      params.mask |= KADM5_CONFIG_REALM;
      params.realm = def_realm;
  
@@ -31,7 +31,7 @@
      /*
       * Set cc to an open credentials cache, either specified by the -c
       * argument or the default.
-@@ -503,13 +498,14 @@ kadmin_startup(int argc, char *argv[], char **request_out, char ***args_out)
+@@ -547,13 +542,14 @@ kadmin_startup(int argc, char *argv[], char **request_out, char ***args_out)
      if (ccache_name) {
          info(_("Authenticating as principal %s with existing "
                 "credentials.\n"), princstr);
@@ -48,7 +48,7 @@
                                        KADM5_STRUCT_VERSION,
                                        KADM5_API_VERSION_4, db_args, &handle);
      } else if (use_keytab) {
-@@ -520,17 +516,20 @@ kadmin_startup(int argc, char *argv[], char **request_out, char ***args_out)
+@@ -564,17 +560,20 @@ kadmin_startup(int argc, char *argv[], char **request_out, char ***args_out)
              info(_("Authenticating as principal %s with default keytab.\n"),
                   princstr);
          }
@@ -73,7 +73,7 @@
          if (retval == KADM5_BAD_CLIENT_PARAMS ||
 --- a/src/lib/kadm5/admin.h
 +++ b/src/lib/kadm5/admin.h
-@@ -345,6 +345,51 @@ kadm5_ret_t    kadm5_init_with_creds(krb5_context context,
+@@ -352,6 +352,51 @@ kadm5_ret_t    kadm5_init_with_creds(krb5_context context,
                                       krb5_ui_4 api_version,
                                       char **db_args,
                                       void **server_handle);
@@ -249,7 +249,8 @@
 +    svcnames[0] = service_name;
 +    svcnames[1] = NULL;
 +
-+    return init_any(context, client_name, INIT_SKEY, keytab, NULL,
+     return init_any(context, client_name, INIT_SKEY, keytab, NULL,
+-                    service_name, params, struct_version, api_version, db_args,
 +                    svcnames, params, struct_version, api_version, db_args,
 +                    server_handle);
 +}
@@ -261,22 +262,12 @@
 +                     krb5_ui_4 api_version, char **db_args,
 +                     void **server_handle)
 +{
-     return init_any(context, client_name, INIT_SKEY, keytab, NULL,
--                    service_name, params, struct_version, api_version, db_args,
++    return init_any(context, client_name, INIT_SKEY, keytab, NULL,
 +                    svcnames, params, struct_version, api_version, db_args,
                      server_handle);
  }
  
-@@ -339,7 +422,7 @@ _kadm5_initialize_rpcsec_gss_handle(kadm5_server_handle_t handle,
- 	}
- 
- 	/*
--	 * iprop fallback logic: 
-+	 * iprop fallback logic:
- 	 *    - if iprop_port is configured, connect to iprop_port
- 	 *    - if not, query remote rpc/bind
- 	 *    - if that fails, try consuming iprop service on kadmin port
-@@ -512,9 +595,35 @@ cleanup:
+@@ -504,9 +587,35 @@ cleanup:
  	return (code);
  }
  
@@ -313,7 +304,7 @@
           kadm5_config_params *params_in, krb5_ui_4 struct_version,
           krb5_ui_4 api_version, char **db_args, void **server_handle)
  {
-@@ -532,6 +641,10 @@ init_any(krb5_context context, char *client_name, enum init_type init_type,
+@@ -524,6 +633,10 @@ init_any(krb5_context context, char *client_name, enum init_type init_type,
  
      int code = 0;
      generic_ret *r;
@@ -324,13 +315,24 @@
  
      initialize_ovk_error_table();
  /*      initialize_adb_error_table(); */
-@@ -599,34 +712,56 @@ init_any(krb5_context context, char *client_name, enum init_type init_type,
+@@ -591,34 +704,56 @@ init_any(krb5_context context, char *client_name, enum init_type init_type,
      if (code)
          goto error;
  
 -    /* NULL svcname means use host-based. */
 -    if (svcname == NULL) {
 -	char **kadmin_srv_names;
+-
+-	code = kadm5_get_adm_host_srv_names(context, handle->params.realm,
+-	    &kadmin_srv_names);
+-        if (code)
+-            goto error;
+-	svcname = strdup(kadmin_srv_names[0]);
+-	free_srv_names(kadmin_srv_names);
+-	if (svcname == NULL) {
+-	    code = ENOMEM;
+-            goto error;
+-	}
 +    if (svcnames_in == NULL || svcnames_in[0] == NULL) {
 +        if (params_in && params_in->mask & KADM5_CONFIG_ADMIN_SERVER &&
 +            params_in->admin_server != NULL) {
@@ -352,17 +354,7 @@
 +    } else {
 +        svcname_ptr = svcnames_in;
 +    }
- 
--	code = kadm5_get_adm_host_srv_names(context, handle->params.realm,
--	    &kadmin_srv_names);
--        if (code)
--            goto error;
--	svcname = strdup(kadmin_srv_names[0]);
--	free_srv_names(kadmin_srv_names);
--	if (svcname == NULL) {
--	    code = ENOMEM;
--            goto error;
--	}
++
 +    for (i = 0; svcname_ptr[i]; i++) {
 +        /* Get credentials. */
 +        code = get_init_creds(handle, client, init_type, pass, ccache_in,
@@ -403,7 +395,7 @@
      *server_handle = (void *) handle;
  
      goto cleanup;
-@@ -659,6 +794,8 @@ cleanup:
+@@ -652,6 +787,8 @@ cleanup:
      krb5_free_principal(handle->context, server);
      if (code)
          free(handle);
@@ -412,7 +404,7 @@
  
      return code;
  }
-@@ -671,46 +808,43 @@ get_init_creds(kadm5_server_handle_t handle, krb5_principal client,
+@@ -664,46 +801,46 @@ get_init_creds(kadm5_server_handle_t handle, krb5_principal client,
  {
      kadm5_ret_t code;
      krb5_ccache ccache = NULL;
@@ -484,13 +476,16 @@
 +            (void) strlcpy(svcbuf, str, sizeof(svcbuf));
 +            krb5_free_unparsed_name(handle->context, str);
 +            svcname = svcbuf;
++        } else {
++            code = KADM5_BAD_SERVER_NAME;
++            goto error;
 +        }
      }
 -    free(svcname);
  
      /*
       * Acquire a service ticket for svcname@realm for client, using password
-@@ -747,7 +881,7 @@ get_init_creds(kadm5_server_handle_t handle, krb5_principal client,
+@@ -740,7 +877,7 @@ get_init_creds(kadm5_server_handle_t handle, krb5_principal client,
      }
      handle->lhandle->cache_name = handle->cache_name;
  
@@ -501,7 +496,7 @@
      if (code == KRB5KRB_AP_ERR_BAD_INTEGRITY) code = KADM5_BAD_PASSWORD;
 --- a/src/lib/kadm5/clnt/libkadm5clnt_mit.exports
 +++ b/src/lib/kadm5/clnt/libkadm5clnt_mit.exports
-@@ -31,6 +31,11 @@ kadm5_init_krb5_context
+@@ -33,6 +33,11 @@ kadm5_init_krb5_context
  kadm5_init_with_creds
  kadm5_init_with_password
  kadm5_init_with_skey
@@ -621,35 +616,22 @@
      unsigned int pollin, backoff_time;
      int backoff_cnt = 0, reinit_cnt = 0;
      struct timeval iprop_start, iprop_end;
-@@ -643,22 +643,9 @@ do_iprop()
-     params.mask |= KADM5_CONFIG_REALM;
-     params.realm = def_realm;
+@@ -632,9 +632,9 @@ do_iprop()
+     if (pollin == 0)
+         pollin = 10;
  
 -    if (master_svc_princstr == NULL) {
--#if 0
--        retval = kadm5_get_kiprop_host_srv_name(kpropd_context, def_realm,
--                                                &master_svc_princstr);
--        if (retval) {
--            com_err(progname, retval,
--                    _("%s: unable to get kiprop host based "
--                      "service name for realm %s\n"),
--                    progname, def_realm);
--            return retval;
--        }
--#endif
--        char **kiprop_srv_names;
--
 +    if (master_svc_princstrs == NULL) {
-         retval = kadm5_get_kiprop_host_srv_names(kpropd_context, def_realm,
+         retval = kadm5_get_kiprop_host_srv_names(kpropd_context, realm,
 -						 &kiprop_srv_names);
 +						 &master_svc_princstrs);
          if (retval) {
              com_err(progname, retval,
                      _("%s: unable to get kiprop host based "
-@@ -666,15 +653,6 @@ do_iprop()
-                     progname, def_realm);
+@@ -642,15 +642,6 @@ do_iprop()
+                     progname, realm);
              return retval;
- 	}
+         }
 -        master_svc_princstr = strdup(kiprop_srv_names[0]);
 -	free_srv_names(kiprop_srv_names);
 -	if (master_svc_princstr == NULL) {
@@ -661,8 +643,8 @@
 -	}
      }
  
-     retval = krb5_sname_to_principal(kpropd_context, NULL, KIPROP_SVC_NAME,
-@@ -718,9 +696,9 @@ reinit:
+     retval = sn2princ_realm(kpropd_context, NULL, KIPROP_SVC_NAME, realm,
+@@ -679,9 +670,9 @@ reinit:
          fprintf(stderr, _("Initializing kadm5 as client %s\n"),
                  iprop_svc_princstr);
      }
@@ -674,7 +656,7 @@
                                    &params,
                                    KADM5_STRUCT_VERSION,
                                    KADM5_API_VERSION_4,
-@@ -1018,7 +996,7 @@ error:
+@@ -979,7 +970,7 @@ error:
      syslog(LOG_ERR, _("ERROR returned by master KDC, bailing.\n"));
  done:
      free(iprop_svc_princstr);
@@ -682,4 +664,4 @@
 +    free_srv_names(master_svc_princstrs);
      krb5_free_default_realm(kpropd_context, def_realm);
      kadm5_destroy(server_handle);
-     krb5_free_context(kpropd_context);
+     krb5_db_fini(kpropd_context);

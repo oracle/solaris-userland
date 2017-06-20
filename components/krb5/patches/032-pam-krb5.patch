@@ -18,13 +18,13 @@
 @@ -299,7 +299,7 @@ _kadm5_initialize_rpcsec_gss_handle(kadm5_server_handle_t handle,
  {
  	int code = 0;
- 	generic_ret *r;
+ 	generic_ret r = { 0, 0 };
 -	char *ccname_orig = NULL;
 +	const char *ccname_orig = NULL;
- 	char *iprop_svc;
  	boolean_t iprop_enable = B_FALSE;
  	char mech[] = "kerberos_v5";
-@@ -317,15 +317,13 @@ _kadm5_initialize_rpcsec_gss_handle(kadm5_server_handle_t handle,
+ 	gss_OID mech_oid;
+@@ -316,15 +316,13 @@ _kadm5_initialize_rpcsec_gss_handle(kadm5_server_handle_t handle,
  	int port;
  	struct timeval timeout;
  
@@ -41,9 +41,9 @@
 -	*server++ = '@';
 +	server++;
  
- 	iprop_svc = strdup(KIPROP_SVC_NAME);
- 	if (iprop_svc == NULL)
-@@ -442,7 +440,7 @@ _kadm5_initialize_rpcsec_gss_handle(kadm5_server_handle_t handle,
+  	/*
+ 	 * If the service_name and client_name are iprop-centric
+@@ -435,7 +433,7 @@ _kadm5_initialize_rpcsec_gss_handle(kadm5_server_handle_t handle,
  
  	if (ccname_orig) {
  		gssstat = gss_krb5_ccache_name(&minor_stat, ccname_orig, NULL);
@@ -52,7 +52,7 @@
  		if (gssstat != GSS_S_COMPLETE) {
  			code = KADM5_GSS_ERROR;
  			goto error;
-@@ -516,7 +514,7 @@ cleanup:
+@@ -508,7 +506,7 @@ cleanup:
  
  static kadm5_ret_t
  init_any(krb5_context context, char *client_name, enum init_type init_type,
@@ -61,15 +61,16 @@
           kadm5_config_params *params_in, krb5_ui_4 struct_version,
           krb5_ui_4 api_version, char **db_args, void **server_handle)
  {
-@@ -534,7 +532,6 @@ init_any(krb5_context context, char *client_name, enum init_type init_type,
+@@ -525,7 +523,7 @@ init_any(krb5_context context, char *client_name, enum init_type init_type,
+     kadm5_config_params params_local;
  
      int code = 0;
-     generic_ret *r;
 -    char svcname[BUFSIZ];
++    generic_ret *r;
  
      initialize_ovk_error_table();
  /*      initialize_adb_error_table(); */
-@@ -603,15 +600,19 @@ init_any(krb5_context context, char *client_name, enum init_type init_type,
+@@ -594,15 +592,19 @@ init_any(krb5_context context, char *client_name, enum init_type init_type,
          goto error;
  
      /* NULL svcname means use host-based. */
@@ -96,7 +97,7 @@
      }
  
      /* Get credentials. */
-@@ -666,14 +667,52 @@ cleanup:
+@@ -658,14 +660,52 @@ cleanup:
  static kadm5_ret_t
  get_init_creds(kadm5_server_handle_t handle, krb5_principal client,
                 enum init_type init_type, char *pass, krb5_ccache ccache_in,
@@ -150,7 +151,7 @@
       * Acquire a service ticket for svcname@realm for client, using password
       * pass (which could be NULL), and create a ccache to store them in.  If
       * INIT_CREDS, use the ccache we were provided instead.
-@@ -708,7 +747,7 @@ get_init_creds(kadm5_server_handle_t handle, krb5_principal client,
+@@ -700,7 +740,7 @@ get_init_creds(kadm5_server_handle_t handle, krb5_principal client,
      }
      handle->lhandle->cache_name = handle->cache_name;
  
@@ -224,7 +225,7 @@
      krb5_error_code ret;
      int use_master;
      krb5_kdc_rep *as_reply;
-@@ -505,8 +545,12 @@ cleanup:
+@@ -504,8 +544,12 @@ cleanup:
      memset(pw0array, 0, sizeof(pw0array));
      memset(pw1array, 0, sizeof(pw1array));
      krb5_free_cred_contents(context, &chpw_creds);
@@ -241,30 +242,29 @@
      return(ret);
 --- a/src/slave/kpropd.c
 +++ b/src/slave/kpropd.c
-@@ -644,6 +644,7 @@ do_iprop()
-     params.realm = def_realm;
+@@ -623,6 +623,7 @@ do_iprop()
+     kdb_last_t mylast;
+     kdb_fullresync_result_t *full_ret;
+     kadm5_iprop_handle_t handle;
++   char **kiprop_srv_names;
+ 
+     if (debug)
+         fprintf(stderr, _("Incremental propagation enabled\n"));
+@@ -632,8 +633,8 @@ do_iprop()
+         pollin = 10;
  
      if (master_svc_princstr == NULL) {
-+#if 0
-         retval = kadm5_get_kiprop_host_srv_name(kpropd_context, def_realm,
-                                                 &master_svc_princstr);
+-        retval = kadm5_get_kiprop_host_srv_name(kpropd_context, realm,
+-                                                &master_svc_princstr);
++        retval = kadm5_get_kiprop_host_srv_names(kpropd_context, realm,
++						 &kiprop_srv_names);
          if (retval) {
-@@ -653,6 +654,27 @@ do_iprop()
-                     progname, def_realm);
+             com_err(progname, retval,
+                     _("%s: unable to get kiprop host based "
+@@ -641,6 +642,15 @@ do_iprop()
+                     progname, realm);
              return retval;
          }
-+#endif
-+        char **kiprop_srv_names;
-+
-+        retval = kadm5_get_kiprop_host_srv_names(kpropd_context, def_realm,
-+						 &kiprop_srv_names);
-+        if (retval) {
-+            com_err(progname, retval,
-+                    _("%s: unable to get kiprop host based "
-+                      "service name for realm %s\n"),
-+                    progname, def_realm);
-+            return retval;
-+	}
 +        master_svc_princstr = strdup(kiprop_srv_names[0]);
 +	free_srv_names(kiprop_srv_names);
 +	if (master_svc_princstr == NULL) {
@@ -276,4 +276,4 @@
 +	}
      }
  
-     retval = krb5_sname_to_principal(kpropd_context, NULL, KIPROP_SVC_NAME,
+     retval = sn2princ_realm(kpropd_context, NULL, KIPROP_SVC_NAME, realm,

@@ -9,14 +9,14 @@
 
 --- a/src/clients/kdestroy/Makefile.in
 +++ b/src/clients/kdestroy/Makefile.in
-@@ -19,7 +19,7 @@ all-unix:: kdestroy
- ##WIN32##all-windows:: $(KDESTROY)
+@@ -19,7 +19,7 @@ all-unix: kdestroy
+ ##WIN32##all-windows: $(KDESTROY)
  
  kdestroy: kdestroy.o $(KRB5_BASE_DEPLIBS)
 -	$(CC_LINK) -o $@ kdestroy.o $(KRB5_BASE_LIBS)
 +	$(CC_LINK) -o $@ kdestroy.o $(KRB5_BASE_LIBS) -lkwarn
  
- ##WIN32##$(KDESTROY): $(OUTPRE)kdestroy.obj $(BUILDTOP)\util\windows\$(OUTPRE)getopt.obj $(KLIB) $(CLIB) $(EXERES)
+ ##WIN32##$(KDESTROY): $(OUTPRE)kdestroy.obj $(SLIB) $(KLIB) $(CLIB) $(EXERES)
  ##WIN32##	link $(EXE_LINKOPTS) -out:$@ $**
 --- a/src/clients/kdestroy/kdestroy.c
 +++ b/src/clients/kdestroy/kdestroy.c
@@ -33,7 +33,7 @@
  #include "k5-platform.h"
  #include <krb5.h>
  #include <com_err.h>
-@@ -46,6 +52,13 @@
+@@ -40,6 +46,13 @@
  extern int optind;
  extern char *optarg;
  
@@ -47,7 +47,7 @@
  #ifndef _WIN32
  #define GET_PROGNAME(x) (strrchr((x), '/') ? strrchr((x), '/')+1 : (x))
  #else
-@@ -82,6 +95,13 @@ main(argc, argv)
+@@ -100,6 +113,13 @@ main(argc, argv)
      int quiet = 0;
      int all = 0;
  
@@ -61,8 +61,8 @@
      setlocale(LC_ALL, "");
      progname = GET_PROGNAME(argv[0]);
  
-@@ -165,6 +185,49 @@ main(argc, argv)
-         }
+@@ -170,10 +190,24 @@ main(argc, argv)
+         return 0;
      }
  
 +    /*
@@ -79,20 +79,18 @@
 +            progname, code);
 +    }
 +
-+    if (cache_name) {
-+        code = krb5_cc_resolve (kcontext, cache_name, &cache);
-+        if (code != 0) {
+     if (cache_name) {
+         code = krb5_cc_resolve (kcontext, cache_name, &cache);
+         if (code != 0) {
+-            com_err(progname, code, _("while resolving %s"), cache_name);
 +            com_err (progname, code, _("while resolving %s"), cache_name);
-+            exit(1);
-+        }
-+    } else {
-+        code = krb5_cc_default(kcontext, &cache);
-+        if (code) {
-+            com_err(progname, code, _("while getting default ccache"));
-+            exit(1);
-+        }
-+    }
-+
+             exit(1);
+         }
+     } else {
+@@ -184,6 +218,21 @@ main(argc, argv)
+         }
+     }
+ 
 +    /*
 +     * Solaris Kerberos
 +     * Get client name for ktkt_warnd(1M) msg.
@@ -111,34 +109,40 @@
      code = krb5_cc_destroy (kcontext, cache);
      if (code != 0) {
          com_err (progname, code, _("while destroying cache"));
-@@ -178,5 +241,17 @@ main(argc, argv)
-             errflg = 1;
+@@ -198,9 +247,21 @@ main(argc, argv)
          }
      }
-+
-+    /* Solaris Kerberos - Delete ktkt_warnd(1M) entry. */
-+    if (!errflg && client_name)
-+        kwarn_del_warning(client_name);
-+    else
-+        fprintf(stderr, _("%s: TGT expire warning NOT deleted\n"),
-+            progname);
-+
+ 
+-    if (!quiet && !errflg)
+-        print_remaining_cc_warning(kcontext);
++    if (!errflg) {
++        if (!quiet)
++            print_remaining_cc_warning(kcontext);
++        /* Solaris Kerberos - Delete ktkt_warnd(1M) entry. */
++        if (client_name)
++            kwarn_del_warning(client_name);
++        else
++            fprintf(stderr, _("%s: TGT expire warning NOT deleted\n"),
++                progname);
++    }
+ 
 +    /* Solaris Kerberos */
-+    free(client_name);
++    krb5_free_unparsed_name(kcontext, client_name);
 +    krb5_free_principal(kcontext, me);
+     krb5_free_context(kcontext);
 +
      return errflg;
  }
 --- a/src/clients/kinit/Makefile.in
 +++ b/src/clients/kinit/Makefile.in
-@@ -20,7 +20,7 @@ all-unix:: kinit
- ##WIN32##all-windows:: $(KINIT)
+@@ -18,7 +18,7 @@ all-unix: kinit
+ ##WIN32##all-windows: $(KINIT)
  
  kinit: kinit.o kinit_kdb.o $(KRB5_BASE_DEPLIBS) $(KADMSRV_DEPLIBS)
 -	$(CC_LINK) -o $@ kinit.o kinit_kdb.o $(KADMSRV_LIBS) $(KRB5_BASE_LIBS)
 +	$(CC_LINK) -o $@ kinit.o kinit_kdb.o $(KADMSRV_LIBS) $(KRB5_BASE_LIBS) -lkwarn
  
- ##WIN32##$(KINIT): $(OUTPRE)kinit.obj $(BUILDTOP)\util\windows\$(OUTPRE)getopt.lib $(KLIB) $(CLIB) $(EXERES)
+ ##WIN32##$(KINIT): $(OUTPRE)kinit.obj $(SLIB) $(KLIB) $(CLIB) $(EXERES)
  ##WIN32##	link $(EXE_LINKOPTS) -out:$@ $** advapi32.lib
 --- a/src/clients/kinit/kinit.c
 +++ b/src/clients/kinit/kinit.c
@@ -148,9 +152,9 @@
  #include <com_err.h>
 +#include <kerberosv5/private/ktwarn.h>
  
- #ifdef GETOPT_LONG
- #include <getopt.h>
-@@ -94,6 +95,9 @@ char * get_name_from_os()
+ #ifndef _WIN32
+ #define GET_PROGNAME(x) (strrchr((x), '/') ? strrchr((x), '/')+1 : (x))
+@@ -77,6 +78,9 @@ char * get_name_from_os()
  
  static char *progname;
  
@@ -160,7 +164,7 @@
  typedef enum { INIT_PW, INIT_KT, RENEW, VALIDATE } action_type;
  
  struct k_opts
-@@ -883,6 +887,15 @@ k5_kinit(opts, k5)
+@@ -885,6 +889,15 @@ k5_kinit(opts, k5)
          if (opts->verbose)
              fprintf(stderr, _("Stored credentials\n"));
      }
@@ -176,7 +180,7 @@
      notix = 0;
  
      if (k5->switch_to_cache) {
-@@ -951,3 +964,25 @@ main(argc, argv)
+@@ -956,3 +969,25 @@ main(argc, argv)
          exit(1);
      return 0;
  }
@@ -212,7 +216,7 @@
 +SHLIB_EXPLIBS=-lkrb5 -lk5crypto -lcom_err -lkwarn $(SUPPORT_LIB) $(DL_LIB) $(LIBS)
  RELDIR=gssapi
  
- all-unix:: all-liblinks @MAINT@ verify-calling-conventions-gssapi
+ all-unix: all-liblinks @MAINT@ verify-calling-conventions-gssapi
 --- a/src/lib/gssapi/krb5/store_cred.c
 +++ b/src/lib/gssapi/krb5/store_cred.c
 @@ -26,6 +26,8 @@
@@ -245,7 +249,7 @@
 +        syslog(LOG_AUTH|LOG_DEBUG, "store_cred: kwarn_add_warning"
 +            " failed: ktkt_warnd(1M) down? ");
 +    }
-+    free(client_name);
++    krb5_free_unparsed_name(context, client_name);
 +
  cleanup:
      if (kcred != NULL)

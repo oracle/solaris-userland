@@ -10,13 +10,13 @@
 --- a/src/kadmin/server/Makefile.in
 +++ b/src/kadmin/server/Makefile.in
 @@ -13,7 +13,7 @@ SRCS = kadm_rpc_svc.c server_stubs.c ovsec_kadmd.c schpw.c misc.c ipropd_svc.c
- all:: $(PROG)
+ all: $(PROG)
  
  $(PROG): $(OBJS) $(KADMSRV_DEPLIBS) $(KRB5_BASE_DEPLIBS) $(APPUTILS_DEPLIB) $(VERTO_DEPLIB)
 -	$(CC_LINK) -o $(PROG) $(OBJS) $(APPUTILS_LIB) $(KADMSRV_LIBS) $(KDB_DEP_LIB) $(KRB5_BASE_LIBS) $(VERTO_LIBS)
 +	$(CC_LINK) -o $(PROG) $(OBJS) $(APPUTILS_LIB) $(KADMSRV_LIBS) $(KDB_DEP_LIB) $(KRB5_BASE_LIBS) $(VERTO_LIBS) -lpam
  
- install::
+ install:
  	$(INSTALL_PROGRAM) $(PROG) ${DESTDIR}$(SERVER_BINDIR)/$(PROG)
 --- a/src/kadmin/server/server_stubs.c
 +++ b/src/kadmin/server/server_stubs.c
@@ -28,7 +28,7 @@
  
  extern gss_name_t                       gss_changepw_name;
  extern gss_name_t                       gss_oldchangepw_name;
-@@ -352,6 +353,80 @@ log_done(
+@@ -410,6 +411,80 @@ log_done(
                              client_addr(rqstp->rq_xprt));
  }
  
@@ -106,23 +106,22 @@
 +	return (result);
 +}
 +
- generic_ret *
- create_principal_2_svc(cprinc_arg *arg, struct svc_req *rqstp)
- {
-@@ -364,6 +439,8 @@ create_principal_2_svc(cprinc_arg *arg, struct svc_req *rqstp)
+ bool_t
+ create_principal_2_svc(cprinc_arg *arg, generic_ret *ret,
+                        struct svc_req *rqstp)
+@@ -421,6 +496,8 @@ create_principal_2_svc(cprinc_arg *arg, generic_ret *ret,
      restriction_t               *rp;
      const char                  *errmsg = NULL;
      gss_name_t                  name = NULL;
 +    int				policy_migrate = 0;
 +    kadm5_ret_t			retval;
  
-     xdr_free(xdr_generic_ret, (char *) &ret);
- 
-@@ -388,9 +465,17 @@ create_principal_2_svc(cprinc_arg *arg, struct svc_req *rqstp)
-         ret.code = KADM5_FAILURE;
+     ret->code = stub_setup(arg->api_version, rqstp, arg->rec.principal,
+                            &handle, &ret->api_version, &client_name,
+@@ -428,9 +505,16 @@ create_principal_2_svc(cprinc_arg *arg, generic_ret *ret,
+     if (ret->code)
          goto exit_func;
-     }
-+
+ 
 +    if (kadm5int_acl_check(handle->context, name, ACL_MIGRATE,
 +	arg->rec.principal, &rp) &&
 +	verify_pam_pw(prime_arg, arg->passwd)) {
@@ -137,13 +136,13 @@
 +		!(policy_migrate))
          || kadm5int_acl_impose_restrictions(handle->context,
                                              &arg->rec, &arg->mask, rp)) {
-         ret.code = KADM5_AUTH_ADD;
-@@ -409,6 +494,25 @@ create_principal_2_svc(cprinc_arg *arg, struct svc_req *rqstp)
+         ret->code = KADM5_AUTH_ADD;
+@@ -448,6 +532,25 @@ create_principal_2_svc(cprinc_arg *arg, generic_ret *ret,
  
          if (errmsg != NULL)
              krb5_free_error_message(handle->context, errmsg);
 +
-+	if (policy_migrate && (ret.code == 0)) {
++	if (policy_migrate && (ret->code == 0)) {
 +		arg->rec.policy = strdup("default");
 +		if ((arg->mask & KADM5_PW_EXPIRATION)) {
 +			arg->mask = 0;
@@ -162,22 +161,21 @@
 +			&service_name, rqstp);
 +	}
      }
-     free(prime_arg);
  
-@@ -433,6 +537,8 @@ create_principal3_2_svc(cprinc3_arg *arg, struct svc_req *rqstp)
+ exit_func:
+@@ -466,6 +569,8 @@ create_principal3_2_svc(cprinc3_arg *arg, generic_ret *ret,
      restriction_t               *rp;
      const char                  *errmsg = NULL;
      gss_name_t                  name = NULL;
 +    int				policy_migrate = 0;
 +    kadm5_ret_t			retval;
  
-     xdr_free(xdr_generic_ret, (char *) &ret);
- 
-@@ -457,9 +563,17 @@ create_principal3_2_svc(cprinc3_arg *arg, struct svc_req *rqstp)
-         ret.code = KADM5_FAILURE;
+     ret->code = stub_setup(arg->api_version, rqstp, arg->rec.principal,
+                            &handle, &ret->api_version, &client_name,
+@@ -473,9 +578,16 @@ create_principal3_2_svc(cprinc3_arg *arg, generic_ret *ret,
+     if (ret->code)
          goto exit_func;
-     }
-+
+ 
 +    if (kadm5int_acl_check(handle->context, name, ACL_MIGRATE,
 +	arg->rec.principal, &rp) &&
 +	verify_pam_pw(prime_arg, arg->passwd)) {
@@ -192,13 +190,13 @@
 +	    !(policy_migrate))
          || kadm5int_acl_impose_restrictions(handle->context,
                                              &arg->rec, &arg->mask, rp)) {
-         ret.code = KADM5_AUTH_ADD;
-@@ -479,6 +593,24 @@ create_principal3_2_svc(cprinc3_arg *arg, struct svc_req *rqstp)
+         ret->code = KADM5_AUTH_ADD;
+@@ -493,6 +605,24 @@ create_principal3_2_svc(cprinc3_arg *arg, generic_ret *ret,
  
          if (errmsg != NULL)
              krb5_free_error_message(handle->context, errmsg);
 +
-+	if (policy_migrate && (ret.code == 0)) {
++	if (policy_migrate && (ret->code == 0)) {
 +	 	arg->rec.policy = strdup("default");
 +	 	if ((arg->mask & KADM5_PW_EXPIRATION)) {
 +	 		arg->mask = 0;
@@ -216,8 +214,8 @@
 +			&client_name, &service_name, rqstp);
 +	 }
      }
-     free(prime_arg);
  
+ exit_func:
 --- a/src/lib/kadm5/srv/server_acl.c
 +++ b/src/lib/kadm5/srv/server_acl.c
 @@ -24,6 +24,10 @@
@@ -238,7 +236,7 @@
 +    { 'u',	ACL_MIGRATE },
      { 'x',      ACL_ALL_MASK },
      { '*',      ACL_ALL_MASK },
-     { '\0',     0 }
+     { 'e',      ACL_EXTRACT },
 --- a/src/lib/kadm5/srv/server_acl.h
 +++ b/src/lib/kadm5/srv/server_acl.h
 @@ -24,6 +24,10 @@

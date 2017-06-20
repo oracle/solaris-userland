@@ -1,5 +1,5 @@
 '\" te
-.\" Copyright (c) 2008, 2011, Oracle and/or its affiliates. All rights reserved.
+.\" Copyright (c) 2008, 2017, Oracle and/or its affiliates. All rights reserved.
 .\" Copyright 1989 AT&T
 .\" Portions Copyright (c) 1992, X/Open Company Limited All Rights Reserved
 .\"  Sun Microsystems, Inc. gratefully acknowledges The Open Group for permission to reproduce portions of its copyrighted documentation. Original documentation from The Open Group can be obtained online at http://www.opengroup.org/bookstore/.
@@ -295,7 +295,7 @@ sh, jsh \- 標準シェルとジョブ制御シェルおよびコマンドイン
 .ad
 .RS 13n
 .rt  
-\fBcd\fR コマンドのデフォルト引数 (ホームディレクトリ)。\fBlogin\fR(1) によって、パスワードファイルから ユーザーのログインディレクトリに設定されます (\fBpasswd\fR(4) を参照)。
+\fBcd\fR コマンドのデフォルト引数 (ホームディレクトリ)。\fBlogin\fR(1) によって、パスワードファイルから ユーザーのログインディレクトリに設定されます (\fBpasswd\fR(5) を参照)。
 .RE
 
 .sp
@@ -410,7 +410,7 @@ sh, jsh \- 標準シェルとジョブ制御シェルおよびコマンドイン
 
 .sp
 .LP
-\fBsh\fR の実行に影響を与える次の環境変数についての詳細は、\fBenviron\fR(5) を参照してください。\fBLC_CTYPE\fR および \fBLC_MESSAGES\fR。
+\fBsh\fR の実行に影響を与える次の環境変数についての詳細は、\fBenviron\fR(7) を参照してください。\fBLC_CTYPE\fR および \fBLC_MESSAGES\fR。
 .sp
 .LP
 シェルは、\fBPATH\fR、\fBPS1\fR、\fBPS2\fR、\fBMAILCHECK\fR、および \fBIFS\fR にデフォルト値を割り当てます。\fBHOME\fR および \fBMAIL\fR のデフォルト値は \fBlogin\fR(1) で設定します。
@@ -628,7 +628,7 @@ NULL 文字列を含め、任意の文字列と一致します。
 .SS "環境"
 .sp
 .LP
-環境 (\fIenvironment\fR) は、通常の引数リストが実行されるプログラムに引き渡される場合と同様の方法で引き渡される、名前と値の対の集まりです (\fBenviron\fR(5) を参照) 。シェルが環境と対話する方法はいくつかあります。シェルは、呼び出されると、環境を走査して、見つけた名前ごとに変数を作成し、対応する値を設定します。ユーザーがこれらのパラメータの値を変更したり 新しいパラメータを作成したときには、\fBexport\fR コマンドを用いてシェルのパラメータを環境に関連付けなければ、これらのパラメータは環境に何の影響も与えません (\fBset\fR \fB-a\fR の説明を参照)。環境からパラメータを削除するには、\fBunset\fR コマンドを使用します。したがって、実行されるコマンドが参照する環境は、シェルが最初に引き継いだ「名前 = 値」の対のうち 変更されていないものから、\fBunset\fR によって削除された対を引き、変更または追加した対をくわえたものです。これらはいずれも \fBexport\fR コマンドで指定する必要があります。
+環境 (\fIenvironment\fR) は、通常の引数リストが実行されるプログラムに引き渡される場合と同様の方法で引き渡される、名前と値の対の集まりです (\fBenviron\fR(7) を参照) 。シェルが環境と対話する方法はいくつかあります。シェルは、呼び出されると、環境を走査して、見つけた名前ごとに変数を作成し、対応する値を設定します。ユーザーがこれらのパラメータの値を変更したり 新しいパラメータを作成したときには、\fBexport\fR コマンドを用いてシェルのパラメータを環境に関連付けなければ、これらのパラメータは環境に何の影響も与えません (\fBset\fR \fB-a\fR の説明を参照)。環境からパラメータを削除するには、\fBunset\fR コマンドを使用します。したがって、実行されるコマンドが参照する環境は、シェルが最初に引き継いだ「名前 = 値」の対のうち 変更されていないものから、\fBunset\fR によって削除された対を引き、変更または追加した対をくわえたものです。これらはいずれも \fBexport\fR コマンドで指定する必要があります。
 .sp
 .LP
 単純コマンドの環境は、いくつかのパラメータ代入指定を先頭に付加すれば拡張できます。\fI\fRしたがって、
@@ -1590,7 +1590,7 @@ c\fR
 .SS "大規模ファイルの動作"
 .sp
 .LP
-ファイルが 2G バイト (2^31 バイト) 以上ある場合の \fBsh\fR と \fBjsh\fR の動作については、\fBlargefile\fR(5) を参照してください。
+ファイルが 2G バイト (2^31 バイト) 以上ある場合の \fBsh\fR と \fBjsh\fR の動作については、\fBlfcompile\fR(7) を参照してください。
 .SH 終了ステータス
 .sp
 .LP
@@ -1621,7 +1621,7 @@ c\fR
 .SH 属性
 .sp
 .LP
-属性についての詳細は、\fBattributes\fR(5) を参照してください。
+属性についての詳細は、\fBattributes\fR(7) を参照してください。
 .SS "/usr/bin/sh, /usr/bin/jsh"
 .sp
 
@@ -1657,7 +1657,7 @@ CSI有効
 .SH 関連項目
 .sp
 .LP
-\fBIntro\fR(1), \fBbc\fR(1), \fBecho\fR(1), \fBgetoptcvt\fR(1), \fBkill\fR(1), \fBksh88\fR(1), \fBlogin\fR(1), \fBnewgrp\fR(1), \fBpfsh\fR(1), \fBpfexec\fR(1), \fBps\fR(1), \fBpwd\fR(1), \fBset\fR(1), \fBshell_builtins\fR(1), \fBstty\fR(1), \fBtest\fR(1), \fBumask\fR(1), \fBwait\fR(1), \fBrsh\fR(1M), \fBsu\fR(1M), \fBswap\fR(1M), \fBsysdef\fR(1M), \fBdup\fR(2), \fBexec\fR(2), \fBfork\fR(2), \fBgetrlimit\fR(2), \fBpipe\fR(2), \fBulimit\fR(2), \fBsetlocale\fR(3C), \fBsignal.h\fR(3HEAD), \fBpasswd\fR(4), \fBprofile\fR(4), \fBattributes\fR(5), \fBenviron\fR(5), \fBlargefile\fR(5), \fBXPG4\fR(5)
+\fBIntro\fR(1), \fBbc\fR(1), \fBecho\fR(1), \fBgetoptcvt\fR(1), \fBkill\fR(1), \fBksh88\fR(1), \fBlogin\fR(1), \fBnewgrp\fR(1), \fBpfsh\fR(1), \fBpfexec\fR(1), \fBps\fR(1), \fBpwd\fR(1), \fBset\fR(1), \fBshell_builtins\fR(1), \fBstty\fR(1), \fBtest\fR(1), \fBumask\fR(1), \fBwait\fR(1), \fBrsh\fR(1M), \fBsu\fR(1M), \fBswap\fR(1M), \fBsysdef\fR(1M), \fBdup\fR(2), \fBexec\fR(2), \fBfork\fR(2), \fBgetrlimit\fR(2), \fBpipe\fR(2), \fBulimit\fR(2), \fBsetlocale\fR(3C), \fBsignal.h\fR(3HEAD), \fBpasswd\fR(5), \fBprofile\fR(5), \fBattributes\fR(7), \fBenviron\fR(7), \fBlfcompile\fR(7), \fBXPG4\fR(7)
 .SH 警告
 .sp
 .LP

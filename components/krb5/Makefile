@@ -30,8 +30,8 @@ COMPONENT_NAME=		Kerberos
 # Encoding rule for MINOR: MIT KerberosV5 x.y[.z] => MINOR $MAJOR.y
 # Encoding rule for MICRO: MIT KerberosV5 x.y[.z] => MICRO $MINOR[.z]
 COMPONENT_MAJOR=	1
-COMPONENT_MINOR=	$(COMPONENT_MAJOR).14
-COMPONENT_MICRO=	$(COMPONENT_MINOR).4
+COMPONENT_MINOR=	$(COMPONENT_MAJOR).15
+COMPONENT_MICRO=	$(COMPONENT_MINOR).1
 COMPONENT_ANITYA_ID=	13287
 
 COMPONENT_VERSION=		$(COMPONENT_MICRO)
@@ -40,12 +40,12 @@ IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0
 COMPONENT_PROJECT_URL=	http://web.mit.edu/kerberos/
 COMPONENT_SRC=		krb5-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:03a61a4280c9161771fb39019085dbe6a57aa602080515ff93b43cd6137e0b95
+	sha256:71b8073db274c6e2332d47db03fa58582f7b0e92514126388f018e849b2fbd66
 COMPONENT_ARCHIVE_URL=	\
 	$(COMPONENT_PROJECT_URL)dist/krb5/$(COMPONENT_MINOR)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/kerberos
 
-TPNO=		31744
+TPNO=		34136
 
 # Depends on S12-only header file in ON.
 ifeq ($(BUILD_TYPE), evaluation)
@@ -55,6 +55,10 @@ PUBLISH_STAMP=
 endif
 
 include $(WS_MAKE_RULES)/common.mk
+
+# Enable adiheap and adistack security extensions
+ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
+ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
 LINT_FLAGS += -I$(PROTOUSRINCDIR) -I$(PROTOUSRINCDIR)/kerberosv5 -I$(COMPONENT_DIR)/Solaris
 
@@ -72,11 +76,6 @@ CFLAGS += -errwarn=no%E_EMPTY_DECLARATION
 CFLAGS += -errwarn=no%E_ENUM_VAL_OVERFLOWS_INT_MAX
 CFLAGS += -errwarn=no%E_DEPRECATED_ATT
 CFLAGS += -errwarn=no%E_INIT_SIGN_EXTEND
-# XXX really E_ASSIGNMENT_TYPE_MISMATCH should not be treated as a warning but
-# making this an error would require patching MIT code which I do not want to
-# do at this moment.  Making this an error should be revisited after rebasing
-# to MIT v1.15.
-CFLAGS += -errwarn=no%E_ASSIGNMENT_TYPE_MISMATCH
 
 # Include openldap headers instead of obsolete mozilla ldap headers.
 CPPFLAGS += -I$(USRINCDIR)/openldap
@@ -106,11 +105,12 @@ CONFIGURE_OPTIONS += --without-system-verto
 CONFIGURE_OPTIONS += --enable-audit-plugin=solaris
 
 COMPONENT_PRE_CONFIGURE_ACTION = \
-	cd $(SOURCE_DIR)/src/ && $(SOURCE_DIR)/src/util/reconf
+	cd $(SOURCE_DIR)/src/ && autoreconf
 
 PROTOULD = $(PROTOUSRLIBDIR)
 
 COMPONENT_TEST_ARGS += LD_LIBRARY_PATH="$(PROTOULD):$(PROTOULD)/$(MACH64):"
+COMPONENT_TEST_ARGS += SLAPD="/usr/lib/slapd"
 
 # MIT's test suite is not well suited for master results processing/filtering
 # but since the test implementation will return failure to the uland build,
@@ -155,12 +155,12 @@ COMPONENT_PREP_ACTION += \
 	$(CP) $(SRCLIB)/rpc/dynP.h $(SRCLIB)/kadm5/srv/; \
 	$(CP) $(SRCLIB)/rpc/dyntest.c $(SRCLIB)/kadm5/srv/; \
 	(cd Solaris && $(TAR) -cf - ucrypto) | (cd $(SRCLIB)/crypto && tar -xf -); \
-	$(LN) -s ../../builtin/des/des_keys.c $(SRCLIB)/crypto/ucrypto/des/; \
-	$(LN) -s ../../builtin/des/f_parity.c $(SRCLIB)/crypto/ucrypto/des/; \
-	$(LN) -s ../../builtin/des/weak_key.c $(SRCLIB)/crypto/ucrypto/des/; \
-	$(LN) -s ../../builtin/des/des_int.h $(SRCLIB)/crypto/ucrypto/des/; \
-	$(LN) -s ../../builtin/hash_provider/hash_crc32.c $(SRCLIB)/crypto/ucrypto/hash_provider/; \
-	$(LN) -s ../builtin/pbkdf2.c $(SRCLIB)/crypto/ucrypto/; \
+	$(SYMLINK) ../../builtin/des/des_keys.c $(SRCLIB)/crypto/ucrypto/des/; \
+	$(SYMLINK) ../../builtin/des/f_parity.c $(SRCLIB)/crypto/ucrypto/des/; \
+	$(SYMLINK) ../../builtin/des/weak_key.c $(SRCLIB)/crypto/ucrypto/des/; \
+	$(SYMLINK) ../../builtin/des/des_int.h $(SRCLIB)/crypto/ucrypto/des/; \
+	$(SYMLINK) ../../builtin/hash_provider/hash_crc32.c $(SRCLIB)/crypto/ucrypto/hash_provider/; \
+	$(SYMLINK) ../builtin/pbkdf2.c $(SRCLIB)/crypto/ucrypto/;
 
 # Common flags used to create the filter libs below
 FILTLIBFLAGS = -G $(LD_B_DIRECT) $(LD_Z_DEFS) $(LD_Z_TEXT)
