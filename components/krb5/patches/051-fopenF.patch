@@ -71,7 +71,7 @@
          if ( fowner(users_fp, pwd->pw_uid) == FALSE){
 --- a/src/kadmin/dbutil/dump.c
 +++ b/src/kadmin/dbutil/dump.c
-@@ -1215,7 +1215,7 @@ current_dump_sno_in_ulog(krb5_context context, const char *ifile)
+@@ -1217,7 +1217,7 @@ current_dump_sno_in_ulog(krb5_context context, const char *ifile)
      char buf[BUFSIZ];
      FILE *f;
  
@@ -80,7 +80,7 @@
      if (f == NULL)
          return 0;              /* aliasing other errors to ENOENT here is OK */
  
-@@ -1540,7 +1540,7 @@ load_db(int argc, char **argv)
+@@ -1538,7 +1538,7 @@ load_db(int argc, char **argv)
  
      /* Open the dumpfile. */
      if (dumpfile != NULL) {
@@ -91,7 +91,7 @@
              goto error;
 --- a/src/kadmin/server/ovsec_kadmd.c
 +++ b/src/kadmin/server/ovsec_kadmd.c
-@@ -126,7 +126,7 @@ write_pid_file(const char *pid_file)
+@@ -127,7 +127,7 @@ write_pid_file(const char *pid_file)
      unsigned long pid;
      int st1, st2;
  
@@ -102,7 +102,7 @@
      pid = (unsigned long)getpid();
 --- a/src/kdc/main.c
 +++ b/src/kdc/main.c
-@@ -859,7 +859,7 @@ write_pid_file(const char *path)
+@@ -883,7 +883,7 @@ write_pid_file(const char *path)
      FILE *file;
      unsigned long pid;
  
@@ -124,7 +124,7 @@
  #endif
 --- a/src/lib/gssapi/mechglue/g_initialize.c
 +++ b/src/lib/gssapi/mechglue/g_initialize.c
-@@ -1218,7 +1218,7 @@ loadConfigFile(const char *fileName)
+@@ -1263,7 +1263,7 @@ loadConfigFile(const char *fileName)
  	char buffer[BUFSIZ], *oidStr;
  	FILE *confFile;
  
@@ -135,16 +135,16 @@
  
 --- a/src/lib/kadm5/logger.c
 +++ b/src/lib/kadm5/logger.c
-@@ -566,7 +566,7 @@ krb5_klog_init(krb5_context kcontext, char *ename, char *whoami, krb5_boolean do
-                     if (cp[4] == ':' || cp[4] == '=') {
-                         /* Solaris Kerberos */
+@@ -576,7 +576,7 @@ krb5_klog_init(krb5_context kcontext, char *ename, char *whoami, krb5_boolean do
+                         log_control.log_entries[i].lfu_last_rotated =
+                             time(0);
                          log_control.log_entries[i].lfu_fopen_mode =
--                            (cp[4] == ':') ? "a" : "w";
-+                            (cp[4] == ':') ? "aF" : "wF";
-                         old_umask = umask(077);
-                         f = fopen(&cp[5],
-                                   log_control.log_entries[i].lfu_fopen_mode);
-@@ -801,7 +801,7 @@ krb5_klog_init(krb5_context kcontext, char *ename, char *whoami, krb5_boolean do
+-                            append ? "a" : "w";
++                            append ? "aF" : "wF";
+ 
+                         /*
+                          * Now parse for ename_"rotate" = {
+@@ -775,7 +775,7 @@ krb5_klog_init(krb5_context kcontext, char *ename, char *whoami, krb5_boolean do
                   */
                  else if (!strcasecmp(cp, "CONSOLE")) {
                      log_control.log_entries[i].ldu_filep =
@@ -153,7 +153,7 @@
                      if (log_control.log_entries[i].ldu_filep) {
                          set_cloexec_file(log_control.log_entries[i].ldu_filep);
                          log_control.log_entries[i].log_type = K_LOG_CONSOLE;
-@@ -817,7 +817,7 @@ krb5_klog_init(krb5_context kcontext, char *ename, char *whoami, krb5_boolean do
+@@ -791,7 +791,7 @@ krb5_klog_init(krb5_context kcontext, char *ename, char *whoami, krb5_boolean do
                       */
                      if (cp[6] == '=') {
                          log_control.log_entries[i].ldu_filep =
@@ -162,7 +162,7 @@
                          if (log_control.log_entries[i].ldu_filep) {
                              set_cloexec_file(log_control.log_entries[i].ldu_filep);
                              log_control.log_entries[i].log_type = K_LOG_DEVICE;
-@@ -1156,7 +1156,7 @@ krb5_klog_reopen(krb5_context kcontext)
+@@ -1112,7 +1112,7 @@ krb5_klog_reopen(krb5_context kcontext)
               * In case the old logfile did not get moved out of the
               * way, open for append to prevent squashing the old logs.
               */
@@ -184,18 +184,15 @@
          alineno = 1;
 --- a/src/lib/kdb/kdb_default.c
 +++ b/src/lib/kdb/kdb_default.c
-@@ -251,9 +251,9 @@ krb5_db_def_fetch_mkey_stash(krb5_context   context,
+@@ -250,7 +250,7 @@ krb5_db_def_fetch_mkey_stash(krb5_context   context,
+     krb5_ui_4 keylength;
      FILE *kf = NULL;
  
- #ifdef ANSI_STDIO
 -    if (!(kf = fopen(keyfile, "rb")))
 +    if (!(kf = fopen(keyfile, "rbF")))
- #else
--        if (!(kf = fopen(keyfile, "r")))
-+        if (!(kf = fopen(keyfile, "rF")))
- #endif
-             return KRB5_KDB_CANTREAD_STORED;
+         return KRB5_KDB_CANTREAD_STORED;
      set_cloexec_file(kf);
+ 
 --- a/src/lib/krb5/ccache/cc_dir.c
 +++ b/src/lib/krb5/ccache/cc_dir.c
 @@ -153,7 +153,7 @@ read_primary_file(krb5_context context, const char *primary_path,
@@ -220,36 +217,33 @@
          return KRB5_PLUGIN_NO_HANDLE;
 --- a/src/lib/krb5/keytab/kt_file.c
 +++ b/src/lib/krb5/keytab/kt_file.c
-@@ -1028,11 +1028,11 @@ typedef krb5_int16  krb5_kt_vno;
- #define krb5_kt_default_vno ((krb5_kt_vno)KRB5_KT_DEFAULT_VNO)
- 
- #ifdef ANSI_STDIO
--static char *const fopen_mode_rbplus= "rb+";
--static char *const fopen_mode_rb = "rb";
-+static char *const fopen_mode_rbplus= "rb+F";
-+static char *const fopen_mode_rb = "rbF";
- #else
--static char *const fopen_mode_rbplus= "r+";
--static char *const fopen_mode_rb = "r";
-+static char *const fopen_mode_rbplus= "r+F";
-+static char *const fopen_mode_rb = "rF";
- #endif
- 
- static krb5_error_code
+@@ -1037,13 +1037,13 @@ krb5_ktfileint_open(krb5_context context, krb5_keytab id, int mode)
+     KTCHECKLOCK(id);
+     errno = 0;
+     KTFILEP(id) = fopen(KTFILENAME(id),
+-                        (mode == KRB5_LOCKMODE_EXCLUSIVE) ? "rb+" : "rb");
++                        (mode == KRB5_LOCKMODE_EXCLUSIVE) ? "rb+F" : "rbF");
+     if (!KTFILEP(id)) {
+         if ((mode == KRB5_LOCKMODE_EXCLUSIVE) && (errno == ENOENT)) {
+             /* try making it first time around */
+             k5_create_secure_file(context, KTFILENAME(id));
+             errno = 0;
+-            KTFILEP(id) = fopen(KTFILENAME(id), "rb+");
++            KTFILEP(id) = fopen(KTFILENAME(id), "rb+F");
+             if (!KTFILEP(id))
+                 goto report_errno;
+             writevno = 1;
 --- a/src/lib/krb5/keytab/kt_srvtab.c
 +++ b/src/lib/krb5/keytab/kt_srvtab.c
-@@ -342,9 +342,9 @@ const struct _krb5_kt_ops krb5_kts_ops = {
- #include <stdio.h>
- 
- #ifdef ANSI_STDIO
--#define         READ_MODE       "rb"
-+#define         READ_MODE       "rbF"
- #else
--#define         READ_MODE       "r"
-+#define         READ_MODE       "rF"
- #endif
- 
- /* The maximum sizes for V4 aname, realm, sname, and instance +1 */
+@@ -367,7 +367,7 @@ read_field(FILE *fp, char *s, int len)
+ krb5_error_code
+ krb5_ktsrvint_open(krb5_context context, krb5_keytab id)
+ {
+-    KTFILEP(id) = fopen(KTFILENAME(id), "rb");
++    KTFILEP(id) = fopen(KTFILENAME(id), "rbF");
+     if (!KTFILEP(id))
+         return errno;
+     set_cloexec_file(KTFILEP(id));
 --- a/src/lib/krb5/os/localaddr.c
 +++ b/src/lib/krb5/os/localaddr.c
 @@ -368,7 +368,7 @@ get_linux_ipv6_addrs ()
@@ -500,7 +494,7 @@
                  return OSA_ADB_NOLOCKFILE;
 --- a/src/plugins/kdb/db2/libdb2/btree/bt_debug.c
 +++ b/src/plugins/kdb/db2/libdb2/btree/bt_debug.c
-@@ -66,7 +66,7 @@ __bt_dinit()
+@@ -65,7 +65,7 @@ __bt_dinit()
  	first = 0;
  
  #ifndef TRACE_TO_STDERR
@@ -522,7 +516,7 @@
    }
 --- a/src/plugins/kdb/db2/libdb2/test/btree.tests/main.c
 +++ b/src/plugins/kdb/db2/libdb2/test/btree.tests/main.c
-@@ -224,7 +224,7 @@ user(db)
+@@ -260,7 +260,7 @@ user(db)
  	int argc, i, last;
  	char *lbuf, *argv[4], buf[512];
  
@@ -531,7 +525,7 @@
  		(void)fprintf(stderr,
  		    "/dev/tty: %s\n", strerror(errno));
  		exit(1);
-@@ -624,7 +624,7 @@ list(db, argv)
+@@ -666,7 +666,7 @@ list(db, argv)
  	FILE *fp;
  	int status;
  
@@ -540,16 +534,16 @@
  		(void)fprintf(stderr, "%s: %s\n", argv[1], strerror(errno));
  		return;
  	}
-@@ -649,7 +649,7 @@ rlist(db, argv)
- 	void *cookie;
+@@ -689,7 +689,7 @@ rlist(db, argv)
+ 	FILE *fp;
+ 	int status;
  
- 	cookie = NULL;
 -	if ((fp = fopen(argv[1], "w")) == NULL) {
 +	if ((fp = fopen(argv[1], "wF")) == NULL) {
  		(void)fprintf(stderr, "%s: %s\n", argv[1], strerror(errno));
  		return;
  	}
-@@ -679,7 +679,7 @@ load(db, argv)
+@@ -719,7 +719,7 @@ load(db, argv)
  	char *lp, buf[16 * 1024];
  
  	BUGdb = db;
@@ -628,7 +622,7 @@
      n = 0;
 --- a/src/plugins/kdb/ldap/ldap_util/kdb5_ldap_services.c
 +++ b/src/plugins/kdb/ldap/ldap_util/kdb5_ldap_services.c
-@@ -178,7 +178,7 @@ done:
+@@ -203,7 +203,7 @@ kdb5_ldap_stash_service_password(int argc, char **argv)
  
      /* set password in the file */
      old_mode = umask(0177);
@@ -637,7 +631,7 @@
      if (pfile == NULL) {
          com_err(me, errno, _("Failed to open file %s: %s"), file_name,
                  strerror (errno));
-@@ -230,7 +230,7 @@ done:
+@@ -255,7 +255,7 @@ kdb5_ldap_stash_service_password(int argc, char **argv)
          }
  
          omask = umask(077);
@@ -657,17 +651,6 @@
      if (fp == NULL) {
          ret = errno;
          k5_setmsg(context, ret, _("Cannot open LDAP password file '%s': %s"),
---- a/src/plugins/locate/python/py-locate.c
-+++ b/src/plugins/locate/python/py-locate.c
-@@ -98,7 +98,7 @@ my_init(void)
- 
-     Py_Initialize ();
- //    fprintf(stderr, "trying to load %s\n", SCRIPT_PATH);
--    f = fopen(SCRIPT_PATH, "r");
-+    f = fopen(SCRIPT_PATH, "rF");
-     if (f == NULL) {
-         if (sctx)
-             krb5_set_error_message(sctx, -1,
 --- a/src/plugins/preauth/otp/otp_state.c
 +++ b/src/plugins/preauth/otp/otp_state.c
 @@ -96,7 +96,7 @@ read_secret_file(const char *secret_file, char **secret)
@@ -681,7 +664,7 @@
          com_err("otp", retval, "Unable to open secret file '%s'", filename);
 --- a/src/plugins/preauth/pkinit/pkinit_crypto_openssl.c
 +++ b/src/plugins/preauth/pkinit/pkinit_crypto_openssl.c
-@@ -4281,7 +4281,7 @@ pkinit_get_certs_pkcs12(krb5_context context,
+@@ -4440,7 +4440,7 @@ pkinit_get_certs_pkcs12(krb5_context context,
          goto cleanup;
      }
  
@@ -714,7 +697,7 @@
      sk = PEM_X509_INFO_read(fp, NULL, NULL, NULL);
 --- a/src/slave/kpropd.c
 +++ b/src/slave/kpropd.c
-@@ -1310,7 +1310,7 @@ authorized_principal(krb5_context context, krb5_principal p,
+@@ -1296,7 +1296,7 @@ authorized_principal(krb5_context context, krb5_principal p,
      if (retval)
          return FALSE;
  

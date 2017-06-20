@@ -38,7 +38,11 @@
 #define MD5_DIGEST_LENGTH 16
 #define MD5_DATASIZE    64
 #define SHA_DIGEST_LENGTH  20
+#define SHA256_DIGEST_LENGTH  32
+#define SHA384_DIGEST_LENGTH  48
 #define SHA_DATASIZE    64
+#define SHA256_DATASIZE SHA_DATASIZE
+#define SHA384_DATASIZE    128
 
 static krb5_error_code
 hash_ucrypto(int ucrypto_type, size_t digest_size, const krb5_crypto_iov *data,
@@ -95,6 +99,20 @@ hash_sha1(const krb5_crypto_iov *data, size_t num_data, krb5_data *output)
                         output);
 }
 
+static krb5_error_code
+hash_sha256(const krb5_crypto_iov *data, size_t num_data, krb5_data *output)
+{
+    return hash_ucrypto(CRYPTO_SHA256, SHA256_DIGEST_LENGTH, data, num_data,
+                        output);
+}
+
+static krb5_error_code
+hash_sha384(const krb5_crypto_iov *data, size_t num_data, krb5_data *output)
+{
+    return hash_ucrypto(CRYPTO_SHA384, SHA384_DIGEST_LENGTH, data, num_data,
+                        output);
+}
+
 const struct krb5_hash_provider krb5int_hash_md5 = {
     "MD5",
     MD5_DIGEST_LENGTH,
@@ -107,4 +125,18 @@ const struct krb5_hash_provider krb5int_hash_sha1 = {
     SHA_DIGEST_LENGTH,
     SHA_DATASIZE,
     hash_sha1
+};
+
+const struct krb5_hash_provider krb5int_hash_sha256 = {
+    "SHA-256",
+    SHA256_DIGEST_LENGTH,
+    SHA256_DATASIZE,
+    hash_sha256
+};
+
+const struct krb5_hash_provider krb5int_hash_sha384 = {
+    "SHA-384",
+    SHA384_DIGEST_LENGTH,
+    SHA384_DATASIZE,
+    hash_sha384
 };

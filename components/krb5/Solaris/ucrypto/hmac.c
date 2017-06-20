@@ -70,6 +70,10 @@ map_digest(const struct krb5_hash_provider *hash)
 {
     if (!strncmp(hash->hash_name, "SHA1",4))
         return CRYPTO_SHA1_HMAC;
+    else if (!strncmp(hash->hash_name, "SHA-256", 7))
+        return CRYPTO_SHA256_HMAC;
+    else if (!strncmp(hash->hash_name, "SHA-384", 7))
+        return CRYPTO_SHA384_HMAC;
     else if (!strncmp(hash->hash_name, "MD5", 3))
         return CRYPTO_MD5_HMAC;
     else if (!strncmp(hash->hash_name, "MD4", 3))
@@ -199,6 +203,8 @@ krb5int_hmac_keyblock(const struct krb5_hash_provider *hash,
 
     ucrypto_hmac_type = map_digest(hash);
     switch (ucrypto_hmac_type) {
+    case CRYPTO_SHA384_HMAC:
+    case CRYPTO_SHA256_HMAC:
     case CRYPTO_SHA1_HMAC:
     case CRYPTO_MD5_HMAC:
         return krb5int_hmac_keyblock_ucrypto(ucrypto_hmac_type, keyblock,

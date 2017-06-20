@@ -17,7 +17,7 @@
 #
 --- a/src/lib/kadm5/logger.c
 +++ b/src/lib/kadm5/logger.c
-@@ -115,6 +115,13 @@ struct log_entry {
+@@ -113,6 +113,13 @@ struct log_entry {
          struct log_file {
              FILE        *lf_filep;
              char        *lf_fname;
@@ -31,7 +31,7 @@
          } log_file;
          struct log_syslog {
              int         ls_facility;
-@@ -128,6 +135,11 @@ struct log_entry {
+@@ -126,6 +133,11 @@ struct log_entry {
  };
  #define lfu_filep       log_union.log_file.lf_filep
  #define lfu_fname       log_union.log_file.lf_fname
@@ -44,10 +44,9 @@
  #define lsu_severity    log_union.log_syslog.ls_severity
  #define ldu_filep       log_union.log_device.ld_filep
 @@ -161,6 +173,132 @@ static struct log_entry def_log_entry;
-                                  -1)
  #define DEVICE_CLOSE(d)         fclose(d)
  
-+/*
+ /*
 + * Solaris Kerberos
 + * klog_rotate() - roate a log file if we have specified rotation
 + * parameters in krb5.conf.
@@ -173,11 +172,12 @@
 +    }
 +}
 +
- 
- /*
++/*
   * klog_com_err_proc()  - Handle com_err(3) messages as specified by the
-@@ -276,6 +414,8 @@ klog_com_err_proc(const char *whoami, long int code, const char *format, va_list
-     for (lindex = 0; lindex < log_control.log_nentries; lindex++) {
+  *                        profile.
+  */
+@@ -262,6 +400,8 @@ klog_com_err_proc(const char *whoami, long int code, const char *format, va_list
+ 
          switch (log_control.log_entries[lindex].log_type) {
          case K_LOG_FILE:
 +            /* Solaris Kerberos */
@@ -185,85 +185,81 @@
          case K_LOG_STDERR:
              /*
               * Files/standard error.
-@@ -360,6 +500,7 @@ krb5_klog_init(krb5_context kcontext, char *ename, char *whoami, krb5_boolean do
-     int         error;
+@@ -344,6 +484,7 @@ krb5_klog_init(krb5_context kcontext, char *ename, char *whoami, krb5_boolean do
+     int         error, debug;
      int         do_openlog, log_facility;
-     FILE        *f;
+     FILE        *f = NULL;
 +    mode_t      old_umask;
  
      /* Initialize */
      do_openlog = 0;
-@@ -423,12 +564,66 @@ krb5_klog_init(krb5_context kcontext, char *ename, char *whoami, krb5_boolean do
-                      * Check for append/overwrite, then open the file.
+@@ -414,6 +555,7 @@ krb5_klog_init(krb5_context kcontext, char *ename, char *whoami, krb5_boolean do
                       */
-                     if (cp[4] == ':' || cp[4] == '=') {
--                        f = fopen(&cp[5], (cp[4] == ':') ? "a" : "w");
-+                        /* Solaris Kerberos */
+                     append = (cp[4] == ':') ? O_APPEND : 0;
+                     if (append || cp[4] == '=') {
++                        char rotate_kw[128];
+                         fd = open(&cp[5], O_CREAT | O_WRONLY | append,
+                                   S_IRUSR | S_IWUSR | S_IRGRP);
+                         if (fd != -1)
+@@ -427,6 +569,56 @@ krb5_klog_init(krb5_context kcontext, char *ename, char *whoami, krb5_boolean do
+                         log_control.log_entries[i].lfu_filep = f;
+                         log_control.log_entries[i].log_type = K_LOG_FILE;
+                         log_control.log_entries[i].lfu_fname = &cp[5];
++                        log_control.log_entries[i].lfu_rotate_period =
++                            K_LOG_DEF_FILE_ROTATE_PERIOD;
++                        log_control.log_entries[i].lfu_rotate_versions =
++                            K_LOG_DEF_FILE_ROTATE_VERSIONS;
++                        log_control.log_entries[i].lfu_last_rotated =
++                            time(0);
 +                        log_control.log_entries[i].lfu_fopen_mode =
-+                            (cp[4] == ':') ? "a" : "w";
-+                        old_umask = umask(077);
-+                        f = fopen(&cp[5],
-+                                  log_control.log_entries[i].lfu_fopen_mode);
-+                        umask(old_umask);
-                         if (f) {
--                            set_cloexec_file(f);
-+                            char rotate_kw[128];
-                             log_control.log_entries[i].lfu_filep = f;
-                             log_control.log_entries[i].log_type = K_LOG_FILE;
-                             log_control.log_entries[i].lfu_fname = &cp[5];
-+                            log_control.log_entries[i].lfu_rotate_period =
-+                                K_LOG_DEF_FILE_ROTATE_PERIOD;
-+                            log_control.log_entries[i].lfu_rotate_versions =
-+                                K_LOG_DEF_FILE_ROTATE_VERSIONS;
-+                            log_control.log_entries[i].lfu_last_rotated =
-+                                time(0);
++                            append ? "a" : "w";
 +
-+                            /*
-+                             * Now parse for ename_"rotate" = {
-+                             *  period = XXX
-+                             *  versions = 10
-+                             * }
-+                             */
-+                            if (strlen(ename) + strlen("_rotate") <
-+                                sizeof (rotate_kw)) {
++                        /*
++                         * Now parse for ename_"rotate" = {
++                         *  period = XXX
++                         *  versions = 10
++                         * }
++                         */
++                        if (strlen(ename) + strlen("_rotate") <
++                            sizeof (rotate_kw)) {
 +
-+                                char *time;
-+                                krb5_deltat     dt;
-+                                int vers;
++                            char *time;
++                            krb5_deltat     dt;
++                            int vers;
 +
-+                                strcpy(rotate_kw, ename);
-+                                strcat(rotate_kw, "_rotate");
++                            strcpy(rotate_kw, ename);
++                            strcat(rotate_kw, "_rotate");
 +
-+                                if (!profile_get_string(kcontext->profile,
-+                                                        "logging", rotate_kw,
-+                                                        "period", NULL,
-+                                                        &time)) {
++                            if (!profile_get_string(kcontext->profile,
++                                                    "logging", rotate_kw,
++                                                    "period", NULL,
++                                                    &time)) {
 +
-+                                    if (time != NULL) {
-+                                        if (!krb5_string_to_deltat(time,
-+                                                                   &dt)) {
-+                                            log_control.log_entries[i].lfu_rotate_period =
-+                                                (time_t) dt;
-+                                        }
-+                                        free(time);
++                                if (time != NULL) {
++                                    if (!krb5_string_to_deltat(time,
++                                                               &dt)) {
++                                        log_control.log_entries[i].lfu_rotate_period =
++                                            (time_t) dt;
 +                                    }
++                                    free(time);
 +                                }
-+
-+                                if (!profile_get_integer(
-+                                                         kcontext->profile,
-+                                                         "logging", rotate_kw,
-+                                                         "versions",
-+                                                         K_LOG_DEF_FILE_ROTATE_VERSIONS,
-+                                                         &vers)) {
-+                                    log_control.log_entries[i].lfu_rotate_versions = vers;
-+                                }
-+
 +                            }
-                         } else {
-                             fprintf(stderr,"Couldn't open log file %s: %s\n",
-                                     &cp[5], error_message(errno));
-@@ -880,6 +1075,8 @@ klog_vsyslog(int priority, const char *format, va_list arglist)
-     for (lindex = 0; lindex < log_control.log_nentries; lindex++) {
++
++                            if (!profile_get_integer(
++                                                     kcontext->profile,
++                                                     "logging", rotate_kw,
++                                                     "versions",
++                                                     K_LOG_DEF_FILE_ROTATE_VERSIONS,
++                                                     &vers)) {
++                                log_control.log_entries[i].lfu_rotate_versions = vers;
++                            }
++
++                        }
+                     }
+                 }
+                 /*
+@@ -841,6 +1033,8 @@ klog_vsyslog(int priority, const char *format, va_list arglist)
+ 
          switch (log_control.log_entries[lindex].log_type) {
          case K_LOG_FILE:
 +            /* Solaris Kerberos */

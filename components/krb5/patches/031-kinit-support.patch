@@ -19,9 +19,9 @@
  #include <kerberosv5/private/ktwarn.h>
 +#include "../../lib/krb5/prof_solaris.h"
  
- #ifdef GETOPT_LONG
- #include <getopt.h>
-@@ -135,6 +136,34 @@ struct k_opts
+ #ifndef _WIN32
+ #define GET_PROGNAME(x) (strrchr((x), '/') ? strrchr((x), '/')+1 : (x))
+@@ -120,6 +121,34 @@ struct k_opts
      int enterprise;
  };
  
@@ -56,16 +56,16 @@
  struct k5_data
  {
      krb5_context ctx;
-@@ -720,6 +749,8 @@ k5_kinit(opts, k5)
-     krb5_error_code code = 0;
+@@ -714,6 +743,8 @@ k5_kinit(opts, k5)
      krb5_get_init_creds_opt *options = NULL;
+     krb5_boolean pwprompt = FALSE;
      int i;
 +    krb5_timestamp now;
 +    krb5_deltat lifetime = 0, rlife = 0, krb5_max_duration;
  
      memset(&my_creds, 0, sizeof(my_creds));
  
-@@ -728,6 +759,83 @@ k5_kinit(opts, k5)
+@@ -722,6 +753,83 @@ k5_kinit(opts, k5)
          goto cleanup;
  
      /*

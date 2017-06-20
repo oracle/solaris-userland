@@ -49,10 +49,10 @@
 +    }
 +}
 +
- /* Set *name_out to the canonicalized form of name, obeying relevant
-  * configuration settings.  The caller must free the result. */
- static krb5_error_code
-@@ -63,11 +91,15 @@ canon_hostname(krb5_context context, krb5_int32 type, const char *host,
+ krb5_error_code KRB5_CALLCONV
+ krb5_expand_hostname(krb5_context context, const char *host,
+                      char **canonhost_out)
+@@ -61,6 +89,9 @@ krb5_expand_hostname(krb5_context context, const char *host,
      char namebuf[NI_MAXHOST], *copy, *p;
      int err;
      const char *canonhost;
@@ -62,13 +62,7 @@
  
      *canonhost_out = NULL;
  
-     canonhost = host;
-     if (type == KRB5_NT_SRV_HST && context->dns_canonicalize_hostname) {
-+#if 0
-         /* Try a forward lookup of the hostname. */
-         memset(&hint, 0, sizeof(hint));
-         hint.ai_flags = AI_CANONNAME;
-@@ -86,6 +118,31 @@ canon_hostname(krb5_context context, krb5_int32 type, const char *host,
+@@ -85,6 +116,31 @@ krb5_expand_hostname(krb5_context context, const char *host,
              if (!err)
                  canonhost = namebuf;
          }
@@ -100,7 +94,7 @@
      }
  
      copy = strdup(canonhost);
-@@ -110,9 +167,12 @@ canon_hostname(krb5_context context, krb5_int32 type, const char *host,
+@@ -107,9 +163,12 @@ krb5_expand_hostname(krb5_context context, const char *host,
      *canonhost_out = copy;
  
  cleanup:
@@ -124,7 +118,7 @@
  
  # Used when most things go wrong (other than programming errors) so
  # that the user sees an error message rather than a Python traceback,
-@@ -485,7 +486,19 @@ def _find_srctop():
+@@ -504,7 +505,19 @@ def _find_srctop():
  # because it explicitly prefers results containing periods and
  # krb5_sname_to_principal doesn't care.
  def _get_hostname():

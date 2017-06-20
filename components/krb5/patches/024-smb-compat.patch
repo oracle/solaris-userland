@@ -68,7 +68,7 @@
              code = 60 /* KRB_ERR_GENERIC */;
 --- a/src/lib/gssapi/spnego/spnego_mech.c
 +++ b/src/lib/gssapi/spnego/spnego_mech.c
-@@ -180,6 +180,13 @@ get_negTokenResp(OM_uint32 *, unsigned char *, unsigned int,
+@@ -178,6 +178,13 @@ get_negTokenResp(OM_uint32 *, unsigned char *, unsigned int,
  static int
  is_kerb_mech(gss_OID oid);
  
@@ -82,7 +82,7 @@
  /* SPNEGO oid structure */
  static const gss_OID_desc spnego_oids[] = {
  	{SPNEGO_OID_LENGTH, SPNEGO_OID},
-@@ -1325,6 +1332,7 @@ acc_ctx_new(OM_uint32 *minor_status,
+@@ -1347,6 +1354,7 @@ acc_ctx_new(OM_uint32 *minor_status,
  	gss_buffer_desc der_mechTypes;
  	gss_OID mech_wanted;
  	spnego_gss_ctx_id_t sc = NULL;
@@ -90,7 +90,7 @@
  
  	ret = GSS_S_DEFECTIVE_TOKEN;
  	der_mechTypes.length = 0;
-@@ -1347,6 +1355,26 @@ acc_ctx_new(OM_uint32 *minor_status,
+@@ -1369,6 +1377,26 @@ acc_ctx_new(OM_uint32 *minor_status,
  		*return_token = NO_TOKEN_SEND;
  		goto cleanup;
  	}
@@ -117,7 +117,7 @@
  	/*
  	 * Select the best match between the list of mechs
  	 * that the initiator requested and the list that
-@@ -3084,6 +3112,7 @@ get_available_mechs(OM_uint32 *minor_status,
+@@ -3094,6 +3122,7 @@ get_available_mechs(OM_uint32 *minor_status,
  	gss_OID_set mechs, goodmechs;
  	gss_OID_set_desc except_attrs;
  	gss_OID_desc attr_oids[2];
@@ -125,7 +125,7 @@
  
  	attr_oids[0] = *GSS_C_MA_DEPRECATED;
  	attr_oids[1] = *GSS_C_MA_NOT_DFLT_MECH;
-@@ -3105,6 +3134,15 @@ get_available_mechs(OM_uint32 *minor_status,
+@@ -3115,6 +3144,15 @@ get_available_mechs(OM_uint32 *minor_status,
  		return (major_status);
  	}
  
@@ -141,7 +141,7 @@
  	for (i = 0; i < mechs->count && major_status == GSS_S_COMPLETE; i++) {
  		if ((mechs->elements[i].length
  		    != spnego_mechanism.mech_type.length) ||
-@@ -3120,6 +3158,25 @@ get_available_mechs(OM_uint32 *minor_status,
+@@ -3130,6 +3168,25 @@ get_available_mechs(OM_uint32 *minor_status,
  		}
  	}
  
@@ -167,7 +167,7 @@
  	/*
  	 * If the caller wanted a list of creds returned,
  	 * trim the list of mechanisms down to only those
-@@ -3695,9 +3752,17 @@ negotiate_mech(gss_OID_set supported, gss_OID_set received,
+@@ -3705,9 +3762,17 @@ negotiate_mech(gss_OID_set supported, gss_OID_set received,
  	for (i = 0; i < received->count; i++) {
  		gss_OID mech_oid = &received->elements[i];
  
