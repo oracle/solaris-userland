@@ -26,30 +26,41 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		patchutils
-COMPONENT_VERSION=	0.3.1
+COMPONENT_VERSION=	0.3.4
 IPS_PKG_NAME=		text/patchutils
 COMPONENT_PROJECT_URL=	http://cyberelk.net/tim/patchutils/
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:48d28d4a6fd9922e15ecfd8a152ba5aef6673842c8303337fcaa6b3bb2d129a2
+    sha256:cf55d4db83ead41188f5b6be16f60f6b76a87d5db1c42f5459d596e81dabe876
 COMPONENT_ARCHIVE_URL=	http://cyberelk.net/tim/data/patchutils/stable/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	2599
 
-TPNO=			9269
+TPNO=			35972
 
 include $(WS_MAKE_RULES)/common.mk
 
-# A couple of tests dump core, and the message contains the pid
-# A number of failing tests operate on randomly named files
-# Remove the make garbage from the test output
-COMPONENT_TEST_TRANSFORMS += \
-	'-e "/coredump/s/[0-9]*: Abort/XXXX: Abort/"' \
-	'-e "s,\(/var/tmp//.*diff-1\.\)......,\1XXXXXX,"' \
-	'-e "1,/^for test in/{N;d}"' \
-	'-e "/^===/{N;N;q}"'
+# The tests really expect bash, which is not our /bin/sh; this is simpler than
+# patching each one individually.
+COMPONENT_PREP_ACTION += \
+	$(FIND) $(SOURCE_DIR)/tests -name run-test | \
+	    xargs $(GSED) -i -e '1s,!/bin/sh,!/bin/bash,'
 
-# Note that the gendiff tests will fail on Solaris, because the gendiff utility
-# is missing; this is delivered by rpm.
+# If xmlto isn't available, all manpages are elided from the makefile, even
+# though they've been pre-generated and delivered in the source tarball.  If we
+# override the xmlto discovery, everything just works.
+CONFIGURE_OPTIONS +=	ac_cv_path_XMLTO=/bin/true
+
+# Make sure we use GNU diff.  We should use GNU patch, as well, but
+# /usr/bin/patch already is GNU patch.
+CONFIGURE_OPTIONS +=	--with-diff=gdiff
+
+COMPONENT_TEST_ARGS +=	TEST_SUITE_LOG=$(COMPONENT_TEST_OUTPUT)
+COMPONENT_TEST_ENV +=	DIFF=gdiff
+
+COMPONENT_TEST_TRANSFORMS += \
+	'-e "s|$(BUILD_DIR)|\\$$(BUILD_DIR)|g"' \
+	'-e "s|$(MACH64)|\\$$(MACH64)|g"' \
+	'-e "1,3s|==*|=====================================================================|"'
 
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += text/gnu-diffutils
