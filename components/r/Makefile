@@ -22,6 +22,10 @@
 #
 # Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
 #
+# parfait seems to spin when looking at the .bc files, so
+# for now disable it.
+export PARFAIT_BUILD=no
+
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
