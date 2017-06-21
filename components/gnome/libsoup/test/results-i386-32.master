@@ -1,14 +1,18 @@
 SKIP: auth-test 1 /auth/main-tests # SKIP apache is not available
 SKIP: auth-test 2 /auth/relogin-tests # SKIP apache is not available
-SKIP: auth-test 3 /auth/pipelined-auth # SKIP apache is not available
-SKIP: auth-test 4 /auth/digest-expiration # SKIP apache is not available
-PASS: auth-test 5 /auth/select-auth
-PASS: auth-test 6 /auth/auth-close
-SKIP: auth-test 7 /auth/infinite-auth # SKIP apache is not available
-PASS: auth-test 8 /auth/disappearing-auth
-SKIP: auth-test 9 /auth/async-auth/good-password # SKIP apache is not available
-SKIP: auth-test 10 /auth/async-auth/bad-password # SKIP apache is not available
-SKIP: auth-test 11 /auth/async-auth/no-password # SKIP apache is not available
+SKIP: auth-test 3 /auth/basic-root-pspec-test # SKIP apache is not available
+SKIP: auth-test 4 /auth/pipelined-auth # SKIP apache is not available
+SKIP: auth-test 5 /auth/digest-expiration # SKIP apache is not available
+PASS: auth-test 6 /auth/select-auth
+PASS: auth-test 7 /auth/auth-close
+SKIP: auth-test 8 /auth/infinite-auth # SKIP apache is not available
+PASS: auth-test 9 /auth/disappearing-auth
+SKIP: auth-test 10 /auth/clear-credentials # SKIP apache is not available
+SKIP: auth-test 11 /auth/message-do-not-use-auth-cache # SKIP apache is not available
+SKIP: auth-test 12 /auth/authorization-header-request # SKIP apache is not available
+SKIP: auth-test 13 /auth/async-auth/good-password # SKIP apache is not available
+SKIP: auth-test 14 /auth/async-auth/bad-password # SKIP apache is not available
+SKIP: auth-test 15 /auth/async-auth/no-password # SKIP apache is not available
 PASS: cache-test 1 /cache/basics
 PASS: cache-test 2 /cache/cancellation
 PASS: cache-test 3 /cache/refcounting
@@ -182,22 +186,38 @@ PASS: multipart-test 3 /multipart/async
 PASS: multipart-test 4 /multipart/async-small-reads
 PASS: no-ssl-test 1 /no-ssl/session-properties
 PASS: no-ssl-test 2 /no-ssl/request-error
-ERROR: ntlm-test - too few tests run (expected 17, got 0)
-ERROR: ntlm-test - exited with status 139 (terminated by signal 11?)
+PASS: ntlm-test 1 /ntlm/retry
+PASS: ntlm-test 2 /ntlm/builtin/none
+PASS: ntlm-test 3 /ntlm/builtin/alice
+PASS: ntlm-test 4 /ntlm/builtin/bob
+PASS: ntlm-test 5 /ntlm/builtin/basic
+PASS: ntlm-test 6 /ntlm/winbind/none
+PASS: ntlm-test 7 /ntlm/winbind/alice
+PASS: ntlm-test 8 /ntlm/winbind/bob
+PASS: ntlm-test 9 /ntlm/winbind/basic
+PASS: ntlm-test 10 /ntlm/fallback/none
+PASS: ntlm-test 11 /ntlm/fallback/alice
+PASS: ntlm-test 12 /ntlm/fallback/bob
+PASS: ntlm-test 13 /ntlm/fallback/basic
+PASS: ntlm-test 14 /ntlm/ssp/none
+PASS: ntlm-test 15 /ntlm/ssp/alice
+PASS: ntlm-test 16 /ntlm/ssp/bob
+PASS: ntlm-test 17 /ntlm/ssp/basic
 SKIP: proxy-test 1 /proxy/fragment # SKIP apache is not available
 SKIP: proxy-test 2 /proxy/redirect # SKIP apache is not available
-SKIP: proxy-test 3 /proxy/async/GET -> 200 # SKIP apache is not available
-SKIP: proxy-test 4 /proxy/async/GET -> 404 # SKIP apache is not available
-SKIP: proxy-test 5 /proxy/async/GET -> 401 -> 200 # SKIP apache is not available
-SKIP: proxy-test 6 /proxy/async/GET -> 401 -> 401 # SKIP apache is not available
-SKIP: proxy-test 7 /proxy/async/GET -> 403 # SKIP apache is not available
-SKIP: proxy-test 8 /proxy/async/GET -> 200 (unproxied) # SKIP apache is not available
-SKIP: proxy-test 9 /proxy/sync/GET -> 200 # SKIP apache is not available
-SKIP: proxy-test 10 /proxy/sync/GET -> 404 # SKIP apache is not available
-SKIP: proxy-test 11 /proxy/sync/GET -> 401 -> 200 # SKIP apache is not available
-SKIP: proxy-test 12 /proxy/sync/GET -> 401 -> 401 # SKIP apache is not available
-SKIP: proxy-test 13 /proxy/sync/GET -> 403 # SKIP apache is not available
-SKIP: proxy-test 14 /proxy/sync/GET -> 200 (unproxied) # SKIP apache is not available
+SKIP: proxy-test 3 /proxy/auth-cache # SKIP apache is not available
+SKIP: proxy-test 4 /proxy/async/GET -> 200 # SKIP apache is not available
+SKIP: proxy-test 5 /proxy/async/GET -> 404 # SKIP apache is not available
+SKIP: proxy-test 6 /proxy/async/GET -> 401 -> 200 # SKIP apache is not available
+SKIP: proxy-test 7 /proxy/async/GET -> 401 -> 401 # SKIP apache is not available
+SKIP: proxy-test 8 /proxy/async/GET -> 403 # SKIP apache is not available
+SKIP: proxy-test 9 /proxy/async/GET -> 200 (unproxied) # SKIP apache is not available
+SKIP: proxy-test 10 /proxy/sync/GET -> 200 # SKIP apache is not available
+SKIP: proxy-test 11 /proxy/sync/GET -> 404 # SKIP apache is not available
+SKIP: proxy-test 12 /proxy/sync/GET -> 401 -> 200 # SKIP apache is not available
+SKIP: proxy-test 13 /proxy/sync/GET -> 401 -> 401 # SKIP apache is not available
+SKIP: proxy-test 14 /proxy/sync/GET -> 403 # SKIP apache is not available
+SKIP: proxy-test 15 /proxy/sync/GET -> 200 (unproxied) # SKIP apache is not available
 SKIP: pull-api 1 /pull-api/sync-async # SKIP apache is not available
 SKIP: pull-api 2 /pull-api/async/fast # SKIP apache is not available
 SKIP: pull-api 3 /pull-api/async/slow # SKIP apache is not available
@@ -445,18 +465,19 @@ PASS: websocket-test 9 /websocket/soup/protocol-negotiate
 PASS: websocket-test 10 /websocket/soup/protocol-mismatch
 PASS: websocket-test 11 /websocket/soup/protocol-server-any
 PASS: websocket-test 12 /websocket/soup/protocol-client-any
-PASS: websocket-test 13 /websocket/direct/send-client-to-server
-PASS: websocket-test 14 /websocket/direct/send-server-to-client
-PASS: websocket-test 15 /websocket/direct/send-big-packets
-PASS: websocket-test 16 /websocket/direct/send-bad-data
-PASS: websocket-test 17 /websocket/direct/close-clean-client
-PASS: websocket-test 18 /websocket/direct/close-clean-server
-PASS: websocket-test 19 /websocket/direct/message-after-closing
-PASS: websocket-test 20 /websocket/direct/protocol-negotiate
-PASS: websocket-test 21 /websocket/direct/protocol-mismatch
-PASS: websocket-test 22 /websocket/direct/protocol-server-any
-PASS: websocket-test 23 /websocket/direct/protocol-client-any
-PASS: websocket-test 24 /websocket/direct/receive-fragmented
+PASS: websocket-test 13 /websocket/soup/client-context
+PASS: websocket-test 14 /websocket/direct/send-client-to-server
+PASS: websocket-test 15 /websocket/direct/send-server-to-client
+PASS: websocket-test 16 /websocket/direct/send-big-packets
+PASS: websocket-test 17 /websocket/direct/send-bad-data
+PASS: websocket-test 18 /websocket/direct/close-clean-client
+PASS: websocket-test 19 /websocket/direct/close-clean-server
+PASS: websocket-test 20 /websocket/direct/message-after-closing
+PASS: websocket-test 21 /websocket/direct/protocol-negotiate
+PASS: websocket-test 22 /websocket/direct/protocol-mismatch
+PASS: websocket-test 23 /websocket/direct/protocol-server-any
+PASS: websocket-test 24 /websocket/direct/protocol-client-any
+PASS: websocket-test 25 /websocket/direct/receive-fragmented
 PASS: xmlrpc-old-server-test 1 /xmlrpc-old-server/sum
 PASS: xmlrpc-old-server-test 2 /xmlrpc-old-server/countBools
 PASS: xmlrpc-old-server-test 3 /xmlrpc-old-server/md5sum
@@ -503,10 +524,10 @@ SKIP: xmlrpc-test 10 /xmlrpc/variant/ping/no-params # SKIP php-xmlrpc is not ava
 SKIP: xmlrpc-test 11 /xmlrpc/variant/fault/malformed # SKIP php-xmlrpc is not available
 SKIP: xmlrpc-test 12 /xmlrpc/variant/fault/method # SKIP php-xmlrpc is not available
 SKIP: xmlrpc-test 13 /xmlrpc/variant/fault/args # SKIP php-xmlrpc is not available
-# TOTAL: 505
-# PASS:  455
-# SKIP:  48
+# TOTAL: 526
+# PASS:  473
+# SKIP:  53
 # XFAIL: 0
 # FAIL:  0
 # XPASS: 0
-# ERROR: 2
+# ERROR: 0

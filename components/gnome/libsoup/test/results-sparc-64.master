@@ -1,14 +1,18 @@
 SKIP: auth-test 1 /auth/main-tests # SKIP apache is not available
 SKIP: auth-test 2 /auth/relogin-tests # SKIP apache is not available
-SKIP: auth-test 3 /auth/pipelined-auth # SKIP apache is not available
-SKIP: auth-test 4 /auth/digest-expiration # SKIP apache is not available
-PASS: auth-test 5 /auth/select-auth
-PASS: auth-test 6 /auth/auth-close
-SKIP: auth-test 7 /auth/infinite-auth # SKIP apache is not available
-PASS: auth-test 8 /auth/disappearing-auth
-SKIP: auth-test 9 /auth/async-auth/good-password # SKIP apache is not available
-SKIP: auth-test 10 /auth/async-auth/bad-password # SKIP apache is not available
-SKIP: auth-test 11 /auth/async-auth/no-password # SKIP apache is not available
+SKIP: auth-test 3 /auth/basic-root-pspec-test # SKIP apache is not available
+SKIP: auth-test 4 /auth/pipelined-auth # SKIP apache is not available
+SKIP: auth-test 5 /auth/digest-expiration # SKIP apache is not available
+PASS: auth-test 6 /auth/select-auth
+PASS: auth-test 7 /auth/auth-close
+SKIP: auth-test 8 /auth/infinite-auth # SKIP apache is not available
+PASS: auth-test 9 /auth/disappearing-auth
+SKIP: auth-test 10 /auth/clear-credentials # SKIP apache is not available
+SKIP: auth-test 11 /auth/message-do-not-use-auth-cache # SKIP apache is not available
+SKIP: auth-test 12 /auth/authorization-header-request # SKIP apache is not available
+SKIP: auth-test 13 /auth/async-auth/good-password # SKIP apache is not available
+SKIP: auth-test 14 /auth/async-auth/bad-password # SKIP apache is not available
+SKIP: auth-test 15 /auth/async-auth/no-password # SKIP apache is not available
 PASS: cache-test 1 /cache/basics
 PASS: cache-test 2 /cache/cancellation
 PASS: cache-test 3 /cache/refcounting
@@ -201,18 +205,19 @@ PASS: ntlm-test 16 /ntlm/ssp/bob
 PASS: ntlm-test 17 /ntlm/ssp/basic
 SKIP: proxy-test 1 /proxy/fragment # SKIP apache is not available
 SKIP: proxy-test 2 /proxy/redirect # SKIP apache is not available
-SKIP: proxy-test 3 /proxy/async/GET -> 200 # SKIP apache is not available
-SKIP: proxy-test 4 /proxy/async/GET -> 404 # SKIP apache is not available
-SKIP: proxy-test 5 /proxy/async/GET -> 401 -> 200 # SKIP apache is not available
-SKIP: proxy-test 6 /proxy/async/GET -> 401 -> 401 # SKIP apache is not available
-SKIP: proxy-test 7 /proxy/async/GET -> 403 # SKIP apache is not available
-SKIP: proxy-test 8 /proxy/async/GET -> 200 (unproxied) # SKIP apache is not available
-SKIP: proxy-test 9 /proxy/sync/GET -> 200 # SKIP apache is not available
-SKIP: proxy-test 10 /proxy/sync/GET -> 404 # SKIP apache is not available
-SKIP: proxy-test 11 /proxy/sync/GET -> 401 -> 200 # SKIP apache is not available
-SKIP: proxy-test 12 /proxy/sync/GET -> 401 -> 401 # SKIP apache is not available
-SKIP: proxy-test 13 /proxy/sync/GET -> 403 # SKIP apache is not available
-SKIP: proxy-test 14 /proxy/sync/GET -> 200 (unproxied) # SKIP apache is not available
+SKIP: proxy-test 3 /proxy/auth-cache # SKIP apache is not available
+SKIP: proxy-test 4 /proxy/async/GET -> 200 # SKIP apache is not available
+SKIP: proxy-test 5 /proxy/async/GET -> 404 # SKIP apache is not available
+SKIP: proxy-test 6 /proxy/async/GET -> 401 -> 200 # SKIP apache is not available
+SKIP: proxy-test 7 /proxy/async/GET -> 401 -> 401 # SKIP apache is not available
+SKIP: proxy-test 8 /proxy/async/GET -> 403 # SKIP apache is not available
+SKIP: proxy-test 9 /proxy/async/GET -> 200 (unproxied) # SKIP apache is not available
+SKIP: proxy-test 10 /proxy/sync/GET -> 200 # SKIP apache is not available
+SKIP: proxy-test 11 /proxy/sync/GET -> 404 # SKIP apache is not available
+SKIP: proxy-test 12 /proxy/sync/GET -> 401 -> 200 # SKIP apache is not available
+SKIP: proxy-test 13 /proxy/sync/GET -> 401 -> 401 # SKIP apache is not available
+SKIP: proxy-test 14 /proxy/sync/GET -> 403 # SKIP apache is not available
+SKIP: proxy-test 15 /proxy/sync/GET -> 200 (unproxied) # SKIP apache is not available
 SKIP: pull-api 1 /pull-api/sync-async # SKIP apache is not available
 SKIP: pull-api 2 /pull-api/async/fast # SKIP apache is not available
 SKIP: pull-api 3 /pull-api/async/slow # SKIP apache is not available
@@ -449,7 +454,7 @@ PASS: uri-parsing 4 /uri/null
 PASS: uri-parsing 5 /uri/normalization
 PASS: uri-parsing 6 /uri/data
 PASS: websocket-test 1 /websocket/soup/handshake
-ERROR: websocket-test - too few tests run (expected 24, got 1)
+ERROR: websocket-test - too few tests run (expected 25, got 1)
 ERROR: websocket-test - exited with status 138 (terminated by signal 10?)
 PASS: xmlrpc-old-server-test 1 /xmlrpc-old-server/sum
 PASS: xmlrpc-old-server-test 2 /xmlrpc-old-server/countBools
@@ -497,9 +502,9 @@ SKIP: xmlrpc-test 10 /xmlrpc/variant/ping/no-params # SKIP php-xmlrpc is not ava
 SKIP: xmlrpc-test 11 /xmlrpc/variant/fault/malformed # SKIP php-xmlrpc is not available
 SKIP: xmlrpc-test 12 /xmlrpc/variant/fault/method # SKIP php-xmlrpc is not available
 SKIP: xmlrpc-test 13 /xmlrpc/variant/fault/args # SKIP php-xmlrpc is not available
-# TOTAL: 499
+# TOTAL: 504
 # PASS:  449
-# SKIP:  48
+# SKIP:  53
 # XFAIL: 0
 # FAIL:  0
 # XPASS: 0
