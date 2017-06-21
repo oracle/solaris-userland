@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gupnp
-COMPONENT_VERSION=	0.20.14
+COMPONENT_VERSION=	1.0.2
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/GUPnP
 COMPONENT_ARCHIVE_HASH= \
-	sha256:77ffb940ba77c4a6426d09d41004c75d92652dcbde86c84ac1c847dbd9ad59bd
+	sha256:5173fda779111c6b01cd4a5e41b594322be9d04f8c74d3361f0a0c2069c77610
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	1281
 
-TPNO=			25395
+TPNO=			35414
 
 # Tests don't work on Solaris yet
 TEST_TARGET = $(SKIP_TEST)
