@@ -28,14 +28,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-screenshot
-COMPONENT_VERSION=	3.18.0
+COMPONENT_VERSION=	3.22.0
 COMPONENT_PROJECT_URL=	https://en.wikipedia.org/wiki/GNOME_Screenshot
 COMPONENT_ARCHIVE_HASH= \
-	sha256:eba64dbf4acf0ab8222fec549d0a4f2dd7dbd51c255e7978dedf1f5c06a98841
+	sha256:8a05f14b3c7c6cb42f9848ad0332034c7fe5c34a69742910203588fd60b00230
 COMPONENT_BUGDB=        gnome/applications
 COMPONENT_ANITYA_ID=	13135
 
-TPNO=			24603
+TPNO=			34516
 
 TEST_TARGET= $(NO_TESTS)
 
