@@ -32,19 +32,19 @@ COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		thunderbird
-COMPONENT_VERSION=	52.1.0
+COMPONENT_VERSION=	52.2.0
 COMPONENT_PROJECT_URL=	http://www.mozilla.com/thunderbird
 COMPONENT_ARCHIVE = 	$(COMPONENT_SRC).source.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:c33ca35b6acd1a0dc0d0f4b1df16745a33144c5d3d3715fe05454a5e9eefd48b
+    sha256:c65c66244ac113996002bcfa9e387f14291163cfb7009a9126e3a8d4a970e72d
 MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_URL=	$(MOZILLA_FTP)/source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	tbird/mailer
 COMPONENT_ANITYA_ID=	4967
 
-TPNO=			35119
+TPNO=			35966
 
-LIGHTNING_VERSION=	5.4.1
+LIGHTNING_VERSION=	5.4.2
 
 # There are a set of .xpi files (as given in the LANG_LIST definition below)
 # that we need. These are available under:
@@ -57,12 +57,12 @@ LIGHTNING_VERSION=	5.4.1
 # collide due to different files with identical .xpi names. 
 COMPONENT_ARCHIVE_1 =   	$(COMPONENT_SRC)-xpi.tar.gz
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:db8230f438d16212771992f4f5d9c07cfb81d78ed8a3bb877c86f266cecb9d2c
+    sha256:ee06aadf2df98961aa1310888f6c2829f3e788942383b85904b75c3182a20fc5
 COMPONENT_ARCHIVE_URL_1 =       $(INTERNAL_ARCHIVE_MIRROR)/$(COMPONENT_ARCHIVE_1)
 
 COMPONENT_ARCHIVE_2 =		lightning-$(LIGHTNING_VERSION)-xpi.tar.gz
 COMPONENT_ARCHIVE_HASH_2 = \
-    sha256:a43279226f4bc5d18b7464c833c59eb0113be44f1932d107df267793aab94c81
+    sha256:5a4bc1768958c53e518b891a0ebc14ed33f4ab0cd1b6ba44bdaedab987268eb3
 COMPONENT_ARCHIVE_URL_2 = 	$(INTERNAL_ARCHIVE_MIRROR)/$(COMPONENT_ARCHIVE_2)
 
 LANG_LIST = ar bg ca cs da de el es-AR es-ES et eu fi \
@@ -74,7 +74,7 @@ CLEAN_PATHS += $(COMPONENT_DIR)/xpi-lightning
 
 # Firefox and Thunderbird share the same firefox*.patch patches. Copy these 
 # patches from the Firefox patches directory and the Thunderbird patches to a 
-# directory of all files (patches-all), except for Firefox patches 42 and 68,
+# directory of all files (patches-all), except for Firefox patches 42,
 # which don't get applied in Thunderbird. (dtrace patch)
 PATCH_DIR=patches-all
 CLEAN_PATHS += $(PATCH_DIR)
@@ -82,7 +82,7 @@ COPY_COMMON_FILES_1:= $(shell mkdir -p $(PATCH_DIR))
 COPY_COMMON_FILES_2:=  \
     $(shell /usr/bin/rsync -ac patches/* ../firefox/patches/* $(PATCH_DIR))
 COPY_COMMON_FILES_3:= \
-    $(shell $(RM) $(PATCH_DIR)/firefox*42*.patch $(PATCH_DIR)/firefox*68*.patch)
+    $(shell $(RM) $(PATCH_DIR)/firefox*42*.patch)
 
 # Depends on libsmbclient but samba is on the do-not-publish list, so this
 # must be too.
