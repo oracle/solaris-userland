@@ -27,13 +27,13 @@ BUILD_BITS =            64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dconf
-COMPONENT_VERSION=	0.24.0
+COMPONENT_VERSION=	0.26.0
 COMPONENT_ARCHIVE_HASH= \
-	sha256:4373e0ced1f4d7d68d518038796c073696280e22957babb29feb0267c630fec2
+	sha256:8683292eb31a3fae31e561f0a4220d8569b0f6d882e9958b68373f9043d658c9
 COMPONENT_BUGDB=        gnome/gconf
 COMPONENT_ANITYA_ID=	11683
 
-TPNO=			25273
+TPNO=			34496
 
 # Needs updated glib2, not available on S11.
 ifeq ($(BUILD_TYPE), evaluation)
@@ -50,6 +50,7 @@ studio_C99MODE=$(studio_C99_ENABLE)
 CFLAGS.studio += $(studio_FEATURES_EXTENSIONS)
 
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
+CONFIGURE_OPTIONS += --enable-gtk-doc
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_ARGS =   -k -i
