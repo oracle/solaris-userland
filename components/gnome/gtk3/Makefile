@@ -30,22 +30,19 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gtk3
-COMPONENT_VERSION=	3.18.0
+COMPONENT_VERSION=	3.22.12
 COMPONENT_PROJECT_URL=	http://www.gtk.org/
 COMPONENT_SRC=		gtk+-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:7fb8ae257403317d3852bad28d064d35f67e978b1fed8b71d5997e87204271b9
-COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/gtk+/3.18/$(COMPONENT_ARCHIVE)
+    sha256:84fae0cefb6a11ee2b4e86b8ac42fe46a3d30b4ad16661d5fc51e8ae03e2a98c
+COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/gtk+/3.22/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/gtk+
 COMPONENT_ANITYA_ID=	10018
 
-TPNO=			24779
+TPNO=			34749
 
 ETCDIR.64="$(ETCDIR)/$(MACH64)"
-
-# Enable tests once all dependencies are install on the build server
-TEST_TARGET = $(SKIP_TEST)
 
 # Needs gobject-introspection, not available on S11.
 ifeq ($(BUILD_TYPE), evaluation)
@@ -99,6 +96,16 @@ COMPONENT_POST_INSTALL_ACTION += \
 	  $(PROTOGTKDIR)/immodules/*.so | \
 	  $(GSED) -e 's%$(PROTO_DIR)%%' > $(PROTOIMMCONF) ;
 
+# Standard automake test framework results transform
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/TOTAL/p" ' \
+        '-e "/SKIP/p" ' \
+        '-e "/PASS/p" ' \
+        '-e "/FAIL/p" '
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+
 REQUIRED_PACKAGES += data/docbook/docbook-dtds
 REQUIRED_PACKAGES += data/docbook/docbook-style-dsssl
 REQUIRED_PACKAGES += data/docbook/docbook-style-xsl
@@ -109,6 +116,7 @@ REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
+REQUIRED_PACKAGES += library/desktop/harfbuzz
 REQUIRED_PACKAGES += library/desktop/librest
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/desktop/xdg/libcanberra
