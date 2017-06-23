@@ -28,14 +28,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gvfs
-COMPONENT_VERSION=	1.26.0
+COMPONENT_VERSION=	1.32.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/gvfs
 COMPONENT_ARCHIVE_HASH= \
-	sha256:6d43e8b33a5c1588525875f9d3979b515f648da1d567d0ce3d337a18f5ff8c32
+	sha256:60acc16af9564ec00017b9196549839052e3f67b5c8f39dce319af0bb3439004
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	5496
 
-TPNO=			25202
+TPNO=			34604
 
 # Needs updated glib2, not available on S11.
 ifeq ($(BUILD_TYPE), evaluation)
@@ -58,7 +58,6 @@ COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += --enable-archive
 CONFIGURE_OPTIONS += --enable-avahi
-CONFIGURE_OPTIONS += --enable-bash-completion
 CONFIGURE_OPTIONS += --enable-documentation
 CONFIGURE_OPTIONS += --enable-goa
 CONFIGURE_OPTIONS += --disable-gphoto2
@@ -66,12 +65,16 @@ CONFIGURE_OPTIONS += --enable-gtk
 CONFIGURE_OPTIONS += --enable-http
 CONFIGURE_OPTIONS += --enable-keyring
 CONFIGURE_OPTIONS += --enable-shared
+# admin requires libcap
+CONFIGURE_OPTIONS += --disable-admin
 CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += library/desktop/gtk3
+REQUIRED_PACKAGES += library/desktop/libgdata
 REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += library/gnome/gnome-online-accounts
 REQUIRED_PACKAGES += library/gnome/libsecret
 REQUIRED_PACKAGES += library/libarchive
 REQUIRED_PACKAGES += library/libsoup
