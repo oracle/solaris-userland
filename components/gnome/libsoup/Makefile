@@ -30,14 +30,14 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libsoup
-COMPONENT_VERSION=	2.52.0
+COMPONENT_VERSION=	2.57.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/libsoup
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6c6c366622a1a9d938e0cea9b557fa536f088784251d31381ccd1b115a466785
+    sha256:ca1ca037e89e8bc7b782559f3ec5d89c9d0b836f505b2f95e008ed517fd6658f
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	11483
 
-TPNO=			24900
+TPNO=			34509
 
 # Needs gobject-introspection, not available on S11.
 ifeq ($(BUILD_TYPE), evaluation)
@@ -76,4 +76,5 @@ REQUIRED_PACKAGES += library/glib-networking
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-common
 REQUIRED_PACKAGES += library/libxml2
+REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += text/gnu-gettext

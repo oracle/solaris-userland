@@ -26,19 +26,19 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		meld
-COMPONENT_VERSION=	3.16.4
+COMPONENT_VERSION=	3.17.2
+COMPONENT_MINOR_VERSION= $(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\([0-9]\+\)\.\([0-9]\+\)\.[0-9]\+/\1.\2/')
 COMPONENT_PROJECT_URL=	http://meldmerge.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:93c4f928319dae7484135ab292fe6ea4254123e8219549a66d3e2deba6a38e67
-COMPONENT_ARCHIVE_URL=	http://ftp.gnome.org/pub/gnome/sources/meld/1.8/$(COMPONENT_ARCHIVE)
-COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/$(COMPONENT_NAME)/3.16/$(COMPONENT_ARCHIVE)
+    sha256:3efb5cbdc6acd66fc2c2b45bcbfb7fba03e4775e7ce6172b2887bc6fa7b505ea
+COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/$(COMPONENT_NAME)/$(COMPONENT_MINOR_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	5520
 
-TPNO=			33168
+TPNO=			36055
 
 # We just need to build one version.
-PYTHON_VERSIONS =       2.7
+PYTHON_VERSIONS =       3.5
 
 ifneq ($(BUILD_TYPE), evaluation)
 BUILD_STYLE= setup.py
@@ -53,12 +53,14 @@ include $(WS_MAKE_RULES)/common.mk
 # Needed to find GNU xgettext.
 PATH =			$(GNUBIN):$(USRBINDIR)
 
+PYTHON_VERSION =	3.5
 PKG_MACROS +=		PYVER=$(PYTHON_VERSION)
 
 PYTHON_DATA =		/usr
 
 COMPONENT_TEST_DIR =    $(COMPONENT_SRC)/test
-COMPONENT_TEST_CMD =    /usr/bin/py.test
+COMPONENT_TEST_ENV =	PYTHONPATH=$(PROTO_DIR)/$(PYTHON_LIB)
+COMPONENT_TEST_CMD =    /usr/bin/py.test-$(PYTHON_VERSION)
 COMPONENT_TEST_ARGS =
 
 COMPONENT_TEST_TRANSFORMS += \
@@ -72,6 +74,6 @@ REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += library/desktop/gtksourceview3
 REQUIRED_PACKAGES += library/gnome/gnome-common
 REQUIRED_PACKAGES += library/python/pycairo-27
-REQUIRED_PACKAGES += library/python/pygtk2-27
-REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += library/python/tkinter-35
+REQUIRED_PACKAGES += runtime/python-35
 REQUIRED_PACKAGES += text/gnu-gettext

@@ -1,0 +1,22 @@
+Need to have HAVE_PCRE_PCRE_H defined otherwise we get "pcre.h: No such
+file or directory" when trying to compile service_scan.cc.
+
+HAVE_PCRE_PCRE_H is defined in nmap_config.h, which is included in nmap.h
+because HAVE_CONFIG_H is defined at compile time.
+
+nmap version 7.40 had a: #include "nmap.h" in service_scan.h for exactly
+this reason.
+
+This has been filed upstream as:
+https://github.com/nmap/nmap/issues/909
+
+--- nmap-7.50/service_scan.h.orig	2017-06-16 14:09:54.939845093 +0000
++++ nmap-7.50/service_scan.h	2017-06-16 14:13:53.316640164 +0000
+@@ -136,6 +136,7 @@
+ 
+ #include "portlist.h"
+ #include "scan_lists.h"
++#include "nmap.h"
+ 
+ #include <vector>
+ 
