@@ -118,7 +118,7 @@ OS_SUB_VERS_2 =		$(OS_SUB_VERS_1:s%=%)
 OS_SUB_VERS_3 =		$(subst _, ,$(OS_SUB_VERS_2))
 OS_VERSION ?=	$(firstword $(OS_SUB_VERS_3))
 # Target OS version
-PKG_SOLARIS_VERSION ?= 5.12
+PKG_SOLARIS_VERSION ?= 11.$(UPDATENUM)
 
 # We generally build the default branch on the latest release.  But for
 # the FOSS evaluation repo project, we build on the previous release.

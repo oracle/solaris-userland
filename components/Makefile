@@ -159,7 +159,7 @@ INCORPORATE_WERROR ?= --Werror
 incorporation:
 	$(WS_TOOLS)/userland-incorporator \
 		--repository $(PKG_REPO) \
-		--version $(OS_RELEASE),$(BUILD_VERSION) \
+		--version $(PKG_SOLARIS_VERSION),$(BUILD_VERSION) \
 		--publisher $(PUBLISHER) \
 		--consolidation $(CONSOLIDATION) \
 		--destdir $(WS_MACH) \
