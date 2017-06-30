@@ -1,0 +1,225 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+#
+
+<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
+# Pull vendor-packages files from site-packages because nmap build installs
+# them there and doesn't offer an overide.
+<transform file path=(usr/lib/python.*)/vendor-packages/(.+) -> \
+    set action.hash %<1>/site-packages/%<2> >
+set name=pkg.fmri \
+    value=pkg:/diagnostic/nmap/zenmap@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="Network exploration and security / port scanner GUI"
+set name=pkg.description \
+    value="Zenmap is a multi-platform graphical Nmap frontend and results viewer."
+# Several python modules have an optional "import hildon" for Maemo OS support
+# Also skip looking for a gdk module, since pygtk implements it in the gtk module
+set name=pkg.depend.bypass-generate value=.*gdk.* value=.*hildon.*
+set name=com.oracle.info.description \
+    value="the nmap network exploration tool and security / port scanner GUI"
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification \
+    value="org.opensolaris.category.2008:System/Administration and Configuration"
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2007/129 value=PSARC/2017/176
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+link path=usr/bin/nmapfe target=zenmap
+link path=usr/bin/xnmap target=zenmap
+file path=usr/bin/zenmap
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/bestwidgets/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/bestwidgets/boxes.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/bestwidgets/buttons.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/bestwidgets/comboboxes.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/bestwidgets/expanders.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/bestwidgets/frames.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/bestwidgets/labels.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/bestwidgets/textview.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/bestwidgets/windows.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/core/ArgvHandle.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/core/Coordinate.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/core/Graph.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/core/Info.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/core/Interpolation.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/core/XMLHandler.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/core/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/gui/Application.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/gui/ControlWidget.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/gui/Dialogs.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/gui/HostsViewer.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/gui/Image.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/gui/LegendWindow.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/gui/NodeNotebook.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/gui/NodeWindow.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/gui/RadialNet.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/gui/SaveDialog.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/gui/Toolbar.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/gui/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/util/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/util/drawing.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/util/geometry.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/util/integration.py
+file path=usr/lib/python$(PYVER)/vendor-packages/radialnet/util/misc.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmap-$(COMPONENT_VERSION)-py$(PYVER).egg-info
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/BasePaths.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/DelayedObject.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/Diff.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/I18N.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/NSEDocParser.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/Name.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/NetworkInventory.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/NmapCommand.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/NmapOptions.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/NmapParser.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/Paths.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/RecentScans.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/ScriptArgsParser.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/ScriptMetadata.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/SearchResult.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/StringPool.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/TargetList.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/UmitConf.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/UmitConfigParser.py
+# UmitDB tries loading both sqlite2 & sqlite3 modules - finds sqlite3 on Solaris
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/UmitDB.py \
+    pkg.depend.bypass-generate=.*pysqlite2.*
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/UmitLogging.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/UmitOptionParser.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/Version.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapCore/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/About.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/App.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/BugReport.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/CrashReport.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/DiffCompare.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/FileChoosers.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/FilterBar.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/Icons.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/MainWindow.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/NmapOutputProperties.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/NmapOutputViewer.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/OptionBuilder.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/Print.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/ProfileCombo.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/ProfileEditor.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/ProfileHelp.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/ScanHostDetailsPage.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/ScanHostsView.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/ScanInterface.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/ScanNmapOutputPage.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/ScanOpenPortsPage.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/ScanRunDetailsPage.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/ScanScanListPage.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/ScanToolbar.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/ScansListStore.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/ScriptInterface.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/SearchGUI.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/SearchWindow.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/TargetCombo.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/TopologyPage.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/higwidgets/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/higwidgets/gtkutils.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/higwidgets/higboxes.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/higwidgets/higbuttons.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/higwidgets/higdialogs.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/higwidgets/higentries.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/higwidgets/higexpanders.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/higwidgets/higframe.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/higwidgets/higlabels.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/higwidgets/higlogindialogs.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/higwidgets/hignotebooks.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/higwidgets/higprogressbars.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/higwidgets/higscrollers.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/higwidgets/higspinner.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/higwidgets/higtables.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/higwidgets/higtextviewers.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/higwidgets/higwindows.py
+file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/higwidgets/utils.py
+file path=usr/share/applications/zenmap-root.desktop
+file path=usr/share/applications/zenmap.desktop
+link path=usr/share/man/man1/nmapfe.1 target=zenmap.1
+link path=usr/share/man/man1/xnmap.1 target=zenmap.1
+file path=usr/share/man/man1/zenmap.1
+file path=usr/share/zenmap/config/scan_profile.usp
+file path=usr/share/zenmap/config/zenmap.conf
+file path=usr/share/zenmap/config/zenmap_version
+file path=usr/share/zenmap/docs/help.html
+file path=usr/share/zenmap/locale/de/LC_MESSAGES/zenmap.mo
+file path=usr/share/zenmap/locale/es/LC_MESSAGES/zenmap.mo
+file path=usr/share/zenmap/locale/fr/LC_MESSAGES/zenmap.mo
+file path=usr/share/zenmap/locale/hi/LC_MESSAGES/zenmap.mo
+file path=usr/share/zenmap/locale/hr/LC_MESSAGES/zenmap.mo
+file path=usr/share/zenmap/locale/it/LC_MESSAGES/zenmap.mo
+file path=usr/share/zenmap/locale/ja/LC_MESSAGES/zenmap.mo
+file path=usr/share/zenmap/locale/pl/LC_MESSAGES/zenmap.mo
+file path=usr/share/zenmap/locale/pt_BR/LC_MESSAGES/zenmap.mo
+file path=usr/share/zenmap/locale/ru/LC_MESSAGES/zenmap.mo
+file path=usr/share/zenmap/locale/zh/LC_MESSAGES/zenmap.mo
+file path=usr/share/zenmap/misc/profile_editor.xml
+file path=usr/share/zenmap/pixmaps/default_32.png
+file path=usr/share/zenmap/pixmaps/default_75.png
+file path=usr/share/zenmap/pixmaps/freebsd_32.png
+file path=usr/share/zenmap/pixmaps/freebsd_75.png
+file path=usr/share/zenmap/pixmaps/irix_32.png
+file path=usr/share/zenmap/pixmaps/irix_75.png
+file path=usr/share/zenmap/pixmaps/linux_32.png
+file path=usr/share/zenmap/pixmaps/linux_75.png
+file path=usr/share/zenmap/pixmaps/macosx_32.png
+file path=usr/share/zenmap/pixmaps/macosx_75.png
+file path=usr/share/zenmap/pixmaps/openbsd_32.png
+file path=usr/share/zenmap/pixmaps/openbsd_75.png
+file path=usr/share/zenmap/pixmaps/radialnet/border.png
+file path=usr/share/zenmap/pixmaps/radialnet/firewall.png
+file path=usr/share/zenmap/pixmaps/radialnet/logo.png
+file path=usr/share/zenmap/pixmaps/radialnet/padlock.png
+file path=usr/share/zenmap/pixmaps/radialnet/router.png
+file path=usr/share/zenmap/pixmaps/radialnet/switch.png
+file path=usr/share/zenmap/pixmaps/radialnet/wireless.png
+file path=usr/share/zenmap/pixmaps/redhat_32.png
+file path=usr/share/zenmap/pixmaps/redhat_75.png
+file path=usr/share/zenmap/pixmaps/solaris_32.png
+file path=usr/share/zenmap/pixmaps/solaris_75.png
+file path=usr/share/zenmap/pixmaps/throbber.gif
+file path=usr/share/zenmap/pixmaps/throbber.png
+file path=usr/share/zenmap/pixmaps/ubuntu_32.png
+file path=usr/share/zenmap/pixmaps/ubuntu_75.png
+file path=usr/share/zenmap/pixmaps/unknown_32.png
+file path=usr/share/zenmap/pixmaps/unknown_75.png
+file path=usr/share/zenmap/pixmaps/vl_1_32.png
+file path=usr/share/zenmap/pixmaps/vl_1_75.png
+file path=usr/share/zenmap/pixmaps/vl_2_32.png
+file path=usr/share/zenmap/pixmaps/vl_2_75.png
+file path=usr/share/zenmap/pixmaps/vl_3_32.png
+file path=usr/share/zenmap/pixmaps/vl_3_75.png
+file path=usr/share/zenmap/pixmaps/vl_4_32.png
+file path=usr/share/zenmap/pixmaps/vl_4_75.png
+file path=usr/share/zenmap/pixmaps/vl_5_32.png
+file path=usr/share/zenmap/pixmaps/vl_5_75.png
+file path=usr/share/zenmap/pixmaps/win_32.png
+file path=usr/share/zenmap/pixmaps/win_75.png
+file path=usr/share/zenmap/pixmaps/zenmap.png
+file path=usr/share/zenmap/su-to-zenmap.sh
+license COPYING license=GPLv2
+# zenmap was split out from the nmap package in Solaris 11.4 build #1.
+depend type=require fmri=diagnostic/nmap@7.50-11.4.0.0.0.1
