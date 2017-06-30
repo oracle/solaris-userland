@@ -30,14 +30,14 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sushi
-COMPONENT_VERSION=	3.18.0
+COMPONENT_VERSION=	3.23.91
 COMPONENT_PROJECT_URL=  https://github.com/GNOME/sushi
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7f4df92be950bf23aff28da49ce108766dd21a88efc14a9d0807e10225608e9c
+	sha256:ed822ef5b989da61830af6d23e4e5e42b1fd405e098221794f70857bfa558e2a
 COMPONENT_BUGDB=        gnome/nautilus
 COMPONENT_ANITYA_ID=	10897
 
-TPNO=			25458
+TPNO=			34524
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -67,6 +67,7 @@ REQUIRED_PACKAGES += library/audio/libmusicbrainz5
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/clutter
 REQUIRED_PACKAGES += library/desktop/clutter/clutter-gst
+REQUIRED_PACKAGES += library/desktop/clutter/clutter-gst3
 REQUIRED_PACKAGES += library/desktop/clutter/clutter-gtk
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gjs
@@ -75,6 +76,7 @@ REQUIRED_PACKAGES += library/desktop/gstreamer-1
 REQUIRED_PACKAGES += library/desktop/gstreamer-1/gst-plugins-base
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/gtksourceview3
+REQUIRED_PACKAGES += library/desktop/harfbuzz
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/desktop/webkitgtk4
 REQUIRED_PACKAGES += library/glib2
