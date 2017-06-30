@@ -1,6 +1,6 @@
-From 6a293987452dffd04df51fb75e2953dbd432a765 Mon Sep 17 00:00:00 2001
-From: Amit Krishnan <amit.krishnan@oracle.com>
-Date: Wed, 19 Apr 2017 13:49:33 -0700
+From d979a93c86f3ebc1051a777716f61df14ac33bcc Mon Sep 17 00:00:00 2001
+From: Puneet Pruthi <puneet.pruthi@oracle.com>
+Date: Tue, 27 Jun 2017 17:13:51 -0700
 Subject: [PATCH] Solaris-v1.10.3
 
 ---
@@ -10,7 +10,7 @@ Subject: [PATCH] Solaris-v1.10.3
  api/client/version.go                              |   20 -
  api/server/router/container/container_routes.go    |    7 +
  api/server/server_unix.go                          |    2 +-
- container/container_solaris.go                     |  650 ++++++++++++
+ container/container_solaris.go                     |  600 +++++++++++
  container/monitor.go                               |    9 +
  container/state_solaris.go                         |    9 +
  contrib/docker-device-tool/device_tool.go          |    2 +-
@@ -33,7 +33,7 @@ Subject: [PATCH] Solaris-v1.10.3
  daemon/execdriver/driver_solaris.go                |   76 ++
  daemon/execdriver/driver_unix.go                   |    2 +-
  .../execdriver/execdrivers/execdrivers_solaris.go  |   13 +
- daemon/execdriver/zones/driver.go                  |  807 +++++++++++++++
+ daemon/execdriver/zones/driver.go                  |  925 +++++++++++++++++
  daemon/execdriver/zones/driver_unsupported.go      |   12 +
  .../execdriver/zones/driver_unsupported_nocgo.go   |   13 +
  daemon/graphdriver/driver_solaris.go               |    8 +
@@ -52,7 +52,7 @@ Subject: [PATCH] Solaris-v1.10.3
  daemon/network.go                                  |    7 +
  daemon/selinux_unsupported.go                      |    8 +
  daemon/start.go                                    |   16 +
- daemon/stats_collector_solaris.go                  |  537 ++++++++++
+ daemon/stats_collector_solaris.go                  |  541 ++++++++++
  daemon/stats_collector_unix.go                     |    2 +-
  daemon/stats_solaris.go                            |   84 ++
  docker/daemon_solaris.go                           |   58 ++
@@ -126,9 +126,8 @@ Subject: [PATCH] Solaris-v1.10.3
  pkg/sysinfo/sysinfo_solaris.go                     |  117 +++
  pkg/system/meminfo_solaris.go                      |  127 +++
  pkg/system/meminfo_unsupported.go                  |    2 +-
- pkg/system/stat_linux.go                           |   33 -
  pkg/system/stat_solaris.go                         |   20 +-
- pkg/system/stat_unix.go                            |   35 +
+ pkg/system/{stat_linux.go => stat_unix.go}         |    2 +
  pkg/system/stat_unsupported.go                     |    2 +-
  pkg/term/tc_other.go                               |    1 +
  pkg/term/tc_solaris_cgo.go                         |   60 ++
@@ -165,13 +164,10 @@ Subject: [PATCH] Solaris-v1.10.3
  .../libnetwork/portallocator/portallocator.go      |   22 -
  .../portallocator/portallocator_linux.go           |   28 +
  .../portallocator/portallocator_solaris.go         |    5 +
- .../docker/libnetwork/portmapper/mapper.go         |  228 -----
- .../docker/libnetwork/portmapper/mapper_linux.go   |  228 +++++
+ .../portmapper/{mapper.go => mapper_linux.go}      |    0
  .../docker/libnetwork/portmapper/mapper_solaris.go |  150 +++
- .../docker/libnetwork/portmapper/mock_proxy.go     |   18 -
- .../libnetwork/portmapper/mock_proxy_linux.go      |   18 +
- .../docker/libnetwork/portmapper/proxy.go          |  209 ----
- .../docker/libnetwork/portmapper/proxy_linux.go    |  209 ++++
+ .../{mock_proxy.go => mock_proxy_linux.go}         |    0
+ .../portmapper/{proxy.go => proxy_linux.go}        |    2 +-
  vendor/src/github.com/docker/libnetwork/sandbox.go |    7 +-
  .../libnetwork/sandbox_externalkey_solaris.go      |   45 +
  .../docker/libnetwork/sandbox_externalkey_unix.go  |    2 +-
@@ -200,7 +196,7 @@ Subject: [PATCH] Solaris-v1.10.3
  vendor/src/gopkg.in/fsnotify.v1/fsnotify.go        |    2 +-
  volume/local/local_unix.go                         |    2 +-
  volume/store/store_unix.go                         |    2 +-
- 196 files changed, 9231 insertions(+), 1241 deletions(-)
+ 192 files changed, 8816 insertions(+), 754 deletions(-)
  create mode 100644 Dockerfile.solaris
  create mode 100644 container/container_solaris.go
  create mode 100644 container/state_solaris.go
@@ -232,8 +228,7 @@ Subject: [PATCH] Solaris-v1.10.3
  create mode 100644 pkg/signal/signal_solaris.go
  create mode 100644 pkg/sysinfo/sysinfo_solaris.go
  create mode 100644 pkg/system/meminfo_solaris.go
- delete mode 100644 pkg/system/stat_linux.go
- create mode 100644 pkg/system/stat_unix.go
+ rename pkg/system/{stat_linux.go => stat_unix.go} (97%)
  create mode 100644 pkg/term/tc_solaris_cgo.go
  create mode 100644 pkg/term/term_solaris.go
  create mode 100644 pkg/term/term_unix.go
@@ -252,13 +247,10 @@ Subject: [PATCH] Solaris-v1.10.3
  create mode 100644 vendor/src/github.com/docker/libnetwork/osl/neigh_solaris.go
  create mode 100644 vendor/src/github.com/docker/libnetwork/portallocator/portallocator_linux.go
  create mode 100644 vendor/src/github.com/docker/libnetwork/portallocator/portallocator_solaris.go
- delete mode 100644 vendor/src/github.com/docker/libnetwork/portmapper/mapper.go
- create mode 100644 vendor/src/github.com/docker/libnetwork/portmapper/mapper_linux.go
+ rename vendor/src/github.com/docker/libnetwork/portmapper/{mapper.go => mapper_linux.go} (100%)
  create mode 100644 vendor/src/github.com/docker/libnetwork/portmapper/mapper_solaris.go
- delete mode 100644 vendor/src/github.com/docker/libnetwork/portmapper/mock_proxy.go
- create mode 100644 vendor/src/github.com/docker/libnetwork/portmapper/mock_proxy_linux.go
- delete mode 100644 vendor/src/github.com/docker/libnetwork/portmapper/proxy.go
- create mode 100644 vendor/src/github.com/docker/libnetwork/portmapper/proxy_linux.go
+ rename vendor/src/github.com/docker/libnetwork/portmapper/{mock_proxy.go => mock_proxy_linux.go} (100%)
+ rename vendor/src/github.com/docker/libnetwork/portmapper/{proxy.go => proxy_linux.go} (99%)
  create mode 100644 vendor/src/github.com/docker/libnetwork/sandbox_externalkey_solaris.go
  create mode 100644 vendor/src/github.com/mistifyio/go-zfs/utils_notsolaris.go
  create mode 100644 vendor/src/github.com/mistifyio/go-zfs/utils_solaris.go
@@ -276,7 +268,7 @@ Subject: [PATCH] Solaris-v1.10.3
 
 diff --git a/Dockerfile.solaris b/Dockerfile.solaris
 new file mode 100644
-index 0000000..65f3d63
+index 000000000..65f3d635a
 --- /dev/null
 +++ b/Dockerfile.solaris
 @@ -0,0 +1,26 @@
@@ -307,7 +299,7 @@ index 0000000..65f3d63
 +WORKDIR /go/src/github.com/docker/docker
 +COPY . /go/src/github.com/docker/docker
 diff --git a/Makefile b/Makefile
-index 7a66015..c218458 100644
+index 7a6601599..c21845887 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -9,14 +9,21 @@ ifeq ($(DOCKER_OSARCH), linux/arm)
@@ -389,7 +381,7 @@ index 7a66015..c218458 100644
 -	$(DOCKER_RUN_DOCKER) hack/make.sh validate-dco validate-gofmt validate-pkg validate-lint validate-test validate-toml validate-vet validate-vendor
 +	$(DOCKER_RUN_DOCKER) hack/make.sh validate-dco validate-default-seccomp validate-gofmt validate-pkg validate-lint validate-test validate-toml validate-vet validate-vendor
 diff --git a/api/client/run.go b/api/client/run.go
-index 16f4230..4f5a412 100644
+index 16f4230e9..4f5a4127f 100644
 --- a/api/client/run.go
 +++ b/api/client/run.go
 @@ -269,6 +269,7 @@ func (cli *DockerCli) CmdRun(args ...string) error {
@@ -401,7 +393,7 @@ index 16f4230..4f5a412 100644
  		if !config.Tty {
  			// In non-TTY mode, we can't detach, so we must wait for container exit
 diff --git a/api/client/version.go b/api/client/version.go
-index a64deef..3000b1a 100644
+index a64deef69..3000b1abc 100644
 --- a/api/client/version.go
 +++ b/api/client/version.go
 @@ -3,7 +3,6 @@ package client
@@ -460,7 +452,7 @@ index a64deef..3000b1a 100644
  		err = err2
  	}
 diff --git a/api/server/router/container/container_routes.go b/api/server/router/container/container_routes.go
-index 4e2ffca..e58405b 100644
+index 4e2ffca29..e58405ba5 100644
 --- a/api/server/router/container/container_routes.go
 +++ b/api/server/router/container/container_routes.go
 @@ -27,6 +27,11 @@ import (
@@ -492,7 +484,7 @@ index 4e2ffca..e58405b 100644
  		return err
  	}
 diff --git a/api/server/server_unix.go b/api/server/server_unix.go
-index a4fc639..ea647ff 100644
+index a4fc63957..ea647ff4a 100644
 --- a/api/server/server_unix.go
 +++ b/api/server/server_unix.go
 @@ -1,4 +1,4 @@
@@ -503,10 +495,10 @@ index a4fc639..ea647ff 100644
  
 diff --git a/container/container_solaris.go b/container/container_solaris.go
 new file mode 100644
-index 0000000..0525329
+index 000000000..4f99de007
 --- /dev/null
 +++ b/container/container_solaris.go
-@@ -0,0 +1,650 @@
+@@ -0,0 +1,600 @@
 +// +build solaris
 +
 +package container
@@ -538,7 +530,6 @@ index 0000000..0525329
 +	"github.com/docker/libnetwork/netlabel"
 +	"github.com/docker/libnetwork/options"
 +	"github.com/docker/libnetwork/types"
-+	"github.com/opencontainers/runc/libcontainer/label"
 +)
 +
 +const (
@@ -946,61 +937,12 @@ index 0000000..0525329
 +}
 +
 +// NetworkMounts returns the list of network mounts.
++// Note:
++//    Not required for Solaris containers as execdriver writes the
++//    SMF profile for dns/client and nss services to a svc bundle
++//    - which are applied by container runtime (runz) at boot time.
 +func (container *Container) NetworkMounts() []execdriver.Mount {
-+	var mounts []execdriver.Mount
-+	shared := container.HostConfig.NetworkMode.IsContainer()
-+	if container.ResolvConfPath != "" {
-+		if _, err := os.Stat(container.ResolvConfPath); err != nil {
-+			logrus.Warnf("ResolvConfPath set to %q, but can't stat this filename (err = %v); skipping", container.ResolvConfPath, err)
-+		} else {
-+			label.Relabel(container.ResolvConfPath, container.MountLabel, shared)
-+			writable := !container.HostConfig.ReadonlyRootfs
-+			if m, exists := container.MountPoints["/etc/resolv.conf"]; exists {
-+				writable = m.RW
-+			}
-+			mounts = append(mounts, execdriver.Mount{
-+				Source:      container.ResolvConfPath,
-+				Destination: "/etc/resolv.conf",
-+				Writable:    writable,
-+				Propagation: volume.DefaultPropagationMode,
-+			})
-+		}
-+	}
-+	if container.HostnamePath != "" {
-+		if _, err := os.Stat(container.HostnamePath); err != nil {
-+			logrus.Warnf("HostnamePath set to %q, but can't stat this filename (err = %v); skipping", container.HostnamePath, err)
-+		} else {
-+			label.Relabel(container.HostnamePath, container.MountLabel, shared)
-+			writable := !container.HostConfig.ReadonlyRootfs
-+			if m, exists := container.MountPoints["/etc/hostname"]; exists {
-+				writable = m.RW
-+			}
-+			mounts = append(mounts, execdriver.Mount{
-+				Source:      container.HostnamePath,
-+				Destination: "/etc/hostname",
-+				Writable:    writable,
-+				Propagation: volume.DefaultPropagationMode,
-+			})
-+		}
-+	}
-+	if container.HostsPath != "" {
-+		if _, err := os.Stat(container.HostsPath); err != nil {
-+			logrus.Warnf("HostsPath set to %q, but can't stat this filename (err = %v); skipping", container.HostsPath, err)
-+		} else {
-+			label.Relabel(container.HostsPath, container.MountLabel, shared)
-+			writable := !container.HostConfig.ReadonlyRootfs
-+			if m, exists := container.MountPoints["/etc/hosts"]; exists {
-+				writable = m.RW
-+			}
-+			mounts = append(mounts, execdriver.Mount{
-+				Source:      container.HostsPath,
-+				Destination: "/etc/hosts",
-+				Writable:    writable,
-+				Propagation: volume.DefaultPropagationMode,
-+			})
-+		}
-+	}
-+	return mounts
++	return nil
 +}
 +
 +// CopyImagePathContent copies files in destination to the volume.
@@ -1158,7 +1100,7 @@ index 0000000..0525329
 +	return true
 +}
 diff --git a/container/monitor.go b/container/monitor.go
-index 09b447d..990b022 100644
+index 09b447d94..990b02299 100644
 --- a/container/monitor.go
 +++ b/container/monitor.go
 @@ -205,6 +205,15 @@ func (m *containerMonitor) start() error {
@@ -1179,7 +1121,7 @@ index 09b447d..990b022 100644
  			}
 diff --git a/container/state_solaris.go b/container/state_solaris.go
 new file mode 100644
-index 0000000..645c934
+index 000000000..645c9348c
 --- /dev/null
 +++ b/container/state_solaris.go
 @@ -0,0 +1,9 @@
@@ -1193,7 +1135,7 @@ index 0000000..645c934
 +	s.ExitCode = exitStatus.ExitCode
 +}
 diff --git a/contrib/docker-device-tool/device_tool.go b/contrib/docker-device-tool/device_tool.go
-index cb538f2..7f013f9 100644
+index cb538f28f..7f013f9a6 100644
 --- a/contrib/docker-device-tool/device_tool.go
 +++ b/contrib/docker-device-tool/device_tool.go
 @@ -1,4 +1,4 @@
@@ -1203,7 +1145,7 @@ index cb538f2..7f013f9 100644
  package main
  
 diff --git a/contrib/httpserver/Dockerfile b/contrib/httpserver/Dockerfile
-index 747dc91..3d0d691 100644
+index 747dc91bc..3d0d691c1 100644
 --- a/contrib/httpserver/Dockerfile
 +++ b/contrib/httpserver/Dockerfile
 @@ -1,4 +1,4 @@
@@ -1213,7 +1155,7 @@ index 747dc91..3d0d691 100644
  COPY httpserver .
  CMD ["./httpserver"]
 diff --git a/contrib/mkimage.sh b/contrib/mkimage.sh
-index 3976d72..d59315f 100755
+index 3976d72d9..d59315ff1 100755
 --- a/contrib/mkimage.sh
 +++ b/contrib/mkimage.sh
 @@ -11,11 +11,22 @@ usage() {
@@ -1241,7 +1183,7 @@ index 3976d72..d59315f 100755
  unset optTemp
 diff --git a/contrib/mkimage/solaris b/contrib/mkimage/solaris
 new file mode 100755
-index 0000000..34f8689
+index 000000000..34f868916
 --- /dev/null
 +++ b/contrib/mkimage/solaris
 @@ -0,0 +1,120 @@
@@ -1366,7 +1308,7 @@ index 0000000..34f8689
 +EOF
 +chmod +x "$rootfsDir/usr/bin/pkg"
 diff --git a/daemon/commit.go b/daemon/commit.go
-index d0c4924..ecdc316 100644
+index d0c4924e8..ecdc316c6 100644
 --- a/daemon/commit.go
 +++ b/daemon/commit.go
 @@ -95,14 +95,18 @@ func merge(userConf, imageConf *containertypes.Config) error {
@@ -1419,7 +1361,7 @@ index d0c4924..ecdc316 100644
  			ContainerConfig: *container.Config,
  			Author:          c.Author,
 diff --git a/daemon/config.go b/daemon/config.go
-index 8e063c0..cf22934 100644
+index 8e063c038..cf22934a3 100644
 --- a/daemon/config.go
 +++ b/daemon/config.go
 @@ -6,6 +6,7 @@ import (
@@ -1442,7 +1384,7 @@ index 8e063c0..cf22934 100644
  	}
 diff --git a/daemon/config_solaris.go b/daemon/config_solaris.go
 new file mode 100644
-index 0000000..8172ccd
+index 000000000..8172ccd0e
 --- /dev/null
 +++ b/daemon/config_solaris.go
 @@ -0,0 +1,66 @@
@@ -1513,7 +1455,7 @@ index 0000000..8172ccd
 +	config.attachExperimentalFlags(cmd, usageFn)
 +}
 diff --git a/daemon/config_test.go b/daemon/config_test.go
-index dc1c3bc..beb2eb0 100644
+index dc1c3bc7d..beb2eb0e2 100644
 --- a/daemon/config_test.go
 +++ b/daemon/config_test.go
 @@ -69,20 +69,22 @@ func TestDaemonBrokenConfiguration(t *testing.T) {
@@ -1555,7 +1497,7 @@ index dc1c3bc..beb2eb0 100644
  func TestFindConfigurationConflicts(t *testing.T) {
 diff --git a/daemon/container_operations_solaris.go b/daemon/container_operations_solaris.go
 new file mode 100644
-index 0000000..17bb0a0
+index 000000000..17bb0a011
 --- /dev/null
 +++ b/daemon/container_operations_solaris.go
 @@ -0,0 +1,973 @@
@@ -2533,7 +2475,7 @@ index 0000000..17bb0a0
 +	return fmt.Errorf("Container %s is marked for removal and cannot be connected or disconnected to the network", containerID)
 +}
 diff --git a/daemon/daemon.go b/daemon/daemon.go
-index 6cb7f8c..f360392 100644
+index 6cb7f8c60..f360392d6 100644
 --- a/daemon/daemon.go
 +++ b/daemon/daemon.go
 @@ -766,7 +766,7 @@ func NewDaemon(config *Config, registryService *registry.Service) (daemon *Daemo
@@ -2561,7 +2503,7 @@ index 6cb7f8c..f360392 100644
  // Run uses the execution driver to run a given container
 diff --git a/daemon/daemon_solaris.go b/daemon/daemon_solaris.go
 new file mode 100644
-index 0000000..a73cbb8
+index 000000000..a73cbb88b
 --- /dev/null
 +++ b/daemon/daemon_solaris.go
 @@ -0,0 +1,576 @@
@@ -3142,7 +3084,7 @@ index 0000000..a73cbb8
 +	return []nwconfig.Option{}
 +}
 diff --git a/daemon/daemon_test.go b/daemon/daemon_test.go
-index 5b7d4cf..e97298c 100644
+index 5b7d4cf17..e97298ccc 100644
 --- a/daemon/daemon_test.go
 +++ b/daemon/daemon_test.go
 @@ -1,3 +1,5 @@
@@ -3152,7 +3094,7 @@ index 5b7d4cf..e97298c 100644
  
  import (
 diff --git a/daemon/daemon_unix_test.go b/daemon/daemon_unix_test.go
-index 8a99b4b..6e772da 100644
+index 8a99b4b88..6e772daad 100644
 --- a/daemon/daemon_unix_test.go
 +++ b/daemon/daemon_unix_test.go
 @@ -1,4 +1,4 @@
@@ -3162,7 +3104,7 @@ index 8a99b4b..6e772da 100644
  package daemon
  
 diff --git a/daemon/daemon_unsupported.go b/daemon/daemon_unsupported.go
-index 987528f..cb1acf6 100644
+index 987528f47..cb1acf63d 100644
 --- a/daemon/daemon_unsupported.go
 +++ b/daemon/daemon_unsupported.go
 @@ -1,4 +1,4 @@
@@ -3172,7 +3114,7 @@ index 987528f..cb1acf6 100644
  package daemon
  
 diff --git a/daemon/daemonbuilder/builder_unix.go b/daemon/daemonbuilder/builder_unix.go
-index aa63b33..388e2b7 100644
+index aa63b33b4..388e2b78f 100644
 --- a/daemon/daemonbuilder/builder_unix.go
 +++ b/daemon/daemonbuilder/builder_unix.go
 @@ -1,4 +1,4 @@
@@ -3182,7 +3124,7 @@ index aa63b33..388e2b7 100644
  package daemonbuilder
  
 diff --git a/daemon/debugtrap_unsupported.go b/daemon/debugtrap_unsupported.go
-index fef1bd7..cbe4e91 100644
+index fef1bd776..cbe4e91d8 100644
 --- a/daemon/debugtrap_unsupported.go
 +++ b/daemon/debugtrap_unsupported.go
 @@ -1,4 +1,4 @@
@@ -3193,7 +3135,7 @@ index fef1bd7..cbe4e91 100644
  
 diff --git a/daemon/exec_solaris.go b/daemon/exec_solaris.go
 new file mode 100644
-index 0000000..3804403
+index 000000000..380440396
 --- /dev/null
 +++ b/daemon/exec_solaris.go
 @@ -0,0 +1,18 @@
@@ -3217,7 +3159,7 @@ index 0000000..3804403
 +}
 diff --git a/daemon/execdriver/driver_solaris.go b/daemon/execdriver/driver_solaris.go
 new file mode 100644
-index 0000000..7a647b7
+index 000000000..7a647b7de
 --- /dev/null
 +++ b/daemon/execdriver/driver_solaris.go
 @@ -0,0 +1,76 @@
@@ -3298,7 +3240,7 @@ index 0000000..7a647b7
 +	ExitCode int
 +}
 diff --git a/daemon/execdriver/driver_unix.go b/daemon/execdriver/driver_unix.go
-index 3ed3c81..fc4873d 100644
+index 3ed3c8170..fc4873d8d 100644
 --- a/daemon/execdriver/driver_unix.go
 +++ b/daemon/execdriver/driver_unix.go
 @@ -1,4 +1,4 @@
@@ -3309,7 +3251,7 @@ index 3ed3c81..fc4873d 100644
  
 diff --git a/daemon/execdriver/execdrivers/execdrivers_solaris.go b/daemon/execdriver/execdrivers/execdrivers_solaris.go
 new file mode 100644
-index 0000000..25a496e
+index 000000000..25a496e14
 --- /dev/null
 +++ b/daemon/execdriver/execdrivers/execdrivers_solaris.go
 @@ -0,0 +1,13 @@
@@ -3328,24 +3270,25 @@ index 0000000..25a496e
 +}
 diff --git a/daemon/execdriver/zones/driver.go b/daemon/execdriver/zones/driver.go
 new file mode 100644
-index 0000000..eaad4ae
+index 000000000..0ad1d26b1
 --- /dev/null
 +++ b/daemon/execdriver/zones/driver.go
-@@ -0,0 +1,807 @@
+@@ -0,0 +1,925 @@
 +// +build solaris,cgo
 +
 +package zones
 +
 +import (
-+	"bufio"
 +	"bytes"
 +	"encoding/json"
++	"encoding/xml"
 +	"errors"
 +	"fmt"
 +	"io"
 +	"io/ioutil"
 +	"os"
 +	"os/exec"
++	"os/user"
 +	"path/filepath"
 +	"strconv"
 +	"strings"
@@ -3439,6 +3382,9 @@ index 0000000..eaad4ae
 +	EXEC_PATH           = "/system/volatile"
 +	LX_DOCKER_INIT_PATH = "/usr/lib/brand/lx/lx_docker_init"
 +	SVCCFG              = "/usr/sbin/svccfg"
++	SVCPROP             = "/usr/bin/svcprop"
++	SMF_FMRI_DNS        = "svc:/network/dns/client:default"
++	SMF_FMRI_NSS        = "svc:/system/name-service/switch:default"
 +)
 +
 +// We don't yet have libcontainer.Factory support, so just whack it together here
@@ -3526,6 +3472,62 @@ index 0000000..eaad4ae
 +	Uid            int64   `json:"uid"`
 +}
 +
++// Structs to parse SMF profile for dns/client
++type SvcDNSServers struct {
++	Value      string           `xml:"value,attr"`
++}
++
++type SvcSearchURL struct {
++	Value      string           `xml:"value,attr"`
++}
++
++type SvcDNSProp struct {
++	Name       string             `xml:"name,attr"`
++	Type       string             `xml:"type,attr"`
++	DNSServers *[]SvcDNSServers   `xml:"net_address_list>value_node,omitempty"`
++	SearchURL  *[]SvcSearchURL    `xml:"astring_list>value_node,omitempty"`
++}
++
++type SvcPropVal struct {
++	Name       string           `xml:"name,attr"`
++	Type       string           `xml:"type,attr"`
++	Value      string           `xml:"value,attr"`
++}
++
++type SvcPropGroup struct {
++	Name       string           `xml:"name,attr"`
++	Type       string           `xml:"type,attr"`
++	Props      []SvcDNSProp     `xml:"property"`
++	PropVals   []SvcPropVal     `xml:"propval"`
++}
++
++type DefSvcInstance struct {
++	Enabled    bool           `xml:"enabled,attr"`
++}
++
++type SvcInstance struct {
++	Name       string           `xml:"name,attr"`
++	Enabled    bool             `xml:"enabled,attr"`
++	PropGroups []SvcPropGroup   `xml:"property_group"`
++}
++
++type Svc struct {
++	Name         string           `xml:"name,attr"`
++	Type         string           `xml:"type,attr"`
++	Version      string           `xml:"version,attr"`
++	PropGroups   []SvcPropGroup   `xml:"property_group,omitempty"`
++	Instances    []SvcInstance    `xml:"instance,omitempty"`
++	DefInstances []DefSvcInstance `xml:"create_default_instance,omitempty"`
++}
++
++type SvcBundle struct {
++	XMLName    xml.Name         `xml:"service_bundle"`
++	Type       string           `xml:"type,attr"`
++	Name       string           `xml:"name,attr"`
++	Services   []Svc            `xml:"service"`
++}
++
++
 +func startWrapper(cmd *exec.Cmd) error {
 +	// create processes in their own process contracts
 +	var cttmpl C.int
@@ -3568,6 +3570,32 @@ index 0000000..eaad4ae
 +	return ""
 +}
 +
++// Fetch (uid, gid) for the given userName.
++// NOTE: defaults to root if no username is given.
++func getUserInfo(userName string) (int64, int64, error) {
++	if userName == "" {
++		// Default to root.
++		return 0, 0, nil
++	}
++
++	execUser, err := user.Lookup(userName)
++	if err != nil {
++		return 0, 0, err
++	}
++
++	groupID, err := strconv.ParseInt(execUser.Gid, 10, 64)
++	if err != nil {
++		return 0, 0, err
++	}
++
++	userID, err := strconv.ParseInt(execUser.Uid, 10, 64)
++	if err != nil {
++		return 0, 0, err
++	}
++
++	return userID, groupID, nil
++}
++
 +func (d *Driver) Exec(c *execdriver.Command, processConfig *execdriver.ProcessConfig, pipes *execdriver.Pipes, hooks execdriver.Hooks) (int, error) {
 +
 +	args := []string{processConfig.Entrypoint}
@@ -3577,28 +3605,9 @@ index 0000000..eaad4ae
 +		hostname = c.Name
 +	}
 +
-+	var userID int
-+	var groupID int
-+	var err error
-+	if c.ProcessConfig.User != "" {
-+		ids := strings.Split(c.ProcessConfig.User, ":")
-+		userID, err = strconv.Atoi(ids[0])
-+		if err != nil {
-+			logrus.Error("Only uid[:gid] is supported")
-+			return -1, err
-+		}
-+		if len(ids) == 1 {
-+			groupID = 0
-+		} else {
-+			groupID, err = strconv.Atoi(ids[1])
-+			if err != nil {
-+				logrus.Error("Only uid[:gid] is supported")
-+				return -1, err
-+			}
-+		}
-+	} else {
-+		userID = 0
-+		groupID = 0
++	userID, groupID, err := getUserInfo(c.ProcessConfig.User);
++	if err != nil {
++		return -1, err
 +	}
 +
 +	env := processConfig.Env
@@ -3616,8 +3625,8 @@ index 0000000..eaad4ae
 +		Env:      env,
 +		Terminal: processConfig.Tty,
 +		User: User{
-+			Gid: int64(groupID),
-+			Uid: int64(userID),
++			Gid: groupID,
++			Uid: userID,
 +		},
 +	}
 +
@@ -3732,6 +3741,121 @@ index 0000000..eaad4ae
 +	return strconv.FormatInt(val, 10)
 +}
 +
++func runCmd(
++    stdin *bytes.Buffer, stdout *bytes.Buffer,
++    name string, arg ...string) error {
++	cmd := exec.Command(name, arg...);
++
++	/* Setup Stdin, Stdout, and Stderr */
++	if stdin != nil {
++		cmd.Stdin = stdin
++	} else {
++		cmd.Stdin = nil
++	}
++	if stdout != nil {
++		cmd.Stdout = stdout
++	} else {
++		cmd.Stdout = new(bytes.Buffer)
++	}
++	stderr := new(bytes.Buffer)
++	cmd.Stderr = stderr
++
++	/*
++	 * Run the command.  If the command fails create a new error
++	 * object to return that includes stderr output.
++	 */
++	err := cmd.Start()
++	if err != nil {
++		return err
++	}
++	err = cmd.Wait()
++	if err != nil {
++		return errors.New(fmt.Sprintf("%v: %s", err, stderr.String()))
++	}
++	return nil
++}
++
++// Parses dns/client SMF profile from host; enables the service by 'default'.
++// Writes the container SMF profile to pathDNSXml.
++func extractDNSProfile(pathDNSXml string) error {
++	dnsEnabled := false
++	dnsProfile := SvcBundle{}
++	stdout := new(bytes.Buffer)
++
++	if err := runCmd(nil,
++			 stdout,
++			 SVCCFG,
++			 "extract",
++			 SMF_FMRI_DNS); err != nil {
++		return err
++	}
++
++	// Parse SMF Profile xml to store in dnsProfile.
++	if err := xml.Unmarshal((*stdout).Bytes(), &dnsProfile); err != nil {
++		return err
++	}
++
++	if len(dnsProfile.Services) != 1 {
++		//Too many services listed; something is wrong
++		return errors.New("Too many services")
++	}
++
++	// Check if dns/client service instance is persistently disabled
++	// NOTE:
++	//	If dns/client service properties are set at the service
++	//	level, we end up with <create_default_instance> tag in
++	//	the profile. However, if the properties are set at the
++	//	instance level, we end up with an <instance> tag. While
++	//	we parse the svccfg extract output, we need to decipher
++	//	either of the two cases to fetch is the service is
++	//	enabled/not.
++
++	if len(dnsProfile.Services[0].Instances) == 1 {
++		dnsEnabled = dnsProfile.Services[0].Instances[0].Enabled
++	} else if len(dnsProfile.Services[0].DefInstances) == 1 {
++		dnsEnabled = dnsProfile.Services[0].DefInstances[0].Enabled
++	} else {
++		// Neither tags - <instance> or <create_default_instance>
++		// were found. Something is wrong with the output
++		return errors.New("No instance/default instance found")
++	}
++
++	if dnsEnabled == false {
++		// Check if the service has been temporarily enabled
++		stdout.Reset()
++		if err := runCmd(nil,
++				stdout,
++				SVCPROP,
++				"-G",
++				"general_ovr",
++				"-P",
++				"enabled",
++				SMF_FMRI_DNS); err != nil {
++			return err
++		}
++
++		if (strings.Compare(strings.TrimSpace(stdout.String()), "true") == 0) {
++			// Service is temporarily enabled; Override the
++			// dns/client profile for container to be enabled.
++			if len(dnsProfile.Services[0].Instances) != 1 {
++				dnsProfile.Services[0].Instances[0].Enabled = true
++			} else {
++				dnsProfile.Services[0].DefInstances[0].Enabled = true
++			}
++		}
++	}
++
++	// Encode dnsProfile with proper indentation.
++	xmlout, _ := xml.MarshalIndent(dnsProfile, " ", "  ")
++
++	// Write back the SMF profile for container.
++	if err := ioutil.WriteFile(pathDNSXml, xmlout, 0644); err != nil {
++		return err
++	}
++
++	return nil
++}
++
 +// Run implements the exec driver Driver interface,
 +// it calls libcontainer APIs to run a container.
 +func (d *Driver) Run(c *execdriver.Command, pipes *execdriver.Pipes, hooks execdriver.Hooks) (execdriver.ExitStatus, error) {
@@ -3744,7 +3868,7 @@ index 0000000..eaad4ae
 +	}
 +	fmt.Printf("The hostname of the container is: %+v\n", hostname)
 +	fmt.Printf("The name of the container is: %+v\n", c.Name)
-+	fmt.Printf("user spec is : %+v\n", c.ProcessConfig.User)
++	fmt.Printf("user spec is : %#v\n", c.ProcessConfig.User)
 +	var OStype string
 +	if c.ContOS == "solaris" {
 +		OStype = "SunOS"
@@ -3757,28 +3881,9 @@ index 0000000..eaad4ae
 +		}
 +	}
 +
-+	var userID int
-+	var groupID int
-+	var err error
-+	if c.ProcessConfig.User != "" {
-+		ids := strings.Split(c.ProcessConfig.User, ":")
-+		userID, err = strconv.Atoi(ids[0])
-+		if err != nil {
-+			logrus.Error("Only uid[:gid] is supported")
-+			return execdriver.ExitStatus{ExitCode: -1}, err
-+		}
-+		if len(ids) == 1 {
-+			groupID = 0
-+		} else {
-+			groupID, err = strconv.Atoi(ids[1])
-+			if err != nil {
-+				logrus.Error("Only uid[:gid] is supported")
-+				return execdriver.ExitStatus{ExitCode: -1}, err
-+			}
-+		}
-+	} else {
-+		userID = 0
-+		groupID = 0
++	userID, groupID, err := getUserInfo(c.ProcessConfig.User);
++	if err != nil {
++		return execdriver.ExitStatus{ExitCode: -1}, err
 +	}
 +
 +	// TODO solaris: should this be handled by volumes?
@@ -3854,8 +3959,8 @@ index 0000000..eaad4ae
 +				Env:      c.ProcessConfig.Env,
 +				Terminal: c.ProcessConfig.Tty,
 +				User: User{
-+					Gid: int64(groupID),
-+					Uid: int64(userID),
++					Gid: groupID,
++					Uid: userID,
 +				},
 +			},
 +			RootSpec: RootSpec{
@@ -3885,70 +3990,25 @@ index 0000000..eaad4ae
 +	PathDnsXml := filepath.Join(ProfilesPath, "/dns_client.xml")
 +	PathNSSwitchXml := filepath.Join(ProfilesPath, "/ns_switch.xml")
 +
-+	err = exec.Command(SVCCFG, "extract", "svc:/network/dns/client", ">", PathDnsXml).Run()
-+	if err != nil {
++	// Extract dns client SMF Profile
++	if err = extractDNSProfile(PathDnsXml); err != nil {
 +		logrus.Errorf("Error exporting dns/client: %v", err)
 +		return execdriver.ExitStatus{ExitCode: -1}, err
 +	}
 +
-+	cmd := exec.Command(SVCCFG, "-s", "svc:/network/dns/client:default", "listprop", "general/enabled")
-+	outbufgen := new(bytes.Buffer)
-+	cmd.Stdout = outbufgen
-+	if err = cmd.Run(); err != nil {
-+		logrus.Errorf("Error listing property: %s", err)
-+		return execdriver.ExitStatus{ExitCode: -1}, err
-+	}
-+
-+	cmd = exec.Command(SVCCFG, "-s", "svc:/network/dns/client:default", "listprop", "general_ovr/enabled")
-+	outbufgenovr := new(bytes.Buffer)
-+	cmd.Stdout = outbufgenovr
-+	if err = cmd.Run(); err != nil {
-+		logrus.Errorf("Error listing property: %s", err)
-+		return execdriver.ExitStatus{ExitCode: -1}, err
-+	}
-+
-+	if strings.Contains(outbufgen.String(), "false") && strings.Contains(outbufgenovr.String(), "true") {
-+		PathDnsOvrXml := filepath.Join(ProfilesPath, "/dns_ovr_client.xml")
-+		var f *os.File
-+		FoundDnsClient := false
-+
-+		if f, err = os.Open(PathDnsXml); err != nil {
-+			logrus.Errorf("Error opening file: %v", err)
-+			return execdriver.ExitStatus{ExitCode: -1}, err
-+		}
-+		scanner := bufio.NewScanner(f)
-+
-+		if f, err = os.Create(PathDnsOvrXml); err != nil {
-+			logrus.Errorf("Error creating file: %v", err)
-+			return execdriver.ExitStatus{ExitCode: -1}, err
-+		}
-+		wr := bufio.NewWriter(f)
-+
-+		for scanner.Scan() {
-+			line := scanner.Text()
-+			if strings.Contains(line, "network/dns/client") {
-+				FoundDnsClient = true
-+			}
-+			if (strings.Contains(line, "<instance name=\"default\"") || strings.Contains(line, "<create_default_instance")) && FoundDnsClient == true {
-+				if strings.Contains(line, "enabled") {
-+					src := bytes.Replace([]byte(line), []byte("false"), []byte("true"), -1)
-+					line = string(src[:])
-+				}
-+				FoundDnsClient = false
-+			}
-+			wr.WriteString(line)
-+			wr.Flush()
-+		}
-+		os.Remove(PathDnsXml)
-+	}
-+
-+	err = exec.Command(SVCCFG, "extract", "svc:/system/name-service/switch", ">", PathNSSwitchXml).Run()
++	// Extract name service switch SMF Profile
++	err = exec.Command(
++		SVCCFG,
++		"extract",
++		SMF_FMRI_NSS,
++		">",
++		PathNSSwitchXml).Run()
 +	if err != nil {
 +		logrus.Errorf("Error exporting name-service/switch: %v", err)
 +		return execdriver.ExitStatus{ExitCode: -1}, err
 +	}
 +
-+	cmd = exec.Command(RUNZ, "create", c.Name, filepath.Dir(filepath.Dir(c.Rootfs)))
++	cmd := exec.Command(RUNZ, "create", c.Name, filepath.Dir(filepath.Dir(c.Rootfs)))
 +	cmd.Dir = filepath.Dir(filepath.Dir(c.Rootfs))
 +	cmd.Stdout = pipes.Stdout
 +	cmd.Stderr = pipes.Stderr
@@ -4141,7 +4201,7 @@ index 0000000..eaad4ae
 +}
 diff --git a/daemon/execdriver/zones/driver_unsupported.go b/daemon/execdriver/zones/driver_unsupported.go
 new file mode 100644
-index 0000000..8b4a636
+index 000000000..8b4a6369d
 --- /dev/null
 +++ b/daemon/execdriver/zones/driver_unsupported.go
 @@ -0,0 +1,12 @@
@@ -4159,7 +4219,7 @@ index 0000000..8b4a636
 +}
 diff --git a/daemon/execdriver/zones/driver_unsupported_nocgo.go b/daemon/execdriver/zones/driver_unsupported_nocgo.go
 new file mode 100644
-index 0000000..0b80a10
+index 000000000..0b80a1076
 --- /dev/null
 +++ b/daemon/execdriver/zones/driver_unsupported_nocgo.go
 @@ -0,0 +1,13 @@
@@ -4178,7 +4238,7 @@ index 0000000..0b80a10
 +}
 diff --git a/daemon/graphdriver/driver_solaris.go b/daemon/graphdriver/driver_solaris.go
 new file mode 100644
-index 0000000..be4eb52
+index 000000000..be4eb5265
 --- /dev/null
 +++ b/daemon/graphdriver/driver_solaris.go
 @@ -0,0 +1,8 @@
@@ -4191,7 +4251,7 @@ index 0000000..be4eb52
 +	}
 +)
 diff --git a/daemon/graphdriver/driver_unsupported.go b/daemon/graphdriver/driver_unsupported.go
-index b3f6857..4a87560 100644
+index b3f685730..4a875608b 100644
 --- a/daemon/graphdriver/driver_unsupported.go
 +++ b/daemon/graphdriver/driver_unsupported.go
 @@ -1,4 +1,4 @@
@@ -4201,7 +4261,7 @@ index b3f6857..4a87560 100644
  package graphdriver
  
 diff --git a/daemon/graphdriver/graphtest/graphtest_unix.go b/daemon/graphdriver/graphtest/graphtest_unix.go
-index 534f2e5..c3e2b35 100644
+index 534f2e586..c3e2b353f 100644
 --- a/daemon/graphdriver/graphtest/graphtest_unix.go
 +++ b/daemon/graphdriver/graphtest/graphtest_unix.go
 @@ -1,4 +1,4 @@
@@ -4211,7 +4271,7 @@ index 534f2e5..c3e2b35 100644
  package graphtest
  
 diff --git a/daemon/graphdriver/register/register_zfs.go b/daemon/graphdriver/register/register_zfs.go
-index 8c31c41..3ba59f5 100644
+index 8c31c415f..3ba59f5a3 100644
 --- a/daemon/graphdriver/register/register_zfs.go
 +++ b/daemon/graphdriver/register/register_zfs.go
 @@ -1,4 +1,4 @@
@@ -4221,7 +4281,7 @@ index 8c31c41..3ba59f5 100644
  package register
  
 diff --git a/daemon/graphdriver/zfs/zfs.go b/daemon/graphdriver/zfs/zfs.go
-index 5cc10d2..04e474e 100644
+index 5cc10d2e2..04e474eba 100644
 --- a/daemon/graphdriver/zfs/zfs.go
 +++ b/daemon/graphdriver/zfs/zfs.go
 @@ -1,4 +1,4 @@
@@ -4315,7 +4375,7 @@ index 5cc10d2..04e474e 100644
  			d.Lock()
  			d.filesystemsCache[fs.Name] = true
 diff --git a/daemon/graphdriver/zfs/zfs_freebsd.go b/daemon/graphdriver/zfs/zfs_freebsd.go
-index 1c05fa7..24bbfe9 100644
+index 1c05fa794..24bbfe9c3 100644
 --- a/daemon/graphdriver/zfs/zfs_freebsd.go
 +++ b/daemon/graphdriver/zfs/zfs_freebsd.go
 @@ -7,8 +7,11 @@ import (
@@ -4368,7 +4428,7 @@ index 1c05fa7..24bbfe9 100644
 +	}
 +}
 diff --git a/daemon/graphdriver/zfs/zfs_linux.go b/daemon/graphdriver/zfs/zfs_linux.go
-index 52ed516..62f2ca9 100644
+index 52ed51604..62f2ca9c2 100644
 --- a/daemon/graphdriver/zfs/zfs_linux.go
 +++ b/daemon/graphdriver/zfs/zfs_linux.go
 @@ -2,12 +2,16 @@ package zfs
@@ -4427,7 +4487,7 @@ index 52ed516..62f2ca9 100644
 +}
 diff --git a/daemon/graphdriver/zfs/zfs_solaris.go b/daemon/graphdriver/zfs/zfs_solaris.go
 new file mode 100644
-index 0000000..a9a174b
+index 000000000..a9a174b5e
 --- /dev/null
 +++ b/daemon/graphdriver/zfs/zfs_solaris.go
 @@ -0,0 +1,95 @@
@@ -4527,7 +4587,7 @@ index 0000000..a9a174b
 +	}
 +}
 diff --git a/daemon/graphdriver/zfs/zfs_unsupported.go b/daemon/graphdriver/zfs/zfs_unsupported.go
-index 643b169..ce8daad 100644
+index 643b169bc..ce8daadaf 100644
 --- a/daemon/graphdriver/zfs/zfs_unsupported.go
 +++ b/daemon/graphdriver/zfs/zfs_unsupported.go
 @@ -1,4 +1,4 @@
@@ -4537,7 +4597,7 @@ index 643b169..ce8daad 100644
  package zfs
  
 diff --git a/daemon/info.go b/daemon/info.go
-index 008ac20..3d86bc0 100644
+index 008ac20a5..3d86bc06a 100644
 --- a/daemon/info.go
 +++ b/daemon/info.go
 @@ -134,11 +134,9 @@ func (daemon *Daemon) SystemInfo() (*types.Info, error) {
@@ -4554,7 +4614,7 @@ index 008ac20..3d86bc0 100644
  
 diff --git a/daemon/inspect_solaris.go b/daemon/inspect_solaris.go
 new file mode 100644
-index 0000000..e42a61d
+index 000000000..e42a61dad
 --- /dev/null
 +++ b/daemon/inspect_solaris.go
 @@ -0,0 +1,30 @@
@@ -4589,7 +4649,7 @@ index 0000000..e42a61d
 +	return daemon.containerInspectCurrent(name, false)
 +}
 diff --git a/daemon/inspect_unix.go b/daemon/inspect_unix.go
-index b9321f3..d241711 100644
+index b9321f34c..d241711e1 100644
 --- a/daemon/inspect_unix.go
 +++ b/daemon/inspect_unix.go
 @@ -1,4 +1,4 @@
@@ -4599,7 +4659,7 @@ index b9321f3..d241711 100644
  package daemon
  
 diff --git a/daemon/list_unix.go b/daemon/list_unix.go
-index 8dccbe4..91c9cac 100644
+index 8dccbe4e8..91c9caccf 100644
 --- a/daemon/list_unix.go
 +++ b/daemon/list_unix.go
 @@ -1,4 +1,4 @@
@@ -4609,7 +4669,7 @@ index 8dccbe4..91c9cac 100644
  package daemon
  
 diff --git a/daemon/network.go b/daemon/network.go
-index f6a2515..0ffe17f 100644
+index f6a251520..0ffe17f9a 100644
 --- a/daemon/network.go
 +++ b/daemon/network.go
 @@ -4,6 +4,7 @@ import (
@@ -4641,7 +4701,7 @@ index f6a2515..0ffe17f 100644
  	if err != nil {
  		if force {
 diff --git a/daemon/selinux_unsupported.go b/daemon/selinux_unsupported.go
-index 25a56ad..4f9bbe4 100644
+index 25a56ad15..4f9bbe4b6 100644
 --- a/daemon/selinux_unsupported.go
 +++ b/daemon/selinux_unsupported.go
 @@ -2,6 +2,10 @@
@@ -4664,7 +4724,7 @@ index 25a56ad..4f9bbe4 100644
 +	return nil, nil
 +}
 diff --git a/daemon/start.go b/daemon/start.go
-index 418dace..50b1cc1 100644
+index 418dace60..50b1cc1d1 100644
 --- a/daemon/start.go
 +++ b/daemon/start.go
 @@ -1,6 +1,8 @@
@@ -4706,10 +4766,10 @@ index 418dace..50b1cc1 100644
  	}
 diff --git a/daemon/stats_collector_solaris.go b/daemon/stats_collector_solaris.go
 new file mode 100644
-index 0000000..4d4b4a0
+index 000000000..06ee1bc85
 --- /dev/null
 +++ b/daemon/stats_collector_solaris.go
-@@ -0,0 +1,537 @@
+@@ -0,0 +1,541 @@
 +package daemon
 +
 +import (
@@ -5047,7 +5107,11 @@ index 0000000..4d4b4a0
 +	// it will grow enough in first iteration
 +	pairs := make(map[string]publishersPair)
 +
-+	zsctl := C.zs_open()
++	zsctl, err := C.zs_open()
++	if err != nil {
++		logrus.Error("Failed to initialize libzonestat handle: %s", err)
++		return
++	}
 +	usage_last, err := C.get_usage(zsctl)
 +	if usage_last == nil {
 +		logrus.Error("Failed to get usage: ", err)
@@ -5248,7 +5312,7 @@ index 0000000..4d4b4a0
 +	return stats, nil
 +}
 diff --git a/daemon/stats_collector_unix.go b/daemon/stats_collector_unix.go
-index 2fd368c..ec408c6 100644
+index 2fd368cd3..ec408c609 100644
 --- a/daemon/stats_collector_unix.go
 +++ b/daemon/stats_collector_unix.go
 @@ -1,4 +1,4 @@
@@ -5259,7 +5323,7 @@ index 2fd368c..ec408c6 100644
  
 diff --git a/daemon/stats_solaris.go b/daemon/stats_solaris.go
 new file mode 100644
-index 0000000..a1230c6
+index 000000000..a1230c6c4
 --- /dev/null
 +++ b/daemon/stats_solaris.go
 @@ -0,0 +1,84 @@
@@ -5349,7 +5413,7 @@ index 0000000..a1230c6
 +}
 diff --git a/docker/daemon_solaris.go b/docker/daemon_solaris.go
 new file mode 100644
-index 0000000..ee22de9
+index 000000000..ee22de9a0
 --- /dev/null
 +++ b/docker/daemon_solaris.go
 @@ -0,0 +1,58 @@
@@ -5412,7 +5476,7 @@ index 0000000..ee22de9
 +func notifySystem() {
 +}
 diff --git a/docker/daemon_unix.go b/docker/daemon_unix.go
-index ef90970..67fb35d 100644
+index ef9097046..67fb35d53 100644
 --- a/docker/daemon_unix.go
 +++ b/docker/daemon_unix.go
 @@ -1,4 +1,4 @@
@@ -5422,7 +5486,7 @@ index ef90970..67fb35d 100644
  package main
  
 diff --git a/hack/.vendor-helpers.sh b/hack/.vendor-helpers.sh
-index e3be72b..b2fa5ef 100755
+index e3be72bc8..b2fa5ef73 100755
 --- a/hack/.vendor-helpers.sh
 +++ b/hack/.vendor-helpers.sh
 @@ -13,7 +13,7 @@ if ! go list github.com/docker/docker/docker &> /dev/null; then
@@ -5457,7 +5521,7 @@ index e3be72b..b2fa5ef 100755
 +       $find "$target" -name \*.go -exec gsed -i -e "s|\"${remove}|\"|g" {} \;
  }
 diff --git a/hack/make.sh b/hack/make.sh
-index ca01fd8..2397afe 100755
+index ca01fd8ba..2397afec2 100755
 --- a/hack/make.sh
 +++ b/hack/make.sh
 @@ -71,7 +71,7 @@ if command -v git &> /dev/null && git rev-parse &> /dev/null; then
@@ -5496,7 +5560,7 @@ index ca01fd8..2397afe 100755
  	$LDFLAGS_STATIC
  	-extldflags \"$EXTLDFLAGS_STATIC\"
 diff --git a/hack/make/.detect-daemon-osarch b/hack/make/.detect-daemon-osarch
-index f95afc4..4bc2a7a 100644
+index f95afc475..4bc2a7aa7 100644
 --- a/hack/make/.detect-daemon-osarch
 +++ b/hack/make/.detect-daemon-osarch
 @@ -2,17 +2,33 @@
@@ -5536,7 +5600,7 @@ index f95afc4..4bc2a7a 100644
 +esac
 +export PACKAGE_ARCH
 diff --git a/hack/make/.ensure-httpserver b/hack/make/.ensure-httpserver
-index c159fa8..f7d200e 100644
+index c159fa801..f7d200ed9 100644
 --- a/hack/make/.ensure-httpserver
 +++ b/hack/make/.ensure-httpserver
 @@ -8,7 +8,7 @@ dir="$DEST/httpserver"
@@ -5549,7 +5613,7 @@ index c159fa8..f7d200e 100644
  	docker build -qt httpserver . > /dev/null
  )
 diff --git a/hack/make/.integration-daemon-setup b/hack/make/.integration-daemon-setup
-index 9732486..dc557fe 100644
+index 97324862d..dc557fed2 100644
 --- a/hack/make/.integration-daemon-setup
 +++ b/hack/make/.integration-daemon-setup
 @@ -2,7 +2,7 @@
@@ -5564,7 +5628,7 @@ index 9732486..dc557fe 100644
 -bundle .ensure-syscall-test
 +#bundle .ensure-syscall-test
 diff --git a/hack/make/.integration-daemon-start b/hack/make/.integration-daemon-start
-index ba466b7..7234f35 100644
+index ba466b7c0..7234f3532 100644
 --- a/hack/make/.integration-daemon-start
 +++ b/hack/make/.integration-daemon-start
 @@ -12,8 +12,10 @@ fi
@@ -5595,7 +5659,7 @@ index ba466b7..7234f35 100644
  		$extra_params \
  			&> "$DEST/docker.log"
 diff --git a/integration-cli/docker_api_build_test.go b/integration-cli/docker_api_build_test.go
-index 49de71c9..e2679bb 100644
+index 49de71c9a..e2679bb69 100644
 --- a/integration-cli/docker_api_build_test.go
 +++ b/integration-cli/docker_api_build_test.go
 @@ -204,9 +204,9 @@ RUN echo from Dockerfile`,
@@ -5611,7 +5675,7 @@ index 49de71c9..e2679bb 100644
  	}, false)
  	c.Assert(err, checker.IsNil)
 diff --git a/integration-cli/docker_api_events_test.go b/integration-cli/docker_api_events_test.go
-index 5d6e817..f584663 100644
+index 5d6e817f0..f58466314 100644
 --- a/integration-cli/docker_api_events_test.go
 +++ b/integration-cli/docker_api_events_test.go
 @@ -39,7 +39,7 @@ func (s *DockerSuite) TestEventsApiBackwardsCompatible(c *check.C) {
@@ -5631,7 +5695,7 @@ index 5d6e817..f584663 100644
 +	c.Assert(containerCreateEvent.From, checker.Equals, "solaris")
  }
 diff --git a/integration-cli/docker_api_exec_test.go b/integration-cli/docker_api_exec_test.go
-index 8acc9ac..295af9c 100644
+index 8acc9acad..295af9cb6 100644
 --- a/integration-cli/docker_api_exec_test.go
 +++ b/integration-cli/docker_api_exec_test.go
 @@ -87,7 +87,7 @@ func (s *DockerSuite) TestExecAPIStart(c *check.C) {
@@ -5662,7 +5726,7 @@ index 8acc9ac..295af9c 100644
  		"cmd":         []string{"true"},
  		"AttachStdin": true,
 diff --git a/integration-cli/docker_api_inspect_test.go b/integration-cli/docker_api_inspect_test.go
-index 6e3753e..b977cb4 100644
+index 6e3753e42..b977cb44f 100644
 --- a/integration-cli/docker_api_inspect_test.go
 +++ b/integration-cli/docker_api_inspect_test.go
 @@ -48,7 +48,7 @@ func (s *DockerSuite) TestInspectApiContainerResponse(c *check.C) {
@@ -5710,7 +5774,7 @@ index 6e3753e..b977cb4 100644
  
  // #17131, #17139, #17173
 diff --git a/integration-cli/docker_api_volumes_test.go b/integration-cli/docker_api_volumes_test.go
-index eab1909..dbd2cda 100644
+index eab19091c..dbd2cdaec 100644
 --- a/integration-cli/docker_api_volumes_test.go
 +++ b/integration-cli/docker_api_volumes_test.go
 @@ -15,7 +15,7 @@ func (s *DockerSuite) TestVolumesApiList(c *check.C) {
@@ -5732,7 +5796,7 @@ index eab1909..dbd2cda 100644
  	status, b, err := sockRequest("GET", "/volumes", nil)
  	c.Assert(err, checker.IsNil)
 diff --git a/integration-cli/docker_cli_attach_unix_test.go b/integration-cli/docker_cli_attach_unix_test.go
-index e5e7ab3..8458d80 100644
+index e5e7ab366..8458d80b5 100644
 --- a/integration-cli/docker_cli_attach_unix_test.go
 +++ b/integration-cli/docker_cli_attach_unix_test.go
 @@ -1,4 +1,4 @@
@@ -5742,7 +5806,7 @@ index e5e7ab3..8458d80 100644
  package main
  
 diff --git a/integration-cli/docker_cli_authz_unix_test.go b/integration-cli/docker_cli_authz_unix_test.go
-index 4ab83b9..5d2e008 100644
+index 4ab83b917..5d2e00887 100644
 --- a/integration-cli/docker_cli_authz_unix_test.go
 +++ b/integration-cli/docker_cli_authz_unix_test.go
 @@ -1,4 +1,4 @@
@@ -5752,7 +5816,7 @@ index 4ab83b9..5d2e008 100644
  package main
  
 diff --git a/integration-cli/docker_cli_build_test.go b/integration-cli/docker_cli_build_test.go
-index b5bd1d7..7353212 100644
+index b5bd1d79d..735321206 100644
 --- a/integration-cli/docker_cli_build_test.go
 +++ b/integration-cli/docker_cli_build_test.go
 @@ -6466,7 +6466,7 @@ func (s *DockerSuite) TestBuildTagEvent(c *check.C) {
@@ -5765,7 +5829,7 @@ index b5bd1d7..7353212 100644
  	`
  	cmd := exec.Command(dockerBinary, "build", "-t", "tag1", "-t", "tag2:v2",
 diff --git a/integration-cli/docker_cli_build_unix_test.go b/integration-cli/docker_cli_build_unix_test.go
-index ea8b32a..d670823 100644
+index ea8b32a52..d67082365 100644
 --- a/integration-cli/docker_cli_build_unix_test.go
 +++ b/integration-cli/docker_cli_build_unix_test.go
 @@ -20,7 +20,7 @@ import (
@@ -5778,7 +5842,7 @@ index ea8b32a..d670823 100644
  
  	ctx, err := fakeContext(`
 diff --git a/integration-cli/docker_cli_create_test.go b/integration-cli/docker_cli_create_test.go
-index 633313e..a424833 100644
+index 633313e67..a424833b2 100644
 --- a/integration-cli/docker_cli_create_test.go
 +++ b/integration-cli/docker_cli_create_test.go
 @@ -247,7 +247,7 @@ func (s *DockerSuite) TestCreateModeIpcContainer(c *check.C) {
@@ -5800,7 +5864,7 @@ index 633313e..a424833 100644
  	res, err := inspectFieldJSON(name, "Config.StopSignal")
  	c.Assert(err, check.IsNil)
 diff --git a/integration-cli/docker_cli_daemon_test.go b/integration-cli/docker_cli_daemon_test.go
-index 2fa39da..29fa700 100644
+index 2fa39dae4..29fa70096 100644
 --- a/integration-cli/docker_cli_daemon_test.go
 +++ b/integration-cli/docker_cli_daemon_test.go
 @@ -13,6 +13,7 @@ import (
@@ -5853,7 +5917,7 @@ index 2fa39da..29fa700 100644
  	type kind int
  
 diff --git a/integration-cli/docker_cli_events_test.go b/integration-cli/docker_cli_events_test.go
-index aaeb1b0..3c92464 100644
+index aaeb1b093..3c9246434 100644
 --- a/integration-cli/docker_cli_events_test.go
 +++ b/integration-cli/docker_cli_events_test.go
 @@ -67,8 +67,8 @@ func (s *DockerSuite) TestEventsUntag(c *check.C) {
@@ -5868,7 +5932,7 @@ index aaeb1b0..3c92464 100644
  
  	out, _ = dockerCmd(c, "events", "--since=0", fmt.Sprintf("--until=%d", daemonTime(c).Unix()))
 diff --git a/integration-cli/docker_cli_events_unix_test.go b/integration-cli/docker_cli_events_unix_test.go
-index 2f1cb91..880b279 100644
+index 2f1cb917a..880b27916 100644
 --- a/integration-cli/docker_cli_events_unix_test.go
 +++ b/integration-cli/docker_cli_events_unix_test.go
 @@ -3,46 +3,44 @@
@@ -5945,7 +6009,7 @@ index 2f1cb91..880b279 100644
  
  func (s *DockerSuite) TestEventsOOMDisableFalse(c *check.C) {
 diff --git a/integration-cli/docker_cli_exec_unix_test.go b/integration-cli/docker_cli_exec_unix_test.go
-index a50d580..07f5be6 100644
+index a50d580de..07f5be65a 100644
 --- a/integration-cli/docker_cli_exec_unix_test.go
 +++ b/integration-cli/docker_cli_exec_unix_test.go
 @@ -1,4 +1,4 @@
@@ -5955,7 +6019,7 @@ index a50d580..07f5be6 100644
  package main
  
 diff --git a/integration-cli/docker_cli_images_test.go b/integration-cli/docker_cli_images_test.go
-index dbceddf..4ac3108 100644
+index dbceddf14..4ac31088c 100644
 --- a/integration-cli/docker_cli_images_test.go
 +++ b/integration-cli/docker_cli_images_test.go
 @@ -111,7 +111,7 @@ func (s *DockerSuite) TestImagesFilterLabelMatch(c *check.C) {
@@ -5988,7 +6052,7 @@ index dbceddf..4ac3108 100644
  	out, _ := dockerCmd(c, "images", "--format", "{{.Repository}}", tag)
  	lines := strings.Split(strings.TrimSpace(string(out)), "\n")
 diff --git a/integration-cli/docker_cli_inspect_test.go b/integration-cli/docker_cli_inspect_test.go
-index c39b2a0..04b36ee 100644
+index c39b2a045..04b36eedc 100644
 --- a/integration-cli/docker_cli_inspect_test.go
 +++ b/integration-cli/docker_cli_inspect_test.go
 @@ -302,18 +302,18 @@ func (s *DockerSuite) TestInspectNoSizeFlagContainer(c *check.C) {
@@ -6071,7 +6135,7 @@ index c39b2a0..04b36ee 100644
  
  	c.Assert(err, checker.Not(check.IsNil))
 diff --git a/integration-cli/docker_cli_links_test.go b/integration-cli/docker_cli_links_test.go
-index 36175a2..0992d93 100644
+index 36175a23b..0992d935a 100644
 --- a/integration-cli/docker_cli_links_test.go
 +++ b/integration-cli/docker_cli_links_test.go
 @@ -1,3 +1,5 @@
@@ -6081,7 +6145,7 @@ index 36175a2..0992d93 100644
  
  import (
 diff --git a/integration-cli/docker_cli_links_unix_test.go b/integration-cli/docker_cli_links_unix_test.go
-index 1af9279..ebfd960 100644
+index 1af927930..ebfd96014 100644
 --- a/integration-cli/docker_cli_links_unix_test.go
 +++ b/integration-cli/docker_cli_links_unix_test.go
 @@ -1,4 +1,4 @@
@@ -6091,7 +6155,7 @@ index 1af9279..ebfd960 100644
  package main
  
 diff --git a/integration-cli/docker_cli_network_unix_test.go b/integration-cli/docker_cli_network_unix_test.go
-index 24dd8a9..b1b7fd1 100644
+index 24dd8a931..b1b7fd18a 100644
 --- a/integration-cli/docker_cli_network_unix_test.go
 +++ b/integration-cli/docker_cli_network_unix_test.go
 @@ -1,4 +1,4 @@
@@ -6101,7 +6165,7 @@ index 24dd8a9..b1b7fd1 100644
  package main
  
 diff --git a/integration-cli/docker_cli_ps_test.go b/integration-cli/docker_cli_ps_test.go
-index 4bda638..9930ae3 100644
+index 4bda63841..9930ae31e 100644
 --- a/integration-cli/docker_cli_ps_test.go
 +++ b/integration-cli/docker_cli_ps_test.go
 @@ -18,17 +18,17 @@ import (
@@ -6151,7 +6215,7 @@ index 4bda638..9930ae3 100644
  	c.Assert(fields[len(fields)-2], checker.Equals, expected, check.Commentf("Expected: %v, got: %v", expected, fields[len(fields)-2]))
  
 diff --git a/integration-cli/docker_cli_run_test.go b/integration-cli/docker_cli_run_test.go
-index 80db1b2..425f178 100644
+index 80db1b2f6..425f17816 100644
 --- a/integration-cli/docker_cli_run_test.go
 +++ b/integration-cli/docker_cli_run_test.go
 @@ -29,7 +29,7 @@ import (
@@ -7416,7 +7480,7 @@ index 80db1b2..425f178 100644
  	// Remove the parent so there are not other references to the volumes
  	dockerCmd(c, "rm", "-f", "parent")
 diff --git a/integration-cli/docker_cli_run_unix_test.go b/integration-cli/docker_cli_run_unix_test.go
-index 15f0d52..57c9856 100644
+index 15f0d52ac..57c985663 100644
 --- a/integration-cli/docker_cli_run_unix_test.go
 +++ b/integration-cli/docker_cli_run_unix_test.go
 @@ -25,6 +25,7 @@ import (
@@ -7644,7 +7708,7 @@ index 15f0d52..57c9856 100644
  	containerID := strings.TrimSpace(out)
  
 diff --git a/integration-cli/docker_cli_save_load_unix_test.go b/integration-cli/docker_cli_save_load_unix_test.go
-index cef7d43..e0256b5 100644
+index cef7d4307..e0256b595 100644
 --- a/integration-cli/docker_cli_save_load_unix_test.go
 +++ b/integration-cli/docker_cli_save_load_unix_test.go
 @@ -1,4 +1,4 @@
@@ -7654,7 +7718,7 @@ index cef7d43..e0256b5 100644
  package main
  
 diff --git a/integration-cli/docker_cli_start_volume_driver_unix_test.go b/integration-cli/docker_cli_start_volume_driver_unix_test.go
-index 6ee53b4..fd09c60 100644
+index 6ee53b4b5..fd09c60b1 100644
 --- a/integration-cli/docker_cli_start_volume_driver_unix_test.go
 +++ b/integration-cli/docker_cli_start_volume_driver_unix_test.go
 @@ -1,4 +1,4 @@
@@ -7722,7 +7786,7 @@ index 6ee53b4..fd09c60 100644
  	var mounts []struct {
  		Name   string
 diff --git a/integration-cli/docker_cli_volume_driver_compat_unix_test.go b/integration-cli/docker_cli_volume_driver_compat_unix_test.go
-index 2207822..cc054e3 100644
+index 2207822f7..cc054e36c 100644
 --- a/integration-cli/docker_cli_volume_driver_compat_unix_test.go
 +++ b/integration-cli/docker_cli_volume_driver_compat_unix_test.go
 @@ -1,4 +1,4 @@
@@ -7741,7 +7805,7 @@ index 2207822..cc054e3 100644
  	out, err = s.d.Cmd("rm", "test")
  	c.Assert(err, checker.IsNil, check.Commentf(out))
 diff --git a/integration-cli/docker_cli_volume_test.go b/integration-cli/docker_cli_volume_test.go
-index 5a19ba5..b81bff4 100644
+index 5a19ba539..b81bff426 100644
 --- a/integration-cli/docker_cli_volume_test.go
 +++ b/integration-cli/docker_cli_volume_test.go
 @@ -72,7 +72,7 @@ func (s *DockerSuite) TestVolumeCliLs(c *check.C) {
@@ -7789,7 +7853,7 @@ index 5a19ba5..b81bff4 100644
  	dockerCmd(c, "rm", "test2")
  
 diff --git a/integration-cli/docker_cli_wait_test.go b/integration-cli/docker_cli_wait_test.go
-index 2993397..c0d4217 100644
+index 299339756..c0d421796 100644
 --- a/integration-cli/docker_cli_wait_test.go
 +++ b/integration-cli/docker_cli_wait_test.go
 @@ -12,7 +12,7 @@ import (
@@ -7811,7 +7875,7 @@ index 2993397..c0d4217 100644
  
  	err := waitInspect(containerID, "{{.State.Running}}", "false", 30*time.Second)
 diff --git a/integration-cli/docker_test_vars.go b/integration-cli/docker_test_vars.go
-index e876736..b3d542f 100644
+index e87673693..b3d542fca 100644
 --- a/integration-cli/docker_test_vars.go
 +++ b/integration-cli/docker_test_vars.go
 @@ -58,7 +58,7 @@ const (
@@ -7824,7 +7888,7 @@ index e876736..b3d542f 100644
  
  func init() {
 diff --git a/integration-cli/docker_utils.go b/integration-cli/docker_utils.go
-index 069ab88..35e6b3b 100644
+index 069ab88b8..35e6b3bd1 100644
 --- a/integration-cli/docker_utils.go
 +++ b/integration-cli/docker_utils.go
 @@ -62,7 +62,7 @@ func init() {
@@ -7837,7 +7901,7 @@ index 069ab88..35e6b3b 100644
  	}
  
 diff --git a/integration-cli/test_vars_unix.go b/integration-cli/test_vars_unix.go
-index 853889a..eae442f 100644
+index 853889abe..eae442f8b 100644
 --- a/integration-cli/test_vars_unix.go
 +++ b/integration-cli/test_vars_unix.go
 @@ -10,7 +10,7 @@ const (
@@ -7851,7 +7915,7 @@ index 853889a..eae442f 100644
 -var defaultSleepCommand = []string{"top"}
 +var defaultSleepCommand = []string{"sleep", "60"}
 diff --git a/layer/layer_unix.go b/layer/layer_unix.go
-index 524b97e..86defff 100644
+index 524b97e8d..86defff72 100644
 --- a/layer/layer_unix.go
 +++ b/layer/layer_unix.go
 @@ -1,4 +1,4 @@
@@ -7861,7 +7925,7 @@ index 524b97e..86defff 100644
  package layer
  
 diff --git a/migrate/v1/migratev1_test.go b/migrate/v1/migratev1_test.go
-index 6e8af7f..54cbc92 100644
+index 6e8af7fdc..54cbc9216 100644
 --- a/migrate/v1/migratev1_test.go
 +++ b/migrate/v1/migratev1_test.go
 @@ -1,3 +1,5 @@
@@ -7871,7 +7935,7 @@ index 6e8af7f..54cbc92 100644
  
  import (
 diff --git a/opts/hosts.go b/opts/hosts.go
-index d1b6985..5f4d2d4 100644
+index d1b698541..5f4d2d4a5 100644
 --- a/opts/hosts.go
 +++ b/opts/hosts.go
 @@ -19,9 +19,6 @@ var (
@@ -7886,7 +7950,7 @@ index d1b6985..5f4d2d4 100644
  	// DefaultTLSHost constant defines the default host string used by docker for TLS sockets
 diff --git a/opts/hosts_solaris.go b/opts/hosts_solaris.go
 new file mode 100644
-index 0000000..75cd3f2
+index 000000000..75cd3f2f5
 --- /dev/null
 +++ b/opts/hosts_solaris.go
 @@ -0,0 +1,10 @@
@@ -7901,7 +7965,7 @@ index 0000000..75cd3f2
 +// Docker daemon by default always listens on the default unix socket
 +var DefaultUnixSocket = "/system/volatile/docker/docker.sock"
 diff --git a/opts/hosts_test.go b/opts/hosts_test.go
-index e497e28..cd65f82 100644
+index e497e2865..cd65f82b5 100644
 --- a/opts/hosts_test.go
 +++ b/opts/hosts_test.go
 @@ -16,7 +16,7 @@ func TestParseHost(t *testing.T) {
@@ -7923,7 +7987,7 @@ index e497e28..cd65f82 100644
  	}
  
 diff --git a/opts/hosts_unix.go b/opts/hosts_unix.go
-index 611407a..4e231e3 100644
+index 611407a9d..4e231e39a 100644
 --- a/opts/hosts_unix.go
 +++ b/opts/hosts_unix.go
 @@ -1,4 +1,4 @@
@@ -7941,7 +8005,7 @@ index 611407a..4e231e3 100644
 +// Docker daemon by default always listens on the default unix socket
 +var DefaultUnixSocket = "/var/run/docker.sock"
 diff --git a/pkg/archive/archive_test.go b/pkg/archive/archive_test.go
-index 0a89902..1e05cda 100644
+index 0a899023a..1e05cda3f 100644
 --- a/pkg/archive/archive_test.go
 +++ b/pkg/archive/archive_test.go
 @@ -15,7 +15,7 @@ import (
@@ -8018,7 +8082,7 @@ index 0a89902..1e05cda 100644
  	if err != nil {
  		t.Fatal(err)
 diff --git a/pkg/archive/changes_test.go b/pkg/archive/changes_test.go
-index f4316ce..7c549a0 100644
+index f4316ce21..7c549a031 100644
 --- a/pkg/archive/changes_test.go
 +++ b/pkg/archive/changes_test.go
 @@ -18,7 +18,8 @@ func max(x, y int) int {
@@ -8052,7 +8116,7 @@ index f4316ce..7c549a0 100644
  
  func TestChangesSizeWithHardlinks(t *testing.T) {
 diff --git a/pkg/chrootarchive/archive_test.go b/pkg/chrootarchive/archive_test.go
-index 1d6c2b9..c7e1ab6 100644
+index 1d6c2b922..c7e1ab632 100644
 --- a/pkg/chrootarchive/archive_test.go
 +++ b/pkg/chrootarchive/archive_test.go
 @@ -160,7 +160,7 @@ func TestChrootTarUntarWithSymlink(t *testing.T) {
@@ -8152,7 +8216,7 @@ index 1d6c2b9..c7e1ab6 100644
  	}
  	dest := filepath.Join(tmpdir, "dest")
 diff --git a/pkg/chrootarchive/diff_unix.go b/pkg/chrootarchive/diff_unix.go
-index 4196dd4..ade5210 100644
+index 4196dd4b1..ade52104f 100644
 --- a/pkg/chrootarchive/diff_unix.go
 +++ b/pkg/chrootarchive/diff_unix.go
 @@ -65,7 +65,6 @@ func applyLayer() {
@@ -8164,7 +8228,7 @@ index 4196dd4..ade5210 100644
  	os.Exit(0)
  }
 diff --git a/pkg/directory/directory_unix.go b/pkg/directory/directory_unix.go
-index dbebdd3..b43c79f 100644
+index dbebdd3c2..b43c79fb8 100644
 --- a/pkg/directory/directory_unix.go
 +++ b/pkg/directory/directory_unix.go
 @@ -1,4 +1,4 @@
@@ -8175,7 +8239,7 @@ index dbebdd3..b43c79f 100644
  
 diff --git a/pkg/fileutils/fileutils_solaris.go b/pkg/fileutils/fileutils_solaris.go
 new file mode 100644
-index 0000000..0f2cb7a
+index 000000000..0f2cb7ab9
 --- /dev/null
 +++ b/pkg/fileutils/fileutils_solaris.go
 @@ -0,0 +1,7 @@
@@ -8187,7 +8251,7 @@ index 0000000..0f2cb7a
 +	return -1
 +}
 diff --git a/pkg/integration/utils_test.go b/pkg/integration/utils_test.go
-index 8920834..ef3e30f 100644
+index 892083444..ef3e30fdf 100644
 --- a/pkg/integration/utils_test.go
 +++ b/pkg/integration/utils_test.go
 @@ -23,7 +23,8 @@ func TestIsKilledFalseWithNonKilledProcess(t *testing.T) {
@@ -8224,7 +8288,7 @@ index 8920834..ef3e30f 100644
  	}
 diff --git a/pkg/mount/flags_solaris.go b/pkg/mount/flags_solaris.go
 new file mode 100644
-index 0000000..ad170a0
+index 000000000..ad170a0d2
 --- /dev/null
 +++ b/pkg/mount/flags_solaris.go
 @@ -0,0 +1,42 @@
@@ -8271,7 +8335,7 @@ index 0000000..ad170a0
 +	STRICTATIME = 0
 +)
 diff --git a/pkg/mount/flags_unsupported.go b/pkg/mount/flags_unsupported.go
-index a90d3d1..9b7318a 100644
+index a90d3d115..9b7318a35 100644
 --- a/pkg/mount/flags_unsupported.go
 +++ b/pkg/mount/flags_unsupported.go
 @@ -1,4 +1,4 @@
@@ -8281,7 +8345,7 @@ index a90d3d1..9b7318a 100644
  package mount
  
 diff --git a/pkg/mount/mount.go b/pkg/mount/mount.go
-index ed7216e..f85733f 100644
+index ed7216e5c..f85733fd6 100644
 --- a/pkg/mount/mount.go
 +++ b/pkg/mount/mount.go
 @@ -10,7 +10,8 @@ func GetMounts() ([]*Info, error) {
@@ -8295,7 +8359,7 @@ index ed7216e..f85733f 100644
  	entries, err := parseMountTable()
  	if err != nil {
 diff --git a/pkg/mount/mount_test.go b/pkg/mount/mount_test.go
-index 5c7f1b8..133d6a1 100644
+index 5c7f1b86a..133d6a195 100644
 --- a/pkg/mount/mount_test.go
 +++ b/pkg/mount/mount_test.go
 @@ -1,3 +1,5 @@
@@ -8306,7 +8370,7 @@ index 5c7f1b8..133d6a1 100644
  import (
 diff --git a/pkg/mount/mounter_solaris.go b/pkg/mount/mounter_solaris.go
 new file mode 100644
-index 0000000..c684aa8
+index 000000000..c684aa81f
 --- /dev/null
 +++ b/pkg/mount/mounter_solaris.go
 @@ -0,0 +1,33 @@
@@ -8344,7 +8408,7 @@ index 0000000..c684aa8
 +	return err
 +}
 diff --git a/pkg/mount/mounter_unsupported.go b/pkg/mount/mounter_unsupported.go
-index eb93365..aa006fe 100644
+index eb93365eb..aa006fe8b 100644
 --- a/pkg/mount/mounter_unsupported.go
 +++ b/pkg/mount/mounter_unsupported.go
 @@ -1,4 +1,4 @@
@@ -8355,7 +8419,7 @@ index eb93365..aa006fe 100644
  
 diff --git a/pkg/mount/mountinfo_solaris.go b/pkg/mount/mountinfo_solaris.go
 new file mode 100644
-index 0000000..3a485fc
+index 000000000..3a485fc1c
 --- /dev/null
 +++ b/pkg/mount/mountinfo_solaris.go
 @@ -0,0 +1,35 @@
@@ -8395,7 +8459,7 @@ index 0000000..3a485fc
 +	return out, nil
 +}
 diff --git a/pkg/mount/mountinfo_unsupported.go b/pkg/mount/mountinfo_unsupported.go
-index 8245f01..966cf69 100644
+index 8245f01d4..966cf69b1 100644
 --- a/pkg/mount/mountinfo_unsupported.go
 +++ b/pkg/mount/mountinfo_unsupported.go
 @@ -1,4 +1,4 @@
@@ -8406,7 +8470,7 @@ index 8245f01..966cf69 100644
  
 diff --git a/pkg/parsers/kernel/uname_solaris.go b/pkg/parsers/kernel/uname_solaris.go
 new file mode 100644
-index 0000000..49370bd
+index 000000000..49370bd3d
 --- /dev/null
 +++ b/pkg/parsers/kernel/uname_solaris.go
 @@ -0,0 +1,14 @@
@@ -8425,7 +8489,7 @@ index 0000000..49370bd
 +	return uts, nil
 +}
 diff --git a/pkg/parsers/kernel/uname_unsupported.go b/pkg/parsers/kernel/uname_unsupported.go
-index 79c66b3..1da3f23 100644
+index 79c66b322..1da3f239f 100644
 --- a/pkg/parsers/kernel/uname_unsupported.go
 +++ b/pkg/parsers/kernel/uname_unsupported.go
 @@ -1,4 +1,4 @@
@@ -8436,7 +8500,7 @@ index 79c66b3..1da3f23 100644
  
 diff --git a/pkg/parsers/operatingsystem/operatingsystem_solaris.go b/pkg/parsers/operatingsystem/operatingsystem_solaris.go
 new file mode 100644
-index 0000000..06b0432
+index 000000000..06b043275
 --- /dev/null
 +++ b/pkg/parsers/operatingsystem/operatingsystem_solaris.go
 @@ -0,0 +1,33 @@
@@ -8475,7 +8539,7 @@ index 0000000..06b0432
 +}
 diff --git a/pkg/platform/architecture_solaris.go b/pkg/platform/architecture_solaris.go
 new file mode 100644
-index 0000000..ecd769e
+index 000000000..ecd769e86
 --- /dev/null
 +++ b/pkg/platform/architecture_solaris.go
 @@ -0,0 +1,16 @@
@@ -8496,7 +8560,7 @@ index 0000000..ecd769e
 +	return strings.TrimSpace(string(machine)), nil
 +}
 diff --git a/pkg/proxy/network_proxy_test.go b/pkg/proxy/network_proxy_test.go
-index 9e38256..75b162e 100644
+index 9e382567c..75b162e69 100644
 --- a/pkg/proxy/network_proxy_test.go
 +++ b/pkg/proxy/network_proxy_test.go
 @@ -127,15 +127,17 @@ func TestTCP4Proxy(t *testing.T) {
@@ -8555,7 +8619,7 @@ index 9e38256..75b162e 100644
  func TestUDPWriteError(t *testing.T) {
 diff --git a/pkg/reexec/command_solaris.go b/pkg/reexec/command_solaris.go
 new file mode 100644
-index 0000000..578aab4
+index 000000000..578aab4c9
 --- /dev/null
 +++ b/pkg/reexec/command_solaris.go
 @@ -0,0 +1,23 @@
@@ -8583,7 +8647,7 @@ index 0000000..578aab4
 +	}
 +}
 diff --git a/pkg/reexec/command_unsupported.go b/pkg/reexec/command_unsupported.go
-index ad4ea38..9aed004 100644
+index ad4ea38eb..9aed004e8 100644
 --- a/pkg/reexec/command_unsupported.go
 +++ b/pkg/reexec/command_unsupported.go
 @@ -1,4 +1,4 @@
@@ -8594,7 +8658,7 @@ index ad4ea38..9aed004 100644
  
 diff --git a/pkg/signal/signal_solaris.go b/pkg/signal/signal_solaris.go
 new file mode 100644
-index 0000000..79fe488
+index 000000000..79fe48871
 --- /dev/null
 +++ b/pkg/signal/signal_solaris.go
 @@ -0,0 +1,42 @@
@@ -8641,7 +8705,7 @@ index 0000000..79fe488
 +	"XFSZ":   syscall.SIGXFSZ,
 +}
 diff --git a/pkg/signal/signal_unsupported.go b/pkg/signal/signal_unsupported.go
-index 161ba27..c592d37 100644
+index 161ba2739..c592d37df 100644
 --- a/pkg/signal/signal_unsupported.go
 +++ b/pkg/signal/signal_unsupported.go
 @@ -1,4 +1,4 @@
@@ -8652,7 +8716,7 @@ index 161ba27..c592d37 100644
  
 diff --git a/pkg/sysinfo/sysinfo_solaris.go b/pkg/sysinfo/sysinfo_solaris.go
 new file mode 100644
-index 0000000..f8314c4
+index 000000000..94da194db
 --- /dev/null
 +++ b/pkg/sysinfo/sysinfo_solaris.go
 @@ -0,0 +1,117 @@
@@ -8763,7 +8827,7 @@ index 0000000..f8314c4
 +	if ncpus <= 0 {
 +		return ""
 +	}
-+	return strconv.FormatInt(int64(ncpus), 16)
++	return strconv.FormatInt(int64(ncpus), 10)
 +}
 +
 +func getLgrpCount() string {
@@ -8771,11 +8835,11 @@ index 0000000..f8314c4
 +	if nlgrps <= 0 {
 +		return ""
 +	}
-+	return strconv.FormatInt(int64(nlgrps), 16)
++	return strconv.FormatInt(int64(nlgrps), 10)
 +}
 diff --git a/pkg/system/meminfo_solaris.go b/pkg/system/meminfo_solaris.go
 new file mode 100644
-index 0000000..bad227f
+index 000000000..bad227ff2
 --- /dev/null
 +++ b/pkg/system/meminfo_solaris.go
 @@ -0,0 +1,127 @@
@@ -8907,7 +8971,7 @@ index 0000000..bad227f
 +	return tSwap, fSwap, nil
 +}
 diff --git a/pkg/system/meminfo_unsupported.go b/pkg/system/meminfo_unsupported.go
-index 82ddd30..3ce019d 100644
+index 82ddd30c1..3ce019dff 100644
 --- a/pkg/system/meminfo_unsupported.go
 +++ b/pkg/system/meminfo_unsupported.go
 @@ -1,4 +1,4 @@
@@ -8916,47 +8980,8 @@ index 82ddd30..3ce019d 100644
  
  package system
  
-diff --git a/pkg/system/stat_linux.go b/pkg/system/stat_linux.go
-deleted file mode 100644
-index 8b1eded..0000000
---- a/pkg/system/stat_linux.go
-+++ /dev/null
-@@ -1,33 +0,0 @@
--package system
--
--import (
--	"syscall"
--)
--
--// fromStatT converts a syscall.Stat_t type to a system.Stat_t type
--func fromStatT(s *syscall.Stat_t) (*StatT, error) {
--	return &StatT{size: s.Size,
--		mode: s.Mode,
--		uid:  s.Uid,
--		gid:  s.Gid,
--		rdev: s.Rdev,
--		mtim: s.Mtim}, nil
--}
--
--// FromStatT exists only on linux, and loads a system.StatT from a
--// syscal.Stat_t.
--func FromStatT(s *syscall.Stat_t) (*StatT, error) {
--	return fromStatT(s)
--}
--
--// Stat takes a path to a file and returns
--// a system.StatT type pertaining to that file.
--//
--// Throws an error if the file does not exist
--func Stat(path string) (*StatT, error) {
--	s := &syscall.Stat_t{}
--	if err := syscall.Stat(path, s); err != nil {
--		return nil, err
--	}
--	return fromStatT(s)
--}
 diff --git a/pkg/system/stat_solaris.go b/pkg/system/stat_solaris.go
-index b01d08a..5f1fe1e 100644
+index b01d08acf..5f1fe1eb1 100644
 --- a/pkg/system/stat_solaris.go
 +++ b/pkg/system/stat_solaris.go
 @@ -1,5 +1,3 @@
@@ -8987,49 +9012,21 @@ index b01d08a..5f1fe1e 100644
 +	}
 +	return fromStatT(s)
 +}
-diff --git a/pkg/system/stat_unix.go b/pkg/system/stat_unix.go
-new file mode 100644
-index 0000000..e283201
---- /dev/null
+diff --git a/pkg/system/stat_linux.go b/pkg/system/stat_unix.go
+similarity index 97%
+rename from pkg/system/stat_linux.go
+rename to pkg/system/stat_unix.go
+index 8b1eded13..e283201e8 100644
+--- a/pkg/system/stat_linux.go
 +++ b/pkg/system/stat_unix.go
-@@ -0,0 +1,35 @@
+@@ -1,3 +1,5 @@
 +//+build !solaris
 +
-+package system
-+
-+import (
-+	"syscall"
-+)
-+
-+// fromStatT converts a syscall.Stat_t type to a system.Stat_t type
-+func fromStatT(s *syscall.Stat_t) (*StatT, error) {
-+	return &StatT{size: s.Size,
-+		mode: s.Mode,
-+		uid:  s.Uid,
-+		gid:  s.Gid,
-+		rdev: s.Rdev,
-+		mtim: s.Mtim}, nil
-+}
-+
-+// FromStatT exists only on linux, and loads a system.StatT from a
-+// syscal.Stat_t.
-+func FromStatT(s *syscall.Stat_t) (*StatT, error) {
-+	return fromStatT(s)
-+}
-+
-+// Stat takes a path to a file and returns
-+// a system.StatT type pertaining to that file.
-+//
-+// Throws an error if the file does not exist
-+func Stat(path string) (*StatT, error) {
-+	s := &syscall.Stat_t{}
-+	if err := syscall.Stat(path, s); err != nil {
-+		return nil, err
-+	}
-+	return fromStatT(s)
-+}
+ package system
+ 
+ import (
 diff --git a/pkg/system/stat_unsupported.go b/pkg/system/stat_unsupported.go
-index c6075d4..2f3132b 100644
+index c6075d4ff..2f3132b7d 100644
 --- a/pkg/system/stat_unsupported.go
 +++ b/pkg/system/stat_unsupported.go
 @@ -13,5 +13,5 @@ func fromStatT(s *syscall.Stat_t) (*StatT, error) {
@@ -9040,7 +9037,7 @@ index c6075d4..2f3132b 100644
 +		mtim: s.Mtim}, nil
  }
 diff --git a/pkg/term/tc_other.go b/pkg/term/tc_other.go
-index 266039b..750d7c3 100644
+index 266039bac..750d7c3f6 100644
 --- a/pkg/term/tc_other.go
 +++ b/pkg/term/tc_other.go
 @@ -1,5 +1,6 @@
@@ -9052,7 +9049,7 @@ index 266039b..750d7c3 100644
  
 diff --git a/pkg/term/tc_solaris_cgo.go b/pkg/term/tc_solaris_cgo.go
 new file mode 100644
-index 0000000..2c0c8bd
+index 000000000..2c0c8bde2
 --- /dev/null
 +++ b/pkg/term/tc_solaris_cgo.go
 @@ -0,0 +1,60 @@
@@ -9117,7 +9114,7 @@ index 0000000..2c0c8bd
 +	return 0
 +}
 diff --git a/pkg/term/term.go b/pkg/term/term.go
-index 316c399..f868b70 100644
+index 316c39905..f868b70de 100644
 --- a/pkg/term/term.go
 +++ b/pkg/term/term.go
 @@ -10,7 +10,6 @@ import (
@@ -9158,7 +9155,7 @@ index 316c399..f868b70 100644
  	var termios Termios
 diff --git a/pkg/term/term_solaris.go b/pkg/term/term_solaris.go
 new file mode 100644
-index 0000000..461b18e
+index 000000000..461b18ed1
 --- /dev/null
 +++ b/pkg/term/term_solaris.go
 @@ -0,0 +1,39 @@
@@ -9203,7 +9200,7 @@ index 0000000..461b18e
 +}
 diff --git a/pkg/term/term_unix.go b/pkg/term/term_unix.go
 new file mode 100644
-index 0000000..0d91b60
+index 000000000..0d91b601c
 --- /dev/null
 +++ b/pkg/term/term_unix.go
 @@ -0,0 +1,27 @@
@@ -9235,7 +9232,7 @@ index 0000000..0d91b60
 +	return err
 +}
 diff --git a/registry/auth_test.go b/registry/auth_test.go
-index caff866..62e299f 100644
+index caff8667d..62e299f88 100644
 --- a/registry/auth_test.go
 +++ b/registry/auth_test.go
 @@ -1,3 +1,5 @@
@@ -9245,7 +9242,7 @@ index caff866..62e299f 100644
  
  import (
 diff --git a/registry/registry_mock_test.go b/registry/registry_mock_test.go
-index 057afac..2608381 100644
+index 057afac10..2608381f2 100644
 --- a/registry/registry_mock_test.go
 +++ b/registry/registry_mock_test.go
 @@ -1,3 +1,5 @@
@@ -9255,7 +9252,7 @@ index 057afac..2608381 100644
  
  import (
 diff --git a/registry/registry_test.go b/registry/registry_test.go
-index 7630d9a..ec4fb30 100644
+index 7630d9a52..ec4fb3015 100644
 --- a/registry/registry_test.go
 +++ b/registry/registry_test.go
 @@ -1,3 +1,5 @@
@@ -9266,7 +9263,7 @@ index 7630d9a..ec4fb30 100644
  import (
 diff --git a/runconfig/hostconfig_solaris.go b/runconfig/hostconfig_solaris.go
 new file mode 100644
-index 0000000..312f2f5
+index 000000000..312f2f5b6
 --- /dev/null
 +++ b/runconfig/hostconfig_solaris.go
 @@ -0,0 +1,82 @@
@@ -9353,7 +9350,7 @@ index 0000000..312f2f5
 +	return nil
 +}
 diff --git a/runconfig/hostconfig_unix.go b/runconfig/hostconfig_unix.go
-index 28d209b..e3832db 100644
+index 28d209b69..e3832db90 100644
 --- a/runconfig/hostconfig_unix.go
 +++ b/runconfig/hostconfig_unix.go
 @@ -1,4 +1,5 @@
@@ -9363,7 +9360,7 @@ index 28d209b..e3832db 100644
  package runconfig
  
 diff --git a/runconfig/opts/parse.go b/runconfig/opts/parse.go
-index 41cb377..29b22ea 100644
+index 41cb377ae..29b22ea58 100644
 --- a/runconfig/opts/parse.go
 +++ b/runconfig/opts/parse.go
 @@ -93,6 +93,7 @@ func Parse(cmd *flag.FlagSet, args []string) (*container.Config, *container.Host
@@ -9384,7 +9381,7 @@ index 41cb377..29b22ea 100644
  	// When allocating stdin in attached mode, close stdin at client disconnect
 diff --git a/vendor/src/github.com/Sirupsen/logrus/terminal_solaris.go b/vendor/src/github.com/Sirupsen/logrus/terminal_solaris.go
 new file mode 100644
-index 0000000..3e70bf7
+index 000000000..3e70bf7bf
 --- /dev/null
 +++ b/vendor/src/github.com/Sirupsen/logrus/terminal_solaris.go
 @@ -0,0 +1,15 @@
@@ -9404,7 +9401,7 @@ index 0000000..3e70bf7
 +	return err == nil
 +}
 diff --git a/vendor/src/github.com/boltdb/bolt/bolt_amd64.go b/vendor/src/github.com/boltdb/bolt/bolt_amd64.go
-index cca6b7e..f3536ec 100644
+index cca6b7eb7..f3536ec33 100644
 --- a/vendor/src/github.com/boltdb/bolt/bolt_amd64.go
 +++ b/vendor/src/github.com/boltdb/bolt/bolt_amd64.go
 @@ -5,3 +5,6 @@ const maxMapSize = 0xFFFFFFFFFFFF // 256TB
@@ -9416,7 +9413,7 @@ index cca6b7e..f3536ec 100644
 +var brokenUnaligned = false
 diff --git a/vendor/src/github.com/boltdb/bolt/bolt_sparc64.go b/vendor/src/github.com/boltdb/bolt/bolt_sparc64.go
 new file mode 100644
-index 0000000..b04c371
+index 000000000..b04c37165
 --- /dev/null
 +++ b/vendor/src/github.com/boltdb/bolt/bolt_sparc64.go
 @@ -0,0 +1,10 @@
@@ -9431,7 +9428,7 @@ index 0000000..b04c371
 +// sparcv9 does not generally allow unaligned load/stores
 +var brokenUnaligned = true
 diff --git a/vendor/src/github.com/boltdb/bolt/bucket.go b/vendor/src/github.com/boltdb/bolt/bucket.go
-index 2925288..4a65a8f 100644
+index 29252885f..4a65a8f65 100644
 --- a/vendor/src/github.com/boltdb/bolt/bucket.go
 +++ b/vendor/src/github.com/boltdb/bolt/bucket.go
 @@ -130,6 +130,22 @@ func (b *Bucket) Bucket(name []byte) *Bucket {
@@ -9458,7 +9455,7 @@ index 2925288..4a65a8f 100644
  	// Read-only transactions can point directly at the mmap entry.
  	if b.tx.writable {
 diff --git a/vendor/src/github.com/docker/engine-api/types/container/config.go b/vendor/src/github.com/docker/engine-api/types/container/config.go
-index b4e6205..5a5f905 100644
+index b4e6205d2..5a5f9058c 100644
 --- a/vendor/src/github.com/docker/engine-api/types/container/config.go
 +++ b/vendor/src/github.com/docker/engine-api/types/container/config.go
 @@ -35,4 +35,8 @@ type Config struct {
@@ -9471,7 +9468,7 @@ index b4e6205..5a5f905 100644
 +	Vlan		string                `json:",omitempty"` // Vlan ID of the container
  }
 diff --git a/vendor/src/github.com/docker/engine-api/types/container/host_config.go b/vendor/src/github.com/docker/engine-api/types/container/host_config.go
-index f43263d..0bf260d 100644
+index f43263d6e..0bf260d46 100644
 --- a/vendor/src/github.com/docker/engine-api/types/container/host_config.go
 +++ b/vendor/src/github.com/docker/engine-api/types/container/host_config.go
 @@ -232,4 +232,5 @@ type HostConfig struct {
@@ -9481,7 +9478,7 @@ index f43263d..0bf260d 100644
 +	LimitPriv string // Comma separated list of privileges to limit container to
  }
 diff --git a/vendor/src/github.com/docker/engine-api/types/types.go b/vendor/src/github.com/docker/engine-api/types/types.go
-index 64c9981..d42395e 100644
+index 64c998182..d42395e6b 100644
 --- a/vendor/src/github.com/docker/engine-api/types/types.go
 +++ b/vendor/src/github.com/docker/engine-api/types/types.go
 @@ -178,13 +178,11 @@ type ContainerProcessList struct {
@@ -9499,7 +9496,7 @@ index 64c9981..d42395e 100644
  
  // Info contains response of Remote API:
 diff --git a/vendor/src/github.com/docker/go-connections/sockets/unix_socket.go b/vendor/src/github.com/docker/go-connections/sockets/unix_socket.go
-index c10aced..d162734 100644
+index c10acedca..d1627349f 100644
 --- a/vendor/src/github.com/docker/go-connections/sockets/unix_socket.go
 +++ b/vendor/src/github.com/docker/go-connections/sockets/unix_socket.go
 @@ -1,4 +1,4 @@
@@ -9510,7 +9507,7 @@ index c10aced..d162734 100644
  
 diff --git a/vendor/src/github.com/docker/libnetwork/default_gateway_solaris.go b/vendor/src/github.com/docker/libnetwork/default_gateway_solaris.go
 new file mode 100644
-index 0000000..104781a
+index 000000000..104781aa3
 --- /dev/null
 +++ b/vendor/src/github.com/docker/libnetwork/default_gateway_solaris.go
 @@ -0,0 +1,7 @@
@@ -9523,7 +9520,7 @@ index 0000000..104781a
 +}
 diff --git a/vendor/src/github.com/docker/libnetwork/drivers/solaris/bridge/bridge.go b/vendor/src/github.com/docker/libnetwork/drivers/solaris/bridge/bridge.go
 new file mode 100644
-index 0000000..5db0560
+index 000000000..5db056026
 --- /dev/null
 +++ b/vendor/src/github.com/docker/libnetwork/drivers/solaris/bridge/bridge.go
 @@ -0,0 +1,1041 @@
@@ -10570,7 +10567,7 @@ index 0000000..5db0560
 +}
 diff --git a/vendor/src/github.com/docker/libnetwork/drivers/solaris/bridge/bridge_store.go b/vendor/src/github.com/docker/libnetwork/drivers/solaris/bridge/bridge_store.go
 new file mode 100644
-index 0000000..fbb6ef0
+index 000000000..fbb6ef0ef
 --- /dev/null
 +++ b/vendor/src/github.com/docker/libnetwork/drivers/solaris/bridge/bridge_store.go
 @@ -0,0 +1,212 @@
@@ -10788,7 +10785,7 @@ index 0000000..fbb6ef0
 +}
 diff --git a/vendor/src/github.com/docker/libnetwork/drivers/solaris/bridge/errors.go b/vendor/src/github.com/docker/libnetwork/drivers/solaris/bridge/errors.go
 new file mode 100644
-index 0000000..0e0d67a
+index 000000000..0e0d67aa6
 --- /dev/null
 +++ b/vendor/src/github.com/docker/libnetwork/drivers/solaris/bridge/errors.go
 @@ -0,0 +1,341 @@
@@ -11135,7 +11132,7 @@ index 0000000..0e0d67a
 +func (address InvalidLinkIPAddrError) BadRequest() {}
 diff --git a/vendor/src/github.com/docker/libnetwork/drivers/solaris/bridge/port_mapping.go b/vendor/src/github.com/docker/libnetwork/drivers/solaris/bridge/port_mapping.go
 new file mode 100644
-index 0000000..a2e0599
+index 000000000..a2e0599ca
 --- /dev/null
 +++ b/vendor/src/github.com/docker/libnetwork/drivers/solaris/bridge/port_mapping.go
 @@ -0,0 +1,247 @@
@@ -11388,7 +11385,7 @@ index 0000000..a2e0599
 +}
 diff --git a/vendor/src/github.com/docker/libnetwork/drivers_solaris.go b/vendor/src/github.com/docker/libnetwork/drivers_solaris.go
 new file mode 100644
-index 0000000..ba5d6a9
+index 000000000..ba5d6a93e
 --- /dev/null
 +++ b/vendor/src/github.com/docker/libnetwork/drivers_solaris.go
 @@ -0,0 +1,13 @@
@@ -11407,7 +11404,7 @@ index 0000000..ba5d6a9
 +}
 diff --git a/vendor/src/github.com/docker/libnetwork/ipamutils/utils_solaris.go b/vendor/src/github.com/docker/libnetwork/ipamutils/utils_solaris.go
 new file mode 100644
-index 0000000..72801db
+index 000000000..72801db91
 --- /dev/null
 +++ b/vendor/src/github.com/docker/libnetwork/ipamutils/utils_solaris.go
 @@ -0,0 +1,92 @@
@@ -11504,7 +11501,7 @@ index 0000000..72801db
 +	return nil, fmt.Errorf("no available network")
 +}
 diff --git a/vendor/src/github.com/docker/libnetwork/network.go b/vendor/src/github.com/docker/libnetwork/network.go
-index aa32cb8..371767e 100644
+index aa32cb8d6..371767eb1 100644
 --- a/vendor/src/github.com/docker/libnetwork/network.go
 +++ b/vendor/src/github.com/docker/libnetwork/network.go
 @@ -604,7 +604,6 @@ func (n *network) Delete() error {
@@ -11525,7 +11522,7 @@ index aa32cb8..371767e 100644
  		if _, ok := err.(types.ForbiddenError); ok {
 diff --git a/vendor/src/github.com/docker/libnetwork/osl/interface_solaris.go b/vendor/src/github.com/docker/libnetwork/osl/interface_solaris.go
 new file mode 100644
-index 0000000..73aae48
+index 000000000..73aae4832
 --- /dev/null
 +++ b/vendor/src/github.com/docker/libnetwork/osl/interface_solaris.go
 @@ -0,0 +1,6 @@
@@ -11537,7 +11534,7 @@ index 0000000..73aae48
 +type IfaceOption func()
 diff --git a/vendor/src/github.com/docker/libnetwork/osl/namespace_solaris.go b/vendor/src/github.com/docker/libnetwork/osl/namespace_solaris.go
 new file mode 100644
-index 0000000..7df134f
+index 000000000..7df134f1c
 --- /dev/null
 +++ b/vendor/src/github.com/docker/libnetwork/osl/namespace_solaris.go
 @@ -0,0 +1,41 @@
@@ -11583,7 +11580,7 @@ index 0000000..7df134f
 +	return func() {}
 +}
 diff --git a/vendor/src/github.com/docker/libnetwork/osl/namespace_unsupported.go b/vendor/src/github.com/docker/libnetwork/osl/namespace_unsupported.go
-index dbd8d9d..f85c558 100644
+index dbd8d9d35..f85c558d3 100644
 --- a/vendor/src/github.com/docker/libnetwork/osl/namespace_unsupported.go
 +++ b/vendor/src/github.com/docker/libnetwork/osl/namespace_unsupported.go
 @@ -1,4 +1,4 @@
@@ -11594,7 +11591,7 @@ index dbd8d9d..f85c558 100644
  
 diff --git a/vendor/src/github.com/docker/libnetwork/osl/neigh_solaris.go b/vendor/src/github.com/docker/libnetwork/osl/neigh_solaris.go
 new file mode 100644
-index 0000000..d6e8910
+index 000000000..d6e8910e8
 --- /dev/null
 +++ b/vendor/src/github.com/docker/libnetwork/osl/neigh_solaris.go
 @@ -0,0 +1,6 @@
@@ -11605,7 +11602,7 @@ index 0000000..d6e8910
 +// NeighOption is a function option type to set interface options
 +type NeighOption func()
 diff --git a/vendor/src/github.com/docker/libnetwork/osl/sandbox_unsupported.go b/vendor/src/github.com/docker/libnetwork/osl/sandbox_unsupported.go
-index 3bc6c38..dcffc38 100644
+index 3bc6c3850..dcffc3868 100644
 --- a/vendor/src/github.com/docker/libnetwork/osl/sandbox_unsupported.go
 +++ b/vendor/src/github.com/docker/libnetwork/osl/sandbox_unsupported.go
 @@ -1,4 +1,4 @@
@@ -11615,7 +11612,7 @@ index 3bc6c38..dcffc38 100644
  package osl
  
 diff --git a/vendor/src/github.com/docker/libnetwork/portallocator/portallocator.go b/vendor/src/github.com/docker/libnetwork/portallocator/portallocator.go
-index 240e94f..b7f790b 100644
+index 240e94fc8..b7f790bed 100644
 --- a/vendor/src/github.com/docker/libnetwork/portallocator/portallocator.go
 +++ b/vendor/src/github.com/docker/libnetwork/portallocator/portallocator.go
 @@ -1,11 +1,9 @@
@@ -11659,7 +11656,7 @@ index 240e94f..b7f790b 100644
  // in proto's pool and returns that port or error if port is already busy.
 diff --git a/vendor/src/github.com/docker/libnetwork/portallocator/portallocator_linux.go b/vendor/src/github.com/docker/libnetwork/portallocator/portallocator_linux.go
 new file mode 100644
-index 0000000..98891cb
+index 000000000..98891cb9c
 --- /dev/null
 +++ b/vendor/src/github.com/docker/libnetwork/portallocator/portallocator_linux.go
 @@ -0,0 +1,28 @@
@@ -11693,7 +11690,7 @@ index 0000000..98891cb
 +}
 diff --git a/vendor/src/github.com/docker/libnetwork/portallocator/portallocator_solaris.go b/vendor/src/github.com/docker/libnetwork/portallocator/portallocator_solaris.go
 new file mode 100644
-index 0000000..ccc20b1
+index 000000000..ccc20b137
 --- /dev/null
 +++ b/vendor/src/github.com/docker/libnetwork/portallocator/portallocator_solaris.go
 @@ -0,0 +1,5 @@
@@ -11702,477 +11699,13 @@ index 0000000..ccc20b1
 +func getDynamicPortRange() (start int, end int, err error) {
 +	return 32768, 65535, nil
 +}
-diff --git a/vendor/src/github.com/docker/libnetwork/portmapper/mapper.go b/vendor/src/github.com/docker/libnetwork/portmapper/mapper.go
-deleted file mode 100644
-index d125fa8..0000000
---- a/vendor/src/github.com/docker/libnetwork/portmapper/mapper.go
-+++ /dev/null
-@@ -1,228 +0,0 @@
--package portmapper
--
--import (
--	"errors"
--	"fmt"
--	"net"
--	"sync"
--
--	"github.com/Sirupsen/logrus"
--	"github.com/docker/libnetwork/iptables"
--	"github.com/docker/libnetwork/portallocator"
--)
--
--type mapping struct {
--	proto         string
--	userlandProxy userlandProxy
--	host          net.Addr
--	container     net.Addr
--}
--
--var newProxy = newProxyCommand
--
--var (
--	// ErrUnknownBackendAddressType refers to an unknown container or unsupported address type
--	ErrUnknownBackendAddressType = errors.New("unknown container address type not supported")
--	// ErrPortMappedForIP refers to a port already mapped to an ip address
--	ErrPortMappedForIP = errors.New("port is already mapped to ip")
--	// ErrPortNotMapped refers to an unmapped port
--	ErrPortNotMapped = errors.New("port is not mapped")
--)
--
--// PortMapper manages the network address translation
--type PortMapper struct {
--	chain      *iptables.ChainInfo
--	bridgeName string
--
--	// udp:ip:port
--	currentMappings map[string]*mapping
--	lock            sync.Mutex
--
--	Allocator *portallocator.PortAllocator
--}
--
--// New returns a new instance of PortMapper
--func New() *PortMapper {
--	return NewWithPortAllocator(portallocator.Get())
--}
--
--// NewWithPortAllocator returns a new instance of PortMapper which will use the specified PortAllocator
--func NewWithPortAllocator(allocator *portallocator.PortAllocator) *PortMapper {
--	return &PortMapper{
--		currentMappings: make(map[string]*mapping),
--		Allocator:       allocator,
--	}
--}
--
--// SetIptablesChain sets the specified chain into portmapper
--func (pm *PortMapper) SetIptablesChain(c *iptables.ChainInfo, bridgeName string) {
--	pm.chain = c
--	pm.bridgeName = bridgeName
--}
--
--// Map maps the specified container transport address to the host's network address and transport port
--func (pm *PortMapper) Map(container net.Addr, hostIP net.IP, hostPort int, useProxy bool) (host net.Addr, err error) {
--	return pm.MapRange(container, hostIP, hostPort, hostPort, useProxy)
--}
--
--// MapRange maps the specified container transport address to the host's network address and transport port range
--func (pm *PortMapper) MapRange(container net.Addr, hostIP net.IP, hostPortStart, hostPortEnd int, useProxy bool) (host net.Addr, err error) {
--	pm.lock.Lock()
--	defer pm.lock.Unlock()
--
--	var (
--		m                 *mapping
--		proto             string
--		allocatedHostPort int
--	)
--
--	switch container.(type) {
--	case *net.TCPAddr:
--		proto = "tcp"
--		if allocatedHostPort, err = pm.Allocator.RequestPortInRange(hostIP, proto, hostPortStart, hostPortEnd); err != nil {
--			return nil, err
--		}
--
--		m = &mapping{
--			proto:     proto,
--			host:      &net.TCPAddr{IP: hostIP, Port: allocatedHostPort},
--			container: container,
--		}
--
--		if useProxy {
--			m.userlandProxy = newProxy(proto, hostIP, allocatedHostPort, container.(*net.TCPAddr).IP, container.(*net.TCPAddr).Port)
--		} else {
--			m.userlandProxy = newDummyProxy(proto, hostIP, allocatedHostPort)
--		}
--	case *net.UDPAddr:
--		proto = "udp"
--		if allocatedHostPort, err = pm.Allocator.RequestPortInRange(hostIP, proto, hostPortStart, hostPortEnd); err != nil {
--			return nil, err
--		}
--
--		m = &mapping{
--			proto:     proto,
--			host:      &net.UDPAddr{IP: hostIP, Port: allocatedHostPort},
--			container: container,
--		}
--
--		if useProxy {
--			m.userlandProxy = newProxy(proto, hostIP, allocatedHostPort, container.(*net.UDPAddr).IP, container.(*net.UDPAddr).Port)
--		} else {
--			m.userlandProxy = newDummyProxy(proto, hostIP, allocatedHostPort)
--		}
--	default:
--		return nil, ErrUnknownBackendAddressType
--	}
--
--	// release the allocated port on any further error during return.
--	defer func() {
--		if err != nil {
--			pm.Allocator.ReleasePort(hostIP, proto, allocatedHostPort)
--		}
--	}()
--
--	key := getKey(m.host)
--	if _, exists := pm.currentMappings[key]; exists {
--		return nil, ErrPortMappedForIP
--	}
--
--	containerIP, containerPort := getIPAndPort(m.container)
--	if err := pm.forward(iptables.Append, m.proto, hostIP, allocatedHostPort, containerIP.String(), containerPort); err != nil {
--		return nil, err
--	}
--
--	cleanup := func() error {
--		// need to undo the iptables rules before we return
--		m.userlandProxy.Stop()
--		pm.forward(iptables.Delete, m.proto, hostIP, allocatedHostPort, containerIP.String(), containerPort)
--		if err := pm.Allocator.ReleasePort(hostIP, m.proto, allocatedHostPort); err != nil {
--			return err
--		}
--
--		return nil
--	}
--
--	if err := m.userlandProxy.Start(); err != nil {
--		if err := cleanup(); err != nil {
--			return nil, fmt.Errorf("Error during port allocation cleanup: %v", err)
--		}
--		return nil, err
--	}
--
--	pm.currentMappings[key] = m
--	return m.host, nil
--}
--
--// Unmap removes stored mapping for the specified host transport address
--func (pm *PortMapper) Unmap(host net.Addr) error {
--	pm.lock.Lock()
--	defer pm.lock.Unlock()
--
--	key := getKey(host)
--	data, exists := pm.currentMappings[key]
--	if !exists {
--		return ErrPortNotMapped
--	}
--
--	if data.userlandProxy != nil {
--		data.userlandProxy.Stop()
--	}
--
--	delete(pm.currentMappings, key)
--
--	containerIP, containerPort := getIPAndPort(data.container)
--	hostIP, hostPort := getIPAndPort(data.host)
--	if err := pm.forward(iptables.Delete, data.proto, hostIP, hostPort, containerIP.String(), containerPort); err != nil {
--		logrus.Errorf("Error on iptables delete: %s", err)
--	}
--
--	switch a := host.(type) {
--	case *net.TCPAddr:
--		return pm.Allocator.ReleasePort(a.IP, "tcp", a.Port)
--	case *net.UDPAddr:
--		return pm.Allocator.ReleasePort(a.IP, "udp", a.Port)
--	}
--	return nil
--}
--
--//ReMapAll will re-apply all port mappings
--func (pm *PortMapper) ReMapAll() {
--	pm.lock.Lock()
--	defer pm.lock.Unlock()
--	logrus.Debugln("Re-applying all port mappings.")
--	for _, data := range pm.currentMappings {
--		containerIP, containerPort := getIPAndPort(data.container)
--		hostIP, hostPort := getIPAndPort(data.host)
--		if err := pm.forward(iptables.Append, data.proto, hostIP, hostPort, containerIP.String(), containerPort); err != nil {
--			logrus.Errorf("Error on iptables add: %s", err)
--		}
--	}
--}
--
--func getKey(a net.Addr) string {
--	switch t := a.(type) {
--	case *net.TCPAddr:
--		return fmt.Sprintf("%s:%d/%s", t.IP.String(), t.Port, "tcp")
--	case *net.UDPAddr:
--		return fmt.Sprintf("%s:%d/%s", t.IP.String(), t.Port, "udp")
--	}
--	return ""
--}
--
--func getIPAndPort(a net.Addr) (net.IP, int) {
--	switch t := a.(type) {
--	case *net.TCPAddr:
--		return t.IP, t.Port
--	case *net.UDPAddr:
--		return t.IP, t.Port
--	}
--	return nil, 0
--}
--
--func (pm *PortMapper) forward(action iptables.Action, proto string, sourceIP net.IP, sourcePort int, containerIP string, containerPort int) error {
--	if pm.chain == nil {
--		return nil
--	}
--	return pm.chain.Forward(action, sourceIP, sourcePort, proto, containerIP, containerPort, pm.bridgeName)
--}
-diff --git a/vendor/src/github.com/docker/libnetwork/portmapper/mapper_linux.go b/vendor/src/github.com/docker/libnetwork/portmapper/mapper_linux.go
-new file mode 100644
-index 0000000..d125fa8
---- /dev/null
-+++ b/vendor/src/github.com/docker/libnetwork/portmapper/mapper_linux.go
-@@ -0,0 +1,228 @@
-+package portmapper
-+
-+import (
-+	"errors"
-+	"fmt"
-+	"net"
-+	"sync"
-+
-+	"github.com/Sirupsen/logrus"
-+	"github.com/docker/libnetwork/iptables"
-+	"github.com/docker/libnetwork/portallocator"
-+)
-+
-+type mapping struct {
-+	proto         string
-+	userlandProxy userlandProxy
-+	host          net.Addr
-+	container     net.Addr
-+}
-+
-+var newProxy = newProxyCommand
-+
-+var (
-+	// ErrUnknownBackendAddressType refers to an unknown container or unsupported address type
-+	ErrUnknownBackendAddressType = errors.New("unknown container address type not supported")
-+	// ErrPortMappedForIP refers to a port already mapped to an ip address
-+	ErrPortMappedForIP = errors.New("port is already mapped to ip")
-+	// ErrPortNotMapped refers to an unmapped port
-+	ErrPortNotMapped = errors.New("port is not mapped")
-+)
-+
-+// PortMapper manages the network address translation
-+type PortMapper struct {
-+	chain      *iptables.ChainInfo
-+	bridgeName string
-+
-+	// udp:ip:port
-+	currentMappings map[string]*mapping
-+	lock            sync.Mutex
-+
-+	Allocator *portallocator.PortAllocator
-+}
-+
-+// New returns a new instance of PortMapper
-+func New() *PortMapper {
-+	return NewWithPortAllocator(portallocator.Get())
-+}
-+
-+// NewWithPortAllocator returns a new instance of PortMapper which will use the specified PortAllocator
-+func NewWithPortAllocator(allocator *portallocator.PortAllocator) *PortMapper {
-+	return &PortMapper{
-+		currentMappings: make(map[string]*mapping),
-+		Allocator:       allocator,
-+	}
-+}
-+
-+// SetIptablesChain sets the specified chain into portmapper
-+func (pm *PortMapper) SetIptablesChain(c *iptables.ChainInfo, bridgeName string) {
-+	pm.chain = c
-+	pm.bridgeName = bridgeName
-+}
-+
-+// Map maps the specified container transport address to the host's network address and transport port
-+func (pm *PortMapper) Map(container net.Addr, hostIP net.IP, hostPort int, useProxy bool) (host net.Addr, err error) {
-+	return pm.MapRange(container, hostIP, hostPort, hostPort, useProxy)
-+}
-+
-+// MapRange maps the specified container transport address to the host's network address and transport port range
-+func (pm *PortMapper) MapRange(container net.Addr, hostIP net.IP, hostPortStart, hostPortEnd int, useProxy bool) (host net.Addr, err error) {
-+	pm.lock.Lock()
-+	defer pm.lock.Unlock()
-+
-+	var (
-+		m                 *mapping
-+		proto             string
-+		allocatedHostPort int
-+	)
-+
-+	switch container.(type) {
-+	case *net.TCPAddr:
-+		proto = "tcp"
-+		if allocatedHostPort, err = pm.Allocator.RequestPortInRange(hostIP, proto, hostPortStart, hostPortEnd); err != nil {
-+			return nil, err
-+		}
-+
-+		m = &mapping{
-+			proto:     proto,
-+			host:      &net.TCPAddr{IP: hostIP, Port: allocatedHostPort},
-+			container: container,
-+		}
-+
-+		if useProxy {
-+			m.userlandProxy = newProxy(proto, hostIP, allocatedHostPort, container.(*net.TCPAddr).IP, container.(*net.TCPAddr).Port)
-+		} else {
-+			m.userlandProxy = newDummyProxy(proto, hostIP, allocatedHostPort)
-+		}
-+	case *net.UDPAddr:
-+		proto = "udp"
-+		if allocatedHostPort, err = pm.Allocator.RequestPortInRange(hostIP, proto, hostPortStart, hostPortEnd); err != nil {
-+			return nil, err
-+		}
-+
-+		m = &mapping{
-+			proto:     proto,
-+			host:      &net.UDPAddr{IP: hostIP, Port: allocatedHostPort},
-+			container: container,
-+		}
-+
-+		if useProxy {
-+			m.userlandProxy = newProxy(proto, hostIP, allocatedHostPort, container.(*net.UDPAddr).IP, container.(*net.UDPAddr).Port)
-+		} else {
-+			m.userlandProxy = newDummyProxy(proto, hostIP, allocatedHostPort)
-+		}
-+	default:
-+		return nil, ErrUnknownBackendAddressType
-+	}
-+
-+	// release the allocated port on any further error during return.
-+	defer func() {
-+		if err != nil {
-+			pm.Allocator.ReleasePort(hostIP, proto, allocatedHostPort)
-+		}
-+	}()
-+
-+	key := getKey(m.host)
-+	if _, exists := pm.currentMappings[key]; exists {
-+		return nil, ErrPortMappedForIP
-+	}
-+
-+	containerIP, containerPort := getIPAndPort(m.container)
-+	if err := pm.forward(iptables.Append, m.proto, hostIP, allocatedHostPort, containerIP.String(), containerPort); err != nil {
-+		return nil, err
-+	}
-+
-+	cleanup := func() error {
-+		// need to undo the iptables rules before we return
-+		m.userlandProxy.Stop()
-+		pm.forward(iptables.Delete, m.proto, hostIP, allocatedHostPort, containerIP.String(), containerPort)
-+		if err := pm.Allocator.ReleasePort(hostIP, m.proto, allocatedHostPort); err != nil {
-+			return err
-+		}
-+
-+		return nil
-+	}
-+
-+	if err := m.userlandProxy.Start(); err != nil {
-+		if err := cleanup(); err != nil {
-+			return nil, fmt.Errorf("Error during port allocation cleanup: %v", err)
-+		}
-+		return nil, err
-+	}
-+
-+	pm.currentMappings[key] = m
-+	return m.host, nil
-+}
-+
-+// Unmap removes stored mapping for the specified host transport address
-+func (pm *PortMapper) Unmap(host net.Addr) error {
-+	pm.lock.Lock()
-+	defer pm.lock.Unlock()
-+
-+	key := getKey(host)
-+	data, exists := pm.currentMappings[key]
-+	if !exists {
-+		return ErrPortNotMapped
-+	}
-+
-+	if data.userlandProxy != nil {
-+		data.userlandProxy.Stop()
-+	}
-+
-+	delete(pm.currentMappings, key)
-+
-+	containerIP, containerPort := getIPAndPort(data.container)
-+	hostIP, hostPort := getIPAndPort(data.host)
-+	if err := pm.forward(iptables.Delete, data.proto, hostIP, hostPort, containerIP.String(), containerPort); err != nil {
-+		logrus.Errorf("Error on iptables delete: %s", err)
-+	}
-+
-+	switch a := host.(type) {
-+	case *net.TCPAddr:
-+		return pm.Allocator.ReleasePort(a.IP, "tcp", a.Port)
-+	case *net.UDPAddr:
-+		return pm.Allocator.ReleasePort(a.IP, "udp", a.Port)
-+	}
-+	return nil
-+}
-+
-+//ReMapAll will re-apply all port mappings
-+func (pm *PortMapper) ReMapAll() {
-+	pm.lock.Lock()
-+	defer pm.lock.Unlock()
-+	logrus.Debugln("Re-applying all port mappings.")
-+	for _, data := range pm.currentMappings {
-+		containerIP, containerPort := getIPAndPort(data.container)
-+		hostIP, hostPort := getIPAndPort(data.host)
-+		if err := pm.forward(iptables.Append, data.proto, hostIP, hostPort, containerIP.String(), containerPort); err != nil {
-+			logrus.Errorf("Error on iptables add: %s", err)
-+		}
-+	}
-+}
-+
-+func getKey(a net.Addr) string {
-+	switch t := a.(type) {
-+	case *net.TCPAddr:
-+		return fmt.Sprintf("%s:%d/%s", t.IP.String(), t.Port, "tcp")
-+	case *net.UDPAddr:
-+		return fmt.Sprintf("%s:%d/%s", t.IP.String(), t.Port, "udp")
-+	}
-+	return ""
-+}
-+
-+func getIPAndPort(a net.Addr) (net.IP, int) {
-+	switch t := a.(type) {
-+	case *net.TCPAddr:
-+		return t.IP, t.Port
-+	case *net.UDPAddr:
-+		return t.IP, t.Port
-+	}
-+	return nil, 0
-+}
-+
-+func (pm *PortMapper) forward(action iptables.Action, proto string, sourceIP net.IP, sourcePort int, containerIP string, containerPort int) error {
-+	if pm.chain == nil {
-+		return nil
-+	}
-+	return pm.chain.Forward(action, sourceIP, sourcePort, proto, containerIP, containerPort, pm.bridgeName)
-+}
+diff --git a/vendor/src/github.com/docker/libnetwork/portmapper/mapper.go b/vendor/src/github.com/docker/libnetwork/portmapper/mapper_linux.go
+similarity index 100%
+rename from vendor/src/github.com/docker/libnetwork/portmapper/mapper.go
+rename to vendor/src/github.com/docker/libnetwork/portmapper/mapper_linux.go
 diff --git a/vendor/src/github.com/docker/libnetwork/portmapper/mapper_solaris.go b/vendor/src/github.com/docker/libnetwork/portmapper/mapper_solaris.go
 new file mode 100644
-index 0000000..9922935
+index 000000000..992293513
 --- /dev/null
 +++ b/vendor/src/github.com/docker/libnetwork/portmapper/mapper_solaris.go
 @@ -0,0 +1,150 @@
@@ -12326,486 +11859,28 @@ index 0000000..9922935
 +	}
 +	return nil, 0
 +}
-diff --git a/vendor/src/github.com/docker/libnetwork/portmapper/mock_proxy.go b/vendor/src/github.com/docker/libnetwork/portmapper/mock_proxy.go
-deleted file mode 100644
-index 29b1605..0000000
---- a/vendor/src/github.com/docker/libnetwork/portmapper/mock_proxy.go
-+++ /dev/null
-@@ -1,18 +0,0 @@
--package portmapper
--
--import "net"
--
--func newMockProxyCommand(proto string, hostIP net.IP, hostPort int, containerIP net.IP, containerPort int) userlandProxy {
--	return &mockProxyCommand{}
--}
--
--type mockProxyCommand struct {
--}
--
--func (p *mockProxyCommand) Start() error {
--	return nil
--}
--
--func (p *mockProxyCommand) Stop() error {
--	return nil
--}
-diff --git a/vendor/src/github.com/docker/libnetwork/portmapper/mock_proxy_linux.go b/vendor/src/github.com/docker/libnetwork/portmapper/mock_proxy_linux.go
-new file mode 100644
-index 0000000..29b1605
---- /dev/null
-+++ b/vendor/src/github.com/docker/libnetwork/portmapper/mock_proxy_linux.go
-@@ -0,0 +1,18 @@
-+package portmapper
-+
-+import "net"
-+
-+func newMockProxyCommand(proto string, hostIP net.IP, hostPort int, containerIP net.IP, containerPort int) userlandProxy {
-+	return &mockProxyCommand{}
-+}
-+
-+type mockProxyCommand struct {
-+}
-+
-+func (p *mockProxyCommand) Start() error {
-+	return nil
-+}
-+
-+func (p *mockProxyCommand) Stop() error {
-+	return nil
-+}
-diff --git a/vendor/src/github.com/docker/libnetwork/portmapper/proxy.go b/vendor/src/github.com/docker/libnetwork/portmapper/proxy.go
-deleted file mode 100644
-index 530703b..0000000
+diff --git a/vendor/src/github.com/docker/libnetwork/portmapper/mock_proxy.go b/vendor/src/github.com/docker/libnetwork/portmapper/mock_proxy_linux.go
+similarity index 100%
+rename from vendor/src/github.com/docker/libnetwork/portmapper/mock_proxy.go
+rename to vendor/src/github.com/docker/libnetwork/portmapper/mock_proxy_linux.go
+diff --git a/vendor/src/github.com/docker/libnetwork/portmapper/proxy.go b/vendor/src/github.com/docker/libnetwork/portmapper/proxy_linux.go
+similarity index 99%
+rename from vendor/src/github.com/docker/libnetwork/portmapper/proxy.go
+rename to vendor/src/github.com/docker/libnetwork/portmapper/proxy_linux.go
+index 530703b25..ddde2744c 100644
 --- a/vendor/src/github.com/docker/libnetwork/portmapper/proxy.go
-+++ /dev/null
-@@ -1,209 +0,0 @@
--package portmapper
--
--import (
--	"flag"
--	"fmt"
--	"io"
--	"io/ioutil"
--	"log"
--	"net"
--	"os"
--	"os/exec"
--	"os/signal"
--	"strconv"
--	"syscall"
--	"time"
--
--	"github.com/docker/docker/pkg/proxy"
--	"github.com/docker/docker/pkg/reexec"
--)
--
--const userlandProxyCommandName = "docker-proxy"
--
--func init() {
--	reexec.Register(userlandProxyCommandName, execProxy)
--}
--
--type userlandProxy interface {
--	Start() error
--	Stop() error
--}
--
--// proxyCommand wraps an exec.Cmd to run the userland TCP and UDP
--// proxies as separate processes.
--type proxyCommand struct {
--	cmd *exec.Cmd
--}
--
--// execProxy is the reexec function that is registered to start the userland proxies
--func execProxy() {
--	f := os.NewFile(3, "signal-parent")
--	host, container := parseHostContainerAddrs()
--
--	p, err := proxy.NewProxy(host, container)
--	if err != nil {
--		fmt.Fprintf(f, "1\n%s", err)
--		f.Close()
--		os.Exit(1)
--	}
--	go handleStopSignals(p)
--	fmt.Fprint(f, "0\n")
--	f.Close()
--
--	// Run will block until the proxy stops
--	p.Run()
--}
--
--// parseHostContainerAddrs parses the flags passed on reexec to create the TCP or UDP
--// net.Addrs to map the host and container ports
--func parseHostContainerAddrs() (host net.Addr, container net.Addr) {
--	var (
--		proto         = flag.String("proto", "tcp", "proxy protocol")
--		hostIP        = flag.String("host-ip", "", "host ip")
--		hostPort      = flag.Int("host-port", -1, "host port")
--		containerIP   = flag.String("container-ip", "", "container ip")
--		containerPort = flag.Int("container-port", -1, "container port")
--	)
--
--	flag.Parse()
--
--	switch *proto {
--	case "tcp":
--		host = &net.TCPAddr{IP: net.ParseIP(*hostIP), Port: *hostPort}
--		container = &net.TCPAddr{IP: net.ParseIP(*containerIP), Port: *containerPort}
--	case "udp":
--		host = &net.UDPAddr{IP: net.ParseIP(*hostIP), Port: *hostPort}
--		container = &net.UDPAddr{IP: net.ParseIP(*containerIP), Port: *containerPort}
--	default:
--		log.Fatalf("unsupported protocol %s", *proto)
--	}
--
--	return host, container
--}
--
--func handleStopSignals(p proxy.Proxy) {
--	s := make(chan os.Signal, 10)
--	signal.Notify(s, os.Interrupt, syscall.SIGTERM, syscall.SIGSTOP)
--
--	for _ = range s {
--		p.Close()
--
--		os.Exit(0)
--	}
--}
--
--func newProxyCommand(proto string, hostIP net.IP, hostPort int, containerIP net.IP, containerPort int) userlandProxy {
--	args := []string{
--		userlandProxyCommandName,
--		"-proto", proto,
--		"-host-ip", hostIP.String(),
--		"-host-port", strconv.Itoa(hostPort),
--		"-container-ip", containerIP.String(),
--		"-container-port", strconv.Itoa(containerPort),
--	}
--
--	return &proxyCommand{
--		cmd: &exec.Cmd{
--			Path: reexec.Self(),
--			Args: args,
--			SysProcAttr: &syscall.SysProcAttr{
--				Pdeathsig: syscall.SIGTERM, // send a sigterm to the proxy if the daemon process dies
--			},
--		},
--	}
--}
--
--func (p *proxyCommand) Start() error {
--	r, w, err := os.Pipe()
--	if err != nil {
--		return fmt.Errorf("proxy unable to open os.Pipe %s", err)
--	}
--	defer r.Close()
--	p.cmd.ExtraFiles = []*os.File{w}
--	if err := p.cmd.Start(); err != nil {
--		return err
--	}
--	w.Close()
--
--	errchan := make(chan error, 1)
--	go func() {
--		buf := make([]byte, 2)
--		r.Read(buf)
--
--		if string(buf) != "0\n" {
--			errStr, err := ioutil.ReadAll(r)
--			if err != nil {
--				errchan <- fmt.Errorf("Error reading exit status from userland proxy: %v", err)
--				return
--			}
--
--			errchan <- fmt.Errorf("Error starting userland proxy: %s", errStr)
--			return
--		}
--		errchan <- nil
--	}()
--
--	select {
--	case err := <-errchan:
--		return err
--	case <-time.After(16 * time.Second):
--		return fmt.Errorf("Timed out proxy starting the userland proxy")
--	}
--}
--
--func (p *proxyCommand) Stop() error {
--	if p.cmd.Process != nil {
--		if err := p.cmd.Process.Signal(os.Interrupt); err != nil {
--			return err
--		}
--		return p.cmd.Wait()
--	}
--	return nil
--}
--
--// dummyProxy just listen on some port, it is needed to prevent accidental
--// port allocations on bound port, because without userland proxy we using
--// iptables rules and not net.Listen
--type dummyProxy struct {
--	listener io.Closer
--	addr     net.Addr
--}
--
--func newDummyProxy(proto string, hostIP net.IP, hostPort int) userlandProxy {
--	switch proto {
--	case "tcp":
--		addr := &net.TCPAddr{IP: hostIP, Port: hostPort}
--		return &dummyProxy{addr: addr}
--	case "udp":
--		addr := &net.UDPAddr{IP: hostIP, Port: hostPort}
--		return &dummyProxy{addr: addr}
--	}
--	return nil
--}
--
--func (p *dummyProxy) Start() error {
--	switch addr := p.addr.(type) {
--	case *net.TCPAddr:
--		l, err := net.ListenTCP("tcp", addr)
--		if err != nil {
--			return err
--		}
--		p.listener = l
--	case *net.UDPAddr:
--		l, err := net.ListenUDP("udp", addr)
--		if err != nil {
--			return err
--		}
--		p.listener = l
--	default:
--		return fmt.Errorf("Unknown addr type: %T", p.addr)
--	}
--	return nil
--}
--
--func (p *dummyProxy) Stop() error {
--	if p.listener != nil {
--		return p.listener.Close()
--	}
--	return nil
--}
-diff --git a/vendor/src/github.com/docker/libnetwork/portmapper/proxy_linux.go b/vendor/src/github.com/docker/libnetwork/portmapper/proxy_linux.go
-new file mode 100644
-index 0000000..ddde274
---- /dev/null
 +++ b/vendor/src/github.com/docker/libnetwork/portmapper/proxy_linux.go
-@@ -0,0 +1,209 @@
-+package portmapper
-+
-+import (
-+	"flag"
-+	"fmt"
-+	"io"
-+	"io/ioutil"
-+	"log"
-+	"net"
-+	"os"
-+	"os/exec"
-+	"os/signal"
-+	"strconv"
-+	"syscall"
-+	"time"
-+
-+	"github.com/docker/docker/pkg/proxy"
-+	"github.com/docker/docker/pkg/reexec"
-+)
-+
-+const userlandProxyCommandName = "docker-proxy"
-+
-+func init() {
-+	reexec.Register(userlandProxyCommandName, execProxy)
-+}
-+
-+type userlandProxy interface {
-+	Start() error
-+	Stop() error
-+}
-+
-+// proxyCommand wraps an exec.Cmd to run the userland TCP and UDP
-+// proxies as separate processes.
-+type proxyCommand struct {
-+	cmd *exec.Cmd
-+}
-+
-+// execProxy is the reexec function that is registered to start the userland proxies
-+func execProxy() {
-+	f := os.NewFile(3, "signal-parent")
-+	host, container := parseHostContainerAddrs()
-+
-+	p, err := proxy.NewProxy(host, container)
-+	if err != nil {
-+		fmt.Fprintf(f, "1\n%s", err)
-+		f.Close()
-+		os.Exit(1)
-+	}
-+	go handleStopSignals(p)
-+	fmt.Fprint(f, "0\n")
-+	f.Close()
-+
-+	// Run will block until the proxy stops
-+	p.Run()
-+}
-+
-+// parseHostContainerAddrs parses the flags passed on reexec to create the TCP or UDP
-+// net.Addrs to map the host and container ports
-+func parseHostContainerAddrs() (host net.Addr, container net.Addr) {
-+	var (
-+		proto         = flag.String("proto", "tcp", "proxy protocol")
-+		hostIP        = flag.String("host-ip", "", "host ip")
-+		hostPort      = flag.Int("host-port", -1, "host port")
-+		containerIP   = flag.String("container-ip", "", "container ip")
-+		containerPort = flag.Int("container-port", -1, "container port")
-+	)
-+
-+	flag.Parse()
-+
-+	switch *proto {
-+	case "tcp":
-+		host = &net.TCPAddr{IP: net.ParseIP(*hostIP), Port: *hostPort}
-+		container = &net.TCPAddr{IP: net.ParseIP(*containerIP), Port: *containerPort}
-+	case "udp":
-+		host = &net.UDPAddr{IP: net.ParseIP(*hostIP), Port: *hostPort}
-+		container = &net.UDPAddr{IP: net.ParseIP(*containerIP), Port: *containerPort}
-+	default:
-+		log.Fatalf("unsupported protocol %s", *proto)
-+	}
-+
-+	return host, container
-+}
-+
-+func handleStopSignals(p proxy.Proxy) {
-+	s := make(chan os.Signal, 10)
-+	signal.Notify(s, os.Interrupt, syscall.SIGTERM, syscall.SIGSTOP)
-+
+@@ -85,7 +85,7 @@ func handleStopSignals(p proxy.Proxy) {
+ 	s := make(chan os.Signal, 10)
+ 	signal.Notify(s, os.Interrupt, syscall.SIGTERM, syscall.SIGSTOP)
+ 
+-	for _ = range s {
 +	for range s {
-+		p.Close()
-+
-+		os.Exit(0)
-+	}
-+}
-+
-+func newProxyCommand(proto string, hostIP net.IP, hostPort int, containerIP net.IP, containerPort int) userlandProxy {
-+	args := []string{
-+		userlandProxyCommandName,
-+		"-proto", proto,
-+		"-host-ip", hostIP.String(),
-+		"-host-port", strconv.Itoa(hostPort),
-+		"-container-ip", containerIP.String(),
-+		"-container-port", strconv.Itoa(containerPort),
-+	}
-+
-+	return &proxyCommand{
-+		cmd: &exec.Cmd{
-+			Path: reexec.Self(),
-+			Args: args,
-+			SysProcAttr: &syscall.SysProcAttr{
-+				Pdeathsig: syscall.SIGTERM, // send a sigterm to the proxy if the daemon process dies
-+			},
-+		},
-+	}
-+}
-+
-+func (p *proxyCommand) Start() error {
-+	r, w, err := os.Pipe()
-+	if err != nil {
-+		return fmt.Errorf("proxy unable to open os.Pipe %s", err)
-+	}
-+	defer r.Close()
-+	p.cmd.ExtraFiles = []*os.File{w}
-+	if err := p.cmd.Start(); err != nil {
-+		return err
-+	}
-+	w.Close()
-+
-+	errchan := make(chan error, 1)
-+	go func() {
-+		buf := make([]byte, 2)
-+		r.Read(buf)
-+
-+		if string(buf) != "0\n" {
-+			errStr, err := ioutil.ReadAll(r)
-+			if err != nil {
-+				errchan <- fmt.Errorf("Error reading exit status from userland proxy: %v", err)
-+				return
-+			}
-+
-+			errchan <- fmt.Errorf("Error starting userland proxy: %s", errStr)
-+			return
-+		}
-+		errchan <- nil
-+	}()
-+
-+	select {
-+	case err := <-errchan:
-+		return err
-+	case <-time.After(16 * time.Second):
-+		return fmt.Errorf("Timed out proxy starting the userland proxy")
-+	}
-+}
-+
-+func (p *proxyCommand) Stop() error {
-+	if p.cmd.Process != nil {
-+		if err := p.cmd.Process.Signal(os.Interrupt); err != nil {
-+			return err
-+		}
-+		return p.cmd.Wait()
-+	}
-+	return nil
-+}
-+
-+// dummyProxy just listen on some port, it is needed to prevent accidental
-+// port allocations on bound port, because without userland proxy we using
-+// iptables rules and not net.Listen
-+type dummyProxy struct {
-+	listener io.Closer
-+	addr     net.Addr
-+}
-+
-+func newDummyProxy(proto string, hostIP net.IP, hostPort int) userlandProxy {
-+	switch proto {
-+	case "tcp":
-+		addr := &net.TCPAddr{IP: hostIP, Port: hostPort}
-+		return &dummyProxy{addr: addr}
-+	case "udp":
-+		addr := &net.UDPAddr{IP: hostIP, Port: hostPort}
-+		return &dummyProxy{addr: addr}
-+	}
-+	return nil
-+}
-+
-+func (p *dummyProxy) Start() error {
-+	switch addr := p.addr.(type) {
-+	case *net.TCPAddr:
-+		l, err := net.ListenTCP("tcp", addr)
-+		if err != nil {
-+			return err
-+		}
-+		p.listener = l
-+	case *net.UDPAddr:
-+		l, err := net.ListenUDP("udp", addr)
-+		if err != nil {
-+			return err
-+		}
-+		p.listener = l
-+	default:
-+		return fmt.Errorf("Unknown addr type: %T", p.addr)
-+	}
-+	return nil
-+}
-+
-+func (p *dummyProxy) Stop() error {
-+	if p.listener != nil {
-+		return p.listener.Close()
-+	}
-+	return nil
-+}
+ 		p.Close()
+ 
+ 		os.Exit(0)
 diff --git a/vendor/src/github.com/docker/libnetwork/sandbox.go b/vendor/src/github.com/docker/libnetwork/sandbox.go
-index 71c8ebb..4853ee4 100644
+index 71c8ebb75..4853ee465 100644
 --- a/vendor/src/github.com/docker/libnetwork/sandbox.go
 +++ b/vendor/src/github.com/docker/libnetwork/sandbox.go
 @@ -148,12 +148,15 @@ func (sb *sandbox) Labels() map[string]interface{} {
@@ -12828,7 +11903,7 @@ index 71c8ebb..4853ee4 100644
  		}
 diff --git a/vendor/src/github.com/docker/libnetwork/sandbox_externalkey_solaris.go b/vendor/src/github.com/docker/libnetwork/sandbox_externalkey_solaris.go
 new file mode 100644
-index 0000000..7569e46
+index 000000000..7569e46b9
 --- /dev/null
 +++ b/vendor/src/github.com/docker/libnetwork/sandbox_externalkey_solaris.go
 @@ -0,0 +1,45 @@
@@ -12878,7 +11953,7 @@ index 0000000..7569e46
 +func (c *controller) stopExternalKeyListener() {
 +}
 diff --git a/vendor/src/github.com/docker/libnetwork/sandbox_externalkey_unix.go b/vendor/src/github.com/docker/libnetwork/sandbox_externalkey_unix.go
-index 74ae2af..1fbd554 100644
+index 74ae2af78..1fbd554bb 100644
 --- a/vendor/src/github.com/docker/libnetwork/sandbox_externalkey_unix.go
 +++ b/vendor/src/github.com/docker/libnetwork/sandbox_externalkey_unix.go
 @@ -1,4 +1,4 @@
@@ -12888,7 +11963,7 @@ index 74ae2af..1fbd554 100644
  package libnetwork
  
 diff --git a/vendor/src/github.com/godbus/dbus/transport_unix.go b/vendor/src/github.com/godbus/dbus/transport_unix.go
-index 3fafeab..a1d00cb 100644
+index 3fafeabb1..a1d00cbc1 100644
 --- a/vendor/src/github.com/godbus/dbus/transport_unix.go
 +++ b/vendor/src/github.com/godbus/dbus/transport_unix.go
 @@ -1,4 +1,4 @@
@@ -12898,7 +11973,7 @@ index 3fafeab..a1d00cb 100644
  package dbus
  
 diff --git a/vendor/src/github.com/kr/pty/ioctl.go b/vendor/src/github.com/kr/pty/ioctl.go
-index 5b856e8..ae74671 100644
+index 5b856e871..ae7467177 100644
 --- a/vendor/src/github.com/kr/pty/ioctl.go
 +++ b/vendor/src/github.com/kr/pty/ioctl.go
 @@ -1,3 +1,5 @@
@@ -12908,7 +11983,7 @@ index 5b856e8..ae74671 100644
  
  import "syscall"
 diff --git a/vendor/src/github.com/kr/pty/util.go b/vendor/src/github.com/kr/pty/util.go
-index 67c52d0..8a3fdb8 100644
+index 67c52d06c..8a3fdb805 100644
 --- a/vendor/src/github.com/kr/pty/util.go
 +++ b/vendor/src/github.com/kr/pty/util.go
 @@ -2,8 +2,6 @@ package pty
@@ -12936,7 +12011,7 @@ index 67c52d0..8a3fdb8 100644
  	return nil
  }
 diff --git a/vendor/src/github.com/mistifyio/go-zfs/utils.go b/vendor/src/github.com/mistifyio/go-zfs/utils.go
-index d5b7353..7773b6d 100644
+index d5b735349..7773b6d9f 100644
 --- a/vendor/src/github.com/mistifyio/go-zfs/utils.go
 +++ b/vendor/src/github.com/mistifyio/go-zfs/utils.go
 @@ -8,6 +8,7 @@ import (
@@ -13069,7 +12144,7 @@ index d5b7353..7773b6d 100644
 -}
 diff --git a/vendor/src/github.com/mistifyio/go-zfs/utils_notsolaris.go b/vendor/src/github.com/mistifyio/go-zfs/utils_notsolaris.go
 new file mode 100644
-index 0000000..de3b265
+index 000000000..de3b26535
 --- /dev/null
 +++ b/vendor/src/github.com/mistifyio/go-zfs/utils_notsolaris.go
 @@ -0,0 +1,82 @@
@@ -13157,7 +12232,7 @@ index 0000000..de3b265
 +}
 diff --git a/vendor/src/github.com/mistifyio/go-zfs/utils_solaris.go b/vendor/src/github.com/mistifyio/go-zfs/utils_solaris.go
 new file mode 100644
-index 0000000..587a33c
+index 000000000..587a33c21
 --- /dev/null
 +++ b/vendor/src/github.com/mistifyio/go-zfs/utils_solaris.go
 @@ -0,0 +1,85 @@
@@ -13247,7 +12322,7 @@ index 0000000..587a33c
 +	return err
 +}
 diff --git a/vendor/src/github.com/mistifyio/go-zfs/zfs.go b/vendor/src/github.com/mistifyio/go-zfs/zfs.go
-index a1d740e..8519c74 100644
+index a1d740e07..8519c74c7 100644
 --- a/vendor/src/github.com/mistifyio/go-zfs/zfs.go
 +++ b/vendor/src/github.com/mistifyio/go-zfs/zfs.go
 @@ -7,6 +7,7 @@ import (
@@ -13446,7 +12521,7 @@ index a1d740e..8519c74 100644
  	if err != nil {
 diff --git a/vendor/src/github.com/mistifyio/go-zfs/zfs_notsolaris.go b/vendor/src/github.com/mistifyio/go-zfs/zfs_notsolaris.go
 new file mode 100644
-index 0000000..120666c
+index 000000000..120666c08
 --- /dev/null
 +++ b/vendor/src/github.com/mistifyio/go-zfs/zfs_notsolaris.go
 @@ -0,0 +1,80 @@
@@ -13532,7 +12607,7 @@ index 0000000..120666c
 +}
 diff --git a/vendor/src/github.com/mistifyio/go-zfs/zfs_solaris.go b/vendor/src/github.com/mistifyio/go-zfs/zfs_solaris.go
 new file mode 100644
-index 0000000..f5db280
+index 000000000..f5db28026
 --- /dev/null
 +++ b/vendor/src/github.com/mistifyio/go-zfs/zfs_solaris.go
 @@ -0,0 +1,87 @@
@@ -13624,7 +12699,7 @@ index 0000000..f5db280
 +	return ds, nil
 +}
 diff --git a/vendor/src/github.com/mistifyio/go-zfs/zpool.go b/vendor/src/github.com/mistifyio/go-zfs/zpool.go
-index 6ba52d3..97de8fd 100644
+index 6ba52d30c..97de8fd7b 100644
 --- a/vendor/src/github.com/mistifyio/go-zfs/zpool.go
 +++ b/vendor/src/github.com/mistifyio/go-zfs/zpool.go
 @@ -1,5 +1,7 @@
@@ -13712,7 +12787,7 @@ index 6ba52d3..97de8fd 100644
  	if err != nil {
 diff --git a/vendor/src/github.com/mistifyio/go-zfs/zpool_notsolaris.go b/vendor/src/github.com/mistifyio/go-zfs/zpool_notsolaris.go
 new file mode 100644
-index 0000000..6d580f3
+index 000000000..6d580f3d5
 --- /dev/null
 +++ b/vendor/src/github.com/mistifyio/go-zfs/zpool_notsolaris.go
 @@ -0,0 +1,33 @@
@@ -13751,7 +12826,7 @@ index 0000000..6d580f3
 +}
 diff --git a/vendor/src/github.com/mistifyio/go-zfs/zpool_solaris.go b/vendor/src/github.com/mistifyio/go-zfs/zpool_solaris.go
 new file mode 100644
-index 0000000..1c4914d
+index 000000000..1c4914d1b
 --- /dev/null
 +++ b/vendor/src/github.com/mistifyio/go-zfs/zpool_solaris.go
 @@ -0,0 +1,40 @@
@@ -13797,7 +12872,7 @@ index 0000000..1c4914d
 +}
 diff --git a/vendor/src/github.com/opencontainers/runc/libcontainer/configs/cgroup_solaris.go b/vendor/src/github.com/opencontainers/runc/libcontainer/configs/cgroup_solaris.go
 new file mode 100644
-index 0000000..ee56d98
+index 000000000..ee56d98e5
 --- /dev/null
 +++ b/vendor/src/github.com/opencontainers/runc/libcontainer/configs/cgroup_solaris.go
 @@ -0,0 +1,6 @@
@@ -13808,7 +12883,7 @@ index 0000000..ee56d98
 +type Cgroup struct {
 +}
 diff --git a/vendor/src/github.com/opencontainers/runc/libcontainer/configs/cgroup_unsupported.go b/vendor/src/github.com/opencontainers/runc/libcontainer/configs/cgroup_unsupported.go
-index 95e2830..bd82e0f 100644
+index 95e2830a4..bd82e0fd5 100644
 --- a/vendor/src/github.com/opencontainers/runc/libcontainer/configs/cgroup_unsupported.go
 +++ b/vendor/src/github.com/opencontainers/runc/libcontainer/configs/cgroup_unsupported.go
 @@ -1,4 +1,4 @@
@@ -13818,7 +12893,7 @@ index 95e2830..bd82e0f 100644
  package configs
  
 diff --git a/vendor/src/github.com/opencontainers/runc/libcontainer/configs/device_defaults.go b/vendor/src/github.com/opencontainers/runc/libcontainer/configs/device_defaults.go
-index 0ce040f..e8f6ffc 100644
+index 0ce040fd3..e8f6ffc24 100644
 --- a/vendor/src/github.com/opencontainers/runc/libcontainer/configs/device_defaults.go
 +++ b/vendor/src/github.com/opencontainers/runc/libcontainer/configs/device_defaults.go
 @@ -1,4 +1,6 @@
@@ -13831,7 +12906,7 @@ index 0ce040f..e8f6ffc 100644
  
 diff --git a/vendor/src/github.com/opencontainers/runc/libcontainer/console_solaris.go b/vendor/src/github.com/opencontainers/runc/libcontainer/console_solaris.go
 new file mode 100644
-index 0000000..d0e6819
+index 000000000..d0e681969
 --- /dev/null
 +++ b/vendor/src/github.com/opencontainers/runc/libcontainer/console_solaris.go
 @@ -0,0 +1,13 @@
@@ -13850,7 +12925,7 @@ index 0000000..d0e6819
 +}
 diff --git a/vendor/src/github.com/opencontainers/runc/libcontainer/container_solaris.go b/vendor/src/github.com/opencontainers/runc/libcontainer/container_solaris.go
 new file mode 100644
-index 0000000..503c339
+index 000000000..503c33900
 --- /dev/null
 +++ b/vendor/src/github.com/opencontainers/runc/libcontainer/container_solaris.go
 @@ -0,0 +1,22 @@
@@ -13878,7 +12953,7 @@ index 0000000..503c339
 +}
 diff --git a/vendor/src/github.com/opencontainers/runc/libcontainer/stats_solaris.go b/vendor/src/github.com/opencontainers/runc/libcontainer/stats_solaris.go
 new file mode 100644
-index 0000000..7353cd8
+index 000000000..7353cd891
 --- /dev/null
 +++ b/vendor/src/github.com/opencontainers/runc/libcontainer/stats_solaris.go
 @@ -0,0 +1,8 @@
@@ -13891,7 +12966,7 @@ index 0000000..7353cd8
 +	Stats *zones.Stats
 +}
 diff --git a/vendor/src/github.com/opencontainers/runc/libcontainer/system/sysconfig.go b/vendor/src/github.com/opencontainers/runc/libcontainer/system/sysconfig.go
-index b3a07cb..b6db51d 100644
+index b3a07cba3..b6db51ddd 100644
 --- a/vendor/src/github.com/opencontainers/runc/libcontainer/system/sysconfig.go
 +++ b/vendor/src/github.com/opencontainers/runc/libcontainer/system/sysconfig.go
 @@ -1,4 +1,4 @@
@@ -13902,7 +12977,7 @@ index b3a07cb..b6db51d 100644
  
 diff --git a/vendor/src/github.com/opencontainers/runc/libcontainer/zones/stats.go b/vendor/src/github.com/opencontainers/runc/libcontainer/zones/stats.go
 new file mode 100644
-index 0000000..618ebe9
+index 000000000..618ebe924
 --- /dev/null
 +++ b/vendor/src/github.com/opencontainers/runc/libcontainer/zones/stats.go
 @@ -0,0 +1,86 @@
@@ -13994,7 +13069,7 @@ index 0000000..618ebe9
 +}
 diff --git a/vendor/src/gopkg.in/fsnotify.v1/fen.go b/vendor/src/gopkg.in/fsnotify.v1/fen.go
 new file mode 100644
-index 0000000..a8bb6a0
+index 000000000..a8bb6a02b
 --- /dev/null
 +++ b/vendor/src/gopkg.in/fsnotify.v1/fen.go
 @@ -0,0 +1,188 @@
@@ -14188,7 +13263,7 @@ index 0000000..a8bb6a0
 +}
 diff --git a/vendor/src/gopkg.in/fsnotify.v1/fen_cgo.go b/vendor/src/gopkg.in/fsnotify.v1/fen_cgo.go
 new file mode 100644
-index 0000000..fac6022
+index 000000000..fac6022af
 --- /dev/null
 +++ b/vendor/src/gopkg.in/fsnotify.v1/fen_cgo.go
 @@ -0,0 +1,82 @@
@@ -14275,7 +13350,7 @@ index 0000000..fac6022
 +	return x
 +}
 diff --git a/vendor/src/gopkg.in/fsnotify.v1/fsnotify.go b/vendor/src/gopkg.in/fsnotify.v1/fsnotify.go
-index c899ee0..d1d39a0 100644
+index c899ee008..d1d39a0eb 100644
 --- a/vendor/src/gopkg.in/fsnotify.v1/fsnotify.go
 +++ b/vendor/src/gopkg.in/fsnotify.v1/fsnotify.go
 @@ -2,7 +2,7 @@
@@ -14288,7 +13363,7 @@ index c899ee0..d1d39a0 100644
  // Package fsnotify provides a platform-independent interface for file system notifications.
  package fsnotify
 diff --git a/volume/local/local_unix.go b/volume/local/local_unix.go
-index 60f0e76..ec807f0 100644
+index 60f0e765d..ec807f0b3 100644
 --- a/volume/local/local_unix.go
 +++ b/volume/local/local_unix.go
 @@ -1,4 +1,4 @@
@@ -14298,7 +13373,7 @@ index 60f0e76..ec807f0 100644
  // Package local provides the default implementation for volumes. It
  // is used to mount data volume containers and directories local to
 diff --git a/volume/store/store_unix.go b/volume/store/store_unix.go
-index 319c541..8ebc1f2 100644
+index 319c541d6..8ebc1f20c 100644
 --- a/volume/store/store_unix.go
 +++ b/volume/store/store_unix.go
 @@ -1,4 +1,4 @@
@@ -14308,5 +13383,5 @@ index 319c541..8ebc1f2 100644
  package store
  
 -- 
-2.7.4
+2.13.0
 
