@@ -1390,7 +1390,7 @@ user username=puppet ftpuser=false gcos-field="Puppet Admin" group=puppet \
 license puppet.license license="Apache v2.0"
 
 # globally applicable low level puppet modules we provide
-depend type=group fmri=system/management/puppet/nanliu-staging
+depend type=group fmri=system/management/puppet/puppet-staging
 depend type=group fmri=system/management/puppet/puppetlabs-concat
 depend type=group fmri=system/management/puppet/puppetlabs-inifile
 depend type=group fmri=system/management/puppet/puppetlabs-ntp
@@ -1400,10 +1400,15 @@ depend type=group fmri=system/management/puppet/puppetlabs-stdlib
 # Depend on renamed/removed versions to pull them forward
 depend type=optional fmri=library/ruby/hiera@1.3.4-5.12.0.0.0.93.0
 depend type=optional fmri=system/management/facter@2.1.0-5.12.0.0.0.93.0
+
 # depend on renamed -19 versions to force an update to remove them
 depend type=optional fmri=system/management/puppet-19@3.6.2-5.12.0.0.0.93.0
 depend type=optional \
     fmri=system/management/puppet/puppet-solaris@5.12-5.12.0.0.0.113.0
+
+# puppet-staging -> nanliu-staging -> puppet-staging
+depend type=optional \
+    fmri=system/management/puppet/puppet-staging@1.0.7-5.12.0.0.0.126.0
 
 # Puppet Dependencies
 depend type=require fmri=library/ruby/hiera
