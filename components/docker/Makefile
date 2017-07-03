@@ -56,7 +56,7 @@ PKG_PROTO_DIRS += $(COMPONENT_DIR)/files/man
 ifneq ($(BUILD_TYPE), evaluation)
 # common targets
 build:		$(SOURCE_DIR)/.prep
-	cd $(SOURCE_DIR); DOCKER_GITCOMMIT=6f2305e \
+	cd $(SOURCE_DIR); DOCKER_GITCOMMIT=714c8b5 \
 		AUTO_GOPATH=1 ./hack/make.sh dynbinary
 	$(TOUCH) $(SOURCE_DIR)/.built
 

@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Since we are building these as a set and not packaging them individually at
@@ -64,5 +64,6 @@ COMPONENT_BUILD_ARGS +=	LDFLAGS="-L$(PROTO_DIR)/$(CONFIGURE_LIBDIR.$(BITS)) $(LI
 
 CONFIGURE_OPTIONS +=	--disable-static
 CONFIGURE_OPTIONS +=	$(DISABLE_LIBCHECK)
+CONFIGURE_OPTIONS +=	ac_cv_version_script=no
 
 CLEAN_PATHS += $(BUILD_DIR)
