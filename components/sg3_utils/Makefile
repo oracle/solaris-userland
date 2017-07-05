@@ -26,16 +26,16 @@ BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sg3_utils
-COMPONENT_VERSION=	1.33
+COMPONENT_VERSION=	1.42
 COMPONENT_PROJECT_URL=	http://sg.danny.cz/sg/sg3_utils.html
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:3034a4e798404cc963fc46437b0ceeb0edc635e02471ab13aa18acd8b716a27b
+    sha256:1dcb7a0309bd0ba3d4a83acb526973b80106ee26cd9f7398186cd3f0633c9ef3
 COMPONENT_ARCHIVE_URL=	http://sg.danny.cz/sg/p/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/sg3utils
 COMPONENT_ANITYA_ID=	4801
 
-TPNO=			17711
+TPNO=			31436
 
 # Even though "gmake check" goes to completion, it doesn't really do anything.
 TEST_TARGET= $(NO_TESTS)
