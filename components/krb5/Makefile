@@ -79,6 +79,8 @@ CFLAGS += -errwarn=no%E_INIT_SIGN_EXTEND
 
 # Include openldap headers instead of obsolete mozilla ldap headers.
 CPPFLAGS += -I$(USRINCDIR)/openldap
+# To enable support of memset_s, see PSARC/2014/043
+CPPFLAGS += -D__STDC_WANT_LIB_EXT1__
 
 # Temporary solution until we can fix this upstream with MIT, which currently
 # depends on implicit binding of libc.  Here we explicitly link with libc to
