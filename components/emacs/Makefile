@@ -28,33 +28,29 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		emacs
-COMPONENT_VERSION=	24.5
+COMPONENT_VERSION=	25.2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2737a6622fb2d9982e9c47fb6f2fb297bda42674e09db40fc9bcc0db4297c3b6
+    sha256:505bbd6ea6c197947001d0f80bfccb6b30e1add584d6376f54d4fd6e4de72d2d
 COMPONENT_ANITYA_ID=	675
 
-TPNO=			23457
+TPNO=			35834
 
 INSTALL_TARGET=
 # The upstream emacs distribution does not have tests to be run
 # from this target.
 TEST_TARGET= $(NO_TESTS)
 
+# We build three different variants of emacs for our users.
+VARIANTS =	nox x gtk
+
+CONFIGURE_64 = $(VARIANTS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
+BUILD_64 = $(VARIANTS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
+INSTALL_64 = $(VARIANTS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
+
 # Depends on newer cairo, which cannot be updated in S11.
 include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnu-component.mk
-
-# We patch the configure.ac file. Get the new configure generated during prep.
-COMPONENT_PREP_ACTION = (cd $(@D) ; aclocal -I m4; autoconf )
-
-# We build three different variants of emacs for our users.
-VARIANTS =	nox x gtk
-
-ifneq ($(BUILD_TYPE), evaluation)
-BUILD_64 = $(VARIANTS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
-INSTALL_64 = $(VARIANTS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
-endif
 
 # emacs creates a directory in usr/lib/emacs/$(COMPONENT_VERSION) that
 # contains the platform name. Although the name is platform dependent,
@@ -81,6 +77,13 @@ LD_MAP_NOEXDATA.sparc=
 PKG_CONFIG_PATH.64 := $(PKG_CONFIG_PATH.64)/gnutls-3:$(PKG_CONFIG_PATH.64)
 LDFLAGS += -L$(USRLIBDIR64)/gnutls-3
 
+# Starting with emacs 25.2, the emacs executable uses trig functions (sin, cos)
+# that are not satisfied by libc. Rather than patch the configure process
+# or Makefiles, supply libm via the environment, and allow the use of -zignore,
+# inherited from the top level Userland Makefiles, to remove it from binaries
+# that don't need it.
+LDFLAGS += -lm
+
 # Never use xmkmf to find X11 libraries from autoconf. They are all available
 # from standard system locations, and we don't want the ld -L option that
 # gets injected.
@@ -98,15 +101,23 @@ ifeq   ($(strip $(PARFAIT_BUILD)),yes)
 CONFIGURE_OPTIONS +=	emacs_cv_prog_cc_o=no
 endif
 
-# Disable gsettings and dbus. gsettings causes numerous startup errors
-# of the form
+# The emacs INSTALL says
+#
+#	Emacs will autolaunch a D-Bus session bus, when the environment
+#	variable DISPLAY is set, but no session bus is running.  This might be
+#	inconvenient for Emacs when running as daemon or running via a remote
+#	ssh connection.  In order to completely prevent the use of D-Bus,
+#	configure Emacs with the options '--without-dbus --without-gconf
+#	--without-gsettings'.
+#
+# dbus does not offer sufficient utility for Solaris to be worth the negative
+# interactions with ssh, where the session blocks on exit due to dbus holding
+# an open port. And, gsettings causes numerous startup errors of the form
+#
 #    (process:25309): GLib-GIO-CRITICAL **: file gsettingsschema.c:
 #	line 416: assertion 'source != NULL' failed
-# without providing much benefit on Solaris. dbus does not offer sufficient
-# utility for Solaris to be worth the negative interactions with ssh, where
-# the session blocks on exit due to dbus holding an open port.
 # 
-CONFIGURE_OPTIONS +=	--without-gsettings --without-dbus
+CONFIGURE_OPTIONS +=	--without-dbus --without-gconf --without-gsettings
 
 # ASLR should remain disabled for emacs. ASLR undermines emacs's dumping
 # code, which requires every execution to have the same mappings. Since
@@ -245,6 +256,8 @@ REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libice
 REQUIRED_PACKAGES += x11/library/libsm
 REQUIRED_PACKAGES += x11/library/libx11
+REQUIRED_PACKAGES += x11/library/libxcb
+REQUIRED_PACKAGES += x11/library/libxfixes
 REQUIRED_PACKAGES += x11/library/libxft
 REQUIRED_PACKAGES += x11/library/libxinerama
 REQUIRED_PACKAGES += x11/library/libxmu
