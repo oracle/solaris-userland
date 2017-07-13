@@ -111,7 +111,20 @@ $(BUILD_DIR)/test-%/.configured: configure_test= --enable-test
 LICENSE_TRANSFORMS =
 
 COMPONENT_POST_INSTALL_ACTION += \
-	$(CP) berkeleydb.license $(PROTOUSRDIR)/docs/LICENSE
+	$(CP) berkeleydb.license $(PROTOUSRDIR)/docs/LICENSE ;
+
+# Switching from the Studio to the GNU compilers causes four unsigned typedef
+# definitions to be added to the db.h include file. With modern GNU compilers,
+# this isn't a problem, but AK/ON is still being built with GNU version 3.4
+# which generates errors. Until AK/ON adjusts to using newer GNU compilers,
+# then we should just remove these four typedefs.
+COMPONENT_POST_INSTALL_ACTION += \
+	$(GSED) -i \
+		-e 's|^typedef unsigned char u_char;||' \
+		-e 's|^typedef unsigned int u_int;||' \
+		-e 's|^typedef unsigned long u_long;||' \
+		-e 's|^typedef unsigned short u_short;||' \
+		$(PROTOUSRINCDIR)/db.h ;
 
 # By default "gmake test" runs standard tests, takes ~2 days per $(BITS).
 RUN=run_std

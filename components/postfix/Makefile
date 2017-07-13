@@ -58,6 +58,9 @@ AUXLIBS +=	-lsqlite3
 # LDAP
 CCARGS +=	-DHAS_LDAP -I/usr/include/openldap
 AUXLIBS +=	-lldap_r-2.4 -llber-2.4
+# Cyrus SASL
+CCARGS +=	-DUSE_SASL_AUTH -DUSE_CYRUS_SASL -I/usr/include/sasl
+AUXLIBS +=	-lsasl2
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -81,7 +84,9 @@ REQUIRED_PACKAGES += library/icu
 $(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += library/openldap
 REQUIRED_PACKAGES += library/pcre
 REQUIRED_PACKAGES += library/security/openssl
+REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library/security/libsasl2
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/network/ldap/openldap

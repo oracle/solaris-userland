@@ -1,6 +1,6 @@
-From d979a93c86f3ebc1051a777716f61df14ac33bcc Mon Sep 17 00:00:00 2001
+From d80cc6e2c49c48ea052f0eeb546c73a17ca4bc81 Mon Sep 17 00:00:00 2001
 From: Puneet Pruthi <puneet.pruthi@oracle.com>
-Date: Tue, 27 Jun 2017 17:13:51 -0700
+Date: Tue, 11 Jul 2017 13:47:26 -0700
 Subject: [PATCH] Solaris-v1.10.3
 
 ---
@@ -23,7 +23,7 @@ Subject: [PATCH] Solaris-v1.10.3
  daemon/config_test.go                              |   30 +-
  daemon/container_operations_solaris.go             |  973 ++++++++++++++++++
  daemon/daemon.go                                   |    6 +-
- daemon/daemon_solaris.go                           |  576 +++++++++++
+ daemon/daemon_solaris.go                           |  588 +++++++++++
  daemon/daemon_test.go                              |    2 +
  daemon/daemon_unix_test.go                         |    2 +-
  daemon/daemon_unsupported.go                       |    2 +-
@@ -33,7 +33,7 @@ Subject: [PATCH] Solaris-v1.10.3
  daemon/execdriver/driver_solaris.go                |   76 ++
  daemon/execdriver/driver_unix.go                   |    2 +-
  .../execdriver/execdrivers/execdrivers_solaris.go  |   13 +
- daemon/execdriver/zones/driver.go                  |  925 +++++++++++++++++
+ daemon/execdriver/zones/driver.go                  |  926 +++++++++++++++++
  daemon/execdriver/zones/driver_unsupported.go      |   12 +
  .../execdriver/zones/driver_unsupported_nocgo.go   |   13 +
  daemon/graphdriver/driver_solaris.go               |    8 +
@@ -196,7 +196,7 @@ Subject: [PATCH] Solaris-v1.10.3
  vendor/src/gopkg.in/fsnotify.v1/fsnotify.go        |    2 +-
  volume/local/local_unix.go                         |    2 +-
  volume/store/store_unix.go                         |    2 +-
- 192 files changed, 8816 insertions(+), 754 deletions(-)
+ 192 files changed, 8829 insertions(+), 754 deletions(-)
  create mode 100644 Dockerfile.solaris
  create mode 100644 container/container_solaris.go
  create mode 100644 container/state_solaris.go
@@ -2503,10 +2503,10 @@ index 6cb7f8c60..f360392d6 100644
  // Run uses the execution driver to run a given container
 diff --git a/daemon/daemon_solaris.go b/daemon/daemon_solaris.go
 new file mode 100644
-index 000000000..a73cbb88b
+index 000000000..c0f995313
 --- /dev/null
 +++ b/daemon/daemon_solaris.go
-@@ -0,0 +1,576 @@
+@@ -0,0 +1,588 @@
 +// +build solaris,cgo
 +
 +package daemon
@@ -2514,6 +2514,7 @@ index 000000000..a73cbb88b
 +import (
 +	"fmt"
 +	"net"
++	"os/exec"
 +	"strconv"
 +	"strings"
 +
@@ -2523,7 +2524,6 @@ index 000000000..a73cbb88b
 +	"github.com/docker/docker/image"
 +	"github.com/docker/docker/layer"
 +	"github.com/docker/docker/pkg/idtools"
-+	"github.com/docker/docker/pkg/parsers/kernel"
 +	"github.com/docker/docker/pkg/sysinfo"
 +	"github.com/docker/docker/reference"
 +	"github.com/docker/docker/runconfig"
@@ -2547,6 +2547,8 @@ index 000000000..a73cbb88b
 +	platformSupported    = true
 +	solarisMinCPUShares  = 1
 +	solarisMaxCPUShares  = 65535
++	runzPath             = "/usr/lib/brand/solaris-oci/runz"
++	ociVersion           = "1.0.0"
 +)
 +
 +func parseSecurityOpt(container *container.Container, config *containertypes.HostConfig) error {
@@ -2800,7 +2802,7 @@ index 000000000..a73cbb88b
 +}
 +
 +func checkSystem() error {
-+	// check OS version for compatibility, ensure running in global zone
++	// ensure running in global zone.
 +	var err error
 +
 +	if id, err := C.getzoneid(); err != nil {
@@ -2811,11 +2813,21 @@ index 000000000..a73cbb88b
 +		}
 +	}
 +
-+	v, err := kernel.GetKernelVersion()
-+	if kernel.CompareKernelVersion(*v, kernel.VersionInfo{Kernel: 5, Major: 12, Minor: 0}) < 0 {
-+		return fmt.Errorf("Your Solaris kernel version: %s doesn't support Docker. Please upgrade to 5.12.0", v.String())
++	// verify if supported runz version is installed.
++	out, err := exec.Command(runzPath, "help", "-s").Output()
++	if err != nil {
++		return fmt.Errorf("Unable to verify runtime version: %v", err)
 +	}
-+	return err
++
++	versionArray := strings.Split(string(out), "\n")
++	for _, elem := range versionArray {
++		if strings.Compare(elem, ociVersion) != 0 {
++			return nil
++		}
++	}
++
++	// runtime did not support specified OCI version.
++	return fmt.Errorf("runtime supports incorrect version; needs to support %s", ociVersion)
 +}
 +
 +// configureMaxThreads sets the Go runtime max threads threshold
@@ -3270,10 +3282,10 @@ index 000000000..25a496e14
 +}
 diff --git a/daemon/execdriver/zones/driver.go b/daemon/execdriver/zones/driver.go
 new file mode 100644
-index 000000000..0ad1d26b1
+index 000000000..5a57a62d3
 --- /dev/null
 +++ b/daemon/execdriver/zones/driver.go
-@@ -0,0 +1,925 @@
+@@ -0,0 +1,926 @@
 +// +build solaris,cgo
 +
 +package zones
@@ -3377,6 +3389,7 @@ index 000000000..0ad1d26b1
 +const (
 +	DriverName          = "zones"
 +	Version             = "0.1"
++	OCI_VERSION         = "1.0.0"
 +	RUNZ                = "/usr/lib/brand/solaris-oci/runz"
 +	DUMMY_PID           = 0
 +	EXEC_PATH           = "/system/volatile"
@@ -3967,7 +3980,7 @@ index 000000000..0ad1d26b1
 +				Path:     "rootfs",
 +				Readonly: c.ReadonlyRootfs,
 +			},
-+			OciVersion: "0.6.0",
++			OciVersion: OCI_VERSION,
 +		}
 +
 +		fileJson, _ := json.Marshal(runzconfig)
