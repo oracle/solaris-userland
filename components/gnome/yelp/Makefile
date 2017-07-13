@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		yelp
-COMPONENT_VERSION=	3.18.0
+COMPONENT_VERSION=	3.22.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Yelp
 COMPONENT_ARCHIVE_HASH= \
-	sha256:a8c201e520c87832d017439492e4343e957a90da5c6d85060e8dd3b28ffee72e
+	sha256:8616b77c239aaa731312609f192c9b2c71d54b2cae42ff23efa23b5b3188778e
 COMPONENT_BUGDB=        gnome/docviewer
 COMPONENT_ANITYA_ID=	8420
 
-TPNO=			24621
+TPNO=			36161
 
 # gmake check works but produces no useful output
 TEST_TARGET = $(SKIP_TEST)
