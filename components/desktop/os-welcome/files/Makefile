@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2010, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ ALL_FILES_BASE= \
 # Let's avoid having multiple copies of images - we could do the same for css at
 # some stage
 ALL_IMAGES = \
-	html/C/images/ora_info_company.gif \
+	html/C/images/ora_info_company.png \
 	html/C/images/ora_solaris.png\
 	$(null)
 
@@ -40,7 +40,7 @@ ALL_STYLE = \
 	html/C/css/master.css \
 	$(null)
 
-ALL_LINGUAS=C ar ca cs de el es fr it he hu id ja ko nl pl pt_BR ru sv sk zh_CN zh_HK zh_TW
+ALL_LINGUAS=C de es fr it ja ko pt_BR zh_CN zh_HK zh_TW
 ALL_FILES= $(foreach ling, $(ALL_LINGUAS), $(addprefix html/$(ling)/, $(ALL_FILES_BASE)))
 ALL_FILES+= html/index.html $(ALL_IMAGES) $(ALL_STYLE)
 

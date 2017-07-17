@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2008, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2008, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -34,11 +34,9 @@ from gi.repository import GObject, Gtk, Gdk, GdkPixbuf, Gio
 def N_(message): return message
 
 PACKAGE	  = "os-next-steps"
-VERSION	  = "12"
+VERSION	  = "Oracle Solaris"
 GETTEXT_PACKAGE	  = "os-welcome"
 LOCALEDIR = "/usr/share/locale"
-
-release_string = "Oracle Solaris 12"
 
 # There's probably a nicer way of including UTF-8 strings than this
 bullet_point = u'\u2022'
@@ -93,7 +91,7 @@ class DialogOSNextSteps(Gtk.Dialog):
 		self.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse('white'))
 
 		# Set the dialog default spacing for about
-		self.set_title(_("Start here with Oracle Solaris 12"))
+		self.set_title(_("Start here with Oracle Solaris"))
 		self.set_border_width(5)
 		self.set_resizable(False)
 		self.vbox.set_border_width(2)
