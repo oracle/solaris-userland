@@ -66,7 +66,6 @@ endif
 
 include $(WS_MAKE_RULES)/common.mk
 
-CFLAGS += -I$(USRINCDIR)/gmp
 CFLAGS += -I$(USRINCDIR)/idn
 
 # Force libtool to pass this flag through using -Wc.
