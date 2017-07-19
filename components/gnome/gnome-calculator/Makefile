@@ -29,21 +29,17 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-calculator
-COMPONENT_VERSION=	3.18.2
+COMPONENT_VERSION=	3.24.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Calculator
 COMPONENT_ARCHIVE_HASH= \
-        sha256:c86c5857409ce1d01896904e97ccf0a1a880f3dcf428a524e5c0fec27b274d64
+        sha256:44758ac719edd20067381073de3c643f842308f26da039412b1978a415202d10
 COMPONENT_BUGDB=        gnome/applications
 COMPONENT_ANITYA_ID=	13126
 
-TPNO=			25268
+TPNO=			36159
 
 # Needs updated glib2, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_64=
-INSTALL_64=
-PUBLISH_STAMP=
-endif
+include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -77,6 +73,8 @@ REQUIRED_PACKAGES += library/desktop/gtksourceview3
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gmp
+REQUIRED_PACKAGES += library/libsoup
 REQUIRED_PACKAGES += library/libxml2
+REQUIRED_PACKAGES += library/mpc
 REQUIRED_PACKAGES += library/mpfr
 REQUIRED_PACKAGES += system/library/math
