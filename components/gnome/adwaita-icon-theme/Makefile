@@ -27,14 +27,14 @@ BUILD_BITS=             NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		adwaita-icon-theme
-COMPONENT_VERSION=	3.18.0
+COMPONENT_VERSION=	3.24.0
 COMPONENT_PROJECT_URL=	https://github.com/GNOME/adwaita-icon-theme
 COMPONENT_ARCHIVE_HASH= \
-    sha256:5e9ce726001fdd8ee93c394fdc3cdb9e1603bbed5b7c62df453ccf521ec50e58
+    sha256:ccf79ff3bd340254737ce4d28b87f0ccee4b3358cd3cd5cd11dc7b42f41b272a
 COMPONENT_BUGDB=        gnome/themes
 COMPONENT_ANITYA_ID=	13117
 
-TPNO=			25252
+TPNO=			34531
 
 # Needs gtk3, not available on S11.
 ifeq ($(BUILD_TYPE), evaluation)

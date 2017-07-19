@@ -30,14 +30,14 @@ COMPILER =		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cogl
-COMPONENT_VERSION=	1.22.0
+COMPONENT_VERSION=	1.22.2
 COMPONENT_PROJECT_URL=  https://developer.gnome.org/cogl/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:689dfb5d14fc1106e9d2ded0f7930dcf7265d0bc84fa846b4f03941633eeaa91
+	sha256:39a718cdb64ea45225a7e94f88dddec1869ab37a21b339ad058a9d898782c00d
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	315
 
-TPNO=			25267
+TPNO=			34511
 
 # Needs gobject-introspection, not available on S11.
 ifeq ($(BUILD_TYPE), evaluation)
@@ -46,8 +46,45 @@ INSTALL_32_and_64=
 PUBLISH_STAMP=
 endif
 
-# Enable tests once all dependencies are install on the build server
-TEST_TARGET = $(SKIP_TEST)
+# This component needs a display (vnc setup from gnome-settings-daemon)
+COMPONENT_PRE_TEST_ACTION += \
+        ( \
+                set -x; \
+                cd $(@D); \
+                : ; \
+                mkdir -p myhome/.vnc; \
+                : ; \
+                echo xterm > myhome/.vnc/xstartup; \
+                chmod +x myhome/.vnc/xstartup; \
+                export HOME=$(@D)/myhome; \
+                : ; \
+                /usr/bin/expect -f $(WS_COMPONENTS)/gnome/gnome-settings-daemon/create_vncpasswd_file; \
+                vncserver -SecurityTypes VncAuth; \
+                : ; \
+                vncserver -list | tail -1 | awk '{ print $$1 }' > myhome/DISPLAY; \
+        )
+
+COMPONENT_POST_TEST_ACTION += \
+        ( \
+                set -x; \
+                cd $(@D); \
+                export HOME=$(@D)/myhome; \
+                DISPLAY=$$(<myhome/DISPLAY); \
+                vncserver -kill $$DISPLAY; \
+                rm -rf myhome; \
+        )
+
+# We need to read in DISPLAY variable from file and at the same time use it in
+# the env(1) command:
+COMPONENT_TEST_ENV_CMD = DISPLAY=$$(<$(@D)/myhome/DISPLAY); $(ENV)
+COMPONENT_TEST_ENV += DISPLAY="$$DISPLAY"
+COMPONENT_TEST_ENV += HOME=$(@D)/myhome
+
+COMPONENT_TEST_TRANSFORMS += '-e "/\(make\).*/d" '
+COMPONENT_TEST_TRANSFORMS += '-e "/\(Making check\).*/d" '
+# excluding this test since it gives different results at each run
+COMPONENT_TEST_TRANSFORMS += '-e "/\(test_premult\).*/d" '
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

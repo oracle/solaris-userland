@@ -30,21 +30,29 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		clutter-gtk
-COMPONENT_VERSION=	1.6.4
+COMPONENT_VERSION=	1.8.2
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:52fc9b35d301737a221bb6c24abafafe23e4bd0a5e2060bba3860b6cac7b32aa
+	sha256:da27d486325490ad3f65d2abf9413aeb8b4a8f7b559e4b2f73567a5344a26b94
 COMPONENT_BUGDB=        library/clutter
 COMPONENT_ANITYA_ID=	303
 
-TPNO=			24627
+TPNO=			34585
 
-# Requires cogl modules - disable till we get the fixed cogl on build servers
+# Requires a display
 TEST_TARGET = $(SKIP_TEST)
 
 # Needs gobject-introspection, not available on S11.
 include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+
+# Use the build area of gtk3 since clutter-gtk requires the new version
+# not installed on the build servers yet
+GTK3_BASE = $(WS_COMPONENTS)/gnome/gtk3/build/prototype/$(MACH)
+PKG_CONFIG_PATHS += $(GTK3_BASE)$(USRLIB)/pkgconfig/
+
+CPPFLAGS += -I$(GTK3_BASE)/usr/include/gtk-3.0
+LD_OPTIONS += -L $(GTK3_BASE)$(USRLIB)
 
 CONFIGURE_OPTIONS += --disable-static
 # Required for other components.

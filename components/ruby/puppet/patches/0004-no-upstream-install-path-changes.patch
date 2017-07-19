@@ -1,13 +1,13 @@
-From 7624c6e20709736d1469e05a7d0c636ca56da478 Mon Sep 17 00:00:00 2001
+From 739cf69a6154d230d40964ec116497534c81956f Mon Sep 17 00:00:00 2001
 From: Shawn Ferry <sferry@gmail.com>
 Date: Fri, 14 Apr 2017 13:18:47 -0400
-Subject: [PATCH 4/4] (no-upstream) install path changes
+Subject: [PATCH 4/5] (no-upstream) install path changes
 
 Patches not suitable for upstream
 25232171 puppet hard codes new path locations
 25232111 puppet install.rb vardir argument has no impact
 ---
- install.rb                                    |  4 ++--
+ install.rb                                    |  8 ++++----
  lib/puppet/defaults.rb                        |  2 +-
  lib/puppet/face/config.rb                     |  2 +-
  lib/puppet/face/module/install.rb             | 17 +++++++++--------
@@ -21,10 +21,10 @@ Patches not suitable for upstream
  man/man8/puppet-module.8                      | 14 +++++++-------
  spec/unit/provider/package/puppet_gem_spec.rb |  2 +-
  spec/unit/util/run_mode_spec.rb               |  4 ++--
- 14 files changed, 36 insertions(+), 35 deletions(-)
+ 14 files changed, 38 insertions(+), 37 deletions(-)
 
 diff --git a/install.rb b/install.rb
-index cad3ad8dc..8e5220fc1 100755
+index cad3ad8dc..abc8cf234 100755
 --- a/install.rb
 +++ b/install.rb
 @@ -193,7 +193,7 @@ def prepare_installation
@@ -36,6 +36,15 @@ index cad3ad8dc..8e5220fc1 100755
        InstallOptions.vardir = vardir
      end
      opts.on('--rundir[=OPTIONAL]', 'Installation directory for state files', 'Default /var/run/puppetlabs') do |rundir|
+@@ -205,7 +205,7 @@ def prepare_installation
+     opts.on('--bindir[=OPTIONAL]', 'Installation directory for binaries', 'overrides RbConfig::CONFIG["bindir"]') do |bindir|
+       InstallOptions.bindir = bindir
+     end
+-    opts.on('--localedir[=OPTIONAL]', 'Installation directory for locale information', 'Default /opt/puppetlabs/puppet/share/locale') do |localedir|
++    opts.on('--localedir[=OPTIONAL]', 'Installation directory for locale information', 'Default /usr/puppetlabs/puppet/share/locale') do |localedir|
+       InstallOptions.localedir = localedir
+     end
+     opts.on('--ruby[=OPTIONAL]', 'Ruby interpreter to use with installation', 'overrides ruby used to call install.rb') do |ruby|
 @@ -291,7 +291,7 @@ def prepare_installation
    elsif $operatingsystem == "windows"
      vardir = File.join(Dir::COMMON_APPDATA, "PuppetLabs", "puppet", "cache")
@@ -45,6 +54,15 @@ index cad3ad8dc..8e5220fc1 100755
    end
  
    if not InstallOptions.rundir.nil?
+@@ -322,7 +322,7 @@ def prepare_installation
+     if $operatingsystem == "windows"
+       localedir = File.join(Dir::PROGRAM_FILES, "Puppet Labs", "Puppet", "puppet", "share", "locale")
+     else
+-      localedir = "/opt/puppetlabs/puppet/share/locale"
++      localedir = "/usr/puppetlabs/puppet/share/locale"
+     end
+   end
+ 
 diff --git a/lib/puppet/defaults.rb b/lib/puppet/defaults.rb
 index 4aff56f5b..f6d30f4c3 100644
 --- a/lib/puppet/defaults.rb

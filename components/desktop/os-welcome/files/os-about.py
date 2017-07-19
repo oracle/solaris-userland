@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2010, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ import locale
 import gettext
 from gettext import gettext as _
 import os, sys
+import platform
 import subprocess
 import string
 import re
@@ -36,13 +37,12 @@ PACKAGE	  = "os-welcome"
 VERSION	  = "Oracle Solaris"
 LOCALEDIR = "/usr/share/locale"
 
-# This is the only release string we need to change. Otherwise we
-# refer to both releases as 'Oracle Solaris' to cut down on localization
-release_string = "Oracle Solaris 12"
+# Product name is not localized.  Uses version from uname -v.
+release_string = "Oracle Solaris " + platform.version()
 
 # We don't technically use this string at the moment, but this
 # may change
-copyright_string = N_("Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.")
+copyright_string = N_("Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.")
 
 release_text = N_("Release")
 space_text = N_("Used Space")
@@ -61,16 +61,7 @@ def get_machine_info():
 		return machine_name[1][:-1]
 
 def get_solaris_version():
-	p = subprocess.Popen(["/usr/bin/pkg", "contents", "-H", "-t", "set",
-			      "-a", "name=pkg.human-version", "-o", "value",
-			      "entire"],
-			     stdin=None, stdout=subprocess.PIPE, stderr=None,
-			     shell=False, close_fds=True, bufsize=-1)
-	(stdoutdata, stderrdata) = p.communicate()
-	if p.returncode == 0:
-		return stdoutdata.rstrip()
-	else:
-		return release_string
+	return release_string
 
 def get_machine_memory():
 	# This is also gross, assumes the file output is regular

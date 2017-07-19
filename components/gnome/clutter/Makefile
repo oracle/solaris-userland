@@ -30,16 +30,16 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		clutter
-COMPONENT_VERSION=	1.24.0
+COMPONENT_VERSION=	1.26.0
 COMPONENT_PROJECT_URL=	http://www.clutter-project.org/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:85c87d5745b97af7633776419a47421aae7cea66c1b870f88cc5e06a4c5626e6
+	sha256:67514e7824b3feb4723164084b36d6ce1ae41cb3a9897e9f1a56c8334993ce06
 COMPONENT_BUGDB=        library/clutter
 COMPONENT_ANITYA_ID=	302
 
-TPNO=			24625
+TPNO=			34584
 
-# Requires cogl modules - disable till we get the fixed cogl on build servers
+# Requires a display
 TEST_TARGET = $(SKIP_TEST)
 
 # Needs gobject-introspection, not available on S11.
@@ -51,6 +51,9 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 CFLAGS.studio += $(studio_FEATURES_EXTENSIONS)
 
 CONFIGURE_OPTIONS += --disable-static
+# Explicitly disabling egl backend cos otherwise it looks for cogl-egl.h
+# which isn't delivered because it requires wayland support
+CONFIGURE_OPTIONS += --disable-egl-backend
 # Required for other components.
 CONFIGURE_OPTIONS += --enable-introspection
 CONFIGURE_OPTIONS += --enable-shared

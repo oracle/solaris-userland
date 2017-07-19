@@ -30,12 +30,12 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgweather
-COMPONENT_VERSION=	3.18.0
+COMPONENT_VERSION=	3.24.0
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:8f4fda67f48c776f2bf955d384de4cc842aacb8d9b2ad87b42d83d0dc5a1cb1f
+	sha256:1089b932205085add19e5e1b63361c0cff1a2c46a67ab2dded6dd2ca87bdfa3d
 COMPONENT_ANITYA_ID=	13147
 
-TPNO=			24863
+TPNO=			34522
 
 TEST_TARGET= $(NO_TESTS)
 
@@ -53,6 +53,8 @@ CONFIGURE_OPTIONS += --enable-shared
 # Required for other components.
 CONFIGURE_OPTIONS += --enable-vala
 CONFIGURE_OPTIONS += --with-pic
+
+CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala

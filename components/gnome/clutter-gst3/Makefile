@@ -30,16 +30,16 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		clutter-gst
-COMPONENT_VERSION=	3.0.10
+COMPONENT_VERSION=	3.0.22
 COMPONENT_PROJECT_URL=  http://www.clutter-project.org/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:2dbdbc3292e92684bbdbf1694c61f6b781f5810e4d79a415dfdee2f7ee42148c
+	sha256:f1fc57fb32ea7e3d9234b58db35eb9ef3028cf0b266d85235f959edc0fe3dfd4
 COMPONENT_BUGDB=        library/clutter
 COMPONENT_ANITYA_ID=	302
 
-TPNO=			25843
+TPNO=			34586
 
-# Requires cogl modules - disable till we get the fixed cogl on build servers
+# Requires a display
 TEST_TARGET = $(SKIP_TEST)
 
 # Needs gobject-introspection, not available on S11.
