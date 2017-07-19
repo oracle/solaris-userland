@@ -30,21 +30,17 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gtksourceview
-COMPONENT_VERSION=	3.18.1
+COMPONENT_VERSION=	3.24.0
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/gtkmm/stable/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:7be95faf068b9f0ac7540cc1e8d607baa98a482850ef11a6471b53c9327aede6
+    sha256:4f7bfd06ea7a79886483e8a7769f7b05e1a41430cca258dd2b06be4a8a0e57f9
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	7724
 
-TPNO=			25826
+TPNO=			34528
 
 # Needs gobject-introspection, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
+include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
