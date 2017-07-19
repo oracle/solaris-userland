@@ -28,24 +28,19 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		eog
-COMPONENT_VERSION=	3.17.92
+COMPONENT_VERSION=	3.24.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/EyeOfGnome
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8d8cb893d595bda05f7ea52f6be6fb107940861bac390a1694b28181a6819b2c
-COMPONENT_ARCHIVE_URL=	http://ftp.gnome.org/pub/GNOME/sources/$(COMPONENT_NAME)/3.17/$(COMPONENT_ARCHIVE)
+	sha256:c640bb76f202d06858e4d82be626d83256326f9cedfb46ae3b450a82ff3f11cc
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	5393
 
-TPNO=			24611
+TPNO=			34563
 
 TEST_TARGET = $(NO_TESTS)
 
 # Needs gobject-introspection, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_64=
-INSTALL_64=
-PUBLISH_STAMP=
-endif
+include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
