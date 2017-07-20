@@ -21,7 +21,7 @@
 
  CDDL HEADER END
 
- Copyright (c) 2014, 2016, Oracle and/or its affiliates. All rights reserved.
+ Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
 
     NOTE:  This service manifest is not editable; its contents will
     be overwritten by package or patch operations, including
@@ -35,6 +35,15 @@
     name='network/firewall/pflog'
     type='service'
     version='1'>
+
+	<dependency
+		name='network'
+		grouping='require_any'
+		restart_on='none'
+		type='service'>
+		<service_fmri value='svc:/milestone/network:default' />
+	</dependency>
+
 	<method_context>
 		<method_credential
 		    user='daemon'

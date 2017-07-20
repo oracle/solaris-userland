@@ -114,9 +114,10 @@ CONSOLIDATION_REPOSITORY_URL=https://github.com/oracle/solaris-userland.git
 OS_RELEASE :=		$(shell uname -r)
 SOLARIS_VERSION =	$(OS_RELEASE:5.%=2.%)
 OS_SUB_VERS_1 :=	$(shell uname -v)
-OS_SUB_VERS_2 =		$(OS_SUB_VERS_1:s%=%)
-OS_SUB_VERS_3 =		$(subst _, ,$(OS_SUB_VERS_2))
-OS_VERSION ?=	$(firstword $(OS_SUB_VERS_3))
+OS_SUB_VERS_2 =		$(subst ., ,$(OS_SUB_VERS_1))
+OS_SUB_VERS_MINOR =	$(word 1, $(OS_SUB_VERS_2))
+OS_SUB_VERS_MICRO =	$(word 2, $(OS_SUB_VERS_2))
+OS_VERSION ?=		$(OS_SUB_VERS_MINOR).$(OS_SUB_VERS_MICRO)
 # Target OS version
 PKG_SOLARIS_VERSION ?= 11.$(UPDATENUM)
 
