@@ -85,6 +85,7 @@ class DialogOSNextSteps(Gtk.Dialog):
 		Gtk.Dialog.__init__(self, self.__class__.__name__, parent, 0, None)
 
 		self.connect('destroy', lambda *w: Gtk.main_quit())
+		self.set_name('os_dialog')
 
 		Gtk.Window.set_default_icon_from_file ("/usr/share/os-about/about-os-window-icon.png")
 
@@ -219,7 +220,7 @@ def main():
 
 	style_provider = Gtk.CssProvider()
 	css = """
-	GtkDialog {
+	#os_dialog {
 	  background-image: url('/usr/share/os-about/about-os-background.jpg');
 	  background-position: left top;
 	}

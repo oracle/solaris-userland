@@ -244,7 +244,7 @@ def main():
 
 	style_provider = Gtk.CssProvider()
 	css = """
-	GtkDialog {
+	#os_dialog {
 	  background-image: url('/usr/share/os-about/about-os-background.jpg');
 	  background-position: left top;
 	}
