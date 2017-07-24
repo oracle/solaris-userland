@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libpeas
-COMPONENT_VERSION=	1.16.0
+COMPONENT_VERSION=	1.20.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/Libpeas
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:b093008ecd65f7d55c80517589509698ff15ad41f664b11a3eb88ff461b1454e
+	sha256:f392fffe2dc00072a51bb2a1b274224a06bdc5f9c3b3c0ac4816909e9933d354
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	6871
 
-TPNO=			25272
+TPNO=			36125
 
 # Needs pygobject3, not available on S11.
 include $(WS_MAKE_RULES)/no-evaluation.mk
@@ -80,6 +80,7 @@ COMPONENT_TEST_TRANSFORMS += \
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/documentation-tool/xmlto
+REQUIRED_PACKAGES += developer/ui-designer/glade
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3

@@ -27,13 +27,13 @@ BUILD_BITS =            64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-font-viewer
-COMPONENT_VERSION=	3.16.2
+COMPONENT_VERSION=	3.23.91
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:f5367417d926d1dbe175aceb8eb4d2733d723a237428f130edd4b4023c0dc1cf
+	sha256:f6ca813c388741ca5ffcdd5b5fb7a65ac5ba2da2818592ae3161bddba92e88d0
 COMPONENT_ANITYA_ID=	13130
 
-TPNO=			25271
+TPNO=			34519
 
 TEST_TARGET = $(NO_TESTS)
 
