@@ -85,7 +85,7 @@ export LC_ALL=C
 export HOME=$(WS_HOME)
 
 SHELL=	/bin/bash
-
+ID=	/usr/bin/id
 # We want "nightly" as our publisher, to match other consolidations and
 # facilitate migrations (except for evaluation builds, which need to use
 # "solaris" as the publisher).  G11N wants $(CONSOLIDATION)-localizable for
@@ -423,6 +423,16 @@ COMPONENT_SYSTEM_TEST_TARGETS =	check
 # set the default directory for test of the component
 COMPONENT_TEST_DIR =		$(@D)
 COMPONENT_SYSTEM_TEST_DIR =	$(@D)
+
+#
+# For tests requiring privilege, check if we can elevate privilege without
+# prompting. If we can't, tell the user what to do and fail.
+#
+COMPONENT_PRE_TEST_SUDO = \
+	@$(SUDO) -n /bin/true 2>/dev/null || ( \
+	echo "Test run requires privilege." >&2; \
+	echo "Run '$(SUDO) /bin/true' and then re-run tests" >&2; \
+	exit 1 )
 
 # determine the type of tests we want to run.
 ifeq ($(strip $(wildcard $(COMPONENT_SYSTEM_TEST_RESULTS_DIR)/results-*.master)),)
