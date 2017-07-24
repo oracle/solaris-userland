@@ -53,6 +53,7 @@ LDFLAGS += $(CC_BITS)
 CXXFLAGS += -std=sun03
 
 CONFIGURE_OPTIONS +=	--with-shared
+CONFIGURE_OPTIONS +=	--with-abi-version=5
 CONFIGURE_OPTIONS +=	--with-normal
 CONFIGURE_OPTIONS +=	--enable-rpath
 CONFIGURE_OPTIONS +=	--enable-widec
@@ -63,7 +64,7 @@ CONFIGURE_OPTIONS +=	--with-default-terminfo-dir=$(GNUSHARE)/terminfo
 # We only deliver 64-bit binaries and in /usr/bin.
 COMPONENT_POST_INSTALL_ACTION.32 += \
 	$(GSED) -i -e 's|$(GNUBIN)/i86|$(GNUBIN)|' \
-		$(PROTOGNUBIN)/$(MACH32)/ncursesw6-config;
+		$(PROTOGNUBIN)/$(MACH32)/ncursesw5-config;
 
 # There is no master test file because tests are interactive and not
 # tied to the build.
