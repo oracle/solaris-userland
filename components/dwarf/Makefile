@@ -52,7 +52,7 @@ include $(WS_MAKE_RULES)/common.mk
 
 # Use the headers from the workspace for lint library generation.
 LINT_FLAGS += -I$(SOURCE_DIR)/libdwarf
-LINT_FLAGS += -I$(BUILD_DIR_64)/libdwarf
+LINT_FLAGS += -I$(BUILD_DIR_$(BITS))/libdwarf
 
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(USRBIN):$(GCC_ROOT)/bin"
 
