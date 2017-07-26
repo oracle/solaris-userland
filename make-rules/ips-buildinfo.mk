@@ -103,5 +103,5 @@ BUILD_VERSION ?=  5.11-$(BRANCHID)
 ifeq ($(BUILD_TYPE),evaluation)
 CANONICAL_REPO ?=		http://ipkg.us.oracle.com/solaris11/release/
 else
-CANONICAL_REPO ?=		http://ipkg.us.oracle.com/solaris12/minidev/
+CANONICAL_REPO ?=		http://ipkg.us.oracle.com/solaris11/dev/
 endif
