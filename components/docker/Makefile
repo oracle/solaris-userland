@@ -39,9 +39,7 @@ TPNO=			27475
 BUILD_STYLE= justmake
 
 # Requires S12-only changes from ON.
-ifeq ($(BUILD_TYPE), evaluation)
-PUBLISH_STAMP=
-endif
+include $(WS_MAKE_RULES)/no-evaluation.mk
 
 SYSTEM_TEST_TARGET=		$(NO_TESTS)
 
