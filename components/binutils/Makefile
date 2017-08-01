@@ -36,6 +36,18 @@ COMPONENT_ANITYA_ID=	7981
 
 TPNO=			36852
 
+#
+# for platform and cross platform support
+#
+VARIANTS =	$(BUILD_DIR_64) $(BUILD_DIR_64)-cross
+
+CONFIGURE_64 =	$(VARIANTS:%=%/.configured)
+BUILD_64 =	$(VARIANTS:%=%/.built)
+INSTALL_64 =	$(VARIANTS:%=%/.installed)
+
+$(BUILD_DIR_64)-cross/.configured: CONFIGURE_OPTIONS += --target=$(CROSS_ARCH)
+
+
 TEST_TARGET= $(TEST_64)
 include $(WS_MAKE_RULES)/gnu-component.mk
 
@@ -51,7 +63,19 @@ COMPONENT_TEST_TRANSFORMS += '-e "/^Test run by /d" '
 PARCH =		$(MACH:i386=x86_64-pc)
 GNU_ARCH =	$(PARCH:sparc=sparcv9-sun)-solaris$(SOLARIS_VERSION)
 
-PKG_MACROS +=	GNU_ARCH="$(GNU_ARCH)"
+CROSS_ARCH_ =	$(MACH:i386=sparcv9-sun)
+CROSS_ARCH =	$(CROSS_ARCH_:sparc=x86_64-pc)-solaris$(SOLARIS_VERSION)
+
+CROSS_MACH_ =	$(CROSS_ARCH:sparcv9%=sparc)
+CROSS_MACH =	$(CROSS_MACH_:x86_64%=i386)
+
+PKG_MACROS +=	CROSS_ARCH="$(CROSS_ARCH)"
+PKG_MACROS +=	CROSS_MACH="$(CROSS_MACH)"
+
+# Set GNU_ARCH differently based on whether we're mogrifying the cross-build
+# package or not, so that we can share a single manifest across both packages.
+$(MANIFEST_BASE)-%.mogrified: PKG_MACROS += GNU_ARCH=$(GNU_ARCH)
+$(MANIFEST_BASE)-binutils-cross-MACH.mogrified: PKG_MACROS += GNU_ARCH=$(CROSS_ARCH)
 
 CONFIGURE_PREFIX =	$(USRDIR)/gnu
 
@@ -66,7 +90,7 @@ CONFIGURE_OPTIONS +=    --enable-largefile
 CONFIGURE_OPTIONS +=    --enable-nls
 CONFIGURE_OPTIONS +=    --enable-plugins
 CONFIGURE_OPTIONS +=    --with-system-zlib
-CONFIGURE_OPTIONS +=    --with-sysroot=/
+CONFIGURE_OPTIONS +=    --with-sysroot
 CONFIGURE_OPTIONS +=    --build=$(GNU_ARCH)
 
 REQUIRED_PACKAGES += library/zlib
