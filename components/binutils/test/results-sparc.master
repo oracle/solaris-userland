@@ -51,7 +51,7 @@ else echo "WARNING: could not find \`runtest'" 1>&2; :;\
 fi
 WARNING: Couldn't find the global config file.
 WARNING: Couldn't find tool init file
-Native configuration is sparcv9-sun-solaris2.12
+Native configuration is sparcv9-sun-solaris2.11
 
 		=== binutils tests ===
 
@@ -64,6 +64,7 @@ Using /usr/share/dejagnu/config/unix.exp as generic interface file for target.
 Using $(SOURCE_DIR)/binutils/testsuite/config/default.exp as tool-and-target-specific interface file.
 Running $(SOURCE_DIR)/binutils/testsuite/binutils-all/aarch64/aarch64.exp ...
 Running $(SOURCE_DIR)/binutils/testsuite/binutils-all/ar.exp ...
+Running $(SOURCE_DIR)/binutils/testsuite/binutils-all/arc/objdump.exp ...
 Running $(SOURCE_DIR)/binutils/testsuite/binutils-all/arm/objdump.exp ...
 Running $(SOURCE_DIR)/binutils/testsuite/binutils-all/bfin/objdump.exp ...
 Running $(SOURCE_DIR)/binutils/testsuite/binutils-all/compress.exp ...
@@ -74,30 +75,38 @@ Running $(SOURCE_DIR)/binutils/testsuite/binutils-all/i386/i386.exp ...
 Running $(SOURCE_DIR)/binutils/testsuite/binutils-all/m68k/objdump.exp ...
 Running $(SOURCE_DIR)/binutils/testsuite/binutils-all/mips/mips.exp ...
 Running $(SOURCE_DIR)/binutils/testsuite/binutils-all/nm.exp ...
-Version $(@D)/binutils/nm-new 2.27
+Version $(@D)/binutils/nm-new 2.29
 Running $(SOURCE_DIR)/binutils/testsuite/binutils-all/objcopy.exp ...
-Version $(@D)/binutils/objcopy 2.27
+Version $(@D)/binutils/objcopy 2.29
 Running $(SOURCE_DIR)/binutils/testsuite/binutils-all/objdump.exp ...
-Version $(@D)/binutils/objdump 2.27
+Version $(@D)/binutils/objdump 2.29
+FAIL: build-id-debuglink (build)
 Running $(SOURCE_DIR)/binutils/testsuite/binutils-all/readelf.exp ...
-Version $(@D)/binutils/readelf 2.27
+Version $(@D)/binutils/readelf 2.29
 Running $(SOURCE_DIR)/binutils/testsuite/binutils-all/size.exp ...
-Version $(@D)/binutils/size 2.27
+Version $(@D)/binutils/size 2.29
 Running $(SOURCE_DIR)/binutils/testsuite/binutils-all/update-section.exp ...
-Version $(@D)/binutils/objcopy 2.27
+Version $(@D)/binutils/objcopy 2.29
 Running $(SOURCE_DIR)/binutils/testsuite/binutils-all/vax/objdump.exp ...
+Running $(SOURCE_DIR)/binutils/testsuite/binutils-all/wasm32/wasm32.exp ...
 Running $(SOURCE_DIR)/binutils/testsuite/binutils-all/windres/windres.exp ...
 Running $(SOURCE_DIR)/binutils/testsuite/binutils-all/x86-64/x86-64.exp ...
 
 		=== binutils Summary ===
 
-# of expected passes		135
+# of expected passes		153
+# of unexpected failures	1
 # of expected failures		1
 # of unsupported tests		7
+make[6]: *** [Makefile:1322: check-DEJAGNU] Error 1
 make[6]: Leaving directory '$(@D)/binutils'
+make[5]: *** [Makefile:1164: check-am] Error 2
 make[5]: Leaving directory '$(@D)/binutils'
+make[4]: *** [Makefile:1004: check-recursive] Error 1
 make[4]: Leaving directory '$(@D)/binutils'
+make[3]: *** [Makefile:1166: check] Error 2
 make[3]: Leaving directory '$(@D)/binutils'
+make[2]: *** [Makefile:3627: check-binutils] Error 2
 make[3]: Entering directory '$(@D)/etc'
 make[3]: Nothing to be done for 'check'.
 make[3]: Leaving directory '$(@D)/etc'
@@ -134,7 +143,7 @@ else echo "WARNING: could not find \`runtest'" 1>&2; :;\
 fi
 WARNING: Couldn't find the global config file.
 WARNING: Couldn't find tool init file
-Native configuration is sparcv9-sun-solaris2.12
+Native configuration is sparcv9-sun-solaris2.11
 
 		=== gas tests ===
 
@@ -244,6 +253,8 @@ Running $(SOURCE_DIR)/gas/testsuite/gas/pe/pe.exp ...
 Running $(SOURCE_DIR)/gas/testsuite/gas/pj/pj.exp ...
 Running $(SOURCE_DIR)/gas/testsuite/gas/ppc/aix.exp ...
 Running $(SOURCE_DIR)/gas/testsuite/gas/ppc/ppc.exp ...
+Running $(SOURCE_DIR)/gas/testsuite/gas/pru/pru.exp ...
+Running $(SOURCE_DIR)/gas/testsuite/gas/riscv/riscv.exp ...
 Running $(SOURCE_DIR)/gas/testsuite/gas/rl78/rl78.exp ...
 Running $(SOURCE_DIR)/gas/testsuite/gas/rx/rx.exp ...
 Running $(SOURCE_DIR)/gas/testsuite/gas/s390/s390.exp ...
@@ -258,22 +269,28 @@ Running $(SOURCE_DIR)/gas/testsuite/gas/sparc-solaris/addend.exp ...
 Running $(SOURCE_DIR)/gas/testsuite/gas/sparc-solaris/gas.exp ...
 Running $(SOURCE_DIR)/gas/testsuite/gas/sparc/mismatch.exp ...
 Running $(SOURCE_DIR)/gas/testsuite/gas/sparc/sparc.exp ...
+FAIL: sparc PAUSE
+FAIL: sparc CBCOND
+FAIL: sparc CFR
+FAIL: sparc CRYPTO
+FAIL: sparc HPC+VIS3
+FAIL: sparc IMA
+FAIL: sparc OSA2015 %mwait asr and MWAIT instruction
+FAIL: sparc OSA2015 %mcdper asr
+FAIL: sparc SPARC5 and VIS4.0
+FAIL: OSA2015 crypto instructions
+FAIL: SPARC6
+FAIL: FPCMPSHL OSA2017 instructions
+FAIL: sparc LDM/STM/LDMA/STMA
+FAIL: sparc LDMF/STMF/LDMFA/STMFA
+FAIL: OSA2017 ONADD/ONSUB/ONMUL/ONDIV instructions.
+FAIL: OSA2017 RLE instructions
 FAIL: sparc64 rdasr
 FAIL: sparc64 rdpr
 FAIL: sparc64 rdhpr
 FAIL: sparc64 wrasr
 FAIL: sparc64 wrpr
 FAIL: sparc64 wrhpr
-FAIL: sparc HPC+VIS3
-FAIL: sparc IMA
-FAIL: sparc CRYPTO
-FAIL: OSA2015 crypto instructions
-FAIL: sparc CBCOND
-FAIL: sparc PAUSE
-FAIL: sparc CFR
-FAIL: sparc OSA2015 %mwait asr and MWAIT instruction
-FAIL: sparc OSA2015 %mcdper asr
-FAIL: sparc SPARC5 and VIS4.0
 Running $(SOURCE_DIR)/gas/testsuite/gas/sun4/addend.exp ...
 Running $(SOURCE_DIR)/gas/testsuite/gas/symver/symver.exp ...
 Running $(SOURCE_DIR)/gas/testsuite/gas/tic4x/tic4x.exp ...
@@ -285,6 +302,7 @@ Running $(SOURCE_DIR)/gas/testsuite/gas/v850/basic.exp ...
 Running $(SOURCE_DIR)/gas/testsuite/gas/vax/vax.exp ...
 Running $(SOURCE_DIR)/gas/testsuite/gas/visium/error.exp ...
 Running $(SOURCE_DIR)/gas/testsuite/gas/visium/visium.exp ...
+Running $(SOURCE_DIR)/gas/testsuite/gas/wasm32/wasm32.exp ...
 Running $(SOURCE_DIR)/gas/testsuite/gas/xc16x/xc16x.exp ...
 Running $(SOURCE_DIR)/gas/testsuite/gas/xgate/xgate.exp ...
 Running $(SOURCE_DIR)/gas/testsuite/gas/xstormy16/allinsn.exp ...
@@ -295,19 +313,19 @@ Running $(SOURCE_DIR)/gas/testsuite/gas/z8k/z8k.exp ...
 
 		=== gas Summary ===
 
-# of expected passes		200
-# of unexpected failures	16
+# of expected passes		240
+# of unexpected failures	22
 # of unsupported tests		3
-$(@D)/gas/as-new 2.27
+$(@D)/gas/as-new 2.29
 
-make[5]: *** [Makefile:2537: check-DEJAGNU] Error 1
+make[5]: *** [Makefile:2595: check-DEJAGNU] Error 1
 make[5]: Leaving directory '$(@D)/gas'
-make[4]: *** [Makefile:2392: check-am] Error 2
+make[4]: *** [Makefile:2448: check-am] Error 2
 make[4]: Leaving directory '$(@D)/gas'
-make[3]: *** [Makefile:2232: check-recursive] Error 1
+make[3]: *** [Makefile:2288: check-recursive] Error 1
 make[3]: Target 'check' not remade because of errors.
 make[3]: Leaving directory '$(@D)/gas'
-make[2]: *** [Makefile:4951: check-gas] Error 2
+make[2]: *** [Makefile:4916: check-gas] Error 2
 make[3]: Entering directory '$(@D)/gprof'
 /usr/gnu/bin/make  check-recursive
 make[4]: Entering directory '$(@D)/gprof'
@@ -348,7 +366,7 @@ else echo "WARNING: could not find \`runtest'" 1>&2; :;\
 fi
 WARNING: Couldn't find the global config file.
 WARNING: Couldn't find tool init file
-Native configuration is sparcv9-sun-solaris2.12
+Native configuration is sparcv9-sun-solaris2.11
 
 		=== ld tests ===
 
@@ -369,12 +387,10 @@ Running $(SOURCE_DIR)/ld/testsuite/ld-avr/avr.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-bootstrap/bootstrap.exp ...
 FAIL: bootstrap
 FAIL: bootstrap with strip
-FAIL: bootstrap with --traditional-format
-FAIL: bootstrap with --no-keep-memory
-FAIL: bootstrap with --relax
+FAIL: bootstrap with -Wl,--traditional-format
+FAIL: bootstrap with -Wl,--no-keep-memory
+FAIL: bootstrap with -Wl,--relax
 Running $(SOURCE_DIR)/ld/testsuite/ld-cdtest/cdtest.exp ...
-FAIL: cdtest
-FAIL: cdtest with -Ur
 Running $(SOURCE_DIR)/ld/testsuite/ld-checks/checks.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-cris/cris.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-crx/crx.exp ...
@@ -383,28 +399,17 @@ Running $(SOURCE_DIR)/ld/testsuite/ld-d10v/d10v.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-discard/discard.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-elf/audit.exp ...
 FAIL: Run with -paudit.so
-FAIL: Run with -paudit.so
-FAIL: Run with --depaudit=audit.so
 FAIL: Run with --depaudit=audit.so
 FAIL: Run with shared with --audit
 FAIL: Run with shared with --audit
-FAIL: Run with shared with --audit
-FAIL: Run with shared with --audit
 FAIL: Run with -lusesaudit
-FAIL: Run with -lusesaudit
-FAIL: Run with -lusesaudit -lusesaudit2
 FAIL: Run with -lusesaudit -lusesaudit2
 Running $(SOURCE_DIR)/ld/testsuite/ld-elf/binutils.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-elf/comm-data.exp ...
+FAIL: Common symbol override test (auxiliary shared object build)
 Running $(SOURCE_DIR)/ld/testsuite/ld-elf/compress.exp ...
 FAIL: Build libgabifoo.so with zlib-gabi compressed debug sections
-FAIL: Build libgabifoo.so with zlib-gabi compressed debug sections
 FAIL: Build gabiend.o with zlib-gabi compressed debug sections
-FAIL: Build gabiend.o with zlib-gabi compressed debug sections
-FAIL: Run normal with libfoo.so with compressed debug sections
-FAIL: Run normal with libfoozlib.so with compressed debug sections with zlib-gabi
-FAIL: Run zlibnormal with libzlibfoo.so with zlib compressed debug sections
-FAIL: Run zlibnormal with libfoozlib.so with zlib compressed debug sections
 FAIL: Run gnunormal with libgnufoo.so with zlib-gnu compressed debug sections
 FAIL: Run gnunormal with libfoozlib.so with zlib-gnu compressed debug sections
 FAIL: Run gabinormal with libgabifoo.so with zlib-gabi compressed debug sections
@@ -415,31 +420,30 @@ FAIL: Link -r with zlib-gabi compressed debug output
 FAIL: Link with zlib compressed debug output
 FAIL: Link with zlib compressed debug output
 FAIL: Link with zlib-gnu compressed debug output
-FAIL: Link with zlib-gnu compressed debug output
 FAIL: Link with zlib-gabi compressed debug output
 FAIL: Link with zlib-gabi compressed debug output
 Running $(SOURCE_DIR)/ld/testsuite/ld-elf/dwarf.exp ...
 FAIL: Build libdwarf1.so
-FAIL: Build libdwarf1.so
+FAIL: DWARF parse during linker error
+FAIL: Handle no DWARF information
 FAIL: Run with libdwarf1.so first
 FAIL: Run with libdwarf1.so last
 Running $(SOURCE_DIR)/ld/testsuite/ld-elf/eh-group.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-elf/elf.exp ...
 FAIL: PR ld/14170
 FAIL: pr17068 link --as-needed lib in group
+FAIL: pr20995
+FAIL: pr20995-2
 FAIL: ld-elf/comm-data4
 FAIL: ld-elf/comm-data5
 FAIL: ld-elf/compress1a
 FAIL: ld-elf/compressed1a
 FAIL: ld-elf/eh5
 FAIL: ld-elf/pr12851
+FAIL: ld-elf/pr19617a
+FAIL: ld-elf/pr19698
 FAIL: ld-elf/warn3
 FAIL: PR ld/13195
-FAIL: PR ld/13195
-FAIL: preinit array
-FAIL: init array
-FAIL: fini array
-FAIL: init array mixed
 FAIL: static preinit array
 FAIL: static init array
 FAIL: static fini array
@@ -448,11 +452,9 @@ Running $(SOURCE_DIR)/ld/testsuite/ld-elf/exclude.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-elf/export-class.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-elf/frame.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-elf/indirect.exp ...
-FAIL: Build libpr19553b.so
+FAIL: Build libindirect5.so
 FAIL: Build libpr19553b.so
 FAIL: Build libpr19553c.so
-FAIL: Build libpr19553c.so
-FAIL: Build libpr19553d.so
 FAIL: Build libpr19553d.so
 FAIL: Run with libindirect3c.so 1
 FAIL: Run with libindirect3c.so 2
@@ -462,6 +464,10 @@ FAIL: Run with libindirect4c.so 1
 FAIL: Run with libindirect4c.so 2
 FAIL: Run with libindirect4c.so 3
 FAIL: Run with libindirect4c.so 4
+FAIL: Run indirect5 1
+FAIL: Run indirect5 2
+FAIL: Run indirect6 1
+FAIL: Run indirect6 2
 FAIL: Run with libpr18720c.so 1
 FAIL: Run with libpr18720c.so 2
 FAIL: Run with libpr18720c.so 3
@@ -470,106 +476,72 @@ FAIL: Run with libpr18720c.so 5
 FAIL: Run with libpr19553b.so
 FAIL: Run with libpr19553c.so
 FAIL: Run with libpr19553d.so
+FAIL: indirect5a dynsym
+FAIL: indirect5b dynsym
+FAIL: indirect6a dynsym
+FAIL: indirect6b dynsym
+FAIL: Run indirect5 3
+FAIL: Run indirect5 4
+FAIL: Run indirect6 3
+FAIL: Run indirect6 4
+FAIL: indirect5c dynsym
+FAIL: indirect5d dynsym
+FAIL: indirect6c dynsym
+FAIL: indirect6d dynsym
 Running $(SOURCE_DIR)/ld/testsuite/ld-elf/provide-hidden.exp ...
+Running $(SOURCE_DIR)/ld/testsuite/ld-elf/readelf.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-elf/sec-to-seg.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-elf/sec64k.exp ...
 FAIL: ld-elf/64ksec
 Running $(SOURCE_DIR)/ld/testsuite/ld-elf/shared.exp ...
 FAIL: Build versioned libfoo.so
-FAIL: Build versioned libfoo.so
-FAIL: Build warn libbar.so
 FAIL: Build warn libbar.so
 FAIL: Build libar.so with versioned libfoo.so
-FAIL: Build libar.so with versioned libfoo.so
-FAIL: Build hidden libar.so with versioned libfoo.so
 FAIL: Build hidden libar.so with versioned libfoo.so
 FAIL: Build protected libbar.so with versioned libfoo.so
-FAIL: Build protected libbar.so with versioned libfoo.so
-FAIL: Build libdl2a.so with --dynamic-list=dl2.list
 FAIL: Build libdl2a.so with --dynamic-list=dl2.list
 FAIL: Build libdl2a.so with --dynamic-list=dl2a.list
-FAIL: Build libdl2a.so with --dynamic-list=dl2a.list
-FAIL: Build libdl2a.so with --dynamic-list-data
 FAIL: Build libdl2a.so with --dynamic-list-data
 FAIL: Build libdl2b.so with --dynamic-list=dl2.list and dl2xxx.list
-FAIL: Build libdl2b.so with --dynamic-list=dl2.list and dl2xxx.list
-FAIL: Build libdl2c.so with --dynamic-list-data and dl2xxx.list
 FAIL: Build libdl2c.so with --dynamic-list-data and dl2xxx.list
 FAIL: Build libdl4a.so with --dynamic-list=dl4.list
-FAIL: Build libdl4a.so with --dynamic-list=dl4.list
-FAIL: Build libdl4b.so with --dynamic-list-data
 FAIL: Build libdl4b.so with --dynamic-list-data
 FAIL: Build libdl4c.so with --dynamic-list=dl4.list and dl4xxx.list
-FAIL: Build libdl4c.so with --dynamic-list=dl4.list and dl4xxx.list
-FAIL: Build libdl4d.so with --dynamic-list-data and dl4xxx.list
 FAIL: Build libdl4d.so with --dynamic-list-data and dl4xxx.list
 FAIL: Build libdl4e.so with -Bsymbolic-functions --dynamic-list-cpp-new
-FAIL: Build libdl4e.so with -Bsymbolic-functions --dynamic-list-cpp-new
-FAIL: Build libdl4f.so with --dynamic-list-cpp-new -Bsymbolic-functions
 FAIL: Build libdl4f.so with --dynamic-list-cpp-new -Bsymbolic-functions
 FAIL: Build libdl6b.so with -Bsymbolic --dynamic-list-data
-FAIL: Build libdl6b.so with -Bsymbolic --dynamic-list-data
-FAIL: Build libdl6d.so with --dynamic-list-data -Bsymbolic
 FAIL: Build libdl6d.so with --dynamic-list-data -Bsymbolic
 FAIL: Build libpr9676-4a.so
 FAIL: Build libpr9679.so
 FAIL: Build libpr11138-1.so
-FAIL: Build libpr11138-1.so
-FAIL: Build libpr14862.so
 FAIL: Build libpr14862.so
 FAIL: Build libneeded1a.so
-FAIL: Build libneeded1a.so
-FAIL: Build needed1a.so with --add-needed
 FAIL: Build needed1a.so with --add-needed
 FAIL: Build needed1b.so with --copy-dt-needed-entries
-FAIL: Build needed1b.so with --copy-dt-needed-entries
-FAIL: Build needed1a.so with --no-add-needed
 FAIL: Build needed1a.so with --no-add-needed
 FAIL: Build needed1b.so with --no-copy-dt-needed-entries
-FAIL: Build needed1b.so with --no-copy-dt-needed-entries
-FAIL: Build libneeded2b.so
 FAIL: Build libneeded2b.so
 FAIL: Build needed2
-FAIL: Build needed2
-FAIL: Build libneeded3a.so
 FAIL: Build libneeded3a.so
 FAIL: Build libneeded3b.so
-FAIL: Build libneeded3b.so
-FAIL: Build needed3
 FAIL: Build needed3
 FAIL: Build rdynamic-1
-FAIL: Build rdynamic-1
-FAIL: Build dynamic-1
 FAIL: Build dynamic-1
 FAIL: Build libpr16496a.so
-FAIL: Build libpr16496a.so
-FAIL: Build libpr16496b.so
 FAIL: Build libpr16496b.so
 FAIL: Build libpr16452a.so
-FAIL: Build libpr16452a.so
-FAIL: Build libpr16452b.so
 FAIL: Build libpr16452b.so
 FAIL: Build pr16452
-FAIL: Build pr16452
-FAIL: Build pr16457
 FAIL: Build pr16457
 FAIL: Build libpr19073.so
-FAIL: Build libpr19073.so
-FAIL: Run normal with libfoo.so
-FAIL: Run protected with libfoo.so
-FAIL: Run hidden with libfoo.so
 FAIL: Run normal with versioned libfoo.so
 FAIL: Run warn with versioned libfoo.so
 FAIL: Run protected with versioned libfoo.so
 FAIL: Run hidden with versioned libfoo.so
-FAIL: Run normal libbar.so with libfoo.so
-FAIL: Run protected libbar.so with libfoo.so
-FAIL: Run hidden libbar.so with libfoo.so
 FAIL: Run normal libbar.so with versioned libfoo.so
 FAIL: Run protected libbar.so with versioned libfoo.so
 FAIL: Run hidden libbar.so with versioned libfoo.so
-FAIL: Run dl1a with --dynamic-list=dl1.list and dlopen on libdl1.so
-FAIL: Run dl1b with --dynamic-list-data and dlopen on libdl1.so
 FAIL: Run with libdl2a.so
 FAIL: Run with libdl2b.so
 FAIL: Run with libdl2c.so
@@ -579,6 +551,20 @@ FAIL: Run with libdl4c.so
 FAIL: Run with libdl4d.so
 FAIL: Run with libdl4e.so
 FAIL: Run with libdl4f.so
+FAIL: Run with libdata1.so
+FAIL: Run with libfunc1.so comm1.o
+FAIL: Run with pr11138-2.c libpr11138-1.so
+FAIL: Run with libpr11138-1.so pr11138-2.c
+FAIL: Run with pr13250-3.c, libpr13250-1.so and libpr13250-2.so
+FAIL: Run with pr14323-1.c pr14323-2.so
+FAIL: Run with pr14862-1.c libpr14862.so
+FAIL: Link with --add-needed
+FAIL: Link with --copy-dt-needed-entries
+FAIL: Run relmain
+FAIL: Run pr2404
+FAIL: Run pr2404n
+FAIL: Run dl1a with --dynamic-list=dl1.list and dlopen on libdl1.so
+FAIL: Run dl1b with --dynamic-list-data and dlopen on libdl1.so
 FAIL: Run dl6a1 with --dynamic-list-data and dlopen on libdl6a.so
 FAIL: Run dl6a2 with -Bsymbolic-functions and dlopen on libdl6a.so
 FAIL: Run dl6a3 with -Bsymbolic and dlopen on libdl6a.so
@@ -590,44 +576,21 @@ FAIL: Run dl6b1 with --dynamic-list-data and dlopen on libdl6b.so
 FAIL: Run dl6b2 with dlopen on libdl6b.so
 FAIL: Run dl6c1 with --dynamic-list-data and dlopen on libdl6c.so
 FAIL: Run dl6d1 with --dynamic-list-data and dlopen on libdl6d.so
-FAIL: Run with libdata1.so
-FAIL: Run with libdata2.so
-FAIL: Run with libfunc1.so comm1.o
-FAIL: Run with comm1.o libfunc1.so
-FAIL: Run with pr11138-2.c libpr11138-1.so
-FAIL: Run with libpr11138-1.so pr11138-2.c
-FAIL: Run with pr13250-3.c, libpr13250-1.so and libpr13250-2.so
-FAIL: Run with pr14323-1.c pr14323-2.so
-FAIL: Run with pr14862-1.c libpr14862.so
-FAIL: Link with --add-needed
-FAIL: Link with --copy-dt-needed-entries
-FAIL: Run relmain
-FAIL: Run pr2404
-FAIL: Run pr18458
 FAIL: --no-add-needed
 FAIL: --no-copy-dt-needed-entries
 FAIL: --no-add-needed -shared
 FAIL: --no-copy-dt-needed-entries -shared
 FAIL: Build libdl3a.so with --dynamic-list=dl3.list
-FAIL: Build libdl3a.so with --dynamic-list=dl3.list
-FAIL: Build libdl3a.so with --dynamic-list-cpp-typeinfo
 FAIL: Build libdl3a.so with --dynamic-list-cpp-typeinfo
 FAIL: Build libdnew1a.so with --Bsymbolic-functions --dynamic-list-cpp-new
-FAIL: Build libdnew1a.so with --Bsymbolic-functions --dynamic-list-cpp-new
-FAIL: Build libdnew1b.so with --dynamic-list-data --dynamic-list-cpp-new
 FAIL: Build libdnew1b.so with --dynamic-list-data --dynamic-list-cpp-new
 FAIL: Run with libdl3a.so
 FAIL: Run with libdl3c.so
 FAIL: Run with libnew1a.so
 FAIL: Run with libnew1b.so
-FAIL: Run pr19719 fun defined
-ERROR: tmpdir/pr19719 does not exist
-FAIL: Run pr19719pie fun defined
-ERROR: tmpdir/pr19719pie does not exist
+FAIL: Run pr19719 fun undefined
 Running $(SOURCE_DIR)/ld/testsuite/ld-elf/tls_common.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-elf/wrap.exp ...
-FAIL: Run with libwrap1a.so and libwrap1b.so
-FAIL: Run with libwrap1b.so and libwrap1a.so
 Running $(SOURCE_DIR)/ld/testsuite/ld-elfcomm/elfcomm.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-elfvers/vers.exp ...
 FAIL: vers1
@@ -648,7 +611,7 @@ ERROR: cp: cannot stat 'tmpdir/vers1.so': No such file or directory
     (procedure "test_strip_vers_lib" line 11)
     invoked from within
 "test_strip_vers_lib "vers14" vers1.so vers14 vers1.ver vers1.dsym"
-    (file "$(SOURCE_DIR)/ld/testsuite/ld-elfvers/vers.exp" line 884)
+    (file "$(SOURCE_DIR)/ld/testsuite/ld-elfvers/vers.exp" line 892)
     invoked from within
 "source $(SOURCE_DIR)/ld/testsuite/ld-elfvers/vers.exp"
     ("uplevel" body line 1)
@@ -710,9 +673,11 @@ Running $(SOURCE_DIR)/ld/testsuite/ld-pe/pe.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-pie/pie.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-plugin/lto.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-plugin/plugin.exp ...
+FAIL: PR ld/17973
 Running $(SOURCE_DIR)/ld/testsuite/ld-powerpc/aix52.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-powerpc/export-class.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-powerpc/powerpc.exp ...
+Running $(SOURCE_DIR)/ld/testsuite/ld-pru/pru.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-s390/s390.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-scripts/align.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-scripts/alignof.exp ...
@@ -725,6 +690,7 @@ Running $(SOURCE_DIR)/ld/testsuite/ld-scripts/dynamic-sections.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-scripts/empty-address.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-scripts/empty-aligned.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-scripts/empty-orphan.exp ...
+Running $(SOURCE_DIR)/ld/testsuite/ld-scripts/exclude-file.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-scripts/expr.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-scripts/extern.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-scripts/include.exp ...
@@ -749,14 +715,20 @@ FAIL: sysroot-prefix common plain -Lpath, quoted
 FAIL: sysroot-prefix common plain -Lpath, unquoted
 FAIL: sysroot-prefix common full-path, quoted
 FAIL: sysroot-prefix common full-path, unquoted
-FAIL: sysroot-prefix common full-path =-prefixed with empty, quoted
-FAIL: sysroot-prefix common full-path =-prefixed with empty, unquoted
 FAIL: sysroot-prefix common plain =-prefixed with empty, quoted
 FAIL: sysroot-prefix common plain =-prefixed with empty, unquoted
-FAIL: sysroot-prefix common plain =-prefixed -Lpath, quoted
-FAIL: sysroot-prefix common plain =-prefixed -Lpath, unquoted
-FAIL: sysroot-prefix common full-path =-prefixed without, quoted
-FAIL: sysroot-prefix common full-path =-prefixed without, unquoted
+FAIL: sysroot-prefix common plain $SYSROOT-prefixed with empty, quoted
+FAIL: sysroot-prefix common plain $SYSROOT-prefixed with empty, unquoted
+FAIL: sysroot-prefix common root-anchored and script inside sysroot, quoted
+FAIL: sysroot-prefix common root-anchored and script inside sysroot, unquoted
+FAIL: sysroot-prefix common root-anchored =-prefixed script outside, quoted
+FAIL: sysroot-prefix common root-anchored =-prefixed script outside, unquoted
+FAIL: sysroot-prefix common root-anchored $SYSROOT-prefixed script outside, quoted
+FAIL: sysroot-prefix common root-anchored $SYSROOT-prefixed script outside, unquoted
+FAIL: sysroot-prefix common root-anchored =-prefixed script inside, quoted
+FAIL: sysroot-prefix common root-anchored =-prefixed script inside, unquoted
+FAIL: sysroot-prefix common root-anchored $SYSROOT-prefixed script inside, quoted
+FAIL: sysroot-prefix common root-anchored $SYSROOT-prefixed script inside, unquoted
 Running $(SOURCE_DIR)/ld/testsuite/ld-scripts/weak.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-selective/sel-dump.exp ...
 Running $(SOURCE_DIR)/ld/testsuite/ld-selective/selective.exp ...
@@ -781,6 +753,7 @@ FAIL: 32-bit: TLS -fpic and -fno-pic exec transitions
 FAIL: 32-bit: TLS -fno-pic -shared
 FAIL: 32-bit: TLS in debug sections
 FAIL: 32-bit: GOTDATA relocations
+FAIL: relaxed call WDISP30 relocation
 FAIL: 64-bit: TLS -fpic -shared transitions
 FAIL: 64-bit: Helper shared library
 FAIL: 64-bit: Another helper shared library
@@ -821,30 +794,32 @@ Running $(SOURCE_DIR)/ld/testsuite/ld-z8k/z8k.exp ...
 
 		=== ld Summary ===
 
-# of expected passes		434
-# of unexpected failures	290
+# of expected passes		506
+# of unexpected failures	244
 # of expected failures		5
-# of unresolved testcases	11
+# of unresolved testcases	5
 # of untested testcases		1
-# of unsupported tests		12
-$(@D)/ld/ld-new 2.27
+# of unsupported tests		9
+$(@D)/ld/ld-new 2.29
 
-make[6]: *** [Makefile:3643: check-DEJAGNU] Error 1
+make[6]: *** [Makefile:3665: check-DEJAGNU] Error 1
 make[6]: Leaving directory '$(@D)/ld'
-make[5]: *** [Makefile:1940: check-am] Error 2
+make[5]: *** [Makefile:1920: check-am] Error 2
 make[5]: Leaving directory '$(@D)/ld'
-make[4]: *** [Makefile:1780: check-recursive] Error 1
+make[4]: *** [Makefile:1760: check-recursive] Error 1
 make[4]: Leaving directory '$(@D)/ld'
-make[3]: *** [Makefile:1942: check] Error 2
+make[3]: *** [Makefile:1922: check] Error 2
 make[3]: Leaving directory '$(@D)/ld'
-make[2]: *** [Makefile:7225: check-ld] Error 2
+make[2]: *** [Makefile:7190: check-ld] Error 2
 make[3]: Entering directory '$(@D)/libiberty'
 make[4]: Entering directory '$(@D)/libiberty/testsuite'
 	$(SOURCE_DIR)/libiberty/testsuite/test-demangle.c ../libiberty.a
 ./test-demangle < $(SOURCE_DIR)/libiberty/testsuite/demangle-expected
-./test-demangle: 912 tests, 0 failures
+./test-demangle: 989 tests, 0 failures
 ./test-demangle < $(SOURCE_DIR)/libiberty/testsuite/d-demangle-expected
-./test-demangle: 269 tests, 0 failures
+./test-demangle: 323 tests, 0 failures
+./test-demangle < $(SOURCE_DIR)/libiberty/testsuite/rust-demangle-expected
+./test-demangle: 36 tests, 0 failures
 	$(SOURCE_DIR)/libiberty/testsuite/test-pexecute.c ../libiberty.a
 ./test-pexecute
 	$(SOURCE_DIR)/libiberty/testsuite/test-expandargv.c ../libiberty.a
@@ -884,6 +859,6 @@ make[3]: Leaving directory '$(@D)/libiberty'
 make[2]: Target 'check-host' not remade because of errors.
 make[2]: Nothing to be done for 'check-target'.
 make[2]: Leaving directory '$(@D)'
-make[1]: *** [Makefile:2203: do-check] Error 2
+make[1]: *** [Makefile:2172: do-check] Error 2
 make[1]: Target 'check' not remade because of errors.
 make[1]: Leaving directory '$(@D)'

@@ -27,14 +27,14 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		binutils
-COMPONENT_VERSION=	2.27
+COMPONENT_VERSION=	2.29
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:369737ce51587f92466041a97ab7d2358c6d9e1b6490b3940eb09fb0a9a6ac88
+	sha256:29a29549869039aad75fdf507ac30366da5ad0b974fbff4a8e7148dbf4f40ebf
 COMPONENT_BUGDB=	utility/gnu-binutils
 COMPONENT_ANITYA_ID=	7981
 
-TPNO=			32076
+TPNO=			36852
 
 TEST_TARGET= $(TEST_64)
 include $(WS_MAKE_RULES)/gnu-component.mk
@@ -66,6 +66,7 @@ CONFIGURE_OPTIONS +=    --enable-largefile
 CONFIGURE_OPTIONS +=    --enable-nls
 CONFIGURE_OPTIONS +=    --enable-plugins
 CONFIGURE_OPTIONS +=    --with-system-zlib
+CONFIGURE_OPTIONS +=    --with-sysroot=/
 CONFIGURE_OPTIONS +=    --build=$(GNU_ARCH)
 
 REQUIRED_PACKAGES += library/zlib
