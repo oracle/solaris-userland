@@ -1,27 +1,6 @@
 #! /usr/bin/ksh93
 
-#
-# CDDL HEADER START
-#
-# The contents of this file are subject to the terms of the
-# Common Development and Distribution License (the "License").
-# You may not use this file except in compliance with the License.
-#
-# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
-# or http://www.opensolaris.org/os/licensing.
-# See the License for the specific language governing permissions
-# and limitations under the License.
-#
-# When distributing Covered Code, include this CDDL HEADER in each
-# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
-# If applicable, add the following below this CDDL HEADER, with the
-# fields enclosed by brackets "[]" replaced with your own identifying
-# information: Portions Copyright [yyyy] [name of copyright owner]
-#
-# CDDL HEADER END
-#
-
-# Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2007, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 source /lib/svc/share/smf_include.sh
 
@@ -38,26 +17,112 @@ typeset -r LDAPSERVERCFG="/usr/sbin/ldapservercfg"
 typeset -r DO_LDAPSERVERCFG="pfexec ${LDAPSERVERCFG} -a openldap"
 typeset -r FLAG_STR='olcConfigFile: /tmp/dscfg.'
 
+use_dir=0
+
+slapd_conf_configured()
+{
+	grep -q '^database[ 	]*bdb$' ${CONF_FILE}
+	bdb=$?
+	if [[ $bdb -eq 0 ]] ; then
+		echo 'Error: OpenLDAP slapd.conf configured for BerkeleyDB'
+		return -1
+	fi
+	grep -q '^database[ 	]*mdb$' ${CONF_FILE}
+	mdb=$?
+	if [[ $mdb -ne 0 ]] ; then
+		# Server may be using some other DB such as shell.
+		echo 'Warning: OpenLDAP slapd.conf not configured for mdb.'
+		echo 'Attempting to start server.'
+		return 1
+	fi
+	# slapd.conf is configured for mdb, but double check databases
+	has_bdb=0
+	has_mdb=0
+	grep '^directory' ${CONF_FILE} | while read key dir
+	do
+		if [[ -d ${dir} ]] ; then
+			for file in ${dir}/*.bdb
+			do
+				if [[ -f "${file}" ]] ; then
+					has_bdb=1
+				fi
+			done
+			for file in ${dir}/*.mdb
+			do
+				if [[ -f "${file}" ]] ; then
+					has_mdb=1
+				fi
+			done
+		fi
+	done
+	if [[ $has_bdb -eq 1 ]] ; then
+		echo 'Warning BerkeleyDB databases found and ignored.'
+	fi
+	if [[ $has_mdb -eq 1 ]] ; then
+		# Previously configured slapd.conf using mdb
+		return 1
+	fi
+	return 0
+}
+
+# Strategy:
+# If the configuration is still includes BDB setup then it is an error
+# If the configuration includes a slapd.d, then LDAP is already setup
+# If the slapd.conf is missing mdb, then it is an non-standard
+# -1 - Bad configuration, 0 - no configuration, 1 - already configured
+
+check_ldap_configuration()
+{
+	if [[ -d ${CONF_DIR} && -f ${CONF_DIR}/cn\=config.ldif ]] ; then
+		# Looks like Server is configured using slapd.d
+		# Check to see if it has old BDB configuration
+		if [[ -f ${CONF_DIR}/cn\=config/*bdb.ldif ]] ; then
+			echo 'Error: OpenLDAP configured for BerkeleyDB'
+			return -1
+		fi
+		use_dir=1
+		return 1
+	elif [[ -f ${CONF_FILE} ]] ; then
+		slapd_conf_configured
+		err=$?
+		return $err
+	fi
+	# OpenLDAP seems to be unconfigured
+	return 0
+}
 
 case "$1" in
 start)
 	urls=`/usr/bin/svcprop -c -p config/urls \
 	    svc:/network/ldap/server:openldap 2>/dev/null`
 
-	if [[ -x ${LDAPSERVERCFG} ]]; then
-		grep -q "${FLAG_STR}" ${CONF_DIR}/cn\=config.ldif
-		[[ $? -eq 0 ]] && exec ${SLAPD_DIR} -h "$urls" 2>&1
-		${DO_LDAPSERVERCFG}
+	check_ldap_configuration
+	err=$?
+	if [[ $err -lt 0 ]]; then
+		exit $SMF_EXIT_ERR_CONFIG
+	elif [[ $err -gt 0 ]] ; then
+		if [[ $use_dir -eq 1 ]] ; then
+			exec ${SLAPD_DIR} -h "$urls" 2>&1
+		else
+			exec ${SLAPD} -h "$urls" 2>&1
+		fi
 	else
-		[[ -f ${CONF_FILE} ]] || exit $SMF_EXIT_ERR_CONFIG
-		exec ${SLAPD} -h "$urls" 2>&1
+		if [[ -x ${LDAPSERVERCFG} ]]; then
+			grep -q "${FLAG_STR}" ${CONF_DIR}/cn\=config.ldif
+			[[ $? -eq 0 ]] && exec ${SLAPD_DIR} -h "$urls" 2>&1
+			${DO_LDAPSERVERCFG}
+		else
+			echo "Unable to setup OpenLDAP server."
+			exit $SMF_EXIT_ERR_CONFIG
+			
+		fi
 	fi
         ;;
 stop)
 	# Use the actual contract, not ${PIDFILE}
 	smf_kill_contract $2 TERM 1 30
         ret=$?
-        [ $ret -ne 0 ] && exit 1
+        [[ $ret -ne 0 ]] && exit 1
 	exit $ret
         ;;
 *)
