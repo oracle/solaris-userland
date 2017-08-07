@@ -1,4 +1,8 @@
 #
+# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+#
+
+#
 # CDDL HEADER START
 #
 # The contents of this file are subject to the terms of the
@@ -18,11 +22,7 @@
 #
 # CDDL HEADER END
 #
-#
-
-#
-# Copyright (c) 2015, Oracle and/or its affiliates. All rights reserved.
-#
 
 noinst_HEADERS += \
-	include/solaris/solarisdefs.h
+	include/solaris/solarisdefs.h \
+	include/solaris/pkt_sched.h

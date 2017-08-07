@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
  */
 
 /*
@@ -21,21 +21,19 @@
 #include <config.h>
 
 #include "route-table.h"
-#include <sys/socket.h>
-#include <sys/types.h>
 
-#include <net/if.h>
 #include <net/route.h>
 #include <net/if_dl.h>
-#include <netinet/in.h>
 
 #include <string.h>
 #include <unistd.h>
 
 #include "util.h"
+#include "packets.h"
+#include "ovs-router.h"
+#include "openvswitch/vlog.h"
 
-static int pid;
-static unsigned int register_count = 0;
+VLOG_DEFINE_THIS_MODULE(route_table_solaris);
 
 #define	ROUNDUP_LONG(a) ((a) > 0 ? (1 + (((a) - 1) | (sizeof (long) - 1))) : \
     sizeof (long))
@@ -62,9 +60,34 @@ salen(const struct sockaddr *sa)
 	}
 }
 
-bool
-route_table_get_name(ovs_be32 ip, char name[IFNAMSIZ])
+
+uint64_t
+route_table_get_change_seq(void)
 {
+	return (0);
+}
+
+void
+route_table_init(void)
+{
+	ovs_router_init();
+}
+
+void
+route_table_run(void)
+{
+}
+
+void
+route_table_wait(void)
+{
+}
+
+bool
+route_table_fallback_lookup(const struct in6_addr *ip6_dst, char name[],
+		struct in6_addr *gw6)
+{
+	ovs_be32		ip;
 	rtmsg_t			m_rtmsg;
 	struct rt_msghdr	*rtm = &m_rtmsg.m_rtm;
 	char			*cp = m_rtmsg.m_space;
@@ -72,20 +95,31 @@ route_table_get_name(ovs_be32 ip, char name[IFNAMSIZ])
 	struct sockaddr_in	sin;
 	struct sockaddr_dl	sdl;
 	ssize_t			ssz;
-	static int		seq;
+	static int		seq = 0;
 	int			rlen;
 	int			i;
 	int			l;
+	int			pid = getpid();
+
+	if (!IN6_IS_ADDR_V4MAPPED(ip6_dst)) {
+		VLOG_DBG("route_table_fallback_lookup: .. not IPv4 addr\n");
+		return (false);
+	}
+	ip = in6_addr_get_mapped_ipv4(ip6_dst);
+	*gw6 = in6addr_any;
 
 	rtsock_fd = socket(PF_ROUTE, SOCK_RAW, 0);
-	if (rtsock_fd == -1)
+	if (rtsock_fd == -1) {
+		VLOG_DBG("route_table_fallback_lookup: error opening sock\n");
 		return (false);
-
+	}
 	memset(&sin, 0, sizeof (sin));
 	sin.sin_family = AF_INET;
 	sin.sin_port = 0;
 	sin.sin_addr.s_addr = ip;
 
+	VLOG_DBG("route_table_fallback_lookup: IP address is %s\n",
+		inet_ntoa(sin.sin_addr));
 	memset(&sdl, 0, sizeof (sdl));
 	sdl.sdl_family = AF_LINK;
 
@@ -105,6 +139,7 @@ route_table_get_name(ovs_be32 ip, char name[IFNAMSIZ])
 
 	rtm->rtm_msglen = l = cp - (char *)&m_rtmsg;
 	if ((rlen = write(rtsock_fd, (char *)&m_rtmsg, l)) < l) {
+		VLOG_DBG("route_table_fallback_lookup: error writing..\n");
 		close(rtsock_fd);
 		return (false);
 	}
@@ -134,41 +169,16 @@ route_table_get_name(ovs_be32 ip, char name[IFNAMSIZ])
 				memcpy(name, sdlp->sdl_data, namelen);
 				name[namelen] = '\0';
 				return (true);
+			} else if (i == RTA_GATEWAY && sa->sa_family ==
+			    AF_INET) {
+				const struct sockaddr_in *sin_dst =
+				    ALIGNED_CAST(struct sockaddr_in *, sa);
+
+				in6_addr_set_mapped_ipv4(gw6,
+					sin_dst->sin_addr.s_addr);
 			}
 			RT_ADVANCE(cp, sa);
 		}
 	}
 	return (false);
-}
-
-uint64_t
-route_table_get_change_seq(void)
-{
-	return (0);
-}
-
-void
-route_table_register(void)
-{
-	if (!register_count) {
-		pid = getpid();
-	}
-
-	register_count++;
-}
-
-void
-route_table_unregister(void)
-{
-	register_count--;
-}
-
-void
-route_table_run(void)
-{
-}
-
-void
-route_table_wait(void)
-{
 }

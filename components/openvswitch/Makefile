@@ -29,17 +29,18 @@ export PARFAIT_BUILD=no
 
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
+PATH=$(GNUBIN):$(USRBINDIR)
 
 COMPONENT_NAME=		openvswitch
-COMPONENT_VERSION=	2.3.2
+COMPONENT_VERSION=	2.6.1
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:386b11df94d06c68d391ee4091832360095bd3a14c72d454325fab284dad9887
+    sha256:307b20aba6a179bf13e5da9ac242933c31349073762473a9d4782619c8c1cf0c
 COMPONENT_PROJECT_URL=  http://openvswitch.org/
 COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/openvswitch
 COMPONENT_ANITYA_ID=	2568
 
-TPNO=			26090
+TPNO=			35287
 
 # Depends on S12-only changes in ON to build.
 ifeq ($(BUILD_TYPE), evaluation)
@@ -48,7 +49,7 @@ INSTALL_64=
 PUBLISH_STAMP=
 endif
 
-PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
+PYTHON_VERSIONS =	$(PYTHON2_VERSIONS)
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -63,19 +64,20 @@ COMPILER =	gcc
 
 USRLIBOVSDIR= $(USRLIBDIR)/ovs
 
+LD_OPTIONS += -z gnu-version-script-compat
+
 CONFIGURE_PREFIX	= $(USRLIBOVSDIR)
 CONFIGURE_BINDIR.64	= $(USRSBINDIR)
 CONFIGURE_SBINDIR.64	= $(USRLIBOVSDIR)
 
+CONFIGURE_OPTIONS	+= --enable-shared
 CONFIGURE_OPTIONS	+= --mandir=$(USRSHAREMANDIR)
 CONFIGURE_OPTIONS	+= --localstatedir=$(VARDIR)/run/ovs
 CONFIGURE_OPTIONS	+= --with-logdir=$(VARDIR)/log/ovs
 CONFIGURE_OPTIONS	+= --with-rundir=$(VARDIR)/run/ovs/
 CONFIGURE_OPTIONS	+= --with-dbdir=$(VARDIR)/lib/ovs/etc
 CONFIGURE_OPTIONS	+= --datarootdir=$(USRLIBOVSDIR)/share
-
-COMPONENT_PRE_BUILD_ACTION = \
-    ($(LN) -fs $(COMPONENT_DIR)/files/include/solaris $(SOURCE_DIR)/include/solaris)
+CONFIGURE_LIBDIR.64	= $(USRLIBDIR64)
 
 COMPONENT_TEST_TRANSFORMS += \
     '-e "s|^tests/pki/test-req.pem.*||g" ' \
@@ -83,13 +85,11 @@ COMPONENT_TEST_TRANSFORMS += \
     '-e "s|^.*fingerprint.*||g" '
 
 COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_TEST_ENV += TESTSUITEFLAGS=-j8
 
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += system/management/rad
-REQUIRED_PACKAGES += system/management/rad/client/rad-c
-REQUIRED_PACKAGES += system/management/rad/client/rad-python
 REQUIRED_PACKAGES += system/network

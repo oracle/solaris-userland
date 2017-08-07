@@ -45,27 +45,27 @@
 
 #include "coverage.h"
 #include "dpif-netdev.h"
-#include "dynamic-string.h"
 #include "fatal-signal.h"
 #include "hash.h"
-#include "hmap.h"
+#include "openvswitch/hmap.h"
 #include "netdev-provider.h"
 #include "netdev-vport.h"
-#include "ofpbuf.h"
+#include "openvswitch/ofpbuf.h"
 #include "openflow/openflow.h"
 #include "ovs-atomic.h"
 #include "packets.h"
 #include "poll-loop.h"
-#include "shash.h"
+#include "openvswitch/shash.h"
 #include "socket-util.h"
 #include "sset.h"
 #include "timer.h"
 #include "unaligned.h"
-#include "vlog.h"
+#include "openvswitch/vlog.h"
 
 #include "netdev-solaris.h"
 #include "util-solaris.h"
-#include "dpif-solaris.h"
+#include "netlink-socket.h"
+
 
 /*
  * Enable vlog() for this module
@@ -80,8 +80,6 @@ struct netdev_solaris {
 
 	/* Protects all members below. */
 	struct ovs_mutex mutex;
-
-	boolean_t rarp_sent;
 
 	/*
 	 * Bit mask of cached properties. These can be cached because
@@ -105,12 +103,16 @@ struct netdev_solaris {
 	unsigned int implicitly_plumbed; /* per-family implicitly plumbed */
 
 	char class[DLADM_PROP_VAL_MAX];	/* datalink class */
-	char brname[MAXLINKNAMELEN];	/* bridge name */
+	char vnicname[MAXLINKNAMELEN];	/* internal netdev implicit vnic name */
 	int mtu;			/* datalink MTU */
-	uint8_t etheraddr[ETH_ADDR_LEN]; /* MAC address */
+	struct eth_addr etheraddr;	/* MAC address */
 
-	uint32_t kbits_rate;		/* Ingress policing rate */
 	struct tc *tc;			/* traffic control */
+
+	enum netdev_flags vflags;	/* virtual flags */
+	uint32_t kbits_rate;		/* Policing data. */
+
+	int netdev_policing_error;	/* Cached error from set policing. */
 };
 
 /*
@@ -124,7 +126,8 @@ enum {
 	VALID_IN6		= 1 << 3,
 	VALID_MTU		= 1 << 4,
 	VALID_LINKCLASS		= 1 << 5,
-	VALID_FEATURES		= 1 << 6
+	VALID_FEATURES		= 1 << 6,
+	VALID_POLICING		= 1 << 7
 };
 
 /*
@@ -132,6 +135,9 @@ enum {
  */
 #define	SOLARIS_IPV4 0x01
 #define	SOLARIS_IPV6 0x02
+
+static int ovs_vport_family;
+#define	OVS_VPORT_FAMILY "ovs_vport"
 
 /*
  * Cached socket descriptors.
@@ -149,10 +155,7 @@ static struct ovs_mutex	kstat_mutex = OVS_MUTEX_INITIALIZER;
 
 static int netdev_solaris_init(void);
 static struct netdev_solaris *netdev_solaris_cast(const struct netdev *);
-static void netdev_solaris_send_rarp(const struct netdev *);
-
-/* Maintaining a mapping of every netdev->name to its bridge name. */
-struct shash port_to_bridge_map = SHASH_INITIALIZER(&port_to_bridge_map);
+static bool netdev_solaris_is_uplink(const struct netdev *);
 
 /*
  * An instance of a traffic control class.
@@ -253,7 +256,7 @@ struct tc_ops {
 	 *
 	 * This function may be null if 'tc' is trivial.
 	 */
-	void (*tc_destroy)(struct tc *tc);
+	void (*tc_destroy)(struct netdev *netdev, struct tc *tc);
 
 	/*
 	 * Retrieves details of 'netdev->tc' configuration into 'details'.
@@ -398,13 +401,6 @@ tc_find_queue(const struct netdev *netdev, unsigned int queue_id)
 }
 
 static int
-tc_delete_class(const struct netdev *netdev OVS_UNUSED,
-    unsigned int handle OVS_UNUSED)
-{
-	return (0);
-}
-
-static int
 tc_del_qdisc(struct netdev *netdev_)
 {
 	const char		*netdev_name = netdev_get_name(netdev_);
@@ -413,7 +409,7 @@ tc_del_qdisc(struct netdev *netdev_)
 	VLOG_DBG("tc_del_qdisc device %s", netdev_name);
 	if (netdev->tc) {
 		if (netdev->tc->ops->tc_destroy) {
-			netdev->tc->ops->tc_destroy(netdev->tc);
+			netdev->tc->ops->tc_destroy(netdev_, netdev->tc);
 		}
 		netdev->tc = NULL;
 	}
@@ -466,17 +462,45 @@ netdev_solaris_cast(const struct netdev *netdev)
 	return (CONTAINER_OF(netdev, struct netdev_solaris, up));
 }
 
-char *
-netdev_solaris_get_class(struct netdev *netdev)
+static int
+netdev_solaris_get_class(char *name, char *class, int len)
 {
-	return ((netdev_solaris_cast(netdev))->class);
+	struct netdev *netdev;
+
+	netdev = netdev_from_name(name);
+	if (!netdev) {
+		VLOG_ERR("netdev_solaris_get_class error in finding netdev for "
+		    "%s", name);
+		return (ENODEV);
+	}
+	(void) strlcpy(class, (netdev_solaris_cast(netdev))->class, len);
+	netdev_close(netdev);
+	return (0);
+}
+
+const char *
+netdev_solaris_get_name(const struct netdev *netdev_)
+{
+	struct netdev_solaris	*netdev = netdev_solaris_cast(netdev_);
+	const char *netdev_name = netdev_get_name(netdev_);
+	const char *name;
+
+	if (netdev_ == NULL)
+		return (NULL);
+
+	name = (netdev->vnicname[0] != '\0') ? netdev->vnicname : netdev_name;
+
+	VLOG_DBG("netdev_solaris_get_name: netdev = %s, vnic = %s, name = %s",
+		netdev_name, netdev->vnicname,  name);
+
+	return (name);
 }
 
 static int
 netdev_solaris_plumb(const struct netdev *netdev_, sa_family_t af)
 {
 	struct netdev_solaris	*netdev = netdev_solaris_cast(netdev_);
-	const char		*netdev_name = netdev_get_name(netdev_);
+	const char		*dlname;
 	char			*astring;
 	int			sock;
 	int			proto;
@@ -497,12 +521,13 @@ netdev_solaris_plumb(const struct netdev *netdev_, sa_family_t af)
 	if ((netdev->plumbed & proto) != 0)
 		return (0);
 
-	error = solaris_plumb_if(sock, netdev_name, af);
+	dlname = netdev_solaris_get_name(netdev_);
+	error = solaris_plumb_if(sock, dlname, af);
 	if (error != 0) {
-		VLOG_ERR("%s device could not be plumbed", netdev_name);
+		VLOG_ERR("%s device could not be plumbed", dlname);
 		return (error);
 	}
-	VLOG_DBG("%s device plumbed for %s", netdev_name, astring);
+	VLOG_DBG("%s device plumbed for %s", dlname, astring);
 
 	netdev->implicitly_plumbed |= proto;
 	netdev->plumbed |= proto;
@@ -513,7 +538,7 @@ static int
 netdev_solaris_unplumb(const struct netdev *netdev_, sa_family_t af)
 {
 	struct netdev_solaris	*netdev = netdev_solaris_cast(netdev_);
-	const char		*netdev_name = netdev_get_name(netdev_);
+	const char		*dlname;
 	char			*astring;
 	int			sock;
 	int			proto;
@@ -536,16 +561,17 @@ netdev_solaris_unplumb(const struct netdev *netdev_, sa_family_t af)
 		return (0);
 	}
 
-	error = solaris_unplumb_if(sock, netdev_name, af);
+	dlname = netdev_solaris_get_name(netdev_);
+	error = solaris_unplumb_if(sock, dlname, af);
 	if (error != 0) {
 		if (error == ENXIO &&
 		    netdev->up.netdev_class == &netdev_internal_class) {
 			return (0);
 		}
-		VLOG_ERR("%s device could not be unplumbed %d", netdev_name,
+		VLOG_ERR("%s device could not be unplumbed %d", dlname,
 		    error);
 	}
-	VLOG_ERR("%s device unplumbed for %s", netdev_name, astring);
+	VLOG_DBG("%s device unplumbed for %s", dlname, astring);
 	netdev->implicitly_plumbed &= ~proto;
 	netdev->plumbed &= ~proto;
 
@@ -558,7 +584,7 @@ struct solaris_netdev_sdmap {
 };
 
 static int
-netdev_solaris_chk_speed_duplex(const char *netdev_name,
+netdev_solaris_chk_speed_duplex(const char *dlname,
     const char *field_name, enum netdev_features *features)
 {
 	struct solaris_netdev_sdmap map [] = {
@@ -579,11 +605,11 @@ netdev_solaris_chk_speed_duplex(const char *netdev_name,
 	int	i;
 	int	error;
 
-	error = solaris_get_dlprop(netdev_name, "speed-duplex", field_name,
+	error = solaris_get_dlprop(dlname, "speed-duplex", field_name,
 	    buffer, sizeof (buffer));
 	if (error != 0) {
 		VLOG_ERR("Unable to retrieve feature speed-duplex for %s "
-		    "device", netdev_name);
+		    "device", dlname);
 		return (error);
 	}
 	snsp = map;
@@ -596,7 +622,7 @@ netdev_solaris_chk_speed_duplex(const char *netdev_name,
 
 static int
 netdev_solaris_read_features(struct netdev_solaris *netdev,
-    const char *netdev_name)
+    const char *dlname)
 {
 	char	buffer[DLADM_PROP_VAL_MAX];
 	int	error = 0;
@@ -616,7 +642,7 @@ netdev_solaris_read_features(struct netdev_solaris *netdev,
 	 * NETDEV_F_PAUSE_ASYM;
 	 */
 	netdev->supported = 0;
-	if ((error = netdev_solaris_chk_speed_duplex(netdev_name,
+	if ((error = netdev_solaris_chk_speed_duplex(dlname,
 	    "possible", &netdev->supported)) != 0)
 		goto exit;
 	/*
@@ -629,25 +655,25 @@ netdev_solaris_read_features(struct netdev_solaris *netdev,
 	 * NETDEV_F_PAUSE_ASYM;
 	 */
 	netdev->advertised = 0;
-	if ((error = netdev_solaris_chk_speed_duplex(netdev_name,
+	if ((error = netdev_solaris_chk_speed_duplex(dlname,
 	    "current", &netdev->advertised)) != 0)
 		goto exit;
 
 	/* Current settings. */
-	error = solaris_get_dlprop(netdev_name, "speed", "current", buffer,
+	error = solaris_get_dlprop(dlname, "speed", "current", buffer,
 	    sizeof (buffer));
 	if (error != 0) {
 		VLOG_ERR("Unable to retrieve speed for %s device",
-		    netdev_name);
+		    dlname);
 		goto exit;
 	}
 	speed = atoi(buffer);
 
-	error = solaris_get_dlprop(netdev_name, "duplex", "current", buffer,
+	error = solaris_get_dlprop(dlname, "duplex", "current", buffer,
 	    sizeof (buffer));
 	if (error != 0) {
 		VLOG_ERR("Unable to retrieve duplex for %s device",
-		    netdev_name);
+		    dlname);
 		goto exit;
 	}
 	full = (strcmp(buffer, "full") == 0);
@@ -698,39 +724,24 @@ netdev_solaris_init(void)
 		return (error);
 	}
 
-	error = solaris_init_rad();
+	error = solaris_init_dladm();
+	if (!error) {
+		error = nl_lookup_genl_family(OVS_VPORT_FAMILY,
+			&ovs_vport_family);
+		if (error != 0)
+			VLOG_ERR("netdev solaris-init failed (%s)",
+			    ovs_strerror(error));
+	}
 	return (error);
 }
 
 static void
-netdev_solaris_run(void)
+netdev_solaris_run(const struct netdev_class *netdev_class OVS_UNUSED)
 {
-	struct shash device_shash;
-	struct shash_node *node;
-
-	shash_init(&device_shash);
-	netdev_get_devices(&netdev_solaris_class, &device_shash);
-	SHASH_FOR_EACH(node, &device_shash) {
-		struct netdev *netdev = node->data;
-		struct netdev_solaris *dev = netdev_solaris_cast(netdev);
-
-		/*
-		 * No lock is needed to protect dev->rarp_sent. Because
-		 * netdev_solaris_run() is called single threaded in the
-		 * main() function.
-		 */
-		if (!dev->rarp_sent) {
-			netdev_solaris_send_rarp(netdev);
-			dev->rarp_sent = B_TRUE;
-		}
-		netdev_close(netdev);
-	}
-
-	shash_destroy(&device_shash);
 }
 
 static void
-netdev_solaris_wait(void)
+netdev_solaris_wait(const struct netdev_class *netdev_class OVS_UNUSED)
 {
 }
 
@@ -739,96 +750,117 @@ netdev_solaris_alloc(void)
 {
 	struct netdev_solaris *netdev = xzalloc(sizeof (*netdev));
 
-	netdev->rarp_sent = B_FALSE;
 	return (&netdev->up);
 }
 
-static void
-netdev_solaris_add_port_to_bridge_mapping(const struct netdev
-		*netdev, const char *brname)
+/*
+ * Generates the name for the VNIC that will back the internal devices
+ * (i.e., bridges). We always append "_0" to the VNIC name to insure that
+ * the VNIC name will have PPA suffix. This is a requirement of Solaris
+ * datalink names.
+ */
+int
+devname_to_internal(const char *devname, char *iname, int buflen)
 {
-	VLOG_DBG("netdev_solaris_add_port_to_bridge_mapping: adding a mapping "
-	    "<%s,%s> to port_to_bridge_map", netdev->name, brname);
-	shash_add_nocopy(&port_to_bridge_map, netdev->name, brname);
+	if (strlcpy(iname, devname, buflen) >= buflen)
+		return (ENOBUFS);
+
+	if (strlcat(iname, "_0", buflen) >= buflen)
+		return (ENOBUFS);
+
+	return (0);
 }
 
-static int
-netdev_solaris_unconfigure_uplink(const struct netdev *netdev_)
+int
+internal_to_devname(const char *iname, char *devname, int buflen)
 {
-	struct netdev_solaris	*netdev = netdev_solaris_cast(netdev_);
-	const char		*netdev_name = netdev_get_name(netdev_);
-	int			error;
-	char			curr_lower[DLADM_PROP_VAL_MAX];
-	struct netdev		*netdev_to_migrate = NULL;
-	char			*new_lower = NULL;
-	bool			b_error = false;
+	size_t len = strlen(iname);
 
-	VLOG_DBG("netdev_solaris_unconfigure_uplink device %s", netdev_name);
-
-	error = solaris_get_dlprop(netdev->brname, "lower-link", "current",
-	    curr_lower, sizeof (curr_lower));
-	if (error) {
-		VLOG_ERR("netdev_solaris_unconfigure_uplink couldn't obtain "
-		    "bridge(%s) lowerlink", netdev->brname);
+	if (len > 2 && buflen >= len && iname[len-2] == '_' &&
+			iname[len-1] == '0') {
+		strncpy(devname, iname, len - 2);
+		devname[len-2] = '\0';
 		return (0);
 	}
 
-	if (strcmp(netdev_name, curr_lower) == 0) {
-		/*
-		 * The uplink which we are trying to remove has bridge vnic on
-		 * top of it. We need to migrate bridge vnic to a different
-		 * uplink or to ovs.etherstub0 if uplink_port_list is empty.
-		 */
-		VLOG_DBG("netdev_solaris_unconfigure_uplink: unconfiguring the "
-		    "uplink (%s) which is the bridge %s's lowerlink (%s)",
-		    netdev_name, netdev->brname, curr_lower);
+	return (-1);
+}
 
-		netdev_to_migrate = dpif_solaris_obtain_netdev_to_migrate(
-		    netdev->brname, &b_error);
-		if (b_error) {
-			VLOG_ERR("netdev_solaris_unconfigure_uplink: couldn't "
-			    "obtain netdev_to_migrate for bridge vnic %s",
-			    netdev->brname);
-			return (0);
+static int
+i_netdev_solaris_unconfigure_uplink(const char *brname,
+    const struct netdev *old_netdev_, const struct netdev *new_netdev_)
+{
+	const char		*old_lower = netdev_get_name(old_netdev_);
+	const char		*new_lower;
+	char			curr_lower[DLADM_PROP_VAL_MAX];
+	const char		*vnicname;
+	char			vnicbuf[MAXLINKNAMELEN];
+	int			error;
+	struct netdev	*netdev;
+
+	VLOG_DBG("i_netdev_solaris_unconfigure_uplink device %s", brname);
+
+	netdev = netdev_from_name(brname);
+	if (netdev != NULL) {
+		vnicname = netdev_solaris_get_name(netdev);
+	} else {
+		error = devname_to_internal(brname, vnicbuf, sizeof (vnicbuf));
+		if (error != 0) {
+			VLOG_ERR("Failed to generate vnic name for %s", brname);
+			return (error);
 		}
+		vnicname = vnicbuf;
+	}
+	netdev_close(netdev);
 
-		if (netdev_to_migrate == NULL)
-			new_lower = NETDEV_IMPL_ETHERSTUB;
+	error = solaris_get_dllower(vnicname, curr_lower, sizeof (curr_lower));
+	if (error) {
+		VLOG_ERR("netdev_solaris_unconfigure_uplink couldn't obtain "
+		    "bridge(%s) lowerlink", vnicname);
+		return (0);
+	}
+
+	VLOG_DBG("i_netdev_solaris_unconfigure_uplink vnic = %s, "
+		"old_lower = %s, cur_lower = %s",
+		vnicname, old_lower, curr_lower);
+
+	if (strcmp(old_lower, curr_lower) == 0) {
+		if (new_netdev_ != NULL &&
+				netdev_solaris_is_uplink(new_netdev_))
+			new_lower = netdev_get_name(new_netdev_);
 		else
-			new_lower = netdev_to_migrate->name;
+			new_lower = NETDEV_IMPL_ETHERSTUB;
 
-		VLOG_DBG("netdev_solaris_unconfigure_uplink migrating bridge "
-		    "vnic to %s", new_lower);
-
-		error = solaris_modify_vnic(new_lower, netdev->brname);
+		VLOG_DBG("netdev_solaris_unconfigure_uplink migrate %s to %s",
+		    vnicname, new_lower);
+		error = solaris_modify_vnic(new_lower, vnicname);
 		if (error != 0) {
 			VLOG_ERR("failed to unconfigure %s as uplink for %s: "
-			    "%s", netdev_name, netdev->brname,
-			    ovs_strerror(error));
+				"%s", new_lower, vnicname, ovs_strerror(error));
 			return (0);
 		}
-
-		/*
-		 * reset internal port's physname and refresh its port channel.
-		 */
-		dpif_solaris_migrate_internal_port(netdev->brname, new_lower);
 	}
+
 	return (0);
 }
 
 static int
-netdev_solaris_configure_uplink(const struct netdev *netdev_,
-    const char *brname)
+i_netdev_solaris_configure_uplink(const char *brname,
+    const struct netdev *netdev_)
 {
 	struct netdev_solaris	*netdev = netdev_solaris_cast(netdev_);
-	const char		*new_uplink = netdev_get_name(netdev_);
+	const char		*new_lower = netdev_get_name(netdev_);
 	char			curr_lower[DLADM_PROP_VAL_MAX];
+	const char		*vnicname;
 	int			error;
-	const char		*netdev_existing_class;
-	struct netdev		*i_netdev;
-	boolean_t		migrated = B_FALSE;
+	char			old_class[DLADM_PROP_VAL_MAX];
+	struct netdev		*cnetdev;
+	char			vnicbuf[MAXLINKNAMELEN];
 
-	VLOG_DBG("netdev_solaris_configure_uplink device %s", new_uplink);
+	VLOG_DBG("netdev_solaris_configure_uplink device %s", new_lower);
+
+	if (!netdev_solaris_is_uplink(netdev_))
+		return (0);
 
 	/*
 	 * Normally, we would expect to see that the bridge VNIC has already
@@ -838,69 +870,31 @@ netdev_solaris_configure_uplink(const struct netdev *netdev_,
 	 * As a result, we need to create the bridge VNIC here if it does not
 	 * already exist.
 	 */
-	error = solaris_get_dlprop(brname, "lower-link", "current",
-	    curr_lower, sizeof (curr_lower));
-	VLOG_DBG("netdev_solaris_configure_uplink lower-link:%s", curr_lower);
 
-	if (error == ENODEV) {
-		/*
-		 * No implicit VNIC exists, create it now first over
-		 * NETDEV_IMPL_ETHERSTUB and later migrate onto new_uplink. Not
-		 * creating it directly over new_uplink as it may fail(for vnet)
-		 * if it doesn't support creating vnic with "auto" mac-addr-type
-		 */
-		VLOG_DBG("%s vnic being created on %s", brname,
-		    NETDEV_IMPL_ETHERSTUB);
-		error = solaris_create_vnic(NETDEV_IMPL_ETHERSTUB, brname);
-		if (error == 0) {
-			VLOG_DBG("%s vnic is being migrated on %s", brname,
-			    new_uplink);
-			error = solaris_modify_vnic(new_uplink, brname);
-			if (error == 0) {
-				(void) strlcpy(netdev->brname, brname,
-				    sizeof (netdev->brname));
-			} else {
-				VLOG_ERR("Failed to migrate %s vnic over %s:%s",
-				    brname, new_uplink, ovs_strerror(error));
-			}
-		} else {
-			VLOG_ERR("Failed to create vnic for %s: %s",
-			    brname, ovs_strerror(error));
-		}
-		goto exit;
-	} else if (error != 0) {
-		VLOG_ERR("Failed to get the lower-link for %s: %s",
-		    brname, ovs_strerror(error));
-		goto exit;
-	}
-
-	/*
-	 * If the lower-link is already set correctly, then return with
-	 * success.
-	 */
-	if (strcmp(curr_lower, new_uplink) == 0) {
-		VLOG_DBG("netdev_solaris_configure_uplink lower-link(%s) is "
-		    "already correctly set. (%s)", curr_lower, new_uplink);
-		error = 0;
-		goto exit;
-	}
-
-	if (strcmp(curr_lower, NETDEV_IMPL_ETHERSTUB) == 0) {
-		/*
-		 * Bridge vnic is on ovs.etherstub0. We have to migrate the
-		 * bridge vnic to the uplink
-		 */
-		VLOG_DBG("bridge vnic %s is on %s, migrating it to %s",
-		    brname, curr_lower, new_uplink);
-
-		error = solaris_modify_vnic(new_uplink, brname);
-		if (error != 0) {
-			VLOG_ERR("failed to configure %s as uplink: %s",
-			    new_uplink, ovs_strerror(error));
-			goto exit;
-		}
-		migrated = B_TRUE;
+	cnetdev = netdev_from_name(brname);
+	if (cnetdev != NULL) {
+		vnicname = netdev_solaris_get_name(cnetdev);
 	} else {
+		error = devname_to_internal(brname, vnicbuf, sizeof (vnicbuf));
+		if (error != 0) {
+			VLOG_ERR("Failed to generate vnic name for %s", brname);
+			return (error);
+		}
+		vnicname = vnicbuf;
+	}
+	netdev_close(cnetdev);
+
+	error = solaris_get_dllower(vnicname, curr_lower, sizeof (curr_lower));
+	if (error != 0) {
+		VLOG_ERR("Failed to get the lower-link for %s: %s",
+		    vnicname, ovs_strerror(error));
+		return (error);
+	}
+
+	VLOG_DBG("i_netdev_solaris_configure_uplink current uplink %s",
+	    curr_lower);
+
+	if (strcmp(curr_lower, NETDEV_IMPL_ETHERSTUB) != 0) {
 		/*
 		 * Bridge vnic is already on an uplink. Now we see if the
 		 * uplink to be added is other than etherstub or not.
@@ -908,35 +902,48 @@ netdev_solaris_configure_uplink(const struct netdev *netdev_,
 		 * and the one to be configured is not etherstub,
 		 * then we migrate the bridge vnic.
 		 */
-		i_netdev = netdev_from_name(curr_lower);
-		if (!i_netdev) {
+		error = netdev_solaris_get_class(curr_lower, old_class,
+		    sizeof (old_class));
+		if (error != 0) {
 			VLOG_ERR("netdev_solaris_configure_uplink error "
 			    "in fetching lower-link netdev for %s", curr_lower);
-			goto exit;
+			return (error);
 		}
-		/* i_netdev->ref_cnt--; */
-		netdev_close(i_netdev);
-
-		netdev_existing_class = netdev_solaris_get_class(i_netdev);
-		if ((strcmp(netdev_existing_class, "etherstub") == 0) &&
-		    (strcmp(netdev->class, "etherstub") != 0)) {
-			error = solaris_modify_vnic(new_uplink, brname);
-			if (error != 0) {
-				VLOG_ERR("failed to configure %s as uplink: %s",
-				    new_uplink, ovs_strerror(error));
-				goto exit;
-			}
-			migrated = B_TRUE;
+		if ((strcmp(old_class, "etherstub") != 0) ||
+		    (strcmp(netdev->class, "etherstub") == 0)) {
+			return (0);
 		}
 	}
-	(void) strlcpy(netdev->brname, brname, sizeof (netdev->brname));
+	VLOG_DBG("i_netdev_solaris_configure_uplink migrate %s to %s",
+	    vnicname, new_lower);
+	error = solaris_modify_vnic(new_lower, vnicname);
+	if (error != 0) {
+		VLOG_ERR("failed to configure %s as uplink for %s: %s",
+		    new_lower, vnicname, ovs_strerror(error));
+		return (error);
+	}
+	return (0);
+}
 
-exit:
-	/*
-	 * reset internal port's physname and refresh its port channel.
-	 */
-	if (migrated)
-		dpif_solaris_migrate_internal_port(brname, new_uplink);
+static int
+netdev_solaris_configure_uplink(const char *brname,
+    const struct netdev *old_netdev_, const struct netdev *new_netdev_)
+{
+	const char *old_lower, *new_lower;
+	int error = 0;
+
+	old_lower = old_netdev_ ? netdev_get_name(old_netdev_) : "none";
+	new_lower = new_netdev_ ? netdev_get_name(new_netdev_) : "none";
+
+	VLOG_DBG("netdev_solaris_configure_uplink: brname %s "
+	    "old_lower %s, new_lower %s", brname, old_lower, new_lower);
+
+	if (old_netdev_ == NULL)
+		error = i_netdev_solaris_configure_uplink(brname, new_netdev_);
+	else
+		error = i_netdev_solaris_unconfigure_uplink(brname, old_netdev_,
+		    new_netdev_);
+
 	return (error);
 }
 
@@ -944,7 +951,7 @@ static boolean_t
 solaris_is_if_plumbed(struct netdev *netdev_, sa_family_t af, uint64_t *flags)
 {
 	struct netdev_solaris	*netdev = netdev_solaris_cast(netdev_);
-	const char		*netdev_name = netdev_get_name(netdev_);
+	const char		*dlname;
 	int			sock;
 	int			proto;
 	int			error;
@@ -961,12 +968,13 @@ solaris_is_if_plumbed(struct netdev *netdev_, sa_family_t af, uint64_t *flags)
 		astring = "IPv6";
 		proto = SOLARIS_IPV6;
 	}
-	error = solaris_if_enabled(sock, netdev_name, flags);
+	dlname = netdev_solaris_get_name(netdev_);
+	error = solaris_if_enabled(sock, dlname, flags);
 	if (error == 0) {
 		netdev->plumbed |= proto;
 	} else if (error != ENXIO) {
 		VLOG_DBG("netdev_is_if_plumbed %s device encountered "
-		    "error %d for %s", netdev_name, error, astring);
+		    "error %d for %s", dlname, error, astring);
 	}
 	return (error == 0);
 }
@@ -1049,49 +1057,75 @@ netdev_solaris_construct(struct netdev *netdev_)
 {
 	struct netdev_solaris	*netdev = netdev_solaris_cast(netdev_);
 	const char		*netdev_name = netdev_get_name(netdev_);
+	char			vnicname[MAXLINKNAMELEN];
 	char			buffer[DLADM_PROP_VAL_MAX];
 	uint64_t		flags;
 	int			error;
 
 	ovs_mutex_init(&netdev->mutex);
-	if (netdev->up.netdev_class != &netdev_internal_class) {
-		VLOG_DBG("netdev_solaris_construct system device %s",
-		    netdev_name);
-	} else {
+
+	if (netdev->up.netdev_class == &netdev_internal_class) {
 		VLOG_DBG("netdev_solaris_construct internal device %s",
-		    netdev_name);
+			netdev_name);
+		error = devname_to_internal(netdev_name, vnicname,
+			sizeof (vnicname));
+		if (error != 0) {
+			VLOG_ERR("Failed to generate vnic name for %s",
+				netdev_name);
+			return (error);
+		}
+		(void) strlcpy(netdev->vnicname, vnicname,
+			sizeof (netdev->vnicname));
+	} else {
+		VLOG_DBG("netdev_solaris_construct system device %s",
+			netdev_name);
+		netdev->vnicname[0] = '\0';
 	}
 	netdev->implicitly_plumbed = 0;
 	netdev->plumbed = 0;
 
-	(void) solaris_is_if_plumbed(netdev_, AF_INET, &flags);
-	(void) solaris_is_if_plumbed(netdev_, AF_INET6, &flags);
+
+
+	if (strchr(netdev_name, '/') == NULL) {
+		(void) solaris_is_if_plumbed(netdev_, AF_INET, &flags);
+		(void) solaris_is_if_plumbed(netdev_, AF_INET6, &flags);
+	} else {
+		/*
+		 * Dealing with device for vnic, which is loaned to non-global
+		 * zone. Those links are:
+		 *	- always plumbed
+		 *	- always upped
+		 * at start.
+		 */
+		netdev->plumbed = 1;
+		flags = NETDEV_UP;
+		netdev->vflags = flags;
+	}
 
 	/*
 	 * loopback is illegal.
 	 */
 	if (netdev->plumbed != 0 && flags & NETDEV_LOOPBACK) {
-		VLOG_ERR("%s: cannot add a loopback device",
-		    netdev_name);
+		VLOG_ERR("%s: cannot add a loopback device", netdev_name);
 		return (EINVAL);
 	}
 
 	if (netdev->up.netdev_class == &netdev_internal_class) {
-		error = solaris_get_dlprop(netdev_name, "lower-link",
-		    "current", buffer, sizeof (buffer));
+		error = solaris_get_dllower(vnicname, buffer, sizeof (buffer));
 		if (error == ENODEV) {
 			error = solaris_create_vnic(NETDEV_IMPL_ETHERSTUB,
-			    netdev_name);
+				vnicname);
 			if (error != 0) {
 				VLOG_ERR("failed to configure %s as uplink: "
-				"%s", netdev_name, ovs_strerror(error));
+				"%s", vnicname, ovs_strerror(error));
 				return (error);
 			}
 		} else if (error != 0) {
 			VLOG_ERR("Failed to get the lower-link for %s: %s",
-			    netdev_name, ovs_strerror(error));
+			    vnicname, ovs_strerror(error));
 		}
 	}
+
 	return (0);
 }
 
@@ -1111,14 +1145,15 @@ netdev_solaris_destruct(struct netdev *netdev_)
 	(void) netdev_solaris_unplumb(netdev_, AF_INET6);
 
 	if (netdev->up.netdev_class == &netdev_internal_class) {
-		error = solaris_delete_vnic(netdev_name);
-		if (error != 0) {
-			VLOG_ERR("failed to delete %s: %s",
-			    netdev_name, ovs_strerror(error));
-		}
-	} else {
-		if (netdev->brname[0] != '\0') {
-			netdev_solaris_unconfigure_uplink(netdev_);
+		if (netdev->vnicname[0] != '\0') {
+			VLOG_DBG("Deleting backing VNIC %s", netdev->vnicname);
+			error = solaris_delete_vnic(netdev->vnicname);
+			if (error != 0) {
+				VLOG_ERR("failed to delete %s: %s",
+				    netdev->vnicname, ovs_strerror(error));
+			}
+		} else {
+			VLOG_ERR("No backing VNIC for %s", netdev_name);
 		}
 	}
 
@@ -1139,10 +1174,11 @@ netdev_solaris_dealloc(struct netdev *netdev_)
  */
 static int
 netdev_solaris_set_etheraddr(struct netdev *netdev_,
-    const uint8_t mac[ETH_ADDR_LEN])
+    const struct eth_addr mac)
 {
 	struct netdev_solaris	*netdev = netdev_solaris_cast(netdev_);
 	const char		*netdev_name = netdev_get_name(netdev_);
+	const char		*dlname;
 	char			buffer[128];
 	int			error = 0;
 
@@ -1165,15 +1201,16 @@ netdev_solaris_set_etheraddr(struct netdev *netdev_,
 	 */
 	(void) snprintf(buffer, sizeof (buffer), ETH_ADDR_FMT,
 	    ETH_ADDR_ARGS(mac));
-	error = solaris_set_dlprop_string(netdev_name, "mac-address", buffer,
+	dlname = netdev_solaris_get_name(netdev_);
+	error = solaris_set_dlprop_string(dlname, "mac-address", buffer,
 	    B_TRUE);
 	if (error != 0) {
 		VLOG_ERR("set etheraddr %s on %s device failed: %s",
-		    buffer, netdev_name, ovs_strerror(error));
+		    buffer, dlname, ovs_strerror(error));
 		goto exit;
 	}
 
-	memcpy(netdev->etheraddr, mac, ETH_ADDR_LEN);
+	netdev->etheraddr = mac;
 	netdev->cache_valid |= VALID_ETHERADDR;
 	netdev_change_seq_changed(netdev_);
 
@@ -1186,7 +1223,7 @@ static int
 netdev_solaris_get_dlclass(const struct netdev *netdev_)
 {
 	struct netdev_solaris	*netdev = netdev_solaris_cast(netdev_);
-	const char		*netdev_name = netdev_get_name(netdev_);
+	const char		*dlname;
 	char			buffer[DLADM_PROP_VAL_MAX];
 	int			error = 0;
 
@@ -1196,10 +1233,11 @@ netdev_solaris_get_dlclass(const struct netdev *netdev_)
 	/*
 	 * Get the datalink class for this link.
 	 */
-	error = solaris_get_dlclass(netdev_name, buffer, sizeof (buffer));
+	dlname = netdev_solaris_get_name(netdev_);
+	error = solaris_get_dlclass(dlname, buffer, sizeof (buffer));
 	if (error != 0) {
 		VLOG_ERR("Unable to retrieve linkclass for %s device, %d",
-		    netdev_name, error);
+		    dlname, error);
 		goto exit;
 	}
 
@@ -1217,37 +1255,25 @@ netdev_solaris_is_uplink(const struct netdev *netdev_)
 {
 	struct netdev_solaris	*netdev = netdev_solaris_cast(netdev_);
 	const char		*netdev_name = netdev_get_name(netdev_);
+	bool 			is_uplink = false;
 
-	VLOG_DBG("netdev_solaris_is_uplink device %s", netdev_name);
-	if (netdev_solaris_get_dlclass(netdev_) != 0)
-		return (false);
-	return (solaris_is_uplink_class(netdev->class));
-}
-
-/*
- * Send an Reverse ARP for this link, if it is not an uplink.
- */
-static void
-netdev_solaris_send_rarp(const struct netdev *netdev_)
-{
-	const char		*netdev_name = netdev_get_name(netdev_);
-
-	VLOG_DBG("netdev_solaris_send_rarp:send RARP device %s", netdev_name);
-
-	if (netdev_solaris_is_uplink(netdev_)) {
-		VLOG_DBG("netdev_solaris_send_rarp: uplink\n");
-		return;
+	if (netdev_solaris_get_dlclass(netdev_) == 0) {
+		is_uplink = solaris_is_uplink_class(netdev->class);
 	}
 
-	dpif_solaris_send_rarp(netdev_name);
+	VLOG_DBG("netdev_solaris_is_uplink: device %s: %s",
+		netdev_name, (is_uplink ? "yes" : "no"));
+
+	return (is_uplink);
 }
 
 static int
 netdev_solaris_get_etheraddr(const struct netdev *netdev_,
-    uint8_t mac[ETH_ADDR_LEN])
+    struct eth_addr *mac)
 {
 	struct netdev_solaris	*netdev = netdev_solaris_cast(netdev_);
 	const char		*netdev_name = netdev_get_name(netdev_);
+	const char		*dlname;
 	char			buffer[DLADM_PROP_VAL_MAX];
 	int			error = 0;
 
@@ -1261,28 +1287,28 @@ netdev_solaris_get_etheraddr(const struct netdev *netdev_,
 	 */
 	if ((netdev->cache_valid & VALID_ETHERADDR) &&
 	    (netdev->up.netdev_class != &netdev_internal_class)) {
-		memcpy(mac, netdev->etheraddr, ETH_ADDR_LEN);
+		*mac = netdev->etheraddr;
 		goto exit;
 	}
 
 	/*
 	 * MAC addresses are datalink properties.
 	 */
-	error = solaris_get_dlprop(netdev_name, "mac-address", "current",
+	dlname = netdev_solaris_get_name(netdev_);
+	error = solaris_get_dlprop(dlname, "mac-address", "current",
 	    buffer, sizeof (buffer));
 	if (error != 0) {
-		VLOG_ERR("Unable to retrieve etheraddr for %s device",
-		    netdev_name);
+		VLOG_ERR("Unable to retrieve etheraddr for %s device", dlname);
 		goto exit;
 	}
 
 	if (!eth_addr_from_string(buffer, mac)) {
-		VLOG_ERR("Invalid etheraddr for %s device", netdev_name);
+		VLOG_ERR("Invalid etheraddr for %s device", dlname);
 		error = EINVAL;
 		goto exit;
 	}
 
-	memcpy(netdev->etheraddr, mac, ETH_ADDR_LEN);
+	netdev->etheraddr = *mac;
 	netdev->cache_valid |= VALID_ETHERADDR;
 exit:
 	ovs_mutex_unlock(&netdev->mutex);
@@ -1291,7 +1317,7 @@ exit:
 
 static int
 netdev_solaris_get_mtu__(struct netdev_solaris *netdev, int *mtup,
-    const char *netdev_name)
+    const char *dlname)
 {
 	char	buffer[DLADM_PROP_VAL_MAX];
 	int	mtu;
@@ -1305,17 +1331,16 @@ netdev_solaris_get_mtu__(struct netdev_solaris *netdev, int *mtup,
 	/*
 	 * MTU is a datalink property
 	 */
-	error = solaris_get_dlprop(netdev_name, "mtu", "current", buffer,
+	error = solaris_get_dlprop(dlname, "mtu", "current", buffer,
 	    sizeof (buffer));
 	if (error != 0) {
-		VLOG_ERR("Unable to retrieve mtu for %s device",
-		    netdev_name);
+		VLOG_ERR("Unable to retrieve mtu for %s device", dlname);
 		return (error);
 	}
 
 	mtu = atoi(buffer);
 	if (mtu == 0) {
-		VLOG_ERR("Invalid mtu for %s device", netdev_name);
+		VLOG_ERR("Invalid mtu for %s device", dlname);
 		error = EINVAL;
 		return (error);
 	}
@@ -1335,6 +1360,7 @@ netdev_solaris_get_mtu(const struct netdev *netdev_, int *mtup)
 {
 	struct netdev_solaris	*netdev = netdev_solaris_cast(netdev_);
 	const char		*netdev_name = netdev_get_name(netdev_);
+	const char		*dlname;
 	int			error = 0;
 
 	VLOG_DBG("netdev_solaris_get_mtu device %s", netdev_name);
@@ -1345,7 +1371,8 @@ netdev_solaris_get_mtu(const struct netdev *netdev_, int *mtup)
 	}
 
 	ovs_mutex_lock(&netdev->mutex);
-	error = netdev_solaris_get_mtu__(netdev, mtup, netdev_name);
+	dlname = netdev_solaris_get_name(netdev_);
+	error = netdev_solaris_get_mtu__(netdev, mtup, dlname);
 	ovs_mutex_unlock(&netdev->mutex);
 	return (error);
 }
@@ -1354,10 +1381,11 @@ netdev_solaris_get_mtu(const struct netdev *netdev_, int *mtup)
  * Sets the maximum size of transmitted (MTU) for given device.
  */
 static int
-netdev_solaris_set_mtu(const struct netdev *netdev_ OVS_UNUSED, int mtu)
+netdev_solaris_set_mtu(struct netdev *netdev_, int mtu)
 {
 	struct netdev_solaris	*netdev = netdev_solaris_cast(netdev_);
 	const char		*netdev_name = netdev_get_name(netdev_);
+	const char		*dlname;
 	uint64_t		ulval = mtu;
 	int			error = 0;
 
@@ -1376,10 +1404,11 @@ netdev_solaris_set_mtu(const struct netdev *netdev_ OVS_UNUSED, int mtu)
 	/*
 	 * MTU is a datalink property.
 	 */
-	error = solaris_set_dlprop_ulong(netdev_name, "mtu", &ulval, B_TRUE);
+	dlname = netdev_solaris_get_name(netdev_);
+	error = solaris_set_dlprop_ulong(dlname, "mtu", &ulval, B_TRUE);
 	if (error != 0) {
 		VLOG_ERR("set mtu on %s device failed: %s",
-		    netdev_name, ovs_strerror(error));
+		    dlname, ovs_strerror(error));
 		goto exit;
 	}
 
@@ -1401,6 +1430,7 @@ netdev_solaris_get_ifindex(const struct netdev *netdev_)
 {
 	struct netdev_solaris 	*netdev = netdev_solaris_cast(netdev_);
 	const char		*netdev_name = netdev_get_name(netdev_);
+	const char		*dlname;
 	int			ifindex;
 	int			error = 0;
 
@@ -1412,7 +1442,8 @@ netdev_solaris_get_ifindex(const struct netdev *netdev_)
 		goto exit;
 	}
 
-	ifindex = (int)if_nametoindex(netdev_name);
+	dlname = netdev_solaris_get_name(netdev_);
+	ifindex = (int)if_nametoindex(dlname);
 	if (ifindex <= 0) {
 		error = errno;
 		goto exit;
@@ -1441,7 +1472,7 @@ netdev_solaris_get_stats(const struct netdev *netdev_,
 	char			devname[DLADM_PROP_VAL_MAX];
 	char			modname[DLADM_PROP_VAL_MAX];
 	char			kstat_name[MAXLINKNAMELEN];
-	char			*name;
+	const char		*name;
 	zoneid_t		zid;
 	uint_t			instance;
 	int			error = 0;
@@ -1492,7 +1523,10 @@ netdev_solaris_get_stats(const struct netdev *netdev_,
 		    &zid);
 		name = kstat_name;
 		instance = zid;
+	} else {
+		name = netdev_solaris_get_name(netdev_);
 	}
+
 	(void) snprintf(kuri, sizeof (kuri), "kstat:/net/link/%s/%d",
 	    name, instance);
 	stat = kstat2_lookup_map(nd_khandle, kuri, &map);
@@ -1592,6 +1626,7 @@ netdev_solaris_get_features(const struct netdev *netdev_,
 	struct netdev_solaris	*netdev = netdev_solaris_cast(netdev_);
 	const char		*netdev_name = netdev_get_name(netdev_);
 	const char		*physname;
+	const char		*dlname;
 	char			buffer[DLADM_PROP_VAL_MAX];
 	int			error = 0;
 
@@ -1601,8 +1636,8 @@ netdev_solaris_get_features(const struct netdev *netdev_,
 	if (netdev_solaris_is_uplink(netdev_)) {
 		physname = netdev_name;
 	} else {
-		error = solaris_get_dllower(netdev_name, buffer,
-		    sizeof (buffer));
+		dlname = netdev_solaris_get_name(netdev_);
+		error = solaris_get_dllower(dlname, buffer, sizeof (buffer));
 		if (error != 0)
 			goto exit;
 		physname = buffer;
@@ -1627,34 +1662,39 @@ exit:
  * successful, otherwise a positive errno value.
  */
 static int
-netdev_solaris_set_policing(struct netdev *netdev_,
-    uint32_t kbits_rate, uint32_t kbits_burst OVS_UNUSED)
+netdev_solaris_set_policing(struct netdev *netdev_, uint32_t kbits_rate,
+    uint32_t kbits_burst OVS_UNUSED)
 {
 	struct netdev_solaris	*netdev = netdev_solaris_cast(netdev_);
-	const char	*netdev_name = netdev_get_name(netdev_);
-	int		error = 0;
-	uint64_t	rate;
+	const char		*netdev_name = netdev_get_name(netdev_);
+	int			error = 0;
+	char			buffer[128];
+	uint64_t		ulval = kbits_rate;
 
+	VLOG_DBG("netdev_solaris_set_policing device %s", netdev_name);
 	ovs_mutex_lock(&netdev->mutex);
+	if (netdev->cache_valid & VALID_POLICING) {
+		error = netdev->netdev_policing_error;
+		if (error || (netdev->kbits_rate == kbits_rate))
+			goto exit;
 
-	if (netdev->kbits_rate == kbits_rate)
-		goto out;
-
-	VLOG_DBG("netdev_solaris_set_policing setting "
-	    "ingress_policing_rate %d kbps on device %s",
-	    kbits_rate, netdev_name);
-
-	rate = kbits_rate * 1000;
-	if ((error = solaris_set_dlprop_ulong(netdev_name, "max-bw",
-	    kbits_rate == 0 ? NULL : &rate, B_TRUE)) != 0) {
-		VLOG_ERR("set ingress_policing_rate "
-		    "%d kbps on %s failed: %s",
-		    kbits_rate, netdev_name, ovs_strerror(error));
-		goto out;
+		netdev->cache_valid &= ~VALID_POLICING;
 	}
-	netdev->kbits_rate = kbits_rate;
 
-out:
+	(void) snprintf(buffer, sizeof (buffer), "%luk", ulval);
+	error = solaris_set_dlprop_string(netdev_name, "max-bw",
+	    kbits_rate == 0 ? NULL : buffer, B_TRUE);
+	if (error != 0) {
+		VLOG_ERR("set maxbw %lu on %s device failed: %s", ulval,
+		    netdev_name, ovs_strerror(error));
+		goto exit;
+	}
+
+	netdev->kbits_rate = kbits_rate;
+	netdev->netdev_policing_error = error;
+	netdev->cache_valid |= VALID_POLICING;
+
+exit:
 	ovs_mutex_unlock(&netdev->mutex);
 	return (error);
 }
@@ -1734,7 +1774,8 @@ netdev_solaris_set_qos(struct netdev *netdev_,
 	const struct tc_ops	*new_ops;
 	int			error = 0;
 
-	VLOG_DBG("netdev_solaris_set_qos device %s", netdev_name);
+	VLOG_DBG("netdev_solaris_set_qos device %s type %s", netdev_name, type);
+	/* Solaris only supports htb. */
 	new_ops = tc_lookup_ovs_name(type);
 	if (!new_ops) {
 		VLOG_DBG("netdev_solaris_set_qos type %s not found", type);
@@ -1749,8 +1790,7 @@ netdev_solaris_set_qos(struct netdev *netdev_,
 
 	if (new_ops == netdev->tc->ops) {
 		error = new_ops->qdisc_set ?
-		    new_ops->qdisc_set(netdev_, details) :
-		    0;
+			new_ops->qdisc_set(netdev_, details) : 0;
 	} else {
 		error = tc_del_qdisc(netdev_);
 		if (error) {
@@ -1969,72 +2009,13 @@ netdev_solaris_dump_queue_stats(const struct netdev *netdev_,
 	return (error);
 }
 
-/*
- * If 'netdev' has an assigned IPv4 address, sets '*address' to that
- * address and '*netmask' to the associated netmask. Otherwise, returns
- * errno.
- */
-static int
-netdev_solaris_get_in4(const struct netdev *netdev_,
-    struct in_addr *address, struct in_addr *netmask)
-{
-	struct netdev_solaris	*netdev = netdev_solaris_cast(netdev_);
-	const char		*netdev_name = netdev_get_name(netdev_);
-	struct lifreq		lifr;
-	const struct sockaddr_in *sin;
-	int			error = 0;
-
-	VLOG_DBG("netdev_solaris_get_in4 device %s", netdev_name);
-
-	ovs_mutex_lock(&netdev->mutex);
-	if (netdev->cache_valid & VALID_IN4) {
-		*address = netdev->in4;
-		*netmask = netdev->netmask;
-		goto exit;
-	}
-
-	error = netdev_solaris_plumb(netdev_, AF_INET);
-	if (error != 0)
-		goto exit;
-
-	/*
-	 * In the future, a RAD IP module might be a good provider
-	 * of this information. For now, use the SIOCGLIFADDR.
-	 */
-	bzero(&lifr, sizeof (lifr));
-	(void) strncpy(lifr.lifr_name, netdev_name, sizeof (lifr.lifr_name));
-	sin = ALIGNED_CAST(struct sockaddr_in *, &lifr.lifr_addr);
-	if (ioctl(sock4, SIOCGLIFADDR, &lifr) < 0) {
-		error = errno;
-		goto exit;
-	}
-	netdev->in4 = sin->sin_addr;
-
-	if (ioctl(sock4, SIOCGLIFNETMASK, (caddr_t)&lifr) < 0) {
-		error = errno;
-		goto exit;
-	}
-	netdev->netmask = sin->sin_addr;
-	netdev->cache_valid |= VALID_IN4;
-
-	if (netdev->in4.s_addr != INADDR_ANY) {
-		*address = netdev->in4;
-		*netmask = netdev->netmask;
-	} else {
-		error = EADDRNOTAVAIL;
-	}
-
-exit:
-	ovs_mutex_unlock(&netdev->mutex);
-	return (error);
-}
-
 static int
 netdev_solaris_set_in4(struct netdev *netdev_, struct in_addr address,
     struct in_addr netmask)
 {
 	struct netdev_solaris	*netdev = netdev_solaris_cast(netdev_);
 	const char		*netdev_name = netdev_get_name(netdev_);
+	const char		*dlname;
 	struct lifreq		lifr;
 	struct sockaddr_in	*sin;
 	int			error = 0;
@@ -2052,7 +2033,8 @@ netdev_solaris_set_in4(struct netdev *netdev_, struct in_addr address,
 	 * of this information. For now, use the SIOCSLIFADDR.
 	 */
 	bzero(&lifr, sizeof (lifr));
-	(void) strncpy(lifr.lifr_name, netdev_name, sizeof (lifr.lifr_name));
+	dlname = netdev_solaris_get_name(netdev_);
+	(void) strncpy(lifr.lifr_name, dlname, sizeof (lifr.lifr_name));
 	sin = ALIGNED_CAST(struct sockaddr_in *, &lifr.lifr_addr);
 	sin->sin_addr = address;
 	sin->sin_family = AF_INET;
@@ -2074,58 +2056,6 @@ netdev_solaris_set_in4(struct netdev *netdev_, struct in_addr address,
 
 done:
 	netdev_change_seq_changed(netdev_);
-exit:
-	ovs_mutex_unlock(&netdev->mutex);
-	return (error);
-}
-
-/*
- * If 'netdev' has an assigned IPv6 address, sets '*address' to that
- * address. Otherwise, returns errno.
- */
-static int
-netdev_solaris_get_in6(const struct netdev *netdev_, struct in6_addr *address)
-{
-	struct netdev_solaris	*netdev = netdev_solaris_cast(netdev_);
-	const char		*netdev_name = netdev_get_name(netdev_);
-	struct lifreq		lifr;
-	const struct sockaddr_in6 *sin6;
-	int			error = 0;
-
-	VLOG_DBG("netdev_solaris_get_in6 device %s", netdev_name);
-
-	ovs_mutex_lock(&netdev->mutex);
-	if (netdev->cache_valid & VALID_IN6) {
-		if (!IN6_IS_ADDR_UNSPECIFIED(address))
-			*address = netdev->in6;
-		else
-			error = EADDRNOTAVAIL;
-		goto exit;
-	}
-
-	error = netdev_solaris_plumb(netdev_, AF_INET6);
-	if (error != 0)
-		goto exit;
-
-	/*
-	 * In the future, a RAD IP module might be a good provider
-	 * of this information. For now, use the SIOCGLIFADDR.
-	 */
-	bzero(&lifr, sizeof (lifr));
-	(void) strncpy(lifr.lifr_name, netdev_name, sizeof (lifr.lifr_name));
-	if (ioctl(sock6, SIOCGLIFADDR, &lifr) < 0) {
-		error = errno;
-		goto exit;
-	}
-	sin6 = ALIGNED_CAST(struct sockaddr_in6 *, &lifr.lifr_addr);
-	netdev->in6 = sin6->sin6_addr;
-	netdev->cache_valid |= VALID_IN6;
-
-	if (!IN6_IS_ADDR_UNSPECIFIED(address))
-		*address = netdev->in6;
-	else
-		error = EADDRNOTAVAIL;
-
 exit:
 	ovs_mutex_unlock(&netdev->mutex);
 	return (error);
@@ -2365,7 +2295,7 @@ netdev_solaris_get_status(const struct netdev *netdev_,
  */
 static int
 netdev_solaris_arp_lookup(const struct netdev *netdev_,
-    ovs_be32 ip OVS_UNUSED, uint8_t mac[ETH_ADDR_LEN] OVS_UNUSED)
+    ovs_be32 ip OVS_UNUSED, struct eth_addr *mac)
 {
 	const char		*netdev_name = netdev_get_name(netdev_);
 	int			error = 0;
@@ -2437,7 +2367,9 @@ static int
 netdev_solaris_update_flags(struct netdev *netdev_, enum netdev_flags off,
     enum netdev_flags on, enum netdev_flags *old_flagsp)
 {
+	struct netdev_solaris	*netdev = netdev_solaris_cast(netdev_);
 	const char		*netdev_name = netdev_get_name(netdev_);
+	const char		*dlname;
 	struct lifreq		lifr;
 	int64_t			old_lifr_flags;
 	int64_t			new_lifr_flags;
@@ -2445,25 +2377,40 @@ netdev_solaris_update_flags(struct netdev *netdev_, enum netdev_flags off,
 
 	VLOG_DBG("netdev_solaris_update_flags %s", netdev_name);
 
-	bzero(&lifr, sizeof (lifr));
-	(void) strncpy(lifr.lifr_name, netdev_name, sizeof (lifr.lifr_name));
-	if (ioctl(sock4, SIOCGLIFFLAGS, (caddr_t)&lifr) < 0) {
-		error = errno;
-		goto exit;
-	}
-	old_lifr_flags = lifr.lifr_flags;
-	*old_flagsp = lifr_to_nd_flags(old_lifr_flags);
-	new_lifr_flags = (old_lifr_flags & ~nd_to_lifr_flags(off)) |
-	    nd_to_lifr_flags(on);
+	/*
+	 * check whether we are operating on vnic, which is on loan
+	 * to non-global zone. If we deal with 'regular vnic' (not
+	 * on loan), poke to kernel to read flags, otherwise use
+	 * virtual flags kept at netdev.
+	 */
+	if (strchr(netdev_name, '/') == NULL) {
+		bzero(&lifr, sizeof (lifr));
+		dlname = netdev_solaris_get_name(netdev_);
+		(void) strncpy(lifr.lifr_name, dlname, sizeof (lifr.lifr_name));
+		if (ioctl(sock4, SIOCGLIFFLAGS, (caddr_t)&lifr) < 0) {
+			error = errno;
+			goto exit;
+		}
+		old_lifr_flags = lifr.lifr_flags;
+		*old_flagsp = lifr_to_nd_flags(old_lifr_flags);
+		new_lifr_flags = (old_lifr_flags & ~nd_to_lifr_flags(off)) |
+		    nd_to_lifr_flags(on);
 
-	if (new_lifr_flags == old_lifr_flags)
-		goto exit;
+		if (new_lifr_flags == old_lifr_flags)
+			goto exit;
 
-	lifr.lifr_flags = new_lifr_flags;
-	if (ioctl(sock4, SIOCSLIFFLAGS, (caddr_t)&lifr) < 0) {
-		error = errno;
-		goto exit;
+		lifr.lifr_flags = new_lifr_flags;
+		if (ioctl(sock4, SIOCSLIFFLAGS, (caddr_t)&lifr) < 0) {
+			error = errno;
+			goto exit;
+		}
+	} else {
+		*old_flagsp = netdev->vflags;
+		netdev->vflags = (*old_flagsp & ~off) | on;
+		if (*old_flagsp == netdev->vflags)
+			goto exit;
 	}
+
 	netdev_change_seq_changed(netdev_);
 
 exit:
@@ -2478,10 +2425,11 @@ netdev_internal_get_status(const struct netdev *netdev OVS_UNUSED,
 	return (0);
 }
 
-#define	NETDEV_SOLARIS_CLASS(NAME, CONSTRUCT, GET_STATS, SET_STATS,	\
-    GET_FEATURES, GET_STATUS)						\
+#define	NETDEV_SOLARIS_CLASS(NAME, CONSTRUCT, GET_STATS, GET_FEATURES,	\
+	GET_STATUS)							\
 {									\
 	NAME,								\
+	false,				/* is_pmd */			\
 	netdev_solaris_init,						\
 	netdev_solaris_run,						\
 	netdev_solaris_wait,						\
@@ -2489,23 +2437,27 @@ netdev_internal_get_status(const struct netdev *netdev OVS_UNUSED,
 	CONSTRUCT,							\
 	netdev_solaris_destruct,					\
 	netdev_solaris_dealloc,						\
-	NULL,								\
-	NULL,								\
-	NULL,								\
-	NULL,								\
-	NULL,								\
+	NULL,	/* get_config */					\
+	NULL,	/* set_config */					\
+	NULL,	/* get_tunnel_config */					\
+	NULL,	/* build_header */					\
+	NULL,	/* push_header */					\
+	NULL,	/* pop_header */					\
+	NULL,	/* get_numa_id */					\
+	NULL,	/* set_multiq */					\
+	NULL,	/* send */						\
+	NULL,	/* send_wait */						\
 	netdev_solaris_set_etheraddr,					\
 	netdev_solaris_get_etheraddr,					\
 	netdev_solaris_get_mtu,						\
 	netdev_solaris_set_mtu,						\
 	netdev_solaris_get_ifindex,					\
-	NULL,								\
-	NULL,								\
-	NULL,								\
+	NULL,	/* get_carrier */					\
+	NULL,	/* get_carrier_resets */				\
+	NULL,	/* set_miion_interval */				\
 	GET_STATS,							\
-	SET_STATS,							\
 	GET_FEATURES,							\
-	NULL,								\
+	NULL,	/* set_advertisements */				\
 	netdev_solaris_set_policing,					\
 	netdev_solaris_get_qos_types,					\
 	netdev_solaris_get_qos_capabilities,				\
@@ -2519,24 +2471,22 @@ netdev_internal_get_status(const struct netdev *netdev OVS_UNUSED,
 	netdev_solaris_queue_dump_next,					\
 	netdev_solaris_queue_dump_done,					\
 	netdev_solaris_dump_queue_stats,				\
-	netdev_solaris_get_in4,						\
 	netdev_solaris_set_in4,						\
-	netdev_solaris_get_in6,						\
+	NULL,	/* get_addr_list XXX */					\
 	netdev_solaris_add_router,					\
 	netdev_solaris_get_next_hop,					\
 	GET_STATUS,							\
 	netdev_solaris_arp_lookup,					\
 	netdev_solaris_update_flags,					\
+	NULL,	/* reconfigure */					\
 	netdev_solaris_configure_uplink,				\
-	netdev_solaris_is_uplink,					\
-	netdev_solaris_add_port_to_bridge_mapping,			\
-	NULL,								\
-	NULL,								\
-	NULL,								\
-	NULL,								\
-	NULL,								\
-	NULL,								\
-	NULL								\
+	NULL,	/* rxq_alloc */						\
+	NULL,	/* rxq_construct */					\
+	NULL,	/* rxq_destruct */					\
+	NULL,	/* rxq_dealloc */					\
+	NULL,	/* rxq_recv */						\
+	NULL,	/* rxq_wait */						\
+	NULL	/* rxq_drain */						\
 }
 
 const struct netdev_class netdev_solaris_class =
@@ -2544,7 +2494,6 @@ const struct netdev_class netdev_solaris_class =
 	"system",
 	netdev_solaris_construct,
 	netdev_solaris_get_stats,
-	NULL,				/* set_stats */
 	netdev_solaris_get_features,
 	netdev_solaris_get_status);
 
@@ -2553,7 +2502,6 @@ const struct netdev_class netdev_internal_class =
 	"internal",
 	netdev_solaris_construct,
 	netdev_solaris_get_stats,
-	NULL,				/* set_stats */
 	NULL,				/* get_features */
 	netdev_internal_get_status);
 
@@ -2573,6 +2521,21 @@ struct htb_class {
 	unsigned int	priority;	/* Lower value is higher priority */
 };
 
+struct htb_qos {
+	unsigned int	type;		/* Qos or queue */
+	unsigned int	queue_id;	/* queue id */
+	unsigned int	min_rate;	/* In bytes/s */
+	unsigned int	max_rate;	/* In bytes/s */
+	unsigned int	burst;		/* In bytes/s -- unused */
+	unsigned int	priority;	/* Lower value is higher priority */
+};
+
+typedef enum qos_type {
+	OVS_SETUP_QOS = 0,
+	OVS_SETUP_QUEUE,
+	OVS_DEL_QOS,
+	OVS_DEL_QUEUE
+} qos_type_t;
 
 /*
  * Create an HTB qdisc.
@@ -2580,10 +2543,12 @@ struct htb_class {
  * Equivalent to "tc qdisc add dev <dev> root handle 1: htb default 1".
  */
 static int
-htb_setup_qdisc__(struct netdev *netdev)
+htb_setup_qdisc__(struct netdev *netdev_)
 {
-	VLOG_DBG("htb_setup_qdisc__ device %s", netdev->name);
-	tc_del_qdisc(netdev);
+	const char		*netdev_name = netdev_get_name(netdev_);
+
+	VLOG_DBG("htb_setup_qdisc__ device %s", netdev_name);
+	tc_del_qdisc(netdev_);
 
 	return (0);
 }
@@ -2614,22 +2579,13 @@ htb_install__(struct netdev *netdev_, uint64_t max_rate)
 	VLOG_DBG("htb_install__ device %s TC configured ", netdev_name);
 }
 
-static int
-htb_setup_class__(struct netdev *netdev, unsigned int handle OVS_UNUSED,
-    unsigned int parent OVS_UNUSED,
-    struct htb_class *class OVS_UNUSED)
-{
-	VLOG_DBG("htb_setup_class__ device %s", netdev->name);
-
-	return (0);
-}
-
 static void
 htb_parse_qdisc_details__(struct netdev *netdev_,
-			const struct smap *details, struct htb_class *hc)
+			const struct smap *details, struct htb_qos *hc)
 {
 	struct netdev_solaris	*netdev = netdev_solaris_cast(netdev_);
 	const char		*netdev_name = netdev_get_name(netdev_);
+	const char		*dlname;
 	const char		*max_rate_s;
 	const char		*physname;
 	char			buffer[DLADM_PROP_VAL_MAX];
@@ -2644,54 +2600,130 @@ htb_parse_qdisc_details__(struct netdev *netdev_,
 	hc->min_rate = 0;
 	hc->burst = 0;
 	hc->priority = 0;
+	hc->queue_id = 0;
+	hc->type = OVS_SETUP_QOS;
 
 	if (netdev_solaris_is_uplink(netdev_)) {
 		physname = netdev_name;
 	} else {
-		error = solaris_get_dllower(netdev_name, buffer,
-		    sizeof (buffer));
+		dlname = netdev_solaris_get_name(netdev_);
+		error = solaris_get_dllower(dlname, buffer, sizeof (buffer));
 		if (error != 0)
 			return;
 		physname = buffer;
 	}
 
 	max_rate_s = smap_get(details, "max-rate");
-	hc->max_rate = max_rate_s ? strtoull(max_rate_s, NULL, 10) / 8 : 0;
+	hc->max_rate = max_rate_s ? strtoull(max_rate_s, NULL, 10) : 0;
 	if (!hc->max_rate) {
 		enum netdev_features current;
 
 		netdev_solaris_read_features(netdev, physname);
 		current = !netdev->get_features_error ? netdev->current : 0;
 		hc->max_rate = netdev_features_to_bps(current,
-		    100 * 1000 * 1000) / 8;
+		    100 * 1000 * 1000);
 	}
 }
 
 static int
-htb_tc_install(struct netdev *netdev, const struct smap *details)
+htb_setup_qos__(struct netdev *netdev_, struct htb_qos *qos)
+{
+	const char		*netdev_name = netdev_get_name(netdev_);
+	struct ofpbuf *request_buf;
+	int error = 0;
+	struct ovs_header *ovs_header;
+	int ifindex = 0;
+
+	VLOG_DBG("htb_setup_qos__ %s %d", netdev_name, qos->max_rate);
+
+	request_buf = ofpbuf_new(1024);
+	if (request_buf == NULL)
+		return (ENOMEM);
+	nl_msg_put_genlmsghdr(request_buf, 0, ovs_vport_family, NLM_F_REQUEST |
+			NLM_F_ECHO, OVS_VPORT_CMD_SET, OVS_VPORT_VERSION);
+
+	ovs_header = ofpbuf_put_uninit(request_buf, sizeof (*ovs_header));
+	ovs_header->dp_ifindex = ifindex;
+
+	nl_msg_put_string(request_buf, OVS_VPORT_ATTR_NAME, netdev_name);
+	nl_msg_put_unspec(request_buf, OVS_VPORT_ATTR_QOS, qos, sizeof (*qos));
+	error = nl_transact(NETLINK_GENERIC, request_buf, NULL);
+	if (error != 0)
+		VLOG_DBG("nl_transact returned error in "
+				"htb_setup_qos__ for netdev %s",
+			netdev_name);
+	ofpbuf_delete(request_buf);
+	return (error);
+}
+
+static int
+htb_tc_install(struct netdev *netdev_, const struct smap *details)
 {
 	int error;
+	const char		*netdev_name = netdev_get_name(netdev_);
+	struct htb_qos hc;
 
-	VLOG_DBG("htb_tc_install device %s", netdev->name);
+	VLOG_DBG("htb_tc_install device %s", netdev_name);
 
-	error = htb_setup_qdisc__(netdev);
+	error = htb_setup_qdisc__(netdev_);
 	if (!error) {
-		struct htb_class hc;
-
-		htb_parse_qdisc_details__(netdev, details, &hc);
-		error = htb_setup_class__(netdev, 0, 0, &hc);
+		htb_parse_qdisc_details__(netdev_, details, &hc);
+		error = htb_setup_qos__(netdev_, &hc);
 		if (!error) {
-			htb_install__(netdev, hc.max_rate);
+			htb_install__(netdev_, hc.max_rate);
 		}
 	}
 	return (error);
 }
 
+static int
+htb_delete_class__(struct netdev *netdev_, unsigned int queue_id, boolean_t qos)
+{
+	const char		*netdev_name = netdev_get_name(netdev_);
+	struct ofpbuf 		*request_buf;
+	int 			error = 0;
+	struct ovs_header 	*ovs_header;
+	int 			ifindex = 0;
+	struct htb_qos		hc;
+
+	/*
+	 * Initialize in case of early return.
+	 */
+	hc.max_rate = 0;
+	hc.min_rate = 0;
+	hc.burst = 0;
+	hc.priority = 0;
+	hc.queue_id = queue_id;
+	hc.type = qos? OVS_DEL_QOS : OVS_DEL_QUEUE;
+
+	request_buf = ofpbuf_new(1024);
+	if (request_buf == NULL)
+		return (ENOMEM);
+	nl_msg_put_genlmsghdr(request_buf, 0, ovs_vport_family, NLM_F_REQUEST |
+			NLM_F_ECHO, OVS_VPORT_CMD_SET, OVS_VPORT_VERSION);
+
+	ovs_header = ofpbuf_put_uninit(request_buf, sizeof (*ovs_header));
+	ovs_header->dp_ifindex = ifindex;
+
+	nl_msg_put_string(request_buf, OVS_VPORT_ATTR_NAME, netdev_name);
+	nl_msg_put_unspec(request_buf, OVS_VPORT_ATTR_QOS, &hc, sizeof (hc));
+	error = nl_transact(NETLINK_GENERIC, request_buf, NULL);
+	if (error != 0)
+		VLOG_DBG("nl_transact returned error in "
+			"tc_delete_class for netdev %s",
+			netdev_name);
+	ofpbuf_delete(request_buf);
+
+	return (error);
+}
+
 static void
-htb_tc_destroy(struct tc *tc)
+htb_tc_destroy(struct netdev *netdev_, struct tc *tc)
 {
 	struct htb		*htb = CONTAINER_OF(tc, struct htb, tc);
 	struct htb_class	*hc, *next;
+
+	htb_delete_class__(netdev_, 0, B_TRUE);
 
 	HMAP_FOR_EACH_SAFE(hc, next, tc_queue.hmap_node, &htb->tc.queues) {
 		hmap_remove(&htb->tc.queues, &hc->tc_queue.hmap_node);
@@ -2702,27 +2734,29 @@ htb_tc_destroy(struct tc *tc)
 }
 
 static int
-htb_qdisc_get(const struct netdev *netdev, struct smap *details)
+htb_qdisc_get(const struct netdev *netdev_, struct smap *details)
 {
-	const struct htb *htb = htb_get__(netdev);
+	const struct htb *htb = htb_get__(netdev_);
+	const char		*netdev_name = netdev_get_name(netdev_);
 
-	VLOG_DBG("htb_qdisc_get device %s", netdev->name);
+	VLOG_DBG("htb_qdisc_get device %s", netdev_name);
 	smap_add_format(details, "max-rate", "%llu", 8ULL * htb->max_rate);
 	return (0);
 }
 
 static int
-htb_qdisc_set(struct netdev *netdev, const struct smap *details)
+htb_qdisc_set(struct netdev *netdev_, const struct smap *details)
 {
-	struct htb_class	hc;
+	const char		*netdev_name = netdev_get_name(netdev_);
+	struct htb_qos		hc;
 	int			error;
 
-	VLOG_DBG("htb_qdisc_set device %s", netdev->name);
-	htb_parse_qdisc_details__(netdev, details, &hc);
+	VLOG_DBG("htb_qdisc_set device %s", netdev_name);
+	htb_parse_qdisc_details__(netdev_, details, &hc);
 	/* Solaris: don't care about the handles */
-	error = htb_setup_class__(netdev, 0, 0, &hc);
+	error = htb_setup_qos__(netdev_, &hc);
 	if (!error) {
-		htb_get__(netdev)->max_rate = hc.max_rate;
+		htb_get__(netdev_)->max_rate = hc.max_rate;
 	}
 
 	return (error);
@@ -2752,36 +2786,40 @@ htb_class_get(const struct netdev *netdev,
 
 /* Solaris: currently, min-rate, burst and priority are not supported */
 static int
-htb_parse_class_details__(struct netdev *netdev,
-    const struct smap *details, struct htb_class *hc)
+htb_parse_class_details__(struct netdev *netdev_,
+    const struct smap *details, struct htb_qos *hc, unsigned int queue_id)
 {
-	const struct htb	*htb = htb_get__(netdev);
+	const struct htb	*htb = htb_get__(netdev_);
 	const char		*max_rate_s = smap_get(details, "max-rate");
+	const char		*netdev_name = netdev_get_name(netdev_);
 
-	VLOG_DBG("htb_parse_class_details__ device %s", netdev->name);
+	VLOG_DBG("htb_parse_class_details__ device %s", netdev_name);
 
 	/* max-rate */
 	hc->max_rate = (max_rate_s
-	    ? strtoull(max_rate_s, NULL, 10) / 8
+	    ? strtoull(max_rate_s, NULL, 10)
 	    : htb->max_rate);
-	VLOG_DBG("htb_parse_class_details__ device max_rate is %u",
-	    hc->max_rate);
+	VLOG_DBG("htb_parse_class_details__ max_rate is %u and queueid =%u",
+	    hc->max_rate, queue_id);
+	hc->type = OVS_SETUP_QUEUE;
+	hc->queue_id = queue_id;
 
 	return (0);
 }
 
 static void
-htb_update_queue__(struct netdev *netdev, unsigned int queue_id,
-    const struct htb_class *hc)
+htb_update_queue__(struct netdev *netdev_, unsigned int queue_id,
+    const struct htb_qos *hc)
 {
-	struct htb		*htb = htb_get__(netdev);
+	struct htb		*htb = htb_get__(netdev_);
 	size_t			hash = hash_int(queue_id, 0);
 	struct tc_queue		*queue;
 	struct htb_class	*hcp;
+	const char		*netdev_name = netdev_get_name(netdev_);
 
-	VLOG_DBG("htb_update_queue__ %s", netdev->name);
+	VLOG_DBG("htb_update_queue__ %s", netdev_name);
 
-	queue = tc_find_queue__(netdev, queue_id, hash);
+	queue = tc_find_queue__(netdev_, queue_id, hash);
 	if (queue) {
 		hcp = htb_class_cast__(queue);
 	} else {
@@ -2796,37 +2834,39 @@ htb_update_queue__(struct netdev *netdev, unsigned int queue_id,
 }
 
 static int
-htb_class_set(struct netdev *netdev, unsigned int queue_id,
+htb_class_set(struct netdev *netdev_, unsigned int queue_id,
     const struct smap *details)
 {
-	struct htb_class	hc;
+	struct htb_qos		hc;
 	int			error;
+	const char		*netdev_name = netdev_get_name(netdev_);
 
-	VLOG_DBG("htb_class_set %s", netdev->name);
+	VLOG_DBG("htb_class_set %s", netdev_name);
 
-	error = htb_parse_class_details__(netdev, details, &hc);
+	error = htb_parse_class_details__(netdev_, details, &hc, queue_id);
 	if (error) {
 		return (error);
 	}
 
-	error = htb_setup_class__(netdev, 0, 0, &hc);
+	error = htb_setup_qos__(netdev_, &hc);
 	if (error) {
 		return (error);
 	}
 
-	htb_update_queue__(netdev, queue_id, &hc);
+	htb_update_queue__(netdev_, queue_id, &hc);
 	return (0);
 }
 
 static int
-htb_class_delete(struct netdev *netdev, struct tc_queue *queue)
+htb_class_delete(struct netdev *netdev_, struct tc_queue *queue)
 {
+	const char		*netdev_name = netdev_get_name(netdev_);
 	struct htb_class	*hc = htb_class_cast__(queue);
-	struct htb		*htb = htb_get__(netdev);
-	int			error;
+	struct htb		*htb = htb_get__(netdev_);
+	int			error = 0;
 
-	VLOG_DBG("htb_class_delete %s", netdev->name);
-	error = tc_delete_class(netdev, 0);
+	VLOG_DBG("htb_class_delete %s", netdev_name);
+	error = htb_delete_class__(netdev_, queue->queue_id, B_FALSE);
 	if (!error) {
 		hmap_remove(&htb->tc.queues, &hc->tc_queue.hmap_node);
 		free(hc);

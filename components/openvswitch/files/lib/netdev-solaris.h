@@ -1,6 +1,13 @@
 /*
- * Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
  */
+
+#ifndef	_NETDEV_SOLARIS_H
+#define	_NETDEV_SOLARIS_H
+
+#ifdef	__cplusplus
+extern "C" {
+#endif
 
 /*
  * Copyright (c) 2011, 2013, 2014 Nicira, Inc.
@@ -17,9 +24,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#ifndef	NETDEV_SOLARIS_H
-#define	NETDEV_SOLARIS_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -43,6 +47,12 @@ extern struct shash port_to_bridge_map;
 int netdev_create_impl_etherstub(void);
 void netdev_delete_impl_etherstub(void);
 boolean_t netdev_impl_etherstub_exists(void);
-char *netdev_solaris_get_class(struct netdev *);
+const char *netdev_solaris_get_name(const struct netdev *);
+int internal_to_devname(const char *iname, char *devname, int len);
+int devname_to_internal(const char *devname, char *iname, int len);
 
-#endif	/* NETDEV_SOLARIS_H */
+#ifdef	__cplusplus
+}
+#endif
+
+#endif	/* _NETDEV_SOLARIS_H */
