@@ -45,6 +45,11 @@ include $(WS_MAKE_RULES)/common.mk
 # Requires gnu versions of xgettext & msgfmt first in $PATH
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 
+# Don't generate files at build time that update-mime-database will be
+# generating from svc:/application/desktop-cache/mime-types-cache:default
+# so we don't suck them into the package and then have pkg verify errors
+CONFIGURE_OPTIONS += --disable-update-mimedb
+
 REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxml2
