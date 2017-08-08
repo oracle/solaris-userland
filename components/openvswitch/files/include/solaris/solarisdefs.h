@@ -1,6 +1,8 @@
 /*
- * CDDL HEADER START
- *
+ * Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+ */
+
+/*
  * The contents of this file are subject to the terms of the
  * Common Development and Distribution License (the "License").
  * You may not use this file except in compliance with the License.
@@ -16,14 +18,13 @@
  * fields enclosed by brackets "[]" replaced with your own identifying
  * information: Portions Copyright [yyyy] [name of copyright owner]
  *
- * CDDL HEADER END
  */
-/*
- * Copyright (c) 2015, Oracle and/or its affiliates. All rights reserved.
- */
+#ifndef	_SOLARISDEFS_H
+#define	_SOLARISDEFS_H
 
-#ifndef	SOLARISDEFS_H
-#define	SOLARISDEFS_H
+#ifdef	__cplusplus
+extern "C" {
+#endif
 
 #include <sys/types.h>
 
@@ -37,4 +38,8 @@ struct ip6_ext {
 	uint8_t  ip6e_len;
 };
 
-#endif /* SOLARISDEFS_H */
+#ifdef	__cplusplus
+}
+#endif
+
+#endif /* _SOLARISDEFS_H */

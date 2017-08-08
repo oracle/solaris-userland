@@ -1,6 +1,8 @@
 /*
- * CDDL HEADER START
- *
+ * Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+ */
+
+/*
  * The contents of this file are subject to the terms of the
  * Common Development and Distribution License (the "License").
  * You may not use this file except in compliance with the License.
@@ -16,24 +18,24 @@
  * fields enclosed by brackets "[]" replaced with your own identifying
  * information: Portions Copyright [yyyy] [name of copyright owner]
  *
- * CDDL HEADER END
  */
 
-/*
- * Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
- */
+#ifndef	_UTIL_SOLARIS_H
+#define	_UTIL_SOLARIS_H
 
-#ifndef	UTIL_SOLARIS_H
-#define	UTIL_SOLARIS_H
+#ifdef	__cplusplus
+extern "C" {
+#endif
 
 #include <libdladm.h>
-#include <linux/openvswitch.h>
 #include <lib/packets.h>
 #include <sys/types.h>
+#include <sys/vnic_mgmt.h>
+#include <sys/ib/ib_types.h>
 #include <kstat2.h>
+
 #include "odp-util.h"
 
-extern kstat2_handle_t	khandle;
 
 /*
  * These functions are Solaris specific, so they should be used directly
@@ -88,6 +90,10 @@ int solaris_get_flowaction(const char *, struct ofpbuf *);
 void slowpath_to_actions(enum slow_path_reason, struct ofpbuf *);
 int solaris_get_flowstats(const char *, uint64_t *, uint64_t *, uint64_t *);
 
+/* kstat related definitions */
+extern kstat2_handle_t	khandle;
+
+uint64_t get_nvvt_int(kstat2_map_t, char *);
 boolean_t kstat_handle_init(kstat2_handle_t *);
 boolean_t kstat_handle_update(kstat2_handle_t);
 void kstat_handle_close(kstat2_handle_t *);
@@ -95,15 +101,46 @@ uint64_t get_nvvt_int(kstat2_map_t, char *);
 
 void solaris_port_walk(void *, void (*)(void *, const char *, char *,
     odp_port_t));
-void solaris_flow_walk(void *, struct ofpbuf *,
-    void (*)(void *, const char *, struct flow *, struct flow *,
+uint64_t solaris_flow_walk(void *, struct ofpbuf *, boolean_t,
+    void (*)(void *, const char *, boolean_t, struct flow *, struct flow *,
     struct ofpbuf *, uint64_t, uint64_t, uint64_t));
 
 boolean_t solaris_is_uplink_class(const char *);
 boolean_t solaris_dlparse_zonelinkname(const char *, char *, zoneid_t *);
+int solaris_init_dladm(void);
+int solaris_create_vnic(const char *lowerlink, const char *vnicname);
+int solaris_modify_vnic(const char *lowerlink, const char *vnicname);
+int solaris_delete_vnic(const char *vnicname);
+
+dladm_status_t dladm_vnic_delete(dladm_handle_t dlhdl,
+	datalink_id_t linkid, uint32_t flags);
+dladm_status_t dladm_vlan_delete(dladm_handle_t dlhdl,
+	datalink_id_t linkid, uint32_t flags);
+extern dladm_status_t dladm_vnic_create(dladm_handle_t handle, const char *vnic,
+    datalink_id_t linkid, zoneid_t zoneid,
+    vnic_mac_addr_type_t mac_addr_type, uchar_t *mac_addr, uint_t mac_len,
+    int *mac_slot, uint_t mac_prefix_len,
+    uchar_t *auto_mac_addr, size_t auto_mac_addr_size,
+    uint16_t vid, uint16_t pvlan_svid, mac_pvlantype_t pvlan_type, vrid_t vrid,
+    int af, datalink_id_t *vnic_id_out, dladm_arg_list_t *proplist,
+    ib_pkey_t pkey, uint32_t flags);
+
+extern dladm_status_t dladm_vnic_modify(dladm_handle_t handle,
+    datalink_id_t linkid,
+    datalink_id_t lower_linkid, zoneid_t zoneid,
+    vnic_mac_addr_type_t mac_addr_type, uchar_t *mac_addr,
+    uint_t mac_len, int *mac_slot, uint_t mac_prefix_len,
+    uchar_t *auto_mac_addr, size_t auto_mac_addr_size,
+    uint16_t vid, uint16_t pvlan_svid, mac_pvlantype_t pvlan_type, vrid_t vrid,
+    int af, dladm_arg_list_t *proplist, uint32_t flags);
 
 void solaris_parse_cpuinfo(long int *);
-int solaris_send_rarp(int, const uint8_t *);
 
 #define	SOLARIS_MAX_BUFSIZE	1024
-#endif	/* UTIL_SOLARIS_H */
+#define	PORT_PF_PACKET_UPLINK	1
+
+#ifdef	__cplusplus
+}
+#endif
+
+#endif /* _UTIL_SOLARIS_H */

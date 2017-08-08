@@ -1,29 +1,11 @@
 #!/sbin/sh
 #
 #
-# CDDL HEADER START
-#
-# The contents of this file are subject to the terms of the
-# Common Development and Distribution License (the "License").
-# You may not use this file except in compliance with the License.
-#
-# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
-# or http://www.opensolaris.org/os/licensing.
-# See the License for the specific language governing permissions
-# and limitations under the License.
-#
-# When distributing Covered Code, include this CDDL HEADER in each
-# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
-# If applicable, add the following below this CDDL HEADER, with the
-# fields enclosed by brackets "[]" replaced with your own identifying
-# information: Portions Copyright [yyyy] [name of copyright owner]
-#
-# CDDL HEADER END
 #
 #
 
 #
-# Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 
 . /lib/svc/share/smf_include.sh
@@ -43,21 +25,22 @@ typeset -r OVS_GROUP=_ovs
 typeset -r OVS_SBIN_DIR=/usr/sbin
 typeset -r OVSDB_TOOL=${OVS_SBIN_DIR}/ovsdb-tool
 typeset -r OVS_VSCTL=${OVS_SBIN_DIR}/ovs-vsctl
+typeset -r OVS_OFCTL=${OVS_SBIN_DIR}/ovs-ofctl
+typeset -r OVS_APPCTL=${OVS_SBIN_DIR}/ovs-appctl
 
 typeset -r OVS_VSWITCHD=ovs-vswitchd
 typeset -r OVSDB_SERVER=ovsdb-server
-typeset -r OVS_CLEAN=ovs-clean.py
 typeset -r OVSDB_SERVER_PATH=${OVS_USRLIB_DIR}/${OVSDB_SERVER}
 typeset -r OVS_VSWITCHD_PATH=${OVS_USRLIB_DIR}/${OVS_VSWITCHD}
-typeset -r OVS_CLEAN_PATH=${OVS_USRLIB_DIR}/${OVS_CLEAN}
-
 typeset -r OVSDB_REMOTE=${OVS_TMP_DIR}/db.sock
 
 typeset -r PFEXEC=/usr/bin/pfexec
 typeset -r MKDIR=/usr/bin/mkdir
 typeset -r CHOWN=/usr/bin/chown
-typeset -r PKILL=/usr/bin/pkill
+typeset -r DLADM=/usr/sbin/dladm
 typeset -r IPADM=/usr/sbin/ipadm
+typeset -r FLOWADM=/usr/sbin/flowadm
+typeset -r FLOWSTAT=/usr/sbin/flowstat
 
 errlog () {
 	echo $1 >&2
@@ -118,40 +101,49 @@ start_ovsdb_server() {
 
 clean_vswitch() {
         typeset BRIDGENAME
+	typeset LINK
+	typeset OFPORT
+	typeset OPENVSWITCH
 
-	SVC_METHOD=$1
-	
         ${OVS_VSCTL} list-br |
                 while read BRIDGENAME; do
-			${PFEXEC} ${IPADM} disable-if -t ${BRIDGENAME} >/dev/null 2>&1
-                        ${OVS_CLEAN_PATH} delete-vnic ${BRIDGENAME} >/dev/null 2>&1
+			${PFEXEC} ${IPADM} disable-if -t ${BRIDGENAME}_0 >/dev/null 2>&1
+			${PFEXEC} ${DLADM} delete-vnic ${BRIDGENAME}_0 >/dev/null 2>&1
                         if [[ $? -ne 0 && "$1" = 'stop' ]]; then
-                                errlog "Error $? removing ${BRIDGENAME} VNIC"
+                                errlog "Failed removing VNIC ${BRIDGENAME}_0"
                         fi
                 done
-        ${OVS_CLEAN_PATH} reset-ofports
-        if [ $? -ne 0 ]; then
-        	errlog "Error $? resetting OF ports"
-	fi
 
-        ${OVS_CLEAN_PATH} remove-flows
-        if [ $? -ne 0 ]; then
-                errlog "Error $? removing OF flows"
-        fi
+	${DLADM} show-linkprop -p ofport -c -o link,value | \
+ 	    while IFS=":" read LINK OFPORT; do
+		if [ "${OFPORT}" != "NONE" -a "${OFPORT}" != "0" ]; then
+			${PFEXEC} ${DLADM} reset-linkprop -f -p ofport ${LINK} >/dev/null 2>&1
+			if [ $? -ne 0 ]; then
+				errlog "Failed resetting ofport on ${LINK}"
+			fi
+		fi
+	done
 
-        ${OVS_CLEAN_PATH} delete-etherstub ovs.etherstub0
-        if [ $? -ne 0 ]; then
-                errlog "Error $? deleting the OVS etherstub"
-        fi
-}    
+	${DLADM} show-linkprop -p openvswitch -c -o link,value | \
+ 	    while IFS=":" read LINK OPENVSWITCH; do
+		if [ "${OPENVSWITCH}" == "on" ]; then
+			${FLOWSTAT} -l ${LINK} -p -o flow | \
+			    while IFS=":" read FLOW; do
+				${PFEXEC} ${FLOWADM} remove-flow -f ${FLOW} >/dev/null 2>&1
+				if [ $? -ne 0 ]; then
+					errlog "Failed removing flow ${FLOW} from ${LINK}"
+				fi
+			done
+		fi
+	done
+}
 
 stop_vswitch_server() {
         typeset BRIDGENAME
 
-        $PKILL -x -u ${OVS_USER} -z `smf_zonename` ${OVS_VSWITCHD}
-        if [[ $? -ne 0 && $? -ne 1 ]]; then
-                errlog "pkill of ${OVS_VSWITCHD} failed with $?"
-        fi
+        # Use ovs-appctl to gracefully shutdown the daemon.
+	${OVS_APPCTL} -t ${OVS_VSWITCHD} exit
+	sleep 30
 
         clean_vswitch stop
 }
