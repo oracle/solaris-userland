@@ -1,0 +1,76 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+#
+
+<transform hardlink path=usr/gnu/bin/$(CROSS_ARCH)-(.*) -> \
+    default target ../$(CROSS_ARCH)/bin/%<1>>
+# For the cross-tools, make SPARC linker scripts available on x86.
+<transform file path=.*ldscripts/elf.._sparc -> set variant.arch i386>
+# And make Intel linker scripts available on SPARC.
+<transform file path=.*ldscripts/elf_(i386|x86_64|iamcu|[kl]1om) -> set variant.arch sparc>
+#
+<include linker-scripts.p5m-fragment>
+set name=pkg.fmri \
+    value=pkg:/developer/gnu-binutils-cross-$(CROSS_MACH)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="GNU binutils cross-tools for $(CROSS_MACH)"
+set name=com.oracle.info.description \
+    value="GNU binutils ($(CROSS_MACH) cross-tools)"
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification value=org.opensolaris.category.2008:Development/GNU
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2017/041
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+#
+file path=usr/gnu/$(CROSS_ARCH)/bin/ar
+file path=usr/gnu/$(CROSS_ARCH)/bin/as
+file path=usr/gnu/$(CROSS_ARCH)/bin/ld
+hardlink path=usr/gnu/$(CROSS_ARCH)/bin/ld.bfd target=ld
+file path=usr/gnu/$(CROSS_ARCH)/bin/nm
+file path=usr/gnu/$(CROSS_ARCH)/bin/objcopy
+file path=usr/gnu/$(CROSS_ARCH)/bin/objdump
+file path=usr/gnu/$(CROSS_ARCH)/bin/ranlib
+file path=usr/gnu/$(CROSS_ARCH)/bin/readelf
+file path=usr/gnu/$(CROSS_ARCH)/bin/strip
+file path=usr/gnu/bin/$(CROSS_ARCH)-addr2line
+hardlink path=usr/gnu/bin/$(CROSS_ARCH)-ar
+hardlink path=usr/gnu/bin/$(CROSS_ARCH)-as
+file path=usr/gnu/bin/$(CROSS_ARCH)-c++filt
+file path=usr/gnu/bin/$(CROSS_ARCH)-elfedit
+file path=usr/gnu/bin/$(CROSS_ARCH)-gprof
+hardlink path=usr/gnu/bin/$(CROSS_ARCH)-ld
+# Don't hardlink to a hardlink, as the transforms above would do.
+hardlink path=usr/gnu/bin/$(CROSS_ARCH)-ld.bfd target=../$(CROSS_ARCH)/bin/ld
+hardlink path=usr/gnu/bin/$(CROSS_ARCH)-nm
+hardlink path=usr/gnu/bin/$(CROSS_ARCH)-objcopy
+hardlink path=usr/gnu/bin/$(CROSS_ARCH)-objdump
+hardlink path=usr/gnu/bin/$(CROSS_ARCH)-ranlib
+hardlink path=usr/gnu/bin/$(CROSS_ARCH)-readelf
+file path=usr/gnu/bin/$(CROSS_ARCH)-size
+file path=usr/gnu/bin/$(CROSS_ARCH)-strings
+hardlink path=usr/gnu/bin/$(CROSS_ARCH)-strip
+license COPYING license=GPLv2
+license COPYING3 license=GPLv3
+license COPYING.LIB license=LGPLv2.1
+license COPYING3.LIB license=LGPLv3
