@@ -26,15 +26,15 @@ BUILD_BITS= 64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		evince
-COMPONENT_VERSION=	3.24.0
+COMPONENT_VERSION=	3.25.4
 COMPONENT_MINOR_VERSION= $(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\([0-9]\+\)\.\([0-9]\+\)\.[0-9]\+/\1.\2/')
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Evince
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:043895af7bbd6f1b57f9ab8778e78cf9c0af5dfcc347eaa94a17bf864c04dc8f
+    sha256:ddbf76c69a6aed1af3f2363b7e7e526797fa9e4a2455814e45f1d4ca6b3c95ab
 COMPONENT_ARCHIVE_URL=	http://ftp.gnome.org/pub/GNOME/sources/$(COMPONENT_NAME)/$(COMPONENT_MINOR_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/evince
-TPNO=			35977
+TPNO=			37070
 COMPONENT_ANITYA_ID=	8178
 
 TEST_TARGET= $(NO_TESTS)
@@ -118,6 +118,7 @@ REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
 REQUIRED_PACKAGES += library/gnome/libsecret
+REQUIRED_PACKAGES += library/libarchive
 REQUIRED_PACKAGES += library/libspectre
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/perl-5/xml-parser
