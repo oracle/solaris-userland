@@ -36,8 +36,6 @@ COMPONENT_ANITYA_ID=	1327
 
 include $(WS_MAKE_RULES)/common.mk
 
-PKG_OPTIONS += -I $(COMPONENT_DIR)
-
 # We need to be able to return from void functions
 CFLAGS.studio += $(studio_FEATURES_EXTENSIONS)
 CXXFLAGS.studio += $(studio_FEATURES_EXTENSIONS) 

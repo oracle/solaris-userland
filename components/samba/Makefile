@@ -69,8 +69,6 @@ PUBLISH_STAMP=
 endif
 include $(WS_MAKE_RULES)/ips.mk
 
-# directory to search for "include" in samba.p5m
-PKG_OPTIONS += -I $(COMPONENT_DIR)
 # Set the pkg... path to search files in ./Solaris/ dir (mainly the SMF manifests are there)
 PKG_PROTO_DIRS += $(COMPONENT_DIR)
 

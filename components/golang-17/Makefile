@@ -131,9 +131,6 @@ include $(WS_MAKE_RULES)/common.mk
 # Simplify source copying for install by eliding patch detritus.
 GPATCH_BACKUP=
 
-# Enable local transforms.
-PKG_OPTIONS += -I $(COMPONENT_DIR)
-
 # Avoid some of the default transforms:
 # - facet.devel serves no useful purpose for a development package
 # - facet.doc wrongly assumes all things in a doc directory are documentation;
