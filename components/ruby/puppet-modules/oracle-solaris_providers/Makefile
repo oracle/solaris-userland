@@ -47,8 +47,6 @@ MODULE_NAME =	solaris_providers
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-PKG_OPTIONS +=	-I $(COMPONENT_DIR)
-
 # Dump a list of files installed in the proto dir but not in the manifest
 # this is a convenience target for the package maintainer
 new-files: install

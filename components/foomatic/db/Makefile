@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 32
 include ../../../make-rules/shared-macros.mk
@@ -45,8 +45,6 @@ include $(WS_MAKE_RULES)/common.mk
 
 # var is needed to check the "weird symlinks"
 PKG_MACROS += COMPONENT_DIR="$(COMPONENT_DIR)"
-# directory to search for "include" in mogrify .p5m
-PKG_OPTIONS += -I $(COMPONENT_DIR)
 
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 COMPONENT_PRE_CONFIGURE_ACTION = $(CLONEY) $(SOURCE_DIR) $(@D)

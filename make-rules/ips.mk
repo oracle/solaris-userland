@@ -133,6 +133,9 @@ PKG_MACROS +=		Q=\"
 
 PKG_OPTIONS +=		$(PKG_MACROS:%=-D %)
 
+# 11.3 doesn't include CWD in pkgmogrify search path
+PKG_OPTIONS +=		-I$(COMPONENT_DIR)
+
 MANGLED_DIR =	$(PROTO_DIR)/mangled
 
 # We use += below so anyone wishing to put other directories at the beginning

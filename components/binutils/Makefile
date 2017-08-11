@@ -72,9 +72,6 @@ CROSS_MACH =	$(CROSS_MACH_:x86_64%=i386)
 PKG_MACROS +=	CROSS_ARCH="$(CROSS_ARCH)"
 PKG_MACROS +=	CROSS_MACH="$(CROSS_MACH)"
 
-# 11.3 doesn't include CWD in pkgmogrify search path
-PKG_OPTIONS +=	-I$(COMPONENT_DIR)
-
 # Set GNU_ARCH differently based on whether we're mogrifying the cross-build
 # package or not, so that we can share a single manifest across both packages.
 $(MANIFEST_BASE)-%.mogrified: PKG_MACROS += GNU_ARCH=$(GNU_ARCH)

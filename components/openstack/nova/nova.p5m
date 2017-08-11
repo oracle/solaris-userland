@@ -46,6 +46,7 @@ set name=org.opensolaris.arc-caseid value=PSARC/2013/350 value=PSARC/2014/049 \
     value=PSARC/2016/172 value=PSARC/2016/242 value=PSARC/2016/251 \
     value=PSARC/2016/268 value=PSARC/2016/455
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+set name=variant.container value=false value=true
 set name=variant.debug.container value=false value=true
 #
 dir  path=etc/nova owner=nova group=nova mode=0700
@@ -1012,7 +1013,7 @@ depend type=require fmri=__TBD pkg.debug.depend.file=usr/bin/mkisofs
 
 # force a dependency on package delivering archiveadm(1M)
 depend type=require fmri=__TBD pkg.debug.depend.file=usr/sbin/archiveadm \
-    variant.debug.container=false
+    variant.container=false variant.debug.container=false
 
 # force a dependency on package delivering fcinfo(1M)
 depend type=require fmri=__TBD pkg.debug.depend.file=usr/sbin/fcinfo

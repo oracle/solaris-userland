@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
@@ -43,6 +43,7 @@ set name=org.opensolaris.arc-caseid value=PSARC/2013/350 value=PSARC/2014/059 \
     value=PSARC/2015/110 value=PSARC/2015/535 value=PSARC/2016/116 \
     value=PSARC/2016/251 value=PSARC/2016/268 value=PSARC/2016/455
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+set name=variant.container value=false value=true
 set name=variant.debug.container value=false value=true
 #
 dir  path=etc/neutron owner=neutron group=neutron mode=0700
@@ -864,11 +865,11 @@ depend type=require fmri=__TBD pkg.debug.depend.file=usr/sbin/arping
 
 # force a dependency on package delivering dladm(8)
 depend type=require fmri=__TBD pkg.debug.depend.file=usr/sbin/dladm \
-    variant.debug.container=false
+    variant.container=false variant.debug.container=false
 
 # force a dependency on package delivering ipadm(8)
 depend type=require fmri=__TBD pkg.debug.depend.file=usr/sbin/ipadm \
-    variant.debug.container=false
+    variant.container=false variant.debug.container=false
 
 # force a dependency on package delivering ovs-vsctl(8)
 depend type=require fmri=__TBD pkg.debug.depend.file=usr/sbin/ovs-vsctl
