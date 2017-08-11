@@ -1,40 +1,13 @@
-Source: in-house
-Up-stream Acceptability: Patch is fixing the Solaris build in consequences
-   of the "krb5" patch and is Solaris specific only.
-   It is heavily acceptable by community.
+param/loadparm.c need cc options to find krb5 headers
 
---- a/source3/wscript_build	2016-03-30 03:20:20.000000000 -0700
-+++ samba-4.4.1/source3/wscript_build	2016-04-09 17:34:50.562542184 -0700
-@@ -344,6 +344,7 @@
-                    lib/util_ea.c
-                    lib/background.c''',
-                    deps='''
-+			krb5
-                         samba3util
-                         LIBTSOCKET
-                         NDR_MESSAGING
-@@ -774,7 +775,7 @@
- 
- bld.SAMBA3_LIBRARY('trusts_util',
-                    source='libsmb/trusts_util.c',
--                   deps='libcli_netlogon3 msrpc3 samba-passdb',
-+                   deps='libcli_netlogon3 msrpc3 samba-passdb krb5',
-                    private_library=True)
- 
- bld.SAMBA3_SUBSYSTEM('tdb-wrap3',
-@@ -1350,6 +1351,7 @@
- bld.SAMBA3_BINARY('smbcacls',
-                  source='utils/smbcacls.c lib/util_sd.c',
-                  deps='''
-+		 krb5
-                  talloc
-                  popt_samba3
-                  msrpc3
-@@ -1375,6 +1377,7 @@
- bld.SAMBA3_BINARY('sharesec',
-                  source='utils/sharesec.c lib/util_sd.c',
-                  deps='''
-+		 krb5
-                  talloc
-                  msrpc3
-                  libcli_lsa3
+cc need -Ipath to find krb5.h in /usr/include/kerberos5/ dir
+--- a/source3/wscript_build	2017-07-25 02:05:53.000000000 +0000
++++ b/source3/wscript_build	2017-08-10 11:11:43.400267777 +0000
+@@ -571,6 +571,7 @@
+                         PARAM_UTIL
+                         ldap
+                         lber
++                        krb5
+                         LOADPARM_CTX
+                         samba3core
+                         param_local.h

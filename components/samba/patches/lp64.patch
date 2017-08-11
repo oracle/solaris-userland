@@ -1,0 +1,12 @@
+sun4v (sparc) is not detected as lp64
+--- a/third_party/cmocka/cmocka.h	2017-07-25 02:05:53.000000000 +0000
++++ b/third_party/cmocka/cmocka.h	2017-08-11 16:19:15.248062728 +0000
+@@ -56,7 +56,7 @@
+ 
+ /* If __WORDSIZE is not set, try to figure it out and default to 32 bit. */
+ #ifndef __WORDSIZE
+-# if defined(__x86_64__) && !defined(__ILP32__)
++# if (defined(__x86_64__) || defined(_LP64)) && !defined(__ILP32__)
+ #  define __WORDSIZE 64
+ # else
+ #  define __WORDSIZE 32

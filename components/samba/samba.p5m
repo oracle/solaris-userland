@@ -48,6 +48,12 @@
 <transform file path=usr/lib/python2.7/vendor-packages/64/samba/samba/tests/subunitrun.* -> drop>
 <transform file path=usr/lib/python2.7/vendor-packages/64/samba/samba/tests/dcerpc/raw_protocol.* -> drop>
 
+# "new" deps - will change later
+<transform file path=usr/lib/samba/private/$(MACH64)/libcommon-auth-samba4\.so.* -> default pkg.depend.bypass-generate .*>
+<transform file path=usr/lib/samba/private/$(MACH64)/libcommon-auth-samba4\.so.* -> default pkg.linted.userland.action001.3 true>
+<transform file path=usr/lib/python2.7/vendor-packages/64/samba/samba/dsdb_dns.so -> default pkg.depend.bypass-generate .*>
+<transform file path=usr/lib/python2.7/vendor-packages/64/samba/samba/dsdb_dns.so -> default pkg.linted.userland.action001.3 true>
+
 # Oracle HSM (SAMFS) is not yet supported on 12.0
 #<transform file path=usr/lib/samba/vfs/samfs.so -> default pkg.depend.bypass-generate .*>
 #<transform file path=usr/lib/samba/vfs/samfs.so -> default pkg.linted.userland.action001.3 true>
@@ -90,7 +96,7 @@ set name=com.oracle.info.description value="Samba, a SMB/CIFS fileserver"
 set name=com.oracle.info.tpno value=$(TPNO)
 set name=info.classification \
     value="org.opensolaris.category.2008:System/File System"
-set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.source-url value=$(COMPONENT_SRC_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2015/008
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)

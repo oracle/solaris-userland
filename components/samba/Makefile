@@ -25,15 +25,23 @@
 
 include ../../make-rules/shared-macros.mk
 
+# Both SPRO_VROOT and studio_OPT vars should use the override keyword otherwise
+# Userland will ignore it and use its default values.
+
+# studio 12.5 handle the func.attribs massively used in Samba code
+# much better than the older studio versions
+override SPRO_VROOT = $(SPRO_ROOT)/developerstudio12.5
+
 # Samba does not work properly on i386 when built by studio with -xO3+.
 ifeq ($(MACH), sparc)
-WAFOPT1	= -j64
+# to test Samba build using studio 12.6 nightly uncomment the following line
+#override SPRO_VROOT = /shared/dp/releases/dev/sparc-S2/
+WAFOPT1 = -j64
 else
-# Both SPRO_VROOT and studio_OPT vars must use the override keyword otherwise
-# Userland will ignore it and use its default value.
-# To use the older 12.3 compiler instead of the default 12.4 compiler uncomment
-# the following line.
-#override SPRO_VROOT = $(SPRO_ROOT)/solarisstudio12.3
+# to test Samba build using studio 12.6 nightly uncomment the following line
+#override SPRO_VROOT = /shared/dp/releases/dev/intel-S2/
+# for faster build i.e. if you prototyping src. patches use local cc (i.e. on strax)
+#override SPRO_VROOT = /opt/developerstudio12.5
 override studio_OPT = -xO1
 endif
 
@@ -41,15 +49,23 @@ endif
 export PARFAIT_BUILD=no
 
 COMPONENT_NAME=		samba
-COMPONENT_VERSION=	4.4.16
-TPNO=			37821
-COMPONENT_ARCHIVE_HASH= sha256:2681f6d9d838d90273f151539331a2051b2292fc8784d4bbc416caae5d0c438e
-COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	http://www.samba.org/
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
-COMPONENT_ARCHIVE_URL=	https://download.samba.org/pub/samba/stable/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/samba
 COMPONENT_ANITYA_ID=	4758
+
+COMPONENT_VERSION=	4.7.1
+TPNO=			39269
+# Samba pre-releases are available on git only.
+# if you want to build Samba from git uncomment next 4 lines
+#GIT_REPO=		https://git.samba.org/samba.git
+#GIT_COMMIT_ID=		samba-4.7.0rc4
+#GIT_HASH=		sha256:6f210b7757b6b55ae0fafff0c21a1704cc1a7621d81462d630c162097959d47d
+#COMPONENT_SRC_URL=	$(GIT_REPO)
+# clone of git.samba.org takes a long
+# if you want to build Samba from archive uncomment next 3 lines
+COMPONENT_ARCHIVE_URL=	https://download.samba.org/pub/samba/stable/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_HASH=	sha256:7ba932523c821ebfa4c31ebd183f7aa20d663059f9761563fcdec85cd1e9be1a
+COMPONENT_SRC_URL=	$(COMPONENT_ARCHIVE_URL)
 
 include $(WS_MAKE_RULES)/prep.mk
 
@@ -59,20 +75,19 @@ WAF_PATH	=	PATH=$(BUILD_DIR)/samba/buildtools/bin:$(PROTO_DIR)/usr/bin:$$PATH
 # Uncomment to enable verbose build.
 #override WAFOPT1	=	-v -j1
 
+COMPONENT_PREP_ACTION += \
+   $(CP)  $(COMPONENT_DIR)/patches/vfs_zfsacl.c $(SOURCE_DIR)/source3/modules/vfs_zfsacl.c ;
+
 # Set build dirs for Samba + Winbind / Winbind (without Samba).
 BUILD_DIR_SMB		= $(BUILD_DIR)/samba
 BUILD_DIR_WINB		= $(BUILD_DIR)/winbind
 
-# Depends on S12-only libraries from Desktop to build.
-ifeq ($(BUILD_TYPE), evaluation)
-PUBLISH_STAMP=
-endif
 include $(WS_MAKE_RULES)/ips.mk
-
+PKG_VARS += COMPONENT_SRC_URL
 # Set the pkg... path to search files in ./Solaris/ dir (mainly the SMF manifests are there)
 PKG_PROTO_DIRS += $(COMPONENT_DIR)
 
-# Oracle HSM is not supported on 12.0 yet but the libsam.so target should rather be commented out than removed
+# Oracle HSM is not supported on 11.4 yet but the libsam.so target should rather be commented out than removed
 #$(PROTO_DIR)/opt/SUNWsamfs/lib/$(MACH64)/libsam.so: Solaris/libsam.c
 #	$(MKDIR) $(@D)
 #	$(CC.studio.64) -m64 -G $(studio_PIC) -hlibsam.so Solaris/libsam.c \
@@ -86,14 +101,8 @@ LIBS +=		-lrt -lsec -lcrypt -lmd5 -lsocket -lnsl
 # More libs needed by smbd (libavahi, libgamin, ...)
 LIBS4SMBD =	-lsendfile -lavahi-common -lavahi-core
 
-#CPPFLAGS +=	-DSAMBA_VERSION_VENDOR_SUFFIX=\\\"Placeholder_for_vendor_suffix\\\"
 CPPFLAGS +=	$(CPP_LARGEFILES)
 CPPFLAGS +=	$(CPP_XPG6MODE)
-CPPFLAGS +=	-I/usr/include/openldap
-
-# MIT kerberos uses different enctype defs.
-CPPFLAGS += -DCKSUMTYPE_HMAC_SHA1_96_AES_128=CKSUMTYPE_HMAC_SHA1_96_AES128
-CPPFLAGS += -DCKSUMTYPE_HMAC_SHA1_96_AES_256=CKSUMTYPE_HMAC_SHA1_96_AES256
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -135,7 +144,6 @@ $(BUILD_DIR_WINB)/.configured:	CONFIGURE_OPTIONS += \
 CONFIGURE_OPTIONS +=	--with-ads
 CONFIGURE_OPTIONS +=	--with-winbind
 CONFIGURE_OPTIONS +=	--with-ldap
-CONFIGURE_OPTIONS +=	--with-libldap=ldap_r
 CONFIGURE_OPTIONS +=	--with-system-mitkrb5
 CONFIGURE_OPTIONS +=	--without-ad-dc
 
@@ -260,31 +268,26 @@ build:		$(BUILD_DIR_SMB)/.built $(BUILD_DIR_WINB)/.built
 
 include $(WS_MAKE_RULES)/shared-targets.mk
 
+PERL_SCRIPTS   += $(PROTO_DIR)/usr/lib/samba/bin/findsmb
+PYTHON_SCRIPTS += \
+ $(shell nawk -F \= \
+  ' $$1 ~ /^file.*path/ && $$2 ~ /.*\.py$$/ {print "$(PROTO_DIR)/"$$2;} ' \
+  $(COMPONENT_DIR)/samba.proto-objects)
+
 install:	$(BUILD_DIR_SMB)/.installed $(BUILD_DIR_WINB)/.installed
-	# set version of python interpreter for pkglint
-	find $(PROTO_DIR) -name \*.py -print0 | \
-	   while IFS= read -r -d $$'\0' file; do \
-		/usr/bin/sed -e '1,1s&^#!.*python[:blank:]\{0,\}$$&#!$(PYTHON.$(PYTHON_VERSION))&' \
-		   $$file > $$file.pyverset ; \
-	   done
-	find $(PROTO_DIR) -name \*.py.pyverset -print0 | \
-	   while IFS= read -r -d $$'\0' file; do \
-		$(MV) $$file `echo $$file | sed -e 's/[.]pyverset$$//'` ; \
-	   done
 
 test:		$(NO_TESTS)
 
 system-test:    $(NO_TESTS)
 
-clean::
-	$(RM) -r $(BUILD_DIR)
-
 REQUIRED_PACKAGES += library/file-monitor/gamin
 REQUIRED_PACKAGES += library/libarchive
 REQUIRED_PACKAGES += library/print/cups-libs
+REQUIRED_PACKAGES += library/samba/libsmbclient
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += security/kerberos-5
+REQUIRED_PACKAGES += service/network/samba
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library

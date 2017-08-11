@@ -1,47 +1,91 @@
-In-house
-Proposed to community as: https://bugzilla.samba.org/show_bug.cgi?id=12758
---- a/source3/smbd/quotas.c	2017-04-26 11:57:07.061357855 +0000
-+++ b/source3/smbd/quotas.c	2017-04-26 12:04:40.103690322 +0000
-@@ -67,6 +67,7 @@
+User quota do not work on Solaris
+
+Old code directly asking the quota on NFS server do not work
+on Solaris 11 and above. Using fcntl()-op. to get quota will
+either return quota nor return -1 (ENOSUP) i.e. on pcfs
+
+Solution unified cross all supported FSs is preferable.
+
+Samba bug: https://bugzilla.samba.org/show_bug.cgi?id=12758
+is now closed but the fix from community do not work so there
+is no fix available yet.
+
+Here is the fix. I did not removed the code not working on
+recent Solaris releases so it can be activated by adding:
+ -DSUNOS5NOTSUP=1
+on cc options. I am leaving the decission if completely remove
+the unused code on community.
+
+--- a/source3/wscript	2017-07-25 02:05:53.000000000 +0000
++++ b/source3/wscript	2017-08-10 11:49:23.441352329 +0000
+@@ -1451,6 +1480,8 @@
+         conf.CHECK_HEADERS('sys/quota.h')
+         # For quotas on BSD systems
+         conf.CHECK_HEADERS('ufs/ufs/quota.h')
++        # For quotas on Solaris (it works for any FS)
++        conf.CHECK_HEADERS('sys/fs/ufs_quota.h')
+         # For quotas on Linux XFS filesystems
+         if conf.CHECK_HEADERS('xfs/xqm.h'):
+             conf.DEFINE('HAVE_XFS_QUOTAS', '1')
+--- a/source3/smbd/quotas.c	2017-07-25 02:05:53.000000000 +0000
++++ b/source3/smbd/quotas.c	2017-08-10 14:55:13.897953464 +0000
+@@ -41,10 +41,11 @@
+ #ifdef WITH_QUOTAS
  
- #if defined(SUNOS5)
+ #if defined(SUNOS5) /* Solaris */
+-
+ #include <fcntl.h>
+ #include <sys/param.h>
+ #include <sys/fs/ufs_quota.h>
++
++#if defined(SUNOS5NOTSUP) /* SOLARIS 9 and before */
+ #include <sys/mnttab.h>
+ #include <sys/mntent.h>
  
-+#if defined(USE_OBSOLETED_SOLARIS_APIS)
- /****************************************************************************
-  Allows querying of remote hosts for quotas on NFS mounted shares.
-  Supports normal NFS and AMD mounts.
-@@ -229,6 +230,7 @@
+@@ -102,7 +103,7 @@
+ 	return (1);
+ }
+ 
+-/* Restricted to SUNOS5 for the moment, I haven`t access to others to test. */
++/* Restricted to SUNOS5 (5.9 and before) for the moment, I haven`t access to others to test. */
+ static bool nfs_quotas(char *nfspath, uid_t euser_id, uint64_t *bsize, uint64_t *dfree, uint64_t *dsize)
+ {
+ 	uid_t uid = euser_id;
+@@ -210,6 +211,7 @@
  	DEBUG(10,("nfs_quotas: End of nfs_quotas\n" ));
  	return ret;
  }
-+#endif /* USE_OBSOLETED_SOLARIS_APIS */
- #endif
++#endif /* SUNOS5NOTSUP */
  
  /****************************************************************************
-@@ -277,7 +279,9 @@
- 		/* quotas are only on vxfs, UFS or NFS */
- 		if ((sbuf.st_ex_dev == devno) && (
- 			strcmp( mnt.mnt_fstype, MNTTYPE_UFS ) == 0 ||
-+			strcmp( mnt.mnt_fstype, "zfs" ) == 0    ||
- 			strcmp( mnt.mnt_fstype, "nfs" ) == 0    ||
-+			strcmp( mnt.mnt_fstype, "samfs" ) == 0  ||
- 			strcmp( mnt.mnt_fstype, "vxfs" ) == 0 )) {
- 				found = true;
- 				name = talloc_asprintf(talloc_tos(),
-@@ -320,6 +324,7 @@
- 	become_root();
- 
- #if defined(SUNOS5)
-+#if defined(USE_OBSOLETED_SOLARIS_APIS)
- 	if (strcmp(mnt.mnt_fstype, "nfs") == 0) {
- 		bool retval;
- 		DEBUG(5,("disk_quotas: looking for mountpath (NFS) \"%s\"\n",
-@@ -329,7 +334,7 @@
+ try to get the disk space from disk quotas (SunOS & Solaris2 version)
+@@ -224,7 +226,9 @@
+ 	struct dqblk D;
+ 	struct quotctl command;
+ 	int file;
++#if defined(SUNOS5NOTSUP) /* SOLARIS 9 and before */
+ 	struct mnttab mnt;
++#endif
+ 	char *name = NULL;
+ 	FILE *fd;
+ 	SMB_STRUCT_STAT sbuf;
+@@ -237,6 +241,7 @@
+ 	devno = fname->st.st_ex_dev;
+ 	DEBUG(5,("disk_quotas: looking for path \"%s\" devno=%x\n",
+ 		path, (unsigned int)devno));
++#if defined(SUNOS5NOTSUP) /* SOLARIS 9 and before */
+ 	if ((fd = fopen(MNTTAB, "r")) == NULL) {
+ 		return false;
+ 	}
+@@ -281,7 +286,10 @@
  		unbecome_root();
  		return retval;
  	}
 -
-+#endif /* USE_OBSOLETED_SOLARIS_APIS */
++#else /* SOLARIS 10 and above */
++	become_root();
++	name = talloc_strdup(talloc_tos(), path);
++#endif
  	DEBUG(5,("disk_quotas: looking for quotas file \"%s\"\n", name));
  	if((file=open(name, O_RDONLY,0))<0) {
  		unbecome_root();
