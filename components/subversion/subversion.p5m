@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
 <transform file  path=usr/include/svn/(.+)$ -> \
@@ -42,7 +42,7 @@ set name=info.classification \
     value="org.opensolaris.category.2008:Development/Source Code Management"
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2006/563
+set name=org.opensolaris.arc-caseid value=PSARC/2006/563 value=PSARC/2017/199
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/apache2/2.4/libexec/mod_authz_svn.so
 file path=usr/apache2/2.4/libexec/mod_dav_svn.so
@@ -50,6 +50,7 @@ file path=usr/bin/svn
 file path=usr/bin/svnadmin
 file path=usr/bin/svndumpfilter
 file path=usr/bin/svnlook
+file path=usr/bin/svnmucc
 file path=usr/bin/svnrdump
 file path=usr/bin/svnserve
 file path=usr/bin/svnsync
@@ -109,58 +110,30 @@ file usr/include/subversion-1/svn_xml.h path=usr/include/svn/svn_xml.h
 #
 file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_client.pc \
     path=usr/lib/$(MACH64)/pkgconfig/libsvn_client.pc
-file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_client.pc \
-    path=usr/lib/$(MACH64)/pkgconfig/libsvn_client.pc
-file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_delta.pc \
-    path=usr/lib/$(MACH64)/pkgconfig/libsvn_delta.pc
 file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_delta.pc \
     path=usr/lib/$(MACH64)/pkgconfig/libsvn_delta.pc
 file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_diff.pc \
     path=usr/lib/$(MACH64)/pkgconfig/libsvn_diff.pc
-file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_diff.pc \
-    path=usr/lib/$(MACH64)/pkgconfig/libsvn_diff.pc
-file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_fs.pc \
-    path=usr/lib/$(MACH64)/pkgconfig/libsvn_fs.pc
 file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_fs.pc \
     path=usr/lib/$(MACH64)/pkgconfig/libsvn_fs.pc
 file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_fs_fs.pc \
     path=usr/lib/$(MACH64)/pkgconfig/libsvn_fs_fs.pc
-file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_fs_fs.pc \
-    path=usr/lib/$(MACH64)/pkgconfig/libsvn_fs_fs.pc
-file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_fs_util.pc \
-    path=usr/lib/$(MACH64)/pkgconfig/libsvn_fs_util.pc
 file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_fs_util.pc \
     path=usr/lib/$(MACH64)/pkgconfig/libsvn_fs_util.pc
 file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_fs_x.pc \
     path=usr/lib/$(MACH64)/pkgconfig/libsvn_fs_x.pc
-file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_fs_x.pc \
-    path=usr/lib/$(MACH64)/pkgconfig/libsvn_fs_x.pc
-file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_ra.pc \
-    path=usr/lib/$(MACH64)/pkgconfig/libsvn_ra.pc
 file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_ra.pc \
     path=usr/lib/$(MACH64)/pkgconfig/libsvn_ra.pc
 file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_ra_local.pc \
     path=usr/lib/$(MACH64)/pkgconfig/libsvn_ra_local.pc
-file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_ra_local.pc \
-    path=usr/lib/$(MACH64)/pkgconfig/libsvn_ra_local.pc
-file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_ra_serf.pc \
-    path=usr/lib/$(MACH64)/pkgconfig/libsvn_ra_serf.pc
 file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_ra_serf.pc \
     path=usr/lib/$(MACH64)/pkgconfig/libsvn_ra_serf.pc
 file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_ra_svn.pc \
     path=usr/lib/$(MACH64)/pkgconfig/libsvn_ra_svn.pc
-file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_ra_svn.pc \
-    path=usr/lib/$(MACH64)/pkgconfig/libsvn_ra_svn.pc
-file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_repos.pc \
-    path=usr/lib/$(MACH64)/pkgconfig/libsvn_repos.pc
 file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_repos.pc \
     path=usr/lib/$(MACH64)/pkgconfig/libsvn_repos.pc
 file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_subr.pc \
     path=usr/lib/$(MACH64)/pkgconfig/libsvn_subr.pc
-file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_subr.pc \
-    path=usr/lib/$(MACH64)/pkgconfig/libsvn_subr.pc
-file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_wc.pc \
-    path=usr/lib/$(MACH64)/pkgconfig/libsvn_wc.pc
 file usr/lib/svn/$(MACH64)/pkgconfig/libsvn_wc.pc \
     path=usr/lib/$(MACH64)/pkgconfig/libsvn_wc.pc
 #
@@ -304,6 +277,7 @@ file path=usr/share/man/man1/svn.1
 file path=usr/share/man/man1/svnadmin.1
 file path=usr/share/man/man1/svndumpfilter.1
 file path=usr/share/man/man1/svnlook.1
+file path=usr/share/man/man1/svnmucc.1
 file path=usr/share/man/man1/svnrdump.1
 file path=usr/share/man/man1/svnsync.1
 file path=usr/share/man/man1/svnversion.1
