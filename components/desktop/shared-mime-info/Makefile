@@ -25,16 +25,16 @@ BUILD_BITS=		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		shared-mime-info
-COMPONENT_VERSION=	0.80
+COMPONENT_VERSION=	1.8
 COMPONENT_PROJECT_URL=	https://freedesktop.org/wiki/Software/shared-mime-info/
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:80857ba19f8066bfc8d998bfc72b492e241ebd52d49c245aae9fd5b3d233b024
+	sha256:2af55ef1a0319805b74ab40d331a3962c905477d76c086f49e34dc96363589e9
 COMPONENT_ARCHIVE_URL=	http://freedesktop.org/~hadess/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	5524
 
-TPNO=			9300
+TPNO=			37223
 
 # Does not build correctly with S11 version of intltool, and cannot be
 # installed on S11 since it conflicts with S11 gnome-vfs package
