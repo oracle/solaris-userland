@@ -68,6 +68,11 @@ COMPARISON_TRANSFORMS +=	$(PKGMOGRIFY_TRANSFORMS)
 
 LICENSE_TRANSFORMS =		$(WS_TOP)/transforms/license-changes
 
+# Some components contain the directory 'locale' but you don't want to
+# assign to its subdirectories facets like facet.locale.nl_NL. This variable
+# makes it easy to disable such transformations.
+LOCALE_TRANSFORMS +=	$(WS_TOP)/transforms/locale
+
 # order is important
 PUBLISH_TRANSFORMS +=	$(LICENSE_TRANSFORMS)
 PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/variant-cleanup
@@ -77,7 +82,7 @@ PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/actuators
 PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/depends
 PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/devel
 PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/docs
-PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/locale
+PUBLISH_TRANSFORMS +=	$(LOCALE_TRANSFORMS)
 PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/standard-python-libraries
 PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/python-rename
 PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/python-3-groups
