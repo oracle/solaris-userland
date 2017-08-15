@@ -69,6 +69,7 @@ CFLAGS += -DOPENSSL_NO_CAST
 CFLAGS += -DENABLE_OPENSSL_FIPS
 CFLAGS += -DOPENSSL_NO_RC4
 CFLAGS += -DWITHOUT_HMAC_MD5
+CFLAGS += -DSFTP_AUDIT
 CFLAGS += -DDEFAULT_PKCS11_WHITELIST='\"/lib/$(MACH64)/*,/usr/lib/$(MACH64)/*,/usr/lib/security/$(MACH64)/*\"'
 
 # We need to disable lazyloading of dynamic dependent libraries. During the
@@ -112,7 +113,7 @@ COMPONENT_PRE_BUILD_ACTION = \
 
 # Copy Solaris specific source files and generate configuration script
 COMPONENT_PREP_ACTION += \
-    ( $(CP) sources/moduli sources/*.c $(@D)/; \
+    ( $(CP) sources/moduli sources/*.c sources/*.h $(@D)/; \
       cd $(@D); autoconf; \
     )
 
