@@ -43,11 +43,7 @@ ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
 ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
 # Mostly but not completely migrated from ON in S12.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
+include $(WS_MAKE_RULES)/no-evaluation.mk
 
 BUILD_STYLE= justmake
 INSTALL_TARGET=
@@ -129,6 +125,7 @@ APPENDDEF(`conf_sendmail_ENVDEF', `-DSUN_INIT_DOMAIN')
 APPENDDEF(`conf_sendmail_ENVDEF', `-DSUN_SIMPLIFIED_LDAP')
 APPENDDEF(`conf_sendmail_ENVDEF', `-DTCPWRAPPERS')
 APPENDDEF(`conf_sendmail_ENVDEF', `-DSTARTTLS')
+APPENDDEF(`conf_sendmail_ENVDEF', `-DSASL=2')
 APPENDDEF(`conf_sendmail_ENVDEF', `-D_FFR_LOCAL_DAEMON')
 APPENDDEF(`conf_sendmail_ENVDEF', `-D_FFR_MAIL_MACRO')
 APPENDDEF(`conf_sendmail_ENVDEF', `-DIPV6_FULL=0')
@@ -137,6 +134,7 @@ APPENDDEF(`conf_sendmail_LIBS', `-lwrap')
 APPENDDEF(`conf_sendmail_LIBS', `-lumem')
 APPENDDEF(`conf_sendmail_LIBS', `-lssl')
 APPENDDEF(`conf_sendmail_LIBS', `-lcrypto')
+APPENDDEF(`conf_sendmail_LIBS', `-lsasl2')
 APPENDDEF(`confMAPDEF', `-DLDAPMAP')
 APPENDDEF(`confLIBS', `-lldap_r-2.4 -llber-2.4 -lc')
 define(`confENVDEF', `-DSOLARIS=$(SOLARIS) -DNETINET6')
@@ -215,5 +213,6 @@ REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library/security/libsasl2
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/network/ldap/openldap
