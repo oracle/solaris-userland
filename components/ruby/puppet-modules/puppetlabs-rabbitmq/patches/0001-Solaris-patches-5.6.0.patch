@@ -1,8 +1,12 @@
-From 8828cbaf43cd3a676febdd4d43e42d66f01a7fce Mon Sep 17 00:00:00 2001
+From c7c6ccf35f77b4da533059e002e781836f0faa6b Mon Sep 17 00:00:00 2001
 From: Shawn Ferry <sferry@gmail.com>
 Date: Wed, 19 Apr 2017 11:56:04 -0400
 Subject: [PATCH] Solaris patches 5.6.0
 
+Changes in this patch are not written to maintain functionality for
+operating systems other than Solaris.
+
+Patch is not suitable for upstream
 ---
  .../provider/rabbitmq_binding/rabbitmqadmin.rb     |  7 +++---
  .../provider/rabbitmq_exchange/rabbitmqadmin.rb    |  6 ++---
@@ -11,9 +15,9 @@ Subject: [PATCH] Solaris patches 5.6.0
  manifests/init.pp                                  | 25 ++++++++++++++++++---
  manifests/install/rabbitmqadmin.pp                 |  7 +++---
  manifests/params.pp                                | 26 +++++++++++++++++++++-
- metadata.json                                      |  9 +++++++-
+ metadata.json                                      |  8 ++++++-
  tests/full.pp                                      | 12 +++++-----
- 9 files changed, 81 insertions(+), 27 deletions(-)
+ 9 files changed, 80 insertions(+), 27 deletions(-)
 
 diff --git a/lib/puppet/provider/rabbitmq_binding/rabbitmqadmin.rb b/lib/puppet/provider/rabbitmq_binding/rabbitmqadmin.rb
 index 3828394..031256f 100644
@@ -247,10 +251,10 @@ index 69d4e52..45b5b9b 100644
    $admin_enable                = true
    $management_hostname         = undef
 diff --git a/metadata.json b/metadata.json
-index 3d5ab8c..22930b2 100644
+index 3d5ab8c..4f27861 100644
 --- a/metadata.json
 +++ b/metadata.json
-@@ -38,6 +38,14 @@
+@@ -38,6 +38,13 @@
          "12.04",
          "14.04"
        ]
@@ -259,13 +263,12 @@ index 3d5ab8c..22930b2 100644
 +      "operatingsystem": "Solaris",
 +      "operatingsystemrelease": [
 +        "11.3",
-+        "11.4",
-+        "12.0"
++        "11.4"
 +      ]
      }
    ],
    "requirements": [
-@@ -48,7 +56,6 @@
+@@ -48,7 +55,6 @@
    ],
    "dependencies": [
      {"name":"puppetlabs/stdlib","version_requirement":">=3.0.0 <5.0.0"},
@@ -301,5 +304,5 @@ index c6dfc5c..caaafcd 100644
  }
  rabbitmq_user_permissions { 'dan@myhost':
 -- 
-2.11.0 (Apple Git-81)
+2.14.1
 
