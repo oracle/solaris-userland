@@ -1,18 +1,56 @@
-Patch migrated from Desktop, where it was listed as:
-# date:2010-08-16 owner:padraig type:bug doo:16787
+Submitted upstream at:
+https://bugs.freedesktop.org/show_bug.cgi?id=29526
 
-possibly suitable for upstream
+From 93d76df772ee27b5ff3a2da7ae5e6134a1149fad Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Thu, 10 Aug 2017 18:52:21 -0700
+Subject: [PATCH] Use closefrom() if available in _dbus_close_all()
 
---- dbus-1.6.0/dbus/dbus-sysdeps-unix.c-orig	2012-06-05 06:33:44.620328189 -0500
-+++ dbus-1.6.0/dbus/dbus-sysdeps-unix.c	2012-06-05 06:34:40.948758620 -0500
-@@ -4030,6 +4030,10 @@ _dbus_close_all (void)
+Similar to the #ifdef __linux__ code to use /proc to find open fd's
+to close, but implemented in libc instead of locally.  Available on
+Solaris, FreeBSD, NetBSD, OpenBSD, and MacOS X.
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ configure.ac             | 2 +-
+ dbus/dbus-sysdeps-unix.c | 4 ++++
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index c4022ed7..d0e48d8c 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -606,7 +606,7 @@ AC_DEFINE_UNQUOTED([DBUS_USE_SYNC], [$have_sync], [Use the gcc __sync extension]
+ AC_SEARCH_LIBS(socket,[socket network])
+ AC_CHECK_FUNC(gethostbyname,,[AC_CHECK_LIB(nsl,gethostbyname)])
+ 
+-AC_CHECK_FUNCS([vsnprintf vasprintf nanosleep usleep setenv clearenv unsetenv socketpair getgrouplist fpathconf setrlimit poll setlocale localeconv strtoll strtoull issetugid getresuid setresuid getrlimit])
++AC_CHECK_FUNCS([vsnprintf vasprintf nanosleep usleep setenv clearenv unsetenv socketpair getgrouplist fpathconf setrlimit poll setlocale localeconv strtoll strtoull issetugid getresuid setresuid getrlimit closefrom])
+ 
+ AC_CHECK_HEADERS([syslog.h])
+ if test "x$ac_cv_header_syslog_h" = "xyes"; then
+diff --git a/dbus/dbus-sysdeps-unix.c b/dbus/dbus-sysdeps-unix.c
+index 9d914f8c..2800a3ab 100644
+--- a/dbus/dbus-sysdeps-unix.c
++++ b/dbus/dbus-sysdeps-unix.c
+@@ -4336,6 +4336,9 @@ _dbus_socket_can_pass_unix_fd (DBusSocket fd)
+ void
+ _dbus_close_all (void)
  {
++#ifdef HAVE_CLOSEFROM
++  closefrom (3);
++#else
    int maxfds, i;
  
-+#if HAVE_CLOSEFROM
-+      closefrom(3);
-+#endif
-+
  #ifdef __linux__
-   DIR *d;
+@@ -4392,6 +4395,7 @@ _dbus_close_all (void)
+   /* close all inherited fds */
+   for (i = 3; i < maxfds; i++)
+     close (i);
++#endif /* HAVE_CLOSEFROM */
+ }
  
+ /**
+-- 
+2.13.0
+

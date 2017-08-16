@@ -23,6 +23,9 @@ make[3]: Entering directory '$(@D)/test'
 /usr/gnu/bin/make  check-TESTS
 make[4]: Entering directory '$(@D)/test'
 make[5]: Entering directory '$(@D)/test'
+PASS: test-dbus-daemon-fork.sh 1 - normal dbus-daemon
+PASS: test-dbus-daemon-fork.sh 2 - dbus-daemon with stdin closed
+PASS: test-dbus-daemon-fork.sh 3 - dbus-daemon with stdin, stdout, stderr closed
 PASS: test-shell 1
 PASS: test-shell 2
 PASS: test-shell 3
@@ -55,34 +58,36 @@ PASS: test-dbus-daemon 8 /canonical-path/uae
 PASS: test-dbus-daemon-eavesdrop 1 /eavedrop/match_keyword/broadcast
 PASS: test-dbus-daemon-eavesdrop 2 /eavedrop/match_keyword/unicast_to_receiver
 PASS: test-dbus-daemon-eavesdrop 3 /eavedrop/match_keyword/unicast_to_sender
-PASS: test-fdpass 1 /relay
-PASS: test-fdpass 2 /limit
-PASS: test-fdpass 3 /too-many/plus1
-PASS: test-fdpass 4 /too-many/plus2
-PASS: test-fdpass 5 /too-many/plus17
-PASS: test-fdpass 6 /too-many/split
-PASS: test-fdpass 7 /flood/1
-PASS: test-fdpass 8 /flood/half-limit
-PASS: test-fdpass 9 /flood/over-half-limit
-PASS: test-fdpass 10 /flood/limit
-PASS: test-fdpass 11 /odd-limit/minus1
-PASS: test-fdpass 12 /odd-limit/at
-PASS: test-fdpass 13 /odd-limit/plus1
-PASS: test-fdpass 14 /odd-limit/plus2
-PASS: test-monitor 1 /monitor/become
-PASS: test-monitor 2 /monitor/broadcast
-PASS: test-monitor 3 /monitor/forbidden-broadcast
-PASS: test-monitor 4 /monitor/unicast-signal
-PASS: test-monitor 5 /monitor/forbidden
-PASS: test-monitor 6 /monitor/method-call
-PASS: test-monitor 7 /monitor/forbidden-method
-PASS: test-monitor 8 /monitor/dbus-daemon
-PASS: test-monitor 9 /monitor/selective
-PASS: test-monitor 10 /monitor/wildcard
-PASS: test-monitor 11 /monitor/no-rule
-PASS: test-monitor 12 /monitor/eavesdrop
-PASS: test-monitor 13 /monitor/no-eavesdrop
-PASS: test-monitor 14 /monitor/activation
+PASS: test-fdpass 1 /unsupported
+PASS: test-fdpass 2 /relay
+PASS: test-fdpass 3 /limit
+PASS: test-fdpass 4 /too-many/plus1
+PASS: test-fdpass 5 /too-many/plus2
+PASS: test-fdpass 6 /too-many/plus17
+PASS: test-fdpass 7 /too-many/split
+PASS: test-fdpass 8 /flood/1
+PASS: test-fdpass 9 /flood/half-limit
+PASS: test-fdpass 10 /flood/over-half-limit
+PASS: test-fdpass 11 /flood/limit
+PASS: test-fdpass 12 /odd-limit/minus1
+PASS: test-fdpass 13 /odd-limit/at
+PASS: test-fdpass 14 /odd-limit/plus1
+PASS: test-fdpass 15 /odd-limit/plus2
+PASS: test-monitor 1 /monitor/invalid
+PASS: test-monitor 2 /monitor/become
+PASS: test-monitor 3 /monitor/broadcast
+PASS: test-monitor 4 /monitor/forbidden-broadcast
+PASS: test-monitor 5 /monitor/unicast-signal
+PASS: test-monitor 6 /monitor/forbidden
+PASS: test-monitor 7 /monitor/method-call
+PASS: test-monitor 8 /monitor/forbidden-method
+PASS: test-monitor 9 /monitor/dbus-daemon
+PASS: test-monitor 10 /monitor/selective
+PASS: test-monitor 11 /monitor/wildcard
+PASS: test-monitor 12 /monitor/no-rule
+PASS: test-monitor 13 /monitor/eavesdrop
+PASS: test-monitor 14 /monitor/no-eavesdrop
+PASS: test-monitor 15 /monitor/activation
 PASS: test-loopback 1 /connect/tcp
 PASS: test-loopback 2 /connect/nonce-tcp
 PASS: test-loopback 3 /connect/unix
@@ -103,7 +108,6 @@ PASS: test-refs 4 /refs/server
 PASS: test-relay 1 /connect
 PASS: test-relay 2 /relay
 PASS: test-relay 3 /limit
-PASS: test-sd-activation 1 /sd-activation
 PASS: test-syntax 1 /syntax/path
 PASS: test-syntax 2 /syntax/interface
 PASS: test-syntax 3 /syntax/error
@@ -113,15 +117,18 @@ PASS: test-syntax 6 /syntax/signature
 PASS: test-syntax 7 /syntax/single-signature
 PASS: test-syntax 8 /syntax/utf8
 PASS: test-syslog 1 /syslog
-SKIP: test-uid-permissions 1 /uid-permissions/uae/root # SKIP cannot use alternative uid when not uid 0
-SKIP: test-uid-permissions 2 /uid-permissions/uae/messagebus # SKIP cannot use alternative uid when not uid 0
-SKIP: test-uid-permissions 3 /uid-permissions/uae/other # SKIP cannot use alternative uid when not uid 0
+SKIP: test-uid-permissions 1 /uid-permissions/uae/other # SKIP cannot use alternative uid when not uid 0
+SKIP: test-uid-permissions 2 /uid-permissions/monitor/root # SKIP cannot use alternative uid when not uid 0
+SKIP: test-uid-permissions 3 /uid-permissions/monitor/messagebus # SKIP cannot use alternative uid when not uid 0
+SKIP: test-uid-permissions 4 /uid-permissions/monitor/other # SKIP cannot use alternative uid when not uid 0
+PASS: test-sd-activation 1 /sd-activation/activation
+PASS: test-sd-activation 2 /sd-activation/uae
 ============================================================================
-Testsuite summary for dbus 1.10.0
+Testsuite summary for dbus 1.10.22
 ============================================================================
-# TOTAL: 93
-# PASS:  90
-# SKIP:  3
+# TOTAL: 100
+# PASS:  96
+# SKIP:  4
 # XFAIL: 0
 # FAIL:  0
 # XPASS: 0
@@ -132,11 +139,15 @@ make[4]: Leaving directory '$(@D)/test'
 make[3]: Leaving directory '$(@D)/test'
 Making check in name-test
 make[3]: Entering directory '$(@D)/test/name-test'
+/usr/gnu/bin/make  
+make[4]: Entering directory '$(@D)/test/name-test'
+make[4]: Nothing to be done for 'all'.
+make[4]: Leaving directory '$(@D)/test/name-test'
 /usr/gnu/bin/make  check-TESTS
 make[4]: Entering directory '$(@D)/test/name-test'
 make[5]: Entering directory '$(@D)/test/name-test'
 ============================================================================
-Testsuite summary for dbus 1.10.0
+Testsuite summary for dbus 1.10.22
 ============================================================================
 # TOTAL: 0
 # PASS:  0
