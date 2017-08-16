@@ -1,0 +1,188 @@
+Current as of:
+Tuesday, June 13, 2017 at 09:50:19 AM PDT
+
+These instructions are for testing php.
+I don't have instructions for testing suhosin nor xdebug.
+
+Installing Wordpress
+====================
+
+Following:
+http://codex.wordpress.org/Installing_WordPress
+to install.
+
+Use mysql 5.5 for now.
+mysql 5.7 has some authentication restriction which I haven't figured
+out yet.
+# pkg set-mediator --no-backup-be -v -V 5.5 mysql
+# svcadm enable mysql:version_55
+# svcs -p mysql
+  [Patience.  mysql is slow starting up sometimes.  Keep checking.]
+# cp /etc/apache2/2.4/samples-conf.d/php5.6.conf /etc/apache2/2.4/conf.d/
+# vi /etc/php/5.6/conf.d/extensions.ini
+uncomment
+	extension=mysql.so
+	extension=mysqli.so
+	extension=pdo_mysql.so
+
+# svcs -p http
+If apache24 is NOT online do:
+# svcadm enable apache24
+If apache24 is online do:
+# svcadm restart apache24
+# svcs -p http
+
+1) # cd /var/apache2/2.4/htdocs
+   Move index.html out of the way so we get a directory listing.
+   # mv index.html itworks.html
+   Optionally create this file.  Browse to this file to check php information.
+   # cat > phpinfo.php
+<?php
+phpinfo();
+?>
+
+   # wget http://wordpress.org/latest.zip
+   # unzip latest.zip
+   Creates the directory wordpress
+
+2) Create the Database and a User
+
+   As root; make a database
+   We need the choose the following values before creating a mysql database.
+   These are only samples.  NOT something you must use but you can use.
+   DB_NAME=wordpress
+   DB_USER=wordpress
+   DB_PASSWORD="{root's password}"
+   DB_HOST=localhost
+
+   # mysql
+   mysql> create database wordpress;
+   mysql> grant all privileges on wordpress.* to "wordpress"@"localhost" identified by "{root's password}";
+   mysql> flush privileges;
+   mysql> exit;
+
+   mysql> show databases;    ## to see all databases
+   mysql> drop database {database};    ## to delete {database}
+
+3) # cd /var/apache2/2.4/htdocs/wordpress
+   # cp wp-config-sample.php wp-config.php
+   [edit wp-config.php and enter values listed above]:
+   DB_NAME
+   DB_USER
+   DB_PASSWORD
+   DB_HOST
+
+   Save the file.
+
+4) In your web browser to go:
+   http://{testing machine}.us.oracle.com/wordpress/wp-admin/install.php
+
+   Site Title = {your choice}
+   User = admin
+   Password = {root's password}
+   CHECKBOX Confirm use of weak password
+   Your E-mail: {your email address}
+
+   Click Install WordPress
+
+5) Your wordpress site is ready as:
+   http://{testing machine}.us.oracle.com/wordpress/
+   Click Log In
+   Username: admin
+   Password: "{root's password}"
+
+6) Test the site.
+   Top left corner.  Click on house icon.
+   Scroll down to see the current content.
+   Click New -> Post
+   Fill in the Title and add some content to the large edit area.
+   Click Publish on the right.
+   Top left corner.  Click on the house icon again.
+   Scroll down.  You should see your new post.
+   Click on EDIT that appears in your new post and change something and Publish again.
+
+
+Installing Joomla
+=================
+
+# cd /var/apache2/2.4/htdocs
+
+## Can no longer download directly from Joomla website.
+## Download with browser and copy manually.
+
+https://downloads.joomla.org/
+
+# mkdir joomla
+# cd joomla
+# unzip ~/Downloads/Joomla_3.7.1-Stable-Full_Package.zip
+
+Enable mysql if you have not already.
+# svcadm enable svc:/application/database/mysql:version_55
+
+See wordpress comments about enabling php extensions.
+# vi /etc/php/5.6/conf.d/extensions.ini
+    uncomment:
+    extension=zip.so
+# vi /etc/php/5.6/php.ini
+    Change output_buffering to:
+    output_buffering = Off
+Restart apache to pick up these changes.
+# svcadm restart apache24
+
+# cd /var/apache/2.4/htdocs/joomla
+# chown webservd:webservd .
+# chown -R webservd:webservd *
+
+Start installation by browsing here:
+http://{testing machine}.us.oracle.com/joomla/installation/index.php
+
+Then configure:
+
+
+Main Configuration:
+    Site Name: {your choice}
+    Your Email: {your email address}
+    Admin Username: admin
+    Admin Password: {root's password}
+
+    Click Next
+
+Database Configuration:
+    Database Type: Mysqli
+    Host Name: localhost
+    Username: root
+    Password: [leave blank]
+    Database Name: {your choice}
+    Table Prefix: [don't change]
+    Old Database Process: {your choice}
+
+    Click Next
+
+Finalization:
+    Install Sample Data: {pick one like Learn Joomla}
+    Email Configuration:  {Yes or No}
+
+    Everything else displays the configuration.
+    Everything should be green except perhaps Site Offline
+    and Mcrypt Support.  We disable Mcrypt for weak security reasons.
+
+    Click Install
+
+Congratulations! Joomla! is now installed.
+
+    Now REMOVE or RENAME the installation directory,
+    /var/apache2/2.4/htdocs/joomla/installation
+    # mv installation DELETE-installation
+
+Start using:
+    Click Administrator and login as admin
+    You might see Error.  Don't know why.  Ignore it.
+    Lower left corner: click View Site
+    Log in again in the lower right.
+    Upper right: User Menu: click Submit an Article
+    Title: {write something}
+    {write something in the block area below the Title}
+    Click on the Publishing tab.
+    Click Featured Yes.
+    Click Save.
+    You should be back to the main page and your article should be there.
