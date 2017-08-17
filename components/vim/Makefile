@@ -35,12 +35,12 @@ COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_PROJECT_URL=	http://www.vim.org/
 COMPONENT_ANITYA_ID=	5092
 
-GIT_REPO=		git://github.com/vim/vim
-GIT_TAG=		v8.0.0095
-GIT_COMMIT_ID=		182707a
-GIT_HASH=		sha256:9a9c90d3c5576e7a3e092ec86469529a7386828086d3631eee1b8db4b4c80f37
+GIT_REPO=		https://github.com/vim/vim
+GIT_TAG=		v8.0.0711
+GIT_COMMIT_ID=		85dad2c81
+GIT_HASH=		sha256:2f1c1483e7699224a5d1e18d39c5596101787dfcb74138589d4c8c19591b52f3
 
-TPNO=			32753
+TPNO=			36600
 
 PKG_MACROS +=	VIMVER=vim$(subst .,,$(COMPONENT_VERSION))
 
@@ -62,6 +62,7 @@ include $(WS_MAKE_RULES)/common.mk
 # making the build pretty loud about unknown "unused" attributes.  If we make
 # it an error, configure will turn off its use.  See bug 20230791.
 CFLAGS +=		-errwarn=E_ATTRIBUTE_UNKNOWN
+studio_C99MODE =	$(studio_C99_ENABLE)
 
 # Make sure we use a 64-bit, multithreaded perl
 CONFIGURE_ENV +=	vi_cv_path_perl=/usr/perl5/5.22/bin/perl
@@ -71,6 +72,7 @@ CONFIGURE_ENV +=	vi_cv_path_python3=/usr/bin/python3.5
 CONFIGURE_ENV +=	MSGFMT=gmsgfmt
 CONFIGURE_ENV +=	SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH)
 
+CONFIGURE_OPTIONS +=	LDFLAGS="$(studio_C99MODE)"
 CONFIGURE_OPTIONS +=	--with-features=huge
 CONFIGURE_OPTIONS +=	--with-compiledby="the Solaris Userland build environment"
 CONFIGURE_OPTIONS +=	--with-modified-by="Solaris Userland Team"
