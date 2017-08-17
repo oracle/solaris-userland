@@ -64,6 +64,8 @@ TPNO_ROBOTO_FF=			27203
 TPNO_SMART_TABLE=		23157
 TPNO_SPIN=			20674
 TPNO_TERM_JS=			23158
+TPNO_DJANGO=			32455
+TPNO_DJANGO_OAUTH=		29183
 
 #
 # Starting with Juno, Horizon depends on a number of XStatic modules
@@ -294,7 +296,29 @@ COMPONENT_ARCHIVE_HASH_25 =	\
 COMPONENT_ARCHIVE_URL_25 = $(call pypi_url,25)
 PKG_MACROS +=		VERSION_IRONIC_UI=$(COMPONENT_VERSION_25)
 
+COMPONENT_NAME_DJANGO=		Django
+COMPONENT_VERSION_DJANGO=	1.8.16
+COMPONENT_SRC_DJANGO=		$(COMPONENT_NAME_DJANGO)-$(COMPONENT_VERSION_DJANGO)
+COMPONENT_ARCHIVE_DJANGO=	$(COMPONENT_SRC_DJANGO).tar.gz
+COMPONENT_ARCHIVE_HASH_DJANGO=	\
+    sha256:224aaf17a28609707d942deafe6d0a5b382baf22a6f33e4e61c56c62f09081dd
+COMPONENT_ARCHIVE_URL_DJANGO=	$(call pypi_url)
+PKG_MACROS +=			VERSION_DJANGO=$(COMPONENT_VERSION_DJANGO)
+
+COMPONENT_NAME_DJANGO_OAUTH=	django_openstack_auth
+COMPONENT_VERSION_DJANGO_OAUTH=	2.2.1
+COMPONENT_SRC_DJANGO_OAUTH=	$(COMPONENT_NAME_DJANGO_OAUTH)-$(COMPONENT_VERSION_DJANGO_OAUTH)
+COMPONENT_ARCHIVE_DJANGO_OAUTH=	$(COMPONENT_SRC_DJANGO_OAUTH).tar.gz
+COMPONENT_ARCHIVE_HASH_DJANGO_OAUTH=	\
+    sha256:f4a525a2dd1b36b7ce5e2b2e1e010c3b4467f970604a582e81a4233a368f462b
+COMPONENT_ARCHIVE_URL_DJANGO_OAUTH=	$(call pypi_url)
+PKG_MACROS +=			VERSION_DJANGO_OAUTH=$(COMPONENT_VERSION_DJANGO_OAUTH)
+
+
 PKG_VARS +=		COMPONENT_BE_VERSION
+
+# Directory where horizon private modules are installed
+HORIZON_PRIVATE_DIR = /usr/lib/horizon
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -302,6 +326,9 @@ include $(WS_MAKE_RULES)/setup.py.mk
 BUILD_BITS=NO_ARCH
 include $(WS_MAKE_RULES)/no-evaluation.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+LOCALE_TRANSFORMS =
+
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -407,12 +434,31 @@ xstatic:	$(PROTO_DIR) build
 	done
 endif
 
+.PHONY: django
+django:		$(PROTO_DIR)
+	set -x; \
+	for component in $(COMPONENT_SRC_DJANGO) $(COMPONENT_SRC_DJANGO_OAUTH); do \
+	    ( \
+	    cd $$component; \
+	    $(ENV) $(PYTHON.$(BITS)) ./setup.py build; \
+	    $(ENV) PYTHON_LIB=$(HORIZON_PRIVATE_DIR) $(PYTHON.$(BITS)) ./setup.py install \
+		--force \
+		--install-data=$(HORIZON_PRIVATE_DIR) \
+		--install-lib=$(HORIZON_PRIVATE_DIR) \
+		--install-platlib=$(HORIZON_PRIVATE_DIR) \
+		--install-purelib=$(HORIZON_PRIVATE_DIR) \
+		--root $(PROTO_DIR); \
+	    ) \
+	done; \
+	/usr/bin/find $(BUILD_DIR)/prototype/$(MACH)/usr/lib/horizon/django -name *.py \
+		-exec $(GSED) -i -e 's/env python/python$(PYTHON_VERSION)/' "{}" \; ;
+
 # common targets
 build:		$(BUILD_NO_ARCH)
 
 ifneq ($(BUILD_TYPE), evaluation)
 # make sure all of the xstatic modules are built
-install:	$(INSTALL_NO_ARCH) xstatic
+install:	$(INSTALL_NO_ARCH) xstatic django
 endif
 
 test:		$(NO_TESTS)

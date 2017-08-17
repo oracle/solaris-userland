@@ -67,15 +67,18 @@ CONFIGURE_SCRIPT=	$(SOURCE_DIR)/src/configure
 
 # We need to enable large file support and build PIC for our shared libraries
 CFLAGS += $(CPP_LARGEFILES) $(CC_PIC)
-CFLAGS += -errtags=yes -errwarn=%all
-CFLAGS += -errwarn=no%E_STATEMENT_NOT_REACHED
-CFLAGS += -errwarn=no%E_NO_IMPLICIT_DECL_ALLOWED
-CFLAGS += -errwarn=no%E_EMPTY_TRANSLATION_UNIT
-CFLAGS += -errwarn=no%E_EMPTY_INITIALIZER
-CFLAGS += -errwarn=no%E_EMPTY_DECLARATION
-CFLAGS += -errwarn=no%E_ENUM_VAL_OVERFLOWS_INT_MAX
-CFLAGS += -errwarn=no%E_DEPRECATED_ATT
-CFLAGS += -errwarn=no%E_INIT_SIGN_EXTEND
+
+# MIT supports WARN_CFLAGS to set the compiler error/warning behavior
+WARN_CFLAGS = -errtags=yes -errwarn=%all
+WARN_CFLAGS += -errwarn=no%E_STATEMENT_NOT_REACHED
+WARN_CFLAGS += -errwarn=no%E_NO_IMPLICIT_DECL_ALLOWED
+WARN_CFLAGS += -errwarn=no%E_EMPTY_TRANSLATION_UNIT
+WARN_CFLAGS += -errwarn=no%E_EMPTY_INITIALIZER
+WARN_CFLAGS += -errwarn=no%E_EMPTY_DECLARATION
+WARN_CFLAGS += -errwarn=no%E_ENUM_VAL_OVERFLOWS_INT_MAX
+WARN_CFLAGS += -errwarn=no%E_DEPRECATED_ATT
+WARN_CFLAGS += -errwarn=no%E_INIT_SIGN_EXTEND
+CONFIGURE_ENV += WARN_CFLAGS="$(WARN_CFLAGS)"
 
 # Include openldap headers instead of obsolete mozilla ldap headers.
 CPPFLAGS += -I$(USRINCDIR)/openldap

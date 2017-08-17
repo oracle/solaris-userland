@@ -12,3 +12,32 @@ suitable for upstream contribution.
      program_options = ['--check-format']
  
      def add_arguments(self, parser):
+--- Django-1.11.1/django/core/management/commands/makemessages.py	2017-07-04 12:36:33.399069813 +0000
++++ Django-1.11.1/django/core/management/commands/makemessages.py	2017-07-04 12:36:25.907294306 +0000
+@@ -354,7 +354,7 @@ class Command(BaseCommand):
+         if locales:
+             check_programs('msguniq', 'msgmerge', 'msgattrib')
+ 
+-        check_programs('xgettext')
++        check_programs('/usr/gnu/bin/xgettext')
+ 
+         try:
+             potfiles = self.build_potfiles()
+@@ -528,7 +528,7 @@ class Command(BaseCommand):
+         if self.domain == 'djangojs':
+             is_templatized = build_file.is_templatized
+             args = [
+-                'xgettext',
++                '/usr/gnu/bin/xgettext',
+                 '-d', self.domain,
+                 '--language=%s' % ('C' if is_templatized else 'JavaScript',),
+                 '--keyword=gettext_noop',
+@@ -540,7 +540,7 @@ class Command(BaseCommand):
+             ]
+         elif self.domain == 'django':
+             args = [
+-                'xgettext',
++                '/usr/gnu/bin/xgettext',
+                 '-d', self.domain,
+                 '--language=Python',
+                 '--keyword=gettext_noop',
