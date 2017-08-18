@@ -194,9 +194,18 @@ information needed to understand how this component is put together.
     # cost/benefit decision not to pursue it at this time
     COMPILER =      gcc
 
-  With emacs 24.3, I removed this, and find that studio now builds
-  emacs without issue. This is something that should be reverified
-  with each update.
+  With emacs 24.3, I removed this, and found that studio now builds
+  emacs without issue.
+
+  With emacs 25.2, the studio compilers on sparc produce broken behavior
+  at the -xO4 optimization level.
+
+      26552153 emacs on sparc does not wrap long line
+      26558067 emacs loses mouse cursor on sparc
+
+  This can be mitigated by changing to -xO2. However, we don't know what
+  the real issue is, and therefore, do not fully know if that's sufficient.
+  Therefore, we're back to using gcc.
 
 - When updating to a new version, remember to ensure that the REQUIRED_PACKAGES
   lines in the Makefile are updated to match. Instructions can be found in the
