@@ -32,12 +32,12 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gdb
-COMPONENT_VERSION=	7.12.1
+COMPONENT_VERSION=	8.0
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:142057eacecfb929d52b561eb47a1103c7d504cec3f659dd8a5ae7bc378f7e77
+    sha256:8968a19e14e176ee026f0ca777657c43456514ad41bb2bc7273e8c4219555ac9
 COMPONENT_ANITYA_ID=	11798
 
-TPNO=			34387
+TPNO=			36110
 
 # The traditional output from gmake test omits some
 # test results information that is contained in the 
