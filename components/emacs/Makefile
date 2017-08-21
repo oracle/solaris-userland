@@ -22,9 +22,13 @@
 #
 # Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
 #
+# This code is built with gcc. See README.
+#
 # As Solaris always has a 64-bit kernel, and 64-bit emacs can handle larger
 # files, we only build and deliver 64-bit binaries. 
-BUILD_BITS= 64
+#
+COMPILER=	gcc
+BUILD_BITS=	64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		emacs

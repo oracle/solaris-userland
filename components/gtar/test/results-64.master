@@ -1,5 +1,5 @@
 ## ------------------------ ##
-## GNU tar 1.28 test suite. ##
+## GNU tar 1.29 test suite. ##
 ## ------------------------ ##
   1: tar version                                     ok
   2: decompressing from stdin                        ok
@@ -20,258 +20,274 @@ The -T option
  11: multiple file lists                             ok
  12: nested file lists                               ok
  13: recursive file lists                            ok
- 14: -C in file lists                                ok
- 15: empty entries                                   ok
- 16: 0-separated file without -0                     ok
- 17: empty file                                      ok
- 18: entries with missing newlines                   ok
+ 14: files-from & recurse: toggle                    ok
+ 15: toggle --recursion (not) from -T                ok
+ 16: -C in file lists                                ok
+ 17: empty entries                                   ok
+ 18: 0-separated file without -0                     ok
+ 19: --null enables verbatim reading                 ok
+ 20: empty file                                      ok
+ 21: entries with missing newlines                   ok
+ 22: recursive extraction from --files-from          ok
+ 23: trailing slash in --files-from                  ok
 
 Various options
 
- 19: tar --index-file=FILE --file=-                  ok
- 20: tar cvf -                                       ok
- 21: gzip                                            ok
- 22: recurse                                         ok
- 23: recurse: toggle                                 ok
- 24: short records                                   ok
- 25: terminal input                                  ok
+ 24: tar --index-file=FILE --file=-                  ok
+ 25: tar cvf -                                       ok
+ 26: gzip                                            ok
+ 27: recurse                                         ok
+ 28: recurse: toggle                                 ok
+ 29: short records                                   ok
+ 30: --numeric-owner basic tests                     ok
 
 The --same-order option
 
- 26: working -C with --same-order                    ok
- 27: multiple -C options                             ok
+ 31: working -C with --same-order                    ok
+ 32: multiple -C options                             ok
 
 Append
 
- 28: append                                          ok
- 29: appending files with long names                 ok
- 30: append vs. create                               ok
- 31: append with name transformation                 ok
- 32: append with verify                              ok
+ 33: append                                          ok
+ 34: appending files with long names                 ok
+ 35: append vs. create                               ok
+ 36: append with name transformation                 ok
+ 37: append with verify                              ok
+ 38: append after changed blocking                   ok
 
 Transforms
 
- 33: transforming hard links on create               ok
- 34: transformations and GNU volume labels           ok
+ 39: transforming hard links on create               ok
+ 40: transformations and GNU volume labels           ok
+ 41: transforming escaped delimiters on create       ok
 
 Exclude
 
- 35: exclude                                         ok
- 36: exclude wildcards                               ok
- 37: exclude: anchoring                              ok
- 38: exclude: wildcards match slash                  ok
- 39: exclude: case insensitive                       ok
- 40: exclude: lots of excludes                       ok
- 41: exclude: long files in pax archives             ok
- 42: exclude: --exclude-backups option               ok
- 43: --exclude-tag option                            ok
- 44: --exclude-tag option and --listed-incremental   ok
- 45: --exclude-tag option in incremental pass        ok
- 46: --exclude-tag-under option                      ok
- 47: --exclude-tag-under and --listed-incremental    ok
- 48: --exclude-tag-under option in incremental pass  ok
- 49: --exclude-tag-all option                        ok
- 50: --exclude-tag-all and --listed-incremental      ok
- 51: --exclude-tag-all option in incremental pass    ok
+ 42: exclude                                         ok
+ 43: exclude wildcards                               ok
+ 44: exclude: anchoring                              ok
+ 45: exclude: wildcards match slash                  ok
+ 46: exclude: case insensitive                       ok
+ 47: exclude: lots of excludes                       ok
+ 48: exclude: long files in pax archives             ok
+ 49: exclude: --exclude-backups option               ok
+ 50: --exclude-tag option                            ok
+ 51: --exclude-tag option and --listed-incremental   ok
+ 52: --exclude-tag option in incremental pass        ok
+ 53: --exclude-tag-under option                      ok
+ 54: --exclude-tag-under and --listed-incremental    ok
+ 55: --exclude-tag-under option in incremental pass  ok
+ 56: --exclude-tag-all option                        ok
+ 57: --exclude-tag-all and --listed-incremental      ok
+ 58: --exclude-tag-all option in incremental pass    ok
 
 Deletions
 
- 52: deleting a member after a big one               ok
- 53: deleting a member from stdin archive            ok
- 54: deleting members with long names                ok
- 55: deleting a large last member                    ok
- 56: deleting non-existing member                    ok
+ 59: deleting a member after a big one               ok
+ 60: deleting a member from stdin archive            ok
+ 61: deleting members with long names                ok
+ 62: deleting a large last member                    ok
+ 63: deleting non-existing member                    ok
 
 Extracting
 
- 57: extract over an existing directory              ok
- 58: extracting symlinks over an existing file       ok
- 59: extraction loops                                ok
- 60: extract + fnmatch                               ok
- 61: extracting selected members from pax            ok
- 62: mode of extracted directories                   ok
- 63: extracting symlinks to a read-only dir          ok
- 64: restoring mode on existing directory            ok
- 65: extracting even when . and .. are unreadable    ok
- 66: -C and delayed setting of metadata              ok
- 67: scarce file descriptors                         ok
- 68: extract dot permissions                         ok
- 69: extract over symlinks                           ok
- 70: extract -C symlink                              ok
- 71: extract parent mkdir failure                    ok
- 72: extract empty directory with -C                 ok
- 73: name matching/transformation ordering           ok
- 74: keep-old-files                                  ok
- 75: skip-old-files                                  ok
- 76: extracting existing dir with --backup           ok
+ 64: extract over an existing directory              ok
+ 65: extracting symlinks over an existing file       ok
+ 66: extraction loops                                ok
+ 67: extract + fnmatch                               ok
+ 68: extracting selected members from pax            ok
+ 69: mode of extracted directories                   ok
+ 70: extracting symlinks to a read-only dir          ok
+ 71: restoring mode on existing directory            ok
+ 72: extracting even when . and .. are unreadable    ok
+ 73: -C and delayed setting of metadata              ok
+ 74: scarce file descriptors                         ok
+ 75: extract dot permissions                         ok
+ 76: extract over symlinks                           ok
+ 77: extract -C symlink                              ok
+ 78: extract parent mkdir failure                    ok
+ 79: extract empty directory with -C                 ok
+ 80: name matching/transformation ordering           ok
+ 81: keep-old-files                                  ok
+ 82: skip-old-files                                  ok
+ 83: extracting existing dir with --backup           ok
 
 Volume label operations
 
- 77: single-volume label                             ok
- 78: multi-volume label                              ok
- 79: test-label option                               ok
- 80: label with non-create option                    ok
- 81: label with non-create option                    ok
+ 84: single-volume label                             ok
+ 85: multi-volume label                              ok
+ 86: test-label option                               ok
+ 87: label with non-create option                    ok
+ 88: label with non-create option                    ok
 
 Incremental archives
 
- 82: incremental                                     ok
- 83: restore broken symlinks from incremental        ok
- 84: restoring timestamps from incremental           ok
- 85: --listed for individual files                   ok
- 86: working --listed                                ok
- 87: incremental dump when the parent directory is unreadable ok
- 88: --listed-incremental and --one-file-system      ok
- 89: --listed-incremental and remounted directories  skipped (listed05.at:36)
- 90: renamed files in incrementals                   ok
- 91: proper icontents initialization                 ok
- 92: incremental dumps with -C                       ok
- 93: incremental dumps of nested directories         ok
- 94: incremental restores with -C                    ok
- 95: filename normalization                          ok
- 96: incremental with alternating -C                 ok
+ 89: incremental                                     ok
+ 90: restore broken symlinks from incremental        ok
+ 91: restoring timestamps from incremental           ok
+ 92: --listed for individual files                   ok
+ 93: working --listed                                ok
+ 94: incremental dump when the parent directory is unreadable ok
+ 95: --listed-incremental and --one-file-system      ok
+ 96: --listed-incremental and remounted directories  skipped (listed05.at:36)
+ 97: renamed files in incrementals                   ok
+ 98: proper icontents initialization                 ok
+ 99: incremental dumps with -C                       ok
+100: incremental dumps of nested directories         ok
+101: incremental restores with -C                    ok
+102: filename normalization                          ok
+103: incremental with alternating -C                 ok
+104: concatenated incremental archives (deletes)     ok
+105: concatenated incremental archives (renames)     ok
 
 Files removed while archiving
 
- 97: file removed as we read it (ca. 22 seconds)     ok
- 98: toplevel file removed (ca. 24 seconds)          ok
+106: file removed as we read it (ca. 22 seconds)     ok
+107: toplevel file removed (ca. 24 seconds)          ok
 
 Renames
 
- 99: renamed dirs in incrementals                    ok
-100: move between hierarchies                        ok
-101: cyclic renames                                  ok
-102: renamed directory containing subdirectories     ok
-103: renamed subdirectories                          ok
-104: changed file types in incrementals              ok
+108: renamed dirs in incrementals                    ok
+109: move between hierarchies                        ok
+110: cyclic renames                                  ok
+111: renamed directory containing subdirectories     ok
+112: renamed subdirectories                          ok
+113: changed file types in incrementals              ok
 
 Ignore failing reads
 
-105: ignfail                                         ok
+114: ignfail                                         ok
 
 Link handling
 
-106: link count gt 2                                 ok
-107: preserve hard links with --remove-files         ok
-108: working -l with --remove-files                  ok
-109: link count is 1 but multiple occurrences        ok
+115: link count gt 2                                 ok
+116: preserve hard links with --remove-files         ok
+117: working -l with --remove-files                  ok
+118: link count is 1 but multiple occurrences        ok
 
 Specific archive formats
 
-110: long names in V7 archives                       ok
-111: long file names divisible by block size         ok
-112: ustar: unsplittable file name                   ok
-113: ustar: unsplittable path name                   ok
-114: ustar: splitting long names                     ok
-115: old archives                                    ok
-116: time: tricky time stamps                        ok
+119: long names in V7 archives                       ok
+120: long file names divisible by block size         ok
+121: ustar: unsplittable file name                   ok
+122: ustar: unsplittable path name                   ok
+123: ustar: splitting long names                     ok
+124: old archives                                    ok
+125: time: tricky time stamps                        ok
+126: time: clamping mtime                            ok
 
 Multivolume archives
 
-117: multivolume dumps from pipes                    ok
-118: skipping a straddling member                    ok
-119: MV archive & long filenames                     ok
-120: split directory members in a MV archive         ok
-121: Restoring after an out of sync volume           ok
-122: Multivolumes with L=record_size                 ok
-123: volumes split at an extended header             skipped (multiv07.at:31)
-124: multivolume header creation                     ok
+127: multivolume dumps from pipes                    ok
+128: skipping a straddling member                    ok
+129: MV archive & long filenames                     ok
+130: split directory members in a MV archive         ok
+131: Restoring after an out of sync volume           ok
+132: Multivolumes with L=record_size                 ok
+133: volumes split at an extended header             skipped (multiv07.at:31)
+134: multivolume header creation                     ok
+135: bad next volume                                 ok
 
 Owner and Groups
 
-125: --owner and --group                             ok
+136: --owner and --group                             ok
+137: --owner-map and --group-map                     ok
 
 Sparse files
 
-126: sparse files                                    ok
-127: extracting sparse file over a pipe              ok
-128: storing sparse files > 8G                       ok
-129: storing long sparse file names                  ok
-130: sparse files in MV archives                     ok
-131: sparse files in PAX MV archives, v.0.0          ok
-132: sparse files in PAX MV archives, v.0.1          ok
-133: sparse files in PAX MV archives, v.1.0          ok
+138: sparse files                                    ok
+139: extracting sparse file over a pipe              ok
+140: storing sparse files > 8G                       ok
+141: storing long sparse file names                  ok
+142: listing sparse files bigger than 2^33 B         ok
+143: storing sparse file using seek method           ok
+144: sparse files in MV archives                     ok
+145: sparse files in PAX MV archives, v.0.0          ok
+146: sparse files in PAX MV archives, v.0.1          ok
+147: sparse files in PAX MV archives, v.1.0          ok
 
 Updates
 
-134: update unchanged directories                    ok
-135: update directories                              ok
-136: update changed files                            ok
+148: update unchanged directories                    ok
+149: update directories                              ok
+150: update changed files                            ok
 
 Verifying the archive
 
-137: verify                                          ok
+151: verify                                          ok
 
 Volume operations
 
-138: volume                                          ok
-139: volume header size                              skipped (volsize.at:32)
+152: volume                                          ok
+153: volume header size                              skipped (volsize.at:32)
 
-140: compressed format recognition                   ok
-141: short input files                               ok
-142: updating short archives                         ok
-143: truncate                                        ok
-144: grow                                            ok
-145: sigpipe handling                                ok
+154: compressed format recognition                   ok
+155: short input files                               ok
+156: updating short archives                         ok
+157: truncate                                        ok
+158: grow                                            ok
+159: sigpipe handling                                ok
+160: compressor program failure                      ok
 
 Removing files after archiving
 
-146: remove-files with compression                   ok
-147: remove-files with compression: grand-child      ok
-148: remove-files with symbolic links                ok
-149: remove-files with -C:rel in -c/non-incr. mode   ok
-150: remove-files with -C:rel in -c/incr. mode       ok
-151: remove-files with -C:rel in -r mode             ok
-152: remove-files with -C:rel,rel in -c/non-incr. mode ok
-153: remove-files with -C:rel,rel in -c/incr. mode   ok
-154: remove-files with -C:rel,rel in -r mode         ok
-155: remove-files with -C:rel,abs in -c/non-incr. mode ok
-156: remove-files with -C:rel,abs in -c/incr. mode   ok
-157: remove-files with -C:rel,abs in -r mode         ok
-158: remove-files with -C:abs,rel in -c/non-incr. mode ok
-159: remove-files with -C:abs,rel in -c/incr. mode   ok
-160: remove-files with -C:abs,rel in -r mode         ok
-161: remove-files deleting two subdirs in -c/non-incr. mode ok
-162: remove-files deleting two subdirs in -c/incr. mode expected failure (remfiles08b.at:36)
-163: remove-files deleting two subdirs in -r mode    ok
-164: remove-files on full directory in -c/non-incr. mode ok
-165: remove-files on full directory in -c/incr. mode expected failure (remfiles09b.at:34)
-166: remove-files on full directory in -r mode       ok
-167: remove-files                                    ok
+161: remove-files with compression                   ok
+162: remove-files with compression: grand-child      ok
+163: remove-files with symbolic links                ok
+164: remove-files with -C:rel in -c/non-incr. mode   ok
+165: remove-files with -C:rel in -c/incr. mode       ok
+166: remove-files with -C:rel in -r mode             ok
+167: remove-files with -C:rel,rel in -c/non-incr. mode ok
+168: remove-files with -C:rel,rel in -c/incr. mode   ok
+169: remove-files with -C:rel,rel in -r mode         ok
+170: remove-files with -C:rel,abs in -c/non-incr. mode ok
+171: remove-files with -C:rel,abs in -c/incr. mode   ok
+172: remove-files with -C:rel,abs in -r mode         ok
+173: remove-files with -C:abs,rel in -c/non-incr. mode ok
+174: remove-files with -C:abs,rel in -c/incr. mode   ok
+175: remove-files with -C:abs,rel in -r mode         ok
+176: remove-files deleting two subdirs in -c/non-incr. mode ok
+177: remove-files deleting two subdirs in -c/incr. mode ok
+178: remove-files deleting two subdirs in -r mode    ok
+179: remove-files on full directory in -c/non-incr. mode ok
+180: remove-files on full directory in -c/incr. mode ok
+181: remove-files on full directory in -r mode       ok
+182: remove-files                                    ok
 
 Extended attributes
 
-168: xattrs: basic functionality                     skipped (xattr01.at:28)
-169: xattrs: change directory with -C option         skipped (xattr02.at:28)
-170: xattrs: trusted.* attributes                    skipped (xattr03.at:28)
-171: xattrs: s/open/openat/ regression               skipped (xattr04.at:29)
-172: xattrs: keywords with '=' and '%'               skipped (xattr05.at:31)
-173: acls: basic functionality                       skipped (acls01.at:28)
-174: acls: work with -C                              skipped (acls02.at:28)
-175: acls: default ACLs                              skipped (acls03.at:47)
-176: selinux: basic store/restore                    skipped (selnx01.at:28)
-177: acls/selinux: special files & fifos             skipped (selacl01.at:28)
-178: capabilities: binary store/restore              skipped (capabs_raw01.at:28)
+183: xattrs: basic functionality                     skipped (xattr01.at:28)
+184: xattrs: change directory with -C option         skipped (xattr02.at:28)
+185: xattrs: trusted.* attributes                    skipped (xattr03.at:28)
+186: xattrs: s/open/openat/ regression               skipped (xattr04.at:29)
+187: xattrs: keywords with '=' and '%'               skipped (xattr05.at:31)
+188: acls: basic functionality                       skipped (acls01.at:28)
+189: acls: work with -C                              skipped (acls02.at:28)
+190: acls: default ACLs                              skipped (acls03.at:47)
+191: selinux: basic store/restore                    skipped (selnx01.at:28)
+192: acls/selinux: special files & fifos             skipped (selacl01.at:28)
+193: capabilities: binary store/restore              skipped (capabs_raw01.at:28)
 
 One top level
 
-179: tar --one-top-level                             ok
-180: tar --one-top-level --show-transformed          ok
-181: tar --one-top-level --transform                 ok
-182: tar --one-top-level --transform                 ok
+194: tar --one-top-level                             ok
+195: tar --one-top-level --show-transformed          ok
+196: tar --one-top-level --transform                 ok
+197: tar --one-top-level --transform                 ok
+198: tar --one-top-level restoring permissions       ok
 
 Star tests
 
-183: gtarfail                                        skipped (gtarfail.at:26)
-184: gtarfail2                                       skipped (gtarfail2.at:26)
-185: multi-fail                                      skipped (multi-fail.at:26)
-186: ustar-big-2g                                    skipped (ustar-big-2g.at:26)
-187: ustar-big-8g                                    skipped (ustar-big-8g.at:26)
-188: pax-big-10g                                     skipped (pax-big-10g.at:26)
+199: gtarfail                                        skipped (gtarfail.at:27)
+200: gtarfail2                                       skipped (gtarfail2.at:27)
+201: multi-fail                                      skipped (multi-fail.at:27)
+202: ustar-big-2g                                    skipped (ustar-big-2g.at:27)
+203: ustar-big-8g                                    skipped (ustar-big-8g.at:27)
+204: pax-big-10g                                     skipped (pax-big-10g.at:27)
 
 ## ------------- ##
 ## Test results. ##
 ## ------------- ##
 
-167 tests behaved as expected.
+183 tests were successful.
 21 tests were skipped.

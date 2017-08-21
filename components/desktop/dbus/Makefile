@@ -21,20 +21,23 @@
 # Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 
+# Static assertions fail when building with Studio
+COMPILER =		gcc
 BUILD_BITS =            64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dbus
-COMPONENT_VERSION=	1.10.0
+COMPONENT_VERSION=	1.10.22
 COMPONENT_PROJECT_URL=	http://dbus.freedesktop.org
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:1dfb9745fb992f1ccd43c920490de8caddf6726a6222e8b803be6098293f924b
+    sha256:e2b1401e3eedc7b5c9a2034d31254c886e1fcbc7858006e0a1c59158fe4b7b97
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/dbus
 COMPONENT_ANITYA_ID=	1052
 
-TPNO=			25522
+TPNO=			37224
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 include $(WS_MAKE_RULES)/common.mk

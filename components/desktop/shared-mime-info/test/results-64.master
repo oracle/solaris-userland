@@ -1,10 +1,10 @@
 make[1]: Entering directory '$(@D)'
-Makefile:1057: warning: overriding recipe for target 'all'
-Makefile:314: warning: ignoring old recipe for target 'all'
+  GEN      create-pot
+make[2]: Entering directory '$(@D)/po'
+make[2]: '$(SOURCE_DIR)/po/shared-mime-info.pot' is up to date.
+make[2]: Leaving directory '$(@D)/po'
 Making check in .
 make[2]: Entering directory '$(@D)'
-Makefile:1057: warning: overriding recipe for target 'all'
-Makefile:314: warning: ignoring old recipe for target 'all'
 make[2]: Leaving directory '$(@D)'
 Making check in po
 make[2]: Entering directory '$(@D)/po'
@@ -14,21 +14,14 @@ if [ -r missing -o -r notexist ]; then \
   exit 1; \
 fi
 make[2]: Leaving directory '$(@D)/po'
-if test -n /usr/bin/xmllint ; then \
-	if test -e ./freedesktop.org.xml; then \
-	xmllint --noout --valid ./freedesktop.org.xml;	\
-	else \
-	xmllint --noout --valid $(SOURCE_DIR)/freedesktop.org.xml;	\
-	fi \
+if test -e ./freedesktop.org.xml; then \
+	xmllint --noout --valid ./freedesktop.org.xml || exit 1;	\
+else \
+	xmllint --noout --valid $(SOURCE_DIR)/freedesktop.org.xml || exit 1;	\
+fi; \
+if test -d .git/ && test -x ./update-mime-database && test -d $(SOURCE_DIR)/mime-db-tests ; then \
+	./update-mime-database mime-db-tests/ ; \
 fi
-if test -d .git/ && test -x ../xdgmime/src/test-mime-data && test -x ./test-tree-magic ; then \
-	mkdir -p ./temp-mime-dir/mime/packages ; \
-	cp -a ./freedesktop.org.xml ./temp-mime-dir/mime/packages/ ; \
-	XDG_DATA_DIRS="./temp-mime-dir/" ./update-mime-database "./temp-mime-dir/mime/" ; \
-	XDG_DATA_DIRS="./temp-mime-dir/" XDG_DATA_HOME="./temp-mime-dir/" ../xdgmime/src/test-mime-data -v tests/list || (XDG_DATA_DIRS="./temp-mime-dir/" ../xdgmime/src/test-mime-data -v -v tests/list ; exit 1); \
-	XDG_DATA_DIRS="./temp-mime-dir/" ./test-tree-magic tests/tree-list || exit 1; \
-	rm -rf "./temp-mime-dir/" ; \
-fi
-Number of mime-types that might need generic-icon: 374
-Number of mime-types with a generic icon: 295
+Number of mime-types that might need generic-icon: 467
+Number of mime-types with a generic icon: 372
 make[1]: Leaving directory '$(@D)'
