@@ -26,12 +26,12 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		screen
-COMPONENT_VERSION=	4.5.1
+COMPONENT_VERSION=	4.6.1
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:97db2114dd963b016cd4ded34831955dcbe3251e5eee45ac2606e67e9f097b2d
+    sha256:aba9af66cb626155d6abce4703f45cce0e30a5114a368bd6387c966cbbbb7c64
 COMPONENT_ANITYA_ID=	4772
 
-TPNO=			34130	
+TPNO=			36938	
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -39,6 +39,9 @@ ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/gnu-component.mk
+
+# Use standard XPG5MODE makefile macro during the build
+CFLAGS += $(XPG5MODE) 
 
 # Fix 64-bit linking via compiler.
 LDFLAGS += $(CC_BITS)
