@@ -40,6 +40,10 @@ COMPONENT_ANITYA_ID=	1052
 TPNO=			37224
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+
+# Needs newer X/Open defines that don't work on 11.3.
+include $(WS_MAKE_RULES)/no-evaluation.mk
+
 include $(WS_MAKE_RULES)/common.mk
 
 # Needed for "gmake test" to work successfully.
