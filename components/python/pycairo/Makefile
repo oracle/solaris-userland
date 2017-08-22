@@ -49,9 +49,6 @@ BUILD_64     = $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
 INSTALL_64   = $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
 TEST_64      = $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.tested-and-compared)
 
-# Cannot run tests until build machines update to s12_105 due to bug 23763105
-TEST_TARGET = $(SKIP_TEST)
-
 # Requires newer version of cairo than we have available in S11.
 include $(WS_MAKE_RULES)/no-evaluation.mk
 
@@ -88,6 +85,33 @@ COMPONENT_PRE_INSTALL_ACTION += \
 COMPONENT_TEST_DIR = $(@D)/test
 COMPONENT_TEST_CMD = /usr/bin/py.test-$(PYTHON_VERSION)
 COMPONENT_TEST_TARGETS =
+# Display warnings that may be raised by tests
+COMPONENT_TEST_ARGS += -rw
+# Upstream hasn't made their code pep8 clean, and we're not forking to do it
+COMPONENT_TEST_ARGS += -p no:codechecker
+# Workaround Bug 26654485 (pytest_capturelog causes warnings if installed)
+COMPONENT_TEST_ARGS += -p no:capturelog
+
+# more bits replicated from $(WS_MAKE_RULES)/setup.py.mk
+COMPONENT_TEST_BUILD_DIR = $(BUILD_DIR)/test/$(MACH$(BITS))-$(PYTHON_VERSION)
+# This would separate results per python version, but pycairo can use a
+# common results file for all versions for now:
+# COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(PYTHON_VERSION)-$(BITS).master
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_OUTPUT = $(COMPONENT_TEST_BUILD_DIR)/test-$(PYTHON_VERSION)-$(BITS)-results
+COMPONENT_TEST_DIFFS =  $(COMPONENT_TEST_BUILD_DIR)/test-$(PYTHON_VERSION)-$(BITS)-diffs
+COMPONENT_TEST_SNAPSHOT = $(COMPONENT_TEST_BUILD_DIR)/results-$(PYTHON_VERSION)-$(BITS).snapshot
+COMPONENT_TEST_TRANSFORM_CMD = $(COMPONENT_TEST_BUILD_DIR)/transform-$(PYTHON_VERSION)-$(BITS)-results
+
+# Test scripts just run 'python', but we need to specify the right version
+COMPONENT_PRE_TEST_ACTION += $(GSED) -i -e 's%/usr/bin/env python%$(PYTHON)%' \
+	-e "s%subprocess.call('python %subprocess.call('$(PYTHON) %" \
+	$(COMPONENT_TEST_DIR)/*.py
+
+# Exclude lines with version information of other packages, so we don't have
+# to update our results everytime one of them is updated.
+COMPONENT_TEST_TRANSFORMS += '-e "/^platform sunos5/d" ' '-e "/^plugins: /d"'
+COMPONENT_TEST_TRANSFORMS += '-e "s/ in [0-9]*\.[0-9]* seconds//" '
 
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += runtime/python-34
