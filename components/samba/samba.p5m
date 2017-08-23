@@ -68,6 +68,13 @@
 # SMF services import (for .xml manifests)
 <transform file path=lib/svc/manifest/.+\.xml -> default restart_fmri svc:/system/manifest-import:default >
 
+# objects in "samba" and "libsmbclient" packages are mutualy exclusive
+<include samba-objects2drop>
+<transform file path=usr/include/samba/libsmbclient.h -> drop>
+<transform link path=usr/lib/samba/$(MACH64)/libsmbclient.so target=libsmbclient.so.0.2.3 -> drop>
+<transform link path=usr/lib/samba/$(MACH64)/libsmbclient.so.0 target=libsmbclient.so.0.2.3 -> drop>
+<transform file path=usr/lib/samba/$(MACH64)/libsmbclient.so.0.2.3 -> drop>
+
 # "samba.proto-objects"-file is created using the command:
 #   gmake sample-manifest METADATA_TEMPLATE=
 # as a "sample-manifest"-file (in build/ dir) and is pkgfmt clean
