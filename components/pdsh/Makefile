@@ -26,17 +26,18 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 include $(WS_MAKE_RULES)/shared-targets.mk
 
+PATH=$(GNUBIN):$(USRBINDIR)
+
 COMPONENT_NAME=		pdsh
-COMPONENT_VERSION=	2.31
-COMPONENT_PROJECT_URL=	https://github.com/grondo/pdsh
-COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_NAME)-$(COMPONENT_VERSION)
+COMPONENT_VERSION=	2.33
+COMPONENT_PROJECT_URL=	https://github.com/chaos/pdsh
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:0ee066ce395703285cf4f6cf00b54b7097d12457a4b1c146bc6f33d8ba73caa7
-COMPONENT_ARCHIVE_URL=	https://github.com/grondo/$(COMPONENT_NAME)/archive/$(COMPONENT_ARCHIVE)
+    sha256:7368087429d6269f0a6313c406ef38c6a6a947bc003ca7368fc6481b139d942f
+COMPONENT_ARCHIVE_URL=	https://github.com/chaos/$(COMPONENT_NAME)/releases/download/$(COMPONENT_NAME)-$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	13274
 
-TPNO=			33966
+TPNO=			37401
 
 # Old version in SFW was not version-locked, so cannot be upgraded to, so
 # do not publish.
@@ -65,22 +66,19 @@ CONFIGURE_OPTIONS +=	--with-readline
 CONFIGURE_OPTIONS +=	--with-ssh
 CONFIGURE_OPTIONS +=	--without-rsh
 
-COMPONENT_TEST_ENV =   PATH="/usr/gnu/bin:/usr/bin:$(PATH)"
+COMPONENT_TEST_ENV =	PATH="$(PROTOUSRSBINDIR):$(PATH)"
 COMPONENT_TEST_DIR =	$(@D)/tests
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
-	'-e "/^Makefile/d" ' \
-	'-e "/^ok /p" ' \
-	'-e "/^not ok /p" ' \
-	'-e "/still have/p" ' \
-	'-e "/complete/p" ' \
-	'-e "/^\*\*\* /p" ' \
 	'-e "/^===/p" ' \
-	'-e "/skipped/p" ' \
-	'-e "/passed/p" ' \
-	'-e "/failed/p" ' \
-	'-e "/^FAIL/p" '
+	'-e "/TOTAL/p" ' \
+	'-e "/XPASS/p" ' \
+	'-e "/PASS/p" ' \
+	'-e "/SKIP/p" ' \
+	'-e "/ERROR/p" ' \
+	'-e "/XFAIL/p" ' \
+	'-e "/FAIL/p" '
 
 REQUIRED_PACKAGES += library/libgenders
 REQUIRED_PACKAGES += library/ncurses
