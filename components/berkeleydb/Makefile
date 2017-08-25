@@ -24,6 +24,17 @@
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
+
+# The GCC 5.3 default optimization is -O3 (set via shared-macros.mk).
+# A previous comment for berkeleydb when built with the Studio compilers was:
+#
+#   Userland default optimization level is 4, but that causes test failures.
+#   Upstream recommends level 2, which allows the tests to run, so we use that.
+#
+# Therefore we are overridding the default and setting it to -O2 for both
+# platforms and both architectures.
+gcc_OPT =	-O2
+
 include ../../make-rules/shared-macros.mk
 
 # Separate build for test with --enable-test configured
@@ -85,7 +96,7 @@ CXXFLAGS += $(CPP_LARGEFILES)
 
 # Prevent: #error "Compiler or options invalid for pre-UNIX 03 X/Open
 # applications.
-CFLAGS += -D_XOPEN_SOURCE=600
+CFLAGS += -std=gnu89
 
 # BerkeleyDB < 6 does not support Java 8. Java 7 is EOL & removed.
 CONFIGURE_OPTIONS += --disable-java
