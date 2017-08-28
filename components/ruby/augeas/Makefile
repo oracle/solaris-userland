@@ -56,7 +56,7 @@ include $(WS_MAKE_RULES)/ruby.mk
 # Once the transition is complete and build machines are running 11.4, these
 # lines can be removed and the corresponding .p5m file changes can be reverted.
 RUBY_DIR_VERS=$(shell $(RUBY) --version | $(GSED) -e 's/^.*solaris2.//' -e 's/]//')
-PKG_PROTO_DIRS += $(PROTO_DIR)/usr/ruby/$(RUBY_VERSION)/lib/ruby/vendor_ruby/gems/$(RUBY_LIB_VERSION)/extensions/$(MACH64)-solaris-2.$(RUBY_DIR_VERS)/$(RUBY_LIB_VERSION)/ruby-augeas-$(COMPONENT_VERSION)
+PKG_PROTO_DIRS += $(PROTO_DIR)/$(VENDOR_GEM_DIR)/extensions/$(MACH64)-solaris-2.$(RUBY_DIR_VERS)/$(RUBY_LIB_VERSION)/ruby-augeas-$(COMPONENT_VERSION)
 
 COMPONENT_TEST_CMD=	/usr/bin/rake
 COMPONENT_TEST_DIR=	$(SOURCE_DIR)
@@ -83,3 +83,13 @@ REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/linker
 REQUIRED_PACKAGES += system/management/augeas
+
+new-files:
+	$(PKGSEND) generate $(PROTO_DIR) | \
+		$(GSED) -e 's|group=.*||' -e s'|^file |file path=|' | \
+		$(CAT) *.p5m - | $(PKGFMT) -u |\
+		$(GSED) \
+		  -e '/~[0-9]\+~$$/d' \
+		  -e 's|$(VENDOR_RUBY)|$$(VENDOR_RUBY)|' | \
+		sort | uniq -c | \
+		$(GSED) -e '/ 2 /d' -e 's/   1 //' -e '/^file/!d'
