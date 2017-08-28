@@ -26,18 +26,18 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		perl
-COMPONENT_VERSION=	5.22.1
-PERL_VERSION_LOCAL=	5.22
+COMPONENT_VERSION=	5.26.0
+PERL_VERSION_LOCAL=	5.26
 COMPONENT_PROJECT_URL=	http://www.perl.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-     sha256:e98e4075a3167fa40524abe447c30bcca10c60e02a54ee1361eff278947a1221
+     sha256:f21d66de84982175e95ad15fd8d0e22fed2cc2de7e4394f5d48dbe451be2f6f2
 COMPONENT_ARCHIVE_URL=	http://www.cpan.org/src/5.0/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/perl
 COMPONENT_ANITYA_ID=	13599
 
-TPNO=			26810
+TPNO=			36929
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/configure.mk
@@ -96,7 +96,6 @@ CONFIGURE_OPTIONS = \
 			-Duse64bitall \
                         -Dusethreads \
 			-Dlibpth="/lib/64 /usr/lib/64" \
-			-Dusesitecustomize \
 			-Doptimize="$(CFLAGS.studio)"
 
 #
@@ -126,10 +125,6 @@ COMPONENT_BUILD_ENV	  +=	PATH=$(dir $(CC)):$(PATH)
 COMPONENT_INSTALL_ENV	  +=	PATH=$(dir $(CC)):$(PATH)
 COMPONENT_INSTALL_ENV	  +=	DESTDIR="$(PROTO_DIR)"
 COMPONENT_TEST_ENV	  +=	PATH=$(dir $(CC)):$(PATH)
-#
-# Getting 1 different result between sparc and x86.
-#
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 
 #
 # Throw out everything prior to test results.
@@ -161,5 +156,6 @@ system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += database/berkeleydb-5
 REQUIRED_PACKAGES += library/database/gdbm
+REQUIRED_PACKAGES += runtime/perl-526
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/math
