@@ -29,15 +29,15 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         nmap
-COMPONENT_VERSION=      7.50
+COMPONENT_VERSION=      7.60
 COMPONENT_PROJECT_URL=	http://nmap.org/
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tgz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:40febe4a4e4b583aabcdd8cfceb6ae0f366dbb2fede96e4a529340bdb6d24776
+    sha256:330d94228f3196dc7481990435703ba1ab67bb95016ea073a11a361aa76f65ef
 COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)dist/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	2096
 
-TPNO=			36088
+TPNO=			37398
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
@@ -71,6 +71,7 @@ CONFIGURE_OPTIONS  +=	ac_cv_header_net_pfvar_h=yes
 CONFIGURE_OPTIONS  +=	ac_cv_header_net_route_h=yes
 CONFIGURE_OPTIONS  +=	ac_cv_header_netinet_in_vars_h=yes
 
+REQUIRED_PACKAGES += library/libssh2
 REQUIRED_PACKAGES += library/pcre
 REQUIRED_PACKAGES += library/python/pygobject-27
 REQUIRED_PACKAGES += library/python/pygtk2-27

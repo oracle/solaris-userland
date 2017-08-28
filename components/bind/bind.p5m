@@ -36,7 +36,8 @@ set name=com.oracle.info.tpno value=$(TPNO)
 set name=info.classification value=org.opensolaris.category.2008:System/Services
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2009/308 value=PSARC/2016/261
+set name=org.opensolaris.arc-caseid value=PSARC/2009/308 value=PSARC/2016/261 \
+    value=PSARC/2017/175
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 
 # Solaris additions
@@ -44,6 +45,7 @@ file Solaris/server.xml path=lib/svc/manifest/network/dns/server.xml
 file Solaris/dns-server.sh path=lib/svc/method/dns-server mode=0555
 
 # Tools
+file path=usr/bin/named-rrchecker
 file path=usr/sbin/ddns-confgen
 file path=usr/sbin/dnssec-checkds pkg.depend.bypass-generate=.*/win32api.* \
     pkg.depend.bypass-generate=.*/win32con.*
@@ -65,7 +67,7 @@ file path=usr/sbin/named-checkconf
 file path=usr/sbin/named-checkzone
 link path=usr/sbin/named-compilezone target=named-checkzone
 file path=usr/sbin/named-journalprint
-file path=usr/sbin/named-rrchecker
+link path=usr/sbin/named-rrchecker target=../bin/named-rrchecker
 file path=usr/sbin/nsec3hash
 file path=usr/sbin/pkcs11-destroy
 file path=usr/sbin/pkcs11-keygen

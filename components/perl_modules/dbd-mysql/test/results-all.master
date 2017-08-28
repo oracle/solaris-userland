@@ -1,5 +1,5 @@
 make[1]: Entering directory '$(@D)'
-PERL_DL_NONLAZY=1 "$(PERL)" "-MExtUtils::Command::MM" "-MTest::Harness" "-e" "undef *Test::Harness::Switches; test_harness(0, 'blib/lib', 'blib/arch')" t/*.t
+PERL_DL_NONLAZY=1 PERL_USE_UNSAFE_INC=1 "$(PERL)" "-MExtUtils::Command::MM" "-MTest::Harness" "-e" "undef *Test::Harness::Switches; test_harness(0, 'blib/lib', 'blib/arch')" t/*.t
 # Driver version is <REMOVED>
 t/00base.t .............................. ok
 # Database 'test' accessible
@@ -14,7 +14,6 @@ t/05dbcreate.t .......................... ok
 # SQL_DBMS_VER is <REMOVED>
 # Default storage engine is: InnoDB
 t/10connect.t ........................... ok
-DBD::mysql::st DESTROY failed: MySQL server has gone away.
 t/15reconnect.t ......................... ok
 t/16dbi-get_info.t ...................... ok
 t/20createdrop.t ........................ ok
