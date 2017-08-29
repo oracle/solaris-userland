@@ -64,6 +64,9 @@ CFLAGS += -I/usr/include/kerberosv5
 
 CONFIGURE_BINDIR.64= $(CONFIGURE_SBINDIR.64)
 
+# Disable lua support as wireshark doesn't support lua 5.3.X
+CONFIGURE_OPTIONS +=	--with-lua=no
+
 CONFIGURE_OPTIONS +=	--disable-usr-local
 CONFIGURE_OPTIONS +=	--disable-androiddump
 CONFIGURE_OPTIONS +=	--disable-randpkt
