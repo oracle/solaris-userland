@@ -50,5 +50,8 @@ CONFIGURE_OPTIONS += --enable-suhosin
 # Run MySQL tests - requires MySQL (and maybe configuration!)
 #COMPONENT_TEST_ENV += TEST_SUHOSIN_MYSQL=1
 
+COMPONENT_TEST_TRANSFORMS += \
+    '-e "1,/^===/d" '
+
 REQUIRED_PACKAGES += web/php-56
 REQUIRED_PACKAGES += web/php-71

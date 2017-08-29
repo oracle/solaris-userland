@@ -26,18 +26,18 @@ BUILD_BITS= 64
 # Must use gcc because of 21090206
 COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
-include $(WS_COMPONENTS)/php/php71/php71-metadata.mk
 
 COMPONENT_NAME=		php
-COMPONENT_VERSION=	$(UL_PHP_VERSION)
+COMPONENT_VERSION=	7.1.8
+UL_PHP_MINOR_VERSION=	7.1
 COMPONENT_PROJECT_URL=	http://php.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=\
-    sha256:71514386adf3e963df087c2044a0b3747900b8b1fc8da3a99f0a0ae9180d300b
+    sha256:8943858738604acb33ecedb865d6c4051eeffe4e2d06f3a3c8f794daccaa2aab
 COMPONENT_ARCHIVE_URL=	http://php.net/get/$(COMPONENT_ARCHIVE)/from/this/mirror
 COMPONENT_ANITYA_ID=	3627
 
-TPNO=			34399
+TPNO=			37404
 
 include $(WS_MAKE_RULES)/common.mk
 include $(PHP_TOP_DIR)/php.mk
