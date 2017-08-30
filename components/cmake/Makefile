@@ -29,15 +29,15 @@ export PARFAIT_BUILD=no
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cmake
-CMAKE_MAJOR_VERSION=	3.8
+CMAKE_MAJOR_VERSION=	3.9
 COMPONENT_VERSION=	$(CMAKE_MAJOR_VERSION).1
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:ce5d9161396e06501b00e52933783150a87c33080d4bdcef461b5b7fd24ac228
+    sha256:d768ee83d217f91bb597b3ca2ac663da7a8603c97e1f1a5184bc01e0ad2b12bb
 COMPONENT_ARCHIVE_URL=	http://www.cmake.org/files/v$(CMAKE_MAJOR_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=  http://www.cmake.org/
 COMPONENT_ANITYA_ID=	306
 
-TPNO=			35629
+TPNO=			37292
 
 # configure in cmake does not accept many of the options set in
 # configure.mk (CC=, CXX=, --bindir, --libdir, --sbindir).

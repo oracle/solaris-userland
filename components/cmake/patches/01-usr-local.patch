@@ -2,8 +2,8 @@
 #
 # Patch is Solaris specific and not appropriate for upstream.
 
---- cmake-3.8.1/Modules/CMakeDetermineJavaCompiler.cmake.orig	2017-05-25 12:25:51.986678366 +0000
-+++ cmake-3.8.1/Modules/CMakeDetermineJavaCompiler.cmake	2017-05-25 12:29:09.948766578 +0000
+--- cmake-3.9.1/Modules/CMakeDetermineJavaCompiler.cmake.orig	2017-08-15 15:35:07.140770607 +0000
++++ cmake-3.9.1/Modules/CMakeDetermineJavaCompiler.cmake	2017-08-15 15:39:28.440394117 +0000
 @@ -45,16 +45,11 @@
      /usr/bin
      /usr/lib/java/bin
@@ -21,8 +21,8 @@
      )
    # if no compiler has been specified yet, then look for one
    if(CMAKE_Java_COMPILER_INIT)
---- cmake-3.8.1/Modules/CMakeDetermineSystem.cmake.orig	2017-05-25 12:25:52.683547363 +0000
-+++ cmake-3.8.1/Modules/CMakeDetermineSystem.cmake	2017-05-25 12:29:35.185381531 +0000
+--- cmake-3.9.1/Modules/CMakeDetermineSystem.cmake.orig	2017-08-15 15:35:07.949078916 +0000
++++ cmake-3.9.1/Modules/CMakeDetermineSystem.cmake	2017-08-15 15:39:53.402209847 +0000
 @@ -33,7 +33,7 @@
  
  # find out on which system cmake runs
@@ -30,10 +30,10 @@
 -  find_program(CMAKE_UNAME uname /bin /usr/bin /usr/local/bin )
 +  find_program(CMAKE_UNAME uname /bin /usr/bin )
    if(CMAKE_UNAME)
-     exec_program(uname ARGS -s OUTPUT_VARIABLE CMAKE_HOST_SYSTEM_NAME)
-     exec_program(uname ARGS -r OUTPUT_VARIABLE CMAKE_HOST_SYSTEM_VERSION)
---- cmake-3.8.1/Modules/FindFLTK.cmake.orig	2017-05-25 12:25:53.347231900 +0000
-+++ cmake-3.8.1/Modules/FindFLTK.cmake	2017-05-25 12:30:15.612919899 +0000
+     if(CMAKE_HOST_SYSTEM_NAME STREQUAL "AIX")
+       exec_program(${CMAKE_UNAME} ARGS -v OUTPUT_VARIABLE _CMAKE_HOST_SYSTEM_MAJOR_VERSION)
+--- cmake-3.9.1/Modules/FindFLTK.cmake.orig	2017-08-15 15:35:08.580038470 +0000
++++ cmake-3.9.1/Modules/FindFLTK.cmake	2017-08-15 15:40:28.299356706 +0000
 @@ -116,9 +116,7 @@
  
      PATHS
@@ -60,8 +60,8 @@
        /usr/X11R6/lib
        ${FLTK_INCLUDE_DIR}/lib
        ${_FLTK_POSSIBLE_LIBRARY_DIR}
---- cmake-3.8.1/Modules/FindFLTK2.cmake.orig	2017-05-25 12:25:53.958914955 +0000
-+++ cmake-3.8.1/Modules/FindFLTK2.cmake	2017-05-25 12:30:51.497754621 +0000
+--- cmake-3.9.1/Modules/FindFLTK2.cmake.orig	2017-08-15 15:35:09.266750325 +0000
++++ cmake-3.9.1/Modules/FindFLTK2.cmake	2017-08-15 15:41:02.455957825 +0000
 @@ -81,9 +81,7 @@
      ${FLTK2_DIR_SEARCH}
  
@@ -87,8 +87,8 @@
        /usr/X11R6/lib
        ${FLTK2_INCLUDE_DIR}/lib
        )
---- cmake-3.8.1/Modules/FindFreetype.cmake.orig	2017-05-25 12:25:54.554514258 +0000
-+++ cmake-3.8.1/Modules/FindFreetype.cmake	2017-05-25 12:31:10.176921690 +0000
+--- cmake-3.9.1/Modules/FindFreetype.cmake.orig	2017-08-15 15:35:10.065330245 +0000
++++ cmake-3.9.1/Modules/FindFreetype.cmake	2017-08-15 15:41:25.423558871 +0000
 @@ -47,8 +47,6 @@
      ENV FREETYPE_DIR
    PATHS
@@ -98,8 +98,8 @@
      /usr/freeware
      ENV GTKMM_BASEPATH
      [HKEY_CURRENT_USER\\SOFTWARE\\gtkmm\\2.4;Path]
---- cmake-3.8.1/Modules/FindGTK.cmake.orig	2017-05-25 12:25:55.153476092 +0000
-+++ cmake-3.8.1/Modules/FindGTK.cmake	2017-05-25 12:31:50.917663193 +0000
+--- cmake-3.9.1/Modules/FindGTK.cmake.orig	2017-08-15 15:35:10.738753872 +0000
++++ cmake-3.9.1/Modules/FindGTK.cmake	2017-08-15 15:41:45.128525572 +0000
 @@ -33,9 +33,7 @@
    find_path( GTK_glibconfig_INCLUDE_PATH NAMES glibconfig.h
      PATHS
@@ -110,19 +110,20 @@
      /opt/gnome/include
      /opt/gnome/lib/glib/include
    )
---- cmake-3.8.1/Modules/FindGTK2.cmake.orig	2017-05-25 12:25:56.121094821 +0000
-+++ cmake-3.8.1/Modules/FindGTK2.cmake	2017-05-25 12:32:15.275118949 +0000
-@@ -292,8 +292,6 @@
+--- cmake-3.9.1/Modules/FindGTK2.cmake.orig	2017-08-15 15:35:12.016669830 +0000
++++ cmake-3.9.1/Modules/FindGTK2.cmake	2017-08-15 15:42:06.594048549 +0000
+@@ -292,9 +292,6 @@
      find_path(GTK2_${_var}_INCLUDE_DIR ${_hdr}
          PATHS
              ${_gtk2_arch_dir}
+-            /usr/local/libx32
 -            /usr/local/lib64
 -            /usr/local/lib
+             /usr/libx32
              /usr/lib64
              /usr/lib
-             /usr/X11R6/include
---- cmake-3.8.1/Modules/FindIce.cmake.orig	2017-05-25 12:25:56.864314663 +0000
-+++ cmake-3.8.1/Modules/FindIce.cmake	2017-05-25 12:32:39.736840380 +0000
+--- cmake-3.9.1/Modules/FindIce.cmake.orig	2017-08-15 15:35:12.895256243 +0000
++++ cmake-3.9.1/Modules/FindIce.cmake	2017-08-15 15:42:27.730399129 +0000
 @@ -332,7 +332,7 @@
    # In common use on Linux, MacOS X (homebrew) and FreeBSD; prefer
    # version-specific dir
@@ -132,8 +133,8 @@
    list(APPEND ice_slice_suffixes
         "Ice-${Ice_VERSION_SLICE2CPP_FULL}/slice"
         "Ice-${Ice_VERSION_SLICE2CPP_SHORT}/slice"
---- cmake-3.8.1/Modules/FindJava.cmake.orig	2017-05-25 12:25:57.515623516 +0000
-+++ cmake-3.8.1/Modules/FindJava.cmake	2017-05-25 12:33:02.603865933 +0000
+--- cmake-3.9.1/Modules/FindJava.cmake.orig	2017-08-15 15:35:13.536923611 +0000
++++ cmake-3.9.1/Modules/FindJava.cmake	2017-08-15 15:43:13.068301495 +0000
 @@ -100,15 +100,11 @@
  set(_JAVA_PATHS
    /usr/lib/java/bin
@@ -150,8 +151,8 @@
    )
  find_program(Java_JAVA_EXECUTABLE
    NAMES java
---- cmake-3.8.1/Modules/FindJNI.cmake.orig	2017-05-25 12:25:58.108492359 +0000
-+++ cmake-3.8.1/Modules/FindJNI.cmake	2017-05-25 12:34:22.565360653 +0000
+--- cmake-3.9.1/Modules/FindJNI.cmake.orig	2017-08-15 15:35:14.234231247 +0000
++++ cmake-3.9.1/Modules/FindJNI.cmake	2017-08-15 15:44:42.474214286 +0000
 @@ -127,12 +127,9 @@
    )
  JAVA_APPEND_LIBRARY_DIRECTORIES(JAVA_AWT_LIBRARY_DIRECTORIES
@@ -205,8 +206,8 @@
    # SuSE specific paths for default JVM
    /usr/lib64/jvm/java/include
    )
---- cmake-3.8.1/Modules/FindKDE3.cmake.orig	2017-05-25 12:25:58.690340855 +0000
-+++ cmake-3.8.1/Modules/FindKDE3.cmake	2017-05-25 12:34:38.719889082 +0000
+--- cmake-3.9.1/Modules/FindKDE3.cmake.orig	2017-08-15 15:35:14.835846206 +0000
++++ cmake-3.9.1/Modules/FindKDE3.cmake	2017-08-15 15:45:01.139244258 +0000
 @@ -201,7 +201,6 @@
    /opt/kde3/include
    /opt/kde/include
@@ -215,8 +216,8 @@
    )
  
  #now the KDE library directory
---- cmake-3.8.1/Modules/FindPHP4.cmake.orig	2017-05-25 12:25:59.276031007 +0000
-+++ cmake-3.8.1/Modules/FindPHP4.cmake	2017-05-25 12:34:58.265068696 +0000
+--- cmake-3.9.1/Modules/FindPHP4.cmake.orig	2017-08-15 15:35:15.476743539 +0000
++++ cmake-3.9.1/Modules/FindPHP4.cmake	2017-08-15 15:45:24.084546682 +0000
 @@ -18,10 +18,7 @@
  
  set(PHP4_POSSIBLE_INCLUDE_PATHS
@@ -228,8 +229,8 @@
    )
  
  set(PHP4_POSSIBLE_LIB_PATHS
---- cmake-3.8.1/Modules/FindPike.cmake.orig	2017-05-25 12:25:59.973266687 +0000
-+++ cmake-3.8.1/Modules/FindPike.cmake	2017-05-25 12:35:30.029033302 +0000
+--- cmake-3.9.1/Modules/FindPike.cmake.orig	2017-08-15 15:35:16.145120598 +0000
++++ cmake-3.9.1/Modules/FindPike.cmake	2017-08-15 15:45:50.525873939 +0000
 @@ -18,7 +18,7 @@
  
  file(GLOB PIKE_POSSIBLE_INCLUDE_PATHS
@@ -239,8 +240,8 @@
  
  find_path(PIKE_INCLUDE_PATH program.h
    ${PIKE_POSSIBLE_INCLUDE_PATHS})
---- cmake-3.8.1/Modules/FindQt.cmake.orig	2017-05-25 12:26:00.923844638 +0000
-+++ cmake-3.8.1/Modules/FindQt.cmake	2017-05-25 12:36:02.896324630 +0000
+--- cmake-3.9.1/Modules/FindQt.cmake.orig	2017-08-15 15:35:16.754186631 +0000
++++ cmake-3.9.1/Modules/FindQt.cmake	2017-08-15 15:46:25.055868054 +0000
 @@ -105,12 +105,9 @@
    "[HKEY_CURRENT_USER\\Software\\Trolltech\\Versions\\4.0.0;InstallDir]/include/Qt"
    ${qt_headers}/Qt
@@ -267,8 +268,8 @@
    C:/Progra~1/qt/include
    /usr/include/qt3 )
  
---- cmake-3.8.1/Modules/FindQt3.cmake.orig	2017-05-25 12:26:01.535969304 +0000
-+++ cmake-3.8.1/Modules/FindQt3.cmake	2017-05-25 12:37:27.118088531 +0000
+--- cmake-3.9.1/Modules/FindQt3.cmake.orig	2017-08-15 15:35:17.408511789 +0000
++++ cmake-3.9.1/Modules/FindQt3.cmake	2017-08-15 15:47:38.586691251 +0000
 @@ -61,14 +61,12 @@
    "[HKEY_CURRENT_USER\\Software\\Trolltech\\Qt3Versions\\3.1.0;InstallDir]/include/Qt"
    $ENV{QTDIR}/include
@@ -325,8 +326,8 @@
      /usr/lib/qt
      /usr/lib/qt3
      /usr/share/qt3
---- cmake-3.8.1/Modules/FindSelfPackers.cmake.orig	2017-05-25 12:26:02.261690033 +0000
-+++ cmake-3.8.1/Modules/FindSelfPackers.cmake	2017-05-25 12:37:45.571945068 +0000
+--- cmake-3.9.1/Modules/FindSelfPackers.cmake.orig	2017-08-15 15:35:18.025696552 +0000
++++ cmake-3.9.1/Modules/FindSelfPackers.cmake	2017-08-15 15:48:06.221420255 +0000
 @@ -22,7 +22,6 @@
    ${CYGWIN_INSTALL_PATH}/bin
    /bin
@@ -343,8 +344,8 @@
    /sbin
  )
  
---- cmake-3.8.1/Modules/FindTCL.cmake.orig	2017-05-25 12:26:02.998913955 +0000
-+++ cmake-3.8.1/Modules/FindTCL.cmake	2017-05-25 12:38:22.118926069 +0000
+--- cmake-3.9.1/Modules/FindTCL.cmake.orig	2017-08-15 15:35:18.643327735 +0000
++++ cmake-3.9.1/Modules/FindTCL.cmake	2017-08-15 15:48:41.615513283 +0000
 @@ -82,10 +82,6 @@
    "${TK_LIBRARY_PATH}"
    "${TCL_TCLSH_PATH_PARENT}/lib"
@@ -369,8 +370,8 @@
    )
  
  if(WIN32)
---- cmake-3.8.1/Modules/FindUnixCommands.cmake.orig	2017-05-25 12:26:03.937815802 +0000
-+++ cmake-3.8.1/Modules/FindUnixCommands.cmake	2017-05-25 12:39:03.942428966 +0000
+--- cmake-3.9.1/Modules/FindUnixCommands.cmake.orig	2017-08-15 15:35:19.254071401 +0000
++++ cmake-3.9.1/Modules/FindUnixCommands.cmake	2017-08-15 15:50:01.475761496 +0000
 @@ -17,7 +17,6 @@
    ${CYGWIN_INSTALL_PATH}/bin
    /bin
@@ -419,9 +420,9 @@
    /sbin
  )
  mark_as_advanced(
---- cmake-3.8.1/Modules/GetPrerequisites.cmake.orig	2017-05-25 12:26:04.948191945 +0000
-+++ cmake-3.8.1/Modules/GetPrerequisites.cmake	2017-05-25 12:39:24.107910546 +0000
-@@ -683,7 +683,6 @@
+--- cmake-3.9.1/Modules/GetPrerequisites.cmake.orig	2017-08-15 15:37:46.664712291 +0000
++++ cmake-3.9.1/Modules/GetPrerequisites.cmake	2017-08-15 15:50:17.955458867 +0000
+@@ -688,7 +688,6 @@
      "$ENV{VS71COMNTOOLS}/../../VC7/bin"
      "C:/Program Files/Microsoft Visual Studio .NET 2003/VC7/BIN"
      "C:/Program Files (x86)/Microsoft Visual Studio .NET 2003/VC7/BIN"
@@ -429,9 +430,9 @@
      "/usr/bin"
      )
  
---- cmake-3.8.1/Modules/UseJava.cmake.orig	2017-05-25 12:26:05.834597093 +0000
-+++ cmake-3.8.1/Modules/UseJava.cmake	2017-05-25 12:39:40.303999807 +0000
-@@ -824,7 +824,6 @@
+--- cmake-3.9.1/Modules/UseJava.cmake.orig	2017-08-15 15:37:39.336337964 +0000
++++ cmake-3.9.1/Modules/UseJava.cmake	2017-08-15 15:50:40.116693196 +0000
+@@ -828,7 +828,6 @@
      set(_jar_versions)
      set(_jar_paths
          /usr/share/java/
