@@ -38,21 +38,21 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file exec_attr.dumpcap \
     path=etc/security/exec_attr.d/diagnostic:wireshark:wireshark-common
 link path=usr/lib/$(MACH64)/libwireshark.so \
-    target=libwireshark.so.8.1.$(MICRO_VERSION)
-link path=usr/lib/$(MACH64)/libwireshark.so.8 \
-    target=libwireshark.so.8.1.$(MICRO_VERSION)
-file path=usr/lib/$(MACH64)/libwireshark.so.8.1.$(MICRO_VERSION)
+    target=libwireshark.so.10.0.$(MICRO_VERSION)
+link path=usr/lib/$(MACH64)/libwireshark.so.10 \
+    target=libwireshark.so.10.0.$(MICRO_VERSION)
+file path=usr/lib/$(MACH64)/libwireshark.so.10.0.$(MICRO_VERSION)
 link path=usr/lib/$(MACH64)/libwiretap.so \
-    target=libwiretap.so.6.0.$(MICRO_VERSION)
-link path=usr/lib/$(MACH64)/libwiretap.so.6 \
-    target=libwiretap.so.6.0.$(MICRO_VERSION)
-file path=usr/lib/$(MACH64)/libwiretap.so.6.0.$(MICRO_VERSION)
-link path=usr/lib/$(MACH64)/libwscodecs.so target=libwscodecs.so.1.0.0
-link path=usr/lib/$(MACH64)/libwscodecs.so.1 target=libwscodecs.so.1.0.0
-file path=usr/lib/$(MACH64)/libwscodecs.so.1.0.0
-link path=usr/lib/$(MACH64)/libwsutil.so target=libwsutil.so.7.0.0
-link path=usr/lib/$(MACH64)/libwsutil.so.7 target=libwsutil.so.7.0.0
-file path=usr/lib/$(MACH64)/libwsutil.so.7.0.0
+    target=libwiretap.so.7.0.$(MICRO_VERSION)
+link path=usr/lib/$(MACH64)/libwiretap.so.7 \
+    target=libwiretap.so.7.0.$(MICRO_VERSION)
+file path=usr/lib/$(MACH64)/libwiretap.so.7.0.$(MICRO_VERSION)
+link path=usr/lib/$(MACH64)/libwscodecs.so target=libwscodecs.so.1.1.0
+link path=usr/lib/$(MACH64)/libwscodecs.so.1 target=libwscodecs.so.1.1.0
+file path=usr/lib/$(MACH64)/libwscodecs.so.1.1.0
+link path=usr/lib/$(MACH64)/libwsutil.so target=libwsutil.so.8.0.0
+link path=usr/lib/$(MACH64)/libwsutil.so.8 target=libwsutil.so.8.0.0
+file path=usr/lib/$(MACH64)/libwsutil.so.8.0.0
 file path=usr/lib/$(MACH64)/pkgconfig/wireshark.pc
 file path=usr/lib/$(MACH64)/wireshark/plugins/$(IPS_COMPONENT_VERSION)/docsis.so
 file path=usr/lib/$(MACH64)/wireshark/plugins/$(IPS_COMPONENT_VERSION)/ethercat.so
@@ -63,6 +63,7 @@ file path=usr/lib/$(MACH64)/wireshark/plugins/$(IPS_COMPONENT_VERSION)/mate.so
 file path=usr/lib/$(MACH64)/wireshark/plugins/$(IPS_COMPONENT_VERSION)/opcua.so
 file path=usr/lib/$(MACH64)/wireshark/plugins/$(IPS_COMPONENT_VERSION)/profinet.so
 file path=usr/lib/$(MACH64)/wireshark/plugins/$(IPS_COMPONENT_VERSION)/stats_tree.so
+file path=usr/lib/$(MACH64)/wireshark/plugins/$(IPS_COMPONENT_VERSION)/transum.so
 file path=usr/lib/$(MACH64)/wireshark/plugins/$(IPS_COMPONENT_VERSION)/unistim.so
 file path=usr/lib/$(MACH64)/wireshark/plugins/$(IPS_COMPONENT_VERSION)/wimax.so
 file path=usr/lib/$(MACH64)/wireshark/plugins/$(IPS_COMPONENT_VERSION)/wimaxasncp.so
@@ -95,6 +96,8 @@ file path=usr/share/wireshark/diameter/CiscoSystems.xml
 file path=usr/share/wireshark/diameter/Custom.xml
 file path=usr/share/wireshark/diameter/Ericsson.xml
 file path=usr/share/wireshark/diameter/HP.xml
+file path=usr/share/wireshark/diameter/Inovar.xml
+file path=usr/share/wireshark/diameter/Juniper.xml
 file path=usr/share/wireshark/diameter/Nokia.xml
 file path=usr/share/wireshark/diameter/NokiaSolutionsAndNetworks.xml
 file path=usr/share/wireshark/diameter/Oracle.xml
@@ -187,12 +190,14 @@ file path=usr/share/wireshark/radius/dictionary.cisco.vpn3000
 file path=usr/share/wireshark/radius/dictionary.cisco.vpn5000
 file path=usr/share/wireshark/radius/dictionary.citrix
 file path=usr/share/wireshark/radius/dictionary.clavister
+file path=usr/share/wireshark/radius/dictionary.cnergee
 file path=usr/share/wireshark/radius/dictionary.colubris
 file path=usr/share/wireshark/radius/dictionary.columbia_university
 file path=usr/share/wireshark/radius/dictionary.compat
 file path=usr/share/wireshark/radius/dictionary.compatible
 file path=usr/share/wireshark/radius/dictionary.cosine
 file path=usr/share/wireshark/radius/dictionary.dante
+file path=usr/share/wireshark/radius/dictionary.dellemc
 file path=usr/share/wireshark/radius/dictionary.dhcp
 file path=usr/share/wireshark/radius/dictionary.digium
 file path=usr/share/wireshark/radius/dictionary.dlink
@@ -204,7 +209,6 @@ file path=usr/share/wireshark/radius/dictionary.equallogic
 file path=usr/share/wireshark/radius/dictionary.ericsson
 file path=usr/share/wireshark/radius/dictionary.ericsson.ab
 file path=usr/share/wireshark/radius/dictionary.ericsson.packet.core.networks
-file path=usr/share/wireshark/radius/dictionary.erx
 file path=usr/share/wireshark/radius/dictionary.extreme
 file path=usr/share/wireshark/radius/dictionary.f5
 file path=usr/share/wireshark/radius/dictionary.fdxtended
@@ -239,6 +243,7 @@ file path=usr/share/wireshark/radius/dictionary.manzara
 file path=usr/share/wireshark/radius/dictionary.meinberg
 file path=usr/share/wireshark/radius/dictionary.merit
 file path=usr/share/wireshark/radius/dictionary.meru
+file path=usr/share/wireshark/radius/dictionary.microsemi
 file path=usr/share/wireshark/radius/dictionary.microsoft
 file path=usr/share/wireshark/radius/dictionary.mikrotik
 file path=usr/share/wireshark/radius/dictionary.motorola
@@ -295,6 +300,7 @@ file path=usr/share/wireshark/radius/dictionary.rfc7055
 file path=usr/share/wireshark/radius/dictionary.rfc7155
 file path=usr/share/wireshark/radius/dictionary.rfc7268
 file path=usr/share/wireshark/radius/dictionary.rfc7499
+file path=usr/share/wireshark/radius/dictionary.rfc7930
 file path=usr/share/wireshark/radius/dictionary.riverbed
 file path=usr/share/wireshark/radius/dictionary.riverstone
 file path=usr/share/wireshark/radius/dictionary.roaringpenguin
@@ -321,6 +327,7 @@ file path=usr/share/wireshark/radius/dictionary.trapeze
 file path=usr/share/wireshark/radius/dictionary.travelping
 file path=usr/share/wireshark/radius/dictionary.tropos
 file path=usr/share/wireshark/radius/dictionary.ukerna
+file path=usr/share/wireshark/radius/dictionary.unisphere
 file path=usr/share/wireshark/radius/dictionary.unix
 file path=usr/share/wireshark/radius/dictionary.usr
 file path=usr/share/wireshark/radius/dictionary.utstarcom
