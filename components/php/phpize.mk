@@ -91,27 +91,22 @@ endif
 PHP_VERSION_NODOT = $(subst .,,$(UL_PHP_MINOR_VERSION))
 PHP_HOME = $(PHP_TOP_DIR)/php$(PHP_VERSION_NODOT)
 
-# Building extensions with interpreters from the build tree
-# is time consuming.
-# If revving the php interpreters then temporarily switch to building
-# extensions against those.
-#PHP_INSTALLED = $(PHP_HOME)/build/$(MACH64)/.installed
-#$(CONFIGURE_64): $(PHP_INSTALLED)
-#$(BUILD_DIR)/$(MACH64)-5.6/.configured: \
-#	$(PHP_TOP_DIR)/php56/build/$(MACH64)/.installed
-#
-#$(BUILD_DIR)/$(MACH64)-7.1/.configured: \
-#	$(PHP_TOP_DIR)/php71/build/$(MACH64)/.installed
-#
-#$(PHP_TOP_DIR)/php56/build/$(MACH64)/.installed \
-#$(PHP_TOP_DIR)/php71/build/$(MACH64)/.installed:
-#	cd $(PHP_HOME) ; $(GMAKE) install ;
+# Build extensions against source tree versions of the interpreters and
+# not against installed interpreters.
 
-# If revving php interpreters use those instead for building extensions.
-#		< $(PHP_HOME)/proto-scripts/phpize-proto
+$(BUILD_DIR)/$(MACH64)-5.6/.configured: \
+	$(PHP_TOP_DIR)/php56/build/$(MACH64)/.installed
+
+$(BUILD_DIR)/$(MACH64)-7.1/.configured: \
+	$(PHP_TOP_DIR)/php71/build/$(MACH64)/.installed
+
+$(PHP_TOP_DIR)/php56/build/$(MACH64)/.installed \
+$(PHP_TOP_DIR)/php71/build/$(MACH64)/.installed:
+	cd $(PHP_HOME) ; $(GMAKE) install ;
+
 COMPONENT_PRE_CONFIGURE_ACTION += \
 	$(GSED) -e "s|^builddir=.*|builddir=$(@D)|" \
-		< /usr/php/$(UL_PHP_MINOR_VERSION)/bin/phpize \
+		< $(PHP_HOME)/proto-scripts/phpize-proto \
 		> $(@D)/phpize-proto; \
 	chmod +x $(@D)/phpize-proto;
 
@@ -127,15 +122,12 @@ COMPONENT_PRE_CONFIGURE_ACTION += $(CLONEY) $(SOURCE_DIR) $(@D) ;
 CONFIGURE_SCRIPT = $(@D)/configure
 COMPONENT_PRE_CONFIGURE_ACTION += cd $(@D) ; $(@D)/phpize-proto;
 
-# If revving php interpreters use those instead for building extensions.
-# Change PHP_EXECUTABLE so that tests can run.
-#PROTOUSRPHPVERDIR = $(PHP_HOME)/build/prototype/$(MACH)/$(CONFIGURE_PREFIX)
-#COMPONENT_PRE_CONFIGURE_ACTION += \
-#	$(GSED) -i -e "s@^PHP_EXECUTABLE=.*@PHP_EXECUTABLE=$(PROTOUSRPHPVERDIR)/bin/php@" \
-#		$(CONFIGURE_SCRIPT) ;
-
-# If revving php interpreters use those instead for building extensions.
-#		cp $(PHP_HOME)/proto-scripts/php-config-proto $(@D) ;
+PROTOUSRPHPVERDIR = $(PHP_HOME)/build/prototype/$(MACH)/$(CONFIGURE_PREFIX)
+# Change PHP_EXECUTABLE so tests can run.
 COMPONENT_PRE_CONFIGURE_ACTION += \
-    cp /usr/php/$(UL_PHP_MINOR_VERSION)/bin/php-config $(@D)/php-config-proto ;
+	$(GSED) -i -e "s@^PHP_EXECUTABLE=.*@PHP_EXECUTABLE=$(PROTOUSRPHPVERDIR)/bin/php@" \
+		$(CONFIGURE_SCRIPT) ;
+
+COMPONENT_PRE_CONFIGURE_ACTION += \
+    cp $(PHP_HOME)/proto-scripts/php-config-proto $(@D) ;
 CONFIGURE_OPTIONS += --with-php-config=$(@D)/php-config-proto

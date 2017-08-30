@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -441,8 +441,6 @@ file path=var/php/5.6/pear/.channels/__uri.reg
 file path=var/php/5.6/pear/.channels/doc.php.net.reg
 file path=var/php/5.6/pear/.channels/pear.php.net.reg
 file path=var/php/5.6/pear/.channels/pecl.php.net.reg
-file .depdb path=var/php/5.6/pear/.depdb
-file .depdblock path=var/php/5.6/pear/.depdblock
 file path=var/php/5.6/pear/.filemap
 file path=var/php/5.6/pear/.lock
 dir  path=var/php/5.6/pear/.registry/.channel.__uri
@@ -457,7 +455,6 @@ file path=var/php/5.6/pear/Archive/Tar.php
 file path=var/php/5.6/pear/Console/Getopt.php
 file path=var/php/5.6/pear/OS/Guess.php
 file path=var/php/5.6/pear/PEAR.php
-file path=var/php/5.6/pear/PEAR/Autoloader.php
 file path=var/php/5.6/pear/PEAR/Builder.php
 file path=var/php/5.6/pear/PEAR/ChannelFile.php
 file path=var/php/5.6/pear/PEAR/ChannelFile/Parser.php
@@ -528,6 +525,7 @@ file path=var/php/5.6/pear/PEAR/PackageFile/v2.php
 file path=var/php/5.6/pear/PEAR/PackageFile/v2/Validator.php
 file path=var/php/5.6/pear/PEAR/PackageFile/v2/rw.php
 file path=var/php/5.6/pear/PEAR/Packager.php
+file path=var/php/5.6/pear/PEAR/Proxy.php
 file path=var/php/5.6/pear/PEAR/REST.php
 file path=var/php/5.6/pear/PEAR/REST/10.php
 file path=var/php/5.6/pear/PEAR/REST/11.php
@@ -573,25 +571,28 @@ file path=var/php/5.6/pear/test/Structures_Graph/tests/AllTests.php
 file path=var/php/5.6/pear/test/Structures_Graph/tests/BasicGraphTest.php
 file path=var/php/5.6/pear/test/Structures_Graph/tests/TopologicalSorterTest.php
 file path=var/php/5.6/pear/test/Structures_Graph/tests/helper.inc
-file path=var/php/5.6/pear/test/XML_Util/tests/testBasic_apiVersion.phpt
-file path=var/php/5.6/pear/test/XML_Util/tests/testBasic_attributesToString.phpt
-file path=var/php/5.6/pear/test/XML_Util/tests/testBasic_collapseEmptyTags.phpt
-file path=var/php/5.6/pear/test/XML_Util/tests/testBasic_createCDataSection.phpt
-file path=var/php/5.6/pear/test/XML_Util/tests/testBasic_createComment.phpt
-file path=var/php/5.6/pear/test/XML_Util/tests/testBasic_createEndElement.phpt
-file path=var/php/5.6/pear/test/XML_Util/tests/testBasic_createStartElement.phpt
-file path=var/php/5.6/pear/test/XML_Util/tests/testBasic_createTag.phpt
-file path=var/php/5.6/pear/test/XML_Util/tests/testBasic_createTagFromArray.phpt
-file path=var/php/5.6/pear/test/XML_Util/tests/testBasic_getDocTypeDeclaration.phpt
-file path=var/php/5.6/pear/test/XML_Util/tests/testBasic_getXmlDeclaration.phpt
-file path=var/php/5.6/pear/test/XML_Util/tests/testBasic_isValidName.phpt
-file path=var/php/5.6/pear/test/XML_Util/tests/testBasic_raiseError.phpt
-file path=var/php/5.6/pear/test/XML_Util/tests/testBasic_replaceEntities.phpt
-file path=var/php/5.6/pear/test/XML_Util/tests/testBasic_reverseEntities.phpt
-file path=var/php/5.6/pear/test/XML_Util/tests/testBasic_splitQualifiedName.phpt
-file path=var/php/5.6/pear/test/XML_Util/tests/testBug_18343.phpt
-file path=var/php/5.6/pear/test/XML_Util/tests/testBug_4950.phpt
-file path=var/php/5.6/pear/test/XML_Util/tests/testBug_5392.phpt
+file path=var/php/5.6/pear/test/XML_Util/tests/AbstractUnitTests.php
+file path=var/php/5.6/pear/test/XML_Util/tests/ApiVersionTests.php
+file path=var/php/5.6/pear/test/XML_Util/tests/AttributesToStringTests.php
+file path=var/php/5.6/pear/test/XML_Util/tests/Bug18343Tests.php
+file path=var/php/5.6/pear/test/XML_Util/tests/Bug21177Tests.php
+file path=var/php/5.6/pear/test/XML_Util/tests/Bug21184Tests.php
+file path=var/php/5.6/pear/test/XML_Util/tests/Bug4950Tests.php
+file path=var/php/5.6/pear/test/XML_Util/tests/Bug5392Tests.php
+file path=var/php/5.6/pear/test/XML_Util/tests/CollapseEmptyTagsTests.php
+file path=var/php/5.6/pear/test/XML_Util/tests/CreateCDataSectionTests.php
+file path=var/php/5.6/pear/test/XML_Util/tests/CreateCommentTests.php
+file path=var/php/5.6/pear/test/XML_Util/tests/CreateEndElementTests.php
+file path=var/php/5.6/pear/test/XML_Util/tests/CreateStartElementTests.php
+file path=var/php/5.6/pear/test/XML_Util/tests/CreateTagFromArrayTests.php
+file path=var/php/5.6/pear/test/XML_Util/tests/CreateTagTests.php
+file path=var/php/5.6/pear/test/XML_Util/tests/GetDocTypeDeclarationTests.php
+file path=var/php/5.6/pear/test/XML_Util/tests/GetXmlDeclarationTests.php
+file path=var/php/5.6/pear/test/XML_Util/tests/IsValidNameTests.php
+file path=var/php/5.6/pear/test/XML_Util/tests/RaiseErrorTests.php
+file path=var/php/5.6/pear/test/XML_Util/tests/ReplaceEntitiesTests.php
+file path=var/php/5.6/pear/test/XML_Util/tests/ReverseEntitiesTests.php
+file path=var/php/5.6/pear/test/XML_Util/tests/SplitQualifiedNameTests.php
 dir  path=var/php/5.6/run
 license php.license license="PHP 5.6 licenses"
 depend type=require fmri=__TBD pkg.debug.depend.file=usr/bin/gsed \
