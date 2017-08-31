@@ -1,4 +1,4 @@
-From ae4a14dfe00d8864704c5c3336695db0d9128f48 Mon Sep 17 00:00:00 2001
+From 281321aec287e9bf781210e8f2f598e34112417d Mon Sep 17 00:00:00 2001
 From: Shawn Ferry <sferry@gmail.com>
 Date: Mon, 17 Jul 2017 14:20:02 -0400
 Subject: [PATCH 5/5] (PUP-7745) package latest method does not refresh
@@ -8,7 +8,8 @@ The latest method currently uses `pkg list -Hvn` which does not imply a
 periodic refresh of package metadata. With this change the latest method
 calls `pkg refresh`.
 
-Patch has been submitted upstream but not yet accepted
+Patch Accepted Upstream. Pending Merge
+https://github.com/puppetlabs/puppet/pull/6033
 ---
  lib/puppet/provider/package/pkg.rb     | 3 +++
  spec/unit/provider/package/pkg_spec.rb | 3 +++
@@ -43,5 +44,5 @@ index aa75b502c..7acdce154 100644
          described_class.expects(:pkg).with(:list,'-Hvn','dummy').returns File.read(my_fixture('dummy_solaris11.installed'))
          expect(provider.latest).to eq('1.0.6,5.11-0.175.0.0.0.2.537:20131230T130000Z')
 -- 
-2.11.0 (Apple Git-81)
+2.14.1
 

@@ -1,9 +1,16 @@
-Not yet submitted upstream
-
-From ac7a8aaea91fbb25bf7adb0ee24e08b9a5497867 Mon Sep 17 00:00:00 2001
+From 1e7f0c974b51d945e30df78de9c7b99881a3d323 Mon Sep 17 00:00:00 2001
 From: Shawn Ferry <sferry@gmail.com>
-Date: Thu, 13 Apr 2017 17:27:16 -0400
-Subject: [PATCH] Solaris support
+Date: Wed, 16 Aug 2017 17:15:56 -0400
+Subject: [PATCH] (MODULES-5499) puppetlabs-apache : Solaris support
+
+Oracle ships a modified version of this provider.
+Include these changes in the official release.
+
+(MODULES-5498) puppetlabs-apache : the OS formerly known as Solaris 12
+
+Solaris 12 is now Solaris 11.4 metadata.json needs an update
+
+https://tickets.puppetlabs.com/browse/MODULES-5499
 
 ---
  manifests/default_mods.pp |  4 +++
@@ -12,8 +19,8 @@ Subject: [PATCH] Solaris support
  manifests/mpm.pp          |  2 +-
  manifests/params.pp       | 64 +++++++++++++++++++++++++++++++++++++++++++++++
  manifests/version.pp      |  3 +++
- metadata.json             |  8 ++++++
- 8 files changed, 100 insertions(+), 3 deletions(-)
+ metadata.json             |  7 ++++++
+ 7 files changed, 99 insertions(+), 3 deletions(-)
 
 diff --git a/manifests/default_mods.pp b/manifests/default_mods.pp
 index 879df59..cb8b873 100644
@@ -184,10 +191,10 @@ index 2d33a5f..87bc8fc 100644
        fail("Class['apache::version']: Unsupported osfamily: ${::osfamily}")
      }
 diff --git a/metadata.json b/metadata.json
-index 7bb2f12..ed0fd31 100644
+index 7bb2f12..785474e 100644
 --- a/metadata.json
 +++ b/metadata.json
-@@ -67,6 +67,14 @@
+@@ -67,6 +67,13 @@
          "14.04",
          "16.04"
        ]
@@ -196,12 +203,11 @@ index 7bb2f12..ed0fd31 100644
 +      "operatingsystem": "Solaris",
 +      "operatingsystemrelease": [
 +        "11.3",
-+        "11.4",
-+        "12.0"
++        "11.4"
 +      ]
      }
    ],
    "requirements": [
 -- 
-2.11.0 (Apple Git-81)
+2.14.1
 

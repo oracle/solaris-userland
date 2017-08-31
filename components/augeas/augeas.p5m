@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
 set name=pkg.fmri \
@@ -40,12 +40,12 @@ file path=usr/bin/augtool
 file path=usr/bin/fadot
 file path=usr/include/augeas.h
 file path=usr/include/fa.h
-link path=usr/lib/$(MACH64)/libaugeas.so target=libaugeas.so.0.20.1
-link path=usr/lib/$(MACH64)/libaugeas.so.0 target=libaugeas.so.0.20.1
-file path=usr/lib/$(MACH64)/libaugeas.so.0.20.1
-link path=usr/lib/$(MACH64)/libfa.so target=libfa.so.1.4.2
-link path=usr/lib/$(MACH64)/libfa.so.1 target=libfa.so.1.4.2
-file path=usr/lib/$(MACH64)/libfa.so.1.4.2
+file path=usr/lib/$(MACH64)/libaugeas.$(LIBAUGEAS_VER)
+link path=usr/lib/$(MACH64)/libaugeas.so target=libaugeas.$(LIBAUGEAS_VER)
+link path=usr/lib/$(MACH64)/libaugeas.so.0 target=libaugeas.$(LIBAUGEAS_VER)
+file path=usr/lib/$(MACH64)/libfa.$(LIBFA_VER)
+link path=usr/lib/$(MACH64)/libfa.so target=libfa.$(LIBFA_VER)
+link path=usr/lib/$(MACH64)/libfa.so.1 target=libfa.$(LIBFA_VER)
 file path=usr/lib/$(MACH64)/pkgconfig/augeas.pc
 file path=usr/share/augeas/lenses/dist/access.aug
 file path=usr/share/augeas/lenses/dist/activemq_conf.aug
@@ -79,6 +79,7 @@ file path=usr/share/augeas/lenses/dist/cobblersettings.aug
 file path=usr/share/augeas/lenses/dist/collectd.aug
 file path=usr/share/augeas/lenses/dist/cpanel.aug
 file path=usr/share/augeas/lenses/dist/cron.aug
+file path=usr/share/augeas/lenses/dist/cron_user.aug
 file path=usr/share/augeas/lenses/dist/crypttab.aug
 file path=usr/share/augeas/lenses/dist/csv.aug
 file path=usr/share/augeas/lenses/dist/cups.aug
@@ -164,6 +165,7 @@ file path=usr/share/augeas/lenses/dist/nsswitch.aug
 file path=usr/share/augeas/lenses/dist/ntp.aug
 file path=usr/share/augeas/lenses/dist/ntpd.aug
 file path=usr/share/augeas/lenses/dist/odbc.aug
+file path=usr/share/augeas/lenses/dist/opendkim.aug
 file path=usr/share/augeas/lenses/dist/openshift_config.aug
 file path=usr/share/augeas/lenses/dist/openshift_http.aug
 file path=usr/share/augeas/lenses/dist/openshift_quickstarts.aug
@@ -180,6 +182,7 @@ file path=usr/share/augeas/lenses/dist/phpvars.aug
 file path=usr/share/augeas/lenses/dist/postfix_access.aug
 file path=usr/share/augeas/lenses/dist/postfix_main.aug
 file path=usr/share/augeas/lenses/dist/postfix_master.aug
+file path=usr/share/augeas/lenses/dist/postfix_passwordmap.aug
 file path=usr/share/augeas/lenses/dist/postfix_sasl_smtpd.aug
 file path=usr/share/augeas/lenses/dist/postfix_transport.aug
 file path=usr/share/augeas/lenses/dist/postfix_virtual.aug
@@ -195,6 +198,7 @@ file path=usr/share/augeas/lenses/dist/pythonpaste.aug
 file path=usr/share/augeas/lenses/dist/qpid.aug
 file path=usr/share/augeas/lenses/dist/quote.aug
 file path=usr/share/augeas/lenses/dist/rabbitmq.aug
+file path=usr/share/augeas/lenses/dist/radicale.aug
 file path=usr/share/augeas/lenses/dist/redis.aug
 file path=usr/share/augeas/lenses/dist/reprepro_uploaders.aug
 file path=usr/share/augeas/lenses/dist/resolv.aug
@@ -266,6 +270,7 @@ file path=usr/share/augeas/lenses/dist/tests/test_cobblersettings.aug
 file path=usr/share/augeas/lenses/dist/tests/test_collectd.aug
 file path=usr/share/augeas/lenses/dist/tests/test_cpanel.aug
 file path=usr/share/augeas/lenses/dist/tests/test_cron.aug
+file path=usr/share/augeas/lenses/dist/tests/test_cron_user.aug
 file path=usr/share/augeas/lenses/dist/tests/test_crypttab.aug
 file path=usr/share/augeas/lenses/dist/tests/test_csv.aug
 file path=usr/share/augeas/lenses/dist/tests/test_cups.aug
@@ -352,6 +357,7 @@ file path=usr/share/augeas/lenses/dist/tests/test_nsswitch.aug
 file path=usr/share/augeas/lenses/dist/tests/test_ntp.aug
 file path=usr/share/augeas/lenses/dist/tests/test_ntpd.aug
 file path=usr/share/augeas/lenses/dist/tests/test_odbc.aug
+file path=usr/share/augeas/lenses/dist/tests/test_opendkim.aug
 file path=usr/share/augeas/lenses/dist/tests/test_openshift_config.aug
 file path=usr/share/augeas/lenses/dist/tests/test_openshift_http.aug
 file path=usr/share/augeas/lenses/dist/tests/test_openshift_quickstarts.aug
@@ -368,6 +374,7 @@ file path=usr/share/augeas/lenses/dist/tests/test_phpvars.aug
 file path=usr/share/augeas/lenses/dist/tests/test_postfix_access.aug
 file path=usr/share/augeas/lenses/dist/tests/test_postfix_main.aug
 file path=usr/share/augeas/lenses/dist/tests/test_postfix_master.aug
+file path=usr/share/augeas/lenses/dist/tests/test_postfix_passwordmap.aug
 file path=usr/share/augeas/lenses/dist/tests/test_postfix_sasl_smtpd.aug
 file path=usr/share/augeas/lenses/dist/tests/test_postfix_transport.aug
 file path=usr/share/augeas/lenses/dist/tests/test_postfix_virtual.aug
@@ -383,6 +390,7 @@ file path=usr/share/augeas/lenses/dist/tests/test_pythonpaste.aug
 file path=usr/share/augeas/lenses/dist/tests/test_qpid.aug
 file path=usr/share/augeas/lenses/dist/tests/test_quote.aug
 file path=usr/share/augeas/lenses/dist/tests/test_rabbitmq.aug
+file path=usr/share/augeas/lenses/dist/tests/test_radicale.aug
 file path=usr/share/augeas/lenses/dist/tests/test_redis.aug
 file path=usr/share/augeas/lenses/dist/tests/test_reprepro_uploaders.aug
 file path=usr/share/augeas/lenses/dist/tests/test_resolv.aug

@@ -1,0 +1,46 @@
+From 5c564b8e567e8036bfcfd88addc8e8fd65ddb3bd Mon Sep 17 00:00:00 2001
+From: Shawn Ferry <sferry@gmail.com>
+Date: Wed, 16 Aug 2017 16:32:19 -0400
+Subject: [PATCH 3/3] (MODULES-5495) puppetlabs-mysql : the OS formerly known
+ as Solaris 12
+
+Solaris 12 is now Solaris 11.4 metadata.json needs an update
+
+patch has been submitted upstream
+https://tickets.puppetlabs.com/browse/MODULES-5495
+---
+ metadata.json                          | 2 +-
+ spec/unit/facter/mysql_solaris_spec.rb | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/metadata.json b/metadata.json
+index a188277..1545b14 100644
+--- a/metadata.json
++++ b/metadata.json
+@@ -55,7 +55,7 @@
+       "operatingsystem": "Solaris",
+       "operatingsystemrelease": [
+         "11",
+-        "12"
++        "11.4"
+       ]
+     },
+     {
+diff --git a/spec/unit/facter/mysql_solaris_spec.rb b/spec/unit/facter/mysql_solaris_spec.rb
+index a41196e..a724bea 100644
+--- a/spec/unit/facter/mysql_solaris_spec.rb
++++ b/spec/unit/facter/mysql_solaris_spec.rb
+@@ -5,8 +5,8 @@ describe Facter::Util::Fact do
+     Facter.clear
+     Facter.stubs(:value).with(:kernel).returns('SunOS')
+     Facter.stubs(:value).with('os').returns(
+-      {"name"=>"Solaris", "family"=>"Solaris", "release"=>{"major"=>"12",
+-      "minor"=>"0", "full"=>"12.0"}}
++      {"name"=>"Solaris", "family"=>"Solaris", "release"=>{"major"=>"5",
++      "minor"=>"11", "full"=>"5.11"}}
+      )
+     # Stubbed osfamily fails without stubbed 'os'
+     Facter.stubs(:value).with(:osfamily).returns('Solaris')
+-- 
+2.14.1
+

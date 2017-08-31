@@ -28,9 +28,9 @@ RUBY_LIB_VERSION=2.1.0
 RUBY_VERSIONS=2.1.0
 
 GIT_REPO= https://github.com/puppetlabs/puppet
-GIT_BRANCH= 4.10.0
-GIT_COMMIT_ID= 8afedd0
-GIT_HASH=sha256:adcd30070597967a5e946d0666d1a65c875187038dd2462642f0351f151178d1
+GIT_BRANCH= 4.10.6
+GIT_COMMIT_ID= 7e9a4bb
+GIT_HASH=sha256:dc71446d96952538d4742c7bd2c264dee798dfec561c6915d3c923215cab0220
 
 COMPONENT_NAME=		puppet
 COMPONENT_VERSION=	$(GIT_BRANCH)
@@ -132,6 +132,6 @@ new-files:
 		$(CAT) *.p5m - | $(PKGFMT) -u |\
 		$(GSED) \
 		  -e '/~[0-9]\+~$$/d' \
-		  -e 's|$(VENDOR_RUBY)|$$$$(VENDOR_RUBY)|' | \
+		  -e 's|$(VENDOR_RUBY)|$$(VENDOR_RUBY)|' | \
 		sort | uniq -c | \
 		$(GSED) -e '/ 2 /d' -e 's/   1 //' -e '/^file/!d'

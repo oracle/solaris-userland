@@ -27,19 +27,23 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		augeas
-COMPONENT_VERSION=	1.5.0
+COMPONENT_VERSION=	1.8.1
 COMPONENT_PROJECT_URL=	http://www.augeas.net/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:223bb6e6fe3e9e92277dafd5d34e623733eb969a72a382998d204feab253f73f
+	sha256:65cf75b5a573fee2a5c6c6e3c95cad05f0101e70d3f9db10d53f6cc5b11bc9f9
 COMPONENT_ARCHIVE_URL=	http://download.augeas.net/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	7017
 
-TPNO=	29439
+TPNO=	37422
+
+PKG_MACROS += LIBAUGEAS_VER=so.0.22.1
+PKG_MACROS += LIBFA_VER=so.1.4.4
 
 include $(WS_MAKE_RULES)/common.mk
 
-COMPONENT_PRE_CONFIGURE_ACTION = \
-       ($(CLONEY) $(SOURCE_DIR) $(@D))
+# Regenerate our patched configure.ac
+COMPONENT_PRE_CONFIGURE_ACTION = (cd $(SOURCE_DIR); autoconf)
+COMPONENT_PRE_CONFIGURE_ACTION +=  ;($(CLONEY) $(SOURCE_DIR) $(@D))
 
 CONFIGURE_OPTIONS  +=	--infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS  +=	--disable-dependency-tracking
@@ -68,7 +72,7 @@ CONFIGURE_OPTIONS  +=           ac_cv_func_newlocale=no
 # This option causes "$1: unbound variable" errors during the check-TESTS,
 # and the gnulib-tests don't even run at all.
 # Note that the below unexports SHELLOPTS, even for targets
-# other than "test." 
+# other than "test."
 unexport SHELLOPTS
 
 REQUIRED_PACKAGES += library/libxml2

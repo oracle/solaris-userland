@@ -82,7 +82,7 @@ test:			TARGET = test
 system-test:		TARGET = system-test
 zone-build:		TARGET = component-zone-build
 component-hook:		TARGET = component-hook
-zone-build prep build install publish test system-test:	LOG = >$(WS_LOGS)/$(@F).$(TARGET).log 2>&1
+zone-build prep build install publish test system-test:	LOG = >$(WS_LOGS)/$(subst /,.,$@).$(TARGET).log 2>&1
 
 # turn off pkglint for the individual component builds.
 ifeq   ($(strip $(PKGLINT_COMPONENT)),)
