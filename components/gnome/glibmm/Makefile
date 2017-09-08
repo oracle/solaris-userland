@@ -29,21 +29,17 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		glibmm
-COMPONENT_VERSION=	2.46.2
+COMPONENT_VERSION=	2.50.0
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/glibmm/stable/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:7221a01a768c1cce2bb994cb6ebfe634246dba4788f910484d04e3b0d903a3c8
+    sha256:df726e3c6ef42b7621474b03b644a2e40ec4eef94a1c5a932c1e740a78f95e94
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	7960
 
-TPNO=			25778
+TPNO=			35829
 
 # Needs updated glib2, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
+include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
