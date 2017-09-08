@@ -29,16 +29,16 @@ COMPILER =		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sigcpp
-COMPONENT_VERSION=	2.6.2
+COMPONENT_VERSION=	2.10.0
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/libsigc++/stable/
 COMPONENT_SRC=		libsigc++-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH= \
-    sha256:fdace7134c31de792c17570f9049ca0657909b28c4c70ec4882f91a03de54437
-COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/libsigc++/2.6/$(COMPONENT_ARCHIVE)
+    sha256:f843d6346260bfcb4426259e314512b99e296e8ca241d771d21ac64f28298d81
+COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/libsigc++/2.10/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13161
 
-TPNO=			25828
+TPNO=			35828
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
