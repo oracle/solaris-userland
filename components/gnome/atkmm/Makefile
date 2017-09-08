@@ -29,23 +29,19 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		atkmm
-COMPONENT_VERSION=	2.24.1
+COMPONENT_VERSION=	2.24.2
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/atkmm/stable/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:26c41d8da37d04eef9f219c6ce87d94852e1cacaad823050e520e1c08a36ed23
+    sha256:ff95385759e2af23828d4056356f25376cfabc41e690ac1df055371537e458bd
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	7962
 
-TPNO=			25782
+TPNO=			35831
 
 TEST_TARGET = $(NO_TESTS)
 
 # Needs updated atk, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
+include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
