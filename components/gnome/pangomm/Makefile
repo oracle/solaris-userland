@@ -29,23 +29,19 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pangomm
-COMPONENT_VERSION=	2.36.0
+COMPONENT_VERSION=	2.40.1
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/pangomm/stable/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:a8d96952c708d7726bed260d693cece554f8f00e48b97cccfbf4f5690b6821f0
+    sha256:9762ee2a2d5781be6797448d4dd2383ce14907159b30bc12bf6b08e7227be3af
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	7958
 
-TPNO=			25825
+TPNO=			35832
 
 TEST_TARGET = $(NO_TESTS)
 
 # Needs updated glibmm, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
+include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
