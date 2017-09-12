@@ -29,14 +29,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gtkmm
-COMPONENT_VERSION=	3.16.0
+COMPONENT_VERSION=	3.22.0
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/gtkmm/stable/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:9b8d4af5e1bb64e52b53bc8ef471ef43e1b9d11a829f16ef54c3a92985b0dd0c
+    sha256:05da4d4b628fb20c8384630ddf478a3b5562952b2d6181fe28d58f6cbc0514f5
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	7963
 
-TPNO=			31032
+TPNO=			35830
 
 TEST_TARGET = $(NO_TESTS)
 
