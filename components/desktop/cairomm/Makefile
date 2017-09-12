@@ -29,26 +29,22 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cairomm
-COMPONENT_VERSION=	1.11.2
+COMPONENT_VERSION=	1.12.2
 COMPONENT_PROJECT_URL=	http://cairographics.org
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:ccf677098c1e08e189add0bd146f78498109f202575491a82f1815b6bc28008d
+    sha256:45c47fd4d0aa77464a75cdca011143fea3ef795c4753f6e860057da5fb8bd599
 COMPONENT_ARCHIVE_URL=	http://cairographics.org/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	7959
 
-TPNO=			24146
+TPNO=			35833
 
 TEST_TARGET = $(NO_TESTS)
 
 # Needs updated cairo, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
+include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/common.mk
 
