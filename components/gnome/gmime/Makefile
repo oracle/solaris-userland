@@ -42,11 +42,7 @@ COMPONENT_ANITYA_ID=	13124
 TPNO=			34659
 
 # Needs gobject-introspection, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
+include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -57,6 +53,11 @@ CONFIGURE_OPTIONS += --enable-introspection
 CONFIGURE_OPTIONS += --enable-shared
 # Required for other components.
 CONFIGURE_OPTIONS += --enable-vala
+# /usr/bin/mcs accepts the --version option, which causes configure to think
+# it has found GNU Mono, and enable Mono support. On Solaris, mcs is an ELF
+# utility, and Mono is not available. Explicitly disable it in order to
+# sidestep the issue.
+CONFIGURE_OPTIONS += --enable-mono=no
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \
