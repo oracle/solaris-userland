@@ -26,10 +26,11 @@ BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libxml2
-COMPONENT_VERSION=	2.9.4
+COMPONENT_VERSION=	2.9.5
 COMPONENT_PROJECT_URL=	http://xmlsoft.org/
+COMPONENT_ARCHIVE=libxml2-2.9.5.tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:ffb911191e509b966deb55de705387f14156e1a56b21824357cdf0053233633c
+    sha256:4031c1ecee9ce7ba4f313e91ef6284164885cdb69937a123f6a83bb6a72dcd38
 COMPONENT_ARCHIVE_URL=	ftp://xmlsoft.org/libxml2/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libxml
 COMPONENT_ANITYA_ID=	1783
@@ -40,7 +41,7 @@ COMPONENT_ARCHIVE_HASH_1= \
     sha256:96151685cec997e1f9f3387e3626d61e6284d4d6e66e0e440c209286c03e9cc7
 COMPONENT_ARCHIVE_URL_1= http://www.w3.org/XML/Test/$(COMPONENT_ARCHIVE_1)
 
-TPNO=			29079
+TPNO=			37576
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_32_and_64)
 include $(WS_MAKE_RULES)/common.mk
@@ -80,11 +81,11 @@ COMPONENT_POST_CONFIGURE_ACTION += \
      `find python3.4 -name Makefile` ; \
 )
 
-# It's also nice to test python 3.4 modules.
+# It's also nice to test python 3.4 modules (LC_ALL is set to avoid test failure).
 COMPONENT_POST_TEST_ACTION += \
     ( if [ $(BITS) -eq 64 ]; then \
 	cd $(@D)/python3.4 ; \
-	$(GMAKE) $(COMPONENT_TEST_ARGS) test ; \
+	LC_ALL=en_US.utf8  $(GMAKE) $(COMPONENT_TEST_ARGS) test ; \
      else \
         true ; \
      fi )
