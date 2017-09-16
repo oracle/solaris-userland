@@ -1,32 +1,5 @@
 # Developed in house: Solaris specific
-# This patch enables FIPS mode in the _init routine.
-# Also, use EVP API instead of low level SHA API
---- a/crypto/cryptlib.c 2016-09-02 14:10:14.157867400 -0700
-+++ b/crypto/cryptlib.c 2016-09-02 14:08:38.308229315 -0700
-@@ -117,6 +117,8 @@
- #include <openssl/safestack.h>
- #include <pthread.h>
- 
-+extern	unsigned char FIPS_signature[];
-+
- #if defined(OPENSSL_SYS_WIN32) || defined(OPENSSL_SYS_WIN16)
- static double SSLeay_MSVC5_hack = 0.0; /* and for VC1.5 */
- #endif
-@@ -531,6 +582,14 @@
-         (void) pthread_mutex_init(&solaris_openssl_locks[i], NULL);
-     }
- 
-+    if ((FIPS_signature[0] != 0x00) || (FIPS_signature[1] != 0xFF)) {
-+        /* Set FIPS mode by default if FIPS_signature is already set */
-+        if (FIPS_mode_set(1) != 1) {
-+            fprintf(stderr, "Failed to set FIPS mode.\n");
-+            abort();
-+        }
-+    }
-+
-     (void) pthread_atfork(solaris_fork_prep, solaris_fork_post, solaris_fork_post);
- }
- 
+# Use EVP API instead of low level SHA API
 --- a/apps/speed.c	2016-09-26 02:49:07.000000000 -0700
 +++ b/apps/speed.c	2016-10-25 11:26:37.455939170 -0700
 @@ -1640,7 +1640,8 @@

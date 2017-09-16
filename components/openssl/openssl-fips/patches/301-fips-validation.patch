@@ -60,8 +60,8 @@
  	if (!BN_X931_derive_prime_ex(p, p1, p2, Xp, Xp1, Xp2, e, ctx, cb))
  		goto error;
 --- a/fips/fips.c	2016-06-20 12:49:46.000000000 -0700
-+++ b/fips/fips.c	2016-09-08 07:53:52.169922810 -0700
-@@ -288,6 +291,12 @@
++++ b/fips/fips.c	2017-09-07 12:53:13.309095315 -0700
+@@ -288,6 +303,12 @@
      {
      int ret = 0;
  
@@ -74,7 +74,7 @@
      fips_w_lock();
      fips_started = 1;
      fips_set_owning_thread();
-@@ -301,15 +310,6 @@
+@@ -301,15 +322,6 @@
  	    fips_auth_fail = 1;
  	    fips_selftest_fail = 1;
  	    FIPSerr(FIPS_F_FIPS_MODULE_MODE_SET,FIPS_R_AUTHENTICATION_FAILURE);
@@ -90,3 +90,23 @@
  	    ret = 0;
  	    goto end;
  	    }
+--- a/fips/fips_premain.c	2016-06-22 08:40:20.000000000 -0700
++++ b/fips/fips_premain.c	2017-09-08 14:07:28.888746325 -0700
+@@ -143,6 +143,12 @@
+ #if defined(__powerpc__) || defined(__ppc__) || defined(_ARCH_PPC)
+     fips_openssl_cpuid_setup();
+ #endif
++
++  /* enable FIPS mode by default */
++  if (FIPS_mode_set(1) != 1)
++  {   fprintf(stderr, "Failed to set FIPS mode.\n");
++      abort();
++  }
+ }
+ 
+ #else
+--- a/fips/fips_premain.c.sha1	2016-06-22 08:40:20.000000000 -0700
++++ b/fips/fips_premain.c.sha1	2017-09-08 12:19:55.443014110 -0700
+@@ -1 +1 @@
+-HMAC-SHA1(fips_premain.c)= 2bfb57ef540bdba29220a45d65e1b4080de9adc1
++HMAC-SHA1(fips_premain.c)= a68e0e164fb515a23043ef480a2aea38269fc5d6
