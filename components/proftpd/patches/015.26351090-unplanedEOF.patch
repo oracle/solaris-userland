@@ -1,0 +1,13 @@
+https://github.com/proftpd/proftpd/pull/583
+--- a/src/data.c	2017-09-18 02:02:30.320297083 +0000
++++ b/src/data.c	2017-09-18 02:35:36.740957634 +0000
+@@ -1535,6 +1535,9 @@
+         if (timeout_idle) {
+           pr_timer_reset(PR_TIMER_IDLE, ANY_MODULE);
+         }
++      } else { /* (len == 0) */
++	/* unexpected EOF i.e. if the file is truncated while transfer */
++	break;
+       }
+ 
+       session.xfer.total_bytes += len;
