@@ -31,21 +31,25 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =		firefox
-COMPONENT_VERSION =		52.3.0esr
+COMPONENT_VERSION =		52.4.0esr
 COMPONENT_PROJECT_URL =		http://www.mozilla.com/firefox
 COMPONENT_SRC_NAME =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC = 		$(COMPONENT_SRC_NAME)
 COMPONENT_ARCHIVE =		$(COMPONENT_SRC_NAME).source.tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:c16bc86d6cb8c2199ed1435ab80a9ae65f9324c820ea0eeb38bf89a97d253b5b
+    sha256:58ae7cb6c2fb81d22762ab3c60e46cadbe7c5b687f24c2823d9533ec998a21ee
+ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		        http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)
+else
+MOZILLA_FTP = 		        http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/candidates/$(COMPONENT_VERSION)-candidates/build$(CANDIDATE_BUILD)
+endif
 COMPONENT_ARCHIVE_URL =		$(MOZILLA_FTP)/source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB =		firefox/browser
 COMPONENT_ANITYA_ID=    5506
 
-TPNO=				36809
+TPNO=				37820
 
-IPS_COMPONENT_VERSION =		52.3.0
+IPS_COMPONENT_VERSION =		52.4.0
 
 # There are a set of .xpi files (as given in the LANG_LIST definition below)
 # that we need. These are available under:
@@ -54,9 +58,9 @@ IPS_COMPONENT_VERSION =		52.3.0
 # a compressed tarball of them, and made that available locally for download.
 # Downloading them individually can be a problem because firefox/thunderbird 
 # collide due to different files with identical .xpi names.
-COMPONENT_ARCHIVE_1 =           $(COMPONENT_SRC_NAME)-xpi.tar.gz
+COMPONENT_ARCHIVE_1 =           $(COMPONENT_SRC_NAME)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:3564066d61053faccd3bb4b2206f070cd0cbc9b33343f5b5cb1a9da27d190e28
+    sha256:78015f3d1d4eae05d79930219b9c103cafb5f6ecb40210a4b40be598ed1bbbaf
 COMPONENT_ARCHIVE_URL_1 =       $(INTERNAL_ARCHIVE_MIRROR)/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ach af an ar as ast az bg bn-BD bn-IN br bs ca cak cs cy \
@@ -94,16 +98,16 @@ COMPONENT_PRE_CONFIGURE_ACTION += \
 	echo "ac_add_options --with-system-bz2" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-libevent" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-system-ffi" >> $(MOZCONFIG) ; \
-        echo "ac_add_options --enable-jemalloc" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --enable-jemalloc" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --disable-crashreporter" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-pulseaudio" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-intl-api" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-system-sqlite" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-system-pixman" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-startup-notification" >> $(MOZCONFIG) ; \
-        echo "ac_add_options --enable-replace-malloc" >> $(MOZCONFIG) ; \
-        echo "ac_add_options --enable-js-shell" >> $(MOZCONFIG) ; \
-        echo "ac_add_options --enable-default-toolkit=cairo-gtk2" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --enable-replace-malloc" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --enable-js-shell" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --enable-default-toolkit=cairo-gtk2" >> $(MOZCONFIG) ; \
 
 CXXFLAGS +=     -Wno-invalid-offsetof -fpermissive
 CC +=           $(CC_BITS)
@@ -156,11 +160,15 @@ download-xpis:
 	@echo "downloading firefox xpis"
 	list1='$(LANG_LIST)' ; for f in $$list1 ; do \
 	    echo $$f; \
-	    /usr/bin/curl -s -o $(COMPONENT_DIR)/xpi/$$f.xpi \
+	    /usr/bin/curl -R -s -o $(COMPONENT_DIR)/xpi/$$f.xpi \
 	        $(FF_XPI)/$$f.xpi; \
+	    file $(COMPONENT_DIR)/xpi/$$f.xpi | grep ZIP > /dev/null; \
+	    if [ $$? -ne 0 ]; then \
+	        echo "File $$f is not ZIP archive!"; exit 1; \
+	    fi ; \
 	done
 	(cd $(COMPONENT_DIR); \
-	    $(TAR) czvf $(COMPONENT_DIR)/$(COMPONENT_ARCHIVE_1) xpi )
+	    TZ=UTC gtar cjvf $(COMPONENT_DIR)/$(COMPONENT_ARCHIVE_1) --mtime='1970-01-01' --owner=root --group=root xpi/* )
 	/usr/bin/sha256sum $(COMPONENT_ARCHIVE_1)
 
 SIGNED_LIST.i386 = libsoftokn3.so libnssdbm3.so libfreebl3.so
