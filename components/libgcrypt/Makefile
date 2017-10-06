@@ -36,16 +36,16 @@ gcc_OPT.i386.64 = -O2
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgcrypt
-COMPONENT_VERSION=	1.7.8
+COMPONENT_VERSION=	1.7.9
 COMPONENT_PROJECT_URL=  ftp://ftp.gnupg.org/gcrypt/libgcrypt/ 
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-    sha256:948276ea47e6ba0244f36a17b51dcdd52cfd1e664b0a1ac3bc82134fb6cec199
+    sha256:bfe9bb703c1126c3647da2810fd23039c2f09d46969f71612c2065dc3fa9373b
 COMPONENT_ARCHIVE_URL=  ftp://ftp.gnupg.org/gcrypt/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libgcrypt
 COMPONENT_ANITYA_ID=	1623
 
-TPNO=			36844
+TPNO=			38338
 
 # Requires new pkgmogrify feature, available in S12 but not 11.3, so do not
 # publish.
@@ -73,25 +73,6 @@ CONFIGURE_OPTIONS += --enable-maintainer-mode
 CONFIGURE_OPTIONS += --disable-asm
 
 include ../../make-rules/shared-targets.mk
-
-#
-# The following target is used during switch of the incompatible libgcrypt.11
-# to libgcrypt.20.  Libgcrypt-15 is not delivered as a package. If it has not
-# been built yet, we build the library as a target dependency from here and
-# deliver a subset of the library (the shared objects only and the second
-# level links) to satisfy the ABI compatibility requirements during the ABI
-# upgrade period.
-$(WS_COMPONENTS)/libgcrypt-15/build/$(MACH$(BITS))/.installed:
-	$(GMAKE) -C $(WS_COMPONENTS)/libgcrypt-15 install
-
-$(WS_COMPONENTS)/libgcrypt-15/build/$(MACH$(BITS))/.FRC_%:
-	$(GMAKE) -C $(WS_COMPONENTS)/libgcrypt-15 $(@F:.FRC_%=%)
-
-ifneq ($(BUILD_TYPE), evaluation)
-install: $(WS_COMPONENTS)/libgcrypt-15/build/$(MACH$(BITS))/.installed
-endif
-
-clean clobber:: % : $(WS_COMPONENTS)/libgcrypt-15/build/$(MACH$(BITS))/.FRC_%
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
