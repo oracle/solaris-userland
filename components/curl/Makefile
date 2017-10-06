@@ -20,30 +20,39 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
-COMPONENT_NAME =        curl
-COMPONENT_VERSION=      7.45.0
+COMPONENT_NAME=	curl
+COMPONENT_VERSION= 7.59.0
+TPNO=		41742
+GIT_REPO=	https://github.com/curl/curl.git
+# last tag we checkout to it
+GIT_COMMIT_ID=	curl-7_59_0
+GIT_HASH=	sha256:4ef536587d402b3194b6334077e5d237769c39f00a2f01e6243dcafe4bbb68dc
+
 COMPONENT_PROJECT_URL=  http://curl.haxx.se/
-COMPONENT_ARCHIVE_HASH= \
-    sha256:02c78c8060d587422e2826f622c729189b56084bba365140f13af3d402b6cb6b
-COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE)
+COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_BUGDB=	library/curl
 COMPONENT_ANITYA_ID=	381
 
-TPNO=			25724
-
 include $(WS_MAKE_RULES)/common.mk
 
-PATCH_LEVEL = 0
+CPPFLAGS += -I/usr/include/openldap
+CPPFLAGS += $(shell pkg-config --cflags libidn2)
+# GSS MECH's API is in /usr/include/kerberosv5/gssapi/
+CPPFLAGS += $(shell krb5-config --cflags)
+CPPFLAGS += $(CPP_LARGEFILES)
 
-CFLAGS += $(CPP_LARGEFILES)
-CFLAGS += `pkg-config --cflags libidn`
-CPPFLAGS += `pkg-config --cflags libidn`
-CPPFLAGS += "-I/usr/include/openldap"
+# Community code uses different defs
+$(BUILD_DIR_32)/.configured:	CPPFLAGS += -D__ILP32=32
+$(BUILD_DIR_64)/.configured:	CPPFLAGS += -D__LP64=64
+
+LIBS += $(shell krb5-config --libs gssapi)
+LDFLAGS += -m$(BITS)
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -61,54 +70,54 @@ CONFIGURE_OPTIONS += --enable-thread --enable-verbose
 CONFIGURE_OPTIONS += --disable-sspi --enable-crypto-auth
 CONFIGURE_OPTIONS += --enable-cookies --disable-hidden-symbols
 CONFIGURE_OPTIONS += --disable-soname-bump
-CONFIGURE_OPTIONS += --enable-ldap --with-random=/dev/urandom
-CONFIGURE_OPTIONS += --with-ssl --with-ldap-lib=ldap_r-2.4
-CONFIGURE_OPTIONS += --with-lber-lib=lber-2.4
-CONFIGURE_OPTIONS += --with-gssapi-includes=$(USRINCDIR)/gssapi
-CONFIGURE_OPTIONS += --with-gssapi-libs=$(USRLIB)
-CONFIGURE_OPTIONS += --with-gssapi=$(USRDIR) --without-ca-bundle
-CONFIGURE_OPTIONS += --with-ca-path=$(ETCDIR)/openssl/certs
-CONFIGURE_OPTIONS += --with-zlib=$(USRDIR) --with-libidn=$(USRDIR)
+CONFIGURE_OPTIONS += --with-random=/dev/urandom
+CONFIGURE_OPTIONS += --with-gssapi
+CONFIGURE_OPTIONS += --with-ssl=/usr --with-ca-path=$(ETCDIR)/openssl/certs
+CONFIGURE_OPTIONS += --enable-ldap --with-ldap-lib=ldap_r --with-lber-lib=lber
+CONFIGURE_OPTIONS += --with-zlib=$(USRDIR) --with-libidn2=$(USRDIR)
 CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += --with-libssh2
 CONFIGURE_OPTIONS += --with-nghttp2
 CONFIGURE_OPTIONS += "curl_disallow_getifaddrs=yes"
 
+CONFIGURE_ENV +=	CPP="$(CC) -E"
+CONFIGURE_ENV +=	CFLAGS="$(CFLAGS)"
+CONFIGURE_ENV +=	LIBS="$(LIBS)"
+CONFIGURE_ENV +=	LDFLAGS="$(LDFLAGS)"
+CONFIGURE_ENV +=	KRB5CONFIG=/usr/bin/krb5-config
+
 LINT_FLAGS += -I$(SOURCE_DIR)/include
 
-COMPONENT_TEST_ENV += PATH="$(GCC_ROOT)/bin:$(PATH)"
+# Generate configuration scripts form .am-files
+COMPONENT_PREP_ACTION = (cd $(@D) ; $(SHELL) buildconf )
 
-# The additional curl specific set of transforms to be applied to the
-# test results to try to normalize them.
+COMPONENT_TEST_ENV += CC="$(CC)"
+COMPONENT_TEST_ENV += PATH="$(SPRO_VROOT)/bin:$(GNUBIN):$(PATH)"
+COMPONENT_TEST_ENV += CFLAGS="$(CFLAGS)"
+COMPONENT_TEST_ARGS+= -k -i
+
+# Only the #'s of passed/failed tests are verified for change
+# note: Test 1119 is failing permannently and it only checks library symbols
+# by a Linux way.
 COMPONENT_TEST_TRANSFORMS += \
-	'-e "s|^.*$(CC).*$$|XXX_CC_XXX|g" ' \
-	'-e "s|^.*source=.*libtool=no.*$$|XXX_CC_XXX|g" ' \
-	'-e "s|^.*DEPDIR=.deps.*$$|XXX_CC_XXX|g" ' \
-	'-e "s|^make.*: Leaving directory.*$$|XXX_CC_XXX|g" ' \
-	'-e "s|^make.*: Entering directory.*$$|XXX_CC_XXX|g" ' \
-	'-e "s|^make.*: Nothing to be done for.*$$|XXX_CC_XXX|g" ' \
-	'-e "/^XXX_CC_XXX$$/d" ' \
-	'-e "s|\(^/bin/bash ../../libtool\).*|\1|" ' \
-	'-e "s|\(^libtool: link:\).*|\1|" ' \
-	'-e "s|remaining: ..:..|remaining: xx:xx|" ' \
-	'-e "s|\(^TESTDONE: 997 tests were considered during\).*|\1|" ' \
-	'-e "s|\(^\* curl $(COMPONENT_VERSION)\).*|\1|" ' \
-	'-e "s|\(^\* Host:\).*|\1|" ' \
-	'-e "s|\(^\* System: SunOS\).*|\1|" ' \
-	'-e "s|\(^Connection from 127.0.0.1 port\).*|\1|" ' \
-	'-e "s|\(^Failed none for\).*|\1|" ' \
-	'-e "s|\(^Found matching DSA key:\).*|\1|" ' \
-	'-e "s|\(^Failed publickey for\).*|\1|" ' \
-	'-e "/^debug.:/d" ' \
-	'-e "/^monitor debug.:/d" '
+	'-n ' \
+	'-e "s/ during [0-9][0-9]* seconds.//" ' \
+	'-e "/TESTDONE:/p" ' \
+	'-e "/TESTFAIL:/p" ' \
+	'-e "/ TOTAL:/p" ' \
+	'-e "/ PASS:/p" ' \
+	'-e "/ SKIP:/p" ' \
+	'-e "/ XFAIL:/p" ' \
+	'-e "/ FAIL:/p" ' \
+	'-e "/ XPASS:/p" ' \
+	'-e "/ ERROR:/p" '
 
-REQUIRED_PACKAGES += library/libidn
+REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/libssh2
 REQUIRED_PACKAGES += library/nghttp2
-$(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += library/openldap
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
-$(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += system/library/security/gss
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/network/ldap/openldap
