@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2010, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 #
 # userland-fetch - a file download utility
@@ -325,6 +325,10 @@ def download_from_paths(search_list, file_arg, url, timeout_arg, link_arg, quiet
 				if not quiet:
 					print "failed"
 				continue
+		# Hook back to component Makefile to allow special download cases:
+		# make://[component make target]/[archive name]
+		elif scheme == "make":
+			os.system("gmake " + path.split('/')[2])
 		elif scheme == "pypi":
 			nurl = pypi_url(url, file_arg)
 			if nurl:

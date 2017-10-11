@@ -32,38 +32,38 @@ COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		thunderbird
-COMPONENT_VERSION=	52.3.0
+COMPONENT_VERSION=	52.4.0
 COMPONENT_PROJECT_URL=	http://www.mozilla.com/thunderbird
 COMPONENT_ARCHIVE = 	$(COMPONENT_SRC).source.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:050acc320a9c50365a53e4faa6538a0ad7f9a302d5f2cfb6edf0c6fe1b573b18
+    sha256:7f57b5b4d4ec42b04afcff8327abc2d3c6185c0bcc1ad138825d021a2d3f578c
+ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)
+else
+MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/candidates/$(COMPONENT_VERSION)-candidates/build$(CANDIDATE_BUILD)
+endif
 COMPONENT_ARCHIVE_URL=	$(MOZILLA_FTP)/source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	tbird/mailer
 COMPONENT_ANITYA_ID=	4967
 
-TPNO=			36811
+TPNO=			38730
 
-LIGHTNING_VERSION=	5.4.3
+LIGHTNING_VERSION=	5.4.4
 
-# There are a set of .xpi files (as given in the LANG_LIST definition below)
-# that we need. These are available under:
-# http://ftp.mozilla.org/pub/mozilla.org/thunderbird/releases/31.6.0/linux-i686/xpi/
-# https://ftp.mozilla.org/pub/calendar/lightning/candidates/4.0.5-candidates/build1/linux-i686/
-# We could download and unpack them individually, but instead I've created
-# a compressed tarball of them, and made them available from the internal
-# Userland mirror. So these need to be re-created by hand each time we rev.
-# Downloading them individually can be a problem because firefox/thunderbird 
-# collide due to different files with identical .xpi names. 
-COMPONENT_ARCHIVE_1 =   	$(COMPONENT_SRC)-xpi.tar.gz
+# There are a set of .xpi files (as given in the LANG_LIST definition
+# below) that we need. We could download and unpack them individually, but
+# they doesn't contain version in its file name and there is lot of them.
+# Therefore we will download them and archive them in Userland cache using
+# one file with version number.
+COMPONENT_ARCHIVE_1 =   	$(COMPONENT_SRC)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:1e1939a53947407fbf5545cc93674f927f41eeb5f010e2b9fe072948a2a2927c
-COMPONENT_ARCHIVE_URL_1 =       $(INTERNAL_ARCHIVE_MIRROR)/$(COMPONENT_ARCHIVE_1)
+    sha256:8ee09bda132dce766d24f0031562b2b49beed6e62d51a98cc76f9687f0544a45
+COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
-COMPONENT_ARCHIVE_2 =		lightning-$(LIGHTNING_VERSION)-xpi.tar.gz
+COMPONENT_ARCHIVE_2 =		lightning-$(LIGHTNING_VERSION)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_2 = \
-    sha256:1ed8c5218d869263fef6234749927cf7bcfe4390ed08ea194b51b9a063e6f9e5
-COMPONENT_ARCHIVE_URL_2 = 	$(INTERNAL_ARCHIVE_MIRROR)/$(COMPONENT_ARCHIVE_2)
+    sha256:98668086f27f0faa2c33bd56d094059ee5416d77e90db8ecf65dde587292d070
+COMPONENT_ARCHIVE_URL_2 = 	make://download-lightning-xpis/$(COMPONENT_ARCHIVE_2)
 
 LANG_LIST = ar bg ca cs da de el es-AR es-ES et eu fi \
 	fr gl he hu id is it ja ko lt nb-NO nl nn-NO pa-IN pl \
@@ -191,7 +191,6 @@ LN_XPI = http://ftp.mozilla.org/pub/calendar/lightning/candidates/$(LIGHTNING_VE
 
 # Run gmake download-xpis and gmake download-lightning-xpis to download tarballs of xpi
 # for thunderbird and lightning separately.
-# The resulting archives should be uploaded to userland internal archive.
 download-xpis:
 	@echo "download-xpis"
 	$(RM) -r $(COMPONENT_DIR)/xpi $(COMPONENT_DIR)/$(COMPONENT_ARCHIVE_1) 
@@ -201,9 +200,13 @@ download-xpis:
 		echo $$f; \
 		/usr/bin/curl -s -o $(COMPONENT_DIR)/xpi/$$f.xpi \
 			$(TB_XPI)/$$f.xpi ;\
+		file $(COMPONENT_DIR)/xpi/$$f.xpi | grep ZIP > /dev/null; \
+		if [ $$? -ne 0 ]; then \
+			echo "File $$f is not ZIP archive!"; exit 1; \
+		fi ; \
 	done
 	(cd $(COMPONENT_DIR); \
-	    $(TAR) czvf $(COMPONENT_DIR)/$(COMPONENT_ARCHIVE_1) xpi )
+	    TZ=UTC gtar cjvf $(COMPONENT_DIR)/$(COMPONENT_ARCHIVE_1) --mtime='1970-01-01' --owner=root --group=root xpi/* )
 	/usr/bin/sha256sum $(COMPONENT_ARCHIVE_1)
 
 download-lightning-xpis:
@@ -215,9 +218,13 @@ download-lightning-xpis:
 		echo $$f; \
 		/usr/bin/curl -s -o $(COMPONENT_DIR)/xpi-lightning/lightning-$(LIGHTNING_VERSION).$$f.linux-i686.xpi \
 	                $(LN_XPI)/lightning-$(LIGHTNING_VERSION).$$f.linux-i686.xpi ;\
+		file $(COMPONENT_DIR)/xpi-lightning/lightning-$(LIGHTNING_VERSION).$$f.linux-i686.xpi | grep ZIP > /dev/null; \
+		if [ $$? -ne 0 ]; then \
+			echo "File $$f is not ZIP archive!"; exit 1; \
+		fi ; \
 	done
 	(cd $(COMPONENT_DIR); \
-	    $(TAR) czvf $(COMPONENT_DIR)/$(COMPONENT_ARCHIVE_2) xpi-lightning )
+	    TZ=UTC gtar cjvf $(COMPONENT_DIR)/$(COMPONENT_ARCHIVE_2) --mtime='1970-01-01' --owner=root --group=root xpi-lightning/* )
 	/usr/bin/sha256sum $(COMPONENT_ARCHIVE_2)
 
 COMPONENT_TEST_DIR =    $(@D)/js/src
