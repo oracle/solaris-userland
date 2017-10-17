@@ -1,6 +1,6 @@
---- openscap-1.2.9/src/OVAL/probes/oval_fts.c.~1~	2016-04-21 04:51:58.300491814 -0700
-+++ openscap-1.2.9/src/OVAL/probes/oval_fts.c	2016-06-08 12:59:52.982814231 -0700
-@@ -45,8 +45,9 @@
+--- openscap-1.2.9/src/OVAL/probes/oval_fts.c	2016-04-21 04:51:58.000000000 +0000
++++ openscap-1.2.9/src/OVAL/probes/oval_fts.c	2017-10-18 02:32:29.538133397 +0000
+@@ -45,8 +45,10 @@
  #if defined(__SVR4) && defined(__sun)
  #include "fts_sun.h"
  #include <sys/mntent.h>
@@ -9,10 +9,11 @@
 +#include <rad/radclient.h>
 +#include <rad/radclient_basetypes.h>
 +#include <rad/client/1/zonemgr.h>
++#include <zone.h>
  #else
  #include <fts.h>
  #endif
-@@ -137,12 +138,7 @@
+@@ -137,12 +139,7 @@
  #ifndef MNTTYPE_PROC
  #define MNTTYPE_PROC	"proc"
  #endif
@@ -26,7 +27,7 @@
  
  
  static bool valid_remote_fs(char *fstype)
-@@ -168,79 +164,123 @@
+@@ -168,79 +165,132 @@
  	return (true);
  }
  
@@ -97,6 +98,10 @@
 +       char *p;
 +       char rpath[PATH_MAX];
 +
++       if (getzoneid() != GLOBAL_ZONEID) {
++              return (0);
++       }
++
 +       /* Connect to rad */
 +       conn = rc_connect_unix(NULL, NULL);
 +       if (conn == NULL) {
@@ -106,14 +111,14 @@
 +       status = zonemgr_Zone__rad_list(conn, _B_TRUE, NS_GLOB, &name_list,
 +          &name_count, 0);
 +       if (status != RCE_OK) {
-+              dE("Zonemgr lookup failed.\n");
++              dE("Zonemgr list failed.\n");
 +              goto error;
 +      }
 +      if (name_count > 0) {
 +              top = calloc(name_count + 1, PATH_MAX);
 +              if (top == NULL) {
 +                      dE("Memory error.\n");
-+                      return (1);
++                      goto error;
 +              }
 +      }
 +      for (i = 0; i < name_count; i++) {
@@ -121,17 +126,19 @@
 +               status = rc_lookup(conn, name_list[i], NULL,  _B_TRUE,
 +                   &zone_inst);
 +               if (status != RCE_OK) {
++                       dE("Failed to get zone inst.\n");
 +                       goto error;
 +               }
 +               status = zonemgr_Zone_get_name(zone_inst, &zone_name);
 +               if (status != RCE_OK) {
++                       dE("Failed to get zone name.\n");
 +                       goto error;
 +               }
 +               dE("zone name:%s\n", zone_name);
 +               status = zonemgr_Zone_get_state(zone_inst, &zone_state);
 +               if (status != RCE_OK) {
 +                      dE("Failed to get state\n");
-+                      return(1);
++                      goto error;
 +               }
 +              dE("zone state:%s\n", zone_state);
 +              if (strcmp(zone_state, "incomplete") != 0 &&
@@ -141,14 +148,16 @@
 +                      free(zone_state);
 +                      continue;
 +              }
-+               status = zonemgr_Zone_getResourceProperties(zone_inst, &global,
++              status = zonemgr_Zone_getResourceProperties(zone_inst, &global,
 +                   prop, 1, &result, &prop_count, &error);
 +              if (status == RCE_SERVER_OBJECT) {
-+                  dE("error code:%d: %s\n",
++                  dE("Failed to get zone properties. Error code: %d: %s\n",
 +                       error->zr_code ? *error->zr_code : 0,
 +                       error->zr_str ? error->zr_str : "");
++                  goto error;
 +              } else if (status != RCE_OK) {
 +                  dE("Internal RAD error: %s\n", rc_err_string(status));
++                  goto error;
 +              }
 +              zonepath = strdup(result[0]->zp_value);
 +              dE("zonepath :%s\n", zonepath);
@@ -170,6 +179,7 @@
 +              free(zone_name);
 +              free(zone_state);
 +        }
++        rc_disconnect(conn);
 +        return (0);
 +error:
 +      /* disconnect from rad */
@@ -212,7 +222,7 @@
  
  	return (false);
  }
-@@ -884,7 +924,6 @@
+@@ -884,7 +934,6 @@
  #if defined(__SVR4) && defined(__sun)
  	if (load_zones_path_list() != 0) {
  		dE("Failed to load zones path info. Recursing non-global zones.");
