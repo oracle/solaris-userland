@@ -206,8 +206,8 @@ download-xpis:
 		fi ; \
 	done
 	(cd $(COMPONENT_DIR); \
-	    TZ=UTC gtar cjvf $(COMPONENT_DIR)/$(COMPONENT_ARCHIVE_1) --mtime='1970-01-01' --owner=root --group=root xpi/* )
-	/usr/bin/sha256sum $(COMPONENT_ARCHIVE_1)
+	    TZ=UTC gtar cjvf $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1) --mtime='1970-01-01' --owner=root --group=root xpi/* )
+	/usr/bin/sha256sum $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1)
 
 download-lightning-xpis:
 	@echo "download-lightning-xpis"
@@ -224,8 +224,8 @@ download-lightning-xpis:
 		fi ; \
 	done
 	(cd $(COMPONENT_DIR); \
-	    TZ=UTC gtar cjvf $(COMPONENT_DIR)/$(COMPONENT_ARCHIVE_2) --mtime='1970-01-01' --owner=root --group=root xpi-lightning/* )
-	/usr/bin/sha256sum $(COMPONENT_ARCHIVE_2)
+	    TZ=UTC gtar cjvf $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_2) --mtime='1970-01-01' --owner=root --group=root xpi-lightning/* )
+	/usr/bin/sha256sum $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_2)
 
 COMPONENT_TEST_DIR =    $(@D)/js/src
 COMPONENT_TEST_TARGETS=check-jit-test
