@@ -23,6 +23,11 @@
 # Copyright (c) 2010, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 
+.PHONY: void
+void:
+	@echo "Must specify target: prep, build, install, publish, test, etc."
+	@echo "See $(WS_TOP)/makefile-targets.txt for more info."
+
 PATH=/usr/bin:/usr/gnu/bin
 
 # The location of an internal mirror of community source archives that we build
