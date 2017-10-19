@@ -26,14 +26,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-keyring
-COMPONENT_VERSION=	3.18.3
+COMPONENT_VERSION=	3.20.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GnomeKeyring
 COMPONENT_ARCHIVE_HASH= \
-	sha256:3f670dd61789bdda75b9c9e31e289bf7b1d23ba012433474790081ba7dc0ed98
+	sha256:bc17cecd748a0e46e302171d11c3ae3d76bba5258c441fabec3786f418e7ec99
 COMPONENT_BUGDB=	gnome/security
 COMPONENT_ANITYA_ID=	13133
 
-TPNO=			25824
+TPNO=			35133
 
 TEST_TARGET = $(NO_TESTS)
 
