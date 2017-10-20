@@ -75,8 +75,6 @@ CFLAGS.wanboot += -mno-stack-arg-probe
 CONFIGURE_OPTIONS  += --libexecdir=$(CONFIGURE_LIBDIR.$(BITS))
 CONFIGURE_OPTIONS  += --infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS  += --with-include-path=$(USRINCDIR)/gmp
-CONFIGURE_OPTIONS  += --disable-elliptic-curves
-CONFIGURE_OPTIONS  += --disable-knuth-lfib
 
 # Set the wanboot configure options as needed for wanboot
 

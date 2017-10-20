@@ -361,7 +361,8 @@ COMPONENT_POST_INSTALL_ACTION += \
 
 # Generate .pyc files for the files in the proto directory
 COMPONENT_POST_INSTALL_ACTION += \
-    $(PYTHON) -m compileall $(PROTO_PYTHON_LIB);
+    $(PYTHON) -m compileall $(PROTO_PYTHON_LIB); \
+    $(PYTHON) -m compileall $(PROTO_DIR)$(HORIZON_PRIVATE_DIR);
 
 # Collect the JavaScript files and compress the static assets
 COMPONENT_POST_INSTALL_ACTION += \

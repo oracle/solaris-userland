@@ -1,12 +1,23 @@
 Patch origin: in-house
 Patch status: Solaris-specific; not suitable for upstream
 
+Don't bring any unnecessary dependency - Checkstyle (LGPL).
+
 Redirects build process to use local archives instead of downloading
 from external webs.
 
 --- build.properties.default
 +++ build.properties.default
-@@ -95,6 +95,12 @@
+@@ -31,7 +31,7 @@
+ 
+ # ----- Build control flags -----
+ # Note enabling validation uses Checkstyle which is LGPL licensed
+-execute.validate=true
++execute.validate=false
+ execute.test.nio=true
+ execute.test.nio2=true
+ # Still requires APR/native library to be present
+@@ -103,6 +103,12 @@
  # Mirror, was used when there were problems with the main SF downloads site
  # base-sf.loc=http://sunet.dl.sourceforge.net
  
@@ -19,7 +30,7 @@ from external webs.
  # ----- Webservices - JAX RPC -----
  jaxrpc-lib.version=1.1-rc4
  jaxrpc-lib.home=${base.path}/jaxrpc-${jaxrpc-lib.version}
-@@ -114,7 +120,7 @@
+@@ -122,7 +128,7 @@
  jdt.home=${base.path}/ecj-${jdt.version}
  jdt.jar=${jdt.home}/ecj-${jdt.version}.jar
  # The download will be moved to the archive area eventually. We are taking care of that in advance.

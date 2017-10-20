@@ -30,20 +30,20 @@ COMPONENT_NAME =	openssl
 # When upgrading OpenSSL, please, DON'T FORGET TO TEST WANBOOT too. 
 # For more information about wanboot-openssl testing, please refer to
 # ../README.
-COMPONENT_VERSION =	1.0.2k
+COMPONENT_VERSION =	1.0.2l
 # Version for IPS. It is easier to do it manually than convert the letter to a
 # number while taking into account that there might be no letter at all.
-IPS_COMPONENT_VERSION = 1.0.2.11
+IPS_COMPONENT_VERSION = 1.0.2.12
 COMPONENT_PROJECT_URL=	http://www.openssl.org/
 COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6b3977c61f2aedf0f96367dcfb5c6e578cf37e7b8d913b4ecb6643c3cb88d8c0
+    sha256:ce07195b659e75f4e1db43552860070061f156a98bb37b672b101ba6e3ddf30c
 COMPONENT_ARCHIVE_URL =	$(COMPONENT_PROJECT_URL)source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/openssl
 COMPONENT_ANITYA_ID=	2566
 
-TPNO=			33605
+TPNO=			35720
 
 # Clone the patch files to the patches-all dir.
 # COPY_COMMON_FILES is there so that rsync is called as soon as
@@ -343,7 +343,8 @@ WANBOOT_OBJS =  \
     ssl/s3_both.o ssl/s3_clnt.o ssl/s3_enc.o ssl/s3_lib.o ssl/s3_pkt.o \
     ssl/ssl_algs.o ssl/ssl_asn1.o ssl/ssl_cert.o ssl/ssl_ciph.o ssl/ssl_err.o \
     ssl/ssl_err2.o ssl/ssl_lib.o ssl/ssl_rsa.o ssl/ssl_sess.o ssl/t1_enc.o \
-    ssl/t1_lib.o ssl/t1_reneg.o ssl/d1_srtp.o ssl/s3_cbc.o ssl/t1_clnt.o
+    ssl/t1_ext.o ssl/t1_lib.o ssl/t1_reneg.o ssl/d1_srtp.o ssl/s3_cbc.o \
+    ssl/t1_clnt.o
 
 # Linking of openssl bits for wanboot.
 # Interface for wanboot is specified in mapfile.wanboot. Object files are

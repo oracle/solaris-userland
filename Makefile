@@ -38,7 +38,7 @@ test:		TARGET = test
 system-test:	TARGET = system-test
 component-hook:		TARGET = component-hook
 
-.DEFAULT:	publish
+.DEFAULT_GOAL :=	publish
 
 download setup unpack patch prep build install publish validate clean clobber \
 test system-test component-hook: $(SUBDIRS)
@@ -47,3 +47,4 @@ $(SUBDIRS):	FORCE
 	@+echo "$(TARGET) $@" ; $(MAKE) -C $@ $(TARGET)
 
 FORCE:
+.PHONY: FORCE

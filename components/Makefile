@@ -99,7 +99,7 @@ publish:		MAKEFLAGS += DISABLE_IPS_CATALOG_AND_INDEX_UPDATES=yes
 test:			MAKEFLAGS += TOP_LEVEL_TEST=yes
 system-test:		MAKEFLAGS += TOP_LEVEL_TEST=yes
 
-.DEFAULT:	publish
+.DEFAULT_GOAL :=	publish
 
 zone-build build install publish test system-test: $(COMPONENT_DIRS)
 
