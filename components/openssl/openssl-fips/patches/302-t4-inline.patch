@@ -16,33 +16,6 @@ diff -ru openssl-1.0.1e/Configure openssl-1.0.1e/Configure
  my $sparcv8_asm=":sparcv8.o:des_enc-sparc.o fcrypt_b.o:::::::::::::void";
  my $alpha_asm="alphacpuid.o:bn_asm.o alpha-mont.o:::::sha1-alpha.o:::::::ghash-alpha.o::void";
  my $mips32_asm=":bn-mips.o::aes_cbc.o aes-mips.o:::sha1-mips.o sha256-mips.o::::::::";
-Index: crypto/sparccpuid.S
-===================================================================
-diff -ru openssl-1.0.1e/crypto/sparccpuid.S openssl-1.0.1e/crypto/sparccpuid.S
---- a/crypto/sparccpuid.S 2011-05-24 17:02:24.000000000 -0700
-+++ b/crypto/sparccpuid.S 2011-07-27 10:48:17.817470000 -0700
-@@ -255,7 +255,12 @@
- !	UltraSPARC IIe		7
- !	UltraSPARC III		7
- !	UltraSPARC T1		24
-+!	SPARC T4		65(*)
- !
-+! (*)	result has lesser to do with VIS instruction latencies, rdtick
-+!	appears that slow, but it does the trick in sense that FP and
-+!	VIS code paths are still slower than integer-only ones.
-+!
- ! Numbers for T2 and SPARC64 V-VII are more than welcomed.
- !
- ! It would be possible to detect specifically US-T1 by instrumenting
-@@ -264,6 +269,8 @@
- .global	_sparcv9_vis1_instrument
- .align	8
- _sparcv9_vis1_instrument:
-+	.word	0x81b00d80	!fxor	%f0,%f0,%f0
-+	.word	0x85b08d82	!fxor	%f2,%f2,%f2
- 	.word	0x91410000	!rd	%tick,%o0
- 	.word	0x81b00d80	!fxor	%f0,%f0,%f0
- 	.word	0x85b08d82	!fxor	%f2,%f2,%f2
 Index: crypto/sparcv9cap.c
 ===================================================================
 --- openssl-fips-2.0.13/crypto/sparcv9cap.c.~1~	2016-06-20 12:49:42.000000000 -0700
@@ -66,7 +39,7 @@ Index: crypto/sparcv9cap.c
 +#endif
  
 -static int OPENSSL_sparcv9cap_P=SPARCV9_TICK_PRIVILEGED;
-+extern unsigned OPENSSL_sparcv9cap_P[2];
++unsigned int OPENSSL_sparcv9cap_P[2] = { SPARCV9_TICK_PRIVILEGED, 0 };
  
  int bn_mul_mont(BN_ULONG *rp, const BN_ULONG *ap, const BN_ULONG *bp, const BN_ULONG *np,const BN_ULONG *n0, int num)
 -	{
