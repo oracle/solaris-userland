@@ -1,34 +1,44 @@
-Developed in-house, as the community seems to be back it can be
-provided back upstream.
+Developed in-house.
+Makes pwgen to use Solaris'implementation of SHA1.
 
-Fixes a Parfait reported issue and makes pwgen to use Solaris'
-implementation of SHA1.
-
---- pwgen-2.07/sha1num.c.orig	Fri Apr 22 04:32:20 2016
-+++ pwgen-2.07/sha1num.c	Fri Apr 22 04:45:55 2016
+--- pwgen-2.08/sha1num.c.orig	2017-10-21 04:59:33.229951833 -0700
++++ pwgen-2.08/sha1num.c	2017-10-21 05:05:02.510013633 -0700
 @@ -11,7 +11,15 @@
  #include <stdio.h>
  #include <stdlib.h>
  #include "pwgen.h"
 -#include "sha1.h"
-+#ifdef SHA_INTERNAL
-+  #include "sha1.h"
-+#elif SHA_SOLARIS
++#ifdef SHA_SOLARIS
 +  #include <sha1.h>
 +  #define sha1_context SHA1_CTX
 +  #define sha1_starts SHA1Init
 +  #define sha1_update SHA1Update
 +  #define sha1_finish(a,b) SHA1Final(b,a)
++#else
++  #include "sha1.h"
 +#endif
  
  sha1_context sha1_ctx;
  char *sha1_seed;
-@@ -54,6 +62,8 @@
- 		sha1_update( &sha1_ctx, buf, i );
- 	}
+
+Do not use any code from internal SHA1 implementation.
+
+--- pwgen-2.08/sha1.c.orig	2017-10-21 05:08:09.650908199 -0700
++++ pwgen-2.08/sha1.c	2017-10-21 05:16:26.884152003 -0700
+@@ -18,6 +18,10 @@
+  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  */
  
-+  fclose(f);
++#ifdef SHA_SOLARIS
++typedef int make_iso_compilers_happy;
++#else
 +
- 	return;
+ #include <string.h>
+ 
+ #include "sha1.h"
+@@ -397,3 +401,5 @@
  }
  
+ #endif
++
++#endif
