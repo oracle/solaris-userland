@@ -30,23 +30,19 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-online-accounts
-COMPONENT_VERSION=	3.18.0
+COMPONENT_VERSION=	3.24.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GnomeOnlineAccounts
 COMPONENT_ARCHIVE_HASH= \
-	sha256:fc2dac96551746576759bd14f9b322bae1dd0aeedc0e755065ddf5eaaefacd34
+	sha256:9e2f780e061641dfd692cc82269b0cac6cce73c74ce2d8a0a5e80889ed07c17b
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	10943
 
-TPNO=			25358
+TPNO=			36149
 
 TEST_TARGET = $(NO_TESTS)
 
 # Needs gobject-introspection, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_64=
-INSTALL_64=
-PUBLISH_STAMP=
-endif
+include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

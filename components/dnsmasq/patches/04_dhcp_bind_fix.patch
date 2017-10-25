@@ -4,8 +4,9 @@ that causes DHCP to be extremely slow.
 This patch was developed in-house. Since it is Solaris-specific, it is not
 suitable for upstream.
 
---- dnsmasq-2.76/src/dhcp-common.c	2015-07-30 12:59:07.000000000 -0700
-+++ new/src/dhcp-common.c	2016-09-22 15:12:02.104708123 -0700
+diff -r 37614cb705be -r 4468e42e6443 src/dhcp-common.c
+--- a/src/dhcp-common.c	Fri Oct 06 14:10:20 2017 +0100
++++ b/src/dhcp-common.c	Fri Oct 06 14:11:14 2017 +0100
 @@ -493,6 +493,58 @@
        errno != EPERM)
      die(_("failed to set SO_BINDTODEVICE on DHCP socket: %s"), NULL, EC_BADNET);
@@ -65,20 +66,9 @@ suitable for upstream.
  #endif
  
  static const struct opttab_t {
---- dnsmasq-2.76/src/dnsmasq.h	2016-09-22 15:20:19.502011580 -0700
-+++ new/src/dnsmasq.h	2016-09-22 13:17:03.865473011 -0700
-@@ -1464,6 +1464,9 @@
- #ifdef HAVE_LINUX_NETWORK
- char *whichdevice(void);
- void bindtodevice(char *device, int fd);
-+#elif defined(HAVE_SOLARIS_NETWORK)
-+int which_ifindex(void);
-+void bindtoif(int ifindex, int fd, int is_dhcp6);
- #endif
- #  ifdef HAVE_DHCP6
- void display_opts6(void);
---- dnsmasq-2.76/src/dnsmasq.c	2015-07-30 12:59:07.000000000 -0700
-+++ new/src/dnsmasq.c	2016-09-22 15:20:03.040122945 -0700
+diff -r 37614cb705be -r 4468e42e6443 src/dnsmasq.c
+--- a/src/dnsmasq.c	Fri Oct 06 14:10:20 2017 +0100
++++ b/src/dnsmasq.c	Fri Oct 06 14:11:14 2017 +0100
 @@ -54,6 +54,10 @@
    char *bound_device = NULL;
    int did_bind = 0;
@@ -90,7 +80,7 @@ suitable for upstream.
  #if defined(HAVE_DHCP) || defined(HAVE_DHCP6)
    struct dhcp_context *context;
    struct dhcp_relay *relay;
-@@ -306,6 +310,23 @@
+@@ -326,6 +330,23 @@
  	      did_bind = 1;
  	    }
  	}
@@ -114,7 +104,7 @@ suitable for upstream.
  #endif
  
  #if defined(HAVE_LINUX_NETWORK) && defined(HAVE_DHCP6)
-@@ -314,6 +335,12 @@
+@@ -334,6 +355,12 @@
  	  bindtodevice(bound_device, daemon->dhcp6fd);
  	  did_bind = 1;
  	}
@@ -127,7 +117,7 @@ suitable for upstream.
  #endif
      }
    else 
-@@ -788,6 +815,9 @@
+@@ -818,6 +845,9 @@
  #  ifdef HAVE_LINUX_NETWORK
    if (did_bind)
      my_syslog(MS_DHCP | LOG_INFO, _("DHCP, sockets bound exclusively to interface %s"), bound_device);
@@ -136,4 +126,17 @@ suitable for upstream.
 +    my_syslog(MS_DHCP | LOG_INFO, _("DHCP, sockets bound exclusively to interface index %d"), bound_ifindex);
  #  endif
  
-   /* after dhcp_contruct_contexts */
+   /* after dhcp_construct_contexts */
+diff -r 37614cb705be -r 4468e42e6443 src/dnsmasq.h
+--- a/src/dnsmasq.h	Fri Oct 06 14:10:20 2017 +0100
++++ b/src/dnsmasq.h	Fri Oct 06 14:11:14 2017 +0100
+@@ -1490,6 +1490,9 @@
+ #ifdef HAVE_LINUX_NETWORK
+ char *whichdevice(void);
+ void bindtodevice(char *device, int fd);
++#elif defined(HAVE_SOLARIS_NETWORK)
++int which_ifindex(void);
++void bindtoif(int ifindex, int fd, int is_dhcp6);
+ #endif
+ #  ifdef HAVE_DHCP6
+ void display_opts6(void);

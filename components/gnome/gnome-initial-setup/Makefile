@@ -29,13 +29,13 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-initial-setup
-COMPONENT_VERSION=	3.18.0
+COMPONENT_VERSION=	3.24.0
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8fee9de41677c44318bb1c3bade2b6c9156698ad1a06e63aa1c15e3ab1bee729
+	sha256:c66fadfb5ec8febaecbd81d6bf976cbf9557e9f65efd4d8e59ef712700bae554
 COMPONENT_BUGDB=	gnome/session
 COMPONENT_ANITYA_ID=	13132
 
-TPNO=			25848
+TPNO=			34579
 
 TEST_TARGET= $(NO_TESTS)
 
@@ -67,6 +67,7 @@ REQUIRED_PACKAGES += library/desktop/webkitgtk4
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
 REQUIRED_PACKAGES += library/gnome/gnome-online-accounts
+REQUIRED_PACKAGES += library/gnome/libsecret
 REQUIRED_PACKAGES += library/json-glib
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += system/display-manager/gdm

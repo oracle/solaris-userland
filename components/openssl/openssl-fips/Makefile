@@ -45,28 +45,6 @@ include $(WS_MAKE_RULES)/configure.mk
 
 PATH=$(SPRO_VROOT)/bin:/usr/bin:/usr/gnu/bin:/usr/perl5/bin
 
-# In order to build a 32bit version on a 64bit system the isalist(1) command
-# must be substituted for the 32bit build so that amd64|sparcv9 is not part of
-# its output. isalist is used internally when configuring the canister before
-# building it. In order to allow make install to be run as a no-op we have to
-# fake "make install" since we do not want to install the files anywhere. The
-# command sets U1 and U2 are defined in the FIPS 2.0.5 security policy and must be
-# run as shown there. Nothing from the tarball can be modified. We use the U2
-# command set, see below.
-FAKE_ISALIST = 32/isalist 64/isalist
-FAKE_MAKE = fips-gmake
-FAKE_CC = cc
-FAKE_APPS = $(FAKE_ISALIST) $(FAKE_MAKE) $(FAKE_CC)
-
-CLEAN_PATHS += $(FAKE_APPS)
-
-# Do not use $(PWD), it would not work if run from a different directory with
-# "gmake -C" as we do from openssl-default
-# we'll also pick up gcc if we find it in the path, so force it to
-# find one that doesn't work like it wants
-FIPS_PATH_32 = $(COMPONENT_DIR)/32:$(COMPONENT_DIR)/gcc:$(PATH)
-FIPS_PATH_64 = $(COMPONENT_DIR)/64:$(COMPONENT_DIR)/gcc:$(PATH)
-
 # HMAC-SHA-1 digest of the OpenSSL FIPS tar file is used for the
 # integrity test requirement for the FIPS-140 validation.
 # Note: COMPONENT_ARCHIVE_HASH is a SHA256 digest used by the Userland
@@ -97,34 +75,29 @@ COMPONENT_POST_UNPACK_ACTION = \
 	$(LN) -fs $(COMPONENT_DIR)/inline-t4/sha1-sparcv9.pl		$(@D)/crypto/sha/asm; \
 	$(LN) -fs $(COMPONENT_DIR)/inline-t4/sha512-sparcv9.pl		$(@D)/crypto/sha/asm; )
 
-# There is a specific way that must be followed to build the FIPS-140 canister.
-# It is "./config fipscanisterbuild; make; make install" and is called a command
-# set "U2" in the OpenSSL FIPS-140 User Guide.
 ifeq ($(MACH), sparc)
-CONFIGURE_SCRIPT_32 = config
-# For 64-bit, use './Configure fipscanisterbuild solaris64-sparcv9-cc'.
-CONFIGURE_SCRIPT_64 = ./Configure
-CONFIGURE_OPTIONS.64 = solaris64-sparcv9-cc
-CONFIGURE_SCRIPT = $(CONFIGURE_SCRIPT_$(BITS))
+CONFIGURE_OPTIONS.32 =	solaris-sparcv9-cc
+CONFIGURE_OPTIONS.64 =	solaris64-sparcv9-cc
 else
-CONFIGURE_SCRIPT = config
+CONFIGURE_OPTIONS.32 =	solaris-x86-cc
+CONFIGURE_OPTIONS.64 =	solaris64-x86_64-cc
 endif
+CONFIGURE_SCRIPT = ./Configure
+
 
 CONFIGURE_OPTIONS = fipscanisterbuild
 CONFIGURE_OPTIONS += $(CONFIGURE_OPTIONS.$(BITS))
 COMPONENT_BUILD_ARGS =
 COMPONENT_BUILD_TARGETS =
 COMPONENT_INSTALL_ARGS =
-COMPONENT_INSTALL_TARGETS = install
+COMPONENT_INSTALL_TARGETS =
 # Ignore default CC_FOR_BUILD, CC, and CXX in CONFIGURE_ENV.
 CONFIGURE_ENV += CC_FOR_BUILD=
 CONFIGURE_ENV += CC=
 CONFIGURE_ENV += CXX=
-CONFIGURE_ENV += FIPS_SITE_LD=$(LD) PATH=$(FIPS_PATH_$(BITS))
+CONFIGURE_ENV += FIPS_SITE_LD=$(LD)
 # Add COMPONENT_DIR to PATH so cc wrapper can be found.
-COMPONENT_BUILD_ENV += FIPS_SITE_LD=$(LD) REALCC=$(CC) MYMAKE=$(MAKE) PATH=$(COMPONENT_DIR):$(PATH)
-
-$(BUILD_32_and_64): $(FAKE_APPS)
+COMPONENT_BUILD_ENV += FIPS_SITE_LD=$(LD) MYMAKE=$(MAKE) PATH=$(COMPONENT_DIR):$(PATH)
 
 # You should not use this target with this component unless testing or
 # debugging. The OpenSSL FIPS-140 policy is strict and full U2 command set
@@ -133,9 +106,9 @@ configure:	$(CONFIGURE_32_and_64)
 
 build:		$(BUILD_32_and_64)
 
+
 # We must make the "install" target a no-op (but must run it to be compliant).
 # See above for more information.
-install:	GMAKE = $(COMPONENT_DIR)/fips-gmake
 install:	$(BUILD_DIR_32)/.verified $(BUILD_DIR_64)/.verified
 
 # This is a recommended set of commands to verify that the FIPS-140 mode can be

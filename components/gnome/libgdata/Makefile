@@ -30,14 +30,14 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgdata
-COMPONENT_VERSION=	0.17.3
+COMPONENT_VERSION=	0.17.7
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/libgdata
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:ff280b031c50a99ed735c3fa18fbea9ae3e4cc5e3d7dd58ebae09994b01b513b
+    sha256:8a663ef314a6d20b73c762072e0c1353fa7ec1ca3c2dee6fb85927cbda0d44fd
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13145
 
-TPNO=			25082
+TPNO=			34705
 
 # Needs gobject-introspection, not available on S11.
 include $(WS_MAKE_RULES)/no-evaluation.mk
@@ -57,6 +57,11 @@ CONFIGURE_OPTIONS += --enable-vala
 CONFIGURE_OPTIONS += --with-pic
 
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
+
+# Requires updated gnome-online-accounts
+GOA_BASE = $(WS_COMPONENTS)/gnome/gnome-online-accounts/build/prototype/$(MACH)
+COMPONENT_BUILD_ENV  += \
+       XDG_DATA_DIRS="$(GOA_BASE)/usr/share:/usr/share"
 
 # for the tests
 unexport SHELLOPTS

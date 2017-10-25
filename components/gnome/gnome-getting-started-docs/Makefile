@@ -25,14 +25,14 @@ BUILD_BITS =            NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-getting-started-docs
-COMPONENT_VERSION=	3.18.2
+COMPONENT_VERSION=	3.24.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/DocumentationProject/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:5f4a39d51aba3669d84ce2cb06619a09a92103f58d4bc6728db448398b1f308b
+	sha256:07d2461602e78f8747826a1592f72f072df620d5abc28470f7e5eeaaa5bca099
 COMPONENT_BUGDB=	gnome/help
 COMPONENT_ANITYA_ID=	13131
 
-TPNO=			25849
+TPNO=			34526
 
 TEST_TARGET= $(NO_TESTS)
 
