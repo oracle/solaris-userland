@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		binutils
-COMPONENT_VERSION=	2.29
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
+COMPONENT_VERSION=	2.30
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:29a29549869039aad75fdf507ac30366da5ad0b974fbff4a8e7148dbf4f40ebf
+    sha256:6e46b8aeae2f727a36f0bd9505e405768a72218f1796f0d09757d45209871ae6
 COMPONENT_BUGDB=	utility/gnu-binutils
 COMPONENT_ANITYA_ID=	7981
 
-TPNO=			36852
+TPNO=			40924
 
 #
 # for platform and cross platform support
@@ -55,10 +55,11 @@ export PATH=$(dirname $(CC)):$(GNUBIN):/usr/bin
 COMPONENT_TEST_ARGS += -k
 COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 
-COMPONENT_TEST_TRANSFORMS += '-e "/bin\/gcc/d" '
-COMPONENT_TEST_TRANSFORMS += '-e "/bin\/g++/d" '
-COMPONENT_TEST_TRANSFORMS += '-e "/^Test Run By /d" '
-COMPONENT_TEST_TRANSFORMS += '-e "/^Test run by /d" '
+# Keep only the test results.  Details are always in the build directory
+COMPONENT_TEST_TRANSFORMS += \
+	'-n '\
+	'-e "/^\# of/p" '\
+	'-e "/Summary =/p" '
 
 PARCH =		$(MACH:i386=x86_64-pc)
 GNU_ARCH =	$(PARCH:sparc=sparcv9-sun)-solaris$(SOLARIS_VERSION)
@@ -79,11 +80,11 @@ $(MANIFEST_BASE)-binutils-cross-MACH.mogrified: PKG_MACROS += GNU_ARCH=$(CROSS_A
 
 CONFIGURE_PREFIX =	$(USRDIR)/gnu
 
-CONFIGURE_OPTIONS +=	--mandir=$(CONFIGURE_MANDIR)
-CONFIGURE_OPTIONS +=	--infodir=$(CONFIGURE_INFODIR)
+CONFIGURE_OPTIONS +=    --mandir=$(CONFIGURE_MANDIR)
+CONFIGURE_OPTIONS +=    --infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS +=    --disable-gold
 CONFIGURE_OPTIONS +=    --disable-libtool-lock
-CONFIGURE_OPTIONS +=	--enable-64-bit-bfd
+CONFIGURE_OPTIONS +=    --enable-64-bit-bfd
 CONFIGURE_OPTIONS +=    --enable-deterministic-archives
 CONFIGURE_OPTIONS +=    --enable-host-shared
 CONFIGURE_OPTIONS +=    --enable-largefile
