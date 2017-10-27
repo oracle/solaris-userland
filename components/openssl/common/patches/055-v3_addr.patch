@@ -1,0 +1,24 @@
+================================================================================
+# The patch is based on the following commit from the upstream to fix
+# CVE-2017-3735:
+# https://github.com/openssl/openssl/commit/31c8b265591a0aaa462a1f3eb5770661aaac67db
+# The fix is patched until the new version becomes available from the upstream.
+--- openssl-1.0.2l/crypto/x509v3/v3_addr.c	2017-10-24 15:48:19.112159373 -0700
++++ openssl-1.0.2l/crypto/x509v3/v3_addr.c.new	2017-10-24 15:58:39.143390546 -0700
+@@ -130,10 +130,12 @@
+  */
+ unsigned int v3_addr_get_afi(const IPAddressFamily *f)
+ {
+-    return ((f != NULL &&
+-             f->addressFamily != NULL && f->addressFamily->data != NULL)
+-            ? ((f->addressFamily->data[0] << 8) | (f->addressFamily->data[1]))
+-            : 0);
++    if (f == NULL
++            || f->addressFamily == NULL
++            || f->addressFamily->data == NULL
++            || f->addressFamily->length < 2)
++        return 0;
++    return (f->addressFamily->data[0] << 8) | f->addressFamily->data[1];
+ }
+ 
+ /*
