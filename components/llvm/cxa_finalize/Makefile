@@ -1,5 +1,5 @@
 #
-## CDDL HEADER START
+# CDDL HEADER START
 #
 # The contents of this file are subject to the terms of the
 # Common Development and Distribution License (the "License").
@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 export PARFAIT_BUILD=no
 COMPILER= gcc
@@ -39,9 +39,6 @@ OBJECTS = cxa_finalize-32.o cxa_finalize-64.o \
 
 BUILD_STYLE= pkg
 include $(WS_MAKE_RULES)/common.mk
-
-# We need GCC version 5, and not another version; see components/llvm/Makefile.
-GCC_ROOT=/usr/gcc/5
 
 RELEASE_LIST=Debug+Asserts+Checks Debug+Asserts Debug Release+Debug Release Unoptimized
 

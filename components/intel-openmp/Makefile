@@ -30,9 +30,6 @@ COMPILER = gcc
 
 include ../../make-rules/shared-macros.mk
 
-# This and llvm must use the same version of gcc.
-GCC_ROOT=/usr/gcc/5
-
 COMPONENT_NAME        = libomp
 COMPONENT_VERSION     = 20151009
 COMPONENT_SRC         = $(COMPONENT_NAME)_$(COMPONENT_VERSION)
@@ -88,8 +85,8 @@ CPPFLAGS += -D__EXTENSIONS__=1 -DKMP_GOMP_COMPAT=1
 CPPFLAGS += -DKMP_TDATA_GTID=1
 LDFLAGS += -z ignore -z relax=comdat
 
-LIBIOMP_RUNPATH_32	= /usr/gcc/5/lib
-LIBIOMP_RUNPATH_64	= /usr/gcc/5/lib/$(MACH64)
+LIBIOMP_RUNPATH_32	= /usr/gcc/7/lib
+LIBIOMP_RUNPATH_64	= /usr/gcc/7/lib/$(MACH64)
 LIBIOMP_RUNPATH	= $(LIBIOMP_RUNPATH_$(BITS))
 
 CFLAGS		+= -Wl,-R -Wl,$(LIBIOMP_RUNPATH)
@@ -120,12 +117,12 @@ COMPONENT_POST_UNPACK_ACTION = \
 
 REQUIRED_PACKAGES += developer/build/cmake
 REQUIRED_PACKAGES += developer/build/pkg-config
-REQUIRED_PACKAGES += developer/gcc/gcc-c++-5
-REQUIRED_PACKAGES += developer/gcc/gcc-c-5
-REQUIRED_PACKAGES += developer/gcc/gcc-common-5
+REQUIRED_PACKAGES += developer/gcc/gcc-c++-7
+REQUIRED_PACKAGES += developer/gcc/gcc-c-7
+REQUIRED_PACKAGES += developer/gcc/gcc-common-7
 REQUIRED_PACKAGES += developer/gnu-binutils
 REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/library/gcc/gcc-runtime-5
-REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime-5
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime-5
+REQUIRED_PACKAGES += system/library/gcc/gcc-runtime-7
+REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime-7
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime-7
 REQUIRED_PACKAGES += system/library/math
