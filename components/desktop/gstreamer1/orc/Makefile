@@ -27,16 +27,16 @@ BUILD_BITS =            32_and_64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		orc
-COMPONENT_VERSION=	0.4.26
+COMPONENT_VERSION=	0.4.27
 COMPONENT_PROJECT_URL=	http://gstreamer.freedesktop.org/projects/orc.html
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7d52fa80ef84988359c3434e1eea302d077a08987abdde6905678ebcad4fa649
+	sha256:51e53e58fc8158e5986a1f1a49a6d970c5b16493841cf7b9de2c2bde7ce36b93
 COMPONENT_ARCHIVE_URL=	http://gstreamer.freedesktop.org/src/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	2573
 
-TPNO=			33711
+TPNO=			39069
 
 include $(WS_MAKE_RULES)/common.mk
 
