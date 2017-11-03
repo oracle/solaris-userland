@@ -28,26 +28,22 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		geoclue
-COMPONENT_VERSION=	2.4.6
+COMPONENT_VERSION=	2.4.7
 COMPONENT_PROJECT_URL=	http://freedesktop.org/wiki/Software/GeoClue/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-        sha256:c57df7455c9b4b2f43b0f5d9be14d52f5ff9897236df768f6ca9044b79b6d3b6
+        sha256:d17b96bb5799a84723385ea5704235565e9c3dedd2b7afac475a06e550ae0ea6
 COMPONENT_ARCHIVE_URL=	http://freedesktop.org/software/geoclue/releases/2.4/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13108
 
-TPNO=			35143
+TPNO=			39070
 
 TEST_TARGET = $(NO_TESTS)
 
 # Needs json-glib, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
+include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/common.mk
 

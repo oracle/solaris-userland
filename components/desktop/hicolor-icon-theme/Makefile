@@ -27,14 +27,14 @@ BUILD_BITS=             NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		hicolor-icon-theme
-COMPONENT_VERSION=	0.15
+COMPONENT_VERSION=	0.17
 COMPONENT_PROJECT_URL=	http://freedesktop.org/wiki/Software/icon-theme/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:9cc45ac3318c31212ea2d8cb99e64020732393ee7630fa6c1810af5f987033cc
+	sha256:317484352271d18cbbcfac3868eab798d67fff1b8402e740baa6ff41d588a9d8
 COMPONENT_ARCHIVE_URL=	http://icon-theme.freedesktop.org/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=        gnome/branding
 COMPONENT_ANITYA_ID=	1316
 
-TPNO=		24162
+TPNO=			39067
 
 include $(WS_MAKE_RULES)/gnome-component.mk

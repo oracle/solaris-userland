@@ -25,17 +25,17 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		CGI
-COMPONENT_VERSION=	4.28
+COMPONENT_VERSION=	4.37
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:1297d3ed6616cacb4eb57860e3e743f3890111e7a63ca08849930f42f1360532
+    sha256:1548c25841565908314e4591eb16236067bda4cc72618f68b6975c3b84cb0c99
 COMPONENT_ARCHIVE_URL=	http://search.cpan.org/CPAN/authors/id/L/LE/LEEJO/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://search.cpan.org/~leejo/CGI
 COMPONENT_BUGDB=	perl-mod/cgi
 COMPONENT_ANITYA_ID=	2687
 
-TPNO=			29151
+TPNO=			39158
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
@@ -47,9 +47,13 @@ include $(WS_MAKE_RULES)/makemaker.mk
 COMPONENT_TEST_TARGETS = test
 
 COMPONENT_TEST_TRANSFORMS += \
+	 '-n ' \
 	 '-e "s/\s*[0-9][0-9]* wallclock secs (.*CPU)$$/ <TIMINGS REMOVED>/" ' \
-	 '-e "s/^\[... ... [0-9][0-9]* [0-9][0-9]:[0-9][0-9]:[0-9][0-9] [0-9][0-9][0-9][0-9]\]/[date]/" ' \
-	 '-e "s/$(PERL_ARCH)/\$$(PERL_ARCH)/g" ' \
+	 '-e "/^All tests successful/p" ' \
+	 '-e "/^Files=/p" ' \
+	 '-e "/^Result:/p" ' \
+	 '-e "/^Failed .* test programs/p" '
+
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -57,6 +61,8 @@ build:		$(BUILD_64)
 
 install:	$(INSTALL_64)
 
+# Please note that the failures are due to missing external modules. See
+# TESTING for info on how to test this module successfully
 test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)

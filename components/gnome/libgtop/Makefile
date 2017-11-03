@@ -30,23 +30,19 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgtop
-COMPONENT_VERSION=	2.30.0
+COMPONENT_VERSION=	2.36.0
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/libgtop/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:463bcbe5737b1b93f3345ee34abf601e8eb864f507c49ff1921c2737abafc1e5
+	sha256:13bfe34c150b2b00b03df4732e8c7ccfae09ab15897ee4f4ebf0d16b0f3ba12b
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13146
 
-TPNO=			25827
+TPNO=			34656
 
 TEST_TARGET = $(NO_TESTS)
 
 # Needs gobject-introspection, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
+include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
