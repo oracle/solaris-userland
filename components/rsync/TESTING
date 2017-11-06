@@ -1,0 +1,12 @@
+# Make sure we are looking at the correct rsync
+rsync --version
+
+cd /var/tmp
+mkdir a
+cd a
+touch file
+runat file cp /etc/passwd extended
+cd ..
+rsync -Xr a/ b/
+runat b/file cat extended
+# Should display /etc/passwd contents

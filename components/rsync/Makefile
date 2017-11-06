@@ -40,3 +40,9 @@ include $(WS_MAKE_RULES)/common.mk
 CONFIGURE_OPTIONS  +=		SHELL_PATH=$(BINDIR)/sh
 CONFIGURE_OPTIONS  +=		--with-included-popt
 CONFIGURE_OPTIONS  +=		--enable-xattr-support
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS += \
+	'-n ' \
+	'-e "/passed$$/p" ' \
+	'-e "/skipped$$/p" '
