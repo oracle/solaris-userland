@@ -31,31 +31,22 @@ include ../../make-rules/shared-macros.mk
 PATH=$(GNUBIN):$(USRBINDIR)
 
 COMPONENT_NAME=		avahi
-COMPONENT_VERSION=	0.6.32
-TPNO=			27473
-COMPONENT_ARCHIVE_HASH=	sha256:d54991185d514a0aba54ebeb408d7575b60f5818a772e28fa0e18b98bc1db454
-COMPONENT_ARCHIVE_URL=	https://github.com/lathiat/avahi/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+COMPONENT_VERSION=	0.7
+TPNO=			39210
+COMPONENT_ARCHIVE_HASH=	sha256:57a99b5dfe7fdae794e3d1ee7a62973a368e91e414bd0dfa5d84434de5b14804
+COMPONENT_ARCHIVE_URL=	http://avahi.org/download/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://www.avahi.org/
 COMPONENT_BUGDB=	library/avahi
 COMPONENT_ANITYA_ID=	147
 
-# Depends on a Python module from Desktop that is only available 32-bit in S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
-
-TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_SBINDIR.64 =	$(CONFIGURE_BINDIR.64)
 CONFIGURE_OPTIONS	+=	--enable-shared
 CONFIGURE_OPTIONS	+=	--disable-static
-CONFIGURE_OPTIONS	+=	--sysconfdir=$(ETCDIR)
+CONFIGURE_OPTIONS	+=	--sysconfdir="$(ETCDIR)"
 CONFIGURE_OPTIONS	+=	--with-avahi-user=daemon
 CONFIGURE_OPTIONS	+=	--with-avahi-group=other
-CONFIGURE_OPTIONS	+=	--localstatedir=$(VARDIR)/avahi
 CONFIGURE_OPTIONS	+=	--with-distro=none
 CONFIGURE_OPTIONS	+=	--disable-gtk3
 CONFIGURE_OPTIONS	+=	--disable-pygtk
@@ -71,9 +62,6 @@ CONFIGURE_OPTIONS	+=	--enable-dbm
 CONFIGURE_OPTIONS	+=	--disable-manpages
 CONFIGURE_OPTIONS.64	+=	--enable-doxygen-man
 CONFIGURE_OPTIONS.32	+=	--disable-doxygen-man
-# stack-protector breaks build with gcc 5.3 if not explicitly disabled until
-# fix for 23185183 is available on all build machines (s12_99 or later)
-CONFIGURE_OPTIONS	+=	--disable-stack-protector
 CONFIGURE_OPTIONS	+=	CPP="$(CC) -E"
 LDFLAGS	+=	-ldns_sd
 CONFIGURE_OPTIONS	+=	PYTHON=$(PYTHON.$(PYTHON_VERSION))
@@ -81,10 +69,10 @@ CONFIGURE_OPTIONS	+=	am_cv_python_pythondir="$(PYTHON_VENDOR_PACKAGES)"
 CONFIGURE_OPTIONS	+=	am_cv_python_pyexecdir="$(PYTHON_VENDOR_PACKAGES)"
 
 # NOCONFIGURE=yes -> do not execute "configure" directly from "autogen.sh" (/wo CONFIGURE_OPTIONS...)
-# running of configure /wo CONFIGURE_OPTIONS + ENV -> configure will fail (on --with-distro=none is missing)
+# running of configure /wo CONFIGURE_OPTIONS/ENV -> configure will fail (on --with-distro=none is missing)
 # because "sunos" is not among the distros known to avahi.
 COMPONENT_PREP_ACTION += \
- ( cd $(@D) ; set NOCONFIGURE=yes $(CONFIG_SHELL) autogen.sh )
+ ( cd $(@D) ; PATH="$(PATH)" NOCONFIGURE=yes $(CONFIG_SHELL) autogen.sh )
 # g-i-r-scanner also need to have PATH to cc
 COMPONENT_BUILD_ENV += CC="$(CC)"
 COMPONENT_BUILD_ENV += CFLAGS="$(CFLAGS)"
@@ -93,10 +81,21 @@ $(BUILD_32_and_64): PATH = $(SPRO_VROOT)/bin:$(GNUBIN):$(USRBINDIR)
 COMPONENT_POST_INSTALL_ACTION += \
  ( $(PYTHON.$(PYTHON_VERSION)) -m compileall $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES) )
 
-# build standalone sub-components only
+# build standalone sub-components only needed to lib support only
 SUBDIRS = avahi-common avahi-core avahi-client avahi-glib avahi-gobject avahi-ui
 $(BUILD_32):	COMPONENT_BUILD_TARGETS		+=	SUBDIRS="$(SUBDIRS)"
 $(INSTALL_32):	COMPONENT_INSTALL_TARGETS	+=	SUBDIRS="$(SUBDIRS)"
+
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/bin/avahi-bookmarks
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/bin/avahi-discover
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/lib/python2.7/vendor-packages/64/avahi/ServiceTypeDatabase.py
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/lib/python2.7/vendor-packages/64/avahi/__init__.py
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/lib/python2.7/vendor-packages/64/avahi_discover/__init__.py
+
+COMPONENT_TEST_DIR =             $(@D)/avahi-core
+COMPONENT_TEST_TRANSFORMS += \
+	'-n ' \
+	'-e "/^PASS:/p" '
 
 # gobject-introspection tools are used to build, not a runtime dependency
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
