@@ -1,0 +1,41 @@
+Starting ver 3.19.4, upstream made changes in the startup and initialization,
+because of issues reported in https://bugzilla.gnome.org/show_bug.cgi?id=738205 
+
+Since we didn't see this issue with 3.18.3 and because this is tied to the
+updates of gnome-session and gnome-shell as well, we are patching this 
+temporarily to move autostart back to the initialization phase.
+Once we update gnome-session and gnome-shell, we'll revisit this patch.
+
+--- a/daemon/gnome-keyring-ssh.desktop.in.in	2017-11-03 23:16:17.126310487 -0700
++++ b/daemon/gnome-keyring-ssh.desktop.in.in	2017-11-03 23:16:28.280071783 -0700
+@@ -4,7 +4,7 @@
+ _Comment=GNOME Keyring: SSH Agent
+ Exec=@bindir@/gnome-keyring-daemon --start --components=ssh
+ OnlyShowIn=GNOME;Unity;MATE;
+-X-GNOME-Autostart-Phase=PreDisplayServer
++X-GNOME-Autostart-Phase=Initialization
+ X-GNOME-AutoRestart=false
+ X-GNOME-Autostart-Notify=true
+ X-GNOME-Bugzilla-Bugzilla=GNOME
+--- a/daemon/gnome-keyring-secrets.desktop.in.in	2017-11-06 08:42:07.901933118 -0800
++++ b/daemon/gnome-keyring-secrets.desktop.in.in	2017-11-06 08:42:37.653150029 -0800
+@@ -4,7 +4,7 @@
+ _Comment=GNOME Keyring: Secret Service
+ Exec=@bindir@/gnome-keyring-daemon --start --components=secrets
+ OnlyShowIn=GNOME;Unity;MATE;
+-X-GNOME-Autostart-Phase=PreDisplayServer
++X-GNOME-Autostart-Phase=Initialization
+ X-GNOME-AutoRestart=false
+ X-GNOME-Autostart-Notify=true
+ X-GNOME-Bugzilla-Bugzilla=GNOME
+--- a/daemon/gnome-keyring-pkcs11.desktop.in.in	2017-11-06 08:42:01.262143137 -0800
++++ b/daemon/gnome-keyring-pkcs11.desktop.in.in	2017-11-06 08:42:59.512070279 -0800
+@@ -4,7 +4,7 @@
+ _Comment=GNOME Keyring: PKCS#11 Component
+ Exec=@bindir@/gnome-keyring-daemon --start --components=pkcs11
+ OnlyShowIn=GNOME;Unity;MATE;
+-X-GNOME-Autostart-Phase=PreDisplayServer
++X-GNOME-Autostart-Phase=Initialization
+ X-GNOME-AutoRestart=false
+ X-GNOME-Autostart-Notify=true
+ X-GNOME-Bugzilla-Bugzilla=GNOME

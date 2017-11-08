@@ -1,6 +1,6 @@
 /*
  * ProFTPD - FTP server daemon
- * Copyright (c) 2011, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -164,7 +164,7 @@ static void audit_failure(pool *p, char *authuser) {
   return;
 
 fail:
-  pr_log_pri(PR_LOG_ERR, "Auditing of login failed: %s (%s)", how,
+  pr_log_pri(PR_LOG_DEBUG, "Auditing of login failed: %s (%s)", how,
     strerror(saved_errno));
 
   adt_free_event(event);
@@ -201,7 +201,7 @@ static void audit_success(void) {
   return;
 
 fail:
-  pr_log_pri(PR_LOG_ERR, "Auditing of login failed: %s (%s)", how,
+  pr_log_pri(PR_LOG_DEBUG, "Auditing of login failed: %s (%s)", how,
     strerror(saved_errno));
 
   adt_free_event(event);
@@ -237,7 +237,7 @@ static void audit_logout(void) {
   return;
 
 fail:
-  pr_log_pri(PR_LOG_ERR, "Auditing of logout failed: %s (%s)", how,
+  pr_log_pri(PR_LOG_DEBUG, "Auditing of logout failed: %s (%s)", how,
     strerror(saved_errno));
 
   adt_free_event(event);
@@ -279,7 +279,7 @@ static int audit_sess_init(void) {
 
   /* add privs for audit init */
   if ((privset = priv_allocset()) == NULL) {
-    pr_log_pri(PR_LOG_ERR, "Auditing privilege initialization failed");
+    pr_log_pri(PR_LOG_DEBUG, "Auditing privilege initialization failed");
     return rval;
   }
 
@@ -293,25 +293,25 @@ static int audit_sess_init(void) {
 
   /* basic terminal id setup */
   if (adt_start_session(&aht, NULL, 0) != 0) {
-    pr_log_pri(PR_LOG_ERR, "pam adt_start_session: %s", strerror(errno));
+    pr_log_pri(PR_LOG_DEBUG, "pam adt_start_session: %s", strerror(errno));
     goto out;
   }
   if (adt_load_termid(session.c->rfd, &termid) != 0) {
-    pr_log_pri(PR_LOG_ERR, "adt_load_termid: %s", strerror(errno));
+    pr_log_pri(PR_LOG_DEBUG, "adt_load_termid: %s", strerror(errno));
     (void) adt_end_session(aht);
     goto out;
   }
 
   if (adt_set_user(aht, ADT_NO_AUDIT, ADT_NO_AUDIT, 0, ADT_NO_AUDIT, termid,
     ADT_SETTID) != 0) {
-    pr_log_pri(PR_LOG_ERR, "adt_set_user: %", strerror(errno));
+    pr_log_pri(PR_LOG_DEBUG, "adt_set_user: %", strerror(errno));
     free(termid);
     (void) adt_end_session(aht);
     goto out;
   }
   free(termid);
   if (adt_set_proc(aht) != 0) {
-    pr_log_pri(PR_LOG_ERR, "adt_set_proc: %", strerror(errno));
+    pr_log_pri(PR_LOG_DEBUG, "adt_set_proc: %", strerror(errno));
     (void) adt_end_session(aht);
     goto out;
   }
@@ -394,7 +394,7 @@ adt_event_data_t* __solaris_audit_pre_arg2(
   cmd->error_code = ADT_FAILURE;
 
   if (cmd->arg == NULL) {
-    pr_log_pri(PR_LOG_ERR, "Auditing of %s failed: %s",
+    pr_log_pri(PR_LOG_DEBUG, "Auditing of %s failed: %s",
       description, "bad argument");
     goto err;
   }
@@ -404,7 +404,7 @@ adt_event_data_t* __solaris_audit_pre_arg2(
 
     if ((tmp = pstrdup(cmd->pool, cmd->arg)) == NULL) {
       how = "no memory";
-      pr_log_pri(PR_LOG_ERR, "Auditing of %s(%s) failed: %s",
+      pr_log_pri(PR_LOG_DEBUG, "Auditing of %s(%s) failed: %s",
         description, cmd->arg, how);
       goto err;
     }
@@ -412,21 +412,21 @@ adt_event_data_t* __solaris_audit_pre_arg2(
   }
 
   if (cmd->notes == NULL) {
-    pr_log_pri(PR_LOG_ERR, "Auditing of %s(%s) failed: %s",
+    pr_log_pri(PR_LOG_DEBUG, "Auditing of %s(%s) failed: %s",
       description, cmd->arg, "API error, notes is NULL");
     goto err;
   }
 
   if ((event = adt_alloc_event(asession, event_type)) == NULL) {
     how = "couldn't allocate adt event";
-    pr_log_pri(PR_LOG_ERR, "Auditing of %s(%s) failed: %s(%s)",
+    pr_log_pri(PR_LOG_DEBUG, "Auditing of %s(%s) failed: %s(%s)",
       description, cmd->arg, how, strerror(errno));
     goto err;
   }
 
   if (pr_table_add(cmd->notes, EVENT_KEY, event, sizeof(*event)) == -1) {
     how = "pr_table_add() failed";
-    pr_log_pri(PR_LOG_ERR, "Auditing of %s(%s) failed: %s",
+    pr_log_pri(PR_LOG_DEBUG, "Auditing of %s(%s) failed: %s",
       description, cmd->arg, how);
     adt_free_event(event);
     goto err;
@@ -468,20 +468,21 @@ MODRET __solaris_audit_post(cmd_rec *cmd,
   event = (adt_event_data_t*)pr_table_remove(cmd->notes, EVENT_KEY, &size);
   if (event == NULL) {
     how = "event is NULL";
-    pr_log_pri(PR_LOG_ERR, "Auditing of %s failed: %s", description, how);
+    pr_log_pri(PR_LOG_DEBUG, "Auditing of %s failed: %s", description, how);
     goto out;
   }
 
   if (size != sizeof(*event)) {
     how = "bad event size";
-    pr_log_pri(PR_LOG_ERR, "Auditing of %s failed: %s", description, how);
+    pr_log_pri(PR_LOG_DEBUG, "Auditing of %s failed: %s", description, how);
     goto out;
   }
 
   if (fill_event != NULL) {
     msg = fill_event(cmd, event);
     if (msg != NULL) {
-      pr_log_pri(PR_LOG_ERR, "Auditing of %s failed: %s", description, msg);
+      pr_log_pri(PR_LOG_DEBUG, "Auditing of %s failed: %s with %s", description,
+        msg, strerror(cmd->error_code));
       goto out;
     }
   }
@@ -497,7 +498,7 @@ MODRET __solaris_audit_post(cmd_rec *cmd,
 
   if (adt_put_event(event, exit_status, exit_error) != 0) {
     how = "couldn't put adt event";
-    pr_log_pri(PR_LOG_ERR, "Auditing of %s failed: %s (%s)",
+    pr_log_pri(PR_LOG_DEBUG, "Auditing of %s failed: %s (%s)",
       description, how, strerror(errno));
   }
 
@@ -571,7 +572,7 @@ MODRET solaris_audit_pre_dele(cmd_rec *cmd) {
   rp = realpath(ptr, src_realpath);
   if (rp == NULL) {
     if (errno != ENOENT) {
-      pr_log_pri(PR_LOG_ERR, "Auditing of %s(%s) failed: %s",
+      pr_log_pri(PR_LOG_DEBUG, "Auditing of %s(%s) failed: %s",
         "remove", ptr, "realpath() failed");
       cmd->error_code = errno;
       error_451();
@@ -686,7 +687,7 @@ MODRET solaris_audit_pre_rmd(cmd_rec *cmd) {
   if (rp == NULL) {
     if (errno != ENOENT) {
       cmd->error_code = errno;
-      pr_log_pri(PR_LOG_ERR, "Auditing of %s(%s) failed: %s",
+      pr_log_pri(PR_LOG_DEBUG, "Auditing of %s(%s) failed: %s",
         "rmdir", ptr, "realpath() failed");
       error_451();
       return PR_ERROR(cmd);
@@ -727,7 +728,7 @@ MODRET solaris_audit_pre_mdtm(cmd_rec *cmd) {
   if (rp == NULL) {
     if (errno != ENOENT) {
       cmd->error_code = errno;
-      pr_log_pri(PR_LOG_ERR, "Auditing of %s(%s) failed: %s",
+      pr_log_pri(PR_LOG_DEBUG, "Auditing of %s(%s) failed: %s",
         "utimes", ptr, "realpath() failed");
       error_451();
       return PR_ERROR(cmd);
@@ -817,7 +818,7 @@ MODRET solaris_audit_pre_get(cmd_rec *cmd) {
   if (rp == NULL) {
     if (errno != ENOENT) {
       cmd->error_code = errno;
-      pr_log_pri(PR_LOG_ERR, "Auditing of %s(%s) failed: %s",
+      pr_log_pri(PR_LOG_DEBUG, "Auditing of %s(%s) failed: %s",
         "get", ptr, "realpath() failed");
       error_451();
       return PR_ERROR(cmd);
@@ -927,7 +928,7 @@ MODRET solaris_audit_pre_rnfr(cmd_rec *cmd) {
 
   src_path = strdup(cmd->arg);
   if (src_path == NULL) {
-    pr_log_pri(PR_LOG_ERR, "Auditing of %s(%s) failed: %s",
+    pr_log_pri(PR_LOG_DEBUG, "Auditing of %s(%s) failed: %s",
       "RNFR", ptr, "no memory");
     goto err;
   }
@@ -948,7 +949,7 @@ MODRET solaris_audit_post_rnfr(cmd_rec *cmd) {
 
   ptr = realpath(src_path, src_realpath);
   if (ptr == NULL) {
-    pr_log_pri(PR_LOG_ERR, "Auditing of %s(%s) failed: %s",
+    pr_log_pri(PR_LOG_DEBUG, "Auditing of %s(%s) failed: %s",
       "RNFR", src_path, "realpath() failed");
     error_451();
     return PR_ERROR(cmd);
@@ -1031,7 +1032,7 @@ MODRET solaris_audit_pre_rnto(cmd_rec *cmd) {
    */
   msg = rnto_fill_attr(cmd, event);  
   if (msg != NULL) {
-    pr_log_pri(PR_LOG_ERR, "Auditing of %s(%s,%s) failed: %s",
+    pr_log_pri(PR_LOG_DEBUG, "Auditing of %s(%s,%s) failed: %s",
       "RNTO", event->adt_ft_rename.src_path, ptr, msg);
     goto err;
   }
