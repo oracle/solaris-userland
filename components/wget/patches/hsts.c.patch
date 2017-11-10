@@ -2,8 +2,8 @@ flock system call is not available on Solaris but it can be
 replaced by calling fcntl. This patch will be sent upstream
 after being reworked into a format that will be acceptable.
 
---- wget-1.17.1/src/hsts.c.orig	Tue Jan 12 09:14:54 2016
-+++ wget-1.17.1/src/hsts.c	Tue Jan 12 09:16:55 2016
+--- wget-1.19.2/src/hsts.c.orig	2017-11-08 02:35:12.287469658 -0800
++++ wget-1.19.2/src/hsts.c	2017-11-08 02:40:50.536826637 -0800
 @@ -49,6 +49,7 @@
  #include <string.h>
  #include <stdio.h>
@@ -12,24 +12,24 @@ after being reworked into a format that will be acceptable.
  
  struct hsts_store {
    struct hash_table *table;
-@@ -498,6 +499,7 @@
-   struct_stat st;
+@@ -553,6 +554,7 @@
+   struct stat st;
    FILE *fp = NULL;
    int fd = 0;
 +  struct flock lock_data;
  
    if (filename && hash_table_count (store->table) > 0)
      {
-@@ -506,7 +508,11 @@
+@@ -561,7 +563,11 @@
          {
            /* Lock the file to avoid potential race conditions */
            fd = fileno (fp);
 -          flock (fd, LOCK_EX);
-+          lock_data.l_start = 0;
-+          lock_data.l_len = 0;
-+          lock_data.l_whence = SEEK_SET;
-+          lock_data.l_type = F_WRLCK;
-+          fcntl(fd, F_SETLKW, &lock_data);
++					lock_data.l_start = 0;
++					lock_data.l_len = 0;
++					lock_data.l_whence = SEEK_SET;
++					lock_data.l_type = F_WRLCK;
++					fcntl(fd, F_SETLKW, &lock_data);
  
            /* If the file has changed, merge the changes with our in-memory data
               before dumping them to the file.

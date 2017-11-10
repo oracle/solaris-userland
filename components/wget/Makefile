@@ -23,16 +23,17 @@
 # Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
+COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		wget
-COMPONENT_VERSION=	1.18
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
+COMPONENT_VERSION=	1.19.2
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b5b55b75726c04c06fe253daec9329a6f1a3c0c1878e3ea76ebfebc139ea9cc1
+	sha256:4f4a673b6d466efa50fbfba796bd84a46ae24e370fa562ede5b21ab53c11a920
 COMPONENT_ANITYA_ID=	5124
 
-TPNO=			29459
+TPNO=			39163
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -61,14 +62,14 @@ CONFIGURE_OPTIONS +=	PATH="$(PATH):/usr/perl5/bin"
 # missing on system. By uncommenting following lines it will pass 82
 # tests  out of 83 total tests (1 test in which wget tries to output
 # to a non-existing device /dev/full fails with wrong error code).
-#URI=URI-1.60
-#WWW=libwww-perl-5.837
-#SOCK=IO-Socket-SSL-2.005
-#COMPONENT_TEST_ENV = "http_proxy="
-#COMPONENT_TEST_ENV += "https_proxy="
-#COMPONENT_TEST_ENV += "ftp_proxy="
-#COMPONENT_TEST_ENV += "no_proxy="
-#COMPONENT_PRE_TEST_ACTION = ( \
+# URI=URI-1.60
+# WWW=libwww-perl-5.837
+# SOCK=IO-Socket-SSL-2.005
+# COMPONENT_TEST_ENV = "http_proxy="
+# COMPONENT_TEST_ENV += "https_proxy="
+# COMPONENT_TEST_ENV += "ftp_proxy="
+# COMPONENT_TEST_ENV += "no_proxy="
+# COMPONENT_PRE_TEST_ACTION = ( \
 	cd $(COMPONENT_SRC)/tests; \
 	wget http://search.cpan.org/CPAN/authors/id/G/GA/GAAS/$(URI).tar.gz; \
 	wget http://search.cpan.org/CPAN/authors/id/G/GA/GAAS/$(WWW).tar.gz; \
