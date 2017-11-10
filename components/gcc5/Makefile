@@ -28,15 +28,15 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gcc
-COMPONENT_VERSION=	5.4.0
+COMPONENT_VERSION=	5.5.0
 COMPONENT_PROJECT_URL=	http://gcc.gnu.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:37089e80c3f2e9a0663d7ccc51c2a6c7dbbf3275bc1e4ed1ed3b1460cd5b3030
+    sha256:3aabce75d6dd206876eced17504b28d47a724c2e430dbd2de176beb948708983
 COMPONENT_ARCHIVE_URL=	http://ftp.gnu.org/gnu/gcc/$(COMPONENT_SRC)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=        utility/gnu-compiler
 COMPONENT_ANITYA_ID=	6502
 
-TPNO=			29354
+TPNO=			38835
 
 # Use gcc's default flags instead of userland's.
 CFLAGS=
