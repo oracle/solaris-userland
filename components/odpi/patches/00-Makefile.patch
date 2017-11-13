@@ -1,0 +1,122 @@
+This patch enables building both 32- and 64-bit versions of the library, and
+installing them under usr/lib. Since ODPI-C searches the standard library
+runpath to find libclntsh.so, we bake in the paths where the Instant Client
+is installed if using IPS.
+
+No discussion with the ODPI-C team has occurred yet about how useful this
+patch is for integration with upstream.
+
+
+--- odpi-2.0.2/Makefile.orig	2017-11-02 13:00:16.862851874 -0700
++++ odpi-2.0.2/Makefile	2017-11-02 13:00:35.991424280 -0700
+@@ -17,10 +17,21 @@
+ #------------------------------------------------------------------------------
+ 
+ vpath %.c src
+ vpath %.h include src
+ 
++# Pull in userland definitions.
++include ../../../../make-rules/shared-macros.mk
++
++# We bake in the Instant Client library paths 
++LDFLAGS32 += -R"\$$ORIGIN/../oracle/instantclient/12.2/lib"
++LDFLAGS32 += -R"\$$ORIGIN/../oracle/instantclient/12.1/lib"
++
++LDFLAGS64 += -R"\$$ORIGIN/../../oracle/instantclient/12.2/lib/$(MACH64)"
++LDFLAGS64 += -R"\$$ORIGIN/../../oracle/instantclient/12.1/lib/$(MACH64)"
++
++
+ # define location for library target and intermediate files
+ BUILD_DIR=build
+ LIB_DIR=lib
+ 
+ # set parameters on Windows
+@@ -37,12 +48,13 @@
+ 
+ # set parameters on all other platforms
+ else
+ 	CC=gcc
+ 	LD=gcc
+-	CFLAGS=-Iinclude -O2 -g -Wall -fPIC
+-	LDFLAGS=-shared
++	CFLAGS=-Iinclude -O2 -g -Wall -fPIC -m$(BITS)
++	LDFLAGS=-shared -m$(BITS)
++	LDFLAGS += $(LDFLAGS$(BITS))
+ 	OBJ_SUFFIX=.o
+ 	OBJ_OUT_OPTS=-o
+ 	IMPLIB_NAME=
+ 	ifeq ($(shell uname -s), Darwin)
+ 		LIB_NAME=libodpic.dylib
+@@ -49,39 +61,63 @@
+ 		LIB_OUT_OPTS=-dynamiclib \
+ 			-install_name $(shell pwd)/$(LIB_DIR)/$(LIB_NAME) \
+ 			-o $(LIB_DIR)/$(LIB_NAME)
+ 	else
+ 		LIB_NAME=libodpic.so
+-		LIB_OUT_OPTS=-o $(LIB_DIR)/$(LIB_NAME)
++		DYNLIB = $(LIB_NAME).$(VERS)
++		LIB_OUT_OPTS=-o $(LIB_DIR)/$(DYNLIB) 
++		# Best practice: set the SONAME
++		LDFLAGS += -h$(DYNLIB)
+ 	endif
+ endif
+ 
+ SRCS = dpiConn.c dpiContext.c dpiData.c dpiEnv.c dpiError.c dpiGen.c \
+        dpiGlobal.c dpiLob.c dpiObject.c dpiObjectAttr.c dpiObjectType.c \
+        dpiPool.c dpiStmt.c dpiUtils.c dpiVar.c dpiOracleType.c dpiSubscr.c \
+        dpiDeqOptions.c dpiEnqOptions.c dpiMsgProps.c dpiRowid.c dpiOci.c
+ OBJS = $(SRCS:%.c=$(BUILD_DIR)/%$(OBJ_SUFFIX))
+ 
+-all: $(BUILD_DIR) $(LIB_DIR) $(LIB_DIR)/$(LIB_NAME) $(IMPLIB_NAME)
++DIRS = $(BUILD_DIR) $(LIB_DIR)
+ 
++all: $(DIRS) $(LIB_DIR)/$(DYNLIB) $(IMPLIB_NAME)
++
++install: $(LIB_DIR)/$(DYNLIB) install$(BITS) liblink$(BITS)
++
++$(PROTOUSRINCDIR)/odpi/%.h:		include/%.h
++	$(INS.file)
++
++$(PROTOUSRLIBDIR)/%.so.$(VERS):		$(LIB_DIR)/%.so.$(VERS)
++	$(INS.file) 
++
++$(PROTOUSRLIBDIR64)/%.so.$(VERS):	$(LIB_DIR)/%.so.$(VERS)
++	$(INS.file)
++
++liblink32: $(PROTOUSRLIBDIR)/$(DYNLIB)
++	-$(RM) $(PROTOUSRLIBDIR)/$(LIB_NAME)
++	$(SYMLINK) $(DYNLIB) $(PROTOUSRLIBDIR)/$(LIB_NAME)
++
++liblink64: $(PROTOUSRLIBDIR64)/$(DYNLIB)
++	-$(RM) $(PROTOUSRLIBDIR64)/$(LIB_NAME)
++	$(SYMLINK) $(DYNLIB) $(PROTOUSRLIBDIR64)/$(LIB_NAME)
++
++install32: $(PROTOUSRLIBDIR)/$(DYNLIB)
++install64: $(PROTOUSRINCDIR)/odpi/dpi.h $(PROTOUSRLIBDIR64)/$(DYNLIB)
++
++
+ clean:
+ 	rm -rf $(BUILD_DIR)
+ 	rm -rf $(LIB_DIR)
+ 
+-$(BUILD_DIR):
+-	mkdir $(BUILD_DIR)
++$(BUILD_DIR) $(LIB_DIR):
++	mkdir $@
+ 
+-$(LIB_DIR):
+-	mkdir $(LIB_DIR)
+-
+ $(BUILD_DIR)/%$(OBJ_SUFFIX): %.c dpi.h dpiImpl.h dpiErrorMessages.h
+ 	$(CC) -c $(CFLAGS) $< $(OBJ_OUT_OPTS)$@
+ 
+-$(LIB_DIR)/$(LIB_NAME): $(OBJS)
++$(LIB_DIR)/$(DYNLIB): $(OBJS)
+ 	$(LD) $(LDFLAGS) $(LIB_OUT_OPTS) $(OBJS) $(LIBS)
+ 
+ # import library is specific to Windows
+ ifdef IMPLIB_NAME
+ $(IMPLIB_NAME): $(OBJS)
+ 	lib $(OBJS) /OUT:$@
+ endif
+-
