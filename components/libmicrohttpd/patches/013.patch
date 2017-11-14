@@ -1,0 +1,17 @@
+This patch avoids compilation problems on recent Trunk.
+
+Upstream bug: https://gnunet.org/bugs/view.php?id=5170
+
+--- libmicrohttpd-0.9.52/src/microhttpd/response.c	2017-10-19 14:26:09.439917401 +0000
++++ libmicrohttpd-0.9.52/src/microhttpd/response.c	2017-10-19 14:24:00.542128079 +0000
+@@ -576,8 +576,8 @@ MHD_create_response_from_data (size_t si
+       must_free = MHD_YES;
+       data = tmp;
+     }
+-  response->crc = NULL;
+-  response->crfc = must_free ? &free : NULL;
++  response->crc = (MHD_ContentReaderCallback)NULL;
++  response->crfc = must_free ? &free : (MHD_ContentReaderFreeCallback)NULL;
+   response->crc_cls = must_free ? data : NULL;
+   response->reference_count = 1;
+   response->total_size = size;

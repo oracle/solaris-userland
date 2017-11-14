@@ -54,6 +54,14 @@ PKG_CONFIG_PATHS.64 += /usr/lib/$(MACH64)/pkgconfig/gnutls-3
 PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
 
 COMPONENT_TEST_ENV +=	PATH="$(GNUBIN):$(PATH)"
+COMPONENT_TEST_ENV +=	http_proxy=""
+COMPONENT_TEST_ENV +=	https_proxy=""
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
+COMPONENT_TEST_TRANSFORMS += \
+	'-n ' \
+	'-e "/^\#/p" '
+
 
 COMPONENT_PREP_ACTION += \
 	(cd $(@D); ACLOCAL=aclocal-1.15 AUTOMAKE=automake-1.15 autoreconf -fiv);
