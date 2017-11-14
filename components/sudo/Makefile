@@ -83,18 +83,27 @@ COMPONENT_INSTALL_ARGS += INSTALL_OWNER=
 # http://www.sudo.ws/bugs/show_bug.cgi?id=641
 COMPONENT_TEST_ENV_CMD =
 COMPONENT_TEST_CMD = \
-	if [[ -n $$( elfdump -s "$(VISUDO)" | grep SHA256Init | grep -v UNDEF ) ]]; then \
-		echo "SHA256Init is not an undefined symbol in $(VISUDO)"; \
+	: Test that $(VISUDO) is an ELF && \
+	if [[ -z $$( file "$(VISUDO)" | (grep ELF||:) ) ]]; then \
+		echo "ERROR: File '$(VISUDO)' is not an ELF type, this test is broken" ; \
 		exit 1; \
-	fi; \
+	fi && \
+	: Test that all the SHA* functions are UNDEFined thus loaded from external library && \
+	if [[ -n $$( elfdump -s "$(VISUDO)" | (grep SHA256Init||:) | (grep -v UNDEF||:) ) ]]; then \
+		echo "ERROR: SHA256Init is not an undefined symbol in $(VISUDO)"; \
+		exit 1; \
+	fi && \
 	$(GMAKE)
 
 # Tests may output some compilation lines, so just pull out the relevant test
 # output lines for the test results comparison
-COMPONENT_TEST_TRANSFORMS += '-e "/^parse_gids_test\|^strsplit_test\|^atofoo_test\|^hltq_test\|^sudo_conf\|^sudo_parseln\|^check_addr\|^check_base64\|^check_fill\|^iolog_path\|^check_symbols\|^sudoers\|^testsudoers\|^visudo\|^check_ttyname/!d"'
-COMPONENT_TEST_TRANSFORMS += '-e "s/\(\/dev\/pts\/\)[0-9][0-9]*/\1\#/"'
+COMPONENT_TEST_TRANSFORMS += '-e "/^parse_gids_test\|^strsplit_test\|^atofoo_test\|^hltq_test\|^sudo_conf\|^sudo_parseln\|^check_addr\|^check_base64\|^check_fill\|^iolog_path\|^check_symbols\|^sudoers\|^testsudoers\|^visudo\|^check_ttyname\|^ERROR/!d"'
 
-VISUDO=$(BUILD_DIR_64)/plugins/sudoers/visudo
+# The terminal name can differ between runs. It can either be /dev/pts/<number> or
+# it can be word 'none'
+COMPONENT_TEST_TRANSFORMS += '-e "s/\(check_ttyname:.*\)(.*)/\1/"'
+
+VISUDO=$(BUILD_DIR_64)/plugins/sudoers/.libs/visudo
 
 $(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += library/openldap
 REQUIRED_PACKAGES += library/zlib
