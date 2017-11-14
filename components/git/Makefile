@@ -29,15 +29,15 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		git
-COMPONENT_VERSION=	2.13.0
+COMPONENT_VERSION=	2.15.0
 COMPONENT_PROJECT_URL=	http://git-scm.com/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:4bbf2ab6f2341253a38f95306ec7936833eb1c42572da5c1fa61f0abb2191258
+	  sha256:107116489f10b758b51af1c5dbdb9a274917b0fb67dc8eaefcdabc7bc3eb3e6a
 COMPONENT_ARCHIVE_URL=	https://www.kernel.org/pub/software/scm/git/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	5350
 
-TPNO=			35506
+TPNO=			39307
 
 #
 # man pages are a separate archive
@@ -45,7 +45,7 @@ TPNO=			35506
 COMPONENT_SRC_1 =	$(COMPONENT_NAME)-manpages-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_1 =	$(COMPONENT_SRC_1).tar.xz
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:8414f9c62e2b099cd0ea2ca22c55fb6538b13fc7a3ed1508fb9881aae42a97c9
+    sha256:22ad09441490f77bca781168fc66fd6576f0175407c5a95c1cdc96dfd3731c77
 COMPONENT_ARCHIVE_URL_1 = https://www.kernel.org/pub/software/scm/git/$(COMPONENT_ARCHIVE_1)
 UNPACK_ARGS_1 =		-r $(COMPONENT_SRC_1)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_1)
@@ -64,6 +64,10 @@ PKG_MACROS +=		PYVER=$(PYTHON_VERSION)
 CONFIGURE_LIBDIR.64 =	$(CONFIGURE_PREFIX)/lib
 CONFIGURE_SCRIPT    =	$(@D)/configure
 CPPFLAGS += "-I/usr/include/pcre"
+
+# pcre on Solaris is not compiled with --enable-jit, so this needs to be
+# told to git
+CPPFLAGS += "-DNO_LIBPCRE1_JIT"
 
 # Needed to use the SHA1 implementation from OpenSSL (rather than git's).
 # All three are needed otherwise the git top-level Makefile outputs:
@@ -111,10 +115,6 @@ COMPONENT_TEST_ENV += HTTPS_PROXY=
 # Some tests (like t9402-git-cvsserver-refs.sh) need GNU diff.
 COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
 
-# We currently get slightly different results for 64-bit x86 and SPARC.
-COMPONENT_TEST_MASTER = \
-	$(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS).$(MACH).master
-
 # many failures; keep going; later versions of git are much cleaner
 COMPONENT_TEST_ARGS += -k -i
 # If GITTEST_JOBS is set, then run the jobs in parallel (to that number)
@@ -134,6 +134,17 @@ COMPONENT_POST_TEST_ACTION = \
 	done; \
 	cd ..; \
 	$(GMAKE) -s aggregate-results) &> $(COMPONENT_TEST_OUTPUT)
+
+# Some of the tests do not run always in the same order, so the test report
+# may be different each time.  To avoid this we will use only the final stats
+# as the actual test results.
+COMPONENT_TEST_TRANSFORMS += \
+	'-n ' \
+	'-e "/^fixed/p" '\
+	'-e "/^success/p" '\
+	'-e "/^failed/p" '\
+	'-e "/^broken/p" '\
+	'-e "/^total/p" '
 
 # This runs configure but configure doesn't generate a Makefile.
 # Instead a Makefile comes with git.
