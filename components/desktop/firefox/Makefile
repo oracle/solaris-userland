@@ -31,13 +31,13 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =		firefox
-COMPONENT_VERSION =		52.4.0esr
+COMPONENT_VERSION =		52.5.0esr
 COMPONENT_PROJECT_URL =		http://www.mozilla.com/firefox
 COMPONENT_SRC_NAME =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC = 		$(COMPONENT_SRC_NAME)
 COMPONENT_ARCHIVE =		$(COMPONENT_SRC_NAME).source.tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:58ae7cb6c2fb81d22762ab3c60e46cadbe7c5b687f24c2823d9533ec998a21ee
+    sha256:0e583576f6bbdc9d863656c43b8c97a60f276725bca20459b7511e2afacac85f
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		        http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)
 else
@@ -47,21 +47,19 @@ COMPONENT_ARCHIVE_URL =		$(MOZILLA_FTP)/source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB =		firefox/browser
 COMPONENT_ANITYA_ID=    5506
 
-TPNO=				37820
+TPNO=				39250
 
-IPS_COMPONENT_VERSION =		52.4.0
+IPS_COMPONENT_VERSION =		52.5.0
 
-# There are a set of .xpi files (as given in the LANG_LIST definition below)
-# that we need. These are available under:
-# http://ftp.mozilla.org/pub/mozilla.org/firefox/releases/31.8.0esr/linux-i686/xpi/
-# We could download and unpack them individually, but instead I've created
-# a compressed tarball of them, and made that available locally for download.
-# Downloading them individually can be a problem because firefox/thunderbird 
-# collide due to different files with identical .xpi names.
+# There are a set of .xpi files (as given in the LANG_LIST definition
+# below) that we need. We could download and unpack them individually, but
+# they doesn't contain version in its file name and there is lot of them.
+# Therefore we will download them and archive them in Userland cache using
+# one file with version number.
 COMPONENT_ARCHIVE_1 =           $(COMPONENT_SRC_NAME)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:78015f3d1d4eae05d79930219b9c103cafb5f6ecb40210a4b40be598ed1bbbaf
-COMPONENT_ARCHIVE_URL_1 =       $(INTERNAL_ARCHIVE_MIRROR)/$(COMPONENT_ARCHIVE_1)
+    sha256:987685adaf0c1a9b576d2084437020403e3fe8f4ef35e0d884b235cfa34367dd
+COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ach af an ar as ast az bg bn-BD bn-IN br bs ca cak cs cy \
 	da de dsb el en-GB en-US en-ZA eo es-AR es-CL es-ES es-MX et \
@@ -152,7 +150,6 @@ COMPONENT_POST_INSTALL_ACTION += \
 FF_XPI = $(MOZILLA_FTP)/linux-i686/xpi
 
 # Run gmake download-xpis to download a tarball for xpi locally. 
-# The resulting archive should be uploaded to userland internal archive.
 download-xpis:
 	@echo "download-xpis"
 	$(RM) -r $(COMPONENT_DIR)/$(COMPONENT_ARCHIVE_1)
@@ -168,8 +165,8 @@ download-xpis:
 	    fi ; \
 	done
 	(cd $(COMPONENT_DIR); \
-	    TZ=UTC gtar cjvf $(COMPONENT_DIR)/$(COMPONENT_ARCHIVE_1) --mtime='1970-01-01' --owner=root --group=root xpi/* )
-	/usr/bin/sha256sum $(COMPONENT_ARCHIVE_1)
+	    TZ=UTC gtar cjvf $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1) --mtime='1970-01-01' --owner=root --group=root xpi/* )
+	/usr/bin/sha256sum $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1)
 
 SIGNED_LIST.i386 = libsoftokn3.so libnssdbm3.so libfreebl3.so
 SIGNED_LIST.sparc = libsoftokn3.so libnssdbm3.so libfreebl_32int64_3.so
