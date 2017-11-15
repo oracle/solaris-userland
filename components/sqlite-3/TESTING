@@ -1,0 +1,83 @@
+================================================================================
+Test on a test machine:
+
+# Make sure that you are working with the correct sqlite version
+sqlite3 --version
+
+# Make sure that the smf data can be read
+sqlite3 /etc/svc/repository.db 'select * from service_tbl;'
+
+# Make sure that the machine can reboot with the new sqlite installed
+reboot
+
+================================================================================
+Test bootable iso creation. We download the IPS repo, substitute the contained
+sqlite-3 for our version of sqlite-3 and modify userland-incorporation so that
+it refers our version of sqlite-3. After that create bootable iso from the
+modified IPS repo and test installing Solaris from it.
+
+# download zipped repo and install-repo.ksh
+# http://nana.us.oracle.com/products/Solaris_Trunk/st_trunk/010/zipped-repo/
+
+# I perform whole action in zfs so that I can rollback easily
+zfs create scratch/repo
+./install-repo.ksh -d repo
+zfs snapshot scratch/repo@after_unpack
+
+# Remove old sqlite
+PKG=database/sqlite-3
+# This is where the manifest will be found in the raw repository
+PKG_PATH="${PKG//\//%2F}"
+OLDVER=$( pkg list -Haf -g repo "$PKG" | awk '{ print $2 }' )
+pkgrepo remove -s repo "$PKG" 
+
+# Copy sqlite to the repo
+pkgrepo create raw-repo
+pkgrecv -d raw-repo --raw -s userland-gate/$(uname -p)/repo "$PKG"
+# changing publisher nightly -> solaris
+perl -pi -e "s,nightly/(\\Q${PKG}\\E),solaris/\$1," "raw-repo/$PKG_PATH"/*/manifest
+pkgrepo create fix
+pkgsend -s fix publish $( printf -- '-d %s ' raw-repo/*/* ) "raw-repo/$PKG_PATH"/*/manifest
+pkg list -af -g fix
+pkgrecv -v -d repo -s fix "$PKG"
+rm -rf fix raw-repo
+NEWVER=$( pkg list -Haf -g repo "$PKG" | awk '{ print $2 }' )
+
+
+# Teach userland-incorporation about our new sqlite version. This is needed
+# only if we have built sqlite version different to what the repo contained
+# originally
+CONS=consolidation/userland/userland-incorporation
+CONS_PATH="${CONS//\//%2F}"
+pkgrepo create raw-repo
+pkgrecv -d raw-repo --raw -s repo "$CONS"
+pkgrepo remove -s repo "$CONS"
+# change database/sqlite-3@3.17.0-11.4.0.0.0.10.0 to database/sqlite-3@3.21.0-11.4.0.0.0.10.0
+perl -pi -e "s,=\\Q${PKG}\\E@\\Q${OLDVER}\\E,=${PKG}\\@${NEWVER},g" "raw-repo/$CONS_PATH"/*/manifest
+pkgrepo create fix
+pkgsend -s fix publish $( printf -- '-d %s ' raw-repo/*/* ) "raw-repo/$CONS_PATH"/*/manifest
+pkg list -af -g fix
+pkgrecv -v -d repo -s fix "$CONS"
+rm -rf fix raw-repo
+
+# Now create the iso definition file
+cp /usr/share/distro_const/dc_text_sparc.xml iso.xml
+vi iso.xml
+ - change set-ips-attributes to file:///scratch/repo
+ - change transfer-ips-install to
+   - solaris - file:///scratch/repo
+# The machine needs uucp installed otherwise building iso fails
+sudo pkg install -v service/network/uucp
+sudo distro_const build iso.xml
+
+# Now install machine from the iso and verify that we are looking at correct
+# sqlite version
+$ pkg list database/sqlite-3
+NAME (PUBLISHER)                                  VERSION                    IFO
+database/sqlite-3                                 3.21.0-11.4.0.0.0.10.0     i--
+
+$ sqlite3 --version
+3.21.0 2017-10-24 18:55:49 1a584e499906b5c87ec7d43d4abce641fdf017c42125b083109bc77c4de4alt2
+
+$ svcs -x
+<no output>
