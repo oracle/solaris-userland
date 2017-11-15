@@ -165,8 +165,8 @@ download-xpis:
 	    fi ; \
 	done
 	(cd $(COMPONENT_DIR); \
-	    TZ=UTC gtar cjvf $(COMPONENT_DIR)/$(COMPONENT_ARCHIVE_1) --mtime='1970-01-01' --owner=root --group=root xpi/* )
-	/usr/bin/sha256sum $(COMPONENT_ARCHIVE_1)
+	    TZ=UTC gtar cjvf $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1) --mtime='1970-01-01' --owner=root --group=root xpi/* )
+	/usr/bin/sha256sum $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1)
 
 SIGNED_LIST.i386 = libsoftokn3.so libnssdbm3.so libfreebl3.so
 SIGNED_LIST.sparc = libsoftokn3.so libnssdbm3.so libfreebl_32int64_3.so
