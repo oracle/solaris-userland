@@ -46,7 +46,6 @@ COMPONENT_PREP_ACTION =	(cd $(@D); autoconf);
 # libpcap Makefile does not use CFLAGS when building shared library.
 LDFLAGS += $(CC_BITS)
 
-CFLAGS += -D_SYS_REGSET_H
 CFLAGS += -DHAVE_CONFIG_H
 CFLAGS += -DBUILDING_PCAP
 CONFIGURE_OPTIONS  +=	--disable-dbus
