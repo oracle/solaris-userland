@@ -1,0 +1,18 @@
+This patch fixes pcap-int.h so pflogd can safely include it.
+The issue has been reported to upstream as ticket #560 [1]
+
+[1] https://github.com/the-tcpdump-group/libpcap/issues/560
+
+--- a/pcap-int.h	2016-10-26 02:07:59.000000000 +0200
++++ b/pcap-int.h	2017-11-15 11:09:23.960676875 +0100
+@@ -366,7 +366,9 @@
+ 
+ #include <stdarg.h>
+ 
++#ifdef	BUILDING_PCAP
+ #include "portability.h"
++#endif	/* BUILDING_PCAP */
+ 
+ /*
+  * Does the packet count argument to a module's read routine say
+Common subdirectories: libpcap-1.8.1/tests and libpcap-1.8.1.fixed/tests
