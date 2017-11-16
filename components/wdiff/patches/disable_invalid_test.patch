@@ -1,0 +1,48 @@
+This patch disables single test from wdiff test suite which is not valid in our
+case
+
+Wdiff calls external binary diff(1) to do the actual work. If it can't find the
+diff(1) command it will report an error. This test is checking this behavior
+simulating missing diff by removing /usr/bin from $PATH. However on Solaris the
+GNU version of diff is in /usr/gnu/bin and this path is hardcoded into wdiff
+binary. So playing with $PATH can not simulate the situation when diff(1) is
+not found. So whole test is invalid on Solaris (and generally any time
+-DDIFF_PROGRAM specifies a full pat to the diff(1) program)
+
+The bug is reported here: https://savannah.gnu.org/support/index.php?109415
+
+--- wdiff-1.2.2/tests/wdiff.at	2017-11-16 10:49:43.419708179 +0000
++++ wdiff-1.2.2/tests/wdiff.at	2017-11-16 10:49:35.835472131 +0000
+@@ -139,32 +139,6 @@ dnl '
+ 
+ AT_CLEANUP()
+ 
+-AT_SETUP(report bad diff binary)
+-dnl      ----------------------
+-
+-AT_TESTED([wdiff which env grep])
+-wdiff_bin="`which wdiff`"
+-# wish I could use AC_CHECK_PROG([wdiff_bin], [wdiff]) instead
+-AT_FAIL_IF([! test -x "$wdiff_bin"])
+-AT_DATA([foo.txt], [foo
+-])
+-AT_DATA([bar.txt], [bar
+-])
+-
+-AT_CHECK([env PATH="$PWD" "$wdiff_bin" foo.txt bar.txt], 2, [], [stderr])
+-AT_CHECK([grep "wdiff: failed to execute diff" stderr], 0, [ignore-nolog], [])
+-
+-AT_DATA([diff], [#! /bin/sh
+-echo "This diff is broken" >&2
+-exit 27
+-])
+-chmod +x diff
+-AT_CHECK([env PATH="$PWD" "$wdiff_bin" foo.txt bar.txt], 2, [],
+-[This diff is broken
+-])
+-
+-AT_CLEANUP()
+-
+ AT_SETUP(use pager)
+ dnl      ---------
+ 

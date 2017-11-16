@@ -41,10 +41,13 @@ CONFIGURE_OPTIONS +=	--enable-experimental
 # Used directly as a macro in C code, so literal quotes must be left intact.
 CFLAGS +=	-DDIFF_PROGRAM=\\\"$(GDIFF)\\\"
 
-COMPONENT_TEST_DIR =		$(SOURCE_DIR)/tests
-COMPONENT_TEST_CMD =		./testsuite
-COMPONENT_TEST_ARGS =		AUTOTEST_PATH="src"
-COMPONENT_TEST_TARGETS =
+COMPONENT_TEST_ENV = PATH=/usr/gnu/bin:/usr/bin
+COMPONENT_TEST_TRANSFORMS += \
+	'-n ' \
+	'-e "/ ok$$/p" ' \
+	'-e "/ERROR/p" ' \
+	'-e "/^All/p" ' \
+	'-e "/fail/p" '
 
 COMPONENT_SYSTEM_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_SYSTEM_TEST_CMD =	./testsuite
