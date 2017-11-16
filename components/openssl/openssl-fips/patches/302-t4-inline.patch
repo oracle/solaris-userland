@@ -7,15 +7,32 @@ Index: Configure
 diff -ru openssl-1.0.1e/Configure openssl-1.0.1e/Configure
 --- a/Configure 2011-05-24 17:02:24.000000000 -0700
 +++ b/Configure 2011-07-27 10:48:17.817470000 -0700
-@@ -129,7 +129,7 @@
+@@ -123,13 +123,13 @@
+ my $bits1="THIRTY_TWO_BIT ";
+ my $bits2="SIXTY_FOUR_BIT ";
  
- my $x86_64_asm="x86_64cpuid.o:x86_64-gcc.o x86_64-mont.o x86_64-mont5.o x86_64-gf2m.o modexp512-x86_64.o::aes-x86_64.o vpaes-x86_64.o bsaes-x86_64.o aesni-x86_64.o aesni-sha1-x86_64.o::md5-x86_64.o:sha1-x86_64.o sha256-x86_64.o sha512-x86_64.o::rc4-x86_64.o rc4-md5-x86_64.o:::wp-x86_64.o:cmll-x86_64.o cmll_misc.o:ghash-x86_64.o:e_padlock-x86_64.o";
+-my $x86_asm="x86cpuid.o:bn-586.o co-586.o x86-mont.o x86-gf2m.o:des-586.o crypt586.o:aes-586.o vpaes-x86.o aesni-x86.o:bf-586.o:md5-586.o:sha1-586.o sha256-586.o sha512-586.o:cast-586.o:rc4-586.o:rmd-586.o:rc5-586.o:wp_block.o wp-mmx.o:cmll-x86.o:ghash-x86.o:e_padlock-x86.o";
++my $x86_asm="x86cpuid.o o_init.o o_fips.o:bn-586.o co-586.o x86-mont.o x86-gf2m.o:des-586.o crypt586.o:aes-586.o vpaes-x86.o aesni-x86.o:bf-586.o:md5-586.o:sha1-586.o sha256-586.o sha512-586.o:cast-586.o:rc4-586.o:rmd-586.o:rc5-586.o:wp_block.o wp-mmx.o:cmll-x86.o:ghash-x86.o:e_padlock-x86.o";
+ 
+ my $x86_elf_asm="$x86_asm:elf";
+ 
+-my $x86_64_asm="x86_64cpuid.o:x86_64-gcc.o x86_64-mont.o x86_64-mont5.o x86_64-gf2m.o modexp512-x86_64.o::aes-x86_64.o vpaes-x86_64.o bsaes-x86_64.o aesni-x86_64.o aesni-sha1-x86_64.o::md5-x86_64.o:sha1-x86_64.o sha256-x86_64.o sha512-x86_64.o::rc4-x86_64.o rc4-md5-x86_64.o:::wp-x86_64.o:cmll-x86_64.o cmll_misc.o:ghash-x86_64.o:e_padlock-x86_64.o";
++my $x86_64_asm="x86_64cpuid.o o_init.o o_fips.o:x86_64-gcc.o x86_64-mont.o x86_64-mont5.o x86_64-gf2m.o modexp512-x86_64.o::aes-x86_64.o vpaes-x86_64.o bsaes-x86_64.o aesni-x86_64.o aesni-sha1-x86_64.o::md5-x86_64.o:sha1-x86_64.o sha256-x86_64.o sha512-x86_64.o::rc4-x86_64.o rc4-md5-x86_64.o:::wp-x86_64.o:cmll-x86_64.o cmll_misc.o:ghash-x86_64.o aesni-gcm-x86_64.o:e_padlock-x86_64.o";
  my $ia64_asm="ia64cpuid.o:bn-ia64.o ia64-mont.o::aes_core.o aes_cbc.o aes-ia64.o::md5-ia64.o:sha1-ia64.o sha256-ia64.o sha512-ia64.o::rc4-ia64.o rc4_skey.o:::::ghash-ia64.o::void";
 -my $sparcv9_asm="sparcv9cap.o sparccpuid.o:bn-sparcv9.o sparcv9-mont.o sparcv9a-mont.o:des_enc-sparc.o fcrypt_b.o:aes_core.o aes_cbc.o aes-sparcv9.o:::sha1-sparcv9.o sha256-sparcv9.o sha512-sparcv9.o:::::::ghash-sparcv9.o::void";
-+my $sparcv9_asm="sparcv9cap.o sparccpuid.o:bn-sparcv9.o sparcv9-mont.o sparcv9a-mont.o vis3-mont.o sparct4-mont.o sparcv9-gf2m.o:des_enc-sparc.o fcrypt_b.o dest4-sparcv9.o:aes_core.o aes_cbc.o aes-sparcv9.o aest4-sparcv9.o:::sha1-sparcv9.o sha256-sparcv9.o sha512-sparcv9.o:::::::ghash-sparcv9.o::void";
++my $sparcv9_asm="sparcv9cap.o sparccpuid.o o_init.o o_fips.o:bn-sparcv9.o sparcv9-mont.o sparcv9a-mont.o vis3-mont.o sparct4-mont.o sparcv9-gf2m.o:des_enc-sparc.o fcrypt_b.o dest4-sparcv9.o:aes_core.o aes_cbc.o aes-sparcv9.o aest4-sparcv9.o:::sha1-sparcv9.o sha256-sparcv9.o sha512-sparcv9.o:::::::ghash-sparcv9.o::void";
  my $sparcv8_asm=":sparcv8.o:des_enc-sparc.o fcrypt_b.o:::::::::::::void";
  my $alpha_asm="alphacpuid.o:bn_asm.o alpha-mont.o:::::sha1-alpha.o:::::::ghash-alpha.o::void";
  my $mips32_asm=":bn-mips.o::aes_cbc.o aes-mips.o:::sha1-mips.o sha256-mips.o::::::::";
+@@ -221,7 +221,7 @@
+ "solaris64-x86_64-gcc","gcc:-m64 -O3 -Wall -DL_ENDIAN::-D_REENTRANT::-lsocket -lnsl -ldl:SIXTY_FOUR_BIT_LONG RC4_CHUNK DES_INT DES_UNROLL:${x86_64_asm}:elf:dlfcn:solaris-shared:-fPIC:-m64 -shared -static-libgcc:.so.\$(SHLIB_MAJOR).\$(SHLIB_MINOR):::/64",
+  
+ #### Solaris x86 with Sun C setups
+-"solaris-x86-cc","cc:-m32 -O -xstrconst -Xa::-D_REENTRANT::-lsocket -lnsl -ldl:BN_LLONG RC4_CHAR RC4_CHUNK DES_PTR DES_UNROLL BF_PTR:${no_asm}:dlfcn:solaris-shared:-KPIC:-G -dy -z text:.so.\$(SHLIB_MAJOR).\$(SHLIB_MINOR)",
++"solaris-x86-cc","cc:-m32 -O -xstrconst -Xa::-D_REENTRANT::-lsocket -lnsl -ldl:BN_LLONG RC4_CHAR RC4_CHUNK DES_PTR DES_UNROLL BF_PTR:${x86_asm}:elf:dlfcn:solaris-shared:-KPIC:-G -dy -z text:.so.\$(SHLIB_MAJOR).\$(SHLIB_MINOR)",
+ "solaris64-x86_64-cc","cc:-m64 -xstrconst -Xa -DL_ENDIAN::-D_REENTRANT::-lsocket -lnsl -ldl:SIXTY_FOUR_BIT_LONG RC4_CHUNK DES_INT DES_UNROLL:${x86_64_asm}:elf:dlfcn:solaris-shared:-KPIC:-m64 -G -dy -z text:.so.\$(SHLIB_MAJOR).\$(SHLIB_MINOR):::/64",
+ 
+ #### SPARC Solaris with GNU C setups
 Index: crypto/sparcv9cap.c
 ===================================================================
 --- openssl-fips-2.0.13/crypto/sparcv9cap.c.~1~	2016-06-20 12:49:42.000000000 -0700
@@ -669,6 +686,16 @@ Index: fips/fipssyms.h
  #define dsa_builtin_paramgen fips_dsa_builtin_paramgen
  #define dsa_builtin_paramgen2 fips_dsa_builtin_paramgen2
  #define dsa_paramgen_check_g fips_dsa_paramgen_check_g
+@@ -584,6 +621,9 @@
+ /* assembler symbols */
+ #define gcm_gmult_4bit_x86 fips_gcm_gmult_4bit_x86
+ #define gcm_ghash_4bit_x86 fips_gcm_ghash_4bit_x86
++#define gcm_init_avx fips_gcm_init_avx
++#define gcm_gmult_avx fips_gcm_gmult_avx
++#define gcm_ghash_avx fips_gcm_ghash_avx
+ #define AES_cbc_encrypt fips_aes_cbc_encrypt
+ #define AES_decrypt fips_aes_decrypt
+ #define AES_encrypt fips_aes_encrypt
 Index: fips/sha/fips_standalone_sha1.c
 ===================================================================
 --- a/fips/sha/fips_standalone_sha1.c	2016-06-20 12:49:46.000000000 -0700
@@ -681,3 +708,14 @@ Index: fips/sha/fips_standalone_sha1.c
  #endif
  
  #ifdef OPENSSL_FIPS
+--- a/crypto/modes/Makefile	2016-06-22 08:40:20.000000000 -0700
++++ b/crypto/modes/Makefile	2017-10-26 12:44:45.025418795 -0700
+@@ -50,6 +50,8 @@
+ 	$(PERL) asm/ghash-x86.pl $(PERLASM_SCHEME) $(CFLAGS) $(PROCESSOR) > $@
+ ghash-x86_64.s:	asm/ghash-x86_64.pl
+ 	$(PERL) asm/ghash-x86_64.pl $(PERLASM_SCHEME) > $@
++aesni-gcm-x86_64.s:	asm/aesni-gcm-x86_64.pl
++	$(PERL) asm/aesni-gcm-x86_64.pl $(PERLASM_SCHEME) > $@
+ ghash-sparcv9.s:	asm/ghash-sparcv9.pl
+ 	$(PERL) asm/ghash-sparcv9.pl $@ $(CFLAGS)
+ ghash-alpha.s:	asm/ghash-alpha.pl

@@ -63,8 +63,13 @@ COMPONENT_POST_UNPACK_ACTION = \
     ( echo "Cloning engines..."; \
 	$(LN) -fs $(COMPONENT_DIR)/inline-t4/sparc_arch.h		$(@D)/crypto/; \
 	$(LN) -fs $(COMPONENT_DIR)/inline-t4/sparccpuid.S		$(@D)/crypto/; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/o_fips.c			$(@D)/crypto/; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/o_init.c			$(@D)/crypto/; \
 	$(LN) -fs $(COMPONENT_DIR)/inline-t4/aest4-sparcv9.pl		$(@D)/crypto/aes/asm; \
 	$(LN) -fs $(COMPONENT_DIR)/inline-t4/dest4-sparcv9.pl		$(@D)/crypto/des/asm; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/aesni-gcm-x86_64.pl	$(@D)/crypto/modes/asm; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/ghash-x86_64.pl		$(@D)/crypto/modes/asm; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/ghash-x86.pl		$(@D)/crypto/modes/asm; \
 	$(LN) -fs $(COMPONENT_DIR)/inline-t4/dh_check.c			$(@D)/crypto/dh; \
 	$(LN) -fs $(COMPONENT_DIR)/inline-t4/sparcv9_modes.pl		$(@D)/crypto/perlasm; \
 	$(LN) -fs $(COMPONENT_DIR)/inline-t4/vis3-mont.pl		$(@D)/crypto/bn/asm; \

@@ -61,7 +61,7 @@
  		goto error;
 --- a/fips/fips.c	2016-06-20 12:49:46.000000000 -0700
 +++ b/fips/fips.c	2017-09-07 12:53:13.309095315 -0700
-@@ -288,6 +303,12 @@
+@@ -288,6 +288,12 @@
      {
      int ret = 0;
  
@@ -74,7 +74,7 @@
      fips_w_lock();
      fips_started = 1;
      fips_set_owning_thread();
-@@ -301,15 +322,6 @@
+@@ -301,20 +307,11 @@
  	    fips_auth_fail = 1;
  	    fips_selftest_fail = 1;
  	    FIPSerr(FIPS_F_FIPS_MODULE_MODE_SET,FIPS_R_AUTHENTICATION_FAILURE);
@@ -90,9 +90,23 @@
  	    ret = 0;
  	    goto end;
  	    }
+ 
+-#ifdef OPENSSL_IA32_SSE2
++#if 0
+ 	{
+ 	extern unsigned int OPENSSL_ia32cap_P[2];
+ 	if ((OPENSSL_ia32cap_P[0] & (1<<25|1<<26)) != (1<<25|1<<26))
 --- a/fips/fips_premain.c	2016-06-22 08:40:20.000000000 -0700
 +++ b/fips/fips_premain.c	2017-09-08 14:07:28.888746325 -0700
-@@ -143,6 +143,12 @@
+@@ -87,6 +87,7 @@
+ extern const unsigned char FIPS_rodata_start[], FIPS_rodata_end[];
+ extern unsigned char       FIPS_signature[20];
+ extern unsigned int        FIPS_incore_fingerprint(unsigned char *,unsigned int);
++extern int                 FIPS_mode_set(int);
+ 
+ /*
+  * As name suggests this code is executed prior main(). We use this
+@@ -143,6 +144,12 @@
  #if defined(__powerpc__) || defined(__ppc__) || defined(_ARCH_PPC)
      fips_openssl_cpuid_setup();
  #endif
@@ -109,4 +123,4 @@
 +++ b/fips/fips_premain.c.sha1	2017-09-08 12:19:55.443014110 -0700
 @@ -1 +1 @@
 -HMAC-SHA1(fips_premain.c)= 2bfb57ef540bdba29220a45d65e1b4080de9adc1
-+HMAC-SHA1(fips_premain.c)= a68e0e164fb515a23043ef480a2aea38269fc5d6
++HMAC-SHA1(fips_premain.c)= ed6ada81e94636991d39d1f2e498296da087d327
