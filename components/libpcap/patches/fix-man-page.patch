@@ -8,9 +8,9 @@ Date:   Mon Sep 19 12:42:11 2016 +0200
     a) usermod and ethers man pages lie in nonstandard path
     b) Newer Solaris versions have the man pages sections reordered completely
 
---- a/configure.in	2015-04-22 13:19:15.000000000 +0000
-+++ b/configure.in	2017-03-22 10:07:21.877704267 +0000
-@@ -1077,6 +1077,8 @@
+--- a/configure.ac	2016-10-25 17:07:59.000000000 -0700
++++ b/configure.ac	2017-10-03 16:00:50.974239266 -0700
+@@ -1191,6 +1191,8 @@
  DYEXT="none"
  MAN_FILE_FORMATS=5
  MAN_MISC_INFO=7
@@ -19,25 +19,25 @@ Date:   Mon Sep 19 12:42:11 2016 +0200
  case "$host_os" in
  
  aix*)
-@@ -1309,12 +1311,23 @@
+@@ -1423,12 +1425,23 @@
  solaris*)
  	AC_DEFINE(HAVE_SOLARIS,1,[On solaris])
  
-+	if test -f /usr/share/man/man7/attributes.7 ; then
-+		MAN_USERMOD_SECTION=8
-+		MAN_ETHERS_SECTION=5
-+		MAN_FILE_FORMATS=5
-+		MAN_MISC_INFO=7
-+	else
-+		#
-+		# Use System V conventions for man pages.
-+		#
++       if test -f /usr/share/man/man7/attributes.7 ; then
++               MAN_USERMOD_SECTION=8
++               MAN_ETHERS_SECTION=5
++               MAN_FILE_FORMATS=5
++               MAN_MISC_INFO=7
++       else
++               #
++               # Use System V conventions for man pages.
++               #
 +
-+		MAN_USERMOD_SECTION=1m
-+		MAN_ETHERS_SECTION=4
-+		MAN_FILE_FORMATS=4
-+		MAN_MISC_INFO=5
-+	fi
++               MAN_USERMOD_SECTION=1m
++               MAN_ETHERS_SECTION=4
++               MAN_FILE_FORMATS=4
++               MAN_MISC_INFO=5
++       fi
 +
  	DYEXT="so"
 -	#
@@ -48,7 +48,7 @@ Date:   Mon Sep 19 12:42:11 2016 +0200
  	;;
  esac
  
-@@ -1364,6 +1377,8 @@
+@@ -1472,6 +1485,8 @@
  AC_SUBST(DYEXT)
  AC_SUBST(MAN_FILE_FORMATS)
  AC_SUBST(MAN_MISC_INFO)

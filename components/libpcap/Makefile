@@ -27,15 +27,15 @@ BUILD_BITS= 32_and_64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libpcap
-COMPONENT_VERSION=	1.7.4
+COMPONENT_VERSION=	1.8.1
 COMPONENT_PROJECT_URL=	http://www.tcpdump.org/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:7ad3112187e88328b85e46dce7a9b949632af18ee74d97ffc3f2b41fe7f448b0
+	sha256:673dbc69fdc3f5a86fb5759ab19899039a8e5e6c631749e48dcd9c6f0c83541e
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)release/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libpcap
 COMPONENT_ANITYA_ID=	1702
 
-TPNO=			23891
+TPNO=			39211
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
@@ -46,8 +46,8 @@ COMPONENT_PREP_ACTION =	(cd $(@D); autoconf);
 # libpcap Makefile does not use CFLAGS when building shared library.
 LDFLAGS += $(CC_BITS)
 
-CFLAGS += -D_SYS_REGSET_H
 CFLAGS += -DHAVE_CONFIG_H
+CFLAGS += -DBUILDING_PCAP
 CONFIGURE_OPTIONS  +=	--disable-dbus
 
 REQUIRED_PACKAGES += developer/lexer/flex
