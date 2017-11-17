@@ -28,16 +28,16 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-settings-daemon
-COMPONENT_VERSION=	3.18.0
+COMPONENT_VERSION=	3.24.0
 COMPONENT_PROJECT_URL=	http://wiki.gnome.org
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8d3ef9c18538831ed89122fee0bdaca68b0e482a18b3c4388c4e672aba1b3cd5
+	sha256:4f31a68aebdd4e0c37336306a4eea4cf219d46ed8fc59e3f3081b7a3088900c4
 COMPONENT_BUGDB=	gnome/session
 COMPONENT_ANITYA_ID=	12860
 
-TPNO=			24901
+TPNO=			34520
 
-# Needs gobject-introspection, not available on S11.
+# Needs gobject-introspection, not available on S11.3
 include $(WS_MAKE_RULES)/no-evaluation.mk
 
 # This component needs X11, so we run vnc session, run the tests inside and
@@ -87,7 +87,6 @@ COMPONENT_POST_TEST_ACTION += \
 COMPONENT_TEST_ENV_CMD = DISPLAY=$$(<$(@D)/myhome/DISPLAY); $(ENV)
 COMPONENT_TEST_ENV += DISPLAY="$$DISPLAY"
 COMPONENT_TEST_ENV += HOME=$(@D)/myhome
-COMPONENT_TEST_ENV += LD_LIBRARY_PATH=/usr/lib/$(MACH64)/libnotify-4
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
