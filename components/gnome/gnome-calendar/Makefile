@@ -26,18 +26,18 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-calendar
-COMPONENT_VERSION=	3.18.1
+COMPONENT_VERSION=	3.24.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Calendar
 COMPONENT_ARCHIVE_HASH= \
-	sha256:96f307c79952fa55bfdfc2b256085c568384dde2312b2815ee5e8e21e6adf2b9
+	sha256:8a21f51e10ce491e4a492e21c47de29a9ba1b568f4e2fd6f4e33616609d413d0
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	10906
 
-TPNO=			25846
+TPNO=			35138
 
 TEST_TARGET= $(NO_TESTS)
 
-# Needs updated evolution-data-server, not available on S11.
+# Needs updated evolution-data-server, not available on S11.3
 include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
