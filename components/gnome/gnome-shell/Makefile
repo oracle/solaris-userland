@@ -28,18 +28,18 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-shell
-COMPONENT_VERSION=	3.18.3
+COMPONENT_VERSION=	3.24.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/GnomeShell
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8517baf8606f970ebf38222411eb7563cab2ae5efbfb088954ce23705b67519b
+	sha256:86e1bd1ee9f721b25ebcf7edd80f39fafe7342fc0695ba6ddf804152cd45ada7
 COMPONENT_BUGDB=        gnome/gnome-shell
 COMPONENT_ANITYA_ID=	5409
 
-TPNO=		25491
+TPNO=			34687
 
 TEST_TARGET = $(NO_TESTS)
 
-# Needs mutter, not available on S11.
+# Needs mutter, not available on S11.3
 include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -73,6 +73,11 @@ ADISTACK_MODE =	$(ADISTACK_DISABLE)
 # pkg-config file for it, so we workaround this by using the one-off copy in the
 # evolution-data-server component directory
 PKG_CONFIG_PATHS += $(WS_COMPONENTS)/gnome/evolution-data-server
+
+MUTTER_BASE = $(WS_COMPONENTS)/gnome/mutter/build/prototype/$(MACH)
+LD_OPTIONS += -L $(MUTTER_BASE)$(USRLIB)
+
+COMPONENT_BUILD_ENV += LD_LIBRARY_PATH_64="/usr/lib/$(MACH64):$(MUTTER_BASE)/$(USRLIB)/mutter:$(BUILD_DIR_64)/src/.libs"
 
 REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += gnome/accessibility/caribou
