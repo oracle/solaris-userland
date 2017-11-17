@@ -30,18 +30,18 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		totem
-COMPONENT_VERSION=	3.18.1
+COMPONENT_VERSION=	3.24.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Totem
 COMPONENT_ARCHIVE_HASH= \
-	sha256:d7816eae9606846c44fd508902eae10bdaed28e6d4f621531990d473184107a2
+	sha256:9bd78f7b940e886b5c809acdfe00a610a834de5080dd40272b92835528a58d01
 COMPONENT_BUGDB=        gnome/multimedia
 COMPONENT_ANITYA_ID=	13162
 
-TPNO=			25794
+TPNO=			35135
 
 TEST_TARGET = $(NO_TESTS)
 
-# Needs gobject-introspection, not available in S11
+# Needs gobject-introspection, not available in S11.3
 include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
