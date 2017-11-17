@@ -34,16 +34,18 @@ include ../../../make-rules/shared-macros.mk
 # GNOME stores and various components now expect it to be present.
 
 COMPONENT_NAME=		evolution-data-server
-COMPONENT_VERSION=	3.18.2
+COMPONENT_VERSION=	3.24.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Evolution
 COMPONENT_ARCHIVE_HASH= \
-	sha256:5942fc1cf395acdc15425939d83824d861d01c57225ee3fc8c1d77009468ce9b
+	sha256:41ddb60b08ee287e82be52ebbe49b5a336984e52584a5fd34c82d45493f8031b
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	10935
 
-TPNO=			25795
+TPNO=			34706
 
-# Needs gobject-introspection, not available on S11.
+BUILD_STYLE= cmake
+
+# Needs gobject-introspection, not available on S11.3
 include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -54,48 +56,13 @@ CXXFLAGS += -std=c++11 -D__EXTENSIONS__ -DHAVE_SUN_KRB5
 CPPFLAGS += -I/usr/include/kerberosv5/
 CFLAGS += $(XPG6MODE)
 
-# Our NSS/NSPR libraries have their own private copy of sqlite3 which is
-# different than the system-wide one; to avoid the private copy, we explicitly
-# set the sqlite3 library location.
-CONFIGURE_ENV += SQLITE3_LIBS="-L$(USRLIB) -lsqlite3"
-CONFIGURE_ENV += SYSTEM_MAIL_DIR="$(VARDIR)/mail"
-CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
-
-CONFIGURE_OPTIONS += --disable-dot-locking
-# Documentation target is busted.
-CONFIGURE_OPTIONS += --disable-gtk-doc
-CONFIGURE_OPTIONS += --disable-schemas-compile
-CONFIGURE_OPTIONS += --disable-static
-# Ubuntu-specific functionality.
-CONFIGURE_OPTIONS += --disable-uoa
-CONFIGURE_OPTIONS += --enable-file-locking=fcntl
-CONFIGURE_OPTIONS += --enable-goa
-CONFIGURE_OPTIONS += --enable-gtk
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
-CONFIGURE_OPTIONS += --enable-ipv6
-CONFIGURE_OPTIONS += --enable-largefile
-CONFIGURE_OPTIONS += --enable-smime
-CONFIGURE_OPTIONS += --enable-shared
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-vala-bindings
-CONFIGURE_OPTIONS += --enable-weather
-CONFIGURE_OPTIONS += --with-krb5
-CONFIGURE_OPTIONS += --with-pic
-# Apparently, Solaris mail spool format is "broken".
-CONFIGURE_OPTIONS += --with-broken-spool=yes
-# XXX Neither ldap target builds on Solaris.
-CONFIGURE_OPTIONS += --without-openldap
-CONFIGURE_OPTIONS += --without-sunldap
-
-# A pkg-config file isn't shipped in Solaris for nss/nspr 64-bit, so configure
-# will fail to find it; we workaround this by providing a one-off copy of the
-# related pkg-config files and telling pkg-config to search our directory for
-# them first.
-CONFIGURE_ENV.64 += PKG_CONFIG_PATH="$(COMPONENT_DIR):$(PKG_CONFIG_PATH)"
-
-# Required due to patches.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
+CMAKE_OPTIONS += -DENABLE_GOOGLE_AUTH=OFF
+CMAKE_OPTIONS += -DENABLE_UOA=OFF
+CMAKE_OPTIONS += -DENABLE_INTROSPECTION=ON
+CMAKE_OPTIONS += -DENABLE_GTK_DOC=ON
+CMAKE_OPTIONS += -DOPEN_LDAP=OFF
+CMAKE_OPTIONS += -DENABLE_VALA_BINDINGS=ON
+CMAKE_OPTIONS += -DSYSCONF_INSTALL_DIR="/etc"
 
 # for the tests
 unexport SHELLOPTS
