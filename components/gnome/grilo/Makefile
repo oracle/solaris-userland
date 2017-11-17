@@ -30,18 +30,18 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		grilo
-COMPONENT_VERSION=	0.2.14
+COMPONENT_VERSION=	0.3.3
 COMPONENT_ARCHIVE_HASH= \
-	sha256:79c82ea1747ae7430a648aa9660e44d88d48c968bcdaeb3b2c5cb97e1c921ccd
+	sha256:5c874222c7bdf42490cd56765a593c41407247706bb1f24a1bd5d007aa38a0e3
 COMPONENT_BUGDB=        gnome/multimedia
 COMPONENT_ANITYA_ID=	10928
 
-TPNO=			25361
+TPNO=			34587
 
 # Tests don't seem to do anything - 23712784
 TEST_TARGET = $(SKIP_TEST)
 
-# Needs gobject-introspection, not available on S11.
+# Needs gobject-introspection, not available on S11.3
 include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -65,7 +65,9 @@ REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
+REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += library/liboauth
 REQUIRED_PACKAGES += library/libsoup
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/media-player/totem-pl-parser
