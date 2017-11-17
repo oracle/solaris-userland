@@ -30,18 +30,18 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mutter
-COMPONENT_VERSION=	3.18.1
+COMPONENT_VERSION=	3.24.1
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/Mutter
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:4fdee7c9dc2db3a48f18723f47c3122aa5bddaddb8751701ce243e577e2a69a9
+	sha256:acaa77f9705cc6ca4a3d41935524ff31ba7a4c677bdd3e1d4662bbf3ece86a24
 COMPONENT_BUGDB=        gnome/window-manager
 COMPONENT_ANITYA_ID=	13154
 
-TPNO=			27162
+TPNO=			34756
 
 TEST_TARGET = $(NO_TESTS)
 
-# Needs gobject-introspection, not available on S11.
+# Needs gobject-introspection, not available on S11.3
 include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -57,6 +57,8 @@ CONFIGURE_OPTIONS += --disable-schemas-compile
 CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += --disable-native-backend
 CONFIGURE_OPTIONS += --disable-wayland
+CONFIGURE_OPTIONS += --without-libwacom
+CONFIGURE_OPTIONS += --disable-wayland-egl-server
 # Enable additional compiler warnings, but leave them as warnings, not errors
 # (upstream default if this isn't specified is =error which breaks SPARC)
 CONFIGURE_OPTIONS += --enable-compile-warnings=yes
@@ -77,6 +79,7 @@ CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += gnome/gnome-settings-daemon
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
+REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/clutter
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
@@ -89,6 +92,8 @@ REQUIRED_PACKAGES += library/desktop/xdg/libcanberra
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
 REQUIRED_PACKAGES += library/graphics/cogl
+REQUIRED_PACKAGES += library/json-glib
+REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/upower
@@ -107,3 +112,5 @@ REQUIRED_PACKAGES += x11/library/libxkbcommon
 REQUIRED_PACKAGES += x11/library/libxkbfile
 REQUIRED_PACKAGES += x11/library/libxrandr
 REQUIRED_PACKAGES += x11/library/libxrender
+REQUIRED_PACKAGES += x11/library/libxtst
+REQUIRED_PACKAGES += x11/library/mesa
