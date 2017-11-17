@@ -26,19 +26,18 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-session
-COMPONENT_VERSION=	3.18.1.2
+COMPONENT_VERSION=	3.24.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/SessionManagement
 COMPONENT_ARCHIVE_HASH= \
-	sha256:b37d823d57ff2e3057401a426279954699cfe1e44e59a4cbdd941687ff928a45
+	sha256:87e380a54628f0e6e4506887c409ec0f99024e7840d614edfeeb511dea884d2c
 COMPONENT_BUGDB=	gnome/session
-COMPONENT_ARCHIVE_URL=  http://ftp.gnome.org/pub/GNOME/sources/$(COMPONENT_NAME)/3.18/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	13136
 
-TPNO=			27163
+TPNO=			34626
 
 TEST_TARGET = $(NO_TESTS)
 
-# Needs updated glib2, not available on S11.
+# Needs updated glib2, not available on S11.3
 include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -79,6 +78,7 @@ REQUIRED_PACKAGES += service/opengl/ogl-select
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/libdbus-glib
 REQUIRED_PACKAGES += x11/library/libice
+REQUIRED_PACKAGES += x11/library/libepoxy
 REQUIRED_PACKAGES += x11/library/libsm
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcomposite
