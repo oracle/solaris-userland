@@ -30,23 +30,19 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gsettings-desktop-schemas
-COMPONENT_VERSION=	3.18.1
+COMPONENT_VERSION=	3.24.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/HowDoI/GSettings
 COMPONENT_ARCHIVE_HASH= \
-    sha256:258713b2a3dc6b6590971bcfc81f98d78ea9827d60e2f55ffbe40d9cd0f99a1a
+    sha256:f6573a3f661d22ff8a001cc2421d8647717f1c0e697e342d03c6102f29bbbb90
 COMPONENT_BUGDB=	gnome/gconf
 COMPONENT_ANITYA_ID=	13139
 
-TPNO=			25277
+TPNO=			34498
 
 TEST_TARGET = $(NO_TESTS)
 
-# Needs updated glib2, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
+# Needed for Gnome 3, not available on S11.3
+include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
