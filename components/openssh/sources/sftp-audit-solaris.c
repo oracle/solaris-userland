@@ -105,10 +105,10 @@ void
 audit_sftp_session_fatal(void)
 {
 	/*
-         * The audit_sftp_session_stop routine will be called only for
+	 * The audit_sftp_session_stop routine will be called only for
 	 * valid sftp sessions
 	 */
-	if(audit_session != NULL)
+	if (audit_session != NULL)
 		audit_sftp_session_stop(ADT_FAIL_VALUE_PROGRAM);
 }
 
@@ -128,7 +128,7 @@ audit_sftp_finish_event(adt_event_data_t *event, int status, int rv)
 		fatal("Auditing failed: %s (%s)", strerror(errno),
 		    "could not put adt event");
 	}
-	
+
 	adt_free_event(event);
 }
 

@@ -23,8 +23,10 @@
  * Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
  */
 
-#ifdef SFTP_AUDIT
+#ifndef _SFTP_AUDIT_SOLARIS_H
+#define	_SFTP_AUDIT_SOLARIS_H
 
+#ifdef	SFTP_AUDIT
 #include <bsm/adt.h>
 
 /*
@@ -62,3 +64,5 @@ adt_event_data_t *audit_sftp_chmod(char *, int, mode_t);
 adt_event_data_t *audit_sftp_utimes(char *, int);
 
 #endif /* SFTP_AUDIT */
+
+#endif /* _SFTP_AUDIT_SOLARIS_H */
