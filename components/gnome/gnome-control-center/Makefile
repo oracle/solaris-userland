@@ -30,18 +30,18 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-control-center
-COMPONENT_VERSION=	3.18.2
+COMPONENT_VERSION=	3.24.0
 COMPONENT_PROJECT_URL=  https://git.gnome.org/browse/gnome-control-center
 COMPONENT_ARCHIVE_HASH= \
-	sha256:36fe6157247d2b7c8a98dbb3dbcde1c3a6f9e5e8fcc9ccf357e2b2417578f8ad
+	sha256:8de5ea79068e2d6b441db8c41a64bd983dedaeba71c2351505a71b527e77d9e2
 COMPONENT_BUGDB=	gnome/preferences
 COMPONENT_ANITYA_ID=	5408
 
-TPNO=			25823
+TPNO=			34518
 
 TEST_TARGET = $(NO_TESTS)
 
-# Needs gobject-introspection, not available on S11.
+# Needs gobject-introspection, not available on S11.3
 include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk

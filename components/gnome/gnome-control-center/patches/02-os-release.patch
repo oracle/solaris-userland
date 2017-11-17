@@ -1,30 +1,73 @@
-Use /etc/release instead of /etc/os-release to get OS name on Solaris.
+Use /etc/release & uname instead of /etc/os-release to get OS name on Solaris.
 
-Need to submit upstream.
+Need to submit upstream or get RE to start delivering /etc/os-release
 
---- gnome-control-center-3.18.2/panels/info/cc-info-panel.c~	2015-07-20 03:08:50.000000000 +0000
-+++ gnome-control-center-3.18.2/panels/info/cc-info-panel.c	2016-10-15 13:22:56.504195284 +0000
-@@ -460,6 +460,23 @@ get_os_type (void)
+--- gnome-control-center-3.24.0/panels/info/cc-info-panel.c
++++ gnome-control-center-3.24.0/panels/info/cc-info-panel.c
+@@ -48,6 +48,10 @@
  
-        g_free (buffer);
+ #include "gsd-disk-space-helper.h"
+ 
++#ifdef __sun
++#include <sys/utsname.h>
++#endif
++
+ /* Autorun options */
+ #define PREF_MEDIA_AUTORUN_NEVER                "autorun-never"
+ #define PREF_MEDIA_AUTORUN_X_CONTENT_START_APP  "autorun-x-content-start-app"
+@@ -487,6 +491,55 @@ get_os_info (void)
+       g_strfreev (lines);
+       g_free (buffer);
      }
 +#ifdef __sun
-+  else if (g_file_get_contents ("/etc/release", &buffer, NULL, NULL))
++  /* Generate a subset of the fields documented in
++     https://www.freedesktop.org/software/systemd/man/os-release.html
++     from other sources on Solaris */
++  else
 +    {
-+      char *start = buffer;
-+      char *end = strchr (start, '\n');
-+        
-+      if (start != NULL && end != NULL)
++      gchar *key, *value, *name;
++      struct utsname uts;
++
++      hashtable = g_hash_table_new_full (g_str_hash, g_str_equal,
++                                         g_free, g_free);
++
++      if (g_file_get_contents ("/etc/release", &buffer, NULL, NULL))
 +        {
-+          name = g_strndup (start, end - start);
-+          if (name != NULL)
++          char *start = buffer;
++          char *end = strchr (start, '\n');
++
++          if (start != NULL && end != NULL)
 +            {
-+              g_strstrip(name);
++              name = g_strndup (start, end - start);
++              if (name != NULL)
++                {
++                  g_strstrip(name);
++                }
 +            }
++          g_free (buffer);
 +        }
-+       g_free (buffer);
++
++      key = g_strdup ("PRETTY_NAME");
++      if (name != NULL)
++        value = name;
++      else
++        value = g_strdup("Oracle Solaris");
++      if (key != NULL && value != NULL)
++        g_hash_table_insert (hashtable, key, value);
++
++      uname(&uts);
++      key = g_strdup ("BUILD_ID");
++      value = g_strdup (uts.version);
++      if (key != NULL && value != NULL)
++        g_hash_table_insert (hashtable, key, value);
++
++      key = g_strdup ("NAME");
++      value = g_strdup("Oracle Solaris");
++      if (key != NULL && value != NULL)
++        g_hash_table_insert (hashtable, key, value);
++
 +    }
 +#endif
  
-   if (GLIB_SIZEOF_VOID_P == 8)
-     bits = 64;
+   return hashtable;
+ }
