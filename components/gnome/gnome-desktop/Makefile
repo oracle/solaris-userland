@@ -30,23 +30,19 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-desktop
-COMPONENT_VERSION=	3.18.0
+COMPONENT_VERSION=	3.24.0
 COMPONENT_PROJECT_URL= 	http://wiki.gnome.org
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:44c806b16ea7d38bdc0e6343f2cb6be97afd7f64490f30c0cb5c3373e89a9d44
+	sha256:86387aa12ba789afc0772d49fdfbab2d815669552e895be089252dd42aa68677
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13127
 
-TPNO=			24892
+TPNO=			34530
 
 TEST_TARGET = $(NO_TESTS)
 
-# Needs updated glib2, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
+# Needed for Gnome 3, not available on S11.3
+include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
