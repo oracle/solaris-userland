@@ -121,7 +121,7 @@
  }
  
  /*
-@@ -517,6 +531,12 @@
+@@ -519,6 +533,12 @@
  	    locking_callback = solaris_locking_callback;
      }
  
@@ -134,7 +134,7 @@
      /* allocate and initialize locks needed by OpenSSL  */
      solaris_openssl_locks =
          OPENSSL_malloc(sizeof (pthread_mutex_t) * CRYPTO_NUM_LOCKS);
-@@ -530,6 +550,7 @@
+@@ -532,6 +552,7 @@
      }
  
      (void) pthread_atfork(solaris_fork_prep, solaris_fork_post, solaris_fork_post);
@@ -142,7 +142,27 @@
  }
  
  
-@@ -1104,6 +1120,12 @@
+@@ -639,6 +660,9 @@
+     CRYPTO_THREADID_set_numeric(id, (unsigned long)GetCurrentThreadId());
+ #elif defined(OPENSSL_SYS_BEOS)
+     CRYPTO_THREADID_set_numeric(id, (unsigned long)find_thread(NULL));
++#elif defined(_BOOT)
++    /* For wanboot, default to using the address of errno */
++    CRYPTO_THREADID_set_pointer(id, &errno);
+ #else
+     /* For everything else, default to using pthread_self() */
+     CRYPTO_THREADID_set_numeric(id, (unsigned long)pthread_self());
+@@ -686,6 +710,9 @@
+         ret = 1L;
+ # elif defined(OPENSSL_SYS_BEOS)
+         ret = (unsigned long)find_thread(NULL);
++# elif defined (_BOOT)
++        /* For wanboot, default to using the address of errno */
++        ret = (unsigned long)&errno;
+ # else
+         ret = (unsigned long)pthread_self();
+ # endif
+@@ -1119,6 +1146,12 @@
          MessageBox(NULL, buf, _T("OpenSSL: FATAL"), MB_OK | MB_ICONERROR);
  }
  #else
@@ -155,7 +175,7 @@
  void OPENSSL_showfatal(const char *fmta, ...)
  {
      va_list ap;
-@@ -1112,6 +1134,7 @@
+@@ -1127,6 +1160,7 @@
      vfprintf(stderr, fmta, ap);
      va_end(ap);
  }
@@ -163,7 +183,7 @@
  
  int OPENSSL_isservice(void)
  {
-@@ -1121,9 +1144,15 @@
+@@ -1136,9 +1170,15 @@
  
  void OpenSSLDie(const char *file, int line, const char *assertion)
  {
