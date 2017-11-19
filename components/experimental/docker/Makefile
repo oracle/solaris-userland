@@ -23,7 +23,8 @@
 # Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS=		64
-include ../../make-rules/shared-macros.mk
+include ../../../make-rules/shared-macros.mk
+include $(WS_MAKE_RULES)/experimental-only.mk
 
 COMPONENT_NAME=		docker
 COMPONENT_VERSION=	1.10.3
