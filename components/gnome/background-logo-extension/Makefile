@@ -26,29 +26,21 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		background-logo-extension
-COMPONENT_VERSION=	3.20.0
+COMPONENT_VERSION=	3.24.0
 COMPONENT_PROJECT_URL=  https://extensions.gnome.org/extension/889/background-logo
 COMPONENT_ARCHIVE_HASH= \
-	sha256:9a0480fcf82214c6fac54485d5e91be485b2b8517df2fad853bfeba534c00f6b
-COMPONENT_ARCHIVE_URL=	https://git.fedorahosted.org/cgit/$(COMPONENT_NAME).git/snapshot/$(COMPONENT_ARCHIVE)
+	sha256:02be5afb7fc4e31e89b0090caeef189d938f861717ab8d773d653d6bfebded0c
+COMPONENT_ARCHIVE_URL=	http://releases.pagure.org/background-logo-extension/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	13118
 
-TPNO=			29309
+TPNO=			39314
 
 TEST_TARGET = $(NO_TESTS)
 
-# This is for Gnome 3 so shouldn't apply to S11
+# This is for Gnome 3 so shouldn't apply to S11.3
 include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
-
-# configure assumes the extension version matches the gnome-shell version,
-# so override that for now, since our version numberss are out of sync
-COMPONENT_PREP_ACTION += \
-    $(GSED) -i -e 's/@shell_version@/3.18/' $(@D)/metadata.json.in ;
-
-# tarballs include autogen.sh, but not pre-generated configure script
-COMPONENT_PREP_ACTION += ( cd $(@D) ; NOCONFIGURE=1 $(CONFIG_SHELL) autogen.sh );
 
 REQUIRED_PACKAGES += gnome/gnome-shell
 REQUIRED_PACKAGES += library/desktop/clutter

@@ -30,16 +30,16 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nautilus
-COMPONENT_VERSION=	3.18.2
+COMPONENT_VERSION=	3.24.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/Nautilus
 COMPONENT_ARCHIVE_HASH= \
-	sha256:68dcf668e2ca93126a899d2e236ef37af2aea93e3fc25eee23ccd7ba911d424a
+	sha256:8a499247caff3c02437c0ad955f043e675a056912d8553d9c9783c762f5dbbbd
 COMPONENT_BUGDB=        gnome/nautilus
 COMPONENT_ANITYA_ID=	2050
 
-TPNO=			25412
+TPNO=			35134
 
-# Needs gobject-introspection, not available on S11.
+# Needs gobject-introspection, not available on S11.3
 include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -54,6 +54,7 @@ CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 
 # Not yet available for Solaris.
 CONFIGURE_OPTIONS += --disable-packagekit
+CONFIGURE_OPTIONS += --disable-selinux
 # Not desired for production builds.
 CONFIGURE_OPTIONS += --disable-profiling
 CONFIGURE_OPTIONS += --disable-static
@@ -76,6 +77,7 @@ REQUIRED_PACKAGES += image/library/libexif
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
+REQUIRED_PACKAGES += library/desktop/gnome-autoar
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/pango

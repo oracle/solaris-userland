@@ -27,19 +27,19 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		grilo-plugins
-COMPONENT_VERSION=	0.2.16
+COMPONENT_VERSION=	0.3.4
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Grilo
 COMPONENT_ARCHIVE_HASH= \
-	sha256:80b4571f9db6df0d5f0873d30f2ee475204f5831d2974b89c58423d6ffac5203
+	sha256:990282a518968c52f6a67b96c6b708e236a59da1c7c920ed45e6316ab49ddeb5
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	10929
 
-TPNO=			25380
+TPNO=			35418
 
 # Tests dont work in the Userland framework yet
 TEST_TARGET = $(SKIP_TEST)
 
-# Needs gnome-online-accounts, not available on S11.
+# Needs gnome-online-accounts, not available on S11.3
 include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk

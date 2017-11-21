@@ -2,20 +2,20 @@ Use libv12n to find virtualization environment instead of asking systemd
 
 Need to submit upstream
 
---- gnome-control-center-3.18.2/configure.ac
-+++ gnome-control-center-3.18.2/configure.ac
-@@ -64,6 +64,7 @@ AC_CHECK_HEADERS(X11/extensions/XKB.h)
- CPPFLAGS=$savecppflags
+--- a/configure.ac	2017-11-07 13:36:12.640843834 -0800
++++ b/configure.ac	2017-11-07 13:37:12.596600866 -0800
+@@ -65,6 +65,7 @@
  
- AC_CHECK_LIB(m, floor)
+ AC_CHECK_LIBM
+ AC_SUBST(LIBM)
 +AC_CHECK_LIB(v12n, v12n_get_current_env)
  
  # IBus support
  IBUS_REQUIRED_VERSION=1.5.2
---- gnome-control-center-3.18.2/panels/info/cc-info-panel.c
-+++ gnome-control-center-3.18.2/panels/info/cc-info-panel.c
-@@ -43,6 +43,10 @@
- #include <GL/glx.h>
+--- a/panels/info/cc-info-panel.c	2017-11-07 13:37:46.237124276 -0800
++++ b/panels/info/cc-info-panel.c	2017-11-07 13:39:28.478434856 -0800
+@@ -42,6 +42,10 @@
+ #include <gdk/gdkx.h>
  #endif
  
 +#ifdef HAVE_LIBV12N
@@ -25,7 +25,7 @@ Need to submit upstream
  #include "gsd-disk-space-helper.h"
  
  /* Autorun options */
-@@ -740,6 +744,10 @@ static struct {
+@@ -760,6 +764,10 @@
    const char *id;
    const char *display;
  } const virt_tech[] = {
@@ -36,7 +36,7 @@ Need to submit upstream
    { "kvm", "KVM" },
    { "qemu", "QEmu" },
    { "vmware", "VMware" },
-@@ -788,13 +796,31 @@ set_virtualization_label (CcInfoPanel  *
+@@ -808,14 +816,32 @@
  static void
  info_panel_setup_virt (CcInfoPanel  *self)
  {
@@ -66,12 +66,13 @@ Need to submit upstream
    GVariant *variant;
    GVariant *inner;
 -  char *str;
--
--  str = NULL;
  
+-  str = NULL;
+-
    systemd_proxy = g_dbus_proxy_new_for_bus_sync (G_BUS_TYPE_SYSTEM,
                                                   G_DBUS_PROXY_FLAGS_NONE,
-@@ -832,6 +858,7 @@ info_panel_setup_virt (CcInfoPanel  *sel
+                                                  NULL,
+@@ -852,6 +878,7 @@
    g_variant_unref (variant);
  
    g_object_unref (systemd_proxy);

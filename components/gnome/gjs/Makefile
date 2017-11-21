@@ -30,24 +30,20 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gjs
-COMPONENT_VERSION=	1.43.3
+COMPONENT_VERSION=	1.48.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Gjs
 COMPONENT_ARCHIVE_HASH= \
-	sha256:82b54dd4590ea1622d19b2e27978bcb9c2c5b46922e1e1780ea79b6a28aa1c4e
+	sha256:ed7db93e12709fe43b2fbe1e157331a0b1dcf3e0d19b81ccebd2d96bfcbe9525
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	9532
 
-TPNO=			25284
+TPNO=			34683
 
 # Tests do not work in Solaris yet
 TEST_TARGET = $(SKIP_TEST)
 
-# Needs updated glib2, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
+# Needs updated libmozjs, not available on S11.3
+include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -71,7 +67,7 @@ REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libffi
-REQUIRED_PACKAGES += library/libmozjs-24
+REQUIRED_PACKAGES += library/libmozjs-38
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/readline
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime

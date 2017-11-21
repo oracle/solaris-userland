@@ -1,42 +1,7 @@
 Fix compiler warnings.
 
-meta-cursor-renderer.c is already fixed upstream in a later release:
-https://git.gnome.org/browse/mutter/commit?id=ff312b69585cb0ec9f53483baa47678db8d44306
-
-Other two files need to be submitted upstream still.
-
---- mutter-3.18.0/src/backends/meta-cursor-renderer.c	Sun Oct  4 19:47:56 2015
-+++ mutter-3.18.0/src/backends/meta-cursor-renderer.c	Sun Oct  4 19:48:42 2015
-@@ -26,6 +26,7 @@
- 
- #include "meta-cursor-renderer.h"
- 
-+#include <math.h> 
- #include <meta/meta-backend.h>
- #include <meta/util.h>
- 
---- mutter-3.18.0/src/core/window.c	Mon Sep 21 12:48:51 2015
-+++ mutter-3.18.0/src/core/window.c	Tue Jan  5 13:34:16 2016
-@@ -3488,7 +3488,7 @@
-     {
-       MetaMonitorInfo *info = &window->screen->monitor_infos[i];
- 
--      if (info->winsys_id == winsys_id)
-+      if ((size_t)info->winsys_id == winsys_id)
-         return info;
-     }
- 
-@@ -3697,7 +3697,7 @@
- 
-   meta_window_update_monitor (window, flags & META_MOVE_RESIZE_USER_ACTION);
- 
--  if (old_output_winsys_id != window->monitor->winsys_id &&
-+  if (old_output_winsys_id != (size_t) window->monitor->winsys_id &&
-       flags & META_MOVE_RESIZE_MOVE_ACTION && flags & META_MOVE_RESIZE_USER_ACTION)
-     window->preferred_output_winsys_id = window->monitor->winsys_id;
-
---- mutter-3.18.1/src/x11/session.c	Tue Jan  5 13:40:50 2016
-+++ mutter-3.18.1/src/x11/session.c	Tue Jan  5 13:41:09 2016
+--- a/src/x11/session.c	2017-11-08 10:47:56.543172288 -0800
++++ b/src/x11/session.c	2017-11-08 10:48:20.478477632 -0800
 @@ -336,7 +336,7 @@
      prop3val.value = &hint;
      prop3val.length = 1;
@@ -46,3 +11,49 @@ Other two files need to be submitted upstream still.
      prop4.name = (char *)SmProcessID;
      prop4.type = (char *)SmARRAY8;
      prop4.num_vals = 1;
+
+--- mutter-3.24.0/cogl/cogl/cogl-bitmap-conversion.c	2017-03-31 12:06:21.354426499 -0700
++++ mutter-3.24.0/cogl/cogl/cogl-bitmap-conversion.c	2017-03-31 12:08:09.967708049 -0700
+@@ -135,7 +135,7 @@
+    it is available. The same assembler code works for x86 and x86-64
+    because it doesn't refer to any non-SSE registers directly */
+ #if defined(__SSE2__) && defined(__GNUC__) \
+-  && (defined(__x86_64) || defined(__i386))
++  && (defined(__x86_64) || defined(__i386)) && !defined(__sun)
+ #define COGL_USE_PREMULT_SSE2
+ #endif
+
+--- a/src/core/main.c	2017-11-08 14:21:51.697782191 -0800
++++ b/src/core/main.c	2017-11-08 14:23:05.028764203 -0800
+@@ -445,11 +445,13 @@
+ #endif /* HAVE_WAYLAND */
+     *compositor_type = META_COMPOSITOR_TYPE_X11;
+ 
++#ifdef HAVE_WAYLAND
+   if (opt_nested)
+     {
+       *backend_gtype = META_TYPE_BACKEND_X11_NESTED;
+       return;
+     }
++#endif
+ 
+ #ifdef HAVE_NATIVE_BACKEND
+   if (opt_display_server)
+--- mutter-3.24.0/src/compositor/compositor.c	2017-03-31 13:21:31.200819023 -0700
++++ mutter-3.24.0/src/compositor/compositor.c	2017-03-31 13:21:57.282065940 -0700
+@@ -383,6 +383,7 @@
+                          meta_plugin_get_screen (plugin),
+                          display->grab_window, display->grab_op);
+ 
++#ifdef HAVE_WAYLAND
+   if (meta_is_wayland_compositor ())
+     {
+       meta_display_sync_wayland_input_focus (display);
+@@ -390,6 +391,7 @@
+ 
+       meta_dnd_wayland_handle_begin_modal (compositor);
+     }
++#endif
+ 
+   return TRUE;
+ }

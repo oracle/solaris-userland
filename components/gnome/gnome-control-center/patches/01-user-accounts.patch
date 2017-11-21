@@ -30,21 +30,19 @@ If this panel is ever restored, then you will also need to remove
  	datetime \
  	search \
  	privacy \
---- gnome-control-center-3.18.2/shell/Makefile.am	2016-10-05 14:11:27.817541135 -0700
-+++ gnome-control-center-3.18.2/shell/Makefile.am	2016-10-05 14:11:45.146654661 -0700
-@@ -72,8 +72,7 @@
- 	$(top_builddir)/panels/search/libsearch.la			\
+--- a/shell/Makefile.am	2017-11-07 13:34:32.508060455 -0800
++++ b/shell/Makefile.am	2017-11-07 13:34:57.626172458 -0800
+@@ -93,7 +93,6 @@
  	$(top_builddir)/panels/sharing/libsharing.la			\
  	$(top_builddir)/panels/sound/libsound.la			\
--	$(top_builddir)/panels/universal-access/libuniversal-access.la	\
--	$(top_builddir)/panels/user-accounts/libuser-accounts.la
-+	$(top_builddir)/panels/universal-access/libuniversal-access.la
+ 	$(top_builddir)/panels/universal-access/libuniversal-access.la	\
+-	$(top_builddir)/panels/user-accounts/libuser-accounts.la	\
+ 	$(top_builddir)/panels/printers/libprinters.la
  
  if BUILD_WACOM
- gnome_control_center_LDADD += $(top_builddir)/panels/wacom/libwacom-properties.la
---- gnome-control-center-3.18.2/shell/cc-panel-loader.c	2016-10-05 14:39:04.203136226 -0700
-+++ gnome-control-center-3.18.2/shell/cc-panel-loader.c	2016-10-05 14:39:28.489591313 -0700
-@@ -54,7 +54,6 @@
+--- a/shell/cc-panel-loader.c	2017-11-07 13:35:20.043104014 -0800
++++ b/shell/cc-panel-loader.c	2017-11-07 13:35:43.463644020 -0800
+@@ -52,7 +52,6 @@
  extern GType cc_sharing_panel_get_type (void);
  extern GType cc_sound_panel_get_type (void);
  extern GType cc_ua_panel_get_type (void);
@@ -52,7 +50,7 @@ If this panel is ever restored, then you will also need to remove
  #ifdef BUILD_WACOM
  extern GType cc_wacom_panel_get_type (void);
  #endif /* BUILD_WACOM */
-@@ -98,7 +97,6 @@
+@@ -94,7 +93,6 @@
    PANEL_TYPE("sharing",          cc_sharing_panel_get_type      ),
    PANEL_TYPE("sound",            cc_sound_panel_get_type        ),
    PANEL_TYPE("universal-access", cc_ua_panel_get_type           ),

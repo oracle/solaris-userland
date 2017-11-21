@@ -3,16 +3,13 @@ into the binaries.
 
 XXX file upstream bug
 
---- gjs-1.43.3/Makefile.am	2014-12-21 09:37:14.000000000 -0800
-+++ gjs-1.43.3/Makefile.am	2015-06-30 14:07:54.267786457 -0700
-@@ -98,7 +98,9 @@
- 	$(EXTRA_LINK_FLAGS)	\
+--- a/Makefile.am	2017-10-31 12:41:28.207749943 -0700
++++ b/Makefile.am	2017-10-31 12:41:53.733672392 -0700
+@@ -61,6 +61,7 @@
+ 	-DGJS_COMPILATION
+ libgjs_la_LDFLAGS = 		\
  	-export-symbols-regex "^[^_]" -version-info 0:0:0	\
++  	-Wl,-soname=libgjs.so.0 \
  	-no-undefined \
--	-rdynamic
-+	-rdynamic \
-+	-Wl,-soname=libgjs.so.0
-+
+ 	$(NULL)
  libgjs_la_LIBADD = 		\
- 	$(GJS_LIBS)
- 

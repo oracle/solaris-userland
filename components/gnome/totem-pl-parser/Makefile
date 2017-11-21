@@ -30,23 +30,19 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		totem-pl-parser
-COMPONENT_VERSION=	3.10.5
+COMPONENT_VERSION=	3.10.7
 COMPONENT_PROJECT_URL=  https://github.com/GNOME/totem-pl-parser
 COMPONENT_ARCHIVE_HASH= \
-	sha256:a746580f61b678029dadaa824a6923445afd944d12c40c5fccb27159799c8137
+	sha256:9c8285bc3131faa309d5cba5a919d5166abc2b8cc5a0c850fe861be8b14e089c
 COMPONENT_BUGDB=        gnome/multimedia
 COMPONENT_ANITYA_ID=	13163
 
-TPNO=			25833
+TPNO=			34606
 
 TEST_TARGET  = $(NO_TESTS)
 
-# Needs gobject-introspection, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
+# Needs gobject-introspection, not available on S11.3
+include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

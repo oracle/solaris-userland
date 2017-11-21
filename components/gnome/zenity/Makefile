@@ -28,20 +28,16 @@ BUILD_BITS=		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		zenity
-COMPONENT_VERSION=	3.18.0
+COMPONENT_VERSION=	3.24.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Zenity
 COMPONENT_ARCHIVE_HASH= \
-	sha256:0efafea95a830f3bf6eca805ff4a8008df760a6ad3e81181b9473dcf721c3a69
+	sha256:6ff0a026ec94e5bc1b30f78df91e54f4f82fd982f4c29b52fe5dacc886a9f7f7
 COMPONENT_ANITYA_ID=	13165
 
-TPNO=			24606
+TPNO=			34565
 
-# zenity is not unlockable in S11 gnome-incorporation
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_64=
-INSTALL_64=
-PUBLISH_STAMP=
-endif
+# zenity is not unlockable in S11.3 gnome-incorporation
+include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

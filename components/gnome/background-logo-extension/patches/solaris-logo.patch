@@ -7,12 +7,13 @@ Not suitable for upstream
    <schema path="/org/fedorahosted/background-logo-extension/"
            id="org.fedorahosted.background-logo-extension">
      <key type="s" name="logo-file">
--      <default>'/usr/share/pixmaps/fedora_whitelogo.svg'</default>
+-      <default>'/usr/share/fedora-logos/fedora_lightbackground.svg'</default>
 +      <default>'/usr/share/pixmaps/Oracle_Solaris_Logo.png'</default>
        <summary>Logo file</summary>
        <description>The full logo file path</description>
      </key>
-@@ -25,7 +25,7 @@
+@@ -24,8 +24,8 @@
+       </description>
      </key>
      <key type="d" name="logo-size">
 -      <range min="5.0" max="15.0"/>
@@ -22,24 +23,32 @@ Not suitable for upstream
        <summary>Logo size</summary>
        <description>The logo size in percent relative to the screen width</description>
      </key>
-
+@@ -37,7 +37,7 @@
+     </key>
+     <key type="u" name="logo-opacity">
+       <range min="0" max="255"/>
+-      <default>255</default>
++      <default>80</default>
+       <summary>Logo opacity</summary>
+       <description>The opacity of the logo</description>
+     </key>
 --- a/extension.js
 +++ b/extension.js
-@@ -141,14 +141,15 @@ const BackgroundLogo = new Lang.Class({
+@@ -165,7 +165,8 @@
          let defaultUri = background._settings.get_default_value('picture-uri');
          let file = Gio.File.new_for_commandline_arg(defaultUri.deep_unpack());
  
 -        let visible;
 +        let visible = true;
 +/*
-         if (background._file) // > 3.14
-             visible = background._file.equal(file);
-         else if (background._filename) // <= 3.14
+         if (this._settings.get_boolean('logo-always-visible'))
+             visible = true;
+         else if (background._file) // > 3.14
+@@ -174,6 +175,7 @@
              visible = background._filename == file.get_path();
          else // background == NONE
              visible = false;
--
-+ */
++*/
+ 
          Tweener.addTween(this.actor,
                           { opacity: visible ? 255 : 0,
-                            time: Background.FADE_ANIMATION_TIME,

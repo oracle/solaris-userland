@@ -29,18 +29,17 @@ COMPILER=               gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-shell-extensions
-COMPONENT_VERSION=	3.18.2
+COMPONENT_VERSION=	3.24.0
 COMPONENT_PROJECT_URL=  https://extensions.gnome.org
 COMPONENT_ARCHIVE_HASH= \
-	sha256:cc514ffc896ed8c04853a89cb8e97058f9d5518313becf7c92aea5210b8adf61
-COMPONENT_ARCHIVE_URL=	http://download.gnome.org/sources/$(COMPONENT_NAME)/3.18/$(COMPONENT_ARCHIVE)
+	sha256:a1f453cce7543a09f3d5515918a6fe903c1b4aa578f7367335dd1a8121d2618f
 COMPONENT_ANITYA_ID=	1195
 
-TPNO=			25492
+TPNO=			39313
 
 TEST_TARGET = $(NO_TESTS)
 
-# It's useless without gnome-shell which is not available on S11.
+# It's useless without gnome-shell which is not available on S11.3
 include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk

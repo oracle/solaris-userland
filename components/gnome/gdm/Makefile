@@ -29,16 +29,16 @@ COMPILER= 		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gdm
-COMPONENT_VERSION=	3.18.2
+COMPONENT_VERSION=	3.24.2
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/GDM
 COMPONENT_ARCHIVE_HASH= \
-	sha256:549235247611d74f0d5d5a4aa01ba9350a4d3468e44ac013b40791c6a986f822
+	sha256:4378b9fad5536e03c56ad138d0e249fbcaa09977b867895426cb41c978fe5de8
 COMPONENT_BUGDB=        gnome/gdm
 COMPONENT_ANITYA_ID=	13122
 
-TPNO=			25845
+TPNO=			36164
 
-# Needs accountsservice, not available on S11.
+# Needs accountsservice, not available on S11.3
 include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -107,6 +107,7 @@ REQUIRED_PACKAGES += terminal/xterm
 REQUIRED_PACKAGES += x11/keyboard/xkb-utilities
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxau
+REQUIRED_PACKAGES += x11/library/libxcb
 REQUIRED_PACKAGES += x11/library/libxdmcp
 REQUIRED_PACKAGES += x11/library/libxft
 REQUIRED_PACKAGES += x11/library/libxi
