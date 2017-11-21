@@ -277,7 +277,6 @@ CONFIGURE_OPTIONS += --disable-guile
 CONFIGURE_OPTIONS += --with-included-libtasn1
 CONFIGURE_OPTIONS += --with-included-unistring
 CONFIGURE_OPTIONS += --without-p11-kit
-CONFIGURE_OPTIONS += --disable-ecdhe
 CONFIGURE_OPTIONS += --disable-openssl-compatibility
 CONFIGURE_OPTIONS += --disable-tests
 
