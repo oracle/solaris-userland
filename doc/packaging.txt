@@ -288,9 +288,9 @@ Renames
     of creating an additional file.
 
 
-=============================
+==============================
 Component EOF (End Of Feature) 
-=============================
+==============================
 This is a brief description on how to remove a component from Userland for
 an EOF.
 
@@ -364,5 +364,27 @@ system.
 For languages and anything else that has modules or is otherwise part of the
 Userland build environment you will need to do a full build, of both ISAs, on
 the test machines you just updated.
+
+
+
+=====================
+Experimental packages
+=====================
+There are components which we for any reason want to have in the gate, have the
+ability to build them but do not deliver them to WOS. This is called
+experimental packages. Such packages will
+ - be in the components/experimental directory
+ - will include make-rules/experimental-only.mk in their Makefile
+ - will have a record in components/meta-packages/history/history similarly as
+   if you just deleted the component completely (there is section at the end
+   for experimental packages)
+
+If you run gmake install/build/publish in the component directory it will
+work normally, but the package will be published into
+$(hg root)/$(uname -p)/repo.experimental . If you run full gate build the
+obsolete packages will be created from 'history' as usual in addition to the
+packages being delivered to the experimental repo.
+
+
 
 # vi:set fdm=marker expandtab ts=4:
