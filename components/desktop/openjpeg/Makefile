@@ -57,6 +57,7 @@ CMAKE_OPTIONS += -DLCMS2_INCLUDE_DIR=$(USRINCDIR)/lcms
 
 REQUIRED_PACKAGES += developer/build/cmake
 REQUIRED_PACKAGES += image/library/libpng
+REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += image/library/libtiff
 REQUIRED_PACKAGES += library/lcms2
 REQUIRED_PACKAGES += system/library/math

@@ -123,6 +123,7 @@ COMPONENT_PRE_TEST_ACTION = \
 REQUIRED_PACKAGES += image/graphviz
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng
+REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += image/library/librsvg
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo

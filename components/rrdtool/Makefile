@@ -85,6 +85,7 @@ PKG_MACROS +=  PYVER=$(PYTHON_VERSION)
 PKG_MACROS +=  PYV=$(shell echo $(PYTHON_VERSION) | tr -d .)
 
 REQUIRED_PACKAGES += image/library/libpng
+REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
