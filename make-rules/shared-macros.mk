@@ -59,6 +59,7 @@ WS_MACH =	$(WS_TOP)/$(MACH)
 WS_LOGS =	$(WS_MACH)/logs
 WS_HOME =	$(WS_MACH)/home
 WS_REPO =	$(WS_MACH)/repo
+WS_EXPERIMENTAL_REPO =	$(WS_MACH)/repo.experimental
 WS_TOOLS =	$(WS_TOP)/tools
 WS_MAKE_RULES =	$(WS_TOP)/make-rules
 WS_COMPONENTS =	$(WS_TOP)/components
@@ -204,6 +205,7 @@ CLONEY =	$(WS_TOOLS)/cloney
 CONFIG_SHELL =	/bin/bash
 
 PKG_REPO =	file:$(WS_REPO)
+PKG_EXPERIMENTAL_REPO =	file:$(WS_EXPERIMENTAL_REPO)
 
 COMPONENT_SRC_NAME =	$(COMPONENT_NAME)
 # Assume a component is categorized as a utility by default.
