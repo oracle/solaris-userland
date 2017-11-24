@@ -88,6 +88,7 @@ COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += image/library/libpng
+REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += library/glib2
 # Requires pixman >= 0.30
 REQUIRED_PACKAGES += library/graphics/pixman

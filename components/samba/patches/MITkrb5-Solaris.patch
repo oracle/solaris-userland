@@ -1,50 +1,49 @@
-Source: in-house
-Up-stream Acceptability: Patch only reflects customized paths to Krb5
-  in Solaris so it is not acceptable for community.
+Tests are failing on Solaris
 
---- a/wscript_configure_system_mitkrb5	2016-03-30 03:20:20.000000000 -0700
-+++ samba-4.4.1/wscript_configure_system_mitkrb5	2016-04-09 06:33:07.937842880 -0700
-@@ -34,6 +34,8 @@
-         krb5_define_syslib(conf, "com_err", conf.env['LIB_GSSAPI'])
-     if 'gssapi_krb5' in conf.env['LIB_GSSAPI']:
-         krb5_define_syslib(conf, "gssapi_krb5", conf.env['LIB_GSSAPI'])
-+    if 'gss' in conf.env['LIB_GSSAPI']:
-+        krb5_define_syslib(conf, "gss", conf.env['LIB_GSSAPI'])
- 
-     vendor = conf.cmd_and_log("%(path)s --vendor" % dict(path=conf.env.KRB5_CONFIG), dict())
-     conf.env.KRB5_VENDOR = vendor.strip().lower()
-@@ -56,18 +58,18 @@
+Solaris place krb5 headers into /usr/include/kerberosv5/ so
+the -I/usr/include/kerberosv5 option need to be passed into the
+test by pointing to "lib" entity from where it can be retrieved.
+
+--- a/wscript_configure_system_mitkrb5	2017-07-04 03:05:26.000000000 +0000
++++ b/wscript_configure_system_mitkrb5	2017-11-08 14:08:56.806740797 +0000
+@@ -75,20 +75,20 @@
+             Logs.info('MIT Kerberos %s detected, MIT krb5 build can proceed' % (krb5_version))
  
  conf.CHECK_CFG(args="--cflags --libs", package="com_err", uselib_store="com_err")
- conf.CHECK_FUNCS_IN('_et_list', 'com_err')
+-conf.CHECK_FUNCS_IN('_et_list', 'com_err')
 -conf.CHECK_HEADERS('com_err.h', lib='com_err')
++conf.CHECK_FUNCS_IN('_et_list', 'com_err krb5')
 +conf.CHECK_HEADERS('com_err.h', lib='com_err krb5')
+ conf.CHECK_HEADERS('kdb.h', lib='kdb5')
  
  conf.CHECK_HEADERS('krb5.h krb5/locate_plugin.h', lib='krb5')
  possible_gssapi_headers="gssapi.h gssapi/gssapi_generic.h gssapi/gssapi.h gssapi/gssapi_ext.h gssapi/gssapi_krb5.h gssapi/gssapi_oid.h"
--conf.CHECK_HEADERS(possible_gssapi_headers, lib='gssapi')
-+conf.CHECK_HEADERS(possible_gssapi_headers, lib='gssapi krb5')
+ conf.CHECK_HEADERS(possible_gssapi_headers, lib='gssapi')
  
- conf.CHECK_FUNCS_IN('krb5_encrypt_data', 'k5crypto')
- conf.CHECK_FUNCS_IN('des_set_key','crypto')
- conf.CHECK_FUNCS_IN('copy_Authenticator', 'asn1')
- conf.CHECK_FUNCS_IN('roken_getaddrinfo_hostspec', 'roken')
+-conf.CHECK_FUNCS_IN('krb5_encrypt_data', 'k5crypto')
+-conf.CHECK_FUNCS_IN('des_set_key','crypto')
+-conf.CHECK_FUNCS_IN('copy_Authenticator', 'asn1')
+-conf.CHECK_FUNCS_IN('roken_getaddrinfo_hostspec', 'roken')
++conf.CHECK_FUNCS_IN('krb5_encrypt_data', 'k5crypto krb5')
++conf.CHECK_FUNCS_IN('des_set_key','crypto krb5')
++conf.CHECK_FUNCS_IN('copy_Authenticator', 'asn1 krb5')
++conf.CHECK_FUNCS_IN('roken_getaddrinfo_hostspec', 'roken krb5')
  
 -conf.CHECK_HEADERS('profile.h')
 +conf.CHECK_HEADERS('profile.h', lib='krb5')
  
  if conf.CHECK_FUNCS_IN('gss_display_status', 'gssapi gssapi_krb5'):
      have_gssapi=True
-@@ -87,7 +89,7 @@
-        gsskrb5_extract_authz_data_from_sec_context
-        gss_krb5_export_lucid_sec_context
+@@ -110,7 +110,7 @@
         gss_import_cred gss_export_cred
--       ''', 'gssapi gssapi_krb5')
-+       ''', 'gssapi gssapi_krb5 krb5')
- conf.CHECK_VARIABLE('GSS_KRB5_CRED_NO_CI_FLAGS_X', headers=possible_gssapi_headers)
+        gss_acquire_cred_from
+        ''', 'gssapi gssapi_krb5')
+-conf.CHECK_VARIABLE('GSS_KRB5_CRED_NO_CI_FLAGS_X', headers=possible_gssapi_headers)
++conf.CHECK_VARIABLE('GSS_KRB5_CRED_NO_CI_FLAGS_X', headers=possible_gssapi_headers, lib='krb5')
  conf.CHECK_FUNCS_IN('krb5_mk_req_extended krb5_kt_compare', 'krb5')
  conf.CHECK_FUNCS('''
-@@ -122,27 +124,27 @@
+        krb5_auth_con_getrecvsubkey
+@@ -148,25 +148,25 @@
  conf.CHECK_DECLS('''krb5_get_credentials_for_user
                      krb5_auth_con_set_req_cksumtype''',
                      headers='krb5.h', always=True)
@@ -80,21 +79,18 @@ Up-stream Acceptability: Patch only reflects customized paths to Krb5
 -                            define='HAVE_KRB5_PROMPT_TYPE')
 +                            define='HAVE_KRB5_PROMPT_TYPE', lib='krb5')
  
--conf.CHECK_TYPE('krb5_encrypt_block', headers='krb5.h')
-+conf.CHECK_TYPE('krb5_encrypt_block', headers='krb5.h', lib='krb5')
+ conf.CHECK_TYPE('krb5_encrypt_block', headers='krb5.h')
  
- conf.CHECK_CODE('''
-        krb5_context ctx;
-@@ -150,7 +152,7 @@
+@@ -176,7 +176,7 @@
         krb5_get_init_creds_opt_free(ctx, opt);
         ''',
      'KRB5_CREDS_OPT_FREE_REQUIRES_CONTEXT',
 -    headers='krb5.h', link=False,
-+    headers='krb5.h', lib='krb5', link=False,
++    headers='krb5.h', link=False, lib='krb5',
      msg="Checking whether krb5_get_init_creds_opt_free takes a context argument")
  conf.CHECK_CODE('''
         const krb5_data *pkdata;
-@@ -261,7 +263,7 @@
+@@ -287,7 +287,7 @@
  conf.CHECK_CODE('''#define KRB5_DEPRECATED 1
         #include <krb5.h>''',
     'HAVE_KRB5_DEPRECATED_WITH_IDENTIFIER', addmain=False,

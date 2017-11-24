@@ -99,6 +99,7 @@ COMPONENT_POST_INSTALL_ACTION = \
 REQUIRED_PACKAGES += driver/parallel/ecpp
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng
+REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += image/library/libtiff
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/security/openssl

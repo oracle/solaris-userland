@@ -1,70 +1,65 @@
-Source: in-house
-Up-stream Acceptability: Patch is fixing the names of "ldap" and "lber" libs
-   which are "hard-wired" to "libldap.so" and "liblber.so" in upstream.
-   Patch will be promoted to community.
+LDAP API is not found if located on non-default path
 
---- a/source3/wscript	2016-03-22 02:00:33.000000000 -0700
-+++ samba-4.4.0/source3/wscript	2016-03-23 12:43:02.236160369 -0700
-@@ -36,6 +36,16 @@
-                          "--with-shared-modules"),
-                    action="store", dest='shared_modules', default=None)
+Paths to LDAP C-SDK ("ldap" and "lber" libs) is currently "hard-wired"
+to -L/usr/lib -I/usr/include. Here is the fix.
+
+details in: https://bugzilla.samba.org/show_bug.cgi?id=12124
+
+diff --git a/lib/ldb/wscript b/lib/ldb/wscript
+index 13f1d93..ce1eae0 100755
+--- a/lib/ldb/wscript
++++ b/lib/ldb/wscript
+@@ -68,7 +68,7 @@ def configure(conf):
+         conf.CHECK_XSLTPROC_MANPAGES()
  
-+
-+    opt.add_option('--with-libldap',
-+                   help=("Name of the libldap for -l<libname> format."),
-+                   action="store", dest='libldap_name', default='ldap')
-+
-+    # mozldap has lber-calls part of the libldap so it should be also set on ldap60 to avoid link of lber from OpenLDAP
-+    opt.add_option('--with-liblber',
-+                   help=("Name of the liblber for -l<libname> format."),
-+                   action="store", dest='liblber_name', default='lber')
-+
-     opt.SAMBA3_ADD_OPTION('winbind')
-     opt.SAMBA3_ADD_OPTION('ads')
-     opt.SAMBA3_ADD_OPTION('ldap')
-@@ -664,7 +673,7 @@
+         # we need this for the ldap backend
+-        if conf.CHECK_FUNCS_IN('ber_flush ldap_open ldap_initialize', 'lber ldap', headers='lber.h ldap.h'):
++        if conf.CHECK_FUNCS('ber_flush ldap_open ldap_initialize', lib='ldap', headers='lber.h ldap.h'):
+             conf.env.ENABLE_LDAP_BACKEND = True
+ 
+         # we don't want any libraries or modules to rely on runtime
+diff --git a/source3/wscript b/source3/wscript
+index 497b673..88169be 100644
+--- a/source3/wscript
++++ b/source3/wscript
+@@ -666,24 +666,32 @@ msg.msg_accrightslen = sizeof(fd);
+ 
+     # Check for LDAP
      if Options.options.with_ldap:
-         conf.CHECK_HEADERS('ldap.h lber.h ldap_pvt.h')
-         conf.CHECK_TYPE('ber_tag_t', 'unsigned int', headers='ldap.h lber.h')
+-        conf.CHECK_HEADERS('ldap.h lber.h ldap_pvt.h')
+-        conf.CHECK_TYPE('ber_tag_t', 'unsigned int', headers='ldap.h lber.h')
 -        conf.CHECK_FUNCS_IN('ber_scanf ber_sockbuf_add_io', 'lber')
-+        conf.CHECK_FUNCS_IN('ber_scanf ber_sockbuf_add_io', Options.options.liblber_name )
-         conf.CHECK_VARIABLE('LDAP_OPT_SOCKBUF', headers='ldap.h')
+-        conf.CHECK_VARIABLE('LDAP_OPT_SOCKBUF', headers='ldap.h')
++        if conf.CHECK_CFG(package='ldap', args="--cflags --libs", msg='Check for ldap', uselib_store="LDAP") :
++            conf.SET_TARGET_TYPE('ldap', 'SYSLIB')
++        else :
++            conf.CHECK_LIB('ldap', shlib=True)
++        if conf.CHECK_CFG(package='lber', args="--cflags --libs", msg='Check for lber', uselib_store="LBER") :
++            conf.SET_TARGET_TYPE('lber', 'SYSLIB')
++        else :
++            conf.CHECK_LIB('lber', shlib=True)
++        conf.CHECK_HEADERS('ldap.h lber.h ldap_pvt.h', lib='ldap')
++        conf.CHECK_TYPE('ber_tag_t', 'unsigned int', headers='ldap.h lber.h', lib='ldap lber')
++        conf.CHECK_FUNCS('ber_scanf ber_sockbuf_add_io', lib='ldap lber')
++        conf.CHECK_VARIABLE('LDAP_OPT_SOCKBUF', headers='ldap.h', lib='ldap')
  
          # if we LBER_OPT_LOG_PRINT_FN we can intercept ldap logging and print it out
-@@ -672,8 +681,8 @@
+         # for the samba logs
          conf.CHECK_VARIABLE('LBER_OPT_LOG_PRINT_FN',
-                             define='HAVE_LBER_LOG_PRINT_FN', headers='lber.h')
+-                            define='HAVE_LBER_LOG_PRINT_FN', headers='lber.h')
++                            define='HAVE_LBER_LOG_PRINT_FN', headers='lber.h', lib='ldap lber')
  
 -        conf.CHECK_FUNCS_IN('ldap_init ldap_init_fd ldap_initialize ldap_set_rebind_proc', 'ldap')
 -        conf.CHECK_FUNCS_IN('ldap_add_result_entry', 'ldap')
-+        conf.CHECK_FUNCS_IN('ldap_init ldap_init_fd ldap_initialize ldap_set_rebind_proc', Options.options.libldap_name )
-+        conf.CHECK_FUNCS_IN('ldap_add_result_entry', Options.options.libldap_name )
++        conf.CHECK_FUNCS('ldap_init ldap_init_fd ldap_initialize ldap_set_rebind_proc', lib='ldap')
++        conf.CHECK_FUNCS('ldap_add_result_entry', lib='ldap')
  
          # Check if ldap_set_rebind_proc() takes three arguments
          if conf.CHECK_CODE('ldap_set_rebind_proc(0, 0, 0)',
-@@ -694,6 +703,25 @@
-             if conf.CONFIG_SET('HAVE_BER_SOCKBUF_ADD_IO') and \
-                     conf.CONFIG_SET('HAVE_LDAP_OPT_SOCKBUF'):
-                 conf.DEFINE('HAVE_LDAP_SASL_WRAPPING', '1')
-+            # fix the conf.TARGET_TYPE and conf.LIB_... items
-+            if 'ldap' != Options.options.libldap_name:
-+                conf.SET_TARGET_TYPE('ldap', 'SYSLIB')
-+                #conf.SET_TARGET_TYPE(Options.options.libldap_name, 'EMPTY')
-+                conf.define('HAVE_LIBLDAP', 1)
-+                conf.undefine('HAVE_LIB%s' % Options.options.libldap_name.upper().replace('-','_'))
-+                conf.define('LIB_LDAP', Options.options.libldap_name)
-+                conf.undefine('LIB_%s' % Options.options.libldap_name.upper().replace('-','_'))
-+                #conf.define('LIB_ldap', [ Options.options.libldap_name ] )
-+                #conf.undefine('LIB_%s' % Options.options.libldap_name.replace('-','_'))
-+            if 'lber' != Options.options.liblber_name:
-+                conf.SET_TARGET_TYPE('lber', 'SYSLIB')
-+                #conf.SET_TARGET_TYPE(Options.options.liblber_name, 'EMPTY')
-+                conf.define('HAVE_LIBLBER', 1)
-+                conf.undefine('HAVE_LIB%s' % Options.options.liblber_name.upper().replace('-','_'))
-+                conf.define('LIB_LBER', Options.options.liblber_name)
-+                conf.undefine('LIB_%s' % Options.options.liblber_name.upper().replace('-','_'))
-+                #conf.define('LIB_lber', [ Options.options.liblber_name ] )
-+                #conf.undefine('LIB_%s' % Options.options.liblber_name.replace('-','_'))
+                            'LDAP_SET_REBIND_PROC_ARGS',
+                            msg="Checking whether ldap_set_rebind_proc takes 3 arguments",
+-                           headers='ldap.h lber.h', link=False):
++                           headers='ldap.h lber.h', link=False, lib='ldap'):
+             conf.DEFINE('LDAP_SET_REBIND_PROC_ARGS', '3')
          else:
-             conf.fatal("LDAP support not found. "
-                        "Try installing libldap2-dev or openldap-devel. "
+             conf.DEFINE('LDAP_SET_REBIND_PROC_ARGS', '2')

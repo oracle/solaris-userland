@@ -61,6 +61,7 @@ COMPONENT_POST_BUILD_ACTION +=		\
 
 REQUIRED_PACKAGES +=	image/library/librsvg
 REQUIRED_PACKAGES +=	image/library/libpng
+REQUIRED_PACKAGES +=	image/library/libpng14
 REQUIRED_PACKAGES +=	library/desktop/cairo
 REQUIRED_PACKAGES +=	library/glib2
 REQUIRED_PACKAGES +=	library/readline

@@ -109,6 +109,7 @@ REQUIRED_PACKAGES += codec/libvpx
 REQUIRED_PACKAGES += codec/speex
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng
+REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += library/aalib
 REQUIRED_PACKAGES += library/audio/pulseaudio
 REQUIRED_PACKAGES += library/audio/taglib
