@@ -188,7 +188,7 @@
  void CRYPTO_set_locking_callback(void (*func) (int mode, int type,
                                                 const char *file, int line))
  {
-@@ -410,7 +543,11 @@
+@@ -410,7 +541,11 @@
       * started.
       */
      OPENSSL_init();
@@ -201,51 +201,35 @@
  }
  
  void CRYPTO_set_add_lock_callback(int (*func) (int *num, int mount, int type,
-@@ -471,9 +608,10 @@
+@@ -471,12 +606,10 @@
  
  int CRYPTO_THREADID_set_callback(void (*func) (CRYPTO_THREADID *))
  {
 -    if (threadid_callback)
 -        return 0;
 -    threadid_callback = func;
+-#ifdef OPENSSL_FIPS
+-    FIPS_crypto_threadid_set_callback(func);
+-#endif
 +    /*
-+     * Setting a threadid callback is no longer allowed; the compiled-in
-+     * platform-specific default is always used.
++     * Use the backup method (the address of 'errno') to identify the
++     * thread and disallow setting the threadid callback.
 +     */
      return 1;
  }
  
-@@ -503,7 +641,7 @@
-     CRYPTO_THREADID_set_numeric(id, (unsigned long)find_thread(NULL));
- #else
--    /* For everything else, default to using the address of 'errno' */
--    CRYPTO_THREADID_set_pointer(id, (void *)&errno);
-+    /* For everything else, default to using pthread_self() */
-+    CRYPTO_THREADID_set_numeric(id, (unsigned long)pthread_self());
- #endif
- }
- 
-@@ -529,7 +667,10 @@
+@@ -529,7 +665,10 @@
  
  void CRYPTO_set_id_callback(unsigned long (*func) (void))
  {
 -    id_callback = func;
 +    /*
-+     * Setting a threadid callback is no longer allowed; the compiled-in
-+     * platform-specific default is always used.
++     * Use the backup method to identify the thread/process.
++     * Setting the id callback is disallowed.
 +     */
  }
  
  unsigned long CRYPTO_thread_id(void)
-@@ -546,7 +687,7 @@
- # elif defined(OPENSSL_SYS_BEOS)
-         ret = (unsigned long)find_thread(NULL);
- # else
--        ret = (unsigned long)getpid();
-+        ret = (unsigned long)pthread_self();
- # endif
-     } else
-         ret = id_callback();
 --- openssl-1.0.1f/crypto/cryptlib.h.~1~	Fri Feb  7 10:41:42 2014
 +++ openssl-1.0.1f/crypto/cryptlib.h	Thu Feb  6 16:04:16 2014
 @@ -104,6 +104,8 @@
