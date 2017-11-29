@@ -767,6 +767,10 @@ TEE =		/usr/bin/tee
 INS.dir=        $(INSTALL) -d $@
 INS.file=       $(INSTALL) -m 444 $< $(@D)
 
+MKFONTDIR =	/usr/bin/mkfontdir
+MKFONTSCALE =	/usr/bin/mkfontscale
+UNZIP =		/usr/bin/unzip
+
 #
 # To simplify adding directories to PKG_CONFIG_PATH, since += adds spaces, not :
 # use PKG_CONFIG_PATHS += ... and the following will convert to the : form
