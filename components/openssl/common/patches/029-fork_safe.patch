@@ -201,13 +201,16 @@
  }
  
  void CRYPTO_set_add_lock_callback(int (*func) (int *num, int mount, int type,
-@@ -471,9 +608,10 @@
+@@ -471,12 +608,10 @@
  
  int CRYPTO_THREADID_set_callback(void (*func) (CRYPTO_THREADID *))
  {
 -    if (threadid_callback)
 -        return 0;
 -    threadid_callback = func;
+-#ifdef OPENSSL_FIPS
+-    FIPS_crypto_threadid_set_callback(func);
+-#endif
 +    /*
 +     * Setting a threadid callback is no longer allowed; the compiled-in
 +     * platform-specific default is always used.
