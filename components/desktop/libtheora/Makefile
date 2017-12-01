@@ -46,6 +46,7 @@ include $(WS_MAKE_RULES)/common.mk
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
 CONFIGURE_OPTIONS += --disable-static
+LDFLAGS += -lm
 
 # for the tests
 unexport SHELLOPTS

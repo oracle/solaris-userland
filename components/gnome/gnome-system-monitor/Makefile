@@ -30,15 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-system-monitor
-COMPONENT_VERSION=	3.18.0.1
+COMPONENT_VERSION=	3.24.0
 COMPONENT_PROJECT_URL=  https://help.gnome.org/users/gnome-system-monitor/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:71ff8db2fa3eb53d8f54ffd612c6679b231a9d69c13adb91cf63421425953b10
-COMPONENT_ARCHIVE_URL=  https://download.gnome.org/sources/$(COMPONENT_NAME)/3.18/$(COMPONENT_ARCHIVE)
+	sha256:c32b45062411aaef06681e5e28fd2c24ea8b362168bae83992944ec8e02063f4
 COMPONENT_BUGDB=        gnome/applications
 COMPONENT_ANITYA_ID=	13137
 
-TPNO=			24894
+TPNO=			34566
 
 # Needs updated glib2, not available on S11.
 include $(WS_MAKE_RULES)/no-evaluation.mk
@@ -61,6 +60,12 @@ CONFIGURE_OPTIONS += --libexecdir="$(USRLIBDIR)"
 # Assumes GNU msgfmt is in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+
+# Added for compiling gsm-resources.c in src
+COMPONENT_PRE_CONFIGURE_ACTION = ($(CLONEY) $(SOURCE_DIR) $(@D))
+COMPONENT_POST_CONFIGURE_ACTION = \
+	($(LN) -fs $(@D)/src/legacy/gsm-resources.c \
+	$(@D)/src/gsm-resources.c)
 
 REQUIRED_PACKAGES += image/library/librsvg
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas

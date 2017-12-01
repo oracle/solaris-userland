@@ -26,15 +26,15 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libvorbis
-COMPONENT_VERSION=	1.3.3
+COMPONENT_VERSION=	1.3.5
 COMPONENT_PROJECT_URL=	https://xiph.org/vorbis/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:6d747efe7ac4ad249bf711527882cef79fb61d9194c45b5ca5498aa60f290762
+	sha256:6efbcecdd3e5dfbf090341b485da9d176eb250d893e3eb378c428a2db38301ce
 COMPONENT_ARCHIVE_URL=	http://downloads.xiph.org/releases/vorbis/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	1758
 
-TPNO=			9575
+TPNO=			39044
 
 # gmake check works and all test pass but because of hard-coded paths
 # check with results-all.master fails
