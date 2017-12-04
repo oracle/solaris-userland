@@ -27,14 +27,14 @@ BUILD_BITS =		32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libcroco
-COMPONENT_VERSION=	0.6.10
+COMPONENT_VERSION=	0.6.12
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Libcroco
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:72066611df77f5c4fb28268cfc7306ecc1517212a6182c2ea756c326a154246c
+    sha256:ddc4b5546c9fb4280a5017e2707fbd4839034ed1aba5b7d4372212f34f84f860
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	11787
 
-TPNO=			34491
+TPNO=			39550
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

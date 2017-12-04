@@ -811,18 +811,15 @@
  
      case EVP_PKEY_CTRL_PEER_KEY:
          /* Default behaviour is OK */
-@@ -207,7 +209,11 @@
+@@ -207,7 +209,7 @@
      case EVP_PKEY_CTRL_DH_KDF_TYPE:
          if (p1 == -2)
              return dctx->kdf_type;
-+#ifndef	_BOOT
+-#ifdef OPENSSL_NO_CMS
++#if defined(OPENSSL_NO_CMS) || defined(_BOOT)
+         if (p1 != EVP_PKEY_DH_KDF_NONE)
+ #else
          if (p1 != EVP_PKEY_DH_KDF_NONE && p1 != EVP_PKEY_DH_KDF_X9_42)
-+#else
-+        if (p1 != EVP_PKEY_DH_KDF_NONE)
-+#endif
-             return -2;
-         dctx->kdf_type = p1;
-         return 1;
 @@ -268,6 +274,7 @@
          len = atoi(value);
          return EVP_PKEY_CTX_set_dh_paramgen_prime_len(ctx, len);
@@ -855,22 +852,15 @@
  
      if (ctx->pkey_gencb) {
          pcb = &cb;
-@@ -448,6 +458,7 @@
-             return ret;
+@@ -453,7 +459,7 @@
          *keylen = ret;
          return 1;
-+#ifndef	_BOOT
-     } else if (dctx->kdf_type == EVP_PKEY_DH_KDF_X9_42) {
+     }
+-#ifndef OPENSSL_NO_CMS
++#if !defined(OPENSSL_NO_CMS) && !defined(_BOOT)
+     else if (dctx->kdf_type == EVP_PKEY_DH_KDF_X9_42) {
          unsigned char *Z = NULL;
          size_t Zlen = 0;
-@@ -478,6 +489,7 @@
-             OPENSSL_free(Z);
-         }
-         return ret;
-+#endif
-     }
-     return 1;
- }
 --- openssl-1.0.2d/crypto/evp/e_des3.c.orig	Fri Aug  7 10:22:12 2015
 +++ openssl-1.0.2d/crypto/evp/e_des3.c	Fri Aug  7 10:23:16 2015
 @@ -381,6 +381,8 @@
