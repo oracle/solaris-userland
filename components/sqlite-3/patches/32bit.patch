@@ -1,0 +1,19 @@
+The sqlite configuration is assuming that compiler with no -mXX flag compiles
+32 bit binaries. This is no longer true, as the default is 64bit these days.
+This patch fixes the 32bit compilation.
+
+This patch has been reported to sqlite-users@mailinglists.sqlite.org
+
+http://mailinglists.sqlite.org/cgi-bin/mailman/private/sqlite-users/2017-November/076381.html
+
+--- sqlite-autoconf-3210000/tea/tclconfig/tcl.m4	2017-11-15 08:52:28.206926381 +0000
++++ sqlite-autoconf-3210000/tea/tclconfig/tcl.m4	2017-11-15 08:52:24.892793953 +0000
+@@ -1942,7 +1944,7 @@ AC_DEFUN([TEA_CONFIG_CFLAGS], [
+ 			# not be necessary for extensions.
+ 			SHLIB_LD="$SHLIB_LD -m64 -static-libgcc"
+ 		    ])])
+-		])
++		], [ SHLIB_LD="$SHLIB_LD -m32" ])
+ 	    ], [
+ 		case $system in
+ 		    SunOS-5.[[1-9]][[0-9]]*)
