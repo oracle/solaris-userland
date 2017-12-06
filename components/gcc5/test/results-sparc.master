@@ -1,25 +1,41 @@
 cat <<'EOF' |
-LAST_UPDATED: Obtained from SVN: tags/gcc_5_4_0_release revision 237057
+LAST_UPDATED: Obtained from SVN: tags/gcc_5_5_0_release revision 253577
 
-Native configuration is sparcv9-sun-solaris2.12
+Native configuration is sparcv9-sun-solaris2.11
 
 		=== g++ tests ===
 
 
 Running target unix
+FAIL: g++.dg/init/cleanup3.C  -std=c++98  scan-assembler-not _tcf
+FAIL: g++.dg/init/cleanup3.C  -std=c++11  scan-assembler-not _tcf
+FAIL: g++.dg/init/cleanup3.C  -std=c++14  scan-assembler-not _tcf
 FAIL: g++.dg/guality/pr55665.C   -O2  line 23 p == 40
 FAIL: g++.dg/guality/pr55665.C   -O3 -fomit-frame-pointer  line 23 p == 40
 FAIL: g++.dg/guality/pr55665.C   -O3 -g  line 23 p == 40
 FAIL: g++.dg/guality/pr55665.C   -O2 -flto -flto-partition=none  line 23 p == 40
 FAIL: g++.dg/guality/pr55665.C   -O2 -flto  line 23 p == 40
+FAIL: g++.dg/tls/thread_local-order1.C  -std=c++11 execution test
+FAIL: g++.dg/tls/thread_local-order1.C  -std=c++14 execution test
+FAIL: g++.dg/tls/thread_local3g.C  -std=gnu++11 execution test
+FAIL: g++.dg/tls/thread_local3g.C  -std=gnu++14 execution test
+FAIL: g++.dg/tls/thread_local4g.C  -std=gnu++11 execution test
+FAIL: g++.dg/tls/thread_local4g.C  -std=gnu++14 execution test
+FAIL: g++.dg/tls/thread_local5g.C  -std=gnu++11 execution test
+FAIL: g++.dg/tls/thread_local5g.C  -std=gnu++14 execution test
+FAIL: g++.dg/tls/thread_local6g.C  -std=c++11 execution test
+FAIL: g++.dg/tls/thread_local6g.C  -std=c++14 execution test
+FAIL: g++.old-deja/g++.other/init5.C  -std=c++98 execution test
+FAIL: g++.old-deja/g++.other/init5.C  -std=c++11 execution test
+FAIL: g++.old-deja/g++.other/init5.C  -std=c++14 execution test
 
 		=== g++ Summary ===
 
-# of expected passes		86329
-# of unexpected failures	5
-# of expected failures		288
-# of unsupported tests		4030
-$(@D)/gcc/xg++  version 5.4.0 (GCC) 
+# of expected passes		86813
+# of unexpected failures	21
+# of expected failures		297
+# of unsupported tests		4078
+$(@D)/gcc/xg++  version 5.5.0 (GCC) 
 
 		=== gcc tests ===
 
@@ -42,7 +58,6 @@ XPASS: gcc.dg/guality/inline-params.c   -O3 -g  execution test
 XPASS: gcc.dg/guality/inline-params.c   -Os  execution test
 XPASS: gcc.dg/guality/inline-params.c   -O2 -flto -flto-partition=none  execution test
 XPASS: gcc.dg/guality/inline-params.c   -O2 -flto  execution test
-FAIL: gcc.dg/guality/pr36728-2.c   -Os  line 18 y == 2
 XPASS: gcc.dg/guality/pr41353-1.c   -O0  line 28 j == 28 + 37
 FAIL: gcc.dg/guality/pr43051-1.c   -O1  line 35 v == 1
 FAIL: gcc.dg/guality/pr43051-1.c   -O1  line 40 v == 1
@@ -375,29 +390,28 @@ FAIL: gcc.dg/guality/vla-1.c   -O2 -flto -flto-partition=none  line 17 sizeof (a
 FAIL: gcc.dg/guality/vla-1.c   -O2 -flto -flto-partition=none  line 24 sizeof (a) == 17 * sizeof (short)
 FAIL: gcc.dg/guality/vla-1.c   -O2 -flto  line 17 sizeof (a) == 6
 FAIL: gcc.dg/guality/vla-1.c   -O2 -flto  line 24 sizeof (a) == 17 * sizeof (short)
+XPASS: gcc.dg/torture/pr60092.c   -O0  execution test
 
 		=== gcc Summary ===
 
-# of expected passes		97112
-# of unexpected failures	333
-# of unexpected successes	17
-# of expected failures		348
-# of unsupported tests		2300
-$(@D)/gcc/xgcc  version 5.4.0 (GCC) 
+# of expected passes		97997
+# of unexpected failures	332
+# of unexpected successes	18
+# of expected failures		349
+# of unsupported tests		2317
+$(@D)/gcc/xgcc  version 5.5.0 (GCC) 
 
 		=== gfortran tests ===
 
 
 Running target unix
-FAIL: gfortran.dg/contiguous_1.f90   -O  (test for excess errors)
 
 		=== gfortran Summary ===
 
-# of expected passes		49580
-# of unexpected failures	1
+# of expected passes		50010
 # of expected failures		81
-# of unsupported tests		114
-$(@D)/gcc/gfortran  version 5.4.0 (GCC) 
+# of unsupported tests		115
+$(@D)/gcc/gfortran  version 5.5.0 (GCC) 
 
 		=== objc tests ===
 
@@ -408,7 +422,7 @@ Running target unix
 
 # of expected passes		3016
 # of unsupported tests		74
-$(@D)/gcc/xgcc  version 5.4.0 (GCC) 
+$(@D)/gcc/xgcc  version 5.5.0 (GCC) 
 
 		=== libatomic tests ===
 
@@ -422,208 +436,10 @@ Running target unix
 
 
 Running target unix
-UNRESOLVED: libgomp.c/appendix-a/a.15.1.c compilation failed to produce executable
-UNRESOLVED: libgomp.c/appendix-a/a.16.1.c compilation failed to produce executable
-UNRESOLVED: libgomp.c/appendix-a/a.18.1.c compilation failed to produce executable
-UNRESOLVED: libgomp.c/appendix-a/a.19.1.c compilation failed to produce executable
-UNRESOLVED: libgomp.c/appendix-a/a.36.1.c compilation failed to produce executable
-FAIL: libgomp.c/atomic-10.c execution test
-FAIL: libgomp.c/atomic-4.c (test for excess errors)
-FAIL: libgomp.c/cancel-for-1.c (test for excess errors)
-FAIL: libgomp.c/cancel-for-2.c (test for excess errors)
-UNRESOLVED: libgomp.c/cancel-sections-1.c compilation failed to produce executable
-UNRESOLVED: libgomp.c/collapse-2.c compilation failed to produce executable
-FAIL: libgomp.c/copyin-1.c execution test
-UNRESOLVED: libgomp.c/copyin-3.c compilation failed to produce executable
-UNRESOLVED: libgomp.c/depend-10.c compilation failed to produce executable
-UNRESOLVED: libgomp.c/depend-6.c compilation failed to produce executable
-UNRESOLVED: libgomp.c/depend-9.c compilation failed to produce executable
-UNRESOLVED: libgomp.c/examples-4/e.54.5.c compilation failed to produce executable
-UNRESOLVED: libgomp.c/examples-4/e.56.3.c compilation failed to produce executable
-UNRESOLVED: libgomp.c/for-3.c compilation failed to produce executable
-UNRESOLVED: libgomp.c/icv-1.c compilation failed to produce executable
-UNRESOLVED: libgomp.c/lib-1.c compilation failed to produce executable
-UNRESOLVED: libgomp.c/lib-2.c compilation failed to produce executable
-UNRESOLVED: libgomp.c/lock-1.c compilation failed to produce executable
-UNRESOLVED: libgomp.c/lock-2.c compilation failed to produce executable
-UNRESOLVED: libgomp.c/loop-16.c compilation failed to produce executable
-UNRESOLVED: libgomp.c/loop-2.c compilation failed to produce executable
-FAIL: libgomp.c/loop-3.c execution test
-FAIL: libgomp.c/loop-4.c execution test
-FAIL: libgomp.c/nested-3.c execution test
-FAIL: libgomp.c/nestedfn-1.c execution test
-FAIL: libgomp.c/nestedfn-4.c (test for excess errors)
-UNRESOLVED: libgomp.c/omp-loop02.c compilation failed to produce executable
-UNRESOLVED: libgomp.c/omp-loop03.c compilation failed to produce executable
-UNRESOLVED: libgomp.c/omp-nested-1.c compilation failed to produce executable
-FAIL: libgomp.c/omp-parallel-if.c execution test
-FAIL: libgomp.c/ordered-2.c execution test
-FAIL: libgomp.c/pr35625.c (test for excess errors)
-UNRESOLVED: libgomp.c/pr39591-3.c compilation failed to produce executable
-FAIL: libgomp.c/pr42942.c execution test
-UNRESOLVED: libgomp.c/pr58392.c compilation failed to produce executable
-FAIL: libgomp.c/pr64824.c (test for excess errors)
-FAIL: libgomp.c/pr69110.c (test for excess errors)
-FAIL: libgomp.c/simd-11.c (test for excess errors)
-FAIL: libgomp.c/simd-14.c (test for excess errors)
-FAIL: libgomp.c/simd-3.c execution test
-FAIL: libgomp.c/simd-5.c (test for excess errors)
-FAIL: libgomp.c/target-8.c (test for excess errors)
-UNRESOLVED: libgomp.c/task-1.c compilation failed to produce executable
-UNRESOLVED: libgomp.c/task-2.c compilation failed to produce executable
-FAIL: libgomp.c/thread-limit-2.c (test for excess errors)
-UNRESOLVED: libgomp.c/udr-1.c compilation failed to produce executable
-FAIL: libgomp.c/udr-2.c (test for excess errors)
-FAIL: libgomp.c++/atomic-12.C (test for excess errors)
-UNRESOLVED: libgomp.c++/cancel-parallel-1.C compilation failed to produce executable
-UNRESOLVED: libgomp.c++/collapse-2.C compilation failed to produce executable
-UNRESOLVED: libgomp.c++/copyin-1.C compilation failed to produce executable
-UNRESOLVED: libgomp.c++/copyin-2.C compilation failed to produce executable
-UNRESOLVED: libgomp.c++/for-10.C compilation failed to produce executable
-UNRESOLVED: libgomp.c++/loop-8.C compilation failed to produce executable
-FAIL: libgomp.c++/loop-9.C (test for excess errors)
-FAIL: libgomp.c++/pr34513.C (test for excess errors)
-FAIL: libgomp.c++/pr48869.C (test for excess errors)
-FAIL: libgomp.c++/pr63248.C (test for excess errors)
-UNRESOLVED: libgomp.c++/reduction-2.C compilation failed to produce executable
-FAIL: libgomp.c++/simd-1.C (test for excess errors)
-FAIL: libgomp.c++/simd-3.C execution test
-FAIL: libgomp.c++/simd-5.C (test for excess errors)
-FAIL: libgomp.c++/task-3.C (test for excess errors)
-UNRESOLVED: libgomp.c++/task-7.C compilation failed to produce executable
-FAIL: libgomp.c++/udr-1.C (test for excess errors)
-FAIL: libgomp.c++/udr-1.C execution test
-UNRESOLVED: libgomp.c++/udr-19.C compilation failed to produce executable
-FAIL: libgomp.c++/udr-3.C (test for excess errors)
-FAIL: libgomp.c++/udr-6.C (test for excess errors)
-FAIL: libgomp.fortran/aligned1.f03   -O0  (test for excess errors)
-UNRESOLVED: libgomp.fortran/aligned1.f03   -O2  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/aligned1.f03   -O3 -fomit-frame-pointer -funroll-loops  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/aligned1.f03   -O3 -fomit-frame-pointer -funroll-all-loops -finline-functions  compilation failed to produce executable
-FAIL: libgomp.fortran/alloc-comp-1.f90   -O0  (test for excess errors)
-UNRESOLVED: libgomp.fortran/alloc-comp-1.f90   -O0  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/allocatable1.f90   -O3 -fomit-frame-pointer -funroll-loops  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/allocatable1.f90   -O3 -g  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/allocatable11.f90   -O3 -fomit-frame-pointer -funroll-loops  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/allocatable4.f90   -O3 -g  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/allocatable5.f90   -O3 -g  compilation failed to produce executable
-FAIL: libgomp.fortran/allocatable5.f90   -Os  execution test
-FAIL: libgomp.fortran/allocatable6.f90   -O3 -fomit-frame-pointer -funroll-all-loops -finline-functions  execution test
-UNRESOLVED: libgomp.fortran/appendix-a/a.18.1.f90   -O3 -g  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/appendix-a/a.18.1.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/appendix-a/a.2.1.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/appendix-a/a.28.4.f90   -O3 -fomit-frame-pointer -funroll-all-loops -finline-functions  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/appendix-a/a.28.4.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/appendix-a/a.3.1.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/appendix-a/a.4.1.f90   -O3 -fomit-frame-pointer -funroll-all-loops -finline-functions  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/appendix-a/a.4.1.f90   -O3 -g  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/appendix-a/a10.1.f90   -O3 -g  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/associate1.f90   -O3 -g  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/associate1.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/associate2.f90   -O3 -fomit-frame-pointer -funroll-loops  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/cancel-taskgroup-2.f90   -O3 -g  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/cancel-taskgroup-2.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/character1.f90   -O3 -fomit-frame-pointer -funroll-all-loops -finline-functions  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/collapse1.f90   -O3 -g  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/collapse1.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/collapse2.f90   -O3 -fomit-frame-pointer -funroll-all-loops -finline-functions  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/collapse2.f90   -O3 -g  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/collapse2.f90   -Os  compilation failed to produce executable
-ERROR: ./collapse3.exe does not exist in unix_load.
-UNRESOLVED: libgomp.fortran/collapse3.f90   -O3 -fomit-frame-pointer -funroll-loops  execution test
-UNRESOLVED: libgomp.fortran/collapse3.f90   -O3 -fomit-frame-pointer -funroll-all-loops -finline-functions  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/depend-1.f90   -O3 -fomit-frame-pointer -funroll-loops  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/depend-1.f90   -O3 -g  compilation failed to produce executable
-FAIL: libgomp.fortran/depend-1.f90   -Os  execution test
-UNRESOLVED: libgomp.fortran/do2.f90   -O3 -fomit-frame-pointer -funroll-all-loops -finline-functions  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/examples-4/e.50.1.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/examples-4/e.50.4.f90   -O3 -g  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/examples-4/e.51.1.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/examples-4/e.51.2.f90   -O3 -g  compilation failed to produce executable
-FAIL: libgomp.fortran/examples-4/e.51.2.f90   -Os  execution test
-FAIL: libgomp.fortran/examples-4/e.51.3.f90   -O3 -fomit-frame-pointer -funroll-all-loops -finline-functions  execution test
-UNRESOLVED: libgomp.fortran/examples-4/e.51.5.f90   -O3 -g  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/examples-4/e.51.5.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/examples-4/e.52.1.f90   -O3 -fomit-frame-pointer -funroll-all-loops -finline-functions  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/examples-4/e.53.4.f90   -O3 -fomit-frame-pointer  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/examples-4/e.54.6.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/omp_atomic2.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/omp_atomic3.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/omp_parse1.f90   -O3 -fomit-frame-pointer -funroll-all-loops -finline-functions  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/omp_parse1.f90   -O3 -g  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/omp_parse1.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/omp_parse2.f90   -O3 -g  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/omp_parse4.f90   -O3 -fomit-frame-pointer  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/pointer1.f90   -O3 -fomit-frame-pointer -funroll-loops  compilation failed to produce executable
-FAIL: libgomp.fortran/pointer2.f90   -O3 -g  execution test
-UNRESOLVED: libgomp.fortran/pr27395-1.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/pr27395-2.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/pr32550.f90   -Os  compilation failed to produce executable
-FAIL: libgomp.fortran/pr33880.f90   -Os  execution test
-UNRESOLVED: libgomp.fortran/pr34020.f90   -O3 -g  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/pr34020.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/pr42162.f90   -O3 -g  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/pr42162.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/pr46753.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/procptr1.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/reduction3.f90   -O3 -fomit-frame-pointer -funroll-loops  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/retval1.f90   -O3 -fomit-frame-pointer -funroll-loops  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/retval1.f90   -O3 -g  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/simd4.f90   -O3 -g  compilation failed to produce executable
-FAIL: libgomp.fortran/simd4.f90   -Os  execution test
-UNRESOLVED: libgomp.fortran/simd5.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/target2.f90   -O3 -fomit-frame-pointer -funroll-loops  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/target3.f90   -Os  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/target6.f90   -O3 -fomit-frame-pointer -funroll-loops  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/target7.f90   -O2  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/target8.f90   -O2  compilation failed to produce executable
-FAIL: libgomp.fortran/task1.f90   -O3 -g  execution test
-UNRESOLVED: libgomp.fortran/task3.f90   -O3 -fomit-frame-pointer -funroll-all-loops -finline-functions  compilation failed to produce executable
-FAIL: libgomp.fortran/task3.f90   -O3 -g  execution test
-UNRESOLVED: libgomp.fortran/threadprivate1.f90   -O3 -g  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/threadprivate1.f90   -Os  compilation failed to produce executable
-FAIL: libgomp.fortran/threadprivate2.f90   -O3 -fomit-frame-pointer -funroll-all-loops -finline-functions  execution test
-FAIL: libgomp.fortran/threadprivate3.f90   -O2  execution test
-UNRESOLVED: libgomp.fortran/threadprivate4.f90   -O3 -fomit-frame-pointer -funroll-all-loops -finline-functions  compilation failed to produce executable
-FAIL: libgomp.fortran/udr1.f90   -O3 -fomit-frame-pointer  (test for excess errors)
-UNRESOLVED: libgomp.fortran/udr1.f90   -O3 -fomit-frame-pointer  compilation failed to produce executable
-FAIL: libgomp.fortran/udr1.f90   -O3 -g  (test for excess errors)
-UNRESOLVED: libgomp.fortran/udr1.f90   -O3 -g  compilation failed to produce executable
-FAIL: libgomp.fortran/udr1.f90   -Os  (test for excess errors)
-UNRESOLVED: libgomp.fortran/udr1.f90   -Os  compilation failed to produce executable
-FAIL: libgomp.fortran/udr11.f90   -O3 -g  (test for excess errors)
-UNRESOLVED: libgomp.fortran/udr11.f90   -O3 -g  compilation failed to produce executable
-FAIL: libgomp.fortran/udr11.f90   -Os  (test for excess errors)
-UNRESOLVED: libgomp.fortran/udr11.f90   -Os  compilation failed to produce executable
-FAIL: libgomp.fortran/udr13.f90   -Os  execution test
-FAIL: libgomp.fortran/udr15.f90   -O2  (test for excess errors)
-UNRESOLVED: libgomp.fortran/udr15.f90   -O2  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/udr15.f90   -O3 -fomit-frame-pointer  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/udr15.f90   -O3 -fomit-frame-pointer -funroll-loops  compilation failed to produce executable
-FAIL: libgomp.fortran/udr15.f90   -Os  (test for excess errors)
-UNRESOLVED: libgomp.fortran/udr15.f90   -Os  compilation failed to produce executable
-FAIL: libgomp.fortran/udr2.f90   -O0  (test for excess errors)
-UNRESOLVED: libgomp.fortran/udr2.f90   -O0  compilation failed to produce executable
-FAIL: libgomp.fortran/udr5.f90   -O1  (test for excess errors)
-UNRESOLVED: libgomp.fortran/udr5.f90   -O1  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/udr5.f90   -O2  compilation failed to produce executable
-UNRESOLVED: libgomp.fortran/udr6.f90   -O0  compilation failed to produce executable
-FAIL: libgomp.fortran/udr6.f90   -O2  execution test
-FAIL: libgomp.fortran/udr7.f90   -O1  execution test
-UNRESOLVED: libgomp.fortran/udr8.f90   -O0  compilation failed to produce executable
-FAIL: libgomp.fortran/udr8.f90   -O1  execution test
-UNRESOLVED: libgomp.fortran/vla6.f90   -O1  compilation failed to produce executable
-UNRESOLVED: libgomp.oacc-fortran/reduction-1.f90 -DACC_DEVICE_TYPE_host_nonshm=1 -DACC_MEM_SHARED=0  -O1  compilation failed to produce executable
-FAIL: libgomp.oacc-fortran/reduction-2.f90 -DACC_DEVICE_TYPE_host_nonshm=1 -DACC_MEM_SHARED=0  -O0  execution test
-UNRESOLVED: libgomp.oacc-fortran/data-4-2.f90 -DACC_DEVICE_TYPE_host=1 -DACC_MEM_SHARED=1  -O0  compilation failed to produce executable
-FAIL: libgomp.oacc-fortran/data-4.f90 -DACC_DEVICE_TYPE_host=1 -DACC_MEM_SHARED=1  -O0  execution test
-UNRESOLVED: libgomp.oacc-fortran/pset-1.f90 -DACC_DEVICE_TYPE_host=1 -DACC_MEM_SHARED=1  -O0  compilation failed to produce executable
 
 		=== libgomp Summary ===
 
-# of expected passes		5660
-# of unexpected failures	65
-# of unresolved testcases	130
+# of expected passes		5879
 # of unsupported tests		298
 		=== libitm tests ===
 
@@ -639,70 +455,8 @@ Running target unix
 
 
 Running target unix
-FAIL: libstdc++-abi/abi_check
-UNRESOLVED: 18_support/nested_exception/cons.cc compilation failed to produce executable
-UNRESOLVED: 18_support/nested_exception/nested_ptr.cc compilation failed to produce executable
-UNRESOLVED: 18_support/nested_exception/rethrow_if_nested.cc compilation failed to produce executable
-UNRESOLVED: 18_support/numeric_limits/cons/default_c++0x.cc compilation failed to produce executable
-UNRESOLVED: 18_support/numeric_limits/dr559.cc compilation failed to produce executable
-UNRESOLVED: 18_support/numeric_limits/min_max.cc compilation failed to produce executable
-FAIL: 19_diagnostics/error_category/operators/not_equal.cc (test for excess errors)
-UNRESOLVED: 19_diagnostics/error_code/cons/39882.cc compilation failed to produce executable
-UNRESOLVED: 19_diagnostics/error_code/modifiers/39882.cc compilation failed to produce executable
-UNRESOLVED: 19_diagnostics/logic_error/cons_virtual_derivation.cc compilation failed to produce executable
-UNRESOLVED: 19_diagnostics/logic_error/what-3.cc compilation failed to produce executable
-UNRESOLVED: 19_diagnostics/logic_error/what-big.cc compilation failed to produce executable
-FAIL: 19_diagnostics/runtime_error/cons_virtual_derivation.cc (test for excess errors)
-UNRESOLVED: 19_diagnostics/runtime_error/what-2.cc compilation failed to produce executable
-UNRESOLVED: 19_diagnostics/system_error/cons-1.cc compilation failed to produce executable
-UNRESOLVED: 19_diagnostics/system_error/cons_virtual_derivation.cc compilation failed to produce executable
-UNRESOLVED: 19_diagnostics/system_error/what-1.cc compilation failed to produce executable
-UNRESOLVED: 19_diagnostics/system_error/what-2.cc compilation failed to produce executable
-UNRESOLVED: 19_diagnostics/system_error/what-3.cc compilation failed to produce executable
-UNRESOLVED: 19_diagnostics/system_error/what-4.cc compilation failed to produce executable
-UNRESOLVED: 20_util/allocator_traits/members/select.cc compilation failed to produce executable
-UNRESOLVED: 20_util/auto_ptr/1.cc compilation failed to produce executable
-FAIL: 20_util/auto_ptr/3946.cc (test for excess errors)
-UNRESOLVED: 20_util/bad_function_call/cons_virtual_derivation.cc compilation failed to produce executable
-FAIL: 20_util/bad_function_call/what.cc execution test
-UNRESOLVED: 20_util/bind/conv_result.cc compilation failed to produce executable
-FAIL: 20_util/bind/cv_quals_2.cc (test for excess errors)
-UNRESOLVED: 20_util/bind/move.cc compilation failed to produce executable
-FAIL: 20_util/bind/nested.cc execution test
-FAIL: 20_util/bind/ref.cc (test for excess errors)
-UNRESOLVED: 20_util/duration/cons/1.cc compilation failed to produce executable
-UNRESOLVED: 20_util/duration/cons/2.cc compilation failed to produce executable
-UNRESOLVED: 20_util/exchange/1.cc compilation failed to produce executable
-UNRESOLVED: 20_util/function_objects/dr660.cc compilation failed to produce executable
-UNRESOLVED: 20_util/owner_less/cmp.cc compilation failed to produce executable
-UNRESOLVED: 21_strings/basic_string/element_access/wchar_t/3.cc compilation failed to produce executable
-FAIL: 21_strings/basic_string/element_access/wchar_t/4.cc execution test
-FAIL: 21_strings/basic_string/element_access/wchar_t/empty.cc execution test
-UNRESOLVED: 21_strings/basic_string/element_access/wchar_t/front_back.cc compilation failed to produce executable
-UNRESOLVED: 21_strings/basic_string/modifiers/assign/char/1.cc compilation failed to produce executable
-UNRESOLVED: 21_strings/basic_string/modifiers/insert/wchar_t/2.cc compilation failed to produce executable
-UNRESOLVED: 21_strings/basic_string/operations/find/wchar_t/1.cc compilation failed to produce executable
-UNRESOLVED: 21_strings/basic_string/operations/rfind/char/3.cc compilation failed to produce executable
-UNRESOLVED: 21_strings/basic_string/operators/char/1.cc compilation failed to produce executable
-UNRESOLVED: 22_locale/codecvt/max_length/char/1.cc compilation failed to produce executable
-UNRESOLVED: 22_locale/codecvt/max_length/wchar_t/1.cc compilation failed to produce executable
-UNRESOLVED: 22_locale/codecvt/out/char/1.cc compilation failed to produce executable
-UNRESOLVED: 22_locale/codecvt/out/wchar_t/1.cc compilation failed to produce executable
-UNRESOLVED: 22_locale/collate/hash/wchar_t/1.cc compilation failed to produce executable
-UNRESOLVED: 22_locale/ctype/widen/wchar_t/1.cc compilation failed to produce executable
-UNRESOLVED: 22_locale/time_get/date_order/char/1.cc compilation failed to produce executable
-UNRESOLVED: 22_locale/time_put/put/char/1.cc compilation failed to produce executable
-UNRESOLVED: 23_containers/bitset/to_string/1.cc compilation failed to produce executable
-UNRESOLVED: 23_containers/map/modifiers/insert/1.cc compilation failed to produce executable
-FAIL: 23_containers/multimap/operations/2.cc execution test
-UNRESOLVED: 23_containers/unordered_map/allocator/copy_assign.cc compilation failed to produce executable
-UNRESOLVED: 23_containers/vector/modifiers/moveable.cc compilation failed to produce executable
-UNRESOLVED: 25_algorithms/copy_n/1.cc compilation failed to produce executable
-UNRESOLVED: 25_algorithms/find_if/vectorbool.cc compilation failed to produce executable
-UNRESOLVED: 25_algorithms/find_if_not/1.cc compilation failed to produce executable
-UNRESOLVED: 25_algorithms/mismatch/1.cc compilation failed to produce executable
-UNRESOLVED: 25_algorithms/partial_sort/random_test.cc compilation failed to produce executable
 FAIL: 26_numerics/random/binomial_distribution/operators/values.cc (test for excess errors)
+UNRESOLVED: 26_numerics/random/binomial_distribution/operators/values.cc compilation failed to produce executable
 FAIL: 26_numerics/random/binomial_distribution/operators/values2.cc (test for excess errors)
 UNRESOLVED: 26_numerics/random/binomial_distribution/operators/values2.cc compilation failed to produce executable
 FAIL: 26_numerics/random/binomial_distribution/operators/values3.cc (test for excess errors)
@@ -711,50 +465,27 @@ FAIL: 26_numerics/random/binomial_distribution/operators/values4.cc (test for ex
 UNRESOLVED: 26_numerics/random/binomial_distribution/operators/values4.cc compilation failed to produce executable
 FAIL: 26_numerics/random/binomial_distribution/operators/values5.cc (test for excess errors)
 UNRESOLVED: 26_numerics/random/binomial_distribution/operators/values5.cc compilation failed to produce executable
-UNRESOLVED: 26_numerics/random/chi_squared_distribution/cons/parms.cc compilation failed to produce executable
-FAIL: 26_numerics/random/fisher_f_distribution/cons/default.cc execution test
-UNRESOLVED: 26_numerics/random/geometric_distribution/cons/parms.cc compilation failed to produce executable
-UNRESOLVED: 26_numerics/random/geometric_distribution/operators/equal.cc compilation failed to produce executable
 FAIL: 26_numerics/random/negative_binomial_distribution/operators/values.cc (test for excess errors)
 UNRESOLVED: 26_numerics/random/negative_binomial_distribution/operators/values.cc compilation failed to produce executable
 FAIL: 26_numerics/random/poisson_distribution/operators/values.cc (test for excess errors)
 UNRESOLVED: 26_numerics/random/poisson_distribution/operators/values.cc compilation failed to produce executable
-UNRESOLVED: 27_io/basic_filebuf/overflow/char/1.cc compilation failed to produce executable
-UNRESOLVED: 27_io/basic_filebuf/seekoff/char/12790-3.cc compilation failed to produce executable
-UNRESOLVED: 27_io/basic_istream/read/wchar_t/2.cc compilation failed to produce executable
 XPASS: 27_io/basic_ostream/inserters_arithmetic/char/hexfloat.cc execution test
-UNRESOLVED: 27_io/basic_stringbuf/cons/wchar_t/1.cc compilation failed to produce executable
-UNRESOLVED: 27_io/basic_stringbuf/imbue/char/1.cc compilation failed to produce executable
-UNRESOLVED: 27_io/basic_stringbuf/sputc/wchar_t/1.cc compilation failed to produce executable
-UNRESOLVED: 27_io/basic_stringbuf/str/wchar_t/1.cc compilation failed to produce executable
-UNRESOLVED: 28_regex/algorithms/regex_match/ecma/char/emptygroup.cc compilation failed to produce executable
-UNRESOLVED: 28_regex/algorithms/regex_match/ecma/char/quoted_char.cc compilation failed to produce executable
-UNRESOLVED: 28_regex/algorithms/regex_replace/char/basic_replace.cc compilation failed to produce executable
-UNRESOLVED: 28_regex/algorithms/regex_search/61424.cc compilation failed to produce executable
-UNRESOLVED: 30_threads/try_lock/1.cc compilation failed to produce executable
 FAIL: ext/random/hypergeometric_distribution/operators/values.cc (test for excess errors)
 UNRESOLVED: ext/random/hypergeometric_distribution/operators/values.cc compilation failed to produce executable
-FAIL: ext/random/uniform_on_sphere_distribution/operators/equal.cc execution test
-UNRESOLVED: tr1/4_metaprogramming/is_compound/value.cc compilation failed to produce executable
-UNRESOLVED: tr1/4_metaprogramming/is_enum/value.cc compilation failed to produce executable
-UNRESOLVED: tr1/4_metaprogramming/is_floating_point/value.cc compilation failed to produce executable
-UNRESOLVED: tr1/4_metaprogramming/is_object/value.cc compilation failed to produce executable
-FAIL: tr1/4_metaprogramming/remove_cv/value.cc execution test
-FAIL: tr1/4_metaprogramming/remove_volatile/value.cc (test for excess errors)
 
 		=== libstdc++ Summary ===
 
-# of expected passes		9720
-# of unexpected failures	23
+# of expected passes		9940
+# of unexpected failures	8
 # of unexpected successes	1
 # of expected failures		65
-# of unresolved testcases	78
+# of unresolved testcases	8
 # of unsupported tests		612
 
-Compiler version: 5.4.0 (GCC) 
-Platform: sparcv9-sun-solaris2.12
-configure flags: --prefix=/usr/gcc/5 --mandir=/usr/gcc/5/share/man --bindir=/usr/gcc/5/bin --sbindir=/usr/gcc/5/sbin --libdir=/usr/gcc/5/lib --infodir=/usr/gcc/5/share/info --libexecdir=/usr/gcc/5/lib --enable-languages=c,c++,fortran,objc --enable-shared --enable-initfini-array --disable-rpath --with-system-zlib --with-build-config=no --with-gmp-include=/usr/include --with-mpfr-include=/usr/include --without-gnu-ld --with-ld=/usr/bin/ld --with-gnu-as --with-as=/usr/gnu/bin/as --disable-bootstrap 'BOOT_CFLAGS=-g -O2' sparcv9-sun-solaris2.12
+Compiler version: 5.5.0 (GCC) 
+Platform: sparcv9-sun-solaris2.11
+configure flags: --prefix=/usr/gcc/5 --mandir=/usr/gcc/5/share/man --bindir=/usr/gcc/5/bin --sbindir=/usr/gcc/5/sbin --libdir=/usr/gcc/5/lib --infodir=/usr/gcc/5/share/info --libexecdir=/usr/gcc/5/lib --enable-languages=c,c++,fortran,objc --enable-shared --enable-initfini-array --disable-rpath --with-system-zlib --with-build-config=no --with-gmp-include=/usr/include --with-mpfr-include=/usr/include --without-gnu-ld --with-ld=/usr/bin/ld --with-gnu-as --with-as=/usr/gnu/bin/as 'BOOT_CFLAGS=-g -O2' sparcv9-sun-solaris2.11
 BOOT_CFLAGS=-g -O2
 EOF
-Mail -s "Results for 5.4.0 (GCC) testsuite on sparcv9-sun-solaris2.12" gcc-testresults@gcc.gnu.org &&
+Mail -s "Results for 5.5.0 (GCC) testsuite on sparcv9-sun-solaris2.11" gcc-testresults@gcc.gnu.org &&
 true
