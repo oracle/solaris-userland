@@ -36,20 +36,26 @@ PATH=$(GCC_ROOT)/bin:$(USRBINDIR):$(GNUBIN)
 endif
 
 COMPONENT_NAME=		p7zip
-COMPONENT_VERSION=	15.14.1
+COMPONENT_VERSION=	16.02
 COMPONENT_PROJECT_URL=	http://p7zip.sourceforge.net/
 COMPONENT_SRC=		$(COMPONENT_NAME)_$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC)_src_all.tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:699db4da3621904113e040703220abb1148dfef477b55305e2f14a4f1f8f25d4
+    sha256:5eb20ac0e2944f6cb9c2d51dd6c4518941c185347d4089ea89087ffdd6e2341f
 COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/p7zip/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	2583
 
-TPNO=			27905
+TPNO=			39759
 
 BUILD_STYLE= justmake
 INSTALL_TARGET=
 include $(WS_MAKE_RULES)/common.mk
+
+# The .1 refers to version 16.02-1 to distinguish between community version
+# of p7zip and this package, which contains all known fixes.  A similar approach
+# is addopted by some Linux distros.
+IPS_COMPONENT_VERSION=	16.2.1
+HUMAN_VERSION=		$(COMPONENT_VERSION)-1
 
 COMPONENT_TEST_DIR =		$(@D)
 COMPONENT_TEST_ENV =		P7ZIP_HOME_DIR=$(BUILD_DIR)/$(MACH$(BITS))/bin
@@ -59,19 +65,7 @@ COMPONENT_PREP_ACTION = (cd $(@D); cp ../makefile.solaris makefile.machine)
 COMPONENT_BUILD_TARGETS = all3
 COMPONENT_INSTALL_ARGS += DEST_HOME=$(USRDIR) DEST_DIR=$(PROTO_DIR)
 
-$(SOURCE_DIR)/DOC/copying.txt $(SOURCE_DIR)/DOC/unRarLicense.txt: prep
-
-$(BUILD_DIR)/%: $(SOURCE_DIR)/DOC/%
-	$(CP) $< $@
-
-$(BUILD_DIR)/copying.txt: $(SOURCE_DIR)/DOC/copying.txt
-	$(CP) $(SOURCE_DIR)/DOC/copying.txt $@
-
-# common targets
-EXTRATARGETS = \
-	$(BUILD_DIR)/copying.txt $(BUILD_DIR)/unRarLicense.txt
-
-install:	build $(INSTALL_64) $(EXTRATARGETS)
+install:	build $(INSTALL_64)
 
 # 7zr.1 is in DOS format for some reason, and geqn can't handle it.
 COMPONENT_POST_INSTALL_ACTION += $(GSED) -i -e 's/\r//' $(PROTO_DIR)/usr/man/man1/7zr.1
