@@ -47,10 +47,13 @@ PROTOFONTSDIR=	$(PROTOUSRSHAREDIR)/fonts/TrueType
 
 COMPONENT_BUILD_ACTION = \
 	$(MKFONTSCALE) $(@D); \
-	$(MKFONTDIR) $(@D);
+	$(MKFONTDIR) $(@D); \
+	tail +2 $(@D)/fonts.alias > $(@D)/fonts.alias.new; \
+	cat fonts.alias >> $(@D)/fonts.alias.new;
 
 COMPONENT_INSTALL_ACTION = \
-	$(CP) $(@D)/*.ttf $(@D)/fonts.* $(PROTOFONTSDIR)/$(COMPONENT_NAME)/;
+	$(CP) $(@D)/*.ttf $(@D)/fonts.scale $(@D)/fonts.dir $(PROTOFONTSDIR)/$(COMPONENT_NAME)/; \
+	$(CP) $(@D)/fonts.alias.new $(PROTOFONTSDIR)/$(COMPONENT_NAME)/fonts.alias;
 
 COMPONENT_PRE_INSTALL_ACTION += \
 	$(MKDIR) $(PROTOFONTSDIR)/$(COMPONENT_NAME);

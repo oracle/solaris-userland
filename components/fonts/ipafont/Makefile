@@ -53,7 +53,7 @@ COMPONENT_BUILD_ACTION = \
 COMPONENT_INSTALL_ACTION = \
 	$(CP) $(@D)/IPA_Font_License_Agreement_v1.0.txt $(@D)/Readme_IPAfont00303.txt \
 		$(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)/; \
-	$(CP) $(@D)/*.ttf $(@D)/fonts.* $(PROTOFONTSDIR)/$(COMPONENT_NAME)/;
+	$(CP) fonts.alias $(@D)/*.ttf $(@D)/fonts.* $(PROTOFONTSDIR)/$(COMPONENT_NAME)/;
 
 COMPONENT_PRE_INSTALL_ACTION += \
 	$(MKDIR) $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME); \
