@@ -1,0 +1,20 @@
+This is similar to the upstream bug 
+https://bugzilla.gnome.org/show_bug.cgi?id=738205 which is still 
+intermittently seen in the community.
+
+The updated 3.24 version of gnome-session still has the hack to ensure 
+SSH_AUTH_SOCK is set - we don't have wayland, so using the same
+workaround and applying it to x11
+
+--- a/gnome-session/main.c	2017-11-03 11:04:15.701788548 -0700
++++ b/gnome-session/main.c	2017-11-03 11:04:44.247781723 -0700
+@@ -412,7 +412,7 @@
+         /* hack to fix keyring until we can reorder things in 3.20
+          * https://bugzilla.gnome.org/show_bug.cgi?id=738205
+          */
+-        if (g_strcmp0 (g_getenv ("XDG_SESSION_TYPE"), "wayland") == 0 &&
++        if (g_strcmp0 (g_getenv ("XDG_SESSION_TYPE"), "x11") == 0 &&
+             g_getenv ("GSM_SKIP_SSH_AGENT_WORKAROUND") == NULL) {
+                 char *ssh_socket;
+ 
+
