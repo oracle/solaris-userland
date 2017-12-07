@@ -27,10 +27,10 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         xorriso
 COMPONENT_VERSION=      1.4.6
-COMPONENT_PROJECT_URL=  http://scdbackup.sourceforge.net/xorriso/
+COMPONENT_PROJECT_URL=  http://gnu.org/software/xorriso/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:526f728c7eee6f8c4b69fbf391789e6c80806197c2861cf5922cf7cfe1035784
-COMPONENT_ARCHIVE_URL=  http://scdbackup.sourceforge.net/$(COMPONENT_ARCHIVE)
+      sha256:e73bac48e126043005e4076e2ca8d5223c528d3e43d653e1dc85101dee941ccd
+COMPONENT_ARCHIVE_URL=   http://gnu.org/software/xorriso/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	13270
 
 TPNO=			32406
