@@ -28,7 +28,10 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		unifont
 COMPONENT_VERSION=	8.0.01
-IPS_COMPONENT_VERSION=	8.0.1
+
+# due to 27244651 the IPS version should be the solaris version
+IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
+
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	unifont-8.0.01.tar.gz
 COMPONENT_PROJECT_URL=	http://unifoundry.com/unifont.html

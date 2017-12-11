@@ -28,6 +28,10 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		thai-scalable
 COMPONENT_VERSION=	0.6.1
+
+# due to 27244651 the IPS version should be the solaris version
+IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
+
 COMPONENT_SRC=		ttf-tlwg-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_PROJECT_URL=	https://linux.thai.net/projects/fonts-tlwg

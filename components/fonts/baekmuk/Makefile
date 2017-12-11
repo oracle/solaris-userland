@@ -28,6 +28,10 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		baekmuk
 COMPONENT_VERSION=	2.1
+
+# due to 27244651 the IPS version should be the solaris version
+IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
+
 COMPONENT_SRC=		baekmuk-ttf-$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	http://kldp.net/baekmuk/
 COMPONENT_ARCHIVE_URL=	http://pkgs.fedoraproject.org/repo/pkgs/fonts-korean/$(COMPONENT_ARCHIVE)/afb58ae36c74fdcc232ec4a2084a956c/$(COMPONENT_ARCHIVE)

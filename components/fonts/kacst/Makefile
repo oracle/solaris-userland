@@ -28,6 +28,10 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		kacst
 COMPONENT_VERSION=	2.0
+
+# due to 27244651 the IPS version should be the solaris version
+IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
+
 COMPONENT_SRC=		KacstArabicFonts-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)_fonts_$(COMPONENT_VERSION).tar.bz2
 COMPONENT_PROJECT_URL=	https://www.arabeyes.org/

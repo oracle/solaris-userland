@@ -28,7 +28,10 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ipafont
 COMPONENT_VERSION=	3.03
-IPS_COMPONENT_VERSION=	3.3
+
+# due to 27244651 the IPS version should be the solaris version
+IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
+
 COMPONENT_SRC=		IPAfont00303
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_PROJECT_URL=	http://ipafont.ipa.go.jp

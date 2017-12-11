@@ -28,6 +28,10 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		arphic-uming
 COMPONENT_VERSION=	0.1.20060928
+
+# due to 27244651 the IPS version should be the solaris version
+IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
+
 COMPONENT_SRC=		ttf-$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	ttf-$(COMPONENT_NAME)_$(COMPONENT_VERSION).orig.tar.gz
 COMPONENT_PROJECT_URL=	https://www.freedesktop.org/wiki/Software/CJKUnifonts
