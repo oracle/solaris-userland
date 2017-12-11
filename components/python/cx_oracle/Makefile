@@ -53,6 +53,6 @@ test:		$(NO_TESTS)
 
 system-test:    $(NO_TESTS)
 
-REQUIRED_PACKAGES += database/oracle/instantclient
-REQUIRED_PACKAGES += developer/oracle/instantclient/sdk
+REQUIRED_PACKAGES += database/oracle/instantclient-122
+REQUIRED_PACKAGES += developer/oracle/instantclient/sdk-122
 REQUIRED_PACKAGES += system/library
