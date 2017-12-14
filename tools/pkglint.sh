@@ -21,19 +21,24 @@
 #
 
 #
-# Copyright (c) 2013, 2014, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 IFS=
 
 SLEEPTIME=60
 
-LOCKFILE=WS_TOP_XXX/pkglint.lock
+LOCKDIR=WS_TOP_XXX/pkglint.lock
 
-lockfile -${SLEEPTIME} ${LOCKFILE}
+# Only one mkdir can succeed, others will fail as the directory already exists.
+# This effectively creates a protected section which can be entered by one
+# pkglint only at a time.
+while ! mkdir "$LOCKDIR" ; do
+	sleep $SLEEPTIME
+done
 
 /usr/bin/pkglint $*
 
 pls=$?
 
-rm -f ${LOCKFILE}
+rmdir "$LOCKDIR"
 exit ${pls}
