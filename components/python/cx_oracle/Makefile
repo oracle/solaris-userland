@@ -25,17 +25,19 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cx_Oracle
-COMPONENT_VERSION=	5.2.1
+COMPONENT_VERSION=	6.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=		\
-	sha256:3dfedd9538f50dee41493020c1f589e5c61835a0c8fd14f5a6c47b5919258e81
+	sha256:80545fc7acbdda917dd2b1604c938141256bdfed3ad464a44586c9c2f09c3004
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=  http://cx-oracle.sourceforge.net/
+COMPONENT_PROJECT_URL=  https://oracle.github.io/python-cx_Oracle
 COMPONENT_BUGDB=	python-mod/cx_oracle
 COMPONENT_ANITYA_ID=	13233
 
-TPNO=			26442
+#TPNO=                  NONE (included with Stack Approval rather than 3PLTA,
+#                       for email trail of the approval please see
+#                       /shared/sac/PSARC/2015/294/approvals)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
@@ -56,3 +58,4 @@ system-test:    $(NO_TESTS)
 REQUIRED_PACKAGES += database/oracle/instantclient-122
 REQUIRED_PACKAGES += developer/oracle/instantclient/sdk-122
 REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += developer/oracle/odpi
