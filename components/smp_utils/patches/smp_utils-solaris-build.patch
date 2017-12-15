@@ -1,56 +1,51 @@
 #Use -v to switch to standard error output. This patch is deemed
 #Solaris-centric and thus not worthy of being submitted upstream.
-diff -urN smp_utils-0.97/lib/Makefile.am smp_utils-0.97.new/lib/Makefile.am
---- smp_utils-0.97/lib/Makefile.am	2011-08-06 20:47:17.000000000 -0700
-+++ smp_utils-0.97.new/lib/Makefile.am	2012-10-29 23:22:01.250489177 -0700
-@@ -38,7 +38,7 @@
+diff -ur smp_utils-0.98/smp_utils.spec smp_utils-0.98-new/smp_utils.spec
+--- smp_utils-0.98/smp_utils.spec	2017-11-28 14:57:15.983701957 -0800
++++ smp_utils-0.98-new/smp_utils.spec	2017-11-28 14:50:38.360270492 -0800
+@@ -64,7 +64,7 @@
+ %files
+ %defattr(-,root,root)
+ %doc AUTHORS ChangeLog COPYING COVERAGE CREDITS INSTALL NEWS README
+-%attr(755,root,root) %{_bindir}/*
++%attr(755,root,root) %{_sbindir}/*
+ %{_mandir}/man8/*
  
+ %files libs
+diff -ur smp_utils-0.98/debian/smp-utils.install smp_utils-0.98-new/debian/smp-utils.install
+--- smp_utils-0.98/debian/smp-utils.install	2017-11-28 14:57:15.997852633 -0800
++++ smp_utils-0.98-new/debian/smp-utils.install	2017-11-28 14:50:38.329933991 -0800
+@@ -1,2 +1,2 @@
+-usr/bin/*
++usr/sbin/*
+ usr/share/man/man8/*
+diff -ur smp_utils-0.98/lib/Makefile.am smp_utils-0.98-new/lib/Makefile.am
+--- smp_utils-0.98/lib/Makefile.am	2014-05-15 05:55:44.000000000 -0700
++++ smp_utils-0.98-new/lib/Makefile.am	2017-11-27 16:11:40.994655815 -0800
+@@ -45,7 +45,7 @@
+ ## CC = clang++
  
- 
+ # -std=<s> can be c99, c11, gnu11, etc. Default is gnu89 (gnu90 is the same)
 -AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -W
 +AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -v
- # AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -W -pedantic -std=c99
+ ## AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -W -pedantic -std=c11
  
  lib_LTLIBRARIES = libsmputils1.la
-diff -urN smp_utils-0.97/lib/Makefile.in smp_utils-0.97.new/lib/Makefile.in
---- smp_utils-0.97/lib/Makefile.in	2011-11-16 16:48:55.000000000 -0800
-+++ smp_utils-0.97.new/lib/Makefile.in	2012-10-29 23:22:01.251160763 -0700
-@@ -243,7 +243,7 @@
- @OS_SOLARIS_TRUE@EXTRA_libsmputils1_la_SOURCES = \
- @OS_SOLARIS_TRUE@	smp_dummy.c
+diff -ur smp_utils-0.98/lib/Makefile.in smp_utils-0.98-new/lib/Makefile.in
+--- smp_utils-0.98/lib/Makefile.in	2014-05-15 05:55:44.000000000 -0700
++++ smp_utils-0.98-new/lib/Makefile.in	2017-11-27 16:13:02.334566255 -0800
+@@ -350,7 +350,7 @@
+ # for C++ testing
  
+ # -std=<s> can be c99, c11, gnu11, etc. Default is gnu89 (gnu90 is the same)
 -AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -W
 +AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -v
- # AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -W -pedantic -std=c99
  lib_LTLIBRARIES = libsmputils1.la
  libsmputils1_la_LDFLAGS = -version-info 1:0:0
-diff -urN smp_utils-0.97/src/Makefile.am smp_utils-0.97.new/src/Makefile.am
---- smp_utils-0.97/src/Makefile.am	2011-11-29 12:11:36.000000000 -0800
-+++ smp_utils-0.97.new/src/Makefile.am	2012-10-29 23:22:36.457726462 -0700
-@@ -28,7 +28,7 @@
- ## endif
- 
- 
--AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -W
-+AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -v
- # AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -W -pedantic -std=c99
- 
- smp_conf_general_SOURCES =	smp_conf_general.c
-diff -urN smp_utils-0.97/src/Makefile.in smp_utils-0.97.new/src/Makefile.in
---- smp_utils-0.97/src/Makefile.in	2011-11-29 12:11:36.000000000 -0800
-+++ smp_utils-0.97.new/src/Makefile.in	2012-10-29 23:22:36.458435498 -0700
-@@ -319,7 +319,7 @@
- top_build_prefix = @top_build_prefix@
- top_builddir = @top_builddir@
- top_srcdir = @top_srcdir@
--AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -W
-+AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -v
- # AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -W -pedantic -std=c99
- smp_conf_general_SOURCES = smp_conf_general.c
- smp_conf_general_LDADD = ../lib/libsmputils1.la @os_libs@
-
---- smp_utils-0.97/lib/smp_sol_usmp.c.orig	Wed Sep 24 16:55:09 2014
-+++ smp_utils-0.97/lib/smp_sol_usmp.c	Wed Sep 24 16:55:58 2014
+ libsmputils1_la_LIBADD = @os_libs@
+diff -ur smp_utils-0.98/lib/smp_sol_usmp.c smp_utils-0.98-new/lib/smp_sol_usmp.c
+--- smp_utils-0.98/lib/smp_sol_usmp.c	2012-12-16 14:43:41.000000000 -0800
++++ smp_utils-0.98-new/lib/smp_sol_usmp.c	2017-11-27 16:13:54.380675524 -0800
 @@ -37,7 +37,7 @@
  #include <unistd.h>
  #include <stropts.h>
@@ -60,3 +55,161 @@ diff -urN smp_utils-0.97/src/Makefile.in smp_utils-0.97.new/src/Makefile.in
  
  #ifdef HAVE_CONFIG_H
  #include "config.h"
+diff -ur smp_utils-0.98/src/Makefile.am smp_utils-0.98-new/src/Makefile.am
+--- smp_utils-0.98/src/Makefile.am	2014-05-26 14:50:48.000000000 -0700
++++ smp_utils-0.98-new/src/Makefile.am	2017-11-27 16:11:55.485763512 -0800
+@@ -6,7 +6,7 @@
+ # sbin_PROGRAMS . Caused problems so put back in normal
+ # place with bin_PROGRAMS = xxxx .
+ 
+-bin_PROGRAMS = \
++sbin_PROGRAMS = \
+ 	smp_conf_general smp_conf_phy_event smp_conf_route_info \
+ 	smp_conf_zone_man_pass smp_conf_zone_perm_tbl \
+ 	smp_conf_zone_phy_info smp_discover smp_discover_list \
+@@ -34,7 +34,7 @@
+ ## CC = clang++
+ 
+ # -std=<s> can be c99, c11, gnu11, etc. Default is gnu89 (gnu90 is the same)
+-AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -W
++AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -v
+ ## AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -W -pedantic -std=c11
+ ## AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -W -pedantic -std=c++11
+ 
+diff -ur smp_utils-0.98/src/Makefile.in smp_utils-0.98-new/src/Makefile.in
+--- smp_utils-0.98/src/Makefile.in	2014-05-15 05:55:44.000000000 -0700
++++ smp_utils-0.98-new/src/Makefile.in	2017-11-27 16:13:19.036570863 -0800
+@@ -82,7 +82,7 @@
+ POST_UNINSTALL = :
+ build_triplet = @build@
+ host_triplet = @host@
+-bin_PROGRAMS = smp_conf_general$(EXEEXT) smp_conf_phy_event$(EXEEXT) \
++sbin_PROGRAMS = smp_conf_general$(EXEEXT) smp_conf_phy_event$(EXEEXT) \
+ 	smp_conf_route_info$(EXEEXT) smp_conf_zone_man_pass$(EXEEXT) \
+ 	smp_conf_zone_perm_tbl$(EXEEXT) \
+ 	smp_conf_zone_phy_info$(EXEEXT) smp_discover$(EXEEXT) \
+@@ -108,8 +108,8 @@
+ CONFIG_HEADER = $(top_builddir)/config.h
+ CONFIG_CLEAN_FILES =
+ CONFIG_CLEAN_VPATH_FILES =
+-am__installdirs = "$(DESTDIR)$(bindir)"
+-PROGRAMS = $(bin_PROGRAMS)
++am__installdirs = "$(DESTDIR)$(sbindir)"
++PROGRAMS = $(sbin_PROGRAMS)
+ am_smp_conf_general_OBJECTS = smp_conf_general.$(OBJEXT)
+ smp_conf_general_OBJECTS = $(am_smp_conf_general_OBJECTS)
+ smp_conf_general_DEPENDENCIES = ../lib/libsmputils1.la
+@@ -416,7 +416,7 @@
+ # for C++ testing
+ 
+ # -std=<s> can be c99, c11, gnu11, etc. Default is gnu89 (gnu90 is the same)
+-AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -W
++AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -v
+ smp_conf_general_SOURCES = smp_conf_general.c
+ smp_conf_general_LDADD = ../lib/libsmputils1.la @os_libs@
+ smp_conf_phy_event_SOURCES = smp_conf_phy_event.c
+@@ -509,12 +509,12 @@
+ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
+ 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+ $(am__aclocal_m4_deps):
+-install-binPROGRAMS: $(bin_PROGRAMS)
++install-sbinPROGRAMS: $(sbin_PROGRAMS)
+ 	@$(NORMAL_INSTALL)
+-	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
++	@list='$(sbin_PROGRAMS)'; test -n "$(sbindir)" || list=; \
+ 	if test -n "$$list"; then \
+-	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
+-	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
++	  echo " $(MKDIR_P) '$(DESTDIR)$(sbindir)'"; \
++	  $(MKDIR_P) "$(DESTDIR)$(sbindir)" || exit 1; \
+ 	fi; \
+ 	for p in $$list; do echo "$$p $$p"; done | \
+ 	sed 's/$(EXEEXT)$$//' | \
+@@ -534,24 +534,24 @@
+ 	while read type dir files; do \
+ 	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+ 	    test -z "$$files" || { \
+-	    echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+-	    $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
++	    echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(sbindir)$$dir'"; \
++	    $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(sbindir)$$dir" || exit $$?; \
+ 	    } \
+ 	; done
+ 
+-uninstall-binPROGRAMS:
++uninstall-sbinPROGRAMS:
+ 	@$(NORMAL_UNINSTALL)
+-	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
++	@list='$(sbin_PROGRAMS)'; test -n "$(sbindir)" || list=; \
+ 	files=`for p in $$list; do echo "$$p"; done | \
+ 	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
+ 	      -e 's/$$/$(EXEEXT)/' \
+ 	`; \
+ 	test -n "$$list" || exit 0; \
+-	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
+-	cd "$(DESTDIR)$(bindir)" && rm -f $$files
++	echo " ( cd '$(DESTDIR)$(sbindir)' && rm -f" $$files ")"; \
++	cd "$(DESTDIR)$(sbindir)" && rm -f $$files
+ 
+-clean-binPROGRAMS:
+-	@list='$(bin_PROGRAMS)'; test -n "$$list" || exit 0; \
++clean-sbinPROGRAMS:
++	@list='$(sbin_PROGRAMS)'; test -n "$$list" || exit 0; \
+ 	echo " rm -f" $$list; \
+ 	rm -f $$list || exit $$?; \
+ 	test -n "$(EXEEXT)" || exit 0; \
+@@ -824,7 +824,7 @@
+ check: check-am
+ all-am: Makefile $(PROGRAMS)
+ installdirs:
+-	for dir in "$(DESTDIR)$(bindir)"; do \
++	for dir in "$(DESTDIR)$(sbindir)"; do \
+ 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
+ 	done
+ install: install-am
+@@ -859,7 +859,7 @@
+ 	@echo "it deletes files that may require special tools to rebuild."
+ clean: clean-am
+ 
+-clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
++clean-am: clean-sbinPROGRAMS clean-generic clean-libtool mostlyclean-am
+ 
+ distclean: distclean-am
+ 	-rm -rf ./$(DEPDIR)
+@@ -885,7 +885,7 @@
+ 
+ install-dvi-am:
+ 
+-install-exec-am: install-binPROGRAMS
++install-exec-am: install-sbinPROGRAMS
+ 
+ install-html: install-html-am
+ 
+@@ -925,15 +925,15 @@
+ 
+ ps-am:
+ 
+-uninstall-am: uninstall-binPROGRAMS
++uninstall-am: uninstall-sbinPROGRAMS
+ 
+ .MAKE: install-am install-strip
+ 
+ .PHONY: CTAGS GTAGS TAGS all all-am check check-am clean \
+-	clean-binPROGRAMS clean-generic clean-libtool cscopelist-am \
++	clean-sbinPROGRAMS clean-generic clean-libtool cscopelist-am \
+ 	ctags ctags-am distclean distclean-compile distclean-generic \
+ 	distclean-libtool distclean-tags distdir dvi dvi-am html \
+-	html-am info info-am install install-am install-binPROGRAMS \
++	html-am info info-am install install-am install-sbinPROGRAMS \
+ 	install-data install-data-am install-dvi install-dvi-am \
+ 	install-exec install-exec-am install-html install-html-am \
+ 	install-info install-info-am install-man install-pdf \
+@@ -941,7 +941,7 @@
+ 	installcheck installcheck-am installdirs maintainer-clean \
+ 	maintainer-clean-generic mostlyclean mostlyclean-compile \
+ 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+-	tags tags-am uninstall uninstall-am uninstall-binPROGRAMS
++	tags tags-am uninstall uninstall-am uninstall-sbinPROGRAMS
+ 
+ 
+ # Tell versions [3.59,3.63) of GNU make to not export all variables.
