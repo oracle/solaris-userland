@@ -28,7 +28,8 @@
 export PARFAIT_BUILD=no
 
 BUILD_BITS= 64
-include ../../make-rules/shared-macros.mk
+include ../../../make-rules/shared-macros.mk
+include $(WS_MAKE_RULES)/experimental-only.mk
 PATH=$(GNUBIN):$(USRBINDIR)
 
 COMPONENT_NAME=		openvswitch
