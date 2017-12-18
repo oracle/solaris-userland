@@ -631,3 +631,14 @@ class UserlandManifestChecker(base.ManifestChecker):
 
         uses_cffi.pkglint_desc = _(
             "Packages using CFFI incorporate CFFI at the correct version.")
+
+
+	def makefile_var_check(self, manifest, engine, pkglint_id="004"):
+		for m in manifest.as_lines():
+			if m.find("$(") != -1:
+				engine.error( _("Unexpanded make variable in %s:\n%s" % (manifest.fmri, m)),
+					msgid="%s%s.0" % (self.name, pkglint_id))
+
+	makefile_var_check.pkglint_desc = _("Unexpanded makefile variable.")
+
+
