@@ -26,16 +26,16 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		smp_utils
-COMPONENT_VERSION=	0.97
+COMPONENT_VERSION=	0.98
 COMPONENT_PROJECT_URL= http://sg.danny.cz/sg/smp_utils.html
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:0e10d304cfa8789bcf16537e8f72d9afdf8838fca20ae68103c317432d00915b
+    sha256:eb1952a192992bc60c7c84301f43d57fd386d6dcc9eef3f018a94114a38bb7e0
 COMPONENT_ARCHIVE_URL=	http://sg.danny.cz/sg/p/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/smputils
 COMPONENT_ANITYA_ID=	4840
 
-TPNO=			11065
+TPNO=			39251
 
 # Needs header file from ON only available in S12.
 ifeq ($(BUILD_TYPE), evaluation)
@@ -62,33 +62,33 @@ $(INSTALL_64):  COMPONENT_INSTALL_ARGS += INSTALL_SBIN=$(PROTOUSRBINDIR)
 
 COMPONENT_TEST_ENV +=	LD_LIBRARY_PATH=$(PROTOUSRLIBDIR64)
 COMPONENT_TEST_CMD =	\
-		$(PROTOUSRBINDIR)/smp_conf_general -V; \
-		$(PROTOUSRBINDIR)/smp_conf_phy_event -V; \
-		$(PROTOUSRBINDIR)/smp_conf_route_info -V; \
-		$(PROTOUSRBINDIR)/smp_conf_zone_man_pass -V; \
-		$(PROTOUSRBINDIR)/smp_conf_zone_perm_tbl -V; \
-		$(PROTOUSRBINDIR)/smp_conf_zone_phy_info -V; \
-		$(PROTOUSRBINDIR)/smp_discover -V; \
-		$(PROTOUSRBINDIR)/smp_discover_list -V; \
-		$(PROTOUSRBINDIR)/smp_ena_dis_zoning -V; \
-		$(PROTOUSRBINDIR)/smp_phy_control -V; \
-		$(PROTOUSRBINDIR)/smp_phy_test -V; \
-		$(PROTOUSRBINDIR)/smp_read_gpio -V; \
-		$(PROTOUSRBINDIR)/smp_rep_broadcast -V; \
-		$(PROTOUSRBINDIR)/smp_rep_exp_route_tbl -V; \
-		$(PROTOUSRBINDIR)/smp_rep_general -V; \
-		$(PROTOUSRBINDIR)/smp_rep_manufacturer -V; \
-		$(PROTOUSRBINDIR)/smp_rep_phy_err_log -V; \
-		$(PROTOUSRBINDIR)/smp_rep_phy_event -V; \
-		$(PROTOUSRBINDIR)/smp_rep_phy_event_list -V; \
-		$(PROTOUSRBINDIR)/smp_rep_phy_sata -V; \
-		$(PROTOUSRBINDIR)/smp_rep_route_info -V; \
-		$(PROTOUSRBINDIR)/smp_rep_self_conf_stat -V; \
-		$(PROTOUSRBINDIR)/smp_rep_zone_man_pass -V; \
-		$(PROTOUSRBINDIR)/smp_rep_zone_perm_tbl -V; \
-		$(PROTOUSRBINDIR)/smp_write_gpio -V; \
-		$(PROTOUSRBINDIR)/smp_zone_activate -V; \
-		$(PROTOUSRBINDIR)/smp_zone_lock -V; \
-		$(PROTOUSRBINDIR)/smp_zone_unlock -V; \
-		$(PROTOUSRBINDIR)/smp_zoned_broadcast -V
+		$(PROTOUSRSBINDIR)/smp_conf_general -V; \
+		$(PROTOUSRSBINDIR)/smp_conf_phy_event -V; \
+		$(PROTOUSRSBINDIR)/smp_conf_route_info -V; \
+		$(PROTOUSRSBINDIR)/smp_conf_zone_man_pass -V; \
+		$(PROTOUSRSBINDIR)/smp_conf_zone_perm_tbl -V; \
+		$(PROTOUSRSBINDIR)/smp_conf_zone_phy_info -V; \
+		$(PROTOUSRSBINDIR)/smp_discover -V; \
+		$(PROTOUSRSBINDIR)/smp_discover_list -V; \
+		$(PROTOUSRSBINDIR)/smp_ena_dis_zoning -V; \
+		$(PROTOUSRSBINDIR)/smp_phy_control -V; \
+		$(PROTOUSRSBINDIR)/smp_phy_test -V; \
+		$(PROTOUSRSBINDIR)/smp_read_gpio -V; \
+		$(PROTOUSRSBINDIR)/smp_rep_broadcast -V; \
+		$(PROTOUSRSBINDIR)/smp_rep_exp_route_tbl -V; \
+		$(PROTOUSRSBINDIR)/smp_rep_general -V; \
+		$(PROTOUSRSBINDIR)/smp_rep_manufacturer -V; \
+		$(PROTOUSRSBINDIR)/smp_rep_phy_err_log -V; \
+		$(PROTOUSRSBINDIR)/smp_rep_phy_event -V; \
+		$(PROTOUSRSBINDIR)/smp_rep_phy_event_list -V; \
+		$(PROTOUSRSBINDIR)/smp_rep_phy_sata -V; \
+		$(PROTOUSRSBINDIR)/smp_rep_route_info -V; \
+		$(PROTOUSRSBINDIR)/smp_rep_self_conf_stat -V; \
+		$(PROTOUSRSBINDIR)/smp_rep_zone_man_pass -V; \
+		$(PROTOUSRSBINDIR)/smp_rep_zone_perm_tbl -V; \
+		$(PROTOUSRSBINDIR)/smp_write_gpio -V; \
+		$(PROTOUSRSBINDIR)/smp_zone_activate -V; \
+		$(PROTOUSRSBINDIR)/smp_zone_lock -V; \
+		$(PROTOUSRSBINDIR)/smp_zone_unlock -V; \
+		$(PROTOUSRSBINDIR)/smp_zoned_broadcast -V
 
