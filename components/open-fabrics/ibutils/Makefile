@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../ofed-component-macros.mk
@@ -99,4 +99,7 @@ CLEANUP_DIRS=\
 
 COMPONENT_POST_INSTALL_ACTION+= \
 	$(RM) $(CLEANUP_FILES); \
-	$(RM) -r $(CLEANUP_DIRS)
+	$(RM) -r $(CLEANUP_DIRS);
+
+RMRPATH=$(ELFEDIT) -e "dyn:delete RUNPATH" -e "dyn:delete RPATH"
+COMPONENT_POST_INSTALL_ACTION += $(RMRPATH) $(PROTOUSRLIBDIR64)/ibdm$(COMPONENT_VERSION)/libibdm.so.$(COMPONENT_VERSION);

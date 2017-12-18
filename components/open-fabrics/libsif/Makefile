@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -62,3 +62,6 @@ COMPONENT_PREP_ACTION += cd $(COMPONENT_SRC)/src/ ; rm $(REMOVE_OLD_SRC) ; cd - 
 COMPONENT_POST_INSTALL_ACTION =\
 	$(RM) $(PROTO_DIR)/$(CONFIGURE_LIBDIR.32)/$(COMPONENT_NAME).la;\
 	$(RM) $(PROTO_DIR)/$(CONFIGURE_LIBDIR.64)/$(COMPONENT_NAME).la;
+
+RMRPATH=$(ELFEDIT) -e "dyn:delete RUNPATH" -e "dyn:delete RPATH"
+COMPONENT_POST_INSTALL_ACTION += $(RMRPATH) $(PROTOUSRLIBDIR64)/libsif-rdmav2.so;
