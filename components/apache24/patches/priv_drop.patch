@@ -22,19 +22,22 @@ Drops extra privilege which was given via SMF manifest file.
      APR_OPTIONAL_FN_TYPE(ap_signal_server) *signal_server;
      int rc = OK;
  
-@@ -794,6 +912,17 @@
+@@ -806,6 +809,20 @@
  
          ap_run_optional_fn_retrieve();
  
 +
-+        /* here we drop privileges we won't need any more */
-+        tset = priv_allocset();
-+        priv_emptyset(tset);
-+        priv_addset(tset, PRIV_NET_PRIVADDR);
-+        if (setppriv(PRIV_OFF, PRIV_PERMITTED, tset) != 0) {
-+           ap_log_error(APLOG_MARK, APLOG_EMERG, 0, NULL,
-+                         APLOGNO(00021) "Unable to drop unneeded privilege.");
-+            destroy_and_exit_process(process, 1);
++        /* here we drop privileges we won't need any more
++         * unless we run as root */
++        if (getuid()) {
++            tset = priv_allocset();
++            priv_emptyset(tset);
++            priv_addset(tset, PRIV_NET_PRIVADDR);
++            if (setppriv(PRIV_OFF, PRIV_PERMITTED, tset) != 0) {
++                ap_log_error(APLOG_MARK, APLOG_EMERG, 0, NULL,
++                             APLOGNO(00021) "Unable to drop unneeded privilege.");
++                destroy_and_exit_process(process, 1);
++            }
 +        }
 +
          ap_main_state = AP_SQ_MS_RUN_MPM;
