@@ -92,22 +92,17 @@ CONFIGURE_OPTIONS +=	--enable-dso
 CONFIGURE_OPTIONS +=	--enable-openssl
 CONFIGURE_OPTIONS +=	--disable-static
 CONFIGURE_OPTIONS +=	--with-modules=mod_solaris_audit:mod_solaris_priv
-CONFIGURE_OPTIONS +=	--with-shared=mod_facl:mod_wrap:mod_tls:mod_tls-fips-140:mod_auth_gss:mod_gss
+CONFIGURE_OPTIONS +=	--with-shared=mod_facl:mod_wrap:mod_tls:mod_auth_gss:mod_gss
 CONFIGURE_OPTIONS +=	--enable-buffer-size=16384
-CONFIGURE_OPTIONS +=	FIPS_CPPFLAGS="-I/usr/include/openssl/fips-140"
-CONFIGURE_OPTIONS +=	FIPS_LDFLAGS="-R/lib/openssl/fips-140/64"
 
 # Copy Solaris modules and GSSAPI modules to proftpd source tree.
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CP) mod_solaris_audit.c $(SOURCE_DIR)/contrib ; \
 	$(CP) mod_solaris_priv.c $(SOURCE_DIR)/contrib ; \
-	cd $(SOURCE_DIR) ; \
-	autoconf ; \
-	cd .. ; \
 	cd $(BUILD_DIR) ; \
 	$(UNPACK) $(UNPACK_ARGS) ../$(COMPONENT_ARCHIVE_1) ; \
 	cd $(COMPONENT_SRC_1) ; \
-	./configure CC="$(CC)" CFLAGS="-I/usr/include/kerberosv5"; \
+	./configure CC="$(CC)" CFLAGS="-I/usr/include/kerberosv5" ; \
 	$(CP) mod_gss.c mod_auth_gss.c $(SOURCE_DIR)/contrib ; \
 	$(CP) mod_gss.h $(SOURCE_DIR)/include ; \
 	$(CP) mod_gss.html $(SOURCE_DIR)/doc/contrib ; \
@@ -126,7 +121,6 @@ CONFIGURE_SCRIPT =	$(@D)/configure
 LICENSE_TRANSFORMS =
 
 REQUIRED_PACKAGES += library/security/openssl
-REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
