@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 #
 # CDDL HEADER START
 #
@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2010, 2015, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 #
 # bass-o-matic.py
@@ -112,7 +112,7 @@ class BassComponent:
         return result
 
 def usage():
-    print "Usage: %s [-c|--components=(path|depend)] [-z|--zone (zone)]" % (sys.argv[0].split('/')[-1])
+    print("Usage: %s [-c|--components=(path|depend)] [-z|--zone (zone)]" % (sys.argv[0].split('/')[-1]))
     sys.exit(1)
 
 def main():
@@ -120,7 +120,7 @@ def main():
     import sys
 
     # FLUSH STDOUT 
-    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+    sys.stdout.flush()
 
     components = {}
     debug=None
@@ -134,8 +134,8 @@ def main():
         opts, args = getopt.getopt(sys.argv[1:], "w:c:d",
             [ "debug", "workspace=", "components=",
               "make", "component=", "template-zone=" ])
-    except getopt.GetoptError, err:
-        print str(err)
+    except(getopt.GetoptError) as err:
+        print(str(err))
         usage()
 
     for opt, arg in opts:
@@ -158,15 +158,15 @@ def main():
 
     if make_arg:
         if template_zone:
-            print "using template zone %s to create a build environment for %s to run '%s'" % (template_zone, component_arg, ['gmake'] + args)
+            print("using template zone %s to create a build environment for %s to run '%s'" % (template_zone, component_arg, ['gmake'] + args))
         proc = subprocess.Popen(['gmake'] + args)
-	rc = proc.wait()
+        rc = proc.wait()
         sys.exit(rc)
 
     if components_arg:
         if components_arg in [ 'path', 'paths', 'dir', 'dirs', 'directories' ]:
             for path in component_paths:
-                print "%s" % path
+                print("%s" % path)
             
         elif components_arg in [ 'depend', 'dependencies' ]:
             for path in component_paths:
@@ -178,7 +178,7 @@ def main():
                 for d_path in components.keys():
                     if (c_path != d_path and
                         component.required(components[d_path])):
-                          print "%s: %s" % (c_path, d_path)
+                          print("%s: %s" % (c_path, d_path))
 
         sys.exit(0)
 
