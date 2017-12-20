@@ -28,7 +28,10 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ipafont
 COMPONENT_VERSION=	3.03
-IPS_COMPONENT_VERSION=	3.3
+
+# due to 27244651 the IPS version should be the solaris version
+IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
+
 COMPONENT_SRC=		IPAfont00303
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_PROJECT_URL=	http://ipafont.ipa.go.jp
@@ -53,7 +56,7 @@ COMPONENT_BUILD_ACTION = \
 COMPONENT_INSTALL_ACTION = \
 	$(CP) $(@D)/IPA_Font_License_Agreement_v1.0.txt $(@D)/Readme_IPAfont00303.txt \
 		$(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME)/; \
-	$(CP) $(@D)/*.ttf $(@D)/fonts.* $(PROTOFONTSDIR)/$(COMPONENT_NAME)/;
+	$(CP) fonts.alias $(@D)/*.ttf $(@D)/fonts.* $(PROTOFONTSDIR)/$(COMPONENT_NAME)/;
 
 COMPONENT_PRE_INSTALL_ACTION += \
 	$(MKDIR) $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME); \

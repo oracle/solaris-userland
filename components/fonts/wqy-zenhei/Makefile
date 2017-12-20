@@ -28,7 +28,10 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		wqy-zenhei
 COMPONENT_VERSION=	0.8.38-1
-IPS_COMPONENT_VERSION=	0.8.38.1
+
+# due to 27244651 the IPS version should be the solaris version
+IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
+
 COMPONENT_SRC=		$(COMPONENT_NAME)
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.gz
 COMPONENT_PROJECT_URL=	https://sourceforge.net/projects/wqy

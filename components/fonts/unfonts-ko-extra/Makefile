@@ -28,7 +28,10 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		unfonts-ko-extra
 COMPONENT_VERSION=	1.0.2-080608
-IPS_COMPONENT_VERSION=	1.0.2.80608
+
+# due to 27244651 the IPS version should be the solaris version
+IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
+
 COMPONENT_SRC=		un-fonts
 COMPONENT_ARCHIVE=	2608-un-fonts-extra-$(COMPONENT_VERSION).tar.gz
 COMPONENT_PROJECT_URL=	http://kldp.net/unfonts/

@@ -28,7 +28,10 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gentium
 COMPONENT_VERSION=	1.02
-IPS_COMPONENT_VERSION=	1.2
+
+# due to 27244651 the IPS version should be the solaris version
+IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
+
 COMPONENT_ARCHIVE=	GentiumBasic_110_source.zip
 COMPONENT_PROJECT_URL=	http://software.sil.org/gentium/
 COMPONENT_ARCHIVE_URL=http://scripts.sil.org/cms/scripts/render_download.php?format=file&media_id=GentiumBasic_110_source&filename=GentiumBasic_110_source.zip

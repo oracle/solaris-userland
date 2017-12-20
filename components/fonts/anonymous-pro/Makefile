@@ -28,7 +28,10 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		anonymous-pro
 COMPONENT_VERSION=	1.002
-IPS_COMPONENT_VERSION=	1.2
+
+# due to 27244651 the IPS version should be the solaris version
+IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
+
 COMPONENT_SRC=		AnonymousPro-$(COMPONENT_VERSION).001
 COMPONENT_ARCHIVE=	AnonymousPro-$(COMPONENT_VERSION).zip
 COMPONENT_PROJECT_URL=	https://www.marksimonson.com/assets/content/fonts

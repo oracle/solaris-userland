@@ -28,6 +28,10 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		croscorefonts
 COMPONENT_VERSION=	1.31.0
+
+# due to 27244651 the IPS version should be the solaris version
+IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
+
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_PROJECT_URL=	https://fonts.google.com/
@@ -50,7 +54,8 @@ COMPONENT_BUILD_ACTION = \
 	$(MKFONTDIR) $(@D);
 
 COMPONENT_INSTALL_ACTION = \
-	$(CP) $(@D)/*.ttf $(@D)/fonts.* $(PROTOFONTSDIR)/$(COMPONENT_NAME)/;
+	$(CP) $(@D)/*.ttf $(@D)/fonts.* $(PROTOFONTSDIR)/$(COMPONENT_NAME)/; \
+	$(CP) fonts.alias $(PROTOFONTSDIR)/$(COMPONENT_NAME)/;
 
 COMPONENT_PRE_INSTALL_ACTION += \
 	$(MKDIR) $(PROTOFONTSDIR)/$(COMPONENT_NAME);

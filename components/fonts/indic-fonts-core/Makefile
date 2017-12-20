@@ -29,6 +29,9 @@ include ../../../make-rules/shared-macros.mk
 COMPONENT_NAME=		indic-fonts-core
 COMPONENT_VERSION=	0.1
 
+# due to 27244651 the IPS version should be the solaris version
+IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
+
 COMPONENT_SRC=		MuktiNarrow0.94
 COMPONENT_ARCHIVE=	MuktiNarrow-0.94.tar.bz2
 COMPONENT_PROJECT_URL=	http://www.nongnu.org/freebangfont/sdf

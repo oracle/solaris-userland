@@ -28,6 +28,10 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		bpg-georgian
 COMPONENT_VERSION=	0.2009
+
+# due to 27244651 the IPS version should be the solaris version
+IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
+
 COMPONENT_SRC=		BPG_Fonts
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_PROJECT_URL=	http://bpgfonts.wordpress.com/category/gpl-gnu/
