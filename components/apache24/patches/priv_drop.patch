@@ -29,7 +29,7 @@ Drops extra privilege which was given via SMF manifest file.
 +
 +        /* here we drop privileges we won't need any more
 +         * unless we run as root */
-+        if (getuid()) {
++        if (getuid() !=0) {
 +            tset = priv_allocset();
 +            priv_emptyset(tset);
 +            priv_addset(tset, PRIV_NET_PRIVADDR);
