@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -31,18 +31,18 @@ include ../../make-rules/shared-macros.mk
 PATCH_EACH_ARCHIVE= 1
 
 COMPONENT_NAME=		golang
-COMPONENT_VERSION=	1.7
+COMPONENT_VERSION=	1.7.6
 COMPONENT_MAJOR_VERSION=	$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\([0-9]\+\.[0-9]\+\).*/\1/')
 COMPONENT_PROJECT_URL=	https://golang.org/
 COMPONENT_ARCHIVE=	go$(COMPONENT_VERSION).src.tar.gz
 COMPONENT_ARCHIVE_URL=	https://storage.googleapis.com/golang/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH=	 \
-	sha256:72680c16ba0891fcf2ccf46d0f809e4ecf47bbf889f5d884ccb54c5e9a17e1c0
+	sha256:1a67a4e688673fdff7ba41e73482b0e59ac5bd0f7acf703bc6d50cc775c5baba
 COMPONENT_PROJECT_URL=	https://golang.org
 COMPONENT_ANITYA_ID=	1227
 
 ARC_CASE=		PSARC/2015/203,PSARC/2016/250
-TPNO=			29538
+TPNO=			39850
 
 # Go has a number of supplementary tools and packages that are located in
 # separate archives or source repositories. Because Go currently forces a
@@ -168,12 +168,7 @@ PUBLISH_TRANSFORMS +=	$(NO_ELFSIGN_MOG)
 # directory so that we can use the standard build targets.  We're effectively
 # building multiple components using a single target.
 COMPONENT_POST_UNPACK_ACTION= \
-	$(MV) go $(COMPONENT_SRC) && \
-	$(TOUCH) $(COMPONENT_SRC)/VERSION && \
-	echo "devel $(shell digest -a md5 $(COMPONENT_ARCHIVE)) \
-		$(shell date -u +'%a %b %e %T %Z %Y')" > \
-		$(COMPONENT_SRC)/VERSION && \
-	(cd $(COMPONENT_SRC); git apply -p1 < ../patches/*.git)
+	$(MV) go $(COMPONENT_SRC)
 
 # Go doesn't have a standard Makefile-based build process, so override the
 # default.
