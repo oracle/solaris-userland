@@ -38,11 +38,16 @@ COMPONENT_BUGDB=	gate-stuff/userland
 
 GENERATE_HISTORY=	$(WS_TOOLS)/generate-history
 HISTORY=		history
+HISTORY+=		history.$(MACH)
 
 MANIFEST_BASE =		$(BUILD_DIR)/manifest-$(MACH)
 
 CANONICAL_MANIFESTS =	$(wildcard *.p5m)
-HISTORICAL_MANIFESTS =	$(shell $(NAWK) -v FUNCTION=name -f $(GENERATE_HISTORY) < $(HISTORY))
+# The funny ( cat || : ) construction is here because the nawk function exits
+# before going through all $(HISTORY) lines and so cat receives SIGPIPE and
+# exits with nonzero exit code. That would make gmake(1) stop with an error
+# too. This is used further in this Makefile again.
+HISTORICAL_MANIFESTS =	$(shell ( cat $(HISTORY) || : ) | $(NAWK) -v FUNCTION=name -f $(GENERATE_HISTORY) )
 ARCH_MANIFESTS =	$(wildcard *.p5m.$(MACH))
 GENERATED_ARCH_MANIFESTS =	$(ARCH_MANIFESTS:%.p5m.$(MACH)=%.p5m)
 CANONICAL_MANIFESTS +=  $(GENERATED_ARCH_MANIFESTS)
@@ -55,8 +60,9 @@ PUBLISHED +=		$(HISTORICAL_MANIFESTS:%.p5m=$(MANIFEST_BASE)-%.published)
 # Rule to generate historical manifests from the $(HISTORY) file.
 define history-manifest-rule
 $(MANIFEST_BASE)-$(1): $(HISTORY) $(BUILD_DIR)
-	$(NAWK) -v FUNCTION=manifest -v TARGET=$1 -f $(GENERATE_HISTORY) < \
-	    $(HISTORY) > $$@
+	( cat $(HISTORY) || : ) | \
+		$(NAWK) -v FUNCTION=manifest -v TARGET=$1 \
+		-f $(GENERATE_HISTORY) > $$@
 endef
 $(foreach mfst,$(HISTORICAL_MANIFESTS),$(eval $(call history-manifest-rule,$(mfst))))
 
