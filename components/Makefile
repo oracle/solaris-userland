@@ -34,7 +34,7 @@ include ../make-rules/shared-macros.mk
 $(WS_MACH)/components.mk:	$(WS_MACH) # Makefile # $(WS_TOP)/components
 	@echo "Generating component list..."
 	@$(BASS_O_MATIC) --workspace=$(WS_TOP) --components=paths \
-		| sed -e 's;^$(shell pwd)/;COMPONENT_DIRS += ;g' >$@
+		| sed -e 's;^$(shell readlink -f "$$PWD")/;COMPONENT_DIRS += ;g' >$@
 
 -include $(WS_MACH)/components.mk
 
