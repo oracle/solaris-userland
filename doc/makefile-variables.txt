@@ -114,6 +114,15 @@ if overriding the default:
   is not $(NO_TESTS) or $(SKIP_TEST), the default value is
   $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
+* MAKEFILE_PREREQ is the default prerequisite for any target. It is not
+  intended to be used directly in Makefile but instead directly on the command
+  line. By default it is 'Makefile' so every time you change the Makefile
+  everything gets rebuilt. Sometimes it is handy to turn off this dependency.
+  For example, if you are working on 'gmake publish' (but works for other
+  targets too) and do not want to have your component rebuilt from scratch
+  every time you change REQUIRED_PACKAGES, you can do
+  $ gmake MAKEFILE_PREREQ= publish
+
 The following variables alter the compilation or build process for components:
 
 * ASLR_MODE controls the application of Address Space Layout Randomization to

@@ -1,7 +1,13 @@
-
 This is a guide to explain various useful targets in Userland component
 Makefiles.  There is a set of targets that all Makefiles must include, plus
-some addtional targets that are there for convenience.
+some additional targets that are there for convenience.
+
+Most targets depend on your component Makefile, so changes to your component
+Makefile will automatically trigger a re-download and subsequent build steps
+that depend on it.  You can use the MAKEFILE_PREREQ macro to override this
+behaviour and avoid rebuilding with each Makefile change.  This macro should
+only be used in the calling environment via something like:
+  $ gmake MAKEFILE_PREREQ= install
 
 component-environment-check::
   This target is an optional target that will be included in most Makefiles
@@ -22,12 +28,7 @@ download::
   This target is present in all Makefiles.  It can be used at the top level
   to act across all components, or on an individual component basis.  It is
   typically defined by including $(WS_MAKE_RULES)/prep.mk in your component
-  Makefile.  This target depends on your component Makefile, so changes to your
-  component Makefile will automatically trigger a re-download and subsequent
-  build steps that depend on it.  You can use the MAKEFILE_PREREQ macro to
-  override this behaviour and avoid rebuilding with each Makefile change.  This
-  macro should only be used in the calling environment via something like:
-    $ gmake MAKEFILE_PREREQ= install
+  Makefile.
 
 unpack::
   This target is present in all Makefiles.  It can be used at the top level
