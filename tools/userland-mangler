@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 #
 # userland-mangler - a file mangling utility
@@ -33,6 +33,7 @@
 import os
 import sys
 import re
+import gettext
 
 import pkg.fmri
 import pkg.manifest
@@ -318,7 +319,13 @@ def mangle_manifest(manifest):
 
 def load_manifest(manifest_file):
 	manifest = pkg.manifest.Manifest()
-	manifest.set_content(pathname=manifest_file)
+	try:
+		manifest.set_content(pathname=manifest_file)
+	except pkg.client.api_errors.InvalidPackageErrors, err:
+		gettext.install("")
+		print(_(err))
+		sys.exit(1)
+
 
 	return manifest
 
