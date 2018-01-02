@@ -1,20 +1,60 @@
-# If invoked with -v FUNCTION=name, then just print $1 (s|/|---|).
-# Otherwise we expect to be invoked with TARGET=<whatever>, then if
-# s|/|---| on $1 matches TARGET, we generate a manifest.
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+
+# generate-history - Tool to convert 'history' file into proper obsolete or
+# rename IPS manifest
+#
+# Print names of all IPS manifests which can be generated:
+#
+# nawk -f tools/generate-history \
+#     -v FUNCTION=name \
+#     components/meta-packages/history/history
+#
+#
+# Generate on stdout the IPS manifest for given package:
+#
+# nawk -f tools/generate-history \
+#     -v FUNCTION=manifest \
+#     -v TARGET=<IPS manifest name> \
+#     components/meta-packages/history/history
+#
+
+/^[ \t]*#/ { next }; # Skip comments.
+/^[ \t]*$/ { next }; # Skip empty lines
 {
-  if (substr($1, 1, 1) == "#") { # Skip comments.
-    continue
-  }
   fmri=$1
   split(fmri, a, "@")
   gsub("/", "---", a[1])
   target = sprintf("%s.p5m", a[1])
   if (FUNCTION == "name") {
     printf "%s\n", target
-    continue
+    next
   }
   if (target != TARGET) {
-    continue
+    next
   }
   printf "set name=pkg.fmri value=pkg:/%s\n", fmri
   if ($NF ~ /^incorporate=/) {
