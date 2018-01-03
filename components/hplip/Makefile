@@ -21,36 +21,29 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
-BUILD_BITS= 32
+BUILD_BITS=	32
+COMPILER=	gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         hplip
-COMPONENT_VERSION=      3.16.9
-TPNO=			31664
-COMPONENT_ARCHIVE_HASH= sha256:cc8cf2a7baa1403cddd6503f120c58780c786b42fad073da6caec7535d3797a6
-COMPONENT_ARCHIVE_URL=	http://prdownloads.sourceforge.net/hplip/$(COMPONENT_ARCHIVE)
+COMPONENT_VERSION=      3.17.10
+TPNO=			40319
+COMPONENT_ARCHIVE_HASH= sha256:0f7344174672f63a98a22f3c109005b6eb89fe738b7d466316bf2c53d083476c
+COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/project/$(COMPONENT_NAME)/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://hplipopensource.com/hplip-web/index.html
 COMPONENT_ANITYA_ID=	1327
 
 include $(WS_MAKE_RULES)/common.mk
 
-# We need to be able to return from void functions
-CFLAGS.studio += $(studio_FEATURES_EXTENSIONS)
-CXXFLAGS.studio += $(studio_FEATURES_EXTENSIONS) 
-CXXFLAGS.studio += $(studio_CXXLIB_CSTD) 
-CXXFLAGS.studio += -std=sun03
-
 CONFIGURE_OPTIONS +=	--localedir=$(CONFIGURE_LOCALEDIR)
 CONFIGURE_OPTIONS +=	--with-hpppddir=$(USRSHAREDIR)/cups/model/hplip
-ifeq ($(OS_VERSION),11.3)
-CONFIGURE_OPTIONS +=	--enable-libusb01_build
-endif
 CONFIGURE_OPTIONS +=	--enable-fax-build
+CONFIGURE_OPTIONS +=	--enable-new-hpcups
 CONFIGURE_OPTIONS +=	--enable-hpcups-install
-CONFIGURE_OPTIONS +=	--disable-new-hpcups
 CONFIGURE_OPTIONS +=	--enable-cups-drv-install
+CONFIGURE_OPTIONS +=	--enable-cups-ppd-install
 CONFIGURE_OPTIONS +=	--disable-pp-build
 CONFIGURE_OPTIONS +=	--disable-gui-build
 CONFIGURE_OPTIONS +=	--disable-qt4
@@ -65,7 +58,11 @@ LDFLAGS += $(LIBNSL)
 COMPONENT_INSTALL_ARGS += -e
 
 # Generate configuration scripts
-COMPONENT_PREP_ACTION = (cd $(@D) ; autoconf )
+COMPONENT_PREP_ACTION = (cd $(@D) ; \
+   touch INSTALL NEWS README AUTHORS ChangeLog compile ; \
+   PATH="/usr/gnu/bin:$(PATH)" aclocal --force ; \
+   PATH="/usr/gnu/bin:$(PATH)" libtoolize --force ; \
+   PATH="/usr/gnu/bin:$(PATH)" autoreconf -fi )
 
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
@@ -87,13 +84,12 @@ test:	$(NO_TESTS)
 
 system-test:    $(NO_TESTS)
 
-# libusb-1 is needed on S12; libusb is needed on S11, so list both.
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += library/libusb-1
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += runtime/python-27
-REQUIRED_PACKAGES += system/library/c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += system/library/usb/libusb
 REQUIRED_PACKAGES += system/management/snmp/net-snmp

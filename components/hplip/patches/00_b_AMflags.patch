@@ -1,0 +1,19 @@
+In-house patch
+
+Fixes problem /w autoreconf which can not find m4 macro library.
+Also fixes a problem with persistent CPPFLAGS in AM.
+
+Can be offered to community but this is HP who is "the community".
+
+--- a/Makefile.am	2017-11-03 10:26:20.790067061 +0000
++++ b/Makefile.am	2017-11-03 10:28:32.871287781 +0000
+@@ -3,7 +3,8 @@
+ #
+ #  (c) 2004-2015 Copyright HP Development Company, LP
+ #  Author: David Suffield, Naga Samrat Chowdary Narla, Sarbeswar Meher
+-INCLUDES = -Iip -Iio/hpmud -Iscan/sane -Iprnt/hpijs -Icommon/
++AM_CPPFLAGS = -Iip -Iio/hpmud -Iscan/sane -Iprnt/hpijs -Icommon/ -Iprotocol/
++ACLOCAL_AMFLAGS = -I m4
+ CFLAGS+= -DCONFDIR=\"$(hplip_confdir)\"
+ CXXFLAGS+= -DCONFDIR=\"$(hplip_confdir)\"
+ 
