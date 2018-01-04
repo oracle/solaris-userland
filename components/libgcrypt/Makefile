@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 
@@ -36,16 +36,16 @@ gcc_OPT.i386.64 = -O2
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgcrypt
-COMPONENT_VERSION=	1.7.9
-COMPONENT_PROJECT_URL=  ftp://ftp.gnupg.org/gcrypt/libgcrypt/ 
+COMPONENT_VERSION=	1.8.1
+COMPONENT_PROJECT_URL=  https://gnupg.org/ftp/gcrypt/libgcrypt/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-    sha256:bfe9bb703c1126c3647da2810fd23039c2f09d46969f71612c2065dc3fa9373b
-COMPONENT_ARCHIVE_URL=  ftp://ftp.gnupg.org/gcrypt/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+    sha256:7a2875f8b1ae0301732e878c0cca2c9664ff09ef71408f085c50e332656a78b3
+COMPONENT_ARCHIVE_URL=  https://gnupg.org/ftp/gcrypt/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libgcrypt
 COMPONENT_ANITYA_ID=	1623
 
-TPNO=			38338
+TPNO=			39742
 
 # Requires new pkgmogrify feature, available in S12 but not 11.3, so do not
 # publish.
@@ -74,6 +74,8 @@ CONFIGURE_OPTIONS += --disable-asm
 
 include ../../make-rules/shared-targets.mk
 
+# Note: Two test cases (t-secmem and t-sexp) fail with EPERM when executed as
+# a normal user. All tests should be successful when executed as a root user.
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 COMPONENT_TEST_TRANSFORMS += \
