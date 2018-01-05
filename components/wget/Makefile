@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER=gcc
@@ -49,6 +49,17 @@ COMPONENT_TEST_TRANSFORMS += '-ne "/^\# /p" '
 COMPONENT_TEST_TRANSFORMS += '-ne "/^See/p" '
 COMPONENT_TEST_TRANSFORMS += '-ne "/^Please/p" '
 
+# The tests require 'python3' binary. We create symlink to /usr/bin/python3.5
+# in our test directory
+COMPONENT_PRE_TEST_ACTION += rm -f "$(COMPONENT_TEST_BUILD_DIR)/python3";
+COMPONENT_PRE_TEST_ACTION += ln -s /usr/bin/python3.5 "$(COMPONENT_TEST_BUILD_DIR)/python3";
+COMPONENT_TEST_ENV += PATH="$$PATH:$(COMPONENT_TEST_BUILD_DIR)"
+
+# There are two sets of tests. First set fails unless we download some external
+# files. That is expected. But without -k argument to gmake the second set is
+# not even executed
+COMPONENT_TEST_ARGS += -k
+
 # Enforce openssl (--with-ssl=openssl) instead of default gnutls
 # (--with-ssl) as wget doesn't work for secure connections with gnutls. 
 # Set PATH to find /usr/perl5/bin/pod2man, so that the man page wget.1
@@ -58,31 +69,16 @@ CONFIGURE_OPTIONS +=	--with-ssl=openssl
 CONFIGURE_OPTIONS +=	--infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS +=	PATH="$(PATH):/usr/perl5/bin"
 
-# Wget test suite will skip majority of tests with few Perl modules
-# missing on system. By uncommenting following lines it will pass 82
-# tests  out of 83 total tests (1 test in which wget tries to output
-# to a non-existing device /dev/full fails with wrong error code).
-# URI=URI-1.60
-# WWW=libwww-perl-5.837
-# SOCK=IO-Socket-SSL-2.005
-# COMPONENT_TEST_ENV = "http_proxy="
-# COMPONENT_TEST_ENV += "https_proxy="
-# COMPONENT_TEST_ENV += "ftp_proxy="
-# COMPONENT_TEST_ENV += "no_proxy="
-# COMPONENT_PRE_TEST_ACTION = ( \
-	cd $(COMPONENT_SRC)/tests; \
-	wget http://search.cpan.org/CPAN/authors/id/G/GA/GAAS/$(URI).tar.gz; \
-	wget http://search.cpan.org/CPAN/authors/id/G/GA/GAAS/$(WWW).tar.gz; \
-	wget http://cpan.metacpan.org/authors/id/S/SU/SULLR/$(SOCK).tar.gz; \
-	gtar --get $(URI)/URI $(URI)/URI.pm \
-	     --strip-components=1 -f $(URI).tar.gz; \
-	gtar --get $(WWW)/lib/HTTP $(WWW)/lib/LWP $(WWW)/lib/LWP.pm \
-	     --strip-components=2 -f $(WWW).tar.gz; \
-	gtar --get $(SOCK)/lib/IO/Socket/SSL $(SOCK)/lib/IO/Socket/SSL.pm \
-	     --strip-components=2 -f $(SOCK).tar.gz; )
+# No proxy settings for the tests because it runs it's own server on localhost
+# which can be unreachable via proxy
+COMPONENT_TEST_ENV += "http_proxy="
+COMPONENT_TEST_ENV += "https_proxy="
+COMPONENT_TEST_ENV += "ftp_proxy="
+COMPONENT_TEST_ENV += "no_proxy="
 
 REQUIRED_PACKAGES += library/libidn
 REQUIRED_PACKAGES += library/pcre
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += runtime/python-35
 REQUIRED_PACKAGES += text/texinfo
