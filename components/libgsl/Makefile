@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -80,12 +80,6 @@ LDFLAGS += $(LD_DEF_LIBS)
 
 STUDIO_LIBS_PATH.32 =	$(USRLIBDIR)/studio
 STUDIO_LIBS_PATH.64 =	$(USRLIBDIR)/studio/64
-
-LDFLAGS += -L$(STUDIO_LIBS_PATH.$(BITS)) -R$(STUDIO_LIBS_PATH.$(BITS)) \
-		-lsunperf -lfsu -lmtsk -lpicl -lkstat
-
-COMPONENT_BUILD_ARGS += CFLAGS="$(CFLAGS)"
-COMPONENT_BUILD_ARGS += LDFLAGS="$(LDFLAGS)"
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 

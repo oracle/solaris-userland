@@ -2,11 +2,11 @@ Changes needed to use Studio libsunperf on Solaris (if available).
 
 These changes will be sent upstream.
 
---- gsl-2.2.1/configure.ac.orig	2016-11-28 09:04:10.000000000 +0000
-+++ gsl-2.2.1/configure.ac	2016-11-28 09:03:51.000000000 +0000
-@@ -111,6 +111,20 @@
- AC_C_INLINE
- AC_C_CHAR_UNSIGNED
+--- gsl-2.4/configure.ac	2018-01-05 17:41:59.207892483 +0000
++++ gsl-2.4/configure.ac	2018-01-05 17:41:37.280831214 +0000
+@@ -125,6 +125,21 @@ AC_SUBST(GSL_CFLAGS)
+ AC_SUBST(GSL_LIBS)
+ AC_SUBST(GSL_LIBM)
  
 +dnl Check for existing BLAS
 +dnl look for BLAS in some typical places
@@ -17,14 +17,15 @@ These changes will be sent upstream.
 +    if test "$BLAS"; then
 +        dnl Solaris BLAS library has performance benefits
 +        AM_CONDITIONAL(SOLARIS_SUNPERF, true)
-+        CFLAGS="-xlibmopt -xbuiltin=%default -xlibmil"
++        CFLAGS="$CFLAGS -xlibmopt -xbuiltin=%default -xlibmil"
++        GSL_LDFLAGS="$GSL_LDFLAGS -lsunperf"
 +    fi
 +    ;;
 +esac
 +
- GSL_CFLAGS="-I$includedir"
- GSL_LIBS="-L$libdir -lgsl"
- dnl macro from libtool - can be replaced with LT_LIB_M when we require libtool 2
+ if test "$ac_cv_c_inline" != no ; then 
+ dnl Check for "extern inline", using a modified version of the test
+ dnl for AC_C_INLINE from acspecific.mt
 --- gsl-2.2.1/Makefile.am.orig	2016-11-28 09:04:30.000000000 +0000
 +++ gsl-2.2.1/Makefile.am	2016-11-30 08:35:26.586505711 +0000
 @@ -2,7 +2,14 @@
