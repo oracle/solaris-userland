@@ -1,8 +1,9 @@
 This patch provides Python RBAC support.  It may be contributed upstream at
 some point, but the suitability (or lack thereof) has not yet been determined.
+Note, that changes in setup.py are applied inside patch 02-setup.patch.
 
---- /dev/null
-+++ Python-2.6.4/Modules/authattr.c
+--- /dev/null	2018-01-26 01:34:30.000000000 -0800
++++ Python-2.7.14/Modules/authattr.c	2018-01-26 01:29:00.176349715 -0800
 @@ -0,0 +1,261 @@
 +/*
 + * CDDL HEADER START
@@ -265,10 +266,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +	0,                         /* tp_alloc */
 +	Authattr_new,                 /* tp_new */
 +};
-diff --git Python-2.6.4/Modules/execattr.c Python-2.6.4/Modules/execattr.c
-new file mode 100644
---- /dev/null
-+++ Python-2.6.4/Modules/execattr.c
+--- /dev/null	2018-01-26 01:34:30.000000000 -0800
++++ Python-2.7.14/Modules/execattr.c	2018-01-26 01:29:14.734620578 -0800
 @@ -0,0 +1,313 @@
 +/*
 + * CDDL HEADER START
@@ -583,10 +582,8 @@ new file mode 100644
 +	0,                         /* tp_alloc */
 +	Execattr_new,                 /* tp_new */
 +};
-diff --git Python-2.6.4/Modules/privileges.c Python-2.6.4/Modules/privileges.c
-new file mode 100644
---- /dev/null
-+++ Python-2.6.4/Modules/privileges.c
+--- /dev/null	2018-01-26 01:34:30.000000000 -0800
++++ Python-2.7.14/Modules/privileges.c	2018-01-26 01:29:30.745408553 -0800
 @@ -0,0 +1,229 @@
 +/*
 + * CDDL HEADER START
@@ -817,10 +814,8 @@ new file mode 100644
 +	PyDict_SetItemString(d, "PRIV_LIMIT", PyInt_FromLong((long)PRIV_LIMIT));
 +	PyDict_SetItemString(d, "PRIV_EFFECTIVE", PyInt_FromLong((long)PRIV_EFFECTIVE));
 +}
-diff --git Python-2.6.4/Modules/pyrbac.c Python-2.6.4/Modules/pyrbac.c
-new file mode 100644
---- /dev/null
-+++ Python-2.6.4/Modules/pyrbac.c
+--- /dev/null	2018-01-26 01:34:30.000000000 -0800
++++ Python-2.7.14/Modules/pyrbac.c	2018-01-26 01:29:43.947495525 -0800
 @@ -0,0 +1,68 @@
 +/*
 + * CDDL HEADER START
@@ -890,10 +885,8 @@ new file mode 100644
 +
 +}
 +
-diff --git Python-2.6.4/Modules/pyrbac.h Python-2.6.4/Modules/pyrbac.h
-new file mode 100644
---- /dev/null
-+++ Python-2.6.4/Modules/pyrbac.h
+--- /dev/null	2018-01-26 01:34:30.000000000 -0800
++++ Python-2.7.14/Modules/pyrbac.h	2018-01-26 01:30:00.158421174 -0800
 @@ -0,0 +1,45 @@
 +/*
 + * CDDL HEADER START
@@ -940,10 +933,8 @@ new file mode 100644
 +PyTypeObject UserattrType;
 +
 +#endif
-diff --git Python-2.6.4/Modules/userattr.c Python-2.6.4/Modules/userattr.c
-new file mode 100644
---- /dev/null
-+++ Python-2.6.4/Modules/userattr.c
+--- /dev/null	2018-01-26 01:34:30.000000000 -0800
++++ Python-2.7.14/Modules/userattr.c	2018-01-26 01:30:17.925146827 -0800
 @@ -0,0 +1,308 @@
 +/*
 + * CDDL HEADER START
@@ -1253,320 +1244,3 @@ new file mode 100644
 +	0,                         /* tp_alloc */
 +	Userattr_new,                 /* tp_new */
 +};
---- Python-2.7.10/setup.py.~4~	2015-05-10 10:17:06 -0800
-+++ Python-2.7.10/setup.py	2015-05-18 14:40:44 -0800
-@@ -1596,6 +1596,22 @@
-             exts.append( Extension('dlpi', ['dlpimodule.c'],
-                                    libraries = ['dlpi']) )
- 
-+        # privileges module (Solaris)
-+        priv_inc = find_file('priv.h', [], inc_dirs)
-+        if priv_inc is not None:
-+            exts.append( Extension('privileges', ['privileges.c']))
-+
-+        # rbac module (Solaris)
-+        secdb_inc = find_file('secdb.h', [], inc_dirs)
-+        aa_inc = find_file('auth_attr.h', [], inc_dirs)
-+        ea_inc = find_file('exec_attr.h', [], inc_dirs)
-+        ua_inc = find_file('user_attr.h', [], inc_dirs)
-+        if secdb_inc is not None and aa_inc is not None and \
-+            ea_inc is not None and ua_inc is not None:
-+            exts.append( Extension('rbac', ['pyrbac.c', 'authattr.c', \
-+                                   'execattr.c', 'userattr.c'],
-+                                   libraries = ['nsl', 'socket', 'secdb']) )
-+
-         # Thomas Heller's _ctypes module
-         self.detect_ctypes(inc_dirs, lib_dirs)
- 
---- /dev/null	2011-02-12 03:13:57.000000000 -0600
-+++ Python-2.6.4/Lib/test/privrbactest.py	2011-01-20 13:52:42.862305331 -0600
-@@ -0,0 +1,289 @@
-+#!/usr/bin/python2.7
-+#
-+# CDDL HEADER START
-+#
-+# The contents of this file are subject to the terms of the
-+# Common Development and Distribution License (the "License").
-+# You may not use this file except in compliance with the License.
-+#
-+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
-+# or http://www.opensolaris.org/os/licensing.
-+# See the License for the specific language governing permissions
-+# and limitations under the License.
-+#
-+# When distributing Covered Code, include this CDDL HEADER in each
-+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
-+# If applicable, add the following below this CDDL HEADER, with the
-+# fields enclosed by brackets "[]" replaced with your own identifying
-+# information: Portions Copyright [yyyy] [name of copyright owner]
-+#
-+# CDDL HEADER END
-+#
-+
-+# Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
-+
-+import privileges
-+import rbac
-+import os
-+import sys
-+import tempfile
-+
-+# privileges tests
-+
-+def test_setppriv():
-+    amchild = os.fork()
-+    if amchild == 0:
-+        if privileges.setppriv(privileges.PRIV_OFF, privileges.PRIV_EFFECTIVE, 
-+            ['proc_fork']):
-+            try:
-+                os.fork()
-+                sys.exit(1)
-+            except OSError, e:
-+                sys.exit(0)
-+
-+    child = os.wait()
-+    if child[1] is not 0:
-+        print "setppriv. Bad exit status from pid %i\n" % child[0]
-+        return False
-+    return True
-+
-+def test_getppriv():
-+    if 'proc_fork' in privileges.getppriv(privileges.PRIV_LIMIT):
-+        return True
-+    print "getppriv or PRIV_PROC_FORK not in PRIV_LIMIT.\n"
-+    return False
-+
-+def test_priv_ineffect():
-+    if privileges.priv_ineffect('proc_fork'):
-+        return True
-+    print "priv_ineffect or PRIV_PROC_FORK not in effect\n"
-+    return False
-+
-+# authattr tests
-+
-+def test_chkauthattr():
-+    try:
-+        a = rbac.authattr()
-+    except Exception, e:
-+        print "Could not instantiate authattr object: %s\n" % e
-+        return False
-+    try:
-+        res = a.chkauthattr('solaris.*', 'root')
-+    except Exception, e:
-+        print "chkauthattr failed: %s\n" % e
-+        return False
-+    if not res:
-+        print "chkauthattr failed or \'root\' lacks \'solaris.*\'\n"
-+        return False
-+    return True
-+
-+def test_getauthattr():
-+    try:
-+        a = rbac.authattr()
-+    except Exception, e:
-+        print "Could not instantiate authattr object: %s\n" % e
-+        return False
-+    try:
-+        res = a.getauthattr()
-+    except Exception, e:
-+        print "getauthattr failed: %s\n" % e
-+        return False
-+    if not 'name' in res.keys():
-+        print "getauthattr failed\n"
-+        return False
-+    return True
-+
-+def test_getauthnam():
-+    try:
-+        a = rbac.authattr()
-+    except Exception, e:
-+        print "Could not instantiate authattr object: %s\n" % e
-+        return False
-+    try:
-+        res = a.getauthnam('solaris.')
-+    except Exception, e:
-+        print "getauthnam failed: %s\n" % e
-+        return False
-+    if not res:
-+        print "getauthnam failed or \'solaris.\' not in auth_attr(4)\n"
-+        return False
-+    return True
-+
-+def test_authattr_iter():
-+    try:
-+        a = rbac.authattr()
-+    except Exception, e:
-+        print "Could not instantiate authattr object: %s\n" % e
-+        return False
-+    res = a.next()
-+    if not 'name' in res.keys() or type(a) != type(a.__iter__()):
-+        print "authattr object is not an iterable\n"
-+        return False
-+    return True
-+
-+# execattr tests
-+
-+def test_getexecattr():
-+    try:
-+        a = rbac.execattr()
-+    except Exception, e:
-+        print "Could not instantiate execattr object: %s\n" % e
-+        return False
-+    try:
-+        res = a.getexecattr()
-+    except Exception, e:
-+        print "getexecattr failed: %s\n" % e
-+        return False
-+    if not 'name' in res.keys():
-+        print "getexecattr failed\n"
-+        return False
-+    return True
-+
-+def test_getexecuser():
-+    try:
-+        a = rbac.execattr()
-+    except Exception, e:
-+        print "Could not instantiate execattr object: %s\n" % e
-+        return False
-+    try:
-+        res = a.getexecuser("root", "act", "*;*;*;*;*")
-+    except Exception, e:
-+        print "getexecuser failed: %s\n" % e
-+        return False
-+    if not res:
-+        print "getexecuser failed or \'root\' not assigned to \'act\', " \
-+            "\'*;*;*;*;*\' \n"
-+        return False
-+    return True
-+
-+
-+def test_getexecprof():
-+    try:
-+        a = rbac.execattr()
-+    except Exception, e:
-+        print "Could not instantiate execattr object: %s\n" % e
-+        return False
-+    try:
-+        res = a.getexecprof("All", "cmd", "*")
-+    except Exception, e:
-+        print "getexecprof failed: %s\n" % e
-+        return False
-+    if not res:
-+        print "getexecprof failed or \'All\' not granted \'cmd\' : \'*\'\n"
-+        return False
-+    return True
-+
-+def test_execattr_iter():
-+    try:
-+        a = rbac.execattr()
-+    except Exception, e:
-+        print "Could not instantiate execattr object: %s\n" % e
-+        return False
-+    res = a.next()
-+    if not 'name' in res.keys() or type(a) != type(a.__iter__()):
-+        print "execattr object is not an iterable\n"
-+        return False
-+    return True
-+
-+# userattr tests
-+
-+def test_getuserattr():
-+    try:
-+        a = rbac.userattr()
-+    except Exception, e:
-+        print "Could not instantiate userattr object: %s\n" % e
-+        return False
-+    try:
-+        res = a.getuserattr()
-+    except Exception, e:
-+        print "getuserattr failed: %s\n" % e
-+        return False
-+    if not 'name' in res.keys():
-+        print "getuserattr failed\n"
-+        return False
-+    return True
-+
-+def test_fgetuserattr():
-+    temp = tempfile.NamedTemporaryFile()
-+    temp.write("user::::profiles=Software Installation;roles=foo;"\
-+        "auths=solaris.foo.bar")
-+    temp.seek(0)
-+    try:
-+        a = rbac.userattr()
-+    except Exception, e:
-+        print "Could not instantiate userattr object: %s\n" % e
-+        return False
-+    try:
-+        res = a.fgetuserattr(temp.name)
-+        temp.close()    
-+    except Exception, e:
-+        print "fgetuserattr failed: %s\n" % e
-+        temp.close()
-+        return False
-+    if not 'name' in res.keys():
-+        print "fgetuserattr failed\n"
-+        return False
-+    return True
-+
-+def test_getuseruid():
-+    try:
-+        a = rbac.userattr()
-+    except Exception, e:
-+        print "Could not instantiate userattr object: %s\n" % e
-+        return False
-+    try:
-+        res = a.getuseruid(0)
-+    except Exception, e:
-+        print "getusernam failed: %s\n" % e
-+        return False
-+    if not 'name' in res:
-+        print "getusernam failed or no uid 0\n"
-+        return False
-+    return True
-+
-+def test_getusernam():
-+    try:
-+        a = rbac.userattr()
-+    except Exception, e:
-+        print "Could not instantiate userattr object: %s\n" % e
-+        return False
-+    try:
-+        res = a.getusernam('root')
-+    except Exception, e:
-+        print "getusernam failed: %s\n" % e
-+        return False
-+    if not 'name' in res:
-+        print "getusernam failed or no \'root\' user\n"
-+        return False
-+    return True
-+
-+def test_userattr_iter():
-+    try:
-+        a = rbac.userattr()
-+    except Exception, e:
-+        print "Could not instantiate userattr object: %s\n" % e
-+        return False
-+    res = a.next()
-+    if not 'name' in res.keys() or type(a) != type(a.__iter__()):
-+        print "userattr object is not an iterable\n"
-+        return False
-+    return True
-+
-+if not test_setppriv() or not test_getppriv() or not test_priv_ineffect():
-+    print "*** Failures detected in privileges module\n"    
-+    sys.exit(1)
-+
-+if not test_getauthattr() or not test_chkauthattr() or not test_getauthnam() \
-+    or not test_authattr_iter:
-+    print "*** Failures detected in rbac.authattr\n"
-+    sys.exit(1)
-+
-+if not test_getexecattr() or not test_getexecuser() or not test_getexecprof() \
-+    or not test_execattr_iter():
-+    print "*** Failures detected in rbac.execattr\n"
-+    sys.exit(1)
-+
-+if not test_getuserattr() or not test_fgetuserattr() or not test_getusernam()\
-+    or not test_getuseruid() or not test_userattr_iter():
-+    print "*** Failures detected in rbac.userattr\n"
-+    sys.exit(1)

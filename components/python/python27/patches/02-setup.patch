@@ -1,8 +1,8 @@
 This patch modifies the setup script to support Solaris.
 As it is Solaris-specific, it is not suitable for upstream.
 
---- Python-2.7.12/setup.py.~1~	2016-06-25 14:49:32.000000000 -0700
-+++ Python-2.7.12/setup.py	2016-07-07 13:41:05.283500122 -0700
+--- Python-2.7.14/setup.py.orig	2017-09-16 10:38:35.000000000 -0700
++++ Python-2.7.14/setup.py	2018-01-26 00:30:48.952032886 -0800
 @@ -6,6 +6,7 @@
  import sys, os, imp, re, optparse
  from glob import glob
@@ -51,7 +51,17 @@ As it is Solaris-specific, it is not suitable for upstream.
          # Detect SSL support for the socket module (via _ssl)
          search_for_ssl_incs_in = [
                                '/usr/local/ssl/include',
-@@ -1370,8 +1381,11 @@
+@@ -1082,7 +1093,8 @@
+                                     db_dirs_to_check + lib_dirs, dblib )
+                     if dblib_file:
+                         dblib_dir = [ os.path.abspath(os.path.dirname(dblib_file)) ]
+-                        raise db_found
++                        # Doesn't work; skip.
++                        # raise db_found
+                     else:
+                         if db_setup_debug: print "db lib: ", dblib, "not found"
+ 
+@@ -1370,8 +1382,11 @@
                  # _curses_panel.so must link with panelw.
                  panel_library = 'panelw'
              curses_libs = [curses_library]
@@ -65,7 +75,7 @@ As it is Solaris-specific, it is not suitable for upstream.
              exts.append( Extension('_curses', ['_cursesmodule.c'],
                                     include_dirs = curses_incs,
                                     libraries = curses_libs) )
-@@ -1393,9 +1407,21 @@
+@@ -1393,9 +1408,21 @@
          # If the curses module is enabled, check for the panel module
          if (module_enabled(exts, '_curses') and
              self.compiler.find_library_file(lib_dirs, panel_library)):
@@ -88,7 +98,43 @@ As it is Solaris-specific, it is not suitable for upstream.
          else:
              missing.append('_curses_panel')
  
-@@ -1607,9 +1633,14 @@
+@@ -1560,6 +1587,35 @@
+         else:
+             missing.append('dl')
+ 
++        # ucred module (Solaris)
++        ucred_inc = find_file('ucred.h', [], inc_dirs)
++        tsol_inc = find_file('tsol/label.h', [], inc_dirs)
++        if ucred_inc is not None and tsol_inc is not None:
++            exts.append( Extension('ucred', ['ucred.c'],
++                                   libraries = ['tsol']) )
++
++        # dlpi module (Solaris)
++        dlpi_inc = find_file('libdlpi.h', [], inc_dirs)
++        if dlpi_inc is not None:
++            exts.append( Extension('dlpi', ['dlpimodule.c'],
++                                   libraries = ['dlpi']) )
++
++        # privileges module (Solaris)
++        priv_inc = find_file('priv.h', [], inc_dirs)
++        if priv_inc is not None:
++            exts.append( Extension('privileges', ['privileges.c']))
++
++        # rbac module (Solaris)
++        secdb_inc = find_file('secdb.h', [], inc_dirs)
++        aa_inc = find_file('auth_attr.h', [], inc_dirs)
++        ea_inc = find_file('exec_attr.h', [], inc_dirs)
++        ua_inc = find_file('user_attr.h', [], inc_dirs)
++        if secdb_inc is not None and aa_inc is not None and \
++            ea_inc is not None and ua_inc is not None:
++            exts.append( Extension('rbac', ['pyrbac.c', 'authattr.c', \
++                                   'execattr.c', 'userattr.c'],
++                                   libraries = ['nsl', 'socket', 'secdb']) )
++
+         # Thomas Heller's _ctypes module
+         self.detect_ctypes(inc_dirs, lib_dirs)
+ 
+@@ -1610,9 +1666,14 @@
                  sysconfig.get_config_var('POSIX_SEMAPHORES_NOT_ENABLED')):
                  multiprocessing_srcs.append('_multiprocessing/semaphore.c')
  
@@ -103,7 +149,18 @@ As it is Solaris-specific, it is not suitable for upstream.
                                      include_dirs=["Modules/_multiprocessing"]))
          else:
              missing.append('_multiprocessing')
-@@ -2103,7 +2134,8 @@
+@@ -1627,8 +1688,8 @@
+         else:
+             missing.append('linuxaudiodev')
+ 
+-        if (host_platform in ('linux2', 'freebsd4', 'freebsd5', 'freebsd6',
+-                        'freebsd7', 'freebsd8')
++        if (host_platform in ('sunos5', 'linux2', 'freebsd4', 'freebsd5',
++                        'freebsd6', 'freebsd7', 'freebsd8')
+             or host_platform.startswith("gnukfreebsd")):
+             exts.append( Extension('ossaudiodev', ['ossaudiodev.c']) )
+         else:
+@@ -2106,7 +2167,8 @@
              # this option. If you want to compile ctypes with the Sun
              # compiler, please research a proper solution, instead of
              # finding some -z option for the Sun compiler.

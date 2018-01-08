@@ -3,9 +3,12 @@ Starting with 2.7.4, the behavior is different, and it causes tests to
 dump core.  So skip it.  The module is removed in Python 3, so this patch
 is not being submitted upstream.
 
---- Python-2.7.9/Makefile.pre.in.~4~	2014-12-11 09:33:27.006970089 -0800
-+++ Python-2.7.9/Makefile.pre.in	2014-12-11 09:33:27.077073582 -0800
-@@ -1082,7 +1082,7 @@
+Note, that changes in setup.py are applied inside patch 02-setup.patch
+(# raise db_found).
+
+--- Python-2.7.14/Makefile.pre.in.orig	2018-01-26 03:09:44.649652970 -0800
++++ Python-2.7.14/Makefile.pre.in	2018-01-26 03:10:11.112938557 -0800
+@@ -1076,7 +1076,7 @@
  		ensurepip ensurepip/_bundled \
  		json json/tests \
  		sqlite3 sqlite3/test \
@@ -14,15 +17,3 @@ is not being submitted upstream.
  		lib2to3 lib2to3/fixes lib2to3/pgen2 lib2to3/tests \
  		lib2to3/tests/data lib2to3/tests/data/fixers lib2to3/tests/data/fixers/myfixes \
  		ctypes ctypes/test ctypes/macholib \
---- Python-2.7.10/setup.py.~6~	2015-05-10 10:17:06 -0800
-+++ Python-2.7.10/setup.py	2015-05-18 14:48:34 -0800
-@@ -1093,7 +1093,8 @@
-                                     db_dirs_to_check + lib_dirs, dblib )
-                     if dblib_file:
-                         dblib_dir = [ os.path.abspath(os.path.dirname(dblib_file)) ]
--                        raise db_found
-+                        # Doesn't work; skip.
-+                        # raise db_found
-                     else:
-                         if db_setup_debug: print "db lib: ", dblib, "not found"
- 

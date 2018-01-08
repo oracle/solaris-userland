@@ -7,8 +7,8 @@ http://www.jcea.es/artic/python_dtrace.htm
 Follow http://bugs.python.org/issue13405 for plans to get it
 integrated into the main tree.
 
---- Python-2.7.12/Makefile.pre.in.~1~	2016-06-25 14:49:31.000000000 -0700
-+++ Python-2.7.12/Makefile.pre.in	2016-07-07 13:45:26.859336399 -0700
+--- Python-2.7.14/Makefile.pre.in.orig	2017-09-16 10:38:35.000000000 -0700
++++ Python-2.7.14/Makefile.pre.in	2018-01-26 02:30:36.583726091 -0800
 @@ -232,6 +232,7 @@
  # Used of signalmodule.o is not available
  SIGNAL_OBJS=	@SIGNAL_OBJS@
@@ -16,8 +16,8 @@ integrated into the main tree.
 +DTRACE_OBJS=Python/dtrace.o Python/phelper.o
  
  ##########################################################################
- # Grammar
-@@ -365,6 +366,7 @@
+ 
+@@ -337,6 +338,7 @@
  		Python/formatter_unicode.o \
  		Python/formatter_string.o \
  		Python/$(DYNLOADFILE) \
@@ -25,7 +25,7 @@ integrated into the main tree.
  		$(LIBOBJS) \
  		$(MACHDEP_OBJS) \
  		$(THREADOBJ)
-@@ -751,6 +753,18 @@
+@@ -739,6 +741,18 @@
  Python/formatter_string.o: $(srcdir)/Python/formatter_string.c \
  				$(STRINGLIB_HEADERS)
  
@@ -44,8 +44,8 @@ integrated into the main tree.
  ############################################################################
  # Header files
  
---- Python-2.7.6/Include/frameobject.h.~1~	2013-11-09 23:36:39.000000000 -0800
-+++ Python-2.7.6/Include/frameobject.h	2014-05-14 13:03:19.938777249 -0700
+--- Python-2.7.14/Include/frameobject.h.orig	2017-09-16 10:38:35.000000000 -0700
++++ Python-2.7.14/Include/frameobject.h	2018-01-26 00:59:31.343385725 -0800
 @@ -44,6 +44,7 @@
         PyCode_Addr2Line to calculate the line from the current
         bytecode index. */
@@ -54,8 +54,8 @@ integrated into the main tree.
      int f_iblock;		/* index in f_blockstack */
      PyTryBlock f_blockstack[CO_MAXBLOCKS]; /* for try and loop blocks */
      PyObject *f_localsplus[1];	/* locals+stack, dynamically sized */
---- Python-2.7.6/Objects/frameobject.c.~1~	2013-11-09 23:36:41.000000000 -0800
-+++ Python-2.7.6/Objects/frameobject.c	2014-05-14 12:56:06.970076859 -0700
+--- Python-2.7.14/Objects/frameobject.c.orig	2017-09-16 10:38:35.000000000 -0700
++++ Python-2.7.14/Objects/frameobject.c	2018-01-16 05:59:22.407897238 -0800
 @@ -736,6 +736,7 @@
      f->f_tstate = tstate;
  
@@ -64,8 +64,8 @@ integrated into the main tree.
      f->f_lineno = code->co_firstlineno;
      f->f_iblock = 0;
  
---- Python-2.7.11rc1/Python/ceval.c.~1~	2015-11-21 13:43:46.000000000 -0800
-+++ Python-2.7.11rc1/Python/ceval.c	2015-12-03 13:42:17.344605237 -0800
+--- Python-2.7.14/Python/ceval.c.orig	2017-09-16 10:38:35.000000000 -0700
++++ Python-2.7.14/Python/ceval.c	2018-01-26 01:01:53.874757344 -0800
 @@ -19,6 +19,11 @@
  
  #include <ctype.h>
@@ -78,7 +78,7 @@ integrated into the main tree.
  #ifndef WITH_TSC
  
  #define READ_TIMESTAMP(var)
-@@ -674,6 +679,55 @@
+@@ -674,7 +679,56 @@
                        NULL);
  }
  
@@ -93,7 +93,7 @@ integrated into the main tree.
 +	filename = PyString_AsString(f->f_code->co_filename);
 +	fname = PyString_AsString(f->f_code->co_name);
 +	lineno = PyCode_Addr2Line(f->f_code, f->f_lasti);
-+
+ 
 +	PYTHON_FUNCTION_ENTRY((char *)filename, (char *)fname, lineno);
 +
 +	/*
@@ -131,9 +131,10 @@ integrated into the main tree.
 +#define	dtrace_entry()
 +#define	dtrace_return()
 +#endif
- 
++
  /* Interpreter main loop */
  
+ PyObject *
 @@ -685,9 +739,84 @@
      return PyEval_EvalFrameEx(f, 0);
  }
@@ -168,9 +169,9 @@ integrated into the main tree.
 +
 +
 +
-+PyObject *
-+PyEval_EvalFrameEx(PyFrameObject *f, int throwflag)
-+{
+ PyObject *
+ PyEval_EvalFrameEx(PyFrameObject *f, int throwflag)
+ {
 +	volatile PyObject *f2;
 +	f2 = PyEval_EvalFrameExReal(0, 0, 0, 0, 0, 0, f, throwflag);
 +	return (PyObject *)f2;
@@ -202,9 +203,9 @@ integrated into the main tree.
 +
 +#else /* __amd64 || __sparc */
 +
- PyObject *
- PyEval_EvalFrameEx(PyFrameObject *f, int throwflag)
- {
++PyObject *
++PyEval_EvalFrameEx(PyFrameObject *f, int throwflag)
++{
 +
 +#endif /* __amd64 || __sparc */
 +
@@ -231,7 +232,7 @@ integrated into the main tree.
      co = f->f_code;
      names = co->co_names;
      consts = co->co_consts;
-@@ -2983,6 +3117,9 @@
+@@ -2988,6 +3122,9 @@
              PyObject **sp;
              PCALL(PCALL_ALL);
              sp = stack_pointer;
@@ -241,7 +242,7 @@ integrated into the main tree.
  #ifdef WITH_TSC
              x = call_function(&sp, oparg, &intr0, &intr1);
  #else
-@@ -3024,6 +3161,9 @@
+@@ -3029,6 +3166,9 @@
              } else
                  Py_INCREF(func);
              sp = stack_pointer;
@@ -251,7 +252,7 @@ integrated into the main tree.
              READ_TIMESTAMP(intr0);
              x = ext_do_call(func, &sp, flags, na, nk);
              READ_TIMESTAMP(intr1);
-@@ -3333,6 +3473,10 @@
+@@ -3338,6 +3478,10 @@
  
      /* pop frame */
  exit_eval_frame:
@@ -262,8 +263,8 @@ integrated into the main tree.
      Py_LeaveRecursiveCall();
      tstate->frame = f->f_back;
  
---- /dev/null
-+++ Python-2.6.4/Python/phelper.d
+--- /dev/null	2018-01-26 01:04:30.000000000 -0800
++++ Python-2.7.14/Python/phelper.d	2018-01-26 01:03:56.949511123 -0800
 @@ -0,0 +1,139 @@
 +
 +/*
@@ -404,10 +405,8 @@ integrated into the main tree.
 +{
 +	NULL;
 +}
-diff --git Python-2.6.4/Python/python.d Python-2.6.4/Python/python.d
-new file mode 100644
---- /dev/null
-+++ Python-2.6.4/Python/python.d
+--- /dev/null	2018-01-26 01:07:30.000000000 -0800
++++ Python-2.7.14/Python/python.d	2018-01-26 01:03:56.955716596 -0800
 @@ -0,0 +1,10 @@
 +provider python {
 +	probe function__entry(const char *, const char *, int);
@@ -419,9 +418,9 @@ new file mode 100644
 +#pragma D attributes Private/Private/Common provider python function
 +#pragma D attributes Evolving/Evolving/Common provider python name
 +#pragma D attributes Evolving/Evolving/Common provider python args
---- Python-2.7.10/Lib/test/test_sys.py.~1~	2015-05-10 10:17:04 -0800
-+++ Python-2.7.10/Lib/test/test_sys.py	2015-05-18 14:35:06 -0800
-@@ -635,7 +635,7 @@
+--- Python-2.7.14/Lib/test/test_sys.py.orig	2017-09-16 10:38:35.000000000 -0700
++++ Python-2.7.14/Lib/test/test_sys.py	2018-01-26 01:08:42.532790560 -0800
+@@ -646,7 +646,7 @@
          nfrees = len(x.f_code.co_freevars)
          extras = x.f_code.co_stacksize + x.f_code.co_nlocals +\
                   ncells + nfrees - 1
@@ -430,8 +429,8 @@ new file mode 100644
          # function
          def func(): pass
          check(func, size('9P'))
---- Python-2.7.12/Include/ceval.h.~1~	2016-06-25 14:49:30.000000000 -0700
-+++ Python-2.7.12/Include/ceval.h	2016-10-12 07:33:22.132802000 -0700
+--- Python-2.7.14/Include/ceval.h.orig	2017-09-16 10:38:35.000000000 -0700
++++ Python-2.7.14/Include/ceval.h	2018-01-26 01:09:50.734704881 -0800
 @@ -64,6 +64,7 @@
  PyAPI_FUNC(PyObject *) PyEval_GetCallStats(PyObject *);
  PyAPI_FUNC(PyObject *) PyEval_EvalFrame(struct _frame *);

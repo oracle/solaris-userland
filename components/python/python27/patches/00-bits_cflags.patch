@@ -1,9 +1,9 @@
-#
-# This patch makes the pyconfig.h header file 32/64 bit friendly.
-# As it is Solaris-specific, it is not suitable for upstream.
-#
---- Python-2.7.13/configure.ac.~1~	2016-12-17 12:05:07.000000000 +0000
-+++ Python-2.7.13/configure.ac	2016-12-19 08:14:37.701742813 +0000
+This patch makes the pyconfig.h header file 32/64 bit friendly.
+The patch also modifies cflags.
+As it is Solaris-specific, it is not suitable for upstream.
+
+--- Python-2.7.14/configure.ac.orig	2018-01-25 12:42:59.090314422 -0800
++++ Python-2.7.14/configure.ac	2018-01-25 12:43:18.313705421 -0800
 @@ -5,7 +5,7 @@
  # Set VERSION so we only need to edit in one place (i.e., here)
  m4_define(PYTHON_VERSION, 2.7)
@@ -13,7 +13,16 @@
  
  AC_REVISION($Revision$)
  AC_INIT(python, PYTHON_VERSION, https://bugs.python.org/)
-@@ -2273,12 +2273,6 @@
+@@ -1091,7 +1091,7 @@
+ 	;;
+ 
+     *)
+-	OPT="-O"
++	OPT=""
+ 	;;
+     esac
+ fi
+@@ -2269,12 +2269,6 @@
  if test -z "$CCSHARED"
  then
  	case $ac_sys_system/$ac_sys_release in

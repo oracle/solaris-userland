@@ -2,8 +2,11 @@ This patch is needed to make Python understand it can build the OSS plugin.
 Some OSS ioctls are not supported on Solaris, so they are ifdef'f out.  As
 the patch is Solaris-specific, it is not suitable for upstream.
 
---- Python-2.7.7/Modules/ossaudiodev.c.~1~	2014-05-31 11:58:40.000000000 -0700
-+++ Python-2.7.7/Modules/ossaudiodev.c	2014-06-02 10:58:12.132478970 -0700
+Note, that changes in setup.py are applied inside patch 02-setup.patch
+(sunos5 added to host_platform).
+
+--- Python-2.7.14/Modules/ossaudiodev.c.orig	2018-01-26 03:19:21.669078048 -0800
++++ Python-2.7.14/Modules/ossaudiodev.c	2018-01-26 03:19:50.039720770 -0800
 @@ -1037,6 +1037,7 @@
      _EXPORT_INT(m, SOUND_MIXER_MONITOR);
  #endif
@@ -47,16 +50,3 @@ the patch is Solaris-specific, it is not suitable for upstream.
      _EXPORT_INT(m, SNDCTL_TMR_TIMEBASE);
 +#endif
  }
---- Python-2.7.10/setup.py.~5~	2015-05-10 10:17:06 -0800
-+++ Python-2.7.10/setup.py	2015-05-18 14:45:24 -0800
-@@ -1684,8 +1684,8 @@
-         else:
-             missing.append('linuxaudiodev')
- 
--        if (host_platform in ('linux2', 'freebsd4', 'freebsd5', 'freebsd6',
--                        'freebsd7', 'freebsd8')
-+        if (host_platform in ('sunos5', 'linux2', 'freebsd4', 'freebsd5',
-+                        'freebsd6', 'freebsd7', 'freebsd8')
-             or host_platform.startswith("gnukfreebsd")):
-             exts.append( Extension('ossaudiodev', ['ossaudiodev.c']) )
-         else:
