@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -56,7 +56,7 @@ CLEAN_PATHS += $(PATCH_DIR)
 COPY_COMMON_FILES:= $(shell rsync -ac ../common/patches/ patches/ $(PATCH_DIR))
 
 # OpenSSL FIPS directory
-OPENSSL_FIPS_DIR = $(COMPONENT_DIR)/../openssl-fips
+OPENSSL_FIPS_DIR = $(COMPONENT_DIR)/fipscanister
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/configure.mk
@@ -72,12 +72,13 @@ PKCS11_LIB64 = /usr/lib/64/libpkcs11.so.1
 ENGINESDIR_32 = /lib/openssl/engines
 ENGINESDIR_64 = /lib/openssl/engines/64
 
-# Built openssl/openssl-fips component is used when building FIPS-140 libraries.
+# Built openssl/openssl-fips-140/fipscanister component is used when
+# building FIPS-140 libraries.
 # What we do here follows the OpenSSL FIPS-140 User Guide instructions.
 FIPS_BUILD_DIR_32 = $(shell echo $(BUILD_DIR_32) | \
-    sed -e 's/openssl-fips-140/openssl-fips/g' )
+    sed -e 's/openssl-fips-140/openssl-fips-140\/fipscanister/g' )
 FIPS_BUILD_DIR_64 = $(shell echo $(BUILD_DIR_64) | \
-    sed -e 's/openssl-fips-140/openssl-fips/g' )
+    sed -e 's/openssl-fips-140/openssl-fips-140\/fipscanister/g' )
 
 # Ignore default CC_FOR_BUILD, CC, and CXX in CONFIGURE_ENV.
 CONFIGURE_ENV += CC_FOR_BUILD=
@@ -144,19 +145,19 @@ COMPONENT_POST_CONFIGURE_ACTION = \
    ( [ $(BITS) -eq 32 ] && $(GPATCH) -p1 $(@D)/crypto/opensslconf.h \
       patches-post-config/opensslconf.patch; cd $(@D); $(MAKE) depend; )
 
-# We must make sure that openssl-fips component is built before this openssl-fips-140
-# component since in order to build FIPS-140 certified libraries, the canister
-# is needed. Note that we must unset BITS that would override the same variable
-# used in openssl-fips' Makefile, and we would end up up with both canisters
-# built in 64 (or 32) bits.
-$(COMPONENT_DIR)/../openssl-fips/build/$(MACH32)/.installed \
-$(COMPONENT_DIR)/../openssl-fips/build/$(MACH64)/.installed:
+# We must make sure that fipscanister component is built before this
+# openssl-fips-140 component since in order to build FIPS-140 certified
+# libraries, the canister is needed. Note that we must unset BITS that would
+# override the same variable used in openssl-fips' Makefile, and we would
+# end up up with both canisters built in 64 (or 32) bits.
+fipscanister/build/$(MACH32)/.installed \
+fipscanister/build/$(MACH64)/.installed:
 	( unset BITS; \
-	$(MAKE) -C $(COMPONENT_DIR)/../openssl-fips install; )
+	$(MAKE) -C fipscanister install; )
 
 # download, clean, and clobber should all propogate to the fips bits
 download clobber clean::
-	(cd ../openssl-fips ; $(GMAKE) $@)
+	(cd fipscanister ; $(GMAKE) $@)
 
 # We do not ship our engines as patches since it would be more difficult to
 # update the files which have been under continuous development. We rather copy
@@ -187,8 +188,8 @@ COMPONENT_POST_INSTALL_ACTION.64 = \
         $(BUILD_DIR_64)/libcrypto.so.1.0.0;
 COMPONENT_POST_INSTALL_ACTION += $(COMPONENT_POST_INSTALL_ACTION.$(BITS))
 
-$(SOURCE_DIR)/.prep: $(COMPONENT_DIR)/../openssl-fips/build/$(MACH32)/.installed \
-		     $(COMPONENT_DIR)/../openssl-fips/build/$(MACH64)/.installed
+$(SOURCE_DIR)/.prep: fipscanister/build/$(MACH32)/.installed \
+		     fipscanister/build/$(MACH64)/.installed
 
 configure:	$(CONFIGURE_32_and_64)
 
