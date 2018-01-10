@@ -14,3 +14,37 @@ the following commands:
 /JOIN #python
 ... type messages ...
 /QUIT
+
+Basic functionality testing - general stetps:
+
+1. Start irssi
+2. Configure proxy (optional)
+  An example that sets http proxy running on emea-proxy.uk.oracle.com:80
+
+/SET use_proxy ON
+/SET proxy_address emea-proxy.uk.oracle.com
+/SET proxy_port 80
+/SET -clear proxy_string
+/SET proxy_string_after conn %s %d
+/EVAL SET proxy_string CONNECT %s:%d HTTP/1.0\n\n
+/SET -clear proxy_password
+
+3. Connect to an IRC server
+  E.g. irc.freenode.net:
+
+/CONNECT irc.freenode.net
+
+4. Join a channel
+  E.g. channel test:
+
+/JOIN ##test
+
+5. Repeat steps 1-4 in another irssi instance
+
+6. Send a test message from both instances
+
+7. Verify irssi instances see the messages
+
+8. Terminate irssi (both instances)
+
+/QUIT
