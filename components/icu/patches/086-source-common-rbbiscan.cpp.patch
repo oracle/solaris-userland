@@ -1,0 +1,23 @@
+#
+# Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+#
+Fix a memory leak
+http://bugs.icu-project.org/trac/ticket/12374
+diff --git a/source/common/rbbiscan.cpp b/source/common/rbbiscan.cpp
+--- a/icu/source/common/rbbiscan.cpp
++++ b/icu/source/common/rbbiscan.cpp
+@@ -777,7 +777,13 @@ void RBBIRuleScanner::findSetFor(const U
+     // Add the new set to the set hash table.
+     //
+     el      = (RBBISetTableEl *)uprv_malloc(sizeof(RBBISetTableEl));
+-    UnicodeString *tkey = new UnicodeString(s);
++    UnicodeString *tkey;
++    try
++    {
++        tkey = new UnicodeString(s);
++    } catch (...) {
++        tkey = NULL;
++    }
+     if (tkey == NULL || el == NULL || setToAdopt == NULL) {
+         // Delete to avoid memory leak
+         delete tkey;

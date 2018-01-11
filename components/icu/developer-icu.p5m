@@ -1,0 +1,70 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+<transform file path=usr.*/man/.+ -> default mangler.man.stability "pass-through volatile">
+set name=pkg.fmri \
+    value=pkg:/developer/icu@$(PKG_SOLARIS_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="International Components for Unicode"
+set name=pkg.description \
+    value="ICU is a set of C and C++ libraries that provides robust and full-featured Unicode and locale support. The library provides calendar support, conversions for many character sets, language sensitive collation, date and time formatting, support for many locales, message catalogs and resources, message formatting, normalization, number and currency formatting, time zones support, transliteration, word, line and sentence breaking, etc. This package contains various ICU utilities."
+set name=com.oracle.info.description \
+    value="International Components for Unicode"
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification \
+    value=org.opensolaris.category.2008:System/Internationalization
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2017/213
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+#
+#
+file path=usr/bin/derb
+file path=usr/bin/genbrk
+file path=usr/bin/gencfu
+file path=usr/bin/gencnval
+file path=usr/bin/gendict
+file path=usr/bin/genrb
+file path=usr/bin/icu-config facet.devel=true
+file path=usr/bin/icuinfo
+file path=usr/bin/makeconv
+file path=usr/bin/pkgdata
+file path=usr/bin/uconv
+file path=usr/sbin/genccode
+file path=usr/sbin/gencmn
+file path=usr/sbin/gennorm2
+file path=usr/sbin/gensprep
+file path=usr/sbin/icupkg
+file path=usr/share/man/man1/derb.1
+file path=usr/share/man/man1/genbrk.1
+file path=usr/share/man/man1/gencfu.1
+file path=usr/share/man/man1/gencnval.1
+file path=usr/share/man/man1/gendict.1
+file path=usr/share/man/man1/genrb.1
+file path=usr/share/man/man1/icu-config.1 facet.devel=true
+file path=usr/share/man/man1/makeconv.1
+file path=usr/share/man/man1/pkgdata.1
+file path=usr/share/man/man1/uconv.1
+file path=usr/share/man/man8/genccode.8
+file path=usr/share/man/man8/gencmn.8
+file path=usr/share/man/man8/gensprep.8
+file path=usr/share/man/man8/icupkg.8
+license icu.license license=icu
