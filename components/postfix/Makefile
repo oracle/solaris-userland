@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64
@@ -78,6 +78,8 @@ COMPONENT_BUILD_ENV += OPT="$(CFLAGS)"
 COMPONENT_BUILD_ENV += DEBUG="$(CFLAGS)"
 COMPONENT_BUILD_ENV += PATH="$(PATH)"
 COMPONENT_BUILD_ENV += AUXLIBS="$(AUXLIBS)"
+# Postfix build deliberately fails if LD_LIBRARY_PATH is set
+COMPONENT_BUILD_ENV += LD_LIBRARY_PATH=
 
 COMPONENT_INSTALL_TARGETS = non-interactive-package install_root="$(PROTO_DIR)"
 
