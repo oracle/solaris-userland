@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 .PHONY: void
@@ -366,13 +366,13 @@ COMPONENT_TEST_CREATE_TRANSFORMS = \
 	@if [ -e $(COMPONENT_TEST_MASTER) ]; \
 	then \
 		print "\#!/bin/sh" > $(COMPONENT_TEST_TRANSFORM_CMD); \
-        	print '$(COMPONENT_TEST_TRANSFORMER) ' \
+		print '$(COMPONENT_TEST_TRANSFORMER) ' \
 			$(COMPONENT_TEST_TRANSFORMS) \
-                	' \\' >> $(COMPONENT_TEST_TRANSFORM_CMD); \
-        	print '$(COMPONENT_TEST_OUTPUT) \\' \
-                	>> $(COMPONENT_TEST_TRANSFORM_CMD); \
-        	print '> $(COMPONENT_TEST_SNAPSHOT)' \
-                	>> $(COMPONENT_TEST_TRANSFORM_CMD); \
+			' \\' >> $(COMPONENT_TEST_TRANSFORM_CMD); \
+		print '$(COMPONENT_TEST_OUTPUT) \\' \
+			>> $(COMPONENT_TEST_TRANSFORM_CMD); \
+		print '> $(COMPONENT_TEST_SNAPSHOT)' \
+			>> $(COMPONENT_TEST_TRANSFORM_CMD); \
 	else \
 		print 'Cannot find $(COMPONENT_TEST_MASTER)'; \
 		exit 2; \
@@ -508,6 +508,9 @@ export PARFAIT_NATIVESUNCC=$(SPRO_VROOT)/bin/cc
 export PARFAIT_NATIVESUNCXX=$(SPRO_VROOT)/bin/CC
 export PARFAIT_NATIVEGCC=$(GCC_ROOT)/bin/gcc
 export PARFAIT_NATIVEGXX=$(GCC_ROOT)/bin/g++
+
+ONBLD_ROOT ?=	$(BUILD_TOOLS)/onbld
+ONBLD_BIN ?=	$(ONBLD_ROOT)/bin
 
 GCC_ROOT =	/usr/gcc/5
 
@@ -1198,7 +1201,7 @@ LD_SECEXT_OPTIONS =	$(LD_Z_ASLR) $(LD_Z_NXSTACK) $(LD_Z_NXHEAP) \
 # binaries with -ztype=pie, by passing it on the LD_EXEC_OPTIONS list.
 LD_EXEC_OPTIONS =	$(LD_Z_PIE_MODE) $(LD_SECEXT_OPTIONS)
 LD_PIE_OPTIONS =	$(LD_SECEXT_OPTIONS)
-		
+
 
 # Environment variables and arguments passed into the build and install
 # environment(s).  These are the initial settings.
@@ -1219,7 +1222,8 @@ COMPONENT_INSTALL_ENV += $(COMPONENT_INSTALL_ENV.$(BITS))
 COMPONENT_INSTALL_ARGS += $(COMPONENT_INSTALL_ARGS.$(BITS))
 
 # declare these phony so that we avoid filesystem conflicts.
-.PHONY:	prep build install publish test system-test clean clobber parfait
+.PHONY:	prep build install publish test system-test clean clobber parfait \
+	check_rtime
 
 # If there are no tests to execute
 NO_TESTS =	test-nothing
@@ -1235,6 +1239,27 @@ no-sys-tests:
 SKIP_TEST =	skip-test
 skip-test:
 	@echo "Skipping tests"
+
+# check_rtime script from onbld to check binaries are built with the right
+# linker flags
+ifneq ($(COMPONENT_DIR),$(WS_COMPONENTS))
+COMPONENT_CHECK_RTIME_EXCEPTIONS ?= $(BUILD_DIR)/check_rtime.$(MACH)
+COMPONENT_CHECK_RTIME_ENV	 += PATH="$(PATH):$(ONBLD_BIN)"
+COMPONENT_CHECK_RTIME_ARGS	 += -e $(COMPONENT_CHECK_RTIME_EXCEPTIONS)
+COMPONENT_CHECK_RTIME_ARGS	 += -d $(PROTO_DIR) -w $(PROTO_DIR)
+COMPONENT_CHECK_RTIME_ARGS	 += -m -o -s
+
+check_rtime: install
+	@if [ -d $(PROTO_DIR) ] ; then \
+		$(CAT) -s $(WS_TOP)/exception_lists/check_rtime \
+			$(COMPONENT_TEST_RESULTS_DIR)/check_rtime > \
+			$(COMPONENT_CHECK_RTIME_EXCEPTIONS) ; \
+		$(ENV) $(COMPONENT_CHECK_RTIME_ENV) $(ONBLD_BIN)/check_rtime \
+			$(COMPONENT_CHECK_RTIME_ARGS) $(PROTO_DIR) ; \
+	else \
+		echo "No PROTO_DIR found for check_rtime to check" ; \
+	fi
+endif
 
 # default behaviour for 'component-hook' target is to echo the component
 # name and version information, but more complex behaviour can be implemented
@@ -1252,6 +1277,7 @@ CLOBBER_PATHS +=	$(PROTO_DIR)
 #
 REQUIRED_PACKAGES += developer/build/gnu-make
 REQUIRED_PACKAGES += developer/build/make
+REQUIRED_PACKAGES += developer/build/onbld
 ifeq ($(COMPILER),gcc)
 REQUIRED_PACKAGES += developer/gcc-5
 endif

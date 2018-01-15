@@ -36,12 +36,13 @@ clobber:	TARGET = clobber
 setup:		TARGET = setup
 test:		TARGET = test
 system-test:	TARGET = system-test
+check_rtime:	TARGET = check_rtime
 component-hook:		TARGET = component-hook
 
 .DEFAULT_GOAL :=	publish
 
 download setup unpack patch prep build install publish validate clean clobber \
-test system-test component-hook: $(SUBDIRS)
+test system-test component-hook check_rtime: $(SUBDIRS)
 
 $(SUBDIRS):	FORCE
 	@+echo "$(TARGET) $@" ; $(MAKE) -C $@ $(TARGET)

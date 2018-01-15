@@ -120,5 +120,16 @@ REQUIRED_PACKAGES::
   be used to generate the set of REQUIRED_PACKAGES that is needed by the
   'pkgdepend resolve' portion of package generation and publication (publish
   target).  It automatically appends to the component Makefile, but the results
-  should be
-  manually verified.
+  should be manually verified.
+
+check_rtime:
+  This target is present in all Makefiles.  It can be used at the top level
+  to act across all components, or on an individual component basis.  It is
+  defined by including $(WS_MAKE_RULES)/shared-macros.mk.  It runs the
+  check_rtime script from pkg:/developer/build/onbld to check for common
+  errors in ELF binaries.  It checks the binaries from the component's
+  prototype directory for the current platform, resolving any dependencies
+  not found there against the installed versions on the machine its run on.
+  A global exceptions file is provided in $(WS_TOP)/exception_lists/check_rtime
+  and is automatically supplemented with the contest of test/check_rtime in
+  the component directory.

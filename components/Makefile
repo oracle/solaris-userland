@@ -80,9 +80,10 @@ clean:			TARGET = clean
 clobber:		TARGET = clobber
 test:			TARGET = test
 system-test:		TARGET = system-test
+check_rtime:		TARGET = check_rtime
 zone-build:		TARGET = component-zone-build
 component-hook:		TARGET = component-hook
-zone-build prep build install publish test system-test:	LOG = >$(WS_LOGS)/$(subst /,.,$@).$(TARGET).log 2>&1
+zone-build prep build install publish test system-test check_rtime:	LOG = >$(WS_LOGS)/$(subst /,.,$@).$(TARGET).log 2>&1
 
 # turn off pkglint for the individual component builds.
 ifeq   ($(strip $(PKGLINT_COMPONENT)),)
@@ -106,7 +107,7 @@ zone-build build install publish test system-test: $(COMPONENT_DIRS)
 COMPONENT_DIRS.nosetup =	$(COMPONENT_DIRS:%=%.nosetup)
 
 download unpack patch::	$(COMPONENT_DIRS.nosetup)
-prep:		$(COMPONENT_DIRS.nosetup)
+prep check_rtime:		$(COMPONENT_DIRS.nosetup)
 component-environment-check::	$(COMPONENT_DIRS.nosetup)
 component-hook:	$(COMPONENT_DIRS.nosetup)
 

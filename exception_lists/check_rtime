@@ -1,0 +1,96 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+#
+
+# Userland consolidation global file - this contains information applicable
+# to all (or at least very many) components, mainly about things from other
+# consolidations.  Overrides specific to a component should go in the
+# test/check_rtime file in that component's directory.
+
+#
+# This file provides exceptions to the usual rules applied to ELF objects by
+# check_rtime. All strings are Perl regular expressions that are compared to
+# file paths. In addition to the standard Perl syntax, there is one extension:
+#
+#	MACH(dir)
+#
+# is expanded into a regular expression that matches the given
+# directory, or a 64-bit subdirectory of the directory with the
+# name of a 64-bit architecture. For example, MACH(lib) will match
+# any of the following:
+#
+#	lib
+#	lib/amd64
+#	lib/sparcv9
+#
+
+# Objects that used to contain system functionality that has since
+# migrated to libc. We preserve these libraries as pure filters for
+# backward compatibility but nothing needs to link to them.
+OLDDEP		libaio\.so\.1			# onnv build 44
+OLDDEP		libdl\.so\.1			# on10 build 49
+OLDDEP		libdoor\.so\.1			# onnv build 12
+OLDDEP		libintl\.so\.1			# on297 build 7
+OLDDEP		libnsl\.so\.1			# on12 build 16
+OLDDEP		libpthread\.so\.1		# on10 build 53
+OLDDEP		librt\.so\.1			# onnv build 44
+OLDDEP		libsched\.so\.1			# on10 build 36
+OLDDEP		libsecdb\.so\.1			# onnv build 161
+OLDDEP		libsendfile\.so\.1		# on12 build 73
+OLDDEP		libsocket\.so\.1		# on12 build 16
+OLDDEP		libthread\.so\.1		# on10 build 53
+OLDDEP		libw\.so\.1			# on297 build 7
+OLDDEP		libxnet\.so\.1			# on12 build 16
+
+# libmd5/libmd are filter libraries.  Their previous content resides in
+# libucrypto.  We preserve libmd5/libmd as pure filters for backward
+# compatibility, but nothing needs to link to them.
+OLDDEP		libmd5\.so\.1			# on12 build 38
+OLDDEP		libmd\.so\.1			# on12 build 53
+
+# Since we're not in ON, elfsigning happens at RE dock integration,
+# not during the build process.
+NOELFSIGN	.*
+
+# Files for which we skip checking of duplicate addresses in the
+# symbol sort sections. Such exceptions should be rare --- most code will
+# not have duplicate addresses, since it takes assember or a "#pragma weak"
+# to do such aliasing in C. C++ is different: The compiler generates aliases
+# for implementation reasons, and the mangled names used to encode argument
+# and return value types are difficult to handle well in mapfiles.
+#
+# We don't want to maintain a list of every C++ binary in Userland, so we
+# skip them all here for now, until we can find some way to auto-exclude them.
+NOSYMSORT   	.*
+
+# Unreferenced objects of objects from other consolidations
+UNREF_OBJ	/libXext\.so\.0;\ unused\ dependency\ of .*/libX11\.so\.4
+UNREF_OBJ	unused\ dependency\ of /usr/lib/mps/.*
+UNREF_OBJ	unused\ dependency\ of /usr/oracle/instantclient/.*
+
+# Unused runpaths in objects from other consolidations
+UNUSED_RPATH	/opt/VRTSvxvm/lib.*\ from\ .*libdiskmgt\.so\.1
+UNUSED_RPATH	/usr/lib/mps.*\ from\ .*/usr/lib/MACH(mps)/lib.*\.so
+UNUSED_RPATH	/usr/lib/xorg.*\ from\ .*/usr/lib/MACH(xorg)/libdrm\.so\.2
+UNUSED_RPATH	\$ORIGIN.*\ from\ .*/usr/oracle/instantclient/.*\.so
