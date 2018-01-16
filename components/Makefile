@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2010, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../make-rules/shared-macros.mk
@@ -162,6 +162,8 @@ $(COMPONENT_DIRS):	$(WS_LOGS) setup FORCE
 # Turn userland-incorporator warnings into build failures
 INCORPORATE_WERROR ?= --Werror
 
+# rm of smcc-incorporation.p5m is a temporary hack to avoid unnecessary
+# republishing of it until Userland starts pkgsurf'ing its deliveries.
 incorporation:
 	$(WS_TOOLS)/userland-incorporator \
 		--repository $(PKG_REPO) \
@@ -171,6 +173,7 @@ incorporation:
 		--destdir $(WS_MACH) \
 		--static-content-file $(WS_COMPONENTS)/meta-packages/incorporation-cache \
 		$(INCORPORATE_WERROR)
+	-$(RM) $(WS_MACH)/smcc-incorporation.p5m
 	for incorporation in $(WS_MACH)/*.p5m ; do \
 	    $(PKGSEND) -s $(PKG_REPO) publish --fmri-in-manifest \
 	               $${incorporation} ; \

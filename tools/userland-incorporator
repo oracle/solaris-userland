@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2011, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 #
 # incorporator - an utility to incorporate packages in a repo
@@ -33,6 +33,7 @@ import sys
 import getopt
 import re
 import os.path
+import platform
 
 Werror = False	# set to true to exit with any warning
 
@@ -97,6 +98,7 @@ def get_incorporations(repository, publisher, inc_version='5.12',
     # that file.
     #
     if static_file:
+        current_arch = platform.processor()
         with open(static_file, 'r') as fp:
           for line in fp:
             line = line.partition('#')[0]
@@ -107,6 +109,10 @@ def get_incorporations(repository, publisher, inc_version='5.12',
             except ValueError:
                 pass
             else:
+                if "=" in version:
+                    (version, pkg_arch) = version.split('=',1)
+                    if pkg_arch != current_arch:
+                        continue
                 if incorporation not in incorporations:
                     incorporations[incorporation] = Incorporation(incorporation, inc_version)
                 # find the incorporation and add the package
