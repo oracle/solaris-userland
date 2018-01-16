@@ -1,0 +1,94 @@
+Solaris specific: alter manual page with Oracle information
+
+diff --git a/src/paps.1 b/src/paps.1
+--- a/src/paps.1
++++ b/src/paps.1
+@@ -1,8 +1,9 @@
++'\" te
+ .\"                                      Hey, EMACS: -*- nroff -*-
+ .\" First parameter, NAME, should be all caps
+ .\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+ .\" other parameters are allowed: see man(7), man(1)
+-.TH PAPS 1 "October 12, 2015"
++.TH paps 1 "January 15, 2016"
+ .\" Please adjust this date whenever revising the manpage.
+ .\"
+ .\" Some roff macros, for reference:
+@@ -291,6 +292,31 @@
+ Make all glib warnings fatal.
+ .br
+ 
++.\" Oracle has added the Compatibility section to this manual page
++.SH COMPATIBILITY
++Use the following option conversion table to obtain output similar to
++.BR mp(1)
++:
++.sp
++.TS
++box;
++cbp-1 | cbp-1
++l | l .
++mp option	paps option(s)
++=
++ <default>	--header --paper=letter --wrap=char
++ -A4	<default>
++ -l	--landscape --columns=2
++ -L locale	LC_ALL=locale paps ...
++ -ll	--landscape
++ -n	<default>
++ -US	--paper=letter
++ -z pointsize	--font='fontname pointsize'
++.TE
++.sp
++.LP
++
++
+ .SH EXIT STATUS
+ .sp
+ .LP
+@@ -417,6 +443,45 @@
+ .sp
+ .LP
+ 
++.\" Oracle has added the NOTES stability level to this manual page
++.SH NOTES
++The output of paps is affected by current locale and available fonts.
++Additional fonts can be added with the following command:
++.in +2
++.nf
++$ \fBpkg install system/font/truetype/*\fR
++.fi
++.in -2
++.sp
++When the package system/font/sun-ja-bitmap-unicode is installed, the bitmap
++font will take precedence over TrueType fonts in Japanese locales and the
++output may have lower quality. Uninstall the font package with:
++.in +2
++.nf
++$ \fBpkg uninstall system/font/sun-ja-bitmap-unicode\fR
++.fi
++.in -2
++.sp
++or select specific font with the --font option:
++.in +2
++.nf
++$ \fBpaps --font 'Courier,IPAGothic 10'\fR
++.fi
++.in -2
++.sp
++To display a halfwidth and a fullwidth character correctly, use 'Monospace'
++font with the --font option.  To change the smaller size of font in landscape
++mode, specify the size of font with the --font option. For example, the
++following will display similar output with mp of portrait and landscape
++mode in Japanese locale.
++.in +2
++.nf
++$ \fBpaps --font 'Monospace 11'\fR
++$ \fBpaps --font 'Monospace 8' --columns=2 --landscape\fR
++.fi
++.in -2
++.LP
++
+ .SH AUTHOR
+ paps was written by Dov Grobgeld <dov.grobgeld@gmail.com>.
+ .PP

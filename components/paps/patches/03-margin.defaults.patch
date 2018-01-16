@@ -1,0 +1,62 @@
+Solaris specific: modify margin default values to match mp(1) output
+
+diff --git a/src/paps.1 b/src/paps.1
+--- a/src/paps.1
++++ b/src/paps.1
+@@ -251,16 +251,16 @@
+ .RE
+ .TP
+ .B \-\-bottom-margin=bm
+-Set bottom margin in postscript points (1/72 inch). Default is 36.
++Set bottom margin in postscript points (1/72 inch). Default is 55.
+ .TP
+ .B \-\-top-margin=tm
+-Set top margin. Default is 36.
++Set top margin. Default is 55.
+ .TP
+ .B \-\-left-margin=lm
+-Set left margin. Default is 36.
++Set left margin. Default is 55.
+ .TP
+ .B \-\-right-margin=rm
+-Set right margin. Default is 36.
++Set right margin. Default is 55.
+ .TP
+ .B \-\-header
+ Draw page header with document name, date and page number for each page. Header
+diff --git a/src/paps.c b/src/paps.c
+--- a/src/paps.c
++++ b/src/paps.c
+@@ -71,10 +71,10 @@
+  */
+ #define	CAIRO_COMMENT_MAX       255
+ 
+-#define	MARGIN_LEFT     36
+-#define	MARGIN_RIGHT    36
+-#define	MARGIN_TOP      36
+-#define	MARGIN_BOTTOM   36
++#define	MARGIN_LEFT     55
++#define	MARGIN_RIGHT    55
++#define	MARGIN_TOP      55
++#define	MARGIN_BOTTOM   55
+ 
+ 
+ typedef enum {
+@@ -489,13 +489,13 @@
+     {"format", 0, 0, G_OPTION_ARG_CALLBACK, _paps_arg_format_cb,
+      N_("Set output format [pdf, svg, ps]. (Default: ps)"), "FORMAT"},
+     {"bottom-margin", 0, 0, G_OPTION_ARG_INT, &bottom_margin,
+-     N_("Set bottom margin in postscript point units (1/72 inch). (Default: 36)"), "NUM"},
++     N_("Set bottom margin in postscript point units (1/72 inch). (Default: 55)"), "NUM"},
+     {"top-margin", 0, 0, G_OPTION_ARG_INT, &top_margin,
+-     N_("Set top margin. (Default: 36)"), "NUM"},
++     N_("Set top margin. (Default: 55)"), "NUM"},
+     {"right-margin", 0, 0, G_OPTION_ARG_INT, &right_margin,
+-     N_("Set right margin. (Default: 36)"), "NUM"},
++     N_("Set right margin. (Default: 55)"), "NUM"},
+     {"left-margin", 0, 0, G_OPTION_ARG_INT, &left_margin,
+-     N_("Set left margin. (Default: 36)"), "NUM"},
++     N_("Set left margin. (Default: 55)"), "NUM"},
+     {"header", 0, 0, G_OPTION_ARG_NONE, &do_draw_header,
+      N_("Draw page header for each page."), NULL},
+     {"footer", 0, 0, G_OPTION_ARG_NONE, &do_draw_footer,
