@@ -21,33 +21,28 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 # parfait seems to spin when looking at the .bc files (13704877), so
 # for now disable it.
 export PARFAIT_BUILD=no
 
-# Prefer 32-bit due to ghostcript's hybrid build system.
-BUILD_BITS= 32_and_64
+BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 
 COMPONENT_NAME=         ghostscript
-COMPONENT_VERSION=      9.00
+COMPONENT_VERSION=      9.22
 COMPONENT_PROJECT_URL=	http://ghostscript.com/
+COMPONENT_DOWNLOAD_URL= \
+    https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download
 COMPONENT_ARCHIVE_HASH= \
-    sha256:9e754c315d68d91a65ef208b9a8bda1fb57e45a7be18aa9397acfcc5ff59de16
-COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)releases/$(COMPONENT_ARCHIVE)
-COMPONENT_ANITYA_ID=	1157
+    sha256:7f5f4487c0df9dce37481e4c8f192c0322e4c69f5a2ba900a7833c992331bcf4
+COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/gs922/$(COMPONENT_ARCHIVE)
 
-TPNO=			3796
+TPNO=			39425
 
-# Adding IPS_COMPONENT_VERSION and keeping that as 9.20 as with downrev
-# to 9.0, the package version will be lower than currently available in
-# 'dev' repo. TO mitigate confusion, adding 'human-version' as 9.00
-IPS_COMPONENT_VERSION= 9.20
-HUMAN_VERSION=	9.00
-
+COMPILER=gcc
 COMMON_TARGETS= no
 include $(WS_MAKE_RULES)/common.mk
 studio_OPT= -xO2
@@ -71,9 +66,12 @@ CONFIGURE_OPTIONS +=	--disable-compile-inits
 CONFIGURE_OPTIONS +=	--disable-freetype
 CONFIGURE_OPTIONS +=	--with-fontpath=/usr/share/ghostscript/$(COMPONENT_VERSION)/Resource:/usr/share/ghostscript/$(COMPONENT_VERSION)/Resource/Font:/usr/share/ghostscript/fonts:/usr/openwin/lib/X11/fonts/Type1:/usr/openwin/lib/X11/fonts/TrueType:/usr/openwin/lib/X11/fonts/Type3:/usr/X11/lib/X11/fonts/Type1:/usr/X11/lib/fonts/TrueType:/usr/X11/lib/X11/fonts/Type3:/usr/X11/lib/X11/fonts/Resource:/usr/X11/lib/X11/Resource/Font
 
+# configure options to generate 32 bit binaries
+$(BUILD_DIR)/$(MACH32)/.configured: CONFIGURE_OPTIONS += CC="$(CC) -m32"
+$(BUILD_DIR)/$(MACH32)/ijs/.configured: CONFIGURE_OPTIONS += CC="$(CC) -m32"
+
 # configure options to generate 64 bit binaries
 $(BUILD_DIR)/$(MACH64)/.configured: CONFIGURE_OPTIONS += CC="$(CC) -m64"
-$(BUILD_DIR)/$(MACH64)/ijs/.configured: CONFIGURE_OPTIONS += CC="$(CC) -m64"
 
 # config env
 CONFIGURE_ENV += LDFLAGS_SO="-G"
@@ -114,9 +112,6 @@ $(IJS_VARIANT_64)/.configured: COMPONENT_PRE_CONFIGURE_ACTION = \
 
 CONFIGURE_SCRIPT = ./configure
 
-# Adjust '#!/usr/bin/perl'
-PERL_SCRIPTS= $(PROTOUSRBINDIR)/fixmswrd.pl
-
 # ASLR disabled until sufficient testing can be performed.
 ASLR_MODE= $(ASLR_DISABLE)
 
@@ -137,7 +132,9 @@ system-test:    $(NO_TESTS)
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng
 REQUIRED_PACKAGES += image/library/libpng14
-REQUIRED_PACKAGES += library/desktop/gtk2
+REQUIRED_PACKAGES += library/desktop/gtk3
+REQUIRED_PACKAGES += library/desktop/cairo
+REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/zlib
