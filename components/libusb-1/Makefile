@@ -19,30 +19,24 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
+BUILD_BITS=		64_and_32
+COMPILER=		gcc
 include ../../make-rules/shared-macros.mk
 
-COMPILER=		gcc
 COMPONENT_NAME=		libusb
-COMPONENT_VERSION=	1.0.20
-COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
-COMPONENT_ARCHIVE_HASH= sha256:cb057190ba0a961768224e4dc6883104c6f945b2bf2ef90d7da39e7c1834f7ff
+COMPONENT_VERSION=     1.0.21
+COMPONENT_ARCHIVE_HASH= sha256:1a5b08c05bc5e38c81c2d59c29954d5916646f4ff46f51381b3f624384e4ac01
 COMPONENT_ARCHIVE_URL=  http://sourceforge.net/projects/libusb/files/libusb-1.0/$(COMPONENT_SRC)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=  http://libusb.info/
-COMPONENT_BUGDB=	library/libusb
 COMPONENT_ANITYA_ID=	1749
 
-TPNO=			26906
+TPNO=			39479
 
-include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/configure.mk
-include $(WS_MAKE_RULES)/ips.mk
-include $(WS_MAKE_RULES)/lint-libraries.mk
-
-CONFIGURE_ENV +=	"CFLAGS=$(CFLAGS)"
+SYSTEM_TEST_TARGET= $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS  +=	--enable-static=no
 CONFIGURE_OPTIONS  +=   --enable-log
@@ -57,18 +51,7 @@ PROTOUSRSHAREDOCDIR = $(PROTOUSRSHAREDIR)/doc/libusb-1.0
 
 COMPONENT_PREP_ACTION = (cd $(@D); $(AUTORECONF) -if)
 
-# common targets
-configure:	$(CONFIGURE_32_and_64)
-
-build:		$(BUILD_32_and_64)
-
 install:	$(INSTALL_32_and_64)
 	cd $(BUILD_DIR_64); \
 	$(MKDIR) -p $(PROTOUSRSHAREDOCDIR); \
 	$(CP) -r doc/html $(PROTOUSRSHAREDOCDIR)
-
-test:		$(TEST_32_and_64)
-
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
-
-REQUIRED_PACKAGES += system/library
