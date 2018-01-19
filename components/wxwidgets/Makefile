@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 # 32-bit preferred as only *-config and source generation scripts delivered.
 BUILD_BITS= 32_and_64
@@ -67,7 +67,6 @@ CONFIGURE_OPTIONS += --with-opengl
 CONFIGURE_OPTIONS += --without-libmpack
 
 REQUIRED_PACKAGES += image/library/libjpeg
-REQUIRED_PACKAGES += image/library/libpng
 REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += image/library/libtiff
 REQUIRED_PACKAGES += library/desktop/cairo

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS = 64_and_32
@@ -56,7 +56,6 @@ CMAKE_OPTIONS += -DCMAKE_VERBOSE_MAKEFILE=ON
 CMAKE_OPTIONS += -DLCMS2_INCLUDE_DIR=$(USRINCDIR)/lcms
 
 REQUIRED_PACKAGES += developer/build/cmake
-REQUIRED_PACKAGES += image/library/libpng
 REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += image/library/libtiff
 REQUIRED_PACKAGES += library/lcms2

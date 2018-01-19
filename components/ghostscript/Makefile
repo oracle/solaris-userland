@@ -130,7 +130,6 @@ system-test:    $(NO_TESTS)
 
 
 REQUIRED_PACKAGES += image/library/libjpeg
-REQUIRED_PACKAGES += image/library/libpng
 REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/cairo

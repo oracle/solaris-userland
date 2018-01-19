@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # This file specifies configure-line options to enable as many extensions as
@@ -105,7 +105,6 @@ CONFIGURE_OPTIONS += --with-jpeg-dir=/usr
 REQUIRED_PACKAGES += x11/library/libxpm
 REQUIRED_PACKAGES += system/library/freetype-2
 REQUIRED_PACKAGES += image/library/libjpeg
-REQUIRED_PACKAGES += image/library/libpng
 REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += library/zlib
 

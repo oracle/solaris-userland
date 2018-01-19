@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -84,7 +84,6 @@ COMPONENT_INSTALL_ENV += $(PYTHON_ENV)
 PKG_MACROS +=  PYVER=$(PYTHON_VERSION)
 PKG_MACROS +=  PYV=$(shell echo $(PYTHON_VERSION) | tr -d .)
 
-REQUIRED_PACKAGES += image/library/libpng
 REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/pango

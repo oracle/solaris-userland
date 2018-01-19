@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../../make-rules/shared-macros.mk
@@ -115,7 +115,6 @@ COMPONENT_POST_BUILD_ACTION = \
 COMPONENT_BUILD_ARGS += V=1
 
 REQUIRED_PACKAGES += image/library/libjpeg
-REQUIRED_PACKAGES += image/library/libpng
 REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += image/library/libtiff
 REQUIRED_PACKAGES += image/library/openjpeg2

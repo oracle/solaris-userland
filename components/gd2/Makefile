@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -81,7 +81,6 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/Errors/p" '
 
 REQUIRED_PACKAGES += image/library/libjpeg
-REQUIRED_PACKAGES += image/library/libpng
 REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += shell/ksh93

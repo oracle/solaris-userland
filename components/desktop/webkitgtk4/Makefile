@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # parfait is a bit unhappy (24796572)
@@ -122,7 +122,6 @@ REQUIRED_PACKAGES += developer/build/pkg-config
 REQUIRED_PACKAGES += developer/gperf
 REQUIRED_PACKAGES += developer/parser/bison
 REQUIRED_PACKAGES += image/library/libjpeg
-REQUIRED_PACKAGES += image/library/libpng
 REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += image/library/libwebp
 REQUIRED_PACKAGES += library/desktop/atk

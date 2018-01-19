@@ -128,7 +128,6 @@ PKG_MACROS += PERL_PKG=$(PERL_PKG)
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += compress/xz
 REQUIRED_PACKAGES += image/library/libjpeg
-REQUIRED_PACKAGES += image/library/libpng
 REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += image/library/libtiff
 REQUIRED_PACKAGES += image/library/libwebp

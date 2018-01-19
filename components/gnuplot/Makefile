@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -51,7 +51,6 @@ CONFIGURE_OPTIONS  += --x-libraries=$(CONFIGURE_LIBDIR.$(BITS))
 CONFIGURE_OPTIONS  += WX_CONFIG="$(USRBINDIR64)/wx-config"
 
 REQUIRED_PACKAGES += image/library/libjpeg
-REQUIRED_PACKAGES += image/library/libpng
 REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
