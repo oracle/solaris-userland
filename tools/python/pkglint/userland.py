@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2010, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Some userland consolidation specific lint checks
@@ -642,3 +642,42 @@ class UserlandManifestChecker(base.ManifestChecker):
 	makefile_var_check.pkglint_desc = _("Unexpanded makefile variable.")
 
 
+	# Make sure that the manifests deliver only variant.arch equal to
+	# architecture on current machine. Otherwise we may have problems later
+	# when merging i386 and sparc repos together.
+	def check_package_arch(self, manifest, engine, pkglint_id="005"):
+		arch = platform.uname()[5] # i386 or sparc
+
+		# First make sure that whole manifest does not have
+		# wrong variant.arch set
+		for v in manifest.gen_variants():
+			if v[0] != "variant.arch":
+				continue
+
+			if v[1] == set([arch]):
+				continue
+
+			engine.error(
+				_( "Package %s is being published for wrong "
+				"architecture %s instead of %s:\n%s\n") %
+				(manifest.fmri, v[1], arch, v),
+				msgid="%s%s.1" % (self.name, pkglint_id))
+
+		# Then go throught all actions in the manifest
+		for m in manifest.gen_actions():
+			# scan all variants
+			for v in m.get_variant_template():
+				if v != "variant.arch":
+					continue
+
+				if m.attrs[v] == [arch]:
+					continue
+
+				engine.error(
+					_("The manifest %s contains action with "
+					"wrong architecture '%s' (instead of '%s'):"
+					"\n%s\n") %
+					(manifest.fmri, m.attrs[v], arch, m),
+					msgid="%s%s.2" % (self.name, pkglint_id))
+
+	check_package_arch.desc = _("Wrong architecture package.")
