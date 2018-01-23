@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -29,15 +29,13 @@ include ../../make-rules/shared-macros.mk
 PATH=$(USRBINDIR):$(GNUBIN):$(USRSBINDIR):$(USRDIR)/perl5/bin
 
 COMPONENT_NAME=         squid
-COMPONENT_VERSION=      3.5.24
+COMPONENT_VERSION=      3.5.27
+TPNO=			40855 
 COMPONENT_PROJECT_URL=  http://www.squid-cache.org/
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.xz
-COMPONENT_ARCHIVE_HASH= \
-    sha256:4fe29f582eef357faa541a53835b6885e24e6f28b80a3abcdf3b57f5393bbdb2
+COMPONENT_ARCHIVE_HASH= sha256:5ddb4367f2dc635921f9ca7a59d8b87edb0412fa203d1543393ac3c7f9fef0ec
 COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)Versions/v3/3.5/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	4880
-
-TPNO=			34394
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -64,6 +62,7 @@ CONFIGURE_PREFIX =	$(USRDIR)/squid
 
 CONFIGURE_OPTIONS += --libexecdir=$(CONFIGURE_PREFIX)/libexec
 CONFIGURE_OPTIONS += --localstatedir=$(VARDIR)/squid
+CONFIGURE_OPTIONS += --with-pidfile=/system/volatile/squid.pid
 CONFIGURE_OPTIONS += --sharedstatedir=$(VARDIR)/squid
 CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)/squid
 CONFIGURE_OPTIONS += --mandir=$(CONFIGURE_PREFIX)/man
