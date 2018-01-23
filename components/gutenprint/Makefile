@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gutenprint
-COMPONENT_VERSION=	5.2.7
-COMPONENT_PROJECT_URL=	http://www.gutenprint.org/software/gutenprint/
+COMPONENT_VERSION=	5.2.13
+COMPONENT_PROJECT_URL=	http://gimp-print.sourceforge.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:114c899227e3ebb0753c1db503e6a5c1afaa4b1f1235fdfe02fb6bbd533beed1
-COMPONENT_ARCHIVE_URL=	http://voxel.dl.sourceforge.net/project/gimp-print/gutenprint-5.2/5.2.7/$(COMPONENT_ARCHIVE)
+    sha256:d9a9745d83668096e89e762e380b40629ea2dcb44a1b7027b9068c543cd02742
+COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/gimp-print/files/gutenprint-5.2/5.2.13/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1285
 
-TPNO=			8943
+TPNO=			39288
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -45,19 +45,26 @@ CONFIGURE_OPTIONS +=    --enable-cups-1_2-enhancements
 CONFIGURE_OPTIONS +=    --enable-shared
 CONFIGURE_OPTIONS +=    --disable-static-genppd
 CONFIGURE_OPTIONS +=    --enable-simplified-cups-ppds
-CONFIGURE_OPTIONS +=    --without-foomatic
-CONFIGURE_OPTIONS +=    --without-foomatic3
 CONFIGURE_OPTIONS +=    --without-readline
 CONFIGURE_OPTIONS +=    --disable-static
 
 COMPONENT_BUILD_TARGETS = all
 
+# Needed for "gmake test" to work successfully.  If SHELLOPTS is exported (as
+# it is by the Userland Makefiles), then all shell options get exported to
+# child invocations of bash, which results in test failures due to nounset and
+# xtrace being set unexpectedly, and errors such as "$1: unbound variable" and
+# diffs failing due to script tracing in output files.
+unexport SHELLOPTS
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 $(SKIP_TEST_AT_TOP_LEVEL)
 
 # the tests mostly pass, but it can't find several drivers for ppd files
 
 REQUIRED_PACKAGES += library/desktop/gtk2
 REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += library/libusb-1
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += print/cups
