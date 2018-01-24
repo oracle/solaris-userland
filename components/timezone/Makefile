@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2005, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2005, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
@@ -56,12 +56,22 @@ PKG_MACROS +=		OS_META_VERSION=$(OS_META_VERSION)
 
 POFILE=zoneinfo.po
 
-CLEAN_PATHS += $(POFILE)
+CLEAN_PATHS += $(POFILE) $(LINGUAS:%=%.mo)
 
-build:
-	@/bin/sh ./do_pofile.sh > $(POFILE)
+LINGUAS = de_DE es_ES fr_FR it_IT ja_JP ko_KR pt_BR zh_CN zh_TW
 
-install: build
+%.mo: po/%.po
+	/usr/bin/gmsgfmt -o $@.tmp $<
+	$(MV) $@.tmp $@
+
+$(PROTOUSRLIBDIR)/locale/%.UTF-8/LC_MESSAGES/SUNW_OST_ZONEINFO.mo: %.mo
+	$(MKDIR) -p $(@D)
+	$(CP) $< $@
+
+build: $(LINGUAS:%=%.mo)
+	@/bin/sh ./do_pofile.sh | /usr/bin/msguniq > $(POFILE)
+
+install: build $(LINGUAS:%=$(PROTOUSRLIBDIR)/locale/%.UTF-8/LC_MESSAGES/SUNW_OST_ZONEINFO.mo)
 	/usr/sbin/zic -d $(PROTOUSRSHARELIBDIR)/zoneinfo $(TZFILES)
 
 # empty test target

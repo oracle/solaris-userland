@@ -1,6 +1,6 @@
 #! /bin/sh
 #
-# Copyright (c) 2001, 2011, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2001, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 #
@@ -15,7 +15,8 @@ CONTINENT_FILE=continent.tab
 
 DOMAIN=SUNW_OST_ZONEINFO
 
-$ECHO "domain \"$DOMAIN\""
+$ECHO "msgid \"\""
+$ECHO "msgstr \"Content-Type: text/plain; charset=utf-8\\\n\""
 
 $ECHO "#"
 $ECHO "# These files are located in components/timezone."
@@ -30,8 +31,10 @@ $AWK -F'\t' \
 	' 
 	/^#/ { next }
 	{ 
-		printf "msgid \"%s\"\n", $2 
-		printf "msgstr \"\"\n"
+		if ($2 != "") {
+			printf "msgid \"%s\"\n", $2 
+			printf "msgstr \"\"\n"
+		}
 	}
 	' < $CONTINENT_FILE
 
@@ -44,8 +47,10 @@ $AWK -F'\t' \
 	' 
 	/^#/ { next }
 	{ 
-		printf "msgid \"%s\"\n", $2 
-		printf "msgstr \"\"\n"
+		if ($2 != "") {
+			printf "msgid \"%s\"\n", $2 
+			printf "msgstr \"\"\n"
+		}
 	}
 	' < $COUNTRY_FILE
 
@@ -59,7 +64,7 @@ $AWK -F'\t' \
 	' 
 	/^#/ { next }
 	{ 
-		if (NF > 4) {
+		if (NF > 4 && $5 != "") {
 			printf "msgid \"%s\"\n", $5 
 			printf "msgstr \"\"\n"
 		}
