@@ -19,14 +19,14 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sudo
-SRC_VERSION=	1.8.18
-SRC_PATCH_VERSION=1
+SRC_VERSION=	1.8.21
+SRC_PATCH_VERSION=2
 ifdef SRC_PATCH_VERSION
 COMPONENT_VERSION=	$(SRC_VERSION).$(SRC_PATCH_VERSION)
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(SRC_VERSION)p$(SRC_PATCH_VERSION)
@@ -35,12 +35,12 @@ COMPONENT_VERSION=	$(SRC_VERSION)
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(SRC_VERSION)
 endif
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e5a0471c721281a693025bbde33ebd9d3db43245d83ab8516bbfc23980379434
+    sha256:74c5746cd33a814e2431c39faf0d76f7f8a697379bd073862e3b156cf0d76368
 COMPONENT_ARCHIVE_URL=	http://www.sudo.ws/sudo/dist/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=  http://www.sudo.ws/
 COMPONENT_ANITYA_ID=	4906
 
-TPNO=			32515
+TPNO=			39599
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -61,6 +61,7 @@ COMPONENT_PREP_ACTION = ( cd $(@D) ; $(AUTORECONF) -f -I m4 )
 CPPFLAGS += -I$(USRINCDIR)/openldap
 CONFIGURE_ENV +=	"MAKE=$(GMAKE)"
 
+CONFIGURE_OPTIONS +=	--enable-openssl
 CONFIGURE_OPTIONS +=	--with-ldap
 CONFIGURE_OPTIONS +=	--with-project
 CONFIGURE_OPTIONS +=	--with-rundir=/system/volatile/sudo
@@ -106,6 +107,8 @@ COMPONENT_TEST_TRANSFORMS += '-e "s/\(check_ttyname:.*\)(.*)/\1/"'
 VISUDO=$(BUILD_DIR_64)/plugins/sudoers/.libs/visudo
 
 $(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += library/openldap
+REQUIRED_PACKAGES += library/security/openssl
+REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library/security/crypto
 REQUIRED_PACKAGES += system/network/ldap/openldap
