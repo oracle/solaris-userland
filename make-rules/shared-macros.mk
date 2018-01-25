@@ -124,8 +124,6 @@ OS_SUB_VERS_2 =		$(subst ., ,$(OS_SUB_VERS_1))
 OS_SUB_VERS_MINOR =	$(word 1, $(OS_SUB_VERS_2))
 OS_SUB_VERS_MICRO =	$(word 2, $(OS_SUB_VERS_2))
 OS_VERSION ?=		$(OS_SUB_VERS_MINOR).$(OS_SUB_VERS_MICRO)
-# Target OS version
-PKG_SOLARIS_VERSION ?= 11.$(UPDATENUM)
 
 # We generally build the default branch on the latest release.  But for
 # the FOSS evaluation repo project, we build on the previous release.

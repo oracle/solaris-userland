@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 
@@ -43,6 +43,9 @@
 # The value must match the update number of the release.
 #
 UPDATENUM ?= 4
+
+# Target OS version
+PKG_SOLARIS_VERSION ?= 11.$(UPDATENUM)
 
 #
 # Support Respository Update number. This is here to reserve space within the
