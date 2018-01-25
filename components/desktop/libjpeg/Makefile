@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS = 	64_and_32
@@ -30,9 +30,10 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         jpeg
 COMPONENT_VERSION=      6.0.2
-HUMAN_VERSION=          v6b2
+PROJECT_VERSION=	6b2
+HUMAN_VERSION=          v$(PROJECT_VERSION)
 COMPONENT_PROJECT_URL=  https://sourceforge.net/projects/libjpeg/
-COMPONENT_SRC=          jpeg-6b2
+COMPONENT_SRC=          jpeg-$(PROJECT_VERSION)
 COMPONENT_SRC_NAME=     jpegsrc.$(HUMAN_VERSION)
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC_NAME).tar.gz
 COMPONENT_ARCHIVE_HASH= \
@@ -55,6 +56,11 @@ CONFIGURE_ENV += INSTALL="$(INSTALL) -D"
 COMPONENT_POST_CONFIGURE_ACTION += \
 	$(GSED) -i -e 's/hardcode_into_libs=yes/hardcode_into_libs=no/' $(@D)/libtool; \
 	$(GSED) -i -e 's/hardcode_libdir_flag_spec=.*/hardcode_libdir_flag_spec=""/' $(@D)/libtool;
+
+COMPONENT_POST_INSTALL_ACTION += \
+	$(MKDIR) $(PROTOUSRLIBDIR64)/pkgconfig/ $(PROTOUSRLIBDIR)/pkgconfig/ ; \
+	sed -e 's/PROJECT_VERSION/$(PROJECT_VERSION)/' < $(COMPONENT_DIR)/files/libjpeg.pc \
+	 | $(TEE) $(PROTOUSRLIBDIR64)/pkgconfig/libjpeg.pc > $(PROTOUSRLIBDIR)/pkgconfig/libjpeg.pc ;
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
