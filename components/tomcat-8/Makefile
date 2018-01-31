@@ -20,18 +20,18 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tomcat
-COMPONENT_VERSION=	8.5.23
+COMPONENT_VERSION=	8.5.28
 COMPONENT_PROJECT_URL=	http://tomcat.apache.org/
 COMPONENT_SRC_NAME=	apache-tomcat
 COMPONENT_SRC=		$(COMPONENT_SRC_NAME)-$(COMPONENT_VERSION)-src
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:eaaf35752841356dec976fa6250cd71680b8b5b9c0bdf4df9a86ac38630bcbd4
+    sha256:74437356c3fb13315d6d4b6be4a7603e1fe2d1b91cc23dfee8ac66a9f4604b60
 COMPONENT_ARCHIVE_URL=	https://archive.apache.org/dist/tomcat/tomcat-8/v$(COMPONENT_VERSION)/src/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	4987
 
@@ -41,7 +41,7 @@ COMPONENT_ARCHIVE_HASH_1= \
     sha256:f4be12aeaa50d54e883e75ee524c69ec9ed6a7c74bce4ef70d4adaff9a7e8e85
 COMPONENT_ARCHIVE_URL_1= http://archive.eclipse.org/eclipse/downloads/drops4/R-4.6.3-201703010400/$(COMPONENT_ARCHIVE_1)
 
-TPNO=			38738
+TPNO=			41389
 
 BUILD_STYLE= ant
 TEST_TARGET= $(SKIP_TEST)
