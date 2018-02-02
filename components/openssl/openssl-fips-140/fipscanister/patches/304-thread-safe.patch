@@ -57,3 +57,73 @@
  #endif
  		}
  	else
+--- a/fips/utl/fips_lck.c	2018-01-31 08:00:22.264949838 -0800
++++ b/fips/utl/fips_lck.c	2018-01-31 08:23:54.528551838 -0800
+@@ -55,6 +55,7 @@
+ 
+ #include <openssl/evp.h>
+ #include <openssl/fips.h>
++#include <pthread.h>
+ 
+ /* FIPS locking callbacks */
+ 
+@@ -62,11 +63,33 @@
+ static int (*fips_add_cb)(int *pointer, int amount, int type, const char *file,
+ 	     int line);
+ 
++static pthread_mutex_t *solaris_fips_openssl_locks;
++
++void
++solaris_fips_locking_setup()
++	{
++	int i;
++	/* allocate and initialize locks needed by OpenSSL  */
++	solaris_fips_openssl_locks =
++	    OPENSSL_malloc(sizeof (pthread_mutex_t) * CRYPTO_NUM_LOCKS);
++	if (solaris_fips_openssl_locks == NULL) {
++		fprintf(stderr,
++		    "solaris_fips_locking_setup: memory allocation failure.\n");
++		abort();
++	}
++	for (i = 0; i < CRYPTO_NUM_LOCKS; i++) {
++		(void) pthread_mutex_init(&solaris_fips_openssl_locks[i], NULL);
++	}
++}
++
+ void FIPS_lock(int mode, int type,const char *file,int line)
+ 	{
+-	if (fips_lck_cb)
+-		fips_lck_cb(mode, type, file, line);
++	if (mode & CRYPTO_LOCK) {
++		(void) pthread_mutex_lock(&solaris_fips_openssl_locks[type]);
++	} else {
++		(void) pthread_mutex_unlock(&solaris_fips_openssl_locks[type]);
+ 	}
++	}
+ 
+ void FIPS_set_locking_callbacks(void (*func)(int mode, int type,
+ 				const char *file,int line),
+@@ -73,15 +99,19 @@
+ 				int (*add_cb)(int *pointer, int amount,
+ 					int type, const char *file, int line))
+ 	{
+-	fips_lck_cb = func;
+-	fips_add_cb = add_cb;
++	/*
++	 * we now setup our own mutex pool: locking callbacks not used
++	 */
++	fips_lck_cb = NULL;
++	fips_add_cb = NULL;
+ 	}
+ 
+ int FIPS_add_lock(int *pointer, int amount, int type, const char *file,
+ 	     int line)
+ 	{
+-	if (fips_add_cb)
+-		return fips_add_cb(pointer, amount, type, file, line);
++	/* atomic add : protect the operation with mutex */
++	FIPS_lock(CRYPTO_LOCK, type, file, line);
+ 	*pointer += amount;
++	FIPS_lock(CRYPTO_UNLOCK, type, file, line);
+ 	return *pointer;
+ 	}
