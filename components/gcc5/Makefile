@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 export PARFAIT_BUILD=no
 BUILD_BITS= 64
@@ -127,7 +127,26 @@ CONFIGURE_ENV     += PYTHON="$(PYTHON)"
 COMPONENT_POST_INSTALL_ACTION = \
 	( gfind $(PROTO_DIR)$(CONFIGURE_PREFIX) -name '*.py' | \
 	  xargs -n 1 dirname | sort -u | \
-	  xargs $(PYTHON) -m compileall )
+	  xargs $(PYTHON) -m compileall ) ;
+
+# Make sure that gcc5 binaries and libraries depend on gcc5 runtime
+# (not system gcc runtime). This fixes packaging issue after gcc system
+# runtime is delivered from gcc7.
+COMPONENT_POST_INSTALL_ACTION += \
+	( for f in cpp g++ gcc gcov gcov-tool gfortran ; do \
+	    $(ELFEDIT) -e "dyn:rpath /usr/gcc/$(GCC_MAJOR_VERSION)/lib/$(MACH64)" \
+	      $(PROTOUSRDIR)/gcc/$(GCC_MAJOR_VERSION)/bin/$$f ; \
+	  done ) ; \
+	( for f in cc1 cc1obj cc1plus collect2 f951 lto-wrapper lto1 plugin/libcc1plugin.so.0.0.0 ; do \
+	    $(ELFEDIT) -e "dyn:rpath /usr/gcc/$(GCC_MAJOR_VERSION)/lib/$(MACH64)" \
+	      $(PROTOUSRDIR)/gcc/$(GCC_MAJOR_VERSION)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/$$f ; \
+	  done ) ; \
+	( for f in libobjc.so.4.0.0 libstdc++.so.6.0.21 libitm.so.1.0.0 libgfortran.so.3.0.0 libcc1.so.0.0.0; do \
+	    $(ELFEDIT) -e "dyn:rpath /usr/gcc/$(GCC_MAJOR_VERSION)/lib" \
+	      $(PROTOUSRDIR)/gcc/$(GCC_MAJOR_VERSION)/lib/$$f ; \
+	    $(ELFEDIT) -e "dyn:rpath /usr/gcc/$(GCC_MAJOR_VERSION)/lib/$(MACH64)" \
+	      $(PROTOUSRDIR)/gcc/$(GCC_MAJOR_VERSION)/lib/$(MACH64)/$$f ; \
+	  done ) ;
 
 COMPONENT_BUILD_ARGS += $(JOBS:%=-j%)
 
