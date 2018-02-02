@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2008, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2008, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ def get_solaris_dashboard_url():
 help_link= {
 	'header' : N_("Learn More about Oracle Solaris"),
 	'icon' : "resources.png",
-	'url_links' : [ ["http://docs.oracle.com/cd/E53394_01/pdf/E54847.pdf", N_("##What's new## with <b>Oracle Solaris 11.3</b>")], ["http://www.oracle.com/us/support/systems/index.html", N_("##Get world class support## with <b>Oracle Premier Support</b>")], [get_solaris_dashboard_url(), N_("##Explore## the <b>Oracle Solaris Dashboard</b> with system analytics and more")] ],
+	'url_links' : [ ["https://docs.oracle.com/cd/E37838_01/html/E60974/index.html", N_("##What's new## with <b>Oracle Solaris 11.4</b>")], ["https://www.oracle.com/us/support/systems/index.html", N_("##Get world class support## with <b>Oracle Premier Support</b>")], [get_solaris_dashboard_url(), N_("##Explore## the <b>Oracle Solaris Dashboard</b> with system analytics and more")] ],
 }
 
 personalize_link= {
