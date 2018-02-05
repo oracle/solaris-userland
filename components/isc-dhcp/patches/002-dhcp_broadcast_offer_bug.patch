@@ -3,8 +3,9 @@ working with upstream, but it is unclear at this point whether or not they are
 going to accept it. This is a highly visible bug which many customers have
 encountered.
 
---- old/common/socket.c	Tue Mar  1 19:45:19 2016
-+++ new/common/socket.c	Tue Mar  1 19:45:18 2016
+diff -r 1680283c6725 common/socket.c
+--- a/common/socket.c	Tue Jan 16 13:35:26 2018 -0800
++++ b/common/socket.c	Tue Jan 16 17:55:37 2018 -0800
 @@ -39,6 +39,9 @@
  #include <sys/ioctl.h>
  #include <sys/uio.h>
@@ -33,8 +34,8 @@ encountered.
 +	sin->sin_addr.s_addr = ip_addr.s_addr;
 +
 +	ar.xarp_ha.sdl_alen = ETHERADDRL;
-+	(void) memcpy(LLADDR(&ar.xarp_ha), macaddr, ar.xarp_ha.sdl_alen); 
-+	ar.xarp_ha.sdl_family = AF_LINK; 
++	(void) memcpy(LLADDR(&ar.xarp_ha), macaddr, ar.xarp_ha.sdl_alen);
++	ar.xarp_ha.sdl_family = AF_LINK;
 +	if (ioctl(interface->set_arp_socket, SIOCSXARP, (caddr_t)&ar) < 0) {
 +		log_error("setup_arp: ioctl error for IP %s MAC %s",
 +		   inet_ntoa(ip_addr), ether_ntoa((const struct ether_addr *)
@@ -49,7 +50,7 @@ encountered.
  /* Reinitializes the specified interface after an address change.   This
     is not required for packet-filter APIs. */
  
-@@ -337,6 +367,9 @@
+@@ -340,6 +370,9 @@
  #else
  	info->wfdesc = info->rfdesc;
  #endif
@@ -59,7 +60,7 @@ encountered.
  	if (!quiet_interface_discovery)
  		log_info ("Sending on   Socket/%s%s%s",
  		      info->name,
-@@ -353,6 +386,9 @@
+@@ -356,6 +389,9 @@
  	close (info -> wfdesc);
  #endif
  	info -> wfdesc = -1;
@@ -69,7 +70,7 @@ encountered.
  
  	if (!quiet_interface_discovery)
  		log_info ("Disabling output on Socket/%s%s%s",
-@@ -1088,7 +1124,11 @@
+@@ -1091,7 +1127,11 @@
  int can_unicast_without_arp (ip)
  	struct interface_info *ip;
  {
@@ -81,9 +82,10 @@ encountered.
  }
  
  int can_receive_unicast_unconfigured (ip)
---- old/includes/dhcpd.h	Tue Mar  1 19:45:19 2016
-+++ new/includes/dhcpd.h	Tue Mar  1 19:45:18 2016
-@@ -1354,6 +1354,9 @@
+diff -r 1680283c6725 includes/dhcpd.h
+--- a/includes/dhcpd.h	Tue Jan 16 13:35:26 2018 -0800
++++ b/includes/dhcpd.h	Tue Jan 16 17:55:37 2018 -0800
+@@ -1378,6 +1378,9 @@
  	int configured;			/* If set to 1, interface has at least
  					 * one valid IP address.
  					 */
@@ -93,7 +95,7 @@ encountered.
  	u_int32_t flags;		/* Control flags... */
  #define INTERFACE_REQUESTED 1
  #define INTERFACE_AUTOMATIC 2
-@@ -2563,6 +2566,10 @@
+@@ -2608,6 +2611,10 @@
  		       struct sockaddr_in6 *, struct hardware *);
  #endif
  
@@ -104,9 +106,10 @@ encountered.
  #ifdef USE_SOCKET_SEND
  void if_reinitialize_send (struct interface_info *);
  void if_register_send (struct interface_info *);
---- old/relay/dhcrelay.c	Tue Mar  1 19:45:19 2016
-+++ new/relay/dhcrelay.c	Tue Mar  1 19:45:18 2016
-@@ -653,6 +653,13 @@
+diff -r 1680283c6725 relay/dhcrelay.c
+--- a/relay/dhcrelay.c	Tue Jan 16 13:35:26 2018 -0800
++++ b/relay/dhcrelay.c	Tue Jan 16 17:55:37 2018 -0800
+@@ -759,6 +759,13 @@
  			to.sin_addr = packet->yiaddr;
  			to.sin_port = remote_port;
  
@@ -120,9 +123,10 @@ encountered.
  			/* and hardware address is not broadcast */
  			htop = &hto;
  		} else {
---- old/server/bootp.c	Tue Mar  1 19:45:19 2016
-+++ new/server/bootp.c	Tue Mar  1 19:45:18 2016
-@@ -410,7 +410,12 @@
+diff -r 1680283c6725 server/bootp.c
+--- a/server/bootp.c	Tue Jan 16 13:35:26 2018 -0800
++++ b/server/bootp.c	Tue Jan 16 17:55:37 2018 -0800
+@@ -437,7 +437,12 @@
  		   can_unicast_without_arp (packet -> interface)) {
  		to.sin_addr = raw.yiaddr;
  		to.sin_port = remote_port;
@@ -136,8 +140,9 @@ encountered.
  	/* Otherwise, broadcast it on the local network. */
  	} else {
  		to.sin_addr = limited_broadcast;
---- old/server/dhcp.c	Tue Mar  1 19:45:19 2016
-+++ new/server/dhcp.c	Tue Mar  1 19:45:18 2016
+diff -r 1680283c6725 server/dhcp.c
+--- a/server/dhcp.c	Tue Jan 16 13:35:26 2018 -0800
++++ b/server/dhcp.c	Tue Jan 16 17:55:37 2018 -0800
 @@ -30,6 +30,8 @@
  #include <errno.h>
  #include <limits.h>
@@ -147,7 +152,7 @@ encountered.
  
  static void maybe_return_agent_options(struct packet *packet,
  				       struct option_state *options);
-@@ -3745,7 +3747,12 @@
+@@ -3991,7 +3993,12 @@
  		   can_unicast_without_arp (state -> ip)) {
  		to.sin_addr = raw.yiaddr;
  		to.sin_port = remote_port;
@@ -161,7 +166,7 @@ encountered.
  	/* Otherwise, broadcast it on the local network. */
  	} else {
  		to.sin_addr = limited_broadcast;
-@@ -3767,7 +3774,9 @@
+@@ -4013,7 +4020,9 @@
  
  	/* Free all of the entries in the option_state structure
  	   now that we're done with them. */

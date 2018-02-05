@@ -4,9 +4,10 @@ in-house. ISC did not express any interest in incorporating this patch
 into their code since they consider the limit to be a mitigating
 solution.
 
---- old/includes/omapip/omapip.h	Tue May 24 17:01:08 2016
-+++ new/includes/omapip/omapip.h	Tue May 24 17:01:08 2016
-@@ -468,6 +468,9 @@
+diff -r 1680283c6725 includes/omapip/omapip.h
+--- a/includes/omapip/omapip.h	Tue Jan 16 13:35:26 2018 -0800
++++ b/includes/omapip/omapip.h	Tue Jan 16 18:01:14 2018 -0800
+@@ -467,6 +467,9 @@
  
  extern omapi_object_type_t *omapi_object_types;
  
@@ -16,9 +17,10 @@ solution.
  void omapi_type_relinquish (void);
  isc_result_t omapi_init (void);
  isc_result_t omapi_object_type_register (omapi_object_type_t **,
---- old/omapip/listener.c	Tue May 24 17:01:08 2016
-+++ new/omapip/listener.c	Tue May 24 17:01:08 2016
-@@ -41,6 +41,10 @@
+diff -r 1680283c6725 omapip/listener.c
+--- a/omapip/listener.c	Tue Jan 16 13:35:26 2018 -0800
++++ b/omapip/listener.c	Tue Jan 16 18:01:14 2018 -0800
+@@ -40,6 +40,10 @@
  trace_type_t *trace_listener_accept;
  #endif
  
@@ -29,7 +31,7 @@ solution.
  OMAPI_OBJECT_ALLOC (omapi_listener,
  		    omapi_listener_object_t, omapi_type_listener)
  
-@@ -210,6 +214,35 @@
+@@ -209,6 +213,35 @@
  	return l -> socket;
  }
  
@@ -65,7 +67,7 @@ solution.
  /* Reader callback for a listener object.   Accept an incoming connection. */
  isc_result_t omapi_accept (omapi_object_t *h)
  {
-@@ -234,7 +267,13 @@
+@@ -233,7 +266,13 @@
  		return ISC_R_UNEXPECTED;
  	}
  
@@ -79,9 +81,10 @@ solution.
  		close(socket);
  		return (ISC_R_NORESOURCES);
  	}
---- old/server/dhcpd.c	Tue May 24 17:01:08 2016
-+++ new/server/dhcpd.c	Tue May 24 17:01:08 2016
-@@ -363,6 +363,10 @@
+diff -r 1680283c6725 server/dhcpd.c
+--- a/server/dhcpd.c	Tue Jan 16 13:35:26 2018 -0800
++++ b/server/dhcpd.c	Tue Jan 16 18:01:14 2018 -0800
+@@ -452,6 +452,10 @@
  		path_dhcpd_conf = s;
  	}
  

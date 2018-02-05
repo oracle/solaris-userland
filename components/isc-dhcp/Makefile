@@ -20,25 +20,26 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		isc-dhcp
-COMPONENT_VERSION=	4.3.3-P1
+COMPONENT_VERSION=	4.3.6
 HUMAN_VERSION=		$(COMPONENT_VERSION)-S1
-IPS_COMPONENT_VERSION=	4.3.3.1.1
+IPS_COMPONENT_VERSION=	4.3.6.0.1
 COMPONENT_SRC_NAME=	dhcp
 COMPONENT_PROJECT_URL=	http://www.isc.org/software/dhcp/
 COMPONENT_ARCHIVE_URL=  \
     http://ftp.isc.org/isc/dhcp/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-    sha256:c11e896dffa1bfbc49462965d3f6dec45534e34068603546d9a236f2aa669921
+    sha256:a41eaf6364f1377fe065d35671d9cf82bbbc8f21207819b2b9f33f652aec6f1b
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sha512.asc
 COMPONENT_BUGDB=	service/dhcp-server
 COMPONENT_ANITYA_ID=	5584
 
-TPNO=			27530
+TPNO=			40591
 
 INSTALL_TARGET=
 include $(WS_MAKE_RULES)/common.mk
@@ -63,7 +64,7 @@ CONFIGURE_OPTIONS  +=	--bindir=$(USRSBINDIR)
 CONFIGURE_OPTIONS  +=	--enable-use-sockets
 CONFIGURE_OPTIONS  +=	--enable-ipv4-pktinfo
 CONFIGURE_OPTIONS  +=	--with-pic
-CONFIGURE_OPTIONS +=	--srcdir=$(BUILD_DIR_$(BITS))
+CONFIGURE_OPTIONS  +=	--srcdir=$(BUILD_DIR_$(BITS))
 
 CFLAGS += -g -fPIC
 
