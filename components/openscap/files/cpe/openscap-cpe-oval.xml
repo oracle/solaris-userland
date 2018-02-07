@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+  Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 -->
 <oval_definitions xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -269,6 +269,25 @@
              test_ref="oval:com.oracle.solaris.cpe:tst:1107" />
       </criteria>
     </definition>
+    <definition id="oval:com.oracle.solaris.cpe:def:128" version="1"
+         class="inventory">
+      <metadata>
+        <title>Oracle Solaris 11 configured as Cluster</title>
+        <affected family="unix">
+          <product>Oracle Solaris</product>
+        </affected>
+        <description>
+          Oracle Solaris 11 configured as Cluster
+        </description>
+      </metadata>
+      <criteria operator="AND" negate="false"
+           comment="Application is Oracle Solaris cluster">
+        <criterion comment="Oracle Solaris 11"
+             test_ref="oval:com.oracle.solaris.cpe:tst:11" />
+        <criterion comment="Application is Oracle Solaris cluster"
+             test_ref="oval:com.oracle.solaris.cpe:tst:128" />
+      </criteria>
+    </definition>
   </definitions>
   <tests>
     <uname_test xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#unix"
@@ -355,6 +374,13 @@
       <object object_ref="oval:com.oracle.solaris.cpe:obj:2" />
       <state state_ref="oval:com.oracle.solaris.cpe:ste:1107" />
     </virtualizationinfo_test>
+    <smf_test xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#solaris"
+         id="oval:com.oracle.solaris.cpe:tst:128" version="1"
+         check="all" comment="svc:/system/cluster/cl-svc-cluster-milestone:default enabled"
+         check_existence="at_least_one_exists">
+      <object object_ref="oval:com.oracle.solaris.cpe:obj:128" />
+      <state state_ref="oval:com.oracle.solaris.cpe:ste:128" />
+    </smf_test>
   </tests>
   <objects>
     <uname_object
@@ -365,6 +391,12 @@
          xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#solaris"
          id="oval:com.oracle.solaris.cpe:obj:2" version="1"
          comment="Solaris Virtual Environment" />
+    <smf_object
+         xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#solaris"
+         id="oval:com.oracle.solaris.cpe:obj:128" version="1"
+         comment="svc:/system/cluster/cl-svc-cluster-milestone:default enabled">
+      <fmri datatype="string" operation="equals">svc:/system/cluster/cl-svc-cluster-milestone:default</fmri>
+    </smf_object>
   </objects>
   <states>
     <uname_state
@@ -495,5 +527,12 @@
       <ldom-role datatype="string" operation="equals"
           entity_check="all">service-role</ldom-role>
     </virtualizationinfo_state>
+    <smf_state
+         xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#solaris"
+         id="oval:com.oracle.solaris.cpe:ste:128" version="1"
+         comment="fmri marked as ONLINE">
+      <service_state datatype="string" operation="equals" entity_check="all"
+           var_check="all">ONLINE</service_state>
+    </smf_state>
   </states>
 </oval_definitions>
