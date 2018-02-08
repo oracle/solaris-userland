@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 # Must use gcc because of 21090206
@@ -29,14 +29,14 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		php
-COMPONENT_VERSION=	5.6.31
+COMPONENT_VERSION=	5.6.34
 UL_PHP_MINOR_VERSION=	5.6
 COMPONENT_PROJECT_URL=	http://php.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=\
-    sha256:c464af61240a9b7729fabe0314cdbdd5a000a4f0c9bd201f89f8628732fe4ae4
+    sha256:21453be3a045204cd2717543ef42771324f411f40962ecda4fe841930a933128
 COMPONENT_ARCHIVE_URL=	http://php.net/get/$(COMPONENT_ARCHIVE)/from/this/mirror
-TPNO=			37403
+TPNO=			41442
 COMPONENT_ANITYA_ID=	12535
 
 include $(WS_MAKE_RULES)/common.mk
@@ -116,6 +116,8 @@ COMPONENT_POST_INSTALL_ACTION += \
 	 > proto-scripts/php-config-proto ; \
 	chmod 755 proto-scripts/php-config-proto ) ;
 
+# sapi/fpm/tests/002.phpt leaves php-fpm running
+COMPONENT_PRE_TEST_ACTION += (pkill -u `id -u` php-fpm; exit 0);
 # test failures; keep going
 COMPONENT_TEST_ARGS += -k -i
 # different results for different architectures

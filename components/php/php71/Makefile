@@ -25,22 +25,20 @@
 BUILD_BITS= 64
 # Must use gcc because of 21090206
 COMPILER= gcc
+
 include ../../../make-rules/shared-macros.mk
 
-# with gcc7 on sparc build cores dump
-GCC_ROOT = /usr/gcc/5
-
 COMPONENT_NAME=		php
-COMPONENT_VERSION=	7.1.8
+COMPONENT_VERSION=	7.1.15
 UL_PHP_MINOR_VERSION=	7.1
 COMPONENT_PROJECT_URL=	http://php.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=\
-    sha256:8943858738604acb33ecedb865d6c4051eeffe4e2d06f3a3c8f794daccaa2aab
+    sha256:0e17192fb43532e4ebaa190ecec9c7e59deea7dadb7dab67b19c2081a68bd817
 COMPONENT_ARCHIVE_URL=	http://php.net/get/$(COMPONENT_ARCHIVE)/from/this/mirror
 COMPONENT_ANITYA_ID=	3627
 
-TPNO=			37404
+TPNO=			41441
 
 include $(WS_MAKE_RULES)/common.mk
 include $(PHP_TOP_DIR)/php.mk
@@ -135,6 +133,8 @@ COMPONENT_POST_INSTALL_ACTION += \
 	 > proto-scripts/php-config-proto ; \
 	chmod 755 proto-scripts/php-config-proto ) ;
 
+# sapi/fpm/tests/002.phpt leaves php-fpm running
+COMPONENT_PRE_TEST_ACTION += (pkill -u `id -u` php-fpm; exit 0);
 # test failures; keep going
 COMPONENT_TEST_ARGS += -k -i
 # different results for different architectures
@@ -148,9 +148,7 @@ CLEAN_PATHS += proto-scripts
 $(SKIP_TEST_AT_TOP_LEVEL)
 
 REQUIRED_PACKAGES += developer/icu
-REQUIRED_PACKAGES += developer/gcc-5
 REQUIRED_PACKAGES += library/libxml2
-$(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += library/openldap
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += system/dtrace
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

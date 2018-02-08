@@ -1,108 +1,62 @@
-Current as of:
-Tuesday, August 29, 2017 02:56:20 PM PDT
+AMP Configuration Testing
+=========================
 
-Internal Test Suites:
-The internal test suites for the php interpreters are unstable from
-run to run.  Sporatic PASS / FAILS happen for some unknown reason.
-Still, 99.9% of the test results match the stored results.
-I tend to focus on Summary towards the end of the test run and in particular
-I look at the last percentage on the last line; 98.1%.
-I think that means 98.1% of the tests run passed.
-This shows a normal and acceptable result.
+# set http_proxy if needed
 
-TEST RESULT SUMMARY
----------------------------------------------------------------------
-Exts skipped    :   18
-Exts tested     :   62
----------------------------------------------------------------------
+# select which version to test
+VERS=5.6
+VERS=7.1
 
-Number of tests : 13992             11855
-Tests skipped   : 2137 ( 15.3%) --------
-Tests warned    :    6 (  0.0%) (  0.1%)
-Tests failed    :  173 (  1.2%) (  1.5%)
-Expected fail   :   41 (  0.3%) (  0.3%)
-Tests passed    : 11635 ( 83.2%) ( 98.1%)
+# prepare database
+pkg install mysql-57 mysql-57/client
+svcadm enable svc:/application/database/mysql:version_57
+while $(svcs mysql:version_57 | grep -q online && echo false || echo true); do echo "Waiting for MySQL.."; sleep 1; done
+mysql --connect-expired-password -p"$(grep 'temporary password'  /var/mysql/5.7/data/`hostname`.err | awk '{print $11}')" <<EOF
+SET PASSWORD = PASSWORD('password123');
+create database php;
+GRANT ALL PRIVILEGES ON php.* TO php@localhost IDENTIFIED BY 'php123' WITH GRANT OPTION;
+flush privileges;
+EOF
 
+# prepare Apache with PHP (PHP 5.6 on sparc needs prefork MPM)
+echo $VERS`uname -p` | grep -q '5.6sparc' && bash -c 'svccfg -s apache24 setprop httpd/MPM=prefork; svcadm refresh apache24'
+# enable PHP extensions (zip is needed by Joomla)
+gsed -i -e '/mysql/s/^;//' -e '/zip/s/^;//' /etc/php/$VERS/conf.d/extensions.ini
+# start Apache HTTP server with PHP
+cp /etc/apache2/2.4/samples-conf.d/php$VERS.conf /etc/apache2/2.4/conf.d/
+svcadm enable apache24
 
-AMP Configuration Testing:
-While the internal test suites show that the interpreter is healthy what
-really matters is does PHP work in a web configuration.
-
-These instructions are for testing php in an AMP (Apache, Mysql, PHP) style
-configuration.
-
-Installing Wordpress
-====================
-
-Following:
-http://codex.wordpress.org/Installing_WordPress
-to install.
-
-Use mysql 5.5 for now.
-mysql 5.7 has some authentication restriction which I haven't figured
-out yet.
-# pkg set-mediator --no-backup-be -v -V 5.5 mysql
-# svcadm enable mysql:version_55
-# svcs -p mysql
-  [Patience.  mysql is slow starting up sometimes.  Keep checking.]
-# cp /etc/apache2/2.4/samples-conf.d/php5.6.conf /etc/apache2/2.4/conf.d/
-# vi /etc/php/5.6/conf.d/extensions.ini
-uncomment
-	extension=mysql.so
-	extension=mysqli.so
-	extension=pdo_mysql.so
-
-# svcs -p http
-If apache24 is NOT online do:
-# svcadm enable apache24
-If apache24 is online do:
-# svcadm restart apache24
-# svcs -p http
-
-1) # cd /var/apache2/2.4/htdocs
-   Move index.html out of the way so we get a directory listing.
-   # mv index.html itworks.html
-   Optionally create this file.  Browse to this file to check php information.
-   # cat > phpinfo.php
+# add PHP info page
+cat > /var/apache2/2.4/htdocs/phpinfo.php <<EOF
 <?php
 phpinfo();
 ?>
+EOF
 
-   # wget http://wordpress.org/latest.zip
-   # unzip latest.zip
-   Creates the directory wordpress
+# prepate Wordpress
+wget http://wordpress.org/latest.zip -O /var/tmp/wp-latest.zip
+cd /var/apache2/2.4/htdocs
+unzip /var/tmp/wp-latest.zip
+gsed -e 's/database_name_here/php/' \
+     -e 's/username_here/php/' \
+     -e 's/password_here/php123/' wordpress/wp-config-sample.php > wordpress/wp-config.php
+chown -R webservd:webservd wordpress
 
-2) Create the Database and a User
+# prepare Joomla
+wget -O /var/tmp/joomla.zip https://downloads.joomla.org/cms/joomla3/3-8-5/Joomla_3-8-5-Stable-Full_Package.zip
+cd /var/apache2/2.4/htdocs/
+mkdir joomla; bash -c 'cd joomla/; unzip /var/tmp/joomla.zip'
+chown -R webservd:webservd joomla
 
-   As root; make a database
-   We need the choose the following values before creating a mysql database.
-   These are only samples.  NOT something you must use but you can use.
-   DB_NAME=wordpress
-   DB_USER=wordpress
-   DB_PASSWORD="{root's password}"
-   DB_HOST=localhost
 
-   # mysql
-   mysql> create database wordpress;
-   mysql> grant all privileges on wordpress.* to "wordpress"@"localhost" identified by "{root's password}";
-   mysql> flush privileges;
-   mysql> exit;
+PHPinfo:
+========
+http://{testing machine}/phpinfo.php
 
-   mysql> show databases;    ## to see all databases
-   mysql> drop database {database};    ## to delete {database}
-
-3) # cd /var/apache2/2.4/htdocs/wordpress
-   # cp wp-config-sample.php wp-config.php
-   [edit wp-config.php and enter values listed above]:
-   DB_NAME
-   DB_USER
-   DB_PASSWORD
-   DB_HOST
-
-   Save the file.
-
-4) In your web browser to go:
-   http://{testing machine}.us.oracle.com/wordpress/wp-admin/install.php
+Wordpress:
+==========
+1) In your web browser to go:
+   http://{testing machine}/wordpress/
 
    Site Title = {your choice}
    User = admin
@@ -112,13 +66,13 @@ phpinfo();
 
    Click Install WordPress
 
-5) Your wordpress site is ready as:
+2) Your wordpress site is ready as:
    http://{testing machine}.us.oracle.com/wordpress/
    Click Log In
    Username: admin
    Password: "{root's password}"
 
-6) Test the site.
+3) Test the site.
    Top left corner.  Click on house icon.
    Scroll down to see the current content.
    Click New -> Post
@@ -129,42 +83,13 @@ phpinfo();
    Click on EDIT that appears in your new post and change something and Publish again.
 
 
-Installing Joomla
-=================
-
-# cd /var/apache2/2.4/htdocs
-
-## Can no longer download directly from Joomla website.
-## Download with browser and copy manually.
-
-https://downloads.joomla.org/
-
-# mkdir joomla
-# cd joomla
-# unzip ~/Downloads/Joomla_3.7.1-Stable-Full_Package.zip
-
-Enable mysql if you have not already.
-# svcadm enable svc:/application/database/mysql:version_55
-
-See wordpress comments about enabling php extensions.
-# vi /etc/php/5.6/conf.d/extensions.ini
-    uncomment:
-    extension=zip.so
-# vi /etc/php/5.6/php.ini
-    Change output_buffering to:
-    output_buffering = Off
-Restart apache to pick up these changes.
-# svcadm restart apache24
-
-# cd /var/apache/2.4/htdocs/joomla
-# chown webservd:webservd .
-# chown -R webservd:webservd *
+Joomla
+======
 
 Start installation by browsing here:
-http://{testing machine}.us.oracle.com/joomla/installation/index.php
+http://{testing machine}/joomla/
 
 Then configure:
-
 
 Main Configuration:
     Site Name: {your choice}
@@ -177,9 +102,9 @@ Main Configuration:
 Database Configuration:
     Database Type: Mysqli
     Host Name: localhost
-    Username: root
-    Password: [leave blank]
-    Database Name: {your choice}
+    Username: php
+    Password: php123
+    Database Name: php
     Table Prefix: [don't change]
     Old Database Process: {your choice}
 

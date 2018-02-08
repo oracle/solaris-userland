@@ -1,0 +1,19 @@
+Patch origin: in-house
+Patch status: Solaris-specific; not suitable for upstream
+
+gcc 7 build issue
+
+--- a/Zend/zend_language_parser.c
++++ b/Zend/zend_language_parser.c
+@@ -40,6 +40,11 @@
+    define necessary library symbols; they are noted "INFRINGES ON
+    USER NAME SPACE" below.  */
+ 
++/* php cores dump when built with gcc 7 on sparc with -O2 and above */
++#ifdef __sparc__
++#pragma GCC optimize ("-fno-gcse")
++#endif
++
+ /* Identify Bison output.  */
+ #define YYBISON 1
+ 
