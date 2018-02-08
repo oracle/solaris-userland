@@ -68,6 +68,8 @@ CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS +=	--with-ssl=openssl
 CONFIGURE_OPTIONS +=	--infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS +=	PATH="$(PATH):/usr/perl5/bin"
+CPPFLAGS +=	-I/usr/include/idn
+CONFIGURE_OPTIONS +=	CPPFLAGS="$(CPPFLAGS)"
 
 # No proxy settings for the tests because it runs it's own server on localhost
 # which can be unreachable via proxy
@@ -76,7 +78,7 @@ COMPONENT_TEST_ENV += "https_proxy="
 COMPONENT_TEST_ENV += "ftp_proxy="
 COMPONENT_TEST_ENV += "no_proxy="
 
-REQUIRED_PACKAGES += library/libidn
+REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/pcre
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/zlib
