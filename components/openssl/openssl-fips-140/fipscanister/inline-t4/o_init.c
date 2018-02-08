@@ -69,8 +69,6 @@
 int fips_drbg_type = OPENSSL_DRBG_DEFAULT_TYPE;
 int fips_drbg_flags = OPENSSL_DRBG_DEFAULT_FLAGS;
 
-extern void solaris_fips_locking_setup();
-
 /*
  * FIPS DRBG initialisation code. This sets up the DRBG for use by the rest
  * of OpenSSL.
@@ -155,6 +153,5 @@ void OPENSSL_init(void)
         return;
     done = 1;
 
-    solaris_fips_locking_setup();
     solaris_RAND_init_fips();
 }
