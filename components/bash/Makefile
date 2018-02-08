@@ -20,18 +20,20 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		bash
-COMPONENT_VERSION=	4.4
+COMPONENT_VERSION=	4.4.19
 COMPONENT_ARCHIVE_HASH = \
-    sha256:d86b3392c1202e8ff5a423b302e6284db7f8f435ea9f39b5b1b20fd3ac36dfcb
+    sha256:aacffe428679a53d31127bf406693f9340a5fe8cba46d6648b6beb9fb2575917
 COMPONENT_ANITYA_ID=	166
+# We have 4.4.18 tarball plus a patch
+COMPONENT_SRC ?=        $(COMPONENT_SRC_NAME)-4.4.18
 
-TPNO=			32706
+TPNO=			42414
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
