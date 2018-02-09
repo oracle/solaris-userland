@@ -153,7 +153,9 @@ else
 endif
 
 tools:
-	@cd ../tools ; echo "building tools..." ; $(GMAKE) clean setup
+	@echo "building tools..."
+	+$(GMAKE) -C ../tools clean setup
+
 
 $(COMPONENT_DIRS):	$(WS_LOGS) setup FORCE
 	@cd $@ && echo "$(TARGET) $@" && \
