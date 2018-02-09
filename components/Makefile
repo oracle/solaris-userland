@@ -154,7 +154,8 @@ endif
 
 tools:
 	@echo "building tools..."
-	+$(GMAKE) -C ../tools clean setup
+	+$(GMAKE) -C ../tools clean
+	+$(GMAKE) -C ../tools setup
 
 
 $(COMPONENT_DIRS):	$(WS_LOGS) setup FORCE
