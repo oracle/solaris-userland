@@ -20,27 +20,23 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nano
-COMPONENT_VERSION=	2.8.6
+COMPONENT_VERSION=	2.9.3
 COMPONENT_PROJECT_URL=	http://www.nano-editor.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:3725aa145880223b2c4d0b3fa08220e1633f2d341917f49d028e067fc12cce49
-COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)dist/v2.8/$(COMPONENT_ARCHIVE)
+    sha256:f12058ead9955cb841c1c5e3b9aec6ba93114a807580e928de0eaf6144c91074
+COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)dist/v2.9/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	2046
 
-TPNO=			37029
+TPNO=			40914
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
-
-# Ensure ancient autoconf scripts are overwritten with fixed versions that
-# properly detect SunOS 5.x hosts.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv)
 
 CPPFLAGS += -I$(USRINCDIR)/ncurses
 CFLAGS += -I$(USRINCDIR)/ncurses
