@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -315,7 +315,7 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/ERROR/p" '
 
 REQUIRED_PACKAGES += library/gmp
-REQUIRED_PACKAGES += library/libidn
+REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/security/nettle
 REQUIRED_PACKAGES += library/security/trousers
 REQUIRED_PACKAGES += library/zlib
