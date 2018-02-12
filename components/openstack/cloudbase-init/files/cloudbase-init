@@ -1,6 +1,6 @@
 #!/usr/bin/python2.7
 
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -35,8 +35,12 @@ def start():
             else:
                 url = 'http://169.254.169.254'
             open_url = urllib2.urlopen(url, timeout=20)
+        except urllib2.HTTPError:
+            # HTTP Error means we reached a service, but it didn't like our
+            # ping, so just start and see what cloudbase-init can figure out
+            pass
         except Exception as err:
-            print >> sys.stderr, 'No response from %s: %s' % (url, err)
+            print >> sys.stderr, 'Failed response from %s: %s' % (url, err)
             return smf_include.SMF_EXIT_ERR_FATAL
 
     # Initiate cloudbase-init service

@@ -1,20 +1,93 @@
-Needed for cloudbase-init to run on non-Windows systems.  Needs to go upstream.
+Patches to run cloudbase-init plugins on Solaris.  Possibly upstreamable
 
---- cloudbase-init-0.9.8a/cloudbaseinit/osutils/posix.py	2015-03-19 15:42:23.000000000 -0700
-+++ /tmp/posix.py.new	2015-03-19 16:05:45.328238028 -0700
-@@ -17,7 +17,14 @@
+--- ORIGINAL/cloudbaseinit/osutils/posix.py	2017-10-12 15:10:41.282101967 +0000
++++ cloudbase-init-0.9.9/cloudbaseinit/osutils/posix.py	2018-02-06 08:17:15.651344916 +0000
+@@ -13,11 +13,86 @@
+ #    under the License.
+ 
+ import os
+-
++import pwd
++from subprocess import CalledProcessError, Popen, PIPE, check_call
++from solaris_install.utils import encrypt_password
  from cloudbaseinit.osutils import base
  
  
 -class PosixUtil(base.BaseOSUtils):
 +class PosixUtils(base.BaseOSUtils):
++
++    def __init__(self):
++        self._config_value = {}
  
      def reboot(self):
          os.system('reboot')
 +
 +    def get_config_value(self, name, section=None):
-+        pass
++        """Get Plugin Status for a (plugin name, section) pair.
++        For example: PLUGIN_EXECUTION_DONE"""
++
++        if not section:
++            config_key = name
++        else:
++            config_key = name + ":" + section
++
++        return self._config_value.get(config_key)
 +
 +    def set_config_value(self, name, value, section=None):
-+        pass
++        """Set Plugin Status for a (plugin name, section) pair.
++        For example: PLUGIN_EXECUTION_DONE"""
 +
++        if not section:
++            config_key = name
++        else:
++            config_key = name + ":" + section
++
++        self._config_value[config_key] = value
++
++    def set_host_name(self, new_host_name):
++        """Set current instance's hostname"""
++
++        try:
++            check_call(["/usr/bin/hostname", new_host_name])
++            return False # Reboot not required
++        except CalledProcessError:
++            raise RuntimeError("Unable to set host name")
++
++    def change_password_next_logon(self, username):
++        """Force user to change password during next login."""
++
++        check_call(["/usr/bin/passwd", "-f", username])
++
++    def set_user_password(self, username, password, password_expires=False):
++        """Change password for a specific user"""
++
++        hashed_password = encrypt_password(password)
++        check_call(["/usr/bin/passwd", "-p", hashed_password, username])
++
++    def add_user_to_local_group(self, username, groupname):
++        """Add user to a specific local group"""
++
++        check_call(["/usr/sbin/usermod", "-G", groupname, username])
++
++    def user_exists(self, username):
++        """Return True if user exists. """
++
++        try:
++            pwd.getpwnam(username)
++            return True
++        except KeyError:
++            return False
++
++    def get_user_home(self, username):
++        """Get user's home directory"""
++        
++        try:
++            d = pwd.getpwnam(username).pw_dir
++            return d
++        except KeyError:
++            return None
++
++    def get_maximum_password_length(self):
++        """Solaris maximum password length is 255"""
++
++        return 255
