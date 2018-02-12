@@ -58,7 +58,7 @@ SRUNUM ?= 0
 # For distinguising between Server OS and Storage OS branches, and/or between
 # trunk and release branches.
 #
-BRANCH_ORDER ?= 0
+BRANCH_ORDER ?= 1
 
 #
 # Platform number. This is here to reserve space within the version
@@ -72,7 +72,7 @@ PLATNUM ?= 0
 # the development build) of the Solaris Update is being built.
 # This is set by the gatekeepers.
 #
-BUILDID ?= 14
+BUILDID ?= 15
 
 # Each (nightly) build of the code that produces packages needs to
 # be uniquely identified so that packages produced by different
