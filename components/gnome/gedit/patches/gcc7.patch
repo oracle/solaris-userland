@@ -1,0 +1,231 @@
+Disables GCC 7 format-nonliteral error.
+
+--- gedit-3.18.2/gedit/gedit-close-confirmation-dialog.c
++++ gedit-3.18.2/gedit/gedit-close-confirmation-dialog.c
+@@ -360,6 +360,7 @@
+ 
+ 	if (seconds < 55)
+ 	{
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 		secondary_msg = g_strdup_printf (
+ 					ngettext ("If you don't save, changes from the last %ld second "
+ 					    	  "will be permanently lost.",
+@@ -367,6 +368,7 @@
+ 					    	  "will be permanently lost.",
+ 						  seconds),
+ 					seconds);
++#pragma GCC diagnostic pop
+ 	}
+ 	else if (seconds < 75) /* 55 <= seconds < 75 */
+ 	{
+@@ -375,6 +377,7 @@
+ 	}
+ 	else if (seconds < 110) /* 75 <= seconds < 110 */
+ 	{
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 		secondary_msg = g_strdup_printf (
+ 					ngettext ("If you don't save, changes from the last minute and %ld "
+ 						  "second will be permanently lost.",
+@@ -382,9 +385,11 @@
+ 						  "seconds will be permanently lost.",
+ 						  seconds - 60 ),
+ 					seconds - 60);
++#pragma GCC diagnostic pop
+ 	}
+ 	else if (seconds < 3600)
+ 	{
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 		secondary_msg = g_strdup_printf (
+ 					ngettext ("If you don't save, changes from the last %ld minute "
+ 					    	  "will be permanently lost.",
+@@ -392,6 +397,7 @@
+ 					    	  "will be permanently lost.",
+ 						  seconds / 60),
+ 					seconds / 60);
++#pragma GCC diagnostic pop
+ 	}
+ 	else if (seconds < 7200)
+ 	{
+@@ -406,6 +412,7 @@
+ 		}
+ 		else
+ 		{
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 			secondary_msg = g_strdup_printf (
+ 					ngettext ("If you don't save, changes from the last hour and %d "
+ 						  "minute will be permanently lost.",
+@@ -413,6 +420,7 @@
+ 						  "minutes will be permanently lost.",
+ 						  minutes),
+ 					minutes);
++#pragma GCC diagnostic pop
+ 		}
+ 	}
+ 	else
+@@ -421,6 +429,7 @@
+ 
+ 		hours = seconds / 3600;
+ 
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 		secondary_msg = g_strdup_printf (
+ 					ngettext ("If you don't save, changes from the last %d hour "
+ 					    	  "will be permanently lost.",
+@@ -428,6 +437,7 @@
+ 					    	  "will be permanently lost.",
+ 						  hours),
+ 					hours);
++#pragma GCC diagnostic pop
+ 	}
+ 
+ 	return secondary_msg;
+@@ -591,14 +601,17 @@
+ 
+ 	if (dlg->disable_save_to_disk)
+ 	{
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 		str = g_strdup_printf (
+ 				ngettext ("Changes to %d document will be permanently lost.",
+ 					  "Changes to %d documents will be permanently lost.",
+ 					  g_list_length (dlg->unsaved_documents)),
+ 				g_list_length (dlg->unsaved_documents));
++#pragma GCC diagnostic pop
+ 	}
+ 	else
+ 	{
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 		str = g_strdup_printf (
+ 				ngettext ("There is %d document with unsaved changes. "
+ 					  "Save changes before closing?",
+@@ -606,6 +619,7 @@
+ 					  "Save changes before closing?",
+ 					  g_list_length (dlg->unsaved_documents)),
+ 				g_list_length (dlg->unsaved_documents));
++#pragma GCC diagnostic pop
+ 	}
+ 
+ 	markup_str = g_strconcat ("<span weight=\"bold\" size=\"larger\">", str, "</span>", NULL);
+--- gedit-3.18.2/gedit/gedit-commands-file.c
++++ gedit-3.18.2/gedit/gedit-commands-file.c
+@@ -265,12 +265,14 @@
+ 	}
+ 	else
+ 	{
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 		gedit_statusbar_flash_message (GEDIT_STATUSBAR (window->priv->statusbar),
+ 					       window->priv->generic_message_cid,
+ 					       ngettext ("Loading %d file\342\200\246",
+ 							 "Loading %d files\342\200\246",
+ 							 num_loaded_files),
+ 					       num_loaded_files);
++#pragma GCC diagnostic pop
+ 	}
+ 
+ 	g_slist_free (files_to_load);
+@@ -1480,6 +1482,7 @@
+ 
+ 	if (seconds < 55)
+ 	{
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 		secondary_msg = g_strdup_printf (
+ 					ngettext ("Changes made to the document in the last %ld second "
+ 					    	  "will be permanently lost.",
+@@ -1487,6 +1490,7 @@
+ 					    	  "will be permanently lost.",
+ 						  seconds),
+ 					seconds);
++#pragma GCC diagnostic pop
+ 	}
+ 	else if (seconds < 75) /* 55 <= seconds < 75 */
+ 	{
+@@ -1495,6 +1499,7 @@
+ 	}
+ 	else if (seconds < 110) /* 75 <= seconds < 110 */
+ 	{
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 		secondary_msg = g_strdup_printf (
+ 					ngettext ("Changes made to the document in the last minute and "
+ 						  "%ld second will be permanently lost.",
+@@ -1502,9 +1507,11 @@
+ 						  "%ld seconds will be permanently lost.",
+ 						  seconds - 60 ),
+ 					seconds - 60);
++#pragma GCC diagnostic pop
+ 	}
+ 	else if (seconds < 3600)
+ 	{
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 		secondary_msg = g_strdup_printf (
+ 					ngettext ("Changes made to the document in the last %ld minute "
+ 					    	  "will be permanently lost.",
+@@ -1512,6 +1519,7 @@
+ 					    	  "will be permanently lost.",
+ 						  seconds / 60),
+ 					seconds / 60);
++#pragma GCC diagnostic pop
+ 	}
+ 	else if (seconds < 7200)
+ 	{
+@@ -1526,6 +1534,7 @@
+ 		}
+ 		else
+ 		{
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 			secondary_msg = g_strdup_printf (
+ 					ngettext ("Changes made to the document in the last hour and "
+ 						  "%d minute will be permanently lost.",
+@@ -1533,6 +1542,7 @@
+ 						  "%d minutes will be permanently lost.",
+ 						  minutes),
+ 					minutes);
++#pragma GCC diagnostic pop
+ 		}
+ 	}
+ 	else
+@@ -1541,6 +1551,7 @@
+ 
+ 		hours = seconds / 3600;
+ 
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 		secondary_msg = g_strdup_printf (
+ 					ngettext ("Changes made to the document in the last %d hour "
+ 					    	  "will be permanently lost.",
+@@ -1548,6 +1559,7 @@
+ 					    	  "will be permanently lost.",
+ 						  hours),
+ 					hours);
++#pragma GCC diagnostic pop
+ 	}
+ 
+ 	dialog = gtk_message_dialog_new (GTK_WINDOW (window),
+--- gedit-3.18.2/gedit/gedit-commands-search.c
++++ gedit-3.18.2/gedit/gedit-commands-search.c
+@@ -102,12 +102,14 @@
+ {
+ 	if (occurrences > 1)
+ 	{
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 		gedit_statusbar_flash_message (GEDIT_STATUSBAR (window->priv->statusbar),
+ 					       window->priv->generic_message_cid,
+ 					       ngettext("Found and replaced %d occurrence",
+ 					     	        "Found and replaced %d occurrences",
+ 					     	        occurrences),
+ 					       occurrences);
++#pragma GCC diagnostic pop
+ 	}
+ 	else if (occurrences == 1)
+ 	{
+--- gedit-3.18.2/gedit/gedit-statusbar.c
++++ gedit-3.18.2/gedit/gedit-statusbar.c
+@@ -241,10 +241,12 @@
+ 	{
+ 	 	gchar *tip;
+ 
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+  		tip = g_strdup_printf (ngettext("There is a tab with errors",
+ 		                                "There are %d tabs with errors",
+ 		                                num_of_errors),
+ 		                       num_of_errors);
++#pragma GCC diagnostic pop
+ 
+ 		gtk_widget_set_tooltip_text (statusbar->error_image, tip);
+ 		g_free (tip);

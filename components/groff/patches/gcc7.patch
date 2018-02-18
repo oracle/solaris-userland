@@ -1,0 +1,29 @@
+Workarounds following gcc7 issue. Proper solution is needed before
+submitting to upstream.
+
+/usr/gcc/7/bin/g++ -I. -I/scratch/userland-gate/components/groff/groff-1.22.3/src/libs/libgroff -I/scratch/userland-gate/components/groff/build/amd64/src/include -I/scratch/userland-gate/components/groff/groff-1.22.3/src/include -I/scratch/userland-gate/components/groff/build/amd64/src/libs/gnulib/lib -DHAVE_CONFIG_H -m64 -O3 -m64 -c  /scratch/userland-gate/components/groff/groff-1.22.3/src/libs/libgroff/hypot.cpp
+/scratch/userland-gate/components/groff/groff-1.22.3/src/libs/libgroff/hypot.cpp:24:30: error: 'double hypot(double, double)' conflicts with a previous declaration
+   double hypot(double, double);
+                              ^
+In file included from /usr/gcc/7/include/c++/7.3.0/cmath:45:0,
+                 from /usr/gcc/7/include/c++/7.3.0/math.h:36,
+                 from /scratch/userland-gate/components/groff/groff-1.22.3/src/libs/libgroff/hypot.cpp:21:
+/usr/gcc/7/lib/gcc/x86_64-pc-solaris2.11/7.3.0/include-fixed/math.h:202:15: note: previous declaration 'double std::hypot(double, double)'
+ extern double hypot __P((double, double));
+               ^~~~~
+/scratch/userland-gate/components/groff/groff-1.22.3/src/libs/libgroff/hypot.cpp: In function 'double groff_hypot(double, double)':
+/scratch/userland-gate/components/groff/groff-1.22.3/src/libs/libgroff/hypot.cpp:29:29: error: call of overloaded 'hypot(double&, double&)' is ambiguous
+   double result = hypot(x, y);
+                             ^
+
+--- groff-1.22.3/src/libs/libgroff/hypot.cpp
++++ groff-1.22.3/src/libs/libgroff/hypot.cpp
+@@ -20,7 +20,7 @@
+ 
+ #include <math.h>
+ 
+-#ifdef NEED_DECLARATION_HYPOT
++#ifdef NEED_DECLARATION_HYPOT__NO_WITH_GCC7
+   double hypot(double, double);
+ #endif /* NEED_DECLARATION_HYPOT */
+   

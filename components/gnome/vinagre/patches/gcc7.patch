@@ -1,0 +1,28 @@
+Disables GCC 7 format-nonliteral error.
+
+--- vinagre-3.16.0/vinagre/vinagre-bookmarks-ui.c
++++ vinagre-3.16.0/vinagre/vinagre-bookmarks-ui.c
+@@ -326,9 +326,11 @@
+ 				   "%s",
+ 				   title);
+ 
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+   gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog),
+ 					      msg2,
+ 					      name);
++#pragma GCC diagnostic pop
+  
+   if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK)
+     if (!vinagre_bookmarks_remove_entry (book, entry))
+--- vinagre-3.16.0/vinagre/vinagre-utils.c
++++ vinagre-3.16.0/vinagre/vinagre-utils.c
+@@ -608,7 +608,9 @@
+ 	_tmp9_ = auth_label;
+ 	_tmp10_ = _ ("%s authentication is required");
+ 	_tmp11_ = protocol;
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 	_tmp12_ = g_strdup_printf (_tmp10_, _tmp11_);
++#pragma GCC diagnostic pop
+ 	_tmp13_ = _tmp12_;
+ 	gtk_label_set_label (_tmp9_, _tmp13_);
+ 	_g_free0 (_tmp13_);

@@ -510,7 +510,7 @@ export PARFAIT_NATIVEGXX=$(GCC_ROOT)/bin/g++
 ONBLD_ROOT ?=	$(BUILD_TOOLS)/onbld
 ONBLD_BIN ?=	$(ONBLD_ROOT)/bin
 
-GCC_ROOT =	/usr/gcc/5
+GCC_ROOT =	/usr/gcc/7
 
 CC.studio.32 =	$(SPRO_VROOT)/bin/cc
 CXX.studio.32 =	$(SPRO_VROOT)/bin/CC
@@ -1277,7 +1277,7 @@ REQUIRED_PACKAGES += developer/build/gnu-make
 REQUIRED_PACKAGES += developer/build/make
 REQUIRED_PACKAGES += developer/build/onbld
 ifeq ($(COMPILER),gcc)
-REQUIRED_PACKAGES += developer/gcc-5
+REQUIRED_PACKAGES += developer/gcc-7
 endif
 ifeq ($(COMPILER),studio)
 ifneq ($(findstring /opt/solarisstudio12.4,$(CC)),)

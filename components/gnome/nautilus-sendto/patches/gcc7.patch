@@ -1,0 +1,14 @@
+Disables GCC 7 format-nonliteral error.
+
+--- nautilus-sendto-3.8.2/src/nautilus-sendto.c
++++ nautilus-sendto-3.8.2/src/nautilus-sendto.c
+@@ -383,7 +383,9 @@
+ 		get_evo_mailto (mailto, nst->file_list);
+ 	}
+ 
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 	cmd = g_strdup_printf (nst->mail_cmd, mailto->str);
++#pragma GCC diagnostic pop
+ 	g_string_free (mailto, TRUE);
+ 
+ 	g_debug ("Mailer type: %d", nst->type);

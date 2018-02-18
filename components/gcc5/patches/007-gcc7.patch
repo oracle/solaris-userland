@@ -1,0 +1,48 @@
+Name collision issue with gcc7. Need to be evaluated with upstream.
+
+/usr/gcc/7/bin/g++ -c   -g -DIN_GCC    -fno-exceptions -fno-rtti -fasynchronous-unwind-tables -W -Wall -Wno-narrowing -Wwrite-strings -Wcast-qual -Wno-format -Wmissing-format-attribute -Woverloaded-virtual -pedantic -Wno-long-long -Wno-variadic-macros -Wno-overlength-strings -fno-common  -DHAVE_CONFIG_H -DGENERATOR_FILE -I. -Ibuild -I/scratch/userland-gate/components/gcc5/gcc-5.5.0/gcc -I/scratch/userland-gate/components/gcc5/gcc-5.5.0/gcc/build -I/scratch/userland-gate/components/gcc5/gcc-5.5.0/gcc/../include  -I/scratch/userland-gate/components/gcc5/gcc-5.5.0/gcc/../libcpp/include  \
+        -o build/read-md.o /scratch/userland-gate/components/gcc5/gcc-5.5.0/gcc/read-md.c
+/scratch/userland-gate/components/gcc5/gcc-5.5.0/gcc/read-md.c: In function 'char* decimal_string(int)':
+/scratch/userland-gate/components/gcc5/gcc-5.5.0/gcc/read-md.c:783:27: error: 'char* decimal_string(int)' redeclared as different kind of symbol
+ decimal_string (int number)
+                           ^
+In file included from /usr/gcc/7/lib/gcc/x86_64-pc-solaris2.11/7.3.0/include-fixed/math.h:391:0,
+                 from /usr/gcc/7/include/c++/7.3.0/bits/std_abs.h:40,
+                 from /usr/gcc/7/include/c++/7.3.0/cstdlib:77,
+                 from /usr/gcc/7/include/c++/7.3.0/ext/string_conversions.h:41,
+                 from /usr/gcc/7/include/c++/7.3.0/bits/basic_string.h:6349,
+                 from /usr/gcc/7/include/c++/7.3.0/string:52,
+                 from /scratch/userland-gate/components/gcc5/gcc-5.5.0/gcc/system.h:201,
+                 from /scratch/userland-gate/components/gcc5/gcc-5.5.0/gcc/read-md.c:21:
+/usr/include/floatingpoint.h:88:14: note: previous declaration 'typedef char decimal_string [512]'
+ typedef char decimal_string[DECIMAL_STRING_LENGTH];
+              ^~~~~~~~~~~~~~
+/scratch/userland-gate/components/gcc5/gcc-5.5.0/gcc/read-md.c: In function 'void handle_enum(int, bool)':
+/scratch/userland-gate/components/gcc5/gcc-5.5.0/gcc/read-md.c:855:41: error: functional cast to array type 'decimal_string {aka char [512]}'
+          decimal_string (def->num_values), def);
+                                         ^
+/scratch/userland-gate/components/gcc5/gcc-5.5.0/gcc/read-md.c: At global scope:
+/scratch/userland-gate/components/gcc5/gcc-5.5.0/gcc/read-md.c:783:1: warning: 'char* decimal_string(int)' defined but not used [-Wunused-function]
+ decimal_string (int number)
+ ^~~~~~~~~~~~~~
+
+--- gcc-5.5.0/gcc/read-md.c
++++ gcc-5.5.0/gcc/read-md.c
+@@ -780,7 +780,7 @@
+ /* Return a malloc()ed decimal string that represents number NUMBER.  */
+ 
+ static char *
+-decimal_string (int number)
++decimal_string_num (int number)
+ {
+   /* A safe overestimate.  +1 for sign, +1 for null terminator.  */
+   char buffer[sizeof (int) * CHAR_BIT + 1 + 1];
+@@ -852,7 +852,7 @@
+ 	  ev->name = value_name;
+ 	}
+       ev->def = add_constant (md_constants, value_name,
+-			      decimal_string (def->num_values), def);
++			      decimal_string_num (def->num_values), def);
+ 
+       *def->tail_ptr = ev;
+       def->tail_ptr = &ev->next;

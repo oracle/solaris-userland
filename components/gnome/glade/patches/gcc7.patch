@@ -1,0 +1,20 @@
+Disables GCC 7 format-nonliteral error.
+
+--- glade-3.16.0/gladeui/glade-editor-property.c
++++ glade-3.16.0/gladeui/glade-editor-property.c
+@@ -2996,6 +2996,7 @@
+         _("Choose %s type objects in this project") :
+         _("Choose a %s in this project");
+ 
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+   if (GLADE_IS_PARAM_SPEC_OBJECTS (pspec))
+     return g_strdup_printf (format, g_type_name
+                             (glade_param_spec_objects_get_type
+@@ -3008,6 +3009,7 @@
+    * instead of "Button" and maybe not translated).
+    */
+   return g_strdup_printf (format, g_type_name (pspec->value_type));
++#pragma GCC diagnostic pop
+ }
+ 
+ 

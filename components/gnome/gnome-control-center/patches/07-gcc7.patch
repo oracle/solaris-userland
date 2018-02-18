@@ -1,0 +1,29 @@
+Disables GCC 7 format-nonliteral error.
+
+--- gnome-control-center-3.24.0/panels/sound/gvc/gvc-mixer-control.c
++++ gnome-control-center-3.24.0/panels/sound/gvc/gvc-mixer-control.c
+@@ -1834,20 +1834,24 @@
+         } else {
+                 /* translators:
+                  * The number of sound outputs on a particular device */
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+                 sinks_str = g_strdup_printf (ngettext ("%u Output",
+                                                        "%u Outputs",
+                                                        sinks),
+                                              sinks);
++#pragma GCC diagnostic pop
+         }
+         if (sources == 0) {
+                 sources_str = NULL;
+         } else {
+                 /* translators:
+                  * The number of sound inputs on a particular device */
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+                 sources_str = g_strdup_printf (ngettext ("%u Input",
+                                                          "%u Inputs",
+                                                          sources),
+                                                sources);
++#pragma GCC diagnostic pop
+         }
+         if (sources_str == NULL)
+                 return sinks_str;

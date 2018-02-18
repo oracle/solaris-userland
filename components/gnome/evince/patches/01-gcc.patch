@@ -3,6 +3,8 @@ pid_t -- which is an int on Solaris now (historically a long).
 
 This patch should be sent upstream.
 
+Also disables GCC 7 format-nonliteral error.
+
 --- evince-3.16.0/libdocument/ev-file-helpers.c	2014-11-29 01:40:15.000000000 -0800
 +++ evince-3.16.0.new/libdocument/ev-file-helpers.c	2015-07-08 13:57:33.999990934 -0700
 @@ -88,7 +88,7 @@
@@ -14,3 +16,32 @@ This patch should be sent upstream.
                  tmp_dir = g_build_filename (g_get_tmp_dir (), dirname, NULL);
                  g_free (dirname);
          }
+--- evince-3.25.4/shell/ev-window.c
++++ evince-3.25.4/shell/ev-window.c
+@@ -3211,9 +3211,11 @@
+ 	}
+ 	
+ 	if (n_jobs > 1) {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 		text = g_strdup_printf (ngettext ("%d pending job in queue",
+ 						  "%d pending jobs in queue",
+ 						  n_jobs - 1), n_jobs - 1);
++#pragma GCC diagnostic pop
+ 	}
+ 
+ 	ev_message_area_set_secondary_text (EV_MESSAGE_AREA (ev_window->priv->message_area),
+@@ -3665,12 +3667,14 @@
+ 		/* TRANS: the singular form is not really used as n_print_jobs > 1
+  			  but some languages distinguish between different plurals forms,
+ 			  so the ngettext is needed. */
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 		text = g_strdup_printf (ngettext("There is %d print job active. "
+ 						 "Wait until print finishes before closing?",
+ 						 "There are %d print jobs active. "
+ 						 "Wait until print finishes before closing?",
+ 						 n_print_jobs),
+ 					n_print_jobs);
++#pragma GCC diagnostic pop
+ 	}
+ 
+ 	markup = g_strdup_printf ("<b>%s</b>", text);

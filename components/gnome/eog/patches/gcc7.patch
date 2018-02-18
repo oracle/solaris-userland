@@ -1,0 +1,98 @@
+Disables GCC 7 format-nonliteral error.
+
+  CC       libeog_la-eog-close-confirmation-dialog.lo
+/scratch/userland-gate/components/gnome/eog/eog-3.24.0/src/eog-close-confirmation-dialog.c: In function 'build_multiple_imgs_dialog':
+/scratch/userland-gate/components/gnome/eog/eog-3.24.0/src/eog-close-confirmation-dialog.c:657:4: error: format not a string literal, argument types not checked [-Werror=format-nonliteral]
+    g_list_length (priv->unsaved_images));
+    ^~~~~~~~~~~~~
+
+--- eog-3.24.0/src/eog-close-confirmation-dialog.c
++++ eog-3.24.0/src/eog-close-confirmation-dialog.c
+@@ -648,6 +648,7 @@
+ G_GNUC_END_IGNORE_DEPRECATIONS
+ 	gtk_label_set_selectable (GTK_LABEL (primary_label), TRUE);
+ 
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 	str = g_strdup_printf (
+ 			ngettext ("There is %d image with unsaved changes. "
+ 				  "Save changes before closing?",
+@@ -655,6 +656,7 @@
+ 				  "Save changes before closing?",
+ 				  g_list_length (priv->unsaved_images)),
+ 			g_list_length (priv->unsaved_images));
++#pragma GCC diagnostic pop
+ 
+ 	markup_str = g_strconcat ("<span weight=\"bold\" size=\"larger\">", str, "</span>", NULL);
+ 	g_free (str);
+--- eog-3.24.0/src/eog-metadata-sidebar.c
++++ eog-3.24.0/src/eog-metadata-sidebar.c
+@@ -141,9 +141,11 @@
+ 	}
+ 
+ 	eog_image_get_size (img, &width, &height);
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 	str = g_strdup_printf (ngettext("%i × %i pixel",
+ 					"%i × %i pixels", height),
+ 			       width, height);
++#pragma GCC diagnostic pop
+ 	gtk_label_set_text (GTK_LABEL (priv->size_label), str);
+ 	g_free (str);
+ 
+--- eog-3.24.0/src/eog-preferences-dialog.c
++++ eog-3.24.0/src/eog-preferences-dialog.c
+@@ -122,8 +122,10 @@
+ {
+ 	gulong int_val = (gulong) value;
+ 
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 	return g_strdup_printf (ngettext("%lu second", "%lu seconds", int_val),
+ 	                        int_val);
++#pragma GCC diagnostic pop
+ }
+ 
+ static void
+--- eog-3.24.0/src/eog-window.c
++++ eog-3.24.0/src/eog-window.c
+@@ -540,12 +540,14 @@
+ 				 * - image height
+ 				 * - image size in bytes
+ 				 * - zoom in percent */
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 				str = g_strdup_printf (ngettext("%i × %i pixel  %s    %i%%",
+ 								"%i × %i pixels  %s    %i%%", height),
+ 							width,
+ 							height,
+ 							size_string,
+ 							zoom);
++#pragma GCC diagnostic pop
+ 
+ 				g_free (size_string);
+ 			}
+@@ -3199,12 +3201,14 @@
+ 		prompt = g_strdup_printf (_("Are you sure you want to remove\n“%s” permanently?"),
+ 					  eog_image_get_caption (image));
+ 	} else {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 		prompt = g_strdup_printf (ngettext ("Are you sure you want to remove\n"
+ 						    "the selected image permanently?",
+ 						    "Are you sure you want to remove\n"
+ 						    "the %d selected images permanently?",
+ 						    n_images),
+ 					  n_images);
++#pragma GCC diagnostic pop
+ 	}
+ 
+ 	/* create the dialog */
+@@ -3457,10 +3461,12 @@
+ 		}
+ 	} else {
+ 		if (can_trash) {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 			prompt = g_strdup_printf (ngettext("Are you sure you want to move\n"
+ 							   "the selected image to the trash?",
+ 							   "Are you sure you want to move\n"
+ 							   "the %d selected images to the trash?", n_images), n_images);
++#pragma GCC diagnostic pop
+ 		} else {
+ 			prompt = g_strdup (_("Some of the selected images can’t be moved to the trash "
+ 					     "and will be removed permanently. Are you sure you want "

@@ -1,0 +1,17 @@
+Disables GCC 7 format-nonliteral error.
+
+--- totem-3.24.0/src/backend/bacon-video-widget-gst-missing-plugins.c
++++ totem-3.24.0/src/backend/bacon-video-widget-gst-missing-plugins.c
+@@ -345,10 +345,12 @@
+ 	                                 _("Unable to play the file"));
+ 
+ 	descriptions_text = g_strjoinv (", ", ctx->descriptions);
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+ 	message_text = g_strdup_printf (ngettext ("%s is required to play the file, but is not installed.",
+ 	                                          "%s are required to play the file, but are not installed.",
+ 	                                          g_strv_length (ctx->descriptions)),
+ 	                                descriptions_text);
++#pragma GCC diagnostic pop
+ 
+ 	/* TRANSLATORS: this is a button to launch a codec installer.
+ 	 * %s will be replaced with the software installer's name, e.g.

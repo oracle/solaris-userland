@@ -32,6 +32,9 @@ BUILD_BITS= 64
 COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
+# gcc7 issue - error: 'std::function' has not been declared
+GCC_ROOT = /usr/gcc/5
+
 COMPONENT_NAME=		webkitgtk
 COMPONENT_VERSION=	2.8.4
 COMPONENT_PROJECT_URL=	http://webkitgtk.org
@@ -119,6 +122,7 @@ REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/build/cmake
 REQUIRED_PACKAGES += developer/build/gnu-make
 REQUIRED_PACKAGES += developer/build/pkg-config
+REQUIRED_PACKAGES += developer/gcc-5
 REQUIRED_PACKAGES += developer/gperf
 REQUIRED_PACKAGES += developer/parser/bison
 REQUIRED_PACKAGES += image/library/libjpeg

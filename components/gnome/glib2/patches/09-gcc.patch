@@ -2,6 +2,8 @@ gcc complaints about mismatched types for format specifiers.
 
 Need to determine if we should file an upstream bug.
 
+ALso disables GCC 7 format-nonliteral error.
+
 --- glib-2.44.1/gio/gdbusauthmechanismsha1.c	Fri Dec 19 13:49:48 2014
 +++ glib-2.44.1/gio/gdbusauthmechanismsha1.c	Wed May 20 10:56:38 2015
 @@ -272,7 +272,7 @@
@@ -36,3 +38,49 @@ Need to determine if we should file an upstream bug.
                    g_string_append_printf (fs, "%s" "size=%" G_GUINT64_FORMAT, fs->len > 0 ? "," : "",
                                            (guint64) statbuf.st_size);
                    g_string_append_printf (fs, "%s" "atime=%" G_GUINT64_FORMAT, fs->len > 0 ? "," : "",
+--- glib-2.52.0/gio/gunixconnection.c
++++ glib-2.52.0/gio/gunixconnection.c
+@@ -162,11 +162,13 @@
+     {
+       gint i;
+ 
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+       g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED,
+         ngettext("Expecting 1 control message, got %d",
+                  "Expecting 1 control message, got %d",
+                  nscm),
+         nscm);
++#pragma GCC diagnostic pop
+ 
+       for (i = 0; i < nscm; i++)
+         g_object_unref (scms[i]);
+@@ -196,11 +198,13 @@
+     {
+       gint i;
+ 
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+       g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED,
+                    ngettext("Expecting one fd, but got %d\n",
+                             "Expecting one fd, but got %d\n",
+                             nfd),
+                    nfd);
++#pragma GCC diagnostic pop
+ 
+       for (i = 0; i < nfd; i++)
+         close (fds[i]);
+@@ -555,6 +559,7 @@
+     {
+       if (nscm != 1)
+         {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+           g_set_error (error,
+                        G_IO_ERROR,
+                        G_IO_ERROR_FAILED,
+@@ -562,6 +567,7 @@
+                                 "Expecting 1 control message, got %d",
+                                 nscm),
+                        nscm);
++#pragma GCC diagnostic pop
+           goto out;
+         }
+ 

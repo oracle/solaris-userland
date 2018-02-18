@@ -1,0 +1,17 @@
+Disables GCC 7 format-nonliteral error.
+
+--- vino-3.22.0/server/vino-status-icon.c
++++ vino-3.22.0/server/vino-status-icon.c
+@@ -100,10 +100,12 @@
+ 
+       n_clients = g_slist_length (icon->priv->clients);
+ 
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+       tooltip = g_strdup_printf (ngettext ("One person is viewing your desktop",
+                                            "%d people are viewing your desktop",
+                                            n_clients),
+                                  n_clients);
++#pragma GCC diagnostic pop
+       visible = (visible) && ( (icon->priv->visibility == VINO_STATUS_ICON_VISIBILITY_CLIENT) ||
+ 			     (icon->priv->visibility == VINO_STATUS_ICON_VISIBILITY_ALWAYS) );
+     }

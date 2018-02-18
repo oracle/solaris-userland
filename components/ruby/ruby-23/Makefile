@@ -20,11 +20,14 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
+
+# rdoc cores dump when gcc 7 is used
+GCC_ROOT = /usr/gcc/5
 
 COMPONENT_NAME=		ruby
 COMPONENT_VERSION=	2.3.1
@@ -199,6 +202,7 @@ COMPONENT_TEST_TRANSFORMS += \
 # appropriate to run at top level
 $(SKIP_TEST_AT_TOP_LEVEL)
 
+REQUIRED_PACKAGES += developer/gcc-5
 REQUIRED_PACKAGES += library/database/gdbm
 REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/libffi

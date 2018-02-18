@@ -20,12 +20,15 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 # Must use gcc because of 21090206
 COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
+
+# with gcc7 on sparc build cores dump
+GCC_ROOT = /usr/gcc/5
 
 COMPONENT_NAME=		php
 COMPONENT_VERSION=	7.1.8
@@ -145,6 +148,7 @@ CLEAN_PATHS += proto-scripts
 $(SKIP_TEST_AT_TOP_LEVEL)
 
 REQUIRED_PACKAGES += developer/icu
+REQUIRED_PACKAGES += developer/gcc-5
 REQUIRED_PACKAGES += library/libxml2
 $(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += library/openldap
 REQUIRED_PACKAGES += library/security/openssl
