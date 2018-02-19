@@ -1,0 +1,385 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
+set name=pkg.fmri \
+    value=pkg:/x11/header/x11-protocols@$(X11PKGVERS),$(BUILD_VERSION)
+set name=pkg.summary value="X Window System protocol definitions"
+set name=pkg.description \
+    value="Developer documentation and C language definitions of X11, X extension, and related protocols"
+set name=com.oracle.info.description \
+    value="headers & documentation for the X11 protocol"
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification value=org.opensolaris.category.2008:Development/X11
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL) \
+    value=$(COMPONENT_ARCHIVE_URL_1) value=$(COMPONENT_ARCHIVE_URL_10) \
+    value=$(COMPONENT_ARCHIVE_URL_11) value=$(COMPONENT_ARCHIVE_URL_12) \
+    value=$(COMPONENT_ARCHIVE_URL_13) value=$(COMPONENT_ARCHIVE_URL_14) \
+    value=$(COMPONENT_ARCHIVE_URL_15) value=$(COMPONENT_ARCHIVE_URL_16) \
+    value=$(COMPONENT_ARCHIVE_URL_17) value=$(COMPONENT_ARCHIVE_URL_18) \
+    value=$(COMPONENT_ARCHIVE_URL_19) value=$(COMPONENT_ARCHIVE_URL_2) \
+    value=$(COMPONENT_ARCHIVE_URL_20) value=$(COMPONENT_ARCHIVE_URL_21) \
+    value=$(COMPONENT_ARCHIVE_URL_22) value=$(COMPONENT_ARCHIVE_URL_23) \
+    value=$(COMPONENT_ARCHIVE_URL_24) value=$(COMPONENT_ARCHIVE_URL_25) \
+    value=$(COMPONENT_ARCHIVE_URL_26) value=$(COMPONENT_ARCHIVE_URL_27) \
+    value=$(COMPONENT_ARCHIVE_URL_3) value=$(COMPONENT_ARCHIVE_URL_4) \
+    value=$(COMPONENT_ARCHIVE_URL_5) value=$(COMPONENT_ARCHIVE_URL_6) \
+    value=$(COMPONENT_ARCHIVE_URL_7) value=$(COMPONENT_ARCHIVE_URL_8) \
+    value=$(COMPONENT_ARCHIVE_URL_9)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=LSARC/2002/312 value=LSARC/2003/506 \
+    value=LSARC/2003/686 value=LSARC/2007/421 value=PSARC/1994/377 \
+    value=PSARC/1999/188 value=PSARC/1999/545 value=PSARC/2001/108 \
+    value=PSARC/2004/187 value=PSARC/2004/318 value=PSARC/2005/189 \
+    value=PSARC/2006/702 value=PSARC/2007/430 value=PSARC/2009/269 \
+    value=PSARC/2011/213 value=PSARC/2012/318 value=PSARC/2015/251 \
+    value=PSARC/2016/252
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+link path=usr/X11/include/GL target=../../include/GL
+link path=usr/X11/include/X11 target=../../include/X11
+# This is being copied statically for now. This is from mesa and should be
+# ideally delivered via the mesa manifest
+file files/glcorearb.h path=usr/include/GL/glcorearb.h
+file path=usr/include/GL/glxint.h
+file path=usr/include/GL/glxmd.h
+file path=usr/include/GL/glxproto.h
+file path=usr/include/GL/glxtokens.h
+file path=usr/include/GL/internal/glcore.h
+file path=usr/include/X11/DECkeysym.h
+file path=usr/include/X11/HPkeysym.h
+file path=usr/include/X11/Sunkeysym.h
+file path=usr/include/X11/X.h
+file path=usr/include/X11/XF86keysym.h
+file path=usr/include/X11/XWDFile.h
+file path=usr/include/X11/Xalloca.h
+file path=usr/include/X11/Xarch.h
+file path=usr/include/X11/Xatom.h
+file path=usr/include/X11/Xdefs.h
+file path=usr/include/X11/Xfuncproto.h
+file path=usr/include/X11/Xfuncs.h
+file path=usr/include/X11/Xmd.h
+file path=usr/include/X11/Xos.h
+file path=usr/include/X11/Xos_r.h
+file path=usr/include/X11/Xosdefs.h
+file path=usr/include/X11/Xpoll.h
+file path=usr/include/X11/Xproto.h
+file path=usr/include/X11/Xprotostr.h
+file path=usr/include/X11/Xthreads.h
+file path=usr/include/X11/Xw32defs.h
+file path=usr/include/X11/Xwindows.h
+file path=usr/include/X11/Xwinsock.h
+file path=usr/include/X11/ap_keysym.h
+file path=usr/include/X11/dri/xf86dri.h
+file path=usr/include/X11/dri/xf86driproto.h
+file path=usr/include/X11/dri/xf86dristr.h
+file path=usr/include/X11/extensions/EVI.h
+file path=usr/include/X11/extensions/EVIproto.h
+file path=usr/include/X11/extensions/Print.h
+file path=usr/include/X11/extensions/Printstr.h
+file path=usr/include/X11/extensions/XI.h
+file path=usr/include/X11/extensions/XI2.h
+file path=usr/include/X11/extensions/XI2proto.h
+file path=usr/include/X11/extensions/XIproto.h
+file path=usr/include/X11/extensions/XKB.h
+file path=usr/include/X11/extensions/XKBgeom.h
+file path=usr/include/X11/extensions/XKBproto.h
+file path=usr/include/X11/extensions/XKBsrv.h
+file path=usr/include/X11/extensions/XKBstr.h
+file path=usr/include/X11/extensions/XResproto.h
+file path=usr/include/X11/extensions/Xeviestr.h
+file path=usr/include/X11/extensions/Xv.h
+file path=usr/include/X11/extensions/XvMC.h
+file path=usr/include/X11/extensions/XvMCproto.h
+file path=usr/include/X11/extensions/Xvproto.h
+file path=usr/include/X11/extensions/ag.h
+file path=usr/include/X11/extensions/agproto.h
+file allplanes.h path=usr/include/X11/extensions/allplanes.h
+file allplanesstr.h path=usr/include/X11/extensions/allplanesstr.h
+file path=usr/include/X11/extensions/bigreqsproto.h
+file path=usr/include/X11/extensions/bigreqstr.h
+file path=usr/include/X11/extensions/composite.h
+file path=usr/include/X11/extensions/compositeproto.h
+file path=usr/include/X11/extensions/cup.h
+file path=usr/include/X11/extensions/cupproto.h
+file path=usr/include/X11/extensions/damageproto.h
+file path=usr/include/X11/extensions/damagewire.h
+file path=usr/include/X11/extensions/dbe.h
+file path=usr/include/X11/extensions/dbeproto.h
+file dgast.h path=usr/include/X11/extensions/dgast.h
+file path=usr/include/X11/extensions/dmx.h
+file path=usr/include/X11/extensions/dmxproto.h
+file path=usr/include/X11/extensions/dpmsconst.h
+file path=usr/include/X11/extensions/dpmsproto.h
+file path=usr/include/X11/extensions/dri2proto.h
+file path=usr/include/X11/extensions/dri2tokens.h
+file path=usr/include/X11/extensions/dri3proto.h
+file path=usr/include/X11/extensions/evieproto.h
+file fbpm.h path=usr/include/X11/extensions/fbpm.h
+file fbpmstr.h path=usr/include/X11/extensions/fbpmstr.h
+file path=usr/include/X11/extensions/ge.h
+file path=usr/include/X11/extensions/geproto.h
+file interactive.h path=usr/include/X11/extensions/interactive.h
+file interactiveCommon.h path=usr/include/X11/extensions/interactiveCommon.h
+file path=usr/include/X11/extensions/lbx.h
+file path=usr/include/X11/extensions/lbxproto.h
+file path=usr/include/X11/extensions/mitmiscconst.h
+file path=usr/include/X11/extensions/mitmiscproto.h
+file path=usr/include/X11/extensions/multibufconst.h
+file path=usr/include/X11/extensions/multibufproto.h
+file path=usr/include/X11/extensions/panoramiXproto.h
+file path=usr/include/X11/extensions/presentproto.h
+file path=usr/include/X11/extensions/presenttokens.h
+file path=usr/include/X11/extensions/randr.h
+file path=usr/include/X11/extensions/randrproto.h
+file path=usr/include/X11/extensions/recordconst.h
+file path=usr/include/X11/extensions/recordproto.h
+file path=usr/include/X11/extensions/recordstr.h
+file path=usr/include/X11/extensions/render.h
+file path=usr/include/X11/extensions/renderproto.h
+file path=usr/include/X11/extensions/saver.h
+file path=usr/include/X11/extensions/saverproto.h
+file path=usr/include/X11/extensions/secur.h
+file path=usr/include/X11/extensions/securproto.h
+file path=usr/include/X11/extensions/shapeconst.h
+file path=usr/include/X11/extensions/shapeproto.h
+file path=usr/include/X11/extensions/shapestr.h
+file path=usr/include/X11/extensions/shm.h
+file path=usr/include/X11/extensions/shmproto.h
+file path=usr/include/X11/extensions/shmstr.h
+file sme.h path=usr/include/X11/extensions/sme.h
+file path=usr/include/X11/extensions/syncconst.h
+file path=usr/include/X11/extensions/syncproto.h
+file path=usr/include/X11/extensions/syncstr.h
+file transovl.h path=usr/include/X11/extensions/transovl.h
+file transovlstr.h path=usr/include/X11/extensions/transovlstr.h
+file path=usr/include/X11/extensions/vldXvMC.h
+file path=usr/include/X11/extensions/xcmiscproto.h
+file path=usr/include/X11/extensions/xcmiscstr.h
+file path=usr/include/X11/extensions/xf86dga.h
+file path=usr/include/X11/extensions/xf86dga1const.h
+file path=usr/include/X11/extensions/xf86dga1proto.h
+file path=usr/include/X11/extensions/xf86dga1str.h
+file path=usr/include/X11/extensions/xf86dgaconst.h
+file path=usr/include/X11/extensions/xf86dgaproto.h
+file path=usr/include/X11/extensions/xf86dgastr.h
+file path=usr/include/X11/extensions/xf86misc.h
+file path=usr/include/X11/extensions/xf86mscstr.h
+file path=usr/include/X11/extensions/xf86vm.h
+file path=usr/include/X11/extensions/xf86vmproto.h
+file path=usr/include/X11/extensions/xf86vmstr.h
+file path=usr/include/X11/extensions/xfixesproto.h
+file path=usr/include/X11/extensions/xfixeswire.h
+file path=usr/include/X11/extensions/xtestconst.h
+file path=usr/include/X11/extensions/xtestext1const.h
+file path=usr/include/X11/extensions/xtestext1proto.h
+file path=usr/include/X11/extensions/xtestproto.h
+file path=usr/include/X11/fonts/FS.h
+file path=usr/include/X11/fonts/FSproto.h
+file path=usr/include/X11/fonts/font.h
+file path=usr/include/X11/fonts/fontproto.h
+file path=usr/include/X11/fonts/fontstruct.h
+file path=usr/include/X11/fonts/fsmasks.h
+file path=usr/include/X11/keysym.h
+file path=usr/include/X11/keysymdef.h
+file path=usr/share/doc/bigreqsproto/bigreq.html
+file path=usr/share/doc/bigreqsproto/bigreq.html.db
+file path=usr/share/doc/bigreqsproto/bigreq.pdf.db
+file path=usr/share/doc/bigreqsproto/bigreq.txt
+file path=usr/share/doc/bigreqsproto/bigreq.xml
+file path=usr/share/doc/compositeproto/compositeproto.txt
+file path=usr/share/doc/damageproto/damageproto.txt
+file path=usr/share/doc/dri2proto/dri2proto.txt
+file path=usr/share/doc/dri3proto/dri3proto.txt
+file path=usr/share/doc/fixesproto/fixesproto.txt
+file path=usr/share/doc/fontsproto/fsproto.html
+file path=usr/share/doc/fontsproto/fsproto.html.db
+file path=usr/share/doc/fontsproto/fsproto.pdf.db
+file path=usr/share/doc/fontsproto/fsproto.txt
+file path=usr/share/doc/fontsproto/fsproto.xml
+file path=usr/share/doc/inputproto/XI2proto.html
+file path=usr/share/doc/inputproto/XI2proto.txt
+file path=usr/share/doc/inputproto/XIproto.html
+file path=usr/share/doc/inputproto/XIproto.txt
+file path=usr/share/doc/kbproto/XKBproto-1.svg
+file path=usr/share/doc/kbproto/XKBproto-10.svg
+file path=usr/share/doc/kbproto/XKBproto-11.svg
+file path=usr/share/doc/kbproto/XKBproto-2.svg
+file path=usr/share/doc/kbproto/XKBproto-3.svg
+file path=usr/share/doc/kbproto/XKBproto-4.svg
+file path=usr/share/doc/kbproto/XKBproto-5.svg
+file path=usr/share/doc/kbproto/XKBproto-6.svg
+file path=usr/share/doc/kbproto/XKBproto-7.svg
+file path=usr/share/doc/kbproto/XKBproto-8.svg
+file path=usr/share/doc/kbproto/XKBproto-9.svg
+file path=usr/share/doc/kbproto/acknowledgements.xml
+file path=usr/share/doc/kbproto/appA.xml
+file path=usr/share/doc/kbproto/appB.xml
+file path=usr/share/doc/kbproto/appC.xml
+file path=usr/share/doc/kbproto/appD.xml
+file path=usr/share/doc/kbproto/ch01.xml
+file path=usr/share/doc/kbproto/ch02.xml
+file path=usr/share/doc/kbproto/ch03.xml
+file path=usr/share/doc/kbproto/ch04.xml
+file path=usr/share/doc/kbproto/ch05.xml
+file path=usr/share/doc/kbproto/ch06.xml
+file path=usr/share/doc/kbproto/ch07.xml
+file path=usr/share/doc/kbproto/ch08.xml
+file path=usr/share/doc/kbproto/ch09.xml
+file path=usr/share/doc/kbproto/ch10.xml
+file path=usr/share/doc/kbproto/ch11.xml
+file path=usr/share/doc/kbproto/ch12.xml
+file path=usr/share/doc/kbproto/ch13.xml
+file path=usr/share/doc/kbproto/ch14.xml
+file path=usr/share/doc/kbproto/ch15.xml
+file path=usr/share/doc/kbproto/ch16.xml
+file path=usr/share/doc/kbproto/xkbproto.html
+file path=usr/share/doc/kbproto/xkbproto.html.db
+file path=usr/share/doc/kbproto/xkbproto.pdf.db
+file path=usr/share/doc/kbproto/xkbproto.txt
+file path=usr/share/doc/kbproto/xkbproto.xml
+file path=usr/share/doc/presentproto/presentproto.txt
+file path=usr/share/doc/randrproto/randrproto.txt
+file path=usr/share/doc/recordproto/record.html
+file path=usr/share/doc/recordproto/record.html.db
+file path=usr/share/doc/recordproto/record.pdf.db
+file path=usr/share/doc/recordproto/record.txt
+file path=usr/share/doc/recordproto/record.xml
+file path=usr/share/doc/renderproto/renderproto.txt
+file path=usr/share/doc/resourceproto/resproto.txt
+file path=usr/share/doc/scrnsaverproto/saver.html
+file path=usr/share/doc/scrnsaverproto/saver.html.db
+file path=usr/share/doc/scrnsaverproto/saver.pdf.db
+file path=usr/share/doc/scrnsaverproto/saver.txt
+file path=usr/share/doc/scrnsaverproto/saver.xml
+file path=usr/share/doc/videoproto/xv-protocol-v2.txt
+file path=usr/share/doc/xcmiscproto/xc-misc.html
+file path=usr/share/doc/xcmiscproto/xc-misc.html.db
+file path=usr/share/doc/xcmiscproto/xc-misc.pdf.db
+file path=usr/share/doc/xcmiscproto/xc-misc.txt
+file path=usr/share/doc/xcmiscproto/xc-misc.xml
+file path=usr/share/doc/xextproto/appendix.xml
+file path=usr/share/doc/xextproto/appgrp.html
+file path=usr/share/doc/xextproto/appgrp.html.db
+file path=usr/share/doc/xextproto/appgrp.pdf.db
+file path=usr/share/doc/xextproto/appgrp.txt
+file path=usr/share/doc/xextproto/appgrp.xml
+file path=usr/share/doc/xextproto/dbe.html
+file path=usr/share/doc/xextproto/dbe.html.db
+file path=usr/share/doc/xextproto/dbe.pdf.db
+file path=usr/share/doc/xextproto/dbe.txt
+file path=usr/share/doc/xextproto/dbe.xml
+file path=usr/share/doc/xextproto/dpms.html
+file path=usr/share/doc/xextproto/dpms.html.db
+file path=usr/share/doc/xextproto/dpms.pdf.db
+file path=usr/share/doc/xextproto/dpms.txt
+file path=usr/share/doc/xextproto/dpms.xml
+file path=usr/share/doc/xextproto/evi.html
+file path=usr/share/doc/xextproto/evi.html.db
+file path=usr/share/doc/xextproto/evi.pdf.db
+file path=usr/share/doc/xextproto/evi.txt
+file path=usr/share/doc/xextproto/evi.xml
+file path=usr/share/doc/xextproto/geproto.html
+file path=usr/share/doc/xextproto/geproto.html.db
+file path=usr/share/doc/xextproto/geproto.pdf.db
+file path=usr/share/doc/xextproto/geproto.txt
+file path=usr/share/doc/xextproto/geproto.xml
+file path=usr/share/doc/xextproto/lbx.html
+file path=usr/share/doc/xextproto/lbx.html.db
+file path=usr/share/doc/xextproto/lbx.pdf.db
+file path=usr/share/doc/xextproto/lbx.txt
+file path=usr/share/doc/xextproto/lbx.xml
+file path=usr/share/doc/xextproto/multibuf.html
+file path=usr/share/doc/xextproto/multibuf.html.db
+file path=usr/share/doc/xextproto/multibuf.pdf.db
+file path=usr/share/doc/xextproto/multibuf.txt
+file path=usr/share/doc/xextproto/multibuf.xml
+file path=usr/share/doc/xextproto/security.html
+file path=usr/share/doc/xextproto/security.html.db
+file path=usr/share/doc/xextproto/security.pdf.db
+file path=usr/share/doc/xextproto/security.txt
+file path=usr/share/doc/xextproto/security.xml
+file path=usr/share/doc/xextproto/shape.html
+file path=usr/share/doc/xextproto/shape.html.db
+file path=usr/share/doc/xextproto/shape.pdf.db
+file path=usr/share/doc/xextproto/shape.txt
+file path=usr/share/doc/xextproto/shape.xml
+file path=usr/share/doc/xextproto/shm.html
+file path=usr/share/doc/xextproto/shm.html.db
+file path=usr/share/doc/xextproto/shm.pdf.db
+file path=usr/share/doc/xextproto/shm.txt
+file path=usr/share/doc/xextproto/shm.xml
+file path=usr/share/doc/xextproto/sync.html
+file path=usr/share/doc/xextproto/sync.html.db
+file path=usr/share/doc/xextproto/sync.pdf.db
+file path=usr/share/doc/xextproto/sync.txt
+file path=usr/share/doc/xextproto/sync.xml
+file path=usr/share/doc/xextproto/tog-cup.html
+file path=usr/share/doc/xextproto/tog-cup.html.db
+file path=usr/share/doc/xextproto/tog-cup.pdf.db
+file path=usr/share/doc/xextproto/tog-cup.txt
+file path=usr/share/doc/xextproto/tog-cup.xml
+file path=usr/share/doc/xextproto/xtest.html
+file path=usr/share/doc/xextproto/xtest.html.db
+file path=usr/share/doc/xextproto/xtest.pdf.db
+file path=usr/share/doc/xextproto/xtest.txt
+file path=usr/share/doc/xextproto/xtest.xml
+file path=usr/share/doc/xproto/encoding.xml
+file path=usr/share/doc/xproto/glossary.xml
+file path=usr/share/doc/xproto/keysyms.xml
+file path=usr/share/doc/xproto/sect1-9.xml
+file path=usr/share/doc/xproto/x11protocol.html
+file path=usr/share/doc/xproto/x11protocol.html.db
+file path=usr/share/doc/xproto/x11protocol.pdf.db
+file path=usr/share/doc/xproto/x11protocol.txt
+file path=usr/share/doc/xproto/x11protocol.xml
+file path=usr/share/pkgconfig/bigreqsproto.pc
+file path=usr/share/pkgconfig/compositeproto.pc
+file path=usr/share/pkgconfig/damageproto.pc
+file path=usr/share/pkgconfig/dmxproto.pc
+file path=usr/share/pkgconfig/dri2proto.pc
+file path=usr/share/pkgconfig/dri3proto.pc
+file path=usr/share/pkgconfig/evieproto.pc
+file path=usr/share/pkgconfig/fixesproto.pc
+file path=usr/share/pkgconfig/fontsproto.pc
+file path=usr/share/pkgconfig/glproto.pc
+file path=usr/share/pkgconfig/inputproto.pc
+file path=usr/share/pkgconfig/kbproto.pc
+file path=usr/share/pkgconfig/presentproto.pc
+file path=usr/share/pkgconfig/printproto.pc
+file path=usr/share/pkgconfig/randrproto.pc
+file path=usr/share/pkgconfig/recordproto.pc
+file path=usr/share/pkgconfig/renderproto.pc
+file path=usr/share/pkgconfig/resourceproto.pc
+file path=usr/share/pkgconfig/scrnsaverproto.pc
+file path=usr/share/pkgconfig/videoproto.pc
+file path=usr/share/pkgconfig/xcmiscproto.pc
+file path=usr/share/pkgconfig/xextproto.pc
+file path=usr/share/pkgconfig/xf86dgaproto.pc
+file path=usr/share/pkgconfig/xf86driproto.pc
+file path=usr/share/pkgconfig/xf86miscproto.pc
+file path=usr/share/pkgconfig/xf86vidmodeproto.pc
+file path=usr/share/pkgconfig/xineramaproto.pc
+file path=usr/share/pkgconfig/xproto.pc
+license COPYING license=MIT
