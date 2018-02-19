@@ -67,6 +67,7 @@ class UserlandActionChecker(base.ActionChecker):
 			"amd64",
 			"sparcv9",
 			"64",
+			"fbconfig",	# x11/app/gfx-utils path
 			"i86pc-solaris-64",     # perl path
 			"sun4-solaris-64",      # perl path
                         "i86pc-solaris-thread-multi-64", # perl path
@@ -99,8 +100,14 @@ class UserlandActionChecker(base.ActionChecker):
 				# ruby path
 			re.compile('^.*/sparcv9-sun-solaris2\.[0-9]+(/.*)?$'),
 				# GCC path
-			re.compile('^.*/x86_64-sun-solaris2\.[0-9]+(/.*)?$')
+			re.compile('^.*/x86_64-sun-solaris2\.[0-9]+(/.*)?$'),
 				# GCC path
+			re.compile('^/usr/lib/fbconfig(/)?$'),
+				# x11/app/gfx-utils path
+			re.compile('^/usr/lib/xorg/modules(/)?$'),
+				# Xorg path
+			re.compile('^/usr/lib/xorg/modules/(drivers|extensions|input)$')
+				# Xorg path
 		]
 		self.initscript_re = re.compile("^etc/(rc.|init)\.d")
 
@@ -386,6 +393,13 @@ class UserlandActionChecker(base.ActionChecker):
 		    if (p in self.pathlist64):
 		    	path64 = True
 			break
+
+		# The Xorg module directory is a hybrid case - everything
+		# but the dri subdirectory is 64-bit
+		if (os.path.dirname(inspath).startswith("usr/lib/xorg/modules")
+		    and not
+		    os.path.dirname(inspath) == "usr/lib/xorg/modules/dri"):
+			path64 = True
 
 		# ignore 64-bit executables in normal (non-32-bit-specific)
 		# locations, that's ok now.
