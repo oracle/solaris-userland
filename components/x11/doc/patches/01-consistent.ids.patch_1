@@ -1,0 +1,103 @@
+Patch already submitted & accepted upstream for next release:
+https://cgit.freedesktop.org/xorg/doc/xorg-sgml-doctools/commit/?id=aa97249b332f23fec7b0575ab5d634b8180dcada
+
+From aa97249b332f23fec7b0575ab5d634b8180dcada Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Tue, 5 Jan 2016 15:15:41 -0800
+Subject: [PATCH:xorg-sgml-doctools] Set generate.consistent.ids in xsl
+ stylesheets for more repeatable builds
+
+Causes auto-generation of id attributes to use values based on position in
+document, such as id="id-1.5.9.5.2", instead of based on memory address of
+parse tree, such as id="idm140664351287904", so that generated documents
+end up with the same contents across rebuilds & platforms (especially on
+platforms using address space layout randomization).
+
+Does not guarantee long-term stability of links across releases, just
+repeatability when building the same release multiple times - values
+will change when documents are edited to add/remove/reorder sections.
+
+Only effective when used with version 1.77 or later of the
+DocBook XSL stylesheets (released in 2012).
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ xorg-chunk.xsl | 7 +++++++
+ xorg-fo.xsl    | 7 +++++++
+ xorg-xhtml.xsl | 6 ++++++
+ xorg.xsl       | 6 ++++++
+ 4 files changed, 26 insertions(+)
+
+diff --git a/xorg-chunk.xsl b/xorg-chunk.xsl
+index 93b18b5..2e7f7b5 100644
+--- a/xorg-chunk.xsl
++++ b/xorg-chunk.xsl
+@@ -44,6 +44,13 @@
+   <!-- Index links should point to indexterm location, not start of section -->
+   <xsl:param name="index.links.to.section" select="0"/>
+ 
++  <!--
++      Use element count instead of random number for id generation, for more
++      repeatable builds
++    -->
++  <xsl:param name="generate.consistent.ids" select="1"/>
++
++
+ 			<!-- HTML Parameters -->
+ 
+   <!-- Uses XSLT Extension to provide more valid and better formatted elements-->
+diff --git a/xorg-fo.xsl b/xorg-fo.xsl
+index 4680db3..41fb3f3 100644
+--- a/xorg-fo.xsl
++++ b/xorg-fo.xsl
+@@ -41,6 +41,13 @@
+     <xsl:attribute name="break-after">page</xsl:attribute>
+   </xsl:attribute-set>
+ 
++  <!--
++      Use element count instead of random number for id generation, for more
++      repeatable builds
++    -->
++  <xsl:param name="generate.consistent.ids" select="1"/>
++
++
+ 			<!-- Pagination and General Styles FO Parameters -->
+   <!--
+      Speed up ps & pdf creation by not creating pages with "draft" image,
+diff --git a/xorg-xhtml.xsl b/xorg-xhtml.xsl
+index d9b7b3e..502aafc 100644
+--- a/xorg-xhtml.xsl
++++ b/xorg-xhtml.xsl
+@@ -44,6 +44,12 @@
+   <!-- Index links should point to indexterm location, not start of section -->
+   <xsl:param name="index.links.to.section" select="0"/>
+ 
++  <!--
++      Use element count instead of random number for id generation, for more
++      repeatable builds
++    -->
++  <xsl:param name="generate.consistent.ids" select="1"/>
++
+ 			<!-- HTML Parameters -->
+ 
+   <!-- Uses XSLT Extension to provide more valid and better formatted elements-->
+diff --git a/xorg.xsl b/xorg.xsl
+index 0a2ff62..ff99273 100644
+--- a/xorg.xsl
++++ b/xorg.xsl
+@@ -41,6 +41,12 @@ DEALINGS IN THE SOFTWARE.
+   <!-- Index links should point to indexterm location, not start of section -->
+   <xsl:param name="index.links.to.section" select="0"/>
+ 
++  <!--
++      Use element count instead of random number for id generation, for more
++      repeatable builds
++    -->
++  <xsl:param name="generate.consistent.ids" select="1"/>
++
+   <!-- PDF bookmarks extensions for FOP version 0.90 and later will be used. -->
+   <xsl:param name="fop.extensions" select="0"></xsl:param>
+   <xsl:param name="fop1.extensions" select="1"></xsl:param>
+-- 
+2.6.1
+
