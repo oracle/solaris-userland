@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 export PARFAIT_BUILD=no
 BUILD_BITS=64
@@ -30,7 +30,7 @@ include ../../make-rules/shared-macros.mk
 
 # This and intel-openmp must use the same version of gcc.  In addition, LLVM's
 # gcc toolchain logic we currently have for Solaris is effectively hard-coded
-# for a specific version of gcc (5.4.0 currently):
+# for a specific version of gcc (5.5.0 currently):
 #
 # 25682681 llvm's gcc toolchain usage should be multilib friendly and
 #          version-agnostic
@@ -335,7 +335,7 @@ LD_OPTIONS_SO = $(LD_Z_DEFS) $(LD_DEF_LIBS)
 
 # The default target triple must be set so that the OS release is included by
 # default as LLVM will use this to find the installed gcc internal libraries
-# and headers (e.g.  /usr/gcc/5/lib/gcc/sparcv9-sun-solaris2.11/5.4.0/).  This
+# and headers (e.g.  /usr/gcc/5/lib/gcc/sparcv9-sun-solaris2.11/5.5.0/).  This
 # also means that when specifying a --target to clang, developers must also
 # include the OS release (e.g. --target=sparcv9-sun-solaris2.11).
 ifeq ($(MACH),sparc)
