@@ -20,20 +20,20 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		less
-COMPONENT_VERSION=	487
+COMPONENT_VERSION=	530
 COMPONENT_PROJECT_URL=	http://www.greenwoodsoftware.com/less/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:f3dc8455cb0b2b66e0c6b816c00197a71bf6d1787078adeee0bcf2aea4b12706
+    sha256:503f91ab0af4846f34f0444ab71c4b286123f0044a4964f1ae781486c617f2e2
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1550
 
-TPNO=			34617
+TPNO=			41223
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
