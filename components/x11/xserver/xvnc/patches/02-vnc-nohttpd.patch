@@ -1,0 +1,89 @@
+## Disable httpd service [PSARC/2017/236]
+
+diff --git a/unix/vncserver b/unix/vncserver
+index 8f1f4b7..c05f814 100755
+--- a/unix/vncserver
++++ b/unix/vncserver
+@@ -261,7 +261,6 @@ my %default_opts;
+ my %config;
+ 
+ $default_opts{desktop} = &quotedString($desktopName);
+-$default_opts{httpd} = $vncJavaFiles if ($vncJavaFiles);
+ $default_opts{auth} = $xauthorityFile;
+ $default_opts{geometry} = $geometry if ($geometry);
+ $default_opts{depth} = $depth if ($depth);
+diff --git a/unix/xserver/hw/vnc/Xvnc.man b/unix/xserver/hw/vnc/Xvnc.man
+index a4d9f8d..f8d6819 100644
+--- a/unix/xserver/hw/vnc/Xvnc.man
++++ b/unix/xserver/hw/vnc/Xvnc.man
+@@ -91,19 +91,6 @@ has finished sending or receiving a message - note that this does not mean an
+ update will be aborted after this time.  Default is 20000 (20 seconds).
+ .
+ .TP
+-.B \-httpd \fIdirectory\fP
+-Run a mini-HTTP server which serves files from the given directory.  Normally
+-the directory will contain the classes for the Java viewer.  In addition, files
+-with a .vnc extension will have certain substitutions made so that a single
+-installation of the Java VNC viewer can be served by separate instances of
+-Xvnc.
+-.
+-.TP
+-.B \-httpPort \fIport\fP
+-Specifies the port on which the mini-HTTP server runs.  Default is 5800 plus
+-the display number.
+-.
+-.TP
+ .B \-rfbauth \fIpasswd-file\fP, \-PasswordFile \fIpasswd-file\fP
+ Specifies the file containing the password used to authenticate viewers.  The
+ file is accessed each time a connection comes in, so it can be changed on the
+diff --git a/unix/xserver/hw/vnc/vncExtInit.cc b/unix/xserver/hw/vnc/vncExtInit.cc
+index 1d37493..7a238c9 100644
+--- a/unix/xserver/hw/vnc/vncExtInit.cc
++++ b/unix/xserver/hw/vnc/vncExtInit.cc
+@@ -64,10 +64,12 @@ struct CaseInsensitiveCompare {
+ typedef std::set<std::string, CaseInsensitiveCompare> ParamSet;
+ static ParamSet allowOverrideSet;
+ 
++#ifdef ENABLE_HTTPD
+ rfb::StringParameter httpDir("httpd",
+                              "Directory containing files to serve via HTTP",
+                              "");
+ rfb::IntParameter httpPort("httpPort", "TCP port to listen for HTTP",0);
++#endif /* ENABLE_HTTPD */
+ rfb::AliasParameter rfbwait("rfbwait", "Alias for ClientWaitTimeMillis",
+                             &rfb::Server::clientWaitTimeMillis);
+ rfb::IntParameter rfbport("rfbport", "TCP port to listen for RFB protocol",0);
+@@ -190,6 +192,7 @@ void vncExtensionInit(void)
+                     localhostOnly ? "local" : (const char*)interface,
+                     port);
+ 
++#ifdef ENABLE_HTTPD
+           CharArray httpDirStr(httpDir.getData());
+           if (httpDirStr.buf[0]) {
+             port = httpPort;
+@@ -205,6 +208,7 @@ void vncExtensionInit(void)
+                       port);
+           }
++#endif /* ENABLE_HTTPD */
+         }
+ 
+         CharArray desktopNameStr(desktopName.getData());
+         PixelFormat pf = vncGetPixelFormat(scr);
+--- unpacked-src/unix/xserver/hw/vnc/XserverDesktop.cc
++++ unpacked-src/unix/xserver/hw/vnc/XserverDesktop.cc
+@@ -59,6 +59,7 @@
+   FileHTTPServer(XserverDesktop* d) : desktop(d) {}
+   virtual ~FileHTTPServer() {}
+ 
++#ifdef ENABLE_HTTPD
+   virtual rdr::InStream* getFile(const char* name, const char** contentType,
+                                  int* contentLength, time_t* lastModified)
+   {
+@@ -88,6 +89,7 @@
+     }
+     return is;
+   }
++#endif /* ENABLE_HTTPD */
+ 
+   XserverDesktop* desktop;
+ };

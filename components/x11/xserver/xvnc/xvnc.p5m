@@ -1,0 +1,92 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
+set name=pkg.fmri \
+    value=pkg:/x11/server/xvnc@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="TigerVNC X11/VNC server"
+set name=pkg.description \
+    value="X Window System server based on X.Org Foundation open source release and TigerVNC open source release that displays over RFB protocol to a VNC client"
+# pkgdepend needs help to follow the runtime generated symlinks to libGL
+set name=pkg.depend.runpath \
+    value=$PKGDEPEND_RUNPATH:usr/lib/mesa:usr/lib/mesa/$(MACH64)
+set name=com.oracle.info.description value="portions of the TigerVNC software"
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification value=org.opensolaris.category.2008:System/X11
+set name=info.repository-url value=https://github.com/TigerVNC/tigervnc.git
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream value=TigerVNC
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+# PSARC/2007/545 Xvnc
+# PSARC/2009/592 TigerVNC 1.0
+# PSARC/2017/212 TigerVNC 1.7.1
+# PSARC/2017/236 EOF of VNC web client
+set name=org.opensolaris.arc-caseid value=PSARC/2007/545 value=PSARC/2009/592 \
+    value=PSARC/2017/212 value=PSARC/2017/236
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file xvnc-inetd.xml path=lib/svc/manifest/application/x11/xvnc-inetd.xml \
+    group=sys
+link path=usr/X11/bin/Xvnc target=../../bin/Xvnc
+link path=usr/bin/$(MACH64)/Xvnc target=../Xvnc variant.arch=i386
+file path=usr/bin/Xvnc group=root mode=2555
+file path=usr/bin/vncconfig
+file path=usr/bin/vncpasswd
+file path=usr/bin/vncserver
+file path=usr/bin/x0vncserver
+link path=usr/lib/mdb/proc/$(MACH64)/Xvnc.so target=Xserver.so
+file vnclock.sh path=usr/lib/vnclock mode=0555
+file path=usr/share/man/man1/Xvnc.1
+file path=usr/share/man/man1/vncconfig.1
+file path=usr/share/man/man1/vncpasswd.1
+file path=usr/share/man/man1/vncserver.1
+file path=usr/share/man/man1/x0vncserver.1
+license tigervnc.license license=GPLv2
+
+# Fallback vncserver session runs xterm & twm, but GNOME will be used instead
+# if installed, and customers can configure an alternate session that does
+# not require those, so these are not listed as strict requirements.
+depend type=group fmri=pkg:/desktop/window-manager/twm
+
+# Xvnc depends on xscreensaver.  However, it will still work without the
+# xscreensaver functionality so it is not a strict requirement.
+depend type=group fmri=pkg:/desktop/xscreensaver
+depend type=group fmri=pkg:/terminal/xterm
+
+# vnclock.sh requires xdg-utils
+depend type=require fmri=pkg:/desktop/xdg/xdg-utils
+
+# We need ck-launch-session for VNC/gnome3
+depend type=require fmri=pkg:/library/xdg/consolekit
+
+# vncserver script requires xdpyinfo
+depend type=require fmri=pkg:/x11/diagnostic/x11-info-clients
+
+# X servers require xkbcomp & data-xkb for keyboard layouts
+depend type=require fmri=pkg:/x11/keyboard/data-xkb
+depend type=require fmri=pkg:/x11/keyboard/xkbcomp
+
+# vncserver script requires xauth & xrdb programs
+depend type=require fmri=pkg:/x11/session/xauth
+depend type=require fmri=pkg:/x11/x11-server-utilities
