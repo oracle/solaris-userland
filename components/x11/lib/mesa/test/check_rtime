@@ -1,0 +1,11 @@
+# Direct binding is disabled in Xorg module, since it breaks libglx.so
+NODIRECT	^usr/lib/mesa/modules/extensions/libglx.so$
+# Issues caused by having to pass a single set of linker flags to module
+# configure scripts/Makefiles used to build a mixed bag of objects
+UNUSED_RPATH	/usr/lib/xorg.*\ from\ .*/usr/lib/.*\.so.*
+# Unreferenced objects of objects from other components
+UNREF_OBJ       libdl.*\ of\ .*libLLVM-.*\.so
+UNREF_OBJ       libpthread.*\ of\ .*libLLVM-.*\.so
+UNREF_OBJ       librt.*\ of\ .*libLLVM-.*\.so
+UNREF_OBJ       libstdc.*\ of\ .*libLLVM-.*\.so
+UNREF_OBJ       libssp.*\ of\ .*libLLVM-.*\.so

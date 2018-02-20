@@ -1,0 +1,88 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+<transform file path=usr.*/man/.+ -> default mangler.man.stability obsolete>
+set name=pkg.fmri \
+    value=pkg:/x11/library/libxp@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="libXp - X Print Client Library"
+set name=pkg.description \
+    value="Xlib-based client API for the X Print extension to the X11 protocol"
+set name=com.oracle.info.description value=libXp
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification value=org.opensolaris.category.2008:System/X11
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/1998/299 value=PSARC/2001/103 \
+    value=PSARC/2009/294
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+link path=usr/X11/lib/$(MACH64)/libXp.so target=../../../lib/$(MACH64)/libXp.so
+link path=usr/X11/lib/$(MACH64)/libXp.so.1 \
+    target=../../../lib/$(MACH64)/libXp.so.1
+link path=usr/X11/lib/libXp.so target=../../lib/libXp.so
+link path=usr/X11/lib/libXp.so.1 target=../../lib/libXp.so.1
+link path=usr/lib/$(MACH64)/libXp.so target=libXp.so.1
+link path=usr/lib/$(MACH64)/libXp.so.1 target=libXp.so.1.0.0
+file path=usr/lib/$(MACH64)/libXp.so.1.0.0
+file path=usr/lib/$(MACH64)/pkgconfig/xp.pc
+link path=usr/lib/libXp.so target=libXp.so.1
+link path=usr/lib/libXp.so.1 target=libXp.so.1.0.0
+file path=usr/lib/libXp.so.1.0.0
+file path=usr/lib/pkgconfig/xp.pc
+file path=usr/share/man/man3xp/XpCancelDoc.3xp
+file path=usr/share/man/man3xp/XpCancelJob.3xp
+file path=usr/share/man/man3xp/XpCancelPage.3xp
+file path=usr/share/man/man3xp/XpCreateContext.3xp
+file path=usr/share/man/man3xp/XpDestroyContext.3xp
+file path=usr/share/man/man3xp/XpEndDoc.3xp
+file path=usr/share/man/man3xp/XpEndJob.3xp
+file path=usr/share/man/man3xp/XpEndPage.3xp
+file path=usr/share/man/man3xp/XpFreePrinterList.3xp
+file path=usr/share/man/man3xp/XpGetAttributes.3xp
+file path=usr/share/man/man3xp/XpGetContext.3xp
+file path=usr/share/man/man3xp/XpGetDocumentData.3xp
+file path=usr/share/man/man3xp/XpGetImageResolution.3xp
+file path=usr/share/man/man3xp/XpGetLocaleHinter.3xp
+file path=usr/share/man/man3xp/XpGetOneAttribute.3xp
+file path=usr/share/man/man3xp/XpGetPageDimensions.3xp
+file path=usr/share/man/man3xp/XpGetPdmStartParams.3xp
+file path=usr/share/man/man3xp/XpGetPrinterList.3xp
+file path=usr/share/man/man3xp/XpGetScreenOfContext.3xp
+file path=usr/share/man/man3xp/XpInputSelected.3xp
+file path=usr/share/man/man3xp/XpPutDocumentData.3xp
+file path=usr/share/man/man3xp/XpQueryExtension.3xp
+file path=usr/share/man/man3xp/XpQueryScreens.3xp
+file path=usr/share/man/man3xp/XpQueryVersion.3xp
+file path=usr/share/man/man3xp/XpRehashPrinterList.3xp
+file path=usr/share/man/man3xp/XpSelectInput.3xp
+file path=usr/share/man/man3xp/XpSetAttributes.3xp
+file path=usr/share/man/man3xp/XpSetContext.3xp
+file path=usr/share/man/man3xp/XpSetImageResolution.3xp
+file path=usr/share/man/man3xp/XpSetLocaleHinter.3xp
+file path=usr/share/man/man3xp/XpStartDoc.3xp
+file path=usr/share/man/man3xp/XpStartJob.3xp
+file path=usr/share/man/man3xp/XpStartPage.3xp
+file path=usr/share/man/man3xp/libXp.3xp
+license COPYING license=MIT
+depend type=require fmri=pkg:/x11/header/x11-protocols facet.devel=true

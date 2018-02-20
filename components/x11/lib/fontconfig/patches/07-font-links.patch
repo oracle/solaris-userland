@@ -1,0 +1,16 @@
+Existing set of patches from the X gate
+
+--- a/conf.d/Makefile.am	Wed Oct 28 08:06:32 2015
++++ b/conf.d/Makefile.am	Wed Oct 28 08:07:46 2015
+@@ -88,9 +88,9 @@
+ 	@(echo cd $(DESTDIR)$(configdir);			\
+ 	  cd $(DESTDIR)$(configdir);				\
+ 	  for i in $(CONF_LINKS); do				\
+-	    echo $(RM) $$i";" ln -s $(templatedir)/$$i .;	\
++	    echo $(RM) $$i";" ln -s ../conf.avail/$$i .;	\
+ 	    $(RM) $$i;						\
+-	    ln -s $(templatedir)/$$i .;				\
++	    ln -s ../conf.avail/$$i .;				\
+ 	  done)
+ uninstall-local:
+ 	@(echo cd $(DESTDIR)$(configdir);			\

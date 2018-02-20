@@ -1,0 +1,28 @@
+Existing set of patches from the X gate
+
+--- a/py-compile	Wed Apr 22 10:24:26 2015
++++ b/py-compile	Wed Apr 22 10:32:59 2015
+@@ -129,10 +129,7 @@
+ 	    continue
+     sys.stdout.write(file)
+     sys.stdout.flush()
+-    if hasattr(imp, 'get_tag'):
+-        py_compile.compile(filepath, imp.cache_from_source(filepath), path)
+-    else:
+-        py_compile.compile(filepath, filepath + 'c', path)
++    py_compile.compile(filepath, filepath + 'c', path)
+ sys.stdout.write('\n')" || exit $?
+ 
+ # this will fail for python < 1.5, but that doesn't matter ...
+@@ -153,10 +150,7 @@
+ 	    continue
+     sys.stdout.write(file)
+     sys.stdout.flush()
+-    if hasattr(imp, 'get_tag'):
+-        py_compile.compile(filepath, imp.cache_from_source(filepath, False), path)
+-    else:
+-        py_compile.compile(filepath, filepath + 'o', path)
++    py_compile.compile(filepath, filepath + 'o', path)
+ sys.stdout.write('\n')" 2>/dev/null || :
+ 
+ # Local Variables:

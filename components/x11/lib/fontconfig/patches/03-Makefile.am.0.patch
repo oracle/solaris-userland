@@ -1,0 +1,21 @@
+Existing set of patches from the X gate
+
+--- a/Makefile.am	Thu Jun 18 09:00:13 2015
++++ b/Makefile.am	Thu Jun 18 09:00:43 2015
+@@ -116,16 +116,6 @@
+ 	  echo " $(INSTALL_DATA) fonts.conf $(DESTDIR)$(baseconfigdir)/fonts.conf"; \
+ 	  $(INSTALL_DATA) fonts.conf $(DESTDIR)$(baseconfigdir)/fonts.conf; \
+ 	fi; fi
+-	@(if $(RUN_FC_CACHE_TEST); then \
+-	    echo "fc-cache$(EXEEXT) -s -f -v"; \
+-	    fc-cache/fc-cache$(EXEEXT) -s -f -v; \
+-	else \
+-	    echo "***"; \
+-	    echo "*** Warning: fonts.cache not built"; \
+-	    echo "***"; \
+-	    echo "*** Generate this file manually on host system using fc-cache"; \
+-	    echo "***"; \
+-	fi)
+ 
+ uninstall-local:
+ 	if [ -f $(srcdir)/fonts.conf ]; then \

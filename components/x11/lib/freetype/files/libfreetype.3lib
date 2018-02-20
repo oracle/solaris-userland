@@ -1,0 +1,80 @@
+.\" Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+.\"
+.\" Permission is hereby granted, free of charge, to any person obtaining a
+.\" copy of this software and associated documentation files (the "Software"),
+.\" to deal in the Software without restriction, including without limitation
+.\" the rights to use, copy, modify, merge, publish, distribute, sublicense,
+.\" and/or sell copies of the Software, and to permit persons to whom the
+.\" Software is furnished to do so, subject to the following conditions:
+.\"
+.\" The above copyright notice and this permission notice (including the next
+.\" paragraph) shall be included in all copies or substantial portions of the
+.\" Software.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+.\" IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+.\" FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+.\" THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+.\" LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+.\" FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+.\" DEALINGS IN THE SOFTWARE.
+.\"
+.TH libfreetype 3lib "27 May 2017" "__version__" "Interface Libraries"
+.SH "NAME"
+libfreetype \- font rendering library
+.SH "SYNOPSIS"
+.sp
+.nf
+#include <ft2build.h>
+#include FT_FREETYPE_H
+.fi
+.SH "DESCRIPTION"
+.PP
+\fBlibfreetype\fR is a software library to access the contents of font files.
+It supports both bitmap and scalable formats, including TrueType, OpenType,
+Type1, CID, CFF, Windows FON/FNT, X11 PCF, and others.
+.PP
+Full documentation of the library is available on the community website at
+.B https://www.freetype.org/
+.SH "FILES"
+.PP
+The following files are provided by this library:
+.TP 4
+.B /usr/include/freetype2/ft2build.h
+Public header file
+.TP 4
+.B /usr/lib/libfreetype\&.so
+32-bit shared library
+.TP 4
+.B /usr/lib/64/libfreetype\&.so
+64-bit shared library
+.TP 4
+.B /usr/lib/pkgconfig/freetype2\&.pc
+.BR pkg-config (1)
+file for 32-bit shared library
+.TP 4
+.B /usr/lib/64/pkgconfig/freetype2\&.pc
+.BR pkg-config (1)
+file for 64-bit shared library
+.TP 4
+.B /usr/share/doc/freetype
+documentation files, including
+.BR "FreeType API Reference".
+.SH "SEE ALSO"
+.PP
+.BR freetype-config (1),
+.BR pkg-config (1),
+.BR attributes (7),
+.B /usr/share/doc/freetype/index.html
+.SH "NOTES"
+.PP
+FreeType uses macros defined in <ft2build.h> to provide #include paths for
+its other header files.  Installation paths for headers may change between
+versions, but the macros will be updated to use the correct path.  The
+.B Header File Macros
+page of the FreeType API Reference provides a list of these macros and
+further details on their usage.
+.PP
+See the FreeType API Reference for details on the thread safety of the various
+API calls, including details on which data structures must be protected by a
+mutex if used in multiple threads.

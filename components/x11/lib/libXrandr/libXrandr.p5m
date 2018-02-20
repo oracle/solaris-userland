@@ -1,0 +1,72 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
+set name=pkg.fmri \
+    value=pkg:/x11/library/libxrandr@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary \
+    value="libXrandr - X Resize, Rotate and Reflection extension client library"
+set name=pkg.description \
+    value="Xlib-based client API for the RANDR extension to the X11 protocol"
+set name=com.oracle.info.description value=libXrandr
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification value=org.opensolaris.category.2008:System/X11
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2004/187 value=PSARC/2007/430 \
+    value=PSARC/2009/269 value=PSARC/2012/318 value=PSARC/2016/252
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+link path=usr/X11/lib/$(MACH64)/libXrandr.so \
+    target=../../../lib/$(MACH64)/libXrandr.so
+link path=usr/X11/lib/$(MACH64)/libXrandr.so.2 \
+    target=../../../lib/$(MACH64)/libXrandr.so.2
+link path=usr/X11/lib/libXrandr.so target=../../lib/libXrandr.so
+link path=usr/X11/lib/libXrandr.so.2 target=../../lib/libXrandr.so.2
+file path=usr/include/X11/extensions/Xrandr.h
+link path=usr/lib/$(MACH64)/libXrandr.so target=libXrandr.so.2
+link path=usr/lib/$(MACH64)/libXrandr.so.2 target=libXrandr.so.2.2.0
+file path=usr/lib/$(MACH64)/libXrandr.so.2.2.0
+file path=usr/lib/$(MACH64)/pkgconfig/xrandr.pc
+link path=usr/lib/libXrandr.so target=libXrandr.so.2
+link path=usr/lib/libXrandr.so.2 target=libXrandr.so.2.2.0
+file path=usr/lib/libXrandr.so.2.2.0
+file path=usr/lib/pkgconfig/xrandr.pc
+file path=usr/share/man/man3xrandr/XRRConfigCurrentConfiguration.3xrandr
+file path=usr/share/man/man3xrandr/XRRConfigCurrentRate.3xrandr
+file path=usr/share/man/man3xrandr/XRRConfigRates.3xrandr
+file path=usr/share/man/man3xrandr/XRRConfigRotations.3xrandr
+file path=usr/share/man/man3xrandr/XRRConfigSizes.3xrandr
+file path=usr/share/man/man3xrandr/XRRConfigTimes.3xrandr
+file path=usr/share/man/man3xrandr/XRRFreeScreenConfigInfo.3xrandr
+file path=usr/share/man/man3xrandr/XRRGetScreenInfo.3xrandr
+file path=usr/share/man/man3xrandr/XRRQueryExtension.3xrandr
+file path=usr/share/man/man3xrandr/XRRQueryVersion.3xrandr
+file path=usr/share/man/man3xrandr/XRRRootToScreen.3xrandr
+file path=usr/share/man/man3xrandr/XRRSelectInput.3xrandr
+file path=usr/share/man/man3xrandr/XRRSetScreenConfig.3xrandr
+file path=usr/share/man/man3xrandr/XRRSetScreenConfigAndRate.3xrandr
+file path=usr/share/man/man3xrandr/Xrandr.3xrandr
+license COPYING license=MIT
+depend type=require fmri=pkg:/x11/header/x11-protocols facet.devel=true

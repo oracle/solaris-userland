@@ -1,0 +1,67 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
+set name=pkg.fmri \
+    value=pkg:/x11/library/libdmx@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary \
+    value="libdmx - X Window System DMX (Distributed Multihead X) extension library"
+set name=pkg.description \
+    value="libdmx is an interface to the DMX extension for X, which allows a single server to be set up as a proxy spanning multiple servers -- not unlike Xinerama across discrete physical machines. It can be reconfigured on the fly to change the layout, and it is presented as a single logical display to clients."
+set name=com.oracle.info.description \
+    value="libdmx - X Window System DMX extension library"
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification value=org.opensolaris.category.2008:System/X11
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2010/176
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file path=usr/include/X11/extensions/dmxext.h
+link path=usr/lib/$(MACH64)/libdmx.so target=libdmx.so.1
+link path=usr/lib/$(MACH64)/libdmx.so.1 target=libdmx.so.1.0.0
+file path=usr/lib/$(MACH64)/libdmx.so.1.0.0
+file path=usr/lib/$(MACH64)/pkgconfig/dmx.pc
+link path=usr/lib/libdmx.so target=libdmx.so.1
+link path=usr/lib/libdmx.so.1 target=libdmx.so.1.0.0
+file path=usr/lib/libdmx.so.1.0.0
+file path=usr/lib/pkgconfig/dmx.pc
+file path=usr/share/man/man3dmx/DMX.3dmx
+file path=usr/share/man/man3dmx/DMXAddInput.3dmx
+file path=usr/share/man/man3dmx/DMXAddScreen.3dmx
+file path=usr/share/man/man3dmx/DMXChangeDesktopAttributes.3dmx
+file path=usr/share/man/man3dmx/DMXChangeScreensAttributes.3dmx
+file path=usr/share/man/man3dmx/DMXForceWindowCreation.3dmx
+file path=usr/share/man/man3dmx/DMXGetDesktopAttributes.3dmx
+file path=usr/share/man/man3dmx/DMXGetInputAttributes.3dmx
+file path=usr/share/man/man3dmx/DMXGetInputCount.3dmx
+file path=usr/share/man/man3dmx/DMXGetScreenAttributes.3dmx
+file path=usr/share/man/man3dmx/DMXGetScreenCount.3dmx
+file path=usr/share/man/man3dmx/DMXGetWindowAttributes.3dmx
+file path=usr/share/man/man3dmx/DMXQueryExtension.3dmx
+file path=usr/share/man/man3dmx/DMXQueryVersion.3dmx
+file path=usr/share/man/man3dmx/DMXRemoveInput.3dmx
+file path=usr/share/man/man3dmx/DMXRemoveScreen.3dmx
+file path=usr/share/man/man3dmx/DMXSync.3dmx
+license COPYING license=MIT

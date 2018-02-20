@@ -1,0 +1,53 @@
+Existing set of patches from the X gate
+
+--- a/src/Makefile.am	2017-01-31 09:22:54.963032041 -0800
++++ b/src/Makefile.am	2017-01-31 09:25:33.929422778 -0800
+@@ -1,5 +1,7 @@
+ lib_LTLIBRARIES = libxcb.la
+ 
++man3dir = $(mandir)/man3xcb
++
+ EXTSOURCES =	xproto.c \
+ 		bigreq.c \
+ 		xc_misc.c
+@@ -8,7 +10,7 @@
+ libxcb_la_LIBADD = $(NEEDED_LIBS) $(XDMCP_LIBS)
+ libxcb_la_SOURCES = \
+ 		xcb_conn.c xcb_out.c xcb_in.c xcb_ext.c xcb_xid.c \
+-		xcb_list.c xcb_util.c xcb_auth.c c_client.py
++		xcb_list.c xcb_util.c xcb_auth.c xia.c c_client.py
+ nodist_libxcb_la_SOURCES = xproto.c bigreq.c xc_misc.c
+ 
+ # Explanation for -version-info:
+@@ -24,6 +26,8 @@
+ 
+ # FIXME: find a way to autogenerate this from the XML files.
+ 
++EXTSOURCES += xia.c
++
+ EXTSOURCES += composite.c
+ if BUILD_COMPOSITE
+ lib_LTLIBRARIES += libxcb-composite.la
+@@ -241,7 +245,7 @@
+ nodist_xcbinclude_HEADERS = $(EXTHEADERS)
+ noinst_HEADERS = xcbint.h
+ 
+-BUILT_MAN_PAGES = man/xcb_*
++BUILT_MAN_PAGES = # handled in Solaris Makefile
+ libmandir = $(LIB_MAN_DIR)
+ libman_DATA = $(BUILT_MAN_PAGES)
+ 
+@@ -253,10 +257,10 @@
+ C_CLIENT_PY_EXTRA_ARGS += --server-side
+ endif
+ 
+-$(EXTSOURCES): c_client.py $(XCBPROTO_XCBINCLUDEDIR)/$(@:.c=.xml)
++$(EXTSOURCES): c_client.py $(PROTODIR)/$(XCBPROTO_XCBINCLUDEDIR)/$(@:.c=.xml)
+ 	$(AM_V_GEN)$(PYTHON) $(srcdir)/c_client.py	-c "$(PACKAGE_STRING)" -l "$(XORG_MAN_PAGE)" \
+-		-s "$(LIB_MAN_SUFFIX)" -p $(XCBPROTO_XCBPYTHONDIR) \
++		-s "$(LIB_MAN_SUFFIX)" -p  $(PROTODIR)/$(XCBPROTO_XCBPYTHONDIR) \
+ 		$(C_CLIENT_PY_EXTRA_ARGS) \
+-		$(XCBPROTO_XCBINCLUDEDIR)/$(@:.c=.xml)
++		$(PROTODIR)/$(XCBPROTO_XCBINCLUDEDIR)/$(@:.c=.xml)
+ 
+ $(BUILT_MAN_PAGES): $(EXTSOURCES)

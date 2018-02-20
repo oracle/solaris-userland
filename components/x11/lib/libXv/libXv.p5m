@@ -1,0 +1,80 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
+set name=pkg.fmri \
+    value=pkg:/x11/library/libxv@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="libXv - X Video (Xv) extension client library"
+set name=pkg.description \
+    value="Xlib-based client API for the X Video (Xv) extension to the X11 protocol"
+set name=com.oracle.info.description value=libXv
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification value=org.opensolaris.category.2008:System/X11
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2005/189
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+link path=usr/X11/lib/$(MACH64)/libXv.so target=../../../lib/$(MACH64)/libXv.so
+link path=usr/X11/lib/$(MACH64)/libXv.so.1 \
+    target=../../../lib/$(MACH64)/libXv.so.1
+link path=usr/X11/lib/libXv.so target=../../lib/libXv.so
+link path=usr/X11/lib/libXv.so.1 target=../../lib/libXv.so.1
+file path=usr/include/X11/extensions/Xvlib.h
+link path=usr/lib/$(MACH64)/libXv.so target=libXv.so.1
+link path=usr/lib/$(MACH64)/libXv.so.1 target=libXv.so.1.0.0
+file path=usr/lib/$(MACH64)/libXv.so.1.0.0
+file path=usr/lib/$(MACH64)/pkgconfig/xv.pc
+link path=usr/lib/libXv.so target=libXv.so.1
+link path=usr/lib/libXv.so.1 target=libXv.so.1.0.0
+file path=usr/lib/libXv.so.1.0.0
+file path=usr/lib/pkgconfig/xv.pc
+file path=usr/share/man/man3xv/Xv.3xv
+file path=usr/share/man/man3xv/XvCreateImage.3xv
+file path=usr/share/man/man3xv/XvFreeAdaptorInfo.3xv
+file path=usr/share/man/man3xv/XvFreeEncodingInfo.3xv
+file path=usr/share/man/man3xv/XvGetPortAttribute.3xv
+file path=usr/share/man/man3xv/XvGetStill.3xv
+file path=usr/share/man/man3xv/XvGetVideo.3xv
+file path=usr/share/man/man3xv/XvGrabPort.3xv
+file path=usr/share/man/man3xv/XvListImageFormats.3xv
+file path=usr/share/man/man3xv/XvPortNotify.3xv
+file path=usr/share/man/man3xv/XvPutImage.3xv
+file path=usr/share/man/man3xv/XvPutStill.3xv
+file path=usr/share/man/man3xv/XvPutVideo.3xv
+file path=usr/share/man/man3xv/XvQueryAdaptors.3xv
+file path=usr/share/man/man3xv/XvQueryBestSize.3xv
+file path=usr/share/man/man3xv/XvQueryEncodings.3xv
+file path=usr/share/man/man3xv/XvQueryExtension.3xv
+file path=usr/share/man/man3xv/XvQueryPortAttributes.3xv
+file path=usr/share/man/man3xv/XvSelectPortNotify.3xv
+file path=usr/share/man/man3xv/XvSelectVideoNotify.3xv
+file path=usr/share/man/man3xv/XvSetPortAttribute.3xv
+file path=usr/share/man/man3xv/XvShmCreateImage.3xv
+file path=usr/share/man/man3xv/XvShmPutImage.3xv
+file path=usr/share/man/man3xv/XvStopVideo.3xv
+file path=usr/share/man/man3xv/XvUngrabPort.3xv
+file path=usr/share/man/man3xv/XvVideoNotify.3xv
+license COPYING license=MIT
+depend type=require fmri=pkg:/x11/header/x11-protocols facet.devel=true

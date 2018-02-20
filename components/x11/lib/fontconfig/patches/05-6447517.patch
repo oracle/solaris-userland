@@ -1,0 +1,31 @@
+Fix for Solaris bug 6447517: Cannot login to JDS desktop for Egyptian and
+ Saudi Arabic UTF-8 locales (ar_EG, ar_SA)
+
+This was root caused to the decimal separator for the Arabic UTF-8 locales
+being set to U+066b (oxd9ab) while for the non UTF-8 "ar" locale this is 0x2c.
+
+Adds code to setlocale before attempting to read fonts.conf file. 
+Reset the locale after reading file.
+
+
+diff -urp -x '*~' -x '*.orig' src/fcxml.c src/fcxml.c
+--- a/src/fcxml.c	Thu Jun 18 09:18:07 2015
++++ b/src/fcxml.c	Thu Jun 18 09:19:31 2015
+@@ -3226,6 +3226,9 @@
+     void	    *buf;
+ #endif
+ 
++    char           *cur_locale = setlocale (LC_NUMERIC, NULL);
++    setlocale (LC_NUMERIC, "C");
++
+ #ifdef _WIN32
+     if (!pGetSystemWindowsDirectory)
+     {
+@@ -3346,6 +3349,7 @@
+     close (fd);
+     fd = -1;
+ bail0:
++    setlocale (LC_NUMERIC, cur_locale);
+     if (error && complain)
+     {
+ 	if (name)

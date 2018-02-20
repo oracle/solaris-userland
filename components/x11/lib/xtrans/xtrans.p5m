@@ -1,0 +1,54 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+set name=pkg.fmri \
+    value=pkg:/x11/library/xtrans@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary \
+    value="xtrans - X network protocol transport layer development files"
+set name=pkg.description \
+    value="xtrans is a library of code that is shared among various X packages to handle network protocol transport in a modular fashion, allowing a single place to add new transport types.  It is used by the X server, libX11, libICE, the X font server, and related components."
+set name=com.oracle.info.description value=xtrans
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification value=org.opensolaris.category.2008:Development/X11
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2015/251
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file path=usr/include/X11/Xtrans/Xtrans.c
+file path=usr/include/X11/Xtrans/Xtrans.h
+file path=usr/include/X11/Xtrans/Xtransint.h
+file path=usr/include/X11/Xtrans/Xtranslcl.c
+file path=usr/include/X11/Xtrans/Xtranssock.c
+file path=usr/include/X11/Xtrans/Xtransutil.c
+file path=usr/include/X11/Xtrans/transport.c
+file path=usr/share/aclocal/xtrans.m4
+file path=usr/share/doc/xtrans/xtrans.html
+file path=usr/share/doc/xtrans/xtrans.html.db
+file path=usr/share/doc/xtrans/xtrans.pdf.db
+file path=usr/share/doc/xtrans/xtrans.txt
+file path=usr/share/doc/xtrans/xtrans.xml
+file path=usr/share/pkgconfig/xtrans.pc
+license COPYING license=MIT
+depend type=require fmri=pkg:/x11/header/x11-protocols facet.devel=true

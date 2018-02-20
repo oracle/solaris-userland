@@ -1,0 +1,15 @@
+Setting LLVM_CXXFLAGS in the Makefile doesn't see to take effect and ends up with g++: opteron: No such file or directory.  So patching the configure file to set LLVM_CXXFLAGS.
+
+Not suitable for upstream
+
+--- a/configure.ac	2018-02-02 16:06:52.579348709 -0800
++++ b/configure.ac	2018-02-02 16:07:45.841447660 -0800
+@@ -2189,7 +2188,7 @@
+         LLVM_BINDIR=`$LLVM_CONFIG --bindir`
+         LLVM_CPPFLAGS=`strip_unwanted_llvm_flags "$LLVM_CONFIG --cppflags"`
+         LLVM_CFLAGS=$LLVM_CPPFLAGS   # CPPFLAGS seem to be sufficient
+-        LLVM_CXXFLAGS=`strip_unwanted_llvm_flags "$LLVM_CONFIG --cxxflags"`
++        LLVM_CXXFLAGS="-I/usr/include -m64   -fno-common -pthread -fno-strict-aliasing -fexceptions -frtti -fstack-protector-all  -Wcast-align -Wno-long-long -Woverflow -Wstack-protector -fkeep-static-consts -std=c++11   -Wl,-z -Wl,relax=common -Wl,-z -Wl,relax=secadj -Wl,-z -Wl,relax=transtls -Wl,-z -Wl,relax=symbound -Wl,-z -Wl,relax=comdat -Wl,-R -Wl,/usr/gcc/5/lib/amd64   -W -Wno-unused-parameter -Wwrite-strings  -Wno-missing-field-initializers  -Wno-long-long -Wno-maybe-uninitialized -Wdelete-non-virtual-dtor -Wno-comment -std=c++11   -include llvm/Support/Solaris.h   -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS"
+         LLVM_INCLUDEDIR=`$LLVM_CONFIG --includedir`
+         LLVM_LIBDIR=`$LLVM_CONFIG --libdir`
+ 

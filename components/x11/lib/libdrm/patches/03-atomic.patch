@@ -1,0 +1,123 @@
+Existing set of patches from the X gate
+
+--- a/intel/intel_bufmgr_gem.c	Fri Feb 20 06:27:47 2015
++++ b/intel/intel_bufmgr_gem.c	Fri Feb 20 07:00:16 2015
+@@ -93,7 +93,7 @@
+ typedef struct _drm_intel_bufmgr_gem {
+ 	drm_intel_bufmgr bufmgr;
+ 
+-	atomic_t refcount;
++	int refcount;
+ 
+ 	int fd;
+ 
+@@ -147,7 +147,7 @@
+ struct _drm_intel_bo_gem {
+ 	drm_intel_bo bo;
+ 
+-	atomic_t refcount;
++	int refcount;
+ 	uint32_t gem_handle;
+ 	const char *name;
+ 
+@@ -416,7 +416,7 @@
+ {
+ 	drm_intel_bo_gem *bo_gem = (drm_intel_bo_gem *) bo;
+ 
+-	atomic_inc(&bo_gem->refcount);
++	bo_gem->refcount++;
+ }
+ 
+ /**
+@@ -772,7 +772,7 @@
+ 	}
+ 
+ 	bo_gem->name = name;
+-	atomic_set(&bo_gem->refcount, 1);
++	bo_gem->refcount = 1;
+ 	bo_gem->validate_index = -1;
+ 	bo_gem->reloc_tree_fences = 0;
+ 	bo_gem->used_as_reloc_target = false;
+@@ -919,7 +919,7 @@
+ 	DRMINITLISTHEAD(&bo_gem->vma_list);
+ 
+ 	bo_gem->name = name;
+-	atomic_set(&bo_gem->refcount, 1);
++	bo_gem->refcount = 1;
+ 	bo_gem->validate_index = -1;
+ 	bo_gem->reloc_tree_fences = 0;
+ 	bo_gem->used_as_reloc_target = false;
+@@ -1010,7 +1010,7 @@
+ 	bo_gem->bo.virtual = NULL;
+ 	bo_gem->bo.bufmgr = bufmgr;
+ 	bo_gem->name = name;
+-	atomic_set(&bo_gem->refcount, 1);
++	bo_gem->refcount = 1;
+ 	bo_gem->validate_index = -1;
+ 	bo_gem->gem_handle = open_arg.handle;
+ 	bo_gem->bo.handle = open_arg.handle;
+@@ -1239,8 +1239,8 @@
+ {
+ 	drm_intel_bo_gem *bo_gem = (drm_intel_bo_gem *) bo;
+ 
+-	assert(atomic_read(&bo_gem->refcount) > 0);
+-	if (atomic_dec_and_test(&bo_gem->refcount))
++	assert(bo_gem->refcount > 0);
++	if (--bo_gem->refcount == 0)
+ 		drm_intel_gem_bo_unreference_final(bo, time);
+ }
+ 
+@@ -1248,7 +1248,7 @@
+ {
+ 	drm_intel_bo_gem *bo_gem = (drm_intel_bo_gem *) bo;
+ 
+-	assert(atomic_read(&bo_gem->refcount) > 0);
++	assert(bo_gem->refcount > 0);
+ 
+ 	if (atomic_add_unless(&bo_gem->refcount, -1, 1)) {
+ 		drm_intel_bufmgr_gem *bufmgr_gem =
+@@ -1259,7 +1259,7 @@
+ 
+ 		pthread_mutex_lock(&bufmgr_gem->lock);
+ 
+-		if (atomic_dec_and_test(&bo_gem->refcount)) {
++		if (--bo_gem->refcount == 0) {
+ 			drm_intel_gem_bo_unreference_final(bo, time.tv_sec);
+ 			drm_intel_gem_cleanup_bo_cache(bufmgr_gem, time.tv_sec);
+ 		}
+@@ -2683,7 +2683,7 @@
+ 
+ 	bo_gem->gem_handle = handle;
+ 
+-	atomic_set(&bo_gem->refcount, 1);
++	bo_gem->refcount = 1;
+ 
+ 	bo_gem->name = "prime";
+ 	bo_gem->validate_index = -1;
+@@ -3346,7 +3346,7 @@
+ 
+ 	DRMLISTFOREACHENTRY(bufmgr_gem, &bufmgr_list, managers) {
+ 		if (bufmgr_gem->fd == fd) {
+-			atomic_inc(&bufmgr_gem->refcount);
++			bufmgr_gem->refcount++;
+ 			return bufmgr_gem;
+ 		}
+ 	}
+@@ -3362,7 +3362,7 @@
+ 	if (atomic_add_unless(&bufmgr_gem->refcount, -1, 1)) {
+ 		pthread_mutex_lock(&bufmgr_list_mutex);
+ 
+-		if (atomic_dec_and_test(&bufmgr_gem->refcount)) {
++		if (--bufmgr_gem->refcount == 0) {
+ 			DRMLISTDEL(&bufmgr_gem->managers);
+ 			drm_intel_bufmgr_gem_destroy(bufmgr);
+ 		}
+@@ -3443,7 +3443,7 @@
+ 		goto exit;
+ 
+ 	bufmgr_gem->fd = fd;
+-	atomic_set(&bufmgr_gem->refcount, 1);
++	bufmgr_gem->refcount = 1;
+ 
+ 	if (pthread_mutex_init(&bufmgr_gem->lock, NULL) != 0) {
+ 		free(bufmgr_gem);
