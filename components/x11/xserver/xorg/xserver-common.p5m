@@ -1,0 +1,72 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
+set name=pkg.fmri \
+    value=pkg:/x11/server/xserver-common@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="X server common files"
+set name=pkg.description \
+    value="Files shared by all X server variants based on the X.Org Foundation implementation.  Includes the x11-server SMF service for Solaris."
+set name=com.oracle.info.description \
+    value="portions of the X.Org X server software"
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification value=org.opensolaris.category.2008:System/X11
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=value=PSARC/2015/251
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file files/auth_attr path=etc/security/auth_attr.d/xserver-common group=sys
+file files/prof_attr path=etc/security/prof_attr.d/xserver-common group=sys
+dir  path=lib/svc/manifest/application/x11 group=sys
+file files/x11-server.xml path=lib/svc/manifest/application/x11/x11-server.xml \
+    group=sys
+file files/x11-server path=lib/svc/method/x11-server
+link path=usr/X11/bin/X target=../../bin/X
+link path=usr/X11/bin/Xserver target=../../bin/Xserver
+link path=usr/X11/bin/amd64 target=../../bin/amd64 variant.arch=i386
+link path=usr/X11/lib/X11/xserver target=../../../lib/xorg
+link path=usr/bin/X target=Xserver
+file files/Xserver path=usr/bin/Xserver
+file path=usr/demo/Xserver/mdb/README
+file path=usr/demo/Xserver/mdb/list_Xserver_clients mode=0555
+file path=usr/demo/Xserver/mdb/list_Xserver_devicegrab_client mode=0555
+file path=usr/demo/Xserver/mdb/list_Xserver_servergrab_client mode=0555
+file path=usr/lib/mdb/proc/$(MACH64)/Xserver.so
+file path=usr/lib/xorg/protocol.txt
+link path=usr/share/doc/Xserver target=xorg-server
+# Have to explictly create dir so that pkglint can follow the link
+dir  path=usr/share/doc/xorg-server
+# dtrace files not being delivered because of 25247220
+#file path=usr/share/doc/xorg-server/Xserver-DTrace.html
+#file path=usr/share/doc/xorg-server/Xserver-DTrace.html.db
+#file path=usr/share/doc/xorg-server/Xserver-DTrace.pdf.db
+#file path=usr/share/doc/xorg-server/Xserver-DTrace.txt
+#file path=usr/share/doc/xorg-server/Xserver-DTrace.xml
+file files/Xnest.1 path=usr/share/man/man1/Xnest.1
+file path=usr/share/man/man1/Xserver.1
+license xorg-server.license license=MIT
+# Xserver script runs /usr/bin/readlink (from GNU coreutils)
+depend type=require fmri=__TBD pkg.debug.depend.file=readlink \
+    pkg.debug.depend.path=usr/bin pkg.debug.depend.reason=usr/bin/Xserver

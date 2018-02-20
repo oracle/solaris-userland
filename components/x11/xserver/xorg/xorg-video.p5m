@@ -1,0 +1,86 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+set name=pkg.fmri \
+    value=pkg:/x11/server/xorg/driver/xorg-video@$(PKG_SOLARIS_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="Xorg server video drivers group"
+set name=pkg.description \
+    value="A group package that provides all of the available Xorg video drivers for a given platform"
+set name=info.classification value=org.opensolaris.category.2008:System/X11
+set name=org.opensolaris.arc-caseid value=PSARC/2004/187 value=PSARC/2004/685 \
+    value=PSARC/2004/829 value=PSARC/2005/450 value=PSARC/2006/609 \
+    value=PSARC/2007/051 value=PSARC/2007/434 value=PSARC/2007/500 \
+    value=PSARC/2008/294 value=PSARC/2009/021 value=PSARC/2009/292 \
+    value=PSARC/2009/679 value=PSARC/2010/109 value=PSARC/2010/382 \
+    value=PSARC/2011/008 value=PSARC/2011/214 value=PSARC/2012/144 \
+    value=PSARC/2012/320 value=PSARC/2013/091 value=PSARC/2015/251 \
+    value=PSARC/2016/293 value=PSARC/2017/212
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+### Depends on packages delivering the drivers
+
+# Nvidia driver (from the nvidia consolidation)
+depend type=group fmri=pkg:/driver/graphics/nvidia variant.arch=i386
+
+# driver/xf86-video-ast
+depend type=group fmri=pkg:/x11/server/xorg/driver/xorg-video-ast
+
+# driver/xf86-video-ati
+depend type=group fmri=pkg:/x11/server/xorg/driver/xorg-video-ati \
+    variant.arch=i386
+
+# driver/xf86-video-cirrus
+depend type=group fmri=pkg:/x11/server/xorg/driver/xorg-video-cirrus \
+    variant.arch=i386
+
+# driver/xf86-video-intel
+depend type=group fmri=pkg:/x11/server/xorg/driver/xorg-video-intel \
+    variant.arch=i386
+
+# driver/xf86-video-mach64
+depend type=group fmri=pkg:/x11/server/xorg/driver/xorg-video-mach64 \
+    variant.arch=i386
+
+# driver/xf86-video-mga
+depend type=group fmri=pkg:/x11/server/xorg/driver/xorg-video-mga
+
+# driver/xf86-video-openchrome
+depend type=group fmri=pkg:/x11/server/xorg/driver/xorg-video-openchrome \
+    variant.arch=i386
+
+# driver/xf86-video-r128
+depend type=group fmri=pkg:/x11/server/xorg/driver/xorg-video-r128 \
+    variant.arch=i386
+
+# driver/xf86-video-vboxvideo
+depend type=group fmri=pkg:/x11/server/xorg/driver/xorg-video-vboxvideo \
+    variant.arch=i386
+
+# driver/xf86-video-vesa
+depend type=group fmri=pkg:/x11/server/xorg/driver/xorg-video-vesa \
+    variant.arch=i386
+
+# driver/xf86-video-vmware
+depend type=group fmri=pkg:/x11/server/xorg/driver/xorg-video-vmware \
+    variant.arch=i386
