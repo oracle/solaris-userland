@@ -35,7 +35,9 @@ COMPONENT_CATEGORY    ?=	\
 	$(firstword $(subst /, ,$(COMPONENT_DIR:$(X11_COMPONENTS_DIR)/%=%)))
 endif
 COMPONENT_ARCHIVE     ?=	$(COMPONENT_SRC).tar.bz2
+ifneq ($(strip $(COMPONENT_ARCHIVE_SRC)), none)
 COMPONENT_ARCHIVE_URL ?=	https://www.x.org/releases/individual/$(COMPONENT_CATEGORY)/$(COMPONENT_ARCHIVE)
+endif
 
 PKGMOGRIFY_TRANSFORMS += $(WS_TOP)/transforms/X-incorporation
 
