@@ -1,0 +1,46 @@
+Existing set of patches from X gate.  Need to evaluate if we still need these
+
+--- a/src/Makefile.am	Fri Jan  8 13:37:38 2016
++++ b/src/Makefile.am	Fri Jan  8 13:45:10 2016
+@@ -64,3 +64,41 @@
+          lg_xaa.c \
+          lg_xaa.h
+ endif
++
++
++# Generate linker mapfiles for symbols found in other modules and use them
++# and library flag additions to make sure all symbols are resolvable
++
++MAPFILES = \
++	mapfile-cirrus_drv-external	 	\
++	mapfile-cirrus_alpine-external 	\
++	mapfile-cirrus_laguna-external
++
++BUILT_SOURCES = $(MAPFILES)
++
++cirrus_drv_la_LDFLAGS += \
++	-Wl,-M,mapfile-cirrus_alpine-external \
++	-Wl,-M,mapfile-cirrus_laguna-external \
++	-lpciaccess -lvgahw -lvbe
++
++cirrus_alpine_la_LDFLAGS += \
++	-Wl,-M,mapfile-cirrus_drv-external \
++	-lfb -lint10 -lpciaccess -lshadowfb -lvgahw
++
++cirrus_laguna_la_LDFLAGS += \
++	-Wl,-M,mapfile-cirrus_drv-external \
++	-lfb -lint10 -lvgahw
++
++mapfiles: $(MAPFILES)
++
++mapfile-cirrus_drv-external: $(cirrus_drv_la_OBJECTS)
++mapfile-cirrus_alpine-external: $(cirrus_alpine_la_OBJECTS)
++mapfile-cirrus_laguna-external: $(cirrus_laguna_la_OBJECTS)
++
++mapfile-%-external: 
++	-rm -f $@
++	printf '# Functions exported to loadable modules\n\n' > $@
++	printf '{\n  global:\n' >> $@
++	/usr/ccs/bin/nm -g $(?:%.lo=.libs/%.o) | grep -v UNDEF | sed -n -e 's/^.*\|FUNC \|GLOB \|.*\|\(.*\)$$/    \1 = FUNCTION extern;/p' -e 's/^.*\|OBJT \|GLOB \|.*\|\(.*\)$$/    \1 = DATA extern;/p' >> $@
++	printf '};\n' >> $@
++

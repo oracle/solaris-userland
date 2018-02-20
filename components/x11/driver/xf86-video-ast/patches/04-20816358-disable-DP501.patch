@@ -1,0 +1,659 @@
+Existing set of patches from X gate.
+
+--- a/src/ast.h	Thu Apr 28 20:42:49 2016
++++ b/src/ast.h	Thu Apr 28 20:43:41 2016
+@@ -81,13 +81,6 @@
+     AST1180
+ } CHIP_ID;
+ 
+-typedef enum _TX_CHIPTYPE {
+-    Tx_NONE,
+-    Tx_Sil164,
+-    Tx_Ite66121,
+-    Tx_DP501
+-} TX_CHIPTYPE;
+-
+ /* AST REC Info */
+ #define AST_NAME 			"AST"
+ #define AST_DRIVER_NAME 		"ast"
+@@ -105,10 +98,6 @@
+ #define CMD_QUEUE_GUARD_BAND    	0x00000020
+ #define DEFAULT_HWC_NUM			0x00000002
+ 
+-/* Customized Info. for DVO */
+-#define HDMI_I2C_CHANNEL		1
+-#define HDMI_TX_I2C_SLAVE_ADDR 		0x98
+-
+ /* Patch Info */
+ #define ABI_VIDEODRV_VERSION_PATCH	SET_ABI_VERSION(0, 5)
+ 
+@@ -292,10 +281,6 @@
+     int				mon_h_active;		/* Monitor Info. */
+     int				mon_v_active;
+ 
+-    UCHAR			jTxChipType;		/* 3rd TX */
+-    UCHAR			DP501_MaxVCLK;
+-    UCHAR			*pDP501FWBufferVirtualAddress;
+-
+ #ifdef AstVideo
+     XF86VideoAdaptorPtr adaptor;
+     Atom        	xvBrightness, xvContrast, xvColorKey, xvHue, xvSaturation;
+--- a/src/ast_driver.c	Thu Apr 28 20:44:00 2016
++++ b/src/ast_driver.c	Thu Apr 28 20:44:49 2016
+@@ -1311,8 +1311,6 @@
+       return;
+    if (!pScrn->driverPrivate)
+       return;
+-   if (pAST->pDP501FWBufferVirtualAddress)
+-       free(pAST->pDP501FWBufferVirtualAddress);
+    free(pScrn->driverPrivate);
+    pScrn->driverPrivate = 0;
+ }
+@@ -1577,12 +1575,6 @@
+    {
+       if (pAST->jChipType == AST1180)
+           Flags = ASTGetVGA2EDID(pScrn, DDC_data);
+-      else if (pAST->jTxChipType == Tx_DP501)
+-      {
+-          Flags = ASTReadEDID_M68K(pScrn, DDC_data);
+-          if (Flags == FALSE)
+-              Flags = ASTGetVGAEDID(pScrn, DDC_data);
+-      }
+       else
+           Flags = ASTGetVGAEDID(pScrn, DDC_data);
+ 
+@@ -1633,14 +1625,6 @@
+    {
+       if (pAST->jChipType == AST1180)
+           Flags = ASTGetVGA2EDID(pScrn, DDC_data);
+-      else if (pAST->jTxChipType == Tx_DP501)
+-      {
+-	      pAST->DP501_MaxVCLK = 0xFF;
+-          Flags = ASTReadEDID_M68K(pScrn, DDC_data);
+-          if (Flags) pAST->DP501_MaxVCLK = ASTGetLinkMaxCLK(pScrn);
+-          else
+-              Flags = ASTGetVGAEDID(pScrn, DDC_data);
+-      }
+       else
+           Flags = ASTGetVGAEDID(pScrn, DDC_data);
+ 
+--- a/src/ast_mode.c	Thu Apr 28 20:45:05 2016
++++ b/src/ast_mode.c	Thu Apr 28 20:46:08 2016
+@@ -515,8 +515,6 @@
+         vASTOpenKey(pScrn);
+         bASTRegInit(pScrn);
+ 
+-        vAST1000DisplayOff(pScrn);
+-
+         vSetStdReg(pScrn, mode, &vgamodeinfo);
+         vSetCRTCReg(pScrn, mode, &vgamodeinfo);
+         vSetOffsetReg(pScrn, mode, &vgamodeinfo);
+@@ -528,7 +526,6 @@
+         /* clear video buffer to avoid display noise */
+         memset(pAST->FBVirtualAddr, 0x00, pAST->VideoModeInfo.ScreenPitch*pAST->VideoModeInfo.ScreenHeight);
+ 
+-        vAST1000DisplayOn(pScrn);
+     }
+ 
+     /* post set mode */
+@@ -549,6 +546,8 @@
+    }
+ #endif
+ 
++    vAST1000DisplayOn(pScrn);
++
+     return (TRUE);
+ }
+ 
+--- a/src/ast_vgatool.c	Thu Apr 28 20:46:28 2016
++++ b/src/ast_vgatool.c	Thu Apr 28 20:50:55 2016
+@@ -53,7 +53,6 @@
+ /* Driver specific headers */
+ #include "ast.h"
+ #include "ast_vgatool.h"
+-#include "ast_dp501fw.h"
+ 
+ __inline ULONG MIndwm(UCHAR *mmiobase, ULONG r)
+ {
+@@ -85,315 +84,6 @@
+ }
+ 
+ /*
+- * BMCI2C
+- */
+-#define I2C_BASE	0x1e780000
+-
+-
+-static ULONG GetFWBase(ScrnInfoPtr pScrn)
+-{
+-    ASTRecPtr pAST = ASTPTR(pScrn);
+-    UCHAR *mmiobase;
+-
+-    mmiobase = pAST->MMIOVirtualAddr;
+-    return (MIndwm(mmiobase, 0x1e6e2104) & 0x7FFFFFFF);
+-}
+-
+-static void send_ack(ScrnInfoPtr pScrn)
+-{
+-    ASTRecPtr pAST = ASTPTR(pScrn);
+-    UCHAR SendACK;
+-
+-    GetIndexRegMask(CRTC_PORT, 0x9b, 0xFF, SendACK);
+-	SendACK |= 0x80;
+-    SetIndexRegMask(CRTC_PORT, 0x9B, 0x00, SendACK);
+-}
+-
+-static void send_nack(ScrnInfoPtr pScrn)
+-{
+-    ASTRecPtr pAST = ASTPTR(pScrn);
+-    UCHAR SendACK;
+-
+-    GetIndexRegMask(CRTC_PORT, 0x9b, 0xFF, SendACK);
+-	SendACK &= ~0x80;
+-    SetIndexRegMask(CRTC_PORT, 0x9B, 0x00, SendACK);
+-}
+-
+-static Bool wait_ack(ScrnInfoPtr pScrn)
+-{
+-    ASTRecPtr pAST = ASTPTR(pScrn);
+-    UCHAR WaitACK;
+-    ULONG retry=0;
+-
+- 	do {
+-        GetIndexRegMask(CRTC_PORT, 0xd2, 0xFF, WaitACK);
+-        WaitACK &= 0x80;
+-	 	DelayUS(100);
+-    } while ( (!WaitACK) && (retry++ < 1000) );
+-
+-    if (retry < 1000)
+-        return TRUE;
+-    else
+-        return FALSE;
+-}
+-
+-static Bool wait_nack(ScrnInfoPtr pScrn)
+-{
+-    ASTRecPtr pAST = ASTPTR(pScrn);
+-    UCHAR WaitACK;
+-    ULONG retry=0;
+-
+- 	do {
+-        GetIndexRegMask(CRTC_PORT, 0xd2, 0xFF, WaitACK);
+-        WaitACK &= 0x80;
+-	 	DelayUS(100);
+-    } while ( (WaitACK) && (retry++ < 1000) );
+-
+-    if (retry < 1000)
+-        return TRUE;
+-    else
+-        return FALSE;
+-}
+-
+-static void set_cmd_trigger(ScrnInfoPtr pScrn)
+-{
+-    ASTRecPtr pAST = ASTPTR(pScrn);
+-
+-    SetIndexRegMask(CRTC_PORT, 0x9B, ~0x40, 0x40);
+-}
+-
+-static void clear_cmd_trigger(ScrnInfoPtr pScrn)
+-{
+-    ASTRecPtr pAST = ASTPTR(pScrn);
+-
+-    SetIndexRegMask(CRTC_PORT, 0x9B, ~0x40, 0x00);
+-}
+-
+-static Bool write_cmd(ScrnInfoPtr pScrn, UCHAR data)
+-{
+-    ASTRecPtr pAST = ASTPTR(pScrn);
+-	UCHAR retry = 0;
+-
+-	if (wait_nack(pScrn))
+-	{
+-        send_nack(pScrn);
+-        SetIndexRegMask(CRTC_PORT, 0x9a, 0x00, data);
+-        send_ack(pScrn);
+-        set_cmd_trigger(pScrn);
+-        do {
+-		    if (wait_ack(pScrn))
+-		    {
+-			    clear_cmd_trigger(pScrn);
+-			    send_nack(pScrn);
+-		        return TRUE;
+-	        }
+-        } while (retry++ < 100);
+-    }
+-
+-    clear_cmd_trigger(pScrn);
+-    send_nack(pScrn);
+-    return FALSE;
+-}
+-
+-static Bool write_data(ScrnInfoPtr pScrn, UCHAR data)
+-{
+-    ASTRecPtr pAST = ASTPTR(pScrn);
+-
+-	if (wait_nack(pScrn))
+-	{
+-        send_nack(pScrn);
+-        SetIndexRegMask(CRTC_PORT, 0x9a, 0x00, data);
+-        send_ack(pScrn);
+-		if (wait_ack(pScrn))
+-		{
+-			send_nack(pScrn);
+-		    return TRUE;
+-	    }
+-    }
+-
+-    send_nack(pScrn);
+-    return FALSE;
+-}
+-
+-static void SetDP501VideoOutput(ScrnInfoPtr pScrn, UCHAR Mode)
+-{
+-    write_cmd(pScrn, 0x40);
+-    write_data(pScrn, Mode);
+-
+-    DelayMS(10);						/* delay 10ms */
+-
+-} /* SetDP501VideoOutput */
+-
+-static BOOL BackupM68KFW(ScrnInfoPtr pScrn, UCHAR *addr, ULONG size)
+-{
+-    ASTRecPtr pAST  = ASTPTR(pScrn);
+-    UCHAR *mmiobase = pAST->MMIOVirtualAddr;
+-    ULONG i, Data;
+-    ULONG BootAddress;
+-
+-    Data = MIndwm(mmiobase, 0x1e6e2100) & 0x01;
+-    if (Data)	/* FW had been load */
+-	{
+-        /* copy image to buffer */
+-        BootAddress = GetFWBase(pScrn);
+-        for (i=0; i<size; i+=4)
+-        {
+-            *(ULONG *)(addr + i) = MIndwm(mmiobase, BootAddress + i);
+-        }
+-        return TRUE;
+-    } /* UEFI Driver Handling */
+-
+-    return FALSE;
+-} /* BackupM68KFW */
+-
+-static BOOL LaunchM68K(ScrnInfoPtr pScrn)
+-{
+-    ASTRecPtr pAST  = ASTPTR(pScrn);
+-    UCHAR *mmiobase = pAST->MMIOVirtualAddr;
+-    ULONG i, Data, Len;
+-    ULONG BootAddress;
+-    UCHAR *pFWAddr;
+-    UCHAR jReg;
+-
+-    Data = MIndwm(mmiobase, 0x1e6e2100) & 0x03;
+-    if (Data != 0x01)	/* UEFI Driver Handling */
+-    {
+-        /* Reset Co-processor */
+-        MOutdwm(mmiobase, 0x1e6e2100, 0x03);
+-        do {
+-            Data = MIndwm(mmiobase, 0x1e6e2100);
+-        } while (Data != 0x03);
+-
+-	if (pAST->pDP501FWBufferVirtualAddress)
+-	{
+-	    pFWAddr = pAST->pDP501FWBufferVirtualAddress;
+-	    Len     = 32*1024;		/* 32K */
+-	}
+-	else
+-	{
+-	    pFWAddr = AST_DP501_firmware;
+-            Len     = sizeof(AST_DP501_firmware) / sizeof(AST_DP501_firmware[0]);
+-	}
+-
+-        /* Get BootAddress */
+-        MOutdwm(mmiobase, 0x1e6e2000, 0x1688a8a8);				/* open passwd */
+-        Data = MIndwm(mmiobase, 0x1e6e0004);
+-        switch (Data & 0x03)
+-        {
+-	    case 0x00:	/* 64M */
+-	        BootAddress = 0x44000000;
+-	        break;
+-	    default:
+-	    case 0x01:	/* 128MB */
+-	        BootAddress = 0x48000000;
+-	        break;
+-	    case 0x02:	/* 256MB */
+-	        BootAddress = 0x50000000;
+-	        break;
+-	    case 0x03:	/* 512MB */
+-	        BootAddress = 0x60000000;
+-	        break;
+-        }
+-        BootAddress -= 0x200000;	/* - 2MB */
+-
+-        /* copy image to buffer */
+-        for (i=0; i<Len; i+=4)
+-        {
+-	        Data = *(ULONG *)(pFWAddr + i);
+-            MOutdwm(mmiobase, BootAddress + i, Data);
+-        }
+-
+-        /* Init SCU */
+-        MOutdwm(mmiobase, 0x1e6e2000, 0x1688a8a8);				/* open passwd */
+-
+-        /* Launch FW */
+-        MOutdwm(mmiobase, 0x1e6e2104, 0x80000000 + BootAddress);
+-        MOutdwm(mmiobase, 0x1e6e2100, 1);
+-
+-        /* Update Scratch */
+-        Data  = MIndwm(mmiobase, 0x1e6e2040) & 0xFFFFF1FF;		/* D[11:9] = 100b: UEFI handling */
+-        Data |= 0x0800;
+-        MOutdwm(mmiobase, 0x1e6e2040, Data);
+-
+-        GetIndexRegMask(CRTC_PORT, 0x99, 0xFC, jReg);			/* D[1:0]: Reserved Video Buffer */
+-        jReg |= 0x02;										    /* 2MB */
+-        SetIndexReg(CRTC_PORT, 0x99, jReg);
+-
+-    } /* UEFI Driver Handling */
+-
+-    return TRUE;
+-} /* LaunchM68K */
+-
+-/*
+- * DP501 external
+- */
+-Bool ASTReadEDID_M68K(ScrnInfoPtr pScrn, BYTE *pEDIDData)
+-{
+-    ASTRecPtr pAST = ASTPTR(pScrn);
+-    UCHAR *mmiobase;
+-    ULONG i, BootAddress, Offset, Data;
+-
+-    /* init value */
+-    mmiobase = pAST->MMIOVirtualAddr;
+-    BootAddress = GetFWBase(pScrn);
+-
+-    /* validate FW version */
+-    Offset = 0xF000;
+-    Data = MIndwm(mmiobase, BootAddress + Offset);
+-    if ((Data & 0xF0) != 0x10)	/* version: 1x */
+-        return FALSE;
+-
+-    /* validate PnP Monitor */
+-    Offset = 0xF010;
+-    Data = MIndwm(mmiobase, BootAddress + Offset);
+-    if (!(Data & 0x01))
+-        return FALSE;
+-
+-    /* Read EDID */
+-    Offset = 0xF020;
+-    for (i=0; i<128; i+=4)
+-    {
+-        Data = MIndwm(mmiobase, BootAddress + Offset + i);
+-        *(ULONG *)(pEDIDData + i) = Data;
+-    }
+-
+-    return TRUE;
+-} /* ReadEDID_M68K */
+-
+-UCHAR ASTGetLinkMaxCLK(ScrnInfoPtr pScrn)
+-{
+-    ASTRecPtr pAST = ASTPTR(pScrn);
+-    UCHAR *mmiobase;
+-    ULONG BootAddress, Offset, Data;
+-    UCHAR LinkCap[4], LinkRate, LinkLanes, MaxClk = 0xFF;
+-
+-    /* init value */
+-    mmiobase = pAST->MMIOVirtualAddr;
+-    BootAddress = GetFWBase(pScrn);
+-
+-    /* validate FW version */
+-    Offset = 0xF000;
+-    Data = MIndwm(mmiobase, BootAddress + Offset);
+-    if ((Data & 0xF0) != 0x10)	/* version: 1x */
+-        return MaxClk;
+-
+-    /* Read Link Capability */
+-    Offset = 0xF014;
+-    *(ULONG *)(LinkCap) = MIndwm(mmiobase, BootAddress + Offset);
+-    if (LinkCap[2] == 0)		/* no Max. CLK Assigned */
+-    {
+-	    LinkRate  = LinkCap[0];
+-	    LinkLanes = LinkCap[1];
+-	    Data = (LinkRate == 0x0A) ? (90 * LinkLanes): (54 * LinkLanes);
+-	    if (Data > 255) Data = 255;				/* Max. */
+-	    MaxClk = (UCHAR)(Data);
+-    }
+-
+-    return MaxClk;
+-
+-} /* ASTGetLinkMaxCLK */
+-
+-/*
+  * VGA Modules
+  */
+ void
+@@ -598,12 +288,6 @@
+            ulDCLK = ActualDRAMBandwidth / ((pScrn->bitsPerPixel+1) / 8);
+    }
+ 
+-   /* Validate for DP501 */
+-   if (pAST->jTxChipType == Tx_DP501)
+-   {
+-       if (ulDCLK > pAST->DP501_MaxVCLK) ulDCLK = pAST->DP501_MaxVCLK;
+-   }
+-
+    /* Add for AST2100, ycchen@061807 */
+    if ((pAST->jChipType == AST2100) || (pAST->jChipType == AST2200) || (pAST->jChipType == AST2300) || (pAST->jChipType == AST2400) || (pAST->jChipType == AST2500) || (pAST->jChipType == AST1180) )
+    {
+@@ -662,38 +346,6 @@
+    if (jReg & 0x10)
+        pAST->VGA2Clone = TRUE;
+ 
+-   /* 3rd Tx Check */
+-   pAST->pDP501FWBufferVirtualAddress = NULL;
+-   pAST->jTxChipType = Tx_NONE;
+-   /* Get 3rd Tx Info from HW Reg. */
+-   GetIndexRegMask(CRTC_PORT, 0xA3, 0xFF, jReg);
+-   if (jReg & 0x80)
+-       pAST->jTxChipType = Tx_Sil164;
+-   /* Get 3rd Tx Info from BMC Scratch */
+-   if ((pAST->jChipType == AST2300) || (pAST->jChipType == AST2400) || (pAST->jChipType == AST2500))
+-   {
+-       GetIndexRegMask(CRTC_PORT, 0xD1, 0x0E, jReg);
+-	   switch (jReg)
+-	   {
+-	   case 0x04:
+-	       pAST->jTxChipType = Tx_Sil164;
+-	       break;
+-       case 0x08:
+-	        pAST->pDP501FWBufferVirtualAddress = (UCHAR*) calloc(1, 32*1024);
+-	        if	(pAST->pDP501FWBufferVirtualAddress)
+-	        {
+-                if (BackupM68KFW(pScrn, pAST->pDP501FWBufferVirtualAddress, 32*1024) == FALSE)
+-		        {
+-                    free(pAST->pDP501FWBufferVirtualAddress);
+-                    pAST->pDP501FWBufferVirtualAddress = NULL;
+-		        }
+-            } /* Backup DP501 FW */
+-       case 0x0c:
+-           pAST->jTxChipType = Tx_DP501;
+-           break;
+-       }
+-   }
+-
+    /* WideScreen Support */
+    switch (pAST->jChipType)
+    {
+@@ -752,10 +404,6 @@
+     ASTRecPtr pAST = ASTPTR(pScrn);
+     ULONG ulData;
+ 
+-	/* 3rd Tx */
+-    if (pAST->jTxChipType == Tx_DP501)
+-	    SetDP501VideoOutput(pScrn, 0);
+-
+     if (pAST->jChipType == AST1180)
+     {
+         ReadAST1180SOC(AST1180_GFX_BASE + AST1180_VGA1_CTRL, ulData);
+@@ -783,9 +431,6 @@
+     else
+         SetIndexRegMask(SEQ_PORT,0x01, 0xDF, 0x00);
+ 
+-    /* 3rd Tx */
+-    if (pAST->jTxChipType == Tx_DP501)
+-	    SetDP501VideoOutput(pScrn, 1);
+ }
+ 
+ void ASTBlankScreen(ScrnInfoPtr pScrn, Bool unblack)
+@@ -902,11 +547,6 @@
+       break;
+    }
+ 
+-   if (PowerManagementMode != DPMSModeOn)
+-   {  /* 3rd Tx */
+-      if (pAST->jTxChipType == Tx_DP501) SetDP501VideoOutput(pScrn, 0);
+-   }
+-
+    if (pAST->jChipType == AST1180)
+    {
+        ReadAST1180SOC(AST1180_GFX_BASE + AST1180_VGA1_CTRL, ulTemp);
+@@ -920,10 +560,6 @@
+        SetIndexRegMask(CRTC_PORT,0xB6, 0xFC, CRB6);
+    }
+ 
+-   if (PowerManagementMode == DPMSModeOn)
+-   {  /* 3rd Tx */
+-      if (pAST->jTxChipType == Tx_DP501) SetDP501VideoOutput(pScrn, 1);
+-   }
+ #endif
+ }
+ 
+@@ -3448,109 +3084,6 @@
+ 
+ } /* vGetDefaultSettings */
+ 
+-static Bool InitDVO(ScrnInfoPtr pScrn)
+-{
+-    ASTRecPtr pAST = ASTPTR(pScrn);
+-    ULONG ulData;
+-    UCHAR jReg;
+-
+-    *(ULONG *) (pAST->MMIOVirtualAddr + 0xF004)  = 0x1e6e0000;
+-    *(ULONG *) (pAST->MMIOVirtualAddr + 0xF000)  = 0x1;
+-    *(ULONG *) (pAST->MMIOVirtualAddr + 0x12000) = 0x1688A8A8;
+-
+-    GetIndexRegMask(CRTC_PORT, 0xD0, 0xFF, jReg);
+-    if (!(jReg & 0x80))														/* Init SCU DVO Settings */
+-    {
+-        ulData  = *(ULONG *) (pAST->MMIOVirtualAddr + 0x12008);				/* delay phase */
+-        ulData &= 0xfffff8ff;
+-        ulData |= 0x00000500;
+-        *(ULONG *) (pAST->MMIOVirtualAddr + 0x12008) = ulData;
+-
+-        if (pAST->jChipType == AST2300)
+-        {
+-            ulData  = *(ULONG *) (pAST->MMIOVirtualAddr + 0x12084);			/* multi-pins for DVO single-edge */
+-            ulData |= 0xfffe0000;
+-            *(ULONG *) (pAST->MMIOVirtualAddr + 0x12084) = ulData;
+-
+-            ulData  = *(ULONG *) (pAST->MMIOVirtualAddr + 0x12088);			/* multi-pins for DVO single-edge */
+-            ulData |= 0x000fffff;
+-            *(ULONG *) (pAST->MMIOVirtualAddr + 0x12088) = ulData;
+-
+-            ulData  = *(ULONG *) (pAST->MMIOVirtualAddr + 0x12090);			/* multi-pins for DVO single-edge */
+-            ulData &= 0xffffffcf;
+-            ulData |= 0x00000020;
+-            *(ULONG *) (pAST->MMIOVirtualAddr + 0x12090) = ulData;
+-        }
+-        else	/* AST2400 */
+-        {
+-            ulData  = *(ULONG *) (pAST->MMIOVirtualAddr + 0x12088);			/* multi-pins for DVO single-edge */
+-            ulData |= 0x30000000;
+-            *(ULONG *) (pAST->MMIOVirtualAddr + 0x12088) = ulData;
+-
+-            ulData  = *(ULONG *) (pAST->MMIOVirtualAddr + 0x1208c);			/* multi-pins for DVO single-edge */
+-            ulData |= 0x000000cf;
+-            *(ULONG *) (pAST->MMIOVirtualAddr + 0x1208c) = ulData;
+-
+-            ulData  = *(ULONG *) (pAST->MMIOVirtualAddr + 0x120a4);			/* multi-pins for DVO single-edge */
+-            ulData |= 0xffff0000;
+-            *(ULONG *) (pAST->MMIOVirtualAddr + 0x120a4) = ulData;
+-
+-            ulData  = *(ULONG *) (pAST->MMIOVirtualAddr + 0x120a8);			/* multi-pins for DVO single-edge */
+-            ulData |= 0x0000000f;
+-            *(ULONG *) (pAST->MMIOVirtualAddr + 0x120a8) = ulData;
+-
+-            ulData  = *(ULONG *) (pAST->MMIOVirtualAddr + 0x12094);			/* multi-pins for DVO single-edge */
+-            ulData |= 0x00000002;
+-            *(ULONG *) (pAST->MMIOVirtualAddr + 0x12094) = ulData;
+-        }
+-    }
+-
+-    /* Force to DVO */
+-    ulData  = *(ULONG *) (pAST->MMIOVirtualAddr + 0x1202c);
+-    ulData &= 0xfffbffff;
+-	*(ULONG *) (pAST->MMIOVirtualAddr + 0x1202c) = ulData;
+-
+-    /* Init VGA DVO Settings */
+-    SetIndexRegMask(CRTC_PORT, 0xA3, 0xCF, 0x80);							/* enable DVO, single-edge */
+-
+-    return TRUE;
+-} /* InitDVO */
+-
+-static void vInit3rdTX(ScrnInfoPtr pScrn)
+-{
+-    ASTRecPtr pAST = ASTPTR(pScrn);
+-    ULONG ulData;
+-    UCHAR jReg;
+-
+-    /* Only support on AST2300/2400 */
+-    if ((pAST->jChipType == AST2300) || (pAST->jChipType == AST2400) || (pAST->jChipType == AST2500))
+-    {
+-        GetIndexRegMask(CRTC_PORT, 0xD1, 0xFF, jReg);      /* D[1]: DVO Enable */
+-        switch (jReg & 0x0E)	/* D[11:9] */
+-        {
+-	    case 0x04:				/* Sil164 */
+-            InitDVO(pScrn);
+-            break;
+-	    case 0x08:	    		/* DP501 with VBIOS launch FW */
+-	        LaunchM68K(pScrn);
+-	    case 0x0C:				/* DP501 with BMC launch FW */
+-            InitDVO(pScrn);
+-	        break;
+-	    default:    			/* Force to VGA */
+-            if (pAST->jTxChipType == Tx_Sil164)
+-                InitDVO(pScrn);
+-            else
+-            {
+-                *(ULONG *)(pAST->MMIOVirtualAddr + 0x12000) = 0x1688A8A8;
+-                ulData  = *(ULONG *) (pAST->MMIOVirtualAddr + 0x1202c);
+-                ulData &= 0xfffcffff;
+-	            *(ULONG *)(pAST->MMIOVirtualAddr) = ulData;
+-            }
+-        }
+-    }
+-
+-} /* vInit3rdTX */
+-
+ /*
+  * Flags: 0: POST init
+  *        1: resume from power management
+@@ -3587,7 +3120,6 @@
+        else
+            vInitDRAMReg(pScrn);
+ 
+-       vInit3rdTX(pScrn);
+    }
+ 
+    return (TRUE);
+--- a/src/ast_vgatool.h	Thu Apr 28 20:51:13 2016
++++ b/src/ast_vgatool.h	Thu Apr 28 20:51:36 2016
+@@ -259,9 +259,5 @@
+         *(ULONG *) (pAST->MMIOVirtualAddr + 0x10000 + ((addr) & 0x0000FFFF)) = (data);	\
+ }
+ 
+-/* Delay */
+-#define DelayUS(x)		usleep(x)
+-#define DelayMS(x)		DelayUS(1000*x)
+-
+ #endif /* ASTVGATOOL_H */
+ 

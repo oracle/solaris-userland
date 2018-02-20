@@ -1,0 +1,20 @@
+Existing set of patches from X gate for sparc support
+
+--- a/src/ast_vgatool.c	2017-03-06 14:17:58.725833327 -0800
++++ b/src/ast_vgatool.c	2017-03-06 14:20:26.302802909 -0800
+@@ -233,6 +233,7 @@
+        break;
+    }
+ 
++#if !defined(__sparc__)
+    /* Adjust VRAMSize from Scratch */
+    GetIndexRegMask(CRTC_PORT, 0x99, 0xFF, jReg);
+    switch (jReg & 0x03)
+@@ -247,6 +248,7 @@
+        ulVRAMSize -= 0x400000;
+        break;
+    }
++#endif
+ 
+    return (ulVRAMSize);
+ }

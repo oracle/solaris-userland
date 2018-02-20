@@ -1,0 +1,90 @@
+Existing set of patches from X gate.  
+
+--- a/src/ast.h	Thu Apr 28 21:02:49 2016
++++ b/src/ast.h	Thu Apr 28 21:03:25 2016
+@@ -306,66 +306,7 @@
+ #define ASTPTR(p) ((ASTRecPtr)((p)->driverPrivate))
+ 
+ #if defined(__sparc__)
+-#ifndef VIS_GETPCICONFIG
+ 
+-/*
+- * These definitions will be removed when they are included in the
+- * visual_io.h
+- */
+-#define VIS_GETVIDEOMODENAME            (VIOC | 12)
+-#define VIS_STOREVIDEOMODENAME          (VIOC | 13)
+-#define VIS_MAX_VMODE_LEN               48
+-
+-typedef struct  vis_video_mode {
+-        char            mode_name[VIS_MAX_VMODE_LEN];
+-        uint32_t        vRefresh;
+-        char            pad[96];
+-} vis_video_mode_t;
+-
+-#define VIS_GETPCICONFIG               (VIOC | 14)
+-
+-typedef struct  vis_pci_cfg {
+-        uint16_t        VendorID;
+-        uint16_t        DeviceID;
+-        uint16_t        Command;
+-        uint16_t        Status;
+-        uint8_t         RevisionID;
+-        uint8_t         ProgIF;
+-        uint8_t         SubClass;
+-        uint8_t         BaseClass;
+-
+-        uint8_t         CacheLineSize;
+-        uint8_t         LatencyTimer;
+-        uint8_t         HeaderType;
+-        uint8_t         BIST;
+-
+-        uint32_t        bar[6];
+-        uint32_t        CIS;
+-        uint16_t        SubVendorID;
+-        uint16_t        SubSystemID;
+-        uint32_t        ROMBaseAddress;
+-
+-        uint8_t         CapabilitiesPtr;
+-        uint8_t         Reserved_1[3];
+-        uint32_t        Reserved_2;
+-
+-        uint8_t         InterruptLine;
+-        uint8_t         InterruptPin;
+-        uint8_t         MinimumGrant;
+-        uint8_t         MaximumLatency;
+-
+-       uint8_t         pad[100];
+-} vis_pci_cfg_t;
+-
+-#define VIS_SETIOREG                    (VIOC | 17)
+-#define VIS_GETIOREG                    (VIOC | 18)
+-
+-typedef struct vis_io_reg {
+-        uchar_t         offset;
+-        uchar_t         value;
+-} vis_io_reg_t;
+-#endif
+-
+ extern struct pci_device *ASTGetPciInfo(ASTRecPtr);
+ extern ScrnInfoPtr        ASTAllocScreen(DriverPtr, GDevPtr);
+ extern pointer           ASTMapVidMem(ScrnInfoPtr, unsigned int, CARD32,
+--- a/src/ast_vgatool.h	Thu Apr 28 21:04:02 2016
++++ b/src/ast_vgatool.h	Thu Apr 28 21:05:03 2016
+@@ -1,5 +1,6 @@
+ /*
+  * Copyright (c) 2005 ASPEED Technology Inc.
++ * Copyright (c) 2005, 2016, Oracle and/or its affiliates. All rights reserved.
+  *
+  * Permission to use, copy, modify, distribute, and sell this software and its
+  * documentation for any purpose is hereby granted without fee, provided that
+@@ -48,9 +49,6 @@
+ 
+ #if defined(__sparc__)
+ 
+-#define SET_IO_REG             0x1000
+-#define GET_IO_REG             0x1001
+-
+ #define AR_PORT_WRITE          0x40
+ #define MISC_PORT_WRITE        0x42
+ #define VGA_ENABLE_PORT        0x43

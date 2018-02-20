@@ -1,0 +1,463 @@
+sparc support patches from X gate
+
+
+diff --git a/src/mga.h b/src/mga.h
+index 77406f1..25dcf53 100644
+--- a/src/mga.h
++++ b/src/mga.h
+@@ -46,6 +46,10 @@
+ #include "mga_dri.h"
+ #endif
+ 
++#ifdef __sparc__
++#include <sys/visual_io.h>
++#endif
++
+ typedef enum {
+     OPTION_SW_CURSOR,
+     OPTION_HW_CURSOR,
+@@ -200,6 +204,28 @@ void MGAdbg_outreg32(ScrnInfoPtr, int,int, char*);
+ #define MGA_MODULE_DATA mgaModuleData
+ #define MGA_DRIVER_NAME "mga"
+ 
++#ifdef __sparc__
++#ifndef VIS_GETPCICONFIG
++
++/*
++ * These definitions will be removed when they are included in the
++ * visual_io.h
++ */
++#define VIS_GETVIDEOMODENAME		(VIOC | 12)
++#define VIS_STOREVIDEOMODENAME		(VIOC | 13)
++#define VIS_MAX_VMODE_LEN		48
++
++typedef struct	vis_video_mode {
++	char		mode_name[VIS_MAX_VMODE_LEN];
++	uint32_t	vRefresh;
++	char		pad[96];
++} vis_video_mode_t;
++
++
++#define VIS_GETPCICONFIG		(VIOC | 14)
++#endif
++#endif
++
+ typedef struct {
+     unsigned char	ExtVga[6];
+     unsigned char 	DacClk[6];
+@@ -667,6 +693,9 @@ typedef struct {
+                                        if in merged mode */
+ /* End of Merged Framebuffer Data */
+   int			HALGranularityOffX, HALGranularityOffY;
++#ifdef __sparc__
++    int			fd;
++#endif
+ } MGARec, *MGAPtr;
+ 
+ extern CARD32 MGAAtype[16];
+diff --git a/src/mga_dacG.c b/src/mga_dacG.c
+index b489dea..e549f6c 100644
+--- a/src/mga_dacG.c
++++ b/src/mga_dacG.c
+@@ -1711,11 +1711,35 @@ MGAGLoadCursorImage(ScrnInfoPtr pScrn, unsigned char *src)
+     MGAPtr pMga = MGAPTR(pScrn);
+     CARD32 *dst = (CARD32*)(pMga->FbBase + pMga->FbCursorOffset);
+     int i = 128;
+-    
+-    /* swap bytes in each line */
++#ifdef X_BYTE_ORDER != X_LITTLE_ENDIAN
++    MGAFBLayout *pLayout = &pMga->CurrentLayout;
++#endif
++
++    /* 
++     * HW cursor expects image that is both bytes and words swapped
++     * see DAC Registers section of the manual 
++     */
+     while( i-- ) {
++#if X_BYTE_ORDER == X_LITTLE_ENDIAN
++    	/* swap bytes in each line, byte swap happens during explict byte shift */
+         *dst++ = (src[4] << 24) | (src[5] << 16) | (src[6] << 8) | src[7];
+         *dst++ = (src[0] << 24) | (src[1] << 16) | (src[2] << 8) | src[3];
++#else
++	if (pLayout->depth == 8) {
++	    /* byte swap happens during assembly of word, no explict byte shift */
++            *dst++ = (src[7] << 24) | (src[6] << 16) | (src[5] << 8) | src[4];
++            *dst++ = (src[3] << 24) | (src[2] << 16) | (src[1] << 8) | src[0];
++	} else if (pLayout->depth == 16) {
++	    /* byte swap happens during assembly of word, partial byte shift to
++	       offset effects from HW cursor's double bytes reading */
++	    *dst++ = (src[6] << 24) | (src[7] << 16) | (src[4] << 8) | src[5];
++	    *dst++ = (src[2] << 24) | (src[3] << 16) | (src[0] << 8) | src[1];
++	} else {
++	    /* depth = 32. no byte swap needed, HW cursor's word reading does swap */
++	    *dst++ = ((CARD32 *)src)[1];
++	    *dst++ = ((CARD32 *)src)[0];
++	}
++#endif
+         src += 8;
+     }
+ }
+diff --git a/src/mga_driver.c b/src/mga_driver.c
+index af005f1..ae4a005 100644
+--- a/src/mga_driver.c
++++ b/src/mga_driver.c
+@@ -107,6 +107,11 @@
+ 
+ #include <unistd.h>
+ 
++#ifdef __sparc__
++#include <stdio.h>
++#include <fcntl.h>
++#endif
++
+ /*
+  * Forward definitions for the functions that make up the driver.
+  */
+@@ -156,6 +161,10 @@ static Bool	MGAModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode);
+ static void 	MGABlockHandler(int, pointer, pointer, pointer);
+ static void	MGAG100BlackMagic(ScrnInfoPtr pScrn);
+ 
++#ifdef __sparc__
++static void MGANotifyModeChanged(ScrnInfoPtr pScrn);
++#endif
++
+ static int MGAEntityIndex = -1;
+ 
+ #include "mga_merge.h"
+@@ -455,6 +464,15 @@ static const struct pci_id_match mga_device_match[] = {
+ 
+     { 0, 0, 0 },
+ };
++
++#ifdef __sparc__
++/* mimic pci_device_private struct so that define of DEV_PATH becomes valid */
++static struct mga_device_private {
++    struct pci_device  base;
++    const char * device_string;
++};
++#define DEV_PATH(dev)    (((struct mga_device_private *) (dev))->device_string)
++#endif
+ #endif
+ 
+ /* Supported chipsets */
+@@ -1296,9 +1314,11 @@ MGAdoDDC(ScrnInfoPtr pScrn)
+ 
+     /* Map the VGA memory when the primary video */
+     if (pMga->Primary) {
++#if !defined(__sparc__)
+ 	hwp->MapSize = 0x10000;
+ 	if (!vgaHWMapMem(pScrn))
+ 	    return NULL;
++#endif
+     } else {
+ 	/* XXX Need to write an MGA mode ddc1SetSpeed */
+ 	if (pMga->DDC1SetSpeed == vgaHWddc1SetSpeedWeak()) {
+@@ -1341,6 +1361,7 @@ MGAdoDDC(ScrnInfoPtr pScrn)
+ 					  pMga->ddc1Read ) ;
+ 		from = "DDC1";
+ 	    }
++#if !defined(__sparc__)
+ 	if (!MonInfo){
+ 	    vbeInfoPtr pVbe;
+ 	    if (xf86LoadSubModule(pScrn, "vbe")) {
+@@ -1350,6 +1371,7 @@ MGAdoDDC(ScrnInfoPtr pScrn)
+ 		from = "VBE";
+ 	    }
+ 	}
++#endif
+     }
+ 
+     if (MonInfo) {
+@@ -1571,6 +1593,20 @@ MGAPreInit(ScrnInfoPtr pScrn, int flags)
+     pMga->PciInfo = xf86GetPciInfoForEntity(pMga->pEnt->index);
+     pMga->PciTag = pciTag(pMga->PciInfo->bus, pMga->PciInfo->device,
+ 			  pMga->PciInfo->func);
++#else
++#ifdef __sparc__
++    {
++	char        dev[128];
++	if (DEV_PATH(pMga->PciInfo))
++	    snprintf(dev, sizeof (dev), "%s%s", "/devices",
++		DEV_PATH(pMga->PciInfo));
++	else
++	    strcpy (dev, "/dev/fb0");
++
++	if ((pMga->fd = open(dev, O_RDWR)) < 0)
++	    xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Cannot open device %s\n", dev);
++    }
++#endif
+ #endif
+ 
+     pMga->Primary = xf86IsPrimaryPci(pMga->PciInfo);
+@@ -1922,7 +1958,7 @@ MGAPreInit(ScrnInfoPtr pScrn, int flags)
+         xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, "Enabling KVM\n");
+     }
+     
+-#if !defined(__powerpc__)
++#if (!defined(__powerpc__) && !defined(__sparc__))
+     pMga->softbooted = FALSE;
+     Default = (pMga->chip_attribs->dual_head_possible
+ 	       && !pMga->Primary && !pMga->SecondCrtc);
+@@ -2838,7 +2874,11 @@ MGASave(ScrnInfoPtr pScrn)
+     /* Could call it dac2Saved */
+ 
+     /* Only save text mode fonts/text for the primary card */
++#ifdef __sparc__
++    (*pMga->Save)(pScrn, vgaReg, mgaReg, FALSE);
++#else
+     (*pMga->Save)(pScrn, vgaReg, mgaReg, pMga->Primary);
++#endif
+ }
+ 
+ /*
+@@ -2996,6 +3036,10 @@ MGAModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
+ #ifdef DEBUG
+    MGAG450PrintPLL(pScrn);
+ #endif
++
++#ifdef __sparc__
++    MGANotifyModeChanged(pScrn);
++#endif
+     return TRUE;
+ }
+ 
+@@ -3085,7 +3129,11 @@ MGARestore(ScrnInfoPtr pScrn)
+ 	vgaHWProtect(pScrn, TRUE);
+     }
+     if (pMga->Primary) {
++#ifdef __sparc__
++        (*pMga->Restore)(pScrn, vgaReg, mgaReg, FALSE);
++#else
+         (*pMga->Restore)(pScrn, vgaReg, mgaReg, TRUE);
++#endif
+     } else {
+         vgaHWRestore(pScrn, vgaReg, VGA_SR_MODE);
+     }
+@@ -3215,9 +3263,11 @@ MGAScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
+     /* Map the VGA memory when the primary video */
+     if (!pMga->FBDev) {
+ 	if (pMga->Primary) {
++#if !defined(__sparc__)
+ 	    hwp->MapSize = 0x10000;
+ 	    if (!vgaHWMapMem(pScrn))
+ 		return FALSE;
++#endif
+ 	}
+ 
+ 	/* Save the current state */
+@@ -3473,6 +3523,10 @@ MGAScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
+ 
+     MGAInitVideo(pScreen);
+ 
++#ifdef __sparc__
++    MGANotifyModeChanged(pScrn);
++#endif
++
+ #ifdef MGADRI
+     if (pMga->directRenderingEnabled) {
+        /* Now that mi, drm and others have done their thing,
+@@ -3792,6 +3846,13 @@ MGACloseScreen(int scrnIndex, ScreenPtr pScreen)
+     free(pMga->portPrivate);
+     free(pMga->ScratchBuffer);
+ 
++#ifdef __sparc__
++    MGANotifyModeChanged(pScrn);
++
++    if (pMga->fd)
++	close(pMga->fd);
++#endif
++
+     pScrn->vtSema = FALSE;
+ 
+     xf86ClearPrimInitDone(pScrn->entityList[0]);
+diff --git a/src/mga_storm.c b/src/mga_storm.c
+index 96bb6b9..57fdba5 100644
+--- a/src/mga_storm.c
++++ b/src/mga_storm.c
+@@ -97,6 +97,7 @@
+ static void mgaSubsequentSolidTwoPointLine( ScrnInfoPtr pScrn,	int x1, int y1,
+     int x2, int y2, int flags );
+ 
++#if X_BYTE_ORDER == X_LITTLE_ENDIAN
+ static void mgaSetupForMono8x8PatternFill( ScrnInfoPtr pScrn, 
+     int patx, int paty, int fg, int bg, int rop, unsigned int planemask );
+ 
+@@ -109,6 +110,7 @@
+ static void mgaSubsequentMono8x8PatternFillTrap( ScrnInfoPtr pScrn,
+     int patx, int paty, int y, int h, int left, int dxL, int dyL, int eL,
+     int right, int dxR, int dyR, int eR );
++#endif
+ 
+ static void mgaSetupForScanlineImageWrite( ScrnInfoPtr pScrn, int rop,
+     unsigned int planemask, int transparency_color, int bpp, int depth );
+@@ -148,10 +150,12 @@
+ static void MGAFillSolidSpansDMA(ScrnInfoPtr pScrn, int fg, int rop,
+ 				unsigned int planemask, int n, DDXPointPtr ppt,
+  				int *pwidth, int fSorted);
++#if X_BYTE_ORDER == X_LITTLE_ENDIAN
+ static void MGAFillMono8x8PatternRectsTwoPass(ScrnInfoPtr pScrn, int fg, int bg,
+  				int rop, unsigned int planemask, int nBox,
+  				BoxPtr pBox, int pattern0, int pattern1,
+ 				int xorigin, int yorigin);
++#endif
+ static void MGAValidatePolyArc(GCPtr, unsigned long, DrawablePtr);
+ static void MGAValidatePolyPoint(GCPtr, unsigned long, DrawablePtr);
+ static void MGAFillCacheBltRects(ScrnInfoPtr, int, unsigned int, int, BoxPtr,
+@@ -623,7 +627,9 @@
+     /* fill out infoPtr here */
+     infoPtr->Flags = 	PIXMAP_CACHE |
+ 			OFFSCREEN_PIXMAPS |
++#if X_BYTE_ORDER == X_LITTLE_ENDIAN
+ 			LINEAR_FRAMEBUFFER |
++#endif
+ 			MICROSOFT_ZERO_LINE_BIAS;
+ 
+     /* sync */
+@@ -652,18 +658,20 @@
+     /* clipping */
+     infoPtr->SetClippingRectangle = MGASetClippingRectangle;
+     infoPtr->DisableClipping = MGADisableClipping;
++#if X_BYTE_ORDER == X_BIG_ENDIAN
+     infoPtr->ClippingFlags = 	HARDWARE_CLIP_SOLID_LINE  |
++				HARDWARE_CLIP_SOLID_FILL;
++#else
++    infoPtr->ClippingFlags = 	HARDWARE_CLIP_SOLID_LINE  |
+ 				HARDWARE_CLIP_DASHED_LINE |
+ 				HARDWARE_CLIP_SOLID_FILL  |
+ 				HARDWARE_CLIP_MONO_8x8_FILL;
+ 
+-#if X_BYTE_ORDER == X_LITTLE_ENDIAN
+     /* dashed lines */
+     infoPtr->DashedLineFlags = LINE_PATTERN_MSBFIRST_LSBJUSTIFIED;
+     infoPtr->SetupForDashedLine = mgaSetupForDashedLine;
+     infoPtr->SubsequentDashedTwoPointLine = mgaSubsequentDashedTwoPointLine;
+     infoPtr->DashPatternMaxLength = 128;
+-#endif
+ 
+     /* 8x8 mono patterns */
+     infoPtr->Mono8x8PatternFillFlags = HARDWARE_PATTERN_PROGRAMMED_BITS |
+@@ -675,6 +683,7 @@
+ 		mgaSubsequentMono8x8PatternFillRect;
+     infoPtr->SubsequentMono8x8PatternFillTrap =
+ 		mgaSubsequentMono8x8PatternFillTrap;
++#endif
+ 
+     /* cpu to screen color expansion */
+     infoPtr->ScanlineCPUToScreenColorExpandFillFlags =
+@@ -748,11 +757,13 @@
+ 	infoPtr->FillSolidSpans = MGAFillSolidSpansDMA;
+     }
+ 
++#if X_BYTE_ORDER == X_LITTLE_ENDIAN
+     if(pMga->AccelFlags & TWO_PASS_COLOR_EXPAND) {
+ 	if(infoPtr->SetupForMono8x8PatternFill)
+ 	    infoPtr->FillMono8x8PatternRects =
+ 				MGAFillMono8x8PatternRectsTwoPass;
+     }
++#endif
+ 
+     if(infoPtr->SetupForSolidFill) {
+ 	infoPtr->ValidatePolyArc = MGAValidatePolyArc;
+@@ -769,12 +780,14 @@
+ 	infoPtr->SolidLineFlags |= NO_PLANEMASK;
+ #if X_BYTE_ORDER == X_LITTLE_ENDIAN
+ 	infoPtr->DashedLineFlags |= NO_PLANEMASK;
+-#endif
+ 	infoPtr->Mono8x8PatternFillFlags |= NO_PLANEMASK;
++#endif
+ 	infoPtr->ScreenToScreenColorExpandFillFlags |= NO_PLANEMASK;
+ 	infoPtr->FillSolidRectsFlags |= NO_PLANEMASK;
+ 	infoPtr->FillSolidSpansFlags |= NO_PLANEMASK;
++#if X_BYTE_ORDER == X_LITTLE_ENDIAN
+ 	infoPtr->FillMono8x8PatternRectsFlags |= NO_PLANEMASK;
++#endif
+ 	infoPtr->FillCacheBltRectsFlags |= NO_PLANEMASK;
+     }
+ 
+@@ -989,7 +1002,12 @@
+ #if X_BYTE_ORDER == X_LITTLE_ENDIAN
+    OUTREG(MGAREG_OPMODE, MGAOPM_DMA_BLIT );
+ #else
+-   OUTREG(MGAREG_OPMODE, MGAOPM_DMA_BLIT | 0x10000);
++   if (pLayout->depth == 8)
++	OUTREG(MGAREG_OPMODE, MGAOPM_DMA_BLIT);
++   else if (pLayout->depth == 16)
++	OUTREG(MGAREG_OPMODE, MGAOPM_DMA_BLIT | 0x10000);
++   else
++	OUTREG(MGAREG_OPMODE, MGAOPM_DMA_BLIT | 0x20000);
+ #endif
+    OUTREG(MGAREG_CXBNDRY, 0xFFFF0000); /* (maxX << 16) | minX */
+    OUTREG(MGAREG_YTOP, 0x00000000);    /* minPixelPointer */
+@@ -1077,9 +1095,9 @@
+         maccess |= (1 << 31);
+     }
+ 
+-    opmode |= opmode_table[ pLayout->bitsPerPixel / 8 ];
+-#if X_BYTE_ORDER == X_LITTLE_ENDIAN
+     opmode &= ~0x30000;
++#if X_BYTE_ORDER == X_BIG_ENDIAN
++    opmode |= opmode_table[ pLayout->bitsPerPixel / 8 ];
+ #endif
+ 
+     pMga->SetupForSolidFill = mgaSetupForSolidFill;
+@@ -1601,6 +1619,7 @@
+     OUTREG(MGAREG_DWGCTL, pMga->FilledRectCMD);
+ }
+ 
++#if X_BYTE_ORDER == X_LITTLE_ENDIAN
+ 
+ 	/***************************\
+ 	|   8x8 Mono Pattern Fills  |
+@@ -1689,6 +1708,7 @@
+     OUTREG(MGAREG_YDSTLEN + MGAREG_EXEC, (y << 16) | h);
+     OUTREG(MGAREG_DWGCTL, pMga->PatternRectCMD);
+ }
++#endif /* X_BYTE_ORDER == X_LITTLE_ENDIAN */
+ 
+ 	/***********************\
+ 	|   Color Expand Rect   |
+@@ -2280,6 +2300,8 @@
+ }
+ 
+ 
++#if X_BYTE_ORDER == X_LITTLE_ENDIAN
++
+ static void
+ MGAFillMono8x8PatternRectsTwoPass(
+     ScrnInfoPtr pScrn,
+@@ -2331,6 +2353,7 @@
+ 
+     SET_SYNC_FLAG(infoRec);
+ }
++#endif /* X_BYTE_ORDER == X_LITTLE_ENDIAN */
+ 
+ 
+ static void
+--- a/src/mga_driver.c	Thu Oct 18 14:08:08 2012
++++ b/src/mga_driver.c	Thu Oct 18 14:11:07 2012
+@@ -2890,6 +2890,25 @@
+ #endif
+ }
+ 
++#ifdef __sparc__
++static void
++MGANotifyModeChanged(ScrnInfoPtr pScrn)
++{
++    struct vis_video_mode mode;
++    MGAPtr pMga = MGAPTR(pScrn);
++
++    if (pScrn->currentMode->name != NULL) {
++      strlcpy(mode.mode_name, pScrn->currentMode->name, VIS_MAX_VMODE_LEN);
++    } else {
++      strlcpy(mode.mode_name, " ", VIS_MAX_VMODE_LEN);
++    }
++    mode.vRefresh = pScrn->currentMode->VRefresh;
++
++    ioctl(pMga->fd, VIS_STOREVIDEOMODENAME, &mode);
++
++}
++#endif
++
+ /*
+  * Initialise a new mode.  This is currently still using the old
+  * "initialise struct, restore/write struct to HW" model.  That could
