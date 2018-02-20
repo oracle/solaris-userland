@@ -1,0 +1,98 @@
+'\" t 
+.\"
+.\" Copyright (c) 2014, 2015, Oracle and/or its affiliates. All rights reserved.
+.\"
+.\" Permission is hereby granted, free of charge, to any person obtaining a
+.\" copy of this software and associated documentation files (the "Software"),
+.\" to deal in the Software without restriction, including without limitation
+.\" the rights to use, copy, modify, merge, publish, distribute, sublicense,
+.\" and/or sell copies of the Software, and to permit persons to whom the
+.\" Software is furnished to do so, subject to the following conditions:
+.\"
+.\" The above copyright notice and this permission notice (including the next
+.\" paragraph) shall be included in all copies or substantial portions of the
+.\" Software.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+.\" IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+.\" FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+.\" THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+.\" LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+.\" FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+.\" DEALINGS IN THE SOFTWARE.
+.\"
+.\"
+.TH DSESSION 1
+.SH NAME
+dsession \- Dynamic Session Manager
+.SH SYNOPSIS
+.B "/usr/lib/ConsoleKit/dsession -h|--help"
+.sp
+.B "/usr/sbin/dsession [option] sub-command"
+
+.SH DESCRIPTION
+.I dsession
+uses ConsoleKit tool ck-seat-tool to dynamically add and delete individual
+sessions (the dynamically added and deleted sessions are also referred to as
+dsessions), uses ConsoleKit tool ck-list-sessions to list all or individual
+dsessions.
+
+With --init option, it probes whole PCI/PCIe system, and for each display
+\fIdevice\fP it finds, adds a dsession. When adding a dsession, it uses display file
+/etc/ConsoleKit/displays.d/HotPlug.display to start an X dsession on a display
+\fIdevice\fP identified by its Bus ID, and creates an entry in management table
+that has a mapping between display \fIdevice\fP path and dsession ID.  
+
+The management table is referenced and updated in dsession add/delete/restart 
+operations.
+
+.SH OPTION
+.IP "\-v, \-\-verb"
+Print debug messages.
+
+.SH SUB-COMMAND
+.IP "\-i, \-\-init"
+Initialize: create shared memory and mutex, add all dsessions.
+.IP "\-f, \-\-fini"
+Finish: delete all dsessions.
+.IP "\-c, \-\-clean"
+Delete all dsessions, destroy mutex and shared memory.
+.IP "\-a, \-\-add \fIdevice\fP"
+Add a dsession to run on \fIdevice\fP.
+.IP "\-d, \-\-delete \fIdevice\fP"
+Delete a dsession running on \fIdevice\fP.
+.IP "\-r, \-\-restart \fIdevice\fP"
+Restart a dsession running on \fIdevice\fP.
+.IP "\-l, \-\-list \fIdevice\fP"
+List a dsession running on \fIdevice\fP.
+.IP "\-l, \-\-list all"
+List all dsessions.
+.IP "\-l, \-\-list dev"
+List all display devices.
+
+.SH FILE
+.sp
+/usr/lib/ConsoleKit/dsession
+.br
+/etc/ConsoleKit/displays.d/HotPlug.display
+
+.SH "SEE ALSO"
+.sp
+ck-list-sessions (1)
+.br
+ck-seat-tool (8)
+
+.\" Begin Sun update
+.SH "ATTRIBUTES"
+See \fBattributes\fR(7) for descriptions of the following attributes:
+.sp
+.TS
+allbox;
+cw(2.750000i)| cw(2.750000i)
+lw(2.750000i)| lw(2.750000i).
+ATTRIBUTE TYPE	ATTRIBUTE VALUE
+Availability	pkg:/x11/session/dsession
+Interface Stability	Project Private
+.TE 
+.sp
+.\" End Sun update

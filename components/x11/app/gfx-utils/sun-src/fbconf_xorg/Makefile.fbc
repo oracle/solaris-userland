@@ -1,0 +1,187 @@
+#
+# Copyright (c) 2008, 2013, Oracle and/or its affiliates. All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice (including the next
+# paragraph) shall be included in all copies or substantial portions of the
+# Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+#
+
+#
+# Makefile for libSUNWfbconf_xorg.so
+#
+
+include Makefile.common
+
+VPATH	=$(FBC_SRC_DIR):$(XF86_SRC_DIR)
+
+
+#
+# Preprocessor flags
+#
+
+XF86_DEFINE = -DSMI_FBCONFIG
+FBC_DEFINE = $(DEFINE) $(XF86_DEFINE)
+
+FBC_INC	= -I$(FBC_SRC_DIR) -I$(XF86_SRC_DIR)
+FBC_INC	+= -I$(GFX_COMMON)/include
+FBC_INC	+= -I$(COMMON) -I$(COMMON)/include
+
+
+#
+# Linker flags
+#
+
+LIBS	= $(L_XF86) $(L_GFX) -lm
+
+#
+# Code modules
+#
+
+FBC_HDRS = \
+	fbc.h \
+	  fbc_dev.h \
+	    fbc_properties.h \
+	      fbc_query_device.h \
+	  fbc_getargs.h \
+	    fbc_keywds.h \
+	  fbc_help.h \
+	  fbc_open_device.h \
+	  fbc_gamma_table.h \
+	  fbc_line_er.h \
+	  fbc_xorg.h \
+	  fbc_edit_config.h \
+	    fbc_Device.h \
+	    fbc_Screen.h \
+	    fbc_Monitor.h \
+	    fbc_Modes.h \
+	    fbc_Option.h \
+	    fbc_open_master.h \
+	  fbc_prconf.h \
+	  fbc_predid.h \
+	    fbc_predid_ceaext.h \
+	    fbc_predid_diext.h \
+	    fbc_predid_vtbext.h \
+	  fbc_propt.h \
+	  fbc_res.h \
+	    fbc_res_compatible.h \
+	    sun_edid.h \
+	    fbc_mode_list.h \
+	    fbc_append_config.h \
+	    resolutions.h \
+	  fbc_ask.h \
+	  fbc_write_config.h \
+	    fbc_fields.h \
+	  fbc_error.h \
+	fbc_edid_test_data.h
+
+FBC_CSRCS = \
+	    fbc_properties.c \
+	      fbc_query_device.c \
+	  fbc_getargs.c \
+	    fbc_keywds.c \
+	  fbc_help.c \
+	  fbc_open_device.c \
+	  fbc_gamma_table.c \
+	  fbc_line_er.c \
+	  fbc_edit_config.c \
+	    fbc_Device.c \
+	    fbc_Screen.c \
+	    fbc_Monitor.c \
+	    fbc_Modes.c \
+	    fbc_Option.c \
+	    fbc_open_master.c \
+	  fbc_prconf.c \
+	  fbc_predid.c \
+	    fbc_predid_ceaext.c \
+	    fbc_predid_diext.c \
+	    fbc_predid_vtbext.c \
+	  fbc_propt.c \
+	  fbc_res.c \
+	    fbc_res_compatible.c \
+	    sun_edid.c \
+	    fbc_mode_list.c \
+	    fbc_append_config.c \
+	    resolutions.c \
+	  fbc_ask.c \
+	  fbc_write_config.c \
+	    fbc_fields.c \
+	  fbc_error.c
+
+FBC_OBJ_FILES = $(FBC_CSRCS:.c=.o)
+FBC_OBJS = $(FBC_OBJ_FILES:%=$(FBC_BIN_DIR)/%)
+
+
+XF86_HDRS = \
+	xf86Optrec.h \
+	xf86Parser.h \
+	Configint.h \
+	configProcs.h \
+	xf86tokens.h
+
+
+all:	$(FBC_BIN_DIR) $(BIN_DIR)/$(LIB_FBC_SO)$(VERS)
+
+
+# Library build rules
+
+$(BIN_DIR)/$(LIB_FBC_SO)$(VERS): $(FBC_OBJS) $(GFX_BIN_DIR)/$(LIB_GFX_A) $(XF86_BIN_DIR)/$(LIB_XF86_A)
+	rm -f $(BIN_DIR)/$(LIB_FBC_SO)
+	$(CC) $(LIB_LDFLAGS) $(FBC_OBJS) $(LIBS) $(DYNLIBFLAGS) -o $@
+	ln -s $@ $(BIN_DIR)/$(LIB_FBC_SO)
+
+$(GFX_BIN_DIR)/$(LIB_GFX_A): Makefile.gfx
+	$(MAKE) -f Makefile.gfx all
+
+$(XF86_BIN_DIR)/$(LIB_XF86_A): Makefile.xf86
+	$(MAKE) -f Makefile.xf86 all
+
+# Component-specific compilation rule
+
+$(FBC_BIN_DIR)/%.o: $(FBC_SRC_DIR)/%.c $(FBC_HDRS)
+	$(CC) $(FBC_DEFINE) $(FBC_INC) $(CFLAGS) -c -o $@ $<
+
+
+# Directories
+
+$(FBC_BIN_DIR):
+	[ -d $@ ] || mkdir -p $@
+
+
+#install: all $(INSTALL_LIB_DIR)/$(LIB_FBC_SO) $(INSTALL_LIB_DIR)/$(LIB_FBC_SO)$(VERS)
+install: $(INSTALL_LIB_DIR)/$(LIB_FBC_SO) $(INSTALL_LIB_DIR)/$(LIB_FBC_SO)$(VERS)
+
+$(INSTALL_LIB_DIR)/$(LIB_FBC_SO)$(VERS): $(LIB_FBC_SO)$(VERS)
+	$(INSTALL) -m 0555 $? $@
+
+$(INSTALL_LIB_DIR)/$(LIB_FBC_SO): $(LIB_FBC_SO)$(VERS)
+	-rm -f $@
+	ln -s $(LIB_FBC_SO)$(VERS) $@
+
+
+clean:
+	-rm -f $(FBC_OBJS) $(FBC_SRC_DIR)/*~
+	$(MAKE) -f Makefile.xf86 clean
+	$(MAKE) -f Makefile.gfx clean
+
+clobber: clean
+	-rm -f $(BIN_DIR)/$(LIB_FBC_SO)$(VERS) $(BIN_DIR)/$(LIB_FBC_SO)
+	$(MAKE) -f Makefile.xf86 clobber
+	$(MAKE) -f Makefile.gfx clobber
+
+
+# End of Makefile.fbc

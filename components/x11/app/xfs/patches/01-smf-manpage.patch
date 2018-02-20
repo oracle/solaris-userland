@@ -1,0 +1,87 @@
+###############################################################################
+#
+# Copyright (c) 2009, 2015, Oracle and/or its affiliates. All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice (including the next
+# paragraph) shall be included in all copies or substantial portions of the
+# Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+#
+
+Add notes on SMF integration and change to reflect default startup via
+inetd.
+
+diff --git a/man/xfs.man b/man/xfs.man
+index cc4530b..a027d21 100644
+--- a/man/xfs.man
++++ b/man/xfs.man
+@@ -71,10 +71,14 @@ xfs \- X font server
+ .B xfs
+ is the X Window System font server.
+ It supplies fonts to X Window System display servers.
+-The server is usually run by a system administrator, and started via
+-.BR init (__adminmansuffix__)
+-or
+-.BR inetd (__adminmansuffix__).
++The server is usually run by 
++.BR inetd (__adminmansuffix__),
++as described in the NOTES section below.
++Automatic starting can be enabled or disabled through the
++.BR fsadmin (1)
++or 
++.BR inetadm (__adminmansuffix__)
++commands.
+ Users may also wish to start private font servers for specific sets of
+ fonts.
+ .PP
+@@ -369,6 +373,22 @@ causes
+ .B xfs
+ to reset, closing all active connections and re-reading the configuration
+ file.
++.\" Solaris/OpenSolaris additions for SMF:
++.SH "NOTES"
++.PP
++The \fBxfs\fR service is managed by the service management facility, 
++\fBsmf\fR(__miscmansuffix__), under the service identifier:
++.PP
++.nf
++svc:/application/x11/xfs:default
++.fi
++.PP
++Administrative actions on this service, such as enabling, disabling, or
++requesting restart, can be performed using \fBsvcadm\fR(__adminmansuffix__)\&. Responsibility
++for initiating and restarting this service is delegated to \fBinetd\fR(__adminmansuffix__)\&.
++Use \fBinetadm\fR(__adminmansuffix__) to make configuration changes and to view configuration
++information for this service\&. The service\&'s status can be queried using 
++the \fBsvcs\fR(1) command\&.
+ .SH BUGS
+ Multiple catalogues should be supported.
+ .SH "FUTURE DIRECTIONS"
+@@ -390,8 +410,11 @@ Keith Packard, Massachusetts Institute of Technology
+ .BR X (__miscmansuffix__),
+ .BR xfsinfo (__appmansuffix__),
+ .BR fslsfonts (__appmansuffix__),
+-.BR init (__adminmansuffix__),
+ .BR inetd (__adminmansuffix__),
+-.BR syslog (__libmansuffix__),
++.BR fsadmin (1),
++.BR inetadm (__adminmansuffix__),
++.BR smf (__miscmansuffix__),
++.BR syslogd (__adminmansuffix__),
++.BR syslog (3c),
+ .IR "The X Font Service Protocol" ,
+ .I Font Server Implementation Overview

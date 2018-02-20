@@ -1,0 +1,62 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
+set name=pkg.fmri \
+    value=pkg:/x11/session/xinit@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary \
+    value="xinit & startx - X Window System manual session startup"
+set name=pkg.description \
+    value="xinit and startx are used to start the X Window System server and clients when a display manager or other startup methods are not in use."
+set name=com.oracle.info.description value=xinit
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification value=org.opensolaris.category.2008:System/X11
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2008/379 value=PSARC/2011/033
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+dir  path=etc/X11 group=sys
+dir  path=etc/X11/xinit group=sys
+file path=etc/X11/xinit/xinitrc preserve=renamenew
+link path=usr/X11/bin/startx target=../../bin/startx
+link path=usr/X11/bin/xinit target=../../bin/xinit
+file path=usr/bin/startx
+file path=usr/bin/xinit
+file path=usr/share/man/man1/startx.1
+file path=usr/share/man/man1/xinit.1
+license COPYING license=MIT
+
+# startx runs /usr/bin/od to read /dev/urandom
+depend type=require fmri=__TBD pkg.debug.depend.file=usr/bin/od
+# Default xinit session uses twm for window manager
+depend type=require fmri=pkg:/desktop/window-manager/twm
+# startx runs kbd_mode to reset kbd state on Xserver exit/crash
+depend type=require fmri=pkg:/system/keyboard/kbd_mode
+# Default xinit session runs xterm
+depend type=require fmri=pkg:/terminal/xterm
+# startx runs xauth to save cookies to .Xauthority
+depend type=require fmri=pkg:/x11/session/xauth
+# Default xinit session uses xrdb & xmodmap
+depend type=require fmri=pkg:/x11/x11-server-utilities

@@ -1,0 +1,94 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
+set name=pkg.fmri \
+    value=pkg:/x11/x11-server-utilities@$(X11PKGVERS),$(BUILD_VERSION)
+set name=pkg.summary value="X11 server state utilities"
+set name=pkg.description \
+    value="A collection of common utilities for manipulating the state of an X server in a running X session."
+set name=com.oracle.info.description value=x11-server-utilities
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification value=org.opensolaris.category.2008:System/X11
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL) \
+    value=$(COMPONENT_ARCHIVE_URL_1) value=$(COMPONENT_ARCHIVE_URL_10) \
+    value=$(COMPONENT_ARCHIVE_URL_11) value=$(COMPONENT_ARCHIVE_URL_2) \
+    value=$(COMPONENT_ARCHIVE_URL_3) value=$(COMPONENT_ARCHIVE_URL_4) \
+    value=$(COMPONENT_ARCHIVE_URL_5) value=$(COMPONENT_ARCHIVE_URL_6) \
+    value=$(COMPONENT_ARCHIVE_URL_7) value=$(COMPONENT_ARCHIVE_URL_8) \
+    value=$(COMPONENT_ARCHIVE_URL_9)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=LSARC/2008/048 value=LSARC/2009/361 \
+    value=LSARC/2009/506 value=PSARC/1992/173 value=PSARC/1999/188 \
+    value=PSARC/2001/108 value=PSARC/2005/189 value=PSARC/2007/430 \
+    value=PSARC/2009/269 value=PSARC/2011/033 value=PSARC/2013/089 \
+    value=PSARC/2015/221 value=PSARC/2016/252
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+link path=usr/X11/bin/showrgb target=../../bin/showrgb
+link path=usr/X11/bin/xcmsdb target=../../bin/xcmsdb
+link path=usr/X11/bin/xgamma target=../../bin/xgamma
+link path=usr/X11/bin/xhost target=../../bin/xhost
+link path=usr/X11/bin/xinput target=../../bin/xinput
+link path=usr/X11/bin/xmakemap target=../../bin/xmakemap
+link path=usr/X11/bin/xmodmap target=../../bin/xmodmap
+link path=usr/X11/bin/xprop target=../../bin/xprop
+link path=usr/X11/bin/xrandr target=../../bin/xrandr
+link path=usr/X11/bin/xrdb target=../../bin/xrdb
+link path=usr/X11/bin/xrefresh target=../../bin/xrefresh
+link path=usr/X11/bin/xset target=../../bin/xset
+link path=usr/X11/bin/xsetroot target=../../bin/xsetroot
+link path=usr/X11/lib/X11/rgb.txt target=../../../share/X11/rgb.txt
+file path=usr/bin/showrgb
+file path=usr/bin/xcmsdb
+file path=usr/bin/xgamma
+file path=usr/bin/xhost
+file path=usr/bin/xinput
+file files/xmakemap path=usr/bin/xmakemap
+file path=usr/bin/xmodmap
+file path=usr/bin/xprop
+file path=usr/bin/xrandr
+file path=usr/bin/xrdb
+file path=usr/bin/xrefresh
+file path=usr/bin/xset
+file path=usr/bin/xsetroot
+file path=usr/share/X11/rgb.txt
+file files/xhost.po path=usr/share/locale/C/LC_MESSAGES/xhost.po
+file path=usr/share/man/man1/showrgb.1
+file path=usr/share/man/man1/xcmsdb.1
+file path=usr/share/man/man1/xgamma.1
+file path=usr/share/man/man1/xhost.1
+file path=usr/share/man/man1/xinput.1
+file files/xmakemap.man path=usr/share/man/man1/xmakemap.1
+file path=usr/share/man/man1/xmodmap.1
+file path=usr/share/man/man1/xprop.1
+file path=usr/share/man/man1/xrandr.1
+file path=usr/share/man/man1/xrdb.1
+file path=usr/share/man/man1/xrefresh.1
+file path=usr/share/man/man1/xset.1
+file path=usr/share/man/man1/xsetroot.1
+license COPYING license=MIT
+
+# xrdb requires cpp
+depend type=require fmri=pkg:/developer/macro/cpp

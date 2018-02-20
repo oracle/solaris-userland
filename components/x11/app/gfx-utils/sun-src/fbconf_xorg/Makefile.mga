@@ -1,0 +1,144 @@
+#
+# Makefile for libSUNWmga_conf.so
+#
+
+#
+# Copyright (c) 2008, 2013, Oracle and/or its affiliates. All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice (including the next
+# paragraph) shall be included in all copies or substantial portions of the
+# Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+#
+
+
+include Makefile.common
+
+VPATH	=$(FBC_SRC_DIR):$(MGA_SRC_DIR)
+
+
+#
+# Preprocessor flags
+#
+
+MGA_DEFINE = $DEFINE
+
+#MGA_INC = -I$(COMMON)/include -I$(COMMON)/lib -I$(OPENWINHOME)/include
+
+MGA_INC	= -I$(FBC_SRC_DIR) -I$(XF86_SRC_DIR) -I$(MGA_SRC_DIR)
+MGA_INC += -I$(GFX_COMMON)/include
+# MGA_INC += -I../../staging/mga/common/include -I../../common/lib
+
+
+#
+# Linker flags
+#
+
+LIBS	= $(L_FBC)
+
+
+#
+# Code modules
+#
+
+FBC_HDRS = \
+	fbc.h \
+	  fbc_dev.h \
+	  fbc_properties.h \
+	  fbc_getargs.h \
+	    fbc_keywds.h \
+	  fbc_help.h \
+	  fbc_open_device.h \
+	  fbc_gamma_table.h \
+	  fbc_line_er.h \
+	  fbc_xorg.h \
+	  fbc_edit_config.h \
+	    fbc_Device.h \
+	    fbc_Screen.h \
+	    fbc_Monitor.h \
+	    fbc_Option.h \
+	    fbc_fields.h \
+	      fbc_open_master.h \
+	  fbc_prconf.h \
+	  fbc_predid.h \
+	  fbc_propt.h \
+	  fbc_res.h \
+	    sun_edid.h \
+	    fbc_mode_list.h \
+	  fbc_ask.h \
+	  fbc_error.h
+
+MGA_HDRS = \
+	    mga_properties.h \
+	  mga_query_device.h \
+	  mga_res_try_now.h \
+	    mga_prconf.h \
+	    mga_predid.h
+
+MGA_CSRCS = \
+	    mga_properties.c \
+	  mga_query_device.c \
+	  mga_res_try_now.c \
+	    mga_prconf.c \
+	    mga_predid.c
+
+MGA_OBJ_FILES = $(MGA_CSRCS:.c=.o)
+MGA_OBJS = $(MGA_OBJ_FILES:%=$(MGA_BIN_DIR)/%)
+
+
+all:	$(MGA_BIN_DIR) $(BIN_DIR)/$(LIB_MGA_SO)$(VERS)
+
+
+# Library build rules
+
+$(BIN_DIR)/$(LIB_MGA_SO)$(VERS): $(MGA_OBJS) $(BIN_DIR)/$(LIB_FBC_SO)$(VERS)
+	rm -f $(BIN_DIR)/$(LIB_MGA_SO)
+	$(CC) $(LIB_LDFLAGS) $(MGA_OBJS) $(LIBS) $(DYNLIBFLAGS) -o $@
+	ln -s $@ $(BIN_DIR)/$(LIB_MGA_SO)
+
+$(BIN_DIR)/$(LIB_FBC_SO)$(VERS):
+	$(MAKE) -f Makefile.fbc all
+
+# Component-specific compilation rules
+
+$(MGA_BIN_DIR)/%.o: $(MGA_SRC_DIR)/%.c $(FBC_HDRS) $(MGA_HDRS)
+	$(CC) $(MGA_INC) $(CFLAGS) -c -o $@ $<
+
+
+# Directories
+
+$(MGA_BIN_DIR):
+	[ -d $@ ] || mkdir -p $@
+
+
+install: all $(INSTALL_LIB_DIR)/$(LIB_MGA_SO) $(INSTALL_LIB_DIR)/$(LIB_MGA_SO)$(VERS)
+
+$(INSTALL_LIB_DIR)/$(LIB_MGA_SO)$(VERS): $(LIB_MGA_SO)$(VERS)
+	$(INSTALL) -m 0555 $? $@
+
+$(INSTALL_LIB_DIR)/$(LIB_MGA_SO): $(LIB_MGA_SO)$(VERS)
+	-rm -f $@
+	ln -s $(LIB_MGA_SO)$(VERS) $@
+
+clean:
+	rm -f $(MGA_OBJS) $(MGA_SRC_DIR)/*~
+
+clobber: clean
+	rm -f $(BIN_DIR)/$(LIB_MGA_SO)$(VERS) $(BIN_DIR)/$(LIB_MGA_SO)
+
+
+# End of Makefile.mga

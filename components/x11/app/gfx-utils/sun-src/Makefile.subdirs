@@ -1,0 +1,78 @@
+# -*- Makefile -*- rules commonly shared among X consolidation open source dirs
+# Makefile.subdirs has rules for recursively iterating through module subdirs
+#
+# Copyright (c) 2008, 2015, Oracle and/or its affiliates. All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice (including the next
+# paragraph) shall be included in all copies or substantial portions of the
+# Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+#
+#
+
+# MACH will be either "sparc" or "i386"
+MACH=$(TARGET_ARCH:-%=%)
+START_CMD_ECHO = PS4="" ; set -x
+
+OS_SUBDIRS=$(OS_SUBDIRS_$(MACH))
+
+# Variables to always pass down to subdirs
+PASSDOWN_VARS = V="$(V)" TOP="$(TOP)" CDEBUGFLAGS="$(CDEBUGFLAGS)" 
+PASSDOWN_VARS += $(ADD_PASSDOWN_VARS) ADD_PASSDOWN_VARS='$(ADD_PASSDOWN_VARS)'
+
+.DEFAULT:
+	$(MAKE) $(MAKEFLAGS) $(PASSDOWN_VARS) subdirs OS_TARGET=$@
+
+World: clobber all
+
+clean: clean-subdirs clean-obsolete-subdirs
+clobber: clobber-subdirs clean-obsolete-subdirs
+
+clean-subdirs clobber-subdirs:
+	$(MAKE) $(MAKEFLAGS) $(PASSDOWN_VARS) subdirs OS_TARGET=$(@:-subdirs=)
+
+subdirs: $(OS_SUBDIRS)
+
+$(OS_SUBDIRS): ALWAYS_RUN
+	@case '${MAKEFLAGS}' in *[ik]*) set +e;; esac; \
+	cd $@ ; \
+	print "## making" $(OS_TARGET) "in open-src/$(DIRNAME)$@..."; \
+        $(MAKE) $(MAKEFLAGS) $(PASSDOWN_VARS) $(OS_TARGET)
+
+clean-obsolete-subdirs:
+	@ set +e; \
+	if [[ ! -z "$(OBSOLETE_SUBDIRS)" ]] ; then \
+	    for i in $(OBSOLETE_SUBDIRS) ; do \
+	    	if [[ -d $$i ]] ; then \
+		    if [[ -f $$i/Makefile ]] ; then \
+		    	$(MAKE) $(MAKEFLAGS) subdirs OS_TARGET=clean OS_SUBDIRS=$$i ; \
+		    else ; \
+		    	print "## removing obsolete build directories in open-src/$(DIRNAME)$$i..."; \
+			($(START_CMD_ECHO) ; cd $$i && rm -rf unpacked-src build* .checksum* ) ; \
+			($(START_CMD_ECHO) ; rmdir $$i ) ; \
+		    fi ; \
+		fi ; \
+	    done ; \
+	fi ; \
+	return 0
+
+# Dummy target to force another target to always be run, even if a file
+# or directory with the same name already exists (as it will for subdirs)
+ALWAYS_RUN:
+
+# Tell dmake it can build subdirs in parallel
+.PARALLEL: $(OS_SUBDIRS) clean-subdirs clobber-subdirs clean-obsolete-subdirs

@@ -1,0 +1,45 @@
+Fix for 22177995 /dev/console and /dev/msglog redirection getting garbled in legacy locale on s11
+
+--- a/luit.c.orig	Fri Jun  3 00:19:19 2016
++++ b/luit.c	Wed Jul  6 23:43:47 2016
+@@ -30,6 +30,7 @@
+ #include <string.h>
+ #include <locale.h>
+ #include <sys/types.h>
++#include <sys/strredir.h>
+ #include <fcntl.h>
+ #include <unistd.h>
+ #include <errno.h>
+@@ -64,6 +65,7 @@
+ 
+ static volatile int sigwinch_queued = 0;
+ static volatile int sigchld_queued = 0;
++int Console = 0;
+ 
+ static int convert(int, int);
+ static int condom(int, char **);
+@@ -303,6 +305,9 @@
+ 		FatalError("-encoding requires an argument\n");
+ 	    locale_name = argv[i + 1];
+ 	    i += 2;
++	} else if (!strcmp(argv[i], "-C")) {
++	    Console = 1;
++	    i += 1;
+ 	} else if (!strcmp(argv[i], "-p")) {
+ 	    pipe_option = 1;
+ 	    i += 1;
+@@ -650,6 +655,14 @@
+ 	close_waitpipe(0);
+     }
+ 
++    if (Console) {
++	int consfd = open("/dev/console", O_RDONLY);
++	    if (consfd >= 0) {
++		 if (ioctl(consfd, SRIOCSREDIR, 0) != -1)
++		    close(consfd);
++	    }
++    }
++
+     execvp(path, argv);
+     perror("Couldn't exec");
+     ExitProgram(1);

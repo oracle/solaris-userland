@@ -18,7 +18,7 @@
  *
  * CDDL HEADER END
  *
- * Copyright (c) 2010, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
  */
 
 /*
@@ -39,7 +39,7 @@
 static char *programs[] = { 
 	"autogen", "bash", "cpp", "cc1", "date", "doxygen",
 	"erl", "grops", "gs", "gtroff", "javadoc", "ksh", "ksh93", "ld",
-	"perl", "perl5.8.4", "perl5.10", "ruby", "sh", NULL
+	"perl", "perl5.8.4", "perl5.10", "ruby", "sh", "uil", NULL
 };
 
 static int

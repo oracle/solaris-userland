@@ -1,0 +1,52 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
+set name=pkg.fmri \
+    value=pkg:/x11/colormap-utilities@$(X11PKGVERS),$(BUILD_VERSION)
+set name=pkg.summary value="X Colormap utilities"
+set name=pkg.description \
+    value="Utilties for viewing and manipulating entries in X colormaps, especially those associated with low bit-depth visuals."
+set name=com.oracle.info.description \
+    value=cmap_alloc,cmap_compact,xstdcmap,xcolor
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification value=org.opensolaris.category.2008:System/X11
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/1992/173 value=PSARC/2013/089
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+link path=usr/X11/bin/cmap_alloc target=../../bin/cmap_alloc
+link path=usr/X11/bin/cmap_compact target=../../bin/cmap_compact
+link path=usr/X11/bin/xcolor target=../../bin/xcolor
+link path=usr/X11/bin/xstdcmap target=../../bin/xstdcmap
+file path=usr/bin/cmap_alloc
+file path=usr/bin/cmap_compact
+file path=usr/bin/xcolor
+file path=usr/bin/xstdcmap
+file path=usr/share/man/man1/cmap_alloc.1
+file path=usr/share/man/man1/cmap_compact.1
+file path=usr/share/man/man1/xcolor.1
+file path=usr/share/man/man1/xstdcmap.1
+license COPYING license=MIT

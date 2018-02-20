@@ -1,0 +1,18 @@
+--- a/xinitrc.cpp	2016-11-01 16:17:02.820211907 -0700
++++ b/xinitrc.cpp	2016-11-01 16:18:26.177850736 -0700
+@@ -39,6 +39,15 @@
+     XMODMAP "$usermodmap"
+ fi
+ 
++XCOMM
++XCOMM  If GNOME desktop is available, run it
++XCOMM  In GNOME 3, user unable to enter the password without ck-launch-session
++XCOMM
++if [ -x /etc/gdm/Xsession ] && [ -x /usr/bin/dtstart ] ; then
++  exec /usr/bin/ck-launch-session /usr/bin/dtstart jds
++fi
++
++
+ XCOMM start some nice programs
+ 
+ if [ -d XINITDIR/xinitrc.d ] ; then

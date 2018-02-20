@@ -1,0 +1,117 @@
+#
+# Makefile containing common definitions for fbconf_xorg(1M)
+#
+
+#
+# Copyright (c) 2008, 2015, Oracle and/or its affiliates. All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice (including the next
+# paragraph) shall be included in all copies or substantial portions of the
+# Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+#
+
+
+#
+# Tools
+#
+
+AR	= ar
+MKDIR	= mkdir
+
+#
+# Targets
+#
+
+BIN	= fbconf_xorg
+
+VERS	= .1
+
+L_GFX      = -L$(GFX_BIN_DIR) -lgfx
+LIB_GFX_A  = libgfx.a
+
+L_XF86     = -L$(XF86_BIN_DIR) -lxf86conf
+LIB_XF86_A = libxf86conf.a
+
+L_FBC      = -L$(BIN_DIR) -R$(INSTALL_LIB_DIR) -lfbconf_xorg
+LIB_FBC_SO = libfbconf_xorg.so
+
+LIB_AST_SO = libSUNWast_conf.so
+LIB_MGA_SO = libSUNWmga_conf.so
+
+
+#
+# Environment pathnames
+#
+
+GFX_COMMON = ../gfx_common
+
+PROJ_DIR = .
+SRC_DIR	= $(PROJ_DIR)
+BIN_DIR	= $(PROJ_DIR)
+
+GFX_SRC_DIR  = $(GFX_COMMON)/config
+GFX_BIN_DIR  = $(BIN_DIR)/gfx
+
+XF86_SRC_DIR = $(SRC_DIR)/xf86
+XF86_BIN_DIR = $(BIN_DIR)/xf86
+
+FBC_SRC_DIR  = $(SRC_DIR)/fbc
+FBC_BIN_DIR  = $(BIN_DIR)/fbc
+
+KFB_SRC_DIR  = $(SRC_DIR)/kfb
+KFB_BIN_DIR  = $(BIN_DIR)/kfb
+
+AST_SRC_DIR  = $(SRC_DIR)/ast
+AST_BIN_DIR  = $(BIN_DIR)/ast
+
+MGA_SRC_DIR  = $(SRC_DIR)/mga
+MGA_BIN_DIR  = $(BIN_DIR)/mga
+
+
+INSTALL_BIN_DIR = $(DESTDIR)/usr/lib/fbconfig
+INSTALL_LIB_DIR = $(DESTDIR)/usr/lib/fbconfig
+
+
+#
+# Preprocessor flags
+#
+
+#DEFINE	+= -DDEBUG
+
+
+#
+# Compiler flags
+#
+
+#DEBUG_FLAG= -g
+DEBUG_FLAG= 
+PIC_FLAG = -xcode=pic32				# Needed with dynamic linking
+CFLAGS	+= $(DEBUG_FLAG) $(PIC_FLAG)
+CFLAGS += $(CPPFLAGS)
+
+
+#
+# Linker flags
+#
+
+DYNLIBFLAGS  = -lc
+DYNLIBFLAGS += -G
+DYNLIBFLAGS += -h $(@F)
+
+
+# End of Makefile.common

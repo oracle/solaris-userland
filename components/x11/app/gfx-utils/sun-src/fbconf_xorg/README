@@ -1,0 +1,49 @@
+
+The fbconf_xorg/src directory contains these Makefiles:
+
+    Makefile        Master Makefile, builds fbconf_xorg(1M), et. al.
+    Makefile.common Common definitions, included by all other Makefile.* files
+    Makefile.fbc    Builds libfbconf_xorg.so.1 for fbconf_xorg(1M)
+    Makefile.gfx    Builds gfx/libgfx.a as a stripped-down, PIC version
+    Makefile.xf86   Builds xf86/libxf86conf.a, the open source XFree86 parser
+
+    Makefile.<xfb>  Builds libSUNW<xfb>_conf.so.1 for <xfb>
+
+
+To implement a new libSUNW<xfb>_conf.so.1 shared library for a new <xfb>
+frame buffer device:
+
+    Create the fbconf_xorg/<xfb> source directory.
+
+    Start populating the new source directory by creating
+        fbconf_xorg/<xfb>/<xfb>_properties.c
+    and
+        fbconf_xorg/<xfb>/<xfb>_properties.h,
+    based on existing examples.
+    Prominent details will be:
+        SUNW<xfb>_api_version
+                API version number (prominent but trivial)
+        <xfb>_option[]
+                Command line option descriptors
+                (see fbopt_descr_t, etc. in fbc_getargs.h)
+        <xfb>_propt_fn[]
+                -propt display function addresses
+                (see fbc_propt.c)
+        SUNW<xfb>_get_properties()
+                Initialization function for the <xfb> varient of
+                fbconfig_xorg(1M)
+                (see fbc_varient_t in fbc_properties.h)
+
+    Repeat the process with other fbconf_xorg/<xfb>/*.[ch] sources
+    as needed, until all of the anticipated symbols have been defined
+    and the intended <xfb> functionality has been implemented.
+
+    When it makes sense, move sufficiently common code into
+    fbconf_xorg/fbc to be incorporated into libfbconf_xorg.so.1 (or
+    into fbconf_xorg, if the code isn't referenced from a shared
+    library).
+
+    Create a fbconf_xorg/Makefile.<xfb> makefile.  Invoke it from
+    fbconf_xorg/Makefile, following existing examples.  Update
+    fbconf_xorg/Makefile.common as necessary.
+

@@ -1,0 +1,113 @@
+#
+# Makefile for libxf86config.a
+#
+
+#
+# Copyright (c) 2008, Oracle and/or its affiliates. All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice (including the next
+# paragraph) shall be included in all copies or substantial portions of the
+# Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+#
+
+
+include Makefile.common
+
+VPATH	=$(FBC_SRC_DIR):$(XF86_SRC_DIR)
+
+
+#
+# Preprocessor flags
+#
+
+XF86_DEFINE= -DSMI_FBCONFIG \
+	-DHAS_SAVED_IDS_AND_SETEUID -DPROJROOT="/tmp/Xorg-KEM"
+
+XF86_INC = -I$(XF86_SRC_DIR) -I$(FBC_SRC_DIR)
+
+
+#
+# Code modules
+#
+
+FBC_HDRS = \
+	fbc_edit_config.h \
+	fbc_line_er.h
+
+XF86_HDRS = \
+	xf86Optrec.h \
+	xf86Parser.h \
+	Configint.h \
+	configProcs.h \
+	xf86tokens.h
+
+XF86_CSRCS = \
+	Device.c \
+	Files.c \
+	Flags.c \
+	Input.c \
+	Keyboard.c \
+	Layout.c \
+	Module.c \
+	Video.c \
+	Monitor.c \
+	Pointer.c \
+	Screen.c \
+	Vendor.c \
+	read.c \
+	scan.c \
+	DRI.c \
+	Extensions.c \
+	fields.c
+
+#	Omitting write.c
+
+
+XF86_OBJ_FILES = $(XF86_CSRCS:.c=.o)
+XF86_OBJS = $(XF86_OBJ_FILES:%=$(XF86_BIN_DIR)/%)
+
+
+all:	$(XF86_BIN_DIR) $(XF86_BIN_DIR)/$(LIB_XF86_A)
+
+
+# Archive library build rule
+
+$(XF86_BIN_DIR)/$(LIB_XF86_A): $(XF86_OBJS)
+	$(AR) -r $@ $^
+
+
+# Component-specific compilation rule
+
+$(XF86_BIN_DIR)/%.o: $(XF86_SRC_DIR)/%.c $(XF86_HDRS) $(FBC_HDRS)
+	$(CC) $(XF86_DEFINE) $(XF86_INC) $(CFLAGS) -c -o $@ $<
+
+
+# Directories
+
+$(XF86_BIN_DIR):
+	[ -d $@ ] || mkdir -p $@
+
+
+clean:
+	-rm -f $(XF86_OBJS) $(XF86_SRC_DIR)/*~
+
+clobber: clean
+	-rm -f $(XF86_BIN_DIR)/$(LIB_XF86_A)
+
+
+# End of Makefile.xf86

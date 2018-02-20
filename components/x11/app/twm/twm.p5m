@@ -1,0 +1,50 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
+set name=pkg.fmri \
+    value=pkg:/desktop/window-manager/twm@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="twm - Tab Window Manager for the X Window System"
+set name=pkg.description \
+    value="Twm is a simple window manager for the X Window System.  It provides titlebars, shaped windows, several forms of icon management, user-defined macro functions, click-to-type  and pointer-driven  keyboard  focus,  and user-specified key and pointer button bindings."
+set name=com.oracle.info.description value="the Tab Window Manager (twm)"
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification value=org.opensolaris.category.2008:System/X11
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/1992/173
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+link path=usr/X11/bin/twm target=../../bin/twm
+file path=usr/bin/twm
+file path=usr/share/X11/twm/system.twmrc
+file path=usr/share/man/man1/twm.1
+license COPYING license=MIT
+
+# system.twmrc uses -adobe-helvetica-* fonts
+depend type=require fmri=pkg:/system/font/xorg/xorg-core
+# system.twmrc includes an xterm menu item
+depend type=require fmri=pkg:/terminal/xterm
+# twm loads various bitmaps via XmuLocateBitmapFile
+depend type=require fmri=pkg:/x11/data/xbitmaps

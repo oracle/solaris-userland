@@ -1,0 +1,57 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
+set name=pkg.fmri \
+    value=pkg:/x11/keyboard/xkb-utilities@$(X11PKGVERS),$(BUILD_VERSION)
+set name=pkg.summary value="X Window System X Keyboard Extension (XKB) Utilties"
+set name=pkg.description \
+    value="This a collection of small utilities utilizing the XKeyboard (XKB) extension to the X11 protocol.  It includes utilities to display & monitor xkb state, generate XKB bell events, and set XKB keymap layouts and options."
+set name=com.oracle.info.description \
+    value=setxkbmap,xkbbell,xkbprint,xkbvleds,xkbwatch
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification value=org.opensolaris.category.2008:System/X11
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL) \
+    value=$(COMPONENT_ARCHIVE_URL_1) value=$(COMPONENT_ARCHIVE_URL_2)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2008/162 value=PSARC/2011/033 \
+    value=PSARC/2015/221
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+link path=usr/X11/bin/setxkbmap target=../../bin/setxkbmap
+link path=usr/X11/bin/xkbbell target=../../bin/xkbbell
+link path=usr/X11/bin/xkbprint target=../../bin/xkbprint
+link path=usr/X11/bin/xkbvleds target=../../bin/xkbvleds
+link path=usr/X11/bin/xkbwatch target=../../bin/xkbwatch
+file path=usr/bin/setxkbmap
+file path=usr/bin/xkbbell
+file path=usr/bin/xkbprint
+file path=usr/bin/xkbvleds
+file path=usr/bin/xkbwatch
+file path=usr/share/man/man1/setxkbmap.1
+file path=usr/share/man/man1/xkbbell.1
+file path=usr/share/man/man1/xkbprint.1
+file path=usr/share/man/man1/xkbvleds.1
+file path=usr/share/man/man1/xkbwatch.1
+license COPYING license=MIT
