@@ -1,0 +1,114 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+<transform link path=system/volatile.* -> set facet.optional.ogl-static-link true>
+<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
+set name=pkg.fmri \
+    value=pkg:/service/opengl/ogl-select@$(PKG_SOLARIS_VERSION),$(BUILD_VERSION)
+set name=pkg.summary \
+    value="ogl-select - boot time selection of OpenGL vendor files"
+set name=pkg.description \
+    value="ogl-select is a SMF service that determines at boot time which vendor supplied OpenGL headers and libraries will be used, based on the hardware and drivers installed in the system."
+set name=com.oracle.info.description value=ogl-select
+set name=info.classification value=org.opensolaris.category.2008:System/X11
+set name=org.opensolaris.arc-caseid value=LSARC/2005/700
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file files/mesa_vendor_select path=lib/opengl/ogl_select/mesa_vendor_select \
+    mode=0555
+file files/nvidia_vendor_select \
+    path=lib/opengl/ogl_select/nvidia_vendor_select mode=0555 variant.arch=i386
+file files/sun_vendor_select path=lib/opengl/ogl_select/sun_vendor_select \
+    mode=0555 variant.arch=sparc
+dir  path=lib/svc/manifest/application/opengl group=sys
+file files/ogl-select.xml \
+    path=lib/svc/manifest/application/opengl/ogl-select.xml group=sys
+file files/ogl-select path=lib/svc/method/ogl-select
+# These links in /system/volatile are used to resolve dependencies during the
+# build but are not installed by the package as they're created at runtime by
+# the SMF service
+link path=system/volatile/opengl/include/gl.h \
+    target=../../../../usr/include/mesa/gl.h
+link path=system/volatile/opengl/include/glext.h \
+    target=../../../../usr/include/mesa/glext.h
+link path=system/volatile/opengl/include/glx.h \
+    target=../../../../usr/include/mesa/glx.h
+link path=system/volatile/opengl/include/glxext.h \
+    target=../../../../usr/include/mesa/glxext.h
+link path=system/volatile/opengl/lib/$(MACH64)/libEGL.so.1 \
+    target=../../../../../usr/lib/mesa/$(MACH64)/libEGL.so.1
+link path=system/volatile/opengl/lib/$(MACH64)/libGL.so.1 \
+    target=../../../../../usr/lib/mesa/$(MACH64)/libGL.so.1
+link path=system/volatile/opengl/lib/$(MACH64)/libGLESv1_CM.so.1 \
+    target=../../../../../usr/lib/mesa/$(MACH64)/libGLESv1_CM.so.1
+link path=system/volatile/opengl/lib/$(MACH64)/libGLESv2.so.2 \
+    target=../../../../../usr/lib/mesa/$(MACH64)/libGLESv2.so.2
+link path=system/volatile/opengl/lib/64 target=$(MACH64)
+link path=system/volatile/opengl/lib/libEGL.so.1 \
+    target=../../../../usr/lib/mesa/libEGL.so.1
+link path=system/volatile/opengl/lib/libGL.so.1 \
+    target=../../../../usr/lib/mesa/libGL.so.1
+link path=system/volatile/opengl/lib/libGLESv1_CM.so.1 \
+    target=../../../../usr/lib/mesa/libGLESv1_CM.so.1
+link path=system/volatile/opengl/lib/libGLESv2.so.2 \
+    target=../../../../usr/lib/mesa/libGLESv2.so.2
+link path=system/volatile/opengl/server/libglx.so \
+    target=../../../../usr/lib/mesa/modules/extensions/libglx.so
+link path=usr/X11/lib/$(MACH64)/libGL.so target=libGL.so.1
+link path=usr/X11/lib/$(MACH64)/libGL.so.1 \
+    target=../../../lib/GL/$(MACH64)/libGL.so.1
+link path=usr/X11/lib/64 target=$(MACH64)
+link path=usr/X11/lib/GL target=../../lib/GL
+link path=usr/X11/lib/libGL.so target=libGL.so.1
+link path=usr/X11/lib/libGL.so.1 target=../../lib/GL/libGL.so.1
+link path=usr/include/GL/gl.h \
+    target=../../../system/volatile/opengl/include/gl.h
+link path=usr/include/GL/glext.h \
+    target=../../../system/volatile/opengl/include/glext.h
+link path=usr/include/GL/glx.h \
+    target=../../../system/volatile/opengl/include/glx.h
+link path=usr/include/GL/glxext.h \
+    target=../../../system/volatile/opengl/include/glxext.h
+link path=usr/lib/$(MACH64)/libGL.so target=libGL.so.1
+link path=usr/lib/$(MACH64)/libGL.so.1 target=../GL/$(MACH64)/libGL.so.1
+link path=usr/lib/GL/$(MACH64)/libGL.so target=libGL.so.1
+link path=usr/lib/GL/$(MACH64)/libGL.so.1 \
+    target=../../../../system/volatile/opengl/lib/$(MACH64)/libGL.so.1
+link path=usr/lib/GL/64 target=$(MACH64)
+link path=usr/lib/GL/libGL.so target=libGL.so.1
+link path=usr/lib/GL/libGL.so.1 \
+    target=../../../system/volatile/opengl/lib/libGL.so.1
+link path=usr/lib/libGL.so target=libGL.so.1
+link path=usr/lib/libGL.so.1 target=GL/libGL.so.1
+link path=usr/lib/xorg/modules/extensions/libglx.so \
+    target=../../../../../system/volatile/opengl/server/libglx.so
+file files/ogl-select.man path=usr/share/man/man1/ogl-select.1
+license ogl-select.license license=Oracle
+
+# constype is required to detect which vendor_select script to run
+depend type=require fmri=pkg:/diagnostic/constype
+
+# mesa is needed for the libraries we link to for generic versions,
+# since vendor-specific GL implementations don't provide all of them
+depend type=require fmri=pkg:/x11/library/mesa

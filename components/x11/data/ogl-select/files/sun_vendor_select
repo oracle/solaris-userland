@@ -1,0 +1,94 @@
+#!/bin/ksh93
+#
+# Copyright (c) 2009, 2011, Oracle and/or its affiliates. All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice (including the next
+# paragraph) shall be included in all copies or substantial portions of the
+# Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+#
+#
+
+LINKDIR=/system/volatile/opengl
+
+PATH=/usr/bin:/usr/sbin
+
+# Do nothing if SUNWglrt is not present
+if [[ ! -d /usr/lib/SUNWgl ]] ; then
+    return 0
+fi
+
+ARCH="$(uname -p)"
+
+case "${ARCH}" in
+    sparc)	DIR64="sparcv9" ;;
+    *)		return 0	;; # Unsupported architecture
+esac
+
+# If this is just a probe, identify ourself and leave.
+if [[ $# -eq 1 ]]; then
+	if [[ $1 = "identify" ]]; then
+		# Claim to support whatever the console fb is
+		print "$(constype) sun"
+		return 0
+	fi
+fi
+
+# Make a directory. $1 is the pathname.
+function make_dir {
+	if [[ $# != 1 ]]; then
+		return
+	fi
+	if [[ ! -d $1 ]]; then
+		mkdir -p $1
+	fi	
+	chmod 755 $1
+}
+
+# Make a file link. $1 is the source path, $2 is the target path
+function make_link {
+	if [[ $# != 2 ]]; then
+		return
+	fi
+	if [[ -h $2 ]]; then
+		rm -f $2
+	fi
+	ln -sf $1 $2
+}
+
+# Create directories
+make_dir ${LINKDIR}
+make_dir ${LINKDIR}/lib
+make_dir ${LINKDIR}/lib/${DIR64}
+make_link ${DIR64} ${LINKDIR}/lib/64
+make_dir ${LINKDIR}/include
+make_dir ${LINKDIR}/server
+
+# User libraries
+make_link /usr/lib/SUNWgl/libGL.so.1 ${LINKDIR}/lib/libGL.so.1
+make_link /usr/lib/SUNWgl/${DIR64}/libGL.so.1 ${LINKDIR}/lib/${DIR64}/libGL.so.1
+
+# Server libraries
+make_link /usr/lib/xorg/modules/extensions/SUNWgl/libglx.so ${LINKDIR}/server/libglx.so
+
+# Includes
+make_link /usr/include/SUNWgl/gl.h	${LINKDIR}/include/gl.h
+make_link /usr/include/SUNWgl/glext.h	${LINKDIR}/include/glext.h
+make_link /usr/include/SUNWgl/glx.h	${LINKDIR}/include/glx.h
+make_link /usr/include/SUNWgl/glxext.h	${LINKDIR}/include/glxext.h
+
+return 0
