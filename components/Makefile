@@ -35,6 +35,16 @@ $(WS_MACH)/components.mk:	$(WS_MACH) # Makefile # $(WS_TOP)/components
 	@echo "Generating component list..."
 	@$(BASS_O_MATIC) --workspace=$(WS_TOP) --components=paths \
 		| sed -e 's;^$(shell readlink -f "$$PWD")/;COMPONENT_DIRS += ;g' >$@
+	@if [[ -n "$(PRIORITY_COMPONENTS)" ]]; then \
+		PRIORITY="`printf 'COMPONENT_DIRS += %s\n' $(PRIORITY_COMPONENTS)`"; \
+		OUT="` \
+			$$( : first print the prioritized components ); \
+			$(GNU_GREP)    -F -x -f <(echo -E "$$PRIORITY") "$@" || : ; \
+			$$( : then the rest ) ; \
+			$(GNU_GREP) -v -F -x -f <(echo -E "$$PRIORITY") "$@" || : \
+		`"; \
+		echo -E "$$OUT" > "$@"; \
+	fi
 
 -include $(WS_MACH)/components.mk
 

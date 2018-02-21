@@ -123,6 +123,18 @@ if overriding the default:
   every time you change REQUIRED_PACKAGES, you can do
   $ gmake MAKEFILE_PREREQ= publish
 
+* PRIORITY_COMPONENTS is a variable which may be used on command line during
+  full build. It says which components should be build before the rest of the
+  components. There are two reasons one may wish to use this feature
+    - component is taking long to build. During paralel build if such component
+    is built as last one all other parallel tasks have nothing to do already.
+    If you run build of such component at the beginning it will happily build
+    in parallel with rest of the components.
+    - debugging full build problems. You are having a problem in some component
+    only during full build and do not want to wait till all previous components
+    are built. This can be partially achieved by specifying COMPONENT_DIRS on
+    command line, but that would mean only given component would be built.
+
 The following variables alter the compilation or build process for components:
 
 * ASLR_MODE controls the application of Address Space Layout Randomization to
