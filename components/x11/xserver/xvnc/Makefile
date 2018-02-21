@@ -41,7 +41,7 @@ TPNO=			34678
 
 XORG_DIR=		$(COMPONENT_DIR:xvnc=xorg)
 get-xorg-value=		$(MAKE) --no-print-directory -C $(XORG_DIR) print-$(1) \
-				| $(GSED) -e 's|^$(1)=||' -e 's| (origin:.*$$||'
+				| $(PERL) -ne 'print "$$1\n" if m/^$(1)=(.*?)\s*\(origin:/'
 
 COMPONENT_NAME_1=	xorg-server
 COMPONENT_VERSION_1:=	$(shell $(call get-xorg-value,COMPONENT_VERSION))
