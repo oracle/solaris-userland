@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Python
-COMPONENT_VERSION=	3.4.6
+COMPONENT_VERSION=	3.4.8
 COMPONENT_PROJECT_URL=	https://python.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f13428bbe6aa9e3b9b6499502dc488c26096349ed7a21f7a0c1db90911115f40
+    sha256:29a472fa902c7b2add152f5e1e82e0885a8d360645689c1db5d1949a7e8ac3ea
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)ftp/python/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	utility/python
 COMPONENT_ANITYA_ID=	13256
 
-TPNO=			33492
+TPNO=			41295
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/configure.mk
@@ -187,6 +187,9 @@ COMPONENT_SYSTEM_TEST_ENV = EXTRATESTOPTS="-v -uall,-network $(TESTOPTS_PYTHON_T
 COMPONENT_SYSTEM_TEST_TARGETS = 
 COMPONENT_SYSTEM_TEST_CMD=	$(PYTHON.3.4)
 COMPONENT_SYSTEM_TEST_ARGS=	/usr/lib/python3.4/test/regrtest.py -v -uall,-network
+
+# Test results differ between x86 and SPARC
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
 
 # The test output contains details from each test, in whatever order they
 # complete.  The default _TRANSFORMER is not powerful enough to deal with
