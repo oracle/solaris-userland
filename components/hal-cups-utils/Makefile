@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 32
 include ../../make-rules/shared-macros.mk
@@ -49,8 +49,7 @@ CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)/hal
 COMPONENT_PREP_ACTION = ( \
 	cd $(@D); \
 	ACLOCAL=aclocal-1.11 AUTOMAKE=aclocal-1.11 autoreconf; \
-	cd $(SOURCE_DIR); \
-	$(PERL) -pi -e 's,^\#!.*?python,\#!$(USED_PYTHON), if $$.==1' systemv/hal_lpadmin ; \
+        cd $(SOURCE_DIR); \
 ) 
 
 # ASLR disabled until sufficient testing can be performed.

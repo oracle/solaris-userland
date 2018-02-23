@@ -1,16 +1,22 @@
---- systemv/hal_lpadmin.orig	Tue Apr 14 22:13:11 2009
-+++ systemv/hal_lpadmin	Tue Apr 14 22:13:21 2009
-@@ -283,7 +284,8 @@
+--- systemv/hal_lpadmin.orig	2018-02-21 22:27:15.842198177 +0000
++++ systemv/hal_lpadmin	2018-02-21 22:31:42.463912060 +0000
+@@ -1,4 +1,4 @@
+-#!/bin/env python
++#!/usr/bin/python2.7
+ import dbus, sys, os, time, signal, re
+ import traceback
+ import cups, cupshelpers
+@@ -283,7 +283,8 @@
          uris=["hal://%s" % self.uid]
          if self.properties.has_key("printer.vendor"):
              vendor = self.properties["printer.vendor"].lower ()
 -            if (self.properties.get("linux.subsystem","") == "usb" and
-+            if ((self.properties.get("linux.subsystem","") == "usb" or
-+                 self.properties.get("info.solaris.driver","") == "usbprn") and
++            if (self.properties.get("linux.subsystem","") == "usb" or
++                self.properties.get("info.solaris.driver","") == "usbprn") and
                  self.properties.has_key("printer.product")):
                  # Use a 'usb:...' URI.  Use the same method the CUPS
                  # usb backend uses to construct it.
-@@ -609,6 +611,9 @@
+@@ -609,6 +610,9 @@
                      resg = res.groups()
                      serial = resg[0]
          bus = self.properties.get ("linux.subsystem", None)
