@@ -19,7 +19,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 . /lib/svc/share/smf_include.sh
@@ -63,8 +63,8 @@ if [ ! -d ${MYSQLDATA} ]; then
 fi
 
 if [ ! -d ${MYSQLDATA}/mysql ]; then
-	echo ${MYSQLBIN}/mysql_install_db --user=mysql --datadir=${MYSQLDATA} --defaults-file=${MYSQLCNF} 
-	${MYSQLBIN}/mysql_install_db --user=mysql --datadir=${MYSQLDATA} --defaults-file=${MYSQLCNF} 
+	echo ${MYSQLBIN}/mysql_install_db --defaults-file=${MYSQLCNF} --user=mysql --datadir=${MYSQLDATA} --keep-my-cnf
+	${MYSQLBIN}/mysql_install_db --defaults-file=${MYSQLCNF} --user=mysql --datadir=${MYSQLDATA} --keep-my-cnf
 fi
 
 getpidfile() {
