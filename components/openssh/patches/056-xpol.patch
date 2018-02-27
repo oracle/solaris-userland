@@ -1,0 +1,60 @@
+#
+# The code in opennsd-compat/port-solaris.c should not change PRIV_LIMIT
+# when PRIV_XPOLICY is set.
+#
+# Patch source: in-house
+#
+# We have contributed back this patch to the OpenSSH upstream community (see
+# https://bugzilla.mindrot.org/show_bug.cgi?id=2833). In the future, if this
+# patch is accepted by the upsteam in a later release, we will remove this
+# patch when we upgrade to that release.
+#
+
+diff -ur orig/openbsd-compat/port-solaris.c new/openbsd-compat/port-solaris.c
+--- orig/openbsd-compat/port-solaris.c	Tue Feb  6 08:22:44 2018
++++ new/openbsd-compat/port-solaris.c	Tue Feb  6 08:45:21 2018
+@@ -306,6 +306,36 @@
+ 	    priv_delset(npset, PRIV_PROC_SESSION) != 0)
+ 		fatal("priv_delset: %s", strerror(errno));
+ 
++#ifdef PRIV_XPOLICY
++	/*
++	 * It is possible that the user has an extended policy
++	 * in place, which then effectively replaces the PERMITTED
++	 * set, making the PERMITTED set a bad model for the LIMIT set.
++	 *
++	 * In that case, the LIMIT set should be the intersection of
++	 * the existing LIMIT set and the custom-altered basic set, rather
++	 * than be overridden by the PERMITTED set.
++	 *
++	 * PRIV_XPOLICY is newly defined in Solaris 11 though the extended
++	 * policy was not implemented until Solaris 11.1.
++	 */
++	if (getpflags(PRIV_XPOLICY) == 1) {
++		if (getppriv(PRIV_LIMIT, pset) != 0)
++			fatal("getppriv: %s", strerror(errno));
++
++		priv_intersect(pset, npset);
++
++		if (setppriv(PRIV_SET, PRIV_LIMIT, npset) != 0)
++			fatal("setppriv: %s", strerror(errno));
++	} else
++#endif
++	{
++		/* Cannot exec, so we can kill the limit set. */
++		priv_emptyset(pset);
++		if (setppriv(PRIV_SET, PRIV_LIMIT, pset) != 0)
++			fatal("setppriv: %s", strerror(errno));
++	}
++
+ 	if (getppriv(PRIV_PERMITTED, pset) != 0)
+ 		fatal("getppriv: %s", strerror(errno));
+ 
+@@ -312,7 +342,6 @@
+ 	priv_intersect(pset, npset);
+ 
+ 	if (setppriv(PRIV_SET, PRIV_PERMITTED, npset) != 0 ||
+-	    setppriv(PRIV_SET, PRIV_LIMIT, npset) != 0 ||
+ 	    setppriv(PRIV_SET, PRIV_INHERITABLE, npset) != 0)
+ 		fatal("setppriv: %s", strerror(errno));
+ 
