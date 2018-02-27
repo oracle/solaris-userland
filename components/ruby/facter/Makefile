@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 RUBY_VERSION=2.1
@@ -28,17 +28,17 @@ RUBY_LIB_VERSION=2.1.0
 RUBY_VERSIONS=2.1.0
 
 COMPONENT_NAME=		facter
-COMPONENT_VERSION=	2.4.6
+COMPONENT_VERSION=	2.5.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).gem
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:56ffc5fbcd550fcdb4788bc4d7fd0199bff69937d6df1e5a1f61c92d143d78fe
+    sha256:6108a6178ee727088915984d161c2006e5bf991134fd37f29417ec5fbdfee51c
 COMPONENT_ARCHIVE_URL=	http://rubygems.org/gems/$(COMPONENT_SRC).gem
 COMPONENT_PROJECT_URL=  http://puppetlabs.com/facter
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	778
 
-TPNO=                   27310
+TPNO=                   40627
 
 # No gemspec is shipped with the gem. Create one
 COMPONENT_POST_UNPACK_ACTION= \
