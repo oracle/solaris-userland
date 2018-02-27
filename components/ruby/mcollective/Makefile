@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 include $(WS_MAKE_RULES)/shared-targets.mk
@@ -34,9 +34,9 @@ PATCH_EACH_ARCHIVE = 1
 PKG_MACROS += PLUGIN_PATH=usr/share/mcollective/mcollective/
 
 GIT_REPO=               https://github.com/puppetlabs/$(COMPONENT_NAME)
-GIT_BRANCH=             2.10.3
+GIT_BRANCH=             2.11.4
 GIT_COMMIT_ID=          04b7991
-GIT_HASH=sha256:1de8531a286754a5490b1acd18565bbb6aace1720743c9d7503ef8b587de1c79
+GIT_HASH=sha256:2bf8425a50023744e28f26efd64931d6383b216e9918e1df49276bc5477e4493
 COMPONENT=              mcollective
 COMPONENT_NAME=         marionette-collective
 COMPONENT_VERSION=      $(GIT_BRANCH)
@@ -45,7 +45,7 @@ COMPONENT_SRC=          $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.gz
 COMPONENT_BUGDB=        utility/mcollective
 COMPONENT_ANITYA_ID=    1956
-TPNO=                   35351
+TPNO=                   40664
 
 COMPONENT_NAME_1=  mcollective-puppet-agent
 GIT_REPO_1=        https://github.com/puppetlabs/$(COMPONENT_NAME_1)
