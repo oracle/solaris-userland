@@ -35,7 +35,7 @@ RUBY_VERSIONS=      2.1.0
 
 GIT_REPO=               https://github.com/stompgem/stomp
 GIT_BRANCH=             v1.4.3
-GIT_COMMIT_ID=          46b2c0f
+GIT_COMMIT_ID=          1236aca
 GIT_HASH=sha256:2741d214934e4a430ee9da1f9b4e89037048707899df1b07a6a08617da829855
 
 COMPONENT_NAME=         stomp

@@ -1,0 +1,18 @@
+This patch should be mergered upstream.
+
+---------
+--- a/lib/puppet/provider/pkg_publisher/solaris.rb.orig	2018-02-25 10:34:52.712735860 +0000
++++ b/lib/puppet/provider/pkg_publisher/solaris.rb	2018-02-25 10:35:45.666796307 +0000
+@@ -34,8 +34,10 @@
+         publisher_order.push name
+       end
+       # strip off any trailing "/" characters
+-      if origin.end_with?("/")
+-        origin = origin[0..-2]
++      unless origin.to_s.strip.empty?
++        if origin.end_with?("/")
++          origin = origin[0..-2]
++        end
+       end
+ 
+       if publishers.has_key?(name)

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 RUBY_VERSION=2.1
@@ -28,9 +28,9 @@ RUBY_LIB_VERSION=2.1.0
 RUBY_VERSIONS=2.1.0
 
 GIT_REPO= https://github.com/puppetlabs/puppet
-GIT_BRANCH= 4.10.6
-GIT_COMMIT_ID= 7e9a4bb
-GIT_HASH=sha256:dc71446d96952538d4742c7bd2c264dee798dfec561c6915d3c923215cab0220
+GIT_BRANCH= 5.3.3
+GIT_COMMIT_ID=  6d635b0
+GIT_HASH=sha256:65c5269fa24179ee750570bca760c8917fdb0ad6f4bfb182dc493bd7644bf96c
 
 COMPONENT_NAME=		puppet
 COMPONENT_VERSION=	$(GIT_BRANCH)
@@ -40,7 +40,7 @@ COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	7018
 
-TPNO=			34821
+TPNO=			40665
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/install.rb.mk

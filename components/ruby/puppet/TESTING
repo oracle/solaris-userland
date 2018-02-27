@@ -18,3 +18,85 @@ Usage portions of the README.md shipped with each module.
 
 e.g. Testing install behavior with mysql
 puppet apply -e "include '::mysql::server'"
+
+
+-- Manual testing guidelines
+----------------------------
+
+-- For detailed info about working with Puppet On Solaris, please
+-- refer to
+https://docs.oracle.com/cd/E37838_01/html/E72062/index.html
+
+-- Setting up Puppet Master and agent(s).
+-- Consider hosts
+    - puppet-master
+    - puppet-agent
+
+-- Install the Puppet IPS package
+--    pkg:/system/management/puppet
+-- on both the master and all nodes that will act as Puppet agent.
+
+
+-- setting up master
+
+- set config parameters for puppet:master
+# svccfg -s puppet:master setprop config/server= host: <hostname-master>
+# svccfg -s puppet:master setprop config/bindaddressr= astring: 0.0.0.0
+
+# svcadm enable puppet:master
+# svcs puppet:master
+
+
+-- setting up agent
+
+- set config parameters for puppet:agent (on all agent nodes)
+
+# svccfg -s puppet:agent setprop config/server= host: <hostname-master>
+# svccfg -s puppet:agent refresh
+
+NOTE : DO not enable this service yet!
+
+# puppet agent --test
+(this will creates a new SSL key and sets up a auth request to master)
+
+- On master node
+# puppet cert list
+# puppet cert sign <hostname-agent>
+
+- On agent node (again)
+# puppet agent --test
+# svcadm enable puppet:agent
+# svcs puppet:agent
+
+-- testing master-client setup; using 'file' resource type create
+-- a custom file on agent via configuration applied by master 
+
+- on master 
+# cat /etc/puppetlabs/code/environments/production/manifests/site.pp 
+$file_contents = $osfamily ? {
+  'solaris' => "Hello Oracle Solaris",
+  'redhat' => "Hello RHEL",
+}
+
+file { '/var/tmp/custom-file.txt':
+  ensure => 'present',
+  content => $file_contents,
+}
+
+
+- on client
+# ls -l /var/tmp/custom-file.txt
+/var/tmp/custom-file.txt: No such file or directory
+
+# puppet agent --test
+Info: Using configured environment 'production'
+..
+..
+Info: Applying configuration version '1518599038'
+Notice: /Stage[main]/Main/File[/var/tmp/custom-file.txt]/ensure: defined content as '{md5}76221effbe78bba84d8c2eace5aa7064'
+Notice: Applied catalog in 0.12 seconds
+
+root@virtual9:~# ls -l /var/tmp/custom-file.txt
+-rw-r--r--   1 root     root          20 Feb 14 09:03 /var/tmp/custom-file.txt
+
+

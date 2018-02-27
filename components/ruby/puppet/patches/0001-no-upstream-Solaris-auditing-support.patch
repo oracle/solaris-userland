@@ -10,20 +10,20 @@ Patch is not upstream
  lib/puppet/application/apply.rb | 14 ++++++++++++++
  2 files changed, 28 insertions(+), 1 deletion(-)
 
-diff --git a/lib/puppet/agent.rb b/lib/puppet/agent.rb
-index debeb9ff2..c4ce32c1a 100644
---- a/lib/puppet/agent.rb
-+++ b/lib/puppet/agent.rb
-@@ -1,5 +1,8 @@
- require 'puppet/application'
+--- puppet-5.3.3/lib/puppet/agent.rb.orig	2017-10-30 11:56:09.000000000 +0000
++++ puppet-5.3.3/lib/puppet/agent.rb	2018-01-09 21:12:38.571906326 +0000
+@@ -2,6 +2,10 @@
  require 'puppet/error'
+ require 'puppet/util/at_fork'
+ 
 +if Facter.value(:osfamily) == "Solaris"
 +  require 'PuppetAudit'
 +end
- 
++
  # A general class for triggering a run of another
  # class.
-@@ -30,11 +33,15 @@ class Puppet::Agent
+ class Puppet::Agent
+@@ -31,6 +35,12 @@
  
    # Perform a run with our client.
    def run(client_options = {})
@@ -32,17 +32,13 @@ index debeb9ff2..c4ce32c1a 100644
 +        audit_handle = PuppetAudit.new
 +        audit_handle.audit_start
 +    end
++
      if disabled?
-       Puppet.notice "Skipping run of #{client_class}; administratively disabled (Reason: '#{disable_message}');\nUse 'puppet agent --enable' to re-enable."
+       Puppet.notice _("Skipping run of %{client_class}; administratively disabled (Reason: '%{disable_message}');\nUse 'puppet agent --enable' to re-enable.") % { client_class: client_class, disable_message: disable_message }
        return
+@@ -57,6 +67,12 @@
      end
--
-     result = nil
-     block_run = Puppet::Application.controlled_run do
-       splay client_options.fetch :splay, Puppet[:splay]
-@@ -55,6 +62,12 @@ class Puppet::Agent
-     end
-     Puppet.notice "Shutdown/restart in progress (#{Puppet::Application.run_status.inspect}); skipping run" unless block_run
+     Puppet.notice _("Shutdown/restart in progress (%{status}); skipping run") % { status: Puppet::Application.run_status.inspect } unless block_run
      result
 +  ensure
 +    # Always stop an audit record
