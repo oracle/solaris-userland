@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file -> edit path ^ usr/puppetlabs/puppet/modules/>
@@ -45,11 +45,17 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=rsync/CHANGELOG.md
 file path=rsync/Gemfile
 file path=rsync/LICENSE
+file path=rsync/MAINTAINERS.md
+file path=rsync/NOTICE
 file path=rsync/README.markdown
 file path=rsync/Rakefile
-file path=rsync/checksums.json
+file path=rsync/appveyor.yml
+file path=rsync/examples/init.pp
+file path=rsync/examples/repo.pp
+file path=rsync/examples/server_with_motd.pp
 file path=rsync/files/defaults
 file path=rsync/files/motd
+file path=rsync/locales/config.yaml
 file path=rsync/manifests/get.pp
 file path=rsync/manifests/init.pp
 file path=rsync/manifests/put.pp
@@ -61,13 +67,9 @@ file path=rsync/spec/classes/server_spec.rb
 file path=rsync/spec/defines/get_spec.rb
 file path=rsync/spec/defines/put_spec.rb
 file path=rsync/spec/defines/server_module_spec.rb
-file path=rsync/spec/spec.opts
 file path=rsync/spec/spec_helper.rb
 file path=rsync/templates/header.erb
 file path=rsync/templates/module.erb
-file path=rsync/tests/init.pp
-file path=rsync/tests/repo.pp
-file path=rsync/tests/server_with_motd.pp
 #
 license LICENSE license="Apache v2.0"
 # Renamed Package
@@ -79,5 +81,3 @@ depend type=require fmri=system/management/puppet/puppetlabs-concat
 
 # force a dependency on puppetlabs-stdlib
 depend type=require fmri=system/management/puppet/puppetlabs-stdlib
-# Require Puppet 4.x for module path changes
-depend type=require fmri=system/management/puppet@4
