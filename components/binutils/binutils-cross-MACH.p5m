@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform hardlink path=usr/gnu/bin/$(CROSS_ARCH)-(.*) -> \
@@ -34,6 +34,7 @@
 set name=pkg.fmri \
     value=pkg:/developer/gnu-binutils-cross-$(CROSS_MACH)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="GNU binutils cross-tools for $(CROSS_MACH)"
+set name=pkg.human-version value=$(HUMAN_VERSION)
 set name=com.oracle.info.description \
     value="GNU binutils ($(CROSS_MACH) cross-tools)"
 set name=com.oracle.info.tpno value=$(TPNO)
@@ -70,7 +71,5 @@ hardlink path=usr/gnu/bin/$(CROSS_ARCH)-readelf
 file path=usr/gnu/bin/$(CROSS_ARCH)-size
 file path=usr/gnu/bin/$(CROSS_ARCH)-strings
 hardlink path=usr/gnu/bin/$(CROSS_ARCH)-strip
-license COPYING license=GPLv2
-license COPYING3 license=GPLv3
-license COPYING.LIB license=LGPLv2.1
-license COPYING3.LIB license=LGPLv3
+license binutils.license \
+    license="GPLv2, GPLv3, LGPLv2, LGPLv3, FDL1.1, FDL1.2, FDL1.3"

@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=	utility/gnu-binutils
 COMPONENT_ANITYA_ID=	7981
 
-TPNO=			40924
+TPNO=			41378
 
 #
 # for platform and cross platform support
@@ -50,6 +50,12 @@ $(BUILD_DIR_64)-cross/.configured: CONFIGURE_OPTIONS += --target=$(CROSS_ARCH)
 
 TEST_TARGET= $(TEST_64)
 include $(WS_MAKE_RULES)/gnu-component.mk
+
+# The .1 refers to version 2.30-1 to distinguish between community version
+# of binutils and this package, which contains all known fixes.  A similar approach
+# is addopted by some Linux distros.
+IPS_COMPONENT_VERSION=	2.30.1
+HUMAN_VERSION=		$(COMPONENT_VERSION)-1
 
 export PATH=$(dirname $(CC)):$(GNUBIN):/usr/bin
 COMPONENT_TEST_ARGS += -k
