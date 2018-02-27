@@ -20,20 +20,18 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
-# net-snmp has a "special" build where only 32-bit items are installed into
-# proto area; so prefer 32-bit to preserve existing sourcing.
-BUILD_BITS= 32_and_64
+BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 PATH=$(SPRO_VROOT)/bin:$(GNUBIN):$(USRBINDIR)
 
 COMPONENT_NAME=		net-snmp
-COMPONENT_VERSION=	5.7.2.1
+COMPONENT_VERSION=	5.7.3
 COMPONENT_PROJECT_URL=	http://www.net-snmp.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:35dd20a2b17849f6d5a0a6109b4f52c1a777a3e1a00c79c4a175c520d23f3497
+    sha256:12ef89613c7707dc96d13335f153c1921efc9d61d3708ef09f3fc4a7014fb4f0
 COMPONENT_ARCHIVE_URL=	http://ftp.ntua.gr/mirror/net-snmp/net-snmp/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/net-snmp utility/net-snmp library/net-snmp
 COMPONENT_ANITYA_ID=	2062
@@ -102,8 +100,8 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "s|\(output (\)\(.*\)|\2|g"'
 COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS).master
 # Get correct binaries from the proto area.
-TEST_BINPATH.32 =       $(PROTOUSRBINDIR)
-TEST_BINPATH.64 =       $(BUILD_DIR)/prototype/$(MACH64)$(USRBINDIR64)
+TEST_BINPATH.32 =       $(PROTOUSRBINDIR)/$(MACH32)
+TEST_BINPATH.64 =       $(BUILD_DIR)/prototype/$(MACH64)$(USRBINDIR)
 COMPONENT_TEST_ENV +=   PATH=$(TEST_BINPATH.$(BITS)):$(PATH)
 # Get correct libraries from the proto area.
 TEST_LIBPATH.32 =       $(PROTOUSRLIBDIR)
