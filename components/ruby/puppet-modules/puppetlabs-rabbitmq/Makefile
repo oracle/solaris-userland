@@ -20,25 +20,26 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../../make-rules/shared-macros.mk
 
 GIT_REPO= https://github.com/puppetlabs/puppetlabs-rabbitmq
-GIT_BRANCH= 5.6.0
-GIT_COMMIT_ID=  057a013
-GIT_HASH=sha256:804e2d75e7aa7b96a13a6363d8a74691af0a90daa1e6408476826247879cf6d0
+GIT_BRANCH= v8.0.0
+GIT_COMMIT_ID=  6468d67
+GIT_HASH=sha256:c4f97a009d03f9ceb34bb4d383e9e77ae8f660b0085a05b854097c359e14c803
 
 
-COMPONENT_NAME=		puppetlabs-rabbitmq
-COMPONENT_VERSION=	$(GIT_BRANCH)
+COMPONENT_NAME=		puppet-rabbitmq
+COMPONENT_PKG_NAME=	puppetlabs-rabbitmq
+COMPONENT_VERSION=      $(GIT_BRANCH:v%=%)
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	13313
 
-TPNO=			35286
+TPNO=			40672
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/puppetmodule.mk

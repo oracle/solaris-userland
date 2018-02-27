@@ -19,147 +19,103 @@ Patch is not suitable for upstream
  tests/full.pp                                      | 12 +++++-----
  9 files changed, 80 insertions(+), 27 deletions(-)
 
-diff --git a/lib/puppet/provider/rabbitmq_binding/rabbitmqadmin.rb b/lib/puppet/provider/rabbitmq_binding/rabbitmqadmin.rb
-index 3828394..031256f 100644
---- a/lib/puppet/provider/rabbitmq_binding/rabbitmqadmin.rb
-+++ b/lib/puppet/provider/rabbitmq_binding/rabbitmqadmin.rb
-@@ -4,12 +4,12 @@ Puppet::Type.type(:rabbitmq_binding).provide(:rabbitmqadmin) do
- 
-   if Puppet::PUPPETVERSION.to_f < 3
-     commands :rabbitmqctl   => 'rabbitmqctl'
--    commands :rabbitmqadmin => '/usr/local/bin/rabbitmqadmin'
-+    commands :rabbitmqadmin => 'rabbitmqadmin'
-   else
-     has_command(:rabbitmqctl, 'rabbitmqctl') do
-       environment :HOME => "/tmp"
-     end
--    has_command(:rabbitmqadmin, '/usr/local/bin/rabbitmqadmin') do
-+    has_command(:rabbitmqadmin, 'rabbitmqadmin') do
-       environment :HOME => "/tmp"
-     end
+--- puppet-rabbitmq-8.0.0/lib/puppet/provider/rabbitmq_binding/rabbitmqadmin.rb.orig    2018-01-22 22:18:11.235541969 +0000
++++ puppet-rabbitmq-8.0.0/lib/puppet/provider/rabbitmq_binding/rabbitmqadmin.rb 2018-01-22 22:19:34.183446105 +0000
+@@ -6,7 +6,7 @@
+   has_command(:rabbitmqctl, 'rabbitmqctl') do
+     environment HOME: '/tmp'
    end
-@@ -85,7 +85,8 @@ Puppet::Type.type(:rabbitmq_binding).provide(:rabbitmqadmin) do
-     if arguments.nil?
-       arguments = {}
-     end
+-  has_command(:rabbitmqadmin, '/usr/local/bin/rabbitmqadmin') do
++  has_command(:rabbitmqadmin, 'rabbitmqadmin') do
+     environment HOME: '/tmp'
+   end
+
+@@ -84,7 +84,8 @@
+     vhost_opt = should_vhost ? "--vhost=#{should_vhost}" : ''
+     arguments = resource[:arguments]
+     arguments = {} if arguments.nil?
 -    rabbitmqadmin('declare',
 +    rabbitmqadmin(
-+      'declare',
-       'binding',
-       vhost_opt,
-       "--user=#{resource[:user]}",
-diff --git a/lib/puppet/provider/rabbitmq_exchange/rabbitmqadmin.rb b/lib/puppet/provider/rabbitmq_exchange/rabbitmqadmin.rb
-index 663b2f0..15e4afe 100644
---- a/lib/puppet/provider/rabbitmq_exchange/rabbitmqadmin.rb
-+++ b/lib/puppet/provider/rabbitmq_exchange/rabbitmqadmin.rb
-@@ -4,12 +4,12 @@ Puppet::Type.type(:rabbitmq_exchange).provide(:rabbitmqadmin, :parent => Puppet:
- 
++                  'declare',
+                   'binding',
+                   vhost_opt,
+                   "--user=#{resource[:user]}",
+--- puppet-rabbitmq-8.0.0/lib/puppet/provider/rabbitmq_exchange/rabbitmqadmin.rb.orig   2018-01-22 22:11:30.238147282 +0000
++++ puppet-rabbitmq-8.0.0/lib/puppet/provider/rabbitmq_exchange/rabbitmqadmin.rb        2018-01-22 22:13:02.765205142 +0000
+@@ -3,12 +3,12 @@
+ Puppet::Type.type(:rabbitmq_exchange).provide(:rabbitmqadmin, parent: Puppet::Provider::Rabbitmqctl) do
    if Puppet::PUPPETVERSION.to_f < 3
-     commands :rabbitmqctl   => 'rabbitmqctl'
--    commands :rabbitmqadmin => '/usr/local/bin/rabbitmqadmin'
-+    commands :rabbitmqadmin => 'rabbitmqadmin'
+     commands rabbitmqctl: 'rabbitmqctl'
+-    commands rabbitmqadmin: '/usr/local/bin/rabbitmqadmin'
++    commands rabbitmqadmin: 'rabbitmqadmin'
    else
      has_command(:rabbitmqctl, 'rabbitmqctl') do
-       environment :HOME => "/tmp"
+       environment HOME: '/tmp'
      end
 -    has_command(:rabbitmqadmin, '/usr/local/bin/rabbitmqadmin') do
 +    has_command(:rabbitmqadmin, 'rabbitmqadmin') do
-       environment :HOME => "/tmp"
+       environment HOME: '/tmp'
      end
    end
-@@ -48,7 +48,7 @@ Puppet::Type.type(:rabbitmq_exchange).provide(:rabbitmqadmin, :parent => Puppet:
-     resources = []
-     all_vhosts.each do |vhost|
-         all_exchanges(vhost).each do |line|
--            name, type, internal, durable, auto_delete, arguments = line.split()
-+            name, type, internal, durable, auto_delete, arguments = line.split
-             if type.nil?
-                 # if name is empty, it will wrongly get the type's value.
-                 # This way type will get the correct value
-diff --git a/lib/puppet/provider/rabbitmq_queue/rabbitmqadmin.rb b/lib/puppet/provider/rabbitmq_queue/rabbitmqadmin.rb
-index 1feb993..3729d40 100644
---- a/lib/puppet/provider/rabbitmq_queue/rabbitmqadmin.rb
-+++ b/lib/puppet/provider/rabbitmq_queue/rabbitmqadmin.rb
-@@ -4,12 +4,12 @@ Puppet::Type.type(:rabbitmq_queue).provide(:rabbitmqadmin) do
- 
+--- puppet-rabbitmq-8.0.0/lib/puppet/provider/rabbitmq_queue/rabbitmqadmin.rb.orig      2018-01-22 22:14:55.844342492 +0000
++++ puppet-rabbitmq-8.0.0/lib/puppet/provider/rabbitmq_queue/rabbitmqadmin.rb   2018-01-22 22:17:08.772040955 +0000
+@@ -3,12 +3,12 @@
+ Puppet::Type.type(:rabbitmq_queue).provide(:rabbitmqadmin) do
    if Puppet::PUPPETVERSION.to_f < 3
-     commands :rabbitmqctl   => 'rabbitmqctl'
--    commands :rabbitmqadmin => '/usr/local/bin/rabbitmqadmin'
-+    commands :rabbitmqadmin => 'rabbitmqadmin'
+     commands rabbitmqctl: 'rabbitmqctl'
+-    commands rabbitmqadmin: '/usr/local/bin/rabbitmqadmin'
++    commands rabbitmqadmin: 'rabbitmqadmin'
    else
      has_command(:rabbitmqctl, 'rabbitmqctl') do
-       environment :HOME => "/tmp"
+       environment HOME: '/tmp'
      end
 -    has_command(:rabbitmqadmin, '/usr/local/bin/rabbitmqadmin') do
 +    has_command(:rabbitmqadmin, 'rabbitmqadmin') do
-       environment :HOME => "/tmp"
+       environment HOME: '/tmp'
      end
    end
-@@ -40,7 +40,7 @@ Puppet::Type.type(:rabbitmq_queue).provide(:rabbitmqadmin) do
-     all_vhosts.each do |vhost|
-       all_queues(vhost).collect do |line|
-         next if line =~ /^federation:/
--        name, durable, auto_delete, arguments = line.split()
-+        name, durable, auto_delete, arguments = line.split
-         # Convert output of arguments from the rabbitmqctl command to a json string.
-         if !arguments.nil?
-           arguments = arguments.gsub(/^\[(.*)\]$/, "").gsub(/\{("(?:.|\\")*?"),/, '{\1:').gsub(/\},\{/, ",")
-@@ -83,7 +83,8 @@ Puppet::Type.type(:rabbitmq_queue).provide(:rabbitmqadmin) do
-     if arguments.nil?
-       arguments = {}
-     end
+@@ -74,7 +74,8 @@
+     name = resource[:name].rpartition('@').first
+     arguments = resource[:arguments]
+     arguments = {} if arguments.nil?
 -    rabbitmqadmin('declare',
 +    rabbitmqadmin(
-+      'declare',
-       'queue',
-       vhost_opt,
-       "--user=#{resource[:user]}",
-diff --git a/manifests/config.pp b/manifests/config.pp
-index 13f15d0..9f4485e 100644
---- a/manifests/config.pp
-+++ b/manifests/config.pp
++                  'declare',
+                   'queue',
+                   vhost_opt,
+                   "--user=#{resource[:user]}",
+--- puppet-rabbitmq-8.0.0/manifests/config.pp.orig      2018-01-22 23:41:00.170104891 +0000
++++ puppet-rabbitmq-8.0.0/manifests/config.pp   2018-01-22 23:51:02.950331587 +0000
 @@ -4,6 +4,9 @@
  class rabbitmq::config {
- 
-   $admin_enable               = $rabbitmq::admin_enable
+
+   $admin_enable                = $rabbitmq::admin_enable
 +  $admin_owner                = $rabbitmq::admin_owner
 +  $admin_group                = $rabbitmq::admin_group
 +  $admin_path                 = $rabbitmq::admin_path
-   $cluster_node_type          = $rabbitmq::cluster_node_type
-   $cluster_nodes              = $rabbitmq::cluster_nodes
-   $config                     = $rabbitmq::config
-@@ -138,8 +141,8 @@ class rabbitmq::config {
-           group                   => '0',
-           mode                    => '0755',
-           selinux_ignore_defaults => true,
--        } ->
--        file { '/etc/systemd/system/rabbitmq-server.service.d/limits.conf':
-+        }
-+        -> file { '/etc/systemd/system/rabbitmq-server.service.d/limits.conf':
-           content => template('rabbitmq/rabbitmq-server.service.d/limits.conf'),
-           owner   => '0',
-           group   => '0',
-diff --git a/manifests/init.pp b/manifests/init.pp
-index f9bc0e7..c1358a0 100644
---- a/manifests/init.pp
-+++ b/manifests/init.pp
-@@ -1,6 +1,9 @@
- # Main rabbitmq class
+   $cluster_node_type           = $rabbitmq::cluster_node_type
+   $cluster_nodes               = $rabbitmq::cluster_nodes
+   $config                      = $rabbitmq::config
+--- puppet-rabbitmq-8.0.0/manifests/init.pp.orig        2018-01-22 22:34:38.324145709 +0000
++++ puppet-rabbitmq-8.0.0/manifests/init.pp     2018-01-22 23:17:22.635989912 +0000
+@@ -185,6 +185,9 @@
+ # @param $rabbitmqadmin_package OS dependent. default defined in param.pp. If undef: install rabbitmqadmin via archive, otherwise via package
  class rabbitmq(
-   $admin_enable               = $rabbitmq::params::admin_enable,
-+  $admin_owner                = $rabbitmq::params::admin_owner,
-+  $admin_group                = $rabbitmq::params::admin_group,
-+  $admin_path                 = $rabbitmq::params::admin_path,
-   $cluster_node_type          = $rabbitmq::params::cluster_node_type,
-   $cluster_nodes              = $rabbitmq::params::cluster_nodes,
-   $config                     = $rabbitmq::params::config,
-@@ -302,9 +305,25 @@ class rabbitmq(
-   anchor { 'rabbitmq::begin': }
-   anchor { 'rabbitmq::end': }
- 
--  Anchor['rabbitmq::begin'] -> Class['::rabbitmq::install']
--    -> Class['::rabbitmq::config'] ~> Class['::rabbitmq::service']
--    -> Class['::rabbitmq::management'] -> Anchor['rabbitmq::end']
+   Boolean $admin_enable                                            = $rabbitmq::params::admin_enable,
++  String $admin_owner                                              = $rabbitmq::params::admin_owner,
++  String $admin_group                                              = $rabbitmq::params::admin_group,
++  String $admin_path                                              = $rabbitmq::params::admin_path,
+   Enum['ram', 'disk', 'disc'] $cluster_node_type                   = $rabbitmq::params::cluster_node_type,
+   Array $cluster_nodes                                             = $rabbitmq::params::cluster_nodes,
+   String $config                                                   = $rabbitmq::params::config,
+@@ -349,10 +349,27 @@
+     }
+   }
+
+-  Class['rabbitmq::install']
+-  -> Class['rabbitmq::config']
+-  ~> Class['rabbitmq::service']
+-  -> Class['rabbitmq::management']
 +  case $::osfamily {
 +    'Solaris': {
 +      file { 'cookie_owner':
@@ -168,55 +124,42 @@ index f9bc0e7..c1358a0 100644
 +        group => 'daemon',
 +      }
 +
-+      Anchor['rabbitmq::begin'] -> Class['::rabbitmq::install']
++      Class['rabbitmq::install']
 +        -> File['cookie_owner']
-+        -> Class['::rabbitmq::config'] ~> Class['::rabbitmq::service']
-+        -> Class['::rabbitmq::management'] -> Anchor['rabbitmq::end']
++        -> Class['rabbitmq::config']
++        ~> Class['rabbitmq::service']
++        -> Class['rabbitmq::management']
 +    }
 +    default: {
-+      Anchor['rabbitmq::begin'] -> Class['::rabbitmq::install']
-+        -> Class['::rabbitmq::config'] ~> Class['::rabbitmq::service']
-+        -> Class['::rabbitmq::management'] -> Anchor['rabbitmq::end']
++      Class['rabbitmq::install']
++        -> Class['rabbitmq::config']
++        ~> Class['rabbitmq::service']
++        -> Class['rabbitmq::management']
 +    }
 +  }
- 
+
    # Make sure the various providers have their requirements in place.
-   Class['::rabbitmq::install'] -> Rabbitmq_plugin<| |>
-diff --git a/manifests/install/rabbitmqadmin.pp b/manifests/install/rabbitmqadmin.pp
-index e0ab7c7..1823b16 100644
---- a/manifests/install/rabbitmqadmin.pp
-+++ b/manifests/install/rabbitmqadmin.pp
-@@ -1,4 +1,3 @@
--#
- class rabbitmq::install::rabbitmqadmin {
- 
-   if($rabbitmq::ssl and $rabbitmq::management_ssl) {
-@@ -37,9 +36,9 @@ class rabbitmq::install::rabbitmqadmin {
-     ],
-   }
- 
--  file { '/usr/local/bin/rabbitmqadmin':
--    owner   => 'root',
--    group   => '0',
-+  file { $rabbbitmq::admin_path:
-+    owner   => $rabbbitmq::admin_owner,
-+    group   => $rabbbitmq::admin_group,
-     source  => "${rabbitmq::rabbitmq_home}/rabbitmqadmin",
-     mode    => '0755',
-     require => Staging::File['rabbitmqadmin'],
-diff --git a/manifests/params.pp b/manifests/params.pp
-index 69d4e52..45b5b9b 100644
---- a/manifests/params.pp
-+++ b/manifests/params.pp
-@@ -1,4 +1,4 @@
--  # Class: rabbitmq::params
-+# Class: rabbitmq::params
- #
- #   The RabbitMQ Module configuration settings.
- #
-@@ -60,11 +60,35 @@ class rabbitmq::params {
-       $rabbitmq_home    = '/var/lib/rabbitmq'
-       $plugin_dir       = "/usr/lib/rabbitmq/lib/rabbitmq_server-${version}/plugins"
+   Class['rabbitmq::install'] -> Rabbitmq_plugin<| |>
+--- puppet-rabbitmq-8.0.0/manifests/install/rabbitmqadmin.pp.orig       2018-01-22 23:51:50.735075417 +0000
++++ puppet-rabbitmq-8.0.0/manifests/install/rabbitmqadmin.pp    2018-01-22 23:53:03.260064632 +0000
+@@ -55,9 +55,9 @@
+       ],
+     }
+
+-    file { '/usr/local/bin/rabbitmqadmin':
+-      owner   => 'root',
+-      group   => '0',
++    file { $rabbbitmq::admin_path:
++      owner   => $rabbbitmq::admin_owner,
++      group   => $rabbbitmq::admin_group,
+       source  => "${rabbitmq::rabbitmq_home}/rabbitmqadmin",
+       mode    => '0755',
+       require => $rabbitmqadmin_require,
+--- puppet-rabbitmq-8.0.0/manifests/params.pp.orig      2018-01-22 23:55:06.007416853 +0000
++++ puppet-rabbitmq-8.0.0/manifests/params.pp   2018-01-23 00:46:26.486764888 +0000
+@@ -77,10 +77,35 @@
+       $package_gpg_key       = undef
+       $rabbitmqadmin_package = undef
      }
 +    'Solaris': {
 +      $package_ensure   = 'installed'
@@ -229,35 +172,34 @@ index 69d4e52..45b5b9b 100644
 +      $rabbitmq_home    = '/var/lib/rabbitmq'
 +      $plugin_dir       = '/usr/lib/rabbitmq/plugins'
 +    }
-     default: {
-       fail("The ${module_name} module is not supported on an ${::osfamily} based system.")
-     }
-   }
- 
++     default: {
++       fail("The ${module_name} module is not supported on an ${::osfamily} based system.")
++     }
++   }
++
 +  case $::osfamily {
 +    'Solaris': {
 +      $admin_owner = 'root'
 +      $admin_group = 'bin'
 +      $admin_path  = '/usr/bin/rabbitmqadmin'
 +    }
-+    default: {
+     default: {
+-      fail("The ${module_name} module is not supported on an ${facts['os']['family']} based system.")
 +      $admin_owner = 'root'
 +      $admin_group = '0'
 +      $admin_path  = '/usr/local/bin/rabbitmqadmin'
-+    }
-+  }
-+
+     }
+   }
++ 
+
    #install
    $admin_enable                = true
-   $management_hostname         = undef
-diff --git a/metadata.json b/metadata.json
-index 3d5ab8c..4f27861 100644
---- a/metadata.json
-+++ b/metadata.json
-@@ -38,6 +38,13 @@
-         "12.04",
-         "14.04"
-       ]
+--- puppet-rabbitmq-8.0.0/metadata.json.orig    2018-01-22 22:24:00.733999751 +0000
++++ puppet-rabbitmq-8.0.0/metadata.json 2018-01-22 22:27:07.139646219 +0000
+@@ -46,6 +46,13 @@
+     },
+     { 
+       "operatingsystem": "Archlinux"
 +    },
 +    {
 +      "operatingsystem": "Solaris",
@@ -268,41 +210,3 @@ index 3d5ab8c..4f27861 100644
      }
    ],
    "requirements": [
-@@ -48,7 +55,6 @@
-   ],
-   "dependencies": [
-     {"name":"puppetlabs/stdlib","version_requirement":">=3.0.0 <5.0.0"},
--    {"name":"puppetlabs/apt","version_requirement":">=1.8.0 <3.0.0"},
-     {"name":"puppet/staging","version_requirement":">=0.3.1 <2.0.0"}
-   ]
- }
-diff --git a/tests/full.pp b/tests/full.pp
-index c6dfc5c..caaafcd 100644
---- a/tests/full.pp
-+++ b/tests/full.pp
-@@ -1,16 +1,16 @@
- class { 'rabbitmq::repo::apt':
-   pin => '900',
--}->
--class { 'rabbitmq::server':
-+}
-+-> class { 'rabbitmq::server':
-   delete_guest_user => true,
- #  version           => '2.4.1',
--}->
--rabbitmq_user { 'dan':
-+}
-+-> rabbitmq_user { 'dan':
-   admin    => true,
-   password => 'pass',
-   provider => 'rabbitmqctl',
--}->
--rabbitmq_vhost { 'myhost':
-+}
-+-> rabbitmq_vhost { 'myhost':
-   provider => 'rabbitmqctl',
- }
- rabbitmq_user_permissions { 'dan@myhost':
--- 
-2.14.1
-
