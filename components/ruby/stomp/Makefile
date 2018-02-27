@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 include $(WS_MAKE_RULES)/ruby.mk
@@ -34,9 +34,9 @@ RUBY_LIB_VERSION=   2.1.0
 RUBY_VERSIONS=      2.1.0
 
 GIT_REPO=               https://github.com/stompgem/stomp
-GIT_BRANCH=             v1.4.3
+GIT_BRANCH=             v1.4.4
 GIT_COMMIT_ID=          1236aca
-GIT_HASH=sha256:2741d214934e4a430ee9da1f9b4e89037048707899df1b07a6a08617da829855
+GIT_HASH=sha256:8e80208ec2300f138dfd9e92da02280643d046e22b529ce1d31dc905882cd34f
 
 COMPONENT_NAME=         stomp
 COMPONENT_VERSION=      $(GIT_BRANCH:v%=%)
@@ -45,7 +45,7 @@ COMPONENT_SRC=          $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.gz
 COMPONENT_BUGDB=        utility/ruby-stomp
 COMPONENT_ANITYA_ID=    4499
-TPNO=                   35389
+TPNO=                   40666
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
