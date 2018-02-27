@@ -70,24 +70,22 @@ index 92c4563..52c7b14 100644
        'Suse': {
          $_ssl_mutex = 'default'
        }
-@@ -66,7 +75,16 @@ class apache::mod::ssl (
-     'redhat'  => '/var/cache/mod_ssl/scache(512000)',
-     'freebsd' => '/var/run/ssl_scache(512000)',
-     'gentoo'  => '/var/run/ssl_scache(512000)',
--    'Suse'    => '/var/lib/apache2/ssl_scache(512000)'
-+    'Suse'    => '/var/lib/apache2/ssl_scache(512000)',
+@@ -69,6 +69,15 @@
+     'freebsd' => '/var/run/ssl_stapling(32768)',
+     'gentoo'  => '/var/run/ssl_stapling(32768)',
+     'Suse'    => '/var/lib/apache2/ssl_stapling(32768)',
 +    'solaris': {
 +      if versioncmp($apache_version, '2.4') == 0 {
-+        $session_cache = '/var/run/apache2/2.4/ssl_scache(512000)'
++        $session_cache = '/var/run/apache2/2.4/ssl_stapling(32768)'
 +      } elsif versioncmp($apache_version, '2.2') == 0 {
-+        $session_cache = '/var/run/apache2/2.2/ssl_scache(512000)'
++        $session_cache = '/var/run/apache2/2.2/ssl_stapling(32768)'
 +      } else {
 +        $session_cache = '/var/run/ssl_scache(512000)'
 +      }
 +     }
    }
  
-   validate_bool($ssl_stapling)
+   if $::osfamily == 'Suse' {
 diff --git a/manifests/mpm.pp b/manifests/mpm.pp
 index 119fedf..efa39e7 100644
 --- a/manifests/mpm.pp
@@ -210,4 +208,3 @@ index 7bb2f12..785474e 100644
    "requirements": [
 -- 
 2.14.1
-
