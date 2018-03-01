@@ -1,0 +1,35 @@
+#
+# patch deals with test failures caused by two factors:
+#	- poor coding style in 3rd party ltmain.sh,
+#	  which uses variables, without defining them first
+#
+#	- paranoid setting of our gmake test target, which
+#	  runs sub-shells with 'set -u' option, which specifically
+#	  asks to define variable before its first use
+#
+# there are two ways to fix it:
+#	1) relax our build environment for test target
+#
+#	2) fix ltmain.sh which comes from upstream
+#
+# patch below opts for 2)
+#
+--- libtasn1-4.13/build-aux/ltmain.sh	2014-06-08 14:53:18.000000000 +0000
++++ libtasn1-4.13.modified/build-aux/ltmain.sh	2018-01-23 18:25:20.899126853 +0000
+@@ -3874,6 +3874,8 @@
+ relink_command=\"$relink_command\"
+ 
+ # This environment variable determines our operation mode.
++libtool_install_magic=\${libtool_install_magic:-'0'};
++libtool_execute_magic=\${libtool_execute_magic:-'0'};
+ if test \"\$libtool_install_magic\" = \"$magic\"; then
+   # install mode needs the following variables:
+   generated_by_libtool_version='$macro_version'
+@@ -4104,6 +4106,7 @@
+ 	if test "$shlibpath_overrides_runpath" = yes && test -n "$shlibpath_var" && test -n "$temp_rpath"; then
+ 	  $ECHO "\
+     # Add our own library path to $shlibpath_var
++    $shlibpath_var=\${$shlibpath_var:-''}
+     $shlibpath_var=\"$temp_rpath\$$shlibpath_var\"
+ 
+     # Some systems cannot cope with colon-terminated $shlibpath_var

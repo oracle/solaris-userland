@@ -5,35 +5,20 @@ Info:
 To take out buffer overflow issue.
 
 Status:
-Need to determine if this patch has been sent upstream.
+Upstream seems not to bother about case 'str == NULL' like we do.
+This is the only difference
 
---- a/lib/coding.c
-+++ b/lib/coding.c
-@@ -253,18 +253,23 @@ static asn1_retCode
- _asn1_objectid_der (unsigned char *str, unsigned char *der, int *der_len)
- {
-   int len_len, counter, k, first, max_len;
--  char *temp, *n_end, *n_start;
-+  char *temp = NULL, *n_end, *n_start;
+--- libtasn1-4.13/lib/coding.c	2016-09-11 11:53:52.000000000 +0000
++++ libtasn1-4.13.modified/lib/coding.c	2018-01-23 11:06:40.168254599 +0000
+@@ -338,7 +338,10 @@
+   char *temp, *n_end, *n_start;
    unsigned char bit7;
-   unsigned long val, val1 = 0;
-+  size_t temp_size = str ? strlen (str) : 0;
+   uint64_t val, val1 = 0;
+-  int str_len = _asn1_strlen (str);
++  size_t str_len = (str == NULL) ? 0 : _asn1_strlen (str);
 +
-+  temp_size += 2;
-+  if (temp_size < 2)
++  if ((str_len + 2) < 2)
 +    return ASN1_MEM_ALLOC_ERROR;
  
    max_len = *der_len;
  
--  temp = (char *) _asn1_malloc (strlen (str) + 2);
-+  temp = (char *) _asn1_malloc (temp_size);
-   if (temp == NULL)
-     return ASN1_MEM_ALLOC_ERROR;
- 
--  strcpy (temp, str);
--  strcat (temp, ".");
-+  strncpy (temp, str ? (const char *)str : "", temp_size);
-+  strncat (temp, ".", 1);
- 
-   counter = 0;
-   n_start = temp;
