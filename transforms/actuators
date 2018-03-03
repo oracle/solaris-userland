@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # SMF service manifests
@@ -40,14 +40,20 @@
 # GNOME/XDG desktop files
 <transform file path=usr/share/applications/.*\.desktop$ -> \
     default restart_fmri svc:/application/desktop-cache/desktop-mime-cache:default>
+<transform file link hardlink path=usr/share/applications/mimeinfo.cache$ -> \
+    exit 1 "Error: packaged mimeinfo cache file (%<action.path>)" >
 
 # GNOME/XDG icons
 <transform file path=usr/share/icons/.*$ -> \
     default restart_fmri svc:/application/desktop-cache/icon-cache:default>
+<transform file link hardlink path=usr/share/icons/.*/icon-theme.cache$ -> \
+    exit 1 "Error: packaged icon cache file (%<action.path>)" >
 
 # GNOME/XDG mime-types
 <transform file path=usr/share/mime/.*\.xml$ -> \
     default restart_fmri svc:/application/desktop-cache/mime-types-cache:default>
+<transform file link hardlink path=usr/share/mime/mime.cache$ -> \
+    exit 1 "Error: packaged mimeinfo cache file (%<action.path>)" >
 
 # GNOME gtk2 Input Method modules
 <transform file path=usr/lib.*/gtk-2.*/.*/immodules/.*.so$ -> \
@@ -64,10 +70,14 @@
 # GNOME GSettings schemas & overrides
 <transform file link hardlink path=usr/share/glib-2\.0/schemas/.* -> \
     default restart_fmri svc:/application/desktop-cache/glib-compile-schemas:default>
+<transform file link hardlink path=usr/share/glib-2\.0/schemas/gschemas.compiled$ -> \
+    exit 1 "Error: packaged compiled gschemas file (%<action.path>)" >
 
 # GNOME GIO modules
 <transform file link hardlink path=usr/lib.*/gio/modules/.*\.so$ -> \
     default restart_fmri svc:/application/desktop-cache/gio-module-cache:default>
+<transform file link hardlink path=usr/lib.*/gio/modules/giomodule.cache$ -> \
+    exit 1 "Error: packaged giomodule cache file (%<action.path>)" >
 
 # D-Bus services
 <transform file path=(etc|usr/share)/dbus-1/system(\.d|-services)/.+$ -> \
