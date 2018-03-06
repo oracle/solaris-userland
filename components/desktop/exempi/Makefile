@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64_and_32
@@ -27,16 +27,16 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		exempi
-COMPONENT_VERSION=	2.2.2
+COMPONENT_VERSION=	2.4.4
 COMPONENT_PROJECT_URL=	http://libopenraw.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-	sha256:0e7ad0e5e61b6828e38d31a8cc59c26c9adeed7edf4b26708c400beb6a686c07
+	sha256:a2d59a9c5d449d88480dc9ffb3220f34b9789367dbe6fdc957ed2b9a78ec3db0
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/download/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/exempi
 COMPONENT_ANITYA_ID=	767
 
-TPNO=			25504
+TPNO=			41519
 
 # disable for now since it requires boost C++ libraries
 TEST_TARGET= $(SKIP_TEST)
