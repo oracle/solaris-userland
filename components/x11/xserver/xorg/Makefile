@@ -24,7 +24,6 @@
 #
 
 BUILD_BITS =            64
-COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xorg-server
@@ -44,6 +43,8 @@ FIX_PC_FILES = xorg-server.pc.in
 FIX_PC_FLAGS += -e 's|\@symbol_visibility\@||'
 
 include $(WS_MAKE_RULES)/x11-component.mk
+
+CFLAGS.studio += $(studio_FEATURES_EXTENSIONS)
 
 CONFIGURE_OPTIONS += --docdir="$(USRSHAREDOCDIR)"
 CONFIGURE_OPTIONS += --enable-dmx
