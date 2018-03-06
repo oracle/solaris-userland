@@ -3,9 +3,9 @@ The cast is safe as void and unsigned char have same alignment.
 
 file upstream bug
 
---- webkitgtk-2.8.3/Source/bmalloc/bmalloc/VMAllocate.h	2015-04-28 03:38:00.000000000 -0700
-+++ webkitgtk-2.8.3/Source/bmalloc/bmalloc/VMAllocate.h	2015-07-09 19:04:47.781960759 -0700
-@@ -134,7 +134,7 @@
+--- a/Source/bmalloc/bmalloc/VMAllocate.h	2018-02-14 09:09:44.950546075 -0800
++++ b/Source/bmalloc/bmalloc/VMAllocate.h	2018-02-14 09:10:46.848653091 -0800
+@@ -187,7 +187,7 @@
  #if BOS(DARWIN)
      SYSCALL(madvise(p, vmSize, MADV_FREE_REUSABLE));
  #else
@@ -14,7 +14,7 @@ file upstream bug
  #endif
  }
  
-@@ -144,7 +144,7 @@
+@@ -197,7 +197,7 @@
  #if BOS(DARWIN)
      SYSCALL(madvise(p, vmSize, MADV_FREE_REUSE));
  #else
@@ -23,9 +23,9 @@ file upstream bug
  #endif
  }
  
---- webkitgtk-2.8.3/Source/WTF/wtf/OSAllocatorPosix.cpp	2015-05-15 01:41:50.000000000 -0700
-+++ webkitgtk-2.8.3/Source/WTF/wtf/OSAllocatorPosix.cpp	2015-07-09 19:03:50.332468626 -0700
-@@ -153,7 +153,7 @@
+--- a/Source/WTF/wtf/OSAllocatorPosix.cpp	2018-02-14 09:11:14.518083741 -0800
++++ b/Source/WTF/wtf/OSAllocatorPosix.cpp	2018-02-14 09:12:12.911785534 -0800
+@@ -155,7 +155,7 @@
  #elif HAVE(MADV_FREE_REUSE)
      while (madvise(address, bytes, MADV_FREE_REUSABLE) == -1 && errno == EAGAIN) { }
  #elif HAVE(MADV_FREE)

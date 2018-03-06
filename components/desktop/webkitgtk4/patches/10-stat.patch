@@ -1,0 +1,52 @@
+Changes to get this working on Solaris.
+
+potentially file a bug and send upstream
+
+--- a/Source/WebKit/NetworkProcess/cache/NetworkCacheFileSystem.cpp	2018-02-20 10:51:42.832792388 -0800
++++ b/Source/WebKit/NetworkProcess/cache/NetworkCacheFileSystem.cpp	2018-02-20 10:53:42.352979719 -0800
+@@ -47,6 +47,13 @@
+ #include <wtf/glib/GRefPtr.h>
+ #endif
+ 
++#if __sun
++/* map struct stat.st_mode to directoryEntryType values */
++#define ST_MODE_TO_DT_TYPE(mode)   (((mode) & S_IFMT) >> 12)
++#define DT_DIR                     ST_MODE_TO_DT_TYPE(S_IFDIR)
++#define DT_REG                     ST_MODE_TO_DT_TYPE(S_IFREG)
++#endif
++
+ namespace WebKit {
+ namespace NetworkCache {
+ 
+@@ -66,11 +73,19 @@
+ void traverseDirectory(const String& path, const Function<void (const String&, DirectoryEntryType)>& function)
+ {
+     DIR* dir = opendir(WebCore::fileSystemRepresentation(path).data());
++#if __sun
++      struct stat st;
++#endif
+     if (!dir)
+         return;
+     dirent* dp;
+     while ((dp = readdir(dir))) {
++#if __sun
++      lstat(dp->d_name, &st);
++      if (!S_ISDIR(st.st_mode) && !S_ISREG(st.st_mode))
++#else
+         if (dp->d_type != DT_DIR && dp->d_type != DT_REG)
++#endif
+             continue;
+         const char* name = dp->d_name;
+         if (!strcmp(name, ".") || !strcmp(name, ".."))
+@@ -78,7 +93,11 @@
+         auto nameString = String::fromUTF8(name);
+         if (nameString.isNull())
+             continue;
++#if __sun
++        function(nameString, directoryEntryType(ST_MODE_TO_DT_TYPE(st.st_mode)));
++#else
+         function(nameString, directoryEntryType(dp->d_type));
++#endif
+     }
+     closedir(dir);
+ }

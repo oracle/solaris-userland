@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 GPATCH =	/usr/bin/patch
@@ -72,6 +72,8 @@ else
 PATCH_PATTERN$(1) ?=	%.patch$(1)
 PATCHES$(1) = $(filter %.patch$(1),$(ALL_PATCHES))
 endif
+
+PATCHES$(1) += $(ADDITIONAL_PATCHES$(1))
 
 ifneq ($$(PATCHES$(1)),)
 PATCH_STAMPS$(1) += $$(PATCHES$(1):$(PATCH_DIR)/%=$$(SOURCE_DIR$(1))/.patched-%)

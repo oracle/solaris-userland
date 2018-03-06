@@ -32,36 +32,38 @@ BUILD_BITS= 64
 COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
-# gcc7 issue - error: 'std::function' has not been declared
-GCC_ROOT = /usr/gcc/5
-
 COMPONENT_NAME=		webkitgtk
-COMPONENT_VERSION=	2.8.4
+COMPONENT_VERSION=	2.18.4
 COMPONENT_PROJECT_URL=	http://webkitgtk.org
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:30bd366bd970d4bac2f9ef5bff0fb935376bf91ea2aaa2a5183fe5fdbec20fbd
+	sha256:87b6bb9a6065b949ecbe6191313c43e57ad28efdf1f2b5e763405093520632b8
 COMPONENT_ARCHIVE_URL=	http://webkitgtk.org/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/webkitgtk
 COMPONENT_ANITYA_ID=	5355
 
-TPNO=			25892
+TPNO=			39841
 
 # Use project's own optimization flags instead.
 gcc_OPT=
 
-# Requires newer version of cairo, available in S12 but not 11.3,
-# so do not publish.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_64=
-INSTALL_64=
-PUBLISH_STAMP=
-endif
+# Requires newer version of cairo, available in trunk but not 11.3
+include $(WS_MAKE_RULES)/no-evaluation.mk
 
 # We don't have JHbuild needed for tests
 TEST_TARGET= $(NO_TESTS)
 
-BUILD_STYLE= justmake
+BUILD_STYLE= cmake
+
+# Once 27639813 is figured out this can be removed along with the change
+# in prep-patch.mk for ADDITIONAL_PATCHES
+ifeq ($(MACH), sparc)
+ADDITIONAL_PATCHES += patches/mapfile.$(MACH)
+endif
+ifeq ($(MACH), i386)
+ADDITIONAL_PATCHES += patches/mapfile.$(MACH)
+endif
+
 include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_BUILD_ARGS += -j4
@@ -74,6 +76,10 @@ LD_OPTIONS.32 += -L $(USRLIB.32)/gnutls-3 -R $(USRLIB.32)/gnutls-3
 LD_OPTIONS.64 += -L $(USRLIB.64)/gnutls-3 -R $(USRLIB.64)/gnutls-3
 LD_OPTIONS += $(LD_OPTIONS.$(BITS))
 
+# This should have avoided the need for mapfile.$(MACH) above
+# why its not working needs to be eventually figured out (27639813)
+LD_OPTIONS+=-zgnu-version-script-compat
+
 # Required to ensure expected defines are set; also, ensures project's
 # optimisation level set appropriately.  Would prefer RelWithDebInfo, but that
 # target is curently broken.
@@ -81,29 +87,18 @@ CMAKE_OPTIONS += -DCMAKE_BUILD_TYPE=Release
 CMAKE_OPTIONS += -DENABLE_MINIBROWSER=ON
 CMAKE_OPTIONS += -DPORT=GTK
 CMAKE_OPTIONS += -DENABLE_GLES2=OFF
+CMAKE_OPTIONS += -DUSE_GSTREAMER_GL=OFF
+CMAKE_OPTIONS += -DUSE_LIBHYPHEN=OFF
+CMAKE_OPTIONS += -DENABLE_SAMPLING_PROFILER=OFF
+CMAKE_OPTIONS += -DENABLE_SUBTLE_CRYPTO=OFF
 
 ifeq ($(MACH), sparc)
 CMAKE_OPTIONS += -DENABLE_JIT=OFF
 endif
 
-# Need to figure out a way to use BUILD_STYLE = cmake and remove
-# these duplicate entries here - 24375155
-# This component uses cmake to generate Makefiles and so has no configure
-CMAKE           = $(shell which cmake)
-CMAKE_OPTIONS += -DCMAKE_CXX_COMPILER="$(CXX)"
-CMAKE_OPTIONS += -DCMAKE_CXX_FLAGS="$(CXXFLAGS)"
-CMAKE_OPTIONS += -DCMAKE_C_COMPILER="$(CC)"
-CMAKE_OPTIONS += -DCMAKE_C_FLAGS="$(CFLAGS)"
-CMAKE_OPTIONS += -DCMAKE_EXE_LINKER_FLAGS="$(LDFLAGS)"
-# Must start install paths with a leading '/' or files will be installed into
-# wrong location!
-CMAKE_OPTIONS += -DCMAKE_INSTALL_PREFIX="$(USRDIR)"
-CMAKE_OPTIONS += -DCMAKE_MODULE_LINKER_FLAGS="$(LDFLAGS)"
-CMAKE_OPTIONS += -DCMAKE_SHARED_LINKER_FLAGS="$(LDFLAGS)"
-CMAKE_OPTIONS += -DGETTEXT_MSGFMT_EXECUTABLE="$(GNUBIN)/msgfmt"
-CMAKE_OPTIONS += -DEXEC_INSTALL_DIR="$(USRBIN)"
 CMAKE_OPTIONS += -DLIB_INSTALL_DIR="$(USRLIB)"
 CMAKE_OPTIONS += -DLIBEXEC_INSTALL_DIR="$(USRLIB)"
+CMAKE_OPTIONS += -DEXEC_INSTALL_DIR="$(USRBIN)"
 
 # Tell g-ir-scanner not to cache results in homedir of user running the build
 COMPONENT_BUILD_ENV += GI_SCANNER_DISABLE_CACHE=""
@@ -122,7 +117,6 @@ REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/build/cmake
 REQUIRED_PACKAGES += developer/build/gnu-make
 REQUIRED_PACKAGES += developer/build/pkg-config
-REQUIRED_PACKAGES += developer/gcc-5
 REQUIRED_PACKAGES += developer/gperf
 REQUIRED_PACKAGES += developer/parser/bison
 REQUIRED_PACKAGES += image/library/libjpeg
@@ -156,6 +150,7 @@ REQUIRED_PACKAGES += system/library/freetype-2
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library/security/libgcrypt
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcomposite
 REQUIRED_PACKAGES += x11/library/libxdamage
