@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -40,10 +40,6 @@ TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 PATCH_LEVEL =   0
-
-# Look for gnutls-3 pkg-config & libraries before the defaults
-PKG_CONFIG_PATH.64 := $(PKG_CONFIG_PATH.64)/gnutls-3:$(PKG_CONFIG_PATH.64)
-LDFLAGS += -L$(USRLIBDIR64)/gnutls-3
 
 CONFIGURE_OPTIONS  +=		--localedir=$(CONFIGURE_LOCALEDIR)
 

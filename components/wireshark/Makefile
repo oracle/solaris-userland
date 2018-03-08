@@ -55,10 +55,6 @@ PKG_MACROS+= MICRO_VERSION=$(MICRO_VERSION)
 
 PATCH_LEVEL=0
 
-# Look for gnutls-3 pkg-config & libraries before the defaults
-PKG_CONFIG_PATH.64 := $(PKG_CONFIG_PATH.64)/gnutls-3:$(PKG_CONFIG_PATH.64)
-LDFLAGS += -L$(USRLIBDIR64)/gnutls-3
-
 # Reported via bug 12923
 CFLAGS += -I/usr/include/kerberosv5
 

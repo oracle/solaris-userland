@@ -76,11 +76,6 @@ LD_MAP_NOEXDATA.sparc=
 #
 #CONFIGURE_PREFIX =	$(PROTO_DIR)/usr
 
-# The configure script runs the pkg-config command. This allows it to
-# find the non-default GnuTLS v3 library.
-PKG_CONFIG_PATH.64 := $(PKG_CONFIG_PATH.64)/gnutls-3:$(PKG_CONFIG_PATH.64)
-LDFLAGS += -L$(USRLIBDIR64)/gnutls-3
-
 # Starting with emacs 25.2, the emacs executable uses trig functions (sin, cos)
 # that are not satisfied by libc. Rather than patch the configure process
 # or Makefiles, supply libm via the environment, and allow the use of -zignore,
@@ -247,7 +242,6 @@ REQUIRED_PACKAGES += library/desktop/gtk2
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/gnutls
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/ncurses

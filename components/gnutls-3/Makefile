@@ -39,16 +39,6 @@ TPNO=			39829
 
 COMPONENT_BUILD_TARGETS = all info
 
-# The GnuTLS API and ABI have incompatible changes between versions 2.8.6
-# and 3.4.1; but the basic symlink name 'libgnutls.so' and pkg-config file
-# name 'gnutls.pc' are unchanged.  As a result, it's not possible to have
-# both versions installed at the same time in the default paths in a way
-# that makes it possible to build programs that are only compatible with
-# one version of the API.  As a result, GnuTLS version 3 delivered to a folder
-# called gnutls-3 temporarily.  The plan is to integrate 3.4.1 and move all
-# programs to 3.4.1; after all usage of 2.8.6  excised, move 3.4.1 to the
-# default location.
-
 # We need to build an extra static version of this library for
 # GRUB/Wanboot support.
 
@@ -265,13 +255,13 @@ CONFIGURE_OPTIONS.wanboot += ac_cv_librt=no
 
 CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS += --infodir=$(CONFIGURE_INFODIR)
-CONFIGURE_OPTIONS += --mandir=$(USRSHAREDIR)/$(COMPONENT_NAME)-3/man
-CONFIGURE_OPTIONS += --includedir=$(USRINCDIR)/$(COMPONENT_NAME)-3/
-CONFIGURE_OPTIONS.32 += --libdir=$(USRLIBDIR)/$(COMPONENT_NAME)-3/
-CONFIGURE_OPTIONS.64 += --libdir=$(USRLIBDIR64)/$(COMPONENT_NAME)-3/
-CONFIGURE_OPTIONS.32 += --libexecdir=$(USRLIBDIR)/pkgconfig/$(COMPONENT_NAME)-3/
-CONFIGURE_OPTIONS.64 += --libexecdir=$(USRLIBDIR64)/pkgconfig/$(COMPONENT_NAME)-3/
-CONFIGURE_OPTIONS += --localedir=$(USRSHARELOCALEDIR)/$(COMPONENT_NAME)-3/
+CONFIGURE_OPTIONS += --mandir=$(USRSHAREDIR)/man
+CONFIGURE_OPTIONS += --includedir=$(USRINCDIR)/
+CONFIGURE_OPTIONS.32 += --libdir=$(USRLIBDIR)/
+CONFIGURE_OPTIONS.64 += --libdir=$(USRLIBDIR64)/
+CONFIGURE_OPTIONS.32 += --libexecdir=$(USRLIBDIR)/pkgconfig/
+CONFIGURE_OPTIONS.64 += --libexecdir=$(USRLIBDIR64)/pkgconfig/
+CONFIGURE_OPTIONS += --localedir=$(USRSHARELOCALEDIR)/
 CONFIGURE_OPTIONS += --localstatedir=$(VARDIR)
 CONFIGURE_OPTIONS += --disable-guile
 CONFIGURE_OPTIONS += --with-included-libtasn1
@@ -293,7 +283,7 @@ $(BUILD_DIR)/wanboot-amd64/.installed: \
 	$(MKDIR) $(PROTOUSRLIBDIR)/grub/wanboot;
 $(BUILD_DIR)/wanboot-amd64/.installed: \
 	COMPONENT_POST_INSTALL_ACTION += \
-	$(MV) $(PROTOUSRLIBDIR64)/$(COMPONENT_NAME)-3/libgnutls.a \
+	$(MV) $(PROTOUSRLIBDIR64)/libgnutls.a \
 	$(PROTOUSRLIBDIR)/grub/wanboot/libgnutls.a;
 $(BUILD_DIR)/wanboot-amd64/.installed: \
 	COMPONENT_POST_INSTALL_ACTION += \

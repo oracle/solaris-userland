@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		64
@@ -44,12 +44,7 @@ include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# Force use of gnutls-3 pkgconfig during 2.x->3.x transition
-PKG_CONFIG_PATHS.32 += $(PKG_CONFIG_PATH.32)/gnutls-3
-PKG_CONFIG_PATHS.64 += $(PKG_CONFIG_PATH.64)/gnutls-3
 PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
-LD_OPTIONS.32 += -L $(USRLIB.32)/gnutls-3 -R $(USRLIB.32)/gnutls-3
-LD_OPTIONS.64 += -L $(USRLIB.64)/gnutls-3 -R $(USRLIB.64)/gnutls-3
 LD_OPTIONS += $(LD_OPTIONS.$(BITS))
 
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"

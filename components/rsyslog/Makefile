@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -80,12 +80,9 @@ CFLAGS += -std=c99
 # have a self-contained eco-system, simplify things for customers and just use
 # /usr/lib/rsyslog .
 CONFIGURE_LIBDIR.64 =	$(CONFIGURE_LIBDIR.32)
-PKG_CONFIG_PATH = /usr/lib/pkgconfig/gnutls-3
 
 # The configure script runs the pkg-config command. This allows it to
 # find the non-default GnuTLS v3 library.
-PKG_CONFIG_PATH.64 := $(PKG_CONFIG_PATH.64)/gnutls-3:$(PKG_CONFIG_PATH.64)
-LDFLAGS += -L$(USRLIBDIR64)/gnutls-3
 
 # Rsyslog sources contain __FILE__ macros which contain full path to the workspace
 # This may appear in debug output which is not nice. By specifying the source

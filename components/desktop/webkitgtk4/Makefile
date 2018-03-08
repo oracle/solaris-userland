@@ -68,12 +68,7 @@ include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_BUILD_ARGS += -j4
 
-# Force use of gnutls-3 pkgconfig during 2.x->3.x transition
-PKG_CONFIG_PATHS.32 += $(PKG_CONFIG_PATH.32)/gnutls-3
-PKG_CONFIG_PATHS.64 += $(PKG_CONFIG_PATH.64)/gnutls-3
 PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
-LD_OPTIONS.32 += -L $(USRLIB.32)/gnutls-3 -R $(USRLIB.32)/gnutls-3
-LD_OPTIONS.64 += -L $(USRLIB.64)/gnutls-3 -R $(USRLIB.64)/gnutls-3
 LD_OPTIONS += $(LD_OPTIONS.$(BITS))
 
 # This should have avoided the need for mapfile.$(MACH) above

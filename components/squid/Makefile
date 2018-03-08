@@ -44,10 +44,6 @@ ADISTACK_MODE =	$(ADISTACK_ENABLE)
 TEST_TARGET= $(TEST_64)
 include $(WS_MAKE_RULES)/common.mk
 
-# Look for gnutls-3 pkg-config & libraries before the defaults
-PKG_CONFIG_PATH.64 := $(PKG_CONFIG_PATH.64)/gnutls-3:$(PKG_CONFIG_PATH.64)
-LDFLAGS += -L$(USRLIBDIR64)/gnutls-3
-
 CFLAGS += -I$(USRINCDIR)/kerberosv5
 CFLAGS += $(CPP_LARGEFILES)
 # <getopt.h> changed after 11.3.

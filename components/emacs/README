@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2008, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2008, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 NAME:             emacs
@@ -226,16 +226,13 @@ information needed to understand how this component is put together.
   way that makes their purpose clear.
 
 - Emacs is currently configured to use GnuTLS 3 rather than version 2.
-  As version 3 is temporarily installed in a non-default manner, this is
-  achieved with the following additions to Makefile:
+  As version 3 is named gnutls-3 in Solaris, but has been moved to the
+  default locations where gnutls is expected to be, only the REQUIRED_PACKAGES
+  line remains of previous adjustments during the transition period.
 
-    # The configure script runs the pkg-config command. This allows it to
-    # find the non-default GnuTLS v3 library.
-    CONFIGURE_ENV +=	PKG_CONFIG_PATH=/usr/lib/$(MACH64)/pkgconfig/gnutls-3
-...
     REQUIRED_PACKAGES += library/gnutls-3
 
-  These lines will need to be removed/adjusted when version 3 becomes the
+  The other lines were removed/adjusted when version 3 became the
   system default.
 
 - We deliver the following packages:

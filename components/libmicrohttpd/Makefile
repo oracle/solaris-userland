@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -49,8 +49,6 @@ LINT_FLAGS += -I$(PROTOUSRINCDIR)
 CPPFLAGS += $(CPP_LARGEFILES)
 
 CONFIGURE_OPTIONS += --includedir=$(USRINCDIR)/microhttpd
-PKG_CONFIG_PATHS.32 += /usr/lib/pkgconfig/gnutls-3
-PKG_CONFIG_PATHS.64 += /usr/lib/$(MACH64)/pkgconfig/gnutls-3
 PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
 
 COMPONENT_TEST_ENV +=	PATH="$(GNUBIN):$(PATH)"

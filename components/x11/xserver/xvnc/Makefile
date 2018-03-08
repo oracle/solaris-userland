@@ -118,12 +118,6 @@ DEPENDED += 	$(FLTK_BUILD)/manifest-$(MACH)-fltk.depend
 REQUIRED_PACKAGES += $(shell $(GSED) -n 's/REQUIRED_PACKAGES +=//p' $(FLTK_DIR)/Makefile)
 # end of Delete ... fltk
 
-# Force use of gnutls-3 pkgconfig during 2.x->3.x transition
-PKG_CONFIG_PATHS += /usr/lib/$(MACH64)/pkgconfig/gnutls-3
-CMAKE_OPTIONS += -DGNUTLS_INCLUDE_DIR:PATH="$(USRINCDIR)/gnutls-3"
-CMAKE_OPTIONS += -DGNUTLS_LIBRARY:FILEPATH="$(USRLIBDIR64)/gnutls-3/libgnutls.so.30"
-# end of gnutls-3
-
 ### Xvnc (embedded in unix/xserver in TigerVNC sources) is built w/ autotools
 
 include $(WS_MAKE_RULES)/configure.mk
