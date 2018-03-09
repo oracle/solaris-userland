@@ -314,3 +314,5 @@ $(foreach n, $(LIST), \
 	cd $(TOPDIR)/$(SOURCE_DIR_$(n)); \
 	$(AUTORECONF_ENV) $(AUTORECONF) -fiv; \
         $(ENV) $(CONFIGURE_ENV) ./configure $(CONFIGURE_OPTIONS); $(GMAKE) DESTDIR=$(PROTO_DIR) install $(COMPONENT_INSTALL_ARGS);))
+
+REQUIRED_PACKAGES += x11/documentation/xorg-docs

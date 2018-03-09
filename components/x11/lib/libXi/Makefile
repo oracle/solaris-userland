@@ -45,5 +45,6 @@ CONFIGURE_ENV += LIB_MAN_SUFFIX=3xi
 
 LD_OPTIONS += -M$(COMPONENT_DIR)/mapfile
 
+REQUIRED_PACKAGES += developer/documentation-tool/asciidoc
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxext

@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=	    	64
@@ -57,6 +57,7 @@ REQUIRED_PACKAGES += library/desktop/gtk-vnc
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/libsecret
+REQUIRED_PACKAGES += library/gnome/vte3
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/telepathy-glib
 REQUIRED_PACKAGES += system/library
