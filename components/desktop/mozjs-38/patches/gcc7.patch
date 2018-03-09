@@ -1,0 +1,19 @@
+Patch origin: in-house
+Patch status: Solaris-specific; not suitable for upstream
+
+gcc 7 build issue; should be evaluated as possible gcc bug
+
+--- a/js/src/vm/SharedTypedArrayObject.cpp
++++ b/js/src/vm/SharedTypedArrayObject.cpp
+@@ -4,6 +4,11 @@
+  * License, v. 2.0. If a copy of the MPL was not distributed with this
+  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ 
++/* gcc 7 on sparc fails in -O1 with error: unrecognizable insn */
++#ifdef __sparc__
++#pragma GCC optimize ("-fexpensive-optimizations")
++#endif
++
+ #include "vm/SharedTypedArrayObject.h"
+ 
+ #include "mozilla/Alignment.h"

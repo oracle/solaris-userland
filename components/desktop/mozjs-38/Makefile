@@ -28,9 +28,6 @@ BUILD_BITS =            32_and_64
 COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
-# with gcc7 on sparc build fails
-GCC_ROOT = /usr/gcc/5
-
 COMPONENT_NAME=		mozjs
 COMPONENT_VERSION=	38.2.1
 COMPONENT_PROJECT_URL=	https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey
@@ -92,7 +89,6 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/FAIL:/p" ' \
         '-e "/ERROR:/p" '
 
-REQUIRED_PACKAGES += developer/gcc-5
 REQUIRED_PACKAGES += library/libffi
 REQUIRED_PACKAGES += library/nspr
 REQUIRED_PACKAGES += library/readline
