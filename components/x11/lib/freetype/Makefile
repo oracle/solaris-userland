@@ -27,14 +27,15 @@ BUILD_BITS =            32_and_64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		freetype
-COMPONENT_VERSION=	2.8
-COMPONENT_PROJECT_URL=	http://freetype.org/
-COMPONENT_ARCHIVE_URL=	http://download.savannah.gnu.org/releases/freetype/$(COMPONENT_ARCHIVE)
+COMPONENT_VERSION=	2.9
+COMPONENT_PROJECT_URL=	https://www.freetype.org/
+COMPONENT_ARCHIVE_URL=	https://download.savannah.gnu.org/releases/freetype/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:a3c603ed84c3c2495f9c9331fe6bba3bb0ee65e06ec331e0a0fb52158291b40b
+	sha256:e6ffba3c8cef93f557d1f767d7bc3dee860ac7a3aaff588a521e081bc36f4c8a
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=        x11/font
 COMPONENT_ANITYA_ID=	854
-TPNO=			35528
+TPNO=			41600
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -47,9 +48,27 @@ CONFIGURE_OPTIONS += --with-zlib
 CONFIGURE_OPTIONS += --with-bzip2
 CONFIGURE_OPTIONS += --with-png
 CONFIGURE_OPTIONS += --with-pic
+# FreeType 2.9 requires a minimum of HarfBuzz 1.3.0
 CONFIGURE_OPTIONS += --without-harfbuzz
 
 LDFLAGS += -lc
+
+install: $(PROTOUSRSHAREDOCDIR)/$(COMPONENT_NAME)/index.html
+
+$(PROTOUSRSHAREDOCDIR)/$(COMPONENT_NAME)/index.html: $(INSTALL_TARGET)
+	$(RM) -rf $(PROTOUSRSHAREDOCDIR)/$(COMPONENT_NAME)
+	$(MKDIR) $(PROTOUSRSHAREDOCDIR)/$(COMPONENT_NAME)
+	$(INSTALL) -m 0444 \
+		$(SOURCE_DIR)/docs/reference/*.html \
+		$(SOURCE_DIR)/docs/formats.txt \
+		$(SOURCE_DIR)/docs/VERSIONS.TXT \
+		$(PROTOUSRSHAREDOCDIR)/$(COMPONENT_NAME)/
+	$(SYMLINK) ft2-toc.html \
+		$(PROTOUSRSHAREDOCDIR)/$(COMPONENT_NAME)/index.html
+	$(MKDIR) $(PROTOUSRSHAREMANDIR)/man3lib
+	$(GSED) -e 's%__version__%FreeType $(COMPONENT_VERSION)%' \
+		$(COMPONENT_DIR)/files/libfreetype.3lib > \
+		$(PROTOUSRSHAREMANDIR)/man3lib/libfreetype.3lib
 
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += image/library/libpng14
