@@ -20,29 +20,16 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
+COMPILER =              gcc
 include ../../make-rules/shared-macros.mk
 
-# Both SPRO_VROOT and studio_OPT vars should use the override keyword otherwise
-# Userland will ignore it and use its default values.
-
-# studio 12.5 handle the func.attribs massively used in Samba code
-# much better than the older studio versions
-override SPRO_VROOT = $(SPRO_ROOT)/developerstudio12.5
-
-# Samba does not work properly on i386 when built by studio with -xO3+.
 ifeq ($(MACH), sparc)
-# to test Samba build using studio 12.6 nightly uncomment the following line
-#override SPRO_VROOT = /shared/dp/releases/dev/sparc-S2/
 WAFOPT1 = -j64
 else
-# to test Samba build using studio 12.6 nightly uncomment the following line
-#override SPRO_VROOT = /shared/dp/releases/dev/intel-S2/
-# for faster build i.e. if you prototyping src. patches use local cc (i.e. on strax)
-#override SPRO_VROOT = /opt/developerstudio12.5
-override studio_OPT = -xO1
+WAFOPT1 = -j16
 endif
 
 # parfait seems to spin on us
@@ -53,8 +40,8 @@ COMPONENT_PROJECT_URL=	http://www.samba.org/
 COMPONENT_BUGDB=	utility/samba
 COMPONENT_ANITYA_ID=	4758
 
-COMPONENT_VERSION=	4.7.3
-TPNO=			39509
+COMPONENT_VERSION=	4.7.6
+TPNO=			41636
 # Samba pre-releases are available on git only.
 # if you want to build Samba from git uncomment next 4 lines
 #GIT_REPO=		https://git.samba.org/samba.git
@@ -64,19 +51,16 @@ TPNO=			39509
 # clone of git.samba.org takes a long
 # if you want to build Samba from archive uncomment next 3 lines
 COMPONENT_ARCHIVE_URL=	https://download.samba.org/pub/samba/stable/$(COMPONENT_ARCHIVE)
-COMPONENT_ARCHIVE_HASH=	sha256:06e4152ca1cb803f005e92eb6baedb6cc874998b44ee37c2a7819e77a55bfd2c
+COMPONENT_ARCHIVE_HASH=	sha256:1eede30fc8ef6504e24602fb72b00baa0a7b73b59f16d25cb0771dc8c7c57d6e
 COMPONENT_SRC_URL=	$(COMPONENT_ARCHIVE_URL)
 
 include $(WS_MAKE_RULES)/prep.mk
 
 # waf
 WAF_PATH	=	PATH=$(BUILD_DIR)/samba/buildtools/bin:$(PROTO_DIR)/usr/bin:$$PATH
-# Verbosed waf produces unreadable output if parallelized.
-# Uncomment to enable verbose build.
+# Verbosed waf produces unreadable output in coincidence with parallel build.
+# Uncomment the followin line to enable verbose and single-thread build.
 #override WAFOPT1	=	-v -j1
-
-COMPONENT_PREP_ACTION += \
-   $(CP)  $(COMPONENT_DIR)/patches/vfs_zfsacl.c $(SOURCE_DIR)/source3/modules/vfs_zfsacl.c ;
 
 # Set build dirs for Samba + Winbind / Winbind (without Samba).
 BUILD_DIR_SMB		= $(BUILD_DIR)/samba
@@ -90,12 +74,9 @@ PKG_PROTO_DIRS += $(COMPONENT_DIR)
 # Oracle HSM is not supported on 11.4 yet but the libsam.so target should rather be commented out than removed
 #$(PROTO_DIR)/opt/SUNWsamfs/lib/$(MACH64)/libsam.so: Solaris/libsam.c
 #	$(MKDIR) $(@D)
-#	$(CC.studio.64) -m64 -G $(studio_PIC) -hlibsam.so Solaris/libsam.c \
+#	$(CC) -m64 -G $(CC_PIC_MODE) -hlibsam.so Solaris/libsam.c \
 #		-I$(COMPONENT_DIR)/Solaris/include \
 #		-o $@
-
-# Compiler settings
-CFLAGS.studio	+=	$(studio_C99_ENABLE)
 
 LIBS +=		-lrt -lsec -lcrypt -lmd5 -lsocket -lnsl
 # More libs needed by smbd (libavahi, libgamin, ...)
@@ -113,8 +94,6 @@ LDFLAGS +=	-R/usr/lib/samba$(MACHLIBDIR)
 LDFLAGS +=	-R/usr/lib/samba/private$(MACHLIBDIR)
 LDFLAGS +=	$(LIBS)
 $(BUILD_DIR_SMB)/.configured:	LDFLAGS +=	$(LIBS4SMBD)
-
-LD_OPTIONS += 	$(LD_B_DIRECT)
 
 # --enable-fhs should not be on
 CONFIGURE_OPTIONS =	--exec-prefix=/usr
@@ -164,7 +143,7 @@ CONFIGURE_ENV += 	PYTHONARCHDIR="$(PYTHON_VENDOR_PACKAGES)/samba"
 CONFIGURE_ENV += 	LD="$(LD)"
 CONFIGURE_ENV +=	CFLAGS="$(CFLAGS)"
 CONFIGURE_ENV +=	CPPFLAGS="$(CPPFLAGS) -I$(PROTO_DIR)/usr/include -I$(COMPONENT_DIR)/Solaris/include"
-CONFIGURE_ENV +=	LINKFLAGS="$(LD_OPTIONS) $(LDFLAGS)"
+CONFIGURE_ENV +=	LINKFLAGS="$(LDFLAGS) $(LD_B_DIRECT)"
 CONFIGURE_ENV.64 +=	MACH64="$(MACH64)"
 CONFIGURE_ENV +=	LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS)"
 CONFIGURE_ENV +=	CUPS_CONFIG=$(USRBINDIR)/cups-config
@@ -281,16 +260,16 @@ test:		$(NO_TESTS)
 system-test:    $(NO_TESTS)
 
 REQUIRED_PACKAGES += library/file-monitor/gamin
+REQUIRED_PACKAGES += library/jansson
 REQUIRED_PACKAGES += library/libarchive
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/samba/libsmbclient
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += security/kerberos-5
-REQUIRED_PACKAGES += service/network/samba
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/security/crypto
 REQUIRED_PACKAGES += system/network

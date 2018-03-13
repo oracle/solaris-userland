@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -28,6 +28,10 @@
 
 # smbprofiles man
 <transform file path=usr/share/man/man1/profiles.1 -> drop>
+
+# avoid of: 64-bit object 'usr/lib/samba/(s)bin/...' in 32-bit path
+<transform file path=usr/lib/samba/(s)?bin/.+ -> default pkg.linted.userland.action001.2 True>
+<transform file path=usr/lib/samba/samba/smbspool_krb5_wrapper -> default pkg.linted.userland.action001.2 True>
 
 # General dirs generated in sample-manifest but with bad attribs.
 <transform dir path=etc$ -> drop>

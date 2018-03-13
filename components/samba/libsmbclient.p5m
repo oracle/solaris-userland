@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # prototype objects in "samba" and "libsmbclient" packages should be
@@ -27,20 +27,20 @@
 #  - samba-objects2drop
 # here is the recipe:
 ## # list all (recursive) deps of libsmbclient.so
-## ldd -v /usr/lib/samba/amd64/libsmbclient.so | grep =[\>-\>] | nawk '{print $NF;}' | sort -u > libsmbclient.deps
+## ldd -v build/prototype/i386/usr/lib/samba/amd64/libsmbclient.so | grep =[\>-\>] | nawk '{print $NF;}' | sort -u > libsmbclient.deps
 ## # edit libsmbclient.deps file
 ## vi libsmbclient.deps
 ## #  remove all other than /usr/lib/samba :1,.d
 ## #  suppress leading '/' :1,$s#^/##
 ## #  change amd64 to $(MACH64) :1,$s/amd64/\$(MACH64)/
-## # join continuing lines of samba.proto-objects
-## nawk '{if (sub(/\\$/,"")) printf "%s", $0; else print $0}' samba.proto-objects > samba-objects
+## # join continuing lines and replace samba.proto-objects
+## nawk '{if (sub(/\\$/,"")) printf "%s", $0; else print $0}' build/manifest-i386-generated.p5m > samba.proto-objects
 ## # select libsmbclient objects
-## /usr/xpg4/bin/fgrep -f libsmbclient.deps samba-objects > libsmbclient-objects
+## /usr/xpg4/bin/fgrep -f libsmbclient.deps samba.proto-objects > libsmbclient-objects
 ## # create "drop" file
 ## nawk '{print "<transform " $1 " " $2 " -> drop>";}' libsmbclient-objects > samba-objects2drop
-## # remove temporary files
-## rm libsmbclient.deps samba-objects
+## # remove temporary file
+## rm libsmbclient.deps
 
 <include libsmbclient-objects>
 #
