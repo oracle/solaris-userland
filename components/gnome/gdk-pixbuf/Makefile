@@ -30,14 +30,14 @@ BUILD_BITS =		32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gdk-pixbuf
-COMPONENT_VERSION=	2.36.5
+COMPONENT_VERSION=	2.36.11
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GdkPixbuf
 COMPONENT_ARCHIVE_HASH= \
-    sha256:7ace06170291a1f21771552768bace072ecdea9bd4a02f7658939b9a314c40fc
+    sha256:ae62ab87250413156ed72ef756347b10208c00e76b222d82d9ed361ed9dde2f3
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	9533
 
-TPNO=			34492
+TPNO=			41638
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -90,6 +90,7 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "s%/pixbuf/randomly-modified/.*%/pixbuf/randomly-modified/...%"'
 
 # Standard automake test framework results transform
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/TOTAL/p" ' \
