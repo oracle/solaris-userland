@@ -149,7 +149,10 @@ include $(WS_MAKE_RULES)/x11-component.mk
 CONFIGURE_OPTIONS += --disable-secure-rpc	# for xhost
 
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += x11/data/xbitmaps
+REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libx11
+REQUIRED_PACKAGES += x11/library/libxau
 REQUIRED_PACKAGES += x11/library/libxcursor
 REQUIRED_PACKAGES += x11/library/libxext
 REQUIRED_PACKAGES += x11/library/libxi

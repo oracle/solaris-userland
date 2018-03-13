@@ -39,6 +39,8 @@ include $(WS_MAKE_RULES)/x11-component.mk
 
 CONFIGURE_OPTIONS += --with-xinitdir=/etc/X11/xinit
 
+REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxmuu

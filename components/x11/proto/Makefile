@@ -315,4 +315,5 @@ $(foreach n, $(LIST), \
 	$(AUTORECONF_ENV) $(AUTORECONF) -fiv; \
         $(ENV) $(CONFIGURE_ENV) ./configure $(CONFIGURE_OPTIONS); $(GMAKE) DESTDIR=$(PROTO_DIR) install $(COMPONENT_INSTALL_ARGS);))
 
+REQUIRED_PACKAGES += developer/documentation-tool/asciidoc
 REQUIRED_PACKAGES += x11/documentation/xorg-docs

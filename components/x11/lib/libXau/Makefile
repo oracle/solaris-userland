@@ -46,3 +46,5 @@ CONFIGURE_OPTIONS += --enable-xthreads
 LINT_FLAGS += -I$(PROTOUSRINCDIR)/X11
 
 LD_OPTIONS += -M$(COMPONENT_DIR)/mapfile
+
+REQUIRED_PACKAGES += x11/header/x11-protocols

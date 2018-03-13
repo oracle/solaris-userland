@@ -82,5 +82,6 @@ LDFLAGS += -L$(LIBFS_BASE)/usr/lib/$(MACH64)
 DEPENDED += $(WS_TOP)/components/x11/lib/libFS/build/manifest-$(MACH)-libFS.depend
 REQUIRED_PACKAGES += $(shell $(GSED) -n 's/REQUIRED_PACKAGES +=//p' ../../lib/libFS/Makefile)
 
+REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libfs
 REQUIRED_PACKAGES += x11/library/libx11

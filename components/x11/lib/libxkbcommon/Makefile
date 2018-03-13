@@ -58,4 +58,7 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/ERROR:/p" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
+REQUIRED_PACKAGES += developer/documentation-tool/doxygen
+REQUIRED_PACKAGES += developer/parser/bison
+REQUIRED_PACKAGES += image/graphviz
 REQUIRED_PACKAGES += x11/library/libxcb

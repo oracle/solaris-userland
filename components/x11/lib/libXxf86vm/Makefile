@@ -41,5 +41,6 @@ include $(WS_MAKE_RULES)/x11-component.mk
 
 CONFIGURE_ENV += LIB_MAN_SUFFIX=3xxf86vm
 
+REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxext

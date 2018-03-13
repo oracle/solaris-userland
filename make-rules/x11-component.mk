@@ -50,6 +50,7 @@ UTIL_MACROS = $(WS_COMPONENTS)/x11/util/util-macros/build/prototype/$(MACH)
 ACLOCAL_INCLUDES = -I$(UTIL_MACROS)/usr/share/aclocal
 AUTORECONF_ENV = ACLOCAL="/usr/bin/aclocal $(ACLOCAL_INCLUDES)"
 PKG_CONFIG_PATHS += $(UTIL_MACROS)/usr/share/pkgconfig
+REQUIRED_PACKAGES += developer/build/autoconf/xorg-macros
 
 # X.Org packages use a common set of sgml entities to build documentation
 XORG_DOCS = $(WS_COMPONENTS)/x11/doc/build/prototype/$(MACH)
@@ -102,6 +103,9 @@ CONFIGURE_OPTIONS += --with-xorg-module-dir="$(X11_SERVERMODS_DIR)"
 # some drivers are compiled with a different compiler than the server
 CFLAGS.studio += -xldscope=hidden
 CFLAGS.gcc += -fvisibility=hidden
+
+# All drivers need some headers from this package
+REQUIRED_PACKAGES += x11/header/x11-protocols
 
 # Resolve calls to functions in Xorg against the Xorg binary
 XORG_EXTERNS_FLAG ?= -z parent=$(USRBINDIR)/Xorg

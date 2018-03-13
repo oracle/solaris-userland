@@ -37,3 +37,5 @@ COMPONENT_ANITYA_ID=	13528
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/x11-component.mk
+
+REQUIRED_PACKAGES += x11/header/x11-protocols

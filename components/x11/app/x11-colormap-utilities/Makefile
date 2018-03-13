@@ -74,5 +74,6 @@ $(BUILD_DIR_$(MK_BITS))_%/.built:
 	touch $@
 
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxmu

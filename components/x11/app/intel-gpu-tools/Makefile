@@ -45,4 +45,5 @@ CONFIGURE_OPTIONS += --disable-nouveau
 
 REQUIRED_PACKAGES += diagnostic/scanpci
 REQUIRED_PACKAGES += library/desktop/cairo
+REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += x11/library/libdrm

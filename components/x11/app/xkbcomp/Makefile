@@ -39,6 +39,7 @@ include $(WS_MAKE_RULES)/x11-component.mk
 
 CPPFLAGS += -DNO_ALLOCA
 
+REQUIRED_PACKAGES += developer/parser/bison
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxkbfile

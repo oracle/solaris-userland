@@ -189,15 +189,29 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/FAIL:/p" ' \
         '-e "/ERROR:/p" '
 
+# Needed for agp headers on x86
+REQUIRED_PACKAGES.i386 += driver/graphics/agpgart
+REQUIRED_PACKAGES += $(REQUIRED_PACKAGES.$(MACH))
+
+REQUIRED_PACKAGES += developer/assembler
+REQUIRED_PACKAGES += developer/debug/mdb
+REQUIRED_PACKAGES += developer/documentation-tool/doxygen
+REQUIRED_PACKAGES += developer/lexer/flex
+REQUIRED_PACKAGES += developer/parser/bison
 REQUIRED_PACKAGES += diagnostic/scanpci
 REQUIRED_PACKAGES += file/gnu-coreutils
+REQUIRED_PACKAGES += image/graphviz
 REQUIRED_PACKAGES += library/graphics/pixman
+REQUIRED_PACKAGES += system/dtrace
 REQUIRED_PACKAGES += system/hal
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/security/crypto
+REQUIRED_PACKAGES += x11/header/x11-protocols
+REQUIRED_PACKAGES += x11/font-utilities
 REQUIRED_PACKAGES += x11/library/libdmx
 REQUIRED_PACKAGES += x11/library/libdrm
+REQUIRED_PACKAGES += x11/library/libepoxy
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxau
 REQUIRED_PACKAGES += x11/library/libxcb
@@ -208,8 +222,11 @@ REQUIRED_PACKAGES += x11/library/libxfont2
 REQUIRED_PACKAGES += x11/library/libxi
 REQUIRED_PACKAGES += x11/library/libxmuu
 REQUIRED_PACKAGES += x11/library/libxrender
+REQUIRED_PACKAGES += x11/library/libxres
 REQUIRED_PACKAGES += x11/library/libxshmfence
 REQUIRED_PACKAGES += x11/library/mesa
 REQUIRED_PACKAGES += x11/library/toolkit/libxaw7
 REQUIRED_PACKAGES += x11/library/toolkit/libxt
 REQUIRED_PACKAGES += x11/library/xcb-util
+REQUIRED_PACKAGES += x11/library/xtrans
+REQUIRED_PACKAGES += x11/keyboard/data-xkb

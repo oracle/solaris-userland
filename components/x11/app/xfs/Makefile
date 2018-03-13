@@ -46,4 +46,6 @@ CONFIGURE_OPTIONS += --with-default-config-file='/etc/X11/fs/config,/usr/lib/X11
 
 CPPFLAGS += -DNO_ALLOCA
 
+REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libxfont
+REQUIRED_PACKAGES += x11/library/xtrans

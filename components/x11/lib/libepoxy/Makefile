@@ -46,3 +46,5 @@ FIX_PC_FILES=epoxy.pc.in
 include $(WS_MAKE_RULES)/x11-component.mk
 
 COMPONENT_PREP_ACTION +=(cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
+
+REQUIRED_PACKAGES += x11/library/mesa

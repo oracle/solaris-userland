@@ -55,3 +55,5 @@ COMPONENT_INSTALL_ARGS.32 += pkgconfigdir="$(DESTDIR)/usr/lib/pkgconfig"
 COMPONENT_INSTALL_ARGS.64 += pkgconfigdir="$(DESTDIR)/usr/lib/$(MACH64)/pkgconfig"
 
 REQUIRED_PACKAGES += diagnostic/scanpci
+REQUIRED_PACKAGES += library/desktop/cairo
+REQUIRED_PACKAGES += x11/library/libpthread-stubs

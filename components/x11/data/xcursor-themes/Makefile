@@ -43,3 +43,5 @@ PKG_CONFIG_PATHS += $(XCURSORGEN_BASE)/usr/lib/$(MACH64)/pkgconfig
 
 PATH = $(USRBINDIR):$(XCURSORGEN_BASE)/usr/bin
 
+REQUIRED_PACKAGES += image/xcursorgen
+REQUIRED_PACKAGES += x11/library/libxcursor

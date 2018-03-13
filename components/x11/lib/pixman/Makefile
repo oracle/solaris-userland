@@ -50,4 +50,5 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/ERROR:/p" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
+REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += system/library/math

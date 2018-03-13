@@ -102,5 +102,10 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 	$(INSTALL) -m 0444 $(BUILD_DIR_64)/src/man/*.3xcb \
 		$(PROTO_DIR)/usr/share/man/man3xcb/ ;
 
+REQUIRED_PACKAGES += developer/documentation-tool/doxygen
+REQUIRED_PACKAGES += image/graphviz
+# xcb-proto runs xmllint
+REQUIRED_PACKAGES += library/libxml2
+REQUIRED_PACKAGES += runtime/python-34
 REQUIRED_PACKAGES += x11/library/libxau
 REQUIRED_PACKAGES += x11/library/libxdmcp

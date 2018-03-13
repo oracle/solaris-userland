@@ -68,3 +68,5 @@ $(BUILD_DIR_64)_1/.configured: SOURCE_DIR=$(SOURCE_DIR_1)
 configure:	$(BUILD_DIR_64)_1/.configured
 build:		$(BUILD_DIR_64)_1/.built
 install:	$(BUILD_DIR_64)_1/.installed
+
+REQUIRED_PACKAGES += x11/header/x11-protocols

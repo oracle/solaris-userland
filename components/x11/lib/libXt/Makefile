@@ -51,6 +51,7 @@ CPPFLAGS += -DGETVALUES_BUG -DNO_ALLOCA
 CFLAGS += \
         -xinline=no%_XtAppCreateShell,no%XtAppNextEvent,no%XtAppProcessEvent
 
+REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libice
 REQUIRED_PACKAGES += x11/library/libsm
 REQUIRED_PACKAGES += x11/library/libx11

@@ -40,6 +40,7 @@ include $(WS_MAKE_RULES)/x11-component.mk
 CONFIGURE_OPTIONS += --libdir=$(CONFIGURE_LIBDIR.32)
 
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxext
 REQUIRED_PACKAGES += x11/library/libxft

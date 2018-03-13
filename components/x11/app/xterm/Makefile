@@ -57,7 +57,13 @@ CONFIGURE_OPTIONS += --with-icondir=/usr/share/pixmaps
 CONFIGURE_OPTIONS += --enable-logging
 CONFIGURE_OPTIONS += LUIT=$(USRBINDIR)/luit
 
+# xterm uses desktop-file-install
+REQUIRED_PACKAGES += desktop/xdg/desktop-file-utils
+# xterm uses ncurses/term.h
+REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += system/library/fontconfig
+REQUIRED_PACKAGES += terminal/luit
+REQUIRED_PACKAGES += text/groff
 REQUIRED_PACKAGES += x11/library/libice
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxft

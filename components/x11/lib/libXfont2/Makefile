@@ -48,4 +48,6 @@ COMPONENT_INSTALL_ARGS.64 += pkgconfigdir="$(DESTDIR)/usr/lib/$(MACH64)/pkgconfi
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library/freetype-2
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libfontenc
+REQUIRED_PACKAGES += x11/library/xtrans

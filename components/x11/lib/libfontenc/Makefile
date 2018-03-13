@@ -66,3 +66,4 @@ COMPONENT_INSTALL_ARGS.32 += pkgconfigdir="$(DESTDIR)/usr/lib/pkgconfig"
 COMPONENT_INSTALL_ARGS.64 += pkgconfigdir="$(DESTDIR)/usr/lib/$(MACH64)/pkgconfig"
 
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += x11/header/x11-protocols

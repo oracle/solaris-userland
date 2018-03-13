@@ -51,6 +51,7 @@ COMPONENT_POST_INSTALL_ACTION += \
 	$(MKDIR) $(XPM_DOC_DIR) ; \
 	gzcat $(@D)/doc/xpm.PS.gz > $(XPM_DOC_DIR)/xpm.ps;
 
+REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxext
 REQUIRED_PACKAGES += x11/library/toolkit/libxt

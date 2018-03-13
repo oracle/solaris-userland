@@ -39,3 +39,5 @@ TEST_TARGET = $(NO_TESTS)
 include $(WS_MAKE_RULES)/x11-component.mk
 
 COMPONENT_PREP_ACTION += (cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
+
+REQUIRED_PACKAGES += x11/header/x11-protocols

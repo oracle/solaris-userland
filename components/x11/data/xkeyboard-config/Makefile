@@ -50,4 +50,6 @@ CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ARGS += pkgconfigdir="$(DESTDIR)/usr/lib/$(MACH64)/pkgconfig"
 
 
-
+REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += developer/intltool
+REQUIRED_PACKAGES += library/perl-5/xml-parser
