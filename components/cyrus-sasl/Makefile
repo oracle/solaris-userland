@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
@@ -57,14 +58,6 @@ PROTO_CONFDIR = $(PROTO_DIR)$(SASL_CONFDIR)
 
 TESTS_DIR=$(PROTO_DIR)/tests
 TESTS_32_DIR=$(TESTS_DIR)/$(MACH32)
-
-# Migrated from ON in S12, including stuff from system/header, so this
-# cannot be installed on an S11 box.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
 
 INSTALL_TARGET=
 TEST_TARGET= $(NO_TESTS)

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
@@ -36,9 +36,6 @@ COMPONENT_BUGDB=	gnome/session
 COMPONENT_ANITYA_ID=	12860
 
 TPNO=			34520
-
-# Needs gobject-introspection, not available on S11.3
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 # This component needs X11, so we run vnc session, run the tests inside and
 # tear down vnc

@@ -93,15 +93,10 @@ export HOME=$(WS_HOME)
 SHELL=	/bin/bash
 ID=	/usr/bin/id
 # We want "nightly" as our publisher, to match other consolidations and
-# facilitate migrations (except for evaluation builds, which need to use
-# "solaris" as the publisher).  G11N wants $(CONSOLIDATION)-localizable for
-# the localizable publisher.
+# facilitate migrations. G11N wants $(CONSOLIDATION)-localizable for the
+# localizable publisher.
 CONSOLIDATION =	userland
-ifeq ($(BUILD_TYPE),evaluation)
-PUBLISHER ?=	solaris
-else
 PUBLISHER ?=	nightly
-endif
 PUBLISHER_LOCALIZABLE ?=	$(CONSOLIDATION)-localizable
 
 # Defines $(space) as a single blank space, so we can use it to convert
@@ -125,15 +120,6 @@ OS_SUB_VERS_MINOR =	$(word 1, $(OS_SUB_VERS_2))
 OS_SUB_VERS_MICRO =	$(word 2, $(OS_SUB_VERS_2))
 OS_VERSION ?=		$(OS_SUB_VERS_MINOR).$(OS_SUB_VERS_MICRO)
 
-# We generally build the default branch on the latest release.  But for
-# the FOSS evaluation repo project, we build on the previous release.
-# Add macros to make that easier.  Note: what started out as Solaris 12
-# later became 11.4, which is why SOLARIS_11_4_ONLY is set when OS_RELEASE
-# is "5.12".
-ifeq ($(OS_RELEASE),5.12)
-SOLARIS_11_4_ONLY =
-SOLARIS_11_3_ONLY =\#
-else
 ifeq ($(OS_VERSION),11.4)
 SOLARIS_11_4_ONLY =
 SOLARIS_11_3_ONLY =\#
@@ -143,7 +129,6 @@ SOLARIS_11_4_ONLY =\#
 SOLARIS_11_3_ONLY =
 else
 $(error Unknown OS version "$(OS_VERSION)"; set OS_VERSION to "11.3" or "11.4")
-endif
 endif
 endif
 

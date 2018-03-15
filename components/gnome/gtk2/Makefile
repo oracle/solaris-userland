@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # All components using gobject-introspection must be built with gcc as
@@ -40,9 +40,6 @@ COMPONENT_BUGDB=	gnome/gtk+
 COMPONENT_ANITYA_ID=	4572
 
 TPNO=			32698
-
-# Requires gdk-pixbuf, which we cannot build on 11.3, so do not publish.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 ETCDIR.64="$(ETCDIR)/$(MACH64)"
 

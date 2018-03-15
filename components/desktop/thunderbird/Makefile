@@ -84,14 +84,6 @@ COPY_COMMON_FILES_2:=  \
 COPY_COMMON_FILES_3:= \
     $(shell $(RM) $(PATCH_DIR)/firefox*42*.patch)
 
-# Depends on libsmbclient but samba is on the do-not-publish list, so this
-# must be too.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32=
-INSTALL_32=
-PUBLISH_STAMP=
-endif
-
 include $(WS_MAKE_RULES)/common.mk
 
 # /usr/sbin for dtrace, SPRO for python modules, PERL as well.

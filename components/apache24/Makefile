@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
@@ -39,9 +40,6 @@ TPNO=	39228
 
 CONFIGURE_DEFAULT_DIRS=no
 TEST_TARGET= $(NO_TESTS)
-
-# Requires newer Kerberos, unavailable in 11.3
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/common.mk
 

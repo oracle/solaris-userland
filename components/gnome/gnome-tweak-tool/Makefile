@@ -18,7 +18,9 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+
+#
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		NO_ARCH
@@ -34,9 +36,6 @@ COMPONENT_BUGDB=	gnome/gnome-shell
 COMPONENT_ANITYA_ID=	1198
 
 TPNO=			34578
-
-# No need in S11.3 since its for Gnome 3
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 PYTHON_VERSIONS= 2.7
 

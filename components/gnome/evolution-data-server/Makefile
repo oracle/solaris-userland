@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+
 BUILD_BITS=		64
 # All components using gobject-introspection must be built with gcc as
 # gobject-introspection does not produce correct results when using Studio.
@@ -44,9 +45,6 @@ COMPONENT_ANITYA_ID=	10935
 TPNO=			34706
 
 BUILD_STYLE= cmake
-
-# Needs gobject-introspection, not available on S11.3
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

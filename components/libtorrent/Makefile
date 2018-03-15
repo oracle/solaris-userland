@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+
 BUILD_BITS= 64_and_32
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
@@ -38,13 +39,6 @@ COMPONENT_ANITYA_ID=	1742
 TPNO=			24572
 
 TEST_TARGET= $(NO_TESTS)
-
-# Needs updated sigcpp, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
 
 include $(WS_MAKE_RULES)/common.mk
 

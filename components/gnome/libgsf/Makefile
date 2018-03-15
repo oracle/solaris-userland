@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -35,13 +35,6 @@ COMPONENT_ARCHIVE_HASH=	\
 	sha256:150b98586a1021d5c49b3d4d065d0aa3e3674ae31db131af5372499d2d3f08d3
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	1980
-
-# Needs gobject-introspection, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
 
 TPNO=			34501
 

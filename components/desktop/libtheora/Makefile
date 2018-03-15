@@ -18,7 +18,9 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+
+#
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=            	32_and_64
@@ -36,9 +38,6 @@ COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	11793
 
 TPNO=			9578
-
-# Depends on libogg which is on the do-not-publish list.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/common.mk
 

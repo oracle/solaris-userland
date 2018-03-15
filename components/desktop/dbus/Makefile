@@ -18,7 +18,9 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+
+#
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Static assertions fail when building with Studio
@@ -40,9 +42,6 @@ COMPONENT_ANITYA_ID=	1052
 TPNO=			37224
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-
-# Needs newer X/Open defines that don't work on 11.3.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/common.mk
 

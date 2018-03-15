@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+
 BUILD_BITS=		64_and_32
 # For now, all things built for C++11 require gcc.
 COMPILER= 		gcc
@@ -38,10 +39,6 @@ COMPONENT_BUGDB=	library/harfbuzz
 COMPONENT_ANITYA_ID=	1299
 
 TPNO=			25623
-
-# Requires newer version of gobject-introspection from Desktop, available in
-# S12 but not 11.3, so do not publish.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/common.mk
 

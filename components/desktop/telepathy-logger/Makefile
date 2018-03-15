@@ -18,7 +18,9 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+
+#
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -36,13 +38,6 @@ COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	6067
 
 TPNO=			25836
-
-# Needs telepathy-glib, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
 
 # Not compiled as an xpg6 application, but configure defines this, so we
 # override and undefine it to avoid feature_tests.h failures; unclear what the

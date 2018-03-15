@@ -18,7 +18,9 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+
+#
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # parfait is a bit unhappy (24796395)
@@ -48,12 +50,8 @@ include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS += --enable-ogg
 
-ifeq ($(BUILD_TYPE), evaluation)
-REQUIRED_PACKAGES += codec/ogg-vorbis
-else
 REQUIRED_PACKAGES += codec/libogg
 REQUIRED_PACKAGES += codec/libvorbis
-endif
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math

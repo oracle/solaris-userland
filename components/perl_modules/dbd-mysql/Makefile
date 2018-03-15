@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # This variable has no impact on perl build, it is here merely to satisfy
@@ -45,15 +45,10 @@ COMPONENT_ANITYA_ID=	2807
 TPNO=			32689
 
 
-# MySQL 5.7 is not available in S11.
-ifeq ($(BUILD_TYPE), evaluation)
-PUBLISH_STAMP=
-else
 BUILD_STYLE= makemaker
 LICENSE=DBD-mysql.license
 BUILD_TARGET= $(BUILD_$(MK_BITS)) $(LICENSE)
 include $(WS_MAKE_RULES)/common.mk
-endif
 
 CLEAN_PATHS += $(LICENSE)
 

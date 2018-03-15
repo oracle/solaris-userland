@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,9 +36,6 @@ COMPONENT_ANITYA_ID=	13118
 TPNO=			39314
 
 TEST_TARGET = $(NO_TESTS)
-
-# This is for Gnome 3 so shouldn't apply to S11.3
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

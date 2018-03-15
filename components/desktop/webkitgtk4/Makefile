@@ -47,9 +47,6 @@ TPNO=			39841
 # Use project's own optimization flags instead.
 gcc_OPT=
 
-# Requires newer version of cairo, available in trunk but not 11.3
-include $(WS_MAKE_RULES)/no-evaluation.mk
-
 # We don't have JHbuild needed for tests
 TEST_TARGET= $(NO_TESTS)
 

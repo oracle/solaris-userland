@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
@@ -39,9 +40,6 @@ TPNO=			37084
 
 TEST_TARGET= install $(TEST_32_and_64)
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_32_and_64)
-
-# Depends on S12-only function in ON.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/common.mk
 

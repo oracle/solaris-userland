@@ -194,7 +194,7 @@ incorporation:
 
 # Use PKGLINT below instead of PKGLINTVAR because we know we always want the
 # real one for this set of rules.  We use $(wildcard ...) because not all
-# component directories get published (evaluation builds complicate things).
+# component directories might get published
 pkglint:
 	@echo 'pkglinting all package manifests...'
 	@$(ENV) PYTHONPATH=$(WS_TOOLS)/python \
@@ -206,19 +206,7 @@ pkglint:
 publish:
 	$(PKGREPO) refresh -s $(PKG_REPO)
 	$(PKGREPO) refresh -s $(PKG_EXPERIMENTAL_REPO)
-# The package below is obsolete in S12/11.4, but cannot yet be removed from
-# S11.3 because runtime/python-26 has an optional dependency on it.
-ifeq ($(BUILD_TYPE),evaluation)
-ifeq ($(OS_VERSION),11.3)
-	-$(PKGREPO) remove -s $(PKG_REPO) \
-	    library/python/tkinter-26
-	$(PKGREPO) refresh -s $(PKG_REPO)
-endif
-endif
-# evaluation packages don't need to be incorporated
-ifneq ($(BUILD_TYPE), evaluation)
 	$(MAKE) incorporation
-endif
 # pkglint all of the published manifests in one batch.
 ifdef CANONICAL_REPO
 	$(MAKE) pkglint

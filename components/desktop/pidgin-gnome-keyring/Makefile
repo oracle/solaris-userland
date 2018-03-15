@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+
 COMPILER= gcc
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
@@ -37,14 +38,6 @@ COMPONENT_BUGDB=	utility/pidgin
 COMPONENT_ANITYA_ID=	13281
 
 TPNO=			29496
-
-# Pidgin is on the do-not-publish list (depends on S12-only changes in ON &
-# Desktop), so no point publishing this without that.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_64=
-INSTALL_64=
-PUBLISH_STAMP=
-endif
 
 BUILD_STYLE= justmake
 INSTALL_TARGET= build

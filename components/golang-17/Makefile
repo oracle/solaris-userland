@@ -145,9 +145,6 @@ PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/locale
 PUBLISH_TRANSFORMS +=	$(PKGMOGRIFY_TRANSFORMS)
 PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/incorporate
 PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/publish-cleanup
-ifeq ($(BUILD_TYPE),evaluation)
-	PUBLISH_TRANSFORMS += $(WS_TOP)/transforms/evaluation
-endif
 
 $(NO_ELFSIGN_MOG): install
 	cd $(PROTO_DIR); \

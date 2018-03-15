@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -45,13 +45,6 @@ TEST_TARGET = $(SKIP_TEST)
 # Contains a single Python script written for Python 2.x/3.x; prefer 3.4.
 PYTHON=3.4
 PYTHON_VERSIONS=3.4
-
-# Needs gobject-introspection and gssdp, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

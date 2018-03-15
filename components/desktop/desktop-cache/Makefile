@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= NO_ARCH
@@ -35,13 +35,8 @@ COMPONENT_ARCHIVE_SRC=	none
 # nothing to download or build; just package
 BUILD_STYLE= pkg
 
-# Uses a feature in a gtk script not added until S12.
-include $(WS_MAKE_RULES)/no-evaluation.mk
-
 include $(WS_MAKE_RULES)/common.mk
 
-# Make sure SMF manifests are valid
-ifneq ($(BUILD_TYPE), evaluation)
 $(BUILD_DIR)/.validated-smf-manifests-$(MACH): $(BUILD_DIR)
 	@for f in files/*.xml ; do \
 	    [[ "$$f" == "files/com.oracle.solaris.gdm-temporary.xml" ]] || \
@@ -51,7 +46,6 @@ $(BUILD_DIR)/.validated-smf-manifests-$(MACH): $(BUILD_DIR)
 
 validate-smf:	$(BUILD_DIR)/.validated-smf-manifests-$(MACH)
 build:		$(BUILD_DIR)/.validated-smf-manifests-$(MACH)
-endif
 
 REQUIRED_PACKAGES += service/opengl/ogl-select
 REQUIRED_PACKAGES += system/core-os

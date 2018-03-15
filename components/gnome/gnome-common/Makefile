@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		NO_ARCH
@@ -35,13 +35,6 @@ COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	8421
 
 TPNO=			25944
-
-# Forked from gnome/gettext, which was in Gnome in 11.3 => do-not-publish.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_NO_ARCH=
-INSTALL_NO_ARCH=
-PUBLISH_STAMP=
-endif
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

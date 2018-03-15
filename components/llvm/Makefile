@@ -71,14 +71,6 @@ COMPONENT_POST_UNPACK_ACTION_1 = \
 	 $(CP) -rp $(COMPONENT_SRC_1) \
 	    $(COMPONENT_SRC)/tools/$(COMPONENT_NAME_1) )
 
-# Depends on S12-only changes in gcc; might be able to deal with later,
-# but avoid publishing while this is under investigation.
-ifeq ($(BUILD_TYPE), evaluation)
-  BUILD_64=
-  INSTALL_64=
-  PUBLISH_STAMP=
-endif
-
 BUILD_STYLE = cmake
 # Building with debug info results in ~7GB of package data, so while preferred,
 # is not practical.

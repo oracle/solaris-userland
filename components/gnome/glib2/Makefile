@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 COMPILER =      	gcc
@@ -39,9 +39,6 @@ TPNO=			34480
 
 # No need to build for older versions.
 PYTHON_VERSIONS= 3.4
-
-# Cannot be upgraded because gnome-incorporation had no version-lock facet.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

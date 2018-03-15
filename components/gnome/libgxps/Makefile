@@ -40,13 +40,6 @@ TPNO=			34503
 
 TEST_TARGET= $(SKIP_TEST)
 
-# Needs updated glib2, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CONFIGURE_OPTIONS += --disable-static

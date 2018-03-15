@@ -311,12 +311,6 @@ def mangle_manifest(manifest):
 		for action in manifest.gen_actions_by_type("depend"):
 			manifest.actions.remove(action)
 
-	if manifest_is_renamed:
-		for action in manifest.gen_actions_by_type("depend"):
-			if (action.attrs["type"] == "require" and
-			    action.attrs["fmri"] == "release/evaluation"):
-				manifest.actions.remove(action)
-
 def load_manifest(manifest_file):
 	manifest = pkg.manifest.Manifest()
 	try:

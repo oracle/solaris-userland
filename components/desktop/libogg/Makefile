@@ -18,7 +18,9 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+
+#
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 		32_and_64
@@ -38,14 +40,10 @@ TPNO=			9571
 
 TEST_TARGET = $(NO_TESTS)
 
-# ogg-vorbis is not unlockable in S11 gnome-incorporation
-include $(WS_MAKE_RULES)/no-evaluation.mk
-
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 
-ifneq ($(BUILD_TYPE), evaluation)
 # Merge 32-bit & 64-bit versions of config_types.h 
 install: $(BUILD_DIR)/.merged-header
 
@@ -56,6 +54,5 @@ $(BUILD_DIR)/.merged-header: $(BUILD_DIR_32)/.installed $(BUILD_DIR_64)/.install
 	    > $(PROTO_DIR)/usr/include/ogg/config_types.h; \
 	diffstatus=$$? ; \
 	if (( $$diffstatus != 1 )) ; then exit $$diffstatus ; fi
-endif
 
 REQUIRED_PACKAGES += system/library/math

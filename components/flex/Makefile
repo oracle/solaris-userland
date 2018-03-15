@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
@@ -37,9 +38,6 @@ COMPONENT_ANITYA_ID=	819
 TPNO=			35362
 
 LDFLAGS += $(CC_BITS)
-
-# Evaluation builds (x86 full builds only) fail generating .po files.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/common.mk
 

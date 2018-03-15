@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS = 		64_and_32
@@ -42,13 +42,6 @@ TPNO=			32882
 # Only build for 2.7 for now as we need 32-bit and 64-bit support; all of the
 # GNOME and desktop components must be built for Python 2.7 for now.
 PYTHON_VERSIONS= 2.7
-
-# Needs updated glib2, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
 
 include $(WS_MAKE_RULES)/common.mk
 

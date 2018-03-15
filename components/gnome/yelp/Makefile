@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
@@ -41,9 +41,6 @@ TPNO=			36161
 
 # gmake check works but produces no useful output
 TEST_TARGET = $(SKIP_TEST)
-
-# Needs updated glib2, not available on S11.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

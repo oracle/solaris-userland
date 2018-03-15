@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		NO_ARCH
@@ -41,15 +41,7 @@ COMPONENT_BUGDB=	service/cloudbase-init
 
 TPNO=			26420
 
-ifneq ($(BUILD_TYPE), evaluation)
 BUILD_STYLE= setup.py
-endif
-
-# FOSS eval upgrade instructions lead to maintenance state; just skip.
-# On S12, the same problem if the pkg is installed, but it's not on the
-# default install list for S12.  If the S12 issue gets fixed, we can drop
-# the following line and thus remove this from the do-not-publish list.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 # Upstream only supports 3.3 from the Python 3 series
 PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)

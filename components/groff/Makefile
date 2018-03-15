@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -35,9 +35,6 @@ COMPONENT_ANITYA_ID=	1253
 TPNO=			28205
 
 TEST_TARGET= $(NO_TESTS)
-
-# Complex dependencies on ON only available in S12.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 

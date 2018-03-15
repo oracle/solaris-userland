@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
@@ -36,9 +37,6 @@ COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/$(COMPONENT_NAME)/$(COMP
 COMPONENT_ANITYA_ID=	3636
 
 TPNO=			34232
-
-# Cyrus SASL is S12-only (at least for evaluation builds).
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk

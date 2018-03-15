@@ -18,8 +18,11 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2014, 2016, Oracle and/or its affiliates. All rights reserved.
+
 #
+# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pflogd
@@ -43,13 +46,6 @@ COMPONENT_BUILD_ARGS +=	CC="$(CC)"
 
 include ../../make-rules/prep.mk
 include ../../make-rules/justmake.mk
-
-# Depends on S12-only changes in ON.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_64=
-INSTALL_64=
-PUBLISH_STAMP=
-endif
 
 include ../../make-rules/ips.mk
 

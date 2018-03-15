@@ -39,9 +39,6 @@ TPNO=			35137
 
 TEST_TARGET = $(NO_TESTS)
 
-# Needs updated glib2, not available on S11.
-include $(WS_MAKE_RULES)/no-evaluation.mk
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))

@@ -18,7 +18,9 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+
+#
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -41,9 +43,6 @@ COMPONENT_ANITYA_ID=	13108
 TPNO=			39070
 
 TEST_TARGET = $(NO_TESTS)
-
-# Needs json-glib, not available on S11.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/common.mk
 

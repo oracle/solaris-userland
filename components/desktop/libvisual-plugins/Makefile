@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 		32_and_64
@@ -39,9 +39,6 @@ COMPONENT_ANITYA_ID=	13114
 TPNO=			9462
 
 TEST_TARGET = $(NO_TESTS)
-
-# Needs newer versions of various desktop packages than are available in S11.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/common.mk
 

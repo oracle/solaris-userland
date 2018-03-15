@@ -18,7 +18,9 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+
+#
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # MySQL 5.7 is compiled using GCC. Note that the MySQL Server 5.7 for
@@ -42,14 +44,6 @@ COMPONENT_ARCHIVE_URL = http://cdn.mysql.com/Downloads/MySQL-5.7/$(COMPONENT_ARC
 COMPONENT_PROJECT_URL = http://dev.mysql.com/ 
 COMPONENT_BUGDB       = database/mysql
 COMPONENT_ANITYA_ID=	334
-
-# Requires new pkgmogrify feature, available in S12 but not 11.3, so do not
-# publish.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_64=
-INSTALL_64=
-PUBLISH_STAMP=
-endif
 
 #We use cp(1) instead of cloney because we use TAR to copy files and the TAR 
 #used doesn't handle long links

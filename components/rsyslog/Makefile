@@ -50,10 +50,6 @@ UNPACK_ARGS_DOC=		-r $(COMPONENT_SRC_DOC)
 TEST_TARGET= $(NO_TESTS)
 
 # Requires mysql-57 not available on S11.
-# Also, syslog is required to be disabled, only in S12.
-include $(WS_MAKE_RULES)/no-evaluation.mk
-
-include $(WS_MAKE_RULES)/common.mk
 
 # Automake fix, regenerates configure file to get rid of the
 # automake 'probably too old' error. This fixes gmake test

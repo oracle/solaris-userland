@@ -19,8 +19,9 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
@@ -34,14 +35,6 @@ COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	4619
 
 TPNO =			28398
-
-# Requires newer version of system/management/rad/client/rad-c from ON,
-# available in S12 but not 11.3, so do not publish.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_64=
-INSTALL_64=
-PUBLISH_STAMP=
-endif
 
 CFLAGS+=		-std=c99
 CFLAGS+=		-DNDEBUG

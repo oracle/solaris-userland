@@ -40,13 +40,8 @@ TPNO=			36055
 # We just need to build one version.
 PYTHON_VERSIONS =       3.5
 
-ifneq ($(BUILD_TYPE), evaluation)
 BUILD_STYLE= setup.py
-endif
 TEST_TARGET=	$(TEST_64)
-
-# Needs older version of libpng, no longer available in evaluation builds.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/common.mk
 

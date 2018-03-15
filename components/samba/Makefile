@@ -180,15 +180,6 @@ $(BUILD_DIR_SMB)/.configured: $(BUILD_DIR_SMB)/.BDprep
 		waf configure $(WAFOPT1) $(CONFIGURE_OPTIONS) $(CONFIGURE_OPTIONS.$(BITS)) )
 	$(TOUCH) $@
 
-# Depends on S12-only libraries from Desktop to build.
-ifeq ($(BUILD_TYPE), evaluation)
-$(BUILD_DIR_SMB)/.built:
-$(BUILD_DIR_SMB)/.installed:
-$(BUILD_DIR_WINB)/.built:
-$(BUILD_DIR_WINB)/.installed:
-PUBLISH_STAMP=
-else
-
 # Build of Samba + Winbind.
 $(BUILD_DIR_SMB)/.built:	$(BUILD_DIR_SMB)/.configured
 	(cd $(@D) ; $(ENV) - $(WAF_PATH) LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS)" waf build $(WAFOPT1) )
@@ -234,7 +225,6 @@ $(BUILD_DIR_WINB)/.installed:	$(BUILD_DIR_WINB)/.built
 	    $(INSTALL) -m 0555 -t $(PROTO_DIR)/usr/lib/samba/private$(MACHLIBDIR) bin/shared/private/*.so* \
 	"
 	$(TOUCH) $@
-endif
 
 # Set appropriate bitnesses for Samba + Winbind / Winbind (without Samba).
 $(BUILD_DIR_SMB)/.configured:	BITS=64

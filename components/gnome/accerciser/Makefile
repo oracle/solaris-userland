@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		NO_ARCH
@@ -35,9 +35,6 @@ COMPONENT_BUGDB= 	gnome/accessibility
 COMPONENT_ANITYA_ID=	13116
 
 TPNO=			25184
-
-# Needs gtk3, not available in S11.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

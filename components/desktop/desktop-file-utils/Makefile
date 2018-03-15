@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		64
@@ -40,9 +40,6 @@ COMPONENT_ANITYA_ID=	421
 TPNO=			37080
 
 TEST_TARGET = $(NO_TESTS)
-
-# Needs updated glib2, not available on S11.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/common.mk
 

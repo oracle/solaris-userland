@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+
 # Built in SFW with gcc and builds cleanly now only with gcc
 BUILD_BITS= 64
 COMPILER= gcc
@@ -63,9 +64,6 @@ PKG_PROTO_DIRS +=	$(COMPONENT_SRC_2)
 TPNO=			35510
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
-
-# Multiple issues building on 11.3
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/common.mk
 

@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
@@ -46,13 +47,6 @@ COMPONENT_ARCHIVE_URL=	\
 COMPONENT_BUGDB=	utility/kerberos
 
 TPNO=		34136
-
-# Depends on S12-only header file in ON.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
 
 include $(WS_MAKE_RULES)/common.mk
 

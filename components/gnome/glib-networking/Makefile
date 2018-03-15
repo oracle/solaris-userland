@@ -37,13 +37,6 @@ COMPONENT_ANITYA_ID=	10024
 
 TPNO=			34497
 
-# Needs updated glib2, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))

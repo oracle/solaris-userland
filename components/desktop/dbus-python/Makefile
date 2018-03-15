@@ -18,7 +18,9 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+
+#
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =		64_and_32
@@ -67,11 +69,6 @@ COMPONENT_TEST_TRANSFORM_CMD = \
     $(COMPONENT_TEST_BUILD_DIR)/transform-$(PYTHON_VERSION)-$(BITS)-results
 COMPONENT_TEST_MASTER = \
     $(COMPONENT_TEST_RESULTS_DIR)/results-py$(PYTHON_MAJOR).master
-
-# An ancestor package had a mismatched version-lock facet, which would
-# complicate instructions.  As nothing in FOSS-eval depends on this,
-# just add it to the do-not-publish list for simplicity.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/common.mk
 

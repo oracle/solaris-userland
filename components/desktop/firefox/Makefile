@@ -68,9 +68,6 @@ LANG_LIST = ach af an ar as ast az bg bn-BD bn-IN br bs ca cak cs cy \
 	nb-NO nl nn-NO or pa-IN pl pt-BR pt-PT rm ro ru si sk sl son \
 	sq sr sv-SE ta te th tr uk uz vi xh zh-CN zh-TW
 
-# Alignment issues on sparc: do not publish until resolved.
-include $(WS_MAKE_RULES)/no-evaluation.mk
-
 include $(WS_MAKE_RULES)/common.mk
 
 # /usr/gnu/bin needed to pick up the GNU version of tail and readelf.
@@ -184,12 +181,8 @@ COMPONENT_TEST_TRANSFORMS = \
         '-e "/^PASSED ALL/,/Failed:/p" ' \
 	'-e "/.*/d" '
 
-ifeq ($(BUILD_TYPE), evaluation)
-REQUIRED_PACKAGES += codec/ogg-vorbis
-else
 REQUIRED_PACKAGES += codec/libogg
 REQUIRED_PACKAGES += codec/libvorbis
-endif
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/build/autoconf-213
 REQUIRED_PACKAGES += developer/gcc

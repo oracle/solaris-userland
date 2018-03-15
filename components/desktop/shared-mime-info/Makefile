@@ -18,7 +18,9 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+
+#
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		64
@@ -35,10 +37,6 @@ COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	5524
 
 TPNO=			37223
-
-# Does not build correctly with S11 version of intltool, and cannot be
-# installed on S11 since it conflicts with S11 gnome-vfs package
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/common.mk
 

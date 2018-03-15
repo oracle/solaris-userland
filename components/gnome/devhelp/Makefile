@@ -38,9 +38,6 @@ TPNO=			25069
 
 TEST_TARGET = $(NO_TESTS)
 
-# Gnome isn't being updated in S11
-include $(WS_MAKE_RULES)/no-evaluation.mk
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # need to use gnu-gettext

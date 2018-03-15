@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		64
@@ -35,9 +35,6 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_ANITYA_ID=	13165
 
 TPNO=			34565
-
-# zenity is not unlockable in S11.3 gnome-incorporation
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

@@ -18,8 +18,11 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2014, 2016, Oracle and/or its affiliates. All rights reserved.
+
 #
+# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
@@ -37,13 +40,6 @@ COMPONENT_ARCHIVE_HASH= sha256:372dbe0ca8c6b090842a9f0fbdd13b320dc37883137d3dc67
 COMPONENT_BUGDB=	service/ftp-proxy
 
 TPNO=	24255
-
-# Depends on S12-only changes in ON.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_64=
-INSTALL_64=
-PUBLISH_STAMP=
-endif
 
 BUILD_STYLE= justmake
 TEST_TARGET= $(NO_TESTS)

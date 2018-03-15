@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -44,10 +44,6 @@ COMPILER =      gcc
 # Override tests in m4/acx_pthread.m4 that try to set obsolete/incompatible
 # flags for linking threaded code on Solaris.
 PTHREAD_CFLAGS = -D__EXTENSIONS__
-ifeq ($(BUILD_TYPE), evaluation)
-# No longer needed on S12 due to PSARC/2014/019, but still needed on S11
-PTHREAD_CFLAGS += -D_POSIX_PTHREAD_SEMANTICS
-endif
 CONFIGURE_OPTIONS += PTHREAD_CFLAGS="$(PTHREAD_CFLAGS)"
 CONFIGURE_OPTIONS += PTHREAD_LIBS="-lc"
 

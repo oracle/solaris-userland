@@ -44,9 +44,6 @@ ADISTACK_MODE =	$(ADISTACK_DISABLE)
 
 TEST_TARGET= $(NO_TESTS)
 
-# Depends on newer cairo, which cannot be updated in S11.
-include $(WS_MAKE_RULES)/no-evaluation.mk
-
 include $(WS_MAKE_RULES)/common.mk
 
 # Micro version for easy libraries packaging

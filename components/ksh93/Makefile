@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
@@ -143,18 +144,6 @@ IPS_PKG_NAME= ksh93
 IPS_COMPONENT_VERSION= 93.21.1.20120801
 HUMAN_VERSION= 93u+ 2012-08-01
 
-# Exposes a bug in ON.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-
-COMPONENT_POST_INSTALL_ACTION += \
-	(for binary in msgcvt msgcpp msgget msggen ksh shcomp alias; do \
-		/usr/bin/elfedit -e 'dyn:delete RPATH' -e 'dyn:delete RUNPATH' \
-		    "$(PROTO_DIR)/$(MACH64)/bin/$$binary" ; \
-	done )
-endif
 
 BUILD_STYLE= attpackagemake
 include $(WS_MAKE_RULES)/common.mk

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -37,13 +37,6 @@ COMPONENT_BUGDB=	gnome/security
 COMPONENT_ANITYA_ID=	2582
 
 TPNO=			32885	
-
-# Needs header updates from ON, available in S12 but not S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
 
 include $(WS_MAKE_RULES)/common.mk
 

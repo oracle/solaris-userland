@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+
 BUILD_BITS= 64_and_32
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
@@ -73,11 +74,7 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/ok$$/p" '
 
 REQUIRED_PACKAGES += codec/flac
-ifeq ($(BUILD_TYPE), evaluation)
-REQUIRED_PACKAGES += codec/ogg-vorbis
-else
 REQUIRED_PACKAGES += codec/libogg
 REQUIRED_PACKAGES += codec/libvorbis
-endif
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += system/library/math

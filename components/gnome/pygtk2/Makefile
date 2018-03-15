@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # gobject-introspection bindings are only built correctly for gtk when building
@@ -45,13 +45,6 @@ PYTHON_VERSIONS= 2.7
 
 # Tests do not yet work with Userland framework - 23712629
 TEST_TARGET= $(SKIP_TEST)
-
-# Needs newer version of gtk2, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

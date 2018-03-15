@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
@@ -48,14 +49,6 @@ COMPONENT_ARCHIVE_HASH_1= \
     sha256:bd1cb3f8ba0668981beb54d8b4de10ab204199327a464debd9da19196bbb23c4
 COMPONENT_ARCHIVE_URL_1= http://downloads.sourceforge.net/gssmod/$(COMPONENT_ARCHIVE_1)
 TPNO_MOD_GSS=		13480
-
-# Requires 64-bit version of libwrap from ON, available in S12 but not 11.3,
-# so do not publish.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_64=
-INSTALL_64=
-PUBLISH_STAMP=
-endif
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)

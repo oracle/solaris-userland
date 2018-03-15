@@ -18,7 +18,9 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+
+#
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 export PARFAIT_BUILD=no
@@ -42,13 +44,6 @@ COMPONENT_PROJECT_URL = http://www.openmprtl.org/
 COMPONENT_BUGDB       = library/intel-openmp
 
 TPNO = 27154
-
-# Uses an ON header file with S12-only features.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
 
 # There are no tests for this version of the Intel OpenMP Library
 # OpenMP tests will be integrated in ${WS_TOP}/components/bots.

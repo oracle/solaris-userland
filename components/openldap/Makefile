@@ -46,11 +46,6 @@ COMPONENT_ARCHIVE_HASH_1= \
 COMPONENT_ARCHIVE_URL_1= ftp://ftp.eenet.ee/pub/cpan/authors/id/I/IA/IANC/$(COMPONENT_ARCHIVE_1)
 
 
-# This depends on libsasl which cannot be installed on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-PUBLISH_STAMP=
-endif
-
 include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_PRE_CONFIGURE_ACTION = \

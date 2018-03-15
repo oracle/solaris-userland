@@ -48,9 +48,6 @@ TEST_TARGET= $(SKIP_TEST)
 # GNOME and desktop components must be built for Python 2.7 for now.
 PYTHON_VERSIONS= 2.7
 
-# Needs gobject-introspection, not available on S11.
-include $(WS_MAKE_RULES)/no-evaluation.mk
-
 include $(WS_MAKE_RULES)/common.mk
 
 # Use the build area of gstreamer and gst-plugins-base

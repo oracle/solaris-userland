@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # gobject-introspection bindings are only built correctly for gtk when building
@@ -38,13 +38,6 @@ COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13158
 
 TPNO=			35809
-
-# Needs gobject-introspection >= 1.39.0, which is not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
 
 # replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses configure.mk
 CONFIGURE_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)

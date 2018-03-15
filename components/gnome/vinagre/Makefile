@@ -35,9 +35,6 @@ COMPONENT_ANITYA_ID=	5573
 
 TPNO=			26597
 
-# Needs updated glib2, not available on S11.
-include $(WS_MAKE_RULES)/no-evaluation.mk
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Requires XPG4 or later & C99 compatibility, thus XPG6 or later

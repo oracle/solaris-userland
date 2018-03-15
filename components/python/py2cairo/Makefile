@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            32_and_64
@@ -43,14 +43,6 @@ TPNO=			19938
 PYTHON_VERSIONS=        $(PYTHON2_VERSIONS)
 
 BUILD_STYLE= setup.py
-
-# Parent package was not version-unlockable in gnome-incorporation =>
-# do-not-publish.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
 
 include $(WS_MAKE_RULES)/common.mk
 

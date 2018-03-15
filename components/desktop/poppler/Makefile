@@ -48,13 +48,6 @@ TPNO_POPPLER_DATA=	25618
 
 TEST_TARGET= $(NO_TESTS)
 
-# This version of poppler only works with the new version of evince.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
-
 include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_PREP_ACTION = \

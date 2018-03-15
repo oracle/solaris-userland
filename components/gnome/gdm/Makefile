@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 		64
 # All components using gobject-introspection must be built with gcc as
@@ -37,9 +37,6 @@ COMPONENT_BUGDB=        gnome/gdm
 COMPONENT_ANITYA_ID=	13122
 
 TPNO=			36164
-
-# Needs accountsservice, not available on S11.3
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

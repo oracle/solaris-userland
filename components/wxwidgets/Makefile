@@ -46,9 +46,6 @@ COMPONENT_PREP_ACTION += (cd $(@D); autoconf);
 
 TEST_TARGET= $(NO_TESTS)
 
-# Depends on newer cairo, which cannot be updated in S11.
-include $(WS_MAKE_RULES)/no-evaluation.mk
-
 include $(WS_MAKE_RULES)/common.mk
 
 PKG_PROTO_DIRS += $(COMPONENT_DIR)/man

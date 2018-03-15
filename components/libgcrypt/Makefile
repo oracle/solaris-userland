@@ -47,14 +47,6 @@ COMPONENT_ANITYA_ID=	1623
 
 TPNO=			39742
 
-# Requires new pkgmogrify feature, available in S12 but not 11.3, so do not
-# publish.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
-
 COMPONENT_BUILD_TARGETS = all info
 
 include $(WS_MAKE_RULES)/common.mk

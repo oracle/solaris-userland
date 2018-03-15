@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
@@ -45,14 +46,6 @@ TPNO_GSSKEX=		20377
 
 # Because of set up requirements, test suite is in stc gate.
 TEST_TARGET= $(SKIP_TEST)
-
-# 11.3 has conflicts with ON's SunSSH package, which had not yet added
-# mediated links, thus cannot be updated to.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_64=
-INSTALL_64=
-PUBLISH_STAMP=
-endif
 
 include $(WS_MAKE_RULES)/common.mk
 

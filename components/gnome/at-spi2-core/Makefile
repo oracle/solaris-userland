@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64_and_32
@@ -38,13 +38,6 @@ COMPONENT_BUGDB=	gnome/a11y-libs-core
 COMPONENT_ANITYA_ID=	7841
 
 TPNO=			34489
-
-# Needs updated glib2, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
 
 # Tests do not work on Solaris yet
 TEST_TARGET= $(SKIP_TEST)

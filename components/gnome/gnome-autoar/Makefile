@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 		64_and_32
@@ -39,9 +39,6 @@ TPNO=			34570
 
 # Test directory exists, but gmake test doesn't provide anything useful
 TEST_TARGET= $(SKIP_TEST)
-
-# Needs gobject-introspection, not available in S11
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =           64_and_32
@@ -39,9 +39,6 @@ COMPONENT_BUGDB=        library/librsvg
 COMPONENT_ANITYA_ID=	5420
 
 TPNO=			32695
-
-# Needs gobject-introspection, not available on S11.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

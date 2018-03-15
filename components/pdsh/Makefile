@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 include $(WS_MAKE_RULES)/shared-targets.mk
@@ -38,14 +39,6 @@ COMPONENT_ARCHIVE_URL=	https://github.com/chaos/$(COMPONENT_NAME)/releases/downl
 COMPONENT_ANITYA_ID=	13274
 
 TPNO=			37401
-
-# Old version in SFW was not version-locked, so cannot be upgraded to, so
-# do not publish.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_64=
-INSTALL_64=
-PUBLISH_STAMP=
-endif
 
 include $(WS_MAKE_RULES)/common.mk
 

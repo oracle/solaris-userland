@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
@@ -48,9 +48,6 @@ CONFIGURE_64 = $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
 BUILD_64     = $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
 INSTALL_64   = $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
 TEST_64      = $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.tested-and-compared)
-
-# Requires newer version of cairo than we have available in S11.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/common.mk
 

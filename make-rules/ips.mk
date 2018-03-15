@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 #
@@ -93,13 +93,6 @@ PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/puppet
 PUBLISH_TRANSFORMS +=	$(PKGMOGRIFY_TRANSFORMS)
 PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/incorporate
 PUBLISH_TRANSFORMS +=	$(WS_TOP)/transforms/publish-cleanup
-
-# If we are building "evaluation" packages, add the evaluation information
-# action so that the package(s) display the terms and require acceptance
-# to install.
-ifeq ($(BUILD_TYPE),evaluation)
-PUBLISH_TRANSFORMS += $(WS_TOP)/transforms/evaluation
-endif
 
 # For items defined as variables or that may contain whitespace, add
 # them to a list to be expanded into PKG_OPTIONS later.

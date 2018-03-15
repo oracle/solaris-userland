@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -41,9 +41,6 @@ TPNO=			26337
 # While there is a tests subdirectory, it's not setup for automated use
 # on a headless system, and isn't even built unless you manually do it.
 TEST_TARGET = $(NO_TESTS)
-
-# Needs gobject-introspection, not available on S11.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

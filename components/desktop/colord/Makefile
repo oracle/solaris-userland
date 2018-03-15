@@ -18,7 +18,9 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+
+#
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -42,9 +44,6 @@ COMPONENT_ANITYA_ID=	10190
 TPNO=			25612
 
 TEST_TARGET = $(NO_TESTS)
-
-# Needs gobject-introspection, not available on S11.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

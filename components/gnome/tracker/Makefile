@@ -38,9 +38,6 @@ COMPONENT_ANITYA_ID=	5578
 
 TPNO=			25835
 
-# Needs gobject-introspection, not available in S11
-include $(WS_MAKE_RULES)/no-evaluation.mk
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CFLAGS += $(XPG6MODE)

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -35,13 +35,6 @@ COMPONENT_BUGDB=        gnome/themes
 COMPONENT_ANITYA_ID=	13117
 
 TPNO=			34531
-
-# Needs gtk3, not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_NO_ARCH=
-INSTALL_NO_ARCH=
-PUBLISH_STAMP=
-endif
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

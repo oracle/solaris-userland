@@ -38,9 +38,6 @@ COMPONENT_ANITYA_ID=	3693
 
 TPNO=			36084
 
-# Depends on cyrus-sasl which is on the do-not-publish list.
-include ../../make-rules/no-evaluation.mk
-
 BUILD_STYLE= justmake
 TEST_TARGET= $(NO_TESTS)
 include ../../make-rules/common.mk

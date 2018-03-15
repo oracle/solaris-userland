@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+
 BUILD_BITS=64
 # While the tree currently builds with Studio, we need to make sure it also
 # builds with gcc when submitting patches upstream, and having both sets of
@@ -41,9 +42,6 @@ COMPONENT_ANITYA_ID=	5269
 TPNO=			26341
 
 TEST_TARGET = $(NO_TESTS)
-
-# Needs older version of libpng, no longer available in evaluation builds.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/common.mk
 

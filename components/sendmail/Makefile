@@ -20,8 +20,9 @@
 #
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
@@ -41,9 +42,6 @@ TPNO=			23958
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
 ADISTACK_MODE =	$(ADISTACK_ENABLE)
-
-# Mostly but not completely migrated from ON in S12.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 BUILD_STYLE= justmake
 INSTALL_TARGET=

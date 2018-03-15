@@ -37,14 +37,6 @@ COMPONENT_PROJECT_URL = http://dev.mysql.com/
 COMPONENT_BUGDB       = database/mysql
 COMPONENT_ANITYA_ID=	334
 
-# Requires newer version of system/library/c++-runtime from Studio, available
-# in S12 but not 11.3, so do not publish.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
-
 #We use cp(1) instead of cloney because we use TAR to copy files and the TAR 
 #used doesn't handle long links
 CLONEY = echo

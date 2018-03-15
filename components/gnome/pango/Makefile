@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # All components using gobject-introspection must be built with gcc as
@@ -38,13 +38,6 @@ COMPONENT_BUGDB=	gnome/pango
 COMPONENT_ANITYA_ID=	11783
 
 TPNO=			34484
-
-# Requires harfbuzz, which we cannot build on 11.3, so do not publish.
-ifeq ($(BUILD_TYPE), evaluation)
-BUILD_32_and_64=
-INSTALL_32_and_64=
-PUBLISH_STAMP=
-endif
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

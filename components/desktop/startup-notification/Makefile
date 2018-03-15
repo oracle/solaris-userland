@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=             32_and_64
@@ -41,9 +41,6 @@ TPNO=			24899
 
 # gmake check works but produces no useful output
 TEST_TARGET = $(SKIP_TEST)
-
-# May build on S11 but will conflict with gnome-libs
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/common.mk
 

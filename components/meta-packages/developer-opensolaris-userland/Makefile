@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -35,12 +35,6 @@ COMPONENT_ARCHIVE_URL=	https://github.com/oracle/solaris-userland.git
 COMPONENT_BUGDB=	gate-stuff/userland
 
 include $(WS_MAKE_RULES)/prep.mk
-
-# This has a dependency on every REQUIRED_PACKAGE in Userland, some of which
-# are not available on S11.
-ifeq ($(BUILD_TYPE), evaluation)
-PUBLISH_STAMP=
-endif
 
 include $(WS_MAKE_RULES)/ips.mk
 

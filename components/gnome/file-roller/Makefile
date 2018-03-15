@@ -18,7 +18,9 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+
+#
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		64
@@ -36,9 +38,6 @@ COMPONENT_ANITYA_ID=	5392
 TPNO=			36275
 
 TEST_TARGET = $(NO_TESTS)
-
-# Needs gtk3, not available in S11.
-include $(WS_MAKE_RULES)/no-evaluation.mk
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

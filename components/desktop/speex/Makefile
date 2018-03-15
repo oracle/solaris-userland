@@ -18,7 +18,9 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+
+#
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		64_and_32
@@ -44,10 +46,6 @@ include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS += --disable-static
 
-ifeq ($(BUILD_TYPE), evaluation)
-REQUIRED_PACKAGES += codec/ogg-vorbis
-else
 REQUIRED_PACKAGES += codec/libogg
 REQUIRED_PACKAGES += codec/libvorbis
-endif
 REQUIRED_PACKAGES += system/library/math

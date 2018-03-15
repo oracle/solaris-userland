@@ -37,9 +37,6 @@ COMPONENT_ANITYA_ID=	10896
 
 TPNO=			25405
 
-# Needs newer intltool, not available in 11.3
-include $(WS_MAKE_RULES)/no-evaluation.mk
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Need to regenerate configure after stack-protector.patch edits configure.ac
