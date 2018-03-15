@@ -1,0 +1,78 @@
+#
+# Copyright (c) 2002, 2018, Oracle and/or its affiliates. All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice (including the next
+# paragraph) shall be included in all copies or substantial portions of the
+# Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	 IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+#
+#
+###############################################################################
+#
+#  Definitions in this Makefile are common for kernel modules
+#
+###############################################################################
+
+# Borrowed from Solaris OS/Net makefile.master:
+# The declaration POUND_SIGN is always '#'. This is needed to get around the
+# make feature that '#' is always a comment delimiter, even when escaped or
+# quoted. We use this macro expansion method to get POUND_SIGN rather than
+# always breaking out a shell because the general case can cause a noticeable
+# slowdown in build times when so many Makefiles include Makefile.init.
+#
+PRE_POUND=	pre\#
+POUND_SIGN=	$(PRE_POUND:pre\%=%)
+
+# Set default build target to all
+default: all
+
+# The infrastructure in this tree requires Solaris make
+$(error You must use Solaris make, not GNU make in this build - make sure /usr/ccs/bin or /usr/bin is ahead of /usr/gnu/bin in $$PATH)
+
+###  Machine architecture macros
+
+# MACH will be either "sparc" or "i386"
+MACH=$(TARGET_ARCH:-%=%)
+
+MACH32_sparc	= sparc
+MACH64_sparc	= sparcv9
+MACH32_i386	= i386
+MACH64_i386	= amd64
+
+MACH32= $(MACH32_$(MACH))
+MACH64= $(MACH64_$(MACH))
+
+# Architecture subdirectories
+
+SUBDIR32_sparc	= sparcv7
+SUBDIR64_sparc	= sparcv9
+SUBDIR32_i386	= i86
+SUBDIR64_i386	= amd64
+
+SUBDIR32	= $(SUBDIR32_$(MACH))
+SUBDIR64	= $(SUBDIR64_$(MACH))
+
+LIBSUBDIR	= $(LIBSUBDIR_$(BUILD_TYPE))
+LIBSUBDIR_32	= # None
+LIBSUBDIR_64	= /$(SUBDIR64)
+ARCHLIBSUBDIR	= $(LIBSUBDIR)
+
+### Misc rules
+
+# For use in debugging or calling from scripts
+print-%:
+	@echo $*=$($*)
