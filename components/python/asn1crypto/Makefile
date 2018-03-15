@@ -26,18 +26,18 @@
 COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		cryptography
-COMPONENT_VERSION=	2.1.4
+COMPONENT_NAME=		asn1crypto
+COMPONENT_VERSION=	0.24.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e4d967371c5b6b2e67855066471d844c5d52d210c36c28d49a8507b96e2c5291
+    sha256:9d5c20441baf0cb60a4ac34cc447c6c189024b6b4c6cd7877034f4965c464e49
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	https://cryptography.io/
-COMPONENT_BUGDB=	python-mod/cryptography
-COMPONENT_ANITYA_ID=	5532
+COMPONENT_PROJECT_URL=	https://github.com/wbond/asn1crypto
+COMPONENT_BUGDB=	python-mod/asn1crypto
+COMPONENT_ANITYA_ID=	tbd
 
-TPNO=			37828
+TPNO=			40851
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -45,30 +45,11 @@ include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-# Use the CFFI version in the gate because if the CFFI version changes
-# everything using CFFI will break.
-CFFI = $(WS_COMPONENTS)/python/cffi/build/prototype/$(MACH)/$(PYTHON_LIB)
-
-COMPONENT_BUILD_ENV +=		PYTHONPATH=$(CFFI)
-COMPONENT_INSTALL_ENV +=	PYTHONPATH=$(CFFI)
-
 # common targets
 build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)
 
-#
-# tests require cryptography_vectors, iso8601, pretend, pytest>= 2.8.7,
-# hypothesis>=1.11.4 and pyasn1_modules, some of which have not yet integrated.
-# On a i386 kernel zone with the test dependencies installed, test results are:
-# Python2.7: 74000 passed, 6136 skipped
-# Python3.4: 74000 passed, 6136 skipped
-# Python3.5: 74000 passed, 6136 skipped
-#
 test:		$(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
-
-REQUIRED_PACKAGES += library/python/cffi
-REQUIRED_PACKAGES += library/security/openssl
-REQUIRED_PACKAGES += system/library

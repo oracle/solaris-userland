@@ -20,23 +20,26 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+
+COMPILER=		gcc
+BUILD_BITS=		32_and_64
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cffi
-COMPONENT_VERSION=	1.5.2
+COMPONENT_VERSION=	1.11.4
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:da9bde99872e46f7bb5cff40a9b1cc08406765efafb583c704de108b6cb821dd
+    sha256:df9083a992b17a28cd4251a3f5c879e0198bb26c9e808c4647e0a18739f1d11d
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://cffi.readthedocs.org/
 COMPONENT_BUGDB=	python-mod/cffi
 COMPONENT_ANITYA_ID=	5536
 
-TPNO=			29371
+TPNO=			40843
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -47,13 +50,21 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 LDSHARED=      $(CC) -G
 PYTHON_ENV +=  LDSHARED="$(LDSHARED)"
 
+CFLAGS = -DXOPEN_SOURCE=700
+CFLAGS += $(CC_BITS)
+CFLAGS += -Dno_inline=noinline
+CFLAGS.studio += -xCC
+
+# We get spurious test failures with python 3.4
 COMPONENT_TEST_DIR =	$(@D)/tests
-COMPONENT_TEST_ENV =	$(PYTHON_ENV)
+COMPONENT_TEST_ENV =	PYTHON_VERSIONS="2.7 3.5"
+COMPONENT_TEST_ENV +=	$(PYTHON_ENV)
 COMPONENT_TEST_ENV +=	PYTHONPATH=$(PROTO_DIR)/$(PYTHON_LIB)
-COMPONENT_TEST_ENV +=	TESTOWNLIB_CC="$(CC) %s $(CC_BITS) -G -KPIC -o %s"
+COMPONENT_TEST_ENV +=	TESTOWNLIB_CC="$(CC) $(CC_PIC) %s $(CC_BITS) -G -o %s"
 COMPONENT_TEST_CMD =	$(PYTHON.$(BITS)) /usr/bin/py.test-$(PYTHON_VERSION)
 COMPONENT_TEST_ARGS =	--resultlog $(@D)/testresults
 COMPONENT_TEST_ARGS +=	-p no:codechecker
+COMPONENT_TEST_ARGS +=	-v
 COMPONENT_TEST_ARGS +=	$(TEST_SKIPS)
 COMPONENT_TEST_ARGS +=	c testing
 

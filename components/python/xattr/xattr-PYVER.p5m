@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
@@ -46,12 +46,12 @@ file path=usr/lib/python$(PYVER)/vendor-packages/xattr-$(COMPONENT_VERSION)-py$(
 file path=usr/lib/python$(PYVER)/vendor-packages/xattr-$(COMPONENT_VERSION)-py$(PYVER).egg-info/not-zip-safe
 file path=usr/lib/python$(PYVER)/vendor-packages/xattr-$(COMPONENT_VERSION)-py$(PYVER).egg-info/requires.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/xattr-$(COMPONENT_VERSION)-py$(PYVER).egg-info/top_level.txt
-$(PYTHON_3.4_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/xattr/64/_cffi__xb665bd52x3f40c4a9.so
-$(PYTHON_2.7_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/xattr/64/_cffi__xf88a1d89x3f40c4a9.so
+file path=usr/lib/python$(PYVER)/vendor-packages/xattr/64/_lib.so
 file path=usr/lib/python$(PYVER)/vendor-packages/xattr/__init__.py
-$(PYTHON_3.5_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/xattr/_cffi__x480bb259x3f40c4a9.so
-$(PYTHON_2.7_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/xattr/_cffi__xf88a1d89x3f40c4a9.so
+file path=usr/lib/python$(PYVER)/vendor-packages/xattr/_lib.so
+file path=usr/lib/python$(PYVER)/vendor-packages/xattr/compat.py
 file path=usr/lib/python$(PYVER)/vendor-packages/xattr/lib.py
+file path=usr/lib/python$(PYVER)/vendor-packages/xattr/lib_build.py
 file path=usr/lib/python$(PYVER)/vendor-packages/xattr/pyxattr_compat.py
 file path=usr/lib/python$(PYVER)/vendor-packages/xattr/tool.py \
     pkg.depend.bypass-generate=.*/zlib.*
@@ -59,7 +59,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/xattr/tool.py \
 license LICENSE.txt license=MIT
 
 # Dependencies on cffi must be incorporated.
-depend type=incorporate fmri=library/python/cffi-$(PYV)@1.5.2
+depend type=incorporate fmri=library/python/cffi-$(PYV)@1.11.4
 
 # force a dependency on cffi; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/cffi-$(PYV)

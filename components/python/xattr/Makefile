@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xattr
-COMPONENT_VERSION=	0.8.0
+COMPONENT_VERSION=	0.9.3
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:71d08712f78ed543215e4145779a336e42acb4003b97e16d493a680cf08f1d01
+    sha256:cd010284c816bad19d271f33c14666583669455779d3f7cb0047f4368e49f80b
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://github.com/xattr/xattr
 COMPONENT_BUGDB=	python-mod/xattr
 COMPONENT_ANITYA_ID=	7504
 
-TPNO=			30241
+TPNO=			41361
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
