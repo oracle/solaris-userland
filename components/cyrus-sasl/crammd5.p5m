@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # openldap.p5m is dependent on this package inside the workspace, must
@@ -38,16 +38,11 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2016/158
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-link path=usr/lib/sasl2/$(MACH64)/libcrammd5.so target=libcrammd5.so.3.0.0 \
-    pkg.linted.dupaction010.2=true
-link path=usr/lib/sasl2/$(MACH64)/libcrammd5.so.3 target=libcrammd5.so.3.0.0 \
-    pkg.linted.dupaction010.2=true
-file path=usr/lib/sasl2/$(MACH64)/libcrammd5.so.3.0.0 \
-    pkg.linted.dupaction010.2=true
-link path=usr/lib/sasl2/libcrammd5.so target=libcrammd5.so.3.0.0 \
-    pkg.linted.dupaction010.2=true
-link path=usr/lib/sasl2/libcrammd5.so.3 target=libcrammd5.so.3.0.0 \
-    pkg.linted.dupaction010.2=true
-file path=usr/lib/sasl2/libcrammd5.so.3.0.0 pkg.linted.dupaction010.2=true
+link path=usr/lib/sasl2/$(MACH64)/libcrammd5.so target=libcrammd5.so.3.0.0
+link path=usr/lib/sasl2/$(MACH64)/libcrammd5.so.3 target=libcrammd5.so.3.0.0
+file path=usr/lib/sasl2/$(MACH64)/libcrammd5.so.3.0.0
+link path=usr/lib/sasl2/libcrammd5.so target=libcrammd5.so.3.0.0
+link path=usr/lib/sasl2/libcrammd5.so.3 target=libcrammd5.so.3.0.0
+file path=usr/lib/sasl2/libcrammd5.so.3.0.0
 license libsasl2.license license="BSD with attribution to CMU, MIT, others"
-depend type=require fmri=system/library/security/libsasl2@2.1.26
+depend type=require fmri=system/library/security/libsasl2@$(COMPONENT_VERSION)
