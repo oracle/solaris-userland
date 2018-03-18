@@ -29,18 +29,18 @@ include ../../make-rules/shared-macros.mk
 COMPONENT_NAME=			ImageMagick
 COMPONENT_VERSION=		6.9.9
 COMPONENT_MAJOR_VERSION=	$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\([0-9]\+\)\.[0-9]\+\.[0-9]\+/\1/')
-COMPONENT_SUBVERSION=		30
+COMPONENT_SUBVERSION=		40
 HUMAN_VERSION=			$(COMPONENT_VERSION)-$(COMPONENT_SUBVERSION)
 COMPONENT_PROJECT_URL=		http://www.imagemagick.org/
 COMPONENT_SRC=			$(COMPONENT_NAME)-$(COMPONENT_VERSION)-$(COMPONENT_SUBVERSION)
 COMPONENT_ARCHIVE=		$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:dc7e4fea6ede6fafb3a75bab89dd99d558dce0b5672acce8100eceffb406cb89
+	sha256:6b2c6ec497391fda62ee5ce9468bf840e5f5e73b01ea54b801d62e4f7010c3a4
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/download/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/imagemagick
 COMPONENT_ANITYA_ID=	1372
 
-TPNO=			36820
+TPNO=			42031
 
 # Enable adiheap security extension.
 # adistack fails with libgcc exception unwinding code.
