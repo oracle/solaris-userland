@@ -20,10 +20,19 @@
 # CDDL HEADER END
 #
 #
-# Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
-# Use is subject to license terms.
+# Copyright (c) 2008, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
+# Ensure D-Bus is started in a UTF-8 locale
+case "${LANG}" in
+    *.UTF-8*)	;;
+    C|POSIX)	LANG="en_US.UTF-8" ;;
+    *.*@*)  	LANG="${LANG/.*@/.UTF-8@}" ;;
+    *.*)  	LANG="${LANG/%.*/.UTF-8}" ;;
+    *_*)  	LANG="${LANG}.UTF-8" ;;
+    *) 		LANG="en_US.UTF-8" ;;
+esac
+export LANG
 
 if [ -x "/usr/bin/dbus-launch" -a -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
         eval `dbus-launch --exit-with-session --sh-syntax`
