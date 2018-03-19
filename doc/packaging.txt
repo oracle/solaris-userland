@@ -250,7 +250,7 @@ Renames
     names.  This is because those names are actually the limit set, to speed
     up processing, rather than a true required list.
     
-    If you tell pkgdepend it can look for the the component dependencies in
+    If you tell pkgdepend it can look for the component dependencies in
     either the old package name or the new name, then it will find them and
     be happy.  If only one of your package names is listed and it doesn't
     happen to be the one installed on the build system, the dependencies will
@@ -286,6 +286,38 @@ Renames
     the Userland consolidation build, using the data in the history file.
     So simply rename and edit the manifest (p5m file) to the new name instead
     of creating an additional file.
+
+
+============
+Package FMRI
+============
+There are two kinds of FMRI in userland - automatic and manual.
+
+Automatic is generated from make-rules/ips-buildinfo.mk. It is used for most of
+the components. Every time you build the component it receives FMRI according
+to ips-buildinfo.mk issues.
+
+Manual FMRI is entered once by hand and remains the same until it's changed by
+hand again. This is used for obsolete and renamed packages. We say that package
+X was removed in build Y. And Y remains the same in every build since that
+moment. We could theoretically have Y automatic too (which would mean something
+like "yes, in this build package X is still obsoleted). But that would
+unnecessarily increase the IPS repository size.
+
+For example, when userland build 5 is closed, all automatic FMRI packages have
+FMRI corresponding to build 5. While build 6 is opened, the packages still
+receive build 5 FMRI. Once the gate is closed again the packages receive FMRI
+corresponding to build 6. That means that the packages have all the time FMRI
+smaller than what they will have during the build release. For that reason if
+you touch manual FMRI package, you have to give it FMRI of the upcoming build.
+Otherwise your package will appear to be 'old' and the change won't be accepted
+by release engineering.
+
+Since this is error prone there are automatic checks in the build process which
+will catch such issue. And because such checks must be able to determine
+whether package has automatic or manual FMRI all 'obsolete' and 'rename'
+packages are being treated as manual FMRI, other packages are automatic.
+Exceptions are possible after discussing with gatekeepers.
 
 
 ==============================
