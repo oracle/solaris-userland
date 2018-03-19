@@ -1,0 +1,111 @@
+# 
+# We have already tested this code and sent it code upstream, and they
+# implemented it,  so now this patch is downloaded from their tested
+# implementation.
+# It is identical to 1 of the 2 choices we sent upstream.
+#
+# URL:  https://github.com/cyrusimap/cyrus-sasl/commit/46d149b4b889bd5c71241cc30cfac9174005f860.patch
+#
+# Fixed in 2.1.27
+#
+diff --git a/saslauthd/ipc_doors.c b/saslauthd/ipc_doors.c
+index 92f403c0..4e459d7c 100644
+--- a/saslauthd/ipc_doors.c
++++ b/saslauthd/ipc_doors.c
+@@ -203,13 +203,42 @@ void ipc_cleanup() {
+ 		logger(L_DEBUG, L_FUNC, "door file removed: %s", door_file);
+ }
+ 
++/*************************************************************
++ * It is very rare but not impossible to have door_return actually return.
++ * When it does, it leaks a reference count.  Prevent that.
++ **************************************************************/
++
++void
++safe_door_return(char *data, size_t len)
++{
++    (void) door_return(data, len, NULL, 0);
++    /*
++     * If door_return() failed, and our response wasn't empty, try sending
++     * an empty response.  If that still doesn't work, then we must exit
++     * this thread.
++     */
++    if (len > 0) {
++	logger(L_ERR, L_FUNC, "door_return: %s", strerror(errno));
++	(void) door_return(NULL, 0, NULL, 0);
++    }
++    logger(L_ERR, L_FUNC, "door_return: %s", strerror(errno));
++
++    pthread_mutex_lock(&num_lock);
++    if (num_procs > 0 && num_thr > 0) {
++	num_thr--;
++    }
++    pthread_mutex_unlock(&num_lock);
++    pthread_exit(NULL);
++}
++
+ 
+ /*************************************************************
+  * Handle the door data, pass the request off to
+  * do_auth() back in saslauthd-main.c, then send the 
+  * result back through the door.
+  **************************************************************/
+-void do_request(void *cookie, char *data, size_t datasize, door_desc_t *dp, size_t ndesc) {
++static void
++do_request(void *cookie, char *data, size_t datasize, door_desc_t *dp, uint_t ndesc) {
+ 	unsigned short		count = 0;                 /* input/output data byte count           */
+ 	char			*response = NULL;          /* response to send to the client         */
+ 	char			response_buff[1024];       /* temporary response buffer              */
+@@ -227,6 +256,12 @@ void do_request(void *cookie, char *data, size_t datasize, door_desc_t *dp, size
+ 	 **************************************************************/
+ 	dataend = data + datasize;
+ 
++	if (data == NULL || datasize < sizeof(unsigned short)) {
++		logger(L_ERR, L_FUNC, "Bad data");
++		send_no("");
++		return;
++	}
++
+ 	/* login id */
+ 	memcpy(&count, data, sizeof(unsigned short));
+ 
+@@ -328,8 +363,7 @@ void do_request(void *cookie, char *data, size_t datasize, door_desc_t *dp, size
+ 	if (flags & VERBOSE)
+ 	    logger(L_DEBUG, L_FUNC, "response: %s", response_buff);
+ 
+-	if(door_return(response_buff, strlen(response_buff), NULL, 0) < 0)
+-	    logger(L_ERR, L_FUNC, "door_return: %s", strerror(errno));
++	safe_door_return(response_buff, strlen(response_buff));
+ 
+ 	return;
+ }
+@@ -353,14 +387,17 @@ void need_thread(door_info_t *di) {
+ 
+     pthread_create(&newt, &thread_attr, &server_thread, NULL);
+ }
+- 
++
+ /*************************************************************
+  * Start a new server thread.
+  * Make it available for door invocations.
+  **************************************************************/
+ void *server_thread(void *arg) {
+     pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
+-    door_return(NULL, 0, NULL, 0);
++
++    safe_door_return(NULL, 0);
++
++    return (void *) NULL;
+ }
+ 
+ /*************************************************************
+@@ -382,8 +419,7 @@ void send_no(char *mesg) {
+ 	if (flags & VERBOSE)
+ 	    logger(L_DEBUG, L_FUNC, "response: %s", buff);
+ 
+-	if(door_return(buff, strlen(buff), NULL, 0) < 0)
+-	    logger(L_ERR, L_FUNC, "door_return: %s", strerror(errno));
++	safe_door_return(buff, strlen(buff));
+ 
+ 	return;	
+ }
