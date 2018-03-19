@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2009, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2009, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Standard prolog
@@ -121,6 +121,16 @@ val=`svcprop -c -p config/allow_step_at_boot $SMF_FMRI`
 if [ "$val" = "true" ] && [ "$slew_always" = "true" ] && \
     [ ! -f /var/run/ntp.pid ]; then
 	set -- "$@" --force-step-once
+fi
+
+# It is possible to make the system unbootable in certain configurations
+# if the date is set to after the epoch rollover in Feb. 2038. This is
+# not likely but if protection is required we will prevent NTP from setting
+# any date in 2038.
+val=`svcprop -c -p config/no_2038 $SMF_FMRI`
+if [ "$val" = "true" ]; then
+	NTP_NO_2038=1
+	export NTP_NO_2038
 fi
 
 # Start the daemon. If debugging is requested, put it in the background, 

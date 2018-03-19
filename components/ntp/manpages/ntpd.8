@@ -18,7 +18,7 @@
 .\"
 .\" CDDL HEADER END
 .\"
-.\" Copyright (c) 2009, 2017, Oracle and/or its affiliates. All rights reserved.
+.\" Copyright (c) 2009, 2018, Oracle and/or its affiliates. All rights reserved.
 .\"
 .TH "ntpd" "8" "" "" "System Administration Commands"
 .SH NAME
@@ -73,7 +73,7 @@ As provided by international agreement, an extra second is sometimes inserted in
 .LP
 If a host does not have the leapsecond values, they can be obtained over the net using the Autokey security protocol. Ordinarily, the leapseconds file is installed on the primary servers and the values flow from them via secondary servers to the clients. When multiple servers are involved, the values with the latest expiration time are used.
 .LP
-If the latest leap is in the past, nothing further is done other than to install the TAI offset. If the leap is in the future less than 28 days, the leap warning bits are set. If in the future less than 23 hours, the kernel is armed to insert one second at the end of the current day. Additional details are in the The NTP Timescale and Leap Seconds white paper at http://www.eecis.udel.edu/~mills/leap.html.
+If the latest leap is in the past, nothing further is done other than to install the TAI offset. If the leap is in the future less than 28 days, the leap warning bits are set. If in the future less than 23 hours, the kernel is armed to insert one second at the end of the current day. Additional details are in The NTP Timescale and Leap Seconds white paper at http://www.eecis.udel.edu/~mills/leap.html.
 .LP
 If none of the above provisions are available, dsependent servers and clients tally the leap warning bits of surviving servers and reference clocks. When a majority of the survivors show warning, a leap is programmed at the end of the current month. During the month and day of insertion, they operate as above. In this way the leap is is propagated at all dependent servers and clients.
 .LP
@@ -308,6 +308,11 @@ A boolean which when true, will cause the daemon to register with the network mD
 .TP
 .BR config/verbose_logging
 A boolean which when true, cause the daemon to issue logging messages. The default is false.
+.TP
+.BR config/no_2038
+A boolean which when true will prevent the daemon from stepping the clock to any date in the year 2038 or later. Dates after
+the epoch rollover in Februrary 2038 can render the system unstable if 32-bit system processes are in use. In some configurations
+the instability may persist after the problem is corrected. The default is false.
 .SH NOTES
 The system clock must be set to within 68 years of the actual time before \fBntpd\fR is started.
 .LP

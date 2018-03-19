@@ -1,0 +1,33 @@
+Solaris specific patch to allow NTP to be configured to prevent any clock
+step from setting the year 2038 or later. 
+
+*** libntp/machines.c
+--- libntp/machines.c
+*************** ntp_set_tod(
+*** 440,446 ****
+  	TRACE(1, ("In ntp_set_tod\n"));
+  	rc = -1;
+  	saved_errno = 0;
+! 
+  #ifdef HAVE_CLOCK_SETTIME
+  	if (rc && (SET_TOD_CLOCK_SETTIME == tod || !tod)) {
+  		struct timespec ts;
+--- 440,457 ----
+  	TRACE(1, ("In ntp_set_tod\n"));
+  	rc = -1;
+  	saved_errno = 0;
+! /*
+!  * Dates that don't fit into 32 bits can render the system unbootable
+!  * We cut it off /1/1/2038 to prevent drifting into dangerous territory
+!  * if requested by NTP_NO_2038 environment variable.
+!  */
+! #define JAN_2038_UTC 2145916800
+! 	if (getenv("NTP_NO_2038") != NULL) {
+! 		if (tvp->tv_sec < 0 || tvp->tv_sec > JAN_2038_UTC) {
+! 			msyslog(LOG_ERR,"Cannot set year to 2038 or later.");
+! 			exit(1);
+! 		}
+! 	}
+  #ifdef HAVE_CLOCK_SETTIME
+  	if (rc && (SET_TOD_CLOCK_SETTIME == tod || !tod)) {
+  		struct timespec ts;
