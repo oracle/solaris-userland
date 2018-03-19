@@ -1,20 +1,22 @@
 See:
 	http://bugzilla.ntp.org/show_bug.cgi?id=2367
 
+*** ntpd/ntp_proto.c
 --- ntpd/ntp_proto.c
-+++ ntpd/ntp_proto.c
-@@ -429,9 +429,11 @@ receive(
- 		process_control(rbufp, restrict_mask);
- 		return;
- 	}
--	if (restrict_mask & RES_DONTSERVE) {
--		sys_restricted++;
--		return;				/* no time serve */
-+	if (hismode == MODE_CLIENT) {
-+		if (restrict_mask & RES_DONTSERVE) {
-+			sys_restricted++;
-+			return;				/* no time serve */
-+		}
- 	}
- 
- 	/*
+*************** receive(
+*** 681,687 ****
+  		process_control(rbufp, restrict_mask);
+  		return;
+  	}
+! 	if (restrict_mask & RES_DONTSERVE) {
+  		DPRINTF(2, ("receive: drop: RES_DONTSERVE\n"));
+  		sys_restricted++;
+  		return;				/* no time serve */
+--- 681,687 ----
+  		process_control(rbufp, restrict_mask);
+  		return;
+  	}
+! 	if (hismode == MODE_CLIENT && (restrict_mask & RES_DONTSERVE)) {
+  		DPRINTF(2, ("receive: drop: RES_DONTSERVE\n"));
+  		sys_restricted++;
+  		return;				/* no time serve */

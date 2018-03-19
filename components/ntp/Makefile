@@ -20,14 +20,14 @@
 #
 
 #
-# Copyright (c) 2010, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ntp
 COMPONENT_VERSION=	4.2.8
-COMPONENT_PATCH_VERSION=	10
+COMPONENT_PATCH_VERSION=	11
 COMPONENT_RC_VERSION=	1
 HUMAN_VERSION=		$(COMPONENT_VERSION)p$(COMPONENT_PATCH_VERSION)
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).$(COMPONENT_PATCH_VERSION)
@@ -35,7 +35,7 @@ COMPONENT_PROJECT_URL=	http://www.ntp.org/
 COMPONENT_SRC_NAME=	ntp
 COMPONENT_SRC=		$(COMPONENT_SRC_NAME)-$(HUMAN_VERSION)
 COMPONENT_ARCHIVE_HASH=	 \
-    sha256:ddd2366e64219b9efa0f7438e06800d0db394ac5c88e13c17b70d0dcdf99b99f
+    sha256:f14a39f753688252d683ff907035ffff106ba8d3db21309b742e09b5c3cd278e
 COMPONENT_ARCHIVE_URL=	http://archive.ntp.org/ntp4/ntp-4.2/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB= service/ntp
 COMPONENT_ANITYA_ID=	9025
@@ -44,7 +44,9 @@ COMPONENT_ANITYA_ID=	9025
 # of the build and test and deleting the extra lines, it is easier to just
 # cat together all of the logs. The test TEST_PROGNAME3 tests the system
 # log facility, so we have to get rid of the output because the pid is
-# different every time.
+# different every time. Same for TEST_PROGNAME. We have to edit out the
+# syslog format lines to get rid of the time and the pid. And the packet
+# processing test uses the current time so it changes.
 #
 # In addition, we append the config.h file so we know if the configuration
 # ever changes. We get rid of the version number which changes every time
@@ -57,9 +59,15 @@ COMPONENT_TEST_CREATE_TRANSFORMS = \
 		print "\#!/bin/sh" > $(COMPONENT_TEST_TRANSFORM_CMD); \
 		print '$(FIND) $(BUILD_DIR_64) -name test-\*.log | sort |\\' \
 		    >> $(COMPONENT_TEST_TRANSFORM_CMD); \
-		print ' xargs cat  | grep -v TEST_PROGNAME3 | \\' \
+		print ' xargs cat  | grep -v TEST_PROGNAME | \\' \
 		    >> $(COMPONENT_TEST_TRANSFORM_CMD); \
-		print 'sed -e "s/4.2..p[0-9]*//" \\' \
+		print 'grep -v unsync |  \\' \
+		    >> $(COMPONENT_TEST_TRANSFORM_CMD); \
+		print 'grep -v no-leap |  \\' \
+		    >> $(COMPONENT_TEST_TRANSFORM_CMD); \
+		print 'sed -e "s/4.2..p[0-9]*//" | \\' \
+		    >> $(COMPONENT_TEST_TRANSFORM_CMD); \
+		print 'sed -e "s/^.*\[[0-9]*\]: //" \\' \
 		    >> $(COMPONENT_TEST_TRANSFORM_CMD); \
 		print '> $(COMPONENT_TEST_SNAPSHOT)' \
 		    >> $(COMPONENT_TEST_TRANSFORM_CMD); \

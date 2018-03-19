@@ -71,20 +71,20 @@ if the privilege is missing.
 *** libntp/systime.c
 --- libntp/systime.c
 ***************
-*** 14,19 ****
---- 14,20 ----
-  #include "timevalops.h"
+*** 17,22 ****
+--- 17,23 ----
   #include "timespecops.h"
   #include "ntp_calendar.h"
+  #include "lib_strbuf.h"
 + #include "ntp_machine.h"
   
   #ifdef HAVE_SYS_PARAM_H
   # include <sys/param.h>
-***************
-*** 28,33 ****
---- 29,40 ----
-  int	allow_panic = FALSE;		/* allow panic correction (-g) */
-  int	enable_panic_check = TRUE;	/* Can we check allow_panic's state? */
+*************** int	enable_panic_check = TRUE;	/* Can we
+*** 34,39 ****
+--- 35,46 ----
+  u_long	sys_lamport;			/* Lamport violation */
+  u_long	sys_tsrounding;			/* timestamp rounding errors */
   
 + /* Count how many EPERM error we have had. Only log an error on the first
 +  * one. Don't even try after the first ten. To suppress the log, initialize
@@ -96,7 +96,7 @@ if the privilege is missing.
   # define USE_COMPILETIME_PIVOT 1
   #endif
 *************** adj_systime(
-*** 346,363 ****
+*** 353,370 ****
   		adjtv.tv_usec = -adjtv.tv_usec;
   		sys_residual = -sys_residual;
   	}
@@ -115,7 +115,7 @@ if the privilege is missing.
   	return TRUE;
   }
   #endif
---- 353,380 ----
+--- 360,387 ----
   		adjtv.tv_usec = -adjtv.tv_usec;
   		sys_residual = -sys_residual;
   	}
@@ -145,7 +145,7 @@ if the privilege is missing.
   }
   #endif
 *************** step_systime(
-*** 440,446 ****
+*** 562,568 ****
   
   	/* now set new system time */
   	if (ntp_set_tod(&timetv, NULL) != 0) {
@@ -153,7 +153,7 @@ if the privilege is missing.
   		if (enable_panic_check && allow_panic) {
   			msyslog(LOG_ERR, "step_systime: allow_panic is TRUE!");
   		}
---- 457,466 ----
+--- 579,588 ----
   
   	/* now set new system time */
   	if (ntp_set_tod(&timetv, NULL) != 0) {
