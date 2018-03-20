@@ -45,6 +45,7 @@ COMPONENT_ARCHIVE_HASH_1= \
 COMPONENT_ARCHIVE_URL_1= $(COMPONENT_PROJECT_URL)/releases/individual/util/$(COMPONENT_ARCHIVE_1)
 
 TEST_TARGET = $(NO_TESTS)
+SYSTEM_TEST_TARGET= $(SYSTEM_TEST_64)
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
@@ -59,7 +60,8 @@ IMAKE_CONFIGURE_OPTIONS += --disable-revpath
 # Prefer cpp from /usr/lib
 IMAKE_CONFIGURE_OPTIONS += RAWCPP=/usr/lib/cpp
 
-XORG_CF_CONFIGURE_OPTIONS += --with-config-dir="$(USRLIBDIR)/X11/config"
+# Pass to both so Imake looks for config files where xorg.cf installs them
+CONFIGURE_OPTIONS += --with-config-dir="$(USRLIBDIR)/X11/config"
 
 $(BUILD_DIR_64)/.configured:   CONFIGURE_OPTIONS += $(IMAKE_CONFIGURE_OPTIONS)
 $(BUILD_DIR_64)_1/.configured: CONFIGURE_OPTIONS += $(XORG_CF_CONFIGURE_OPTIONS)
@@ -70,3 +72,22 @@ build:		$(BUILD_DIR_64)_1/.built
 install:	$(BUILD_DIR_64)_1/.installed
 
 REQUIRED_PACKAGES += x11/header/x11-protocols
+
+# Since upstream has no tests, we just run xmkmf against a simple Imakefile
+# to ensure it can generate the expected Makefile.  This is done as a system
+# test since xmkmf doesn't have any way to override the path to use the proto
+# area instead of the installed path.
+COMPONENT_SYSTEM_TEST_DIR = $(@D)/system-test
+COMPONENT_PRE_SYSTEM_TEST_ACTION += \
+  $(RM) -rf $(COMPONENT_SYSTEM_TEST_DIR) ; \
+  $(MKDIR) $(COMPONENT_SYSTEM_TEST_DIR) ;
+COMPONENT_SYSTEM_TEST_ENV += 	PATH=$(USRBINDIR):$(dir $(CC))
+COMPONENT_SYSTEM_TEST_CMD =	$(SHELL) $(COMPONENT_DIR)/test/run-test
+COMPONENT_SYSTEM_TEST_ARGS =	$(COMPONENT_DIR)/test
+COMPONENT_SYSTEM_TEST_TARGETS =	# none
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS += '-e "s|$(COMPONENT_DIR)|\\$$(COMPONENT_DIR)|g"'
+COMPONENT_TEST_TRANSFORMS += '-e "s|$(MACH64)|\\$$(MACH64)|g"'
+COMPONENT_TEST_TRANSFORMS += '-e "s|\\bcc .*|\\$$(CC) ...|g"'
+COMPONENT_TEST_TRANSFORMS += '-e "s|\\bmakedepend .*|makedepend ...|g"'

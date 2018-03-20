@@ -1,0 +1,23 @@
++ /usr/bin/ln -s $(COMPONENT_DIR)/test/Imakefile $(COMPONENT_DIR)/test/simple-test.c .
++ /usr/bin/touch simple-test.man
++ /usr/bin/xmkmf -a
+imake -DUseInstalled -I/usr/lib/X11/config
+make Makefiles
+make includes
+make depend
+makedepend ...
++ /usr/bin/make
+$(CC) ...
+rm -f simple-test
+LD_RUN_PATH=/usr/lib/$(MACH64) $(CC) ...
+rm -f simple-test._man
+if test -z "" ; then \
+cd `dirname simple-test` && \
+ln -s `basename simple-test.man` `basename simple-test._man`; \
+else \
+ /usr/ccs/lib/cpp -undef   -D__apploaddir__=/usr/lib/X11/app-defaults -D__appmansuffix__=1x -D__filemansuffix__=4 -D__libmansuffix__=3x -D__miscmansuffix__=5 -D__drivermansuffix__=7 -D__adminmansuffix__=1m -D__projectroot__=/usr -D__xconfigfile__=xorg.conf -D__xconfigdir__=/usr/lib/X11 -D__xlogfile__=Xorg -D__xservername__=Xorg -D__xorgversion__="\"`echo 7 7 0 | sed -e 's/ /./g' -e 's/^/Version\\\ /'`\" \"X Version 11\"" -D__vendorversion__="`echo 7 7 0 | sed -e 's/ /./g' -e 's/^/Version\\\ /'` X.Org"  \
+< simple-test.man | sed -e '/^#  *[0-9][0-9]*  *.*$/d' -e '/^#line  *[0-9][0-9]*  *.*$/d' -e '/^[ 	]*XCOMM$/s/XCOMM/#/' -e '/^[ 	]*XCOMM[^a-zA-Z0-9_]/s/XCOMM/#/' -e '/^[ 	]*XHASH/s/XHASH/#/' -e '/\@\@$/s/\@\@$/\\/' >simple-test._man; \
+fi
++ ./simple-test
+PASSED
++ exit 0
