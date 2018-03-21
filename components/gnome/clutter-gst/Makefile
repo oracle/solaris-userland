@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=        library/clutter
 COMPONENT_ANITYA_ID=	304
 
-TPNO=			25520
+TPNO=			25220
 
 # Requires cogl modules - disable till we get the fixed cogl on build servers
 TEST_TARGET = $(SKIP_TEST)
