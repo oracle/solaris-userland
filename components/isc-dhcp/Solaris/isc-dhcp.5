@@ -1,11 +1,10 @@
 '\" te
 .\" Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
-.TH isc-dhcp 5 "16 January 2018" "Solaris 11.4"
+.TH isc-dhcp 5 "28 Feb 2018" "Oracle Solaris 11.4"
 .SH NAME
 isc\-dhcp \- ISC Dynamic Host Configuration Protocol Software
 
 .SH DESCRIPTION
-.sp
 .LP
 The Internet Systems Consortium (ISC) DHCP Server (dhcpd)
 implements the Dynamic Host Configuration Protocol
@@ -14,18 +13,15 @@ implements the Dynamic Host Configuration Protocol
 and be assigned IP addresses, and also to discover information
 about the network to which they are attached.  BOOTP
 provides similar functionality, with certain restrictions.
-.sp
 .LP
 ISC Relay Agent (dhcrelay) provides a means for relaying DHCP
 and BOOTP requests from a subnet to which no DHCP server is
 directly connected to one or more DHCP servers on other subnets.
-.sp
 .LP
 The services above (dhcpd and dhcrelay) are managed using the Service
 Management Facility (SMF) on Solaris, and should be administered by
-the svcadm(8) command using the following fault management resource
+the \fIsvcadm\fP(8) command using the following fault management resource
 identifiers (FMRIs):
-.sp
 .LP
 .in +2
 .nf
@@ -34,15 +30,13 @@ svc:/network/dhcp/server:ipv6
 svc:/network/dhcp/relay:ipv4
 svc:/network/dhcp/relay:ipv6
 .fi
-.sp
 .LP
 After making property changes to the above FMRIs it is necessary to
 refresh the service and restart as appropriate for the changes to take
 effect.
-.sp
 .LP
 The following dhcpd service configuration properties can be viewed with
-svcprop(1) and modified via svccfg(8):
+\fIsvcprop\fP(1) and modified via \fIsvccfg\fP(8):
 .sp
 .ne 2
 .mk
@@ -55,7 +49,6 @@ Send log messages from the DHCP daemon to  the  standard  error  descriptor.
 Setting this property to true ensures the \fI-d\fR command-line option is
 used when starting dhcpd. This property is set to false by default.
 .RE
-
 .sp
 .ne 2
 .mk
@@ -69,7 +62,6 @@ is passed as an argument to the \fI-cf\fR command-line option of dhcpd.
 The default is set to /etc/inet/dhcpd6.conf and /etc/inet/dhcpd4.conf
 for DHCP v6 and v4 servers respectively.
 .RE
-
 .sp
 .ne 2
 .mk
@@ -83,7 +75,6 @@ an argument to the \fI-lf\fR command-line option of dhcpd. The
 default value is set to /var/db/isc-dhcp/v4.leases for DHCPv4 and
 /var/db/isc-dhcp/v6.leases for DHCPv6.
 .RE
-
 .sp
 .ne 2
 .mk
@@ -97,10 +88,9 @@ which dhcpd should serve DHCP requests. The property values are
 appended to the dhcpd command-line.  Care must be taken when setting
 this property to multiple interfaces as it is a list-of-string-values,
 and not a single comma separated string.
-
+.sp
 See Example 4.
 .RE
-
 .sp
 .ne 2
 .mk
@@ -112,20 +102,18 @@ See Example 4.
 Value used to limit the number of failover and control connections
 accepted by the server - the default is 200. Only positive integer
 values are permissible; a value of 0 means there is no limit.
-
+.sp
 See Example 5.
 .LP
 NOTE: This property will be removed in the event ISC removes the
 underlying functionality. The ISC recommends that customers implement
 one or more of the workarounds documented in ISC's Knowledge Base
-article \fB\fIAA-01354\fR (https://kb.isc.org/article/AA-01354).
+article \fB\fIAA-01354\fR (\fIhttps://kb.isc.org/article/AA-01354\fP).
 .RE
-
-.sp
 .LP
 The following dhcrelay options are available as
-service configuration properties and can be viewed with svcprop(1)
-and modified via svccfg(8):
+service configuration properties and can be viewed with \fIsvcprop\fP(1)
+and modified via \fIsvccfg\fP(8):
 .sp
 .ne 2
 .mk
@@ -141,7 +129,6 @@ is used when launching dhcrelay. The default value of this property is
 false. This option is only applicable to the
 svc:/network/dhcp/relay:ipv4 service.
 .RE
-
 .sp
 .ne 2
 .mk
@@ -157,10 +144,9 @@ of the dhcrelay program.  Care must be taken when setting this
 property to multiple interfaces as it is a list-of-string-values, and
 not a single comma separated string.  This option is only applicable
 to the svc:/network/dhcp/relay:ipv4 service.
-
+.sp
 See Examples section for how to set list-of-string-values.
 .RE
-
 .sp
 .ne 2
 .mk
@@ -176,7 +162,6 @@ property to multiple values as it is a list-of-string-values, and not
 a single comma separated string.  This option is only applicable to
 the svc:/network/dhcp/relay:ipv4 service.
 .RE
-
 .sp
 .ne 2
 .mk
@@ -194,10 +179,9 @@ when setting this property to multiple interfaces as it is a
 list-of-string-values, and not a single comma separated string. This
 option is only applicable to the svc:/network/dhcp/relay:ipv6
 service.
-
+.sp
 See Example 3.
 .RE
-
 .sp
 .ne 2
 .mk
@@ -215,17 +199,12 @@ when setting this property to multiple interfaces as it is a
 list-of-string-values, and not a single comma separated string. This
 option is only applicable to the svc:/network/dhcp/relay:ipv6 service.
 .RE
-
-.sp
 .LP
 Since dhcpd and dhcrelay are managed using SMF no pid files are created.
-.sp
-.LP
 
 .SH EXAMPLES
-.sp
 .LP
-In the following examples property changes have been made on the
+In the following examples, property changes have been made on the
 command-line where often it is necessary to use the shell escape
 character (\\) to pass-in values correctly.  An alternative option is
 to use svccfg's \fBeditprop\fR feature to edit the values in an
@@ -233,8 +212,7 @@ editor, where escaping is then not necessary. For example, the
 shell-escaped value
 of \fB\\(\\"10.0.0.1%e10000g#0\\"\\"bge0\\"\\"iprb#1\\"\\)\fR can be
 entered as \fB("10.0.0.1%e10000g#0" "bge0" "iprb#1")\fR.  Refer to
-svccfg(8) for further details.
-.sp
+\fIsvccfg\fP(8) for further details.
 .LP
 \fBExample\ 1\fR Enabling DHCPv4 Server.
 .sp
@@ -257,9 +235,9 @@ DHCPv6 Relay Agent Service:
 .nf
 example# \fBsvccfg -s dhcp/relay:ipv6 listprop config\fR
 config                      application
-config/forward_query_links  astring  
-config/listen_ifnames       astring  
-config/receive_query_links  astring  
+config/forward_query_links  astring
+config/listen_ifnames       astring
+config/receive_query_links  astring
 config/value_authorization  astring  solaris.smf.value.dhcp
 .fi
 .in -2
@@ -270,22 +248,22 @@ Agent service.
 The following commands will set the
 receive_query_links property value, for which the service will append
 to the dhcrelay command-line "\fI-l 10.0.0.1%e10000g#0 -l bge0 -l iprb#1\fR".
-
+.sp
 .in +2
 .nf
 example# \fBsvccfg -s dhcp/relay:ipv6 setprop \\\fR
     \fBconfig/receive_query_links= \\\fR
     \fB\\(\\"10.0.0.1%e10000g#0\\"\\"bge0\\"\\"iprb#1\\"\\)\fR
 example# \fBsvccfg -s dhcp/relay:ipv6 refresh\fR
-.fi
-.sp
+
 NOTE: spaces are not allowed in the string within quotes in the
       setprop command.
-.sp
-.nf
+
+To verify that the property values are set execute either
+the svccfg command or the svcprop command as given below:
+
 example# \fBsvccfg -s dhcp/relay:ipv6 listprop config/receive_query_links\fR
 config/receive_query_links  astring  "10.0.0.1%e10000g#0" "bge0" "iprb#1"
-
 example# \fBsvcprop -p config/receive_query_links dhcp/relay:ipv6\fR
 10.0.0.1%e10000g#0 bge0 iprb#1
 .fi
@@ -294,7 +272,7 @@ example# \fBsvcprop -p config/receive_query_links dhcp/relay:ipv6\fR
 \fBExample\ 4\fR Setting the listen_ifnames property value for dhcpd.
 The following commands will set the listen_ifnames property to
 \fIbge0\fR and \fIbge1\fR and then display the updated values.
-
+.sp
 .in +2
 .nf
 example# \fBsvccfg -s dhcp/server:ipv4 setprop \\\fR
@@ -314,6 +292,7 @@ config/listen_ifnames  astring  "bge0" "bge1"
 \fBExample\ 5\fR Limiting the number of failover and control connections
 in dhcpd to 1000 and restarting the service so that the modified
 property comes into effect.
+.sp
 .in +2
 .nf
 example# \fBsvccfg -s dhcp/server:ipv4 setprop config/omapi_conn_limit = 1000\fR
@@ -323,7 +302,6 @@ example# \fBsvcadm restart dhcp/server:ipv4\fR
 .in -2
 
 .SH SEE ALSO
-.sp
 .LP
 .[
 svccfg(8), svcprop(1), svcadm(8), dhcpd(8), dhcrelay(8)
