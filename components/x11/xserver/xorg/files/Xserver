@@ -1,7 +1,7 @@
 #!/bin/ksh93
 #
 #
-# Copyright (c) 2004, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2004, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -274,7 +274,7 @@ fi
 ALLARGS="${DEPTHARG} ${LISTENARG} ${SERVERARGS} ${CONSOLE} ${CONFIGARG} $*"
 # Remove unneeded arguments for Xvnc.
 if [[ "${XSERVER}" == "/usr/bin/Xvnc" ]] ; then
-    ALLARGSVNC=$(echo ${ALLARGS}| sed 's/-novtswitch//'| tr -d '\\')
+    ALLARGSVNC=$(echo ${ALLARGS}| sed 's/-novtswitch//;s/-logverbose [0-9]//;s/vt7//' | tr -d '\\')
     ALLARGS=${ALLARGSVNC}
 fi
 
