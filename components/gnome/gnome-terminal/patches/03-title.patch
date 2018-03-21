@@ -1,0 +1,328 @@
+From 156b85533f42d8c7e6cf6258ce3e7fe4ec8f1754 Mon Sep 17 00:00:00 2001
+From: Christian Persch <chpe@gnome.org>
+Date: Tue, 16 Feb 2016 18:59:09 +0100
+Subject: client: legacy: Reimplement deprecated --title option
+
+This reverts commit 0033eca2909ddccf3358c1f089bce05d3473b123.
+
+Reimplement the deprecated --title client option. It seems it is absolutely
+required by all those super l33t unix admins that are above using a lowly
+command like printf(1) or the even simpler xtermcontrol(1).
+
+https://bugzilla.gnome.org/show_bug.cgi?id=740188
+---
+ src/terminal-app.c     |  3 ++-
+ src/terminal-app.h     |  1 +
+ src/terminal-gdbus.c   |  6 ++++--
+ src/terminal-options.c | 45 +++++++++++++++++++++++++++++++++++++++++++--
+ src/terminal-options.h |  2 ++
+ src/terminal-screen.c  | 24 ++++++++++++++++++++++++
+ src/terminal-screen.h  |  1 +
+ src/terminal-window.c  |  2 +-
+ src/terminal.c         |  2 +-
+ 9 files changed, 79 insertions(+), 7 deletions(-)
+
+diff --git a/src/terminal-app.c b/src/terminal-app.c
+index dfde524..f47a427 100644
+--- a/src/terminal-app.c
++++ b/src/terminal-app.c
+@@ -610,6 +610,7 @@ terminal_app_new_terminal (TerminalApp     *app,
+                            TerminalWindow  *window,
+                            GSettings       *profile,
+                            char           **override_command,
++                           const char      *title,
+                            const char      *working_dir,
+                            char           **child_env,
+                            double           zoom)
+@@ -619,7 +620,7 @@ terminal_app_new_terminal (TerminalApp     *app,
+   g_return_val_if_fail (TERMINAL_IS_APP (app), NULL);
+   g_return_val_if_fail (TERMINAL_IS_WINDOW (window), NULL);
+ 
+-  screen = terminal_screen_new (profile, override_command,
++  screen = terminal_screen_new (profile, override_command, title,
+                                 working_dir, child_env, zoom);
+ 
+   terminal_window_add_screen (window, screen, -1);
+diff --git a/src/terminal-app.h b/src/terminal-app.h
+index 20cb3ee..6bf2f81 100644
+--- a/src/terminal-app.h
++++ b/src/terminal-app.h
+@@ -75,6 +75,7 @@ TerminalScreen *terminal_app_new_terminal (TerminalApp     *app,
+                                            TerminalWindow  *window,
+                                            GSettings       *profile,
+                                            char           **override_command,
++                                           const char      *title,
+                                            const char      *working_dir,
+                                            char           **child_env,
+                                            double           zoom);
+diff --git a/src/terminal-gdbus.c b/src/terminal-gdbus.c
+index 90597d4..40f426a 100644
+--- a/src/terminal-gdbus.c
++++ b/src/terminal-gdbus.c
+@@ -368,7 +368,7 @@ terminal_factory_impl_create_instance (TerminalFactory *factory,
+   TerminalObjectSkeleton *skeleton;
+   char *object_path;
+   GSettings *profile = NULL;
+-  const char *profile_uuid;
++  const char *profile_uuid, *title;
+   gboolean zoom_set = FALSE;
+   gdouble zoom = 1.0;
+   guint window_id;
+@@ -456,10 +456,12 @@ terminal_factory_impl_create_instance (TerminalFactory *factory,
+ 
+   g_assert (window != NULL);
+ 
++  if (!g_variant_lookup (options, "title", "&s", &title))
++    title = NULL;
+   if (g_variant_lookup (options, "zoom", "d", &zoom))
+     zoom_set = TRUE;
+ 
+-  screen = terminal_screen_new (profile, NULL, NULL, NULL,
++  screen = terminal_screen_new (profile, NULL, title, NULL, NULL, 
+                                 zoom_set ? zoom : 1.0);
+   terminal_window_add_screen (window, screen, -1);
+ 
+diff --git a/src/terminal-options.c b/src/terminal-options.c
+index dca3a8a..cc51cf6 100644
+--- a/src/terminal-options.c
++++ b/src/terminal-options.c
+@@ -96,6 +96,7 @@ initial_tab_new (char *profile /* adopts */)
+ 
+   it->profile = profile;
+   it->exec_argv = NULL;
++  it->title = NULL;
+   it->working_dir = NULL;
+   it->zoom = 1.0;
+   it->zoom_set = FALSE;
+@@ -109,6 +110,7 @@ initial_tab_free (InitialTab *it)
+ {
+   g_free (it->profile);
+   g_strfreev (it->exec_argv);
++  g_free (it->title);
+   g_free (it->working_dir);
+   g_slice_free (InitialTab, it);
+ }
+@@ -213,6 +215,15 @@ add_new_window (TerminalOptions *options,
+ }
+ 
+ /* handle deprecated command line options */
++
++static void
++deprecated_option_warning (const gchar *option_name)
++{
++  g_printerr (_("Option \"%s\" is deprecated and might be removed in a later version of gnome-terminal."),
++              option_name);
++  g_printerr ("\n");
++}
++
+ static gboolean
+ unsupported_option_callback (const gchar *option_name,
+                              const gchar *value,
+@@ -617,6 +628,32 @@ option_load_config_cb (const gchar *option_name,
+ }
+ 
+ static gboolean
++option_title_callback (const gchar *option_name,
++                       const gchar *value,
++                       gpointer     data,
++                       GError     **error)
++{
++  TerminalOptions *options = data;
++
++  deprecated_option_warning (option_name);
++
++  if (options->initial_windows)
++    {
++      InitialTab *it = ensure_top_tab (options);
++
++      g_free (it->title);
++      it->title = g_strdup (value);
++    }
++  else
++    {
++      g_free (options->default_title);
++      options->default_title = g_strdup (value);
++    }
++
++  return TRUE;
++}
++
++static gboolean
+ option_working_directory_callback (const gchar *option_name,
+                                    const gchar *value,
+                                    gpointer     data,
+@@ -786,6 +823,7 @@ terminal_options_parse (const char *working_directory,
+   options->initial_windows = NULL;
+   options->default_role = NULL;
+   options->default_geometry = NULL;
++  options->default_title = NULL;
+   options->zoom = 1.0;
+   options->zoom_set = FALSE;
+ 
+@@ -929,6 +967,7 @@ terminal_options_merge_config (TerminalOptions *options,
+ /*          it->width = g_key_file_get_integer (key_file, tab_group, TERMINAL_CONFIG_TERMINAL_PROP_WIDTH, NULL);
+           it->height = g_key_file_get_integer (key_file, tab_group, TERMINAL_CONFIG_TERMINAL_PROP_HEIGHT, NULL);*/
+           it->working_dir = terminal_util_key_file_get_string_unescape (key_file, tab_group, TERMINAL_CONFIG_TERMINAL_PROP_WORKING_DIRECTORY, NULL);
++          it->title = g_key_file_get_string (key_file, tab_group, TERMINAL_CONFIG_TERMINAL_PROP_TITLE, NULL);
+ 
+           if (g_key_file_has_key (key_file, tab_group, TERMINAL_CONFIG_TERMINAL_PROP_COMMAND, NULL) &&
+               !(it->exec_argv = terminal_util_key_file_get_argv (key_file, tab_group, TERMINAL_CONFIG_TERMINAL_PROP_COMMAND, NULL, error)))
+@@ -986,6 +1025,7 @@ terminal_options_free (TerminalOptions *options)
+   g_free (options->default_role);
+   g_free (options->default_geometry);
+   g_free (options->default_working_dir);
++  g_free (options->default_title);
+   g_free (options->default_profile);
+ 
+   g_strfreev (options->exec_argv);
+@@ -1158,8 +1198,9 @@ get_goption_context (TerminalOptions *options)
+       't',
+       G_OPTION_FLAG_HIDDEN,
+       G_OPTION_ARG_CALLBACK,
+-      unsupported_option_callback,
+-      NULL, NULL
++      option_title_callback,
++      N_("Set the initial terminal title"),
++      N_("TITLE")
+     },
+     {
+       "working-directory",
+diff --git a/src/terminal-options.h b/src/terminal-options.h
+index 17f42b4..a1e645b 100644
+--- a/src/terminal-options.h
++++ b/src/terminal-options.h
+@@ -75,6 +75,7 @@ typedef struct
+   char    *default_role;
+   char    *default_geometry;
+   char    *default_working_dir;
++  char    *default_title;
+   char   **exec_argv;
+   char    *default_profile;
+   gboolean default_profile_is_id;
+@@ -94,6 +95,7 @@ typedef struct
+   char *profile;
+   gboolean profile_is_id;
+   char **exec_argv;
++  char *title;
+   char *working_dir;
+   double zoom;
+   guint zoom_set : 1;
+diff --git a/src/terminal-screen.c b/src/terminal-screen.c
+index ba26c69..7c94aac 100644
+--- a/src/terminal-screen.c
++++ b/src/terminal-screen.c
+@@ -680,6 +680,7 @@ terminal_screen_finalize (GObject *object)
+ TerminalScreen *
+ terminal_screen_new (GSettings       *profile,
+                      char           **override_command,
++                     const char      *title,
+                      const char      *working_dir,
+                      char           **child_env,
+                      double           zoom)
+@@ -697,6 +698,29 @@ terminal_screen_new (GSettings       *profile,
+                          g_settings_get_int (profile, TERMINAL_PROFILE_DEFAULT_SIZE_COLUMNS_KEY),
+                          g_settings_get_int (profile, TERMINAL_PROFILE_DEFAULT_SIZE_ROWS_KEY));
+ 
++  /* If given an initial title, strip it of control characters and
++   * feed it to the terminal.
++   */
++  if (title != NULL) {
++    GString *seq;
++    const char *p;
++
++    seq = g_string_new ("\033]0;");
++    for (p = title; *p; p = g_utf8_next_char (p)) {
++      gunichar c = g_utf8_get_char (p);
++      if (c < 0x20 || (c >= 0x7f && c <= 0x9f))
++        continue;
++      else if (c == ';')
++        break;
++
++      g_string_append_unichar (seq, c);
++    }
++    g_string_append (seq, "\033\\");
++
++    vte_terminal_feed (VTE_TERMINAL (screen), seq->str, seq->len);
++    g_string_free (seq, TRUE);
++  }
++
+   priv->initial_working_directory = g_strdup (working_dir);
+ 
+   if (override_command)
+diff --git a/src/terminal-screen.h b/src/terminal-screen.h
+index be1e765..8097bde 100644
+--- a/src/terminal-screen.h
++++ b/src/terminal-screen.h
+@@ -77,6 +77,7 @@ const char *terminal_screen_get_uuid (TerminalScreen *screen);
+ 
+ TerminalScreen *terminal_screen_new (GSettings       *profile,
+                                      char           **override_command,
++                                     const char      *title,
+                                      const char      *working_dir,
+                                      char           **child_env,
+                                      double           zoom);
+diff --git a/src/terminal-window.c b/src/terminal-window.c
+index a890fd3..9b23128 100644
+--- a/src/terminal-window.c
++++ b/src/terminal-window.c
+@@ -409,7 +409,7 @@ action_new_terminal_cb (GSimpleAction *action,
+ 
+   new_working_directory = terminal_screen_get_current_dir (priv->active_screen);
+   terminal_app_new_terminal (app, window, profile,
+-                             NULL,
++                             NULL, NULL,
+                              new_working_directory,
+                              terminal_screen_get_initial_environment (priv->active_screen),
+                              1.0);
+diff --git a/src/terminal.c b/src/terminal.c
+index 296d381..97db938 100644
+--- a/src/terminal.c
++++ b/src/terminal.c
+@@ -102,7 +102,7 @@ handle_options (TerminalFactory *factory,
+                                                           iw->geometry,
+                                                           iw->role,
+                                                           it->profile ? it->profile : options->default_profile,
+-                                                          NULL /* title */,
++                                                          it->title ? it->title : options->default_title,
+                                                           it->active,
+                                                           iw->start_maximized,
+                                                           iw->start_fullscreen);
+-- 
+cgit v0.12
+
+From 54da2fe919634e2d6a6aab392b36449947b812cd Mon Sep 17 00:00:00 2001
+From: Christian Persch <chpe@src.gnome.org>
+Date: Mon, 30 Oct 2017 22:41:06 +0100
+Subject: client: legacy: Undeprecate title option
+
+Don't warn when using the title option to set the initial title.
+---
+ src/terminal-options.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/src/terminal-options.c b/src/terminal-options.c
+index 3c21846..a48c437 100644
+--- a/src/terminal-options.c
++++ b/src/terminal-options.c
+@@ -681,8 +681,6 @@ option_title_callback (const gchar *option_name,
+ {
+   TerminalOptions *options = data;
+ 
+-  deprecated_option_warning (option_name);
+-
+   if (options->initial_windows)
+     {
+       InitialTab *it = ensure_top_tab (options);
+@@ -1248,7 +1246,7 @@ get_goption_context (TerminalOptions *options)
+     {
+       "title",
+       't',
+-      G_OPTION_FLAG_HIDDEN,
++      0,
+       G_OPTION_ARG_CALLBACK,
+       option_title_callback,
+       N_("Set the initial terminal title"),
+-- 
+cgit v0.12
+
+
