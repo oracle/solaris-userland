@@ -1,0 +1,15 @@
+# This is temporary patch until this bug is fixed and CBE is updated
+#
+# 27736162 opensource expects timespeccmp definition in sys/time.h
+#
+--- openssh-7.5p1/sftp.c	2018-03-22 11:00:48.464493352 +0000
++++ openssh-7.5p1/sftp.c	2018-03-22 11:00:16.115467744 +0000
+@@ -59,6 +59,8 @@ typedef void EditLine;
+ # include <util.h>
+ #endif
+ 
++#include <sys/timespec_util.h>
++
+ #include "xmalloc.h"
+ #include "log.h"
+ #include "pathnames.h"
