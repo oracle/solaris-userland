@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		32_and_64
@@ -62,6 +62,7 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += x11/keyboard/data-xkb
 REQUIRED_PACKAGES += x11/keyboard/xkbcomp
+REQUIRED_PACKAGES += x11/keyboard/xkeyboard-config
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxi
 REQUIRED_PACKAGES += x11/library/libxkbfile

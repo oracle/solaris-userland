@@ -213,4 +213,5 @@ REQUIRED_PACKAGES += x11/library/mesa
 REQUIRED_PACKAGES += x11/library/toolkit/fltk
 REQUIRED_PACKAGES += x11/library/xtrans
 REQUIRED_PACKAGES += x11/keyboard/data-xkb
+REQUIRED_PACKAGES += x11/keyboard/xkeyboard-config
 REQUIRED_PACKAGES += x11/server/xserver-common
