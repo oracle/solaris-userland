@@ -49,7 +49,7 @@ UNPACK_ARGS_DOC=		-r $(COMPONENT_SRC_DOC)
 # it breaks now. Leaving it at no tests for now.
 TEST_TARGET= $(NO_TESTS)
 
-# Requires mysql-57 not available on S11.
+include $(WS_MAKE_RULES)/common.mk
 
 # Automake fix, regenerates configure file to get rid of the
 # automake 'probably too old' error. This fixes gmake test
