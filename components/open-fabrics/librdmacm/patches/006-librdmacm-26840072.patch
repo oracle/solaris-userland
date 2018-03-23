@@ -1,0 +1,21 @@
+# HG changeset patch
+# Parent  fd49b90f1923ad693a48376637d67919addbaa53
+#This patch was developed both in-house and from outside. We plan to submit it
+#upstream, but do not yet have a target date for doing so
+
+26840072 solaris OFUV does not support RDMA_PS_IB port space
+
+diff -r fd49b90f1923 src/cma.c
+--- a/src/cma.c	Wed Mar 21 03:26:56 2018 -0700
++++ b/src/cma.c	Wed Mar 21 03:46:43 2018 -0700
+@@ -205,8 +205,10 @@
+ 	struct sockaddr_ib sib;
+ 	int ret;
+ 
++#if !(defined(__SVR4) && defined(__sun))
+ 	ret = rdma_create_id(NULL, &id, NULL, RDMA_PS_IB);
+ 	if (ret)
++#endif
+ 		return;
+ 
+ 	memset(&sib, 0, sizeof sib);
