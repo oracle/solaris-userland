@@ -47,11 +47,6 @@ TPNO_LIBSDP=		5080
 TPNO_PERFTEST=		5081
 TPNO_RDS_TOOLS=		5092
 
-include libsif/libsif-macros.mk 
-
-PKG_MACROS +=  LIBSIF_COMPONENT_VERSION=$(LIBSIF_COMPONENT_VERSION)
-PKG_MACROS +=  LIBSIF_COMPONENT_ARCHIVE_URL=$(LIBSIF_COMPONENT_ARCHIVE_URL)
-
 # for now, everything with a Makefile should be built
 SUBDIRS =	$(shell echo */Makefile | sed -e 's;/Makefile;;g')
 
@@ -105,7 +100,6 @@ libibmad:		libibumad
 opensm:			libibumad libibmad
 ibutils:		opensm
 infiniband-diags:	libibverbs opensm
-libsif: 		libibverbs
 
 FORCE:
 
