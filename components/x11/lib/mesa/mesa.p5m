@@ -44,20 +44,17 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=etc/drirc mode=0644 overlay=allow preserve=renamenew variant.arch=i386
 link path=usr/X11/include/mesa target=../../include/mesa
 link path=usr/X11/lib/$(MACH64)/libGLU.so target=libGLU.so.1
-link path=usr/X11/lib/$(MACH64)/libGLU.so.1 target=../GL/$(MACH64)/libGLU.so.1 \
-    pkg.linted.userland.action002.0=true
+link path=usr/X11/lib/$(MACH64)/libGLU.so.1 \
+    target=../../../lib/GL/$(MACH64)/libGLU.so.1
 link path=usr/X11/lib/$(MACH64)/libglapi.so target=libglapi.so.0
 link path=usr/X11/lib/$(MACH64)/libglapi.so.0 target=libglapi.so.0.0.0
 link path=usr/X11/lib/$(MACH64)/libglapi.so.0.0.0 \
-    target=../GL/$(MACH64)/libglapi.so.0.0.0 \
-    pkg.linted.userland.action002.0=true
+    target=../../../lib/GL/$(MACH64)/libglapi.so.0.0.0
 link path=usr/X11/lib/libGLU.so target=libGLU.so.1
-link path=usr/X11/lib/libGLU.so.1 target=GL/libGLU.so.1 \
-    pkg.linted.userland.action002.0=true
+link path=usr/X11/lib/libGLU.so.1 target=../../lib/GL/libGLU.so.1
 link path=usr/X11/lib/libglapi.so target=libglapi.so.0
 link path=usr/X11/lib/libglapi.so.0 target=libglapi.so.0.0.0
-link path=usr/X11/lib/libglapi.so.0.0.0 target=GL/libglapi.so.0.0.0 \
-    pkg.linted.userland.action002.0=true
+link path=usr/X11/lib/libglapi.so.0.0.0 target=../../lib/GL/libglapi.so.0.0.0
 link path=usr/X11/lib/mesa target=../../lib/mesa
 file path=usr/include/EGL/egl.h
 file path=usr/include/EGL/eglext.h
@@ -170,8 +167,6 @@ link path=usr/lib/GL/libglapi.so.0.0.0 target=../mesa/libglapi.so.0.0.0
 link path=usr/lib/libEGL.so target=libEGL.so.1
 link path=usr/lib/libEGL.so.1 target=libEGL.so.1.0.0
 link path=usr/lib/libEGL.so.1.0.0 target=GL/libEGL.so.1.0.0
-link path=usr/lib/libGL.so target=libGL.so.1
-link path=usr/lib/libGL.so.1 target=GL/libGL.so.1
 link path=usr/lib/libGLESv1_CM.so target=libGLESv1_CM.so.1
 link path=usr/lib/libGLESv1_CM.so.1 target=libGLESv1_CM.so.1.1.0
 link path=usr/lib/libGLESv1_CM.so.1.1.0 target=GL/libGLESv1_CM.so.1.1.0
