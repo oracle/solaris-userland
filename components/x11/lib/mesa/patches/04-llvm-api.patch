@@ -1,0 +1,565 @@
+Accomodate for API changes with llvm updates
+
+upstream bug report: https://bugs.freedesktop.org/show_bug.cgi?id=98627
+fix: https://patchwork.freedesktop.org/patch/120211
+
+--- a/src/gallium/auxiliary/draw/draw_llvm.c	2018-01-05 12:16:43.057529368 -0800
++++ b/src/gallium/auxiliary/draw/draw_llvm.c	2018-01-05 12:18:07.992332013 -0800
+@@ -1574,8 +1574,7 @@
+    LLVMSetFunctionCallConv(variant_func, LLVMCCallConv);
+    for (i = 0; i < num_arg_types; ++i)
+       if (LLVMGetTypeKind(arg_types[i]) == LLVMPointerTypeKind)
+-         LLVMAddAttribute(LLVMGetParam(variant_func, i),
+-                          LLVMNoAliasAttribute);
++	lp_add_function_attr(variant_func, i + 1, "noalias", 7);
+ 
+    context_ptr               = LLVMGetParam(variant_func, 0);
+    io_ptr                    = LLVMGetParam(variant_func, 1);
+@@ -2189,8 +2188,7 @@
+ 
+    for (i = 0; i < ARRAY_SIZE(arg_types); ++i)
+       if (LLVMGetTypeKind(arg_types[i]) == LLVMPointerTypeKind)
+-         LLVMAddAttribute(LLVMGetParam(variant_func, i),
+-                          LLVMNoAliasAttribute);
++	lp_add_function_attr(variant_func, i + 1, "noalias", 7);
+ 
+    context_ptr               = LLVMGetParam(variant_func, 0);
+    input_array               = LLVMGetParam(variant_func, 1);
+--- a/src/gallium/auxiliary/gallivm/lp_bld_intr.c	2018-01-05 12:18:28.173703926 -0800
++++ b/src/gallium/auxiliary/gallivm/lp_bld_intr.c	2018-01-05 12:20:07.711101736 -0800
+@@ -119,7 +119,50 @@
+    return function;
+ }
+ 
++#if HAVE_LLVM < 0x0400
++static LLVMAttribute str_to_attr(const char *attr_name, unsigned attr_len)
++{
++   if (!strncmp("alwaysinline", attr_name, attr_len)) {
++      return LLVMAlwaysInlineAttribute;
++   } else if (!strncmp("byval", attr_name, attr_len)) {
++      return LLVMByValAttribute;
++   } else if (!strncmp("inreg", attr_name, attr_len)) {
++      return LLVMInRegAttribute;
++   } else if (!strncmp("noalias", attr_name, attr_len)) {
++      return LLVMNoAlliasAttribute;
++   } else if (!strncmp("readnone", attr_name, attr_len)) {
++      return LLVMReadNoneAttribute;
++   } else if (!strncmp("readonly", attr_name, attr_len)) {
++      return LLVMReadOnlyAttribute;
++   } else {
++      _debug_printf("Unhandled function attribute: %s\n", attr_name);
++      return 0;
++   }
++}
++#endif
+ 
++void
++lp_add_function_attr(LLVMValueRef function,
++                     int attr_idx,
++                     const char *attr_name,
++                     unsigned attr_len)
++{
++
++#if HAVE_LLVM < 0x0400
++   LLVMAttribute attr = str_to_attr(attr_name, attr_len);
++   if (attr_idx == -1) {
++      LLVMAddFunctionAttr(function, attr);
++   } else {
++      LLVMAddAttribute(LLVMGetParam(function, attr_idx), attr);
++   }
++#else
++   LLVMContextRef context = LLVMGetModuleContext(LLVMGetGlobalParent(function));
++   unsigned kind_id = LLVMGetEnumAttributeKindForName(attr_name, attr_len);
++   LLVMAttributeRef attr = LLVMCreateEnumAttribute(context, kind_id, 0);
++   LLVMAddAttributeAtIndex(function, attr_idx, attr);
++#endif
++}
++
+ LLVMValueRef
+ lp_build_intrinsic(LLVMBuilderRef builder,
+                    const char *name,
+@@ -126,7 +169,7 @@
+                    LLVMTypeRef ret_type,
+                    LLVMValueRef *args,
+                    unsigned num_args,
+-                   LLVMAttribute attr)
++                   const char *attr_str)
+ {
+    LLVMModuleRef module = LLVMGetGlobalParent(LLVMGetBasicBlockParent(LLVMGetInsertBlock(builder)));
+    LLVMValueRef function;
+@@ -145,10 +188,14 @@
+ 
+       function = lp_declare_intrinsic(module, name, ret_type, arg_types, num_args);
+ 
++      if (attr_str) {
++         lp_add_function_attr(function, -1, attr_str, sizeof(attr_str));
++      }
++
+       /* NoUnwind indicates that the intrinsic never raises a C++ exception.
+        * Set it for all intrinsics.
+        */
+-      LLVMAddFunctionAttr(function, attr | LLVMNoUnwindAttribute);
++      lp_add_function_attr(function, -1, "nounwind", 8);
+ 
+       if (gallivm_debug & GALLIVM_DEBUG_IR) {
+          lp_debug_dump_value(function);
+--- a/src/gallium/auxiliary/gallivm/lp_bld_intr.h	2018-01-05 12:20:28.639305225 -0800
++++ b/src/gallium/auxiliary/gallivm/lp_bld_intr.h	2018-01-05 12:21:00.013979156 -0800
+@@ -60,6 +60,17 @@
+                      LLVMTypeRef *arg_types,
+                      unsigned num_args);
+ 
++void
++lp_remove_attr(LLVMValueRef value,
++               const char *attr_name,
++               unsigned attr_len);
++
++void
++lp_add_function_attr(LLVMValueRef function,
++                     int attr_idx,
++                     const char *attr_name,
++                     unsigned attr_len);
++
+ LLVMValueRef
+ lp_build_intrinsic(LLVMBuilderRef builder,
+                    const char *name,
+@@ -66,7 +77,7 @@
+                    LLVMTypeRef ret_type,
+                    LLVMValueRef *args,
+                    unsigned num_args,
+-                   LLVMAttribute attr);
++                   const char *attr);
+ 
+ 
+ LLVMValueRef
+--- a/src/gallium/auxiliary/gallivm/lp_bld_sample_soa.c	2018-01-05 12:21:16.942738705 -0800
++++ b/src/gallium/auxiliary/gallivm/lp_bld_sample_soa.c	2018-01-05 12:21:48.808649295 -0800
+@@ -60,6 +60,7 @@
+ #include "lp_bld_struct.h"
+ #include "lp_bld_quad.h"
+ #include "lp_bld_pack.h"
++#include "lp_bld_intr.h"
+ 
+ 
+ /**
+@@ -3316,7 +3317,7 @@
+ 
+       for (i = 0; i < num_param; ++i) {
+          if(LLVMGetTypeKind(arg_types[i]) == LLVMPointerTypeKind) {
+-            LLVMAddAttribute(LLVMGetParam(function, i), LLVMNoAliasAttribute);
++            lp_add_function_attr(function, i + 1, "noalias", 7);
+          }
+       }
+ 
+--- a/src/gallium/drivers/radeonsi/si_shader.c	2018-01-05 12:22:15.316257422 -0800
++++ b/src/gallium/drivers/radeonsi/si_shader.c	2018-01-05 12:30:29.160570734 -0800
+@@ -413,7 +413,7 @@
+ 	args[2] = buffer_index;
+ 	input = lp_build_intrinsic(gallivm->builder,
+ 		"llvm.SI.vs.load.input", ctx->v4f32, args, 3,
+-		LLVMReadNoneAttribute);
++		"readnone");
+ 
+ 	/* Break up the vec4 into individual components */
+ 	for (chan = 0; chan < 4; chan++) {
+@@ -808,7 +808,7 @@
+ 		         type_names[func]);
+ 
+ 		return lp_build_intrinsic(gallivm->builder, name, types[func], args,
+-		                          ARRAY_SIZE(args), LLVMReadOnlyAttribute);
++		                          ARRAY_SIZE(args), "readonly");
+ 	} else {
+ 		LLVMValueRef args[] = {
+ 			LLVMBuildBitCast(gallivm->builder, rsrc, ctx->v16i8, ""),
+@@ -839,7 +839,7 @@
+ 		         type_names[func], arg_type);
+ 
+ 		return lp_build_intrinsic(gallivm->builder, name, types[func], args,
+-		                          ARRAY_SIZE(args), LLVMReadOnlyAttribute);
++		                          ARRAY_SIZE(args), "readonly");
+ 	}
+ }
+ 
+@@ -1126,7 +1126,7 @@
+ 	value = lp_build_intrinsic(gallivm->builder,
+ 				   "llvm.SI.buffer.load.dword.i32.i32",
+ 				   ctx->i32, args, 9,
+-				   LLVMReadOnlyAttribute);
++				   "readonly");
+ 	if (tgsi_type_is_64bit(type)) {
+ 		LLVMValueRef value2;
+ 		args[2] = lp_build_const_int32(gallivm, (param * 4 + swizzle + 1) * 256);
+@@ -1133,7 +1133,7 @@
+ 		value2 = lp_build_intrinsic(gallivm->builder,
+ 					    "llvm.SI.buffer.load.dword.i32.i32",
+ 					    ctx->i32, args, 9,
+-					    LLVMReadOnlyAttribute);
++					    "readonly");
+ 		return si_llvm_emit_fetch_64bit(bld_base, type,
+ 						value, value2);
+ 	}
+@@ -1285,12 +1285,12 @@
+ 			args[1] = attr_number;
+ 			front = lp_build_intrinsic(gallivm->builder, intr_name,
+ 						ctx->f32, args, args[3] ? 4 : 3,
+-						LLVMReadNoneAttribute);
++						"readnone");
+ 
+ 			args[1] = back_attr_number;
+ 			back = lp_build_intrinsic(gallivm->builder, intr_name,
+ 					       ctx->f32, args, args[3] ? 4 : 3,
+-					       LLVMReadNoneAttribute);
++					       "readnone");
+ 
+ 			result[chan] = LLVMBuildSelect(gallivm->builder,
+ 						is_face_positive,
+@@ -1307,7 +1307,7 @@
+ 		args[3] = interp_param;
+ 		result[0] = lp_build_intrinsic(gallivm->builder, intr_name,
+ 					ctx->f32, args, args[3] ? 4 : 3,
+-					LLVMReadNoneAttribute);
++					"readnone");
+ 		result[1] =
+ 		result[2] = lp_build_const_float(gallivm, 0.0f);
+ 		result[3] = lp_build_const_float(gallivm, 1.0f);
+@@ -1322,7 +1322,7 @@
+ 			args[3] = interp_param;
+ 			result[chan] = lp_build_intrinsic(gallivm->builder, intr_name,
+ 						ctx->f32, args, args[3] ? 4 : 3,
+-						LLVMReadNoneAttribute);
++						"readnone");
+ 		}
+ 	}
+ }
+@@ -1463,7 +1463,7 @@
+ 
+ 	if (HAVE_LLVM < 0x0308) {
+ 		tid = lp_build_intrinsic(gallivm->builder, "llvm.SI.tid",
+-				ctx->i32,   NULL, 0, LLVMReadNoneAttribute);
++				ctx->i32,   NULL, 0, "readnone");
+ 	} else {
+ 		LLVMValueRef tid_args[2];
+ 		tid_args[0] = lp_build_const_int32(gallivm, 0xffffffff);
+@@ -1470,11 +1470,11 @@
+ 		tid_args[1] = lp_build_const_int32(gallivm, 0);
+ 		tid_args[1] = lp_build_intrinsic(gallivm->builder,
+ 					"llvm.amdgcn.mbcnt.lo", ctx->i32,
+-					tid_args, 2, LLVMReadNoneAttribute);
++					tid_args, 2, "readnone");
+ 
+ 		tid = lp_build_intrinsic(gallivm->builder,
+ 					"llvm.amdgcn.mbcnt.hi", ctx->i32,
+-					tid_args, 2, LLVMReadNoneAttribute);
++					tid_args, 2, "readnone");
+ 	}
+ 	set_range_metadata(ctx, tid, 0, 64);
+ 	return tid;
+@@ -1491,7 +1491,7 @@
+ 	LLVMValueRef args[2] = {resource, offset};
+ 
+ 	return lp_build_intrinsic(builder, "llvm.SI.load.const", ctx->f32, args, 2,
+-			       LLVMReadNoneAttribute);
++			       "readnone");
+ }
+ 
+ static LLVMValueRef load_sample_position(struct si_shader_context *radeon_bld, LLVMValueRef sample_id)
+@@ -1729,7 +1729,7 @@
+ 		value = lp_build_intrinsic(gallivm->builder,
+ 					   "llvm.amdgcn.ps.live",
+ 					   ctx->i1, NULL, 0,
+-					   LLVMReadNoneAttribute);
++					   "readnone");
+ 		value = LLVMBuildNot(gallivm->builder, value, "");
+ 		value = LLVMBuildSExt(gallivm->builder, value, ctx->i32, "");
+ 		break;
+@@ -1943,7 +1943,7 @@
+ 			packed = lp_build_intrinsic(base->gallivm->builder,
+ 						    "llvm.SI.packf16",
+ 						    ctx->i32, pack_args, 2,
+-						    LLVMReadNoneAttribute);
++						    "readnone");
+ 			args[chan + 5] =
+ 				LLVMBuildBitCast(base->gallivm->builder,
+ 						 packed, ctx->f32, "");
+@@ -2097,7 +2097,7 @@
+ 
+ 	coverage = lp_build_intrinsic(gallivm->builder, "llvm.ctpop.i32",
+ 				   ctx->i32,
+-				   &coverage, 1, LLVMReadNoneAttribute);
++				   &coverage, 1, "readnone");
+ 
+ 	coverage = LLVMBuildUIToFP(gallivm->builder, coverage,
+ 				   ctx->f32, "");
+@@ -3678,7 +3678,7 @@
+ 	emit_data->output[emit_data->chan] = lp_build_intrinsic(
+ 			builder, intrinsic_name, dst_type,
+ 			emit_data->args, emit_data->arg_count,
+-			LLVMReadOnlyAttribute);
++			"readonly");
+ }
+ 
+ static LLVMValueRef get_memory_ptr(struct si_shader_context *ctx,
+@@ -3783,7 +3783,7 @@
+ 			lp_build_intrinsic(
+ 				builder, "llvm.amdgcn.buffer.load.format.v4f32", emit_data->dst_type,
+ 				emit_data->args, emit_data->arg_count,
+-				LLVMReadOnlyAttribute);
++				"readonly");
+ 	} else {
+ 		get_image_intr_name("llvm.amdgcn.image.load",
+ 				emit_data->dst_type,		/* vdata */
+@@ -3795,7 +3795,7 @@
+ 			lp_build_intrinsic(
+ 				builder, intrinsic_name, emit_data->dst_type,
+ 				emit_data->args, emit_data->arg_count,
+-				LLVMReadOnlyAttribute);
++				"readonly");
+ 	}
+ }
+ 
+@@ -4231,7 +4231,7 @@
+ 		out = lp_build_intrinsic(
+ 			builder, "llvm.SI.getresinfo.i32", emit_data->dst_type,
+ 			emit_data->args, emit_data->arg_count,
+-			LLVMReadNoneAttribute);
++			"readnone");
+ 
+ 		/* Divide the number of layers by 6 to get the number of cubes. */
+ 		if (inst->Memory.Texture == TGSI_TEXTURE_CUBE_ARRAY) {
+@@ -4465,7 +4465,7 @@
+ 	emit_data->output[emit_data->chan] = lp_build_intrinsic(
+ 		base->gallivm->builder, "llvm.SI.getresinfo.i32",
+ 		emit_data->dst_type, emit_data->args, emit_data->arg_count,
+-		LLVMReadNoneAttribute);
++		"readnone");
+ 
+ 	/* Divide the number of layers by 6 to get the number of cubes. */
+ 	if (target == TGSI_TEXTURE_CUBE_ARRAY ||
+@@ -4883,7 +4883,7 @@
+ 	emit_data->output[emit_data->chan] =
+ 		lp_build_intrinsic(builder, intr_name, emit_data->dst_type,
+ 				   emit_data->args, emit_data->arg_count,
+-				   LLVMReadNoneAttribute);
++				   "readnone");
+ }
+ 
+ static void build_tex_intrinsic(const struct lp_build_tgsi_action *action,
+@@ -4907,7 +4907,7 @@
+ 			base->gallivm->builder,
+ 			"llvm.SI.vs.load.input", emit_data->dst_type,
+ 			emit_data->args, emit_data->arg_count,
+-			LLVMReadNoneAttribute);
++			"readnone");
+ 		return;
+ 	}
+ 
+@@ -4984,7 +4984,7 @@
+ 	emit_data->output[emit_data->chan] = lp_build_intrinsic(
+ 		base->gallivm->builder, intr_name, emit_data->dst_type,
+ 		emit_data->args, emit_data->arg_count,
+-		LLVMReadNoneAttribute);
++		"readnone");
+ }
+ 
+ static void si_llvm_emit_txqs(
+@@ -5082,13 +5082,13 @@
+ 		args[1] = val;
+ 		tl = lp_build_intrinsic(gallivm->builder,
+ 					"llvm.amdgcn.ds.bpermute", ctx->i32,
+-					args, 2, LLVMReadNoneAttribute);
++					args, 2, "readnone");
+ 
+ 		args[0] = LLVMBuildMul(gallivm->builder, trbl_tid,
+ 				       lp_build_const_int32(gallivm, 4), "");
+ 		trbl = lp_build_intrinsic(gallivm->builder,
+ 					  "llvm.amdgcn.ds.bpermute", ctx->i32,
+-					  args, 2, LLVMReadNoneAttribute);
++					  args, 2, "readnone");
+ 	} else {
+ 		LLVMValueRef store_ptr, load_ptr0, load_ptr1;
+ 
+@@ -5271,7 +5271,7 @@
+ 		emit_data->output[chan] =
+ 			lp_build_intrinsic(gallivm->builder, intr_name,
+ 					   ctx->f32, args, args[3] ? 4 : 3,
+-					   LLVMReadNoneAttribute);
++					   "readnone");
+ 	}
+ }
+ 
+@@ -5456,10 +5456,10 @@
+ 		 * SGPR spilling significantly.
+ 		 */
+ 		if (LLVMGetTypeKind(LLVMTypeOf(P)) == LLVMPointerTypeKind) {
+-			LLVMAddAttribute(P, LLVMByValAttribute);
++			lp_add_function_attr(ctx->main_fn, i + 1, "byval", 5);
+ 			lp_add_attr_dereferenceable(P, UINT64_MAX);
+ 		} else
+-			LLVMAddAttribute(P, LLVMInRegAttribute);
++			lp_add_function_attr(ctx->main_fn, i + 1, "inreg", 5)
+ 	}
+ 
+ 	if (ctx->screen->b.debug_flags & DBG_UNSAFE_MATH) {
+@@ -6405,7 +6405,7 @@
+ 						 lp_build_intrinsic(gallivm->builder,
+ 								 "llvm.SI.buffer.load.dword.i32.i32",
+ 								 ctx->i32, args, 9,
+-								 LLVMReadOnlyAttribute),
++								 "readonly");
+ 						 ctx->f32, "");
+ 		}
+ 	}
+--- a/src/gallium/drivers/radeonsi/si_shader_tgsi_alu.c	2018-01-05 12:31:59.389302792 -0800
++++ b/src/gallium/drivers/radeonsi/si_shader_tgsi_alu.c	2018-01-05 12:32:52.696575771 -0800
+@@ -399,7 +399,7 @@
+ 
+ 	LLVMValueRef floor = lp_build_intrinsic(builder, intr, emit_data->dst_type,
+ 						&emit_data->args[0], 1,
+-						LLVMReadNoneAttribute);
++						"readnone");
+ 	emit_data->output[emit_data->chan] = LLVMBuildFSub(builder,
+ 			emit_data->args[0], floor, "");
+ }
+@@ -449,7 +449,7 @@
+ 	emit_data->output[emit_data->chan] =
+ 		lp_build_intrinsic(base->gallivm->builder, action->intr_name,
+ 				   emit_data->dst_type, emit_data->args,
+-				   emit_data->arg_count, LLVMReadNoneAttribute);
++				   emit_data->arg_count, "readnone");
+ }
+ 
+ static void emit_bfi(const struct lp_build_tgsi_action *action,
+@@ -507,7 +507,7 @@
+ 
+ 	bfe_sm5 = lp_build_intrinsic(builder, action->intr_name,
+ 				     emit_data->dst_type, emit_data->args,
+-				     emit_data->arg_count, LLVMReadNoneAttribute);
++				     emit_data->arg_count, "readnone");
+ 
+ 	/* Correct for GLSL semantics. */
+ 	cond = LLVMBuildICmp(builder, LLVMIntUGE, emit_data->args[2],
+@@ -539,7 +539,7 @@
+ 	LLVMValueRef lsb =
+ 		lp_build_intrinsic(gallivm->builder, "llvm.cttz.i32",
+ 				emit_data->dst_type, args, ARRAY_SIZE(args),
+-				LLVMReadNoneAttribute);
++				"readnone");
+ 
+ 	/* TODO: We need an intrinsic to skip this conditional. */
+ 	/* Check for zero: */
+@@ -566,7 +566,7 @@
+ 	LLVMValueRef msb =
+ 		lp_build_intrinsic(builder, "llvm.ctlz.i32",
+ 				emit_data->dst_type, args, ARRAY_SIZE(args),
+-				LLVMReadNoneAttribute);
++				"readnone");
+ 
+ 	/* The HW returns the last bit index from MSB, but TGSI wants
+ 	 * the index from LSB. Invert it by doing "31 - msb". */
+@@ -593,7 +593,7 @@
+ 	LLVMValueRef msb =
+ 		lp_build_intrinsic(builder, "llvm.AMDGPU.flbit.i32",
+ 				emit_data->dst_type, &arg, 1,
+-				LLVMReadNoneAttribute);
++				"readnone");
+ 
+ 	/* The HW returns the last bit index from MSB, but TGSI wants
+ 	 * the index from LSB. Invert it by doing "31 - msb". */
+@@ -917,13 +917,13 @@
+ 		LLVMValueRef out[4];
+ 
+ 		out[0] = lp_build_intrinsic(gallivm->builder, "llvm.amdgcn.cubetc",
+-					    f32, in, 3, LLVMReadNoneAttribute);
++					    f32, in, 3, "readnone");
+ 		out[1] = lp_build_intrinsic(gallivm->builder, "llvm.amdgcn.cubesc",
+-					    f32, in, 3, LLVMReadNoneAttribute);
++					    f32, in, 3, "readnone");
+ 		out[2] = lp_build_intrinsic(gallivm->builder, "llvm.amdgcn.cubema",
+-					    f32, in, 3, LLVMReadNoneAttribute);
++					    f32, in, 3, "readnone");
+ 		out[3] = lp_build_intrinsic(gallivm->builder, "llvm.amdgcn.cubeid",
+-					    f32, in, 3, LLVMReadNoneAttribute);
++					    f32, in, 3, "readnone");
+ 
+ 		return lp_build_gather_values(gallivm, out, 4);
+ 	} else {
+@@ -937,7 +937,7 @@
+ 
+ 		return lp_build_intrinsic(gallivm->builder, "llvm.AMDGPU.cube",
+ 					  LLVMTypeOf(vec), &vec, 1,
+-					  LLVMReadNoneAttribute);
++					  "readnone");
+ 	}
+ }
+ 
+@@ -959,7 +959,7 @@
+ 						    lp_build_const_int32(gallivm, i), "");
+ 
+ 	coords[2] = lp_build_intrinsic(builder, "llvm.fabs.f32",
+-			type, &coords[2], 1, LLVMReadNoneAttribute);
++			type, &coords[2], 1, "readnone");
+ 	coords[2] = lp_build_emit_llvm_unary(bld_base, TGSI_OPCODE_RCP, coords[2]);
+ 
+ 	mad_args[1] = coords[2];
+--- a/src/gallium/auxiliary/gallivm/lp_bld_misc.cpp	2018-01-05 13:38:36.350444122 -0800
++++ b/src/gallium/auxiliary/gallivm/lp_bld_misc.cpp	2018-01-05 13:39:51.429329078 -0800
+@@ -347,14 +347,20 @@
+       virtual void registerEHFrames(uint8_t *Addr, uint64_t LoadAddr, size_t Size) {
+          mgr()->registerEHFrames(Addr, LoadAddr, Size);
+       }
+-      virtual void deregisterEHFrames(uint8_t *Addr, uint64_t LoadAddr, size_t Size) {
+-         mgr()->deregisterEHFrames(Addr, LoadAddr, Size);
+-      }
+ #else
+       virtual void registerEHFrames(llvm::StringRef SectionData) {
+          mgr()->registerEHFrames(SectionData);
+       }
+ #endif
++#if HAVE_LLVM >= 0x0500
++      virtual void deregisterEHFrames() {
++         mgr()->deregisterEHFrames();
++      }
++#elif HAVE_LLVM >= 0x0304
++      virtual void deregisterEHFrames(uint8_t *Addr, uint64_t LoadAddr, size_t Size) {
++         mgr()->deregisterEHFrames(Addr, LoadAddr, Size);
++      }
++#endif
+       virtual void *getPointerToNamedFunction(const std::string &Name,
+                                               bool AbortOnFailure=true) {
+          return mgr()->getPointerToNamedFunction(Name, AbortOnFailure);
+@@ -737,6 +743,7 @@
+    delete reinterpret_cast<BaseMemoryManager*>(memorymgr);
+ }
+ 
++#if 0
+ extern "C" void
+ lp_add_attr_dereferenceable(LLVMValueRef val, uint64_t bytes)
+ {
+@@ -747,3 +754,4 @@
+    A->addAttr(llvm::AttributeSet::get(A->getContext(), A->getArgNo() + 1,  B));
+ #endif
+ }
++#endif
+--- a/src/gallium/drivers/llvmpipe/lp_state_fs.c	2018-01-05 14:52:27.510989506 -0800
++++ b/src/gallium/drivers/llvmpipe/lp_state_fs.c	2018-01-05 14:54:08.017651350 -0800
+@@ -2296,7 +2296,7 @@
+     */
+    for(i = 0; i < ARRAY_SIZE(arg_types); ++i)
+       if(LLVMGetTypeKind(arg_types[i]) == LLVMPointerTypeKind)
+-         LLVMAddAttribute(LLVMGetParam(function, i), LLVMNoAliasAttribute);
++         lp_add_function_attr(function, i + 1, "noalias", 7);
+ 
+    context_ptr  = LLVMGetParam(function, 0);
+    x            = LLVMGetParam(function, 1);
+--- a/src/gallium/drivers/llvmpipe/lp_state_setup.c	2018-01-05 15:07:21.487596456 -0800
++++ b/src/gallium/drivers/llvmpipe/lp_state_setup.c	2018-01-05 15:08:26.903676148 -0800
+@@ -624,8 +624,7 @@
+    int i;
+    for(i = 0; i < nr_args; ++i)
+       if(LLVMGetTypeKind(arg_types[i]) == LLVMPointerTypeKind)
+-         LLVMAddAttribute(LLVMGetParam(function, i),
+-            LLVMNoAliasAttribute);
++	lp_add_function_attr(function, i + 1, "noalias", 7);
+ }
+ 
+ static void
