@@ -38,7 +38,7 @@ COMPONENT_PROJECT_URL=  http://puppetlabs.com/facter
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	778
 
-TPNO=                   40627
+TPNO=                   42024
 
 # No gemspec is shipped with the gem. Create one
 COMPONENT_POST_UNPACK_ACTION= \
