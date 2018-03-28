@@ -17,7 +17,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 
 This suite also runs fuzz tests, which means it pumps out a lot of
 random warnings and scary messages.  Ignore them, except to mentally note
@@ -27,42 +27,49 @@ and decides PASS/FAIL based upon the results of the transform.
 
 NOTE: cleanup does not restore the previous Kerberos setup.
 
-TODO: debug GSS-SPNEGO mechansim and/or test
 
 To run testsuite:
 
-PREP:  gmake tarball in comoponents/cyrus-sasl
+PREP:  gmake test_tarball in components/cyrus-sasl
 
-On a build machine with kernel zones:
+On a lab machine that has a static ip address, accessible by nslookup:
 
-    log into kz as yourself
-    cd [ your workspace /components/cyrus-sasl ]
-    gmake tarball   (if you didn't already do this)
-    su 
-    cd [ your workspace /components/cyrus-sasl/sasltest ]
+    --  make sure you are ready and willing to destroy your kerberos setup
+    --  set publisher to install the version of libsasl2 to test, and 
+        install libsasl2.
+
+        The test setup tries to install the optional sasl plugins, which are
+	each separate packages, so each one has its own .p5m file.  To 
+	find existing ones, which will need their facets unlocked:
+
+	    pkg list -a /system/library/security/sasl/*
+
+	If the lab system has old versions  of any optional sasl plugins,
+	either uninstall them or disable solaris publishers, so that you 
+	only get the ones from your own publisher.  
+
+	Setup will not try to install libsasl-links, it's not a plugin.
+
+
+    --      cd /var/tmp
+	    gtar zxf sasltest.tgz
+	    cd sasltest
+
+as root:
+    If this is not the first test run, run ./cleanup or the test will not 
+    run.
+
     ./run_testsuite
     [ answer y to "Existing KDC config will be destroyed, okay to proceed?" ]
 
-    [ you can do more runs, setup_testsuite will not be re-run unless you 
-    	do ./cleanup ]
-
     [gather results]
+    If doing another run:  ./cleanup  
 
-    optional:  ./cleanup  
 
-On a lab machine:
 
-    make sure you are ready and willing to destroy your kerberos setup
-    cd /var/tmp
-    gtar zxf sasltest.tgz
-    cd sasltest
+TODO: 
+	debug GSS-SPNEGO mechanism and/or test
 
-    ./run_testsuite
-    [ answer y to "Existing KDC config will be destroyed, okay to proceed?" ]
-
-    [ you can do more runs, setup_testsuite will not be re-run unless you 
-    	do ./cleanup ]
-
-    [gather results]
-
-    optional:  ./cleanup  
+	See if there is a way to run the test without nslookup-able address
+	(the setup was inherited from kerberos tests and may or may not
+	be overly strict)

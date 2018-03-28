@@ -1,0 +1,41 @@
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+
+There are 2 types of test for libsasl2.
+
+The main test is taken from upstream and wrapped with local scripts.  It
+must be run as root, with installed packages.  It tests a wide range of
+libsasl functionality, and compares the filtered results to a master file.
+
+-- After gmake publish, do gmake test_tarball.  Obtain a machine with
+   a static address and dns, on which you have root access.
+
+-- The directions for testing are in test/README.test, which is also
+   included in the tarball.
+
+The other test is for the legacy libsasl-links pkg.  This is to test that our
+accommodation for older binaries works.  This test can ONLY be performed on
+a SPARC lab machine.  As long as you can install the published packages
+this test can be run.
+
+-- Install all sasl packages except libsasl-links
+
+-- Copy /usr/sbin/ldm from and 11.3 or earlier OS into /var/tmp or a test
+   directory.
+
+   Run ./ldm -V
+
+   Without working legacy links, it gives:
+
+   ld.so.1: ldm: fatal: libsasl.so.1: open failed: No such file or directory
+   Killed
+
+   Install libsasl-links
+
+   With working links:
+
+   Failed to connect to logical domain manager: Connection refused
+
+   (Unless, of course, there is an active logical domain manager willing to
+   accept the connection.)
+
+

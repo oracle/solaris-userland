@@ -1,0 +1,59 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+# openldap.p5m is dependent on this package inside the workspace, must
+# be kept in sync
+set name=pkg.fmri \
+    value=pkg:/legacy/system/library/security/libsasl-links@$(COMPONENT_VERSION),$(BUILD_VERSION)
+#
+set name=pkg.summary \
+    value="Deprecated filter library and links redirecting applications that were linked with -lsasl to link through to -lsasl2."
+set name=pkg.namespace value=legacy
+set name=com.oracle.info.description \
+    value="Accommodation for applications linking to -lsasl,  as used by the Oracle Solaris 11.3 propriety implementation of the libsasl V2  interface.  Useful only for those applications that cannot be relinked/recompiled to use -lsasl2, the correct libsasl V2 library delivered in Oracle Solaris 11.4.  See SASL Transition to Oracle Solaris 11.4 in the Info Guide.  This accommodation is deprecated, and may be removed in a future update."
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification \
+    value=org.opensolaris.category.2008:System/Libraries
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2015/194 value=PSARC/2016/158 \
+    value=PSARC/2018/052
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+link path=usr/lib/$(MACH64)/libsasl.so target=libsasl2.so.3.0.0 \
+    pkg.linted.dupaction010.2=true
+file path=usr/lib/$(MACH64)/libsasl.so.1 pkg.linted.dupaction010.2=true
+link path=usr/lib/$(MACH64)/pkgconfig/libsasl.pc target=libsasl2.pc \
+    pkg.linted.dupaction010.2=true
+link path=usr/lib/libsasl.so target=libsasl2.so.3.0.0 \
+    pkg.linted.dupaction010.2=true
+file path=usr/lib/libsasl.so.1 pkg.linted.dupaction010.2=true
+link path=usr/lib/pkgconfig/libsasl.pc target=libsasl2.pc \
+    pkg.linted.dupaction010.2=true
+link path=usr/lib/sasl target=./sasl2 pkg.linted.dupaction010.2=true
+file \
+    path=usr/share/doc/release-notes/legacy-system-library-security-libsasl-links.txt \
+    owner=root group=bin mode=0444 must-display=true \
+    release-note=feature/pkg/self@0
+license libsasl2.license license="BSD with attribution to CMU, MIT, others"
