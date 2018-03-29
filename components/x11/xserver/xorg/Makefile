@@ -40,7 +40,7 @@ PKG_PROTO_DIRS += $(SOURCE_DIR)/hw/xfree86/os-support/bus
 # Remove compiler specific visibility flag that breaks builds of drivers
 # with other compilers
 FIX_PC_FILES = xorg-server.pc.in
-FIX_PC_FLAGS += -e 's|\@symbol_visibility\@||'
+COMPONENT_FIX_PC_FLAGS += -e 's|\@symbol_visibility\@||'
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
