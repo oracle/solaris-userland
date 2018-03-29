@@ -20,33 +20,29 @@
 #
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		paramiko
-COMPONENT_VERSION=	2.0.2
+COMPONENT_VERSION=	2.0.8
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:411bf90fa22b078a923ff19ef9772c1115a0953702db93549a2848acefd141dc
+	sha256:3c479acfcdf8aa21c4b5f6c3d063a6318b94282744353c9c6cbad06ebe5a9abf
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://github.com/paramiko/paramiko/
 COMPONENT_BUGDB=	python-mod/paramiko
 COMPONENT_ANITYA_ID=	3954
 
-TPNO=			31171
+TPNO=			42001
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
-
-# Master test results are the same for all versions of Python, so override
-# here, rather than create multiple identical master files.
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 # set LC_ALL for unicode sftp tests test_K_utf8 and test_L_utf8_chdir
 COMPONENT_TEST_ENV=	LC_ALL=en_US.UTF-8 PYTHONPATH=$(SOURCE_DIR)
