@@ -50,7 +50,7 @@ TEST_TARGET = $(SKIP_TEST)
 
 include $(WS_MAKE_RULES)/common.mk
 
-# Regenerate configure after patches/02-duktape.patch modifies configure.ac
+# Regenerate configure after applying patches that modify configure.ac
 COMPONENT_PREP_ACTION += ( cd $(@D); autoreconf -fiv);
 # Make sure we haven't broken the SMF manifest formatting
 COMPONENT_PREP_ACTION += \
@@ -98,7 +98,7 @@ PKG_PROTO_DIRS += $(COMPONENT_DIR)/files
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/libmozjs-24
+REQUIRED_PACKAGES += library/libmozjs-38
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/dbus
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
