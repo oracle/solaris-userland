@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Run this command as root to set up for sasl testsuite
@@ -216,21 +216,7 @@ then
 	svcadm enable -s svc:/network/ntp:default
 fi
 
-export KMODE="mit"
-set -A MEDIATOR `pkg mediator -H kerberos5`
-
-case ${MEDIATOR[3]} in
-
-	"solaris" )   # old kerberos configured
-		KMODE="seam"
-		;;
-
-	*)	# "MIT" or mediator does not exist
-		KMODE="mit"
-		;;
-esac
-
-. ./setup-for-$KMODE
+. ./setup-for-mit
 if (( $? != 0 ))
 then
         print -u2 "Setup failed"

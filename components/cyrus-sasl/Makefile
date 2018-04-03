@@ -169,7 +169,7 @@ CLEAN_PATHS += $(TARBALL_DIR)
 
 test_tarball:	sasltest.tgz
 TEST_SCRIPTS= setup_testsuite run_testsuite transform-results cleanup \
-	setup-for-mit setup-for-seam
+	setup-for-mit
 
 sasltest.tgz:	install
 	$(MKDIR) $(TARBALL_DIR)
