@@ -1,23 +1,34 @@
-LDAP API is not found if located on non-default path
+in-house
+promoted into the community:
+https://bugzilla.samba.org/show_bug.cgi?id=12124
 
-Paths to LDAP C-SDK ("ldap" and "lber" libs) is currently "hard-wired"
-to -L/usr/lib -I/usr/include. Here is the fix.
+This is a small configuration change to allow to choose which LDAP C-SDK will be used
+by defining the alternate paths in ldap.pc and lber.pc (pkg-config) files.
+note: in case of the API do not reside in standard paths the appropriate "SYSLIB target"
+should be added into the deps= of the target to ensure the appropriate "-I<alt.path>" or
+"-L<alt.path>" flags will be available when compile/link.
 
-details in: https://bugzilla.samba.org/show_bug.cgi?id=12124
+In case of no pkg-config info is found libldap.so and liblber.so libs are searched in
+standard library path.
 
-diff --git a/lib/ldb/wscript b/lib/ldb/wscript
-index 13f1d93..ce1eae0 100755
---- a/lib/ldb/wscript
-+++ b/lib/ldb/wscript
-@@ -68,7 +68,7 @@ def configure(conf):
-         conf.CHECK_XSLTPROC_MANPAGES()
+Motivation:
+On Solaris 11 there are 2 LDAP APIs:
+
+ - "legacy" DS 5 C-SDK represented by:
+   /usr/include/ldap.h
+   /usr/include/lber.h
+   /usr/lib/libldap.so -> libldap.so.5
+    ...mozldap has no lber lib. distiguished from ldap lib.
+
+ - new OpenLDAP C-SDK represented by:
+   /usr/include/openldap/ldap.h
+   /usr/include/openldap/lber.h
+   /usr/lib/libldap_r.so -> libldap_r.so.${cur.ver.}
+   /usr/lib/liblber.so -> liblber.so.${cur.ver.}
+
+...so the default one found by waf is the "wrong one".
+
  
-         # we need this for the ldap backend
--        if conf.CHECK_FUNCS_IN('ber_flush ldap_open ldap_initialize', 'lber ldap', headers='lber.h ldap.h'):
-+        if conf.CHECK_FUNCS('ber_flush ldap_open ldap_initialize', lib='ldap', headers='lber.h ldap.h'):
-             conf.env.ENABLE_LDAP_BACKEND = True
- 
-         # we don't want any libraries or modules to rely on runtime
 diff --git a/source3/wscript b/source3/wscript
 index 497b673..88169be 100644
 --- a/source3/wscript
@@ -63,3 +74,63 @@ index 497b673..88169be 100644
              conf.DEFINE('LDAP_SET_REBIND_PROC_ARGS', '3')
          else:
              conf.DEFINE('LDAP_SET_REBIND_PROC_ARGS', '2')
+--- a/source3/wscript_build	2018-04-13 00:02:31.660518039 -0700
++++ b/source3/wscript_build	2018-04-13 00:18:25.998288427 -0700
+@@ -42,6 +42,8 @@
+                     LIBCLI_SAMR
+                     INIT_SAMR
+                     auth
++                    ldap
++                    lber
+                     ''',
+                     public_headers='../source3/lib/netapi/netapi.h',
+                     pc_files='libnet/netapi.pc',
+@@ -555,7 +557,7 @@
+ 
+ bld.SAMBA3_SUBSYSTEM('LIBADS_PRINTER',
+                     source='libads/ldap_printer.c',
+-                    deps='samba-util krb5samba')
++                    deps='samba-util krb5samba ldap lber')
+ 
+ # Only smbconf should link against this subsystem, else we will create
+ # a circular dependency.
+--- a/source3/librpc/wscript_build	2018-04-13 00:11:21.363754980 -0700
++++ b/source3/librpc/wscript_build	2018-04-13 00:13:37.961113303 -0700
+@@ -7,7 +7,7 @@
+ 
+ bld.SAMBA3_SUBSYSTEM('NDR_LIBNET_JOIN',
+ 	source='gen_ndr/ndr_libnet_join.c',
+-	public_deps='ndr krb5samba'
++	public_deps='ndr krb5samba ldap lber'
+ 	)
+ 
+ bld.SAMBA3_SUBSYSTEM('NDR_OPEN_FILES',
+--- a/source3/winbindd/wscript_build	2017-07-04 03:05:26.000000000 -0700
++++ b/source3/winbindd/wscript_build	2018-04-13 00:44:04.995575329 -0700
+@@ -16,7 +16,7 @@
+ 
+ bld.SAMBA3_SUBSYSTEM('IDMAP_HASH',
+                     source='idmap_hash/idmap_hash.c idmap_hash/mapfile.c',
+-                    deps='samba-util krb5samba',
++                    deps='samba-util krb5samba ldap lber',
+                     enabled=bld.SAMBA3_IS_ENABLED_MODULE('idmap_hash'))
+ 
+ bld.SAMBA3_SUBSYSTEM('IDMAP_AD',
+@@ -38,7 +38,7 @@
+                  allow_undefined_symbols=True,
+                  source='idmap_rfc2307.c',
+                  init_function='',
+-                 deps='ads',
++                 deps='ads ldap lber',
+                  internal_module=bld.SAMBA3_IS_STATIC_MODULE('idmap_rfc2307'),
+                  enabled=bld.SAMBA3_IS_ENABLED_MODULE('idmap_rfc2307'))
+ 
+@@ -122,7 +122,7 @@
+ bld.SAMBA3_MODULE('nss_info_template',
+                  subsystem='nss_info',
+                  source='nss_info_template.c',
+-                 deps='samba-util krb5samba',
++                 deps='samba-util krb5samba ldap lber',
+                  init_function='',
+                  internal_module=bld.SAMBA3_IS_STATIC_MODULE('nss_info_template'),
+                  enabled=bld.SAMBA3_IS_ENABLED_MODULE('nss_info_template'))

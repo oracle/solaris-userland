@@ -22,14 +22,14 @@
 #
 # Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
-
-COMPILER =              gcc
+BUILD_BITS=	64_and_32
+COMPILER=	gcc
 include ../../make-rules/shared-macros.mk
 
 ifeq ($(MACH), sparc)
-WAFOPT1 = -j64
+WAFOPTS = -j64
 else
-WAFOPT1 = -j16
+WAFOPTS = -j16
 endif
 
 # parfait seems to spin on us
@@ -54,48 +54,38 @@ COMPONENT_ARCHIVE_URL=	https://download.samba.org/pub/samba/stable/$(COMPONENT_A
 COMPONENT_ARCHIVE_HASH=	sha256:1eede30fc8ef6504e24602fb72b00baa0a7b73b59f16d25cb0771dc8c7c57d6e
 COMPONENT_SRC_URL=	$(COMPONENT_ARCHIVE_URL)
 
-include $(WS_MAKE_RULES)/prep.mk
+include $(WS_MAKE_RULES)/common.mk
 
-# waf
-WAF_PATH	=	PATH=$(BUILD_DIR)/samba/buildtools/bin:$(PROTO_DIR)/usr/bin:$$PATH
-# Verbosed waf produces unreadable output in coincidence with parallel build.
-# Uncomment the followin line to enable verbose and single-thread build.
-#override WAFOPT1	=	-v -j1
+# Winbind only build is 32b.
+WB_ONLY_CONF=		$(BUILD_DIR_32)/.configured
+SAMBA_FULL_CONF=	$(BUILD_DIR_64)/.configured
 
-# Set build dirs for Samba + Winbind / Winbind (without Samba).
-BUILD_DIR_SMB		= $(BUILD_DIR)/samba
-BUILD_DIR_WINB		= $(BUILD_DIR)/winbind
+$(BUILD_DIR_32)/%:	MACHLIBDIR=
+$(BUILD_DIR_64)/%:	MACHLIBDIR=/$(MACH64)
 
-include $(WS_MAKE_RULES)/ips.mk
+# Uncomment the followin line to enable verbose and single-thread (readable) build.
+#override WAFOPTS	=	-v -j1
+WAF= ./buildtools/bin/waf
+
 PKG_VARS += COMPONENT_SRC_URL
 # Set the pkg... path to search files in ./Solaris/ dir (mainly the SMF manifests are there)
 PKG_PROTO_DIRS += $(COMPONENT_DIR)
 
-# Oracle HSM is not supported on 11.4 yet but the libsam.so target should rather be commented out than removed
-#$(PROTO_DIR)/opt/SUNWsamfs/lib/$(MACH64)/libsam.so: Solaris/libsam.c
-#	$(MKDIR) $(@D)
-#	$(CC) -m64 -G $(CC_PIC_MODE) -hlibsam.so Solaris/libsam.c \
-#		-I$(COMPONENT_DIR)/Solaris/include \
-#		-o $@
+# pkg-config files
+PKGCONFIG_AUX_DIR = $(BUILD_DIR)/lib$(MACHLIBDIR)/pkgconfig
 
 LIBS +=		-lrt -lsec -lcrypt -lmd5 -lsocket -lnsl
-# More libs needed by smbd (libavahi, libgamin, ...)
-LIBS4SMBD =	-lsendfile -lavahi-common -lavahi-core
+# More libs needed by Samba (libavahi, libgamin, ...)
+$(SAMBA_FULL_CONF): LIBS += -lsendfile -lavahi-common -lavahi-core
 
 CPPFLAGS +=	$(CPP_LARGEFILES)
 CPPFLAGS +=	$(CPP_XPG6MODE)
-
-# Enable adiheap and adistack security extensions
-ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
-ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
 LDFLAGS +=	-m$(BITS)
 LDFLAGS +=	-R/usr/lib/samba$(MACHLIBDIR)
 LDFLAGS +=	-R/usr/lib/samba/private$(MACHLIBDIR)
 LDFLAGS +=	$(LIBS)
-$(BUILD_DIR_SMB)/.configured:	LDFLAGS +=	$(LIBS4SMBD)
 
-# --enable-fhs should not be on
 CONFIGURE_OPTIONS =	--exec-prefix=/usr
 CONFIGURE_OPTIONS +=	--bindir=/usr/lib/samba/bin
 CONFIGURE_OPTIONS +=	--sbindir=/usr/lib/samba/sbin
@@ -116,9 +106,9 @@ CONFIGURE_OPTIONS +=	--libexecdir=/usr/lib/samba
 # Whenever getfacl is found HAVE_SOLARIS_UNIXWARE_ACLS is set and
 # vfs_solarisacl is placed into the list of the static modules
 CONFIGURE_OPTIONS +=	--with-static-modules=
-$(BUILD_DIR_SMB)/.configured:	CONFIGURE_OPTIONS += \
+$(SAMBA_FULL_CONF):	CONFIGURE_OPTIONS += \
 	--with-shared-modules=vfs_worm,vfs_zfsacl,vfs_prealloc,vfs_cacheprime,vfs_commit,idmap_ldap,idmap_tdb2,idmap_rid,idmap_ad,idmap_hash,idmap_adex
-$(BUILD_DIR_WINB)/.configured:	CONFIGURE_OPTIONS += \
+$(WB_ONLY_CONF):	CONFIGURE_OPTIONS += \
 	--with-shared-modules=idmap_ldap,idmap_tdb2,idmap_rid,idmap_ad,idmap_hash,idmap_adex
 CONFIGURE_OPTIONS +=	--with-ads
 CONFIGURE_OPTIONS +=	--with-winbind
@@ -132,8 +122,8 @@ CONFIGURE_OPTIONS +=	--disable-rpath
 CONFIGURE_OPTIONS +=	--disable-gnutls
 CONFIGURE_OPTIONS +=	--bundled-libraries=ALL
 
-#$(BUILD_DIR_SMB)/.configured:	CONFIGURE_OPTIONS +=	--with-samfs=$(PROTO_DIR)/opt/SUNWsamfs/lib
-
+# PATH for 64-bit is already set in configure.mk
+CONFIGURE_ENV.32 +=	PATH="$(PATH)"
 CONFIGURE_ENV += 	CC="$(CC)"
 CONFIGURE_ENV += 	CPP="$(CC) -E"
 CONFIGURE_ENV += 	AWK=gawk
@@ -148,74 +138,60 @@ CONFIGURE_ENV.64 +=	MACH64="$(MACH64)"
 CONFIGURE_ENV +=	LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS)"
 CONFIGURE_ENV +=	CUPS_CONFIG=$(USRBINDIR)/cups-config
 CONFIGURE_ENV += 	INSTALL="$(INSTALL)"
+CONFIGURE_ENV += 	PKG_CONFIG_PATH="$(PKGCONFIG_AUX_DIR)"
 
-# Propagation of smb.conf with default settings.
-$(PROTO_DIR)/etc/samba/smb.conf-example: $(BUILD_DIR_SMB)/.built
-	$(MKDIR) $(@D)
-	sed -f $(COMPONENT_DIR)/Solaris/smbconf.sed > $@ \
-	   $(BUILD_DIR_SMB)/examples/smb.conf.default
+# cleanup unpacked archive
+COMPONENT_PREP_ACTION += (cd $(@D) ; $(WAF) distclean $(WAFOPTS) );
 
-# Build targets for WAF:
-# (motivation) Samba started to use WAF (build system from Google) from the 3.x
-# (as a parallel build system) but Samba4 discontinued the use of auto tools
-# definitively.
-# (note) .BDprep target is an additional step between .prep and .configure
-# targets. It was added because there were problems with libtool-like phase of
-# WAF when the not "prepared well". "waf distclean" on CLONEY'ed BUILD_DIR is
-# enough.
+# configure
+COMPONENT_PRE_CONFIGURE_ACTION += \
+   $(CLONEY) $(SOURCE_DIR) $(@D); \
+   $(CP) $(COMPONENT_DIR)/Solaris/vfs_samfs.c $(@D)/source3/modules/vfs_samfs.c; \
+   $(MKDIR) $(PKGCONFIG_AUX_DIR); \
+   $(CP) $(COMPONENT_DIR)/Solaris/ldap.pc $(PKGCONFIG_AUX_DIR); \
+   $(CP) $(COMPONENT_DIR)/Solaris/lber.pc $(PKGCONFIG_AUX_DIR); \
+   $(CP) $(COMPONENT_DIR)/Solaris/openldap.pc $(PKGCONFIG_AUX_DIR);
 
-# Prepare build dir for Samba + Winbind.
-$(BUILD_DIR_SMB)/.BDprep: $(SOURCE_DIR)/.prep
-	# re-create configure dir
-	$(MKDIR) $(@D)
-	# Clone SOURCE_DIR
-	$(CLONEY) $(SOURCE_DIR) $(@D)
-	# clenup of clone
-	(cd $(@D) ; $(ENV) - $(WAF_PATH) waf distclean $(WAFOPT1) )
-	$(TOUCH) $@
+$(SAMBA_FULL_CONF): COMPONENT_PRE_CONFIGURE_ACTION += sed -e \
+    "s:@LIBDIR@:$(PROTO_DIR)/opt/SUNWsamfs/lib$(MACHLIBDIR):g;s:@INCLUDEDIR@:$(COMPONENT_DIR)/Solaris/include:g" \
+    $(COMPONENT_DIR)/Solaris/samfs.pc > $(PKGCONFIG_AUX_DIR)/samfs.pc;
 
-# Configure of Samba + Winbind.
-$(BUILD_DIR_SMB)/.configured: $(BUILD_DIR_SMB)/.BDprep
-	(cd $(@D) ; $(ENV) - $(WAF_PATH) $(CONFIGURE_ENV) $(CONFIGURE_ENV.$(BITS)) \
-		waf configure $(WAFOPT1) $(CONFIGURE_OPTIONS) $(CONFIGURE_OPTIONS.$(BITS)) )
-	$(TOUCH) $@
+# Oracle HSM helper library
+$(SAMBA_FULL_CONF): COMPONENT_PRE_CONFIGURE_ACTION += \
+   $(MKDIR) $(PROTO_DIR)/opt/SUNWsamfs/lib$(MACHLIBDIR) ; \
+   $(CC) -m$(BITS) -G $(CC_PIC_MODE) -hlibsam.so Solaris/libsam.c \
+	-I$(COMPONENT_DIR)/Solaris/include \
+	-o $(PROTO_DIR)/opt/SUNWsamfs/lib$(MACHLIBDIR)/libsam.so ;
 
-# Build of Samba + Winbind.
-$(BUILD_DIR_SMB)/.built:	$(BUILD_DIR_SMB)/.configured
-	(cd $(@D) ; $(ENV) - $(WAF_PATH) LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS)" waf build $(WAFOPT1) )
-	$(TOUCH) $@
+CONFIGURE_SCRIPT= $(WAF) configure $(WAFOPTS)
+CONFIG_SHELL=
 
-# Install of Samba + Winbind.
-$(BUILD_DIR_SMB)/.installed:	$(BUILD_DIR_SMB)/.built
-	(cd $(@D) ; $(ENV) - $(WAF_PATH) LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS)" waf install $(WAFOPT1) --destdir=$(PROTO_DIR) )
-	$(PYTHON) -m compileall $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES)/
-	$(TOUCH) $@
+# build
+COMPONENT_BUILD_ENV += PATH="$(PATH)"
+%/.built: GMAKE= $(WAF) build $(WAFOPTS)
+$(SAMBA_FULL_CONF:.configured=.built): COMPONENT_BUILD_TARGETS=
+$(WB_ONLY_CONF:.configured=.built): COMPONENT_BUILD_TARGETS= --targets=nss_winbind,pamwinbind
 
-# Prepare build dir for Winbind (without Samba) for different bitness.
-$(BUILD_DIR_WINB)/.BDprep: $(SOURCE_DIR)/.prep
-	# re-create configure dir
-	$(MKDIR) $(@D)
-	# Clone SOURCE_DIR
-	$(CLONEY) $(SOURCE_DIR) $(@D)
-	# clenup of clone
-	(cd $(@D) ; $(ENV) - $(WAF_PATH) waf distclean $(WAFOPT1) )
-	$(TOUCH) $@
+# install
+PERL_SCRIPTS   += $(PROTO_DIR)/usr/lib/samba/bin/findsmb
+PERL_SCRIPTS   += $(PROTO_DIR)/usr/lib/samba/bin/pidl
+PYTHON_SCRIPTS += \
+ $(shell nawk -F \= \
+  ' $$1 ~ /^file.*path/ && $$2 ~ /.*\.py$$/ {print "$(PROTO_DIR)/"$$2;} ' \
+  $(COMPONENT_DIR)/samba.proto-objects)
+COMPONENT_INSTALL_ENV += PATH="$(PATH)"
+COMPONENT_INSTALL_ARGS = --destdir=$(PROTO_DIR)
+%/.installed: GMAKE= $(WAF) install $(WAFOPTS)
+$(SAMBA_FULL_CONF:.configured=.installed): COMPONENT_INSTALL_TARGETS=
+$(SAMBA_FULL_CONF:.configured=.installed): COMPONENT_POST_INSTALL_ACTION += \
+   $(MKDIR) $(PROTO_DIR)/etc/samba ; \
+   sed -f $(COMPONENT_DIR)/Solaris/smbconf.sed \
+     > $(PROTO_DIR)/etc/samba/smb.conf-example \
+     $(BUILD_DIR_SMB)/examples/smb.conf.default ; \
+   $(PYTHON) -m compileall $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES)/ ;
 
-# Configure of Winbind (without Samba) for different bitness.
-$(BUILD_DIR_WINB)/.configured: $(BUILD_DIR_WINB)/.BDprep
-	(cd $(@D) ; $(ENV) - $(WAF_PATH) $(CONFIGURE_ENV) $(CONFIGURE_ENV.$(BITS)) \
-		waf configure $(WAFOPT1) $(CONFIGURE_OPTIONS) $(CONFIGURE_OPTIONS.$(BITS)) )
-	$(TOUCH) $@
-
-# Build of Winbind (without Samba) for different bitness.
-WB_TARGETS =	--targets=nss_winbind,pamwinbind
-$(BUILD_DIR_WINB)/.built:	$(BUILD_DIR_WINB)/.configured
-	(cd $(@D) ; $(ENV) - $(WAF_PATH) LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS)" waf build $(WAFOPT1) \
-	    $(WB_TARGETS) )
-	$(TOUCH) $@
-
-# Installf Winbind (without Samba) for different bitness.
-$(BUILD_DIR_WINB)/.installed:	$(BUILD_DIR_WINB)/.built
+# do not do waf install for winbind only - override the recipe
+$(WB_ONLY_CONF:.configured=.installed): $(WB_ONLY_CONF:.configured=.built)
 	/bin/sh -c "cd $(@D) ; \
 	    $(INSTALL) -d $(PROTO_DIR)/usr/lib/samba$(MACHLIBDIR) ; \
 	    $(INSTALL) -m 0555 -t $(PROTO_DIR)/usr/lib/samba$(MACHLIBDIR) bin/shared/!(pam_*).so* ; \
@@ -226,25 +202,7 @@ $(BUILD_DIR_WINB)/.installed:	$(BUILD_DIR_WINB)/.built
 	"
 	$(TOUCH) $@
 
-# Set appropriate bitnesses for Samba + Winbind / Winbind (without Samba).
-$(BUILD_DIR_SMB)/.configured:	BITS=64
-$(BUILD_DIR_SMB)/.configured:	MACHLIBDIR=/$(MACH64)	
-$(BUILD_DIR_WINB)/.configured:	BITS=32
-$(BUILD_DIR_WINB)/.configured $(BUILD_DIR_WINB)/.installed:	MACHLIBDIR=
-
-# common targets
-build:		$(BUILD_DIR_SMB)/.built $(BUILD_DIR_WINB)/.built
-
-include $(WS_MAKE_RULES)/shared-targets.mk
-
-PERL_SCRIPTS   += $(PROTO_DIR)/usr/lib/samba/bin/findsmb
-PYTHON_SCRIPTS += \
- $(shell nawk -F \= \
-  ' $$1 ~ /^file.*path/ && $$2 ~ /.*\.py$$/ {print "$(PROTO_DIR)/"$$2;} ' \
-  $(COMPONENT_DIR)/samba.proto-objects)
-
-install:	$(BUILD_DIR_SMB)/.installed $(BUILD_DIR_WINB)/.installed
-
+# no tests
 test:		$(NO_TESTS)
 
 system-test:    $(NO_TESTS)

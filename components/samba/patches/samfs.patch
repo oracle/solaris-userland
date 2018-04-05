@@ -1,0 +1,48 @@
+in-house
+
+Oracle HSM (originally known as: SAMFS - Storage Archivation Management + QFS)
+support of off-laid/staged files. SMB offers "off-line" flag for off-laid files
+so the SMB client can behave accordingly to such file-status:
+ - explorer do not create thumbnails to avoid staging of all files in browsed dir.
+ - explorer display a small "hand-watch" symbol in the corner of file-icon
+
+note: MacOS X ignore the "off-line" flag in SMB protocol.
+
+Originally promoted into the community by:
+ https://bugzilla.samba.org/show_bug.cgi?id=5780
+...but during the SAMFS version change also the licensing conditions
+has changed so the community rejected to adopt the SAMFS support.
+
+--- a/source3/wscript	2016-08-03 06:29:54.129142866 -0700
++++ b/source3/wscript	2016-08-03 06:15:24.109052374 -0700
+@@ -1549,6 +1549,13 @@
+     if conf.CHECK_HEADERS('cephfs/libcephfs.h', False, False, 'cephfs') and conf.CHECK_LIB('cephfs'):
+         conf.DEFINE('HAVE_CEPH', '1')
+
++    if conf.CHECK_CFG(package='samfs', args="--cflags --libs", msg='Check for Oracle HSM (aka. SAMFS) API.', uselib_store="SAMFS") :
++        conf.SET_TARGET_TYPE('samfs', 'SYSLIB')
++        conf.CHECK_HEADERS('samfs/lib.h samfs/stat.h', lib='samfs')
++        conf.env['LINKFLAGS_SAMFS'] = [ '-R/opt/SUNWsamfs/lib' ]
++        conf.CHECK_FUNCS('sam_stat', lib='samfs')
++        default_shared_modules.extend(TO_LIST('vfs_samfs'))
++
+     if Options.options.with_glusterfs:
+         conf.CHECK_CFG(package='glusterfs-api', args='"glusterfs-api >= 4" --cflags --libs',
+                        msg='Checking for glusterfs-api >= 4', uselib_store="GFAPI")
+--- a/source3/modules/wscript_build	2016-01-26 12:25:54.000000000 -0800
++++ b/source3/modules/wscript_build	2016-07-28 16:27:45.819924564 -0700
+@@ -194,6 +194,14 @@
+                  internal_module=bld.SAMBA3_IS_STATIC_MODULE('vfs_solarisacl'),
+                  enabled=bld.SAMBA3_IS_ENABLED_MODULE('vfs_solarisacl'))
+ 
++bld.SAMBA3_MODULE('vfs_samfs',
++                 subsystem='vfs',
++                 source='vfs_samfs.c',
++                 deps='samba-util samfs',
++                 init_function='',
++                 internal_module=bld.SAMBA3_IS_STATIC_MODULE('vfs_samfs'),
++                 enabled=bld.SAMBA3_IS_ENABLED_MODULE('vfs_samfs'))
++
+ bld.SAMBA3_MODULE('vfs_zfsacl',
+                  subsystem='vfs',
+                  source='vfs_zfsacl.c',
