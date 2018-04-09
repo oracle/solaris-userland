@@ -42,7 +42,7 @@
 # The Solaris Update number. This will be set by the gatekeepers.
 # The value must match the update number of the release.
 #
-UPDATENUM ?= 4
+UPDATENUM ?= 5
 
 # Target OS version
 PKG_SOLARIS_VERSION ?= 11.$(UPDATENUM)
@@ -58,7 +58,7 @@ SRUNUM ?= 0
 # For distinguising between Server OS and Storage OS branches, and/or between
 # trunk and release branches.
 #
-BRANCH_ORDER ?= 1
+BRANCH_ORDER ?= 0
 
 #
 # Platform number. This is here to reserve space within the version
