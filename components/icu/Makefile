@@ -29,6 +29,7 @@ include ../../make-rules/shared-macros.mk
 COMPONENT_NAME=		icu4c
 COMPONENT_VERSION=	59_1
 IPS_COMPONENT_VERSION=	59.1
+HUMAN_VERSION=		$(COMPONENT_VERSION)-1
 COMPONENT_PROJECT_URL=  http://site.icu-project.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-src.tgz
 COMPONENT_ARCHIVE_HASH= \
@@ -37,7 +38,8 @@ COMPONENT_ARCHIVE_URL=  http://download.icu-project.org/files/icu4c/59.1/$(COMPO
 COMPONENT_BUGDB=	library/icu
 COMPONENT_ANITYA_ID=	16134
 
-TPNO=			36196
+# patches 141 and 142 come from ICU 61.1
+TPNO=			42250
 
 # set relocate_to option while unpacking the tar ball
 UNPACK_ARGS= -r $(COMPONENT_SRC)
