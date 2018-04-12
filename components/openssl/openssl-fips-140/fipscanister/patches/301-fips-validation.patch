@@ -2,7 +2,7 @@
 # This patch is necessary to get a new FIPS validation:
 # - Use modern compile options
 # - Conform to FIPS 186-4: RSA key generation
-# - Enable FIPS by default: ignore a call to FIPS_mode_set(1)
+# - Enable FIPS by default
 --- a/Configure.orig	2016-07-15 01:47:46.399055235 -0700
 +++ b/Configure	2016-07-15 01:59:36.376433305 -0700
 @@ -221,8 +221,8 @@
@@ -61,20 +61,37 @@
  		goto error;
 --- a/fips/fips.c	2016-06-20 12:49:46.000000000 -0700
 +++ b/fips/fips.c	2017-09-07 12:53:13.309095315 -0700
-@@ -288,6 +288,12 @@
+@@ -77,6 +77,7 @@
+ static int fips_auth_fail = 0;
+ static int fips_mode = 0;
+ static int fips_started = 0;
++static int fips_post_pass = 0;
+ 
+ static int fips_is_owning_thread(void);
+ static int fips_set_owning_thread(void);
+@@ -288,6 +289,21 @@
      {
      int ret = 0;
  
-+    /* FIPS mode is enabled by default : this is noop */
-+    if (onoff && FIPS_module_mode())
++    if (onoff)
 +        {
-+        return 1;
++        if (FIPS_module_mode() == 1)
++            /* FIPS mode is already enabled: this is noop */
++            return 1;
++        else if (fips_started && fips_post_pass == 0)
++            {
++            /*
++             * If the FIPS mode was disabled at the load time, fail to
++             * enable the FIPS mode
++             */
++            return 0;
++            }
 +        }
 +
      fips_w_lock();
      fips_started = 1;
      fips_set_owning_thread();
-@@ -301,20 +307,11 @@
+@@ -301,20 +317,11 @@
  	    fips_auth_fail = 1;
  	    fips_selftest_fail = 1;
  	    FIPSerr(FIPS_F_FIPS_MODULE_MODE_SET,FIPS_R_AUTHENTICATION_FAILURE);
@@ -96,31 +113,81 @@
  	{
  	extern unsigned int OPENSSL_ia32cap_P[2];
  	if ((OPENSSL_ia32cap_P[0] & (1<<25|1<<26)) != (1<<25|1<<26))
+@@ -338,7 +345,10 @@
+ 	    }
+ 
+ 	if(FIPS_selftest())
++           {
+ 	    fips_set_mode(onoff);
++           fips_post_pass = 1;
++           }
+ 	else
+ 	    {
+ 	    fips_selftest_fail = 1;
 --- a/fips/fips_premain.c	2016-06-22 08:40:20.000000000 -0700
 +++ b/fips/fips_premain.c	2017-09-08 14:07:28.888746325 -0700
-@@ -87,6 +87,7 @@
+@@ -4,9 +4,13 @@
+  * OpenSSL license.
+  */
+ 
++#ifdef __linux__
++#define _GNU_SOURCE
++#endif
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include <dlfcn.h>
+ #if defined(__unix) || defined(__unix__) || defined(__vxworks) || defined(__ANDROID__) || defined(__APPLE__)
+ #include <unistd.h>
+ #endif
+@@ -87,6 +88,8 @@
  extern const unsigned char FIPS_rodata_start[], FIPS_rodata_end[];
  extern unsigned char       FIPS_signature[20];
  extern unsigned int        FIPS_incore_fingerprint(unsigned char *,unsigned int);
-+extern int                 FIPS_mode_set(int);
++extern int                 FIPS_module_mode_set(int onoff, const char *auth);
++extern int                 solaris_fips_OPENSSL_init(void);
  
  /*
   * As name suggests this code is executed prior main(). We use this
-@@ -143,6 +144,12 @@
+@@ -97,6 +99,8 @@
+ { unsigned char sig[sizeof(FIPS_signature)];
+   const unsigned char * volatile p=FINGERPRINT_ascii_value;
+   unsigned int len=sizeof(sig),i;
++  int fips_enabled;
++  int (*_fips_config_check)(void);
+ 
+     /* "volatilization" is done to disengage unwanted optimization... */
+     if (*((volatile unsigned char *)p)=='?')
+@@ -143,6 +147,32 @@
  #if defined(__powerpc__) || defined(__ppc__) || defined(_ARCH_PPC)
      fips_openssl_cpuid_setup();
  #endif
 +
-+  /* enable FIPS mode by default */
-+  if (FIPS_mode_set(1) != 1)
-+  {   fprintf(stderr, "Failed to set FIPS mode.\n");
-+      abort();
-+  }
++    /*
++     * If the OS provides _fips_config_check(), call the function to check
++     * the mode of the operation configured.
++     * Note: the function is not defined in Solaris, so Solaris will always
++     * enable the FIPS mode by default.
++     */
++    fips_enabled  = 1; /* by default, it is enabled */
++    _fips_config_check = (int (*)())dlsym(RTLD_DEFAULT, "_fips_config_check");
++    if (_fips_config_check) {
++        fips_enabled = _fips_config_check();
++    }
++
++    if (fips_enabled) {
++        /* enable FIPS mode by default */
++        if (solaris_fips_OPENSSL_init() != 1) {
++            fprintf(stderr, "Failed to set FIPS mode.\n");
++            abort();
++        }
++    } else {
++        /*
++         * Call FIPS_module_mode_set(0) to indicate that the FIPS mode was
++         * false when the module is loaded and POST was not executed.
++         */
++        (void) FIPS_module_mode_set(0, NULL);
++    }
  }
  
  #else
---- a/fips/fips_premain.c.sha1	2016-06-22 08:40:20.000000000 -0700
-+++ b/fips/fips_premain.c.sha1	2017-09-08 12:19:55.443014110 -0700
-@@ -1 +1 @@
--HMAC-SHA1(fips_premain.c)= 2bfb57ef540bdba29220a45d65e1b4080de9adc1
-+HMAC-SHA1(fips_premain.c)= ed6ada81e94636991d39d1f2e498296da087d327

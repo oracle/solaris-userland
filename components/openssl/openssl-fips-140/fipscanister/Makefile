@@ -64,7 +64,6 @@ COMPONENT_POST_UNPACK_ACTION = \
     ( echo "Cloning engines..."; \
 	$(LN) -fs $(COMPONENT_DIR)/inline-t4/sparc_arch.h		$(@D)/crypto/; \
 	$(LN) -fs $(COMPONENT_DIR)/inline-t4/sparccpuid.S		$(@D)/crypto/; \
-	$(LN) -fs $(COMPONENT_DIR)/inline-t4/o_fips.c			$(@D)/crypto/; \
 	$(LN) -fs $(COMPONENT_DIR)/inline-t4/o_init.c			$(@D)/crypto/; \
 	$(LN) -fs $(COMPONENT_DIR)/inline-t4/aest4-sparcv9.pl		$(@D)/crypto/aes/asm; \
 	$(LN) -fs $(COMPONENT_DIR)/inline-t4/dest4-sparcv9.pl		$(@D)/crypto/des/asm; \

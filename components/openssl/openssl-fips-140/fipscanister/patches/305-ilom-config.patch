@@ -1,0 +1,255 @@
+#
+# This patch is needed to build the Oracle Solaris OpenSSL
+# on linux for ILOM.
+# This was developed in house, and not appricable to the upstream.
+#
+--- a/Configure	2018-01-31 23:15:31.919605095 -0800
++++ b/Configure	2018-01-31 23:15:02.366995130 -0800
+@@ -141,6 +141,8 @@
+ my $parisc20_asm="pariscid.o:pa-risc2W.o parisc-mont.o::aes_core.o aes_cbc.o aes-parisc.o:::sha1-parisc.o sha256-parisc.o sha512-parisc.o::rc4-parisc.o:::::ghash-parisc.o::64";
+ my $ppc32_asm="ppccpuid.o ppccap.o:bn-ppc.o ppc-mont.o ppc64-mont.o::aes_core.o aes_cbc.o aes-ppc.o aesp8-ppc.o:::sha1-ppc.o sha256-ppc.o sha512-ppc.o sha256p8-ppc.o sha512p8-ppc.o:::::::ghashp8-ppc.o:";
+ my $ppc64_asm="ppccpuid.o ppccap.o:bn-ppc.o ppc-mont.o ppc64-mont.o::aes_core.o aes_cbc.o aes-ppc.o aesp8-ppc.o:::sha1-ppc.o sha256-ppc.o sha512-ppc.o sha256p8-ppc.o sha512p8-ppc.o:::::::ghashp8-ppc.o:";
++# ILOM config
++my $ilom_asm="o_init.o mem_clr.o:::::::::::::::void";
+ my $no_asm=":::::::::::::::void";
+ 
+ # As for $BSDthreads. Idea is to maintain "collective" set of flags,
+@@ -341,7 +343,8 @@
+ ####
+ # *-generic* is endian-neutral target, but ./config is free to
+ # throw in -D[BL]_ENDIAN, whichever appropriate...
+-"linux-generic32","gcc:-DTERMIO -O3 -fomit-frame-pointer -Wall::-D_REENTRANT::-ldl:BN_LLONG RC4_CHAR RC4_CHUNK DES_INT DES_UNROLL BF_PTR:${no_asm}:dlfcn:linux-shared:-fPIC::.so.\$(SHLIB_MAJOR).\$(SHLIB_MINOR)",
++"linux-generic32","gcc:-DTERMIO -O3 -fomit-frame-pointer -Wall::-D_REENTRANT::-ldl:BN_LLONG RC4_CHAR RC4_CHUNK DES_INT DES_UNROLL BF_PTR:${ilom_asm}:dlfcn:linux-shared:-fPIC::.so.\$(SHLIB_MAJOR).\$(SHLIB_MINOR)",
++"linux-generic32-closed","gcc:-DTERMIO -O3 -fomit-frame-pointer -Wall::-D_REENTRANT -DFIPS_CLOSED_SYSTEM::-ldl -lrt:BN_LLONG RC4_CHAR RC4_CHUNK DES_INT DES_UNROLL BF_PTR:${ilom_asm}:dlfcn:linux-shared:-fPIC::.so.\$(SHLIB_MAJOR).\$(SHLIB_MINOR)",
+ "linux-ppc",	"gcc:-DB_ENDIAN -DTERMIO -O3 -Wall::-D_REENTRANT::-ldl:BN_LLONG RC4_CHAR RC4_CHUNK DES_RISC1 DES_UNROLL:${ppc32_asm}:linux32:dlfcn:linux-shared:-fPIC::.so.\$(SHLIB_MAJOR).\$(SHLIB_MINOR)",
+ # It's believed that majority of ARM toolchains predefine appropriate -march.
+ # If you compiler does not, do complement config command line with one!
+--- a/config	2018-04-12 07:28:43.114380902 -0700
++++ b/config	2018-04-12 07:28:43.109802420 -0700
+@@ -46,6 +46,10 @@
+ esac
+ done
+ 
++if [ ".$FIPS_CLOSED_SYSTEM" != "." ]; then
++	SUFFIX="-closed"
++fi
++
+ # First get uname entries that we use below
+ 
+ [ "$MACHINE" ] || MACHINE=`(uname -m) 2>/dev/null` || MACHINE="unknown"
+@@ -990,7 +994,7 @@
+   OUT="$OUT-$CC"
+ fi
+ 
+-OUT="$PREFIX$OUT"
++OUT="$PREFIX$OUT$SUFFIX"
+ 
+ $PERL ./Configure LIST | grep "$OUT" > /dev/null
+ if [ $? = "0" ]; then
+--- a/fips/fips_post.c	2018-04-12 07:28:43.402943683 -0700
++++ b/fips/fips_post.c	2018-04-12 07:28:43.399450544 -0700
+@@ -60,6 +60,9 @@
+ #include <openssl/ecdsa.h>
+ #include <string.h>
+ #include <limits.h>
++#include <fcntl.h>
++#include <unistd.h>
++#include <sys/stat.h>
+ 
+ #ifdef OPENSSL_FIPS
+ 
+@@ -68,6 +71,8 @@
+ #include <openssl/fips.h>
+ #include "fips_locl.h"
+ 
++#define FIPS_KATS_REQUIRED	"/fips_kats_required"
++
+ /* POST notification callback */
+ 
+ int (*fips_post_cb)(int op, int id, int subid, void *ex);
+@@ -153,6 +158,76 @@
+ 	{
+ 	return post_status > 0 ? 1 : 0;
+ 	}
++#ifdef FIPS_CLOSED_SYSTEM
++int fips_kats_required(void)
++	{
++	struct stat stat;
++	unsigned char c = 1;
++	int kats_required = 1;
++	int fd;
++
++	fd = shm_open(FIPS_KATS_REQUIRED, O_RDONLY, 0);
++	if (fd < 0) {
++		return kats_required;
++	}
++	// files not owned by root and/or writable by non-root are not trusted
++	if (fstat(fd, &stat) < 0 || stat.st_size != 1 ||
++	    stat.st_uid != 0 || stat.st_mode != (S_IFREG|0644)) {
++		close(fd);
++		return kats_required;
++	}
++	if (read(fd, &c, 1) != 1) {
++		close(fd);
++		return kats_required;
++	}
++	close(fd);
++	kats_required = c != 1 ? 1 : 0;
++	return kats_required;
++	}
++void fips_kats_completed(int status)
++	{
++	struct stat stat;
++	unsigned char c = status ? 1 : 0;
++	int retry;
++	int fd;
++
++	// only root is allowed to alter the kats_required flag
++	if (geteuid() != 0) {
++		return;
++	}
++
++	for (retry = 5; retry > 0; retry--) {
++		fd = shm_open(FIPS_KATS_REQUIRED, O_CREAT|O_RDWR, 0644);
++		if (fd < 0) {
++			// this should never happen; just abort if it does
++			return;
++		}
++
++		if (fstat(fd, &stat) < 0) {
++			// this should never happen; just abort if it does
++			close(fd);
++			return;
++		}
++
++		if (stat.st_uid == 0 || stat.st_mode == (S_IFREG|0644)) {
++			write(fd, &c, 1);
++			close(fd);
++			return;
++		}
++
++		/*
++		 * If a non-root user owns the file then it's possible an
++		 * attacker already has an open file descriptor. There is
++		 * no way for us to fchown() the file to root without
++		 * introducing a race condition that lets the other process
++		 * alter the contents after we are done. The only safe
++		 * thing to do is remove the file and try again.
++		 */
++		close(fd);
++		shm_unlink(FIPS_KATS_REQUIRED);
++	}
++	}
++#endif // FIPS_CLOSED_SYSTEM
+ /* Run all selftests */
+ int FIPS_selftest(void)
+ 	{
+@@ -160,34 +235,42 @@
+ 	fips_post_begin();
+ 	if(!FIPS_check_incore_fingerprint())
+ 		rv = 0;
+-	if (!FIPS_selftest_drbg())
+-		rv = 0;
+-	if (!FIPS_selftest_x931())
+-		rv = 0;
+-    	if (!FIPS_selftest_sha1())
+-		rv = 0;
+-	if (!FIPS_selftest_hmac())
+-		rv = 0;
+-	if (!FIPS_selftest_cmac())
+-		rv = 0;
+-	if (!FIPS_selftest_aes())
+-		rv = 0;
+-	if (!FIPS_selftest_aes_ccm())
+-		rv = 0;
+-	if (!FIPS_selftest_aes_gcm())
+-		rv = 0;
+-	if (!FIPS_selftest_aes_xts())
+-		rv = 0;
+-	if (!FIPS_selftest_des())
+-		rv = 0;
+-	if (!FIPS_selftest_rsa())
+-		rv = 0;
+-	if (!FIPS_selftest_ecdsa())
+-		rv = 0;
+-	if (!FIPS_selftest_dsa())
+-		rv = 0;
+-	if (!FIPS_selftest_ecdh())
+-		rv = 0;
++#ifdef FIPS_CLOSED_SYSTEM
++	if (fips_kats_required())
++#endif
++	{
++		if (!FIPS_selftest_drbg())
++			rv = 0;
++		if (!FIPS_selftest_x931())
++			rv = 0;
++		if (!FIPS_selftest_sha1())
++			rv = 0;
++		if (!FIPS_selftest_hmac())
++			rv = 0;
++		if (!FIPS_selftest_cmac())
++			rv = 0;
++		if (!FIPS_selftest_aes())
++			rv = 0;
++		if (!FIPS_selftest_aes_ccm())
++			rv = 0;
++		if (!FIPS_selftest_aes_gcm())
++			rv = 0;
++		if (!FIPS_selftest_aes_xts())
++			rv = 0;
++		if (!FIPS_selftest_des())
++			rv = 0;
++		if (!FIPS_selftest_rsa())
++			rv = 0;
++		if (!FIPS_selftest_ecdsa())
++			rv = 0;
++		if (!FIPS_selftest_dsa())
++			rv = 0;
++		if (!FIPS_selftest_ecdh())
++			rv = 0;
++#ifdef FIPS_CLOSED_SYSTEM
++		fips_kats_completed(rv);
++#endif
++	}
+ 	fips_post_end();
+ 	return rv;
+ 	}
+--- a/fips/fips_premain.c	2018-02-02 13:54:30.296844315 -0800
++++ b/fips/fips_premain.c	2018-02-12 14:23:22.937762875 -0800
+@@ -18,7 +18,7 @@
+ #ifndef FINGERPRINT_PREMAIN_DSO_LOAD
+ 
+ #if defined(__GNUC__) && __GNUC__>=2
+-  void FINGERPRINT_premain(void) __attribute__((constructor));
++  void FINGERPRINT_premain(void) __attribute__((constructor (101)));
+   /* Most commonly this results in pointer to premain to be dropped
+    * to .ctors segment, which is traversed by GCC crtbegin.o upon
+    * program startup. Except on a.out OpenBSD where it results in
+--- a/fips/fips_premain.c.sha1	2018-02-02 13:54:30.297029509 -0800
++++ b/fips/fips_premain.c.sha1	2018-02-12 14:24:45.897725220 -0800
+@@ -1 +1 @@
+-HMAC-SHA1(fips_premain.c)= 2bfb57ef540bdba29220a45d65e1b4080de9adc1
++HMAC-SHA1(fips_premain.c)= ea3c2af6924391dcb3b1d87b42a5ef8d68744983
+--- a/fips/fips_test_suite.c	2016-06-20 12:49:46.000000000 -0700
++++ b/fips/fips_test_suite.c	2018-02-21 11:55:52.020333311 -0800
+@@ -1325,7 +1325,7 @@
+ 
+     FIPS_post_set_callback(post_cb);
+ 
+-#if (defined(__arm__) || defined(__aarch64__))
++#if 0
+     extern unsigned int OPENSSL_armcap_P;
+     if (0 == OPENSSL_armcap_P)
+ 	fprintf(stderr, "Optimizations disabled\n");
+--- a/test/fips_algvs.c	2016-06-20 12:49:47.000000000 -0700
++++ b/test/fips_algvs.c	2018-02-21 13:17:56.194654316 -0800
+@@ -326,7 +326,7 @@
+ 	SysInit();
+ #endif
+ 
+-#if (defined(__arm__) || defined(__aarch64__))
++#if 0
+ 	if (*args && !strcmp(*args, "-noaccel"))
+ 		{
+ 		extern unsigned int OPENSSL_armcap_P;

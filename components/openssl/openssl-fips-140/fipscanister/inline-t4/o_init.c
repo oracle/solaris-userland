@@ -53,8 +53,14 @@
  *
  */
 
-#include <strings.h>
-#include <sys/random.h>
+#ifdef __linux__
+#define _GNU_SOURCE
+#endif
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <dlfcn.h>
 #include <e_os.h>
 #include <openssl/err.h>
 #ifdef OPENSSL_FIPS
@@ -81,17 +87,44 @@ int fips_drbg_flags = OPENSSL_DRBG_DEFAULT_FLAGS;
 static size_t drbg_get_entropy(DRBG_CTX *ctx, unsigned char **pout,
                                int entropy, size_t min_len, size_t max_len)
 {
+    int		fd;
+    ssize_t	rnd_len = 0;
+    int		(*getentropy)(void *buf, size_t buflen);
+
     /* Round up request to multiple of block size */
     min_len = ((min_len + 19) / 20) * 20;
     *pout = OPENSSL_malloc(min_len);
     if (!*pout)
         return 0;
-    if (getentropy(*pout, min_len) != 0) {
-        OPENSSL_free(*pout);
-        *pout = NULL;
-        return 0;
+
+    /* if the OS provides getentropy(), use the function*/
+    getentropy = (int (*)())dlsym(RTLD_DEFAULT, "getentropy");
+    if (getentropy) {
+        if (getentropy(*pout, min_len) != 0) {
+            OPENSSL_free(*pout);
+            *pout = NULL;
+            return 0;
+        }
+        return (min_len);
     }
-    return min_len;
+
+    // OS does not provide getentropy() so emulate it ourselves
+
+    fd = open("/dev/urandom", O_RDONLY);
+    if (fd < 0) {
+            return (0);
+    }
+    while (rnd_len < min_len) {
+        ssize_t result = read(fd, *pout + rnd_len,
+            (min_len - rnd_len) > 256 ? 256 : (min_len - rnd_len));
+        if (result < 0) {
+            (void) close(fd);
+            return (0);
+        }
+        rnd_len += result;
+    }
+    (void) close(fd);
+    return (min_len);
 }
 
 static void drbg_free_entropy(DRBG_CTX *ctx, unsigned char *out, size_t olen)
@@ -146,12 +179,20 @@ static int solaris_RAND_init_fips(void)
     return 1;
 }
 
-void OPENSSL_init(void)
+int solaris_fips_OPENSSL_init(void)
 {
     static int done = 0;
     if (done)
-        return;
+        return 1;
     done = 1;
 
     solaris_RAND_init_fips();
+
+#ifndef FIPS_AUTH_USER_PASS
+#define FIPS_AUTH_USER_PASS     "Default FIPS Crypto User Password"
+#endif
+    if (!FIPS_module_mode_set(1, FIPS_AUTH_USER_PASS))
+        return 0;
+
+    return 1;
 }
