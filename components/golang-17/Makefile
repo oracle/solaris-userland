@@ -42,7 +42,15 @@ COMPONENT_PROJECT_URL=	https://golang.org
 COMPONENT_ANITYA_ID=	1227
 
 ARC_CASE=		PSARC/2015/203,PSARC/2016/250
-TPNO=			39850
+TPNO=			42638
+
+
+# The .1 refers to version 1.7.6-1 to distinguish between community version of
+# golang and this package, which contains other known fixes backported from
+# upstream. A similar approach is addopted by some Linux distros.
+
+IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).1
+HUMAN_VERSION=		$(COMPONENT_VERSION)-1
 
 # Go has a number of supplementary tools and packages that are located in
 # separate archives or source repositories. Because Go currently forces a
@@ -58,6 +66,8 @@ SUPP_PACKAGES=		crypto image lint net sys text tools tour
 define supp-rules
 COMPONENT_NAME_$(1)=		$(1)
 COMPONENT_VERSION_$(1)=		$(COMPONENT_VERSION)
+IPS_COMPONENT_VERSION_$(1)=	$(COMPONENT_VERSION).1
+HUMAN_VERSION_$(1)=		$(COMPONENT_VERSION)-1
 COMPONENT_LABEL_$(1)=
 COMPONENT_IMPORT_SRC_$(1)=	golang.org/x
 GIT_REPO_$(1)=			https://github.com/golang/$(1).git
