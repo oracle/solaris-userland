@@ -35,6 +35,7 @@ COMPONENT_SRC=		sun-src
 COMPONENT_BUGDB=        driver/drm
 
 TPNO=			5772
+TPNO_i915=		5800
 
 BUILD_STYLE= justmake
 TEST_TARGET= $(NO_TESTS)
