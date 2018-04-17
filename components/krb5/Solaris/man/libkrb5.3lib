@@ -1,6 +1,6 @@
 '\" te
-.\" Copyright (c) 2009, 2017, Oracle and/or its affiliates. All rights reserved.
-.TH libkrb5 3LIB "21 Apr 2011" "Solaris 11.4" "Interface Libraries"
+.\" Copyright (c) 2009, 2018, Oracle and/or its affiliates. All rights reserved.
+.TH libkrb5 3LIB "17 Apr 2018" "Solaris 11.4" "Interface Libraries"
 .SH NAME
 libkrb5 \- MIT Kerberos 5 library
 .SH SYNOPSIS
@@ -34,8 +34,8 @@ The \fBkrb5_cc_gen_new\fR routine, listed in \fBkrb5.h\fR section, is flawed and
 char ccname[40];
 int tmpfd;
 
-snprintf(ccname,sizeof(ccname),"FILE:/tmp/krb5cc_%d_XXXXXX",
-        geteuid());
+snprintf(ccname,sizeof(ccname),"FILE:/tmp/volatile-user/<uid>/krb5cc_%d_XXXXXX",
+        geteuid(), geteuid());
 
 if ((tmpfd = mkstemp(ccname+strlen("FILE:")))==-1) {
         log("mkstemp(): %.100s", strerror(errno));

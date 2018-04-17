@@ -85,6 +85,7 @@ CPPFLAGS += -D__STDC_WANT_LIB_EXT1__
 # If you make changes to LDFLAGS, check krb5-config and 052-krb5-config.patch.
 LDFLAGS += -lc $(LD_Z_DEFS)
 
+CONFIGURE_ENV += DEFCCNAME="FILE:/tmp/volatile-user/%{uid}/krb5cc_%{uid}"
 CONFIGURE_ENV += DEFKTNAME="FILE:$(ETCDIR)/krb5/krb5.keytab"
 CONFIGURE_ENV += DEFCKTNAME="FILE:/var/user/%{username}/client.keytab"
 
