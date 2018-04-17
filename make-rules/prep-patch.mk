@@ -45,6 +45,11 @@ GPATCH_FLAGS =	--strip=$(PATCH_LEVEL) $(GPATCH_BACKUP)
 #     additional patches.
 #
 
+# We are interested in *.patch and *.patch_*
+# *.patch is applied against $(COMPONENT_SRC)
+# *.patch_blah is applied against $(COMPONENT_SRC_blah)
+# Since the pattern is passed to find(1) command we merge the two options into
+# *.patch*
 PATCH_PATTERN ?=	*.patch*
 
 PATCH_DIR ?=		patches
@@ -73,7 +78,9 @@ PATCH_PATTERN$(1) ?=	%.patch$(1)
 PATCHES$(1) = $(filter %.patch$(1),$(ALL_PATCHES))
 endif
 
+ifneq ($(strip $(ADDITIONAL_PATCHES$(1))),)
 PATCHES$(1) += $(ADDITIONAL_PATCHES$(1))
+endif
 
 ifneq ($$(PATCHES$(1)),)
 PATCH_STAMPS$(1) += $$(PATCHES$(1):$(PATCH_DIR)/%=$$(SOURCE_DIR$(1))/.patched-%)
