@@ -29,16 +29,16 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		php
-COMPONENT_VERSION=	7.1.15
+COMPONENT_VERSION=	7.1.16
 UL_PHP_MINOR_VERSION=	7.1
 COMPONENT_PROJECT_URL=	http://php.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=\
-    sha256:0e17192fb43532e4ebaa190ecec9c7e59deea7dadb7dab67b19c2081a68bd817
+    sha256:a5d67e477248a3911af7ef85c8400c1ba8cd632184186fd31070b96714e669f1
 COMPONENT_ARCHIVE_URL=	http://php.net/get/$(COMPONENT_ARCHIVE)/from/this/mirror
 COMPONENT_ANITYA_ID=	3627
 
-TPNO=			41441
+TPNO=			42616
 
 include $(WS_MAKE_RULES)/common.mk
 include $(PHP_TOP_DIR)/php.mk
@@ -140,7 +140,9 @@ COMPONENT_TEST_ARGS += -k -i
 # different results for different architectures
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
 COMPONENT_TEST_TRANSFORMS += \
-    '-e "/^make/d" '
+    '-e "/^make/d" ' \
+    '-e "/^TEST RESULT SUMMARY$$/,\$$p" ' \
+    '-e "/.*/d" '
 
 CLEAN_PATHS += proto-scripts
 
