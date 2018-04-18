@@ -20,25 +20,23 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 		64
+COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		liblouis
-COMPONENT_VERSION=	2.1.1
+COMPONENT_VERSION=	3.5.0
 COMPONENT_PROJECT_URL=	http://liblouis.org/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e7b4f1aee9b1cd595b49a2fab1c545d1c7aad70dc427aa5c6d413a3dba17722c
-# liblouis upstream didn't migrate the 2.1.1 download from google code to
-# github, so we use a mirror site for now, until we upgrade to a current version
-# COMPONENT_ARCHIVE_URL=	https://github.com/liblouis/liblouis/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
-COMPONENT_ARCHIVE_URL=	https://distfiles.macports.org/liblouis/$(COMPONENT_ARCHIVE)
+	sha256:cf9b9650f750ef19768773b3d882780d42a8674719d887255f00ad735a4ffa2a
+COMPONENT_ARCHIVE_URL=	https://github.com/liblouis/liblouis/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/accessibility
 COMPONENT_ANITYA_ID=	13112
 
-TPNO=			4317
+TPNO=			41699
 
 # Orca uses python 3.5, so we need to match
 PYTHON_VERSION=		3.5
@@ -86,4 +84,7 @@ COMPONENT_TEST_TRANSFORMS += \
 
 REQUIRED_PACKAGES += developer/documentation-tool/help2man
 REQUIRED_PACKAGES += library/python/setuptools-35
+REQUIRED_PACKAGES += runtime/perl-522
 REQUIRED_PACKAGES += runtime/python-35
+REQUIRED_PACKAGES += system/core-os
+
