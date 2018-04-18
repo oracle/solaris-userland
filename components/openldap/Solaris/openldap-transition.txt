@@ -1,0 +1,101 @@
+Requirements to transition from one version of OpenLDAP to another.
+
+_Only required if the system is being used as an OpenLDAP server._
+
+Ordinarily a system is being used as an OpenLDAP server when SMF service
+instance ldap/server is enabled and online.
+,----
+| svcs ldap/server
+`----
+
+The OpenLDAP package has been updated to include a newer version of
+OpenLDAP which must be manually migrated to.
+
+To transition from one version of OpenLDAP to the next it is imperative
+that databases are exported to LDAP Data Interchange Format (LDIF) and
+imported following the upgrade.  This is a manual procedure and needs to
+be completed by a systems administrator before booting into the new boot
+environment.
+
+In addition the version of OpenLDAP 2.4.44, and for the foreseeable
+future, has switched from using Berkeley DB (BDB) format to the
+Lightning Memory-Mapped Database (LMDB) format requiring an additional
+configuration change.
+
+This guide explains how to transition to the later version and migrate
+your data from the BDB database to LMDB format.  These instructions
+assume that slapd's configuration is stored in
+/etc/openldap/slapd.conf.
+
+a) Quiesce the service of writes, for example by disabling it:
+   ,----
+   | svcadm disable ldap/server
+   `----
+
+b) Dump database to LDIF file using slapcat(8oldap).
+
+   ,----
+   | mkdir -p /var/share/openldap
+   | slapcat -l /var/share/openldap/data.ldif
+   `----
+
+c) Boot into new boot environment when ready
+
+   ,----
+   | reboot
+   `----
+
+   Upon reboot the ldap/server service may be in maintenance mode if the
+   versions are not compatible.
+
+d) Update slapd configuration files as necessary.
+
+   slapd's configuration may require a couple of minor changes.
+   This is necessary to update:
+   - TLSProtocolMin : Minimum protocol version (format change).
+     - If applicable change setting from "770" to "3.2"
+   - database : OpenLDAP database type
+     - If applicable change setting from bdb to mdb
+
+   Example: Modifying slapd.conf for use with OpenLDAP 2.4.44 and above.
+   ,----
+   | # cp /etc/openldap/slapd.conf /etc/openldap/slapd.2430.conf
+   | # vi /etc/openldap/slapd.conf
+   | # diff /etc/openldap/slapd.2430.conf /etc/openldap/slapd.conf
+   | 27c27
+   | < TLSProtocolMin        770
+   | ---
+   | > TLSProtocolMin        3.2
+   | 55c55
+   | < database      bdb
+   | ---
+   | > database      mdb
+   | #
+   `----
+
+e) Remove old database in /var/openldap/openldap-data
+
+   ,----
+   | rm -rf /var/openldap/openldap-data/*
+   `----
+
+f) Import LDIF data manually after boot.
+
+   ,----
+   | slapadd -l /var/share/openldap/data.ldif
+   `----
+
+g) Enable ldap/server
+
+   ,----
+   | svcadm enable ldap/server
+   `----
+
+h) Check ldap/server status and log as necessary
+
+   ,----
+   | svcs ldap/server
+   | svcs -Lv ldap/server
+   `----
+
+That concludes the OpenLDAP transition instructions.

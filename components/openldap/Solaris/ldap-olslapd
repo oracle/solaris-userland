@@ -1,133 +1,355 @@
-#! /usr/bin/ksh93
+#!/usr/bin/ksh93
 
-# Copyright (c) 2007, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2007, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 source /lib/svc/share/smf_include.sh
 
+typeset -r IAM=${0##*/}
 typeset -r LDAPUSR=openldap
 typeset -r LDAPGRP=openldap
-typeset -r VARRUNDIR=/var/openldap/run
-typeset -r VARDATADIR=/var/openldap/openldap-data
-typeset -r PIDFILE=${VARRUNDIR}/slapd.pid
+
+# OpenLDAP commands
+typeset -r SLAPD="/usr/lib/slapd"
+typeset -r SLAPD_CMD="${SLAPD} -u ${LDAPUSR} -g ${LDAPGRP}"
+
+# Files and directories
 typeset -r CONF_FILE=/etc/openldap/slapd.conf
-typeset -r SLAPD="/usr/lib/slapd -u ${LDAPUSR} -g ${LDAPGRP} -f ${CONF_FILE}"
 typeset -r CONF_DIR=/etc/openldap/slapd.d
-typeset -r SLAPD_DIR="/usr/lib/slapd -u ${LDAPUSR} -g ${LDAPGRP} -F ${CONF_DIR}"
+typeset -r DATA_DIR=/var/openldap/openldap-data
+typeset -r DATA_MDB=$DATA_DIR/data.mdb
+typeset -r DATA_BDB=$DATA_DIR/id2entry.bdb
+typeset -r VERSION_FILE=$DATA_DIR/sunw_version
+typeset -r VERSION_DOC=/usr/share/doc/release-notes/openldap-transition.txt
+
+# ldapservercfg
 typeset -r LDAPSERVERCFG="/usr/sbin/ldapservercfg"
 typeset -r DO_LDAPSERVERCFG="pfexec ${LDAPSERVERCFG} -a openldap"
+
 typeset -r FLAG_STR='olcConfigFile: /tmp/dscfg.'
 
-use_dir=0
+integer USE_CONF_DIR=0
 
-slapd_conf_configured()
+# Variables used by read_config
+typeset -A DIRECTORY	# Array of directory paths indexed by database type.
+typeset TLS_MIN		# TLSProtocolMin value for verification.
+
+function slapd_conf_configured
 {
-	grep -q '^database[ 	]*bdb$' ${CONF_FILE}
-	bdb=$?
-	if [[ $bdb -eq 0 ]] ; then
-		echo 'Error: OpenLDAP slapd.conf configured for BerkeleyDB'
-		return -1
+	# Verify that slapd.conf is configured for mdb database and not bdb.
+	# returns:
+	# 1   : when configured for mdb, or other database type.
+	# 0   : Upon failure to read configuration file.
+	# 255 : when configured for bdb
+	#
+	if ! read_config_file; then
+		return 0
 	fi
-	grep -q '^database[ 	]*mdb$' ${CONF_FILE}
-	mdb=$?
-	if [[ $mdb -ne 0 ]] ; then
-		# Server may be using some other DB such as shell.
-		echo 'Warning: OpenLDAP slapd.conf not configured for mdb.'
-		echo 'Attempting to start server.'
-		return 1
+	# Check TLSProtocolMin value
+	if [[ $TLS_MIN == +([0-9]) ]]; then
+		logit "Warning: detected old TLSProtocolMin format in slapd.conf!"
 	fi
-	# slapd.conf is configured for mdb, but double check databases
-	has_bdb=0
-	has_mdb=0
-	grep '^directory' ${CONF_FILE} | while read key dir
-	do
-		if [[ -d ${dir} ]] ; then
-			for file in ${dir}/*.bdb
-			do
-				if [[ -f "${file}" ]] ; then
-					has_bdb=1
-				fi
-			done
-			for file in ${dir}/*.mdb
-			do
-				if [[ -f "${file}" ]] ; then
-					has_mdb=1
+
+	if [[ -n ${DIRECTORY[bdb]} ]]; then
+		error 'slapd.conf configured for BerkeleyDB'
+		return 255
+	fi
+	if [[ -n ${DIRECTORY[mdb]} ]]; then
+		# slapd.conf is configured for mdb, check database exists
+		if [[ -d ${DIRECTORY[mdb]} ]];then
+			for file in "${DIRECTORY[mdb]}"/*.mdb; do
+				if [[ -f $file ]]; then
+					debug 'slapd.conf using mdb database' \
+					      ${DIRECTORY[mdb]}
+					return 1
 				fi
 			done
 		fi
-	done
-	if [[ $has_bdb -eq 1 ]] ; then
-		echo 'Warning BerkeleyDB databases found and ignored.'
+		debug 'slapd.conf using mdb, but missing database' \
+		      ${DIRECTORY[mdb]}
+		# One will be created by ldapservercfg.
+		return 0
+	else
+		logit 'Notice: slapd.conf not configured for mdb.'
 	fi
-	if [[ $has_mdb -eq 1 ]] ; then
-		# Previously configured slapd.conf using mdb
-		return 1
-	fi
-	return 0
+	# Server may be using some other DB such as shell.
+	debug 'Will attempt to start server.'
+	return 1
 }
 
-# Strategy:
-# If the configuration is still includes BDB setup then it is an error
-# If the configuration includes a slapd.d, then LDAP is already setup
-# If the slapd.conf is missing mdb, then it is an non-standard
-# -1 - Bad configuration, 0 - no configuration, 1 - already configured
-
-check_ldap_configuration()
+function check_ldap_configuration
 {
+	# slapd may have been configured manually (not by
+	# ldapservercfg) and therefore maybe using an alternative
+	# backend DB type, for example ldif, ldap, meta or mdb.
+	#
+	# Strategy:
+	# If the configuration still includes BDB setup then it is an error.
+	# If the configuration includes a slapd.d, then LDAP is already setup.
+	# If slapd.conf is missing mdb, then it is a non-standard configuration.
+	#
+	# Returns:
+	# 255 - Bad configuration (DB not supported)
+	# 0   - no configuration
+	# 1   - already configured
+
+	integer db_type_code=0
+
 	if [[ -d ${CONF_DIR} && -f ${CONF_DIR}/cn\=config.ldif ]] ; then
 		# Looks like Server is configured using slapd.d
 		# Check to see if it has old BDB configuration
 		if [[ -f ${CONF_DIR}/cn\=config/*bdb.ldif ]] ; then
-			echo 'Error: OpenLDAP configured for BerkeleyDB'
-			return -1
+			error '$CONF_DIR configured for BerkeleyDB'
+			db_type_code=255
+		else
+			USE_CONF_DIR=1
+			db_type_code=1
 		fi
-		use_dir=1
-		return 1
 	elif [[ -f ${CONF_FILE} ]] ; then
 		slapd_conf_configured
-		err=$?
-		return $err
+		db_type_code=$?
 	fi
-	# OpenLDAP seems to be unconfigured
+
+	if (( $db_type_code == 1 )); then
+		# slapd is configured.  Check version is compatible.
+		version_check
+		if (( $? == 255 )); then
+			db_type_code=255
+		fi
+	fi
+	return $db_type_code
+}
+
+function debug
+{
+	# Only call logit if DEBUG set.
+	if [[ -n $DEBUG ]]; then
+		logit "debug: $@"
+	fi
+}
+
+function logit
+{
+	# All output is directed to SMF log file, this simply adds the
+	# date as per SMF standard; YYYY MMM dd hh:mm:ss.
+	now=$(date '+%Y %b %d %H:%M:%S')
+	echo "[ $now $IAM: $@ ]" >&2
+}
+
+function error
+{
+	logit "Error: $@"
+}
+
+function version_update
+{
+	# Overwrite version file with the current version.
+	# Only use if you know what your doing.
+	# Log what's happening to the SMF log.
+	logit "Notice: writing SLAPD version to $VERSION_FILE"
+	if [[ -f ${VERSION_FILE} ]]; then
+		echo "Previous version found in file:"
+		head ${VERSION_FILE} | cat -tn
+	fi
+	${SLAPD} -VV 2>${VERSION_FILE}
+	if [[ -r ${VERSION_FILE} ]]; then
+		echo "New version written to file:"
+		head ${VERSION_FILE} | cat -tn
+	else
+		error "writing version file!"
+	fi
+}
+
+function version_check
+{
+	# Check for installed version against database version.
+	#
+	# When no version file exists then call version_seeding
+	# and if suitable create version file. Otherwise report error.
+	# Returns 255 for bad version, 0 on matched version and 1 for
+	# an acceptable version.
+	integer version_code=0
+	typeset -r tmp_file=$(mktemp)
+
+	# Write out current version file for comparison and parsing.
+	${SLAPD} -VV 2>$tmp_file
+	vers=$(grep 'OpenLDAP: slapd' $tmp_file | cut -d" " -f4)
+
+	if [[ -f $VERSION_FILE ]]; then
+		# Compare current version string to saved version string.
+		if ! cmp $VERSION_FILE $tmp_file >/dev/null 2>&1; then
+			error "slapd version mismatch!"
+			version_code=255
+		fi
+	else
+		logit "Warning: no version recorded!"
+		seed=$(version_seeding)
+		if [[ $seed == "None" || $seed == "ER!" ]]; then
+			version_update
+		elif [[ $seed == "2.4.30" && $vers == "2.4.30" ]] ||
+			     [[ $seed == "2.4.45" && $vers == "2.4.4"@(4|5) ]]; then
+			logit "Notice: Discovered compatible version $seed"
+			version_update
+			version_code=1
+		else
+			error "slapd Version mismatch: $seed v $vers"
+			version_code=255
+		fi
+	fi
+
+	if (( $version_code == 255 )); then
+		echo "DB in ${DATA_DIR} not created by installed slapd."
+		echo "The version recorded in $VERSION_FILE"
+		echo "differs from the slapd version installed now."
+		echo "To ensure compatibility the previous version of OpenLDAP"
+		echo "should be used to export the older DB to LDIF file"
+		echo "and the new version should be used to import it."
+		echo "For further information read the instructions in"
+		echo "${VERSION_DOC}"
+	fi
+	rm $tmp_file
+	return $version_code
+}
+
+function read_config_file
+{
+	# Reads values we are interested in from slapd.conf.
+	# Returns 255 if configuration file not readable.
+	# Otherwise returns 0.
+	if [[ ! -r ${CONF_FILE} ]]; then
+		error "unable to read ${CONF_FILE}"
+		return 255
+	fi
+	cat $CONF_FILE | while read cmd value; do
+		case $cmd in
+		("#")
+			# The file is mostly comments
+			continue
+			;;
+		("TLSProtocolMin")
+			# The format of this value changed after 2.4.30
+			TLS_MIN=$value
+			;;
+		("database")
+			# Database type, might be more than one.
+			database_type=$value
+			;;
+		("directory")
+			# store directory location and type.
+			DIRECTORY[${database_type:-Err}]=$value
+			;;
+		(*)
+			continue
+			;;
+		esac
+	done
+	# Sanity check
+	if [[ ${DIRECTORY[Err]} ]]; then
+		debug "Warning: " \
+		      "directory statement without database type!" \
+		      ${DIRECTORY[Err]}
+	fi
 	return 0
 }
+
+
+function version_seeding
+{
+	# Very simple discovery based on configured database.
+	# Solaris has only shipped two versions of OpenLDAP.
+	# 2.4.30 provided BDB database.
+	# 2.4.44 and 2.4.45 provided MDB database.
+	typeset db="None"
+	if [[ -d $DATA_DIR ]]; then
+		if [[ -f $DATA_BDB ]]; then
+			db="2.4.30"
+		elif [[ -f $DATA_MDB ]]; then
+			db="2.4.45"
+		else
+			# Is there anything in database directory?
+			for file in $DATA_DIR/*; do
+				if [[ $file == $VERSION_FILE ]]; then
+					# May occur in testing, ignore.
+					continue
+				elif [[ -e $file ]]; then
+					# If any other file exists, assume
+					# it is a database.
+					db="Undetermined"
+					break
+				fi
+			done
+		fi
+	else
+		# Directory should exist as it is in packaging.
+		db="ER!"
+	fi
+	echo $db
+}
+
+# Main
 
 case "$1" in
 start)
 	urls=`/usr/bin/svcprop -c -p config/urls \
-	    svc:/network/ldap/server:openldap 2>/dev/null`
+		svc:/network/ldap/server:openldap 2>/dev/null`
 
 	check_ldap_configuration
-	err=$?
-	if [[ $err -lt 0 ]]; then
+	configured=$?	# 0 = No. 1 = Yes. 255 = Er!
+	if (( $configured == 255 )); then
 		exit $SMF_EXIT_ERR_CONFIG
-	elif [[ $err -gt 0 ]] ; then
-		if [[ $use_dir -eq 1 ]] ; then
-			exec ${SLAPD_DIR} -h "$urls" 2>&1
-		else
-			exec ${SLAPD} -h "$urls" 2>&1
+	fi
+
+	if [[ $configured == 0 && -x ${LDAPSERVERCFG} ]]; then
+		# Check for directory config.
+		if [[ -f ${CONF_DIR}/cn\=config.ldif ]] &&
+			   grep -q "${FLAG_STR}" \
+				${CONF_DIR}/cn\=config.ldif; then
+			# FLAG_STR found
+			#
+			# FLAG_STR's presence ensures that the configuration was
+			# created by ldapservercfg as opposed to being
+			# handcrafted by the user.
+			#
+			#
+			debug FLAG_STR in ${CONF_DIR}/cn\=config.ldif
+			exec ${SLAPD_CMD} -F ${CONF_DIR} -h "$urls" 2>&1
 		fi
-	else
-		if [[ -x ${LDAPSERVERCFG} ]]; then
-			grep -q "${FLAG_STR}" ${CONF_DIR}/cn\=config.ldif
-			[[ $? -eq 0 ]] && exec ${SLAPD_DIR} -h "$urls" 2>&1
-			${DO_LDAPSERVERCFG}
+		# Directory not configured and no FLAG_STR.
+		# Configure a sample configuration.
+		# ldapservercfg will start the server.
+		version_update
+		logit "Configuring an example LDAP server"
+		debug ${DO_LDAPSERVERCFG}
+		${DO_LDAPSERVERCFG}
+		err=$?
+		if (( $err == 0 )); then
+			exit $SMF_EXIT_OK
 		else
-			echo "Unable to setup OpenLDAP server."
+			error "ldapservercfg exited $err"
 			exit $SMF_EXIT_ERR_CONFIG
-			
 		fi
 	fi
-        ;;
+
+	if (( $configured == 1 )) ; then
+		if (( $USE_CONF_DIR == 1 )) ; then
+			exec ${SLAPD_CMD} -F ${CONF_DIR} -h "$urls" 2>&1
+		else
+			exec ${SLAPD_CMD} -f ${CONF_FILE} -h "$urls" 2>&1
+		fi
+	fi
+	# Not reached
+	exit $SMF_EXIT_ERR_CONFIG
+	;;
 stop)
 	# Use the actual contract, not ${PIDFILE}
 	smf_kill_contract $2 TERM 1 30
-        ret=$?
-        [[ $ret -ne 0 ]] && exit 1
+	ret=$?
+	(( $ret != 0 )) && exit 1
 	exit $ret
-        ;;
+	;;
 *)
-        print "Usage: $0 {start|stop}"
-        exit 1
-        ;;
+	print "Usage: $0 {start|stop}"
+	exit 1
+	;;
 esac
 
+# not reached
