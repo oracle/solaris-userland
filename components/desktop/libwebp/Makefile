@@ -28,15 +28,17 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libwebp
-COMPONENT_VERSION=	0.4.3
+COMPONENT_VERSION=	1.0.0
 COMPONENT_PROJECT_URL=	http://www.webmproject.org/
+COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-rc3
+COMPONENT_ARCHIVE=	v$(COMPONENT_VERSION)-rc3.tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:efbe0d58fda936f2ed99d0b837ed7087d064d6838931f282c4618d2a3f7390c4
-COMPONENT_ARCHIVE_URL=	http://downloads.webmproject.org/releases/webp/$(COMPONENT_ARCHIVE)
+	sha256:8c7056025bc600135daa613bed556dcd86268bb7aa3da32ea334bdb3120b6c4f
+COMPONENT_ARCHIVE_URL=	http://github.com/webmproject/libwebp/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libwebp
 COMPONENT_ANITYA_ID=	1761
 
-TPNO=			25769
+TPNO=			42648
 
 # Required for 64-bit builds.
 LDFLAGS += $(CC_BITS)
@@ -44,6 +46,9 @@ LDFLAGS += $(CC_BITS)
 TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk
+
+# To generate configure
+COMPONENT_PREP_ACTION += ( cd $(@D); autoreconf -fiv);
 
 # needs libgif, so disabling for now
 CONFIGURE_OPTIONS += --disable-gif
