@@ -1,0 +1,272 @@
+Solaris specific patch developed inhouse, not suitable for upstream
+--- net-snmp-5.7.3.old/snmplib/scapi.c	2018-03-06 01:41:02.216170099 +0000
++++ net-snmp-5.7.3/snmplib/scapi.c	2018-04-17 05:40:29.355970330 +0000
+@@ -124,6 +124,16 @@
+              const u_char * secret, size_t secretlen);
+ #endif
+ 
++#ifdef NETSNMP_USE_OPENSSL
++static
++int EVP_decrypt(const EVP_CIPHER *type, u_char * key,
++                u_int keylen, u_char * iv, u_char * ciphertext,
++                u_int ctlen, u_char * plaintext);
++static
++int EVP_encrypt(const EVP_CIPHER *type, u_char * key,
++                u_int keylen, u_char * iv, const u_char * plaintext,
++                u_int ptlen, u_char * ciphertext, size_t * ctlen);
++#endif
+ /*
+  * sc_get_properlength(oid *hashtype, u_int hashtype_len):
+  * 
+@@ -797,74 +811,20 @@
+ 
+ #ifndef NETSNMP_DISABLE_DES
+     if (ISTRANSFORM(privtype, DESPriv)) {
+-
+-        /*
+-         * now calculate the padding needed 
+-         */
+-        pad = pad_size - (ptlen % pad_size);
+-        plast = (int) ptlen - (pad_size - pad);
+-        if (pad == pad_size)
+-            pad = 0;
+-        if (ptlen + pad > *ctlen) {
+-            QUITFUN(SNMPERR_GENERR, sc_encrypt_quit);    /* not enough space */
+-        }
+-        if (pad > 0) {              /* copy data into pad block if needed */
+-            memcpy(pad_block, plaintext + plast, pad_size - pad);
+-            memset(&pad_block[pad_size - pad], pad, pad);   /* filling in padblock */
+-        }
+-
+-        memcpy(key_struct, key, sizeof(key_struct));
+-        (void) DES_key_sched(&key_struct, key_sch);
+-
+-        memcpy(my_iv, iv, ivlen);
+-        /*
+-         * encrypt the data 
+-         */
+-        DES_ncbc_encrypt(plaintext, ciphertext, plast, key_sch,
+-                         (DES_cblock *) my_iv, DES_ENCRYPT);
+-        if (pad > 0) {
+-            /*
+-             * then encrypt the pad block 
+-             */
+-            DES_ncbc_encrypt(pad_block, ciphertext + plast, pad_size,
+-                             key_sch, (DES_cblock *) my_iv, DES_ENCRYPT);
+-            *ctlen = plast + pad_size;
+-        } else {
+-            *ctlen = plast;
++        if(!EVP_encrypt(EVP_des_cbc(), key, keylen,
++                        iv, plaintext, ptlen,
++                        ciphertext, ctlen)) {
++            QUITFUN(SNMPERR_GENERR, sc_encrypt_quit);
+         }
+     }
+ #endif
+ #ifdef HAVE_AES
+     if (ISTRANSFORM(privtype, AESPriv)) {
+-      EVP_CIPHER_CTX ctx;
+-      int outlen = 0;
+-      int tmplen = 0;
+-
+-      EVP_CIPHER_CTX_init(&ctx);
+-
+-      EVP_EncryptInit_ex(&ctx, EVP_aes_128_cfb(), NULL, key, iv);
+-
+-      EVP_CIPHER_CTX_set_key_length(&ctx, keylen);
+-
+-      if(!EVP_EncryptUpdate(&ctx, ciphertext, &outlen, plaintext, ptlen))
+-      {
+-         snmp_log(LOG_ERR, "Cipher encryption update of plaintext failed\n");
+-         return FALSE;
+-      }
+-
+-      /* Buffer passed to EVP_EncryptFinal() must be after data just
+-       * encrypted to avoid overwriting it.
+-       */
+-      if(!EVP_EncryptFinal_ex(&ctx, ciphertext + outlen, &tmplen))
+-      {
+-         snmp_log(LOG_ERR, "Final cipher encryption of plaintext failed\n");
+-         return FALSE;
+-      }
+-
+-      outlen += tmplen;
+-
+-      EVP_CIPHER_CTX_cleanup(&ctx);
+-      *ctlen = outlen;
++        if(!EVP_encrypt(EVP_aes_128_cfb(), key, keylen,
++                        iv, plaintext, ptlen,
++                        ciphertext, ctlen)) {
++            QUITFUN(SNMPERR_GENERR, sc_encrypt_quit);
++        }
+     }
+ #endif
+   sc_encrypt_quit:
+@@ -1068,69 +1028,20 @@
+     memset(my_iv, 0, sizeof(my_iv));
+ #ifndef NETSNMP_DISABLE_DES
+     if (ISTRANSFORM(privtype, DESPriv)) {
+-        memcpy(key_struct, key, sizeof(key_struct));
+-        (void) DES_key_sched(&key_struct, key_sch);
+-
+-        memcpy(my_iv, iv, ivlen);
+-        DES_cbc_encrypt(ciphertext, plaintext, ctlen, key_sch,
+-                        (DES_cblock *) my_iv, DES_DECRYPT);
+-        *ptlen = ctlen;
++        if(!EVP_decrypt(EVP_des_cbc(), key,
++                        keylen, iv, ciphertext,
++                        ctlen, plaintext)) {
++            QUITFUN(SNMPERR_GENERR, sc_decrypt_quit);
++        }
+     }
+ #endif
+ #ifdef HAVE_AES
+     if (ISTRANSFORM(privtype, AESPriv)) {
+-
+-      int decryptedLength = 0;
+-      int lastDecryptLength = 0;
+-
+-      EVP_CIPHER_CTX cryptCtx;
+-
+-      /*
+-       * Initialization
+-       */
+-      EVP_CIPHER_CTX_init(&cryptCtx);
+-
+-      if (EVP_DecryptInit_ex(&cryptCtx, EVP_aes_128_cfb(), NULL, key, iv) == 1)
+-      {
+-         EVP_CIPHER_CTX_set_key_length(&cryptCtx, keylen);
+-
+-         /* 
+-          * Note that EVP_DecryptUpdate will alter the value of the third
+-          * parameter to be equal to the amount of data that was written.
+-          * This is not always the entire length of the decrypted data!
+-          * To finish the decryption process, use EVP_DecryptFinal_ex.
+-          * This will decrypt any remaining data
+-          */
+-         if (EVP_DecryptUpdate(&cryptCtx, plaintext, &decryptedLength,
+-                               ciphertext, ctlen) == 1)
+-         {
+-             /*
+-              * Stick the final data at the end of the last decrypted data.
+-              */
+-
+-            if(EVP_DecryptFinal_ex(&cryptCtx, plaintext + decryptedLength,
+-                                   &lastDecryptLength) == 1)
+-            {
+-                decryptedLength = decryptedLength + lastDecryptLength;
+-                plaintext[decryptedLength] = 0;
+-            }
+-           else
+-            {
+-               snmp_log(LOG_ERR, "EVP_DecryptFinal_ex final decryption failed.\n");
+-               return FALSE;
+-            }
+-         }
+-         else
+-         {
+-               snmp_log(LOG_ERR, "EVP_DecryptUpdate update decryption failed.\n");
+-               return FALSE;
+-         }
+-      }
+-      else
+-      {
+-            snmp_log(LOG_ERR,"EVP_DecryptInit_ex init decryption failed.\n");
+-            return FALSE;
+-      }
++        if(!EVP_decrypt(EVP_aes_128_cfb(), key,
++                        keylen, iv, ciphertext,
++                        ctlen, plaintext)) {
++            QUITFUN(SNMPERR_GENERR, sc_decrypt_quit);
++        }
+     }
+ #endif
+ 
+@@ -1423,4 +1334,87 @@
+     return rc;
+ }
+ #endif /* NETSNMP_USE_INTERNAL_CRYPTO */
++#ifdef NETSNMP_USE_OPENSSL
++static
++int EVP_encrypt(const EVP_CIPHER *type, u_char * key,
++                u_int keylen, u_char * iv, const u_char * plaintext,
++                u_int ptlen, u_char * ciphertext, size_t * ctlen)
++{
++      EVP_CIPHER_CTX *ctx;
++      int outlen = 0;
++      int tmplen = 0;
++
++      if((ctx = EVP_CIPHER_CTX_new()) == NULL) {
++         snmp_log(LOG_ERR, "EVP_CIPHER_CTX_new failure.\n");
++         return FALSE;
++      }
++#ifdef EVP_CIPH_FLAG_NON_FIPS_ALLOW
++      EVP_CIPHER_CTX_set_flags(ctx, EVP_CIPH_FLAG_NON_FIPS_ALLOW);
++#endif
++      if(EVP_EncryptInit_ex(ctx, type, NULL, key, iv) != 1) {
++         snmp_log(LOG_ERR, "EVP_EncryptInit_ex failure.\n");
++         EVP_CIPHER_CTX_free(ctx);
++         return FALSE;
++      }
++      EVP_CIPHER_CTX_set_key_length(ctx, keylen);
++      if(EVP_EncryptUpdate(ctx, ciphertext, &outlen,
++                           plaintext, ptlen) != 1) {
++         snmp_log(LOG_ERR, "EVP_EncryptUpdate failure.\n");
++         EVP_CIPHER_CTX_free(ctx);
++         return FALSE;
++      }
++      if(EVP_EncryptFinal_ex(ctx, ciphertext + outlen,
++                             &tmplen) != 1) {
++         snmp_log(LOG_ERR, "EVP_EncryptFinal_ex failure.\n");
++         EVP_CIPHER_CTX_free(ctx);
++         return FALSE;
++      }
++      EVP_CIPHER_CTX_free(ctx);
++      outlen += tmplen;
++      *ctlen = outlen;
++
++      return TRUE;
++}
++
++static
++int EVP_decrypt(const EVP_CIPHER *type, u_char * key,
++                u_int keylen, u_char * iv, u_char * ciphertext,
++                u_int ctlen, u_char * plaintext)
++{
++      int decryptedLength = 0;
++      int lastDecryptLength = 0;
++      EVP_CIPHER_CTX *ctx;
++  
++      if((ctx = EVP_CIPHER_CTX_new()) == NULL) {
++         snmp_log(LOG_ERR, "EVP_CIPHER_CTX_new failure.\n");
++         return FALSE;
++      }
++#ifdef EVP_CIPH_FLAG_NON_FIPS_ALLOW
++      EVP_CIPHER_CTX_set_flags (ctx, EVP_CIPH_FLAG_NON_FIPS_ALLOW);
++#endif
++      if (EVP_DecryptInit_ex(ctx, type, NULL, key, iv) != 1) {
++          snmp_log(LOG_ERR, "EVP_DecryptInit_ex final failure.\n");
++          EVP_CIPHER_CTX_free(ctx);
++          return FALSE;
++      }
++      EVP_CIPHER_CTX_set_key_length(ctx, keylen);
++      if (EVP_DecryptUpdate(ctx, plaintext, &decryptedLength,
++                            ciphertext, ctlen) != 1) {
++          snmp_log(LOG_ERR, "EVP_DecryptUpdate failure.\n");
++          EVP_CIPHER_CTX_free(ctx);
++          return FALSE;
++      }
++      if(EVP_DecryptFinal_ex(ctx, plaintext + decryptedLength,
++                             &lastDecryptLength) != 1) {
++          snmp_log(LOG_ERR, "EVP_DecryptFinal_ex failure.\n");
++          EVP_CIPHER_CTX_free(ctx);
++          return FALSE;
++      }
++      EVP_CIPHER_CTX_free(ctx);
++      decryptedLength = decryptedLength + lastDecryptLength;
++      plaintext[decryptedLength] = 0;
++
++      return TRUE;
++}
++#endif /* NETSNMP_USE_OPENSSL */
+ #endif /*  NETSNMP_FEATURE_REMOVE_USM_SCAPI  */

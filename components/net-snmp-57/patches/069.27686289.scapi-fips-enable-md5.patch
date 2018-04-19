@@ -1,0 +1,82 @@
+Solaris specific patch developed inhouse, not suitable for upstream
+--- net-snmp-5.7.3.old/snmplib/scapi.c	2018-04-17 05:56:23.287879439 +0000
++++ net-snmp-5.7.3/snmplib/scapi.c	2018-04-17 05:40:29.355970330 +0000
+@@ -126,6 +126,10 @@
+ 
+ #ifdef NETSNMP_USE_OPENSSL
+ static
++void EVP_hmac(const EVP_MD *evp_md, const void *key,
++              const unsigned char *msg, unsigned char *md,
++              size_t *md_len);
++static
+ int EVP_decrypt(const EVP_CIPHER *type, u_char * key,
+                 u_int keylen, u_char * iv, u_char * ciphertext,
+                 u_int ctlen, u_char * plaintext);
+@@ -297,7 +311,7 @@
+
+     u_char          buf[SNMP_MAXBUF_SMALL];
+ #if  defined(NETSNMP_USE_OPENSSL) || defined(NETSNMP_USE_PKCS11)
+-    unsigned int    buf_len = sizeof(buf);
++    size_t    buf_len = sizeof(buf);
+ #endif
+
+     DEBUGTRACE;
+@@ -335,7 +349,7 @@
+      */
+ #ifndef NETSNMP_DISABLE_MD5
+     if (ISTRANSFORM(authtype, HMACMD5Auth))
+-        HMAC(EVP_md5(), key, keylen, message, msglen, buf, &buf_len);
++        EVP_hmac(EVP_md5(), key, message, buf, &buf_len);
+     else
+ #endif  
+         if (ISTRANSFORM(authtype, HMACSHA1Auth))
+@@ -1330,6 +1335,49 @@
+ }
+ #endif /* NETSNMP_USE_INTERNAL_CRYPTO */
+ #ifdef NETSNMP_USE_OPENSSL
++static
++void EVP_hmac(const EVP_MD *evp_md, const void *key,
++              const unsigned char *msg, unsigned char *md,
++              size_t *md_len)
++{
++        EVP_MD_CTX* mdctx = NULL;
++        EVP_PKEY *pkey = NULL;
++
++        if(!(mdctx = EVP_MD_CTX_create())) {
++            snmp_log(LOG_ERR, "EVP_MD_CTX_create failure.\n");
++            return;
++        }
++        if(!(pkey = EVP_PKEY_new_mac_key(EVP_PKEY_HMAC, NULL,
++                                         key, EVP_MD_size(evp_md)))) {
++            snmp_log(LOG_ERR, "EVP_PKEY_new_mac_key failure.\n");
++            EVP_MD_CTX_destroy(mdctx);
++            return;
++        }
++#ifdef EVP_MD_CTX_FLAG_NON_FIPS_ALLOW
++        EVP_MD_CTX_set_flags (mdctx, EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
++#endif  
++        if(EVP_DigestSignInit(mdctx, NULL, evp_md, NULL, pkey) != 1) {
++            snmp_log(LOG_ERR, "EVP_DigestSignInit failure.\n");
++            EVP_MD_CTX_destroy(mdctx);
++            EVP_PKEY_free(pkey);
++            return;
++        }
++        if(EVP_DigestSignUpdate(mdctx, msg, strlen(msg)) != 1) {
++            snmp_log(LOG_ERR, "EVP_DigestSignUpdate failure.\n");
++            EVP_MD_CTX_destroy(mdctx);
++            EVP_PKEY_free(pkey);
++            return;
++        }
++        if(EVP_DigestSignFinal(mdctx, md, md_len) != 1) {
++            snmp_log(LOG_ERR, "EVP_DigestSignFinal failure.\n");
++            EVP_MD_CTX_destroy(mdctx);
++            EVP_PKEY_free(pkey);
++            return;
++        }
++        EVP_MD_CTX_destroy(mdctx);
++        EVP_PKEY_free(pkey);
++}
++
+ static
+ int EVP_encrypt(const EVP_CIPHER *type, u_char * key,
+                 u_int keylen, u_char * iv, const u_char * plaintext,
