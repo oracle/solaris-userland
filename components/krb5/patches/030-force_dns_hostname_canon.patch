@@ -108,9 +108,27 @@
      return (*canonhost_out == NULL) ? ENOMEM : 0;
  }
  
+--- a/src/tests/gssapi/t_ccselect.py
++++ b/src/tests/gssapi/t_ccselect.py
+@@ -44,7 +44,14 @@ foobar = "foo.bar.krbtest.com"
+ gssserver = 'h:host@' + foo
+ gssserver2 = 'h:host@' + foo2
+ gssserver_bar = 'h:host@' + foobar
+-gsslocal = 'h:host@localhost'
++#
++# Solaris enforces DNS resolution (bypasses /etc/hosts). Therefore we need to
++# use '@localhost.' instead of 'localhost'. Without the terminating '.' DNS
++# returns FQDN in response to reverse look up. The FQDN name typically looks
++# like 'localhost.some.domain', which is (from krb point of view) different
++# to 'localhost'. Mismatch constitutes a failure (principal not found).
++#
++gsslocal = 'h:host@localhost.'
+ 
+ # refserver specifies the target as a principal in the referral realm.
+ # The principal won't be treated as a host principal by the
 --- a/src/util/k5test.py
 +++ b/src/util/k5test.py
-@@ -364,6 +364,7 @@ import string
+@@ -367,6 +367,7 @@ import string
  import subprocess
  import sys
  import imp
@@ -118,7 +136,7 @@
  
  # Used when most things go wrong (other than programming errors) so
  # that the user sees an error message rather than a Python traceback,
-@@ -504,7 +505,19 @@ def _find_srctop():
+@@ -507,7 +508,19 @@ def _find_srctop():
  # because it explicitly prefers results containing periods and
  # krb5_sname_to_principal doesn't care.
  def _get_hostname():

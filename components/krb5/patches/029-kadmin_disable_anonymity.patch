@@ -19,7 +19,7 @@
 #
 --- a/src/kadmin/cli/kadmin.c
 +++ b/src/kadmin/cli/kadmin.c
-@@ -312,7 +312,7 @@ kadmin_startup(int argc, char *argv[], char **request_out, char ***args_out)
+@@ -311,7 +311,7 @@ kadmin_startup(int argc, char *argv[], char **request_out, char ***args_out)
      }
  
      while ((optchar = getopt(argc, argv,
@@ -63,7 +63,7 @@
  cache should contain a service ticket for the \fBkadmin/ADMINHOST\fP
 --- a/src/tests/t_pkinit.py
 +++ b/src/tests/t_pkinit.py
-@@ -73,15 +73,16 @@ if '97:' in out:
+@@ -130,14 +130,15 @@ if '97:' in out:
      fail('auth indicators seen in anonymous PKINIT ticket')
  
  # Test anonymous kadmin.
@@ -72,18 +72,16 @@
 -f.close()
 -realm.start_kadmind()
 -realm.run([kadmin, '-n', 'addprinc', '-pw', 'test', 'testadd'])
--out = realm.run([kadmin, '-n', 'getprinc', 'testadd'], expected_code=1)
--if "Operation requires ``get'' privilege" not in out:
--    fail('Anonymous kadmin has too much privilege')
+-realm.run([kadmin, '-n', 'getprinc', 'testadd'], expected_code=1,
+-          expected_msg="Operation requires ``get'' privilege")
 -realm.stop_kadmind()
 +#f = open(os.path.join(realm.testdir, 'acl'), 'a')
 +#f.write('WELLKNOWN/ANONYMOUS@WELLKNOWN:ANONYMOUS a *')
 +#f.close()
 +#realm.start_kadmind()
 +#realm.run([kadmin, '-n', 'addprinc', '-pw', 'test', 'testadd'])
-+#out = realm.run([kadmin, '-n', 'getprinc', 'testadd'], expected_code=1)
-+#if "Operation requires ``get'' privilege" not in out:
-+#    fail('Anonymous kadmin has too much privilege')
++#realm.run([kadmin, '-n', 'getprinc', 'testadd'], expected_code=1,
++#          expected_msg="Operation requires ``get'' privilege")
 +#realm.stop_kadmind()
 +sys.stderr.write("Anonymous pkinit support in kadmin disabled, skipping...\n");
  

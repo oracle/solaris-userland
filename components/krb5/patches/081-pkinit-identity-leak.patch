@@ -1,0 +1,56 @@
+# Free cert info in pkinit_identity_initialize()
+#
+# The pkinit_identity_crypto_context creds field contains a collection
+# of cert info deduced from configuration, and is used to select the
+# identity certificate on the client and the KDC.  Its lifetime is
+# managed separately from the context, by crypto_load_certs() and
+# crypto_free_cert_info().
+#
+# Prior to commit 60426439f672fe273ceead17910f818da1954c5b, the lifetime
+# was managed purely within pkinit_identity_initialize().  When that
+# function now split into two phases, pkinit_identity_initialize() began
+# leaving the creds array around unnecessarily.  The client calling
+# function made its own call to free the creds array, but this was not
+# done by the KDC calling function.  The result was that the creds array
+# was overwritten in pkinit_identity_prompt(), leaking a small amount of
+# memory at KDC startup.  This leak is trivial, but adds noise to leak
+# detection tools.
+#
+# Fix the leak by freeing the creds array in
+# pkinit_identity_initialize() before returning, and remove the
+# no-longer-necessary call in pkinit_client_prep_questions().  In the
+# longer term, it might be better to separate the creds array from
+# pkinit_identity_crypto_context and manage it using local variables
+# within pkinit_identity_initialize() and pkinit_identity_prompt().
+#
+# [ghudson@mit.edu: rewrote commit message]
+#
+# patch comes from upstream:
+#	https://github.com/krb5/krb5/pull/730
+#
+# the fix will be available with next major release
+#
+
+--- a/src/plugins/preauth/pkinit/pkinit_clnt.c
++++ b/src/plugins/preauth/pkinit/pkinit_clnt.c
+@@ -1021,8 +1021,6 @@ pkinit_client_prep_questions(krb5_context context,
+         }
+ 
+         reqctx->identity_initialized = TRUE;
+-        crypto_free_cert_info(context, plgctx->cryptoctx,
+-                              reqctx->cryptoctx, reqctx->idctx);
+         if (retval != 0) {
+             pkiDebug("%s: not asking responder question\n", __FUNCTION__);
+             retval = 0;
+--- a/src/plugins/preauth/pkinit/pkinit_identity.c
++++ b/src/plugins/preauth/pkinit/pkinit_identity.c
+@@ -553,6 +553,9 @@ pkinit_identity_initialize(krb5_context context,
+                                    idopts, id_cryptoctx, princ, TRUE);
+         if (retval)
+             goto errout;
++
++        crypto_free_cert_info(context, plg_cryptoctx, req_cryptoctx,
++                              id_cryptoctx);
+     } else {
+         /* We're the anonymous principal. */
+         retval = 0;

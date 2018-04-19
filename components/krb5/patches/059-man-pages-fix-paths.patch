@@ -51,16 +51,16 @@
  environment variable \fBKRB5_KDC_PROFILE\fP\&.
  .sp
  Please note that you need to restart the KDC daemon for any configuration
-@@ -148,7 +148,7 @@ The following tags may be specified in a [realms] subsection:
- (String.)  Location of the access control list file that
+@@ -149,7 +149,7 @@ The following tags may be specified in a [realms] subsection:
  \fIkadmind(8)\fP uses to determine which principals are allowed
- which permissions on the Kerberos database.  The default value is
--\fB@LOCALSTATEDIR@\fP\fB/krb5kdc\fP\fB/kadm5.acl\fP\&.  For more information on Kerberos ACL
-+\fB@LOCALSTATEDIR@\fP\fB/krb5\fP\fB/kadm5.acl\fP\&.  For more information on Kerberos ACL
- file see \fIkadm5.acl(5)\fP\&.
+ which permissions on the Kerberos database.  To operate without an
+ ACL file, set this relation to the empty string with \fBacl_file =
+-""\fP\&.  The default value is \fB@LOCALSTATEDIR@\fP\fB/krb5kdc\fP\fB/kadm5.acl\fP\&.  For more
++""\fP\&.  The default value is \fB@LOCALSTATEDIR@\fP\fB/krb5\fP\fB/kadm5.acl\fP\&.  For more
+ information on Kerberos ACL file see \fIkadm5.acl(5)\fP\&.
  .TP
  .B \fBdatabase_module\fP
-@@ -162,7 +162,7 @@ values will be used for all database parameters.
+@@ -163,7 +163,7 @@ values will be used for all database parameters.
  (String, deprecated.)  This relation specifies the location of the
  Kerberos database for this realm, if the DB2 module is being used
  and the \fI\%[dbmodules]\fP configuration section does not specify a
@@ -69,7 +69,7 @@
  .TP
  .B \fBdefault_principal_expiration\fP
  (\fIabstime\fP string.)  Specifies the default expiration date of
-@@ -338,7 +338,7 @@ assigned port for kadmind is 749, which is used by default.
+@@ -344,7 +344,7 @@ assigned port for kadmind is 749, which is used by default.
  .TP
  .B \fBkey_stash_file\fP
  (String.)  Specifies the location where the master key has been
@@ -78,7 +78,7 @@
  .TP
  .B \fBkdc_listen\fP
  (Whitespace\- or comma\-separated list.)  Specifies the UDP
-@@ -533,7 +533,7 @@ The following tags may be specified in a [dbmodules] subsection:
+@@ -539,7 +539,7 @@ The following tags may be specified in a [dbmodules] subsection:
  .TP
  .B \fBdatabase_name\fP
  This DB2\-specific tag indicates the location of the database in
@@ -87,7 +87,7 @@
  .TP
  .B \fBdb_library\fP
  This tag indicates the name of the loadable database module.  The
-@@ -748,8 +748,8 @@ In the following example, the logging messages from the KDC will go to
+@@ -754,8 +754,8 @@ In the following example, the logging messages from the KDC will go to
  the console and to the system log under the facility LOG_DAEMON with
  default severity of LOG_INFO; and the logging messages from the
  administrative server will be appended to the file
@@ -98,7 +98,7 @@
  specified time interval of a day.
  .INDENT 0.0
  .INDENT 3.5
-@@ -759,7 +759,7 @@ specified time interval of a day.
+@@ -765,7 +765,7 @@ specified time interval of a day.
  [logging]
      kdc = CONSOLE
      kdc = SYSLOG:INFO:DAEMON
@@ -107,7 +107,7 @@
      admin_server = DEVICE=/dev/tty04
      admin_server_rotate = {
          period = 1d
-@@ -782,10 +782,10 @@ For each token type, the following tags may be specified:
+@@ -788,10 +788,10 @@ For each token type, the following tags may be specified:
  This is the server to send the RADIUS request to.  It can be a
  hostname with optional port, an ip address with optional port, or
  a Unix domain socket address.  The default is
@@ -120,7 +120,7 @@
  containing the secret used to encrypt the RADIUS packets.  The
  secret should appear in the first line of the file by itself;
  leading and trailing whitespace on the line will be removed.  If
-@@ -1222,8 +1222,8 @@ Here\(aqs an example of a kdc.conf file:
+@@ -1225,8 +1225,8 @@ Here\(aqs an example of a kdc.conf file:
      }
  
  [logging]
@@ -131,7 +131,7 @@
  
  [dbdefaults]
      ldap_kerberos_container_dn = cn=krbcontainer,dc=mit,dc=edu
-@@ -1248,7 +1248,7 @@ Here\(aqs an example of a kdc.conf file:
+@@ -1251,7 +1251,7 @@ Here\(aqs an example of a kdc.conf file:
  .UNINDENT
  .SH FILES
  .sp
@@ -153,7 +153,7 @@
  Specifies the port to use to contact the \fIkpropd(8)\fP server
 --- a/src/man/kpropd.man
 +++ b/src/man/kpropd.man
-@@ -106,7 +106,7 @@ default, the master admin server is contacted.
+@@ -107,7 +107,7 @@ default, the master admin server is contacted.
  .TP
  .B \fB\-f\fP \fIfile\fP
  Specifies the filename where the dumped principal database file is
@@ -162,12 +162,12 @@
  .TP
  .B \fB\-p\fP
  Allows the user to specify the pathname to the \fIkdb5_util(8)\fP
-@@ -130,7 +130,7 @@ is only useful in combination with the \fB\-S\fP option.
+@@ -131,7 +131,7 @@ is only useful in combination with the \fB\-S\fP option.
  .TP
  .B \fB\-a\fP \fIacl_file\fP
  Allows the user to specify the path to the kpropd.acl file; by
 -default the path used is \fB@LOCALSTATEDIR@\fP\fB/krb5kdc\fP\fB/kpropd.acl\fP\&.
 +default the path used is \fB@LOCALSTATEDIR@\fP\fB/krb5\fP\fB/kpropd.acl\fP\&.
- .UNINDENT
- .SH ENVIRONMENT
- .sp
+ .TP
+ .B \fB\-\-pid\-file\fP=\fIpid_file\fP
+ In standalone mode, write the process ID of the daemon into

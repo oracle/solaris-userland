@@ -43,10 +43,11 @@
  #define lsu_facility    log_union.log_syslog.ls_facility
  #define lsu_severity    log_union.log_syslog.ls_severity
  #define ldu_filep       log_union.log_device.ld_filep
-@@ -161,6 +173,132 @@ static struct log_entry def_log_entry;
+@@ -160,6 +172,132 @@ static struct log_entry def_log_entry;
+                                  -1)
  #define DEVICE_CLOSE(d)         fclose(d)
  
- /*
++/*
 + * Solaris Kerberos
 + * klog_rotate() - roate a log file if we have specified rotation
 + * parameters in krb5.conf.
@@ -172,10 +173,9 @@
 +    }
 +}
 +
-+/*
+ /*
   * klog_com_err_proc()  - Handle com_err(3) messages as specified by the
   *                        profile.
-  */
 @@ -262,6 +400,8 @@ klog_com_err_proc(const char *whoami, long int code, const char *format, va_list
  
          switch (log_control.log_entries[lindex].log_type) {

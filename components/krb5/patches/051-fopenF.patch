@@ -40,7 +40,7 @@
          if ( fowner(users_fp, pwd->pw_uid) == FALSE){
 --- a/src/clients/ksu/ccache.c
 +++ b/src/clients/ksu/ccache.c
-@@ -375,7 +375,7 @@ krb5_get_login_princ(luser, princ_list)
+@@ -365,7 +365,7 @@ krb5_get_login_princ(luser, princ_list)
  
  
      /* open ~/.k5login */
@@ -71,7 +71,7 @@
          if ( fowner(users_fp, pwd->pw_uid) == FALSE){
 --- a/src/kadmin/dbutil/dump.c
 +++ b/src/kadmin/dbutil/dump.c
-@@ -1217,7 +1217,7 @@ current_dump_sno_in_ulog(krb5_context context, const char *ifile)
+@@ -1230,7 +1230,7 @@ current_dump_sno_in_ulog(krb5_context context, const char *ifile)
      char buf[BUFSIZ];
      FILE *f;
  
@@ -80,7 +80,7 @@
      if (f == NULL)
          return 0;              /* aliasing other errors to ENOENT here is OK */
  
-@@ -1538,7 +1538,7 @@ load_db(int argc, char **argv)
+@@ -1551,7 +1551,7 @@ load_db(int argc, char **argv)
  
      /* Open the dumpfile. */
      if (dumpfile != NULL) {
@@ -102,7 +102,7 @@
      pid = (unsigned long)getpid();
 --- a/src/kdc/main.c
 +++ b/src/kdc/main.c
-@@ -883,7 +883,7 @@ write_pid_file(const char *path)
+@@ -884,7 +884,7 @@ write_pid_file(const char *path)
      FILE *file;
      unsigned long pid;
  
@@ -171,17 +171,6 @@
              if (f) {
                  set_cloexec_file(f);
                  log_control.log_entries[lindex].lfu_filep = f;
---- a/src/lib/kadm5/srv/server_acl.c
-+++ b/src/lib/kadm5/srv/server_acl.c
-@@ -488,7 +488,7 @@ kadm5int_acl_load_acl_file()
- 
-     DPRINT(DEBUG_CALLS, acl_debug_level, ("* kadm5int_acl_load_acl_file()\n"));
-     /* Open the ACL file for read */
--    afp = fopen(acl_acl_file, "r");
-+    afp = fopen(acl_acl_file, "rF");
-     if (afp) {
-         set_cloexec_file(afp);
-         alineno = 1;
 --- a/src/lib/kdb/kdb_default.c
 +++ b/src/lib/kdb/kdb_default.c
 @@ -250,7 +250,7 @@ krb5_db_def_fetch_mkey_stash(krb5_context   context,
@@ -217,7 +206,7 @@
          return KRB5_PLUGIN_NO_HANDLE;
 --- a/src/lib/krb5/keytab/kt_file.c
 +++ b/src/lib/krb5/keytab/kt_file.c
-@@ -1037,13 +1037,13 @@ krb5_ktfileint_open(krb5_context context, krb5_keytab id, int mode)
+@@ -1039,13 +1039,13 @@ krb5_ktfileint_open(krb5_context context, krb5_keytab id, int mode)
      KTCHECKLOCK(id);
      errno = 0;
      KTFILEP(id) = fopen(KTFILENAME(id),
@@ -246,7 +235,7 @@
      set_cloexec_file(KTFILEP(id));
 --- a/src/lib/krb5/os/localaddr.c
 +++ b/src/lib/krb5/os/localaddr.c
-@@ -368,7 +368,7 @@ get_linux_ipv6_addrs ()
+@@ -369,7 +369,7 @@ get_linux_ipv6_addrs ()
      FILE *f;
  
      /* _PATH_PROCNET_IFINET6 */
@@ -664,15 +653,15 @@
          com_err("otp", retval, "Unable to open secret file '%s'", filename);
 --- a/src/plugins/preauth/pkinit/pkinit_crypto_openssl.c
 +++ b/src/plugins/preauth/pkinit/pkinit_crypto_openssl.c
-@@ -4440,7 +4440,7 @@ pkinit_get_certs_pkcs12(krb5_context context,
+@@ -4423,7 +4423,7 @@ pkinit_get_certs_pkcs12(krb5_context context,
          goto cleanup;
      }
  
 -    fp = fopen(idopts->cert_filename, "rb");
 +    fp = fopen(idopts->cert_filename, "rbF");
      if (fp == NULL) {
-         pkiDebug("Failed to open PKCS12 file '%s', error %d\n",
-                  idopts->cert_filename, errno);
+         TRACE_PKINIT_PKCS_OPEN_FAIL(context, idopts->cert_filename, errno);
+         goto cleanup;
 --- a/src/plugins/preauth/pkinit/pkinit_lib.c
 +++ b/src/plugins/preauth/pkinit/pkinit_lib.c
 @@ -365,7 +365,7 @@ print_buffer_bin(unsigned char *buf, unsigned int len, char *filename)
@@ -697,7 +686,7 @@
      sk = PEM_X509_INFO_read(fp, NULL, NULL, NULL);
 --- a/src/slave/kpropd.c
 +++ b/src/slave/kpropd.c
-@@ -1296,7 +1296,7 @@ authorized_principal(krb5_context context, krb5_principal p,
+@@ -1291,7 +1291,7 @@ authorized_principal(krb5_context context, krb5_principal p,
      if (retval)
          return FALSE;
  

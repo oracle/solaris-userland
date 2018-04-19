@@ -28,7 +28,7 @@
  #ifndef LEAN_CLIENT
  k5_mutex_t gssint_krb5_keytab_lock = K5_MUTEX_PARTIAL_INITIALIZER;
  static char *krb5_gss_keytab = NULL;
-@@ -590,6 +594,151 @@ kg_cred_set_initial_refresh(krb5_context context, krb5_gss_cred_id_rec *cred,
+@@ -592,6 +596,151 @@ kg_cred_set_initial_refresh(krb5_context context, krb5_gss_cred_id_rec *cred,
      set_refresh_time(context, cred->ccache, refresh);
  }
  
@@ -180,7 +180,7 @@
  /* Get initial credentials using the supplied password or client keytab. */
  static krb5_error_code
  get_initial_cred(krb5_context context, krb5_gss_cred_id_rec *cred)
-@@ -609,8 +758,41 @@ get_initial_cred(krb5_context context, krb5_gss_cred_id_rec *cred)
+@@ -611,8 +760,41 @@ get_initial_cred(krb5_context context, krb5_gss_cred_id_rec *cred)
                                              cred->password, NULL, NULL, 0,
                                              NULL, opt);
      } else if (cred->client_keytab != NULL) {
@@ -224,7 +224,7 @@
      } else {
          code = KRB5_KT_NOTFOUND;
      }
-@@ -700,6 +882,23 @@ acquire_init_cred(krb5_context context,
+@@ -702,6 +884,23 @@ acquire_init_cred(krb5_context context,
              krb5_clear_error_message(context);
              code = 0;
          }

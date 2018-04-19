@@ -14,7 +14,7 @@
 #
 --- a/src/Makefile.in
 +++ b/src/Makefile.in
-@@ -63,7 +63,7 @@ INSTALLMKDIRS = $(KRB5ROOT) $(KRB5MANROOT) $(KRB5OTHERMKDIRS) \
+@@ -66,7 +66,7 @@ INSTALLMKDIRS = $(KRB5ROOT) $(KRB5MANROOT) $(KRB5OTHERMKDIRS) \
  		$(FILE_CATDIR) \
  		$(KRB5_LIBDIR) $(KRB5_INCDIR) \
  		$(KRB5_DB_MODULE_DIR) $(KRB5_PA_MODULE_DIR) \
@@ -35,7 +35,7 @@
  KRB5_LOCALEDIR = @localedir@
 --- a/src/configure.in
 +++ b/src/configure.in
-@@ -207,7 +207,7 @@ if test "$withval" = yes; then
+@@ -221,7 +221,7 @@ if test "$withval" = yes; then
  fi
  
  # Check which (if any) audit plugin to build
@@ -44,7 +44,7 @@
  AC_ARG_ENABLE([audit-plugin],
  AC_HELP_STRING([--enable-audit-plugin=IMPL],
                 [use audit plugin @<:@ do not use audit @:>@]), , enableval=no)
-@@ -222,6 +222,13 @@ if test "$enableval" != no; then
+@@ -236,6 +236,13 @@ if test "$enableval" != no; then
                       audit_plugin=plugins/audit/simple ],
                       AC_MSG_ERROR([libaudit not found or undefined symbol audit_log_user_message]))
          ;;
@@ -60,16 +60,15 @@
          ;;
 --- a/src/kadmin/server/Makefile.in
 +++ b/src/kadmin/server/Makefile.in
-@@ -7,13 +7,15 @@ LOCALINCLUDES = -I$(top_srcdir)/lib/gssapi/generic \
- 	-I$(BUILDTOP)/lib/gssapi/krb5 -I$(top_srcdir)/lib/kadm5/srv
+@@ -8,14 +8,14 @@ LOCALINCLUDES = -I$(top_srcdir)/lib/gssapi/generic \
  
  PROG = kadmind
--OBJS = kadm_rpc_svc.o server_stubs.o ovsec_kadmd.o schpw.o misc.o ipropd_svc.o
--SRCS = kadm_rpc_svc.c server_stubs.c ovsec_kadmd.c schpw.c misc.c ipropd_svc.c
-+OBJS = kadm_rpc_svc.o server_stubs.o ovsec_kadmd.o schpw.o misc.o ipropd_svc.o \
-+	kadmind_audit.o
-+SRCS = kadm_rpc_svc.c server_stubs.c ovsec_kadmd.c schpw.c misc.c ipropd_svc.c \
-+	kadmind_audit.c
+ OBJS = auth.o auth_acl.o auth_self.o kadm_rpc_svc.o server_stubs.o \
+-	ovsec_kadmd.o schpw.o misc.o ipropd_svc.o
++	ovsec_kadmd.o schpw.o misc.o ipropd_svc.o kadmind_audit.o
+ SRCS = auth.o auth_acl.c auth_self.c kadm_rpc_svc.c server_stubs.c \
+-	ovsec_kadmd.c schpw.c misc.c ipropd_svc.c
++	ovsec_kadmd.c schpw.c misc.c ipropd_svc.c kadmind_audit.c
  
  all: $(PROG)
  
@@ -81,10 +80,10 @@
  	$(INSTALL_PROGRAM) $(PROG) ${DESTDIR}$(SERVER_BINDIR)/$(PROG)
 --- a/src/kadmin/server/deps
 +++ b/src/kadmin/server/deps
-@@ -132,4 +132,23 @@ $(OUTPRE)ipropd_svc.$(OBJEXT): $(BUILDTOP)/include/autoconf.h \
+@@ -169,4 +169,3 @@ $(OUTPRE)ipropd_svc.$(OBJEXT): $(BUILDTOP)/include/autoconf.h \
    $(top_srcdir)/include/kdb_log.h $(top_srcdir)/include/krb5.h \
    $(top_srcdir)/include/krb5/plugin.h $(top_srcdir)/include/net-server.h \
-   $(top_srcdir)/lib/gssapi/krb5/gssapi_krb5.h $(top_srcdir)/lib/kadm5/srv/server_acl.h \
+   $(top_srcdir)/lib/gssapi/krb5/gssapi_krb5.h auth.h \
 -  ipropd_svc.c misc.h
 +  ipropd_svc.c misc.h kadmind_audit.h
 +$(OUTPRE)kadmind_audit.$(OBJEXT): $(BUILDTOP)/include/autoconf.h \
@@ -108,7 +107,7 @@
 +  kadmind_audit.c kadmind_audit.h
 --- a/src/kadmin/server/ipropd_svc.c
 +++ b/src/kadmin/server/ipropd_svc.c
-@@ -192,6 +192,9 @@ iprop_get_updates_1_svc(kdb_last_t *arg, struct svc_req *rqstp)
+@@ -203,6 +203,9 @@ iprop_get_updates_1_svc(kdb_last_t *arg, struct svc_req *rqstp)
  	DPRINT("%s: PERMISSION DENIED: clprinc=`%s'\n\tsvcprinc=`%s'\n",
  		whoami, client_name, service_name);
  
@@ -118,7 +117,7 @@
  	krb5_klog_syslog(LOG_NOTICE, LOG_UNAUTH, whoami,
  			 client_name, service_name,
  			 client_addr(rqstp->rq_xprt));
-@@ -218,6 +221,10 @@ iprop_get_updates_1_svc(kdb_last_t *arg, struct svc_req *rqstp)
+@@ -229,6 +232,10 @@ iprop_get_updates_1_svc(kdb_last_t *arg, struct svc_req *rqstp)
  	   ((kret == 0) ? "success" : error_message(kret)),
  	   client_name, service_name);
  
@@ -129,7 +128,7 @@
      krb5_klog_syslog(LOG_NOTICE,
  		     _("Request: %s, %s, %s, client=%s, service=%s, addr=%s"),
  		     whoami,
-@@ -337,6 +344,10 @@ ipropx_resync(uint32_t vers, struct svc_req *rqstp)
+@@ -345,6 +352,10 @@ ipropx_resync(uint32_t vers, struct svc_req *rqstp)
  	ret.ret = UPDATE_PERM_DENIED;
  
  	DPRINT("%s: Permission denied\n", whoami);
@@ -140,7 +139,7 @@
  	krb5_klog_syslog(LOG_NOTICE, LOG_UNAUTH, whoami,
  			 client_name, service_name,
  			 client_addr(rqstp->rq_xprt));
-@@ -448,6 +459,10 @@ ipropx_resync(uint32_t vers, struct svc_req *rqstp)
+@@ -456,6 +467,10 @@ ipropx_resync(uint32_t vers, struct svc_req *rqstp)
  	DPRINT("%s: spawned resync process %d, client=%s, "
  		"service=%s, addr=%s\n", whoami, fret, client_name,
  		service_name, client_addr(rqstp->rq_xprt));
@@ -163,7 +162,7 @@
  setup_gss_names(struct svc_req *, gss_buffer_desc *,
 --- a/src/kadmin/server/server_stubs.c
 +++ b/src/kadmin/server/server_stubs.c
-@@ -370,6 +370,29 @@ log_unauth(
+@@ -477,6 +477,29 @@ log_unauth(
      slen = server->length;
      trunc_name(&slen, &sdots);
  
@@ -193,7 +192,7 @@
      /* okay to cast lengths to int because trunc_name limits max value */
      return krb5_klog_syslog(LOG_NOTICE,
                              _("Unauthorized request: %s, %.*s%s, "
-@@ -401,6 +424,29 @@ log_done(
+@@ -508,6 +531,29 @@ log_done(
      slen = server->length;
      trunc_name(&slen, &sdots);
  

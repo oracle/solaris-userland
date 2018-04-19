@@ -40,7 +40,7 @@
                               ccselect_realm_initvt);
 --- a/src/man/krb5.conf.man
 +++ b/src/man/krb5.conf.man
-@@ -951,10 +951,6 @@ dynamic modules, the following built\-in modules exist (and may be
+@@ -952,10 +952,6 @@ dynamic modules, the following built\-in modules exist (and may be
  disabled with the disable tag):
  .INDENT 0.0
  .TP
@@ -53,51 +53,49 @@
  collection
 --- a/src/tests/gssapi/t_ccselect.py
 +++ b/src/tests/gssapi/t_ccselect.py
-@@ -103,22 +103,24 @@ r1.run(['./t_ccselect', gssserver], expected_code=1)
+@@ -148,21 +148,23 @@ r1.run(['./t_ccselect', gssserver_bar], expected_msg=alice)
  r1.kinit(bob, password('bob'))
  
  # Try some cache selections using .k5identity.
 -k5id = open(os.path.join(r1.testdir, '.k5identity'), 'w')
 -k5id.write('%s realm=%s\n' % (alice, r1.realm))
--k5id.write('%s service=ho*t host=%s\n' % (zaphod, hostname))
+-k5id.write('%s service=ho*t host=localhost\n' % zaphod)
 -k5id.write('noprinc service=bogus')
 -k5id.close()
 -output = r1.run(['./t_ccselect', host1])
 -if output != (alice + '\n'):
 -    fail('alice not chosen via .k5identity realm line.')
--output = r2.run(['./t_ccselect', gssserver])
+-output = r2.run(['./t_ccselect', gsslocal])
 -if output != (zaphod + '\n'):
 -    fail('zaphod not chosen via .k5identity service/host line.')
 -output = r1.run(['./t_ccselect', refserver])
 -if output != (bob + '\n'):
 -    fail('bob not chosen via primary cache when no .k5identity line matches.')
--output = r1.run(['./t_ccselect', 'h:bogus@' + hostname], expected_code=1)
--if 'Can\'t find client principal noprinc' not in output:
--    fail('Expected error not seen when k5identity selects bad principal.')
+-r1.run(['./t_ccselect', 'h:bogus@' + foo2], expected_code=1,
+-       expected_msg="Can't find client principal noprinc")
 +#k5id = open(os.path.join(r1.testdir, '.k5identity'), 'w')
 +#k5id.write('%s realm=%s\n' % (alice, r1.realm))
-+#k5id.write('%s service=ho*t host=%s\n' % (zaphod, hostname))
++#k5id.write('%s service=ho*t host=localhost\n' % zaphod)
 +#k5id.write('noprinc service=bogus')
 +#k5id.close()
 +#output = r1.run(['./t_ccselect', host1])
 +#if output != (alice + '\n'):
 +#    fail('alice not chosen via .k5identity realm line.')
-+#output = r2.run(['./t_ccselect', gssserver])
++#output = r2.run(['./t_ccselect', gsslocal])
 +#if output != (zaphod + '\n'):
 +#    fail('zaphod not chosen via .k5identity service/host line.')
 +#output = r1.run(['./t_ccselect', refserver])
 +#if output != (bob + '\n'):
 +#    fail('bob not chosen via primary cache when no .k5identity line matches.')
-+#output = r1.run(['./t_ccselect', 'h:bogus@' + hostname], expected_code=1)
-+#if 'Can\'t find client principal noprinc' not in output:
-+#    fail('Expected error not seen when k5identity selects bad principal.')
++#r1.run(['./t_ccselect', 'h:bogus@' + foo2], expected_code=1,
++#       expected_msg="Can't find client principal noprinc")
 +sys.stderr.write("Support of k5identity ccselect plugin disabled, skipping "
 +    "k5identity tests...\n");
  
  success('GSSAPI credential selection tests')
 --- a/src/tests/gssapi/t_client_keytab.py
 +++ b/src/tests/gssapi/t_client_keytab.py
-@@ -21,15 +21,17 @@ if realm.user_princ not in out:
+@@ -19,13 +19,15 @@ realm.run(['./t_ccselect', phost], expected_msg=realm.user_princ)
  realm.run([kdestroy])
  
  # Test 2: no name/cache specified, pick principal from k5identity
@@ -105,18 +103,14 @@
 -k5id = open(k5idname, 'w')
 -k5id.write('%s service=host host=%s\n' % (bob, hostname))
 -k5id.close()
--out = realm.run(['./t_ccselect', gssserver])
--if bob not in out:
--    fail('Authenticated as wrong principal')
+-realm.run(['./t_ccselect', gssserver], expected_msg=bob)
 -os.remove(k5idname)
 -realm.run([kdestroy])
 +#k5idname = os.path.join(realm.testdir, '.k5identity')
 +#k5id = open(k5idname, 'w')
 +#k5id.write('%s service=host host=%s\n' % (bob, hostname))
 +#k5id.close()
-+#out = realm.run(['./t_ccselect', gssserver])
-+#if bob not in out:
-+#    fail('Authenticated as wrong principal')
++#realm.run(['./t_ccselect', gssserver], expected_msg=bob)
 +#os.remove(k5idname)
 +#realm.run([kdestroy])
 +sys.stderr.write("Support of k5identity ccselect plugin disabled, skipping "

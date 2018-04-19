@@ -45,11 +45,11 @@
 +extern int _rpcsys(int, void *);
 +
  #ifndef _WIN32
- #define GET_PROGNAME(x) (strrchr((x), '/') ? strrchr((x), '/')+1 : (x))
+ #define GET_PROGNAME(x) (strrchr((x), '/') ? strrchr((x), '/') + 1 : (x))
  #else
-@@ -100,6 +113,13 @@ main(argc, argv)
-     int quiet = 0;
-     int all = 0;
+@@ -93,6 +106,13 @@ main(int argc, char *argv[])
+     char *cache_name = NULL;
+     int code = 0, errflg = 0, quiet = 0, all = 0, c;
  
 +    /* Solaris Kerberos */
 +    krb5_principal me = NULL;
@@ -61,7 +61,7 @@
      setlocale(LC_ALL, "");
      progname = GET_PROGNAME(argv[0]);
  
-@@ -170,10 +190,24 @@ main(argc, argv)
+@@ -170,12 +190,41 @@ main(int argc, char *argv[])
          return 0;
      }
  
@@ -79,45 +79,39 @@
 +            progname, code);
 +    }
 +
-     if (cache_name) {
-         code = krb5_cc_resolve (kcontext, cache_name, &cache);
-         if (code != 0) {
--            com_err(progname, code, _("while resolving %s"), cache_name);
-+            com_err (progname, code, _("while resolving %s"), cache_name);
-             exit(1);
-         }
-     } else {
-@@ -184,6 +218,21 @@ main(argc, argv)
-         }
+     code = krb5_cc_default(context, &cache);
+     if (code) {
+         com_err(progname, code, _("while resolving ccache"));
+         exit(1);
      }
  
 +    /*
 +     * Solaris Kerberos
 +     * Get client name for ktkt_warnd(1M) msg.
 +     */
-+    code = krb5_cc_get_principal(kcontext, cache, &me);
++    code = krb5_cc_get_principal(context, cache, &me);
 +    if (code != 0)
 +        fprintf(stderr,
 +            _("%s: Could not obtain principal name from cache\n"),
 +                progname);
 +    else
-+         if ((code = krb5_unparse_name(kcontext, me, &client_name)))
++         if ((code = krb5_unparse_name(context, me, &client_name)))
 +             fprintf(stderr,
 +                 _("%s: Could not unparse principal name found in cache\n"),
 +                     progname);
 +
-     code = krb5_cc_destroy (kcontext, cache);
+     code = krb5_cc_destroy(context, cache);
      if (code != 0) {
-         com_err (progname, code, _("while destroying cache"));
-@@ -198,9 +247,21 @@ main(argc, argv)
+         com_err(progname, code, _("while destroying cache"));
+@@ -190,10 +239,20 @@ main(int argc, char *argv[])
          }
      }
  
 -    if (!quiet && !errflg)
--        print_remaining_cc_warning(kcontext);
+-        print_remaining_cc_warning(context);
 +    if (!errflg) {
 +        if (!quiet)
-+            print_remaining_cc_warning(kcontext);
++            print_remaining_cc_warning(context);
 +        /* Solaris Kerberos - Delete ktkt_warnd(1M) entry. */
 +        if (client_name)
 +            kwarn_del_warning(client_name);
@@ -127,10 +121,10 @@
 +    }
  
 +    /* Solaris Kerberos */
-+    krb5_free_unparsed_name(kcontext, client_name);
-+    krb5_free_principal(kcontext, me);
-     krb5_free_context(kcontext);
-+
++    krb5_free_unparsed_name(context, client_name);
++    krb5_free_principal(context, me);
+     krb5_free_context(context);
+-
      return errflg;
  }
 --- a/src/clients/kinit/Makefile.in
@@ -153,8 +147,8 @@
 +#include <kerberosv5/private/ktwarn.h>
  
  #ifndef _WIN32
- #define GET_PROGNAME(x) (strrchr((x), '/') ? strrchr((x), '/')+1 : (x))
-@@ -77,6 +78,9 @@ char * get_name_from_os()
+ #define GET_PROGNAME(x) (strrchr((x), '/') ? strrchr((x), '/') + 1 : (x))
+@@ -78,6 +79,9 @@ get_name_from_os()
  
  static char *progname;
  
@@ -164,7 +158,7 @@
  typedef enum { INIT_PW, INIT_KT, RENEW, VALIDATE } action_type;
  
  struct k_opts
-@@ -885,6 +889,15 @@ k5_kinit(opts, k5)
+@@ -835,6 +839,15 @@ k5_kinit(struct k_opts *opts, struct k5_data *k5)
          if (opts->verbose)
              fprintf(stderr, _("Stored credentials\n"));
      }
@@ -178,9 +172,9 @@
 +    }
 +
      notix = 0;
- 
      if (k5->switch_to_cache) {
-@@ -956,3 +969,25 @@ main(argc, argv)
+         ret = krb5_cc_switch(k5->ctx, k5->out_cc);
+@@ -902,3 +915,25 @@ main(int argc, char *argv[])
          exit(1);
      return 0;
  }
