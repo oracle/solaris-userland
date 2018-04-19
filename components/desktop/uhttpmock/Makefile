@@ -18,8 +18,6 @@
 #
 # CDDL HEADER END
 #
-
-#
 # Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
@@ -30,16 +28,16 @@ COMPILER = 		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		uhttpmock
-COMPONENT_VERSION=	0.5.0
+COMPONENT_VERSION=	0.5.1
 COMPONENT_PROJECT_URL=	https://gitlab.com/uhttpmock/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:26da182a2db2579c5ba4dad9096d52099e0766228c295cfbaed6de4046f7d16e
+	sha256:a6a34a011db142a98473b492039c84468d575f416689484f1f82a84927f17798
 COMPONENT_ARCHIVE_URL=	https://tecnocode.co.uk/downloads/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/uhttpmock
 COMPONENT_ANITYA_ID=	5036
 
-TPNO=			25615
+TPNO=			34660
 
 # Enable after libsoup is installed on the build servers
 TEST_TARGET= $(SKIP_TEST)
