@@ -28,8 +28,9 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mesa-demos
 COMPONENT_VERSION=	8.2.0
-COMPONENT_PROJECT_URL=	http://mesa3d.org/
+COMPONENT_PROJECT_URL=	https://mesa3d.org/
 COMPONENT_ARCHIVE_URL=  https://mesa.freedesktop.org/archive/demos/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ARCHIVE_HASH= \
 	sha256:e4bfecb5816ddd4b7b37c1bc876b63f1f7f06fda5879221a9774d0952f90ba92
 COMPONENT_BUGDB=        x11/xclients

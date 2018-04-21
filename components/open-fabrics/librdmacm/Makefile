@@ -31,6 +31,7 @@ COMPONENT_ARCHIVE_HASH=	\
 	sha256:bd99d29d24338f0bcc7258f7cde32dc06e5a85139938c2f655c5d5dd4ae6a27b
 COMPONENT_ARCHIVE_URL= https://www.openfabrics.org/downloads/rdmacm/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/ofuv_lib
+COMPONENT_ANITYA_ID=	17141
 
 include ../ofed-component.mk
 
@@ -43,7 +44,7 @@ CLEANUP_FILES =\
 	$(PROTOUSRINCDIR)/rdma/rdma_cma_abi.h\
 	$(PROTOUSRLIBDIR)/$(COMPONENT_NAME).la\
 	$(PROTOUSRLIBDIR64)/$(COMPONENT_NAME).la
-	
+
 COMPONENT_PREP_ACTION = \
 	$(TOUCH) $(COMPONENT_SRC)/Makefile.in
 

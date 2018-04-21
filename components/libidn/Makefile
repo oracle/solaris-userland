@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -34,10 +34,12 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=	library/libidn
 COMPONENT_ANITYA_ID=	1639
 
-COMPONENT_ARCHIVE_1 =   tld-0.7.tar.gz
+COMPONENT_NAME_1=	tldchk
+COMPONENT_VERSION_1=	0.7
+COMPONENT_ARCHIVE_1 =   tld-$(COMPONENT_VERSION_1).tar.gz
 COMPONENT_ARCHIVE_HASH_1 = \
     sha256:7423f48d15fb1377ee0050c3e1f22e8a91668c2f158afed57b8ead3fed908785
-COMPONENT_ARCHIVE_URL_1 = http://download.berlios.de/tldchk/$(COMPONENT_ARCHIVE_1)
+COMPONENT_ARCHIVE_URL_1 = https://download.sourceforge.net/sourceforge/tldchk.berlios/$(COMPONENT_ARCHIVE_1)
 
 TPNO=			30227
 

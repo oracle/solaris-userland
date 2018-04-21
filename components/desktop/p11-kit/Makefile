@@ -28,11 +28,11 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		p11-kit
 COMPONENT_VERSION=	0.23.2
-COMPONENT_PROJECT_URL=	http://p11-glue.freedesktop.org/
+COMPONENT_PROJECT_URL=	https://p11-glue.github.io/p11-glue/p11-kit.html
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
     sha256:ba726ea8303c97467a33fca50ee79b7b35212964be808ecf9b145e9042fdfaf0
-COMPONENT_ARCHIVE_URL=	http://p11-glue.freedesktop.org/releases/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://github.com/p11-glue/p11-kit/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/security
 COMPONENT_ANITYA_ID=	2582
 

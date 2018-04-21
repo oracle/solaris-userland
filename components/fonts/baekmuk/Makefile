@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -38,6 +38,7 @@ COMPONENT_ARCHIVE_URL=	http://pkgs.fedoraproject.org/repo/pkgs/fonts-korean/$(CO
 COMPONENT_ARCHIVE_HASH= \
     sha256:f367c48519bde6ff9941381f1eec7279ad8cec6ca2b20b4f1884752bd42f95da
 COMPONENT_BUGDB=	g11n/font
+COMPONENT_ANITYA_ID=	17137
 
 TPNO=			9365
 

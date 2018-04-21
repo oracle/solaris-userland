@@ -31,11 +31,12 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		colord-gtk
 COMPONENT_VERSION=	0.1.26
-COMPONENT_PROJECT_URL=	http://www.freedesktop.org/software/colord/
+COMPONENT_PROJECT_URL=	https://www.freedesktop.org/software/colord/
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
 	sha256:28d00b7f157ea3e2ea5315387b2660fde82faba16674861c50465e55d61a3e45
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	331
 

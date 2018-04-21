@@ -26,12 +26,14 @@
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
-COMPONENT_PROJECT_URL= http://www2.research.att.com/sw/download/
+COMPONENT_PROJECT_URL=	http://www.kornshell.com/
 COMPONENT_ANITYA_ID=	1523
 
 # These are required if retrieving packages from the AT&T website.
 ATT_USERNAME= "I accept www.opensource.org/licenses/eclipse"
 ATT_PASSWD= "."
+# Upstream moved to https://github.com/att/ast but doesn't have tarballs
+# available for download from there yet.
 
 COMPONENT_TEST_MASTER = \
 	$(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS).$(MACH).master 
@@ -61,6 +63,7 @@ COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tgz
 COMPONENT_ARCHIVE_HASH = \
     sha256:c40cf57e9b2186271a9c362a560aa4a6e25ba911a8258ab931d2bbdbce44cfe5
 COMPONENT_ARCHIVE_URL = http://www2.research.att.com/~astopen/download/tgz/$(COMPONENT_ARCHIVE)
+COMPONENT_ANITYA_ID_1=	1523
 
 TPNO=		16530
 

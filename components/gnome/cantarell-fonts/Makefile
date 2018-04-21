@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -28,6 +28,7 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cantarell-fonts
 COMPONENT_VERSION=	0.0.25
+COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/CantarellFonts
 COMPONENT_ARCHIVE_HASH= \
     sha256:14a228aa0b516dfc367b434a850f955a00c57fc549cbb05348e2b150196a737f
 COMPONENT_BUGDB=        gnome/themes

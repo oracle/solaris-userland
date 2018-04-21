@@ -31,6 +31,7 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tracker
 COMPONENT_VERSION=	1.6.0
+COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Tracker
 COMPONENT_ARCHIVE_HASH= \
 	sha256:7e2729627224f43f8cd99c18d027a3b984e049fe924a265a9b31857566c9e28a
 COMPONENT_BUGDB=        gnome/libraries

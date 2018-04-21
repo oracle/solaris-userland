@@ -38,6 +38,7 @@ TEST_TARGET = $(NO_TESTS)
 # Sun source mkcookie
 COMPONENT_NAME_1=       mkcookie
 COMPONENT_ARCHIVE_SRC_1=none
+COMPONENT_ANITYA_ID_1=	N/A
 
 TEST_TARGET = $(NO_TESTS)
 

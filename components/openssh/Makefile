@@ -37,9 +37,10 @@ COMPONENT_ANITYA_ID=	2565
 #   OpenSSH <x>.<y>.<z>p<n> => IPS <x>.<y>.<z>.<n>
 IPS_COMPONENT_VERSION=	7.5.0.1
 
-COMPONENT_PROJECT_URL=	http://www.openssh.org/
+COMPONENT_PROJECT_URL=	https://www.openssh.com/
 COMPONENT_ARCHIVE_HASH=	sha256:9846e3c5fab9f0547400b4d2c017992f914222b3fd1f8eee6c7dc6bc5e59f9f0
-COMPONENT_ARCHIVE_URL=	http://mirrors.sonic.net/pub/OpenBSD/OpenSSH/portable/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://mirrors.sonic.net/pub/OpenBSD/OpenSSH/portable/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 
 TPNO_OPENSSH=		34574
 TPNO_GSSKEX=		20377

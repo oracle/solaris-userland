@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -30,7 +30,7 @@ COMPONENT_VERSION=	0.9.7
 COMPONENT_PROJECT_URL=	http://librsync.sourceforge.net/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:6633e4605662763a03bb6388529cbdfd3b11a9ec55b8845351c1bd9a92bc41d6
-COMPONENT_ARCHIVE_URL=	http://sourceforge.net/projects/$(COMPONENT_NAME)/files/librsync/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)/download
+COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/$(COMPONENT_NAME)/files/librsync/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)/download
 COMPONENT_BUGDB=	library/librsync
 COMPONENT_ANITYA_ID=	6309
 
@@ -45,6 +45,8 @@ COMPONENT_ARCHIVE_1=	$(COMPONENT_SRC_1).tar.gz
 COMPONENT_ARCHIVE_HASH_1=	\
     sha256:e805819272f71b06823ee13f2dd7ddb92e75d75de18c33b7fd32133847c52afe
 COMPONENT_ARCHIVE_URL_1=	$(EXTERNAL_ARCHIVE_MIRROR)/$(COMPONENT_ARCHIVE_1)
+COMPONENT_ANITYA_ID_1=	N/A
+
 COMPONENT_POST_UNPACK_ACTION_1 = $(MV) $(COMPONENT_NAME_1) $(@D)
 
 TPNO=			9087

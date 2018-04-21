@@ -20,17 +20,18 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tcpdump
 COMPONENT_VERSION=	4.9.2
-COMPONENT_PROJECT_URL=	http://www.tcpdump.org/
+COMPONENT_PROJECT_URL=	https://www.tcpdump.org/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:798b3536a29832ce0cbb07fafb1ce5097c95e308a6f592d14052e1ef1505fe79
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)release/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	4947
 
 TPNO=			37776

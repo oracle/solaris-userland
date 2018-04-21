@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
@@ -29,6 +29,7 @@ COMPONENT_NAME=		autoconf
 COMPONENT_VERSION=	2.13
 COMPONENT_ARCHIVE_HASH=	\
     sha256:35eb09ad59d78726349bfda05922f892453a2cbc6ec7fe54eb18615fb0c09fd5
+COMPONENT_ANITYA_ID=	N/A
 TPNO=			34462
 
 # AC_F77_LIBRARY_LDFLAGS test wouldn't find ./../config.sub

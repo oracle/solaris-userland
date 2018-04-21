@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -28,13 +28,15 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gentium
 COMPONENT_VERSION=	1.02
+COMPONENT_ANITYA_ID=	10086
 
 # due to 27244651 the IPS version should be the solaris version
 IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
 
 COMPONENT_ARCHIVE=	GentiumBasic_110_source.zip
-COMPONENT_PROJECT_URL=	http://software.sil.org/gentium/
-COMPONENT_ARCHIVE_URL=http://scripts.sil.org/cms/scripts/render_download.php?format=file&media_id=GentiumBasic_110_source&filename=GentiumBasic_110_source.zip
+COMPONENT_PROJECT_URL=	https://software.sil.org/gentium/
+COMPONENT_DOWNLOAD_URL= https://software.sil.org/downloads/r/gentium/
+COMPONENT_ARCHIVE_URL=	$(COMPONENT_DOWNLOAD_URL)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
     sha256:612c053db7322c38915f6c02df79e241a296a4a5b5beda8ac0d6c99378f026b6
 # GNU make does not handle spaces in filename well
@@ -43,7 +45,7 @@ COMPONENT_POST_UNPACK_ACTION= \
 CLEAN_PATHS+=	Gentium\ Basic\ 1.1\ Source
 
 COMPONENT_ARCHIVE_1=	Gentium_102_W.zip
-COMPONENT_ARCHIVE_URL_1=http://scripts.sil.org/cms/scripts/render_download.php?format=file&media_id=Gentium_102_W&filename=Gentium_102_W.zip
+COMPONENT_ARCHIVE_URL_1=$(COMPONENT_DOWNLOAD_URL)/$(COMPONENT_ARCHIVE_1)
 COMPONENT_ARCHIVE_HASH_1= \
     sha256:9652affcde2c850b6e68b68b8506fa1ba17da5167d2d2ea24ad2de24440105aa
 COMPONENT_SRC_1=	Gentium102

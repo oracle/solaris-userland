@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
@@ -31,6 +31,7 @@ COMPONENT_SRC=		src
 COMPONENT_ARCHIVE=
 COMPONENT_ARCHIVE_SRC=	none
 COMPONENT_PROJECT_URL=	http://prefetch.net/projects/apache_modtrace/
+COMPONENT_ANITYA_ID=	N/A
 
 TPNO=			8876
 

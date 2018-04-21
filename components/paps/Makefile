@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER=gcc
@@ -35,6 +35,7 @@ IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
 COMPONENT_PROJECT_URL=	https://github.com/dov/paps
 COMPONENT_ARCHIVE_SRC=	git
 COMPONENT_BUGDB=	utility/paps
+COMPONENT_ANITYA_ID=	2592
 
 GIT_REPO=	https://github.com/dov/paps
 GIT_COMMIT_ID=	37e6ca1

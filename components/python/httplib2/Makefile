@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -31,7 +31,7 @@ COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:c3aba1c9539711551f4d83e857b316b5134a1c4ddce98a875b7027be7dd6d988
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	http://code.google.com/p/httplib2/
+COMPONENT_PROJECT_URL=	https://pypi.org/project/httplib2/
 COMPONENT_BUGDB=	python-mod/httplib2
 COMPONENT_ANITYA_ID=	3887
 

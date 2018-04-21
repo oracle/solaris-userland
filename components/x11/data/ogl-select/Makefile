@@ -31,6 +31,7 @@ COMPONENT_VERSION=      #
 COMPONENT_SRC=          files
 COMPONENT_ARCHIVE_SRC=	none
 COMPONENT_BUGDB=	x11/other
+COMPONENT_ANITYA_ID=	N/A
 
 # nothing to download ; just package
 BUILD_STYLE= pkg

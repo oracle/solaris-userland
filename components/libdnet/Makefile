@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -29,11 +29,11 @@ PATH=$(SPRO_VROOT)/bin:$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=		libdnet
 COMPONENT_VERSION=	1.12
-COMPONENT_PROJECT_URL=	http://code.google.com/p/libdnet/
+COMPONENT_PROJECT_URL=	https://github.com/dugsong/libdnet
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:83b33039787cf99990e977cef7f18a5d5e7aaffc4505548a83d31bd3515eb026
-COMPONENT_ARCHIVE_URL=	http://libdnet.googlecode.com/files/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://github.com/dugsong/libdnet/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libdnet 
 COMPONENT_ANITYA_ID=	6308
 

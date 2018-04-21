@@ -20,18 +20,18 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		jjv
 COMPONENT_VERSION=	1.0.2
-COMPONENT_PROJECT_URL=	https://github.com/acornejo/jjv/archive
+COMPONENT_PROJECT_URL=	https://github.com/acornejo/jjv
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	v$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	sha256:130b9a2a09c2525f9ccecdf52e3d855901f2eaf6712edc7eedaad3824f65654d
-COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB= 	javascript/jjv
 COMPONENT_ANITYA_ID=	13253
 

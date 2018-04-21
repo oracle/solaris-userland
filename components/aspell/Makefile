@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -39,8 +39,10 @@ COMPONENT_SRC_1=	$(COMPONENT_NAME_1)-$(COMPONENT_VERSION_1)
 COMPONENT_ARCHIVE_1=	$(COMPONENT_SRC_1).tar.bz2
 COMPONENT_ARCHIVE_HASH_1= \
     sha256:ff9df3c2e8c5bb19c6a66078b36a0ef4c4dfb0fcb969e29f7b5345e26d748d0a
-COMPONENT_ARCHIVE_URL_1= ftp://ftp.gnu.org/gnu/$(COMPONENT_NAME)/dict/en/$(COMPONENT_ARCHIVE_1)
+COMPONENT_ARCHIVE_URL_1= https://ftp.gnu.org/gnu/$(COMPONENT_NAME)/dict/en/$(COMPONENT_ARCHIVE_1)
+COMPONENT_SIG_URL_1=	$(COMPONENT_ARCHIVE_URL_1).sig
 SOURCE_DIR_1=		$(COMPONENT_DIR)/$(COMPONENT_SRC_1)
+COMPONENT_ANITYA_ID_1=	7838
 
 TPNO=			23575
 

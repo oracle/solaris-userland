@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/smontanaro/pylockfile
 COMPONENT_BUGDB=	python-mod/lockfile
-COMPONENT_ANITYA_ID=	4627
+COMPONENT_ANITYA_ID=	6854
 
 TPNO=			28727
 

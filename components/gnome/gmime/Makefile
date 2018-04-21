@@ -34,6 +34,7 @@ include ../../../make-rules/shared-macros.mk
 # depends on it.
 COMPONENT_NAME=		gmime
 COMPONENT_VERSION=	2.6.23
+COMPONENT_PROJECT_URL=	https://developer.gnome.org/gmime/
 COMPONENT_ARCHIVE_HASH= \
 	sha256:7149686a71ca42a1390869b6074815106b061aaeaaa8f2ef8c12c191d9a79f6a
 COMPONENT_BUGDB=        gnome/libraries

@@ -29,6 +29,7 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libnotify
 COMPONENT_VERSION=	0.7.7
+COMPONENT_PROJECT_URL=	https://developer.gnome.org/libnotify/
 COMPONENT_ARCHIVE_HASH=	\
 	sha256:9cb4ce315b2655860c524d46b56010874214ec27e854086c1a1d0260137efc04
 COMPONENT_BUGDB=        gnome/libraries

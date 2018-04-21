@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 # Can't use the Studio compilers as they don't support the GNU 
@@ -30,7 +30,7 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         nmap
 COMPONENT_VERSION=      7.60
-COMPONENT_PROJECT_URL=	http://nmap.org/
+COMPONENT_PROJECT_URL=  https://nmap.org/
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tgz
 COMPONENT_ARCHIVE_HASH= \
     sha256:330d94228f3196dc7481990435703ba1ab67bb95016ea073a11a361aa76f65ef

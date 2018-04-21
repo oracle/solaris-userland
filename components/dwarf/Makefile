@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 COMPILER=gcc
 BUILD_BITS= 64_and_32
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	https://www.prevanders.net/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH=	\
     sha256:bd3d6dc7da0509876fb95b8681f165febd898845dc66714aa58e69b8feca988f
 COMPONENT_BUGDB=	library/libdwarf
-COMPONENT_ANITYA_ID=	1587
+COMPONENT_ANITYA_ID=	1597
 
 TPNO=			33513
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -32,7 +32,7 @@ COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:1b555b8a8800134fdafe32b7d0cb52f5bdbfdd093707c3dd484c5ea59f1d98b7
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	http://code.google.com/p/ipaddr-py/
+COMPONENT_PROJECT_URL=	https://github.com/google/ipaddr-py
 COMPONENT_BUGDB=	python-mod/ipaddr
 COMPONENT_ANITYA_ID=	12022
 

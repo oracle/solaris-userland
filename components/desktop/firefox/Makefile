@@ -45,7 +45,7 @@ MOZILLA_FTP = 		        http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/candidates/
 endif
 COMPONENT_ARCHIVE_URL =		$(MOZILLA_FTP)/source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB =		firefox/browser
-COMPONENT_ANITYA_ID=    5506
+COMPONENT_ANITYA_ID=    	16838
 
 TPNO=				42003
 

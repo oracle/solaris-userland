@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 COMPILER= gcc
 BUILD_ARCH= i386
@@ -30,11 +30,11 @@ include ../../make-rules/shared-macros.mk
 COMPONENT_NAME=		acpidump
 COMPONENT_VERSION=	20071116
 IPS_COMPONENT_VERSION=	0.2007.11.16
-COMPONENT_PROJECT_URL=	http://www.lesswatts.org/projects/acpi/utilities.php
+COMPONENT_PROJECT_URL=	https://01.org/linux-acpi/utilities
 COMPONENT_SRC_NAME=	pmtools
 COMPONENT_ARCHIVE_HASH=	\
     sha256:91751774976e39f6237efd0326eb35196a9346220b92ad35894a33283e872748
-COMPONENT_ARCHIVE_URL=	http://www.lesswatts.org/patches/linux_acpi/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://01.org/sites/default/files/page/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	13294
 
 TPNO=			8848

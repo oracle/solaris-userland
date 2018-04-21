@@ -31,11 +31,18 @@ COMPONENT_VERSION=	1.0.3
 COMPONENT_ARCHIVE_HASH= \
 	sha256:f648e2b0cf16aa29856de998e2c7204be39dc1f8daeda9464d32288e0b580fc1
 COMPONENT_BUGDB=        x11/xclients
+COMPONENT_ANITYA_ID=	17150
 
 # Additional Sun-created utilties
 COMPONENT_NAME_1=	cmap_alloc
 COMPONENT_NAME_2=	cmap_compact
 COMPONENT_NAME_3=	xcolor
+
+# check-releases.py requires these to be spelled out, not auto-generated
+COMPONENT_ANITYA_ID_1=	N/A
+COMPONENT_ANITYA_ID_2=	N/A
+COMPONENT_ANITYA_ID_3=	N/A
+
 
 TEST_TARGET = $(NO_TESTS)
 

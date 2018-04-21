@@ -29,10 +29,11 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gcc
 COMPONENT_VERSION=	7.3.0
-COMPONENT_PROJECT_URL=	http://gcc.gnu.org/
+COMPONENT_PROJECT_URL=	https://gcc.gnu.org/
 COMPONENT_ARCHIVE_HASH= \
     sha256:fa06e455ca198ddc11ea4ddf2a394cf7cfb66aa7e0ab98cc1184189f1d405870
-COMPONENT_ARCHIVE_URL=	http://ftp.gnu.org/gnu/gcc/$(COMPONENT_SRC)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://ftp.gnu.org/gnu/gcc/$(COMPONENT_SRC)/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=        utility/gnu-compiler
 COMPONENT_ANITYA_ID=	6502
 

@@ -32,7 +32,7 @@ COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
 	sha256:3c479acfcdf8aa21c4b5f6c3d063a6318b94282744353c9c6cbad06ebe5a9abf
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	http://github.com/paramiko/paramiko/
+COMPONENT_PROJECT_URL=	https://github.com/paramiko/paramiko/
 COMPONENT_BUGDB=	python-mod/paramiko
 COMPONENT_ANITYA_ID=	3954
 

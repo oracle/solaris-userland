@@ -33,6 +33,7 @@ COMPONENT_SRC=          sun-src
 COMPONENT_ARCHIVE=	
 COMPONENT_ARCHIVE_SRC=	none
 COMPONENT_BUGDB=	x11/xclients
+COMPONENT_ANITYA_ID=	N/A
 
 # nothing to download ; just build & package
 BUILD_STYLE= justmake

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -30,10 +30,11 @@ PATH=$(GNUBIN):$(USRBINDIR):$(USRSBINDIR)
 
 COMPONENT_NAME=		dnsmasq
 COMPONENT_VERSION=	2.78
-COMPONENT_PROJECT_URL=	http://www.thekelleys.org.uk
+COMPONENT_PROJECT_URL=	http://www.thekelleys.org.uk/$(COMPONENT_NAME)
 COMPONENT_ARCHIVE_HASH=	\
     sha256:c92e5d78aa6353354d02aabf74590d08980bb1385d8a00b80ef9bc80430aa1dc
-COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	service/dnsmasq
 COMPONENT_ANITYA_ID=	444
 

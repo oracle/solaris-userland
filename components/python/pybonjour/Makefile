@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -32,7 +32,7 @@ COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:006175b0fa6ef555fe8970132db81332827662a680d5f64dcb005bfcc80299ad
-COMPONENT_ARCHIVE_URL=	http://pybonjour.googlecode.com/files/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/pybonjour/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	python-mod/pybonjour
 COMPONENT_ANITYA_ID=	13251
 

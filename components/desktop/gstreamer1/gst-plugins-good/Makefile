@@ -31,11 +31,12 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gst-plugins-good
 COMPONENT_VERSION=	1.10.3
-COMPONENT_PROJECT_URL=	http://gstreamer.freedesktop.org/
+COMPONENT_PROJECT_URL=	https://gstreamer.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
 	sha256:4e07e93e34d4b93208f1579c21e7d91a236577b36f128a5332ffee85b4465955
-COMPONENT_ARCHIVE_URL=	http://gstreamer.freedesktop.org/src/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://gstreamer.freedesktop.org/src/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	1263
 

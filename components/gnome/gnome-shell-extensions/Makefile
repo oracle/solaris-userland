@@ -29,7 +29,7 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-shell-extensions
 COMPONENT_VERSION=	3.24.0
-COMPONENT_PROJECT_URL=  https://extensions.gnome.org
+COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/GnomeShell/Extensions
 COMPONENT_ARCHIVE_HASH= \
 	sha256:a1f453cce7543a09f3d5515918a6fe903c1b4aa578f7367335dd1a8121d2618f
 COMPONENT_ANITYA_ID=	1195

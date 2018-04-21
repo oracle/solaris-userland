@@ -31,7 +31,7 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-desktop
 COMPONENT_VERSION=	3.24.0
-COMPONENT_PROJECT_URL= 	http://wiki.gnome.org
+COMPONENT_PROJECT_URL= 	https://developer.gnome.org/gnome-desktop/
 COMPONENT_ARCHIVE_HASH=	\
 	sha256:86387aa12ba789afc0772d49fdfbab2d815669552e895be089252dd42aa68677
 COMPONENT_BUGDB=	gnome/libraries

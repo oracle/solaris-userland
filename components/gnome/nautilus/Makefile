@@ -31,7 +31,7 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nautilus
 COMPONENT_VERSION=	3.24.0
-COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/Nautilus
+COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Files
 COMPONENT_ARCHIVE_HASH= \
 	sha256:8a499247caff3c02437c0ad955f043e675a056912d8553d9c9783c762f5dbbbd
 COMPONENT_BUGDB=        gnome/nautilus

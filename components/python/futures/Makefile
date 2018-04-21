@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -32,9 +32,9 @@ COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:0542525145d5afc984c88f914a0c85c77527f65946617edb5274f72406f981df
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	http://code.google.com/p/pythonfutures/
+COMPONENT_PROJECT_URL=	https://github.com/agronholm/pythonfutures
 COMPONENT_BUGDB=	python-mod/futures
-COMPONENT_ANITYA_ID=	6595
+COMPONENT_ANITYA_ID=	6594
 
 TPNO=			27997
 

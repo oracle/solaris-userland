@@ -20,17 +20,18 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libssh2
 COMPONENT_VERSION=	1.7.0
-COMPONENT_PROJECT_URL=	http://www.libssh2.org/
+COMPONENT_PROJECT_URL=	https://www.libssh2.org/
 COMPONENT_ARCHIVE_HASH=	\
 	sha256:e4561fd43a50539a8c2ceb37841691baf03ecb7daf043766da1b112e4280d584
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/libssh2
 COMPONENT_ANITYA_ID=	1730
 

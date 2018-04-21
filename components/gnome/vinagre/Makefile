@@ -27,7 +27,7 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		vinagre
 COMPONENT_VERSION=	3.16.0
-COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects//$(COMPONENT_NAME)
+COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Vinagre
 COMPONENT_ARCHIVE_HASH= \
 	sha256:93d79e18e71509647fe4bc00a0dcef5382b2e3a79c39d2b18a91334195995c34
 COMPONENT_BUGDB=	gnome/remote-desktop

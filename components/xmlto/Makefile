@@ -20,17 +20,18 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xmlto
 COMPONENT_VERSION=	0.0.28
-COMPONENT_PROJECT_URL=	https://fedorahosted.org/xmlto/
+COMPONENT_PROJECT_URL=	https://pagure.io/xmlto
 COMPONENT_ARCHIVE_HASH= \
     sha256:2f986b7c9a0e9ac6728147668e776d405465284e13c74d4146c9cbc51fd8aad3
-COMPONENT_ARCHIVE_URL=	 https://fedorahosted.org/releases/x/m/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://releases.pagure.org/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	13307
 
 TPNO=			27193

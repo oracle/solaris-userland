@@ -29,6 +29,7 @@ include ../../../../make-rules/shared-macros.mk
 COMPONENT_NAME=		libxcb
 COMPONENT_VERSION=	1.12
 COMPONENT_CATEGORY=	xcb
+COMPONENT_PROJECT_URL=	https://xcb.freedesktop.org/
 COMPONENT_ARCHIVE_HASH= \
 	sha256:4adfb1b7c67e99bc9c2ccb110b2f175686576d2f792c8a71b9c8b19014057b5b
 COMPONENT_BUGDB=        x11/libraries

@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_URL=	https://gitlab.com/libidn/libidn2/uploads/15020b7769a7c69
 # libidn2 is continuation of libidn
 COMPONENT_PROJECT_URL=	https://www.gnu.org/software/libidn/#libidn2
 COMPONENT_BUGDB=	library/libidn
-COMPONENT_ANITYA_ID=	1639
+COMPONENT_ANITYA_ID=	5597
 
 include $(WS_MAKE_RULES)/common.mk
 

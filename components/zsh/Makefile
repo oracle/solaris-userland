@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -28,11 +28,12 @@ include $(WS_MAKE_RULES)/shared-targets.mk
 
 COMPONENT_NAME=		zsh
 COMPONENT_VERSION=	5.3.1
-COMPONENT_PROJECT_URL=	http://www.zsh.org/
+COMPONENT_PROJECT_URL=	https://www.zsh.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:fc886cb2ade032d006da8322c09a7e92b2309177811428b121192d44832920da
-COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/project/zsh/zsh/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/project/zsh/zsh/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	5307
 
 TPNO=			33339

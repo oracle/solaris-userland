@@ -39,6 +39,24 @@ ifneq ($(strip $(COMPONENT_ARCHIVE_SRC)), none)
 COMPONENT_ARCHIVE_URL ?=	https://www.x.org/releases/individual/$(COMPONENT_CATEGORY)/$(COMPONENT_ARCHIVE)
 endif
 
+# Automatically set COMPONENT_SIG_URL* for all COMPONENT_ARCHIVE_URL*
+# matching www.x.org
+define x11-make-sig-url
+ifneq (,$(findstring www.x.org,$(COMPONENT_ARCHIVE_URL$(1))))
+ifeq "$(origin COMPONENT_SIG_URL$(1))" "undefined"
+COMPONENT_SIG_URL$(1) =		$(strip $$(COMPONENT_ARCHIVE_URL$(1))).sig
+endif
+endif
+endef
+
+$(eval $(call x11-make-sig-url,))
+$(foreach suffix, \
+    $(subst COMPONENT_ARCHIVE_URL_,, \
+	$(filter COMPONENT_ARCHIVE_URL_%, $(.VARIABLES))), \
+    $(eval $(call x11-make-sig-url,_$(suffix))))
+
+
+# Set packages to be part of the X consolidation incorporation
 PKGMOGRIFY_TRANSFORMS += $(WS_TOP)/transforms/X-incorporation
 
 include $(WS_MAKE_RULES)/common.mk

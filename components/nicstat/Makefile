@@ -20,14 +20,14 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nicstat
 COMPONENT_VERSION=	1.95
-COMPONENT_PROJECT_URL=	http://sourceforge.net/projects/nicstat/
+COMPONENT_PROJECT_URL=	https://sourceforge.net/projects/nicstat/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:c4cc33f8838f4523f27c3d7584eedbe59f4c587f0821612f5ac2201adc18b367
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)files/$(COMPONENT_ARCHIVE)/download

@@ -28,6 +28,7 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME= 	timezone
 COMPONENT_VERSION=    	2017.1.1
+COMPONENT_PROJECT_URL=	http://www.iana.org/time-zones
 COMPONENT_SRC=
 COMPONENT_ARCHIVE_SRC=	none
 HUMAN_VERSION=		2017a

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -32,6 +32,7 @@ COMPONENT_PROJECT_URL=	http://www.tcsh.org/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:b89de7064ab54dac454a266cfe5d8bf66940cb5ed048d0c30674ea62e7ecef9d
 COMPONENT_ARCHIVE_URL=	ftp://ftp.astron.com/pub/tcsh/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	4945
 
 TPNO=			34278

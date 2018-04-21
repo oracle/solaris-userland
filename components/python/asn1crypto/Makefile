@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/wbond/asn1crypto
 COMPONENT_BUGDB=	python-mod/asn1crypto
-COMPONENT_ANITYA_ID=	tbd
+COMPONENT_ANITYA_ID=	15550
 
 TPNO=			40851
 

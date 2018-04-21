@@ -19,7 +19,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 COMPILER=gcc
@@ -29,11 +29,12 @@ PATH=$(dir $(CC)):$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=		gmp
 COMPONENT_VERSION=      6.1.2
-COMPONENT_PROJECT_URL=	http://gmplib.org/
-COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.xz 
+COMPONENT_PROJECT_URL=	https://gmplib.org/
+COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.xz
 COMPONENT_ARCHIVE_HASH= \
     sha256:87b565e89a9a684fe4ebeeddb8399dce2599f9c9049854ca8c0dfbdea0e21912
 COMPONENT_ARCHIVE_URL=  https://gmplib.org/download/gmp/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=	library/gnump
 COMPONENT_ANITYA_ID=	1186
 
@@ -46,6 +47,7 @@ COMPONENT_ARCHIVE_1=      $(COMPONENT_SRC_1).tar.gz
 COMPONENT_ARCHIVE_HASH_1= \
     sha256:7be3ad1641b99b17f6a8be6a976f1f954e997c41e919ad7e0c418fe848c13c97
 COMPONENT_ARCHIVE_URL_1=  http://ftp.gnu.org/gnu/gmp/$(COMPONENT_ARCHIVE_1)
+COMPONENT_SIG_URL_1=	  $(COMPONENT_ARCHIVE_URL_1).sig
 
 
 COMPONENT_PREP_ACTION = (cd $(@D) ; $(AUTORECONF) -fiv)

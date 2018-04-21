@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -30,8 +30,8 @@ COMPONENT_VERSION=	0.8.5
 COMPONENT_PROJECT_URL=	http://hg-git.github.io/
 COMPONENT_BUGDB=	python-mod/hg-git
 COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
-COMPONENT_ARCHIVE_URL=	http://bitbucket.org/durin42/$(COMPONENT_NAME)/get/$(COMPONENT_ARCHIVE)
-COMPONENT_PROJECT_ANITYA_ID=	1314
+COMPONENT_ARCHIVE_URL=	https://bitbucket.org/durin42/$(COMPONENT_NAME)/get/$(COMPONENT_ARCHIVE)
+COMPONENT_ANITYA_ID=	1314
 
 TPNO=			33779
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -30,7 +30,7 @@ COMPONENT_VERSION=	1.0.10
 COMPONENT_PROJECT_URL=	http://www.libmng.com/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:03a79dac9b9316d37227057614a248a946f997c4d1a3437fb569e9a63897f911
-COMPONENT_ARCHIVE_URL=	http://sourceforge.net/projects/libmng/files/libmng-devel/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/libmng/files/libmng-devel/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_1 =	mng-1.0-20010209-pdg.html
 COMPONENT_ARCHIVE_HASH_1 = \
     sha256:fe8e0a7aa7371c4c1369b56485fdbd96699e53f0078d7369162c883bb7dac1ca

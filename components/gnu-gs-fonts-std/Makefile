@@ -21,17 +21,17 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         gnu-gs-fonts-std
 COMPONENT_VERSION=      6.0
-COMPONENT_PROJECT_URL=	http://sourceforge.net/projects/gs-fonts/
+COMPONENT_PROJECT_URL=	https://sourceforge.net/projects/gs-fonts/
 COMPONENT_ARCHIVE_HASH= \
     sha256:4cef38d05aa958dfee4dabb8d1599b8ad2b2347413b7895c94d8882c8a0fb9d3
-COMPONENT_ARCHIVE_URL=  http://softlayer.dl.sourceforge.net/sourceforge/gs-fonts/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=  https://download.sourceforge.net/sourceforge/gs-fonts/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/ghostscript
 COMPONENT_ANITYA_ID=	13283
 

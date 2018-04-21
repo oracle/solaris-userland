@@ -29,10 +29,10 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         libvisual-plugins
 COMPONENT_VERSION=      0.4.0
-COMPONENT_PROJECT_URL=  https://sourceforge.net/projects/libvisual
+COMPONENT_PROJECT_URL=  http://libvisual.org/
 COMPONENT_ARCHIVE_HASH= \
        sha256:8b783a111d54b92502085199c351979d0452b950fcddddd1eae28a16d8508e9b
-COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)/files/$(COMPONENT_NAME)/$(COMPONENT_SRC)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=  https://sourceforge.net/projects/libvisual/files/$(COMPONENT_NAME)/$(COMPONENT_SRC)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=        gnome/multimedia
 COMPONENT_ANITYA_ID=	13114
 

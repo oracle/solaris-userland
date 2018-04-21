@@ -20,14 +20,15 @@
 #
 
 #
-# Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 #
 # This file sets up the standard, default options and base requirements for
 # GNU userland components.
 #
-COMPONENT_PROJECT_URL ?=	http://www.gnu.org/software/$(COMPONENT_NAME)
-COMPONENT_ARCHIVE_URL ?=	http://ftp.gnu.org/gnu/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+COMPONENT_PROJECT_URL ?=	https://www.gnu.org/software/$(COMPONENT_NAME)
+COMPONENT_ARCHIVE_URL ?=	https://ftp.gnu.org/gnu/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL ?=		$(strip $(COMPONENT_ARCHIVE_URL)).sig
 
 include $(WS_MAKE_RULES)/common.mk

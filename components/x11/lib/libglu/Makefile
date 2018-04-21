@@ -27,14 +27,15 @@ BUILD_BITS =            32_and_64
 COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=       glu
-COMPONENT_VERSION=    9.0.0
-COMPONENT_ARCHIVE_URL=ftp://ftp.freedesktop.org/pub/mesa/glu/$(COMPONENT_ARCHIVE)
+COMPONENT_NAME=		glu
+COMPONENT_VERSION=	9.0.0
+COMPONENT_PROJECT_URL=	https://www.mesa3d.org/
+COMPONENT_ARCHIVE_URL=	https://mesa.freedesktop.org/archive/glu/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-        sha256:1f7ad0d379a722fcbd303aa5650c6d7d5544fde83196b42a73d1193568a4df12
-COMPONENT_BUGDB=      x11/libraries
-COMPONENT_ANITYA_ID=  13518
-TPNO=		      9926
+	sha256:1f7ad0d379a722fcbd303aa5650c6d7d5544fde83196b42a73d1193568a4df12
+COMPONENT_BUGDB=	x11/libraries
+COMPONENT_ANITYA_ID=	13518
+TPNO=			9926
 
 TEST_TARGET = $(NO_TESTS)
 

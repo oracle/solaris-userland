@@ -31,6 +31,7 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgsf
 COMPONENT_VERSION=	1.14.41
+COMPONENT_PROJECT_URL=	https://developer.gnome.org/gsf/
 COMPONENT_ARCHIVE_HASH=	\
 	sha256:150b98586a1021d5c49b3d4d065d0aa3e3674ae31db131af5372499d2d3f08d3
 COMPONENT_BUGDB=        gnome/libraries

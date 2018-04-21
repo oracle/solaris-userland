@@ -27,12 +27,13 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tomcat
 COMPONENT_VERSION=	8.5.28
-COMPONENT_PROJECT_URL=	http://tomcat.apache.org/
+COMPONENT_PROJECT_URL=	https://tomcat.apache.org/
 COMPONENT_SRC_NAME=	apache-tomcat
 COMPONENT_SRC=		$(COMPONENT_SRC_NAME)-$(COMPONENT_VERSION)-src
 COMPONENT_ARCHIVE_HASH=	\
     sha256:74437356c3fb13315d6d4b6be4a7603e1fe2d1b91cc23dfee8ac66a9f4604b60
 COMPONENT_ARCHIVE_URL=	https://archive.apache.org/dist/tomcat/tomcat-8/v$(COMPONENT_VERSION)/src/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	4987
 
 # Tomcat subcomponents

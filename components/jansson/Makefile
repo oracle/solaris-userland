@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -31,6 +31,7 @@ COMPONENT_PROJECT_URL=	http://www.digip.org/jansson
 COMPONENT_ARCHIVE_HASH=	\
     sha256:78215ad1e277b42681404c1d66870097a50eb084be9d771b1d15576575cf6447
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/jansson
 COMPONENT_ANITYA_ID=	1417
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -28,7 +28,7 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		procps-ng
 COMPONENT_VERSION=	3.3.12
-COMPONENT_PROJECT_URL=	http://sourceforge.net/projects/procps-ng/
+COMPONENT_PROJECT_URL=	https://sourceforge.net/projects/procps-ng/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:6ed65ab86318f37904e8f9014415a098bec5bc53653e5d9ab404f95ca5e1a7d4

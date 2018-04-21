@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -34,6 +34,7 @@ COMPONENT_PROJECT_URL=	http://www.list.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_MICRO_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_ARCHIVE_URL=	https://launchpad.net/mailman/$(COMPONENT_MINOR_VERSION)/$(COMPONENT_MICRO_VERSION)/+download/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ARCHIVE_HASH=	sha256:89b0cfc13c52915b9cdebd4b772852f1043e7435554050b4f5f7094f9093cd77
 COMPONENT_ANITYA_ID=	1875
 

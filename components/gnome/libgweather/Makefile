@@ -31,6 +31,7 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgweather
 COMPONENT_VERSION=	3.24.0
+COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/LibGWeather
 COMPONENT_ARCHIVE_HASH=	\
 	sha256:1089b932205085add19e5e1b63361c0cff1a2c46a67ab2dded6dd2ca87bdfa3d
 COMPONENT_ANITYA_ID=	13147

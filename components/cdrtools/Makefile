@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -31,11 +31,11 @@ COMPONENT_VERSION=      3.01
 IPS_COMPONENT_VERSION=  3.1
 HUMAN_VERSION=          $(COMPONENT_VERSION)
 COMPONENT_SUBVERSION=   a22
-COMPONENT_PROJECT_URL= 	http://cdrecord.berlios.de/private/cdrecord.html 
+COMPONENT_PROJECT_URL= 	http://cdrecord.org/
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC)$(COMPONENT_SUBVERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:facd40dc66f1499dfe936e647b694bee7a12cd63afd901a35bec855d9e3600a5
-COMPONENT_ARCHIVE_URL=  ftp://ftp.berlios.de/pub/cdrecord/alpha/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=  https://sourceforge.net/projects/cdrtools/files/alpha/OLD/3.01aX/$(COMPONENT_ARCHIVE)/download
 COMPONENT_ANITYA_ID=	9153
 
 TPNO=			6305

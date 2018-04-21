@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -31,9 +31,9 @@ COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:e8fb52f78880ae063336c94eb5b87b181e6a0cc33a6c008511bac9a6e980ef30 
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	http://code.google.com/p/pyiso8601/
+COMPONENT_PROJECT_URL=	https://pypi.org/project/iso8601/
 COMPONENT_BUGDB=	python-mod/iso8601
-COMPONENT_ANITYA_ID=	2280
+COMPONENT_ANITYA_ID=	17228
 
 TPNO=			28702
 

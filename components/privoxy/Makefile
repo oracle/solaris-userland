@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -29,10 +29,11 @@ COMPONENT_NAME=		privoxy
 COMPONENT_VERSION=	3.0.26
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-stable
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-src.tar.gz
-COMPONENT_PROJECT_URL=	http://www.privoxy.org/
+COMPONENT_PROJECT_URL=	https://www.privoxy.org/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:57e415b43ee5dfdca74685cc034053eaae962952fdabd086171551a86abf9cd8
-COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/ijbswa/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/ijbswa/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	3712
 
 TPNO=		 	34236

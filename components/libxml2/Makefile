@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -32,6 +32,7 @@ COMPONENT_ARCHIVE=libxml2-2.9.5.tar.gz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:4031c1ecee9ce7ba4f313e91ef6284164885cdb69937a123f6a83bb6a72dcd38
 COMPONENT_ARCHIVE_URL=	ftp://xmlsoft.org/libxml2/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/libxml
 COMPONENT_ANITYA_ID=	1783
 

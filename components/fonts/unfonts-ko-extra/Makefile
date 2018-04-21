@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -39,6 +39,7 @@ COMPONENT_ARCHIVE_URL=	http://kldp.net/unfonts/release/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
     sha256:32a56acc06f264653bd151ec48c0811d07c198c2561e9f2efa8845e45b6b7407
 COMPONENT_BUGDB=        g11n/font
+COMPONENT_ANITYA_ID=	5039
 
 TPNO=			11255
 

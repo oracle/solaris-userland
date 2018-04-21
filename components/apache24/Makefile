@@ -28,11 +28,12 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		apache2
 COMPONENT_VERSION=	2.4.33
-COMPONENT_PROJECT_URL=	http://httpd.apache.org/
+COMPONENT_PROJECT_URL=	https://httpd.apache.org/
 COMPONENT_SRC_NAME=	httpd
 COMPONENT_ARCHIVE_HASH=	\
     sha256:cd34636caf03c9a897ddfc928fc866c965f23d909b9612880563a7ad0d1a7e5b
-COMPONENT_ARCHIVE_URL=	http://archive.apache.org/dist/httpd/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://archive.apache.org/dist/httpd/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	utility/apache
 COMPONENT_ANITYA_ID=	1335
 

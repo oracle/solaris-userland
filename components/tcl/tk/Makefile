@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../../make-rules/shared-macros.mk
@@ -28,12 +28,12 @@ include ../../../make-rules/shared-macros.mk
 COMPONENT_NAME=		tk
 COMPONENT_VERSION=	8.6.7
 COMPONENT_MINOR_VERSION=	$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\([0-9]\+\)\.\([0-9]\+\)\.[0-9]\+/\1.\2/')
-COMPONENT_PROJECT_URL=	http://prdownloads.sourceforge.net/tk/
+COMPONENT_PROJECT_URL=	https://www.tcl.tk/
 COMPONENT_SRC=		$(COMPONENT_NAME)$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-src.tar.gz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:061de2a354f9b7c7d04de3984c90c9bc6dd3a1b8377bb45509f1ad8a8d6337aa
-COMPONENT_ARCHIVE_URL=	http://sourceforge.net/projects/tcl/files/Tcl/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)/download
+COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/tcl/files/Tcl/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)/download
 COMPONENT_BUGDB=	library/libtk
 COMPONENT_ANITYA_ID=	11426
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -33,7 +33,9 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ANITYA_ID=	3713
 
 # ftp://ftp.procmail.org/pub/procmail/procmail-3.22.tar.gz no longer works.
-COMPONENT_ARCHIVE_URL=	ftp://ftp.ucsb.edu/pub/mirrors/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	ftp://ftp.fu-berlin.de/pub/unix/mail/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
+
 
 TPNO=			9003
 

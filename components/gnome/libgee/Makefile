@@ -31,6 +31,7 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgee
 COMPONENT_VERSION=	0.20.0
+COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Libgee
 COMPONENT_ARCHIVE_HASH=	\
 	sha256:21308ba3ed77646dda2e724c0e8d5a2f8d101fb05e078975a532d7887223c2bb
 COMPONENT_BUGDB=        gnome/libraries

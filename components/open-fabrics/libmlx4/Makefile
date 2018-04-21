@@ -31,6 +31,7 @@ COMPONENT_ARCHIVE_HASH=	\
 	sha256:f680ecbb60b01ad893490c158b4ce8028a3014bb8194c2754df508d53aa848a8
 COMPONENT_ARCHIVE_URL= https://www.openfabrics.org/downloads/mlx4/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/ofuv_lib
+COMPONENT_ANITYA_ID=	17140
 
 include ../ofed-component.mk
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -31,7 +31,8 @@ COMPONENT_VERSION=      2.2.0
 COMPONENT_PROJECT_URL=  http://www.openexr.com/
 COMPONENT_ARCHIVE_HASH= \
     sha256:ecf815b60695555c1fbc73679e84c7c9902f4e8faa6e8000d2f905b8b86cedc7
-COMPONENT_ARCHIVE_URL=  http://download.savannah.nongnu.org/releases/openexr/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=  https://download.savannah.nongnu.org/releases/openexr/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=	library/openexr
 COMPONENT_ANITYA_ID=	13285
 

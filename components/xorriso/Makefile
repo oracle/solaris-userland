@@ -20,17 +20,15 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         xorriso
 COMPONENT_VERSION=      1.4.6
-COMPONENT_PROJECT_URL=  http://gnu.org/software/xorriso/
 COMPONENT_ARCHIVE_HASH=	\
       sha256:e73bac48e126043005e4076e2ca8d5223c528d3e43d653e1dc85101dee941ccd
-COMPONENT_ARCHIVE_URL=   http://gnu.org/software/xorriso/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	13270
 
 TPNO=			32406
@@ -38,7 +36,7 @@ TPNO=			32406
 CPPFLAGS+=		-I./test
 
 TEST_TARGET= $(NO_TESTS)
-include $(WS_MAKE_RULES)/common.mk
+include $(WS_MAKE_RULES)/gnu-component.mk
 
 CONFIGURE_OPTIONS  +=           --enable-shared
 CONFIGURE_OPTIONS  +=           --disable-static

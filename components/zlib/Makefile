@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64_and_32
@@ -28,10 +28,11 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		zlib
 COMPONENT_VERSION=	1.2.11
-COMPONENT_PROJECT_URL=	http://www.zlib.net/
+COMPONENT_PROJECT_URL=	https://www.zlib.net/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1
-COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/project/libpng/zlib/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/project/libpng/zlib/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/libz
 COMPONENT_ANITYA_ID=	5303
 

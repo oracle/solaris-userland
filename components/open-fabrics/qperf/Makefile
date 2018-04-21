@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../ofed-component-macros.mk
@@ -30,6 +30,7 @@ COMPONENT_VERSION=	0.4.9
 COMPONENT_ARCHIVE_HASH=	\
 	sha256:2300e75edffe95d4dfbe576eb5c2f0d0da3142b5e4a96fcd01b535d50a48f07c
 COMPONENT_BUGDB=	utility/ofuv_tools
+COMPONENT_ANITYA_ID=	17171
 
 include ../ofed-component.mk
 

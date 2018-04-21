@@ -38,10 +38,10 @@ COMPONENT_NAME=		cyrus-sasl
 # in the dependency at the bottom of the openldap/openldap.p5m file.
 #
 COMPONENT_VERSION=	2.1.26
-COMPONENT_PROJECT_URL=	ftp://ftp.cyrusimap.org/cyrus-sasl
+COMPONENT_PROJECT_URL=	https://www.cyrusimap.org/sasl/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:8fbc5136512b59bb793657f36fadda6359cae3b08f01fd16b3d406f1345b7bc3
-COMPONENT_ARCHIVE_URL= $(COMPONENT_PROJECT_URL)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	ftp://ftp.cyrusimap.org/cyrus-sasl/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	13280
 
 # Check DONOTUSE items when updating the version and hash
@@ -133,9 +133,9 @@ COMPONENT_POST_BUILD_ACTION += \
     -o $(BUILD_DIR_$(BITS))/lib/.libs/libsasl.so.1 \
     -G -hlibsasl.so.1 $(LD_B_DIRECT) $(LD_Z_DEFS) -M$(COMPONENT_DIR)/mapfile ; \
     (cd $(BUILD_DIR_$(BITS))/sample; $(ENV) $(COMPONENT_BUILD_ENV) \
-    	$(MAKE) sample-client sample-server) ; \
+	$(MAKE) sample-client sample-server) ; \
     (cd $(BUILD_DIR_$(BITS))/utils; $(ENV) $(COMPONENT_BUILD_ENV) \
-    	$(MAKE) testsuite) ;
+	$(MAKE) testsuite) ;
 
 COMPONENT_POST_INSTALL_ACTION += \
         $(CP) $(BUILD_DIR_$(BITS))/utils/.libs/testsuite \

@@ -20,17 +20,18 @@
 #
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xz
 COMPONENT_VERSION=	5.2.3
-COMPONENT_PROJECT_URL=	http://tukaani.org/xz/
+COMPONENT_PROJECT_URL=	https://tukaani.org/xz/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:71928b357d0a09a12a4b4c5fafca8c31c19b0e7d3b8ebb19622e96f26dbf28cb
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	5277
 
 TPNO=			33885

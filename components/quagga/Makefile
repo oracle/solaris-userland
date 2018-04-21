@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2006, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2006, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 32
 include ../../make-rules/shared-macros.mk
@@ -31,7 +31,8 @@ IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	http://www.quagga.net/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:bc5052d285af6e7aac42984741e74261637c57c4a02032bf05de7a5ea3a1afe0
-COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://download.savannah.gnu.org/releases/quagga/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	service/quagga
 COMPONENT_ANITYA_ID=	4139
 

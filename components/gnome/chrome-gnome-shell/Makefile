@@ -33,11 +33,13 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		chrome-gnome-shell
 COMPONENT_VERSION=	10.1
+COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GnomeShellIntegrationForChrome
 COMPONENT_ARCHIVE=	v$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_URL=	https://github.com/GNOME/chrome-gnome-shell/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
 	sha256:d93e83c7e7193e386df4acad6ea4c86ea9abc75bbe67539bbc9310607ea6aeb5
 COMPONENT_BUGDB=        gnome/gnome-shell
+COMPONENT_ANITYA_ID=	17138
 
 TPNO=			41814
 

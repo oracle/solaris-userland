@@ -31,6 +31,7 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libmediaart
 COMPONENT_VERSION=	1.9.1
+COMPONENT_PROJECT_URL=	https://developer.gnome.org/libmediaart/
 COMPONENT_ARCHIVE_HASH= \
 	sha256:5b14aa4e0cc84eaec57b6cb28f39092d503fdaecf36d5d165fac37583b7fe949
 COMPONENT_BUGDB=	gnome/multimedia

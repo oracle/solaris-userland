@@ -31,6 +31,7 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgxps
 COMPONENT_VERSION=	0.2.5
+COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/libgxps
 COMPONENT_ARCHIVE_HASH=	\
     sha256:3e7594c5c9b077171ec9ccd3ff2b4f4c4b29884d26d4f35e740c8887b40199a0
 COMPONENT_BUGDB=	gnome/libraries

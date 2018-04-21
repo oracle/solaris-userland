@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_ARCH= i386
@@ -31,11 +31,11 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnu-efi
 COMPONENT_VERSION=	3.0
-COMPONENT_PROJECT_URL=  http://sourceforge.net/projects/$(COMPONENT_NAME)
+COMPONENT_PROJECT_URL=  https://sourceforge.net/projects/$(COMPONENT_NAME)
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)_$(COMPONENT_VERSION)u.orig.tar.gz
 COMPONENT_ARCHIVE_HASH= \
     sha256:3c0d450d5829204ca05dcb3b2aae772e52c379b7c7e09146759c6315606f934e
-COMPONENT_ARCHIVE_URL=  http://sourceforge.net/projects/$(COMPONENT_NAME)/files/$(COMPONENT_ARCHIVE)/download
+COMPONENT_ARCHIVE_URL=  https://sourceforge.net/projects/$(COMPONENT_NAME)/files/$(COMPONENT_ARCHIVE)/download
 COMPONENT_BUGDB=        library/gnu-efi
 COMPONENT_ANITYA_ID=	1202
 

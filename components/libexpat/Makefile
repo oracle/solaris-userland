@@ -20,14 +20,14 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libexpat
 COMPONENT_VERSION=	2.2.1
-COMPONENT_PROJECT_URL=	http://expat.sourceforge.net/
+COMPONENT_PROJECT_URL=	https://libexpat.github.io/
 COMPONENT_SRC_NAME=	expat
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\

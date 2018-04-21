@@ -33,11 +33,12 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		colord
 COMPONENT_VERSION=	1.1.8
-COMPONENT_PROJECT_URL=	http://www.freedesktop.org/software/colord/
+COMPONENT_PROJECT_URL=	https://www.freedesktop.org/software/colord/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
 	sha256:f03e951641f39c2cea6ce7a6435608dd2bc0bd2c98e901ae331193f95f3e8907
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	10190
 

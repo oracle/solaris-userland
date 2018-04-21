@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 # Prefer 32-bit as only "binary" delivered is a script with embedded paths.
 BUILD_BITS= 32_and_64
@@ -30,12 +30,13 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	SDL
 COMPONENT_VERSION =	1.2.15
-COMPONENT_PROJECT_URL =	http://www.libsdl.org/
+COMPONENT_PROJECT_URL =	https://www.libsdl.org/
 COMPONENT_ARCHIVE_HASH = \
     sha256:d6d316a793e5e348155f0dd93b979798933fb98aa1edebcc108829d6474aad00
 COMPONENT_ARCHIVE_URL = $(COMPONENT_PROJECT_URL)release/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=	library/sdl
-COMPONENT_ANITYA_ID=	4779
+COMPONENT_ANITYA_ID=	4777
 
 TPNO = 28045
 

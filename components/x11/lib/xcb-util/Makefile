@@ -29,7 +29,7 @@ include ../../../../make-rules/shared-macros.mk
 COMPONENT_NAME=		xcb-util
 COMPONENT_VERSION=	0.4.0
 COMPONENT_CATEGORY=	xcb
-COMPONENT_PROJECT_URL=  https://www.x.org
+COMPONENT_PROJECT_URL=  https://xcb.freedesktop.org/XcbUtil/
 COMPONENT_ARCHIVE_HASH= \
 	sha256:46e49469cb3b594af1d33176cd7565def2be3fa8be4371d62271fabb5eae50e9
 COMPONENT_BUGDB=        x11/libraries
@@ -54,6 +54,7 @@ COMPONENT_NAME_3=       xcb-util-errors
 COMPONENT_VERSION_3=    1.0
 COMPONENT_ARCHIVE_HASH_3= \
     sha256:682681769e818ba085870d1ccd65f1f282ca16ca7d6f0f73ee70bc3642aa1995
+COMPONENT_ANITYA_ID_3=  17167
 TPNO_3=			22962
 
 COMPONENT_NAME_4=       xcb-util-keysyms

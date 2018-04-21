@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -30,7 +30,7 @@ COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	sha256:7779a3bbb74e79db234af6a08775568c6769b5821faecf6e2f4143edb227516e
 COMPONENT_ARCHIVE_URL=  $(call pypi_url)
-COMPONENT_PROJECT_URL=  https://launchpad.net/pyopenssl
+COMPONENT_PROJECT_URL=  https://pyopenssl.org/
 COMPONENT_BUGDB=	python-mod/pyopenssl
 COMPONENT_ANITYA_ID=	5535
 

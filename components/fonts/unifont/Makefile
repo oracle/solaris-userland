@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -36,6 +36,7 @@ COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	unifont-8.0.01.tar.gz
 COMPONENT_PROJECT_URL=	http://unifoundry.com/unifont.html
 COMPONENT_ARCHIVE_URL=	http://unifoundry.com/pub/$(COMPONENT_SRC)/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ARCHIVE_HASH= \
     sha256:4b20bfc6412bce9302cd321f39d7c0185c3c69f9deaf9ab7ea89c4e105fbcb9c
 COMPONENT_BUGDB=	g11n/font

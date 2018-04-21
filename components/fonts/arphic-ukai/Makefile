@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -39,6 +39,7 @@ COMPONENT_ARCHIVE_URL=	http://archive.debian.org/debian/pool/main/t/ttf-$(COMPON
 COMPONENT_ARCHIVE_HASH= \
     sha256:3f225fbbb33553ab5bc9bf159025843a845e8cc061541796891db7eafdb67634
 COMPONENT_BUGDB=	g11n/font
+COMPONENT_ANITYA_ID=	288
 
 TPNO=			10697
 

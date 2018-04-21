@@ -31,7 +31,7 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		totem-pl-parser
 COMPONENT_VERSION=	3.10.7
-COMPONENT_PROJECT_URL=  https://github.com/GNOME/totem-pl-parser
+COMPONENT_PROJECT_URL=  https://developer.gnome.org/totem-pl-parser/
 COMPONENT_ARCHIVE_HASH= \
 	sha256:9c8285bc3131faa309d5cba5a919d5166abc2b8cc5a0c850fe861be8b14e089c
 COMPONENT_BUGDB=        gnome/multimedia

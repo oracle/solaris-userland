@@ -29,10 +29,10 @@ include ../../make-rules/shared-macros.mk
 COMPONENT_NAME=		libconfuse
 COMPONENT_VERSION=	3.2
 COMPONENT_SRC_NAME=	confuse
-COMPONENT_PROJECT_URL=	http://www.nongnu.org/confuse/
+COMPONENT_PROJECT_URL=	https://github.com/martinh/$(COMPONENT_NAME)
 COMPONENT_ARCHIVE_HASH=	\
     sha256:166d1d0611de05587447d91fb44b31188cb229c9aaa5aff79ae4706e04dffa09
-COMPONENT_ARCHIVE_URL=	https://github.com/martinh/$(COMPONENT_NAME)/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libconfuse
 COMPONENT_ANITYA_ID=	1581
 

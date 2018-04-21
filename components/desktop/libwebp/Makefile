@@ -29,12 +29,12 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libwebp
 COMPONENT_VERSION=	1.0.0
-COMPONENT_PROJECT_URL=	http://www.webmproject.org/
+COMPONENT_PROJECT_URL=	https://www.webmproject.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-rc3
-COMPONENT_ARCHIVE=	v$(COMPONENT_VERSION)-rc3.tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8c7056025bc600135daa613bed556dcd86268bb7aa3da32ea334bdb3120b6c4f
-COMPONENT_ARCHIVE_URL=	http://github.com/webmproject/libwebp/archive/$(COMPONENT_ARCHIVE)
+	sha256:af7bb0c13dcc74ba733b3f115526bd4e77590d78ceb88e039483a112ef1eca87
+COMPONENT_ARCHIVE_URL=	http://downloads.webmproject.org/releases/webp/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/libwebp
 COMPONENT_ANITYA_ID=	1761
 

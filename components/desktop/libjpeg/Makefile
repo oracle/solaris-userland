@@ -40,7 +40,6 @@ COMPONENT_ARCHIVE_HASH= \
     sha256:6d2be0db82dda2e50c908b72aa22ed8cf42cc5aa5ae5f2b081498be6ef16eabc
 COMPONENT_ARCHIVE_URL=  http://jpegclub.org/support/files/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libjpeg
-COMPONENT_ANITYA_ID=	1628
 
 TPNO=			34809
 

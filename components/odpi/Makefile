@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 BUILD_STYLE=justmake
@@ -38,6 +38,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=	https://github.com/oracle/odpi/archive/v$(COMPONENT_VERSION).tar.gz
 COMPONENT_PROJECT_URL=	https://github.com/oracle/odpi
 COMPONENT_BUGDB=	library/odpi
+COMPONENT_ANITYA_ID=	17139
 
 # We do not run automated tests of this package because doing so
 # requires access to a captive Oracle database instance.

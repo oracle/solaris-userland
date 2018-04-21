@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 COMPILER=	gcc
 BUILD_BITS= 64_and_32
@@ -28,11 +28,11 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         isl
 COMPONENT_VERSION=      0.18
-COMPONENT_PROJECT_URL=  http://freecode.com/projects/isl
+COMPONENT_PROJECT_URL=  http://isl.gforge.inria.fr/
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
 	sha256:6b8b0fd7f81d0a957beb3679c81bbb34ccc7568d5682844d8924424a0dadcb1b
-COMPONENT_ARCHIVE_URL=  http://isl.gforge.inria.fr/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=        utility/gnu-compiler
 COMPONENT_ANITYA_ID=	13286
 

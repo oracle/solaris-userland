@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -31,7 +31,7 @@ COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:640357af8599aec24462013c66043fa499de84c94c468b2b464e440a3ecf9b30
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	https://github.com/robotis/Lesscpy
+COMPONENT_PROJECT_URL=	https://github.com/lesscpy/lesscpy
 COMPONENT_BUGDB=	python-mod/lesscpy
 COMPONENT_ANITYA_ID=	13248
 

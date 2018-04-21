@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		junit
 COMPONENT_VERSION=	4.11
-COMPONENT_PROJECT_URL=	https://github.com/junit-team/junit/archive
+COMPONENT_PROJECT_URL=	https://github.com/junit-team/junit
 COMPONENT_SRC=		$(COMPONENT_NAME)-r$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	r$(COMPONENT_VERSION).zip
 COMPONENT_ARCHIVE_HASH=	\
     sha256:3048cb3f2b07fada9d85b2c042bbedb93892ef70c1dcfe0594124850418f9ffb
-COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1480
 
 TPNO=                   9070

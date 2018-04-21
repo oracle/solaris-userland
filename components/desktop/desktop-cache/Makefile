@@ -31,6 +31,7 @@ COMPONENT_VERSION=      0.2.9
 COMPONENT_SRC=          # all files under files/
 COMPONENT_BUGDB=	gnome/install
 COMPONENT_ARCHIVE_SRC=	none
+COMPONENT_ANITYA_ID=	N/A
 
 # nothing to download or build; just package
 BUILD_STYLE= pkg

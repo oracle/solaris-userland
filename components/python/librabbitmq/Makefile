@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -31,7 +31,7 @@ COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:604a226b9fe3f9e439353702a731f2a39cf771882e68bca020cb224d9b990c49
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	http://github.com/celery/librabbitmq
+COMPONENT_PROJECT_URL=	https://github.com/celery/librabbitmq
 COMPONENT_BUGDB=	python-mod/librabbitmq
 COMPONENT_ANITYA_ID=	13200
 

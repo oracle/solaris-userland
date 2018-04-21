@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		32_and_64
@@ -29,10 +29,10 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libvisual
 COMPONENT_VERSION=	0.4.0
-COMPONENT_PROJECT_URL=	https://sourceforge.net/projects/libvisual
+COMPONENT_PROJECT_URL=	http://libvisual.org/
 COMPONENT_ARCHIVE_HASH= \
 	sha256:0b4dfdb87125e129567752089e3c8b54cefed601eef169d2533d8659da8dc1d7
-COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/files/$(COMPONENT_NAME)/$(COMPONENT_SRC)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/libvisual/files/$(COMPONENT_NAME)/$(COMPONENT_SRC)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	13113
 

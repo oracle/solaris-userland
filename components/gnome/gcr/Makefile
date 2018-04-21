@@ -31,7 +31,7 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gcr
 COMPONENT_VERSION=	3.20.0
-COMPONENT_PROJECT_URL=	https://github.com/GNOME/gcr
+COMPONENT_PROJECT_URL=	https://developer.gnome.org/gcr/
 COMPONENT_ARCHIVE_HASH= \
 	sha256:90572c626d8a708225560c42b4421f7941315247fa1679d4ef569bde7f4bb379
 COMPONENT_BUGDB=        gnome/security

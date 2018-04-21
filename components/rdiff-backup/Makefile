@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -30,6 +30,7 @@ COMPONENT_VERSION=	1.3.3
 COMPONENT_ARCHIVE_HASH=	\
     sha256:ee030ce638df0eb1047cf72578e0de15d9a3ee9ab24da2dc0023e2978be30c06
 COMPONENT_ARCHIVE_URL=	http://download.savannah.gnu.org/releases/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_PROJECT_URL=  http://www.nongnu.org/rdiff-backup/
 COMPONENT_ANITYA_ID=	13273
 

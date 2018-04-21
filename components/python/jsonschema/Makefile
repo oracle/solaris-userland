@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -31,7 +31,7 @@ COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:c2c8483be59aea3df568d8aad2b3296ef7ea767639efe6e0363c722f7f096322
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	http://github.com/Julian/jsonschema
+COMPONENT_PROJECT_URL=	https://github.com/Julian/jsonschema
 COMPONENT_BUGDB=	python-mod/jsonschema
 COMPONENT_ANITYA_ID=	3898
 

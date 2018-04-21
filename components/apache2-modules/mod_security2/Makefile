@@ -20,18 +20,19 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		modsecurity
 COMPONENT_VERSION=	2.9.2
-COMPONENT_PROJECT_URL=	http://www.modsecurity.org/
+COMPONENT_PROJECT_URL=	https://www.modsecurity.org/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:41a8f73476ec891f3a9e8736b98b64ea5c2105f1ce15ea57a1f05b4bf2ffaeb5
 COMPONENT_ARCHIVE_URL= \
     $(COMPONENT_PROJECT_URL)tarball/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	9933
 
 TPNO=			36801

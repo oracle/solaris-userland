@@ -29,10 +29,10 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-tweak-tool
 COMPONENT_VERSION=	3.24.0
-COMPONENT_PROJECT_URL=	https://wiki.gnome.org/GnomeTweakTool
+COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Tweaks
 COMPONENT_ARCHIVE_HASH= \
 	sha256:930b248e40db4c10991978f28b46207d6d11aa938b67b36abc68dbc7d37f1e00
-COMPONENT_BUGDB=	gnome/gnome-shell
+COMPONENT_BUGDB=	gnome/preferences
 COMPONENT_ANITYA_ID=	1198
 
 TPNO=			34578

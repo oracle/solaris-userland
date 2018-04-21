@@ -20,17 +20,18 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mod_perl
 COMPONENT_VERSION=	2.0.10
-COMPONENT_PROJECT_URL=	http://perl.apache.org/
+COMPONENT_PROJECT_URL=	https://perl.apache.org/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:d1cf83ed4ea3a9dfceaa6d9662ff645177090749881093051020bf42f9872b64
-COMPONENT_ARCHIVE_URL=	http://www.apache.org/dist/perl/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://www.apache.org/dist/perl/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	utility/apache
 COMPONENT_ANITYA_ID=	1998
 

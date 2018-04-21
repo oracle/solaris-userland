@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -31,10 +31,12 @@ COMPONENT_VERSION=	20120503
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-ttf-$(COMPONENT_VERSION).zip
 COMPONENT_PROJECT_URL=	https://www.gnu.org/software/freefont/
-COMPONENT_ARCHIVE_URL=	http://ftp.gnu.org/gnu/freefont/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://ftp.gnu.org/gnu/freefont/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ARCHIVE_HASH= \
     sha256:7c85baf1bf82a1a1845d1322112bc6ca982221b484e3b3925022e25b5cae89af
 COMPONENT_BUGDB=	g11n/font
+COMPONENT_ANITYA_ID=	9983
 
 TPNO=			22855
 

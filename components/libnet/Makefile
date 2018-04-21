@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 # Prefer 32-bit as only "binary" delivered is a script with embedded paths.
 BUILD_BITS= 32_and_64
@@ -29,10 +29,11 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libnet
 COMPONENT_VERSION=	1.1.5
-COMPONENT_PROJECT_URL=	http://sourceforge.net/projects/libnet-dev/
+COMPONENT_PROJECT_URL=	https://sourceforge.net/projects/libnet-dev/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:75588f8d1232e1df34eccf2dba5e66be197b345a07fae80d8275db994496a20d
-COMPONENT_ARCHIVE_URL=	http://cdnetworks-us-2.dl.sourceforge.net/project/libnet-dev/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	\
+    https://download.sourceforge.net/sourceforge/libnet-dev/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libnet
 COMPONENT_ANITYA_ID=	1673
 

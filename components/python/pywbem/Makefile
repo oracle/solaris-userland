@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -31,7 +31,7 @@ COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:414f2cebabc0824e1d834809a27842cf698af19b23b61691a4ee76105b9cdcbd
 COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/pywbem/$(COMPONENT_ARCHIVE)
-COMPONENT_PROJECT_URL=	http://pywbem.sourceforge.net/
+COMPONENT_PROJECT_URL=	http://pywbem.github.io/
 COMPONENT_BUGDB=	python-mod/pywbem
 COMPONENT_ANITYA_ID=	12059
 

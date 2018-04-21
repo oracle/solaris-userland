@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -30,8 +30,8 @@ COMPONENT_NAME=		snort
 COMPONENT_VERSION=	2.9.9.0
 COMPONENT_ARCHIVE_HASH=	\
     sha256:71b147125e96390a12f3d55796ed5073df77206bd3563d84d3e5a1f19e7d7a56
-COMPONENT_PROJECT_URL=	http://www.snort.org/
-COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)downloads/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+COMPONENT_PROJECT_URL=	https://www.snort.org/
+COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)downloads/archive/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	13263
 
 TPNO=			33599

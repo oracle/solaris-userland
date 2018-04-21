@@ -28,7 +28,7 @@ include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		freeglut
 COMPONENT_VERSION=	2.8.1
-COMPONENT_PROJECT_URL=  https://freeglut.sourceforge.net
+COMPONENT_PROJECT_URL=  http://freeglut.sourceforge.net
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/freeglut/freeglut/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \

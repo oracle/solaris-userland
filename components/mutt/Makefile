@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -31,6 +31,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:749b83a96373c6e2101ebe8c4b9a651735e02c478edb750750a5146a15d91bb1
 COMPONENT_ARCHIVE_URL=	ftp://ftp.mutt.org/pub/mutt/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://www.mutt.org/
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	2035
 
 TPNO=			39470

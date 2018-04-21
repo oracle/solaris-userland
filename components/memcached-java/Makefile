@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 32
 include ../../make-rules/shared-macros.mk
@@ -31,7 +31,7 @@ COMPONENT_SRC=		java_memcached-$(COMPONENT_RELEASE)
 COMPONENT_ARCHIVE_HASH=	\
     sha256:f0978f387cd6c42191a3ec366ecc5519f66ee03e686c5d080eb2516ebbecdcc4
 COMPONENT_ARCHIVE_URL=	http://img.whalin.com/memcached/jdk5/standard/$(COMPONENT_ARCHIVE)
-COMPONENT_PROJECT_URL=  http://whalin.com/memcached/
+COMPONENT_PROJECT_URL=  https://github.com/gwhalin/Memcached-Java-Client
 COMPONENT_BUGDB=	database/memcached
 COMPONENT_ANITYA_ID=	13311
 

@@ -29,10 +29,11 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		apr-util
 COMPONENT_VERSION=	1.5.4
-COMPONENT_PROJECT_URL=	http://apr.apache.org/
+COMPONENT_PROJECT_URL=	https://apr.apache.org/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:976a12a59bc286d634a21d7be0841cc74289ea9077aa1af46be19d1a6e844c19
-COMPONENT_ARCHIVE_URL=	http://archive.apache.org/dist/apr/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://archive.apache.org/dist/apr/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	utility/apache
 COMPONENT_ANITYA_ID=	96
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		64
@@ -29,7 +29,7 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nautilus-sendto
 COMPONENT_VERSION=	3.8.2
-COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/Nautilus
+COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Files
 COMPONENT_ARCHIVE_HASH= \
 	sha256:932811e781457b1dbf7b396e930d588f433b9ba756b10bde9f03f6d71d54bdc5
 COMPONENT_BUGDB=	gnome/nautilus

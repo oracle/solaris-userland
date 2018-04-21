@@ -32,6 +32,7 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gobject-introspection
 COMPONENT_VERSION=	1.52.0
+COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GObjectIntrospection
 COMPONENT_ARCHIVE_HASH= \
     sha256:9fc6d1ebce5ad98942cb21e2fe8dd67b722dcc01981840632a1b233f7d0e2c1e
 COMPONENT_BUGDB=        gnome/libraries

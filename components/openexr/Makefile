@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -28,10 +28,11 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         openexr
 COMPONENT_VERSION=      2.2.0
-COMPONENT_PROJECT_URL=  http://www.openexr.com/
+COMPONENT_PROJECT_URL=  https://www.openexr.com/
 COMPONENT_ARCHIVE_HASH= \
     sha256:36a012f6c43213f840ce29a8b182700f6cf6b214bea0d5735594136b44914231
-COMPONENT_ARCHIVE_URL=  http://download.savannah.nongnu.org/releases/openexr/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=  https://download.savannah.nongnu.org/releases/openexr/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=	library/openexr
 COMPONENT_ANITYA_ID=	13289
 

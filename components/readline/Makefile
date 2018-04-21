@@ -20,14 +20,14 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		readline
 COMPONENT_VERSION=	6.3
-COMPONENT_PROJECT_URL=	http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
+COMPONENT_PROJECT_URL=	https://tiswww.cwru.edu/php/chet/readline/rltop.html
 COMPONENT_ARCHIVE_HASH=	\
     sha256:56ba6071b9462f980c5a72ab0023893b65ba6debb4eeb475d7a563dc65cafd43
 COMPONENT_BUGDB=	library/readline
@@ -44,7 +44,8 @@ COMPONENT_SRC_1 =       $(COMPONENT_NAME)-$(COMPONENT_VERSION_1)
 COMPONENT_ARCHIVE_1 =   $(COMPONENT_SRC_1).tar.gz
 COMPONENT_ARCHIVE_HASH_1 = \
     sha256:12e88d96aee2cd1192500356f0535540db499282ca7f76339fb4228c31249f45
-COMPONENT_ARCHIVE_URL_1 = http://ftp.gnu.org/gnu/readline/$(COMPONENT_ARCHIVE_1)
+COMPONENT_ARCHIVE_URL_1 = https://ftp.gnu.org/gnu/readline/$(COMPONENT_ARCHIVE_1)
+COMPONENT_SIG_URL_1=	$(COMPONENT_ARCHIVE_URL_1).sig
 SOURCE_DIR_1 =          $(COMPONENT_DIR)/$(COMPONENT_SRC_1)
 
 BUILD_TARGET=

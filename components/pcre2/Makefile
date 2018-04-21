@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -29,6 +29,7 @@ COMPONENT_VERSION=	10.30
 COMPONENT_ARCHIVE_HASH=	\
     sha256:b549873a39f804480c2e6145a78adcba53e38162d90ef6ea92384f6ecf2fde76
 COMPONENT_ARCHIVE_URL=	ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_PROJECT_URL=  http://pcre.org/
 COMPONENT_BUGDB=	library/pcre
 COMPONENT_ANITYA_ID=	5832

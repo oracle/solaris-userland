@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=64_and_32
@@ -30,10 +30,11 @@ PATH=$(dir $(CC)):$(SPRO_VROOT)/bin:$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=		subversion
 COMPONENT_VERSION=	1.9.7
-COMPONENT_PROJECT_URL=	http://subversion.apache.org/
+COMPONENT_PROJECT_URL=	https://subversion.apache.org/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:c72a209c883e20245f14c4e644803f50ae83ae24652e385ff5e82300a0d06c3c
 COMPONENT_ARCHIVE_URL=	https://www.apache.org/dist/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	utility/svn
 COMPONENT_ANITYA_ID=	4905
 

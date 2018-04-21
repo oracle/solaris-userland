@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER=gcc
@@ -28,10 +28,11 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pwgen
 COMPONENT_VERSION=	2.08
-COMPONENT_PROJECT_URL=	http://sourceforge.net/projects/pwgen/
+COMPONENT_PROJECT_URL=	https://sourceforge.net/projects/pwgen/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:dab03dd30ad5a58e578c5581241a6e87e184a18eb2c3b2e0fffa8a9cf105c97b
-COMPONENT_ARCHIVE_URL=	http://netcologne.dl.sourceforge.net/project/pwgen/pwgen/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/pwgen/pwgen/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	3738
 
 TPNO=			39010

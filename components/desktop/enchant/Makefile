@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 		64_and_32
 # For now, all things built for C++11 require gcc.
@@ -29,10 +29,10 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		enchant
 COMPONENT_VERSION=	1.6.0
-COMPONENT_PROJECT_URL=	http://www.abisource.com/projects/enchant/
+COMPONENT_PROJECT_URL=	https://abiword.github.io/enchant/
 COMPONENT_ARCHIVE_HASH=	\
 	sha256:2fac9e7be7e9424b2c5570d8affe568db39f7572c10ed48d4e13cddf03f7097f
-COMPONENT_ARCHIVE_URL=	http://www.abisource.com/downloads/enchant/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://www.abisource.com/downloads/enchant/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/enchant
 COMPONENT_ANITYA_ID=	6601
 

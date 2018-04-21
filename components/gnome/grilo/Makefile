@@ -31,6 +31,7 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		grilo
 COMPONENT_VERSION=	0.3.3
+COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Grilo
 COMPONENT_ARCHIVE_HASH= \
 	sha256:5c874222c7bdf42490cd56765a593c41407247706bb1f24a1bd5d007aa38a0e3
 COMPONENT_BUGDB=        gnome/multimedia

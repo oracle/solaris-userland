@@ -29,7 +29,7 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-clocks
 COMPONENT_VERSION=	3.18.0
-COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Gnome-Clocks
+COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Clocks
 COMPONENT_ARCHIVE_HASH= \
 	sha256:ca0818ec89e3539201da6b5388365e3d66df815198beccc90e2be44c7822baa0
 COMPONENT_BUGDB=	gnome/applications

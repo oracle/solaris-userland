@@ -37,7 +37,7 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgcrypt
 COMPONENT_VERSION=	1.8.1
-COMPONENT_PROJECT_URL=  https://gnupg.org/ftp/gcrypt/libgcrypt/
+COMPONENT_PROJECT_URL=  https://gnupg.org/software/libgcrypt/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
     sha256:7a2875f8b1ae0301732e878c0cca2c9664ff09ef71408f085c50e332656a78b3

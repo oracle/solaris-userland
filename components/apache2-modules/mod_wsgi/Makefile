@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
@@ -29,7 +29,7 @@ COMPONENT_NAME=		mod_wsgi
 COMPONENT_VERSION=	4.5.1
 COMPONENT_ARCHIVE_HASH=	sha256:5ed31abf1978099ec0b4a00970c1be3c9cd3bef47830773cba441ca9770d4a2e
 COMPONENT_ARCHIVE_URL=	https://pypi.python.org/packages/source/m/mod_wsgi/$(COMPONENT_ARCHIVE)
-COMPONENT_PROJECT_URL=  http://code.google.com/p/modwsgi/
+COMPONENT_PROJECT_URL=  https://modwsgi.readthedocs.io/
 COMPONENT_ANITYA_ID=	2001
 
 TPNO=			27758

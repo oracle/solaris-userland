@@ -28,7 +28,7 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libotr
 COMPONENT_VERSION=	4.1.1
-COMPONENT_PROJECT_URL=	http://www.cypherpunks.ca/otr/
+COMPONENT_PROJECT_URL=	https://otr.cypherpunks.ca/
 COMPONENT_ARCHIVE_HASH= \
     sha256:8b3b182424251067a952fb4e6c7b95a21e644fbb27fbd5f8af2b2ed87ca419f5
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)$(COMPONENT_ARCHIVE)

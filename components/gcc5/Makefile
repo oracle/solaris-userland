@@ -29,10 +29,11 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gcc
 COMPONENT_VERSION=	5.5.0
-COMPONENT_PROJECT_URL=	http://gcc.gnu.org/
+COMPONENT_PROJECT_URL=	https://gcc.gnu.org/
 COMPONENT_ARCHIVE_HASH= \
     sha256:3aabce75d6dd206876eced17504b28d47a724c2e430dbd2de176beb948708983
-COMPONENT_ARCHIVE_URL=	http://ftp.gnu.org/gnu/gcc/$(COMPONENT_SRC)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://ftp.gnu.org/gnu/gcc/$(COMPONENT_SRC)/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=        utility/gnu-compiler
 COMPONENT_ANITYA_ID=	6502
 

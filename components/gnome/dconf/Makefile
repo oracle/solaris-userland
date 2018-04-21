@@ -28,6 +28,7 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dconf
 COMPONENT_VERSION=	0.26.0
+COMPONENT_PROJECT_URL=	http://wiki.gnome.org/dconf
 COMPONENT_ARCHIVE_HASH= \
 	sha256:8683292eb31a3fae31e561f0a4220d8569b0f6d882e9958b68373f9043d658c9
 COMPONENT_BUGDB=        gnome/gconf
