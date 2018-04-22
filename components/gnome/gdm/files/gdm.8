@@ -1,4 +1,4 @@
-.TH gdm 8 "28 Dec 2015"
+.TH gdm 8 "22 Apr 2018"
 .SH "NAME"
 gdm \- GDM (GNOME Display Manager)
 .SH "SYNOPSIS"
@@ -28,18 +28,18 @@ this applet to your panel to make use of it\&.  You can also use the
 \fBgdmflexiserver\fR(1)
 command to start flexible displays from the command line\&.
 .PP
-On Solaris, the GDM service is managed by the 
+On Oracle Solaris, the GDM service is managed by the
 \fBsmf\fR(7)
 service management facility under the service identifier
 \fIsvc:/application/graphical-login/gdm\fR\&.
-On Solaris, it is recommended that you use the
+On Oracle Solaris, it is recommended that you use the
 \fBsvcadm\fR(8) utility to enable and disable the
 "gdm" service instead of killing the daemon with a SIGTERM signal.
 .PP
-GDM supports libaudit and Solaris auditing\&.  Refer to the 
+GDM supports Oracle Solaris auditing\&.  Refer to the
 "System Administration Guide: Security Services" and the
 \fBaudit\fR(8) manpage for more information\&.
-On Solaris, GDM also uses
+On Oracle Solaris, GDM also uses
 \fBlogindevperm\fR(5)
 to ensure that device permissions are set properly for the user on login\&.
 .SH "OPTIONS"
@@ -60,7 +60,7 @@ Display the GDM version\&.
 .SH "ENVIRONMENT VARIABLES"
 .PP
 See
-\fBenviron\fR(5)
+\fBenviron\fR(7)
 for descriptions of environment variables\&.
 .PP
 When the following description refers to "scripts", these are
@@ -165,7 +165,7 @@ Image files must be no larger than 64K in size, or they are ignored by GDM\&.
 .PP
 The login greeter GUI can be configured to provide "Shutdown",
 "Restart", and "Suspend" buttons which allow the user to
-shutdown, restart, or suspend the system if desired\&.  On Solaris, the buttons
+shutdown, restart, or suspend the system if desired\&.  On Oracle Solaris, the buttons
 will only be available if the "solaris\&.system\&.shutdown" authorization name is
 specified for the "gdm" user in the
 \fB/etc/user_attr\fR file\&.  For example, the
@@ -416,7 +416,7 @@ false, the face browser will only show users who have recently logged in\&.
 .sp
 When this key is true, GDM will call fgetpwent() to get a list of local users
 on the system\&.  Anyusers with a user id less than 500 (or 100 if running on
-Solaris) are filtered out\&.  The Face Browser also will display any users that
+Oracle Solaris) are filtered out\&.  The Face Browser also will display any users that
 have previously logged in on the system (for example NIS/LDAP users)\&. It gets
 this list via calling the
 \fBck-history\fR(1)
@@ -472,11 +472,11 @@ user\&'s cached settings might become inconsistent across different servers\&.
 If true, then always append "-\fBnolisten\fR tcp" to the
 Xserver command line when starting attached Xservers, thus disallowing TCP
 connection\&.  This is a more secure configuration if you are not using remote
-connections\&.  Note that on Solaris, the
+connections\&.  Note that on Oracle Solaris, the
 \fBoptions/tcp_listen\fR property of the 
 \fBx11-server\fR service also controls whether this option is
 appended to the Xserver command line\&.  The GDM configuration value is set to
-"false" by default on Solaris to defer control of this feature to
+"false" by default on Oracle Solaris to defer control of this feature to
 this \fBx11-server\fR property\&.  Refer to the
 \fBXserver\fR(1)
 manpage for more information\&.
@@ -664,7 +664,7 @@ If set, then the assistive tools linked to this GConf key will be started with
 the GDM GUI program\&. By default this is a screen reader application\&. 
 
 .PP
-On Solaris, GDM also supports the CONSOLE, PASSREQ, PATH, and SUPATH
+On Oracle Solaris, GDM also supports the CONSOLE, PASSREQ, PATH, and SUPATH
 configuration options in \fB/etc/default/login\fR\&.  Refer to the
 \fBlogin\fR(1) manpage for details\&.
 .SS "Logging"
@@ -716,11 +716,11 @@ apply to the "gdm" user\&.
 \fBexample% gconftool-2 --direct --config-source xml:readwrite:/var/lib/gdm/\&.gconf\&.mandatory -t bool -s /apps/gdm/simple-greeter/disable_user_list false\fR
 .fi
 .PP
-\fBExample 2: To Change the Background Image to \fBstream\&.jpg\fR for the GDM login greeter GUI\fR
+\fBExample 2: To Change the Background Image for the GDM login greeter GUI\fR
 .PP
 .PP
 .nf
-\fBexample% gconftool-2 --direct --config-source xml:readwrite:/var/lib/gdm/\&.gconf\&.mandatory -t string -s /desktop/gnome/background/picture_filename /usr/share/pixmaps/backgrounds/opensolaris/stream\&.jpg\fR
+\fBexample% gconftool-2 --direct --config-source xml:readwrite:/var/lib/gdm/\&.gconf\&.mandatory -t string -s /desktop/gnome/background/picture_filename /usr/share/backgrounds/solaris/Hexagons_Dark\&.png
 .fi
 .PP
 \fBExample 3: To Disable Face Browser for StaticSeat1 GDM login greeter GUI\fR
@@ -958,7 +958,7 @@ script will source \fB/etc/profile\fR,
 \fB~/\&.profile\fR, and all scripts in the
 \fB/etc/X11/xinit/xinitrc\&.d\fR directory before starting the
 user session\&.  Refer to the
-\fBprofile\fR(4)
+\fBprofile\fR(5)
 manpage for more information\&.
 .SS "Configuration Files"
 .TP 30
@@ -975,7 +975,7 @@ GDM default login greeter GUI configuration\&.
 
 .TP 30
 .B /etc/default/login\fR\fR
-On Solaris, GDM supports the CONSOLE, PASSREQ, PATH, and SUPATH configuration
+On Oracle Solaris, GDM supports the CONSOLE, PASSREQ, PATH, and SUPATH configuration
 options\&.  Refer to the
 \fBlogin\fR(1)
 manpage for details\&.
@@ -1041,7 +1041,7 @@ $HOME directory before
 .PP
 More information can be found at:
 .PP
-\fBhttp://library\&.gnome\&.org/admin/gdm\fR
+\fBhttps://help\&.gnome\&.org/admin/gdm/\fR
 .PP
 Latest version of the \fIGNOME Desktop User Guide\fR for your
 platform\&.
@@ -1073,4 +1073,4 @@ This man page written by Martin K\&. Petersen <mkp@mkp\&.net>, George Lebl
 Copyright (c) 1998, 1999 by Martin K\&. Petersen\&.
 Copyright (c) 2001, 2003, 2004 by George Lebl\&.
 Copyright (c) 2003 by Red Hat, Inc\&.
-Copyright (c) 2006, 2016, Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2006, 2018, Oracle and/or its affiliates. All rights reserved.
