@@ -33,21 +33,19 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libvpx
-COMPONENT_VERSION=	1.4.0
+COMPONENT_VERSION=	1.7.0
 COMPONENT_PROJECT_URL=	http://www.webmproject.org/
-COMPONENT_ARCHIVE= 	$(COMPONENT_SRC).tar.bz2
+COMPONENT_ARCHIVE= 	v$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:f582d9b2d60a592a4a3d8c32965ca2d2167e9ade38c6c30bac8801ff66a118e4
-COMPONENT_ARCHIVE_URL=	http://downloads.webmproject.org/releases/webm/$(COMPONENT_ARCHIVE)
+	sha256:1fec931eb5c94279ad219a5b6e0202358e94a93a90cfb1603578c326abfc1238
+COMPONENT_ARCHIVE_URL=	https://github.com/webmproject/libvpx/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libvpx
-TPNO=			25516
+TPNO=			42646
 COMPONENT_ANITYA_ID=	11083
 
 # Required for 64-bit builds.
 LDFLAGS += $(CC_BITS)
 LDFLAGS += -Wl,-zgnu-version-script-compat
-
-TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -68,6 +66,20 @@ CONFIGURE_OPTIONS += --enable-shared
 CONFIGURE_OPTIONS.sparc += --target=sparc-solaris-gcc
 CONFIGURE_OPTIONS.i386.32 += --target=x86-solaris-gcc
 CONFIGURE_OPTIONS.i386.64 += --target=x86_64-solaris-gcc
+
+# Tests are hooked up but they take over 3 hours to run
+unexport SHELLOPTS
+COMPONENT_TEST_ARGS += -k -i
+COMPONENT_TEST_TARGETS = test
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/PASSED/p" ' \
+        '-e "/tests/p" ' \
+        '-e "/RUN/p" ' \
+        '-e "/OK/p" ' \
+        '-e "/ERROR/p" '
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+
 
 ifneq ($(MACH), sparc)
 REQUIRED_PACKAGES += developer/yasm

@@ -1,21 +1,13 @@
-A proper fix to include Solaris in the exception is needed before this can go upstream.
+This should be sent upstream to add Solaris
 
-Not appropriate for upstream in current form.
-
-XXX file upstream bug
-
---- libvpx-1.4.0/configure	2015-04-03 11:49:19.000000000 -0700
-+++ libvpx-1.4.0/configure	2015-06-15 13:37:48.713588212 -0700
-@@ -548,11 +548,7 @@
+--- a/configure	2018-04-18 21:08:53.994022527 -0700
++++ b/configure	2018-04-18 21:16:29.261782547 -0700
+@@ -518,7 +518,7 @@
          # here rather than at option parse time because the target auto-detect
          # magic happens after the command line has been parsed.
-         if ! enabled linux; then
--            if enabled gnu; then
--                echo "--enable-shared is only supported on ELF; assuming this is OK"
--            else
--                die "--enable-shared only supported on ELF for now"
--            fi
-+            echo "--enable-shared is only supported on ELF; assuming this is OK"
-         fi
-     fi
-     if [ -z "$CC" ] || enabled external_build; then
+         case "${tgt_os}" in
+-        linux|os2|darwin*|iphonesimulator*)
++        linux|os2|solaris|darwin*|iphonesimulator*)
+             # Supported platforms
+             ;;
+         *)
