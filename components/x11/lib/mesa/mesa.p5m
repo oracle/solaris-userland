@@ -43,15 +43,10 @@ set name=org.opensolaris.arc-caseid value=LSARC/2005/109 value=PSARC/2013/264 \
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=etc/drirc mode=0644 overlay=allow preserve=renamenew variant.arch=i386
 link path=usr/X11/include/mesa target=../../include/mesa
-link path=usr/X11/lib/$(MACH64)/libGLU.so target=libGLU.so.1
-link path=usr/X11/lib/$(MACH64)/libGLU.so.1 \
-    target=../../../lib/GL/$(MACH64)/libGLU.so.1
 link path=usr/X11/lib/$(MACH64)/libglapi.so target=libglapi.so.0
 link path=usr/X11/lib/$(MACH64)/libglapi.so.0 target=libglapi.so.0.0.0
 link path=usr/X11/lib/$(MACH64)/libglapi.so.0.0.0 \
     target=../../../lib/GL/$(MACH64)/libglapi.so.0.0.0
-link path=usr/X11/lib/libGLU.so target=libGLU.so.1
-link path=usr/X11/lib/libGLU.so.1 target=../../lib/GL/libGLU.so.1
 link path=usr/X11/lib/libglapi.so target=libglapi.so.0
 link path=usr/X11/lib/libglapi.so.0 target=libglapi.so.0.0.0
 link path=usr/X11/lib/libglapi.so.0.0.0 target=../../lib/GL/libglapi.so.0.0.0
@@ -61,7 +56,6 @@ file path=usr/include/EGL/eglext.h
 file path=usr/include/EGL/eglextchromium.h
 file path=usr/include/EGL/eglmesaext.h
 file path=usr/include/EGL/eglplatform.h
-link path=usr/include/GL/glu.h target=../mesa/glu.h
 link path=usr/include/GL/internal/dri_interface.h \
     target=../../mesa/internal/dri_interface.h
 link path=usr/include/GL/osmesa.h target=../mesa/osmesa.h
@@ -83,8 +77,6 @@ file path=usr/include/gbm.h
 file usr/include/GL/gl.h path=usr/include/mesa/gl.h
 file usr/include/GL/gl_mangle.h path=usr/include/mesa/gl_mangle.h
 file usr/include/GL/glext.h path=usr/include/mesa/glext.h
-file usr/include/GL/glu.h path=usr/include/mesa/glu.h
-file usr/include/GL/glu_mangle.h path=usr/include/mesa/glu_mangle.h
 file usr/include/GL/glx.h path=usr/include/mesa/glx.h
 file usr/include/GL/glx_mangle.h path=usr/include/mesa/glx_mangle.h
 file usr/include/GL/glxext.h path=usr/include/mesa/glxext.h
@@ -107,8 +99,6 @@ link path=usr/lib/$(MACH64)/libGLESv2.so target=libGLESv2.so.2
 link path=usr/lib/$(MACH64)/libGLESv2.so.2 target=libGLESv2.so.2.0.0
 link path=usr/lib/$(MACH64)/libGLESv2.so.2.0.0 \
     target=../GL/$(MACH64)/libGLESv2.so.2.0.0
-link path=usr/lib/$(MACH64)/libGLU.so target=libGLU.so.1
-link path=usr/lib/$(MACH64)/libGLU.so.1 target=../GL/$(MACH64)/libGLU.so.1
 link path=usr/lib/$(MACH64)/libgbm.so target=libgbm.so.1
 link path=usr/lib/$(MACH64)/libgbm.so.1 target=libgbm.so.1.0.0
 link path=usr/lib/$(MACH64)/libgbm.so.1.0.0 \
@@ -123,7 +113,6 @@ file path=usr/lib/$(MACH64)/pkgconfig/gbm.pc
 file path=usr/lib/$(MACH64)/pkgconfig/gl.pc
 file path=usr/lib/$(MACH64)/pkgconfig/glesv1_cm.pc
 file path=usr/lib/$(MACH64)/pkgconfig/glesv2.pc
-file path=usr/lib/$(MACH64)/pkgconfig/glu.pc
 link path=usr/lib/GL/$(MACH64)/libEGL.so target=libEGL.so.1
 link path=usr/lib/GL/$(MACH64)/libEGL.so.1 target=libEGL.so.1.0.0
 link path=usr/lib/GL/$(MACH64)/libEGL.so.1.0.0 \
@@ -136,9 +125,6 @@ link path=usr/lib/GL/$(MACH64)/libGLESv2.so target=libGLESv2.so.2
 link path=usr/lib/GL/$(MACH64)/libGLESv2.so.2 target=libGLESv2.so.2.0.0
 link path=usr/lib/GL/$(MACH64)/libGLESv2.so.2.0.0 \
     target=../../mesa/$(MACH64)/libGLESv2.so.2.0.0
-link path=usr/lib/GL/$(MACH64)/libGLU.so target=libGLU.so.1
-link path=usr/lib/GL/$(MACH64)/libGLU.so.1 \
-    target=../../mesa/$(MACH64)/libGLU.so.1
 link path=usr/lib/GL/$(MACH64)/libgbm.so target=libgbm.so.1
 link path=usr/lib/GL/$(MACH64)/libgbm.so.1 target=libgbm.so.1.0.0
 link path=usr/lib/GL/$(MACH64)/libgbm.so.1.0.0 \
@@ -156,8 +142,6 @@ link path=usr/lib/GL/libGLESv1_CM.so.1.1.0 target=../mesa/libGLESv1_CM.so.1.1.0
 link path=usr/lib/GL/libGLESv2.so target=libGLESv2.so.2
 link path=usr/lib/GL/libGLESv2.so.2 target=libGLESv2.so.2.0.0
 link path=usr/lib/GL/libGLESv2.so.2.0.0 target=../mesa/libGLESv2.so.2.0.0
-link path=usr/lib/GL/libGLU.so target=libGLU.so.1
-link path=usr/lib/GL/libGLU.so.1 target=../mesa/libGLU.so.1
 link path=usr/lib/GL/libgbm.so target=libgbm.so.1
 link path=usr/lib/GL/libgbm.so.1 target=libgbm.so.1.0.0
 link path=usr/lib/GL/libgbm.so.1.0.0 target=../mesa/libgbm.so.1.0.0
@@ -173,8 +157,6 @@ link path=usr/lib/libGLESv1_CM.so.1.1.0 target=GL/libGLESv1_CM.so.1.1.0
 link path=usr/lib/libGLESv2.so target=libGLESv2.so.2
 link path=usr/lib/libGLESv2.so.2 target=libGLESv2.so.2.0.0
 link path=usr/lib/libGLESv2.so.2.0.0 target=GL/libGLESv2.so.2.0.0
-link path=usr/lib/libGLU.so target=libGLU.so.1
-link path=usr/lib/libGLU.so.1 target=GL/libGLU.so.1
 link path=usr/lib/libgbm.so target=libgbm.so.1
 link path=usr/lib/libgbm.so.1 target=libgbm.so.1.0.0
 link path=usr/lib/libgbm.so.1.0.0 target=GL/libgbm.so.1.0.0
@@ -196,10 +178,6 @@ link path=usr/lib/mesa/$(MACH64)/libGLESv2.so target=libGLESv2.so.2
 link path=usr/lib/mesa/$(MACH64)/libGLESv2.so.2 target=libGLESv2.so.2.0.0
 file usr/lib/$(MACH64)/libGLESv2.so.2.0.0 \
     path=usr/lib/mesa/$(MACH64)/libGLESv2.so.2.0.0
-link path=usr/lib/mesa/$(MACH64)/libGLU.so target=libGLU.so.1
-link path=usr/lib/mesa/$(MACH64)/libGLU.so.1 target=libGLU.so.1.3.1
-file usr/lib/$(MACH64)/libGLU.so.1.3.1 \
-    path=usr/lib/mesa/$(MACH64)/libGLU.so.1.3.1
 link path=usr/lib/mesa/$(MACH64)/libgbm.so target=libgbm.so.1
 link path=usr/lib/mesa/$(MACH64)/libgbm.so.1 target=libgbm.so.1.0.0
 file usr/lib/$(MACH64)/libgbm.so.1.0.0 \
@@ -221,9 +199,6 @@ file usr/lib/libGLESv1_CM.so.1.1.0 path=usr/lib/mesa/libGLESv1_CM.so.1.1.0
 link path=usr/lib/mesa/libGLESv2.so target=libGLESv2.so.2
 link path=usr/lib/mesa/libGLESv2.so.2 target=libGLESv2.so.2.0.0
 file usr/lib/libGLESv2.so.2.0.0 path=usr/lib/mesa/libGLESv2.so.2.0.0
-link path=usr/lib/mesa/libGLU.so target=libGLU.so.1
-link path=usr/lib/mesa/libGLU.so.1 target=libGLU.so.1.3.1
-file usr/lib/libGLU.so.1.3.1 path=usr/lib/mesa/libGLU.so.1.3.1
 link path=usr/lib/mesa/libgbm.so target=libgbm.so.1
 link path=usr/lib/mesa/libgbm.so.1 target=libgbm.so.1.0.0
 file usr/lib/libgbm.so.1.0.0 path=usr/lib/mesa/libgbm.so.1.0.0
@@ -238,9 +213,9 @@ file path=usr/lib/pkgconfig/gbm.pc
 file path=usr/lib/pkgconfig/gl.pc
 file path=usr/lib/pkgconfig/glesv1_cm.pc
 file path=usr/lib/pkgconfig/glesv2.pc
-file path=usr/lib/pkgconfig/glu.pc
 file path=usr/lib/xorg/modules/dri/$(MACH64)/swrast_dri.so
 file usr/lib/dri/swrast_dri.so path=usr/lib/xorg/modules/dri/swrast_dri.so
 license mesa.license license=MIT,Other
 depend type=require fmri=pkg:/service/opengl/ogl-select
 depend type=require fmri=pkg:/x11/header/x11-protocols facet.devel=true
+depend type=require fmri=pkg:/x11/library/libglu

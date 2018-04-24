@@ -38,18 +38,6 @@ COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1970
 TPNO=			35915
 
-COMPONENT_NAME_1=       glu
-COMPONENT_VERSION_1=    9.0.0
-COMPONENT_SRC_1=        $(COMPONENT_NAME_1)-$(COMPONENT_VERSION_1)
-COMPONENT_ARCHIVE_1=    $(COMPONENT_SRC_1).tar.gz
-COMPONENT_ARCHIVE_URL_1=ftp://ftp.freedesktop.org/pub/mesa/glu/$(COMPONENT_ARCHIVE_1)
-COMPONENT_ARCHIVE_HASH_1= \
-        sha256:4387476a1933f36fec1531178ea204057bbeb04cc2d8396c9ea32720a1f7e264
-COMPONENT_BUGDB_1=      x11/libraries
-COMPONENT_ANITYA_ID_1=  13518
-SOURCE_DIR_1=           $(COMPONENT_DIR)/$(COMPONENT_SRC_1)
-TPNO_1=			9926
-
 TEST_TARGET = $(NO_TESTS)
 
 PKG_PROTO_DIRS += $(SOURCE_DIR)/include/GL
@@ -99,18 +87,6 @@ COMPONENT_POST_INSTALL_ACTION += \
        $(MKDIR) $(PROTO_DIR)/usr/lib/mesa/modules/extensions ; \
        $(CP) $(XORG_BASE)/usr/lib/xorg/modules/extensions/libglx.so \
                $(PROTO_DIR)/usr/lib/mesa/modules/extensions ;
-
-FIX_PC_FILES_1 = glu.pc.in
-SOURCE_PC_FILES_1 = $(FIX_PC_FILES_1:%=$(SOURCE_DIR_1)/%)
-SOURCE_PC_FILES += $(SOURCE_PC_FILES_1)
-$(SOURCE_PC_FILES_1):	$(SOURCE_DIR_1)/.unpacked
-
-$(BUILD_DIR)/%_1/.configured:  SOURCE_DIR=$(SOURCE_DIR_1)
-$(BUILD_DIR)/$(MACH64)_1/%:    BITS=64
-
-configure:      $(BUILD_TARGET:%/.built=%_1/.configured)
-build:          $(BUILD_TARGET:%/.built=%_1/.built)
-install:        $(INSTALL_TARGET:%/.installed=%_1/.installed)
 
 REQUIRED_PACKAGES += developer/gnu-indent
 REQUIRED_PACKAGES += developer/lexer/flex
