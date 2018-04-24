@@ -90,6 +90,7 @@ clean:			TARGET = clean
 clobber:		TARGET = clobber
 test:			TARGET = test
 system-test:		TARGET = system-test
+check_anitya:		TARGET = check_anitya
 check_rtime:		TARGET = check_rtime
 zone-build:		TARGET = component-zone-build
 component-hook:		TARGET = component-hook
@@ -117,7 +118,7 @@ zone-build build install publish test system-test: $(COMPONENT_DIRS)
 COMPONENT_DIRS.nosetup =	$(COMPONENT_DIRS:%=%.nosetup)
 
 download unpack patch::	$(COMPONENT_DIRS.nosetup)
-prep check_rtime:		$(COMPONENT_DIRS.nosetup)
+prep check_anitya check_rtime:	$(COMPONENT_DIRS.nosetup)
 component-environment-check::	$(COMPONENT_DIRS.nosetup)
 component-hook:	$(COMPONENT_DIRS.nosetup)
 

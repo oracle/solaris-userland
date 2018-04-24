@@ -1206,7 +1206,7 @@ COMPONENT_INSTALL_ARGS += $(COMPONENT_INSTALL_ARGS.$(BITS))
 
 # declare these phony so that we avoid filesystem conflicts.
 .PHONY:	prep build install publish test system-test clean clobber parfait \
-	check_rtime
+	check_rtime check_anitya
 
 # If there are no tests to execute
 NO_TESTS =	test-nothing
@@ -1251,6 +1251,30 @@ COMPONENT_HOOK ?=	echo $(COMPONENT_NAME) $(COMPONENT_VERSION)
 
 component-hook:
 	@$(COMPONENT_HOOK)
+
+# Display current information about a component from the Antiya database
+# at https://release-monitoring.org/
+ifneq ($(COMPONENT_DIR),$(WS_COMPONENTS))
+ANITYA_SUFFIXES = $(subst COMPONENT_ANITYA_ID_,, $(filter COMPONENT_ANITYA_ID_%, $(.VARIABLES)))
+ANITYA_API_URL = https://release-monitoring.org/api/project
+
+define anitya-recipe
+	@ print '# $(COMPONENT_NAME$(1)) $(COMPONENT_VERSION$(1))'
+	@ print '# $(COMPONENT_PROJECT_URL$(1))'
+	@ if [[ -n "$(COMPONENT_ANITYA_ID$(1):N/A=)" ]] ; then \
+		curl -s $(ANITYA_API_URL)/$(COMPONENT_ANITYA_ID$(1)) ; \
+		print ; \
+	else \
+		print '# COMPONENT_ANITYA_ID$(1) = $(COMPONENT_ANITYA_ID$(1))' ;\
+	fi
+
+endef
+
+check_anitya:
+	$(call anitya-recipe,)
+	$(foreach suffix, $(ANITYA_SUFFIXES), \
+		$(call anitya-recipe,_$(suffix)))
+endif
 
 CLEAN_PATHS +=	$(BUILD_DIR)
 CLOBBER_PATHS +=	$(PROTO_DIR)
