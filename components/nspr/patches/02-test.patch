@@ -1,0 +1,24 @@
+Need to pass those flags to build test.
+May investigate and send upstream.
+
+--- a/nspr/pr/tests/dll/Makefile.in	2017-07-25 11:21:32.455626939 +0000
++++ b/nspr/pr/tests/dll/Makefile.in	2017-07-25 11:22:40.869179329 +0000
+@@ -16,6 +16,8 @@
+ 
+ CSRCS = mygetval.c mysetval.c
+ 
++CFLAGS += -fpic
++
+ INCLUDES = -I$(dist_includedir)
+ 
+ OBJS = $(OBJDIR)/mygetval.$(OBJ_SUFFIX) \
+--- a/nspr/pr/tests/Makefile.in	2017-07-25 11:29:58.167039680 +0000
++++ b/nspr/pr/tests/Makefile.in	2017-07-25 11:31:38.932711647 +0000
+@@ -302,6 +302,7 @@
+ ifeq ($(OS_ARCH), SunOS)
+     ifdef NS_USE_GCC
+         LDOPTS += -Xlinker -R -Xlinker $(ABSOLUTE_LIB_DIR)
++        LDOPTS += $(LDFLAGS)
+     else
+         ifeq ($(USE_CPLUS), 1)
+             CC = CC

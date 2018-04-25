@@ -1,0 +1,38 @@
+There is no need to include $ORIGIN into RPATH. This should be sent to
+upstream, but given that we want to move the libs to /usr/lib we may rather
+wait for that.
+
+--- nspr-4.19/nspr/lib/ds/Makefile.in	2018-04-23 18:09:48.527907712 +0000
++++ nspr-4.19/nspr/lib/ds/Makefile.in	2018-04-23 18:09:33.455755680 +0000
+@@ -60,9 +60,11 @@ endif
+ else
+ MKSHLIB += -M $(MAPFILE)
+ endif
+-# The -R '$ORIGIN' linker option instructs this library to search for its
+-# dependencies in the same directory where it resides.
+-MKSHLIB += -R '$$ORIGIN'
++ifeq ($(USE_64), 1)
++MKSHLIB += -R '/usr/lib/mps/64'
++else
++MKSHLIB += -R '/usr/lib/mps'
++endif
+ endif
+ 
+ ifeq ($(OS_ARCH),OS2)
+--- nspr-4.19/nspr/lib/libc/src/Makefile.in	2018-04-23 18:10:51.749785128 +0000
++++ nspr-4.19/nspr/lib/libc/src/Makefile.in	2018-04-23 18:08:40.464589604 +0000
+@@ -69,9 +69,11 @@ endif
+ else
+ MKSHLIB += -M $(MAPFILE)
+ endif
+-# The -R '$ORIGIN' linker option instructs this library to search for its
+-# dependencies in the same directory where it resides.
+-MKSHLIB += -R '$$ORIGIN'
++ifeq ($(USE_64), 1)
++MKSHLIB += -R '/usr/lib/mps/64'
++else
++MKSHLIB += -R '/usr/lib/mps'
++endif
+ endif
+ 
+ ifeq ($(OS_ARCH),OS2)

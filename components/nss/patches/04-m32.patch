@@ -1,0 +1,97 @@
+Pass -m32 to gcc to make it build 32 bit.
+May investigate and send upstream. Use correct runpaths.
+
+--- a/nss/lib/freebl/Makefile	2017-07-21 15:35:03.871135684 +0000
++++ b/nss/lib/freebl/Makefile	2017-07-21 15:34:17.438771551 +0000
+@@ -451,7 +451,7 @@
+     ifdef NS_USE_GCC
+ 	LD = gcc
+ 	AS = gcc
+-	ASFLAGS = -x assembler-with-cpp
++	ASFLAGS += -x assembler-with-cpp
+     endif
+     ifeq ($(USE_64),1)
+ 	# Solaris for AMD64
+--- nss-3.36.1/nss/coreconf/SunOS5.mk	2018-04-23 16:54:41.665357829 +0000
++++ nss-3.36.1/nss/coreconf/SunOS5.mk	2018-04-23 16:54:22.926615286 +0000
+@@ -47,6 +47,15 @@ ifdef NS_USE_GCC
+ 	    # Enable this for accurate dtrace profiling
+ 	    # OPTIMIZER += -mno-omit-leaf-frame-pointer -fno-omit-frame-pointer
+ 	endif
++	ifeq ($(USE_64), 1)
++		OS_CFLAGS += -m64
++		CCC += -m64
++		ASFLAGS += -m64
++	else
++		OS_CFLAGS += -m32
++		CCC += -m32
++		ASFLAGS += -m32
++	endif
+ else
+ 	CC         = cc
+ 	CCC        = CC
+@@ -105,6 +114,8 @@ PROCESS_MAP_FILE = grep -v ';-' $< | \
+ ifdef NS_USE_GCC
+ ifeq ($(USE_64), 1)
+ 	DSO_LDOPTS += -m64
++else
++	DSO_LDOPTS += -m32
+ endif
+ 	DSO_LDOPTS += -shared -h $(notdir $@)
+ else
+@@ -129,16 +140,10 @@ endif
+ 
+ NOSUCHFILE   = /solaris-rm-f-sucks
+ 
+-ifeq ($(BUILD_SUN_PKG), 1)
+-# The -R '$ORIGIN' linker option instructs this library to search for its
+-# dependencies in the same directory where it resides.
+ ifeq ($(USE_64), 1)
+-RPATH = -R '$$ORIGIN:/usr/lib/mps/secv1/64:/usr/lib/mps/64'
+-else
+-RPATH = -R '$$ORIGIN:/usr/lib/mps/secv1:/usr/lib/mps'
+-endif
++RPATH = -R '/usr/lib/mps/64'
+ else
+-RPATH = -R '$$ORIGIN'
++RPATH = -R '/usr/lib/mps'
+ endif
+ 
+ OS_LIBS += -lthread -lnsl -lsocket -lposix4 -ldl -lc
+--- nss-3.36.1/nss/cmd/platlibs.mk	2018-04-23 17:15:33.493799309 +0000
++++ nss-3.36.1/nss/cmd/platlibs.mk	2018-04-23 17:14:53.893192266 +0000
+@@ -10,9 +10,9 @@ ifeq ($(BUILD_SUN_PKG), 1)
+ 
+ ifeq ($(OS_ARCH), SunOS) 
+ ifeq ($(USE_64), 1)
+-EXTRA_SHARED_LIBS += -R '$$ORIGIN/../lib:/usr/lib/mps/secv1/64:/usr/lib/mps/64'
++EXTRA_SHARED_LIBS += -R '/usr/lib/mps/64'
+ else
+-EXTRA_SHARED_LIBS += -R '$$ORIGIN/../lib:/usr/lib/mps/secv1:/usr/lib/mps'
++EXTRA_SHARED_LIBS += -R '/usr/lib/mps'
+ endif
+ endif
+ 
+--- nss-3.36.1/nss/lib/sysinit/config.mk	2018-04-23 17:16:35.346449192 +0000
++++ nss-3.36.1/nss/lib/sysinit/config.mk	2018-04-23 17:16:19.172571628 +0000
+@@ -56,18 +56,10 @@ endif
+ 
+ # $(PROGRAM) has explicit dependencies on $(EXTRA_LIBS)
+ 
+-ifeq ($(OS_TARGET),SunOS)
+-ifeq ($(BUILD_SUN_PKG), 1)
+-# The -R '$ORIGIN' linker option instructs this library to search for its
+-# dependencies in the same directory where it resides.
+ ifeq ($(USE_64), 1)
+-MKSHLIB += -R '$$ORIGIN:/usr/lib/mps/secv1/64:/usr/lib/mps/64'
++MKSHLIB += -R '/usr/lib/mps/64'
+ else
+-MKSHLIB += -R '$$ORIGIN:/usr/lib/mps/secv1:/usr/lib/mps'
+-endif
+-else
+-MKSHLIB += -R '$$ORIGIN'
+-endif
++MKSHLIB += -R '/usr/lib/mps'
+ endif
+ 
+ ifeq ($(OS_ARCH), HP-UX) 
