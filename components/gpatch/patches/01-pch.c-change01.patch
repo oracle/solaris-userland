@@ -1,0 +1,23 @@
+http://git.savannah.gnu.org/cgit/patch.git/commit/src/pch.c?id=f290f48a621867084884bfff87f8093c15195e6a
+
+Fix segfault with mangled rename patch
+http://savannah.gnu.org/bugs/?53132
+* src/pch.c (intuit_diff_type): Ensure that two filenames are specified
+for renames and copies (fix the existing check).
+Diffstat (limited to 'src/pch.c')
+-rw-r--r--	src/pch.c	3	
+1 files changed, 2 insertions, 1 deletions
+diff --git a/src/pch.c b/src/pch.c
+index ff9ed2c..bc6278c 100644
+--- a/src/pch.c
++++ b/src/pch.c
+@@ -974,7 +974,8 @@ intuit_diff_type (bool need_header, mode_t *p_file_type)
+     if ((pch_rename () || pch_copy ())
+ 	&& ! inname
+ 	&& ! ((i == OLD || i == NEW) &&
+-	      p_name[! reverse] &&
++	      p_name[reverse] && p_name[! reverse] &&
++	      name_is_valid (p_name[reverse]) &&
+ 	      name_is_valid (p_name[! reverse])))
+       {
+ 	say ("Cannot %s file without two valid file names\n", pch_rename () ? "rename" : "copy");

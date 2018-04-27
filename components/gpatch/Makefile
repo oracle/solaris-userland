@@ -20,19 +20,26 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
+COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		patch
-COMPONENT_VERSION=	2.7.5
+COMPONENT_VERSION=	2.7.6
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:7436f5a19f93c3ca83153ce9c5cbe4847e97c5d956e57a220121e741f6e7968f
+    sha256:8cf86e00ad3aaa6d26aca30640e86b0e3e1f395ed99f189b06d4c9f74bc58a4e
 COMPONENT_BUGDB=	utility/gpatch
 COMPONENT_ANITYA_ID=	2597
 
-TPNO=			22293
+TPNO=			42799
+
+# The .1 refers to version 2.7.6-1 to distinguish between community version
+# binutils and this package, which contains all known fixes.  A similar approach
+# is addopted by some Linux distros.
+IPS_COMPONENT_VERSION=	2.7.6.1
+HUMAN_VERSION=		$(COMPONENT_VERSION)-1
 
 # Although system-test doesn't run against the built bits, the tests
 # require the bits are built.  Using build as a pre-requisite
@@ -52,3 +59,8 @@ unexport SHELLOPTS
 COMPONENT_INSTALL_ARGS += bindir=$(USRBINDIR)
 
 COMPONENT_SYSTEM_TEST_ENV += PATCH=$(GPATCH)
+
+# Keep only the test results
+COMPONENT_TEST_TRANSFORMS += \
+    '-n '\
+    '-e "/^\#/p" '	
