@@ -158,6 +158,7 @@ REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/perl-5/xml-parser
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += x11/library/libglu
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxext
 REQUIRED_PACKAGES += x11/library/libxft
