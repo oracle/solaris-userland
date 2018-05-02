@@ -52,7 +52,6 @@ FIX_PC_FILES += src/mapi/es1api/glesv1_cm.pc.in
 FIX_PC_FILES += src/mapi/es2api/glesv2.pc.in
 
 LIBDRM_BASE = $(WS_COMPONENTS)/x11/lib/libdrm/libdrm-2.4.67
-XORG_BASE = $(WS_COMPONENTS)/x11/xserver/xorg/build/prototype/$(MACH)
 
 COMPONENT_PREP_ACTION +=(cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
 
@@ -83,11 +82,6 @@ LD_OPTIONS += -z discard-unused=dependencies
 LD_OPTIONS += -M $(COMPONENT_DIR)/mapfile.externs
 
 CONFIGURE_OPTIONS += --enable-ldflags="$(CC_BITS)"
-
-COMPONENT_POST_INSTALL_ACTION += \
-       $(MKDIR) $(PROTO_DIR)/usr/lib/mesa/modules/extensions ; \
-       $(CP) $(XORG_BASE)/usr/lib/xorg/modules/extensions/libglx.so \
-               $(PROTO_DIR)/usr/lib/mesa/modules/extensions ;
 
 REQUIRED_PACKAGES += developer/gnu-indent
 REQUIRED_PACKAGES += developer/lexer/flex

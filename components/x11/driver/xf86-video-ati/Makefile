@@ -39,8 +39,6 @@ TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
-MESA_BASE = $(WS_COMPONENTS)/x11/lib/mesa/build/prototype/$(MACH)
-
 CONFIGURE_OPTIONS += --disable-glamor
 CONFIGURE_OPTIONS += --disable-kms
 
@@ -51,15 +49,6 @@ radeon_drv_la_LDFLAGS_add = \
 	-R$(X11_SERVERMODS_DIR) \
 	-R$(X11_SERVERLIBS_DIR)/$(MACH64)
 COMPONENT_BUILD_ENV += radeon_drv_la_LDFLAGS_add='$(radeon_drv_la_LDFLAGS_add)'
-
-COMPONENT_POST_INSTALL_ACTION += \
-	$(MKDIR) $(PROTO_DIR)/usr/lib/xorg/modules/dri/$(MACH64) ; \
-	$(CP) $(MESA_BASE)/usr/lib/dri/radeon_dri.so \
-		$(MESA_BASE)/usr/lib/dri/r200_dri.so \
-		$(PROTO_DIR)/usr/lib/xorg/modules/dri/ ; \
-	$(CP) $(MESA_BASE)/usr/lib/xorg/modules/dri/$(MACH64)/radeon_dri.so \
-		$(MESA_BASE)/usr/lib/xorg/modules/dri/$(MACH64)/r200_dri.so \
-		$(PROTO_DIR)/usr/lib/xorg/modules/dri/$(MACH64)/ ;
 
 REQUIRED_PACKAGES += diagnostic/scanpci
 REQUIRED_PACKAGES += library/expat

@@ -53,7 +53,6 @@ CFLAGS += -DHAVE_DRI1
 
 COMPONENT_PREP_ACTION +=(cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
 
-MESA_BASE = $(WS_COMPONENTS)/x11/lib/mesa/build/prototype/$(MACH)
 XVMC_BASE = $(WS_COMPONENTS)/x11/lib/libXvMC/build/prototype/$(MACH)
 
 PKG_CONFIG_PATHS += $(XVMC_BASE)$(PKG_CONFIG_PATH.$(BITS))
@@ -78,15 +77,6 @@ LD_OPTIONS += $(LD_OPTIONS.$(BITS))
 SUBDIRS=	src/legacy/i810/xvmc xvmc
 COMPONENT_POST_CONFIGURE_ACTION.32 += \
 	$(GSED) -i 's%SUBDIRS = .*%SUBDIRS = $(SUBDIRS)%' $(@D)/Makefile ;
-
-COMPONENT_POST_INSTALL_ACTION.64 += \
-	$(MKDIR) $(PROTO_DIR)/usr/lib/xorg/modules/dri/$(MACH64); \
-	$(CP) $(MESA_BASE)/usr/lib/dri/i915_dri.so \
-	      $(MESA_BASE)/usr/lib/dri/i965_dri.so \
-	    $(PROTO_DIR)/usr/lib/xorg/modules/dri/ ; \
-	$(CP) $(MESA_BASE)/usr/lib/xorg/modules/dri/$(MACH64)/i915_dri.so \
-	      $(MESA_BASE)/usr/lib/xorg/modules/dri/$(MACH64)/i965_dri.so \
-	    $(PROTO_DIR)/usr/lib/xorg/modules/dri/$(MACH64)/ ;
 
 REQUIRED_PACKAGES += diagnostic/scanpci
 REQUIRED_PACKAGES += library/expat

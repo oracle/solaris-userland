@@ -29,6 +29,9 @@ set name=pkg.fmri \
 set name=pkg.summary value="Xorg - X11R7 X server"
 set name=pkg.description \
     value="Xorg is a full featured X server that was originally designed for UNIX and UNIX-like operating systems running on a wide range of hardware and OS platforms."
+# pkgdepend needs help to follow the runtime generated symlinks to libGL
+set name=pkg.depend.runpath \
+    value=$PKGDEPEND_RUNPATH:usr/lib/mesa:usr/lib/mesa/$(MACH64)
 set name=com.oracle.info.description \
     value="portions of the X.Org X server software"
 set name=com.oracle.info.tpno value=$(TPNO)
@@ -222,6 +225,9 @@ file path=usr/include/xorg/xvdix.h
 file path=usr/include/xorg/xvmcext.h
 file path=usr/lib/$(MACH64)/pkgconfig/xorg-server.pc
 link path=usr/lib/mdb/proc/$(MACH64)/Xorg.so target=Xserver.so
+file usr/lib/xorg/modules/extensions/libglx.so \
+    path=usr/lib/mesa/modules/extensions/libglx.so \
+    pkg.linted.pkglint.dupaction001.1=true pkg.linted.userland.action001.2=true
 link path=usr/lib/pkgconfig/xorg-server.pc \
     target=../$(MACH64)/pkgconfig/xorg-server.pc
 file path=usr/lib/xorg/modules/drivers/modesetting_drv.so variant.arch=i386
