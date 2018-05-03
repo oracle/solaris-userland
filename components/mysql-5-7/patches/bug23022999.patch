@@ -4,7 +4,7 @@ plugin_dir option not set correctly in mysqld_safe for 64bit mysql packages
 
 --- a/scripts/mysqld_safe.sh
 +++ b/scripts/mysqld_safe.sh
-@@ -492,29 +492,6 @@ case "$timestamp_format" in
+@@ -539,29 +539,6 @@
                     log_error "unknown data format $timestamp_format, using UTC";;
  esac
  
@@ -31,10 +31,10 @@ plugin_dir option not set correctly in mysqld_safe for 64bit mysql packages
 -fi
 -plugin_dir="${plugin_dir}${PLUGIN_VARIANT}"
 -
- # A pid file is created for the mysqld_safe process. This file protects the
- # server instance resources during race conditions.
- safe_pid="$DATADIR/mysqld_safe.pid"
-@@ -789,7 +766,7 @@ fi
+ # Determine what logging facility to use
+ 
+ # Ensure that 'logger' exists, if it's requested
+@@ -859,7 +836,7 @@
  cmd="`mysqld_ld_preload_text`$NOHUP_NICENESS"
  
  for i in  "$ledir/$MYSQLD" "$defaults" "--basedir=$MY_BASEDIR_VERSION" \
@@ -43,4 +43,3 @@ plugin_dir option not set correctly in mysqld_safe for 64bit mysql packages
  do
    cmd="$cmd "`shell_quote_string "$i"`
  done
-

@@ -33,13 +33,14 @@ COMPILER              = gcc
 BUILD_BITS= 64
 export PARFAIT_BUILD=no
 include ../../make-rules/shared-macros.mk
+GCC_ROOT = /usr/gcc/7
 
 COMPONENT_NAME        = mysql
-COMPONENT_VERSION     = 5.7.17
+COMPONENT_VERSION     = 5.7.22
 COMPONENT_SRC         = $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE     = $(COMPONENT_NAME)-boost-$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-         sha256:b75bba87199ef6a6ccc5dfbcaf70949009dc12089eafad8c5254afc9002aa903
+         sha256:5b2a61700af7c99f5630a7dfdb099af9283c3029843cddd9e123bcdbcc4aad03
 COMPONENT_ARCHIVE_URL = https://dev.mysql.com/get/Downloads/MySQL-5.7/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL = https://dev.mysql.com/
 COMPONENT_BUGDB       = database/mysql

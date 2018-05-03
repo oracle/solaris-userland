@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -34,8 +34,8 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2015/501
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file usr/mysql/5.7/support-files/my-default.cnf path=etc/mysql/5.7/my.cnf \
-    mode=0644 preserve=renamenew
+file Solaris/my-default.cnf path=etc/mysql/5.7/my.cnf mode=0644 \
+    preserve=renamenew
 
 # SMF Configuration
 file Solaris/mysql_57.xml \
@@ -52,11 +52,11 @@ file path=usr/mysql/5.7/bin/myisam_ftdump
 file path=usr/mysql/5.7/bin/myisamchk
 file path=usr/mysql/5.7/bin/myisamlog
 file path=usr/mysql/5.7/bin/myisampack
+file path=usr/mysql/5.7/bin/mysql_config
 file path=usr/mysql/5.7/bin/mysql_embedded
 file path=usr/mysql/5.7/bin/mysql_install_db
 file path=usr/mysql/5.7/bin/mysql_plugin
 file path=usr/mysql/5.7/bin/mysql_secure_installation
-file path=usr/mysql/5.7/bin/mysql_server_config
 file path=usr/mysql/5.7/bin/mysql_ssl_rsa_setup
 file path=usr/mysql/5.7/bin/mysql_tzinfo_to_sql
 file path=usr/mysql/5.7/bin/mysql_upgrade
@@ -64,7 +64,6 @@ file path=usr/mysql/5.7/bin/mysqld
 file path=usr/mysql/5.7/bin/mysqld_multi
 file path=usr/mysql/5.7/bin/mysqld_safe
 file path=usr/mysql/5.7/bin/mysqldumpslow
-file path=usr/mysql/5.7/bin/mysqlxtest
 file path=usr/mysql/5.7/bin/perror
 file path=usr/mysql/5.7/bin/replace
 file path=usr/mysql/5.7/bin/resolve_stack_dump
@@ -249,6 +248,7 @@ file path=usr/mysql/5.7/man/man1/mysql_upgrade.1
 file path=usr/mysql/5.7/man/man1/mysqld_multi.1
 file path=usr/mysql/5.7/man/man1/mysqld_safe.1
 file path=usr/mysql/5.7/man/man1/mysqldumpslow.1
+file path=usr/mysql/5.7/man/man1/mysqlman.1
 file path=usr/mysql/5.7/man/man1/perror.1
 file path=usr/mysql/5.7/man/man1/replace.1
 file path=usr/mysql/5.7/man/man1/resolve_stack_dump.1
@@ -318,7 +318,6 @@ file path=usr/mysql/5.7/share/swedish/errmsg.sys
 file path=usr/mysql/5.7/share/ukrainian/errmsg.sys
 file path=usr/mysql/5.7/share/uninstall_rewriter.sql
 file path=usr/mysql/5.7/support-files/magic
-file path=usr/mysql/5.7/support-files/my-default.cnf mode=0644 preserve=true
 file path=usr/mysql/5.7/support-files/mysql-log-rotate
 file path=usr/mysql/5.7/support-files/mysql.server
 file path=usr/mysql/5.7/support-files/mysqld_multi.server
