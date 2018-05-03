@@ -21,12 +21,12 @@
 #
 
 #
-# Copyright (c) 2010, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 #
 # userland-fetch - a file download utility
 #
-#  A simple program similiar to wget(1), but handles local file copy, ignores
+#  A simple program similar to wget(1), but handles local file copy, ignores
 #  directories, and verifies file hashes.
 #
 
@@ -221,21 +221,29 @@ def pypi_url(url, filename):
 		return None
 
 	if not host:
-		jsurl = "http://pypi.python.org/pypi/%s/json" % name
-	else:
-		jsurl = "http://%s/pypi/%s/json" % (host, name)
+		host = "pypi.python.org"
 
-	try:
-		# Don't wait very long for the connection
-		f = urlopen(jsurl, None, 2)
-	except HTTPError as e:
-		if e.getcode() == 404:
-			print "Unknown component '%s'" % name
-		else:
-			printIOError(e, "Can't open PyPI JSON url %s" % url)
-		return None
-	except IOError as e:
-		printIOError(e, "Can't open PyPI JSON url %s" % url)
+	for protocol in [ "https", "http" ]:
+		success = True
+		jsurl = "%s://%s/pypi/%s/json" % (protocol, host, name)
+		try:
+			# Don't wait very long for the connection
+			f = urlopen(jsurl, None, 2)
+		except HTTPError as e:
+			success = False
+			if e.getcode() == 404:
+				printIOError(e, "Unknown component '%s'" % name)
+			else:
+				printIOError(e, "Can't open PyPI JSON url %s - http error code = %d" % (jsurl, e.getcode()))
+		except IOError as e:
+			success = False
+			printIOError(e, "Can't open PyPI JSON url %s - IOError encountered" % jsurl)
+
+		if success:
+			break
+
+	if not success:
+		printIOError(e, "No protocol worked - bailing out.")
 		return None
 
 	js = json.load(f)
