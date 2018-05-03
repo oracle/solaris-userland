@@ -79,10 +79,14 @@ e) Remove old database in /var/openldap/openldap-data
    | rm -rf /var/openldap/openldap-data/*
    `----
 
-f) Import LDIF data manually after boot.
+f) Import LDIF data with slapadd(8oldap) as user "openldap".
+
+   Execute from a directory accessible to "openldap" to prevent
+   non-toxic (getcwd) error from slapadd.
 
    ,----
-   | slapadd -l /var/share/openldap/data.ldif
+   | cd /tmp
+   | su openldap -c "slapadd -l /var/share/openldap/data.ldif"
    `----
 
 g) Enable ldap/server
