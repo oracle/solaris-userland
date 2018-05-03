@@ -94,7 +94,9 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += library/apr-15
+REQUIRED_PACKAGES += library/apr-16
 REQUIRED_PACKAGES += library/apr-util-15
+REQUIRED_PACKAGES += library/apr-util-16
 REQUIRED_PACKAGES += library/perl-5/CGI-522
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += web/server/apache-24

@@ -43,8 +43,8 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/justmake.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-USED_APR =		/usr/apr/1.5
-USED_APU =		/usr/apr-util/1.5
+USED_APR =		/usr/apr/1.6
+USED_APU =		/usr/apr-util/1.6
 
 APR_32 =		$(USED_APR)/bin/apr-1-config
 APR_64 =		$(USED_APR)/bin/$(MACH64)/apr-1-config
@@ -96,10 +96,9 @@ test:		$(TEST_32_and_64)
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += developer/build/scons-27
-REQUIRED_PACKAGES += library/apr-15
-REQUIRED_PACKAGES += library/apr-util-15
+REQUIRED_PACKAGES += library/apr-16
+REQUIRED_PACKAGES += library/apr-util-16
 REQUIRED_PACKAGES += library/expat
-$(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += library/openldap
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library

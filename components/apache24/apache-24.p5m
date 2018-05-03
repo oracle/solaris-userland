@@ -29,6 +29,9 @@
 # prevents "64bit file in 32bit path" errors
 <transform file path=usr/apache2/2.4/libexec/.*\.so -> \
     add pkg.linted.userland.action001.2 true>
+# Temporary disable RUNPATH check till new APR/APR-util 1.6 is in repo
+<transform file path=usr/apache2/2.4/bin/.* -> \
+    add pkg.linted.userland.action001.3 true>
 set name=pkg.fmri \
     value=pkg:/web/server/apache-24@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Apache Web Server V2.4"

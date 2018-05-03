@@ -52,7 +52,9 @@ CONFIGURE_OPTIONS += --with-apu=`$(APXS) -q APU_CONFIG`
 COMPONENT_TEST_ARGS += CFLAGS="$(CFLAGS) -DMSC_TEST"
 
 REQUIRED_PACKAGES += library/apr-15
+REQUIRED_PACKAGES += library/apr-16
 REQUIRED_PACKAGES += library/apr-util-15
+REQUIRED_PACKAGES += library/apr-util-16
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/pcre
 REQUIRED_PACKAGES += runtime/lua

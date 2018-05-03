@@ -96,8 +96,8 @@ PERL_ARCH_22_i386 = i86pc-solaris-thread-multi-64
 PERL_ARCH_22_sparc = sun4-solaris-thread-multi-64
 PERL_ARCH_22 = $(PERL_ARCH_22_$(MACH))
 
-APR_VERSION = 1.5
-APR_UTIL_VERSION = 1.5
+APR_VERSION = 1.6
+APR_UTIL_VERSION = 1.6
 
 # Use the libraries just built plus the svn test harness library.
 LD_TEST_PATH_32 := \
@@ -222,8 +222,8 @@ COMPONENT_POST_INSTALL_ACTION += \
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/versioning/subversion
 REQUIRED_PACKAGES += developer/build/scons
-REQUIRED_PACKAGES += library/apr-15
-REQUIRED_PACKAGES += library/apr-util-15
+REQUIRED_PACKAGES += library/apr-16
+REQUIRED_PACKAGES += library/apr-util-16
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libserf
@@ -231,5 +231,4 @@ REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/perl-522
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += system/library/c++-runtime
-$(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += system/library/security/libsasl
 REQUIRED_PACKAGES += system/library/security/libsasl2

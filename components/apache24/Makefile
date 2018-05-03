@@ -72,8 +72,8 @@ CONFIGURE_OPTIONS +=	--enable-exception-hook
 CONFIGURE_OPTIONS +=	--enable-cgi
 CONFIGURE_OPTIONS +=	--enable-suexec
 CONFIGURE_OPTIONS +=	--with-suexec-caller=webservd
-CONFIGURE_OPTIONS +=	--with-apr=$(USRDIR)/apr/1.5/bin/$(MACH64)/apr-1-config
-CONFIGURE_OPTIONS +=	--with-apr-util=$(USRDIR)/apr-util/1.5/bin/$(MACH64)/apu-1-config
+CONFIGURE_OPTIONS +=	--with-apr=$(USRDIR)/apr/1.6/bin/$(MACH64)/apr-1-config
+CONFIGURE_OPTIONS +=	--with-apr-util=$(USRDIR)/apr-util/1.6/bin/$(MACH64)/apu-1-config
 CONFIGURE_OPTIONS +=	CFLAGS="$(CFLAGS)"
 CONFIGURE_OPTIONS +=	LTFLAGS="--silent --tag=CC"
 
@@ -85,11 +85,11 @@ endif
 
 COMPONENT_POST_INSTALL_ACTION += ($(KSH93) Solaris/customization.sh $(PROTO_DIR))
 
-REQUIRED_PACKAGES += library/apr-15
-REQUIRED_PACKAGES += library/apr-util-15
-REQUIRED_PACKAGES += library/apr-util-15/apr-ldap
-REQUIRED_PACKAGES += library/apr-util-15/dbd-mysql
-REQUIRED_PACKAGES += library/apr-util-15/dbd-sqlite
+REQUIRED_PACKAGES += library/apr-16
+REQUIRED_PACKAGES += library/apr-util-16
+REQUIRED_PACKAGES += library/apr-util-16/apr-ldap
+REQUIRED_PACKAGES += library/apr-util-16/dbd-mysql
+REQUIRED_PACKAGES += library/apr-util-16/dbd-sqlite
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/nghttp2
 REQUIRED_PACKAGES += library/pcre
