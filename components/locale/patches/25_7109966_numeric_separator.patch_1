@@ -1,0 +1,102 @@
+Fix of bug 15753847. The decimal_point and thousands_sep is defined in ISO/IEC 9899 as:
+sec. 7.11
+	char *decimal_point
+		The decimal-point character used to format nonmonetary quantities.
+	char *thousands_sep
+		The character used to separate groups of digits before the decimal-point
+		character in formatted nonmonetary quantities.
+sec. 3.7.1: 
+	character = single byte character
+
+By the way the limitation does not apply to *mon_decimal_point and
+*mon_thousands_sep - definition of the fields allows multibyte characters.
+
+--- cldr_tools-28/tools/java/org/unicode/cldr/posix/POSIX_LCNumeric.java
++++ cldr_tools-28.new/tools/java/org/unicode/cldr/posix/POSIX_LCNumeric.java
+@@ -21,10 +21,11 @@
+     public POSIX_LCNumeric(CLDRFile doc) {
+ 
+         numsys = doc.getWinningValue("//ldml/numbers/defaultNumberingSystem");
+-        decimal_point = POSIXUtilities.POSIXCharName(doc.getWinningValue("//ldml/numbers/symbols[@numberSystem='"
+-            + numsys + "']/decimal"));
+-        thousands_sep = POSIXUtilities.POSIXCharName(doc.getWinningValue("//ldml/numbers/symbols[@numberSystem='"
+-            + numsys + "']/group"));
++        decimal_point = POSIXUtilities.POSIXCharName(POSIXUtilities.POSIXSingleByteSeparator(doc.getWinningValue("//ldml/numbers/symbols[@numberSystem='"
++            + numsys + "']/decimal")));
++        thousands_sep = POSIXUtilities.POSIXCharName(POSIXUtilities.POSIXSingleByteSeparator(doc.getWinningValue("//ldml/numbers/symbols[@numberSystem='"
++            + numsys + "']/group")));
++
+         String grouping_pattern = doc
+             .getWinningValue("//ldml/numbers/decimalFormats/decimalFormatLength/decimalFormat[@type='standard']/pattern[@type='standard']");
+ 
+--- a/tools/java/org/unicode/cldr/posix/POSIXLocale.java
++++ b/tools/java/org/unicode/cldr/posix/POSIXLocale.java
+@@ -119,6 +119,7 @@
+         }
+ 
+         POSIXUtilities.setCharFallback(char_fallbk);
++     POSIXUtilities.setCharset(cs);
+ 
+         lc_collate = new POSIX_LCCollate(doc, repertoire, collrules, collateset, codeset, variant);
+ 
+--- a/tools/java/org/unicode/cldr/posix/POSIXUtilities.java
++++ b/tools/java/org/unicode/cldr/posix/POSIXUtilities.java
+@@ -12,6 +12,7 @@
+ import java.util.HashMap;
+ import java.util.Iterator;
+ import java.util.Map;
++import java.nio.charset.Charset;
+ 
+ import org.unicode.cldr.util.CLDRFile;
+ 
+@@ -22,6 +23,7 @@
+ public class POSIXUtilities {
+ 
+     private static UnicodeSet repertoire = new UnicodeSet(0x0000, 0x10FFFF);
++    private static Charset charset = Charset.forName("UTF-8");
+     private static CLDRFile char_fallbk;
+     private static Map<Integer, String> controlCodeNames = new HashMap<Integer, String>();
+ 
+@@ -101,6 +103,11 @@
+         repertoire = rep;
+     }
+ 
++    public static void setCharset ( Charset cs )
++    {
++        charset = cs;
++    }
++
+     public static void setCharFallback(CLDRFile fallbk)
+     {
+         char_fallbk = fallbk;
+@@ -404,4 +411,30 @@
+ 
+         return (POSIXCharNameNP(result.toString()));
+     }
++
++   public static String POSIXSingleByteSeparator(String s)
++   {
++      String substituteString = "";
++
++      if (charset.encode(s).limit() == 1)
++         return s;
++
++      System.out.println("WARNING: number separator "+POSIXCharName(s)+" is not single byte in the target codeset.");
++
++      if (POSIXCharName(s).equals("<NO-BREAK_SPACE>")) {
++         substituteString = " ";
++      } else if (POSIXCharName(s).equals("<ARABIC_DECIMAL_SEPARATOR>")) {
++         substituteString = ",";
++      } else if (POSIXCharName(s).equals("<ARABIC_THOUSANDS_SEPARATOR>")) {
++         substituteString = ".";
++      } else {
++         System.out.println("Error: unknown substitution");
++         System.exit(1);
++      }
++
++      System.out.println("	Substituted: "+POSIXUtilities.POSIXCharName(substituteString));
++
++      return substituteString;
++   }
++
+ }

@@ -1,0 +1,55 @@
+Minor exemplar characters are often missing in other
+encodings.  Do not flood build logs with repeating warnings.
+
+--- tools.orig/tools/java/org/unicode/cldr/posix/POSIXUtilities.java
++++ tools/tools/java/org/unicode/cldr/posix/POSIXUtilities.java
+@@ -26,6 +26,7 @@
+     private static Charset charset = Charset.forName("UTF-8");
+     private static CLDRFile char_fallbk;
+     private static Map<Integer, String> controlCodeNames = new HashMap<Integer, String>();
++    public static int repertoireMissingCounter = 0;
+ 
+     // Since UCharacter.getExtendedName() in ICU doesn't provide the names for control characters
+     // we have to force the issue here. Required elements for the POSIX portable character set will be
+@@ -170,7 +171,8 @@
+ 
+         if (!repertoire.contains(cp))
+         {
+-            System.out.println("WARNING: character " + result.toString() + " is not in the target codeset.");
++            if (repertoireMissingCounter < 3)
++                System.out.println("WARNING: character " + result.toString() + " is not in the target codeset.");
+ 
+             String substituteString = "";
+             boolean SubFound = false;
+@@ -188,12 +190,17 @@
+ 
+             if (SubFound)
+             {
+-                System.out.println("	Substituted: " + POSIXUtilities.POSIXCharName(substituteString));
++                if (repertoireMissingCounter < 3)
++                    System.out.println("	Substituted: " + POSIXUtilities.POSIXCharName(substituteString));
+                 result = new StringBuffer(POSIXUtilities.POSIXCharName(substituteString));
+             }
+             else
+             {
+-                System.out.println("	No acceptable substitute found. The resulting locale source may not compile.");
++                if (repertoireMissingCounter < 3)
++                    System.out.println("	No acceptable substitute found. The resulting locale source may not compile.");
++                if (repertoireMissingCounter == 3)
++                    System.out.println("	... (and more)");
++                repertoireMissingCounter++;
+                 result = new StringBuffer();
+             }
+         }
+--- tools.orig/tools/java/org/unicode/cldr/posix/POSIX_LCCtype.java
++++ tools/tools/java/org/unicode/cldr/posix/POSIX_LCCtype.java
+@@ -32,7 +32,8 @@
+         while (it.next())
+             if (it.codepoint != -1 && !chars.contains(it.codepoint))
+             {
+-                System.out.println("WARNING: Target codeset does not contain exemplar character : " +
++                if (POSIXUtilities.repertoireMissingCounter < 3)
++                    System.out.println("WARNING: Target codeset does not contain exemplar character : " +
+                     POSIXUtilities.POSIXCharName(it.codepoint));
+                 ExemplarError = true;
+             }

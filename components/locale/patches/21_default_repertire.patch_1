@@ -1,0 +1,25 @@
+repertoire is all assigned unicode characters
+
+To reduce locale object size, PUA characters are not included in collation tables for UTF-8 locales.
+To generate correct ctype information for the chars, we have to add them to POSIX_LCCtype repertoire
+
+--- a/tools/java/org/unicode/cldr/posix/POSIXLocale.java
++++ b/tools/java/org/unicode/cldr/posix/POSIXLocale.java
+@@ -101,6 +101,7 @@ public class POSIXLocale {
+             }
+ 
+             repertoire.add(0x0000, 0x007f); // Always add the ASCII set
++            repertoire.addAll(new UnicodeSet("[^[:Noncharacter_Code_Point:][:Cn:][:Cs:][:Co:]]"));
+ 
+         }
+         else if (!codeset.equals("UTF-8"))
+@@ -152,7 +153,8 @@ public class POSIXLocale {
+                 }
+             }
+         }
+-
++        if (codeset.equals("UTF-8"))
++            repertoire.addAll(new UnicodeSet("[:Co:]"));
+         lc_ctype = new POSIX_LCCtype(doc, repertoire);
+         lc_numeric = new POSIX_LCNumeric(doc);
+         lc_monetary = new POSIX_LCMonetary(doc, supp, variant);

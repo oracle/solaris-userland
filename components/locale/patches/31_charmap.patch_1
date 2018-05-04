@@ -1,0 +1,13 @@
+fix character map file name
+
+--- tools.orig/tools/java/org/unicode/cldr/posix/GenerateCharmap.java
++++ tools/tools/java/org/unicode/cldr/posix/GenerateCharmap.java
+@@ -52,7 +52,7 @@
+         String codeset = options[CHARSET].value;
+         GenerateCharmap gp = new GenerateCharmap(new UnicodeSet(options[UNICODESET].value),
+             Charset.forName(codeset), codeset);
+-        PrintWriter out = BagFormatter.openUTF8Writer(options[DESTDIR].value + File.separator, codeset + ".cm");
++        PrintWriter out = BagFormatter.openUTF8Writer(options[DESTDIR].value + File.separator, codeset + ".charmap");
+         gp.write(out);
+         out.close();
+     }

@@ -1,0 +1,36 @@
+Some tolower pairs were not valid because the second letter is not upper case
+(the same for toupper).  Only characters specified for tolower (or toupper)
+keywords lower and upper shall be specified in posix locale.
+
+Ex: toupper (<GREEK_SMALL_LETTER_OMEGA_WITH_YPOGEGRAMMENI>,<GREEK_CAPITAL_LETTER_OMEGA_WITH_PROSGEGRAMMENI>)
+	GREEK_CAPITAL_LETTER_OMEGA_WITH_PROSGEGRAMMENI is not uppercase (Lu), but titlecase (Lt).
+
+--- a/tools/java/org/unicode/cldr/posix/POSIX_LCCtype.java
++++ b/tools/java/org/unicode/cldr/posix/POSIX_LCCtype.java
+@@ -85,11 +85,12 @@
+         // toupper processing
+ 
+         UnicodeSet lowers = new UnicodeSet(types[1][1]).retainAll(chars);
++        UnicodeSet uppers = new UnicodeSet(types[0][1]).retainAll(chars);
+ 
+         UnicodeSet us = new UnicodeSet();
+         for (UnicodeSetIterator it = new UnicodeSetIterator(chars); it.next();) {
+             int upp = UCharacter.toUpperCase(it.codepoint);
+-            if (upp != it.codepoint && chars.contains(upp) && lowers.contains(it.codepoint)) us.add(it.codepoint);
++            if (upp != it.codepoint && uppers.contains(upp) && lowers.contains(it.codepoint)) us.add(it.codepoint);
+         }
+         item = 0;
+         last = us.size() - 1;
+@@ -104,11 +105,10 @@
+ 
+         // tolower processing
+ 
+-        UnicodeSet uppers = new UnicodeSet(types[0][1]).retainAll(chars);
+         us = new UnicodeSet();
+         for (UnicodeSetIterator it = new UnicodeSetIterator(chars); it.next();) {
+             int low = UCharacter.toLowerCase(it.codepoint);
+-            if (low != it.codepoint && chars.contains(low) && uppers.contains(it.codepoint)) us.add(it.codepoint);
++            if (low != it.codepoint && lowers.contains(low) && uppers.contains(it.codepoint)) us.add(it.codepoint);
+         }
+         item = 0;
+         last = us.size() - 1;

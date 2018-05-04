@@ -1,0 +1,80 @@
+add Solaris yesno expression format - in all locales accept also 
+English 'yes' and 'no'
+
+--- a/tools/java/org/unicode/cldr/posix/POSIX_LCMessages.java
++++ b/tools/java/org/unicode/cldr/posix/POSIX_LCMessages.java
+@@ -36,7 +36,7 @@ public class POSIX_LCMessages {
+         s = doc.getWinningValue(SearchLocation);
+         if (s != null) {
+             StringBuffer buf;
+-            if (variant.yesno.equals("short"))
++            if ( variant.yesno.equals("short") || variant.yesno.equals("solaris"))
+             {
+                 i = s.indexOf(":");
+                 if (i > 0)
+@@ -53,9 +53,13 @@ public class POSIX_LCMessages {
+                     buf.append(":yes:y:YES:Y");
+             }
+             yesstr = POSIXUtilities.POSIXCharNameNP(buf.toString());
++
++            if (variant.yesno.equals("solaris") && ! s.startsWith("yes")) {
++                 buf.insert(0, "yes:");
++            }
+             yesexpr = POSIXUtilities.POSIXYesNoExpr(buf.toString());
+         }
+-        else if (variant.yesno.equals("short"))
++        else if ( variant.yesno.equals("short") || variant.yesno.equals("solaris"))
+         {
+             yesstr = "yes";
+             yesexpr = POSIXUtilities.POSIXYesNoExpr(yesstr);
+@@ -70,7 +70,7 @@
+         s = doc.getWinningValue(SearchLocation);
+         if (s != null) {
+             StringBuffer buf;
+-            if (variant.yesno.equals("short")) {
++            if ( variant.yesno.equals("short") || variant.yesno.equals("solaris")) {
+                 i = s.indexOf(":");
+                 if (i > 0)
+                     buf = new StringBuffer(s.substring(0, i));
+@@ -86,9 +90,12 @@ public class POSIX_LCMessages {
+                     buf.append(":no:n:NO:N");
+             }
+             nostr = POSIXUtilities.POSIXCharNameNP(buf.toString());
++            if (variant.yesno.equals("solaris") && ! s.startsWith("no")) {
++                    buf.insert(0, "no:");
++            }
+             noexpr = POSIXUtilities.POSIXYesNoExpr(buf.toString());
+         }
+-        else if (variant.yesno.equals("short"))
++        else if ( variant.yesno.equals("short") || variant.yesno.equals("solaris"))
+         {
+             nostr = "no";
+             noexpr = POSIXUtilities.POSIXYesNoExpr(nostr);
+--- a/tools/java/org/unicode/cldr/posix/POSIXUtilities.java
++++ b/tools/java/org/unicode/cldr/posix/POSIXUtilities.java
+@@ -369,8 +369,11 @@ public class POSIXUtilities {
+             {
+                 if (result.length() > 0)
+                     result.append(")|(");
+-                else
+-                    result.append("^((");
++                else {
++                    result.append("^(");
++                    if (YesNoElements.length > 1)
++                        result.append("(");
++                }
+ 
+                 StringCharacterIterator si = new StringCharacterIterator(cur);
+                 boolean OptLastChars = false;
+@@ -395,7 +398,10 @@ public class POSIXUtilities {
+                     result.append(")?");
+             }
+         }
+-        result.append("))");
++        result.append(")");
++        if (YesNoElements.length > 1)
++            result.append(")");
++
+         return (POSIXCharNameNP(result.toString()));
+     }
+ }

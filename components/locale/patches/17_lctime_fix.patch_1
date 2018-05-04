@@ -1,0 +1,29 @@
+The CLDR provies multiple data/time formats. The 'full' variant matches
+to "Solaris style" better that the default one.
+
+--- a/tools/java/org/unicode/cldr/posix/POSIX_LCTime.java
++++ b/tools/java/org/unicode/cldr/posix/POSIX_LCTime.java
+@@ -150,13 +150,19 @@ public class POSIX_LCTime {
+         if (variant.platform.equals(POSIXVariant.SOLARIS))
+         {
+             // date_fmt
+-            SearchLocation = "//ldml/dates/calendars/calendar[@type='gregorian']/dateTimeFormats/dateTimeFormatLength/dateTimeFormat/pattern";
+-            date_fmt = doc.getWinningValue(SearchLocation);
++            SearchLocation = "//ldml/dates/calendars/calendar[@type='gregorian']" +
++                "/dateTimeFormats/dateTimeFormatLength[@type='full']" +
++                "/dateTimeFormat[@type='standard']/pattern[@type='standard']";
++             date_fmt = doc.getWinningValue(SearchLocation);
+ 
+-            SearchLocation = "//ldml/dates/calendars/calendar[@type='gregorian']/timeFormats/timeFormatLength[@type='full']/timeFormat/pattern";
++            SearchLocation = "//ldml/dates/calendars/calendar[@type='gregorian']" +
++                "/timeFormats/timeFormatLength[@type='full']" +
++                "/timeFormat[@type='standard']/pattern[@type='standard']";
+             date_fmt = date_fmt.replaceAll("\\{0\\}", doc.getWinningValue(SearchLocation));
+ 
+-            SearchLocation = "//ldml/dates/calendars/calendar[@type='gregorian']/dateFormats/dateFormatLength[@type='full']/dateFormat/pattern";
++            SearchLocation = "//ldml/dates/calendars/calendar[@type='gregorian']" +
++                "/dateFormats/dateFormatLength[@type='full']" +
++                "/dateFormat[@type='standard']/pattern[@type='standard']";
+             date_fmt = date_fmt.replaceAll("\\{1\\}", doc.getWinningValue(SearchLocation));
+ 
+             date_fmt = POSIXUtilities.POSIXDateTimeFormat(date_fmt, alt_digits[0].length() > 0, variant);

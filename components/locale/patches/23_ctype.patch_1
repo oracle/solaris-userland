@@ -1,0 +1,40 @@
+The CLDR definition of ctype categories is based on ICU categories.
+This patch defines ctype categories by Unicode character categories
+(http://www.unicode.org/versions/Unicode6.0.0/ch04.pdf)
+instead of ICU categories.
+
+To reduce size and compilation time, we remove the characters included in ctype
+category by default from localedef file. The change has no efect to final
+locale object, but localedef file is smaller by 25%.
+
+--- a/tools/java/org/unicode/cldr/posix/POSIX_LCCtype.java
++++ b/tools/java/org/unicode/cldr/posix/POSIX_LCCtype.java
+@@ -55,17 +55,17 @@
+         out.println();
+ 
+         String[][] types = {
+-            { "upper", "[:Uppercase:]" },
+-            { "lower", "[:Lowercase:]" },
+-            { "alpha", "[[:Alphabetic:]-[[:Uppercase:][:Lowercase:]]]" },
+-            { "space", "[:Whitespace:]" },
+-            { "cntrl", "[:Control:]" },
+-            { "graph", "[^[:Whitespace:][:Control:][:Format:][:Surrogate:][:Unassigned:]]" },
+-            { "print", "[^[:Control:][:Format:][:Surrogate:][:Unassigned:]]" },
+-            { "punct", "[:Punctuation:]" },
+-            { "digit", "[0-9]" },
+-            { "xdigit", "[0-9 a-f A-F]" },
+-            { "blank", "[[:Whitespace:]-[\\u000A-\\u000D \\u0085 [:Line_Separator:][:Paragraph_Separator:]]]" } };
++		  { "upper", "[[:Lu:][:Lt:]]" },
++		  { "lower", "[[:Ll:][\\u01C5\\u01C8\\u01CB\\u01F2]]" },
++		  { "alpha", "[[[:L:][:N:]]-[[:Lu:][:Lt:][:Ll:][0-9]]]" },	/* auto included: upper, lower [:Lu:][:Lt:][:Ll:] */
++		  { "space", "[\\u000A\\u000B\\u000C\\u000D\\u0085]" }, 	/* auto included: blank [:Z:][\\u0009] */
++		  { "cntrl", "[[:Cc:][:Cf:]]" },
++		  { "graph", "[[:M:][:Co:]]" },					/* auto included: alpha, xdigit, punct  [:L:][:N:][:P:][:S:] */
++		  { "print", "[[:Z:]-[\\u0020]]" }, 				/* auto included: alpha, xdigit, punct, <space>  [:L:] [:N:] [:P:][:S:]*/
++		  { "punct", "[[:P:][:S:]]" },
++		  { "digit", "[0-9]" },
++		  { "xdigit", "[0-9 a-f A-F]" },
++		  { "blank", "[[:Z:][\\u0009]]" } };
+ 
+         // print character types, restricted to the charset
+         int item, last;

@@ -1,0 +1,30 @@
+don't generate alt_digits if possible values contain invalid characters
+
+diff -ruN cldr_tools-28.orig/tools/java/org/unicode/cldr/posix/POSIXUtilities.java cldr_tools-28/tools/java/org/unicode/cldr/posix/POSIXUtilities.java
+--- cldr_tools-28.orig/tools/java/org/unicode/cldr/posix/POSIXUtilities.java	2016-04-08 04:49:17.528402289 +0200
++++ cldr_tools-28/tools/java/org/unicode/cldr/posix/POSIXUtilities.java	2016-04-08 04:59:54.164934278 +0200
+@@ -192,7 +192,10 @@
+                 result = new StringBuffer(POSIXUtilities.POSIXCharName(substituteString));
+             }
+             else
++            {
+                 System.out.println("	No acceptable substitute found. The resulting locale source may not compile.");
++                result = new StringBuffer();
++            }
+         }
+ 
+         return result.toString();
+diff -ruN cldr_tools-28.orig/tools/java/org/unicode/cldr/posix/POSIX_LCTime.java cldr_tools-28/tools/java/org/unicode/cldr/posix/POSIX_LCTime.java
+--- cldr_tools-28.orig/tools/java/org/unicode/cldr/posix/POSIX_LCTime.java	2016-04-08 04:49:17.529651148 +0200
++++ cldr_tools-28/tools/java/org/unicode/cldr/posix/POSIX_LCTime.java	2016-04-08 04:59:50.316491917 +0200
+@@ -83,6 +83,10 @@
+                 alt_digits[i] = POSIXUtilities.POSIXCharName(Character.toString(((char) ((short) base_value + i))));
+             for (short i = 10; i < 100; i++)
+                 alt_digits[i] = alt_digits[i / 10] + alt_digits[i % 10];
++
++            for (short i = 0; i < 100; i++)
++                if (alt_digits[i].length() == 0)
++                    alt_digits[0] = "";
+         }
+ 
+         // t_fmt -

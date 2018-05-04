@@ -1,0 +1,14 @@
+The null key handling in TreeMap changed between jdk6 and jdk7, TreeMap does
+not allow null key in jdk7.
+
+--- a/tools/java/org/unicode/cldr/util/SupplementalDataInfo.java
++++ b/tools/java/org/unicode/cldr/util/SupplementalDataInfo.java
+@@ -1539,7 +1539,7 @@
+                 }
+                 Map<String, String> regionToZone = zoneToRegionToZone.get(mzone);
+                 if (regionToZone == null) {
+-                    zoneToRegionToZone.put(mzone, regionToZone = new TreeMap<String, String>());
++                    zoneToRegionToZone.put(mzone, regionToZone = new HashMap<String, String>());
+                 }
+                 if (region != null) {
+                     regionToZone.put(region, zone);

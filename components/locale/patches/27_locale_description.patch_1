@@ -1,0 +1,226 @@
+Add LocaleDescription tool. The tool builds locale_description
+files from the CLDR data.
+
+--- /dev/null
++++ b/tools/java/org/unicode/cldr/tool/LocaleDescription.java
+@@ -0,0 +1,220 @@
++package org.unicode.cldr.tool;
++
++import org.w3c.dom.Document;
++import org.w3c.dom.NodeList;
++
++import org.unicode.cldr.util.CLDRFile;
++import org.unicode.cldr.util.CldrUtility;
++import org.unicode.cldr.util.LDMLUtilities;
++import org.unicode.cldr.util.CLDRConfig;
++
++
++import java.lang.Comparable;
++import java.util.*;
++import java.io.*;
++
++
++
++class MyLoc implements Comparable<MyLoc> {
++	CLDRFile cldr;
++
++	String name;
++	String name_solaris;
++	String name_cldr;
++
++	String lang;
++	String terr;
++	String enc;
++	String mod;
++
++	public MyLoc(String name) {
++		this.name = name;
++
++		String[] tmp = name.split(":",2);
++		name_solaris = tmp[0];
++
++		String[] tmp1 = tmp[0].split("@",2);
++		String[] tmp2 = tmp1[0].split("_",2);
++		String[] tmp3 = tmp2[1].split("[.]",2);
++		mod = tmp1.length > 1 ? tmp1[1] : null;
++		lang = tmp2[0];
++		terr = tmp3[0];
++		enc = tmp3.length > 1 ? tmp3[1] : null;
++
++		if (tmp.length > 1) {
++			String[] tmp4 = tmp[1].split("@",2);
++			name_cldr = tmp4[0];
++		} else
++			name_cldr = lang + '_' + terr;
++
++		cldr = CLDRConfig.getInstance().getCldrFactory().make(name_cldr, true);
++	}
++
++	public int compareTo(MyLoc t) {
++		return name_solaris.compareTo(t.name_solaris);
++	}
++
++
++	private String get(String val)
++	{
++		if (val.equals("lang"))
++			return lang;
++		else if (val.equals("terr"))
++			return terr;
++		else if (val.equals("enc"))
++			return enc;
++		else if (val.equals("mod"))
++			return mod;
++		else
++			return null;
++	}
++
++
++	private Map<String,String> translations(Set<MyLoc> locs, String type, String path) {
++		SortedMap<String,Map<String,SortedMap<String,MyLoc>>> all = new TreeMap<String,Map<String,SortedMap<String,MyLoc>>>();
++		Map<String,String> ret = new TreeMap<String,String>();
++
++		for (MyLoc loc : locs) {
++			String val = loc.cldr.getWinningValue(path + "[@type=\"" + get(type) +"\"]");
++			Map<String,SortedMap<String,MyLoc>> tr;
++
++			if (val.equals(get(type)))
++				continue;
++
++			if (!all.containsKey(loc.lang))
++				all.put(loc.lang, new TreeMap<String,SortedMap<String,MyLoc>>());
++			tr = all.get(loc.lang);
++
++			if (!tr.containsKey(val))
++				tr.put(val, new TreeMap<String,MyLoc>());
++
++			tr.get(val).put(loc.lang + "_" + loc.terr, loc);
++		}
++
++		for (Map.Entry<String,Map<String,SortedMap<String,MyLoc>>> lang : all.entrySet()) {
++			String best_tr = null;
++			int max_size = 0;
++
++			for (Map.Entry<String,SortedMap<String,MyLoc>> val : lang.getValue().entrySet())
++				if (max_size < val.getValue().size()) {
++					max_size = val.getValue().size();
++					best_tr = val.getKey();
++				}
++
++			assert max_size > 0;
++
++			ret.put(lang.getKey(), best_tr);
++
++			if (lang.getValue().size() > 1)
++				for (Map.Entry<String,SortedMap<String,MyLoc>> tr : lang.getValue().entrySet())
++					for (Map.Entry<String,MyLoc> val : tr.getValue().entrySet())
++						if (! best_tr.equals(tr.getKey()))
++							ret.put(val.getKey(), tr.getKey());
++		}
++
++
++		return ret;
++	}
++
++
++	public Map<String,String> getLangs(Set<MyLoc> locs) {
++		return translations(locs, "lang", "//ldml/localeDisplayNames/languages/language");
++	}
++
++
++	public Map<String,String> getTerritories(Set<MyLoc> locs) {
++		return translations(locs, "terr", "//ldml/localeDisplayNames/territories/territory");
++	}
++
++
++	public Set<String> getTimezones(Document doc) {
++		Set<String> tz = new TreeSet<String>();
++
++		NodeList list = LDMLUtilities.getNodeList(doc, "//supplementalData/windowsZones/mapTimezones/mapZone[@territory='" + terr + "']");
++
++		for (int i = 0; i < list.getLength(); i++)
++			tz.addAll(Arrays.asList(LDMLUtilities.getAttributeValue(list.item(i), "type").split(" ")));
++
++		return tz;
++	}
++
++
++	public Set<String> getAliases() throws IOException {
++		BufferedReader in = new BufferedReader(new FileReader("locale.alias"));
++		Set<String> aliases = new TreeSet<String>();
++
++		String line;
++
++		while ((line = in.readLine()) != null) {
++			if (line.startsWith("#"))
++				continue;
++
++			String[] arr = line.split(" +", 2);
++
++			if (arr[1].equals(name_solaris))
++				aliases.add(arr[0]);
++		}
++
++		return aliases;
++	}
++
++	public boolean isLegacy() throws IOException {
++		BufferedReader in = new BufferedReader(new FileReader("locale.legacy"));
++
++		String line;
++
++		while ((line = in.readLine()) != null) {
++			if (line.startsWith("#"))
++				continue;
++
++			if (name_solaris.equals(line))
++				return true;
++		}
++
++		return false;
++	}
++
++}
++
++
++
++public class LocaleDescription {
++	public static void main(String[] args) throws Exception {
++		Document zones = LDMLUtilities.parse(CLDRConfig.getInstance().getCldrFactory().make("root", true).getSupplementalDirectory()+"/windowsZones.xml", false);
++		String targetDir = args[0];
++
++		Set<MyLoc> locs = new TreeSet<MyLoc> ();
++		for (int k = 1; k < args.length; k++)
++			locs.add(new MyLoc(args[k]));
++
++		for (MyLoc loc : locs) {
++			File file = new File(targetDir + "/" + loc.name_solaris + "/locale_description");
++
++			PrintWriter out = new PrintWriter(file);
++
++			out.println("language:\t" + loc.lang);
++			for (Map.Entry<String,String> lang : loc.getLangs(locs).entrySet())
++				out.println("language-" + lang.getKey() + ":\t" + lang.getValue());
++
++			out.println("territory:\t" + loc.terr);
++			for (Map.Entry<String,String> terr : loc.getTerritories(locs).entrySet())
++				out.println("territory-" + terr.getKey() + ":\t" + terr.getValue());
++
++			out.println("codeset:\t" + loc.enc);
++			if (loc.mod != null)
++				out.println("modifier:\t" + loc.mod);
++
++			for (String tz : loc.getTimezones(zones))
++				out.println("timezone:\t" + tz);
++
++			for (String a : loc.getAliases())
++				out.println("alias:\t" + a);
++
++			if (loc.isLegacy())
++				out.println("legacy:\ttrue");
++
++			out.close();
++		}
++
++	}
++}

@@ -1,0 +1,45 @@
+add -o option to GeneratePOSIX tool. The option allows you to set the 
+target file name.
+
+--- a/tools/java/org/unicode/cldr/posix/GeneratePOSIX.java
++++ b/tools/java/org/unicode/cldr/posix/GeneratePOSIX.java
+@@ -30,7 +30,8 @@
+         MATCH = 3,
+         UNICODESET = 4,
+         COLLATESET = 5,
+-        CHARSET = 6;
++        CHARSET = 6,
++        DESTFILE = 7;
+ 
+     private static final UOption[] options = {
+         UOption.HELP_H(),
+@@ -40,6 +41,7 @@
+         UOption.create("unicodeset", 'u', UOption.REQUIRES_ARG),
+         UOption.create("collateset", 'x', UOption.REQUIRES_ARG),
+         UOption.create("charset", 'c', UOption.REQUIRES_ARG).setDefault("UTF-8"),
++        UOption.create("destfile", 'o', UOption.REQUIRES_ARG),
+     };
+ 
+     public static void main(String[] args) throws Exception {
+@@ -78,18 +80,18 @@
+ 
+         POSIXLocale pl = new POSIXLocale(locale, repertoire, Charset.forName(options[CHARSET].value), codeset,
+             collate_set, variant);
+-        PrintWriter out = BagFormatter.openUTF8Writer(options[DESTDIR].value + File.separator, options[MATCH].value
+-            + "." + codeset + ".src");
++        PrintWriter out = BagFormatter.openUTF8Writer(options[DESTFILE].doesOccur ? "" : options[DESTDIR].value + File.separator, options[DESTFILE].doesOccur ? options[DESTFILE].value : options[MATCH].value + "." + codeset + ".src");
+         pl.write(out);
+         out.close();
+     }
+ 
+     public static void Usage() {
+ 
+-        System.out.println("Usage: GeneratePOSIX [-d target_dir] -m locale_name[@variants]");
++        System.out.println("Usage: GeneratePOSIX [-d target_dir] [-o target_file] -m locale_name[@variants]");
+         System.out.println("                     { [-c codeset] | [-u repertoire_set][-x collation_set] }");
+         System.out.println("where:");
+         System.out.println("   -d target_dir is the directory where POSIX .src files will be written");
++        System.out.println("   -o target_file is the file where POSIX .src files will be written");
+         System.out.println("   -m locale_name is the language/territory you want to generate");
+         System.out.println("   -c codeset is the character set to use for the locale (Default = UTF-8)");
+         System.out.println("   -u repertoire_set : Use to override the default repertoire set (UnicodeSet format)");

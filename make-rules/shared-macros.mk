@@ -749,6 +749,8 @@ CHMOD =		/usr/bin/chmod
 NAWK =		/usr/bin/nawk
 TAR =		/usr/bin/tar
 TEE =		/usr/bin/tee
+ANT =		/usr/bin/ant
+LOCALEDEF =	/usr/bin/localedef
 
 INS.dir=        $(INSTALL) -d $@
 INS.file=       $(INSTALL) -m 444 $< $(@D)
