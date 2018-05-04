@@ -560,3 +560,38 @@ Existing set of patches from X gate for sparc support
     pci_device_unmap_range(pAST->PciInfo, pAST->MMIOVirtualAddr, pAST->MMIOMapSize);
  #endif
     pAST->MMIOVirtualAddr = 0;
+--- a/src/ast_driver.c	2016-10-19 19:32:32.586151260 -0700
++++ b/src/ast_driver.c	2016-10-19 19:36:20.008810060 -0700
+@@ -665,7 +665,16 @@
+        /* Enable VGA MMIO Access */
+        vASTEnableVGAMMIO(pScrn);
+ #endif
++       /* Init VGA Adapter */
++       if (!xf86IsPrimaryPci(pAST->PciInfo))
++       {
++           ASTInitVGA(pScrn, 0);
++       }
+ 
++       vASTOpenKey(pScrn);
++       bASTRegInit(pScrn);
++
++
+        /* Get Chip Type */
+        if (PCI_DEV_REVISION(pAST->PciInfo) >= 0x40)
+            pAST->jChipType = AST2500;
+@@ -678,15 +687,6 @@
+        else
+            pAST->jChipType = AST2000;
+ 
+-       /* Init VGA Adapter */
+-       if (!xf86IsPrimaryPci(pAST->PciInfo))
+-       {
+-           ASTInitVGA(pScrn, 0);
+-       }
+-
+-       vASTOpenKey(pScrn);
+-       bASTRegInit(pScrn);
+-
+        /* Get Options from Scratch */
+        ASTGetScratchOptions(pScrn);
+ 
