@@ -27,11 +27,11 @@ export PARFAIT_BUILD=no
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME        = mysql
-COMPONENT_VERSION     = 5.5.59
+COMPONENT_VERSION     = 5.5.60
 COMPONENT_ARCHIVE_HASH= \
-    sha256:ee920177c9dec770c30b673a21143d5e92a67e8207f9b720d41d51cda05d8513
+    sha256:a34112e1748823f6dfd0d129fe29a629cf35b8702f9dfaf1f24caf89ab523d1c
 COMPONENT_ARCHIVE_URL = https://cdn.mysql.com/Downloads/MySQL-5.5/$(COMPONENT_ARCHIVE)
-COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
+COMPONENT_SIG_URL=      $(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_PROJECT_URL = https://dev.mysql.com/ 
 COMPONENT_BUGDB       = database/mysql
 COMPONENT_ANITYA_ID=	334
@@ -44,6 +44,9 @@ COMPONENT_PRE_BUILD_ACTION += $(CP) -rp $(SOURCE_DIR)/* $(@D);
 BUILD_STYLE= cmake
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
+
+# MySQL being one of Oracle's own product doesn't require to have a
+# TPNO License number.
 
 # This component uses cmake to generate Makefiles and thus does not
 # run any configure script
