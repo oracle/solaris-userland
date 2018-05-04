@@ -93,7 +93,19 @@ endef
 define patch-rules
 ifneq ($$(PATCHES$(1)),)
 # We should unpack the source that we patch before we patch it.
-$$(PATCH_STAMPS$(1)::	$$(UNPACK_STAMP$(1)) unpack
+$$(firstword $$(PATCH_STAMPS$(1))):	$$(UNPACK_STAMP$(1))
+
+# This section makes the patch stams to depend one on each other in the order
+# they are going to be applied. This insures that running 'gmake -j prep' does
+# not have all the patches stepping on each other toes. That means if you have
+# patches a, b, c, d. The lines should create the gmake recipes as
+# b: a
+# c: b
+# d: c
+ALLBUTFIRST$(1) = $$(filter-out $$(firstword $$(PATCH_STAMPS$(1))), $$(PATCH_STAMPS$(1)))
+ALLBUTLAST$(1) = $$(filter-out $$(lastword $$(PATCH_STAMPS$(1))), $$(PATCH_STAMPS$(1)))
+PAIRS$(1) = $$(join $$(ALLBUTFIRST$(1)),$$(addprefix :,$$(ALLBUTLAST$(1))))
+$$(foreach pair,$$(PAIRS$(1)),$$(eval $$(pair)))
 
 # Adding MAKEFILE_PREREQ because gmake seems to evaluate the need to patch
 # before re-unpacking if the Makefile changed.  The various stamps are
