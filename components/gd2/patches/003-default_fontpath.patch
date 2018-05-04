@@ -1,10 +1,12 @@
---- gd.h 2007-05-06 13:38:20.000000000 -0800
-+++ gd.h 2010-04-15 12:13:00.000000000 -0800
-@@ -71,7 +71,28 @@
- /* 2.0.23: more Type 1 fonts */
- #ifndef DEFAULT_FONTPATH
- /* default fontpath for unix systems  - whatever happened to standards ! */
--#define DEFAULT_FONTPATH "/usr/X11R6/lib/X11/fonts/TrueType:/usr/X11R6/lib/X11/fonts/truetype:/usr/X11R6/lib/X11/fonts/TTF:/usr/share/fonts/TrueType:/usr/share/fonts/truetype:/usr/openwin/lib/X11/fonts/TrueType:/usr/X11R6/lib/X11/fonts/Type1:/usr/lib/X11/fonts/Type1:/usr/openwin/lib/X11/fonts/Type1"
+Solaris specific font paths.
+
+--- src/gdft.c
++++ src/gdft.c
+@@ -78,6 +78,29 @@
+ #    define DEFAULT_FONTPATH "C:\\WINDOWS\\FONTS;C:\\WINNT\\FONTS"
+ #  elif defined(__APPLE__) || (defined(__MWERKS__) && defined(macintosh))
+ #    define DEFAULT_FONTPATH "/usr/share/fonts/truetype:/System/Library/Fonts:/Library/Fonts"
++#  elif defined(__sun__)
 +#define DEFAULT_FONTPATH \
 +"/usr/share/fonts/TrueType/arphic:" \
 +"/usr/share/fonts/TrueType/baekmuk:" \
@@ -27,6 +29,6 @@
 +"/usr/share/fonts/X11/Type1:" \
 +"/usr/share/fonts/sun/TrueType:" \
 +"/usr/share/fonts/sun/Type1"
- #endif
- #ifndef PATHSEPARATOR
- #define PATHSEPARATOR ":"
+ #  else
+    /* default fontpath for unix systems  - whatever happened to standards ! */
+ #    define DEFAULT_FONTPATH "/usr/X11R6/lib/X11/fonts/TrueType:/usr/X11R6/lib/X11/fonts/truetype:/usr/X11R6/lib/X11/fonts/TTF:/usr/share/fonts/TrueType:/usr/share/fonts/truetype:/usr/openwin/lib/X11/fonts/TrueType:/usr/X11R6/lib/X11/fonts/Type1:/usr/lib/X11/fonts/Type1:/usr/openwin/lib/X11/fonts/Type1"

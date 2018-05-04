@@ -23,21 +23,23 @@
 # Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
+COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		gd2
-COMPONENT_VERSION=      2.0.35
-COMPONENT_SRC_NAME=	gd
+COMPONENT_NAME=		gd
+COMPONENT_VERSION=      2.2.5
+COMPONENT_SRC=		libgd-gd-$(COMPONENT_VERSION)
+COMPONENT_ARCHIVE=	gd-$(COMPONENT_VERSION).tar.gz
 COMPONENT_PROJECT_URL=  http://www.libgd.org/
 # this is the hash of the payload because it appears to be re-compressed
 # periodically causing it to have a new hash value.
 COMPONENT_ARCHIVE_HASH= \
-    sha256:44bd0819b64a2341fb800abbe99f23c7f6388327c71e1f5bd5ed7874a8cc0e49
-COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)releases/$(COMPONENT_ARCHIVE)
+    sha256:199874fdb006de0911819234104ffa84338e98e82fefbac042a58a3f8272a7df
+COMPONENT_ARCHIVE_URL=  https://github.com/libgd/libgd/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/gd2
 COMPONENT_ANITYA_ID=	880
 
-TPNO=			8786
+TPNO=			42776
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -45,6 +47,8 @@ PATCH_LEVEL = 0
 
 CFLAGS += $(CPP_LARGEFILES)
 CPPFLAGS += $(CPP_LARGEFILES)
+
+LINT_FLAGS += -I$(SOURCE_DIR)/src
 
 # Needed for "gmake test" to work.
 COMPONENT_PRE_CONFIGURE_ACTION = \
@@ -73,6 +77,7 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/Performing/d" ' \
 	'-e "s|\(^.*32 Test.*Passed\).*|\1|" ' \
 	'-e "s|\(^.*32 Test.*Failed\).*|\1|" ' \
+	'-e "s|    [0-9]\.[0-9][0-9] sec||" ' \
 	'-n ' \
 	'-e "/Passed/p" ' \
 	'-e "/Failed/p" ' \
@@ -82,6 +87,8 @@ COMPONENT_TEST_TRANSFORMS += \
 
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng14
+REQUIRED_PACKAGES += image/library/libtiff
+REQUIRED_PACKAGES += image/library/libwebp
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/fontconfig

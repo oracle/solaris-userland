@@ -1,21 +1,21 @@
---- Makefile.am.orig	Sat Mar 12 23:00:26 2011
-+++ Makefile.am	Sat Mar 12 23:03:00 2011
-@@ -5,15 +5,15 @@
+We should investigate if it is really needed. It came with first
+integration into Solaris (PSARC nor bug have no info why these were
+included).
+
+--- src/Makefile.am
++++ src/Makefile.am
+@@ -34,12 +34,12 @@
+ bin_SCRIPTS = bdftogd
  
- SUBDIRS = config test
+ if HAVE_LIBZ
+-check_PROGRAMS += gd2time
++bin_PROGRAMS += gd2time
+ endif
  
--bin_PROGRAMS = annotate gdparttopng gdtopng gd2copypal gd2topng pngtogd pngtogd2 webpng gd2togif gdcmpgif giftogd2
-+bin_PROGRAMS = annotate gdparttopng gdtopng gd2copypal gd2topng pngtogd pngtogd2 webpng gd2togif gdcmpgif giftogd2 gd2time
+ EXTRA_DIST = bdftogd demoin.png entities.html entities.tcl CMakeLists.txt config.h.cmake gd_io_stream.cxx gdpp.cxx msinttypes/inttypes.h msinttypes/stdint.h
  
- bin_SCRIPTS = bdftogd config/gdlib-config
- 
--noinst_PROGRAMS = fontsizetest fontwheeltest gdtest gddemo gd2time gdtestft testac circletexttest testtr fontconfigtest gifanimtest
-+noinst_PROGRAMS = fontsizetest fontwheeltest gdtest gddemo gdtestft testac circletexttest testtr fontconfigtest gifanimtest
- 
- EXTRA_DIST = README-JPEG.TXT README.TXT configure.pl bdftogd demoin.png err.out index.html install-item makefile.sample readme.jpn entities.html entities.tcl
- 
--include_HEADERS = gd.h gdfx.h gd_io.h gdcache.h gdfontg.h gdfontl.h gdfontmb.h gdfonts.h gdfontt.h entities.h
-+include_HEADERS = gd.h gdfx.h gd_io.h gdcache.h gdfontg.h gdfontl.h gdfontmb.h gdfonts.h gdfontt.h entities.h gdhelpers.h jisx0208.h wbmp.h
+-include_HEADERS = gd.h gdfx.h gd_io.h gdcache.h gdfontg.h gdfontl.h gdfontmb.h gdfonts.h gdfontt.h entities.h gd_color_map.h gd_errors.h gdpp.h
++include_HEADERS = gd.h gdfx.h gd_io.h gdcache.h gdfontg.h gdfontl.h gdfontmb.h gdfonts.h gdfontt.h entities.h gd_color_map.h gd_errors.h gdpp.h gdhelpers.h jisx0208.h wbmp.h
  
  lib_LTLIBRARIES = libgd.la
  
