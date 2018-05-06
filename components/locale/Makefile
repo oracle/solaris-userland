@@ -201,7 +201,7 @@ $(BUILD_DIR)/.tools.prep: $(SOURCE_DIR_1)/.patched
 	$(ENV) JAVA_HOME=$(JAVA_HOME) $(ANT) -f $(SOURCE_DIR_1)/tools/java/build.xml jar
 	$(TOUCH) $@
 
-$(BUILD_DIR)/core/.prep: $(SOURCE_DIR)/.patched
+$(BUILD_DIR)/core/.prep: $(SOURCE_DIR)/.patched $(SOURCE_DIR_2)/.unpacked
 	$(RM) -r $(@D)
 	$(CLONEY) $(SOURCE_DIR) $(@D)
 	$(CLONEY) $(SOURCE_DIR_2) $(@D)
