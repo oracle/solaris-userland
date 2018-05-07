@@ -125,9 +125,9 @@ Existing set of patches from the X gate
 +                }
 +            }
 +        }
-+        if (found) {
-+            strcpy(xf86SolarisFbDev, "/devices");
-+            strcat(xf86SolarisFbDev, DEV_PATH(pPci));
++        if (found && (DEV_PATH(pPci) != NULL)) {
++            snprintf(xf86SolarisFbDev, sizeof(xf86SolarisFbDev), "/devices%s",
++                    DEV_PATH(pPci));
 +            xf86Msg(X_INFO, "Got xf86SolarisFbDev From Probe: %s\n", xf86SolarisFbDev);
 +        }
 +
