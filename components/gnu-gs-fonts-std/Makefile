@@ -26,16 +26,16 @@
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=         gnu-gs-fonts-std
-COMPONENT_VERSION=      6.0
+COMPONENT_NAME=         ghostscript-fonts-std
+COMPONENT_VERSION=      8.11
 COMPONENT_PROJECT_URL=	https://sourceforge.net/projects/gs-fonts/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:4cef38d05aa958dfee4dabb8d1599b8ad2b2347413b7895c94d8882c8a0fb9d3
+    sha256:0eb6f356119f2e49b2563210852e17f57f9dcc5755f350a69a46a0d641a0c401
 COMPONENT_ARCHIVE_URL=  https://download.sourceforge.net/sourceforge/gs-fonts/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/ghostscript
 COMPONENT_ANITYA_ID=	13283
 
-TPNO=			9240
+TPNO=			30610
 
 # set relocate_to option while unpacking the tar ball
 UNPACK_ARGS= -r $(COMPONENT_SRC)
