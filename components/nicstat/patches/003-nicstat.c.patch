@@ -1,0 +1,29 @@
+Fix tcp and udp statistics around kstat uint32 wrap.
+
+These changes passed back upstream although
+the upstream looks dormant or dead at this time.
+https://github.com/scotte/nicstat/issues/2
+
+--- nicstat.c	2014-01-27 15:04:11.000000000 +0000
++++ ../../nicstat-1.95/nicstat.c	2018-04-02 03:22:44.930544867 +0000
+@@ -1811,8 +1811,18 @@
+ 	(void) strftime(g_timestr, sizeof (g_timestr), "%H:%M:%S", tm);
+ }
+ 
+-#define	TCPSTAT(field)	(g_tcp_new->field - g_tcp_old->field)
+-#define	UDPSTAT(field)	(g_udp_new->field - g_udp_old->field)
++static uint32_t
++tcpudpstat(uint32_t new, uint32_t old)
++{
++	if (new < old)
++		return((UINT32_MAX - old) + new);
++	else
++		return(new - old);
++}
++
++#define	TCPSTAT(field)	tcpudpstat(((g_tcp_new)->field), ((g_tcp_old)->field))
++
++#define	UDPSTAT(field)	tcpudpstat(((g_udp_new)->field), ((g_udp_old)->field))
+ 
+ static void
+ print_tcp()
