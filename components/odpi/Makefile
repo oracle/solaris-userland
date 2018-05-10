@@ -28,13 +28,13 @@ BUILD_STYLE=justmake
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		odpi
-COMPONENT_VERSION=	2.1.0
+COMPONENT_VERSION=	2.3.0
 #TPNO=			NONE (included with Stack Approval rather than 3PLTA,
 #			for email trail of the approval please see
 #			/shared/sac/PSARC/2017/232/approvals)
 
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:b74e06feb1a25d907b97739eda500d03af50c87cd5861b27a0e0baf79f739c06
+	sha256:3d09726537ea4965a4a6b5a024f89c59be782aa07dda9caf933945faef593a42
 COMPONENT_ARCHIVE_URL=	https://github.com/oracle/odpi/archive/v$(COMPONENT_VERSION).tar.gz
 COMPONENT_PROJECT_URL=	https://github.com/oracle/odpi
 COMPONENT_BUGDB=	library/odpi

@@ -19,18 +19,18 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cx_Oracle
-COMPONENT_VERSION=	6.1
+COMPONENT_VERSION=	6.3
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=		\
-	sha256:80545fc7acbdda917dd2b1604c938141256bdfed3ad464a44586c9c2f09c3004
-COMPONENT_ARCHIVE_URL=	$(call pypi_url)
+	sha256:79a63ddcfc912022a34fd3094c5ff415d4d39d2be6f2935e274a0c38a42e8087
+COMPONENT_ARCHIVE_URL=	https://github.com/oracle/python-cx_Oracle/archive/$(COMPONENT_VERSION).tar.gz
 COMPONENT_PROJECT_URL=  https://oracle.github.io/python-cx_Oracle
 COMPONENT_BUGDB=	python-mod/cx_oracle
 COMPONENT_ANITYA_ID=	13233
@@ -39,9 +39,22 @@ COMPONENT_ANITYA_ID=	13233
 #                       for email trail of the approval please see
 #                       /shared/sac/PSARC/2015/294/approvals)
 
+EXTRA_ENV =		ODPIC_INC_DIR=/usr/include/odpi
+EXTRA_ENV +=		ODPIC_LIB_DIR=/usr/lib
+
+COMPONENT_BUILD_ENV +=		$(EXTRA_ENV)
+COMPONENT_PUBLISH_ENV +=	$(EXTRA_ENV)
+COMPONENT_INSTALL_ENV +=	$(EXTRA_ENV)
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/setup.py.mk
+
+# Grabbing the archive from github gives us something that's been archived
+# underneath  python-$(COMPONENT_NAME)-$(COMPONENT_VERSION), so we need
+# a post-unpack action to put it in the right spot.
+COMPONENT_POST_UNPACK_ACTION = \
+	$(MV) python-$(COMPONENT_NAME)-$(COMPONENT_VERSION) $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 
 # common targets
 

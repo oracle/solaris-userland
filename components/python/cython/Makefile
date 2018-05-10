@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 COMPILER =		gcc
@@ -27,17 +27,17 @@ BUILD_BITS =		32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Cython
-COMPONENT_VERSION=	0.25.1
+COMPONENT_VERSION=	0.28.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=		\
-    sha256:e0941455769335ec5afb17dee36dc3833b7edc2ae20a8ed5806c58215e4b6669
+    sha256:e0ab1a807792f60fb5cd9efc0044cbeefa0a69d39e1003bd9cfa7e66916608b9
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=  http://cython.org/
 COMPONENT_BUGDB=	python-mod/cython
 COMPONENT_ANITYA_ID=	12679
 
-TPNO=			32538
+TPNO=			42613
 
 # Avoid warnings about use of the deprecated NumPy API. Please see
 # http://docs.cython.org/en/latest/src/reference/compilation.html#configuring-the-c-build
@@ -66,16 +66,16 @@ COMPONENT_POST_INSTALL_ACTION += \
 	    done; fi )
 
 
-COMPONENT_TEST_ENV += PREREQ_MAKEFILE=
+COMPONENT_TEST_ENV += CC=gcc CXX=g++ MAKE=gmake
 COMPONENT_TEST_DIR =    $(SOURCE_DIR)
-COMPONENT_TEST_CMD =    ./runtests.py
-COMPONENT_TEST_ARGS=
+COMPONENT_TEST_CMD =    $(PYTHON) ./runtests.py
+COMPONENT_TEST_ARGS=    --no-cleanup-failures
 
 build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)
 
-test:		$(TEST_32_and_64)
+test:		$(TEST_64)
 
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += developer/debug/gdb

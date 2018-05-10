@@ -20,23 +20,25 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+
+COMPILER =		gcc
 BUILD_BITS = 		32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		numpy
-COMPONENT_VERSION=	1.9.0
+COMPONENT_VERSION=	1.14.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f7e6cede959ec7d26dc242150839f3193b4ec16d733f1a4bff623c4ed0d27ff5
-COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/numpy/$(COMPONENT_ARCHIVE)
+    sha256:facc6f925c3099ac01a1f03758100772560a0b020fb9d70f210404be08006bcb
+COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.numpy.org/
 COMPONENT_BUGDB=	python-mod/numpy
 COMPONENT_ANITYA_ID=	2509
 
-TPNO=			19933
+TPNO=			42611
 
 BUILD_STYLE= setup.py
 
@@ -47,7 +49,7 @@ include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_BUILD_ARGS.studio 	+= --compiler=sun$(BITS) --fcompiler=sun$(BITS)
 COMPONENT_BUILD_ARGS.gcc	+= --compiler=gnu --fcompiler=gnu95
-COMPONENT_BUILD_ARGS 		+= $(COMPONENT_BUILD_ARGS.$(COMPILER))
+COMPONENT_BUILD_ARGS 		+= $(COMPONENT_BUILD_ARGS.$(COMPILER)) -lm
 
 studio_XBITS.i386.32 		+= -xarch=sse2
 
@@ -57,7 +59,6 @@ PYTHON_ENV +=   PATH="$(SPRO_VROOT)/bin:$(PATH)"
 PYTHON_SCRIPTS += $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES.32)/numpy/*.py
 PYTHON_SCRIPTS += $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES.32)/numpy/*/*.py
 PYTHON_SCRIPTS += $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES.32)/numpy/*/*/*.py
-PYTHON_SCRIPTS += $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES.32)/numpy/*/*/*/*.py
 
 # Merge 32-bit & 64-bit versions of header with different SIZEOF values
 install: $(BUILD_DIR)/.merged-header
