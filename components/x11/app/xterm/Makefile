@@ -27,16 +27,16 @@ BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xterm
-COMPONENT_VERSION=	320
+COMPONENT_VERSION=	333
 COMPONENT_PROJECT_URL=	http://invisible-island.net/xterm/
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_URL=  https://invisible-mirror.net/archives/xterm/$(COMPONENT_ARCHIVE:.tar.gz=.tgz)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ARCHIVE_HASH= \
-	sha256:a60dbb574334c081425fa30f011cd9f571e3be7a91e2a84e252461798bce24a7
+	sha256:2f1d42014e55c8036c6b29a847b31d3b5c1a3a35b126993ae6d3f05e8da0ef78
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	5272
-TPNO=			23284
+TPNO=			43016
 
 PKG_PROTO_DIRS += $(SOURCE_DIR)
 
@@ -63,6 +63,7 @@ REQUIRED_PACKAGES += desktop/xdg/desktop-file-utils
 # xterm uses ncurses/term.h
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += system/library/fontconfig
+REQUIRED_PACKAGES += system/library/freetype-2
 REQUIRED_PACKAGES += terminal/luit
 REQUIRED_PACKAGES += text/groff
 REQUIRED_PACKAGES += x11/library/libice
