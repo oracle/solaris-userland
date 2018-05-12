@@ -22,49 +22,31 @@
 #
 # Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
+COMPILER= gcc
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 PATH=$(dir $(CC)):$(JAVA_HOME)/bin:$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=		libidn
-COMPONENT_VERSION=	1.33
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:44a7aab635bb721ceef6beecc4d49dfd19478325e1b47f3196f7d2acc4930e19
+COMPONENT_VERSION=	1.34
+TPNO=			43018
+COMPONENT_ARCHIVE_HASH=	sha256:3719e2975f2fb28605df3479c380af2cf4ab4e919e1506527e4c7670afff6e3c
 COMPONENT_BUGDB=	library/libidn
 COMPONENT_ANITYA_ID=	1639
 
 COMPONENT_NAME_1=	tldchk
 COMPONENT_VERSION_1=	0.7
 COMPONENT_ARCHIVE_1 =   tld-$(COMPONENT_VERSION_1).tar.gz
-COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:7423f48d15fb1377ee0050c3e1f22e8a91668c2f158afed57b8ead3fed908785
+COMPONENT_ARCHIVE_HASH_1 = sha256:7423f48d15fb1377ee0050c3e1f22e8a91668c2f158afed57b8ead3fed908785
+# berlios.de do not exists anymore tldchk was moved to https://github.com/gnuthor/tldchk
 COMPONENT_ARCHIVE_URL_1 = https://download.sourceforge.net/sourceforge/tldchk.berlios/$(COMPONENT_ARCHIVE_1)
-
-TPNO=			30227
 
 INSTALL_TARGET=
 include $(WS_MAKE_RULES)/gnu-component.mk
 
-PATCH_LEVEL = 0
 LINT_FLAGS += -I$(PROTOUSRINCDIR)/idn
 LINT_FLAGS += -DGNULIB_defined_stdint_types
-
-# Enable C99 mode + -Xc for its additional warnings.
-studio_C99MODE = -Xc $(studio_C99_ENABLE)
-
-# -xinline=%auto -- we like inlining where appropriate
-CFLAGS.studio += -xinline=%auto
-
-# -xbuiltin=%none -- builtins have been known to be buggy
-CFLAGS.studio += -xbuiltin=%none
-
-CFLAGS += $(CPP_LARGEFILES)
-CFLAGS += $(XPG6MODE)
-CFLAGS += $(CPP_POSIX)
-CFLAGS += $(CPP_C99_EXTENDED_MATH)
-CFLAGS += $(studio_PIC)
-CFLAGS += -DGNULIB_defined_stdint_types
 
 COMPONENT_TEST_MASTER = \
 	$(COMPONENT_TEST_RESULTS_DIR)/results-libidn.master
@@ -137,3 +119,4 @@ install: $(INSTALL_32_and_64)
 	    $(IDNDOCDIR)/
 	$(CP) -Rp $(PROTOUSRSHAREDIR)/locale/en@boldquot \
 	    $(PROTOUSRSHAREDIR)/locale/en
+
