@@ -24,18 +24,20 @@
 #
 
 BUILD_BITS =            32_and_64
+# FreeType uses various gcc-isms for optimizations
+COMPILER =		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		freetype
-COMPONENT_VERSION=	2.9
+COMPONENT_VERSION=	2.9.1
 COMPONENT_PROJECT_URL=	https://www.freetype.org/
 COMPONENT_ARCHIVE_URL=	https://download.savannah.gnu.org/releases/freetype/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e6ffba3c8cef93f557d1f767d7bc3dee860ac7a3aaff588a521e081bc36f4c8a
+	sha256:db8d87ea720ea9d5edc5388fc7a0497bb11ba9fe972245e0f7f4c7e8b1e1e84d
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=        x11/font
 COMPONENT_ANITYA_ID=	854
-TPNO=			41600
+TPNO=			42908
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -44,6 +46,7 @@ FIX_PC_FILES=builds/unix/freetype2.in
 include $(WS_MAKE_RULES)/x11-component.mk
 
 CONFIGURE_OPTIONS += --enable-biarch-config
+CONFIGURE_OPTIONS += --enable-freetype-config
 CONFIGURE_OPTIONS += --with-zlib
 CONFIGURE_OPTIONS += --with-bzip2
 CONFIGURE_OPTIONS += --with-png
