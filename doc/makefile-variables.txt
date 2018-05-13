@@ -137,6 +137,17 @@ if overriding the default:
     are built. This can be partially achieved by specifying COMPONENT_DIRS on
     command line, but that would mean only given component would be built.
 
+* SOLARIS_11_*_ONLY - variable limiting the rest of the line to only given
+  release allowing to use common source for multiple branches to ease
+  backporting. For example in the Makefile
+
+  $(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += library/openldap
+
+  The variable SOLARIS_11_3_ONLY is empty in 11.3, but contains comment mark '#'
+  in any other release. That way the line applies only when compiled in 11.3.
+  The variables are also defined in p5m manifests so the same principle can be
+  used there too. 
+
 The following variables alter the compilation or build process for components:
 
 * ASLR_MODE controls the application of Address Space Layout Randomization to
