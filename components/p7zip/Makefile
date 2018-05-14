@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 # When building with Studio, p7zip has many warnings about extra semicolons,
@@ -45,17 +45,17 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/p7zip/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	2583
 
-TPNO=			39759
+TPNO=			43040
 
 BUILD_STYLE= justmake
 INSTALL_TARGET=
 include $(WS_MAKE_RULES)/common.mk
 
-# The .1 refers to version 16.02-1 to distinguish between community version
-# of p7zip and this package, which contains all known fixes.  A similar approach
+# The .3 refers to version 16.02-3 to distinguish between community version
+# of p7zip and this package, which contains all known fixes. A similar approach
 # is addopted by some Linux distros.
-IPS_COMPONENT_VERSION=	16.2.1
-HUMAN_VERSION=		$(COMPONENT_VERSION)-1
+IPS_COMPONENT_VERSION=	16.2.3
+HUMAN_VERSION=		$(COMPONENT_VERSION)-3
 
 COMPONENT_TEST_DIR =		$(@D)
 COMPONENT_TEST_ENV =		P7ZIP_HOME_DIR=$(BUILD_DIR)/$(MACH$(BITS))/bin
