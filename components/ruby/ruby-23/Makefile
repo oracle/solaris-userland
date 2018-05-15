@@ -28,7 +28,7 @@ include ../../../make-rules/shared-macros.mk
 
 # rdoc cores dump when gcc 7 is used
 GCC_ROOT = /usr/gcc/5
-
+ 
 COMPONENT_NAME=		ruby
 COMPONENT_VERSION=	2.3.1
 COMPONENT_PROJECT_URL=	http://www.ruby-lang.org/
@@ -40,7 +40,29 @@ COMPONENT_ANITYA_ID=	4223
 
 TPNO=			31235
 
+# Rubygems support
+RUBYGEMS=		rubygems-2.7.6
+COMPONENT_ARCHIVE_1=    $(RUBYGEMS).tgz
+COMPONENT_ARCHIVE_HASH_1=       \
+    sha256:67f714a582a9ce471bbbcb417374ea9cf9c061271c865dbb0d093f3bc3371eeb
+COMPONENT_ARCHIVE_URL_1= https://rubygems.org/rubygems/$(COMPONENT_ARCHIVE_1)
+
 include $(WS_MAKE_RULES)/common.mk
+
+TPNO_RUBYGEMS=          42693
+
+COMPONENT_PREP_ACTION = \
+        $(TAR) xvzf $(COMPONENT_ARCHIVE_1); \
+        $(CP) -r $(RUBYGEMS)/lib $(SOURCE_DIR); \
+	$(CP) -r $(RUBYGEMS)/bundler/exe $(SOURCE_DIR)/bin; \
+	$(CP) $(SOURCE_DIR)/bin/exe/* $(SOURCE_DIR)/bin;\
+	$(CP) -r $(RUBYGEMS)/bundler $(SOURCE_DIR)/gems; \
+	$(CP) -r $(RUBYGEMS)/bundler $(SOURCE_DIR)/ext; \
+        $(CP) -r $(RUBYGEMS)/bin $(SOURCE_DIR);\
+        $(CP) -r $(RUBYGEMS)/hide_lib_for_update $(SOURCE_DIR);\
+        $(CP) -r $(RUBYGEMS)/util $(SOURCE_DIR);\
+	$(CP) -r $(RUBYGEMS)/Rakefile $(SOURCE_DIR);\
+        $(CP) -r $(RUBYGEMS)/test/rubygems $(SOURCE_DIR)/test;
 
 # COMPONENT_VERSION <major>.<minor>.<teeny>
 # is transformed into <major>.<minor> for RUBY_VER.
@@ -59,6 +81,7 @@ PROTO_RBCONFIG_FILE=$(PROTORUBYDIR)/lib/ruby/$(RUBY_LIB_VER)/$(MACH64)-solaris$(
 
 # these macros are used in the package manifest
 PKG_MACROS+=	RUBY_VER=$(RUBY_VER) RUBY_LIB_VER=$(RUBY_LIB_VER) RUBY_VER_NO_DOT=$(RUBY_VER_NO_DOT)
+PKG_MACROS+=	TPNO_RUBYGEMS=$(TPNO_RUBYGEMS)
 
 # Prevent re-compile of ripper.so during install, which would result in
 # an erroneous full build directory in its RUNPATH.  The below change to 
@@ -154,7 +177,8 @@ CFLAGS +=		-DFFI_NO_RAW_API
 ASLR_MODE =		$(ASLR_DISABLE)
 
 CLEAN_PATHS +=		Solaris/gem.1 Solaris/rbconfig.sedscript.mod \
-			Solaris/ruby.1.sedscript.mod
+			Solaris/ruby.1.sedscript.mod \
+			$(RUBYGEMS)
 
 # Some tests produce warnings if HTTP_PROXY is set
 COMPONENT_TEST_ENV += "--unset=HTTP_PROXY"
