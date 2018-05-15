@@ -1,0 +1,120 @@
+Issue #23867:
+https://github.com/golang/go/issues/23867
+
+commit 1102616c772c262175f5ba5f12d6b574d0ad9101
+Author: Arthur Khashaev <arthur@khashaev.ru>
+Date:   Mon Feb 12 03:28:12 2018 +0300
+
+    cmd/go: fix command injection in VCS path
+    
+    Fixes #23867, CVE-2018-7187
+    
+    Change-Id: I5d0ba4923c9ed354ef76290e149c182447f9dfe2
+    Reviewed-on: https://go-review.googlesource.com/94656
+    Run-TryBot: Ian Lance Taylor <iant@golang.org>
+    TryBot-Result: Gobot Gobot <gobot@golang.org>
+    Reviewed-by: Ian Lance Taylor <iant@golang.org>
+
+commit c941e27e70c3e06e1011d2dd71d72a7a06a9bcbc
+Author: Ian Lance Taylor <iant@golang.org>
+Date:   Thu Feb 15 15:57:13 2018 -0800
+
+    cmd/go: restrict meta imports to valid schemes
+
+    Before this change, when using -insecure, we permitted any meta import
+    repo root as long as it contained "://". When not using -insecure, we
+    restrict meta import repo roots to be valid URLs. People may depend on
+    that somehow, so permit meta import repo roots to be invalid URLs, but
+    require them to have valid schemes per RFC 3986.
+    
+    Fixes #23867
+    
+    Change-Id: Iac666dfc75ac321bf8639dda5b0dba7c8840922d
+    Reviewed-on: https://go-review.googlesource.com/94603
+    Reviewed-by: Brad Fitzpatrick <bradfitz@golang.org>
+
+diff -ru golang-1.7.6.orig/src/cmd/go/vcs.go golang-1.7.6/src/cmd/go/vcs.go
+--- golang-1.7.6.orig/src/cmd/go/vcs.go	2017-05-23 11:35:22.000000000 +0000
++++ golang-1.7.6/src/cmd/go/vcs.go	2018-05-15 06:57:41.751658968 +0000
+@@ -691,8 +691,8 @@
+ 		}
+ 	}
+ 
+-	if !strings.Contains(mmi.RepoRoot, "://") {
+-		return nil, fmt.Errorf("%s: invalid repo root %q; no scheme", urlStr, mmi.RepoRoot)
++	if err := validateRepoRoot(mmi.RepoRoot); err != nil {
++		return nil, fmt.Errorf("%s: invalid repo root %q: %v", urlStr, mmi.RepoRoot, err)
+ 	}
+ 	rr := &repoRoot{
+ 		vcs:  vcsByCmd(mmi.VCS),
+@@ -705,6 +705,19 @@
+ 	return rr, nil
+ }
+ 
++// validateRepoRoot returns an error if repoRoot does not seem to be
++// a valid URL with scheme.
++func validateRepoRoot(repoRoot string) error {
++	url, err := url.Parse(repoRoot)
++	if err != nil {
++		return err
++	}
++	if url.Scheme == "" {
++		return errors.New("no scheme")
++	}
++	return nil
++}
++
+ var fetchGroup singleflight.Group
+ var (
+ 	fetchCacheMu sync.Mutex
+diff -ru golang-1.7.6.orig/src/cmd/go/vcs_test.go golang-1.7.6/src/cmd/go/vcs_test.go
+--- golang-1.7.6.orig/src/cmd/go/vcs_test.go	2017-05-23 11:35:22.000000000 +0000
++++ golang-1.7.6/src/cmd/go/vcs_test.go	2018-05-15 06:57:41.755407754 +0000
+@@ -321,3 +321,47 @@
+ 		}
+ 	}
+ }
++
++func TestValidateRepoRoot(t *testing.T) {
++	tests := []struct {
++		root string
++		ok   bool
++	}{
++		{
++			root: "",
++			ok:   false,
++		},
++		{
++			root: "http://",
++			ok:   true,
++		},
++		{
++			root: "git+ssh://",
++			ok:   true,
++		},
++		{
++			root: "http#://",
++			ok:   false,
++		},
++		{
++			root: "-config",
++			ok:   false,
++		},
++		{
++			root: "-config://",
++			ok:   false,
++		},
++	}
++
++	for _, test := range tests {
++		err := validateRepoRoot(test.root)
++		ok := err == nil
++		if ok != test.ok {
++			want := "error"
++			if test.ok {
++				want = "nil"
++			}
++			t.Errorf("validateRepoRoot(%q) = %q, want %s", test.root, err, want)
++		}
++	}
++}
