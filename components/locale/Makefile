@@ -67,7 +67,6 @@ include $(WS_MAKE_RULES)/common.mk
 
 PROTOLOCALE	= $(PROTOUSRLIBDIR)/locale
 PROTOLOCALEDEFSRC	= $(PROTOUSRLIBDIR)/localedef/src
-LOCDEF_DIR>-----= $(FILEROOT)/usr/lib/localedef/src/locales
 
 #
 # CLDR build tools
