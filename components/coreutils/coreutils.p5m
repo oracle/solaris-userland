@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -75,7 +75,7 @@ link path=usr/bin/ggroups target=../gnu/bin/groups facet.compat.gnulinks=true
 link path=usr/bin/ghead target=../gnu/bin/head facet.compat.gnulinks=true
 link path=usr/bin/ghostid target=../gnu/bin/hostid facet.compat.gnulinks=true
 link path=usr/bin/gid target=../gnu/bin/id facet.compat.gnulinks=true
-link path=usr/bin/ginstall target=../gnu/bin/install facet.compat.gnulinks=true
+link path=usr/bin/ginstall target=install facet.compat.gnulinks=true
 link path=usr/bin/gjoin target=../gnu/bin/join facet.compat.gnulinks=true
 link path=usr/bin/gkill target=../gnu/bin/kill facet.compat.gnulinks=true
 link path=usr/bin/glink target=../gnu/bin/link facet.compat.gnulinks=true
@@ -121,6 +121,7 @@ link path=usr/bin/guptime target=../gnu/bin/uptime facet.compat.gnulinks=true
 link path=usr/bin/gwc target=../gnu/bin/wc facet.compat.gnulinks=true
 link path=usr/bin/gwho target=../gnu/bin/who facet.compat.gnulinks=true
 link path=usr/bin/gyes target=../gnu/bin/yes facet.compat.gnulinks=true
+file usr/gnu/bin/install path=usr/bin/install
 file usr/gnu/bin/md5sum path=usr/bin/md5sum
 file usr/gnu/bin/nproc path=usr/bin/nproc
 file usr/gnu/bin/numfmt path=usr/bin/numfmt
@@ -174,7 +175,7 @@ file path=usr/gnu/bin/groups
 file path=usr/gnu/bin/head
 file path=usr/gnu/bin/hostid
 file path=usr/gnu/bin/id
-file path=usr/gnu/bin/install
+link path=usr/gnu/bin/install target=../../bin/install
 file path=usr/gnu/bin/join
 file path=usr/gnu/bin/kill
 file path=usr/gnu/bin/link
@@ -376,7 +377,8 @@ file path=usr/gnu/share/man/man1/groups.1
 file path=usr/gnu/share/man/man1/head.1
 file path=usr/gnu/share/man/man1/hostid.1
 file path=usr/gnu/share/man/man1/id.1
-file path=usr/gnu/share/man/man1/install.1
+link path=usr/gnu/share/man/man1/install.1 \
+    target=../../../../share/man/man1/install.1
 file path=usr/gnu/share/man/man1/join.1
 file path=usr/gnu/share/man/man1/kill.1
 file path=usr/gnu/share/man/man1/link.1
@@ -486,8 +488,8 @@ link path=usr/share/man/man1/ghostid.1 \
     target=../../../gnu/share/man/man1/hostid.1 facet.compat.gnulinks=all
 link path=usr/share/man/man1/gid.1 target=../../../gnu/share/man/man1/id.1 \
     facet.compat.gnulinks=all
-link path=usr/share/man/man1/ginstall.1 \
-    target=../../../gnu/share/man/man1/install.1 facet.compat.gnulinks=all
+link path=usr/share/man/man1/ginstall.1 target=install.1 \
+    facet.compat.gnulinks=all
 link path=usr/share/man/man1/gjoin.1 target=../../../gnu/share/man/man1/join.1 \
     facet.compat.gnulinks=all
 link path=usr/share/man/man1/gkill.1 target=../../../gnu/share/man/man1/kill.1 \
@@ -576,6 +578,7 @@ link path=usr/share/man/man1/gwho.1 target=../../../gnu/share/man/man1/who.1 \
     facet.compat.gnulinks=all
 link path=usr/share/man/man1/gyes.1 target=../../../gnu/share/man/man1/yes.1 \
     facet.compat.gnulinks=all
+file usr/gnu/share/man/man1/install.1 path=usr/share/man/man1/install.1
 file usr/gnu/share/man/man1/md5sum.1 path=usr/share/man/man1/md5sum.1
 file usr/gnu/share/man/man1/nproc.1 path=usr/share/man/man1/nproc.1
 file usr/gnu/share/man/man1/numfmt.1 path=usr/share/man/man1/numfmt.1
