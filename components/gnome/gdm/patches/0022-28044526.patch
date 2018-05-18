@@ -1,0 +1,21 @@
+In 0002-disable-systemd.patch as part of disabling systemd stuff for Solaris,
+this was omitted as well, which bypasses handling the /etc/gdm/Init/Default
+file which has the changes to display contents of /etc/issue if it exists.
+
+Restoring that bit back.  
+
+--- a/daemon/gdm-server.c	2018-05-17 15:28:50.036580436 -0700
++++ b/daemon/gdm-server.c	2018-05-17 15:29:38.818770781 -0700
+@@ -213,6 +213,12 @@
+ gdm_server_ready (GdmServer *server)
+ {
+         g_debug ("GdmServer: Got USR1 from X server - emitting READY");
++
++        gdm_run_script (GDMCONFDIR "/Init", GDM_USERNAME,
++                        server->priv->display_name,
++                        NULL, /* hostname */
++                        server->priv->auth_file);
++
+         g_signal_emit (server, signals[READY], 0);
+ }
+ 
