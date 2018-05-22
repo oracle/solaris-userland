@@ -72,7 +72,7 @@ clean::
 	fi
 
 $(BUILD_DIR)/puppet.conf: install
-	RUBYLIB=$(PROTO_DIR)/usr/ruby/$(RUBY_VERSION):$(PROTO_DIR)$(VENDOR_RUBY) \
+	RUBYLIB=$(PROTO_DIR)/usr/ruby/$(RUBY_VERSION):$(PROTO_DIR)/$(VENDOR_RUBY) \
 	  $(PROTO_DIR)/usr/sbin/puppet agent --genconfig > $@
 
 $(PROTOSVCMANIFESTDIR)/application/puppet.xml: $(BUILD_DIR)/puppet.conf
