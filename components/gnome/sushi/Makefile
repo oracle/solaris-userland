@@ -53,6 +53,12 @@ CONFIGURE_OPTIONS += --enable-shared
 CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
 
+# Workaround the mozjs issue described in 24935318
+# without with sushi has issues described in 28062328
+LD_EXEC_OPTIONS += -M $(PWD)/../gjs/mapfile
+ADIHEAP_MODE = $(ADIHEAP_DISABLE)
+ADISTACK_MODE = $(ADISTACK_DISABLE)
+
 # Required due to patches.
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 
