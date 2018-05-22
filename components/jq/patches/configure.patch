@@ -1,0 +1,35 @@
+disable these checks to prevent the following errors on Solaris:
+
+./userland-test1/components/jq/jq-jq-1.6rc1/src/libm.h: In function 'f_pow10':
+./userland-test1/components/jq/jq-jq-1.6rc1/src/libm.h:253:9: warning: implicit declaration of function 'pow10' [-Wimplicit-function-declaration]
+ LIBM_DD(pow10)
+
+Undefined                       first referenced
+ symbol                             in file
+drem                                ./.libs/libjq.a(builtin.o)
+exp10                               ./.libs/libjq.a(builtin.o)
+pow10                               ./.libs/libjq.a(builtin.o)
+ld: fatal: symbol referencing errors
+collect2: error: ld returned 1 exit status
+
+--- a/configure.ac	2018-05-14 12:00:01.385615037 -0700
++++ b/configure.ac	2018-05-14 12:00:13.733063767 -0700
+@@ -160,10 +160,8 @@
+ AC_CHECK_MATH_FUNC(copysign,[.5,1.0])
+ AC_CHECK_MATH_FUNC(cos, [.5])
+ AC_CHECK_MATH_FUNC(cosh, [.5])
+-AC_CHECK_MATH_FUNC(drem,[.5,1.0])
+ AC_CHECK_MATH_FUNC(erf,[.5])
+ AC_CHECK_MATH_FUNC(erfc,[.5])
+-AC_CHECK_MATH_FUNC(exp10,[.5])
+ AC_CHECK_MATH_FUNC(exp2, [.5])
+ AC_CHECK_MATH_FUNC(exp, [.5])
+ AC_CHECK_MATH_FUNC(expm1,[.5])
+@@ -192,7 +190,6 @@
+ AC_CHECK_MATH_FUNC(nearbyint,[.5])
+ AC_CHECK_MATH_FUNC(nextafter,[.5,1.0])
+ AC_CHECK_MATH_FUNC(nexttoward,[.5,1.0])
+-AC_CHECK_MATH_FUNC(pow10,[.5])
+ AC_CHECK_MATH_FUNC(pow, [2,2])
+ AC_CHECK_MATH_FUNC(remainder, [3,2])
+ AC_CHECK_MATH_FUNC(rint,[.5])

@@ -20,48 +20,39 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS = 64
+COMPILER = gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	jq
-COMPONENT_VERSION =	1.5
+COMPONENT_VERSION =	1.6
 COMPONENT_PROJECT_URL =	https://github.com/stedolan/jq
+COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION)rc1.tar.gz
+COMPONENT_SRC=		jq-jq-$(COMPONENT_VERSION)rc1
 COMPONENT_ARCHIVE_HASH =	\
-    sha256:c4d2bfec6436341113419debf479d833692cc5cdab7eb0326b5a4d4fbe9f493c
-COMPONENT_ARCHIVE_URL =	$(COMPONENT_PROJECT_URL)/releases/download/$(COMPONENT_NAME)-$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+    sha256:1273c34c8db9c33870c559f475247771139d008d9266c673c13111acab3a77d4
+COMPONENT_ARCHIVE_URL =	$(COMPONENT_PROJECT_URL)/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB =	utility/jq
 COMPONENT_ANITYA_ID=	13252
 
-TPNO =			27148
+TPNO =			39651
 
 include $(WS_MAKE_RULES)/common.mk
-
-COMPILER =		gcc
 
 # noexbss causes onig.test to fail
 LD_MAP_NOEXBSS.sparc =
 
-# delete all this when build servers are installed with oniguruma
-ONIG_PROTO =		$(WS_COMPONENTS)/oniguruma/build/prototype/$(MACH)
-ONIG_LIBDIR =		$(ONIG_PROTO)$(USRLIBDIR64)
-ONIG_INCDIR =		$(ONIG_PROTO)$(USRINCDIR)
-CONFIGURE_ENV +=	CPPFLAGS="$(CPPFLAGS) -I$(ONIG_INCDIR)"
-CONFIGURE_ENV +=	LDFLAGS="$(LDFLAGS) -L$(ONIG_LIBDIR)"
-CONFIGURE_OPTIONS +=	--with-oniguruma=$(ONIG_PROTO)$(USRDIR)
+# generate configure
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 
 # couldn't convince autotools to not include the proto runpath
 COMPONENT_POST_INSTALL_ACTION += \
 	( /usr/bin/elfedit -e 'dyn:delete RPATH' -e 'dyn:delete RUNPATH' \
 		"$(PROTOUSRBINDIR)/jq" )
 
-ONIG_MANIFEST =		manifest-$(MACH)-oniguruma.depend
-DEPENDED +=		$(WS_COMPONENTS)/oniguruma/build/$(ONIG_MANIFEST)
-PKG_PROTO_DIRS +=	$(WS_COMPONENTS)/oniguruma
-
 COMPONENT_TEST_ENV +=	JQ="$(PROTOUSRBINDIR)/jq"
-COMPONENT_TEST_ENV +=	LD_LIBRARY_PATH_64="$(ONIG_LIBDIR)"
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
 	'-e "/TOTAL/p" ' \
@@ -76,5 +67,4 @@ COMPONENT_TEST_TRANSFORMS += \
 test: install
 
 REQUIRED_PACKAGES +=	library/oniguruma
-REQUIRED_PACKAGES +=	system/library
 REQUIRED_PACKAGES +=	system/library/math
