@@ -1,0 +1,17 @@
+# this is a dry-run test
+
+cd build
+prototype/$(uname -p)/usr/bin/procmail \
+  PATH=$(pwd)/prototype/$(uname -p)/usr/bin:/usr/bin \
+  FORMAIL=$(pwd)/prototype/$(uname -p)/usr/bin/formail \
+  LOGFILE=./procmaillog \
+  MAILDIR=$(pwd) \
+  SENDMAIL=/usr/sbin/sendmail \
+  DEFAULT=/dev/null \
+   $(pwd)/../files/test.rc < $(pwd)/../files/test-mail.txt
+
+# Create files: IN.testing backup msgid.cache procmaillog
+#  IN.testing - mail-folder
+#  backup - is backup mail-folder
+#  msgid.cache - lock file
+#  procmaillog - log

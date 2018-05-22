@@ -1,0 +1,26 @@
+
+SHELL=/bin/bash		
+
+LINEBUF=4096            
+
+VERBOSE=on
+
+
+
+:0 Wh: msgid.lock
+| $FORMAIL -D 8192 msgid.cache
+
+
+:0 c
+backup
+
+
+:0 fhw
+| formail -I "From " -a "From "
+
+
+:0:
+* ^Subject: Test only
+IN.testing
+
+
