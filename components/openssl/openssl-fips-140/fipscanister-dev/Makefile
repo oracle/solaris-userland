@@ -30,13 +30,14 @@
 
 include ../../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME =	OpenSSL_2.0.13_OracleFIPS
-COMPONENT_VERSION =	1.0
-COMPONENT_SRC =		OracleFIPS_$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE =	$(COMPONENT_NAME)_$(COMPONENT_VERSION).tar.gz
+COMPONENT_NAME =	openssl-fips
+COMPONENT_VERSION =	2.0.13
+COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
+COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5e507a9cc2de3b07bb693472b5e84a2952944ca17ffb0c2ca1c01e69b8013fc1
-COMPONENT_ARCHIVE_URL =	https://github.com/oracle/solaris-openssl-fips/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+    sha256:3ff723f93901f750779a2e67ff15985c357f1a15c892c9504446fbc85c6f77da
+COMPONENT_ARCHIVE_URL =	https://www.openssl.org/source/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/openssl
 COMPONENT_ANITYA_ID=	13290
 
@@ -50,7 +51,7 @@ PATH=$(SPRO_VROOT)/bin:/usr/bin:/usr/gnu/bin:/usr/perl5/bin
 # Note: COMPONENT_ARCHIVE_HASH is a SHA256 digest used by the Userland
 # Consolidation to check the file integrity.
 OPENSSL_FIPS_HMAC_KEY = etaonrishdlcupfm
-OPENSSL_FIPS_HMAC = 7e7b369cef47a184151d78bdd85c9f3e36bd7289
+OPENSSL_FIPS_HMAC = 26f923491458df77a1f4c6ce39fef2f5bea88cd5
 
 # There is a broken link in the tarball which causes cp(1) to fail which would
 # fail the whole configure process. It's safer to get rid of the link than
@@ -59,6 +60,25 @@ OPENSSL_FIPS_HMAC = 7e7b369cef47a184151d78bdd85c9f3e36bd7289
 COMPONENT_PRE_CONFIGURE_ACTION = ( cd $(@D); \
     $(RM) $(SOURCE_DIR)/test/fips_aes_data; $(CP) -r $(SOURCE_DIR)/* .; )
 
+COMPONENT_POST_UNPACK_ACTION = \
+    ( echo "Cloning engines..."; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/sparc_arch.h		$(@D)/crypto/; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/sparccpuid.S		$(@D)/crypto/; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/o_init.c			$(@D)/crypto/; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/aest4-sparcv9.pl		$(@D)/crypto/aes/asm; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/dest4-sparcv9.pl		$(@D)/crypto/des/asm; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/aesni-gcm-x86_64.pl	$(@D)/crypto/modes/asm; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/ghash-x86_64.pl		$(@D)/crypto/modes/asm; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/ghash-x86.pl		$(@D)/crypto/modes/asm; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/dh_check.c			$(@D)/crypto/dh; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/sparcv9_modes.pl		$(@D)/crypto/perlasm; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/vis3-mont.pl		$(@D)/crypto/bn/asm; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/sparcv9-gf2m.pl		$(@D)/crypto/bn/asm; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/sparct4-mont.pl		$(@D)/crypto/bn/asm; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/e_des3.c			$(@D)/crypto/evp; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/e_aes.c			$(@D)/crypto/evp; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/sha1-sparcv9.pl		$(@D)/crypto/sha/asm; \
+	$(LN) -fs $(COMPONENT_DIR)/inline-t4/sha512-sparcv9.pl		$(@D)/crypto/sha/asm; )
 
 ifeq ($(MACH), sparc)
 CONFIGURE_OPTIONS.32 =	solaris-sparcv9-cc
@@ -105,7 +125,7 @@ $(BUILD_DIR)/%/.verified:	$(BUILD_DIR)/%/.installed
 	    $(COMPONENT_ARCHIVE)) | \
 	    $(NAWK) '{ if ($$2 != "$(OPENSSL_FIPS_HMAC)") exit 1 }'
 	@echo Basic FIPS-140 mode verification passed.
-	$(TOUCH) $@
+	$(TOUCH) $@	    	
 
 test:		$(NO_TESTS)
 
