@@ -24,6 +24,8 @@
 #
 
 BUILD_BITS=		64
+PUBLISH_STAMP=          # This version of docker can't be build with the version of go we have
+
 include ../../../make-rules/shared-macros.mk
 include $(WS_MAKE_RULES)/experimental-only.mk
 
@@ -59,6 +61,7 @@ GO_BUILD_ENV=		\
 
 # Git commit is needed to run the tests
 COMPONENT_BUILD_ACTION=	\
+	exit 0; (: This version of docker can not be build with the version of go we have); \
 	set -e; \
 	cd $(BUILD_DIR_64); \
 	$(GO_BUILD_ENV) AUTO_GOPATH=1 ./hack/make.sh dynbinary
@@ -81,6 +84,7 @@ DOCKER_INSTALL_ACTIONS= \
 	    $(PROTOUSRBINDIR)/docker-support
 
 COMPONENT_INSTALL_ACTION= \
+	exit 0; (: This version of docker can not be build with the version of go we have); \
 	set -e; \
 	$(MKDIR) \
 	    $(PROTOUSRBINDIR) \
