@@ -23,18 +23,22 @@
 # Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
+COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
+MAJOR_VERSION=2.6
+MICRO_VERSION=1
+
 COMPONENT_NAME=		wireshark
-COMPONENT_VERSION=	2.4.6
+COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
 COMPONENT_PROJECT_URL=	http://www.wireshark.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8e965fd282bc0c09e7c4eba5f08a555d0ccf40a7d1544b939e01b90bc893d5fe
+    sha256:ab6e5bbc3464c956347b8671ce8397950ad5daff3bf9964c967d495f4ddbcd88
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/src/all-versions/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	5137
 
-TPNO=			42249
+TPNO=			43238
 
 # Enable adiheap security extension
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -46,8 +50,7 @@ TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk
 
-# Micro version for easy libraries packaging
-MICRO_VERSION:= $(shell echo $(COMPONENT_VERSION) | awk -F. '{ print $$3 }')
+PKG_MACROS+= MAJOR_VERSION=$(MAJOR_VERSION)
 PKG_MACROS+= MICRO_VERSION=$(MICRO_VERSION)
 
 PATCH_LEVEL=0
@@ -86,10 +89,10 @@ COMPONENT_POST_CONFIGURE_ACTION = \
 # During install libtool will relink libwireshark library so that it
 # requires libwiretap version from system and not from proto area.
 # This workaround is only needed when CBE contains older libwiretap.
-LIBWIRESHARK=$(PROTOUSRLIBDIR64)/libwireshark.so.9.1.$(MICRO_VERSION)
+LIBWIRESHARK=$(PROTOUSRLIBDIR64)/libwireshark.so.11.0.$(MICRO_VERSION)
 COMPONENT_POST_INSTALL_ACTION = \
 	(WTAP=`$(ELFEDIT) -e dyn:dump $(LIBWIRESHARK) | grep 'libwiretap' | awk '{print $$4}'` \
-	; $(ELFEDIT) -e "dyn:value -s -with-valstr $$WTAP libwiretap.so.7" $(LIBWIRESHARK) )
+	; $(ELFEDIT) -e "dyn:value -s -with-valstr $$WTAP libwiretap.so.8" $(LIBWIRESHARK) )
 
 REQUIRED_PACKAGES += developer/lexer/flex
 REQUIRED_PACKAGES += developer/parser/bison
