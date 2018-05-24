@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		perl
-COMPONENT_VERSION=	5.26.1
+COMPONENT_VERSION=	5.26.2
 PERL_VERSION_LOCAL=	5.26
 COMPONENT_PROJECT_URL=	http://www.perl.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-     sha256:da1e412460263be73fc3b16b5dd8d53ce9c01c9d2e5ede6fe6c267ed1ecaf505
+     sha256:d2323d54bd4c988db090faadf663dde31da94f98f0d03e2367ec9f71ea3ddc8e
 COMPONENT_ARCHIVE_URL=	http://www.cpan.org/src/5.0/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/perl
 COMPONENT_ANITYA_ID=	13599
 
-TPNO=			39360
+TPNO=			43384
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/configure.mk
