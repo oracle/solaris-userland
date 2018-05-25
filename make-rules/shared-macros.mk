@@ -35,7 +35,7 @@ PATH=/usr/bin:/usr/gnu/bin
 # for a few components where the communities either no longer provide matching
 # source archives or we have changes that aren't reflected in their archives or
 # anywhere else.
-INTERNAL_ARCHIVE_MIRROR =	http://userland.us.oracle.com/source-archives
+INTERNAL_ARCHIVE_MIRROR ?=	http://userland.us.oracle.com/source-archives
 
 # The location of an external mirror of community source archives that we build
 # in this gate.  The external mirror is a replica of the internal mirror.

@@ -69,7 +69,7 @@ pkglint:
 
 
 time-$(MACH64).o:			BITS=64
-time-$(MACH32).o time-$(MACH64).o:	CFLAGS += -Kpic
+time-$(MACH32).o time-$(MACH64).o:	CFLAGS += $(CC_PIC)
 
 time-$(MACH32).o time-$(MACH64).o:	time.c
 	@$(CC) $(CFLAGS) -c -o $@ $<
