@@ -28,31 +28,20 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libogg
-COMPONENT_VERSION=	1.2.2
+COMPONENT_VERSION=	1.3.3
 COMPONENT_PROJECT_URL=	https://xiph.org/ogg/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:ab000574bc26d5f01284f5b0f50e12dc761d035c429f2e9c70cb2a9487d8cfba
+	sha256:c2e8a485110b97550f453226ec644ebac6cb29d1caef2902c007edab4308d985
 COMPONENT_ARCHIVE_URL=	http://downloads.xiph.org/releases/ogg/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	1694
 
-TPNO=			9571
+TPNO=			42992
 
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
-
-# Merge 32-bit & 64-bit versions of config_types.h 
-install: $(BUILD_DIR)/.merged-header
-
-$(BUILD_DIR)/.merged-header: $(BUILD_DIR_32)/.installed $(BUILD_DIR_64)/.installed
-	-$(RM) $(PROTO_DIR)/include/ogg/config_types.h
-	$(GDIFF) -D _LP64 \
-	    $(BUILD_DIR_32)/include/ogg/config_types.h $(BUILD_DIR_64)/include/ogg/config_types.h \
-	    > $(PROTO_DIR)/usr/include/ogg/config_types.h; \
-	diffstatus=$$? ; \
-	if (( $$diffstatus != 1 )) ; then exit $$diffstatus ; fi
 
 REQUIRED_PACKAGES += system/library/math
