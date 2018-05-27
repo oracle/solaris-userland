@@ -50,7 +50,7 @@ PATH=$(SPRO_VROOT)/bin:/usr/bin:/usr/gnu/bin:/usr/perl5/bin
 # Note: COMPONENT_ARCHIVE_HASH is a SHA256 digest used by the Userland
 # Consolidation to check the file integrity.
 OPENSSL_FIPS_HMAC_KEY = etaonrishdlcupfm
-OPENSSL_FIPS_HMAC = 7e7b369cef47a184151d78bdd85c9f3e36bd7289
+OPENSSL_FIPS_HMAC = ef8f7a91979cad14d033d8803a89fdf925102a30
 
 # There is a broken link in the tarball which causes cp(1) to fail which would
 # fail the whole configure process. It's safer to get rid of the link than
