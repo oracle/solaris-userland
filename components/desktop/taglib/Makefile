@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 32_and_64
 # For now, all things built for C++11 require gcc.
@@ -38,11 +38,11 @@ COMPONENT_ANITYA_ID=	1982
 
 TPNO=			32884	
 
-PATCH_LEVEL= 0
-
 BUILD_STYLE= cmake
 
-# disable tests for now - 23214794
+# integrated tests pass when built now 
+# but building tests and shared libs seems to be mutually exclusive
+# disabling the tests 
 TEST_TARGET= $(SKIP_TEST)
 
 include $(WS_MAKE_RULES)/common.mk
