@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_URL=	\
 	http://cache.ruby-lang.org/pub/ruby/2.3/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	4223
 
-TPNO=			31235
+TPNO=			32731
 
 # Rubygems support
 RUBYGEMS=		rubygems-2.7.6
