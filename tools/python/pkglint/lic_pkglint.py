@@ -1,7 +1,7 @@
 #!/usr/bin/python2.7
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # OSNet-specific pkglint(1) checks, called as part of pkglint commands in
@@ -212,17 +212,29 @@ class ExtractLicense(base.ManifestChecker):
                 except ValueError:
                     pkgvers = ""
 
+        pkgpath = manifest.fmri.get_pkg_stem()
+
+        pkglint_id = "000"
+        lint_id = "%s%s" % (self.name, pkglint_id)
+
+        seen_license_types = {}
         # extract license action attributes
         for action in manifest.gen_actions_by_type("license"):
             licenselic = ExtractLicense._construct_license(action.attrs)
-            licenselic["license"] = action.attrs.get("license", "")
+            license_type = action.attrs.get("license", "")
+            if license_type in seen_license_types:
+                engine.error(_(
+                    "License '%(lic)s' has been encountered multiple times in"
+                    " %(fmri)s") % {"fmri": pkgpath, "lic":license_type},
+                    msgid=lint_id)
+            seen_license_types[license_type] = action
+            licenselic["license"] = license_type
             licenseslic.append(licenselic)
 
         # manifest cannot use both set actions and license actions to define
         # tpno attribute.
         if not licensepkg and not licenselic:
             return
-        pkgpath = manifest.fmri.get_pkg_stem()
 
         pkglint_id = "001"
         if licensepkg:
