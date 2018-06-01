@@ -31,15 +31,15 @@ BUILD_BITS=64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xscreensaver
-COMPONENT_VERSION=	5.34
+COMPONENT_VERSION=	5.39
 COMPONENT_PROJECT_URL=	https://www.jwz.org/xscreensaver/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6fff7ec4be743e5c042647ea9687dd0cdf48d1dd5e8e15098e5018bbd02e5e27
+    sha256:48ce1880f18b5321182be0c033aeceb5ec5628a1505b9d1ff69dbf06093c2426
 COMPONENT_ARCHIVE_URL=	https://www.jwz.org/xscreensaver/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=        gnome/screensaver
 COMPONENT_ANITYA_ID=	5269
 
-TPNO=			26341
+TPNO=			43531
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -70,9 +70,11 @@ COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv; automake -af | true)
 PATH=$(GNUBIN):$(USRBINDIR)
 
 # Libraries & programs to depend on
+CONFIGURE_OPTIONS += --with-browser="$(USRBINDIR)/gio open"
 CONFIGURE_OPTIONS += --with-gl=$(USRDIR)
 CONFIGURE_OPTIONS += --with-gtk=$(USRDIR)
 CONFIGURE_OPTIONS += --with-jpeg=$(USRDIR)
+CONFIGURE_OPTIONS += --with-png=$(USRDIR)
 CONFIGURE_OPTIONS += --without-motif
 CONFIGURE_OPTIONS += --with-pixbuf=$(USRDIR)
 CONFIGURE_OPTIONS += --with-xft=$(USRDIR)
@@ -115,6 +117,7 @@ CONFIGURE_OPTIONS += --without-setuid-hacks
 
 # The potfiles.in updates don't work unless source is cloned to build dir
 COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR) $(@D));
+CONFIGURE_SCRIPT = ./configure
 
 # Update potfiles.in to pick up our added sources like lock-Gtk.c
 # The "-o Makefile" & touch stamp-it is needed to avoid infinite looping.
@@ -149,6 +152,7 @@ PERL_SCRIPTS= \
 
 REQUIRED_PACKAGES += gnome/config/gconf
 REQUIRED_PACKAGES += image/library/libjpeg
+REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk2

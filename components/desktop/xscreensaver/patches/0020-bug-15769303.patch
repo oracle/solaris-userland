@@ -1,4 +1,4 @@
-From a946e560758d0041aea4fc55ee7f5f657cbe27df Mon Sep 17 00:00:00 2001
+From 58ba70c8f19b6697abbb01ead08ecb4267e47aa0 Mon Sep 17 00:00:00 2001
 From: Alan Coopersmith <alan.coopersmith@oracle.com>
 Date: Sat, 2 Jan 2016 23:16:21 -0800
 Subject: [PATCH] bug 15769303
@@ -18,10 +18,10 @@ Upstream applicability & status unknown.
  3 files changed, 150 insertions(+), 25 deletions(-)
 
 diff --git a/driver/lock-Gtk.c b/driver/lock-Gtk.c
-index 13e0213..cbb70a2 100644
+index 93ef574..639187c 100644
 --- a/driver/lock-Gtk.c
 +++ b/driver/lock-Gtk.c
-@@ -394,11 +394,13 @@ make_dialog (gboolean center_pos)
+@@ -390,11 +390,13 @@ make_dialog (gboolean center_pos)
                         NULL);
  
    /* Ok button */
@@ -36,7 +36,7 @@ index 13e0213..cbb70a2 100644
  
    free (user);
    free (version);
-@@ -417,18 +419,26 @@ ok_clicked_cb (GtkWidget *button, PasswdDialog *pwd)
+@@ -413,18 +415,26 @@ ok_clicked_cb (GtkWidget *button, PasswdDialog *pwd)
  {
    const char *s;
  
@@ -73,7 +73,7 @@ index 13e0213..cbb70a2 100644
  }
  
  static void
-@@ -445,6 +455,10 @@ connect_signals (PasswdDialog *pwd)
+@@ -441,6 +451,10 @@ connect_signals (PasswdDialog *pwd)
    g_signal_connect (pwd->dialog, "delete-event",
                      G_CALLBACK (gtk_main_quit),
                      NULL);
@@ -84,7 +84,7 @@ index 13e0213..cbb70a2 100644
  }
  
  static GdkFilterReturn
-@@ -561,6 +575,7 @@ handle_input (GIOChannel *source, GIOCondition cond, gpointer data)
+@@ -557,6 +571,7 @@ handle_input (GIOChannel *source, GIOCondition cond, gpointer data)
              {
                gtk_label_set_text (GTK_LABEL (pwd->user_prompt_label), msgstr);
                gtk_widget_show (pwd->user_prompt_label);
@@ -92,7 +92,7 @@ index 13e0213..cbb70a2 100644
                msgstr = NULL; /* clear message so we don't show it twice */
              }
            else if ((strcmp (str, "ul_prompt_echo") == 0))
-@@ -595,6 +610,14 @@ handle_input (GIOChannel *source, GIOCondition cond, gpointer data)
+@@ -591,6 +606,14 @@ handle_input (GIOChannel *source, GIOCondition cond, gpointer data)
              {
                hmsg = NULL; /* only show msg */
              }
@@ -108,7 +108,7 @@ index 13e0213..cbb70a2 100644
              {
                /* Should not be others, but if so just show it */
 diff --git a/driver/lock.c b/driver/lock.c
-index dc40ca4..b494eae 100644
+index 91cac99..017e0ee 100644
 --- a/driver/lock.c
 +++ b/driver/lock.c
 @@ -437,6 +437,10 @@ handle_passwd_input (XtPointer xtdata, int *fd, XtInputId *id)
@@ -131,7 +131,7 @@ index dc40ca4..b494eae 100644
            XFlush (si->dpy);
            XSetInputFocus (si->dpy, window, RevertToPointerRoot, CurrentTime);
            XSync (si->dpy, False);
-@@ -957,7 +961,7 @@ static int
+@@ -936,7 +940,7 @@ static int
  make_passwd_window (saver_info *si,
  		    const char *info_msg,
  		    const char *prompt,
@@ -140,7 +140,7 @@ index dc40ca4..b494eae 100644
  {
  #ifndef HAVE_XSCREENSAVER_LOCK
    XSetWindowAttributes attrs;
-@@ -1006,7 +1010,7 @@ make_passwd_window (saver_info *si,
+@@ -985,7 +989,7 @@ make_passwd_window (saver_info *si,
      }
  
    if (info_msg)
@@ -149,7 +149,7 @@ index dc40ca4..b494eae 100644
    if (prompt)
      {
        write_to_child (si, "ul_pamprompt", prompt);
-@@ -2719,8 +2723,22 @@ passwd_event_loop (saver_info *si)
+@@ -2698,8 +2702,22 @@ passwd_event_loop (saver_info *si)
            handle_passwd_key (si, &event.x_event.xkey);
            si->pw_data->caps_p = (event.x_event.xkey.state & LockMask);
          }
@@ -174,7 +174,7 @@ index dc40ca4..b494eae 100644
                 event.x_event.xany.type == ButtonRelease)
  	{
  	  si->pw_data->button_state_changed_p = True;
-@@ -2937,6 +2955,8 @@ gui_auth_conv(int num_msg,
+@@ -2916,6 +2934,8 @@ gui_auth_conv(int num_msg,
    const char *info_msg, *prompt;
    struct auth_response *responses;
  
@@ -183,7 +183,7 @@ index dc40ca4..b494eae 100644
    if (si->unlock_state == ul_cancel ||
        si->unlock_state == ul_time)
      /* If we've already cancelled or timed out in this PAM conversation,
-@@ -2977,9 +2997,14 @@ gui_auth_conv(int num_msg,
+@@ -2956,9 +2976,14 @@ gui_auth_conv(int num_msg,
  	info_msg_trimmed = remove_trailing_whitespace(info_msg);
  	prompt_trimmed = remove_trailing_whitespace(prompt);
  
@@ -199,7 +199,7 @@ index dc40ca4..b494eae 100644
              < 0)
            goto fail;
  
-@@ -3001,6 +3026,9 @@ gui_auth_conv(int num_msg,
+@@ -2980,6 +3005,9 @@ gui_auth_conv(int num_msg,
        handle_typeahead (si);
        passwd_event_loop (si);
  
@@ -209,7 +209,7 @@ index dc40ca4..b494eae 100644
        if (si->unlock_state == ul_cancel)
  	goto fail;
  
-@@ -3040,10 +3068,13 @@ fail:
+@@ -3019,10 +3047,13 @@ fail:
      {
        for (i = 0; i < num_msg; ++i)
  	if (responses[i].response)
@@ -225,7 +225,7 @@ index dc40ca4..b494eae 100644
    return -1;
  }
  
-@@ -3084,7 +3115,7 @@ auth_finished_cb (saver_info *si)
+@@ -3063,7 +3094,7 @@ auth_finished_cb (saver_info *si)
    else						/* good, with no failures, */
      goto END;					/* or timeout, or cancel. */
  
@@ -235,10 +235,10 @@ index dc40ca4..b494eae 100644
  
    {
 diff --git a/driver/passwd-pam.c b/driver/passwd-pam.c
-index 4d24ac3..f5cd07c 100644
+index d654780..bc54fbd 100644
 --- a/driver/passwd-pam.c
 +++ b/driver/passwd-pam.c
-@@ -541,7 +541,7 @@ pam_try_unlock(saver_info *si, Bool verbose_p,
+@@ -549,7 +549,7 @@ pam_try_unlock(saver_info *si, Bool verbose_p,
        else if (acct_rc != PAM_SUCCESS)
          {
            pam_auth_status = acct_rc;
@@ -247,7 +247,7 @@ index 4d24ac3..f5cd07c 100644
            sleep (3);
            goto DONE;
          }
-@@ -726,6 +726,7 @@ pam_conversation (int nmsgs,
+@@ -725,6 +725,7 @@ pam_conversation (int nmsgs,
    struct pam_response *pam_responses;
    saver_info *si = (saver_info *) vsaver_info;
    Bool verbose_p;
@@ -255,7 +255,7 @@ index 4d24ac3..f5cd07c 100644
  
    /* On SunOS 5.6, the `closure' argument always comes in as random garbage. */
    si = (saver_info *) suns_pam_implementation_blows;
-@@ -741,6 +742,20 @@ pam_conversation (int nmsgs,
+@@ -740,6 +741,20 @@ pam_conversation (int nmsgs,
     * pass along whatever was passed in here.
     */
  
@@ -276,7 +276,7 @@ index 4d24ac3..f5cd07c 100644
    messages = calloc(nmsgs, sizeof(struct auth_message));
    pam_responses = calloc(nmsgs, sizeof(*pam_responses));
    
-@@ -752,6 +767,34 @@ pam_conversation (int nmsgs,
+@@ -751,6 +766,34 @@ pam_conversation (int nmsgs,
  
    for (i = 0; i < nmsgs; ++i)
      {
@@ -311,7 +311,7 @@ index 4d24ac3..f5cd07c 100644
        if (verbose_p && i > 0) fprintf (stderr, ", ");
  
        messages[i].msg = msg[i]->msg;
-@@ -769,9 +812,16 @@ pam_conversation (int nmsgs,
+@@ -768,9 +811,16 @@ pam_conversation (int nmsgs,
        case PAM_TEXT_INFO:       messages[i].type = AUTH_MSGTYPE_INFO;
          if (verbose_p) fprintf (stderr, "TEXT_INFO");
          break;
@@ -331,7 +331,7 @@ index 4d24ac3..f5cd07c 100644
        }
  
        if (verbose_p) 
-@@ -793,8 +843,28 @@ pam_conversation (int nmsgs,
+@@ -792,8 +842,28 @@ pam_conversation (int nmsgs,
  
    if (ret == 0)
      {
@@ -361,7 +361,7 @@ index 4d24ac3..f5cd07c 100644
      }
  
  end:
-@@ -818,6 +888,7 @@ end:
+@@ -817,6 +887,7 @@ end:
      if (pam_responses)
        free(pam_responses);
  
@@ -370,5 +370,5 @@ index 4d24ac3..f5cd07c 100644
  }
  
 -- 
-2.6.1
+2.15.0
 

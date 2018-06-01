@@ -1,4 +1,4 @@
-From a5e9aa2e68624b0162e69829bfc5a633e5cf8b79 Mon Sep 17 00:00:00 2001
+From 6272d943acb2f54842bb678c5d041c989bba1173 Mon Sep 17 00:00:00 2001
 From: Alan Coopersmith <alan.coopersmith@oracle.com>
 Date: Sat, 2 Jan 2016 20:36:57 -0800
 Subject: [PATCH] gtk-lock
@@ -81,7 +81,7 @@ This patch also contains fixes for:
  driver/dialog-data.h  |  131 ++++++
  driver/lock-Gtk.c     |  738 +++++++++++++++++++++++++++++++++
  driver/lock.c         | 1083 ++++++++++++++++++++++++++++++++++++++++++++-----
- driver/passwd-pam.c   |  228 +++++++++--
+ driver/passwd-pam.c   |  231 +++++++++--
  driver/passwd.c       |    1 +
  driver/setuid.c       |    5 +-
  driver/subprocs.c     |   35 +-
@@ -90,17 +90,17 @@ This patch also contains fixes for:
  driver/windows.c      |   21 +-
  driver/xscreensaver.c |  130 +++++-
  driver/xscreensaver.h |    6 +
- 17 files changed, 2451 insertions(+), 161 deletions(-)
+ 17 files changed, 2446 insertions(+), 169 deletions(-)
  create mode 100644 driver/dialog-data.h
  create mode 100644 driver/lock-Gtk.c
 
 diff --git a/config.h.in b/config.h.in
-index 3524ec4..6b6d077 100644
+index 6294bee..e663bd1 100644
 --- a/config.h.in
 +++ b/config.h.in
-@@ -360,6 +360,9 @@
-    make use of this if it is available. */
- #undef HAVE_XPM
+@@ -375,6 +375,9 @@
+    your vendor doesn't ship it, you should report that as a bug. */
+ #undef HAVE_XMU
  
 +/* Define this to build the external lock dialog */
 +#undef HAVE_XSCREENSAVER_LOCK
@@ -109,10 +109,10 @@ index 3524ec4..6b6d077 100644
  #undef HAVE_XSHM_EXTENSION
  
 diff --git a/configure.in b/configure.in
-index 5ff8aea..dea1f6a 100644
+index ca8cb07..a1d597d 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -2665,6 +2665,7 @@ if test "$with_gtk" = yes; then
+@@ -2673,6 +2673,7 @@ if test "$with_gtk" = yes; then
    pkg_check_version          libxml-2.0  2.4.6
    pkg_check_version      gdk-pixbuf-2.0  2.0.0
    pkg_check_version gdk-pixbuf-xlib-2.0  2.0.0
@@ -120,7 +120,7 @@ index 5ff8aea..dea1f6a 100644
    have_gtk="$ok"
  
    if test "$have_gtk" = no; then
-@@ -2680,6 +2681,9 @@ if test "$with_gtk" = yes; then
+@@ -2688,6 +2689,9 @@ if test "$with_gtk" = yes; then
    fi
  
    if test "$have_gtk" = yes; then
@@ -130,7 +130,7 @@ index 5ff8aea..dea1f6a 100644
      AC_CACHE_CHECK([for Gtk includes], ac_cv_gtk_config_cflags,
                     [ac_cv_gtk_config_cflags=`$pkg_config --cflags $pkgs`])
      AC_CACHE_CHECK([for Gtk libs], ac_cv_gtk_config_libs,
-@@ -3932,6 +3936,16 @@ if test "$have_gtk" = yes; then
+@@ -3915,6 +3919,16 @@ if test "$have_gtk" = yes; then
    ALL_DEMO_PROGRAMS="$PREFERRED_DEMO_PROGRAM $ALL_DEMO_PROGRAMS"
  fi
  
@@ -147,7 +147,7 @@ index 5ff8aea..dea1f6a 100644
  
  if test "$have_kerberos" = yes; then
    PASSWD_SRCS="$PASSWD_SRCS \$(KERBEROS_SRCS)"
-@@ -4076,6 +4090,11 @@ AC_SUBST(INCLUDES)
+@@ -4059,6 +4073,11 @@ AC_SUBST(INCLUDES)
  
  AC_SUBST(PREFERRED_DEMO_PROGRAM)
  AC_SUBST(ALL_DEMO_PROGRAMS)
@@ -159,7 +159,7 @@ index 5ff8aea..dea1f6a 100644
  AC_SUBST(SAVER_LIBS)
  AC_SUBST(MOTIF_LIBS)
  AC_SUBST(GTK_LIBS)
-@@ -4597,7 +4616,8 @@ HACK_CONF_DIR=`echo "${HACK_CONF_DIR}" | sed 's@/$@@;s@//*@/@g'`
+@@ -4591,7 +4610,8 @@ HACK_CONF_DIR=`echo "${HACK_CONF_DIR}" | sed 's@/$@@;s@//*@/@g'`
  
  
  # Sanity check the hackdir
@@ -170,7 +170,7 @@ index 5ff8aea..dea1f6a 100644
      echo ""
      AC_MSG_ERROR([\"--with-hackdir=${bindir}/${bad_choice}\" won't work.
 diff --git a/driver/Makefile.in b/driver/Makefile.in
-index 5f269df..22c486f 100644
+index 8ab4dcb..acb2c4e 100644
 --- a/driver/Makefile.in
 +++ b/driver/Makefile.in
 @@ -29,6 +29,7 @@ GTK_APPDIR	= $(GTK_DATADIR)/applications
@@ -198,7 +198,7 @@ index 5f269df..22c486f 100644
  
  PWENT_SRCS	= passwd-pwent.c
  PWENT_OBJS	= passwd-pwent.o
-@@ -217,8 +221,8 @@ GETIMG_LIBS	= $(LIBS) $(X_LIBS) $(XPM_LIBS) $(JPEG_LIBS) \
+@@ -217,8 +221,8 @@ GETIMG_LIBS	= $(LIBS) $(X_LIBS) $(PNG_LIBS) $(JPEG_LIBS) \
  		  $(X_PRE_LIBS) -lXt -lX11 $(XMU_LIBS) -lXext $(X_EXTRA_LIBS)
  
  EXES		= xscreensaver xscreensaver-command xscreensaver-demo \
@@ -250,7 +250,7 @@ index 5f269df..22c486f 100644
  
  install-ad: XScreenSaver.ad
  	@if [ ! -d $(install_prefix)$(AD_DIR) ]; then			      \
-@@ -736,7 +749,7 @@ $(SAVER_UTIL_OBJS):
+@@ -744,7 +757,7 @@ $(UTIL_OBJS):
  
  # How we build object files in this directory.
  .c.o:
@@ -259,7 +259,7 @@ index 5f269df..22c486f 100644
  
  .m.o:
  	$(OBJCC) -c $(INCLUDES) $(DEFS) $(CPPFLAGS) $(CFLAGS) $(X_CFLAGS) $<
-@@ -762,6 +775,16 @@ demo-Gtk-conf.o: demo-Gtk-conf.c
+@@ -770,6 +783,16 @@ demo-Gtk-conf.o: demo-Gtk-conf.c
  	$(CC) -c $(INCLUDES) $(CONF_DEFS) $(GTK_DEFS) $(CPPFLAGS) $(CFLAGS) $(X_CFLAGS) \
  	  $(srcdir)/demo-Gtk-conf.c
  
@@ -276,7 +276,7 @@ index 5f269df..22c486f 100644
  
  # How we build the default app-defaults file into the program.
  #
-@@ -776,7 +799,8 @@ XScreenSaver_Xm_ad.h: XScreenSaver-Xm.ad
+@@ -784,7 +807,8 @@ XScreenSaver_Xm_ad.h: XScreenSaver-Xm.ad
  # The executables linked in this directory.
  #
  xscreensaver: $(SAVER_OBJS)
@@ -286,7 +286,7 @@ index 5f269df..22c486f 100644
  
  xscreensaver-command: $(CMD_OBJS)
  	$(CC) $(LDFLAGS) -o $@ $(CMD_OBJS) $(CMD_LIBS)
-@@ -792,6 +816,15 @@ xscreensaver-demo: @PREFERRED_DEMO_PROGRAM@
+@@ -800,6 +824,15 @@ xscreensaver-demo: @PREFERRED_DEMO_PROGRAM@
  	       cp -p @PREFERRED_DEMO_PROGRAM@@EXEEXT@ $@@EXEEXT@      ;	\
  	fi
  
@@ -302,7 +302,7 @@ index 5f269df..22c486f 100644
  xscreensaver-demo-Xm: $(DEMO_OBJS) $(MOTIF_OBJS)
  	$(CC) $(LDFLAGS) -o $@ $(DEMO_OBJS) $(MOTIF_OBJS) $(LIBS) $(X_LIBS) \
  	$(MOTIF_LIBS) $(INTL_LIBS) $(X_PRE_LIBS) -lXt -lX11 \
-@@ -815,7 +848,7 @@ pdf2jpeg: $(PDF2JPEG_OBJS)
+@@ -823,7 +856,7 @@ pdf2jpeg: $(PDF2JPEG_OBJS)
  
  
  TEST_PASSWD_OBJS = test-passwd.o $(LOCK_OBJS_1) $(PASSWD_OBJS) \
@@ -311,7 +311,7 @@ index 5f269df..22c486f 100644
  	$(SAVER_UTIL_OBJS)
  test-passwd.o: XScreenSaver_ad.h
  
-@@ -897,8 +930,14 @@ dpms.o: $(srcdir)/types.h
+@@ -905,8 +938,14 @@ dpms.o: $(srcdir)/types.h
  dpms.o: $(srcdir)/xscreensaver.h
  exec.o: ../config.h
  exec.o: $(srcdir)/exec.h
@@ -326,7 +326,7 @@ index 5f269df..22c486f 100644
  lock.o: $(srcdir)/mlstring.h
  lock.o: $(srcdir)/prefs.h
  lock.o: $(srcdir)/types.h
-@@ -907,6 +946,8 @@ lock.o: $(srcdir)/xscreensaver.h
+@@ -915,6 +954,8 @@ lock.o: $(srcdir)/xscreensaver.h
  mlstring.o: $(srcdir)/mlstring.h
  passwd.o: $(srcdir)/auth.h
  passwd.o: ../config.h
@@ -335,7 +335,7 @@ index 5f269df..22c486f 100644
  passwd.o: $(srcdir)/prefs.h
  passwd.o: $(srcdir)/types.h
  passwd.o: $(srcdir)/xscreensaver.h
-@@ -975,6 +1016,8 @@ test-vp.o: ../config.h
+@@ -984,6 +1025,8 @@ test-vp.o: ../config.h
  test-xdpms.o: ../config.h
  test-xinerama.o: ../config.h
  timers.o: ../config.h
@@ -344,7 +344,7 @@ index 5f269df..22c486f 100644
  timers.o: $(srcdir)/prefs.h
  timers.o: $(srcdir)/types.h
  timers.o: $(srcdir)/xscreensaver.h
-@@ -1002,6 +1045,8 @@ xscreensaver-getimage.o: $(UTILS_SRC)/yarandom.h
+@@ -1011,6 +1054,8 @@ xscreensaver-getimage.o: $(UTILS_SRC)/yarandom.h
  xscreensaver.o: XScreenSaver_ad.h
  xscreensaver.o: $(srcdir)/auth.h
  xscreensaver.o: ../config.h
@@ -367,7 +367,7 @@ index 65e00f3..4fcbb34 100644
 +
  #endif
 diff --git a/driver/demo-Gtk.c b/driver/demo-Gtk.c
-index 6457d15..d62152c 100644
+index 7a61ff8..fc61fde 100644
 --- a/driver/demo-Gtk.c
 +++ b/driver/demo-Gtk.c
 @@ -97,6 +97,8 @@
@@ -379,7 +379,7 @@ index 6457d15..d62152c 100644
  #if defined(DEFAULT_ICONDIR) && !defined(GLADE_DIR)
  # define GLADE_DIR DEFAULT_ICONDIR
  #endif
-@@ -5038,6 +5040,22 @@ main (int argc, char **argv)
+@@ -5026,6 +5028,22 @@ main (int argc, char **argv)
    load_init_file (dpy, p);
    initialize_sort_map (s);
  
@@ -1284,7 +1284,7 @@ index 0000000..93ef574
 +}
 +#endif /* HAVE_GTK2 */
 diff --git a/driver/lock.c b/driver/lock.c
-index 7c92be6..a4114e2 100644
+index 10b879e..2030f20 100644
 --- a/driver/lock.c
 +++ b/driver/lock.c
 @@ -21,8 +21,13 @@
@@ -1301,7 +1301,7 @@ index 7c92be6..a4114e2 100644
  #include "xscreensaver.h"
  #include "resources.h"
  #include "mlstring.h"
-@@ -83,126 +88,631 @@ vms_passwd_valid_p(char *pw, Bool verbose_p)
+@@ -83,125 +88,630 @@ vms_passwd_valid_p(char *pw, Bool verbose_p)
  
  typedef struct info_dialog_data info_dialog_data;
  
@@ -2018,7 +2018,6 @@ index 7c92be6..a4114e2 100644
 +#ifndef HAVE_XSCREENSAVER_LOCK
    Screen *screen;
    Colormap cmap;
-   char *f;
 +#endif
    saver_screen_info *ssi = &si->screens [mouse_screen (si)];
  
@@ -2032,7 +2031,7 @@ index 7c92be6..a4114e2 100644
    pw = (passwd_dialog_data *) calloc (1, sizeof(*pw));
    if (!pw)
      return -1;
-@@ -211,17 +721,21 @@ new_passwd_window (saver_info *si)
+@@ -210,17 +720,21 @@ new_passwd_window (saver_info *si)
     */
    pw->login_button_p = (si->prefs.new_login_command &&
                          *si->prefs.new_login_command);
@@ -2054,7 +2053,7 @@ index 7c92be6..a4114e2 100644
    pw->heading_label = get_string_resource (si->dpy, "passwd.heading.label",
  					   "Dialog.Label.Label");
    pw->body_label = get_string_resource (si->dpy, "passwd.body.label",
-@@ -376,6 +890,7 @@ new_passwd_window (saver_info *si)
+@@ -355,6 +869,7 @@ new_passwd_window (saver_info *si)
    if (pw->shadow_width == 0) pw->shadow_width = 4;
    if (pw->thermo_width == 0) pw->thermo_width = pw->shadow_width;
  
@@ -2062,7 +2061,7 @@ index 7c92be6..a4114e2 100644
  
    /* We need to remember the mouse position and restore it afterward, or
       sometimes (perhaps only with Xinerama?) the mouse gets warped to
-@@ -442,12 +957,16 @@ make_passwd_window (saver_info *si,
+@@ -421,12 +936,16 @@ make_passwd_window (saver_info *si,
  		    const char *prompt,
  		    Bool echo)
  {
@@ -2079,7 +2078,7 @@ index 7c92be6..a4114e2 100644
    saver_screen_info *ssi = &si->screens [mouse_screen (si)];
  
    cleanup_passwd_window (si);
-@@ -455,7 +974,12 @@ make_passwd_window (saver_info *si,
+@@ -434,7 +953,12 @@ make_passwd_window (saver_info *si,
    if (! ssi)   /* WTF?  Trying to prompt while no screens connected? */
      return -1;
  
@@ -2092,7 +2091,7 @@ index 7c92be6..a4114e2 100644
      if (new_passwd_window (si) < 0)
        return -1;
  
-@@ -470,6 +994,29 @@ make_passwd_window (saver_info *si,
+@@ -449,6 +973,29 @@ make_passwd_window (saver_info *si,
               blurb(), pw->prompt_screen->number,
               info_msg ? info_msg : "");
  
@@ -2122,7 +2121,7 @@ index 7c92be6..a4114e2 100644
    screen = pw->prompt_screen->screen;
    cmap = DefaultColormapOfScreen (screen);
  
-@@ -721,11 +1268,13 @@ make_passwd_window (saver_info *si,
+@@ -700,11 +1247,13 @@ make_passwd_window (saver_info *si,
    if (cmap)
      XInstallColormap (si->dpy, cmap);
    draw_passwd_window (si);
@@ -2136,7 +2135,7 @@ index 7c92be6..a4114e2 100644
  static void
  draw_passwd_window (saver_info *si)
  {
-@@ -1071,17 +1620,48 @@ draw_button(Display *dpy,
+@@ -1050,17 +1599,48 @@ draw_button(Display *dpy,
    draw_shaded_rectangle(dpy, dialog, x, y, width, height,
  			shadow_width, shadow_light, shadow_dark);
  }
@@ -2185,7 +2184,7 @@ index 7c92be6..a4114e2 100644
    gcv.foreground = pw->passwd_foreground;
    gcv.font = pw->passwd_font->fid;
    gc1 = XCreateGC (si->dpy, si->passwd_dialog, GCForeground|GCFont, &gcv);
-@@ -1226,6 +1806,7 @@ update_passwd_window (saver_info *si, const char *printed_passwd, float ratio)
+@@ -1205,6 +1785,7 @@ update_passwd_window (saver_info *si, const char *printed_passwd, float ratio)
    XFreeGC (si->dpy, gc1);
    XFreeGC (si->dpy, gc2);
    XSync (si->dpy, False);
@@ -2193,7 +2192,7 @@ index 7c92be6..a4114e2 100644
  }
  
  
-@@ -1257,6 +1838,9 @@ cleanup_passwd_window (saver_info *si)
+@@ -1236,6 +1817,9 @@ cleanup_passwd_window (saver_info *si)
  {
    passwd_dialog_data *pw;
  
@@ -2203,7 +2202,7 @@ index 7c92be6..a4114e2 100644
    if (!(pw = si->pw_data))
      return;
  
-@@ -1274,7 +1858,13 @@ cleanup_passwd_window (saver_info *si)
+@@ -1253,7 +1837,13 @@ cleanup_passwd_window (saver_info *si)
  
    memset (pw->typed_passwd, 0, sizeof(pw->typed_passwd));
    memset (pw->typed_passwd_char_size, 0, sizeof(pw->typed_passwd_char_size));
@@ -2218,7 +2217,7 @@ index 7c92be6..a4114e2 100644
  
    if (pw->timer)
      {
-@@ -1297,8 +1887,10 @@ destroy_passwd_window (saver_info *si)
+@@ -1276,8 +1866,10 @@ destroy_passwd_window (saver_info *si)
    passwd_dialog_data *pw = si->pw_data;
    saver_screen_info *ssi = pw->prompt_screen;
    Colormap cmap = DefaultColormapOfScreen (ssi->screen);
@@ -2229,7 +2228,7 @@ index 7c92be6..a4114e2 100644
    XEvent event;
  
    cleanup_passwd_window (si);
-@@ -1314,6 +1906,81 @@ destroy_passwd_window (saver_info *si)
+@@ -1293,6 +1885,81 @@ destroy_passwd_window (saver_info *si)
        si->cached_passwd = NULL;
      }
  
@@ -2311,7 +2310,7 @@ index 7c92be6..a4114e2 100644
    move_mouse_grab (si, RootWindowOfScreen (ssi->screen),
                     ssi->cursor, ssi->number);
  
-@@ -1348,7 +2015,14 @@ destroy_passwd_window (saver_info *si)
+@@ -1327,7 +1994,14 @@ destroy_passwd_window (saver_info *si)
          fprintf (stderr, "%s: %d: destroying password dialog.\n",
                   blurb(), pw->prompt_screen->number);
  
@@ -2326,7 +2325,7 @@ index 7c92be6..a4114e2 100644
        si->passwd_dialog = 0;
      }
    
-@@ -1359,6 +2033,7 @@ destroy_passwd_window (saver_info *si)
+@@ -1338,6 +2012,7 @@ destroy_passwd_window (saver_info *si)
        pw->save_under = 0;
      }
  
@@ -2334,7 +2333,7 @@ index 7c92be6..a4114e2 100644
    if (pw->heading_label) free (pw->heading_label);
    if (pw->body_label)    free (pw->body_label);
    if (pw->user_label)    free (pw->user_label);
-@@ -1409,6 +2084,7 @@ destroy_passwd_window (saver_info *si)
+@@ -1388,6 +2063,7 @@ destroy_passwd_window (saver_info *si)
        pw->logo_pixels = 0;
        pw->logo_npixels = 0;
      }
@@ -2342,7 +2341,7 @@ index 7c92be6..a4114e2 100644
  
    if (pw->save_under)
      XFreePixmap (si->dpy, pw->save_under);
-@@ -1416,9 +2092,12 @@ destroy_passwd_window (saver_info *si)
+@@ -1395,9 +2071,12 @@ destroy_passwd_window (saver_info *si)
    if (cmap)
      XInstallColormap (si->dpy, cmap);
  
@@ -2355,7 +2354,7 @@ index 7c92be6..a4114e2 100644
  }
  
  
-@@ -1435,6 +2114,49 @@ ignore_all_errors_ehandler (Display *dpy, XErrorEvent *error)
+@@ -1414,6 +2093,49 @@ ignore_all_errors_ehandler (Display *dpy, XErrorEvent *error)
  
  #endif /* HAVE_XF86MISCSETGRABKEYSSTATE || HAVE_XF86VMODE */
  
@@ -2405,7 +2404,7 @@ index 7c92be6..a4114e2 100644
  
  #ifdef HAVE_XHPDISABLERESET
  /* This function enables and disables the C-Sh-Reset hot-key, which
-@@ -1636,6 +2358,17 @@ passwd_animate_timer (XtPointer closure, XtIntervalId *id)
+@@ -1615,6 +2337,17 @@ passwd_animate_timer (XtPointer closure, XtIntervalId *id)
  
    if (!pw) return;
  
@@ -2423,7 +2422,7 @@ index 7c92be6..a4114e2 100644
    pw->ratio -= (1.0 / ((double) si->prefs.passwd_timeout / (double) tick));
    if (pw->ratio < 0)
      {
-@@ -1655,6 +2388,7 @@ passwd_animate_timer (XtPointer closure, XtIntervalId *id)
+@@ -1634,6 +2367,7 @@ passwd_animate_timer (XtPointer closure, XtIntervalId *id)
    idle_timer ((XtPointer) si, 0);
  }
  
@@ -2431,7 +2430,7 @@ index 7c92be6..a4114e2 100644
  
  static XComposeStatus *compose_status;
  
-@@ -1732,6 +2466,7 @@ finished_typing_passwd (saver_info *si, passwd_dialog_data *pw)
+@@ -1711,6 +2445,7 @@ finished_typing_passwd (saver_info *si, passwd_dialog_data *pw)
        update_passwd_window (si, "", pw->ratio);
      }
  }
@@ -2439,7 +2438,7 @@ index 7c92be6..a4114e2 100644
  
  static void
  handle_passwd_key (saver_info *si, XKeyEvent *event)
-@@ -1740,6 +2475,7 @@ handle_passwd_key (saver_info *si, XKeyEvent *event)
+@@ -1719,6 +2454,7 @@ handle_passwd_key (saver_info *si, XKeyEvent *event)
    unsigned char decoded [MAX_BYTES_PER_CHAR * 10]; /* leave some slack */
    KeySym keysym = 0;
  
@@ -2447,7 +2446,7 @@ index 7c92be6..a4114e2 100644
    /* XLookupString may return more than one character via XRebindKeysym;
       and on some systems it returns multi-byte UTF-8 characters (contrary
       to its documentation, which says it returns only Latin1.)
-@@ -1773,11 +2509,40 @@ handle_passwd_key (saver_info *si, XKeyEvent *event)
+@@ -1752,11 +2488,40 @@ handle_passwd_key (saver_info *si, XKeyEvent *event)
  
    decoded[decoded_size] = 0;
    pw->passwd_changed_p = True;
@@ -2488,7 +2487,7 @@ index 7c92be6..a4114e2 100644
    if (decoded_size == 1)		/* Handle single-char commands */
      {
        switch (*decoded)
-@@ -1867,6 +2632,7 @@ handle_passwd_key (saver_info *si, XKeyEvent *event)
+@@ -1846,6 +2611,7 @@ handle_passwd_key (saver_info *si, XKeyEvent *event)
      {
        update_passwd_window (si, "", pw->ratio);
      }
@@ -2496,7 +2495,7 @@ index 7c92be6..a4114e2 100644
  }
  
  
-@@ -1890,7 +2656,9 @@ passwd_event_loop (saver_info *si)
+@@ -1869,7 +2635,9 @@ passwd_event_loop (saver_info *si)
    passwd_animate_timer ((XtPointer) si, 0);
    reset_watchdog_timer (si, False);	/* Disable watchdog while dialog up */
  
@@ -2507,7 +2506,7 @@ index 7c92be6..a4114e2 100644
      {
        XtAppNextEvent (si->app, &event.x_event);
  
-@@ -1931,12 +2699,17 @@ passwd_event_loop (saver_info *si)
+@@ -1910,12 +2678,17 @@ passwd_event_loop (saver_info *si)
  
        if (event.x_event.xany.window == si->passwd_dialog && 
            event.x_event.xany.type == Expose)
@@ -2525,7 +2524,7 @@ index 7c92be6..a4114e2 100644
        else if (event.x_event.xany.type == ButtonPress || 
                 event.x_event.xany.type == ButtonRelease)
  	{
-@@ -1945,6 +2718,82 @@ passwd_event_loop (saver_info *si)
+@@ -1924,6 +2697,82 @@ passwd_event_loop (saver_info *si)
  	  if (si->pw_data->login_button_p)
  	    handle_login_button (si, &event.x_event);
  	}
@@ -2608,7 +2607,7 @@ index 7c92be6..a4114e2 100644
        else
  	XtDispatchEvent (&event.x_event);
      }
-@@ -1970,8 +2819,13 @@ passwd_event_loop (saver_info *si)
+@@ -1949,8 +2798,13 @@ passwd_event_loop (saver_info *si)
  
    if (msg)
      {
@@ -2622,7 +2621,7 @@ index 7c92be6..a4114e2 100644
        XSync (si->dpy, False);
  
        /* Swallow all pending KeyPress/KeyRelease events. */
-@@ -1989,6 +2843,10 @@ passwd_event_loop (saver_info *si)
+@@ -1968,6 +2822,10 @@ passwd_event_loop (saver_info *si)
  static void
  handle_typeahead (saver_info *si)
  {
@@ -2633,7 +2632,7 @@ index 7c92be6..a4114e2 100644
    passwd_dialog_data *pw = si->pw_data;
    int i;
    if (!si->unlock_typeahead)
-@@ -2016,6 +2874,7 @@ handle_typeahead (saver_info *si)
+@@ -1995,6 +2853,7 @@ handle_typeahead (saver_info *si)
  
    free (si->unlock_typeahead);
    si->unlock_typeahead = 0;
@@ -2641,7 +2640,7 @@ index 7c92be6..a4114e2 100644
  }
  
  
-@@ -2121,9 +2980,11 @@ gui_auth_conv(int num_msg,
+@@ -2100,9 +2959,11 @@ gui_auth_conv(int num_msg,
  	  free(prompt_trimmed);
        }
  
@@ -2653,7 +2652,7 @@ index 7c92be6..a4114e2 100644
  
        si->unlock_state = ul_read;
  
-@@ -2133,7 +2994,14 @@ gui_auth_conv(int num_msg,
+@@ -2112,7 +2973,14 @@ gui_auth_conv(int num_msg,
        if (si->unlock_state == ul_cancel)
  	goto fail;
  
@@ -2668,7 +2667,7 @@ index 7c92be6..a4114e2 100644
  
        /* Cache the first response to a PROMPT_NOECHO to save prompting for
         * each auth mechanism. */
-@@ -2141,8 +3009,10 @@ gui_auth_conv(int num_msg,
+@@ -2120,8 +2988,10 @@ gui_auth_conv(int num_msg,
  	  auth_msgs[i].type == AUTH_MSGTYPE_PROMPT_NOECHO)
  	si->cached_passwd = strdup(responses[i].response);
  
@@ -2679,7 +2678,7 @@ index 7c92be6..a4114e2 100644
      }
  
    *resp = responses;
-@@ -2150,9 +3020,11 @@ gui_auth_conv(int num_msg,
+@@ -2129,9 +2999,11 @@ gui_auth_conv(int num_msg,
    return (si->unlock_state == ul_finished) ? 0 : -1;
  
  fail:
@@ -2691,7 +2690,7 @@ index 7c92be6..a4114e2 100644
  
    if (responses)
      {
-@@ -2213,11 +3085,14 @@ auth_finished_cb (saver_info *si)
+@@ -2192,11 +3064,14 @@ auth_finished_cb (saver_info *si)
        if (XPending (si->dpy))
          {
            XNextEvent (si->dpy, &event);
@@ -2708,7 +2707,7 @@ index 7c92be6..a4114e2 100644
              break;
            XSync (si->dpy, False);
          }
-@@ -2226,7 +3101,7 @@ auth_finished_cb (saver_info *si)
+@@ -2205,7 +3080,7 @@ auth_finished_cb (saver_info *si)
    }
  
   END:
@@ -2718,7 +2717,7 @@ index 7c92be6..a4114e2 100644
  }
  
 diff --git a/driver/passwd-pam.c b/driver/passwd-pam.c
-index 0c60d50..93c73f1 100644
+index d463bc2..11f2014 100644
 --- a/driver/passwd-pam.c
 +++ b/driver/passwd-pam.c
 @@ -39,10 +39,16 @@
@@ -2746,7 +2745,7 @@ index 0c60d50..93c73f1 100644
  #include "auth.h"
  
  extern sigset_t block_sigchld (void);
-@@ -82,7 +89,10 @@ extern void unblock_sigchld (void);
+@@ -85,7 +92,10 @@ extern void unblock_sigchld (void);
  #endif
  
  static int pam_conversation (int nmsgs,
@@ -2758,10 +2757,10 @@ index 0c60d50..93c73f1 100644
                               struct pam_response **resp,
                               void *closure);
  
-@@ -183,6 +193,11 @@ pam_try_unlock(saver_info *si, Bool verbose_p,
-   struct pam_conv pc;
+@@ -188,6 +198,11 @@ pam_try_unlock(saver_info *si, Bool verbose_p,
    sigset_t set;
    struct timespec timeout;
+ # endif /* HAVE_SIGTIMEDWAIT */
 +  int pam_auth_status = 0;  /* Specific for pam_authenticate() status*/
 +  int acct_rc, setcred_rc, chauth_rc;
 +  int pam_flags = 0;
@@ -2770,7 +2769,7 @@ index 0c60d50..93c73f1 100644
  
    pc.conv = &pam_conversation;
    pc.appdata_ptr = (void *) si;
-@@ -191,6 +206,23 @@ pam_try_unlock(saver_info *si, Bool verbose_p,
+@@ -196,6 +211,23 @@ pam_try_unlock(saver_info *si, Bool verbose_p,
       `closure' argument to pc.conv always comes in as random garbage. */
    suns_pam_implementation_blows = (void *) si;
  
@@ -2794,7 +2793,7 @@ index 0c60d50..93c73f1 100644
  
    /* Initialize PAM.
     */
-@@ -201,11 +233,35 @@ pam_try_unlock(saver_info *si, Bool verbose_p,
+@@ -206,11 +238,35 @@ pam_try_unlock(saver_info *si, Bool verbose_p,
               status, PAM_STRERROR (pamh, status));
    if (status != PAM_SUCCESS) goto DONE;
  
@@ -2830,7 +2829,7 @@ index 0c60d50..93c73f1 100644
    {
      char *tty = strdup (":0.0");
      status = pam_set_item (pamh, PAM_TTY, tty);
-@@ -214,6 +270,7 @@ pam_try_unlock(saver_info *si, Bool verbose_p,
+@@ -219,6 +275,7 @@ pam_try_unlock(saver_info *si, Bool verbose_p,
                 blurb(), tty, status, PAM_STRERROR(pamh, status));
      free (tty);
    }
@@ -2838,10 +2837,10 @@ index 0c60d50..93c73f1 100644
  
    /* Try to authenticate as the current user.
       We must turn off our SIGCHLD handler for the duration of the call to
-@@ -243,56 +300,102 @@ pam_try_unlock(saver_info *si, Bool verbose_p,
-   timeout.tv_sec = 0;
-   timeout.tv_nsec = 1;
-   set = block_sigchld();
+@@ -251,65 +308,103 @@ pam_try_unlock(saver_info *si, Bool verbose_p,
+   set =
+ # endif /* HAVE_SIGTIMEDWAIT */
+     block_sigchld();
 -  status = pam_authenticate (pamh, 0);
 +  pam_auth_status = pam_authenticate (pamh, pam_flags);
  # ifdef HAVE_SIGTIMEDWAIT
@@ -2951,8 +2950,16 @@ index 0c60d50..93c73f1 100644
            if (verbose_p)
              fprintf (stderr, "%s: pam_chauthtok (...) ==> %d (%s)\n",
 -                     blurb(), status2, PAM_STRERROR(pamh, status2));
+-        }
 +                     blurb(), chauth_rc, PAM_STRERROR(pamh, chauth_rc));
-+
+ 
+-      /* If 'configure' requested that we believe the results of PAM
+-         account module failures, then obey that status code.
+-         Otherwise ignore it.
+-       */
+-#ifdef PAM_CHECK_ACCOUNT_TYPE
+-       status = status2;
+-#endif
 +          if (chauth_rc != PAM_SUCCESS)
 +            {
 +              pam_auth_status = chauth_rc;
@@ -2965,27 +2972,22 @@ index 0c60d50..93c73f1 100644
 +          write_to_child (si, "pw_acct_fail", PAM_STRERROR(pamh, acct_rc));
 +          sleep (3);
 +          goto DONE;
-         }
++        }
  
-       /* If 'configure' requested that we believe the results of PAM
-@@ -306,30 +409,68 @@ pam_try_unlock(saver_info *si, Bool verbose_p,
        /* Each time we successfully authenticate, refresh credentials,
           for Kerberos/AFS/DCE/etc.  If this fails, just ignore that
-          failure and blunder along; it shouldn't matter.
--
-+      */
-+#ifdef __linux__
-+      /*
-          Note: this used to be PAM_REFRESH_CRED instead of
-          PAM_REINITIALIZE_CRED, but Jason Heiss <jheiss@ee.washington.edu>
-          says that the Linux PAM library ignores that one, and only refreshes
-          credentials when using PAM_REINITIALIZE_CRED.
-        */
+@@ -319,29 +414,62 @@ pam_try_unlock(saver_info *si, Bool verbose_p,
+ #if defined(__linux__)
+       /* Apparently the Linux PAM library ignores PAM_REFRESH_CRED and only
+          refreshes credentials when using PAM_REINITIALIZE_CRED. */
 -      status2 = pam_setcred (pamh, PAM_REINITIALIZE_CRED);
 +      setcred_rc = pam_setcred (pamh, PAM_REINITIALIZE_CRED);
-+#else
+ #else
+       /* But Solaris requires PAM_REFRESH_CRED or extra prompts appear. */
+-      status2 = pam_setcred (pamh, PAM_REFRESH_CRED);
 +      setcred_rc = pam_setcred (pamh, PAM_REFRESH_CRED);
-+#endif
+ #endif
+ 
        if (verbose_p)
          fprintf (stderr, "%s:   pam_setcred (...) ==> %d (%s)\n",
 -                 blurb(), status2, PAM_STRERROR(pamh, status2));
@@ -3043,7 +3045,7 @@ index 0c60d50..93c73f1 100644
      si->unlock_state = ul_success;	     /* yay */
    else if (si->unlock_state == ul_cancel ||
             si->unlock_state == ul_time)
-@@ -355,6 +496,13 @@ pam_priv_init (int argc, char **argv, Bool verbose_p)
+@@ -367,6 +495,13 @@ pam_priv_init (int argc, char **argv, Bool verbose_p)
    const char file2[] = "/etc/pam.conf";
    struct stat st;
  
@@ -3057,7 +3059,7 @@ index 0c60d50..93c73f1 100644
  # ifndef S_ISDIR
  #  define S_ISDIR(mode) (((mode) & S_IFMT) == S_IFDIR)
  # endif
-@@ -381,6 +529,8 @@ pam_priv_init (int argc, char **argv, Bool verbose_p)
+@@ -393,6 +528,8 @@ pam_priv_init (int argc, char **argv, Bool verbose_p)
                  break;
                }
            fclose (f);
@@ -3066,7 +3068,7 @@ index 0c60d50..93c73f1 100644
            if (!ok)
              {
                fprintf (stderr,
-@@ -388,9 +538,11 @@ pam_priv_init (int argc, char **argv, Bool verbose_p)
+@@ -400,9 +537,11 @@ pam_priv_init (int argc, char **argv, Bool verbose_p)
                    "%s: password authentication via PAM is unlikely to work.\n",
                         blurb(), file2, PAM_SERVICE_NAME, blurb());
              }
@@ -3078,7 +3080,7 @@ index 0c60d50..93c73f1 100644
    else
      {
        fprintf (stderr,
-@@ -398,15 +550,19 @@ pam_priv_init (int argc, char **argv, Bool verbose_p)
+@@ -410,15 +549,19 @@ pam_priv_init (int argc, char **argv, Bool verbose_p)
                 "%s: password authentication via PAM is unlikely to work.\n",
                 blurb(), file2, file, blurb());
      }
@@ -3129,10 +3131,10 @@ index 3ac78e4..a17194a 100644
  
    if (uid_errno == 0 && gid_errno == 0 && sgs_errno == 0)
 diff --git a/driver/subprocs.c b/driver/subprocs.c
-index 9414df1..a244f36 100644
+index 092e1b2..94f3e6e 100644
 --- a/driver/subprocs.c
 +++ b/driver/subprocs.c
-@@ -243,7 +243,11 @@ show_job_list (void)
+@@ -252,7 +252,11 @@ show_job_list (void)
  
  static void clean_job_list (void);
  
@@ -3144,7 +3146,7 @@ index 9414df1..a244f36 100644
  make_job (pid_t pid, int screen, const char *cmd)
  {
    struct screenhack_job *job = (struct screenhack_job *) malloc (sizeof(*job));
-@@ -413,7 +417,11 @@ unblock_sigchld (void)
+@@ -440,7 +444,11 @@ unblock_sigchld (void)
    block_sigchld_handler--;
  }
  
@@ -3156,7 +3158,7 @@ index 9414df1..a244f36 100644
  kill_job (saver_info *si, pid_t pid, int signal)
  {
    saver_preferences *p = &si->prefs;
-@@ -598,9 +606,14 @@ describe_dead_child (saver_info *si, pid_t kid, int wait_status)
+@@ -628,9 +636,14 @@ describe_dead_child (saver_info *si, pid_t kid, int wait_status)
  	 mention them) if we've just killed the subprocess.  But mention them
  	 if they happen on their own.
         */
@@ -3174,7 +3176,7 @@ index 9414df1..a244f36 100644
          {
            /* Don't call fprintf() from signal handlers, as it might malloc.
  	  fprintf (stderr,
-@@ -640,8 +653,12 @@ describe_dead_child (saver_info *si, pid_t kid, int wait_status)
+@@ -670,8 +683,12 @@ describe_dead_child (saver_info *si, pid_t kid, int wait_status)
    else if (WIFSIGNALED (wait_status))
      {
        if (p->verbose_p ||
@@ -3189,7 +3191,7 @@ index 9414df1..a244f36 100644
  	  WTERMSIG (wait_status) != SIGTERM)
          {
            /* Don't call fprintf() from signal handlers, as it might malloc.
-@@ -709,12 +726,20 @@ describe_dead_child (saver_info *si, pid_t kid, int wait_status)
+@@ -739,12 +756,20 @@ describe_dead_child (saver_info *si, pid_t kid, int wait_status)
    /* Clear out the pid so that screenhack_running_p() knows it's dead.
     */
    if (!job || job->status == job_dead)
@@ -3211,10 +3213,10 @@ index 9414df1..a244f36 100644
  
  #else  /* VMS */
 diff --git a/driver/timers.c b/driver/timers.c
-index 81c8adb..9afc752 100644
+index ea97f34..98d37f5 100644
 --- a/driver/timers.c
 +++ b/driver/timers.c
-@@ -47,6 +47,8 @@
+@@ -48,6 +48,8 @@
  #endif /* HAVE_RANDR */
  
  #include "xscreensaver.h"
@@ -3223,7 +3225,7 @@ index 81c8adb..9afc752 100644
  
  #undef ABS
  #define ABS(x)((x)<0?-(x):(x))
-@@ -60,6 +62,11 @@ static Bool proc_interrupts_activity_p (saver_info *si);
+@@ -61,6 +63,11 @@ static Bool proc_interrupts_activity_p (saver_info *si);
  #endif /* HAVE_PROC_INTERRUPTS */
  
  static void check_for_clock_skew (saver_info *si);
@@ -3235,7 +3237,7 @@ index 81c8adb..9afc752 100644
  
  
  void
-@@ -257,7 +264,11 @@ cycle_timer (XtPointer closure, XtIntervalId *id)
+@@ -258,7 +265,11 @@ cycle_timer (XtPointer closure, XtIntervalId *id)
         crash.  So, restart the thing once an hour. */
      how_long = 1000 * 60 * 60;
  
@@ -3247,7 +3249,7 @@ index 81c8adb..9afc752 100644
      {
        if (p->verbose_p)
  	fprintf (stderr, "%s: dialog box up; delaying hack change.\n",
-@@ -310,7 +321,28 @@ activate_lock_timer (XtPointer closure, XtIntervalId *id)
+@@ -311,7 +322,28 @@ activate_lock_timer (XtPointer closure, XtIntervalId *id)
  
    if (p->verbose_p)
      fprintf (stderr, "%s: timed out; activating lock.\n", blurb());
@@ -3277,7 +3279,7 @@ index 81c8adb..9afc752 100644
  }
  
  
-@@ -616,14 +648,30 @@ dispatch_event (saver_info *si, XEvent *event)
+@@ -632,14 +664,30 @@ dispatch_event (saver_info *si, XEvent *event)
  }
  
  
@@ -3308,7 +3310,7 @@ index 81c8adb..9afc752 100644
  
    event = *e;
  
-@@ -636,10 +684,12 @@ swallow_unlock_typeahead_events (saver_info *si, XEvent *e)
+@@ -652,10 +700,12 @@ swallow_unlock_typeahead_events (saver_info *si, XEvent *e)
            if (size != 1) continue;
            switch (*s)
              {
@@ -3321,7 +3323,7 @@ index 81c8adb..9afc752 100644
              case '\012': case '\015':			/* Enter */
              case '\033':				/* ESC */
                i = 0;
-@@ -649,7 +699,17 @@ swallow_unlock_typeahead_events (saver_info *si, XEvent *e)
+@@ -665,7 +715,17 @@ swallow_unlock_typeahead_events (saver_info *si, XEvent *e)
                  break;  /* ignore space at beginning of line */
                /* else, fall through */
              default:
@@ -3339,7 +3341,7 @@ index 81c8adb..9afc752 100644
                break;
              }
          }
-@@ -657,6 +717,7 @@ swallow_unlock_typeahead_events (saver_info *si, XEvent *e)
+@@ -673,6 +733,7 @@ swallow_unlock_typeahead_events (saver_info *si, XEvent *e)
      } while (i < sizeof(buf)-1 &&
               XCheckMaskEvent (si->dpy, KeyPressMask, &event));
  
@@ -3347,7 +3349,7 @@ index 81c8adb..9afc752 100644
    buf[i] = 0;
  
    if (si->unlock_typeahead)
-@@ -671,6 +732,7 @@ swallow_unlock_typeahead_events (saver_info *si, XEvent *e)
+@@ -687,6 +748,7 @@ swallow_unlock_typeahead_events (saver_info *si, XEvent *e)
      si->unlock_typeahead = 0;
  
    memset (buf, 0, sizeof(buf));
@@ -3355,7 +3357,7 @@ index 81c8adb..9afc752 100644
  }
  
  
-@@ -854,6 +916,7 @@ sleep_until_idle (saver_info *si, Bool until_idle_p)
+@@ -870,6 +932,7 @@ sleep_until_idle (saver_info *si, Bool until_idle_p)
  	if (handle_clientmessage (si, &event.x_event, until_idle_p))
            {
              why = "ClientMessage";
@@ -3363,7 +3365,7 @@ index 81c8adb..9afc752 100644
              goto DONE;
            }
  	break;
-@@ -868,6 +931,47 @@ sleep_until_idle (saver_info *si, Bool until_idle_p)
+@@ -884,6 +947,47 @@ sleep_until_idle (saver_info *si, Bool until_idle_p)
  	  }
  	break;
  
@@ -3411,7 +3413,7 @@ index 81c8adb..9afc752 100644
        case KeyPress:
        case ButtonPress:
        /* Ignore release events so that hitting ESC at the password dialog
-@@ -1565,7 +1669,11 @@ watchdog_timer (XtPointer closure, XtIntervalId *id)
+@@ -1642,7 +1746,11 @@ watchdog_timer (XtPointer closure, XtIntervalId *id)
      {
        Bool running_p = screenhack_running_p (si);
  
@@ -3459,10 +3461,10 @@ index f1630b0..c77ee3f 100644
    char *user;			/* The user whose session is locked. */
    char *cached_passwd;		/* Cached password, used to avoid multiple
 diff --git a/driver/windows.c b/driver/windows.c
-index 6acaddb..51e4c6a 100644
+index 5cb3ebb..8952178 100644
 --- a/driver/windows.c
 +++ b/driver/windows.c
-@@ -1082,8 +1082,12 @@ safe_XConfigureWindow (Display *dpy, Window window,
+@@ -1084,8 +1084,12 @@ safe_XConfigureWindow (Display *dpy, Window window,
    return (!error_handler_hit_p);
  }
  
@@ -3475,7 +3477,7 @@ index 6acaddb..51e4c6a 100644
  safe_XDestroyWindow (Display *dpy, Window window)
  {
    XErrorHandler old_handler;
-@@ -1097,6 +1101,14 @@ safe_XDestroyWindow (Display *dpy, Window window)
+@@ -1099,6 +1103,14 @@ safe_XDestroyWindow (Display *dpy, Window window)
    XSetErrorHandler (old_handler);
    XSync (dpy, False);
  
@@ -3490,7 +3492,7 @@ index 6acaddb..51e4c6a 100644
    return (!error_handler_hit_p);
  }
  
-@@ -1211,6 +1223,7 @@ initialize_screensaver_window_1 (saver_screen_info *ssi)
+@@ -1213,6 +1225,7 @@ initialize_screensaver_window_1 (saver_screen_info *ssi)
     */
    attrs.event_mask = (KeyPressMask | KeyReleaseMask |
  		      ButtonPressMask | ButtonReleaseMask |
@@ -3498,7 +3500,7 @@ index 6acaddb..51e4c6a 100644
  		      PointerMotionMask);
  
    attrs.backing_store = NotUseful;
-@@ -1482,6 +1495,9 @@ raise_window (saver_info *si,
+@@ -1484,6 +1497,9 @@ raise_window (saver_info *si,
    saver_preferences *p = &si->prefs;
    int i;
  
@@ -3508,7 +3510,7 @@ index 6acaddb..51e4c6a 100644
    if (si->demoing_p)
      inhibit_fade = True;
  
-@@ -1696,6 +1712,9 @@ unblank_screen (saver_info *si)
+@@ -1698,6 +1714,9 @@ unblank_screen (saver_info *si)
    Bool unfade_p = (si->fading_possible_p && p->unfade_p);
    int i;
  
@@ -3518,7 +3520,7 @@ index 6acaddb..51e4c6a 100644
    monitor_power_on (si, True);
    reset_watchdog_timer (si, False);
  
-@@ -1984,7 +2003,7 @@ select_visual (saver_screen_info *ssi, const char *visual_name)
+@@ -1986,7 +2005,7 @@ select_visual (saver_screen_info *ssi, const char *visual_name)
        maybe_transfer_grabs (ssi, old_w, ssi->screensaver_window, ssi->number);
  
        /* Now we can destroy the old window without horking our grabs. */
@@ -3528,7 +3530,7 @@ index 6acaddb..51e4c6a 100644
        if (p->verbose_p)
  	fprintf (stderr, "%s: %d: destroyed old saver window 0x%lx.\n",
 diff --git a/driver/xscreensaver.c b/driver/xscreensaver.c
-index 06f5c13..33d357a 100644
+index 985d2ef..8699d08 100644
 --- a/driver/xscreensaver.c
 +++ b/driver/xscreensaver.c
 @@ -164,6 +164,8 @@
@@ -3577,7 +3579,7 @@ index 06f5c13..33d357a 100644
  
  static XrmOptionDescRec options [] = {
  
-@@ -670,6 +690,9 @@ connect_to_server (saver_info *si, int *argc, char **argv)
+@@ -671,6 +691,9 @@ connect_to_server (saver_info *si, int *argc, char **argv)
  	{ &XA_ESETROOT_PMAP_ID, "ESETROOT_PMAP_ID" },
  	{ &XA_XROOTPMAP_ID, "_XROOTPMAP_ID" },
  	{ &XA_NET_WM_USER_TIME, "_NET_WM_USER_TIME" },
@@ -3587,7 +3589,7 @@ index 06f5c13..33d357a 100644
  	{ NULL, NULL } /* Must be last to terminate list */
        };
      const struct atom_request *atom_lists[3] = { NULL, NULL, NULL };
-@@ -1164,8 +1187,36 @@ static void
+@@ -1165,8 +1188,36 @@ static void
  main_loop (saver_info *si)
  {
    saver_preferences *p = &si->prefs;
@@ -3625,9 +3627,9 @@ index 06f5c13..33d357a 100644
  
    while (1)
      {
-@@ -1196,6 +1247,17 @@ main_loop (saver_info *si)
+@@ -1197,6 +1248,17 @@ main_loop (saver_info *si)
              fprintf (stderr, "%s: idle with blanking disabled at %s.\n",
-                      blurb(), timestring());
+                      blurb(), timestring(0));
  
 +          /* 6221109 Changing mode from disable to anything else,
 +             doesn't lock screen.
@@ -3643,7 +3645,7 @@ index 06f5c13..33d357a 100644
            /* Go around the loop and wait for the next bout of idleness,
               or for the init file to change, or for a remote command to
               come in, or something.
-@@ -1267,6 +1329,7 @@ main_loop (saver_info *si)
+@@ -1268,6 +1330,7 @@ main_loop (saver_info *si)
                  set_locked_p (si, False);
  
                schedule_wakeup_event (si, retry, p->debug_p);
@@ -3651,7 +3653,7 @@ index 06f5c13..33d357a 100644
                continue;
              }
          }
-@@ -1329,7 +1392,17 @@ main_loop (saver_info *si)
+@@ -1330,7 +1393,17 @@ main_loop (saver_info *si)
              p->lock_p &&                /* and locking is enabled */
              !si->locking_disabled_p &&  /* and locking is possible */
              lock_timeout == 0)          /* and locking is not timer-deferred */
@@ -3670,7 +3672,7 @@ index 06f5c13..33d357a 100644
  
          /* locked_p might be true already because of the above, or because of
             the LOCK ClientMessage.  But if not, and if we're supposed to lock
-@@ -1344,10 +1417,7 @@ main_loop (saver_info *si)
+@@ -1345,10 +1418,7 @@ main_loop (saver_info *si)
        }
  #endif /* !NO_LOCKING */
  
@@ -3681,7 +3683,7 @@ index 06f5c13..33d357a 100644
          check_for_leaks ("blanked A");
  	sleep_until_idle (si, False);		/* until not idle */
          check_for_leaks ("blanked B");
-@@ -1357,6 +1427,13 @@ main_loop (saver_info *si)
+@@ -1358,6 +1428,13 @@ main_loop (saver_info *si)
  #ifndef NO_LOCKING
          /* Maybe unlock the screen.
           */
@@ -3695,7 +3697,7 @@ index 06f5c13..33d357a 100644
  	if (si->locked_p)
  	  {
  	    saver_screen_info *ssi = si->default_screen;
-@@ -1368,7 +1445,20 @@ main_loop (saver_info *si)
+@@ -1369,7 +1446,20 @@ main_loop (saver_info *si)
                suspend_screenhack (&si->screens[i], True);	  /* suspend */
  	    XUndefineCursor (si->dpy, ssi->screensaver_window);
  
@@ -3716,7 +3718,7 @@ index 06f5c13..33d357a 100644
  
  	    si->dbox_up_p = False;
  	    XDefineCursor (si->dpy, ssi->screensaver_window, ssi->cursor);
-@@ -1393,6 +1483,7 @@ main_loop (saver_info *si)
+@@ -1394,6 +1484,7 @@ main_loop (saver_info *si)
  
  	} while (!ok_to_unblank);
  
@@ -3724,7 +3726,7 @@ index 06f5c13..33d357a 100644
  
        if (p->verbose_p)
  	fprintf (stderr, "%s: unblanking screen at %s.\n",
-@@ -1477,7 +1568,19 @@ main (int argc, char **argv)
+@@ -1478,7 +1569,19 @@ main (int argc, char **argv)
    textdomain (GETTEXT_PACKAGE);
  #endif /* ENABLE_NLS */
  
@@ -3744,7 +3746,7 @@ index 06f5c13..33d357a 100644
    global_si_kludge = si;	/* I hate C so much... */
  
    fix_fds();
-@@ -1487,7 +1590,9 @@ main (int argc, char **argv)
+@@ -1488,7 +1591,9 @@ main (int argc, char **argv)
  
    save_argv (argc, argv);
    set_version_string (si, &argc, argv);
@@ -3754,7 +3756,7 @@ index 06f5c13..33d357a 100644
    hack_environment (si);
  
    spasswd = getpwuid(getuid());
-@@ -1510,6 +1615,10 @@ main (int argc, char **argv)
+@@ -1511,6 +1616,10 @@ main (int argc, char **argv)
    print_banner (si);
  
    load_init_file(si->dpy, p); /* must be before initialize_per_screen_info() */
@@ -3765,7 +3767,7 @@ index 06f5c13..33d357a 100644
    blurb_timestamp_p = p->timestamp_p;  /* kludge */
    initialize_per_screen_info (si, shell); /* also sets si->fading_possible_p */
  
-@@ -1762,8 +1871,12 @@ handle_clientmessage (saver_info *si, XEvent *event, Bool until_idle_p)
+@@ -1763,8 +1872,12 @@ handle_clientmessage (saver_info *si, XEvent *event, Bool until_idle_p)
    Atom type = 0;
    Window window = event->xclient.window;
  
@@ -3778,7 +3780,7 @@ index 06f5c13..33d357a 100644
  
    if (event->xclient.message_type != XA_SCREENSAVER ||
        event->xclient.format != 32)
-@@ -2055,10 +2168,14 @@ handle_clientmessage (saver_info *si, XEvent *event, Bool until_idle_p)
+@@ -2056,10 +2169,14 @@ handle_clientmessage (saver_info *si, XEvent *event, Bool until_idle_p)
  	  sprintf (buf, "LOCK ClientMessage received; %s", response);
  	  clientmessage_response (si, window, False, buf, response);
  
@@ -3793,7 +3795,7 @@ index 06f5c13..33d357a 100644
  
             /* Have to set the time or xscreensaver-command doesn't
                report the LOCK state change. */
-@@ -2067,6 +2184,9 @@ handle_clientmessage (saver_info *si, XEvent *event, Bool until_idle_p)
+@@ -2068,6 +2185,9 @@ handle_clientmessage (saver_info *si, XEvent *event, Bool until_idle_p)
  	  si->selection_mode = 0;
  	  si->demoing_p = False;
  
@@ -3804,10 +3806,10 @@ index 06f5c13..33d357a 100644
  	    {
  	      XtRemoveTimeOut (si->lock_id);
 diff --git a/driver/xscreensaver.h b/driver/xscreensaver.h
-index 064e9c4..a52ba63 100644
+index b319a55..f75ddaf 100644
 --- a/driver/xscreensaver.h
 +++ b/driver/xscreensaver.h
-@@ -164,6 +164,12 @@ extern Bool select_visual (saver_screen_info *ssi, const char *visual_name);
+@@ -165,6 +165,12 @@ extern Bool select_visual (saver_screen_info *ssi, const char *visual_name);
  extern void store_saver_status (saver_info *si);
  extern const char *signal_name (int signal);
  
@@ -3821,5 +3823,5 @@ index 064e9c4..a52ba63 100644
     subprocs diagnostics
     ======================================================================= */
 -- 
-2.7.4
+2.15.0
 

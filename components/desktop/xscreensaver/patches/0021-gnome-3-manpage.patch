@@ -1,0 +1,249 @@
+From d67dee1221e32ec3d22cb37cf067d242f50689ba Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Sat, 2 Dec 2017 18:06:34 -0800
+Subject: [PATCH] gnome 3 manpage
+
+Update the xscreensaver(1) man page to explain the situation with GNOME 3,
+and drop a bunch of bits that aren't relevant to Solaris at all.
+
+Need to submit GNOME 3 additions upstream, but removal of details for other
+platforms will remain a Solaris-specific patch.
+---
+ driver/xscreensaver.man | 205 ++++--------------------------------------------
+ 1 file changed, 16 insertions(+), 189 deletions(-)
+
+diff --git a/driver/xscreensaver.man b/driver/xscreensaver.man
+index 20e2399..c2ef895 100644
+--- a/driver/xscreensaver.man
++++ b/driver/xscreensaver.man
+@@ -175,199 +175,25 @@ built in at a very low level that is invisible to Unix and X.  On such
+ systems, you can typically adjust the power-saving delays only by
+ changing settings in the BIOS in some hardware-specific way.
+ 
+-If DPMS seems not to be working with XFree86, make sure the "DPMS"
+-option is set in your \fI/etc/X11/XF86Config\fP file.  See the
+-.BR XF86Config (5)
+-manual for details.
+-.SH USING GNOME OR UNITY
+-For the better part of a decade, GNOME shipped xscreensaver as-is,
+-and everything just worked out of the box.  In 2005, however, they
+-decided to re-invent the wheel and ship their own replacement for
+-the \fIxscreensaver\fP daemon called "\fIgnome-screensaver\fP",
+-rather than improving xscreensaver and contributing their changes
+-back.  As a result, the "\fIgnome-screensaver\fP" program is insecure,
+-bug-ridden, and missing many features of xscreensaver.  You shouldn't
+-use it.
+-
+-To replace gnome-screensaver with xscreensaver:
+-.RS 4
+-.TP 3
+-\fB1: Fully uninstall the gnome-screensaver package.\fP
+-.EX
+-sudo apt-get remove gnome-screensaver
+-.EE
+-or possibly
+-.EX
+-sudo dpkg -P gnome-screensaver
+-.EE
+-.TP 3
+-\fB2: Launch xscreensaver at login.\fP
+-Select "\fIStartup Applications\fP" from the menu (or manually
+-launch "\fIgnome-session-properties\fP") and add "\fIxscreensaver\fP".
+-
+-Do this as your normal user account, not as root.
+-(This should go without saying, because you should never, ever, ever
+-be logged in to the graphical desktop as user "root".)
+-.TP 3
+-\fB3: Make GNOME's "Lock Screen" use xscreensaver.\fP
+-.EX
+-sudo ln -sf /usr/bin/xscreensaver-command \\
+-            /usr/bin/gnome-screensaver-command
+-.EE
+-That doesn't work under Unity, though.  Apparently it has its own
+-built-in screen locker which is not gnome-screensaver, and cannot be
+-removed, and yet still manages to be bug-addled and insecure. 
+-Keep reinventing that wheel, guys!  (If you have figured out how to
+-replace Unity's locking "feature" with xscreensaver, let me know.)
+-.TP 3
+-\fB4: Turn off Unity's built-in blanking.\fP
+-Open "\fISystem Settings / Brightness & Lock\fP";
+-.br
+-Un-check "\fIStart Automatically\fP";
+-.br
+-Set \fI"Turn screen off when inactive for"\fP to \fI"Never".\fP
+-.SH USING KDE
+-Like GNOME, KDE also decided to invent their own screen saver framework
+-from scratch instead of simply using xscreensaver.  To replace the KDE
+-screen saver with xscreensaver, do the following:
+-.RS 4
+-.TP 3
+-\fB1: Turn off KDE's screen saver.\fP
+-Open the "\fIControl Center\fP" and
+-select the "\fIAppearance & Themes / Screensaver\fP" page.
+-Un-check "\fIStart Automatically\fP".
+-
+-Or possibly:
+-Open "\fISystem Settings\fP" and
+-select "\fIScreen Locking\fP".
+-Un-check "\fILock Screen Automatically\fP".
+-.TP 3
+-\fB2: Find your Autostart directory.\fP
+-Open the "\fISystem Administration / Paths\fP" page,
+-and see what your "Autostart path" is set to: it will
+-probably be something like \fI~/.kde/Autostart/\fP
+-or \fI~/.config/autostart/\fP
+-
+-If that doesn't work, then try this:
+-
+-Open "\fISystem Settings / Startup/Shutdown / Autostart\fP", and then
+-add "\fI/usr/bin/xscreensaver\fP".
+-
+-If you are lucky, that will create a \fIxscreensaver.desktop"\fP file 
+-for you in \fI~/.config/autostart/\fP or \fI~/.kde/Autostart/\fP.
+-.TP 3
+-\fB3: Make xscreensaver be an Autostart program.\fP
+-If it does not already exist, create a file in your autostart directory 
+-called \fIxscreensaver.desktop\fP that contains the following six lines:
+-.EX
+-[Desktop Entry]
+-Exec=xscreensaver
+-Name=XScreenSaver
+-Type=Application
+-StartupNotify=false
+-X-KDE-StartupNotify=false
+-.EE
+-.TP 3
+-\fB4: Make the various "lock session" buttons call xscreensaver.\fP
+-The file you want to replace next has moved around over the years. It
+-might be called \fI/usr/libexec/kde4/kscreenlocker\fP,
+-or it might be called "\fIkdesktop_lock\fP" or "\fIkrunner_lock\fP"
+-or "\fIkscreenlocker_greet\fP", and
+-it might be in \fI/usr/lib/kde4/libexec/\fP
+-or in \fI/usr/kde/3.5/bin/\fP or even in \fI/usr/bin/\fP,
+-depending on the distro and phase of the moon.  Replace the contents
+-of that file with these two lines:
+-.EX
+-#!/bin/sh
+-xscreensaver-command -lock
+-.EE
+-Make sure the file is executable (chmod a+x).
+-.RE
++.SH USING GNOME
++By default, GNOME 3 uses the
++.BR gdm (8)
++screen shield to blank and lock the screen, and does not run xscreensaver
++or offer any screensaver modes.
+ .PP
+-Now use xscreensaver normally, controlling it via the usual
+-.BR xscreensaver-demo (1)
+-and
+-.BR xscreensaver-command (1)
+-mechanisms.
+-.SH USING SYSTEMD
+-If the above didn't do it, and your system has
+-.BR systemd (1),
+-then give this a try:
++To run xscreensaver as part of your GNOME 3 session, symlink or copy the
++file \fI/usr/lib/xscreensaver/xscreensaver-autostart.desktop\fR to
++your  \fI~/.config/autostart/\fR directory.
+ .TP 3
+-\fB1: Create a service.\fP
+-Create the file \fI~/.config/systemd/user/xscreensaver.service\fP
+-containing:
++To prevent GNOME screen shield from locking the display, run:
+ .EX
+-[Unit]
+-Description=XScreenSaver
+-[Service]
+-ExecStart=/usr/bin/xscreensaver
+-[Install]
+-WantedBy=default.target
++gsettings set org.gnome.desktop.screensaver lock-enabled false
+ .EE
+ .TP 3
+-\fB2. Enable it.\fP
+-.EX
+-systemctl --user enable xscreensaver
+-.EE
+-Then restart X11.
+-.SH USING UPSTART
+-If it's still not working, but on your distro, that newfangled
+-.BR systemd (1)
+-nonsense has already fallen out of favor?  Then maybe this will work:
+-launch the \fI"Startup Applications"\fP applet, click \fI"Add"\fP,
+-enter these lines, then restart X11:
++To prevent gnome-shell from dimming and turning off the display, run:
+ .EX
+-Name: XScreenSaver
+-Command: xscreensaver
+-Comment: xscreensaver
++gsettings set org.gnome.desktop.session idle-delay 0
+ .EE
+-.SH USING GDM
+-You can run \fIxscreensaver\fP from your 
+-.BR gdm (1)
+-session, so that the screensaver will run even when nobody is logged 
+-in on the console.  To do this, run
+-.BR gdmconfig (1).
+-
+-On the \fIGeneral\fP page set the \fILocal Greeter\fP to
+-\fIStandard Greeter\fP.
+-
+-On the \fIBackground\fP page, type the
+-command \fB"xscreensaver -nosplash"\fP into the \fIBackground Program\fP
+-field.  That will cause gdm to run xscreensaver while nobody is logged
+-in, and kill it as soon as someone does log in.  (The user will then
+-be responsible for starting xscreensaver on their own, if they want.)
+-
+-If that doesn't work, you can edit the config file directly. Edit
+-\fI/etc/X11/gdm/gdm.conf\fP to include:
+-.EX
+-Greeter=/usr/bin/gdmlogin
+-BackgroundProgram=xscreensaver -nosplash
+-RunBackgroundProgramAlways=true
+-.EE
+-In this situation, the \fIxscreensaver\fP process will probably be running
+-as user \fIgdm\fP instead of \fIroot\fP.  You can configure the settings
+-for this nobody-logged-in state (timeouts, DPMS, etc.) by editing
+-the \fI~gdm/.xscreensaver\fP file.
+-
+-It is safe to run \fIxscreensaver\fP as root (as \fIxdm\fP or \fIgdm\fP may do).
+-If run as root, \fIxscreensaver\fP changes its effective user and group ids 
+-to something safe (like \fI"nobody"\fP) before connecting to the X server
+-or launching user-specified programs.
+-
+-An unfortunate side effect of this (important) security precaution is that
+-it may conflict with cookie-based authentication.
+-
+-If you get "connection refused" errors when running \fIxscreensaver\fP
+-from \fIgdm\fP, then this probably means that you have
+-.BR xauth (1)
+-or some other security mechanism turned on.  For information on the
+-X server's access control mechanisms, see the man pages for
+-.BR X (1),
+-.BR Xsecurity (1),
+-.BR xauth (1),
+-and
+-.BR xhost (1).
+ .SH BUGS
+ Bugs?  There are no bugs.  Ok, well, maybe.  If you find one, please let
+ me know.  https://www.jwz.org/xscreensaver/bugs.html explains how to
+@@ -1003,11 +829,12 @@ stored in the RESOURCE_MANAGER property.
+ The latest version of xscreensaver, an online version of this manual,
+ and a FAQ can always be found at https://www.jwz.org/xscreensaver/
+ .SH SEE ALSO
+-.BR X (1),
+-.BR Xsecurity (1),
++.BR X (7),
++.BR Xsecurity (7),
+ .BR xauth (1),
+ .BR xdm (1),
+-.BR gdm (1),
++.BR gdm (8),
++.BR gsettings (1),
+ .BR xhost (1),
+ .BR xscreensaver\-demo (1),
+ .BR xscreensaver\-command (1),
+-- 
+2.15.0
+

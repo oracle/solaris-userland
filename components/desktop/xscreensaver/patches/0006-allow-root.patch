@@ -1,4 +1,4 @@
-From 42a34d66f5455bb0899f189a38539affbae0e212 Mon Sep 17 00:00:00 2001
+From d4a5d27b2305054f1eaa7d10f4561302be077b09 Mon Sep 17 00:00:00 2001
 From: Alan Coopersmith <alan.coopersmith@oracle.com>
 Date: Sat, 2 Jan 2016 20:56:50 -0800
 Subject: [PATCH] allow root
@@ -22,7 +22,7 @@ See http://www.jwz.org/xscreensaver/faq.html#root-lock for his side.
  6 files changed, 37 insertions(+), 4 deletions(-)
 
 diff --git a/driver/demo-Gtk.c b/driver/demo-Gtk.c
-index d62152c..f6f9c19 100644
+index fc61fde..6a715d5 100644
 --- a/driver/demo-Gtk.c
 +++ b/driver/demo-Gtk.c
 @@ -723,6 +723,14 @@ run_hack (state *s, int list_elt, Bool report_errors_p)
@@ -40,7 +40,7 @@ index d62152c..f6f9c19 100644
    if (list_elt < 0) return;
    hack_number = s->list_elt_to_hack_number[list_elt];
  
-@@ -5163,6 +5171,13 @@ main (int argc, char **argv)
+@@ -5151,6 +5159,13 @@ main (int argc, char **argv)
                        (gpointer) s);
  #endif /* !HAVE_GTK2 */
  
@@ -132,10 +132,10 @@ index a17194a..e3aa78d 100644
        }
    }
 diff --git a/driver/subprocs.c b/driver/subprocs.c
-index a244f36..c975813 100644
+index 94f3e6e..5204a3e 100644
 --- a/driver/subprocs.c
 +++ b/driver/subprocs.c
-@@ -947,6 +947,9 @@ spawn_screenhack (saver_screen_info *ssi)
+@@ -977,6 +977,9 @@ spawn_screenhack (saver_screen_info *ssi)
    saver_preferences *p = &si->prefs;
    char* complete_hack_command;
  
@@ -146,10 +146,10 @@ index a244f36..c975813 100644
     fprintf(stderr, "--> spawn_screenhack()\n");
  
 diff --git a/driver/timers.c b/driver/timers.c
-index 9afc752..32728a0 100644
+index 98d37f5..042e3a5 100644
 --- a/driver/timers.c
 +++ b/driver/timers.c
-@@ -284,7 +284,7 @@ cycle_timer (XtPointer closure, XtIntervalId *id)
+@@ -285,7 +285,7 @@ cycle_timer (XtPointer closure, XtIntervalId *id)
  
        raise_window (si, True, True, False);
  
@@ -159,10 +159,10 @@ index 9afc752..32728a0 100644
            spawn_screenhack (&si->screens[i]);
        else
 diff --git a/driver/xscreensaver.c b/driver/xscreensaver.c
-index 33d357a..f357281 100644
+index 8699d08..ecb783a 100644
 --- a/driver/xscreensaver.c
 +++ b/driver/xscreensaver.c
-@@ -487,6 +487,7 @@ startup_ehandler (String name, String type, String class,
+@@ -488,6 +488,7 @@ startup_ehandler (String name, String type, String class,
  
    describe_uids (si, stderr);
  
@@ -170,7 +170,7 @@ index 33d357a..f357281 100644
    if (si->orig_uid && !strncmp (si->orig_uid, "root/", 5))
      {
        fprintf (stderr, "\n"
-@@ -500,11 +501,11 @@ startup_ehandler (String name, String type, String class,
+@@ -501,11 +502,11 @@ startup_ehandler (String name, String type, String class,
                 blurb());
      }
    else
@@ -184,7 +184,7 @@ index 33d357a..f357281 100644
             blurb());
      }
  
-@@ -1338,7 +1339,7 @@ main_loop (saver_info *si)
+@@ -1339,7 +1340,7 @@ main_loop (saver_info *si)
          kill_screenhack (&si->screens[i]);
  
        raise_window (si, True, True, False);
@@ -194,5 +194,5 @@ index 33d357a..f357281 100644
        else
          for (i = 0; i < si->nscreens; i++)
 -- 
-2.7.4
+2.15.0
 

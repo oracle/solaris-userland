@@ -1,6 +1,6 @@
-From bebe3185c9f754e6d672e47eb2e330c7cb80aa7f Mon Sep 17 00:00:00 2001
+From ec19cd39dee9124d9a8b672f8a365ef3ab6e077b Mon Sep 17 00:00:00 2001
 From: Alan Coopersmith <alan.coopersmith@oracle.com>
-Date: Sat, 2 Jan 2016 19:59:16 -0800
+Date: Sun, 27 May 2018 17:26:06 -0700
 Subject: [PATCH] Solaris paths
 
 Various fixes to deal with where we install things on Solaris:
@@ -19,27 +19,19 @@ Various fixes to deal with where we install things on Solaris:
   opening a gnome-terminal to run the man command.
 
 Mostly not acceptable upstream.
-
-Backport notes: this change relies on the gnome-help version delivered in
-Solaris 11 that supports "man:xscreensaver" style URL's to display man pages.
-When backporting to Solaris 10 you will probably want to uncomment the
-lines shown for GNOME 2.4/2.6.
-
-Also, you'll need to fix the package names shown when the hacks are not
-installed to be the older SUNWxscreensaver-* for Solaris 10.
 ---
  driver/Makefile.in             |  9 ++++---
- driver/XScreenSaver.ad.in      | 14 +++++++----
+ driver/XScreenSaver.ad.in      |  1 +
  driver/demo-Gtk.c              |  4 ++--
  driver/subprocs.c              | 54 ++++++++++++++++++++++++++++++++++++++++--
  driver/xscreensaver-demo.ui.in |  5 ++--
  driver/xscreensaver-text       |  6 ++++-
  driver/xscreensaver.man        |  5 ++--
  hacks/glx/Makefile.in          |  4 ++--
- 8 files changed, 82 insertions(+), 19 deletions(-)
+ 8 files changed, 73 insertions(+), 15 deletions(-)
 
 diff --git a/driver/Makefile.in b/driver/Makefile.in
-index b24536e..7c41ac0 100644
+index c20dabb..26057a1 100644
 --- a/driver/Makefile.in
 +++ b/driver/Makefile.in
 @@ -27,7 +27,7 @@ INTLTOOL_MERGE	= @INTLTOOL_MERGE@
@@ -66,43 +58,22 @@ index b24536e..7c41ac0 100644
  
  LIBS		= @LIBS@
 diff --git a/driver/XScreenSaver.ad.in b/driver/XScreenSaver.ad.in
-index 22d5bcb..3e1ff8a 100644
+index f27f1fc..6edeaeb 100644
 --- a/driver/XScreenSaver.ad.in
 +++ b/driver/XScreenSaver.ad.in
-@@ -91,18 +91,24 @@ GetViewPortIsFullOfLies: False
- 
+@@ -92,6 +92,7 @@ GetViewPortIsFullOfLies: False
  ! This is the URL loaded by the "Help" button on the splash screen,
  ! and by the "Documentation" menu item in xscreensaver-demo.
--*helpURL: http://www.jwz.org/xscreensaver/man.html
-+*helpURL: man:xscreensaver
+ *helpURL: https://www.jwz.org/xscreensaver/man.html
++!*helpURL: man:xscreensaver - doesn't work in GNOME 3 yelp yet
  
  ! loadURL       -- how the "Help" buttons load the helpURL (/bin/sh syntax.)
  ! manualCommand -- how the "Documentation" buttons display man pages.
- !
- ! And there are so very many options to choose from!
- !
-+!   Modern GNOME:
-+!
-+*loadURL: gnome-help '%s'
-+*manualCommand: gnome-help 'man:%s'
-+!
- !   Gnome 2.4, 2.6: (yelp can't display man pages, as of 2.6.3)
- !
--@GNOME24@*loadURL: @WITH_BROWSER@ '%s'
--@GNOME24@*manualCommand: gnome-terminal --title '%s manual' \
--@GNOME24@		--command '/bin/sh -c "man %s; read foo"'
-+!*loadURL: gnome-terminal --title 'xscreensaver manual' \
-+!		--command '/bin/ksh -c "man xscreensaver; read foo"'
-+!*manualCommand: gnome-terminal --title '%s manual' \
-+!		--command '/bin/ksh -c "man %s; read foo"'
- !
- !   Gnome 2.2:
- !
 diff --git a/driver/demo-Gtk.c b/driver/demo-Gtk.c
-index 87ae8a5..adb097f 100644
+index 4ca25fd..cf0c7a8 100644
 --- a/driver/demo-Gtk.c
 +++ b/driver/demo-Gtk.c
-@@ -1004,7 +1004,7 @@ restart_menu_cb (GtkWidget *widget, gpointer user_data)
+@@ -1005,7 +1005,7 @@ restart_menu_cb (GtkWidget *widget, gpointer user_data)
    flush_dialog_changes_and_save (s);
    xscreensaver_command (GDK_DISPLAY(), XA_EXIT, 0, False, NULL);
    sleep (1);
@@ -111,7 +82,7 @@ index 87ae8a5..adb097f 100644
      fprintf (stderr, "%s: fork error\n", blurb());
  
    await_xscreensaver (s);
-@@ -4965,7 +4965,7 @@ main (int argc, char **argv)
+@@ -4953,7 +4953,7 @@ main (int argc, char **argv)
  
        if (init_results == 1)
  	{
@@ -121,7 +92,7 @@ index 87ae8a5..adb097f 100644
  	}
  
 diff --git a/driver/subprocs.c b/driver/subprocs.c
-index ecbaeb2..9414df1 100644
+index 4f327e9..092e1b2 100644
 --- a/driver/subprocs.c
 +++ b/driver/subprocs.c
 @@ -14,6 +14,7 @@
@@ -132,7 +103,7 @@ index ecbaeb2..9414df1 100644
  #include <ctype.h>
  #include <stdio.h>
  #include <string.h>
-@@ -799,6 +800,8 @@ print_path_error (const char *program)
+@@ -829,6 +830,8 @@ print_path_error (const char *program)
    free (cmd);
    perror (buf);
  
@@ -141,7 +112,7 @@ index ecbaeb2..9414df1 100644
    if (errno == ENOENT &&
        (token = getenv("PATH")))
      {
-@@ -829,6 +832,7 @@ print_path_error (const char *program)
+@@ -859,6 +862,7 @@ print_path_error (const char *program)
          }
        fprintf (stderr, "\n");
      }
@@ -149,7 +120,7 @@ index ecbaeb2..9414df1 100644
  }
  
  
-@@ -885,12 +889,42 @@ fork_and_exec (saver_screen_info *ssi, const char *command)
+@@ -915,12 +919,42 @@ fork_and_exec (saver_screen_info *ssi, const char *command)
    return forked;
  }
  
@@ -192,7 +163,7 @@ index ecbaeb2..9414df1 100644
    XFlush (si->dpy);
  
    if (!monitor_powered_on_p (si))
-@@ -970,6 +1004,12 @@ spawn_screenhack (saver_screen_info *ssi)
+@@ -1000,6 +1034,12 @@ spawn_screenhack (saver_screen_info *ssi)
  	    ;
  	}
  
@@ -205,7 +176,7 @@ index ecbaeb2..9414df1 100644
        if (new_hack < 0)   /* don't run a hack */
          {
            ssi->current_hack = -1;
-@@ -1017,7 +1057,17 @@ spawn_screenhack (saver_screen_info *ssi)
+@@ -1047,7 +1087,17 @@ spawn_screenhack (saver_screen_info *ssi)
        if (si->selection_mode < 0)
  	si->selection_mode = 0;
  
@@ -224,7 +195,7 @@ index ecbaeb2..9414df1 100644
        switch ((int) forked)
  	{
  	case -1: /* fork failed */
-@@ -1196,7 +1246,7 @@ get_best_gl_visual (saver_info *si, Screen *screen)
+@@ -1226,7 +1276,7 @@ get_best_gl_visual (saver_info *si, Screen *screen)
    char *av[10];
    int ac = 0;
  
@@ -234,7 +205,7 @@ index ecbaeb2..9414df1 100644
  
    if (pipe (fds))
 diff --git a/driver/xscreensaver-demo.ui.in b/driver/xscreensaver-demo.ui.in
-index 9c31a9b..c04a331 100644
+index 7be9797..e9a4062 100644
 --- a/driver/xscreensaver-demo.ui.in
 +++ b/driver/xscreensaver-demo.ui.in
 @@ -950,8 +950,9 @@ Installed</property>
@@ -250,10 +221,10 @@ index 9c31a9b..c04a331 100644
                                  <property name="use_markup">False</property>
                                  <property name="justify">GTK_JUSTIFY_CENTER</property>
 diff --git a/driver/xscreensaver-text b/driver/xscreensaver-text
-index 8199829..921d5c7 100755
+index e965bed..ef590dd 100755
 --- a/driver/xscreensaver-text
 +++ b/driver/xscreensaver-text
-@@ -569,12 +569,15 @@ sub reformat_rss($) {
+@@ -574,12 +574,15 @@ sub reformat_rss($) {
      $i++;
  
      my ($title, $body1, $body2, $body3);
@@ -269,7 +240,7 @@ index 8199829..921d5c7 100755
      # If there are both <description> and <content> or <content:encoded>,
      # use whichever one contains more text.
      #
-@@ -598,10 +601,11 @@ sub reformat_rss($) {
+@@ -603,10 +606,11 @@ sub reformat_rss($) {
  
      $title = rss_field_to_html ($title || '');
      $body1 = rss_field_to_html ($body1 || '');
@@ -283,7 +254,7 @@ index 8199829..921d5c7 100755
    }
  
 diff --git a/driver/xscreensaver.man b/driver/xscreensaver.man
-index 11f5b02..9ad7509 100644
+index a99845b..20e2399 100644
 --- a/driver/xscreensaver.man
 +++ b/driver/xscreensaver.man
 @@ -97,9 +97,8 @@ xscreensaver-command -restart
@@ -292,17 +263,17 @@ index 11f5b02..9ad7509 100644
  when xscreensaver itself was installed.  The app-defaults file will
 -usually be named /usr/lib/X11/app-defaults/XScreenSaver, but different
 -systems might keep it in a different place (for example,
--/usr/openwin/lib/app-defaults/XScreenSaver on Solaris.)
+-/usr/openwin/lib/app-defaults/XScreenSaver on Solaris).
 +usually be named /usr/share/X11/app-defaults/XScreenSaver, but different
 +systems might keep it in a different place.
  
  When settings are changed in the Preferences dialog box (see above)
  the current settings will be written to the \fI.xscreensaver\fP file.
 diff --git a/hacks/glx/Makefile.in b/hacks/glx/Makefile.in
-index 211d356..23c68d4 100644
+index bbd07f3..b2599b9 100644
 --- a/hacks/glx/Makefile.in
 +++ b/hacks/glx/Makefile.in
-@@ -303,7 +303,7 @@ install-program:: $(EXES)
+@@ -325,7 +325,7 @@ install-program:: $(EXES)
  # the xscreensaver-gl-helper program, in $bindir
  install-program:: $(EXES)
  	@exes="@GL_UTIL_EXES@" ;					\
@@ -311,7 +282,7 @@ index 211d356..23c68d4 100644
  	 if [ "$$exes" != "" ]; then					\
  	   if [ ! -d $$idir ]; then					\
  	     $(INSTALL_DIRS) $$idir ;					\
-@@ -372,7 +372,7 @@ uninstall-program::
+@@ -394,7 +394,7 @@ uninstall-program::
  # the xscreensaver-gl-helper program, in $bindir
  uninstall-program::
  	@exes="$(GL_UTIL_EXES)" ;					\
@@ -321,5 +292,5 @@ index 211d356..23c68d4 100644
  	   echo rm -f $$idir/$$program ;				\
  		rm -f $$idir/$$program ;				\
 -- 
-2.7.4
+2.15.0
 

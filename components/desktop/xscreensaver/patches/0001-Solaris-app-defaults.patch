@@ -1,6 +1,6 @@
-From ed0b348f926a4bb5df19f59a6a86ab0030891b04 Mon Sep 17 00:00:00 2001
+From 015e14755a9b971c1b56881574e262326368a3da Mon Sep 17 00:00:00 2001
 From: Alan Coopersmith <alan.coopersmith@oracle.com>
-Date: Sat, 2 Jan 2016 19:40:40 -0800
+Date: Sun, 27 May 2018 17:23:12 -0700
 Subject: [PATCH] Solaris app-defaults
 
 Various settings to meet Solaris policies/preferences, including:
@@ -19,14 +19,14 @@ Various settings to meet Solaris policies/preferences, including:
 Not suitable for upstream as these represent our differences of opinion or
 differences of requirements with upstreams.
 ---
- driver/XScreenSaver.ad.in | 66 +++++++++++++++++++++++------------------------
- 1 file changed, 32 insertions(+), 34 deletions(-)
+ driver/XScreenSaver.ad.in | 60 +++++++++++++++++++++++------------------------
+ 1 file changed, 29 insertions(+), 31 deletions(-)
 
 diff --git a/driver/XScreenSaver.ad.in b/driver/XScreenSaver.ad.in
-index 1c1850f..22d5bcb 100644
+index 932c0fe..f27f1fc 100644
 --- a/driver/XScreenSaver.ad.in
 +++ b/driver/XScreenSaver.ad.in
-@@ -28,42 +28,43 @@
+@@ -28,24 +28,24 @@
  
  ! /* (xrdb prevention kludge: whole file)
  
@@ -52,22 +52,14 @@ index 1c1850f..22d5bcb 100644
  *chooseRandomImages:	@DEFAULT_IMAGES_P@
  ! This can be a local directory name, or the URL of an RSS or Atom feed.
  *imageDirectory:	@DEFAULT_IMAGE_DIRECTORY@
--*nice:			10
-+*nice:			19
+ *nice:			10
  *memoryLimit:		0
 -*lock:			False
 +*lock:			True
  *verbose:		False
  *timestamp:		True
  *fade:			True
- *unfade:		False
- *fadeSeconds:		0:00:03
- *fadeTicks:		20
--*splash:		True
-+*splash:		False
- *splashDuration:	0:00:05
- *visualID:		default
- *captureStderr: 	True
+@@ -59,11 +59,12 @@
  *ignoreUninstalledPrograms: False
  *authWarningSlack:	20
  
@@ -79,7 +71,7 @@ index 1c1850f..22d5bcb 100644
 -*textURL:		https://en.wikipedia.org/w/index.php?title=Special:NewPages&feed=rss
 +*textProgram:		date
 +!*textURL:		https://en.wikipedia.org/w/index.php?title=Special:NewPages&feed=rss
-+*textURL:		https://blogs.oracle.com/observatory/en_US/feed/entries/atom
++*textURL:		https://blogs.oracle.com/solaris/rss
  
  *overlayTextForeground:	#FFFF00
  *overlayTextBackground:	#000000
@@ -169,15 +161,6 @@ index 1c1850f..22d5bcb 100644
  @GLE_KLUDGE@ GL: 				extrusion -root				    \n\
  -				loop -root				    \n\
  				penetrate -root				    \n\
-@@ -245,7 +246,7 @@ GetViewPortIsFullOfLies: False
- 				squiral -root				    \n\
- 				wander -root				    \n\
- -				webcollage -root			    \n\
--				xflame -root				    \n\
-+				xflame -root -bitmap /usr/lib/xscreensaver/config/unlock-logo.png \n\
- 				xmatrix -root				    \n\
- @GL_KLUDGE@ GL: 				gflux -root				    \n\
- -				nerverot -root				    \n\
 @@ -260,14 +261,14 @@ GetViewPortIsFullOfLies: False
  @GL_KLUDGE@ GL: 				menger -root				    \n\
  @GL_KLUDGE@ GL: 				molecule -root				    \n\
@@ -217,7 +200,7 @@ index 1c1850f..22d5bcb 100644
  @GL_KLUDGE@ GL: 				pinion -root				    \n\
  @GL_KLUDGE@ GL: 				polyhedra -root				    \n\
  - GL: 				providence -root			    \n\
-@@ -468,7 +467,6 @@ XScreenSaver.bourneShell:		/bin/sh
+@@ -488,7 +487,6 @@ XScreenSaver.bourneShell:		/bin/sh
  *hacks.flipscreen3d.name:   FlipScreen3D
  *hacks.fliptext.name:       FlipText
  *hacks.fluidballs.name:     FluidBalls
@@ -226,5 +209,5 @@ index 1c1850f..22d5bcb 100644
  *hacks.fuzzyflakes.name:    FuzzyFlakes
  *hacks.geodesicgears.name:  GeodesicGears
 -- 
-2.6.1
+2.15.0
 

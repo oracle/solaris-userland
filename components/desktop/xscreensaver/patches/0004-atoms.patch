@@ -1,4 +1,4 @@
-From 9bf12ae3168aa6f9234304a8a376d47962f0d589 Mon Sep 17 00:00:00 2001
+From 3b431e5a6ca746714150d5d2ba13b94495ca80e3 Mon Sep 17 00:00:00 2001
 From: Alan Coopersmith <alan.coopersmith@oracle.com>
 Date: Sat, 2 Jan 2016 20:11:05 -0800
 Subject: [PATCH] atoms
@@ -29,7 +29,7 @@ Need to find some time to actually measure that someday (dtrace?).
  create mode 100644 driver/atoms.h
 
 diff --git a/driver/Makefile.in b/driver/Makefile.in
-index a5b94bf..90ef1d2 100644
+index 26057a1..8ab4dcb 100644
 --- a/driver/Makefile.in
 +++ b/driver/Makefile.in
 @@ -188,18 +188,18 @@ SAVER_OBJS_1	= xscreensaver.o windows.o screens.o timers.o subprocs.o \
@@ -225,10 +225,10 @@ index 0000000..09e78f3
 +
 +#endif /* _XSCREENSAVER_ATOMS_H_ */
 diff --git a/driver/demo-Gtk.c b/driver/demo-Gtk.c
-index 6c449f2..3fa27c3 100644
+index cf0c7a8..7a61ff8 100644
 --- a/driver/demo-Gtk.c
 +++ b/driver/demo-Gtk.c
-@@ -118,6 +118,7 @@
+@@ -117,6 +117,7 @@
  #include "resources.h"		/* for parse_time() */
  #include "visual.h"		/* for has_writable_cells() */
  #include "remote.h"		/* for xscreensaver_command() */
@@ -236,7 +236,7 @@ index 6c449f2..3fa27c3 100644
  #include "usleep.h"
  
  #include "logo-50.xpm"
-@@ -247,12 +248,6 @@ typedef struct {
+@@ -246,12 +247,6 @@ typedef struct {
     a closure object of our own down into the various widget callbacks. */
  static state *global_state_kludge;
  
@@ -249,7 +249,7 @@ index 6c449f2..3fa27c3 100644
  static void populate_demo_window (state *, int list_elt);
  static void populate_prefs_page (state *);
  static void populate_popup_window (state *);
-@@ -5068,20 +5063,11 @@ main (int argc, char **argv)
+@@ -5052,20 +5047,11 @@ main (int argc, char **argv)
  
    /* Intern the atoms that xscreensaver_command() needs.
     */
@@ -276,7 +276,7 @@ index 6c449f2..3fa27c3 100644
    /* Create the window and all its widgets.
     */
 diff --git a/driver/demo-Xm.c b/driver/demo-Xm.c
-index 56d1aac..a3e6567 100644
+index 149e7c5..202d9f6 100644
 --- a/driver/demo-Xm.c
 +++ b/driver/demo-Xm.c
 @@ -82,6 +82,7 @@
@@ -347,7 +347,7 @@ index 775036a..59e30c1 100644
  
  static XErrorHandler old_handler = 0;
 diff --git a/driver/windows.c b/driver/windows.c
-index d33f251..6acaddb 100644
+index 9b2bf84..5cb3ebb 100644
 --- a/driver/windows.c
 +++ b/driver/windows.c
 @@ -69,14 +69,13 @@ typedef long PROP32;
@@ -367,7 +367,7 @@ index d33f251..6acaddb 100644
  extern saver_info *global_si_kludge;	/* I hate C so much... */
  
 diff --git a/driver/xscreensaver-command.c b/driver/xscreensaver-command.c
-index 0057438..80b2813 100644
+index f4a855d..d8c4fc7 100644
 --- a/driver/xscreensaver-command.c
 +++ b/driver/xscreensaver-command.c
 @@ -40,6 +40,7 @@
@@ -427,7 +427,7 @@ index 0057438..80b2813 100644
    if (cmd == &XA_WATCH)
      {
 diff --git a/driver/xscreensaver.c b/driver/xscreensaver.c
-index 45f0f0c..06f5c13 100644
+index f5f65dc..985d2ef 100644
 --- a/driver/xscreensaver.c
 +++ b/driver/xscreensaver.c
 @@ -232,6 +232,7 @@
@@ -451,7 +451,7 @@ index 45f0f0c..06f5c13 100644
  
  static XrmOptionDescRec options [] = {
  
-@@ -667,31 +662,21 @@ connect_to_server (saver_info *si, int *argc, char **argv)
+@@ -668,31 +663,21 @@ connect_to_server (saver_info *si, int *argc, char **argv)
  
    db = si->prefs.db;	/* resources.c needs this */
  
@@ -499,10 +499,10 @@ index 45f0f0c..06f5c13 100644
    return toplevel_shell;
  }
 diff --git a/driver/xscreensaver.h b/driver/xscreensaver.h
-index d67966e..064e9c4 100644
+index 42cf794..b319a55 100644
 --- a/driver/xscreensaver.h
 +++ b/driver/xscreensaver.h
-@@ -202,8 +202,5 @@ Bool safe_XF86VidModeGetViewPort (Display *, int, int *, int *);
+@@ -203,8 +203,5 @@ Bool safe_XF86VidModeGetViewPort (Display *, int, int *, int *);
  
  extern Atom XA_VROOT, XA_XSETROOT_ID, XA_ESETROOT_PMAP_ID, XA_XROOTPMAP_ID;
  extern Atom XA_NET_WM_USER_TIME;
@@ -512,5 +512,5 @@ index d67966e..064e9c4 100644
  
  #endif /* __XSCREENSAVER_H__ */
 -- 
-2.6.1
+2.15.0
 
