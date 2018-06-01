@@ -98,6 +98,11 @@ if [ -n "$LOGFILE" -a "$ENABLE_LOGGING" = "true" ]; then
 	CMD_LINE_ARGS="$CMD_LINE_ARGS -f $LOGFILE"
 fi
 
+DRIFTDIR="`get_prop drift_dir`"
+if [ -n "$DRIFTDIR" = "true" ]; then
+	CMD_LINE_ARGS="$CMD_LINE_ARGS -J $DRIFTDIR"
+fi
+
 OTHER_OPTIONS="`get_prop other_options`"
 if [ -n "$OTHER_OPTIONS" ]; then
 	CMD_LINE_ARGS="$CMD_LINE_ARGS $OTHER_OPTIONS"

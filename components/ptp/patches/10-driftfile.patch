@@ -1,0 +1,422 @@
+This patch adds support for maintaining the clock drift rate in a driftfile
+so that ptpd does not have to start from scratch in finding the rate when it
+restarts.
+
+This feature is already in later versions of ptpd and will not be submitted to
+the community.
+
+--- ptpd-2.2.0/src/dep/ptpd_dep.h
++++ ptpd-2.2.0/src/dep/ptpd_dep.h
+@@ -429,6 +429,11 @@ Boolean timerExpired(UInteger16,Interval
+ void timerNow(TimeInternal*);
+ /** \}*/
+ 
++void adjTime_wrapper(RunTimeOpts * rtOpts, PtpClock * ptpClock, LongDouble adj);
++
++/* Observed drift save / recovery functions */
++void restoreDrift( PtpClock * ptpClock, RunTimeOpts * rtOpts, Boolean quiet);
++void saveDrift( PtpClock * ptpClock, RunTimeOpts * rtOpts, Boolean quiet);
+ 
+ /*Test functions*/
+ void
+--- ptpd-2.2.0/./src/dep/servo.c	2017-08-11 16:15:22.468526001 +0000
++++ NEWFILES/ptpd-2.2.0/./src/dep/servo.c	2017-08-11 16:14:21.679519163 +0000
+@@ -72,11 +72,9 @@
+ 
+ 	if (!rtOpts->noAdjust)
+ 		adjTime(0, rtOpts->time_mode, ptpClock);
+-	ptpClock->observed_drift = 0.0;
+ #endif /* apple */
+ 
+-
+-
++	restoreDrift(ptpClock, rtOpts, TRUE);
+ 	
+ 	/* clean more original filter variables */
+ 	clearTime(&ptpClock->offsetFromMaster);
+@@ -442,10 +438,14 @@
+ 		return;
+ 	}
+ 
+-	WARNING("performing hard frequency reset, by setting frequency to zero\n");
+ 	/* In our driver, stepping the time also has the effect of setting the frequency */
+ 	/* adjustment to zero. */
+-	 adjTimeOffset(offset, rtOpts->time_mode, ptpClock);
++	adjTimeOffset(offset, rtOpts->time_mode, ptpClock);
++
++	/* 
++	 * Drift is initialized to zero, but may be restored from driftDir 
++	 * file in initClock() if driftDir is specified in cmdline.
++	 */
+ 	ptpClock->observed_drift = 0.0;
+ 
+ 	initClock(rtOpts, ptpClock);
+@@ -510,7 +510,7 @@
+ 	// test all combinations
+ 
+ 	// call original adjtime
+-	DBG2("     adjTime_wrapper: call adjTime to %d \n", adj);
++	DBG2("     adjTime_wrapper: call adjTime to %Lf \n", adj);
+ 	adjTime(adj, rtOpts->time_mode, ptpClock);
+ 
+ 	warn_operator_fast_slewing(rtOpts, ptpClock, adj);
+--- ptpd-2.2.0/src/dep/startup.c
++++ ptpd-2.2.0/src/dep/startup.c
+@@ -546,6 +546,14 @@ recordToFile(RunTimeOpts * rtOpts)
+ void
+ ptpdShutdown(PtpClock * ptpClock)
+ {
++  extern RunTimeOpts rtOpts;
++
++  saveDrift(ptpClock, &rtOpts, FALSE);
++  if (rtOpts.time_mode == TIME_BOTH) {
++      extern PtpClock *G_timeBothClock;
++      extern RunTimeOpts *G_timeBothRtOpts;
++      saveDrift(G_timeBothClock, G_timeBothRtOpts, FALSE);
++  }
+   shutdownTime(ptpClock);
+   netShutdown(&ptpClock->netPath);
+ 
+@@ -608,6 +616,7 @@ display_short_help(char *msg, Boolean er
+ 			"\n"
+ 			"   -cC  -DVfS    Console / verbose console;     Dump stats / Interval / Output file / no Syslog\n"
+ 			"   -uU           Unicast/Hybrid mode\n"
++			"   -J <driftDir> Drift file directory\n"
+ 			"\n"
+ 			"\n"
+ 			"   -?HB           Summary / Complete help file / run-time debug level\n"
+@@ -662,7 +671,7 @@ ptpdStartup(int argc, char **argv, Integ
+ #endif
+ */
+ 
+-   const char *getopt_string = "?HgGWb:cCf:ST:dDPR:xO:tM:a:w:u:ehzl:o:i:n:N:y:m:v:r:s:p:q:Y:BjLV:XZKFU";
++   const char *getopt_string = "?HgGWb:cCf:ST:dDPR:xO:tM:a:w:u:ehzl:o:i:n:N:y:m:v:r:s:p:q:Y:BjLV:XZKFUJ:";
+ 
+   /* parse command line arguments */
+   while ((c = getopt(argc, argv, getopt_string)) != -1) {
+@@ -763,6 +772,8 @@ ptpdStartup(int argc, char **argv, Integ
+ 				"\n"
+ 	"-Z                ignore delayReq interval given by Master\n"
+ 
++	"-J FILE           store observed drift in drift file\n"
++
+ 
+ #define GETOPT_END_OF_OPTIONS
+ 				"\n"
+@@ -1162,6 +1173,11 @@ ptpdStartup(int argc, char **argv, Integ
+ 	rtOpts->do_IGMP_refresh = FALSE;
+ 	break;
+ 
++      case 'J':
++         /* safe drift files to driftDir */
++         strncpy(rtOpts->driftDir, optarg, PATH_MAX - 13);
++         break;
++      
+     default:
+       ERROR("Unknown parameter %c \n", c);
+       *ret = 1;
+--- ptpd-2.2.0/src/dep/time.c
++++ ptpd-2.2.0/src/dep/time.c
+@@ -1206,3 +1206,147 @@ Boolean getReceiveTime(TimeInternal *rec
+       return getReceiveTimeFromArray(recvTimeStamp, clockId, sequenceId, 0, nextFreeRecv);
+   }
+ }
++
++#define BOTH_FILE "drift-both"
++#define PTP_FILE "drift-nic"
++
++void
++restoreDrift(PtpClock * ptpClock, RunTimeOpts * rtOpts, Boolean quiet)
++{
++
++	FILE *driftFP;
++	Boolean reset_offset = FALSE;
++	Boolean isBoth = FALSE;
++	LongDouble recovered_drift = 0.0;
++	LongDouble new_drift = 0.0;
++	LongDouble limit_drift = 0.0;
++
++	char driftFile[PATH_MAX];
++
++	if (ptpClock == G_timeBothClock)
++		isBoth = TRUE;
++
++	DBGV("restoreDrift of %s called\n", isBoth ? "BOTH" : "PTP");
++
++	if (rtOpts->driftDir[0] == '\0') {
++		reset_offset = TRUE;
++	} else {
++		if (ptpClock->drift_saved) {
++			ptpClock->observed_drift = ptpClock->last_saved_drift;
++			if (!rtOpts->noAdjust) {
++				adjTime_wrapper(rtOpts, ptpClock,
++			   	    -ptpClock->last_saved_drift);
++			}
++			DBGV("Loading saved drift value\n");
++			return;
++		}
++
++		snprintf(driftFile, PATH_MAX, "%s/%s", rtOpts->driftDir, isBoth ?
++		    BOTH_FILE : PTP_FILE);
++
++		if( (driftFP = fopen(driftFile, "r")) == NULL) {
++			if(errno!=ENOENT) {
++				PERROR("Could not open drift file: %s - using "
++				    "current kernel frequency offset. Ignore "
++				    "this error if ", driftFile);
++			} else {
++				NOTICE("Drift file %s not found - will be "
++				    "initialised on write\n",driftFile);
++			}
++		} else if (fscanf(driftFP, "%LF", &new_drift) != 1) {
++ 			PERROR("Could not load saved offset from drift file"
++			    " - using current kernel frequency offset");
++			fclose(driftFP);
++		} else {
++			limit_drift = isBoth ? (LongDouble) ADJ_FREQ_MAX_SYSTEM :
++			    (LongDouble) ADJ_FREQ_MAX_NIC;
++			if ( new_drift >= -limit_drift && new_drift <= limit_drift) {
++				recovered_drift = new_drift;
++			} else {
++				NOTICE("Value from driftfile out of range:%LF\n",new_drift);
++			}
++		}
++		fclose(driftFP);
++		if(quiet) {
++			DBGV("Observed drift loaded from %s: %Lf "
++			    "ppb\n", driftFile, recovered_drift);
++		} else {
++			INFO("Observed drift loaded from %s: %Lf "
++			    "ppb\n", driftFile, recovered_drift);
++		}
++	}
++
++	if (reset_offset) {
++		DBGV("Observed drift and offset reset to 0.0\n");
++		if (!rtOpts->noAdjust)
++		  adjTime_wrapper(rtOpts, ptpClock, 0.0);
++		ptpClock->observed_drift = 0.0;
++		return;
++	}
++
++	ptpClock->observed_drift = recovered_drift;
++	ptpClock->drift_saved = TRUE;
++	ptpClock->last_saved_drift = recovered_drift;
++	DBGV("Observed drift reset to %d", recovered_drift);
++
++	if (!rtOpts->noAdjust)
++		adjTime_wrapper(rtOpts, ptpClock, -recovered_drift);
++}
++
++void
++saveDrift(PtpClock * ptpClock, RunTimeOpts * rtOpts, Boolean quiet)
++{
++	FILE *driftFP;
++	Boolean	isBoth = FALSE;
++	char driftFile[PATH_MAX];
++
++
++	if (ptpClock == G_timeBothClock)
++		isBoth = TRUE;
++
++	DBGV("saveDrift of %s called\n", isBoth ? "BOTH" : "PTP");
++
++	if (rtOpts->driftDir[0] == '\0')
++		return;
++
++       DBGV("portstate %d clock %d\n", ptpClock->portState,
++	   ptpClock->clockQuality.clockClass);
++       if(ptpClock->portState == PTP_PASSIVE ||
++              ptpClock->portState == PTP_MASTER ||
++                (!isBoth &&ptpClock->clockQuality.clockClass < 128)) {
++                    DBGV("We're not slave - not saving drift\n");
++                    return;
++        }
++
++
++        if(ptpClock->observed_drift == 0.0 &&
++            ptpClock->portState == PTP_LISTENING )
++                return;
++
++	ptpClock->last_saved_drift = ptpClock->observed_drift;
++	ptpClock->drift_saved = TRUE;
++
++	if(ptpClock->warned_operator_fast_slewing == 1) {
++	    DBG("Servo running at maximum shift - not saving drift file");
++	    return;
++	}
++
++	snprintf(driftFile, PATH_MAX, "%s/%s", rtOpts->driftDir, isBoth ? BOTH_FILE :
++	    PTP_FILE);
++	if( (driftFP = fopen(driftFile, "w")) == NULL) {
++		PERROR("Could not open drift file %s for writing", driftFile);
++		return;
++	}
++
++	/* The fractional part really won't make a difference here */
++	fprintf(driftFP, "%d\n", (int)round(ptpClock->observed_drift));
++
++	if (quiet) {
++		DBGV("Wrote observed drift (%Lf ppb) to %s\n", 
++		    ptpClock->observed_drift, driftFile);
++	} else {
++		INFO("Wrote observed drift (%Lf ppb) to %s\n", 
++		    ptpClock->observed_drift, driftFile);
++	}
++	fclose(driftFP);
++}
+--- ptpd-2.2.0/src/protocol.c
++++ ptpd-2.2.0/src/protocol.c
+@@ -128,6 +128,9 @@ toState(UInteger8 state, RunTimeOpts *rt
+ 			timerStop(DELAYREQ_INTERVAL_TIMER, ptpClock->itimer);
+ 		else if (ptpClock->delayMechanism == P2P)
+ 			timerStop(PDELAYREQ_INTERVAL_TIMER, ptpClock->itimer);
++		/* save observed drift value, dont' inform user */
++		saveDrift(ptpClock, rtOpts, TRUE);
++		timerStop(DRIFTFILE_WRITE_TIMER, ptpClock->itimer);
+ 
+     /* bug 25796 - Don't reset the servo when entering or leaving the slave state.
+      * Instead we assume let the servo continue to work. If the time on a the next
+@@ -183,6 +186,8 @@ toState(UInteger8 state, RunTimeOpts *rt
+ 		timerStop(ANNOUNCE_INTERVAL_TIMER,  ptpClock->itimer);
+ 		timerStop(PDELAYREQ_INTERVAL_TIMER, ptpClock->itimer);
+ 		timerStop(DELAYREQ_INTERVAL_TIMER,  ptpClock->itimer);
++		/* We don't want to update the drift value either */
++		timerStop(DRIFTFILE_WRITE_TIMER, ptpClock->itimer);
+ 
+ 		/*
+ 		 *  Count how many _unique_ timeouts happen to us.
+@@ -278,7 +283,11 @@ toState(UInteger8 state, RunTimeOpts *rt
+ 			   (ptpClock->announceReceiptTimeout) * 
+ 			   rtOpts->announceInterval,
+ 			   ptpClock->itimer);
+-
++		if (rtOpts->driftDir[0] != '\0') {
++			timerStart(DRIFTFILE_WRITE_TIMER,
++			    DRIFTFILE_WRITE_INTERVAL, ptpClock->itimer);
++			ptpClock->drift_not_written = TRUE;
++		}
+ 		/*
+ 		 * Previously, this state transition would start the delayreq timer immediately.
+ 		 * However, if this was faster than the first received sync, then the servo would drop the delayResp
+@@ -345,6 +354,8 @@ doInit(RunTimeOpts *rtOpts, PtpClock *pt
+ 	initData(rtOpts, ptpClock);
+ 	initTimer();
+ 	initClock(rtOpts, ptpClock);
++	if (ptpClock->clockQuality.clockClass > 127)
++		restoreDrift(ptpClock, rtOpts, FALSE);
+ 	m1(rtOpts, ptpClock );
+ 	msgPackHeader(ptpClock->msgObuf, ptpClock, SYNC);
+ 
+@@ -515,6 +526,17 @@ doState(RunTimeOpts *rtOpts, PtpClock *p
+ 			}
+ 			timerStop(LEAP_SECOND_NOW_TIMER,ptpClock->itimer);
+ 		}
++		if (rtOpts->driftDir[0] != '\0' && timerExpired(DRIFTFILE_WRITE_TIMER, 
++		    ptpClock->itimer) ) {
++			saveDrift(ptpClock, rtOpts, TRUE);
++			if (ptpClock->drift_not_written) {
++				timerStop(DRIFTFILE_WRITE_TIMER, ptpClock->itimer);
++				timerStart(DRIFTFILE_WRITE_TIMER,
++			    	    DRIFTFILE_WRITE_INTERVAL, ptpClock->itimer);
++				ptpClock->drift_not_written = FALSE;
++			}
++		}
++		
+ 		break;
+ 
+ 	case PTP_MASTER:
+--- ptpd-2.2.0/./src/ptpd.c	2017-08-11 16:15:22.487912818 +0000
++++ NEWFILES/ptpd-2.2.0/./src/ptpd.c	2017-05-30 15:25:45.772870700 +0000
+@@ -132,6 +132,8 @@
+ 	rtOpts.initial_delayreq = DEFAULT_DELAYREQ_INTERVAL;
+ 	rtOpts.subsequent_delayreq = DEFAULT_DELAYREQ_INTERVAL;      // this will be updated if -g is given
+ 
++    	rtOpts.driftDir[0] = '\0';
++
+     /* Initialize run time options with command line arguments */
+     if (!(ptpClock = ptpdStartup(argc, argv, &ret, &rtOpts)))
+         return ret;
+--- ptpd-2.2.0/src/datatypes.h
++++ ptpd-2.2.0/src/datatypes.h
+@@ -389,6 +389,8 @@ typedef struct {
+   TimeInternal  master_to_slave_delay;
+   TimeInternal  slave_to_master_delay;
+   LongDouble    observed_drift;
++  LongDouble	last_saved_drift;	/* Last observed drift value written to file */
++  Boolean	drift_saved;		/* Did we save a drift value already? */
+   LongDouble    frequency_adjustment;
+ 
+   TimeInternal  pdelay_req_receive_time;
+@@ -464,6 +466,7 @@ typedef struct {
+ 
+   char char_last_msg;  					/* representation of last message processed by servo */
+   Boolean last_packet_was_sync;                   /* used to limit logging of Sync messages */
++  Boolean drift_not_written;			/* Remember to cut drift file interval after the first write */
+ 
+   int waiting_for_first_sync;				/* we'll only start the delayReq timer after the first sync */
+   int waiting_for_first_delayresp;		/* Just for information purposes */
+@@ -610,6 +613,10 @@ typedef struct {
+   MasterSlaveMode master_slave_mode;
+   LongDouble system_time_update_interval;
+   int do_unicast_mode;
++
++#ifdef __sun
++  char driftDir[PATH_MAX - 12];
++#endif
+   
+   int debug_level;
+ 
+--- ptpd-2.2.0/src/constants.h
++++ ptpd-2.2.0/src/constants.h
+@@ -59,6 +59,7 @@
+ #define LEAP_SECOND_PAUSE_PERIOD        2      /* how long before/after leap */
+                                                /* second event we pause offset */
+                                                /* calculation */
++#define DRIFTFILE_WRITE_INTERVAL	1800.0
+ 
+ /* Master mode operates in ARB (UTC) timescale, without TAI+leap seconds */
+ #define DEFAULT_UTC_OFFSET           	0
+@@ -198,6 +199,7 @@ enum {
+   OPERATOR_MESSAGES_TIMER,  /* used to limit the operator messages */
+   LEAP_SECOND_PENDING_TIMER, /**<\brief timer used for handling leap second operations */
+   LEAP_SECOND_NOW_TIMER, /**<\brief Timer used to time moment of leap second */
++  DRIFTFILE_WRITE_TIMER, /**<\brief Timer used to time update of drift file */
+   TIMER_ARRAY_SIZE  /* this one is non-spec */
+ };
+ 
+--- ptpd-2.2.0/src/ptpd2.8
++++ ptpd-2.2.0/src/ptpd2.8
+@@ -30,6 +30,7 @@ ptpd \- Precision Time Protocol daemon (
+ [-U]
+ [-e]
+ [-h]
++[-J DIRECTORY]
+ [-l NUMBER,NUMBER]
+ [-o NUMBER]
+ [-i NUMBER]
+@@ -142,6 +143,12 @@ specified by config/logfile. Default val
+ .BR  config/other_options
+ A string specifying other command line options mentioned
+ below to be passed to svc:/network/ptp:default at startup.
++.TP
++.BR  config/drift_dir
++A string to specify a readable and writeable directory were ptpd
++can store drift files. Specifying a drift directory automatically enables
++the use of drift files. Drift files are used to store the native measured
++drift of the system clock relative to the upstream master clocks.
+ .SH OPTIONS
+ .TP
+ .B \-?
+@@ -214,6 +221,11 @@ run in ethernet mode (currently unimplem
+ .B \-h
+ run in End to End mode
+ .TP
++.B \-J DIRECTORY
++specify the directory to use to read and write the driftfile. There is no
++default. Specifying the directory enables the use of driftfiles. The directory
++must have its permissions set to be readable and writeable by the ptpd daemon.
++.TP
+ .B \-l NUMBER,NUMBER
+ specify inbound, outbound latency in nsec
+ .TP
