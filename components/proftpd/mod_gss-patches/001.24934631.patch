@@ -1,0 +1,63 @@
+#
+# integer promotion on sparc strikes again. this time the victim is mod_gss.
+# patch has been offered to upstream:
+#	https://github.com/huaraz/gssmod/pull/2
+#
+diff --git a/mod_gss/mod_gss/mod_gss.c.in b/mod_gss/mod_gss/mod_gss.c.in
+index d602d07..5bebab6 100644
+--- a/mod_gss/mod_gss/mod_gss.c.in
++++ b/mod_gss/mod_gss/mod_gss.c.in
+@@ -88,7 +88,7 @@ static pool *fmt_pool = NULL;
+ static char *gss_format_cb(pool *,const char *fmt, ...);
+ static void gss_closelog(void);
+ static char *radix_error(int e);
+-static int  radix_encode(unsigned char inbuf[], unsigned char outbuf[], int *len, int decode);
++static int  radix_encode(unsigned char inbuf[], unsigned char outbuf[], size_t *len, int decode);
+ static void reply_gss_error(char *code, OM_uint32 maj_stat, OM_uint32 min_stat, char *s);
+ static void log_gss_error(OM_uint32 maj_stat, OM_uint32 min_stat, char *s);
+ static ssize_t looping_read(int fd, register char *buf,register int len);
+@@ -1214,7 +1214,7 @@ MODRET gss_dec(cmd_rec *cmd) {
+     xmit_buf.length=strlen(cmd->arg)+1;
+     /* protected string <= unprotected string */
+     xmit_buf.value=pcalloc(cmd->pool,strlen(cmd->arg)+1);
+-    if ((error = radix_encode((unsigned char*)cmd->arg, xmit_buf.value, (int *)&xmit_buf.length, 1)) != 0 ) {
++    if ((error = radix_encode((unsigned char*)cmd->arg, xmit_buf.value, &xmit_buf.length, 1)) != 0 ) {
+ 	pr_response_add_err(R_501, "Couldn't base 64 decode argument to %s command (%s)",
+ 		session.sp_flags & SP_ENC ? "ENC" : 
+                 session.sp_flags & SP_MIC ? "MIC" : "", radix_error(error));
+@@ -1594,7 +1594,7 @@ MODRET gss_adat(cmd_rec *cmd) {
+     */
+ 
+     tok.value=pcalloc(cmd->tmp_pool,strlen(cmd->arg));
+-    if ((error = radix_encode((unsigned char*)cmd->arg, tok.value , (int *)&tok.length, 1)) !=0  ) {
++    if ((error = radix_encode((unsigned char*)cmd->arg, tok.value , &tok.length, 1)) !=0  ) {
+ 	pr_response_add_err(R_501, "Couldn't decode ADAT (%s)",radix_error(error)); 
+ 	gss_log("GSSAPI Could not decode ADAT (%s)",radix_error(error));
+ 	return PR_ERROR(cmd);
+@@ -1680,7 +1680,7 @@ MODRET gss_adat(cmd_rec *cmd) {
+ 
+     if (out_tok.length) {
+         gbuf = pcalloc(cmd->tmp_pool,out_tok.length*4+1);
+-	if ( (error = radix_encode((unsigned char*)out_tok.value, (unsigned char*)gbuf, (int *)&out_tok.length, 0)) != 0 ) {
++	if ( (error = radix_encode((unsigned char*)out_tok.value, (unsigned char*)gbuf, &out_tok.length, 0)) != 0 ) {
+ 	    pr_response_add_err(R_535,"Couldn't encode ADAT reply (%s)",
+ 			     radix_error(error));
+ 	    gss_log("GSSAPI Could not encode ADAT reply (%s)",radix_error(error));
+@@ -2627,7 +2627,7 @@ static char *gss_format_cb(pool *pool, const char *fmt, ...)
+     } 
+     /* protected reply <= 4*unprotected reply */
+     reply=pcalloc(pool, gss_out_buf.length*4+1);
+-    if ((error = radix_encode(gss_out_buf.value, (unsigned char*)reply, (int *)&gss_out_buf.length, 0)) != 0 ) {
++    if ((error = radix_encode(gss_out_buf.value, (unsigned char*)reply, &gss_out_buf.length, 0)) != 0 ) {
+ 	gss_log("Couldn't encode reply (%s)", radix_error(error));
+ 	gss_release_buffer(&min_stat, &gss_out_buf);
+         gss_out_buf.length = 0;
+@@ -2987,7 +2987,7 @@ static ssize_t looping_read(int fd, register char *buf, int len)
+    Case must not be ignored when reading commands and replies containing
+    base 64 encodings.
+  */
+-static int radix_encode(unsigned char inbuf[], unsigned char outbuf[], int *len, int decode)
++static int radix_encode(unsigned char inbuf[], unsigned char outbuf[], size_t *len, int decode)
+ {
+     int           i,j,D=0;
+     char          *p;
