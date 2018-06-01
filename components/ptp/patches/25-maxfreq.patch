@@ -1,0 +1,70 @@
+This patch caps the maximum skew rate used in calculations to match the
+maximum skew rate enforced by the ntp_adjtime call that ptpd uses to skew
+the clock. Otherwise the PI loop greatly underestimates the time to correct
+the offset.
+
+This patch will not be subimitted to the community as this fork of PTP is 
+moribund. 
+
+--- ptpd-2.2.0/src/dep/time.c
++++ ptpd-2.2.0/src/dep/time.c
+@@ -671,7 +671,9 @@ void adjTime(LongDouble adj, TimeMode ti
+     struct timex t;
+     static Boolean maxAdjValid;
+     static LongDouble maxAdj;
++#ifndef __sun
+     static LongDouble minTick, maxTick;
++#endif
+     static LongDouble userHZ;
+     static LongDouble tickRes; /* USER_HZ * 1000 [ppb] */
+     LongDouble tickAdj;
+@@ -689,9 +691,11 @@ void adjTime(LongDouble adj, TimeMode ti
+         adjtimex(&t);
+         maxAdj = (LongDouble)t.tolerance / (((1<<16)+0.0)/1000.0);
+         tickRes = userHZ * 1000.0;
++#ifndef __sun
+         /* limits from the adjtimex command man page; could be determined via binary search */
+         minTick = (900000.0 - 1000000.0) / userHZ;
+         maxTick = (1100000.0 - 1000000.0) / userHZ;
++#endif
+         maxAdjValid = TRUE;
+     }
+ 
+@@ -722,7 +726,9 @@ void adjTime(LongDouble adj, TimeMode ti
+      * because we need to fit that into t.freq.
+      */
+     freqAdj = adj;
+-    tickAdj = 0;
++   tickAdj = 0;
++#ifndef __sun
++/* We don't have tick adjustments on Solaris. */
+     if(freqAdj > maxAdj)
+     {
+       tickAdj = round((adj - maxAdj) / tickRes);
+@@ -737,6 +743,7 @@ void adjTime(LongDouble adj, TimeMode ti
+         tickAdj = minTick;
+       freqAdj = adj - tickAdj * tickRes;
+     }
++#endif
+     if(freqAdj > maxAdj)
+       freqAdj = maxAdj;
+     else if(freqAdj < -maxAdj)
+*** ptpd-2.2.0/src/dep/constants_dep.h
+--- ptpd-2.2.0/src/dep/constants_dep.h
+***************
+*** 112,118 ****
+  
+  #define CLOCK_IDENTITY_LENGTH 8
+  /* The system clock can handle frequency adjustments up to 100,000,000ppb */
+! #define ADJ_FREQ_MAX_SYSTEM  100000000.0
+  /* Our NIC can only handle frequency adjustments up to 1,000,000ppb */
+  #define ADJ_FREQ_MAX_NIC  1000000.0
+  
+--- 112,118 ----
+  
+  #define CLOCK_IDENTITY_LENGTH 8
+  /* The system clock can handle frequency adjustments up to 100,000,000ppb */
+! #define ADJ_FREQ_MAX_SYSTEM  512000.0
+  /* Our NIC can only handle frequency adjustments up to 1,000,000ppb */
+  #define ADJ_FREQ_MAX_NIC  1000000.0
+  
