@@ -1,13 +1,34 @@
-https://github.com/proftpd/proftpd/pull/583
---- a/src/data.c	2017-09-18 02:02:30.320297083 +0000
-+++ b/src/data.c	2017-09-18 02:35:36.740957634 +0000
-@@ -1535,6 +1535,9 @@
-         if (timeout_idle) {
-           pr_timer_reset(PR_TIMER_IDLE, ANY_MODULE);
-         }
-+      } else { /* (len == 0) */
-+	/* unexpected EOF i.e. if the file is truncated while transfer */
-+	break;
-       }
+#
+# The patch comes from upstream, it is part of 1.3.6 branch
+# Bug #4318: If sendfile(2) returns zero, e.g. due to EOF (file truncation)
+# More details can be found here:
+#	http://bugs.proftpd.org/show_bug.cgi?id=4318
+# The patch will die with next re-sync (either 1.3.7 or 1.3.6x)
+#
+
+--- a/src/data.c
++++ b/src/data.c
+@@ -1500,6 +1500,15 @@ pr_sendfile_t pr_data_sendfile(int retr_fd, off_t *offset, off_t count) {
+ #endif /* !HAVE_SOLARIS_SENDFILE */
  
-       session.xfer.total_bytes += len;
+     len = sendfile(PR_NETIO_FD(session.d->outstrm), retr_fd, offset, count);
++
++    /* If no data could be written (e.g. the file was truncated), we're
++     * done (Bug#4318).
++     */
++    if (len == 0) {
++      pr_signals_handle();
++      break;
++    }
++
+     if (len != -1 &&
+         len < count) {
+       /* Under Linux semantics, this occurs when a signal has interrupted
+@@ -1605,7 +1614,6 @@ pr_sendfile_t pr_data_sendfile(int retr_fd, off_t *offset, off_t count) {
+     len = (int) parms.bytes_sent;
+ 
+     if (rc < -1 || rc == 1) {
+-
+ #endif /* HAVE_AIX_SENDFILE */
+ 
+       /* IMO, BSD's semantics are warped.  Apparently, since we have our

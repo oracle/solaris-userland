@@ -1,8 +1,16 @@
-http://bugs.proftpd.org/show_bug.cgi?id=4162
+#
+# This is an Oracle Solaris specific patch currently. There
+# was an attempt to offer it to upstream:
+#    http://bugs.proftpd.org/show_bug.cgi?id=4162
+# unfortunately the conversation died...
+# I believe we should retry to upstream it, because
+# dtrace is also available on FreeBSD. We should fix
+# autoconf so it detects dtrace availability.
+#
 
---- a/modules/mod_xfer.c	2015-02-03 20:54:22.857151750 -0800
-+++ b/modules/mod_xfer.c	2015-02-03 21:10:36.020000070 -0800
-@@ -31,6 +31,9 @@
+--- a/modules/mod_xfer.c
++++ b/modules/mod_xfer.c
+@@ -28,6 +28,9 @@
  
  #include "conf.h"
  #include "privs.h"
@@ -12,7 +20,7 @@ http://bugs.proftpd.org/show_bug.cgi?id=4162
  
  #ifdef HAVE_SYS_SENDFILE_H
  # include <sys/sendfile.h>
-@@ -1784,7 +1787,24 @@
+@@ -1960,7 +1963,24 @@ MODRET xfer_stor(cmd_rec *cmd) {
       * be doing short writes, and we ideally should be more resilient/graceful
       * in the face of such things.
       */
@@ -35,11 +43,11 @@ http://bugs.proftpd.org/show_bug.cgi?id=4162
 +#endif
 +
      if (res != len) {
-       int xerrno = EIO;
-       cmd->error_code = errno;
-@@ -2203,7 +2223,24 @@
-     if (XFER_ABORTED)
+       xerrno = EIO;
+ 
+@@ -2512,7 +2532,24 @@ MODRET xfer_retr(cmd_rec *cmd) {
        break;
+     }
  
 +#ifdef _SOLARIS_DTRACE
 +    if (ftp_transfer_start_enabled()) {
@@ -49,7 +57,7 @@ http://bugs.proftpd.org/show_bug.cgi?id=4162
 +    }
 +#endif
 +
-     len = transmit_data(nbytes_sent, &curr_pos, lbuf, bufsz);
+     len = transmit_data(cmd->pool, nbytes_sent, &curr_pos, lbuf, bufsz);
 +
 +#ifdef _SOLARIS_DTRACE
 +    if (ftp_transfer_done_enabled() && len > 0) {
@@ -59,8 +67,6 @@ http://bugs.proftpd.org/show_bug.cgi?id=4162
 +    }
 +#endif
 +
-     if (len == 0)
+     if (len == 0) {
        break;
- 
- 
-
+     }

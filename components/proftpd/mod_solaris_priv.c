@@ -2,7 +2,7 @@
  * ProFTPD - FTP server daemon
  * Copyright (c) 1997, 1998 Public Flood Software
  * Copyright (c) 2003-2010 The ProFTPD Project team
- * Copyright (c) 2011, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,7 @@ MODRET set_solaris_priv(cmd_rec *cmd) {
   unsigned int flags = 0;
   config_rec *c = NULL;
   register unsigned int i = 0;
+  char **argv = (char **)(cmd->argv);
 
   if (cmd->argc - 1 < 1)
     CONF_ERROR(cmd, "need at least one parameter");
@@ -78,35 +79,35 @@ MODRET set_solaris_priv(cmd_rec *cmd) {
   flags |= PRIV_USE_FILE_CHOWN;
 
   for (i = 1; i < cmd->argc; i++) {
-    char *cp = cmd->argv[i];
+    char *cp = argv[i];
     cp++;
 
-    if (*cmd->argv[i] != '+' && *cmd->argv[i] != '-')
+    if (*argv[i] != '+' && *argv[i] != '-')
       CONF_ERROR(cmd, pstrcat(cmd->tmp_pool, ": bad option: '",
-        cmd->argv[i], "'", NULL));
+        argv[i], "'", NULL));
 
     if (strcasecmp(cp, "PRIV_USE_FILE_CHOWN") == 0) {
-      if (*cmd->argv[i] == '-')
+      if (*argv[i] == '-')
         flags &= ~PRIV_USE_FILE_CHOWN;
 
     } else if (strcasecmp(cp, "PRIV_FILE_CHOWN_SELF") == 0) {
-      if (*cmd->argv[i] == '-')
+      if (*argv[i] == '-')
         flags &= ~PRIV_USE_FILE_CHOWN_SELF;
 
     } else if (strcasecmp(cp, "PRIV_DAC_READ") == 0) {
-      if (*cmd->argv[i] == '+')
+      if (*argv[i] == '+')
         flags |= PRIV_USE_DAC_READ;
 
     } else if (strcasecmp(cp, "PRIV_DAC_WRITE") == 0) {
-      if (*cmd->argv[i] == '+')
+      if (*argv[i] == '+')
         flags |= PRIV_USE_DAC_WRITE;
 
     } else if (strcasecmp(cp, "PRIV_DAC_SEARCH") == 0) {
-      if (*cmd->argv[i] == '+')
+      if (*argv[i] == '+')
         flags |= PRIV_USE_DAC_SEARCH;
 
     } else if (strcasecmp(cp, "PRIV_FILE_OWNER") == 0) {
-      if (*cmd->argv[i] == '+')
+      if (*argv[i] == '+')
         flags |= PRIV_USE_FILE_OWNER;
 
     } else {
@@ -115,7 +116,7 @@ MODRET set_solaris_priv(cmd_rec *cmd) {
     }
   }
 
-  c = add_config_param(cmd->argv[0], 1, NULL);
+  c = add_config_param(argv[0], 1, NULL);
   c->argv[0] = pcalloc(c->pool, sizeof(unsigned int));
   *((unsigned int *) c->argv[0]) = flags;
 

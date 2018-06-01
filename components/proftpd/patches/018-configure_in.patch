@@ -1,0 +1,34 @@
+#
+# The patch comes from upstream. More details can be found in commit here:
+# https://github.com/proftpd/proftpd/commit/65fcca8e7855d92c782ccadf48c397f20a40eeec
+# 
+
+--- a/configure.in
++++ b/configure.in
+@@ -1391,7 +1397,7 @@ AC_CHECK_HEADERS(hpsecurity.h, [
+ dnl AIX's "lastlog" support is done via specific functions, rather than a
+ dnl struct (Bug#4285).
+ AC_MSG_CHECKING(for AIX authenticate)
+-AC_TRY_COMPILE([
++AC_TRY_LINK([
+   #include <sys/types.h>
+   #ifdef HAVE_USERSEC_H
+   # include <usersec.h>
+@@ -1410,7 +1416,7 @@ AC_TRY_COMPILE([
+ 
+ 
+ AC_MSG_CHECKING(for AIX loginfailed)
+-AC_TRY_COMPILE([
++AC_TRY_LINK([
+   #include <sys/types.h>
+   #ifdef HAVE_USERSEC_H
+   # include <usersec.h>
+@@ -1428,7 +1440,7 @@ AC_TRY_COMPILE([
+ )
+ 
+ AC_MSG_CHECKING(for AIX loginsuccess)
+-AC_TRY_COMPILE([
++AC_TRY_LINK([
+   #include <sys/types.h>
+   #ifdef HAVE_USERSEC_H
+   # include <usersec.h>

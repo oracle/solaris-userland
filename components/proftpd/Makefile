@@ -27,30 +27,33 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		proftpd
-COMPONENT_VERSION=	1.3.5
-COMPONENT_SUBVERSION=	b
+COMPONENT_VERSION=	1.3.6
+COMPONENT_SUBVERSION=
 HUMAN_VERSION=		$(COMPONENT_VERSION)$(COMPONENT_SUBVERSION)
 COMPONENT_PROJECT_URL=	http://www.proftpd.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(HUMAN_VERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:afc1789f2478acf88dfdc7d70da90a4fa2786d628218e9574273295d044b4fc8
-COMPONENT_ARCHIVE_URL=	ftp://ftp.proftpd.org/distrib/source/$(COMPONENT_ARCHIVE)
+    sha256:3132515ea8eb30fd29812d57a0366a926244df956d74fbc3d2710a2b13bb47ba
+COMPONENT_ARCHIVE_URL=	https://github.com/proftpd/proftpd/archive/v$(COMPONENT_VERSION).zip
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	service/proftpd
-TPNO_PROFTPD=		27604
+TPNO_PROFTPD=		42272
 COMPONENT_ANITYA_ID=	7609
 
 # mod_gss subcomponent
 COMPONENT_NAME_1=	mod_gss
-COMPONENT_VERSION_1=	1.3.6
+COMPONENT_VERSION_1=	1.3.8
 COMPONENT_SRC_1=	$(COMPONENT_NAME_1)-$(COMPONENT_VERSION_1)
-COMPONENT_ARCHIVE_1=	$(COMPONENT_SRC_1).tar.gz
+#
+# Note: we want to fetch mod_gss-1.3.8b.tar.gz
+#
+COMPONENT_ARCHIVE_1=	$(COMPONENT_SRC_1)b.tar.gz
 COMPONENT_ARCHIVE_HASH_1= \
-    sha256:bd1cb3f8ba0668981beb54d8b4de10ab204199327a464debd9da19196bbb23c4
-COMPONENT_ARCHIVE_URL_1= https://downloads.sourceforge.net/gssmod/$(COMPONENT_ARCHIVE_1)
-COMPONENT_ANITYA_ID_1=	17188
-TPNO_MOD_GSS=		13480
+    sha256:5322b11901108f4a6f0009c4a67bf6e6980fa9c016b24fc64b986c8529d3e58b
+MOD_GSS_URL=https://sourceforge.net/projects/gssmod/files/mod_gss/Version%20
+COMPONENT_ARCHIVE_URL_1= $(MOD_GSS_URL)$(COMPONENT_VERSION_1)/$(COMPONENT_ARCHIVE_1)
+TPNO_MOD_GSS=		42688
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -60,16 +63,11 @@ ADISTACK_MODE =	$(ADISTACK_ENABLE)
 TEST_TARGET= $(SKIP_TEST)
 include $(WS_MAKE_RULES)/common.mk
 
-# IPS_COMPONENT_VERSION is by default set to $(COMPONENT_VERSION) but it is not
-# enough for us. We need to include the $(COMPONENT_SUBVERSION) somehow.
-# Because the IPS_COMPONENT_VERSION cannot contain letters
-# ...we will use '.2' instead of 'b'.
-IPS_COMPONENT_VERSION=  $(COMPONENT_VERSION).2
-
 CFLAGS += -I$(USRINCDIR)/kerberosv5 -DHAVE_KRB5_H=1 -DKRB5_DLLIMP= -DHAVE__GETGRPSBYMEMBER -D_SOLARIS_DTRACE
 ifeq ($(OS_VERSION), 11.3)
 CFLAGS += -D_POSIX_PTHREAD_SEMANTICS
 endif
+CFLAGS += -g -xO0
 LDFLAGS +=	-m$(BITS)
 # Force immediate (no-lazy) binding because of chroot() can loose the access into (/usr)/lib
 LDFLAGS +=	-z guidance=nolazyload -z nolazyload -lbsm

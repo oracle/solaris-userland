@@ -1,6 +1,6 @@
 /*
  * ProFTPD - FTP server daemon
- * Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
  */
 
 #include "conf.h"
+#include "cmd.h"
 #include <bsm/adt.h>
 #include <bsm/adt_event.h>
 #include <security/pam_appl.h>
@@ -57,47 +58,26 @@ static void audit_autherr_ev(const void *event_data, void *user_data) {
   case PR_AUTH_DISABLEDPWD:
     auth_retval = PAM_ACCT_EXPIRED;
     break;
-  case PR_AUTH_CRED_INSUFF:
+  case PR_AUTH_CRED_INSUFFICIENT:
     auth_retval = PAM_CRED_INSUFFICIENT;
     break;
   case PR_AUTH_CRED_UNAVAIL:
     auth_retval = PAM_CRED_UNAVAIL;
     break;
-  case PR_AUTH_CRED_ERR:
+  case PR_AUTH_CRED_ERROR:
     auth_retval = PAM_CRED_ERR;
     break;
-  case PR_AUTH_UNAVAIL:
+  case PR_AUTH_INFO_UNAVAIL:
     auth_retval = PAM_AUTHINFO_UNAVAIL;
     break;
-  case PR_AUTH_MAXTRIES:
+  case PR_AUTH_MAX_ATTEMPTS_EXCEEDED:
     auth_retval = PAM_MAXTRIES;
     break;
-  case PR_AUTH_INIT_FAIL:
+  case PR_AUTH_INIT_ERROR:
     auth_retval = PAM_SESSION_ERR;
     break;
-  case PR_AUTH_NEWTOK:
+  case PR_AUTH_NEW_TOKEN_REQUIRED:
     auth_retval = PAM_NEW_AUTHTOK_REQD;
-    break;
-  case PR_AUTH_OPEN_ERR:
-    auth_retval = PAM_OPEN_ERR;
-    break;
-  case PR_AUTH_SYMBOL_ERR:
-    auth_retval = PAM_SYMBOL_ERR;
-    break;
-  case PR_AUTH_SERVICE_ERR:
-    auth_retval = PAM_SERVICE_ERR;
-    break;
-  case PR_AUTH_SYSTEM_ERR:
-    auth_retval = PAM_SYSTEM_ERR;
-    break;
-  case PR_AUTH_BUF_ERR:
-    auth_retval = PAM_BUF_ERR;
-    break;
-  case PR_AUTH_CONV_ERR:
-    auth_retval = PAM_CONV_ERR;
-    break;
-  case PR_AUTH_PERM_DENIED:
-    auth_retval = PAM_PERM_DENIED;
     break;
   default: /* PR_AUTH_BADPWD */
     auth_retval = PAM_AUTH_ERR;
@@ -391,7 +371,7 @@ adt_event_data_t* __solaris_audit_pre_arg2(
   /* The ftp server code will save errno into this variable
    * in case an error happens, and there is a valid errno for it.
    */
-  cmd->error_code = ADT_FAILURE;
+  pr_cmd_set_errno(cmd, ADT_FAILURE);
 
   if (cmd->arg == NULL) {
     pr_log_pri(PR_LOG_DEBUG, "Auditing of %s failed: %s",
@@ -463,7 +443,7 @@ MODRET __solaris_audit_post(cmd_rec *cmd,
   const char* how = "";
   const char* msg = NULL;
   size_t size = 0;
-  int exit_error = cmd->error_code;
+  int exit_error = pr_cmd_get_errno(cmd);
 
   event = (adt_event_data_t*)pr_table_remove(cmd->notes, EVENT_KEY, &size);
   if (event == NULL) {
@@ -482,7 +462,7 @@ MODRET __solaris_audit_post(cmd_rec *cmd,
     msg = fill_event(cmd, event);
     if (msg != NULL) {
       pr_log_pri(PR_LOG_DEBUG, "Auditing of %s failed: %s with %s", description,
-        msg, strerror(cmd->error_code));
+        msg, strerror(pr_cmd_get_errno(cmd)));
       goto out;
     }
   }
@@ -574,7 +554,7 @@ MODRET solaris_audit_pre_dele(cmd_rec *cmd) {
     if (errno != ENOENT) {
       pr_log_pri(PR_LOG_DEBUG, "Auditing of %s(%s) failed: %s",
         "remove", ptr, "realpath() failed");
-      cmd->error_code = errno;
+      pr_cmd_set_errno(cmd, errno);
       error_451();
       return PR_ERROR(cmd);
     }
@@ -631,7 +611,7 @@ static const char* mkd_fill_event(cmd_rec *cmd, adt_event_data_t *event) {
 
   rp = realpath(event->adt_ft_mkdir.d_path, src_realpath);
   if (rp == NULL) {
-    cmd->error_code = errno;
+    pr_cmd_set_errno(cmd, errno);
     return "realpath() failed";
   }
 
@@ -686,7 +666,7 @@ MODRET solaris_audit_pre_rmd(cmd_rec *cmd) {
   rp = realpath(ptr, src_realpath);
   if (rp == NULL) {
     if (errno != ENOENT) {
-      cmd->error_code = errno;
+      pr_cmd_set_errno(cmd, errno);
       pr_log_pri(PR_LOG_DEBUG, "Auditing of %s(%s) failed: %s",
         "rmdir", ptr, "realpath() failed");
       error_451();
@@ -727,7 +707,7 @@ MODRET solaris_audit_pre_mdtm(cmd_rec *cmd) {
   rp = realpath(ptr, src_realpath);
   if (rp == NULL) {
     if (errno != ENOENT) {
-      cmd->error_code = errno;
+      pr_cmd_set_errno(cmd, errno);
       pr_log_pri(PR_LOG_DEBUG, "Auditing of %s(%s) failed: %s",
         "utimes", ptr, "realpath() failed");
       error_451();
@@ -782,7 +762,7 @@ static const char* put_fill_event(cmd_rec *cmd, adt_event_data_t *event) {
 
   rp = realpath(event->adt_ft_put.f_path, src_realpath);
   if (rp == NULL) {
-    cmd->error_code = errno;
+    pr_cmd_set_errno(cmd, errno);
     return "realpath() failed";
   }
 
@@ -817,7 +797,7 @@ MODRET solaris_audit_pre_get(cmd_rec *cmd) {
   rp = realpath(ptr, src_realpath);
   if (rp == NULL) {
     if (errno != ENOENT) {
-      cmd->error_code = errno;
+      pr_cmd_set_errno(cmd, errno);
       pr_log_pri(PR_LOG_DEBUG, "Auditing of %s(%s) failed: %s",
         "get", ptr, "realpath() failed");
       error_451();
@@ -902,7 +882,7 @@ MODRET solaris_audit_pre_rnfr(cmd_rec *cmd) {
 
   /*
    * If src_path is not NULL, it means that this RNFR command immediatelly
-   * follows a successfull RNFR command not terminated with a RNTO command.
+   * follows a successful RNFR command not terminated with a RNTO command.
    * In such case, log an audit error for this unterminated RNFR command,
    * and then continue normally.
    *
@@ -1019,7 +999,7 @@ MODRET solaris_audit_pre_rnto(cmd_rec *cmd) {
 
   /*
    * If src_path is NULL, this means that there is no previous
-   * successfull RNFR command. The ftp server should know about this
+   * successful RNFR command. The ftp server should know about this
    * and terminate this RNTO command with an error (call the error callback).
    */
   event->adt_ft_rename.src_path = (src_path)?src_path:"";
@@ -1061,7 +1041,7 @@ static const char* rnto_fill_event(cmd_rec *cmd, adt_event_data_t *event) {
 MODRET solaris_audit_post_rnto(cmd_rec *cmd) {
    MODRET retval;
 
-  /* NULL means that there is no preceeding successfull RNFR command. */
+  /* NULL means that there is no preceeding successful RNFR command. */
   if (src_path == NULL)
     return PR_ERROR(cmd);
 

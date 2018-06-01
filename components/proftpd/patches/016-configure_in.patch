@@ -16,19 +16,19 @@
 # https://github.com/proftpd/proftpd/issues/660
 #
 
---- a/configure.in	2016-03-11 02:04:32.000000000 +0100
-+++ b/configure.in	2017-11-29 14:44:27.176309475 +0100
-@@ -45,6 +45,9 @@
+--- a/configure.in
++++ b/configure.in
+@@ -47,6 +47,9 @@ AC_SUBST(BUILD_OPTS)
  AC_SUBST(OSREL)
  AC_SUBST(OSTYPE)
  
 +AC_SUBST(FIPS_CPPFLAGS)
 +AC_SUBST(FIPS_LDFLAGS)
 +
- dnl MacOS X requires -traditional-cpp; autodetecting it isn't impossible
+ dnl MacOSX requires -traditional-cpp; autodetecting it isn't impossible
  dnl AFAIK, since assuming the need for -traditional-cpp breaks the build
  dnl on other OSes. -jwm, 30 Jan 2001
-@@ -154,6 +157,9 @@
+@@ -168,6 +171,9 @@ LIB_DEPS="\"\""
  
  AC_ARG_VAR(LIBS, [linker flags, e.g. -l<lib>.{a,so} if you have nonstandard libraries to link])
  
@@ -38,7 +38,7 @@
  dnl configure command line options...
  
  dnl --with options.
-@@ -2548,6 +2554,7 @@
+@@ -3215,6 +3221,7 @@ if test x"$pr_use_openssl" = xyes; then
  
    AC_TRY_RUN(
      [
@@ -46,7 +46,7 @@
        #include <openssl/fips.h>
        int main(int argc, char *argv[]) {
        # ifdef OPENSSL_FIPS
-@@ -2862,7 +2869,56 @@
+@@ -3688,7 +3695,56 @@ for module in $ac_shared_modules; do
    src=`echo "$module" | sed -e 's/\.la$//'`.c;
    srcinc=`echo "$module" | sed -e 's/\.la$//'`.h;
  

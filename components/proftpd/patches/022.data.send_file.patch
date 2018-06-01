@@ -1,0 +1,40 @@
+#
+# The first diff in patch explains unit test it can see sendfile(3C) returning
+# EINVAL, when running on Oracle Solaris. The diff has been sent to
+# upstream:
+#	https://github.com/proftpd/proftpd/pull/712
+#
+# The second diff comes from upstream. It was cherry picked from commit
+# c0e8f7c5fab9fb6db5a75a8a57dc0575d893e8a1:
+# 	http://goo.gl/6bAwdo
+#
+# The patch will die with future re-sync.
+#
+diff --git a/tests/api/data.c b/tests/api/data.c
+index 223a3af53..7324531ab 100644
+--- a/tests/api/data.c
++++ b/tests/api/data.c
+@@ -291,8 +291,13 @@ START_TEST (data_sendfile_test) {
+   mark_point();
+   res = pr_data_sendfile(fd, &offset, 1);
+   fail_unless(res < 0, "Failed to handle bad file descriptor");
++#ifdef	SOLARIS2
++  fail_unless(errno == EINVAL, "Expected EINVAL (%d), got %s (%d)", EINVAL,
++    strerror(errno), errno);
++#else	/* !SOLARIS2 */
+   fail_unless(errno == EBADF, "Expected EBADF (%d), got %s (%d)", EBADF,
+     strerror(errno), errno);
++#endif	/* SOLARIS2 */
+ 
+   fh = pr_fsio_open(data_test_path, O_CREAT|O_EXCL|O_WRONLY);
+   fail_unless(fh != NULL, "Failed to open '%s': %s", data_test_path,
+@@ -313,7 +318,8 @@
+   mark_point();
+   res = pr_data_sendfile(fd, &offset, strlen(text));
+   if (res < 0) {
+-    fail_unless(errno == ENOTSOCK, "Expected ENOTSOCK (%d), got %s (%d)",
++    fail_unless(errno == ENOTSOCK || errno == EINVAL,
++      "Expected ENOTSOCK (%d) or EINVAL (%d), got %s (%d)", ENOTSOCK, EINVAL,
+       ENOTSOCK, strerror(errno), errno);
+   }
+ 

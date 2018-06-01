@@ -7,9 +7,9 @@
 # Solaris specific change below is.
 #
 
---- a/modules/Makefile.in	2016-03-11 02:04:32.000000000 +0100
-+++ b/modules/Makefile.in	2017-11-29 15:41:03.866903891 +0100
-@@ -10,6 +10,9 @@
+--- a/modules/Makefile.in
++++ b/modules/Makefile.in
+@@ -10,6 +10,9 @@ SHARED_CFLAGS=-DPR_SHARED_MODULE
  SHARED_LDFLAGS=-avoid-version -export-dynamic -module
  VPATH=@srcdir@
  
@@ -19,7 +19,7 @@
  include ../Make.rules
  
  .SUFFIXES: .la
-@@ -34,6 +37,13 @@
+@@ -34,6 +37,13 @@ mod_dso.o: mod_dso.c
  	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(CPPFLAGS) $(CFLAGS) $(SHARED_CFLAGS) -c $*.c
  	$(LIBTOOL) --mode=link --tag=CC $(CC) -o $@ -rpath $(LIBEXECDIR) $(LDFLAGS) $(SHARED_LDFLAGS) $*.lo `cat $(top_srcdir)/modules/$*.c | grep '$$Libraries:' | sed -e 's/^.*\$$Libraries: \(.*\)\\$$/\1/'`
  
