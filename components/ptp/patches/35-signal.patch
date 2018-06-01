@@ -1,0 +1,338 @@
+Patch to rationalize debug handling. This will not be submitted to community
+as this fork of PTP is now moribund.
+
+*** ptpd-2.2.0/src/Makefile
+--- ptpd-2.2.0/src/Makefile
+*************** CFLAGS += -DRUNTIME_DEBUG
+*** 40,46 ****
+  #CFLAGS += -DBSD_INTERFACE_FUNCTIONS
+  #CFLAGS += -DDBG_SIGUSR2_CHANGE_DOMAIN
+  #CFLAGS += -DDBG_SIGRTMIN_LEAP_SECOND
+! #CFLAGS += -DDBG_SIGUSR2_CHANGE_DEBUG
+  #CFLAGS += -DPTPD_FULL_OPTIONS
+  
+  CFLAGS += -DPTP_EXPERIMENTAL
+--- 40,46 ----
+  #CFLAGS += -DBSD_INTERFACE_FUNCTIONS
+  #CFLAGS += -DDBG_SIGUSR2_CHANGE_DOMAIN
+  #CFLAGS += -DDBG_SIGRTMIN_LEAP_SECOND
+! CFLAGS += -DDBG_SIGUSR2_CHANGE_DEBUG
+  #CFLAGS += -DPTPD_FULL_OPTIONS
+  
+  CFLAGS += -DPTP_EXPERIMENTAL
+--- ptpd-2.2.0/src/dep/startup.c
++++ ptpd-2.2.0/src/dep/startup.c
+@@ -120,6 +120,9 @@ void catch_signals(int sig)
+        */
+     break;
+   }
++  /* Solaris needs the signals to be reenabled */
++  signal(sig,  catch_signals);
++
+ }
+ 
+ 
+@@ -706,22 +709,19 @@ ptpdStartup(int argc, char **argv, Integ
+ 	"-c                run in command line (non-daemon) mode (implies -D)\n"
+ 	"-C                verbose non-daemon mode: implies -c -S -D -V 0, disables -f\n"
+ 	"-f FILE           send output to FILE (implies -D)\n"
+-        "-S                DON'T send messages to syslog\n"
+-				"\n"
++        "-S                Don't send messages to syslog. Note that NOTICE messages and above\n"
++	"                  still go to syslog.\n"
+         "-T NUMBER         set multicast time to live\n"
+ 	"-d                display stats (per received packet, see also -V)\n"
+ 	"-D                display stats in .csv format (per received packet, see also -V)\n"
+ 	"-P                display each received packet in detail\n"
+ 	"-R FILE           record data about sync packets in a seperate file\n"
+-				"\n"
+ 	"-x                do not reset the clock if off by more than one second\n"
+ 	"-O NUMBER         do not reset the clock if offset is more than NUMBER nanoseconds\n"
+-
+ 	"-t                do not make any changes to the system clock\n"
+ 	"-M NUMBER         do not accept delay values of more than NUMBER nanoseconds\n"
+ 	"-a 10,1000        specify clock servo Proportional and Integral attenuations\n"
+ 	"-w NUMBER         specify one way delay filter stiffness\n"
+-				"\n"
+ 	"-K                use PTP hardware in network interface. Exit if\n"
+ 	"                  PTP hardware is not usable or available.\n"
+ 	"-u ADDRESS        Unicast mode: send all messages in unicast to ADDRESS\n"
+@@ -731,48 +731,36 @@ ptpdStartup(int argc, char **argv, Integ
+ 	"                    For masters, it replyes the delayResp to the IP address of the client\n"
+ 	"                    (from the corresponding delayReq message).\n"
+ 	"                    All other messages are send in multicast\n"
+-				"\n"
+ 	"-e                run in ethernet mode (level2) \n"
+ 	"-h                run in End to End mode \n"
+ 	"-z                run in Peer-delay mode\n"
+ 	"-l NUMBER,NUMBER  specify inbound, outbound latency in nsec.\n"
+ 	"                    (Use this to compensate the time it takes to send and recv\n"
+ 	"                    messages via sockets)\n"
+-			"\n"
+ 	"-o NUMBER         specify current UTC offset\n"
+ 	"-Q NUMBER         number of nanoseconds above which the clock should be stepped. Zero to disable.\n"
+ 	"-i NUMBER         specify PTP domain number (between 0-3)\n"
+ 	"-n NUMBER         specify announce interval in seconds\n"
+ 	"-N NUMBER         specify announce receipt TO (number of lost announces to timeout)\n"
+-
+        	"-y NUMBER         specify sync interval in seconds\n"
+ 	"-m NUMBER         specify max number of foreign master records\n"
+-				"\n"
+         "-v NUMBER         Master mode: specify system clock Allen variance\n"
+         "-r NUMBER         Master mode: specify system clock accuracy\n"
+         "-s NUMBER         Master mode: specify system clock class\n"
+         "-p NUMBER         Master mode: specify priority1 attribute\n"
+         "-q NUMBER         Master mode: specify priority2 attribute\n"
+-		"\n"
+-		"\n"
+ 	"-Y 0[,0]          Initial and Master_Overide delayreq intervals\n"
+ 	"                     desc: the first 2^ number is the rate the slave sends delayReq\n"
+ 	"                     When the first answer is received, the master value is used (unless the\n"
+ 	"                     second number was also given)\n"
+-		"\n"
+ 	"-B                Enable debug messages (if compiled-in). Multiple invocations to more debug\n"
+-		"\n"
+ 	"Compatibility Options (to restore previous default behaviour):\n"
+ 	"-j                Do not refresh the IGMP Multicast membership at each protol reset\n"
+ 	"-L                Allow multiple instances (ignore lock and other daemons)\n"
+ 	"-V 0              Seconds between log messages (0: all messages)\n"
+-				"\n"
+-				"\n"
+ 	"-Z                ignore delayReq interval given by Master\n"
+-
+ 	"-J FILE           store observed drift in drift file\n"
+ 
+-
+ #define GETOPT_END_OF_OPTIONS
+ 				"\n"
+ 	"Possible internal states:\n"
+@@ -793,8 +781,14 @@ ptpdStartup(int argc, char **argv, Integ
+         "Signals synchronous behaviour:\n"
+ 	"  SIGHUP         Re-open statistics log (specified with -f)\n"
+ 	"  SIGUSR1        Manually step clock to current OFM value (overides -x, but honors -t)\n"
++#ifdef DBG_SIGUSR2_CHANGE_DOMAIN
+ 	"  SIGUSR2        swap domain between current and current + 1 (useful for testing)\n"
++#endif
++#ifdef DBG_SIGUSR2_CHANGE_DEBUG
++#ifdef RUNTIME_DEBUG
+ 	"  SIGUSR2        cycle run-time debug level (requires RUNTIME_DEBUG)\n"
++#endif
++#endif
+ #ifdef DBG_SIGRTMIN_LEAP_SECOND
+ 	"  SIGRTMIN       Master: signal a leap second 61 at the end of the current UTC day\n"
+ 	"  SIGRTMIN+1     Master- signal a leap second 59 at the end of the current UTC day\n"
+*** ptpd-2.2.0/src/dep/sys.c
+--- ptpd-2.2.0/src/dep/sys.c
+*************** snprint_PortIdentity(char *s, int max_le
+*** 331,337 ****
+  
+  
+  /*
+!  * Prints a message, randing from critical to debug.
+   * This either prints the message to syslog, or with timestamp+state to stderr
+   * (which has possibly been redirected to a file, using logtofile()/dup2().
+   */
+--- 331,337 ----
+  
+  
+  /*
+!  * Prints a message, ranging from critical to debug.
+   * This either prints the message to syslog, or with timestamp+state to stderr
+   * (which has possibly been redirected to a file, using logtofile()/dup2().
+   */
+*************** message(int priority, const char * forma
+*** 348,354 ****
+  	}
+  #endif
+  
+! 	if (rtOpts.useSysLog) {
+  		static Boolean logOpened;
+  #ifdef RUNTIME_DEBUG
+  		/*
+--- 348,355 ----
+  	}
+  #endif
+  
+! /* We always log NOTICE and above to syslog */
+! 	if (rtOpts.useSysLog || priority <= LOG_NOTICE) {
+  		static Boolean logOpened;
+  #ifdef RUNTIME_DEBUG
+  		/*
+*************** message(int priority, const char * forma
+*** 361,410 ****
+  #endif
+  
+  		if (!logOpened) {
+! 			openlog("ptpd2", 0, LOG_DAEMON);
+  			logOpened = TRUE;
+  		}
+  		vsyslog(priority, format, ap);
+  
+! 		/* Also warn operator during startup only */
+! 		if (rtOpts.syslog_startup_messages_also_to_stdout &&
+! 			(priority <= LOG_WARNING)
+! 			){
+! 			va_start(ap, format);
+! 			vfprintf(stderr, format, ap);
+  		}
+! 	} else {
+! 		char time_str[MAXTIMESTR];
+! 		struct timeval now;
+! 
+! 		extern char *translatePortState(PtpClock *ptpClock);
+! 
+! 		fprintf(stderr, "   (ptpd %-9s ",
+! 			priority == LOG_EMERG   ? "emergency)" :
+! 			priority == LOG_ALERT   ? "alert)" :
+! 			priority == LOG_CRIT    ? "critical)" :
+! 			priority == LOG_ERR     ? "error)" :
+! 			priority == LOG_WARNING ? "warning)" :
+! 			priority == LOG_NOTICE  ? "notice)" :
+! 			priority == LOG_INFO    ? "info)" :
+! 			priority == LOG_DEBUG   ? "debug1)" :
+! 			priority == LOG_DEBUG2  ? "debug2)" :
+! 			priority == LOG_DEBUGV  ? "debug3)" :
+! 			"unk)");
+  
+! 		/*
+! 		 * select debug tagged with timestamps. This will slow down PTP itself if you send a lot of messages!
+! 		 * it also can cause problems in nested debug statements (which are solved by turning the signal
+! 		 *  handling synchronous, and not calling this function inside assycnhonous signal processing)
+! 		 */
+  		gettimeofday(&now, 0);
+  		strftime(time_str, MAXTIMESTR, "%X", localtime(&now.tv_sec));
+  		fprintf(stderr, "%s.%06d ", time_str, (int)now.tv_usec  );
+  		fprintf(stderr, " (%s)  ", G_ptpClock ?
+  		       translatePortState(G_ptpClock) : "___");
+- 
+- 		vfprintf(stderr, format, ap);
+  	}
+  	va_end(ap);
+  }
+  
+--- 362,425 ----
+  #endif
+  
+  		if (!logOpened) {
+! 			openlog("ptpd2", LOG_PID, LOG_DAEMON);
+  			logOpened = TRUE;
+  		}
+  		vsyslog(priority, format, ap);
+  
+! 		if (rtOpts.useSysLog) {
+! 			/* Also warn operator during startup only */
+! 			if (rtOpts.syslog_startup_messages_also_to_stdout &&
+! 				(priority <= LOG_WARNING)
+! 				){
+! 				va_start(ap, format);
+! 				vfprintf(stderr, format, ap);
+! 			}
+! 			va_end(ap);
+! 			return;
+  		}
+! 		va_start(ap, format);
+! 	}
+! 	/* Don't pollute the logfile unless debugging is on. */
+! 	if (rtOpts.displayStats && priority >= LOG_NOTICE &&
+! 	    rtOpts.debug_level <= LOG_INFO ) {
+! 		va_end(ap);
+! 		return;
+! 	}
+  
+! 	char time_str[MAXTIMESTR];
+! 	struct timeval now;
+! 
+! 	extern char *translatePortState(PtpClock *ptpClock);
+! 
+! 	fprintf(stderr, "   (ptpd %-9s ",
+! 		priority == LOG_EMERG   ? "emergency)" :
+! 		priority == LOG_ALERT   ? "alert)" :
+! 		priority == LOG_CRIT    ? "critical)" :
+! 		priority == LOG_ERR     ? "error)" :
+! 		priority == LOG_WARNING ? "warning)" :
+! 		priority == LOG_NOTICE  ? "notice)" :
+! 		priority == LOG_INFO    ? "info)" :
+! 		priority == LOG_DEBUG   ? "debug1)" :
+! 		priority == LOG_DEBUG2  ? "debug2)" :
+! 		priority == LOG_DEBUGV  ? "debug3)" :
+! 		"unk)");
+! 
+! 	/*
+! 	 * select debug tagged with timestamps. This will slow down PTP itself if you send a lot of messages!
+! 	 * it also can cause problems in nested debug statements (which are solved by turning the signal
+! 	 *  handling synchronous, and not calling this function inside assycnhonous signal processing)
+! 	 * To keep the timestamps calls down, we only put them on highest level debug messages.
+! 	 */
+! 	if (priority <= LOG_DEBUG) {
+  		gettimeofday(&now, 0);
+  		strftime(time_str, MAXTIMESTR, "%X", localtime(&now.tv_sec));
+  		fprintf(stderr, "%s.%06d ", time_str, (int)now.tv_usec  );
+  		fprintf(stderr, " (%s)  ", G_ptpClock ?
+  		       translatePortState(G_ptpClock) : "___");
+  	}
++ 
++ 	vfprintf(stderr, format, ap);
+  	va_end(ap);
+  }
+  
+*************** dump(const char *text, void *addr, int l
+*** 422,428 ****
+      int i;
+      static Boolean logOpened;
+      if(!logOpened) {
+!       openlog("ptpd2", 0, LOG_DAEMON);
+        logOpened = TRUE;
+      }
+  
+--- 437,443 ----
+      int i;
+      static Boolean logOpened;
+      if(!logOpened) {
+!       openlog("ptpd2", LOG_PID, LOG_DAEMON);
+        logOpened = TRUE;
+      }
+  
+*** ptpd-2.2.0/src/protocol.c
+--- ptpd-2.2.0/src/protocol.c
+*************** handleSync(MsgHeader *header, Octet *msg
+*** 1033,1040 ****
+  			/* We only start our own delayReq timer after receiving the first sync */
+  			if (ptpClock->waiting_for_first_sync) {
+  				ptpClock->waiting_for_first_sync = FALSE;
+! 				NOTICE("Received first Sync from Master\n");
+! 				NOTICE("   going to arm DelayReq timer for the first time, with initial rate: %Lf\n",
+  					ptpClock->minDelayReqInterval
+  				);
+  
+--- 1033,1039 ----
+  			/* We only start our own delayReq timer after receiving the first sync */
+  			if (ptpClock->waiting_for_first_sync) {
+  				ptpClock->waiting_for_first_sync = FALSE;
+! 				NOTICE("Received first Sync from Master. Arming DelayReq timer for with initial rate: %Lf\n",
+  					ptpClock->minDelayReqInterval
+  				);
+  
+--- ptpd-2.2.0/src/ptpd2.8
++++ ptpd-2.2.0/src/ptpd2.8
+@@ -160,6 +160,12 @@ Only wait the delay seconds from the sta
+ specified in the listen_ifname properter is of type aggr. An aggr interface can
+ be partially initialized so a delay may be necessary to allow it to fully
+ initialize before starting ptpd.
++.TP
++.BR  config/debug_level
++Set the debug level. The default is zero, no debugging. Maximum is 3.
++.TP
++.BR  config/send_debug_to_stderr
++Send debug messages to stderr if true, to the syslog if false. Default is true.
+ .SH OPTIONS
+ .TP
+ .B \-?
+@@ -176,7 +181,7 @@ run in command line (non-daemon) mode
+ run in command line mode and display statistics and logs
+ .TP
+ .B \-S
+-do not log information to syslog
++do not log information to syslog, except messages at NOTICE level or above.
+ .TP
+ .B \-f FILE
+ send output to FILE

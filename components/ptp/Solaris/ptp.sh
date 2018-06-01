@@ -20,7 +20,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2013, 2014, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Standard prolog
@@ -102,6 +102,25 @@ DRIFTDIR="`get_prop drift_dir`"
 if [ -n "$DRIFTDIR" = "true" ]; then
 	CMD_LINE_ARGS="$CMD_LINE_ARGS -J $DRIFTDIR"
 fi
+
+LOGDEBUG="`get_prop send_debug_to_stderr`"
+if [ "$LOGDEBUG" = "true" ]; then
+	CMD_LINE_ARGS="$CMD_LINE_ARGS -S"
+fi
+
+DEBUGLEVEL="`get_prop debug_level`"
+if [ "$DEBUGLEVEL" -gt 3 ]; then
+	DEBUGLEVEL=3
+fi
+if [ "$DEBUGLEVEL" -lt 0 ]; then
+	DEBUGLEVEL=0
+fi
+while [ "$DEBUGLEVEL" -gt 0 ]
+do
+	CMD_LINE_ARGS="$CMD_LINE_ARGS -B"
+	DEBUGLEVEL=`expr $DEBUGLEVEL - 1`
+done
+
 
 OTHER_OPTIONS="`get_prop other_options`"
 if [ -n "$OTHER_OPTIONS" ]; then
