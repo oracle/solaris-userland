@@ -1,0 +1,148 @@
+This patch implements a timeout and failover of the selected grandmaster. If
+the selected grandmaster clock goes off the error for long enough it is no
+longer considered in the clock selection process, allowing the backup to be
+chosen instead. 
+
+This patch will not be submitted to the community as this fork of ptpd is now
+moribund.
+
+*** ptpd-2.2.0/src/datatypes.h
+--- ptpd-2.2.0/src/datatypes.h
+*************** typedef struct {
+*** 153,158 ****
+--- 153,161 ----
+    ClockIdentity grandmasterIdentity;
+    UInteger16 stepsRemoved;
+    Enumeration8 timeSource;
++   UInteger16 sequenceId;
++   hrtime_t recvTimestamp;
++   hrtime_t recvTimestampPrev;
+  }MsgAnnounce;
+  
+  
+*** ptpd-2.2.0/src/display.c
+--- ptpd-2.2.0/src/display.c
+*************** msgAnnounce_display(MsgAnnounce * announ
+*** 229,234 ****
+--- 229,237 ----
+  	DBGV("originTimestamp : \n");
+  	DBGV("secondField  : \n");
+  	timestamp_display(&announce->originTimestamp);
++ 	DBGV("recvTimestamp : %lld\n", announce->recvTimestamp);
++ 	DBGV("recvTimestampPrev : %lld\n", announce->recvTimestampPrev);
++ 	DBGV("sequenceId: %u\n", announce->sequenceId);
+  	DBGV("currentUtcOffset : %d \n", announce->currentUtcOffset);
+  	DBGV("grandMasterPriority1 : %d \n", announce->grandmasterPriority1);
+  	DBGV("grandMasterClockQuality : \n");
+--- ptpd-2.2.0/src/protocol.c
++++ ptpd-2.2.0/src/protocol.c
+@@ -1896,6 +1896,7 @@ addForeign(Octet *buf,MsgHeader *header,
+ 		 * usefull to run Best Master Clock Algorithm
+ 		 */
+ 		msgUnpackHeader(buf,&ptpClock->foreign[j].header);
++		msgZeroAnnounceRecv(&ptpClock->foreign[j].announce);
+ 		msgUnpackAnnounce(buf,&ptpClock->foreign[j].announce);
+ 		DBGV("New foreign Master added \n");
+ 
+*** ptpd-2.2.0/src/dep/ptpd_dep.h
+--- ptpd-2.2.0/src/dep/ptpd_dep.h
+*************** static inline Integer32 flip32(x)
+*** 203,208 ****
+--- 203,209 ----
+   /**\{*/
+  
+  void msgUnpackHeader(Octet * buf,MsgHeader*);
++ void msgZeroAnnounceRecv (MsgAnnounce*);
+  void msgUnpackAnnounce (Octet * buf,MsgAnnounce*);
+  void msgUnpackSync(Octet * buf,MsgSync*);
+  void msgUnpackFollowUp(Octet * buf,MsgFollowUp*);
+*** ptpd-2.2.0/src/dep/msg.c
+--- ptpd-2.2.0/src/dep/msg.c
+*************** msgPackAnnounce(Octet * buf, PtpClock * 
+*** 192,202 ****
+--- 192,222 ----
+  	*(Enumeration8 *) (buf + 63) = ptpClock->timeSource;
+  }
+  
++ /* Zero the originTimestamp so we can track the last two */
++ void
++ msgZeroAnnounceRecv(MsgAnnounce * announce)
++ {
++ 	announce->recvTimestamp = 0;
++ 	announce->sequenceId = 0;
++ }
++ 
+  /*Unpack Announce message from IN buffer of ptpClock to msgtmp.Announce*/
+  void 
+  msgUnpackAnnounce(Octet * buf, MsgAnnounce * announce)
+  {
+  	UInteger16 tmp;
++ 	UInteger16 seq;
++ 
++ 	seq = flip16(*(UInteger16 *) (buf + 30));
++ 	if (seq != announce->sequenceId) {
++ 		announce->recvTimestampPrev = announce->recvTimestamp;
++ 		announce->recvTimestamp = gethrtime()/1000000000;
++ 		DBGV("blu:%lld %lld seq: %d %d\n",announce->recvTimestamp,announce->recvTimestampPrev,seq, announce->sequenceId);
++ 		announce->sequenceId = seq;
++ 	} else {
++ 		DBGV("blu: seq equal: %d %d\n",seq, announce->sequenceId);
++ 	}
++ 
+  
+  	announce->originTimestamp.secondsField.msb = 
+  		flip16(*(UInteger16 *) (buf + 34));
+*** ptpd-2.2.0/src/bmc.c
+--- ptpd-2.2.0/src/bmc.c
+*************** bmc(ForeignMasterRecord *foreignMaster,
+*** 487,492 ****
+--- 487,493 ----
+      RunTimeOpts *rtOpts, PtpClock *ptpClock)
+  {
+  	Integer16 i,best;
++ 	hrtime_t thres;
+  
+  	DBGV("number_foreign_records : %d \n", ptpClock->number_foreign_records);
+  	if (!ptpClock->number_foreign_records)
+*************** bmc(ForeignMasterRecord *foreignMaster,
+*** 494,507 ****
+  			m1(rtOpts,ptpClock);
+  			return ptpClock->portState;
+  		}
+! 
+! 	for (i=1,best = 0; i<ptpClock->number_foreign_records;i++)
+! 		if ((bmcDataSetComparison(&foreignMaster[i].header,
+  					  &foreignMaster[i].announce,
+  					  &foreignMaster[best].header,
+  					  &foreignMaster[best].announce,
+  					  ptpClock)) < 0)
+  			best = i;
+  
+  	DBGV("Best record : %d \n",best);
+  	ptpClock->foreign_record_best = best;
+--- 495,519 ----
+  			m1(rtOpts,ptpClock);
+  			return ptpClock->portState;
+  		}
+! 	thres = gethrtime()/1000000000;
+! 	thres = thres - (DEFAULT_FOREIGN_MASTER_TIME_WINDOW * rtOpts->announceInterval) - 1;
+! 	DBGV("blu: thres=%lld\n",thres);
+! 	DBGV("blu: fmr:%lld\n", foreignMaster[0].announce.recvTimestampPrev);
+! 	for (i=1,best = 0; i<ptpClock->number_foreign_records;i++) {
+! 		if ((foreignMaster[best].announce.recvTimestampPrev >= thres &&
+! 		    foreignMaster[i].announce.recvTimestampPrev >= thres) || 
+! 		    (foreignMaster[best].announce.recvTimestampPrev < thres &&
+! 		    foreignMaster[i].announce.recvTimestampPrev < thres)) {
+! 			if ((bmcDataSetComparison(&foreignMaster[i].header,
+  					  &foreignMaster[i].announce,
+  					  &foreignMaster[best].header,
+  					  &foreignMaster[best].announce,
+  					  ptpClock)) < 0)
++ 				best = i;
++ 		} else if (foreignMaster[i].announce.recvTimestampPrev >= thres) {
+  			best = i;
++ 		}
++ 	}
+  
+  	DBGV("Best record : %d \n",best);
+  	ptpClock->foreign_record_best = best;
