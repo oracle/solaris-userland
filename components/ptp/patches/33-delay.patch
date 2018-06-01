@@ -1,0 +1,22 @@
+This patch modifies the man page to include information about the startup
+delay properties.
+
+--- ptpd-2.2.0/src/ptpd2.8
++++ ptpd-2.2.0/src/ptpd2.8
+@@ -150,6 +150,16 @@ A string to specify a readable and write
+ can store drift files. Specifying a drift directory automatically enables
+ the use of drift files. Drift files are used to store the native measured
+ drift of the system clock relative to the upstream master clocks.
++.TP
++.BR  config/startup_delay
++A number of seconds to delay before starting the ptpd daemon. Used if the
++network interfaces on the system are not done initializing befoe ptpd starts.
++.TP
++.BR  config/delay_only_if_aggr
++Only wait the delay seconds from the startup_delay property if the interface
++specified in the listen_ifname properter is of type aggr. An aggr interface can
++be partially initialized so a delay may be necessary to allow it to fully
++initialize before starting ptpd.
+ .SH OPTIONS
+ .TP
+ .B \-?

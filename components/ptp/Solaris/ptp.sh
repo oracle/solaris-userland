@@ -108,6 +108,35 @@ if [ -n "$OTHER_OPTIONS" ]; then
 	CMD_LINE_ARGS="$CMD_LINE_ARGS $OTHER_OPTIONS"
 fi
 
+# Delay starting the daemon by the specified amount.
+# If delay is conditional check the conditions. 
+# We care if the configured interfaceis an aggr
+# and we care if this is the first time running since boot.
+DELAY=`get_prop startup_delay`
+# If we have already run before since boot, there is no point in waiting now
+# unless we are experiencing a problem. We delay for the first hour.
+if [ -f /system/volatile/ptpd.boot ]; then
+        BOOTTIME=`cat /system/volatile/ptpd.boot | tr -dc '[:digit:]'`
+        NOW=`date "+%s"`
+        SINCEBOOT=`expr 0$NOW - 0$BOOTTIME`
+        if [ $SINCEBOOT -gt 3600 ]; then
+                DELAY=0
+        fi
+else
+        date "+%s" > /system/volatile/ptpd.boot
+fi
+AGGRDELAY=`get_prop delay_only_if_aggr`
+if [ $AGGRDELAY = "true" -a $DELAY -gt 0 ]; then
+	if [ -n $LISTEN_IFNAME ]; then
+        	IFCLASS=`dladm show-link -p -o class $LISTEN_IFNAME 2>/dev/null`
+		if [ "q$IFCLASS" != "qaggr" ]; then
+			DELAY=0
+		fi
+	fi
+fi
+if [ $DELAY -gt 0 ]; then
+	sleep $DELAY
+fi
 
 # start ptp daemon
 $EXECFILE $CMD_LINE_ARGS
