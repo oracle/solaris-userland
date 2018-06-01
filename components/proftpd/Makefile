@@ -69,8 +69,9 @@ CFLAGS += -D_POSIX_PTHREAD_SEMANTICS
 endif
 CFLAGS += -g -xO0
 LDFLAGS +=	-m$(BITS)
-# Force immediate (no-lazy) binding because of chroot() can loose the access into (/usr)/lib
-LDFLAGS +=	-z guidance=nolazyload -z nolazyload -lbsm
+# Force immediate (no-lazy) binding because of chroot() can loose the access
+# into (/usr)/lib
+LDFLAGS +=	-z now -z guidance=nolazyload -z nolazyload -lbsm
 
 CONFIGURE_OPTIONS +=	install_user=`id -nu`
 CONFIGURE_OPTIONS +=	install_group=`groups | cut -f 1 -d ' '`
@@ -83,6 +84,7 @@ CONFIGURE_OPTIONS +=	--enable-facl
 CONFIGURE_OPTIONS +=	--enable-nls
 CONFIGURE_OPTIONS +=	--enable-dso
 CONFIGURE_OPTIONS +=	--enable-openssl
+CONFIGURE_OPTIONS +=	--enable-tests
 CONFIGURE_OPTIONS +=	--disable-static
 CONFIGURE_OPTIONS +=	--with-modules=mod_solaris_audit:mod_solaris_priv
 CONFIGURE_OPTIONS +=	--with-shared=mod_facl:mod_wrap:mod_tls:mod_tls-fips-140:mod_auth_gss:mod_gss
