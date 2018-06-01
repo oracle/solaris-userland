@@ -1,0 +1,127 @@
+Original PTP stepped clock if the offset is over 1 second. Given the drift 
+rates and the offsets that PTP plays in (microsecond or less) and the maximum
+allowed skew rate (500 PPM) this is way too high. Reduce the default to
+one tenth of a second and allow it to be settable from the command line. 
+
+This patch will not be submitted to the community as this fork is moribund.
+
+--- ptpd-2.2.0/src/dep/servo.c
++++ ptpd-2.2.0/src/dep/servo.c
+@@ -554,7 +554,9 @@ updateClock(RunTimeOpts * rtOpts, PtpClo
+ 		}
+ 	}
+ 
+-	if (ptpClock->offsetFromMaster.seconds) {
++      if (ptpClock->offsetFromMaster.seconds || (rtOpts->nsStepThreshold &&
++	  (ptpClock->offsetFromMaster.nanoseconds > rtOpts->nsStepThreshold ||
++	  ptpClock->offsetFromMaster.nanoseconds < -rtOpts->nsStepThreshold))) {
+ 		/* if secs, reset clock or set freq adjustment to max */
+ 
+ 
+--- ptpd-2.2.0/src/datatypes.h
++++ ptpd-2.2.0/src/datatypes.h
+@@ -619,6 +619,7 @@ typedef struct {
+ 
+ #ifdef __sun
+   char driftDir[PATH_MAX - 12];
++  Integer32 nsStepThreshold;
+ #endif
+   
+   int debug_level;
+--- ptpd-2.2.0/src/ptpd.c
++++ ptpd-2.2.0/src/ptpd.c
+@@ -132,6 +132,7 @@ main(int argc, char **argv)
+ 	rtOpts.initial_delayreq = DEFAULT_DELAYREQ_INTERVAL;
+ 	rtOpts.subsequent_delayreq = DEFAULT_DELAYREQ_INTERVAL;      // this will be updated if -g is given
+ 
++ 	rtOpts.nsStepThreshold = 100000000;
+     	rtOpts.driftDir[0] = '\0';
+ 
+     /* Initialize run time options with command line arguments */
+--- ptpd-2.2.0/src/dep/startup.c
++++ ptpd-2.2.0/src/dep/startup.c
+@@ -671,7 +671,7 @@ ptpdStartup(int argc, char **argv, Integ
+ #endif
+ */
+ 
+-   const char *getopt_string = "?HgGWb:cCf:ST:dDPR:xO:tM:a:w:u:ehzl:o:i:n:N:y:m:v:r:s:p:q:Y:BjLV:XZKFUJ:";
++   const char *getopt_string = "?HgGWb:cCf:ST:dDPR:xO:tM:a:w:u:ehzl:o:i:n:N:y:m:v:r:s:p:q:Y:BjLV:XZKFUJ:Q:";
+ 
+   /* parse command line arguments */
+   while ((c = getopt(argc, argv, getopt_string)) != -1) {
+@@ -740,10 +740,8 @@ ptpdStartup(int argc, char **argv, Integ
+ 	"                    messages via sockets)\n"
+ 			"\n"
+ 	"-o NUMBER         specify current UTC offset\n"
++	"-Q NUMBER         number of nanoseconds above which the clock should be stepped. Zero to disable.\n"
+ 	"-i NUMBER         specify PTP domain number (between 0-3)\n"
+-	"-I NUMBER         specify Mcast group (between 0-3, emulates PTPv1 group selection)\n"
+-
+-				"\n"
+ 	"-n NUMBER         specify announce interval in seconds\n"
+ 	"-N NUMBER         specify announce receipt TO (number of lost announces to timeout)\n"
+ 
+@@ -765,7 +763,7 @@ ptpdStartup(int argc, char **argv, Integ
+ 	"-B                Enable debug messages (if compiled-in). Multiple invocations to more debug\n"
+ 		"\n"
+ 	"Compatibility Options (to restore previous default behaviour):\n"
+-	"-j                Do not refresh the IGMP Multicast menbership at each protol reset\n"
++	"-j                Do not refresh the IGMP Multicast membership at each protol reset\n"
+ 	"-L                Allow multiple instances (ignore lock and other daemons)\n"
+ 	"-V 0              Seconds between log messages (0: all messages)\n"
+ 				"\n"
+@@ -1177,7 +1175,17 @@ ptpdStartup(int argc, char **argv, Integ
+          /* safe drift files to driftDir */
+          strncpy(rtOpts->driftDir, optarg, PATH_MAX);
+          break;
+-      
++
++      case 'Q':
++         /* nanosecond step threshold */
++         rtOpts->nsStepThreshold = atoi(optarg);
++         if (rtOpts->nsStepThreshold >= 1000000000 || rtOpts->nsStepThreshold < 0) {
++        	ERROR("-h argument out of range.\n");
++        	*ret = 3;
++        	return (0);
++      	 }
++         break;
++
+     default:
+       ERROR("Unknown parameter %c \n", c);
+       *ret = 1;
+@@ -1204,6 +1212,13 @@ ptpdStartup(int argc, char **argv, Integ
+     return 0;
+   }
+ 
++  if (rtOpts->maxReset && rtOpts->maxReset > rtOpts->nsStepThreshold) {
++	  ERROR("-O (maximum reset) must not be more than -Q (step threshold)\n");
++		*ret = 3;
++		return 0;
++  }
++	  
++
+ #ifdef PTP_EXPERIMENTAL
+ 	if(rtOpts->do_unicast_mode && rtOpts->do_hybrid_mode){
+ 		ERROR("Cant specify both -u and -U\n");
+--- ptpd-2.2.0/src/ptpd2.8
++++ ptpd-2.2.0/src/ptpd2.8
+@@ -45,6 +45,7 @@ ptpd \- Precision Time Protocol daemon (
+ [-s NUMBER]
+ [-p NUMBER]
+ [-q NUMBER]
++[-Q NUMBER]
+ [-W]
+ [-Y NUMBER]
+ [-L]
+@@ -268,6 +269,11 @@ specify priority1 attribute
+ .B \-q NUMBER
+ specify priority2 attribute
+ .TP
++.B \-Q NUMBER
++Specify an offset above which the clock will be stepped rather than slewed. The 
++units are nanoseconds. The default is 0.1 second. The maximum is one second. All
++offsets above one second are always stepped.
++.TP
+ .B \-W
+ run as master only
+ .TP
