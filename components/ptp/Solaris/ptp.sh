@@ -78,7 +78,7 @@ if [ "$USE_HW" = "true" ];then
 fi
 
 DOMAIN="`get_prop domain`"
-if [ "$DOMAIN" -gt 0 -a "$DOMAIN" -lt 4 ]; then
+if [ "$DOMAIN" -gt 0 -a "$DOMAIN" -lt 128 ]; then
 	CMD_LINE_ARGS="$CMD_LINE_ARGS -i $DOMAIN"
 fi
 

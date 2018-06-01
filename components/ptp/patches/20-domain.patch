@@ -1,0 +1,34 @@
+This patch removes the restriction that a domain number must be 3 or less
+and makes it 127 or less as defined in the V2 standard. Later versions
+of the community version of ptpd already have this capability.
+
+--- ptpd-2.2.0/src/dep/startup.c
++++ ptpd-2.2.0/src/dep/startup.c
+@@ -974,7 +974,7 @@ ptpdStartup(int argc, char **argv, Integ
+       break;
+     case 'i':
+       rtOpts->domainNumber = strtol(optarg, &optarg, 0);
+-      if (rtOpts->domainNumber > 3) {
++      if (rtOpts->domainNumber > 127) {
+ 	ERROR(" Please provide an integer between 0 to 3 with -i\n");
+ 	*ret = 1;
+ 	return (0);
+*** ptpd-2.2.0/src/ptpd2.8
+--- ptpd-2.2.0/src/ptpd2.8
+*************** with PTP hardware assist.
+*** 118,124 ****
+  .TP
+  .BR config/domain
+  An integer specifying PTP domain as defined in the
+! IEEE specification.  It can take values from 0 to 3
+  both inclusive. Default value is 0.
+  .TP
+  .BR config/announce_interval
+--- 117,123 ----
+  .TP
+  .BR config/domain
+  An integer specifying PTP domain as defined in the
+! IEEE specification.  It can take values from 0 to 127
+  both inclusive. Default value is 0.
+  .TP
+  .BR config/announce_interval
