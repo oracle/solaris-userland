@@ -1,0 +1,229 @@
+This patch is taken from the community. This patch merges the relevant changes from
+the following 2 patches.
+https://src.fedoraproject.org/rpms/ksh/blob/master/f/ksh-20120801-fd2lost.patch
+https://src.fedoraproject.org/rpms/ksh/blob/master/f/ksh-20120801-macro.patch
+--- INIT.2012-08-01.old/src/cmd/ksh93/include/io.h	2018-05-30 03:18:02.144593510 +0000
++++ INIT.2012-08-01/src/cmd/ksh93/include/io.h	2018-05-30 03:17:44.882281135 +0000
+@@ -85,6 +85,7 @@
+ extern int 	sh_iovalidfd(Shell_t*, int);
+ extern int 	sh_inuse(Shell_t*, int);
+ extern void 	sh_iounsave(Shell_t*);
++extern void	iounpipe(Shell_t*);
+ extern int	sh_chkopen(const char*);
+ extern int	sh_ioaccess(int,int);
+ extern int	sh_devtofd(const char*);
+--- INIT.2012-08-01.old/src/cmd/ksh93/sh/macro.c	2018-05-30 03:18:02.043783493 +0000
++++ INIT.2012-08-01/src/cmd/ksh93/sh/macro.c	2018-05-30 03:16:28.002231914 +0000
+@@ -391,7 +391,7 @@
+ 				break;
+ 			    }
+ 			    case S_PAR:
+-				comsubst(mp,(Shnode_t*)0,1);
++				comsubst(mp,(Shnode_t*)0,3);
+ 				break;
+ 			    case S_EOF:
+ 				if((c=fcfill()) > 0)
+@@ -1165,7 +1165,7 @@
+ 	    case S_PAR:
+ 		if(type)
+ 			goto nosub;
+-		comsubst(mp,(Shnode_t*)0,1);
++		comsubst(mp,(Shnode_t*)0,3);
+ 		return(1);
+ 	    case S_DIG:
+ 		var = 0;
+--- INIT.2012-08-01.old/src/cmd/ksh93/sh/subshell.c	2018-05-30 03:18:02.146974225 +0000
++++ INIT.2012-08-01/src/cmd/ksh93/sh/subshell.c	2018-05-30 03:16:33.904828484 +0000
+@@ -132,7 +132,8 @@
+ 		else if(errno!=EBADF)
+ 			errormsg(SH_DICT,ERROR_system(1),e_toomany);
+ 		/* popping a discipline forces a /tmp file create */
+-		sfdisc(sfstdout,SF_POPDISC);
++		if(shp->comsub != 1)
++			sfdisc(sfstdout,SF_POPDISC);
+ 		if((fd=sffileno(sfstdout))<0)
+ 		{
+ 			/* unable to create the /tmp file so use a pipe */
+@@ -182,7 +183,7 @@
+ {
+ 	register struct subshell *sp = subshell_data;
+ 	Shell_t	*shp = sp->shp;
+-	int	curenv = shp->curenv;
++	int	curenv = shp->curenv, comsub=shp->comsub;
+ 	pid_t pid;
+ 	char *trap = shp->st.trapcom[0];
+ 	if(trap)
+@@ -215,7 +216,7 @@
+ 		shp->comsub = 0;
+ 		SH_SUBSHELLNOD->nvalue.s = 0;
+ 		sp->subpid=0;
+-		shp->st.trapcom[0] = trap;
++		shp->st.trapcom[0] = (comsub==2?NULL:trap);
+ 		shp->savesig = 0;
+ 	}
+ }
+@@ -668,6 +669,13 @@
+ 		}
+ 		else
+ 		{
++			if(comsub!=1 && shp->spid)
++			{
++				job_wait(shp->spid);
++				if(shp->pipepid==shp->spid)
++					shp->spid = 0;
++				shp->pipepid = 0;
++			}
+ 			/* move tmp file to iop and restore sfstdout */
+ 			iop = sfswap(sfstdout,NIL(Sfio_t*));
+ 			if(!iop)
+@@ -781,7 +789,6 @@
+ 		shp->coutpipe = sp->coutpipe;
+ 	}
+ 	shp->subshare = sp->subshare;
+-	shp->comsub = sp->comsub;
+ 	shp->subdup = sp->subdup;
+ #if SHOPT_COSHELL
+ 	shp->coshell = sp->coshell;
+@@ -811,7 +818,12 @@
+ 	if(nsig>0)
+ 		kill(getpid(),nsig);
+ 	if(sp->subpid)
++	{
+ 		job_wait(sp->subpid);
++		if(comsub>1)
++			iounpipe(shp);
++	}
++	shp->comsub = sp->comsub;
+ 	if(comsub && iop && sp->pipefd<0)
+ 		sfseek(iop,(off_t)0,SEEK_SET);
+ 	if(shp->trapnote)
+--- INIT.2012-08-01.old/src/cmd/ksh93/sh/xec.c	2018-05-30 03:18:02.126517383 +0000
++++ INIT.2012-08-01/src/cmd/ksh93/sh/xec.c	2018-05-30 03:16:44.587376347 +0000
+@@ -102,11 +102,11 @@
+  * temp file.
+  */
+ static int      subpipe[3],subdup,tsetio,usepipe;
+-static void iounpipe(Shell_t*);
++void iounpipe(Shell_t*);
+ 
+-static int iousepipe(Shell_t *shp)
++int iousepipe(Shell_t *shp)
+ {
+-	int i;
++	int fd=sffileno(sfstdout),i,err=errno;
+ 	if(usepipe)
+ 	{
+ 		usepipe++;
+@@ -115,15 +115,20 @@
+ 	if(sh_rpipe(subpipe) < 0)
+ 		return(0);
+ 	usepipe++;
+-	fcntl(subpipe[0],F_SETFD,FD_CLOEXEC);
+-	subpipe[2] = fcntl(1,F_DUPFD,10);
++	if(shp->comsub!=1)
++	{
++		subpipe[2] = sh_fcntl(subpipe[1],F_DUPFD,10);
++		sh_close(subpipe[1]);
++		return(1);
++	}
++	subpipe[2] = sh_fcntl(fd,F_dupfd_cloexec,10);
+ 	VALIDATE_FD(shp, subpipe[1]);
+ 	VALIDATE_FD(shp, subpipe[2]);	
+-	fcntl(subpipe[2],F_SETFD,FD_CLOEXEC);
+ 	shp->fdstatus[subpipe[2]] = shp->fdstatus[1];
+-	close(1);
+-	fcntl(subpipe[1],F_DUPFD,1);
+-	shp->fdstatus[1] = shp->fdstatus[subpipe[1]];
++	while(close(fd)<0 && errno==EINTR)
++		errno = err;
++	fcntl(subpipe[1],F_DUPFD,fd);
++	shp->fdstatus[1] = shp->fdstatus[subpipe[1]]&~IOCLEX;
+ 	sh_close(subpipe[1]);
+ 	if(subdup=shp->subdup) for(i=0; i < 10; i++)
+ 	{
+@@ -137,15 +142,24 @@
+ 	return(1);
+ }
+ 
+-static void iounpipe(Shell_t *shp)
++void iounpipe(Shell_t *shp)
+ {
+-	int n;
++	int fd=sffileno(sfstdout),n,err=errno;
+ 	char buff[SF_BUFSIZE];
+-	close(1);
+-	fcntl(subpipe[2], F_DUPFD, 1);
++	if(!usepipe)
++		return;
++	--usepipe;
++	if(shp->comsub>1)
++	{
++		sh_close(subpipe[2]);
++		while(read(subpipe[0],buff,sizeof(buff))>0);
++		goto done;
++	}
++	while(close(fd)<0 && errno==EINTR)
++		errno = err;
++	fcntl(subpipe[2], F_DUPFD, fd);
+ 	VALIDATE_FD(shp, subpipe[2]);
+ 	shp->fdstatus[1] = shp->fdstatus[subpipe[2]];
+-	--usepipe;
+ 	if(subdup) for(n=0; n < 10; n++)
+ 	{
+ 		if(subdup&(1<<n))
+@@ -177,6 +191,7 @@
+ 		else if(errno!=EINTR)
+ 			break;
+ 	}
++done:
+ 	sh_close(subpipe[0]);
+ 	subpipe[0] = -1;
+ 	tsetio = 0;
+@@ -731,7 +746,7 @@
+ }
+ 
+ #if SHOPT_COSHELL
+-uintmax_t	coused;
++static uintmax_t	coused;
+ /*
+  * print out function definition
+  */
+@@ -1726,6 +1741,8 @@
+ 					nlock--;
+ 					job_unlock();
+ 				}
++				if(shp->subshell)
++					shp->spid = parent;
+ 				if(type&FPCL)
+ 					sh_close(shp->inpipe[0]);
+ 				if(type&(FCOOP|FAMP))
+@@ -1741,7 +1758,11 @@
+ 					if(shp->pipepid)
+ 						shp->pipepid = parent;
+ 					else
++					{
+ 						job_wait(parent);
++						if(parent==shp->spid)
++							shp->spid = 0;
++					}
+ 					if(shp->topfd > topfd)
+ 						sh_iorestore(shp,topfd,0);
+ 					if(usepipe && tsetio &&  subdup && unpipe)
+@@ -3492,8 +3513,7 @@
+ 	struct funenv fun;
+ 	char *fname = nv_getval(SH_FUNNAMENOD);
+ 	struct Level	*lp =(struct Level*)(SH_LEVELNOD->nvfun);
+-	int		level, pipepid=shp->pipepid, comsub=shp->comsub;
+-	shp->comsub = 0;
++	int		level, pipepid=shp->pipepid;
+ 	shp->pipepid = 0;
+ 	sh_stats(STAT_FUNCT);
+ 	if(!lp->hdr.disc)
+@@ -3536,7 +3556,6 @@
+ 	lp->maxlevel = level;
+ 	SH_LEVELNOD->nvalue.s = lp->maxlevel;
+ 	shp->last_root = nv_dict(DOTSHNOD);
+-	shp->comsub = comsub;
+ #if 0
+ 	nv_putval(SH_FUNNAMENOD,shp->st.funname,NV_NOFREE);
+ #else
