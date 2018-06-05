@@ -70,7 +70,7 @@
  #if defined(KRB5) && defined(USE_AFS)
  #include <kafs.h>
  #endif
-@@ -1393,8 +1397,19 @@
+@@ -1393,8 +1411,19 @@
  		if (!in_chroot && set_id(pw->pw_name) != 0)
  			fatal("set_id(%s) Failed", pw->pw_name);
  # endif /* USE_LIBIAF */
@@ -90,6 +90,16 @@
  #endif
  	} else if (options.chroot_directory != NULL &&
  	    strcasecmp(options.chroot_directory, "none") != 0) {
+@@ -1940,6 +1969,9 @@
+ 					    prog, strerror(errno));
+ 				s->is_subsystem = SUBSYSTEM_EXT;
+ 				debug("subsystem: exec() %s", cmd);
++#if defined(USE_SOLARIS_PRIVS) && defined(SFTP_AUDIT)
++                               solaris_add_audit_privs();
++#endif
+ 			}
+ 			success = do_exec(s, cmd) == 0;
+ 			break;
 @@ -2562,6 +2577,14 @@
  	 */
  	if (!use_privsep || mm_is_monitor())
@@ -982,3 +992,56 @@
  	if (priv_addset(npset, PRIV_FILE_CHOWN) != 0 ||
  	    priv_addset(npset, PRIV_FILE_DAC_READ) != 0 ||
  	    priv_addset(npset, PRIV_FILE_DAC_SEARCH) != 0 ||
+@@ -360,4 +360,39 @@
+ 
+        priv_freeset(pset);
+ }
++
++#ifdef SFTP_AUDIT
++/*
++ * Called by session_subsystem_req() for SFTP when not using the in-process
++ * sftp-server (internal-sftp) since sshd instead forks and execs the
++ * sftp-server command and proc_audit needs to be carried across the exec(2).
++ * The proc_audit privilege is required for sftp-server(8) so it can generate
++ * audit records.
++ */
++void
++solaris_add_audit_privs(void)
++{
++       priv_set_t *pset = NULL;
++
++       if ((pset = priv_allocset()) == NULL) {
++               fatal("priv_allocset: %s", strerror(errno));
++       }
++
++       if (getppriv(PRIV_PERMITTED, pset) != 0) {
++               fatal("getppriv: %s", strerror(errno));
++       }
++
++       /*
++        * The proc_audit privilege was added to the 'permitted' privilege set
++        * previously in permanently_set_uid_with_audit().
++        */
++       if (priv_ismember(pset, PRIV_PROC_AUDIT)) {
++               if (setppriv(PRIV_SET, PRIV_INHERITABLE, pset) != 0) {
++                       fatal("setppriv: %s", strerror(errno));
++               }
++       }
++
++       priv_freeset(pset);
++}
++#endif /* SFTP_AUDIT */
+
+ #endif
+--- orig/openbsd-compat/port-solaris.h	2017-03-19 19:39:27.000000000 -0700
++++ new/openbsd-compat//port-solaris.h	2018-05-22 02:58:12.952516299 -0700
+@@ -30,6 +30,9 @@
+ void solaris_drop_privs_pinfo_net_fork_exec(void);
+ void solaris_drop_privs_root_pinfo_net(void);
+ void solaris_drop_privs_root_pinfo_net_exec(void);
++#ifdef SFTP_AUDIT
++void solaris_add_audit_privs(void);
++#endif
+ # endif /* USE_SOLARIS_PRIVS */
+
+ #endif
