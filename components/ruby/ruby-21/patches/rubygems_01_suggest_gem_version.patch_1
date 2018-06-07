@@ -1,0 +1,31 @@
+This patch is taken from upstream
+
+https://github.com/rubygems/rubygems/commit/3461ae47e625a79770d8874c6b66ea998c6af364.patch
+
+It's here so that the next patch applies cleanly.
+
+From 3461ae47e625a79770d8874c6b66ea998c6af364 Mon Sep 17 00:00:00 2001
+From: Samuel Giddins <segiddins@segiddins.me>
+Date: Sat, 3 Feb 2018 11:56:08 -0800
+Subject: [PATCH] [RequestSet] Only suggest a gem version with an installable
+ platform
+
+---
+ lib/rubygems/request_set.rb | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/lib/rubygems/request_set.rb b/lib/rubygems/request_set.rb
+index 95a8eed1af..e54a7b8818 100644
+--- a/lib/rubygems/request_set.rb
++++ b/lib/rubygems/request_set.rb
+@@ -171,7 +171,9 @@ def install options, &block # :yields: request, installer
+         rescue Gem::RuntimeRequirementNotMetError => e
+           recent_match = req.spec.set.find_all(req.request).sort_by(&:version).reverse_each.find do |s|
+             s = s.spec
+-            s.required_ruby_version.satisfied_by?(Gem.ruby_version) && s.required_rubygems_version.satisfied_by?(Gem.rubygems_version)
++            s.required_ruby_version.satisfied_by?(Gem.ruby_version) &&
++              s.required_rubygems_version.satisfied_by?(Gem.rubygems_version) &&
++              Gem::Platform.installable?(s)
+           end
+           if recent_match
+             suggestion = "The last version of #{req.request} to support your Ruby & RubyGems was #{recent_match.version}. Try installing it with `gem install #{recent_match.name} -v #{recent_match.version}`"

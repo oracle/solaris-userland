@@ -35,11 +35,17 @@ COMPONENT_ARCHIVE_URL=	\
 COMPONENT_ANITYA_ID=	4223
 
 # Rubygems support
-RUBYGEMS=               rubygems-2.7.6
-COMPONENT_ARCHIVE_1=    $(RUBYGEMS).tgz
+COMPONENT_NAME_1=     rubygems
+COMPONENT_VERSION_1=  2.7.6
+COMPONENT_SRC_NAME_1= $(COMPONENT_NAME_1)
+COMPONENT_SRC_1=      $(COMPONENT_SRC_NAME_1)-$(COMPONENT_VERSION_1)
+COMPONENT_ARCHIVE_1=  $(COMPONENT_SRC_1).tgz
 COMPONENT_ARCHIVE_HASH_1=       \
     sha256:67f714a582a9ce471bbbcb417374ea9cf9c061271c865dbb0d093f3bc3371eeb
 COMPONENT_ARCHIVE_URL_1= https://rubygems.org/rubygems/$(COMPONENT_ARCHIVE_1)
+
+# Convenience variable
+RUBYGEMS=$(COMPONENT_SRC_1)
 
 TPNO=			22307
 
@@ -48,7 +54,6 @@ include $(WS_MAKE_RULES)/common.mk
 TPNO_RUBYGEMS=                   42693
 
 COMPONENT_PREP_ACTION = \
-        $(TAR) xvzf $(COMPONENT_ARCHIVE_1); \
 	$(CP) -r $(RUBYGEMS)/lib/rubygems $(SOURCE_DIR)/lib; \
         $(CP) -r $(RUBYGEMS)/lib/ubygems.rb $(SOURCE_DIR)/lib; \
         $(CP) -r $(RUBYGEMS)/lib/rubygems.rb $(SOURCE_DIR)/lib;\

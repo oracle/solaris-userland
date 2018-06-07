@@ -1,0 +1,91 @@
+This patch is taken from upstream
+
+https://github.com/rubygems/rubygems/commit/2da7d75b1eda18416cf30e585f95e7d6ec158e52.patch
+
+This patch is neccessary because we would otherwise loose documentation as we
+install the gems using --install-dir
+
+
+From 2da7d75b1eda18416cf30e585f95e7d6ec158e52 Mon Sep 17 00:00:00 2001
+From: Elias Hernandis <eliashernandis@gmail.com>
+Date: Sat, 10 Mar 2018 01:55:15 +0100
+Subject: [PATCH] Fix #1470: install documentation when an --install-dir is
+ provided.
+
+Refactor code that called hooks into separate function `install_hooks`. Modify `install into` to call this new function.
+---
+ lib/rubygems/request_set.rb | 43 ++++++++++++++++++++++++++-----------------
+ 1 file changed, 26 insertions(+), 17 deletions(-)
+
+diff --git a/lib/rubygems/request_set.rb b/lib/rubygems/request_set.rb
+index e54a7b8818..0d87301f66 100644
+--- a/lib/rubygems/request_set.rb
++++ b/lib/rubygems/request_set.rb
+@@ -191,22 +191,7 @@ def install options, &block # :yields: request, installer
+ 
+     return requests if options[:gemdeps]
+ 
+-    specs = requests.map do |request|
+-      case request
+-      when Gem::Resolver::ActivationRequest then
+-        request.spec.spec
+-      else
+-        request
+-      end
+-    end
+-
+-    require 'rubygems/dependency_installer'
+-    inst = Gem::DependencyInstaller.new options
+-    inst.installed_gems.replace specs
+-
+-    Gem.done_installing_hooks.each do |hook|
+-      hook.call inst, specs
+-    end unless Gem.done_installing_hooks.empty?
++    install_hooks requests, options
+ 
+     requests
+   end
+@@ -276,18 +261,42 @@ def install_into dir, force = true, options = {}
+         next
+       end
+ 
+-      spec.install options do |installer|
++      a = spec.install options do |installer|
+         yield request, installer if block_given?
+       end
+ 
+       installed << request
+     end
+ 
++    install_hooks installed, options
++
+     installed
+   ensure
+     ENV['GEM_HOME'] = gem_home
+   end
+ 
++  ##
++  # Call hooks on installed gems
++
++  def install_hooks requests, options
++    specs = requests.map do |request|
++      case request
++      when Gem::Resolver::ActivationRequest then
++        request.spec.spec
++      else
++        request
++      end
++    end
++
++    require 'rubygems/dependency_installer'
++    inst = Gem::DependencyInstaller.new options
++    inst.installed_gems.replace specs
++
++    Gem.done_installing_hooks.each do |hook|
++      hook.call inst, specs
++    end unless Gem.done_installing_hooks.empty?
++  end
++
+   ##
+   # Load a dependency management file.
+ 
