@@ -112,6 +112,9 @@ $$(foreach pair,$$(PAIRS$(1)),$$(eval $$(pair)))
 # removed as part of the unpacking process, and it doesn't appear to
 # re-evaluate the need for patching.  If we ever move the stamps to the build
 # directory, we may not need the dependency any more.
+ifeq ($(strip $$(SOURCE_DIR$(1))),)
+$$(error SOURCE_DIR$(1) is empty, I can not apply these patches: $$(PATCHES$(1))$$(newline)Please define COMPONENT_SRC$(1) in the Makefile)
+endif
 $$(SOURCE_DIR$(1))/.patched-%:	$(PATCH_DIR)/% $(MAKEFILE_PREREQ)
 	$(GPATCH) -d $$(@D) $$(GPATCH_FLAGS) < $$<
 	$(TOUCH) $$(@)

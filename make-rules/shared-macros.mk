@@ -104,6 +104,10 @@ PUBLISHER_LOCALIZABLE ?=	$(CONSOLIDATION)-localizable
 # $(subst $(space),:,$(strip $(SPATHS)))
 empty :=
 space := $(empty) $(empty)
+define newline
+
+
+endef
 
 ROOT =			/
 
