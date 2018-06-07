@@ -23,6 +23,19 @@
 # Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
+# unfacet locale_description files
+#
+# pkgmogrify doesn't seem to support using backreference substitution in delete
+# action (bug?), i.e. this rule does not work:
+#
+#   <transform file path=.*/locale/([^/@\.]+)([^/]*)/locale_description$ -> \
+#        delete facet.locale.%<\1> .*> 
+#
+# as workaround we transform path of the files to something that does not match
+# the next rules and revert the transformation at the end
+<transform file -> \
+    edit path "^(usr/lib)/locale/([^/]+/locale_description)$" "\1/__LOCALE__/\2">
+
 # general locale
 <transform dir link hardlink path=.*/locale$ -> default facet.locale true>
 
@@ -32,6 +45,10 @@
 <transform dir file link hardlink \
     path=.*/locale/([^/@\.]+)(.+){0,1}(/.+){0,1}$ -> \
     default facet.locale.%<\1> true>
+
+# but remove invalid facet.locale.common facet added by previous rule
+<transform dir file link hardlink \
+    facet.locale.common=true -> delete facet.locale.common .*>
 
 # add locale specific facets for CDE messages
 <transform dir file link hardlink \
@@ -68,3 +85,7 @@
 # unfacet the C locale
 <transform dir file link hardlink \
     facet.locale.C=.+ -> delete facet.locale.C .+ >
+
+# revert locale_description path modified in the first tranform
+<transform file -> \
+    edit path "^(usr/lib)/__LOCALE__/([^/]+/locale_description)$" "\1/locale/\2">
