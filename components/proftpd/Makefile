@@ -67,7 +67,6 @@ CFLAGS += -I$(USRINCDIR)/kerberosv5 -DHAVE_KRB5_H=1 -DKRB5_DLLIMP= -DHAVE__GETGR
 ifeq ($(OS_VERSION), 11.3)
 CFLAGS += -D_POSIX_PTHREAD_SEMANTICS
 endif
-CFLAGS += -g -xO0
 LDFLAGS +=	-m$(BITS)
 # Force immediate (no-lazy) binding because of chroot() can loose the access
 # into (/usr)/lib
