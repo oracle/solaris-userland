@@ -16,7 +16,7 @@
 #
 diff -rupN old/sftp-server.c new/sftp-server.c
 --- old/sftp-server.c	2017-11-30 16:16:30.241034978 +0000
-+++ new/sftp-server.c	2017-12-21 12:23:40.917989426 +0000
++++ new/sftp-server.c	2018-01-05 09:34:57.941986733 +0000
 @@ -39,6 +39,7 @@
  #include <time.h>
  #include <unistd.h>
@@ -35,7 +35,19 @@ diff -rupN old/sftp-server.c new/sftp-server.c
  /* Packet handlers */
  static void process_open(u_int32_t id);
  static void process_close(u_int32_t id);
-@@ -1873,11 +1877,18 @@ sftp_server_usage(void)
+@@ -1854,7 +1858,10 @@ sftp_server_cleanup_exit(int i)
+ 		    pw->pw_name, client_addr);
+ 	}
+ #ifdef SFTP_AUDIT
+-	audit_sftp_session_stop((i != 0) ? ADT_FAIL_VALUE_PROGRAM : 0);
++	if (i == 3)
++	    audit_sftp_session_stop(ADT_FAIL_VALUE_IDLE_TIMEOUT);
++	else
++	    audit_sftp_session_stop((i != 0) ? ADT_FAIL_VALUE_PROGRAM : 0);
+ #endif
+ 	_exit(i);
+ }
+@@ -1873,11 +1880,18 @@ sftp_server_usage(void)
  	exit(1);
  }
  
@@ -54,7 +66,7 @@ diff -rupN old/sftp-server.c new/sftp-server.c
  	ssize_t len, olen, set_size;
  	SyslogFacility log_facility = SYSLOG_FACILITY_AUTH;
  	char *cp, *homedir = NULL, buf[4*4096];
-@@ -1893,7 +1904,7 @@ sftp_server_main(int argc, char **argv,
+@@ -1893,7 +1907,7 @@ sftp_server_main(int argc, char **argv,
  	pw = pwcopy(user_pw);
  
  	while (!skipargs && (ch = getopt(argc, argv,
@@ -63,7 +75,7 @@ diff -rupN old/sftp-server.c new/sftp-server.c
  		switch (ch) {
  		case 'Q':
  			if (strcasecmp(optarg, "requests") != 0) {
-@@ -1953,6 +1964,20 @@ sftp_server_main(int argc, char **argv,
+@@ -1953,6 +1967,20 @@ sftp_server_main(int argc, char **argv,
  				fatal("Invalid umask \"%s\"", optarg);
  			(void)umask((mode_t)mask);
  			break;
@@ -84,7 +96,7 @@ diff -rupN old/sftp-server.c new/sftp-server.c
  		case 'h':
  		default:
  			sftp_server_usage();
-@@ -2024,6 +2049,7 @@ sftp_server_main(int argc, char **argv,
+@@ -2024,6 +2052,7 @@ sftp_server_main(int argc, char **argv,
  	}
  
  	set_size = howmany(max + 1, NFDBITS) * sizeof(fd_mask);
@@ -92,7 +104,7 @@ diff -rupN old/sftp-server.c new/sftp-server.c
  	for (;;) {
  		memset(rset, 0, set_size);
  		memset(wset, 0, set_size);
-@@ -2045,13 +2071,23 @@ sftp_server_main(int argc, char **argv,
+@@ -2045,13 +2074,23 @@ sftp_server_main(int argc, char **argv,
  		if (olen > 0)
  			FD_SET(out, wset);
  
