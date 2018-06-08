@@ -31,13 +31,13 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =		firefox
-COMPONENT_VERSION =		52.8.0esr
+COMPONENT_VERSION =		52.8.1esr
 COMPONENT_PROJECT_URL =		http://www.mozilla.com/firefox
 COMPONENT_SRC_NAME =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC = 		$(COMPONENT_SRC_NAME)
 COMPONENT_ARCHIVE =		$(COMPONENT_SRC_NAME).source.tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:babed4fe0ae95783e39358aedf7111b20fd9442f73b3b41b025fa4951fe76287
+    sha256:487b4b7fe9a4aeb4dfd63991030b5df47d73f7a17ef917ba1036055f0049cf7b
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		        http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)
 else
@@ -47,9 +47,9 @@ COMPONENT_ARCHIVE_URL =		$(MOZILLA_FTP)/source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB =		firefox/browser
 COMPONENT_ANITYA_ID=    	16838
 
-TPNO=				42965
+TPNO=				43659
 
-IPS_COMPONENT_VERSION =		52.8.0
+IPS_COMPONENT_VERSION =		52.8.1
 
 # There are a set of .xpi files (as given in the LANG_LIST definition
 # below) that we need. We could download and unpack them individually, but
@@ -58,7 +58,7 @@ IPS_COMPONENT_VERSION =		52.8.0
 # one file with version number.
 COMPONENT_ARCHIVE_1 =           $(COMPONENT_SRC_NAME)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:715ae957b5707496690ddc2a170f58622202307b1d16db7b214f4f2566a18150
+    sha256:0143efe73808e465c51eab956995ea89ce67e059dcc32d0a0870a1fe75bb3c73
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ach af an ar as ast az bg bn-BD bn-IN br bs ca cak cs cy \
