@@ -47,6 +47,11 @@ COMPONENT_BUGDB=        utility/ruby-stomp
 COMPONENT_ANITYA_ID=    4499
 TPNO=                   40666
 
+
+# Copy files instead making symlinks. GEM does not handle symlinks.
+CLONEY = true
+COMPONENT_PRE_BUILD_ACTION += $(CP) -rp $(SOURCE_DIR)/* $(@D);
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/gem.mk

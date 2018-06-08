@@ -44,6 +44,10 @@ TPNO=                   42024
 COMPONENT_POST_UNPACK_ACTION= \
     $(GEM) spec $(COMPONENT_ARCHIVE) --ruby > $(SOURCE_DIR)/$(GEMSPEC)
 
+# Copy files instead making symlinks. GEM does not handle symlinks.
+CLONEY = true
+COMPONENT_PRE_BUILD_ACTION += $(CP) -rp $(SOURCE_DIR)/* $(@D);
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/gem.mk
