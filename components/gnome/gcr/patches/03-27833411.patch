@@ -1,0 +1,26 @@
+The problem described in 27833411 is only seen on 64-bit sparc and turns out
+there was an alignment issue with casting that resulted in gnome-keyring-daemon
+causing a crash in gck_attributes_to_string 
+
+components/gnome/gcr/gcr-3.20.0/gck/gck-attributes.c: In function '_gck_format_attributes':
+components/gnome/gcr/gcr-3.20.0/gck/gck-attributes.c:2817:33: warning: cast increases required alignment of target type [-Wcast-align]
+     _gck_format_class (output, *((CK_OBJECT_CLASS_PTR)attr->value)); 
+
+Not suitable for upstream since we don't experience this on x64.
+
+--- a/gck/gck-attributes.c	2018-06-08 21:24:44.546071259 -0700
++++ b/gck/gck-attributes.c	2018-06-11 22:07:42.768141011 -0700
+@@ -2814,7 +2814,13 @@
+ 		if (attr->length == GCK_INVALID) {
+ 			g_string_append_printf (output, " (-1) INVALID");
+ 		} else if (_gck_attribute_is_ulong_of_type (attr, CKA_CLASS)) {
++#ifdef __sparc && __LP64
++                       gulong value;
++                       memcpy(&value, attr->value, sizeof(gulong));
++                       _gck_format_class (output, value);
++#else 
+ 			_gck_format_class (output, *((CK_OBJECT_CLASS_PTR)attr->value));
++#endif
+ 		} else if (_gck_attribute_is_ulong_of_type (attr, CKA_X_ASSERTION_TYPE)) {
+ 			_gck_format_assertion_type (output, *((CK_X_ASSERTION_TYPE *)attr->value));
+ 		} else if (_gck_attribute_is_ulong_of_type (attr, CKA_CERTIFICATE_TYPE)) {
