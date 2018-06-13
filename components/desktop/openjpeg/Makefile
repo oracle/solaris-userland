@@ -27,16 +27,16 @@ BUILD_BITS = 64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		openjpeg
-COMPONENT_VERSION=	2.2.0
+COMPONENT_VERSION=	2.3.0
 COMPONENT_PROJECT_URL=	http://www.openjpeg.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:6fddbce5a618e910e03ad00d66e7fcd09cc6ee307ce69932666d54c73b7c6e7b
+    sha256:3dc787c1bb6023ba846c2a0d9b1f6e179f1cd255172bde9eb75b01f1e6c7d71a
 COMPONENT_ARCHIVE_URL=	https://github.com/uclouvain/$(COMPONENT_NAME)/archive/v$(COMPONENT_VERSION).tar.gz
 COMPONENT_BUGDB=	library/openjpeg
 COMPONENT_ANITYA_ID=	2550
 
-TPNO=			37517
+TPNO=			43064
 
 BUILD_STYLE = cmake
 
