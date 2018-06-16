@@ -73,6 +73,7 @@ CONFIGURE_OPTIONS += --with-builderstring="Solaris ABI: $(BITS)-bit"
 CONFIGURE_OPTIONS += --with-os-name="`uname -srm`"
 CONFIGURE_OPTIONS += --with-log-dir="/var/log"
 CONFIGURE_OPTIONS += --with-xkb-output="/var/run/xkb"
+CONFIGURE_OPTIONS += --with-serverconfig-path="/usr/lib/xorg"
 CONFIGURE_OPTIONS += --with-module-dir="/usr/lib/xorg/modules"
 CONFIGURE_OPTIONS += --with-dri-driver-path="/usr/lib/xorg/modules/dri/$(MACH64)"
 CONFIGURE_OPTIONS += --with-default-font-path="catalogue:/etc/X11/fontpath.d"
@@ -84,9 +85,6 @@ COMPONENT_PREP_ACTION +=(cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
 COMPONENT_POST_UNPACK_ACTION = \
         $(CP) -r sun-src/IA $(SOURCE_DIR); \
         $(CP) -r sun-src/os/* $(SOURCE_DIR)/os;
-
-COMPONENT_POST_INSTALL_ACTION += \
-	$(CP) $(PROTO_DIR)/usr/lib/$(MACH64)/xorg/protocol.txt $(PROTO_DIR)/usr/lib/xorg/;
 
 LDFLAGS += -lm
 CFLAGS += -I/usr/include/pixman-1
