@@ -230,3 +230,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/dulwich/walk.py
 file path=usr/lib/python$(PYVER)/vendor-packages/dulwich/web.py
 #
 license dulwich.license license=Apache
+
+# force a dependency on urllib3; pkgdepend work is needed to flush this out.
+# (specifically a fix for bug 15724943 to scan python modules, not just scripts)
+depend type=require fmri=library/python/urllib3-$(PYV)

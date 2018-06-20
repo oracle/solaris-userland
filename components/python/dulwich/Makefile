@@ -49,3 +49,7 @@ build:		$(BUILD_32_and_64)
 install:	$(INSTALL_32_and_64)
 test:		$(TEST_32_and_64)
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+
+REQUIRED_PACKAGES += library/python/urllib3-27
+REQUIRED_PACKAGES += library/python/urllib3-34
+REQUIRED_PACKAGES += library/python/urllib3-35
