@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri value=pkg:/boot/shim@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
@@ -35,6 +35,8 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2015/563
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+link path=boot/grub/.MokManager.uefi target=MokManager.efi variant.arch=i386
+link path=boot/grub/.fallback.uefi target=fallback.efi variant.arch=i386
 file BOOT.csv path=boot/grub/BOOT.csv variant.arch=i386
 file MokManager.efi path=boot/grub/MokManager.efi variant.arch=i386
 file fallback.efi path=boot/grub/fallback.efi variant.arch=i386
