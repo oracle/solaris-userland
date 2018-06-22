@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
@@ -30,8 +30,8 @@ COMPONENT_VERSION=      0.5.11
 COMPONENT_SRC=
 COMPONENT_ARCHIVE_SRC=	none
 
-TPNO_PCI=	39570
-TPNO_USB=	39571
+TPNO_PCI=	43907
+TPNO_USB=	43908
 
 BUILD_STYLE= archive
 include $(WS_MAKE_RULES)/common.mk
