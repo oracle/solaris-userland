@@ -227,5 +227,4 @@ REQUIRED_PACKAGES += x11/library/toolkit/libxaw7
 REQUIRED_PACKAGES += x11/library/toolkit/libxt
 REQUIRED_PACKAGES += x11/library/xcb-util
 REQUIRED_PACKAGES += x11/library/xtrans
-REQUIRED_PACKAGES += x11/keyboard/data-xkb
 REQUIRED_PACKAGES += x11/keyboard/xkeyboard-config

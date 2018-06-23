@@ -60,7 +60,6 @@ REQUIRED_PACKAGES += data/iso-codes
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += x11/keyboard/data-xkb
 REQUIRED_PACKAGES += x11/keyboard/xkbcomp
 REQUIRED_PACKAGES += x11/keyboard/xkeyboard-config
 REQUIRED_PACKAGES += x11/library/libx11
