@@ -256,8 +256,7 @@ class ExtractLicense(base.ManifestChecker):
                 "%(fmri)s has both license and set actions for "
                 "tpno") % {"fmri": pkgpath}, msgid=lint_id)
 
-        for license in [licensepkg, licenselic]:
-
+        for license in licenseslic:
             if not license:
                 continue
             # validation of tpno format
