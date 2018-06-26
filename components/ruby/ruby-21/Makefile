@@ -80,7 +80,7 @@ PROTORUBYDIR=$(PROTOUSRDIR)/ruby/$(RUBY_VER)
 PROTO_RBCONFIG_FILE=$(PROTORUBYDIR)/lib/ruby/$(RUBY_LIB_VER)/$(MACH64)-solaris$(SOLARIS_VERSION)/rbconfig.rb
 
 # these macros are used in the package manifest
-PKG_MACROS+=	RUBY_VER=$(RUBY_VER) RUBY_LIB_VER=$(RUBY_LIB_VER)
+PKG_MACROS+=	RUBY_VER=$(RUBY_VER) RUBY_LIB_VER=$(RUBY_LIB_VER) RUBY_VER_NO_DOT=$(RUBY_VER_NO_DOT)
 PKG_MACROS+=	TPNO_RUBYGEMS=$(TPNO_RUBYGEMS)
 
 # Prevent re-compile of ripper.so during install, which would result in
