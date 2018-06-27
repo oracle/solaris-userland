@@ -1,0 +1,32 @@
+Fix for Oracle Solaris Bug 15919073:
+gdm-session-worker fails to handle multiple PAM messages in a single call
+
+Workaround for incompatibility between how Solaris & Linux PAM bundles
+multiple messages into a single PAM conversation call, as described in
+http://man7.org/linux/man-pages/man3/pam_conv.3.html and
+http://unixpapa.com/incnote/pam.html .
+
+--- a/daemon/gdm-session-worker.c
++++ b/daemon/gdm-session-worker.c
+@@ -909,6 +909,9 @@ gdm_session_worker_pam_new_messages_handler (int                        number_o
+         struct pam_response *replies;
+         int                  return_value;
+         int                  i;
++#ifdef __sun
++        struct pam_message  *m = *messages;
++#endif
+ 
+         g_debug ("GdmSessionWorker: %d new messages received from PAM\n", number_of_messages);
+ 
+@@ -936,7 +939,11 @@ gdm_session_worker_pam_new_messages_handler (int                        number_o
+ 
+                 response_text = NULL;
+                 got_response = gdm_session_worker_process_pam_message (worker,
++#ifdef __sun
++                                                                       m++,
++#else
+                                                                        messages[i],
++#endif
+                                                                        &response_text);
+                 if (!got_response) {
+                         goto out;
