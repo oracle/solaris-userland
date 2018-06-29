@@ -1,0 +1,212 @@
+#
+# the patch comes from upstream. more details can be found here:
+#	https://github.com/proftpd/proftpd/pull/641
+#	http://bugs.proftpd.org/show_bug.cgi?id=4326
+#
+# the change can be found in 1.3.6 branch, thus it should be
+# released with next maintenance release of proftpd 1.3.6.
+# the release date is not known yet. it should be possible
+# to delete the patch with next uprev.
+#
+
+--- a/modules/mod_auth.c
++++ b/modules/mod_auth.c
+@@ -2137,18 +2137,10 @@ static int auth_count_scoreboard(cmd_rec *cmd, const char *user) {
+       /* Make sure it matches our current server. */
+       if (strcmp(score->sce_server_addr, curr_server_addr) == 0) {
+ 
+-        if ((c != NULL && c->config_type == CONF_ANON &&
+-            !strcmp(score->sce_user, user)) || c == NULL) {
+-
+-          /* This small hack makes sure that cur is incremented properly
+-           * when dealing with anonymous logins (the timing of anonymous
+-           * login updates to the scoreboard makes this...odd).
+-           */
+-          if (c != NULL &&
+-              c->config_type == CONF_ANON &&
+-              cur == 0) {
+-              cur = 1;
+-          }
++        if ((c != NULL &&
++             c->config_type == CONF_ANON &&
++             strcmp(score->sce_user, user) == 0) ||
++            c == NULL) {
+ 
+           /* Only count authenticated clients, as per the documentation. */
+           if (strncmp(score->sce_user, "(none)", 7) == 0) {
+@@ -2159,20 +2151,9 @@ static int auth_count_scoreboard(cmd_rec *cmd, const char *user) {
+ 
+           /* Count up sessions on a per-host basis. */
+ 
+-          if (!strcmp(score->sce_client_addr,
+-              pr_netaddr_get_ipstr(session.c->remote_addr))) {
++          if (strcmp(score->sce_client_addr,
++              pr_netaddr_get_ipstr(session.c->remote_addr)) == 0) {
+             same_host = TRUE;
+-
+-            /* This small hack makes sure that hcur is incremented properly
+-             * when dealing with anonymous logins (the timing of anonymous
+-             * login updates to the scoreboard makes this...odd).
+-             */
+-            if (c != NULL &&
+-                c->config_type == CONF_ANON &&
+-                hcur == 0) {
+-              hcur = 1;
+-            }
+-
+             hcur++;
+           }
+ 
+@@ -2181,7 +2162,7 @@ static int auth_count_scoreboard(cmd_rec *cmd, const char *user) {
+             usersessions++;
+ 
+             /* Count up unique hosts. */
+-            if (!same_host) {
++            if (same_host == FALSE) {
+               hostsperuser++;
+             }
+           }
+@@ -2277,7 +2258,8 @@ static int auth_count_scoreboard(cmd_rec *cmd, const char *user) {
+       maxstr = maxc->argv[1];
+     }
+ 
+-    if (*max && hcur > *max) {
++    if (*max &&
++        hcur > *max) {
+       char maxn[20] = {'\0'};
+ 
+       pr_event_generate("mod_auth.max-clients-per-host", session.c);
+@@ -2305,7 +2287,8 @@ static int auth_count_scoreboard(cmd_rec *cmd, const char *user) {
+       maxstr = maxc->argv[1];
+     }
+ 
+-    if (*max && usersessions > *max) {
++    if (*max &&
++        usersessions > *max) {
+       char maxn[20] = {'\0'};
+ 
+       pr_event_generate("mod_auth.max-clients-per-user", user);
+@@ -2332,7 +2315,8 @@ static int auth_count_scoreboard(cmd_rec *cmd, const char *user) {
+       maxstr = maxc->argv[1];
+     }
+ 
+-    if (*max && cur > *max) {
++    if (*max &&
++        cur > *max) {
+       char maxn[20] = {'\0'};
+ 
+       pr_event_generate("mod_auth.max-clients", NULL);
+--- a/tests/t/lib/ProFTPD/Tests/Config/MaxClientsPerHost.pm
++++ b/tests/t/lib/ProFTPD/Tests/Config/MaxClientsPerHost.pm
+@@ -25,6 +25,11 @@ my $TESTS = {
+     test_class => [qw(forking)],
+   },
+ 
++  maxclientsperhost_anon_one_bug4326 => {
++    order => ++$order,
++    test_class => [qw(bug forking rootprivs)],
++  },
++
+ };
+ 
+ sub new {
+@@ -251,4 +256,99 @@ sub maxclientsperhost_one_multi_conns {
+   unlink($log_file);
+ }
+ 
++sub maxclientsperhost_anon_one_bug4326 {
++  my $self = shift;
++  my $tmpdir = $self->{tmpdir};
++  my $setup = test_setup($tmpdir, 'config');
++
++  my $max_clients_per_host = 1;
++
++  my $config = {
++    PidFile => $setup->{pid_file},
++    ScoreboardFile => $setup->{scoreboard_file},
++    SystemLog => $setup->{log_file},
++
++    AuthUserFile => $setup->{auth_user_file},
++    AuthGroupFile => $setup->{auth_group_file},
++
++    IfModules => {
++      'mod_delay.c' => {
++        DelayEngine => 'off',
++      },
++    },
++  };
++
++  my ($port, $config_user, $config_group) = config_write($setup->{config_file},
++    $config);
++
++  if (open(my $fh, ">> $setup->{config_file}")) {
++    print $fh <<EOC;
++<Anonymous $setup->{home_dir}>
++  User $setup->{user}
++  Group $setup->{group}
++  MaxClientsPerHost $max_clients_per_host
++</Anonymous>
++EOC
++    unless (close($fh)) {
++      die("Can't write $setup->{config_file}: $!");
++    }
++
++  } else {
++    die("Can't open $setup->{config_file}: $!");
++  }
++
++  # Open pipes, for use between the parent and child processes.  Specifically,
++  # the child will indicate when it's done with its test by writing a message
++  # to the parent.
++  my ($rfh, $wfh);
++  unless (pipe($rfh, $wfh)) {
++    die("Can't open pipe: $!");
++  }
++
++  my $ex;
++
++  # Fork child
++  $self->handle_sigchld();
++  defined(my $pid = fork()) or die("Can't fork: $!");
++  if ($pid) {
++    eval {
++      # First client should be able to connect and log in...
++      my $client1 = ProFTPD::TestSuite::FTP->new('127.0.0.1', $port);
++      $client1->login($setup->{user}, $setup->{passwd});
++
++      # ...but the second client should be able to connect, but not login.
++      my $client2 = ProFTPD::TestSuite::FTP->new('127.0.0.1', $port);
++
++      eval { $client2->login($setup->{user}, $setup->{passwd}) };
++      unless ($@) {
++        die("Login succeeded unexpectedly");
++      }
++
++      $client1->quit();
++    };
++
++    if ($@) {
++      $ex = $@;
++    }
++
++    $wfh->print("done\n");
++    $wfh->flush();
++
++  } else {
++    eval { server_wait($setup->{config_file}, $rfh) };
++    if ($@) {
++      warn($@);
++      exit 1;
++    }
++
++    exit 0;
++  }
++
++  # Stop server
++  server_stop($setup->{pid_file});
++  $self->assert_child_ok($pid);
++
++  test_cleanup($setup->{log_file}, $ex);
++}
++
+ 1;
