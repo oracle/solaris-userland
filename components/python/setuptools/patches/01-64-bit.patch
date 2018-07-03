@@ -1,9 +1,11 @@
 Needed as a counterpart to Python's 64-bit patch.  Will not be submitted
 upstream.
 
---- setuptools-19.2/setuptools/command/bdist_egg.py.~1~	2015-12-11 08:17:56.000000000 +0000
-+++ setuptools-19.2/setuptools/command/bdist_egg.py	2016-11-16 11:46:37.034754212 +0000
-@@ -167,11 +167,24 @@
+--- setuptools-39.2.0/setuptools/command/bdist_egg.py.orig	2018-06-14 15:57:33.862005134 -0700
++++ setuptools-39.2.0/setuptools/command/bdist_egg.py	2018-06-14 16:01:01.892118843 -0700
+@@ -177,15 +177,28 @@
+         to_compile = []
+         for (p, ext_name) in enumerate(ext_outputs):
              filename, ext = os.path.splitext(ext_name)
              pyfile = os.path.join(self.bdist_dir, strip_module(filename) +
                                    '.py')
@@ -16,7 +18,7 @@ upstream.
 +            else:
 +                tweakedpyfile = pyfile
 +            self.stubs.append(tweakedpyfile)
-             log.info("creating stub loader for %s" % ext_name)
+             log.info("creating stub loader for %s", ext_name)
              if not self.dry_run:
 -                write_stub(os.path.basename(ext_name), pyfile)
 -            to_compile.append(pyfile)
@@ -31,3 +33,5 @@ upstream.
              ext_outputs[p] = ext_name.replace(os.sep, '/')
  
          if to_compile:
+             cmd.byte_compile(to_compile)
+         if self.distribution.data_files:

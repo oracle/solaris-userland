@@ -20,30 +20,34 @@
 #
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		setuptools
-COMPONENT_VERSION=	19.2
+COMPONENT_VERSION=	39.2.0
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION)
 COMPONENT_ANITYA_ID=	4021
 
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
+COMPONENT_ARCHIVE=	v$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f90ed8eb70b14b0594ba74e9de4ffca040c0ec8ee505cbf3570499467859f71a
-COMPONENT_ARCHIVE_URL=	$(call pypi_url)
+    sha256:ca8119dd5c2764a7d290518817de0b880d23d790913fcd797c02ad2aa39b8c41
+COMPONENT_ARCHIVE_URL=	https://github.com/pypa/setuptools/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://bitbucket.org/pypa/setuptools
 COMPONENT_BUGDB=	python-mod/setuptools
 
-TPNO=			26352
+TPNO=			43204
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+
+# Need to bootstrap setuptools before we can run setup
+
+COMPONENT_PREP_ACTION = (cd $(@D) ; $(PYTHON) bootstrap.py)
 
 # common targets
 build:		$(BUILD_NO_ARCH)
@@ -55,3 +59,4 @@ test:		$(NO_TESTS)
 
 system-test:    $(NO_TESTS)
 
+REQUIRED_PACKAGES += library/python/six

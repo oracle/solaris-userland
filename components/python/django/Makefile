@@ -38,9 +38,6 @@ COMPONENT_ANITYA_ID=	3828
 
 TPNO=			35473
 
-# Depends on python-imaging which is not Python 3 ready.
-PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk

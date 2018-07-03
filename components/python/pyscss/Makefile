@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -37,9 +37,6 @@ COMPONENT_BUGDB=	python-mod/pyscss
 COMPONENT_ANITYA_ID=	13208
 
 TPNO=			28002
-
-# Depends on python-imaging which is not Python 3 ready.
-PYTHON_VERSIONS =	$(PYTHON2_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
