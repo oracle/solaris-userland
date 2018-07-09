@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)$(COMPONENT_VERSION)/$(COMPONENT_
 COMPONENT_BUGDB=	utility/bzip
 COMPONENT_ANITYA_ID=	237
 
-TPNO=			5547
+TPNO=			27621
 
 BUILD_STYLE= justmake
 # build does this always
