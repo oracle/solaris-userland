@@ -97,7 +97,7 @@
      }
  
      /* Get credentials. */
-@@ -658,13 +660,51 @@ cleanup:
+@@ -658,14 +660,52 @@ cleanup:
  static kadm5_ret_t
  get_init_creds(kadm5_server_handle_t handle, krb5_principal client,
                 enum init_type init_type, char *pass, krb5_ccache ccache_in,
@@ -111,7 +111,7 @@
  
      *server_out = NULL;
  
-+    /*
+     /*
 +     * Convert the RPCSEC_GSS version to the host based version as this
 +     * is what gic expects.
 +     */
@@ -147,9 +147,10 @@
 +    }
 +    free(svcname);
 +
-     /*
++    /*
       * Acquire a service ticket for svcname@realm for client, using password
       * pass (which could be NULL), and create a ccache to store them in.  If
+      * INIT_CREDS, use the ccache we were provided instead.
 @@ -700,7 +740,7 @@ get_init_creds(kadm5_server_handle_t handle, krb5_principal client,
      }
      handle->lhandle->cache_name = handle->cache_name;
@@ -188,11 +189,10 @@
  get_expiry_times(krb5_enc_kdc_rep_part *enc_part2, krb5_timestamp *pw_exp,
                   krb5_timestamp *acct_exp, krb5_boolean *is_last_req)
  {
-@@ -287,6 +298,35 @@ krb5_get_init_creds_password(krb5_context context,
-                              krb5_deltat start_time,
+@@ -288,6 +299,35 @@ krb5_get_init_creds_password(krb5_context context,
                               const char *in_tkt_service,
                               krb5_get_init_creds_opt *options)
-+{
+ {
 +    /*
 +     * We call our own private function that returns the as_reply back to
 +     * the caller.  This structure contains information, such as
@@ -221,9 +221,10 @@
 +                             const char *in_tkt_service,
 +                             krb5_get_init_creds_opt *options,
 +			     krb5_kdc_rep **ptr_as_reply)
- {
++{
      krb5_error_code ret;
      int use_master;
+     krb5_kdc_rep *as_reply;
 @@ -504,8 +544,12 @@ cleanup:
      memset(pw0array, 0, sizeof(pw0array));
      memset(pw1array, 0, sizeof(pw1array));

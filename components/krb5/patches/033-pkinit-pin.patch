@@ -74,13 +74,13 @@
   */
  
 +/*
-+ * Copyright (c) 2008, 2015, Oracle and/or its affiliates. All rights reserved.
++ * Copyright (c) 2008, 2018, Oracle and/or its affiliates. All rights reserved.
 + */
 +
+ #include "k5-int.h"
  #include "pkinit_crypto_openssl.h"
  #include "k5-buf.h"
- #include <dlfcn.h>
-@@ -983,6 +987,7 @@ pkinit_init_pkcs11(pkinit_identity_crypto_context ctx)
+@@ -984,6 +988,7 @@ pkinit_init_pkcs11(pkinit_identity_crypto_context ctx)
      ctx->slotid = PK_NOSLOT;
      ctx->token_label = NULL;
      ctx->cert_label = NULL;
@@ -88,7 +88,7 @@
      ctx->session = CK_INVALID_HANDLE;
      ctx->p11 = NULL;
  #endif
-@@ -1015,6 +1020,7 @@ pkinit_fini_pkcs11(pkinit_identity_crypto_context ctx)
+@@ -1016,6 +1021,7 @@ pkinit_fini_pkcs11(pkinit_identity_crypto_context ctx)
      free(ctx->token_label);
      free(ctx->cert_id);
      free(ctx->cert_label);
@@ -96,7 +96,7 @@
  #endif
  }
  
-@@ -3701,7 +3707,36 @@ pkinit_C_UnloadModule(void *handle)
+@@ -3694,7 +3700,36 @@ pkinit_C_UnloadModule(void *handle)
      dlclose(handle);
      return CKR_OK;
  }
@@ -133,7 +133,7 @@
  static krb5_error_code
  pkinit_login(krb5_context context,
               pkinit_identity_crypto_context id_cryptoctx,
-@@ -3717,6 +3752,15 @@ pkinit_login(krb5_context context,
+@@ -3710,6 +3745,15 @@ pkinit_login(krb5_context context,
      if (tip->flags & CKF_PROTECTED_AUTHENTICATION_PATH) {
          rdat.data = NULL;
          rdat.length = 0;
@@ -149,7 +149,7 @@
      } else if (password != NULL) {
          rdat.data = strdup(password);
          rdat.length = strlen(password);
-@@ -3724,6 +3768,16 @@ pkinit_login(krb5_context context,
+@@ -3717,6 +3761,16 @@ pkinit_login(krb5_context context,
          r = KRB5_LIBOS_CANTREADPWD;
          rdat.data = NULL;
      } else {
@@ -166,7 +166,7 @@
          if (tip->flags & CKF_USER_PIN_LOCKED)
              warning = " (Warning: PIN locked)";
          else if (tip->flags & CKF_USER_PIN_FINAL_TRY)
-@@ -3732,11 +3786,14 @@ pkinit_login(krb5_context context,
+@@ -3725,11 +3779,14 @@ pkinit_login(krb5_context context,
              warning = " (Warning: PIN count low)";
          else
              warning = "";
@@ -183,7 +183,7 @@
  
          kprompt.prompt = prompt;
          kprompt.hidden = 1;
-@@ -3747,7 +3804,7 @@ pkinit_login(krb5_context context,
+@@ -3740,7 +3797,7 @@ pkinit_login(krb5_context context,
          k5int_set_prompt_types(context, &prompt_type);
          r = (*id_cryptoctx->prompter)(context, id_cryptoctx->prompter_data,
                                        NULL, NULL, 1, &kprompt);
@@ -192,7 +192,7 @@
          free(prompt);
      }
  
-@@ -3760,7 +3817,7 @@ pkinit_login(krb5_context context,
+@@ -3753,7 +3810,7 @@ pkinit_login(krb5_context context,
              r = KRB5KDC_ERR_PREAUTH_FAILED;
          }
      }
@@ -201,7 +201,7 @@
  
      return r;
  }
-@@ -3957,6 +4014,81 @@ pkinit_find_private_key(pkinit_identity_crypto_context id_cryptoctx,
+@@ -3950,6 +4007,81 @@ pkinit_find_private_key(pkinit_identity_crypto_context id_cryptoctx,
      r = id_cryptoctx->p11->C_FindObjects(id_cryptoctx->session, objp, 1, &count);
      id_cryptoctx->p11->C_FindObjectsFinal(id_cryptoctx->session);
      pkiDebug("found %d private keys (%s)\n", (int) count, pkinit_pkcs11_code_to_text(r));
@@ -283,7 +283,7 @@
      if (r != CKR_OK || count < 1)
          return KRB5KDC_ERR_PREAUTH_FAILED;
      return 0;
-@@ -4339,7 +4471,10 @@ pkinit_get_certs_pkcs12(krb5_context context,
+@@ -4332,7 +4464,10 @@ pkinit_get_certs_pkcs12(krb5_context context,
          } else if (id_cryptoctx->prompter == NULL) {
              /* We can't use a prompter. */
              goto cleanup;
@@ -295,7 +295,7 @@
              /* Ask using a prompter. */
              memset(prompt_reply, '\0', sizeof(prompt_reply));
              rdat.data = prompt_reply;
-@@ -4358,7 +4493,7 @@ pkinit_get_certs_pkcs12(krb5_context context,
+@@ -4351,7 +4486,7 @@ pkinit_get_certs_pkcs12(krb5_context context,
              k5int_set_prompt_types(context, &prompt_type);
              r = (*id_cryptoctx->prompter)(context, id_cryptoctx->prompter_data,
                                            NULL, NULL, 1, &kprompt);
@@ -304,7 +304,7 @@
              if (r) {
                  TRACE_PKINIT_PKCS_PROMPT_FAIL(context);
                  goto cleanup;
-@@ -4663,6 +4798,11 @@ pkinit_get_certs_pkcs11(krb5_context context,
+@@ -4656,6 +4791,11 @@ pkinit_get_certs_pkcs11(krb5_context context,
          if (id_cryptoctx->cert_label == NULL)
              return ENOMEM;
      }

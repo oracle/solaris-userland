@@ -156,11 +156,10 @@
      if (asprintf(&kiprop_name, "kiprop/%s", canonhost) < 0) {
          ret = ENOMEM;
          fprintf(stderr, _("Out of memory\n"));
-@@ -176,12 +181,22 @@ static int add_admin_princs(void *handle, krb5_context context, char *realm)
-                                ADMIN_LIFETIME)))
+@@ -177,11 +182,21 @@ static int add_admin_princs(void *handle, krb5_context context, char *realm)
          goto clean_and_exit;
  
-+    if ((ret = add_admin_princ(handle, context,
+     if ((ret = add_admin_princ(handle, context,
 +                               chpw_name, realm,
 +                               KRB5_KDB_DISALLOW_TGT_BASED |
 +                               KRB5_KDB_PWCHANGE_SERVICE,
@@ -169,7 +168,7 @@
 +
 +/* kadmin/admin unusable with Solaris rpcsec_gss */
 +#if 0
-     if ((ret = add_admin_princ(handle, context,
++    if ((ret = add_admin_princ(handle, context,
                                 KADM5_ADMIN_SERVICE, realm,
                                 KRB5_KDB_DISALLOW_TGT_BASED |
                                 KRB5_KDB_LOCKDOWN_KEYS,
@@ -366,7 +365,7 @@
  
  #include "misc.h"
  #include "auth.h"
-@@ -351,20 +352,21 @@ main(int argc, char *argv[])
+@@ -350,20 +351,21 @@ main(int argc, char *argv[])
      OM_uint32 minor_status;
      gss_buffer_desc in_buf;
      gss_OID nt_krb5_name_oid = (gss_OID)GSS_KRB5_NT_PRINCIPAL_NAME;
@@ -392,7 +391,7 @@
  
      progname = (strrchr(argv[0], '/') != NULL) ? strrchr(argv[0], '/') + 1 :
          argv[0];
-@@ -473,28 +475,88 @@ main(int argc, char *argv[])
+@@ -472,28 +474,88 @@ main(int argc, char *argv[])
      if (!(params.mask & KADM5_CONFIG_ACL_FILE))
          fail_to_start(0, _("Missing required ACL file configuration"));
  
@@ -490,7 +489,7 @@
      svcauth_gssapi_set_log_badauth2_func(log_badauth, NULL);
      svcauth_gssapi_set_log_badverf_func(log_badverf, NULL);
      svcauth_gssapi_set_log_miscerr_func(log_miscerr, NULL);
-@@ -505,6 +567,7 @@ main(int argc, char *argv[])
+@@ -504,6 +566,7 @@ main(int argc, char *argv[])
  
      if (svcauth_gss_set_svc_name(GSS_C_NO_NAME) != TRUE)
          fail_to_start(0, _("Cannot initialize GSSAPI service name"));
@@ -498,7 +497,7 @@
  
      acl_file = (*params.acl_file != '\0') ? params.acl_file : NULL;
      ret = auth_init(context, acl_file);
-@@ -549,14 +612,16 @@ main(int argc, char *argv[])
+@@ -548,14 +611,16 @@ main(int argc, char *argv[])
      krb5_klog_syslog(LOG_INFO, _("finished, exiting"));
  
      /* Clean up memory, etc */

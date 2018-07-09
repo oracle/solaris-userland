@@ -212,11 +212,10 @@
  
 --- a/src/lib/gssapi/krb5/ser_sctx.c
 +++ b/src/lib/gssapi/krb5/ser_sctx.c
-@@ -149,6 +149,22 @@ kg_oid_size(kcontext, arg, sizep)
-     return(kret);
+@@ -150,6 +150,22 @@ kg_oid_size(kcontext, arg, sizep)
  }
  
-+static krb5_error_code
+ static krb5_error_code
 +kg_queue_externalize(kcontext, arg, buffer, lenremain)
 +    krb5_context        kcontext;
 +    krb5_pointer        arg;
@@ -232,14 +231,14 @@
 +    return err;
 +}
 +
- static krb5_error_code
++static krb5_error_code
  kg_seqstate_externalize(kcontext, arg, buffer, lenremain)
      krb5_context        kcontext;
-@@ -165,6 +181,48 @@ kg_seqstate_externalize(kcontext, arg, buffer, lenremain)
-     return err;
+     g_seqnum_state      arg;
+@@ -166,6 +182,48 @@ kg_seqstate_externalize(kcontext, arg, buffer, lenremain)
  }
  
-+static krb5_error_code
+ static krb5_error_code
 +kg_queue_internalize(kcontext, argp, buffer, lenremain)
 +    krb5_context        kcontext;
 +    krb5_pointer        *argp;
@@ -281,14 +280,14 @@
 +    return 0;
 +}
 +
- static krb5_error_code
++static krb5_error_code
  kg_seqstate_internalize(kcontext, argp, buffer, lenremain)
      krb5_context        kcontext;
-@@ -207,6 +265,26 @@ kg_seqstate_internalize(kcontext, argp, buffer, lenremain)
-     return 0;
+     g_seqnum_state      *argp;
+@@ -208,6 +266,26 @@ kg_seqstate_internalize(kcontext, argp, buffer, lenremain)
  }
  
-+static krb5_error_code
+ static krb5_error_code
 +kg_queue_size(kcontext, arg, sizep)
 +    krb5_context        kcontext;
 +    krb5_pointer        arg;
@@ -308,9 +307,10 @@
 +    return(kret);
 +}
 +
- static krb5_error_code
++static krb5_error_code
  kg_seqstate_size(kcontext, arg, sizep)
      krb5_context        kcontext;
+     g_seqnum_state      arg;
 @@ -319,8 +397,9 @@ kg_ctx_size(kcontext, arg, sizep)
                                 &required);
  
