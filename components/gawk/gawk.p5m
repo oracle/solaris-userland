@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # pkg.linted actions are needed to prevent lint errors for 64-bit binaries in
@@ -40,7 +40,7 @@ set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2008/594
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 link path=usr/bin/gawk target=../gnu/bin/awk facet.compat.gnulinks=true
-file path=usr/bin/igawk
+hardlink path=usr/bin/gawk-$(COMPONENT_VERSION) target=gawk
 file usr/bin/gawk path=usr/gnu/bin/awk
 file usr/share/man/man1/gawk.1 path=usr/gnu/share/man/man1/awk.1
 file path=usr/include/gawkapi.h
@@ -50,13 +50,13 @@ file path=usr/lib/gawk/filefuncs.so
 file path=usr/lib/gawk/fnmatch.so
 file path=usr/lib/gawk/fork.so
 file path=usr/lib/gawk/inplace.so
+file path=usr/lib/gawk/intdiv.so
 file path=usr/lib/gawk/ordchr.so
 file path=usr/lib/gawk/readdir.so
 file path=usr/lib/gawk/readfile.so
 file path=usr/lib/gawk/revoutput.so
 file path=usr/lib/gawk/revtwoway.so
 file path=usr/lib/gawk/rwarray.so
-file path=usr/lib/gawk/testext.so
 file path=usr/lib/gawk/time.so
 file path=usr/share/awk/assert.awk
 file path=usr/share/awk/bits2str.awk
@@ -66,7 +66,9 @@ file path=usr/share/awk/ftrans.awk
 file path=usr/share/awk/getopt.awk
 file path=usr/share/awk/gettime.awk
 file path=usr/share/awk/group.awk
+file path=usr/share/awk/have_mpfr.awk
 file path=usr/share/awk/inplace.awk
+file path=usr/share/awk/intdiv0.awk
 file path=usr/share/awk/join.awk
 file path=usr/share/awk/libintl.awk
 file path=usr/share/awk/noassign.awk
@@ -84,6 +86,7 @@ file path=usr/share/awk/walkarray.awk
 file path=usr/share/awk/zerofile.awk
 file path=usr/share/info/gawk.info
 file path=usr/share/info/gawkinet.info
+file path=usr/share/info/gawkworkflow.info
 file path=usr/share/locale/ca/LC_MESSAGES/gawk.mo
 file path=usr/share/locale/da/LC_MESSAGES/gawk.mo
 file path=usr/share/locale/de/LC_MESSAGES/gawk.mo
@@ -96,12 +99,12 @@ file path=usr/share/locale/ja/LC_MESSAGES/gawk.mo
 file path=usr/share/locale/ms/LC_MESSAGES/gawk.mo
 file path=usr/share/locale/nl/LC_MESSAGES/gawk.mo
 file path=usr/share/locale/pl/LC_MESSAGES/gawk.mo
+file path=usr/share/locale/pt_BR/LC_MESSAGES/gawk.mo
 file path=usr/share/locale/sv/LC_MESSAGES/gawk.mo
 file path=usr/share/locale/vi/LC_MESSAGES/gawk.mo
 file path=usr/share/locale/zh_CN/LC_MESSAGES/gawk.mo
 link path=usr/share/man/man1/gawk.1 target=../../../gnu/share/man/man1/awk.1 \
     facet.compat.gnulinks=all
-file path=usr/share/man/man1/igawk.1
 file path=usr/share/man/man3/filefuncs.3
 file path=usr/share/man/man3/fnmatch.3
 file path=usr/share/man/man3/fork.3
@@ -112,5 +115,5 @@ file path=usr/share/man/man3/readfile.3
 file path=usr/share/man/man3/revoutput.3
 file path=usr/share/man/man3/revtwoway.3
 file path=usr/share/man/man3/rwarray.3
-file path=usr/share/man/man3/time.3am
-license gawk.license license="GPLv3, FDLv1.3"
+file path=usr/share/man/man3/time.3
+license gawk.license license="GPLv3, FDLv1.3, LGPLv2.1, BSD"

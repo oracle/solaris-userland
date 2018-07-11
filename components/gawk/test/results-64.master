@@ -1,6 +1,8 @@
+Making check in support
 Making check in .
 /usr/gnu/bin/make
 Making check in extension
+Making check in extras
 Making check in doc
 Making check in awklib
 Making check in po
@@ -17,8 +19,11 @@ Locale environment:
 ======== Starting basic tests ========
 addcomma
 anchgsub
+anchor
 argarray
 arrayind1
+arrayind2
+arrayind3
 arrayparm
 arrayprm2
 arrayprm3
@@ -40,6 +45,7 @@ aryprm7
 aryprm8
 aryprm9
 arysubnm
+aryunasgn
 asgext
 awkpath
 back89
@@ -57,6 +63,7 @@ concat1
 concat2
 concat3
 concat4
+concat5
 convfmt
 datanonl
 defref
@@ -76,6 +83,7 @@ fcall_exit
 fcall_exit2
 fldchg
 fldchgnf
+fldterm
 fnamedat
 fnarray
 fnarray2
@@ -126,10 +134,10 @@ longwrds
 manglprm
 math
 membug1
+memleak
 messages
 minusstr
 mmap8k
-mtchi18n
 nasty
 nasty2
 negexp
@@ -153,6 +161,7 @@ nors
 nulinsrc
 nulrsend
 numindex
+numstr1
 numsubstr
 octsub
 ofmt
@@ -180,15 +189,18 @@ prdupval
 prec
 printf0
 printf1
+printfchar
 prmarscl
 prmreuse
 prt1eval
 prtoeval
 rand
+randtest
 range1
 readbuf
 rebrackloc
 rebt8b1
+rebuild
 redfilnm
 regeq
 regexpbrack
@@ -213,6 +225,8 @@ rswhite
 scalar
 sclforin
 sclifin
+setrec0
+setrec1
 sigpipe1
 sortempty
 sortglos
@@ -221,8 +235,10 @@ splitarr
 splitdef
 splitvar
 splitwht
+status-close
 strcat1
 strnum1
+strnum2
 strtod
 subamp
 subback
@@ -242,6 +258,7 @@ uninit5
 uninitialized
 unterm
 uparrfs
+uplus
 wideidx
 wideidx2
 widesub
@@ -286,20 +303,27 @@ clos1way2
 clos1way3
 clos1way4
 clos1way5
+clos1way6
 crlf
 dbugeval
+dbugeval2
+dbugtypedre1
+dbugtypedre2
 delsub
 devfd
 devfd1
 devfd2
 dumpvars
+errno
 exit
 fieldwdth
+forcenum
 fpat1
 fpat2
 fpat3
 fpat4
 fpat5
+fpat6
 fpatnull
 fsfwfs
 funlen
@@ -309,19 +333,27 @@ functab3
 fwtest
 fwtest2
 fwtest3
+fwtest4
+fwtest5
+fwtest6
+fwtest7
+fwtest8
 genpot
 gensub
 gensub2
+gensub3
 getlndir
 gnuops2
 gnuops3
 gnureops
+gsubind
 icasefs
 icasers
 id
 igncdym
 igncfs
 ignrcas2
+ignrcas4
 ignrcase
 incdupe
 incdupe2
@@ -335,10 +367,18 @@ include2
 indirectbuiltin
 indirectcall
 indirectcall2
+intarray
+isarrayunset
 lint
+lintexp
+lintindex
+lintint
+lintlength
 lintold
+lintset
 lintwarn
 mixed1
+mktime
 manyfiles
 match1
 match2
@@ -351,6 +391,9 @@ negtime
 next
 nondec
 nondec2
+nonfatal1
+nonfatal2
+nonfatal3
 patsplit
 posix
 printfbad1
@@ -368,7 +411,10 @@ profile5
 profile6
 profile7
 profile8
+profile9
+profile10
 pty1
+pty2
 rebuf
 regnul1
 regnul2
@@ -383,13 +429,17 @@ rsstart2
 rsstart3
 rstest6
 shadow
+shadowbuiltin
 sortfor
 sortfor2
 sortu
+sourcesplit
 split_after_fpat
 splitarg4
 strftime
+strftfld
 strtonum
+strtonum1
 switch2
 symtab1
 symtab2
@@ -401,7 +451,17 @@ symtab7
 symtab8
 symtab9
 symtab10
+typedregex1
+typedregex2
+typedregex3
+typeof1
+typeof2
+typeof3
+typeof4
+typeof5
+timeout
 watchpoint1
+gawk is not compiled to support the array debug tests
 ======== Done with gawk extension tests ========
 ======== Starting machine-specific tests ========
 double1
@@ -412,9 +472,10 @@ intformat
 ======== Starting tests that can vary based on character set or locale support ========
 **************************************************************************
 * Some or all of these tests may fail if you have inadequate or missing  *
-* locale support. At least en_US.UTF-8, ru_RU.UTF-8 and ja_JP.UTF-8 are  *
-* needed. However, if you see this message, the Makefile thinks you have *
-* what you need ...                                                      *
+* locale support. At least en_US.UTF-8, fr_FR.UTF-8, ru_RU.UTF-8 and     *
+* ja_JP.UTF-8 are needed. The el_GR.iso88597 is optional but helpful.    *
+* However, if you see this message, the Makefile thinks you have what    *
+* you need ...                                                           *
 **************************************************************************
 asort
 asorti
@@ -431,24 +492,30 @@ mbprintf1
 mbprintf2
 mbprintf3
 mbprintf4
+mbprintf5
+mtchi18n
+nlstringtest
 rebt8b2
 rtlenmb
 sort1
 sprintfc
 ======== Done with tests that can vary based on character set or locale support ========
 ======== Starting shared library tests ========
-fnmatch
+apiterm
 filefuncs
+fnmatch
 fork
 fork2
 fts
 functab4
+getfile
 inplace1
 inplace2
 inplace3
 ordchr
 ordchr2
 readdir
+readdir_test
 readfile
 readfile2
 revout
@@ -458,15 +525,19 @@ testext
 time
 ======== Done with shared library tests ========
 ======== Starting MPFR tests ========
-mpfrnr
-mpfrnegzero
+mpfrbigint
+mpfrexprange
+mpfrieee
 mpfrmemok1
+mpfrnegzero
+mpfrnr
 mpfrrem
 mpfrrnd
-mpfrieee
-mpfrexprange
+mpfrrndeval
 mpfrsort
 mpfrsqrt
-mpfrbigint
+mpfrstrtonum
+mpgforcenum
+mpfruplus
 ======== Done with MPFR tests ========
 ALL TESTS PASSED

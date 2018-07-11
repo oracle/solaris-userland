@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
+COMPILER= gcc
 
 COMPONENT_NAME=		gawk
-COMPONENT_VERSION=	4.1.4
+COMPONENT_VERSION=	4.2.1
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:53e184e2d0f90def9207860531802456322be091c7b48f23fdc79cda65adc266
+    sha256:d1119785e746d46a8209d28b2de404a57f983aa48670f4e225531d3bdc175551
 COMPONENT_ANITYA_ID=	868
 
-TPNO=			35767
+TPNO=			44204
 
 # Adjust references to section 3am to be section 3 in the extensions man pages.
 COMPONENT_POST_CONFIGURE_ACTION = \
@@ -55,7 +56,6 @@ SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/gnu-component.mk
 
 CFLAGS += $(XPG6MODE)
-studio_C99MODE = $(studio_C99_ENABLE) 
 
 # Utility executables are intentionally delivered to the 32-bit lib directory.
 CONFIGURE_LIBDIR.64 =   $(CONFIGURE_PREFIX)/lib
