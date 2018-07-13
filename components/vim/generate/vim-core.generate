@@ -1,0 +1,9 @@
+<include generate/common.transform>
+
+# Delete everything not belonging to this package
+<transform file link pkg.type=(?!core) -> drop>
+<transform file link -> delete pkg.type .*>
+
+# Add symlinks for vi.1 -> vim.1
+<transform file link path=.*/vim\.1$ -> emit link path=%(path)X target=vim.1 pkg.type=core>
+<transform link path=.*/vim\.1X$ -> edit path "/vim.1X" "/vi.1">

@@ -1,0 +1,21 @@
+<include generate/common.transform>
+
+# Drop everything to belonging to 'main'
+<transform dir file link hardlink pkg.type=^(?!main) -> drop>
+<transform dir file link hardlink -> delete pkg.type .*>
+
+# We have all pkgconfig files in /usr/lib/pkgconfig and
+# /usr/lib/$(MACH64)/pkgconfig
+<transform file path=usr/lib/svn/.*pkgconfig -> set action.hash %(path)>
+<transform file path=usr/lib/svn/.*pkgconfig -> edit path /svn/ / >
+
+# Move include files to /usr/include/svn
+<transform file path=usr/include/subversion-1/ -> set action.hash %(path)>
+<transform file path=usr/include/subversion-1/ -> edit path /subversion-1/ /svn/ >
+
+# We deliver files from usr/bin and not from usr/bin/$(MACH32)
+# They are the same
+<transform file path=usr/bin/\$\(MACH32\) -> drop>
+
+# We do not deliver the two utilities
+<transform file path=usr/bin/(svnbench|svnfsfs)$ -> drop>

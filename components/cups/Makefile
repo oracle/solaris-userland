@@ -96,6 +96,8 @@ COMPONENT_POST_INSTALL_ACTION = \
 	$(TOUCH) $(PROTOETCDIR)/cups/command.types ; \
 	$(MV) $(PROTOUSRLIBDIR)/64 $(PROTOUSRLIBDIR)/$(MACH64)
 
+GENERATE_PROTO_DIRS += Solaris^Solaris
+
 REQUIRED_PACKAGES += driver/parallel/ecpp
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng14

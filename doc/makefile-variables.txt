@@ -125,6 +125,19 @@ if overriding the default:
   every time you change REQUIRED_PACKAGES, you can do
   $ gmake MAKEFILE_PREREQ= publish
 
+* GENERATE_TRANSFORM list of pkgmogrify transforms applied during
+  'gmake sample-manifest' and 'gmake manifest-check' to pkgsend(1) generate
+  output. It does things like converting 'sparcv9|amd64' to '$(MACH64)', drops
+  certain directories known to be defined elsewhere (like /etc), removes
+  unnecessary attributes (like timestamp).
+
+* MANIFEST_CLEANUP_TRANSFORM list of common pkgmogrify transforms applied during
+  'gmake manifest-check'. By default this removes 'dir' actions (which we
+  normally do not have in manifests) and handles japan language incompatibility
+  between Linux and Solaris. It is similar to what GENERATE_TRANSFORM does (and
+  it is applied on top of this tranform) but for some corner cases it can do
+  too much, so keeping it in separate variable makes it possible to disable it.
+
 * PRIORITY_COMPONENTS is a variable which may be used on command line during
   full build. It says which components should be build before the rest of the
   components. There are two reasons one may wish to use this feature

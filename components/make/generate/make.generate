@@ -1,0 +1,18 @@
+# gmake - create symlink to sfw and /usr/bin
+<transform file path=(usr/bin/gmake) -> emit link path=%<1> target=../gnu/bin/make facet.compat.gnulinks=true>
+<transform file path=(usr/bin/gmake) -> emit link path=usr/sfw/bin/gmake target=../../gnu/bin/make>
+# And install it to /usr/gnu/bin
+<transform file path=usr/bin/gmake -> set action.hash %(path)>
+<transform file path=usr/bin/gmake -> set path usr/gnu/bin/make>
+
+# We don't handle info files
+<transform file path=usr/share/info/dir -> drop>
+
+# Man page - create symlink to /usr/sfw and usr/share
+<transform file path=usr/share/man/man1/gmake.1 -> emit \
+	link path=usr/sfw/share/man/man1/gmake.1 target=../../../../gnu/share/man/man1/make.1>
+<transform file path=usr/share/man/man1/gmake.1 -> emit \
+	link path=usr/share/man/man1/gmake.1 target=../../../gnu/share/man/man1/make.1 facet.compat.gnulinks=all>
+# And install it to /usr/gnu/share
+<transform file path=usr/share/man/man1/gmake.1 -> set action.hash %(path)>
+<transform file path=usr/share/man/man1/gmake.1 -> set path usr/gnu/share/man/man1/make.1>

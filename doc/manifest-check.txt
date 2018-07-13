@@ -1,0 +1,157 @@
+================================================================================
+================================ Manifest check ================================
+================================================================================
+
+This guide describes steps to set up a system making sure whether the manifest
+(*.p5m) we have in the is still correct and complete.
+
+
+
+The Goal
+========
+Makes sure that the component manifest (p5m) delivers all the files from the
+proto area. An example could be when CBE is updated with new library, component
+X starts to use it and because of that delivers new file. But this file is not
+in it's p5m manifest and there is no warning that there is such new file. If
+component X has 'manifest-check' implemented we'll get an error during 'gmake
+publish'.
+
+The goal of the manifest check is to define how the manifest file (*.p5m) is
+created out of the proto area. And compare the result to the existing p5m files
+to make sure that there are no files or other changes left behind.
+
+Other way of describing it would be that "manifest check" is set of pkgmogrify
+transformations applied to "gmake sample-manifest" output.
+
+
+
+Operation
+=========
+The process is to combine multiple information sources and compare the result
+to the p5m files. That is to create this_component.p5m it considers:
+ - contents of the proto directories itself (gmake sample-manifest output)
+   ( 5) )
+ - pkgmogrify transform file generate/this_component.generate
+   ( 6) - 8) )
+ - the existing this_component.p5m file
+   ( 9) )
+ - fixed set of action read from generate/this_component.static
+   ( 10) )
+
+In detail, these are the steps taken in order to form p5m file
+
+1) "gmake manifest-compare" is executed. Either by hand or as part of "gmake
+   publish" command.
+
+2) "manifest-compare" makes sure that the component was "gmake install"ed
+
+3) list of existing *.p5m files in the component is collected and for each such
+   file tools/manifest_generator is executed.
+
+4) for component.p5m manifest_generator checks whether corresponding
+   generate/component.generate exists. If not, info message is printed and the
+   tool exists with return code 0 (success).
+
+5) manifest_generator collects list of existing files in proto areas (like
+   gmake sample-manifest would do). Please note that you can specify additional
+   proto directories in $(GENERATE_PROTO_DIRS) variable in a form
+   "directory^transpose" so that every file/link/etc. in "directory" produces
+   action with path=transpose/... .
+
+6) There are three mogrify transform files applied
+  - $(GENERATE_TRANSFORMS) - that is to get the output the same as
+    "gmake sample-manifest". By default that is transforms/generate-cleanup
+  - $(MANIFEST_CLEANUP_TRANSFORM) - that contains common actions needed to do
+    make the sample-manifest output similar to the actual p5m. That is dropping
+    directories, moving files from "mangled" dir into root directory etc. That
+    is by default transforms/manifest-check-cleanup.
+  - $(TRANSFORM) - that is the generate/component.generate itself
+
+7) The output is saved as build/manifest-*-generate.debug. That file is
+   intended to help with debugging the manifest check process.
+
+8) The debug file is stripped of debug lines, passed through pkgfmt and long
+   actions which are split on multiple lines are joined into one again. The
+   result is filtered through uniq(1) to remove duplicate lines. Duplicate
+   lines can be generated for example if you have man page in the component and
+   the man page appears later in the "mangled" directory too.
+
+9) manifest_generator takes all pkgmogrify transforms (<transform ... and
+   <include ...), "set", "depend" and "license" actions from existing
+   component.p5m file. These actions can not be guessed so are copied out of
+   exiting p5m file
+
+10) The contents of generate/component.static is read if it exists
+
+11) The combined result is stripped of comments and formatted using pkgfmt(1)
+
+12) Existing p5m file is stripped of comments and compared to our result
+
+13) If the two manifests match exactly "manifest-compare" exits with 0,
+    otherwise it prints the differences and exits with 1. "gmake
+    manifest-compare" exits with an error in such case.
+
+
+
+Best practices
+==============
+
+Converting a common string to a variable
+-------------------------------------------------------------------
+When you have a lot of files like
+
+     file path=usr/perl5/blah/...
+     file path=usr/perl5/blah/...
+
+And you want to convert it to $(PERLPATH) defined in the Makefile
+
+     file path=$(PERLPATH)/blah/...
+
+You have to use a little trick
+
+     # Convert the string into $!(PERLPATH)
+     <transform dir file link hardlink -> edit path "$(PERLPATH)" "$!(PERLPATH)">
+     # Remove the exclamation mark
+     <transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
+
+
+Install a file to a location different to where it is in proto area
+-------------------------------------------------------------------
+     # Set action hash to current path so that IPS can find it
+     <transform file path=usr/bin/ -> set action.hash %(path)>
+     # "Move" the file to it's new location
+     <transform file path=usr/bin/ -> edit path ^/usr/bin /usr/gnu/bin >
+
+
+Multiple *p5m files in a component
+----------------------------------
+Create a generate/common.transform file. That sorts the files according to
+which package it belongs. Other *.generate files will include this common
+transform.
+
+     # Make sure that all files are assigned to a manifest
+     <transform dir file link hardlink -> set pkg.type main>
+
+     # Override for files belonging to different manifest
+     <transform file link path=.*\.pl$ -> set pkg.type perl>
+     <transform file link path=.*\.py$ -> set pkg.type python>
+
+The perl .generate file would then contain
+     <include generate/common.transform>
+
+     # Drop everything not belonging to 'perl'
+     <transform dir file link hardlink pkg.type=(?!perl) -> drop>
+
+     # Remove the mark
+     <transform dir file link hardlink -> delete pkg.type .*>
+
+
+
+Limitations
+===========
+ - Comments are ignored and not compared
+ - While processing Python and Perl modules the variables like $(PYVER) and
+   $(PERLVER) are not available - you have to match strings like python-[0-9.]+
+   instead of python-$(PYVER).
+
+# vim: fo=12tq autoindent

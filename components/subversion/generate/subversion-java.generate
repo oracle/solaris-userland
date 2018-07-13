@@ -1,0 +1,13 @@
+<include generate/common.transform>
+
+# Drop everything not belonging to 'python'
+<transform dir file link hardlink pkg.type=(?!java) -> drop>
+<transform dir file link hardlink -> delete pkg.type .*>
+
+# Drop 64bit svn-javahl.jar
+<transform file path=.*/\$\(MACH64\)/.*\.jar -> drop>
+
+<transform file path=usr/lib/svn/svn-javahl/svn-javahl.jar -> set action.hash %(path)>
+# Move svn-javahl.jar into /usr/share/lib/java/
+<transform file path=usr/lib/svn/svn-javahl/(svn-javahl.jar) -> set path usr/share/lib/java/%<1>>
+

@@ -60,6 +60,7 @@ COPYRIGHT_TEMPLATE =		$(WS_TOP)/transforms/copyright-template
 
 # order is important
 GENERATE_TRANSFORMS +=		$(WS_TOP)/transforms/generate-cleanup
+MANIFEST_CLEANUP_TRANSFORM +=   $(WS_TOP)/transforms/manifest-check-cleanup
 
 PKGMOGRIFY_TRANSFORMS +=	$(WS_TOP)/transforms/libtool-drop
 
@@ -225,6 +226,8 @@ MANIFESTS =		$(VERSIONED_MANIFESTS:%=$(MANIFEST_BASE)-%)
 DEPENDED=$(VERSIONED_MANIFESTS:%.p5m=$(MANIFEST_BASE)-%.depend)
 RESOLVED=$(VERSIONED_MANIFESTS:%.p5m=$(MANIFEST_BASE)-%.depend.res)
 PUBLISHED=$(RESOLVED:%.depend.res=%.published)
+# List of manifests that are to be constructed during 'gmake manifest-check'
+CHECKED=$(CANONICAL_MANIFESTS:%.p5m=$(MANIFEST_BASE)-%.constructed)
 
 COPYRIGHT_FILE ?=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).copyright
 IPS_COMPONENT_VERSION ?=	$(COMPONENT_VERSION)
@@ -237,12 +240,22 @@ IPS_COMPONENT_VERSION ?=	$(COMPONENT_VERSION)
 # a package is for one architecture only.
 PUBLISH_STAMP ?= $(BUILD_DIR)/.published-$(MACH)
 
-publish:		build install $(PUBLISH_STAMP)
+$(MANIFEST_BASE)-%.constructed:
+	@env $(call prepare_env_args,\
+	    GENERATE_TRANSFORMS PKG_OPTIONS PROTO_DIR PKG_HARDLINKS \
+	    MANIFEST_BASE COMPONENT_DIR MANIFEST_CLEANUP_TRANSFORM \
+	    MANIFEST_GENERATE GENERATE_PROTO_DIRS) $(MANIFEST_COMPARE) "$@"
+
+manifest-check: install $(CHECKED)
+
+publish:		build install manifest-check $(PUBLISH_STAMP)
 
 sample-manifest:	$(GENERATED).p5m
 
 $(GENERATED).p5m:	install
-	$(PKGSEND) generate $(PKG_HARDLINKS:%=--target %) $(PROTO_DIR) | \
+	$(MANIFEST_GENERATE) \
+	    $(PKG_HARDLINKS:%=--target %) \
+	    $(PROTO_DIR) $(GENERATE_PROTO_DIRS) | \
 	$(PKGMOGRIFY) $(PKG_OPTIONS) /dev/fd/0 $(GENERATE_TRANSFORMS) | \
 		sed -e '/^$$/d' -e '/^#.*$$/d' | $(PKGFMT) | \
 		cat $(METADATA_TEMPLATE) - >$@

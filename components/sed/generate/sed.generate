@@ -1,0 +1,13 @@
+
+# charset.alias is delivered by glib
+<transform path=.*/charset.alias -> drop>
+
+# Info file is not handled
+<transform path=usr/share/info/dir -> drop>
+
+# Move the man page to gnu directory and create asymlink to /usr/gnu
+<transform file path=usr/share/man/man([^/]+)/(.*)$ -> emit \
+	link path=usr/share/man/man%<1>/g%<2> target=../../../gnu/share/man/man%<1>/%<2> facet.compat.gnulinks=all>
+<transform file path=usr/share/man/man1/sed.1 -> set action.hash %(path)>
+<transform file path=usr/share/man/man1/sed.1 -> edit path usr usr/gnu>
+

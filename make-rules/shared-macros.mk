@@ -103,10 +103,48 @@ PUBLISHER_LOCALIZABLE ?=	$(CONSOLIDATION)-localizable
 # space-separated paths to colon-separated paths in variables with
 # $(subst $(space),:,$(strip $(SPATHS)))
 empty :=
+quot  := "
+bkslash  := \$(empty)
 space := $(empty) $(empty)
 define newline
 
 
+endef
+
+# Change \ -> \\
+define prepare_env_args_slash
+$(subst $(bkslash),$(bkslash)$(bkslash),$(1))
+endef
+
+# Change $ -> \$
+define prepare_env_args_dollar
+$(subst $$,$(bkslash)$$,$(call prepare_env_args_slash,$(1)))
+endef
+
+# Change " -> \"
+define prepare_env_args_quote
+$(subst $(quot),$(bkslash)$(quot),$(call prepare_env_args_dollar,$(1)))
+endef
+
+# Change \n -> "$'\n'"
+define prepare_env_args_newline
+$(subst $(newline),$(quot)$$'$(bkslash)n'$(quot),$(call prepare_env_args_quote,$(1)))
+endef
+
+
+# Modify all the arguments to a form directly passable to the env(1) command.
+# The arguments are encapsulated in double quotes and several characters are
+# replaced as follows:
+#         \ -> \\
+#         " -> \"
+#         $ -> \$
+# <newline> -> "$'\n'"
+#
+# It is intended to be used as
+#     env $(call prepare_env_args,VAR1 VAR2) process
+# and process will get VAR1 and VAR2 in it's environment.
+define prepare_env_args
+$(foreach env,$(1),"$(env)=$(call prepare_env_args_newline,$($(env)))")
 endef
 
 ROOT =			/
@@ -205,6 +243,8 @@ PYTHON3_VERSIONS =	3.4 3.5
 PYTHON_VERSIONS =	$(PYTHON3_VERSIONS) $(PYTHON2_VERSIONS)
 
 BASS_O_MATIC =	$(WS_TOOLS)/bass-o-matic
+MANIFEST_GENERATE = $(WS_TOOLS)/manifest-generate
+MANIFEST_COMPARE = $(WS_TOOLS)/manifest-check
 
 CLONEY =	$(WS_TOOLS)/cloney
 

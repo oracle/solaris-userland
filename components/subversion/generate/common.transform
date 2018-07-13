@@ -1,0 +1,16 @@
+# Everything belongs to 'main' unles overriden later
+<transform dir file link hardlink -> set pkg.type main>
+
+# Python
+<transform dir file link hardlink path=usr/lib/python -> set pkg.type python>
+# Python .so libraries
+<transform file link path=usr/lib/svn(/\$\(MACH64\))?/lib.*_py.*\.so -> set pkg.type python>
+
+# Perl
+<transform file path=usr/perl5/ -> set pkg.type perl>
+<transform file link path=usr/lib/svn/\$\(MACH64\)/lib.*_perl.*\.so -> set pkg.type perl>
+
+# Java
+<transform file link path=usr/lib/svn(/\$\(MACH64\))?/libsvnjava.*\.so -> set pkg.type java>
+<transform file path=.*\.jar -> set pkg.type java>
+

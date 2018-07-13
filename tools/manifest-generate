@@ -1,0 +1,82 @@
+#!/bin/bash
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+set -eu -o pipefail
+export PATH=/usr/bin
+
+if [ $# -eq 0 ]; then
+	cat <<-EOT
+	manifest-generate [--target file] dir [dir ...]
+	
+	--target file - argument is passed to pkgsend(1), see details there
+	dir - a directory from which we create actions
+	    - dir can be specified as dir^transpose which prepends
+	      string 'transpose/' in front of every 'path' attribute.
+	
+	The tool is intended to be replacement for 'pkgsend generate' adding
+	support for dir^transpose proto dir specification
+	EOT
+	exit 0
+fi
+
+# Collect the --target arguments
+HARDLINKS=()
+while [[ "$1" == --target ]]; do
+	if [[ $# -le 1 ]]; then
+		echo "Option --target needs an argument"
+		exit 1
+	fi
+	HARDLINKS+=( "$1" "$2" )
+	shift
+	shift
+done
+
+# Now call pkgsend generate on every directory specified on command line
+for PROTO in "$@"; do
+	if [[ "$PROTO" == *^* ]]; then
+		# If the proto dir is specified as some/where^translate
+		# The result will be files from some/where appearing as if they
+		# would be in a "translate" directory. Thus file
+		# some/where/file will generate
+		#
+		# file path=translate/file
+		#
+		# Action hash is not translated because it is removed
+		# in the following pkgmogrify in GENERATE_TRANSFORMS
+		# anyway
+		OFFSET="${PROTO##*^}"
+		PROTO="${PROTO%^*}"
+	else
+		OFFSET=
+	fi
+
+	pkgsend generate "${HARDLINKS[@]}" $PROTO |
+	if [ -n "$OFFSET" ]; then
+		pkgmogrify /dev/fd/0 <(echo "<transform file link hardlink dir -> edit path ^ ${OFFSET#/}/>")
+	else
+		cat
+	fi
+done

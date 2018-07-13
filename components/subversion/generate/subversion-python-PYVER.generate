@@ -1,0 +1,12 @@
+<include generate/common.transform>
+
+# Drop everything to belonging to 'python'
+<transform dir file link hardlink pkg.type=(?!python) -> drop>
+<transform dir file link hardlink -> delete pkg.type .*>
+
+# We take libraries only from /vendor-packages/ and /vendor-packages/64/
+<transform file path=.*/vendor-packages-(32|64)/ -> drop>
+
+# Use $(PYVER)
+<transform dir file link hardlink -> edit path "/lib/python2.7/" "/lib/python$!(PYVER)/">
+<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">

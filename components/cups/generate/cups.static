@@ -1,0 +1,23 @@
+dir  path=etc/cups group=lp
+dir  path=etc/cups/interfaces group=lp
+dir  path=etc/cups/ppd group=lp
+dir  path=etc/cups/profiles group=lp
+dir  path=etc/cups/ssl group=lp mode=0700
+
+dir  path=var/cache/cups group=lp mode=0775
+dir  path=var/cache/cups/rss group=lp mode=0775
+dir  path=var/log/cups group=lp
+dir  path=var/spool/cups group=lp mode=0710
+dir  path=var/spool/cups/tmp group=lp mode=01770
+
+user username=lp ftpuser=false gcos-field="Line Printer Admin" group=lp \
+    home-dir=/ lastchg=6445 login-shell=/bin/sh password=NP uid=71
+link path=usr/share/man/man1/accept.1 target=../man8/cupsaccept.8
+link path=usr/share/man/man1/cupsdisable.1 target=../man8/cupsenable.8
+link path=usr/share/man/man1/cupsreject.1 target=../man8/cupsaccept.8
+link path=usr/share/man/man1/reject.1 target=../man8/cupsaccept.8
+
+
+link path=usr/bin/disable target=../sbin/cupsaccept
+link path=usr/bin/enable target=../sbin/cupsaccept
+

@@ -1,0 +1,22 @@
+# convert vim8x -> $(VIMVER)
+<transform dir file link hardlink -> edit path "/$(VIMVER)/" "/$!(VIMVER)/">
+<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
+
+# By default everything is in main package
+<transform file link -> default pkg.type vim>
+
+# icons and desktop icons is 'gvim'
+<transform file link path=usr/share/icons/.* -> set pkg.type gvim>
+<transform file link path=usr/share/applications/.* -> set pkg.type gvim>
+
+# basic commands and man pages are in 'core' package
+<transform file link path=.*/(ex|vi|view|vim)(\.1$|$) -> set pkg.type core>
+
+# gvim with man pages is 'gvim'
+<transform file link path=.*/gvim(\.1$|$) -> set pkg.type gvim>
+
+# solaris speciality, the /ja locale is NOT utf-8. Since the locale files are
+# utf-8 encoded we have to move them to ja_JP.UTF-8. We have to do this after
+# the mangled path is removed, as mangled directories can be in /ja/ too
+<transform file path=usr/share/man/ja/.* -> set action.hash %(path)>
+<transform file link path=usr/share/man/ja -> edit path "/ja/" "/ja_JP.UTF-8/">

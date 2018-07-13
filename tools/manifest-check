@@ -1,0 +1,150 @@
+#!/bin/bash
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+set -eu -o pipefail
+export PATH=/usr/bin
+
+if [ $# -eq 0 ]; then
+	cat <<-EOT
+	manifest-compare target_file
+	
+	This tool constructs a manifest according to files in 'generate'
+	directory and compares the result to existing .p5m manifest. Details
+	are in 'doc/manifest-check.txt'
+
+	This tool expects a number of environment variables to be set for it's
+	function. See make-rules/ips.mk for details on how it is called.
+	EOT
+	exit 0
+fi
+
+RESULT="$1"
+
+# Based on the result file name find out the original .p5m file we compare
+# ourselves to
+ORIGIN="${RESULT#$MANIFEST_BASE-}"
+NAME="${ORIGIN%.constructed}" # This is used as a base for temporary file names
+ORIGIN="$NAME.p5m"
+
+# Those are the files used to create the generated manifest
+TRANSFORM="$COMPONENT_DIR/generate/$NAME.generate"
+STATIC="$COMPONENT_DIR/generate/$NAME.static"
+
+# If there is no transform file found, no check is performed. Print a notice
+# and exit
+if [ ! -e "$TRANSFORM" ]; then
+	echo "No '$TRANSFORM' found"
+	exit 0
+fi
+
+RESULT="$MANIFEST_BASE-$NAME.generated"
+DEBUG="$MANIFEST_BASE-generate.debug"
+
+# Move the hardlink arguments to easier to use array
+HARDLINKS=()
+[ -z "$PKG_HARDLINKS" ] || mapfile -t HARDLINKS < <(printf -- "--target %s" $PKG_HARDLINKS)
+
+(
+	# First generate the sample manifest as 'gmake sample-manifest' would do
+	# Then pass it though the $TRANSFORM with full debug output.
+	"$MANIFEST_GENERATE" ${HARDLINKS[@]} $PROTO_DIR $GENERATE_PROTO_DIRS |
+	pkgmogrify -v $PKG_OPTIONS /dev/fd/0 \
+		$GENERATE_TRANSFORMS $MANIFEST_CLEANUP_TRANSFORM $TRANSFORM > "$DEBUG"
+
+
+	# 1st part of the generated manifest - the output of the transform
+	# - the debug needs to be removed
+	# - the manifest is normalized
+	# - long split actions joined back into single line
+	# - duplicate lines removed
+	/usr/gnu/bin/grep -E -v "^#|^\['#" "$DEBUG" |
+		pkgfmt |
+		perl -e '
+			# We have to pkgfmt the output so that
+			# duplicate lines get next to each other
+			# And then straighten the folded lines so that
+			# uniq(1) can remove duplicates
+			$_ = join "", <>;
+			s/\\\n//gms;
+			print;
+		' |
+		uniq
+
+	# 2nd part: copy multiple things from the original *p5m:
+	# - set
+	# - license
+	# - depend
+	# - all transforms
+	perl -e '
+		# Regular expression matching what we want to copy out of original .p5m
+		$re = qr{
+			^    # Beginning of line
+			\s*  # Potentialy whitespace
+			(?:  # Now either of this:
+				<     # This is supposed to match transforms
+				|
+				set
+				|
+				license
+				|
+				depend
+			)
+			(?:
+				[^\\\n]*+ # Take anything but newline or backslash
+				|
+				\\.       # Take anything after backslash (including newline)
+			)*              # As many times as possible
+			(?:
+				\n|\Z     # Take final end of line if it is there
+			)
+		}xms;
+
+		$_ = join "", <>;
+		while ( m/($re)/g ) {
+			print "$1\n";
+		}
+	' "$ORIGIN"
+
+	# 3rd part - add static data if available
+	[ ! -e "$STATIC" ] || cat "$STATIC"
+) |
+sed -e '/^$/d' -e '/^#.*$/d' |
+pkgfmt > "$RESULT"
+
+PWDSLASH="$PWD/"
+RESULT_RELATIVE="${RESULT#$PWDSLASH}"
+
+echo "Comparing '$RESULT_RELATIVE' to '$ORIGIN'"
+
+RET=0
+# To compare we have to remove comments from the orginal .p5m file too
+/usr/gnu/bin/diff -u "$RESULT" <( sed -e '/^$/d' -e '/^#.*$/d' "$ORIGIN" ) || RET=$?
+if [ $RET -ne 0 ]; then
+	echo "Comparing '${RESULT_RELATIVE}' to '$ORIGIN' failed"
+	DEBUG_RELATIVE="${DEBUG#$PWDSLASH}"
+	echo "You can see '$DEBUG_RELATIVE' for debugging info"
+fi
+exit $RET
