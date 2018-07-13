@@ -1,8 +1,8 @@
 Reduce references to source pathnames down to the respective basenames so
 that builds are reproducible between workspaces.
 
---- rsync-3.1.0/main.c.orig	Sat Jan 19 11:05:53 2013
-+++ rsync-3.1.0/main.c	Mon Mar 17 14:57:32 2014
+--- rsync-3.1.3/main.c.orig	2018-07-13 07:41:03.984214760 -0700
++++ rsync-3.1.3/main.c	2018-07-13 07:43:02.574626276 -0700
 @@ -26,6 +26,7 @@
  #if defined CONFIG_LOCALE && defined HAVE_LOCALE_H
  #include <locale.h>
@@ -11,7 +11,7 @@ that builds are reproducible between workspaces.
  
  extern int dry_run;
  extern int list_only;
-@@ -1215,7 +1216,7 @@
+@@ -1239,7 +1240,7 @@
  	for (i = 0; argv[i]; i++) {
  		if (!(argv[i] = strdup(argv[i]))) {
  			rprintf (FERROR, "out of memory at %s(%d)\n",
@@ -20,17 +20,17 @@ that builds are reproducible between workspaces.
  			return RERR_MALLOC;
  		}
  	}
---- rsync-3.1.0/cleanup.c.orig	Sat Sep 28 10:40:27 2013
-+++ rsync-3.1.0/cleanup.c	Mon Mar 17 14:57:58 2014
+--- rsync-3.1.3/cleanup.c.orig	2018-07-13 07:43:28.714209661 -0700
++++ rsync-3.1.3/cleanup.c	2018-07-13 07:45:43.997502670 -0700
 @@ -21,6 +21,7 @@
   */
  
  #include "rsync.h"
 +#include <libgen.h>
  
+ extern int dry_run;
  extern int am_server;
- extern int am_daemon;
-@@ -134,7 +135,7 @@
+@@ -135,7 +136,7 @@
  		if (DEBUG_GTE(EXIT, 2)) {
  			rprintf(FINFO,
  				"[%s] _exit_cleanup(code=%d, file=%s, line=%d): entered\n",
@@ -39,10 +39,7 @@ that builds are reproducible between workspaces.
  		}
  
  		/* FALLTHROUGH */
-
---- Originals/cleanup.c	2016-05-09 14:57:04.922251814 -0700
-+++ rsync-3.1.2/cleanup.c	2016-05-09 14:58:25.902915968 -0700
-@@ -235,7 +235,7 @@
+@@ -234,11 +235,11 @@
  			rprintf(FINFO,
  				"[%s] _exit_cleanup(code=%d, file=%s, line=%d): "
  				"about to call exit(%d)%s\n",
@@ -50,18 +47,22 @@ that builds are reproducible between workspaces.
 +				who_am_i(), first_code, basename((char *)exit_file), exit_line, exit_code,
  				dry_run ? " (DRY RUN)" : "");
  		}
-
-		/* FALLTHROUGH */ 
---- rsync-3.1.0/t_stub.c.orig	Tue Jun 11 18:06:53 2013
-+++ rsync-3.1.0/t_stub.c	Mon Mar 17 14:58:24 2014
+ 
+-		/* FALLTHROUGH */
++		/* FALLTHROUGH *)/
+ #include "case_N.h"
+ 		switch_step++;
+ 
+--- rsync-3.1.3/t_stub.c.orig	2018-07-13 07:46:10.960841749 -0700
++++ rsync-3.1.3/t_stub.c	2018-07-13 07:47:35.654783595 -0700
 @@ -20,6 +20,7 @@
   */
  
  #include "rsync.h"
 +#include <libgen.h>
  
+ int inplace = 0;
  int modify_window = 0;
- int preallocate_files = 0;
 @@ -56,7 +57,7 @@
   void _exit_cleanup(int code, const char *file, int line)
  {
@@ -71,8 +72,8 @@ that builds are reproducible between workspaces.
  	exit(code);
  }
  
---- rsync-3.1.0/log.c.orig	Tue Jun 11 13:36:44 2013
-+++ rsync-3.1.0/log.c	Mon Mar 17 14:58:51 2014
+--- rsync-3.1.3/log.c.orig	2018-07-13 07:47:52.075255852 -0700
++++ rsync-3.1.3/log.c	2018-07-13 07:50:27.588491270 -0700
 @@ -22,6 +22,7 @@
  #include "rsync.h"
  #include "itypes.h"
@@ -81,7 +82,7 @@ that builds are reproducible between workspaces.
  
  extern int dry_run;
  extern int am_daemon;
-@@ -887,10 +888,10 @@
+@@ -880,10 +881,10 @@
  		/* VANISHED is not an error, only a warning */
  		if (code == RERR_VANISHED) {
  			rprintf(FWARNING, "rsync warning: %s (code %d) at %s(%d) [%s=%s]\n",
