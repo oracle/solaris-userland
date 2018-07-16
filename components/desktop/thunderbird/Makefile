@@ -32,11 +32,11 @@ COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		thunderbird
-COMPONENT_VERSION=	52.8.0
+COMPONENT_VERSION=	52.9.1
 COMPONENT_PROJECT_URL=	https://www.thunderbird.net/
 COMPONENT_ARCHIVE = 	$(COMPONENT_SRC).source.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:35b9a687997d92f36107090c1217941e5d637760b0efa7d13819cde36894eb59
+    sha256:286fa71504e7184f3a41bcbdebf591bebe8e04dccbad1c93a47c6e72a7125c4d
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)
 else
@@ -46,9 +46,9 @@ COMPONENT_ARCHIVE_URL=	$(MOZILLA_FTP)/source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	tbird/mailer
 COMPONENT_ANITYA_ID=	4967
 
-TPNO=			43105
+TPNO=			44278
 
-LIGHTNING_VERSION=	5.4.8
+LIGHTNING_VERSION=	5.4.9.1
 
 # There are a set of .xpi files (as given in the LANG_LIST definition
 # below) that we need. We could download and unpack them individually, but
@@ -57,12 +57,12 @@ LIGHTNING_VERSION=	5.4.8
 # one file with version number.
 COMPONENT_ARCHIVE_1 =   	$(COMPONENT_SRC)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:2f85064e3a039dfec91d0204b422d8323ac7ab1f2c435fe564776924e67f5d25
+    sha256:192ae60f8949db5cadd8b1fa72de1a27fc52be479b517de81f20fbfd1f9f251e
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 COMPONENT_ARCHIVE_2 =		lightning-$(LIGHTNING_VERSION)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_2 = \
-    sha256:ca75cc62358461a5f29fdceaee994d83fca085ed89c20e8bda4dff5fd36e40ad
+    sha256:7d2ba4658d670b5d70f2c80c4d8ba46e847113062005e4c750519faf6cdaed18
 COMPONENT_ARCHIVE_URL_2 = 	make://download-lightning-xpis/$(COMPONENT_ARCHIVE_2)
 
 LANG_LIST = ar bg ca cs da de el es-AR es-ES et eu fi \
@@ -179,7 +179,7 @@ COMPONENT_POST_INSTALL_ACTION += \
 	done ;
 
 TB_XPI = $(MOZILLA_FTP)/linux-i686/xpi
-LN_XPI = http://ftp.mozilla.org/pub/calendar/lightning/candidates/$(LIGHTNING_VERSION)-candidates/build1/linux-i686
+LN_XPI = http://ftp.mozilla.org/pub/calendar/lightning/candidates/$(LIGHTNING_VERSION)-candidates/build3/linux-i686
 
 # Run gmake download-xpis and gmake download-lightning-xpis to download tarballs of xpi
 # for thunderbird and lightning separately.
