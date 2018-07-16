@@ -1,0 +1,65 @@
+# Install packages that depend on fftw library.
+sudo pkg install httping
+sudo pkg install pulseaudio
+sudo pkg install imagemagick
+echo ""
+
+### httping ###
+
+# The program uses ncurses library to plot frequency spectrum.
+# Check that the spectrum for ping times looks reasonably.
+httping -K --ai dorfl.cz.oracle.com
+echo ""
+
+### imagemagick ###
+
+# Create a test image, i.e., a black square with white background.
+convert -size 30x30 xc:black image.png
+convert -bordercolor white -border 35 image.png image.png
+# Apply forward and backward Fourier transformation.
+convert image.png -fft -ift image_reconstructed.png
+
+# Calculate the distance between the original and reconstructed images.
+extract_percentage_error() {
+	# Check the function parameters.
+	if [ "$#" -ne 1 ] || ([ "$1" != "RMSE" ] && [ "$1" != "PAE" ]); then
+		(>&2 echo "Expected RMSE or PAE parameter!")
+		return 1
+	fi
+
+	if [ ! -e "image.png" ] || [ ! -e "image_reconstructed.png" ]; then
+		(>&2 echo "You first need to create the test images!")
+		return 2
+	fi
+
+
+	# Extract percentage error.
+	IMG_DIFF=$(compare -metric "$1" image.png image_reconstructed.png null: 2>&1)
+	echo "${IMG_DIFF}" | sed -n 's/.*(\(.*\))/100 \1/p' | awk '{ printf "%f %%", $1*$2 }'
+	return 0
+}
+
+# Check that the reconstructed image is similar to the original one.
+# In other words, the printed errors are below one percent.
+echo "Square Root Mean Squared Error: $(extract_percentage_error RMSE)"
+echo "Peak Absolute Error: $(extract_percentage_error PAE)"
+echo ""
+
+### pulseaudio ###
+
+# Try to load module-equalizer-sink.so (depends on fftw-3)
+#
+# Error message:
+# Connection failure: Connection refused
+# pa_context_connect() failed: Connection refused
+#
+# Error messages from the log: 
+# oss-util.c: open('/dev/dsp'): No such file or directory
+# module.c: Failed to load module "module-oss" (argument: ""): initialization failed.
+# main.c: Module load failed.
+# main.c: Failed to initialize daemon.
+# main.c: Daemon startup failed.
+#
+# The issue is not a new regression since it did not work with fftw 3.3.5 as well.
+pactl load-module module-equalizer-sink
+
