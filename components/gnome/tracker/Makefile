@@ -30,14 +30,13 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tracker
-COMPONENT_VERSION=	1.6.0
-COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Tracker
+COMPONENT_VERSION=	1.12.0
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7e2729627224f43f8cd99c18d027a3b984e049fe924a265a9b31857566c9e28a
+	sha256:83193dd8c05e3e8b05fa8f1cfb80964fa78f7aeb86f3302fa4be6ec7e6ff596f
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	5578
 
-TPNO=			25835
+TPNO=			35136
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -95,6 +94,18 @@ CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
 # Required due to patches.
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 
+# Add tests
+unexport SHELLOPTS
+COMPONENT_TEST_TARGETS = check
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/TOTAL/p" ' \
+        '-e "/SKIP/p" ' \
+        '-e "/PASS/p" ' \
+        '-e "/FAIL/p" ' \
+        '-e "/ERROR/p" '
+
 REQUIRED_PACKAGES += codec/flac
 REQUIRED_PACKAGES += codec/libogg
 REQUIRED_PACKAGES += codec/libvorbis
@@ -118,9 +129,11 @@ REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libgsf
 REQUIRED_PACKAGES += library/exempi
 REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += library/json-glib
 REQUIRED_PACKAGES += library/desktop/libgxps
 REQUIRED_PACKAGES += library/gnome/libmediaart
 REQUIRED_PACKAGES += library/icu
+REQUIRED_PACKAGES += library/libsoup
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/media-player/totem-pl-parser
 REQUIRED_PACKAGES += system/hal
