@@ -141,7 +141,7 @@ echo "Comparing '$RESULT_RELATIVE' to '$ORIGIN'"
 
 RET=0
 # To compare we have to remove comments from the orginal .p5m file too
-/usr/gnu/bin/diff -u "$RESULT" <( sed -e '/^$/d' -e '/^#.*$/d' "$ORIGIN" ) || RET=$?
+/usr/gnu/bin/diff -u "$RESULT" <( sed -e '/^$/d' -e '/^#.*$/d' "$ORIGIN" | pkgfmt ) || RET=$?
 if [ $RET -ne 0 ]; then
 	echo "Comparing '${RESULT_RELATIVE}' to '$ORIGIN' failed"
 	DEBUG_RELATIVE="${DEBUG#$PWDSLASH}"
