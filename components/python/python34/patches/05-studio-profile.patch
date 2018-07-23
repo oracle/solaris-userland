@@ -29,7 +29,7 @@ compilation.  As it is Solaris-specific, it is not suitable for upstream.
  run_profile_task:
  	: # FIXME: can't run for a cross build
 -	$(RUNSHARED) ./$(BUILDPYTHON) $(PROFILE_TASK)
-+	LD_LIBRARY_PATH=. $(RUNSHARED) ./$(BUILDPYTHON) $(PROFILE_TASK)
++	LD_LIBRARY_PATH=. $(RUNSHARED) ./$(BUILDPYTHON) $(PROFILE_TASK) --debug || true
  
  build_all_use_profile:
 -	$(MAKE) all CFLAGS_NODIST="$(CFLAGS) -fprofile-use -fprofile-correction"
