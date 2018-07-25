@@ -23,36 +23,33 @@
 # Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
+COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
+PATH=$(USRBINDIR):$(GNUBIN)
+
 COMPONENT_NAME=		gnupg
-COMPONENT_VERSION=	2.0.30
+COMPONENT_VERSION=	2.2.8
 COMPONENT_PROJECT_URL=	http://www.gnupg.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e329785a4f366ba5d72c2c678a7e388b0892ac8440c2f4e6810042123c235d71
+    sha256:777b4cb8ced21965a5053d4fa20fe11484f0a478f3d011cef508a1a49db50dcd
 COMPONENT_ARCHIVE_URL=	https://www.gnupg.org/ftp/gcrypt/gnupg/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	1215
 
-TPNO=			29221
+TPNO=			42869
 
-include $(WS_MAKE_RULES)/common.mk
+include $(WS_MAKE_RULES)/gnu-component.mk
 
-# Enable C99 mode + -Xc for its additional warnings.
-studio_C99MODE = -Xc $(studio_C99_ENABLE)
+# Enable C99 mode 
+CC += -std=gnu99
 
-# -xinline=%auto -- we like inlining where appropriate
-CFLAGS += -xinline=%auto
+# builtins have been known to be buggy
+CFLAGS += -fno-builtin
 
-# -xbuiltin=%none -- builtins have been known to be buggy
-CFLAGS += -xbuiltin=%none
-
-CFLAGS += $(CPP_LARGEFILES)
 CFLAGS += $(XPG6MODE)
-CFLAGS += $(CPP_POSIX)
 CFLAGS += $(CPP_C99_EXTENDED_MATH)
-CFLAGS += $(studio_PIC)
 
 # If we pass -lc, -mt won't link with -lthread
 # (which is what it does by default, and we don't
@@ -111,13 +108,14 @@ CONFIGURE_OPTIONS  +=		--with-pinentry-pgm=$(CONFIGURE_PREFIX)/lib/pinentry
 CONFIGURE_OPTIONS  +=		--with-gpg-error-prefix=$(CONFIGURE_PREFIX)
 CONFIGURE_OPTIONS  +=		--with-libassuan-prefix=$(CONFIGURE_PREFIX)
 CONFIGURE_OPTIONS  +=		--with-ksba-prefix=$(CONFIGURE_PREFIX)
-CONFIGURE_OPTIONS  +=		--with-pth-prefix=$(CONFIGURE_PREFIX)
-CONFIGURE_OPTIONS  +=		--with-libcurl=$(CONFIGURE_PREFIX)
+CONFIGURE_OPTIONS  +=		--with-npth-prefix=$(CONFIGURE_PREFIX)
 CONFIGURE_OPTIONS  +=		--with-libiconv-prefix=$(CONFIGURE_PREFIX)
 CONFIGURE_OPTIONS  +=		--with-libintl-prefix=$(CONFIGURE_PREFIX)
 CONFIGURE_OPTIONS  +=		--with-zlib=$(CONFIGURE_PREFIX)
 CONFIGURE_OPTIONS  +=		--with-bzip2=$(CONFIGURE_PREFIX)
+CONFIGURE_OPTIONS  +=		--with-pic
 CONFIGURE_OPTIONS  +=		--with-readline=$(CONFIGURE_PREFIX)
+CONFIGURE_OPTIONS  +=		--enable-gpg-is-gpg2
 
 LIBKSBA_MANIFEST = 	manifest-$(MACH)-libksba.depend
 LIBASSUAN_MANIFEST =	manifest-$(MACH)-libassuan.depend
@@ -136,25 +134,20 @@ PKG_PROTO_DIRS += $(WS_TOP)/components/libassuan
 PKG_PROTO_DIRS += $(WS_TOP)/components/gpgme
 PKG_PROTO_DIRS += $(WS_TOP)/components/pinentry
 
-MAN8LIST = addgnupghome applygnupgdefaults
-
 COMPONENT_POST_INSTALL_ACTION += \
 	( cd $(PROTOUSRSHARELOCALEDIR) ; \
 	    $(CP) -R 'en@boldquot' en )
 
 REQUIRED_PACKAGES += compress/bzip2
-REQUIRED_PACKAGES += library/desktop/gtk2
-REQUIRED_PACKAGES += library/desktop/pango
-REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/pth
+REQUIRED_PACKAGES += database/sqlite-3
+REQUIRED_PACKAGES += library/gnutls-3
+REQUIRED_PACKAGES += library/libusb-1
+REQUIRED_PACKAGES += library/npth
 REQUIRED_PACKAGES += library/readline
 REQUIRED_PACKAGES += library/security/libassuan
 REQUIRED_PACKAGES += library/security/libgpg-error
 REQUIRED_PACKAGES += library/security/libksba
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += security/pinentry
-REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/security/libgcrypt
-REQUIRED_PACKAGES += system/library/usb/libusb
 REQUIRED_PACKAGES += system/network/ldap/openldap
-REQUIRED_PACKAGES += web/curl

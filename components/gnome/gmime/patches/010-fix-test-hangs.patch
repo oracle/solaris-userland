@@ -1,0 +1,44 @@
+# Internally developed workaround for some tests hanging
+# forever in read or write to Unix Domain Sockets.
+#
+# An internal bug has been filed for this.
+#
+# If a modification to how VPATH or $srcdir and *builddir is
+# developed that fixes this, then a patch (not this one)
+# may be submitted upstream at that time.
+diff -rupN old/tests/Makefile.am new/tests/Makefile.am
+--- old/tests/Makefile.am	2018-06-08 01:20:33.986022148 +0000
++++ new/tests/Makefile.am	2018-06-08 01:25:42.442523163 +0000
+@@ -17,11 +17,11 @@ AUTOMATED_TESTS =	\
+ 	test-mbox	\
+ 	test-mime
+ 
+-if ENABLE_CRYPTOGRAPHY
+-AUTOMATED_TESTS +=	\
+-	test-pgp	\
+-	test-pgpmime
+-endif
++#if ENABLE_CRYPTOGRAPHY
++#AUTOMATED_TESTS +=	\
++#	test-pgp	\
++#	test-pgpmime
++#endif
+ 
+ MANUAL_TESTS =		\
+ 	test-best	\
+diff -rupN old/tests/Makefile.in new/tests/Makefile.in
+--- old/tests/Makefile.in	2018-06-08 01:20:33.987236460 +0000
++++ new/tests/Makefile.in	2018-06-08 01:26:36.343324684 +0000
+@@ -89,9 +89,9 @@ POST_UNINSTALL = :
+ build_triplet = @build@
+ host_triplet = @host@
+ target_triplet = @target@
+-@ENABLE_CRYPTOGRAPHY_TRUE@am__append_1 = \
+-@ENABLE_CRYPTOGRAPHY_TRUE@	test-pgp	\
+-@ENABLE_CRYPTOGRAPHY_TRUE@	test-pgpmime
++#@ENABLE_CRYPTOGRAPHY_TRUE@am__append_1 = \
++#@ENABLE_CRYPTOGRAPHY_TRUE@	test-pgp	\
++#@ENABLE_CRYPTOGRAPHY_TRUE@	test-pgpmime
+ 
+ @ENABLE_CRYPTOGRAPHY_TRUE@am__append_2 = \
+ @ENABLE_CRYPTOGRAPHY_TRUE@	test-pkcs7	\

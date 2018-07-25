@@ -25,21 +25,21 @@
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
-PATH= $(GNUBIN):$(USRBINDIR)
+PATH=$(dir $(CC)):$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=		gpgme
-COMPONENT_VERSION=	1.6.0
+COMPONENT_VERSION=	1.11.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	http://www.gnupg.org/related_software/gpgme/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b09de4197ac280b102080e09eaec6211d081efff1963bf7821cf8f4f9916099d
+    sha256:2d1b111774d2e3dd26dcd7c251819ce4ef774ec5e566251eb9308fa7542fbd6f
 COMPONENT_ARCHIVE_URL=	https://www.gnupg.org/ftp/gcrypt/gpgme/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=	utility/gnupg
 COMPONENT_ANITYA_ID=	1239
 
-TPNO=			27398
+TPNO=			42836
 
 # Although building and running the GpgME tests is enabled, GpgME's
 # Test Harness is not suitable for running in an automated test
@@ -49,8 +49,6 @@ TPNO=			27398
 # from a terminal.
 TEST_TARGET= $(SKIP_TEST)
 include $(WS_MAKE_RULES)/common.mk
-
-PATCH_LEVEL = 0
 
 # Enable C99 mode + -Xc for its additional warnings.
 studio_C99MODE = -Xc $(studio_C99_ENABLE)
@@ -86,3 +84,4 @@ CONFIGURE_OPTIONS  +=		--with-pic
 REQUIRED_PACKAGES += library/security/libassuan
 REQUIRED_PACKAGES += library/security/libgpg-error
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library/math

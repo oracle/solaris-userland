@@ -1,0 +1,20 @@
+#
+# Taken from upstream bug fix, should be in the next update.
+# Commit rC355f5b7f6907: random: Fix hang of _gcry_rndjent_get_version.
+# https://dev.gnupg.org/rC20c034865f2dd15ce2871385b6e29c15d1570539
+#
+diff -rupN old/random/rndjent.c new/random/rndjent.c
+--- old/random/rndjent.c	2018-06-27 20:57:55.133415973 +0000
++++ new/random/rndjent.c	2018-06-27 21:00:43.338166930 +0000
+@@ -334,9 +334,10 @@ _gcry_rndjent_get_version (int *r_active
+     {
+       if (r_active)
+         {
+-          lock_rng ();
+           /* Make sure the RNG is initialized.  */
+           _gcry_rndjent_poll (NULL, 0, 0);
++
++          lock_rng ();
+           /* To ease debugging we store 2 for a clock_gettime based
+            * implementation and 1 for a rdtsc based code.  */
+           *r_active = jent_rng_collector? is_rng_available () : 0;

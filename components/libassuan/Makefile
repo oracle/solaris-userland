@@ -27,17 +27,17 @@ BUILD_BITS= 32_and_64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libassuan
-COMPONENT_VERSION=	2.4.3
+COMPONENT_VERSION=	2.5.1
 COMPONENT_PROJECT_URL=	http://www.gnupg.org/related_software/libassuan/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:22843a3bdb256f59be49842abf24da76700354293a066d82ade8134bb5aa2b71
+    sha256:47f96c37b4f2aac289f0bc1bacfa8bd8b4b209a488d3d15e2229cb6cc9b26449
 COMPONENT_ARCHIVE_URL=	https://www.gnupg.org/ftp/gcrypt/libassuan/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=	utility/gnupg
 COMPONENT_ANITYA_ID=	1559
 
-TPNO=			30305
+TPNO=			42807
 
 include $(WS_MAKE_RULES)/common.mk
 

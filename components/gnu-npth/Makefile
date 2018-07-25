@@ -20,38 +20,38 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
 #
 # gnupth only delivers scripts that embed paths, so prefer 32-bit.
 BUILD_BITS= 32_and_64
+COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		pth
-COMPONENT_VERSION=	2.0.7
+COMPONENT_NAME=		npth
+COMPONENT_VERSION=	1.5
+COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:72353660c5a2caafd601b20e12e75d865fd88f6cf1a088b306a3963f0bc77232
+    sha256:294a690c1f537b92ed829d867bee537e46be93fbd60b16c04630fbbfcd9db3c2
 COMPONENT_BUGDB=	library/pth
-COMPONENT_ANITYA_ID=	3724
+COMPONENT_ANITYA_ID=	2505
 
-TPNO=			8899
+COMPONENT_ARCHIVE_URL=https://gnupg.org/ftp/gcrypt/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=https://gnupg.org/ftp/gcrypt/npth/npth-1.5.tar.bz2
+COMPONENT_SIG_URL=$(COMPONENT_ARCHIVE_URL).sig
+
+TPNO=		42737
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
-PATCH_LEVEL = 0
-
 # Enable C99 mode + -Xc for its additional warnings.
-studio_C99MODE = -Xc $(studio_C99_ENABLE)
-
-# -xinline=%auto -- we like inlining where appropriate
-CFLAGS += -xinline=%auto
+CFLAGS += -std=gnu99
 
 # -xbuiltin=%none -- builtins have been known to be buggy
-CFLAGS += -xbuiltin=%none
+CFLAGS += -fno-builtin
 
-CFLAGS += $(CPP_LARGEFILES)
-CFLAGS += $(XPG6MODE)
+CFLAGS += -D_XPG6
 CFLAGS += $(CPP_POSIX)
-CFLAGS += $(studio_PIC)
+CFLAGS += -fPIC
 
 CPPFLAGS += $(CPP_LARGEFILES) $(CPP_POSIX)
 
