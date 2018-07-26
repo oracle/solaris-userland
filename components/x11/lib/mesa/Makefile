@@ -56,7 +56,10 @@ LIBDRM_BASE = $(WS_COMPONENTS)/x11/lib/libdrm/libdrm-2.4.67
 COMPONENT_PREP_ACTION +=(cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
 
 COMPONENT_POST_UNPACK_ACTION += \
-        $(CP) $(LIBDRM_BASE)/intel/intel_aub.h $(SOURCE_DIR)/src/mesa/drivers/dri/i965; \
+	if [ ! -e "$(dir $(LIBDRM_BASE))/.prep" ]; then \
+		$(MAKE) -C $(dir $(LIBDRM_BASE)) prep; \
+	fi; \
+	$(CP) $(LIBDRM_BASE)/intel/intel_aub.h $(SOURCE_DIR)/src/mesa/drivers/dri/i965; \
 
 CONFIGURE_OPTIONS.32 += --disable-gallium-llvm
 CONFIGURE_OPTIONS.64 += --enable-gallium-llvm --disable-llvm-shared-libs
@@ -69,6 +72,7 @@ endif
 CONFIGURE_OPTIONS += --with-gallium-drivers=swrast
 CONFIGURE_OPTIONS += --enable-gbm
 CONFIGURE_OPTIONS += --disable-shader-cache
+CONFIGURE_OPTIONS.32 += --with-dri-driverdir='/usr/lib/xorg/modules/dri'
 CONFIGURE_OPTIONS.64 += --with-dri-driverdir='/usr/lib/xorg/modules/dri/$(MACH64)'
 
 CXXFLAGS += -std=c++11
