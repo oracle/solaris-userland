@@ -37,53 +37,7 @@ COMPONENT_ANITYA_ID=	12860
 
 TPNO=			34520
 
-# This component needs X11, so we run vnc session, run the tests inside and
-# tear down vnc
-COMPONENT_PRE_TEST_ACTION += \
-	( \
-		set -x; \
-		cd $(@D); \
-		: ; \
-		: We do not want to cripple user\'s home, instead create special directory for it; \
-		: ; \
-		mkdir -p myhome/.vnc; \
-		: ; \
-		: Simple xterm will do, do not run whole gnome; \
-		: ; \
-		echo xterm > myhome/.vnc/xstartup; \
-		chmod +x myhome/.vnc/xstartup; \
-		export HOME=$(@D)/myhome; \
-		: ; \
-		: Create passwd file. If you want to connect to the VNC do this:; \
-		:  1 - disable COMPONENT_POST_TEST_ACTION; \
-		:  2 - run the tests via "gmake test"; \
-		:  3 - copy the amd64/myhome/.vnc/passwd to your machine; \
-		:  4 - run vncviewer -passwd passwd ...; \
-		: ; \
-		/usr/bin/expect -f $(COMPONENT_DIR)/create_vncpasswd_file; \
-		vncserver -SecurityTypes VncAuth; \
-		: ; \
-		: We need to pass the DISPLAY variable somehow to the tests. Do it via file.; \
-		: ; \
-		vncserver -list | tail -1 | awk '{ print $$1 }' > myhome/DISPLAY; \
-	)
-
-COMPONENT_POST_TEST_ACTION += \
-	( \
-		set -x; \
-		cd $(@D); \
-		export HOME=$(@D)/myhome; \
-		DISPLAY=$$(<myhome/DISPLAY); \
-		vncserver -kill $$DISPLAY; \
-		rm -rf myhome; \
-	)
-
-
-# We need to read in DISPLAY variable from file and at the same time use it in
-# the env(1) command:
-COMPONENT_TEST_ENV_CMD = DISPLAY=$$(<$(@D)/myhome/DISPLAY); $(ENV)
-COMPONENT_TEST_ENV += DISPLAY="$$DISPLAY"
-COMPONENT_TEST_ENV += HOME=$(@D)/myhome
+include $(WS_MAKE_RULES)/test-x11.mk
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
@@ -135,7 +89,6 @@ REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/security/nss
 REQUIRED_PACKAGES += service/gnome/desktop-cache
 REQUIRED_PACKAGES += service/image/colord
-REQUIRED_PACKAGES += shell/expect
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/polkit
@@ -144,4 +97,3 @@ REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxext
 REQUIRED_PACKAGES += x11/library/libxi
 REQUIRED_PACKAGES += x11/library/libxtst
-REQUIRED_PACKAGES += x11/server/xvnc

@@ -39,39 +39,7 @@ COMPONENT_ANITYA_ID=	315
 
 TPNO=			34511
 
-# This component needs a display (vnc setup from gnome-settings-daemon)
-COMPONENT_PRE_TEST_ACTION += \
-        ( \
-                set -x; \
-                cd $(@D); \
-                : ; \
-                mkdir -p myhome/.vnc; \
-                : ; \
-                echo xterm > myhome/.vnc/xstartup; \
-                chmod +x myhome/.vnc/xstartup; \
-                export HOME=$(@D)/myhome; \
-                : ; \
-                /usr/bin/expect -f $(WS_COMPONENTS)/gnome/gnome-settings-daemon/create_vncpasswd_file; \
-                vncserver -SecurityTypes VncAuth; \
-                : ; \
-                vncserver -list | tail -1 | awk '{ print $$1 }' > myhome/DISPLAY; \
-        )
-
-COMPONENT_POST_TEST_ACTION += \
-        ( \
-                set -x; \
-                cd $(@D); \
-                export HOME=$(@D)/myhome; \
-                DISPLAY=$$(<myhome/DISPLAY); \
-                vncserver -kill $$DISPLAY; \
-                rm -rf myhome; \
-        )
-
-# We need to read in DISPLAY variable from file and at the same time use it in
-# the env(1) command:
-COMPONENT_TEST_ENV_CMD = DISPLAY=$$(<$(@D)/myhome/DISPLAY); $(ENV)
-COMPONENT_TEST_ENV += DISPLAY="$$DISPLAY"
-COMPONENT_TEST_ENV += HOME=$(@D)/myhome
+include $(WS_MAKE_RULES)/test-x11.mk
 
 COMPONENT_TEST_TRANSFORMS += '-e "/\(make\).*/d" '
 COMPONENT_TEST_TRANSFORMS += '-e "/\(Making check\).*/d" '
@@ -116,9 +84,8 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += service/opengl/ogl-select
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += x11/library/libx11
-REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxdamage
 REQUIRED_PACKAGES += x11/library/libxext
 REQUIRED_PACKAGES += x11/library/libxfixes
 REQUIRED_PACKAGES += x11/library/libxrandr
+REQUIRED_PACKAGES += x11/library/libx11
