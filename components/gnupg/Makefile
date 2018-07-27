@@ -90,16 +90,6 @@ COMPONENT_TEST_TRANSFORMS += \
      '-e "s/copied $$/copied/g"'  \
      '-e "s/copied [0-9]\{1,\}\./copied/g"'
 
-# Needed to apply changes to *.am files
-# Please note that the autoreconf invocation expects GNU version of head(1) and
-# maybe others, wo we need to prepend the path
-COMPONENT_PREP_ACTION = (cd $(@D) ; PATH=/usr/gnu/bin:$$PATH autoreconf -fiv)
-
-# Needed to apply changes to *.am files
-# Please note that the autoreconf invocation expects GNU version of head(1) and
-# maybe others, wo we need to prepend the path
-COMPONENT_PREP_ACTION = (cd $(@D) ; PATH=/usr/gnu/bin:$$PATH autoreconf -fiv)
-
 CONFIGURE_ENV +=	INSTALL="$(INSTALL)"
 
 # Without this GnuPG's ./configure will complain that we're not using
