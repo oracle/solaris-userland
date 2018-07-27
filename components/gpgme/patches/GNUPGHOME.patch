@@ -1,0 +1,85 @@
+If the build directory has too long path, gnupg compilation fails. This is
+similar to
+
+https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=847206
+
+In order to fix that, this patch extracts the GNUPGHOME variable to be
+presented directly in the Makefile and thus overridable by command line option.
+
+Our build system then creates a symlink to the GNUPGHOME directory in /tmp and
+use that symlink as the GNUPGHOME directory thus making the path very short.
+
+This patch will be submitted upstream.
+
+--- gpgme-1.11.1/lang/qt/tests/Makefile.am	2018-07-27 00:54:50.640383672 +0000
++++ gpgme-1.11.1/lang/qt/tests/Makefile.am	2018-07-27 00:54:24.889797865 +0000
+@@ -21,7 +21,8 @@
+ 
+ GPG = gpg
+ 
+-TESTS_ENVIRONMENT = GNUPGHOME=$(abs_builddir)
++GNUPGHOME=$(abs_builddir)
++TESTS_ENVIRONMENT = GNUPGHOME=$(GNUPGHOME)
+ 
+ EXTRA_DIST = initial.test
+ 
+--- gpgme-1.11.1/lang/python/tests/Makefile.am	2018-07-27 00:54:54.284507884 +0000
++++ gpgme-1.11.1/lang/python/tests/Makefile.am	2018-07-27 00:54:24.909734266 +0000
+@@ -21,7 +21,8 @@ GPG_AGENT = gpg-agent
+ 
+ test_srcdir = $(top_srcdir)/tests/gpg
+ 
+-TESTS_ENVIRONMENT = GNUPGHOME=$(abs_builddir) \
++GNUPGHOME=$(abs_builddir) \
++TESTS_ENVIRONMENT = GNUPGHOME=$(GNUPGHOME) \
+ 	LC_ALL=C GPG_AGENT_INFO= \
+ 	top_srcdir=$(top_srcdir) \
+ 	srcdir=$(srcdir) \
+--- gpgme-1.11.1/tests/opassuan/Makefile.am	2018-07-27 00:54:56.739205917 +0000
++++ gpgme-1.11.1/tests/opassuan/Makefile.am	2018-07-27 00:54:24.926990100 +0000
+@@ -17,7 +17,8 @@
+ 
+ ## Process this file with automake to produce Makefile.in
+ 
+-TESTS_ENVIRONMENT = GNUPGHOME=$(abs_builddir) GPG_AGENT_INFO=
++GNUPGHOME=$(abs_builddir)
++TESTS_ENVIRONMENT = GNUPGHOME=$(GNUPGHOME) GPG_AGENT_INFO=
+ 
+ noinst_HEADERS =
+ TESTS =
+--- gpgme-1.11.1/tests/Makefile.am	2018-07-27 00:54:59.140891528 +0000
++++ gpgme-1.11.1/tests/Makefile.am	2018-07-27 00:54:24.939132292 +0000
+@@ -19,7 +19,8 @@
+ 
+ ## Process this file with automake to produce Makefile.in
+ 
+-TESTS_ENVIRONMENT = GNUPGHOME=$(abs_builddir)
++GNUPGHOME=$(abs_builddir)
++TESTS_ENVIRONMENT = GNUPGHOME=$(GNUPGHOME)
+ 
+ TESTS = t-version t-data t-engine-info
+ 
+--- gpgme-1.11.1/tests/gpgsm/Makefile.am	2018-07-27 00:55:01.498561179 +0000
++++ gpgme-1.11.1/tests/gpgsm/Makefile.am	2018-07-27 00:54:24.949584811 +0000
+@@ -22,7 +22,8 @@
+ GPGSM = gpgsm
+ GPG_AGENT = gpg-agent
+ 
+-TESTS_ENVIRONMENT = GNUPGHOME=$(abs_builddir) LC_ALL=C GPG_AGENT_INFO= \
++GNUPGHOME=$(abs_builddir)
++TESTS_ENVIRONMENT = GNUPGHOME=$(GNUPGHOME) LC_ALL=C GPG_AGENT_INFO= \
+                     top_srcdir=$(top_srcdir)
+ 
+ noinst_HEADERS = t-support.h
+--- gpgme-1.11.1/tests/gpg/Makefile.am	2018-07-27 00:55:02.648525299 +0000
++++ gpgme-1.11.1/tests/gpg/Makefile.am	2018-07-27 00:54:24.957566018 +0000
+@@ -22,7 +22,8 @@
+ GPG = gpg
+ GPG_AGENT = gpg-agent
+ 
+-TESTS_ENVIRONMENT = GNUPGHOME=$(abs_builddir) LC_ALL=C GPG_AGENT_INFO= \
++GNUPGHOME=$(abs_builddir)
++TESTS_ENVIRONMENT = GNUPGHOME=$(GNUPGHOME) LC_ALL=C GPG_AGENT_INFO= \
+                     top_srcdir=$(top_srcdir)
+ 
+ # The keylist tests must come after the import and the edit test.

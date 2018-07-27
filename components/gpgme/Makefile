@@ -65,6 +65,11 @@ CFLAGS += $(CPP_POSIX)
 CFLAGS += $(CPP_C99_EXTENDED_MATH)
 CFLAGS += $(studio_PIC)
 
+# Needed to apply changes to *.am files
+# Please note that the autoreconf invocation expects GNU version of head(1) and
+# maybe others, wo we need to prepend the path
+COMPONENT_PREP_ACTION = (cd $(@D) ; PATH=/usr/gnu/bin:$$PATH autoreconf -fiv)
+
 CONFIGURE_ENV +=	INSTALL="$(INSTALL)"
 
 CONFIGURE_OPTIONS  +=		--localstatedir=$(VARDIR)
@@ -80,6 +85,27 @@ CONFIGURE_OPTIONS  +=		--enable-gpgconf-test
 CONFIGURE_OPTIONS  +=		--with-libgpg-error-prefix=$(CONFIGURE_PREFIX)
 CONFIGURE_OPTIONS  +=		--with-libassuan-prefix=$(CONFIGURE_PREFIX)
 CONFIGURE_OPTIONS  +=		--with-pic
+
+# Please see comments in patches/GNUPGHOME.patch
+GNUPG_HOME_DIR = GNUPGHOME
+GNUPG_HOME_LINK = LINK
+COMPONENT_PRE_BUILD_ACTION += ( \
+    set -x; \
+    DEST="$(@D)/$(GNUPG_HOME_DIR)"; \
+    LINK="$$(mktemp)"; \
+    echo "$$LINK" | tee "$(@D)/$(GNUPG_HOME_LINK)"; \
+    $(RM) "$$DEST" "$$LINK"; \
+    $(MKDIR) "$$DEST"; \
+    ln -s "$$DEST" "$$LINK"; \
+);
+
+COMPONENT_POST_BUILD_ACTION += ( \
+    set -x; \
+    LINK="$$(< "$(@D)/$(GNUPG_HOME_LINK)")"; \
+    [ -z "$$LINK" ] || $(RM) "$$LINK"; \
+);
+
+COMPONENT_BUILD_ARGS += GNUPGHOME="$$(< "$(@D)/$(GNUPG_HOME_LINK)")"
 
 REQUIRED_PACKAGES += library/security/libassuan
 REQUIRED_PACKAGES += library/security/libgpg-error
