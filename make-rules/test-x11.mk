@@ -80,7 +80,7 @@ COMPONENT_POST_TEST_ACTION += \
 COMPONENT_TEST_ENV_CMD = \
 	if [ -z "$$DISPLAY" ]; then \
 		DISPLAY=$$(<$(@D)/myhome/DISPLAY); \
-		HOME=$(@D)/myhome
+		HOME=$(@D)/myhome; \
 	fi; \
 	$(ENV)
 COMPONENT_TEST_ENV += DISPLAY="$$DISPLAY"
