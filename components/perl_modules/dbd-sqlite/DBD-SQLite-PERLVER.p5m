@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -40,24 +40,26 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 
 #file path=usr/perl5/$(PERLVER)/lib/$(PERL_ARCH)/perllocal.pod
 file path=usr/perl5/$(PERLVER)/man/man3/DBD::SQLite.3
+file path=usr/perl5/$(PERLVER)/man/man3/DBD::SQLite::Constants.3
 file path=usr/perl5/$(PERLVER)/man/man3/DBD::SQLite::Cookbook.3
 file path=usr/perl5/$(PERLVER)/man/man3/DBD::SQLite::Fulltext_search.3
 file path=usr/perl5/$(PERLVER)/man/man3/DBD::SQLite::VirtualTable.3
 file path=usr/perl5/$(PERLVER)/man/man3/DBD::SQLite::VirtualTable::FileContent.3
 file path=usr/perl5/$(PERLVER)/man/man3/DBD::SQLite::VirtualTable::PerlData.3
 file path=usr/perl5/vendor_perl/$(PERLVER)/$(PERL_ARCH)/DBD/SQLite.pm
+file path=usr/perl5/vendor_perl/$(PERLVER)/$(PERL_ARCH)/DBD/SQLite/Constants.pm
 file path=usr/perl5/vendor_perl/$(PERLVER)/$(PERL_ARCH)/DBD/SQLite/Cookbook.pod
 file path=usr/perl5/vendor_perl/$(PERLVER)/$(PERL_ARCH)/DBD/SQLite/Fulltext_search.pod
 file path=usr/perl5/vendor_perl/$(PERLVER)/$(PERL_ARCH)/DBD/SQLite/VirtualTable.pm
 file path=usr/perl5/vendor_perl/$(PERLVER)/$(PERL_ARCH)/DBD/SQLite/VirtualTable/FileContent.pm
 file path=usr/perl5/vendor_perl/$(PERLVER)/$(PERL_ARCH)/DBD/SQLite/VirtualTable/PerlData.pm
-file path=usr/perl5/vendor_perl/$(PERLVER)/$(PERL_ARCH)/auto/DBD/SQLite/.packlist
 file path=usr/perl5/vendor_perl/$(PERLVER)/$(PERL_ARCH)/auto/DBD/SQLite/SQLite.so
 license DBD-SQLite.license license=Artistic
+
+# force a dependency on the DBI package
+depend type=conditional fmri=library/perl-5/database-$(PLV) \
+    predicate=runtime/perl-$(PLV)
 
 # force a dependency on the Perl runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=perl \
     pkg.debug.depend.path=usr/perl5/$(PERLVER)/bin
-
-# force a dependency on the DBI package
-depend type=require fmri=library/perl-5/database

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # This variable has no impact on perl build, it is here merely to satisfy
@@ -32,15 +32,15 @@ BUILD_BITS = 64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		DBD-SQLite
-COMPONENT_VERSION=	1.50
+COMPONENT_VERSION=	1.58
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:3ac513ab73944fd7d4b672e1fe885dc522b6369d38f46a68e67e0045bf159ce1
+	sha256:ef41cfa03a3ec2c5157e3a4dae3351df9204058741e1c4c870fa4e75bbe497cb
 COMPONENT_ARCHIVE_URL=	http://backpan.perl.org/authors/id/I/IS/ISHIGAKI/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://github.com/DBD-SQLite/DBD-SQLite
 COMPONENT_BUGDB=	perl-mod/dbd-sqlite
 COMPONENT_ANITYA_ID=	2810
 
-TPNO=			26789
+TPNO=			44527
 
 BUILD_STYLE= makemaker
 LICENSE=DBD-SQLite.license
@@ -49,13 +49,7 @@ include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_TEST_TARGETS = test
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_TRANSFORMS += \
-	'-e "/^Running Mkbootstrap/d" ' \
-	'-e "s/[0-9][0-9]* wallclock secs (.*CPU)$$/<TIMINGS REMOVED>/" ' \
-	'-e "/^PERL_DL_NONLAZY/d" ' \
-	'-e "s/^\(\# sqlite_version=\)[0-9][0-9.]*/\1<USED SQLITE VERSION REMOVED>/" ' \
-	'-e "s/^\(\# \$$DBI::VERSION=\)[0-9][0-9.]*/\1<REPORTED DBI VERSION REMOVED>/" ' \
-	'-e "/^chmod/d" '
+COMPONENT_TEST_TRANSFORMS += '-n -e "/^Result:/p"'
 
 # DBD::Sqlite ships custom sqlite3 sources. We remove the sources to make sure
 # that we do not build/link against it. However just removing the files would
@@ -79,4 +73,4 @@ $(LICENSE): $(LICENSE).template
 	$(PERL) -pe 's/COMPONENT_VERSION/$(COMPONENT_VERSION)/g' "$<" > "$@"
 
 REQUIRED_PACKAGES += database/sqlite-3
-REQUIRED_PACKAGES += library/perl-5/database
+REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/database-5%)

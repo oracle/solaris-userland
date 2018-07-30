@@ -1,0 +1,8 @@
+<transform dir file link hardlink -> edit path "/5.2\d/" "/$!(PERLVER)/">
+<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
+<transform dir file link hardlink -> edit path "$(PERL_ARCH)" "$!(PERL_ARCH)">
+<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
+
+# We don't build against the provided sqlite, but against system wide sqlite
+# So don't share the built in sources.
+<transform file path=.*/sqlite3(\.c|\.h|ext\.h)$ -> drop>

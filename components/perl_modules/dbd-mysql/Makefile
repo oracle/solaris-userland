@@ -54,13 +54,7 @@ CLEAN_PATHS += $(LICENSE)
 
 COMPONENT_TEST_TARGETS = test
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_TRANSFORMS += \
-	'-e "s/[0-9][0-9]* wallclock secs (.*CPU)$$/<TIMINGS REMOVED>/" ' \
-	'-e "s/^\(\# mysql_[a-z][a-z]* is: \).*/\1<REMOVED>/" ' \
-	'-e "s/^\(\# SQL_DBMS_VER is \).*/\1<REMOVED>/" ' \
-	'-e "s/^\(\# Driver version is \).*/\1<REMOVED>/" ' \
-	'-e "/chmod 644 \"mysql.bs\"/d"' \
-	'-e "/Running Mkbootstrap/d"'
+COMPONENT_TEST_TRANSFORMS += '-n -e "/^Result:/p"'
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 

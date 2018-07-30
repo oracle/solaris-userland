@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -40,6 +40,8 @@ TPNO=			39158
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/makemaker.mk
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 # The test results are full of missing "Test::Entities" and "Test::Deep"
 # modules. That means we can't run all the tests, but it does not limit use of
@@ -66,5 +68,3 @@ install:	$(INSTALL_64)
 test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
-
-REQUIRED_PACKAGES += system/library

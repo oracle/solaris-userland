@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2013, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 #
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -41,7 +41,6 @@ file path=usr/perl5/$(PERLVER)/man/man3/XML::SAX::Intro.3
 file path=usr/perl5/$(PERLVER)/man/man3/XML::SAX::ParserFactory.3
 file path=usr/perl5/$(PERLVER)/man/man3/XML::SAX::PurePerl.3
 file path=usr/perl5/$(PERLVER)/man/man3/XML::SAX::PurePerl::Reader.3
-file path=usr/perl5/vendor_perl/$(PERLVER)/$(PERL_ARCH)/auto/XML/SAX/.packlist
 file path=usr/perl5/vendor_perl/$(PERLVER)/XML/SAX.pm
 file path=usr/perl5/vendor_perl/$(PERLVER)/XML/SAX/DocumentLocator.pm
 file path=usr/perl5/vendor_perl/$(PERLVER)/XML/SAX/Intro.pod
@@ -64,10 +63,10 @@ file path=usr/perl5/vendor_perl/$(PERLVER)/XML/SAX/PurePerl/UnicodeExt.pm
 file path=usr/perl5/vendor_perl/$(PERLVER)/XML/SAX/PurePerl/XMLDecl.pm
 license xml-sax.license license=Artistic
 
+# force a dependency on the xml-sax package
+depend type=conditional fmri=library/perl-5/xml-sax-$(PLV) \
+    predicate=runtime/perl-$(PLV)
+
 # force a dependency on the Perl runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=perl \
     pkg.debug.depend.path=usr/perl5/$(PERLVER)/bin
-
-# force a dependency on the xml-sax package
-depend type=require \
-    fmri=library/perl-5/xml-sax@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)

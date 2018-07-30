@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -55,6 +55,8 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "1,/^\#/d" ' \
 	'-e "/\(^Files=\).*/d" ' \
 	'-e "/\(^t\/90\).*/d" ' \
+	'-e "/version:/d" ' \
+	'-e "/make\[/d" ' \
 	'-e "/\(^Hexadecimal\).*/d" '
 
 build:		$(BUILD_64)
@@ -67,4 +69,8 @@ system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 
 REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += system/library
+
+# Needed for testing:
+REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/xml-namespacesupport-5%)
+REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/xml-sax-5%)
+REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/xml-sax-base-5%)

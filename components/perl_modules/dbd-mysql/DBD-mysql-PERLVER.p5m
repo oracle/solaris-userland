@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -46,13 +46,13 @@ file path=usr/perl5/vendor_perl/$(PERLVER)/$(PERL_ARCH)/Bundle/DBD/mysql.pm
 file path=usr/perl5/vendor_perl/$(PERLVER)/$(PERL_ARCH)/DBD/mysql.pm
 file path=usr/perl5/vendor_perl/$(PERLVER)/$(PERL_ARCH)/DBD/mysql/GetInfo.pm
 file path=usr/perl5/vendor_perl/$(PERLVER)/$(PERL_ARCH)/DBD/mysql/INSTALL.pod
-file path=usr/perl5/vendor_perl/$(PERLVER)/$(PERL_ARCH)/auto/DBD/mysql/.packlist
 file path=usr/perl5/vendor_perl/$(PERLVER)/$(PERL_ARCH)/auto/DBD/mysql/mysql.so
 license DBD-mysql.license license=Artistic
+
+# force a dependency on the DBI package
+depend type=conditional fmri=library/perl-5/database-$(PLV) \
+    predicate=runtime/perl-$(PLV)
 
 # force a dependency on the Perl runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=perl \
     pkg.debug.depend.path=usr/perl5/$(PERLVER)/bin
-
-# force a dependency on the DBI package
-depend type=require fmri=library/perl-5/database

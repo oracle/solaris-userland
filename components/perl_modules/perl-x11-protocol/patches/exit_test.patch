@@ -1,0 +1,18 @@
+The test waits for keypress. This terminates the test as soon as the window is
+displayed. This ensures that we can run the test non-interactively.
+
+Not suitable for upstream.
+--- X11-Protocol-0.56/test.pl	2018-07-26 04:05:45.130171680 +0000
++++ X11-Protocol-0.56/test.pl	2018-07-26 04:04:33.519884205 +0000
+@@ -105,6 +105,11 @@ while (1)
+ 	  {
+ 	    place_text($win, $gc, $font, $w, $h);
+ 	    place_graphics($win, $gc, $w, $h);
++	    $x->CloseFont($font);
++	    $x->FreeGC($gc);
++	    undef $x;
++	    print "ok 3\n";
++	    exit;
+ 	  }
+       }
+     elsif ($e{name} eq "ConfigureNotify")

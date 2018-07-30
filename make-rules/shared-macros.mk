@@ -703,9 +703,19 @@ PERL_VERSION_NODOT = $(subst .,,$(PERL_VERSION))
 # multiple packages for each version of perl listed here.  Used by
 # perl_modules/* but also used for those components that deliver a perl
 # package like graphviz and openscap.
-PERL_VERSIONS = 5.22
+PERL_VERSIONS = 5.22 5.26
 
 PERL.5.22 =     /usr/perl5/5.22/bin/perl
+PERL.5.26 =     /usr/perl5/5.26/bin/perl
+
+define test-perl-availability
+TEST_PERL_PATH=$$(PERL.$(1))
+ifeq ($$(strip $$(TEST_PERL_PATH)),)
+$$(error variable PERL.$(1) is not defined)
+endif
+endef
+
+$(foreach p,$(PERL_VERSIONS),$(eval $(call test-perl-availability,$(p))))
 
 # Use these in a component's Makefile for building and packaging with the
 # BUILD's default perl and the package it comes from.
@@ -840,7 +850,7 @@ LIBXNET=$(shell elfdump -d /usr/lib/libxnet.so.1 | $(NAWK) 'BEGIN {ret="-lxnet"}
 # C preprocessor flag sets to ease feature selection.  Add the required
 # feature to your Makefile with CPPFLAGS += $(FEATURE_MACRO) and add to
 # the component build with CONFIGURE_OPTIONS += CPPFLAGS="$(CPPFLAGS)" or
-# similiar.
+# similar.
 #
 
 # Enables visibility of some c99 math functions that aren't visible by default.
@@ -872,7 +882,7 @@ CPP_XPG5MODE=   -D_XOPEN_SOURCE=500 -D__EXTENSIONS__=1 -D_XPG5
 #
 # Studio C compiler flag sets to ease feature selection.  Add the required
 # feature to your Makefile with CFLAGS += $(FEATURE_MACRO) and add to the
-# component build with CONFIGURE_OPTIONS += CFLAGS="$(CFLAGS)" or similiar.
+# component build with CONFIGURE_OPTIONS += CFLAGS="$(CFLAGS)" or similar.
 #
 
 # Generate 32/64 bit objects
@@ -975,7 +985,7 @@ XPG5MODE =		$(studio_XPG5MODE)
 
 # Default Studio C compiler flags.  Add the required feature to your Makefile
 # with CFLAGS += $(FEATURE_MACRO) and add to the component build with
-# CONFIGURE_OPTIONS += CFLAGS="$(CFLAGS)" or similiar.  In most cases, it
+# CONFIGURE_OPTIONS += CFLAGS="$(CFLAGS)" or similar.  In most cases, it
 # should not be necessary to add CFLAGS to any environment other than the
 # configure environment.
 CFLAGS.studio +=	$(studio_OPT) $(studio_XBITS) $(studio_XREGS) \
@@ -984,7 +994,7 @@ CFLAGS.studio +=	$(studio_OPT) $(studio_XBITS) $(studio_XREGS) \
 
 # Default Studio C++ compiler flags.  Add the required feature to your Makefile
 # with CXXFLAGS += $(FEATURE_MACRO) and add to the component build with
-# CONFIGURE_OPTIONS += CXXFLAGS="$(CXXFLAGS)" or similiar.  In most cases, it
+# CONFIGURE_OPTIONS += CXXFLAGS="$(CXXFLAGS)" or similar.  In most cases, it
 # should not be necessary to add CXXFLAGS to any environment other than the
 # configure environment.
 CXXFLAGS.studio +=	$(studio_OPT) $(studio_XBITS) $(studio_XREGS) \
@@ -993,7 +1003,7 @@ CXXFLAGS.studio +=	$(studio_OPT) $(studio_XBITS) $(studio_XREGS) \
 #
 # GNU C compiler flag sets to ease feature selection.  Add the required
 # feature to your Makefile with CFLAGS += $(FEATURE_MACRO) and add to the
-# component build with CONFIGURE_OPTIONS += CFLAGS="$(CFLAGS)" or similiar.
+# component build with CONFIGURE_OPTIONS += CFLAGS="$(CFLAGS)" or similar.
 #
 
 # gcc defaults to assuming stacks are 8 byte aligned on x86, but some
@@ -1023,7 +1033,7 @@ CC_PIC_MODE =		$(CC_PIC_DISABLE)
 
 # Default GNU C compiler flags.  Add the required feature to your Makefile
 # with CFLAGS += $(FEATURE_MACRO) and add to the component build with
-# CONFIGURE_OPTIONS += CFLAGS="$(CFLAGS)" or similiar.  In most cases, it
+# CONFIGURE_OPTIONS += CFLAGS="$(CFLAGS)" or similar.  In most cases, it
 # should not be necessary to add CFLAGS to any environment other than the
 # configure environment.
 CFLAGS.gcc +=	$(gcc_OPT)
@@ -1031,7 +1041,7 @@ CFLAGS.gcc +=	$(gcc_XREGS)
 
 # Default GNU C++ compiler flags.  Add the required feature to your Makefile
 # with CXXFLAGS += $(FEATURE_MACRO) and add to the component build with
-# CONFIGURE_OPTIONS += CXXFLAGS="$(CXXFLAGS)" or similiar.  In most cases, it
+# CONFIGURE_OPTIONS += CXXFLAGS="$(CXXFLAGS)" or similar.  In most cases, it
 # should not be necessary to add CXXFLAGS to any environment other than the
 # configure environment.
 CXXFLAGS.gcc +=		$(gcc_OPT)
@@ -1087,7 +1097,7 @@ CXXFLAGS +=	$(CXXFLAGS.$(MACH))
 #
 # Solaris linker flag sets to ease feature selection.  Add the required
 # feature to your Makefile with LDFLAGS += $(FEATURE_MACRO) and add to the
-# component build with CONFIGURE_OPTIONS += LDFLAGS="$(LDFLAGS)" or similiar.
+# component build with CONFIGURE_OPTIONS += LDFLAGS="$(LDFLAGS)" or similar.
 #
 
 # set the bittedness that we want to link

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -35,7 +35,7 @@ COMPONENT_PROJECT_URL=	http://search.cpan.org/~timb/DBI/
 COMPONENT_BUGDB=	perl-mod/dbi
 COMPONENT_ANITYA_ID=	2811
 
-TPNO=			28024	
+TPNO=			28024
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
@@ -43,16 +43,8 @@ include $(WS_MAKE_RULES)/makemaker.mk
 
 COMPONENT_TEST_ARGS = -k -i
 COMPONENT_TEST_TARGETS = test
-COMPONENT_TEST_TRANSFORMS += \
-	'-e "/^[mM]ake/d" ' \
-	'-e "/^Files/d" ' \
-	'-e "/^PERL/d" ' \
-	'-e "/^Running/d" ' \
-	'-e "/^chmod/d" ' \
-	'-e "/^connect /d" ' \
-	'-e "/^Testing/d" ' \
-	'-e "/NullP/d" ' \
-	'-e "/^\# \-\-\- Perl/d" '
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS += '-n -e "/^Result:/p"'
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -63,5 +55,3 @@ install:	$(INSTALL_64)
 test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
-
-REQUIRED_PACKAGES += system/library

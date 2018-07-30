@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -43,6 +43,7 @@ include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_ENV +=   PATH="/usr/perl5/$(PERLVER)/bin:$(PATH)"
 COMPONENT_TEST_TARGETS = test
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \
 	'-e "s/\s*[0-9][0-9]* wallclock secs (.*CPU)$$/ <TIMINGS REMOVED>/" ' \
 	'-e "/^PERL_DL_NONLAZY/d" ' \

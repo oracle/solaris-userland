@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # makemaker.mk is used to build, install, test perl modules for
@@ -67,6 +67,27 @@ $(BUILD_DIR)/$(MACH64)-5.22/.system-tested-and-compared: BITS=64
 BUILD_64 =	$(BUILD_DIR)/$(MACH64)-5.22/.built
 
 INSTALL_64 =	$(BUILD_DIR)/$(MACH64)-5.22/.installed
+
+
+$(BUILD_DIR)/$(MACH64)-5.26/.configured: PERL_VERSION=5.26
+$(BUILD_DIR)/$(MACH64)-5.26/.configured: BITS=64
+
+$(BUILD_DIR)/$(MACH64)-5.26/.tested: PERL_VERSION=5.26
+$(BUILD_DIR)/$(MACH64)-5.26/.tested: BITS=64
+
+$(BUILD_DIR)/$(MACH64)-5.26/.tested-and-compared: PERL_VERSION=5.26
+$(BUILD_DIR)/$(MACH64)-5.26/.tested-and-compared: BITS=64
+
+$(BUILD_DIR)/$(MACH64)-5.26/.system-tested: PERL_VERSION=5.26
+$(BUILD_DIR)/$(MACH64)-5.26/.system-tested: BITS=64
+
+$(BUILD_DIR)/$(MACH64)-5.26/.system-tested-and-compared: PERL_VERSION=5.26
+$(BUILD_DIR)/$(MACH64)-5.26/.system-tested-and-compared: BITS=64
+
+BUILD_64 +=	$(BUILD_DIR)/$(MACH64)-5.26/.built
+
+INSTALL_64 +=	$(BUILD_DIR)/$(MACH64)-5.26/.installed
+
 
 COMPONENT_CONFIGURE_ENV += $(COMMON_PERL_ENV)
 COMPONENT_CONFIGURE_ENV += PERL="$(PERL)"
@@ -119,14 +140,18 @@ COMPONENT_SYSTEM_TEST_ENV +=	$(COMMON_PERL_ENV)
 # determine the type of tests we want to run.
 ifeq ($(strip $(wildcard $(COMPONENT_TEST_RESULTS_DIR)/results-*.master)),)
 TEST_64 =	$(BUILD_DIR)/$(MACH64)-5.22/.tested
+TEST_64 +=	$(BUILD_DIR)/$(MACH64)-5.26/.tested
 else
 TEST_64 =	$(BUILD_DIR)/$(MACH64)-5.22/.tested-and-compared
+TEST_64 +=	$(BUILD_DIR)/$(MACH64)-5.26/.tested-and-compared
 endif
 
 ifeq ($(strip $(wildcard $(COMPONENT_TEST_RESULTS_DIR)/results-*.master)),)
 SYSTEM_TEST_64 =	$(BUILD_DIR)/$(MACH64)-5.22/.system-tested
+SYSTEM_TEST_64 +=	$(BUILD_DIR)/$(MACH64)-5.26/.system-tested
 else
 SYSTEM_TEST_64 =	$(BUILD_DIR)/$(MACH64)-5.22/.system-tested-and-compared
+SYSTEM_TEST_64 +=	$(BUILD_DIR)/$(MACH64)-5.26/.system-tested-and-compared
 endif
 
 # Test the built source.  If the output file shows up in the environment or
@@ -198,6 +223,17 @@ parfait:
 	$(MAKE) PARFAIT_BUILD=yes parfait
 endif
 
-ifneq ($(findstring 5.22, $(PERL_VERSIONS)),)
-REQUIRED_PACKAGES += runtime/perl-522
+PERL_REQUIRED_PACKAGES_5.22 += runtime/perl-522
+PERL_REQUIRED_PACKAGES_5.26 += runtime/perl-526
+
+define set-perl-req-packages
+TEST_PERL_REQ=$$(PERL_REQUIRED_PACKAGES_$(1))
+ifeq ($$(strip $$(TEST_PERL_REQ)),)
+$$(error variable PERL_REQUIRED_PACKAGES_$(1) is not defined)
 endif
+$$(eval REQUIRED_PACKAGES += $$(TEST_PERL_REQ))
+endef
+
+# PERL_VERSIONS can be modified in the Makefile so that component does not need
+# to be compiled with all perl versions if needed
+$(foreach p,$(PERL_VERSIONS),$(eval $(call set-perl-req-packages,$(p))))

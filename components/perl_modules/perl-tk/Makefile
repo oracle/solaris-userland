@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
@@ -43,6 +43,7 @@ TPNO=			22548
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/makemaker.mk
+include $(WS_MAKE_RULES)/test-x11.mk
 
 # This component loves openwin.
 CONFIGURE_OPTIONS += X11INC=/usr/X11/include
@@ -50,29 +51,13 @@ CONFIGURE_OPTIONS += X11LIB=/usr/X11/lib/64
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-COMPONENT_TEST_ENV =		DISPLAY=:1
 COMPONENT_TEST_TARGETS =	test
 
-# Tests are run using an X virtual framebuffer.
-# When we have the equivalent of REQUIRED_PACKAGES for test dependencies,
-# then we will need to make sure that x11/server/xvfb is included in that list.
-
-COMPONENT_PRE_TEST_ACTION = \
-	$(SHELL) $(COMPONENT_DIR)/start_Xvfb $(COMPONENT_DIR)
-COMPONENT_POST_TEST_ACTION = \
-	$(SHELL) $(COMPONENT_DIR)/stop_Xvfb $(COMPONENT_DIR)
-
 COMPONENT_TEST_TRANSFORMS += \
-	'-e "/Entering directory/d"' \
-	'-e "/Leaving directory/d"' \
-	'-e "/^chmod/d"' \
-	'-e "/^make/d"' \
-	'-e "/^Stack moved/d"' \
-	'-e "/\. update/d"' \
-	'-e "/\.label/d"' \
-	'-e "/\.toplevel/d"' \
-	'-e "/OPTIMIZE/d"' \
-	'-e "s/, *[0-9][0-9]* wallclock secs (.*CPU)$$/, <TIMINGS REMOVED>/" '
+	'-n ' \
+	'-e "/ ok$$/p"' \
+	'-e "/Result:/p"' \
+	'-e "/Failed/p"'
 
 build:		$(BUILD_64)
 
@@ -82,6 +67,8 @@ test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
+REQUIRED_PACKAGES += image/library/libjpeg
+REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += runtime/tk-8
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/fontconfig

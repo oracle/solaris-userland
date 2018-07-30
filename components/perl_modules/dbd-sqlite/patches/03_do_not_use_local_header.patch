@@ -2,7 +2,7 @@ Filed at https://rt.cpan.org/Public/Bug/Display.html?id=114138
 
 --- DBD-SQLite-1.50/Makefile.PL	2016-05-02 13:32:35.562004677 -0700
 +++ DBD-SQLite-1.50/Makefile.PL	2016-05-02 13:31:31.215124807 -0700
-@@ -170,6 +170,7 @@ if ( 0 ) {
+@@ -178,6 +178,7 @@ if ( 0 ) {
  				while ( defined($_ = <$fh>) ) {
  					if (/\#define\s+SQLITE_VERSION_NUMBER\s+(\d+)/) {
  						$version = $1;
@@ -10,7 +10,7 @@ Filed at https://rt.cpan.org/Public/Bug/Display.html?id=114138
  						last;
  					}
  				}
-@@ -216,7 +217,7 @@ my @CC_INC = (
+@@ -224,7 +225,7 @@ my @CC_INC = (
  	'-I$(DBI_INSTARCH_DIR)',
  );
  if ( $sqlite_inc ) {
@@ -19,17 +19,17 @@ Filed at https://rt.cpan.org/Public/Bug/Display.html?id=114138
  }
  
  my @CC_DEFINE = (
---- DBD-SQLite-1.50/sqlite3ext.h	2016-05-02 13:40:28.734661242 -0700
-+++ DBD-SQLite-1.50/sqlite3ext.h	2016-05-02 13:39:16.724889276 -0700
+--- DBD-SQLite-1.58/sqlite3ext.h	2018-07-26 02:41:45.384365075 +0000
++++ DBD-SQLite-1.58/sqlite3ext.h	2018-07-26 02:41:28.422049360 +0000
 @@ -17,7 +17,7 @@
  */
- #ifndef _SQLITE3EXT_H_
- #define _SQLITE3EXT_H_
+ #ifndef SQLITE3EXT_H
+ #define SQLITE3EXT_H
 -#include "sqlite3.h"
 +#include <sqlite3.h>
  
- typedef struct sqlite3_api_routines sqlite3_api_routines;
- 
+ /*
+ ** The following structure holds pointers to all of the SQLite API
 --- DBD-SQLite-1.50/dbdimp.h	2016-05-02 13:40:28.956772954 -0700
 +++ DBD-SQLite-1.50/dbdimp.h	2016-05-02 13:39:23.563370124 -0700
 @@ -3,7 +3,7 @@

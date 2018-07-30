@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
 set name=pkg.fmri \
@@ -37,6 +37,11 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2013/273 value=PSARC/2017/052
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+link path=usr/bin/ccon target=../perl5/$(PERLVER)/bin/ccon mediator=perl \
+    mediator-version=$(PERLVER)
+link path=usr/bin/clusterssh_bash_completion.dist \
+    target=../perl5/$(PERLVER)/bin/clusterssh_bash_completion.dist \
+    mediator=perl mediator-version=$(PERLVER)
 link path=usr/bin/crsh target=../perl5/$(PERLVER)/bin/crsh mediator=perl \
     mediator-version=$(PERLVER)
 link path=usr/bin/csftp target=../perl5/$(PERLVER)/bin/csftp mediator=perl \
@@ -45,10 +50,14 @@ link path=usr/bin/cssh target=../perl5/$(PERLVER)/bin/cssh mediator=perl \
     mediator-version=$(PERLVER)
 link path=usr/bin/ctel target=../perl5/$(PERLVER)/bin/ctel mediator=perl \
     mediator-version=$(PERLVER)
+file path=usr/perl5/$(PERLVER)/bin/ccon
+file path=usr/perl5/$(PERLVER)/bin/clusterssh_bash_completion.dist
 file path=usr/perl5/$(PERLVER)/bin/crsh
 file path=usr/perl5/$(PERLVER)/bin/csftp
 file path=usr/perl5/$(PERLVER)/bin/cssh
 file path=usr/perl5/$(PERLVER)/bin/ctel
+file path=usr/perl5/$(PERLVER)/man/man1/ccon.1
+file path=usr/perl5/$(PERLVER)/man/man1/clusterssh_bash_completion.dist.1
 file path=usr/perl5/$(PERLVER)/man/man1/crsh.1
 file path=usr/perl5/$(PERLVER)/man/man1/csftp.1
 file path=usr/perl5/$(PERLVER)/man/man1/cssh.1
@@ -73,6 +82,12 @@ file path=usr/perl5/vendor_perl/$(PERLVER)/App/ClusterSSH/Host.pm
 file path=usr/perl5/vendor_perl/$(PERLVER)/App/ClusterSSH/L10N.pm
 file path=usr/perl5/vendor_perl/$(PERLVER)/App/ClusterSSH/L10N/en.pm
 file path=usr/perl5/vendor_perl/$(PERLVER)/App/ClusterSSH/Range.pm
+link path=usr/share/man/man1/ccon.1 \
+    target=../../../perl5/$(PERLVER)/man/man1/ccon.1 mediator=perl \
+    mediator-version=$(PERLVER)
+link path=usr/share/man/man1/clusterssh_bash_completion.dist.1 \
+    target=../../../perl5/$(PERLVER)/man/man1/clusterssh_bash_completion.dist.1 \
+    mediator=perl mediator-version=$(PERLVER)
 link path=usr/share/man/man1/crsh.1 \
     target=../../../perl5/$(PERLVER)/man/man1/crsh.1 mediator=perl \
     mediator-version=$(PERLVER)
@@ -86,9 +101,9 @@ link path=usr/share/man/man1/ctel.1 \
     target=../../../perl5/$(PERLVER)/man/man1/ctel.1 mediator=perl \
     mediator-version=$(PERLVER)
 license cssh.license license=Artistic
-depend type=require fmri=__TBD pkg.debug.depend.file=Protocol.pm \
-    pkg.debug.depend.path=usr/perl5/vendor_perl/$(PERLVER)/X11
-depend type=require fmri=__TBD pkg.debug.depend.file=Tk.pm \
-    pkg.debug.depend.path=usr/perl5/vendor_perl/$(PERLVER)/$(PERL_ARCH)
+depend type=conditional fmri=library/perl-5/perl-tk-$(PLV) \
+    predicate=runtime/perl-$(PLV)
+depend type=conditional fmri=library/perl-5/perl-x11-protocol-$(PLV) \
+    predicate=runtime/perl-$(PLV)
 depend type=require fmri=__TBD pkg.debug.depend.file=perl \
     pkg.debug.depend.path=usr/perl5/$(PERLVER)/bin

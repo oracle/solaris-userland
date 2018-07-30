@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -63,3 +63,7 @@ install:	$(INSTALL_64)
 test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+
+# Needed for testing:
+REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/xml-namespacesupport-5%)
+REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/xml-sax-base-5%)

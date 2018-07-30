@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -40,6 +40,7 @@ TPNO=			13258
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/makemaker.mk
+include $(WS_MAKE_RULES)/test-x11.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -52,9 +53,6 @@ build:		$(BUILD_64)
 
 install:	$(INSTALL_64)
 
-# These work but require an interactive X11 display.
 test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
-
-REQUIRED_PACKAGES += system/library
