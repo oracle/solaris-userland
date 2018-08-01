@@ -27,7 +27,7 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mailman
 COMPONENT_MINOR_VERSION=2.1
-COMPONENT_MICRO_VERSION=$(COMPONENT_MINOR_VERSION).24
+COMPONENT_MICRO_VERSION=$(COMPONENT_MINOR_VERSION).29
 COMPONENT_VERSION=	$(COMPONENT_MICRO_VERSION)-1
 IPS_COMPONENT_VERSION=	$(COMPONENT_MICRO_VERSION).1
 COMPONENT_PROJECT_URL=	http://www.list.org/
@@ -35,11 +35,13 @@ COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_MICRO_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_ARCHIVE_URL=	https://launchpad.net/mailman/$(COMPONENT_MINOR_VERSION)/$(COMPONENT_MICRO_VERSION)/+download/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
-COMPONENT_ARCHIVE_HASH=	sha256:89b0cfc13c52915b9cdebd4b772852f1043e7435554050b4f5f7094f9093cd77
+COMPONENT_ARCHIVE_HASH=	sha256:838872713601e8a124146e550f53709482c1ef168f1e16d201465c651cbf0d2c
 COMPONENT_ANITYA_ID=	1875
 
-TPNO=			36148
+TPNO=			44475
 
+# There are no tests that can be executed automatically,
+# the unit tests require some setup as described in file TESTING.
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/gnu-component.mk
 
@@ -52,8 +54,11 @@ CONFIGURE_OPTIONS +=	--with-mail-gid=other
 CONFIGURE_OPTIONS +=	--with-cgi-gid=webservd
 CONFIGURE_OPTIONS +=	--with-python=$(PYTHON.2.7)
 CONFIGURE_OPTIONS +=	--without-permcheck
-CONFIGURE_OPTIONS +=	--with-mailhost=localhost
-CONFIGURE_OPTIONS +=	--with-urlhost=localhost
+# Address 127.0.0.1 is used instead of localhost to bypass the domain check in unit tests.
+# A valid domain, see ValidateEmail() in usr/lib/mailman/Mailman/Utils.py,
+# must have at least two parts, which obviously fails for localhost.
+CONFIGURE_OPTIONS +=	--with-mailhost=127.0.0.1
+CONFIGURE_OPTIONS +=	--with-urlhost=127.0.0.1
 
 # Copy generated file to proto area.  Then py-compile several files that are
 # used as modules in a devious way.

@@ -1,0 +1,18 @@
+#### mailman unit tests ###
+
+# Install the package and enable optional.test facet,
+# which installs the required python files for unit tests.
+sudo pkg install mailman
+sudo pkg change-facet -v 'optional.test=true'
+
+# Enable mailman service, it creates the required directory in /var/share/.
+sudo svcadm enable mailman
+
+# Add yourself to mailman group.
+sudo usermod -S files -G +mailman <username>
+# Switch to a new shell with the activated new group.
+newgrp mailman
+
+# Execute the unit tests, verify that all the tests pass.
+cd /usr/lib/mailman/
+python2.7 tests/testall.py
