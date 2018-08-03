@@ -1,0 +1,571 @@
+From bc7ffad53643a9c80231fc41f5582d6a8931c32c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Miloslav=20Trma=C4=8D?= <mitr@redhat.com>
+Date: Mon, 25 Jun 2018 19:24:06 +0200
+Subject: Fix CVE-2018-1116: Trusting client-supplied UID
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+As part of CVE-2013-4288, the D-Bus clients were allowed (and
+encouraged) to submit the UID of the subject of authorization checks
+to avoid races against UID changes (notably using executables
+set-UID to root).
+
+However, that also allowed any client to submit an arbitrary UID, and
+that could be used to bypass "can only ask about / affect the same UID"
+checks in CheckAuthorization / RegisterAuthenticationAgent /
+UnregisterAuthenticationAgent.  This allowed an attacker:
+
+- With CheckAuthorization, to cause the registered authentication
+  agent in victim's session to pop up a dialog, or to determine whether
+  the victim currently has a temporary authorization to perform an
+  operation.
+
+  (In principle, the attacker can also determine whether JavaScript
+  rules allow the victim process to perform an operation; however,
+  usually rules base their decisions on information determined from
+  the supplied UID, so the attacker usually won't learn anything new.)
+
+- With RegisterAuthenticationAgent, to prevent the victim's
+  authentication agent to work (for a specific victim process),
+  or to learn about which operations requiring authorization
+  the victim is attempting.
+
+To fix this, expose internal _polkit_unix_process_get_owner() /
+obsolete polkit_unix_process_get_owner() as a private
+polkit_unix_process_get_racy_uid__() (being more explicit about the
+dangers on relying on it), and use it in
+polkit_backend_session_monitor_get_user_for_subject() to return
+a boolean indicating whether the subject UID may be caller-chosen.
+
+Then, in the permission checks that require the subject to be
+equal to the caller, fail on caller-chosen UIDs (and continue
+through the pre-existing code paths which allow root, or root-designated
+server processes, to ask about arbitrary subjects.)
+
+Signed-off-by: Miloslav Trma? <mitr@redhat.com>
+
+--- a/src/polkit/polkitprivate.h	2018-08-02 11:41:32.513765589 -0700
++++ b/src/polkit/polkitprivate.h	2018-08-02 11:41:57.576706421 -0700
+@@ -44,6 +44,8 @@
+ GVariant *polkit_subject_to_gvariant (PolkitSubject *subject);
+ GVariant *polkit_identity_to_gvariant (PolkitIdentity *identity);
+ 
++gint polkit_unix_process_get_racy_uid__ (PolkitUnixProcess *process, GError **error);
++
+ PolkitSubject  *polkit_subject_new_for_gvariant (GVariant *variant, GError **error);
+ PolkitIdentity *polkit_identity_new_for_gvariant (GVariant *variant, GError **error);
+ 
+--- a/src/polkitbackend/polkitbackendsessionmonitor-systemd.c	2018-08-02 11:59:04.660820063 -0700
++++ b/src/polkitbackend/polkitbackendsessionmonitor-systemd.c	2018-08-02 12:14:11.327962486 -0700
+@@ -29,6 +29,7 @@
+ #include <stdlib.h>
+ 
+ #include <polkit/polkit.h>
++#include <polkit/polkitprivate.h>
+ #include "polkitbackendsessionmonitor.h"
+ 
+ /* <internal>
+@@ -246,26 +247,40 @@
+  * polkit_backend_session_monitor_get_user:
+  * @monitor: A #PolkitBackendSessionMonitor.
+  * @subject: A #PolkitSubject.
++ * @result_matches: If not %NULL, set to indicate whether the return value matches current (RACY) state.
+  * @error: Return location for error.
+  *
+  * Gets the user corresponding to @subject or %NULL if no user exists.
+  *
++ * NOTE: For a #PolkitUnixProcess, the UID is read from @subject (which may
++ * come from e.g. a D-Bus client), so it may not correspond to the actual UID
++ * of the referenced process (at any point in time).  This is indicated by
++ * setting @result_matches to %FALSE; the caller may reject such subjects or
++ * require additional privileges. @result_matches == %TRUE only indicates that
++ * the UID matched the underlying process at ONE point in time, it may not match
++ * later.
++ *
+  * Returns: %NULL if @error is set otherwise a #PolkitUnixUser that should be freed with g_object_unref().
+  */
+ PolkitIdentity *
+ polkit_backend_session_monitor_get_user_for_subject (PolkitBackendSessionMonitor  *monitor,
+                                                      PolkitSubject                *subject,
++					             gboolean			  *result_matches,	
+                                                      GError                      **error)
+ {
+   PolkitIdentity *ret;
+-  guint32 uid;
++  gboolean matches;
+ 
+   ret = NULL;
++  matches = FALSE;
+ 
+   if (POLKIT_IS_UNIX_PROCESS (subject))
+     {
+-      uid = polkit_unix_process_get_uid (POLKIT_UNIX_PROCESS (subject));
+-      if ((gint) uid == -1)
++      gint subject_uid, current_uid;
++      GError *local_error;
++
++      subject_uid = polkit_unix_process_get_uid (POLKIT_UNIX_PROCESS (subject));
++      if (subject_uid == -1)
+         {
+           g_set_error (error,
+                        POLKIT_ERROR,
+@@ -273,14 +288,24 @@
+                        "Unix process subject does not have uid set");
+           goto out;
+         }
+-      ret = polkit_unix_user_new (uid);
++      local_error = NULL;
++      current_uid = polkit_unix_process_get_racy_uid__ (POLKIT_UNIX_PROCESS (subject), &local_error);
++      if (local_error != NULL)
++       {
++         g_propagate_error (error, local_error);
++         goto out;
++       }
++      ret = polkit_unix_user_new (subject_uid);
++      matches = (subject_uid == current_uid);
+     }
+   else if (POLKIT_IS_SYSTEM_BUS_NAME (subject))
+     {
+       ret = (PolkitIdentity*)polkit_system_bus_name_get_user_sync (POLKIT_SYSTEM_BUS_NAME (subject), NULL, error);
++      matches = TRUE;
+     }
+   else if (POLKIT_IS_UNIX_SESSION (subject))
+     {
++      uid_t uid;
+ 
+       if (sd_session_get_uid (polkit_unix_session_get_session_id (POLKIT_UNIX_SESSION (subject)), &uid) < 0)
+         {
+@@ -292,9 +317,14 @@
+         }
+ 
+       ret = polkit_unix_user_new (uid);
++      matches = TRUE;
+     }
+ 
+  out:
++  if (result_matches != NULL)
++    {
++      *result_matches = matches;
++    }
+   return ret;
+ }
+ 
+--- a/src/polkitbackend/polkitbackendsessionmonitor.c	2018-08-02 12:23:29.729150102 -0700
++++ b/src/polkitbackend/polkitbackendsessionmonitor.c	2018-08-02 12:27:17.455378459 -0700
+@@ -27,6 +27,7 @@
+ #include <glib/gstdio.h>
+ 
+ #include <polkit/polkit.h>
++#include <polkit/polkitprivate.h>
+ #include "polkitbackendsessionmonitor.h"
+ 
+ #define CKDB_PATH "/var/run/ConsoleKit/database"
+@@ -273,28 +274,40 @@
+  * polkit_backend_session_monitor_get_user:
+  * @monitor: A #PolkitBackendSessionMonitor.
+  * @subject: A #PolkitSubject.
++ * @result_matches: If not %NULL, set to indicate whether the return value matches current (RACY) state.
+  * @error: Return location for error.
+  *
+  * Gets the user corresponding to @subject or %NULL if no user exists.
+  *
++ * NOTE: For a #PolkitUnixProcess, the UID is read from @subject (which may
++ * come from e.g. a D-Bus client), so it may not correspond to the actual UID
++ * of the referenced process (at any point in time).  This is indicated by
++ * setting @result_matches to %FALSE; the caller may reject such subjects or
++ * require additional privileges. @result_matches == %TRUE only indicates that
++ * the UID matched the underlying process at ONE point in time, it may not match
++ * later.
++ *
+  * Returns: %NULL if @error is set otherwise a #PolkitUnixUser that should be freed with g_object_unref().
+  */
+ PolkitIdentity *
+ polkit_backend_session_monitor_get_user_for_subject (PolkitBackendSessionMonitor  *monitor,
+                                                      PolkitSubject                *subject,
++					 	     gboolean			  *result_matches,
+                                                      GError                      **error)
+ {
+   PolkitIdentity *ret;
++  gboolean matches;
+   GError *local_error;
+-  gchar *group;
+-  guint32 uid;
+ 
+   ret = NULL;
++  matches = FALSE;
+ 
+   if (POLKIT_IS_UNIX_PROCESS (subject))
+     {
+-      uid = polkit_unix_process_get_uid (POLKIT_UNIX_PROCESS (subject));
+-      if ((gint) uid == -1)
++      gint subject_uid, current_uid;
++
++      subject_uid = polkit_unix_process_get_uid (POLKIT_UNIX_PROCESS (subject));
++      if (subject_uid == -1)
+         {
+           g_set_error (error,
+                        POLKIT_ERROR,
+@@ -302,14 +315,26 @@
+                        "Unix process subject does not have uid set");
+           goto out;
+         }
+-      ret = polkit_unix_user_new (uid);
++      local_error = NULL;
++      current_uid = polkit_unix_process_get_racy_uid__ (POLKIT_UNIX_PROCESS (subject), &local_error);
++      if (local_error != NULL)
++       {
++         g_propagate_error (error, local_error);
++         goto out;
++       }
++      ret = polkit_unix_user_new (subject_uid);
++      matches = (subject_uid == current_uid);
+     }
+   else if (POLKIT_IS_SYSTEM_BUS_NAME (subject))
+     {
+       ret = (PolkitIdentity*)polkit_system_bus_name_get_user_sync (POLKIT_SYSTEM_BUS_NAME (subject), NULL, error);
++      matches = TRUE;
+     }
+   else if (POLKIT_IS_UNIX_SESSION (subject))
+     {
++      gint uid;
++      gchar *group;
++
+       if (!ensure_database (monitor, error))
+         {
+           g_prefix_error (error, "Error getting user for session: Error ensuring CK database at " CKDB_PATH ": ");
+@@ -328,9 +353,14 @@
+       g_free (group);
+ 
+       ret = polkit_unix_user_new (uid);
++      matches = TRUE;
+     }
+ 
+  out:
++  if (result_matches != NULL)
++    {
++      *result_matches = matches;
++    }
+   return ret;
+ }
+ 
+--- a/src/polkitbackend/polkitbackendinteractiveauthority.c	2018-08-02 11:49:41.712166790 -0700
++++ b/src/polkitbackend/polkitbackendinteractiveauthority.c	2018-08-02 13:13:55.491076431 -0700
+@@ -572,7 +572,7 @@
+   if (polkit_authorization_result_get_is_authorized (result))
+     log_result_str = "ALLOWING";
+ 
+-  user_of_subject = polkit_backend_session_monitor_get_user_for_subject (priv->session_monitor, subject, NULL);
++  user_of_subject = polkit_backend_session_monitor_get_user_for_subject (priv->session_monitor, subject, NULL, NULL);
+ 
+   subject_str = polkit_subject_to_string (subject);
+ 
+@@ -844,6 +844,7 @@
+   gchar *subject_str;
+   PolkitIdentity *user_of_caller;
+   PolkitIdentity *user_of_subject;
++  gboolean user_of_subject_matches;
+   gchar *user_of_caller_str;
+   gchar *user_of_subject_str;
+   PolkitAuthorizationResult *result;
+@@ -888,9 +889,8 @@
+            subject_str,
+            action_id);
+ 
+-  user_of_caller = polkit_backend_session_monitor_get_user_for_subject (priv->session_monitor,
+-                                                                        caller,
+-                                                                        &error);
++  user_of_caller = polkit_backend_session_monitor_get_user_for_subject (priv->session_monitor, caller, NULL, &error);
++
+   if (error != NULL)
+     {
+       g_simple_async_result_set_from_error (simple, error);
+@@ -903,9 +903,8 @@
+   user_of_caller_str = polkit_identity_to_string (user_of_caller);
+   g_debug (" user of caller is %s", user_of_caller_str);
+ 
+-  user_of_subject = polkit_backend_session_monitor_get_user_for_subject (priv->session_monitor,
+-                                                                         subject,
+-                                                                         &error);
++  user_of_subject = polkit_backend_session_monitor_get_user_for_subject (priv->session_monitor, subject, &user_of_subject_matches, &error);
++
+   if (error != NULL)
+     {
+       g_simple_async_result_set_from_error (simple, error);
+@@ -933,8 +932,10 @@
+   /* Not anyone is allowed to check that process XYZ is allowed to do ABC.
+    * We only allow this if, and only if,
+    *
+-   *  - processes may check for another process owned by the *same* user but not
+-   *    if details are passed (otherwise you'd be able to spoof the dialog)
++   *    if details are passed (otherwise you'd be able to spoof the dialog);
++   *    the caller supplies the user_of_subject value, so we additionally
++   *    require it to match at least at one point in time (via
++   *    user_of_subject_matches).
+    *
+    *  - processes running as uid 0 may check anything and pass any details
+    *
+@@ -942,7 +943,9 @@
+    *    then any uid referenced by that annotation is also allowed to check
+    *    to check anything and pass any details
+    */
+-  if (!polkit_identity_equal (user_of_caller, user_of_subject) || has_details)
++  if (!user_of_subject_matches
++      || !polkit_identity_equal (user_of_caller, user_of_subject)
++      || has_details)
+     {
+       if (!may_identity_check_authorization (interactive_authority, action_id, user_of_caller))
+         {
+@@ -1107,10 +1110,10 @@
+       goto out;
+     }
+ 
+-  /* every subject has a user */
+-  user_of_subject = polkit_backend_session_monitor_get_user_for_subject (priv->session_monitor,
+-                                                                         subject,
+-                                                                         error);
++  /* every subject has a user; this is supplied by the client, so we rely
++   * on the caller to validate its acceptability. */
++  user_of_subject = polkit_backend_session_monitor_get_user_for_subject (priv->session_monitor, subject, NULL, error);
++
+   if (user_of_subject == NULL)
+       goto out;
+ 
+@@ -2475,6 +2478,7 @@
+   PolkitSubject *session_for_caller;
+   PolkitIdentity *user_of_caller;
+   PolkitIdentity *user_of_subject;
++  gboolean user_of_subject_matches;
+   AuthenticationAgent *agent;
+   gboolean ret;
+   gchar *caller_cmdline;
+@@ -2527,7 +2531,8 @@
+       goto out;
+     }
+ 
+-  user_of_caller = polkit_backend_session_monitor_get_user_for_subject (priv->session_monitor, caller, NULL);
++  user_of_caller = polkit_backend_session_monitor_get_user_for_subject (priv->session_monitor, caller, NULL, NULL);
++
+   if (user_of_caller == NULL)
+     {
+       g_set_error (error,
+@@ -2536,7 +2541,8 @@
+                    "Cannot determine user of caller");
+       goto out;
+     }
+-  user_of_subject = polkit_backend_session_monitor_get_user_for_subject (priv->session_monitor, subject, NULL);
++  user_of_subject = polkit_backend_session_monitor_get_user_for_subject (priv->session_monitor, subject, &user_of_subject_matches, NULL);
++
+   if (user_of_subject == NULL)
+     {
+       g_set_error (error,
+@@ -2545,7 +2551,8 @@
+                    "Cannot determine user of subject");
+       goto out;
+     }
+-  if (!polkit_identity_equal (user_of_caller, user_of_subject))
++  if (!user_of_subject_matches
++      || !polkit_identity_equal (user_of_caller, user_of_subject))
+     {
+       if (identity_is_root_user (user_of_caller))
+         {
+@@ -2638,6 +2645,7 @@
+   PolkitSubject *session_for_caller;
+   PolkitIdentity *user_of_caller;
+   PolkitIdentity *user_of_subject;
++  gboolean user_of_subject_matches;
+   AuthenticationAgent *agent;
+   gboolean ret;
+   gchar *scope_str;
+@@ -2686,7 +2694,8 @@
+       goto out;
+     }
+ 
+-  user_of_caller = polkit_backend_session_monitor_get_user_for_subject (priv->session_monitor, caller, NULL);
++  user_of_caller = polkit_backend_session_monitor_get_user_for_subject (priv->session_monitor, caller, NULL, NULL);
++
+   if (user_of_caller == NULL)
+     {
+       g_set_error (error,
+@@ -2695,7 +2704,8 @@
+                    "Cannot determine user of caller");
+       goto out;
+     }
+-  user_of_subject = polkit_backend_session_monitor_get_user_for_subject (priv->session_monitor, subject, NULL);
++  user_of_subject = polkit_backend_session_monitor_get_user_for_subject (priv->session_monitor, subject, &user_of_subject_matches, NULL);
++
+   if (user_of_subject == NULL)
+     {
+       g_set_error (error,
+@@ -2704,7 +2714,8 @@
+                    "Cannot determine user of subject");
+       goto out;
+     }
+-  if (!polkit_identity_equal (user_of_caller, user_of_subject))
++  if (!user_of_subject_matches
++      || !polkit_identity_equal (user_of_caller, user_of_subject))
+     {
+       if (identity_is_root_user (user_of_caller))
+         {
+@@ -2813,9 +2824,8 @@
+            cookie,
+            identity_str);
+ 
+-  user_of_caller = polkit_backend_session_monitor_get_user_for_subject (priv->session_monitor,
+-                                                                        caller,
+-                                                                        error);
++  user_of_caller = polkit_backend_session_monitor_get_user_for_subject (priv->session_monitor, caller, NULL, error); 
++
+   if (user_of_caller == NULL)
+     goto out;
+ 
+--- a/src/polkitbackend/polkitbackendsessionmonitor.h	2018-08-02 12:27:56.587403117 -0700
++++ b/src/polkitbackend/polkitbackendsessionmonitor.h	2018-08-02 16:16:00.696837566 -0700
+@@ -47,6 +47,7 @@
+ 
+ PolkitIdentity              *polkit_backend_session_monitor_get_user_for_subject (PolkitBackendSessionMonitor *monitor,
+                                                                                   PolkitSubject               *subject,
++                                                                                  gboolean                   *result_matches,
+                                                                                   GError                     **error);
+ 
+ PolkitSubject               *polkit_backend_session_monitor_get_session_for_subject (PolkitBackendSessionMonitor *monitor,
+--- a/src/polkit/polkitunixprocess.c	2018-08-02 11:42:58.448939244 -0700
++++ b/src/polkit/polkitunixprocess.c	2018-08-02 18:33:28.579757882 -0700
+@@ -49,6 +49,14 @@
+  * To uniquely identify processes, both the process id and the start
+  * time of the process (a monotonic increasing value representing the
+  * time since the kernel was started) is used.
++ *
++ * NOTE: This object stores, and provides access to, the real UID of the
++ * process.  That value can change over time (with set*uid*(2) and exec*(2)).
++ * Checks whether an operation is allowed need to take care to use the UID
++ * value as of the time when the operation was made (or, following the open()
++ * privilege check model, when the connection making the operation possible
++ * was initiated).  That is usually done by initializing this with
++ * polkit_unix_process_new_for_owner() with trusted data.
+  */
+ 
+ /**
+@@ -83,9 +91,6 @@
+ static guint64 get_start_time_for_pid (pid_t    pid,
+                                        GError **error);
+ 
+-static gint _polkit_unix_process_get_owner (PolkitUnixProcess  *process,
+-                                            GError            **error);
+-
+ #ifdef HAVE_FREEBSD
+ static gboolean get_kinfo_proc (gint pid, struct kinfo_proc *p);
+ #endif
+@@ -170,7 +175,7 @@
+     {
+       GError *error;
+       error = NULL;
+-      process->uid = _polkit_unix_process_get_owner (process, &error);
++      process->uid = polkit_unix_process_get_racy_uid__ (process, &error);
+       if (error != NULL)
+         {
+           process->uid = -1;
+@@ -259,6 +264,12 @@
+  * Gets the user id for @process. Note that this is the real user-id,
+  * not the effective user-id.
+  *
++ * NOTE: The UID may change over time, so the returned value may not match the
++ * current state of the underlying process; or the UID may have been set by
++ * polkit_unix_process_new_for_owner() or polkit_unix_process_set_uid(),
++ * in which case it may not correspond to the actual UID of the referenced
++ * process at all (at any point in time).
++ *
+  * Returns: The user id for @process or -1 if unknown.
+  */
+ gint
+@@ -633,18 +644,26 @@
+   return start_time;
+ }
+ 
+-static gint
+-_polkit_unix_process_get_owner (PolkitUnixProcess  *process,
+-                                GError            **error)
++/*
++ * Private: Return the "current" UID.  Note that this is inherently racy,
++ * and the value may already be obsolete by the time this function returns;
++ * this function only guarantees that the UID was valid at some point during
++ * its execution.
++ */
++gint
++polkit_unix_process_get_racy_uid__ (PolkitUnixProcess  *process,
++                                    GError            **error)
+ {
+   gint result;
+   gchar *contents;
+   gchar **lines;
++  guint64 start_time;
+ #ifdef HAVE_FREEBSD
+   struct kinfo_proc p;
+ #else
+   gchar filename[64];
+   guint n;
++  GError *local_error;
+ #endif
+ 
+   g_return_val_if_fail (POLKIT_IS_UNIX_PROCESS (process), 0);
+@@ -666,8 +685,14 @@
+       goto out;
+     }
+ 
++#if defined(HAVE_FREEBSD)
+   result = p.ki_uid;
++  start_time = (guint64) p.ki_start.tv_sec;
+ #else
++  result = p.p_uid;
++  start_time = (guint64) p.p_ustart_sec;
++#endif
++#else
+ 
+   /* see 'man proc' for layout of the status file
+    *
+@@ -700,7 +725,7 @@
+       else
+         {
+           result = real_uid;
+-          goto out;
++          goto found;
+         }
+     }
+ 
+@@ -709,8 +734,29 @@
+                POLKIT_ERROR_FAILED,
+                "Didn't find any line starting with `Uid:' in file %s",
+                filename);
++  goto out;
++
++found:
++  /* The UID and start time are, sadly, not available in a single file.  So,
++   * read the UID first, and then the start time; if the start time is the same
++   * before and after reading the UID, it couldn't have changed.
++   */
++  local_error = NULL;
++  start_time = get_start_time_for_pid (process->pid, &local_error);
++  if (local_error != NULL)
++    {
++      g_propagate_error (error, local_error);
++      goto out;
++    }
+ #endif
+ 
++  if (process->start_time != start_time)
++    {
++      g_set_error (error, POLKIT_ERROR, POLKIT_ERROR_FAILED,
++                   "process with PID %d has been replaced", process->pid);
++      goto out;
++    }
++
+ out:
+   g_strfreev (lines);
+   g_free (contents);
+@@ -729,5 +775,5 @@
+ polkit_unix_process_get_owner (PolkitUnixProcess  *process,
+                                GError            **error)
+ {
+-  return _polkit_unix_process_get_owner (process, error);
++  return polkit_unix_process_get_racy_uid__ (process, error);
+ }
