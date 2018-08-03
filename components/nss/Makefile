@@ -29,18 +29,18 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nss
-COMPONENT_VERSION=	3.36.1
+COMPONENT_VERSION=	3.38
 # NSS ips major version is incorrect for historical reasons.
-IPS_COMPONENT_VERSION=	4.36.1
+IPS_COMPONENT_VERSION=	4.38
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_UVERSION=	$(subst .,_,$(COMPONENT_VERSION))
 COMPONENT_PROJECT_URL=	https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:267f7772da8adfdf1e3c9de90e960e9de3b7b7a57f99d5e3470c11e8a8789767
+    sha256:9937a61c35b5e4baefb5aa10327061ac0f7df2b5872a3dd9e5f33b6a5dd4f30f
 COMPONENT_ARCHIVE_URL=	http://ftp.mozilla.org/pub/security/$(COMPONENT_NAME)/releases/NSS_$(COMPONENT_UVERSION)_RTM/src/$(COMPONENT_ARCHIVE)
 
-TPNO=			42674
+TPNO=			44464
 
 BUILD_STYLE= justmake
 
@@ -74,14 +74,28 @@ COMPONENT_INSTALL_ARGS += CC=$(CC)
 
 PKG_PROTO_DIRS += "$(BUILD_DIR)/$(MACH64)/cmd"
 
+REPLACE_STRING  = -e 's/%NSS_VERSION%/$(COMPONENT_VERSION)/'
+REPLACE_STRING += -e "s/%NSPR_VERSION%/$$NSPR_VERSION/"
+
 COMPONENT_POST_INSTALL_ACTION += \
    ( \
-      mkdir -p "$(PROTO_DIR)/usr/include/mps"; \
-      mkdir -p "$(PROTO_DIR)/usr/lib/mps/$(MACH64)"; \
+      $(MKDIR) "$(PROTO_DIR)/usr/include/mps"; \
+      $(MKDIR) "$(PROTO_DIR)/usr/lib/mps/$(MACH64)"; \
       rsync --copy-links -r "$(BUILD_DIR)/dist/public/nss/" "$(PROTO_DIR)/usr/include/mps/"; \
       rsync --exclude '*.a' --copy-links -r "$(BUILD_DIR)/$(DIST_OBJ.$(MACH).32)/lib/" "$(PROTO_DIR)/usr/lib/mps/"; \
       rsync --exclude '*.a' --copy-links -r "$(BUILD_DIR)/$(DIST_OBJ.$(MACH).64)/lib/" "$(PROTO_DIR)/usr/lib/mps/$(MACH64)/"; \
-      rsync                 --copy-links -r "$(BUILD_DIR)/$(DIST_OBJ.$(MACH).64)/bin/" "$(PROTO_DIR)/usr/bin/"; \
+      rsync                 --copy-links -r "$(BUILD_DIR)/$(DIST_OBJ.$(MACH).64)/bin/" "$(PROTO_DIR)/usr/bin/" \
+   ); \
+   ( \
+      NSPR_VERSION=$$( perl -ne 'print "$$1\n" if m/^Version:\s+(\S+)/' /usr/lib/pkgconfig/nspr.pc ); \
+      if [ -z "$$NSPR_VERSION" ]; then \
+         echo "Can't determine nspr version"; \
+         exit 1; \
+      fi; \
+      $(MKDIR) "$(PROTO_DIR)/usr/lib/pkgconfig"; \
+      $(MKDIR) "$(PROTO_DIR)/usr/lib/$(MACH64)/pkgconfig"; \
+      $(GSED) $(REPLACE_STRING) files/nss.pc > "$(PROTO_DIR)/usr/lib/pkgconfig/nss.pc"; \
+      $(GSED) $(REPLACE_STRING) files/nss-64.pc > "$(PROTO_DIR)/usr/lib/$(MACH64)/pkgconfig/nss.pc" \
    )
 
 COMPONENT_PRE_TEST_ACTION += $(RM) -r "$(COMPONENT_TEST_BUILD_DIR)/tests_results"

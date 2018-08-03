@@ -1,0 +1,49 @@
+# We don't ship a lot of binaries. This is inherited from history of the package.
+<transform file path=usr/bin/(atob|baddbdir|bltest|btoa|certdb_gtest)$ -> drop>
+<transform file path=usr/bin/(certhigh_gtest|chktest|conflict)$ -> drop>
+<transform file path=usr/bin/(crmftest|cryptohi_gtest|dbtest)$ -> drop>
+<transform file path=usr/bin/(der_gtest|derdump|dertimetest|digest)$ -> drop>
+<transform file path=usr/bin/(ecperf|encodeinttest|example|fbectest)$ -> drop>
+<transform file path=usr/bin/(fipstest|httpserv|listsuites|makepqg)$ -> drop>
+<transform file path=usr/bin/(mangle|minigzip|multinit|nonspr10)$ -> drop>
+<transform file path=usr/bin/(nss_bogo_shim|ocspclnt|ocspresp)$ -> drop>
+<transform file path=usr/bin/(oidcalc|p7content|p7env|p7sign)$ -> drop>
+<transform file path=usr/bin/(p7verify|pk11_gtest|pk11ectest)$ -> drop>
+<transform file path=usr/bin/(pk11gcmtest|pk11mode|pk1sign)$ -> drop>
+<transform file path=usr/bin/(pkix-errcodes|pp|pwdecrypt|remtest)$ -> drop>
+<transform file path=usr/bin/(rsaperf|rsapoptst|sdrtest|secmodtest)$ -> drop>
+<transform file path=usr/bin/(selfserv|shlibsign|smime)$ -> drop>
+<transform file path=usr/bin/(softoken_gtest|ssl_gtest|strsclnt)$ -> drop>
+<transform file path=usr/bin/(symkeyutil|tstclnt|util_gtest)$ -> drop>
+<transform file path=usr/bin/(vfychain|vfyserv)$ -> drop>
+
+# Do not ship testing library
+<transform file path=.*/libgtest -> drop>
+
+# Emit a file with a name of $(MACH64)
+# This allows us to distinguish later on which platform we run
+# The bogus file will be deleted at the end
+<transform file path=usr/bin/addbuiltin$ -> emit file path=$(MACH64)>
+
+# Mark existing files with the correct variant.arch
+<transform file path=.*/libfreebl3\.[^/]+$ -> set variant.arch i386>
+<transform file path=.*/libfreebl_[^/]+$ -> set variant.arch sparc>
+
+# On i386 emit the sparc actions
+<transform file path=amd64$ -> emit file path=usr/lib/mps/$!(MACH64)/libfreebl_64fpu_3.chk variant.arch=sparc>
+<transform file path=amd64$ -> emit file path=usr/lib/mps/$!(MACH64)/libfreebl_64fpu_3.so variant.arch=sparc>
+<transform file path=amd64$ -> emit file path=usr/lib/mps/$!(MACH64)/libfreebl_64int_3.chk variant.arch=sparc>
+<transform file path=amd64$ -> emit file path=usr/lib/mps/$!(MACH64)/libfreebl_64int_3.so variant.arch=sparc>
+<transform file path=amd64$ -> emit file path=usr/lib/mps/libfreebl_32fpu_3.chk variant.arch=sparc>
+<transform file path=amd64$ -> emit file path=usr/lib/mps/libfreebl_32fpu_3.so variant.arch=sparc >
+<transform file path=amd64$ -> emit file path=usr/lib/mps/libfreebl_32int64_3.chk variant.arch=sparc>
+<transform file path=amd64$ -> emit file path=usr/lib/mps/libfreebl_32int64_3.so variant.arch=sparc>
+
+# On sparc emit the i386 actions
+<transform file path=sparcv9$ -> emit file path=usr/lib/mps/$!(MACH64)/libfreebl3.chk variant.arch=i386>
+<transform file path=sparcv9$ -> emit file path=usr/lib/mps/$!(MACH64)/libfreebl3.so variant.arch=i386>
+<transform file path=sparcv9$ -> emit file path=usr/lib/mps/libfreebl3.chk variant.arch=i386>
+<transform file path=sparcv9$ -> emit file path=usr/lib/mps/libfreebl3.so variant.arch=i386>
+
+# Now delete the bogus file
+<transform file path=$(MACH64) -> drop>
