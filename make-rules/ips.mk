@@ -599,6 +599,7 @@ $(foreach suffix, $(COMP_SUFFIXES), \
     $(eval COMP_VARS=$(filter-out COMPONENT_POST_UNPACK_%, $(COMP_VARS))) \
     $(eval COMP_VARS=$(filter-out TPNO_%, $(COMP_VARS))) \
     $(eval COMP_VARS=$(filter-out UNPACK_ARGS_%, $(COMP_VARS))) \
+    $(eval COMP_VARS=$(filter-out OS_SUB_VERS_2, $(COMP_VARS))) \
     $(foreach macro, $(COMP_VARS), \
         $(eval PKG_OPTIONS += $(call mkdefine,$(macro),$$($(macro)))) \
     ) \
