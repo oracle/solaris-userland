@@ -1,0 +1,17 @@
+From: https://github.com/liblouis/liblouis/issues/546
+
+can be dropped when liblouis is updated to 3.6
+
+diff --git a/liblouis/lou_translateString.c b/liblouis/lou_translateString.c
+index 195ebdc..c169a4e 100644
+--- a/liblouis/lou_translateString.c
++++ b/liblouis/lou_translateString.c
+@@ -1223,6 +1223,8 @@ _lou_translateWithTracing(const char *tableList, const widechar *inbufx, int *in
+ 					}
+ 					outpos = k;
+ 				}
++			if (inpos < 0)
++				inpos = 0;
+ 			while (inpos < *inlen) outputPos[inpos++] = outpos;
+ 		}
+ 	}

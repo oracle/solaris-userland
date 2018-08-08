@@ -45,6 +45,7 @@ include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS +=    --enable-shared
 CONFIGURE_OPTIONS +=    --disable-static
+CONFIGURE_OPTIONS +=    --enable-ucs4
 
 # While the main library is built with configure, the python module is
 # built & installed with separate invocations of setup.py
