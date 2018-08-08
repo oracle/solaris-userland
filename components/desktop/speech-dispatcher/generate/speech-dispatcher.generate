@@ -1,0 +1,8 @@
+# Avoid hardcoding python version to make updates to new versions easier
+<transform dir file link hardlink -> edit path "/python\d\.\d/" "/python$!(PYVER)/">
+<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
+
+# pkgdepend can't resolve the relative path from _test.py to client.py
+# correctly, but since they're both in the same package, we can skip it.
+<transform file path=usr/lib/python.*/vendor-packages/speechd/_test.py$ \
+    -> add pkg.depend.bypass-generate .*>

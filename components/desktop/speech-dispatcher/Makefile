@@ -57,6 +57,8 @@ DEPENDED += $(WS_TOP)/components/desktop/dotconf/build/manifest-$(MACH)-dotconf.
 REQUIRED_PACKAGES += $(shell $(GSED) -n 's/REQUIRED_PACKAGES +=//p' ../dotconf/Makefile)
 #end Delete
 
+COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR) $(@D)) ;
+
 CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += --with-espeak
@@ -65,10 +67,24 @@ CONFIGURE_OPTIONS += --with-pulse
 # Assumes GNU xgettext & msgfmt are first in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 
+# Same version as Orca uses
+PYTHON_VERSION = 3.5
+PYTHON_PKG_DIR = $(PYTHON_VENDOR_PACKAGES:/64=)
+PYV = "$(PYTHON_VERSION:3.%=3%)"
+CONFIGURE_ENV += PYTHON="$(PYTHON)"
+PKG_MACROS += PYVER="$(PYTHON_VERSION)" PYV="$(PYV)"
+
+# Ensure Python modules are installed into vendor package directories.
+CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_PKG_DIR)
+CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_PKG_DIR)
+
+PYTHON_SCRIPTS += $(PROTO_DIR)$(USRBINDIR)/spd-conf
+PYTHON_SCRIPTS += $(PROTO_DIR)$(PYTHON_PKG_DIR)/speechd/_test.py
+
 REQUIRED_PACKAGES += library/audio/pulseaudio
-# Put this back in once the pkg is installed on the build server
-#REQUIRED_PACKAGES = library/desktop/dotconf
+REQUIRED_PACKAGES += library/desktop/dotconf
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libsndfile
 REQUIRED_PACKAGES += library/speech/espeak
+REQUIRED_PACKAGES += runtime/python-$(PYV)
 
