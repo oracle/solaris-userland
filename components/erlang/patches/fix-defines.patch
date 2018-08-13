@@ -9,9 +9,9 @@ This patch is suitable for contribution upstream.  It should be
 confirmed on at least Solaris 11, and possibly Solaris 10, if that's
 still a target by the upstream community.
 
---- otp_src_19.3/erts/emulator/sys/unix/sys_uds.h.orig	2017-03-14 13:10:54.000000000 -0700
-+++ otp_src_19.3/erts/emulator/sys/unix/sys_uds.h	2017-04-18 15:44:09.706006895 -0700
-@@ -25,10 +25,6 @@
+--- otp_src_21.0/erts/emulator/sys/unix/sys_uds.c	2018-08-03 05:37:02.736890205 +0000
++++ otp_src_21.0/erts/emulator/sys/unix/sys_uds.c	2018-08-03 05:36:16.357838738 +0000
+@@ -22,10 +22,6 @@
  #  include "config.h"
  #endif
  
@@ -22,10 +22,15 @@ still a target by the upstream community.
  #include <limits.h>
  
  #include <sys/types.h>
---- otp_src_19.3/erts/etc/unix/run_erl.c.orig	2017-03-14 13:10:54.000000000 -0700
-+++ otp_src_19.3/erts/etc/unix/run_erl.c	2017-04-18 15:44:31.698041163 -0700
-@@ -46,7 +46,7 @@
-      /* On OS X and BSD, we must leave _XOPEN_SOURCE undefined in order for
+
+--- otp_src_21.0/erts/etc/unix/run_erl.c	2018-08-03 05:40:30.930116521 +0000
++++ otp_src_21.0/erts/etc/unix/run_erl.c	2018-08-03 05:40:08.088089206 +0000
+@@ -43,10 +43,10 @@
+ #endif
+ #ifdef HAVE_WORKING_POSIX_OPENPT
+ #  ifndef _XOPEN_SOURCE
+-     /* On OS X and BSD, we must leave _XOPEN_SOURCE undefined in order for
++     /* On OS X, BSD and Solaris we must leave _XOPEN_SOURCE undefined in order for
        * the prototype of vsyslog() to be included.
        */
 -#    if !(defined(__APPLE__) || defined(__FreeBSD__) || defined(__DragonFly__))
@@ -33,4 +38,3 @@ still a target by the upstream community.
  #      define _XOPEN_SOURCE 600
  #    endif
  #  endif
-

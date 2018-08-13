@@ -31,12 +31,12 @@ include ../../make-rules/shared-macros.mk
 PATH=$(JAVA_HOME)/bin:$(USRBINDIR)
 
 COMPONENT_NAME=			erlang
-COMPONENT_VERSION=		19.3
+COMPONENT_VERSION=		21.0
 COMPONENT_PROJECT_URL=	http://www.erlang.org/
 COMPONENT_SRC_NAME=	otp_src
 COMPONENT_SRC=		$(COMPONENT_SRC_NAME)_$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:fe4a00651db39b8542b04530a48d24b2f2e7e0b77cbe93d728c9f05325bdfe83
+    sha256:c7d247c0cad2d2e718eaca2e2dff051136a1347a92097abf19ebf65ea2870131
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/erlang
 COMPONENT_ANITYA_ID=	707
@@ -46,7 +46,7 @@ COMPONENT_NAME_1=	otp_doc_man
 COMPONENT_SRC_1=	$(COMPONENT_NAME_1)_$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_1=	$(COMPONENT_SRC_1).tar.gz
 COMPONENT_ARCHIVE_HASH_1=	\
-    sha256:f8192ffdd7367083c055695eeddf198155da43dcc221aed1d870d1e3871dd95c
+    sha256:10bf0e44b97ee8320c4868d5a4259c49d4d2a74e9c48583735ae0401f010fb31
 COMPONENT_ARCHIVE_URL_1=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE_1)
 UNPACK_ARGS_1=	-r $(COMPONENT_SRC_1)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_1)
@@ -57,13 +57,13 @@ COMPONENT_NAME_2=	otp_doc_html
 COMPONENT_SRC_2=	$(COMPONENT_NAME_2)_$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_2=	$(COMPONENT_SRC_2).tar.gz
 COMPONENT_ARCHIVE_HASH_2=	\
-    sha256:dc3e3a82d1aba7f0deac1ddb81b7d6f8dee9a75e1d42b90c677a2b645f19a00c
+    sha256:fcc10885e8bf2eef14f7d6e150c34eeccf3fcf29c19e457b4fb8c203e57e153c
 COMPONENT_ARCHIVE_URL_2=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE_2)
 UNPACK_ARGS_2=	-r $(COMPONENT_SRC_2)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_2)
 COMPONENT_ANITYA_ID_2=	707
 
-TPNO=			35510
+TPNO=			44817
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 
@@ -76,12 +76,15 @@ CXXFLAGS += -std=c++11
 
 CONFIGURE_OPTIONS += --enable-smp-support
 CONFIGURE_OPTIONS += --enable-threads
+CONFIGURE_OPTIONS += --with-ssl
+CONFIGURE_OPTIONS += --enable-fips
+CONFIGURE_OPTIONS += --enable-dynamic-ssl-lib
+
 # The HiPE portion is a bit sensitive, and only seems to work 64-bit on
 # amd64 (thus the variant.arch tagging in erlang.p5m). erts/config.log
 # can be very interesting if issues occur.
-CONFIGURE_OPTIONS += --enable-hipe
-CONFIGURE_OPTIONS += --with-ssl
-CONFIGURE_OPTIONS += --enable-dynamic-ssl-lib
+CONFIGURE_OPTIONS.i386  = --enable-hipe
+CONFIGURE_OPTIONS.sparc = --disable-hipe
 
 # Erlang doesn't appear to like ASLR: it uses mmap() with MAP_FIXED, and
 # makes assumptions about memory layout that aren't true on Solaris x86,
@@ -122,12 +125,21 @@ COMPONENT_SYSTEM_TEST_TARGETS =	tests
 COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^gmake.*release_tests_spec/d" '
 
+# Some header files are architecture specific, therefore,
+# we must avoid to rename some i386 directories to $(MACH).
+GENERATE_TRANSFORMS := generate/pretrans $(GENERATE_TRANSFORMS)
+
+# Extra directories with documentation for 'gmake manifest-check'.
+GENERATE_PROTO_DIRS += otp_doc_man_21.0/man/ otp_doc_html_21.0/
+
 # remove INSTALL_PREFIX from path
 COMPONENT_POST_INSTALL_ACTION += \
 	$(PERL) -pi -e "s|$(PROTO_DIR)||g" \
 		$(PROTOUSRLIBDIR64)/erlang/bin/erl \
 		$(PROTOUSRLIBDIR64)/erlang/releases/RELEASES
 
+REQUIRED_PACKAGES += developer/java/jdk-8
+REQUIRED_PACKAGES += developer/lexer/flex
 REQUIRED_PACKAGES += library/graphics/wxwidgets
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/security/openssl

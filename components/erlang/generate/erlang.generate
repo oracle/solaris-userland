@@ -1,0 +1,263 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+<include generate/common.transform>
+
+# Delete all files delivered separately as a package.
+<transform file link pkg.type=(?!erlang) -> drop>
+
+# Ignore the temporary files after patching manual pages.
+<transform file path=man[0-9]/(.+)\.\~1\~$ -> drop>
+
+# Modify the paths to the man pages.
+<transform file path=man1/.+ -> edit path man1 usr/share/man/man1>
+<transform file path=man3/(.+)$ -> edit path man3/%<1> usr/share/man/man3erl/%<1>erl>
+<transform file path=man4/(.+)\.4 -> edit path man4/%<1>\.4 usr/share/man/man5erl/%<1>.5erl>
+<transform file path=man6/(.+)\.6 -> edit path man6/%<1>\.6 usr/share/man/man7erl/%<1>.7erl>
+<transform file path=man7/(.+) -> edit path man7/%<1> usr/share/man/man7erl/%<1>erl>
+
+# Enable to call 'gmake manifest-check' even after 'gmake publish'.
+# Do not allow to add manual pages twice...
+<transform file path=^man/(.+) -> drop>
+
+# Set appropriate permissions to the executable files.
+<transform file path=usr/lib/\$\(MACH64\)/erlang/erts-10.0/bin/beam.smp -> set mode 0555>
+<transform file path=usr/lib/\$\(MACH64\)/erlang/lib/tools-3.0/bin/emem -> set mode 0555>
+
+# Most of the Hipe library is delivered only for x86 architecture...
+<transform file path=.*/erlang/lib/hipe-.*/ebin/elf_format.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_adj_list.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_amd64_assemble.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_amd64_defuse.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_amd64_encode.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_amd64_frame.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_amd64_liveness.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_amd64_main.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_amd64_pp.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_amd64_ra_finalise.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_amd64_ra_ls.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_amd64_ra_naive.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_amd64_ra_postconditions.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_amd64_ra_sse2_postconditions.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_amd64_ra.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_amd64_registers.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_amd64_specific_sse2.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_amd64_specific_x87.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_amd64_specific.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_amd64_spill_restore.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_amd64_sse2.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_amd64_subst.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_amd64_x87.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_arm_assemble.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_arm_cfg.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_arm_defuse.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_arm_encode.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_arm_finalise.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_arm_frame.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_arm_liveness_gpr.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_arm_main.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_arm_pp.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_arm_ra_finalise.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_arm_ra_ls.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_arm_ra_naive.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_arm_ra_postconditions.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_arm_ra.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_arm_registers.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_arm_specific.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_arm_subst.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_arm.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_bb_weights.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_coalescing_regalloc.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_data_pp.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_graph_coloring_regalloc.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_icode_heap_test.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_icode2rtl.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ig_moves.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ig.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_jit.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_llvm_liveness.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_llvm_main.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_llvm_merge.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_llvm.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ls_regalloc.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_moves.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_node_sets.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_optimistic_regalloc.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_pack_constants.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc_assemble.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc_cfg.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc_defuse.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc_encode.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc_finalise.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc_frame.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc_liveness_all.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc_liveness_fpr.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc_liveness_gpr.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc_main.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc_pp.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc_ra_finalise.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc_ra_ls.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc_ra_naive.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc_ra_postconditions_fp.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc_ra_postconditions.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc_ra.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc_registers.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc_specific_fp.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc_specific.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc_subst.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_ppc.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_profile.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_range_split.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_reg_worklists.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_regalloc_loop.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_regalloc_prepass.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_restore_reuse.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_arch.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_arith_32.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_arith_64.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_binary_construct.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_binary_match.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_binary.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_cfg.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_cleanup_const.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_exceptions.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_lcm.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_liveness.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_mk_switch.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_primops.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_ssa_avail_expr.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_ssa_const_prop.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_ssa.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_ssapre.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_symbolic.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_to_amd64.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_to_arm.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_to_llvm.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_to_ppc.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_to_sparc.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_to_x86.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_varmap.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl_verify_gcsafe.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_rtl.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sdi.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_segment_trees.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc_assemble.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc_cfg.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc_defuse.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc_encode.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc_finalise.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc_frame.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc_liveness_all.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc_liveness_fpr.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc_liveness_gpr.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc_main.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc_pp.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc_ra_finalise.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc_ra_ls.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc_ra_naive.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc_ra_postconditions_fp.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc_ra_postconditions.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc_ra.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc_registers.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc_specific_fp.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc_specific.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc_subst.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_sparc.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_spillcost.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_spillmin_color.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_spillmin_scan.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_spillmin.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_tagscheme.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_temp_map.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_vectors.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_x86_assemble.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_x86_cfg.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_x86_defuse.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_x86_encode.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_x86_frame.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_x86_liveness.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_x86_main.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_x86_postpass.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_x86_pp.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_x86_ra_finalise.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_x86_ra_ls.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_x86_ra_naive.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_x86_ra_postconditions.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_x86_ra.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_x86_registers.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_x86_specific_x87.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_x86_specific.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_x86_spill_restore.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_x86_subst.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_x86_x87.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe_x86.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/ebin/hipe.beam$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/icode/hipe_icode_heap_test.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/llvm/elf_format.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/llvm/elf_format.hrl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/llvm/elf32_format.hrl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/llvm/elf64_format.hrl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/llvm/hipe_llvm_arch.hrl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/llvm/hipe_llvm_liveness.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/llvm/hipe_llvm_main.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/llvm/hipe_llvm_merge.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/llvm/hipe_llvm.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/llvm/hipe_rtl_to_llvm.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/main/hipe.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/misc/hipe_data_pp.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/misc/hipe_pack_constants.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/misc/hipe_sdi.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/misc/hipe_segment_trees.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_icode2rtl.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_literals.hrl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_rtl_arch.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_rtl_arith_32.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_rtl_arith_64.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_rtl_binary_construct.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_rtl_binary_match.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_rtl_binary.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_rtl_cfg.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_rtl_cleanup_const.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_rtl_exceptions.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_rtl_lcm.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_rtl_liveness.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_rtl_mk_switch.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_rtl_primops.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_rtl_ssa_avail_expr.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_rtl_ssa_const_prop.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_rtl_ssa.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_rtl_ssapre.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_rtl_symbolic.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_rtl_varmap.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_rtl_verify_gcsafe.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_rtl.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/rtl/hipe_tagscheme.erl$ -> set variant.arch i386>
+<transform file path=.*/erlang/lib/hipe-.*/util/hipe_vectors.erl$ -> set variant.arch i386>
+
+# Rename back the architecture specific files.
+<transform file path=.*/internal/arch_i386/.* -> edit path /arch_i386/ /i386/>
+
+# Remove pkg.type tags before the comparison of *.p5m files.
+<transform file link -> delete pkg.type .*>
