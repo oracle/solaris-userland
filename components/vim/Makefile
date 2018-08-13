@@ -20,15 +20,15 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		vim
-COMPONENT_VERSION=	8.0
+COMPONENT_VERSION=	8.1
 COMPONENT_FULL_VERSION=	$(shell echo $(GIT_TAG) | sed -e 's/v//')
-IPS_COMPONENT_VERSION=	$(shell echo $(GIT_TAG) | sed -e 's/v//' -e 's/\.0*\([1-9]\)/.\1/')
+IPS_COMPONENT_VERSION=	$(shell echo $(GIT_TAG) | perl -pe 's/v(8\.1\.)0?(\d+)/\1\2/')
 COMPONENT_LABEL=	$(COMPONENT_FULL_VERSION)
 # COMPONENT_SRC* is autodefined by the prep-{SCM} Makefile fragment
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
@@ -36,11 +36,11 @@ COMPONENT_PROJECT_URL=	http://www.vim.org/
 COMPONENT_ANITYA_ID=	5092
 
 GIT_REPO=		https://github.com/vim/vim
-GIT_TAG=		v8.0.0711
-GIT_COMMIT_ID=		85dad2c81
-GIT_HASH=		sha256:2f1c1483e7699224a5d1e18d39c5596101787dfcb74138589d4c8c19591b52f3
+GIT_TAG=		v8.1.0209
+GIT_COMMIT_ID=		b6c8cd8dc
+GIT_HASH=		sha256:dbd725e76b869815638745eb65c97058ca7ceb57ebb3dddbcec401f1a74cc9df
 
-TPNO=			36600
+TPNO=			44428
 
 PKG_MACROS +=	VIMVER=vim$(subst .,,$(COMPONENT_VERSION))
 

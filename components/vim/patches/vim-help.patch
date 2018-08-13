@@ -1,6 +1,12 @@
---- a/src/ex_cmds.c	2016-09-21 15:16:13.032570431 -0700
-+++ b/src/ex_cmds.c	2016-09-21 15:16:13.055466074 -0700
-@@ -6276,6 +6276,8 @@
+The minimized version of vim (package vim-core) does not
+provide help files, and therefore, we need to inform the user
+that the help cannot be displayed without vim package installed.
+This patch ensures that help_minimized.txt file is printed
+instead of missing help files to inform the user.
+
+--- a/src/ex_cmds.c	2018-07-19 04:01:39.945767647 +0000
++++ b/src/ex_cmds.c	2018-07-19 03:50:04.702136009 +0000
+@@ -6291,6 +6291,8 @@ ex_help(exarg_T *eap)
  #ifdef FEAT_FOLDING
      int		old_KeyTyped = KeyTyped;
  #endif
@@ -9,7 +15,7 @@
  
      if (eap != NULL)
      {
-@@ -6327,6 +6329,23 @@
+@@ -6342,6 +6344,23 @@ ex_help(exarg_T *eap)
      n = find_help_tags(arg, &num_matches, &matches,
  						 eap != NULL && eap->forceit);
  
@@ -33,7 +39,7 @@
      i = 0;
  #ifdef FEAT_MULTI_LANG
      if (n != FAIL && lang != NULL)
-@@ -6339,7 +6358,7 @@
+@@ -6354,7 +6373,7 @@ ex_help(exarg_T *eap)
  		break;
  	}
  #endif
@@ -42,7 +48,7 @@
      {
  #ifdef FEAT_MULTI_LANG
  	if (lang != NULL)
-@@ -6352,9 +6371,11 @@
+@@ -6367,9 +6386,11 @@ ex_help(exarg_T *eap)
  	return;
      }
  
@@ -57,7 +63,7 @@
  
  #ifdef FEAT_GUI
      need_mouse_correct = TRUE;
-@@ -6386,12 +6407,14 @@
+@@ -6395,12 +6416,14 @@ ex_help(exarg_T *eap)
  	     * There is no help window yet.
  	     * Try to open the file specified by the "helpfile" option.
  	     */
@@ -75,18 +81,18 @@
  	    }
 -	    fclose(helpfd);
  
- #ifdef FEAT_WINDOWS
  	    /* Split off help window; put it at far top if no position
-@@ -6420,7 +6443,7 @@
+ 	     * specified, the current window is vertically split and
+@@ -6421,7 +6444,7 @@ ex_help(exarg_T *eap)
  	     * Set the alternate file to the previously edited file.
  	     */
  	    alt_fnum = curbuf->b_fnum;
 -	    (void)do_ecmd(0, NULL, NULL, NULL, ECMD_LASTL,
 +	    (void)do_ecmd(0, mhf, NULL, NULL, ECMD_LASTL,
  			  ECMD_HIDE + ECMD_SET_HELP,
- #ifdef FEAT_WINDOWS
- 			  NULL  /* buffer is still open, don't store info */
-@@ -6443,7 +6466,7 @@
+ 			  NULL);  /* buffer is still open, don't store info */
+ 	    if (!cmdmod.keepalt)
+@@ -6439,7 +6462,7 @@ ex_help(exarg_T *eap)
      KeyTyped = old_KeyTyped;
  #endif
  
@@ -95,7 +101,7 @@
  	do_tag(tag, DT_HELP, 1, FALSE, TRUE);
  
      /* Delete the empty buffer if we're not using it.  Careful: autocommands
-@@ -6461,7 +6484,8 @@
+@@ -6457,7 +6480,8 @@ ex_help(exarg_T *eap)
  	curwin->w_alt_fnum = alt_fnum;
  
  erret:
