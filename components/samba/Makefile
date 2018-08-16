@@ -40,8 +40,8 @@ COMPONENT_PROJECT_URL=	http://www.samba.org/
 COMPONENT_BUGDB=	utility/samba
 COMPONENT_ANITYA_ID=	4758
 
-COMPONENT_VERSION=	4.7.6
-TPNO=			41636
+COMPONENT_VERSION=	4.8.4
+TPNO=			44794
 # Samba pre-releases are available on git only.
 # if you want to build Samba from git uncomment next 4 lines
 #GIT_REPO=		https://git.samba.org/samba.git
@@ -51,7 +51,7 @@ TPNO=			41636
 # clone of git.samba.org takes a long
 # if you want to build Samba from archive uncomment next 3 lines
 COMPONENT_ARCHIVE_URL=	https://download.samba.org/pub/samba/stable/$(COMPONENT_ARCHIVE)
-COMPONENT_ARCHIVE_HASH=	sha256:1eede30fc8ef6504e24602fb72b00baa0a7b73b59f16d25cb0771dc8c7c57d6e
+COMPONENT_ARCHIVE_HASH=	sha256:f5044d149e01894a08b1d114b8b69aed78171a7bb19608bd1fd771453b9a5406
 COMPONENT_SRC_URL=	$(COMPONENT_ARCHIVE_URL)
 
 include $(WS_MAKE_RULES)/common.mk
@@ -175,6 +175,7 @@ $(WB_ONLY_CONF:.configured=.built): COMPONENT_BUILD_TARGETS= --targets=nss_winbi
 # install
 PERL_SCRIPTS   += $(PROTO_DIR)/usr/lib/samba/bin/findsmb
 PERL_SCRIPTS   += $(PROTO_DIR)/usr/lib/samba/bin/pidl
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/lib/samba/sbin/samba_gpoupdate
 PYTHON_SCRIPTS += \
  $(shell nawk -F \= \
   ' $$1 ~ /^file.*path/ && $$2 ~ /.*\.py$$/ {print "$(PROTO_DIR)/"$$2;} ' \
