@@ -43,7 +43,7 @@ COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/webkitgtk
 COMPONENT_ANITYA_ID=	5355
 
-TPNO=			45379
+TPNO=			43759
 
 # Use project's own optimization flags instead.
 gcc_OPT=
