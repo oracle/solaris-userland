@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS = 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	onig
-COMPONENT_VERSION =	6.1.1
+COMPONENT_VERSION =	6.8.2
 COMPONENT_PROJECT_URL =	https://github.com/kkos/oniguruma
 COMPONENT_ARCHIVE_HASH =	\
-    sha256:b9cf2eefef5105820c97f94a2ccd12ed8aa274a576ccdaaed3c632a2aa0d0f04
+    sha256:adeada5f6b54c2a6f58ff021831a01b18a62b55ea9935e972e36ebb19e7c4903
 COMPONENT_ARCHIVE_URL =	$(COMPONENT_PROJECT_URL)/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB =	library/oniguruma
 COMPONENT_ANITYA_ID=	11184
 
-TPNO =			31774
+TPNO =			44976
 
 include $(WS_MAKE_RULES)/common.mk
 

@@ -1,0 +1,37 @@
+### Oniguruma - LIBRARY TEST ###
+
+# If we upgrade oniguruma library, all the components
+# using this library has to be rebuilt and tested.
+# Currently, it is only the text/jq component.
+
+### TEST - text/jq component ###
+
+# Check that you have installed the latest oniguruma library.
+> pkg info oniguruma | grep Version
+          Version: 6.8.2
+
+# Create userland workspace (https://github.com/oracle/solaris-userland)
+# on your local machine and enter jq component directory.
+> cd $(YOUR_WORKSPACE)/components/jq/
+
+# Compile text/jq component and run tests.
+# If the compilation fails, oniguruma API probably changed.
+# If some tests do not pass, a regression probably occurred.
+> gmake build test
+...
+Test results in /scratch/userland-gate/components/jq/build/test/amd64/test-64-results
+No differences found.
+/usr/bin/touch /scratch/userland-gate/components/jq/build/amd64/.tested-and-compared
+
+# Check that component text/jq is really linked to the right version of shared library.
+# From the following output, it can be seen that the right
+# version of 'libonig.so' library was dynamically linked.
+> ldd build/prototype/$(MACH)/usr/bin/jq
+	libm.so.2 =>	 /lib/64/libm.so.2
+	libonig.so.5 =>	 /usr/lib/64/libonig.so.5
+	libc.so.1 =>	 /lib/64/libc.so.1
+> grep libonig $(PATH_TO_DEV_COMP)/oniguruma.p5m
+link path=usr/lib/$(MACH64)/libonig.so target=libonig.so.5.0.0
+link path=usr/lib/$(MACH64)/libonig.so.5 target=libonig.so.5.0.0
+file path=usr/lib/$(MACH64)/libonig.so.5.0.0
+
