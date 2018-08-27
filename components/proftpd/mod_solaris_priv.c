@@ -387,6 +387,7 @@ static conftable solaris_priv_conftab[] = {
 
 static cmdtable solaris_priv_cmdtab[] = {
   { POST_CMD, C_PASS, G_NONE, solaris_priv_post_pass, FALSE, FALSE },
+  { POST_CMD_ERR, C_PASS, G_NONE, solaris_priv_post_pass, FALSE, FALSE },
   { 0, NULL }
 };
 
