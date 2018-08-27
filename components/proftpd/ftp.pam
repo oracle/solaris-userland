@@ -1,0 +1,26 @@
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+# PAM configuration for FTP service.
+#
+auth definitive		pam_user_policy.so.1
+auth requisite		pam_authtok_get.so.1
+auth binding       pam_unix_auth.so.1 server_policy
+auth required              pam_ldap.so.1
+auth required		pam_unix_cred.so.1
+#
+# Account management
+# pam_tsol_account(5) returns PAM_IGNORE if the system is not configured
+# with Trusted Extensions (TX) enabled. 
+# pam_tsol_account(5) does need to run in the Trusted Path for ensuring remote
+# hosts connecting to the global zone have a CIPSO host type.
+#
+account requisite	pam_roles.so.1
+account definitive	pam_user_policy.so.1
+account required	pam_unix_account.so.1
+account required	pam_tsol_account.so.1
+#
+# Session management
+#
+session definitive	pam_user_policy.so.1
+session required	pam_unix_session.so.1
