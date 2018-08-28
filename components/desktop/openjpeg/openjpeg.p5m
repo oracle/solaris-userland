@@ -36,25 +36,29 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2016/367
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file usr/bin/$(MACH64)/opj_compress path=usr/bin/opj_compress
-file usr/bin/$(MACH64)/opj_decompress path=usr/bin/opj_decompress
-file usr/bin/$(MACH64)/opj_dump path=usr/bin/opj_dump
+# 32-bit program binaries required by OpenJPEGTargets.cmake file.
+file path=usr/bin/$(MACH32)/opj_compress
+file path=usr/bin/$(MACH32)/opj_decompress
+file path=usr/bin/$(MACH32)/opj_dump
+file path=usr/bin/opj_compress
+file path=usr/bin/opj_decompress
+file path=usr/bin/opj_dump
 file path=usr/include/openjpeg-2.3/openjpeg.h
 file path=usr/include/openjpeg-2.3/opj_config.h
 file path=usr/include/openjpeg-2.3/opj_stdint.h
+file path=usr/lib/$(MACH64)/cmake/openjpeg-2.3/OpenJPEGConfig.cmake
+file path=usr/lib/$(MACH64)/cmake/openjpeg-2.3/OpenJPEGTargets-relwithdebinfo.cmake
+file path=usr/lib/$(MACH64)/cmake/openjpeg-2.3/OpenJPEGTargets.cmake
 link path=usr/lib/$(MACH64)/libopenjp2.so target=libopenjp2.so.7
 file path=usr/lib/$(MACH64)/libopenjp2.so.$(COMPONENT_VERSION)
 link path=usr/lib/$(MACH64)/libopenjp2.so.7 \
     target=libopenjp2.so.$(COMPONENT_VERSION)
-file path=usr/lib/$(MACH64)/openjpeg-2.3/OpenJPEGConfig.cmake
-file path=usr/lib/$(MACH64)/openjpeg-2.3/OpenJPEGTargets-relwithdebinfo.cmake
-file path=usr/lib/$(MACH64)/openjpeg-2.3/OpenJPEGTargets.cmake
 file path=usr/lib/$(MACH64)/pkgconfig/libopenjp2.pc
+file path=usr/lib/cmake/openjpeg-2.3/OpenJPEGConfig.cmake
+file path=usr/lib/cmake/openjpeg-2.3/OpenJPEGTargets-relwithdebinfo.cmake
+file path=usr/lib/cmake/openjpeg-2.3/OpenJPEGTargets.cmake
 link path=usr/lib/libopenjp2.so target=libopenjp2.so.7
 file path=usr/lib/libopenjp2.so.$(COMPONENT_VERSION)
 link path=usr/lib/libopenjp2.so.7 target=libopenjp2.so.$(COMPONENT_VERSION)
-file path=usr/lib/openjpeg-2.3/OpenJPEGConfig.cmake
-file path=usr/lib/openjpeg-2.3/OpenJPEGTargets-relwithdebinfo.cmake
-file path=usr/lib/openjpeg-2.3/OpenJPEGTargets.cmake
 file path=usr/lib/pkgconfig/libopenjp2.pc
 license openjpeg.license license="BSD, MIT"

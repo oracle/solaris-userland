@@ -27,7 +27,8 @@ BUILD_BITS = 64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		openjpeg
-COMPONENT_VERSION=	2.3.0
+COMPONENT_VERSION_1=    2.3
+COMPONENT_VERSION=	$(COMPONENT_VERSION_1).0
 COMPONENT_PROJECT_URL=	http://www.openjpeg.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
@@ -50,9 +51,23 @@ studio_C99MODE=$(studio_C99_ENABLE)
 # Workaround non-standard type usage in big endian builds.
 CFLAGS.studio.sparc += -Du_int16_t=uint16_t
 
-CMAKE_OPTIONS += -DOPENJPEG_INSTALL_BIN_DIR=$(USRBIN)
-CMAKE_OPTIONS += -DOPENJPEG_INSTALL_LIB_DIR=$(USRLIB)
-CMAKE_OPTIONS += -DCMAKE_VERBOSE_MAKEFILE=ON
+# We must disable the compilation of static libraries explicitly,
+# otherwise, invalid *.cmake files are generated and delivered.
+CMAKE_OPTIONS += -DBUILD_STATIC_LIBS=OFF
+
+# Paths to 64-bit binaries and libraries must be relative,
+# otherwise, pkg-config files with wrong paths are generated.
+CMAKE_OPTIONS.32 += -DOPENJPEG_INSTALL_BIN_DIR=bin/$(MACH32)
+CMAKE_OPTIONS.64 += -DOPENJPEG_INSTALL_BIN_DIR=bin
+CMAKE_OPTIONS.32 += -DOPENJPEG_INSTALL_LIB_DIR=lib
+CMAKE_OPTIONS.64 += -DOPENJPEG_INSTALL_LIB_DIR=lib/$(MACH64)
+
+# Install cmake configure files to the standard Solaris paths.
+OPENJPEG_CMAKE_DIR = openjpeg-$(COMPONENT_VERSION_1)
+CMAKE_OPTIONS.32 += -DOPENJPEG_INSTALL_PACKAGE_DIR=lib/cmake/$(OPENJPEG_CMAKE_DIR)
+CMAKE_OPTIONS.64 += -DOPENJPEG_INSTALL_PACKAGE_DIR=lib/$(MACH64)/cmake/$(OPENJPEG_CMAKE_DIR)
+
+# Path to lcms2 headers is explicitly required, otherwise the library is not used.
 CMAKE_OPTIONS += -DLCMS2_INCLUDE_DIR=$(USRINCDIR)/lcms
 
 REQUIRED_PACKAGES += developer/build/cmake

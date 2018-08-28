@@ -1,0 +1,26 @@
+Solaris does not deliver openjpeg static libraries, therefore,
+their compilation is disabled by -DBUILD_STATIC_LIBS=OFF option.
+Shared libraries are built as expected but they are not
+installed due to the bug in openjpeg 2.3.0.
+
+The issue is fixed in upstream:
+
+commit 66297f07a43d2770a97c8456d20202f3d051d980
+Author: Even Rouault <even.rouault@spatialys.com>
+Date:   Mon Oct 9 11:40:43 2017 +0200
+
+    Unix build: fix regression of 2.3.0 where a shared-only or
+		static-only build lacks the installation target for the library
+		(#1019, fixes regression introduced by 3dfc6ca2bcf06fd1adb6b6b4cecc6c092f08ba0b)
+
+This patch should be removed after the next openjpeg release.
+
+--- openjpeg-2.3.0/src/lib/openjp2/CMakeLists.txt	2018-08-28 02:00:22.619644015 +0000
++++ openjpeg-2.3.0/src/lib/openjp2/CMakeLists.txt	2018-08-28 01:57:35.079601053 +0000
+@@ -99,6 +99,7 @@ else()
+     set(INSTALL_LIBS ${OPENJPEG_LIBRARY_NAME} openjp2_static)
+   else()
+     add_library(${OPENJPEG_LIBRARY_NAME} ${OPENJPEG_SRCS})
++    set(INSTALL_LIBS ${OPENJPEG_LIBRARY_NAME})
+   endif()
+ endif()
