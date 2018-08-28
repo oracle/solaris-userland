@@ -1,6 +1,4 @@
-#
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
-#
+Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
 
 # OpenLDAP notes.
 
@@ -34,16 +32,34 @@ When the OpenLDAP server package is installed or updated it logs a short note
 openldap-transition.txt (Solaris/openldap-transition.txt).  The short note is
 displayed as the full instructions are rather long.
 
-Note: p5m lines for openldap-notice.txt include both:
+Note: source file Solaris/openldap-notice.txt has two entries
 
-- self@0 : displayed on initial install
-- self@VERSION : displayed on subsequent updates
+  - usr/share/doc/release-notes/openldap-install.txt
+
+    Which includes attribute *release-note=feature/pkg/self@0* causing
+    it to be displayed on installation of the package.
+
+  - usr/share/doc/release-notes/openldap-update.txt
+
+    Which includes attribute *self@$(IPS\_COMPONENT\_VERSION)*
+    causing it to be displayed when the component version is incremented.
+
+    By specifying the version as IPS\_COMPONENT\_VERSION the
+    release-note will correctly be applied when openldap component is
+    updated, and COMPONENT\_VERSION is modified in Makefile.  As
+    updates do not have to be applied incrementally it is not possible
+    to use the version as a definitive comparison to the
+    compatibility.
+
+    Originally set to $(IPS\_COMPONENT\_VERSION),$(BUILD\_VERSION)
+    which erroneously caused every build to display the release-note
+    as BUILD\_VERSION includes the branch-id (BRANCHID).
 
 ### openldap-client.p5m
 
 **Caution**
 
-- Oracle Solaris only provides the MT HOT library libldap_r.so.  For
+- Oracle Solaris only provides the MT HOT library libldap\_r.so.  For
   compatibility libldap.so and specific version-ed libraries are links
-  to libldap_r.so.
+  to libldap\_r.so.
 
