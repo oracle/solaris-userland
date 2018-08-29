@@ -34,7 +34,6 @@ set name=pkg.fmri \
 set name=pkg.summary value="PHP scripting language"
 set name=com.oracle.info.description \
     value="A general-purpose scripting language originally designed for web development to produce dynamic web pages."
-set name=com.oracle.info.tpno value=$(TPNO)
 set name=info.classification value=org.opensolaris.category.2008:Development/PHP
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
@@ -397,7 +396,7 @@ file path=usr/php/5.6/lib/extensions/no-debug-zts-20131226/ftp.so
 file path=usr/php/5.6/lib/extensions/no-debug-zts-20131226/gd.so
 file path=usr/php/5.6/lib/extensions/no-debug-zts-20131226/gettext.so
 file path=usr/php/5.6/lib/extensions/no-debug-zts-20131226/gmp.so
-#file path=usr/php/5.6/lib/extensions/no-debug-zts-20131226/imap.so
+file path=usr/php/5.6/lib/extensions/no-debug-zts-20131226/imap.so
 file path=usr/php/5.6/lib/extensions/no-debug-zts-20131226/intl.so
 file path=usr/php/5.6/lib/extensions/no-debug-zts-20131226/ldap.so
 file path=usr/php/5.6/lib/extensions/no-debug-zts-20131226/mbstring.so
@@ -594,7 +593,12 @@ file path=var/php/5.6/pear/test/XML_Util/tests/ReplaceEntitiesTests.php
 file path=var/php/5.6/pear/test/XML_Util/tests/ReverseEntitiesTests.php
 file path=var/php/5.6/pear/test/XML_Util/tests/SplitQualifiedNameTests.php
 dir  path=var/php/5.6/run
-license php.license license="PHP 5.6 licenses"
+license ../uw-imap/uw-imap.license license="Apache v2.0" \
+    com.oracle.info.description="An implementation of the IMAP protocol used in PHP module." \
+    com.oracle.info.name="UW IMAP" com.oracle.info.tpno=$(TPNO_IMAP)
+license php.license license="PHP 5.6 licenses" \
+    com.oracle.info.description="A general-purpose scripting language originally designed for web development to produce dynamic web pages." \
+    com.oracle.info.name="PHP scripting language" com.oracle.info.tpno=$(TPNO)
 depend type=require fmri=__TBD pkg.debug.depend.file=usr/bin/gsed \
     pkg.debug.reason=usr/bin/phpize
 depend type=require fmri=pkg:/web/php-common

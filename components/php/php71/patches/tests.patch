@@ -67,3 +67,33 @@ http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
  --FILE--
  <?php
  error_reporting(E_ALL);
+--- a/sapi/fpm/tests/bug68442-signal-reload.phpt
++++ b/sapi/fpm/tests/bug68442-signal-reload.phpt
+@@ -1,7 +1,12 @@
+ --TEST--
+ FPM: bug68442 - Signal reload
+ --SKIPIF--
+-<?php include "skipif.inc"; ?>
++<?php
++if (substr(PHP_OS, 0, 5) == 'SunOS') {
++    /* on SunOS it kills all tests by the signal */
++    die('skip.. Not valid for SunOS');
++}
++?>
+ --FILE--
+ <?php
+ 
+--- a/sapi/fpm/tests/socket-invalid-allowed-clients.phpt
++++ b/sapi/fpm/tests/socket-invalid-allowed-clients.phpt
+@@ -2,7 +2,10 @@
+ FPM: Socket for invalid allowed client only
+ --SKIPIF--
+ <?php
+-include "skipif.inc";
++if (substr(PHP_OS, 0, 5) == 'SunOS') {
++    /* on SunOS it hangs and never ends */
++    die('skip.. Not valid for SunOS');
++}
+ ?>
+ --FILE--
+ <?php

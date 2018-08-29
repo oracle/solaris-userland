@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -35,7 +35,6 @@ set name=pkg.fmri \
 set name=pkg.summary value="PHP scripting language"
 set name=com.oracle.info.description \
     value="A general-purpose scripting language originally designed for web development to produce dynamic web pages."
-set name=com.oracle.info.tpno value=$(TPNO)
 set name=info.classification value=org.opensolaris.category.2008:Development/PHP
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
@@ -413,6 +412,7 @@ file path=usr/php/7.1/lib/extensions/no-debug-zts-20160303/ftp.so
 file path=usr/php/7.1/lib/extensions/no-debug-zts-20160303/gd.so
 file path=usr/php/7.1/lib/extensions/no-debug-zts-20160303/gettext.so
 file path=usr/php/7.1/lib/extensions/no-debug-zts-20160303/gmp.so
+file path=usr/php/7.1/lib/extensions/no-debug-zts-20160303/imap.so
 file path=usr/php/7.1/lib/extensions/no-debug-zts-20160303/intl.so
 file path=usr/php/7.1/lib/extensions/no-debug-zts-20160303/ldap.so
 file path=usr/php/7.1/lib/extensions/no-debug-zts-20160303/mbstring.so
@@ -608,7 +608,12 @@ file path=var/php/7.1/pear/test/XML_Util/tests/ReplaceEntitiesTests.php
 file path=var/php/7.1/pear/test/XML_Util/tests/ReverseEntitiesTests.php
 file path=var/php/7.1/pear/test/XML_Util/tests/SplitQualifiedNameTests.php
 dir  path=var/php/7.1/run
-license php.license license="PHP 7.1 licenses"
+license ../uw-imap/uw-imap.license license="Apache v2.0" \
+    com.oracle.info.description="An implementation of the IMAP protocol used in PHP module." \
+    com.oracle.info.name="UW IMAP" com.oracle.info.tpno=$(TPNO_IMAP)
+license php.license license="PHP 7.1 licenses" \
+    com.oracle.info.description="A general-purpose scripting language originally designed for web development to produce dynamic web pages." \
+    com.oracle.info.name="PHP scripting language" com.oracle.info.tpno=$(TPNO)
 depend type=require fmri=__TBD pkg.debug.depend.file=usr/bin/gsed \
     pkg.debug.reason=usr/bin/phpize
 depend type=require fmri=pkg:/web/php-common

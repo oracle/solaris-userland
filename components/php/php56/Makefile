@@ -29,14 +29,15 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		php
-COMPONENT_VERSION=	5.6.36
+COMPONENT_VERSION=	5.6.37
 UL_PHP_MINOR_VERSION=	5.6
 COMPONENT_PROJECT_URL=	http://php.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=\
-    sha256:18f536bf548e909b4e980379d0c4e56d024b2b1eb1c9768fd169360491f1d6dd
+    sha256:5000d82610f9134aaedef28854ec3591f68dedf26a17b8935727dac2843bd256
 COMPONENT_ARCHIVE_URL=	http://php.net/get/$(COMPONENT_ARCHIVE)/from/this/mirror
-TPNO=			43068
+TPNO=			45022
+TPNO_IMAP=		32942
 COMPONENT_ANITYA_ID=	12535
 
 include $(WS_MAKE_RULES)/common.mk
@@ -131,6 +132,12 @@ CLEAN_PATHS += proto-scripts
 
 # The test results are unstable between runs
 $(SKIP_TEST_AT_TOP_LEVEL)
+
+clean::
+	cd ../uw-imap; gmake clean
+
+clobber::
+	cd ../uw-imap; gmake clobber
 
 REQUIRED_PACKAGES += developer/icu
 REQUIRED_PACKAGES += library/libxml2
