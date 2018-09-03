@@ -1,0 +1,20 @@
+Not sure why upstream removed "#include       <nnconfig.h>" line from version 2.3.6 
+which was present till 2.3.5. Hence adding the include line back as a Solaris 
+specific patch to avoid build issue caused due to undefined symbols STREQ, MEM_SET, 
+MEM_ALLOC, STRLEN, MEM_REALLOC and MEM_FREE first referenced in file .libs/yyparse.o
+
+No bug found in upstream regarding this and hence needs to be reported with this 
+suggested patch.
+
+--- Drivers/nn/yyparse.c.orig	2018-08-01 07:45:37.750503878 -0700
++++ Drivers/nn/yyparse.c	2018-08-01 07:46:07.600059653 -0700
+@@ -83,6 +83,9 @@
+ 	= "@(#)SQL parser for NNSQL(NetNews SQL), Copyright(c) 1995, 1996 by Ke Jin";
+ 
+ #include	<config.h>
++#ifdef __sun
++#include       <nnconfig.h>
++#endif
+ 
+ #include	<nncol.h>
+ #include	<yyenv.h>

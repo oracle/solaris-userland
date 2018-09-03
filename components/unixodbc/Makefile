@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 # 32-bit is preferred until sufficient testing can be done.
 BUILD_BITS= 32_and_64
@@ -29,20 +29,22 @@ include ../../make-rules/shared-macros.mk
 PATH=$(dir $(CC)):$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=		unixODBC
-COMPONENT_VERSION=	2.3.4
+COMPONENT_VERSION=	2.3.6
 COMPONENT_PROJECT_URL=	http://www.unixodbc.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2e1509a96bb18d248bf08ead0d74804957304ff7c6f8b2e5965309c632421e39
+    sha256:88b637f647c052ecc3861a3baa275c3b503b193b6a49ff8c28b2568656d14d69
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.gz
 COMPONENT_BUGDB=	library/unixodbc
 COMPONENT_ANITYA_ID=	7344
 
-TPNO=			33101
+TPNO=			44568
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 PATCH_LEVEL = 0
+
+COMPONENT_POST_UNPACK_ACTION += (cd $(@D); autoreconf -fiv)
 
 # Enable C99 mode + -Xc for its additional warnings.
 studio_C99MODE = -Xc $(studio_C99_ENABLE)

@@ -1,0 +1,26 @@
+Patch taken from ftp://ftp.unixodbc.org/pub/unixODBC/0001-unixodbc.patch 
+to fix a build issue related to sed.
+
+This patch can be removed when upgrading unixODBC to 2.3.7 or later as 
+the patch will be included in version 2.3.7 by the community.
+
+Index: exe/Makefile.am
+===================================================================
+--- exe/Makefile.am
++++ exe/Makefile.am
+@@ -60,8 +60,10 @@ dltest_DEPENDENCIES = $(LTDLDEPS)
+ dltest_LDADD = $(LIBLTDL)
+ 
+ all-am:
+-	@sed -i -e "s![@]ODBC_ULEN[@]!`$(CURDIR)/odbc_config$(EXEEXT) --ulen`!" \
+-		-e "s![@]ODBC_CFLAGS[@]!`$(CURDIR)/odbc_config$(EXEEXT) --cflags | sed 's/ -I.*//'`!" \
+-		$(top_builddir)/DriverManager/odbc.pc
+-
++	@sed "s![@]ODBC_ULEN[@]!`$(CURDIR)/odbc_config$(EXEEXT) --ulen`!" \
++	  $(top_builddir)/DriverManager/odbc.pc > $(CURDIR)/odbc.pc.tmp
++	@mv $(CURDIR)/odbc.pc.tmp $(top_builddir)/DriverManager/odbc.pc
++	@sed "s![@]ODBC_CFLAGS[@]!`$(CURDIR)/odbc_config$(EXEEXT) --cflags | sed 's/ -I.*//'`!" \
++	  $(top_builddir)/DriverManager/odbc.pc > $(CURDIR)/odbc.pc.tmp
++	@mv $(CURDIR)/odbc.pc.tmp $(top_builddir)/DriverManager/odbc.pc
+ 
+
