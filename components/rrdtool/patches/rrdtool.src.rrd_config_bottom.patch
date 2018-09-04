@@ -1,0 +1,17 @@
+# Include the header file for the environmental variable PATH_MAX.
+# A bug is reported upstream. Use https://github.com/oetiker/rrdtool-1.x/issues/902 to check the status of the bug.
+
+--- rrdtool-1.7.0/src/rrd_config_bottom.h	2017-05-16 05:26:46.000000000 +0000
++++ rrdtool-1.7.0/src/rrd_config_bottom.h	2018-01-25 19:07:47.071342605 +0000
+@@ -27,6 +27,11 @@
+ #ifdef HAVE_SYS_PARAM_H
+ # include <sys/param.h>
+ #endif
++
++#ifndef PATH_MAX
++# include<limits.h>
++#endif
++
+ #ifndef MAXPATH
+ # ifdef PATH_MAX
+ #  define MAXPATH PATH_MAX

@@ -1,0 +1,14 @@
+# Python binding module macro definition fix.  
+# A bug is reported upstream. Use https://github.com/oetiker/rrdtool-1.x/issues/903 to check the status of the bug.
+
+--- rrdtool-1.7.0/bindings/python/rrdtoolmodule.c	2018-01-31 20:44:07.560868065 -0800
++++ rrdtool-1.7.0/bindings/python/rrdtoolmodule.c	2018-02-07 19:42:52.449556082 -0800
+@@ -53,7 +53,7 @@
+ #ifdef __GNUC__
+  #define Py_UNUSED(name) _unused_ ## name __attribute__((unused))
+ #else
+- #define Py_UNUSED(name) _unused_ ## -name
++ #define Py_UNUSED(name) _unused_ ## name
+ #endif
+ #endif
+ 
