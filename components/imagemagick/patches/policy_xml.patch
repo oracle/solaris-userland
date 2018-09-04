@@ -1,0 +1,31 @@
+Workaround in ImageMagick policy.xml to avoid Ghostscript vulnerability
+
+For more details :
+https://www.kb.cert.org/vuls/id/332928
+========================================
+--- ImageMagick-6.9.9-40/config/policy.xml.orig	2018-08-30 23:52:18.237312919 +0000
++++ ImageMagick-6.9.9-40/config/policy.xml	2018-08-30 23:56:48.519666498 +0000
+@@ -78,4 +78,10 @@
+   <!-- <policy domain="cache" name="memory-map" value="anonymous"/> -->
+   <!-- <policy domain="cache" name="synchronize" value="True"/> -->
+   <!-- <policy domain="cache" name="shared-secret" value="passphrase" stealth="true"/> -->
++  <policy domain="coder" rights="none" pattern="PS" />
++  <policy domain="coder" rights="none" pattern="PS2" />
++  <policy domain="coder" rights="none" pattern="PS3" />
++  <policy domain="coder" rights="none" pattern="EPS" />
++  <policy domain="coder" rights="none" pattern="PDF" />
++  <policy domain="coder" rights="none" pattern="XPS" />
+ </policymap>
+--- ImageMagick-6.9.9-40/www/source/policy.xml.orig	2018-08-30 23:57:10.895008668 +0000
++++ ImageMagick-6.9.9-40/www/source/policy.xml	2018-08-30 23:59:31.341297732 +0000
+@@ -77,4 +77,10 @@
+   <!-- <policy domain="cache" name="memory-map" value="anonymous"/> -->
+   <!-- <policy domain="cache" name="synchronize" value="True"/> -->
+   <!-- <policy domain="cache" name="shared-secret" value="passphrase" stealth="true"/> -->
++  <policy domain="coder" rights="none" pattern="PS" />
++  <policy domain="coder" rights="none" pattern="PS2" />
++  <policy domain="coder" rights="none" pattern="PS3" />
++  <policy domain="coder" rights="none" pattern="EPS" />
++  <policy domain="coder" rights="none" pattern="PDF" />
++  <policy domain="coder" rights="none" pattern="XPS" />
+ </policymap>
