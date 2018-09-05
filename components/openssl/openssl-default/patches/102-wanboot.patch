@@ -131,9 +131,9 @@
 +     * function will not be setup for wanboot.
 +     */
 +#ifndef    _BOOT
-     /* allocate and initialize locks needed by OpenSSL  */
-     solaris_openssl_locks =
-         OPENSSL_malloc(sizeof (pthread_mutex_t) * CRYPTO_NUM_LOCKS);
+     /* initialize locks needed by OpenSSL  */
+     for (i = 0; i < CRYPTO_NUM_LOCKS; i++) {
+         (void) pthread_mutex_init(&solaris_openssl_locks[i], NULL);
 @@ -532,6 +552,7 @@
      }
  
