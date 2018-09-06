@@ -248,8 +248,8 @@ out:
     /*
      * unfortunately there are some proftpd modules (e.g. mod_auth_pam.c),
      * which just override 'disable_id_switching' above. This is of course
-     * very futile on Solaris. Hence we just introduce our own solaris
-     * specific flag
+     * very futile on Oracle Solaris. Hence we just introduce our own specific
+     * flag
      */
     session.priv_aware = TRUE;
   } else {

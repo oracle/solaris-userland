@@ -36,7 +36,8 @@ set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2011/088
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
-# customized pam configuration, should be pam.d/others _without_ pam_dhkeys
+# Customized pam.d/ftp configuration below is a copy of pam.d/other
+# configuration with pam_dhkeys module removed from the stack.
 file ftp.pam path=etc/pam.d/ftp
 #
 # config. file
@@ -45,6 +46,7 @@ file proftpd.conf path=etc/proftpd.conf mode=0644 overlay=allow preserve=true
 # SMF(5)
 file auth_service-network-ftpd \
     path=etc/security/auth_attr.d/service-network-ftpd
+file exec_attr-network-ftpd path=etc/security/exec_attr.d/service-network-ftpd
 file prof_service-network-ftpd \
     path=etc/security/prof_attr.d/service-network-ftpd
 file ftp.xml path=lib/svc/manifest/network/ftp.xml
