@@ -1,0 +1,88 @@
+### PREPARING ENVIRONMENT ###
+
+# Install the poppler library on your testing machine.
+# $ sudo pkg change-facet facet.version-lock.desktop/pdf-viewer/poppler=false
+# $ sudo pkg install poppler@YOUR_VERSION
+# Start gnome environment in order to perform the following tests.
+#
+# For example, you can setup a vnc server on your virtual testing machine:
+# [test-virt]$ vncserver -SecurityTypes None
+# In order to connect to your virtual machine execute the following command
+# [localhost]$ vncviewer ${IP_ADDRESS_OF_VIRTUAL_MACHINE}:1
+# where ${IP_ADDRESS_OF_VIRTUAL_MACHINE} is the IP address of your testing machine.
+
+# Testing file from print/filter/ghostscript-core component.
+TEST_PDF_FILE=$(ls /usr/share/ghostscript/*/examples/text_graphic_image.pdf)
+
+
+### TEST PACKAGES THAT USE LIBPOPPLER ###
+
+# Check the linkage of desktop/pdf-viewer/evince
+# and library/desktop/search/tracker components.
+# The output of the following commands should be empty.
+find /usr/lib/ -name 'libpdfdocument.so' -exec ldd {} \; 2>/dev/null | grep "not found"
+find /usr/lib/ -name 'libextract-pdf.so' -exec ldd {} \; 2>/dev/null | grep "not found"
+
+# Check that tracker is able to extract information from the provided pdf file.
+# Output should be similar to:
+# @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+# @prefix dc: <http://purl.org/dc/elements/1.1/> .
+# @prefix nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#> .
+# @prefix nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#> .
+#
+# <file:///usr/share/ghostscript/9.22/examples/text_graphic_image.pdf> nfo:pageCount 1 ;
+#   nie:contentCreated "2011-06-22T17:16:27Z" ;
+#   dc:format "application/pdf" ;
+#   a nfo:PaginatedTextDocument ;
+#   nie:plainTextContent "Black RGB\nGray RGB\nNeutral\nCIELAB " .
+#
+tracker extract "${TEST_PDF_FILE}"
+
+# Use evince to open the pdf file, and check that it is correctly rendered.
+evince "${TEST_PDF_FILE}"
+
+
+### TESTING OF POPPLER UTILS ###
+
+# Print some pdf info.
+# Output should be similar to:
+# Creator:        Adobe InDesign CS3 (5.0.4)
+# Producer:       Adobe PDF Library 8.0
+# CreationDate:   Wed Jun 22 19:16:27 2011 CEST
+# ModDate:        Wed Jun 22 19:16:27 2011 CEST
+# Tagged:         no
+# UserProperties: no
+# Suspects:       no
+# Form:           none
+# JavaScript:     no
+# Pages:          1
+# Encrypted:      no
+# Page size:      612 x 792 pts (letter)
+# Page rot:       0
+# File size:      133847 bytes
+# Optimized:      no
+# PDF version:    1.7
+pdfinfo "${TEST_PDF_FILE}"
+
+# Test merge of two pdf files. Check that the output
+# file contains two copies of the original document.
+pdfunite "${TEST_PDF_FILE}" "${TEST_PDF_FILE}" pdfunite_test.pdf
+evince pdfunite_test.pdf
+rm pdfunite_test.pdf
+
+# Test conversion of pdf file to text file.
+# Output should be similar to:
+# Black RGB
+# Gray RGB
+# Neutral
+# CIELAB
+#
+pdftotext "${TEST_PDF_FILE}" pdftotext_test.txt
+cat pdftotext_test.txt
+rm pdftotext_test.txt
+
+# Extract image from the pdf file.
+# Check the output in the image viewer.
+pdfimages -png "${TEST_PDF_FILE}" flower
+eog flower-*.png
+rm flower-*.png

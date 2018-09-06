@@ -26,83 +26,93 @@ BUILD_BITS= 64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		poppler
-COMPONENT_VERSION=	0.57.0
+COMPONENT_VERSION=	0.70.1
 COMPONENT_PROJECT_URL=	http://poppler.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:0ea37de71b7db78212ebc79df59f99b66409a29c2eac4d882dae9f2397fe44d8
+    sha256:66972047d9ef8162cc8c389d7e7698291dfc9f2b3e4ea9a9f08ae604107451bd
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/poppler
 COMPONENT_ANITYA_ID=	3686
-TPNO_POPPLER=		36967
+TPNO_POPPLER=		46911
 
 COMPONENT_NAME_1=	poppler-data
-COMPONENT_VERSION_1=	0.4.7
+COMPONENT_VERSION_1=	0.4.9
 COMPONENT_SRC_1=	$(COMPONENT_NAME_1)-$(COMPONENT_VERSION_1)
 COMPONENT_ARCHIVE_1=	$(COMPONENT_SRC_1).tar.gz
 COMPONENT_ARCHIVE_HASH_1= \
-    sha256:e752b0d88a7aba54574152143e7bf76436a7ef51977c55d6bd9a48dccde3a7de
+    sha256:1f9c7e7de9ecd0db6ab287349e31bf815ca108a5a175cf906a90163bdbe32012
 COMPONENT_ARCHIVE_URL_1= $(COMPONENT_PROJECT_URL)$(COMPONENT_ARCHIVE_1)
 COMPONENT_ANITYA_ID_1=	3687
-TPNO_POPPLER_DATA=	25618
+TPNO_POPPLER_DATA=	46916
+
+# Only cmake is currently supported to build libpoppler.
+BUILD_STYLE = cmake
 
 TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk
 
-COMPONENT_PREP_ACTION = \
-	(cd $(@D) ; \
-	aclocal -I . ; \
-	libtoolize --force --copy ; \
-	autoheader ; \
-	automake -a -c -f ; \
-	autoconf )
-
 # For now, all things built for C++11 require gcc.
 # (Poppler provides a C++ wrapper.)
 COMPILER=gcc
-# Uses strcpy_s, etc. c11 functions.
-CFLAGS += -std=c11
-CXXFLAGS += -std=c++11 -D__STDC_WANT_LIB_EXT1__=1
 
 # There isn't a 64-bit version of pkg-config's nss.pc, so set these "manually".
 MPSLIB.32 = -L/usr/lib/mps -R/usr/lib/mps
 MPSLIB.64 = -L/usr/lib/mps/64 -R/usr/lib/mps/64
 NSS3_LIBS = $(MPSLIB.$(BITS)) -lnss3 -lsmime3 -lssl3 -lnssutil3 -lplds4 -lplc4 -lnspr4 -lpthread -ldl -lposix4
-CONFIGURE_OPTIONS +=	NSS3_LIBS="$(NSS3_LIBS)"
 
-# Reduce build time dependencies since we don't ship this and can't run as an
-# automated test.
-CONFIGURE_OPTIONS +=	--disable-gtk-test
-CONFIGURE_OPTIONS +=	--disable-poppler-qt4
-CONFIGURE_OPTIONS +=	--disable-poppler-qt5
-CONFIGURE_OPTIONS +=	--disable-static
-# --enable-zlib not recommended by developers?
-CONFIGURE_OPTIONS +=	--disable-zlib
-CONFIGURE_OPTIONS +=	--enable-cairo-output
-CONFIGURE_OPTIONS +=	--enable-cms=lcms2
-# Required for other components.
-CONFIGURE_OPTIONS +=	--enable-introspection
-CONFIGURE_OPTIONS +=	--enable-largefile
-CONFIGURE_OPTIONS +=	--enable-libcurl
-CONFIGURE_OPTIONS +=	--enable-libjpeg
-CONFIGURE_OPTIONS +=	--enable-libpng
-CONFIGURE_OPTIONS +=	--enable-libtiff
-CONFIGURE_OPTIONS +=	--enable-poppler-cpp
-CONFIGURE_OPTIONS +=	--enable-poppler-glib
-CONFIGURE_OPTIONS +=	--enable-shared
-CONFIGURE_OPTIONS +=	--enable-splash-output
-CONFIGURE_OPTIONS +=	--enable-xpdf-headers
-CONFIGURE_OPTIONS +=	--with-font-configuration=fontconfig
-CONFIGURE_OPTIONS +=	--with-pic
-CONFIGURE_OPTIONS +=	--with-x
-# XXX clone test repo? ick.
-#CONFIGURE_OPTIONS +=	--with-testdatadir=
+# Uses strcpy_s, etc. c11 functions.
+CFLAGS += -std=c11
+CXXFLAGS += -std=c++11 -D__STDC_WANT_LIB_EXT1__=1 $(NSS3_LIBS)
+# Set CC environment variable to the compiler path, it is required by g-ir-scanner.
+COMPONENT_BUILD_ENV.32 += CC="$(CC) -m32"
+COMPONENT_BUILD_ENV.64 += CC="$(CC) -m64"
+
+# The path to cmake configure file has to be specified explicitly,
+# otherwise 32-bit openjpeg library is attempted to be linked to 64-bit 
+OPENJPEG_CMAKE_DIR = $(shell pkg-config --modversion libopenjp2 | \
+                       perl -F'\.' -nae 'print "openjpeg-$$F[0].$$F[1]"')
+CMAKE_OPTIONS.32 += -DOpenJPEG_DIR=/usr/lib/cmake/$(OPENJPEG_CMAKE_DIR)
+CMAKE_OPTIONS.64 += -DOpenJPEG_DIR=/usr/lib/$(MACH64)/cmake/$(OPENJPEG_CMAKE_DIR)
+
+# Reduce build time dependencies since we don't ship this
+# or can't run it as an automated test.
+CMAKE_OPTIONS += -DBUILD_CPP_TESTS=OFF
+CMAKE_OPTIONS += -DBUILD_GTK_TESTS=OFF
+CMAKE_OPTIONS += -DBUILD_QT5_TESTS=OFF
+
+# Build shared libpoppler libraries.
+CMAKE_OPTIONS += -DBUILD_SHARED_LIBS=ON
+
+# Not necessary for the userland consolidation.
+CMAKE_OPTIONS += -DENABLE_ZLIB=OFF
+CMAKE_OPTIONS += -DENABLE_QT5=OFF
+CMAKE_OPTIONS += -DENABLE_GTK_DOC=OFF
+
+# Required by other components.
+CMAKE_OPTIONS += -DWITH_Cairo=ON
+CMAKE_OPTIONS += -DWITH_Iconv=ON
+CMAKE_OPTIONS += -DWITH_GLIB=ON
+CMAKE_OPTIONS += -DWITH_GTK=ON
+CMAKE_OPTIONS += -DWITH_NSS3=ON
+CMAKE_OPTIONS += -DWITH_JPEG=ON
+CMAKE_OPTIONS += -DWITH_PNG=ON
+CMAKE_OPTIONS += -DWITH_TIFF=ON
+CMAKE_OPTIONS += -DWITH_GObjectIntrospection=ON
+CMAKE_OPTIONS += -DENABLE_CPP=ON
+CMAKE_OPTIONS += -DENABLE_SPLASH=ON
+CMAKE_OPTIONS += -DENABLE_LIBCURL=ON
+CMAKE_OPTIONS += -DENABLE_XPDF_HEADERS=ON
+CMAKE_OPTIONS += -DENABLE_CMS=lcms2
+CMAKE_OPTIONS += -DENABLE_LIBOPENJPEG=openjpeg2
+CMAKE_OPTIONS += -DENABLE_DCTDECODER=libjpeg
+CMAKE_OPTIONS += -DFONT_CONFIGURATION=fontconfig
 
 # Install the poppler data files.
 COMPONENT_POST_BUILD_ACTION = \
 	(cd $(COMPONENT_DIR)/$(COMPONENT_SRC_1); \
-	$(GMAKE) prefix=$(CONFIGURE_PREFIX) DESTDIR=$(PROTO_DIR) install)
+	$(GMAKE) prefix=$(CONFIGURE_PREFIX) DESTDIR=$(PROTO_DIR)/usr install)
 
 # Always show the build and link lines for easier debugging.
 COMPONENT_BUILD_ARGS += V=1

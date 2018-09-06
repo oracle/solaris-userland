@@ -82,6 +82,7 @@ file path=usr/include/poppler/GlobalParams.h
 file path=usr/include/poppler/Hints.h
 file path=usr/include/poppler/JArithmeticDecoder.h
 file path=usr/include/poppler/JBIG2Stream.h
+file path=usr/include/poppler/JPEG2000Stream.h
 file path=usr/include/poppler/Lexer.h
 file path=usr/include/poppler/Linearization.h
 file path=usr/include/poppler/Link.h
@@ -108,8 +109,6 @@ file path=usr/include/poppler/PreScanOutputDev.h
 file path=usr/include/poppler/ProfileData.h
 file path=usr/include/poppler/Rendition.h
 file path=usr/include/poppler/SecurityHandler.h
-file path=usr/include/poppler/SignatureHandler.h
-file path=usr/include/poppler/SignatureInfo.h
 file path=usr/include/poppler/Sound.h
 file path=usr/include/poppler/SplashOutputDev.h
 file path=usr/include/poppler/StdinCachedFile.h
@@ -120,16 +119,15 @@ file path=usr/include/poppler/StructElement.h
 file path=usr/include/poppler/StructTreeRoot.h
 file path=usr/include/poppler/TextOutputDev.h
 file path=usr/include/poppler/UTF.h
-file path=usr/include/poppler/UTF8.h
 file path=usr/include/poppler/UnicodeCClassTables.h
 file path=usr/include/poppler/UnicodeCompTables.h
 file path=usr/include/poppler/UnicodeDecompTables.h
 file path=usr/include/poppler/UnicodeMap.h
+file path=usr/include/poppler/UnicodeMapFuncs.h
 file path=usr/include/poppler/UnicodeMapTables.h
 file path=usr/include/poppler/UnicodeTypeTable.h
 file path=usr/include/poppler/ViewerPreferences.h
 file path=usr/include/poppler/XRef.h
-file path=usr/include/poppler/XpdfPluginAPI.h
 file path=usr/include/poppler/cpp/poppler-document.h
 file path=usr/include/poppler/cpp/poppler-embedded-file.h
 file path=usr/include/poppler/cpp/poppler-font.h
@@ -156,23 +154,23 @@ file path=usr/include/poppler/glib/poppler-enums.h
 file path=usr/include/poppler/glib/poppler-features.h
 file path=usr/include/poppler/glib/poppler-form-field.h
 file path=usr/include/poppler/glib/poppler-layer.h
+file path=usr/include/poppler/glib/poppler-macros.h
 file path=usr/include/poppler/glib/poppler-media.h
 file path=usr/include/poppler/glib/poppler-movie.h
 file path=usr/include/poppler/glib/poppler-page.h
 file path=usr/include/poppler/glib/poppler-structure-element.h
 file path=usr/include/poppler/glib/poppler.h
 file path=usr/include/poppler/goo/FixedPoint.h
-file path=usr/include/poppler/goo/GooHash.h
+file path=usr/include/poppler/goo/GooCheckedOps.h
 file path=usr/include/poppler/goo/GooLikely.h
 file path=usr/include/poppler/goo/GooList.h
-file path=usr/include/poppler/goo/GooMutex.h
 file path=usr/include/poppler/goo/GooString.h
 file path=usr/include/poppler/goo/GooTimer.h
 file path=usr/include/poppler/goo/ImgWriter.h
 file path=usr/include/poppler/goo/JpegWriter.h
-file path=usr/include/poppler/goo/NetPBMWriter.h
 file path=usr/include/poppler/goo/PNGWriter.h
 file path=usr/include/poppler/goo/TiffWriter.h
+file path=usr/include/poppler/goo/gdir.h
 file path=usr/include/poppler/goo/gfile.h
 file path=usr/include/poppler/goo/gmem.h
 file path=usr/include/poppler/goo/grandom.h
@@ -196,43 +194,35 @@ file path=usr/include/poppler/splash/SplashPath.h
 file path=usr/include/poppler/splash/SplashPattern.h
 file path=usr/include/poppler/splash/SplashScreen.h
 file path=usr/include/poppler/splash/SplashState.h
-file path=usr/include/poppler/splash/SplashT1Font.h
-file path=usr/include/poppler/splash/SplashT1FontEngine.h
-file path=usr/include/poppler/splash/SplashT1FontFile.h
 file path=usr/include/poppler/splash/SplashTypes.h
 file path=usr/include/poppler/splash/SplashXPath.h
 file path=usr/include/poppler/splash/SplashXPathScanner.h
 file path=usr/lib/$(MACH64)/girepository-1.0/Poppler-0.18.typelib
-link path=usr/lib/$(MACH64)/libpoppler-cpp.so target=libpoppler-cpp.so.0.3.0
-link path=usr/lib/$(MACH64)/libpoppler-cpp.so.0 target=libpoppler-cpp.so.0.3.0
-file path=usr/lib/$(MACH64)/libpoppler-cpp.so.0.3.0
-link path=usr/lib/$(MACH64)/libpoppler-glib.so target=libpoppler-glib.so.8.9.0
-link path=usr/lib/$(MACH64)/libpoppler-glib.so.8 target=libpoppler-glib.so.8.9.0
-file path=usr/lib/$(MACH64)/libpoppler-glib.so.8.9.0
-link path=usr/lib/$(MACH64)/libpoppler.so target=libpoppler.so.68.0.0
-# Need to include the old libpoppler.so.67 sym link to allow evince to
-# correctly run while we go through this transition period.
-link path=usr/lib/$(MACH64)/libpoppler.so.67 target=libpoppler.so.68
-link path=usr/lib/$(MACH64)/libpoppler.so.68 target=libpoppler.so.68.0.0
-file path=usr/lib/$(MACH64)/libpoppler.so.68.0.0
+link path=usr/lib/$(MACH64)/libpoppler-cpp.so target=libpoppler-cpp.so.0
+link path=usr/lib/$(MACH64)/libpoppler-cpp.so.0 target=libpoppler-cpp.so.0.5.0
+file path=usr/lib/$(MACH64)/libpoppler-cpp.so.0.5.0
+link path=usr/lib/$(MACH64)/libpoppler-glib.so target=libpoppler-glib.so.8
+link path=usr/lib/$(MACH64)/libpoppler-glib.so.8 \
+    target=libpoppler-glib.so.8.10.0
+file path=usr/lib/$(MACH64)/libpoppler-glib.so.8.10.0
+link path=usr/lib/$(MACH64)/libpoppler.so target=libpoppler.so.81
+link path=usr/lib/$(MACH64)/libpoppler.so.81 target=libpoppler.so.81.0.0
+file path=usr/lib/$(MACH64)/libpoppler.so.81.0.0
 file path=usr/lib/$(MACH64)/pkgconfig/poppler-cairo.pc
 file path=usr/lib/$(MACH64)/pkgconfig/poppler-cpp.pc
 file path=usr/lib/$(MACH64)/pkgconfig/poppler-glib.pc
 file path=usr/lib/$(MACH64)/pkgconfig/poppler-splash.pc
 file path=usr/lib/$(MACH64)/pkgconfig/poppler.pc
 file path=usr/lib/girepository-1.0/Poppler-0.18.typelib
-link path=usr/lib/libpoppler-cpp.so target=libpoppler-cpp.so.0.3.0
-link path=usr/lib/libpoppler-cpp.so.0 target=libpoppler-cpp.so.0.3.0
-file path=usr/lib/libpoppler-cpp.so.0.3.0
-link path=usr/lib/libpoppler-glib.so target=libpoppler-glib.so.8.9.0
-link path=usr/lib/libpoppler-glib.so.8 target=libpoppler-glib.so.8.9.0
-file path=usr/lib/libpoppler-glib.so.8.9.0
-link path=usr/lib/libpoppler.so target=libpoppler.so.68.0.0
-# Need to include the old libpoppler.so.67 sym link to allow evince to
-# correctly run while we go through this transition period.
-link path=usr/lib/libpoppler.so.67 target=libpoppler.so.68
-link path=usr/lib/libpoppler.so.68 target=libpoppler.so.68.0.0
-file path=usr/lib/libpoppler.so.68.0.0
+link path=usr/lib/libpoppler-cpp.so target=libpoppler-cpp.so.0
+link path=usr/lib/libpoppler-cpp.so.0 target=libpoppler-cpp.so.0.5.0
+file path=usr/lib/libpoppler-cpp.so.0.5.0
+link path=usr/lib/libpoppler-glib.so target=libpoppler-glib.so.8
+link path=usr/lib/libpoppler-glib.so.8 target=libpoppler-glib.so.8.10.0
+file path=usr/lib/libpoppler-glib.so.8.10.0
+link path=usr/lib/libpoppler.so target=libpoppler.so.81
+link path=usr/lib/libpoppler.so.81 target=libpoppler.so.81.0.0
+file path=usr/lib/libpoppler.so.81.0.0
 file path=usr/lib/pkgconfig/poppler-cairo.pc
 file path=usr/lib/pkgconfig/poppler-cpp.pc
 file path=usr/lib/pkgconfig/poppler-glib.pc
@@ -259,6 +249,7 @@ file path=usr/share/poppler/cMap/Adobe-CNS1/Adobe-CNS1-3
 file path=usr/share/poppler/cMap/Adobe-CNS1/Adobe-CNS1-4
 file path=usr/share/poppler/cMap/Adobe-CNS1/Adobe-CNS1-5
 file path=usr/share/poppler/cMap/Adobe-CNS1/Adobe-CNS1-6
+file path=usr/share/poppler/cMap/Adobe-CNS1/Adobe-CNS1-7
 file path=usr/share/poppler/cMap/Adobe-CNS1/Adobe-CNS1-B5pc
 file path=usr/share/poppler/cMap/Adobe-CNS1/Adobe-CNS1-ETen-B5
 file path=usr/share/poppler/cMap/Adobe-CNS1/Adobe-CNS1-H-CID
@@ -504,7 +495,7 @@ license poppler-data.license license=GPLv2 \
     com.oracle.info.name=poppler-data \
     com.oracle.info.tpno=$(TPNO_POPPLER_DATA) \
     com.oracle.info.version=$(COMPONENT_VERSION_1)
-license poppler.license license="GPLv2, LGPLv2.1, MIT" \
+license poppler.license license="GPLv2, GPLv3, LGPLv2.1, MIT" \
     com.oracle.info.description="the Poppler PDF viewer" \
     com.oracle.info.name=poppler com.oracle.info.tpno=$(TPNO_POPPLER) \
     com.oracle.info.version=$(COMPONENT_VERSION)
