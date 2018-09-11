@@ -46,6 +46,8 @@ mkdir -p test-dir/a test-dir/b test-dir/c test-dir/d
 (cd test-dir/c; touch 1 2 3 4 5 6 7 8)
 (cd test-dir/d; touch 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15)
 (cd test-dir; ls | parallel 'echo -n {}" "; ls {}|wc -l')
+# to see parallel jobs running together better use this:
+# (cd test-dir; ls | parallel -P 2 'echo -n {}" "; ls {}|wc -l; sleep 3; echo "done"')
 echo
 echo "    To put the output in a file called <name>.dir:"
 echo
@@ -90,6 +92,33 @@ echo
 echo AFTER:
 echo
 cat textfile | parallel -k echo {} append_string
+
+----
+
+$ cat parset-test.sh
+#!/bin/sh
+PATH=/usr/bin
+. `which env_parallel.bash`
+echo "EXAMPLE: Put output into vars \$seq, \$pwd, \$ls:"
+echo "     parset \"seq pwd ls\" ::: \"seq 10\" pwd ls'"
+echo
+parset "seq pwd ls" ::: "seq 10" pwd ls
+echo echo \$seq:
+echo "$seq"
+echo echo \$pwd:
+echo "$pwd"
+echo echo \$ls:
+echo "$ls"
+echo
+echo "EXAMPLE: The commands to run can be an array:"
+echo "     cmd=(\"echo first\" \"echo '<<joe  \\\"double  space\\\"  cartoon>>'\" \"pwd\")"
+echo "     parset data ::: \"${cmd[@]}\""
+echo
+cmd=("echo first" "echo '<<joe  \"double  space\"  cartoon>>'" "pwd")
+parset data ::: "${cmd[@]}"
+echo "${data[0]}"
+echo "${data[1]}"
+echo "${data[2]}"
 
 ----
 
@@ -143,6 +172,26 @@ for i in `ls test-dir/*.log` ; do
   sem -j+0 gzip $i ";" echo done
 done
 sem --wait
+echo
+echo EXAMPLE: Understanding a semaphore
+echo      In toilet analogy this uses 2 toilets (-j 2). GNU sem takes '1' to a
+echo      toilet, and exits immediately. While '1' is sleeping, another GNU sem
+echo      takes '2' to a toilet, and exits immediately.
+echo
+echo      While '1' and '2' are sleeping, another GNU sem waits for a free
+echo      toilet. When '1' finishes, a toilet becomes available, and this GNU sem
+echo      stops waiting, and takes '3' to a toilet, and exits immediately.
+echo
+echo      While '2' and '3' are sleeping, another GNU sem waits for a free
+echo      toilet.  When '2' finishes, a toilet becomes available, and this GNU
+echo      sem stops waiting, and takes '4' to a toilet, and exits immediately.
+echo
+echo      Finally another GNU sem waits for all toilets to become free.
+sem -j 2 'sleep 1;echo 1 finished';   echo sem 1 exited
+sem -j 2 'sleep 2;echo 2 finished';   echo sem 2 exited
+sem -j 2 'sleep 3;echo 3 finished';   echo sem 3 exited
+sem -j 2 'sleep 4;echo 4 finished';   echo sem 4 exited
+sem --wait; echo sem --wait done
 echo
 echo "EXAMPLE: Protecting pod2html from itself"
 echo "    pod2html creates two files: pod2htmd.tmp and pod2htmi.tmp"
