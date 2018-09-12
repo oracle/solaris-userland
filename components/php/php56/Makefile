@@ -133,9 +133,6 @@ CLEAN_PATHS += proto-scripts
 # The test results are unstable between runs
 $(SKIP_TEST_AT_TOP_LEVEL)
 
-clean::
-	cd ../uw-imap; gmake clean
-
 clobber::
 	cd ../uw-imap; gmake clobber
 

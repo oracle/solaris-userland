@@ -165,10 +165,10 @@ CONFIGURE_OPTIONS += --enable-zip=shared
 # Special cases
 
 # IMAP
-CONFIGURE_OPTIONS += --with-imap=shared,$(PHP_TOP_DIR)/uw-imap/build/$(MACH64)
+CONFIGURE_OPTIONS += --with-imap=shared,$(BUILD_DIR)/imap/$(MACH64)
 CONFIGURE_OPTIONS += --with-imap-ssl=shared,/usr
 CONFIGURE_OPTIONS += --with-kerberos   # WARNING! openssl reads same flag!
-COMPONENT_PRE_CONFIGURE_ACTION += (cd $(PHP_TOP_DIR)/uw-imap ; gmake build) ;
+COMPONENT_PRE_CONFIGURE_ACTION += (cd $(PHP_TOP_DIR)/uw-imap ; gmake build SOURCE_DIR=$(SOURCE_DIR)/UW-IMAP/imap-2007f UNPACK_ARGS="-r $(SOURCE_DIR)/UW-IMAP" BUILD_DIR=$(BUILD_DIR)/imap);
 
 # Enables emulation of the obsolete mhash extension by the hash extension.
 CONFIGURE_OPTIONS += --with-mhash
