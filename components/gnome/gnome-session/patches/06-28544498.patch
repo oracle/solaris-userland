@@ -1,0 +1,20 @@
+https://community.oracle.com/thread/4160625
+
+Post the changes to ensure we have a UTF-8 locale so that gnome-terminal
+starts up (27155344), we should also just ensure that if for some reason
+REGION is empty (which we are observing when LANG isn't en_US), then we
+should set all LC* vars to the selected locale
+
+not suitable for upstream
+
+--- a/gnome-session/gnome-session.in	2018-09-12 16:16:01.305590771 -0700
++++ b/gnome-session/gnome-session.in	2018-09-12 16:17:58.156501875 -0700
+@@ -31,7 +31,7 @@
+   export LANG="$REGION"
+ fi
+ 
+-if [ -n "$REGION" ]; then
++if [ -z "$REGION" ]; then
+   export LC_TIME=$REGION
+   export LC_NUMERIC=$REGION
+   export LC_MONETARY=$REGION
