@@ -33,17 +33,17 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		webkitgtk
-COMPONENT_VERSION=	2.18.6
+COMPONENT_VERSION=	2.20.5
 COMPONENT_PROJECT_URL=	https://webkitgtk.org
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:93912cc2f40f12e452be1ca4babdbdaac0ec4f828d441257a6b06c2963bbac3c
+	sha256:15c0f8d26e9605afe0948d161ba5fd82efee8eda2debd409fd40a440ac3af990
 COMPONENT_ARCHIVE_URL=	https://webkitgtk.org/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/webkitgtk
 COMPONENT_ANITYA_ID=	5355
 
-TPNO=			43759
+TPNO=			44978
 
 # Use project's own optimization flags instead.
 gcc_OPT=
@@ -68,6 +68,7 @@ COMPONENT_BUILD_ARGS += -j4
 
 PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
 LD_OPTIONS += $(LD_OPTIONS.$(BITS))
+LDFLAGS +=  -Wl,-zgnu-version-script-compat
 
 # This should have avoided the need for mapfile.$(MACH) above
 # why its not working needs to be eventually figured out (27639813)
@@ -82,12 +83,13 @@ CMAKE_OPTIONS += -DPORT=GTK
 CMAKE_OPTIONS += -DENABLE_GLES2=OFF
 CMAKE_OPTIONS += -DUSE_GSTREAMER_GL=OFF
 CMAKE_OPTIONS += -DUSE_LIBHYPHEN=OFF
+CMAKE_OPTIONS += -DUSE_WOFF2=OFF
 CMAKE_OPTIONS += -DENABLE_SAMPLING_PROFILER=OFF
 CMAKE_OPTIONS += -DENABLE_SUBTLE_CRYPTO=OFF
 
-ifeq ($(MACH), sparc)
+# Disabling for both architectures for now, otherwise x64 builds fail with
+# offlineasm: No magic values found. Skipping assembly file generation.
 CMAKE_OPTIONS += -DENABLE_JIT=OFF
-endif
 
 CMAKE_OPTIONS += -DLIB_INSTALL_DIR="$(USRLIB)"
 CMAKE_OPTIONS += -DLIBEXEC_INSTALL_DIR="$(USRLIB)"

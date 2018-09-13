@@ -11,28 +11,14 @@ should be exported by the relevant library.  The right fix is probably to
 detect whether we're using the GNU linker, and if not, use a combination of
 perl, sed, etc. to generate the mapfile at build time.
 
-Why setting LDFLAGS += -Wl,-zgnu-version-script-compat doesn't work is a 
+Why setting LDFLAGS += -Wl,-zgnu-version-script-compat doesn't work is a
 mystery that needs to be eventually figured out.
 
 file upstream bug after resolving issues documented above
 
---- a/Source/cmake/OptionsGTK.cmake     2018-02-20 14:08:12.520674108 -0800
-+++ b/Source/cmake/OptionsGTK.cmake     2018-02-20 14:08:59.069974715 -0800
-@@ -107,9 +107,7 @@
- else ()
-     WEBKIT_OPTION_DEFAULT_PORT_VALUE(ENABLE_MINIBROWSER PUBLIC OFF)
-     WEBKIT_OPTION_DEFAULT_PORT_VALUE(ENABLE_API_TESTS PRIVATE OFF)
--    if (NOT CMAKE_SYSTEM_NAME MATCHES "Darwin")
--        set(WebKit2_VERSION_SCRIPT "-Wl,--version-script,${CMAKE_MODULE_PATH}/gtksymbols.filter")
--    endif ()
-+        set(WebKit2_VERSION_SCRIPT "-Wl,-M,${CMAKE_MODULE_PATH}/gtksymbols.filter")
- endif ()
-
- if (CMAKE_SYSTEM_NAME MATCHES "Linux")
-
---- a/Source/cmake/gtksymbols.filter	2018-02-22 19:50:51.871416050 -0800
-+++ b/Source/cmake/gtksymbols.filter	2018-02-22 19:53:01.188465200 -0800
-@@ -1,6 +1,14276 @@
+--- a/Source/WebKit/webkitglib-symbols.map	2018-08-20 16:58:40.413303004 -0700
++++ b/Source/WebKit/webkitglib-symbols.map	2018-08-20 17:03:57.696382263 -0700
+@@ -1,11 +1,14281 @@
  {
  global:
 -  webkit_*;
@@ -14310,3 +14296,42 @@ file upstream bug after resolving issues documented above
    WebProcessMainUnix;
    NetworkProcessMainUnix;
    PluginProcessMainUnix;
+   StorageProcessMainUnix;
+-  extern "C++" {
++  extern "C" {
+     "bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_memory";
+     "bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_mutex";
+     "bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_object";
+--- a/Source/WebKit/webkitglib-symbols.map	2018-08-21 12:55:24.007134230 -0700
++++ b/Source/WebKit/webkitglib-symbols.map	2018-08-21 12:55:40.503873645 -0700
+@@ -14271,21 +14271,19 @@
+   webkit_dom_xpath_result_get_type;
+   webkit_dom_xpath_result_iterate_next;
+   webkit_dom_xpath_result_snapshot_item;
++  webkit_network_proxy_settings_new; 
++  webkit_network_proxy_settings_free; 
++  webkit_web_context_set_network_proxy_settings; 
++  webkit_web_process_termination_reason_get_type;
++  webkit_console_message_level_get_type;
++  webkit_form_submission_step_get_type;
++  webkit_console_message_source_get_type;
++  _ZN6WebKit22WebKitExtensionManager9singletonEv;
++  _ZN6WebKit22WebKitExtensionManager10initializeEPNS_14InjectedBundleEPN3API6ObjectE;
+   WebProcessMainUnix;
+   NetworkProcessMainUnix;
+   PluginProcessMainUnix;
+   StorageProcessMainUnix;
+-  extern "C" {
+-    "bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_memory";
+-    "bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_mutex";
+-    "bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_object";
+-    "bmalloc::vmPageSize()::cached";
+-    "guard variable for bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_mutex";
+-    "guard variable for bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_object";
+-    "guard variable for bmalloc::PerProcess<bmalloc::PerHeapKind<bmalloc::Heap> >::s_mutex";
+-    "WebKit::WebKitExtensionManager::singleton()";
+-    "WebKit::WebKitExtensionManager::initialize(WebKit::InjectedBundle*, API::Object*)";
+-  };
+ local:
+   *;
+ };

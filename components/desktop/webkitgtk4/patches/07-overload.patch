@@ -29,7 +29,7 @@ file upstream bug to determine correct fix
  
 --- a/Source/JavaScriptCore/dfg/DFGOperations.cpp	2018-02-14 21:27:54.322665171 -0800
 +++ a/Source/JavaScriptCore/dfg/DFGOperations.cpp	2018-02-14 21:29:06.968857287 -0800
-@@ -1984,7 +1984,7 @@
+@@ -2360,7 +2360,7 @@
  
  double JIT_OPERATION operationFModOnInts(int32_t a, int32_t b)
  {
@@ -38,20 +38,9 @@ file upstream bug to determine correct fix
  }
  
  #if USE(JSVALUE32_64)
---- a/Source/JavaScriptCore/dfg/DFGStaticExecutionCountEstimationPhase.cpp	2018-02-16 07:57:28.088375567 -0800
-+++ b/Source/JavaScriptCore/dfg/DFGStaticExecutionCountEstimationPhase.cpp	2018-02-16 07:58:19.441539390 -0800
-@@ -53,7 +53,7 @@
-             if (!block)
-                 continue;
- 
--            block->executionCount = pow(10, m_graph.m_naturalLoops->loopDepth(block));
-+            block->executionCount = pow(static_cast<double>(10), static_cast<double>(m_graph.m_naturalLoops->loopDepth(block)));
-         }
-         
-         // Estimate branch weights based on execution counts. This isn't quite correct. It'll
---- a/Source/JavaScriptCore/heap/MarkedSpace.cpp	2018-02-16 14:29:13.477445103 -0800
++++ a/Source/JavaScriptCore/heap/MarkedSpace.cpp	2018-02-16 14:29:53.337181369 -0800
 +++ b/Source/JavaScriptCore/heap/MarkedSpace.cpp	2018-02-16 14:29:53.337181369 -0800
-@@ -71,7 +71,7 @@
+@@ -76,7 +76,7 @@
                  dataLog("    Marked block payload size: ", static_cast<size_t>(MarkedSpace::blockPayload), "\n");
              
              for (unsigned i = 0; ; ++i) {
@@ -62,7 +51,7 @@ file upstream bug to determine correct fix
                      dataLog("    Next size class as a double: ", approximateSize, "\n");
 --- a/Source/WebKit/Platform/classifier/ResourceLoadStatisticsClassifier.cpp	2018-02-20 12:49:45.976890265 -0800
 +++ b/Source/WebKit/Platform/classifier/ResourceLoadStatisticsClassifier.cpp	2018-02-20 12:51:03.695785092 -0800
-@@ -56,7 +56,7 @@
+@@ -58,7 +58,7 @@
  bool ResourceLoadStatisticsClassifier::classifyWithVectorThreshold(unsigned a, unsigned b, unsigned c)
  {
      LOG(ResourceLoadStatistics, "ResourceLoadStatisticsClassifier::classifyWithVectorThreshold(): Classified with threshold.");
@@ -71,3 +60,14 @@ file upstream bug to determine correct fix
  }
      
  }
+--- a/Source/JavaScriptCore/dfg/DFGStaticExecutionCountEstimationPhase.cpp
++++ b/Source/JavaScriptCore/dfg/DFGStaticExecutionCountEstimationPhase.cpp
+@@ -53,7 +53,7 @@
+             if (!block)
+                 continue;
+ 
+-            block->executionCount = pow(10, m_graph.m_cpsNaturalLoops->loopDepth(block));
++            block->executionCount = pow(static_cast<double>(10), static_cast<double>(m_graph.m_cpsNaturalLoops->loopDepth(block)));
+         }
+         
+         // Estimate branch weights based on execution counts. This isn't quite correct. It'll

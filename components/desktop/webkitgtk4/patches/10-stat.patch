@@ -4,7 +4,7 @@ potentially file a bug and send upstream
 
 --- a/Source/WebKit/NetworkProcess/cache/NetworkCacheFileSystem.cpp	2018-02-20 10:51:42.832792388 -0800
 +++ b/Source/WebKit/NetworkProcess/cache/NetworkCacheFileSystem.cpp	2018-02-20 10:53:42.352979719 -0800
-@@ -47,6 +47,13 @@
+@@ -45,6 +45,13 @@
  #include <wtf/glib/GRefPtr.h>
  #endif
  
@@ -18,10 +18,10 @@ potentially file a bug and send upstream
  namespace WebKit {
  namespace NetworkCache {
  
-@@ -66,11 +73,19 @@
+@@ -64,11 +71,19 @@
  void traverseDirectory(const String& path, const Function<void (const String&, DirectoryEntryType)>& function)
  {
-     DIR* dir = opendir(WebCore::fileSystemRepresentation(path).data());
+     DIR* dir = opendir(WebCore::FileSystem::fileSystemRepresentation(path).data());
 +#if __sun
 +      struct stat st;
 +#endif
@@ -38,7 +38,7 @@ potentially file a bug and send upstream
              continue;
          const char* name = dp->d_name;
          if (!strcmp(name, ".") || !strcmp(name, ".."))
-@@ -78,7 +93,11 @@
+@@ -76,7 +91,11 @@
          auto nameString = String::fromUTF8(name);
          if (nameString.isNull())
              continue;

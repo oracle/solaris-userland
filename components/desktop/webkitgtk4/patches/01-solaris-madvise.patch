@@ -3,28 +3,28 @@ The cast is safe as void and unsigned char have same alignment.
 
 file upstream bug
 
---- a/Source/bmalloc/bmalloc/VMAllocate.h	2018-02-14 09:09:44.950546075 -0800
-+++ b/Source/bmalloc/bmalloc/VMAllocate.h	2018-02-14 09:10:46.848653091 -0800
-@@ -187,7 +187,7 @@
+--- a/Source/bmalloc/bmalloc/VMAllocate.h	2018-08-06 13:08:15.791977958 -0700
++++ b/Source/bmalloc/bmalloc/VMAllocate.h	2018-08-06 13:09:11.064187008 -0700
+@@ -199,7 +199,7 @@
  #if BOS(DARWIN)
      SYSCALL(madvise(p, vmSize, MADV_FREE_REUSABLE));
  #else
 -    SYSCALL(madvise(p, vmSize, MADV_DONTNEED));
 +    SYSCALL(madvise(reinterpret_cast<char*>(p), vmSize, MADV_DONTNEED));
+ #if BOS(LINUX)
+     SYSCALL(madvise(p, vmSize, MADV_DONTDUMP));
  #endif
- }
- 
-@@ -197,7 +197,7 @@
+@@ -212,7 +212,7 @@
  #if BOS(DARWIN)
      SYSCALL(madvise(p, vmSize, MADV_FREE_REUSE));
  #else
 -    SYSCALL(madvise(p, vmSize, MADV_NORMAL));
 +    SYSCALL(madvise(reinterpret_cast<char*>(p), vmSize, MADV_NORMAL));
+ #if BOS(LINUX)
+     SYSCALL(madvise(p, vmSize, MADV_DODUMP));
  #endif
- }
- 
---- a/Source/WTF/wtf/OSAllocatorPosix.cpp	2018-02-14 09:11:14.518083741 -0800
-+++ b/Source/WTF/wtf/OSAllocatorPosix.cpp	2018-02-14 09:12:12.911785534 -0800
+--- a/Source/WTF/wtf/OSAllocatorPosix.cpp	2018-08-06 13:09:34.376041801 -0700
++++ b/Source/WTF/wtf/OSAllocatorPosix.cpp	2018-08-06 13:10:15.211824683 -0700
 @@ -155,7 +155,7 @@
  #elif HAVE(MADV_FREE_REUSE)
      while (madvise(address, bytes, MADV_FREE_REUSABLE) == -1 && errno == EAGAIN) { }

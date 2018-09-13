@@ -16,23 +16,9 @@ mystery that needs to be eventually figured out.
 
 file upstream bug after resolving issues documented above
 
---- a/Source/cmake/OptionsGTK.cmake     2018-02-20 14:08:12.520674108 -0800
-+++ b/Source/cmake/OptionsGTK.cmake     2018-02-20 14:08:59.069974715 -0800
-@@ -107,9 +107,7 @@
- else ()
-     WEBKIT_OPTION_DEFAULT_PORT_VALUE(ENABLE_MINIBROWSER PUBLIC OFF)
-     WEBKIT_OPTION_DEFAULT_PORT_VALUE(ENABLE_API_TESTS PRIVATE OFF)
--    if (NOT CMAKE_SYSTEM_NAME MATCHES "Darwin")
--        set(WebKit2_VERSION_SCRIPT "-Wl,--version-script,${CMAKE_MODULE_PATH}/gtksymbols.filter")
--    endif ()
-+        set(WebKit2_VERSION_SCRIPT "-Wl,-M,${CMAKE_MODULE_PATH}/gtksymbols.filter")
- endif ()
-
- if (CMAKE_SYSTEM_NAME MATCHES "Linux")
-
---- a/Source/cmake/gtksymbols.filter	2018-02-22 19:50:51.871416050 -0800
-+++ b/Source/cmake/gtksymbols.filter	2018-02-22 19:53:01.188465200 -0800
-@@ -1,6 +1,14262 @@
+--- a/Source/WebKit/webkitglib-symbols.map	2018-08-20 16:58:40.413303004 -0700
++++ b/Source/WebKit/webkitglib-symbols.map	2018-08-20 17:03:57.696382263 -0700
+@@ -1,11 +1,14281 @@
  {
  global:
 -  webkit_*;
@@ -2429,7 +2415,10 @@ file upstream bug after resolving issues documented above
 +  _ZN7WebCore26CustomElementReactionStack12processQueueEv;
 +  _ZN7WebCore26CustomElementReactionStack24s_currentProcessingStackE;
 +  _ZN7WebCore26propagateExceptionSlowPathERN3JSC9ExecStateERNS0_10ThrowScopeEONS_9ExceptionE;
++  _ZN7WebCore28compileDocumentBodyAttributeEv;
 +  _ZN7WebCore32throwArgumentMustBeFunctionErrorERN3JSC9ExecStateERNS0_10ThrowScopeEjPKcS6_S6_;
++  _ZN7WebCore33checkSubClassSnippetForJSDocumentEv;
++  _ZN7WebCore39compileDocumentDocumentElementAttributeEv;
 +  _ZN7WebCore4Node14removedLastRefEv;
 +  _ZN7WebCore4toJSEPN3JSC9ExecStateEPNS_17JSDOMGlobalObjectERNS_11FontFaceSetE;
 +  _ZN7WebCore4toJSEPN3JSC9ExecStateEPNS_17JSDOMGlobalObjectERNS_11XPathResultE;
@@ -2578,6 +2567,7 @@ file upstream bug after resolving issues documented above
 +  _ZN7WebCore26CustomElementReactionStack12processQueueEv;
 +  _ZN7WebCore26CustomElementReactionStack24s_currentProcessingStackE;
 +  _ZN7WebCore26propagateExceptionSlowPathERN3JSC9ExecStateERNS0_10ThrowScopeEONS_9ExceptionE;
++  _ZN7WebCore41checkSubClassSnippetForJSDocumentFragmentEv;
 +  _ZN7WebCore4Node14removedLastRefEv;
 +  _ZN7WebCore4toJSEPN3JSC9ExecStateEPNS_17JSDOMGlobalObjectERNS_14HTMLCollectionE;
 +  _ZN7WebCore4toJSEPN3JSC9ExecStateEPNS_17JSDOMGlobalObjectERNS_7ElementE;
@@ -2646,6 +2636,7 @@ file upstream bug after resolving issues documented above
 +  _ZN7WebCore26CustomElementReactionStack24s_currentProcessingStackE;
 +  _ZN7WebCore26propagateExceptionSlowPathERN3JSC9ExecStateERNS0_10ThrowScopeEONS_9ExceptionE;
 +  _ZN7WebCore28throwRequiredMemberTypeErrorERN3JSC9ExecStateERNS0_10ThrowScopeEPKcS6_S6_;
++  _ZN7WebCore32checkSubClassSnippetForJSElementEv;
 +  _ZN7WebCore4Node11replaceWithEON3WTF6VectorINS1_7VariantIJNS1_6RefPtrIS0_EENS1_6StringEEEELm0ENS1_15CrashOnOverflowELm16EEE;
 +  _ZN7WebCore4Node14removedLastRefEv;
 +  _ZN7WebCore4Node5afterEON3WTF6VectorINS1_7VariantIJNS1_6RefPtrIS0_EENS1_6StringEEEELm0ENS1_15CrashOnOverflowELm16EEE;
@@ -2744,6 +2735,7 @@ file upstream bug after resolving issues documented above
 +  _ZN7WebCore20throwSetterTypeErrorERN3JSC9ExecStateERNS0_10ThrowScopeEPKcS6_;
 +  _ZN7WebCore21getCachedDOMStructureERNS_17JSDOMGlobalObjectEPKN3JSC9ClassInfoE;
 +  _ZN7WebCore22RuntimeEnabledFeatures14sharedFeaturesEv;
++  _ZN7WebCore30checkSubClassSnippetForJSEventEv;
 +  _ZN7WebCore4toJSEPN3JSC9ExecStateEPNS_17JSDOMGlobalObjectERNS_11EventTargetE;
 +  _ZN7WebCore5Event9initEventERKN3WTF12AtomicStringEbb;
 +  _ZN7WebCore5EventC1ERKN3WTF12AtomicStringERKNS_9EventInitENS0_9IsTrustedE;
@@ -3049,6 +3041,14 @@ file upstream bug after resolving issues documented above
 +  _ZN7WebCore26CustomElementReactionStack12processQueueEv;
 +  _ZN7WebCore26CustomElementReactionStack24s_currentProcessingStackE;
 +  _ZN7WebCore26propagateExceptionSlowPathERN3JSC9ExecStateERNS0_10ThrowScopeEONS_9ExceptionE;
++  _ZN7WebCore28compileNodeNodeTypeAttributeEv;
++  _ZN7WebCore29checkSubClassSnippetForJSNodeEv;
++  _ZN7WebCore29compileNodeLastChildAttributeEv;
++  _ZN7WebCore30compileNodeFirstChildAttributeEv;
++  _ZN7WebCore30compileNodeParentNodeAttributeEv;
++  _ZN7WebCore31compileNodeNextSiblingAttributeEv;
++  _ZN7WebCore33compileNodeOwnerDocumentAttributeEv;
++  _ZN7WebCore35compileNodePreviousSiblingAttributeEv;
 +  _ZN7WebCore4Node10childNodesEv;
 +  _ZN7WebCore4Node11appendChildERS0_;
 +  _ZN7WebCore4Node11removeChildERS0_;
@@ -14296,3 +14296,42 @@ file upstream bug after resolving issues documented above
    WebProcessMainUnix;
    NetworkProcessMainUnix;
    PluginProcessMainUnix;
+   StorageProcessMainUnix;
+-  extern "C++" {
++  extern "C" {
+     "bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_memory";
+     "bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_mutex";
+     "bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_object";
+--- a/Source/WebKit/webkitglib-symbols.map	2018-08-21 12:55:24.007134230 -0700
++++ b/Source/WebKit/webkitglib-symbols.map	2018-08-21 12:55:40.503873645 -0700
+@@ -14271,21 +14271,19 @@
+   webkit_dom_xpath_result_get_type;
+   webkit_dom_xpath_result_iterate_next;
+   webkit_dom_xpath_result_snapshot_item;
++  webkit_network_proxy_settings_new; 
++  webkit_network_proxy_settings_free; 
++  webkit_web_context_set_network_proxy_settings; 
++  webkit_web_process_termination_reason_get_type;
++  webkit_console_message_level_get_type;
++  webkit_form_submission_step_get_type;
++  webkit_console_message_source_get_type;
++  _ZN6WebKit22WebKitExtensionManager9singletonEv;
++  _ZN6WebKit22WebKitExtensionManager10initializeEPNS_14InjectedBundleEPN3API6ObjectE;
+   WebProcessMainUnix;
+   NetworkProcessMainUnix;
+   PluginProcessMainUnix;
+   StorageProcessMainUnix;
+-  extern "C" {
+-    "bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_memory";
+-    "bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_mutex";
+-    "bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_object";
+-    "bmalloc::vmPageSize()::cached";
+-    "guard variable for bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_mutex";
+-    "guard variable for bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_object";
+-    "guard variable for bmalloc::PerProcess<bmalloc::PerHeapKind<bmalloc::Heap> >::s_mutex";
+-    "WebKit::WebKitExtensionManager::singleton()";
+-    "WebKit::WebKitExtensionManager::initialize(WebKit::InjectedBundle*, API::Object*)";
+-  };
+ local:
+   *;
+ };

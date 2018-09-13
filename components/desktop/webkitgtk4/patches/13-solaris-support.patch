@@ -1,0 +1,133 @@
+Changes for the build to work on Solaris
+
+Potentially suitable to send upstream
+
+--- a/Source/WTF/wtf/Platform.h	2018-08-15 09:53:48.950348332 -0700
++++ b/Source/WTF/wtf/Platform.h	2018-08-15 10:09:02.845778665 -0700
+@@ -118,6 +118,7 @@
+ #if defined(__sparc) && !defined(__arch64__) || defined(__sparcv8)
+ #define WTF_CPU_SPARC32 1
+ #define WTF_CPU_BIG_ENDIAN 1
++#define WTF_CPU_KNOWN 1
+ #endif
+ 
+ /* CPU(SPARC64) - SPARC 64-bit */
+@@ -124,11 +125,13 @@
+ #if defined(__sparc__) && defined(__arch64__) || defined (__sparcv9)
+ #define WTF_CPU_SPARC64 1
+ #define WTF_CPU_BIG_ENDIAN 1
++#define WTF_CPU_KNOWN 1
+ #endif
+ 
+ /* CPU(SPARC) - any SPARC, true for CPU(SPARC32) and CPU(SPARC64) */
+ #if CPU(SPARC32) || CPU(SPARC64)
+ #define WTF_CPU_SPARC 1
++#define WTF_CPU_KNOWN 1
+ #endif
+ 
+ /* CPU(X86) - i386 / x86 32-bit */
+@@ -395,6 +398,11 @@
+ #define WTF_OS_OPENBSD 1
+ #endif
+ 
++/* OS(SOLARIS) - Solaris */
++#if defined(sun) || defined(__sun)
++#define WTF_OS_SOLARIS 1
++#endif
++
+ /* OS(WINDOWS) - Any version of Windows */
+ #if defined(WIN32) || defined(_WIN32)
+ #define WTF_OS_WINDOWS 1
+@@ -411,6 +419,7 @@
+     || OS(LINUX)            \
+     || OS(NETBSD)           \
+     || OS(OPENBSD)          \
++    || OS(SOLARIS)          \
+     || defined(unix)        \
+     || defined(__unix)      \
+     || defined(__unix__)
+@@ -1322,7 +1331,7 @@
+ #define HAVE_RSA_PSS 1
+ #endif
+ 
+-#if !OS(WINDOWS)
++#if !OS(WINDOWS) && !OS(SOLARIS)
+ #define HAVE_STACK_BOUNDS_FOR_NEW_THREAD 1
+ #endif
+ 
+--- a/Source/WTF/wtf/InlineASM.h	2018-08-15 10:10:17.393912843 -0700
++++ b/Source/WTF/wtf/InlineASM.h	2018-08-15 10:10:53.204693988 -0700
+@@ -67,6 +67,7 @@
+ #elif   OS(LINUX)               \
+      || OS(FREEBSD)             \
+      || OS(OPENBSD)             \
++     || OS(SOLARIS)             \
+      || OS(HPUX)                \
+      || OS(NETBSD)
+     // ELF platform
+--- a/Source/WTF/wtf/NumberOfCores.cpp	2018-08-15 10:12:46.542551846 -0700
++++ b/Source/WTF/wtf/NumberOfCores.cpp	2018-08-15 10:13:55.247620671 -0700
+@@ -34,7 +34,7 @@
+ // data types defined in the former. See sysctl(3) and style(9).
+ #include <sys/types.h>
+ #include <sys/sysctl.h>
+-#elif OS(LINUX) || OS(AIX) || OS(OPENBSD) || OS(NETBSD) || OS(FREEBSD)
++#elif OS(LINUX) || OS(AIX) || OS(SOLARIS) || OS(OPENBSD) || OS(NETBSD) || OS(FREEBSD)
+ #include <unistd.h>
+ #elif OS(WINDOWS)
+ #include <windows.h>
+@@ -69,7 +69,7 @@
+     int sysctlResult = sysctl(name, sizeof(name) / sizeof(int), &result, &length, 0, 0);
+ 
+     s_numberOfCores = sysctlResult < 0 ? defaultIfUnavailable : result;
+-#elif OS(LINUX) || OS(AIX) || OS(OPENBSD) || OS(NETBSD) || OS(FREEBSD)
++#elif OS(LINUX) || OS(AIX) || OS(SOLARIS) || OS(OPENBSD) || OS(NETBSD) || OS(FREEBSD)
+     long sysconfResult = sysconf(_SC_NPROCESSORS_ONLN);
+ 
+     s_numberOfCores = sysconfResult < 0 ? defaultIfUnavailable : static_cast<int>(sysconfResult);
+--- a/Source/WTF/wtf/StackBounds.cpp	2018-08-15 10:14:40.847145054 -0700
++++ b/Source/WTF/wtf/StackBounds.cpp	2018-08-15 10:17:23.584352622 -0700
+@@ -33,6 +33,10 @@
+ 
+ #include <windows.h>
+ 
++#elif OS(SOLARIS)
++
++#include <thread.h>
++
+ #elif OS(UNIX)
+ 
+ #include <pthread.h>
+@@ -102,6 +106,17 @@
+     return newThreadStackBounds(pthread_self());
+ }
+ 
++#elif OS(SOLARIS)
++
++StackBounds StackBounds::currentThreadStackBoundsInternal()
++{
++    stack_t s;
++    thr_stksegment(&s);
++    void* origin = s.ss_sp;
++    void* bound = static_cast<char*>(origin) - s.ss_size;
++    return StackBounds { origin, bound };
++}
++
+ #elif OS(UNIX)
+ 
+ #if OS(OPENBSD)
+--- a/Source/WTF/wtf/ThreadingPthreads.cpp	2018-08-15 10:18:02.570722929 -0700
++++ b/Source/WTF/wtf/ThreadingPthreads.cpp	2018-08-15 10:19:25.133374993 -0700
+@@ -59,7 +59,12 @@
+ #include <semaphore.h>
+ #include <sys/mman.h>
+ #include <unistd.h>
++
++#if OS(SOLARIS)
++#include <thread.h>
++#else
+ #include <pthread.h>
++#endif
+ 
+ #if HAVE(PTHREAD_NP_H)
+ #include <pthread_np.h>
