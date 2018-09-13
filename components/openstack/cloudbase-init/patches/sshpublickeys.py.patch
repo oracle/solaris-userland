@@ -1,0 +1,47 @@
+Patches to get .ssh permissions right for further use.  Possibly upstreamable.
+
+--- ORIGINAL/cloudbaseinit/plugins/common/sshpublickeys.py	2018-09-07 14:17:54.691900508 +0000
++++ cloudbase-init-0.9.9/cloudbaseinit/plugins/common/sshpublickeys.py	2018-09-13 06:22:34.363101496 +0000
+@@ -13,6 +13,8 @@
+ #    under the License.
+ 
+ import os
++import pwd
++import stat
+ 
+ from oslo_config import cfg
+ from oslo_log import log as oslo_logging
+@@ -37,17 +39,19 @@
+ 
+         username = CONF.username
+ 
+-        osutils = osutils_factory.get_os_utils()
+-        user_home = osutils.get_user_home(username)
+-
+-        if not user_home:
++        try:
++            p = pwd.getpwnam(username)
++            user_home = p.pw_dir
++        except KeyError:
+             raise exception.CloudbaseInitException("User profile not found!")
+ 
+         LOG.debug("User home: %s" % user_home)
+ 
+         user_ssh_dir = os.path.join(user_home, '.ssh')
+         if not os.path.exists(user_ssh_dir):
+-            os.makedirs(user_ssh_dir)
++            os.mkdir(user_ssh_dir)
++            os.chown(user_ssh_dir, p.pw_uid, p.pw_gid)
++            os.chmod(user_ssh_dir, stat.S_IRWXU)
+ 
+         authorized_keys_path = os.path.join(user_ssh_dir, "authorized_keys")
+         LOG.info("Writing SSH public keys in: %s" % authorized_keys_path)
+@@ -55,5 +59,7 @@
+             for public_key in public_keys:
+                 # All public keys are space-stripped.
+                 f.write(public_key + "\n")
+-
++        os.chown(authorized_keys_path, p.pw_uid, p.pw_gid)
++        os.chmod(authorized_keys_path, stat.S_IRUSR|stat.S_IWUSR)
++        
+         return base.PLUGIN_EXECUTION_DONE, False
