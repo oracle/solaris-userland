@@ -1,0 +1,65 @@
+The patch removes unneeded ci.erlang.mk dependency
+to enable offline RabbitMQ server compilation.
+The dependency is used for testing, and it is
+downloaded (unwanted) during the build time.
+
+The patch is not suitable for upstream since
+this change simply removes the dependency
+that is not needed for the release but it is
+required for cowboy, cowlib, and ranch testing.
+
+--- rabbitmq-server-3.7.8/deps/cowlib/Makefile	2018-10-31 11:49:14.994464131 +0000
++++ rabbitmq-server-3.7.8/deps/cowlib/Makefile	2018-10-31 11:47:17.369569362 +0000
+@@ -18,13 +18,12 @@ DIALYZER_OPTS = -Werror_handling -Wunmat
+ 
+ LOCAL_DEPS = crypto
+ 
+-TEST_DEPS = ci.erlang.mk horse proper
++TEST_DEPS = horse proper
+ dep_horse = git https://github.com/ninenines/horse.git master
+ 
+ # CI configuration.
+ 
+-dep_ci.erlang.mk = git https://github.com/ninenines/ci.erlang.mk master
+-DEP_EARLY_PLUGINS = ci.erlang.mk
++DEP_EARLY_PLUGINS =
+ 
+ AUTO_CI_OTP ?= OTP-19+
+ AUTO_CI_HIPE ?= OTP-LATEST
+--- rabbitmq-server-3.7.8/deps/cowboy/Makefile	2018-10-31 11:49:20.535939691 +0000
++++ rabbitmq-server-3.7.8/deps/cowboy/Makefile	2018-10-31 11:47:04.012925290 +0000
+@@ -20,14 +20,13 @@ dep_ranch = git https://github.com/ninen
+ 
+ DOC_DEPS = asciideck
+ 
+-TEST_DEPS = ci.erlang.mk ct_helper gun proper
++TEST_DEPS = ct_helper gun proper
+ dep_ct_helper = git https://github.com/extend/ct_helper master
+ dep_gun = git https://github.com/ninenines/gun master
+ 
+ # CI configuration.
+ 
+-dep_ci.erlang.mk = git https://github.com/ninenines/ci.erlang.mk master
+-DEP_EARLY_PLUGINS = ci.erlang.mk
++DEP_EARLY_PLUGINS =
+ 
+ AUTO_CI_OTP ?= OTP-19+
+ AUTO_CI_HIPE ?= OTP-LATEST
+--- rabbitmq-server-3.7.8/deps/ranch/Makefile	2018-10-31 11:49:26.911349701 +0000
++++ rabbitmq-server-3.7.8/deps/ranch/Makefile	2018-10-31 11:48:11.182869470 +0000
+@@ -16,13 +16,12 @@ LOCAL_DEPS = ssl
+ 
+ DOC_DEPS = asciideck
+ 
+-TEST_DEPS = $(if $(CI_ERLANG_MK),ci.erlang.mk) ct_helper
++TEST_DEPS = ct_helper
+ dep_ct_helper = git https://github.com/ninenines/ct_helper master
+ 
+ # CI configuration.
+ 
+-dep_ci.erlang.mk = git https://github.com/ninenines/ci.erlang.mk master
+-DEP_EARLY_PLUGINS = ci.erlang.mk
++DEP_EARLY_PLUGINS =
+ 
+ AUTO_CI_OTP ?= OTP-18+
+ AUTO_CI_HIPE ?= OTP-LATEST

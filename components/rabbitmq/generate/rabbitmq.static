@@ -1,0 +1,46 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+# Configuration of RabbitMQ logging.
+file files/rabbitmq.logadm.conf path=etc/logadm.d/rabbitmq.logadm.conf group=sys
+# RabbitMQ environment configuration.
+file files/rabbitmq-env.conf path=etc/rabbitmq/rabbitmq-env.conf mode=0644 \
+    overlay=allow preserve=renamenew
+# General configuration of RabbitMQ package.
+file files/rabbitmq.config path=etc/rabbitmq/rabbitmq.config mode=0644 \
+    overlay=allow preserve=renamenew
+# Files required for RabbitMQ service.
+file files/rabbitmq.xml path=lib/svc/manifest/application/rabbitmq.xml
+file files/svc-rabbitmq path=lib/svc/method/rabbitmq \
+    disable_fmri=svc:/application/rabbitmq:default
+# Auxiliary script that sets RabbitMQ home to /var/lib/rabbitmq and calls rabbitmq-server
+# rabbitmqctl, or rabbitmq-plugins based on the link/file name from which it was called.
+file files/rmq-mplex path=usr/bin/rabbitmq-plugins
+link path=usr/bin/rabbitmq-server target=rabbitmq-plugins
+link path=usr/bin/rabbitmqctl target=rabbitmq-plugins
+# RabbitMQ work and log directories.
+dir  path=var/lib/rabbitmq owner=rabbitmq
+dir  path=var/log/rabbitmq owner=rabbitmq
+# RabbitMQ service runs under rabbitmq user (see PSARC/2013/175).
+user username=rabbitmq gcos-field=RabbitMQ group=daemon \
+    home-dir=/var/lib/rabbitmq password=NP uid=48

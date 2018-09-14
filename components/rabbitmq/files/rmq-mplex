@@ -19,8 +19,15 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2013, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 export HOME=/var/lib/rabbitmq
+
+# RabbitMQ commands require the full access to /var/lib/rabbitmq directory.
+if [ ! -r "${HOME}" -o ! -w "${HOME}" -o ! -x "${HOME}" ]; then
+  echo "Insufficient permissions to execute '$(basename $0) $@' command!" >&2
+  exit 1
+fi
+
 exec /usr/lib/rabbitmq/sbin/${0##*/} "$@"
