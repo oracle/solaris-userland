@@ -3,53 +3,74 @@ installing them under usr/lib. Since ODPI-C searches the standard library
 runpath to find libclntsh.so, we bake in the paths where the Instant Client
 is installed if using IPS.
 
-No discussion with the ODPI-C team has occurred yet about how useful this
-patch is for integration with upstream.
+No discussion with the ODPI-C team has occurred about how useful this patch
+ is for integration with upstream.
 
 
---- odpi-2.3.0/Makefile.orig	2018-04-02 10:46 -0800
-+++ odpi-2.3.0/Makefile		2018-04-02 10:46 -0800
-@@ -18,48 +18,85 @@
- #------------------------------------------------------------------------------
+
+--- odpi-2.4.2/Makefile.orig	2018-09-03 23:13:30.654344596 -0700
++++ odpi-2.4.2/Makefile	2018-09-13 21:14:37.606397537 -0700
+@@ -19,16 +19,20 @@
  
  vpath %.c src
  vpath %.h include src
  
-+# Pull in userland definitions.
-+include ../../../../make-rules/shared-macros.mk
-+
-+# We bake in the Instant Client library paths 
-+LDFLAGS32 += -R"\$$ORIGIN/../oracle/instantclient/12.2/lib"
-+LDFLAGS32 += -R"\$$ORIGIN/../oracle/instantclient/12.1/lib"
-+
-+LDFLAGS64 += -R"\$$ORIGIN/../../oracle/instantclient/12.2/lib/$(MACH64)"
-+LDFLAGS64 += -R"\$$ORIGIN/../../oracle/instantclient/12.1/lib/$(MACH64)"
-+
-+
-+# define location for library target and intermediate files
- BUILD_DIR = build
- LIB_DIR = lib
+ PREFIX ?= /usr/local
+-INSTALL_LIB_DIR = $(PREFIX)/lib
++INSTALL_LIB_DIR32 = $(PREFIX)/lib
++INSTALL_LIB_DIR64 = $(PREFIX)/lib/$(MACH64)
+ INSTALL_INC_DIR = $(PREFIX)/include
+ INSTALL_SHARE_DIR = $(PREFIX)/share/odpi
+ 
+-BUILD_DIR = build
+-LIB_DIR = lib
++BUILD_DIR32 =	build32
++BUILD_DIR64 =	build64
++INC_DIR =	include
++LIB_DIR32 = 	lib32
++LIB_DIR64 = 	lib64
+ SAMPLES_DIR = samples
+ TESTS_DIR = test
+ 
+ MAJOR_VERSION = 2
+ MINOR_VERSION = 4
+@@ -35,32 +39,46 @@
+ PATCH_LEVEL = 2
  
  CC = gcc
  LD = gcc
+ INSTALL = install
 -CFLAGS = -Iinclude -O2 -g -Wall -fPIC
--LIBS = -ldl -lpthread
++MKDIR = mkdir
++
++# We bake in the Instant Client library paths 
++LDFLAGS32 += -R"\$$ORIGIN/../oracle/instantclient/18.3/lib"
++LDFLAGS32 += -R"\$$ORIGIN/../oracle/instantclient/12.2/lib"
++LDFLAGS32 += -R"\$$ORIGIN/../oracle/instantclient/12.1/lib"
++
++LDFLAGS64 += -R"\$$ORIGIN/../../oracle/instantclient/18.3/lib/$(MACH64)"
++LDFLAGS64 += -R"\$$ORIGIN/../../oracle/instantclient/12.2/lib/$(MACH64)"
++LDFLAGS64 += -R"\$$ORIGIN/../../oracle/instantclient/12.1/lib/$(MACH64)"
++
++# Default to a 64bit build
++BITS ?= 64
++CFLAGS = -Iinclude -O2 -g -Wall -fPIC -m$(BITS) -I$(INC_DIR)
+ LIBS = -ldl -lpthread
 -LDFLAGS = -shared
-+CFLAGS = -Iinclude -O2 -g -Wall -fPIC -m$(BITS)
-+LIBS = -lpthread
 +LDFLAGS = -shared -m$(BITS) $(LDFLAGS$(BITS))
++
+ VERSION_LIB_NAME = $(LIB_NAME).$(MAJOR_VERSION)
+ FULL_LIB_NAME = $(VERSION_LIB_NAME).$(MINOR_VERSION).$(PATCH_LEVEL)
  ifeq ($(shell uname -s), Darwin)
  	LIB_NAME = libodpic.dylib
  	LIB_OUT_OPTS = -dynamiclib \
  		-install_name $(shell pwd)/$(LIB_DIR)/$(LIB_NAME) \
- 		-o $(LIB_DIR)/$(LIB_NAME)
+ 		-o $(LIB_DIR)/$(FULL_LIB_NAME)
  else
  	LIB_NAME = libodpic.so
--	LIB_OUT_OPTS = -o $(LIB_DIR)/$(LIB_NAME)
-+	DYNLIB = $(LIB_NAME).$(VERS)
-+	LIB_OUT_OPTS = -o $(LIB_DIR)/$(DYNLIB)
-+	# Best practice: set the SONAME
-+	LDFLAGS += -h$(DYNLIB)
+-	LIB_OUT_OPTS = -o $(LIB_DIR)/$(FULL_LIB_NAME)
++	LIB_OUT_OPTS = -o $(LIB_DIR$(BITS))/$(FULL_LIB_NAME)
+ 	LDFLAGS += -Wl,-soname,$(LIB_NAME).$(MAJOR_VERSION)
  endif
  
  SRCS = dpiConn.c dpiContext.c dpiData.c dpiEnv.c dpiError.c dpiGen.c \
@@ -57,53 +78,106 @@ patch is for integration with upstream.
         dpiPool.c dpiStmt.c dpiUtils.c dpiVar.c dpiOracleType.c dpiSubscr.c \
         dpiDeqOptions.c dpiEnqOptions.c dpiMsgProps.c dpiRowid.c dpiOci.c \
         dpiDebug.c dpiHandlePool.c dpiHandleList.c
- OBJS = $(SRCS:%.c=$(BUILD_DIR)/%.o)
+-OBJS = $(SRCS:%.c=$(BUILD_DIR)/%.o)
++OBJS = $(SRCS:%.c=$(BUILD_DIR$(BITS))/%.o)
  
--all: $(BUILD_DIR) $(LIB_DIR) $(LIB_DIR)/$(LIB_NAME)
-+DIRS = $(BUILD_DIR) $(LIB_DIR)
+ SAMPLES_FILES := $(SAMPLES_DIR)/Makefile $(SAMPLES_DIR)/README.md \
+ 		$(wildcard $(SAMPLES_DIR)/*.c) $(wildcard $(SAMPLES_DIR)/*.h) \
+ 		$(wildcard $(SAMPLES_DIR)/sql/*.sql)
+ SAMPLES_TARGETS := $(SAMPLES_FILES:%=$(INSTALL_SHARE_DIR)/%)
+@@ -70,70 +88,53 @@
+ 		$(wildcard $(TESTS_DIR)/*.c) $(wildcard $(TESTS_DIR)/*.h) \
+ 		$(wildcard $(TESTS_DIR)/sql/*.sql)
+ TESTS_TARGETS := $(TESTS_FILES:%=$(INSTALL_SHARE_DIR)/%)
+ INSTALL_TESTS_SQL_DIR := $(INSTALL_SHARE_DIR)/$(TESTS_DIR)/sql
  
-+all: $(DIRS) $(LIB_DIR)/$(DYNLIB)
+-INSTALL_TARGETS = $(INSTALL_INC_DIR)/dpi.h \
+-		$(INSTALL_LIB_DIR)/$(LIB_NAME) $(INSTALL_LIB_DIR)/$(FULL_LIB_NAME) \
+-		$(INSTALL_LIB_DIR)/$(VERSION_LIB_NAME) $(INSTALL_SHARE_DIR)
++INSTALL_TARGETS = \
++		$(INSTALL_LIB_DIR$(BITS))/$(LIB_NAME) \
++		$(INSTALL_LIB_DIR$(BITS))/$(FULL_LIB_NAME) \
++		$(INSTALL_LIB_DIR$(BITS))/$(VERSION_LIB_NAME)
+ 
+-all: $(LIB_DIR)/$(FULL_LIB_NAME) $(LIB_DIR)/$(VERSION_LIB_NAME) \
+-		$(LIB_DIR)/$(LIB_NAME)
++DIRS =		$(BUILD_DIR$(BITS)) $(LIB_DIR$(BITS)) $(INSTALL_LIB_DIR$(BITS)) \
++		$(INSTALL_INC_DIR)/odpi $(INSTALL_SHARE_DIR) $(INSTALL_SAMPLES_SQL_DIR) \
++		$(INSTALL_TESTS_SQL_DIR)
+ 
++all: $(DIRS) $(LIB_DIR$(BITS))/$(FULL_LIB_NAME)
 +
  clean:
--	rm -rf $(BUILD_DIR)
--	rm -rf $(LIB_DIR)
-+	rm -rf $(DIRS)
+-	rm -rf $(BUILD_DIR) $(LIB_DIR)
++	rm -rf $(BUILD_DIR$(BITS)) $(LIB_DIR$(BITS))
  
 -$(BUILD_DIR):
--	mkdir $(BUILD_DIR)
+-	mkdir -p $(BUILD_DIR)
++$(DIRS):
++	$(MKDIR) -p $@
  
 -$(LIB_DIR):
--	mkdir $(LIB_DIR)
-+$(DIRS):
-+	mkdir $@
+-	mkdir -p $(LIB_DIR)
  
- $(BUILD_DIR)/%.o: %.c dpi.h dpiImpl.h dpiErrorMessages.h
+-$(BUILD_DIR)/%.o: %.c dpi.h dpiImpl.h dpiErrorMessages.h
++$(BUILD_DIR$(BITS))/%.o: %.c dpi.h dpiImpl.h dpiErrorMessages.h
  	$(CC) -c $(CFLAGS) $< -o $@
  
--$(LIB_DIR)/$(LIB_NAME): $(OBJS)
-+$(LIB_DIR)/$(DYNLIB): $(OBJS)
+-$(LIB_DIR)/$(FULL_LIB_NAME): $(BUILD_DIR) $(LIB_DIR) $(OBJS)
++$(LIB_DIR$(BITS))/$(FULL_LIB_NAME): $(BUILD_DIR$(BITS)) $(LIB_DIR$(BITS)) $(OBJS)
  	$(LD) $(LDFLAGS) $(LIB_OUT_OPTS) $(OBJS) $(LIBS)
-+
-+
-+install: $(LIB_DIR)/$(DYNLIB) install$(BITS) liblink$(BITS)
-+
-+$(PROTOUSRINCDIR)/odpi/%.h:		include/%.h
-+	$(INS.file)
-+
-+$(PROTOUSRLIBDIR)/%.so.$(VERS):		$(LIB_DIR)/%.so.$(VERS)
-+	$(INS.file) 
-+
-+$(PROTOUSRLIBDIR64)/%.so.$(VERS):	$(LIB_DIR)/%.so.$(VERS)
-+	$(INS.file)
-+
-+liblink32: $(PROTOUSRLIBDIR)/$(DYNLIB)
-+	-$(RM) $(PROTOUSRLIBDIR)/$(LIB_NAME)
-+	$(SYMLINK) $(DYNLIB) $(PROTOUSRLIBDIR)/$(LIB_NAME)
-+
-+liblink64: $(PROTOUSRLIBDIR64)/$(DYNLIB)
-+	-$(RM) $(PROTOUSRLIBDIR64)/$(LIB_NAME)
-+	$(SYMLINK) $(DYNLIB) $(PROTOUSRLIBDIR64)/$(LIB_NAME)
-+
-+install32: $(PROTOUSRLIBDIR)/$(DYNLIB)
-+install64: $(PROTOUSRINCDIR)/odpi/dpi.h $(PROTOUSRLIBDIR64)/$(DYNLIB)
  
+-$(LIB_DIR)/$(VERSION_LIB_NAME): $(LIB_DIR)/$(FULL_LIB_NAME)
+-	ln -sf $(FULL_LIB_NAME) $@
++$(INSTALL_INC_DIR)/odpi/%.h: $(INC_DIR)/%.h
++	$(INSTALL) $< $@
+ 
+-$(LIB_DIR)/$(LIB_NAME): $(LIB_DIR)/$(VERSION_LIB_NAME)
+-	ln -sf $(VERSION_LIB_NAME) $@
++$(INSTALL_LIB_DIR$(BITS))/%: $(LIB_DIR$(BITS))/%
++	$(INSTALL) $< $@
+ 
+-$(INSTALL_LIB_DIR):
+-	mkdir -p $@
+-
+-$(INSTALL_INC_DIR):
+-	mkdir -p $@
+-
+-$(INSTALL_SAMPLES_SQL_DIR):
+-	mkdir -p $@
+-
+-$(INSTALL_TESTS_SQL_DIR):
+-	mkdir -p $@
+-
+-$(INSTALL_INC_DIR)/%.h: %.h
++$(INSTALL_SHARE_DIR)/%.md: %.md
+ 	$(INSTALL) $< $@
+ 
+-$(INSTALL_LIB_DIR)/$(FULL_LIB_NAME): $(LIB_DIR)/$(LIB_NAME)
++$(INSTALL_SHARE_DIR)/%:	%
+ 	$(INSTALL) $< $@
+-	if test "`uname -s`" = Darwin; then \
+-			install_name_tool -id $(INSTALL_LIB_DIR)/$(VERSION_LIB_NAME) $@; fi
+ 
+-$(INSTALL_LIB_DIR)/$(VERSION_LIB_NAME): $(INSTALL_LIB_DIR)/$(FULL_LIB_NAME)
++$(INSTALL_LIB_DIR$(BITS))/$(VERSION_LIB_NAME): $(INSTALL_LIB_DIR$(BITS))/$(FULL_LIB_NAME)
+ 	ln -sf $(FULL_LIB_NAME) $@
+ 
+-$(INSTALL_LIB_DIR)/$(LIB_NAME): $(INSTALL_LIB_DIR)/$(VERSION_LIB_NAME)
++$(INSTALL_LIB_DIR$(BITS))/$(LIB_NAME): $(INSTALL_LIB_DIR$(BITS))/$(VERSION_LIB_NAME)
+ 	ln -sf $(VERSION_LIB_NAME) $@
+ 
+-$(INSTALL_SHARE_DIR)/%: %
+-	$(INSTALL) $< $@
+-
+-install: $(INSTALL_SAMPLES_SQL_DIR) $(INSTALL_TESTS_SQL_DIR) \
+-		$(INSTALL_INC_DIR) $(INSTALL_LIB_DIR) $(INSTALL_TARGETS) \
++install32:	$(INSTALL_TARGETS)
++install64:	$(INSTALL_TARGETS) $(INSTALL_INC_DIR)/odpi/dpi.h \
+ 		$(INSTALL_SHARE_DIR)/README.md $(INSTALL_SHARE_DIR)/LICENSE.md \
+ 		$(SAMPLES_TARGETS) $(TESTS_TARGETS)
+ 
+-uninstall:
+-	rm -rf $(INSTALL_TARGETS)
+-
++install: $(DIRS) install$(BITS)
