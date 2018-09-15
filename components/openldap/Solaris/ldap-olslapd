@@ -186,7 +186,7 @@ function version_check
 		if [[ $seed == "None" || $seed == "ER!" ]]; then
 			version_update
 		elif [[ $seed == "2.4.30" && $vers == "2.4.30" ]] ||
-			     [[ $seed == "2.4.45" && $vers == "2.4.4"@(4|5) ]]; then
+			     [[ $seed == "2.4.45" && $vers == "2.4.4"@([5-6]) ]]; then
 			logit "Notice: Discovered compatible version $seed"
 			version_update
 			version_code=1
@@ -257,7 +257,7 @@ function version_seeding
 	# Very simple discovery based on configured database.
 	# Solaris has only shipped two versions of OpenLDAP.
 	# 2.4.30 provided BDB database.
-	# 2.4.44 and 2.4.45 provided MDB database.
+	# 2.4.44 and newer use the MDB database as the default.
 	typeset db="None"
 	if [[ -d $DATA_DIR ]]; then
 		if [[ -f $DATA_BDB ]]; then

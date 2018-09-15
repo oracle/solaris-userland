@@ -28,7 +28,7 @@
     set action.hash %<1>/man/man5/%<2>.5>
 <transform file path=(.+)/man/man8oldap/(.+).8oldap$ -> \
     set action.hash %<1>/man/man8/%<2>.8>
-<transform file path=usr/share/doc/openldap/images/(.+)$ -> \ 
+<transform file path=usr/share/doc/openldap/images/(.+)$ -> \
     set action.hash $(MACH32)/doc/guide/admin/%<1> >
 <transform file path=usr/share/doc/openldap/admin24/(.+)$ -> \
     set action.hash $(MACH32)/doc/guide/admin/%<1> >
@@ -66,7 +66,8 @@ file path=etc/openldap/schema/openldap.schema
 file path=etc/openldap/schema/pmi.schema
 file path=etc/openldap/schema/ppolicy.schema
 file path=etc/openldap/slapd.conf owner=openldap group=openldap mode=0600 \
-    overlay=allow preserve=true
+    original_name=library/openldap:etc/openldap/slapd.conf overlay=allow \
+    preserve=true
 file path=etc/openldap/slapd.conf.default
 file Solaris/exec_attr path=etc/security/exec_attr.d/library:openldap
 file Solaris/prof_attr path=etc/security/prof_attr.d/library:openldap
@@ -121,7 +122,6 @@ file Solaris/openldap-notice.txt \
 file path=usr/share/man/man5oldap/slapd-config.5oldap
 file path=usr/share/man/man5oldap/slapd-dnssrv.5oldap
 file path=usr/share/man/man5oldap/slapd-ldap.5oldap
-file path=usr/share/man/man5oldap/slapd-ldbm.5oldap
 file path=usr/share/man/man5oldap/slapd-ldif.5oldap
 file path=usr/share/man/man5oldap/slapd-meta.5oldap
 file path=usr/share/man/man5oldap/slapd-monitor.5oldap
