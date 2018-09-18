@@ -1,0 +1,282 @@
+*******************************************************************************
+* These instructions are rudimentary and intended for limited test            *
+* environments only. It may affect configuration files or parameters which    *
+* could conflict with a prior existing DNS server configuration. e.g., pay    *
+* attention to the directory and files that are created, and plan             *
+* accordingly.                                                                *
+*******************************************************************************
+
+Sanity Testing
+==============
+The examples assume:
+   - Server's hostname is "abc"
+   - domain is "us.example.com"
+
+1. Install configuration and start SMF service
+
+root# mkdir -p /var/named/abczone
+root# cd /var/named/abczone
+
+root# cat > /tmp/named-forward_only.sh << _EOF
+#!/bin/ksh
+
+# Discover name servers and domain name.
+resconf=/etc/resolv.conf
+integer servercount
+while read cmd value rest; do
+    case $cmd in
+	(domain|search): :
+	    domain=$value	# Compatible with resolver, last one counts.
+		;;
+	(nameserver): :
+	    nameservers="${nameservers}${value}; "
+	    (( servercount+=1 ))
+		;;
+    esac
+done < $resconf
+
+# If servercount is less than three could query server for others, i.e.
+# dig ns $domain.
+
+# Check it is set, would be better if we validated it too.
+integer fail
+if [[ -z $domain ]]; then
+    print -u2 "domain not set in $resconf"
+    (( fail++ ))
+fi
+if [[ -z $nameservers ]]; then
+    print -u2 "no nameservers found in $resconf"
+    (( fail++ ))
+fi
+(( fail > 0 )) && exit $fail
+
+directory=$PWD
+print "Using domain name : $domain"
+print "Using nameservers : $nameservers"
+if [[ -n $directory ]]; then
+    print "using directory : $directory"
+else
+    print "No specific directory path, will use current directory"
+fi
+print "
+options {
+	${directory:+directory \"${directory}\";}
+	forward only;
+	forwarders { $nameservers };
+	check-names master ignore;
+};
+
+// Be authoritative for fake.com
+zone \"fake.com\" {
+	type master;
+	file \"fake.com.zone\";
+};
+
+// All servers should master loopback zones
+zone \"0.0.127.in-addr.arpa\" in {
+	type master;
+	file \"localhost.zone\";
+};
+
+" > ${directory:+$directory/}named.conf
+
+server=$(uname -n).${domain}.
+email='root'@${server}
+serial=$(date +'%Y%m%d00')
+
+print "
+\$TTL 2D
+0.0.127.IN-ADDR.ARPA.   IN      SOA     ${server} ${email} (
+                                                ${serial} ; Serial
+                                                3600       ; Refresh
+                                                300        ; Retry
+                                                3600000    ; Expire
+                                                14400 )    ; Negative TTL
+                        IN      NS      localhost.
+1                       IN      PTR     localhost.
+" > ${directory:+$directory/}localhost.zone
+
+print "
+\$TTL 2D
+fake.com. IN    SOA     ${server} ${email}  (
+                                ${serial}      ; Serial
+                                3600            ; Refresh
+                                300             ; Retry
+                                3600000         ; Expire
+                                5m )            ; Negative TTL
+
+                        IN      NS      ${server}
+
+xxx     IN      A       192.168.0.1
+        IN      TXT     \"text for xxx.fake.com\"
+
+ipv4	IN	A	192.168.4.1
+ipv6	IN	AAAA	fd10:45df:879f:661d:0::1
+ipboth	IN	TXT	\"Both IP address types\"
+ipboth	IN	A	192.168.4.10
+ipboth	IN	AAAA	fd10:45df:879f:661d:0::10
+" > ${directory:+$directory/}fake.com.zone
+
+print "Verifying configuration"
+named-checkconf -z ${directory:+$directory/}named.conf
+
+# Create rndc.key file if one does not exist.
+# Might be worth reusing a key, so it could be installed on other systems.
+# For now just create one, means rndc-confgen is also tested.
+if [[ ! -f /etc/rndc.key ]]; then
+    print "Creating /etc/rndc.key file"
+    rndc-confgen -a
+else
+    print "Skipping creation of /etc/rndc.key, file already exists."
+fi
+_EOF
+
+root# ksh /tmp/named-forward_only.sh
+Using domain name : us.example.com
+Using nameservers : 10.0.1.52; 10.0.1.41; 192.168.8.8;
+using directory : /var/named/abczone
+Verifying configuration
+zone fake.com/IN: loaded serial 2018040400
+zone 0.0.127.in-addr.arpa/IN: loaded serial 2018040400
+Creating /etc/rndc.key file
+wrote key file "/etc/rndc.key"
+
+root# cp /var/named/abczone/named.conf /etc/named.conf
+root# svcadm enable dns/server
+
+
+2. Look-up IPv4 record
+
+root# dig @0 ipboth.fake.com.
+
+; <<>> DiG 9.10.8-P1 <<>> @0 ipboth.fake.com.
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 62253
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;ipboth.fake.com.               IN      A
+
+;; ANSWER SECTION:
+ipboth.fake.com.        172800  IN      A       192.168.4.10
+
+;; AUTHORITY SECTION:
+fake.com.               172800  IN      NS      abc.us.example.com.
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.1#53(0.0.0.0)
+;; WHEN: Fri Apr 04 11:01:37 PDT 2018
+;; MSG SIZE  rcvd: 85
+
+
+3. Look-up IPv6 record
+
+root# dig @0 AAAA ipboth.fake.com.
+
+; <<>> DiG 9.10.8-P1 <<>> @0 AAAA ipboth.fake.com.
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 8836
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;ipboth.fake.com.               IN      AAAA
+
+;; ANSWER SECTION:
+ipboth.fake.com.        172800  IN      AAAA    fd10:45df:879f:661d::10
+
+;; AUTHORITY SECTION:
+fake.com.               172800  IN      NS      abc.us.example.com.
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.1#53(0.0.0.0)
+;; WHEN: Fri Apr 04 11:01:59 PDT 2018
+;; MSG SIZE  rcvd: 97
+
+
+4. Look-up ANY records
+
+root# dig @0 any ipboth.fake.com.
+
+; <<>> DiG 9.10.8-P1 <<>> @0 any ipboth.fake.com.
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 1469
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 3, AUTHORITY: 1, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;ipboth.fake.com.		IN	ANY
+
+;; ANSWER SECTION:
+ipboth.fake.com.	172800	IN	TXT	"Both IP address types"
+ipboth.fake.com.	172800	IN	A	192.168.4.10
+ipboth.fake.com.	172800	IN	AAAA	fd10:45df:879f:661d::10
+
+;; AUTHORITY SECTION:
+fake.com.		172800	IN	NS	abc.us.example.com.
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.1#53(0.0.0.0)
+;; WHEN: Wed Sep 05 00:35:14 UTC 2018
+;; MSG SIZE  rcvd: 154
+
+
+5. Request zone transfer which should fail
+
+root# dig axfr fake.com.
+
+; <<>> DiG 9.10.8-P1 <<>> axfr fake.com.
+;; global options: +cmd
+; Transfer failed.
+
+
+6. Exercise control of BIND via rndc
+
+root# rndc status
+version: BIND 9.10.8-P1 <id:faec130>
+boot time: Wed, 05 Sep 2018 00:34:52 GMT
+last configured: Wed, 05 Sep 2018 00:34:52 GMT
+CPUs found: 4
+worker threads: 4
+UDP listeners per interface: 3
+number of zones: 3
+debug level: 0
+xfers running: 0
+xfers deferred: 0
+soa queries in progress: 0
+query logging is OFF
+recursive clients: 0/0/1000
+tcp clients: 0/100
+server is up and running
+
+root# rndc stop
+root# rndc status
+rndc: connect failed: 127.0.0.1#953: connection refused
+
+root# svcs dns/server
+STATE          STIME    FMRI
+disabled        0:35:14 svc:/network/dns/server:default
+
+root# svcadm enable dns/server
+root# rndc status
+version: BIND 9.10.8-P1 <id:faec130>
+boot time: Wed, 05 Sep 2018 00:35:17 GMT
+last configured: Wed, 05 Sep 2018 00:35:17 GMT
+CPUs found: 4
+worker threads: 4
+UDP listeners per interface: 3
+number of zones: 3
+debug level: 0
+xfers running: 0
+xfers deferred: 0
+soa queries in progress: 0
+query logging is OFF
+recursive clients: 0/0/1000
+tcp clients: 0/100
+server is up and running

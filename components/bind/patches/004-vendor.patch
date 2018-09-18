@@ -1,39 +1,22 @@
 Patch to install ISC python library files to vendor-packages instead
 of site-packages directory.
 
---- a/bin/python/Makefile.in	2017-06-16 08:02:23.189808786 -0700
-+++ b/bin/python/Makefile.in	2017-06-16 08:06:43.317231009 -0700
-@@ -55,9 +55,9 @@
- 	${INSTALL_DATA} ${srcdir}/dnssec-coverage.8 ${DESTDIR}${mandir}/man8
- 	if test -n "${PYTHON}" ; then \
- 		if test -n "${DESTDIR}" ; then \
--			${PYTHON} ${srcdir}/setup.py install --root=${DESTDIR} --prefix=${prefix} ; \
-+			${PYTHON} ${srcdir}/setup.py install --root=${DESTDIR} --prefix=${prefix} --install-lib=/usr/lib/python3.4/vendor-packages; \
- 		else \
--			${PYTHON} ${srcdir}/setup.py install --prefix=${prefix} ; \
-+			${PYTHON} ${srcdir}/setup.py install --prefix=${prefix} --install-lib=/usr/lib/python3.4/vendor-packages; \
- 		fi \
- 	fi
- 
---- a/bin/python/dnssec-coverage.py.in	2017-06-16 08:11:17.908545913 -0700
-+++ b//bin/python/dnssec-coverage.py.in	2017-06-16 08:13:04.191610207 -0700
-@@ -21,7 +21,7 @@
- sys.path.insert(0, os.path.dirname(sys.argv[0]))
- if os.name != 'nt':
-     sys.path.insert(1, os.path.join('@prefix@', 'lib',
--		    'python' + sys.version[:3], 'site-packages'))
-+		    'python' + sys.version[:3], 'vendor-packages'))
- 
- import isc.coverage
- 
---- a/bin/python/dnssec-checkds.py.in	2017-06-16 08:11:08.433240328 -0700
-+++ b/bin/python/dnssec-checkds.py.in	2017-06-16 08:12:42.240744338 -0700
-@@ -21,7 +21,7 @@
- sys.path.insert(0, os.path.dirname(sys.argv[0]))
- if os.name != 'nt':
-     sys.path.insert(1, os.path.join('@prefix@', 'lib',
--		    'python' + sys.version[:3], 'site-packages'))
-+		    'python' + sys.version[:3], 'vendor-packages'))
- 
- import isc.checkds
- 
+--- old/./configure.in	2018-09-04 11:18:50.810670608 -0700
++++ new/./configure.in	2018-09-04 11:18:50.606344674 -0700
+@@ -310,6 +310,16 @@
+ 			case "$use_python" in
+ 			/*)
+ 				PYTHON="$use_python"
++				case "$use_python_install_dir" in
++				unspec)
++					PYTHON_INSTALL_DIR=""
++					PYTHON_INSTALL_LIB=""
++					;;
++				*)
++					PYTHON_INSTALL_DIR="$use_python_install_dir"
++					PYTHON_INSTALL_LIB="--install-lib=$use_python_install_dir"
++					;;
++				esac
+ 				;;
+ 			*)
+ 				AC_PATH_PROGS(PYTHON, $use_python)
