@@ -81,8 +81,7 @@ CONFIGURE_OPTIONS +=	--disable-nm
 CONFIGURE_OPTIONS +=	--enable-consoleui
 CONFIGURE_OPTIONS +=	--with-ncurses-headers=/usr/include/ncurses
 CONFIGURE_OPTIONS +=	--disable-vv
-# 23200148 undo this once 23169155 Move developer/gnome/gettext to Userland
-CONFIGURE_OPTIONS +=	INTLTOOL_MERGE="$(PERL) /usr/bin/intltool-merge"
+CONFIGURE_OPTIONS +=	--with-system-ssl-certs=/etc/certs
 
 # We have two implementations of libcurses in Solaris. finch needs to use the
 # ncurses one. The curses implementations in turn, use libpanel, but the
