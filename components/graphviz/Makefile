@@ -66,6 +66,7 @@ CXX +=		-std=sun03
 # Make sure to use the right python, depending on the 32/64-bit build.
 CONFIGURE_ENV +=	PYTHON27=$(PYTHON.2.7)
 CONFIGURE_OPTIONS +=	--without-included-ltdl
+CONFIGURE_OPTIONS +=	--enable-ocaml=no
 CONFIGURE_OPTIONS +=	--enable-python=no
 CONFIGURE_OPTIONS +=	--enable-python27=yes
 CONFIGURE_OPTIONS +=	--x-libraries=$(CONFIGURE_LIBDIR.$(BITS))
@@ -130,7 +131,6 @@ REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += print/filter/ghostscript
 REQUIRED_PACKAGES += print/filter/ghostscript-core
 REQUIRED_PACKAGES += runtime/lua
-REQUIRED_PACKAGES += runtime/ocaml
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/ruby-21
 REQUIRED_PACKAGES += runtime/tk-8
