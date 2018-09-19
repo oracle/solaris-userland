@@ -1,0 +1,31 @@
+#
+# Apply upstream fix from gcc 9 to this older version, in order to cause
+# /usr/gcc/*/lib/libgcc-unwind.map to use version 2 mapfile syntax.
+#
+# https://gcc.gnu.org/ml/gcc-patches/2018-09/msg00820.html
+#
+# Without this, 'ld -z guidance' complains about the v1 syntax, and
+# generates warnings the end user has no control over, rendering the
+# guidance feature less useful.
+#
+# This patch is simpler than the upstream patch, because we don't need
+# to test the system for version 2 support, and can use it unconditionally.
+#
+--- gcc-7.3.0-orig/libgcc/config/t-slibgcc-sld	2014-05-08 05:11:14.441934000 +0000
++++ gcc-7.3.0/libgcc/config/t-slibgcc-sld	2018-09-19 09:01:06.002034022 +0000
+@@ -9,10 +9,11 @@
+ # Linker mapfile to enforce direct binding to libgcc_s unwinder
+ # (PR target/59788).
+ libgcc-unwind.map: libgcc-std.ver
+-	@(echo "{";				\
+-	for f in `grep _Unwind_ $< | sort`; do	\
+-	  echo "	$$f = EXTERN DIRECT;";	\
+-	done;					\
++	@(echo '$$mapfile_version 2';  \
++	echo "SYMBOL_SCOPE {";   \
++	for f in `grep _Unwind_ $< | sort`; do \
++	  echo " $$f { FLAGS = EXTERN DIRECT };"; \
++	done;     \
+ 	echo "};" ) > $@
+ 
+ # Copy libgcc-unwind.map to the place where gcc will look for it at build-time.
