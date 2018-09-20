@@ -6,7 +6,7 @@ bug 2990 fixed.
 
 --- include/ntpd.h
 +++ include/ntpd.h
-@@ -480,6 +480,7 @@ extern struct peer *sys_peer;		/* curren
+@@ -483,6 +483,7 @@ extern struct peer *sys_peer;		/* curren
   * Nonspecified system state variables.
   */
  extern int	sys_bclient;		/* we set our time to broadcasts */
@@ -16,7 +16,7 @@ bug 2990 fixed.
  extern l_fp	sys_authdelay;		/* authentication delay */
 --- ntpd/ntp_io.c
 +++ ntpd/ntp_io.c
-@@ -2017,9 +2017,6 @@ update_interfaces(
+@@ -2011,9 +2011,6 @@ update_interfaces(
  	 */
  	refresh_all_peerinterfaces();
  
@@ -39,7 +39,7 @@ bug 2990 fixed.
   int	sys_authenticate;	/* requre authentication for config */
   l_fp	sys_authdelay;		/* authentication delay */
 *************** receive(
-*** 1413,1419 ****
+*** 1431,1437 ****
   			return;
   		}
   #endif /* AUTOKEY */
@@ -47,7 +47,7 @@ bug 2990 fixed.
   			DPRINTF(2, ("receive: AM_NEWBCL drop: not a bclient\n"));
   			sys_restricted++;
   			return;			/* not enabled */
---- 1414,1420 ----
+--- 1432,1438 ----
   			return;
   		}
   #endif /* AUTOKEY */
@@ -56,8 +56,8 @@ bug 2990 fixed.
   			sys_restricted++;
   			return;			/* not enabled */
 *************** init_proto(void)
-*** 4968,4973 ****
---- 4969,4975 ----
+*** 5005,5010 ****
+--- 5006,5012 ----
   	sys_survivors = 0;
   	sys_manycastserver = 0;
   	sys_bclient = 0;
@@ -66,7 +66,7 @@ bug 2990 fixed.
   	sys_authenticate = 1;
   	sys_stattime = current_time;
 *************** proto_config(
-*** 5119,5125 ****
+*** 5156,5162 ****
   	case PROTO_MULTICAST_ADD: /* add group address */
   		if (svalue != NULL)
   			io_multicast_add(svalue);
@@ -74,7 +74,7 @@ bug 2990 fixed.
   		break;
   
   	case PROTO_MULTICAST_DEL: /* delete group address */
---- 5121,5127 ----
+--- 5158,5164 ----
   	case PROTO_MULTICAST_ADD: /* add group address */
   		if (svalue != NULL)
   			io_multicast_add(svalue);
@@ -84,7 +84,7 @@ bug 2990 fixed.
   	case PROTO_MULTICAST_DEL: /* delete group address */
 --- ntpd/ntp_request.c
 +++ ntpd/ntp_request.c
-@@ -1117,7 +1117,7 @@ sys_info(
+@@ -1104,7 +1104,7 @@ sys_info(
  	is->flags = 0;
  	if (sys_authenticate)
  		is->flags |= INFO_FLAG_AUTHENTICATE;

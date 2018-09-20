@@ -1,19 +1,19 @@
 crypto.c:15:test_MakeMd5Mac:PASS
 crypto.c:16:test_MakeSHA1Mac:PASS
-crypto.c:17:test_MakeCMac:PASS
+crypto.c:111:test_MakeCMac:IGNORE: OpenSSL not found, skipping...
 crypto.c:18:test_VerifyCorrectMD5:PASS
 crypto.c:19:test_VerifySHA1:PASS
-crypto.c:198:test_VerifyCMAC:IGNORE: VerifyOpenSSLCMAC needs to be implemented, skipping...
+crypto.c:202:test_VerifyCMAC:IGNORE: OpenSSL not found, skipping...
 crypto.c:21:test_VerifyFailure:PASS
 crypto.c:22:test_PacketSizeNotMultipleOfFourBytes:PASS
 
 -----------------------
 8 Tests: 
-7 PASS 
+6 PASS 
 0 XFAIL 
 0 Failures 
 0 XPASS 
-1 Ignored 
+2 Ignored 
 
 OK
 PASS test-crypto (exit status: 0)
@@ -152,15 +152,15 @@ packetProcessing.c:37:test_AcceptNoSentPacketBroadcastMode:PASS
 packetProcessing.c:38:test_CorrectUnauthenticatedPacket:PASS
 packetProcessing.c:39:test_CorrectAuthenticatedPacketMD5:PASS
 packetProcessing.c:40:test_CorrectAuthenticatedPacketSHA1:PASS
-packetProcessing.c:41:test_CorrectAuthenticatedPacketCMAC:PASS
+packetProcessing.c:488:test_CorrectAuthenticatedPacketCMAC:IGNORE: OpenSSL CMAC not used, skipping...
 
 -----------------------
 19 Tests: 
-19 PASS 
+18 PASS 
 0 XFAIL 
 0 Failures 
 0 XPASS 
-0 Ignored 
+1 Ignored 
 
 OK
 PASS test-packetProcessing (exit status: 0)
@@ -1839,6 +1839,9 @@ PASS test-ntpq (exit status: 0)
 /* Provide the explicit 127.0.0.0/8 martian filter? */
 #define ENABLE_BUG3020_FIX 1
 
+/* Enable CMAC support? */
+#define ENABLE_CMAC 1
+
 /* nls support in libopts */
 /* #undef ENABLE_NLS */
 
@@ -1899,6 +1902,14 @@ PASS test-ntpq (exit status: 0)
 
 /* Define to 1 if you have the `daemon' function. */
 #define HAVE_DAEMON 1
+
+/* Define to 1 if you have the declaration of `siglongjmp', and to 0 if you
+   don't. */
+#define HAVE_DECL_SIGLONGJMP 1
+
+/* Define to 1 if you have the declaration of `sigsetjmp', and to 0 if you
+   don't. */
+#define HAVE_DECL_SIGSETJMP 1
 
 /* Define to 1 if you have the declaration of `strerror_r', and to 0 if you
    don't. */
@@ -2180,6 +2191,12 @@ PASS test-ntpq (exit status: 0)
 
 /* if you have NT Threads */
 /* #undef HAVE_NT_THREADS */
+
+/* Define to 1 if you have the <openssl/cmac.h> header file. */
+#define HAVE_OPENSSL_CMAC_H 1
+
+/* Define to 1 if you have the <openssl/hmac.h> header file. */
+#define HAVE_OPENSSL_HMAC_H 1
 
 /* Define to 1 if the system has the type `pid_t'. */
 #define HAVE_PID_T 1
@@ -2485,6 +2502,9 @@ PASS test-ntpq (exit status: 0)
 /* Define to 1 if you have the <sys/lock.h> header file. */
 #define HAVE_SYS_LOCK_H 1
 
+/* Define to 1 if you have the <sys/mac.h> header file. */
+#define HAVE_SYS_MAC_H 1
+
 /* Define to 1 if you have the <sys/mman.h> header file. */
 #define HAVE_SYS_MMAN_H 1
 
@@ -2644,6 +2664,9 @@ PASS test-ntpq (exit status: 0)
 
 /* Do we have the TIO serial stuff? */
 /* #undef HAVE_TIO_SERIAL_STUFF */
+
+/* Are TrustedBSD MAC policy privileges available? */
+/* #undef HAVE_TRUSTEDBSD_MAC */
 
 /* Define to 1 if the system has the type `uint16_t'. */
 #define HAVE_UINT16_T 1
