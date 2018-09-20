@@ -28,13 +28,13 @@ BUILD_STYLE=justmake
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		odpi
-COMPONENT_VERSION=	2.4.2
+COMPONENT_VERSION=	2.3.0
 #TPNO=			NONE (included with Stack Approval rather than 3PLTA,
 #			for email trail of the approval please see
 #			/shared/sac/PSARC/2017/232/approvals)
 
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:b161a835829c2ea6e85be9e668a852cba0aa84c2f35d1e437d0c40bbd1588643
+	sha256:3d09726537ea4965a4a6b5a024f89c59be782aa07dda9caf933945faef593a42
 COMPONENT_ARCHIVE_URL=	https://github.com/oracle/odpi/archive/v$(COMPONENT_VERSION).tar.gz
 COMPONENT_PROJECT_URL=	https://github.com/oracle/odpi
 COMPONENT_BUGDB=	library/odpi
@@ -46,13 +46,18 @@ TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk
 
+# While we don't expect this version to change, we're setting it
+# here in case it ever does change. If we just changed it in the
+# extracted and patched Makefile, this would most likely get lost.
+# This variable is user for SONAME generation.
+LIBVERS=1
 
 COMPONENT_BUILD_ARGS +=	BITS=$(BITS)
 COMPONENT_BUILD_ENV += CC="$(CC)"
 COMPONENT_BUILD_ENV += CFLAGS="$(CFLAGS)"
 COMPONENT_BUILD_ENV += LDFLAGS="$(LDFLAGS)"
-COMPONENT_BUILD_ENV += MACH64="$(MACH64)"
-COMPONENT_BUILD_ENV += PREFIX="$(PROTOUSRDIR)"
+COMPONENT_BUILD_ENV += MACH64=$(MACH64)
+COMPONENT_BUILD_ENV += VERS=$(LIBVERS)
 COMPONENT_BUILD_TARGETS += all
 
 COMPONENT_PRE_INSTALL_ACTION +=	$(MKDIR) -p $(PROTOUSRINCDIR)/odpi ;
@@ -61,14 +66,14 @@ COMPONENT_PRE_INSTALL_ACTION +=	$(MKDIR) $(PROTOUSRLIBDIR64) ;
 
 COMPONENT_INSTALL_ARGS +=	BITS=$(BITS)
 COMPONENT_INSTALL_ARGS +=	MACH64=$(MACH64)
-COMPONENT_INSTALL_ARGS +=	PREFIX=$(PROTOUSRDIR)
+COMPONENT_INSTALL_ARGS +=	PROTOUSRINCDIR=$(PROTOUSRINCDIR)
+COMPONENT_INSTALL_ARGS +=	PROTOUSRLIBDIR=$(PROTOUSRLIBDIR)
+COMPONENT_INSTALL_ARGS +=	PROTOUSRLIBDIR64=$(PROTOUSRLIBDIR64)
+COMPONENT_INSTALL_ARGS +=	VERS=$(LIBVERS)
 COMPONENT_INSTALL_TARGET +=	install
 
 include ../../make-rules/shared-targets.mk
 
 install:	$(INSTALL_32_and_64)
 
-REQUIRED_PACKAGES += database/oracle/instantclient-183
 REQUIRED_PACKAGES += database/oracle/instantclient-122
-REQUIRED_PACKAGES += database/oracle/instantclient-121
-
