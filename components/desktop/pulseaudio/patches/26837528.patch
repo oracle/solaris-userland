@@ -1,0 +1,72 @@
+bringing in the patch from the desktop gate which was missed 
+when doing the move to Userland.
+
+Reference:
+15799858 - SUNBT7178826 PulseAudio generates error messages 
+in the /var/adm/messages/output
+
+Not suitable for upstream
+
+--- a/src/daemon/main.c	2018-09-20 09:54:50.296701113 -0700
++++ b/src/daemon/main.c	2018-09-20 09:57:18.657419774 -0700
+@@ -785,7 +785,7 @@
+             }
+ 
+             if (retval)
+-                pa_log(_("Daemon startup failed."));
++                pa_log_debug(_("Daemon startup failed."));
+             else
+                 pa_log_info("Daemon startup successful.");
+ 
+@@ -1084,11 +1084,11 @@
+         if (r >= 0)
+             r = pa_cli_command_execute(c, conf->script_commands, buf, &conf->fail);
+ 
+-        pa_log_error("%s", s = pa_strbuf_to_string_free(buf));
++        pa_log_debug("%s", s = pa_strbuf_to_string_free(buf));
+         pa_xfree(s);
+ 
+         if (r < 0 && conf->fail) {
+-            pa_log(_("Failed to initialize daemon."));
++            pa_log_debug(_("Failed to initialize daemon."));
+             goto finish;
+         }
+ 
+--- a/src/modules/oss/oss-util.c	2018-09-20 09:57:34.824927231 -0700
++++ b/src/modules/oss/oss-util.c	2018-09-20 09:58:42.128069993 -0700
+@@ -70,13 +70,13 @@
+ 
+         if ((fd = pa_open_cloexec(device, (*mode = O_WRONLY)|O_NDELAY, 0)) < 0) {
+             if ((fd = pa_open_cloexec(device, (*mode = O_RDONLY)|O_NDELAY, 0)) < 0) {
+-                pa_log("open('%s'): %s", device, pa_cstrerror(errno));
++                pa_log_debug("open('%s'): %s", device, pa_cstrerror(errno));
+                 goto fail;
+             }
+         }
+     } else {
+         if ((fd = pa_open_cloexec(device, *mode|O_NDELAY, 0)) < 0) {
+-            pa_log("open('%s'): %s", device, pa_cstrerror(errno));
++            pa_log_debug("open('%s'): %s", device, pa_cstrerror(errno));
+             goto fail;
+         }
+     }
+--- a/src/pulsecore/module.c	2018-09-20 09:59:04.420172540 -0700
++++ b/src/pulsecore/module.c	2018-09-20 10:01:01.931796751 -0700
+@@ -164,7 +164,7 @@
+     }
+ 
+     if (!(m->init = (int (*)(pa_module*_m)) pa_load_sym(m->dl, name, PA_SYMBOL_INIT))) {
+-        pa_log("Failed to load module \"%s\": symbol \""PA_SYMBOL_INIT"\" not found.", name);
++        pa_log_debug("Failed to load module \"%s\": symbol \""PA_SYMBOL_INIT"\" not found.", name);
+         goto fail;
+     }
+ 
+@@ -178,7 +178,7 @@
+     pa_assert(m->index != PA_IDXSET_INVALID);
+ 
+     if (m->init(m) < 0) {
+-        pa_log_error("Failed to load module \"%s\" (argument: \"%s\"): initialization failed.", name, argument ? argument : "");
++        pa_log_debug("Failed to load module \"%s\" (argument: \"%s\"): initialization failed.", name, argument ? argument : "");
+         goto fail;
+     }
+ 
