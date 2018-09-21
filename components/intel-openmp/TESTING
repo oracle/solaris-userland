@@ -1,0 +1,79 @@
+# In order to test Intel OpenMP library, you need
+# to install clang++ compiler and intel-openmp.
+sudo pkg install developer/llvm/clang
+sudo pkg install library/libiomp5
+
+# Let's create some simple parallel program
+# to test the parallelization and vectorization.
+cat << CPP_PROG > openmp_test.cpp
+#include <algorithm>
+#include <cstdlib>
+#include <vector>
+#define ALIGNMENT 4096
+#define NUM_ELEMS 1048576
+#define CHUNK_COUNT 1024
+#define LOOP_COUNT 10000
+
+int main() {
+
+  float* data = (float*) aligned_alloc(ALIGNMENT, NUM_ELEMS*sizeof(float));
+
+  #pragma omp parallel for
+  for (int i = 0; i < NUM_ELEMS; i += CHUNK_COUNT)
+    std::fill(data, data+CHUNK_COUNT, 0.0);
+
+  #pragma omp parallel for
+  for (int i = 0; i < NUM_ELEMS; i += CHUNK_COUNT) {
+    for (int k = 0; k < LOOP_COUNT; ++k)  {
+      #pragma omp simd aligned(data:ALIGNMENT)
+      for (int j = 0; j < CHUNK_COUNT; ++j)
+        data[i+j] = 0.2f*data[i+j]+0.05f;
+    }
+  }
+
+  free(data);
+
+  return 0;
+}
+CPP_PROG
+
+################## COMPILATION NOTES ######################
+# The inner loop can be vectorized even without openmp
+# pragma (you will see in the compiler output).
+#
+# Although the code does not utilize C++11 features,
+# flag -std=c++11 is required otherwise the compiler emits
+# this error: "error: __float128 is not supported on this target"
+# This is a known regression fixed in upstream.
+# See: https://bugs.llvm.org/show_bug.cgi?id=13530
+#
+# Compiler flag '-liomp5' is required even though
+# it should be passed to the linker automatically.
+# Currently, it is not the case and omitting this flag
+# is resulting in compilation errors (undef symbols).
+###########################################################
+
+# Compile a sequential version for the comparison.
+clang++ -mtune=native -O2 -Rpass=loop-vectorize -std=c++11 \
+-o openmp_test_seq openmp_test.cpp
+
+# Compile the parallel vectorized version.
+clang++ -mtune=native -O2 -fopenmp=libiomp5 -liomp5 \
+-Rpass=loop-vectorize -std=c++11 -o openmp_test_par openmp_test.cpp
+echo ""
+
+# Check that the parallel version is linked with Intel OpenMP library.
+# Result should be similar to 'libiomp5.so.5 =>  /usr/lib/64/libiomp5.so.5'.
+ldd ./openmp_test_par | grep omp
+echo ""
+
+# Measure time required by the sequential and parallel versions, respectively.
+# Parallel version should run significantly faster on multi-core systems.
+echo "Sequential version..."
+time ./openmp_test_seq
+echo ""
+echo "Parallel version..."
+time ./openmp_test_par
+
+# Clean the created temporary files...
+rm openmp_test.cpp openmp_test_seq openmp_test_par
