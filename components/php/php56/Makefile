@@ -29,16 +29,17 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		php
-COMPONENT_VERSION=	5.6.37
+COMPONENT_VERSION=	5.6.38
 UL_PHP_MINOR_VERSION=	5.6
 COMPONENT_PROJECT_URL=	http://php.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=\
-    sha256:5000d82610f9134aaedef28854ec3591f68dedf26a17b8935727dac2843bd256
+    sha256:c2fac47dc6316bd230f0ea91d8a5498af122fb6a3eb43f796c9ea5f59b04aa1e
 COMPONENT_ARCHIVE_URL=	http://php.net/get/$(COMPONENT_ARCHIVE)/from/this/mirror
-TPNO=			45022
-TPNO_IMAP=		32942
 COMPONENT_ANITYA_ID=	12535
+
+TPNO=			46065
+TPNO_IMAP=		32942
 
 include $(WS_MAKE_RULES)/common.mk
 include $(PHP_TOP_DIR)/php.mk
@@ -135,6 +136,9 @@ $(SKIP_TEST_AT_TOP_LEVEL)
 
 clobber::
 	cd ../uw-imap; gmake clobber
+
+# Add directory for generate check
+GENERATE_PROTO_DIRS += files^files
 
 REQUIRED_PACKAGES += developer/icu
 REQUIRED_PACKAGES += library/libxml2
