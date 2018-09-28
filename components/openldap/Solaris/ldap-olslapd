@@ -172,12 +172,13 @@ function version_check
 
 	# Write out current version file for comparison and parsing.
 	${SLAPD} -VV 2>$tmp_file
-	vers=$(grep 'OpenLDAP: slapd' $tmp_file | cut -d" " -f4)
+	curvers=$(grep 'OpenLDAP: slapd' $tmp_file | cut -d" " -f4)
 
 	if [[ -f $VERSION_FILE ]]; then
 		# Compare current version string to saved version string.
-		if ! cmp $VERSION_FILE $tmp_file >/dev/null 2>&1; then
-			error "slapd version mismatch!"
+		oldvers=$(grep 'OpenLDAP: slapd' $VERSION_FILE | cut -d" " -f4)
+		if [[ "$curvers" != "$oldvers" ]]; then
+			error "slapd version mismatch: $curvers v $oldvers"
 			version_code=255
 		fi
 	else
@@ -185,13 +186,14 @@ function version_check
 		seed=$(version_seeding)
 		if [[ $seed == "None" || $seed == "ER!" ]]; then
 			version_update
-		elif [[ $seed == "2.4.30" && $vers == "2.4.30" ]] ||
-			     [[ $seed == "2.4.45" && $vers == "2.4.4"@([5-6]) ]]; then
+		elif [[ $seed == "2.4.30" && $curvers == "2.4.30" ]] ||
+			    [[ $seed == "2.4.45" &&
+				$curvers == "2.4.4"@([5-6]) ]]; then
 			logit "Notice: Discovered compatible version $seed"
 			version_update
 			version_code=1
 		else
-			error "slapd Version mismatch: $seed v $vers"
+			error "slapd Version mismatch: $seed v $curvers"
 			version_code=255
 		fi
 	fi

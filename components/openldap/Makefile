@@ -27,8 +27,10 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		openldap
 COMPONENT_VERSION=	2.4.46
-COMPONENT_PROJECT_URL=	http://www.openldap.org/
+HUMAN_VERSION=		$(COMPONENT_VERSION)-S1
+IPS_COMPONENT_VERSION=	2.4.46.0.1
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
+COMPONENT_PROJECT_URL=	http://www.openldap.org/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:9a90dcb86b99ae790ccab93b7585a31fbcbeec8c94bf0f7ab0ca0a87ea0c4b2d
 COMPONENT_ARCHIVE_URL=	ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/$(COMPONENT_ARCHIVE)
