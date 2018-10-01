@@ -20,20 +20,20 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nettle
-COMPONENT_VERSION=	3.2
+COMPONENT_VERSION=	3.4
 COMPONENT_PROJECT_URL=	http://www.lysator.liu.se/~nisse/nettle/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:ea4283def236413edab5a4cf9cf32adf540c8df1b9b67641cfc2302fca849d97
+    sha256:ae7a42df026550b85daca8389b6a60ba6313b0567f374392e54918588a411e94
 COMPONENT_BUGDB=	library/nettle
 COMPONENT_ANITYA_ID=	2073
 
-TPNO=	27549
+TPNO=	46020
 
 # We need to build an extra static version of these libraries for
 # GRUB/Wanboot support.

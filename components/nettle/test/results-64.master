@@ -14,9 +14,11 @@ PASS: md2
 PASS: md4
 PASS: md5
 PASS: md5-compat
+PASS: memeql
 PASS: memxor
 PASS: gosthash94
 PASS: ripemd160
+PASS: hkdf
 PASS: salsa20
 PASS: sha1
 PASS: sha224
@@ -35,6 +37,7 @@ PASS: twofish
 PASS: version
 PASS: knuth-lfib
 PASS: cbc
+PASS: cfb
 PASS: ctr
 PASS: gcm
 PASS: eax
@@ -50,6 +53,7 @@ PASS: meta-armor
 PASS: buffer
 PASS: yarrow
 PASS: pbkdf2
+PASS: pss-mgf1
 PASS: sexp
 PASS: sexp-format
 PASS: rsa2sexp
@@ -57,7 +61,9 @@ PASS: sexp2rsa
 PASS: bignum
 PASS: random-prime
 PASS: pkcs1
+PASS: pss
 PASS: rsa-sign-tr
+PASS: rsa-pss-sign-tr
 PASS: rsa
 PASS: rsa-encrypt
 PASS: rsa-keygen
@@ -87,13 +93,13 @@ PASS: nettle-pbkdf2
 PASS: symbols
 PASS: dlopen
 ===================
-All 88 tests passed
+All 94 tests passed
 ===================
 make[2]: Leaving directory '$(@D)/testsuite'
 Making check in examples
 make[2]: Entering directory '$(@D)/examples'
-LD_LIBRARY_PATH=../.lib PATH="../.lib:$PATH" srcdir="$(SOURCE_DIR)/examples" \
-  EMULATOR="" EXEEXT="" \
+LD_LIBRARY_PATH=../.lib PATH="../.lib:$PATH" DYLD_LIBRARY_PATH=../.lib \
+  srcdir="$(SOURCE_DIR)/examples" EMULATOR="" EXEEXT="" \
           "$(SOURCE_DIR)"/run-tests rsa-sign-test rsa-verify-test rsa-encrypt-test
 xxxxxx
 xxxxxx
