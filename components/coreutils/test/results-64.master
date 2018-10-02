@@ -15,6 +15,8 @@ PASS: tests/tail-2/F-headers.sh
 PASS: tests/tail-2/descriptor-vs-rename.sh
 SKIP: tests/tail-2/inotify-rotate.sh
 SKIP: tests/tail-2/inotify-rotate-resources.sh
+SKIP: tests/tail-2/inotify-dir-recreate.sh
+SKIP: tests/tail-2/inotify-only-regular.sh
 PASS: tests/chmod/no-x.sh
 PASS: tests/chgrp/basic.sh
 PASS: tests/rm/dangling-symlink.sh
@@ -62,7 +64,7 @@ PASS: tests/rm/unread3.sh
 PASS: tests/rm/unreadable.pl
 PASS: tests/rm/v-slash.sh
 SKIP: tests/rm/many-dir-entries-vs-OOM.sh
-SKIP: tests/rm/rm-readdir-fail.sh
+PASS: tests/rm/rm-readdir-fail.sh
 PASS: tests/chgrp/default-no-deref.sh
 PASS: tests/chgrp/deref.sh
 PASS: tests/chgrp/no-x.sh
@@ -119,18 +121,23 @@ PASS: tests/misc/csplit-1000.sh
 PASS: tests/misc/csplit-heap.sh
 SKIP: tests/misc/csplit-io-err.sh
 PASS: tests/misc/csplit-suppress-matched.pl
-FAIL: tests/misc/date-debug.sh
+PASS: tests/misc/date-debug.sh
 PASS: tests/misc/date-sec.sh
+PASS: tests/misc/date-tz.sh
 FAIL: tests/misc/dircolors.pl
 PASS: tests/misc/dirname.pl
 PASS: tests/misc/env-null.sh
+PASS: tests/misc/env-S.pl
+PASS: tests/misc/env-S-script.sh
 PASS: tests/misc/expand.pl
-PASS: tests/misc/expr.pl
+FAIL: tests/misc/expr.pl
+PASS: tests/misc/expr-multibyte.pl
 PASS: tests/misc/factor.pl
 PASS: tests/misc/factor-parallel.sh
 PASS: tests/misc/false-status.sh
 PASS: tests/misc/fold.pl
 PASS: tests/misc/groups-dash.sh
+PASS: tests/misc/groups-process-all.sh
 PASS: tests/misc/groups-version.sh
 PASS: tests/misc/head-c.sh
 PASS: tests/misc/head-pos.sh
@@ -254,6 +261,8 @@ PASS: tests/misc/truncate-overflow.sh
 PASS: tests/misc/truncate-parameters.sh
 PASS: tests/misc/truncate-relative.sh
 PASS: tests/misc/tsort.pl
+PASS: tests/misc/tty.sh
+PASS: tests/misc/usage_vs_getopt.sh
 PASS: tests/misc/unexpand.pl
 PASS: tests/misc/uniq.pl
 PASS: tests/misc/uniq-perf.sh
@@ -293,7 +302,7 @@ PASS: tests/cp/dir-rm-dest.sh
 PASS: tests/cp/dir-slash.sh
 PASS: tests/cp/dir-vs-file.sh
 PASS: tests/cp/existing-perm-dir.sh
-PASS: tests/cp/existing-perm-race.sh
+SKIP: tests/cp/existing-perm-race.sh
 PASS: tests/cp/fail-perm.sh
 SKIP: tests/cp/fiemap-extents.sh
 SKIP: tests/cp/fiemap-FMR.sh
@@ -344,6 +353,7 @@ SKIP: tests/dd/direct.sh
 PASS: tests/dd/misc.sh
 PASS: tests/dd/no-allocate.sh
 PASS: tests/dd/nocache.sh
+SKIP: tests/dd/nocache_eof.sh
 PASS: tests/dd/not-rewound.sh
 PASS: tests/dd/reblock.sh
 PASS: tests/dd/skip-seek.pl
@@ -405,17 +415,19 @@ PASS: tests/ln/relative.sh
 PASS: tests/ln/sf-1.sh
 PASS: tests/ln/slash-decorated-nonexistent-dest.sh
 PASS: tests/ln/target-1.sh
+PASS: tests/ls/a-option.sh
 PASS: tests/ls/abmon-align.sh
 PASS: tests/ls/block-size.sh
 PASS: tests/ls/color-clear-to-eol.sh
 PASS: tests/ls/color-dtype-dir.sh
 PASS: tests/ls/color-norm.sh
 PASS: tests/ls/color-term.sh
+PASS: tests/ls/color-ext.sh
 PASS: tests/ls/dangle.sh
 PASS: tests/ls/dired.sh
 PASS: tests/ls/file-type.sh
 PASS: tests/ls/follow-slink.sh
-SKIP: tests/ls/getxattr-speedup.sh
+PASS: tests/ls/getxattr-speedup.sh
 PASS: tests/ls/hex-option.sh
 PASS: tests/ls/infloop.sh
 PASS: tests/ls/inode.sh
@@ -436,9 +448,11 @@ PASS: tests/ls/stat-failed.sh
 SKIP: tests/ls/stat-free-color.sh
 SKIP: tests/ls/stat-free-symlinks.sh
 PASS: tests/ls/stat-vs-dirent.sh
+PASS: tests/ls/symlink-quote.sh
 PASS: tests/ls/symlink-slash.sh
 PASS: tests/ls/time-style-diag.sh
 PASS: tests/ls/x-option.sh
+PASS: tests/ls/hyperlink.sh
 PASS: tests/mkdir/p-1.sh
 PASS: tests/mkdir/p-2.sh
 PASS: tests/mkdir/p-3.sh
@@ -446,8 +460,8 @@ SKIP: tests/mkdir/p-acl.sh
 PASS: tests/mkdir/p-slashdot.sh
 PASS: tests/mkdir/p-thru-slink.sh
 PASS: tests/mkdir/p-v.sh
-PASS: tests/mkdir/parents.sh
-PASS: tests/mkdir/perm.sh
+SKIP: tests/mkdir/parents.sh
+SKIP: tests/mkdir/perm.sh
 SKIP: tests/mkdir/selinux.sh
 SKIP: tests/mkdir/restorecon.sh
 PASS: tests/mkdir/special-1.sh
@@ -530,6 +544,7 @@ SKIP: tests/cp/special-bits.sh
 SKIP: tests/cp/cp-mv-enotsup-xattr.sh
 SKIP: tests/cp/capability.sh
 SKIP: tests/cp/sparse-fiemap.sh
+SKIP: tests/cp/cross-dev-symlink.sh
 SKIP: tests/dd/skip-seek-past-dev.sh
 SKIP: tests/df/problematic-chars.sh
 SKIP: tests/df/over-mount-device.sh
@@ -552,6 +567,7 @@ SKIP: tests/rm/no-give-up.sh
 SKIP: tests/rm/one-file-system.sh
 SKIP: tests/rm/read-only.sh
 SKIP: tests/tail-2/append-only.sh
+SKIP: tests/tail-2/end-of-device.sh
 SKIP: tests/touch/now-owned-by-other.sh
 SKIP: tests/factor/t00.sh
 SKIP: tests/factor/t01.sh
@@ -590,9 +606,9 @@ SKIP: tests/factor/t33.sh
 SKIP: tests/factor/t34.sh
 SKIP: tests/factor/t35.sh
 SKIP: tests/factor/t36.sh
-# TOTAL: 592
-# PASS:  446
-# SKIP:  143
+# TOTAL: 608
+# PASS:  456
+# SKIP:  149
 # XFAIL: 0
 # FAIL:  3
 # XPASS: 0
@@ -613,14 +629,17 @@ SKIP: tests/tail-2/inotify-rotate
 SKIP tests/tail-2/inotify-rotate.sh (exit status: 77)
 SKIP: tests/tail-2/inotify-rotate-resources
 SKIP tests/tail-2/inotify-rotate-resources.sh (exit status: 77)
+SKIP: tests/tail-2/inotify-dir-recreate
+SKIP tests/tail-2/inotify-dir-recreate.sh (exit status: 77)
+SKIP: tests/tail-2/inotify-only-regular
+SKIP tests/tail-2/inotify-only-regular.sh (exit status: 77)
 SKIP: tests/rm/hash
 SKIP tests/rm/hash.sh (exit status: 77)
 SKIP: tests/rm/r-root
++ unset CU_TEST_SKIP_EXIT
 SKIP tests/rm/r-root.sh (exit status: 77)
 SKIP: tests/rm/many-dir-entries-vs-OOM
 SKIP tests/rm/many-dir-entries-vs-OOM.sh (exit status: 77)
-SKIP: tests/rm/rm-readdir-fail
-SKIP tests/rm/rm-readdir-fail.sh (exit status: 77)
 SKIP: tests/misc/seq-io-errors
 SKIP tests/misc/seq-io-errors.sh (exit status: 77)
 SKIP: tests/misc/seq-long-double
@@ -639,10 +658,10 @@ SKIP: tests/misc/cat-proc
 SKIP tests/misc/cat-proc.sh (exit status: 77)
 SKIP: tests/misc/csplit-io-err
 SKIP tests/misc/csplit-io-err.sh (exit status: 77)
-FAIL: tests/misc/date-debug
-FAIL tests/misc/date-debug.sh (exit status: 1)
 FAIL: tests/misc/dircolors
 FAIL tests/misc/dircolors.pl (exit status: 1)
+FAIL: tests/misc/expr
+FAIL tests/misc/expr.pl (exit status: 1)
 SKIP: tests/misc/head-write-error
 SKIP tests/misc/head-write-error.sh (exit status: 77)
 SKIP: tests/misc/md5sum-parallel
@@ -679,6 +698,8 @@ SKIP: tests/chown/separator
 SKIP tests/chown/separator.sh (exit status: 77)
 SKIP: tests/cp/acl
 SKIP tests/cp/acl.sh (exit status: 77)
+SKIP: tests/cp/existing-perm-race
+SKIP tests/cp/existing-perm-race.sh (exit status: 77)
 SKIP: tests/cp/fiemap-extents
 SKIP tests/cp/fiemap-extents.sh (exit status: 77)
 SKIP: tests/cp/fiemap-FMR
@@ -703,6 +724,8 @@ SKIP: tests/df/skip-rootfs
 SKIP tests/df/skip-rootfs.sh (exit status: 77)
 SKIP: tests/dd/direct
 SKIP tests/dd/direct.sh (exit status: 77)
+SKIP: tests/dd/nocache_eof
+SKIP tests/dd/nocache_eof.sh (exit status: 77)
 SKIP: tests/du/2g
 SKIP tests/du/2g.sh (exit status: 77)
 SKIP: tests/du/fd-leak
@@ -723,8 +746,6 @@ SKIP: tests/install/install-C-selinux
 SKIP tests/install/install-C-selinux.sh (exit status: 77)
 SKIP: tests/install/install-Z-selinux
 SKIP tests/install/install-Z-selinux.sh (exit status: 77)
-SKIP: tests/ls/getxattr-speedup
-SKIP tests/ls/getxattr-speedup.sh (exit status: 77)
 SKIP: tests/ls/no-cap
 SKIP tests/ls/no-cap.sh (exit status: 77)
 SKIP: tests/ls/slink-acl
@@ -737,6 +758,10 @@ SKIP: tests/ls/stat-free-symlinks
 SKIP tests/ls/stat-free-symlinks.sh (exit status: 77)
 SKIP: tests/mkdir/p-acl
 SKIP tests/mkdir/p-acl.sh (exit status: 77)
+SKIP: tests/mkdir/parents
+SKIP tests/mkdir/parents.sh (exit status: 77)
+SKIP: tests/mkdir/perm
+SKIP tests/mkdir/perm.sh (exit status: 77)
 SKIP: tests/mkdir/selinux
 SKIP tests/mkdir/selinux.sh (exit status: 77)
 SKIP: tests/mkdir/restorecon
@@ -769,6 +794,8 @@ SKIP: tests/cp/capability
 SKIP tests/cp/capability.sh (exit status: 77)
 SKIP: tests/cp/sparse-fiemap
 SKIP tests/cp/sparse-fiemap.sh (exit status: 77)
+SKIP: tests/cp/cross-dev-symlink
+SKIP tests/cp/cross-dev-symlink.sh (exit status: 77)
 SKIP: tests/dd/skip-seek-past-dev
 SKIP tests/dd/skip-seek-past-dev.sh (exit status: 77)
 SKIP: tests/df/problematic-chars
@@ -813,6 +840,8 @@ SKIP: tests/rm/read-only
 SKIP tests/rm/read-only.sh (exit status: 77)
 SKIP: tests/tail-2/append-only
 SKIP tests/tail-2/append-only.sh (exit status: 77)
+SKIP: tests/tail-2/end-of-device
+SKIP tests/tail-2/end-of-device.sh (exit status: 77)
 SKIP: tests/touch/now-owned-by-other
 SKIP tests/touch/now-owned-by-other.sh (exit status: 77)
 SKIP: tests/factor/t00
@@ -889,9 +918,9 @@ SKIP: tests/factor/t35
 SKIP tests/factor/t35.sh (exit status: 77)
 SKIP: tests/factor/t36
 SKIP tests/factor/t36.sh (exit status: 77)
-# TOTAL: 592
-# PASS:  446
-# SKIP:  143
+# TOTAL: 608
+# PASS:  456
+# SKIP:  149
 # XFAIL: 0
 # FAIL:  3
 # XPASS: 0

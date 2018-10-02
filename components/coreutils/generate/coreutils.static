@@ -1,0 +1,35 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+# Install is gnu only but it also has g prefixed link (both man pages and program)
+link path=usr/bin/ginstall target=install facet.compat.gnulinks=true
+link path=usr/share/man/man1/ginstall.1 target=install.1 facet.compat.gnulinks=all
+
+link path=usr/gnu/bin/install target=../../bin/install
+link path=usr/gnu/share/man/man1/install.1 target=../../../../share/man/man1/install.1
+
+# libstdbuf.so is added from non prototype area
+file $(MACH32)/src/libstdbuf.so path=usr/lib/libstdbuf.so
+file $(MACH64)/src/libstdbuf.so path=usr/lib/$(MACH64)/libstdbuf.so

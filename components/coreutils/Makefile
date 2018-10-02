@@ -20,20 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
+COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		coreutils
-COMPONENT_VERSION=	8.27
+COMPONENT_VERSION=	8.30
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8891d349ee87b9ff7870f52b6d9312a9db672d2439d289bc57084771ca21656b
+    sha256:e831b3a86091496cdba720411f9748de81507798f6130adeaef872d206e1b057
 COMPONENT_BUGDB=	utility/gnu-coreutils
 COMPONENT_ANITYA_ID=	343
 
-TPNO=			34397
+TPNO=			46210
 
 TEST_TARGET= install $(TEST_64)
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
@@ -47,6 +48,10 @@ PATCH_LEVEL=		0
 CPPFLAGS += -I$(USRINCDIR)/gmp
 CONFIGURE_PREFIX	 =	$(USRGNUDIR)
 CONFIGURE_OPTIONS	+=	--infodir=$(CONFIGURE_INFODIR)
+
+# Acknowledge that 32bit version will build with 32bit time_t type
+# This is needed since version 8.29 because of 'year2038' warning
+CONFIGURE_OPTIONS.32 += TIME_T_32_BIT_OK=yes
 
 # Recreate configure and Makefile to pick up changes in .../src/local.mk
 COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -f && automake)

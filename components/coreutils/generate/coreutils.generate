@@ -1,0 +1,61 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+# Do not add 32 bit versions of coreutils
+<transform path=usr/gnu/bin/\$\(MACH32\)/.+ -> drop>
+
+# Remove not applicable to Solaris (SELinux-specific)
+<transform file path=usr/gnu/share/man/man1/(runcon|chcon).1 -> drop>
+<transform file path=usr/gnu/bin/(runcon|chcon) -> drop>
+
+
+# Move programs without non-gnu variant from gnu folder
+<transform file link path=usr/gnu/bin/(b2sum|base32|base64|dir|dircolors|install|md5sum|nproc|numfmt|pinky|printenv|ptx|readlink|realpath|seq|sha1sum|sha224sum|sha256sum|sha384sum|sha512sum|shred|shuf|stat|stdbuf|tac|timeout|truncate|users|vdir|whoami)$ -> set pkg.type nongnu>
+
+<transform file link pkg.type=nongnu -> set action.hash %(path)>
+<transform file link pkg.type=nongnu -> edit path gnu/bin bin>
+<transform file link -> delete pkg.type .*>
+
+# Move man pages for programs without non-gnu variant from gnu folder
+<transform file link path=usr/gnu/share/man/man1/(b2sum|base32|base64|dir|dircolors|install|md5sum|nproc|numfmt|pinky|printenv|ptx|readlink|realpath|seq|sha1sum|sha224sum|sha256sum|sha384sum|sha512sum|shred|shuf|stat|stdbuf|tac|timeout|truncate|users|vdir|whoami).1 -> set man.type nongnu>
+
+<transform file link man.type=nongnu -> set action.hash %(path)>
+<transform file link man.type=nongnu -> edit path gnu/share share>
+<transform file link -> delete man.type .*>
+
+
+# Create g prefixed link for each gnu program
+<transform file link path=usr/gnu/bin/(.*) \
+	-> emit link path=/usr/bin/g%<1> target=../gnu/bin/%<1> facet.compat.gnulinks=true>
+
+# Create g prefixed link for each gnu program
+<transform file link path=usr/gnu/share/man/man1/(.*) \
+	-> emit link path=usr/share/man/man1/g%<1> target=../../../gnu/share/man/man1/%<1> facet.compat.gnulinks=all>
+
+# Program [ doesn't have g prefixed link
+<transform link path=usr/bin/g\[ -> drop>
+
+# libstdbuf.so is added from other directory via .static file
+<transform file path=usr/gnu/libexec/coreutils/libstdbuf.so -> drop>
