@@ -1,0 +1,32 @@
+#
+# This patch (developed in-house) addresses a misaligned access in
+# pkcs11_inspect(1) when compiled 64-bit which triggers a SIGBUS on SPARC
+# hardware.  The following bug has been filed upstream:
+#
+# https://github.com/OpenSC/pam_pkcs11/issues/28
+#
+diff --git a/src/common/cert_info.c b/src/common/cert_info.c
+--- a/src/common/cert_info.c
++++ b/src/common/cert_info.c
+@@ -668,7 +668,7 @@ static char **cert_info_sshpuk(X509 *x50
+ 	const char *type;
+ 	char *buf;
+ 	unsigned char *blob,*pt,*data = NULL;
+-	int data_len;
++	size_t data_len;
+ 	int res;
+ 	static char *entries[2] = { NULL,NULL };
+ 	EVP_PKEY *pubk = X509_get_pubkey(x509);
+@@ -717,10 +717,10 @@ static char **cert_info_sshpuk(X509 *x50
+ 	/* data_len=8192; */
+ 	data=calloc(data_len,sizeof(unsigned char));
+ 	if(!data) {
+-		DBG1("calloc() to uuencode buffer '%d'",data_len);
++		DBG1("calloc() to uuencode buffer '%zu'",data_len);
+ 		goto sshpuk_fail;
+ 	}
+-	res= base64_encode(blob,pt-blob,data,(size_t *) &data_len);
++	res= base64_encode(blob,pt-blob,data,&data_len);
+ 	if (res<0) {
+ 		DBG("BASE64 Encode failed");
+ 		goto sshpuk_fail;
