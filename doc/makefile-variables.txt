@@ -375,10 +375,16 @@ publication, the following variables are available:
   PYTHON_VERSIONS.  MAYBE_PYVER_SPACE (e.g. '2.7 ') and MAYBE_SPACE_PYVER
   (e.g. ' 2.7') are derived from PYVER if defined.  If PYVER is not defined
   (such as when a generic unversioned Python package manifest is being
-  created), these are defined as ''.  perl and ruby follow the same pattern
-  and define PERLVER, PERL_VERSIONS, MAYBE_SPACE_PERLVER, MAYBE_PERLVER_SPACE
-  and RUBY_VERSION, RUBY_VERSIONS, MAYBE_RUBY_VERSION_SPACE,
-  MAYBE_SPACE_RUBY_VERSION respectively.
+  created), these are defined as ''.
+
+* Variable PYTHON3_SOABI selects between two library naming schemes of
+  python3 extensions: *.cpython3Xm.so ("cpython") or *.abi3.so ("abi3").
+  Currently, only a few components use ABI3 compliant extensions,
+  therefore, the default value is set to "cpython".
+
+* Perl and ruby follow the same pattern as python and define PERLVER,
+  PERL_VERSIONS, MAYBE_SPACE_PERLVER, MAYBE_PERLVER_SPACE and RUBY_VERSION,
+  RUBY_VERSIONS, MAYBE_RUBY_VERSION_SPACE, MAYBE_SPACE_RUBY_VERSION respectively.
 
 * TPNO is the Third Party number (i.e., a numeric value): the License
   Technology from the Product Lifecycle Suite tool.  This should be used

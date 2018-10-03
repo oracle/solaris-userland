@@ -23,7 +23,6 @@
 # Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
-include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xattr
 COMPONENT_VERSION=	0.9.3
@@ -38,6 +37,10 @@ COMPONENT_ANITYA_ID=	7504
 
 TPNO=			41361
 
+# Component uses ABI3 naming.
+PYTHON3_SOABI=abi3
+
+include ../../../make-rules/shared-macros.mk
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk

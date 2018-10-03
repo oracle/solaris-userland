@@ -101,7 +101,9 @@ MANIFEST_LIMITING_VARS += -D $(1)="$(subst #,\#,$($(1)))"
 endef
 
 # Make all the limiting variables available to manifest processing
-$(foreach var, $(filter SOLARIS_11_%_ONLY, $(.VARIABLES)), \
+$(foreach var, $(filter SOLARIS_11_%_ONLY,$(.VARIABLES)), \
+    $(eval $(call add-limiting-variable,$(var))))
+$(foreach var, $(filter PY3_%_NAMING,$(.VARIABLES)), \
     $(eval $(call add-limiting-variable,$(var))))
 
 # For items defined as variables or that may contain whitespace, add
@@ -278,17 +280,14 @@ mkgeneric = \
 # Creates build/manifest-*-modulename-##.p5m file where ## is replaced with
 # the version number.
 define python-manifest-rule
-$(MANIFEST_BASE)-%-$(shell echo $(1) | tr -d .).mogrified: PKG_MACROS += PYTHON_$(1)_ONLY=
+$(MANIFEST_BASE)-%-$(2).mogrified: PKG_MACROS += PYTHON_$(1)_ONLY=
 
-$(MANIFEST_BASE)-%-$(shell echo $(1) | tr -d .).p5m: %-PYVER.p5m
-	if [ -f $$*-$(shell echo $(1) | tr -d .)GENFRAG.p5m ]; then cat $$*-$(shell echo $(1) | tr -d .)GENFRAG.p5m >> $$@; fi
+$(MANIFEST_BASE)-%-$(2).p5m: %-PYVER.p5m
 	$(PKGFMT) $(PKGFMT_CHECK_ARGS) $(CANONICAL_MANIFESTS)
 	$(PKGMOGRIFY) -D PYVER=$(1) -D MAYBE_PYVER_SPACE="$(1) " \
-		-D MAYBE_SPACE_PYVER=" $(1)" \
-		$(MANIFEST_LIMITING_VARS) \
-		-D PYV=$(shell echo $(1) | tr -d .) $$< > $$@
+		-D MAYBE_SPACE_PYVER=" $(1)" $(MANIFEST_LIMITING_VARS) -D PYV=$(2) $$< > $$@
 endef
-$(foreach ver,$(PYTHON_VERSIONS),$(eval $(call python-manifest-rule,$(ver))))
+$(foreach ver,$(PYTHON_VERSIONS),$(eval $(call python-manifest-rule,$(ver),$(shell echo $(ver) | tr -d .))))
 
 # A rule to create a helper transform package for python, that will insert the
 # appropriate conditional dependencies into a python library's

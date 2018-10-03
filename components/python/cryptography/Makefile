@@ -23,9 +23,6 @@
 # Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
-COMPILER=		gcc
-include ../../../make-rules/shared-macros.mk
-
 COMPONENT_NAME=		cryptography
 COMPONENT_VERSION=	2.1.4
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
@@ -39,6 +36,12 @@ COMPONENT_ANITYA_ID=	5532
 
 TPNO=			37828
 
+COMPILER=		gcc
+
+# Component uses ABI3 naming.
+PYTHON3_SOABI=abi3
+
+include ../../../make-rules/shared-macros.mk
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
