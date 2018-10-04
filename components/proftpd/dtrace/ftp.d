@@ -28,20 +28,20 @@ typedef struct ftpproto {
 translator conninfo_t <ftpproto_t *f> {
 	ci_protocol = "tcp";
 	ci_remote = copyinstr((uintptr_t)
-	(uintptr_t)copyin((uintptr_t)&f->ftp_raddr, sizeof (uintptr_t)));
+	*(uintptr_t *)copyin((uintptr_t)&f->ftp_raddr, sizeof (uintptr_t)));
 	ci_local = "<unknown>";
 };
 
 #pragma D binding "1.6.1" translator
 translator ftpinfo_t <ftpproto_t *f> {
-	fti_user = copyinstr((uintptr_t)
+	fti_user = copyinstr(
 	    *(uintptr_t *)copyin((uintptr_t)&f->ftp_user, sizeof (uintptr_t)));
-	fti_cmd = copyinstr((uintptr_t)
+	fti_cmd = copyinstr(
 	    *(uintptr_t *)copyin((uintptr_t)&f->ftp_cmd, sizeof (uintptr_t)));
-	fti_pathname = copyinstr((uintptr_t)
+	fti_pathname = copyinstr(
 	    *(uintptr_t *)copyin((uintptr_t)&f->ftp_pathname,
 	    sizeof (uintptr_t)));
 	fti_nbytes =
 	    *(uint64_t *)copyin((uintptr_t)&f->ftp_nbytes, sizeof (uint64_t));
-	fti_fd = (uintptr_t)copyin((uintptr_t)&f->ftp_fd, sizeof (uintptr_t));
+	fti_fd = *(int *)copyin((uintptr_t)&f->ftp_fd, sizeof (uintptr_t));
 };
