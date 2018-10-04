@@ -32,6 +32,41 @@
  * also has the concept of basic privileges that we can take away to further
  * restrict a process lower than what a normal user process can do, this
  * module removes some of those as well.
+ *
+ * One has to keep in mind proftpd session process (a forked child, which
+ * handles connection from client), needs more care when it comes to
+ * privileges. As soon as session process is forked, it continues to to run as
+ * _not_ privilege aware. The privileges are adjusted after the first
+ * authentication attempt. If the authentication is successful the session
+ * process drops privileges to set as follows:
+ * 5272:   /usr/lib/inet/proftpd
+ * flags = PRIV_AWARE|PRIV_PROC_SENSITIVE
+ *	E: basic,net_privaddr,proc_audit,!proc_exec,!proc_fork,!proc_info,
+ *		!proc_session
+ *	I: basic,!proc_exec,!proc_fork,!proc_info,!proc_session
+ *	P: basic,net_privaddr,proc_audit,!proc_exec,!proc_fork,!proc_info,
+ *		!proc_session
+ *	L: all
+ *
+ * On the other hand if the first authentication attempt fails, the session
+ * process obtains sufficient privileges to retry authentication of client.
+ * The privileges in this case look as follows:
+ * 5277:   /usr/lib/inet/proftpd
+ * flags = PRIV_AWARE|PRIV_PROC_SENSITIVE
+ *	E: basic,file_dac_read,file_dac_search,file_dac_write,net_privaddr,
+ *		proc_audit,proc_chroot,!proc_exec,!proc_fork,!proc_info,
+ *		!proc_session,proc_setid,proc_taskid,sys_audit
+ *	I: basic,!proc_exec,!proc_fork,!proc_info,!proc_session
+ *	P: basic,file_dac_read,file_dac_search,file_dac_write,net_privaddr,
+ *		proc_audit,proc_chroot,!proc_exec,!proc_fork,!proc_info,
+ *		!proc_session,proc_setid,proc_taskid,sys_audit
+ *	L: all
+ *
+ * Which privileges we assign to process depends on outcome of PASS command.
+ * If authentication is successful, we call solaris_priv_post_pass_ok() to
+ * drop privileges the FTP session won't need. If authentication fails
+ * the process must keep sufficient privileges to retry, hence we call
+ * solaris_priv_post_pass_fail() function, which keeps sufficient privileges.
  */
 
 #include <stdio.h>
@@ -55,11 +90,15 @@
 #define	PRIV_USE_SETID			0x0020
 #define	PRIV_USE_FILE_OWNER		0x0040
 #define	PRIV_DROP_FILE_WRITE		0x0080
+#define	PRIV_USE_TASKID			0x0100
+#define	PRIV_USE_CHROOT			0x0200
+#define	PRIV_USE_AUDIT			0x0400
 
 #define	PRIV_SOL_ROOT_PRIVS	\
 	(PRIV_USE_FILE_CHOWN | PRIV_USE_FILE_CHOWN_SELF | \
 	PRIV_USE_DAC_READ | PRIV_USE_DAC_WRITE | PRIV_USE_DAC_SEARCH | \
-	PRIV_USE_FILE_OWNER)
+	PRIV_USE_FILE_OWNER | PRIV_USE_SETID | PRIV_USE_TASKID | \
+	PRIV_USE_CHROOT | PRIV_USE_AUDIT)
 
 static unsigned int solaris_priv_flags = 0;
 static unsigned char use_privs = TRUE;
@@ -149,9 +188,8 @@ MODRET set_solaris_priv_engine(cmd_rec *cmd) {
  * successfully completed, which means authentication is successful,
  * so we can "tweak" our root access down to almost nothing.
  */
-MODRET solaris_priv_post_pass(cmd_rec *cmd) {
+MODRET solaris_priv_post_passwd(cmd_rec *cmd, unsigned int priv_flags) {
   int res = -1;
-  int priv_flags = solaris_priv_flags;
   priv_set_t *p = NULL;
   priv_set_t *i = NULL;
 
@@ -221,6 +259,15 @@ MODRET solaris_priv_post_pass(cmd_rec *cmd) {
 
   if (priv_flags & PRIV_DROP_FILE_WRITE)
     priv_delset(p, PRIV_FILE_WRITE);
+
+  if (priv_flags & PRIV_USE_TASKID)
+    priv_addset(p, PRIV_PROC_TASKID);
+
+  if (priv_flags & PRIV_USE_CHROOT)
+    priv_addset(p, PRIV_PROC_CHROOT);
+
+  if (priv_flags & PRIV_USE_AUDIT)
+    priv_addset(p, PRIV_SYS_AUDIT);
 
   res = setppriv(PRIV_SET, PRIV_PERMITTED, p);
   res = setppriv(PRIV_SET, PRIV_EFFECTIVE, p);
@@ -370,6 +417,31 @@ static int solaris_priv_sess_init(void) {
   return 0;
 }
 
+MODRET solaris_priv_post_passwd_ok(cmd_rec *rec) {
+  return (solaris_priv_post_passwd(rec, solaris_priv_flags));
+}
+
+static int solaris_priv_post_passwd_fail(cmd_rec *rec) {
+  /*
+   * Client passed wrong credentials. The session process can't drop privileges
+   * yet. The process must keep enough privileges to retry authentication. The
+   * privilege set here was determined by try and fail.
+   * 	PRIV_USE_SETID	- required to change to authenticated user
+   *	PRIV_USE_TASKID	- required by pam_unix_cred (avoids 'Not Owner' returned by
+   *				setproject(3PROJECT))
+   *	PRIV_USE_CHROOT	- the server may be told to chroot
+   *	PRIV_USE_AUDIT	- pam_unix_cred calls adt_set_proc(), which requires
+   *				PRIV_SYS_AUDIT.
+   *	PRIV_USE_DAC_READ
+   *			- required by unix_auth, to read /etc/shadow
+   *	PRIV_USE_DAC_WRITE
+   *			- required by accounting to update wtmp log
+   */
+  return (solaris_priv_post_passwd(rec, solaris_priv_flags |
+    (PRIV_USE_SETID | PRIV_USE_TASKID | PRIV_USE_CHROOT | PRIV_USE_AUDIT |
+    PRIV_USE_DAC_READ | PRIV_USE_DAC_WRITE)));
+}
+
 static int solaris_priv_module_init(void) {
 
   return 0;
@@ -386,8 +458,8 @@ static conftable solaris_priv_conftab[] = {
 };
 
 static cmdtable solaris_priv_cmdtab[] = {
-  { POST_CMD, C_PASS, G_NONE, solaris_priv_post_pass, FALSE, FALSE },
-  { POST_CMD_ERR, C_PASS, G_NONE, solaris_priv_post_pass, FALSE, FALSE },
+  { POST_CMD, C_PASS, G_NONE, solaris_priv_post_passwd_ok, FALSE, FALSE },
+  { POST_CMD_ERR, C_PASS, G_NONE, solaris_priv_post_passwd_fail, FALSE, FALSE },
   { 0, NULL }
 };
 
