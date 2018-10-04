@@ -1,9 +1,11 @@
 Patch to address 20638369.  This patch is Solaris specific and not
 suitable for upstream contribution.
 
---- Django-1.8.5/django/core/management/commands/compilemessages.py.~1~	2015-10-05 02:19:35.750704280 -0800
-+++ Django-1.8.5/django/core/management/commands/compilemessages.py	2015-10-05 02:20:57.589647207 -0800
-@@ -34,7 +34,7 @@ class Command(BaseCommand):
+It also addresses simmilar problem with xgettext.
+
+--- Django-1.11.16/django/core/management/commands/compilemessages.py   2018-10-04 03:17:57.890465231 +0000
++++ Django-1.11.16/django/core/management/commands/compilemessages.py   2018-10-04 03:05:21.596615798 +0000
+@@ -32,7 +32,7 @@ class Command(BaseCommand):
      requires_system_checks = False
      leave_locale_alone = True
  
@@ -12,8 +14,8 @@ suitable for upstream contribution.
      program_options = ['--check-format']
  
      def add_arguments(self, parser):
---- Django-1.11.1/django/core/management/commands/makemessages.py	2017-07-04 12:36:33.399069813 +0000
-+++ Django-1.11.1/django/core/management/commands/makemessages.py	2017-07-04 12:36:25.907294306 +0000
+--- Django-1.11.16/django/core/management/commands/makemessages.py      2018-10-04 03:16:38.152589947 +0000
++++ Django-1.11.16/django/core/management/commands/makemessages.py      2018-10-04 03:05:21.599527298 +0000
 @@ -354,7 +354,7 @@ class Command(BaseCommand):
          if locales:
              check_programs('msguniq', 'msgmerge', 'msgattrib')
@@ -23,6 +25,15 @@ suitable for upstream contribution.
  
          try:
              potfiles = self.build_potfiles()
+@@ -374,7 +374,7 @@ class Command(BaseCommand):
+         # Gettext tools will output system-encoded bytestrings instead of UTF-8,
+         # when looking up the version. It's especially a problem on Windows.
+         out, err, status = popen_wrapper(
+-            ['xgettext', '--version'],
++            ['/usr/gnu/bin/xgettext', '--version'],
+             stdout_encoding=DEFAULT_LOCALE_ENCODING,
+         )
+         m = re.search(r'(\d+)\.(\d+)\.?(\d+)?', out)
 @@ -528,7 +528,7 @@ class Command(BaseCommand):
          if self.domain == 'djangojs':
              is_templatized = build_file.is_templatized

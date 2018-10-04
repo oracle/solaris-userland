@@ -26,17 +26,17 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Django
-COMPONENT_VERSION=	1.11.1
+COMPONENT_VERSION=	1.11.16
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:0809402ff678e7d726ef23ef0d6dc4f62cce1f9d8788c015bcc45de8e6d83a07
+    sha256:29268cc47816a44f27308e60f71da635f549c47d8a1d003b28de55141df75791
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.djangoproject.com/
 COMPONENT_BUGDB=	python-mod/django
 COMPONENT_ANITYA_ID=	3828
 
-TPNO=			35473
+TPNO=			46336
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -62,6 +62,10 @@ COMPONENT_TEST_ARGS +=	--settings test_sqlite
 COMPONENT_TEST_ENV=	PYTHONPATH=$(SOURCE_DIR)
 COMPONENT_TEST_ENV +=	LC_ALL=en_US.UTF-8
 
+# Prevent HTTP 502: cannotconnect errors when unit testing on live server
+COMPONENT_TEST_ENV += http_proxy=
+COMPONENT_TEST_ENV += https_proxy=
+
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
@@ -69,14 +73,6 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-# The tests are failing in non-consistent way. Usually there is
-#  - bunch of locking issues "IOError: [Errno 9] Bad file number"
-#  - test_use_for_related_fields_on_geomanager fails because we don't have GDAL
-#    library
-#  - test_urllib2_urlopen
-#  - bunch of "HTTPError: HTTP Error 502: cannotconnect"
-#  - test_project_template_tarball_url
-#  - test_custom_project_template_from_tarball_by_url
 test:		$(TEST_NO_ARCH)
 COMPONENT_TEST_ARGS += --parallel=1
 COMPONENT_TEST_ARGS += --verbosity=3
@@ -88,6 +84,8 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \
 	` : Disable normal test output ` \
 	'-n ' \
+	'-e "/^ERROR/p"' \
+	'-e "/^FAIL/p"' \
 	'-e "s/^Ran .* tests in.*/Tests were executed/g"' \
 	'-e "/Tests were executed/p"'
 

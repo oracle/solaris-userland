@@ -1,0 +1,14 @@
+There is a problem with one python2.7 test where compiled .pyc file makes test sometimes fail.
+This fixes the issue by always using .py extension.
+
+--- Django-1.11.16/tests/pagination/tests.py    2018-10-04 15:07:30.894460172 +0000
++++ Django-1.11.16/tests/pagination/tests.py    2018-10-04 15:04:45.605648127 +0000
+@@ -335,7 +335,7 @@ class ModelPaginationTests(TestCase):
+         ))
+         # The warning points at the Paginator caller (i.e. the stacklevel
+         # is appropriate).
+-        self.assertEqual(warning.filename, __file__)
++        self.assertEqual(warning.filename, __file__[:-1] if __file__.endswith('.pyc') else __file__)
+ 
+     def test_paginating_unordered_object_list_raises_warning(self):
+         """

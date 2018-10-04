@@ -1,0 +1,37 @@
+Python3 still has some problems with the Unicode on some platforms. This patch
+implements a workaround for incorrectly working time.strftime().
+
+Workaround from: https://bugs.python.org/issue8304#msg255043
+
+This seems to be a Solaris specific problem and it should be further
+investigated (Bug 28752228). This patch should not be submitted to upstream.
+
+--- Django-1.11.16/django/utils/formats.py      2018-10-04 15:16:25.478650891 +0000
++++ Django-1.11.16/django/utils/formats.py      2018-10-04 15:15:26.595826309 +0000
+@@ -230,14 +230,23 @@ def localize_input(value, default=None):
+     elif isinstance(value, datetime.datetime):
+         value = datetime_safe.new_datetime(value)
+         format = force_str(default or get_format('DATETIME_INPUT_FORMATS')[0])
+-        return value.strftime(format)
++        if six.PY3:
++            return value.strftime(format.encode('unicode-escape').decode()).encode().decode('unicode-escape')
++        else:
++            return value.strftime(format)
+     elif isinstance(value, datetime.date):
+         value = datetime_safe.new_date(value)
+         format = force_str(default or get_format('DATE_INPUT_FORMATS')[0])
+-        return value.strftime(format)
++        if six.PY3:
++            return value.strftime(format.encode('unicode-escape').decode()).encode().decode('unicode-escape')
++        else:
++            return value.strftime(format)
+     elif isinstance(value, datetime.time):
+         format = force_str(default or get_format('TIME_INPUT_FORMATS')[0])
+-        return value.strftime(format)
++        if six.PY3:
++            return value.strftime(format.encode('unicode-escape').decode()).encode().decode('unicode-escape')
++        else:
++            return value.strftime(format)
+     return value
+
+
