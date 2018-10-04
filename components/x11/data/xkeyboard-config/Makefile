@@ -27,15 +27,15 @@ BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xkeyboard-config
-COMPONENT_VERSION=	2.16
+COMPONENT_VERSION=	2.24
 COMPONENT_PROJECT_URL=	https://www.freedesktop.org/wiki/Software/XKeyboardConfig/
 COMPONENT_ARCHIVE_URL=	https://www.x.org/releases/individual/$(COMPONENT_CATEGORY)/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:1e8a1f212c96b7f71ca0b05da361cac1816d27baae1d8e03e7b53049b58d1d58
+	sha256:91b18580f46b4e4ea913707f6c8d68ab5286879c3a6591462f3b9e760d3ac4d7
 COMPONENT_BUGDB=        x11/other
 COMPONENT_ANITYA_ID=	5191
 
-TPNO=	26022
+TPNO=	45975
 
 PKG_PROTO_DIRS += $(SOURCE_DIR)/compat
 PKG_PROTO_DIRS += $(SOURCE_DIR)
