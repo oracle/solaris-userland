@@ -1,0 +1,20 @@
+Use absolute paths during install runhelp target.
+
+This is specific for our build environment and shouldn't be send upstream.
+
+--- zsh-5.6.2/Doc/Makefile.in	2018-10-09 02:09:32.866317275 +0000
++++ zsh-5.6.2/Doc/Makefile.in	2018-10-09 02:08:29.275390984 +0000
+@@ -337,11 +337,11 @@ install.man: man
+ install.runhelp: $(runhelp)
+ 	if test x"$(runhelpdir)" != x""; then \
+ 	    ${SHELL} $(sdir_top)/mkinstalldirs $(DESTDIR)$(runhelpdir); \
+-	    $(INSTALL_DATA) help/* $(DESTDIR)$(runhelpdir); \
++	    $(INSTALL_DATA) $(sdir)/help/* $(DESTDIR)$(runhelpdir); \
+ 	    while read from to; do \
+ 	        rm -f $(DESTDIR)$(runhelpdir)/$$to || : ; \
+ 	        $(LN_S) $$from $(DESTDIR)$(runhelpdir)/$$to; \
+-	    done < help.txt; \
++	    done < $(sdir)/help.txt; \
+ 	fi
+ .PHONY: install.runhelp
+ 

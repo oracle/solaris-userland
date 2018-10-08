@@ -1,0 +1,20 @@
+Fix a problem where zpty_stop is waiting for a line from zsh which never comes.
+
+--- zsh-5.6.2/Test/W02jobs.ztst	2018-10-09 05:58:27.385113282 +0000
++++ zsh-5.6.2/Test/W02jobs.ztst	2018-10-09 05:55:14.812868740 +0000
+@@ -182,6 +182,7 @@
+   zpty_line
+   zpty_input 'kill -KILL %1'
+   zpty_line
++  zpty_input 'echo End'
+   zpty_stop
+ 0:various `kill` signals with multiple running jobs
+ *>\[1] [0-9]##
+@@ -192,6 +193,7 @@
+ *>\[3]  ? hangup*sleep*
+ *>\[2]  ? interrupt*sleep*
+ *>\[1]  ? kill*sleep*
++*>End
+ 
+ %clean
+ 

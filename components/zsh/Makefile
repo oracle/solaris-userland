@@ -27,16 +27,17 @@ include ../../make-rules/shared-macros.mk
 include $(WS_MAKE_RULES)/shared-targets.mk
 
 COMPONENT_NAME=		zsh
-COMPONENT_VERSION=	5.3.1
+COMPONENT_VERSION=	5.6.2
 COMPONENT_PROJECT_URL=	https://www.zsh.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:fc886cb2ade032d006da8322c09a7e92b2309177811428b121192d44832920da
-COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/project/zsh/zsh/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+    sha256:a50bd66c0557e8eca3b8fa24e85d0de533e775d7a22df042da90488623752e9e
+COMPONENT_ARCHIVE_URL=	\
+	https://downloads.sourceforge.net/project/zsh/zsh/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	5307
 
-TPNO=			33339
+TPNO = 46439
 
 BUILD_TARGET=
 INSTALL_TARGET=
@@ -72,20 +73,23 @@ $(PROTOETCDIR)/zprofile: $(PROTOETCDIR)
 # has it enabled.
 CONFIGURE_ENV += zsh_cv_sys_nis=no
 
+# Tests need gnu version of grep to work correctly
+COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
+
 $(COMPONENT_SRC)/Completion/%: Completion/%
 	$(CP) $< $@
-
-$(COMPONENT_SRC)/LICENCE: prep
-
-license: $(COMPONENT_SRC)/LICENCE
-	tail +13 $< > $@
-
-CLEAN_PATHS += license
 
 # common targets
 build:		$(BUILD_64) $(COMPOVERRIDES:%=$(COMPONENT_SRC)/%)
 
-install:	build $(INSTALL_64) $(PROTOETCDIR)/zprofile $(PROTOETCDIR)/zshrc license
+install:	build $(INSTALL_64) $(PROTOETCDIR)/zprofile $(PROTOETCDIR)/zshrc
+
+# Set main file for manifest generator - other one will be hardlink
+PKG_HARDLINKS += usr/bin/zsh
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS += \
+        '-n -e "/^.* successful test scripts, .* failures, .* skipped/p"'
 
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/pcre

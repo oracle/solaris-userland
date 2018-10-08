@@ -512,22 +512,6 @@ index e4d682f..3dc5741 100644
  			(*)
  				_wanted commands expl "address type" compadd static dhcp addrconf
  				;;
---- zsh-5.0.5/Completion/Solaris/Command/_netstat	Wed Nov 27 11:00:18 2013
-+++ zsh-5.0.5/Completion/Solaris/Command/_netstat	Fri Mar 28 10:12:57 2014
-@@ -1,4 +1,5 @@
- #compdef netstat
-+# Synced with the S11U2 build 34 man page
- 
- _netstat() {
- 	local -a f_rules
-@@ -18,6 +19,7 @@
- 		'-v[verbose]' \
- 		'-f[specify address family]:address family:(inet inet6 unix)' \
- 		'-P[specify protocol]:protocol:(ip ipv6 icmp icmpv6 igmp udp tcp rawip)' \
-+		'-u[show user, pid, and program owning the network endpoint]' \
- 		- set2 \
- 		'-r[show routing table]' \
- 		'-f[filter routing table]:rule:(($f_rules))' \
 --- zsh-5.0.5/Completion/Solaris/Command/_svcadm	Thu Jan  2 14:23:56 2014
 +++ zsh-5.0.5/Completion/Solaris/Command/_svcadm	Tue Jan  7 16:11:20 2014
 @@ -23,8 +23,8 @@
@@ -633,16 +617,16 @@ index c1f01ad..eab561a 100644
 -  '(-l -x)-\?[print help]' \
 +  '(-l -L -x)-\?[print help]' \
    '*:FMRI or pattern:_svcs_fmri -i'
---- zsh-5.0.5/Completion/Solaris/Command/_zlogin	Wed Nov 27 11:00:18 2013
-+++ zsh-5.0.5/Completion/Solaris/Command/_zlogin	Fri Mar 28 10:06:07 2014
+--- zsh-5.6.2/Completion/Solaris/Command/_zlogin	2018-10-05 06:09:11.782200112 +0000
++++ zsh-5.6.2/Completion/Solaris/Command/_zlogin	2018-10-05 06:09:05.537293090 +0000
 @@ -1,5 +1,5 @@
  #compdef zlogin
 -# Synced with the Nevada build 162 man page
 +# Synced with the S11U2 build 34 man page
  
  _zlogin() {
- 	_arguments -s \
-@@ -6,6 +6,8 @@
+         local -a _comp_priv_prefix
+@@ -7,6 +7,8 @@ _zlogin() {
  		'-E[Disable escape character]' \
  		'-e[Specify escape character]:character:' \
  		'-l[Specify username]:username:_users' \
@@ -737,10 +721,10 @@ index c1f01ad..eab561a 100644
 +	solariskz_attach=()
 +	solariskz_clone=( $solaris_clone )
 +	solariskz_install=(
-+		'-a(-m)[Specify unified archive]:path:_path_files'
++		'(-m)-a[Specify unified archive]:path:_path_files'
 +		'-b[Specify boot media]:path:_path_files'
 +		'-c[Specify configuration profile]:path:_path_files'
-+		'-m(-a)[Specify install (AI) manifest]:path:_path_files'
++		'(-a)-m[Specify install (AI) manifest]:path:_path_files'
 +		'-S[Specify root filesystem size]:size: '
 +		'-v[Verbose]'
 +		'-z[Name of zone in unified archive]:zone: '
@@ -834,16 +818,16 @@ index c1f01ad..eab561a 100644
  	("uninstall")
  		_arguments -A "-*" \
  			'-F[Force]' \
---- zsh-5.0.5/Completion/Unix/Command/_zfs	Thu Jan  2 14:23:56 2014
-+++ zsh-5.0.5/Completion/Unix/Command/_zfs	Sat Mar 29 11:35:15 2014
+--- zsh-5.6.2/Completion/Unix/Command/_zfs	2018-10-05 06:10:54.788471417 +0000
++++ zsh-5.6.2/Completion/Unix/Command/_zfs	2018-10-05 06:10:09.183498925 +0000
 @@ -1,5 +1,5 @@
  #compdef zfs
 -# Synced with the S11U1 man page
 +# Synced with the S11U2 build 34 man page
  
  _zfs() {
- 	local context state line expl
-@@ -121,7 +121,7 @@
+ 	local context state line expl implementation
+@@ -125,7 +125,7 @@ _zfs() {
  
  	share_rw_properties=(
  		"share.desc:description:"
@@ -852,7 +836,7 @@ index c1f01ad..eab561a 100644
  		"share.path:path:"
  		$share_nfs_rw_properties
  		$share_smb_rw_properties
-@@ -306,8 +306,8 @@
+@@ -310,8 +310,8 @@ _zfs() {
  			'-d[Depth]:value:' \
  			'-H[Scripting mode]' \
  			'-p[Display numbers exactly]' \
@@ -863,7 +847,7 @@ index c1f01ad..eab561a 100644
  			':property:_values -s , "property" $ro_properties $rw_propnames all' \
  			'*:filesystem/volume/snapshot:_zfs_dataset'
  		;;
-@@ -381,11 +381,13 @@
+@@ -385,11 +385,13 @@ _zfs() {
  
  	("send")
  		_arguments -A "-*" \
@@ -879,16 +863,16 @@ index c1f01ad..eab561a 100644
  			- set1 \
  			'-I[Generate an incremental stream with intermediary snapshots]:snapshot:_zfs_dataset -t snap' \
  			'-R[Generate a replication stream package]' \
---- zsh-5.0.5/Completion/Unix/Command/_zpool	Thu Jan  2 14:23:56 2014
-+++ zsh-5.0.5/Completion/Unix/Command/_zpool	Fri Mar 28 13:56:56 2014
+--- zsh-5.6.2/Completion/Unix/Command/_zpool	2018-10-05 06:11:28.027699881 +0000
++++ zsh-5.6.2/Completion/Unix/Command/_zpool	2018-10-05 06:11:19.483108057 +0000
 @@ -1,5 +1,5 @@
  #compdef zpool
 -# Synced with the S11U1 man page
 +# Synced with the S11U2 build 34 man page
  
  _zpool() {
- 	local context state line expl
-@@ -105,7 +105,7 @@
+ 	local context state line expl implementation
+@@ -108,7 +108,7 @@ _zpool() {
  			':command/property:($subcmds ${fields%%\[*} properties)' \
  			- set2 \
  			'-l[Display property information]' \
@@ -897,7 +881,7 @@ index c1f01ad..eab561a 100644
  		;;
  
  	(clear)
-@@ -126,8 +126,10 @@
+@@ -129,8 +129,10 @@ _zpool() {
  			'-f[Force use of in-use devices]' \
  			'-l[Display configuration in /dev/chassis location form]' \
  			'-n[Display configuration without creating pool]' \
@@ -908,7 +892,7 @@ index c1f01ad..eab561a 100644
  			':pool name:' \
  			'*:virtual device:_files'
  		;;
-@@ -237,11 +239,11 @@
+@@ -246,11 +248,11 @@ _zpool() {
  			'-n[With -F; do not perform input]' \
  			'-R[Alternate root]:alternate root:_files -/' \
  			'-o[Set pool or dataset property]:property:_values -s , "property" $create_properties_dataset $rw_props' \
@@ -921,3 +905,13 @@ index c1f01ad..eab561a 100644
  			'-a[All pools]'
  		;;
  
+--- zsh-5.6.2/Completion/Solaris/Command/_pkg5	2018-10-05 06:37:21.835218862 +0000
++++ zsh-5.6.2/Completion/Solaris/Command/_pkg5	2018-10-05 06:36:54.513501515 +0000
+@@ -378,6 +378,7 @@ _pkg5() {
+ 			'--non-sticky[Make this publisher non-sticky]' \
+ 			'--search-after[Set publisher search-order]:publisher:_pkg5_pubs' \
+ 			'--search-before[Set publisher search-order]:publisher:_pkg5_pubs' \
++			'--search-first[Set publisher search-order]' \
+ 			'--approve-ca-cert[Add trusted CA certificate]:CA cert path:_path_files' \
+ 			'--revoke-ca-cert[Revoke CA certificate]:CA cert hash:(${${certs#/etc/openssl/certs/}%.0})' \
+ 			'--unset-ca-cert[Remove trusted CA certificate]:CA cert hash:' \
