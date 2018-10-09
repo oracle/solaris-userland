@@ -1,0 +1,39 @@
+Ruby is not able to determine and correctly use sorting function on Solaris
+machines and wrongly uses the Microsoft one. However, Microsoft qsort_s and
+Solaris qsort_s use different argument order for both the sorting function
+itself and compare function. That results in miniruby segfaulting during
+the compilation.
+
+This code gives it a sorting function compatible with Solaris qsort_s function.
+
+Problem is a known issue and might be fixed in future releases of Ruby:
+https://bugs.ruby-lang.org/issues/15091.
+
+--- ruby-2.5.3/util.c	2018-11-05 01:24:29.551519992 +0000
++++ ruby-2.5.3/util.c	2018-11-05 01:24:18.755616043 +0000
+@@ -200,7 +200,24 @@ ruby_strtoul(const char *str, char **end
+ # define cmp_bsd_qsort cmp_ms_qsort
+ # define HAVE_BSD_QSORT_R 1
+ #endif
+-#if defined HAVE_BSD_QSORT_R
++
++#if defined HAVE_QSORT_S
++/* this is a Solaris specific part */
++typedef int (cmpfunc_t)(const void*, const void*, void*);
++
++void
++ruby_qsort(void* base, const size_t nel, const size_t size, cmpfunc_t *cmp, void *d)
++{
++    if (!nel || !size) return;  /* nothing to sort */
++
++    /* get rid of runtime-constraints handler for MT-safeness */
++    if (!base || !cmp) return;
++    if (nel > RSIZE_MAX || size > RSIZE_MAX) return;
++
++    qsort_s(base, nel, size, cmp, d);
++}
++
++#elif defined HAVE_BSD_QSORT_R
+ typedef int (cmpfunc_t)(const void*, const void*, void*);
+ 
+ struct bsd_qsort_r_args {
