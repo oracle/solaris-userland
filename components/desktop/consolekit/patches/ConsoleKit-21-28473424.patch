@@ -1,0 +1,135 @@
+From 0b79d92001450e7f359212d4273100628f6a1693 Mon Sep 17 00:00:00 2001
+From: Eric Koegel <eric.koegel@gmail.com>
+Date: Sun, 5 Oct 2014 16:50:25 +0300
+Subject: [PATCH] Set source id to 0 after calling g_source_remove
+
+Avoids some GLIB-Critical runtime messages by properly resetting the
+source id variables after removing the source.
+Patch provided by Manfred Hampl.
+---
+ src/ck-job.c              | 2 ++
+ src/ck-run-programs.c     | 1 +
+ src/ck-tty-idle-monitor.c | 1 +
+ src/ck-vt-monitor.c       | 1 +
+ 4 files changed, 5 insertions(+)
+
+diff --git a/src/ck-job.c b/src/ck-job.c
+index 87fe33a..a69eea9 100644
+--- a/src/ck-job.c
++++ b/src/ck-job.c
+@@ -369,9 +369,11 @@ ck_job_finalize (GObject *object)
+ 
+         if (job->priv->out_watch_id > 0) {
+                 g_source_remove (job->priv->out_watch_id);
++                job->priv->out_watch_id = 0;
+         }
+         if (job->priv->err_watch_id > 0) {
+                 g_source_remove (job->priv->err_watch_id);
++                job->priv->err_watch_id = 0;
+         }
+         g_free (job->priv->command);
+         g_string_free (job->priv->std_out, TRUE);
+diff --git a/src/ck-run-programs.c b/src/ck-run-programs.c
+index 933fd93..8f14388 100644
+--- a/src/ck-run-programs.c
++++ b/src/ck-run-programs.c
+@@ -94,6 +94,7 @@ _child_watch (GPid       pid,
+ 
+         g_spawn_close_pid (pid);
+         g_source_remove (cd->timeout_id);
++        cd->timeout_id = 0;
+ 
+         cd->child_is_running = FALSE;
+ 
+diff --git a/src/ck-tty-idle-monitor.c b/src/ck-tty-idle-monitor.c
+index 4e9ecdc..2aba92a 100644
+--- a/src/ck-tty-idle-monitor.c
++++ b/src/ck-tty-idle-monitor.c
+@@ -171,6 +171,7 @@ remove_idle_hint_timeout (CkTtyIdleMonitor *tty_idle_monitor)
+ {
+         if (tty_idle_monitor->priv->timeout_id > 0) {
+                 g_source_remove (tty_idle_monitor->priv->timeout_id);
++                tty_idle_monitor->priv->timeout_id = 0;
+         }
+ }
+ 
+diff --git a/src/ck-vt-monitor.c b/src/ck-vt-monitor.c
+index b5d6d8d..b0541cd 100644
+--- a/src/ck-vt-monitor.c
++++ b/src/ck-vt-monitor.c
+@@ -504,6 +504,7 @@ ck_vt_monitor_finalize (GObject *object)
+ 
+         if (vt_monitor->priv->process_queue_id > 0) {
+                 g_source_remove (vt_monitor->priv->process_queue_id);
++                vt_monitor->priv->process_queue_id = 0;
+         }
+ 
+         if (vt_monitor->priv->event_queue != NULL) {
+
+***
+
+This change being removed below was added in for multi-seat support 
+(see ConsoleKit-01-ck-dynamic.patch).  But as documented in 
+https://bugzilla.gnome.org/show_bug.cgi?id=536355, upstream has dropped
+this with the transition to gnome 3.x since Linux offers multi-seat
+by logind/udev.  The current upstream development of ConsoleKit2 has also
+dropped this, so for now we are going to not expose these properties to 
+avoid getting the WARNINGS from gobject-introspection.
+
+--- a/src/org.freedesktop.ConsoleKit.Session.xml	2018-10-08 12:08:58.294663930 -0700
++++ b/src/org.freedesktop.ConsoleKit.Session.xml	2018-10-08 12:10:23.325246645 -0700
+@@ -357,19 +357,6 @@
+       </doc:doc>
+     </signal>
+ 
+-    <property name="session" type="o" access="readwrite">
+-      <doc:doc>
+-        <doc:description>
+-          <doc:para>The id of the session.</doc:para>
+-          <doc:para>
+-          The object path of the session.  Typically this is set by a session leader during a call to the
+-          <doc:ref type="method" to="Manager.OpenSessionWithParameters">OpenSessionWithParameters</doc:ref> method, when
+-          opening a session in response to the <doc:ref type="signal" to="Seat::OpenSessionRequest">OpenSessionRequest</doc:ref>
+-          signal.
+-          </doc:para>
+-        </doc:description>
+-      </doc:doc>
+-    </property>
+     <property name="unix-user" type="u" access="readwrite">
+       <doc:doc>
+         <doc:description>
+@@ -459,19 +446,6 @@
+         </doc:description>
+       </doc:doc>
+     </property>
+-    <property name="is-open" type="b" access="readwrite">
+-      <doc:doc>
+-        <doc:description>
+-          <doc:para>
+-          Whether the session is open</doc:para>
+-          <doc:para>Sessions added from static configuration or in direct response to a call to
+-          the <doc:ref type="method" to="Manager.AddSession">AddSession</doc:ref> method are initialally
+-          closed and aren't open until a call to the <doc:ref type="method" to="Manager.OpenSessionWithParameters">OpenSessionWithParameters</doc:ref>
+-          method.
+-          </doc:para>
+-        </doc:description>
+-      </doc:doc>
+-    </property>
+     <property name="is-local" type="b" access="readwrite">
+       <doc:doc>
+         <doc:description>
+@@ -483,14 +457,6 @@
+           </doc:para>
+         </doc:description>
+       </doc:doc>
+-    </property>
+-    <property name="is-dynamic" type="b" access="readwrite">
+-      <doc:doc>
+-        <doc:description>
+-          <doc:para>
+-          Whether the session is dynamic</doc:para>
+-        </doc:description>
+-      </doc:doc>
+     </property>
+     <property name="idle-hint" type="b" access="readwrite">
+       <doc:doc>
