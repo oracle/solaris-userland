@@ -74,7 +74,7 @@ CFLAGS += -xF
 CPPFLAGS += -DSUNSOFT -DMOTIFBC -DSUNSOFT_KBD
 
 # Need additional mapfile for additional symbols in 64-bit versions
-COMPONENT_BUILD_ARGS.64 += ADD_libX11_LDFLAGS="-Wl,-M,$(PWD)/mapfile-vers-64"
+COMPONENT_BUILD_ARGS.64 += ADD_libX11_LDFLAGS="-Wl,-M,$(CURDIR)/mapfile-vers-64"
 
 # The default Userland locale transforms don't work with libX11 locale files
 LOCALE_TRANSFORMS =
