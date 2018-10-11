@@ -1,0 +1,22 @@
+Patch taken from upstream. Details at
+https://sourceforge.net/p/net-snmp/code/ci/7ffb8e25a0db851953155de91f0170e9bf8c457d/
+--- net-snmp-5.7.3.old/agent/helpers/table.c
++++ net-snmp-5.7.3/agent/helpers/table.c
+@@ -340,6 +340,8 @@
+             else if (reqinfo->mode == MODE_GET)
+                 table_helper_cleanup(reqinfo, request,
+                                      SNMP_NOSUCHOBJECT);
++            else
++                request->processed = 1; /* skip if next handler called */
+             continue;
+         }
+ 
+@@ -409,6 +411,8 @@
+                 else if (reqinfo->mode == MODE_GET)
+                     table_helper_cleanup(reqinfo, request,
+                                          SNMP_NOSUCHOBJECT);
++                else
++                    request->processed = 1; /* skip if next handler called */
+                 continue;
+             }
+             /*
