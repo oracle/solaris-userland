@@ -1,0 +1,157 @@
+Patch from upstream, cherry-picked back from 2.13.0 release:
+https://bitbucket.org/pidgin/main/commits/2deceb0
+
+# HG changeset patch
+# User dx <dx@dxzone.com.ar>
+# Date 1497659501 10800
+# Branch release-2.x.y
+# Node ID 2deceb0f9ef93f1a03c611a78500bd85496edd7e
+# Parent  28aa86aaba9317bc0b7dc0b844122665291baba8
+ssl-nss: Use default NSS ciphersuites/TLS versions, fixes TLS 1.3 issues
+
+Recent NSS versions (3.27, 3.29) added TLS 1.3 support without enabling it in
+the default configuration. But, for historical reasons, libpurple always
+enables the latest TLS version, sets custom ciphersuite lists and disables all
+the defaults, including ciphersuites needed for TLS 1.3 to work. This means
+that connections to servers that support TLS 1.3 (for example, anything behind
+cloudflare) always fail with "SSL Handshake Failed".
+
+The solution is to just not do any of that. NSS has decent defaults, they
+regularly update them and their devs will always know better than us.
+
+Fixes #17217
+
+The rest of the commit log is about those historical reasons.
+
+The main user of NSS is firefox, which keeps its own ciphersuite and TLS
+version preferences. In the past there were periods of time where firefox was
+ahead of the NSS defaults, which caused connection issues or eyebrow-raising
+ciphersuite choices. So libpurple tried to copy those prefs. I'm being told
+by the NSS devs that nowadays they do a better job at keeping up.
+
+The referenced issues in the deleted code are:
+
+- Trac #1435 (2007), some connection issues due to disabled ciphers.
+
+Probably NSS 3.11 or 3.12. So old it's not relevant, but interesting anyway.
+The fix (hg 32a4cf358f9c) was enabling things that look like bad choices
+nowadays, but the NSS defaults weren't better. Dark times. It looks like it was
+effective to solve connection issues. Newer NSS versions definitely fixed this,
+mostly with 3.14 (2012)
+
+- Trac #15909 (2014), TLS 1.1 and 1.2 supported but not enabled.
+
+NSS 3.14 (2012) introduced TLS 1.1; NSS 3.15.1 (2013) introduced TLS 1.2.
+It wasn't until NSS 3.18 (2015) that they were enabled by default. The fix was
+hg f4e63e354f45. This isn't needed anymore.
+
+- Trac #16262 (2014), "Enabled ciphers in NSS unnecessarily limited"
+
+Someone messed with ciphersuites in ejabberd and broke things. News at 11.
+The ticket says "we don't have ciphers that support forward security" ignoring
+that the DHE ones have that.
+
+This was NSS 3.17 (2014). The fix (hg f26d96f03176) took the ciphersuite lists
+from firefox to enable ECDHE and disable the defaults. ECDHE ciphersuites were
+enabled by NSS 3.21 (2015).
+
+- Trac #15862 (2014), "Disable Export ciphers and DES in SSL"
+
+Windows pidgin 2.10.7 (2013) bundled NSS 3.13.6 (2012). Those were disabled by
+NSS 3.14 (2012). Pidgin 2.10.8 (2014) updated to NSS 3.15.4 (2014).
+
+---
+
+This means that old NSS versions with bad defaults will use those bad defaults.
+The earliest version in current LTS distros is 3.26, while our windows builds
+have the oldest version, 3.24. These versions aren't affected by any of the
+issues above.
+
+diff --git a/libpurple/plugins/ssl/ssl-nss.c b/libpurple/plugins/ssl/ssl-nss.c
+--- a/libpurple/plugins/ssl/ssl-nss.c
++++ b/libpurple/plugins/ssl/ssl-nss.c
+@@ -139,60 +139,10 @@
+ 	return ret;
+ }
+ 
+-static const PRUint16 default_ciphers[] = {
+-#if NSS_VMAJOR > 3 || ( NSS_VMAJOR == 3 && NSS_VMINOR > 15 ) \
+-		|| ( NSS_VMAJOR == 3 && NSS_VMINOR == 15 && NSS_VPATCH >= 1 )
+-	TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
+-	TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,
+-	TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,
+-# if NSS_VMAJOR > 3 || ( NSS_VMAJOR == 3 && NSS_VMINOR > 15 ) \
+-		|| ( NSS_VMAJOR == 3 && NSS_VMINOR == 15 && NSS_VPATCH >= 2 )
+-	TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+-	TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,
+-	TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+-# endif
+-#endif
+-	TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+-	TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
+-
+-	TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+-	TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
+-
+-	TLS_DHE_RSA_WITH_AES_128_CBC_SHA,
+-
+-	TLS_DHE_RSA_WITH_AES_256_CBC_SHA,
+-
+-	TLS_DHE_DSS_WITH_AES_128_CBC_SHA, /* deprecated (DSS) */
+-	/* TLS_DHE_DSS_WITH_AES_256_CBC_SHA, false }, // deprecated (DSS) */
++static void ssl_nss_init_ciphers(void) {
++	const PRUint16 *cipher;
+ 
+-	TLS_ECDHE_RSA_WITH_RC4_128_SHA,		/* deprecated (RC4) */
+-	TLS_ECDHE_ECDSA_WITH_RC4_128_SHA, 	/* deprecated (RC4) */
+-
+-	/* RFC 6120 Mandatory */
+-	TLS_RSA_WITH_AES_128_CBC_SHA,		/* deprecated (RSA key exchange) */
+-	TLS_RSA_WITH_AES_256_CBC_SHA,		/* deprecated (RSA key exchange) */
+-	/* TLS_RSA_WITH_3DES_EDE_CBC_SHA, 	 deprecated (RSA key exchange, 3DES) */
+-
+-	0 /* end marker */
+-};
+-
+-/* It's unfortunate we need to manage these manually,
+- * ideally NSS would choose good defaults.
+- * This is mostly based on FireFox's list:
+- * https://hg.mozilla.org/mozilla-central/log/default/security/manager/ssl/src/nsNSSComponent.cpp */
+-static void ssl_nss_init_ciphers(void) {
+-	/* Disable any ciphers that NSS might have enabled by default */
+-	const PRUint16 *cipher;
+-	for (cipher = SSL_GetImplementedCiphers(); *cipher != 0; ++cipher) {
+-		SSL_CipherPrefSetDefault(*cipher, PR_FALSE);
+-	}
+-
+-	/* Now only set SSL/TLS ciphers we knew about at compile time */
+-	for (cipher = default_ciphers; *cipher != 0; ++cipher) {
+-		SSL_CipherPrefSetDefault(*cipher, PR_TRUE);
+-	}
+-
+-	/* Now log the available and enabled Ciphers */
++	/* Log the available and enabled Ciphers */
+ 	for (cipher = SSL_GetImplementedCiphers(); *cipher != 0; ++cipher) {
+ 		const PRUint16 suite = *cipher;
+ 		SECStatus rv;
+@@ -246,20 +196,6 @@
+ 				"0x%04hx through 0x%04hx\n", supported.min, supported.max);
+ 		purple_debug_info("nss", "TLS versions allowed by default: "
+ 				"0x%04hx through 0x%04hx\n", enabled.min, enabled.max);
+-
+-		/* Make sure all versions of TLS supported by the local library are
+-		   enabled. (For some reason NSS doesn't enable newer versions of TLS
+-		   by default -- more context in ticket #15909.) */
+-		if (supported.max > enabled.max) {
+-			enabled.max = supported.max;
+-			if (SSL_VersionRangeSetDefault(ssl_variant_stream, &enabled) == SECSuccess) {
+-				purple_debug_info("nss", "Changed allowed TLS versions to "
+-						"0x%04hx through 0x%04hx\n", enabled.min, enabled.max);
+-			} else {
+-				purple_debug_error("nss", "Error setting allowed TLS versions to "
+-						"0x%04hx through 0x%04hx\n", enabled.min, enabled.max);
+-			}
+-		}
+ 	}
+ #endif /* NSS >= 3.14 */
+ 

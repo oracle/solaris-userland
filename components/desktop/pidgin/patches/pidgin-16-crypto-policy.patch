@@ -1,0 +1,139 @@
+Apply Oracle's crpyto policies by default.
+(Commented out lines are specified in Oracle's policy, but not defined in
+ the nss 3.36.1 headers.)
+
+Not suitable for upstream.
+
+--- pidgin-2.12.0/libpurple/plugins/ssl/ssl-nss.c
++++ pidgin-2.12.0/libpurple/plugins/ssl/ssl-nss.c
+@@ -142,6 +142,109 @@ static gchar *get_error_text(void)
+ static void ssl_nss_init_ciphers(void) {
+ 	const PRUint16 *cipher;
+ 
++	/* Apply Oracle crypto policies by default */
++	/* -- Mandatory TLS ciphers -- */
++	SSL_CipherPrefSetDefault(TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
++				 PR_TRUE);
++	SSL_CipherPrefSetDefault(TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
++				 PR_TRUE);
++	SSL_CipherPrefSetDefault(TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
++				 PR_TRUE);
++	SSL_CipherPrefSetDefault(TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
++				 PR_TRUE);
++	SSL_CipherPrefSetDefault(TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256, PR_TRUE);
++	/* -- Approved TLS ciphers -- */
++	SSL_CipherPrefSetDefault(TLS_AES_128_GCM_SHA256, PR_TRUE);
++	SSL_CipherPrefSetDefault(TLS_AES_256_GCM_SHA384, PR_TRUE);
++	SSL_CipherPrefSetDefault(TLS_CHACHA20_POLY1305_SHA256, PR_TRUE);
++	/* SSL_CipherPrefSetDefault(TLS_AES_128_CCM_SHA256, PR_TRUE); */
++	/* SSL_CipherPrefSetDefault(TLS_AES_128_CCM_8_SHA256, PR_TRUE); */
++	SSL_CipherPrefSetDefault(TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384, PR_TRUE);
++	SSL_CipherPrefSetDefault(TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,
++				 PR_TRUE);
++	SSL_CipherPrefSetDefault(TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384, PR_TRUE);
++	SSL_CipherPrefSetDefault(TLS_DHE_RSA_WITH_AES_128_GCM_SHA256, PR_TRUE);
++	SSL_CipherPrefSetDefault(TLS_DHE_DSS_WITH_AES_128_GCM_SHA256, PR_TRUE);
++	SSL_CipherPrefSetDefault(TLS_DHE_RSA_WITH_AES_128_CBC_SHA256, PR_TRUE);
++	SSL_CipherPrefSetDefault(TLS_DHE_DSS_WITH_AES_128_CBC_SHA256, PR_TRUE);
++	SSL_CipherPrefSetDefault(TLS_DHE_DSS_WITH_AES_256_GCM_SHA384, PR_TRUE);
++	SSL_CipherPrefSetDefault(TLS_DHE_RSA_WITH_AES_256_CBC_SHA256, PR_TRUE);
++	SSL_CipherPrefSetDefault(TLS_DHE_DSS_WITH_AES_256_CBC_SHA256, PR_TRUE);
++	SSL_CipherPrefSetDefault(TLS_DHE_RSA_WITH_AES_256_GCM_SHA384, PR_TRUE);
++	SSL_CipherPrefSetDefault(TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,
++				 PR_TRUE);
++	SSL_CipherPrefSetDefault(TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,
++				 PR_TRUE);
++	/* SSL_CipherPrefSetDefault(TLS_DH_DSS_WITH_AES_128_GCM_SHA256, PR_TRUE); */
++	SSL_CipherPrefSetDefault(TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256,
++				 PR_TRUE);
++	/* SSL_CipherPrefSetDefault(TLS_DH_DSS_WITH_AES_256_GCM_SHA384, PR_TRUE); */
++	/* SSL_CipherPrefSetDefault(TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384,
++				 PR_TRUE); */
++	/* SSL_CipherPrefSetDefault(TLS_DH_DSS_WITH_AES_128_CBC_SHA256, PR_TRUE); */
++	/* SSL_CipherPrefSetDefault(TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256,
++				 PR_TRUE); */
++	/* SSL_CipherPrefSetDefault(TLS_DH_DSS_WITH_AES_256_CBC_SHA256, PR_TRUE); */
++	/* SSL_CipherPrefSetDefault(TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384,
++				 PR_TRUE); */
++	/* SSL_CipherPrefSetDefault(TLS_DH_RSA_WITH_AES_128_GCM_SHA256, PR_TRUE); */
++	/* SSL_CipherPrefSetDefault(TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256, PR_TRUE); */
++	/* SSL_CipherPrefSetDefault(TLS_DH_RSA_WITH_AES_256_GCM_SHA384, PR_TRUE); */
++	/* SSL_CipherPrefSetDefault(TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384, PR_TRUE); */
++	/* SSL_CipherPrefSetDefault(TLS_DH_RSA_WITH_AES_128_CBC_SHA256, PR_TRUE); */
++	/* SSL_CipherPrefSetDefault(TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256, PR_TRUE); */
++	/* SSL_CipherPrefSetDefault(TLS_DH_RSA_WITH_AES_256_CBC_SHA256, PR_TRUE); */
++	/* SSL_CipherPrefSetDefault(TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384, PR_TRUE); */
++	/* -- Deprecated TLS ciphers -- */
++	SSL_CipherPrefSetDefault(TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_DHE_DSS_WITH_AES_128_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_DHE_RSA_WITH_AES_128_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_DHE_DSS_WITH_AES_256_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_DHE_RSA_WITH_AES_256_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_DH_DSS_WITH_AES_128_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_RSA_WITH_AES_256_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_DH_DSS_WITH_AES_256_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_DH_RSA_WITH_AES_128_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_ECDH_RSA_WITH_AES_128_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_DH_RSA_WITH_AES_256_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_ECDH_RSA_WITH_AES_256_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_RSA_WITH_CAMELLIA_256_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_RSA_WITH_CAMELLIA_128_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_DH_DSS_WITH_3DES_EDE_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_DH_RSA_WITH_3DES_EDE_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_RSA_WITH_3DES_EDE_CBC_SHA, PR_FALSE);
++	/* -- Unacceptable TLS ciphers -- */
++	SSL_CipherPrefSetDefault(TLS_ECDHE_ECDSA_WITH_NULL_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_ECDHE_RSA_WITH_NULL_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_ECDH_RSA_WITH_NULL_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_ECDH_ECDSA_WITH_NULL_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_RSA_WITH_NULL_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_RSA_WITH_NULL_SHA256, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_RSA_WITH_NULL_MD5, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_RSA_WITH_RC4_128_MD5, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_DHE_RSA_WITH_DES_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_DHE_DSS_WITH_DES_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_RSA_WITH_DES_CBC_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_ECDHE_ECDSA_WITH_RC4_128_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_ECDHE_RSA_WITH_RC4_128_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_DHE_DSS_WITH_RC4_128_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_ECDH_ECDSA_WITH_RC4_128_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_ECDH_RSA_WITH_RC4_128_SHA, PR_FALSE);
++	SSL_CipherPrefSetDefault(TLS_RSA_WITH_RC4_128_SHA, PR_FALSE);
++	/* End of Oracle policy block */
++	
++
+ 	/* Log the available and enabled Ciphers */
+ 	for (cipher = SSL_GetImplementedCiphers(); *cipher != 0; ++cipher) {
+ 		const PRUint16 suite = *cipher;
+@@ -185,13 +288,19 @@ ssl_nss_init_nss(void)
+ #if (NSS_VMAJOR == 3 && (NSS_VMINOR < 15 || (NSS_VMINOR == 15 && NSS_VPATCH < 2)))
+ 	NSS_SetDomesticPolicy();
+ #endif /* NSS < 3.15.2 */
+-
++	
+ 	ssl_nss_init_ciphers();
+ 
+ #if NSS_VMAJOR > 3 || ( NSS_VMAJOR == 3 && NSS_VMINOR >= 14 )
+ 	/* Get the ranges of supported and enabled SSL versions */
+ 	if ((SSL_VersionRangeGetSupported(ssl_variant_stream, &supported) == SECSuccess) &&
+ 			(SSL_VersionRangeGetDefault(ssl_variant_stream, &enabled) == SECSuccess)) {
++
++		/* Apply Oracle crypto policies by default */
++		enabled.min = SSL_LIBRARY_VERSION_TLS_1_2;
++		enabled.max = supported.max;
++		SSL_VersionRangeSetDefault(ssl_variant_stream, &enabled);
++
+ 		purple_debug_info("nss", "TLS supported versions: "
+ 				"0x%04hx through 0x%04hx\n", supported.min, supported.max);
+ 		purple_debug_info("nss", "TLS versions allowed by default: "
