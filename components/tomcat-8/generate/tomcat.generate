@@ -1,0 +1,49 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+<include generate/common.transform>
+
+# no need for Windows bat files
+<transform file path=.*/bin/.*.bat -> drop>
+
+# no need to have start up script, SMF is better
+<transform file path=.*/bin/daemon.sh -> drop>
+
+# Solaris/ files are added in tomcat.static file
+<transform file path=Solaris/ -> drop>
+
+# decorate conf/ files
+<transform file path=.*/conf/tomcat-users.xml -> set mode 0600>
+<transform file path=.*/conf/(catalina.policy|catalina.properties|context.xml|jaspic-providers.xml) -> set mode 0644>
+<transform file path=.*/conf/(jaspic-providers.xsd|logging.properties|server.xml|web.xml) -> set mode 0644>
+<transform file path=.*/conf/(?!CONF.tar.gz|tomcat-users.xsd) -> set preserve renamenew>
+<transform file path=.*/conf/tomcat-users.xml -> set owner webservd>
+<transform file path=.*/conf/tomcat-users.xml -> set group webservd>
+<transform file path=.*/conf/catalina.properties -> set original_name SUNWtcat:var/tomcat6/conf/catalina.properties>
+<transform file path=.*/conf/logging.properties -> set original_name SUNWtcat:var/tomcat6/conf/logging.properties>
+
+# delete everything not belonging to this package
+<transform file link pkg.type=(?!tomcat) -> drop>
+<transform file link -> delete pkg.type .*>

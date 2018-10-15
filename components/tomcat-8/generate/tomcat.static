@@ -1,0 +1,37 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+link path=etc/tomcat8 target=../var/tomcat8/conf
+file Solaris/http-tomcat.xml path=lib/svc/manifest/network/http-tomcat8.xml
+file Solaris/http-tomcat path=lib/svc/method/http-tomcat8
+link path=usr/share/man/man8/tomcat.8 target=tomcat8.8 mediator=tomcat \
+    mediator-version=8
+file Solaris/tomcat.8 path=usr/share/man/man8/tomcat8.8
+dir  path=var/tomcat8/conf owner=webservd group=webservd
+dir  path=var/tomcat8/logs owner=webservd group=webservd mode=0700
+dir  path=var/tomcat8/temp owner=webservd group=webservd
+dir  path=var/tomcat8/webapps owner=webservd group=webservd
+file path=var/tomcat8/webapps/ROOT/index.jsp mode=0644 preserve=renamenew
+dir  path=var/tomcat8/work owner=webservd group=webservd
