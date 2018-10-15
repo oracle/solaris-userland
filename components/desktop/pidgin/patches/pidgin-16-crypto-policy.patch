@@ -1,4 +1,4 @@
-Apply Oracle's crpyto policies by default.
+Apply Oracle's crypto policies by default.
 (Commented out lines are specified in Oracle's policy, but not defined in
  the nss 3.36.1 headers.)
 
@@ -116,15 +116,7 @@ Not suitable for upstream.
  	/* Log the available and enabled Ciphers */
  	for (cipher = SSL_GetImplementedCiphers(); *cipher != 0; ++cipher) {
  		const PRUint16 suite = *cipher;
-@@ -185,13 +288,19 @@ ssl_nss_init_nss(void)
- #if (NSS_VMAJOR == 3 && (NSS_VMINOR < 15 || (NSS_VMINOR == 15 && NSS_VPATCH < 2)))
- 	NSS_SetDomesticPolicy();
- #endif /* NSS < 3.15.2 */
--
-+	
- 	ssl_nss_init_ciphers();
- 
- #if NSS_VMAJOR > 3 || ( NSS_VMAJOR == 3 && NSS_VMINOR >= 14 )
+@@ -192,6 +295,12 @@ ssl_nss_init_nss(void)
  	/* Get the ranges of supported and enabled SSL versions */
  	if ((SSL_VersionRangeGetSupported(ssl_variant_stream, &supported) == SECSuccess) &&
  			(SSL_VersionRangeGetDefault(ssl_variant_stream, &enabled) == SECSuccess)) {
