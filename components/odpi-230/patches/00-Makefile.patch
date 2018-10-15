@@ -3,12 +3,11 @@ installing them under usr/lib. Since ODPI-C searches the standard library
 runpath to find libclntsh.so, we bake in the paths where the Instant Client
 is installed if using IPS.
 
-No discussion with the ODPI-C team has occurred yet about how useful this
-patch is for integration with upstream.
+Not submitting upstream because this is specific to Solaris Userland build
+requirements.
 
-
---- odpi-2.3.0/Makefile.orig	2018-04-02 10:46 -0800
-+++ odpi-2.3.0/Makefile		2018-04-02 10:46 -0800
+--- odpi-2.3.0/Makefile.orig	2018-10-04 23:38:55.799965328 -0700
++++ odpi-2.3.0/Makefile	2018-10-04 23:40:10.066161907 -0700
 @@ -18,48 +18,85 @@
  #------------------------------------------------------------------------------
  
@@ -87,7 +86,7 @@ patch is for integration with upstream.
 +
 +install: $(LIB_DIR)/$(DYNLIB) install$(BITS) liblink$(BITS)
 +
-+$(PROTOUSRINCDIR)/odpi/%.h:		include/%.h
++$(PROTOUSRINCDIR)/odpi-$(DOTLESS_VERSION)/%.h:		include/%.h
 +	$(INS.file)
 +
 +$(PROTOUSRLIBDIR)/%.so.$(VERS):		$(LIB_DIR)/%.so.$(VERS)
@@ -105,5 +104,5 @@ patch is for integration with upstream.
 +	$(SYMLINK) $(DYNLIB) $(PROTOUSRLIBDIR64)/$(LIB_NAME)
 +
 +install32: $(PROTOUSRLIBDIR)/$(DYNLIB)
-+install64: $(PROTOUSRINCDIR)/odpi/dpi.h $(PROTOUSRLIBDIR64)/$(DYNLIB)
++install64: $(PROTOUSRINCDIR)/odpi-$(DOTLESS_VERSION)/dpi.h $(PROTOUSRLIBDIR64)/$(DYNLIB)
  
