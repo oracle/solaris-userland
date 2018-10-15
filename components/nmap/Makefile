@@ -63,6 +63,7 @@ CONFIGURE_OPTIONS  +=   --with-libpcre
 CONFIGURE_OPTIONS  +=   --with-liblua 
 CONFIGURE_OPTIONS  +=   --with-ncat 
 CONFIGURE_OPTIONS  +=   --with-ndiff
+CONFIGURE_OPTIONS  +=   --with-system-ssl-certs=/etc/certs
 
 # The nmap libdnet-stripped configure script can't properly handle
 # finding / using three Solaris network header files. We override this.
