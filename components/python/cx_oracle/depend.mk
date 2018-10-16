@@ -1,1 +1,1 @@
-python/cx_oracle: developer/oracle/odpi-230
+python/cx_oracle: components/odpi-230
