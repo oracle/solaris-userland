@@ -32,17 +32,17 @@ BUILD_BITS = 64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		DBD-mysql
-COMPONENT_VERSION=	4.042
-IPS_COMPONENT_VERSION=  4042
+COMPONENT_VERSION=	4.048
+IPS_COMPONENT_VERSION=  4048
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:dadb6884788dc3fdf40b13b72d8c60d5a83680cc2aeec7515c3e5999e064b455
+	sha256:1737ffcae68712c04bf529f098df53534ca9a60eb3ce0ad23700bfc40c6415ff
 COMPONENT_ARCHIVE_URL=	http://search.cpan.org/CPAN/authors/id/M/MI/MICHIELB/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://github.com/perl5-dbi/DBD-mysql
 COMPONENT_BUGDB=	perl-mod/dbd-mysql
 COMPONENT_ANITYA_ID=	2807
 
-TPNO=			32689
+TPNO=			46641
 
 
 BUILD_STYLE= makemaker
@@ -70,11 +70,6 @@ CONFIGURE_OPTIONS += --mysql_config="$(MYSQL_BINDIR)/mysql_config"
 CONFIGURE_OPTIONS += --testuser=$(MYSQL_TEST_USER)
 CONFIGURE_OPTIONS += --testpassword=$(MYSQL_TEST_PASSWORD)
 CONFIGURE_OPTIONS += --testsocket=CHANGEME
-
-# !!!!!!!!! workaround for 22552923
-MYSQL_LIBS          = $(shell $(MYSQL_BINDIR)/mysql_config --libs)
-CONFIGURE_OPTIONS += --libs="$(MYSQL_LIBS) -lCrun"
-# !!!!!!!!! workaround for 22552923
 
 # For the testing we need to run mysql database first. The database needs it's
 # directory, which will be $(MYSQL_TEST_DATADIR). The directory will also
