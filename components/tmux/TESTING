@@ -1,0 +1,48 @@
+# You can use these guides for tmux testing:
+# https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/
+# https://robots.thoughtbot.com/a-tmux-crash-course
+
+# start tmux with named session
+tmux new -s test
+
+# tmux is using prefix key and command key
+# by default prefix key is ctrl+b (C-b)
+
+# split view into two panes
+#> C-b %
+#> C-b "
+
+#navigate panes with arrow
+#> C-b up
+#> C-b left
+
+# test some simple commands in each pane
+echo "Hi this is tmux"
+grep root /etc/passwd
+gdate
+
+# detach current session
+$> C-b d
+
+# start tmux again with other session
+tmux new -s test2
+
+# to create multiple windows
+#> C-b c
+
+# switch between windows
+# you should see multiple windows on the bottom ([0] 0:bash- 1:bash*)
+#> C-b n
+#> C-b p
+
+# try some simple commands in both windows
+
+# switch to previous session
+tmux switch -t test
+
+# list all current sessions
+tmux list-sessions
+
+# exit this session and attach the first one
+exit
+tmux attach -t test2
