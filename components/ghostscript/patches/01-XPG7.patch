@@ -2,6 +2,19 @@ In house patch to use XPG7 standard
 NOTE : This patch will not be pushed upstream, as community is using
        XPG5 standards.
 
+
+--- ghostscript-9.25/configure.ac 2018-10-17 01:50:24.992338661 +0000
++++ ghostscript-9.25/configure.ac 2018-10-17 01:46:50.907656136 +0000
+@@ -678,7 +678,7 @@ AC_CHECK_FUNCS([pread pwrite], [HAVE_PRE
+ 
+ if test "x$HAVE_PREAD_PWRITE" != "x"; then
+   save_cflags=$CFLAGS
+-  CFLAGS="$CFLAGS -D__USE_UNIX98=1 -D_XOPEN_SOURCE=500"
++  CFLAGS="$CFLAGS -D__USE_UNIX98=1 -D_XOPEN_SOURCE=700"
+   AC_CHECK_DECLS([pwrite,pread], [], [HAVE_PREAD_PWRITE=])
+   CFLAGS=$save_cflags
+   if test "x$HAVE_PREAD_PWRITE" != "x"; then
+
 --- ghostscript-9.22/contrib/pcl3/src/pclgen.c.orig	2017-11-15 22:39:33.665870850 +0000
 +++ ghostscript-9.22/contrib/pcl3/src/pclgen.c	2017-11-15 22:40:06.218958657 +0000
 @@ -52,7 +52,7 @@

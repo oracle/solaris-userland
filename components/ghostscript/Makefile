@@ -32,21 +32,20 @@ include ../../make-rules/shared-macros.mk
 
 
 COMPONENT_NAME=         ghostscript
-COMPONENT_VERSION=      9.22
+COMPONENT_VERSION=      9.26
 COMPONENT_PROJECT_URL=	http://ghostscript.com/
 COMPONENT_DOWNLOAD_URL= \
     https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download
 COMPONENT_ARCHIVE_HASH= \
-    sha256:7f5f4487c0df9dce37481e4c8f192c0322e4c69f5a2ba900a7833c992331bcf4
-COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/gs922/$(COMPONENT_ARCHIVE)
+    sha256:831fc019bd477f7cc2d481dc5395ebfa4a593a95eb2fe1eb231a97e450d7540d
+COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/gs926/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1157
 
-TPNO=			39425
+TPNO=			47816
 
 COMPILER=gcc
 COMMON_TARGETS= no
 include $(WS_MAKE_RULES)/common.mk
-studio_OPT= -xO2
 
 PATH=$(SPRO_VROOT)/bin:$(USRBINDIR):$(GNUBIN)
 
@@ -55,12 +54,12 @@ PATH=$(SPRO_VROOT)/bin:$(USRBINDIR):$(GNUBIN)
 CC_FOR_BUILD=
 CONFIGURE_CPPFLAGS=
 
-# configure(1) options to use
+# force use of shared system libtiff
+CONFIGURE_OPTIONS +=    --with-system-libtiff
+
 CONFIGURE_OPTIONS +=	--with-drivers=ALL
 CONFIGURE_OPTIONS +=	--with-ijs
-CONFIGURE_OPTIONS +=	--without-omni
 CONFIGURE_OPTIONS +=	--with-jbig2dec
-CONFIGURE_OPTIONS +=	--with-jasper
 CONFIGURE_OPTIONS +=	--enable-cups
 CONFIGURE_OPTIONS +=	--enable-dynamic
 CONFIGURE_OPTIONS +=	--disable-compile-inits
@@ -87,7 +86,7 @@ VARIANTS = $(GS_VARIANT) $(IJS_VARIANT) $(GS_VARIANT_64) $(IJS_VARIANT_64)
 
 # autoconf - Generate configuration scripts
 COMPONENT_PREP_ACTION = \
-	 (cd $(@D); $(RM) -r libpng zlib jpeg ; autoconf)
+	 (cd $(@D); $(RM) -r libpng zlib jpeg tiff openjpeg; autoconf)
 
 $(GS_VARIANT)/.configured: COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
@@ -130,6 +129,8 @@ test:	$(NO_TESTS)
 system-test:    $(NO_TESTS)
 
 
+REQUIRED_PACKAGES += image/library/openjpeg2
+REQUIRED_PACKAGES += image/library/libtiff
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += library/desktop/gtk3
