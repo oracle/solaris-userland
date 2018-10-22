@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
 <!--
-    Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
 
     NOTE:  This service manifest is not editable; its contents will
     be overwritten by package or patch operations, including
@@ -16,6 +16,7 @@
 	type='service'
 	version='1'>
 
+	<single_instance/>
 	<instance name='rsyslog' enabled='false'>
 
 	<!--
@@ -41,17 +42,6 @@
 	</dependency>
 
 	<!--
-	  rsyslogd(8) can log to automounted files.
-	-->
-	<dependency
-		name='autofs'
-		grouping='optional_all'
-		restart_on='none'
-		type='service'>
-		<service_fmri value='svc:/system/filesystem/autofs' />
-	</dependency>
-
-	<!--
 	  rsyslogd(8) needs nameservice resolution to log to remote hosts.
 	-->
 	<dependency
@@ -60,6 +50,19 @@
 		restart_on='none'
 		type='service'>
 		<service_fmri value='svc:/milestone/name-services' />
+	</dependency>
+
+	<!--
+	  rsyslogd(8) cannot run together with syslogd(8). This dependency is
+	  a workaround and it can be removed once the single_instance will do
+	  what it is supposed to.
+	-->
+	<dependency
+		name='exclusive-logging'
+		grouping='exclude_all'
+		restart_on='none'
+		type='service'>
+		<service_fmri value='svc:/system/system-log:default' />
 	</dependency>
 
 	<!--

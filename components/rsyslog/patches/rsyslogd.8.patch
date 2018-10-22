@@ -2,12 +2,24 @@ Solaris specific patch around SMF services.
 
 
 
---- rsyslog-8.15.0/tools/rsyslogd.8_orig	2015-11-12 03:52:06.000000000 -0800
-+++ rsyslog-8.15.0/tools/rsyslogd.8	2016-08-03 15:45:05.475192214 -0700
-@@ -308,3 +308,14 @@
+--- rsyslog-8.38.0/tools/rsyslogd.8	2018-11-05 04:21:57.872427003 +0000
++++ rsyslog-8.38.0/tools/rsyslogd.8	2018-11-05 04:20:41.181334427 +0000
+@@ -306,3 +306,26 @@ Grossrinderfeld, Germany
  .TP
  rgerhards@adiscon.com
  .PD
++.SH SVCADM RELATED NOTES
++Compared to
++.BR syslogd (8),
++.B rsyslogd
++cannot be forced to reread its configuration file with the SIGHUP signal and because of that
++.B svcadm refresh
++command doesn't do that eighter.
++
++To do that, you must restart
++.B rsyslogd
++with
++.BR "svcadm restart" .
 +.SH NOTES
 +When the service is enabled the first time, an attempt is made
 +to see if any /etc/syslog.conf (see syslog.conf(5)),

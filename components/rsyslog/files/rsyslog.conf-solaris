@@ -34,6 +34,11 @@ kern.notice					-/var/log/kern.log
 
 mail.debug					/var/log/syslog
 
+# Rsyslog should process its internal messages by itself
+# WARNING: internal messages like 'rsyslog exiting' might not be
+#          correctly logged if this is off
+global(processInternalMessages="on")
+
 # Remote Logging (we use TCP for reliable delivery)
 # An on-disk queue is created for this action. If the remote host is
 # down, messages are spooled to disk and sent when it is up again.

@@ -27,47 +27,66 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		rsyslog
-COMPONENT_VERSION=	8.15.0
-COMPONENT_PROJECT_URL=	http://www.rsyslog.com/
-COMPONENT_ARCHIVE_HASH=	sha256:9ed6615a8503964290471e98ed363f3975b964a34c2d4610fb815a432aadaf59
+COMPONENT_VERSION=	8.38.0
+COMPONENT_PROJECT_URL=	https://www.rsyslog.com/
+COMPONENT_ARCHIVE_HASH=	sha256:4d328ed3bcae784e15401c6c20ada2a9be380798ff6bf0da3fe2095915bba22c
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)files/download/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/rsyslog
 COMPONENT_ANITYA_ID=	4218
 
-TPNO=                   28284
+TPNO=                   46847
 
 # The documentation is in a separate download
 COMPONENT_SRC_DOC=		$(COMPONENT_NAME)-doc-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_DOC=		$(COMPONENT_SRC_DOC).tar.gz
-COMPONENT_ARCHIVE_HASH_DOC=	sha256:3462402165a3ff34ceff23db20382a14bd3727131994f140a004f4872a01c12a
+COMPONENT_ARCHIVE_HASH_DOC=	sha256:40f185c514b64fccbaf73c93ae39f347aae930b2586046a046f340b9b4a218ba
 COMPONENT_ARCHIVE_URL_DOC=	$(COMPONENT_PROJECT_URL)files/download/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE_DOC)
 
 UNPACK_ARGS_DOC=		-r $(COMPONENT_SRC_DOC)
 
-# There are tests, but gmake test is currently broken.
-# It was working in the previous version, but not sure why
-# it breaks now. Leaving it at no tests for now.
-TEST_TARGET= $(NO_TESTS)
+# Libfastjson library statically linked to rsyslog
+COMPONENT_NAME_LIB        = libfastjson
+COMPONENT_VERSION_LIB     = 0.99.8
+COMPONENT_PROJECT_URL_LIB = https://github.com/rsyslog/libfastjson
+COMPONENT_SRC_LIB         = $(COMPONENT_NAME_LIB)-$(COMPONENT_VERSION_LIB)
+COMPONENT_ARCHIVE_LIB     = v$(COMPONENT_VERSION_LIB).tar.gz
+COMPONENT_ARCHIVE_HASH_LIB = sha256:7e49057b26a5a9e3c6623e024f95f9fd9a14b571b9150aeb89d6d475fc3633e3
+COMPONENT_ARCHIVE_URL_LIB = https://github.com/rsyslog/libfastjson/archive/$(COMPONENT_ARCHIVE_LIB)
+COMPONENT_ANITYA_ID_LIB   = 12043
+
+TPNO_LIB = 46846
 
 include $(WS_MAKE_RULES)/common.mk
 
-# Automake fix, regenerates configure file to get rid of the
-# automake 'probably too old' error. This fixes gmake test
-# needing more than one try to run. This does not fix the
-# fact that gmake test runs no tests.
-COMPONENT_PRE_CONFIGURE_ACTION= cd $(SOURCE_DIR); \
-				aclocal; \
-				autoconf; \
-				automake -a;
+# Prepare target specific CONFIGURE_OPTIONS
+CONFIGURE_OPTIONS += $(TS_CONFIGURE_OPTIONS)
 
-# gmake test will generate different outputs if run multiple
-# times. This gets rid of all the unimportant output
-COMPONENT_TEST_TRANSFORMS += '-e "/\(CC\).*/d" '
-COMPONENT_TEST_TRANSFORMS += '-e "/\(make\).*/d" '
-COMPONENT_TEST_TRANSFORMS += '-e "/\(source\).*/d" '
-COMPONENT_TEST_TRANSFORMS += '-e "/\(check\).*/d" '
-COMPONENT_TEST_TRANSFORMS += '-e "/\(usr\).*/d" '
-COMPONENT_TEST_TRANSFORMS += '-e "/\(SOURCE_DIR\).*/d" '
+### Libfastjson configuration ###
+
+# Convenience targets
+LIB_CONFIGURE := $(BUILD_DIR)/$(COMPONENT_SRC_LIB)/.configured
+LIB_BUILD := $(BUILD_DIR)/$(COMPONENT_SRC_LIB)/.built
+LIB_TEST_AND_COMPARE := $(BUILD_DIR)/$(COMPONENT_SRC_LIB)/.tested-and-compared
+
+# Generate libfastjson configure file
+COMPONENT_PREP_ACTION += (cd $(SOURCE_DIR_LIB) ; autoreconf -fiv )
+
+# Set correct configure source dir
+$(LIB_CONFIGURE): SOURCE_DIR = $(SOURCE_DIR_LIB)
+# Libfastjson tests can't find their headers or data files unless we clone the source tree
+$(LIB_CONFIGURE): COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR_LIB) $(BUILD_DIR)/$(COMPONENT_SRC_LIB));
+# Build only static library to prevent accidental dynamic linking
+$(LIB_CONFIGURE): TS_CONFIGURE_OPTIONS = --disable-shared
+
+# Libfastjson must be installed before rsyslog configure can starts
+$(BUILD_DIR)/$(MACH64)/.configured: $(LIB_BUILD)
+
+
+### Rsyslog ###
+
+# Set libfastjson link variables
+TS_CONFIGURE_OPTIONS = LIBFASTJSON_CFLAGS=-I$(BUILD_DIR)/$(COMPONENT_SRC_LIB)
+TS_CONFIGURE_OPTIONS += LIBFASTJSON_LIBS="-L$(BUILD_DIR)/$(COMPONENT_SRC_LIB)/.libs -lfastjson"
 
 # This is needed for things to be built correctly.
 CFLAGS += -std=c99
@@ -83,36 +102,42 @@ CONFIGURE_LIBDIR.64 =	$(CONFIGURE_LIBDIR.32)
 # Rsyslog sources contain __FILE__ macros which contain full path to the workspace
 # This may appear in debug output which is not nice. By specifying the source
 # path relative we force the macro to be relative path too.
-CONFIGURE_OPTIONS +=    --srcdir=../../$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-CONFIGURE_OPTIONS +=    --enable-imsolaris
-CONFIGURE_OPTIONS +=    --enable-mail
-CONFIGURE_OPTIONS +=    --enable-gssapi_krb5
-CONFIGURE_OPTIONS +=    --enable-gnutls
-CONFIGURE_OPTIONS +=    --disable-klog
-CONFIGURE_OPTIONS +=    --sbindir=$(USRLIBDIR)/rsyslog
+TS_CONFIGURE_OPTIONS += --srcdir=../../$(COMPONENT_NAME)-$(COMPONENT_VERSION)
+TS_CONFIGURE_OPTIONS += --enable-imsolaris
+TS_CONFIGURE_OPTIONS += --enable-mail
+TS_CONFIGURE_OPTIONS += --enable-gssapi_krb5
+TS_CONFIGURE_OPTIONS += --enable-gnutls
+TS_CONFIGURE_OPTIONS += --disable-klog
+TS_CONFIGURE_OPTIONS += --sbindir=$(USRLIBDIR)/rsyslog
 
-CONFIGURE_OPTIONS +=    --enable-imfile
-CONFIGURE_OPTIONS +=    --enable-impstats
-CONFIGURE_OPTIONS +=    --enable-mysql
-CONFIGURE_ENV     +=    "MYSQL_CONFIG=/usr/mysql/5.7/bin/mysql_config"
-CONFIGURE_OPTIONS +=    --enable-omstdout
-CONFIGURE_OPTIONS +=    --enable-omuxsock
+TS_CONFIGURE_OPTIONS += --enable-imfile
+TS_CONFIGURE_OPTIONS += --enable-impstats
+TS_CONFIGURE_OPTIONS += --enable-mysql
+TS_CONFIGURE_OPTIONS += --enable-omstdout
+TS_CONFIGURE_OPTIONS += --enable-omuxsock
+TS_CONFIGURE_OPTIONS += --enable-extended-tests
+
+# Configure test suite
+TS_CONFIGURE_OPTIONS += --enable-testbench
+TS_CONFIGURE_OPTIONS += --enable-imdiag
+TS_CONFIGURE_OPTIONS += --enable-extended-tests
 
 # libgcrypt is not approved.
-CONFIGURE_OPTIONS +=	--disable-libgcrypt
-CONFIGURE_OPTIONS +=	--enable-extended-tests
+TS_CONFIGURE_OPTIONS += --disable-libgcrypt
 
 # There are man pages in the tarball, which will require modification for
 # content. Also, building them from here requires python-docutils.
-CONFIGURE_OPTIONS +=	--disable-generate-man-pages
+TS_CONFIGURE_OPTIONS += --disable-generate-man-pages
+
+CONFIGURE_ENV += "MYSQL_CONFIG=/usr/mysql/5.7/bin/mysql_config"
 
 # Make the build verbose, show executed commands
 COMPONENT_BUILD_ARGS += AM_DEFAULT_VERBOSITY=1
 
 # common targets
-PROTODOCDIR=	$(PROTOUSRSHAREDOCDIR)/$(COMPONENT_NAME)
-# Docs to install are the tree under docs/build with some exceptions.
+PROTODOCDIR = $(PROTOUSRSHAREDOCDIR)/$(COMPONENT_NAME)
 
+# Docs to install are the tree under docs/build with some exceptions.
 COMPONENT_POST_INSTALL_ACTION += \
 	($(MKDIR) $(PROTODOCDIR) ; \
 	cd $(COMPONENT_SRC_DOC)/build ; \
@@ -122,6 +147,34 @@ COMPONENT_POST_INSTALL_ACTION += \
 	          -o -name 'objects.inv' \) \
 	     -prune -o -print0 \
 	| cpio -pd0u $(PROTODOCDIR))
+
+
+# run Libfastjson tests as well (before running rsyslog tests)
+$(BUILD_DIR)/$(MACH64)/.tested-and-compared: $(LIB_TEST_AND_COMPARE)
+
+libtest: $(LIB_TEST_AND_COMPARE)
+
+$(LIB_TEST_AND_COMPARE): COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-libfastjson.master
+$(LIB_TEST_AND_COMPARE): COMPONENT_TEST_BUILD_DIR = $(BUILD_DIR)/test/$(COMPONENT_SRC_LIB)
+
+# Needed for "gmake test" to work successfully.
+unexport SHELLOPTS
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-rsyslog.master
+
+# Tests need gnu version of coreutils to work correctly
+COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
+
+# gmake test will generate different outputs if run multiple
+# times. This gets rid of all the unimportant output
+
+COMPONENT_TEST_TRANSFORMS += '-n -e "/=/p"'
+COMPONENT_TEST_TRANSFORMS += '-e "/PASS/p"'
+COMPONENT_TEST_TRANSFORMS += '-e "/SKIP/p"'
+COMPONENT_TEST_TRANSFORMS += '-e "/FAIL/p"'
+COMPONENT_TEST_TRANSFORMS += '-e "/ERROR/p"'
+COMPONENT_TEST_TRANSFORMS += '-e "/TOTAL/p"'
+COMPONENT_TEST_TRANSFORMS += '-e "/Testsuite summary/p"'
 
 REQUIRED_PACKAGES += database/mysql-57
 REQUIRED_PACKAGES += database/mysql-57/library
@@ -133,3 +186,4 @@ REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += web/curl

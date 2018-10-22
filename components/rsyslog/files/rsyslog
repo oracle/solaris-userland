@@ -1,7 +1,7 @@
 #!/usr/sbin/sh
 
 #
-# Copyright (c) 2005, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2005, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 . /lib/svc/share/smf_include.sh
@@ -71,17 +71,17 @@ function setup
 	# Convert the old PID-file based post-command for logadm to an SMF-based one.
 	TMP_CONF=$(/usr/bin/mktemp /tmp/logadm.conf.XXXXXX)
 	/usr/bin/sed -e "s|$OLD_METHOD1|$NEW_METHOD|" \
-    		-e "s|$OLD_METHOD2|$NEW_METHOD|" $LOGADM_CONF > $TMP_CONF
+		-e "s|$OLD_METHOD2|$NEW_METHOD|" $LOGADM_CONF > $TMP_CONF
 	/usr/bin/cmp -s $LOGADM_CONF $TMP_CONF
 	if [ $? -eq 0 ]; then
 		/usr/bin/rm $TMP_CONF
 	else
 		# In case the umask or group is odd.
-		mode=$(/usr/bin/stat -c %a $LOGADM_CONF)
-		owner_group=$(/usr/bin/stat -c %U:%G $LOGADM_CONF)
+		pkg contents -H -o owner,group,mode -a path=etc/logadm.conf \
+			pkg:/system/core-os | read owner group mode
 		/usr/bin/mv $TMP_CONF $LOGADM_CONF
 		/usr/bin/chmod $mode $LOGADM_CONF
-		/usr/bin/chown $owner_group $LOGADM_CONF
+		/usr/bin/chown $owner:$group $LOGADM_CONF
 	fi
 }
 
@@ -94,10 +94,10 @@ function check_update
 
 	# cksum's of /etc/rsyslog.conf
 	RSYSLOG_CKSUM_1=3811874833	# s11.1, s11.2, s11.3
-	RSYSLOG_CKSUM_2=53416708	# s12
+	RSYSLOG_CKSUM_2=53416708	# s11.4
 	# cksum's of /etc/syslog.conf
 	SYSLOG_CKSUM_1=681212404	# s11, s11.1
-	SYSLOG_CKSUM_2=2956275192	# s11.2, s11.3, s12
+	SYSLOG_CKSUM_2=2956275192	# s11.2, s11.3, s11.4
 
 	CKSUM_ETC_RSYSLOG=`/usr/bin/cksum /etc/rsyslog.conf`
 	if [ $? -ne 0 ]; then
@@ -141,6 +141,12 @@ case "$1" in
 'start')
 	setup
 	check_update
+
+	CONFIG_ERR=$(/usr/lib/rsyslog/rsyslogd -N1 2>&1)
+	if [ $? -ne 0 ]; then
+		echo "Exiting because /usr/lib/rsyslog/rsyslogd -N1 reports configuration errors:\n$CONFIG_ERR"
+		exit $SMF_EXIT_ERR_CONFIG
+	fi
 
 	/usr/lib/rsyslog/rsyslogd >/dev/msglog 2>&1
 	if [ $? -ne 0 ]; then
