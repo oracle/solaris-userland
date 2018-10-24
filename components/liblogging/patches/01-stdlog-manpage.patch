@@ -1,0 +1,32 @@
+Journal channel is disabled via configruation and not build.
+That should be reflected in the manual page.
+
+--- liblogging-1.0.6/stdlog/stdlog.3	2018-10-19 03:30:49.542447029 +0000
++++ liblogging-1.0.6/stdlog/stdlog.3	2018-10-19 03:28:48.145251651 +0000
+@@ -356,7 +356,8 @@ channels can be selected:
+ "uxsock:<name>", which writes messages to the local unix socket
+ \fIname\fP\&. The message is formatted in traditional syslog\-format.
+ .IP \(bu 2
+-"journal:", which emits messages via the native systemd journal API
++"journal:", which emits messages via the native systemd journal API. This
++channel is not supported on Solaris.
+ .IP \(bu 2
+ "file:<name>", which writes messages in a syslog\-like format to
+ the file specified as \fIname\fP
+@@ -367,11 +368,11 @@ default channel can be set via the \fBLI
+ environment variable.
+ .sp
+ Not all output channel drivers are available on all platforms. For example,
+-the "journal:" driver is not available on BSD. It is highly suggested that
+-application developers \fBnever\fP hard\-code any channel specifiers inside
+-their code but rather permit the administrator to configure these. If there
+-is no pressing need to select different channel drivers, it is suggested
+-to rely on the default channel spec, which always can be set by the
++the "journal:" driver is not available on BSD (or Solaris). It is highly
++suggested that application developers \fBnever\fP hard\-code any channel
++specifiers inside their code but rather permit the administrator to configure
++these. If there is no pressing need to select different channel drivers, it is
++suggested to rely on the default channel spec, which always can be set by the
+ system administrator.
+ .SH RETURN VALUE
+ .sp

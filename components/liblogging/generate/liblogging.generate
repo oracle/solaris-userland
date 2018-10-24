@@ -20,28 +20,14 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
 #
-BUILD_BITS= 64_and_32
-include ../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		liblogging
-COMPONENT_VERSION=	1.0.6
-COMPONENT_PROJECT_URL=	http://www.liblogging.org/
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:338c6174e5c8652eaa34f956be3451f7491a4416ab489aef63151f802b00bf93
-COMPONENT_ARCHIVE_URL=	\
-    http://download.rsyslog.com/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
-COMPONENT_BUGDB=	service/rsyslog
-TPNO=			46848
-COMPONENT_ANITYA_ID=	1654
+# We are not shipping 32bit binaries
+<transform path=usr/bin/\$\(MACH32\)/.+ -> drop>
 
-TEST_TARGET= $(NO_TESTS)
-include $(WS_MAKE_RULES)/common.mk
+# Move manual pages into correct folder
+<transform file path=stdlog/stdlog.+ -> set action.hash %(path)>
 
-# Means build only stdlog
-CONFIGURE_OPTIONS +=    --disable-journal
-
-# There are built man pages in the tarball, which we shall patch. Making them
-# here would require python-docutils.
-CONFIGURE_OPTIONS +=	--disable-man-pages
+<transform file path=stdlog/stdlog.3 -> edit path stdlog/ usr/share/man/man3/>
+<transform file path=stdlog/stdlogctl.1 -> edit path stdlog/ usr/share/man/man1/>
