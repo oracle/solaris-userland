@@ -1,0 +1,20 @@
+This patch disables watchmalloc memory debugger on SPARC platform
+since the debugger breaks memset function on SPARC architecture.
+The x86 architecture is not affected.
+
+The problem with kernel watchpoints is documented in bug 28893826.
+Please remove this patch after the bug is fixed. 
+
+The patch is not suitable for upstream since it is Solaris specific.
+
+--- memcached-1.5.11/testapp.c	2018-11-26 23:45:00.779780072 +0000
++++ memcached-1.5.11/testapp.c	2018-11-26 23:44:15.358539198 +0000
+@@ -324,7 +324,7 @@ static pid_t start_server(in_port_t *por
+         snprintf(tmo, sizeof(tmo), "%u", timeout);
+ 
+         putenv(environment);
+-#ifdef __sun
++#if defined(__sun) && (defined(__amd64) || defined(__x86_64__))
+         putenv("LD_PRELOAD=watchmalloc.so.1");
+         putenv("MALLOC_DEBUG=WATCH");
+ #endif

@@ -1,10 +1,10 @@
-Adjustments needed to get memcached version 1.4.35 to build with the Studio
-compiler on Solaris.
+Adjustments needed to get memcached to build
+with the Studio compiler on Solaris.
 
 These changes will be passed upstream.
 
---- memcached-1.4.35/logger.c.orig	2017-03-01 15:11:00.811829274 +0000
-+++ memcached-1.4.35/logger.c	2017-03-01 15:11:09.009200863 +0000
+--- memcached-1.5.11/logger.c	2018-11-23 04:17:26.756616464 +0000
++++ memcached-1.5.11/logger.c	2018-11-23 04:15:28.096760772 +0000
 @@ -11,6 +11,10 @@
  #include <atomic.h>
  #endif
@@ -16,9 +16,9 @@ These changes will be passed upstream.
  #include "memcached.h"
  #include "bipbuffer.h"
  
---- memcached-1.4.35/memcached.c.orig	2017-03-01 15:10:36.902614850 +0000
-+++ memcached-1.4.35/memcached.c	2017-03-01 15:50:09.188544377 +0000
-@@ -364,8 +364,6 @@
+--- memcached-1.5.11/memcached.c	2018-11-23 04:17:37.915325545 +0000
++++ memcached-1.5.11/memcached.c	2018-11-23 04:15:28.100019217 +0000
+@@ -387,8 +387,6 @@ static void *conn_timeout_thread(void *a
                      sleep_time);
          usleep((useconds_t) sleep_time * 1000000);
      }
@@ -27,3 +27,25 @@ These changes will be passed upstream.
  }
  
  static int start_conn_timeout_thread() {
+--- memcached-1.5.11/slabs.c	2018-11-23 04:17:56.257603438 +0000
++++ memcached-1.5.11/slabs.c	2018-11-23 04:15:28.101234689 +0000
+@@ -162,7 +162,7 @@ void slabs_init(const size_t limit, cons
+      * the initial allocation fails, the required settings do not persist
+      * for remaining allocations. As such it makes little sense to do slab
+      * preallocation. */
+-    bool __attribute__ ((unused)) do_slab_prealloc = false;
++    bool do_slab_prealloc = false;
+ 
+     mem_limit = limit;
+ 
+--- memcached-1.5.11/slab_automove.c	2018-11-23 04:18:23.065241167 +0000
++++ memcached-1.5.11/slab_automove.c	2018-11-23 04:15:28.101967638 +0000
+@@ -76,7 +76,7 @@ void slab_automove_run(void *arg, int *s
+     int oldest = -1;
+     uint64_t oldest_age = 0;
+     int youngest = -1;
+-    uint64_t youngest_age = ~0;
++    uint64_t youngest_age = (uint64_t) ~0;
+     bool youngest_evicting = false;
+     *src = -1;
+     *dst = -1;
