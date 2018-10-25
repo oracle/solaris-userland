@@ -18,7 +18,7 @@
 .\"
 .\" CDDL HEADER END
 .\"
-.\" Copyright (c) 2009, 2015, Oracle and/or its affiliates. All rights reserved.
+.\" Copyright (c) 2009, 2018, Oracle and/or its affiliates. All rights reserved.
 .\"
 .TH "ntpq" "8" "" "" "System Administration Commands"
 .SH NAME
@@ -285,7 +285,7 @@ Each association known to an NTP server has a 16 bit integer association identif
 Control message commands result in one or more NTP mode 6 messages being sent to the server, and cause the data returned to be printed in some format. Most commands currently implemented send a single message and expect a single response. The current exceptions are the peers command, which will send a preprogrammed series of messages to obtain the data it needs, and the mreadlist and mreadvar commands, which will iterate over a range of associations.
 .TP
 .BR associations
-Obtains and prints a list of association identifiers and peer statuses for in-spec peers of the server being queried. The list is printed in columns. The first of these is an index numbering the associations from 1 for internal use, the second the actual association identifier returned by the server and the third the status word for the peer. This is followed by a number of columns containing data decoded from the status word. See the peers command for a decode of the \fBcondition\fR field. The data returned by the \fBassociations\fR command is cached internally in \fBntpq\fR and used in subsequent commands.  After the first \fBassociations\fP command the index can be used in place of the association identifier by specifing the identifier in the form &\fIindex\fP.
+Obtains and prints a list of association identifiers and peer statuses for in-spec peers of the server being queried. The list is printed in columns. The first of these is an index numbering the associations from 1 for internal use, the second the actual association identifier returned by the server and the third the status word for the peer. This is followed by a number of columns containing data decoded from the status word. See the peers command for a decode of the \fBcondition\fR field. The data returned by the \fBassociations\fR command is cached internally in \fBntpq\fR and used in subsequent commands.  After the first \fBassociations\fP command the index can be used in place of the association identifier by specifying the identifier in the form &\fIindex\fP.
 .TP
 .BR "clocklist [\fIassocID\fP]"
 .TP
@@ -516,4 +516,4 @@ replacement of the \fBdispersion\fP value with the \fBjitter\fP value in the
 .PP
 .SH SEE ALSO
 .LP
-\fBntpd\fR(8), \fBntpdc\fR(8), \fBntprc\fR(5), \fBattributes\fR(7)
+\fBntpd\fR(8), \fBntprc\fR(5), \fBattributes\fR(7)

@@ -305,7 +305,7 @@ These options specify the minimum and maximum polling interval for reference clo
 .ad
 .sp .25
 .RS 4n
-This command can be used to configure reference clocks in special ways. It must immediately follow the \fBserver\fR command which configures the driver. Note that the same capability is possible at run time using the \fBntpdc\fR program. The options are interpreted as follows:
+This command can be used to configure reference clocks in special ways. It must immediately follow the \fBserver\fR command which configures the driver. Note that the same capability is possible at run time using the \fBntpq\fR program. The options are interpreted as follows:
 .RE
 .sp .3
 .ne 2
@@ -448,7 +448,7 @@ Specifies the location of the random seed file used by the OpenSSL library. The 
 .ad
 .sp .25
 .RS 4n
-Specifies the complete path to the MD5 key file containing the keys and key identifiers used by \fBntpd\fR, \fBntpq\fR and \fBntpdc\fR when operating with symmetric key cryptography. This is the same operation as the \fB-k \fRcommand line option.
+Specifies the complete path to the MD5 key file containing the keys and key identifiers used by \fBntpd\fR and \fBntpq\fR when operating with symmetric key cryptography. This is the same operation as the \fB-k \fRcommand line option.
 .RE
 .sp .3
 .ne 2
@@ -468,7 +468,7 @@ This command specifies the default directory path for cryptographic keys, parame
 .ad
 .sp .25
 .RS 4n
-Specifies the key identifier to use with the \fBntpdc\fR utility program, which uses a proprietary protocol specific to this implementation of \fBntpd\fR. The \fB\fIkey\fP\fR argument is a key identifier for the trusted key, where the value can be in the range 1 to 65,535, inclusive.
+Specifies the key identifier to use with the \fBntpdc\fR utility program, which uses a proprietary protocol specific to this implementation of \fBntpd\fR. The \fB\fIkey\fP\fR argument is a key identifier for the trusted key, where the value can be in the range 1 to 65,535, inclusive. The \fBntpdc\fR program is not delivered in \fBSolaris\fR but may be used from a remote system.
 .RE
 .sp .3
 .ne 2
@@ -904,13 +904,13 @@ The parameter \fBtolerance\fR is the wander threshold to skip writing the new va
 .ne 2
 .mk
 .na
-\fBenable [ auth | bclient | calibrate | kernel | monitor | ntp | pps | stats]\fR
+\fBenable [ auth | bclient | calibrate | kernel | mode7 | monitor | ntp | pps | stats]\fR
 .br
-\fBdisable [ auth | bclient | calibrate | kernel | monitor | ntp | pps | stats ]\fR
+\fBdisable [ auth | bclient | calibrate | kernel | mode7 | monitor | ntp | pps | stats ]\fR
 .ad
 .sp .25
 .RS 4n
-Provides a way to enable or disable various system options. Flags not mentioned are unaffected. Note that all of these flags can be controlled remotely using the \fBntpdc\fR utility program.
+Provides a way to enable or disable various system options. Flags not mentioned are unaffected. Note that all of these flags can be controlled remotely using the \fBntpq\fR utility program.
 .RE
 .sp .3
 .ne 2
@@ -956,11 +956,21 @@ Enables the kernel time discipline, if available. The default for this flag is e
 .ne 2
 .mk
 .na
+\fBmode7\fR
+.ad
+.sp .25
+.RS 4n
+Enables processing mode 7 private request packets from the \fBntpdc\fR utility program. The \fBntpdc\fR program is not delivered with Solaris but may still be used remotely from other systems. The default is to not accept these packets.
+.RE
+.sp .3
+.ne 2
+.mk
+.na
 \fBmonitor\fR
 .ad
 .sp .25
 .RS 4n
-Enables the monitoring facility. See the \fBntpdc\fR program and the \fBmonlist\fR command or further information. The default for this flag is enable.
+Enables the monitoring facility. See the \fBntpq\fR program and the \fBmrulist\fR command or further information. The default for this flag is enable.
 .RE
 .sp .3
 .ne 2
