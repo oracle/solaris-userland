@@ -33,6 +33,8 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=        x11/xorg-server
 COMPONENT_ANITYA_ID=	5250
 
+TPNO=			45950
+
 PKG_PROTO_DIRS += $(SOURCE_DIR)/config
 PKG_PROTO_DIRS += $(PWD)/sun-src/os/solaris/mdb/scripts
 PKG_PROTO_DIRS += $(SOURCE_DIR)/hw/xfree86/os-support/bus
