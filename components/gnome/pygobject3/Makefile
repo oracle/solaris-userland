@@ -62,7 +62,10 @@ TEST_TARGET= $(SKIP_TEST)
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Required due to patch to configure.ac.
-COMPONENT_PREP_ACTION += ( cd $(@D) ; NOCONFIGURE=1 $(CONFIG_SHELL) autogen.sh );
+# The TERM is required because autogen.sh calls /usr/bin/gnome-autogen.sh which
+# in turn calls `tput bold` which may fail if you have TERM unknown to the
+# current build machine.
+COMPONENT_PREP_ACTION += ( cd $(@D) ; TERM=vt100 NOCONFIGURE=1 $(CONFIG_SHELL) autogen.sh );
 
 # Needs -std=c99 at minimum for 'NAN', etc.
 CFLAGS += -std=c11
