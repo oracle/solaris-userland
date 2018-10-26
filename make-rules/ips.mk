@@ -230,6 +230,7 @@ RESOLVED=$(VERSIONED_MANIFESTS:%.p5m=$(MANIFEST_BASE)-%.depend.res)
 PUBLISHED=$(RESOLVED:%.depend.res=%.published)
 # List of manifests that are to be constructed during 'gmake manifest-check'
 CHECKED=$(CANONICAL_MANIFESTS:%.p5m=$(MANIFEST_BASE)-%.constructed)
+MANGLED=$(VERSIONED_MANIFESTS:%.p5m=$(MANIFEST_BASE)-%.mangled)
 
 COPYRIGHT_FILE ?=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).copyright
 IPS_COMPONENT_VERSION ?=	$(COMPONENT_VERSION)
