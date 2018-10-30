@@ -45,30 +45,6 @@
 # Do not ship testing library
 <transform file path=.*/libgtest -> drop>
 
-# Emit a file with a name of $(MACH64)
-# This allows us to distinguish later on which platform we run
-# The bogus file will be deleted at the end
-<transform file path=usr/bin/addbuiltin$ -> emit file path=$(MACH64)>
-
 # Mark existing files with the correct variant.arch
 <transform file path=.*/libfreebl3\.[^/]+$ -> set variant.arch i386>
 <transform file path=.*/libfreebl_[^/]+$ -> set variant.arch sparc>
-
-# On i386 emit the sparc actions
-<transform file path=amd64$ -> emit file path=usr/lib/mps/$!(MACH64)/libfreebl_64fpu_3.chk variant.arch=sparc>
-<transform file path=amd64$ -> emit file path=usr/lib/mps/$!(MACH64)/libfreebl_64fpu_3.so variant.arch=sparc>
-<transform file path=amd64$ -> emit file path=usr/lib/mps/$!(MACH64)/libfreebl_64int_3.chk variant.arch=sparc>
-<transform file path=amd64$ -> emit file path=usr/lib/mps/$!(MACH64)/libfreebl_64int_3.so variant.arch=sparc>
-<transform file path=amd64$ -> emit file path=usr/lib/mps/libfreebl_32fpu_3.chk variant.arch=sparc>
-<transform file path=amd64$ -> emit file path=usr/lib/mps/libfreebl_32fpu_3.so variant.arch=sparc >
-<transform file path=amd64$ -> emit file path=usr/lib/mps/libfreebl_32int64_3.chk variant.arch=sparc>
-<transform file path=amd64$ -> emit file path=usr/lib/mps/libfreebl_32int64_3.so variant.arch=sparc>
-
-# On sparc emit the i386 actions
-<transform file path=sparcv9$ -> emit file path=usr/lib/mps/$!(MACH64)/libfreebl3.chk variant.arch=i386>
-<transform file path=sparcv9$ -> emit file path=usr/lib/mps/$!(MACH64)/libfreebl3.so variant.arch=i386>
-<transform file path=sparcv9$ -> emit file path=usr/lib/mps/libfreebl3.chk variant.arch=i386>
-<transform file path=sparcv9$ -> emit file path=usr/lib/mps/libfreebl3.so variant.arch=i386>
-
-# Now delete the bogus file
-<transform file path=$(MACH64) -> drop>

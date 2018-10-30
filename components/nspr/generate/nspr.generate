@@ -37,10 +37,5 @@
 <transform file path=.*/nspr-config$ -> drop>
 <transform file path=.*/nspr\.m4$ -> drop>
 
-# On x64 we have to emit the sparc only file
-<transform file path=usr/lib/mps/\$\(MACH64\)/libnspr4\.so$ -> emit \
-	file path=usr/lib/mps/cpu/sparcv8plus/libnspr_flt4.so>
-
-# And we have to set the variant.arch not matter whether we run on x86 or sparc
-# platform
+# Set the variant.arch no matter whether we run on x86 or sparc platform
 <transform file path=.*/libnspr_flt4.so -> set variant.arch sparc>

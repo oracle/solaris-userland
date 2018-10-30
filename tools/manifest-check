@@ -98,33 +98,82 @@ HARDLINKS=()
 	# - license
 	# - depend
 	# - all transforms
+	# - anything with variant.arch != current variant.arch
 	perl -e '
+		my $arch;
+		BEGIN {
+			# Read our architecture before running rest of the
+			# program
+			$arch=`/usr/bin/uname -p`;
+			chomp($arch);
+		}
+
 		# Regular expression matching what we want to copy out of original .p5m
 		$re = qr{
-			^    # Beginning of line
-			\s*  # Potentialy whitespace
-			(?:  # Now either of this:
-				<     # This is supposed to match transforms
-				|
-				set
-				|
-				license
-				|
-				depend
+			# Match anything we can _not_ detect from the proto area
+
+			^	# Beginning of line
+			\s*	# Potentialy whitespace
+			(?:
+				(?&SPECIAL_LINE)
+				| # or
+				(?&FOREIGN_ARCH_LINE)
 			)
 			(?:
-				[^\\\n]*+ # Take anything but newline or backslash
-				|
-				\\.       # Take anything after backslash (including newline)
-			)*              # As many times as possible
-			(?:
-				\n|\Z     # Take final end of line if it is there
+				\n|\Z # Take final end of line if it is there
+			)
+
+
+			(?(DEFINE)
+				# We can not autogenerate and thus need to
+				# copy:
+				#  - transform
+				#  - set
+				#  - license
+				#  - depend
+				(?<SPECIAL_LINE>
+					# Find beginning of a line
+					(?:
+						<	# This is supposed to match <transform and <include
+						|
+						set
+						|
+						license
+						|
+						depend
+					)
+					(?&ONE_CHARACTER)* # Take rest of line
+				)
+
+				# A line having variant.arch not equal to current architecture
+				(?<FOREIGN_ARCH_LINE>
+					(?&ONE_CHARACTER)*?	# Take as few characters as possible followed by ...
+					[ \t]			# space
+					variant\.arch=		# literal text
+					(?!$arch)		# not followed by our actual arch but rather ...
+					\S++			# any other string representing the arch in the manifest
+					(?:			# followed by
+						[ \t]			# space
+						(?&ONE_CHARACTER)*	# ... and rest of line
+					)?			# ... optionally
+				)
+
+				# One character not including end of line but
+				# including backslash-newline combination
+				(?<ONE_CHARACTER>
+					[^\\\n]			# Take anything but backslash or newline
+					|			# or
+					\\.			# Take \ with anything after that (including newline)
+				)
+
 			)
 		}xms;
 
+		# Read whole file into $_
 		$_ = join "", <>;
 		while ( m/($re)/g ) {
-			print "$1\n";
+			# Print every match
+			print "$1";
 		}
 	' "$ORIGIN"
 
