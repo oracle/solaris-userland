@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2016, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2018, Oracle and/or its affiliates. All rights reserved.
  */
 
 /* i915_dma.c -- DMA support for the I915 -*- linux-c -*-
@@ -1593,7 +1593,8 @@ int i915_driver_unload(struct drm_device *dev)
 	}
 	}
 	drm_mm_takedown(&dev_priv->mm.gtt_space);
-	dev_priv->gtt.gtt_remove(dev);
+	if (dev_priv->gtt.gtt_remove != NULL)
+		dev_priv->gtt.gtt_remove(dev);
 
 	if (dev_priv->regs != NULL)
 		(void) drm_rmmap(dev, dev_priv->regs);
