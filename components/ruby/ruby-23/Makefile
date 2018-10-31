@@ -30,10 +30,10 @@ include ../../../make-rules/shared-macros.mk
 GCC_ROOT = /usr/gcc/5
  
 COMPONENT_NAME=		ruby
-COMPONENT_VERSION=	2.3.1
+COMPONENT_VERSION=	2.3.8
 COMPONENT_PROJECT_URL=	http://www.ruby-lang.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b87c738cb2032bf4920fef8e3864dc5cf8eae9d89d8d523ce0236945c5797dcd
+    sha256:b5016d61440e939045d4e22979e04708ed6c8e1c52e7edb2553cf40b73c59abf
 COMPONENT_ARCHIVE_URL=	\
 	http://cache.ruby-lang.org/pub/ruby/2.3/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	4223
@@ -51,7 +51,7 @@ COMPONENT_ARCHIVE_URL_1= https://rubygems.org/rubygems/$(COMPONENT_ARCHIVE_1)
 # Convenience variable
 RUBYGEMS=$(COMPONENT_SRC_1)
 
-TPNO=			32731
+TPNO=			47007
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -170,14 +170,6 @@ CONFIGURE_OPTIONS +=	--with-tclConfig-file=$(USRLIBDIR)/64/tclConfig.sh
 	# headers we add to the manpages will not work properly
 CONFIGURE_OPTIONS +=	--with-mantype=man
 
-# fiddle.so (ext/fiddle) links to libffi, which does not define
-# ffi_raw_size(), although its prototype is in libffi's 
-# /usr/lib/libffi-3.0/include/ffi.h header file.  
-# Defining FFI_NO_RAW_API avoids use of ffi_raw_size().
-# This is a workaround to bug
-# 17349280 - libffi is missing ffi_raw_size()
-CFLAGS +=		-DFFI_NO_RAW_API
-
 # keep ASLR disabled; 
 # miniruby may core dump on sparc during build
 ASLR_MODE =		$(ASLR_DISABLE)
@@ -199,34 +191,15 @@ COMPONENT_PRE_TEST_ACTION += \
 	    $(SOURCE_DIR)/test/etc/test_etc.rb-save ; fi )
 
 COMPONENT_TEST_TRANSFORMS += \
-	'-e "/^linking shared-object ripper.so$$/d" ' \
-	'-e "s|^20[0-9][0-9]-[01][1-9]-[0-3][0-9].*|XXX_DATE_TIME_XXX|" ' \
-	'-e "s|\(^[[:space:]]*CC = \).*|\1|" ' \
-	'-e "s|\(^[[:space:]]*LD = \).*|\1|" ' \
-	'-e "s|\(^[[:space:]]*LDSHARED = \).*|\1|" ' \
-	'-e "s|\(^[[:space:]]*CFLAGS = \).*|\1|" ' \
-	'-e "s|\(^[[:space:]]*XCFLAGS = \).*|\1|" ' \
-	'-e "s|\(^[[:space:]]*CPPFLAGS = \).*|\1|" ' \
-	'-e "s|\(^[[:space:]]*DLDFLAGS = \).*|\1|" ' \
-	'-e "s|\(^[[:space:]]*SOLIBS = \).*|\1|" ' \
-	'-e "s|\(^COLLECT_GCC=\).*|\1|" ' \
-	'-e "s|\(^COLLECT_LTO_WRAPPER=\).*|\1|" ' \
-	'-e "s|\(^Target: \).*|\1|" ' \
-	'-e "s|\(^Configured with: \).*|\1|" ' \
-	'-e "s|\(^gcc version \).*|\1|" ' \
-	'-e "s|\(^pid \)[1-9][0-9]*|\1NUM|" ' \
-	'-e "s|^\.[\.FES]\+|XXX_DOTS_XXX|" ' \
-	'-e "s|\(Insecure world writable dir \).*\( in PATH, mode \)[0-7].*|\1XXX_DIR_XXX\2XXX_MODE_XXX|g" ' \
-	'-e "s|\(^Driver is \).*|\1XXX_RUBY_VERSION_XXX|" ' \
-	'-e "s|\(^Target is \).*|\1XXX_RUBY_VERSION_XXX|" ' \
-	'-e "s|\(^Finished tests in \).*|\1|" ' \
-        '-e "s|^[[:space:]]*[0-9]\+) \([FSE][a-z]\+:$$\)|NUM) \1|" ' \
-	'-e "s|URI::HTTP:[0-9a-fx]\+ |URI::HTTP:0xXXX |" ' \
-	'-e "s|\(.*\#test_no_memory_leak \).*:$$|\1XXX_RUBY_FILE_XXX:|" ' \
-	'-e "s|/tmp/.*:[0-9]\+: |XXX_TMPFILE_XXX: |" ' \
-	'-e "s|[0-9]\+\( tests, \)[0-9]\+\( assertions, \)[0-9]\+\( failures, \)[0-9]\+\( errors, \)[0-9]\+\( skips\)|XXX_NUM_XXX\1XXX_NUM_XXX\2XXX_NUM_XXX\3XXX_NUM_XXX\4XXX_NUM_XXX\5|" ' \
-	'-e "s|\(^ruby -v: \).*|\1XXX_RUBY_VERSION_XXX|" ' \
-	'-e "s|\(\[yes-test-all\] Error \)[0-9]\+$$|\1NUM|"'
+    '-n' \
+    '-e "s/Finished tests in .*s, .* tests\/s, .* assertions/Finished tests in Xs, X tests\/s, X assertions/"' \
+    '-e "s/\(.*\) tests, .* assertions, \(.*\) failures, \(.*\) errors, .* skips/\1 tests, X assertions, \2 failures, \3 errors, X skips/"' \
+    '-e "/^make/d"' \
+    '-e "/fatal/Ip"' \
+    '-e "/test succeeded/p"' \
+    '-e "/Running tests/p"' \
+    '-e "/Finished tests in Xs, X tests\/s, X assertions/p"' \
+    '-e "/.* tests, X assertions, .* failures, .* errors, X skips/p"'
 
 # master test results are not entirely clean, so not
 # appropriate to run at top level
