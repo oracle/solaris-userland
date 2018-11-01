@@ -1,0 +1,51 @@
+From 716bc0e73444d38f5eddd677c2ef87f8bf0ad1d9 Mon Sep 17 00:00:00 2001
+From: Steven Allen <steven@stebalien.com>
+Date: Fri, 22 Jun 2018 11:56:24 -0700
+Subject: [PATCH] fix compiling on unsupported platforms
+
+fixes #18
+---
+ src/sys/bsd.rs             | 2 ++
+ src/sys/linux_macos/mod.rs | 2 ++
+ src/sys/unsupported.rs     | 3 +++
+ src/util.rs                | 7 ++++++-
+ 4 files changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/src/sys/unsupported.rs b/src/sys/unsupported.rs
+index 7eb48a5d..dba1d881 100644
+--- xattr/src/sys/unsupported.rs
++++ xattr/src/sys/unsupported.rs
+@@ -5,6 +5,9 @@
+ 
+ use ::UnsupportedPlatformError;
+ 
++// Need to use something.
++pub const ENOATTR: ::libc::c_int = 0;
++
+ #[derive(Clone, Debug)]
+ pub struct XAttrs;
+ 
+diff --git a/src/util.rs b/src/util.rs
+index 076159c9..d107694b 100644
+--- xattr/src/util.rs
++++ xattr/src/util.rs
+@@ -5,8 +5,12 @@
+ use std::ffi::CString;
+ use std::path::Path;
+ 
+-use libc::{ERANGE, ENOATTR, ssize_t};
++use libc::{ssize_t, ERANGE};
+ 
++// Need to use this one as libc only defines this on supported platforms. Given
++// that we want to at least compile on unsupported platforms, we define this in
++// our platform-specific modules.
++use sys::ENOATTR;
+ 
+ #[allow(dead_code)]
+ pub fn name_to_c(name: &OsStr) -> io::Result<CString> {
+--- xattr/.cargo-checksum.json
++++ xattr/.cargo-checksum.json
+@@ -1 +1 @@
+-{"files":{".travis.yml":"2067d3855157d59a4cf4772991c0756462bc752f2e3e881c994dc154c20c62d9","Cargo.toml":"31e86098a106cbf8e35aa0341f3c2643dbb7dafdfcc30adbafd9dfbc64ffdbae","LICENSE-APACHE":"a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2","LICENSE-MIT":"8b427f5bc501764575e52ba4f9d95673cf8f6d80a86d0d06599852e1a9a20a36","README.md":"dd49da2b3d7b9ab66f31754e9a5263f84ed8803f49f19e4c7682817266053c7b","rustfmt.toml":"be851a0fa92766755e54e163ccceedee0b28ea6d527888c48f1cbc766f23733c","src/error.rs":"d2dca7a9f9cf648284e1aaaa98475e1703c4c0142ba52807f8e370a39be49fd6","src/lib.rs":"06622c422866b2b2acbaf0aec2265d05da353ea607650b1ee3e616d51865b8f3","src/sys/bsd.rs":"0110b35538f50a633b37e8fb08b2af2b6cb05c6f228a2d9f2758a91437f54565","src/sys/linux_macos/linux.rs":"eda16eae41539e52631366804b14498faf143761b5d112a4f9f326ae65031457","src/sys/linux_macos/macos.rs":"3fe3430c716f40570523f26e061575b5a1a1efb37b06675a1fa26927dba2144f","src/sys/linux_macos/mod.rs":"b7c231ebb2c08673c9fcdc10e9a5e490deea4f358b0c622d49f3bb0b0edff112","src/sys/mod.rs":"8b20a6612eda5c4d1158703723850fda53e60cc66d36415044276b0bf0eeca74","src/sys/unsupported.rs":"7a182363fdced3482bcae023db9ee9d01909c46acd1aa17329566e59f5da5ae0","src/util.rs":"82e8b99bd89e1b69986161b136fed83b9244d001af33a4ea1eec41ac398e27d8","tests/main.rs":"0797a885b2f9c48218e3807c8b1c1c47c95079b86774c53ed59c0ab672414c2f"},"package":"abb373b92de38a4301d66bec009929b4fb83120ea1c4a401be89dbe0b9777443"}
+\ No newline at end of file
++{"files":{".travis.yml":"2067d3855157d59a4cf4772991c0756462bc752f2e3e881c994dc154c20c62d9","Cargo.toml":"31e86098a106cbf8e35aa0341f3c2643dbb7dafdfcc30adbafd9dfbc64ffdbae","LICENSE-APACHE":"a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2","LICENSE-MIT":"8b427f5bc501764575e52ba4f9d95673cf8f6d80a86d0d06599852e1a9a20a36","README.md":"dd49da2b3d7b9ab66f31754e9a5263f84ed8803f49f19e4c7682817266053c7b","rustfmt.toml":"be851a0fa92766755e54e163ccceedee0b28ea6d527888c48f1cbc766f23733c","src/error.rs":"d2dca7a9f9cf648284e1aaaa98475e1703c4c0142ba52807f8e370a39be49fd6","src/lib.rs":"06622c422866b2b2acbaf0aec2265d05da353ea607650b1ee3e616d51865b8f3","src/sys/bsd.rs":"0110b35538f50a633b37e8fb08b2af2b6cb05c6f228a2d9f2758a91437f54565","src/sys/linux_macos/linux.rs":"eda16eae41539e52631366804b14498faf143761b5d112a4f9f326ae65031457","src/sys/linux_macos/macos.rs":"3fe3430c716f40570523f26e061575b5a1a1efb37b06675a1fa26927dba2144f","src/sys/linux_macos/mod.rs":"b7c231ebb2c08673c9fcdc10e9a5e490deea4f358b0c622d49f3bb0b0edff112","src/sys/mod.rs":"8b20a6612eda5c4d1158703723850fda53e60cc66d36415044276b0bf0eeca74","src/sys/unsupported.rs":"70def83cfb21fe4cf550db60fb2f727ab1cfd83be2104c59105b18266291d25e","src/util.rs":"59c3769a005875634d71846b1fff61683b58fc354389416dbd75ee3da19c9370","tests/main.rs":"0797a885b2f9c48218e3807c8b1c1c47c95079b86774c53ed59c0ab672414c2f"},"package":"abb373b92de38a4301d66bec009929b4fb83120ea1c4a401be89dbe0b9777443"}

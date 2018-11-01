@@ -1,0 +1,86 @@
+From 051eddd9a9067dcbdccef6bfd86301453bae42ad Mon Sep 17 00:00:00 2001
+From: Petr Sumbera <petr.sumbera@oracle.com>
+Date: Thu, 26 Jul 2018 03:58:00 -0700
+Subject: [PATCH 1/2] sparc ABI issue - structure returning from function is
+ returned in 64bit registers
+
+Fixes: #52638
+---
+ src/librustc_target/abi/call/sparc64.rs | 11 +----------
+ 1 file changed, 1 insertion(+), 10 deletions(-)
+
+diff --git a/src/librustc_target/abi/call/sparc64.rs b/src/librustc_target/abi/call/sparc64.rs
+index 987f56e6f985..a58aebc2ff06 100644
+--- a/src/librustc_target/abi/call/sparc64.rs
++++ b/src/librustc_target/abi/call/sparc64.rs
+@@ -57,16 +57,7 @@ fn classify_ret_ty<'a, Ty, C>(cx: C, ret: &mut ArgType<'a, Ty>)
+     let size = ret.layout.size;
+     let bits = size.bits();
+     if bits <= 256 {
+-        let unit = if bits <= 8 {
+-            Reg::i8()
+-        } else if bits <= 16 {
+-            Reg::i16()
+-        } else if bits <= 32 {
+-            Reg::i32()
+-        } else {
+-            Reg::i64()
+-        };
+-
++        let unit = Reg::i64();
+         ret.cast_to(Uniform {
+             unit,
+             total: size
+
+From cc2bd71269f9c54fed3849141e29204a5f353693 Mon Sep 17 00:00:00 2001
+From: Simonas Kazlauskas <git@kazlauskas.me>
+Date: Thu, 26 Jul 2018 17:55:25 +0300
+Subject: [PATCH 2/2] Add a test for sparc64 ABI issue
+
+---
+ src/test/codegen/sparc-struct-abi.rs | 36 ++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
+ create mode 100644 src/test/codegen/sparc-struct-abi.rs
+
+diff --git a/src/test/codegen/sparc-struct-abi.rs b/src/test/codegen/sparc-struct-abi.rs
+new file mode 100644
+index 000000000000..d3b7a5cd5988
+--- /dev/null
++++ b/src/test/codegen/sparc-struct-abi.rs
+@@ -0,0 +1,36 @@
++// Copyright 2018 The Rust Project Developers. See the COPYRIGHT
++// file at the top-level directory of this distribution and at
++// http://rust-lang.org/COPYRIGHT.
++//
++// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
++// http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
++// <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
++// option. This file may not be copied, modified, or distributed
++// except according to those terms.
++//
++// Checks that we correctly codegen extern "C" functions returning structs.
++// See issue #52638.
++
++// compile-flags: -O --target=sparc64-unknown-linux-gnu --crate-type=rlib
++#![feature(no_core, lang_items)]
++#![no_core]
++
++#[lang="sized"]
++trait Sized { }
++#[lang="freeze"]
++trait Freeze { }
++#[lang="copy"]
++trait Copy { }
++
++#[repr(C)]
++pub struct Bool {
++    b: bool,
++}
++
++// CHECK: define i64 @structbool()
++// CHECK-NEXT: start:
++// CHECK-NEXT: ret i64 72057594037927936
++#[no_mangle]
++pub extern "C" fn structbool() -> Bool {
++    Bool { b: true }
++}

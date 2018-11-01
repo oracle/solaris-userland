@@ -1,0 +1,69 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
+set name=pkg.fmri \
+    value=pkg:/developer/rust/cargo@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="Rust package manager"
+set name=com.oracle.info.description value="the Rust package manager"
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2018/120
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+#
+file etc/bash_completion.d/cargo \
+    path=etc/bash/bash_completion.d/cargo.bashcomp.sh
+file path=usr/bin/cargo
+file path=usr/share/man/man1/cargo-bench.1
+file path=usr/share/man/man1/cargo-build.1
+file path=usr/share/man/man1/cargo-check.1
+file path=usr/share/man/man1/cargo-clean.1
+file path=usr/share/man/man1/cargo-doc.1
+file path=usr/share/man/man1/cargo-fetch.1
+file path=usr/share/man/man1/cargo-generate-lockfile.1
+file path=usr/share/man/man1/cargo-init.1
+file path=usr/share/man/man1/cargo-install.1
+file path=usr/share/man/man1/cargo-login.1
+file path=usr/share/man/man1/cargo-metadata.1
+file path=usr/share/man/man1/cargo-new.1
+file path=usr/share/man/man1/cargo-owner.1
+file path=usr/share/man/man1/cargo-package.1
+file path=usr/share/man/man1/cargo-pkgid.1
+file path=usr/share/man/man1/cargo-publish.1
+file path=usr/share/man/man1/cargo-run.1
+file path=usr/share/man/man1/cargo-rustc.1
+file path=usr/share/man/man1/cargo-rustdoc.1
+file path=usr/share/man/man1/cargo-search.1
+file path=usr/share/man/man1/cargo-test.1
+file path=usr/share/man/man1/cargo-uninstall.1
+file path=usr/share/man/man1/cargo-update.1
+file path=usr/share/man/man1/cargo-version.1
+file path=usr/share/man/man1/cargo-yank.1
+file path=usr/share/man/man1/cargo.1
+file usr/share/zsh/site-functions/_cargo \
+    path=usr/share/zsh/vendor-functions/Completion/_cargo
+#
+license rust.license license=Apachev2.0

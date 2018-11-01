@@ -28,6 +28,10 @@
 # userland components.
 #
 
+ifeq ($(strip $(BUILD_STYLE)),cargo)
+include $(WS_MAKE_RULES)/cargo-vendored.mk
+endif
+
 include $(WS_MAKE_RULES)/prep.mk
 
 # Override this to limit builds and publication to a single architecture.

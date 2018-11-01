@@ -1,0 +1,66 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+<include generate/common.transform>
+
+# libraries contain hash in their names and thus are included automatically
+<transform path=usr/lib/lib.*\.so$ -> drop>
+<transform path=usr/lib/rustlib/(sparcv9|x86_64)-sun-solaris/.* -> drop>
+
+# no need to package these
+<transform path=usr/lib/rustlib/uninstall.sh -> drop>
+<transform path=usr/lib/rustlib/install.log -> drop>
+<transform path=usr/lib/rustlib/manifest-.* -> drop>
+<transform path=usr/share/doc/rust/html/(\.lock|\.stamp) -> drop>
+
+# lldb is not bundled with Solaris yet
+<transform path=usr/bin/rust-lldb -> drop>
+
+# i386 files only (these are added in static file)
+<transform file path=.*/(__readeflags.v.html|__writeeflags.v.html|fn.__readeflags.htm|fn.__writeeflags.html|x86.rs.html) -> set variant.arch i386>
+
+# sparc files only (these are added in static file)
+<transform file path=usr/share/doc/rust/html/src/std/up/stdsimd/stdsimd/arch/detect/os/other.rs.html -> set variant.arch sparc>
+<transform file path=usr/share/doc/rust/html/std/os/linux/raw/arch/fn.stat.html -> set variant.arch sparc>
+<transform file path=usr/share/doc/rust/html/std/os/linux/raw/arch/stat.v.html -> set variant.arch sparc>
+<transform file path=usr/share/doc/rust/html/std/os/linux/raw/fn.stat.html -> set variant.arch sparc>
+<transform file path=usr/share/doc/rust/html/std/os/linux/raw/stat.v.html -> set variant.arch sparc>
+<transform file path=usr/share/doc/rust/html/std/sys/unix/ext/raw/blkcnt_t.t.html -> set variant.arch sparc>
+<transform file path=usr/share/doc/rust/html/std/sys/unix/ext/raw/blksize_t.t.html -> set variant.arch sparc>
+<transform file path=usr/share/doc/rust/html/std/sys/unix/ext/raw/ino_t.t.html -> set variant.arch sparc>
+<transform file path=usr/share/doc/rust/html/std/sys/unix/ext/raw/nlink_t.t.html -> set variant.arch sparc>
+<transform file path=usr/share/doc/rust/html/std/sys/unix/ext/raw/off_t.t.html -> set variant.arch sparc>
+<transform file path=usr/share/doc/rust/html/std/sys/unix/ext/raw/time_t.t.html -> set variant.arch sparc>
+<transform file path=usr/share/doc/rust/html/std/sys/unix/ext/raw/type.blkcnt_t.html -> set variant.arch sparc>
+<transform file path=usr/share/doc/rust/html/std/sys/unix/ext/raw/type.blksize_t.html -> set variant.arch sparc>
+<transform file path=usr/share/doc/rust/html/std/sys/unix/ext/raw/type.ino_t.html -> set variant.arch sparc>
+<transform file path=usr/share/doc/rust/html/std/sys/unix/ext/raw/type.nlink_t.html -> set variant.arch sparc>
+<transform file path=usr/share/doc/rust/html/std/sys/unix/ext/raw/type.off_t.html -> set variant.arch sparc>
+<transform file path=usr/share/doc/rust/html/std/sys/unix/ext/raw/type.time_t.html -> set variant.arch sparc>
+
+# delete everything not belonging to this package
+<transform file link pkg.type=(?!rustc) -> drop>
+<transform file link -> delete pkg.type .*>
+
