@@ -1,0 +1,17 @@
+Solaris specific patch, not suitable for upstream.
+The pytest version available in Solaris, i.e pytest2.9,
+does not support yield statements inside the pytest.fixture
+decorator. More details at 
+https://docs.pytest.org/en/latest/historical-notes.html#pytest-yield-fixture-decorator
+
+--- setuptools_scm-2.1.0.old/testing/test_file_finder.py	2018-05-13 01:55:37.000000000 +0000
++++ setuptools_scm-2.1.0/testing/test_file_finder.py	2018-09-04 02:58:13.263099914 +0000
+@@ -6,7 +6,7 @@
+ from setuptools_scm.integration import find_files
+ 
+ 
+-@pytest.fixture(params=['git', 'hg'])
++@pytest.yield_fixture(params=['git', 'hg'])
+ def inwd(request, wd):
+     if request.param == 'git':
+         wd('git init')

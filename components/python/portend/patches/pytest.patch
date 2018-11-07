@@ -1,0 +1,28 @@
+Solaris specific patch, not suitable for upstream.
+The pytest.ini changes are required as the flake8 tool
+is not available in Solaris.
+The test_portend.py changes are required as the pytest
+version available in Solaris, i.e pytest2.9, does not 
+support yield statements inside the pytest.fixture
+decorator. More details at 
+https://docs.pytest.org/en/latest/historical-notes.html#pytest-yield-fixture-decorator
+
+--- portend-2.3.old/pytest.ini	2018-06-09 13:02:47.000000000 +0000
++++ portend-2.3/pytest.ini	2018-08-31 03:16:39.714786736 +0000
+@@ -1,4 +1,4 @@
+ [pytest]
+ norecursedirs=dist build .tox .eggs
+-addopts=--doctest-modules --flake8 -v
++addopts=--doctest-modules -v
+ doctest_optionflags=ALLOW_UNICODE ELLIPSIS IGNORE_EXCEPTION_DETAIL
+--- portend-2.3/test_portend.py	2018-06-09 13:02:47.000000000 +0000
++++ portend-2.3/test_portend.py	2018-08-31 06:00:52.230819124 +0000
+@@ -30,7 +30,7 @@
+ 	return locals()
+ 
+ 
+-@pytest.fixture(**build_addr_infos())
++@pytest.yield_fixture(**build_addr_infos())
+ def listening_addr(request):
+ 	af, socktype, proto, canonname, sa = request.param
+ 	sock = socket.socket(af, socktype, proto)
