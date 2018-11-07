@@ -5,15 +5,21 @@ https://bz.apache.org/bugzilla/show_bug.cgi?id=57120
 
 --- modules/ssl/ssl_private.h
 +++ modules/ssl/ssl_private.h
-@@ -302,7 +302,7 @@
- #endif
- #define SSL_PROTOCOL_TLSV1 (1<<2)
- #ifndef OPENSSL_NO_SSL3
--#define SSL_PROTOCOL_BASIC (SSL_PROTOCOL_SSLV3|SSL_PROTOCOL_TLSV1)
-+#define SSL_PROTOCOL_BASIC (SSL_PROTOCOL_TLSV1)
+@@ -378,12 +378,10 @@
+ 
+ #ifdef SSL_OP_NO_TLSv1_3
+ #define SSL_HAVE_PROTOCOL_TLSV1_3   (1)
+-#define SSL_PROTOCOL_ALL   (SSL_PROTOCOL_BASIC| \
+-                            SSL_PROTOCOL_TLSV1_1|SSL_PROTOCOL_TLSV1_2|SSL_PROTOCOL_TLSV1_3)
++#define SSL_PROTOCOL_ALL   (SSL_PROTOCOL_TLSV1_2|SSL_PROTOCOL_TLSV1_3)
  #else
- #define SSL_PROTOCOL_BASIC (SSL_PROTOCOL_TLSV1)
+ #define SSL_HAVE_PROTOCOL_TLSV1_3   (0)
+-#define SSL_PROTOCOL_ALL   (SSL_PROTOCOL_BASIC| \
+-                            SSL_PROTOCOL_TLSV1_1|SSL_PROTOCOL_TLSV1_2)
++#define SSL_PROTOCOL_ALL   (SSL_PROTOCOL_TLSV1_2)
  #endif
+ #else
+ #define SSL_PROTOCOL_ALL   (SSL_PROTOCOL_BASIC)
 --- docs/manual/mod/mod_ssl.html.en
 +++ docs/manual/mod/mod_ssl.html.en
 @@ -1454,11 +1454,7 @@
@@ -25,22 +31,22 @@ https://bz.apache.org/bugzilla/show_bug.cgi?id=57120
 -    ``<code>+SSLv3 +TLSv1 +TLSv1.1 +TLSv1.2</code>'', respectively
 -    (except for OpenSSL versions compiled with the ``no-ssl3'' configuration
 -    option, where <code>all</code> does not include <code>+SSLv3</code>).</p></li>
-+    This is a shortcut for ``<code>+TLSv1 +TLSv1.1 +TLSv1.2</code>''.</p></li>
++    This is a shortcut for ``<code>+TLSv1.2</code>''.</p></li>
  </ul>
  <div class="example"><h3>Example</h3><pre class="prettyprint lang-config">SSLProtocol TLSv1</pre>
  </div>
---- docs/manual/mod/mod_ssl.html.fr
-+++ docs/manual/mod/mod_ssl.html.fr
-@@ -1635,11 +1635,7 @@
+--- docs/manual/mod/mod_ssl.html.fr.utf8
++++ docs/manual/mod/mod_ssl.html.fr.utf8
+@@ -1702,11 +1702,7 @@
  
  <li><code>all</code>
      <p>
--    C'est un raccourci pour ``<code>+SSLv3 +TLSv1</code>'' ou - à partir
+-    C'est un raccourci pour ``<code>+SSLv3 +TLSv1</code>'' ou - Ã  partir
 -    de la version 1.0.1 d'OpenSSL - ``<code>+SSLv3 +TLSv1 +TLSv1.1
--    +TLSv1.2</code>'' (sauf si OpenSSL a été compilé avec l'option
+-    +TLSv1.2</code>'' (sauf si OpenSSL a Ã©tÃ© compilÃ© avec l'option
 -    ``no-ssl3'', auquel cas <code>all</code> n'inclura pas
 -    <code>+SSLv3</code>).</p></li>
-+    C'est un raccourci pour ``<code>+TLSv1 +TLSv1.1 +TLSv1.2</code>''.</p></li>
++    C'est un raccourci pour ``<code>+TLSv1.2</code>''.</p></li>
  </ul>
  <div class="example"><h3>Exemple</h3><pre class="prettyprint lang-config">SSLProtocol TLSv1</pre>
  </div>

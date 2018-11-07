@@ -1,0 +1,62 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+<include generate/common.transform>
+
+# Solaris/ files are added in .static file
+<transform file path=Solaris/ -> drop>
+
+# drop files where patch didn't apply cleanly and gnu patch did create a backup
+<transform file path=.*~$ -> drop>
+
+# decorate some files
+<transform file path=etc/.*/(envvars$|magic$|mime.types$) -> set mode 0644>
+<transform file path=etc/.*/(envvars$|magic$|mime.types$) -> set preserve renamenew>
+<transform file path=.*/bin/apxs$ -> set facet.devel true>
+<transform file path=.*/build/(config.nice$|instdso.sh$|mkdir.sh$) -> set mode 0555>
+<transform file path=.*/cgi-bin/printenv($|\.vbs$|\.wsf$) -> set mode 0444>
+<transform file path=.*/cgi-bin/printenv$ -> set pkg.depend.bypass-generate .*>
+<transform file path=.*/cgi-bin/test-cgi$ -> set mode 0444>
+<transform file path=.*/man/man1/apxs.1$ -> set facet.devel all>
+
+# drop unneeded files
+<transform file path=etc/apache2/2.4/original/.*$ -> drop>
+
+# suexec is disabled by default
+<transform file path=.*/bin/suexec$ -> set mode 0500>
+<transform file path=.*/bin/suexec$ -> set action.hash %(path)>
+<transform file path=.*/bin/suexec$ -> edit path suexec suexec.disabled>
+
+<transform file path=etc/apache2/2.4/httpd.conf$ -> set action.hash %(path)>
+<transform file path=etc/apache2/2.4/httpd.conf$ -> edit path httpd.conf original/httpd.conf>
+
+# move and rename some conf file to samples-conf.d/
+<transform file path=.*/extra/.*$ -> set action.hash %(path)>
+<transform file path=.*/extra/httpd-.*$ -> edit path extra/httpd- samples-conf.d/>
+<transform file path=.*/extra/.*$ -> edit path extra samples-conf.d>
+
+# delete everything not belonging to this package
+<transform file link pkg.type=(?!apache) -> drop>
+<transform file link -> delete pkg.type .*>
