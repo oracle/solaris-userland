@@ -18,7 +18,9 @@ have defaults, but can be overridden.
 * COMPONENT_VERSION is typically numbers separated by dots (e.g. 7.3).
 
 * COMPONENT_SRC is where the archive is extracted; it has a default value of
-  "$(COMPONENT_NAME)-$(COMPONENT_VERSION)".
+  "$(COMPONENT_NAME)-$(COMPONENT_VERSION)". One component can be constructed
+  out of multiple soruce archives, that is discussed later in the section
+  "Multiple source archives for one component"
 
 * COMPONENT_PROJECT_URL is the general web site for the component.
 
@@ -414,7 +416,9 @@ publication, the following variables are available:
   this end-of-the-build-pkglint-everything-together step, which makes it much
   easier to "finish off" a build where a small number of components failed.
 
----
+
+Indirectly using variables
+==========================
 
 Now switching from explaining the function of specific variables to a more
 general discussion about how to use them to solve problems.  One method that
@@ -430,3 +434,40 @@ $(PYTHON3_VERSIONS) and $(PYTHON2_VERSIONS) which in turn were "3.4" and
 the problem, as it allowed $(PYTHON_VERSIONS) to be used to specify 64-bit
 macros but $(PYTHON2_VERSIONS) to specify 32-bit macros.  There are many
 other places where constructs like this are used.
+
+
+Multiple source archives for one component
+==========================================
+Userland provides set of tools to download, unpack and patch any archive. In
+order to utilize it one must define
+
+COMPONENT_SRC (== name of the directory where the archive is unpacked)
+COMPONENT_ARCHIVE (== name of the archive file itself)
+COMPONENT_ARCHIVE_URL (== where to obtain the archive)
+
+After unpacking COMPONENT_ARCHIVE all patches from patches/*.patch are applied
+in COMPONENT_SRC directory.
+
+If component needs second archive, just add second set of variables with common
+postfix. In this example it is "_lib"
+
+COMPONENT_SRC_lib
+COMPONENT_ARCHIVE_lib
+COMPONENT_ARCHIVE_URL_lib
+
+And similarly as before, after unpacking COMPONENT_ARCHIVE_lib all patches with
+the same postfix, thus form patches/*.patch_lib are applied in
+COMPONENT_SRC_lib directory.
+
+Please note that the variables are processed by "common.mk" so they have to be
+defined _before_ including "$(WS_MAKE_RULES)/common.mk"
+
+This is the minimum to add new archive. But there are more variables bound by
+the same postfix to given archive.
+
+SOURCE_DIR
+COMPONENT_ARCHIVE_HASH
+COMPONENT_ARCHIVE_SIG_URL
+COMPONENT_POST_UNPACK_ACTION
+GIT_REPO, GIT_BRANCH, GIT_COMMIT_ID, ...
+HG_TAG, HG_BRANCH, HG_REV, ...
