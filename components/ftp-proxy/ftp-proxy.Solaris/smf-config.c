@@ -21,7 +21,7 @@
  */
 
 /*
- * Copyright (c) 2014, 2016, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
  */
 
 #include <string.h>
@@ -813,6 +813,16 @@ smf_write_ftpcfg(const char *smf_instance, int create)
 			fprintf(stderr, "Could not set %s\n",
 			    bad_prop_vec->pv_prop);
 		}
+		free(fmri);
+		exit(1);
+	}
+
+	if (smf_refresh_instance_synchronous(fmri) != 0) {
+		fprintf(stderr, "Failed to do 'svcadm refresh %s':\n\t%s\n"
+		    "The service instance continues to run with old"
+		    "settings.\n",
+		    fmri,
+		    scf_strerror(scf_error()));
 		free(fmri);
 		exit(1);
 	}
