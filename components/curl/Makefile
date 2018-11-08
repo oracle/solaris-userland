@@ -26,12 +26,12 @@ BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=	curl
-COMPONENT_VERSION= 7.61.0
-TPNO=		44231
+COMPONENT_VERSION= 7.62.0
+TPNO=		47296
 GIT_REPO=	https://github.com/curl/curl.git
 # last tag we checkout to it
-GIT_COMMIT_ID=	curl-7_61_0
-GIT_HASH=	sha256:3fd26ec8979e69b737b2593b5420f66c968532704fa348cb03fed85cba84206a
+GIT_COMMIT_ID=	curl-7_62_0
+GIT_HASH=	sha256:8aa6fdd3aa5bb3e4decfae5952073abb718414e5b06ee17210ec32e61880aec1
 
 COMPONENT_PROJECT_URL=  http://curl.haxx.se/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
