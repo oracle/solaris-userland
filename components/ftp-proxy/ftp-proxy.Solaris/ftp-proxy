@@ -21,7 +21,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2014, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 . /lib/svc/share/smf_include.sh
@@ -159,7 +159,6 @@ function start_proxy
 		echo "Unable to form a valid anchor name."
 		exit $SMF_EXIT_ERR_FATAL
 	fi
-	ANCHOR="_auto/$ANCHOR"
 	echo 'anchor "*"' | pfctl -a "$ANCHOR" -f -
 
 	if [[ $? -ne 0 ]]; then

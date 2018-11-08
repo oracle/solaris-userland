@@ -100,7 +100,7 @@ diff -Naur ftp-proxy-OPENBSD_5_5-OPENBSD_5_5.pre-smf/ftp-proxy.8 ftp-proxy-OPENB
  .It Fl T Ar tag
  The filter rules will add tag
  .Ar tag
-@@ -147,6 +152,20 @@
+@@ -147,7 +152,21 @@
  .Sq log all
  flag.
  The pf rules do not log by default.
@@ -117,19 +117,29 @@ diff -Naur ftp-proxy-OPENBSD_5_5-OPENBSD_5_5.pre-smf/ftp-proxy.8 ftp-proxy-OPENB
 +log all packets, which belong to data session (equivalent to
 +.Fl vv
 +on OpenBSD)
-+.El
  .El
++.El
  .Sh CONFIGURATION
  To make use of the proxy,
-@@ -156,10 +175,18 @@
+ .Xr pf.conf 5
+@@ -156,11 +175,28 @@
  last rule explicitly allowing FTP sessions from the proxy may not be
  necessary.
  .Bd -literal -offset 2n
 -anchor "ftp-proxy/*"
-+anchor "_auto/network:firewall:ftp-proxy:YOUR_INSTANCE_NAME/*"
++anchor "network:firewall:ftp-proxy:YOUR_INSTANCE_NAME/*"
  pass in quick inet proto tcp to port ftp rdr-to 127.0.0.1 port 8021
  pass out inet proto tcp from (self) to any port ftp
  .Ed
+ .Pp
++Substitute 
++.Cm YOUR_INSTANCE_NAME
++with instance name
++.Cm SMF
++uses. For default instance it should read as follows:
++.Bd -literal -offset 2n
++anchor "network:firewall:ftp-proxy:default/*"
++.Ed 
 +.Sh SOLARIS
 +.Nm
 +must be started as an
@@ -138,10 +148,11 @@ diff -Naur ftp-proxy-OPENBSD_5_5-OPENBSD_5_5.pre-smf/ftp-proxy.8 ftp-proxy-OPENB
 +.Bd -literal -offset indent
 +svc:/network/firewall/ftp-proxy
 +.Ed
- .Pp
++.Pp
  To run
  .Nm
-@@ -168,8 +195,157 @@
+ in a non-global zone, the
+@@ -168,8 +204,157 @@
  svc:/network/socket-filter:pf_divert
  .Ed
  instance must be online in the global zone.
@@ -300,7 +311,7 @@ diff -Naur ftp-proxy-OPENBSD_5_5-OPENBSD_5_5.pre-smf/ftp-proxy.8 ftp-proxy-OPENB
  .Sh CAVEATS
  .Pp
  Negotiated data connection ports below 1024 are not allowed.
-@@ -177,3 +353,8 @@
+@@ -177,3 +362,8 @@
  The negotiated IP address for active modes is ignored for security
  reasons.
  This makes third party file transfers impossible.
