@@ -50,6 +50,10 @@ include $(WS_MAKE_RULES)/common.mk
 #
 COMPONENT_BUILD_ENV += CFLAGS="$(CFLAGS) -D_SOLARIS_ -DOBSD_COMP -lscf"
 
+COMPONENT_PRE_BUILD_ACTION = \
+	($(CP) pflogd.Solaris/smf-config.c $(@D)/. ; \
+	$(CP) pflogd.Solaris/smf-config.h $(@D)/. )
+
 COMPONENT_INSTALL_ARGS +=	PREFIX=$(PROTOUSRDIR)
 COMPONENT_INSTALL_ARGS +=	MANDIR=$(PROTOUSRSHAREMANDIR)
 COMPONENT_INSTALL_ARGS +=	INSTALL=/usr/gnu/bin/install
