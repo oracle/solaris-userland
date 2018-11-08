@@ -23,6 +23,7 @@
 # Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
+BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pflogd
@@ -30,44 +31,28 @@ COMPONENT_VERSION=	OPENBSD_5_5
 IPS_COMPONENT_VERSION=	5.5
 COMPONENT_PROJECT_URL=	http://www.openbsd.org
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
+# The archive exists only in the userland cache.  In order to update the cache,
+# we have to get the sources via CVS manually and ask the gatekeepers to add it.
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
+COMPONENT_ARCHIVE_URL=
+COMPONENT_ARCHIVE_SRC=	cache
 COMPONENT_ARCHIVE_HASH= sha256:cfa97a28da9c4c5d07a2c6c8225e867d031417a427effb7152f9e8beea614957
-CLEAN_PATHS +=		$(COMPONENT_SRC)
-CLOBBER_PATHS +=	$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/pflogd
 
 TPNO=	24254
+
+BUILD_STYLE= justmake
+TEST_TARGET= $(NO_TESTS)
+include $(WS_MAKE_RULES)/common.mk
 
 #
 # Don't overwrite CFLAGS here, just add our options there.
 #
 COMPONENT_BUILD_ENV += CFLAGS="$(CFLAGS) -D_SOLARIS_ -DOBSD_COMP -lscf"
-COMPONENT_BUILD_ARGS +=	CC="$(CC)"
-
-include ../../make-rules/prep.mk
-include ../../make-rules/justmake.mk
-
-include ../../make-rules/ips.mk
 
 COMPONENT_INSTALL_ARGS +=	PREFIX=$(PROTOUSRDIR)
 COMPONENT_INSTALL_ARGS +=	MANDIR=$(PROTOUSRSHAREMANDIR)
 COMPONENT_INSTALL_ARGS +=	INSTALL=/usr/gnu/bin/install
-
-# common targets
-build:		$(BUILD_64)
-
-install:	$(INSTALL_64)
-
-test:		$(NO_TESTS)
-
-# Here we just download the cached source archive. In order to update
-# the cache, we have to get the sources via CVS manually and ask gatekeepers
-# to place it into the cache. There is no archive available at openbsd.org.
-download:: $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE)
-
-$(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE): $(MAKEFILE_PREREQ)
-	$(FETCH) --file $@ --hash $(COMPONENT_ARCHIVE_HASH)
-	$(TOUCH) $@
 
 REQUIRED_PACKAGES += network/firewall
 REQUIRED_PACKAGES += shell/ksh93
