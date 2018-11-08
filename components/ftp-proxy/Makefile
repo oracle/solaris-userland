@@ -45,6 +45,9 @@ BUILD_STYLE= justmake
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
+COMPONENT_PRE_BUILD_ACTION = \
+	($(CP) ftp-proxy.Solaris/smf-config.c $(@D)/. ; \
+	$(CP) ftp-proxy.Solaris/smf-config.h $(@D)/. )
 #
 # Don't overwrite CFLAGS here, just add our options there.
 #
