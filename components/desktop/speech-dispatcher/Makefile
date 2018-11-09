@@ -43,20 +43,6 @@ TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk
 
-# Delete this when build servers are installed with dotconf
-DOTCONF_BASE = $(WS_COMPONENTS)/desktop/dotconf/build/prototype/$(MACH)
-PKG_CONFIG_PATHS += $(DOTCONF_BASE)$(PKG_CONFIG_PATH.$(BITS))
-LD_OPTIONS += -L $(DOTCONF_BASE)$(USRLIB.$(BITS))
-CPPFLAGS += -I$(DOTCONF_BASE)$(USRINCDIR)
-
-# The dependency isn't installed, so add it manually since pkgdepend
-# can't resolve them yet: 15708323
-DEPENDED += $(WS_TOP)/components/desktop/dotconf/build/manifest-$(MACH)-dotconf.depend
-
-# Temporary until dependencies are all on build machines
-REQUIRED_PACKAGES += $(shell $(GSED) -n 's/REQUIRED_PACKAGES +=//p' ../dotconf/Makefile)
-#end Delete
-
 COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR) $(@D)) ;
 
 CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)
