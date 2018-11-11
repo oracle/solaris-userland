@@ -1,14 +1,15 @@
 This patch works around an issue with vim dumping core with SIGSEGV when
-handling a more benign signal (typically SIGHUP or SIGTERM).  Vim tries to
+handling a more benign signal (typically SIGHUP or SIGTERM). Vim tries to
 run all the exit-vim autocommands, which end up busting the alternate stack
-at its default size.  Doubling the default seems to do the trick, but it
+at its default size. Increasing the default seems to do the trick, but it
 continues to be just a guess.
 
-This fix was suggested by the maintainer, but the patch has not yet been
-submitted upstream.
+The second change comes from Bram:
+https://groups.google.com/d/msg/vim_dev/GrLf2ePQWDk/Gf3AMnjIAQAJ
+but is unknown whether this change will be made into official patch.
 
---- a/src/os_unix.c	2018-07-19 03:55:59.882437014 +0000
-+++ b/src/os_unix.c	2018-07-19 03:50:04.638443666 +0000
+--- vim-8.1.0209-b6c8cd8dc/src/os_unix.c	2018-11-05 20:37:22.810775645 +0000
++++ vim-8.1.0209-b6c8cd8dc/src/os_unix.c	2018-11-05 20:35:23.851831269 +0000
 @@ -912,9 +912,10 @@ mch_stackcheck(char *p)
   * completely full.
   */
@@ -18,7 +19,16 @@ submitted upstream.
 +#ifdef SIGSTKSZ
 +# undef SIGSTKSZ
  #endif
-+#define SIGSTKSZ 16384    /* just a guess of how much stack is needed... */
++#define SIGSTKSZ 8*1024*1024  /* just a guess of how much stack is needed... */
  
  # ifdef HAVE_SIGALTSTACK
  static stack_t sigstk;			/* for sigaltstack() */
+@@ -6198,7 +6199,7 @@ RealWaitForChar(int fd, long msec, int *
+ 
+ 	struct timeval  tv;
+ 	struct timeval	*tvp;
+-	fd_set		rfds, wfds, efds;
++	static fd_set		rfds, wfds, efds;
+ 	int		maxfd;
+ 	long		towait = msec;
+ 
