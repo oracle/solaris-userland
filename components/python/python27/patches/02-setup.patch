@@ -1,8 +1,8 @@
 This patch modifies the setup script to support Solaris.
 As it is Solaris-specific, it is not suitable for upstream.
 
---- Python-2.7.14/setup.py.orig	2017-09-16 10:38:35.000000000 -0700
-+++ Python-2.7.14/setup.py	2018-01-26 00:30:48.952032886 -0800
+--- Python-2.7.15/setup.py.orig	2018-11-13 01:17:19.607311395 -0800
++++ Python-2.7.15/setup.py	2018-11-13 01:18:25.632668502 -0800
 @@ -6,6 +6,7 @@
  import sys, os, imp, re, optparse
  from glob import glob
@@ -61,7 +61,7 @@ As it is Solaris-specific, it is not suitable for upstream.
                      else:
                          if db_setup_debug: print "db lib: ", dblib, "not found"
  
-@@ -1370,8 +1382,11 @@
+@@ -1362,8 +1374,11 @@
                  # _curses_panel.so must link with panelw.
                  panel_library = 'panelw'
              curses_libs = [curses_library]
@@ -75,7 +75,7 @@ As it is Solaris-specific, it is not suitable for upstream.
              exts.append( Extension('_curses', ['_cursesmodule.c'],
                                     include_dirs = curses_incs,
                                     libraries = curses_libs) )
-@@ -1393,9 +1408,21 @@
+@@ -1385,9 +1400,21 @@
          # If the curses module is enabled, check for the panel module
          if (module_enabled(exts, '_curses') and
              self.compiler.find_library_file(lib_dirs, panel_library)):
@@ -98,7 +98,7 @@ As it is Solaris-specific, it is not suitable for upstream.
          else:
              missing.append('_curses_panel')
  
-@@ -1560,6 +1587,35 @@
+@@ -1552,6 +1579,35 @@
          else:
              missing.append('dl')
  
@@ -134,7 +134,7 @@ As it is Solaris-specific, it is not suitable for upstream.
          # Thomas Heller's _ctypes module
          self.detect_ctypes(inc_dirs, lib_dirs)
  
-@@ -1610,9 +1666,14 @@
+@@ -1602,9 +1658,14 @@
                  sysconfig.get_config_var('POSIX_SEMAPHORES_NOT_ENABLED')):
                  multiprocessing_srcs.append('_multiprocessing/semaphore.c')
  
@@ -149,7 +149,7 @@ As it is Solaris-specific, it is not suitable for upstream.
                                      include_dirs=["Modules/_multiprocessing"]))
          else:
              missing.append('_multiprocessing')
-@@ -1627,8 +1688,8 @@
+@@ -1619,8 +1680,8 @@
          else:
              missing.append('linuxaudiodev')
  
@@ -160,7 +160,7 @@ As it is Solaris-specific, it is not suitable for upstream.
              or host_platform.startswith("gnukfreebsd")):
              exts.append( Extension('ossaudiodev', ['ossaudiodev.c']) )
          else:
-@@ -2106,7 +2167,8 @@
+@@ -2098,7 +2159,8 @@
              # this option. If you want to compile ctypes with the Sun
              # compiler, please research a proper solution, instead of
              # finding some -z option for the Sun compiler.

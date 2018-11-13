@@ -2,8 +2,8 @@ This patch comes from in-house.
 It deals with SSLv2 no longer being supported.
 It disables SSLv3.
 
---- Python-2.7.14/Lib/test/test_ssl.py.orig	2018-01-26 03:25:23.647911842 -0800
-+++ Python-2.7.14/Lib/test/test_ssl.py	2018-01-26 03:25:33.670842048 -0800
+--- Python-2.7.15/Lib/test/test_ssl.py.orig	2018-11-13 06:43:31.680460399 -0800
++++ Python-2.7.15/Lib/test/test_ssl.py	2018-11-13 06:46:32.029495335 -0800
 @@ -25,6 +25,9 @@
  ssl = support.import_module("ssl")
  
@@ -14,7 +14,7 @@ It disables SSLv3.
  HOST = support.HOST
  IS_LIBRESSL = ssl.OPENSSL_VERSION.startswith('LibreSSL')
  IS_OPENSSL_1_1 = not IS_LIBRESSL and ssl.OPENSSL_VERSION_INFO >= (1, 1, 0)
-@@ -2318,7 +2321,7 @@
+@@ -2301,7 +2304,7 @@
                  sys.stdout.write("\n")
              if hasattr(ssl, 'PROTOCOL_SSLv2'):
                  try:

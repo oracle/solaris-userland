@@ -7,8 +7,8 @@ http://www.jcea.es/artic/python_dtrace.htm
 Follow http://bugs.python.org/issue13405 for plans to get it
 integrated into the main tree.
 
---- Python-2.7.14/Makefile.pre.in.orig	2017-09-16 10:38:35.000000000 -0700
-+++ Python-2.7.14/Makefile.pre.in	2018-01-26 02:30:36.583726091 -0800
+--- Python-2.7.15/Makefile.pre.in.orig	2018-11-22 04:32:56.874972855 -0800
++++ Python-2.7.15/Makefile.pre.in	2018-11-22 04:52:38.453671151 -0800
 @@ -232,6 +232,7 @@
  # Used of signalmodule.o is not available
  SIGNAL_OBJS=	@SIGNAL_OBJS@
@@ -25,22 +25,22 @@ integrated into the main tree.
  		$(LIBOBJS) \
  		$(MACHDEP_OBJS) \
  		$(THREADOBJ)
-@@ -739,6 +741,18 @@
+@@ -748,6 +750,18 @@
  Python/formatter_string.o: $(srcdir)/Python/formatter_string.c \
  				$(STRINGLIB_HEADERS)
  
 +Python/phelper.o: $(srcdir)/Python/phelper.d
-+	dtrace -o $@ -DPHELPER $(DFLAGS) $(CPPFLAGS) -C -G -s $(srcdir)/Python/phelper.d
-+
++		dtrace -o $@ -DPHELPER $(DFLAGS) $(CPPFLAGS) -C -G -s $(srcdir)/Python/phelper.d
++	
 +Python/python.h: $(srcdir)/Python/python.d
-+	dtrace -o $@ $(DFLAGS) -C -h -s $(srcdir)/Python/python.d
-+
++		dtrace -o $@ $(DFLAGS) -C -h -s $(srcdir)/Python/python.d
++	
 +Python/ceval.o: Python/ceval.c Python/python.h
-+	$(patsubst $(CEVAL_PATSUBST),,$(CC) -c -I. -IPython $(BASECFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(CFLAGSFORSHARED) $(CEVAL_CFLAGS)) -DPy_BUILD_CORE -o $@ $<
-+
++		$(patsubst $(CEVAL_PATSUBST),,$(CC) -c -I. -IPython $(BASECFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(CFLAGSFORSHARED) $(CEVAL_CFLAGS)) -DPy_BUILD_CORE -o $@ $<
++	
 +Python/dtrace.o: $(srcdir)/Python/python.d Python/ceval.o
-+	dtrace -o $@ $(DFLAGS) -C -G -s $(srcdir)/Python/python.d Python/ceval.o
-+
++		dtrace -o $@ $(DFLAGS) -C -G -s $(srcdir)/Python/python.d Python/ceval.o
++	
  ############################################################################
  # Header files
  
@@ -54,9 +54,9 @@ integrated into the main tree.
      int f_iblock;		/* index in f_blockstack */
      PyTryBlock f_blockstack[CO_MAXBLOCKS]; /* for try and loop blocks */
      PyObject *f_localsplus[1];	/* locals+stack, dynamically sized */
---- Python-2.7.14/Objects/frameobject.c.orig	2017-09-16 10:38:35.000000000 -0700
-+++ Python-2.7.14/Objects/frameobject.c	2018-01-16 05:59:22.407897238 -0800
-@@ -736,6 +736,7 @@
+--- Python-2.7.15/Objects/frameobject.c.orig	2018-11-22 04:58:32.083840507 -0800
++++ Python-2.7.15/Objects/frameobject.c	2018-11-22 05:05:38.110309500 -0800
+@@ -772,6 +772,7 @@
      f->f_tstate = tstate;
  
      f->f_lasti = -1;
@@ -64,8 +64,8 @@ integrated into the main tree.
      f->f_lineno = code->co_firstlineno;
      f->f_iblock = 0;
  
---- Python-2.7.14/Python/ceval.c.orig	2017-09-16 10:38:35.000000000 -0700
-+++ Python-2.7.14/Python/ceval.c	2018-01-26 01:01:53.874757344 -0800
+--- Python-2.7.15/Python/ceval.c.orig	2018-11-20 05:09:35.657599281 -0800
++++ Python-2.7.15/Python/ceval.c	2018-11-22 03:47:35.705058724 -0800
 @@ -19,6 +19,11 @@
  
  #include <ctype.h>
@@ -78,7 +78,7 @@ integrated into the main tree.
  #ifndef WITH_TSC
  
  #define READ_TIMESTAMP(var)
-@@ -674,7 +679,56 @@
+@@ -674,6 +679,55 @@
                        NULL);
  }
  
@@ -86,44 +86,44 @@ integrated into the main tree.
 +static void
 +dtrace_entry(PyFrameObject *f)
 +{
-+	const char *filename;
-+	const char *fname;
-+	int lineno;
-+	
-+	filename = PyString_AsString(f->f_code->co_filename);
-+	fname = PyString_AsString(f->f_code->co_name);
-+	lineno = PyCode_Addr2Line(f->f_code, f->f_lasti);
- 
-+	PYTHON_FUNCTION_ENTRY((char *)filename, (char *)fname, lineno);
-+
-+	/*
-+	 * Currently a USDT tail-call will not receive the correct arguments.
-+	 * Disable the tail call here.
-+	 */
-+#if defined(__sparc)
-+	asm("nop");
-+#endif
++		const char *filename;
++		const char *fname;
++		int lineno;
++			
++		filename = PyString_AsString(f->f_code->co_filename);
++		fname = PyString_AsString(f->f_code->co_name);
++		lineno = PyCode_Addr2Line(f->f_code, f->f_lasti);
++		 
++		PYTHON_FUNCTION_ENTRY((char *)filename, (char *)fname, lineno);
++		
++		/*
++	   * Currently a USDT tail-call will not receive the correct arguments.
++		 * Disable the tail call here.
++		 */
++		#if defined(__sparc)
++			asm("nop");
++		#endif
 +}
-+
++			
 +static void
 +dtrace_return(PyFrameObject *f)
 +{
-+	const char *filename;
-+	const char *fname;
-+	int lineno;
-+	
-+	filename = PyString_AsString(f->f_code->co_filename);
-+	fname = PyString_AsString(f->f_code->co_name);
-+	lineno = PyCode_Addr2Line(f->f_code, f->f_lasti);
-+	PYTHON_FUNCTION_RETURN((char *)filename, (char *)fname, lineno);
-+
-+	/*
-+	 * Currently a USDT tail-call will not receive the correct arguments.
-+	 * Disable the tail call here.
-+	 */
-+#if defined(__sparc)
-+	asm("nop");
-+#endif
++		const char *filename;
++		const char *fname;
++		int lineno;
++			
++		filename = PyString_AsString(f->f_code->co_filename);
++		fname = PyString_AsString(f->f_code->co_name);
++		lineno = PyCode_Addr2Line(f->f_code, f->f_lasti);
++		PYTHON_FUNCTION_RETURN((char *)filename, (char *)fname, lineno);
++		
++		/*
++		 * Currently a USDT tail-call will not receive the correct arguments.
++		 * Disable the tail call here.
++		 */
++		#if defined(__sparc)
++			asm("nop");
++		#endif
 +}
 +#else
 +#define	PYTHON_FUNCTION_ENTRY_ENABLED 0
@@ -131,11 +131,10 @@ integrated into the main tree.
 +#define	dtrace_entry()
 +#define	dtrace_return()
 +#endif
-+
+ 
  /* Interpreter main loop */
  
- PyObject *
-@@ -685,9 +739,84 @@
+@@ -685,9 +739,82 @@
      return PyEval_EvalFrameEx(f, 0);
  }
  
@@ -166,8 +165,6 @@ integrated into the main tree.
 +#if defined(__amd64)
 +PyObject *PyEval_EvalFrameExReal(long, long, long, long, long, long,
 +    PyFrameObject *, int throwflag);
-+
-+
 +
  PyObject *
  PyEval_EvalFrameEx(PyFrameObject *f, int throwflag)
@@ -212,27 +209,27 @@ integrated into the main tree.
 +#else /* don't HAVE_DTRACE */
 +
 +PyObject *
-+PyEval_EvalFrameexEx(PyFrameObject *f, int throwflag))
++PyEval_EvalFrameexEx(PyFrameObject *f, int throwflag)
 +{
 +
 +#endif /* HAVE_DTRACE */
 +
  #ifdef DYNAMIC_EXECUTION_PROFILE
-   #undef USE_COMPUTED_GOTOS
+     #undef USE_COMPUTED_GOTOS
  #endif
-@@ -1009,6 +1138,11 @@
+@@ -1017,6 +1144,11 @@
          }
      }
  
 +#ifdef HAVE_DTRACE
-+    if (PYTHON_FUNCTION_ENTRY_ENABLED())
-+        dtrace_entry(f);
++	if (PYTHON_FUNCTION_ENTRY_ENABLED())
++		dtrace_entry(f);
 +#endif
 +
      co = f->f_code;
      names = co->co_names;
      consts = co->co_consts;
-@@ -2988,6 +3122,9 @@
+@@ -3003,6 +3135,9 @@
              PyObject **sp;
              PCALL(PCALL_ALL);
              sp = stack_pointer;
@@ -242,7 +239,7 @@ integrated into the main tree.
  #ifdef WITH_TSC
              x = call_function(&sp, oparg, &intr0, &intr1);
  #else
-@@ -3029,6 +3166,9 @@
+@@ -3044,6 +3179,9 @@
              } else
                  Py_INCREF(func);
              sp = stack_pointer;
@@ -252,7 +249,7 @@ integrated into the main tree.
              READ_TIMESTAMP(intr0);
              x = ext_do_call(func, &sp, flags, na, nk);
              READ_TIMESTAMP(intr1);
-@@ -3338,6 +3478,10 @@
+@@ -3353,6 +3491,10 @@
  
      /* pop frame */
  exit_eval_frame:
@@ -429,8 +426,8 @@ integrated into the main tree.
          # function
          def func(): pass
          check(func, size('9P'))
---- Python-2.7.14/Include/ceval.h.orig	2017-09-16 10:38:35.000000000 -0700
-+++ Python-2.7.14/Include/ceval.h	2018-01-26 01:09:50.734704881 -0800
+--- Python-2.7.15/Include/ceval.h.orig	2018-11-22 05:01:29.855324825 -0800
++++ Python-2.7.15/Include/ceval.h	2018-11-22 05:03:05.773185602 -0800
 @@ -64,6 +64,7 @@
  PyAPI_FUNC(PyObject *) PyEval_GetCallStats(PyObject *);
  PyAPI_FUNC(PyObject *) PyEval_EvalFrame(struct _frame *);
@@ -439,3 +436,4 @@ integrated into the main tree.
  
  /* this used to be handled on a per-thread basis - now just two globals */
  PyAPI_DATA(volatile int) _Py_Ticker;
+

@@ -41,9 +41,9 @@ it to fix a bug.
          if restore:
              tty.tcsetattr(STDIN_FILENO, tty.TCSAFLUSH, mode)
  
---- Python-2.7.13/Lib/test/test_pty.py.orig	2016-12-17 12:05:06.000000000 +0000
-+++ Python-2.7.13/Lib/test/test_pty.py	2017-04-26 13:39:11.397817862 +0000
-@@ -270,7 +270,7 @@
+--- Python-2.7.15/Lib/test/test_pty.py.orig	2018-11-13 06:53:03.594389720 -0800
++++ Python-2.7.15/Lib/test/test_pty.py	2018-11-13 07:54:27.508016318 -0800
+@@ -287,7 +287,7 @@
          socketpair[1].close()
          os.close(write_to_stdin_fd)
  
@@ -52,7 +52,7 @@ it to fix a bug.
          pty.select = self._mock_select
          self.select_rfds_lengths.append(2)
          self.select_rfds_results.append([mock_stdin_fd, masters[0]])
-@@ -278,8 +278,7 @@
+@@ -295,8 +295,7 @@
          # both encountered an EOF before the second select call.
          self.select_rfds_lengths.append(0)
  

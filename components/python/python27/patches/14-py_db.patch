@@ -1,36 +1,35 @@
 This patch adds Python debugger support.  It may be contributed upstream at
 some point, but the suitability (or lack thereof) has not yet been determined.
 
---- Python-2.7.14/Makefile.pre.in.orig	2018-01-26 02:53:32.854496810 -0800
-+++ Python-2.7.14/Makefile.pre.in	2018-01-26 02:56:13.740165569 -0800
+--- Python-2.7.15/Makefile.pre.in.orig	2018-11-22 05:36:33.134922685 -0800
++++ Python-2.7.15/Makefile.pre.in	2018-11-22 05:58:08.798559650 -0800
 @@ -403,7 +403,7 @@
  
  # Default target
  all:		@DEF_MAKE_ALL_RULE@
--build_all:	$(BUILDPYTHON) oldsharedmods sharedmods gdbhooks
-+build_all:	$(BUILDPYTHON) oldsharedmods sharedmods gdbhooks build-py_db
+-build_all:	check-clean-src $(BUILDPYTHON) oldsharedmods sharedmods gdbhooks
++build_all:	check-clean-src $(BUILDPYTHON) oldsharedmods sharedmods gdbhooks build-py_db
  
- # Compile a binary with profile guided optimization.
- profile-opt:
-@@ -853,7 +853,16 @@
+ # Check that the source is clean when building out of source.
+ check-clean-src:
+@@ -862,6 +862,15 @@
  
  $(LIBRARY_OBJS) $(MODOBJS) Modules/python.o: $(PYTHON_HEADERS)
  
 +SHLIB_FLAGS = -shared -fpic
- 
++ 
 +libpython2.7_db.so.1.0:        $(srcdir)/py_db/libpython27_db.c
-+	$(CC) -o $@ $(CFLAGS) $(CPPFLAGS) $(SHLIB_FLAGS) $<
-+
++		$(CC) -o $@ $(CFLAGS) $(CPPFLAGS) $(SHLIB_FLAGS) $<
++	
 +build-py_db:   libpython2.7_db.so.1.0
-+
++	
 +install-py_db: libpython2.7_db.so.1.0
-+	$(INSTALL_SHARED) libpython2.7_db.so.1.0 $(DESTDIR)$(LIBDIR)
-+
++		$(INSTALL_SHARED) libpython2.7_db.so.1.0 $(DESTDIR)$(LIBDIR)
+ 
  ######################################################################
  
- # Test the interpreter (twice, once without .pyc files, once with)
-@@ -922,7 +931,7 @@
- 		$(TESTPYTHON) $(TESTPROG) $(MEMTESTOPTS)
+@@ -939,7 +948,7 @@
+ 	$(RUNSHARED) ./$(BUILDPYTHON) Tools/ssl/multissltests.py
  
  # Install everything
 -install:	@FRAMEWORKINSTALLFIRST@ commoninstall bininstall maninstall @FRAMEWORKINSTALLLAST@

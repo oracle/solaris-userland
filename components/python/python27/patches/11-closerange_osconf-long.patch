@@ -5,9 +5,9 @@ Additional fix:
 http://bugs.python.org/issue17964 was fixed in 3.4 but not back-ported so we
 need this patch for 2.7 .
 
---- Python-2.7.14/Modules/posixmodule.c.orig	2018-01-26 01:39:58.888245131 -0800
-+++ Python-2.7.14/Modules/posixmodule.c	2018-01-26 01:40:14.074935477 -0800
-@@ -6663,16 +6663,34 @@
+--- Python-2.7.15/Modules/posixmodule.c.orig	2018-11-13 04:01:30.469697707 -0800
++++ Python-2.7.15/Modules/posixmodule.c	2018-11-13 04:01:55.039120425 -0800
+@@ -6669,16 +6669,34 @@
  "closerange(fd_low, fd_high)\n\n\
  Closes all file descriptors in [fd_low, fd_high), ignoring errors.");
  
@@ -45,7 +45,7 @@ need this patch for 2.7 .
      Py_END_ALLOW_THREADS
      Py_RETURN_NONE;
  }
-@@ -8548,7 +8566,7 @@
+@@ -8554,7 +8572,7 @@
      int name;
  
      if (PyArg_ParseTuple(args, "O&:sysconf", conv_sysconf_confname, &name)) {
