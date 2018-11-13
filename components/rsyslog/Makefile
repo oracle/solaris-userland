@@ -168,7 +168,7 @@ COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
 # gmake test will generate different outputs if run multiple
 # times. This gets rid of all the unimportant output
 
-COMPONENT_TEST_TRANSFORMS += '-n -e "/=/p"'
+COMPONENT_TEST_TRANSFORMS += '-n -e "/=====/p"'
 COMPONENT_TEST_TRANSFORMS += '-e "/PASS/p"'
 COMPONENT_TEST_TRANSFORMS += '-e "/SKIP/p"'
 COMPONENT_TEST_TRANSFORMS += '-e "/FAIL/p"'
