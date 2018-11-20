@@ -1,0 +1,2239 @@
+From eb7c9adc3b2570f6b82110b52a24609d124f38de Mon Sep 17 00:00:00 2001
+From: Philip Withnall <withnall@endlessm.com>
+Date: Thu, 16 Aug 2018 20:12:02 +0100
+Subject: [PATCH 01/15] gvariant: Fix checking arithmetic for tuple element
+ ends
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+When checking whether a serialised GVariant tuple is in normal form,
+it’s possible for `offset_ptr -= offset_size` to underflow and wrap
+around, resulting in gvs_read_unaligned_le() reading memory outside the
+serialised GVariant bounds.
+
+See §(Tuples) in gvariant-serialiser.c for the documentation on how
+tuples are serialised. Briefly, all variable-length elements in the
+tuple have an offset to their end stored in an array of offsets at the
+end of the tuple. The width of each offset is in offset_size. offset_ptr
+is added to the start of the serialised tuple to get the offset which is
+currently being examined. The offset array is in reverse order compared
+to the tuple elements, hence the subtraction.
+
+The bug can be triggered if a tuple contains a load of variable-length
+elements, each of whose length is actually zero (i.e. empty arrays).
+
+oss-fuzz#9801
+
+Signed-off-by: Philip Withnall <withnall@endlessm.com>
+---
+ glib/gvariant-serialiser.c |  3 +++
+ glib/tests/gvariant.c      | 28 ++++++++++++++++++++++++++++
+ 2 files changed, 31 insertions(+)
+
+diff --git a/glib/gvariant-serialiser.c b/glib/gvariant-serialiser.c
+index 69f183121..96df54e23 100644
+--- a/glib/gvariant-serialiser.c
++++ b/glib/gvariant-serialiser.c
+@@ -1065,6 +1065,9 @@ gvs_tuple_is_normal (GVariantSerialised value)
+           break;
+ 
+         case G_VARIANT_MEMBER_ENDING_OFFSET:
++          if (offset_ptr < offset_size)
++            return FALSE;
++
+           offset_ptr -= offset_size;
+ 
+           if (offset_ptr < offset)
+diff --git a/glib/tests/gvariant.c b/glib/tests/gvariant.c
+index de8e42d0b..a5095a380 100644
+--- a/glib/tests/gvariant.c
++++ b/glib/tests/gvariant.c
+@@ -4631,6 +4631,30 @@ test_stack_dict_init (void)
+   g_variant_unref (variant);
+ }
+ 
++/* Test checking arbitrary binary data for normal form. This time, it’s a tuple
++ * with invalid element ends. */
++static void
++test_normal_checking_tuples (void)
++{
++  const guint8 data[] = {
++    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00,
++    'a', '(', 'a', 'o', 'a', 'o', 'a', 'a', 'o', 'a', 'a', 'o', ')'
++  };
++  gsize size = sizeof (data);
++  GVariant *variant = NULL;
++  GVariant *normal_variant = NULL;
++
++  variant = g_variant_new_from_data (G_VARIANT_TYPE_VARIANT, data, size,
++                                     FALSE, NULL, NULL);
++  g_assert_nonnull (variant);
++
++  normal_variant = g_variant_get_normal_form (variant);
++  g_assert_nonnull (normal_variant);
++
++  g_variant_unref (normal_variant);
++  g_variant_unref (variant);
++}
++
+ int
+ main (int argc, char **argv)
+ {
+@@ -4692,5 +4716,9 @@ main (int argc, char **argv)
+ 
+   g_test_add_func ("/gvariant/stack-builder-init", test_stack_builder_init);
+   g_test_add_func ("/gvariant/stack-dict-init", test_stack_dict_init);
++
++  g_test_add_func ("/gvariant/normal-checking/tuples",
++                   test_normal_checking_tuples);
++
+   return g_test_run ();
+ }
+-- 
+2.18.1
+
+
+From 7c4e6e9fbe473de0401c778c6b0c4aad27d5145a Mon Sep 17 00:00:00 2001
+From: Philip Withnall <withnall@endlessm.com>
+Date: Fri, 7 Sep 2018 20:27:39 +0100
+Subject: [PATCH 02/15] gvarianttype: Impose a recursion limit of 128 on
+ variant types
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Previously, GVariant has allowed ‘arbitrary’ recursion on GVariantTypes,
+but this isn’t really feasible. We have to deal with GVariants from
+untrusted sources, and the nature of GVariantType means that another
+level of recursion (and hence, for example, another stack frame in your
+application) can be added with a single byte in a variant type signature
+in the input. This gives malicious input sources far too much leverage
+to cause deep stack recursion or massive memory allocations which can
+DoS an application.
+
+Limit recursion to 128 levels (which should be more than enough for
+anyone™), document it and add a test. This is, handily, also the limit
+of 64 applied by the D-Bus specification (§(Valid Signatures)), plus a
+bit to allow wrapping of D-Bus messages in additional layers of
+variants.
+
+oss-fuzz#9857
+
+Signed-off-by: Philip Withnall <withnall@endlessm.com>
+---
+ docs/reference/glib/glib-sections.txt |   1 +
+ glib/gvariant-core.c                  |  46 ++++++-
+ glib/gvariant-internal.h              |  18 +++
+ glib/gvariant-serialiser.c            |  38 +++++-
+ glib/gvariant-serialiser.h            |   1 +
+ glib/gvarianttype.c                   | 137 +++++++++++++++------
+ glib/gvarianttype.h                   |   2 +
+ glib/gvarianttypeinfo.c               |  25 ++++
+ glib/gvarianttypeinfo.h               |   2 +
+ glib/tests/gvariant.c                 | 171 ++++++++++++++++++++++++++
+ 10 files changed, 397 insertions(+), 44 deletions(-)
+
+diff --git a/docs/reference/glib/glib-sections.txt b/docs/reference/glib/glib-sections.txt
+index 5f049cfcb..f88d6b53b 100644
+--- a/docs/reference/glib/glib-sections.txt
++++ b/docs/reference/glib/glib-sections.txt
+@@ -3431,6 +3431,7 @@ g_variant_parse_error_print_context
+ g_variant_parse_error_quark
+ g_variant_parser_get_error_quark
+ g_variant_type_checked_
++g_variant_type_string_get_depth_
+ </SECTION>
+ 
+ 
+diff --git a/glib/gvariant-core.c b/glib/gvariant-core.c
+index bdf09696f..815bdf9e0 100644
+--- a/glib/gvariant-core.c
++++ b/glib/gvariant-core.c
+@@ -20,6 +20,7 @@
+ 
+ #include <glib/gvariant-core.h>
+ 
++#include <glib/gvariant-internal.h>
+ #include <glib/gvariant-serialiser.h>
+ #include <glib/gtestutils.h>
+ #include <glib/gbitlock.h>
+@@ -74,6 +75,7 @@ struct _GVariant
+ 
+   gint state;
+   gint ref_count;
++  gsize depth;
+ };
+ 
+ /* struct GVariant:
+@@ -202,6 +204,11 @@ struct _GVariant
+  *                    reference.  See g_variant_ref_sink().
+  *
+  * ref_count: the reference count of the instance
++ *
++ * depth: the depth of the GVariant in a hierarchy of nested containers,
++ *        increasing with the level of nesting. The top-most GVariant has depth
++ *        zero.  This is used to avoid recursing too deeply and overflowing the
++ *        stack when handling deeply nested untrusted serialised GVariants.
+  */
+ #define STATE_LOCKED     1
+ #define STATE_SERIALISED 2
+@@ -366,6 +373,7 @@ g_variant_serialise (GVariant *value,
+   serialised.type_info = value->type_info;
+   serialised.size = value->size;
+   serialised.data = data;
++  serialised.depth = value->depth;
+ 
+   children = (gpointer *) value->contents.tree.children;
+   n_children = value->contents.tree.n_children;
+@@ -407,6 +415,7 @@ g_variant_fill_gvs (GVariantSerialised *serialised,
+   if (serialised->size == 0)
+     serialised->size = value->size;
+   g_assert (serialised->size == value->size);
++  serialised->depth = value->depth;
+ 
+   if (serialised->data)
+     /* g_variant_store() is a public API, so it
+@@ -480,6 +489,7 @@ g_variant_alloc (const GVariantType *type,
+                  STATE_FLOATING;
+   value->size = (gssize) -1;
+   value->ref_count = 1;
++  value->depth = 0;
+ 
+   return value;
+ }
+@@ -933,7 +943,8 @@ g_variant_n_children (GVariant *value)
+       GVariantSerialised serialised = {
+         value->type_info,
+         (gpointer) value->contents.serialised.data,
+-        value->size
++        value->size,
++        value->depth,
+       };
+ 
+       n_children = g_variant_serialised_n_children (serialised);
+@@ -962,6 +973,11 @@ g_variant_n_children (GVariant *value)
+  * The returned value is never floating.  You should free it with
+  * g_variant_unref() when you're done with it.
+  *
++ * There may be implementation specific restrictions on deeply nested values,
++ * which would result in the unit tuple being returned as the child value,
++ * instead of further nested children. #GVariant is guaranteed to handle
++ * nesting up to at least 64 levels.
++ *
+  * This function is O(1).
+  *
+  * Returns: (transfer full): the child at the specified index
+@@ -973,6 +989,7 @@ g_variant_get_child_value (GVariant *value,
+                            gsize     index_)
+ {
+   g_return_val_if_fail (index_ < g_variant_n_children (value), NULL);
++  g_return_val_if_fail (value->depth < G_MAXSIZE, NULL);
+ 
+   if (~g_atomic_int_get (&value->state) & STATE_SERIALISED)
+     {
+@@ -995,7 +1012,8 @@ g_variant_get_child_value (GVariant *value,
+     GVariantSerialised serialised = {
+       value->type_info,
+       (gpointer) value->contents.serialised.data,
+-      value->size
++      value->size,
++      value->depth,
+     };
+     GVariantSerialised s_child;
+     GVariant *child;
+@@ -1005,6 +1023,20 @@ g_variant_get_child_value (GVariant *value,
+      */
+     s_child = g_variant_serialised_get_child (serialised, index_);
+ 
++    /* Check whether this would cause nesting too deep. If so, return a fake
++     * child. The only situation we expect this to happen in is with a variant,
++     * as all other deeply-nested types have a static type, and hence should
++     * have been rejected earlier. In the case of a variant whose nesting plus
++     * the depth of its child is too great, return a unit variant () instead of
++     * the real child. */
++    if (!(value->state & STATE_TRUSTED) &&
++        g_variant_type_info_query_depth (s_child.type_info) >=
++        G_VARIANT_MAX_RECURSION_DEPTH - value->depth)
++      {
++        g_assert (g_variant_is_of_type (value, G_VARIANT_TYPE_VARIANT));
++        return g_variant_new_tuple (NULL, 0);
++      }
++
+     /* create a new serialised instance out of it */
+     child = g_slice_new (GVariant);
+     child->type_info = s_child.type_info;
+@@ -1012,6 +1044,7 @@ g_variant_get_child_value (GVariant *value,
+                    STATE_SERIALISED;
+     child->size = s_child.size;
+     child->ref_count = 1;
++    child->depth = value->depth + 1;
+     child->contents.serialised.bytes =
+       g_bytes_ref (value->contents.serialised.bytes);
+     child->contents.serialised.data = s_child.data;
+@@ -1074,6 +1107,9 @@ g_variant_store (GVariant *value,
+  * being trusted.  If the value was already marked as being trusted then
+  * this function will immediately return %TRUE.
+  *
++ * There may be implementation specific restrictions on deeply nested values.
++ * GVariant is guaranteed to handle nesting up to at least 64 levels.
++ *
+  * Returns: %TRUE if @value is in normal form
+  *
+  * Since: 2.24
+@@ -1086,12 +1122,16 @@ g_variant_is_normal_form (GVariant *value)
+ 
+   g_variant_lock (value);
+ 
++  if (value->depth >= G_VARIANT_MAX_RECURSION_DEPTH)
++    return FALSE;
++
+   if (value->state & STATE_SERIALISED)
+     {
+       GVariantSerialised serialised = {
+         value->type_info,
+         (gpointer) value->contents.serialised.data,
+-        value->size
++        value->size,
++        value->depth
+       };
+ 
+       if (g_variant_serialised_is_normal (serialised))
+diff --git a/glib/gvariant-internal.h b/glib/gvariant-internal.h
+index 600be1c1a..f7536da71 100644
+--- a/glib/gvariant-internal.h
++++ b/glib/gvariant-internal.h
+@@ -47,4 +47,22 @@ GVariantType *                  g_variant_format_string_scan_type       (const g
+                                                                          const gchar          *limit,
+                                                                          const gchar         **endptr);
+ 
++/* The maximum number of levels of nested container which this implementation
++ * of #GVariant will handle.
++ *
++ * The limit must be at least 64 + 1, to allow D-Bus messages to be wrapped in
++ * a top-level #GVariant. This comes from the D-Bus specification (§(Valid
++ * Signatures)), but also seems generally reasonable. #GDBusMessage wraps its
++ * payload in a top-level tuple.
++ *
++ * The limit is actually set to be a lot greater than 64, to allow much greater
++ * nesting of values off D-Bus. It cannot be set over around 80000, or the risk
++ * of overflowing the stack when parsing type strings becomes too great.
++ *
++ * Aside from those constraints, the choice of this value is arbitrary. The
++ * only restrictions on it from the API are that it has to be greater than 64
++ * (due to D-Bus).
++*/
++#define G_VARIANT_MAX_RECURSION_DEPTH ((gsize) 128)
++
+ #endif /* __G_VARIANT_INTERNAL_H__ */
+diff --git a/glib/gvariant-serialiser.c b/glib/gvariant-serialiser.c
+index 96df54e23..fe0bcf0aa 100644
+--- a/glib/gvariant-serialiser.c
++++ b/glib/gvariant-serialiser.c
+@@ -23,6 +23,7 @@
+ 
+ #include "gvariant-serialiser.h"
+ 
++#include <glib/gvariant-internal.h>
+ #include <glib/gtestutils.h>
+ #include <glib/gstrfuncs.h>
+ #include <glib/gtypes.h>
+@@ -81,7 +82,9 @@
+  * values is permitted (eg: 0 to 255 is a valid byte).  Special checks
+  * need to be performed for booleans (only 0 or 1 allowed), strings
+  * (properly nul-terminated) and object paths and signature strings
+- * (meeting the D-Bus specification requirements).
++ * (meeting the D-Bus specification requirements).  Depth checks need to be
++ * performed for nested types (arrays, tuples, and variants), to avoid massive
++ * recursion which could exhaust our stack when handling untrusted input.
+  */
+ 
+ /* < private >
+@@ -113,6 +116,9 @@
+  * fixed-sized type, yet @size must be non-zero.  The effect of this
+  * combination should be as if @data were a pointer to an
+  * appropriately-sized zero-filled region.
++ *
++ * @depth has no restrictions; the depth of a top-level serialised #GVariant is
++ * zero, and it increases for each level of nested child.
+  */
+ 
+ /* < private >
+@@ -255,6 +261,7 @@ gvs_fixed_sized_maybe_get_child (GVariantSerialised value,
+    */
+   value.type_info = g_variant_type_info_element (value.type_info);
+   g_variant_type_info_ref (value.type_info);
++  value.depth++;
+ 
+   return value;
+ }
+@@ -286,7 +293,7 @@ gvs_fixed_sized_maybe_serialise (GVariantSerialised        value,
+ {
+   if (n_children)
+     {
+-      GVariantSerialised child = { NULL, value.data, value.size };
++      GVariantSerialised child = { NULL, value.data, value.size, value.depth + 1 };
+ 
+       gvs_filler (&child, children[0]);
+     }
+@@ -307,6 +314,7 @@ gvs_fixed_sized_maybe_is_normal (GVariantSerialised value)
+ 
+       /* proper element size: "Just".  recurse to the child. */
+       value.type_info = g_variant_type_info_element (value.type_info);
++      value.depth++;
+ 
+       return g_variant_serialised_is_normal (value);
+     }
+@@ -347,6 +355,8 @@ gvs_variable_sized_maybe_get_child (GVariantSerialised value,
+   if (value.size == 0)
+     value.data = NULL;
+ 
++  value.depth++;
++
+   return value;
+ }
+ 
+@@ -376,7 +386,7 @@ gvs_variable_sized_maybe_serialise (GVariantSerialised        value,
+ {
+   if (n_children)
+     {
+-      GVariantSerialised child = { NULL, value.data, value.size - 1 };
++      GVariantSerialised child = { NULL, value.data, value.size - 1, value.depth + 1 };
+ 
+       /* write the data for the child.  */
+       gvs_filler (&child, children[0]);
+@@ -395,6 +405,7 @@ gvs_variable_sized_maybe_is_normal (GVariantSerialised value)
+ 
+   value.type_info = g_variant_type_info_element (value.type_info);
+   value.size--;
++  value.depth++;
+ 
+   return g_variant_serialised_is_normal (value);
+ }
+@@ -445,6 +456,7 @@ gvs_fixed_sized_array_get_child (GVariantSerialised value,
+   g_variant_type_info_query (child.type_info, NULL, &child.size);
+   child.data = value.data + (child.size * index_);
+   g_variant_type_info_ref (child.type_info);
++  child.depth = value.depth + 1;
+ 
+   return child;
+ }
+@@ -474,6 +486,7 @@ gvs_fixed_sized_array_serialise (GVariantSerialised        value,
+   child.type_info = g_variant_type_info_element (value.type_info);
+   g_variant_type_info_query (child.type_info, NULL, &child.size);
+   child.data = value.data;
++  child.depth = value.depth + 1;
+ 
+   for (i = 0; i < n_children; i++)
+     {
+@@ -489,6 +502,7 @@ gvs_fixed_sized_array_is_normal (GVariantSerialised value)
+ 
+   child.type_info = g_variant_type_info_element (value.type_info);
+   g_variant_type_info_query (child.type_info, NULL, &child.size);
++  child.depth = value.depth + 1;
+ 
+   if (value.size % child.size != 0)
+     return FALSE;
+@@ -655,6 +669,7 @@ gvs_variable_sized_array_get_child (GVariantSerialised value,
+ 
+   child.type_info = g_variant_type_info_element (value.type_info);
+   g_variant_type_info_ref (child.type_info);
++  child.depth = value.depth + 1;
+ 
+   offset_size = gvs_get_offset_size (value.size);
+ 
+@@ -783,6 +798,7 @@ gvs_variable_sized_array_is_normal (GVariantSerialised value)
+ 
+   child.type_info = g_variant_type_info_element (value.type_info);
+   g_variant_type_info_query (child.type_info, &alignment, NULL);
++  child.depth = value.depth + 1;
+   offset = 0;
+ 
+   for (i = 0; i < length; i++)
+@@ -858,6 +874,7 @@ gvs_tuple_get_child (GVariantSerialised value,
+ 
+   member_info = g_variant_type_info_member_info (value.type_info, index_);
+   child.type_info = g_variant_type_info_ref (member_info->type_info);
++  child.depth = value.depth + 1;
+   offset_size = gvs_get_offset_size (value.size);
+ 
+   /* tuples are the only (potentially) fixed-sized containers, so the
+@@ -1042,6 +1059,7 @@ gvs_tuple_is_normal (GVariantSerialised value)
+ 
+       member_info = g_variant_type_info_member_info (value.type_info, i);
+       child.type_info = member_info->type_info;
++      child.depth = value.depth + 1;
+ 
+       g_variant_type_info_query (child.type_info, &alignment, &fixed_size);
+ 
+@@ -1171,8 +1189,10 @@ gvs_variant_get_child (GVariantSerialised value,
+               if (g_variant_type_is_definite (type))
+                 {
+                   gsize fixed_size;
++                  gsize child_type_depth;
+ 
+                   child.type_info = g_variant_type_info_get (type);
++                  child.depth = value.depth + 1;
+ 
+                   if (child.size != 0)
+                     /* only set to non-%NULL if size > 0 */
+@@ -1180,8 +1200,10 @@ gvs_variant_get_child (GVariantSerialised value,
+ 
+                   g_variant_type_info_query (child.type_info,
+                                              NULL, &fixed_size);
++                  child_type_depth = g_variant_type_info_query_depth (child.type_info);
+ 
+-                  if (!fixed_size || fixed_size == child.size)
++                  if ((!fixed_size || fixed_size == child.size) &&
++                      value.depth < G_VARIANT_MAX_RECURSION_DEPTH - child_type_depth)
+                     return child;
+ 
+                   g_variant_type_info_unref (child.type_info);
+@@ -1193,6 +1215,7 @@ gvs_variant_get_child (GVariantSerialised value,
+   child.type_info = g_variant_type_info_get (G_VARIANT_TYPE_UNIT);
+   child.data = NULL;
+   child.size = 1;
++  child.depth = value.depth + 1;
+ 
+   return child;
+ }
+@@ -1234,10 +1257,13 @@ gvs_variant_is_normal (GVariantSerialised value)
+ {
+   GVariantSerialised child;
+   gboolean normal;
++  gsize child_type_depth;
+ 
+   child = gvs_variant_get_child (value, 0);
++  child_type_depth = g_variant_type_info_query_depth (child.type_info);
+ 
+-  normal = (child.data != NULL || child.size == 0) &&
++  normal = (value.depth < G_VARIANT_MAX_RECURSION_DEPTH - child_type_depth) &&
++           (child.data != NULL || child.size == 0) &&
+            g_variant_serialised_is_normal (child);
+ 
+   g_variant_type_info_unref (child.type_info);
+@@ -1555,6 +1581,8 @@ g_variant_serialised_is_normal (GVariantSerialised serialised)
+ 
+   if (serialised.data == NULL)
+     return FALSE;
++  if (serialised.depth >= G_VARIANT_MAX_RECURSION_DEPTH)
++    return FALSE;
+ 
+   /* some hard-coded terminal cases */
+   switch (g_variant_type_info_get_type_char (serialised.type_info))
+diff --git a/glib/gvariant-serialiser.h b/glib/gvariant-serialiser.h
+index c49708662..fa4252d36 100644
+--- a/glib/gvariant-serialiser.h
++++ b/glib/gvariant-serialiser.h
+@@ -28,6 +28,7 @@ typedef struct
+   GVariantTypeInfo *type_info;
+   guchar           *data;
+   gsize             size;
++  gsize             depth;  /* same semantics as GVariant.depth */
+ } GVariantSerialised;
+ 
+ /* deserialisation */
+diff --git a/glib/gvarianttype.c b/glib/gvarianttype.c
+index f473ad008..b8c6cc195 100644
+--- a/glib/gvarianttype.c
++++ b/glib/gvarianttype.c
+@@ -24,6 +24,7 @@
+ 
+ #include <glib/gtestutils.h>
+ #include <glib/gstrfuncs.h>
++#include <glib/gvariant-internal.h>
+ 
+ #include <string.h>
+ 
+@@ -114,7 +115,10 @@
+  *
+  * The above definition is recursive to arbitrary depth. "aaaaai" and
+  * "(ui(nq((y)))s)" are both valid type strings, as is
+- * "a(aa(ui)(qna{ya(yd)}))".
++ * "a(aa(ui)(qna{ya(yd)}))". In order to not hit memory limits, #GVariant
++ * imposes a limit on recursion depth of 65 nested containers. This is the
++ * limit in the D-Bus specification (64) plus one to allow a #GDBusMessage to
++ * be nested in a top-level tuple.
+  *
+  * The meaning of each of the characters is as follows:
+  * - `b`: the type string of %G_VARIANT_TYPE_BOOLEAN; a boolean value.
+@@ -194,35 +198,15 @@ g_variant_type_check (const GVariantType *type)
+ #endif
+ }
+ 
+-/**
+- * g_variant_type_string_scan:
+- * @string: a pointer to any string
+- * @limit: (nullable): the end of @string, or %NULL
+- * @endptr: (out) (optional): location to store the end pointer, or %NULL
+- *
+- * Scan for a single complete and valid GVariant type string in @string.
+- * The memory pointed to by @limit (or bytes beyond it) is never
+- * accessed.
+- *
+- * If a valid type string is found, @endptr is updated to point to the
+- * first character past the end of the string that was found and %TRUE
+- * is returned.
+- *
+- * If there is no valid type string starting at @string, or if the type
+- * string does not end before @limit then %FALSE is returned.
+- *
+- * For the simple case of checking if a string is a valid type string,
+- * see g_variant_type_string_is_valid().
+- *
+- * Returns: %TRUE if a valid type string was found
+- *
+- * Since: 2.24
+- **/
+-gboolean
+-g_variant_type_string_scan (const gchar  *string,
+-                            const gchar  *limit,
+-                            const gchar **endptr)
++static gboolean
++variant_type_string_scan_internal (const gchar  *string,
++                                   const gchar  *limit,
++                                   const gchar **endptr,
++                                   gsize        *depth,
++                                   gsize         depth_limit)
+ {
++  gsize max_depth = 0, child_depth;
++
+   g_return_val_if_fail (string != NULL, FALSE);
+ 
+   if (string == limit || *string == '\0')
+@@ -232,27 +216,44 @@ g_variant_type_string_scan (const gchar  *string,
+     {
+     case '(':
+       while (string == limit || *string != ')')
+-        if (!g_variant_type_string_scan (string, limit, &string))
+-          return FALSE;
++        {
++          if (depth_limit == 0 ||
++              !variant_type_string_scan_internal (string, limit, &string,
++                                                  &child_depth,
++                                                  depth_limit - 1))
++            return FALSE;
++
++          max_depth = MAX (max_depth, child_depth + 1);
++        }
+ 
+       string++;
+       break;
+ 
+     case '{':
+-      if (string == limit || *string == '\0' ||                    /* { */
+-          !strchr ("bynqihuxtdsog?", *string++) ||                 /* key */
+-          !g_variant_type_string_scan (string, limit, &string) ||  /* value */
+-          string == limit || *string++ != '}')                     /* } */
++      if (depth_limit == 0 ||
++          string == limit || *string == '\0' ||                                  /* { */
++          !strchr ("bynqihuxtdsog?", *string++) ||                               /* key */
++          !variant_type_string_scan_internal (string, limit, &string,
++                                              &child_depth, depth_limit - 1) ||  /* value */
++          string == limit || *string++ != '}')                                   /* } */
+         return FALSE;
+ 
++      max_depth = MAX (max_depth, child_depth + 1);
+       break;
+ 
+     case 'm': case 'a':
+-      return g_variant_type_string_scan (string, limit, endptr);
++      if (depth_limit == 0 ||
++          !variant_type_string_scan_internal (string, limit, &string,
++                                              &child_depth, depth_limit - 1))
++        return FALSE;
++
++      max_depth = MAX (max_depth, child_depth + 1);
++      break;
+ 
+     case 'b': case 'y': case 'n': case 'q': case 'i': case 'u':
+     case 'x': case 't': case 'd': case 's': case 'o': case 'g':
+     case 'v': case 'r': case '*': case '?': case 'h':
++      max_depth = MAX (max_depth, 1);
+       break;
+ 
+     default:
+@@ -261,10 +262,74 @@ g_variant_type_string_scan (const gchar  *string,
+ 
+   if (endptr != NULL)
+     *endptr = string;
++  if (depth != NULL)
++    *depth = max_depth;
+ 
+   return TRUE;
+ }
+ 
++/**
++ * g_variant_type_string_scan:
++ * @string: a pointer to any string
++ * @limit: (nullable): the end of @string, or %NULL
++ * @endptr: (out) (optional): location to store the end pointer, or %NULL
++ *
++ * Scan for a single complete and valid GVariant type string in @string.
++ * The memory pointed to by @limit (or bytes beyond it) is never
++ * accessed.
++ *
++ * If a valid type string is found, @endptr is updated to point to the
++ * first character past the end of the string that was found and %TRUE
++ * is returned.
++ *
++ * If there is no valid type string starting at @string, or if the type
++ * string does not end before @limit then %FALSE is returned.
++ *
++ * For the simple case of checking if a string is a valid type string,
++ * see g_variant_type_string_is_valid().
++ *
++ * Returns: %TRUE if a valid type string was found
++ *
++ * Since: 2.24
++ **/
++gboolean
++g_variant_type_string_scan (const gchar  *string,
++                            const gchar  *limit,
++                            const gchar **endptr)
++{
++  return variant_type_string_scan_internal (string, limit, endptr, NULL,
++                                            G_VARIANT_MAX_RECURSION_DEPTH);
++}
++
++/* < private >
++ * g_variant_type_string_get_depth_:
++ * @type_string: a pointer to any string
++ *
++ * Get the maximum depth of the nested types in @type_string. A basic type will
++ * return depth 1, and a container type will return a greater value. The depth
++ * of a tuple is 1 plus the depth of its deepest child type.
++ *
++ * If @type_string is not a valid #GVariant type string, 0 will be returned.
++ *
++ * Returns: depth of @type_string, or 0 on error
++ * Since: 2.60
++ */
++gsize
++g_variant_type_string_get_depth_ (const gchar *type_string)
++{
++  const gchar *endptr;
++  gsize depth = 0;
++
++  g_return_val_if_fail (type_string != NULL, 0);
++
++  if (!variant_type_string_scan_internal (type_string, NULL, &endptr, &depth,
++                                          G_VARIANT_MAX_RECURSION_DEPTH) ||
++      *endptr != '\0')
++    return 0;
++
++  return depth;
++}
++
+ /**
+  * g_variant_type_string_is_valid:
+  * @type_string: a pointer to any string
+diff --git a/glib/gvarianttype.h b/glib/gvarianttype.h
+index 6bb5e07b5..fdc364166 100644
+--- a/glib/gvarianttype.h
++++ b/glib/gvarianttype.h
+@@ -374,6 +374,8 @@ GVariantType *                  g_variant_type_new_dict_entry           (const G
+ /*< private >*/
+ GLIB_AVAILABLE_IN_ALL
+ const GVariantType *            g_variant_type_checked_                 (const gchar *);
++GLIB_AVAILABLE_IN_2_52
++gsize                           g_variant_type_string_get_depth_        (const gchar *type_string);
+ 
+ G_END_DECLS
+ 
+diff --git a/glib/gvarianttypeinfo.c b/glib/gvarianttypeinfo.c
+index 9dade7064..78d029425 100644
+--- a/glib/gvarianttypeinfo.c
++++ b/glib/gvarianttypeinfo.c
+@@ -251,6 +251,31 @@ g_variant_type_info_query (GVariantTypeInfo *info,
+     *fixed_size = info->fixed_size;
+ }
+ 
++/* < private >
++ * g_variant_type_info_query_depth:
++ * @info: a #GVariantTypeInfo
++ *
++ * Queries @info to determine the depth of the type.
++ *
++ * See g_variant_type_string_get_depth_() for more details.
++ *
++ * Returns: depth of @info
++ * Since: 2.60
++ */
++gsize
++g_variant_type_info_query_depth (GVariantTypeInfo *info)
++{
++  g_variant_type_info_check (info, 0);
++
++  if (info->container_class)
++    {
++      ContainerInfo *container = (ContainerInfo *) info;
++      return g_variant_type_string_get_depth_ (container->type_string);
++    }
++
++  return 1;
++}
++
+ /* == array == */
+ #define GV_ARRAY_INFO_CLASS 'a'
+ static ArrayInfo *
+diff --git a/glib/gvarianttypeinfo.h b/glib/gvarianttypeinfo.h
+index cc60f36e2..6ecd1d4bb 100644
+--- a/glib/gvarianttypeinfo.h
++++ b/glib/gvarianttypeinfo.h
+@@ -130,6 +130,8 @@ GLIB_AVAILABLE_IN_ALL
+ void                            g_variant_type_info_query               (GVariantTypeInfo   *typeinfo,
+                                                                          guint              *alignment,
+                                                                          gsize              *size);
++GLIB_AVAILABLE_IN_2_52
++gsize                           g_variant_type_info_query_depth         (GVariantTypeInfo   *typeinfo);
+ 
+ /* array */
+ GLIB_AVAILABLE_IN_ALL
+diff --git a/glib/tests/gvariant.c b/glib/tests/gvariant.c
+index a5095a380..8b1f7a6cb 100644
+--- a/glib/tests/gvariant.c
++++ b/glib/tests/gvariant.c
+@@ -661,6 +661,57 @@ test_gvarianttype (void)
+     }
+ }
+ 
++/* Test that scanning a deeply recursive type string doesn’t exhaust our
++ * stack space (which it would if the type string scanner was recursive). */
++static void
++test_gvarianttype_string_scan_recursion_tuple (void)
++{
++  gchar *type_string = NULL;
++  gsize type_string_len = 1000001;  /* not including nul terminator */
++  gsize i;
++
++  /* Build a long type string of ‘((…u…))’. */
++  type_string = g_new0 (gchar, type_string_len + 1);
++  for (i = 0; i < type_string_len; i++)
++    {
++      if (i < type_string_len / 2)
++        type_string[i] = '(';
++      else if (i == type_string_len / 2)
++        type_string[i] = 'u';
++      else
++        type_string[i] = ')';
++    }
++
++  /* Goes (way) over allowed recursion limit. */
++  g_assert_false (g_variant_type_string_is_valid (type_string));
++
++  g_free (type_string);
++}
++
++/* Same as above, except with an array rather than a tuple. */
++static void
++test_gvarianttype_string_scan_recursion_array (void)
++{
++  gchar *type_string = NULL;
++  gsize type_string_len = 1000001;  /* not including nul terminator */
++  gsize i;
++
++  /* Build a long type string of ‘aaa…aau’. */
++  type_string = g_new0 (gchar, type_string_len + 1);
++  for (i = 0; i < type_string_len; i++)
++    {
++      if (i < type_string_len - 1)
++        type_string[i] = 'a';
++      else
++        type_string[i] = 'u';
++    }
++
++  /* Goes (way) over allowed recursion limit. */
++  g_assert_false (g_variant_type_string_is_valid (type_string));
++
++  g_free (type_string);
++}
++
+ #define ALIGNED(x, y)   (((x + (y - 1)) / y) * y)
+ 
+ /* do our own calculation of the fixed_size and alignment of a type
+@@ -1230,6 +1281,8 @@ random_instance_filler (GVariantSerialised *serialised,
+   if (serialised->size == 0)
+     serialised->size = instance->size;
+ 
++  serialised->depth = 0;
++
+   g_assert (serialised->type_info == instance->type_info);
+   g_assert (serialised->size == instance->size);
+ 
+@@ -1394,6 +1447,7 @@ test_maybe (void)
+         serialised.type_info = type_info;
+         serialised.data = flavoured_malloc (needed_size, flavour);
+         serialised.size = needed_size;
++        serialised.depth = 0;
+ 
+         g_variant_serialiser_serialise (serialised,
+                                         random_instance_filler,
+@@ -1516,6 +1570,7 @@ test_array (void)
+         serialised.type_info = array_info;
+         serialised.data = flavoured_malloc (needed_size, flavour);
+         serialised.size = needed_size;
++        serialised.depth = 0;
+ 
+         g_variant_serialiser_serialise (serialised, random_instance_filler,
+                                         (gpointer *) instances, n_children);
+@@ -1679,6 +1734,7 @@ test_tuple (void)
+         serialised.type_info = type_info;
+         serialised.data = flavoured_malloc (needed_size, flavour);
+         serialised.size = needed_size;
++        serialised.depth = 0;
+ 
+         g_variant_serialiser_serialise (serialised, random_instance_filler,
+                                         (gpointer *) instances, n_children);
+@@ -1774,6 +1830,7 @@ test_variant (void)
+         serialised.type_info = type_info;
+         serialised.data = flavoured_malloc (needed_size, flavour);
+         serialised.size = needed_size;
++        serialised.depth = 0;
+ 
+         g_variant_serialiser_serialise (serialised, random_instance_filler,
+                                         (gpointer *) &instance, 1);
+@@ -2055,6 +2112,8 @@ tree_filler (GVariantSerialised *serialised,
+   if (serialised->type_info == NULL)
+     serialised->type_info = instance->info;
+ 
++  serialised->depth = 0;
++
+   if (instance->data_size == 0)
+     /* is a container */
+     {
+@@ -2225,6 +2284,7 @@ test_byteswap (void)
+   g_variant_serialised_byteswap (two);
+ 
+   g_assert_cmpmem (one.data, one.size, two.data, two.size);
++  g_assert_cmpuint (one.depth, ==, two.depth);
+ 
+   tree_instance_free (tree);
+   g_free (one.data);
+@@ -4655,6 +4715,108 @@ test_normal_checking_tuples (void)
+   g_variant_unref (variant);
+ }
+ 
++/* Check that deeply nested variants are not considered in normal form when
++ * deserialised from untrusted data.*/
++static void
++test_recursion_limits_variant_in_variant (void)
++{
++  GVariant *wrapper_variant = NULL;
++  gsize i;
++  GBytes *bytes = NULL;
++  GVariant *deserialised_variant = NULL;
++
++  /* Construct a hierarchy of variants, containing a single string. This is just
++   * below the maximum recursion level, as a series of nested variant types. */
++  wrapper_variant = g_variant_new_string ("hello");
++
++  for (i = 0; i < G_VARIANT_MAX_RECURSION_DEPTH - 1; i++)
++    wrapper_variant = g_variant_new_variant (g_steal_pointer (&wrapper_variant));
++
++  /* Serialise and deserialise it as untrusted data, to force normalisation. */
++  bytes = g_variant_get_data_as_bytes (wrapper_variant);
++  deserialised_variant = g_variant_new_from_bytes (G_VARIANT_TYPE_VARIANT,
++                                                   bytes, FALSE);
++  g_assert_nonnull (deserialised_variant);
++  g_assert_true (g_variant_is_normal_form (deserialised_variant));
++
++  g_bytes_unref (bytes);
++  g_variant_unref (deserialised_variant);
++
++  /* Wrap it once more. Normalisation should now fail. */
++  wrapper_variant = g_variant_new_variant (g_steal_pointer (&wrapper_variant));
++
++  bytes = g_variant_get_data_as_bytes (wrapper_variant);
++  deserialised_variant = g_variant_new_from_bytes (G_VARIANT_TYPE_VARIANT,
++                                                   bytes, FALSE);
++  g_assert_nonnull (deserialised_variant);
++  g_assert_false (g_variant_is_normal_form (deserialised_variant));
++
++  g_variant_unref (deserialised_variant);
++
++  /* Deserialise it again, but trusted this time. This should succeed. */
++  deserialised_variant = g_variant_new_from_bytes (G_VARIANT_TYPE_VARIANT,
++                                                   bytes, TRUE);
++  g_assert_nonnull (deserialised_variant);
++  g_assert_true (g_variant_is_normal_form (deserialised_variant));
++
++  g_bytes_unref (bytes);
++  g_variant_unref (deserialised_variant);
++  g_variant_unref (wrapper_variant);
++}
++
++/* Check that deeply nested arrays are not considered in normal form when
++ * deserialised from untrusted data after being wrapped in a variant. This is
++ * worth testing, because neither the deeply nested array, nor the variant,
++ * have a static #GVariantType which is too deep — only when nested together do
++ * they become too deep. */
++static void
++test_recursion_limits_array_in_variant (void)
++{
++  GVariant *child_variant = NULL;
++  GVariant *wrapper_variant = NULL;
++  gsize i;
++  GBytes *bytes = NULL;
++  GVariant *deserialised_variant = NULL;
++
++  /* Construct a hierarchy of arrays, containing a single string. This is just
++   * below the maximum recursion level, all in a single definite type. */
++  child_variant = g_variant_new_string ("hello");
++
++  for (i = 0; i < G_VARIANT_MAX_RECURSION_DEPTH - 1; i++)
++    child_variant = g_variant_new_array (NULL, &child_variant, 1);
++
++  /* Serialise and deserialise it as untrusted data, to force normalisation. */
++  bytes = g_variant_get_data_as_bytes (child_variant);
++  deserialised_variant = g_variant_new_from_bytes (g_variant_get_type (child_variant),
++                                                   bytes, FALSE);
++  g_assert_nonnull (deserialised_variant);
++  g_assert_true (g_variant_is_normal_form (deserialised_variant));
++
++  g_bytes_unref (bytes);
++  g_variant_unref (deserialised_variant);
++
++  /* Wrap it in a variant. Normalisation should now fail. */
++  wrapper_variant = g_variant_new_variant (g_steal_pointer (&child_variant));
++
++  bytes = g_variant_get_data_as_bytes (wrapper_variant);
++  deserialised_variant = g_variant_new_from_bytes (G_VARIANT_TYPE_VARIANT,
++                                                   bytes, FALSE);
++  g_assert_nonnull (deserialised_variant);
++  g_assert_false (g_variant_is_normal_form (deserialised_variant));
++
++  g_variant_unref (deserialised_variant);
++
++  /* Deserialise it again, but trusted this time. This should succeed. */
++  deserialised_variant = g_variant_new_from_bytes (G_VARIANT_TYPE_VARIANT,
++                                                   bytes, TRUE);
++  g_assert_nonnull (deserialised_variant);
++  g_assert_true (g_variant_is_normal_form (deserialised_variant));
++
++  g_bytes_unref (bytes);
++  g_variant_unref (deserialised_variant);
++  g_variant_unref (wrapper_variant);
++}
++
+ int
+ main (int argc, char **argv)
+ {
+@@ -4663,6 +4825,10 @@ main (int argc, char **argv)
+   g_test_init (&argc, &argv, NULL);
+ 
+   g_test_add_func ("/gvariant/type", test_gvarianttype);
++  g_test_add_func ("/gvariant/type/string-scan/recursion/tuple",
++                   test_gvarianttype_string_scan_recursion_tuple);
++  g_test_add_func ("/gvariant/type/string-scan/recursion/array",
++                   test_gvarianttype_string_scan_recursion_array);
+   g_test_add_func ("/gvariant/typeinfo", test_gvarianttypeinfo);
+   g_test_add_func ("/gvariant/serialiser/maybe", test_maybes);
+   g_test_add_func ("/gvariant/serialiser/array", test_arrays);
+@@ -4720,5 +4886,10 @@ main (int argc, char **argv)
+   g_test_add_func ("/gvariant/normal-checking/tuples",
+                    test_normal_checking_tuples);
+ 
++  g_test_add_func ("/gvariant/recursion-limits/variant-in-variant",
++                   test_recursion_limits_variant_in_variant);
++  g_test_add_func ("/gvariant/recursion-limits/array-in-variant",
++                   test_recursion_limits_array_in_variant);
++
+   return g_test_run ();
+ }
+-- 
+2.18.1
+
+
+From 5e0b12df1a2e1d5669c0c7e493c45cb2a1f62748 Mon Sep 17 00:00:00 2001
+From: Philip Withnall <withnall@endlessm.com>
+Date: Fri, 7 Sep 2018 22:26:05 +0100
+Subject: [PATCH 03/15] gvariant: Check array offsets against serialised data
+ length
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+When getting a child from a serialised variable array, check its offset
+against the length of the serialised data of the array (excluding the
+length of the offset table). The offset was already checked against the
+length of the entire serialised array (including the offset table) — but a
+child should not be able to start inside the offset table.
+
+A test is included.
+
+oss-fuzz#9803
+
+Signed-off-by: Philip Withnall <withnall@endlessm.com>
+---
+ glib/gvariant-serialiser.c |  2 +-
+ glib/tests/gvariant.c      | 26 ++++++++++++++++++++++++++
+ 2 files changed, 27 insertions(+), 1 deletion(-)
+
+diff --git a/glib/gvariant-serialiser.c b/glib/gvariant-serialiser.c
+index fe0bcf0aa..aa71d3c1c 100644
+--- a/glib/gvariant-serialiser.c
++++ b/glib/gvariant-serialiser.c
+@@ -694,7 +694,7 @@ gvs_variable_sized_array_get_child (GVariantSerialised value,
+                                (offset_size * index_),
+                                offset_size);
+ 
+-  if (start < end && end <= value.size)
++  if (start < end && end <= value.size && end <= last_end)
+     {
+       child.data = value.data + start;
+       child.size = end - start;
+diff --git a/glib/tests/gvariant.c b/glib/tests/gvariant.c
+index 8b1f7a6cb..1ab535534 100644
+--- a/glib/tests/gvariant.c
++++ b/glib/tests/gvariant.c
+@@ -4817,6 +4817,30 @@ test_recursion_limits_array_in_variant (void)
+   g_variant_unref (wrapper_variant);
+ }
+ 
++/* Test that an array with invalidly large values in its offset table is
++ * normalised successfully without looping infinitely. */
++static void
++test_normal_checking_array_offsets (void)
++{
++  const guint8 data[] = {
++    0x07, 0xe5, 0x00, 0x07, 0x00, 0x07, 0x00, 0x00,
++    'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'g',
++  };
++  gsize size = sizeof (data);
++  GVariant *variant = NULL;
++  GVariant *normal_variant = NULL;
++
++  variant = g_variant_new_from_data (G_VARIANT_TYPE_VARIANT, data, size,
++                                     FALSE, NULL, NULL);
++  g_assert_nonnull (variant);
++
++  normal_variant = g_variant_get_normal_form (variant);
++  g_assert_nonnull (normal_variant);
++
++  g_variant_unref (normal_variant);
++  g_variant_unref (variant);
++}
++
+ int
+ main (int argc, char **argv)
+ {
+@@ -4885,6 +4909,8 @@ main (int argc, char **argv)
+ 
+   g_test_add_func ("/gvariant/normal-checking/tuples",
+                    test_normal_checking_tuples);
++  g_test_add_func ("/gvariant/normal-checking/array-offsets",
++                   test_normal_checking_array_offsets);
+ 
+   g_test_add_func ("/gvariant/recursion-limits/variant-in-variant",
+                    test_recursion_limits_variant_in_variant);
+-- 
+2.18.1
+
+
+From 7eedcd76f7d5b8c98fa60013e1fe6e960bf19df3 Mon Sep 17 00:00:00 2001
+From: Philip Withnall <withnall@endlessm.com>
+Date: Fri, 7 Sep 2018 22:28:37 +0100
+Subject: [PATCH 04/15] gvariant: Check tuple offsets against serialised data
+ length
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+As with the previous commit, when getting a child from a serialised
+tuple, check its offset against the length of the serialised data of the
+tuple (excluding the length of the offset table). The offset was already
+checked against the length of the entire serialised tuple (including the
+offset table) — but a child should not be able to start inside the
+offset table.
+
+A test is included.
+
+oss-fuzz#9803
+
+Signed-off-by: Philip Withnall <withnall@endlessm.com>
+---
+ glib/gvariant-serialiser.c | 16 ++++++++++++++--
+ glib/tests/gvariant.c      | 26 ++++++++++++++++++++++++++
+ 2 files changed, 40 insertions(+), 2 deletions(-)
+
+diff --git a/glib/gvariant-serialiser.c b/glib/gvariant-serialiser.c
+index aa71d3c1c..643894919 100644
+--- a/glib/gvariant-serialiser.c
++++ b/glib/gvariant-serialiser.c
+@@ -870,7 +870,7 @@ gvs_tuple_get_child (GVariantSerialised value,
+   const GVariantMemberInfo *member_info;
+   GVariantSerialised child = { 0, };
+   gsize offset_size;
+-  gsize start, end;
++  gsize start, end, last_end;
+ 
+   member_info = g_variant_type_info_member_info (value.type_info, index_);
+   child.type_info = g_variant_type_info_ref (member_info->type_info);
+@@ -940,7 +940,19 @@ gvs_tuple_get_child (GVariantSerialised value,
+                                  offset_size * (member_info->i + 2),
+                                  offset_size);
+ 
+-  if (start < end && end <= value.size)
++  /* The child should not extend into the offset table. */
++  if (index_ != g_variant_type_info_n_members (value.type_info) - 1)
++    {
++      GVariantSerialised last_child;
++      last_child = gvs_tuple_get_child (value,
++                                        g_variant_type_info_n_members (value.type_info) - 1);
++      last_end = last_child.data + last_child.size - value.data;
++      g_variant_type_info_unref (last_child.type_info);
++    }
++  else
++    last_end = end;
++
++  if (start < end && end <= value.size && end <= last_end)
+     {
+       child.data = value.data + start;
+       child.size = end - start;
+diff --git a/glib/tests/gvariant.c b/glib/tests/gvariant.c
+index 1ab535534..be9920c1e 100644
+--- a/glib/tests/gvariant.c
++++ b/glib/tests/gvariant.c
+@@ -4841,6 +4841,30 @@ test_normal_checking_array_offsets (void)
+   g_variant_unref (variant);
+ }
+ 
++/* Test that a tuple with invalidly large values in its offset table is
++ * normalised successfully without looping infinitely. */
++static void
++test_normal_checking_tuple_offsets (void)
++{
++  const guint8 data[] = {
++    0x07, 0xe5, 0x00, 0x07, 0x00, 0x07,
++    '(', 'a', 's', 'a', 's', 'a', 's', 'a', 's', 'a', 's', 'a', 's', ')',
++  };
++  gsize size = sizeof (data);
++  GVariant *variant = NULL;
++  GVariant *normal_variant = NULL;
++
++  variant = g_variant_new_from_data (G_VARIANT_TYPE_VARIANT, data, size,
++                                     FALSE, NULL, NULL);
++  g_assert_nonnull (variant);
++
++  normal_variant = g_variant_get_normal_form (variant);
++  g_assert_nonnull (normal_variant);
++
++  g_variant_unref (normal_variant);
++  g_variant_unref (variant);
++}
++
+ int
+ main (int argc, char **argv)
+ {
+@@ -4911,6 +4935,8 @@ main (int argc, char **argv)
+                    test_normal_checking_tuples);
+   g_test_add_func ("/gvariant/normal-checking/array-offsets",
+                    test_normal_checking_array_offsets);
++  g_test_add_func ("/gvariant/normal-checking/tuple-offsets",
++                   test_normal_checking_tuple_offsets);
+ 
+   g_test_add_func ("/gvariant/recursion-limits/variant-in-variant",
+                    test_recursion_limits_variant_in_variant);
+-- 
+2.18.1
+
+
+From f148687b02789332d5fa1fa2180dfce6770b417f Mon Sep 17 00:00:00 2001
+From: Philip Withnall <withnall@endlessm.com>
+Date: Tue, 18 Sep 2018 13:29:18 +0100
+Subject: [PATCH 05/15] gvariant: Limit GVariant strings to G_MAXSSIZE
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+When validating a string to see if it’s valid UTF-8, we pass a gsize to
+g_utf8_validate(), which only takes a gssize. For large gsize values,
+this will result in the gssize actually being negative, which will
+change g_utf8_validate()’s behaviour to stop at the first nul byte. That
+would allow subsequent nul bytes through the string validator, against
+its documented behaviour.
+
+Add a test case.
+
+oss-fuzz#10319
+
+Signed-off-by: Philip Withnall <withnall@endlessm.com>
+---
+ glib/gvariant-serialiser.c |  3 ++-
+ glib/tests/gvariant.c      | 26 ++++++++++++++++++++++++++
+ 2 files changed, 28 insertions(+), 1 deletion(-)
+
+diff --git a/glib/gvariant-serialiser.c b/glib/gvariant-serialiser.c
+index 643894919..bbdcc7a0c 100644
+--- a/glib/gvariant-serialiser.c
++++ b/glib/gvariant-serialiser.c
+@@ -1643,6 +1643,7 @@ g_variant_serialiser_is_string (gconstpointer data,
+   const gchar *expected_end;
+   const gchar *end;
+ 
++  /* Strings must end with a nul terminator. */
+   if (size == 0)
+     return FALSE;
+ 
+@@ -1651,7 +1652,7 @@ g_variant_serialiser_is_string (gconstpointer data,
+   if (*expected_end != '\0')
+     return FALSE;
+ 
+-  g_utf8_validate (data, size, &end);
++  g_utf8_validate_len (data, size, &end);
+ 
+   return end == expected_end;
+ }
+diff --git a/glib/tests/gvariant.c b/glib/tests/gvariant.c
+index be9920c1e..54cef6777 100644
+--- a/glib/tests/gvariant.c
++++ b/glib/tests/gvariant.c
+@@ -4865,6 +4865,30 @@ test_normal_checking_tuple_offsets (void)
+   g_variant_unref (variant);
+ }
+ 
++/* Test that an empty object path is normalised successfully to the base object
++ * path, ‘/’. */
++static void
++test_normal_checking_empty_object_path (void)
++{
++  const guint8 data[] = {
++    0x20, 0x20, 0x00, 0x00, 0x00, 0x00,
++    '(', 'h', '(', 'a', 'i', 'a', 'b', 'i', 'o', ')', ')',
++  };
++  gsize size = sizeof (data);
++  GVariant *variant = NULL;
++  GVariant *normal_variant = NULL;
++
++  variant = g_variant_new_from_data (G_VARIANT_TYPE_VARIANT, data, size,
++                                     FALSE, NULL, NULL);
++  g_assert_nonnull (variant);
++
++  normal_variant = g_variant_get_normal_form (variant);
++  g_assert_nonnull (normal_variant);
++
++  g_variant_unref (normal_variant);
++  g_variant_unref (variant);
++}
++
+ int
+ main (int argc, char **argv)
+ {
+@@ -4937,6 +4961,8 @@ main (int argc, char **argv)
+                    test_normal_checking_array_offsets);
+   g_test_add_func ("/gvariant/normal-checking/tuple-offsets",
+                    test_normal_checking_tuple_offsets);
++  g_test_add_func ("/gvariant/normal-checking/empty-object-path",
++                   test_normal_checking_empty_object_path);
+ 
+   g_test_add_func ("/gvariant/recursion-limits/variant-in-variant",
+                    test_recursion_limits_variant_in_variant);
+-- 
+2.18.1
+
+
+From af712bbce1580455d455aeea214c39648ad70b46 Mon Sep 17 00:00:00 2001
+From: Philip Withnall <withnall@endlessm.com>
+Date: Thu, 16 Aug 2018 21:33:52 +0100
+Subject: [PATCH 06/15] gdbusmessage: Validate type of message header signature
+ field
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Parsing a D-Bus message with the signature field in the message header
+of type other than ‘g’ (GVariant type signature) would cause a critical
+warning. Instead, we should return a runtime error.
+
+Includes a test.
+
+oss-fuzz#9825
+
+Signed-off-by: Philip Withnall <withnall@endlessm.com>
+---
+ gio/gdbusmessage.c              | 19 +++++++++++
+ gio/tests/gdbus-serialization.c | 56 +++++++++++++++++++++++++++++++++
+ 2 files changed, 75 insertions(+)
+
+diff --git a/gio/gdbusmessage.c b/gio/gdbusmessage.c
+index 8de836bf6..79bc11c16 100644
+--- a/gio/gdbusmessage.c
++++ b/gio/gdbusmessage.c
+@@ -2115,6 +2115,15 @@ g_dbus_message_new_from_blob (guchar                *blob,
+       const gchar *signature_str;
+       gsize signature_str_len;
+ 
++      if (!g_variant_is_of_type (signature, G_VARIANT_TYPE_SIGNATURE))
++        {
++          g_set_error_literal (error,
++                               G_IO_ERROR,
++                               G_IO_ERROR_INVALID_ARGUMENT,
++                               _("Signature header found but is not of type signature"));
++          goto out;
++        }
++
+       signature_str = g_variant_get_string (signature, &signature_str_len);
+ 
+       /* signature but no body */
+@@ -2695,6 +2704,16 @@ g_dbus_message_to_blob (GDBusMessage          *message,
+   body_start_offset = mbuf.valid_len;
+ 
+   signature = g_dbus_message_get_header (message, G_DBUS_MESSAGE_HEADER_FIELD_SIGNATURE);
++
++  if (signature != NULL && !g_variant_is_of_type (signature, G_VARIANT_TYPE_SIGNATURE))
++    {
++      g_set_error_literal (error,
++                           G_IO_ERROR,
++                           G_IO_ERROR_INVALID_ARGUMENT,
++                           _("Signature header found but is not of type signature"));
++      goto out;
++    }
++
+   signature_str = NULL;
+   if (signature != NULL)
+       signature_str = g_variant_get_string (signature, NULL);
+diff --git a/gio/tests/gdbus-serialization.c b/gio/tests/gdbus-serialization.c
+index 2ab856c48..3cdade6d7 100644
+--- a/gio/tests/gdbus-serialization.c
++++ b/gio/tests/gdbus-serialization.c
+@@ -873,6 +873,20 @@ message_serialize_header_checks (void)
+   g_assert (blob == NULL);
+   g_object_unref (message);
+ 
++  /*
++   * check that we can't serialize messages with SIGNATURE set to a non-signature-typed value
++   */
++  message = g_dbus_message_new_signal ("/the/path", "The.Interface", "TheMember");
++  g_dbus_message_set_header (message, G_DBUS_MESSAGE_HEADER_FIELD_SIGNATURE, g_variant_new_boolean (FALSE));
++  blob = g_dbus_message_to_blob (message, &blob_size, G_DBUS_CAPABILITY_FLAGS_NONE, &error);
++
++  g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
++  g_assert_cmpstr (error->message, ==, "Signature header found but is not of type signature");
++  g_assert_null (blob);
++
++  g_clear_error (&error);
++  g_clear_object (&message);
++
+   /*
+    * check we can't serialize signal messages with INTERFACE, PATH or MEMBER unset / set to reserved value
+    */
+@@ -1083,6 +1097,46 @@ test_double_array (void)
+ 
+ /* ---------------------------------------------------------------------------------------------------- */
+ 
++/* Test that an invalid header in a D-Bus message (specifically, with a type
++ * which doesn’t match what’s expected for the given header) is gracefully
++ * handled with an error rather than a crash.
++ * The set of bytes here come directly from fuzzer output. */
++static void
++test_message_parse_non_signature_header (void)
++{
++  const guint8 data[] = {
++    0x6c,  /* byte order */
++    0x04,  /* message type */
++    0x0f,  /* message flags */
++    0x01,  /* major protocol version */
++    0x00, 0x00, 0x00, 0x00,  /* body length */
++    0x00, 0x00, 0x00, 0xbc,  /* message serial */
++    /* a{yv} of header fields:
++     * (things start to be invalid below here) */
++    0x02, 0x00, 0x00, 0x00,  /* array length (in bytes) */
++      G_DBUS_MESSAGE_HEADER_FIELD_SIGNATURE, /* array key */
++      /* GVariant array value: */
++      0x04, /* signature length */
++      'd', 0x00, 0x00, 'F',  /* signature (invalid) */
++      0x00,  /* nul terminator */
++      /* (GVariant array value payload missing) */
++    /* (message body length missing) */
++  };
++  gsize size = sizeof (data);
++  GDBusMessage *message = NULL;
++  GError *local_error = NULL;
++
++  message = g_dbus_message_new_from_blob ((guchar *) data, size,
++                                          G_DBUS_CAPABILITY_FLAGS_NONE,
++                                          &local_error);
++  g_assert_error (local_error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
++  g_assert_null (message);
++
++  g_clear_error (&local_error);
++}
++
++/* ---------------------------------------------------------------------------------------------------- */
++
+ int
+ main (int   argc,
+       char *argv[])
+@@ -1102,6 +1156,8 @@ main (int   argc,
+       message_parse_empty_arrays_of_arrays);
+ 
+   g_test_add_func ("/gdbus/message-serialize/double-array", test_double_array);
++  g_test_add_func ("/gdbus/message-parse/non-signature-header",
++                   test_message_parse_non_signature_header);
+ 
+   return g_test_run();
+ }
+-- 
+2.18.1
+
+
+From 94a9ab3c0397d639514385c67c962e43887c5fc7 Mon Sep 17 00:00:00 2001
+From: Philip Withnall <withnall@endlessm.com>
+Date: Thu, 16 Aug 2018 21:35:31 +0100
+Subject: [PATCH 07/15] gdbusmessage: Improve documentation for
+ g_dbus_message_get_header()
+
+The caller is responsible for checking the type of the returned
+GVariant.
+
+Signed-off-by: Philip Withnall <withnall@endlessm.com>
+---
+ gio/gdbusmessage.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/gio/gdbusmessage.c b/gio/gdbusmessage.c
+index 79bc11c16..22fcb2025 100644
+--- a/gio/gdbusmessage.c
++++ b/gio/gdbusmessage.c
+@@ -985,7 +985,10 @@ g_dbus_message_set_serial (GDBusMessage  *message,
+  *
+  * Gets a header field on @message.
+  *
+- * Returns: A #GVariant with the value if the header was found, %NULL
++ * The caller is responsible for checking the type of the returned #GVariant
++ * matches what is expected.
++ *
++ * Returns: (transfer none) (nullable): A #GVariant with the value if the header was found, %NULL
+  * otherwise. Do not free, it is owned by @message.
+  *
+  * Since: 2.26
+-- 
+2.18.1
+
+
+From 50b544e2c0c974d7e0f11f19f871036dc81f7506 Mon Sep 17 00:00:00 2001
+From: Philip Withnall <withnall@endlessm.com>
+Date: Tue, 18 Sep 2018 14:48:43 +0100
+Subject: [PATCH 08/15] gdbusmessage: Clarify error returns for
+ g_dbus_message_new_from_blob()
+
+Signed-off-by: Philip Withnall <withnall@endlessm.com>
+---
+ gio/gdbusmessage.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/gio/gdbusmessage.c b/gio/gdbusmessage.c
+index 22fcb2025..97888ec57 100644
+--- a/gio/gdbusmessage.c
++++ b/gio/gdbusmessage.c
+@@ -2006,6 +2006,9 @@ g_dbus_message_bytes_needed (guchar  *blob,
+  * order that the message was in can be retrieved using
+  * g_dbus_message_get_byte_order().
+  *
++ * If the @blob cannot be parsed, contains invalid fields, or contains invalid
++ * headers, %G_IO_ERROR_INVALID_ARGUMENT will be returned.
++ *
+  * Returns: A new #GDBusMessage or %NULL if @error is set. Free with
+  * g_object_unref().
+  *
+-- 
+2.18.1
+
+
+From 968f1c6cad559de7497210ad1854bfaf958a7373 Mon Sep 17 00:00:00 2001
+From: Philip Withnall <withnall@endlessm.com>
+Date: Tue, 18 Sep 2018 14:57:51 +0100
+Subject: [PATCH 09/15] gdbusmessage: Fix a typo in a documentation comment
+
+Signed-off-by: Philip Withnall <withnall@endlessm.com>
+---
+ gio/gdbusmessage.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/gio/gdbusmessage.c b/gio/gdbusmessage.c
+index 97888ec57..b1d73fad5 100644
+--- a/gio/gdbusmessage.c
++++ b/gio/gdbusmessage.c
+@@ -1929,7 +1929,7 @@ parse_value_from_blob (GMemoryBuffer       *buf,
+ 
+ /**
+  * g_dbus_message_bytes_needed:
+- * @blob: (array length=blob_len) (element-type guint8): A blob represent a binary D-Bus message.
++ * @blob: (array length=blob_len) (element-type guint8): A blob representing a binary D-Bus message.
+  * @blob_len: The length of @blob (must be at least 16).
+  * @error: Return location for error or %NULL.
+  *
+-- 
+2.18.1
+
+
+From e03d5a335b1c5f19644e6df3002840b296c35cc5 Mon Sep 17 00:00:00 2001
+From: Philip Withnall <withnall@endlessm.com>
+Date: Tue, 18 Sep 2018 15:17:44 +0100
+Subject: [PATCH 10/15] gdbusmessage: Check for valid GVariantType when parsing
+ a variant blob
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The code was checking whether the signature provided by the blob was a
+valid D-Bus signature — but that’s a superset of a valid GVariant type
+string, since a D-Bus signature is zero or more complete types. A
+GVariant type string is exactly one complete type.
+
+This meant that a D-Bus message with a header field containing a variant
+with an empty type signature (for example) could cause a critical
+warning in the code parsing it.
+
+Fix that by checking whether the string is a valid type string too.
+
+Unit test included.
+
+oss-fuzz#9810
+
+Signed-off-by: Philip Withnall <withnall@endlessm.com>
+---
+ gio/gdbusmessage.c              |  5 +-
+ gio/tests/gdbus-serialization.c | 89 +++++++++++++++++++++++++++++++--
+ 2 files changed, 90 insertions(+), 4 deletions(-)
+
+diff --git a/gio/gdbusmessage.c b/gio/gdbusmessage.c
+index b1d73fad5..169e6fd15 100644
+--- a/gio/gdbusmessage.c
++++ b/gio/gdbusmessage.c
+@@ -1846,8 +1846,11 @@ parse_value_from_blob (GMemoryBuffer       *buf,
+               sig = read_string (buf, (gsize) siglen, &local_error);
+               if (sig == NULL)
+                 goto fail;
+-              if (!g_variant_is_signature (sig))
++              if (!g_variant_is_signature (sig) ||
++                  !g_variant_type_string_is_valid (sig))
+                 {
++                  /* A D-Bus signature can contain zero or more complete types,
++                   * but a GVariant has to be exactly one complete type. */
+                   g_set_error (&local_error,
+                                G_IO_ERROR,
+                                G_IO_ERROR_INVALID_ARGUMENT,
+diff --git a/gio/tests/gdbus-serialization.c b/gio/tests/gdbus-serialization.c
+index 3cdade6d7..5848442e0 100644
+--- a/gio/tests/gdbus-serialization.c
++++ b/gio/tests/gdbus-serialization.c
+@@ -1105,7 +1105,7 @@ static void
+ test_message_parse_non_signature_header (void)
+ {
+   const guint8 data[] = {
+-    0x6c,  /* byte order */
++    'l',  /* little-endian byte order */
+     0x04,  /* message type */
+     0x0f,  /* message flags */
+     0x01,  /* major protocol version */
+@@ -1115,11 +1115,90 @@ test_message_parse_non_signature_header (void)
+      * (things start to be invalid below here) */
+     0x02, 0x00, 0x00, 0x00,  /* array length (in bytes) */
+       G_DBUS_MESSAGE_HEADER_FIELD_SIGNATURE, /* array key */
+-      /* GVariant array value: */
++      /* Variant array value: */
+       0x04, /* signature length */
+       'd', 0x00, 0x00, 'F',  /* signature (invalid) */
+       0x00,  /* nul terminator */
+-      /* (GVariant array value payload missing) */
++      /* (Variant array value payload missing) */
++    /* (message body length missing) */
++  };
++  gsize size = sizeof (data);
++  GDBusMessage *message = NULL;
++  GError *local_error = NULL;
++
++  message = g_dbus_message_new_from_blob ((guchar *) data, size,
++                                          G_DBUS_CAPABILITY_FLAGS_NONE,
++                                          &local_error);
++  g_assert_error (local_error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
++  g_assert_null (message);
++
++  g_clear_error (&local_error);
++}
++
++/* ---------------------------------------------------------------------------------------------------- */
++
++/* Test that an invalid header in a D-Bus message (specifically, containing a
++ * variant with an empty type signature) is gracefully handled with an error
++ * rather than a crash. The set of bytes here come directly from fuzzer
++ * output. */
++static void
++test_message_parse_empty_signature_header (void)
++{
++  const guint8 data[] = {
++    'l',  /* little-endian byte order */
++    0x20,  /* message type */
++    0x20,  /* message flags */
++    0x01,  /* major protocol version */
++    0x20, 0x20, 0x20, 0x00,  /* body length (invalid) */
++    0x20, 0x20, 0x20, 0x20,  /* message serial */
++    /* a{yv} of header fields:
++     * (things start to be even more invalid below here) */
++    0x20, 0x20, 0x20, 0x00,  /* array length (in bytes) */
++      0x20, /* array key */
++      /* Variant array value: */
++      0x00, /* signature length */
++      0x00,  /* nul terminator */
++      /* (Variant array value payload missing) */
++    /* (message body length missing) */
++  };
++  gsize size = sizeof (data);
++  GDBusMessage *message = NULL;
++  GError *local_error = NULL;
++
++  message = g_dbus_message_new_from_blob ((guchar *) data, size,
++                                          G_DBUS_CAPABILITY_FLAGS_NONE,
++                                          &local_error);
++  g_assert_error (local_error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
++  g_assert_null (message);
++
++  g_clear_error (&local_error);
++}
++
++/* ---------------------------------------------------------------------------------------------------- */
++
++/* Test that an invalid header in a D-Bus message (specifically, containing a
++ * variant with a type signature containing multiple complete types) is
++ * gracefully handled with an error rather than a crash. The set of bytes here
++ * come directly from fuzzer output. */
++static void
++test_message_parse_multiple_signature_header (void)
++{
++  const guint8 data[] = {
++    'l',  /* little-endian byte order */
++    0x20,  /* message type */
++    0x20,  /* message flags */
++    0x01,  /* major protocol version */
++    0x20, 0x20, 0x20, 0x00,  /* body length (invalid) */
++    0x20, 0x20, 0x20, 0x20,  /* message serial */
++    /* a{yv} of header fields:
++     * (things start to be even more invalid below here) */
++    0x20, 0x20, 0x20, 0x00,  /* array length (in bytes) */
++      0x20, /* array key */
++      /* Variant array value: */
++      0x02, /* signature length */
++      'b', 'b',  /* two complete types */
++      0x00,  /* nul terminator */
++      /* (Variant array value payload missing) */
+     /* (message body length missing) */
+   };
+   gsize size = sizeof (data);
+@@ -1158,6 +1237,10 @@ main (int   argc,
+   g_test_add_func ("/gdbus/message-serialize/double-array", test_double_array);
+   g_test_add_func ("/gdbus/message-parse/non-signature-header",
+                    test_message_parse_non_signature_header);
++  g_test_add_func ("/gdbus/message-parse/empty-signature-header",
++                   test_message_parse_empty_signature_header);
++  g_test_add_func ("/gdbus/message-parse/multiple-signature-header",
++                   test_message_parse_multiple_signature_header);
+ 
+   return g_test_run();
+ }
+-- 
+2.18.1
+
+
+From 5f3b3936624e82c1070fcf42989d1c892a51efb1 Mon Sep 17 00:00:00 2001
+From: Philip Withnall <withnall@endlessm.com>
+Date: Tue, 18 Sep 2018 15:21:51 +0100
+Subject: [PATCH 11/15] gvariant: Clarify internal documentation about GVariant
+ type strings
+
+Signed-off-by: Philip Withnall <withnall@endlessm.com>
+---
+ glib/gvariant-serialiser.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/glib/gvariant-serialiser.c b/glib/gvariant-serialiser.c
+index bbdcc7a0c..ccf96b4aa 100644
+--- a/glib/gvariant-serialiser.c
++++ b/glib/gvariant-serialiser.c
+@@ -1717,7 +1717,9 @@ g_variant_serialiser_is_object_path (gconstpointer data,
+  * Performs the checks for being a valid string.
+  *
+  * Also, ensures that @data is a valid D-Bus type signature, as per the
+- * D-Bus specification.
++ * D-Bus specification. Note that this means the empty string is valid, as the
++ * D-Bus specification defines a signature as “zero or more single complete
++ * types”.
+  */
+ gboolean
+ g_variant_serialiser_is_signature (gconstpointer data,
+-- 
+2.18.1
+
+
+From c2c9c7fa3bbdc43a9415097a247352d8f5356810 Mon Sep 17 00:00:00 2001
+From: Philip Withnall <withnall@endlessm.com>
+Date: Thu, 20 Sep 2018 17:41:10 +0100
+Subject: [PATCH 12/15] tests: Tidy up GError handling in gdbus-serialization
+ test
+
+This introduces no functional changes; just a bit of code tidying.
+
+Signed-off-by: Philip Withnall <withnall@endlessm.com>
+---
+ gio/tests/gdbus-serialization.c | 35 +++++++++++----------------------
+ 1 file changed, 12 insertions(+), 23 deletions(-)
+
+diff --git a/gio/tests/gdbus-serialization.c b/gio/tests/gdbus-serialization.c
+index 5848442e0..ba16bf3c8 100644
+--- a/gio/tests/gdbus-serialization.c
++++ b/gio/tests/gdbus-serialization.c
+@@ -857,7 +857,7 @@ message_serialize_header_checks (void)
+ {
+   GDBusMessage *message;
+   GDBusMessage *reply;
+-  GError *error;
++  GError *error = NULL;
+   guchar *blob;
+   gsize blob_size;
+ 
+@@ -865,11 +865,10 @@ message_serialize_header_checks (void)
+    * check we can't serialize messages with INVALID type
+    */
+   message = g_dbus_message_new ();
+-  error = NULL;
+   blob = g_dbus_message_to_blob (message, &blob_size, G_DBUS_CAPABILITY_FLAGS_NONE, &error);
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: type is INVALID");
+-  g_error_free (error);
++  g_clear_error (&error);
+   g_assert (blob == NULL);
+   g_object_unref (message);
+ 
+@@ -894,49 +893,44 @@ message_serialize_header_checks (void)
+   /* ----- */
+   /* interface NULL => error */
+   g_dbus_message_set_interface (message, NULL);
+-  error = NULL;
+   blob = g_dbus_message_to_blob (message, &blob_size, G_DBUS_CAPABILITY_FLAGS_NONE, &error);
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: SIGNAL message: PATH, INTERFACE or MEMBER header field is missing");
+-  g_error_free (error);
++  g_clear_error (&error);
+   g_assert (blob == NULL);
+   /* interface reserved value => error */
+   g_dbus_message_set_interface (message, "org.freedesktop.DBus.Local");
+-  error = NULL;
+   blob = g_dbus_message_to_blob (message, &blob_size, G_DBUS_CAPABILITY_FLAGS_NONE, &error);
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: SIGNAL message: The INTERFACE header field is using the reserved value org.freedesktop.DBus.Local");
+-  g_error_free (error);
++  g_clear_error (&error);
+   g_assert (blob == NULL);
+   /* reset interface */
+   g_dbus_message_set_interface (message, "The.Interface");
+   /* ----- */
+   /* path NULL => error */
+   g_dbus_message_set_path (message, NULL);
+-  error = NULL;
+   blob = g_dbus_message_to_blob (message, &blob_size, G_DBUS_CAPABILITY_FLAGS_NONE, &error);
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: SIGNAL message: PATH, INTERFACE or MEMBER header field is missing");
+-  g_error_free (error);
++  g_clear_error (&error);
+   g_assert (blob == NULL);
+   /* path reserved value => error */
+   g_dbus_message_set_path (message, "/org/freedesktop/DBus/Local");
+-  error = NULL;
+   blob = g_dbus_message_to_blob (message, &blob_size, G_DBUS_CAPABILITY_FLAGS_NONE, &error);
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: SIGNAL message: The PATH header field is using the reserved value /org/freedesktop/DBus/Local");
+-  g_error_free (error);
++  g_clear_error (&error);
+   g_assert (blob == NULL);
+   /* reset path */
+   g_dbus_message_set_path (message, "/the/path");
+   /* ----- */
+   /* member NULL => error */
+   g_dbus_message_set_member (message, NULL);
+-  error = NULL;
+   blob = g_dbus_message_to_blob (message, &blob_size, G_DBUS_CAPABILITY_FLAGS_NONE, &error);
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: SIGNAL message: PATH, INTERFACE or MEMBER header field is missing");
+-  g_error_free (error);
++  g_clear_error (&error);
+   g_assert (blob == NULL);
+   /* reset member */
+   g_dbus_message_set_member (message, "TheMember");
+@@ -951,22 +945,20 @@ message_serialize_header_checks (void)
+   /* ----- */
+   /* path NULL => error */
+   g_dbus_message_set_path (message, NULL);
+-  error = NULL;
+   blob = g_dbus_message_to_blob (message, &blob_size, G_DBUS_CAPABILITY_FLAGS_NONE, &error);
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: METHOD_CALL message: PATH or MEMBER header field is missing");
+-  g_error_free (error);
++  g_clear_error (&error);
+   g_assert (blob == NULL);
+   /* reset path */
+   g_dbus_message_set_path (message, "/the/path");
+   /* ----- */
+   /* member NULL => error */
+   g_dbus_message_set_member (message, NULL);
+-  error = NULL;
+   blob = g_dbus_message_to_blob (message, &blob_size, G_DBUS_CAPABILITY_FLAGS_NONE, &error);
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: METHOD_CALL message: PATH or MEMBER header field is missing");
+-  g_error_free (error);
++  g_clear_error (&error);
+   g_assert (blob == NULL);
+   /* reset member */
+   g_dbus_message_set_member (message, "TheMember");
+@@ -983,11 +975,10 @@ message_serialize_header_checks (void)
+   reply = g_dbus_message_new_method_reply (message);
+   g_assert_cmpint (g_dbus_message_get_reply_serial (reply), ==, 42);
+   g_dbus_message_set_header (reply, G_DBUS_MESSAGE_HEADER_FIELD_REPLY_SERIAL, NULL);
+-  error = NULL;
+   blob = g_dbus_message_to_blob (reply, &blob_size, G_DBUS_CAPABILITY_FLAGS_NONE, &error);
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: METHOD_RETURN message: REPLY_SERIAL header field is missing");
+-  g_error_free (error);
++  g_clear_error (&error);
+   g_assert (blob == NULL);
+   g_object_unref (reply);
+   /* method error - first nuke ERROR_NAME, then REPLY_SERIAL */
+@@ -995,21 +986,19 @@ message_serialize_header_checks (void)
+   g_assert_cmpint (g_dbus_message_get_reply_serial (reply), ==, 42);
+   /* nuke ERROR_NAME */
+   g_dbus_message_set_error_name (reply, NULL);
+-  error = NULL;
+   blob = g_dbus_message_to_blob (reply, &blob_size, G_DBUS_CAPABILITY_FLAGS_NONE, &error);
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: ERROR message: REPLY_SERIAL or ERROR_NAME header field is missing");
+-  g_error_free (error);
++  g_clear_error (&error);
+   g_assert (blob == NULL);
+   /* reset ERROR_NAME */
+   g_dbus_message_set_error_name (reply, "Some.Error.Name");
+   /* nuke REPLY_SERIAL */
+   g_dbus_message_set_header (reply, G_DBUS_MESSAGE_HEADER_FIELD_REPLY_SERIAL, NULL);
+-  error = NULL;
+   blob = g_dbus_message_to_blob (reply, &blob_size, G_DBUS_CAPABILITY_FLAGS_NONE, &error);
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: ERROR message: REPLY_SERIAL or ERROR_NAME header field is missing");
+-  g_error_free (error);
++  g_clear_error (&error);
+   g_assert (blob == NULL);
+   g_object_unref (reply);
+   g_object_unref (message);
+-- 
+2.18.1
+
+
+From 8e60b3dde0da1162310031010b009cded4ae911f Mon Sep 17 00:00:00 2001
+From: Philip Withnall <withnall@endlessm.com>
+Date: Thu, 20 Sep 2018 17:42:05 +0100
+Subject: [PATCH 13/15] tests: Use g_assert_null() in gdbus-serialization test
+
+This introduces no real functional changes (except when compiling with
+G_DISABLE_ASSERT, in which case it fixes the test). Mostly just a code
+cleanup.
+
+Signed-off-by: Philip Withnall <withnall@endlessm.com>
+---
+ gio/tests/gdbus-serialization.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/gio/tests/gdbus-serialization.c b/gio/tests/gdbus-serialization.c
+index ba16bf3c8..e7c402e70 100644
+--- a/gio/tests/gdbus-serialization.c
++++ b/gio/tests/gdbus-serialization.c
+@@ -869,7 +869,7 @@ message_serialize_header_checks (void)
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: type is INVALID");
+   g_clear_error (&error);
+-  g_assert (blob == NULL);
++  g_assert_null (blob);
+   g_object_unref (message);
+ 
+   /*
+@@ -897,14 +897,14 @@ message_serialize_header_checks (void)
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: SIGNAL message: PATH, INTERFACE or MEMBER header field is missing");
+   g_clear_error (&error);
+-  g_assert (blob == NULL);
++  g_assert_null (blob);
+   /* interface reserved value => error */
+   g_dbus_message_set_interface (message, "org.freedesktop.DBus.Local");
+   blob = g_dbus_message_to_blob (message, &blob_size, G_DBUS_CAPABILITY_FLAGS_NONE, &error);
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: SIGNAL message: The INTERFACE header field is using the reserved value org.freedesktop.DBus.Local");
+   g_clear_error (&error);
+-  g_assert (blob == NULL);
++  g_assert_null (blob);
+   /* reset interface */
+   g_dbus_message_set_interface (message, "The.Interface");
+   /* ----- */
+@@ -914,14 +914,14 @@ message_serialize_header_checks (void)
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: SIGNAL message: PATH, INTERFACE or MEMBER header field is missing");
+   g_clear_error (&error);
+-  g_assert (blob == NULL);
++  g_assert_null (blob);
+   /* path reserved value => error */
+   g_dbus_message_set_path (message, "/org/freedesktop/DBus/Local");
+   blob = g_dbus_message_to_blob (message, &blob_size, G_DBUS_CAPABILITY_FLAGS_NONE, &error);
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: SIGNAL message: The PATH header field is using the reserved value /org/freedesktop/DBus/Local");
+   g_clear_error (&error);
+-  g_assert (blob == NULL);
++  g_assert_null (blob);
+   /* reset path */
+   g_dbus_message_set_path (message, "/the/path");
+   /* ----- */
+@@ -931,7 +931,7 @@ message_serialize_header_checks (void)
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: SIGNAL message: PATH, INTERFACE or MEMBER header field is missing");
+   g_clear_error (&error);
+-  g_assert (blob == NULL);
++  g_assert_null (blob);
+   /* reset member */
+   g_dbus_message_set_member (message, "TheMember");
+   /* ----- */
+@@ -949,7 +949,7 @@ message_serialize_header_checks (void)
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: METHOD_CALL message: PATH or MEMBER header field is missing");
+   g_clear_error (&error);
+-  g_assert (blob == NULL);
++  g_assert_null (blob);
+   /* reset path */
+   g_dbus_message_set_path (message, "/the/path");
+   /* ----- */
+@@ -959,7 +959,7 @@ message_serialize_header_checks (void)
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: METHOD_CALL message: PATH or MEMBER header field is missing");
+   g_clear_error (&error);
+-  g_assert (blob == NULL);
++  g_assert_null (blob);
+   /* reset member */
+   g_dbus_message_set_member (message, "TheMember");
+   /* ----- */
+@@ -979,7 +979,7 @@ message_serialize_header_checks (void)
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: METHOD_RETURN message: REPLY_SERIAL header field is missing");
+   g_clear_error (&error);
+-  g_assert (blob == NULL);
++  g_assert_null (blob);
+   g_object_unref (reply);
+   /* method error - first nuke ERROR_NAME, then REPLY_SERIAL */
+   reply = g_dbus_message_new_method_error (message, "Some.Error.Name", "the message");
+@@ -990,7 +990,7 @@ message_serialize_header_checks (void)
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: ERROR message: REPLY_SERIAL or ERROR_NAME header field is missing");
+   g_clear_error (&error);
+-  g_assert (blob == NULL);
++  g_assert_null (blob);
+   /* reset ERROR_NAME */
+   g_dbus_message_set_error_name (reply, "Some.Error.Name");
+   /* nuke REPLY_SERIAL */
+@@ -999,7 +999,7 @@ message_serialize_header_checks (void)
+   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
+   g_assert_cmpstr (error->message, ==, "Cannot serialize message: ERROR message: REPLY_SERIAL or ERROR_NAME header field is missing");
+   g_clear_error (&error);
+-  g_assert (blob == NULL);
++  g_assert_null (blob);
+   g_object_unref (reply);
+   g_object_unref (message);
+ }
+-- 
+2.18.1
+
+From 31747d10a6258faf5062e3fd3f0760de4723a05f Mon Sep 17 00:00:00 2001
+From: Philip Withnall <withnall@endlessm.com>
+Date: Mon, 1 Oct 2018 19:52:14 +0100
+Subject: [PATCH 14/20] gutf8: Add a g_utf8_validate_len() function
+
+This is a variant of g_utf8_validate() which requires the length to be
+specified, thereby allowing string lengths up to G_MAXSIZE rather than
+just G_MAXSSIZE.
+
+--- a/glib/gunicodeprivate.h	2018-11-14 14:57:13.493623014 -0800
++++ b/glib/gunicodeprivate.h	2018-11-14 14:57:46.802077109 -0800
+@@ -20,6 +20,7 @@
+ #define __G_UNICODE_PRIVATE_H__
+ 
+ #include "gtypes.h"
++#include "gunicode.h"
+ 
+ G_BEGIN_DECLS
+ 
+@@ -27,6 +28,10 @@
+                                 gssize          max_len,
+ 				GNormalizeMode  mode);
+ 
++gboolean _g_utf8_validate_len (const gchar  *str,
++                               gsize         max_len,
++                               const gchar **end);
++
+ G_END_DECLS
+ 
+ #endif /* __G_UNICODE_PRIVATE_H__ */
+--- a/glib/gutf8.c	2018-11-14 14:58:12.114107404 -0800
++++ b/glib/gutf8.c	2018-11-14 15:00:27.490080709 -0800
+@@ -39,6 +39,7 @@
+ #include "gtypes.h"
+ #include "gthread.h"
+ #include "glibintl.h"
++#include "gunicodeprivate.h"
+ 
+ #define UTF8_COMPUTE(Char, Mask, Len)					      \
+   if (Char < 128)							      \
+@@ -1655,16 +1656,48 @@
+ {
+   const gchar *p;
+ 
+-  if (max_len < 0)
+-    p = fast_validate (str);
++  if (max_len >= 0)
++    return _g_utf8_validate_len (str, max_len, end);
++
++  p = fast_validate (str);
++
++  if (end)
++    *end = p;
++
++  if (*p != '\0')
++    return FALSE;
+   else
+-    p = fast_validate_len (str, max_len);
++    return TRUE;
++}
+ 
++/*
++ * _g_utf8_validate_len:
++ * @str: (array length=max_len) (element-type guint8): a pointer to character data
++ * @max_len: max bytes to validate
++ * @end: (out) (optional) (transfer none): return location for end of valid data
++ *
++ * Validates UTF-8 encoded text.
++ *
++ * As with g_utf8_validate(), but @max_len must be set, and hence this function
++ * will always return %FALSE if any of the bytes of @str are nul.
++ *
++ * Returns: %TRUE if the text was valid UTF-8
++ * Since: 2.60 (backported to 2.52)
++ */
++gboolean
++_g_utf8_validate_len (const char   *str,
++                      gsize         max_len,
++                      const gchar **end)
++
++{
++  const gchar *p;
++
++  p = fast_validate_len (str, max_len);
++
+   if (end)
+     *end = p;
+ 
+-  if ((max_len >= 0 && p != str + max_len) ||
+-      (max_len < 0 && *p != '\0'))
++  if (p != str + max_len)
+     return FALSE;
+   else
+     return TRUE;
+--- a/glib/giochannel.c	2018-11-14 15:03:20.124158562 -0800
++++ b/glib/giochannel.c	2018-11-14 15:04:06.807690638 -0800
+@@ -39,6 +39,7 @@
+ #include "gstrfuncs.h"
+ #include "gtestutils.h"
+ #include "glibintl.h"
++#include "gunicodeprivate.h"
+ 
+ 
+ /**
+@@ -2322,7 +2323,7 @@
+ 
+               /* UTF-8, just validate, emulate g_iconv */
+ 
+-              if (!g_utf8_validate (from_buf, try_len, &badchar))
++              if (!_g_utf8_validate_len (from_buf, try_len, &badchar))
+                 {
+                   gunichar try_char;
+                   gsize incomplete_len = from_buf + try_len - badchar;
+--- a/glib/gmarkup.c	2018-11-14 15:04:28.086245886 -0800
++++ b/glib/gmarkup.c	2018-11-14 15:05:32.140475428 -0800
+@@ -35,6 +35,7 @@
+ #include "gtestutils.h"
+ #include "glibintl.h"
+ #include "gthread.h"
++#include "gunicodeprivate.h"
+ 
+ /**
+  * SECTION:markup
+@@ -455,7 +456,7 @@
+ {
+   const gchar *p = name;
+ 
+-  if (!g_utf8_validate (name, strlen (name), NULL))
++  if (!g_utf8_validate (name, -1, NULL))
+     {
+       set_error (context, error, G_MARKUP_ERROR_BAD_UTF8,
+                  _("Invalid UTF-8 encoded text in name - not valid '%s'"), name);
+@@ -538,7 +539,7 @@
+                gint                  len,
+                GError              **error)
+ {
+-  if (!g_utf8_validate (p, len, NULL))
++  if (!_g_utf8_validate_len (p, len, NULL))
+     {
+       set_error (context, error, G_MARKUP_ERROR_BAD_UTF8,
+                  _("Invalid UTF-8 encoded text in name - not valid '%s'"), p);
+--- a/glib/gvariant-serialiser.c	2018-11-14 15:05:46.246385356 -0800
++++ b/glib/gvariant-serialiser.c	2018-11-14 15:06:33.560267942 -0800
+@@ -22,6 +22,7 @@
+ #include "config.h"
+ 
+ #include "gvariant-serialiser.h"
++#include "gunicodeprivate.h"
+ 
+ #include <glib/gvariant-internal.h>
+ #include <glib/gtestutils.h>
+@@ -1652,7 +1653,7 @@
+   if (*expected_end != '\0')
+     return FALSE;
+ 
+-  g_utf8_validate_len (data, size, &end);
++  _g_utf8_validate_len (data, size, &end);
+ 
+   return end == expected_end;
+ }
+
+From 97674cceeba85ae0d4dec3cd85bb3442425cf091 Mon Sep 17 00:00:00 2001
+From: Philip Withnall <withnall@endlessm.com>
+Date: Fri, 26 Oct 2018 23:21:46 +1300
+Subject: [PATCH 19/20] gmarkup: Fix validation of element names
+
+Previously, the element name validation only happened if a start_element
+callback was specified on the context. Element name validation should be
+unconditional.
+
+This was causing test-5.gmarkup to fail when run against the improved
+tests in the following commit.
+
+Signed-off-by: Philip Withnall <withnall@endlessm.com>
+---
+ glib/gmarkup.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+--- a/glib/gmarkup.c	2018-11-14 15:08:40.131532423 -0800
++++ b/glib/gmarkup.c	2018-11-14 15:09:40.316587671 -0800
+@@ -1037,8 +1037,10 @@
+   tmp_error = NULL;
+   start_name = current_element (context);
+ 
+-  if (context->parser->start_element &&
+-      name_validate (context, start_name, error))
++  if (!name_validate (context, start_name, error))
++    return;
++
++  if (context->parser->start_element)
+     (* context->parser->start_element) (context,
+                                         start_name,
+                                         (const gchar **)attr_names,
