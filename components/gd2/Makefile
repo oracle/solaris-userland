@@ -67,6 +67,11 @@ COMPONENT_POST_INSTALL_ACTION.32 += \
 	$(GSED) -i -e 's|$(USRBINDIR)/$(MACH32)|$(USRBINDIR)|' \
 		$(PROTOUSRBINDIR)/$(MACH32)/gdlib-config;
 
+# When we update to a version of libgd that has this test in the
+# tarball, this can be removed along with files/php_bug_75571.gif
+COMPONENT_PRE_TEST_ACTION = \
+	cp files/php_bug_75571.gif $(@D)/tests/gif/
+
 COMPONENT_TEST_CMD = \
 	cmake -DBUILD_TEST=1 .; \
 	(cd $(@D)/tests; gmake); \
