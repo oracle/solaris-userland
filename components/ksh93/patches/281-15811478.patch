@@ -1,0 +1,14 @@
+# This patch has been developed inhouse and has not been submitted to
+# the community.  This is a Solaris specific patch to remove the wrong
+# and unneeded RUNPATH.
+--- INIT.2012-08-01.old/src/cmd/INIT/make.probe	2011-06-01 12:06:48.000000000 +0200
++++ INIT.2012-08-01/src/cmd/INIT/make.probe	2018-11-22 11:36:13.653783183 +0100
+@@ -26,7 +26,7 @@
+ probe_ldmap="'-Wl,-M' '-Qoption ld -M' '-Wl,-m' '-m'"
+ probe_ldorigin="-Wl,-z,origin"
+ probe_ldrecord='-zrecord -zignore -Wl,-zrecord -Wl,-zignore'
+-probe_ldrunpath="-Wl,-R, -R -Wl,-rpath, -L"
++probe_ldrunpath=""
+ probe_ldstrip="'-s -mr' -Wl,-s"
+ probe_lib="a lib"
+ probe_lib_append="/usr/lib/pa1.1"
