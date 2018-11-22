@@ -19,7 +19,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 . /lib/svc/share/smf_include.sh
@@ -123,7 +123,6 @@ mysql_pinger() {
 mysql_start() 	{
 	(
 	exec 2>&1
-	set -x
 	"${MYSQLBIN}"/mysqld_safe --defaults-file="${MYSQLCNF}" --user=mysql --datadir="${MYSQLDATA}" --pid-file="${PIDFILE}" > /dev/null &
 	
 	if mysql_pinger $! ; then
