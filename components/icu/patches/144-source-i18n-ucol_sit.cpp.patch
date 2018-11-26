@@ -1,0 +1,93 @@
+From https://github.com/unicode-org/icu/commit/5c711e36e8e6a9810bb689ace16f698d1d3ab9ce
+
+From 5c711e36e8e6a9810bb689ace16f698d1d3ab9ce Mon Sep 17 00:00:00 2001
+From: Shane Carr <shane@unicode.org>
+Date: Thu, 28 Sep 2017 01:00:43 +0000
+Subject: [PATCH] ICU-13327 Fixing buffer overflow in NumberingSystem
+ constructor.
+
+X-SVN-Rev: 40494
+---
+ icu4c/source/i18n/numsys.cpp            |  7 +++++++
+ icu4c/source/test/intltest/numfmtst.cpp | 22 ++++++++++++++++++++++
+ icu4c/source/test/intltest/numfmtst.h   |  1 +
+ 3 files changed, 30 insertions(+)
+
+diff --git a/icu4c/source/i18n/numsys.cpp b/icu4c/source/i18n/numsys.cpp
+index a05c7e093f6..893ba53dcaa 100644
+--- a/icu/source/i18n/numsys.cpp
++++ b/icu/source/i18n/numsys.cpp
+@@ -25,6 +25,7 @@
+ #include "unicode/schriter.h"
+ #include "unicode/numsys.h"
+ #include "cstring.h"
++#include "uassert.h"
+ #include "uresimp.h"
+ #include "numsys_impl.h"
+ 
+@@ -115,7 +116,13 @@ NumberingSystem::createInstance(const Locale & inLocale, UErrorCode& status) {
+     UBool usingFallback = FALSE;
+     char buffer[ULOC_KEYWORDS_CAPACITY];
+     int32_t count = inLocale.getKeywordValue("numbers",buffer, sizeof(buffer),status);
++    if (U_FAILURE(status) || status == U_STRING_NOT_TERMINATED_WARNING) {
++        // the "numbers" keyword exceeds ULOC_KEYWORDS_CAPACITY; ignore and use default.
++        count = 0;
++        status = U_ZERO_ERROR;
++    }
+     if ( count > 0 ) { // @numbers keyword was specified in the locale
++        U_ASSERT(count < ULOC_KEYWORDS_CAPACITY);
+         buffer[count] = '\0'; // Make sure it is null terminated.
+         if ( !uprv_strcmp(buffer,gDefault) || !uprv_strcmp(buffer,gNative) || 
+              !uprv_strcmp(buffer,gTraditional) || !uprv_strcmp(buffer,gFinance)) {
+diff --git a/icu4c/source/test/intltest/numfmtst.cpp b/icu4c/source/test/intltest/numfmtst.cpp
+index efddc16e0e6..f10e57c0630 100644
+--- a/icu/source/test/intltest/numfmtst.cpp
++++ b/icu/source/test/intltest/numfmtst.cpp
+@@ -621,6 +621,7 @@ void NumberFormatTest::runIndexedTest( int32_t index, UBool exec, const char* &n
+   TESTCASE_AUTO(Test11475_signRecognition);
+   TESTCASE_AUTO(Test11640_getAffixes);
+   TESTCASE_AUTO(Test11649_toPatternWithMultiCurrency);
++  TESTCASE_AUTO(Test13327_numberingSystemBufferOverflow);
+   TESTCASE_AUTO_END;
+ }
+ 
+@@ -8785,6 +8786,27 @@ void NumberFormatTest::Test11649_toPatternWithMultiCurrency() {
+     assertEquals("", "US dollars 12.34", fmt2.format(12.34, appendTo));
+ }
+ 
++void NumberFormatTest::Test13327_numberingSystemBufferOverflow() {
++    UErrorCode status;
++    for (int runId = 0; runId < 2; runId++) {
++        // Construct a locale string with a very long "numbers" value.
++        // The first time, make the value length exactly equal to ULOC_KEYWORDS_CAPACITY.
++        // The second time, make it exceed ULOC_KEYWORDS_CAPACITY.
++        int extraLength = (runId == 0) ? 0 : 5;
++
++        CharString localeId("en@numbers=", status);
++        for (int i = 0; i < ULOC_KEYWORDS_CAPACITY + extraLength; i++) {
++            localeId.append('x', status);
++        }
++        assertSuccess("Constructing locale string", status);
++        Locale locale(localeId.data());
++
++        NumberingSystem* ns = NumberingSystem::createInstance(locale, status);
++        assertFalse("Should not be null", ns == nullptr);
++        assertSuccess("Should create with no error", status);
++    }
++}
++
+ 
+ void NumberFormatTest::verifyFieldPositionIterator(
+         NumberFormatTest_Attributes *expected, FieldPositionIterator &iter) {
+diff --git a/icu4c/source/test/intltest/numfmtst.h b/icu4c/source/test/intltest/numfmtst.h
+index 17a411a28d5..545b4961c0f 100644
+--- a/icu/source/test/intltest/numfmtst.h
++++ b/icu/source/test/intltest/numfmtst.h
+@@ -215,6 +215,7 @@ class NumberFormatTest: public CalendarTimeZoneTest {
+     void Test11475_signRecognition();
+     void Test11640_getAffixes();
+     void Test11649_toPatternWithMultiCurrency();
++    void Test13327_numberingSystemBufferOverflow();
+ 
+     void checkExceptionIssue11735();
+ 
