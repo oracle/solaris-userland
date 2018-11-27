@@ -8,9 +8,9 @@ One of the tests need patching:
 
 Unclear whether this patch should be sent upstream.
 
---- git-2.14.2/t/t4018-diff-funcname.sh.orig	2017-10-16 00:03:59.870188183 -0700
-+++ git-2.14.2/t/t4018-diff-funcname.sh	2017-10-16 00:17:46.601802777 -0700
-@@ -81,8 +81,11 @@
+--- git-2.19.2/t/t4018-diff-funcname.sh.orig	2018-11-27 04:21:46.533262311 -0800
++++ git-2.19.2/t/t4018-diff-funcname.sh	2018-11-27 04:24:26.447516195 -0800
+@@ -82,8 +82,11 @@
  
  	# add all test files to the index
  	(
@@ -32,10 +32,10 @@ up automatically after running the tests, and we can emit those results to
 the master file.  This might be interesting to upstream, but is really
 specific to running the tests in an external framework.
 
---- git-2.14.2/t/Makefile.orig	2017-10-16 00:09:16.883704457 -0700
-+++ git-2.14.2/t/Makefile	2017-10-16 00:11:35.639362420 -0700
-@@ -35,6 +35,9 @@
- test: pre-clean $(TEST_LINT)
+--- git-2.19.2/t/Makefile.orig	2018-11-27 06:58:47.179350591 -0800
++++ git-2.19.2/t/Makefile	2018-11-27 07:00:38.487947976 -0800
+@@ -42,6 +42,9 @@
+ test: pre-clean check-chainlint $(TEST_LINT)
  	$(MAKE) aggregate-results-and-cleanup
  
 +test-noclean: pre-clean $(TEST_LINT)
@@ -44,7 +44,7 @@ specific to running the tests in an external framework.
  failed:
  	@failed=$$(cd '$(TEST_RESULTS_DIRECTORY_SQ)' && \
  		grep -l '^failed [1-9]' *.counts | \
-@@ -74,6 +77,8 @@
+@@ -93,6 +96,8 @@
  test-lint-shell-syntax:
  	@'$(PERL_PATH_SQ)' check-non-portable-shell.pl $(T) $(THELPERS)
  

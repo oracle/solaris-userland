@@ -29,15 +29,15 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		git
-COMPONENT_VERSION=	2.15.3
+COMPONENT_VERSION=	2.19.2
 COMPONENT_PROJECT_URL=	http://git-scm.com/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9f0ea08b3bd5bfb243b50305bd2ef712f1e40f5c611d169f1137eafdaaaaa6d8
+    sha256:fce9a3a3297db5f3756c4553a2fc1fec209ee08178f8491e76ff4ff8fe7b8be9	
 COMPONENT_ARCHIVE_URL=	https://www.kernel.org/pub/software/scm/git/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	5350
 
-TPNO=			46503
+TPNO=			47602
 
 #
 # man pages are a separate archive
@@ -45,7 +45,7 @@ TPNO=			46503
 COMPONENT_SRC_1 =	$(COMPONENT_NAME)-manpages-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_1 =	$(COMPONENT_SRC_1).tar.xz
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:04e640b67cb65c77efeb6524ea47f9318813e0872458f26874005c8abc4155da
+    sha256:25fd8ba1914f5859b59f72d6c6aa2324abe84891e071adae2195faa526a510eb
 COMPONENT_ARCHIVE_URL_1 = https://www.kernel.org/pub/software/scm/git/$(COMPONENT_ARCHIVE_1)
 UNPACK_ARGS_1 =		-r $(COMPONENT_SRC_1)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_1)
@@ -57,7 +57,6 @@ PKG_HARDLINKS +=	usr/lib/git-core/git-cvsserver
 PKG_HARDLINKS +=	usr/lib/git-core/git-gui
 PKG_HARDLINKS +=	usr/lib/git-core/git-remote-ftps
 PKG_HARDLINKS +=	usr/lib/git-core/git-shell
-PKG_HARDLINKS +=	usr/lib/git-core/git-upload-pack
 
 PKG_MACROS +=		PYVER=$(PYTHON_VERSION)
 
@@ -95,13 +94,10 @@ PERL_CONFIG = $(shell $(PERL) -MConfig -e 'print "$$Config{$(1)}"')
 
 # We want the perl modules to install the vendor_perl directory, and their
 # manpages to install in the normal perl manpage directory, but the default
-# behavior is to put the modules in /usr/lib.  Setting these four variables
+# behavior is to put the modules in /usr/lib.  Setting these two variables
 # massages the perl to get files to go where we want.
 COMPONENT_INSTALL_ARGS+=	INSTALL="$(INSTALL)"
-COMPONENT_INSTALL_ARGS+=	VENDORPREFIX=$(call PERL_CONFIG,installvendorlib)
-COMPONENT_INSTALL_ARGS+=	PERLPREFIX=$(call PERL_CONFIG,installprefix)
-COMPONENT_INSTALL_ARGS+=	INSTALLVENDORLIB='$$(VENDORPREFIX)'
-COMPONENT_INSTALL_ARGS+=	INSTALLVENDORMAN3DIR='$$(INSTALLMAN3DIR)'
+COMPONENT_INSTALL_ARGS+=  perllibdir=/usr/perl5/vendor_perl/$(PERL_VERSION)
 
 # get rid of terminal escape codes in test output
 COMPONENT_TEST_ENV += TERM=dumb
@@ -111,6 +107,9 @@ COMPONENT_TEST_ENV += http_proxy=
 COMPONENT_TEST_ENV += https_proxy=
 COMPONENT_TEST_ENV += HTTP_PROXY=
 COMPONENT_TEST_ENV += HTTPS_PROXY=
+
+# The test results differ for x86 and SPARC
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH$(BITS)).master
 
 # Some tests (like t9402-git-cvsserver-refs.sh) need GNU diff.
 COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
