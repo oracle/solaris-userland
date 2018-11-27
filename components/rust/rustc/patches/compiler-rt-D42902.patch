@@ -1,0 +1,38 @@
+https://reviews.llvm.org/D42902
+https://bugs.llvm.org/show_bug.cgi?id=11663
+
+Compared to the original pull request added Solaris __sparcv9 (__sparc64__ is not available on Solaris).
+
+Fixes issue where Firefox and Thunderbird binaries core dump during
+start on sparc in __clzdi2.
+
+--- a/src/libcompiler_builtins/compiler-rt/lib/builtins/ctzdi2.c
++++ b/src/libcompiler_builtins/compiler-rt/lib/builtins/ctzdi2.c
+@@ -16,6 +16,12 @@
+ 
+ /* Returns: the number of trailing 0-bits  */
+ 
++#if !defined(__clang__) && (defined(__sparcv9) || defined(__sparc64__) || defined(__mips64) || defined(__riscv__))
++/* gcc resolves __builtin_ctz -> __ctzdi2 leading to infinite recursion */
++#define __builtin_ctz(a) __ctzsi2(a)
++extern si_int __ctzsi2(si_int);
++#endif
++
+ /* Precondition: a != 0 */
+ 
+ COMPILER_RT_ABI si_int
+--- a/src/libcompiler_builtins/compiler-rt/lib/builtins/clzdi2.c
++++ b/src/libcompiler_builtins/compiler-rt/lib/builtins/clzdi2.c
+@@ -16,6 +16,12 @@
+ 
+ /* Returns: the number of leading 0-bits */
+ 
++#if !defined(__clang__) && (defined(__sparcv9) || defined(__sparc64__) || defined(__mips64) || defined(__riscv__))
++/* gcc resolves __builtin_clz -> __clzdi2 leading to infinite recursion */
++#define __builtin_clz(a) __clzsi2(a)
++extern si_int __clzsi2(si_int);
++#endif
++
+ /* Precondition: a != 0 */
+ 
+ COMPILER_RT_ABI si_int
