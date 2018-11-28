@@ -142,6 +142,12 @@ COMPONENT_TEST_TRANSFORMS += \
 PKG_MACROS 		+=	P_ARCH=$(shell arch)
 PKG_MACROS		+=	PERL_VERSION=$(PERL_VERSION_LOCAL)
 
+# Force a deterministic choice of which is the file & which is the hardlink,
+# otherwise it may vary between runs of pkgsend generate / manifest-check
+PKG_HARDLINKS += usr/perl5/$(PERL_VERSION_LOCAL)/bin/perl$(COMPONENT_VERSION)
+PKG_HARDLINKS += usr/perl5/$(PERL_VERSION_LOCAL)/bin/perlbug
+PKG_HARDLINKS += usr/perl5/$(PERL_VERSION_LOCAL)/man/man1/perlthanks.1
+
 configure:	$(CONFIGURE_64)
 
 build:		$(BUILD_64)
