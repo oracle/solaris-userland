@@ -1,0 +1,53 @@
+Use sparc OpenBSD code also for Solaris.
+
+Originaly reported here (should be updated with new patch):
+https://bugzilla.mozilla.org/show_bug.cgi?id=1432125
+
+diff -r 87cc17943894 xpcom/reflect/xptcall/md/unix/moz.build
+--- a/xpcom/reflect/xptcall/md/unix/moz.build	Mon May 14 00:55:43 2018 +0300
++++ b/xpcom/reflect/xptcall/md/unix/moz.build	Fri May 18 12:54:28 2018 +0000
+@@ -265,7 +265,7 @@
+         'xptcstubs_sparc_openbsd.cpp',
+     ]
+ 
+-if CONFIG['OS_ARCH'] in ('OpenBSD', 'FreeBSD', 'Linux') and CONFIG['OS_TEST'] == 'sparc64':
++if CONFIG['OS_ARCH'] in ('OpenBSD', 'FreeBSD', 'Linux', 'SunOS') and CONFIG['OS_TEST'] == 'sparc64':
+     SOURCES += [
+         'xptcinvoke_asm_sparc64_openbsd.s',
+         'xptcinvoke_sparc64_openbsd.cpp',
+@@ -273,35 +273,6 @@
+         'xptcstubs_sparc64_openbsd.cpp',
+     ]
+ 
+-if CONFIG['OS_ARCH'] == 'SunOS' and '86' not in CONFIG['OS_TEST']:
+-    if CONFIG['HAVE_64BIT_BUILD']:
+-        ASFLAGS += ['-xarch=v9']
+-        SOURCES += [
+-            'xptcinvoke_sparcv9_solaris.cpp',
+-            'xptcstubs_sparcv9_solaris.cpp',
+-        ]
+-    else:
+-        SOURCES += [
+-            'xptcinvoke_sparc_solaris.cpp',
+-            'xptcstubs_sparc_solaris.cpp',
+-        ]
+-    if CONFIG['CC_TYPE'] in ('clang', 'gcc'):
+-        SOURCES += [
+-            'xptcinvoke_asm_sparc_solaris_GCC3.s',
+-            'xptcstubs_asm_sparc_solaris.s',
+-        ]
+-    else:
+-        if CONFIG['HAVE_64BIT_BUILD']:
+-            SOURCES += [
+-                'xptcinvoke_asm_sparcv9_solaris_SUNW.s',
+-                'xptcstubs_asm_sparcv9_solaris.s',
+-            ]
+-        else:
+-            SOURCES += [
+-                'xptcinvoke_asm_sparc_solaris_SUNW.s',
+-                'xptcstubs_asm_sparc_solaris.s',
+-            ]
+-
+ if CONFIG['OS_ARCH'] == 'Linux':
+     if CONFIG['OS_TEST'] == 's390':
+         SOURCES += [

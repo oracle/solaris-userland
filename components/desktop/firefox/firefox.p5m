@@ -18,13 +18,16 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
-# pkg.linted actions are needed to prevent bad RUNPATH lint errors.
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
-<transform file path=usr/lib/firefox/(.+)$ -> \
-    set action.hash usr/lib/firefox-$(IPS_COMPONENT_VERSION)/%<1> >
+# prevents "64bit file in 32bit path" errors
+<transform file path=usr/lib/firefox/.*\.so -> \
+    add pkg.linted.userland.action001.2 true>
+# pkg.linted actions are needed to prevent bad RUNPATH lint errors.
+<transform file path=usr/lib/firefox/.*\.so -> \
+    add pkg.linted.userland.action001.3 true>
 set name=pkg.fmri \
     value=pkg:/web/browser/firefox@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Mozilla Firefox Web browser"
@@ -40,9 +43,11 @@ link path=usr/bin/firefox target=../lib/firefox/firefox
 file path=usr/lib/firefox/application.ini
 file path=usr/lib/firefox/browser/blocklist.xml
 file path=usr/lib/firefox/browser/chrome.manifest
+file path=usr/lib/firefox/browser/chrome/icons/default/default128.png
 file path=usr/lib/firefox/browser/chrome/icons/default/default16.png
 file path=usr/lib/firefox/browser/chrome/icons/default/default32.png
 file path=usr/lib/firefox/browser/chrome/icons/default/default48.png
+file path=usr/lib/firefox/browser/chrome/icons/default/default64.png
 file path=usr/lib/firefox/browser/extensions/langpack-ach@firefox.mozilla.org.xpi
 file path=usr/lib/firefox/browser/extensions/langpack-af@firefox.mozilla.org.xpi
 file path=usr/lib/firefox/browser/extensions/langpack-an@firefox.mozilla.org.xpi
@@ -136,11 +141,15 @@ file path=usr/lib/firefox/browser/extensions/langpack-xh@firefox.mozilla.org.xpi
 file path=usr/lib/firefox/browser/extensions/langpack-zh-CN@firefox.mozilla.org.xpi
 file path=usr/lib/firefox/browser/extensions/langpack-zh-TW@firefox.mozilla.org.xpi
 file path=usr/lib/firefox/browser/extensions/{972ce4c6-7e08-4474-a285-3208198ce6fd}.xpi
+file path=usr/lib/firefox/browser/features/activity-stream@mozilla.org.xpi
 file path=usr/lib/firefox/browser/features/aushelper@mozilla.org.xpi
-file path=usr/lib/firefox/browser/features/e10srollout@mozilla.org.xpi
 file path=usr/lib/firefox/browser/features/firefox@getpocket.com.xpi
+file path=usr/lib/firefox/browser/features/followonsearch@mozilla.com.xpi
+file path=usr/lib/firefox/browser/features/formautofill@mozilla.org.xpi
+file path=usr/lib/firefox/browser/features/jaws-esr@mozilla.org.xpi
+file path=usr/lib/firefox/browser/features/onboarding@mozilla.org.xpi
+file path=usr/lib/firefox/browser/features/screenshots@mozilla.org.xpi
 file path=usr/lib/firefox/browser/features/webcompat@mozilla.org.xpi
-file path=usr/lib/firefox/browser/icons/mozicon128.png
 file path=usr/lib/firefox/browser/omni.ja
 file path=usr/lib/firefox/chrome.manifest
 file path=usr/lib/firefox/defaults/pref/channel-prefs.js
@@ -148,49 +157,35 @@ file path=usr/lib/firefox/dependentlibs.list
 file path=usr/lib/firefox/firefox mode=0555 pkg.linted.userland.action001.3=true
 file path=usr/lib/firefox/firefox-bin mode=0555 \
     pkg.linted.userland.action001.3=true
-file path=usr/lib/firefox/gmp-clearkey/0.1/clearkey.info
-file path=usr/lib/firefox/gmp-clearkey/0.1/libclearkey.so mode=0555 \
-    pkg.linted.userland.action001.3=true
-file path=usr/lib/firefox/icudt58b.dat variant.arch=sparc
-file path=usr/lib/firefox/icudt58l.dat variant.arch=i386
-file path=usr/lib/firefox/libfreebl3.chk variant.arch=i386
-file path=usr/lib/firefox/libfreebl3.so com.oracle.elfsign=false \
-    pkg.linted.userland.action001.3=true variant.arch=i386
-file path=usr/lib/firefox/libfreebl_32fpu_3.chk variant.arch=sparc
-file path=usr/lib/firefox/libfreebl_32fpu_3.so com.oracle.elfsign=false \
-    pkg.linted.userland.action001.3=true variant.arch=sparc
-file path=usr/lib/firefox/libfreebl_32int64_3.chk variant.arch=sparc
-file path=usr/lib/firefox/libfreebl_32int64_3.so com.oracle.elfsign=false \
-    pkg.linted.userland.action001.3=true variant.arch=sparc
-file path=usr/lib/firefox/liblgpllibs.so pkg.linted.userland.action001.3=true
-file path=usr/lib/firefox/libmozavcodec.so \
-    pkg.linted.userland.action001.3=true variant.arch=i386
-file path=usr/lib/firefox/libmozavutil.so pkg.linted.userland.action001.3=true \
-    variant.arch=i386
-file path=usr/lib/firefox/libnspr4.so pkg.linted.userland.action001.3=true
-file path=usr/lib/firefox/libnss3.so pkg.linted.userland.action001.3=true
-file path=usr/lib/firefox/libnssckbi.so pkg.linted.userland.action001.3=true
+file path=usr/lib/firefox/gmp-clearkey/0.1/libclearkey.so
+file path=usr/lib/firefox/gmp-clearkey/0.1/manifest.json
+file path=usr/lib/firefox/gtk2/libmozgtk.so
+file path=usr/lib/firefox/libfreebl3.chk
+file path=usr/lib/firefox/libfreebl3.so
+file path=usr/lib/firefox/liblgpllibs.so
+file path=usr/lib/firefox/libmozavcodec.so variant.arch=i386
+file path=usr/lib/firefox/libmozavutil.so variant.arch=i386
+file path=usr/lib/firefox/libmozgtk.so
+file path=usr/lib/firefox/libnspr4.so
+file path=usr/lib/firefox/libnss3.so
+file path=usr/lib/firefox/libnssckbi.so
 file path=usr/lib/firefox/libnssdbm3.chk
-file path=usr/lib/firefox/libnssdbm3.so com.oracle.elfsign=false \
-    pkg.linted.userland.action001.3=true
-file path=usr/lib/firefox/libnssutil3.so pkg.linted.userland.action001.3=true
-file path=usr/lib/firefox/libplc4.so pkg.linted.userland.action001.3=true
-file path=usr/lib/firefox/libplds4.so pkg.linted.userland.action001.3=true
-file path=usr/lib/firefox/libsmime3.so pkg.linted.userland.action001.3=true
+file path=usr/lib/firefox/libnssdbm3.so
+file path=usr/lib/firefox/libnssutil3.so
+file path=usr/lib/firefox/libplc4.so
+file path=usr/lib/firefox/libplds4.so
+file path=usr/lib/firefox/libsmime3.so
 file path=usr/lib/firefox/libsoftokn3.chk
-file path=usr/lib/firefox/libsoftokn3.so com.oracle.elfsign=false \
-    pkg.depend.bypass-generate=.* pkg.linted.userland.action001.3=true
-file path=usr/lib/firefox/libssl3.so pkg.linted.userland.action001.3=true
-file path=usr/lib/firefox/libxul.so pkg.linted.userland.action001.3=true
+file path=usr/lib/firefox/libsoftokn3.so
+file path=usr/lib/firefox/libssl3.so
+file path=usr/lib/firefox/libxul.so
 file path=usr/lib/firefox/omni.ja
+file path=usr/lib/firefox/pingsender mode=0555 \
+    pkg.linted.userland.action001.3=true
 file path=usr/lib/firefox/platform.ini
 file path=usr/lib/firefox/plugin-container mode=0555 \
     pkg.linted.userland.action001.3=true
 file path=usr/lib/firefox/removed-files
-file path=usr/lib/firefox/run-mozilla.sh mode=0555
-file files/firefox-js.pc path=usr/lib/pkgconfig/firefox-js.pc
-file files/firefox-plugin.pc path=usr/lib/pkgconfig/firefox-plugin.pc
-file files/firefox-xpcom.pc path=usr/lib/pkgconfig/firefox-xpcom.pc
 file files/firefox.desktop path=usr/share/applications/firefox.desktop \
     restart_fmri=svc:/application/desktop-cache/desktop-mime-cache:default
 file files/firefox.1 path=usr/share/man/man1/firefox.1

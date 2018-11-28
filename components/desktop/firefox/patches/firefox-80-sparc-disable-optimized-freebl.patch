@@ -1,0 +1,14 @@
+Disable acceleration till we can build libfreebl_64fpu.
+
+diff -r 5faab9e61990 security/nss/lib/freebl/blname.c
+--- a/security/nss/lib/freebl/blname.c	Sun Jan 21 23:57:26 2018 +0200
++++ b/security/nss/lib/freebl/blname.c	Wed Jan 24 15:31:38 2018 +0000
+@@ -14,7 +14,7 @@
+ 
+ /* getLibName() returns the name of the library to load. */
+ 
+-#if defined(SOLARIS) && defined(__sparc)
++#if defined(SOLARIS) && defined(__sparcDISABLED)
+ #include <stddef.h>
+ #include <strings.h>
+ #include <sys/systeminfo.h>

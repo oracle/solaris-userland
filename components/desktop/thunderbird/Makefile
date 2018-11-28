@@ -80,7 +80,7 @@ PATCH_DIR=patches-all
 CLEAN_PATHS += $(PATCH_DIR)
 COPY_COMMON_FILES_1:= $(shell mkdir -p $(PATCH_DIR))
 COPY_COMMON_FILES_2:=  \
-    $(shell /usr/bin/rsync -ac patches/* ../firefox/patches/* $(PATCH_DIR))
+    $(shell /usr/bin/rsync -ac patches/* ../firefox/patches-52/* $(PATCH_DIR))
 COPY_COMMON_FILES_3:= \
     $(shell $(RM) $(PATCH_DIR)/firefox*42*.patch)
 

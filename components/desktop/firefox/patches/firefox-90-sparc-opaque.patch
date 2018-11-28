@@ -1,0 +1,60 @@
+[GFX2-]: Failed to lock WindowSurface, falling back to XPutImage backend.
+Crash Annotation GraphicsCriticalError: |[0][GFX1]: RGBX corner pixel at (0,0) in 921x691 surface, bounded by (0,0,921,691) is not opaque: 255,162,162,162 (t=7.19982) [GFX1]: RGBX corner pixel at (0,0) in 921x691 surface, bounded by (0,0,921,691) is not opaque: 255,162,162,162
+Assertion failure: [GFX1]: RGBX corner pixel at (0,0) in 921x691 surface, bounded by (0,0,921,691) is not opaque: 255,162,162,162, at /scratch/firefox/gfx/2d/Logging.h:727
+Hit MOZ_CRASH(GFX: An assert from the graphics logger) at /scratch/firefox/gfx/2d/Logging.h:728
+++DOCSHELL f1805800 == 1 [pid = 2206] [id = {d68697a2-4296-4de2-83e3-87ba4f286a54}]
+++DOMWINDOW == 1 (fdc78a00) [pid = 2206] [serial = 1] [outer = 0]
+Hit MOZ_CRASH(Aborting on channel error.) at /scratch/firefox/ipc/glue/MessageChannel.cpp:2548
+
+00000000f13f82d1 libc.so.1`__lwp_sigqueue+8(b, f13f8c30, 0, a, 0, fe72eb80)
+00000000f13f8381 libxul.so`nsProfileLock::FatalSignalHandler+0x124(b, f13f9310, f13f9000, ff00000000, 9, f13f8c30)
+00000000f13f8441 libxul.so`js::UnixExceptionHandler+0xac(b, f13f9310, f13f9000, 0, 0, 0)
+00000000f13f84f1 libc.so.1`__sighndlr+0xc(b, f13f9310, f13f9000, d189a454, 0, fe726000)
+00000000f13f85a1 libc.so.1`call_user_handler+0x354(0, f13f9310, 0, ff019240, b, 0)
+00000000f13f8691 libc.so.1`sigacthandler+0x54(b, f13f9310, f13f9000, f13f93e0, f13f94f0, fe726000)
+00000000f13f8c11 libxul.so`mozilla::gfx::Log<1, mozilla::gfx::CriticalLogger>::Flush+0x170(f13f9600, a2, f13f9618, feec30f0, f13f9610, cc97d3d0)
+00000000f13f8d01 libxul.so`mozilla::gfx::GetSkImageForSurface+0xd08(f13f98d0, dc900000, 0, 0, 2b3, 399)
+00000000f13f8fe1 libxul.so`mozilla::gfx::SetPaintPattern+0x44c(f13f9ad0, f13f9c98, cc983938, 0, f13fa848, 0)
+00000000f13f9191 libxul.so`mozilla::gfx::DrawTargetSkia::FillRect+0x694(ddfc6bb0, f13fa848, f13f9c98, f13fa2f0, e0c78508, f13f9ad0)
+00000000f13f9381 libxul.so`mozilla::layers::FillRectWithMask+0xe8(ddfc6bb0, f13fa848, e0c78500, 1, f13fa2f0, 0)
+00000000f13f9511 libxul.so`void mozilla::layers::DrawSurfaceWithTextureCoords<mozilla::gfx::RectTyped<mozilla::gfx::UnknownUnits, float> >+0x368(ddfc6bb0, f13fa848, f13fa848, e0c78500,
+dcf1b65c, 1)
+00000000f13f9831 libxul.so`void mozilla::layers::BasicCompositor::DrawGeometry<mozilla::gfx::RectTyped<mozilla::gfx::UnknownUnits, float> >+0x780(ddfc6bb0, f13fa848, f13fa848, ddfee910,
+f13fab98, dcf1b640)
+00000000f13f9d11 libxul.so`mozilla::layers::BasicCompositor::DrawQuad+0x2c(e2ef7740, f13fa848, f13fad80, f13fab98, d2f70628, e0c08a20)
+00000000f13f9de1 libxul.so`mozilla::layers::Compositor::DrawGeometry+0x90(e2ef7740, f13fa848, f13fad80, f13fab98, f13fa558, e0c08a20)
+00000000f13f9ec1 libxul.so`mozilla::layers::ContentHostTexture::Composite+0xd5c(0, 2b3, 399, 2b3, 0, f13fa848)
+00000000f13fa1f1 libxul.so`mozilla::layers::PaintedLayerComposite::RenderLayer+0x5a0(e0c08800, f13fad80, f13fae50, e3cb7450, f13fab98, e2ef7740)
+00000000f13fa481 libxul.so`void mozilla::layers::RenderLayers<mozilla::layers::ContainerLayerComposite>+0x424(e0c08000, fe0d84f0, f13faff0, e0c08800, e0c08b50, e0c7f018)
+00000000f13fa6c1 libxul.so`void mozilla::layers::ContainerRender<mozilla::layers::ContainerLayerComposite>+0x29c(e0c08000, fe0d84f0, f13fb230, f13fb198, 22b, 2b3)
+00000000f13fa811 libxul.so`mozilla::layers::ContainerLayerComposite::RenderLayer+0x10(e0c08000, f13fb230, f13fb198, 399000002b3, e0c76860, f13fb068)
+00000000f13fa8c1 libxul.so`mozilla::layers::LayerManagerComposite::Render+0x658(fe0d84f0, f13fb198, 0, 0, 0, fe0d8638)
+00000000f13faa81 libxul.so`mozilla::layers::LayerManagerComposite::UpdateAndRender+0x238(fe0d84f0, cc86d5e8, 1cf, fe0d8660, f13fb3e0, f13fb390)
+00000000f13fabf1 libxul.so`mozilla::layers::LayerManagerComposite::EndTransaction+0x150(fe0d84f0, f13fb560, 0, f13fb400, f13fb440, dcfa6e30)
+00000000f13faca1 libxul.so`mozilla::layers::CompositorBridgeParent::CompositeToTarget+0x1b0(ddf63400, 0, 0, d2d49348, e2cc3400, ddf63578)
+00000000f13fad81 libxul.so`mozilla::layers::CompositorVsyncScheduler::Composite+0x3a0(de3fe1a0, 5cd3fa86e72a, f13fb6e8, d2d49338, 5cd3fa86e72a, de3fe1e0)
+00000000f13fae41 libxul.so`mozilla::detail::RunnableMethodImpl<mozilla::layers::CompositorVsyncScheduler*, void+0x30(ddfee980, ddfee980, 328, ff019240, 1b4, 0)
+00000000f13faef1 libxul.so`MessageLoop::RunTask+0xb8(f13fbcb0, f13fb888, f13fb888, 0, f18e8ba8, ddfee980)
+00000000f13fafd1 libxul.so`MessageLoop::DeferOrRunPendingTask+0x5c(f13fbcb0, f13fb948, cc360fc0, f18e8ad8, 1b4, 1)
+00000000f13fb091 libxul.so`MessageLoop::DoWork+0x14c(f13fbcb0, f13fb950, f13fbcc0, f13fb940, f13fb948, f1e1e2a8)
+00000000f13fb161 libxul.so`base::MessagePumpDefault::Run+0x5c(f18fe410, f13fbcb0, f18fe428, f18fe430, f13fba38, 1)
+00000000f13fb241 libxul.so`MessageLoop::RunInternal+0x60(f13fbcb0, f13fbcb0, 147, fe0f70f2, 1, 0)
+00000000f13fb311 libxul.so`MessageLoop::Run+0x14(f13fbcb0, fe0f70d8, f1e90ef0, f13fbdc0, f13fbdc0, f13fbbc8)
+00000000f13fb3e1 libxul.so`base::Thread::ThreadMain+0xa8(fe0f70b0, 0, 0, ff019240, fe0f70d8, f13fbcb0)
+00000000f13fb661 libxul.so`ThreadFunc+0xc(fe0f70b0, 0, 1, cd2ab81c, 0, 0)
+00000000f13fb711 libc.so.1`_lwp_start(0, 0, 0, 0, 0, 0)
+
+--- a/gfx/2d/DrawTargetSkia.cpp
++++ b/gfx/2d/DrawTargetSkia.cpp
+@@ -152,7 +152,11 @@
+   return surfaceBounds.Intersect(bounds);
+ }
+ 
++#if __sparc
++static const int kARGBAlphaOffset = 0;
++#else
+ static const int kARGBAlphaOffset = SurfaceFormat::A8R8G8B8_UINT32 == SurfaceFormat::B8G8R8A8 ? 3 : 0;
++#endif
+ 
+ static bool
+ VerifyRGBXFormat(uint8_t* aData, const IntSize &aSize, const int32_t aStride, SurfaceFormat aFormat)

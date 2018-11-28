@@ -1,0 +1,24 @@
+Causes pkgdepend to fail. Should be investigated.
+
+--- a/old-configure.in
++++ b/old-configure.in
+@@ -1102,7 +1102,7 @@
+     ;;
+ 
+ *-solaris*)
+-    MOZ_FIX_LINK_PATHS="-L${DIST}/bin"
++    MOZ_FIX_LINK_PATHS="-L${DIST}/bin -Wl,-R,'\$ORIGIN'"
+     ;;
+ 
+ esac
+--- a/js/src/old-configure.in
++++ b/js/src/old-configure.in
+@@ -853,7 +853,7 @@
+     ;;
+ 
+ *-solaris*)
+-    MOZ_FIX_LINK_PATHS="-L${DIST}/bin"
++    MOZ_FIX_LINK_PATHS="-L${DIST}/bin -Wl,-R,'\$ORIGIN'"
+     ;;
+ 
+ esac

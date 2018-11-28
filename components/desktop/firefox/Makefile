@@ -26,39 +26,39 @@
 # parfait is a bit unhappy (22527218)
 export PARFAIT_BUILD=no
 
-BUILD_BITS= 32
+BUILD_BITS= 64
 COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
+ESR = esr
+
 COMPONENT_NAME =		firefox
-COMPONENT_VERSION =		52.9.0esr
+COMPONENT_VERSION =		60.3.0
 COMPONENT_PROJECT_URL =		http://www.mozilla.com/firefox
 COMPONENT_SRC_NAME =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC = 		$(COMPONENT_SRC_NAME)
-COMPONENT_ARCHIVE =		$(COMPONENT_SRC_NAME).source.tar.xz
+COMPONENT_ARCHIVE =		$(COMPONENT_SRC_NAME)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:c01d09658c53c1b3a496e353a24dad03b26b81d3b1d099abc26a06f81c199dd6
+    sha256:5566f3181aba169cae4b026cf1ea5e6b477d3e91b575fb3a42b5a33eeb2b5361
 ifndef CANDIDATE_BUILD
-MOZILLA_FTP = 		        http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)
+MOZILLA_FTP = 		        http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
-MOZILLA_FTP = 		        http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/candidates/$(COMPONENT_VERSION)-candidates/build$(CANDIDATE_BUILD)
+MOZILLA_FTP = 		        http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/candidates/$(COMPONENT_VERSION)$(ESR)-candidates/build$(CANDIDATE_BUILD)
 endif
 COMPONENT_ARCHIVE_URL =		$(MOZILLA_FTP)/source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB =		firefox/browser
 COMPONENT_ANITYA_ID=    	16838
 
-TPNO=				43867
-
-IPS_COMPONENT_VERSION =		52.9.0
+TPNO=				47647
 
 # There are a set of .xpi files (as given in the LANG_LIST definition
 # below) that we need. We could download and unpack them individually, but
 # they doesn't contain version in its file name and there is lot of them.
 # Therefore we will download them and archive them in Userland cache using
 # one file with version number.
-COMPONENT_ARCHIVE_1 =           $(COMPONENT_SRC_NAME)-xpi.tar.bz2
+COMPONENT_ARCHIVE_1 =           $(COMPONENT_SRC_NAME)$(ESR)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:95938fa0e9aeed4c77b5fda31fd987ec3656f9b4a5ef1589dfe6cfde6eac9fde
+    sha256:17585575aedf82b7a950055f7d58d2442993442d7a098384f7c2d5b9496d78ba
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ach af an ar as ast az bg bn-BD bn-IN br bs ca cak cs cy \
@@ -68,16 +68,25 @@ LANG_LIST = ach af an ar as ast az bg bn-BD bn-IN br bs ca cak cs cy \
 	nb-NO nl nn-NO or pa-IN pl pt-BR pt-PT rm ro ru si sk sl son \
 	sq sr sv-SE ta te th tr uk uz vi xh zh-CN zh-TW
 
+CONFIGURE_DEFAULT_DIRS=no
+
 include $(WS_MAKE_RULES)/common.mk
 
 # /usr/gnu/bin needed to pick up the GNU version of tail and readelf.
 # /usr/sbin needed for dtrace.
 PATH =			$(dirname $(CC)):/usr/gnu/bin:/usr/bin:/usr/sbin
 
-CLEAN_PATHS +=		$(COMPONENT_SRC)
 CLEAN_PATHS +=		$(COMPONENT_DIR)/xpi
 
-MOZCONFIG = 		$(BUILD_DIR_32)/mozconfig
+MOZCONFIG = 		$(SOURCE_DIR)/mozconfig
+
+ifdef DEBUG
+MOZCONFIG_DEBUG =	$(MOZCONFIG)
+MOZCONFIG_NON_DEBUG =	/dev/null
+else
+MOZCONFIG_DEBUG =	/dev/null
+MOZCONFIG_NON_DEBUG =	$(MOZCONFIG)
+endif
 
 COMPONENT_PRE_CONFIGURE_ACTION += \
 	echo "mk_add_options BUILD_OFFICIAL=1" > $(MOZCONFIG) ; \
@@ -86,9 +95,10 @@ COMPONENT_PRE_CONFIGURE_ACTION += \
 	echo "ac_add_options --libdir=/usr/lib" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-official-branding" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --disable-updater" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --disable-debug-symbols" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --disable-debug-symbols" >> $(MOZCONFIG_NON_DEBUG) ; \
 	echo "ac_add_options --enable-update-channel=esr" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --disable-tests" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --with-system-icu" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-zlib" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-bz2" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-libevent" >> $(MOZCONFIG) ; \
@@ -102,32 +112,18 @@ COMPONENT_PRE_CONFIGURE_ACTION += \
 	echo "ac_add_options --enable-startup-notification" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-replace-malloc" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-js-shell" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --enable-default-toolkit=cairo-gtk2" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --enable-debug" >> $(MOZCONFIG_DEBUG) ; \
 
 CXXFLAGS +=     -Wno-invalid-offsetof -fpermissive
-CC +=           $(CC_BITS)
-CXX +=          $(CC_BITS)
 
-CONFIGURE_ENV +=	PKG_CONFIG_PATH=$(CONFIGURE_LIBDIR.$(BITS))/pkgconfig
-CONFIGURE_ENV +=	OS_DEFINES="-D__USE_LEGACY_PROTOTYPES__"
-# -L.../dist/lib needs to be set otherwise it will report missing libnss3.so, 
-# libssl3.so, etc, while linking.
-CONFIGURE_ENV +=        LDFLAGS="-z ignore -z interpose -B nodirect -L$(BUILD_DIR_32)/dist/lib -L$(BUILD_DIR_32)/dist/bin"
+# 28395728
+LD_MAP_NOEXBSS.sparc=
 
+# libmozgkt need to link to gtk3 and others
+LD_Z_IGNORE=
 
-CONFIGURE_ENV +=	MOZCONFIG=$(MOZCONFIG)
-CONFIGURE_ENV +=	"CC=$(CC)"
-CONFIGURE_ENV +=	"CXX=$(CXX)"
-CONFIGURE_ENV +=	"CFLAGS=$(CFLAGS)"
-CONFIGURE_ENV +=	"CXXFLAGS=$(CXXFLAGS)"
-
-# If the configure options are not explicitly set, then configure fails with:
-# configure: warning: CC=/usr/gcc/4.8/bin/gcc: invalid host type
-# invalid host type
-# configure: warning: CXX=/usr/gcc/4.8/bin/g++: invalid host type
-# invalid host type
-# configure: error: can only configure for one host and one target at a time
-CONFIGURE_OPTIONS = --prefix=$(CONFIGURE_PREFIX)
+# missing symbols from gtk3 during Firefox start
+LD_B_DIRECT=
 
 #because we touched old-configure.in and js/src/old-configure.in
 COMPONENT_PRE_CONFIGURE_ACTION += (cd $(COMPONENT_NAME)-$(COMPONENT_VERSION); autoreconf; touch configure; cd js/src; autoreconf; touch configure);
@@ -141,7 +137,7 @@ COMPONENT_POST_INSTALL_ACTION += \
         /usr/bin/tar xvf $(COMPONENT_ARCHIVE_1) > /dev/null 2>&1 ; \
         list1='$(LANG_LIST)' ; for f in $$list1 ; do \
             $(CP) xpi/$$f.xpi \
-                $(PROTOUSRLIBDIR)/firefox-$(IPS_COMPONENT_VERSION)/browser/extensions/langpack-$$f@firefox.mozilla.org.xpi ; \
+                $(PROTOUSRLIBDIR)/firefox/browser/extensions/langpack-$$f@firefox.mozilla.org.xpi ; \
         done ;
 
 FF_XPI = $(MOZILLA_FTP)/linux-i686/xpi
@@ -165,20 +161,21 @@ download-xpis:
 	    TZ=UTC gtar cjvf $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1) --mtime='1970-01-01' --owner=root --group=root xpi/* )
 	/usr/bin/sha256sum $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1)
 
-SIGNED_LIST.i386 = libsoftokn3.so libnssdbm3.so libfreebl3.so
-SIGNED_LIST.sparc = libsoftokn3.so libnssdbm3.so libfreebl_32int64_3.so
-SIGNED_LIST = $(SIGNED_LIST.$(MACH))
+SIGNED_LIST = libsoftokn3.so libnssdbm3.so libfreebl3.so
 
 COMPONENT_POST_INSTALL_ACTION += \
 	slist='$(SIGNED_LIST)' ; for f in $$slist ; do \
-	    mcs -d $(PROTOUSRLIBDIR)/firefox-$(IPS_COMPONENT_VERSION)/$$f ; \
-	    LD_LIBRARY_PATH=$(PROTOUSRLIBDIR)/firefox-$(IPS_COMPONENT_VERSION) $(BUILD_DIR_32)/dist/bin/shlibsign -v -i $(PROTOUSRLIBDIR)/firefox-$(IPS_COMPONENT_VERSION)/$$f ; \
+	    mcs -d $(PROTOUSRLIBDIR)/firefox/$$f ; \
+	    LD_LIBRARY_PATH=$(PROTOUSRLIBDIR)/firefox $(BUILD_DIR_64)/dist/bin/shlibsign -v -i $(PROTOUSRLIBDIR)/firefox/$$f ; \
         done ;
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 
 COMPONENT_TEST_DIR =    $(@D)/js/src
 COMPONENT_TEST_TARGETS=check-jit-test
 COMPONENT_TEST_TRANSFORMS = \
         '-e "/^PASSED ALL/,/Failed:/p" ' \
+        '-e "/^FAILURES:/,/Failed:/p" ' \
 	'-e "/.*/d" '
 
 REQUIRED_PACKAGES += codec/libogg
@@ -190,10 +187,12 @@ REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk2
+REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/desktop/startup-notification
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/graphics/pixman
+REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/libevent
 REQUIRED_PACKAGES += library/libffi
 REQUIRED_PACKAGES += library/nspr
