@@ -57,8 +57,9 @@
 <transform file path=usr/lib/samba/private/($(MACH64)/)?libcommon-auth-samba4\.so.* -> default pkg.linted.userland.action001.3 true>
 <transform file path=usr/lib/python2.7/vendor-packages/(64/)?samba/samba/dsdb_dns.so -> default pkg.depend.bypass-generate .*>
 <transform file path=usr/lib/python2.7/vendor-packages/(64/)?samba/samba/dsdb_dns.so -> default pkg.linted.userland.action001.3 true>
-<transform file path=usr/lib/samba/sbin/samba_gpoupdate -> default pkg.depend.bypass-generate .*>
-<transform file path=usr/lib/samba/sbin/samba_gpoupdate -> default pkg.linted.userland.action001.3 true>
+
+# gpupdate has strange dependencies
+<transform file path=usr/lib/samba/sbin/samba-gpupdate -> drop>
 
 # Oracle HSM (aka. SAMFS)
 <transform file path=usr/lib/samba/($(MACH64)/)?vfs/samfs.so -> default pkg.depend.bypass-generate .*>
@@ -132,7 +133,6 @@ file Solaris/samba.sh path=lib/svc/method/samba
 #
 #link path=usr/bin/cifsdd target=../lib/samba/bin/cifsdd target
 #link path=usr/bin/dbwrap_tool target=../lib/samba/bin/dbwrap_tool
-link path=usr/bin/eventlogadm target=../lib/samba/bin/eventlogadm
 #link path=usr/bin/gentest target=../lib/samba/bin/gentest
 #link path=usr/bin/ldbadd target=../lib/samba/bin/ldbadd
 #link path=usr/bin/ldbdel target=../lib/samba/bin/ldbdel
