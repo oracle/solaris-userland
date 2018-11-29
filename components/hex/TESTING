@@ -1,0 +1,37 @@
+# Install hex package to the system.
+sudo pkg install -g $(hg root)/$(uname -p)/repo hex
+
+# Verify that the hex is installed.
+# Expected output:
+# Hex v$(COMPONENT_VERSION)
+# Hex is a package manager for the Erlang ecosystem.
+#
+# To list Hex tasks run: mix help --search hex.
+#
+# Further information can be found here: https://hex.pm/docs
+mix hex --help
+
+# Check the integrated tasks into mix command.
+# Expected output:
+# mix hex              # Prints Hex help information
+# mix hex.audit        # Shows retired Hex deps for the current project
+# mix hex.build        # Builds a new package version locally
+# mix hex.config       # Reads, updates or deletes local Hex config
+# mix hex.docs         # Fetches or opens documentation of a package
+# mix hex.info         # Prints Hex information
+# mix hex.organization # Manages Hex.pm organizations
+# mix hex.outdated     # Shows outdated Hex deps for the current project
+# mix hex.owner        # Manages Hex package ownership
+# mix hex.publish      # Publishes a new package version
+# mix hex.repo         # Manages Hex repositories
+# mix hex.retire       # Retires a package version
+# mix hex.search       # Searches for package names
+# mix hex.user         # Manages your Hex user account
+# mix local.hex        # Installs Hex locally
+mix help --search hex
+
+# Currently, the only component that requires the Hex package manager is RabbitMQ.
+# Hence, to verify the basic functionality, RabbitMQ will be rebuilt and tested.
+echo ""
+cd $(hg root)/components/rabbitmq
+gmake test

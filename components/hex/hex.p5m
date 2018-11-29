@@ -1,0 +1,115 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#
+
+# No manual pages are currently available.
+<transform file path=usr/share/man/.+$ -> add mangler.bypass true >
+#
+<transform file path=.*lib/.*app$ -> default mode 0444>
+<transform file path=.*lib/.*beam$ -> default mode 0444>
+#
+set name=pkg.fmri \
+    value=pkg:/developer/elixir/hex@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="Package manager for Erlang ecosystem."
+set name=pkg.description \
+    value="Hex is a tool used to download, configure, and build Erlang or Elixir packages."
+set name=com.oracle.info.description value="Erlang package manager"
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification \
+    value="org.opensolaris.category.2008:Development/Distribution Tools"
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2018/136
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+#
+file path=usr/lib/elixir/lib/hex/.elixir
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.API.Auth.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.API.Key.Organization.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.API.Key.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.API.Package.Owner.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.API.Package.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.API.Release.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.API.ReleaseDocs.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.API.User.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.API.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Config.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Crypto.AES_CBC_HMAC_SHA2.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Crypto.AES_GCM.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Crypto.ContentEncryptor.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Crypto.Encryption.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Crypto.KeyManager.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Crypto.PBES2_HMAC_SHA2.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Crypto.PKCS5.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Crypto.PublicKey.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Crypto.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.HTTP.Certs.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.HTTP.SSL.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.HTTP.VerifyHostname.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.HTTP.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Mix.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.OptionParser.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Parallel.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Registry.Server.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Registry.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.RemoteConverger.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Repo.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Resolver.Backtracks.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Resolver.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.SCM.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Server.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Set.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Shell.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.State.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.UpdateChecker.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Utils.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Version.InvalidRequirementError.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Version.InvalidVersionError.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Version.Requirement.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.Version.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Hex.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Mix.Tasks.Hex.Audit.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Mix.Tasks.Hex.Build.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Mix.Tasks.Hex.Config.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Mix.Tasks.Hex.Docs.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Mix.Tasks.Hex.Info.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Mix.Tasks.Hex.Install.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Mix.Tasks.Hex.Organization.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Mix.Tasks.Hex.Outdated.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Mix.Tasks.Hex.Owner.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Mix.Tasks.Hex.Publish.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Mix.Tasks.Hex.Repo.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Mix.Tasks.Hex.Retire.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Mix.Tasks.Hex.Search.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Mix.Tasks.Hex.User.beam
+file path=usr/lib/elixir/lib/hex/ebin/Elixir.Mix.Tasks.Hex.beam
+file path=usr/lib/elixir/lib/hex/ebin/hex.app
+file path=usr/lib/elixir/lib/hex/ebin/mix_hex_erl_tar.beam
+file path=usr/lib/elixir/lib/hex/ebin/mix_hex_filename.beam
+file path=usr/lib/elixir/lib/hex/ebin/mix_hex_pb_package.beam
+file path=usr/lib/elixir/lib/hex/ebin/mix_hex_pb_signed.beam
+file path=usr/lib/elixir/lib/hex/ebin/mix_hex_registry.beam
+file path=usr/lib/elixir/lib/hex/ebin/mix_hex_tarball.beam
+file path=usr/lib/elixir/lib/hex/ebin/mix_safe_erl_term.beam
+#
+license hex.license license="Apache 2.0"
