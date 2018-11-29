@@ -1,6 +1,14 @@
 # Define defaults for Solaris.
 # Solaris-specific patch.
 #
+# SSH_SOURCE_BASHRC needs to be enabled for compatibility between SunSSH and
+# OpenSSH. Bash needs to detect whether it's running in the SSH command mode in
+# order to source .bashrc. SunSSH uses sockets for communication which is
+# detected via getpeername. OpenSSH uses pipes which is not detected by
+# getpeername. Enabling SSH_SOURCE_BASHRC makes bash also look at SSH_CLIENT
+# and SSH2_CLIENT environment variables in addition to getpeername. The
+# environment variables are set by OpenSSH.
+#
 # Not for upstream.
 
 --- config-top.h	2012-08-18 17:51:30.000000000 -0700
@@ -22,7 +30,7 @@
  #endif
  
  /* Default primary and secondary prompt strings. */
-@@ -87,14 +87,14 @@
+@@ -87,20 +87,20 @@
  #define DEFAULT_BASHRC "~/.bashrc"
  
  /* System-wide .bashrc file for interactive shells. */
@@ -40,3 +48,10 @@
  
  /* Define this if you want bash to try to check whether it's being run by
     sshd and source the .bashrc if so (like the rshd behavior).  This checks
+    for the presence of SSH_CLIENT or SSH2_CLIENT in the initial environment,
+    which can be fooled under certain not-uncommon circumstances. */
+-/* #define SSH_SOURCE_BASHRC */
++#define SSH_SOURCE_BASHRC
+ 
+ /* Define if you want the case-capitalizing operators (~[~]) and the
+    `capcase' variable attribute (declare -c). */
