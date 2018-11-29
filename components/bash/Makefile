@@ -20,20 +20,18 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		bash
-COMPONENT_VERSION=	4.4.19
+COMPONENT_VERSION=	5.0
 COMPONENT_ARCHIVE_HASH = \
-    sha256:aacffe428679a53d31127bf406693f9340a5fe8cba46d6648b6beb9fb2575917
+    sha256:b4a80f2ac66170b2913efbfb9f2594f1f76c7b1afd11f799e22035d63077fb4d
 COMPONENT_ANITYA_ID=	166
-# We have 4.4.18 tarball plus a patch
-COMPONENT_SRC ?=        $(COMPONENT_SRC_NAME)-4.4.18
 
-TPNO=			42414
+TPNO=			49197
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
@@ -101,6 +99,8 @@ CONFIGURE_OPTIONS += --enable-command-timing
 CONFIGURE_OPTIONS += --enable-cond-command
 CONFIGURE_OPTIONS += --enable-cond-regexp
 CONFIGURE_OPTIONS += --enable-coprocesses
+# test1.sub fails if following option is not enabled
+CONFIGURE_OPTIONS += --enable-dev-fd-stat-broken
 CONFIGURE_OPTIONS += --enable-debugger
 CONFIGURE_OPTIONS += --enable-directory-stack
 CONFIGURE_OPTIONS += --enable-disabled-builtins
@@ -143,27 +143,10 @@ COMPONENT_TEST_MASTER		= \
 # sure to provide a tty if we are missing one
 COMPONENT_TEST_CMD = $(COMPONENT_DIR)/bash_test_wrapper
 
-# The goal is to remove lines like
-#   71d70
-#   < +[8] cat
-# from the test-trap output. This test is producing false positives. To have
-# full controll over the output I use -n gsed parameter (don't print the output
-# automatically)
-COMPONENT_TEST_TRANSFORMS       += \
-	-n \
-	'-e "                           \n\
-	    /^run-trap$$/,/^run-/ {     \n\
-	        \# For text region from ^run-trap$$ till any line beginning with ^run- \n\
-	        /^[^0-9<>]/ {           \n\
-	            \# If the line does _NOT_ start with number or < or >, print it \n\
-	            p                   \n\
-	        }                       \n\
-		\# and delete the line so that it does not get printed again by the last p command \n\
-	        d                       \n\
-	    }                           \n\
-	    \# Everything else gets printed \n\
-	    p                           \n\
-	"'
+# Due to a bug in Makefile gmake tries to remake few targets after application
+# of upstream patches. Following transform removes build related lines from the
+# test output.
+COMPONENT_TEST_TRANSFORMS += "-e '/^rm -f/,/^[[:digit:]]\+[[:space:]].*bash$$/d'"
 
 # If the tests decided they need to execute itself in screen(1) then move the
 # resulting file to final location where the rest of userland infrastructure

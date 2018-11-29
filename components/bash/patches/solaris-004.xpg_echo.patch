@@ -1,0 +1,21 @@
+# Solaris is compiled with --enable-xpg-echo-default=yes. Some tests expect
+# this option disabled.
+#
+# Not for upstream.
+
+--- tests/exp5.sub	2019-02-13 13:01:34.943608493 +0100
++++ tests/exp5.sub	2019-02-13 13:01:28.540680227 +0100
+@@ -1,3 +1,5 @@
++shopt -u xpg_echo
++
+ # expansions involving patterns
+ var='[hello'
+ echo "${var//[/}"
+--- tests/varenv12.sub	2019-02-13 13:01:44.772928022 +0100
++++ tests/varenv12.sub	2019-02-13 12:53:33.681319698 +0100
+@@ -1,4 +1,5 @@
+ set -o posix
++shopt -u xpg_echo
+ 
+ fn() { foo=abc : ; typeset +x foo; printenv|grep ^foo=; }
+ 

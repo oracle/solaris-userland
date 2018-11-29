@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# Override HOME. Bash processes $HOME/.profile.
+HOME=$(pwd)/home
+mkdir -p "$HOME"
+export HOME
+
+# Pre-set TMPDIR. The content of system tmp could collide with the tests.
+TMPDIR=$(pwd)/tmp
+mkdir -p "$TMPDIR"
+export TMPDIR
+
 if tty -s; then
 	# If we have a tty, just run the tests
 	gmake "$@"

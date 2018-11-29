@@ -1,5 +1,4 @@
 # Define defaults for Solaris.
-# Solaris-specific patch.
 #
 # SSH_SOURCE_BASHRC needs to be enabled for compatibility between SunSSH and
 # OpenSSH. Bash needs to detect whether it's running in the SSH command mode in
@@ -11,9 +10,9 @@
 #
 # Not for upstream.
 
---- config-top.h	2012-08-18 17:51:30.000000000 -0700
-+++ config-top.h	2015-04-02 10:08:29.143843829 -0700
-@@ -63,14 +63,14 @@
+--- config-top.h	2018-10-12 21:35:23.000000000 +0200
++++ config-top.h	2019-02-06 15:05:56.837209396 +0100
+@@ -63,7 +63,7 @@
  /* The default value of the PATH variable. */
  #ifndef DEFAULT_PATH_VALUE
  #define DEFAULT_PATH_VALUE \
@@ -21,7 +20,8 @@
 +  "/usr/gnu/bin:/bin:/usr/bin:/sbin:/usr/sbin:."
  #endif
  
- /* The value for PATH when invoking `command -p'.  This is only used when
+ /* If you want to unconditionally set a value for PATH in every restricted
+@@ -74,7 +74,7 @@
     the Posix.2 confstr () function, or CS_PATH define are not present. */
  #ifndef STANDARD_UTILS_PATH
  #define STANDARD_UTILS_PATH \
@@ -30,7 +30,7 @@
  #endif
  
  /* Default primary and secondary prompt strings. */
-@@ -87,20 +87,20 @@
+@@ -91,20 +91,20 @@
  #define DEFAULT_BASHRC "~/.bashrc"
  
  /* System-wide .bashrc file for interactive shells. */
