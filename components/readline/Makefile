@@ -26,32 +26,32 @@ BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		readline
-COMPONENT_VERSION=	6.3
+COMPONENT_VERSION=	7.0
 COMPONENT_PROJECT_URL=	https://tiswww.cwru.edu/php/chet/readline/rltop.html
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:56ba6071b9462f980c5a72ab0023893b65ba6debb4eeb475d7a563dc65cafd43
+    sha256:750d437185286f40a369e1e4f4764eda932b9459b5ec9a731628393dd3d32334
 COMPONENT_BUGDB=	library/readline
 COMPONENT_ANITYA_ID=	4173
 
+TPNO_V7=		33803
 TPNO_V6=		22356
-TPNO_V5=		9042
 
 # For now, we want to continue to provide the libreadline and libhistory so's
-# (and their links) from readline 5.2.
+# (and their links) from readline 6.3.
 #
-COMPONENT_VERSION_1 =   5.2
+COMPONENT_VERSION_1 =   6.3
 COMPONENT_SRC_1 =       $(COMPONENT_NAME)-$(COMPONENT_VERSION_1)
 COMPONENT_ARCHIVE_1 =   $(COMPONENT_SRC_1).tar.gz
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:12e88d96aee2cd1192500356f0535540db499282ca7f76339fb4228c31249f45
+    sha256:56ba6071b9462f980c5a72ab0023893b65ba6debb4eeb475d7a563dc65cafd43
 COMPONENT_ARCHIVE_URL_1 = https://ftp.gnu.org/gnu/readline/$(COMPONENT_ARCHIVE_1)
 COMPONENT_SIG_URL_1=	$(COMPONENT_ARCHIVE_URL_1).sig
 SOURCE_DIR_1 =          $(COMPONENT_DIR)/$(COMPONENT_SRC_1)
 
 BUILD_TARGET=
 INSTALL_TARGET=
-TEST_TARGET= install $(TEST_32_and_64)
-SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_32_and_64)
+TEST_TARGET= install $(TEST_32)
+SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_32)
 include $(WS_MAKE_RULES)/gnu-component.mk
 
 LINT_FLAGS += -I$(PROTOUSRINCDIR)
@@ -81,7 +81,7 @@ COMPONENT_PRE_SYSTEM_TEST_ACTION += \
 COMPONENT_PRE_SYSTEM_TEST_ACTION += \
 	(cd $(@D)/examples ; $(GMAKE) rlcat ) ;
 
-# Get correct libreadline.so.6 from the proto area.
+# Get correct libreadline.so.7 from the proto area.
 TEST_LIBPATH.32 =       $(PROTOUSRLIBDIR)
 TEST_LIBPATH.64 =       $(PROTOUSRLIBDIR64)
 COMPONENT_TEST_ENV +=   LD_LIBRARY_PATH=$(TEST_LIBPATH.$(BITS))
