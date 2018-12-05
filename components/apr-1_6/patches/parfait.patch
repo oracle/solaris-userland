@@ -10,16 +10,16 @@ linking Apache httpd binary.
 
 --- build/ltmain.sh
 +++ build/ltmain.sh
-@@ -7548,7 +7548,7 @@
+@@ -9040,7 +9040,7 @@
  	tempremovelist=`$ECHO "$output_objdir/*"`
  	for p in $tempremovelist; do
  	  case $p in
 -	    *.$objext | *.gcno)
 +	    *.$objext | *.$objext.bc | *.gcno)
  	       ;;
- 	    $output_objdir/$outputname | $output_objdir/$libname.* | $output_objdir/${libname}${release}.*)
- 	       if test "X$precious_files_regex" != "X"; then
-@@ -9123,6 +9123,14 @@
+ 	    $output_objdir/$outputname | $output_objdir/$libname.* | $output_objdir/$libname$release.*)
+ 	       if test -n "$precious_files_regex"; then
+@@ -10617,6 +10617,14 @@
  	  func_append oldobjs " $func_extract_archives_result"
  	fi
  
@@ -34,7 +34,7 @@ linking Apache httpd binary.
  	# POSIX demands no paths to be encoded in archives.  We have
  	# to avoid creating archives with duplicate basenames if we
  	# might have to extract them afterwards, e.g., when creating a
-@@ -9170,12 +9178,19 @@
+@@ -10664,12 +10672,19 @@
  	fi
  	func_to_tool_file "$oldlib" func_convert_file_msys_to_w32
  	tool_oldlib=$func_to_tool_file_result
@@ -57,7 +57,7 @@ linking Apache httpd binary.
  	  for obj in $oldobjs
 --- build/libtool.m4
 +++ build/libtool.m4
-@@ -1465,6 +1465,7 @@
+@@ -1541,6 +1541,7 @@
  
  # Determine commands to create old-style static archives.
  old_archive_cmds='$AR $AR_FLAGS $oldlib$oldobjs'
@@ -65,7 +65,7 @@ linking Apache httpd binary.
  old_postinstall_cmds='chmod 644 $oldlib'
  old_postuninstall_cmds=
  
-@@ -1478,6 +1479,7 @@
+@@ -1554,6 +1555,7 @@
      ;;
    esac
    old_archive_cmds="$old_archive_cmds~\$RANLIB \$tool_oldlib"
@@ -73,7 +73,7 @@ linking Apache httpd binary.
  fi
  
  case $host_os in
-@@ -1490,6 +1492,8 @@
+@@ -1566,6 +1568,8 @@
  _LT_DECL([], [old_postuninstall_cmds], [2])
  _LT_TAGDECL([], [old_archive_cmds], [2],
      [Commands used to build an old-style archive])
