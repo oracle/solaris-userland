@@ -56,7 +56,6 @@ file path=usr/bin/vncpasswd
 file path=usr/bin/vncserver
 file path=usr/bin/x0vncserver
 link path=usr/lib/mdb/proc/$(MACH64)/Xvnc.so target=Xserver.so
-file vnclock.sh path=usr/lib/vnclock mode=0555
 file path=usr/share/man/man1/Xvnc.1
 file path=usr/share/man/man1/vncconfig.1
 file path=usr/share/man/man1/vncpasswd.1
@@ -68,14 +67,7 @@ license tigervnc.license license=GPLv2
 # if installed, and customers can configure an alternate session that does
 # not require those, so these are not listed as strict requirements.
 depend type=group fmri=pkg:/desktop/window-manager/twm
-
-# Xvnc depends on xscreensaver.  However, it will still work without the
-# xscreensaver functionality so it is not a strict requirement.
-depend type=group fmri=pkg:/desktop/xscreensaver
 depend type=group fmri=pkg:/terminal/xterm
-
-# vnclock.sh requires xdg-utils
-depend type=require fmri=pkg:/desktop/xdg/xdg-utils
 
 # We need ck-launch-session for VNC/gnome3
 depend type=require fmri=pkg:/library/xdg/consolekit

@@ -1,4 +1,4 @@
-#
+
 # CDDL HEADER START
 #
 # The contents of this file are subject to the terms of the
@@ -28,16 +28,16 @@ COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tigervnc
-COMPONENT_VERSION=	1.7.1
+COMPONENT_VERSION=	1.9.0
 COMPONENT_PROJECT_URL=	http://tigervnc.org/
 COMPONENT_ARCHIVE=	v$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:3c021ec0bee4611020c0bcbab995b0ef2f6f1a46127a52b368827f3275527ccc
+	sha256:f15ced8500ec56356c3bf271f52e58ed83729118361c7103eab64a618441f740
 COMPONENT_ARCHIVE_URL=	https://github.com/TigerVNC/tigervnc/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=        x11/vnc
 COMPONENT_ANITYA_ID=	4970
 
-TPNO=			34678
+TPNO=			47610
 
 XORG_DIR=		$(COMPONENT_DIR:xvnc=xorg)
 get-xorg-value=		$(MAKE) --no-print-directory -C $(XORG_DIR) print-$(1) \
@@ -83,7 +83,7 @@ COMPONENT_POST_UNPACK_ACTION_1 += \
 # embedded xserver sources
 PATCH_STAMPS += $(XSERVER_SRC)/.patched
 
-$(XSERVER_SRC)/.patched: $(UNPACK_STAMP) $(UNPACK_STAMP_1) $(SOURCE_DIR)/.patched-06-tigervnc-xserver119.patch
+$(XSERVER_SRC)/.patched: $(UNPACK_STAMP) $(UNPACK_STAMP_1) 
 	$(GPATCH) -d $(XSERVER_SRC) $(GPATCH_FLAGS) < \
 		$(SOURCE_DIR)/unix/xserver119.patch ; \
 	for patch in $(XORG_DIR)/patches/*.patch ; do \
@@ -92,31 +92,13 @@ $(XSERVER_SRC)/.patched: $(UNPACK_STAMP) $(UNPACK_STAMP_1) $(SOURCE_DIR)/.patche
 	done
 	touch $@
 
-# This patch depends on the xserver patches being applied first
-$(SOURCE_DIR)/.patched-09-screenlock.patch: $(XSERVER_SRC)/.patched
+$(SOURCE_DIR)/.patched: $(XSERVER_SRC)/.patched
 
 ### Main part of TigerVNC is built with cmake
 
 CMAKE_OPTIONS += -Wno-dev
 CMAKE_OPTIONS += -DBUILD_JAVA:BOOL=FALSE
 CMAKE_OPTIONS += -DCMAKE_SKIP_RPATH:BOOL=TRUE
-
-# Delete this & depends.mk entry when build servers are installed with fltk
-FLTK_DIR= 	$(WS_COMPONENTS)/x11/lib/fltk
-FLTK_BUILD= 	$(FLTK_DIR)/build
-FLTK_PROTO= 	$(FLTK_BUILD)/prototype/$(MACH)
-
-CMAKE_OPTIONS += -DFLTK_INCLUDE_DIR:PATH="$(FLTK_PROTO)$(USRINCDIR)"
-CMAKE_OPTIONS += \
-    -DFLTK_LIBRARIES:FILEPATH="$(FLTK_PROTO)$(USRLIBDIR64)/libfltk.so.1.3"
-CMAKE_OPTIONS += \
-    -DFLTK_IMAGES_LIBRARY:FILEPATH="$(FLTK_PROTO)$(USRLIBDIR64)/libfltk_images.so.1.3"
-CMAKE_OPTIONS += \
-    -DFLTK_BASE_LIBRARY:FILEPATH="$(FLTK_PROTO)$(USRLIBDIR64)/libfltk.so.1.3"
-
-DEPENDED += 	$(FLTK_BUILD)/manifest-$(MACH)-fltk.depend
-REQUIRED_PACKAGES += $(shell $(GSED) -n 's/REQUIRED_PACKAGES +=//p' $(FLTK_DIR)/Makefile)
-# end of Delete ... fltk
 
 ### Xvnc (embedded in unix/xserver in TigerVNC sources) is built w/ autotools
 
@@ -208,6 +190,8 @@ REQUIRED_PACKAGES += x11/library/libxdmcp
 REQUIRED_PACKAGES += x11/library/libxext
 REQUIRED_PACKAGES += x11/library/libxfixes
 REQUIRED_PACKAGES += x11/library/libxfont2
+REQUIRED_PACKAGES += x11/library/libxrandr
+REQUIRED_PACKAGES += x11/library/libxrender
 REQUIRED_PACKAGES += x11/library/libxtst
 REQUIRED_PACKAGES += x11/library/mesa
 REQUIRED_PACKAGES += x11/library/toolkit/fltk

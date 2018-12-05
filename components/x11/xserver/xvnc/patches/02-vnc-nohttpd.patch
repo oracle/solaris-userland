@@ -1,23 +1,19 @@
 ## Disable httpd service [PSARC/2017/236]
 
-diff --git a/unix/vncserver b/unix/vncserver
-index 8f1f4b7..c05f814 100755
---- a/unix/vncserver
-+++ b/unix/vncserver
-@@ -261,7 +261,6 @@ my %default_opts;
- my %config;
- 
+--- a/unix/vncserver	2018-11-20 16:07:55.091911787 -0800
++++ b/unix/vncserver	2018-11-20 16:08:09.629315441 -0800
+@@ -206,7 +206,6 @@
+ # We set some reasonable defaults. Config file settings
+ # override these where present.
  $default_opts{desktop} = &quotedString($desktopName);
 -$default_opts{httpd} = $vncJavaFiles if ($vncJavaFiles);
- $default_opts{auth} = $xauthorityFile;
+ $default_opts{auth} = &quotedString($xauthorityFile);
  $default_opts{geometry} = $geometry if ($geometry);
  $default_opts{depth} = $depth if ($depth);
-diff --git a/unix/xserver/hw/vnc/Xvnc.man b/unix/xserver/hw/vnc/Xvnc.man
-index a4d9f8d..f8d6819 100644
---- a/unix/xserver/hw/vnc/Xvnc.man
-+++ b/unix/xserver/hw/vnc/Xvnc.man
-@@ -91,19 +91,6 @@ has finished sending or receiving a message - note that this does not mean an
- update will be aborted after this time.  Default is 20000 (20 seconds).
+--- a/unix/xserver/hw/vnc/Xvnc.man	2018-11-20 16:08:25.035427962 -0800
++++ b/unix/xserver/hw/vnc/Xvnc.man	2018-11-20 16:08:47.211681609 -0800
+@@ -107,19 +107,6 @@
+ mean an update will be aborted after this time.  Default is 20000 (20 seconds).
  .
  .TP
 -.B \-httpd \fIdirectory\fP
@@ -34,13 +30,11 @@ index a4d9f8d..f8d6819 100644
 -.
 -.TP
  .B \-rfbauth \fIpasswd-file\fP, \-PasswordFile \fIpasswd-file\fP
- Specifies the file containing the password used to authenticate viewers.  The
- file is accessed each time a connection comes in, so it can be changed on the
-diff --git a/unix/xserver/hw/vnc/vncExtInit.cc b/unix/xserver/hw/vnc/vncExtInit.cc
-index 1d37493..7a238c9 100644
---- a/unix/xserver/hw/vnc/vncExtInit.cc
-+++ b/unix/xserver/hw/vnc/vncExtInit.cc
-@@ -64,10 +64,12 @@ struct CaseInsensitiveCompare {
+ Password file for VNC authentication.  There is no default, you should
+ specify the password file explicitly.  Password file should be created with
+--- a/unix/xserver/hw/vnc/vncExtInit.cc	2018-11-20 16:09:02.741775761 -0800
++++ b/unix/xserver/hw/vnc/vncExtInit.cc	2018-11-20 16:10:25.191060927 -0800
+@@ -73,10 +73,12 @@
  typedef std::set<std::string, CaseInsensitiveCompare> ParamSet;
  static ParamSet allowOverrideSet;
  
@@ -53,7 +47,7 @@ index 1d37493..7a238c9 100644
  rfb::AliasParameter rfbwait("rfbwait", "Alias for ClientWaitTimeMillis",
                              &rfb::Server::clientWaitTimeMillis);
  rfb::IntParameter rfbport("rfbport", "TCP port to listen for RFB protocol",0);
-@@ -190,6 +192,7 @@ void vncExtensionInit(void)
+@@ -215,6 +217,7 @@
                      localhostOnly ? "local" : (const char*)interface,
                      port);
  
@@ -61,17 +55,17 @@ index 1d37493..7a238c9 100644
            CharArray httpDirStr(httpDir.getData());
            if (httpDirStr.buf[0]) {
              port = httpPort;
-@@ -205,6 +208,7 @@ void vncExtensionInit(void)
+@@ -229,6 +232,7 @@
+                       localhostOnly ? "local" : (const char*)interface,
                        port);
            }
 +#endif /* ENABLE_HTTPD */
          }
  
          CharArray desktopNameStr(desktopName.getData());
-         PixelFormat pf = vncGetPixelFormat(scr);
---- unpacked-src/unix/xserver/hw/vnc/XserverDesktop.cc
-+++ unpacked-src/unix/xserver/hw/vnc/XserverDesktop.cc
-@@ -59,6 +59,7 @@
+--- a/unix/xserver/hw/vnc/XserverDesktop.cc	2018-11-20 16:10:40.045644221 -0800
++++ b/unix/xserver/hw/vnc/XserverDesktop.cc	2018-11-20 16:11:10.822353684 -0800
+@@ -72,6 +72,7 @@
    FileHTTPServer(XserverDesktop* d) : desktop(d) {}
    virtual ~FileHTTPServer() {}
  
@@ -79,7 +73,7 @@ index 1d37493..7a238c9 100644
    virtual rdr::InStream* getFile(const char* name, const char** contentType,
                                   int* contentLength, time_t* lastModified)
    {
-@@ -88,6 +89,7 @@
+@@ -101,6 +102,7 @@
      }
      return is;
    }

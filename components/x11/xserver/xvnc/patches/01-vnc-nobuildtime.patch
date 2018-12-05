@@ -1,31 +1,24 @@
 Remove buildtime from binaries to avoid unnecessary change in ELF data.
 
---- a/unix/vncconfig/buildtime.c	2017-03-11 07:16:26.183735940 +0000
-+++ b/unix/vncconfig/buildtime.c	2017-03-11 07:16:39.430141048 +0000
+--- a/unix/vncconfig/buildtime.c	2018-11-20 16:03:38.877141494 -0800
++++ b/unix/vncconfig/buildtime.c	2018-11-20 16:04:01.575369175 -0800
 @@ -15,4 +15,3 @@
   * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
   * USA.
   */
 -char buildtime[] = __DATE__ " " __TIME__;
---- a/unix/x0vncserver/buildtime.c	2017-03-11 07:17:57.463804435 +0000
-+++ b/unix/x0vncserver/buildtime.c	2017-03-11 07:18:05.366932835 +0000
-@@ -15,4 +15,3 @@
-  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
-  * USA.
-  */
--char buildtime[] = __DATE__ " " __TIME__;
---- a/unix/x0vncserver/x0vncserver.cxx	2017-03-11 07:18:21.907552984 +0000
-+++ b/unix/x0vncserver/x0vncserver.cxx	2017-03-11 07:18:47.120136121 +0000
-@@ -56,8 +56,6 @@
- #include <sys/proto.h>
- #endif
+--- a/unix/x0vncserver/x0vncserver.cxx	2018-11-20 16:04:22.899688256 -0800
++++ b/unix/x0vncserver/x0vncserver.cxx	2018-11-20 16:04:48.332167732 -0800
+@@ -45,8 +45,6 @@
+ #include <x0vncserver/Image.h>
+ #include <x0vncserver/PollingScheduler.h>
  
 -extern char buildtime[];
 -
  using namespace rfb;
  using namespace network;
  
-@@ -412,8 +410,8 @@
+@@ -226,8 +224,8 @@
  
  static void printVersion(FILE *fp)
  {
@@ -36,9 +29,9 @@ Remove buildtime from binaries to avoid unnecessary change in ELF data.
  }
  
  static void usage()
---- a/unix/xserver/hw/vnc/xvnc.c	2017-03-11 07:19:51.661067238 +0000
-+++ b/unix/xserver/hw/vnc/xvnc.c	2017-03-11 07:20:31.799071698 +0000
-@@ -79,7 +79,6 @@
+--- a/unix/xserver/hw/vnc/xvnc.c	2018-11-20 16:05:07.354759941 -0800
++++ b/unix/xserver/hw/vnc/xvnc.c	2018-11-20 16:05:41.709020108 -0800
+@@ -81,7 +81,6 @@
  #include "dpmsproc.h"
  #endif
  #include <X11/keysym.h>
@@ -46,7 +39,7 @@ Remove buildtime from binaries to avoid unnecessary change in ELF data.
  #undef VENDOR_RELEASE
  #undef VENDOR_STRING
  #include "version-config.h"
-@@ -157,7 +156,7 @@
+@@ -159,7 +158,7 @@
  static void
  vncPrintBanner(void)
  {

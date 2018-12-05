@@ -1,6 +1,8 @@
+Solaris Audit support - not suitable for upstream
+
 --- a/common/rfb/VNCSConnectionST.cxx	2017-03-11 02:36:55.540218849 +0000
 +++ b/common/rfb/VNCSConnectionST.cxx	2017-03-11 02:39:43.674794316 +0000
-@@ -42,6 +42,10 @@
+@@ -36,6 +36,10 @@
  #define XK_XKB_KEYS
  #include <rfb/keysymdef.h>
  
@@ -11,7 +13,7 @@
  using namespace rfb;
  
  static LogWriter vlog("VNCSConnST");
-@@ -87,6 +91,26 @@
+@@ -63,6 +67,26 @@
    lastEventTime = time(0);
  
    server->clients.push_front(this);
@@ -38,7 +40,7 @@
  }
  
  
-@@ -109,6 +133,10 @@
+@@ -92,6 +116,10 @@
    // Remove this client from the server
    server->clients.remove(this);
  
@@ -49,7 +51,7 @@
    delete [] fenceData;
  }
  
-@@ -136,6 +164,32 @@
+@@ -119,6 +147,32 @@
  
    if (authenticated()) {
        server->lastDisconnectTime = time(0);
@@ -82,7 +84,7 @@
    }
  
    // Just shutdown the socket and mark our state as closing.  Eventually the
-@@ -399,6 +453,20 @@
+@@ -411,6 +465,20 @@
  
  void VNCSConnectionST::authSuccess()
  {
@@ -103,11 +105,11 @@
    lastEventTime = time(0);
  
    server->startDesktop();
---- a/common/rfb/VNCSConnectionST.h	2017-03-11 02:39:57.633769393 +0000
-+++ b/common/rfb/VNCSConnectionST.h	2017-03-11 02:40:40.852107134 +0000
+--- a/common/rfb/VNCSConnectionST.h	2018-11-20 19:27:16.655100749 -0800
++++ b/common/rfb/VNCSConnectionST.h	2018-11-20 19:28:30.691987864 -0800
 @@ -34,6 +34,15 @@
+ #include <rfb/SConnection.h>
  #include <rfb/Timer.h>
- #include <rfb/EncodeManager.h>
  
 +#ifdef HAVE_CONFIG_H
 +#include <config.h>
@@ -118,10 +120,10 @@
 +#include <bsm/adt_event.h>
 +#endif
 +
- struct RTTInfo;
- 
  namespace rfb {
-@@ -215,6 +224,11 @@
+   class VNCServerST;
+ 
+@@ -212,6 +221,10 @@
  
      CharArray closeReason;
      time_t startTime;
@@ -129,13 +131,12 @@
 +#ifdef HAVE_LIBBSM
 +    adt_session_data_t  *audit_handle;
 +#endif
-+
    };
  }
  #endif
---- a/common/rfb/CMakeLists.txt	2017-03-11 02:41:59.057489972 +0000
-+++ b/common/rfb/CMakeLists.txt	2017-03-11 02:43:05.536358580 +0000
-@@ -80,6 +80,10 @@
+--- a/common/rfb/CMakeLists.txt	2018-11-20 19:28:56.830363680 -0800
++++ b/common/rfb/CMakeLists.txt	2018-11-20 19:29:19.020663908 -0800
+@@ -81,6 +81,10 @@
    set(RFB_LIBRARIES ${RFB_LIBRARIES} ${PAM_LIBS})
  endif()
  
