@@ -786,9 +786,10 @@ COMPONENT_POST_INSTALL_ACTION += $(PERL_SCRIPTS_PROCESS)
 PHP_TOP_DIR = $(WS_COMPONENTS)/php
 
 # All versions of PHP for building extension packages.
-PHP_VERSIONS = 7.1
+PHP_VERSIONS = 7.1 7.3
 
 PHP.7.1 = /usr/php/7.1/bin/php
+PHP.7.3 = /usr/php/7.3/bin/php
 
 # This is the default BUILD version of tcl
 # Not necessarily the system's default version, i.e. /usr/bin/tclsh

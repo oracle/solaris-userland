@@ -1,0 +1,56 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+# Set action for already existing config files
+<transform file path=etc/php/7.3/pear.conf -> set preserve renamenew>
+<transform file path=files/extensions.ini -> set preserve renamenew>
+
+# Create symlinks for several php 7.3 folders
+<transform file dir path=usr/php/7.3/(bin|include|lib|sbin) \
+	-> emit link path=/usr/php/%<1> target=7.3/%<1> mediator=php mediator-version=7.3>
+
+# Create bin symlinks for php executables
+<transform file link path=usr/php/7.3/bin/(.*) \
+	-> emit link path=/usr/bin/%<1> target=../php/7.3/bin/%<1> mediator=php mediator-version=7.3>
+
+
+# Add several files from files directory (not in proto area)
+# Set action hash to current path so that IPS can find it
+<transform file path=files/php7.3.conf -> set action.hash %(path)>
+<transform file path=files/extensions.ini -> set action.hash %(path)>
+<transform file path=usr/apache2/2.4/libexec/libphp7.so -> set action.hash %(path)>
+
+# "Move" the file to it's new location
+<transform file path=files/php7.3.conf -> edit path files etc/apache2/2.4/samples-conf.d>
+<transform file path=files/extensions.ini -> edit path files etc/php/7.3/conf.d>
+<transform file path=usr/apache2/2.4/libexec/libphp7.so -> edit path libphp7 libphp7.3>
+
+# prevent 64-bit object in 32-bit path errors
+<transform path=usr/apache2/2.4/libexec/libphp7.3.so -> set pkg.linted.userland.action001.2 true>
+
+
+
+# Drop hidden pear files we are not shipping
+<transform path=\..* -> drop>

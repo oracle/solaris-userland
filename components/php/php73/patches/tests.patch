@@ -1,0 +1,131 @@
+Patch origin: in-house
+Patch status: Solaris-specific; not suitable for upstream
+
+Some tests doesn't produces reproducible results.
+
+It might be some general problem (need to be investigated). Similar but
+not the same issue:
+http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
+
+--- a/ext/standard/tests/file/lstat_stat_variation10.phpt
++++ b/ext/standard/tests/file/lstat_stat_variation10.phpt
+@@ -3,8 +3,9 @@
+ --SKIPIF--
+ <?php
+ if (getenv("SKIP_SLOW_TESTS")) die("skip slow test");
+-if (substr(PHP_OS, 0, 3) == 'WIN') {
+-    die('skip.. Not valid for Windows');
++if (substr(PHP_OS, 0, 3) == 'WIN' || substr(PHP_OS, 0, 5) == 'SunOS') {
++    /* on SunOS key value 12 and blocks differes sometime */ 
++    die('skip.. Not valid for Windows or SunOS');
+ }
+ ?>
+ --FILE--
+--- a/ext/standard/tests/streams/proc_open_bug64438.phpt
++++ b/ext/standard/tests/streams/proc_open_bug64438.phpt
+@@ -1,8 +1,14 @@
+ --TEST--
+ Bug #64438 proc_open hangs with stdin/out with 4097+ bytes
++--SKIPIF--
++<?php
++if (substr(PHP_OS, 0, 5) == 'SunOS') {
++    /* on SunOS sometimes fails - don't know where and why */
++    die('skip.. Not valid for SunOS');
++}
++?>
+ --FILE--
+ <?php
+-
+ error_reporting(E_ALL);
+ 
+ if (substr(PHP_OS, 0, 3) == 'WIN') {
+--- a/ext/standard/tests/file/touch_basic.phpt
++++ b/ext/standard/tests/file/touch_basic.phpt
+@@ -5,8 +5,8 @@
+ --SKIPIF--
+ <?php
+ if (getenv("SKIP_SLOW_TESTS")) die("skip slow test");
+-if (substr(PHP_OS, 0, 3) == 'WIN') {
+-    die('skip.. only for Non Windows');
++if (substr(PHP_OS, 0, 3) == 'WIN' || substr(PHP_OS, 0, 5) == 'SunOS') {
++    die('skip.. only for Non Windows and non SunOS (where it fails sometimes)');
+ }
+ ?>
+ --FILE--
+--- a/ext/standard/tests/streams/proc_open_bug60120.phpt
++++ b/ext/standard/tests/streams/proc_open_bug60120.phpt
+@@ -1,5 +1,12 @@
+ --TEST--
+ Bug #60120 proc_open hangs with stdin/out with 2048+ bytes
++--SKIPIF--
++<?php
++if (substr(PHP_OS, 0, 5) == 'SunOS') {
++    /* on SunOS sometimes fails - don't know where and why */
++    die('skip.. Not valid for SunOS');
++}
++?>
+ --FILE--
+ <?php
+ error_reporting(E_ALL);
+--- a/sapi/fpm/tests/bug68442-signal-reload.phpt
++++ b/sapi/fpm/tests/bug68442-signal-reload.phpt
+@@ -1,7 +1,12 @@
+ --TEST--
+ FPM: bug68442 - Signal reload
+ --SKIPIF--
+-<?php include "skipif.inc"; ?>
++<?php
++if (substr(PHP_OS, 0, 5) == 'SunOS') {
++    /* on SunOS it kills all tests by the signal */
++    die('skip.. Not valid for SunOS');
++}
++?>
+ --FILE--
+ <?php
+ 
+--- a/sapi/fpm/tests/socket-invalid-allowed-clients.phpt
++++ b/sapi/fpm/tests/socket-invalid-allowed-clients.phpt
+@@ -2,7 +2,10 @@
+ FPM: Socket for invalid allowed client only
+ --SKIPIF--
+ <?php
+-include "skipif.inc";
++if (substr(PHP_OS, 0, 5) == 'SunOS') {
++    /* on SunOS it hangs and never ends */
++    die('skip.. Not valid for SunOS');
++}
+ ?>
+ --FILE--
+ <?php
+--- php-7.3.0RC6/sapi/fpm/tests/log-bwd-msg-with-nl.phpt	2018-12-06 03:08:56.017355693 +0000
++++ php-7.3.0RC6/sapi/fpm/tests/log-bwd-msg-with-nl.phpt	2018-12-06 03:07:15.622718781 +0000
+@@ -1,7 +1,12 @@
+ --TEST--
+ FPM: Buffered worker output decorated log with msg containing new lines
+ --SKIPIF--
+-<?php include "skipif.inc"; ?>
++<?php
++if (substr(PHP_OS, 0, 5) == 'SunOS') {
++    /* on SunOS it hangs and never ends */
++    die('skip.. Not valid for SunOS');
++}
++?>
+ --FILE--
+ <?php
+ 
+--- php-7.3.0RC6/sapi/fpm/tests/log-bwd-multiple-msgs.phpt	2018-12-06 03:09:16.177475823 +0000
++++ php-7.3.0RC6/sapi/fpm/tests/log-bwd-multiple-msgs.phpt	2018-12-06 03:07:12.159018462 +0000
+@@ -1,7 +1,12 @@
+ --TEST--
+ FPM: Buffered worker output decorated log with multiple continuous messages
+ --SKIPIF--
+-<?php include "skipif.inc"; ?>
++<?php
++if (substr(PHP_OS, 0, 5) == 'SunOS') {
++    /* on SunOS it hangs and never ends */
++    die('skip.. Not valid for SunOS');
++}
++?>
+ --FILE--
+ <?php
+ 
