@@ -66,10 +66,9 @@ diff -r 37614cb705be -r 4468e42e6443 src/dhcp-common.c
  #endif
  
  static const struct opttab_t {
-diff -r 37614cb705be -r 4468e42e6443 src/dnsmasq.c
---- a/src/dnsmasq.c	Fri Oct 06 14:10:20 2017 +0100
-+++ b/src/dnsmasq.c	Fri Oct 06 14:11:14 2017 +0100
-@@ -54,6 +54,10 @@
+--- dnsmasq-2.80/src/dnsmasq.c	2018-12-14 05:28:46.339028699 +0000
++++ dnsmasq-2.80/src/dnsmasq.c	2018-12-14 05:27:58.711961389 +0000
+@@ -55,6 +55,10 @@ int main (int argc, char **argv)
    char *bound_device = NULL;
    int did_bind = 0;
  #endif 
@@ -80,7 +79,7 @@ diff -r 37614cb705be -r 4468e42e6443 src/dnsmasq.c
  #if defined(HAVE_DHCP) || defined(HAVE_DHCP6)
    struct dhcp_context *context;
    struct dhcp_relay *relay;
-@@ -326,6 +330,23 @@
+@@ -340,6 +344,23 @@ int main (int argc, char **argv)
  	      did_bind = 1;
  	    }
  	}
@@ -104,7 +103,7 @@ diff -r 37614cb705be -r 4468e42e6443 src/dnsmasq.c
  #endif
  
  #if defined(HAVE_LINUX_NETWORK) && defined(HAVE_DHCP6)
-@@ -334,6 +355,12 @@
+@@ -348,6 +369,12 @@ int main (int argc, char **argv)
  	  bindtodevice(bound_device, daemon->dhcp6fd);
  	  did_bind = 1;
  	}
@@ -117,7 +116,7 @@ diff -r 37614cb705be -r 4468e42e6443 src/dnsmasq.c
  #endif
      }
    else 
-@@ -818,6 +845,9 @@
+@@ -868,6 +895,9 @@ int main (int argc, char **argv)
  #  ifdef HAVE_LINUX_NETWORK
    if (did_bind)
      my_syslog(MS_DHCP | LOG_INFO, _("DHCP, sockets bound exclusively to interface %s"), bound_device);
@@ -127,10 +126,9 @@ diff -r 37614cb705be -r 4468e42e6443 src/dnsmasq.c
  #  endif
  
    /* after dhcp_construct_contexts */
-diff -r 37614cb705be -r 4468e42e6443 src/dnsmasq.h
---- a/src/dnsmasq.h	Fri Oct 06 14:10:20 2017 +0100
-+++ b/src/dnsmasq.h	Fri Oct 06 14:11:14 2017 +0100
-@@ -1490,6 +1490,9 @@
+--- dnsmasq-2.80/src/dnsmasq.h	2018-12-14 05:28:53.925237515 +0000
++++ dnsmasq-2.80/src/dnsmasq.h	2018-12-14 05:27:58.713977461 +0000
+@@ -1567,6 +1567,9 @@ int config_has_mac(struct dhcp_config *c
  #ifdef HAVE_LINUX_NETWORK
  char *whichdevice(void);
  void bindtodevice(char *device, int fd);
