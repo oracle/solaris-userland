@@ -51,6 +51,7 @@ CONFIGURE_OPTIONS += --enable-shared
 # Required for other components.
 CONFIGURE_OPTIONS += --enable-vala
 CONFIGURE_OPTIONS += --with-pic
+CONFIGURE_OPTIONS += --with-zoneinfo-dir=/usr/share/lib/zoneinfo
 
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 
