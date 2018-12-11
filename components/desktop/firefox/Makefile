@@ -33,13 +33,13 @@ include ../../../make-rules/shared-macros.mk
 ESR = esr
 
 COMPONENT_NAME =		firefox
-COMPONENT_VERSION =		60.3.0
+COMPONENT_VERSION =		60.4.0
 COMPONENT_PROJECT_URL =		http://www.mozilla.com/firefox
 COMPONENT_SRC_NAME =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC = 		$(COMPONENT_SRC_NAME)
 COMPONENT_ARCHIVE =		$(COMPONENT_SRC_NAME)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:5566f3181aba169cae4b026cf1ea5e6b477d3e91b575fb3a42b5a33eeb2b5361
+    sha256:205258548c3f245d42377b338f0db1272df39489d61305c39b83e52750ebff85
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		        http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
@@ -49,7 +49,7 @@ COMPONENT_ARCHIVE_URL =		$(MOZILLA_FTP)/source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB =		firefox/browser
 COMPONENT_ANITYA_ID=    	16838
 
-TPNO=				47647
+TPNO=				47990
 
 # There are a set of .xpi files (as given in the LANG_LIST definition
 # below) that we need. We could download and unpack them individually, but
@@ -58,15 +58,15 @@ TPNO=				47647
 # one file with version number.
 COMPONENT_ARCHIVE_1 =           $(COMPONENT_SRC_NAME)$(ESR)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:17585575aedf82b7a950055f7d58d2442993442d7a098384f7c2d5b9496d78ba
+    sha256:79c740b82cd9bcf3b5e51b2bc05164bd65f887f016df25a218d9bf48b79fed7d
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
-LANG_LIST = ach af an ar as ast az bg bn-BD bn-IN br bs ca cak cs cy \
+LANG_LIST = ach af an ar as ast az be bg bn-BD bn-IN br bs ca cak cs cy \
 	da de dsb el en-GB en-US en-ZA eo es-AR es-CL es-ES es-MX et \
 	eu fa ff fi fr fy-NL ga-IE gd gl gn gu-IN he hi-IN hr hsb hu \
-	hy-AM id is it ja ka kab kk km kn ko lij lt lv mai mk ml mr ms \
-	nb-NO nl nn-NO or pa-IN pl pt-BR pt-PT rm ro ru si sk sl son \
-	sq sr sv-SE ta te th tr uk uz vi xh zh-CN zh-TW
+	hy-AM ia id is it ja ka kab kk km kn ko lij lt lv mai mk ml mr ms my \
+	nb-NO ne-NP nl nn-NO oc or pa-IN pl pt-BR pt-PT rm ro ru si sk sl son \
+	sq sr sv-SE ta te th tr uk ur uz vi xh zh-CN zh-TW
 
 CONFIGURE_DEFAULT_DIRS=no
 
