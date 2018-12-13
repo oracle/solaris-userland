@@ -23,7 +23,7 @@
 -->
 <!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
 <!--
-	Copyright (c) 2006, 2013, Oracle and/or its affiliates. All rights reserved.
+	Copyright (c) 2006, 2018, Oracle and/or its affiliates. All rights reserved.
 
 	#ident	"@(#)samba.xml	1.6	10/07/26 SMI"
 
@@ -36,8 +36,6 @@
 <service_bundle type='manifest' name='SUNWsmbar:samba'>
 
 <service name='network/samba' type='service' version='1'>
-
-	<create_default_instance enabled='false' />
 
 	<single_instance/>
 
@@ -68,6 +66,13 @@
 	<exec_method type='method' name='stop'
 		exec='/lib/svc/method/samba stop %{restarter/contract}'
 		timeout_seconds='60' />
+
+	<instance name='default' complete='true' enabled='false'>
+	   <property_group name='startd' type='framework'>
+	     <!-- sub-process core dumps should not restart session -->
+	     <propval name='ignore_error' type='astring' value='core,signal' />
+	   </property_group>
+	</instance>
 
 	<stability value='Unstable' />
 
