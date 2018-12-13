@@ -249,7 +249,13 @@ $(MANIFEST_BASE)-%.constructed:
 	    MANIFEST_BASE COMPONENT_DIR MANIFEST_CLEANUP_TRANSFORM \
 	    MANIFEST_GENERATE GENERATE_PROTO_DIRS) $(MANIFEST_COMPARE) "$@"
 
+# Make manifest-check perform any action only in components built for the
+# current architecture we run on
+ifeq ($(strip $(BUILD_ARCH)),$(MACH))
 manifest-check: install $(CHECKED)
+else
+manifest-check:
+endif
 
 publish:		build install manifest-check $(PUBLISH_STAMP)
 
