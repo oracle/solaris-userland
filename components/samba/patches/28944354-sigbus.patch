@@ -1,0 +1,64 @@
+From 9d7c8eb33017e6eafcf3fc32e3c1d7cc2b725159 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ji=C5=99=C3=AD=20=C5=A0a=C5=A1ek?= <jiri.sasek@oracle.com>
+Date: Thu, 6 Dec 2018 14:10:53 +0100
+Subject: [PATCH] notifyd: Fix SIGBUS on sparc
+
+Problem is the structure "struct notify_instance" can lay in message buffer on
+address not dividable by 8 but this structure begins by uint_64 (secs in
+time-stamp). Structure should be re-packed to standalone buffer before the use.
+
+Bug: https://bugzilla.samba.org/show_bug.cgi?id=13704
+Signed-off-by: jiri.sasek@oracle.com
+Reviewed-by: Volker Lendecke <vl@samba.org>
+---
+ source3/smbd/notifyd/notifyd.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/source3/smbd/notifyd/notifyd.c b/source3/smbd/notifyd/notifyd.c
+index 811ada969fb..6ff1de5b5fe 100644
+--- a/source3/smbd/notifyd/notifyd.c
++++ b/source3/smbd/notifyd/notifyd.c
+@@ -575,6 +575,7 @@ static void notifyd_rec_change(struct messaging_context *msg_ctx,
+ 	struct notify_rec_change_msg *msg;
+ 	size_t pathlen;
+ 	bool ok;
++	struct notify_instance instance;
+ 
+ 	DBG_DEBUG("Got %zu bytes from %s\n", data->length,
+ 		  server_id_str_buf(src, &idbuf));
+@@ -585,8 +586,10 @@ static void notifyd_rec_change(struct messaging_context *msg_ctx,
+ 		return;
+ 	}
+ 
++	memcpy(&instance, &msg->instance, sizeof(instance)); /* avoid SIGBUS */
++
+ 	ok = notifyd_apply_rec_change(
+-		&src, msg->path, pathlen, &msg->instance,
++		&src, msg->path, pathlen, &instance,
+ 		state->entries, state->sys_notify_watch, state->sys_notify_ctx,
+ 		state->msg_ctx);
+ 	if (!ok) {
+@@ -1337,6 +1340,7 @@ static void notifyd_apply_reclog(struct notifyd_peer *peer,
+ 		struct notify_rec_change_msg *chg;
+ 		size_t pathlen;
+ 		bool ok;
++		struct notify_instance instance;
+ 
+ 		ok = notifyd_parse_rec_change(r->buf.data, r->buf.length,
+ 					      &chg, &pathlen);
+@@ -1346,8 +1350,11 @@ static void notifyd_apply_reclog(struct notifyd_peer *peer,
+ 			goto fail;
+ 		}
+ 
++		/* avoid SIGBUS */
++		memcpy(&instance, &chg->instance, sizeof(instance));
++
+ 		ok = notifyd_apply_rec_change(&r->src, chg->path, pathlen,
+-					      &chg->instance, peer->db,
++					      &instance, peer->db,
+ 					      state->sys_notify_watch,
+ 					      state->sys_notify_ctx,
+ 					      state->msg_ctx);
+-- 
+2.11.0
+
