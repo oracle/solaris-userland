@@ -20,20 +20,11 @@
 #
 
 #
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
 #
-$mapfile_version 2
 
-SYMBOL_SCOPE {
-    global:
-        arc4random_addrandom {
-                FILTER { FILTEE = libc.so.1; TYPE = WEAK };
-                TYPE=function;
-                FLAGS=nodirect;
-        };
-        arc4random_buf {
-                FILTER { FILTEE = libc.so.1; TYPE = WEAK };
-                TYPE=function;
-                FLAGS=nodirect;
-        };
-};
+# Don't ship event_rpcgen.py files
+<transform file path=.*event_rpcgen.py -> drop>
+
+# Don't ship anything with llib-levent in its name
+<transform file path=.*llib-levent(|\.ln) -> drop>

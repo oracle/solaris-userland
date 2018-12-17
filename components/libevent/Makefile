@@ -27,17 +27,17 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libevent
-COMPONENT_VERSION=	2.0.22
+COMPONENT_VERSION=	2.1.8
 COMPONENT_PROJECT_URL=	http://libevent.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-stable
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:71c2c49f0adadacfdbe6332a372c38cf9c8b7895bb73dabeaa53cdcc1d4e1fa3
+    sha256:965cc5a8bb46ce4199a47e9b2c9e1cae3b137e8356ffdad6d94d3b9069b71dc2
 COMPONENT_ARCHIVE_URL=	https://github.com/libevent/libevent/releases/download/release-$(COMPONENT_VERSION)-stable/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/libevent
 COMPONENT_ANITYA_ID=	1606
 
-TPNO=			27840	
+TPNO=			43396
 
 TEST_TARGET= install $(TEST_32_and_64)
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_32_and_64)
@@ -45,14 +45,6 @@ include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_PRE_CONFIGURE_ACTION =  \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
-
-# Use a mapfile specifying NODIRECT flags for the arc4random_addrandom and
-# arc4random symbols in libevent, combined with a filter pointing it to libc,
-# to allow other executables (such as firefox) to continue to work.
-COMPONENT_POST_CONFIGURE_ACTION += \
-        $(GSED) -i -e \
-	's|libevent_la_LDFLAGS = |libevent_la_LDFLAGS = -Wl,-M,../../mapfile |' \
-	$(SOURCE_DIR)/Makefile.in ;
 
 # The original manpage is in a format that the Solaris man command does not
 # understand. Hence it has been manually converted.
@@ -64,6 +56,10 @@ COMPONENT_POST_CONFIGURE_ACTION += \
 CONFIGURE_OPTIONS	+= CFLAGS="$(CFLAGS)"
 CONFIGURE_OPTIONS	+= --disable-static
 
+# Libevent stores many of its header files in the build include directory. This
+# adds the additional path for linter to process.
+LINT_FLAGS += -I$(@D)/include
+
 # 32 and 64 bits event-config.h headers need to be merged to the final one.
 EVENTH=include/event2/event-config.h
 $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
@@ -74,11 +70,7 @@ $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
 TEST_LIBPATH.32 =	$(PROTOUSRLIBDIR)
 TEST_LIBPATH.64 =	$(PROTOUSRLIBDIR64)
 COMPONENT_TEST_ENV +=	LD_LIBRARY_PATH=$(TEST_LIBPATH.$(BITS))
-
-COMPONENT_TEST_DIR =		$(@D)/test
 COMPONENT_TEST_TARGETS =	verify
-
-COMPONENT_SYSTEM_TEST_DIR =	$(@D)/test
 COMPONENT_SYSTEM_TEST_TARGETS =	verify
 
 # \x24 represents the character '$'
@@ -89,14 +81,12 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/Leaving directory/d"' \
 	'-e "/^mv -f/d"' \
 	'-e "/^make/d"' \
+	'-e "s|^[ ]*CC.*|XXX_CC_XXX|g" ' \
 	'-e "s|^.*$(CC).*$$|XXX_CC_XXX|g" ' \
 	'-e "s|^.*source=.*libtool=no.*$$|XXX_CC_XXX|g" ' \
 	'-e "s|^.*DEPDIR=.deps.*$$|XXX_CC_XXX|g" ' \
+	'-re "s|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+|XXX_IP_XXX|g" ' \
 	'-e "/^XXX_CC_XXX$$/d" '
-
-# Master test results are the same for 32-bit and 64-bit, so override
-# here, rather than create multiple identical master files.
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
