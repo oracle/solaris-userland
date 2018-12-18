@@ -1,0 +1,35 @@
+Updated version of the Solaris specific changes to perl(1) migrated from
+the old man page gate.  Not appropriate for upstream.
+
+When migrating to a new version, be sure to update the path name in the
+text below.
+
+--- a/pod/perl.pod
++++ b/pod/perl.pod
+@@ -285,6 +285,11 @@ aux c2ph h2ph h2xs perlbug pl2pm pod2html pod2man splain xsubpp
+ On a Unix-like system, these documentation files will usually also be
+ available as manpages for use with the F<man> program.
+ 
++On Oracle Solaris, they are installed in the F</usr/perl5/5.22/man> directory,
++so may be accessed by including that directory in the C<MANPATH> environment
++variable or by passing it as the argument to the B<-M> flag to the F<man>
++command.
++
+ Some documentation is not available as man pages, so if a
+ cross-reference is not found by man, try it with L<perldoc>.  Perldoc can
+ also take you directly to documentation for functions (with the B<-f>
+@@ -417,3 +422,14 @@ how many more is left as an exercise to the reader.
+ The three principal virtues of a programmer are Laziness,
+ Impatience, and Hubris.  See the Camel Book for why.
+ 
++=head2 Oracle Solaris Specific Notes
++
++The perl versions shipped with Solaris are installed in version-specific
++subdirectories under F</usr/perl5>, so that they can coexist with other
++versions of perl, including a customer-installed Perl in another location.
++
++The F<vendor_perl> subdirectory is reserved for modules provided with the
++operating system.
++
++Links from F</usr/bin> and the top level of F</usr/perl5> to a specific
++version of perl are controlled via the B<pkg>(7) mediator named C<perl>.

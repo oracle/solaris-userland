@@ -24,6 +24,7 @@
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability "pass-through volatile">
+<transform link mediator=perl -> default mediator-version $(PERL_VERSION)>
 #
 set name=pkg.fmri \
     value=pkg:/runtime/perl-526@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
@@ -41,69 +42,38 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 
 # These links (more at the bottom) are mediated so customers may
 # create their own IPS packages and replace perl.
-link path=usr/bin/corelist target=../perl5/5.26/bin/corelist mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/cpan target=../perl5/5.26/bin/cpan mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/enc2xs target=../perl5/5.26/bin/enc2xs mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/encguess target=../perl5/5.26/bin/encguess mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/h2ph target=../perl5/5.26/bin/h2ph mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/h2xs target=../perl5/5.26/bin/h2xs mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/instmodsh target=../perl5/5.26/bin/instmodsh mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/json_pp target=../perl5/5.26/bin/json_pp mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/libnetcfg target=../perl5/5.26/bin/libnetcfg mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/perl target=../perl5/5.26/bin/perl mediator=perl \
-    mediator-version=5.26
+link path=usr/bin/corelist target=../perl5/5.26/bin/corelist mediator=perl
+link path=usr/bin/cpan target=../perl5/5.26/bin/cpan mediator=perl
+link path=usr/bin/enc2xs target=../perl5/5.26/bin/enc2xs mediator=perl
+link path=usr/bin/encguess target=../perl5/5.26/bin/encguess mediator=perl
+link path=usr/bin/h2ph target=../perl5/5.26/bin/h2ph mediator=perl
+link path=usr/bin/h2xs target=../perl5/5.26/bin/h2xs mediator=perl
+link path=usr/bin/instmodsh target=../perl5/5.26/bin/instmodsh mediator=perl
+link path=usr/bin/json_pp target=../perl5/5.26/bin/json_pp mediator=perl
+link path=usr/bin/libnetcfg target=../perl5/5.26/bin/libnetcfg mediator=perl
+link path=usr/bin/perl target=../perl5/5.26/bin/perl mediator=perl
 link path=usr/bin/perl$(COMPONENT_VERSION) \
-    target=../perl5/5.26/bin/perl$(COMPONENT_VERSION) mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/perlbug target=../perl5/5.26/bin/perlbug mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/perldoc target=../perl5/5.26/bin/perldoc mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/perlivp target=../perl5/5.26/bin/perlivp mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/perlthanks target=../perl5/5.26/bin/perlthanks mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/piconv target=../perl5/5.26/bin/piconv mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/pl2pm target=../perl5/5.26/bin/pl2pm mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/pod2html target=../perl5/5.26/bin/pod2html mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/pod2man target=../perl5/5.26/bin/pod2man mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/pod2text target=../perl5/5.26/bin/pod2text mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/pod2usage target=../perl5/5.26/bin/pod2usage mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/podchecker target=../perl5/5.26/bin/podchecker mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/podselect target=../perl5/5.26/bin/podselect mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/prove target=../perl5/5.26/bin/prove mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/ptar target=../perl5/5.26/bin/ptar mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/ptardiff target=../perl5/5.26/bin/ptardiff mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/ptargrep target=../perl5/5.26/bin/ptargrep mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/shasum target=../perl5/5.26/bin/shasum mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/splain target=../perl5/5.26/bin/splain mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/xsubpp target=../perl5/5.26/bin/xsubpp mediator=perl \
-    mediator-version=5.26
-link path=usr/bin/zipdetails target=../perl5/5.26/bin/zipdetails mediator=perl \
-    mediator-version=5.26
+    target=../perl5/5.26/bin/perl$(COMPONENT_VERSION) mediator=perl
+link path=usr/bin/perlbug target=../perl5/5.26/bin/perlbug mediator=perl
+link path=usr/bin/perldoc target=../perl5/5.26/bin/perldoc mediator=perl
+link path=usr/bin/perlivp target=../perl5/5.26/bin/perlivp mediator=perl
+link path=usr/bin/perlthanks target=../perl5/5.26/bin/perlthanks mediator=perl
+link path=usr/bin/piconv target=../perl5/5.26/bin/piconv mediator=perl
+link path=usr/bin/pl2pm target=../perl5/5.26/bin/pl2pm mediator=perl
+link path=usr/bin/pod2html target=../perl5/5.26/bin/pod2html mediator=perl
+link path=usr/bin/pod2man target=../perl5/5.26/bin/pod2man mediator=perl
+link path=usr/bin/pod2text target=../perl5/5.26/bin/pod2text mediator=perl
+link path=usr/bin/pod2usage target=../perl5/5.26/bin/pod2usage mediator=perl
+link path=usr/bin/podchecker target=../perl5/5.26/bin/podchecker mediator=perl
+link path=usr/bin/podselect target=../perl5/5.26/bin/podselect mediator=perl
+link path=usr/bin/prove target=../perl5/5.26/bin/prove mediator=perl
+link path=usr/bin/ptar target=../perl5/5.26/bin/ptar mediator=perl
+link path=usr/bin/ptardiff target=../perl5/5.26/bin/ptardiff mediator=perl
+link path=usr/bin/ptargrep target=../perl5/5.26/bin/ptargrep mediator=perl
+link path=usr/bin/shasum target=../perl5/5.26/bin/shasum mediator=perl
+link path=usr/bin/splain target=../perl5/5.26/bin/splain mediator=perl
+link path=usr/bin/xsubpp target=../perl5/5.26/bin/xsubpp mediator=perl
+link path=usr/bin/zipdetails target=../perl5/5.26/bin/zipdetails mediator=perl
 file path=usr/perl5/5.26/bin/corelist
 file path=usr/perl5/5.26/bin/cpan
 file path=usr/perl5/5.26/bin/enc2xs
@@ -2513,9 +2483,459 @@ file path=usr/perl5/5.26/man/man3/warnings.3
 file path=usr/perl5/5.26/man/man3/warnings::register.3
 # These links are mediated so customers may create their own IPS
 # packages and replace perl.
-link path=usr/perl5/bin target=5.26/bin mediator=perl mediator-version=5.26
-link path=usr/perl5/man target=5.26/man mediator=perl mediator-version=5.26
-link path=usr/perl5/pod target=5.26/lib/pod mediator=perl mediator-version=5.26
+link path=usr/perl5/bin target=5.26/bin mediator=perl
+link path=usr/perl5/man target=5.26/man mediator=perl
+link path=usr/perl5/pod target=5.26/lib/pod mediator=perl
 dir  path=usr/perl5/site_perl/5.26/$(P_ARCH)-solaris-thread-multi-64
+link path=usr/share/man/man1/corelist.1 \
+    target=../../../perl5/5.26/man/man1/corelist.1 mediator=perl
+link path=usr/share/man/man1/cpan.1 target=../../../perl5/5.26/man/man1/cpan.1 \
+    mediator=perl
+link path=usr/share/man/man1/enc2xs.1 \
+    target=../../../perl5/5.26/man/man1/enc2xs.1 mediator=perl
+link path=usr/share/man/man1/encguess.1 \
+    target=../../../perl5/5.26/man/man1/encguess.1 mediator=perl
+link path=usr/share/man/man1/h2ph.1 target=../../../perl5/5.26/man/man1/h2ph.1 \
+    mediator=perl
+link path=usr/share/man/man1/h2xs.1 target=../../../perl5/5.26/man/man1/h2xs.1 \
+    mediator=perl
+link path=usr/share/man/man1/instmodsh.1 \
+    target=../../../perl5/5.26/man/man1/instmodsh.1 mediator=perl
+link path=usr/share/man/man1/json_pp.1 \
+    target=../../../perl5/5.26/man/man1/json_pp.1 mediator=perl
+link path=usr/share/man/man1/libnetcfg.1 \
+    target=../../../perl5/5.26/man/man1/libnetcfg.1 mediator=perl
+link path=usr/share/man/man1/perl.1 target=../../../perl5/5.26/man/man1/perl.1 \
+    mediator=perl
+link path=usr/share/man/man1/perl5004delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5004delta.1 mediator=perl
+link path=usr/share/man/man1/perl5005delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5005delta.1 mediator=perl
+link path=usr/share/man/man1/perl5100delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5100delta.1 mediator=perl
+link path=usr/share/man/man1/perl5101delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5101delta.1 mediator=perl
+link path=usr/share/man/man1/perl5120delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5120delta.1 mediator=perl
+link path=usr/share/man/man1/perl5121delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5121delta.1 mediator=perl
+link path=usr/share/man/man1/perl5122delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5122delta.1 mediator=perl
+link path=usr/share/man/man1/perl5123delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5123delta.1 mediator=perl
+link path=usr/share/man/man1/perl5124delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5124delta.1 mediator=perl
+link path=usr/share/man/man1/perl5125delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5125delta.1 mediator=perl
+link path=usr/share/man/man1/perl5140delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5140delta.1 mediator=perl
+link path=usr/share/man/man1/perl5141delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5141delta.1 mediator=perl
+link path=usr/share/man/man1/perl5142delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5142delta.1 mediator=perl
+link path=usr/share/man/man1/perl5143delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5143delta.1 mediator=perl
+link path=usr/share/man/man1/perl5144delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5144delta.1 mediator=perl
+link path=usr/share/man/man1/perl5160delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5160delta.1 mediator=perl
+link path=usr/share/man/man1/perl5161delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5161delta.1 mediator=perl
+link path=usr/share/man/man1/perl5162delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5162delta.1 mediator=perl
+link path=usr/share/man/man1/perl5163delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5163delta.1 mediator=perl
+link path=usr/share/man/man1/perl5180delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5180delta.1 mediator=perl
+link path=usr/share/man/man1/perl5181delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5181delta.1 mediator=perl
+link path=usr/share/man/man1/perl5182delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5182delta.1 mediator=perl
+link path=usr/share/man/man1/perl5184delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5184delta.1 mediator=perl
+link path=usr/share/man/man1/perl5200delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5200delta.1 mediator=perl
+link path=usr/share/man/man1/perl5201delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5201delta.1 mediator=perl
+link path=usr/share/man/man1/perl5202delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5202delta.1 mediator=perl
+link path=usr/share/man/man1/perl5203delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5203delta.1 mediator=perl
+link path=usr/share/man/man1/perl5220delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5220delta.1 mediator=perl
+link path=usr/share/man/man1/perl5221delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5221delta.1 mediator=perl
+link path=usr/share/man/man1/perl5222delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5222delta.1 mediator=perl
+link path=usr/share/man/man1/perl5223delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5223delta.1 mediator=perl
+link path=usr/share/man/man1/perl5224delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5224delta.1 mediator=perl
+link path=usr/share/man/man1/perl5240delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5240delta.1 mediator=perl
+link path=usr/share/man/man1/perl5241delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5241delta.1 mediator=perl
+link path=usr/share/man/man1/perl5242delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5242delta.1 mediator=perl
+link path=usr/share/man/man1/perl5243delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5243delta.1 mediator=perl
+link path=usr/share/man/man1/perl5244delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5244delta.1 mediator=perl
+link path=usr/share/man/man1/perl5260delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5260delta.1 mediator=perl
+link path=usr/share/man/man1/perl5261delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5261delta.1 mediator=perl
+link path=usr/share/man/man1/perl5262delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5262delta.1 mediator=perl
+link path=usr/share/man/man1/perl5263delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5263delta.1 mediator=perl
+link path=usr/share/man/man1/perl5280delta.1 \
+    target=../../../perl5/5.26/man/man1/perl5280delta.1 mediator=perl
+link path=usr/share/man/man1/perl561delta.1 \
+    target=../../../perl5/5.26/man/man1/perl561delta.1 mediator=perl
+link path=usr/share/man/man1/perl56delta.1 \
+    target=../../../perl5/5.26/man/man1/perl56delta.1 mediator=perl
+link path=usr/share/man/man1/perl581delta.1 \
+    target=../../../perl5/5.26/man/man1/perl581delta.1 mediator=perl
+link path=usr/share/man/man1/perl582delta.1 \
+    target=../../../perl5/5.26/man/man1/perl582delta.1 mediator=perl
+link path=usr/share/man/man1/perl583delta.1 \
+    target=../../../perl5/5.26/man/man1/perl583delta.1 mediator=perl
+link path=usr/share/man/man1/perl584delta.1 \
+    target=../../../perl5/5.26/man/man1/perl584delta.1 mediator=perl
+link path=usr/share/man/man1/perl585delta.1 \
+    target=../../../perl5/5.26/man/man1/perl585delta.1 mediator=perl
+link path=usr/share/man/man1/perl586delta.1 \
+    target=../../../perl5/5.26/man/man1/perl586delta.1 mediator=perl
+link path=usr/share/man/man1/perl587delta.1 \
+    target=../../../perl5/5.26/man/man1/perl587delta.1 mediator=perl
+link path=usr/share/man/man1/perl588delta.1 \
+    target=../../../perl5/5.26/man/man1/perl588delta.1 mediator=perl
+link path=usr/share/man/man1/perl589delta.1 \
+    target=../../../perl5/5.26/man/man1/perl589delta.1 mediator=perl
+link path=usr/share/man/man1/perl58delta.1 \
+    target=../../../perl5/5.26/man/man1/perl58delta.1 mediator=perl
+link path=usr/share/man/man1/perlaix.1 \
+    target=../../../perl5/5.26/man/man1/perlaix.1 mediator=perl
+link path=usr/share/man/man1/perlamiga.1 \
+    target=../../../perl5/5.26/man/man1/perlamiga.1 mediator=perl
+link path=usr/share/man/man1/perlandroid.1 \
+    target=../../../perl5/5.26/man/man1/perlandroid.1 mediator=perl
+link path=usr/share/man/man1/perlapi.1 \
+    target=../../../perl5/5.26/man/man1/perlapi.1 mediator=perl
+link path=usr/share/man/man1/perlapio.1 \
+    target=../../../perl5/5.26/man/man1/perlapio.1 mediator=perl
+link path=usr/share/man/man1/perlartistic.1 \
+    target=../../../perl5/5.26/man/man1/perlartistic.1 mediator=perl
+link path=usr/share/man/man1/perlbook.1 \
+    target=../../../perl5/5.26/man/man1/perlbook.1 mediator=perl
+link path=usr/share/man/man1/perlboot.1 \
+    target=../../../perl5/5.26/man/man1/perlboot.1 mediator=perl
+link path=usr/share/man/man1/perlbot.1 \
+    target=../../../perl5/5.26/man/man1/perlbot.1 mediator=perl
+link path=usr/share/man/man1/perlbs2000.1 \
+    target=../../../perl5/5.26/man/man1/perlbs2000.1 mediator=perl
+link path=usr/share/man/man1/perlbug.1 \
+    target=../../../perl5/5.26/man/man1/perlbug.1 mediator=perl
+link path=usr/share/man/man1/perlcall.1 \
+    target=../../../perl5/5.26/man/man1/perlcall.1 mediator=perl
+link path=usr/share/man/man1/perlce.1 \
+    target=../../../perl5/5.26/man/man1/perlce.1 mediator=perl
+link path=usr/share/man/man1/perlcheat.1 \
+    target=../../../perl5/5.26/man/man1/perlcheat.1 mediator=perl
+link path=usr/share/man/man1/perlclib.1 \
+    target=../../../perl5/5.26/man/man1/perlclib.1 mediator=perl
+link path=usr/share/man/man1/perlcn.1 \
+    target=../../../perl5/5.26/man/man1/perlcn.1 mediator=perl
+link path=usr/share/man/man1/perlcommunity.1 \
+    target=../../../perl5/5.26/man/man1/perlcommunity.1 mediator=perl
+link path=usr/share/man/man1/perlcygwin.1 \
+    target=../../../perl5/5.26/man/man1/perlcygwin.1 mediator=perl
+link path=usr/share/man/man1/perldata.1 \
+    target=../../../perl5/5.26/man/man1/perldata.1 mediator=perl
+link path=usr/share/man/man1/perldbmfilter.1 \
+    target=../../../perl5/5.26/man/man1/perldbmfilter.1 mediator=perl
+link path=usr/share/man/man1/perldebguts.1 \
+    target=../../../perl5/5.26/man/man1/perldebguts.1 mediator=perl
+link path=usr/share/man/man1/perldebtut.1 \
+    target=../../../perl5/5.26/man/man1/perldebtut.1 mediator=perl
+link path=usr/share/man/man1/perldebug.1 \
+    target=../../../perl5/5.26/man/man1/perldebug.1 mediator=perl
+link path=usr/share/man/man1/perldelta.1 \
+    target=../../../perl5/5.26/man/man1/perldelta.1 mediator=perl
+link path=usr/share/man/man1/perldeprecation.1 \
+    target=../../../perl5/5.26/man/man1/perldeprecation.1 mediator=perl
+link path=usr/share/man/man1/perldiag.1 \
+    target=../../../perl5/5.26/man/man1/perldiag.1 mediator=perl
+link path=usr/share/man/man1/perldoc.1 \
+    target=../../../perl5/5.26/man/man1/perldoc.1 mediator=perl
+link path=usr/share/man/man1/perldos.1 \
+    target=../../../perl5/5.26/man/man1/perldos.1 mediator=perl
+link path=usr/share/man/man1/perldsc.1 \
+    target=../../../perl5/5.26/man/man1/perldsc.1 mediator=perl
+link path=usr/share/man/man1/perldtrace.1 \
+    target=../../../perl5/5.26/man/man1/perldtrace.1 mediator=perl
+link path=usr/share/man/man1/perlebcdic.1 \
+    target=../../../perl5/5.26/man/man1/perlebcdic.1 mediator=perl
+link path=usr/share/man/man1/perlembed.1 \
+    target=../../../perl5/5.26/man/man1/perlembed.1 mediator=perl
+link path=usr/share/man/man1/perlexperiment.1 \
+    target=../../../perl5/5.26/man/man1/perlexperiment.1 mediator=perl
+link path=usr/share/man/man1/perlfaq.1 \
+    target=../../../perl5/5.26/man/man1/perlfaq.1 mediator=perl
+link path=usr/share/man/man1/perlfaq1.1 \
+    target=../../../perl5/5.26/man/man1/perlfaq1.1 mediator=perl
+link path=usr/share/man/man1/perlfaq2.1 \
+    target=../../../perl5/5.26/man/man1/perlfaq2.1 mediator=perl
+link path=usr/share/man/man1/perlfaq3.1 \
+    target=../../../perl5/5.26/man/man1/perlfaq3.1 mediator=perl
+link path=usr/share/man/man1/perlfaq4.1 \
+    target=../../../perl5/5.26/man/man1/perlfaq4.1 mediator=perl
+link path=usr/share/man/man1/perlfaq5.1 \
+    target=../../../perl5/5.26/man/man1/perlfaq5.1 mediator=perl
+link path=usr/share/man/man1/perlfaq6.1 \
+    target=../../../perl5/5.26/man/man1/perlfaq6.1 mediator=perl
+link path=usr/share/man/man1/perlfaq7.1 \
+    target=../../../perl5/5.26/man/man1/perlfaq7.1 mediator=perl
+link path=usr/share/man/man1/perlfaq8.1 \
+    target=../../../perl5/5.26/man/man1/perlfaq8.1 mediator=perl
+link path=usr/share/man/man1/perlfaq9.1 \
+    target=../../../perl5/5.26/man/man1/perlfaq9.1 mediator=perl
+link path=usr/share/man/man1/perlfilter.1 \
+    target=../../../perl5/5.26/man/man1/perlfilter.1 mediator=perl
+link path=usr/share/man/man1/perlfork.1 \
+    target=../../../perl5/5.26/man/man1/perlfork.1 mediator=perl
+link path=usr/share/man/man1/perlform.1 \
+    target=../../../perl5/5.26/man/man1/perlform.1 mediator=perl
+link path=usr/share/man/man1/perlfreebsd.1 \
+    target=../../../perl5/5.26/man/man1/perlfreebsd.1 mediator=perl
+link path=usr/share/man/man1/perlfunc.1 \
+    target=../../../perl5/5.26/man/man1/perlfunc.1 mediator=perl
+link path=usr/share/man/man1/perlgit.1 \
+    target=../../../perl5/5.26/man/man1/perlgit.1 mediator=perl
+link path=usr/share/man/man1/perlglossary.1 \
+    target=../../../perl5/5.26/man/man1/perlglossary.1 mediator=perl
+link path=usr/share/man/man1/perlgpl.1 \
+    target=../../../perl5/5.26/man/man1/perlgpl.1 mediator=perl
+link path=usr/share/man/man1/perlguts.1 \
+    target=../../../perl5/5.26/man/man1/perlguts.1 mediator=perl
+link path=usr/share/man/man1/perlhack.1 \
+    target=../../../perl5/5.26/man/man1/perlhack.1 mediator=perl
+link path=usr/share/man/man1/perlhacktips.1 \
+    target=../../../perl5/5.26/man/man1/perlhacktips.1 mediator=perl
+link path=usr/share/man/man1/perlhacktut.1 \
+    target=../../../perl5/5.26/man/man1/perlhacktut.1 mediator=perl
+link path=usr/share/man/man1/perlhaiku.1 \
+    target=../../../perl5/5.26/man/man1/perlhaiku.1 mediator=perl
+link path=usr/share/man/man1/perlhist.1 \
+    target=../../../perl5/5.26/man/man1/perlhist.1 mediator=perl
+link path=usr/share/man/man1/perlhpux.1 \
+    target=../../../perl5/5.26/man/man1/perlhpux.1 mediator=perl
+link path=usr/share/man/man1/perlhurd.1 \
+    target=../../../perl5/5.26/man/man1/perlhurd.1 mediator=perl
+link path=usr/share/man/man1/perlintern.1 \
+    target=../../../perl5/5.26/man/man1/perlintern.1 mediator=perl
+link path=usr/share/man/man1/perlinterp.1 \
+    target=../../../perl5/5.26/man/man1/perlinterp.1 mediator=perl
+link path=usr/share/man/man1/perlintro.1 \
+    target=../../../perl5/5.26/man/man1/perlintro.1 mediator=perl
+link path=usr/share/man/man1/perliol.1 \
+    target=../../../perl5/5.26/man/man1/perliol.1 mediator=perl
+link path=usr/share/man/man1/perlipc.1 \
+    target=../../../perl5/5.26/man/man1/perlipc.1 mediator=perl
+link path=usr/share/man/man1/perlirix.1 \
+    target=../../../perl5/5.26/man/man1/perlirix.1 mediator=perl
+link path=usr/share/man/man1/perlivp.1 \
+    target=../../../perl5/5.26/man/man1/perlivp.1 mediator=perl
+link path=usr/share/man/man1/perljp.1 \
+    target=../../../perl5/5.26/man/man1/perljp.1 mediator=perl
+link path=usr/share/man/man1/perlko.1 \
+    target=../../../perl5/5.26/man/man1/perlko.1 mediator=perl
+link path=usr/share/man/man1/perllexwarn.1 \
+    target=../../../perl5/5.26/man/man1/perllexwarn.1 mediator=perl
+link path=usr/share/man/man1/perllinux.1 \
+    target=../../../perl5/5.26/man/man1/perllinux.1 mediator=perl
+link path=usr/share/man/man1/perllocale.1 \
+    target=../../../perl5/5.26/man/man1/perllocale.1 mediator=perl
+link path=usr/share/man/man1/perllol.1 \
+    target=../../../perl5/5.26/man/man1/perllol.1 mediator=perl
+link path=usr/share/man/man1/perlmacos.1 \
+    target=../../../perl5/5.26/man/man1/perlmacos.1 mediator=perl
+link path=usr/share/man/man1/perlmacosx.1 \
+    target=../../../perl5/5.26/man/man1/perlmacosx.1 mediator=perl
+link path=usr/share/man/man1/perlmod.1 \
+    target=../../../perl5/5.26/man/man1/perlmod.1 mediator=perl
+link path=usr/share/man/man1/perlmodinstall.1 \
+    target=../../../perl5/5.26/man/man1/perlmodinstall.1 mediator=perl
+link path=usr/share/man/man1/perlmodlib.1 \
+    target=../../../perl5/5.26/man/man1/perlmodlib.1 mediator=perl
+link path=usr/share/man/man1/perlmodstyle.1 \
+    target=../../../perl5/5.26/man/man1/perlmodstyle.1 mediator=perl
+link path=usr/share/man/man1/perlmroapi.1 \
+    target=../../../perl5/5.26/man/man1/perlmroapi.1 mediator=perl
+link path=usr/share/man/man1/perlnetware.1 \
+    target=../../../perl5/5.26/man/man1/perlnetware.1 mediator=perl
+link path=usr/share/man/man1/perlnewmod.1 \
+    target=../../../perl5/5.26/man/man1/perlnewmod.1 mediator=perl
+link path=usr/share/man/man1/perlnumber.1 \
+    target=../../../perl5/5.26/man/man1/perlnumber.1 mediator=perl
+link path=usr/share/man/man1/perlobj.1 \
+    target=../../../perl5/5.26/man/man1/perlobj.1 mediator=perl
+link path=usr/share/man/man1/perlootut.1 \
+    target=../../../perl5/5.26/man/man1/perlootut.1 mediator=perl
+link path=usr/share/man/man1/perlop.1 \
+    target=../../../perl5/5.26/man/man1/perlop.1 mediator=perl
+link path=usr/share/man/man1/perlopenbsd.1 \
+    target=../../../perl5/5.26/man/man1/perlopenbsd.1 mediator=perl
+link path=usr/share/man/man1/perlopentut.1 \
+    target=../../../perl5/5.26/man/man1/perlopentut.1 mediator=perl
+link path=usr/share/man/man1/perlos2.1 \
+    target=../../../perl5/5.26/man/man1/perlos2.1 mediator=perl
+link path=usr/share/man/man1/perlos390.1 \
+    target=../../../perl5/5.26/man/man1/perlos390.1 mediator=perl
+link path=usr/share/man/man1/perlos400.1 \
+    target=../../../perl5/5.26/man/man1/perlos400.1 mediator=perl
+link path=usr/share/man/man1/perlpacktut.1 \
+    target=../../../perl5/5.26/man/man1/perlpacktut.1 mediator=perl
+link path=usr/share/man/man1/perlperf.1 \
+    target=../../../perl5/5.26/man/man1/perlperf.1 mediator=perl
+link path=usr/share/man/man1/perlplan9.1 \
+    target=../../../perl5/5.26/man/man1/perlplan9.1 mediator=perl
+link path=usr/share/man/man1/perlpod.1 \
+    target=../../../perl5/5.26/man/man1/perlpod.1 mediator=perl
+link path=usr/share/man/man1/perlpodspec.1 \
+    target=../../../perl5/5.26/man/man1/perlpodspec.1 mediator=perl
+link path=usr/share/man/man1/perlpodstyle.1 \
+    target=../../../perl5/5.26/man/man1/perlpodstyle.1 mediator=perl
+link path=usr/share/man/man1/perlpolicy.1 \
+    target=../../../perl5/5.26/man/man1/perlpolicy.1 mediator=perl
+link path=usr/share/man/man1/perlport.1 \
+    target=../../../perl5/5.26/man/man1/perlport.1 mediator=perl
+link path=usr/share/man/man1/perlpragma.1 \
+    target=../../../perl5/5.26/man/man1/perlpragma.1 mediator=perl
+link path=usr/share/man/man1/perlqnx.1 \
+    target=../../../perl5/5.26/man/man1/perlqnx.1 mediator=perl
+link path=usr/share/man/man1/perlre.1 \
+    target=../../../perl5/5.26/man/man1/perlre.1 mediator=perl
+link path=usr/share/man/man1/perlreapi.1 \
+    target=../../../perl5/5.26/man/man1/perlreapi.1 mediator=perl
+link path=usr/share/man/man1/perlrebackslash.1 \
+    target=../../../perl5/5.26/man/man1/perlrebackslash.1 mediator=perl
+link path=usr/share/man/man1/perlrecharclass.1 \
+    target=../../../perl5/5.26/man/man1/perlrecharclass.1 mediator=perl
+link path=usr/share/man/man1/perlref.1 \
+    target=../../../perl5/5.26/man/man1/perlref.1 mediator=perl
+link path=usr/share/man/man1/perlreftut.1 \
+    target=../../../perl5/5.26/man/man1/perlreftut.1 mediator=perl
+link path=usr/share/man/man1/perlreguts.1 \
+    target=../../../perl5/5.26/man/man1/perlreguts.1 mediator=perl
+link path=usr/share/man/man1/perlrepository.1 \
+    target=../../../perl5/5.26/man/man1/perlrepository.1 mediator=perl
+link path=usr/share/man/man1/perlrequick.1 \
+    target=../../../perl5/5.26/man/man1/perlrequick.1 mediator=perl
+link path=usr/share/man/man1/perlreref.1 \
+    target=../../../perl5/5.26/man/man1/perlreref.1 mediator=perl
+link path=usr/share/man/man1/perlretut.1 \
+    target=../../../perl5/5.26/man/man1/perlretut.1 mediator=perl
+link path=usr/share/man/man1/perlriscos.1 \
+    target=../../../perl5/5.26/man/man1/perlriscos.1 mediator=perl
+link path=usr/share/man/man1/perlrun.1 \
+    target=../../../perl5/5.26/man/man1/perlrun.1 mediator=perl
+link path=usr/share/man/man1/perlsec.1 \
+    target=../../../perl5/5.26/man/man1/perlsec.1 mediator=perl
+link path=usr/share/man/man1/perlsolaris.1 \
+    target=../../../perl5/5.26/man/man1/perlsolaris.1 mediator=perl
+link path=usr/share/man/man1/perlsource.1 \
+    target=../../../perl5/5.26/man/man1/perlsource.1 mediator=perl
+link path=usr/share/man/man1/perlstyle.1 \
+    target=../../../perl5/5.26/man/man1/perlstyle.1 mediator=perl
+link path=usr/share/man/man1/perlsub.1 \
+    target=../../../perl5/5.26/man/man1/perlsub.1 mediator=perl
+link path=usr/share/man/man1/perlsymbian.1 \
+    target=../../../perl5/5.26/man/man1/perlsymbian.1 mediator=perl
+link path=usr/share/man/man1/perlsyn.1 \
+    target=../../../perl5/5.26/man/man1/perlsyn.1 mediator=perl
+link path=usr/share/man/man1/perlsynology.1 \
+    target=../../../perl5/5.26/man/man1/perlsynology.1 mediator=perl
+link path=usr/share/man/man1/perlthanks.1 \
+    target=../../../perl5/5.26/man/man1/perlthanks.1 mediator=perl
+link path=usr/share/man/man1/perlthrtut.1 \
+    target=../../../perl5/5.26/man/man1/perlthrtut.1 mediator=perl
+link path=usr/share/man/man1/perltie.1 \
+    target=../../../perl5/5.26/man/man1/perltie.1 mediator=perl
+link path=usr/share/man/man1/perltoc.1 \
+    target=../../../perl5/5.26/man/man1/perltoc.1 mediator=perl
+link path=usr/share/man/man1/perltodo.1 \
+    target=../../../perl5/5.26/man/man1/perltodo.1 mediator=perl
+link path=usr/share/man/man1/perltooc.1 \
+    target=../../../perl5/5.26/man/man1/perltooc.1 mediator=perl
+link path=usr/share/man/man1/perltoot.1 \
+    target=../../../perl5/5.26/man/man1/perltoot.1 mediator=perl
+link path=usr/share/man/man1/perltrap.1 \
+    target=../../../perl5/5.26/man/man1/perltrap.1 mediator=perl
+link path=usr/share/man/man1/perltru64.1 \
+    target=../../../perl5/5.26/man/man1/perltru64.1 mediator=perl
+link path=usr/share/man/man1/perltw.1 \
+    target=../../../perl5/5.26/man/man1/perltw.1 mediator=perl
+link path=usr/share/man/man1/perlunicode.1 \
+    target=../../../perl5/5.26/man/man1/perlunicode.1 mediator=perl
+link path=usr/share/man/man1/perlunicook.1 \
+    target=../../../perl5/5.26/man/man1/perlunicook.1 mediator=perl
+link path=usr/share/man/man1/perlunifaq.1 \
+    target=../../../perl5/5.26/man/man1/perlunifaq.1 mediator=perl
+link path=usr/share/man/man1/perluniintro.1 \
+    target=../../../perl5/5.26/man/man1/perluniintro.1 mediator=perl
+link path=usr/share/man/man1/perluniprops.1 \
+    target=../../../perl5/5.26/man/man1/perluniprops.1 mediator=perl
+link path=usr/share/man/man1/perlunitut.1 \
+    target=../../../perl5/5.26/man/man1/perlunitut.1 mediator=perl
+link path=usr/share/man/man1/perlutil.1 \
+    target=../../../perl5/5.26/man/man1/perlutil.1 mediator=perl
+link path=usr/share/man/man1/perlvar.1 \
+    target=../../../perl5/5.26/man/man1/perlvar.1 mediator=perl
+link path=usr/share/man/man1/perlvms.1 \
+    target=../../../perl5/5.26/man/man1/perlvms.1 mediator=perl
+link path=usr/share/man/man1/perlvos.1 \
+    target=../../../perl5/5.26/man/man1/perlvos.1 mediator=perl
+link path=usr/share/man/man1/perlwin32.1 \
+    target=../../../perl5/5.26/man/man1/perlwin32.1 mediator=perl
+link path=usr/share/man/man1/perlxs.1 \
+    target=../../../perl5/5.26/man/man1/perlxs.1 mediator=perl
+link path=usr/share/man/man1/perlxstut.1 \
+    target=../../../perl5/5.26/man/man1/perlxstut.1 mediator=perl
+link path=usr/share/man/man1/perlxstypemap.1 \
+    target=../../../perl5/5.26/man/man1/perlxstypemap.1 mediator=perl
+link path=usr/share/man/man1/piconv.1 \
+    target=../../../perl5/5.26/man/man1/piconv.1 mediator=perl
+link path=usr/share/man/man1/pl2pm.1 \
+    target=../../../perl5/5.26/man/man1/pl2pm.1 mediator=perl
+link path=usr/share/man/man1/pod2html.1 \
+    target=../../../perl5/5.26/man/man1/pod2html.1 mediator=perl
+link path=usr/share/man/man1/pod2man.1 \
+    target=../../../perl5/5.26/man/man1/pod2man.1 mediator=perl
+link path=usr/share/man/man1/pod2text.1 \
+    target=../../../perl5/5.26/man/man1/pod2text.1 mediator=perl
+link path=usr/share/man/man1/pod2usage.1 \
+    target=../../../perl5/5.26/man/man1/pod2usage.1 mediator=perl
+link path=usr/share/man/man1/podchecker.1 \
+    target=../../../perl5/5.26/man/man1/podchecker.1 mediator=perl
+link path=usr/share/man/man1/podselect.1 \
+    target=../../../perl5/5.26/man/man1/podselect.1 mediator=perl
+link path=usr/share/man/man1/prove.1 \
+    target=../../../perl5/5.26/man/man1/prove.1 mediator=perl
+link path=usr/share/man/man1/ptar.1 target=../../../perl5/5.26/man/man1/ptar.1 \
+    mediator=perl
+link path=usr/share/man/man1/ptardiff.1 \
+    target=../../../perl5/5.26/man/man1/ptardiff.1 mediator=perl
+link path=usr/share/man/man1/ptargrep.1 \
+    target=../../../perl5/5.26/man/man1/ptargrep.1 mediator=perl
+link path=usr/share/man/man1/shasum.1 \
+    target=../../../perl5/5.26/man/man1/shasum.1 mediator=perl
+link path=usr/share/man/man1/splain.1 \
+    target=../../../perl5/5.26/man/man1/splain.1 mediator=perl
+link path=usr/share/man/man1/xsubpp.1 \
+    target=../../../perl5/5.26/man/man1/xsubpp.1 mediator=perl
+link path=usr/share/man/man1/zipdetails.1 \
+    target=../../../perl5/5.26/man/man1/zipdetails.1 mediator=perl
 license perl.license license=Artistic
 depend type=require fmri=runtime/perl-common
