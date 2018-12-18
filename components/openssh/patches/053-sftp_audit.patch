@@ -3,9 +3,9 @@
 # Solaris-specific, we will not contribute the changes to the upstream
 # community. 
 #
---- orig/Makefile.in	2017-08-07 14:05:42.911894185 -0700
-+++ new/Makefile.in	2017-08-07 15:47:00.108845025 -0700
-@@ -110,7 +110,7 @@
+--- old/Makefile.in	2018-11-12 18:32:20.781350525 +0000
++++ new/Makefile.in	2018-11-12 19:19:27.852724330 +0000
+@@ -118,7 +118,7 @@ SSHDOBJS=sshd.o auth-rhosts.o auth-passw
  	monitor.o monitor_wrap.o auth-krb5.o \
  	auth2-gss.o gss-serv.o gss-serv-krb5.o kexgsss.o \
  	loginrec.o auth-pam.o auth-shadow.o auth-sia.o md5crypt.o \
@@ -14,7 +14,7 @@
  	sandbox-null.o sandbox-rlimit.o sandbox-systrace.o sandbox-darwin.o \
  	sandbox-seccomp-filter.o sandbox-capsicum.o sandbox-pledge.o \
  	sandbox-solaris.o
-@@ -164,34 +164,34 @@
+@@ -172,34 +172,34 @@ libssh.a: $(LIBSSH_OBJS)
  	$(RANLIB) $@
  
  ssh$(EXEEXT): $(LIBCOMPAT) libssh.a $(SSHOBJS)
@@ -53,15 +53,15 @@
  
  sftp-server$(EXEEXT): $(LIBCOMPAT) libssh.a sftp.o sftp-common.o sftp-server.o sftp-server-main.o sftp_provider.o
 -	$(LD) -o $@ sftp-server.o sftp-common.o sftp-server-main.o sftp_provider.o $(LDFLAGS) -lssh -lopenbsd-compat $(LIBS)
-+	$(LD) -o $@ sftp-server.o sftp-common.o sftp-server-main.o sftp_provider.o sftp-audit-solaris.o $(LDFLAGS) -lbsm -lssh -lopenbsd-compat $(LIBS)
++	  $(LD) -o $@ sftp-server.o sftp-common.o sftp-server-main.o sftp_provider.o sftp-audit-solaris.o $(LDFLAGS) -lbsm -lssh -lopenbsd-compat $(LIBS)
  
  sftp$(EXEEXT): $(LIBCOMPAT) libssh.a sftp.o sftp-client.o sftp-common.o sftp-glob.o progressmeter.o
  	$(LD) -o $@ progressmeter.o sftp.o sftp-client.o sftp-common.o sftp-glob.o $(LDFLAGS) -lssh -lopenbsd-compat $(LIBS) $(LIBEDIT)
---- orig/session.c	2017-08-07 14:05:42.985211950 -0700
-+++ new/session.c	2017-08-09 15:36:15.764849530 -0700
-@@ -95,6 +95,10 @@
- #include "monitor_wrap.h"
+--- old/session.c	2018-11-12 18:32:21.065206842 +0000
++++ new/session.c	2018-11-12 19:26:11.476730541 +0000
+@@ -100,6 +100,10 @@
  #include "sftp.h"
+ #include "atomicio.h"
  
 +#ifdef SFTP_AUDIT
 +#include "sftp-audit-solaris.h"
@@ -70,7 +70,7 @@
  #if defined(KRB5) && defined(USE_AFS)
  #include <kafs.h>
  #endif
-@@ -1393,8 +1411,19 @@
+@@ -1404,8 +1408,19 @@ do_setusercontext(struct passwd *pw)
  		if (!in_chroot && set_id(pw->pw_name) != 0)
  			fatal("set_id(%s) Failed", pw->pw_name);
  # endif /* USE_LIBIAF */
@@ -90,20 +90,20 @@
  #endif
  	} else if (options.chroot_directory != NULL &&
  	    strcasecmp(options.chroot_directory, "none") != 0) {
-@@ -1940,6 +1969,9 @@
+@@ -1948,6 +1963,9 @@ session_subsystem_req(struct ssh *ssh, S
  					    prog, strerror(errno));
  				s->is_subsystem = SUBSYSTEM_EXT;
  				debug("subsystem: exec() %s", cmd);
 +#if defined(USE_SOLARIS_PRIVS) && defined(SFTP_AUDIT)
-+                               solaris_add_audit_privs();
++				solaris_add_audit_privs();
 +#endif
  			}
- 			success = do_exec(s, cmd) == 0;
+ 			success = do_exec(ssh, s, cmd) == 0;
  			break;
-@@ -2562,6 +2577,14 @@
+@@ -2677,6 +2695,14 @@ do_cleanup(struct ssh *ssh, Authctxt *au
  	 */
  	if (!use_privsep || mm_is_monitor())
- 		session_destroy_all(session_pty_cleanup2);
+ 		session_destroy_all(ssh, session_pty_cleanup2);
 +
 +#ifdef SFTP_AUDIT
 +	/*
@@ -111,12 +111,12 @@
 +	 * sftp events
 +	 */
 +	audit_sftp_session_fatal();
-+#endif	
++#endif 
  }
  
  /* Return a name for the remote host that fits inside utmp_size */
---- orig/sftp-server.c	2017-08-07 14:05:43.006433300 -0700
-+++ new/sftp-server.c	2017-08-07 14:05:42.754300140 -0700
+--- old/sftp-server.c	2018-11-12 18:32:20.597216679 +0000
++++ new/sftp-server.c	2018-11-12 20:33:39.468164390 +0000
 @@ -54,6 +54,12 @@
  #include "sftp_provider_impl.h"
  #endif
@@ -130,25 +130,25 @@
  /* Our verbosity */
  static LogLevel log_level = SYSLOG_LEVEL_ERROR;
  
-@@ -280,6 +286,17 @@
+@@ -280,6 +286,17 @@ struct Handle {
  	char *name;
  	u_int64_t bytes_read, bytes_write;
  	int next_unused;
 +
 +#ifdef SFTP_AUDIT
-+        /* 
-+         * used for checking if the file has been already audited for
-+         * get/put
-+         */
-+        uint32_t audited;
++	/* 
++	 * used for checking if the file has been already audited for
++	 * get/put
++	 */
++	uint32_t audited;
 +
-+        /* absolute path of the processed file; used in audit records */
-+        char *audit_rpath;
++	/* absolute path of the processed file; used in audit records */
++	char *audit_rpath;
 +#endif
  };
  
  enum {
-@@ -303,6 +320,9 @@
+@@ -303,6 +320,9 @@ static int
  handle_new(int use, const char *name, int fd, int flags, DIR *dirp)
  {
  	int i;
@@ -158,218 +158,205 @@
  
  	if (first_unused_handle == -1) {
  		if (num_handles + 1 <= num_handles)
-@@ -321,7 +341,11 @@
+@@ -321,7 +341,11 @@ handle_new(int use, const char *name, in
  	handles[i].flags = flags;
  	handles[i].name = xstrdup(name);
  	handles[i].bytes_read = handles[i].bytes_write = 0;
 -
 +#ifdef SFTP_AUDIT
-+        handles[i].audited = 0;
-+        handles[i].audit_rpath = realpath(name, rpath) ?
-+            xstrdup(rpath) : NULL;
++	handles[i].audited = 0;
++	handles[i].audit_rpath = realpath(name, rpath) ?
++	    xstrdup(rpath) : NULL;
 +#endif
  	return i;
  }
  
-@@ -419,6 +443,35 @@
+@@ -419,6 +443,34 @@ handle_bytes_write(int handle)
  	return 0;
  }
  
-+
 +#ifdef SFTP_AUDIT
 +static void
 +handle_update_audit(int handle, uint32_t audit_fl)
 +{
-+        if (handle_is_ok(handle, HANDLE_FILE))
-+                handles[handle].audited |= audit_fl;
++	if (handle_is_ok(handle, HANDLE_FILE))
++		handles[handle].audited |= audit_fl;
 +}
 +
 +static uint32_t
 +handle_to_audit(int handle, uint32_t mask)
 +{
-+        if (handle_is_ok(handle, HANDLE_FILE))
-+                 return (handles[handle].audited & mask);
-+        return (0);
++	if (handle_is_ok(handle, HANDLE_FILE))
++		return (handles[handle].audited & mask);
++	return (0);
 +}
 +
 +static char *
 +handle_to_audit_rpath(int handle)
 +{
-+        if (handle_is_ok(handle, HANDLE_DIR) ||
-+            handle_is_ok(handle, HANDLE_FILE)) {
-+                return (handles[handle].audit_rpath != NULL ?
-+                    handles[handle].audit_rpath : handles[handle].name);
-+        }
-+        return (NULL);
++	if (handle_is_ok(handle, HANDLE_DIR) ||
++	    handle_is_ok(handle, HANDLE_FILE)) {
++		return (handles[handle].audit_rpath != NULL ?
++		    handles[handle].audit_rpath : handles[handle].name);
++	}
++	return (NULL);
 +}
 +#endif
 +
  static int
  handle_close(int handle)
  {
-@@ -427,10 +480,18 @@
+@@ -427,10 +479,18 @@ handle_close(int handle)
  	if (handle_is_ok(handle, HANDLE_FILE)) {
  		ret = close(handles[handle].fd);
  		free(handles[handle].name);
 +#ifdef SFTP_AUDIT
-+                if (handles[handle].audit_rpath != NULL)
-+                        free(handles[handle].audit_rpath);
++		if (handles[handle].audit_rpath != NULL)
++			free(handles[handle].audit_rpath);
 +#endif
  		handle_unused(handle);
  	} else if (handle_is_ok(handle, HANDLE_DIR)) {
  		ret = closedir(handles[handle].dirp);
  		free(handles[handle].name);
 +#ifdef SFTP_AUDIT
-+                if (handles[handle].audit_rpath != NULL)
-+                        free(handles[handle].audit_rpath);
++		if (handles[handle].audit_rpath != NULL)
++			free(handles[handle].audit_rpath);
 +#endif
  		handle_unused(handle);
  	} else {
  		errno = ENOENT;
-@@ -682,6 +743,10 @@
+@@ -682,6 +742,10 @@ process_open(u_int32_t id)
  	Attrib a;
  	char *name;
  	int r, handle, fd, flags, mode, status = SSH2_FX_FAILURE;
 +#ifdef SFTP_AUDIT
-+        boolean_t do_audit = B_FALSE;
-+        int saved_errno = 0;
++	boolean_t do_audit = B_FALSE;
++	int saved_errno = 0;
 +#endif
  
  	if ((r = sshbuf_get_cstring(iqueue, &name, NULL)) != 0 ||
  	    (r = sshbuf_get_u32(iqueue, &pflags)) != 0 || /* portable flags */
-@@ -693,6 +758,20 @@
+@@ -693,6 +757,20 @@ process_open(u_int32_t id)
  	mode = (a.flags & SSH2_FILEXFER_ATTR_PERMISSIONS) ? a.perm : 0666;
  	logit("open \"%s\" flags %s mode 0%o",
  	    name, string_from_portable(pflags), mode);
 +
 +#ifdef SFTP_AUDIT
-+        if (flags & (O_CREAT | O_TRUNC)) {
-+                struct stat sb;
-+                if (stat(name, &sb) == -1) {
-+                        if (errno == ENOENT && (flags & O_CREAT)) {
-+                                do_audit = B_TRUE;
-+                        }
-+                } else if (flags & O_TRUNC) {
-+                        do_audit = B_TRUE;
-+                }
-+        }
++	if (flags & (O_CREAT | O_TRUNC)) {
++		struct stat sb;
++		if (stat(name, &sb) == -1) {
++			if (errno == ENOENT && (flags & O_CREAT)) {
++				do_audit = B_TRUE;
++			}
++		} else if (flags & O_TRUNC) {
++			do_audit = B_TRUE;
++		}
++	}
 +#endif
 +
  	if (readonly &&
- 	    ((flags & O_ACCMODE) == O_WRONLY ||
- 	    (flags & O_ACCMODE) == O_RDWR)) {
-@@ -701,10 +780,16 @@
+ 	    ((flags & O_ACCMODE) != O_RDONLY ||
+ 	    (flags & (O_CREAT|O_TRUNC)) != 0)) {
+@@ -701,10 +779,16 @@ process_open(u_int32_t id)
  	} else {
  		fd = open(name, flags, mode);
  		if (fd < 0) {
 +#ifdef SFTP_AUDIT
-+                        saved_errno = errno;
++			saved_errno = errno;
 +#endif
  			status = errno_to_portable(errno);
  		} else {
  			handle = handle_new(HANDLE_FILE, name, fd, flags, NULL);
  			if (handle < 0) {
 +#ifdef SFTP_AUDIT
-+                               saved_errno = EMFILE;
++				saved_errno = EMFILE;
 +#endif
  				close(fd);
  			} else {
  				send_handle(id, handle);
-@@ -712,6 +797,29 @@
+@@ -712,6 +796,28 @@ process_open(u_int32_t id)
  			}
  		}
  	}
 +
-+
 +#ifdef SFTP_AUDIT
-+        if (do_audit) {
-+                adt_event_data_t *ae;
-+                char *fname;
++	if (do_audit) {
++		adt_event_data_t *ae;
++		char *fname;
 +
-+                if (fd >= 0 && handle_is_ok(handle, HANDLE_FILE)) {
-+                        handle_update_audit(handle, SFTP_AUDIT_FD_PUT);
-+                        fname = handle_to_audit_rpath(handle);
-+                } else {
-+                        /*
-+                         * open(2) failed or there are too many files
-+                         * opened. Let's audit that with provided file
-+                         * name.
-+                         */
-+                        fname = name;
-+                }
-+                ae = audit_sftp_put(fname, fd);
-+                audit_sftp_finish_event(ae, status, saved_errno);
-+        }
++		if (fd >= 0 && handle_is_ok(handle, HANDLE_FILE)) {
++			handle_update_audit(handle, SFTP_AUDIT_FD_PUT);
++			fname = handle_to_audit_rpath(handle);
++		} else {
++			/*
++			 * open(2) failed or there are too many files
++			 * opened. Let's audit that with provided file
++			 * name.
++			 */
++			fname = name;
++		}
++		ae = audit_sftp_put(fname, fd);
++		audit_sftp_finish_event(ae, status, saved_errno);
++	}
 +#endif
 +
  	if (status != SSH2_FX_OK)
  		send_status(id, status);
  	free(name);
-@@ -740,7 +848,9 @@
+@@ -740,6 +846,9 @@ process_read(u_int32_t id)
  	int r, handle, fd, ret, status = SSH2_FX_FAILURE;
  	u_int64_t off;
  	char *fpath;
--
 +#ifdef SFTP_AUDIT
-+        int saved_errno = 0;
++	int saved_errno = 0;
 +#endif
+ 
  	if ((r = get_handle(iqueue, &handle)) != 0 ||
  	    (r = sshbuf_get_u64(iqueue, &off)) != 0 ||
- 	    (r = sshbuf_get_u32(iqueue, &len)) != 0)
-@@ -748,7 +858,7 @@
- 
- 	fpath = handle_to_name(handle);
-  
-- 	debug("request %u: read \"%s\" (handle %d) off %llu len %d",
-+	debug("request %u: read \"%s\" (handle %d) off %llu len %d",
- 	    id, fpath, handle, (unsigned long long)off, len);
- 	if (len > sizeof buf) {
- 		len = sizeof buf;
-@@ -757,6 +867,9 @@
+@@ -756,6 +865,9 @@ process_read(u_int32_t id)
  	fd = handle_to_fd(handle);
  	if (fd >= 0) {
  		if (lseek(fd, off, SEEK_SET) < 0) {
 +#ifdef SFTP_AUDIT
-+                        saved_errno = errno;
++			saved_errno = errno;
 +#endif
  			error("process_read: seek failed");
  			status = errno_to_portable(errno);
  		} else {
-@@ -768,6 +881,9 @@
-                         SFTP_TRANSFER_DONE_OP("read", fd, fpath, ret);
+@@ -767,6 +879,9 @@ process_read(u_int32_t id)
+ 			SFTP_TRANSFER_DONE_OP("read", fd, fpath, ret);
  #endif
  			if (ret < 0) {
 +#ifdef SFTP_AUDIT
-+                                saved_errno = errno;
++				saved_errno = errno;
 +#endif
  				status = errno_to_portable(errno);
  			} else if (ret == 0) {
  				status = SSH2_FX_EOF;
-@@ -777,6 +893,16 @@
+@@ -776,6 +891,16 @@ process_read(u_int32_t id)
  				handle_update_read(handle, ret);
  			}
  		}
 +
 +#ifdef SFTP_AUDIT
-+                if (handle_to_audit(handle, SFTP_AUDIT_FD_GET) == 0) {
-+                        adt_event_data_t *ae;
-+			 
-+                        ae = audit_sftp_get(handle_to_audit_rpath(handle), fd);
-+                        audit_sftp_finish_event(ae, status, saved_errno);
-+                        handle_update_audit(handle, SFTP_AUDIT_FD_GET);
-+                }
++		if (handle_to_audit(handle, SFTP_AUDIT_FD_GET) == 0) {
++			adt_event_data_t *ae;
++                        
++			ae = audit_sftp_get(handle_to_audit_rpath(handle), fd);
++			audit_sftp_finish_event(ae, status, saved_errno);
++			handle_update_audit(handle, SFTP_AUDIT_FD_GET);
++		}
 +#endif
  	}
  	if (status != SSH2_FX_OK)
  		send_status(id, status);
-@@ -804,8 +930,15 @@
+@@ -803,8 +928,14 @@ process_write(u_int32_t id)
  	if (fd < 0)
  		status = SSH2_FX_FAILURE;
  	else {
 +#ifdef SFTP_AUDIT
 +		int saved_errno = 0;
 +#endif 
-+
  		if (!(handle_to_flags(handle) & O_APPEND) &&
  				lseek(fd, off, SEEK_SET) < 0) {
 +#ifdef SFTP_AUDIT
@@ -378,11 +365,9 @@
  			status = errno_to_portable(errno);
  			error("process_write: seek failed");
  		} else {
-@@ -817,8 +950,10 @@
- #ifdef DTRACE_SFTP
+@@ -817,6 +948,9 @@ process_write(u_int32_t id)
  			SFTP_TRANSFER_DONE_OP("write", fd, fpath, ret);
  #endif
--
  			if (ret < 0) {
 +#ifdef SFTP_AUDIT
 +				saved_errno = errno;
@@ -390,13 +375,13 @@
  				error("process_write: write failed");
  				status = errno_to_portable(errno);
  			} else if ((size_t)ret == len) {
-@@ -829,6 +964,15 @@
+@@ -827,6 +961,15 @@ process_write(u_int32_t id)
  				status = SSH2_FX_FAILURE;
  			}
  		}
 +#ifdef SFTP_AUDIT
 +		if (handle_to_audit(handle, SFTP_AUDIT_FD_PUT) == 0) {
-+		        adt_event_data_t *ae;
++			adt_event_data_t *ae;
 +
 +			ae = audit_sftp_put(handle_to_audit_rpath(handle), fd);
 +			audit_sftp_finish_event(ae, status, saved_errno);
@@ -406,7 +391,7 @@
  	}
  	send_status(id, status);
  	free(data);
-@@ -917,41 +1061,100 @@
+@@ -915,41 +1058,101 @@ process_setstat(u_int32_t id)
  	char *name;
  	int r, status = SSH2_FX_OK;
  
@@ -421,16 +406,16 @@
  		fatal("%s: buffer error: %s", __func__, ssh_err(r));
  
 +#ifdef SFTP_AUDIT
-+        /* we need resolved path for auditing */
++	/* we need resolved path for auditing */
 +	if ((audit_rpath = realpath(name, rpath)) == NULL) {
 +		audit_rpath = name;
 +	}
-+#endif 
++#endif
 +
  	debug("request %u: setstat name \"%s\"", id, name);
  	if (a.flags & SSH2_FILEXFER_ATTR_SIZE) {
 +#ifdef SFTP_AUDIT
-+                adt_event_data_t *ae;
++		adt_event_data_t *ae;
 +		int saved_errno = 0;
 +#endif
  		logit("set \"%s\" size %llu",
@@ -443,7 +428,7 @@
 +			status = errno_to_portable(errno);
 +		}
 +		ae = audit_sftp_put(audit_rpath, -1);
-+ 		audit_sftp_finish_event(ae, status, saved_errno);
++		audit_sftp_finish_event(ae, status, saved_errno);
 +
 +#else /* original */
  		if (r == -1)
@@ -458,7 +443,7 @@
  		logit("set \"%s\" mode %04o", name, a.perm);
 +
 +#ifdef SFTP_AUDIT
-+                ae = audit_sftp_chmod(audit_rpath, -1, mode);
++		ae = audit_sftp_chmod(audit_rpath, -1, mode);
 +#endif
 +
  		r = chmod(name, a.perm & 07777);
@@ -466,16 +451,16 @@
  			status = errno_to_portable(errno);
 +
 +#ifdef SFTP_AUDIT
-+                audit_sftp_finish_event(ae,status, errno);
-+#endif 
++		audit_sftp_finish_event(ae,status, errno);
++#endif
  	}
  	if (a.flags & SSH2_FILEXFER_ATTR_ACMODTIME) {
  		char buf[64];
  		time_t t = a.mtime;
--
 +#ifdef SFTP_AUDIT
 +		int saved_errno = 0;
 +#endif
+ 
  		strftime(buf, sizeof(buf), "%Y%m%d-%H:%M:%S",
  		    localtime(&t));
  		logit("set \"%s\" modtime %s", name, buf);
@@ -486,12 +471,12 @@
 +			saved_errno = errno;
 +			status = errno_to_portable(errno);
 +		}
-+                audit_sftp_finish_event(audit_sftp_utimes(audit_rpath, -1),
++		audit_sftp_finish_event(audit_sftp_utimes(audit_rpath, -1),
 +		    status, saved_errno);
 +#else /* original */
  		if (r == -1)
  			status = errno_to_portable(errno);
-+#endif 
++#endif
  	}
  	if (a.flags & SSH2_FILEXFER_ATTR_UIDGID) {
  		logit("set \"%s\" owner %lu group %lu", name,
@@ -503,30 +488,30 @@
  		if (r == -1)
  			status = errno_to_portable(errno);
 +#ifdef SFTP_AUDIT
-+                audit_sftp_finish_event(ae, status, errno);
++		audit_sftp_finish_event(ae, status, errno);
 +#endif
  	}
  	send_status(id, status);
  	free(name);
-@@ -963,6 +1166,11 @@
+@@ -961,6 +1164,11 @@ process_fsetstat(u_int32_t id)
  	Attrib a;
  	int handle, fd, r;
  	int status = SSH2_FX_OK;
 +#ifdef SFTP_AUDIT
 +	adt_event_data_t *ae;
-+        char *audit_rpath;
++	char *audit_rpath;
 +	int saved_errno = 0;
 +#endif
  
  	if ((r = get_handle(iqueue, &handle)) != 0 ||
  	    (r = decode_attrib(iqueue, &a)) != 0)
-@@ -974,16 +1182,39 @@
+@@ -972,16 +1180,38 @@ process_fsetstat(u_int32_t id)
  		status = SSH2_FX_FAILURE;
  	else {
  		char *name = handle_to_name(handle);
 +#ifdef SFTP_AUDIT
 +		audit_rpath = handle_to_audit_rpath(handle);
-+#endif 
++#endif
  
  		if (a.flags & SSH2_FILEXFER_ATTR_SIZE) {
  			logit("set \"%s\" size %llu",
@@ -547,38 +532,36 @@
 +#else /* original */
  			if (r == -1)
  				status = errno_to_portable(errno);
-+
 +#endif
  		}
  		if (a.flags & SSH2_FILEXFER_ATTR_PERMISSIONS) {
  			logit("set \"%s\" mode %04o", name, a.perm);
 +
 +#ifdef SFTP_AUDIT
-+                        ae = audit_sftp_chmod(audit_rpath, fd, a.perm &07777);
++			ae = audit_sftp_chmod(audit_rpath, fd, a.perm &07777);
 +#endif
 +
  #ifdef HAVE_FCHMOD
  			r = fchmod(fd, a.perm & 07777);
  #else
-@@ -991,11 +1222,16 @@
+@@ -989,10 +1219,16 @@ process_fsetstat(u_int32_t id)
  #endif
  			if (r == -1)
  				status = errno_to_portable(errno);
 +#ifdef SFTP_AUDIT
-+                        audit_sftp_finish_event(ae, status, errno);
++			audit_sftp_finish_event(ae, status, errno);
 +#endif
  		}
  		if (a.flags & SSH2_FILEXFER_ATTR_ACMODTIME) {
  			char buf[64];
  			time_t t = a.mtime;
--
 +#ifdef SFTP_AUDIT
 +			int saved_errno = 0;
 +#endif
+ 
  			strftime(buf, sizeof(buf), "%Y%m%d-%H:%M:%S",
  			    localtime(&t));
- 			logit("set \"%s\" modtime %s", name, buf);
-@@ -1004,12 +1240,27 @@
+@@ -1002,12 +1238,27 @@ process_fsetstat(u_int32_t id)
  #else
  			r = utimes(name, attrib_to_tv(&a));
  #endif
@@ -607,7 +590,7 @@
  #ifdef HAVE_FCHOWN
  			r = fchown(fd, a.uid, a.gid);
  #else
-@@ -1017,6 +1268,9 @@
+@@ -1015,6 +1266,9 @@ process_fsetstat(u_int32_t id)
  #endif
  			if (r == -1)
  				status = errno_to_portable(errno);
@@ -617,7 +600,7 @@
  		}
  	}
  	send_status(id, status);
-@@ -1113,6 +1367,9 @@
+@@ -1111,14 +1365,23 @@ process_remove(u_int32_t id)
  {
  	char *name;
  	int r, status = SSH2_FX_FAILURE;
@@ -627,7 +610,6 @@
  
  	if ((r = sshbuf_get_cstring(iqueue, &name, NULL)) != 0)
  		fatal("%s: buffer error: %s", __func__, ssh_err(r));
-@@ -1119,8 +1376,14 @@
  
  	debug3("request %u: remove", id);
  	logit("remove name \"%s\"", name);
@@ -637,33 +619,33 @@
  	r = unlink(name);
  	status = (r == -1) ? errno_to_portable(errno) : SSH2_FX_OK;
 +#ifdef SFTP_AUDIT
-+       	audit_sftp_finish_event(ae, status, errno);
++	audit_sftp_finish_event(ae, status, errno);
 +#endif
  	send_status(id, status);
  	free(name);
  }
-@@ -1131,6 +1394,10 @@
+@@ -1129,6 +1392,10 @@ process_mkdir(u_int32_t id)
  	Attrib a;
  	char *name;
  	int r, mode, status = SSH2_FX_FAILURE;
 +#ifdef SFTP_AUDIT
 +	adt_event_data_t *ae;
 +	int saved_errno = 0;
-+#endif 
++#endif
  
  	if ((r = sshbuf_get_cstring(iqueue, &name, NULL)) != 0 ||
  	    (r = decode_attrib(iqueue, &a)) != 0)
-@@ -1140,8 +1407,20 @@
+@@ -1138,8 +1405,20 @@ process_mkdir(u_int32_t id)
  	    a.perm & 07777 : 0777;
  	debug3("request %u: mkdir", id);
  	logit("mkdir name \"%s\" mode 0%o", name, mode);
 +
 +#ifdef SFTP_AUDIT
-+        ae = audit_sftp_mkdir(name, mode);
-+        status = SSH2_FX_OK;
++	ae = audit_sftp_mkdir(name, mode);
++	status = SSH2_FX_OK;
 +	if (mkdir(name, mode) == -1) {
 +		saved_errno = errno;
-+                status = errno_to_portable(errno);
++		status = errno_to_portable(errno);
 +	}
 +	audit_sftp_finish_event(ae, status, saved_errno);
 +#else
@@ -674,7 +656,7 @@
  	send_status(id, status);
  	free(name);
  }
-@@ -1151,6 +1430,9 @@
+@@ -1149,14 +1428,23 @@ process_rmdir(u_int32_t id)
  {
  	char *name;
  	int r, status;
@@ -684,7 +666,6 @@
  
  	if ((r = sshbuf_get_cstring(iqueue, &name, NULL)) != 0)
  		fatal("%s: buffer error: %s", __func__, ssh_err(r));
-@@ -1157,8 +1439,14 @@
  
  	debug3("request %u: rmdir", id);
  	logit("rmdir name \"%s\"", name);
@@ -699,7 +680,7 @@
  	send_status(id, status);
  	free(name);
  }
-@@ -1196,16 +1484,32 @@
+@@ -1194,16 +1482,32 @@ process_rename(u_int32_t id)
  	char *oldpath, *newpath;
  	int r, status;
  	struct stat sb;
@@ -728,11 +709,11 @@
 +#else /* original */
  	if (lstat(oldpath, &sb) == -1)
  		status = errno_to_portable(errno);
-+#endif 
++#endif
  	else if (S_ISREG(sb.st_mode)) {
  		/* Race-free rename of regular files */
  		if (link(oldpath, newpath) == -1) {
-@@ -1224,16 +1528,31 @@
+@@ -1222,27 +1526,51 @@ process_rename(u_int32_t id)
  				 * stat+rename.  This is racy.
  				 */
  				if (stat(newpath, &st) == -1) {
@@ -746,7 +727,6 @@
  					if (rename(oldpath, newpath) == -1)
  						status =
  						    errno_to_portable(errno);
-+
 +#endif
  					else
  						status = SSH2_FX_OK;
@@ -764,7 +744,6 @@
  			status = errno_to_portable(errno);
  			/* clean spare link */
  			unlink(newpath);
-@@ -1240,11 +1559,21 @@
  		} else
  			status = SSH2_FX_OK;
  	} else if (stat(newpath, &sb) == -1) {
@@ -786,18 +765,17 @@
  	send_status(id, status);
  	free(oldpath);
  	free(newpath);
-@@ -1280,7 +1609,9 @@
+@@ -1278,6 +1606,9 @@ process_symlink(u_int32_t id)
  {
  	char *oldpath, *newpath;
  	int r, status;
--
 +#ifdef SFTP_AUDIT
 +	int saved_errno = 0;
 +#endif
+ 
  	if ((r = sshbuf_get_cstring(iqueue, &oldpath, NULL)) != 0 ||
  	    (r = sshbuf_get_cstring(iqueue, &newpath, NULL)) != 0)
- 		fatal("%s: buffer error: %s", __func__, ssh_err(r));
-@@ -1288,8 +1619,19 @@
+@@ -1286,8 +1617,19 @@ process_symlink(u_int32_t id)
  	debug3("request %u: symlink", id);
  	logit("symlink old \"%s\" new \"%s\"", oldpath, newpath);
  	/* this will fail if 'newpath' exists */
@@ -807,9 +785,9 @@
 +	if (symlink(oldpath, newpath) == -1) {
 +		saved_errno = errno;
 +		status = errno_to_portable(errno);
-+        }
-+        audit_sftp_finish_event(audit_sftp_symlink(oldpath, newpath), status,
-+            saved_errno);
++	}
++	audit_sftp_finish_event(audit_sftp_symlink(oldpath, newpath), status,
++	    saved_errno);
 +#else /* original */
  	r = symlink(oldpath, newpath);
  	status = (r == -1) ? errno_to_portable(errno) : SSH2_FX_OK;
@@ -817,35 +795,34 @@
  	send_status(id, status);
  	free(oldpath);
  	free(newpath);
-@@ -1300,15 +1642,26 @@
+@@ -1298,15 +1640,26 @@ process_extended_posix_rename(u_int32_t
  {
  	char *oldpath, *newpath;
  	int r, status;
--
 +#ifdef SFTP_AUDIT
-+        adt_event_data_t *ae;
++	adt_event_data_t *ae;
 +#endif
-+  
+ 
  	if ((r = sshbuf_get_cstring(iqueue, &oldpath, NULL)) != 0 ||
  	    (r = sshbuf_get_cstring(iqueue, &newpath, NULL)) != 0)
  		fatal("%s: buffer error: %s", __func__, ssh_err(r));
  
 +#ifdef SFTP_AUDIT
-+        ae = audit_sftp_rename(oldpath, newpath);
++	ae = audit_sftp_rename(oldpath, newpath);
 +#endif
-+  
++
  	debug3("request %u: posix-rename", id);
  	logit("posix-rename old \"%s\" new \"%s\"", oldpath, newpath);
  	r = rename(oldpath, newpath);
  	status = (r == -1) ? errno_to_portable(errno) : SSH2_FX_OK;
 +
 +#ifdef SFTP_AUDIT
-+        audit_sftp_finish_event(ae, status, errno);
++	audit_sftp_finish_event(ae, status, errno);
 +#endif
  	send_status(id, status);
  	free(oldpath);
  	free(newpath);
-@@ -1500,6 +1853,9 @@
+@@ -1498,6 +1851,9 @@ sftp_server_cleanup_exit(int i)
  		logit("session closed for local user %s from [%s]",
  		    pw->pw_name, client_addr);
  	}
@@ -855,25 +832,24 @@
  	_exit(i);
  }
  
-@@ -1605,7 +1961,15 @@
+@@ -1603,6 +1959,14 @@ sftp_server_main(int argc, char **argv,
  
  	log_init(__progname, log_level, log_facility, log_stderr);
  
 +#ifdef SFTP_AUDIT
- 	/*
++	/*
 +	 * Initialize the audit session and audit the start of the SFTP
 +	 * session.
 +	 */
 +	audit_sftp_session_start();
 +#endif
 +
-+	/*
+ 	/*
  	 * On platforms where we can, avoid making /proc/self/{mem,maps}
  	 * available to the user so that sftp access doesn't automatically
- 	 * imply arbitrary code execution access that will break
---- orig/sshd.c	2017-08-07 14:57:53.408978315 -0700
-+++ new/sshd.c	2017-08-09 15:40:23.480259135 -0700
-@@ -555,7 +555,12 @@
+--- old/sshd.c	2018-11-12 18:32:21.149772076 +0000
++++ new/sshd.c	2018-11-12 20:34:56.031757977 +0000
+@@ -659,7 +659,12 @@ privsep_preauth_child(void)
  		gidset[0] = privsep_pw->pw_gid;
  		if (setgroups(1, gidset) < 0)
  			fatal("setgroups: %.100s", strerror(errno));
@@ -886,9 +862,9 @@
  	}
  }
  
---- orig/uidswap.h	2017-08-07 14:46:54.837957045 -0700
-+++ new/uidswap.h	2017-08-07 14:47:49.624860545 -0700
-@@ -16,3 +16,7 @@
+--- old/uidswap.h	2018-04-01 22:38:28.000000000 +0000
++++ new/uidswap.h	2018-11-12 20:36:05.958858244 +0000
+@@ -16,3 +16,7 @@ void	 temporarily_use_uid(struct passwd
  void	 restore_uid(void);
  void	 permanently_set_uid(struct passwd *);
  void	 permanently_drop_suid(uid_t);
@@ -896,8 +872,8 @@
 +#ifdef SFTP_AUDIT
 +void	 permanently_set_uid_with_audit(struct passwd *);
 +#endif
---- orig/uidswap.c	2017-08-07 14:05:43.021271685 -0700
-+++ new/uidswap.c	2017-08-09 15:46:53.053244165 -0700
+--- old/uidswap.c	2018-04-01 22:38:28.000000000 +0000
++++ new/uidswap.c	2018-11-12 20:42:23.940768090 +0000
 @@ -24,6 +24,11 @@
  
  #include <grp.h>
@@ -910,7 +886,7 @@
  #include "log.h"
  #include "uidswap.h"
  #include "xmalloc.h"
-@@ -261,3 +266,53 @@
+@@ -261,3 +266,53 @@ permanently_set_uid(struct passwd *pw)
  		    (u_int)pw->pw_uid);
  	}
  }
@@ -923,49 +899,49 @@
 +void
 +permanently_set_uid_with_audit(struct passwd *pw)
 +{
-+        boolean_t add_proc_audit =
++	boolean_t add_proc_audit =
 +	    (pw->pw_uid != 0 && !adt_audit_state(AUC_DISABLED));
 +
 +	if (add_proc_audit) {
-+	  	/*
-+        	 * This means we will keep all privileges after the UID change.
-+	         */
-+	        if (setpflags(PRIV_AWARE, 1) != 0)
-+		        fatal("setpflags: %s", strerror(errno));
++		/*
++		 * This means we will keep all privileges after the UID change.
++		 */
++		if (setpflags(PRIV_AWARE, 1) != 0)
++			fatal("setpflags: %s", strerror(errno));
 +	}
 +
 +	permanently_set_uid(pw);
 +
 +	if (add_proc_audit) {
-+	  	priv_set_t *pset;
-+		
-+	        if ((pset = priv_allocset()) == NULL)
-+		        fatal("priv_allocset: %s", strerror(errno));
++		priv_set_t *pset;
 +
-+	        if (getppriv(PRIV_INHERITABLE, pset) != 0)
-+		        fatal("getppriv: %s", strerror(errno));
++		if ((pset = priv_allocset()) == NULL)
++			fatal("priv_allocset: %s", strerror(errno));
++
++		if (getppriv(PRIV_INHERITABLE, pset) != 0)
++			fatal("getppriv: %s", strerror(errno));
 +
 +		/*
-+        	 * We add PRIV_PROC_AUDIT when c2audit module is not explicitly
-+	         * excluded in /etc/system.
-+	         */
-+	        if (priv_addset(pset, PRIV_PROC_AUDIT) == -1)
-+		        fatal("%s: priv_addset failed", __func__);	
++		 * We add PRIV_PROC_AUDIT when c2audit module is not explicitly
++		 * excluded in /etc/system.
++		 */
++		if (priv_addset(pset, PRIV_PROC_AUDIT) == -1)
++			fatal("%s: priv_addset failed", __func__);      
 +
-+	        /* Set only P; this will also set E. */
-+	        if (setppriv(PRIV_SET, PRIV_PERMITTED, pset) == -1)
-+		        fatal("setppriv: %s", strerror(errno));
++		/* Set only P; this will also set E. */
++		if (setppriv(PRIV_SET, PRIV_PERMITTED, pset) == -1)
++			fatal("setppriv: %s", strerror(errno));
 +
-+	        /* We don't need the PRIV_AWARE flag any more. */
-+	        if (setpflags(PRIV_AWARE, 0) == -1)
-+		        fatal("setpflags: %s", strerror(errno));
++		/* We don't need the PRIV_AWARE flag any more. */
++		if (setpflags(PRIV_AWARE, 0) == -1)
++			fatal("setpflags: %s", strerror(errno));
 +
-+	        priv_freeset(pset);
++		priv_freeset(pset);
 +	}
 +}
 +#endif
---- orig/openbsd-compat/port-solaris.c	2017-08-07 14:05:42.960236745 -0700
-+++ new/openbsd-compat/port-solaris.c	2017-08-07 14:05:42.685161825 -0700
+--- old/openbsd-compat/port-solaris.c	2018-04-01 22:38:28.000000000 +0000
++++ new/openbsd-compat/port-solaris.c	2018-11-12 20:47:58.834317079 +0000
 @@ -37,6 +37,10 @@
  
  #include "log.h"
@@ -977,7 +953,7 @@
  #define CT_TEMPLATE	CTFS_ROOT "/process/template"
  #define CT_LATEST	CTFS_ROOT "/process/latest"
  
-@@ -277,6 +281,14 @@
+@@ -277,6 +281,14 @@ solaris_drop_privs_pinfo_net_fork_exec(v
  	if ((npset = solaris_basic_privset()) == NULL)
  		fatal("solaris_basic_privset: %s", strerror(errno));
  
@@ -987,16 +963,15 @@
 +			fatal("priv_addset: %s", strerror(errno));
 +		}
 +	}
-+#endif	
-+	  
++#endif 
++
  	if (priv_addset(npset, PRIV_FILE_CHOWN) != 0 ||
  	    priv_addset(npset, PRIV_FILE_DAC_READ) != 0 ||
  	    priv_addset(npset, PRIV_FILE_DAC_SEARCH) != 0 ||
-@@ -360,4 +360,39 @@
- 
-        priv_freeset(pset);
+@@ -360,4 +372,39 @@ solaris_drop_privs_root_pinfo_net_exec(v
+ 	priv_freeset(pset);
  }
-+
+ 
 +#ifdef SFTP_AUDIT
 +/*
 + * Called by session_subsystem_req() for SFTP when not using the in-process
@@ -1008,34 +983,34 @@
 +void
 +solaris_add_audit_privs(void)
 +{
-+       priv_set_t *pset = NULL;
++	priv_set_t *pset = NULL;
 +
-+       if ((pset = priv_allocset()) == NULL) {
-+               fatal("priv_allocset: %s", strerror(errno));
-+       }
++	if ((pset = priv_allocset()) == NULL) {
++		fatal("priv_allocset: %s", strerror(errno));
++	}
 +
-+       if (getppriv(PRIV_PERMITTED, pset) != 0) {
-+               fatal("getppriv: %s", strerror(errno));
-+       }
++	if (getppriv(PRIV_PERMITTED, pset) != 0) {
++		fatal("getppriv: %s", strerror(errno));
++	}
 +
-+       /*
-+        * The proc_audit privilege was added to the 'permitted' privilege set
-+        * previously in permanently_set_uid_with_audit().
-+        */
-+       if (priv_ismember(pset, PRIV_PROC_AUDIT)) {
-+               if (setppriv(PRIV_SET, PRIV_INHERITABLE, pset) != 0) {
-+                       fatal("setppriv: %s", strerror(errno));
-+               }
-+       }
++	/*
++	 * The proc_audit privilege was added to the 'permitted' privilege set
++	 * previously in permanently_set_uid_with_audit().
++	 */
++	if (priv_ismember(pset, PRIV_PROC_AUDIT)) {
++		if (setppriv(PRIV_SET, PRIV_INHERITABLE, pset) != 0) {
++			fatal("setppriv: %s", strerror(errno));
++		}
++	}
 +
-+       priv_freeset(pset);
++	priv_freeset(pset);
 +}
 +#endif /* SFTP_AUDIT */
-
++
  #endif
---- orig/openbsd-compat/port-solaris.h	2017-03-19 19:39:27.000000000 -0700
-+++ new/openbsd-compat//port-solaris.h	2018-05-22 02:58:12.952516299 -0700
-@@ -30,6 +30,9 @@
+--- old/openbsd-compat/port-solaris.h	2018-04-01 22:38:28.000000000 +0000
++++ new/openbsd-compat/port-solaris.h	2018-11-12 20:48:43.858809128 +0000
+@@ -30,6 +30,9 @@ priv_set_t *solaris_basic_privset(void);
  void solaris_drop_privs_pinfo_net_fork_exec(void);
  void solaris_drop_privs_root_pinfo_net(void);
  void solaris_drop_privs_root_pinfo_net_exec(void);
@@ -1043,5 +1018,5 @@
 +void solaris_add_audit_privs(void);
 +#endif
  # endif /* USE_SOLARIS_PRIVS */
-
+ 
  #endif

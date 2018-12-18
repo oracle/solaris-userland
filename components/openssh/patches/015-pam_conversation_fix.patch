@@ -6,7 +6,7 @@
 #
 --- orig/auth-pam.c	Mon Aug 15 16:16:17 2016
 +++ new/auth-pam.c	Mon Aug 15 16:26:40 2016
-@@ -1138,11 +1138,13 @@
+@@ -1164,11 +1164,13 @@
  	free(env);
  }
  
@@ -20,7 +20,7 @@
  static int
  sshpam_passwd_conv(int n, sshpam_const struct pam_message **msg,
      struct pam_response **resp, void *data)
-@@ -1164,6 +1166,17 @@
+@@ -1190,6 +1192,17 @@
  	for (i = 0; i < n; ++i) {
  		switch (PAM_MSG_MEMBER(msg, i, msg_style)) {
  		case PAM_PROMPT_ECHO_OFF:
@@ -38,7 +38,7 @@
  			if (sshpam_password == NULL)
  				goto fail;
  			if ((reply[i].resp = strdup(sshpam_password)) == NULL)
-@@ -1170,6 +1183,7 @@
+@@ -1196,6 +1209,7 @@
  				goto fail;
  			reply[i].resp_retcode = PAM_SUCCESS;
  			break;
@@ -46,7 +46,7 @@
  		case PAM_ERROR_MSG:
  		case PAM_TEXT_INFO:
  			len = strlen(PAM_MSG_MEMBER(msg, i, msg));
-@@ -1205,6 +1219,9 @@
+@@ -1231,6 +1245,9 @@
  int
  sshpam_auth_passwd(Authctxt *authctxt, const char *password)
  {
@@ -56,7 +56,7 @@
  	int flags = (options.permit_empty_passwd == 0 ?
  	    PAM_DISALLOW_NULL_AUTHTOK : 0);
  	char *fake = NULL;
-@@ -1225,6 +1242,15 @@
+@@ -1251,6 +1268,15 @@
  	    options.permit_root_login != PERMIT_YES))
  		sshpam_password = fake = fake_password(password);
  
@@ -72,7 +72,7 @@
  	sshpam_err = pam_set_item(sshpam_handle, PAM_CONV,
  	    (const void *)&passwd_conv);
  	if (sshpam_err != PAM_SUCCESS)
-@@ -1236,6 +1262,16 @@
+@@ -1262,6 +1288,16 @@
  	free(fake);
  	if (sshpam_err == PAM_MAXTRIES)
  		sshpam_set_maxtries_reached(1);

@@ -1,15 +1,14 @@
-#
-# This patch contains changes to the default SSH system configurations for
-# /etc/ssh/sshd_config and /etc/ssh/ssh_config on Solaris.
-#
-# This is a Solaris specific patch and will not be contributed back to the
-# upstream community.
-#
-diff -pur old/ssh_config new/ssh_config
---- old/ssh_config
-+++ new/ssh_config
-@@ -24,8 +24,9 @@
- #   RSAAuthentication yes
+1 #
+2 # This patch contains changes to the default SSH system configurations for
+3 # /etc/ssh/sshd_config and /etc/ssh/ssh_config on Solaris.
+4 #
+5 # This is a Solaris specific patch and will not be contributed back to the
+6 # upstream community.
+7 #
+--- old/ssh_config	2018-04-01 22:38:28.000000000 +0000
++++ new/ssh_config	2018-11-09 17:10:45.082883119 +0000
+@@ -22,8 +22,9 @@
+ #   ForwardX11 no
  #   PasswordAuthentication yes
  #   HostbasedAuthentication no
 -#   GSSAPIAuthentication no
@@ -19,7 +18,7 @@ diff -pur old/ssh_config new/ssh_config
  #   BatchMode no
  #   CheckHostIP yes
  #   AddressFamily any
-@@ -48,3 +49,7 @@
+@@ -44,3 +45,7 @@
  #   VisualHostKey no
  #   ProxyCommand ssh -q -W %h:%p gateway.example.com
  #   RekeyLimit 1G 1h
@@ -27,16 +26,11 @@ diff -pur old/ssh_config new/ssh_config
 +# Send the LANG and LC_* environment variables to server.
 +SendEnv LANG
 +SendEnv LC_*
-diff -pur old/sshd_config new/sshd_config
---- old/sshd_config
-+++ new/sshd_config
-@@ -1,118 +1,96 @@
--#	$OpenBSD: sshd_config,v 1.101 2017/03/14 07:19:07 djm Exp $
-+#       $OpenBSD: sshd_config,v 1.99 2016/07/11 03:19:44 tedu Exp $
- 
+--- old/sshd_config	2018-11-09 15:04:42.939624172 +0000
++++ new/sshd_config	2018-11-09 17:23:34.958781241 +0000
+@@ -3,115 +3,93 @@
  # This is the sshd server system-wide configuration file.  See
  # sshd_config(5) for more information.
-+#
  
 -# This sshd was compiled with PATH=/usr/bin:/bin:/usr/sbin:/sbin
 -
@@ -56,7 +50,6 @@ diff -pur old/sshd_config new/sshd_config
  #ListenAddress ::
  
 -#HostKey /etc/ssh/ssh_host_rsa_key
--#HostKey /etc/ssh/ssh_host_dsa_key
 -#HostKey /etc/ssh/ssh_host_ecdsa_key
 -#HostKey /etc/ssh/ssh_host_ed25519_key
 -
@@ -145,7 +138,7 @@ diff -pur old/sshd_config new/sshd_config
 +
 +# Maximum number of retries for authentication
 +# Default is 6.
-+#MaxAuthTries	6
++#MaxAuthTries  6
 +
 +# Are logins to accounts with empty passwords allowed.
 +# If PermitEmptyPasswords is no, pass PAM_DISALLOW_NULL_AUTHTOK 

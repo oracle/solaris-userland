@@ -28,21 +28,21 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		openssh
-COMPONENT_VERSION=	7.5p1
+COMPONENT_VERSION=	7.7p1
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_ANITYA_ID=	2565
 
 # Version for IPS.  The encoding rules are:
 #   OpenSSH <x>.<y>p<n>     => IPS <x>.<y>.0.<n>
 #   OpenSSH <x>.<y>.<z>p<n> => IPS <x>.<y>.<z>.<n>
-IPS_COMPONENT_VERSION=	7.5.0.1
+IPS_COMPONENT_VERSION=	7.7.0.1
 
 COMPONENT_PROJECT_URL=	https://www.openssh.com/
-COMPONENT_ARCHIVE_HASH=	sha256:9846e3c5fab9f0547400b4d2c017992f914222b3fd1f8eee6c7dc6bc5e59f9f0
+COMPONENT_ARCHIVE_HASH=	sha256:d73be7e684e99efcd024be15a30bffcbe41b012b2f7b3c9084aed621775e6b8f
 COMPONENT_ARCHIVE_URL=	https://mirrors.sonic.net/pub/OpenBSD/OpenSSH/portable/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 
-TPNO_OPENSSH=		34574
+TPNO_OPENSSH=		42310
 TPNO_GSSKEX=		20377
 
 # Because of set up requirements, test suite is in stc gate.
@@ -98,6 +98,7 @@ CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)/ssh
 CONFIGURE_OPTIONS += --sbindir=$(USRLIBDIR)/ssh
 CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)/ssh
 CONFIGURE_OPTIONS += --disable-lastlog
+CONFIGURE_OPTIONS += --without-hardening
 
 # Copy the sftp dtrace provider file and the header file to source directory
 COMPONENT_PRE_BUILD_ACTION = \

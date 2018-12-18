@@ -19,22 +19,21 @@
 diff -pur old/auth-pam.c new/auth-pam.c
 --- old/auth-pam.c
 +++ new/auth-pam.c
-@@ -399,6 +399,10 @@ sshpam_thread(struct pam_ctxt *ctxt)
- 				goto auth_fail;
- 			sshpam_password_change_required(0);
- 		}
-+		sshpam_err = pam_setcred(sshpam_handle, PAM_ESTABLISH_CRED);
-+		if (sshpam_err != PAM_SUCCESS)
-+			goto auth_fail;
-+		
+@@ -409,6 +409,9 @@ do_pam_auth(struct pam_ctxt *ctxt)
+ 			goto auth_fail;
+ 		sshpam_password_change_required(0);
  	}
++	sshpam_err = pam_setcred(sshpam_handle, PAM_ESTABLISH_CRED);
++	if (sshpam_err != PAM_SUCCESS)
++		goto auth_fail;
  
  	ctxt->pam_done = 1;
-@@ -968,6 +972,8 @@ do_pam_set_tty(const char *tty)
+ 
+@@ -1019,6 +1022,8 @@ do_pam_set_tty(const char *tty)
  void
  do_pam_setcred(int init)
  {
-+	if (compat20 && (sshpam_authenticated == 1))
++	if (sshpam_authenticated == 1)
 +		return;	/* pam_setcred already done */
  	sshpam_err = pam_set_item(sshpam_handle, PAM_CONV,
  	    (const void *)&store_conv);

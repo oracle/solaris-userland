@@ -20,14 +20,13 @@
 # An additional patch relying on the --with-audit=solaris configuration
 #  should/will be created for sftp Solaris Audit and password change.
 #
-diff -pur old/INSTALL new/INSTALL
---- old/INSTALL
-+++ new/INSTALL
-@@ -98,9 +98,13 @@ http://www.gnu.org/software/autoconf/
+--- old/INSTALL	2018-04-01 22:38:28.000000000 +0000
++++ new/INSTALL	2018-11-08 10:59:17.304403322 +0000
+@@ -99,9 +99,13 @@ http://www.gnu.org/software/autoconf/
  
  Basic Security Module (BSM):
  
--Native BSM support is know to exist in Solaris from at least 2.5.1,
+-Native BSM support is known to exist in Solaris from at least 2.5.1,
 -FreeBSD 6.1 and OS X.  Alternatively, you may use the OpenBSM
 -implementation (http://www.openbsm.org).
 +Native BSM support is known to exist in Solaris from at least 2.5.1
@@ -36,11 +35,11 @@ diff -pur old/INSTALL new/INSTALL
 +interfaces, audit-solaris.c implements Solaris Audit from Solaris 11.
 +Native BSM support is known to exist in FreeBSD 6.1 and OS X.
 +Alternatively, you may use the OpenBSM implementation
-+(http://www.openbsm.org).
++(http://www.openbsm.org)
  
+ makedepend:
  
- 2. Building / Installation
-@@ -153,8 +157,9 @@ name).
+@@ -161,8 +165,9 @@ name).
  There are a few other options to the configure script:
  
  --with-audit=[module] enable additional auditing via the specified module.
@@ -52,11 +51,10 @@ diff -pur old/INSTALL new/INSTALL
  
  --with-pam enables PAM support. If PAM support is compiled in, it must
  also be enabled in sshd_config (refer to the UsePAM directive).
-diff -pur old/Makefile.in new/Makefile.in
---- old/Makefile.in
-+++ new/Makefile.in
-@@ -100,7 +100,7 @@ SSHOBJS= ssh.o readconf.o clientloop.o s
- 	sshconnect.o sshconnect1.o sshconnect2.o mux.o
+--- old/Makefile.in	2018-11-07 18:32:12.713275208 +0000
++++ new/Makefile.in	2018-11-08 11:00:29.914745453 +0000
+@@ -108,7 +108,7 @@ SSHOBJS= ssh.o readconf.o clientloop.o s
+ 	sshconnect.o sshconnect2.o mux.o
  
  SSHDOBJS=sshd.o auth-rhosts.o auth-passwd.o \
 -	audit.o audit-bsm.o audit-linux.o platform.o \
@@ -64,9 +62,8 @@ diff -pur old/Makefile.in new/Makefile.in
  	sshpty.o sshlogin.o servconf.o serverloop.o \
  	auth.o auth2.o auth-options.o session.o \
  	auth2-chall.o groupaccess.o \
-diff -pur old/README.platform new/README.platform
---- old/README.platform
-+++ new/README.platform
+--- old/README.platform	2018-04-01 22:38:28.000000000 +0000
++++ new/README.platform	2018-11-08 11:02:21.397377920 +0000
 @@ -71,8 +71,8 @@ zlib-devel and pam-devel, on Debian base
  libssl-dev, libz-dev and libpam-dev.
  
@@ -78,20 +75,21 @@ diff -pur old/README.platform new/README.platform
  If you enable BSM auditing on Solaris, you need to update audit_event(4)
  for praudit(1m) to give sensible output.  The following line needs to be
  added to /etc/security/audit_event:
-@@ -85,6 +85,9 @@ There is no official registry of 3rd par
- number is already in use on your system, you may change it at build time
+@@ -86,6 +86,11 @@ number is already in use on your system,
  by configure'ing --with-cflags=-DAUE_openssh=32801 then rebuilding.
+ 
  
 +From Solaris 11
 +---------------
 +Solaris Audit is supported by configuring --with-audit=solaris.
- 
++
++
  Platforms using PAM
  -------------------
-diff -pur old/config.h.in new/config.h.in
---- old/config.h.in
-+++ new/config.h.in
-@@ -1679,6 +1679,9 @@
+ As of OpenSSH 4.3p1, sshd will no longer check /etc/nologin itself when
+--- old/config.h.in	2018-11-07 18:32:12.672948681 +0000
++++ new/config.h.in	2018-11-08 11:03:25.670770480 +0000
+@@ -1758,6 +1758,9 @@
  /* Use Linux audit module */
  #undef USE_LINUX_AUDIT
  
@@ -101,10 +99,9 @@ diff -pur old/config.h.in new/config.h.in
  /* Enable OpenSSL engine support */
  #undef USE_OPENSSL_ENGINE
  
-diff -pur old/configure.ac new/configure.ac
---- old/configure.ac
-+++ new/configure.ac
-@@ -1560,10 +1560,21 @@ AC_ARG_WITH([libedit],
+--- old/configure.ac	2018-11-07 18:32:12.677882580 +0000
++++ new/configure.ac	2018-11-08 11:07:07.278447642 +0000
+@@ -1647,10 +1647,21 @@ AC_ARG_WITH([libedit],
  
  AUDIT_MODULE=none
  AC_ARG_WITH([audit],
@@ -127,10 +124,9 @@ diff -pur old/configure.ac new/configure.ac
  	  bsm)
  		AC_MSG_RESULT([bsm])
  		AUDIT_MODULE=bsm
-diff -pur old/defines.h new/defines.h
---- old/defines.h
-+++ new/defines.h
-@@ -645,6 +645,11 @@ struct winsize {
+--- old/defines.h	2018-04-01 22:38:28.000000000 +0000
++++ new/defines.h	2018-11-08 11:08:32.370673428 +0000
+@@ -650,6 +650,11 @@ struct winsize {
  # define CUSTOM_SSH_AUDIT_EVENTS
  #endif
  
@@ -142,27 +138,26 @@ diff -pur old/defines.h new/defines.h
  #if !defined(HAVE___func__) && defined(HAVE___FUNCTION__)
  #  define __func__ __FUNCTION__
  #elif !defined(HAVE___func__)
-diff -pur old/sshd.c new/sshd.c
---- old/sshd.c
-+++ new/sshd.c
-@@ -2043,7 +2043,9 @@ main(int ac, char **av)
+--- old/sshd.c	2018-11-07 18:32:12.687311322 +0000
++++ new/sshd.c	2018-11-08 11:11:38.597704064 +0000
+@@ -2117,7 +2117,9 @@ main(int ac, char **av)
  	}
  
  #ifdef SSH_AUDIT_EVENTS
-+#ifndef	USE_SOLARIS_AUDIT
++#ifndef USE_SOLARIS_AUDIT
  	audit_event(SSH_AUTH_SUCCESS);
-+#endif	/* !USE_SOLARIS_AUDIT */
++#endif /* !USE_SOLARIS_AUDIT */
  #endif
  
  #ifdef GSSAPI
-@@ -2073,6 +2075,10 @@ main(int ac, char **av)
- 		do_pam_session();
+@@ -2147,6 +2149,10 @@ main(int ac, char **av)
+ 		do_pam_session(ssh);
  	}
  #endif
-+#ifdef	USE_SOLARIS_AUDIT
++#ifdef USE_SOLARIS_AUDIT
 +	/* Audit should take place after all successful pam */
 +	audit_event(SSH_AUTH_SUCCESS);
-+#endif	/* USE_SOLARIS_AUDIT */
++#endif /* USE_SOLARIS_AUDIT */
  
  	/*
  	 * In privilege separation, we fork another child and prepare

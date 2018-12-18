@@ -19,7 +19,7 @@
 diff -pur old/config.h.in new/config.h.in
 --- old/config.h.in
 +++ new/config.h.in
-@@ -1623,6 +1623,12 @@
+@@ -1746,6 +1746,12 @@
  /* Use btmp to log bad logins */
  #undef USE_BTMP
  
@@ -35,7 +35,7 @@ diff -pur old/config.h.in new/config.h.in
 diff -pur old/configure.ac new/configure.ac
 --- old/configure.ac
 +++ new/configure.ac
-@@ -910,6 +910,8 @@ mips-sony-bsd|mips-sony-newsos4)
+@@ -1035,6 +1035,8 @@ mips-sony-bsd|mips-sony-newsos4)
  		],
  	)
  	TEST_SHELL=$SHELL	# let configure find us a capable shell
@@ -149,7 +149,7 @@ diff -pur old/gss-serv.c new/gss-serv.c
 diff -pur old/servconf.c new/servconf.c
 --- old/servconf.c
 +++ new/servconf.c
-@@ -489,7 +489,11 @@ static struct {
+@@ -539,7 +539,11 @@ static struct {
  	{ "afstokenpassing", sUnsupported, SSHCFG_GLOBAL },
  #ifdef GSSAPI
  	{ "gssapiauthentication", sGssAuthentication, SSHCFG_ALL },
@@ -162,7 +162,7 @@ diff -pur old/servconf.c new/servconf.c
  	{ "gssapistrictacceptorcheck", sGssStrictAcceptor, SSHCFG_GLOBAL },
  #else
  	{ "gssapiauthentication", sUnsupported, SSHCFG_ALL },
-@@ -2264,7 +2268,9 @@ dump_config(ServerOptions *o)
+@@ -2467,7 +2471,9 @@ dump_config(ServerOptions *o)
  #endif
  #ifdef GSSAPI
  	dump_cfg_fmtint(sGssAuthentication, o->gss_authentication);
@@ -175,7 +175,7 @@ diff -pur old/servconf.c new/servconf.c
 diff -pur old/sshd.c new/sshd.c
 --- old/sshd.c
 +++ new/sshd.c
-@@ -2228,9 +2228,23 @@ main(int ac, char **av)
+@@ -2122,9 +2122,23 @@ main(int ac, char **av)
  
  #ifdef GSSAPI
  	if (options.gss_authentication) {

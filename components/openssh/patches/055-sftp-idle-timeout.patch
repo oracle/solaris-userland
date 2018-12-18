@@ -35,7 +35,7 @@ diff -rupN old/sftp-server.c new/sftp-server.c
  /* Packet handlers */
  static void process_open(u_int32_t id);
  static void process_close(u_int32_t id);
-@@ -1854,7 +1858,10 @@ sftp_server_cleanup_exit(int i)
+@@ -1852,7 +1856,10 @@ sftp_server_cleanup_exit(int i)
  		    pw->pw_name, client_addr);
  	}
  #ifdef SFTP_AUDIT
@@ -47,7 +47,7 @@ diff -rupN old/sftp-server.c new/sftp-server.c
  #endif
  	_exit(i);
  }
-@@ -1873,11 +1880,18 @@ sftp_server_usage(void)
+@@ -1871,11 +1878,18 @@ sftp_server_usage(void)
  	exit(1);
  }
  
@@ -66,7 +66,7 @@ diff -rupN old/sftp-server.c new/sftp-server.c
  	ssize_t len, olen, set_size;
  	SyslogFacility log_facility = SYSLOG_FACILITY_AUTH;
  	char *cp, *homedir = NULL, buf[4*4096];
-@@ -1893,7 +1907,7 @@ sftp_server_main(int argc, char **argv,
+@@ -1891,7 +1905,7 @@ sftp_server_main(int argc, char **argv,
  	pw = pwcopy(user_pw);
  
  	while (!skipargs && (ch = getopt(argc, argv,
@@ -75,7 +75,7 @@ diff -rupN old/sftp-server.c new/sftp-server.c
  		switch (ch) {
  		case 'Q':
  			if (strcasecmp(optarg, "requests") != 0) {
-@@ -1953,6 +1967,20 @@ sftp_server_main(int argc, char **argv,
+@@ -1951,6 +1965,20 @@ sftp_server_main(int argc, char **argv,
  				fatal("Invalid umask \"%s\"", optarg);
  			(void)umask((mode_t)mask);
  			break;
@@ -96,7 +96,7 @@ diff -rupN old/sftp-server.c new/sftp-server.c
  		case 'h':
  		default:
  			sftp_server_usage();
-@@ -2024,6 +2052,7 @@ sftp_server_main(int argc, char **argv,
+@@ -2022,6 +2050,7 @@ sftp_server_main(int argc, char **argv,
  	}
  
  	set_size = howmany(max + 1, NFDBITS) * sizeof(fd_mask);
@@ -104,7 +104,7 @@ diff -rupN old/sftp-server.c new/sftp-server.c
  	for (;;) {
  		memset(rset, 0, set_size);
  		memset(wset, 0, set_size);
-@@ -2045,13 +2074,23 @@ sftp_server_main(int argc, char **argv,
+@@ -2043,13 +2072,23 @@ sftp_server_main(int argc, char **argv,
  		if (olen > 0)
  			FD_SET(out, wset);
  
@@ -131,7 +131,7 @@ diff -rupN old/sftp-server.c new/sftp-server.c
 diff -rupN old/sftp.c new/sftp.c
 --- old/sftp.c	2017-12-01 15:29:31.649735226 +0000
 +++ new/sftp.c	2017-12-01 15:29:39.739069916 +0000
-@@ -255,6 +255,24 @@ cmd_interrupt(int signo)
+@@ -253,6 +253,24 @@ cmd_interrupt(int signo)
  	errno = olderrno;
  }
  
@@ -156,15 +156,15 @@ diff -rupN old/sftp.c new/sftp.c
  static void
  help(void)
  {
-@@ -2212,6 +2230,7 @@ interactive_loop(struct sftp_conn *conn,
+@@ -2227,6 +2227,7 @@ interactive_loop(struct sftp_conn *conn,
  		if (err != 0)
  			break;
  	}
 +	signal(SIGCHLD, SIG_DFL);
  	free(remote_path);
+ 	free(startdir);
  	free(conn);
- 
-@@ -2277,6 +2296,7 @@ connect_to_server(char *path, char **arg
+@@ -2293,6 +2312,7 @@ connect_to_server(char *path, char **arg
  	signal(SIGTERM, killchild);
  	signal(SIGINT, killchild);
  	signal(SIGHUP, killchild);

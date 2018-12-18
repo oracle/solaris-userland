@@ -9,9 +9,8 @@
 # Patch source: in-house
 # Solaris specific, upstream already has per-session ccache.
 #
-diff -pur old/gss-serv.c new/gss-serv.c
---- old/gss-serv.c
-+++ new/gss-serv.c
+--- old/gss-serv.c	2018-11-12 16:45:12.419715161 +0000
++++ new/gss-serv.c	2018-11-12 17:07:15.942375667 +0000
 @@ -49,6 +49,8 @@
  #include "ssh-gss.h"
  #include "monitor_wrap.h"
@@ -117,18 +116,17 @@ diff -pur old/gss-serv.c new/gss-serv.c
  #else	/* #ifdef USE_GSS_STORE_CRED */
  	if (gssapi_client.mech && gssapi_client.mech->storecreds) {
  		(*gssapi_client.mech->storecreds)(&gssapi_client);
-diff -pur old/servconf.c new/servconf.c
---- old/servconf.c
-+++ new/servconf.c
-@@ -169,6 +169,7 @@ initialize_server_options(ServerOptions
+--- old/servconf.c	2018-11-12 16:45:12.773521362 +0000
++++ new/servconf.c	2018-11-12 17:25:51.849360213 +0000
+@@ -179,6 +179,7 @@ initialize_server_options(ServerOptions
  	 */
  	options->pam_service_per_authmethod = 1;
- #endif
+ #endif /* PAM_ENHANCEMENT */
 +	options->gss_use_default_ccache = -1;
  	options->authorized_principals_file = NULL;
  	options->authorized_principals_command = NULL;
  	options->authorized_principals_command_user = NULL;
-@@ -363,6 +364,8 @@ fill_default_server_options(ServerOption
+@@ -415,6 +416,8 @@ fill_default_server_options(ServerOption
  		options->pam_service_prefix = _SSH_PAM_SERVICE_PREFIX;
  #endif
  
@@ -137,7 +135,7 @@ diff -pur old/servconf.c new/servconf.c
  	if (options->fwd_opts.streamlocal_bind_mask == (mode_t)-1)
  		options->fwd_opts.streamlocal_bind_mask = 0177;
  	if (options->fwd_opts.streamlocal_bind_unlink == -1)
-@@ -467,7 +470,7 @@ typedef enum {
+@@ -521,7 +524,7 @@ typedef enum {
  #endif
  	sRevokedKeys, sTrustedUserCAKeys, sAuthorizedPrincipalsFile,
  	sAuthorizedPrincipalsCommand, sAuthorizedPrincipalsCommandUser,
@@ -146,7 +144,7 @@ diff -pur old/servconf.c new/servconf.c
  	sAuthorizedKeysCommand, sAuthorizedKeysCommandUser,
  	sAuthenticationMethods, sHostKeyAgent, sPermitUserRC,
  	sStreamLocalBindMask, sStreamLocalBindUnlink,
-@@ -536,11 +539,7 @@ static struct {
+@@ -591,11 +594,7 @@ static struct {
  	{ "gssauthentication", sGssAuthentication, SSHCFG_ALL },   /* alias */
  	{ "gssapikeyexchange", sGssKeyEx, SSHCFG_ALL },
  	{ "gsskeyex", sGssKeyEx, SSHCFG_ALL },                     /* alias */
@@ -158,7 +156,7 @@ diff -pur old/servconf.c new/servconf.c
  	{ "gssapistrictacceptorcheck", sGssStrictAcceptor, SSHCFG_GLOBAL },
  #else
  	{ "gssapiauthentication", sUnsupported, SSHCFG_ALL },
-@@ -646,6 +645,7 @@ static struct {
+@@ -701,6 +700,7 @@ static struct {
  	{ "authorizedkeyscommanduser", sAuthorizedKeysCommandUser, SSHCFG_ALL },
  	{ "authorizedprincipalscommand", sAuthorizedPrincipalsCommand, SSHCFG_ALL },
  	{ "authorizedprincipalscommanduser", sAuthorizedPrincipalsCommandUser, SSHCFG_ALL },
@@ -166,7 +164,7 @@ diff -pur old/servconf.c new/servconf.c
  	{ "versionaddendum", sVersionAddendum, SSHCFG_GLOBAL },
  	{ "authenticationmethods", sAuthenticationMethods, SSHCFG_ALL },
  	{ "streamlocalbindmask", sStreamLocalBindMask, SSHCFG_ALL },
-@@ -1324,6 +1324,10 @@ process_server_config_line(ServerOptions
+@@ -1524,6 +1524,10 @@ process_server_config_line(ServerOptions
  		intptr = &options->gss_strict_acceptor;
  		goto parse_flag;
  
@@ -177,29 +175,27 @@ diff -pur old/servconf.c new/servconf.c
  	case sPasswordAuthentication:
  		intptr = &options->password_authentication;
  		goto parse_flag;
-@@ -2420,6 +2424,7 @@ dump_config(ServerOptions *o)
+@@ -2625,6 +2629,7 @@ dump_config(ServerOptions *o)
  	dump_cfg_fmtint(sStreamLocalBindUnlink, o->fwd_opts.streamlocal_bind_unlink);
- 	dump_cfg_fmtint(sUsePrivilegeSeparation, use_privsep);
  	dump_cfg_fmtint(sFingerprintHash, o->fingerprint_hash);
+ 	dump_cfg_fmtint(sExposeAuthInfo, o->expose_userauth_info);
 +	dump_cfg_fmtint(sGssUseDefaultCCache, o->gss_use_default_ccache);
  
  	/* string arguments */
  	dump_cfg_string(sPidFile, o->pid_file);
-diff -pur old/servconf.h new/servconf.h
---- old/servconf.h
-+++ new/servconf.h
-@@ -200,6 +200,7 @@ typedef struct {
- #endif
-         
+--- old/servconf.h	2018-11-12 16:45:12.434619956 +0000
++++ new/servconf.h	2018-11-12 17:26:33.483141327 +0000
+@@ -220,6 +220,7 @@ typedef struct {
+ 
  	int	fingerprint_hash;
+ 	int	expose_userauth_info;
 +	int	gss_use_default_ccache;
  }       ServerOptions;
  
  /* Information about the incoming connection as used by Match */
-diff -pur old/sshd_config.5 new/sshd_config.5
---- old/sshd_config.5
-+++ new/sshd_config.5
-@@ -640,6 +640,18 @@ Specifies whether to automatically destr
+--- old/sshd_config.5	2018-11-12 16:45:12.687285946 +0000
++++ new/sshd_config.5	2018-11-12 17:27:25.898697785 +0000
+@@ -655,6 +655,18 @@ Specifies whether to automatically destr
  on logout.
  The default is
  .Cm yes .

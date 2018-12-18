@@ -4,10 +4,9 @@
 # Because this is Solaris-specific and not suitable for upstream, we will not
 # contribute the changes to the upstream community.
 #
-diff -pur old/Makefile.in new/Makefile.in
---- old/Makefile.in
-+++ new/Makefile.in
-@@ -26,6 +26,7 @@ ASKPASS_PROGRAM=$(libexecdir)/ssh-askpas
+--- old/Makefile.in	2018-11-07 15:53:57.423330803 +0000
++++ new/Makefile.in	2018-11-07 18:02:30.111585419 +0000
+@@ -24,6 +24,7 @@ ASKPASS_PROGRAM=$(libexecdir)/ssh-askpas
  SFTP_SERVER=$(libexecdir)/sftp-server
  SSH_KEYSIGN=$(libexecdir)/ssh-keysign
  SSH_PKCS11_HELPER=$(libexecdir)/ssh-pkcs11-helper
@@ -15,16 +14,16 @@ diff -pur old/Makefile.in new/Makefile.in
  PRIVSEP_PATH=@PRIVSEP_PATH@
  SSH_PRIVSEP_USER=@SSH_PRIVSEP_USER@
  STRIP_OPT=@STRIP_OPT@
-@@ -85,6 +86,7 @@ LIBSSH_OBJS=${LIBOPENSSH_OBJS} \
- 	atomicio.o key.o dispatch.o mac.o uidswap.o uuencode.o misc.o \
+@@ -93,6 +94,7 @@ LIBSSH_OBJS=${LIBOPENSSH_OBJS} \
+ 	atomicio.o key.o dispatch.o mac.o uidswap.o uuencode.o misc.o utf8.o \
  	monitor_fdpass.o rijndael.o ssh-dss.o ssh-ecdsa.o ssh-rsa.o dh.o \
  	msg.o progressmeter.o dns.o entropy.o gss-genr.o umac.o umac128.o \
 +	sftp_provider.o \
  	ssh-pkcs11.o smult_curve25519_ref.o \
  	poly1305.o chacha.o cipher-chachapoly.o \
  	ssh-ed25519.o digest-openssl.o digest-libc.o hmac.o \
-@@ -107,7 +109,7 @@ SSHDOBJS=sshd.o auth-rhosts.o auth-passw
- 	monitor_mm.o monitor.o monitor_wrap.o auth-krb5.o \
+@@ -115,7 +117,7 @@ SSHDOBJS=sshd.o auth-rhosts.o auth-passw
+ 	monitor.o monitor_wrap.o auth-krb5.o \
  	auth2-gss.o gss-serv.o gss-serv-krb5.o \
  	loginrec.o auth-pam.o auth-shadow.o auth-sia.o md5crypt.o \
 -	sftp-server.o sftp-common.o \
@@ -32,7 +31,7 @@ diff -pur old/Makefile.in new/Makefile.in
  	sandbox-null.o sandbox-rlimit.o sandbox-systrace.o sandbox-darwin.o \
  	sandbox-seccomp-filter.o sandbox-capsicum.o sandbox-pledge.o \
  	sandbox-solaris.o
-@@ -187,8 +189,8 @@ ssh-pkcs11-helper$(EXEEXT): $(LIBCOMPAT)
+@@ -195,8 +197,8 @@ ssh-pkcs11-helper$(EXEEXT): $(LIBCOMPAT)
  ssh-keyscan$(EXEEXT): $(LIBCOMPAT) libssh.a ssh-keyscan.o
  	$(LD) -o $@ ssh-keyscan.o $(LDFLAGS) -lssh -lopenbsd-compat -lssh $(LIBS)
  
@@ -43,9 +42,9 @@ diff -pur old/Makefile.in new/Makefile.in
  
  sftp$(EXEEXT): $(LIBCOMPAT) libssh.a sftp.o sftp-client.o sftp-common.o sftp-glob.o progressmeter.o
  	$(LD) -o $@ progressmeter.o sftp.o sftp-client.o sftp-common.o sftp-glob.o $(LDFLAGS) -lssh -lopenbsd-compat $(LIBS) $(LIBEDIT)
-@@ -225,9 +227,18 @@ umac128.o:	umac.c
- 	    -Dumac_update=umac128_update -Dumac_final=umac128_final \
- 	    -Dumac_delete=umac128_delete
+@@ -226,9 +228,18 @@ $(CONFIGFILES): $(CONFIGFILES_IN)
+ moduli:
+ 	echo
  
 +# dtrace sftp
 +sftp_provider.h: $(srcdir)/sftp_provider.d
@@ -60,21 +59,20 @@ diff -pur old/Makefile.in new/Makefile.in
  	rm -f *.o *.a $(TARGETS) logintest config.cache config.log
 -	rm -f *.out core survey
 +	rm -f *.out core survey sftp_provider.h
+ 	rm -f regress/check-perm$(EXEEXT)
  	rm -f regress/unittests/test_helper/*.a
  	rm -f regress/unittests/test_helper/*.o
- 	rm -f regress/unittests/sshbuf/*.o
-@@ -336,6 +347,7 @@ install-files:
+@@ -364,6 +375,7 @@ install-files:
  	$(INSTALL) -m 644 sftp-server.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/sftp-server.8
  	$(INSTALL) -m 644 ssh-keysign.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-keysign.8
  	$(INSTALL) -m 644 ssh-pkcs11-helper.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-pkcs11-helper.8
 +	mkdir -p $(ROOTDLIBDIR64) && cp $(srcdir)/sftp64.d $(ROOTDLIBDIR64)/sftp64.d
  
  install-sysconf:
- 	if [ ! -d $(DESTDIR)$(sysconfdir) ]; then \
-diff -pur old/sftp-server.c new/sftp-server.c
---- old/sftp-server.c
-+++ new/sftp-server.c
-@@ -54,6 +54,9 @@
+ 	$(MKDIR_P) $(DESTDIR)$(sysconfdir)
+--- old/sftp-server.c	2018-04-01 22:38:28.000000000 +0000
++++ new/sftp-server.c	2018-11-07 17:52:24.677447463 +0000
+@@ -50,6 +50,9 @@
  
  #include "sftp.h"
  #include "sftp-common.h"
@@ -84,7 +82,7 @@ diff -pur old/sftp-server.c new/sftp-server.c
  
  /* Our verbosity */
  static LogLevel log_level = SYSLOG_LEVEL_ERROR;
-@@ -740,14 +743,17 @@ process_read(u_int32_t id)
+@@ -736,14 +739,16 @@ process_read(u_int32_t id)
  	u_int32_t len;
  	int r, handle, fd, ret, status = SSH2_FX_FAILURE;
  	u_int64_t off;
@@ -95,30 +93,28 @@ diff -pur old/sftp-server.c new/sftp-server.c
  	    (r = sshbuf_get_u32(iqueue, &len)) != 0)
  		fatal("%s: buffer error: %s", __func__, ssh_err(r));
  
--	debug("request %u: read \"%s\" (handle %d) off %llu len %d",
--	    id, handle_to_name(handle), handle, (unsigned long long)off, len);
 +	fpath = handle_to_name(handle);
-+ 
-+ 	debug("request %u: read \"%s\" (handle %d) off %llu len %d",
+ 	debug("request %u: read \"%s\" (handle %d) off %llu len %d",
+-	    id, handle_to_name(handle), handle, (unsigned long long)off, len);
 +	    id, fpath, handle, (unsigned long long)off, len);
  	if (len > sizeof buf) {
  		len = sizeof buf;
  		debug2("read change len %d", len);
-@@ -758,7 +764,13 @@ process_read(u_int32_t id)
+@@ -754,7 +759,13 @@ process_read(u_int32_t id)
  			error("process_read: seek failed");
  			status = errno_to_portable(errno);
  		} else {
 +#ifdef DTRACE_SFTP
-+		        SFTP_TRANSFER_START_OP("read", fd, fpath, len);
++			SFTP_TRANSFER_START_OP("read", fd, fpath, len);
 +#endif
  			ret = read(fd, buf, len);
 +#ifdef DTRACE_SFTP
-+                        SFTP_TRANSFER_DONE_OP("read", fd, fpath, ret);
++			SFTP_TRANSFER_DONE_OP("read", fd, fpath, ret);
 +#endif
  			if (ret < 0) {
  				status = errno_to_portable(errno);
  			} else if (ret == 0) {
-@@ -781,14 +793,16 @@ process_write(u_int32_t id)
+@@ -777,14 +788,16 @@ process_write(u_int32_t id)
  	size_t len;
  	int r, handle, fd, ret, status;
  	u_char *data;
@@ -136,18 +132,17 @@ diff -pur old/sftp-server.c new/sftp-server.c
  	fd = handle_to_fd(handle);
  
  	if (fd < 0)
-@@ -800,7 +814,14 @@ process_write(u_int32_t id)
+@@ -796,7 +809,13 @@ process_write(u_int32_t id)
  			error("process_write: seek failed");
  		} else {
  /* XXX ATOMICIO ? */
 +#ifdef DTRACE_SFTP
-+		        SFTP_TRANSFER_START_OP("write", fd, fpath, len);
++			SFTP_TRANSFER_START_OP("write", fd, fpath, len);
 +#endif
  			ret = write(fd, data, len);
 +#ifdef DTRACE_SFTP
 +			SFTP_TRANSFER_DONE_OP("write", fd, fpath, ret);
 +#endif
-+
  			if (ret < 0) {
  				error("process_write: write failed");
  				status = errno_to_portable(errno);

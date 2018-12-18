@@ -1,0 +1,131 @@
+#
+# OpenSSH through 7.7 is prone to a user enumeration vulnerability due to
+# not delaying bailout for an invalid authenticating user until after the
+# packet containing the request has been fully parsed, related to
+# auth2-gss.c, auth2-hostbased.c, and auth2-pubkey.c.
+#
+# http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-15473
+#
+# Further details:
+# http://www.openwall.com/lists/oss-security/2018/08/15/5
+#
+# Upstream fix:
+# https://github.com/openbsd/src/commit/779974d35b4859c07bc3cb8a12c74b43b0a7d1e0
+#
+# This patch should be removed when updating to 7.8 and above.
+#
+--- old/auth2-gss.c	2018-11-27 20:17:34.014772472 +0000
++++ new/auth2-gss.c	2018-11-27 20:22:10.476568149 +0000
+@@ -103,9 +103,6 @@ userauth_gssapi(struct ssh *ssh)
+ 	u_int len;
+ 	u_char *doid = NULL;
+ 
+-	if (!authctxt->valid || authctxt->user == NULL)
+-		return (0);
+-
+ 	mechs = packet_get_int();
+ 	if (mechs == 0) {
+ 		debug("Mechanism negotiation is not supported");
+@@ -136,6 +133,12 @@ userauth_gssapi(struct ssh *ssh)
+ 		return (0);
+ 	}
+ 
++	if (!authctxt->valid || authctxt->user == NULL) {
++		debug2("%s: disabled because of invalid user", __func__);
++		free(doid);
++		return (0);
++	}
++
+ 	if (GSS_ERROR(PRIVSEP(ssh_gssapi_server_ctx(&ctxt, &goid)))) {
+ 		if (ctxt != NULL)
+ 			ssh_gssapi_delete_ctx(&ctxt);
+--- old/auth2-hostbased.c	2018-11-27 20:17:34.064580669 +0000
++++ new/auth2-hostbased.c	2018-11-27 20:24:35.717342631 +0000
+@@ -67,10 +67,6 @@ userauth_hostbased(struct ssh *ssh)
+ 	size_t alen, blen, slen;
+ 	int r, pktype, authenticated = 0;
+ 
+-	if (!authctxt->valid) {
+-		debug2("%s: disabled because of invalid user", __func__);
+-		return 0;
+-	}
+ 	/* XXX use sshkey_froms() */
+ 	if ((r = sshpkt_get_cstring(ssh, &pkalg, &alen)) != 0 ||
+ 	    (r = sshpkt_get_string(ssh, &pkblob, &blen)) != 0 ||
+@@ -121,6 +117,11 @@ userauth_hostbased(struct ssh *ssh)
+ 		goto done;
+ 	}
+ 
++	if (!authctxt->valid || authctxt->user == NULL) {
++		debug2("%s: disabled because of invalid user", __func__);
++		goto done;
++	}
++
+ 	if ((b = sshbuf_new()) == NULL)
+ 		fatal("%s: sshbuf_new failed", __func__);
+ 	/* reconstruct packet */
+--- old/auth2-pubkey.c	2018-11-27 20:17:34.107515461 +0000
++++ new/auth2-pubkey.c	2018-11-27 20:31:52.604121363 +0000
+@@ -89,19 +89,15 @@ userauth_pubkey(struct ssh *ssh)
+ {
+ 	Authctxt *authctxt = ssh->authctxt;
+ 	struct passwd *pw = authctxt->pw;
+-	struct sshbuf *b;
++	struct sshbuf *b = NULL;
+ 	struct sshkey *key = NULL;
+-	char *pkalg, *userstyle = NULL, *key_s = NULL, *ca_s = NULL;
+-	u_char *pkblob, *sig, have_sig;
++	char *pkalg = NULL, *userstyle = NULL, *key_s = NULL, *ca_s = NULL;
++	u_char *pkblob = NULL, *sig = NULL, have_sig;
+ 	size_t blen, slen;
+ 	int r, pktype;
+ 	int authenticated = 0;
+ 	struct sshauthopt *authopts = NULL;
+ 
+-	if (!authctxt->valid) {
+-		debug2("%s: disabled because of invalid user", __func__);
+-		return 0;
+-	}
+ 	if ((r = sshpkt_get_u8(ssh, &have_sig)) != 0 ||
+ 	    (r = sshpkt_get_cstring(ssh, &pkalg, NULL)) != 0 ||
+ 	    (r = sshpkt_get_string(ssh, &pkblob, &blen)) != 0)
+@@ -168,6 +164,11 @@ userauth_pubkey(struct ssh *ssh)
+ 				fatal("%s: sshbuf_put_string session id: %s",
+ 				    __func__, ssh_err(r));
+ 		}
++		if (!authctxt->valid || authctxt->user == NULL) {
++			debug2("%s: disabled because of invalid user",
++			    __func__);
++			goto done;
++		}
+ 		/* reconstruct packet */
+ 		xasprintf(&userstyle, "%s%s%s", authctxt->user,
+ 		    authctxt->style ? ":" : "",
+@@ -193,7 +194,6 @@ userauth_pubkey(struct ssh *ssh)
+ 			authenticated = 1;
+ 		}
+ 		sshbuf_free(b);
+-		free(sig);
+ 		auth2_record_key(authctxt, authenticated, key);
+ 	} else {
+ 		debug("%s: test pkalg %s pkblob %s%s%s",
+@@ -204,6 +204,11 @@ userauth_pubkey(struct ssh *ssh)
+ 		if ((r = sshpkt_get_end(ssh)) != 0)
+ 			fatal("%s: %s", __func__, ssh_err(r));
+ 
++		if (!authctxt->valid || authctxt->user == NULL) {
++			debug2("%s: disabled because of invalid user",
++			    __func__);
++			goto done;
++		}
+ 		/* XXX fake reply and always send PK_OK ? */
+ 		/*
+ 		 * XXX this allows testing whether a user is allowed
+@@ -237,6 +242,7 @@ done:
+ 	free(pkblob);
+ 	free(key_s);
+ 	free(ca_s);
++	free(sig);
+ 	return authenticated;
+ }
+ 

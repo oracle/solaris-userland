@@ -7,10 +7,9 @@
 # In the future, if this fix is accepted by the upsteam in a later release, we
 # will remove this patch when we upgrade to that release.
 #
-diff -pur old/session.c new/session.c
---- old/session.c
-+++ new/session.c
-@@ -62,6 +62,10 @@
+--- old/session.c	2018-04-01 22:38:28.000000000 +0000
++++ new/session.c	2018-11-09 13:07:25.910809529 +0000
+@@ -63,6 +63,10 @@
  #include <unistd.h>
  #include <limits.h>
  
@@ -21,43 +20,43 @@ diff -pur old/session.c new/session.c
  #include "openbsd-compat/sys-queue.h"
  #include "xmalloc.h"
  #include "ssh.h"
-@@ -132,6 +136,11 @@
+@@ -132,6 +136,11 @@ static void do_authenticated2(struct ssh
  
- static int session_pty_req(Session *);
+ static int session_pty_req(struct ssh *, Session *);
  
 +#ifdef PER_SESSION_XAUTHFILE
-+void   session_xauthfile_cleanup(Session *);
-+void   cleanup_all_session_xauthfile();
++void	session_xauthfile_cleanup(Session *);
++void	cleanup_all_session_xauthfile();
 +#endif
 +
  /* import */
  extern ServerOptions options;
  extern char *__progname;
-@@ -1218,6 +1227,11 @@
+@@ -1053,6 +1062,11 @@ do_setup_env(struct ssh *ssh, Session *s
  	if (getenv("TZ"))
  		child_set_env(&env, &envsize, "TZ", getenv("TZ"));
  
 +#ifdef PER_SESSION_XAUTHFILE
-+        if (s->auth_file != NULL)
-+                child_set_env(&env, &envsize, "XAUTHORITY", s->auth_file);
++	if (s->auth_file != NULL)
++		child_set_env(&env, &envsize, "XAUTHORITY", s->auth_file);
 +#endif
 +
- 	/* Set custom environment options from RSA authentication. */
- 	if (!options.use_login) {
- 		while (custom_environment) {
-@@ -2170,6 +2184,11 @@
+ 	/* Set custom environment options from pubkey authentication. */
+ 	if (options.permit_user_env) {
+ 		for (n = 0 ; n < auth_opts->nenv; n++) {
+@@ -1952,6 +1966,11 @@ session_x11_req(struct ssh *ssh, Session
  {
  	int success;
  
 +#ifdef PER_SESSION_XAUTHFILE
 +	int fd;
-+        char xauthdir[] = "/tmp/ssh-xauth-XXXXXX";
++	char xauthdir[] = "/tmp/ssh-xauth-XXXXXX";
 +#endif
 +
  	if (s->auth_proto != NULL || s->auth_data != NULL) {
  		error("session_x11_req: session %d: "
  		    "x11 forwarding already active", s->self);
-@@ -2188,6 +2207,50 @@
+@@ -1976,6 +1995,50 @@ session_x11_req(struct ssh *ssh, Session
  		s->auth_proto = NULL;
  		s->auth_data = NULL;
  	}
@@ -77,7 +76,7 @@ diff -pur old/session.c new/session.c
 +		    xauthdir);
 +		/*
 +		 * we don't want that "creating new authority file" message to
-+                 * be printed by xauth(1) so we must create that file
++		 * be printed by xauth(1) so we must create that file
 +		 * beforehand.
 +		 */
 +		if ((fd = open(s->auth_file, O_CREAT | O_EXCL | O_RDONLY,
@@ -95,7 +94,7 @@ diff -pur old/session.c new/session.c
 +			close(fd);
 +			debug("temporary X authority file %s created",
 +			    s->auth_file);
-+                        debug("session number = %d", s->self);
++			 debug("session number = %d", s->self);
 +		}
 +	}
 +	else {
@@ -108,7 +107,7 @@ diff -pur old/session.c new/session.c
  	return success;
  }
  
-@@ -2378,6 +2441,50 @@
+@@ -2165,6 +2228,50 @@ session_pty_cleanup(Session *s)
  	PRIVSEP(session_pty_cleanup2(s));
  }
  
@@ -151,7 +150,7 @@ diff -pur old/session.c new/session.c
 +{
 +	int i;
 +	for (i = 0; i < sessions_nalloc; i++) {
-+                session_xauthfile_cleanup(&sessions[i]);
++		session_xauthfile_cleanup(&sessions[i]);
 +	}
 +}
 +#endif
@@ -159,7 +158,7 @@ diff -pur old/session.c new/session.c
  static char *
  sig2name(int sig)
  {
-@@ -2512,6 +2619,9 @@
+@@ -2304,6 +2411,9 @@ session_close(struct ssh *ssh, Session *
  	free(s->auth_display);
  	free(s->auth_data);
  	free(s->auth_proto);
@@ -169,7 +168,7 @@ diff -pur old/session.c new/session.c
  	free(s->subsys);
  	if (s->env != NULL) {
  		for (i = 0; i < s->num_env; i++) {
-@@ -2763,6 +2873,10 @@
+@@ -2548,6 +2658,10 @@ do_cleanup(struct ssh *ssh, Authctxt *au
  	/* remove agent socket */
  	auth_sock_cleanup_proc(authctxt->pw);
  
@@ -177,19 +176,18 @@ diff -pur old/session.c new/session.c
 +	cleanup_all_session_xauthfile();
 +#endif
 +
- 	/*
- 	 * Cleanup ptys/utmp only if privsep is disabled,
- 	 * or if running in monitor.
-diff -pur old/session.h new/session.h
---- old/session.h
-+++ new/session.h
-@@ -49,6 +49,9 @@
+ 	/* remove userauth info */
+ 	if (auth_info_file != NULL) {
+ 		temporarily_use_uid(authctxt->pw);
+--- old/session.h	2018-04-01 22:38:28.000000000 +0000
++++ new/session.h	2018-11-09 13:08:05.230838965 +0000
+@@ -49,6 +49,9 @@ struct Session {
  	char	*auth_display;
  	char	*auth_proto;
  	char	*auth_data;
 +#ifdef PER_SESSION_XAUTHFILE
-+	char    *auth_file;	/* xauth(1) authority file */
++	char	*auth_file;     /* xauth(1) authority file */
 +#endif
  	int	single_connection;
  
- 	/* proto 2 */
+ 	int	chanid;

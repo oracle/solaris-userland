@@ -9,10 +9,9 @@
 # Patch offered upstream:
 #     https://bugzilla.mindrot.org/show_bug.cgi?id=2378
 #
-diff -pur old/auth-pam.c new/auth-pam.c
---- old/auth-pam.c
-+++ new/auth-pam.c
-@@ -1040,6 +1040,20 @@ start_pam(Authctxt *authctxt)
+--- old/auth-pam.c	2018-11-08 16:38:37.266717608 +0000
++++ new/auth-pam.c	2018-11-08 20:41:58.259381267 +0000
+@@ -1042,6 +1042,20 @@ start_pam(Authctxt *authctxt)
  		fatal("PAM: initialisation failed");
  }
  
@@ -33,47 +32,44 @@ diff -pur old/auth-pam.c new/auth-pam.c
  void
  finish_pam(void)
  {
-diff -pur old/auth-pam.h new/auth-pam.h
---- old/auth-pam.h
-+++ new/auth-pam.h
-@@ -29,6 +29,9 @@ void start_pam(Authctxt *);
+--- old/auth-pam.h	2018-11-08 16:38:37.497300648 +0000
++++ new/auth-pam.h	2018-11-08 20:42:49.065553581 +0000
+@@ -31,6 +31,9 @@ void start_pam(Authctxt *);
  void finish_pam(void);
  u_int do_pam_account(void);
- void do_pam_session(void);
+ void do_pam_session(struct ssh *);
 +#ifdef HAVE_PAM_AUSER
 +void do_pam_set_auser(const char *);
 +#endif
  void do_pam_setcred(int );
  void do_pam_chauthtok(void);
  int do_pam_putenv(char *, char *);
-diff -pur old/auth.h new/auth.h
---- old/auth.h
-+++ new/auth.h
-@@ -84,6 +84,9 @@ struct Authctxt {
+--- old/auth.h	2018-11-08 16:38:37.268958463 +0000
++++ new/auth.h	2018-11-08 20:43:49.254496595 +0000
+@@ -98,6 +98,9 @@ struct Authctxt {
  #ifdef PAM_ENHANCEMENT
-         char            *authmethod_name;
+ 	char		*authmethod_name;
  #endif 
 +#ifdef HAVE_PAM_AUSER
 +	char		*auser;
-+#endif 
++#endif
  };
+ 
  /*
-  * Every authentication method has to handle authentication requests for
-diff -pur old/auth2-hostbased.c new/auth2-hostbased.c
---- old/auth2-hostbased.c
-+++ new/auth2-hostbased.c
-@@ -85,6 +85,9 @@ userauth_hostbased(Authctxt *authctxt)
- 	buffer_dump(&b);
- 	buffer_free(&b);
+--- old/auth2-hostbased.c	2018-11-08 16:38:37.501222939 +0000
++++ new/auth2-hostbased.c	2018-11-08 20:48:51.428257131 +0000
+@@ -85,6 +85,9 @@ userauth_hostbased(struct ssh *ssh)
+ 	debug("signature:");
+ 	sshbuf_dump_data(sig, siglen, stderr);
  #endif
 +#ifdef HAVE_PAM_AUSER
 +	authctxt->auser = NULL;
 +#endif
- 	pktype = key_type_from_name(pkalg);
+ 	pktype = sshkey_type_from_name(pkalg);
  	if (pktype == KEY_UNSPEC) {
  		/* this is perfectly legal */
-@@ -142,6 +145,13 @@ userauth_hostbased(Authctxt *authctxt)
- 			buffer_len(&b))) == 1)
+@@ -145,6 +148,13 @@ userauth_hostbased(struct ssh *ssh)
+ 	    sshbuf_ptr(b), sshbuf_len(b), pkalg, ssh->compat)) == 0)
  		authenticated = 1;
  
 +#ifdef HAVE_PAM_AUSER
@@ -83,13 +79,12 @@ diff -pur old/auth2-hostbased.c new/auth2-hostbased.c
 +	}
 +#endif
 +
- 	buffer_free(&b);
+ 	auth2_record_key(authctxt, authenticated, key);
+ 	sshbuf_free(b);
  done:
- 	debug2("userauth_hostbased: authenticated %d", authenticated);
-diff -pur old/auth2.c new/auth2.c
---- old/auth2.c
-+++ new/auth2.c
-@@ -339,6 +339,14 @@ userauth_finish(Authctxt *authctxt, int
+--- old/auth2.c	2018-11-08 16:38:37.440124585 +0000
++++ new/auth2.c	2018-11-08 20:51:00.550012491 +0000
+@@ -343,6 +343,14 @@ userauth_finish(struct ssh *ssh, int aut
  #endif
  	}
  
@@ -97,17 +92,16 @@ diff -pur old/auth2.c new/auth2.c
 +	if (!use_privsep) {
 +		do_pam_set_auser(authctxt->auser);
 +		free(authctxt->auser);
-+		authctxt->auser = NULL;	
++		authctxt->auser = NULL;      
 +	}
 +#endif
 +
  	if (authenticated && options.num_auth_methods != 0) {
  
  #if defined(USE_PAM) && defined(PAM_ENHANCEMENT)
-diff -pur old/config.h.in new/config.h.in
---- old/config.h.in
-+++ new/config.h.in
-@@ -839,6 +839,9 @@
+--- old/config.h.in	2018-11-08 16:38:37.398689825 +0000
++++ new/config.h.in	2018-11-08 20:52:03.111787499 +0000
+@@ -878,6 +878,9 @@
  /* Define if you have Digital Unix Security Integration Architecture */
  #undef HAVE_OSF_SIA
  
@@ -117,21 +111,19 @@ diff -pur old/config.h.in new/config.h.in
  /* Define to 1 if you have the `pam_getenvlist' function. */
  #undef HAVE_PAM_GETENVLIST
  
-diff -pur old/configure.ac new/configure.ac
---- old/configure.ac
-+++ new/configure.ac
-@@ -951,6 +951,7 @@ mips-sony-bsd|mips-sony-newsos4)
+--- old/configure.ac	2018-11-08 16:38:37.400899840 +0000
++++ new/configure.ac	2018-11-08 20:53:37.605316810 +0000
+@@ -1037,6 +1037,7 @@ mips-sony-bsd|mips-sony-newsos4)
  	TEST_SHELL=$SHELL	# let configure find us a capable shell
          AC_DEFINE([USE_GSS_STORE_CRED])
          AC_DEFINE([GSSAPI_STORECREDS_NEEDS_RUID])
-+        AC_DEFINE([HAVE_PAM_AUSER])
++ 	AC_DEFINE([HAVE_PAM_AUSER])
  	;;
  *-*-sunos4*)
  	CPPFLAGS="$CPPFLAGS -DSUNOS4"
-diff -pur old/monitor.c new/monitor.c
---- old/monitor.c
-+++ new/monitor.c
-@@ -400,6 +400,12 @@ monitor_child_preauth(Authctxt *_authctx
+--- old/monitor.c	2018-11-08 16:38:37.448042400 +0000
++++ new/monitor.c	2018-11-08 20:59:05.172844138 +0000
+@@ -411,6 +411,12 @@ monitor_child_preauth(Authctxt *_authctx
  		}
  	}
  
@@ -144,7 +136,7 @@ diff -pur old/monitor.c new/monitor.c
  	if (!authctxt->valid)
  		fatal("%s: authenticated invalid user", __func__);
  	if (strcmp(auth_method, "unknown") == 0)
-@@ -599,12 +605,14 @@ monitor_reset_key_state(void)
+@@ -614,14 +620,16 @@ monitor_reset_key_state(void)
  {
  	/* reset state */
  	free(key_blob);
@@ -153,14 +145,16 @@ diff -pur old/monitor.c new/monitor.c
 +	hostbased_cuser = NULL;
 +#endif
  	free(hostbased_chost);
+ 	sshauthopt_free(key_opts);
  	key_blob = NULL;
  	key_bloblen = 0;
  	key_blobtype = MM_NOKEY;
+ 	key_opts = NULL;
 -	hostbased_cuser = NULL;
  	hostbased_chost = NULL;
  }
  
-@@ -1061,6 +1069,11 @@ mm_answer_pam_account(int sock, Buffer *
+@@ -1082,6 +1090,11 @@ mm_answer_pam_account(int sock, Buffer *
  	if (!options.use_pam)
  		fatal("%s: PAM not enabled", __func__);
  

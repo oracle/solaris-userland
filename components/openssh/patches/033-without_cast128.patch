@@ -19,21 +19,10 @@
 #
 # This is a Solaris specific patch and it is not likely to be accepted upstream.
 #
-diff -pur old/ssh_config.5 new/ssh_config.5
---- old/ssh_config.5
-+++ new/ssh_config.5
-@@ -431,7 +431,6 @@ arcfour
- arcfour128
- arcfour256
- blowfish-cbc
--cast128-cbc
- chacha20-poly1305@openssh.com
- .Ed
- .Pp
 diff -pur old/sshd.8 new/sshd.8
 --- old/sshd.8
 +++ new/sshd.8
-@@ -255,7 +255,7 @@ host key against its own database to ver
+@@ -256,7 +256,7 @@ host key against its own database to ver
  Forward security is provided through a Diffie-Hellman key agreement.
  This key agreement results in a shared session key.
  The rest of the session is encrypted using a symmetric cipher, currently
@@ -42,15 +31,3 @@ diff -pur old/sshd.8 new/sshd.8
  The client selects the encryption algorithm
  to use from those offered by the server.
  Additionally, session integrity is provided
-diff -pur old/sshd_config.5 new/sshd_config.5
---- old/sshd_config.5
-+++ new/sshd_config.5
-@@ -468,8 +468,6 @@ arcfour256
- .It
- blowfish-cbc
- .It
--cast128-cbc
--.It
- chacha20-poly1305@openssh.com
- .El
- .Pp

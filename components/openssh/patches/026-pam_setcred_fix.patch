@@ -12,7 +12,7 @@
 #
 --- orig/auth-pam.c	Tue May 12 12:57:25 2015
 +++ new/auth-pam.c	Thu May 14 15:21:54 2015
-@@ -950,6 +950,12 @@
+@@ -1127,6 +1127,12 @@
  		sshpam_cred_established = 1;
  		return;
  	}
@@ -25,7 +25,7 @@
  	if (sshpam_authenticated)
  		fatal("PAM: pam_setcred(): %s",
  		    pam_strerror(sshpam_handle, sshpam_err));
-@@ -956,6 +962,7 @@
+@@ -1133,6 +1139,7 @@
  	else
  		debug("PAM: pam_setcred(): %s",
  		    pam_strerror(sshpam_handle, sshpam_err));
@@ -33,7 +33,7 @@
  }
  
  static int
-@@ -1048,10 +1055,16 @@
+@@ -1228,10 +1235,16 @@
  	if (sshpam_err == PAM_SUCCESS)
  		sshpam_session_open = 1;
  	else {
@@ -43,7 +43,7 @@
 +		    pam_strerror(sshpam_handle, sshpam_err));
 +#else /* orig */
  		sshpam_session_open = 0;
- 		disable_forwarding();
+ 		auth_restrict_session(ssh);
  		error("PAM: pam_open_session(): %s",
  		    pam_strerror(sshpam_handle, sshpam_err));
 +#endif /* PAM_BUGFIX */

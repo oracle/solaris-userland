@@ -6,9 +6,9 @@
 *** orig/servconf.c	Mon Dec  5 17:23:03 2011
 --- new/servconf.c	Wed Dec  7 13:41:04 2011
 ***************
-*** 145,151 ****
---- 145,156 ----
-  {
+*** 240,246 ****
+--- 240,251 ----
+
   	/* Portable-specific options */
   	if (options->use_pam == -1)
 + #ifdef SET_USE_PAM
@@ -19,10 +19,10 @@
 + #endif
   
   	/* Standard Options */
-  	if (options->protocol == SSH_PROTO_UNKNOWN)
+  	if (options->num_host_key_files == 0) {
 ***************
-*** 755,762 ****
---- 760,776 ----
+*** 1196,1203 ****
+--- 1201,1217 ----
   	switch (opcode) {
   	/* Portable-specific options */
   	case sUsePAM:

@@ -19,7 +19,7 @@
 diff -pur old/sshd.c new/sshd.c
 --- old/sshd.c
 +++ new/sshd.c
-@@ -236,7 +236,14 @@ Buffer loginmsg;
+@@ -245,7 +245,14 @@ Buffer loginmsg;
  /* Unprivileged user */
  struct passwd *privsep_pw = NULL;
  
@@ -34,7 +34,7 @@ diff -pur old/sshd.c new/sshd.c
  void destroy_sensitive_data(void);
  void demote_sensitive_data(void);
  static void do_ssh2_kex(void);
-@@ -351,12 +358,101 @@ grace_alarm_handler(int sig)
+@@ -357,12 +364,101 @@ grace_alarm_handler(int sig)
  		signal(SIGTERM, SIG_IGN);
  		kill(0, SIGTERM);
  	}
@@ -144,7 +144,7 @@ diff -pur old/sshd.c new/sshd.c
  
  		/* Arrange for logging to be sent to the monitor */
  		set_log_handler(mm_log_handler, pmonitor);
-@@ -2006,8 +2103,10 @@ main(int ac, char **av)
+@@ -2075,8 +2172,10 @@ main(int ac, char **av)
  	 * are about to discover the bug.
  	 */
  	signal(SIGALRM, grace_alarm_handler);
@@ -156,7 +156,7 @@ diff -pur old/sshd.c new/sshd.c
  
  	sshd_exchange_identification(ssh, sock_in, sock_out);
  	packet_set_nonblocking();
-@@ -2055,6 +2154,7 @@ main(int ac, char **av)
+@@ -2129,6 +2228,7 @@ main(int ac, char **av)
  	 */
  	alarm(0);
  	signal(SIGALRM, SIG_DFL);
