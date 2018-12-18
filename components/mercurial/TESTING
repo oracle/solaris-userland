@@ -1,0 +1,47 @@
+Mercurial comes with it's own test suite which is bound to 'gmake test'.
+
+In addition there is internal 'cdm' Mercurial module. This module is using
+Mercurial python API, which is not stable and changes often with new Mercurial
+releases. Therefore it is important to test that any change made to Mercurial
+(especially version increase) does not break the cdm module. At the same time,
+we must ensure that our changes to cdm do not break it's compatibility with the
+unchanged Mercurial.
+
+There is a test suite at
+http://userland.us.oracle.com/source-archives/cadtest.zip to do that. It tests
+Mercurial against CDM. By default it tests installed hg with installed cdm. If
+you update Mercurial version and cdm needs to update too, you need to test
+
+- new mercurial against old cdm
+- new mercurial against new cdm
+- old mercurial against new cdm
+
+For that you need to prepare the new Mercurial to be tested from the workspace
+directly.
+
+$ gmake clean prep
+$ gmake -C mercurial-x.y.z local
+
+Now you have working hg in mercurial-x.y.z/hg
+
+$ wget http://userland.us.oracle.com/source-archives/cadtest.zip
+$ unzip cadtest.zip
+
+Now you have the test suite in 'cadtest' directory.
+
+You also need to copy cdm from the ON gate
+
+$ scp -r .../usr/src/tools/onbld .
+
+Test that the new hg works with our current cdm:
+
+cadtest.sh -t test.new_hg_old_cdm -c onbld/hgext/cdm.py -h mercurial-x.y.z/hg
+
+If that is ok, you are done. Otherwise you need to modify cdm so that it works.
+And make sure that the new cdm works with old hg too. (Now 'onbld' contains
+our modified cdm)
+
+cadtest.sh -t test.new_hg_new_cdm -c onbld/hgext/cdm.py -h mercurial-x.y.z/hg
+cadtest.sh -t test.old_hg_new_cdm -c $PWD/onbld/hgext/cdm.py
+
+If something fails, you need to make necessary adjustments and re-test.

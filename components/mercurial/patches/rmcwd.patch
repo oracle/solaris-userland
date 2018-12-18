@@ -1,0 +1,90 @@
+Patch taken from https://www.mercurial-scm.org/repo/hg/rev/e5449ff273d6
+
+This is fixed in 4.7.2
+
+# HG changeset patch
+# User Matt Harbison <matt_harbison@yahoo.com>
+# Date 1536291444 14400
+# Node ID e5449ff273d68abd3fd4e7b5766fb6d22edf30b7
+# Parent  7df9ae38c75ca7fd4d0d20802fbc4ab489bb1f06
+tests: stabilize test-removeemptydirs.t on Windows
+
+diff -r 7df9ae38c75c -r e5449ff273d6 tests/test-removeemptydirs.t
+--- a/tests/test-removeemptydirs.t	Thu Sep 06 21:55:30 2018 +0900
++++ b/tests/test-removeemptydirs.t	Thu Sep 06 23:37:24 2018 -0400
+@@ -87,8 +87,8 @@
+   $ hg co -qr 'desc(first_rebase_source)'
+   $ cd $TESTTMP/hgrebase/somedir
+   $ hg --config extensions.rebase= rebase -qr . -d 'desc(first_rebase_dest)'
+-  current directory was removed
+-  (consider changing to repo root: $TESTTMP/hgrebase)
++  current directory was removed (rmcwd !)
++  (consider changing to repo root: $TESTTMP/hgrebase) (rmcwd !)
+   $ cd $TESTTMP/hgrebase/somedir
+ (The current node is the rebased first_rebase_source on top of
+ first_rebase_dest)
+@@ -174,7 +174,9 @@
+ 
+ Histedit doing 'pick, pick, fold':
+ 
+-  $ hg histedit --commands /dev/stdin <<EOF
++#if rmcwd
++
++  $ hg histedit --commands - <<EOF
+   > pick 6274c77c93c3 1 add bar
+   > pick ff70a87b588f 0 add foo
+   > fold 9992bb0ac0db 2 add baz
+@@ -196,6 +198,25 @@
+   1:5c806432464a add foo
+   0:d17db4b0303a add bar
+ 
++#else
++
++  $ cd $TESTTMP/issue5826_withrm
++
++  $ hg histedit --commands - <<EOF
++  > pick 6274c77c93c3 1 add bar
++  > pick ff70a87b588f 0 add foo
++  > fold 9992bb0ac0db 2 add baz
++  > EOF
++  saved backup bundle to $TESTTMP/issue5826_withrm/.hg/strip-backup/5c806432464a-cd4c8d86-histedit.hg
++
++  $ hg log -T '{rev}:{node|short} {desc}\n'
++  1:b9eddaa97cbc add foo
++  ***
++  add baz
++  0:d17db4b0303a add bar
++
++#endif
++
+ Now test that again with experimental.removeemptydirs=false:
+   $ hg init issue5826_norm
+   $ cd issue5826_norm
+@@ -227,7 +248,7 @@
+ 
+ Histedit doing 'pick, pick, fold':
+ 
+-  $ hg histedit --commands /dev/stdin <<EOF
++  $ hg histedit --commands - <<EOF
+   > pick 6274c77c93c3 1 add bar
+   > pick ff70a87b588f 0 add foo
+   > fold 9992bb0ac0db 2 add baz
+@@ -275,6 +296,9 @@
+   > y
+   > a
+   > EOF
++
++The split succeeds on no-rmcwd platforms, which alters the rest of the tests
++#if rmcwd
+   $ cat ../split_commands | hg split
+   current directory was removed
+   (consider changing to repo root: $TESTTMP/hgsplit)
+@@ -292,6 +316,7 @@
+   
+   abort: $ENOENT$
+   [255]
++#endif
+ 
+ Let's try that again without the rmdir
+   $ cd $TESTTMP/hgsplit/somedir
+

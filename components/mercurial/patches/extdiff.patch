@@ -5,15 +5,14 @@ option set.
 
 This is a very Solaris-specific patch, and should not be passed upstream.
 
-diff --git a/hgext/extdiff.py b/hgext/extdiff.py
---- a/hgext/extdiff.py
-+++ b/hgext/extdiff.py
-@@ -282,7 +282,7 @@ def extdiff(ui, repo, *pats, **opts):
+--- mercurial-4.7.1/hgext/extdiff.py	2018-09-17 00:48:40.160800891 +0000
++++ mercurial-4.7.1/hgext/extdiff.py	2018-09-17 00:48:00.629981054 +0000
+@@ -360,7 +360,7 @@ def extdiff(ui, repo, *pats, **opts):
      program = opts.get('program')
      option = opts.get('option')
      if not program:
 -        program = 'diff'
-+        program = 'gdiff'
++        program = '/usr/gnu/bin/diff'
          option = option or ['-Npru']
-     cmdline = ' '.join(map(util.shellquote, [program] + option))
+     cmdline = ' '.join(map(procutil.shellquote, [program] + option))
      return dodiff(ui, repo, cmdline, pats, opts)
