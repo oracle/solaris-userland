@@ -1,0 +1,165 @@
+.\"
+.\" Copyright (c) 2007, 2018, Oracle and/or its affiliates. All rights reserved.
+.\"
+.\" Permission is hereby granted, free of charge, to any person obtaining a
+.\" copy of this software and associated documentation files (the "Software"),
+.\" to deal in the Software without restriction, including without limitation
+.\" the rights to use, copy, modify, merge, publish, distribute, sublicense,
+.\" and/or sell copies of the Software, and to permit persons to whom the
+.\" Software is furnished to do so, subject to the following conditions:
+.\"
+.\" The above copyright notice and this permission notice (including the next
+.\" paragraph) shall be included in all copies or substantial portions of the
+.\" Software.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+.\" IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+.\" FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+.\" THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+.\" LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+.\" FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+.\" DEALINGS IN THE SOFTWARE.
+.TH application/x11/x11-server 8S "26 Nov 2018" "Oracle Solaris" "SMF Services"
+.SH NAME
+svc:/application/x11/x11-server \- X Window System display service
+.SH DESCRIPTION
+.B svc:/application/x11/x11-server
+is the service identifier for configuring the X Window System display server
+with the service management facility, \fBsmf\fR(5).
+In this release of Oracle Solaris, \fB/usr/bin/X\fR is a link to the
+\fBXserver\fR program which starts the appropriate X server based on
+properties set for this service.
+.SH "STARTING THE SERVER"
+On Oracle Solaris 11, the X server is usually started from the GNOME
+Display Manager program \fBgdm\fP(8). This role may also be performed
+by the X Display Manager program \fBxdm\fP(1), or another display manager.
+Besides starting the X server, these display managers also provide a
+login dialog for users and start their desktop environment.
+.PP
+While the configuration of the X server may be managed via SMF, the
+\fBsvcs\fR(8) command will not list any instances of the x11-server
+service in a normal configuration, as the X server will be started
+via a display manager instead of by the SMF system directly, or on
+demand via a program such as \fBstartx\fP(1).
+.PP
+An SMF instance may be created when necessary to have the system automatically
+start an X server without a display manager or other control program.  An
+example of this is provided in the EXAMPLES section below.
+.SH SMF PROPERTIES
+.PP
+Use \fBsvccfg\fR(8) to make configuration changes and to view configuration
+information for the \fBsvc:/application/x11/x11-server\fP service\&.
+.PP
+\fB/usr/bin/Xserver\fP will look for configuration options in the
+instances in this order, stopping at the first match for the given
+property:
+.TP
+1.
+\fB:display\fP\fIN\fP (where \fIN\fP is the display number of the X server,
+i.e. \fB:display0\fP for :0)
+.TP
+2.
+Any class names provided via the \fB-c\fP options to
+\fB/usr/bin/Xserver\fP.  Multiple \fB-c\fP options may be provided, if so,
+they are searched in the order found on the command line.
+.TP
+3.
+If any XDMCP options are provided to open a remote display connection,
+\fB:remote\fP, otherwise \fB:local\fP
+.TP
+4.
+The default properties for the service
+.PP
+Class names may be any valid FMRI instance name.   Sun reserves all class names
+beginning with lowercase letters for its own use - customers wishing to create
+their own class names may use names beginning with an uppercase letter.
+
+.PP
+These properties may be set in any instance of x11-server or for the service
+itself:
+.TP
+.B options/server
+(Type astring) The absolute path to the X server binary to run, currently
+must be one of:
+.sp
+.nf
+\fB/usr/bin/Xorg\fP
+\fB/usr/bin/Xdmx\fP
+\fB/usr/bin/Xvfb\fP
+\fB/usr/bin/Xvnc\fP
+.fi
+.TP
+.B options/config_file
+(Type string) Setting this to a filename causes this file to be used as the
+configuration file for the X server.   Currently this property is only
+available when used with the Xorg server.  The value of this property must
+be a relative path from one of the directories in the Xorg config file
+search path, and not an absolute path.
+.TP
+.B options/tcp_listen
+(Type boolean) Setting this to true enables listening for incoming TCP/IP
+connections.
+.TP
+.B options/default_depth
+(Type int) Sets the depth of the default visual of the X server started.
+.TP
+.B options/server_args
+(Type astring) Sets additional arguments to pass to the X server started.  Care
+must be used when using options specific to a particular X server as then it
+may cause failure to start the X server if the server to be started is later
+changed to one that does not support those options.
+.TP
+.B options/display_0_on_console
+(Type boolean) Setting this to true starts the X server with a DISPLAY ":0.0"
+on "/dev/console" rather than the first available "/dev/vt/#", see vt(4i),
+this preserves backward compatibility with programs such as "xterm -C"
+that expect have access to "/dev/console".  X servers with any other DISPLAY
+are not affected. The default is false.
+.TP
+.B options/vncplatform_override
+(Type boolean) Setting this to true starts the Xorg server instead of the
+Xvnc server for platforms that have ILOM VNC support.
+.SH EXAMPLES
+.SS "Example: Allow remote access"
+.PP
+The following command allows access from remote clients.
+.sp
+.nf
+svccfg -s svc:/application/x11/x11-server \\
+    setprop options/tcp_listen = true
+.fi
+.sp
+Restart the Xserver by either logging out and logging back in, or manually
+if the Xserver was started from the command line.
+.sp
+.SS "Example: Use of VESA driver"
+.PP
+The following command overrides the default Xorg driver selection to use the
+/usr/lib/X11/xorg.conf.vesa configuration file to select the "vesa" driver.
+.sp
+.nf
+svccfg -s svc:/application/x11/x11-server \\
+    setprop options/config_file=xorg.conf.vesa
+.fi
+.SS "Example: Enabling the XINERAMA extension"
+.PP
+The following command enables the XINERAMA extension.
+.sp
+.nf
+svccfg -s svc:/application/x11/x11-server \\
+    setprop options/server_args = +xinerama
+.fi
+.SH FILES
+.TP 30
+.I /usr/bin/Xserver
+Script used to start an X server using the properties set in SMF.
+.SH "SEE ALSO"
+General information: \fBX\fP(7), \fBXserver\fP(1), \fBXsecurity\fP(7)
+.PP
+Starting the server: \fBgdm\fP(1m), \fBstartx\fP(1), \fBxdm\fP(1), \fBxinit\fP(1)
+.PP
+Server-specific man pages:
+\fBXorg\fP(1), \fBXdmx\fP(1), \fBXephyr\fP(1), \fBXvfb\fP(1), \fBXvnc\fP(1).
+.PP
+Service management framework:
+\fBsmf\fP(7), \fBsvcadm\fP(8), \fBsvccfg\fP(8)

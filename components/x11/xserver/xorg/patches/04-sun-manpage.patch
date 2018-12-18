@@ -8,7 +8,7 @@ index 506e5bb..f379451 100644
 @@ -1,4 +1,26 @@
  '\" t
 +.\" 
-+.\" Copyright (c) 2007, 2017, Oracle and/or its affiliates. All rights reserved.
++.\" Copyright (c) 2007, 2018, Oracle and/or its affiliates. All rights reserved.
 +.\" 
 +.\" Permission is hereby granted, free of charge, to any person obtaining a
 +.\" copy of this software and associated documentation files (the "Software"),
@@ -47,7 +47,7 @@ index 506e5bb..f379451 100644
 +Xserver program which starts the appropriate X server based on properties
 +set for the service management facility, under the service identifier
 +\fIsvc:/application/x11/x11-server\fP.  The properties are described in the
-+SMF PROPERTIES section below.
++\fIapplication/x11/x11-server\fP(8s) manual page.
  .SH "STARTING THE SERVER"
 -The X server is usually started from the X Display Manager program
 -\fIxdm\fP(1) or a similar display manager program.
@@ -74,130 +74,6 @@ index 506e5bb..f379451 100644
  local   Platform preferred local connection method
  .TE
  .TP 8
-@@ -422,7 +453,7 @@ located in the XKB base directory or a subdirectory, and specified as the
- relative path from the XKB base directory.  The default XKB base directory is
- .IR __projectroot__/lib/X11/xkb .
- .TP 8
--.BR [+-]accessx " [ \fItimeout\fP [ \fItimeout_mask\fP [ \fIfeedback\fP [ \fIoptions_mask\fP ] ] ] ]"
-+.BR [+-]accessx " [\fItimeout\fP[\fItimeout_mask\fP[\fIfeedback\fP[\fIoptions_mask\fP]]]]"
- enables(+) or disables(-) AccessX key sequences.
- .TP 8
- .B \-xkbdir \fIdirectory\fP
-@@ -577,6 +608,114 @@ the following font path:
-     /usr/share/fonts/default/Type1,
-     /usr/share/fonts/default/ghostscript
- .fi
-+ 
-+.SH SMF PROPERTIES
-+.PP
-+Configuration properties for the \fB/usr/bin/Xserver\fP program are
-+managed by the service management facility, \fBsmf\fR(5), under the service 
-+identifier:
-+.PP
-+.nf
-+svc:/application/x11/x11-server
-+.fi
-+Use \fBsvccfg\fR(__adminmansuffix__) to make configuration changes and to view configuration
-+information for this service\&. 
-+.PP
-+\fB/usr/bin/Xserver\fP will look for configuration options in the 
-+instances in this order, stopping at the first match for the given
-+property:
-+.TP
-+1.
-+\fB:display\fP\fIN\fP (where \fIN\fP is the display number of the X server, 
-+i.e. \fB:display0\fP for :0)
-+.TP
-+2.
-+Any class names provided via the \fB-c\fP options to
-+\fB/usr/bin/Xserver\fP.  Multiple \fB-c\fP options may be provided, if so,
-+they are searched in the order found on the command line.
-+.TP
-+3.
-+If any XDMCP options are provided to open a remote display connection,
-+\fB:remote\fP, otherwise \fB:local\fP
-+.TP
-+4.
-+The default properties for the service
-+.PP
-+Class names may be any valid FMRI instance name.   Sun reserves all class names
-+beginning with lowercase letters for its own use - customers wishing to create
-+their own class names may use names beginning with an uppercase letter.
-+
-+.PP
-+These properties may be set in any instance of x11-server or for the service
-+itself:
-+.TP
-+.B options/server 
-+(Type astring) The absolute path to the X server binary to run, currently
-+must be one of:
-+.sp
-+.nf
-+\fB/usr/bin/Xorg\fP
-+\fB/usr/bin/Xdmx\fP
-+\fB/usr/bin/Xvfb\fP
-+\fB/usr/bin/Xvnc\fP
-+.fi
-+.TP
-+.B options/config_file
-+(Type string) Setting this to a filename causes this file to be used as the
-+configuration file for the X server.   Currently this property is only
-+available when used with the Xorg server.  The value of this property must
-+be a relative path from one of the directories in the Xorg config file
-+search path, and not an absolute path.
-+.TP
-+.B options/tcp_listen
-+(Type boolean) Setting this to false disables listening for incoming TCP/IP 
-+connections (see \fB-nolisten tcp\fP option above).
-+.TP
-+.B options/default_depth
-+(Type int) Sets the depth of the default visual of the X server started.
-+.TP
-+.B options/server_args
-+(Type astring) Sets additional arguments to pass to the X server started.  Care
-+must be used when using options specific to a particular X server as then it
-+may cause failure to start the X server if the server to be started is later
-+changed to one that does not support those options.
-+.TP
-+.B options/display_0_on_console
-+(Type boolean) Setting this to true starts the X server with a DISPLAY ":0.0"
-+on "/dev/console" rather than the first available "/dev/vt/#", see vt(4i),
-+this preserves backward compatibility with programs such as "xterm -C"
-+that expect have access to "/dev/console".  X servers with any other DISPLAY
-+are not affected. The default is false.
-+.TP
-+.B options/vncplatform_override
-+(Type boolean) Setting this to true starts the Xorg server instead of the
-+Xvnc server for platforms that have ILOM VNC support. 
-+.SS "Example: Allow remote access"
-+.PP
-+The following command allows access from remote clients.
-+.sp
-+.nf
-+svccfg -s svc:/application/x11/x11-server setprop options/tcp_listen = true
-+.fi
-+.sp
-+Restart the Xserver by either logging out and logging back in, or manually 
-+if the Xserver was started from the command line.
-+.sp
-+.SS "Example: Use of VESA driver"
-+.PP
-+The following command overrides the default Xorg driver selection to use the
-+/usr/lib/X11/xorg.conf.vesa configuration file to select the "vesa" driver.
-+.sp
-+.nf
-+svccfg -s svc:/application/x11/x11-server setprop options/config_file=xorg.conf.vesa
-+.fi
-+.SS "Example: Enabling the XINERAMA extension"
-+.PP
-+The following command enables the XINERAMA extension.
-+.sp
-+.nf
-+svccfg -s svc:/application/x11/x11-server setprop options/server_args=+xinerama
-+.fi
- 
- .SH FILES
- .TP 30
 @@ -592,8 +731,12 @@ Outline font directories
  .I /tmp/.X11-unix/X\fBn\fP
  Unix domain socket for display number \fBn\fP
@@ -229,8 +105,8 @@ index 506e5bb..f379451 100644
 -\fIXvfb\fP(1), \fIXquartz\fP(1), \fIXWin\fP(1).
 +\fIXorg\fP(1), \fIXdmx\fP(1), \fIXephyr\fP(1), \fIXvfb\fP(1), \fIXvnc\fP(1).
 +.PP
-+Service management framework:
-+\fIsmf\fP(__miscmansuffix__), \fIsvcadm\fP(__adminmansuffix__), \fIsvccfg\fP(__adminmansuffix__)
++Service management framework configuration:
++\fIapplication/x11/x11-server\fP(8s)
 +.PP
 +Dtrace probes:
 +\fI/usr/share/doc/Xserver/Xserver-DTrace.html\fP,

@@ -64,8 +64,10 @@ dir  path=usr/share/doc/xorg-server
 #file path=usr/share/doc/xorg-server/Xserver-DTrace.pdf.db
 #file path=usr/share/doc/xorg-server/Xserver-DTrace.txt
 #file path=usr/share/doc/xorg-server/Xserver-DTrace.xml
-file files/Xnest.1 path=usr/share/man/man1/Xnest.1
+# Special EOF man page needs different attributes than mangler would add
+file files/Xnest.1 path=usr/share/man/man1/Xnest.1 mangler.bypass=true
 file path=usr/share/man/man1/Xserver.1
+file files/x11-server.8s path=usr/share/man/man8s/application/x11/x11-server.8s
 license xorg-server.license license=MIT
 # Xserver script runs /usr/bin/readlink (from GNU coreutils)
 depend type=require fmri=__TBD pkg.debug.depend.file=readlink \
