@@ -51,7 +51,9 @@ TEST_TARGET= install $(TEST_32_and_64)
 include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_POST_INSTALL_ACTION = \
-	(cd $(PROTO_DIR)/usr/bin ; $(MV) -f hg hg-$(PYTHON_VERSION));
+	(cd $(PROTO_DIR)/usr/bin; \
+	$(MV) -f hg hg-$(PYTHON_VERSION); \
+	$(LN) -s hg-$(PYTHON_VERSION) hg);
 
 PYTHON_SCRIPTS += $(COMPONENT_SRC)/contrib/debugcmdserver.py
 PYTHON_SCRIPTS += $(COMPONENT_SRC)/contrib/dumprevlog
@@ -83,8 +85,7 @@ TEST_BLACKLIST = \
 
 COMPONENT_PRE_TEST_ACTION = \
 	(cd $(BUILD_DIR); rm -f sh; ln -s /bin/bash sh; \
-	printf "%s\n" $(TEST_BLACKLIST) > blacklist); \
-	(cd $(PROTOUSRBINDIR); rm -f hg; ln -s hg-$(PYTHON_VERSION) hg)
+	printf "%s\n" $(TEST_BLACKLIST) > blacklist);
 
 HGTEST_JOBS = 20
 COMPONENT_TEST_DIR =	$(COMPONENT_SRC)/tests
