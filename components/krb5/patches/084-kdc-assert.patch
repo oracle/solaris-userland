@@ -1,0 +1,36 @@
+#
+# Patch has been cherry-picked from kerberos master branch. Merge
+# left out test suite changes, which are incompatible with 1.16
+# branch.
+#
+# The patch should be deleted with upgrade to next version. Commit
+# message from upstream git repository follows:
+#
+# commit 5bf467a23051b72a78bcad8fb4c3e4ea47930838
+# Author: Isaac Boukris <iboukris@gmail.com>
+# Date:   Sat Dec 15 11:56:36 2018 +0200
+#
+#     Remove incorrect KDC assertion
+#    
+#     The assertion in return_enc_padata() is reachable because
+#     kdc_make_s4u2self_rep() may have previously added encrypted padata.
+#     It is no longer necessary because the code uses add_pa_data_element()
+#     instead of allocating a new list.
+#    
+#     CVE-2018-20217:
+#    
+#     In MIT krb5 1.8 or later, an authenticated user who can obtain a TGT
+#     using an older encryption type (DES, DES3, or RC4) can cause an
+#     assertion failure in the KDC by sending an S4U2Self request.
+#
+
+--- a/src/kdc/kdc_preauth.c
++++ b/src/kdc/kdc_preauth.c
+@@ -1640,7 +1640,6 @@ return_enc_padata(krb5_context context, krb5_data *req_pkt,
+     krb5_error_code code = 0;
+     /* This should be initialized and only used for Win2K compat and other
+      * specific standardized uses such as FAST negotiation. */
+-    assert(reply_encpart->enc_padata == NULL);
+     if (is_referral) {
+         code = return_referral_enc_padata(context, reply_encpart, server);
+         if (code)
