@@ -77,14 +77,3 @@ Changes for Solaris builds.  Not suitable for upstream
  option(BUILD_STATIC
      "Link statically against most libraries, if possible" OFF)
  
---- a/vncviewer/vncviewer.cxx	2018-11-20 19:18:14.020021223 -0800
-+++ b/vncviewer/vncviewer.cxx	2018-11-20 19:18:33.238693696 -0800
-@@ -558,7 +558,7 @@
- 
-   mkvnchomedir();
- 
--#if !defined(WIN32) && !defined(__APPLE__)
-+#if !defined(WIN32) && !defined(__APPLE__) && !defined(sun)
-   if (strcmp(display, "") != 0) {
-     Fl::display(display);
-   }
