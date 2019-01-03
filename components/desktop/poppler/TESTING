@@ -17,11 +17,12 @@ TEST_PDF_FILE=$(ls /usr/share/ghostscript/*/examples/text_graphic_image.pdf)
 
 ### TEST PACKAGES THAT USE LIBPOPPLER ###
 
-# Check the linkage of desktop/pdf-viewer/evince
-# and library/desktop/search/tracker components.
+# Check the linkage of desktop/pdf-viewer/evince,
+# library/desktop/search/tracker, and image/graphviz components.
 # The output of the following commands should be empty.
 find /usr/lib/ -name 'libpdfdocument.so' -exec ldd {} \; 2>/dev/null | grep "not found"
 find /usr/lib/ -name 'libextract-pdf.so' -exec ldd {} \; 2>/dev/null | grep "not found"
+find /usr/lib/ -name 'libgvplugin_poppler.so' -exec ldd {} \; 2>/dev/null | grep "not found"
 
 # Check that tracker is able to extract information from the provided pdf file.
 # Output should be similar to:
@@ -86,3 +87,36 @@ rm pdftotext_test.txt
 pdfimages -png "${TEST_PDF_FILE}" flower
 eog flower-*.png
 rm flower-*.png
+
+# Test that we can attach/detach a text file to/from the PDF file.
+#
+# %%%%%%%%%%%%%%%%%%%%% EXPECTED OUTPUT %%%%%%%%%%%%%%%%%%%%%%%%%%
+# Attaching file embedded_file.txt to pdfattach_test.pdf...
+# List of attached files:
+# 1 embedded files
+# 1: embedded_file.txt
+# Content of the extracted file:
+# The content of the embedded file...
+# (de)attach test: PASSED
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+cp "${TEST_PDF_FILE}" input_testfile.pdf
+echo "The content of the embedded file..." > embedded_file.txt
+# Attach embedded_file.txt to pdfattach_test.pdf file.
+echo "Attaching file embedded_file.txt to pdfattach_test.pdf..."
+pdfattach input_testfile.pdf embedded_file.txt pdfattach_test.pdf
+# List the attached file(s).
+echo "List of attached files:"
+pdfdetach -list pdfattach_test.pdf
+# Obtain the embedded file from the PDF file.
+pdfdetach -save 1 -o embedded_file_extracted.txt pdfattach_test.pdf
+echo "Content of the extracted file:"
+cat embedded_file_extracted.txt
+# Compare two text files that they are the same.
+if cmp -s embedded_file*.txt; then
+  echo "(de)attach test: PASSED"
+else
+  echo "(de)attach test: FAILED"
+fi
+# Remove all the temporary files.
+rm -f input_testfile.pdf embedded_file.txt embedded_file_extracted.txt pdfattach_test.pdf
+

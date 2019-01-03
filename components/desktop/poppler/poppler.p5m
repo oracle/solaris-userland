@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr/share/gtk-doc/html/poppler/(.+)$ -> \
@@ -38,8 +38,9 @@ set name=info.classification \
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2012/051 value=PSARC/2016/025 \
-    value=PSARC/2016/321 value=PSARC/2017/043
+    value=PSARC/2016/321 value=PSARC/2017/043 value=PSARC/2019/051
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file path=usr/bin/pdfattach
 file path=usr/bin/pdfdetach
 file path=usr/bin/pdffonts
 file path=usr/bin/pdfimages
@@ -59,6 +60,7 @@ file path=usr/include/poppler/BuiltinFontTables.h
 file path=usr/include/poppler/CMap.h
 file path=usr/include/poppler/CachedFile.h
 file path=usr/include/poppler/Catalog.h
+file path=usr/include/poppler/CertificateInfo.h
 file path=usr/include/poppler/CharCodeToUnicode.h
 file path=usr/include/poppler/CharTypes.h
 file path=usr/include/poppler/CompactFontTables.h
@@ -128,6 +130,7 @@ file path=usr/include/poppler/UnicodeMapTables.h
 file path=usr/include/poppler/UnicodeTypeTable.h
 file path=usr/include/poppler/ViewerPreferences.h
 file path=usr/include/poppler/XRef.h
+file path=usr/include/poppler/cpp/poppler-destination.h
 file path=usr/include/poppler/cpp/poppler-document.h
 file path=usr/include/poppler/cpp/poppler-embedded-file.h
 file path=usr/include/poppler/cpp/poppler-font.h
@@ -175,7 +178,6 @@ file path=usr/include/poppler/goo/gfile.h
 file path=usr/include/poppler/goo/gmem.h
 file path=usr/include/poppler/goo/grandom.h
 file path=usr/include/poppler/goo/gstrtod.h
-file path=usr/include/poppler/goo/gtypes.h
 file path=usr/include/poppler/poppler-config.h
 file path=usr/include/poppler/splash/Splash.h
 file path=usr/include/poppler/splash/SplashBitmap.h
@@ -199,15 +201,15 @@ file path=usr/include/poppler/splash/SplashXPath.h
 file path=usr/include/poppler/splash/SplashXPathScanner.h
 file path=usr/lib/$(MACH64)/girepository-1.0/Poppler-0.18.typelib
 link path=usr/lib/$(MACH64)/libpoppler-cpp.so target=libpoppler-cpp.so.0
-link path=usr/lib/$(MACH64)/libpoppler-cpp.so.0 target=libpoppler-cpp.so.0.5.0
-file path=usr/lib/$(MACH64)/libpoppler-cpp.so.0.5.0
+link path=usr/lib/$(MACH64)/libpoppler-cpp.so.0 target=libpoppler-cpp.so.0.7.0
+file path=usr/lib/$(MACH64)/libpoppler-cpp.so.0.7.0
 link path=usr/lib/$(MACH64)/libpoppler-glib.so target=libpoppler-glib.so.8
 link path=usr/lib/$(MACH64)/libpoppler-glib.so.8 \
-    target=libpoppler-glib.so.8.10.0
-file path=usr/lib/$(MACH64)/libpoppler-glib.so.8.10.0
-link path=usr/lib/$(MACH64)/libpoppler.so target=libpoppler.so.81
-link path=usr/lib/$(MACH64)/libpoppler.so.81 target=libpoppler.so.81.0.0
-file path=usr/lib/$(MACH64)/libpoppler.so.81.0.0
+    target=libpoppler-glib.so.8.12.0
+file path=usr/lib/$(MACH64)/libpoppler-glib.so.8.12.0
+link path=usr/lib/$(MACH64)/libpoppler.so target=libpoppler.so.86
+link path=usr/lib/$(MACH64)/libpoppler.so.86 target=libpoppler.so.86.0.0
+file path=usr/lib/$(MACH64)/libpoppler.so.86.0.0
 file path=usr/lib/$(MACH64)/pkgconfig/poppler-cairo.pc
 file path=usr/lib/$(MACH64)/pkgconfig/poppler-cpp.pc
 file path=usr/lib/$(MACH64)/pkgconfig/poppler-glib.pc
@@ -215,20 +217,21 @@ file path=usr/lib/$(MACH64)/pkgconfig/poppler-splash.pc
 file path=usr/lib/$(MACH64)/pkgconfig/poppler.pc
 file path=usr/lib/girepository-1.0/Poppler-0.18.typelib
 link path=usr/lib/libpoppler-cpp.so target=libpoppler-cpp.so.0
-link path=usr/lib/libpoppler-cpp.so.0 target=libpoppler-cpp.so.0.5.0
-file path=usr/lib/libpoppler-cpp.so.0.5.0
+link path=usr/lib/libpoppler-cpp.so.0 target=libpoppler-cpp.so.0.7.0
+file path=usr/lib/libpoppler-cpp.so.0.7.0
 link path=usr/lib/libpoppler-glib.so target=libpoppler-glib.so.8
-link path=usr/lib/libpoppler-glib.so.8 target=libpoppler-glib.so.8.10.0
-file path=usr/lib/libpoppler-glib.so.8.10.0
-link path=usr/lib/libpoppler.so target=libpoppler.so.81
-link path=usr/lib/libpoppler.so.81 target=libpoppler.so.81.0.0
-file path=usr/lib/libpoppler.so.81.0.0
+link path=usr/lib/libpoppler-glib.so.8 target=libpoppler-glib.so.8.12.0
+file path=usr/lib/libpoppler-glib.so.8.12.0
+link path=usr/lib/libpoppler.so target=libpoppler.so.86
+link path=usr/lib/libpoppler.so.86 target=libpoppler.so.86.0.0
+file path=usr/lib/libpoppler.so.86.0.0
 file path=usr/lib/pkgconfig/poppler-cairo.pc
 file path=usr/lib/pkgconfig/poppler-cpp.pc
 file path=usr/lib/pkgconfig/poppler-glib.pc
 file path=usr/lib/pkgconfig/poppler-splash.pc
 file path=usr/lib/pkgconfig/poppler.pc
 file path=usr/share/gir-1.0/Poppler-0.18.gir
+file path=usr/share/man/man1/pdfattach.1
 file path=usr/share/man/man1/pdfdetach.1
 file path=usr/share/man/man1/pdffonts.1
 file path=usr/share/man/man1/pdfimages.1
