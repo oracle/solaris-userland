@@ -1,9 +1,9 @@
 Patch origin: in-house
 Patch status: Solaris-specific; not suitable for upstream
 
---- src/tar.c
-+++ src/tar.c
-@@ -606,7 +606,7 @@
+--- src/tar.c	2019-01-02 10:07:48.000000000 +0000
++++ src/tar.c	2019-01-03 04:52:28.760222408 +0000
+@@ -588,7 +588,7 @@ static struct argp_option options[] = {
    {"rmt-command", RMT_COMMAND_OPTION, N_("COMMAND"), 0,
     N_("use given rmt COMMAND instead of rmt"), GRID+1 },
    {"rsh-command", RSH_COMMAND_OPTION, N_("COMMAND"), 0,
@@ -12,9 +12,9 @@ Patch status: Solaris-specific; not suitable for upstream
  #ifdef DEVICE_PREFIX
    {"-[0-7][lmh]", 0, NULL, OPTION_DOC, /* It is OK, since 'name' will never be
  					  translated */
---- doc/tar.info-1
-+++ doc/tar.info-1
-@@ -3034,7 +3034,7 @@
+--- doc/tar.info-1	2019-01-02 10:17:54.000000000 +0000
++++ doc/tar.info-1	2019-01-03 04:52:28.772615060 +0000
+@@ -3040,7 +3040,7 @@ File: tar.info,  Node: Option Summary,
  
            $ tar --show-defaults
            --format=gnu -f- -b20 --quoting-style=escape
@@ -23,7 +23,7 @@ Patch status: Solaris-specific; not suitable for upstream
  
       Notice, that this option outputs only one line.  The example output
       above has been split to fit page boundaries.  *Note defaults::.
-@@ -3604,7 +3604,7 @@
+@@ -3627,7 +3627,7 @@ of 'tar' command line options:
  
       $ tar --show-defaults
       --format=gnu -f- -b20 --quoting-style=escape
@@ -32,7 +32,7 @@ Patch status: Solaris-specific; not suitable for upstream
  
  Notice, that this option outputs only one line.  The example output
  above has been split to fit page boundaries.
-@@ -3613,7 +3613,7 @@
+@@ -3636,7 +3636,7 @@ The above output shows that this version
  'gnu' archive format (*note Formats::), it uses standard output as the
  archive, if no '--file' option has been given (*note file tutorial::),
  the default blocking factor is 20 (*note Blocking Factor::).  It also
@@ -41,7 +41,7 @@ Patch status: Solaris-specific; not suitable for upstream
  binaries.
  
  
-@@ -6154,8 +6154,8 @@
+@@ -6162,8 +6162,8 @@ File: tar.info,  Node: General-Purpose V
       Full file name of 'mt' binary.
  
   -- Backup variable: RSH
@@ -52,7 +52,7 @@ Patch status: Solaris-specific; not suitable for upstream
       to use public key authentication.
  
   -- Backup variable: RSH_COMMAND
-@@ -6614,7 +6614,7 @@
+@@ -6622,7 +6622,7 @@ as the username on the remote machine.
     If the archive file name includes a colon (':'), then it is assumed
  to be a file on another machine.  If the archive file is
  'USER@HOST:FILE', then FILE is used on the host HOST.  The remote host
@@ -61,7 +61,7 @@ Patch status: Solaris-specific; not suitable for upstream
  username is omitted (along with the '@' sign), then your user name will
  be used.  (This is the normal 'rsh' behavior.)  It is necessary for the
  remote machine, in addition to permitting your 'rsh' access, to have the
-@@ -7657,7 +7657,7 @@
+@@ -7663,7 +7663,7 @@ control to what files transformations ap
  'H'
       Do not apply transformation to hard link targets.
  
@@ -70,9 +70,9 @@ Patch status: Solaris-specific; not suitable for upstream
  archive members and targets of symbolic and hard links.
  
     Default scope flags can also be changed using 'flags=' statement in
---- doc/tar.info-2
-+++ doc/tar.info-2
-@@ -2207,9 +2207,9 @@
+--- doc/tar.info-2	2019-01-02 10:17:55.000000000 +0000
++++ doc/tar.info-2	2019-01-03 04:52:28.781883257 +0000
+@@ -2220,9 +2220,9 @@ write the entire new archive to its stan
     If the file name contains a ':', it is interpreted as 'hostname:file
  name'.  If the HOSTNAME contains an "at" sign ('@'), it is treated as
  'user@hostname:file name'.  In either case, 'tar' will invoke the
@@ -84,7 +84,7 @@ Patch status: Solaris-specific; not suitable for upstream
  '/usr/libexec/rmt'.  This program is free software from the University
  of California, and a copy of the source code can be found with the
  sources for 'tar'; it's compiled and installed by default.  The exact
-@@ -2257,8 +2257,8 @@
+@@ -2270,8 +2270,8 @@ could also check for 'DEFTAPE' in '<sys/
       Archive file is local even if it contains a colon.
  
  '--rsh-command=COMMAND'
@@ -95,7 +95,7 @@ Patch status: Solaris-specific; not suitable for upstream
       Kerberized 'rsh') can access a remote device.
  
       When this command is not used, the shell command found when the
-@@ -2321,7 +2321,7 @@
+@@ -2334,7 +2334,7 @@ In order to access the tape drive on a r
  remote tape server written at the University of California at Berkeley.
  The remote tape server must be installed as 'PREFIX/libexec/rmt' on any
  machine whose tape drive you want to use.  'tar' calls 'rmt' by running

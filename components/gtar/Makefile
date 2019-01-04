@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 # parfait fails to compile us (21334808)
@@ -28,14 +28,14 @@ export PARFAIT_BUILD=no
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tar
-COMPONENT_VERSION=	1.29
+COMPONENT_VERSION=	1.31
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:236b11190c0a3a6885bdb8d61424f2b36a5872869aa3f7f695dea4b4843ae2f2
+    sha256:577bd4463eea103bdfc662fc385789e2228dbeb399a1d0b98571ed9ce044f763
 COMPONENT_BUGDB=	utility/gtar
 COMPONENT_ANITYA_ID=	4939
 
-TPNO=			35380
+TPNO=			48378
 
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/gnu-component.mk

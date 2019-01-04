@@ -1,0 +1,18 @@
+iconv() on Solaris (and also on FreeBSD) works a little bit differently than
+the GNU version (return value is different). That can result in incorrect
+utf8 handling.
+
+Patch from here:
+http://lists.gnu.org/archive/html/bug-tar/2019-01/msg00027.html
+
+--- src/utf8.c	2019-01-14 01:22:18.915687020 +0000
++++ src/utf8.c	2019-01-14 01:21:43.821525122 +0000
+@@ -81,7 +81,7 @@ utf8_convert (bool to_utf, char const *i
+   outlen = inlen * MB_LEN_MAX + 1;
+   ob = ret = xmalloc (outlen);
+   ib = (char ICONV_CONST *) input;
+-  if (iconv (cd, &ib, &inlen, &ob, &outlen) == -1)
++  if (iconv (cd, &ib, &inlen, &ob, &outlen) != 0)
+     {
+       free (ret);
+       return false;
