@@ -1,0 +1,56 @@
+#
+# Solaris specific patch to pass-through LANG and LC_ variables
+# from the server environment to the child if they have not been
+# accepted from the client.
+#
+--- old/session.c	2018-12-21 13:45:27.358370867 +0000
++++ new/session.c	2019-01-04 11:35:29.862690975 +0000
+@@ -951,6 +951,39 @@
+ }
+ #endif /* HAVE_ETC_DEFAULT_LOGIN */
+ 
++
++/*
++ * Pass the given environment variable from the sshd environment through
++ * to the client only if it is not already present in env via SendEnv/AcceptEnv.
++ */
++static void
++pass_env(char **env, u_int *envsize, const char *name)
++{
++	char *server_value = getenv(name);
++
++	if (server_value != NULL && (options.num_accept_env == 0 ||
++	    child_get_env(env, name) == NULL)) {
++		child_set_env(&env, envsize, name, server_value);
++	}
++}
++/*
++ * Pass through the locale variables from the sshd environment
++ * if they have not already been accepted from the client via SendEnv/AcceptEnv.
++ */
++static void
++pass_locale_env(char **env, u_int *envsize)
++{
++	debug3("pass_locale_env");
++	pass_env(env, envsize, "LANG");
++	pass_env(env, envsize, "LC_ALL");
++	pass_env(env, envsize, "LC_CTYPE");
++	pass_env(env, envsize, "LC_COLLATE");
++	pass_env(env, envsize, "LC_TIME");
++	pass_env(env, envsize, "LC_NUMERIC");
++	pass_env(env, envsize, "LC_MONETARY");
++	pass_env(env, envsize, "LC_MESSAGES");
++}
++
+ static void
+ copy_environment_blacklist(char **source, char ***env, u_int *envsize,
+     const char *blacklist)
+@@ -1066,6 +1099,8 @@
+ 	if (getenv("TZ"))
+ 		child_set_env(&env, &envsize, "TZ", getenv("TZ"));
+ 
++	pass_locale_env(env, &envsize);
++
+ #ifdef PER_SESSION_XAUTHFILE
+ 	if (s->auth_file != NULL)
+ 		child_set_env(&env, &envsize, "XAUTHORITY", s->auth_file);
