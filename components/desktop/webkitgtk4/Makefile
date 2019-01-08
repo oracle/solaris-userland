@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # parfait is a bit unhappy (24796572)
@@ -33,17 +33,17 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		webkitgtk
-COMPONENT_VERSION=	2.20.5
+COMPONENT_VERSION=	2.22.5
 COMPONENT_PROJECT_URL=	https://webkitgtk.org
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:15c0f8d26e9605afe0948d161ba5fd82efee8eda2debd409fd40a440ac3af990
+	sha256:99d3863f418a7c3a3e37e5062950dbf2d91fb106ec1633459b0ef6f2d5f6cb13
 COMPONENT_ARCHIVE_URL=	https://webkitgtk.org/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/webkitgtk
 COMPONENT_ANITYA_ID=	5355
 
-TPNO=			44978
+TPNO=			48118
 
 # Use project's own optimization flags instead.
 gcc_OPT=
@@ -86,6 +86,8 @@ CMAKE_OPTIONS += -DUSE_LIBHYPHEN=OFF
 CMAKE_OPTIONS += -DUSE_WOFF2=OFF
 CMAKE_OPTIONS += -DENABLE_SAMPLING_PROFILER=OFF
 CMAKE_OPTIONS += -DENABLE_SUBTLE_CRYPTO=OFF
+CMAKE_OPTIONS += -DENABLE_MEDIA_SOURCE=OFF
+CMAKE_OPTIONS += -DUSE_SYSTEM_MALLOC=OFF
 
 # Disabling for both architectures for now, otherwise x64 builds fail with
 # offlineasm: No magic values found. Skipping assembly file generation.

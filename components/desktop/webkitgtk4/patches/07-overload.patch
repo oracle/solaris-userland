@@ -5,19 +5,19 @@ compiler bug.
 
 file upstream bug to determine correct fix
 
---- a/Source/WebCore/rendering/shapes/BoxShape.cpp	2018-02-14 10:26:39.858520844 -0800
-+++ b/Source/WebCore/rendering/shapes/BoxShape.cpp	2018-02-14 10:27:41.411967105 -0800
+--- a/Source/WebCore/rendering/shapes/BoxShape.cpp	2018-12-13 20:01:51.336037555 -0800
++++ b/Source/WebCore/rendering/shapes/BoxShape.cpp	2018-12-13 20:02:47.967934640 -0800
 @@ -43,7 +43,7 @@
  
      LayoutUnit ratio = radius / margin;
      if (ratio < 1)
 -        return radius + (margin * (1 + pow(ratio - 1, 3.0)));
-+        return radius + (margin * (1 + pow(static_cast<double>(ratio) - 1, static_cast<int>(3.0))));
++        return radius + (margin * (1 + pow(static_cast<double>(ratio) - 1, 3.0)));
  
      return radius + margin;
  }
---- a/Source/WebCore/rendering/shapes/RasterShape.cpp	2018-02-14 10:26:44.417495148 -0800
-+++ b/Source/WebCore/rendering/shapes/RasterShape.cpp	2018-02-14 10:29:12.954380092 -0800
+--- a/Source/WebCore/rendering/shapes/RasterShape.cpp	2018-12-13 21:07:18.927950015 -0800
++++ b/Source/WebCore/rendering/shapes/RasterShape.cpp	2018-12-13 21:07:45.293501930 -0800
 @@ -142,7 +142,7 @@
          return *m_intervals;
  
@@ -27,9 +27,9 @@ file upstream bug to determine correct fix
      if (!m_marginIntervals)
          m_marginIntervals = m_intervals->computeShapeMarginIntervals(std::min(shapeMarginInt, maxShapeMarginInt));
  
---- a/Source/JavaScriptCore/dfg/DFGOperations.cpp	2018-02-14 21:27:54.322665171 -0800
-+++ a/Source/JavaScriptCore/dfg/DFGOperations.cpp	2018-02-14 21:29:06.968857287 -0800
-@@ -2360,7 +2360,7 @@
+--- a/Source/JavaScriptCore/dfg/DFGOperations.cpp	2018-12-13 21:08:22.626424775 -0800
++++ b/Source/JavaScriptCore/dfg/DFGOperations.cpp	2018-12-13 21:08:47.101981030 -0800
+@@ -2446,7 +2446,7 @@
  
  double JIT_OPERATION operationFModOnInts(int32_t a, int32_t b)
  {
@@ -38,8 +38,8 @@ file upstream bug to determine correct fix
  }
  
  #if USE(JSVALUE32_64)
-+++ a/Source/JavaScriptCore/heap/MarkedSpace.cpp	2018-02-16 14:29:53.337181369 -0800
-+++ b/Source/JavaScriptCore/heap/MarkedSpace.cpp	2018-02-16 14:29:53.337181369 -0800
+--- a/Source/JavaScriptCore/heap/MarkedSpace.cpp	2018-12-13 21:09:14.638699775 -0800
++++ b/Source/JavaScriptCore/heap/MarkedSpace.cpp	2018-12-13 21:09:48.099389615 -0800
 @@ -76,7 +76,7 @@
                  dataLog("    Marked block payload size: ", static_cast<size_t>(MarkedSpace::blockPayload), "\n");
              
@@ -49,19 +49,19 @@ file upstream bug to determine correct fix
                  
                  if (Options::dumpSizeClasses())
                      dataLog("    Next size class as a double: ", approximateSize, "\n");
---- a/Source/WebKit/Platform/classifier/ResourceLoadStatisticsClassifier.cpp	2018-02-20 12:49:45.976890265 -0800
-+++ b/Source/WebKit/Platform/classifier/ResourceLoadStatisticsClassifier.cpp	2018-02-20 12:51:03.695785092 -0800
-@@ -58,7 +58,7 @@
- bool ResourceLoadStatisticsClassifier::classifyWithVectorThreshold(unsigned a, unsigned b, unsigned c)
+--- a/Source/WebKit/Platform/classifier/ResourceLoadStatisticsClassifier.cpp	2018-12-13 21:10:16.880272760 -0800
++++ a/Source/WebKit/Platform/classifier/ResourceLoadStatisticsClassifier.cpp	2018-12-13 21:11:01.110660635 -0800
+@@ -34,7 +34,7 @@
+ 
+ static double vectorLength(unsigned a, unsigned b, unsigned c)
  {
-     LOG(ResourceLoadStatistics, "ResourceLoadStatisticsClassifier::classifyWithVectorThreshold(): Classified with threshold.");
--    return sqrt(a * a + b * b + c * c) > featureVectorLengthThreshold;
-+    return sqrt(static_cast<float>(a * a + b * b + c * c)) > featureVectorLengthThreshold;
+-    return sqrt(a * a + b * b + c * c);
++    return sqrt(static_cast<float>(a * a + b * b + c * c));
  }
-     
- }
---- a/Source/JavaScriptCore/dfg/DFGStaticExecutionCountEstimationPhase.cpp
-+++ b/Source/JavaScriptCore/dfg/DFGStaticExecutionCountEstimationPhase.cpp
+ 
+ static const auto featureVectorLengthThresholdHigh = 3;
+--- a/Source/JavaScriptCore/dfg/DFGStaticExecutionCountEstimationPhase.cpp	2018-12-13 21:11:29.194377980 -0800
++++ b/Source/JavaScriptCore/dfg/DFGStaticExecutionCountEstimationPhase.cpp	2018-12-13 21:12:09.353128315 -0800
 @@ -53,7 +53,7 @@
              if (!block)
                  continue;

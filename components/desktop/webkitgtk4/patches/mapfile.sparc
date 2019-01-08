@@ -11,16 +11,17 @@ should be exported by the relevant library.  The right fix is probably to
 detect whether we're using the GNU linker, and if not, use a combination of
 perl, sed, etc. to generate the mapfile at build time.
 
-Why setting LDFLAGS += -Wl,-zgnu-version-script-compat doesn't work is a 
+Why setting LDFLAGS += -Wl,-zgnu-version-script-compat doesn't work is a
 mystery that needs to be eventually figured out.
 
 file upstream bug after resolving issues documented above
 
---- a/Source/WebKit/webkitglib-symbols.map	2018-08-20 16:58:40.413303004 -0700
-+++ b/Source/WebKit/webkitglib-symbols.map	2018-08-20 17:03:57.696382263 -0700
-@@ -1,11 +1,14281 @@
+--- a/Source/WebKit/webkitglib-symbols.map	2018-12-14 09:12:47.239535660 -0800
++++ b/Source/WebKit/webkitglib-symbols.map	2018-12-14 09:18:05.927526055 -0800
+@@ -1,22 +1,14293 @@
  {
  global:
+-  jsc_*;
 -  webkit_*;
 +  _ZN7WebCore20IntersectionObserver11takeRecordsEv;
 +  _ZN7WebCore5Cache4keysEOSt8optionalIN3WTF7VariantIJNS2_6RefPtrINS_12FetchRequestEEENS2_6StringEEEEEOS1_INS_17CacheQueryOptionsEEONS_18DOMPromiseDeferredINS_11IDLSequenceINS_12IDLInterfaceIS5_EEEEEE;
@@ -14293,21 +14294,6 @@ file upstream bug after resolving issues documented above
 +  webkit_dom_xpath_result_get_type;
 +  webkit_dom_xpath_result_iterate_next;
 +  webkit_dom_xpath_result_snapshot_item;
-   WebProcessMainUnix;
-   NetworkProcessMainUnix;
-   PluginProcessMainUnix;
-   StorageProcessMainUnix;
--  extern "C++" {
-+  extern "C" {
-     "bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_memory";
-     "bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_mutex";
-     "bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_object";
---- a/Source/WebKit/webkitglib-symbols.map	2018-08-21 12:55:24.007134230 -0700
-+++ b/Source/WebKit/webkitglib-symbols.map	2018-08-21 12:55:40.503873645 -0700
-@@ -14271,21 +14271,19 @@
-   webkit_dom_xpath_result_get_type;
-   webkit_dom_xpath_result_iterate_next;
-   webkit_dom_xpath_result_snapshot_item;
 +  webkit_network_proxy_settings_new; 
 +  webkit_network_proxy_settings_free; 
 +  webkit_web_context_set_network_proxy_settings; 
@@ -14315,20 +14301,24 @@ file upstream bug after resolving issues documented above
 +  webkit_console_message_level_get_type;
 +  webkit_form_submission_step_get_type;
 +  webkit_console_message_source_get_type;
++  webkit_web_context_is_ephemeral;
++  webkit_javascript_result_get_js_value;
 +  _ZN6WebKit22WebKitExtensionManager9singletonEv;
 +  _ZN6WebKit22WebKitExtensionManager10initializeEPNS_14InjectedBundleEPN3API6ObjectE;
++ _ZN3WTF14ThreadSpecificINS_7RunLoop6HolderELNS_13CanBeGCThreadE0EE7destroyEPv;
++ _ZN7bmalloc9Scavenger13threadRunLoopEv;
    WebProcessMainUnix;
    NetworkProcessMainUnix;
    PluginProcessMainUnix;
    StorageProcessMainUnix;
--  extern "C" {
--    "bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_memory";
--    "bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_mutex";
+-  extern "C++" {
+-    "bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_data";
 -    "bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_object";
+-    "bmalloc::PerProcess<bmalloc::Scavenger>::s_data";
+-    "bmalloc::PerProcess<bmalloc::Scavenger>::s_object";
+-    "bmalloc::PerThreadStorage<bmalloc::PerHeapKind<bmalloc::Cache> >::s_didInitialize";
+-    "bmalloc::PerThreadStorage<bmalloc::PerHeapKind<bmalloc::Cache> >::s_key";
 -    "bmalloc::vmPageSize()::cached";
--    "guard variable for bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_mutex";
--    "guard variable for bmalloc::PerProcess<bmalloc::IsoTLSDeallocatorEntry<bmalloc::IsoConfig<40u> > >::s_object";
--    "guard variable for bmalloc::PerProcess<bmalloc::PerHeapKind<bmalloc::Heap> >::s_mutex";
 -    "WebKit::WebKitExtensionManager::singleton()";
 -    "WebKit::WebKitExtensionManager::initialize(WebKit::InjectedBundle*, API::Object*)";
 -  };

@@ -1,0 +1,48 @@
+Cherry picked changes from upstream that fix issue observed with yelp not
+displaying anything on sparc.
+
+--- a/Source/WebCore/bindings/js/JSDocumentCustom.cpp	2018-12-13 12:20:23.925150175 -0800
++++ b/Source/WebCore/bindings/js/JSDocumentCustom.cpp	2018-12-13 12:23:08.785555130 -0800
+@@ -56,8 +56,12 @@
+     if (!window)
+         return nullptr;
+ 
++    auto* documentGlobalObject = toJSDOMWindow(state.vm(), toJS(&state, *window));
++    if (!documentGlobalObject)
++        return nullptr;
++
+     // Creating a wrapper for domWindow might have created a wrapper for document as well.
+-    return getCachedWrapper(toJSDOMWindow(state.vm(), toJS(&state, *window))->world(), document);
++    return getCachedWrapper(documentGlobalObject->world(), document);
+ }
+ 
+ void reportMemoryForDocumentIfFrameless(ExecState& state, Document& document)
+
+--- a/Source/JavaScriptCore/bytecode/CodeBlock.cpp	2018-07-11 20:21:06.364386815 -0700
++++ b/Source/JavaScriptCore/bytecode/CodeBlock.cpp	2018-07-11 20:25:57.754310400 -0700
+@@ -665,7 +665,11 @@
+                 instructions[i + 5].u.watchpointSet = op.watchpointSet;
+             else if (op.structure)
+                 instructions[i + 5].u.structure.set(vm, this, op.structure);
+-            instructions[i + 6].u.pointer = reinterpret_cast<void*>(op.operand);
++
++            if (op.type == ClosureVar || op.type == ClosureVarWithVarInjectionChecks || op.type == GlobalProperty || op.type == GlobalPropertyWithVarInjectionChecks || op.type == ModuleVar)
++                instructions[i + 6].u.operand = op.operand;
++            else
++                instructions[i + 6].u.pointer = reinterpret_cast<void*>(op.operand);
+             break;
+         }
+ 
+@@ -701,8 +705,11 @@
+                     op.watchpointSet->invalidate(vm, PutToScopeFireDetail(this, ident));
+             } else if (op.structure)
+                 instructions[i + 5].u.structure.set(vm, this, op.structure);
+-            instructions[i + 6].u.pointer = reinterpret_cast<void*>(op.operand);
+ 
++            if (op.type == ClosureVar || op.type == ClosureVarWithVarInjectionChecks || op.type == GlobalProperty || op.type == GlobalPropertyWithVarInjectionChecks || op.type == ModuleVar)
++                instructions[i + 6].u.operand = op.operand;
++            else
++                instructions[i + 6].u.pointer = reinterpret_cast<void*>(op.operand);
+             break;
+         }
+
