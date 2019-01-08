@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 COMPILER=		gcc
@@ -30,18 +30,18 @@ BUILD_ARCH=		i386
 include			../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		node
-COMPONENT_VERSION=	8.12.0
+COMPONENT_VERSION=	8.15.0
 COMPONENT_SUBVERSION=
 HUMAN_VERSION=		$(COMPONENT_VERSION)$(COMPONENT_SUBVERSION)
 COMPONENT_PROJECT_URL=	https://github.com/nodejs/node
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(HUMAN_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_ARCHIVE_HASH= \
-    sha256:9b6bcda78393702b038066fb817cc03c5b9efd089f34d6d53a0cf7c5762b8b8e
+    sha256:93c1665530b5e36c069d20c91f9709902cbc7790f0814f4b38494e8efd4fcad8
 COMPONENT_ARCHIVE_URL=	\
     $(COMPONENT_PROJECT_URL)/archive/v$(COMPONENT_VERSION).zip
 COMPONENT_BUGDB=	utility/nodejs
-TPNO=			46622
+TPNO=			48476
 COMPONENT_ANITYA_ID=	8251
 
 CONFIGURE_DEFAULT_DIRS=	no
