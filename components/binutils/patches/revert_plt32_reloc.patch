@@ -1,0 +1,381 @@
+Binutils 2.31 or newer use R_AMD64_PLT32 relocation type
+instead of R_AMD64_PC32 in some cases, which causes build
+failures in on-gate since this type of relocation is
+forbidden in kernel drivers. This patch reverts H.J. Lu's
+commit bd7ab16b4537788ad53521c45469a1bdae84ad4a in order
+to recover the previous behaviour.
+
+The patch is not suitable for upstream in this form since
+it completely reverts the commit for all platforms.
+
+diff --git a/bfd/elf64-x86-64.c b/bfd/elf64-x86-64.c
+index c7d8bca..033907d 100644
+--- a/bfd/elf64-x86-64.c
++++ b/bfd/elf64-x86-64.c
+@@ -2359,6 +2359,24 @@ elf_x86_64_tpoff (struct bfd_link_info *info, bfd_vma address)
+   return address - static_tls_size - htab->tls_sec->vma;
+ }
+ 
++/* Is the instruction before OFFSET in CONTENTS a 32bit relative
++   branch?  */
++
++static bfd_boolean
++is_32bit_relative_branch (bfd_byte *contents, bfd_vma offset)
++{
++  /* Opcode		Instruction
++     0xe8		call
++     0xe9		jump
++     0x0f 0x8x		conditional jump */
++  return ((offset > 0
++	   && (contents [offset - 1] == 0xe8
++	       || contents [offset - 1] == 0xe9))
++	  || (offset > 1
++	      && contents [offset - 2] == 0x0f
++	      && (contents [offset - 1] & 0xf0) == 0x80));
++}
++
+ /* Relocate an x86_64 ELF section.  */
+ 
+ static bfd_boolean
+@@ -3066,18 +3084,14 @@ use_plt:
+ 	case R_X86_64_PC32:
+ 	case R_X86_64_PC32_BND:
+ 	  /* Don't complain about -fPIC if the symbol is undefined when
+-	     building executable unless it is unresolved weak symbol,
+-	     references a dynamic definition in PIE or -z nocopyreloc
+-	     is used.  */
++	     building executable unless it is unresolved weak symbol or
++	     -z nocopyreloc is used.  */
+ 	  if ((input_section->flags & SEC_ALLOC) != 0
+ 	      && (input_section->flags & SEC_READONLY) != 0
+ 	      && h != NULL
+ 	      && ((bfd_link_executable (info)
+ 		   && ((h->root.type == bfd_link_hash_undefweak
+ 			&& !resolved_to_zero)
+-		       || (bfd_link_pie (info)
+-			   && !h->def_regular
+-			   && h->def_dynamic)
+ 		       || ((info->nocopyreloc
+ 			    || (eh->def_protected
+ 				&& elf_has_no_copy_on_protected (h->root.u.def.section->owner)))
+@@ -3086,21 +3100,26 @@ use_plt:
+ 		  || bfd_link_dll (info)))
+ 	    {
+ 	      bfd_boolean fail = FALSE;
++	      bfd_boolean branch
++		= ((r_type == R_X86_64_PC32
++		    || r_type == R_X86_64_PC32_BND)
++		   && is_32bit_relative_branch (contents, rel->r_offset));
++
+ 	      if (SYMBOL_REFERENCES_LOCAL_P (info, h))
+ 		{
+ 		  /* Symbol is referenced locally.  Make sure it is
+-		     defined locally.  */
+-		  fail = !(h->def_regular || ELF_COMMON_DEF_P (h));
++		     defined locally or for a branch.  */
++		  fail = (!(h->def_regular || ELF_COMMON_DEF_P (h))
++			  && !branch);
+ 		}
+ 	      else if (!(bfd_link_pie (info)
+ 			 && (h->needs_copy || eh->needs_copy)))
+ 		{
+ 		  /* Symbol doesn't need copy reloc and isn't referenced
+-		     locally.  Address of protected function may not be
+-		     reachable at run-time.  */
+-		  fail = (ELF_ST_VISIBILITY (h->other) == STV_DEFAULT
+-			  || (ELF_ST_VISIBILITY (h->other) == STV_PROTECTED
+-			      && h->type == STT_FUNC));
++		     locally.  We only allow branch to symbol with
++		     non-default visibility. */
++		  fail = (!branch
++			  || ELF_ST_VISIBILITY (h->other) == STV_DEFAULT);
+ 		}
+ 
+ 	      if (fail)
+diff --git a/gas/config/tc-i386.c b/gas/config/tc-i386.c
+index d31ee6a..d6f53df 100644
+--- a/gas/config/tc-i386.c
++++ b/gas/config/tc-i386.c
+@@ -7690,46 +7690,12 @@ output_branch (void)
+   frag_var (rs_machine_dependent, 5, i.reloc[0], subtype, sym, off, p);
+ }
+ 
+-#if defined (OBJ_ELF) || defined (OBJ_MAYBE_ELF)
+-/* Return TRUE iff PLT32 relocation should be used for branching to
+-   symbol S.  */
+-
+-static bfd_boolean
+-need_plt32_p (symbolS *s)
+-{
+-  /* PLT32 relocation is ELF only.  */
+-  if (!IS_ELF)
+-    return FALSE;
+-
+-  /* Since there is no need to prepare for PLT branch on x86-64, we
+-     can generate R_X86_64_PLT32, instead of R_X86_64_PC32, which can
+-     be used as a marker for 32-bit PC-relative branches.  */
+-  if (!object_64bit)
+-    return FALSE;
+-
+-  /* Weak or undefined symbol need PLT32 relocation.  */
+-  if (S_IS_WEAK (s) || !S_IS_DEFINED (s))
+-    return TRUE;
+-
+-  /* Non-global symbol doesn't need PLT32 relocation.  */
+-  if (! S_IS_EXTERNAL (s))
+-    return FALSE;
+-
+-  /* Other global symbols need PLT32 relocation.  NB: Symbol with
+-     non-default visibilities are treated as normal global symbol
+-     so that PLT32 relocation can be used as a marker for 32-bit
+-     PC-relative branches.  It is useful for linker relaxation.  */
+-  return TRUE;
+-}
+-#endif
+-
+ static void
+ output_jump (void)
+ {
+   char *p;
+   int size;
+   fixS *fixP;
+-  bfd_reloc_code_real_type jump_reloc = i.reloc[0];
+ 
+   if (i.tm.opcode_modifier.jumpbyte)
+     {
+@@ -7797,17 +7763,8 @@ output_jump (void)
+       abort ();
+     }
+ 
+-#if defined (OBJ_ELF) || defined (OBJ_MAYBE_ELF)
+-  if (size == 4
+-      && jump_reloc == NO_RELOC
+-      && need_plt32_p (i.op[0].disps->X_add_symbol))
+-    jump_reloc = BFD_RELOC_X86_64_PLT32;
+-#endif
+-
+-  jump_reloc = reloc (size, 1, 1, jump_reloc);
+-
+   fixP = fix_new_exp (frag_now, p - frag_now->fr_literal, size,
+-		      i.op[0].disps, 1, jump_reloc);
++		      i.op[0].disps, 1, reloc (size, 1, 1, i.reloc[0]));
+ 
+   /* All jumps handled here are signed, but don't use a signed limit
+      check for 32 and 16 bit jumps as we want to allow wrap around at
+@@ -10236,10 +10193,6 @@ md_estimate_size_before_relax (fragS *fragP, segT segment)
+ 	reloc_type = (enum bfd_reloc_code_real) fragP->fr_var;
+       else if (size == 2)
+ 	reloc_type = BFD_RELOC_16_PCREL;
+-#if defined (OBJ_ELF) || defined (OBJ_MAYBE_ELF)
+-      else if (need_plt32_p (fragP->fr_symbol))
+-	reloc_type = BFD_RELOC_X86_64_PLT32;
+-#endif
+       else
+ 	reloc_type = BFD_RELOC_32_PCREL;
+ 
+diff --git a/gas/testsuite/gas/i386/ilp32/reloc64.d b/gas/testsuite/gas/i386/ilp32/reloc64.d
+index 5865ab0..824c771 100644
+--- a/gas/testsuite/gas/i386/ilp32/reloc64.d
++++ b/gas/testsuite/gas/i386/ilp32/reloc64.d
+@@ -17,7 +17,7 @@ Disassembly of section \.text:
+ .*[ 	]+R_X86_64_PC8[ 	]+xtrn\+0x0*1
+ .*[ 	]+R_X86_64_PC32[ 	]+xtrn-0x0*4
+ .*[ 	]+R_X86_64_PC32[ 	]+xtrn-0x0*4
+-.*[ 	]+R_X86_64_PLT32[ 	]+xtrn-0x0*4
++.*[ 	]+R_X86_64_PC32[ 	]+xtrn-0x0*4
+ .*[ 	]+R_X86_64_PC8[ 	]+xtrn-0x0*1
+ .*[ 	]+R_X86_64_GOT32[ 	]+xtrn
+ .*[ 	]+R_X86_64_GOT32[ 	]+xtrn
+diff --git a/gas/testsuite/gas/i386/ilp32/x86-64-branch.d b/gas/testsuite/gas/i386/ilp32/x86-64-branch.d
+index 45ab617..915dbf3 100644
+--- a/gas/testsuite/gas/i386/ilp32/x86-64-branch.d
++++ b/gas/testsuite/gas/i386/ilp32/x86-64-branch.d
+@@ -20,9 +20,9 @@ Disassembly of section .text:
+ [ 	]*[a-f0-9]+:	66 ff 20             	data16 jmpq \*\(%rax\)
+ [ 	]*[a-f0-9]+:	e8 00 00 00 00       	callq  0x1f	1b: R_X86_64_PC32	\*ABS\*\+0x10003c
+ [ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   0x24	20: R_X86_64_PC32	\*ABS\*\+0x10003c
+-[ 	]*[a-f0-9]+:	66 e8 00 00 00 00    	data16 callq 0x2a	26: R_X86_64_PLT32	foo-0x4
+-[ 	]*[a-f0-9]+:	66 e9 00 00 00 00    	data16 jmpq 0x30	2c: R_X86_64_PLT32	foo-0x4
+-[ 	]*[a-f0-9]+:	66 0f 82 00 00 00 00 	data16 jb 0x37	33: R_X86_64_PLT32	foo-0x4
++[ 	]*[a-f0-9]+:	66 e8 00 00 00 00    	data16 callq 0x2a	26: R_X86_64_PC32	foo-0x4
++[ 	]*[a-f0-9]+:	66 e9 00 00 00 00    	data16 jmpq 0x30	2c: R_X86_64_PC32	foo-0x4
++[ 	]*[a-f0-9]+:	66 0f 82 00 00 00 00 	data16 jb 0x37	33: R_X86_64_PC32	foo-0x4
+ [ 	]*[a-f0-9]+:	ff d0                	callq  \*%rax
+ [ 	]*[a-f0-9]+:	ff d0                	callq  \*%rax
+ [ 	]*[a-f0-9]+:	66 ff d0             	data16 callq \*%rax
+diff --git a/gas/testsuite/gas/i386/reloc64.d b/gas/testsuite/gas/i386/reloc64.d
+index 59e02b4..77252c1 100644
+--- a/gas/testsuite/gas/i386/reloc64.d
++++ b/gas/testsuite/gas/i386/reloc64.d
+@@ -19,7 +19,7 @@ Disassembly of section \.text:
+ .*[ 	]+R_X86_64_PC8[ 	]+xtrn\+0x0*1
+ .*[ 	]+R_X86_64_PC32[ 	]+xtrn-0x0*4
+ .*[ 	]+R_X86_64_PC32[ 	]+xtrn-0x0*4
+-.*[ 	]+R_X86_64_PLT32[ 	]+xtrn-0x0*4
++.*[ 	]+R_X86_64_PC32[ 	]+xtrn-0x0*4
+ .*[ 	]+R_X86_64_PC8[ 	]+xtrn-0x0*1
+ .*[ 	]+R_X86_64_GOT64[ 	]+xtrn
+ .*[ 	]+R_X86_64_GOT32[ 	]+xtrn
+diff --git a/gas/testsuite/gas/i386/x86-64-jump.d b/gas/testsuite/gas/i386/x86-64-jump.d
+index 9f7b4b4..edb34e6 100644
+--- a/gas/testsuite/gas/i386/x86-64-jump.d
++++ b/gas/testsuite/gas/i386/x86-64-jump.d
+@@ -8,7 +8,7 @@ Disassembly of section .text:
+ 
+ 0+ <.text>:
+ [ 	]*[a-f0-9]+:	eb fe                	jmp    (0x0|0 <.text>)
+-[ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   0x7	3: R_X86_64_PLT32	xxx-0x4
++[ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   0x7	3: R_X86_64_PC32	xxx-0x4
+ [ 	]*[a-f0-9]+:	ff 24 25 00 00 00 00 	jmpq   \*0x0	a: R_X86_64_32S	xxx
+ [ 	]*[a-f0-9]+:	ff e7                	jmpq   \*%rdi
+ [ 	]*[a-f0-9]+:	ff 27                	jmpq   \*\(%rdi\)
+@@ -17,7 +17,7 @@ Disassembly of section .text:
+ [ 	]*[a-f0-9]+:	ff 2c 25 00 00 00 00 	ljmp   \*0x0	24: R_X86_64_32S	xxx
+ [ 	]*[a-f0-9]+:	66 ff 2c 25 00 00 00 00 	ljmpw  \*0x0	2c: R_X86_64_32S	xxx
+ [ 	]*[a-f0-9]+:	e8 cb ff ff ff       	callq  0x0
+-[ 	]*[a-f0-9]+:	e8 00 00 00 00       	callq  0x3a	36: R_X86_64_PLT32	xxx-0x4
++[ 	]*[a-f0-9]+:	e8 00 00 00 00       	callq  0x3a	36: R_X86_64_PC32	xxx-0x4
+ [ 	]*[a-f0-9]+:	ff 14 25 00 00 00 00 	callq  \*0x0	3d: R_X86_64_32S	xxx
+ [ 	]*[a-f0-9]+:	ff d7                	callq  \*%rdi
+ [ 	]*[a-f0-9]+:	ff 17                	callq  \*\(%rdi\)
+diff --git a/gas/testsuite/gas/i386/x86-64-mpx-branch-1.d b/gas/testsuite/gas/i386/x86-64-mpx-branch-1.d
+index d44841e..c070029 100644
+--- a/gas/testsuite/gas/i386/x86-64-mpx-branch-1.d
++++ b/gas/testsuite/gas/i386/x86-64-mpx-branch-1.d
+@@ -20,9 +20,9 @@ Disassembly of section .text:
+ [ 	]*[a-f0-9]+:	f2 e8 00 00 00 00    	bnd callq 24 <foo2>
+ 
+ 0+24 <foo2>:
+-[ 	]*[a-f0-9]+:	f2 e9 00 00 00 00    	bnd jmpq 2a <foo2\+0x6>	26: R_X86_64_PLT32	foo-0x4
+-[ 	]*[a-f0-9]+:	f2 0f 82 00 00 00 00 	bnd jb 31 <foo2\+0xd>	2d: R_X86_64_PLT32	foo-0x4
+-[ 	]*[a-f0-9]+:	f2 e8 00 00 00 00    	bnd callq 37 <foo2\+0x13>	33: R_X86_64_PLT32	foo-0x4
++[ 	]*[a-f0-9]+:	f2 e9 00 00 00 00    	bnd jmpq 2a <foo2\+0x6>	26: R_X86_64_PC32	foo-0x4
++[ 	]*[a-f0-9]+:	f2 0f 82 00 00 00 00 	bnd jb 31 <foo2\+0xd>	2d: R_X86_64_PC32	foo-0x4
++[ 	]*[a-f0-9]+:	f2 e8 00 00 00 00    	bnd callq 37 <foo2\+0x13>	33: R_X86_64_PC32	foo-0x4
+ [ 	]*[a-f0-9]+:	f2 e9 00 00 00 00    	bnd jmpq 3d <foo2\+0x19>	39: R_X86_64_PLT32	foo-0x4
+ [ 	]*[a-f0-9]+:	f2 0f 82 00 00 00 00 	bnd jb 44 <foo2\+0x20>	40: R_X86_64_PLT32	foo-0x4
+ [ 	]*[a-f0-9]+:	f2 e8 00 00 00 00    	bnd callq 4a <foo2\+0x26>	46: R_X86_64_PLT32	foo-0x4
+diff --git a/gas/testsuite/gas/i386/x86-64-mpx-branch-2.d b/gas/testsuite/gas/i386/x86-64-mpx-branch-2.d
+index 514c343..5bb6a57 100644
+--- a/gas/testsuite/gas/i386/x86-64-mpx-branch-2.d
++++ b/gas/testsuite/gas/i386/x86-64-mpx-branch-2.d
+@@ -20,9 +20,9 @@ Disassembly of section .text:
+ [ 	]*[a-f0-9]+:	f2 e8 00 00 00 00    	bnd callq 24 <foo2>
+ 
+ 0+24 <foo2>:
+-[ 	]*[a-f0-9]+:	f2 e9 00 00 00 00    	bnd jmpq 2a <foo2\+0x6>	26: R_X86_64_PLT32	foo-0x4
+-[ 	]*[a-f0-9]+:	f2 0f 82 00 00 00 00 	bnd jb 31 <foo2\+0xd>	2d: R_X86_64_PLT32	foo-0x4
+-[ 	]*[a-f0-9]+:	f2 e8 00 00 00 00    	bnd callq 37 <foo2\+0x13>	33: R_X86_64_PLT32	foo-0x4
++[ 	]*[a-f0-9]+:	f2 e9 00 00 00 00    	bnd jmpq 2a <foo2\+0x6>	26: R_X86_64_PC32	foo-0x4
++[ 	]*[a-f0-9]+:	f2 0f 82 00 00 00 00 	bnd jb 31 <foo2\+0xd>	2d: R_X86_64_PC32	foo-0x4
++[ 	]*[a-f0-9]+:	f2 e8 00 00 00 00    	bnd callq 37 <foo2\+0x13>	33: R_X86_64_PC32	foo-0x4
+ [ 	]*[a-f0-9]+:	f2 e9 00 00 00 00    	bnd jmpq 3d <foo2\+0x19>	39: R_X86_64_PLT32	foo-0x4
+ [ 	]*[a-f0-9]+:	f2 0f 82 00 00 00 00 	bnd jb 44 <foo2\+0x20>	40: R_X86_64_PLT32	foo-0x4
+ [ 	]*[a-f0-9]+:	f2 e8 00 00 00 00    	bnd callq 4a <foo2\+0x26>	46: R_X86_64_PLT32	foo-0x4
+diff --git a/gas/testsuite/gas/i386/x86-64-relax-2.d b/gas/testsuite/gas/i386/x86-64-relax-2.d
+index c9eba84..c124102 100644
+--- a/gas/testsuite/gas/i386/x86-64-relax-2.d
++++ b/gas/testsuite/gas/i386/x86-64-relax-2.d
+@@ -10,12 +10,12 @@ Disassembly of section .text:
+ 0+ <foo>:
+ [ 	]*[a-f0-9]+:	eb 24                	jmp    26 <local>
+ [ 	]*[a-f0-9]+:	eb 1e                	jmp    22 <hidden_def>
+-[ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   9 <foo\+0x9>	5: R_X86_64_PLT32	global_def-0x4
++[ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   9 <foo\+0x9>	5: R_X86_64_PC32	global_def-0x4
+ [ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   e <foo\+0xe>	a: R_X86_64_PLT32	global_def-0x4
+-[ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   13 <foo\+0x13>	f: R_X86_64_PLT32	weak_def-0x4
+-[ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   18 <foo\+0x18>	14: R_X86_64_PLT32	weak_hidden_undef-0x4
+-[ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   1d <foo\+0x1d>	19: R_X86_64_PLT32	weak_hidden_def-0x4
+-[ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   22 <hidden_def>	1e: R_X86_64_PLT32	hidden_undef-0x4
++[ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   13 <foo\+0x13>	f: R_X86_64_PC32	weak_def-0x4
++[ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   18 <foo\+0x18>	14: R_X86_64_PC32	weak_hidden_undef-0x4
++[ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   1d <foo\+0x1d>	19: R_X86_64_PC32	weak_hidden_def-0x4
++[ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   22 <hidden_def>	1e: R_X86_64_PC32	hidden_undef-0x4
+ 
+ 0+22 <hidden_def>:
+ [ 	]*[a-f0-9]+:	c3                   	retq   
+diff --git a/gas/testsuite/gas/i386/x86-64-relax-3.d b/gas/testsuite/gas/i386/x86-64-relax-3.d
+index 28ab5dd..98fd28d 100644
+--- a/gas/testsuite/gas/i386/x86-64-relax-3.d
++++ b/gas/testsuite/gas/i386/x86-64-relax-3.d
+@@ -11,10 +11,10 @@ Disassembly of section .text:
+ [ 	]*[a-f0-9]+:	eb 1b                	jmp    1f <hidden_def>
+ [ 	]*[a-f0-9]+:	eb 1b                	jmp    21 <global_def>
+ [ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   b <foo\+0xb>	7: R_X86_64_PLT32	global_def-0x4
+-[ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   10 <foo\+0x10>	c: R_X86_64_PLT32	weak_def-0x4
+-[ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   15 <foo\+0x15>	11: R_X86_64_PLT32	weak_hidden_undef-0x4
+-[ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   1a <foo\+0x1a>	16: R_X86_64_PLT32	weak_hidden_def-0x4
+-[ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   1f <hidden_def>	1b: R_X86_64_PLT32	hidden_undef-0x4
++[ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   10 <foo\+0x10>	c: R_X86_64_PC32	weak_def-0x4
++[ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   15 <foo\+0x15>	11: R_X86_64_PC32	weak_hidden_undef-0x4
++[ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   1a <foo\+0x1a>	16: R_X86_64_PC32	weak_hidden_def-0x4
++[ 	]*[a-f0-9]+:	e9 00 00 00 00       	jmpq   1f <hidden_def>	1b: R_X86_64_PC32	hidden_undef-0x4
+ 
+ 0+1f <hidden_def>:
+ [ 	]*[a-f0-9]+:	c3                   	retq   
+diff --git a/ld/testsuite/ld-x86-64/mpx1c.rd b/ld/testsuite/ld-x86-64/mpx1c.rd
+index d66524c..d3b292c 100644
+--- a/ld/testsuite/ld-x86-64/mpx1c.rd
++++ b/ld/testsuite/ld-x86-64/mpx1c.rd
+@@ -1,3 +1,3 @@
+ #...
+-[0-9a-f ]+R_X86_64_PLT32 +0+ +.*
++[0-9a-f ]+R_X86_64_PC32 +0+ +.*
+ #...
+diff --git a/ld/testsuite/ld-x86-64/x86-64.exp b/ld/testsuite/ld-x86-64/x86-64.exp
+index 86b163f..a6b31be 100644
+--- a/ld/testsuite/ld-x86-64/x86-64.exp
++++ b/ld/testsuite/ld-x86-64/x86-64.exp
+@@ -1197,36 +1197,6 @@ if { [isnative] && [which $CC] != 0 } {
+ 	     {readelf -lW pr22393-3b.rd}} \
+ 	    "pr22393-3-static" \
+ 	] \
+-	[list \
+-	    "Build pr22791-1.so" \
+-	    "-shared" \
+-	    "-fPIC -Wa,-mx86-used-note=yes" \
+-	    { pr22791-1a.c } \
+-	    {} \
+-	    "pr22791-1.so" \
+-	] \
+-	[list \
+-	    "Build pr22791-1" \
+-	    "-pie -Wl,--no-as-needed tmpdir/pr22791-1.so" \
+-	    "$NOPIE_CFLAGS -Wa,-mx86-used-note=yes" \
+-	    { pr22791-1b.s } \
+-	    {{error_output "pr22791-1.err"}} \
+-	    "pr22791-1" \
+-	] \
+-	[list \
+-	    "Build pr22791-2a.o" \
+-	    "" \
+-	    "$NOPIE_CFLAGS -Wa,-mx86-used-note=yes" \
+-	    { pr22791-2a.s } \
+-	] \
+-	[list \
+-	    "Build pr22791-2.so" \
+-	    "-shared tmpdir/pr22791-2a.o" \
+-	    "-fPIC -Wa,-mx86-used-note=yes" \
+-	    { pr22791-2b.c } \
+-	    {{readelf -drW pr22791-2.rd}} \
+-	    "pr22791-2.so" \
+-	] \
+ 	[list \
+ 	    "Build pr22791-2" \
+ 	    "-pie -Wl,--no-as-needed tmpdir/pr22791-2.so" \
+@@ -1577,15 +1547,6 @@ if { [isnative] && [which $CC] != 0 } {
+ 	    "pr22393-3-static" \
+ 	    "pass.out" \
+ 	] \
+-	[list \
+-	    "Run pr22791-2" \
+-	    "-pie -Wl,--no-as-needed tmpdir/pr22791-2.so" \
+-	    "-Wa,-mx86-used-note=yes" \
+-	    { pr22791-2c.s } \
+-	    "pr22791-2" \
+-	    "pass.out" \
+-	    "$NOPIE_CFLAGS" \
+-	] \
+ 	[list \
+ 	    "Run pr22842" \
+ 	    "-pie -Wl,--no-as-needed tmpdir/pr22842.so" \

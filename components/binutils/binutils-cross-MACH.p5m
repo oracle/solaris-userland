@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform hardlink path=usr/gnu/bin/$(CROSS_ARCH)-(.*) -> \
@@ -34,7 +34,6 @@
 set name=pkg.fmri \
     value=pkg:/developer/gnu-binutils-cross-$(CROSS_MACH)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="GNU binutils cross-tools for $(CROSS_MACH)"
-set name=pkg.human-version value=$(HUMAN_VERSION)
 set name=com.oracle.info.description \
     value="GNU binutils ($(CROSS_MACH) cross-tools)"
 set name=com.oracle.info.tpno value=$(TPNO)
@@ -54,6 +53,7 @@ file path=usr/gnu/$(CROSS_ARCH)/bin/objdump
 file path=usr/gnu/$(CROSS_ARCH)/bin/ranlib
 file path=usr/gnu/$(CROSS_ARCH)/bin/readelf
 file path=usr/gnu/$(CROSS_ARCH)/bin/strip
+#
 file path=usr/gnu/bin/$(CROSS_ARCH)-addr2line
 hardlink path=usr/gnu/bin/$(CROSS_ARCH)-ar
 hardlink path=usr/gnu/bin/$(CROSS_ARCH)-as
@@ -62,7 +62,7 @@ file path=usr/gnu/bin/$(CROSS_ARCH)-elfedit
 file path=usr/gnu/bin/$(CROSS_ARCH)-gprof
 hardlink path=usr/gnu/bin/$(CROSS_ARCH)-ld
 # Don't hardlink to a hardlink, as the transforms above would do.
-hardlink path=usr/gnu/bin/$(CROSS_ARCH)-ld.bfd target=../$(CROSS_ARCH)/bin/ld
+hardlink path=usr/gnu/bin/$(CROSS_ARCH)-ld.bfd
 hardlink path=usr/gnu/bin/$(CROSS_ARCH)-nm
 hardlink path=usr/gnu/bin/$(CROSS_ARCH)-objcopy
 hardlink path=usr/gnu/bin/$(CROSS_ARCH)-objdump
@@ -72,4 +72,4 @@ file path=usr/gnu/bin/$(CROSS_ARCH)-size
 file path=usr/gnu/bin/$(CROSS_ARCH)-strings
 hardlink path=usr/gnu/bin/$(CROSS_ARCH)-strip
 license binutils.license \
-    license="GPLv2, GPLv3, LGPLv2, LGPLv3, FDL1.1, FDL1.2, FDL1.3"
+    license="GPLv2, GPLv3, LGPLv2, LGPLv2.1, LGPLv3, FDL1.3"

@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		binutils
-COMPONENT_VERSION=	2.30
+COMPONENT_VERSION=	2.32
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6e46b8aeae2f727a36f0bd9505e405768a72218f1796f0d09757d45209871ae6
+    sha256:0ab6c55dd86a92ed561972ba15b9b70a8b9f75557f896446c82e8b36e473ee04
 COMPONENT_BUGDB=	utility/gnu-binutils
 COMPONENT_ANITYA_ID=	7981
 
-TPNO=			41378
+TPNO=			49258
 
 #
 # for platform and cross platform support
@@ -51,11 +51,7 @@ $(BUILD_DIR_64)-cross/.configured: CONFIGURE_OPTIONS += --target=$(CROSS_ARCH)
 TEST_TARGET= $(TEST_64)
 include $(WS_MAKE_RULES)/gnu-component.mk
 
-# The .1 refers to version 2.30-1 to distinguish between community version
-# of binutils and this package, which contains all known fixes.  A similar approach
-# is addopted by some Linux distros.
-IPS_COMPONENT_VERSION=	2.30.1
-HUMAN_VERSION=		$(COMPONENT_VERSION)-1
+IPS_COMPONENT_VERSION=	2.32.0
 
 export PATH=$(dirname $(CC)):$(GNUBIN):/usr/bin
 COMPONENT_TEST_ARGS += -k
