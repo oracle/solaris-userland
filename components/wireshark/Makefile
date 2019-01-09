@@ -20,25 +20,25 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 MAJOR_VERSION=2.6
-MICRO_VERSION=5
+MICRO_VERSION=6
 
 COMPONENT_NAME=		wireshark
 COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
 COMPONENT_PROJECT_URL=	http://www.wireshark.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:93155b798544b2f07693920f4ac1b531c952965ee4eb1d98419961240177438a
+    sha256:487933ea075bdbb25d8df06017d9c4f49fc20eb7f6ec80af086718ed5550e863
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/src/all-versions/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	5137
 
-TPNO=			47739
+TPNO=			48511
 
 # Enable adiheap security extension
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
