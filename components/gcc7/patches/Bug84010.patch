@@ -1,0 +1,1286 @@
+https://gcc.gnu.org/bugzilla/show_bug.cgi?id=84010
+https://github.com/gcc-mirror/gcc/commit/4b148a96030cadec8b26d1da21e3be06decc9cc7
+
+From 4b148a96030cadec8b26d1da21e3be06decc9cc7 Mon Sep 17 00:00:00 2001
+From: ebotcazou <ebotcazou@138bc75d-0d04-0410-961f-82ee72b054a4>
+Date: Wed, 9 Jan 2019 14:41:55 +0000
+Subject: [PATCH] 	PR target/84010 	* config/sparc/sparc.c
+ (sparc_legitimize_tls_address): Only use Pmode 	consistently in TLS
+ address generation and adjust code to the renaming 	of patterns.  Mark
+ calls to __tls_get_addr as const. 	* config/sparc/sparc.md (tgd_hi22):
+ Turn into... 	(tgd_hi22<P:mode>): ...this and use Pmode throughout. 
+ (tgd_lo10): Turn into... 	(tgd_lo10<P:mode>): ...this and use Pmode
+ throughout. 	(tgd_add32): Merge into... 	(tgd_add64): Likewise. 
+ (tgd_add<P:mode>): ...this and use Pmode throughout. 	(tldm_hi22): Turn
+ into... 	(tldm_hi22<P:mode>): ...this and use Pmode throughout. 
+ (tldm_lo10): Turn into... 	(tldm_lo10<P:mode>): ...this and use Pmode
+ throughout. 	(tldm_add32): Merge into... 	(tldm_add64): Likewise. 
+ (tldm_add<P:mode>): ...this and use Pmode throughout. 	(tldm_call32): Merge
+ into... 	(tldm_call64): Likewise. 	(tldm_call<P:mode>): ...this
+ and use Pmode throughout. 	(tldo_hix22): Turn into... 
+ (tldo_hix22<P:mode>): ...this and use Pmode throughout. 	(tldo_lox10):
+ Turn into... 	(tldo_lox10<P:mode>): ...this and use Pmode throughout. 
+ (tldo_add32): Merge into... 	(tldo_add64): Likewise. 
+ (tldo_add<P:mode>): ...this and use Pmode throughout. 	(tie_hi22): Turn
+ into... 	(tie_hi22<P:mode>): ...this and use Pmode throughout. 
+ (tie_lo10): Turn into... 	(tie_lo10<P:mode>): ...this and use Pmode
+ throughout. 	(tie_ld64): Use DImode throughout. 	(tie_add32): Merge
+ into... 	(tie_add64): Likewise. 	(tie_add<P:mode>): ...this and use
+ Pmode throughout. 	(tle_hix22_sp32): Merge into... 
+ (tle_hix22_sp64): Likewise. 	(tle_hix22<P:mode>): ...this and use Pmode
+ throughout. 	(tle_lox22_sp32): Merge into... 	(tle_lox22_sp64):
+ Likewise. 	(tle_lox22<P:mode>): ...this and use Pmode throughout. 
+ (*tldo_ldub_sp32): Merge into... 	(*tldo_ldub_sp64): Likewise. 
+ (*tldo_ldub<P:mode>): ...this and use Pmode throughout. 
+ (*tldo_ldub1_sp32): Merge into... 	(*tldo_ldub1_sp64): Likewise. 
+ (*tldo_ldub1<P:mode>): ...this and use Pmode throughout. 
+ (*tldo_ldub2_sp32): Merge into... 	(*tldo_ldub2_sp64): Likewise. 
+ (*tldo_ldub2<P:mode>): ...this and use Pmode throughout. 
+ (*tldo_ldsb1_sp32): Merge into... 	(*tldo_ldsb1_sp64): Likewise. 
+ (*tldo_ldsb1<P:mode>): ...this and use Pmode throughout. 
+ (*tldo_ldsb2_sp32): Merge into... 	(*tldo_ldsb2_sp64): Likewise. 
+ (*tldo_ldsb2<P:mode>): ...this and use Pmode throughout. 
+ (*tldo_ldub3_sp64): Use DImode throughout. 	(*tldo_ldsb3_sp64): Likewise. 
+ (*tldo_lduh_sp32): Merge into... 	(*tldo_lduh_sp64): Likewise. 
+ (*tldo_lduh<P:mode>): ...this and use Pmode throughout. 
+ (*tldo_lduh1_sp32): Merge into... 	(*tldo_lduh1_sp64): Likewise. 
+ (*tldo_lduh1<P:mode>): ...this and use Pmode throughout. 
+ (*tldo_ldsh1_sp32): Merge into... 	(*tldo_ldsh1_sp64): Likewise. 
+ (*tldo_ldsh1<P:mode>): ...this and use Pmode throughout. 
+ (*tldo_lduh2_sp64): Use DImode throughout. 	(*tldo_ldsh2_sp64): Likewise. 
+ (*tldo_lduw_sp32): Merge into... 	(*tldo_lduw_sp64): Likewise. 
+ (*tldo_lduw<P:mode>): ...this and use Pmode throughout. 
+ (*tldo_lduw1_sp64): Use DImode throughout. 	(*tldo_ldsw1_sp64): Likewise. 
+ (*tldo_ldx_sp64): Likewise. 	(*tldo_stb_sp32): Merge into... 
+ (*tldo_stb_sp64): Likewise. 	(*tldo_stb<P:mode>): ...this and use Pmode
+ throughout. 	(*tldo_sth_sp32): Merge into... 	(*tldo_sth_sp64):
+ Likewise. 	(*tldo_sth<P:mode>): ...this and use Pmode throughout. 
+ (*tldo_stw_sp32): Merge into... 	(*tldo_stw_sp64): Likewise. 
+ (*tldo_stw<P:mode>): ...this and use Pmode throughout. 
+ (*tldo_stx_sp64): Use DImode throughout.
+
+git-svn-id: svn+ssh://gcc.gnu.org/svn/gcc/branches/gcc-7-branch@267773 138bc75d-0d04-0410-961f-82ee72b054a4
+---
+ gcc/ChangeLog                                 |  90 +++
+ gcc/config/sparc/sparc.c                      |  93 +--
+ gcc/config/sparc/sparc.md                     | 543 ++++++------------
+ gcc/testsuite/ChangeLog                       |   9 +
+ gcc/testsuite/gcc.target/sparc/tls-ld-int16.c |  34 ++
+ gcc/testsuite/gcc.target/sparc/tls-ld-int32.c |  36 ++
+ gcc/testsuite/gcc.target/sparc/tls-ld-int64.c |  24 +
+ gcc/testsuite/gcc.target/sparc/tls-ld-int8.c  |  39 ++
+ .../gcc.target/sparc/tls-ld-uint16.c          |  33 ++
+ .../gcc.target/sparc/tls-ld-uint32.c          |  36 ++
+ gcc/testsuite/gcc.target/sparc/tls-ld-uint8.c |  38 ++
+ 11 files changed, 565 insertions(+), 410 deletions(-)
+ create mode 100644 gcc/testsuite/gcc.target/sparc/tls-ld-int16.c
+ create mode 100644 gcc/testsuite/gcc.target/sparc/tls-ld-int32.c
+ create mode 100644 gcc/testsuite/gcc.target/sparc/tls-ld-int64.c
+ create mode 100644 gcc/testsuite/gcc.target/sparc/tls-ld-int8.c
+ create mode 100644 gcc/testsuite/gcc.target/sparc/tls-ld-uint16.c
+ create mode 100644 gcc/testsuite/gcc.target/sparc/tls-ld-uint32.c
+ create mode 100644 gcc/testsuite/gcc.target/sparc/tls-ld-uint8.c
+
+diff --git a/gcc/config/sparc/sparc.c b/gcc/config/sparc/sparc.c
+index ed3bea2a9a79..b2d82efbe7bc 100644
+--- a/gcc/config/sparc/sparc.c
++++ b/gcc/config/sparc/sparc.c
+@@ -4531,30 +4531,38 @@ sparc_legitimize_tls_address (rtx addr)
+   gcc_assert (can_create_pseudo_p ());
+ 
+   if (GET_CODE (addr) == SYMBOL_REF)
++    /* Although the various sethi/or sequences generate SImode values, many of
++       them can be transformed by the linker when relaxing and, if relaxing to
++       local-exec, will become a sethi/xor pair, which is signed and therefore
++       a full DImode value in 64-bit mode.  Thus we must use Pmode, lest these
++       values be spilled onto the stack in 64-bit mode.  */
+     switch (SYMBOL_REF_TLS_MODEL (addr))
+       {
+       case TLS_MODEL_GLOBAL_DYNAMIC:
+ 	start_sequence ();
+-	temp1 = gen_reg_rtx (SImode);
+-	temp2 = gen_reg_rtx (SImode);
++	temp1 = gen_reg_rtx (Pmode);
++	temp2 = gen_reg_rtx (Pmode);
+ 	ret = gen_reg_rtx (Pmode);
+ 	o0 = gen_rtx_REG (Pmode, 8);
+ 	got = sparc_tls_got ();
+-	emit_insn (gen_tgd_hi22 (temp1, addr));
+-	emit_insn (gen_tgd_lo10 (temp2, temp1, addr));
+ 	if (TARGET_ARCH32)
+ 	  {
+-	    emit_insn (gen_tgd_add32 (o0, got, temp2, addr));
+-	    insn = emit_call_insn (gen_tgd_call32 (o0, sparc_tls_get_addr (),
++	    emit_insn (gen_tgd_hi22si (temp1, addr));
++	    emit_insn (gen_tgd_lo10si (temp2, temp1, addr));
++	    emit_insn (gen_tgd_addsi (o0, got, temp2, addr));
++	    insn = emit_call_insn (gen_tgd_callsi (o0, sparc_tls_get_addr (),
+ 						   addr, const1_rtx));
+ 	  }
+ 	else
+ 	  {
+-	    emit_insn (gen_tgd_add64 (o0, got, temp2, addr));
+-	    insn = emit_call_insn (gen_tgd_call64 (o0, sparc_tls_get_addr (),
++	    emit_insn (gen_tgd_hi22di (temp1, addr));
++	    emit_insn (gen_tgd_lo10di (temp2, temp1, addr));
++	    emit_insn (gen_tgd_adddi (o0, got, temp2, addr));
++	    insn = emit_call_insn (gen_tgd_calldi (o0, sparc_tls_get_addr (),
+ 						   addr, const1_rtx));
+ 	  }
+ 	use_reg (&CALL_INSN_FUNCTION_USAGE (insn), o0);
++	RTL_CONST_CALL_P (insn) = 1;
+ 	insn = get_insns ();
+ 	end_sequence ();
+ 	emit_libcall_block (insn, ret, o0, addr);
+@@ -4562,61 +4570,78 @@ sparc_legitimize_tls_address (rtx addr)
+ 
+       case TLS_MODEL_LOCAL_DYNAMIC:
+ 	start_sequence ();
+-	temp1 = gen_reg_rtx (SImode);
+-	temp2 = gen_reg_rtx (SImode);
++	temp1 = gen_reg_rtx (Pmode);
++	temp2 = gen_reg_rtx (Pmode);
+ 	temp3 = gen_reg_rtx (Pmode);
+ 	ret = gen_reg_rtx (Pmode);
+ 	o0 = gen_rtx_REG (Pmode, 8);
+ 	got = sparc_tls_got ();
+-	emit_insn (gen_tldm_hi22 (temp1));
+-	emit_insn (gen_tldm_lo10 (temp2, temp1));
+ 	if (TARGET_ARCH32)
+ 	  {
+-	    emit_insn (gen_tldm_add32 (o0, got, temp2));
+-	    insn = emit_call_insn (gen_tldm_call32 (o0, sparc_tls_get_addr (),
++	    emit_insn (gen_tldm_hi22si (temp1));
++	    emit_insn (gen_tldm_lo10si (temp2, temp1));
++	    emit_insn (gen_tldm_addsi (o0, got, temp2));
++	    insn = emit_call_insn (gen_tldm_callsi (o0, sparc_tls_get_addr (),
+ 						    const1_rtx));
+ 	  }
+ 	else
+ 	  {
+-	    emit_insn (gen_tldm_add64 (o0, got, temp2));
+-	    insn = emit_call_insn (gen_tldm_call64 (o0, sparc_tls_get_addr (),
++	    emit_insn (gen_tldm_hi22di (temp1));
++	    emit_insn (gen_tldm_lo10di (temp2, temp1));
++	    emit_insn (gen_tldm_adddi (o0, got, temp2));
++	    insn = emit_call_insn (gen_tldm_calldi (o0, sparc_tls_get_addr (),
+ 						    const1_rtx));
+ 	  }
+ 	use_reg (&CALL_INSN_FUNCTION_USAGE (insn), o0);
++	RTL_CONST_CALL_P (insn) = 1;
+ 	insn = get_insns ();
+ 	end_sequence ();
++	/* Attach a unique REG_EQUAL, to allow the RTL optimizers to
++	  share the LD_BASE result with other LD model accesses.  */
+ 	emit_libcall_block (insn, temp3, o0,
+ 			    gen_rtx_UNSPEC (Pmode, gen_rtvec (1, const0_rtx),
+ 					    UNSPEC_TLSLD_BASE));
+-	temp1 = gen_reg_rtx (SImode);
+-	temp2 = gen_reg_rtx (SImode);
+-	emit_insn (gen_tldo_hix22 (temp1, addr));
+-	emit_insn (gen_tldo_lox10 (temp2, temp1, addr));
++	temp1 = gen_reg_rtx (Pmode);
++	temp2 = gen_reg_rtx (Pmode);
+ 	if (TARGET_ARCH32)
+-	  emit_insn (gen_tldo_add32 (ret, temp3, temp2, addr));
++	  {
++	    emit_insn (gen_tldo_hix22si (temp1, addr));
++	    emit_insn (gen_tldo_lox10si (temp2, temp1, addr));
++	    emit_insn (gen_tldo_addsi (ret, temp3, temp2, addr));
++	  }
+ 	else
+-	  emit_insn (gen_tldo_add64 (ret, temp3, temp2, addr));
++	  {
++	    emit_insn (gen_tldo_hix22di (temp1, addr));
++	    emit_insn (gen_tldo_lox10di (temp2, temp1, addr));
++	    emit_insn (gen_tldo_adddi (ret, temp3, temp2, addr));
++	  }
+ 	break;
+ 
+       case TLS_MODEL_INITIAL_EXEC:
+-	temp1 = gen_reg_rtx (SImode);
+-	temp2 = gen_reg_rtx (SImode);
++	temp1 = gen_reg_rtx (Pmode);
++	temp2 = gen_reg_rtx (Pmode);
+ 	temp3 = gen_reg_rtx (Pmode);
+ 	got = sparc_tls_got ();
+-	emit_insn (gen_tie_hi22 (temp1, addr));
+-	emit_insn (gen_tie_lo10 (temp2, temp1, addr));
+ 	if (TARGET_ARCH32)
+-	  emit_insn (gen_tie_ld32 (temp3, got, temp2, addr));
++	  {
++	    emit_insn (gen_tie_hi22si (temp1, addr));
++	    emit_insn (gen_tie_lo10si (temp2, temp1, addr));
++	    emit_insn (gen_tie_ld32 (temp3, got, temp2, addr));
++	  }
+ 	else
+-	  emit_insn (gen_tie_ld64 (temp3, got, temp2, addr));
++	  {
++	    emit_insn (gen_tie_hi22di (temp1, addr));
++	    emit_insn (gen_tie_lo10di (temp2, temp1, addr));
++	    emit_insn (gen_tie_ld64 (temp3, got, temp2, addr));
++	  }
+         if (TARGET_SUN_TLS)
+ 	  {
+ 	    ret = gen_reg_rtx (Pmode);
+ 	    if (TARGET_ARCH32)
+-	      emit_insn (gen_tie_add32 (ret, gen_rtx_REG (Pmode, 7),
++	      emit_insn (gen_tie_addsi (ret, gen_rtx_REG (Pmode, 7),
+ 					temp3, addr));
+ 	    else
+-	      emit_insn (gen_tie_add64 (ret, gen_rtx_REG (Pmode, 7),
++	      emit_insn (gen_tie_adddi (ret, gen_rtx_REG (Pmode, 7),
+ 					temp3, addr));
+ 	  }
+ 	else
+@@ -4628,13 +4653,13 @@ sparc_legitimize_tls_address (rtx addr)
+ 	temp2 = gen_reg_rtx (Pmode);
+ 	if (TARGET_ARCH32)
+ 	  {
+-	    emit_insn (gen_tle_hix22_sp32 (temp1, addr));
+-	    emit_insn (gen_tle_lox10_sp32 (temp2, temp1, addr));
++	    emit_insn (gen_tle_hix22si (temp1, addr));
++	    emit_insn (gen_tle_lox10si (temp2, temp1, addr));
+ 	  }
+ 	else
+ 	  {
+-	    emit_insn (gen_tle_hix22_sp64 (temp1, addr));
+-	    emit_insn (gen_tle_lox10_sp64 (temp2, temp1, addr));
++	    emit_insn (gen_tle_hix22di (temp1, addr));
++	    emit_insn (gen_tle_lox10di (temp2, temp1, addr));
+ 	  }
+ 	ret = gen_rtx_PLUS (Pmode, gen_rtx_REG (Pmode, 7), temp2);
+ 	break;
+diff --git a/gcc/config/sparc/sparc.md b/gcc/config/sparc/sparc.md
+index 55d41ef8dc7e..02ac09305a31 100644
+--- a/gcc/config/sparc/sparc.md
++++ b/gcc/config/sparc/sparc.md
+@@ -7961,158 +7961,112 @@ visl")
+ 
+ ;; TLS support instructions.
+ 
+-(define_insn "tgd_hi22"
+-  [(set (match_operand:SI 0 "register_operand" "=r")
+-        (high:SI (unspec:SI [(match_operand 1 "tgd_symbolic_operand" "")]
+-			    UNSPEC_TLSGD)))]
++(define_insn "tgd_hi22<P:mode>"
++  [(set (match_operand:P 0 "register_operand" "=r")
++        (high:P (unspec:P [(match_operand 1 "tgd_symbolic_operand" "")]
++			  UNSPEC_TLSGD)))]
+   "TARGET_TLS"
+   "sethi\\t%%tgd_hi22(%a1), %0")
+ 
+-(define_insn "tgd_lo10"
+-  [(set (match_operand:SI 0 "register_operand" "=r")
+-	(lo_sum:SI (match_operand:SI 1 "register_operand" "r")
+-		   (unspec:SI [(match_operand 2 "tgd_symbolic_operand" "")]
+-			      UNSPEC_TLSGD)))]
++(define_insn "tgd_lo10<P:mode>"
++  [(set (match_operand:P 0 "register_operand" "=r")
++	(lo_sum:P (match_operand:P 1 "register_operand" "r")
++		  (unspec:P [(match_operand 2 "tgd_symbolic_operand" "")]
++			    UNSPEC_TLSGD)))]
+   "TARGET_TLS"
+   "add\\t%1, %%tgd_lo10(%a2), %0")
+ 
+-(define_insn "tgd_add32"
+-  [(set (match_operand:SI 0 "register_operand" "=r")
+-	(plus:SI (match_operand:SI 1 "register_operand" "r")
+-		 (unspec:SI [(match_operand:SI 2 "register_operand" "r")
+-			     (match_operand 3 "tgd_symbolic_operand" "")]
+-			    UNSPEC_TLSGD)))]
+-  "TARGET_TLS && TARGET_ARCH32"
+-  "add\\t%1, %2, %0, %%tgd_add(%a3)")
+-
+-(define_insn "tgd_add64"
+-  [(set (match_operand:DI 0 "register_operand" "=r")
+-	(plus:DI (match_operand:DI 1 "register_operand" "r")
+-		 (unspec:DI [(match_operand:SI 2 "register_operand" "r")
+-			     (match_operand 3 "tgd_symbolic_operand" "")]
+-			    UNSPEC_TLSGD)))]
+-  "TARGET_TLS && TARGET_ARCH64"
++(define_insn "tgd_add<P:mode>"
++  [(set (match_operand:P 0 "register_operand" "=r")
++	(plus:P (match_operand:P 1 "register_operand" "r")
++		(unspec:P [(match_operand:P 2 "register_operand" "r")
++			   (match_operand 3 "tgd_symbolic_operand" "")]
++			  UNSPEC_TLSGD)))]
++  "TARGET_TLS"
+   "add\\t%1, %2, %0, %%tgd_add(%a3)")
+ 
+-(define_insn "tgd_call32"
++(define_insn "tgd_call<P:mode>"
+   [(set (match_operand 0 "register_operand" "=r")
+-	(call (mem:SI (unspec:SI [(match_operand:SI 1 "symbolic_operand" "s")
+-				  (match_operand 2 "tgd_symbolic_operand" "")]
+-				 UNSPEC_TLSGD))
++	(call (mem:P (unspec:P [(match_operand:P 1 "symbolic_operand" "s")
++				(match_operand 2 "tgd_symbolic_operand" "")]
++			       UNSPEC_TLSGD))
+ 	      (match_operand 3 "" "")))
+-   (clobber (reg:SI O7_REG))]
+-  "TARGET_TLS && TARGET_ARCH32"
+-  "call\t%a1, %%tgd_call(%a2)%#"
+-  [(set_attr "type" "call")])
+-
+-(define_insn "tgd_call64"
+-  [(set (match_operand 0 "register_operand" "=r")
+-	(call (mem:DI (unspec:DI [(match_operand:DI 1 "symbolic_operand" "s")
+-				  (match_operand 2 "tgd_symbolic_operand" "")]
+-				 UNSPEC_TLSGD))
+-	      (match_operand 3 "" "")))
+-   (clobber (reg:DI O7_REG))]
+-  "TARGET_TLS && TARGET_ARCH64"
++   (clobber (reg:P O7_REG))]
++  "TARGET_TLS"
+   "call\t%a1, %%tgd_call(%a2)%#"
+   [(set_attr "type" "call")])
+ 
+-(define_insn "tldm_hi22"
+-  [(set (match_operand:SI 0 "register_operand" "=r")
+-        (high:SI (unspec:SI [(const_int 0)] UNSPEC_TLSLDM)))]
++(define_insn "tldm_hi22<P:mode>"
++  [(set (match_operand:P 0 "register_operand" "=r")
++        (high:P (unspec:P [(const_int 0)] UNSPEC_TLSLDM)))]
+   "TARGET_TLS"
+   "sethi\\t%%tldm_hi22(%&), %0")
+ 
+-(define_insn "tldm_lo10"
+-  [(set (match_operand:SI 0 "register_operand" "=r")
+-	(lo_sum:SI (match_operand:SI 1 "register_operand" "r")
+-		    (unspec:SI [(const_int 0)] UNSPEC_TLSLDM)))]
++(define_insn "tldm_lo10<P:mode>"
++  [(set (match_operand:P 0 "register_operand" "=r")
++	(lo_sum:P (match_operand:P 1 "register_operand" "r")
++		  (unspec:P [(const_int 0)] UNSPEC_TLSLDM)))]
+   "TARGET_TLS"
+   "add\\t%1, %%tldm_lo10(%&), %0")
+ 
+-(define_insn "tldm_add32"
+-  [(set (match_operand:SI 0 "register_operand" "=r")
+-	(plus:SI (match_operand:SI 1 "register_operand" "r")
+-		 (unspec:SI [(match_operand:SI 2 "register_operand" "r")]
+-			    UNSPEC_TLSLDM)))]
+-  "TARGET_TLS && TARGET_ARCH32"
+-  "add\\t%1, %2, %0, %%tldm_add(%&)")
+-
+-(define_insn "tldm_add64"
+-  [(set (match_operand:DI 0 "register_operand" "=r")
+-	(plus:DI (match_operand:DI 1 "register_operand" "r")
+-		 (unspec:DI [(match_operand:SI 2 "register_operand" "r")]
+-			    UNSPEC_TLSLDM)))]
+-  "TARGET_TLS && TARGET_ARCH64"
++(define_insn "tldm_add<P:mode>"
++  [(set (match_operand:P 0 "register_operand" "=r")
++	(plus:P (match_operand:P 1 "register_operand" "r")
++		(unspec:P [(match_operand:P 2 "register_operand" "r")]
++			  UNSPEC_TLSLDM)))]
++  "TARGET_TLS"
+   "add\\t%1, %2, %0, %%tldm_add(%&)")
+ 
+-(define_insn "tldm_call32"
+-  [(set (match_operand 0 "register_operand" "=r")
+-	(call (mem:SI (unspec:SI [(match_operand:SI 1 "symbolic_operand" "s")]
+-				 UNSPEC_TLSLDM))
+-	      (match_operand 2 "" "")))
+-   (clobber (reg:SI O7_REG))]
+-  "TARGET_TLS && TARGET_ARCH32"
+-  "call\t%a1, %%tldm_call(%&)%#"
+-  [(set_attr "type" "call")])
+-
+-(define_insn "tldm_call64"
++(define_insn "tldm_call<P:mode>"
+   [(set (match_operand 0 "register_operand" "=r")
+-	(call (mem:DI (unspec:DI [(match_operand:DI 1 "symbolic_operand" "s")]
+-				 UNSPEC_TLSLDM))
++	(call (mem:P (unspec:P [(match_operand:P 1 "symbolic_operand" "s")]
++			       UNSPEC_TLSLDM))
+ 	      (match_operand 2 "" "")))
+-   (clobber (reg:DI O7_REG))]
+-  "TARGET_TLS && TARGET_ARCH64"
++   (clobber (reg:P O7_REG))]
++  "TARGET_TLS"
+   "call\t%a1, %%tldm_call(%&)%#"
+   [(set_attr "type" "call")])
+ 
+-(define_insn "tldo_hix22"
+-  [(set (match_operand:SI 0 "register_operand" "=r")
+-        (high:SI (unspec:SI [(match_operand 1 "tld_symbolic_operand" "")]
+-			    UNSPEC_TLSLDO)))]
++(define_insn "tldo_hix22<P:mode>"
++  [(set (match_operand:P 0 "register_operand" "=r")
++        (high:P (unspec:P [(match_operand 1 "tld_symbolic_operand" "")]
++			  UNSPEC_TLSLDO)))]
+   "TARGET_TLS"
+   "sethi\\t%%tldo_hix22(%a1), %0")
+ 
+-(define_insn "tldo_lox10"
+-  [(set (match_operand:SI 0 "register_operand" "=r")
+-	(lo_sum:SI (match_operand:SI 1 "register_operand" "r")
+-		   (unspec:SI [(match_operand 2 "tld_symbolic_operand" "")]
+-			      UNSPEC_TLSLDO)))]
++(define_insn "tldo_lox10<P:mode>"
++  [(set (match_operand:P 0 "register_operand" "=r")
++	(lo_sum:P (match_operand:P 1 "register_operand" "r")
++		  (unspec:P [(match_operand 2 "tld_symbolic_operand" "")]
++			    UNSPEC_TLSLDO)))]
+   "TARGET_TLS"
+   "xor\\t%1, %%tldo_lox10(%a2), %0")
+ 
+-(define_insn "tldo_add32"
+-  [(set (match_operand:SI 0 "register_operand" "=r")
+-	(plus:SI (match_operand:SI 1 "register_operand" "r")
+-		 (unspec:SI [(match_operand:SI 2 "register_operand" "r")
+-			     (match_operand 3 "tld_symbolic_operand" "")]
+-			    UNSPEC_TLSLDO)))]
+-  "TARGET_TLS && TARGET_ARCH32"
+-  "add\\t%1, %2, %0, %%tldo_add(%a3)")
+-
+-(define_insn "tldo_add64"
+-  [(set (match_operand:DI 0 "register_operand" "=r")
+-	(plus:DI (match_operand:DI 1 "register_operand" "r")
+-		 (unspec:DI [(match_operand:SI 2 "register_operand" "r")
+-			     (match_operand 3 "tld_symbolic_operand" "")]
+-			    UNSPEC_TLSLDO)))]
+-  "TARGET_TLS && TARGET_ARCH64"
++(define_insn "tldo_add<P:mode>"
++  [(set (match_operand:P 0 "register_operand" "=r")
++	(plus:P (match_operand:P 1 "register_operand" "r")
++		(unspec:P [(match_operand:P 2 "register_operand" "r")
++			   (match_operand 3 "tld_symbolic_operand" "")]
++			  UNSPEC_TLSLDO)))]
++  "TARGET_TLS"
+   "add\\t%1, %2, %0, %%tldo_add(%a3)")
+ 
+-(define_insn "tie_hi22"
+-  [(set (match_operand:SI 0 "register_operand" "=r")
+-        (high:SI (unspec:SI [(match_operand 1 "tie_symbolic_operand" "")]
+-			    UNSPEC_TLSIE)))]
++(define_insn "tie_hi22<P:mode>"
++  [(set (match_operand:P 0 "register_operand" "=r")
++        (high:P (unspec:P [(match_operand 1 "tie_symbolic_operand" "")]
++			  UNSPEC_TLSIE)))]
+   "TARGET_TLS"
+   "sethi\\t%%tie_hi22(%a1), %0")
+ 
+-(define_insn "tie_lo10"
+-  [(set (match_operand:SI 0 "register_operand" "=r")
+-	(lo_sum:SI (match_operand:SI 1 "register_operand" "r")
+-		   (unspec:SI [(match_operand 2 "tie_symbolic_operand" "")]
+-			      UNSPEC_TLSIE)))]
++(define_insn "tie_lo10<P:mode>"
++  [(set (match_operand:P 0 "register_operand" "=r")
++	(lo_sum:P (match_operand:P 1 "register_operand" "r")
++		  (unspec:P [(match_operand 2 "tie_symbolic_operand" "")]
++			    UNSPEC_TLSIE)))]
+   "TARGET_TLS"
+   "add\\t%1, %%tie_lo10(%a2), %0")
+ 
++; Note the %%tie_ld operator
+ (define_insn "tie_ld32"
+   [(set (match_operand:SI 0 "register_operand" "=r")
+ 	(unspec:SI [(match_operand:SI 1 "register_operand" "r")
+@@ -8124,10 +8078,11 @@ visl")
+   [(set_attr "type" "load")
+    (set_attr "subtype" "regular")])
+ 
++; Note the %%tie_ldx operator
+ (define_insn "tie_ld64"
+   [(set (match_operand:DI 0 "register_operand" "=r")
+ 	(unspec:DI [(match_operand:DI 1 "register_operand" "r")
+-		    (match_operand:SI 2 "register_operand" "r")
++		    (match_operand:DI 2 "register_operand" "r")
+ 		    (match_operand 3 "tie_symbolic_operand" "")]
+ 		   UNSPEC_TLSIE))]
+   "TARGET_TLS && TARGET_ARCH64"
+@@ -8135,159 +8090,97 @@ visl")
+   [(set_attr "type" "load")
+    (set_attr "subtype" "regular")])
+ 
+-(define_insn "tie_add32"
+-  [(set (match_operand:SI 0 "register_operand" "=r")
+-	(plus:SI (match_operand:SI 1 "register_operand" "r")
+-		 (unspec:SI [(match_operand:SI 2 "register_operand" "r")
+-			     (match_operand 3 "tie_symbolic_operand" "")]
+-			    UNSPEC_TLSIE)))]
+-  "TARGET_SUN_TLS && TARGET_ARCH32"
+-  "add\\t%1, %2, %0, %%tie_add(%a3)")
+-
+-(define_insn "tie_add64"
+-  [(set (match_operand:DI 0 "register_operand" "=r")
+-	(plus:DI (match_operand:DI 1 "register_operand" "r")
+-		 (unspec:DI [(match_operand:DI 2 "register_operand" "r")
+-			     (match_operand 3 "tie_symbolic_operand" "")]
+-			    UNSPEC_TLSIE)))]
+-  "TARGET_SUN_TLS && TARGET_ARCH64"
++(define_insn "tie_add<P:mode>"
++  [(set (match_operand:P 0 "register_operand" "=r")
++	(plus:P (match_operand:P 1 "register_operand" "r")
++		(unspec:P [(match_operand:P 2 "register_operand" "r")
++			   (match_operand 3 "tie_symbolic_operand" "")]
++			  UNSPEC_TLSIE)))]
++  "TARGET_SUN_TLS"
+   "add\\t%1, %2, %0, %%tie_add(%a3)")
+ 
+-(define_insn "tle_hix22_sp32"
+-  [(set (match_operand:SI 0 "register_operand" "=r")
+-        (high:SI (unspec:SI [(match_operand 1 "tle_symbolic_operand" "")]
+-			    UNSPEC_TLSLE)))]
+-  "TARGET_TLS && TARGET_ARCH32"
++(define_insn "tle_hix22<P:mode>"
++  [(set (match_operand:P 0 "register_operand" "=r")
++        (high:P (unspec:P [(match_operand 1 "tle_symbolic_operand" "")]
++			  UNSPEC_TLSLE)))]
++  "TARGET_TLS"
+   "sethi\\t%%tle_hix22(%a1), %0")
+ 
+-(define_insn "tle_lox10_sp32"
+-  [(set (match_operand:SI 0 "register_operand" "=r")
+-	(lo_sum:SI (match_operand:SI 1 "register_operand" "r")
+-		   (unspec:SI [(match_operand 2 "tle_symbolic_operand" "")]
+-			      UNSPEC_TLSLE)))]
+-  "TARGET_TLS && TARGET_ARCH32"
+-  "xor\\t%1, %%tle_lox10(%a2), %0")
+-
+-(define_insn "tle_hix22_sp64"
+-  [(set (match_operand:DI 0 "register_operand" "=r")
+-        (high:DI (unspec:DI [(match_operand 1 "tle_symbolic_operand" "")]
++(define_insn "tle_lox10<P:mode>"
++  [(set (match_operand:P 0 "register_operand" "=r")
++	(lo_sum:P (match_operand:P 1 "register_operand" "r")
++		  (unspec:P [(match_operand 2 "tle_symbolic_operand" "")]
+ 			    UNSPEC_TLSLE)))]
+-  "TARGET_TLS && TARGET_ARCH64"
+-  "sethi\\t%%tle_hix22(%a1), %0")
+-
+-(define_insn "tle_lox10_sp64"
+-  [(set (match_operand:DI 0 "register_operand" "=r")
+-	(lo_sum:DI (match_operand:DI 1 "register_operand" "r")
+-		   (unspec:DI [(match_operand 2 "tle_symbolic_operand" "")]
+-			      UNSPEC_TLSLE)))]
+-  "TARGET_TLS && TARGET_ARCH64"
++  "TARGET_TLS"
+   "xor\\t%1, %%tle_lox10(%a2), %0")
+ 
+-;; Now patterns combining tldo_add{32,64} with some integer loads or stores
+-(define_insn "*tldo_ldub_sp32"
++;; Now patterns combining tldo_add with some integer loads or stores
++(define_insn "*tldo_ldub<P:mode>"
+   [(set (match_operand:QI 0 "register_operand" "=r")
+-	(mem:QI (plus:SI (unspec:SI [(match_operand:SI 2 "register_operand" "r")
+-				     (match_operand 3 "tld_symbolic_operand" "")]
+-				    UNSPEC_TLSLDO)
+-			 (match_operand:SI 1 "register_operand" "r"))))]
+-  "TARGET_TLS && TARGET_ARCH32"
++	(mem:QI (plus:P (unspec:P [(match_operand:P 2 "register_operand" "r")
++				   (match_operand 3 "tld_symbolic_operand" "")]
++				  UNSPEC_TLSLDO)
++			(match_operand:P 1 "register_operand" "r"))))]
++  "TARGET_TLS"
+   "ldub\t[%1 + %2], %0, %%tldo_add(%3)"
+   [(set_attr "type" "load")
+    (set_attr "subtype" "regular")
+    (set_attr "us3load_type" "3cycle")])
+ 
+-(define_insn "*tldo_ldub1_sp32"
++(define_insn "*tldo_ldub1<P:mode>"
+   [(set (match_operand:HI 0 "register_operand" "=r")
+ 	(zero_extend:HI
+-	  (mem:QI (plus:SI (unspec:SI [(match_operand:SI 2 "register_operand" "r")
+-				       (match_operand 3 "tld_symbolic_operand" "")]
+-				      UNSPEC_TLSLDO)
+-			   (match_operand:SI 1 "register_operand" "r")))))]
+-  "TARGET_TLS && TARGET_ARCH32"
++	  (mem:QI (plus:P (unspec:P [(match_operand:P 2 "register_operand" "r")
++				     (match_operand 3 "tld_symbolic_operand" "")]
++				    UNSPEC_TLSLDO)
++			  (match_operand:P 1 "register_operand" "r")))))]
++  "TARGET_TLS"
+   "ldub\t[%1 + %2], %0, %%tldo_add(%3)"
+   [(set_attr "type" "load")
+    (set_attr "subtype" "regular")
+    (set_attr "us3load_type" "3cycle")])
+ 
+-(define_insn "*tldo_ldub2_sp32"
++(define_insn "*tldo_ldub2<P:mode>"
+   [(set (match_operand:SI 0 "register_operand" "=r")
+ 	(zero_extend:SI
+-	  (mem:QI (plus:SI (unspec:SI [(match_operand:SI 2 "register_operand" "r")
+-				       (match_operand 3 "tld_symbolic_operand" "")]
+-				      UNSPEC_TLSLDO)
+-			   (match_operand:SI 1 "register_operand" "r")))))]
+-  "TARGET_TLS && TARGET_ARCH32"
++	  (mem:QI (plus:P (unspec:P [(match_operand:P 2 "register_operand" "r")
++				     (match_operand 3 "tld_symbolic_operand" "")]
++				    UNSPEC_TLSLDO)
++			  (match_operand:P 1 "register_operand" "r")))))]
++  "TARGET_TLS"
+   "ldub\t[%1 + %2], %0, %%tldo_add(%3)"
+   [(set_attr "type" "load")
+    (set_attr "subtype" "regular")
+    (set_attr "us3load_type" "3cycle")])
+ 
+-(define_insn "*tldo_ldsb1_sp32"
++(define_insn "*tldo_ldsb1<P:mode>"
+   [(set (match_operand:HI 0 "register_operand" "=r")
+ 	(sign_extend:HI
+-	  (mem:QI (plus:SI (unspec:SI [(match_operand:SI 2 "register_operand" "r")
+-				       (match_operand 3 "tld_symbolic_operand" "")]
+-				      UNSPEC_TLSLDO)
+-			   (match_operand:SI 1 "register_operand" "r")))))]
+-  "TARGET_TLS && TARGET_ARCH32"
++	  (mem:QI (plus:P (unspec:P [(match_operand:P 2 "register_operand" "r")
++				     (match_operand 3 "tld_symbolic_operand" "")]
++				    UNSPEC_TLSLDO)
++			  (match_operand:P 1 "register_operand" "r")))))]
++  "TARGET_TLS"
+   "ldsb\t[%1 + %2], %0, %%tldo_add(%3)"
+   [(set_attr "type" "sload")
+    (set_attr "us3load_type" "3cycle")])
+ 
+-(define_insn "*tldo_ldsb2_sp32"
++(define_insn "*tldo_ldsb2<P:mode>"
+   [(set (match_operand:SI 0 "register_operand" "=r")
+ 	(sign_extend:SI
+-	  (mem:QI (plus:SI (unspec:SI [(match_operand:SI 2 "register_operand" "r")
+-				       (match_operand 3 "tld_symbolic_operand" "")]
+-				      UNSPEC_TLSLDO)
+-			   (match_operand:SI 1 "register_operand" "r")))))]
+-  "TARGET_TLS && TARGET_ARCH32"
+-  "ldsb\t[%1 + %2], %0, %%tldo_add(%3)"
+-  [(set_attr "type" "sload")
+-   (set_attr "us3load_type" "3cycle")])
+-
+-(define_insn "*tldo_ldub_sp64"
+-  [(set (match_operand:QI 0 "register_operand" "=r")
+-	(mem:QI (plus:DI (unspec:DI [(match_operand:SI 2 "register_operand" "r")
++	  (mem:QI (plus:P (unspec:P [(match_operand:P 2 "register_operand" "r")
+ 				     (match_operand 3 "tld_symbolic_operand" "")]
+ 				    UNSPEC_TLSLDO)
+-			 (match_operand:DI 1 "register_operand" "r"))))]
+-  "TARGET_TLS && TARGET_ARCH64"
+-  "ldub\t[%1 + %2], %0, %%tldo_add(%3)"
+-  [(set_attr "type" "load")
+-   (set_attr "subtype" "regular")
+-   (set_attr "us3load_type" "3cycle")])
+-
+-(define_insn "*tldo_ldub1_sp64"
+-  [(set (match_operand:HI 0 "register_operand" "=r")
+-	(zero_extend:HI
+-	  (mem:QI (plus:DI (unspec:DI [(match_operand:SI 2 "register_operand" "r")
+-				       (match_operand 3 "tld_symbolic_operand" "")]
+-				      UNSPEC_TLSLDO)
+-			   (match_operand:DI 1 "register_operand" "r")))))]
+-  "TARGET_TLS && TARGET_ARCH64"
+-  "ldub\t[%1 + %2], %0, %%tldo_add(%3)"
+-  [(set_attr "type" "load")
+-   (set_attr "subtype" "regular")
+-   (set_attr "us3load_type" "3cycle")])
+-
+-(define_insn "*tldo_ldub2_sp64"
+-  [(set (match_operand:SI 0 "register_operand" "=r")
+-	(zero_extend:SI
+-	  (mem:QI (plus:DI (unspec:DI [(match_operand:SI 2 "register_operand" "r")
+-				       (match_operand 3 "tld_symbolic_operand" "")]
+-				      UNSPEC_TLSLDO)
+-			   (match_operand:DI 1 "register_operand" "r")))))]
+-  "TARGET_TLS && TARGET_ARCH64"
+-  "ldub\t[%1 + %2], %0, %%tldo_add(%3)"
+-  [(set_attr "type" "load")
+-   (set_attr "subtype" "regular")
++			  (match_operand:P 1 "register_operand" "r")))))]
++  "TARGET_TLS"
++  "ldsb\t[%1 + %2], %0, %%tldo_add(%3)"
++  [(set_attr "type" "sload")
+    (set_attr "us3load_type" "3cycle")])
+ 
+ (define_insn "*tldo_ldub3_sp64"
+   [(set (match_operand:DI 0 "register_operand" "=r")
+ 	(zero_extend:DI
+-	  (mem:QI (plus:DI (unspec:DI [(match_operand:SI 2 "register_operand" "r")
++	  (mem:QI (plus:DI (unspec:DI [(match_operand:DI 2 "register_operand" "r")
+ 				       (match_operand 3 "tld_symbolic_operand" "")]
+ 				      UNSPEC_TLSLDO)
+ 			   (match_operand:DI 1 "register_operand" "r")))))]
+@@ -8297,34 +8190,10 @@ visl")
+    (set_attr "subtype" "regular")
+    (set_attr "us3load_type" "3cycle")])
+ 
+-(define_insn "*tldo_ldsb1_sp64"
+-  [(set (match_operand:HI 0 "register_operand" "=r")
+-	(sign_extend:HI
+-	  (mem:QI (plus:DI (unspec:DI [(match_operand:SI 2 "register_operand" "r")
+-				       (match_operand 3 "tld_symbolic_operand" "")]
+-				      UNSPEC_TLSLDO)
+-			   (match_operand:DI 1 "register_operand" "r")))))]
+-  "TARGET_TLS && TARGET_ARCH64"
+-  "ldsb\t[%1 + %2], %0, %%tldo_add(%3)"
+-  [(set_attr "type" "sload")
+-   (set_attr "us3load_type" "3cycle")])
+-
+-(define_insn "*tldo_ldsb2_sp64"
+-  [(set (match_operand:SI 0 "register_operand" "=r")
+-	(sign_extend:SI
+-	  (mem:QI (plus:DI (unspec:DI [(match_operand:SI 2 "register_operand" "r")
+-				       (match_operand 3 "tld_symbolic_operand" "")]
+-				      UNSPEC_TLSLDO)
+-			   (match_operand:DI 1 "register_operand" "r")))))]
+-  "TARGET_TLS && TARGET_ARCH64"
+-  "ldsb\t[%1 + %2], %0, %%tldo_add(%3)"
+-  [(set_attr "type" "sload")
+-   (set_attr "us3load_type" "3cycle")])
+-
+ (define_insn "*tldo_ldsb3_sp64"
+   [(set (match_operand:DI 0 "register_operand" "=r")
+ 	(sign_extend:DI
+-	  (mem:QI (plus:DI (unspec:DI [(match_operand:SI 2 "register_operand" "r")
++	  (mem:QI (plus:DI (unspec:DI [(match_operand:DI 2 "register_operand" "r")
+ 				       (match_operand 3 "tld_symbolic_operand" "")]
+ 				      UNSPEC_TLSLDO)
+ 			   (match_operand:DI 1 "register_operand" "r")))))]
+@@ -8333,72 +8202,47 @@ visl")
+   [(set_attr "type" "sload")
+    (set_attr "us3load_type" "3cycle")])
+ 
+-(define_insn "*tldo_lduh_sp32"
++(define_insn "*tldo_lduh<P:mode>"
+   [(set (match_operand:HI 0 "register_operand" "=r")
+-	(mem:HI (plus:SI (unspec:SI [(match_operand:SI 2 "register_operand" "r")
+-				     (match_operand 3 "tld_symbolic_operand" "")]
+-				    UNSPEC_TLSLDO)
+-			 (match_operand:SI 1 "register_operand" "r"))))]
+-  "TARGET_TLS && TARGET_ARCH32"
++	(mem:HI (plus:P (unspec:P [(match_operand:P 2 "register_operand" "r")
++				   (match_operand 3 "tld_symbolic_operand" "")]
++				  UNSPEC_TLSLDO)
++			(match_operand:P 1 "register_operand" "r"))))]
++  "TARGET_TLS"
+   "lduh\t[%1 + %2], %0, %%tldo_add(%3)"
+   [(set_attr "type" "load")
+    (set_attr "subtype" "regular")
+    (set_attr "us3load_type" "3cycle")])
+ 
+-(define_insn "*tldo_lduh1_sp32"
++(define_insn "*tldo_lduh1<P:mode>"
+   [(set (match_operand:SI 0 "register_operand" "=r")
+ 	(zero_extend:SI
+-	  (mem:HI (plus:SI (unspec:SI [(match_operand:SI 2 "register_operand" "r")
+-				       (match_operand 3 "tld_symbolic_operand" "")]
+-				      UNSPEC_TLSLDO)
+-			   (match_operand:SI 1 "register_operand" "r")))))]
+-  "TARGET_TLS && TARGET_ARCH32"
++	  (mem:HI (plus:P (unspec:P [(match_operand:P 2 "register_operand" "r")
++				     (match_operand 3 "tld_symbolic_operand" "")]
++				    UNSPEC_TLSLDO)
++			  (match_operand:P 1 "register_operand" "r")))))]
++  "TARGET_TLS"
+   "lduh\t[%1 + %2], %0, %%tldo_add(%3)"
+   [(set_attr "type" "load")
+    (set_attr "subtype" "regular")
+    (set_attr "us3load_type" "3cycle")])
+ 
+-(define_insn "*tldo_ldsh1_sp32"
++(define_insn "*tldo_ldsh1<P:mode>"
+   [(set (match_operand:SI 0 "register_operand" "=r")
+ 	(sign_extend:SI
+-	  (mem:HI (plus:SI (unspec:SI [(match_operand:SI 2 "register_operand" "r")
+-				       (match_operand 3 "tld_symbolic_operand" "")]
+-				      UNSPEC_TLSLDO)
+-			   (match_operand:SI 1 "register_operand" "r")))))]
+-  "TARGET_TLS && TARGET_ARCH32"
+-  "ldsh\t[%1 + %2], %0, %%tldo_add(%3)"
+-  [(set_attr "type" "sload")
+-   (set_attr "us3load_type" "3cycle")])
+-
+-(define_insn "*tldo_lduh_sp64"
+-  [(set (match_operand:HI 0 "register_operand" "=r")
+-	(mem:HI (plus:DI (unspec:DI [(match_operand:SI 2 "register_operand" "r")
++	  (mem:HI (plus:P (unspec:P [(match_operand:P 2 "register_operand" "r")
+ 				     (match_operand 3 "tld_symbolic_operand" "")]
+ 				    UNSPEC_TLSLDO)
+-			 (match_operand:DI 1 "register_operand" "r"))))]
+-  "TARGET_TLS && TARGET_ARCH64"
+-  "lduh\t[%1 + %2], %0, %%tldo_add(%3)"
+-  [(set_attr "type" "load")
+-   (set_attr "subtype" "regular")
+-   (set_attr "us3load_type" "3cycle")])
+-
+-(define_insn "*tldo_lduh1_sp64"
+-  [(set (match_operand:SI 0 "register_operand" "=r")
+-	(zero_extend:SI
+-	  (mem:HI (plus:DI (unspec:DI [(match_operand:SI 2 "register_operand" "r")
+-				       (match_operand 3 "tld_symbolic_operand" "")]
+-				      UNSPEC_TLSLDO)
+-			   (match_operand:DI 1 "register_operand" "r")))))]
+-  "TARGET_TLS && TARGET_ARCH64"
+-  "lduh\t[%1 + %2], %0, %%tldo_add(%3)"
+-  [(set_attr "type" "load")
+-   (set_attr "subtype" "regular")
++			  (match_operand:P 1 "register_operand" "r")))))]
++  "TARGET_TLS"
++  "ldsh\t[%1 + %2], %0, %%tldo_add(%3)"
++  [(set_attr "type" "sload")
+    (set_attr "us3load_type" "3cycle")])
+ 
+ (define_insn "*tldo_lduh2_sp64"
+   [(set (match_operand:DI 0 "register_operand" "=r")
+ 	(zero_extend:DI
+-	  (mem:HI (plus:DI (unspec:DI [(match_operand:SI 2 "register_operand" "r")
++	  (mem:HI (plus:DI (unspec:DI [(match_operand:DI 2 "register_operand" "r")
+ 				       (match_operand 3 "tld_symbolic_operand" "")]
+ 				      UNSPEC_TLSLDO)
+ 			   (match_operand:DI 1 "register_operand" "r")))))]
+@@ -8408,22 +8252,10 @@ visl")
+    (set_attr "subtype" "regular")
+    (set_attr "us3load_type" "3cycle")])
+ 
+-(define_insn "*tldo_ldsh1_sp64"
+-  [(set (match_operand:SI 0 "register_operand" "=r")
+-	(sign_extend:SI
+-	  (mem:HI (plus:DI (unspec:DI [(match_operand:SI 2 "register_operand" "r")
+-				       (match_operand 3 "tld_symbolic_operand" "")]
+-				      UNSPEC_TLSLDO)
+-			   (match_operand:DI 1 "register_operand" "r")))))]
+-  "TARGET_TLS && TARGET_ARCH64"
+-  "ldsh\t[%1 + %2], %0, %%tldo_add(%3)"
+-  [(set_attr "type" "sload")
+-   (set_attr "us3load_type" "3cycle")])
+-
+ (define_insn "*tldo_ldsh2_sp64"
+   [(set (match_operand:DI 0 "register_operand" "=r")
+ 	(sign_extend:DI
+-	  (mem:HI (plus:DI (unspec:DI [(match_operand:SI 2 "register_operand" "r")
++	  (mem:HI (plus:DI (unspec:DI [(match_operand:DI 2 "register_operand" "r")
+ 				       (match_operand 3 "tld_symbolic_operand" "")]
+ 				      UNSPEC_TLSLDO)
+ 			   (match_operand:DI 1 "register_operand" "r")))))]
+@@ -8432,32 +8264,21 @@ visl")
+   [(set_attr "type" "sload")
+    (set_attr "us3load_type" "3cycle")])
+ 
+-(define_insn "*tldo_lduw_sp32"
++(define_insn "*tldo_lduw<P:mode>"
+   [(set (match_operand:SI 0 "register_operand" "=r")
+-	(mem:SI (plus:SI (unspec:SI [(match_operand:SI 2 "register_operand" "r")
+-				     (match_operand 3 "tld_symbolic_operand" "")]
+-				    UNSPEC_TLSLDO)
+-			 (match_operand:SI 1 "register_operand" "r"))))]
+-  "TARGET_TLS && TARGET_ARCH32"
++	(mem:SI (plus:P (unspec:P [(match_operand:P 2 "register_operand" "r")
++				   (match_operand 3 "tld_symbolic_operand" "")]
++				  UNSPEC_TLSLDO)
++			(match_operand:P 1 "register_operand" "r"))))]
++  "TARGET_TLS"
+   "ld\t[%1 + %2], %0, %%tldo_add(%3)"
+   [(set_attr "type" "load")
+    (set_attr "subtype" "regular")])
+ 
+-(define_insn "*tldo_lduw_sp64"
+-  [(set (match_operand:SI 0 "register_operand" "=r")
+-	(mem:SI (plus:DI (unspec:DI [(match_operand:SI 2 "register_operand" "r")
+-				     (match_operand 3 "tld_symbolic_operand" "")]
+-				    UNSPEC_TLSLDO)
+-			 (match_operand:DI 1 "register_operand" "r"))))]
+-  "TARGET_TLS && TARGET_ARCH64"
+-  "lduw\t[%1 + %2], %0, %%tldo_add(%3)"
+-  [(set_attr "type" "load")
+-   (set_attr "subtype" "regular")])
+-
+ (define_insn "*tldo_lduw1_sp64"
+   [(set (match_operand:DI 0 "register_operand" "=r")
+ 	(zero_extend:DI
+-	  (mem:SI (plus:DI (unspec:DI [(match_operand:SI 2 "register_operand" "r")
++	  (mem:SI (plus:DI (unspec:DI [(match_operand:DI 2 "register_operand" "r")
+ 				       (match_operand 3 "tld_symbolic_operand" "")]
+ 				      UNSPEC_TLSLDO)
+ 			   (match_operand:DI 1 "register_operand" "r")))))]
+@@ -8469,8 +8290,8 @@ visl")
+ (define_insn "*tldo_ldsw1_sp64"
+   [(set (match_operand:DI 0 "register_operand" "=r")
+ 	(sign_extend:DI
+-	  (mem:SI (plus:DI (unspec:DI [(match_operand:SI 2 "register_operand" "r")
+-					(match_operand 3 "tld_symbolic_operand" "")]
++	  (mem:SI (plus:DI (unspec:DI [(match_operand:DI 2 "register_operand" "r")
++				       (match_operand 3 "tld_symbolic_operand" "")]
+ 				      UNSPEC_TLSLDO)
+ 			   (match_operand:DI 1 "register_operand" "r")))))]
+   "TARGET_TLS && TARGET_ARCH64"
+@@ -8480,7 +8301,7 @@ visl")
+ 
+ (define_insn "*tldo_ldx_sp64"
+   [(set (match_operand:DI 0 "register_operand" "=r")
+-	(mem:DI (plus:DI (unspec:DI [(match_operand:SI 2 "register_operand" "r")
++	(mem:DI (plus:DI (unspec:DI [(match_operand:DI 2 "register_operand" "r")
+ 				     (match_operand 3 "tld_symbolic_operand" "")]
+ 				    UNSPEC_TLSLDO)
+ 			 (match_operand:DI 1 "register_operand" "r"))))]
+@@ -8489,68 +8310,38 @@ visl")
+   [(set_attr "type" "load")
+    (set_attr "subtype" "regular")])
+ 
+-(define_insn "*tldo_stb_sp32"
+-  [(set (mem:QI (plus:SI (unspec:SI [(match_operand:SI 2 "register_operand" "r")
+-				     (match_operand 3 "tld_symbolic_operand" "")]
+-				    UNSPEC_TLSLDO)
+-			 (match_operand:SI 1 "register_operand" "r")))
+-	(match_operand:QI 0 "register_operand" "r"))]
+-  "TARGET_TLS && TARGET_ARCH32"
+-  "stb\t%0, [%1 + %2], %%tldo_add(%3)"
+-  [(set_attr "type" "store")])
+-
+-(define_insn "*tldo_stb_sp64"
+-  [(set (mem:QI (plus:DI (unspec:DI [(match_operand:SI 2 "register_operand" "r")
+-				     (match_operand 3 "tld_symbolic_operand" "")]
+-				    UNSPEC_TLSLDO)
+-			 (match_operand:DI 1 "register_operand" "r")))
++(define_insn "*tldo_stb<P:mode>"
++  [(set (mem:QI (plus:P (unspec:P [(match_operand:P 2 "register_operand" "r")
++				   (match_operand 3 "tld_symbolic_operand" "")]
++				  UNSPEC_TLSLDO)
++			(match_operand:P 1 "register_operand" "r")))
+ 	(match_operand:QI 0 "register_operand" "r"))]
+-  "TARGET_TLS && TARGET_ARCH64"
++  "TARGET_TLS"
+   "stb\t%0, [%1 + %2], %%tldo_add(%3)"
+   [(set_attr "type" "store")])
+ 
+-(define_insn "*tldo_sth_sp32"
+-  [(set (mem:HI (plus:SI (unspec:SI [(match_operand:SI 2 "register_operand" "r")
+-				     (match_operand 3 "tld_symbolic_operand" "")]
+-				    UNSPEC_TLSLDO)
+-			 (match_operand:SI 1 "register_operand" "r")))
+-	(match_operand:HI 0 "register_operand" "r"))]
+-  "TARGET_TLS && TARGET_ARCH32"
+-  "sth\t%0, [%1 + %2], %%tldo_add(%3)"
+-  [(set_attr "type" "store")])
+-
+-(define_insn "*tldo_sth_sp64"
+-  [(set (mem:HI (plus:DI (unspec:DI [(match_operand:SI 2 "register_operand" "r")
+-				     (match_operand 3 "tld_symbolic_operand" "")]
+-				    UNSPEC_TLSLDO)
+-			 (match_operand:DI 1 "register_operand" "r")))
++(define_insn "*tldo_sth<P:mode>"
++  [(set (mem:HI (plus:P (unspec:P [(match_operand:P 2 "register_operand" "r")
++				   (match_operand 3 "tld_symbolic_operand" "")]
++				   UNSPEC_TLSLDO)
++			(match_operand:P 1 "register_operand" "r")))
+ 	(match_operand:HI 0 "register_operand" "r"))]
+-  "TARGET_TLS && TARGET_ARCH64"
++  "TARGET_TLS"
+   "sth\t%0, [%1 + %2], %%tldo_add(%3)"
+   [(set_attr "type" "store")])
+ 
+-(define_insn "*tldo_stw_sp32"
+-  [(set (mem:SI (plus:SI (unspec:SI [(match_operand:SI 2 "register_operand" "r")
+-				     (match_operand 3 "tld_symbolic_operand" "")]
+-				    UNSPEC_TLSLDO)
+-			 (match_operand:SI 1 "register_operand" "r")))
++(define_insn "*tldo_stw<P:mode>"
++  [(set (mem:SI (plus:P (unspec:P [(match_operand:P 2 "register_operand" "r")
++				   (match_operand 3 "tld_symbolic_operand" "")]
++				  UNSPEC_TLSLDO)
++			(match_operand:P 1 "register_operand" "r")))
+ 	(match_operand:SI 0 "register_operand" "r"))]
+-  "TARGET_TLS && TARGET_ARCH32"
++  "TARGET_TLS"
+   "st\t%0, [%1 + %2], %%tldo_add(%3)"
+   [(set_attr "type" "store")])
+ 
+-(define_insn "*tldo_stw_sp64"
+-  [(set (mem:SI (plus:DI (unspec:DI [(match_operand:SI 2 "register_operand" "r")
+-				     (match_operand 3 "tld_symbolic_operand" "")]
+-				    UNSPEC_TLSLDO)
+-			 (match_operand:DI 1 "register_operand" "r")))
+-	(match_operand:SI 0 "register_operand" "r"))]
+-  "TARGET_TLS && TARGET_ARCH64"
+-  "stw\t%0, [%1 + %2], %%tldo_add(%3)"
+-  [(set_attr "type" "store")])
+-
+ (define_insn "*tldo_stx_sp64"
+-  [(set (mem:DI (plus:DI (unspec:DI [(match_operand:SI 2 "register_operand" "r")
++  [(set (mem:DI (plus:DI (unspec:DI [(match_operand:DI 2 "register_operand" "r")
+ 				     (match_operand 3 "tld_symbolic_operand" "")]
+ 				    UNSPEC_TLSLDO)
+ 			 (match_operand:DI 1 "register_operand" "r")))
+diff --git a/gcc/testsuite/gcc.target/sparc/tls-ld-int16.c b/gcc/testsuite/gcc.target/sparc/tls-ld-int16.c
+new file mode 100644
+index 000000000000..d3d28086156e
+--- /dev/null
++++ b/gcc/testsuite/gcc.target/sparc/tls-ld-int16.c
+@@ -0,0 +1,34 @@
++/* { dg-do compile } */
++/* { dg-options "-O2" }
++/* { dg-add-options tls } */
++
++#include <stdint.h>
++
++__thread int16_t var1 __attribute__((tls_model("local-dynamic")));
++__thread int16_t var2 __attribute__((tls_model("local-dynamic")));
++
++int16_t sum (void)
++{
++  return var1 + var2;
++}
++
++int32_t ext32_sum (void)
++{
++  return (int32_t)var1 + (int32_t)var2;
++}
++
++long ext_sum (void)
++{
++  return (long)var1 + (long)var2;
++}
++
++void set (int16_t i)
++{
++  var1 = i;
++  var2 = i;
++}
++
++/* { dg-final { scan-assembler-times "__tls_get_addr" 4 } } */
++/* { dg-final { scan-assembler-times "lduh\t\[^\n\]*tldo_add" 2 } } */
++/* { dg-final { scan-assembler-times "ldsh\t\[^\n\]*tldo_add" 4 } } */
++/* { dg-final { scan-assembler-times "sth\t\[^\n\]*tldo_add" 2 } } */
+diff --git a/gcc/testsuite/gcc.target/sparc/tls-ld-int32.c b/gcc/testsuite/gcc.target/sparc/tls-ld-int32.c
+new file mode 100644
+index 000000000000..cf18147ef727
+--- /dev/null
++++ b/gcc/testsuite/gcc.target/sparc/tls-ld-int32.c
+@@ -0,0 +1,36 @@
++/* { dg-do compile } */
++/* { dg-options "-O2" }
++/* { dg-add-options tls } */
++
++#include <stdint.h>
++
++__thread int32_t var1 __attribute__((tls_model("local-dynamic")));
++__thread int32_t var2 __attribute__((tls_model("local-dynamic")));
++
++int32_t sum (void)
++{
++  return var1 + var2;
++}
++
++#if defined(__sparcv9) || defined(__arch64__)
++long ext_sum (void)
++{
++  return (long)var1 + (long)var2;
++}
++#else
++void *addr (void)
++{
++  return &var1;
++}
++#endif
++
++void set (int32_t i)
++{
++  var1 = i;
++  var2 = i;
++}
++
++/* { dg-final { scan-assembler-times "__tls_get_addr" 3 } } */
++/* { dg-final { scan-assembler-times "ld\t\[^\n\]*tldo_add" 2 } } */
++/* { dg-final { scan-assembler-times "ldsw\t\[^\n\]*tldo_add" 2 { target lp64 } } } */
++/* { dg-final { scan-assembler-times "st\t\[^\n\]*tldo_add" 2 } } */
+diff --git a/gcc/testsuite/gcc.target/sparc/tls-ld-int64.c b/gcc/testsuite/gcc.target/sparc/tls-ld-int64.c
+new file mode 100644
+index 000000000000..c1925df084fb
+--- /dev/null
++++ b/gcc/testsuite/gcc.target/sparc/tls-ld-int64.c
+@@ -0,0 +1,24 @@
++/* { dg-do compile } */
++/* { dg-options "-O2" }
++/* { dg-add-options tls } */
++/* { dg-require-effective-target lp64 } */
++
++#include <stdint.h>
++
++__thread int64_t var1 __attribute__((tls_model("local-dynamic")));
++__thread int64_t var2 __attribute__((tls_model("local-dynamic")));
++
++int64_t sum (void)
++{
++  return var1 + var2;
++}
++
++void set (int64_t i)
++{
++  var1 = i;
++  var2 = i;
++}
++
++/* { dg-final { scan-assembler-times "__tls_get_addr" 2 } } */
++/* { dg-final { scan-assembler-times "ldx\t\[^\n\]*tldo_add" 2 } } */
++/* { dg-final { scan-assembler-times "stx\t\[^\n\]*tldo_add" 2 } } */
+diff --git a/gcc/testsuite/gcc.target/sparc/tls-ld-int8.c b/gcc/testsuite/gcc.target/sparc/tls-ld-int8.c
+new file mode 100644
+index 000000000000..a07cffc37f8c
+--- /dev/null
++++ b/gcc/testsuite/gcc.target/sparc/tls-ld-int8.c
+@@ -0,0 +1,39 @@
++/* { dg-do compile } */
++/* { dg-options "-O2" }
++/* { dg-add-options tls } */
++
++#include <stdint.h>
++
++__thread int8_t var1 __attribute__((tls_model("local-dynamic")));
++__thread int8_t var2 __attribute__((tls_model("local-dynamic")));
++
++int8_t sum (void)
++{
++  return var1 + var2;
++}
++
++int16_t ext16_sum (void)
++{
++  return (int16_t)var1 + (int16_t)var2;
++}
++
++int32_t ext32_sum (void)
++{
++  return (int32_t)var1 + (int32_t)var2;
++}
++
++long ext_sum (void)
++{
++  return (long)var1 + (long)var2;
++}
++
++void set (int8_t i)
++{
++  var1 = i;
++  var2 = i;
++}
++
++/* { dg-final { scan-assembler-times "__tls_get_addr" 5 } } */
++/* { dg-final { scan-assembler-times "ldub\t\[^\n\]*tldo_add" 2 } } */
++/* { dg-final { scan-assembler-times "ldsb\t\[^\n\]*tldo_add" 6 } } */
++/* { dg-final { scan-assembler-times "stb\t\[^\n\]*tldo_add" 2 } } */
+diff --git a/gcc/testsuite/gcc.target/sparc/tls-ld-uint16.c b/gcc/testsuite/gcc.target/sparc/tls-ld-uint16.c
+new file mode 100644
+index 000000000000..41ee687b28c5
+--- /dev/null
++++ b/gcc/testsuite/gcc.target/sparc/tls-ld-uint16.c
+@@ -0,0 +1,33 @@
++/* { dg-do compile } */
++/* { dg-options "-O2" }
++/* { dg-add-options tls } */
++
++#include <stdint.h>
++
++__thread uint16_t var1 __attribute__((tls_model("local-dynamic")));
++__thread uint16_t var2 __attribute__((tls_model("local-dynamic")));
++
++uint16_t sum (void)
++{
++  return var1 + var2;
++}
++
++uint32_t ext32_sum (void)
++{
++  return (uint32_t)var1 + (uint32_t)var2;
++}
++
++unsigned long ext_sum (void)
++{
++  return (unsigned long)var1 + (unsigned long)var2;
++}
++
++void set (uint16_t i)
++{
++  var1 = i;
++  var2 = i;
++}
++
++/* { dg-final { scan-assembler-times "__tls_get_addr" 4 } } */
++/* { dg-final { scan-assembler-times "lduh\t\[^\n\]*tldo_add" 6 } } */
++/* { dg-final { scan-assembler-times "sth\t\[^\n\]*tldo_add" 2 } } */
+diff --git a/gcc/testsuite/gcc.target/sparc/tls-ld-uint32.c b/gcc/testsuite/gcc.target/sparc/tls-ld-uint32.c
+new file mode 100644
+index 000000000000..9c7915372b9e
+--- /dev/null
++++ b/gcc/testsuite/gcc.target/sparc/tls-ld-uint32.c
+@@ -0,0 +1,36 @@
++/* { dg-do compile } */
++/* { dg-options "-O2" }
++/* { dg-add-options tls } */
++
++#include <stdint.h>
++
++__thread uint32_t var1 __attribute__((tls_model("local-dynamic")));
++__thread uint32_t var2 __attribute__((tls_model("local-dynamic")));
++
++uint32_t sum (void)
++{
++  return var1 + var2;
++}
++
++#if defined(__sparcv9) || defined(__arch64__)
++unsigned long ext_sum (void)
++{
++  return (unsigned long)var1 + (unsigned long)var2;
++}
++#else
++void *addr (void)
++{
++  return &var1;
++}
++#endif
++
++void set (int32_t i)
++{
++  var1 = i;
++  var2 = i;
++}
++
++/* { dg-final { scan-assembler-times "__tls_get_addr" 3 } } */
++/* { dg-final { scan-assembler-times "ld\t\[^\n\]*tldo_add" 2 } } */
++/* { dg-final { scan-assembler-times "lduw\t\[^\n\]*tldo_add" 2 { target lp64 } } } */
++/* { dg-final { scan-assembler-times "st\t\[^\n\]*tldo_add" 2 } } */
+diff --git a/gcc/testsuite/gcc.target/sparc/tls-ld-uint8.c b/gcc/testsuite/gcc.target/sparc/tls-ld-uint8.c
+new file mode 100644
+index 000000000000..0dcff66eb15e
+--- /dev/null
++++ b/gcc/testsuite/gcc.target/sparc/tls-ld-uint8.c
+@@ -0,0 +1,38 @@
++/* { dg-do compile } */
++/* { dg-options "-O2" }
++/* { dg-add-options tls } */
++
++#include <stdint.h>
++
++__thread uint8_t var1 __attribute__((tls_model("local-dynamic")));
++__thread uint8_t var2 __attribute__((tls_model("local-dynamic")));
++
++uint8_t sum (void)
++{
++  return var1 + var2;
++}
++
++uint16_t ext16_sum (void)
++{
++  return (uint16_t)var1 + (uint16_t)var2;
++}
++
++uint32_t ext32_sum (void)
++{
++  return (uint32_t)var1 + (uint32_t)var2;
++}
++
++unsigned long ext_sum (void)
++{
++  return (unsigned long)var1 + (unsigned long)var2;
++}
++
++void set (uint8_t i)
++{
++  var1 = i;
++  var2 = i;
++}
++
++/* { dg-final { scan-assembler-times "__tls_get_addr" 5 } } */
++/* { dg-final { scan-assembler-times "ldub\t\[^\n\]*tldo_add" 8 } } */
++/* { dg-final { scan-assembler-times "stb\t\[^\n\]*tldo_add" 2 } } */
