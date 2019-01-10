@@ -207,6 +207,7 @@ PKG_HARDLINKS += usr/bin/python3.5m
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += compress/xz
 REQUIRED_PACKAGES += database/sqlite-3
+REQUIRED_PACKAGES += developer/base-developer-utilities
 REQUIRED_PACKAGES += library/database/gdbm
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/libffi
