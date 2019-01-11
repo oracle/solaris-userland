@@ -20,15 +20,13 @@
 #
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
 # ncurses-04-manpages.patch adjusts section 1m man pages to be in section 8.
 # If the upstream bug is ever fixed (and the patch is removed), this transform
 # should be updated or removed.
-<transform file path=(.+)/man/man8/(.+).8$ -> \
-    set action.hash %<1>/man/man1/%<2>.1m>
 <transform file path=(.+)/man/man3x/(.+).3x$ -> \
     set action.hash %<1>/man/man3/%<2>.3x>
 set name=pkg.fmri \
@@ -99,6 +97,7 @@ link path=usr/gnu/share/man/man3x/TYPE_NUMERIC.3x target=form_variables.3x
 link path=usr/gnu/share/man/man3x/TYPE_REGEXP.3x target=form_variables.3x
 link path=usr/gnu/share/man/man3x/UP.3x target=curs_termcap.3x
 link path=usr/gnu/share/man/man3x/_nc_free_and_exit.3x target=curs_memleaks.3x
+link path=usr/gnu/share/man/man3x/_nc_free_tinfo.3x target=curs_memleaks.3x
 link path=usr/gnu/share/man/man3x/_nc_freeall.3x target=curs_memleaks.3x
 link path=usr/gnu/share/man/man3x/_nc_tracebits.3x target=curs_trace.3x
 link path=usr/gnu/share/man/man3x/_traceattr.3x target=curs_trace.3x
@@ -674,6 +673,7 @@ link path=usr/gnu/share/man/man3x/raw_sp.3x target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/redrawwin.3x target=curs_refresh.3x
 link path=usr/gnu/share/man/man3x/refresh.3x target=curs_refresh.3x
 link path=usr/gnu/share/man/man3x/replace_panel.3x target=panel.3x
+link path=usr/gnu/share/man/man3x/reset_color_pairs.3x target=curs_color.3x
 link path=usr/gnu/share/man/man3x/reset_prog_mode.3x target=curs_kernel.3x
 link path=usr/gnu/share/man/man3x/reset_prog_mode_sp.3x target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/reset_shell_mode.3x target=curs_kernel.3x
@@ -976,12 +976,13 @@ link path=usr/gnu/share/man/man3x/wvline_set.3x target=curs_border_set.3x
 file path=usr/gnu/share/man/man5/scr_dump.5
 file path=usr/gnu/share/man/man5/term.5
 file path=usr/gnu/share/man/man5/terminfo.5
+file path=usr/gnu/share/man/man5/user_caps.5
 file path=usr/gnu/share/man/man7/term.7
-file path=usr/gnu/share/man/man8/captoinfo.8
-file path=usr/gnu/share/man/man8/infocmp.8
-file path=usr/gnu/share/man/man8/infotocap.8
-file path=usr/gnu/share/man/man8/tic.8
-file path=usr/gnu/share/man/man8/toe.8
+file usr/gnu/share/man/man1/captoinfo.1m path=usr/gnu/share/man/man8/captoinfo.8
+file usr/gnu/share/man/man1/infocmp.1m path=usr/gnu/share/man/man8/infocmp.8
+file usr/gnu/share/man/man1/infotocap.1m path=usr/gnu/share/man/man8/infotocap.8
+file usr/gnu/share/man/man1/tic.1m path=usr/gnu/share/man/man8/tic.8
+file usr/gnu/share/man/man1/toe.1m path=usr/gnu/share/man/man8/toe.8
 file path=usr/gnu/share/tabset/std
 file path=usr/gnu/share/tabset/stdcrt
 file path=usr/gnu/share/tabset/vt100
@@ -1106,6 +1107,7 @@ file path=usr/gnu/share/terminfo/a/abm85h-old
 file path=usr/gnu/share/terminfo/a/act4
 file path=usr/gnu/share/terminfo/a/act5
 file path=usr/gnu/share/terminfo/a/addrinfo
+link path=usr/gnu/share/terminfo/a/adds200 target=../r/regent60
 file path=usr/gnu/share/terminfo/a/adds980
 link path=usr/gnu/share/terminfo/a/addsviewpoint target=../v/viewpoint
 link path=usr/gnu/share/terminfo/a/addsvp60 target=../v/vp60
@@ -1137,6 +1139,9 @@ link path=usr/gnu/share/terminfo/a/aj target=aj830
 file path=usr/gnu/share/terminfo/a/aj510
 file path=usr/gnu/share/terminfo/a/aj830
 link path=usr/gnu/share/terminfo/a/aj832 target=aj830
+file path=usr/gnu/share/terminfo/a/alacritty
+file path=usr/gnu/share/terminfo/a/alacritty+common
+file path=usr/gnu/share/terminfo/a/alacritty-direct
 link path=usr/gnu/share/terminfo/a/alt2 target=altos2
 link path=usr/gnu/share/terminfo/a/alt3 target=altos3
 link path=usr/gnu/share/terminfo/a/alt4 target=altos4
@@ -1184,6 +1189,7 @@ file path=usr/gnu/share/terminfo/a/ansi+cup
 file path=usr/gnu/share/terminfo/a/ansi+enq
 file path=usr/gnu/share/terminfo/a/ansi+erase
 file path=usr/gnu/share/terminfo/a/ansi+idc
+file path=usr/gnu/share/terminfo/a/ansi+idc1
 file path=usr/gnu/share/terminfo/a/ansi+idl
 file path=usr/gnu/share/terminfo/a/ansi+idl1
 file path=usr/gnu/share/terminfo/a/ansi+inittabs
@@ -1841,6 +1847,7 @@ file path=usr/gnu/share/terminfo/d/dw4
 file path=usr/gnu/share/terminfo/d/dwk
 link path=usr/gnu/share/terminfo/d/dwk-vt target=dwk
 file path=usr/gnu/share/terminfo/e/ecma+color
+file path=usr/gnu/share/terminfo/e/ecma+italics
 file path=usr/gnu/share/terminfo/e/ecma+sgr
 file path=usr/gnu/share/terminfo/e/ecma+strikeout
 file path=usr/gnu/share/terminfo/e/elks
@@ -2095,6 +2102,7 @@ link path=usr/gnu/share/terminfo/i/i3101 target=ibm3101
 link path=usr/gnu/share/terminfo/i/i3164 target=ibm3164
 file path=usr/gnu/share/terminfo/i/i400
 file path=usr/gnu/share/terminfo/i/iTerm.app
+file path=usr/gnu/share/terminfo/i/iTerm2.app
 file path=usr/gnu/share/terminfo/i/ibcs2
 file path=usr/gnu/share/terminfo/i/ibm+16color
 file path=usr/gnu/share/terminfo/i/ibm+color
@@ -2172,6 +2180,8 @@ link path=usr/gnu/share/terminfo/i/iris-ansi-net target=iris-ansi
 file path=usr/gnu/share/terminfo/i/iris-color
 link path=usr/gnu/share/terminfo/i/iris40 target=../w/wsiris
 link path=usr/gnu/share/terminfo/i/iterm target=iTerm.app
+link path=usr/gnu/share/terminfo/i/iterm2 target=iTerm2.app
+file path=usr/gnu/share/terminfo/i/iterm2-direct
 file path=usr/gnu/share/terminfo/j/jaixterm
 file path=usr/gnu/share/terminfo/j/jaixterm-m
 link path=usr/gnu/share/terminfo/j/jerq target=../b/blit
@@ -2184,6 +2194,9 @@ link path=usr/gnu/share/terminfo/k/kds7372 target=../i/icl6404
 link path=usr/gnu/share/terminfo/k/kds7372-w target=../i/icl6404-w
 file path=usr/gnu/share/terminfo/k/kermit
 file path=usr/gnu/share/terminfo/k/kermit-am
+file path=usr/gnu/share/terminfo/k/kitty
+file path=usr/gnu/share/terminfo/k/kitty+common
+file path=usr/gnu/share/terminfo/k/kitty-direct
 file path=usr/gnu/share/terminfo/k/klone+acs
 file path=usr/gnu/share/terminfo/k/klone+color
 file path=usr/gnu/share/terminfo/k/klone+koi8acs
@@ -2197,6 +2210,7 @@ file path=usr/gnu/share/terminfo/k/konsole+pcfkeys
 file path=usr/gnu/share/terminfo/k/konsole-16color
 file path=usr/gnu/share/terminfo/k/konsole-256color
 file path=usr/gnu/share/terminfo/k/konsole-base
+file path=usr/gnu/share/terminfo/k/konsole-direct
 file path=usr/gnu/share/terminfo/k/konsole-linux
 file path=usr/gnu/share/terminfo/k/konsole-solaris
 file path=usr/gnu/share/terminfo/k/konsole-vt100
@@ -2301,6 +2315,7 @@ file path=usr/gnu/share/terminfo/m/minix-old-am
 file path=usr/gnu/share/terminfo/m/mlterm
 file path=usr/gnu/share/terminfo/m/mlterm+pcfkeys
 file path=usr/gnu/share/terminfo/m/mlterm-256color
+file path=usr/gnu/share/terminfo/m/mlterm-direct
 file path=usr/gnu/share/terminfo/m/mlterm2
 file path=usr/gnu/share/terminfo/m/mlterm3
 link path=usr/gnu/share/terminfo/m/mm314 target=mime314
@@ -2331,6 +2346,7 @@ file path=usr/gnu/share/terminfo/m/mt70
 file path=usr/gnu/share/terminfo/m/mterm
 file path=usr/gnu/share/terminfo/m/mterm-ansi
 file path=usr/gnu/share/terminfo/m/mvterm
+link path=usr/gnu/share/terminfo/n/n7900 target=ncr7900i
 file path=usr/gnu/share/terminfo/n/nansi.sys
 file path=usr/gnu/share/terminfo/n/nansi.sysk
 link path=usr/gnu/share/terminfo/n/nansisys target=nansi.sys
@@ -2447,7 +2463,7 @@ file path=usr/gnu/share/terminfo/n/nsterm+c41
 file path=usr/gnu/share/terminfo/n/nsterm+mac
 file path=usr/gnu/share/terminfo/n/nsterm+s
 file path=usr/gnu/share/terminfo/n/nsterm-16color
-file path=usr/gnu/share/terminfo/n/nsterm-256color
+link path=usr/gnu/share/terminfo/n/nsterm-256color target=nsterm
 file path=usr/gnu/share/terminfo/n/nsterm-7
 file path=usr/gnu/share/terminfo/n/nsterm-7-c
 link path=usr/gnu/share/terminfo/n/nsterm-7-c-s target=nsterm-c-s-7
@@ -2461,9 +2477,11 @@ link path=usr/gnu/share/terminfo/n/nsterm-acs-m target=nsterm-m-acs
 link path=usr/gnu/share/terminfo/n/nsterm-acs-m-s target=nsterm-m-s-acs
 link path=usr/gnu/share/terminfo/n/nsterm-acs-s target=nsterm-s-acs
 file path=usr/gnu/share/terminfo/n/nsterm-bce
+file path=usr/gnu/share/terminfo/n/nsterm-build309
 file path=usr/gnu/share/terminfo/n/nsterm-build326
 file path=usr/gnu/share/terminfo/n/nsterm-build343
 file path=usr/gnu/share/terminfo/n/nsterm-build361
+file path=usr/gnu/share/terminfo/n/nsterm-build400
 file path=usr/gnu/share/terminfo/n/nsterm-c
 link path=usr/gnu/share/terminfo/n/nsterm-c-7 target=nsterm-7-c
 file path=usr/gnu/share/terminfo/n/nsterm-c-acs
@@ -2856,8 +2874,11 @@ file path=usr/gnu/share/terminfo/s/soroc120
 file path=usr/gnu/share/terminfo/s/soroc140
 link path=usr/gnu/share/terminfo/s/spinwriter target=../n/nec5520
 file path=usr/gnu/share/terminfo/s/st
+file path=usr/gnu/share/terminfo/s/st-0.6
+file path=usr/gnu/share/terminfo/s/st-0.7
 file path=usr/gnu/share/terminfo/s/st-16color
 file path=usr/gnu/share/terminfo/s/st-256color
+file path=usr/gnu/share/terminfo/s/st-direct
 file path=usr/gnu/share/terminfo/s/st52
 file path=usr/gnu/share/terminfo/s/st52-color
 link path=usr/gnu/share/terminfo/s/st52-m target=st52
@@ -2957,13 +2978,18 @@ file path=usr/gnu/share/terminfo/t/teken
 link path=usr/gnu/share/terminfo/t/teleray target=t1061
 file path=usr/gnu/share/terminfo/t/teletec
 file path=usr/gnu/share/terminfo/t/teraterm
+file path=usr/gnu/share/terminfo/t/teraterm-256color
 file path=usr/gnu/share/terminfo/t/teraterm2.3
 file path=usr/gnu/share/terminfo/t/teraterm4.59
+file path=usr/gnu/share/terminfo/t/teraterm4.97
 file path=usr/gnu/share/terminfo/t/terminator
 link path=usr/gnu/share/terminfo/t/terminet target=terminet1200
 file path=usr/gnu/share/terminfo/t/terminet1200
 link path=usr/gnu/share/terminfo/t/terminet300 target=terminet1200
 file path=usr/gnu/share/terminfo/t/terminology
+file path=usr/gnu/share/terminfo/t/terminology-0.6.1
+file path=usr/gnu/share/terminfo/t/terminology-1.0.0
+file path=usr/gnu/share/terminfo/t/termite
 link path=usr/gnu/share/terminfo/t/tgtelnet target=../p/pilot
 file path=usr/gnu/share/terminfo/t/ti700
 link path=usr/gnu/share/terminfo/t/ti733 target=ti700
@@ -3298,7 +3324,10 @@ file path=usr/gnu/share/terminfo/v/vte-2007
 file path=usr/gnu/share/terminfo/v/vte-2008
 file path=usr/gnu/share/terminfo/v/vte-2012
 file path=usr/gnu/share/terminfo/v/vte-2014
+file path=usr/gnu/share/terminfo/v/vte-2017
+file path=usr/gnu/share/terminfo/v/vte-2018
 file path=usr/gnu/share/terminfo/v/vte-256color
+file path=usr/gnu/share/terminfo/v/vte-direct
 link path=usr/gnu/share/terminfo/v/vtnt target=../m/ms-vt100-color
 link path=usr/gnu/share/terminfo/v/vv100 target=../m/mvterm
 file path=usr/gnu/share/terminfo/v/vwmterm
@@ -3610,9 +3639,15 @@ file path=usr/gnu/share/terminfo/x/xterm
 file path=usr/gnu/share/terminfo/x/xterm+256color
 file path=usr/gnu/share/terminfo/x/xterm+256setaf
 file path=usr/gnu/share/terminfo/x/xterm+88color
+file path=usr/gnu/share/terminfo/x/xterm+alt+title
+file path=usr/gnu/share/terminfo/x/xterm+alt1049
 file path=usr/gnu/share/terminfo/x/xterm+app
+file path=usr/gnu/share/terminfo/x/xterm+direct
+file path=usr/gnu/share/terminfo/x/xterm+direct2
 file path=usr/gnu/share/terminfo/x/xterm+edit
+file path=usr/gnu/share/terminfo/x/xterm+indirect
 file path=usr/gnu/share/terminfo/x/xterm+kbs
+file path=usr/gnu/share/terminfo/x/xterm+noalt
 file path=usr/gnu/share/terminfo/x/xterm+noapp
 file path=usr/gnu/share/terminfo/x/xterm+pc+edit
 file path=usr/gnu/share/terminfo/x/xterm+pcc0
@@ -3630,6 +3665,7 @@ file path=usr/gnu/share/terminfo/x/xterm+sm+1002
 file path=usr/gnu/share/terminfo/x/xterm+sm+1003
 file path=usr/gnu/share/terminfo/x/xterm+sm+1005
 file path=usr/gnu/share/terminfo/x/xterm+sm+1006
+file path=usr/gnu/share/terminfo/x/xterm+titlestack
 file path=usr/gnu/share/terminfo/x/xterm+tmux
 file path=usr/gnu/share/terminfo/x/xterm+vt+edit
 file path=usr/gnu/share/terminfo/x/xterm+x10mouse
@@ -3647,6 +3683,8 @@ file path=usr/gnu/share/terminfo/x/xterm-8bit
 file path=usr/gnu/share/terminfo/x/xterm-basic
 file path=usr/gnu/share/terminfo/x/xterm-bold
 file path=usr/gnu/share/terminfo/x/xterm-color
+file path=usr/gnu/share/terminfo/x/xterm-direct
+file path=usr/gnu/share/terminfo/x/xterm-direct2
 file path=usr/gnu/share/terminfo/x/xterm-hp
 file path=usr/gnu/share/terminfo/x/xterm-new
 file path=usr/gnu/share/terminfo/x/xterm-nic

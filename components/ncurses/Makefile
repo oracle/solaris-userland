@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ncurses
-COMPONENT_VERSION=	6.0-20170708
-IPS_COMPONENT_VERSION=	6.0.0.20170708
+COMPONENT_VERSION=	6.1-20190105
+IPS_COMPONENT_VERSION=	6.1.0.20190105
 COMPONENT_PROJECT_URL=	https://invisible-island.net/ncurses/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:92f7024b9fabd0cc58fb5c25bbc6b64035750a8fb980c65b34032ec8f94209a4
+    sha256:bac2970552a743debe3fbc0b480cfaa1878e68352625a3fde2bfe346b06b4d91
 COMPONENT_ARCHIVE_URL=	https://invisible-mirror.net/archives/ncurses/current/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/ncurses
 COMPONENT_ANITYA_ID=	2057
 
-TPNO=			36657
+TPNO=			48516
 
 include $(WS_MAKE_RULES)/common.mk
 

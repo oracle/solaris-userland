@@ -1,0 +1,49 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+# Drop patch backup files
+<transform file path=.+~$ -> drop>
+
+# Do not add 32 bit versions of ncureses
+<transform path=usr/gnu/bin/\$\(MACH32\)/.+ -> drop>
+
+# Move man3 pages to folder man3x
+<transform file link path=.+/man/man3/.+.3x$ -> edit path man3 man3x>
+
+# Move man1m pages to folder man8
+#<transform file path=(.+)/man/man1/(.+).1m$ -> set path %<1>/man/man8/%<2>.8>
+<transform file path=.+.1m$ -> set action.hash %(path)>
+<transform file path=(.+)/man/man1/(.+).1m$ -> set path %<1>/man/man8/%<2>.8>
+
+# Move all lib files from gnu folder and fix those moved wrongly
+<transform file link path=usr/gnu/lib/.+ -> edit path usr/gnu/lib usr/lib>
+<transform link path=usr/lib/terminfo -> edit path usr/lib usr/gnu/lib>
+
+# Move all .so files into gnu folder
+<transform file link path=usr/(.+)\.so(.*)$ -> set action.hash usr/gnu/%<1>.so%<2>>
+
+# Additional changes
+<transform file path=usr/gnu/bin/ncursesw5-config \
+	-> set action.hash usr/gnu/bin/\$\(MACH32\)/ncursesw5-config>
