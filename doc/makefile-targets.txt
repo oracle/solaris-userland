@@ -144,3 +144,19 @@ check_rtime:
   A global exceptions file is provided in $(WS_TOP)/exception_lists/check_rtime
   and is automatically supplemented with the contest of test/check_rtime in
   the component directory.
+
+regen-patches:
+  This target is present in all Makefiles, but may not work in those with
+  unusual or complex unpacking & patching targets, so while it may be run
+  at the top level, it's best used on a subset of components or an individual
+  component basis.  It is automatically included in component Makefiles via
+  $(WS_MAKE_RULES)/prep-patch.mk.  It unpacks the pristine upstream source,
+  applies each patch file in turn, and generates a new patch file under the
+  new/ directory for those changes against the current source, making it
+  easier to keep our local patches in sync when we upgraded to new upstream
+  releases, reducing fuzz and line offset warnings and improving the odds
+  that the patches could be carried forward to new releases.  After running
+  it, you will need to manually compare the patches in patches/ against new/
+  to decide which existing patches to replace with the new versions and if
+  any manual edits are necessary.  You may then discard the new/ directory
+  and any remaining patch files in it.

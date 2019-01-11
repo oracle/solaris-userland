@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../make-rules/shared-macros.mk
@@ -94,7 +94,8 @@ check_anitya:		TARGET = check_anitya
 check_rtime:		TARGET = check_rtime
 zone-build:		TARGET = component-zone-build
 component-hook:		TARGET = component-hook
-zone-build prep build install publish test system-test check_rtime:	LOG = >$(WS_LOGS)/$(subst /,.,$@).$(TARGET).log 2>&1
+regen-patches:		TARGET = regen-patches
+zone-build prep build install publish test system-test check_rtime regen-patches:	LOG = >$(WS_LOGS)/$(subst /,.,$@).$(TARGET).log 2>&1
 
 # turn off pkglint for the individual component builds.
 ifeq   ($(strip $(PKGLINT_COMPONENT)),)
@@ -118,7 +119,7 @@ zone-build build install publish test system-test: $(COMPONENT_DIRS)
 COMPONENT_DIRS.nosetup =	$(COMPONENT_DIRS:%=%.nosetup)
 
 download unpack patch::	$(COMPONENT_DIRS.nosetup)
-prep check_anitya check_rtime:	$(COMPONENT_DIRS.nosetup)
+prep check_anitya check_rtime regen-patches:	$(COMPONENT_DIRS.nosetup)
 component-environment-check::	$(COMPONENT_DIRS.nosetup)
 component-hook:	$(COMPONENT_DIRS.nosetup)
 

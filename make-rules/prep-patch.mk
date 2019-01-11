@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 GPATCH =	/usr/bin/patch
@@ -95,7 +95,7 @@ ifneq ($$(PATCHES$(1)),)
 # We should unpack the source that we patch before we patch it.
 $$(firstword $$(PATCH_STAMPS$(1))):	$$(UNPACK_STAMP$(1))
 
-# This section makes the patch stams to depend one on each other in the order
+# This section makes the patch stamps depend on each other in the order that
 # they are going to be applied. This insures that running 'gmake -j prep' does
 # not have all the patches stepping on each other toes. That means if you have
 # patches a, b, c, d. The lines should create the gmake recipes as
@@ -142,3 +142,48 @@ define eval-patch-rules
 $(foreach suffix, $(PCH_SUFFIXES), $(eval $(call patch-rules,_$(suffix))))
 $(eval $(call patch-rules,))	# this must be last so we don't drop *.patch_%.
 endef
+
+# Developer convenience helper to regenerate patches against new baseline to
+# reduce messages about hunks having fuzz or offsets when applying patches.
+# New patches will be in new/ for inspection before moving to patches/.
+
+regen-patches:
+	$(MAKE) clean
+	@ CUR_LIST="" ; \
+	if [[ -z "$(ALL_PATCHES)" ]] ; then exit 0 ; fi ; \
+	if [[ "$(SOURCE_DIR)" != "$(COMPONENT_DIR)" ]] ; then \
+	    sd="$(SOURCE_DIR) $(foreach s,$(PCH_SUFFIXES),$(SOURCE_DIR_$(s)))" ; \
+	else \
+	    sd="$(foreach s,$(PCK_SUFFIXES),$(SOURCE_DIR_$(s)))" ; \
+	fi ; \
+	if [[ -z "$${sd// }" ]] ; then exit 0 ; fi ; \
+        $(RM) -rf tmp-regen/ ; \
+	$(MAKE) unpack ; \
+	$(MKDIR) new tmp-regen/next ; \
+	$(MV) $${sd} tmp-regen/next ; \
+	for p in $(ALL_PATCHES) ; do \
+	    print '=================' $$p ; \
+	    $(RM) -rf tmp-regen/prev ; \
+	    $(MV) tmp-regen/next tmp-regen/prev ; \
+	    CUR_LIST+="$$p " ; \
+	    $(MAKE) unpack patch ALL_PATCHES="$${CUR_LIST}" \
+		GPATCH_BACKUP="--no-backup-if-mismatch" ; \
+	    $(MKDIR) tmp-regen/next ; \
+	    $(MV) $${sd} tmp-regen/next ;  \
+	    $(RM) tmp-regen/*/*/.patched* $(COMPONENT_DIR)/.patched* ; \
+	    : Copy the old comments/prefix out of the existing patch: ; \
+	    gawk '/^--- /	{exit} \
+		  /^diff -/	{exit} \
+				{print}' $$p > "new/$${p#$(PATCH_DIR)/}" ; \
+	    LC_COLLATE=C git diff --no-color --no-index \
+		tmp-regen/prev tmp-regen/next \
+		| $(GSED) -E -e 's% (a|b)/tmp-regen/(prev|next)/[^/]*/% \1/%g' \
+		| grep -v '^Common subdirectories:' \
+		| grep -v '^Only in ' \
+		>> "new/$${p#$(PATCH_DIR)/}" ; \
+	done
+	$(RM) -rf tmp-regen/
+	$(MAKE) clean
+
+REQUIRED_PACKAGES += developer/versioning/git
+REQUIRED_PACKAGES += text/gawk
