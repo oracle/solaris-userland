@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Python
-COMPONENT_VERSION=	3.4.8
+COMPONENT_VERSION=	3.4.9
 COMPONENT_PROJECT_URL=	https://python.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:29a472fa902c7b2add152f5e1e82e0885a8d360645689c1db5d1949a7e8ac3ea
+    sha256:59629676ba2b01a798f5211d8f63c26ee52f1d5133cf37583e0bf1bad50c2bd9
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)ftp/python/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	utility/python
 COMPONENT_ANITYA_ID=	13256
 
-TPNO=			41295
+TPNO=			48462
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/configure.mk
@@ -200,6 +200,9 @@ COMPONENT_TEST_TRANSFORMS =	"'/tests OK./ {results = 1}; /Re-running failed test
 
 test:				$(TEST_64)
 system-test:			$(SYSTEM_TEST_64)
+
+# Help manifest check to decide what will be a hardlink
+PKG_HARDLINKS += usr/bin/python3.4m
 
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += compress/xz

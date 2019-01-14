@@ -1,9 +1,9 @@
 This patch uses fdwalk(3c) to close file descriptors; as that function is not
 widely implemented, this is unsuitable for upstream.
 
---- Python-3.4.3/Modules/posixmodule.c.~1~	2015-02-25 03:27:46.000000000 -0800
-+++ Python-3.4.3/Modules/posixmodule.c	2015-02-25 08:22:50.773678769 -0800
-@@ -7830,16 +7830,34 @@
+--- Python-3.4.9/Modules/posixmodule.c	2018-08-02 02:18:47.000000000 +0000
++++ Python-3.4.9/Modules/posixmodule.c	2019-01-07 04:27:16.764278425 +0000
+@@ -7846,16 +7846,34 @@ PyDoc_STRVAR(posix_closerange__doc__,
  "closerange(fd_low, fd_high)\n\n\
  Closes all file descriptors in [fd_low, fd_high), ignoring errors.");
  

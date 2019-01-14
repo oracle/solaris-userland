@@ -20,16 +20,16 @@
 #
 
 #
-# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
 #
+
+<transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
+<transform file path=.*/(idle_)?tests?/.* -> default facet.optional.test true>
 
 # bootstrap: pkgdepend doesn't like python 3.4 yet:
 # 19510349 pkgdepend needs to be PEP 3149 aware
 # fixed in S12 but not back-ported to 11.3
 $(SOLARIS_11_3_ONLY)<transform file path=.+\.py$ -> default pkg.depend.bypass-generate .* >
-
-<transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
-<transform file path=.*/(idle_)?tests?/.* -> default facet.optional.test true>
 set name=pkg.fmri \
     value=pkg:/runtime/python-34@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="The Python interpreter, libraries and utilities"
@@ -167,6 +167,7 @@ link path=usr/lib/$(MACH64)/libpython3.4m_db.so target=libpython3.4m_db.so.1.0
 file path=usr/lib/$(MACH64)/libpython3.4m_db.so.1.0
 file $(MACH64)/llib-lpython34m.ln path=usr/lib/$(MACH64)/llib-lpython3.4m.ln
 file path=usr/lib/$(MACH64)/pkgconfig/python-3.4.pc
+link path=usr/lib/$(MACH64)/pkgconfig/python-3.4m.pc target=python-3.4.pc
 link path=usr/lib/$(MACH64)/pkgconfig/python3.pc target=python-3.4.pc \
     mediator=python mediator-version=3.4
 file llib-lpython34m path=usr/lib/llib-lpython3.4m
@@ -251,7 +252,6 @@ file path=usr/lib/python3.4/config-3.4m/Setup.local
 file path=usr/lib/python3.4/config-3.4m/config.c
 file path=usr/lib/python3.4/config-3.4m/config.c.in
 file path=usr/lib/python3.4/config-3.4m/install-sh
-file path=usr/lib/python3.4/config-3.4m/libpython3.4m.a
 file path=usr/lib/python3.4/config-3.4m/makesetup
 file path=usr/lib/python3.4/config-3.4m/python-config.py pkg.tmp.autopyc=false
 file path=usr/lib/python3.4/configparser.py
@@ -368,13 +368,6 @@ file path=usr/lib/python3.4/distutils/command/install_scripts.py
 file path=usr/lib/python3.4/distutils/command/register.py
 file path=usr/lib/python3.4/distutils/command/sdist.py
 file path=usr/lib/python3.4/distutils/command/upload.py
-file path=usr/lib/python3.4/distutils/command/wininst-10.0-amd64.exe
-file path=usr/lib/python3.4/distutils/command/wininst-10.0.exe
-file path=usr/lib/python3.4/distutils/command/wininst-6.0.exe
-file path=usr/lib/python3.4/distutils/command/wininst-7.1.exe
-file path=usr/lib/python3.4/distutils/command/wininst-8.0.exe
-file path=usr/lib/python3.4/distutils/command/wininst-9.0-amd64.exe
-file path=usr/lib/python3.4/distutils/command/wininst-9.0.exe
 file path=usr/lib/python3.4/distutils/config.py
 file path=usr/lib/python3.4/distutils/core.py
 file path=usr/lib/python3.4/distutils/cygwinccompiler.py
@@ -1010,15 +1003,7 @@ file path=usr/lib/python3.4/plat-sunos5/IN.py
 file path=usr/lib/python3.4/plat-sunos5/STROPTS.py
 file path=usr/lib/python3.4/plat-sunos5/TYPES.py
 file path=usr/lib/python3.4/plat-sunos5/regen
-file path=usr/lib/python3.4/platform.py pkg.depend.bypass-generate=.*/MacOS.* \
-    pkg.depend.bypass-generate=.*/_gestalt.* \
-    pkg.depend.bypass-generate=.*/_winreg.* \
-    pkg.depend.bypass-generate=.*/java/__init__.py \
-    pkg.depend.bypass-generate=.*/lang.* \
-    pkg.depend.bypass-generate=.*/vms_lib.* \
-    pkg.depend.bypass-generate=.*/win32api.* \
-    pkg.depend.bypass-generate=.*/win32con.* \
-    pkg.depend.bypass-generate=.*/winreg.*
+file path=usr/lib/python3.4/platform.py pkg.depend.bypass-generate=.*
 file path=usr/lib/python3.4/plistlib.py
 file path=usr/lib/python3.4/poplib.py
 file path=usr/lib/python3.4/posixpath.py
@@ -2079,6 +2064,8 @@ file path=usr/lib/python3.4/uuid.py
 file path=usr/lib/python3.4/venv/__init__.py
 file path=usr/lib/python3.4/venv/__main__.py
 file path=usr/lib/python3.4/venv/scripts/posix/activate
+file path=usr/lib/python3.4/venv/scripts/posix/activate.csh
+file path=usr/lib/python3.4/venv/scripts/posix/activate.fish
 file path=usr/lib/python3.4/warnings.py
 file path=usr/lib/python3.4/wave.py
 file path=usr/lib/python3.4/weakref.py

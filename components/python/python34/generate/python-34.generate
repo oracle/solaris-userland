@@ -1,0 +1,105 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+<include generate/common.transform>
+
+# Delete everything not belonging to this package
+<transform file link pkg.type=(?!main) -> drop>
+<transform hardlink file link -> delete pkg.type .*>
+
+# Add python version mediators to existing links
+<transform link path=usr/bin/2to3 -> set mediator python>
+<transform link path=usr/bin/2to3 -> set mediator-version 3.4>
+<transform link path=usr/bin/idle3 -> set mediator python3>
+<transform link path=usr/bin/idle3 -> set mediator-version 3.4>
+<transform link path=usr/bin/pydoc3 -> set mediator python3>
+<transform link path=usr/bin/pydoc3 -> set mediator-version 3.4>
+<transform link path=usr/bin/python3$ -> set mediator python3>
+<transform link path=usr/bin/python3$ -> set mediator-version 3.4>
+<transform link path=usr/bin/python3-config -> set mediator python3>
+<transform link path=usr/bin/python3-config -> set mediator-version 3.4>
+<transform link path=usr/bin/pyvenv -> set mediator python>
+<transform link path=usr/bin/pyvenv -> set mediator-version 3.4>
+<transform link path=usr/lib/\$\(MACH64\)/pkgconfig/python3.pc -> set mediator python>
+<transform link path=usr/lib/\$\(MACH64\)/pkgconfig/python3.pc -> set mediator-version 3.4>
+<transform link path=usr/share/man/man1/python3.1 -> set mediator python>
+<transform link path=usr/share/man/man1/python3.1 -> set mediator-version 3.4>
+
+# Emit new non version-tied links
+<transform link path=usr/bin/pydoc3 \
+	-> emit link path=usr/bin/pydoc target=pydoc3.4 mediator=python mediator-version=3.4>
+<transform link path=usr/bin/idle3 \
+	-> emit link path=usr/bin/idle target=idle3.4 mediator=python mediator-version=3.4>
+<transform link path=usr/bin/python3 \
+	-> emit link path=usr/bin/python target=python3.4 mediator=python mediator-version=3.4>
+<transform link path=usr/bin/python3-config \
+	-> emit link path=usr/bin/python-config target=python3.4-config mediator=python mediator-version=3.4>
+
+# Add pkg.depend.bypass-generate variables
+<transform file path=usr/lib/python3.4/lib2to3/tests/data/different_encoding.py -> set pkg.depend.bypass-generate .*>
+<transform file path=usr/lib/python3.4/lib2to3/tests/data/false_encoding.py -> set pkg.depend.bypass-generate .*>
+<transform file path=usr/lib/python3.4/lib2to3/tests/pytree_idempotency.py -> set pkg.depend.bypass-generate .*>
+<transform file path=usr/lib/python3.4/pdb.py -> set pkg.depend.bypass-generate .*>
+<transform file path=usr/lib/python3.4/cProfile.py -> set pkg.depend.bypass-generate .*>
+<transform file path=usr/lib/python3.4/platform.py -> set pkg.depend.bypass-generate .*>
+<transform file path=usr/lib/python3.4/profile.py -> set pkg.depend.bypass-generate .*>
+<transform file path=usr/lib/python3.4/smtpd.py -> set pkg.depend.bypass-generate .*>
+<transform file path=usr/lib/python3.4/test/test_logging.py -> set pkg.depend.bypass-generate .*/win32evtlog.*>
+<transform file path=usr/lib/python3.4/test/regrtest.py -> set pkg.depend.bypass-generate .*>
+<transform file path=usr/lib/python3.4/trace.py -> set pkg.depend.bypass-generate .*>
+
+# Add pkg.tmp.autopyc variables (don't ship their corresponding .pyc files)
+<transform file path=usr/lib/python3.4/__phello__.foo.py -> set pkg.tmp.autopyc false>
+<transform file path=usr/lib/python3.4/config-3.4m/python-config.py -> set pkg.tmp.autopyc false>
+<transform file path=usr/lib/python3.4/lib2to3/tests/data/.*.py -> set pkg.tmp.autopyc false>
+<transform file path=usr/lib/python3.4/test/bad_coding.*.py -> set pkg.tmp.autopyc false>
+<transform file path=usr/lib/python3.4/test/badsyntax_.* -> set pkg.tmp.autopyc false>
+
+# For some unknown reason, llib-lpython34m can be sometimes found in the proto
+# area and sometimes not.  This fixes this inconsistency by always removing the
+# file and by adding it via .static file
+<transform file path=llib-lpython34m$ -> drop>
+
+# Emit some additional links
+<transform file path=(.*)/libpython3.4m_db.so.1.0 \
+	-> emit link path=%<1>/libpython3.4m_db.so target=libpython3.4m_db.so.1.0>
+
+# Add links into non 64bit directory
+<transform file path=usr/lib/(.*)/python-3.4.pc \
+	-> emit link path=usr/lib/pkgconfig/python-3.4.pc target=../%<1>/python-3.4.pc>
+<transform link path=usr/lib/pkgconfig/python-3.4.pc \
+	-> emit link path=usr/lib/pkgconfig/python3.pc target=python-3.4.pc mediator=python mediator-version=3.4>
+
+# move and rename ln lib
+<transform file path=.*/llib-lpython34m.ln -> set action.hash \$\(MACH64\)/llib-lpython34m.ln>
+<transform file path=(.*)/llib-lpython34m.ln -> set path %<1>/llib-lpython3.4m.ln>
+
+# move python.o
+<transform path=usr/lib/python3.4/config-3.4m/python.o -> set action.hash %(path)>
+<transform path=usr/lib/python3.4/config-3.4m/python.o -> edit path python.o 64/python.o>
+
+# drop unused files (and Windows executables)
+<transform file path=usr/lib/.*/libpython3.so -> drop>
+<transform file path=.+\.exe$ -> drop>

@@ -2,9 +2,9 @@ This patch is needed to make Python understand it can build the OSS plugin.
 Some OSS ioctls are not supported on Solaris, so they are ifdef'd out.  As
 the patch is Solaris-specific, it is not suitable for upstream.
 
---- Python-3.4.3/setup.py.~6~	2015-02-25 08:25:07.739704118 -0800
-+++ Python-3.4.3/setup.py	2015-02-25 08:25:07.807400186 -0800
-@@ -1599,7 +1599,7 @@
+--- Python-3.4.9/setup.py	2019-01-07 04:27:16.719561985 +0000
++++ Python-3.4.9/setup.py	2019-01-07 04:27:16.914256394 +0000
+@@ -1602,7 +1602,7 @@ class PyBuildExt(build_ext):
          # End multiprocessing
  
          # Platform-specific libraries
@@ -13,9 +13,9 @@ the patch is Solaris-specific, it is not suitable for upstream.
              exts.append( Extension('ossaudiodev', ['ossaudiodev.c']) )
          else:
              missing.append('ossaudiodev')
---- Python-3.4.0/Modules/ossaudiodev.c.~1~	2014-03-16 19:31:31.000000000 -0700
-+++ Python-3.4.0/Modules/ossaudiodev.c	2014-03-17 13:48:16.395254733 -0700
-@@ -1211,6 +1211,7 @@
+--- Python-3.4.9/Modules/ossaudiodev.c	2018-08-02 02:18:47.000000000 +0000
++++ Python-3.4.9/Modules/ossaudiodev.c	2019-01-07 04:27:16.917111640 +0000
+@@ -1211,6 +1211,7 @@ PyInit_ossaudiodev(void)
      _EXPORT_INT(m, SOUND_MIXER_MONITOR);
  #endif
  
@@ -23,7 +23,7 @@ the patch is Solaris-specific, it is not suitable for upstream.
      /* Expose all the ioctl numbers for masochists who like to do this
         stuff directly. */
      _EXPORT_INT(m, SNDCTL_COPR_HALT);
-@@ -1223,6 +1224,7 @@
+@@ -1223,6 +1224,7 @@ PyInit_ossaudiodev(void)
      _EXPORT_INT(m, SNDCTL_COPR_SENDMSG);
      _EXPORT_INT(m, SNDCTL_COPR_WCODE);
      _EXPORT_INT(m, SNDCTL_COPR_WDATA);
@@ -31,7 +31,7 @@ the patch is Solaris-specific, it is not suitable for upstream.
  #ifdef SNDCTL_DSP_BIND_CHANNEL
      _EXPORT_INT(m, SNDCTL_DSP_BIND_CHANNEL);
  #endif
-@@ -1244,8 +1246,12 @@
+@@ -1244,8 +1246,12 @@ PyInit_ossaudiodev(void)
      _EXPORT_INT(m, SNDCTL_DSP_GETSPDIF);
  #endif
      _EXPORT_INT(m, SNDCTL_DSP_GETTRIGGER);
@@ -44,7 +44,7 @@ the patch is Solaris-specific, it is not suitable for upstream.
      _EXPORT_INT(m, SNDCTL_DSP_NONBLOCK);
      _EXPORT_INT(m, SNDCTL_DSP_POST);
  #ifdef SNDCTL_DSP_PROFILE
-@@ -1265,6 +1271,7 @@
+@@ -1265,6 +1271,7 @@ PyInit_ossaudiodev(void)
      _EXPORT_INT(m, SNDCTL_DSP_STEREO);
      _EXPORT_INT(m, SNDCTL_DSP_SUBDIVIDE);
      _EXPORT_INT(m, SNDCTL_DSP_SYNC);
@@ -52,7 +52,7 @@ the patch is Solaris-specific, it is not suitable for upstream.
      _EXPORT_INT(m, SNDCTL_FM_4OP_ENABLE);
      _EXPORT_INT(m, SNDCTL_FM_LOAD_INSTR);
      _EXPORT_INT(m, SNDCTL_MIDI_INFO);
-@@ -1306,5 +1313,6 @@
+@@ -1306,5 +1313,6 @@ PyInit_ossaudiodev(void)
      _EXPORT_INT(m, SNDCTL_TMR_STOP);
      _EXPORT_INT(m, SNDCTL_TMR_TEMPO);
      _EXPORT_INT(m, SNDCTL_TMR_TIMEBASE);
