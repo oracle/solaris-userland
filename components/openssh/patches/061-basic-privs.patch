@@ -1,0 +1,30 @@
+--- old/openbsd-compat/port-solaris.c	2018-12-04 11:30:18.199477927 +0100
++++ new/openbsd-compat/port-solaris.c	2018-12-04 14:17:24.005881997 +0100
+@@ -300,6 +300,15 @@
+ #ifdef PRIV_NET_ACCESS
+ 	    priv_delset(npset, PRIV_NET_ACCESS) != 0 ||
+ #endif
++#ifdef PRIV_DAX_ACCESS
++	    priv_delset(npset, PRIV_DAX_ACCESS) != 0 ||
++#endif
++#ifdef PRIV_SYS_IB_INFO
++	    priv_delset(npset, PRIV_SYS_IB_INFO) != 0 ||
++#endif
++#ifdef PRIV_PROC_SELF
++	    priv_delset(npset, PRIV_PROC_SELF) != 0 ||
++#endif
+ 	    priv_delset(npset, PRIV_PROC_EXEC) != 0 ||
+ 	    priv_delset(npset, PRIV_PROC_FORK) != 0 ||
+ 	    priv_delset(npset, PRIV_PROC_INFO) != 0 ||
+--- old/sandbox-solaris.c	Mon Apr  2 07:38:28 2018
++++ new/sandbox-solaris.c	Mon Jan 14 10:21:15 2019
+@@ -68,6 +68,9 @@
+ #ifdef PRIV_SYS_IB_INFO
+ 	    priv_delset(box->pset, PRIV_SYS_IB_INFO) != 0 ||
+ #endif
++#ifdef PRIV_PROC_SELF
++	    priv_delset(box->pset, PRIV_PROC_SELF) != 0 ||
++#endif
+ 	    priv_delset(box->pset, PRIV_PROC_EXEC) != 0 ||
+ 	    priv_delset(box->pset, PRIV_PROC_FORK) != 0 ||
+ 	    priv_delset(box->pset, PRIV_PROC_INFO) != 0 ||
