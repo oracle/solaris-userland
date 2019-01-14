@@ -1,0 +1,84 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+# Do not add 32 bit versions of binaries
+<transform path=usr/bin/\$\(MACH32\)/.+ -> drop>
+
+# Emit additional link for the config6 file
+<transform file path=usr/lib/graphviz/config6 \
+	-> emit link path=usr/lib/$!(MACH64)/graphviz/config6 target=../../graphviz/config6>
+<transform link -> edit path "\$!\((.*)\)" "$(\1)">
+
+
+# We don't need to deliver internal todo
+<transform file path=usr/share/graphviz/doc/html/internal_todo.html -> drop>
+
+# Following rules are dropping language related binding files because 
+# those have their own packages.
+
+# Drop java related bindings
+<transform file link path=usr/lib/\$\(MACH64\)/graphviz/java/.+ -> drop>
+<transform file link path=usr/lib/graphviz/java/.+ -> drop>
+<transform file link path=.+3java(|\.pdf)$ -> drop>
+
+# Drop lua related bindings
+<transform file link path=usr/lib/\$\(MACH64\)/graphviz/lua/.+ -> drop>
+<transform file link path=usr/lib/graphviz/lua/.+ -> drop>
+<transform file link path=usr/lib/lua/.+ -> drop>
+<transform file link path=.+lua(|\.pdf)$ -> drop>
+
+# Drop perl related bindings
+<transform file link path=usr/lib/\$\(MACH64\)/graphviz/perl/.+ -> drop>
+<transform file link path=usr/perl5/vendor_perl/.+ -> drop>
+<transform file link path=.+3perl(|\.pdf)$ -> drop>
+
+# Drop php related bindings
+<transform file link path=usr/lib/\$\(MACH64\)/graphviz/php/.+ -> drop>
+<transform file link path=usr/lib/64/php/modules/gv.so -> drop>
+<transform file link path=.+php(|\.pdf)$ -> drop>
+<transform file link path=usr/lib/php/.+ -> drop>
+
+# Drop python related bindings
+<transform file link path=usr/lib/\$\(MACH64\)/graphviz/python27/.+ -> drop>
+<transform file link path=usr/lib/graphviz/python27/.+ -> drop>
+<transform file link path=usr/lib/python2.7/.+ -> drop>
+<transform file link path=.+3python(|\.pdf)$ -> drop>
+
+# Drop ruby related bindings
+<transform file link path=usr/lib/\$\(MACH64\)/graphviz/ruby/.+ -> drop>
+<transform file link path=usr/lib/graphviz/python27/.+ -> drop>
+<transform file link path=usr/ruby/.+ -> drop>
+<transform file link path=.+3ruby(|\.pdf)$ -> drop>
+
+# Drop csharp related bindings
+<transform file link path=usr/lib/\$\(MACH64\)/graphviz/sharp/.+ -> drop>
+<transform file link path=usr/lib/graphviz/sharp/.+ -> drop>
+<transform file link path=.+3sharp(|\.pdf)$ -> drop>
+
+# Drop tlc related bindings
+<transform file link path=usr/lib/graphviz/tcl/.+ -> drop>
+<transform file link path=usr/lib/tcl8.6/.+ -> drop>
+<transform file link path=usr/share/graphviz/demo/.+ -> drop>
+<transform file link path=.+3tcl(|\.pdf)$ -> drop>

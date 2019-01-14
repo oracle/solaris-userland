@@ -1,0 +1,29 @@
+This version of graphviz is old enough that PHP 7 wasn't a thing yet. Because
+of that, it has a hard-coded -php5 parameter for swig generator. This patch
+hardcodes the -php7 parameter instead.
+
+The new version of graphviz will be integrated soon where this patch will no
+longer be necessary as it will detect version by itself.
+
+--- graphviz-2.28.0/tclpkg/gv/Makefile.in	2019-01-14 05:12:25.393615250 +0000
++++ graphviz-2.28.0/tclpkg/gv/Makefile.in	2019-01-14 05:11:39.524114753 +0000
+@@ -3388,7 +3388,7 @@ gv_perl.cpp: gv.i
+ gv.php: gv_php.cpp
+ php_gv.h: gv_php.cpp
+ gv_php.cpp: gv.i
+-	$(SWIG) -c++ -php5 -o gv_php.cpp $(srcdir)/gv.i
++	$(SWIG) -c++ -php7 -o gv_php.cpp $(srcdir)/gv.i
+ $(PYTHON_data): gv_python.cpp
+ gv_python.cpp: gv.i
+ 	$(SWIG) -c++ -python -o gv_python.cpp $(srcdir)/gv.i
+--- graphviz-2.28.0/tclpkg/gv/Makefile.am	2019-01-14 05:12:45.359291461 +0000
++++ graphviz-2.28.0/tclpkg/gv/Makefile.am	2019-01-14 05:11:43.508770504 +0000
+@@ -156,7 +156,7 @@ libgv_php_la_CPPFLAGS = $(BASECPPFLAGS)
+ gv.php: gv_php.cpp
+ php_gv.h: gv_php.cpp
+ gv_php.cpp: gv.i
+-	$(SWIG) -c++ -php5 -o gv_php.cpp $(srcdir)/gv.i
++	$(SWIG) -c++ -php7 -o gv_php.cpp $(srcdir)/gv.i
+ 
+ pkgpythondir = $(pkglibdir)/python
+ PYTHON_data = gv.py

@@ -20,10 +20,11 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
+COMPILER=gcc
 
 COMPONENT_NAME=		graphviz
 COMPONENT_VERSION=	2.28.0
@@ -51,7 +52,7 @@ INSTALL_TARGET += $(PROTO_DIR)/$(PYTHON.2.7.VENDOR_PACKAGES)/gv.pyc
 
 include $(WS_MAKE_RULES)/common.mk
 
-PATH =		/usr/php/5.6/bin:/usr/bin:/usr/gnu/bin
+PATH =		/usr/php/7.1/bin:/usr/bin:/usr/gnu/bin
 
 # GMP header files for the guile extension (no --with- flag)
 # The guile build is broken with studio (15732452), so we disable this for now.
@@ -60,8 +61,6 @@ PATH =		/usr/php/5.6/bin:/usr/bin:/usr/gnu/bin
 CPPFLAGS +=	-I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/solaris
 # PHP header files (no --with- flag)
 CPPFLAGS +=	$(shell PATH=$(PATH) php-config --includes)
-CXX +=		$(studio_NORUNPATH)
-CXX +=		-std=sun03
 
 # Make sure to use the right python, depending on the 32/64-bit build.
 CONFIGURE_ENV +=	PYTHON27=$(PYTHON.2.7)
@@ -138,8 +137,11 @@ REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/c++-runtime
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/freetype-2
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += web/php-56
+REQUIRED_PACKAGES += web/php-71
+REQUIRED_PACKAGES += x11/library/freeglut
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcursor
 REQUIRED_PACKAGES += x11/library/libxmu
