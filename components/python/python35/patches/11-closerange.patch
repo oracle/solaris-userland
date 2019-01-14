@@ -1,9 +1,9 @@
 This patch uses fdwalk(3c) to close file descriptors; as that function is not
 widely implemented, this is unsuitable for upstream.
 
---- Python-3.5.3/Modules/posixmodule.c.~1~	2017-01-16 23:57:53.000000000 +0000
-+++ Python-3.5.3/Modules/posixmodule.c	2017-01-17 11:14:01.793616905 +0000
-@@ -7806,6 +7806,19 @@
+--- Python-3.5.6/Modules/posixmodule.c	2018-08-02 02:19:12.000000000 +0000
++++ Python-3.5.6/Modules/posixmodule.c	2019-01-07 04:41:12.778020308 +0000
+@@ -7835,6 +7835,19 @@ os_close_impl(PyObject *module, int fd)
      Py_RETURN_NONE;
  }
  
@@ -23,7 +23,7 @@ widely implemented, this is unsuitable for upstream.
  
  /*[clinic input]
  os.closerange
-@@ -7822,11 +7835,13 @@
+@@ -7851,11 +7864,13 @@ os_closerange_impl(PyObject *module, int
  /*[clinic end generated code: output=0ce5c20fcda681c2 input=5855a3d053ebd4ec]*/
  {
      int i;

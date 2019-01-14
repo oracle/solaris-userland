@@ -1,9 +1,9 @@
 This patch adds Python debugger support.  It may be contributed upstream at
 some point, but the suitability (or lack thereof) has not yet been determined.
 
---- Python-3.5.3/Makefile.pre.in.~3~	2017-01-17 11:17:33.079376903 +0000
-+++ Python-3.5.3/Makefile.pre.in	2017-01-17 11:17:33.175322774 +0000
-@@ -490,7 +490,7 @@
+--- Python-3.5.6/Makefile.pre.in	2019-01-07 04:41:12.257651414 +0000
++++ Python-3.5.6/Makefile.pre.in	2019-01-07 04:41:12.849470262 +0000
+@@ -458,7 +458,7 @@ LIBRARY_OBJS=	\
  
  # Default target
  all:		@DEF_MAKE_ALL_RULE@
@@ -12,7 +12,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
  
  # Compile a binary with profile guided optimization.
  profile-opt:
-@@ -708,6 +708,15 @@
+@@ -677,6 +677,15 @@ Makefile Modules/config.c: Makefile.pre
  	@mv config.c Modules
  	@echo "The Makefile was updated, you may need to re-run make."
  
@@ -28,7 +28,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
  
  Modules/Setup: $(srcdir)/Modules/Setup.dist
  	@if test -f Modules/Setup; then \
-@@ -1085,7 +1094,7 @@
+@@ -1087,7 +1096,7 @@ quicktest:	@DEF_MAKE_RULE@ platform
  		$(TESTRUNNER) $(QUICKTESTOPTS)
  
  
@@ -37,8 +37,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
  	if test "x$(ENSUREPIP)" != "xno"  ; then \
  		case $(ENSUREPIP) in \
  			upgrade) ensurepip="--upgrade" ;; \
---- /dev/null	2015-05-14 14:46:26.000000000 -0700
-+++ Python-3.5.0/py_db/libpython35_db.c	2015-05-14 14:45:15.723529281 -0700
+--- Python-3.5.6/py_db/libpython35_db.c	1969-12-31 16:00:00.000000000 +0000
++++ Python-3.5.6/py_db/libpython35_db.c	2019-01-07 04:41:12.851033349 +0000
 @@ -0,0 +1,583 @@
 +/*
 + * CDDL HEADER START
@@ -623,8 +623,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +
 +	free(iter);
 +}
---- /dev/null
-+++ Python-3.5.0/py_db/libpython35_db.h
+--- Python-3.5.6/py_db/libpython35_db.h	1969-12-31 16:00:00.000000000 +0000
++++ Python-3.5.6/py_db/libpython35_db.h	2019-01-07 04:41:12.851575559 +0000
 @@ -0,0 +1,73 @@
 +/*
 + * CDDL HEADER START
@@ -699,8 +699,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +#endif
 +
 +#endif	/* _LIBPYTHON35_DB_H */
---- /dev/null
-+++ Python-3.5.0/py_db/libpython35_db_32.h
+--- Python-3.5.6/py_db/libpython35_db_32.h	1969-12-31 16:00:00.000000000 +0000
++++ Python-3.5.6/py_db/libpython35_db_32.h	2019-01-07 04:41:12.852156835 +0000
 @@ -0,0 +1,121 @@
 +/*
 + * CDDL HEADER START
@@ -823,8 +823,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +#endif
 +
 +#endif	/* _LIBPYTHON35_DB_32_H */
---- /dev/null
-+++ Python-3.5.0/py_db/mapfile-vers
+--- Python-3.5.6/py_db/mapfile-vers	1969-12-31 16:00:00.000000000 +0000
++++ Python-3.5.6/py_db/mapfile-vers	2019-01-07 04:41:12.852676859 +0000
 @@ -0,0 +1,39 @@
 +#
 +# CDDL HEADER START

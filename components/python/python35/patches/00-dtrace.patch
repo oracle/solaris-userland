@@ -4,16 +4,16 @@ http://www.jcea.es/artic/python_dtrace.htm
 Follow http://bugs.python.org/issue13405 for plans to get it
 integrated into the main tree.
 
---- Python-3.4.0/Doc/library/debug.rst
-+++ Python-3.4.0/Doc/library/debug.rst
-@@ -15,4 +15,5 @@
+--- Python-3.5.6/Doc/library/debug.rst	2018-08-02 02:19:12.000000000 +0000
++++ Python-3.5.6/Doc/library/debug.rst	2019-01-07 04:41:11.643829820 +0000
+@@ -15,4 +15,5 @@ allowing you to identify bottlenecks in
     profile.rst
     timeit.rst
     trace.rst
 +   dtrace.rst
     tracemalloc.rst
---- /dev/null
-+++ Python-3.4.0/Doc/library/dtrace.rst
+--- Python-3.5.6/Doc/library/dtrace.rst	1969-12-31 16:00:00.000000000 +0000
++++ Python-3.5.6/Doc/library/dtrace.rst	2019-01-07 04:41:11.645202501 +0000
 @@ -0,0 +1,183 @@
 +:mod:`dtrace` --- DTrace probes for Python
 +===============================================
@@ -198,8 +198,8 @@ integrated into the main tree.
 +      @conn[jstack()] = count();
 +  }
 +
---- Python-3.5.0a4/Include/code.h.~1~	2015-04-20 00:37:51.000000000 -0700
-+++ Python-3.5.0a4/Include/code.h	2015-04-20 12:35:52.053616933 -0700
+--- Python-3.5.6/Include/code.h	2018-08-02 02:19:12.000000000 +0000
++++ Python-3.5.6/Include/code.h	2019-01-07 04:41:11.646741602 +0000
 @@ -7,6 +7,8 @@
  extern "C" {
  #endif
@@ -209,7 +209,7 @@ integrated into the main tree.
  /* Bytecode object */
  typedef struct {
      PyObject_HEAD
-@@ -33,6 +35,9 @@
+@@ -33,6 +35,9 @@ typedef struct {
      int co_firstlineno;		/* first source line number */
      PyObject *co_lnotab;	/* string (encoding addr<->lineno mapping) See
  				   Objects/lnotab_notes.txt for details. */
@@ -219,8 +219,8 @@ integrated into the main tree.
      void *co_zombieframe;     /* for optimization only (see frameobject.c) */
      PyObject *co_weakreflist;   /* to support weakrefs to code objects */
  } PyCodeObject;
---- /dev/null
-+++ Python-3.4.0/Include/pydtrace.d
+--- Python-3.5.6/Include/pydtrace.d	1969-12-31 16:00:00.000000000 +0000
++++ Python-3.5.6/Include/pydtrace.d	2019-01-07 04:41:11.647691317 +0000
 @@ -0,0 +1,177 @@
 +provider python {
 +    probe function__entry(const char *, const char *, int);
@@ -399,8 +399,8 @@ integrated into the main tree.
 +
 +#endif  /* PYDTRACE_STACK_HELPER */
 +
---- /dev/null
-+++ Python-3.4.0/Include/pydtrace_offsets.c
+--- Python-3.5.6/Include/pydtrace_offsets.c	1969-12-31 16:00:00.000000000 +0000
++++ Python-3.5.6/Include/pydtrace_offsets.c	2019-01-07 04:41:11.648321979 +0000
 @@ -0,0 +1,40 @@
 +#include "Python.h"
 +#include "unicodeobject.h"
@@ -442,9 +442,8 @@ integrated into the main tree.
 +    return 0;
 +}
 +
-new file mode 100755
---- /dev/null
-+++ Python-3.4.0/Include/pydtrace_offsets.sh
+--- Python-3.5.6/Include/pydtrace_offsets.sh	1969-12-31 16:00:00.000000000 +0000
++++ Python-3.5.6/Include/pydtrace_offsets.sh	2019-01-07 04:41:11.648956940 +0000
 @@ -0,0 +1,32 @@
 +#!/bin/sh
 +
@@ -478,8 +477,8 @@ new file mode 100755
 +		sed \"s/.* \([a-zA-Z0-9_]*\)$/\1/\"`"
 +fi
 +
---- /dev/null
-+++ Python-3.4.0/Lib/test/dtrace_sample.py
+--- Python-3.5.6/Lib/test/dtrace_sample.py	1969-12-31 16:00:00.000000000 +0000
++++ Python-3.5.6/Lib/test/dtrace_sample.py	2019-01-07 04:41:11.649754364 +0000
 @@ -0,0 +1,80 @@
 +# Sample script for use by test_dtrace.py
 +# DO NOT MODIFY THIS FILE IN ANY WAY WITHOUT UPDATING test_dtrace.py!!!!!
@@ -561,8 +560,8 @@ new file mode 100755
 +    test_instance_creation_destruction()
 +    test_garbage_collection()
 +
---- /dev/null
-+++ Python-3.4.0/Lib/test/test_dtrace.py
+--- Python-3.5.6/Lib/test/test_dtrace.py	1969-12-31 16:00:00.000000000 +0000
++++ Python-3.5.6/Lib/test/test_dtrace.py	2019-01-07 04:41:11.652043227 +0000
 @@ -0,0 +1,447 @@
 +import sys, unittest, subprocess, os.path, dis, types, re
 +import dtrace
@@ -1011,9 +1010,9 @@ new file mode 100755
 +if __name__ == '__main__':
 +    test_main()
 +
---- Python-3.5.2/Lib/test/test_sys.py.~1~	2016-06-25 14:38:37.000000000 -0700
-+++ Python-3.5.2/Lib/test/test_sys.py	2016-07-07 15:09:04.689495337 -0700
-@@ -883,6 +883,7 @@
+--- Python-3.5.6/Lib/test/test_sys.py	2018-08-02 02:19:12.000000000 +0000
++++ Python-3.5.6/Lib/test/test_sys.py	2019-01-07 04:41:11.653840831 +0000
+@@ -883,6 +883,7 @@ class SizeofTest(unittest.TestCase):
          self.assertEqual(sys.getsizeof(True, -1), size('') + self.longdigit)
  
      def test_objecttypes(self):
@@ -1021,7 +1020,7 @@ new file mode 100755
          # check all types defined in Objects/
          calcsize = struct.calcsize
          size = test.support.calcobjsize
-@@ -912,13 +913,17 @@
+@@ -912,13 +913,17 @@ class SizeofTest(unittest.TestCase):
              return inner
          check(get_cell().__closure__[0], size('P'))
          # code
@@ -1042,9 +1041,9 @@ new file mode 100755
          # complex
          check(complex(0,1), size('2d'))
          # method_descriptor (descriptor object)
---- Python-3.5.3/Makefile.pre.in.~1~	2017-01-16 23:57:52.000000000 +0000
-+++ Python-3.5.3/Makefile.pre.in	2017-01-17 10:56:57.057084254 +0000
-@@ -58,6 +58,13 @@
+--- Python-3.5.6/Makefile.pre.in	2018-08-02 02:19:12.000000000 +0000
++++ Python-3.5.6/Makefile.pre.in	2019-01-07 04:41:11.656096334 +0000
+@@ -58,6 +58,13 @@ SHELL=		/bin/sh
  # Use this to make a link between python$(VERSION) and python in $(BINDIR)
  LN=		@LN@
  
@@ -1058,7 +1057,7 @@ new file mode 100755
  # Portable install script (configure doesn't always guess right)
  INSTALL=	@INSTALL@
  INSTALL_PROGRAM=@INSTALL_PROGRAM@
-@@ -619,7 +626,7 @@
+@@ -588,7 +595,7 @@ $(LIBRARY): $(LIBRARY_OBJS)
  	$(AR) $(ARFLAGS) $@ $(MODOBJS)
  	$(RANLIB) $@
  
@@ -1067,7 +1066,7 @@ new file mode 100755
  	if test $(INSTSONAME) != $(LDLIBRARY); then \
  		$(BLDSHARED) -Wl,-h$(INSTSONAME) -o $(INSTSONAME) $(LIBRARY_OBJS) $(MODLIBS) $(SHLIBS) $(LIBC) $(LIBM) $(LDLAST); \
  		$(LN) -f $(INSTSONAME) $@; \
-@@ -630,9 +637,8 @@
+@@ -599,9 +606,8 @@ libpython$(LDVERSION).so: $(LIBRARY_OBJS
  libpython3.so:	libpython$(LDVERSION).so
  	$(BLDSHARED) $(NO_AS_NEEDED) -o $@ -Wl,-h$@ $^
  
@@ -1079,16 +1078,16 @@ new file mode 100755
  
  libpython$(VERSION).sl: $(LIBRARY_OBJS)
  	$(LDSHARED) -o $@ $(LIBRARY_OBJS) $(MODLIBS) $(SHLIBS) $(LIBC) $(LIBM) $(LDLAST)
-@@ -737,12 +743,18 @@
+@@ -716,12 +722,18 @@ Modules/getbuildinfo.o: $(PARSER_OBJS) \
  		$(MODULE_OBJS) \
  		$(SIGNAL_OBJS) \
  		$(MODOBJS) \
 +		$(DTRACEOBJS) \
  		$(srcdir)/Modules/getbuildinfo.c
  	$(CC) -c $(PY_CORE_CFLAGS) \
- 	      -DHGVERSION="\"`LC_ALL=C $(HGVERSION)`\"" \
- 	      -DHGTAG="\"`LC_ALL=C $(HGTAG)`\"" \
- 	      -DHGBRANCH="\"`LC_ALL=C $(HGBRANCH)`\"" \
+ 	      -DGITVERSION="\"`LC_ALL=C $(GITVERSION)`\"" \
+ 	      -DGITTAG="\"`LC_ALL=C $(GITTAG)`\"" \
+ 	      -DGITBRANCH="\"`LC_ALL=C $(GITBRANCH)`\"" \
  	      -o $@ $(srcdir)/Modules/getbuildinfo.c
 +	if test "$(DTRACEOBJS)" != "" ; then \
 +		$(DTRACE_LINKER) --relocatable \
@@ -1098,9 +1097,9 @@ new file mode 100755
  
  Modules/getpath.o: $(srcdir)/Modules/getpath.c Makefile
  	$(CC) -c $(PY_CORE_CFLAGS) -DPYTHONPATH='"$(PYTHONPATH)"' \
-@@ -876,6 +888,46 @@
- Objects/typeslots.inc: $(srcdir)/Include/typeslots.h $(srcdir)/Objects/typeslots.py
- 	$(PYTHON_FOR_GEN) $(srcdir)/Objects/typeslots.py < $(srcdir)/Include/typeslots.h Objects/typeslots.inc
+@@ -878,6 +890,46 @@ regen-typeslots:
+ 		< $(srcdir)/Include/typeslots.h \
+ 		$(srcdir)/Objects/typeslots.inc
  
 +$(srcdir)/Include/pydtrace.h: $(srcdir)/Include/pydtrace.d
 +	if test "$(DTRACE)" != "" ; then \
@@ -1145,7 +1144,7 @@ new file mode 100755
  ############################################################################
  # Header files
  
-@@ -1595,6 +1647,11 @@
+@@ -1600,6 +1652,11 @@ clean: pycremoval
  	find build -name '*.py[co]' -exec rm -f {} ';' || true
  	-rm -f pybuilddir.txt
  	-rm -f Lib/lib2to3/*Grammar*.pickle
@@ -1157,7 +1156,7 @@ new file mode 100755
  	-rm -f Programs/_testembed Programs/_freeze_importlib
  	-find build -type f -a ! -name '*.gc??' -exec rm -f {} ';'
  
-@@ -1633,6 +1690,11 @@
+@@ -1638,6 +1695,11 @@ distclean: clobber
  				     -o -name '*.orig' -o -name '*.rej' \
  				     -o -name '*.bak' ')' \
  				     -exec rm -f {} ';'
@@ -1168,17 +1167,17 @@ new file mode 100755
 +	rm -f Objects/typeobject.o.ts_dtrace
  
  # Check for smelly exported symbols (not starting with Py/_Py)
- smelly: all
---- Python-3.4.0/Modules/Setup.dist
-+++ Python-3.4.0/Modules/Setup.dist
-@@ -390,3 +390,5 @@
+ smelly: @DEF_MAKE_RULE@
+--- Python-3.5.6/Modules/Setup.dist	2018-08-02 02:19:12.000000000 +0000
++++ Python-3.5.6/Modules/Setup.dist	2019-01-07 04:41:11.656838329 +0000
+@@ -390,3 +390,5 @@ _symtable symtablemodule.c
  
  # Another example -- the 'xxsubtype' module shows C-level subtyping in action
  xxsubtype xxsubtype.c
 +
 +dtrace dtracemodule.c
---- /dev/null
-+++ Python-3.4.0/Modules/dtracemodule.c
+--- Python-3.5.6/Modules/dtracemodule.c	1969-12-31 16:00:00.000000000 +0000
++++ Python-3.5.6/Modules/dtracemodule.c	2019-01-07 04:41:11.657501049 +0000
 @@ -0,0 +1,39 @@
 +#include "Python.h"
 +
@@ -1219,8 +1218,8 @@ new file mode 100755
 +    }
 +    return m;
 +}
---- Python-3.5.0a4/Modules/gcmodule.c.~1~	2015-04-20 00:37:52.000000000 -0700
-+++ Python-3.5.0a4/Modules/gcmodule.c	2015-04-20 12:54:18.784913115 -0700
+--- Python-3.5.6/Modules/gcmodule.c	2018-08-02 02:19:12.000000000 +0000
++++ Python-3.5.6/Modules/gcmodule.c	2019-01-07 04:41:11.658914865 +0000
 @@ -27,6 +27,10 @@
  #include "frameobject.h"        /* for PyFrame_ClearFreeList */
  #include "pytime.h"             /* for _PyTime_GetMonotonicClock() */
@@ -1232,7 +1231,7 @@ new file mode 100755
  /* Get an object's GC head */
  #define AS_GC(o) ((PyGC_Head *)(o)-1)
  
-@@ -897,7 +901,12 @@
+@@ -897,7 +901,12 @@ clear_freelists(void)
  /* This is the main function.  Read this to understand how the
   * collection process works. */
  static Py_ssize_t
@@ -1246,7 +1245,7 @@ new file mode 100755
          int nofail)
  {
      int i;
-@@ -1071,6 +1080,50 @@
+@@ -1071,6 +1080,50 @@ collect(int generation, Py_ssize_t *n_co
      return n+m;
  }
  
@@ -1297,9 +1296,9 @@ new file mode 100755
  /* Invoke progress callbacks to notify clients that garbage collection
   * is starting or stopping
   */
---- Python-3.4.0/Objects/codeobject.c
-+++ Python-3.4.0/Objects/codeobject.c
-@@ -192,6 +192,37 @@
+--- Python-3.5.6/Objects/codeobject.c	2018-08-02 02:19:12.000000000 +0000
++++ Python-3.5.6/Objects/codeobject.c	2019-01-07 04:41:11.659888464 +0000
+@@ -192,6 +192,37 @@ PyCode_New(int argcount, int kwonlyargco
      co->co_lnotab = lnotab;
      co->co_zombieframe = NULL;
      co->co_weakreflist = NULL;
@@ -1337,9 +1336,9 @@ new file mode 100755
      return co;
  }
  
---- Python-3.5.0rc2/Objects/frameobject.c.~1~	2015-08-25 10:19:14.000000000 -0700
-+++ Python-3.5.0rc2/Objects/frameobject.c	2015-09-02 11:31:53.362348226 -0700
-@@ -735,6 +735,15 @@
+--- Python-3.5.6/Objects/frameobject.c	2018-08-02 02:19:12.000000000 +0000
++++ Python-3.5.6/Objects/frameobject.c	2019-01-07 04:41:11.660862737 +0000
+@@ -735,6 +735,15 @@ PyFrame_New(PyThreadState *tstate, PyCod
      f->f_executing = 0;
      f->f_gen = NULL;
  
@@ -1355,8 +1354,8 @@ new file mode 100755
      _PyObject_GC_TRACK(f);
      return f;
  }
---- Python-3.5.2/Objects/typeobject.c.~1~	2016-06-25 14:38:38.000000000 -0700
-+++ Python-3.5.2/Objects/typeobject.c	2016-07-07 15:17:01.001120208 -0700
+--- Python-3.5.6/Objects/typeobject.c	2018-08-02 02:19:12.000000000 +0000
++++ Python-3.5.6/Objects/typeobject.c	2019-01-07 04:41:11.664617387 +0000
 @@ -4,6 +4,10 @@
  #include "frameobject.h"
  #include "structmember.h"
@@ -1368,7 +1367,7 @@ new file mode 100755
  #include <ctype.h>
  
  
-@@ -916,8 +920,29 @@
+@@ -916,8 +920,29 @@ PyObject *
  PyType_GenericAlloc(PyTypeObject *type, Py_ssize_t nitems)
  {
      PyObject *obj;
@@ -1399,7 +1398,7 @@ new file mode 100755
  
      if (PyType_IS_GC(type))
          obj = _PyObject_GC_Malloc(size);
-@@ -939,6 +964,23 @@
+@@ -939,6 +964,23 @@ PyType_GenericAlloc(PyTypeObject *type,
  
      if (PyType_IS_GC(type))
          _PyObject_GC_TRACK(obj);
@@ -1423,7 +1422,7 @@ new file mode 100755
      return obj;
  }
  
-@@ -1059,9 +1101,56 @@
+@@ -1059,9 +1101,56 @@ subtype_clear(PyObject *self)
      return 0;
  }
  
@@ -1480,8 +1479,8 @@ new file mode 100755
      PyTypeObject *type, *base;
      destructor basedealloc;
      PyThreadState *tstate = PyThreadState_GET();
---- Python-3.5.3/Python/ceval.c.~1~	2017-01-16 23:57:53.000000000 +0000
-+++ Python-3.5.3/Python/ceval.c	2017-01-17 10:59:03.372507015 +0000
+--- Python-3.5.6/Python/ceval.c	2018-08-02 02:19:12.000000000 +0000
++++ Python-3.5.6/Python/ceval.c	2019-01-07 04:41:11.667790495 +0000
 @@ -20,6 +20,13 @@
  
  #include <ctype.h>
@@ -1496,7 +1495,7 @@ new file mode 100755
  #ifndef WITH_TSC
  
  #define READ_TIMESTAMP(var)
-@@ -123,6 +130,12 @@
+@@ -123,6 +130,12 @@ static PyObject * load_args(PyObject ***
  #define CALL_FLAG_VAR 1
  #define CALL_FLAG_KW 2
  
@@ -1509,7 +1508,7 @@ new file mode 100755
  #ifdef LLTRACE
  static int lltrace;
  static int prtrace(PyObject *, char *);
-@@ -782,6 +795,49 @@
+@@ -782,6 +795,49 @@ PyEval_EvalCode(PyObject *co, PyObject *
                        NULL, NULL);
  }
  
@@ -1559,7 +1558,7 @@ new file mode 100755
  
  /* Interpreter main loop */
  
-@@ -793,8 +849,16 @@
+@@ -793,8 +849,16 @@ PyEval_EvalFrame(PyFrameObject *f) {
      return PyEval_EvalFrameEx(f, 0);
  }
  
@@ -1576,7 +1575,7 @@ new file mode 100755
  {
  #ifdef DXPAIRS
      int lastopcode = 0;
-@@ -915,7 +979,7 @@
+@@ -915,7 +979,7 @@ PyEval_EvalFrameEx(PyFrameObject *f, int
  #ifdef LLTRACE
  #define FAST_DISPATCH() \
      { \
@@ -1585,7 +1584,7 @@ new file mode 100755
              f->f_lasti = INSTR_OFFSET(); \
              goto *opcode_targets[*next_instr++]; \
          } \
-@@ -924,7 +988,7 @@
+@@ -924,7 +988,7 @@ PyEval_EvalFrameEx(PyFrameObject *f, int
  #else
  #define FAST_DISPATCH() \
      { \
@@ -1594,7 +1593,7 @@ new file mode 100755
              f->f_lasti = INSTR_OFFSET(); \
              goto *opcode_targets[*next_instr++]; \
          } \
-@@ -1160,6 +1224,11 @@
+@@ -1160,6 +1224,11 @@ PyEval_EvalFrameEx(PyFrameObject *f, int
          }
      }
  
@@ -1606,7 +1605,7 @@ new file mode 100755
      co = f->f_code;
      names = co->co_names;
      consts = co->co_consts;
-@@ -1354,6 +1423,12 @@
+@@ -1354,6 +1423,12 @@ PyEval_EvalFrameEx(PyFrameObject *f, int
          /* Main switch on opcode */
          READ_TIMESTAMP(inst0);
  
@@ -1619,7 +1618,7 @@ new file mode 100755
          switch (opcode) {
  
          /* BEWARE!
-@@ -3640,6 +3715,10 @@
+@@ -3678,6 +3753,10 @@ fast_yield:
  
      /* pop frame */
  exit_eval_frame:
@@ -1630,7 +1629,7 @@ new file mode 100755
      Py_LeaveRecursiveCall();
      f->f_executing = 0;
      tstate->frame = f->f_back;
-@@ -4390,6 +4469,57 @@
+@@ -4428,6 +4507,57 @@ call_trace(Py_tracefunc func, PyObject *
      return result;
  }
  
@@ -1688,7 +1687,7 @@ new file mode 100755
  PyObject *
  _PyEval_CallTracing(PyObject *func, PyObject *args)
  {
-@@ -4407,6 +4537,51 @@
+@@ -4445,6 +4575,51 @@ _PyEval_CallTracing(PyObject *func, PyOb
      return result;
  }
  
@@ -1740,9 +1739,9 @@ new file mode 100755
  /* See Objects/lnotab_notes.txt for a description of how tracing works. */
  static int
  maybe_call_line_trace(Py_tracefunc func, PyObject *obj,
---- Python-3.5.3/configure.~1~	2017-01-16 23:57:54.000000000 +0000
-+++ Python-3.5.3/configure	2017-01-17 11:00:12.674898964 +0000
-@@ -642,6 +642,11 @@
+--- Python-3.5.6/configure	2018-08-02 02:19:12.000000000 +0000
++++ Python-3.5.6/configure	2019-01-07 04:41:11.675035232 +0000
+@@ -642,6 +642,11 @@ TRUE
  MACHDEP_OBJS
  DYNLOADFILE
  DLINCLDIR
@@ -1754,7 +1753,7 @@ new file mode 100755
  THREADOBJ
  LDLAST
  USE_THREAD_MODULE
-@@ -835,6 +840,7 @@
+@@ -834,6 +839,7 @@ with_doc_strings
  with_tsc
  with_pymalloc
  with_valgrind
@@ -1762,7 +1761,7 @@ new file mode 100755
  with_fpectl
  with_libm
  with_libc
-@@ -1540,6 +1546,7 @@
+@@ -1528,6 +1534,7 @@ Optional Packages:
    --with(out)-tsc         enable/disable timestamp counter profile
    --with(out)-pymalloc    disable/enable specialized mallocs
    --with-valgrind         Enable Valgrind support
@@ -1770,7 +1769,7 @@ new file mode 100755
    --with-fpectl           enable SIGFPE catching
    --with-libm=STRING      math library
    --with-libc=STRING      C library
-@@ -11181,6 +11188,174 @@
+@@ -11180,6 +11187,174 @@ fi
      OPT="-DDYNAMIC_ANNOTATIONS_ENABLED=1 $OPT"
  fi
  
@@ -1945,9 +1944,9 @@ new file mode 100755
  # -I${DLINCLDIR} is added to the compile rule for importdl.o
  
  DLINCLDIR=.
---- Python-3.5.2/configure.ac.~1~	2016-06-25 14:38:39.000000000 -0700
-+++ Python-3.5.2/configure.ac	2016-07-08 06:38:36.346837325 -0700
-@@ -3277,6 +3277,62 @@
+--- Python-3.5.6/configure.ac	2018-08-02 02:19:12.000000000 +0000
++++ Python-3.5.6/configure.ac	2019-01-07 04:41:11.677428344 +0000
+@@ -3288,6 +3288,62 @@ if test "$with_valgrind" != no; then
      OPT="-DDYNAMIC_ANNOTATIONS_ENABLED=1 $OPT"
  fi
  
@@ -2010,8 +2009,8 @@ new file mode 100755
  # -I${DLINCLDIR} is added to the compile rule for importdl.o
  AC_SUBST(DLINCLDIR)
  DLINCLDIR=.
---- Python-3.5.2/pyconfig.h.in.~1~	2016-06-25 14:38:39.000000000 -0700
-+++ Python-3.5.2/pyconfig.h.in	2016-07-08 06:40:11.272340748 -0700
+--- Python-3.5.6/pyconfig.h.in	2018-08-02 02:19:12.000000000 +0000
++++ Python-3.5.6/pyconfig.h.in	2019-01-07 04:41:11.678415222 +0000
 @@ -1360,6 +1360,9 @@
  /* Define if you want documentation strings in extension modules */
  #undef WITH_DOC_STRINGS
@@ -2022,9 +2021,9 @@ new file mode 100755
  /* Define if you want to use the new-style (Openstep, Rhapsody, MacOS) dynamic
     linker (dyld) instead of the old-style (NextStep) dynamic linker (rld).
     Dyld is necessary to support frameworks. */
---- Python-3.5.2/setup.py.~1~	2016-06-25 14:38:39.000000000 -0700
-+++ Python-3.5.2/setup.py	2016-07-08 06:41:09.939900823 -0700
-@@ -689,6 +689,9 @@
+--- Python-3.5.6/setup.py	2018-08-02 02:19:12.000000000 +0000
++++ Python-3.5.6/setup.py	2019-01-07 04:41:11.679763507 +0000
+@@ -689,6 +689,9 @@ class PyBuildExt(build_ext):
          # syslog daemon interface
          exts.append( Extension('syslog', ['syslogmodule.c']) )
  
@@ -2034,9 +2033,9 @@ new file mode 100755
          #
          # Here ends the simple stuff.  From here on, modules need certain
          # libraries, are platform-specific, or present other surprises.
---- Python-3.5.2/Include/ceval.h.~1~	2016-06-25 14:38:35.000000000 -0700
-+++ Python-3.5.2/Include/ceval.h	2016-10-07 12:37:48.230782391 -0700
-@@ -119,6 +119,7 @@
+--- Python-3.5.6/Include/ceval.h	2018-08-02 02:19:12.000000000 +0000
++++ Python-3.5.6/Include/ceval.h	2019-01-07 04:41:11.680392794 +0000
+@@ -119,6 +119,7 @@ PyAPI_FUNC(const char *) PyEval_GetFuncD
  PyAPI_FUNC(PyObject *) PyEval_GetCallStats(PyObject *);
  PyAPI_FUNC(PyObject *) PyEval_EvalFrame(struct _frame *);
  PyAPI_FUNC(PyObject *) PyEval_EvalFrameEx(struct _frame *f, int exc);

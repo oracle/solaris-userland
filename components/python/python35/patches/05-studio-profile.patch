@@ -4,9 +4,9 @@ is a workaround for build peculiarities and to meet Studio's requirement
 that the profiling options be used at all steps of the build -- not just
 compilation.  As it is Solaris-specific, it is not suitable for upstream.
 
---- Python-3.5.3/Makefile.pre.in.~2~	2017-01-17 11:10:49.856824159 +0000
-+++ Python-3.5.3/Makefile.pre.in	2017-01-17 11:10:49.919768587 +0000
-@@ -242,7 +242,7 @@
+--- Python-3.5.6/Makefile.pre.in	2019-01-07 04:41:11.931114263 +0000
++++ Python-3.5.6/Makefile.pre.in	2019-01-07 04:41:12.231485806 +0000
+@@ -244,7 +244,7 @@ TCLTK_LIBS=	@TCLTK_LIBS@
  # The task to run while instrumented when building the profile-opt target.
  # We exclude unittests with -x that take a rediculious amount of time to
  # run in the instrumented training build or do not provide much value.
@@ -15,7 +15,7 @@ compilation.  As it is Solaris-specific, it is not suitable for upstream.
  
  # report files for gcov / lcov coverage report
  COVERAGE_INFO=	$(abs_builddir)/coverage.info
-@@ -513,24 +513,33 @@
+@@ -481,24 +481,33 @@ profile-opt:
  	$(MAKE) profile-removal
  
  build_all_generate_profile:
@@ -53,7 +53,7 @@ compilation.  As it is Solaris-specific, it is not suitable for upstream.
  
  coverage-lcov:
  	@echo "Creating Coverage HTML report with LCOV:"
-@@ -606,13 +615,9 @@
+@@ -575,13 +584,9 @@ Modules/_math.o: Modules/_math.c Modules
  # -s, --silent or --quiet is always the first char.
  # Under BSD make, MAKEFLAGS might be " -s -v x=y".
  sharedmods: $(BUILDPYTHON) pybuilddir.txt Modules/_math.o
@@ -68,7 +68,7 @@ compilation.  As it is Solaris-specific, it is not suitable for upstream.
  
  # Build static library
  # avoid long command lines, same as LIBRARY_OBJS
-@@ -1656,9 +1661,7 @@
+@@ -1661,9 +1666,7 @@ clean: pycremoval
  	-find build -type f -a ! -name '*.gc??' -exec rm -f {} ';'
  
  profile-removal:
