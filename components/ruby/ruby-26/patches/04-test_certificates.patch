@@ -1,0 +1,266 @@
+Test bundle for Ruby 2.6 is failing because of wrong certificates.
+
+This is already fixed in upstream.
+
+Patches from:
+https://bugs.ruby-lang.org/projects/ruby-trunk/repository/revisions/66685
+https://bugs.ruby-lang.org/projects/ruby-trunk/repository/revisions/66686
+
+--- ruby-2.6.0/test/net/fixtures/cacert.pem	2019-01-11 08:31:15.314085931 +0000
++++ ruby-2.6.0/test/net/fixtures/cacert.pem	2019-01-11 08:27:01.559656650 +0000
+@@ -1,66 +1,24 @@
+-Certificate:
+-    Data:
+-        Version: 3 (0x2)
+-        Serial Number:
+-            b9:90:a2:bf:62:69:17:9c
+-        Signature Algorithm: sha1WithRSAEncryption
+-        Issuer: C=JP, ST=Shimane, L=Matz-e city, O=Ruby Core Team, CN=Ruby Test CA/emailAddress=security@ruby-lang.org
+-        Validity
+-            Not Before: Jan  3 01:34:17 2014 GMT
+-            Not After : Jan  2 01:34:17 2019 GMT
+-        Subject: C=JP, ST=Shimane, L=Matz-e city, O=Ruby Core Team, CN=Ruby Test CA/emailAddress=security@ruby-lang.org
+-        Subject Public Key Info:
+-            Public Key Algorithm: rsaEncryption
+-            RSA Public Key: (1024 bit)
+-                Modulus (1024 bit):
+-                    00:db:75:d0:45:de:b1:df:bf:71:a0:0e:b0:a5:e6:
+-                    bc:f4:1c:9d:e5:25:67:64:c5:7b:cb:f1:af:c6:be:
+-                    9a:aa:ea:7e:0f:cc:05:af:ef:40:69:06:b2:c9:13:
+-                    9d:7e:eb:a2:06:e2:ea:7d:07:c7:c7:99:c7:fb:d5:
+-                    b8:eb:63:77:62:2b:18:12:c3:53:58:d0:f5:c7:40:
+-                    0c:01:d1:26:82:34:16:09:e3:dc:65:f4:dc:bb:5d:
+-                    a5:41:60:e7:a9:74:ba:d7:4c:b6:a3:9c:c5:8c:89:
+-                    af:cb:e8:9f:05:fe:ea:fe:64:24:bf:e7:ed:e3:f6:
+-                    d0:fc:d6:eb:fc:06:82:10:fb
+-                Exponent: 65537 (0x10001)
+-        X509v3 extensions:
+-            X509v3 Subject Key Identifier: 
+-                E8:7E:58:AC:13:7B:03:22:8D:9E:AF:32:0B:84:89:80:80:0C:1E:C2
+-            X509v3 Authority Key Identifier: 
+-                keyid:E8:7E:58:AC:13:7B:03:22:8D:9E:AF:32:0B:84:89:80:80:0C:1E:C2
+-                DirName:/C=JP/ST=Shimane/L=Matz-e city/O=Ruby Core Team/CN=Ruby Test CA/emailAddress=security@ruby-lang.org
+-                serial:B9:90:A2:BF:62:69:17:9C
+-
+-            X509v3 Basic Constraints: 
+-                CA:TRUE
+-    Signature Algorithm: sha1WithRSAEncryption
+-        8f:77:06:4e:31:72:12:ee:68:09:70:27:d4:31:85:ef:10:95:
+-        f9:0f:2b:66:63:08:37:88:6e:b7:9b:40:3e:18:77:33:86:e8:
+-        61:6a:b7:3c:cb:c7:a6:d6:d5:92:6a:1f:56:d0:9f:5c:32:56:
+-        d3:37:52:fe:0e:20:c2:7a:0d:fe:2d:3c:81:da:b8:7f:4d:6a:
+-        08:01:d9:be:7a:a2:15:be:a6:ce:49:64:90:8c:9a:ca:6e:2e:
+-        84:48:1d:94:19:56:94:46:aa:25:9b:68:c2:80:60:bf:cb:2e:
+-        35:03:ea:0a:65:5a:33:38:c6:cc:81:46:c0:bc:36:86:96:39:
+-        10:7d
+ -----BEGIN CERTIFICATE-----
+-MIIDjTCCAvagAwIBAgIJALmQor9iaRecMA0GCSqGSIb3DQEBBQUAMIGMMQswCQYD
+-VQQGEwJKUDEQMA4GA1UECBMHU2hpbWFuZTEUMBIGA1UEBxMLTWF0ei1lIGNpdHkx
+-FzAVBgNVBAoTDlJ1YnkgQ29yZSBUZWFtMRUwEwYDVQQDEwxSdWJ5IFRlc3QgQ0Ex
+-JTAjBgkqhkiG9w0BCQEWFnNlY3VyaXR5QHJ1YnktbGFuZy5vcmcwHhcNMTQwMTAz
+-MDEzNDE3WhcNMTkwMTAyMDEzNDE3WjCBjDELMAkGA1UEBhMCSlAxEDAOBgNVBAgT
+-B1NoaW1hbmUxFDASBgNVBAcTC01hdHotZSBjaXR5MRcwFQYDVQQKEw5SdWJ5IENv
+-cmUgVGVhbTEVMBMGA1UEAxMMUnVieSBUZXN0IENBMSUwIwYJKoZIhvcNAQkBFhZz
+-ZWN1cml0eUBydWJ5LWxhbmcub3JnMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKB
+-gQDbddBF3rHfv3GgDrCl5rz0HJ3lJWdkxXvL8a/Gvpqq6n4PzAWv70BpBrLJE51+
+-66IG4up9B8fHmcf71bjrY3diKxgSw1NY0PXHQAwB0SaCNBYJ49xl9Ny7XaVBYOep
+-dLrXTLajnMWMia/L6J8F/ur+ZCS/5+3j9tD81uv8BoIQ+wIDAQABo4H0MIHxMB0G
+-A1UdDgQWBBToflisE3sDIo2erzILhImAgAwewjCBwQYDVR0jBIG5MIG2gBToflis
+-E3sDIo2erzILhImAgAwewqGBkqSBjzCBjDELMAkGA1UEBhMCSlAxEDAOBgNVBAgT
+-B1NoaW1hbmUxFDASBgNVBAcTC01hdHotZSBjaXR5MRcwFQYDVQQKEw5SdWJ5IENv
+-cmUgVGVhbTEVMBMGA1UEAxMMUnVieSBUZXN0IENBMSUwIwYJKoZIhvcNAQkBFhZz
+-ZWN1cml0eUBydWJ5LWxhbmcub3JnggkAuZCiv2JpF5wwDAYDVR0TBAUwAwEB/zAN
+-BgkqhkiG9w0BAQUFAAOBgQCPdwZOMXIS7mgJcCfUMYXvEJX5DytmYwg3iG63m0A+
+-GHczhuhharc8y8em1tWSah9W0J9cMlbTN1L+DiDCeg3+LTyB2rh/TWoIAdm+eqIV
+-vqbOSWSQjJrKbi6ESB2UGVaURqolm2jCgGC/yy41A+oKZVozOMbMgUbAvDaGljkQ
+-fQ==
++MIID7TCCAtWgAwIBAgIJAIltvxrFAuSnMA0GCSqGSIb3DQEBCwUAMIGMMQswCQYD
++VQQGEwJKUDEQMA4GA1UECAwHU2hpbWFuZTEUMBIGA1UEBwwLTWF0ei1lIGNpdHkx
++FzAVBgNVBAoMDlJ1YnkgQ29yZSBUZWFtMRUwEwYDVQQDDAxSdWJ5IFRlc3QgQ0Ex
++JTAjBgkqhkiG9w0BCQEWFnNlY3VyaXR5QHJ1YnktbGFuZy5vcmcwHhcNMTkwMTAy
++MDI1ODI4WhcNMjQwMTAxMDI1ODI4WjCBjDELMAkGA1UEBhMCSlAxEDAOBgNVBAgM
++B1NoaW1hbmUxFDASBgNVBAcMC01hdHotZSBjaXR5MRcwFQYDVQQKDA5SdWJ5IENv
++cmUgVGVhbTEVMBMGA1UEAwwMUnVieSBUZXN0IENBMSUwIwYJKoZIhvcNAQkBFhZz
++ZWN1cml0eUBydWJ5LWxhbmcub3JnMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB
++CgKCAQEAznlbjRVhz1NlutHVrhcGnK8W0qug2ujKXv1njSC4U6nJF6py7I9EeehV
++SaKePyv+I9z3K1LnfUHOtUbdwdKC77yN66A6q2aqzu5q09/NSykcZGOIF0GuItYI
++3nvW3IqBddff2ffsyR+9pBjfb5AIPP08WowF9q4s1eGULwZc4w2B8PFhtxYANd7d
++BvGLXFlcufv9tDtzyRi4t7eqxCRJkZQIZNZ6DHHIJrNxejOILfHLarI12yk8VK6L
++2LG4WgGqyeePiRyd1o1MbuiAFYqAwpXNUbRKg5NaZGwBHZk8UZ+uFKt1QMBURO5R
++WFy1c349jbWszTqFyL4Lnbg9HhAowQIDAQABo1AwTjAdBgNVHQ4EFgQU9tEiKdU9
++I9derQyc5nWPnc34nVMwHwYDVR0jBBgwFoAU9tEiKdU9I9derQyc5nWPnc34nVMw
++DAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAxj7F/u3C3fgq24N7hGRA
++of7ClFQxGmo/IGT0AISzW3HiVYiFaikKhbO1NwD9aBpD8Zwe62sCqMh8jGV/b0+q
++aOORnWYNy2R6r9FkASAglmdF6xn3bhgGD5ls4pCvcG9FynGnGc24g6MrjFNrBYUS
++2iIZsg36i0IJswo/Dy6HLphCms2BMCD3DeWtfjePUiTmQHJo6HsQIKP/u4N4Fvee
++uMBInei2M4VU74fLXbmKl1F9AEX7JDP3BKSZG19Ch5pnUo4uXM1uNTGsi07P4Y0s
++K44+SKBC0bYEFbDK0eQWMrX3kIhkPxyIWhxdq9/NqPYjShuSEAhA6CSpmRg0pqc+
++mA==
+ -----END CERTIFICATE-----
+--- ruby-2.6.0/test/net/fixtures/server.crt	2019-01-11 08:31:29.484559122 +0000
++++ ruby-2.6.0/test/net/fixtures/server.crt	2019-01-11 08:30:18.617058809 +0000
+@@ -1,48 +1,82 @@
+ Certificate:
+     Data:
+-        Version: 1 (0x0)
+-        Serial Number: 0 (0x0)
+-        Signature Algorithm: sha1WithRSAEncryption
++        Version: 3 (0x2)
++        Serial Number: 2 (0x2)
++    Signature Algorithm: sha256WithRSAEncryption
+         Issuer: C=JP, ST=Shimane, L=Matz-e city, O=Ruby Core Team, CN=Ruby Test CA/emailAddress=security@ruby-lang.org
+         Validity
+-            Not Before: Jan  3 01:34:17 2014 GMT
+-            Not After : Jan  2 01:34:17 2019 GMT
++            Not Before: Jan  2 03:27:13 2019 GMT
++            Not After : Jan  1 03:27:13 2024 GMT
+         Subject: C=JP, ST=Shimane, O=Ruby Core Team, OU=Ruby Test, CN=localhost
+         Subject Public Key Info:
+             Public Key Algorithm: rsaEncryption
+-            RSA Public Key: (1024 bit)
+-                Modulus (1024 bit):
+-                    00:db:75:d0:45:de:b1:df:bf:71:a0:0e:b0:a5:e6:
+-                    bc:f4:1c:9d:e5:25:67:64:c5:7b:cb:f1:af:c6:be:
+-                    9a:aa:ea:7e:0f:cc:05:af:ef:40:69:06:b2:c9:13:
+-                    9d:7e:eb:a2:06:e2:ea:7d:07:c7:c7:99:c7:fb:d5:
+-                    b8:eb:63:77:62:2b:18:12:c3:53:58:d0:f5:c7:40:
+-                    0c:01:d1:26:82:34:16:09:e3:dc:65:f4:dc:bb:5d:
+-                    a5:41:60:e7:a9:74:ba:d7:4c:b6:a3:9c:c5:8c:89:
+-                    af:cb:e8:9f:05:fe:ea:fe:64:24:bf:e7:ed:e3:f6:
+-                    d0:fc:d6:eb:fc:06:82:10:fb
++                Public-Key: (2048 bit)
++                Modulus:
++                    00:e8:da:9c:01:2e:2b:10:ec:49:cd:5e:07:13:07:
++                    9c:70:9e:c6:74:bc:13:c2:e1:6f:c6:82:fd:e3:48:
++                    e0:2c:a5:68:c7:9e:42:de:60:54:65:e6:6a:14:57:
++                    7a:30:d0:cc:b5:b6:d9:c3:d2:df:c9:25:97:54:67:
++                    cf:f6:be:5e:cb:8b:ee:03:c5:e1:e2:f9:e7:f7:d1:
++                    0c:47:f0:b8:da:33:5a:ad:41:ad:e7:b5:a2:7b:b7:
++                    bf:30:da:60:f8:e3:54:a2:bc:3a:fd:1b:74:d9:dc:
++                    74:42:e9:29:be:df:ac:b4:4f:eb:32:f4:06:f1:e1:
++                    8c:4b:a8:8b:fb:29:e7:b1:bf:1d:01:ee:73:0f:f9:
++                    40:dc:d5:15:79:d9:c6:73:d0:c0:dd:cb:e4:da:19:
++                    47:80:c6:14:04:72:fd:9a:7c:8f:11:82:76:49:04:
++                    79:cc:f2:5c:31:22:95:13:3e:5d:40:a6:4d:e0:a3:
++                    02:26:7d:52:3b:bb:ed:65:a1:0f:ed:6b:b0:3c:d4:
++                    de:61:15:5e:d3:dd:68:09:9f:4a:57:a5:c2:a9:6d:
++                    86:92:c5:f4:a4:d4:b7:13:3b:52:63:24:05:e2:cc:
++                    e3:8a:3c:d4:35:34:2b:10:bb:58:72:e7:e1:8d:1d:
++                    74:8c:61:16:20:3d:d0:1c:4e:8f:6e:fd:fe:64:10:
++                    4f:41
+                 Exponent: 65537 (0x10001)
+-    Signature Algorithm: sha1WithRSAEncryption
+-        85:f5:d3:05:8b:8c:f4:43:1c:88:f2:8f:b2:f2:93:77:b7:3d:
+-        95:c6:a0:34:bc:33:6a:d8:85:5f:3e:86:08:10:c5:5c:c1:76:
+-        a3:53:3c:dc:38:98:23:97:e7:da:21:ac:e8:4d:3c:96:70:29:
+-        ff:ff:1e:4a:9a:17:2b:db:04:62:b9:ef:ab:ea:a7:a5:e8:7c:
+-        b1:d5:ed:30:a8:6c:78:de:51:7e:e3:8a:c2:a4:64:a8:63:a2:
+-        bc:fd:43:9c:f3:55:7d:54:c9:6a:d8:53:1c:4b:6b:03:aa:b6:
+-        19:e6:a4:4f:47:00:96:c5:42:59:85:4e:c3:4e:cd:41:82:53:
+-        10:f8
++        X509v3 extensions:
++            X509v3 Basic Constraints: 
++                CA:FALSE
++            Netscape Comment: 
++                OpenSSL Generated Certificate
++            X509v3 Subject Key Identifier: 
++                ED:28:C2:7E:AB:4B:C8:E8:FE:55:6D:66:95:31:1C:2D:60:F9:02:36
++            X509v3 Authority Key Identifier: 
++                keyid:F6:D1:22:29:D5:3D:23:D7:5E:AD:0C:9C:E6:75:8F:9D:CD:F8:9D:53
++
++    Signature Algorithm: sha256WithRSAEncryption
++         1d:b8:c5:8b:72:41:20:65:ad:27:6f:15:63:06:26:12:8d:9c:
++         ad:ca:f4:db:97:b4:90:cb:ff:35:94:bb:2a:a7:a1:ab:1e:35:
++         2d:a5:3f:c9:24:b0:1a:58:89:75:3e:81:0a:2c:4f:98:f9:51:
++         fb:c0:a3:09:d0:0a:9b:e7:a2:b7:c3:60:40:c8:f4:6d:b2:6a:
++         56:12:17:4c:00:24:31:df:9c:60:ae:b1:68:54:a9:e6:b5:4a:
++         04:e6:92:05:86:d9:5a:dc:96:30:a5:58:de:14:99:0f:e5:15:
++         89:3e:9b:eb:80:e3:bd:83:c3:ea:33:35:4b:3e:2f:d3:0d:64:
++         93:67:7f:8d:f5:3f:0c:27:bc:37:5a:cc:d6:47:16:af:5a:62:
++         d2:da:51:f8:74:06:6b:24:ad:28:68:08:98:37:7d:ed:0e:ab:
++         1e:82:61:05:d0:ba:75:a0:ab:21:b0:9a:fd:2b:54:86:1d:0d:
++         1f:c2:d4:77:1f:72:26:5e:ad:8a:9f:09:36:6d:44:be:74:c2:
++         5a:3e:ff:5c:9d:75:d6:38:7b:c5:39:f9:44:6e:a1:d1:8e:ff:
++         63:db:c4:bb:c6:91:92:ca:5c:60:9b:1d:eb:0a:de:08:ee:bf:
++         da:76:03:65:62:29:8b:f8:7f:c7:86:73:1e:f6:1f:2d:89:69:
++         fd:be:bd:6e
+ -----BEGIN CERTIFICATE-----
+-MIICXDCCAcUCAQAwDQYJKoZIhvcNAQEFBQAwgYwxCzAJBgNVBAYTAkpQMRAwDgYD
+-VQQIEwdTaGltYW5lMRQwEgYDVQQHEwtNYXR6LWUgY2l0eTEXMBUGA1UEChMOUnVi
+-eSBDb3JlIFRlYW0xFTATBgNVBAMTDFJ1YnkgVGVzdCBDQTElMCMGCSqGSIb3DQEJ
+-ARYWc2VjdXJpdHlAcnVieS1sYW5nLm9yZzAeFw0xNDAxMDMwMTM0MTdaFw0xOTAx
+-MDIwMTM0MTdaMGAxCzAJBgNVBAYTAkpQMRAwDgYDVQQIEwdTaGltYW5lMRcwFQYD
+-VQQKEw5SdWJ5IENvcmUgVGVhbTESMBAGA1UECxMJUnVieSBUZXN0MRIwEAYDVQQD
+-Ewlsb2NhbGhvc3QwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBANt10EXesd+/
+-caAOsKXmvPQcneUlZ2TFe8vxr8a+mqrqfg/MBa/vQGkGsskTnX7rogbi6n0Hx8eZ
+-x/vVuOtjd2IrGBLDU1jQ9cdADAHRJoI0Fgnj3GX03LtdpUFg56l0utdMtqOcxYyJ
+-r8vonwX+6v5kJL/n7eP20PzW6/wGghD7AgMBAAEwDQYJKoZIhvcNAQEFBQADgYEA
+-hfXTBYuM9EMciPKPsvKTd7c9lcagNLwzatiFXz6GCBDFXMF2o1M83DiYI5fn2iGs
+-6E08lnAp//8eSpoXK9sEYrnvq+qnpeh8sdXtMKhseN5RfuOKwqRkqGOivP1DnPNV
+-fVTJathTHEtrA6q2GeakT0cAlsVCWYVOw07NQYJTEPg=
++MIID4zCCAsugAwIBAgIBAjANBgkqhkiG9w0BAQsFADCBjDELMAkGA1UEBhMCSlAx
++EDAOBgNVBAgMB1NoaW1hbmUxFDASBgNVBAcMC01hdHotZSBjaXR5MRcwFQYDVQQK
++DA5SdWJ5IENvcmUgVGVhbTEVMBMGA1UEAwwMUnVieSBUZXN0IENBMSUwIwYJKoZI
++hvcNAQkBFhZzZWN1cml0eUBydWJ5LWxhbmcub3JnMB4XDTE5MDEwMjAzMjcxM1oX
++DTI0MDEwMTAzMjcxM1owYDELMAkGA1UEBhMCSlAxEDAOBgNVBAgMB1NoaW1hbmUx
++FzAVBgNVBAoMDlJ1YnkgQ29yZSBUZWFtMRIwEAYDVQQLDAlSdWJ5IFRlc3QxEjAQ
++BgNVBAMMCWxvY2FsaG9zdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB
++AOjanAEuKxDsSc1eBxMHnHCexnS8E8Lhb8aC/eNI4CylaMeeQt5gVGXmahRXejDQ
++zLW22cPS38kll1Rnz/a+XsuL7gPF4eL55/fRDEfwuNozWq1Bree1onu3vzDaYPjj
++VKK8Ov0bdNncdELpKb7frLRP6zL0BvHhjEuoi/sp57G/HQHucw/5QNzVFXnZxnPQ
++wN3L5NoZR4DGFARy/Zp8jxGCdkkEeczyXDEilRM+XUCmTeCjAiZ9Uju77WWhD+1r
++sDzU3mEVXtPdaAmfSlelwqlthpLF9KTUtxM7UmMkBeLM44o81DU0KxC7WHLn4Y0d
++dIxhFiA90BxOj279/mQQT0ECAwEAAaN7MHkwCQYDVR0TBAIwADAsBglghkgBhvhC
++AQ0EHxYdT3BlblNTTCBHZW5lcmF0ZWQgQ2VydGlmaWNhdGUwHQYDVR0OBBYEFO0o
++wn6rS8jo/lVtZpUxHC1g+QI2MB8GA1UdIwQYMBaAFPbRIinVPSPXXq0MnOZ1j53N
+++J1TMA0GCSqGSIb3DQEBCwUAA4IBAQAduMWLckEgZa0nbxVjBiYSjZytyvTbl7SQ
++y/81lLsqp6GrHjUtpT/JJLAaWIl1PoEKLE+Y+VH7wKMJ0Aqb56K3w2BAyPRtsmpW
++EhdMACQx35xgrrFoVKnmtUoE5pIFhtla3JYwpVjeFJkP5RWJPpvrgOO9g8PqMzVL
++Pi/TDWSTZ3+N9T8MJ7w3WszWRxavWmLS2lH4dAZrJK0oaAiYN33tDqsegmEF0Lp1
++oKshsJr9K1SGHQ0fwtR3H3ImXq2Knwk2bUS+dMJaPv9cnXXWOHvFOflEbqHRjv9j
++28S7xpGSylxgmx3rCt4I7r/adgNlYimL+H/HhnMe9h8tiWn9vr1u
+ -----END CERTIFICATE-----
+--- ruby-2.6.0/test/net/fixtures/server.key	2019-01-11 08:31:56.170885217 +0000
++++ ruby-2.6.0/test/net/fixtures/server.key	2019-01-11 08:30:26.531462848 +0000
+@@ -1,15 +1,28 @@
+ -----BEGIN RSA PRIVATE KEY-----
+-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
++2whRF0FEjKA8ehrNhAq+VFfFNw==
+ -----END RSA PRIVATE KEY-----

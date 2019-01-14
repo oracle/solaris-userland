@@ -1,0 +1,54 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+# Change all the COMPONENT_VERSION strings to RUBY_LIB_VER This is a problem
+# only for first versions when both of these are the same. With first micro
+# release it is no longer necessary.
+<transform dir file link hardlink -> edit path "COMPONENT_VERSION" "RUBY_LIB_VER">
+
+# Change all version numbers to $(RUBY_LIB_VER) string
+<transform dir file link hardlink -> edit path "/$(RUBY_LIB_VER)/" "/$!(RUBY_LIB_VER)/">
+<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
+
+<transform dir file link hardlink -> edit path "/ruby-$(RUBY_LIB_VER)/" "/ruby-$!(RUBY_LIB_VER)/">
+<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
+
+<transform dir file link hardlink -> edit path "/$(RUBY_VER)/" "/$!(RUBY_VER)/">
+<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
+
+<transform dir file link hardlink -> edit path "/ruby-$(RUBY_VER)" "/ruby-$!(RUBY_VER)">
+<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
+
+<transform dir file link hardlink -> edit path "/$(MACH64)-solaris" "/$!(MACH64)-solaris">
+<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
+
+<transform dir file link hardlink -> edit path "-solaris$(SOLARIS_VERSION)" "-solaris$!(SOLARIS_VERSION)">
+<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
+
+# Move gem.1 into proper place
+<transform file path=Solaris/gem.1 -> set action.hash %(path)>
+# We can't just use $(RUBY_VER) as that would be expanded
+<transform file path=Solaris/gem.1 -> set path usr/ruby/$!(RUBY_VER)/share/man/man1/gem.1>
+<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
