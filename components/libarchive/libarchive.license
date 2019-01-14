@@ -17,12 +17,11 @@ the actual statements in the files are controlling.
   files for details:
    libarchive/archive_entry.c
    libarchive/archive_read_support_filter_compress.c
-   libarchive/archive_write_set_filter_compress.c
+   libarchive/archive_write_add_filter_compress.c
    libarchive/mtree.5
-   tar/matching.c
 
 * The following source files are in the public domain:
-   tar/getdate.c
+   libarchive/archive_getdate.c
 
 * The build files---including Makefiles, configure scripts,
   and auxiliary scripts used as part of the compile process---have
@@ -35,7 +34,37 @@ do use the license below.  The varying licensing of the build scripts
 seems to be an unavoidable mess.
 
 
-Copyright (c) 2003-2009 <author(s)>
+Copyright (c) 2011-2012 libarchive Project
+Copyright (c) 2003-2017 Tim Kientzle
+Copyright (c) 2008-2014 Michihiro NAKAJIMA
+Copyright (c) 2016,2017 Martin Matuska
+Copyright (c) 2007-2010 Joerg Sonnenberger
+Copyright (c) 2003-2007 Kees Zeelenberg
+Copyright (c) 2006 Rudolf Marek SYSGO s.r.o.
+Copyright (c) 2008 Anselm Strauss
+Copyright (c) 2008 Miklos Vajna
+Copyright (c) 2009-2011,2017 Sean Purcell
+Copyright (c) 2009 Andreas Henriksson <andreas@fatal.se>
+Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
+Copyright (c) 1998,2001 The NetBSD Foundation, Inc.
+Copyright (c) 2011-2012 Andres Mejia
+Copyright (c) 2011-2014, Mike Kazantsev
+Copyright (c) 2012 Ondrej Holy
+Copyright (c) 2002 Thomas Moestl <tmm@FreeBSD.org>
+Copyright (c) 2013 Konrad Kleine
+Copyright (c) 2013 Marek Kubica
+Copyright (c) 2014 Kevin Locke
+Copyright (c) 2014 Sebastian Freundt
+Copyright (c) 2014 Trevor Drake
+Copyright (c) 2015 Graham Percival
+Copyright (c) 2015 Okhotnikov Kirill
+Copyright (c) 2016 IBM Corporation
+Copyright (c) 2016 Peter Wu
+Copyright (c) 2017 Phillip Berndt
+Copyright (c) 2018 The FreeBSD Foundation
+Copyright (c) 2007 Kai Wang
+Copyright (c) 2008 Jaakko Heinonen
+
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -59,93 +88,39 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-/*-
- * Copyright (c) 2003-2007 Tim Kientzle
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR(S) ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
 
-/*
- * This code borrows heavily from "compress" source code, which is
- * protected by the following copyright.  (Clause 3 dropped by request
- * of the Regents.)
- */
 
-/*-
- * Copyright (c) 1985, 1986, 1992, 1993
- *      The Regents of the University of California.  All rights reserved.
- *
- * This code is derived from software contributed to Berkeley by
- * Diomidis Spinellis and James A. Woods, derived from original
- * work by Spencer Thomas and Joseph Orost.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 4. Neither the name of the University nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- *
- * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- */
-.\" Copyright (c) 1989, 1990, 1993
-.\"     The Regents of the University of California.  All rights reserved.
-.\"
-.\" Redistribution and use in source and binary forms, with or without
-.\" modification, are permitted provided that the following conditions
-.\" are met:
-.\" 1. Redistributions of source code must retain the above copyright
-.\"    notice, this list of conditions and the following disclaimer.
-.\" 2. Redistributions in binary form must reproduce the above copyright
-.\"    notice, this list of conditions and the following disclaimer in the
-.\"    documentation and/or other materials provided with the distribution.
-.\" 4. Neither the name of the University nor the names of its contributors
-.\"    may be used to endorse or promote products derived from this software
-.\"    without specific prior written permission.
-.\"
-.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
-.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
-.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-.\" SUCH DAMAGE.
+Copyright (c) 1985, 1986, 1992, 1993
+    The Regents of the University of California.  All rights reserved.
+
+This code is derived from software contributed to Berkeley by
+Diomidis Spinellis and James A. Woods, derived from original
+work by Spencer Thomas and Joseph Orost.
+
+
+Copyright (c) 1989, 1990, 1993
+   The Regents of the University of California.  All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer in the
+  documentation and/or other materials provided with the distribution.
+4. Neither the name of the University nor the names of its contributors
+  may be used to endorse or promote products derived from this software
+  without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGE.

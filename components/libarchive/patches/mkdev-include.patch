@@ -1,0 +1,18 @@
+We need an additional header to compile the code. Without this patch,
+compilation crashes with undefined symbol error.
+
+This patch was offered upstream:
+https://github.com/libarchive/libarchive/pull/1121
+
+--- libarchive-3.3.3/libarchive/archive_pack_dev.c
++++ libarchive-3.3.3/libarchive/archive_pack_dev.c
+@@ -60,6 +60,9 @@ __RCSID("$NetBSD$");
+ #ifdef HAVE_SYS_SYSMACROS_H
+ #include <sys/sysmacros.h>
+ #endif
++#ifdef HAVE_SYS_MKDEV_H
++#include <sys/mkdev.h>
++#endif
+ #ifdef HAVE_UNISTD_H
+ #include <unistd.h>
+ #endif
