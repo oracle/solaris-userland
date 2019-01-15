@@ -1,0 +1,29 @@
+This patch for a Solaris-specific problem but is a good safety precaution,
+so although it is not suitable for upstream as-is, we might offer it in a
+slightly tweaked form at some point in the future.
+
+Note that this can also have wrong inpact on other tests (e.g., imap which
+tries to allocate huge chunks of virtual memory).
+
+--- Python-3.7.1/Lib/test/libregrtest/setup.py	2018-11-14 06:32:47.636804463 +0000
++++ Python-3.7.1/Lib/test/libregrtest/setup.py	2018-11-14 06:32:14.498036354 +0000
+@@ -76,6 +76,19 @@ def setup_tests(ns):
+             newsoft = min(hard, max(soft, 1024*2048))
+             resource.setrlimit(resource.RLIMIT_STACK, (newsoft, hard))
+ 
++    # The socket test goes crazy on Solaris, slurping up VM until the system
++    # dies or the test is killed.  So limit it to 8GB.  While we could do this
++    # in the socket test itself, it is more prudent to do it here in case any
++    # other tests ever go crazy in a similar fashion.
++    if sys.platform == 'sunos5':
++        try:
++            import resource
++        except ImportError:
++            pass
++        else:
++            vm_limit = 8589934592
++            resource.setrlimit(resource.RLIMIT_VMEM, (vm_limit, vm_limit))
++
+     if ns.huntrleaks:
+         unittest.BaseTestSuite._cleanup = False
+ 

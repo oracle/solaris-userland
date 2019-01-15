@@ -1,0 +1,88 @@
+Solaris related parts of code should use both defined(__sun) and defined(__SVR4)
+guards rather than just defined(sun), which is not 100% supported by all
+compilers. This can result in some parts of python not working correctly.
+
+This was reported upstream and merged - should be fixed in the next version.
+
+--- Python-3.7.1/Modules/_posixsubprocess.c	2018-12-10 05:42:18.815049168 +0000
++++ Python-3.7.1/Modules/_posixsubprocess.c	2018-12-10 05:31:31.105111871 +0000
+@@ -26,7 +26,7 @@
+ # define SYS_getdents64  __NR_getdents64
+ #endif
+ 
+-#if defined(sun)
++#if defined(__sun) && defined(__SVR4)
+ /* readdir64 is used to work around Solaris 9 bug 6395699. */
+ # define readdir readdir64
+ # define dirent dirent64
+--- Python-3.7.1/Modules/socketmodule.c	2018-12-10 05:42:25.207251507 +0000
++++ Python-3.7.1/Modules/socketmodule.c	2018-12-10 05:34:29.958316665 +0000
+@@ -175,7 +175,7 @@ if_indextoname(index) -- return the corr
+ #ifdef HAVE_GETHOSTBYNAME_R
+ # if defined(_AIX) && !defined(_LINUX_SOURCE_COMPAT)
+ #  define HAVE_GETHOSTBYNAME_R_3_ARG
+-# elif defined(__sun) || defined(__sgi)
++# elif (defined(__sun) && defined(__SVR4)) || defined(__sgi)
+ #  define HAVE_GETHOSTBYNAME_R_5_ARG
+ # elif defined(__linux__)
+ /* Rely on the configure script */
+@@ -261,7 +261,7 @@ http://cvsweb.netbsd.org/bsdweb.cgi/src/
+ #endif
+ 
+ /* Solaris fails to define this variable at all. */
+-#if defined(sun) && !defined(INET_ADDRSTRLEN)
++#if defined(__sun) && defined(__SVR4) && !defined(INET_ADDRSTRLEN)
+ #define INET_ADDRSTRLEN 16
+ #endif
+ 
+--- Python-3.7.1/Modules/posixmodule.c	2018-12-10 05:42:42.213207416 +0000
++++ Python-3.7.1/Modules/posixmodule.c	2018-12-10 05:39:10.217761214 +0000
+@@ -388,7 +388,7 @@ static int win32_can_symlink = 0;
+ #define MODNAME "posix"
+ #endif
+ 
+-#if defined(__sun)
++#if defined(__sun) && defined(__SVR4)
+ /* Something to implement in autoconf, not present in autoconf 2.69 */
+ #define HAVE_STRUCT_STAT_ST_FSTYPE 1
+ #endif
+@@ -5921,7 +5921,7 @@ os_openpty_impl(PyObject *module)
+ #endif
+ #if defined(HAVE_DEV_PTMX) && !defined(HAVE_OPENPTY) && !defined(HAVE__GETPTY)
+     PyOS_sighandler_t sig_saved;
+-#ifdef sun
++#if defined(__sun) && defined(__SVR4)
+     extern char *ptsname(int fildes);
+ #endif
+ #endif
+--- Python-3.7.1/Modules/timemodule.c	2018-12-10 05:42:47.981030981 +0000
++++ Python-3.7.1/Modules/timemodule.c	2018-12-10 05:31:14.367588245 +0000
+@@ -718,7 +718,7 @@ time_strftime(PyObject *self, PyObject *
+         return NULL;
+     }
+ 
+-#if defined(_MSC_VER) || defined(sun) || defined(_AIX)
++#if defined(_MSC_VER) || (defined(__sun) && defined(__SVR4)) || defined(_AIX)
+     if (buf.tm_year + 1900 < 1 || 9999 < buf.tm_year + 1900) {
+         PyErr_SetString(PyExc_ValueError,
+                         "strftime() requires year in [1; 9999]");
+@@ -764,7 +764,7 @@ time_strftime(PyObject *self, PyObject *
+             return NULL;
+         }
+     }
+-#elif (defined(_AIX) || defined(sun)) && defined(HAVE_WCSFTIME)
++#elif (defined(_AIX) || (defined(__sun) && defined(__SVR4))) && defined(HAVE_WCSFTIME)
+     for (outbuf = wcschr(fmt, '%');
+         outbuf != NULL;
+         outbuf = wcschr(outbuf+2, '%'))
+--- Python-3.7.1/Python/bootstrap_hash.c	2018-12-10 05:42:54.082980509 +0000
++++ Python-3.7.1/Python/bootstrap_hash.c	2018-12-10 05:34:58.484234419 +0000
+@@ -112,7 +112,7 @@ py_getrandom(void *buffer, Py_ssize_t si
+     flags = blocking ? 0 : GRND_NONBLOCK;
+     dest = buffer;
+     while (0 < size) {
+-#ifdef sun
++#if defined(__sun) && defined(__SVR4)
+         /* Issue #26735: On Solaris, getrandom() is limited to returning up
+            to 1024 bytes. Call it multiple times if more bytes are
+            requested. */

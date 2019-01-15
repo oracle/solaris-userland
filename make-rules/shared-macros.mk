@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 .PHONY: void
@@ -669,6 +669,10 @@ PYTHON.3.4 =	$(USRBIN.32)/python3.4
 PYTHON.3.5.32 =	$(USRBIN.32)/python3.5
 PYTHON.3.5.64 =	$(USRBIN.32)/python3.5
 PYTHON.3.5 =	$(USRBIN.32)/python3.5
+
+PYTHON.3.7.32 =	$(USRBIN.32)/python3.7
+PYTHON.3.7.64 =	$(USRBIN.32)/python3.7
+PYTHON.3.7 =	$(USRBIN.32)/python3.7
 
 PYTHON.32 =	$(PYTHON.$(PYTHON_VERSION).32)
 PYTHON.64 =	$(PYTHON.$(PYTHON_VERSION).64)

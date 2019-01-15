@@ -1,0 +1,199 @@
+This patch disables several tests that doesn't work correctly on Solaris.
+
+test_gdb is not deterministic and sometimes fails for unimportant reasons (only
+when ran with gmake test from component root). Same is true for on ofe the
+test_normalization tests. [Not for upstream]
+
+test_time changes used locale to region specific utf8 as python is not able to
+work with non utf8 region specific encodings in Solaris. [Not for upstream].
+Second change changes skip reason string to reflect the actual platform.
+[Can be pushed upstream]
+
+test_socket fixes problem with sparc specific behavior of CMSG_SPACE(). Needed
+values are not linear as the test expects and that might cause an exception for
+last byte. Other problems in this test are related to known issues also
+affecting other platforms. [Can be atleast reported upstream]
+
+test_structures is related to known bad support of reference passing on many
+platforms. This just skips given test [Not for upstream].
+
+test_re those two test are probably also locale related but I have no idea what
+is the root cause of these... [Should be reported upstream]
+
+test_float changes encodings for the same reason as in test_time.
+[Not for upstream]
+
+test_c_locale_coercion is not ready for Solaris using 646 as ASCII alias. Patch
+was offered upstream. [https://github.com/python/cpython/pull/11195]
+
+test_faulthandler is segfaulting on intel in this test (end of program with
+registered faulthandler with chain=True). This bug was reported upstream.
+[https://bugs.python.org/issue35484]
+
+--- Python-3.7.1/Lib/test/test_gdb.py   2018-10-19 23:04:19.000000000 +0000
++++ Python-3.7.1/Lib/test/test_gdb.py   2018-12-12 06:58:53.159749109 +0000
+@@ -44,6 +44,8 @@ if gdb_major_version < 7:
+                             "embedding. Saw %s.%s:\n%s"
+                             % (gdb_major_version, gdb_minor_version,
+                                gdb_version))
++if sys.platform.startswith("sunos"):
++    raise unittest.SkipTest("test doesn't work well on Solaris")
+ 
+ if not sysconfig.is_python_build():
+     raise unittest.SkipTest("test_gdb only works on source builds at the moment.")
+--- Python-3.7.1/Lib/test/test_normalization.py 2018-12-12 04:00:44.535349567 +0000
++++ Python-3.7.1/Lib/test/test_normalization.py 2018-12-12 03:53:02.418035411 +0000
+@@ -36,6 +36,8 @@ def unistr(data):
+ 
+ class NormalizationTest(unittest.TestCase):
+     def test_main(self):
++        if sys.platform.startswith("sunos"):
++            self.skipTest("test doesn't work well on Solaris")
+         # Hit the exception early
+         try:
+             testdata = open_urlresource(TESTDATAURL, encoding="utf-8",
+--- Python-3.7.1/Lib/test/test_time.py  2018-12-12 03:34:29.666105890 +0000
++++ Python-3.7.1/Lib/test/test_time.py  2018-12-12 03:33:50.761198497 +0000
+@@ -625,9 +625,9 @@ class TestLocale(unittest.TestCase):
+ 
+     def test_bug_3061(self):
+         try:
+-            tmp = locale.setlocale(locale.LC_ALL, "fr_FR")
++            tmp = locale.setlocale(locale.LC_ALL, "fr_FR.UTF-8")
+         except locale.Error:
+-            self.skipTest('could not set locale.LC_ALL to fr_FR')
++            self.skipTest('could not set locale.LC_ALL to fr_FR.UTF-8')
+         # This should not cause an exception
+         time.strftime("%B", (2009,2,1,0,0,0,0,0,0))
+ 
+@@ -668,7 +668,7 @@ class _TestStrftimeYear:
+             self.test_year('%04d', func=year4d)
+ 
+     def skip_if_not_supported(y):
+-        msg = "strftime() is limited to [1; 9999] with Visual Studio"
++        msg = "strftime() is limited to [1; 9999] on %s" % sys.platform
+         # Check that it doesn't crash for year > 9999
+         try:
+             time.strftime('%Y', (y,) + (0,) * 8)
+--- Python-3.7.1/Lib/test/test_socket.py	2018-12-11 06:15:53.678057549 +0000
++++ Python-3.7.1/Lib/test/test_socket.py	2018-12-11 06:08:23.005687412 +0000
+@@ -3008,7 +3008,7 @@ class CmsgMacroTests(unittest.TestCase):
+         # Test CMSG_SPACE() with various valid and invalid values,
+         # checking the assumptions used by sendmsg().
+         toobig = self.socklen_t_limit - socket.CMSG_SPACE(1) + 1
+-        values = list(range(257)) + list(range(toobig - 257, toobig))
++        values = list(range(257)) + list(range(toobig - 257, toobig - 8))
+ 
+         last = socket.CMSG_SPACE(0)
+         # struct cmsghdr has at least three members, two of which are ints
+@@ -3155,6 +3155,7 @@ class SCMRightsTest(SendrecvmsgServerTim
+ 
+     @unittest.skipIf(sys.platform == "darwin", "skipping, see issue #12958")
+     @unittest.skipIf(sys.platform.startswith("aix"), "skipping, see issue #22397")
++    @unittest.skipIf(sys.platform.startswith("sunos"), "skipping, see issue #12958")
+     @requireAttrs(socket, "CMSG_SPACE")
+     def testFDPassSeparate(self):
+         # Pass two FDs in two separate arrays.  Arrays may be combined
+@@ -3166,6 +3167,7 @@ class SCMRightsTest(SendrecvmsgServerTim
+     @testFDPassSeparate.client_skip
+     @unittest.skipIf(sys.platform == "darwin", "skipping, see issue #12958")
+     @unittest.skipIf(sys.platform.startswith("aix"), "skipping, see issue #22397")
++    @unittest.skipIf(sys.platform.startswith("sunos"), "skipping, see issue #12958")
+     def _testFDPassSeparate(self):
+         fd0, fd1 = self.newFDs(2)
+         self.assertEqual(
+@@ -3179,6 +3181,7 @@ class SCMRightsTest(SendrecvmsgServerTim
+ 
+     @unittest.skipIf(sys.platform == "darwin", "skipping, see issue #12958")
+     @unittest.skipIf(sys.platform.startswith("aix"), "skipping, see issue #22397")
++    @unittest.skipIf(sys.platform.startswith("sunos"), "skipping, see issue #12958")
+     @requireAttrs(socket, "CMSG_SPACE")
+     def testFDPassSeparateMinSpace(self):
+         # Pass two FDs in two separate arrays, receiving them into the
+@@ -3193,6 +3196,7 @@ class SCMRightsTest(SendrecvmsgServerTim
+     @testFDPassSeparateMinSpace.client_skip
+     @unittest.skipIf(sys.platform == "darwin", "skipping, see issue #12958")
+     @unittest.skipIf(sys.platform.startswith("aix"), "skipping, see issue #22397")
++    @unittest.skipIf(sys.platform.startswith("sunos"), "skipping, see issue #12958")
+     def _testFDPassSeparateMinSpace(self):
+         fd0, fd1 = self.newFDs(2)
+         self.assertEqual(
+--- Python-3.7.1/Lib/ctypes/test/test_structures.py	2018-12-11 06:34:48.914184915 +0000
++++ Python-3.7.1/Lib/ctypes/test/test_structures.py	2018-12-11 06:30:09.288475872 +0000
+@@ -1,3 +1,4 @@
++import sys
+ import unittest
+ from ctypes import *
+ from ctypes.test import need_symbol
+@@ -395,6 +396,8 @@ class StructureTestCase(unittest.TestCas
+                          (1, 0, 0, 0, 0, 0))
+         self.assertRaises(TypeError, lambda: Z(1, 2, 3, 4, 5, 6, 7))
+ 
++    @unittest.skipIf(sys.platform.startswith("sunos"),
++                     "test doesn't work well on sparc Solaris")
+     def test_pass_by_value(self):
+         # This should mirror the structure in Modules/_ctypes/_ctypes_test.c
+         class X(Structure):
+--- Python-3.7.1/Lib/test/test_re.py	2018-12-12 04:01:15.803998378 +0000
++++ Python-3.7.1/Lib/test/test_re.py	2018-12-12 03:40:44.774375614 +0000
+@@ -1,5 +1,6 @@
+ from test.support import (gc_collect, bigmemtest, _2G,
+                           cpython_only, captured_stdout)
++import sys
+ import locale
+ import re
+ import sre_compile
+@@ -1879,6 +1880,8 @@ ELSE
+         self.assertTrue(re.match(b'(?Li)\xc5', b'\xe5'))
+         self.assertTrue(re.match(b'(?Li)\xe5', b'\xc5'))
+ 
++    @unittest.skipIf(sys.platform.startswith("sunos"),
++                     "test doesn't work well on sparc Solaris")
+     def check_en_US_utf8(self):
+         locale.setlocale(locale.LC_CTYPE, 'en_US.utf8')
+         self.assertTrue(re.match(b'\xc5\xe5', b'\xc5\xe5', re.L|re.I))
+@@ -1888,6 +1891,8 @@ ELSE
+         self.assertIsNone(re.match(b'(?Li)\xc5', b'\xe5'))
+         self.assertIsNone(re.match(b'(?Li)\xe5', b'\xc5'))
+ 
++    @unittest.skipIf(sys.platform.startswith("sunos"),
++                     "test doesn't work well on sparc Solaris")
+     def test_locale_compiled(self):
+         oldlocale = locale.setlocale(locale.LC_CTYPE)
+         self.addCleanup(locale.setlocale, locale.LC_CTYPE, oldlocale)
+--- Python-3.7.1/Lib/test/test_float.py	2018-12-12 06:01:22.089460727 +0000
++++ Python-3.7.1/Lib/test/test_float.py	2018-12-12 06:00:43.235142202 +0000
+@@ -144,7 +144,7 @@ class GeneralFloatCases(unittest.TestCas
+         # non-UTF-8 byte string
+         check(b'123\xa0')
+ 
+-    @support.run_with_locale('LC_NUMERIC', 'fr_FR', 'de_DE')
++    @support.run_with_locale('LC_NUMERIC', 'fr_FR.UTF-8', 'de_DE.UTF-8')
+     def test_float_with_comma(self):
+         # set locale to something that doesn't use '.' for the decimal point
+         # float must not accept the locale specific decimal point but
+--- Python-3.7.1/Lib/test/test_c_locale_coercion.py	2018-12-12 06:03:26.458720416 +0000
++++ Python-3.7.1/Lib/test/test_c_locale_coercion.py	2018-12-12 06:02:15.799218233 +0000
+@@ -131,10 +131,12 @@ class EncodingDetails(_EncodingDetails):
+ 
+         * Some platforms report ASCII as ANSI_X3.4-1968
+         * Some platforms report ASCII as US-ASCII
++        * Some platforms report ASCII as 646
+         * Some platforms report UTF-8 instead of utf-8
+         """
+         data = data.replace(b"ANSI_X3.4-1968", b"ascii")
+         data = data.replace(b"US-ASCII", b"ascii")
++        data = data.replace(b"646", b"ascii")
+         data = data.lower()
+         return data
+ 
+--- Python-3.7.1/Lib/test/test_faulthandler.py	2018-12-13 07:45:22.646074964 +0000
++++ Python-3.7.1/Lib/test/test_faulthandler.py	2018-12-13 07:41:11.961357614 +0000
+@@ -704,6 +704,7 @@ class FaultHandlerTests(unittest.TestCas
+     def test_register_threads(self):
+         self.check_register(all_threads=True)
+ 
++    @unittest.skipIf(sys.platform.startswith("sunos"), "sometimes fails on Solaris")
+     def test_register_chain(self):
+         self.check_register(chain=True)
+ 
