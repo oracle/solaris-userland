@@ -282,7 +282,7 @@ diff -pur old/misc.c new/misc.c
 +{
 +	char ebuf[MSGBUFSIZ];
 +
-+	if (dlsym(RTLD_DEFAULT, "FIPS_module_mode_set") != NULL) {
++	if (dlsym(RTLD_PROBE, "FIPS_module_mode_set") != NULL) {
 +		if (ssh_FIPS_mode()) {
 +			debug("Running in FIPS mode.");
 +		} else {
@@ -301,7 +301,7 @@ diff -pur old/misc.c new/misc.c
 +ssh_FIPS_mode_set_if_capable()
 +{
 +	/* presence of FIPS_module_mode_set indicates FIPS capable OpenSSL */
-+	if (dlsym(RTLD_DEFAULT, "FIPS_module_mode_set") != NULL) {
++	if (dlsym(RTLD_PROBE, "FIPS_module_mode_set") != NULL) {
 +		/* call the API function FIPS_mode_set*/
 +		if (!FIPS_mode_set(1)) {
 +			ssh_FIPS_err_code = ERR_get_error();

@@ -1,0 +1,23 @@
+--- old/configure.ac	2018-12-05 13:54:03.039469640 +0100
++++ new/configure.ac	2018-12-06 11:06:43.970568966 +0100
+@@ -193,7 +193,6 @@
+ 	OSSH_CHECK_CFLAG_COMPILE([-D_FORTIFY_SOURCE=2])
+     if test "x$use_toolchain_hardening" = "x1"; then
+ 	OSSH_CHECK_LDFLAG_LINK([-Wl,-z,relro])
+-	OSSH_CHECK_LDFLAG_LINK([-Wl,-z,now])
+ 	OSSH_CHECK_LDFLAG_LINK([-Wl,-z,noexecstack])
+ 	# NB. -ftrapv expects certain support functions to be present in
+ 	# the compiler library (libgcc or similar) to detect integer operations
+
+--- old/Makefile.in	2018-12-06 11:08:39.646828583 +0100
++++ new/Makefile.in	2018-12-06 11:25:16.570451901 +0100
+@@ -151,6 +151,9 @@
+ $(SSHOBJS): Makefile.in config.h
+ $(SSHDOBJS): Makefile.in config.h
+ 
++# For chroot(), make sure all libraries are loaded.
++sshd : LDFLAGS += -Wl,-z,now
++
+ .c.o:
+ 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+ 

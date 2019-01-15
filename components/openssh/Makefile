@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64
@@ -65,12 +65,6 @@ CFLAGS += -DOPENSSL_NO_RC4
 CFLAGS += -DWITHOUT_HMAC_MD5
 CFLAGS += -DSFTP_AUDIT
 CFLAGS += -DDEFAULT_PKCS11_WHITELIST='\"/lib/$(MACH64)/*,/usr/lib/$(MACH64)/*,/usr/lib/security/$(MACH64)/*\"'
-
-# We need to disable lazyloading of dynamic dependent libraries. During the
-# pre-authentication phase, sshd will chroot to /var/empty which doesn't
-# contain any files. If we use lazyloading, sshd will fail to find any
-# libraries that it needs.
-LDFLAGS += $(LD_B_DIRECT) -z nolazyload
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
