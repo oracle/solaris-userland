@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         irssi
-COMPONENT_VERSION=	1.0.7
+COMPONENT_VERSION=	1.1.2
 COMPONENT_PROJECT_URL=	https://irssi.org/
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=\
-    sha256:732291e4e39fd928da2a599757c4309fe75bc769d0a783149b7a8e5e928ec987
+    sha256:db7d9ec271c13a28e28af9d72656f61849de88e2592cbb7530768da614697049
 COMPONENT_ARCHIVE_URL=	https://github.com/irssi/irssi/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	1404
 
-TPNO=		41222
+TPNO=		48633
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
