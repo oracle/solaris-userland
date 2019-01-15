@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 32
 include ../../make-rules/shared-macros.mk
@@ -42,8 +42,9 @@ include $(WS_MAKE_RULES)/common.mk
 # Ensure CC-based linking does not embed runpaths.
 LDFLAGS += $(studio_NORUNPATH)
 
-# don't use LD_Z_IGNORE: causes linker problems
-LD_Z_IGNORE=
+# Make sure that "install-sh -s" calls "strip -x" and not "strip";
+# we want to remove debugging data but not the symbols.
+COMPONENT_INSTALL_ENV += STRIPPROG="strip -x"
 
 # cups has an unusual hybrid-build system to support 32-bit and 64-bit
 # libraries in a single build; avoid confusing it by stripping $(CC_BITS) from
@@ -57,8 +58,9 @@ CXXFLAGS= $(CXXFLAGS.stripped)
 
 CONFIGURE_ENV += "ac_cv_search_getifaddrs=no"
 CONFIGURE_ENV += "ac_cv_func_statfs=no"
-# Ensure dynamic shared objects are linked using same LDFLAGS as executables.
-CONFIGURE_ENV += DSOFLAGS="$(LDFLAGS)"
+# Ensure dynamic shared objects are linked using same LDFLAGS as executables
+# and the default LD_OPTIONS_SO.
+CONFIGURE_ENV += DSOFLAGS="$(LDFLAGS) $(LD_OPTIONS_SO)"
 
 CONFIGURE_OPTIONS +=	--localedir=$(USRSHARELOCALEDIR)
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
