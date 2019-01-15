@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64
@@ -86,7 +86,7 @@ CONFIGURE_OPTIONS +=	--enable-openssl
 CONFIGURE_OPTIONS +=	--enable-tests
 CONFIGURE_OPTIONS +=	--disable-static
 CONFIGURE_OPTIONS +=	--with-modules=mod_solaris_audit:mod_solaris_priv
-CONFIGURE_OPTIONS +=	--with-shared=mod_facl:mod_wrap:mod_tls:mod_tls-fips-140:mod_auth_gss:mod_gss
+CONFIGURE_OPTIONS +=	--with-shared=mod_facl:mod_wrap:mod_tls:mod_tls-fips-140:mod_auth_gss:mod_gss:mod_ifsession
 CONFIGURE_OPTIONS +=	--enable-buffer-size=16384
 CONFIGURE_OPTIONS +=	FIPS_CPPFLAGS="-I/usr/include/openssl/fips-140"
 CONFIGURE_OPTIONS +=	FIPS_LDFLAGS="-R/lib/openssl/fips-140/64"
