@@ -218,4 +218,10 @@ $(COMPONENT_DIRS.nosetup):	$(WS_LOGS) FORCE
 	@cd $(@:%.nosetup=%) && echo "$(TARGET) $(@:%.nosetup=%)" && \
 	 $(BASS_O_MATIC) $(@:%.nosetup=--component %) --make $(TARGET) $(LOG)
 
+# component report uses component-hook to process every component.
+# component-hook however executes on the 'components' directory itself (it's
+# defined in shared-macros.mk). We don't want to run component report in this
+# directory, thus we need to disable it
+NO_PKG_REPORT = 1
+
 FORCE:

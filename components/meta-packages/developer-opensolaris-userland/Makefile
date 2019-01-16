@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -55,6 +55,9 @@ build install: $(BUILD_DIR)/package.list
 test:	$(NO_TESTS)
 
 system-test:    $(NO_TESTS)
+
+# This component is not suitable for generating a report
+NO_PKG_REPORT = 1
 
 clean clobber::
 	$(RM) -r $(BUILD_DIR)

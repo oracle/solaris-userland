@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/bin/bash
 #
 # CDDL HEADER START
 #
@@ -21,314 +21,162 @@
 #
 
 #
-# Copyright (c) 2012, 2016, Oracle and/or its affiliates. All rights reserved.
-#
-#
-# gen_components
-# A simple script to generate (on stdout), the component.html web page
-# found at: http://userland.us.oracle.com/component-lists/s12.html
+# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
-import getopt
-import os
-import sys
 
-from subprocess import Popen, PIPE
+set -eu -o pipefail
+export PATH=/usr/bin
+export LC_ALL=C
 
-debug = False
+function usage {
+	cat <<-EOT
+	gen-components --help
+	gen-components --owners owners_file --output file [ --repo IPS_repo_location ] [ --hgroot ws root ]
+	
+	Generates version/tpno/license report of a whole gate.
+	EOT
+}
 
-# Hashtable of RE's, RM's and Teams keyed by component path.
-owners = {}
+function fail {
+	echo "$@"
+	exit 1
+}
 
-# Initial HTML for the generated web page.
-preamble = """
+OWNERS=
+OUTPUT=
+REPO=
+WSROOT=
+
+while [ $# -gt 0 ]; do
+	case "$1" in
+		--owners|--output|--repo|--hgroot)
+			[ $# -gt 1 ] || fail "Option $1 requires an argument"
+			VAR="${1#--}"
+			printf -v "${VAR^^}" '%s' "$2"
+			shift 2
+			;;
+		--help)
+			usage
+			exit 0
+			;;
+		*)
+			fail "Unknown option '$1'\n\n$(usage)"
+			;;
+	esac
+done
+
+WSROOT="${WSROOT:-"$(hg root)"}"
+REPO="${REPO:-"$WSROOT/$(uname -p)/repo"}"
+
+[ -n "$OWNERS" ] || fail "Owners file has to be specified"
+[ -r "$OWNERS" ] || fail "Owners file '$OWNERS' is not readable"
+[ -n "$OUTPUT" ] || fail "Output file has to be specified"
+OUTPUT="$( readlink -f "$OUTPUT" )"
+> "$OUTPUT" || fail "Output file '$OUTPUT' has to be writable"
+pkgrepo info -s $REPO >/dev/null || fail "Repo '$REPO' is not accessible?"
+[ -d "$WSROOT" ] || fail "Can't access workspace root at '$WSROOT'?"
+
+typeset -p OWNERS OUTPUT REPO WSROOT
+
+
+function main {
+	write_preamble >> "$OUTPUT"
+	cd "$WSROOT/components"
+
+	HOOK="gmake -f Makefile -f $WSROOT/make-rules/component-report component-report"
+	HOOK="$HOOK COMPONENT_REPORT_RE_RM_LIST=$OWNERS"
+	HOOK="$HOOK COMPONENT_REPORT_REPO=$REPO"
+	gmake -j 50 \
+		COMPONENT_HOOK="$HOOK" \
+		component-hook
+
+	awk '{ print $3 }' "$WSROOT/$(uname -p)/components.mk" |
+	while read L; do
+		cat "$L/build/component-report" >> "$OUTPUT" 2>/dev/null || :
+	done
+	write_postambe >> "$OUTPUT"
+}
+
+function html_escape {
+	perl -pe '
+		s/\&/&amp;/g;
+		s/</&lt;/g;
+		s/>/&gt;/g;
+	'
+}
+
+function write_preamble {
+	cat <<EOT
 <html>
 <head>
-    <style type='text/css' media='screen'>
-        @import '/css/demo_table.css';
-        @import '/css/ColVis.css';
-        @import '/css/ColReorder.css';
+	<style type='text/css' media='screen'>
+		@import 'css/demo_table.css';
+		@import 'css/ColVis.css';
+		@import 'css/ColReorder.css';
 
-            tr.even:hover,  tr.even:hover td.sorting_1 ,
-            tr.odd:hover,  tr.odd:hover td.sorting_1 {
-                            background-color: gold;
-            }
+			tr.even:hover,  tr.even:hover td.sorting_1 ,
+			tr.odd:hover,  tr.odd:hover td.sorting_1 {
+				            background-color: gold;
+			}
 
-    </style>
-    <script type='text/javascript' src='js/jquery.js'></script>
-    <script type='text/javascript' src='js/jquery.dataTables.js'></script>
-    <script type='text/javascript' src='js/ColReorder.js'></script>
-    <script type='text/javascript' src='js/ColVis.js'></script>
+	</style>
+	<script type='text/javascript' src='js/jquery.js'></script>
+	<script type='text/javascript' src='js/jquery.dataTables.js'></script>
+	<script type='text/javascript' src='js/ColReorder.js'></script>
+	<script type='text/javascript' src='js/ColVis.js'></script>
 
-    <script>
-        $(document).ready(function() {
-            $('#components').dataTable({
-                "sDom": 'C<"clear">Rlfrtip',
-                bPaginate: true,
-                bFilter: true,
-                bSort: true,
-                iDisplayLength: -1,
-                aLengthMenu: [ [ 10, 50, -1], [ 10, 50, 'All'] ]
-            });
-        });
-    </script>
+	<script>
+		\$(document).ready(function() {
+			\$('#components').dataTable({
+				"sDom": 'C<"clear">Rlfrtip',
+				bPaginate: true,
+				bFilter: true,
+				bSort: true,
+				iDisplayLength: -1,
+				aLengthMenu: [ [ 10, 50, -1], [ 10, 50, 'All'] ]
+			});
+		});
+	</script>
 </head>
 <body>
 
 <h1>Userland Components</h1>
+<h2>Repo parent:</h2>
+<pre>
+$( hg -R "$WSROOT" parent | html_escape )
+
+Report generated: $( date | html_escape )
+</pre>
 <p>
 <table align='center' id='components'>
 <thead>
 <tr>
-    <th>Component</th>
-    <th>Version</th>
-    <th>Gate Path</th>
-    <th>Package(s)</th>
-    <th>ARC Case(s)</th>
-    <th>License(s)</th>
-    <th>TPNO</th>
-    <th>BugDB</th>
-    <th>RE</th>
-    <th>RM</th>
-    <th>Team</th>
+	<th>Component</th>
+	<th>Version</th>
+	<th>Gate Path</th>
+	<th>Package(s)</th>
+	<th>ARC Case(s)</th>
+	<th>License(s)</th>
+	<th>TPNO</th>
+	<th>BugDB</th>
+	<th>RE</th>
+	<th>RM</th>
+	<th>Team</th>
 </tr>
 </thead>
 <tbody>
-"""
+EOT
+}
 
-# Final HTML for the generated web page.
-postamble = """
+function write_postambe {
+	cat <<EOT
 </tr>
 </tbody>
 </table>
 </body>
 </html>
-"""
+EOT
+}
 
-# Get a complete list of package names for the repo associated with this
-# Userland workspace.
-def get_package_list(repo, build_version):
-    names = []
-    cmd = "pkgrepo list -H -s %s" % repo
-
-    if debug:
-        print >> sys.stderr, "get_package_list: command: `%s`" % cmd
-    lines = os.popen(cmd).readlines()
-
-    for line in lines:
-        tokens = line.split()
-        if tokens[2] != 'o' and tokens[2] != 'r':
-            n = tokens[2].find(build_version)
-            name = tokens[1] + "@" + tokens[2][:n]
-            if debug:
-                print >> sys.stderr, "get_package_list: name: ", name
-            names.append(name)
-
-    if debug:
-        print >> sys.stderr, "get_package_list: names: ", names
-
-    return names
-
-# Return a hashtable of RE's, RM's and Teams keyed by component path.
-def read_owners(owners_file):
-    if debug:
-        print >> sys.stderr, "Reading %s" % owners_file
-    try:
-        fin = open(owners_file, 'r')
-        lines = fin.readlines()
-        fin.close()
-    except:
-        if debug:
-            print >> sys.stderr, "Unable to read owners file: %s" % owners_file
-
-    owners = {}
-    for line in lines:
-        line = line[:-1]
-        component, re, rm, team = line.split("|")
-        owners[component] = [ re, rm, team ]
-
-    return owners
-
-# Return a sorted list of the directories containing one or more .p5m files.
-def find_p5m_dirs(workspace):
-    p5m_dirs = []
-    for dir, _, files in os.walk(workspace + "/components"):
-        for file in files:
-            if dir.endswith("meta-packages/developer-opensolaris-userland"):
-                continue;
-            if dir.endswith("meta-packages/history"):
-                continue;
-            if file.endswith(".p5m"):
-                p5m_dirs.append(dir)
-
-    return sorted(list(set(p5m_dirs)))
-
-# Write out the initial HTML for the components.html web page.
-def write_preamble():
-    print preamble
-
-# Return the RE,  RM and Team for this component.
-def get_owner(p5m_dir):
-    result = [ "Unknown", "Unknown", "Unknown" ]
-    component_path = ""
-    started = False
-    tokens = p5m_dir.split("/")
-    for token in tokens:
-        if started:
-            component_path += token + "/"
-        if token == "components":
-            started = True
-    component_path = component_path[:-1]
-    if component_path in owners:
-        result = owners[component_path]
-    if debug:
-        print >> sys.stderr, "Component path: ", component_path,
-        print >> sys.stderr, "RE, RM, Team: ", result
-
-    return result
-
-# Generate an HTML table entry for all the information for the component
-# in the given directory. This generates a file called 'component-report'
-# under the components build directory.
-def gen_reports(workspace, component_dir):
-    if debug:
-        print >> sys.stderr, "Processing %s" % component_dir
-
-    re, rm, team = get_owner(component_dir)
-    makefiles = "-f Makefile -f %s/make-rules/component-report" % workspace
-    targets = "clean component-hook"
-    template = "cd %s; "
-    template += "RESPONSIBLE_ENGINEER='%s' "
-    template += "RESPONSIBLE_MANAGER='%s' "
-    template += "TEAM='%s' "
-    template += "gmake COMPONENT_HOOK='gmake %s component-report' %s"
-    cmd = template % (component_dir, re, rm, team, makefiles, targets)
-
-    if debug:
-        print >> sys.stderr, "gen_reports: command: `%s`" % cmd
-    lines = os.popen(cmd).readlines()
-
-# The package name(s) in the component-report files will be incorrectly
-# generated if there was a <whatever>VER.p5m file in the component
-# directory. For those components we've got to use the package names
-# from the repo associated with this Userland workspace.
-def fix_reports(p5m_dirs, package_names):
-    for p5m_dir in p5m_dirs:
-        cmd = "ls %s/*VER.p5m" % p5m_dir
-        p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE,
-                  close_fds=True)
-        output = p.stdout.read()
-        if output.find(".p5m") == -1:
-            continue
-
-        report = "%s/build/component-report" % p5m_dir
-        with open(report, 'r') as fin:
-            lines = fin.readlines()
-
-        fixed = False
-        td_count = 0
-        report = "%s/build/component-report" % p5m_dir
-        fout = open(report, 'w')
-        for line in lines:
-            if not fixed and td_count == 4 and line.startswith("</td>"):
-                fixed = True
-            elif not fixed and td_count == 4:
-                n = line.rfind("-@")
-                if n != -1:
-                    if debug:
-                        print >> sys.stderr, "FIX: %s" % line
-                    broken_pkg_name = line[:n]
-                    for package_name in package_names:
-                        if package_name.startswith(broken_pkg_name):
-                            line = "%s<br>\n" % package_name
-                            fout.write(line)
-                else:
-                    fout.write(line)
-                continue
-            elif line.startswith("<td>"):
-                td_count += 1
-            fout.write(line)
-        fout.close()
-
-# Collect all the .../build/component-report files and write them to stdout.
-def write_reports(p5m_dirs, owners_file):
-    for p5m_dir in p5m_dirs:
-        report = "%s/build/component-report" % p5m_dir
-        if debug:
-            print >> sys.stderr, "Reading %s" % report
-        try:
-            fin = open(report, 'r')
-            lines = fin.readlines()
-            fin.close()
-            sys.stdout.writelines(lines)
-        except:
-            if debug:
-                print >> sys.stderr, "Unable to read: %s" % report
-
-# Write out the final HTML for the components.html web page.
-def write_postamble():
-    print postamble
-
-# Write out a usage message showing valid options to this script.
-def usage():
-    print  >> sys.stderr, \
-"""
-Usage:
-      gen-components [OPTION...]
-
--b, --build-version
-      Build version script to look for (and strip off) from package FMRIs.
-
--d, --debug
-      Turn on debugging
-
--o, --owners
-      Location of a file containing a list of RE's /RM's per component
-
--r, --repo
-      Repo containing the packages associated with this Userland workspace
-
--w --workspace
-      Location of the Userland workspace
-"""
-
-    sys.exit(1)
-
-
-if __name__ == "__main__":
-    workspace = os.getenv('WS_TOP')
-    owners_file = "/net/userland.us.oracle.com/gates/private/RE-RM-list.txt"
-    repo = "http://userland.us.oracle.com:10004/"
-    build_version = "-5.12.0.0.0"
-
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "b:do:r:w:",
-            [ "build-version=", "debug", "owners=", "repo=", "workspace=" ])
-    except getopt.GetoptError, err:
-        print str(err)
-        usage()
-
-    for opt, arg in opts:
-        if opt in [ "-b", "--build-version" ]:
-            build_version = arg
-        elif opt in [ "-d", "--debug" ]:
-            debug = True
-        elif opt in [ "-o", "--owners" ]:
-            owners_file = arg
-        elif opt in [ "-r", "--repo" ]:
-            repo = arg
-        elif opt in [ "-w", "--workspace" ]:
-            workspace = arg
-        else:
-            assert False, "unknown option"
-
-    package_names = get_package_list(repo, build_version)
-    owners = read_owners(owners_file)
-    write_preamble()
-    p5m_dirs = find_p5m_dirs(workspace)
-    for p5m_dir in p5m_dirs:
-        gen_reports(workspace, p5m_dir)
-    fix_reports(p5m_dirs, package_names)
-    write_reports(p5m_dirs, owners_file)
-    write_postamble()
-    sys.exit(0)
+main

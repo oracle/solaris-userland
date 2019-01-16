@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =	64
@@ -89,6 +89,11 @@ COMPONENT_POST_INSTALL_ACTION += \
 	  usr/lib/rustlib/$(MACH64:amd64=x86_64)-sun-solaris/codegen-backends/lib* \
 	  usr/lib/rustlib/$(MACH64:amd64=x86_64)-sun-solaris/lib/lib* | \
 	  awk '{ print "file path="$$1 " variant.arch=$(MACH)" }' > ../../libraries-hashed.$(MACH64); )
+
+# pkg-report requires *.p5m files to be processed by pkgmogrify. Since the
+# libraries-hashed normally comes from build and since pkg-report runs
+# 'gmake clean' first we have to create empty file instead.
+PKG_REPORT_ADDITIONAL_SETUP = touch $(BUILD_DIR)/libraries-hashed.$(MACH64)
 
 # We put $(BOOTSTRAP_DIR)/usr/bin into $PATH if we used it because we need to
 # use the same compiler during test as we did during build.  Otherwise, we'll

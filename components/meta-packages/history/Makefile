@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -117,3 +117,6 @@ publish: $(BUILD_DIR)/.published-$(MACH)
 	
 clobber clean::
 	$(RM) -r $(BUILD_DIR) $(GENERATED_ARCH_MANIFESTS)
+
+# This component is not suitable for generating a report
+NO_PKG_REPORT = 1

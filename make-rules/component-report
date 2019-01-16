@@ -1,4 +1,32 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
 
+#
+# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+ifneq ($(NO_PKG_REPORT),)
+# If NO_PKG_REPORT is set, rest of this file is skipped via this condition
+component-report:
+else
 PKG_REPORTS=$(CANONICAL_MANIFESTS:%.p5m=$(BUILD_DIR)/%.pkg-report)
 HG_BRANCH=$(shell hg branch)
 HGWEB_BASE_URL = http://userland.us.oracle.com/hg/file/$(HG_BRANCH)/
@@ -8,6 +36,13 @@ BUGDB_URL = http://userland.us.oracle.com/bugdb?cat-subcat=
 
 REPORT_TRANSFORMS = $(WS_TOP)/transforms/report
 CDIR=$(COMPONENT_DIR:$(WS_TOP)/%=%)
+
+RE_RM_LINE=$(shell /usr/gnu/bin/grep --max-count=1 -E "^$(CDIR:components/%=%)\|" $(COMPONENT_REPORT_RE_RM_LIST))
+# The line has a form
+# unrar|group.name@oracle.com|engineer.name@oracle.com|resp. team
+RESPONSIBLE_ENGINEER=$(if $(RE_RM_LINE),$(word 2,$(subst |, ,$(RE_RM_LINE))),Unknown)
+RESPONSIBLE_MANAGER=$(if $(RE_RM_LINE),$(word 3,$(subst |, ,$(RE_RM_LINE))),Unknown)
+TEAM=$(if $(RE_RM_LINE),$(word 4,$(subst |, ,$(RE_RM_LINE))),Unknown)
 
 # Add all the TPNO* Makefile macros together for further processing below.
 $(foreach macro, $(filter TPNO%, $(.VARIABLES)), \
@@ -22,7 +57,25 @@ $(BUILD_DIR)/component-report:	$(BUILD_DIR)/package-info
 	@echo "<td><a href='$(COMPONENT_ARCHIVE_URL)'>$(COMPONENT_VERSION)</a></td>" >>$@
 	@echo "<td><a href='$(HGWEB_BASE_URL)$(CDIR)'>$(CDIR)</a></td>" >>$@
 	@echo "<td>" >>$@ ; for pkg in $(PACKAGE) ; do \
-             echo "$$pkg<br>" >>$@ ; \
+             if [[ $$pkg == *-@* ]]; then \
+	     	( : having the version empty as blah-@ means that the version was ) ; \
+	     	( : not correctly extracted and is probably parametric. In such case ) ; \
+	     	( : we will look at the published repo and read all matching ) ; \
+	     	( : packages. Skipping obsolete and renamed ones. ) ; \
+	     	MASK="$${pkg%-@*}" ; \
+	     	VER="$${pkg##*@}" ; \
+		pkgrepo list -H -s $(COMPONENT_REPORT_REPO) "$$MASK" "$$MASK"-* | \
+		   while read publisher name flags rest; do \
+	     	      ( : pkgrepo list is hard to  parsea so $$flags ) ; \
+	     	      ( : contain either flags or package version ) ; \
+		      if [[ $$flags != [or] ]]; then \
+		         echo "$$name@$$VER<br>" >>$@ ; \
+		      fi ; \
+		   done ; \
+             else \
+	     	( : package version is known, just print it ) ; \
+             	echo "$$pkg<br>" >>$@ ; \
+             fi; \
 	 done ; echo "</td>" >>$@
 	@echo "<td>" >>$@ ; for arc in $(COMP_ARC_CASE) ; do \
              echo "<a href='$(ARC_BASE_URL)$$arc'>$$arc</a><br>" >>$@ ; \
@@ -57,7 +110,10 @@ $(BUILD_DIR)/component-info:	$(PKG_REPORTS)
 	@echo "TEAM=\"$(TEAM)\"" >>$@
 
 $(BUILD_DIR)/%.pkg-report:	%.p5m $(BUILD_DIR)
+	$(PKG_REPORT_ADDITIONAL_SETUP)
 	@$(PKGMOGRIFY) $(PKG_OPTIONS) -P $@ $< \
 		$(REPORT_TRANSFORMS) >/dev/null
 
 include $(BUILD_DIR)/package-info
+
+endif
