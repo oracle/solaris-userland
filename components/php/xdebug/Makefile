@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 # xdebug 2.5.1 doesn't compile with studio.
@@ -46,5 +46,4 @@ include $(PHP_TOP_DIR)/php.mk
 CONFIGURE_OPTIONS +=	--enable-xdebug
 
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += web/php-56
 REQUIRED_PACKAGES += web/php-71

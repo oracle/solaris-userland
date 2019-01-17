@@ -5,8 +5,7 @@ AMP Configuration Testing
 #export http_proxy=xxx
 #export https_proxy=xxx
 
-# select which version to test
-VERS=5.6
+# select which version to test (right now we have only single one)
 VERS=7.1
 
 # prepare database
@@ -20,8 +19,6 @@ GRANT ALL PRIVILEGES ON php.* TO php@localhost IDENTIFIED BY 'php123' WITH GRANT
 flush privileges;
 EOF
 
-# prepare Apache with PHP (PHP 5.6 on sparc needs prefork MPM)
-echo $VERS`uname -p` | grep -q '5.6sparc' && bash -c 'svccfg -s apache24 setprop httpd/MPM=prefork; svcadm refresh apache24'
 # enable PHP extensions (zip is needed by Joomla)
 gsed -i -e '/mysql/s/^;//' -e '/zip/s/^;//' /etc/php/$VERS/conf.d/extensions.ini
 # start Apache HTTP server with PHP
