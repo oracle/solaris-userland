@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 #
@@ -245,9 +245,9 @@ PUBLISH_STAMP ?= $(BUILD_DIR)/.published-$(MACH)
 
 $(MANIFEST_BASE)-%.constructed:
 	@env $(call prepare_env_args,\
-	    GENERATE_TRANSFORMS PKG_OPTIONS PROTO_DIR PKG_HARDLINKS \
+	    GENERATE_TRANSFORMS PROTO_DIR PKG_HARDLINKS \
 	    MANIFEST_BASE COMPONENT_DIR MANIFEST_CLEANUP_TRANSFORM \
-	    MANIFEST_GENERATE GENERATE_PROTO_DIRS) $(MANIFEST_COMPARE) "$@"
+	    MANIFEST_GENERATE GENERATE_PROTO_DIRS) $(MANIFEST_COMPARE) "$@" $(PKG_OPTIONS)
 
 # Make manifest-check perform any action only in components built for the
 # current architecture we run on

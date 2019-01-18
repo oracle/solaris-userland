@@ -29,7 +29,7 @@ export PATH=/usr/bin
 
 if [ $# -eq 0 ]; then
 	cat <<-EOT
-	manifest-check target_file
+	manifest-check target_file PKG_OPTIONS
 	
 	This tool constructs a manifest according to files in 'generate'
 	directory and compares the result to existing .p5m manifest. Details
@@ -42,6 +42,8 @@ if [ $# -eq 0 ]; then
 fi
 
 RESULT="$1"
+shift
+PKG_OPTIONS=( "$@" )
 
 # Based on the result file name find out the original .p5m file we compare
 # ourselves to
@@ -71,7 +73,7 @@ HARDLINKS=()
 	# First generate the sample manifest as 'gmake sample-manifest' would do
 	# Then pass it though the $TRANSFORM with full debug output.
 	"$MANIFEST_GENERATE" ${HARDLINKS[@]} $PROTO_DIR $GENERATE_PROTO_DIRS |
-	pkgmogrify -v $PKG_OPTIONS /dev/fd/0 \
+	pkgmogrify -v "${PKG_OPTIONS[@]}" /dev/fd/0 \
 		$GENERATE_TRANSFORMS $MANIFEST_CLEANUP_TRANSFORM $TRANSFORM > "$DEBUG"
 
 
