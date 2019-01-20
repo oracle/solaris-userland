@@ -351,6 +351,8 @@ CONSTANT_TIME +=	TIME_CONSTANT=$(TIME_CONSTANT)
 
 # set MACH from uname -p to either sparc or i386
 MACH :=		$(shell uname -p)
+# Override this to limit builds and publication to a single architecture.
+BUILD_ARCH ?=	$(MACH)
 
 # set MACH32 from MACH to either sparcv7 or i86
 MACH32_1 =	$(MACH:sparc=sparcv7)

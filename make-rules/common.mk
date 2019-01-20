@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 #
@@ -34,8 +34,6 @@ endif
 
 include $(WS_MAKE_RULES)/prep.mk
 
-# Override this to limit builds and publication to a single architecture.
-BUILD_ARCH ?= $(MACH)
 ifneq ($(strip $(BUILD_ARCH)),$(MACH))
 PUBLISH_STAMP= 
 
