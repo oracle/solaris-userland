@@ -1,0 +1,19 @@
+Solaris version of lex command expects a user input even if
+the '--version' option is passed. As a result, the tests
+do not execute since there is no user input.
+This patch overcomes it by redirecting "/dev/null" to
+stdin, which results in immediate EOF for stdin read calls.
+
+The patch is Solaris specific.
+
+--- automake-1.16.1/t/get-sysconf.sh	2019-01-21 12:16:27.397870741 +0000
++++ automake-1.16.1/t/get-sysconf.sh	2019-01-21 12:15:49.754800211 +0000
+@@ -49,7 +49,7 @@ $PERL -e 'use TAP::Parser; print $TAP::P
+ # It's OK if the selected Lex and Yacc programs don't know how to print
+ # the version number or the help screen; those are usually available only
+ # for Flex and Bison.
+-$LEX --version || :
++$LEX --version < /dev/null 2>/dev/null || :
+ $LEX --help || :
+ $YACC --version || :
+ $YACC --help || :

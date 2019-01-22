@@ -1,0 +1,99 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+# Replace long and short automake versions with $(LV) and $(SV), respectively.
+<transform file -> edit path "$(LVER)" "$(LV)">
+<transform file -> edit path "$(SVER)" "$(SV)">
+<transform file -> edit path "\$\(COMPONENT_VERSION\)" "$(LV)">
+# Convert it back to $(LVER) and $(SVER) by using path substitution.
+# The mediator-version and target attributes will use $(LV) and $(SV) to avoid expansion.
+<transform file -> edit path "LV" "LVER">
+<transform file -> edit path "SV" "SVER">
+
+# Mediated links to set a default version of aclocal and automake commands.
+<transform file path=usr/bin/aclocal-\$\(SVER\) -> emit link \
+  path=usr/bin/aclocal target=aclocal-$(SV) mediator=automake mediator-version=$(SV)>
+<transform file path=usr/bin/automake-\$\(SVER\) -> emit link \
+  path=usr/bin/automake target=automake-$(SV) mediator=automake mediator-version=$(SV)>
+
+# Select the right version of manual pages based on the mediator-version value.
+<transform file path=usr/share/man/man1/automake-\$\(LVER\) -> \
+  emit link path=usr/share/man/man1/automake.1 target=automake-$(LV) \
+  mediator=automake mediator-version=$(SV)>
+<transform file path=usr/share/man/man1/aclocal-\$\(LVER\) -> \
+  emit link path=usr/share/man/man1/aclocal.1 target=aclocal-$(LV) \
+  mediator=automake mediator-version=$(SV)>
+
+# Automake example project...
+<transform file path=usr/share/doc/automake/amhello-1.0.tar.gz -> emit link \
+  path=usr/share/doc/automake/amhello-1.0.tar.gz target=../automake-$(SV)/amhello-1.0.tar.gz \
+  mediator=automake mediator-version=$(SV)>
+<transform file path=.*/automake/amhello-1.0.tar.gz -> set action.hash %(path)>
+<transform file path=.*/automake/amhello-1.0.tar.gz -> edit path /automake/ /automake-\$\(SVER\)/>
+
+# Automake info files...
+<transform file path=usr/share/automake-\$\(SVER\)/info/(automake.*) -> emit link \
+  path=usr/share/info/%<1> target=../automake-$(SV)/info/%<1> \
+  mediator=automake mediator-version=$(SV)>
+
+<transform file path=(usr/share/automake-\$\(SVER\)/info/dir) -> emit link \
+  path=%<1> target=../../../../var/info/usr_share_automake_$(SV)_info_dir>
+<transform file path=usr/share/automake-\$\(SVER\)/info/dir -> set action.hash %(path)>
+<transform file path=usr/share/automake-\$\(SVER\)/info/dir -> edit path \
+  ^usr/.*/dir$ var/info/usr_share_automake_\$\(SVER\)_info_dir>
+<transform file path=var/info/usr_share_automake_\$\(SVER\)_info_dir -> set mode 0644>
+<transform file path=var/info/usr_share_automake_\$\(SVER\)_info_dir -> set preserve true>
+
+
+<transform file path=usr/bin/aclocal-\$\(SVER\) -> emit dir path=usr/share/aclocal>
+<transform dir path=usr/share/aclocal$ -> set mode 0755>
+
+# The mediated symlinks with the same names are already used and README is not delivered.
+<transform hardlink path=usr/bin/aclocal -> drop>
+<transform hardlink path=usr/bin/automake -> drop>
+<transform file path=usr/share/man/man1/aclocal.1 -> drop>
+<transform file path=usr/share/man/man1/automake.1 -> drop>
+<transform file path=usr/share/aclocal/README -> drop>
+
+# Fix file permissions.
+<transform file path=usr/share/automake-\$\(SVER\)/ar-lib -> set mode 0555>
+<transform file path=usr/share/automake-\$\(SVER\)/compile -> set mode 0555>
+<transform file path=usr/share/automake-\$\(SVER\)/config.guess -> set mode 0555>
+<transform file path=usr/share/automake-\$\(SVER\)/config.sub -> set mode 0555>
+<transform file path=usr/share/automake-\$\(SVER\)/depcomp -> set mode 0555>
+<transform file path=usr/share/automake-\$\(SVER\)/install-sh -> set mode 0555>
+<transform file path=usr/share/automake-\$\(SVER\)/mdate-sh -> set mode 0555>
+<transform file path=usr/share/automake-\$\(SVER\)/missing -> set mode 0555>
+<transform file path=usr/share/automake-\$\(SVER\)/mkinstalldirs -> set mode 0555>
+<transform file path=usr/share/automake-\$\(SVER\)/py-compile -> set mode 0555>
+<transform file path=usr/share/automake-\$\(SVER\)/tap-driver.sh -> set mode 0555>
+<transform file path=usr/share/automake-\$\(SVER\)/test-driver -> set mode 0555>
+<transform file path=usr/share/automake-\$\(SVER\)/ylwrap -> set mode 0555>
+
+# Restore $(SVER) and $(LVER) variables for target and mediator-version attributes.
+<transform file link -> edit target "SV" "SVER">
+<transform file link -> edit target "LV" "LVER">
+<transform file link -> edit mediator-version "SV" "SVER">
+

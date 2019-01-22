@@ -1,0 +1,184 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
+#
+<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
+<transform link path=usr/share/ mediator=automake -> \
+    add pkg.linted.pkglint.dupaction010.1 true>
+set name=pkg.fmri \
+    value=pkg:/developer/build/automake-116@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="A Makefile generator"
+set name=com.oracle.info.description value="GNU automake"
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification value=org.opensolaris.category.2008:Development/GNU
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=http://www.gnu.org/software/automake/
+set name=org.opensolaris.arc-caseid value=PSARC/2019/004
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+link path=usr/bin/aclocal target=aclocal-$(SVER) mediator=automake \
+    mediator-version=$(SVER)
+file path=usr/bin/aclocal-$(SVER)
+link path=usr/bin/automake target=automake-$(SVER) mediator=automake \
+    mediator-version=$(SVER)
+file path=usr/bin/automake-$(SVER)
+dir  path=usr/share/aclocal mode=0755
+file path=usr/share/aclocal-$(SVER)/amversion.m4
+file path=usr/share/aclocal-$(SVER)/ar-lib.m4
+file path=usr/share/aclocal-$(SVER)/as.m4
+file path=usr/share/aclocal-$(SVER)/auxdir.m4
+file path=usr/share/aclocal-$(SVER)/cond-if.m4
+file path=usr/share/aclocal-$(SVER)/cond.m4
+file path=usr/share/aclocal-$(SVER)/depend.m4
+file path=usr/share/aclocal-$(SVER)/depout.m4
+file path=usr/share/aclocal-$(SVER)/dmalloc.m4
+file path=usr/share/aclocal-$(SVER)/extra-recurs.m4
+file path=usr/share/aclocal-$(SVER)/gcj.m4
+file path=usr/share/aclocal-$(SVER)/init.m4
+file path=usr/share/aclocal-$(SVER)/install-sh.m4
+file path=usr/share/aclocal-$(SVER)/internal/ac-config-macro-dirs.m4
+file path=usr/share/aclocal-$(SVER)/lead-dot.m4
+file path=usr/share/aclocal-$(SVER)/lex.m4
+file path=usr/share/aclocal-$(SVER)/lispdir.m4
+file path=usr/share/aclocal-$(SVER)/maintainer.m4
+file path=usr/share/aclocal-$(SVER)/make.m4
+file path=usr/share/aclocal-$(SVER)/missing.m4
+file path=usr/share/aclocal-$(SVER)/mkdirp.m4
+file path=usr/share/aclocal-$(SVER)/obsolete.m4
+file path=usr/share/aclocal-$(SVER)/options.m4
+file path=usr/share/aclocal-$(SVER)/prog-cc-c-o.m4
+file path=usr/share/aclocal-$(SVER)/python.m4
+file path=usr/share/aclocal-$(SVER)/runlog.m4
+file path=usr/share/aclocal-$(SVER)/sanity.m4
+file path=usr/share/aclocal-$(SVER)/silent.m4
+file path=usr/share/aclocal-$(SVER)/strip.m4
+file path=usr/share/aclocal-$(SVER)/substnot.m4
+file path=usr/share/aclocal-$(SVER)/tar.m4
+file path=usr/share/aclocal-$(SVER)/upc.m4
+file path=usr/share/aclocal-$(SVER)/vala.m4
+file path=usr/share/automake-$(SVER)/Automake/ChannelDefs.pm
+file path=usr/share/automake-$(SVER)/Automake/Channels.pm
+file path=usr/share/automake-$(SVER)/Automake/Condition.pm
+file path=usr/share/automake-$(SVER)/Automake/Config.pm
+file path=usr/share/automake-$(SVER)/Automake/Configure_ac.pm
+file path=usr/share/automake-$(SVER)/Automake/DisjConditions.pm
+file path=usr/share/automake-$(SVER)/Automake/FileUtils.pm
+file path=usr/share/automake-$(SVER)/Automake/General.pm
+file path=usr/share/automake-$(SVER)/Automake/Getopt.pm
+file path=usr/share/automake-$(SVER)/Automake/Item.pm
+file path=usr/share/automake-$(SVER)/Automake/ItemDef.pm
+file path=usr/share/automake-$(SVER)/Automake/Language.pm
+file path=usr/share/automake-$(SVER)/Automake/Location.pm
+file path=usr/share/automake-$(SVER)/Automake/Options.pm
+file path=usr/share/automake-$(SVER)/Automake/Rule.pm
+file path=usr/share/automake-$(SVER)/Automake/RuleDef.pm
+file path=usr/share/automake-$(SVER)/Automake/VarDef.pm
+file path=usr/share/automake-$(SVER)/Automake/Variable.pm
+file path=usr/share/automake-$(SVER)/Automake/Version.pm
+file path=usr/share/automake-$(SVER)/Automake/Wrap.pm
+file path=usr/share/automake-$(SVER)/Automake/XFile.pm
+file path=usr/share/automake-$(SVER)/COPYING
+file path=usr/share/automake-$(SVER)/INSTALL
+file path=usr/share/automake-$(SVER)/am/check.am
+file path=usr/share/automake-$(SVER)/am/check2.am
+file path=usr/share/automake-$(SVER)/am/clean-hdr.am
+file path=usr/share/automake-$(SVER)/am/clean.am
+file path=usr/share/automake-$(SVER)/am/compile.am
+file path=usr/share/automake-$(SVER)/am/configure.am
+file path=usr/share/automake-$(SVER)/am/data.am
+file path=usr/share/automake-$(SVER)/am/dejagnu.am
+file path=usr/share/automake-$(SVER)/am/depend.am
+file path=usr/share/automake-$(SVER)/am/depend2.am
+file path=usr/share/automake-$(SVER)/am/distdir.am
+file path=usr/share/automake-$(SVER)/am/footer.am
+file path=usr/share/automake-$(SVER)/am/header-vars.am
+file path=usr/share/automake-$(SVER)/am/header.am
+file path=usr/share/automake-$(SVER)/am/inst-vars.am
+file path=usr/share/automake-$(SVER)/am/install.am
+file path=usr/share/automake-$(SVER)/am/java.am
+file path=usr/share/automake-$(SVER)/am/lang-compile.am
+file path=usr/share/automake-$(SVER)/am/lex.am
+file path=usr/share/automake-$(SVER)/am/library.am
+file path=usr/share/automake-$(SVER)/am/libs.am
+file path=usr/share/automake-$(SVER)/am/libtool.am
+file path=usr/share/automake-$(SVER)/am/lisp.am
+file path=usr/share/automake-$(SVER)/am/ltlib.am
+file path=usr/share/automake-$(SVER)/am/ltlibrary.am
+file path=usr/share/automake-$(SVER)/am/mans-vars.am
+file path=usr/share/automake-$(SVER)/am/mans.am
+file path=usr/share/automake-$(SVER)/am/program.am
+file path=usr/share/automake-$(SVER)/am/progs.am
+file path=usr/share/automake-$(SVER)/am/python.am
+file path=usr/share/automake-$(SVER)/am/remake-hdr.am
+file path=usr/share/automake-$(SVER)/am/scripts.am
+file path=usr/share/automake-$(SVER)/am/subdirs.am
+file path=usr/share/automake-$(SVER)/am/tags.am
+file path=usr/share/automake-$(SVER)/am/texi-vers.am
+file path=usr/share/automake-$(SVER)/am/texibuild.am
+file path=usr/share/automake-$(SVER)/am/texinfos.am
+file path=usr/share/automake-$(SVER)/am/vala.am
+file path=usr/share/automake-$(SVER)/am/yacc.am
+file path=usr/share/automake-$(SVER)/ar-lib mode=0555
+file path=usr/share/automake-$(SVER)/compile mode=0555
+file path=usr/share/automake-$(SVER)/config.guess mode=0555
+file path=usr/share/automake-$(SVER)/config.sub mode=0555
+file path=usr/share/automake-$(SVER)/depcomp mode=0555
+file path=usr/share/automake-$(SVER)/info/automake-history.info
+file path=usr/share/automake-$(SVER)/info/automake.info
+file path=usr/share/automake-$(SVER)/info/automake.info-1
+file path=usr/share/automake-$(SVER)/info/automake.info-2
+link path=usr/share/automake-$(SVER)/info/dir \
+    target=../../../../var/info/usr_share_automake_$(SVER)_info_dir
+file path=usr/share/automake-$(SVER)/install-sh mode=0555
+file path=usr/share/automake-$(SVER)/mdate-sh mode=0555
+file path=usr/share/automake-$(SVER)/missing mode=0555
+file path=usr/share/automake-$(SVER)/mkinstalldirs mode=0555
+file path=usr/share/automake-$(SVER)/py-compile mode=0555
+file path=usr/share/automake-$(SVER)/tap-driver.sh mode=0555
+file path=usr/share/automake-$(SVER)/test-driver mode=0555
+file path=usr/share/automake-$(SVER)/texinfo.tex
+file path=usr/share/automake-$(SVER)/ylwrap mode=0555
+file usr/share/doc/automake/amhello-1.0.tar.gz \
+    path=usr/share/doc/automake-$(SVER)/amhello-1.0.tar.gz
+link path=usr/share/doc/automake/amhello-1.0.tar.gz \
+    target=../automake-$(SVER)/amhello-1.0.tar.gz mediator=automake \
+    mediator-version=$(SVER)
+link path=usr/share/info/automake-history.info \
+    target=../automake-$(SVER)/info/automake-history.info mediator=automake \
+    mediator-version=$(SVER)
+link path=usr/share/info/automake.info \
+    target=../automake-$(SVER)/info/automake.info mediator=automake \
+    mediator-version=$(SVER)
+link path=usr/share/info/automake.info-1 \
+    target=../automake-$(SVER)/info/automake.info-1 mediator=automake \
+    mediator-version=$(SVER)
+link path=usr/share/info/automake.info-2 \
+    target=../automake-$(SVER)/info/automake.info-2 mediator=automake \
+    mediator-version=$(SVER)
+file path=usr/share/man/man1/aclocal-$(LVER)
+link path=usr/share/man/man1/aclocal.1 target=aclocal-$(LVER) \
+    mediator=automake mediator-version=$(SVER)
+file path=usr/share/man/man1/automake-$(LVER)
+link path=usr/share/man/man1/automake.1 target=automake-$(LVER) \
+    mediator=automake mediator-version=$(SVER)
+file usr/share/automake-$(SVER)/info/dir \
+    path=var/info/usr_share_automake_$(SVER)_info_dir mode=0644 preserve=true
+license automake.license license="GPLv3, GPLv2, FDLv1.3, MIT"
+depend type=optional fmri=developer/build/automake-115
