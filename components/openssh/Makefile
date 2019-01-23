@@ -27,6 +27,14 @@ BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
+#
+# When updating the version of OpenSSH you must add the release notes
+# for *all* skipped versions and the new version.
+#
+# Run:
+#  curl https://www.openssh.com/txt/release-X.Y.txt > release-notes/release-X.Y.txt
+# Then add a line to network-ssh.p5m to deliver them.
+
 COMPONENT_NAME=		openssh
 COMPONENT_VERSION=	7.7p1
 HUMAN_VERSION=		$(COMPONENT_VERSION)
