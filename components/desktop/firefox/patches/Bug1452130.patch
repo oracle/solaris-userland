@@ -9,12 +9,12 @@ Bug 1452130 - nsHttpConnection.cpp should compare time intervals in the same uni
 diff -r 0b5495dc100d -r 2943c89cc5a1 netwerk/protocol/http/nsHttpConnection.cpp
 --- a/netwerk/protocol/http/nsHttpConnection.cpp	Fri Jun 15 12:49:01 2018 +0300
 +++ b/netwerk/protocol/http/nsHttpConnection.cpp	Fri Jun 15 04:52:52 2018 -0700
-@@ -1431,7 +1431,7 @@
-       // succesfullu write to the socket and this can only happen after
-       // the TLS handshake is done.
-       PRIntervalTime initialTLSDelta = now - mLastWriteTime;
--      if (initialTLSDelta > gHttpHandler->TLSHandshakeTimeout()) {
-+      if (initialTLSDelta > PR_MillisecondsToInterval(gHttpHandler->TLSHandshakeTimeout())) {
-         LOG(("canceling transaction: tls handshake takes too long: tls handshake "
-              "last %ums, timeout is %dms.",
-              PR_IntervalToMilliseconds(initialTLSDelta),
+@@ -1415,7 +1415,7 @@
+     // succesfullu write to the socket and this can only happen after
+     // the TLS handshake is done.
+     PRIntervalTime initialTLSDelta = now - mLastWriteTime;
+-    if (initialTLSDelta > gHttpHandler->TLSHandshakeTimeout()) {
++    if (initialTLSDelta > PR_MillisecondsToInterval(gHttpHandler->TLSHandshakeTimeout())) {
+       LOG(
+           ("canceling transaction: tls handshake takes too long: tls handshake "
+            "last %ums, timeout is %dms.",

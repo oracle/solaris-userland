@@ -1201,6 +1201,9 @@ ADISTACK_ENABLE.sparcv9 =	-zsx=adistack=enable
 ADISTACK_DISABLE.sparcv9 =	-zsx=adistack=disable
 ADISTACK_ENABLE =		$(ADISTACK_ENABLE.$(MACH64))
 ADISTACK_DISABLE =		$(ADISTACK_DISABLE.$(MACH64))
+
+SSBD_ENABLE =			-zsx=ssbd=enable
+SSBD_DISABLE =			-zsx=ssbd=disable
 endif
  
 # Enable ASLR, NXHEAP and NXSTACK by default unless target build is NO_ARCH.
