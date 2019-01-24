@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2015, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -29,19 +29,26 @@ set name=com.oracle.info.description value="Java bindings for Graphviz"
 set name=com.oracle.info.tpno value=$(TPNO)
 set name=info.classification \
     value="org.opensolaris.category.2008:Applications/System Utilities"
-set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.source-url value=$(GIT_REPO)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2011/269
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file path=usr/lib/graphviz/java/SWIGTYPE_p_Agedge_t.java
-file path=usr/lib/graphviz/java/SWIGTYPE_p_Agnode_t.java
-file path=usr/lib/graphviz/java/SWIGTYPE_p_Agraph_t.java
-file path=usr/lib/graphviz/java/SWIGTYPE_p_Agsym_t.java
-file path=usr/lib/graphviz/java/SWIGTYPE_p_FILE.java
-file path=usr/lib/graphviz/java/gv.java
-file path=usr/lib/graphviz/java/gvJNI.java
-file path=usr/lib/graphviz/java/libgv_java.so
+file usr/lib/$(MACH64)/graphviz/java/org/graphviz/SWIGTYPE_p_Agedge_t.java \
+    path=usr/lib/$(MACH64)/graphviz/java/SWIGTYPE_p_Agedge_t.java
+file usr/lib/$(MACH64)/graphviz/java/org/graphviz/SWIGTYPE_p_Agnode_t.java \
+    path=usr/lib/$(MACH64)/graphviz/java/SWIGTYPE_p_Agnode_t.java
+file usr/lib/$(MACH64)/graphviz/java/org/graphviz/SWIGTYPE_p_Agraph_t.java \
+    path=usr/lib/$(MACH64)/graphviz/java/SWIGTYPE_p_Agraph_t.java
+file usr/lib/$(MACH64)/graphviz/java/org/graphviz/SWIGTYPE_p_Agsym_t.java \
+    path=usr/lib/$(MACH64)/graphviz/java/SWIGTYPE_p_Agsym_t.java
+file usr/lib/$(MACH64)/graphviz/java/org/graphviz/SWIGTYPE_p_FILE.java \
+    path=usr/lib/$(MACH64)/graphviz/java/SWIGTYPE_p_FILE.java
+file usr/lib/$(MACH64)/graphviz/java/org/graphviz/gv.java \
+    path=usr/lib/$(MACH64)/graphviz/java/gv.java
+file usr/lib/$(MACH64)/graphviz/java/org/graphviz/gvJNI.java \
+    path=usr/lib/$(MACH64)/graphviz/java/gvJNI.java
+file usr/lib/$(MACH64)/graphviz/java/org/graphviz/libgv_java.so \
+    path=usr/lib/$(MACH64)/graphviz/java/libgv_java.so
 file usr/share/man/man3/gv.3java path=usr/share/man/man3/gv-java.3
-license COPYING license=EPL1.0
-license graphviz.license.extra license="Other Notices"
+license graphviz.license license=EPL1.0
 depend type=require fmri=runtime/java/jre-8
