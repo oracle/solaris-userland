@@ -1,0 +1,18 @@
+#
+# Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
+#
+prevent a null pointer dereference
+diff --git a/source/i18n/region.cpp b/source/i18n/region.cpp
+--- a/icu/source/i18n/region.cpp
++++ b/icu/source/i18n/region.cpp
+@@ -531,6 +531,10 @@ Region::getInstance (int32_t code, UErro
+ 
+     if ( r->type == URGN_DEPRECATED && r->preferredValues->size() == 1) {
+         StringEnumeration *pv = r->getPreferredValues(status);
++	if ( U_FAILURE(status) ) {
++	    delete r;
++	    return NULL;
++	}
+         pv->reset(status);
+         const UnicodeString *ustr = pv->snext(status);
+         r = (Region *)uhash_get(regionIDMap,(void *)ustr);

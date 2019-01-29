@@ -1,0 +1,20 @@
+#
+# Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+#
+add check for NULL from udata_getMemory
+http://bugs.icu-project.org/trac/ticket/12384
+diff --git a/source/common/brkeng.cpp b/source/common/brkeng.cpp
+--- a/icu/source/common/brkeng.cpp
++++ b/icu/source/common/brkeng.cpp
+@@ -270,6 +270,11 @@ ICULanguageBreakFactory::loadDictionaryM
+     if (U_SUCCESS(status)) {
+         // build trie
+         const uint8_t *data = (const uint8_t *)udata_getMemory(file);
++	if (data == NULL) {
++		status = U_MEMORY_ALLOCATION_ERROR;
++		udata_close(file);
++		return NULL;
++	}
+         const int32_t *indexes = (const int32_t *)data;
+         const int32_t offset = indexes[DictionaryData::IX_STRING_TRIE_OFFSET];
+         const int32_t trieType = indexes[DictionaryData::IX_TRIE_TYPE] & DictionaryData::TRIE_TYPE_MASK;

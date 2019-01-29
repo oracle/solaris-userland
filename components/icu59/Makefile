@@ -27,19 +27,20 @@ BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		icu4c
-COMPONENT_VERSION=	63_1
-IPS_COMPONENT_VERSION=	63.1
+COMPONENT_VERSION=	59_1
+IPS_COMPONENT_VERSION=	59.1
 HUMAN_VERSION=		$(COMPONENT_VERSION)-1
 COMPONENT_PROJECT_URL=  http://site.icu-project.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-src.tgz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:05c490b69454fce5860b7e8e2821231674af0a11d7ef2febea9a32512998cb9d
-COMPONENT_ARCHIVE_URL=  http://download.icu-project.org/files/icu4c/$(IPS_COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+    sha256:7132fdaf9379429d004005217f10e00b7d2319d0fea22bdfddef8991c45b75fe
+COMPONENT_ARCHIVE_URL=  http://download.icu-project.org/files/icu4c/59.1/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/icu
 COMPONENT_ANITYA_ID=	16134
 
-TPNO=			46913
+# patches 141 and 142 come from ICU 61.1
+TPNO=			42250
 
 # set relocate_to option while unpacking the tar ball
 UNPACK_ARGS= -r $(COMPONENT_SRC)
@@ -55,7 +56,6 @@ CONFIGURE_OPTIONS += --with-data-packaging=library
 CONFIGURE_OPTIONS += --enable-shared
 CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += --disable-samples
-CONFIGURE_OPTIONS += --disable-renaming
 
 COMPILER = gcc
 
@@ -63,16 +63,6 @@ CFLAGS += -D__EXTENSIONS__ -DDECCHECK -D_XOPEN_SOURCE=600
 CXXFLAGS += -D__EXTENSIONS__ -DDECCHECK -D_XOPEN_SOURCE=600 -std=c++11
 
 include ../../make-rules/shared-targets.mk
-
-PKG_PROTO_DIRS += $(WS_TOP)/components/icu59/build/prototype/$(MACH)
-
-# special targets due to dependency on icu59
-../icu59/build/%/.installed:
-	(cd ../icu59 && $(GMAKE) install)
-
-$(CONFIGURE_32):	../icu59/build/$(MACH32)/.installed
-$(CONFIGURE_64):	../icu59/build/$(MACH64)/.installed
-
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 

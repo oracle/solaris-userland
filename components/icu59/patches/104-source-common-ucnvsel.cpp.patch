@@ -1,0 +1,16 @@
+#
+# Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+#
+avoid memory leak in ucnvsel_open
+http://bugs.icu-project.org/trac/ticket/12388
+diff --git a/source/common/ucnvsel.cpp b/source/common/ucnvsel.cpp
+--- a/icu/source/common/ucnvsel.cpp
++++ b/icu/source/common/ucnvsel.cpp
+@@ -218,6 +218,7 @@ ucnvsel_open(const char* const*  convert
+   upvec_close(upvec);
+ 
+   if (U_FAILURE(*status)) {
++    uprv_free(allStrings);
+     return NULL;
+   }
+ 
