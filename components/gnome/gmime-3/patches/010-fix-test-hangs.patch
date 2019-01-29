@@ -1,0 +1,42 @@
+# Internally developed workaround for some tests hanging
+# forever in read or write to Unix Domain Sockets.
+#
+# An internal bug has been filed for this.
+#
+# If a modification to how VPATH or $srcdir and *builddir is
+# developed that fixes this, then a patch (not this one)
+# may be submitted upstream at that time.
+--- a/tests/Makefile.am	2019-01-04 10:28:01.340701120 -0800
++++ b/tests/Makefile.am	2019-01-04 10:28:52.556603842 -0800
+@@ -22,11 +22,11 @@
+ 	test-autocrypt	\
+ 	test-mime
+ 
+-if ENABLE_CRYPTO
+-AUTOMATED_TESTS +=	\
+-	test-pgp	\
+-	test-pgpmime
+-endif
++#if ENABLE_CRYPTO
++#AUTOMATED_TESTS +=	\
++#	test-pgp	\
++#	test-pgpmime
++#endif
+ 
+ MANUAL_TESTS =		\
+ 	test-best	\
+--- a/tests/Makefile.in	2019-01-04 10:29:08.834153728 -0800
++++ b/tests/Makefile.in	2019-01-04 10:29:32.953587507 -0800
+@@ -89,9 +89,9 @@
+ build_triplet = @build@
+ host_triplet = @host@
+ target_triplet = @target@
+-@ENABLE_CRYPTO_TRUE@am__append_1 = \
+-@ENABLE_CRYPTO_TRUE@	test-pgp	\
+-@ENABLE_CRYPTO_TRUE@	test-pgpmime
++#@ENABLE_CRYPTO_TRUE@am__append_1 = \
++#@ENABLE_CRYPTO_TRUE@	test-pgp	\
++#@ENABLE_CRYPTO_TRUE@	test-pgpmime
+ 
+ @ENABLE_CRYPTO_TRUE@am__append_2 = \
+ @ENABLE_CRYPTO_TRUE@	test-pkcs7	\

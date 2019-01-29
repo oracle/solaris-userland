@@ -1,0 +1,52 @@
+Making check in tests
+make[2]: Entering directory '$(@D)/tests'
+make[3]: Entering directory '$(@D)/tests'
+make[4]: Entering directory '$(@D)/tests'
+failed_tests=""; \
+for test in test-iconv test-streams test-cat test-encodings test-filters test-headers test-mime-part test-partial test-mbox test-autocrypt test-mime ; do \
+	testdatadir="data/`echo ${test} | sed -e 's/test-//'`"; \
+	testdir="$(SOURCE_DIR)/tests/${testdatadir}"; \
+	if [ ! -d "${testdir}" ]; then \
+		testdir="${testdatadir}"; \
+	./${test} -v ${testdir}; \
+		failed_tests="${failed_tests}\n ${test}"; \
+echo "Results: ${passed} tests passed; ${failed} tests failed."; \
+	echo -e "Failed tests: ${failed_tests}"; \
+	echo -e "Failed tests: ${failed_tests}"; \
+Testing charset conversion utils: passed
+Testing Stream tests: passed
+Testing Stream tests: passed
+Testing GMimeStreamCat: passed
+Testing Content-Transfer-Encoding: passed
+Testing base64: passed
+Testing uuencode: passed
+Testing quoted-printable: passed
+Testing GMimeFilter: failed (1 errors, 0 warnings)
+Testing indexing: passed
+Testing removing: passed
+Testing removing at an index: passed
+Testing header synchronization: passed
+Testing header formatting: passed
+Testing GMimePart: passed
+Testing message/partial: passed
+Testing Mbox parser: passed
+Testing Autocrypt: generate headers: passed
+Testing Autocrypt: import OpenPGP secret key: passed
+Testing Autocrypt: parse messages: passed
+Testing Autocrypt: inject headers: passed
+Testing addr-spec parser (strict): passed
+Testing addr-spec parser (loose): passed
+Testing date parser: passed
+Testing rfc2047 encoding/decoding (strict): passed
+Testing rfc2047 encoding/decoding (loose): passed
+Testing rfc2184 encoding/decoding: passed
+Testing quoted-strings: passed
+Testing header folding: passed
+Testing references: passed
+Results: 10 tests passed; 1 tests failed.
+Failed tests: 
+Failed tests: 
+ test-filters
+make[4]: Leaving directory '$(@D)/tests'
+make[3]: Leaving directory '$(@D)/tests'
+make[2]: Leaving directory '$(@D)/tests'
