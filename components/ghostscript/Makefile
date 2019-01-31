@@ -21,13 +21,15 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 # parfait seems to spin when looking at the .bc files (13704877), so
 # for now disable it.
 export PARFAIT_BUILD=no
 
 BUILD_BITS= 64_and_32
+COMPILER= gcc
+gcc_OPT= -O0
 include ../../make-rules/shared-macros.mk
 
 
@@ -43,7 +45,6 @@ COMPONENT_ANITYA_ID=	1157
 
 TPNO=			47816
 
-COMPILER=gcc
 COMMON_TARGETS= no
 include $(WS_MAKE_RULES)/common.mk
 
