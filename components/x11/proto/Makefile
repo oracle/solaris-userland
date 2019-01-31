@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            32
@@ -308,7 +308,7 @@ COMPONENT_ANITYA_ID_27=	15897
 
 # sun-ext-protos just delivers headers and xcb-proto is part of libxcb
 
-PKG_PROTO_DIRS += $(PWD)/files/sun-ext-protos/include
+PKG_PROTO_DIRS += $(COMPONENT_DIR)/files/sun-ext-protos/include
 
 TEST_TARGET = $(NO_TESTS)
 

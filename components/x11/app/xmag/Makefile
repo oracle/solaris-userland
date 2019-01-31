@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
@@ -38,7 +38,7 @@ COMPONENT_NAME_1=       xmag_multivis
 COMPONENT_ARCHIVE_SRC_1=none
 COMPONENT_ANITYA_ID_1=	N/A
 
-PKG_PROTO_DIRS += $(PWD)/sun-src
+PKG_PROTO_DIRS += $(COMPONENT_DIR)/sun-src
 
 TEST_TARGET = $(NO_TESTS)
 BUILD_TARGET = $(BUILD_$(MK_BITS))

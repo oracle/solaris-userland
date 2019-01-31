@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # parfait is a bit unhappy (24796481)
@@ -76,7 +76,7 @@ CONFIGURE_OPTIONS += --with-os-type=solaris
 CONFIGURE_OPTIONS += --sysconfdir="$(ETCDIR)"
 
 # Workaround the mozjs issue described in 24935318
-LD_EXEC_OPTIONS += -M $(PWD)/../../gnome/gjs/mapfile
+LD_EXEC_OPTIONS += -M $(WS_COMPONENTS)/gnome/gjs/mapfile
 ADIHEAP_MODE = $(ADIHEAP_DISABLE)
 ADISTACK_MODE = $(ADISTACK_DISABLE)
 

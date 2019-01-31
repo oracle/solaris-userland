@@ -1,6 +1,6 @@
 # Makefile for gfx-util sub-modules
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -31,11 +31,6 @@ OS_SUBDIRS_sparc = \
 	fbconf_xorg \
 	vts/ast \
 	vts/mga
-
-# Dependencies needed for parallel make:
-
-PWD:sh=pwd
-TOP=$(PWD)/../../../..
 
 ### Include common definitions
 DIRNAME="app/gfx-utils/build_sparc/"

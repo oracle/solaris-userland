@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../ofed-component-macros.mk
@@ -46,8 +46,8 @@ include $(WS_MAKE_RULES)/shared-targets.mk
 include $(WS_MAKE_RULES)/lint-libraries.mk
 
 # add flags to get at extra bits from other components' source trees
-CPPFLAGS +=	-I$(PWD)/../libmlx4/libmlx4-1.0.6/src
-CPPFLAGS +=	-I$(PWD)/../librdmacm/librdmacm-1.0.21/include
+CPPFLAGS +=	-I$(COMPONENT_DIR)/../libmlx4/libmlx4-1.0.6/src
+CPPFLAGS +=	-I$(COMPONENT_DIR)/../librdmacm/librdmacm-1.0.21/include
 
 LIBS +=	-lkstat
 

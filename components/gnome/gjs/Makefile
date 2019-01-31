@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -53,7 +53,7 @@ CONFIGURE_OPTIONS += --with-gtk
 CONFIGURE_OPTIONS += --with-pic
 
 # Workaround the mozjs issue described in 24935318 
-COMPONENT_BUILD_ENV.64 += LD_OPTIONS="$(LD_OPTIONS) -M$(PWD)/mapfile"
+COMPONENT_BUILD_ENV.64 += LD_OPTIONS="$(LD_OPTIONS) -M$(COMPONENT_DIR)/mapfile"
 
 # Required due to patches.
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);

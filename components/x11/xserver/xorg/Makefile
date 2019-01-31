@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
@@ -36,7 +36,7 @@ COMPONENT_ANITYA_ID=	5250
 TPNO=			45950
 
 PKG_PROTO_DIRS += $(SOURCE_DIR)/config
-PKG_PROTO_DIRS += $(PWD)/sun-src/os/solaris/mdb/scripts
+PKG_PROTO_DIRS += $(COMPONENT_DIR)/sun-src/os/solaris/mdb/scripts
 PKG_PROTO_DIRS += $(SOURCE_DIR)/hw/xfree86/os-support/bus
 
 # Remove compiler specific visibility flag that breaks builds of drivers
