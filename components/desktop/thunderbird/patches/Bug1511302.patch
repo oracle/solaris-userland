@@ -1,0 +1,17 @@
+Workaround which avoids crashes on sparc. Proper fix is needed.
+
+https://bugzilla.mozilla.org/show_bug.cgi?id=1511302
+
+--- a/layout/generic/nsFrame.cpp
++++ b/layout/generic/nsFrame.cpp
+@@ -4269,6 +4269,10 @@
+              "HandleDrag can only handle mouse event");
+ 
+   RefPtr<nsFrameSelection> frameselection = GetFrameSelection();
++  if (!frameselection) {
++    NS_WARNING("Failed to get valid GetFrameSelection!");
++    return NS_OK;
++  }
+   bool mouseDown = frameselection->GetDragState();
+   if (!mouseDown) {
+     return NS_OK;

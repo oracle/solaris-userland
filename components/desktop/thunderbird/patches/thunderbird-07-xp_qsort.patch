@@ -1,5 +1,11 @@
---- a/ldap/c-sdk/libraries/libldap/sort.c	2016-05-16 10:36:26.007446145 -0700
-+++ b/ldap/c-sdk/libraries/libldap/sort.c.new	2016-05-16 12:56:49.799496038 -0700
+/usr/gcc/7/bin/gcc -std=gnu99 -o sort.o -c -DNDEBUG=1 -DTRIMMED=1 -DSOLARIS=1 -D_PR_PTHREADS -DNET_SSL -DNS_DOMESTIC -DUSE_WAITPID -DUSE_PTHREADS -DNEEDPROTOS -I/builds/psumbera/userland-tb-60/components/desktop/thunderbird/thunderbird-60.3.0/comm/ldap/c-sdk/libraries/libldap -I/builds/psumbera/userland-tb-60/components/desktop/thunderbird/build/amd64/comm/ldap/c-sdk/libraries/libldap -I/builds/psumbera/userland-tb-60/components/desktop/thunderbird/thunderbird-60.3.0/comm/ldap/c-sdk/include -I/builds/psumbera/userland-tb-60/components/desktop/thunderbird/build/amd64/dist/include -I/builds/psumbera/userland-tb-60/components/desktop/thunderbird/build/amd64/dist/include/nspr -I/builds/psumbera/userland-tb-60/components/desktop/thunderbird/build/amd64/dist/include/nss -I/usr/include/pixman-1 -fPIC -include /builds/psumbera/userland-tb-60/components/desktop/thunderbird/build/amd64/mozilla-config.h -DMOZILLA_CLIENT -m64 -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -Wall -Wempty-body -Wignored-qualifiers -Wpointer-arith -Wsign-compare -Wtype-limits -Wunreachable-code -Wduplicated-cond -Wno-error=maybe-uninitialized -Wno-error=deprecated-declarations -Wno-error=array-bounds -Wno-error=free-nonheap-object -Wformat -Wformat-overflow=2 -m64 -O3 -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -fno-strict-aliasing -ffunction-sections -fdata-sections -fno-math-errno -pthread -pipe -O -fomit-frame-pointer  -MD -MP -MF .deps/sort.o.pp   /builds/psumbera/userland-tb-60/components/desktop/thunderbird/thunderbird-60.3.0/comm/ldap/c-sdk/libraries/libldap/sort.c
+/builds/psumbera/userland-tb-60/components/desktop/thunderbird/thunderbird-60.3.0/comm/ldap/c-sdk/libraries/libldap/sort.c:62:10: fatal error: xp_qsort.h: No such file or directory
+ #include "xp_qsort.h"
+          ^~~~~~~~~~~~
+compilation terminated.
+
+--- a/comm/ldap/c-sdk/libraries/libldap/sort.c
++++ b/comm/ldap/c-sdk/libraries/libldap/sort.c
 @@ -58,11 +58,7 @@
   * We don't want to require use of libxp when linking with libldap, so
   * I'll leave use of xp_qsort as a MOZILLA_CLIENT-only thing for now. --mcs

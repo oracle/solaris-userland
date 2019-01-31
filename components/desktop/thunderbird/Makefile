@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # parfait is a bit unhappy (22527218)
 export PARFAIT_BUILD=no
 
-BUILD_BITS = 32
+BUILD_BITS = 64
 COMPILER = gcc
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		thunderbird
-COMPONENT_VERSION=	52.9.1
+COMPONENT_VERSION=	60.5.0
 COMPONENT_PROJECT_URL=	https://www.thunderbird.net/
 COMPONENT_ARCHIVE = 	$(COMPONENT_SRC).source.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:286fa71504e7184f3a41bcbdebf591bebe8e04dccbad1c93a47c6e72a7125c4d
+    sha256:6f96e87e832e4089c69418db64e19afd54a0acefe3e0364087a8bc6f442b9566
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)
 else
@@ -46,9 +46,7 @@ COMPONENT_ARCHIVE_URL=	$(MOZILLA_FTP)/source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	tbird/mailer
 COMPONENT_ANITYA_ID=	4967
 
-TPNO=			44278
-
-LIGHTNING_VERSION=	5.4.9.1
+TPNO=			49297
 
 # There are a set of .xpi files (as given in the LANG_LIST definition
 # below) that we need. We could download and unpack them individually, but
@@ -57,132 +55,104 @@ LIGHTNING_VERSION=	5.4.9.1
 # one file with version number.
 COMPONENT_ARCHIVE_1 =   	$(COMPONENT_SRC)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:192ae60f8949db5cadd8b1fa72de1a27fc52be479b517de81f20fbfd1f9f251e
+    sha256:354350a6921ea78845754394b51e037843b71a065336d481d010c928412dc9f4
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
-COMPONENT_ARCHIVE_2 =		lightning-$(LIGHTNING_VERSION)-xpi.tar.bz2
-COMPONENT_ARCHIVE_HASH_2 = \
-    sha256:7d2ba4658d670b5d70f2c80c4d8ba46e847113062005e4c750519faf6cdaed18
-COMPONENT_ARCHIVE_URL_2 = 	make://download-lightning-xpis/$(COMPONENT_ARCHIVE_2)
-
-LANG_LIST = ar bg ca cs da de el es-AR es-ES et eu fi \
-	fr gl he hu id is it ja ko lt nb-NO nl nn-NO pa-IN pl \
-	pt-BR pt-PT ro ru sk sl sq sv-SE tr uk zh-CN zh-TW
+LANG_LIST = ar ast be bg br ca cs cy \
+       da de dsb el en-GB en-US es-AR es-ES et \
+       eu fi fr fy-NL ga-IE gd gl he hr hsb hu \
+       hy-AM id is it ja kab kk ko lt ms \
+       nb-NO nl nn-NO pl pt-BR pt-PT rm ro ru si sk sl \
+       sq sr sv-SE tr uk vi zh-CN zh-TW
 
 CLEAN_PATHS += $(COMPONENT_DIR)/xpi
-CLEAN_PATHS += $(COMPONENT_DIR)/xpi-lightning 
 
 # Firefox and Thunderbird share the same firefox*.patch patches. Copy these 
 # patches from the Firefox patches directory and the Thunderbird patches to a 
-# directory of all files (patches-all), except for Firefox patches 42,
-# which don't get applied in Thunderbird. (dtrace patch)
+# directory of all files (patches-all).
 PATCH_DIR=patches-all
 CLEAN_PATHS += $(PATCH_DIR)
 COPY_COMMON_FILES_1:= $(shell mkdir -p $(PATCH_DIR))
 COPY_COMMON_FILES_2:=  \
-    $(shell /usr/bin/rsync -ac patches/* ../firefox/patches-52/* $(PATCH_DIR))
-COPY_COMMON_FILES_3:= \
-    $(shell $(RM) $(PATCH_DIR)/firefox*42*.patch)
+    $(shell /usr/bin/rsync -ac patches/* ../firefox/patches/* $(PATCH_DIR))
+
+CONFIGURE_DEFAULT_DIRS=no
 
 include $(WS_MAKE_RULES)/common.mk
 
-# /usr/sbin for dtrace, SPRO for python modules, PERL as well.
-PATH = $(dirname $(CC)):/usr/gnu/bin:/usr/bin:/usr/sbin:$(dirname $(PERL)):$(SPRO_VROOT)/bin
+# /usr/gnu/bin needed to pick up the GNU version of tail and readelf.
+# /usr/sbin needed for dtrace.
+PATH = $(dirname $(CC)):/usr/gnu/bin:/usr/bin:/usr/sbin
 
-MOZCONFIG =	$(BUILD_DIR_32)/mozconfig
+COMPONENT_BUILD_ARGS += $(JOBS:%=-j%)
+
+MOZCONFIG =	$(SOURCE_DIR)/mozconfig
+
+ifdef DEBUG
+MOZCONFIG_DEBUG =       $(MOZCONFIG)
+MOZCONFIG_NON_DEBUG =   /dev/null
+else
+MOZCONFIG_DEBUG =       /dev/null
+MOZCONFIG_NON_DEBUG =   $(MOZCONFIG)
+endif
 
 COMPONENT_PRE_CONFIGURE_ACTION += \
-	echo "mk_add_options BUILD_OFFICIAL=1" > $(MOZCONFIG) ; \
-	echo "mk_add_options MOZILLA_OFFICIAL=1" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --enable-application=mail" >> $(MOZCONFIG) ; \
+	echo "ac_add_options MOZILLA_OFFICIAL=1" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --enable-application=comm/mail" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --enable-calendar" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --prefix=/usr" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --libdir=/usr/lib" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --disable-debug" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --enable-optimize" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --enable-optimize" >> $(MOZCONFIG_NON_DEBUG) ; \
+	echo "ac_add_options --disable-optimize" >> $(MOZCONFIG_DEBUG) ; \
 	echo "ac_add_options --disable-tests" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-libevent" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --with-system-icu" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-zlib" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-bz2" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-system-ffi" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-system-sqlite" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-jemalloc" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --enable-replace-malloc" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-official-branding" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --disable-updater" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-system-pixman" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-intl-api" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --disable-crashreporter" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --disable-debug-symbols" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --enable-calendar" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --disable-debug-symbols" >> $(MOZCONFIG_NON_DEBUG) ; \
 	echo "ac_add_options --enable-startup-notification" >> $(MOZCONFIG) ; \
         echo "ac_add_options --enable-js-shell" >> $(MOZCONFIG) ; \
-        echo "ac_add_options --enable-default-toolkit=cairo-gtk2" >> $(MOZCONFIG) ;
+	echo "ac_add_options --enable-debug" >> $(MOZCONFIG_DEBUG) ; \
+	echo "ac_add_options --disable-install-strip" >> $(MOZCONFIG_DEBUG) ; \
 
 CXXFLAGS += 		-Wno-invalid-offsetof -fpermissive
-CC +=		$(CC_BITS)
-CXX +=		$(CC_BITS)
 
-# jemalloc (from libxul) interposes on malloc in glib causing startup problems,
-# so use the big hammer for now, pending the resolution of:
-#    24765609 thunderbird build dies with newer GCC 
-LD_EXEC_OPTIONS += -z now
+# 28395728
+LD_MAP_NOEXBSS.sparc=
 
-CONFIGURE_ENV +=	PKG_CONFIG_PATH=$(CONFIGURE_LIBDIR.$(BITS))/pkgconfig
-CONFIGURE_ENV +=	OS_DEFINES="-D__USE_LEGACY_PROTOTYPES__"
-# -L.../dist/bin needs to be set otherwise it will report missing libnss3.so, 
-# libssl3.so, etc, while linking.
-CONFIGURE_ENV +=	LDFLAGS="$(LD_Z_IGNORE) -z interpose -B nodirect -L$(BUILD_DIR_32)/dist/lib -L$(BUILD_DIR_32)/dist/bin"
+# libmozgkt need to link to gtk3 and others
+LD_Z_IGNORE=
 
-CONFIGURE_ENV +=	MOZCONFIG=$(MOZCONFIG)
-CONFIGURE_ENV +=	"CC=$(CC)"
-CONFIGURE_ENV +=	"CXX=$(CXX)"
-CONFIGURE_ENV += 	"CFLAGS=$(CFLAGS)"
-CONFIGURE_ENV +=	"CXXFLAGS=$(CXXFLAGS)"
-
-# If the configure options are not explicitly set, then configure fails with:
-# configure: warning: CC=/usr/gcc/4.8/bin/gcc: invalid host type
-# invalid host type
-# configure: warning: CXX=/usr/gcc/4.8/bin/gcc: invalid host type
-# invalid host type
-# configure: error: can only configure for one host and one target at a time
-CONFIGURE_OPTIONS = --prefix=$(CONFIGURE_PREFIX)
+# missing symbols from gtk3 during Firefox start
+LD_B_DIRECT=
 
 #because we touched old-configure.in and js/src/old-configure.in
-COMPONENT_PRE_CONFIGURE_ACTION += (cd $(COMPONENT_NAME)-$(COMPONENT_VERSION)/mozilla; autoreconf; touch configure; cd js/src; autoreconf; touch configure);
-
-COMPONENT_POST_CONFIGURE_ACTION += \
-        $(CP) $(MOZCONFIG) $(COMPONENT_SRC)/mozconfig
+COMPONENT_PRE_CONFIGURE_ACTION += (cd $(COMPONENT_NAME)-$(COMPONENT_VERSION); autoreconf; touch configure; cd js/src; autoreconf; touch configure);
 
 COMPONENT_POST_BUILD_ACTION = \
         (cd $(@D)/mail/installer ; $(ENV) $(COMPONENT_BUILD_ENV) \
                 $(GMAKE) $(COMPONENT_BUILD_ARGS) $(COMPONENT_BUILD_TARGETS))
 
-# Path to lightning extension directory
-LIGHTNING_EXT_DIR = \
-	$(PROTOUSRLIBDIR)/thunderbird-$(COMPONENT_VERSION)/distribution/extensions/{e2fda1a4-762b-4020-b5ad-a41df1933103}
-
-COMPONENT_POST_INSTALL_ACTION += \
-	$(CP) -r $(BUILD_DIR_32)/dist/bin/distribution/extensions/{e2fda1a4-762b-4020-b5ad-a41df1933103}/* \
-		$(LIGHTNING_EXT_DIR) ;
-
 COMPONENT_POST_INSTALL_ACTION += \
         $(RM) -rf xpi ; \
         $(TAR) xvf $(COMPONENT_ARCHIVE_1) > /dev/null 2>&1 ; \
-	$(TAR) xvf $(COMPONENT_ARCHIVE_2) > /dev/null 2>&1 ; \
         list1='$(LANG_LIST)' ; for f in $$list1 ; do \
             $(CP) xpi/$$f.xpi \
-                $(PROTOUSRLIBDIR)/thunderbird-$(COMPONENT_VERSION)/distribution/extensions/langpack-$$f@thunderbird.mozilla.org.xpi ; \
-	    unzip xpi-lightning/lightning-$(LIGHTNING_VERSION).$$f.linux-i686.xpi \
-		chrome/calendar-$$f/\* chrome/lightning-$$f/\* -d \
-		    $(LIGHTNING_EXT_DIR)/ ; \
-	    echo 'locale calendar '$$f' chrome/calendar-'$$f'/locale/'$$f'/calendar/' >> $(LIGHTNING_EXT_DIR)/chrome.manifest ; \
-	    echo 'locale lightning '$$f' chrome/lightning-'$$f'/locale/'$$f'/lightning/' >> $(LIGHTNING_EXT_DIR)/chrome.manifest ; \
+                $(PROTOUSRLIBDIR)/thunderbird/distribution/extensions/langpack-$$f@thunderbird.mozilla.org.xpi ; \
 	done ;
 
 TB_XPI = $(MOZILLA_FTP)/linux-i686/xpi
-LN_XPI = http://ftp.mozilla.org/pub/calendar/lightning/candidates/$(LIGHTNING_VERSION)-candidates/build3/linux-i686
 
-# Run gmake download-xpis and gmake download-lightning-xpis to download tarballs of xpi
-# for thunderbird and lightning separately.
+# Run gmake download-xpis to download a tarball for xpi locally.
 download-xpis:
 	@echo "download-xpis"
 	$(RM) -r $(COMPONENT_DIR)/xpi $(COMPONENT_DIR)/$(COMPONENT_ARCHIVE_1) 
@@ -201,31 +171,12 @@ download-xpis:
 	    TZ=UTC gtar cjvf $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1) --mtime='1970-01-01' --owner=root --group=root xpi/* )
 	/usr/bin/sha256sum $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1)
 
-download-lightning-xpis:
-	@echo "download-lightning-xpis"
-	$(RM) -r $(COMPONENT_DIR)/xpi-lightning $(COMPONENT_DIR)/$(COMPONENT_ARCHIVE_2)
-	$(MKDIR) $(COMPONENT_DIR)/xpi-lightning
-	@echo "downloading lightning xpis"
-	list1='$(LANG_LIST)' ; for f in $$list1 ; do \
-		echo $$f; \
-		/usr/bin/curl -s -o $(COMPONENT_DIR)/xpi-lightning/lightning-$(LIGHTNING_VERSION).$$f.linux-i686.xpi \
-	                $(LN_XPI)/lightning-$(LIGHTNING_VERSION).$$f.linux-i686.xpi ;\
-		file $(COMPONENT_DIR)/xpi-lightning/lightning-$(LIGHTNING_VERSION).$$f.linux-i686.xpi | grep ZIP > /dev/null; \
-		if [ $$? -ne 0 ]; then \
-			echo "File $$f is not ZIP archive!"; exit 1; \
-		fi ; \
-	done
-	(cd $(COMPONENT_DIR); \
-	    TZ=UTC gtar cjvf $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_2) --mtime='1970-01-01' --owner=root --group=root xpi-lightning/* )
-	/usr/bin/sha256sum $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_2)
-
 COMPONENT_TEST_DIR =    $(@D)/js/src
 COMPONENT_TEST_TARGETS=check-jit-test
 COMPONENT_TEST_TRANSFORMS = \
 	'-e "/^PASSED ALL/,/Failed:/p" ' \
+	'-e "/^FAILURES:/,/Failed:/p" ' \
 	'-e "/.*/d" '
-
-$(SOURCE_DIR)/.patched-firefox-%: GPATCH_FLAGS += -d $(@D)/mozilla
 
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += database/sqlite-3
@@ -237,19 +188,20 @@ REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk2
+REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/desktop/startup-notification
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/graphics/pixman
+REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/libevent
 REQUIRED_PACKAGES += library/libffi
-REQUIRED_PACKAGES += library/samba/libsmbclient
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/freetype-2
+REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/libdbus-glib
 REQUIRED_PACKAGES += system/library/math

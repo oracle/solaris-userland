@@ -1,7 +1,7 @@
 Should investigate and send upstream.
 
---- a/ldap/ldap-sdk.mozbuild	2017-04-20 13:08:58.821251992 +0000
-+++ b/ldap/ldap-sdk.mozbuild	2017-04-20 13:10:41.123439878 +0000
+--- a/comm/ldap/ldap-sdk.mozbuild
++++ b/comm/ldap/ldap-sdk.mozbuild
 @@ -17,6 +17,8 @@
      DEFINES[CONFIG['OS_TARGET'].upper()] = True
  elif CONFIG['OS_ARCH'] == 'WINNT':
@@ -11,8 +11,8 @@ Should investigate and send upstream.
  
  DEFINES['_PR_PTHREADS'] = True
  DEFINES['NET_SSL'] = True
---- a/ldap/c-sdk/libraries/libldap/tmplout.c	2017-04-20 13:53:29.138743037 +0000
-+++ b/ldap/c-sdk/libraries/libldap/tmplout.c	2017-04-20 13:53:45.186019094 +0000
+--- a/comm/ldap/c-sdk/libraries/libldap/tmplout.c
++++ b/comm/ldap/c-sdk/libraries/libldap/tmplout.c
 @@ -48,11 +48,6 @@
  #endif
  
@@ -25,8 +25,8 @@ Should investigate and send upstream.
  static int do_entry2text( LDAP *ld, char *buf, char *base, LDAPMessage *entry,
  	struct ldap_disptmpl *tmpl, char **defattrs, char ***defvals,
  	writeptype writeproc, void *writeparm, char *eol, int rdncount,
---- a/ldap/c-sdk/include/portable.h	2017-04-20 13:52:47.492007240 +0000
-+++ b/ldap/c-sdk/include/portable.h	2017-04-20 13:55:01.249093745 +0000
+--- a/comm/ldap/c-sdk/include/portable.h
++++ b/comm/ldap/c-sdk/include/portable.h
 @@ -311,7 +311,8 @@
  	|| defined(OSF1V4) || defined(AIX) || defined(UnixWare) \
          || defined(hpux) || defined(HPUX11) || defined(NETBSD) \
@@ -37,3 +37,16 @@ Should investigate and send upstream.
  #define NSLDAPI_CTIME( c, b, l )        ctime_r( c, b )
  #elif defined( OSF1V3 )
  #define NSLDAPI_CTIME( c, b, l )	(ctime_r( c, b, l ) ? NULL : b)
+Fixes error: 'FIONBIO' undeclared
+
+--- a/comm/ldap/c-sdk/libraries/libldap/os-ip.c
++++ b/comm/ldap/c-sdk/libraries/libldap/os-ip.c
+@@ -64,6 +64,8 @@
+ /* XXX value for macintosh (if applicable)? */
+ #endif
+ 
++#include <sys/filio.h>
++
+ #include "ldap-int.h"
+ #ifdef NSLDAPI_CONNECT_MUST_NOT_BE_INTERRUPTED
+ #include <signal.h>
