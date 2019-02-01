@@ -1,0 +1,29 @@
+Inhouse patch - fix of undefined symbols while build (missing headers)
+Final version (after release of cups-2.3.0) will be promoted to cups.org
+
+--- a/cups/cups-private.h	2018-12-18 22:39:03.564875926 +0000
++++ b/cups/cups-private.h	2018-12-18 22:43:15.387888815 +0000
+@@ -28,6 +28,13 @@
+ #    include <CoreFoundation/CoreFoundation.h>
+ #  endif /* __APPLE__ */
+ 
++#ifdef __sun
++#  include <stdio.h>
++#  include <sys/time.h>
++#  include <sys/types.h>
++#  include <sys/socket.h>
++#  include <ifaddrs.h>
++#endif /* __sun */
+ 
+ /*
+  * C++ magic...
+--- a/cups/getifaddrs-internal.h	2018-12-18 22:53:37.612876535 +0000
++++ b/cups/getifaddrs-internal.h	2018-12-18 22:55:29.146548174 +0000
+@@ -16,6 +16,7 @@
+  */
+ 
+ #  include "config.h"
++#  include "versioning.h"
+ #  ifdef _WIN32
+ #    define _WINSOCK_DEPRECATED_NO_WARNINGS 1
+ #    include <io.h>

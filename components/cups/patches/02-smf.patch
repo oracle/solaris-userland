@@ -1,6 +1,20 @@
---- init/cups.xml.in.orig	Thu Jul  8 22:54:14 2010
-+++ init/cups.xml.in	Tue Aug 16 14:51:37 2011
-@@ -52,14 +52,6 @@
+smf(5) support in cups upstream was introduced in times of
+Open Solaris enthusiasm. Currently the community do not like
+to support anything non-Apple.
+It might worth to ask to remove the smf(5) support from
+cups upstream entirely then keep it on by own.
+
+--- a/scheduler/cups.xml.in	Thu Jul  8 22:54:14 2010
++++ b/scheduler/cups.xml.in	2018-10-18 16:19:20.394816426 +0000
+@@ -41,7 +41,6 @@
+         <service_fmri value='svc:/network/loopback' />
+     </dependency>
+ 
+-
+     <dependency
+         name='network'
+         grouping='optional_all'
+@@ -50,21 +49,13 @@
          <service_fmri value='svc:/milestone/network' />
      </dependency>
  
@@ -15,7 +29,6 @@
      <exec_method
          type='method'
          name='stop'
-@@ -66,7 +58,7 @@
          exec=':kill'
          timeout_seconds='60' />
  
@@ -24,7 +37,7 @@
  
          <dependency
              name='config_data'
-@@ -87,10 +79,12 @@
+@@ -85,10 +76,14 @@
          </exec_method>
  
          <property_group name='general' type='framework'>
@@ -35,10 +48,12 @@
              <propval name='value_authorization' type='astring'
 -                value='solaris.smf.value.cups' />
 +                value='solaris.smf.manage.cups' />
++	    <!-- sub-process core dumps shouldn't restart session -->
++	    <propval name='ignore_error' type='astring' value='core,signal' />
          </property_group>
  
          <template>
-@@ -144,14 +138,6 @@
+@@ -142,21 +137,13 @@
          <service_fmri value='svc:/milestone/network' />
      </dependency>
  
@@ -53,7 +68,6 @@
      <exec_method
          type='method'
          name='stop'
-@@ -158,7 +144,7 @@
          exec=':kill'
          timeout_seconds='60' />
  
@@ -62,7 +76,7 @@
          <dependency
              name='cupsd'
              grouping='require_all'
-@@ -190,7 +176,7 @@
+@@ -188,7 +175,7 @@
              <propval name='action_authorization' type='astring'
                  value='solaris.smf.manage.cups' />
              <propval name='value_authorization' type='astring'

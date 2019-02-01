@@ -11,14 +11,3 @@
  # Object files...
  #
 
---- config-scripts/cups-threads.m4	2009-02-10 18:05:35.000000000 +0100
-+++ config-scripts/cups-threads.m4	2018-12-06 10:25:59.992494239 +0100
-@@ -40,6 +40,8 @@
- 				# be POSIX-compliant... :(
- 				if test $uname = SunOS; then
- 					PTHREAD_FLAGS="$PTHREAD_FLAGS -D_POSIX_PTHREAD_SEMANTICS"
-+					# No need to pass -lpthread since Solaris 11/11.
-+					LIBS="$SAVELIBS"
- 				fi
- 				break
- 			fi
