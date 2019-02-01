@@ -66,12 +66,8 @@ include ../../make-rules/shared-targets.mk
 
 PKG_PROTO_DIRS += $(WS_TOP)/components/icu59/build/prototype/$(MACH)
 
-# special targets due to dependency on icu59
-.PHONY: icu59
-icu59:
-	(cd ../icu59 && $(GMAKE) install)
-
-INSTALL_TARGET += icu59
+# Install icu59 dependency.
+COMPONENT_POST_INSTALL_ACTION += (cd ../icu59 && $(GMAKE) install);
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
