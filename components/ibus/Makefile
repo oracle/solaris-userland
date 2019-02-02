@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ibus
-COMPONENT_VERSION=	1.5.13
+COMPONENT_VERSION=	1.5.19
 COMPONENT_PROJECT_URL=	https://github.com/ibus/ibus
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:ed73d80542dfdcca190b7958431048cd6830c2ce25c467384630b6a7e957a5f1
+    sha256:4b66c798dab093f0fa738e5c10688d395a463287d13678c208a81051af5d2429
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	g11n/im-ibus
 COMPONENT_ANITYA_ID=	1352
 
-TPNO=			31503
+TPNO=			48784
 
 # disabled, upstream tests require DISPLAY and ibus daemon running.
 TEST_TARGET= $(NO_TESTS)
@@ -52,9 +52,14 @@ CONFIGURE_OPTIONS +=	--enable-xim
 CONFIGURE_OPTIONS +=	--enable-introspection
 CONFIGURE_OPTIONS +=	--libexecdir="$(USRLIBDIR)/$(COMPONENT_NAME)"
 CONFIGURE_OPTIONS +=	--sysconfdir=/etc
+CONFIGURE_OPTIONS +=	--disable-emoji-dict
+CONFIGURE_OPTIONS +=	--disable-unicode-dict
 
 # gtkdoc fails on current sources
 CONFIGURE_OPTIONS +=	--disable-gtk-doc
+
+COMPONENT_POST_INSTALL_ACTION += \
+    $(GUNZIP) -f $(PROTO_DIR)/usr/share/man/man*/*.gz ;
 
 REQUIRED_PACKAGES +=	library/desktop/atk
 REQUIRED_PACKAGES +=	library/desktop/cairo
