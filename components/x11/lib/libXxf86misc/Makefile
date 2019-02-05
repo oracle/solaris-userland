@@ -20,18 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXxf86misc
-COMPONENT_VERSION=	1.0.3
+COMPONENT_VERSION=	1.0.4
 COMPONENT_ARCHIVE_HASH= \
-	sha256:563f4200862efd3334c33a669e0a0aae5bab31f3998db75b87a99a697cc26b5b
+	sha256:a89c03e2b0f16239d67a2031b9003f31b5a686106bbdb3c797fb88ae472af380
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1798
+TPNO=			49183
 
 TEST_TARGET = $(NO_TESTS)
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -30,7 +30,6 @@ set name=pkg.summary value="libICE - Inter-Client Exchange Library"
 set name=pkg.description \
     value="Library and utilities to support the X Window System Inter-Client Exchange (ICE) protocol"
 set name=com.oracle.info.description value=libICE,iceauth
-set name=com.oracle.info.tpno value=$(TPNO)
 set name=info.classification value=org.opensolaris.category.2008:System/X11
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL) \
     value=$(COMPONENT_ARCHIVE_URL_1)
@@ -51,11 +50,11 @@ file path=usr/include/X11/ICE/ICElib.h
 file path=usr/include/X11/ICE/ICEmsg.h
 file path=usr/include/X11/ICE/ICEproto.h
 file path=usr/include/X11/ICE/ICEutil.h
-link path=usr/lib/$(MACH64)/libICE.so target=libICE.so.6
+link path=usr/lib/$(MACH64)/libICE.so target=libICE.so.6.3.0
 link path=usr/lib/$(MACH64)/libICE.so.6 target=libICE.so.6.3.0
 file path=usr/lib/$(MACH64)/libICE.so.6.3.0
 file path=usr/lib/$(MACH64)/pkgconfig/ice.pc
-link path=usr/lib/libICE.so target=libICE.so.6
+link path=usr/lib/libICE.so target=libICE.so.6.3.0
 link path=usr/lib/libICE.so.6 target=libICE.so.6.3.0
 file path=usr/lib/libICE.so.6.3.0
 file path=usr/lib/pkgconfig/ice.pc
@@ -70,5 +69,12 @@ file path=usr/share/doc/libICE/ice.pdf.db
 file path=usr/share/doc/libICE/ice.txt
 file path=usr/share/doc/libICE/ice.xml
 file path=usr/share/man/man1/iceauth.1
-license COPYING license=MIT
+license iceauth.license license="MIT (iceauth)" \
+    com.oracle.info.description="iceauth - ICE authority file utility" \
+    com.oracle.info.name=iceauth com.oracle.info.tpno=$(TPNO_1) \
+    com.oracle.info.version=$(COMPONENT_VERSION_1)
+license libICE.license license="MIT (libICE)" \
+    com.oracle.info.description="libICE - Inter-Client Exchange library" \
+    com.oracle.info.name=libICE com.oracle.info.tpno=$(TPNO) \
+    com.oracle.info.version=$(COMPONENT_VERSION)
 depend type=require fmri=pkg:/x11/header/x11-protocols facet.devel=true

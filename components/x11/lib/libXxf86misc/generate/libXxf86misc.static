@@ -1,4 +1,3 @@
-#
 # CDDL HEADER START
 #
 # The contents of this file are subject to the terms of the
@@ -18,30 +17,14 @@
 #
 # CDDL HEADER END
 #
-
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
-BUILD_BITS =            64_and_32
-include ../../../../make-rules/shared-macros.mk
+link path=usr/X11/lib/$(MACH64)/libXxf86misc.so \
+    target=../../../lib/$(MACH64)/libXxf86misc.so
+link path=usr/X11/lib/$(MACH64)/libXxf86misc.so.1 \
+    target=../../../lib/$(MACH64)/libXxf86misc.so.1
+link path=usr/X11/lib/libXxf86misc.so target=../../lib/libXxf86misc.so
+link path=usr/X11/lib/libXxf86misc.so.1 target=../../lib/libXxf86misc.so.1
 
-COMPONENT_NAME=		libdmx
-COMPONENT_VERSION=	1.1.4
-COMPONENT_ARCHIVE_HASH= \
-	sha256:253f90005d134fa7a209fbcbc5a3024335367c930adf0f3203e754cf32747243
-COMPONENT_BUGDB=        x11/libraries
-COMPONENT_ANITYA_ID=	1594
-TPNO=			49184
-
-TEST_TARGET = $(NO_TESTS)
-
-FIX_PC_FILES=dmx.pc.in
-
-include $(WS_MAKE_RULES)/x11-component.mk
-
-CONFIGURE_ENV += LIB_MAN_SUFFIX=3dmx
-
-REQUIRED_PACKAGES += x11/header/x11-protocols
-REQUIRED_PACKAGES += x11/library/libx11
-REQUIRED_PACKAGES += x11/library/libxext
