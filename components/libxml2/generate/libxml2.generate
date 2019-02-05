@@ -1,0 +1,59 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+<include generate/common.transform>
+
+# no need for documentation so far
+<transform path=usr/share/(doc|gtk-doc)/ -> drop>
+
+# at least for now we don't need these new build config files
+<transform file path=usr/lib/.*xml2Conf\.sh -> drop>
+<transform file path=usr/lib/.*cmake/libxml2/libxml2-config.cmake -> drop>
+
+# no need for these 32bit executables
+<transform file path=usr/bin/\$\(MACH32\)/(xmlcatalog$|xmllint$) -> drop>
+
+# lint files are delivered directly (see also static file)
+<transform file path=usr/lib/.*llib-lxml2 -> drop>
+<transform file path=llib-lxml2$ -> set action.hash %(path)>
+<transform file path=llib-lxml2$ -> set path usr/lib/llib-lxml2>
+
+# libraries are delivered in /lib directory (via static file)
+<transform link file path=usr/lib/\$\(MACH64\)/libxml2\.so -> drop>
+<transform link file path=usr/lib/libxml2\.so -> drop>
+
+# xml2-config swap
+<transform file path=usr/bin/xml2-config -> set action.hash %(path)>
+<transform file path=usr/bin/xml2-config -> edit path bin/ bin/\$\(MACH64\)/>
+<transform file path=usr/bin/\$\(MACH32\)/xml2-config -> set action.hash %(path)>
+<transform file path=usr/bin/\$\(MACH32\)/xml2-config -> set path usr/bin/xml2-config>
+
+# decoration
+<transform path=.*/xml2-config\.1 -> set facet.devel all>
+<transform path=.*/xml2-config$ -> set facet.devel true>
+
+# delete everything not belonging to this package
+<transform file link pkg.type=(?!common) -> drop>
+<transform file link -> delete pkg.type .*>
