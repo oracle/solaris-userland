@@ -1,0 +1,52 @@
+The change increases the default maximal depth of libxslt
+recursion from 3000 to 10000. It is required by libX11
+component to generate libX11-keys.html file.
+
+The following command fails if the patch is not applied:
+$ /usr/bin/xmlto --searchpath "/scratch/lbukata/binutils_automake_test/components/x11/doc/build/prototype/i386/usr/share/sgml/X11" --searchpath "/scratch/lbukata/binutils_automake_test/components/x11/lib/libX11/build/i86" -x /scratch/lbukata/binutils_automake_test/components/x11/doc/build/prototype/i386/usr/share/sgml/X11/xorg-chunk.xsl --stringparam root.filename="libX11-keys" --stringparam target.database.document=/scratch/lbukata/binutils_automake_test/components/x11/doc/build/prototype/i386/usr/share/sgml/X11/dbs/masterdb.html.xml --stringparam current.docid="libX11-keys" xhtml libX11-keys.xml
+> runtime error: file file:///usr/share/sgml/docbook/xsl-stylesheets-1.75.2/common/l10n.xsl line 58 element value-of
+> xsltApplySequenceConstructor: A potential infinite template recursion was detected.
+> You can adjust xsltMaxDepth (--maxdepth) in order to raise the maximum number of nested template calls and variables/params (currently set to 3000).
+...
+
+The recursion is deep but not infinite, so this patch
+increases the default value to overcome this problem.
+Note that there is no easy way to pass '--maxdepth'
+parameter to xsltproc from xmlto. An update of docbook
+styles could resolve this issue as well.
+
+The patch is not suitable for upstream.
+
+--- libxslt-1.1.33/libxslt/transform.c	2019-02-13 00:51:19.602434690 +0000
++++ libxslt-1.1.33/libxslt/transform.c	2019-02-13 00:48:02.062467331 +0000
+@@ -67,7 +67,7 @@ static int xsltGetHTMLIDs(const xmlChar
+ 			  const xmlChar **systemID);
+ #endif
+ 
+-int xsltMaxDepth = 3000;
++int xsltMaxDepth = 10000;
+ int xsltMaxVars = 15000;
+ 
+ /*
+--- libxslt-1.1.33/doc/xsltproc.xml	2019-02-13 00:51:50.487852991 +0000
++++ libxslt-1.1.33/doc/xsltproc.xml	2019-02-13 00:49:28.335319197 +0000
+@@ -203,7 +203,7 @@
+ 			before <citerefentry>
+ 			<refentrytitle>libxslt</refentrytitle>
+ 			<manvolnum>3</manvolnum>
+-		</citerefentry> concludes it is in an infinite loop. The default is 3000.
++		</citerefentry> concludes it is in an infinite loop. The default is 10000.
+ 		</para>
+ 	</listitem>
+ 		</varlistentry>
+--- libxslt-1.1.33/doc/xsltproc.1	2019-02-13 00:52:12.813616032 +0000
++++ libxslt-1.1.33/doc/xsltproc.1	2019-02-13 00:48:51.133383418 +0000
+@@ -93,7 +93,7 @@ Display all the documents loaded during
+ .RS 4
+ Adjust the maximum depth of the template stack before
+ \fBlibxslt\fR(3)
+-concludes it is in an infinite loop\. The default is 3000\.
++concludes it is in an infinite loop\. The default is 10000\.
+ .RE
+ .PP
+ \fB\-\-nodtdattr\fR

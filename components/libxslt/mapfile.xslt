@@ -15,6 +15,13 @@
 #
 $mapfile_version 2
 
+SYMBOL_VERSION SUNWpublic {
+	global:
+		xsltDecimalFormatGetByQName;
+		xsltFlagRVTs;
+		xsltInitCtxtKey;
+} SUNW_1.5;
+
 SYMBOL_VERSION SUNW_1.5 {
 	global:
 		xsltMaxVars;

@@ -1,0 +1,67 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+<include generate/common.transform>
+
+<transform file link pkg.type=(?!libxslt) -> drop>
+<transform file link -> delete pkg.type .*>
+
+# Use this trick to revert $(MACH32) expansions.
+<transform file -> edit path "$(MACH32)" "$(M32)">
+<transform file -> edit path "M32" "MACH32">
+
+# xslt-config contains embedded paths, so swap these around.
+<transform file path=usr/bin/xslt-config -> set action.hash %(path)>
+<transform file path=usr/bin/xslt-config -> edit path xslt-config$ \$\(MACH64\)/xslt-config>
+<transform file path=usr/bin/\$\(MACH32\)/xslt-config -> set action.hash %(path)>
+<transform file path=usr/bin/\$\(MACH32\)/xslt-config -> edit path ^.*$ usr/bin/xslt-config>
+
+# Set the installation path for the xslt-config.1 manual page.
+<transform file path=xslt-config.1 -> set action.hash %(path)>
+<transform file path=xslt-config.1 -> edit path ^.*$ \
+  usr/share/man/man1/xslt-config.1>
+
+# The configuration script and its documentation are installed only if the devel facet is set.
+<transform file path=usr/bin/\$\(MACH64\)/xslt-config -> set facet.devel true>
+<transform file path=usr/bin/xslt-config -> set facet.devel true>
+<transform file path=usr/share/man/man1/xslt-config.1 -> set facet.devel all>
+
+# Remove duplicate lines.
+<transform file path=usr/lib/llib-lxslt$ -> drop>
+<transform file path=usr/lib/llib-lexslt$ -> drop>
+# Prepend 'usr/lib/' path to llib-l(e)xslt files.
+<transform file path=llib-lxslt$ -> set action.hash %(path)>
+<transform file path=llib-lxslt$ -> edit path ^.*$ usr/lib/llib-lxslt>
+<transform file path=llib-lexslt$ -> set action.hash %(path)>
+<transform file path=llib-lexslt$ -> edit path ^.*$ usr/lib/llib-lexslt>
+
+# 32-bit binary of xsltproc is not delivered.
+<transform file path=usr/bin/\$\(MACH32\)/xsltproc -> drop>
+# Do not install python examples.
+<transform file path=usr/share/doc/libxslt-python-.* -> drop>
+# A bash script that sets env variables to library paths is not needed.
+<transform file path=usr/.*/xsltConf.sh$ -> drop>
+# Drop library files and related links. They are added manually in libxslt.static file.
+<transform file link path=usr/lib/.*libe*xslt.so.* -> drop>

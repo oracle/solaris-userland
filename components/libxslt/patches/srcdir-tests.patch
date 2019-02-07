@@ -14,9 +14,9 @@ source directory.
  	@rm plugin.res
  
  else
---- libxslt-1.1.27/tests/documents/Makefile.am	Tue Sep  4 07:26:23 2012
-+++ libxslt-1.1.27/tests/documents/Makefile.am	Thu Oct 11 06:54:44 2012
-@@ -27,6 +27,7 @@
+--- libxslt-1.1.33/tests/documents/Makefile.am	2019-02-13 06:04:57.402731316 +0000
++++ libxslt-1.1.33/tests/documents/Makefile.am	2019-02-13 06:04:40.377314220 +0000
+@@ -27,11 +27,13 @@ test tests: $(top_builddir)/xsltproc/xsl
  	grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0" || true;\
  	rm -f result)
  	@($(CHECKER) $(top_builddir)/xsltproc/xsltproc $(srcdir)/test.xsl $(srcdir)/test_bad.xml > result 2>err ; \
@@ -24,22 +24,27 @@ source directory.
  	diff $(srcdir)/test_bad.result result; \
  	diff $(srcdir)/test_bad.err err; \
  	grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0" || true;\
---- libxslt-1.1.27/tests/general/Makefile.am	Fri Sep  7 00:49:41 2012
-+++ libxslt-1.1.27/tests/general/Makefile.am	Mon Oct 15 02:41:07 2012
-@@ -207,10 +207,11 @@
+ 	rm -f result err)
+ 	@($(CHECKER) $(top_builddir)/xsltproc/xsltproc $(srcdir)/message.xsl $(srcdir)/message.xml > result 2>&1 ; \
++	gsed -i 's|$(srcdir)|.|' result; \
+ 	diff $(srcdir)/message.result result; \
+ 	grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0" || true;\
+ 	rm -f result)
+--- libxslt-1.1.33/tests/general/Makefile.am	2019-01-23 06:42:00.097716059 +0000
++++ libxslt-1.1.33/tests/general/Makefile.am	2019-01-23 06:40:01.100398419 +0000
+@@ -217,16 +217,20 @@ test tests: $(top_builddir)/xsltproc/xsl
  	  if [ ! -f $$j ] ; then continue ; fi ; \
  	  if [ -d $$j ] ; then continue ; fi ; \
  	  name=`basename $$j .xsl`; \
 +	  real_docs_path=`cd $(srcdir)/../docs && pwd`; \
  	  out=$(srcdir)/"$$name".out; \
  	  err=$(srcdir)/"$$name".err; \
- 	  log=`$(CHECKER) $(top_builddir)/xsltproc/xsltproc $$j $$i \
+ 	  log=`$(CHECKER) $(top_builddir)/xsltproc/xsltproc --maxdepth 200 $$j $$i \
 -	  	> result.$$name 2>err.$$name; \
 +	  	2>&1 > result.$$name | sed 's|$(srcdir)|.|' >err.$$name; \
  	  if [ ! -f $$out ] ; then \
  	  	cp result.$$name $$out ; \
  		if [ -s err.$$name ] ; then \
-@@ -217,6 +218,9 @@
  			cp err.$$name $$err ; \
  		fi ; \
  	  else \
@@ -49,20 +54,19 @@ source directory.
  	  	diff $$out result.$$name; \
  		if [ -s $$err ] ; then \
  	  		diff $$err err.$$name; \
-@@ -239,10 +243,11 @@
+@@ -249,16 +253,20 @@ test tests: $(top_builddir)/xsltproc/xsl
  	  if [ ! -f $$j ] ; then continue ; fi ; \
  	  if [ -d $$j ] ; then continue ; fi ; \
  	  name=`basename $$j .xsl`; \
 +	  real_docs_path=`cd $(srcdir)/../docs && pwd`; \
  	  out=$(srcdir)/"$$name".out; \
  	  err=$(srcdir)/"$$name".err; \
- 	  log=`$(CHECKER) $(top_builddir)/xsltproc/xsltproc --nodict $$j $$i \
+ 	  log=`$(CHECKER) $(top_builddir)/xsltproc/xsltproc --nodict --maxdepth 200 $$j $$i \
 -	  	> result.$$name 2>err.$$name; \
 +	  	2>&1 > result.$$name | sed 's|$(srcdir)|.|' >err.$$name; \
  	  if [ ! -f $$out ] ; then \
  	  	cp result.$$name $$out ; \
  		if [ -s err.$$name ] ; then \
-@@ -249,6 +254,9 @@
  			cp err.$$name $$err ; \
  		fi ; \
  	  else \
@@ -91,4 +95,16 @@ source directory.
 +	  	2>&1 > $$name.res | sed 's|$(srcdir)|.|' >$$name.bad ; \
  	  if [ ! -f $(srcdir)/$$name.out ] ; then \
  	  	cp $$name.res $(srcdir)/$$name.out ; \
+ 		if [ -s $$name.bad ] ; then \
+--- libxslt-1.1.33/tests/exslt/saxon/Makefile.am	2019-02-07 06:22:16.427901681 +0000
++++ libxslt-1.1.33/tests/exslt/saxon/Makefile.am	2019-02-07 06:21:52.509742576 +0000
+@@ -22,7 +22,8 @@ test tests: $(top_builddir)/xsltproc/xsl
+ 	  name=`basename $$i .xsl` ; \
+ 	  if [ ! -f $(srcdir)/$$name.xml ] ; then continue ; fi ; \
+ 	  log=`$(CHECKER) $(top_builddir)/xsltproc/xsltproc \
+-		$(srcdir)/$$name.xsl $(srcdir)/$$name.xml > $$name.res 2>$$name.bad;\
++		$(srcdir)/$$name.xsl $(srcdir)/$$name.xml \
++	 	   2>&1 > $$name.res | sed 's|$(srcdir)|.|' > $$name.bad; \
+ 	  if [ ! -f $(srcdir)/$$name.out ] ; then \
+ 		cp $$name.res $(srcdir)/$$name.out ; \
  		if [ -s $$name.bad ] ; then \
