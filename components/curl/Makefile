@@ -20,22 +20,27 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=	curl
-COMPONENT_VERSION= 7.62.0
-TPNO=		47296
-GIT_REPO=	https://github.com/curl/curl.git
-# last tag we checkout to it
-GIT_COMMIT_ID=	curl-7_62_0
-GIT_HASH=	sha256:8aa6fdd3aa5bb3e4decfae5952073abb718414e5b06ee17210ec32e61880aec1
+COMPONENT_NAME=		curl
+COMPONENT_VERSION=	$(COMPONENT_NAME)-7_64_0
+IPS_COMPONENT_VERSION=	7.64.0
+TPNO=			49327
+COMPONENT_PROJECT_URL=	http://curl.haxx.se/
 
-COMPONENT_PROJECT_URL=  http://curl.haxx.se/
-COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
+#GIT_REPO=	https://github.com/curl/curl.git
+## last tag we checkout to it
+#GIT_COMMIT_ID=	$(COMPONENT_VERSION)
+#GIT_HASH=	sha256:.......
+
+# git clone is fine but download of the archive is much faster
+COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).zip
+COMPONENT_ARCHIVE_HASH=	sha256:767c6039f247439885d87662f91e7e24aed2d15c80437de9f91d1034e68ac7fd
+COMPONENT_ARCHIVE_URL=	https://github.com/curl/curl/archive/$(COMPONENT_ARCHIVE)
+
 COMPONENT_BUGDB=	library/curl
 COMPONENT_ANITYA_ID=	381
 
