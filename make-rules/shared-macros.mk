@@ -674,10 +674,9 @@ RUBY_VERSION =	2.5
 RUBY_PUPPET_VERSION = 2.5
 
 # The default version should go last.
-RUBY_VERSIONS = 2.1 2.3 2.5
-RUBY.2.1 =	/usr/ruby/2.1/bin/ruby
-RUBY.2.3 =	/usr/ruby/2.3/bin/ruby
+RUBY_VERSIONS = 2.5 2.6
 RUBY.2.5 =	/usr/ruby/2.5/bin/ruby
+RUBY.2.6 =	/usr/ruby/2.6/bin/ruby
 RUBY =		$(RUBY.$(RUBY_VERSION))
 
 # Transform Ruby scripts to call the supported
