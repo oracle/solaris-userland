@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 COMPILER=gcc
@@ -91,6 +91,7 @@ CONFIGURE_OPTIONS+= --enable-shared
 CONFIGURE_OPTIONS+= --disable-static
 CONFIGURE_OPTIONS+= --without-gvc
 CONFIGURE_OPTIONS+= --disable-openmp
+CONFIGURE_OPTIONS+= --without-openexr
 CONFIGURE_OPTIONS+= --without-openjp2 # tests do not pass
 # Using option 'with-fontconfig=no' so that the fonts/fonts path specified in
 # configuration file 'type-ghostscript.xml' is being used.
