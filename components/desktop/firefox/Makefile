@@ -33,13 +33,13 @@ include ../../../make-rules/shared-macros.mk
 ESR = esr
 
 COMPONENT_NAME =		firefox
-COMPONENT_VERSION =		60.5.0
+COMPONENT_VERSION =		60.5.1
 COMPONENT_PROJECT_URL =		http://www.mozilla.com/firefox
 COMPONENT_SRC_NAME =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC = 		$(COMPONENT_SRC_NAME)
 COMPONENT_ARCHIVE =		$(COMPONENT_SRC_NAME)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:1a1f69ee87092637f75aef7f3fa588b0eef0b2c8bcc160094a036450c49c4025
+    sha256:3f01ff52a174bc554934dd85f8703b2817789ceb749abe09f00bef9cf70b71f5
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		        http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
@@ -49,7 +49,7 @@ COMPONENT_ARCHIVE_URL =		$(MOZILLA_FTP)/source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB =		firefox/browser
 COMPONENT_ANITYA_ID=    	16838
 
-TPNO=				48845
+TPNO=				49397
 
 # There are a set of .xpi files (as given in the LANG_LIST definition
 # below) that we need. We could download and unpack them individually, but
@@ -58,7 +58,7 @@ TPNO=				48845
 # one file with version number.
 COMPONENT_ARCHIVE_1 =           $(COMPONENT_SRC_NAME)$(ESR)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:e42593a19481d81b3ac4f9f4df6b33f1f66bb340bd7e12134d1a6c2083710580
+    sha256:cd009d1a43df9dd46f905e165551776cff8625a1f99f9d91757a6897c155ca16
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ach af an ar as ast az be bg bn-BD bn-IN br bs ca cak cs cy \
@@ -75,6 +75,8 @@ include $(WS_MAKE_RULES)/common.mk
 # /usr/gnu/bin needed to pick up the GNU version of tail and readelf.
 # /usr/sbin needed for dtrace.
 PATH =			$(dirname $(CC)):/usr/gnu/bin:/usr/bin:/usr/sbin
+
+COMPONENT_BUILD_ARGS += $(JOBS:%=-j%)
 
 CLEAN_PATHS +=		$(COMPONENT_DIR)/xpi
 
@@ -121,13 +123,13 @@ LD_SECEXT_OPTIONS += $(SSBD_ENABLE)
 # 28395728
 LD_MAP_NOEXBSS.sparc=
 
-# libmozgkt need to link to gtk3 and others
+# libmozgtk needs to link to gtk3 and others
 LD_Z_IGNORE=
 
 # missing symbols from gtk3 during Firefox start
 LD_B_DIRECT=
 
-#because we touched old-configure.in and js/src/old-configure.in
+# because we touched old-configure.in and js/src/old-configure.in
 COMPONENT_PRE_CONFIGURE_ACTION += (cd $(COMPONENT_NAME)-$(COMPONENT_VERSION); autoreconf; touch configure; cd js/src; autoreconf; touch configure);
 
 COMPONENT_POST_BUILD_ACTION = \
@@ -136,7 +138,7 @@ COMPONENT_POST_BUILD_ACTION = \
 
 COMPONENT_POST_INSTALL_ACTION += \
         $(RM) -rf xpi ; \
-        /usr/bin/tar xvf $(COMPONENT_ARCHIVE_1) > /dev/null 2>&1 ; \
+        $(TAR) xvf $(COMPONENT_ARCHIVE_1) > /dev/null 2>&1 ; \
         list1='$(LANG_LIST)' ; for f in $$list1 ; do \
             $(CP) xpi/$$f.xpi \
                 $(PROTOUSRLIBDIR)/firefox/browser/extensions/langpack-$$f@firefox.mozilla.org.xpi ; \
@@ -184,7 +186,9 @@ REQUIRED_PACKAGES += codec/libogg
 REQUIRED_PACKAGES += codec/libvorbis
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/build/autoconf-213
-REQUIRED_PACKAGES += developer/gcc
+ifneq ($(MACH), sparc)
+REQUIRED_PACKAGES += developer/yasm
+endif
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
@@ -197,7 +201,6 @@ REQUIRED_PACKAGES += library/graphics/pixman
 REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/libevent
 REQUIRED_PACKAGES += library/libffi
-REQUIRED_PACKAGES += library/nspr
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/fontconfig
