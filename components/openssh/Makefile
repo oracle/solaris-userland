@@ -32,7 +32,7 @@ include ../../make-rules/shared-macros.mk
 # for *all* skipped versions and the new version.
 #
 # Run:
-#  curl https://www.openssh.com/txt/release-X.Y.txt > release-notes/release-X.Y.txt
+#  curl https://www.openssh.com/txt/release-X.Y > release-notes/release-X.Y.txt
 # Then add a line to network-ssh.p5m to deliver them.
 
 COMPONENT_NAME=		openssh
