@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xcursor-themes
-COMPONENT_VERSION=	1.0.4
+COMPONENT_VERSION=	1.0.6
 COMPONENT_PROJECT_URL=  https://www.x.org
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e3fd2c05b9df0d88a3d1192c02143295744685f4f9a03db116e206698331bb86
+	sha256:ee1ec574741293abcf66ac14ce7e74add7ac6be7deb8b38179ef010d22354999
 COMPONENT_BUGDB=        x11/other
 COMPONENT_ANITYA_ID=	15905
+TPNO=			49493
 
 TEST_TARGET = $(NO_TESTS)
 

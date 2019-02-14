@@ -1,4 +1,3 @@
-#
 # CDDL HEADER START
 #
 # The contents of this file are subject to the terms of the
@@ -18,29 +17,14 @@
 #
 # CDDL HEADER END
 #
-
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
-BUILD_BITS =            64_and_32
-include ../../../../make-rules/shared-macros.mk
+link path=usr/X11/lib/$(MACH64)/libXss.so \
+    target=../../../lib/$(MACH64)/libXss.so
+link path=usr/X11/lib/$(MACH64)/libXss.so.1 \
+    target=../../../lib/$(MACH64)/libXss.so.1
+link path=usr/X11/lib/libXss.so target=../../lib/libXss.so
+link path=usr/X11/lib/libXss.so.1 target=../../lib/libXss.so.1
 
-COMPONENT_NAME=		libpciaccess
-COMPONENT_VERSION=	0.14
-COMPONENT_ARCHIVE_HASH= \
-	sha256:3df543e12afd41fea8eac817e48cbfde5aed8817b81670a4e9e493bb2f5bf2a4
-COMPONENT_BUGDB=        x11/libraries
-COMPONENT_ANITYA_ID=	1703
-TPNO=			49259
-
-PKG_PROTO_DIRS +=  $(BUILD_DIR_64)/scanpci/.libs
-PKG_PROTO_DIRS +=  $(BUILD_DIR_64)/man
-
-TEST_TARGET = $(NO_TESTS)
-
-COMPONENT_PREP_ACTION += (cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
-
-FIX_PC_FILES=pciaccess.pc.in
-
-include $(WS_MAKE_RULES)/x11-component.mk

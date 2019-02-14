@@ -20,18 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXScrnSaver
-COMPONENT_VERSION=	1.2.2
+COMPONENT_VERSION=	1.2.3
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8ff1efa7341c7f34bcf9b17c89648d6325ddaae22e3904e091794e0b4426ce1d
+	sha256:f917075a1b7b5a38d67a8b0238eaab14acd2557679835b154cf2bca576e89bf8
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1791
+TPNO=			49240
 
 TEST_TARGET = $(NO_TESTS)
 
