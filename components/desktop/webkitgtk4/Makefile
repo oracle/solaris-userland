@@ -34,17 +34,17 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		webkitgtk
-COMPONENT_VERSION=	2.22.5
+COMPONENT_VERSION=	2.22.6
 COMPONENT_PROJECT_URL=	https://webkitgtk.org
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:99d3863f418a7c3a3e37e5062950dbf2d91fb106ec1633459b0ef6f2d5f6cb13
+	sha256:df90db9c0db0a2072b945fa3e1d45865922bd686c4659cce6cb5897ce357c85b
 COMPONENT_ARCHIVE_URL=	https://webkitgtk.org/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/webkitgtk
 COMPONENT_ANITYA_ID=	5355
 
-TPNO=			48118
+TPNO=			49483
 
 # Use project's own optimization flags instead.
 gcc_OPT=
