@@ -32,11 +32,11 @@ COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		thunderbird
-COMPONENT_VERSION=	60.5.0
+COMPONENT_VERSION=	60.5.1
 COMPONENT_PROJECT_URL=	https://www.thunderbird.net/
 COMPONENT_ARCHIVE = 	$(COMPONENT_SRC).source.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:6f96e87e832e4089c69418db64e19afd54a0acefe3e0364087a8bc6f442b9566
+    sha256:69a3f741b7378b50a3b6a3b59f6c4fedd2d82d469ab234390627e15da1b58e03
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)
 else
@@ -46,7 +46,7 @@ COMPONENT_ARCHIVE_URL=	$(MOZILLA_FTP)/source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	tbird/mailer
 COMPONENT_ANITYA_ID=	4967
 
-TPNO=			49297
+TPNO=			49498
 
 # There are a set of .xpi files (as given in the LANG_LIST definition
 # below) that we need. We could download and unpack them individually, but
@@ -55,7 +55,7 @@ TPNO=			49297
 # one file with version number.
 COMPONENT_ARCHIVE_1 =   	$(COMPONENT_SRC)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:354350a6921ea78845754394b51e037843b71a065336d481d010c928412dc9f4
+    sha256:ceea211054a787df928ad6d9e5c8245eea9d1250370914e80cd5ed0369a24867
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ar ast be bg br ca cs cy \
@@ -89,6 +89,10 @@ COMPONENT_BUILD_ARGS += $(JOBS:%=-j%)
 MOZCONFIG =	$(SOURCE_DIR)/mozconfig
 
 ifdef DEBUG
+# disable code optimization
+CFLAGS =
+CXXFLAGS =
+
 MOZCONFIG_DEBUG =       $(MOZCONFIG)
 MOZCONFIG_NON_DEBUG =   /dev/null
 else
@@ -129,13 +133,13 @@ CXXFLAGS += 		-Wno-invalid-offsetof -fpermissive
 # 28395728
 LD_MAP_NOEXBSS.sparc=
 
-# libmozgkt need to link to gtk3 and others
+# libmozgtk needs to link to gtk3 and others
 LD_Z_IGNORE=
 
 # missing symbols from gtk3 during Firefox start
 LD_B_DIRECT=
 
-#because we touched old-configure.in and js/src/old-configure.in
+# because we touched old-configure.in and js/src/old-configure.in
 COMPONENT_PRE_CONFIGURE_ACTION += (cd $(COMPONENT_NAME)-$(COMPONENT_VERSION); autoreconf; touch configure; cd js/src; autoreconf; touch configure);
 
 COMPONENT_POST_BUILD_ACTION = \
