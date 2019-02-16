@@ -20,18 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		twm
-COMPONENT_VERSION=	1.0.9
+COMPONENT_VERSION=	1.0.10
 COMPONENT_ARCHIVE_HASH= \
-	sha256:c575167ac33edf3bd1592f1bedfe0559debb128ed5fb4873c1278e3be166310a
+	sha256:6449eadca16ce0f0d900605b0cc020b95f40619261b7beccfb46bcc1836445d7
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	15038
+TPNO=			49488
 
 TEST_TARGET = $(NO_TESTS)
 

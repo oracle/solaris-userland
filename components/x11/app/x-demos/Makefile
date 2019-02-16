@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
@@ -32,12 +32,14 @@ COMPONENT_ARCHIVE_HASH= \
 	sha256:17af6f4fb73e7310e087fbfe5d773bab2b0d6f37a894ae5ee32de4693af6ba92
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	14991
+TPNO=			45764
 
 COMPONENT_NAME_1=       xeyes
-COMPONENT_VERSION_1=    1.1.1
+COMPONENT_VERSION_1=    1.1.2
 COMPONENT_ARCHIVE_HASH_1=       \
-    sha256:975e98680cd59e1f9439016386609546ed08c284d0f05a95276f96aca6e8a521
+    sha256:57bcec0d2d167af9e5d44d0dbd74c6d7c0f0591cd0608952b23c749fdd910553
 COMPONENT_ANITYA_ID_1=	15025
+TPNO_1=			49490
 
 TEST_TARGET = $(NO_TESTS)
 

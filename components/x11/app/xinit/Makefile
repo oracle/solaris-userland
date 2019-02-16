@@ -20,18 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xinit
-COMPONENT_VERSION=	1.3.4
+COMPONENT_VERSION=	1.4.0
 COMPONENT_ARCHIVE_HASH= \
-	sha256:75d88d7397a07e01db253163b7c7a00b249b3d30e99489f2734cac9a0c7902b3
+	sha256:230835eef2f5978a1e1344928168119373f6df1d0a32c09515e545721ee582ef
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	5258
+TPNO=			49517
 
 TEST_TARGET = $(NO_TESTS)
 

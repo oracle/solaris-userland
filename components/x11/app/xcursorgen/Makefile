@@ -20,18 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xcursorgen
-COMPONENT_VERSION=	1.0.6
+COMPONENT_VERSION=	1.0.7
 COMPONENT_ARCHIVE_HASH= \
-	sha256:31c8910f54eb175a8a74a60e7662697467e21a8bf948220a6048a93924b3f66c
+	sha256:35b6f844b24f1776e9006c880a745728800764dbe3b327a128772b4610d8eb3d
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	15029
+TPNO=			49526
 
 TEST_TARGET = $(NO_TESTS)
 

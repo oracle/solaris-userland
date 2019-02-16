@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -30,7 +30,6 @@ set name=pkg.summary value="X11 Window Dump (screenshot) utilities"
 set name=pkg.description \
     value="A collection of utilities to dump an image of a window on screen to a XWD format image file, and to view or print such files."
 set name=com.oracle.info.description value=xwd,xwud,xpr
-set name=com.oracle.info.tpno value=$(TPNO)
 set name=info.classification value=org.opensolaris.category.2008:System/X11
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL) \
     value=$(COMPONENT_ARCHIVE_URL_1) value=$(COMPONENT_ARCHIVE_URL_2)
@@ -50,4 +49,16 @@ file path=usr/share/man/man1/xdpr.1
 file path=usr/share/man/man1/xpr.1
 file path=usr/share/man/man1/xwd.1
 file path=usr/share/man/man1/xwud.1
-license COPYING license=MIT
+license $(COMPONENT_SRC_2)/COPYING license="MIT (xpr)" \
+    com.oracle.info.description="xpr - utility to print X window dumps" \
+    com.oracle.info.name=xpr com.oracle.info.tpno=$(TPNO_2) \
+    com.oracle.info.version=$(COMPONENT_VERSION_2)
+license COPYING license="MIT (xwd)" \
+    com.oracle.info.description="xwd - X window dump utility" \
+    com.oracle.info.name=xwd com.oracle.info.tpno=$(TPNO) \
+    com.oracle.info.version=$(COMPONENT_VERSION)
+license $(COMPONENT_SRC_1)/COPYING license="MIT (xwud)" \
+    com.oracle.info.description="xwud - X window dump utility" \
+    com.oracle.info.name=xwud com.oracle.info.tpno=$(TPNO_1) \
+    com.oracle.info.version=$(COMPONENT_VERSION_1)
+

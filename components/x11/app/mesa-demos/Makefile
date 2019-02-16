@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mesa-demos
-COMPONENT_VERSION=	8.2.0
+COMPONENT_VERSION=	8.4.0
 COMPONENT_PROJECT_URL=	https://mesa3d.org/
-COMPONENT_ARCHIVE_URL=  https://mesa.freedesktop.org/archive/demos/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=  https://mesa.freedesktop.org/archive/demos/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e4bfecb5816ddd4b7b37c1bc876b63f1f7f06fda5879221a9774d0952f90ba92
+	sha256:01e99c94a0184e63e796728af89bfac559795fb2a0d6f506fa900455ca5fff7d
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	16781
 
-TPNO=			22939
+TPNO=			49525
 
 TEST_TARGET = $(NO_TESTS)
 

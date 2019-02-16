@@ -20,30 +20,33 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xwd
-COMPONENT_VERSION=	1.0.6
+COMPONENT_VERSION=	1.0.7
 COMPONENT_ARCHIVE_HASH= \
-    sha256:3bb396a2268d78de4b1c3e5237a85f7849d3434e87b3cd1f4d57eef614227d79
+    sha256:cd6815b8b9e0b98e284d3d732fb12162159cb9dcee4f45a7d4c0bd8b308a6794
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	14950
+TPNO=			47001
 
 COMPONENT_NAME_1=       xpr
-COMPONENT_VERSION_1=    1.0.4
+COMPONENT_VERSION_1=    1.0.5
 COMPONENT_ARCHIVE_HASH_1=       \
-    sha256:fed98df31eb93d3dca4688cb535aabad06be572e70ace3b1685679c18dd86cb5
+    sha256:b936e0f1f8d63f5ad097a0bbdce2e67c34f5d49b7263f32a832ff62d394d1e1f
 COMPONENT_ANITYA_ID_1=	14959
+TPNO_1=			49514
 
 COMPONENT_NAME_2=       xwud
-COMPONENT_VERSION_2=    1.0.4
+COMPONENT_VERSION_2=    1.0.5
 COMPONENT_ARCHIVE_HASH_2=       \
-    sha256:d6b3a09ccfe750868e26bd2384900ab5ff0d434f7f40cd272a50eda8aaa1f8bd
+    sha256:99997051f8a892313f22edf41dab45864e86e7062ee9012d5dbb6a40fc6b10a9
 COMPONENT_ANITYA_ID_2=	14948
+TPNO_2=			49513
 
 TEST_TARGET = $(NO_TESTS)
 

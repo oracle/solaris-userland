@@ -20,18 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		transset
-COMPONENT_VERSION=	1.0.1
+COMPONENT_VERSION=	1.0.2
 COMPONENT_ARCHIVE_HASH= \
-	sha256:70c3d033874fe48286bc4971d5de9027f2e8ccd0f21b7506fe1bb4472218036d
+	sha256:4bac142ee7cfda574893b2f6b4e413dacd88a130c6dca5be1a9958e7c1451b21
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	17148
+TPNO=			49487
 
 TEST_TARGET = $(NO_TESTS)
 

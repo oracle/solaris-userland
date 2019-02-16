@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -30,7 +30,6 @@ set name=pkg.summary value="X11 server state utilities"
 set name=pkg.description \
     value="A collection of common utilities for manipulating the state of an X server in a running X session."
 set name=com.oracle.info.description value=x11-server-utilities
-set name=com.oracle.info.tpno value=$(TPNO)
 set name=info.classification value=org.opensolaris.category.2008:System/X11
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL) \
     value=$(COMPONENT_ARCHIVE_URL_1) value=$(COMPONENT_ARCHIVE_URL_10) \
@@ -88,7 +87,54 @@ file path=usr/share/man/man1/xrdb.1
 file path=usr/share/man/man1/xrefresh.1
 file path=usr/share/man/man1/xset.1
 file path=usr/share/man/man1/xsetroot.1
-license COPYING license=MIT
+license $(COMPONENT_SRC_11)/COPYING license="MIT (rgb)" \
+    com.oracle.info.description="rgb - X11 rgb color name mapping list data and utility" \
+    com.oracle.info.name=rgb com.oracle.info.tpno=$(TPNO_11) \
+    com.oracle.info.version=$(COMPONENT_VERSION_11)
+license $(COMPONENT_SRC_9)/COPYING license="MIT (xcmsdb)" \
+    com.oracle.info.description="xcmsdb - Device Color Characterization utility for Xcms" \
+    com.oracle.info.name=xcmsdb com.oracle.info.tpno=$(TPNO_9) \
+    com.oracle.info.version=$(COMPONENT_VERSION_9)
+license $(COMPONENT_SRC_8)/COPYING license="MIT (xgamma)" \
+    com.oracle.info.description="xgamma - monitor gamma correction utility" \
+    com.oracle.info.name=xgamma com.oracle.info.tpno=$(TPNO_8) \
+    com.oracle.info.version=$(COMPONENT_VERSION_8)
+license COPYING license="MIT (xhost)" \
+    com.oracle.info.description="xhost - X server access control utility" \
+    com.oracle.info.name=xhost com.oracle.info.tpno=$(TPNO) \
+    com.oracle.info.version=$(COMPONENT_VERSION)
+license $(COMPONENT_SRC_10)/COPYING license="MIT (xinput)" \
+    com.oracle.info.description="xinput - utility to configure and test X input devices" \
+    com.oracle.info.name=xinput com.oracle.info.tpno=$(TPNO_10) \
+    com.oracle.info.version=$(COMPONENT_VERSION_10)
+license $(COMPONENT_SRC_6)/COPYING license="MIT (xmodmap)" \
+    com.oracle.info.description="xmodmap - utility for modifying keymaps" \
+    com.oracle.info.name=xmodmap com.oracle.info.tpno=$(TPNO_6) \
+    com.oracle.info.version=$(COMPONENT_VERSION_6)
+license $(COMPONENT_SRC_7)/COPYING license="MIT (xprop)" \
+    com.oracle.info.description="xprop - property displayer for X" \
+    com.oracle.info.name=xprop com.oracle.info.tpno=$(TPNO_7) \
+    com.oracle.info.version=$(COMPONENT_VERSION_7)
+license $(COMPONENT_SRC_5)/COPYING license="MIT (xrandr)" \
+    com.oracle.info.description="xrandr -  command line interface to RandR extension" \
+    com.oracle.info.name=xrandr com.oracle.info.tpno=$(TPNO_5) \
+    com.oracle.info.version=$(COMPONENT_VERSION_5)
+license $(COMPONENT_SRC_4)/COPYING license="MIT (xrdb)" \
+    com.oracle.info.description="xrdb -  X server resource database utility" \
+    com.oracle.info.name=xrdb com.oracle.info.tpno=$(TPNO_4) \
+    com.oracle.info.version=$(COMPONENT_VERSION_4)
+license $(COMPONENT_SRC_1)/COPYING license="MIT (xrefresh)" \
+    com.oracle.info.description="xrefresh - utility to refresh an X Screen" \
+    com.oracle.info.name=xrefresh com.oracle.info.tpno=$(TPNO_1) \
+    com.oracle.info.version=$(COMPONENT_VERSION_1)
+license $(COMPONENT_SRC_2)/COPYING license="MIT (xset)" \
+    com.oracle.info.description="xset - user preference utility for X" \
+    com.oracle.info.name=xset com.oracle.info.tpno=$(TPNO_2) \
+    com.oracle.info.version=$(COMPONENT_VERSION_2)
+license $(COMPONENT_SRC_3)/COPYING license="MIT (xsetroot)" \
+    com.oracle.info.description="xsetroot - X root window parameter setting utility" \
+    com.oracle.info.name=xsetroot com.oracle.info.tpno=$(TPNO_3) \
+    com.oracle.info.version=$(COMPONENT_VERSION_3)
 
 # xrdb requires cpp
 depend type=require fmri=pkg:/developer/macro/cpp

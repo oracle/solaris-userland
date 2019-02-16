@@ -215,15 +215,15 @@ index b9cd707..9865c7e 100644
  	ps_output_bits(iw, ih, flags, orientation, &win, data);
  	ps_finish();
      } else {
-@@ -482,6 +572,8 @@ void usage(void)
-     fprintf(stderr, "    -left <inches>  -top <inches>\n");
-     fprintf(stderr, "    -noposition\n");
-     fprintf(stderr, "    -nosixopt\n");
-+    fprintf(stderr, "    -papertype {letter | legal | A0-A10 | B0-B10 | C0-C10}\n");
-+    fprintf(stderr, "    -pheight <inches>[in | cm | mm] -pwidth <inches>[in | cm | mm]\n");
-     fprintf(stderr, "    -plane <n>\n");
-     fprintf(stderr, "    -psfig\n");
-     fprintf(stderr, "    -render <type>\n");
+@@ -598,6 +598,8 @@
+ 	    "    -left <inches>  -top <inches>\n"
+ 	    "    -noposition\n"
+ 	    "    -nosixopt\n"
++	    "    -papertype {letter | legal | A0-A10 | B0-B10 | C0-C10}\n"
++	    "    -pheight <inches>[in | cm | mm] -pwidth <inches>[in | cm | mm]\n"
+ 	    "    -plane <n>\n"
+ 	    "    -psfig\n"
+ 	    "    -render <type>\n"
 @@ -512,7 +604,9 @@ void parse_args(
    int *density,
    unsigned int *cutoff,
@@ -235,22 +235,16 @@ index b9cd707..9865c7e 100644
  {
      register char *output_filename;
      register int f;
-@@ -685,17 +779,54 @@ void parse_args(
- 		usage();
- 	    break;
- 
--	case 'p':		/* -portrait | -plane <n> */
-+	case 'p':		/* -portrait | -plane <n> | -pwidth <n> | -pheight <n> */
- 	    if (len <= 2)
- 		usage();
- 	    if (!bcmp(*argv, "-portrait", len)) {
- 		*flags |= F_PORTRAIT;
-+            } else if (!bcmp(*argv, "-papertype", len)) {
+@@ -748,6 +750,24 @@
+ 	    output_filename = *argv;
+ 	} else if (!strcmp(*argv, "-portrait")) {
+ 	    *flags |= F_PORTRAIT;
++       } else if (!strcmp(*argv, "-papertype")) {
 +               int found = 0;
 +               int i;
 +
 +               argc--; argv++;
-+               if (argc == 0) usage();
++               if (argc == 0) missing_arg(arg);
 +               for ( i = 0; i < sizeof ( paper_size ) / sizeof ( PaperRec ); i++ )
 +               {
 +                   if ( !strcasecmp ( paper_size[i].name, *argv ))
@@ -262,35 +256,37 @@ index b9cd707..9865c7e 100644
 +               }
 +
 +               if ( !found ) usage();
- 	    } else if (!bcmp(*argv, "-plane", len)) {
- 		argc--; argv++;
- 		if (argc == 0) usage();
- 		*plane = atoi(*argv);
- 	    } else if (!bcmp(*argv, "-psfig", len)) {
- 		*flags |= F_NPOSITION;
-+           } else if (!bcmp(*argv, "-pwidth", len)) {
-+               double mult = 1.0;
++        
+ 	} else if (!strcmp(*argv, "-plane")) {
+ 	    argc--; argv++;
+ 	    if (argc == 0) missing_arg(arg);
+@@ -754,6 +774,26 @@
+ 	    *plane = atoi(*argv);
+ 	} else if (!strcmp(*argv, "-psfig")) {
+ 	    *flags |= F_NPOSITION;
++       } else if (!strcmp(*argv, "-pwidth")) {
++	    double mult = 1.0;
 +
-+               argc--; argv++;
-+               if (argc == 0) usage();
-+               if ( strstr ( *argv, "cm" ))
-+                   mult = 2.54;
-+               else if ( strstr ( *argv, "mm" ))
-+                   mult = 25.4;
-+               *paper_width = (int)(300.0 * atof(*argv) / mult);
-+           } else if (!bcmp(*argv, "-pheight", len)) {
-+               double mult = 1.0;
++            argc--; argv++;
++            if (argc == 0) missing_arg(arg);
++            if ( strstr ( *argv, "cm" ))
++                mult = 2.54;
++            else if ( strstr ( *argv, "mm" ))
++                mult = 25.4;
++            *paper_width = (int)(300.0 * atof(*argv) / mult);
++        } else if (!strcmp(*argv, "-pheight")) {
++            double mult = 1.0;
 +
-+               argc--; argv++;
-+               if (argc == 0) usage();
-+               if ( strstr ( *argv, "cm" ))
-+                   mult = 2.54;
-+               else if ( strstr ( *argv, "mm" ))
-+                   mult = 25.4;
-+               *paper_length = (int)(300.0 * atof(*argv) / mult);
- 	    } else
- 		usage();
- 	    break;
++            argc--; argv++;
++            if (argc == 0) missing_arg(arg);
++            if ( strstr ( *argv, "cm" ))
++                mult = 2.54;
++            else if ( strstr ( *argv, "mm" ))
++                mult = 25.4;
++            *paper_length = (int)(300.0 * atof(*argv) / mult);
+ 	} else if (!strcmp(*argv, "-rv")) {
+ 	    *flags |= F_INVERT;
+ 	} else if (!strcmp(*argv, "-render")) {
 @@ -813,7 +944,9 @@ void setup_layout(
    char *header,
    char *trailer,
@@ -352,15 +348,6 @@ index b9cd707..9865c7e 100644
  {
      char    hostname[256];
  #ifdef WIN32
-@@ -1546,7 +1683,7 @@ char *ps_epilog[] = {
- static
- void ps_finish(void)
- {
--	char **p = (char **)ps_epilog;
-+	const char **p = ps_epilog;
- 
- 	while (*p) printf("%s\n",*p++);
- }
 diff --git a/xpr.man b/xpr.man
 index 3129f08..223f037 100644
 --- a/xpr.man
