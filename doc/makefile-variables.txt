@@ -61,6 +61,18 @@ have defaults, but can be overridden.
 	done
   before you 'hg commit' your merge.
 
+* COMPONENT_MAKE_JOBS contains the maximal number of parallel build jobs
+  that are executed to accelerate the compilation process. If the
+  component modifies GMAKE variable or its Makefile is malformed, then this
+  variable has to be set to 1 (sequential build). Note that the real number
+  of parallel jobs depends on the current load of the system.
+
+* JOBS_PER_COMPONENT variable has to be used instead of COMPONENT_MAKE_JOBS
+  variable if the full userland gate is built. The reason is that if
+  COMPONENT_MAKE_JOBS variable is passed on the command line, it overrides
+  the maximal number of jobs even for the components that have to be
+  compiled sequentially (set by COMPONENT_MAKE_JOBS=1 in the Makefile).
+
 * COMPONENT_LABEL is an arbitrary string that will be used as part of
   COMPONENT_SRC when building an archive from an SCM source repository.  It
   defaults to COMPONENT_VERSION.  It may be set to empty if desired.  See

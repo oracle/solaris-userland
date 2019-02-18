@@ -30,6 +30,15 @@ BUILD_BITS= 64
 # For now, all things built for C++11 require gcc; the cmake files for this
 # project already specify the required -std.
 COMPILER= gcc
+
+# The sequential build is broken, use multiple build jobs to avoid the following error.
+# *** No rule to make target 'JavaScriptCore-4.0.gir', needed by 'WebKit2-4.0.gir'.  Stop.
+ifneq ($(wildcard /usr/sbin/psrinfo),)
+COMPONENT_MAKE_JOBS=$(shell /usr/sbin/psrinfo -pv | grep -c "The core")
+else
+COMPONENT_MAKE_JOBS=8
+endif
+
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		webkitgtk
@@ -63,8 +72,6 @@ ADDITIONAL_PATCHES += patches/mapfile.$(MACH)
 endif
 
 include $(WS_MAKE_RULES)/common.mk
-
-COMPONENT_BUILD_ARGS += -j4
 
 PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
 LD_OPTIONS += $(LD_OPTIONS.$(BITS))

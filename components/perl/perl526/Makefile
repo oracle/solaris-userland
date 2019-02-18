@@ -20,8 +20,11 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
+
+# Parallel build jobs are supported only if GNU make is used.
+COMPONENT_MAKE_JOBS=1
 
 include ../../../make-rules/shared-macros.mk
 

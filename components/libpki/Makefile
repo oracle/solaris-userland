@@ -19,10 +19,13 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64
+
+# Parallel build jobs are supported only if GNU make is used.
+COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 # COMPONENT_VERSION number in ./history must be >= s11 COMPONENT_VERSION

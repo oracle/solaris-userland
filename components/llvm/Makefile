@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 export PARFAIT_BUILD=no
 BUILD_BITS=64
@@ -378,9 +378,6 @@ COMPONENT_BUILD_ENV += PATH="$(PATH)"
 COMPONENT_BUILD_ENV += LANG="C"
 COMPONENT_BUILD_ENV += LC_ALL="C"
 COMPONENT_BUILD_ENV += LD_EXEC_OPTIONS="-zaslr=disable"
-
-# Put this here for now until the gpatch problems are resolved.
-COMPONENT_BUILD_ARGS += -j8
 
 # use bash(1) to run the install recipes otherwise clang header installation
 # fails

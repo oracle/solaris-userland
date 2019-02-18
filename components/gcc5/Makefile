@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 export PARFAIT_BUILD=no
 BUILD_BITS= 64
@@ -148,8 +148,6 @@ COMPONENT_POST_INSTALL_ACTION += \
 	    $(ELFEDIT) -e "dyn:rpath /usr/gcc/$(GCC_MAJOR_VERSION)/lib/$(MACH64)" \
 	      $(PROTOUSRDIR)/gcc/$(GCC_MAJOR_VERSION)/lib/$(MACH64)/$$f ; \
 	  done ) ;
-
-COMPONENT_BUILD_ARGS += $(JOBS:%=-j%)
 
 
 COMPONENT_PRE_TEST_ENV += TCL_LIBRARY="$(USRLIBDIR)/tcl8.5"

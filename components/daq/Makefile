@@ -20,11 +20,15 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 # Prefer 32-bit as only "binary" delivered is a script with embedded paths.
 BUILD_BITS= 32_and_64
+
+# The Makefile of this component does not support multiple build jobs.
+COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
+
 COMPONENT_NAME=		daq
 COMPONENT_VERSION=	2.0.6
 COMPONENT_PROJECT_URL=	http://www.snort.org/

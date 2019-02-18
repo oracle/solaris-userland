@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		64
@@ -28,6 +28,10 @@ BUILD_BITS=		64
 # gobject-introspection does not produce correct results when using Studio.
 # Also, for now, all things built for C++11 require gcc.
 COMPILER=gcc
+
+# The Makefile of this component does not support multiple build jobs.
+COMPONENT_MAKE_JOBS=1
+
 include ../../../make-rules/shared-macros.mk
 
 # Despite its name, evolution-data-server is no longer just a backend for the

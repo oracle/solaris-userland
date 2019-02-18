@@ -56,9 +56,6 @@ $(SOURCE_DIR_crates)/.patched: PATCH_LEVEL=0
 # Everything expects GNU utilities, so make sure those are preferred.
 PATH =			/usr/gnu/bin:/usr/bin
 
-# We don't seem to get much speedup beyond this
-COMPONENT_BUILD_ARGS =	-j8
-
 # LD_B_DIRECT breaks the build.
 LD_B_DIRECT =
 

@@ -20,9 +20,13 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= NO_ARCH
+
+# Disable the parallel build since GNU make is not used.
+COMPONENT_MAKE_JOBS=1
+
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ant

@@ -20,11 +20,15 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 		64
 BUILD_ARCH=		sparc
+
+# Parallel build jobs are supported only if GNU make is used.
+COMPONENT_MAKE_JOBS=1
+
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         gfx-utils

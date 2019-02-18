@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 export PARFAIT_BUILD=no
@@ -28,6 +28,8 @@ export PARFAIT_BUILD=no
 BUILD_BITS = 64_and_32
 COMPILER = gcc
 
+# The Makefile of this component does not support multiple build jobs.
+COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME        = libomp

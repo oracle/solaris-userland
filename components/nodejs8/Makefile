@@ -59,7 +59,6 @@ CONFIGURE_OPTIONS+=	--shared-openssl
 CONFIGURE_OPTIONS+=	--shared-zlib
 CONFIGURE_OPTIONS+=	--with-intl=system-icu
 
-COMPONENT_BUILD_ARGS+=	$(JOBS:%=-j%)
 COMPONENT_BUILD_ENV+=	PATH=$(PATH):/usr/sbin
 
 COMPONENT_PRE_CONFIGURE_ACTION= \

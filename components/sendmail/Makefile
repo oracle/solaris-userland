@@ -24,6 +24,9 @@
 #
 
 BUILD_BITS= 64_and_32
+
+# Parallel build jobs are supported only if GNU make is used.
+COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sendmail

@@ -20,12 +20,16 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		32_and_64
 
 COMPILER= gcc
+
+# The Makefile of this component does not support multiple build jobs.
+COMPONENT_MAKE_JOBS=1
+
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nss

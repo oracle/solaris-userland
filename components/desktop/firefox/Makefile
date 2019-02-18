@@ -76,8 +76,6 @@ include $(WS_MAKE_RULES)/common.mk
 # /usr/sbin needed for dtrace.
 PATH =			$(dirname $(CC)):/usr/gnu/bin:/usr/bin:/usr/sbin
 
-COMPONENT_BUILD_ARGS += $(JOBS:%=-j%)
-
 CLEAN_PATHS +=		$(COMPONENT_DIR)/xpi
 
 MOZCONFIG = 		$(SOURCE_DIR)/mozconfig

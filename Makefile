@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2010, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 SUBDIRS = components
@@ -44,8 +44,10 @@ component-hook:		TARGET = component-hook
 download setup unpack patch prep build install publish validate clean clobber \
 test system-test component-hook check_rtime: $(SUBDIRS)
 
+JOBS_PER_COMPONENT ?= 1
+
 $(SUBDIRS):	FORCE
-	@+echo "$(TARGET) $@" ; $(MAKE) -C $@ $(TARGET)
+	@+echo "$(TARGET) $@" ; env COMPONENT_MAKE_JOBS=$(JOBS_PER_COMPONENT) $(MAKE) -C $@ $(TARGET)
 
 FORCE:
 .PHONY: FORCE
