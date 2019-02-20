@@ -20,18 +20,18 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 export PARFAIT_BUILD=no
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME        = mysql
-COMPONENT_VERSION     = 5.6.42
+COMPONENT_VERSION     = 5.6.43
 COMPONENT_SRC         = $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE     = $(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-         sha256:fc6d4aa9c2ed1a751163d0ec3d35bf800fc6b7c9bd2f890e376b6810c9393dba
+         sha256:1c95800bf0e1b7a19a37d37fbc5023af85c6bc0b41532433b3a886263a1673ef
 COMPONENT_ARCHIVE_URL = https://cdn.mysql.com/Downloads/MySQL-5.6/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=      $(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_PROJECT_URL = https://dev.mysql.com/ 
