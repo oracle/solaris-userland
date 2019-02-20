@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -42,12 +42,14 @@ set name=org.opensolaris.arc-caseid value=LSARC/2008/637 value=LSARC/2009/223 \
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/include/pixman-1/pixman-version.h
 file path=usr/include/pixman-1/pixman.h
-link path=usr/lib/$(MACH64)/libpixman-1.so target=libpixman-1.so.0
-link path=usr/lib/$(MACH64)/libpixman-1.so.0 target=libpixman-1.so.0.34.0
-file path=usr/lib/$(MACH64)/libpixman-1.so.0.34.0
+link path=usr/lib/$(MACH64)/libpixman-1.so \
+    target=libpixman-1.so.$(COMPONENT_VERSION)
+file path=usr/lib/$(MACH64)/libpixman-1.so.$(COMPONENT_VERSION)
+link path=usr/lib/$(MACH64)/libpixman-1.so.0 \
+    target=libpixman-1.so.$(COMPONENT_VERSION)
 file path=usr/lib/$(MACH64)/pkgconfig/pixman-1.pc
-link path=usr/lib/libpixman-1.so target=libpixman-1.so.0
-link path=usr/lib/libpixman-1.so.0 target=libpixman-1.so.0.34.0
-file path=usr/lib/libpixman-1.so.0.34.0
+link path=usr/lib/libpixman-1.so target=libpixman-1.so.$(COMPONENT_VERSION)
+file path=usr/lib/libpixman-1.so.$(COMPONENT_VERSION)
+link path=usr/lib/libpixman-1.so.0 target=libpixman-1.so.$(COMPONENT_VERSION)
 file path=usr/lib/pkgconfig/pixman-1.pc
 license COPYING license=MIT

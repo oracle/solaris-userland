@@ -20,24 +20,28 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pixman
-COMPONENT_VERSION=	0.34.0
+COMPONENT_VERSION=	0.38.0
 COMPONENT_ARCHIVE_HASH= \
-	sha256:39ba3438f3d17c464b0cb8be006dacbca0ab5aee97ebde69fec7ecdbf85794a0
+	sha256:b768e3f7895ddebdc0f07478729d9cec4fe0a9d2201f828c900d67b0e5b436a8
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	3648
+TPNO=			49577
 
 FIX_PC_FILES=pixman-1.pc.in
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
 CONFIGURE_OPTIONS += --disable-gtk
+
+# added to avoid the build failure of a void function returning value
+CFLAGS.studio += $(studio_FEATURES_EXTENSIONS)
 
 # for tests
 unexport SHELLOPTS
