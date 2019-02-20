@@ -19,7 +19,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 #
 
@@ -212,4 +212,3 @@ $(BUILD_DIR)/core/.prep: $(SOURCE_DIR)/.patched $(SOURCE_DIR_2)/.unpacked
 REQUIRED_PACKAGES += system/locale
 
 REQUIRED_PACKAGES += developer/build/ant
-REQUIRED_PACKAGES += system/locale/extra

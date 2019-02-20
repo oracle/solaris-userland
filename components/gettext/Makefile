@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -74,4 +74,4 @@ REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += source/locale/localedef
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += system/locale/extra
+REQUIRED_PACKAGES += system/locale
