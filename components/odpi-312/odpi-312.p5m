@@ -1,0 +1,133 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+# Copyright (c) 2017, 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
+set name=pkg.fmri \
+    value=pkg:/developer/oracle/odpi-$(DOTLESS_VERSION)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="Oracle Database Programming Interface-C"
+set name=pkg.human-version value=$(COMPONENT_VERSION)
+# Once we get the renamed version into the repo, we can remove this line
+set name=pkg.linted.pkglint.dupaction001.1 value=true
+set name=com.oracle.info.description \
+    value="The Oracle Database Programming Interface-C"
+set name=info.classification \
+    value=org.opensolaris.category.2008:Development/Databases
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2017/232
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file path=usr/include/odpi-$(DOTLESS_VERSION)/dpi.h
+link path=usr/lib/$(MACH64)/libodpic.so \
+    target=./libodpic.so.$(COMPONENT_VERSION)
+file path=usr/lib/$(MACH64)/libodpic.so.$(COMPONENT_VERSION)
+link path=usr/lib/$(MACH64)/libodpic.so.$(MAJOR) \
+    target=./libodpic.so.$(COMPONENT_VERSION)
+link path=usr/lib/libodpic.so target=./libodpic.so.$(COMPONENT_VERSION)
+file path=usr/lib/libodpic.so.$(COMPONENT_VERSION)
+link path=usr/lib/libodpic.so.$(MAJOR) target=./libodpic.so.$(COMPONENT_VERSION)
+file manpages/libodpic.3lib \
+    path=usr/share/man/man3lib/libodpic-$(DOTLESS_VERSION).3lib
+file path=usr/share/odpi/LICENSE.md
+file path=usr/share/odpi/README.md
+file path=usr/share/odpi/samples/Makefile
+file path=usr/share/odpi/samples/README.md
+file path=usr/share/odpi/samples/SampleLib.c
+file path=usr/share/odpi/samples/SampleLib.h
+file path=usr/share/odpi/samples/TestAQ.c
+file path=usr/share/odpi/samples/TestAppContext.c
+file path=usr/share/odpi/samples/TestBFILE.c
+file path=usr/share/odpi/samples/TestBLOB.c
+file path=usr/share/odpi/samples/TestBLOBsAsBytes.c
+file path=usr/share/odpi/samples/TestBindArrays.c
+file path=usr/share/odpi/samples/TestBindObjects.c
+file path=usr/share/odpi/samples/TestCLOB.c
+file path=usr/share/odpi/samples/TestCLOBsAsStrings.c
+file path=usr/share/odpi/samples/TestCQN.c
+file path=usr/share/odpi/samples/TestCallProc.c
+file path=usr/share/odpi/samples/TestConvertNumbers.c
+file path=usr/share/odpi/samples/TestCreateSodaColl.c
+file path=usr/share/odpi/samples/TestDMLReturning.c
+file path=usr/share/odpi/samples/TestDistribTrans.c
+file path=usr/share/odpi/samples/TestDropSodaColl.c
+file path=usr/share/odpi/samples/TestFetch.c
+file path=usr/share/odpi/samples/TestFetchDates.c
+file path=usr/share/odpi/samples/TestFetchObjects.c
+file path=usr/share/odpi/samples/TestGetAllSodaDocs.c
+file path=usr/share/odpi/samples/TestGetSodaCollNames.c
+file path=usr/share/odpi/samples/TestGetSodaDoc.c
+file path=usr/share/odpi/samples/TestImplicitResults.c
+file path=usr/share/odpi/samples/TestInOutTempLobs.c
+file path=usr/share/odpi/samples/TestInsert.c
+file path=usr/share/odpi/samples/TestInsertAsArray.c
+file path=usr/share/odpi/samples/TestInsertSodaColl.c
+file path=usr/share/odpi/samples/TestIterSodaColls.c
+file path=usr/share/odpi/samples/TestLongRaws.c
+file path=usr/share/odpi/samples/TestLongs.c
+file path=usr/share/odpi/samples/TestRefCursors.c
+file path=usr/share/odpi/samples/TestRemoveSodaDoc.c
+file path=usr/share/odpi/samples/TestReplaceSodaDoc.c
+file path=usr/share/odpi/samples/sql/DropSamples.sql
+file path=usr/share/odpi/samples/sql/SampleEnv.sql
+file path=usr/share/odpi/samples/sql/SetupSamples.sql
+file path=usr/share/odpi/test/Makefile
+file path=usr/share/odpi/test/README.md
+file path=usr/share/odpi/test/TestAQ.c
+file path=usr/share/odpi/test/TestBatchErrors.c
+file path=usr/share/odpi/test/TestConn.c
+file path=usr/share/odpi/test/TestConnProperties.c
+file path=usr/share/odpi/test/TestContext.c
+file path=usr/share/odpi/test/TestDMLReturning.c
+file path=usr/share/odpi/test/TestDataTypes.c
+file path=usr/share/odpi/test/TestDeqOptions.c
+file path=usr/share/odpi/test/TestEnqOptions.c
+file path=usr/share/odpi/test/TestImplicitResults.c
+file path=usr/share/odpi/test/TestLOBs.c
+file path=usr/share/odpi/test/TestLib.c
+file path=usr/share/odpi/test/TestLib.h
+file path=usr/share/odpi/test/TestMiscCases.c
+file path=usr/share/odpi/test/TestMsgProps.c
+file path=usr/share/odpi/test/TestNumbers.c
+file path=usr/share/odpi/test/TestObjectTypes.c
+file path=usr/share/odpi/test/TestObjects.c
+file path=usr/share/odpi/test/TestPool.c
+file path=usr/share/odpi/test/TestPoolProperties.c
+file path=usr/share/odpi/test/TestQueries.c
+file path=usr/share/odpi/test/TestRowIds.c
+file path=usr/share/odpi/test/TestScrollCursors.c
+file path=usr/share/odpi/test/TestSodaColl.c
+file path=usr/share/odpi/test/TestSodaCollCursor.c
+file path=usr/share/odpi/test/TestSodaDb.c
+file path=usr/share/odpi/test/TestSodaDoc.c
+file path=usr/share/odpi/test/TestSodaDocCursor.c
+file path=usr/share/odpi/test/TestStatements.c
+file path=usr/share/odpi/test/TestSubscriptions.c
+file path=usr/share/odpi/test/TestSuiteRunner.c
+file path=usr/share/odpi/test/TestTransactions.c
+file path=usr/share/odpi/test/TestVariables.c
+file path=usr/share/odpi/test/sql/DropTest.sql
+file path=usr/share/odpi/test/sql/SetupTest.sql
+file path=usr/share/odpi/test/sql/TestEnv.sql
+license odpic.license license="UPLv1, Apachev2.0"
+depend type=require-any fmri=database/oracle/instantclient-121 \
+    fmri=database/oracle/instantclient-122 \
+    fmri=database/oracle/instantclient-183
