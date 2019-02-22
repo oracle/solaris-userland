@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		64
@@ -43,6 +43,10 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 CONFIGURE_OPTIONS += --disable-hkp
+
+# GNU Build System files have to be regenerated for automake 1.16.
+# It can be removed when the upstream starts to use a newer automake version.
+COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/desktop/atk

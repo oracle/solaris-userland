@@ -88,6 +88,9 @@ CONFIGURE_OPTIONS +=	--enable-perl=yes
 CONFIGURE_OPTIONS +=	--libexecdir=$(CONFIGURE_LIBDIR.$(BITS))
 CONFIGURE_OPTIONS +=	am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
 CONFIGURE_OPTIONS +=	am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
+# Makefile.am files of this component are not compatible with Solaris make.
+# Use GNU make to avoid the configuration error when makefile fragments are processed.
+CONFIGURE_OPTIONS += MAKE=$(GMAKE)
 EXTRA_LIBS =		-lldap_r
 EXTRA_LIBS +=		$(LIBNSL) $(LIBSOCKET)
 EXTRA_LIBS +=		-lscf -ldlpi -lsec -lv12n

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS = 64
 COMPILER = gcc
@@ -45,7 +45,11 @@ include $(WS_MAKE_RULES)/common.mk
 LD_MAP_NOEXBSS.sparc =
 
 # generate configure
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv)
+
+# Makefile.am files of this component are not compatible with Solaris make.
+# Use GNU make to avoid the configuration error when makefile fragments are processed.
+CONFIGURE_OPTIONS += MAKE=$(GMAKE)
 
 # couldn't convince autotools to not include the proto runpath
 COMPONENT_POST_INSTALL_ACTION += \

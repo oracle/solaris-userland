@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64_and_32
@@ -41,12 +41,17 @@ LDFLAGS += $(CC_BITS)
 
 include $(WS_MAKE_RULES)/common.mk
 
-COMPONENT_PREP_ACTION +=	( cd $(@D) ; $(CONFIG_SHELL) autogen.sh );
+# GNU Build System files have to be regenerated for automake 1.16.
+COMPONENT_PREP_ACTION +=	( cd $(@D) ; $(CONFIG_SHELL) autogen.sh; autoreconf -fiv);
 
 COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR) $(@D))
 
 CONFIGURE_OPTIONS  +=		--infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS  +=		M4="$(GNUBIN)/m4"
+
+# Makefile.am files of this component are not compatible with Solaris make.
+# Use GNU make to avoid the configuration error when makefile fragments are processed.
+CONFIGURE_OPTIONS  +=		MAKE=$(GMAKE)
 
 # Needed to pick up GNU sed for correct message formatting.
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"

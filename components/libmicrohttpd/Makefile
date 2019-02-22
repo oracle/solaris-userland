@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -61,8 +61,9 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^\#/p" '
 
 
-COMPONENT_PREP_ACTION += \
-	(cd $(@D); ACLOCAL=aclocal-1.15 AUTOMAKE=automake-1.15 autoreconf -fiv);
+# GNU Build System files have to be regenerated for automake 1.16.
+# It can be removed when the upstream starts to use a newer automake version.
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += system/library/security/libgcrypt

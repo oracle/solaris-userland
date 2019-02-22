@@ -66,7 +66,6 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/FAIL:/p" ' \
         '-e "/ERROR:/p" '
 
-REQUIRED_PACKAGES += developer/build/automake-115
 REQUIRED_PACKAGES += developer/build/gnu-make
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc 
 REQUIRED_PACKAGES += library/libffi

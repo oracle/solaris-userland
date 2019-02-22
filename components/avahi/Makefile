@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 # All components using gobject-introspection must be built with gcc as
@@ -71,8 +71,9 @@ CONFIGURE_OPTIONS	+=	am_cv_python_pyexecdir="$(PYTHON_VENDOR_PACKAGES)"
 # NOCONFIGURE=yes -> do not execute "configure" directly from "autogen.sh" (/wo CONFIGURE_OPTIONS...)
 # running of configure /wo CONFIGURE_OPTIONS/ENV -> configure will fail (on --with-distro=none is missing)
 # because "sunos" is not among the distros known to avahi.
+# Note that GNU Build System files have to be regenerated for automake 1.16.
 COMPONENT_PREP_ACTION += \
- ( cd $(@D) ; PATH="$(PATH)" NOCONFIGURE=yes $(CONFIG_SHELL) autogen.sh )
+ ( cd $(@D) ; PATH="$(PATH)" NOCONFIGURE=yes $(CONFIG_SHELL) autogen.sh; autoreconf -fiv)
 # g-i-r-scanner also need to have PATH to cc
 COMPONENT_BUILD_ENV += CC="$(CC)"
 COMPONENT_BUILD_ENV += CFLAGS="$(CFLAGS)"

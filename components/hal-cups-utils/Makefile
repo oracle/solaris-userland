@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 32
 include ../../make-rules/shared-macros.mk
@@ -46,16 +46,11 @@ CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)/hal
 # Since we patch Makefile.am, we have to rebuild the autoconf generated files
 # Just running automake does not work, since our automake is different from the one
 # used by hal-cups-utils maintainer
-COMPONENT_PREP_ACTION = ( \
-	cd $(@D); \
-	ACLOCAL=aclocal-1.11 AUTOMAKE=aclocal-1.11 autoreconf; \
-        cd $(SOURCE_DIR); \
-) 
+COMPONENT_PREP_ACTION = ( cd $(@D); autoreconf -fiv )
 
 # ASLR disabled until sufficient testing can be performed.
 ASLR_MODE= $(ASLR_DISABLE)
 
-REQUIRED_PACKAGES += developer/build/automake-111
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += print/cups
 REQUIRED_PACKAGES += system/hal

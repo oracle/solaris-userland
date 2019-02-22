@@ -61,6 +61,10 @@ include $(WS_MAKE_RULES)/common.mk
 # Prepare target specific CONFIGURE_OPTIONS
 CONFIGURE_OPTIONS += $(TS_CONFIGURE_OPTIONS)
 
+# Makefile.am files of this component are not compatible with Solaris make.
+# Use GNU make to avoid the configuration error when makefile fragments are processed.
+CONFIGURE_OPTIONS += MAKE=$(GMAKE)
+
 ### Libfastjson configuration ###
 
 # Convenience targets

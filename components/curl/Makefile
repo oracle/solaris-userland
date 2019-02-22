@@ -85,6 +85,10 @@ CONFIGURE_OPTIONS += --with-libssh2
 CONFIGURE_OPTIONS += --with-nghttp2
 CONFIGURE_OPTIONS += "curl_disallow_getifaddrs=yes"
 
+# Makefile.am files of this component are not compatible with Solaris make.
+# Use GNU make to avoid the configuration error when makefile fragments are processed.
+CONFIGURE_OPTIONS += MAKE=$(GMAKE)
+
 CONFIGURE_ENV +=	CPP="$(CC) -E"
 CONFIGURE_ENV +=	CFLAGS="$(CFLAGS)"
 CONFIGURE_ENV +=	LIBS="$(LIBS)"
@@ -94,7 +98,8 @@ CONFIGURE_ENV +=	KRB5CONFIG=/usr/bin/krb5-config
 LINT_FLAGS += -I$(SOURCE_DIR)/include
 
 # Generate configuration scripts form .am-files
-COMPONENT_PREP_ACTION = (cd $(@D) ; $(SHELL) buildconf )
+# GNU Build System files have to be regenerated for automake 1.16.
+COMPONENT_PREP_ACTION = (cd $(@D) ; $(SHELL) buildconf; autoreconf; )
 
 COMPONENT_TEST_ENV += CC="$(CC)"
 COMPONENT_TEST_ENV += PATH="$(SPRO_VROOT)/bin:$(GNUBIN):$(PATH)"

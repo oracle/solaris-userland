@@ -43,5 +43,9 @@ include $(WS_MAKE_RULES)/x11-component.mk
 
 LINT_FLAGS += -I$(SOURCE_DIR)/include/X11/fonts
 
+# GNU Build System files have to be regenerated for automake 1.16.
+# It can be removed when the upstream starts to use a newer automake version.
+COMPONENT_PREP_ACTION = (cd $(@D); autoreconf -fiv)
+
 REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/xtrans

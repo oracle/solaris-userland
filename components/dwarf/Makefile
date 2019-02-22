@@ -63,6 +63,10 @@ COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(USRBIN):$(USRBIN.32):$(GCC_ROOT)/bin"
 CONFIGURE_OPTIONS +=	--enable-shared
 CONFIGURE_OPTIONS +=	--disable-nonshared
 
+# Makefile.am files of this component are not compatible with Solaris make.
+# Use GNU make to avoid the configuration error when makefile fragments are processed.
+CONFIGURE_OPTIONS +=  MAKE=$(GMAKE)
+
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/linker

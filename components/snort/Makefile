@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -38,12 +38,6 @@ TPNO=			33599
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
-
-# snort 2.9.8.3 (and later) requires automake/autoconf >= 1.14, but Userland
-# default is older than what is needed. So hard-coding to the next available,
-# 1.15: "--add-missing" needed to use default "compile" script.
-AUTOMAKE=/usr/bin/automake-1.15 --add-missing
-ACLOCAL=/usr/bin/aclocal-1.15
 
 # Need to recreate the configure script for gethrtime checks.
 COMPONENT_PREP_ACTION +=	(cd $(@D); autoreconf -fiv);

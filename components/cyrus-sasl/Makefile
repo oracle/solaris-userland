@@ -59,6 +59,9 @@ SASL2.64 = $(USRLIBDIR)/sasl2/$(MACH64)
 SASL_CONFDIR = $(ETCDIR)/sasl2
 PROTO_CONFDIR = $(PROTO_DIR)$(SASL_CONFDIR)
 
+# GNU Build System files have to be regenerated for automake 1.16.
+COMPONENT_PREP_ACTION = (cd $(@D); autoreconf -fiv; automake --add-missing)
+
 TESTS_DIR=$(PROTO_DIR)/tests
 TESTS_32_DIR=$(TESTS_DIR)/$(MACH32)
 
@@ -103,7 +106,7 @@ INCLIST= hmac-md5.h \
 
 export CONFIG_SITE=$(WS_COMPONENTS)/$(COMPONENT_NAME)/Solaris/config.site
 
-CFG_COMPILE=/usr/share/automake-1.15
+CFG_COMPILE=/usr/share/$(notdir $(AUTOMAKE))
 
 COMPONENT_PREP_ACTION = ( cd $(@D) &&  \
 		( cd config && ln -s $(CFG_COMPILE)/compile . ) ; \
@@ -184,7 +187,6 @@ sasltest.tgz:	install
 
 REQUIRED_PACKAGES += archiver/gnu-tar
 REQUIRED_PACKAGES += database/berkeleydb-5
-REQUIRED_PACKAGES += developer/build/automake-115
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += system/library/pam-core

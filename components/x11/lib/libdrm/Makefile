@@ -48,9 +48,17 @@ FIX_PC_FILES=libdrm.pc.in intel/libdrm_intel.pc.in libkms/libkms.pc.in \
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
+# GNU Build System files have to be regenerated for automake 1.16.
+# It can be removed when the upstream starts to use a newer automake version.
+COMPONENT_PREP_ACTION = (cd $(@D); autoreconf -fiv)
+
 CONFIGURE_OPTIONS += --enable-libkms
 CONFIGURE_OPTIONS += --disable-amdgpu
 CONFIGURE_OPTIONS += --disable-nouveau
+
+# Makefile.am files of this component are not compatible with Solaris make.
+# Use GNU make to avoid the configuration error when makefile fragments are processed.
+CONFIGURE_OPTIONS += MAKE=$(GMAKE)
 
 COMPONENT_INSTALL_ARGS.32 += pkgconfigdir="$(DESTDIR)/usr/lib/pkgconfig"
 COMPONENT_INSTALL_ARGS.64 += pkgconfigdir="$(DESTDIR)/usr/lib/$(MACH64)/pkgconfig"

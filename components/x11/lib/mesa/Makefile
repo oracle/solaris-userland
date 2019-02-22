@@ -75,6 +75,10 @@ CONFIGURE_OPTIONS += --disable-shader-cache
 CONFIGURE_OPTIONS.32 += --with-dri-driverdir='/usr/lib/xorg/modules/dri'
 CONFIGURE_OPTIONS.64 += --with-dri-driverdir='/usr/lib/xorg/modules/dri/$(MACH64)'
 
+# Makefile.am files of this component are not compatible with Solaris make.
+# Use GNU make to avoid the configuration error when makefile fragments are processed.
+CONFIGURE_OPTIONS += MAKE=$(GMAKE)
+
 CXXFLAGS += -std=c++11
 CFLAGS += -D__EXTENSIONS__ 
 CPPFLAGS += -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS

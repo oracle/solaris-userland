@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../ofed-component-macros.mk
@@ -50,9 +50,9 @@ COMPONENT_PREP_ACTION += (if [ x$(MACH) = "xi386" ]; then \
 		cp mlx4.driver.sparc $(@D)/mlx4.driver; \
 		fi; \
 		cd $(@D) ; \
-		aclocal-1.11 --force ; \
+		aclocal --force ; \
 		libtoolize --copy --force --ltdl ; \
-		autoconf --force ; \
+		autoreconf --force ; \
 		autoheader --force)
 
 COMPONENT_POST_INSTALL_ACTION =\

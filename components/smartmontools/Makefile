@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -38,7 +38,7 @@ TEST_TARGET=	$(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 # Run automake to pickup man page normalization changes.
-COMPONENT_PREP_ACTION = (cd $(@D) ; automake)
+COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv; automake)
 
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
 

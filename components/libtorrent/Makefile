@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64_and_32
@@ -45,7 +45,8 @@ include $(WS_MAKE_RULES)/common.mk
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
 
-# Uses aclocal-1.14 by default, which we don't have.
+# GNU Build System files have to be regenerated for automake 1.16.
+# It can be removed when the upstream starts to use a newer automake version.
 COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 
 CXXFLAGS += -std=c++11
@@ -57,7 +58,6 @@ CONFIGURE_OPTIONS  +=	--srcdir=$(BUILD_DIR_$(BITS))
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-REQUIRED_PACKAGES += developer/build/automake-115
 REQUIRED_PACKAGES += developer/c++/cppunit
 REQUIRED_PACKAGES += library/c++/sigcpp
 REQUIRED_PACKAGES += library/security/openssl

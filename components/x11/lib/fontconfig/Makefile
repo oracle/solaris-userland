@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -46,12 +46,20 @@ COMPONENT_FIX_PC_FLAGS += -e 's| \@FREETYPE_CFLAGS\@||g;'
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
+# GNU Build System files have to be regenerated for automake 1.16.
+# It can be removed when the upstream starts to use a newer automake version.
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv)
+
 CONFIGURE_OPTIONS += --with-baseconfigdir='/etc/fonts'
 CONFIGURE_OPTIONS += --with-templatedir='/etc/fonts/conf.avail'
 CONFIGURE_OPTIONS += --with-xmldir='/etc/fonts'
 CONFIGURE_OPTIONS += --with-default-fonts='/usr/share/fonts'
 CONFIGURE_OPTIONS += --with-add-fonts='/etc/X11/fontpath.d,/usr/share/ghostscript/fonts,/usr/X11/lib/X11/fonts'
 CONFIGURE_OPTIONS += --with-cache-dir=/var/cache/fontconfig
+
+# Makefile.am files of this component are not compatible with Solaris make.
+# Use GNU make to avoid the configuration error when makefile fragments are processed.
+CONFIGURE_OPTIONS += MAKE=$(GMAKE)
 
 COMPONENT_POST_INSTALL_ACTION = \
 	(cat files/sunman-notes-fc-cache >> $(PROTO_DIR)/usr/share/man/man1/fc-cache.1)

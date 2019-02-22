@@ -47,11 +47,10 @@ ifeq ($(OS_VERSION),11.3)
 CFLAGS += "-D_POSIX_PTHREAD_SEMANTICS"
 endif
 
-# Trousers 0.3.13 requires automake/autoconf >= 1.13, but Userland default
-# is older than what is needed. So hard-coding to the next available, 1.15:
-# "--add-missing" needed to use default "compile" script.
-AUTOMAKE=/usr/bin/automake-1.15 --add-missing
-ACLOCAL=/usr/bin/aclocal-1.15
+# Trousers require automake 1.16 because of 02-configure.patch file.
+# Option "--add-missing" is needed to use default "compile" script.
+AUTOMAKE=/usr/bin/automake-1.16 --add-missing
+ACLOCAL=/usr/bin/aclocal-1.16
 
 LIBS += -lgen
 
@@ -97,7 +96,7 @@ COMPONENT_TEST_TARGETS =
 COMPONENT_BUILD_TARGETS = all
 
 # These are packages required for building, not for use:
-REQUIRED_PACKAGES += developer/build/automake-115
+REQUIRED_PACKAGES += developer/build/automake-116
 REQUIRED_PACKAGES += developer/build/libtool
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140

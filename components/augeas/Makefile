@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -41,6 +41,10 @@ PKG_MACROS += LIBAUGEAS_VER=so.0.22.1
 PKG_MACROS += LIBFA_VER=so.1.4.4
 
 include $(WS_MAKE_RULES)/common.mk
+
+# GNU Build System files have to be regenerated for automake 1.16.
+# It can be removed when the upstream starts to use a newer automake version.
+COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 
 # Regenerate our patched configure.ac
 COMPONENT_PRE_CONFIGURE_ACTION = (cd $(SOURCE_DIR); autoconf)

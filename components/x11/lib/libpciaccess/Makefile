@@ -34,12 +34,14 @@ COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1703
 TPNO=			49259
 
+# GNU Build System files have to be regenerated for automake 1.16.
+# It can be removed when the upstream starts to use a newer automake version.
+COMPONENT_PREP_ACTION = (cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
+
 PKG_PROTO_DIRS +=  $(BUILD_DIR_64)/scanpci/.libs
 PKG_PROTO_DIRS +=  $(BUILD_DIR_64)/man
 
 TEST_TARGET = $(NO_TESTS)
-
-COMPONENT_PREP_ACTION += (cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
 
 FIX_PC_FILES=pciaccess.pc.in
 

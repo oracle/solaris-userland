@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		NO_ARCH
@@ -38,7 +38,7 @@ TPNO=			25944
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-REQUIRED_PACKAGES += developer/build/automake-115
+REQUIRED_PACKAGES += developer/build/automake-116
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += library/glib2

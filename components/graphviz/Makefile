@@ -74,6 +74,10 @@ CONFIGURE_OPTIONS +=	--enable-python27=yes
 CONFIGURE_OPTIONS +=	--x-libraries=$(CONFIGURE_LIBDIR.$(BITS))
 CONFIGURE_OPTIONS +=	--with-gdincludedir=$(USRINCDIR)/gd2
 
+# Makefile.am files of this component are not compatible with Solaris make.
+# Use GNU make to avoid the configuration error when makefile fragments are processed.
+CONFIGURE_OPTIONS +=  MAKE=$(GMAKE)
+
 COMPONENT_BUILD_ARGS += 	GREP=$(USRBINDIR)/ggrep
 
 # perl, ruby, php ship 64-bit only.

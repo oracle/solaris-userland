@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		64
@@ -43,6 +43,10 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU msgfmt in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
+
+# GNU Build System files have to be regenerated for automake 1.16.
+# It can be removed when the upstream starts to use a newer automake version.
+COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 
 # evolution-data-server requires nss/nspr, but Solaris doesn't include a 64-bit
 # pkg-config file for it, so we workaround this by using the one-off copy in the

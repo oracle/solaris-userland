@@ -93,6 +93,10 @@ clobber::	$(SUBDIRS) clean
 $(SUBDIRS):	FORCE
 	@cd $@ && echo "$(TARGET) $@" && $(MAKE) $(TARGET)
 
+# GNU Build System files have to be regenerated for automake 1.16.
+# It can be removed when the upstream starts to use a newer automake version.
+COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
+
 # declare module dependencies
 librdmacm:		libibverbs
 libmlx4:		libibverbs

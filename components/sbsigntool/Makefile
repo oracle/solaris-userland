@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_ARCH= i386
@@ -46,8 +46,10 @@ CFLAGS += -I. -I/usr/gnu/include -I/usr/include/ -I/usr/include/efi/x86_64 -I/us
 CONFIGURE_OPTIONS  +=  uuid_CFLAGS="-I/usr/include/uuid" uuid_LIBS="-luuid"
 PATH=/usr/gnu/bin:/usr/bin
 
+# GNU Build System files have to be regenerated for automake 1.16.
+# It can be removed when the upstream starts to use a newer automake version.
 COMPONENT_PREP_ACTION = \
-        (cd $(@D) ; ACLOCAL=aclocal-1.11 AUTOMAKE=automake-1.11 autoreconf -fiv)
+        (cd $(@D) ; autoreconf -fiv)
 
 COMPONENT_PRE_TEST_ACTION = \
         (cp test-x86_64_sol2.lds  $(SOURCE_DIR)/tests/.)

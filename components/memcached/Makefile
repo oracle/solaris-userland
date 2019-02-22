@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 
@@ -70,6 +70,10 @@ CONFIGURE_OPTIONS.64 +=	--with-libevent=$(USRLIBDIR64)
 CONFIGURE_OPTIONS.64 +=	"ac_cv_libevent_dir=/usr/lib/$(MACH64)"
 CONFIGURE_OPTIONS +=	--enable-dtrace --disable-docs --disable-coverage
 CONFIGURE_OPTIONS +=	--localstatedir=$(VARDIR)
+
+# GNU Build System files have to be regenerated for automake 1.16.
+# It can be removed when the upstream starts to use a newer automake version.
+COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 
 # Fill the memcached version to the service description.
 COMPONENT_POST_INSTALL_ACTION = ( \

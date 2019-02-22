@@ -82,6 +82,10 @@ CONFIGURE_OPTIONS += --with-default-font-path="catalogue:/etc/X11/fontpath.d"
 CONFIGURE_OPTIONS += --with-xkb-bin-directory="$(USRBINDIR)"
 CONFIGURE_OPTIONS += --with-default-xkb-model="pc105"
 
+# Makefile.am files of this component are not compatible with Solaris make.
+# Use GNU make to avoid the configuration error when makefile fragments are processed.
+CONFIGURE_OPTIONS += MAKE=$(GMAKE)
+
 COMPONENT_PREP_ACTION +=(cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
 
 COMPONENT_POST_UNPACK_ACTION = \

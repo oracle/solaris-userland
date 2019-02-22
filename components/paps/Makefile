@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER=gcc
@@ -51,6 +51,11 @@ COMPONENT_PREP_ACTION += ( cd $(@D) ; intltoolize --copy --force --automake; aut
 
 
 #CONFIGURE_OPTIONS += --with-xgettext=$(USRBINDIR)/gxgettext
+
+# Makefile.am files of this component are not compatible with Solaris make.
+# Use GNU make to avoid the configuration error when makefile fragments are processed.
+CONFIGURE_OPTIONS += MAKE=$(GMAKE)
+
 CONFIGURE_ENV += MSGFMT="/usr/bin/gmsgfmt"
 CONFIGURE_ENV += XGETTEXT="/usr/bin/gxgettext"
 #CONFIGURE_ENV += ac_cv_path_XGETTEXT="/usr/bin/gxgettext"

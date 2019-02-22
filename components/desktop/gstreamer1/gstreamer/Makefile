@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            32_and_64
@@ -63,13 +63,17 @@ CONFIGURE_OPTIONS += --enable-introspection
 CONFIGURE_OPTIONS += --libexecdir=$(CONFIGURE_LIBDIR.$(BITS))
 CONFIGURE_OPTIONS += --with-bash-completion-dir=/etc/bash_completion.d
 
+# Makefile.am files of this component are not compatible with Solaris make.
+# Use GNU make to avoid the configuration error when makefile fragments are processed.
+CONFIGURE_OPTIONS += MAKE=$(GMAKE)
+
 # The build process modifies the shebang line to use the version of Python
 # automatically found; to avoid using the current system default, one is
 # explicitly specified here.
 CONFIGURE_ENV += PYTHON="$(PYTHON.2.7)"
 
 # Required due to patches.
-COMPONENT_PREP_ACTION += ( cd $(@D) ; NOCONFIGURE=1 $(CONFIG_SHELL) autogen.sh );
+COMPONENT_PREP_ACTION += (cd $(@D) ; NOCONFIGURE=1 $(CONFIG_SHELL) autogen.sh; autoreconf -fiv);
 
 # for the tests
 unexport SHELLOPTS

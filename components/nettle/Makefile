@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -136,8 +136,5 @@ $(BUILD_DIR)/wanboot-amd64/.installed: \
 $(BUILD_DIR)/wanboot-amd64/.installed: \
 	COMPONENT_POST_INSTALL_ACTION += \
 	$(AR) ts $(PROTO_DIR)/usr/lib/grub/wanboot/libhogweed.a;
-
-# Required by this Makefile.
-REQUIRED_PACKAGES += developer/build/automake-111
 
 REQUIRED_PACKAGES += library/gmp

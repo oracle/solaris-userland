@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -61,7 +61,6 @@ CONFIGURE_OPTIONS +=	--enable-shared
 CONFIGURE_OPTIONS +=	--disable-static
 CONFIGURE_OPTIONS +=	--disable-debug
 
-REQUIRED_PACKAGES += developer/build/automake-115
 REQUIRED_PACKAGES += library/c++/sigcpp
 REQUIRED_PACKAGES += library/libtorrent
 REQUIRED_PACKAGES += library/ncurses

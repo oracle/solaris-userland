@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            32_and_64
@@ -69,6 +69,10 @@ CONFIGURE_OPTIONS += --enable-ogg
 CONFIGURE_OPTIONS += --enable-theora
 CONFIGURE_OPTIONS += --enable-vorbis
 CONFIGURE_OPTIONS += --with-x
+
+# Makefile.am files of this component are not compatible with Solaris make.
+# Use GNU make to avoid the configuration error when makefile fragments are processed.
+CONFIGURE_OPTIONS += MAKE=$(GMAKE)
 
 # The build process modifies the shebang line to use the version of Python
 # automatically found; to avoid using the current system default, one is

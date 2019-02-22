@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Static assertions fail when building with Studio
@@ -57,6 +57,14 @@ CONFIGURE_OPTIONS +=	--with-dbus-user=root
 CONFIGURE_OPTIONS +=	--libexecdir=$(USRLIBDIR)
 CONFIGURE_OPTIONS +=	--localstatedir=$(VARDIR)
 CONFIGURE_OPTIONS +=	--disable-static
+
+# Makefile.am files of this component are not compatible with Solaris make.
+# Use GNU make to avoid the configuration error when makefile fragments are processed.
+CONFIGURE_OPTIONS +=	MAKE=$(GMAKE)
+
+# GNU Build System files have to be regenerated for automake 1.16.
+# It can be removed when the upstream starts to use a newer automake version.
+COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
