@@ -56,7 +56,7 @@
 # cups-objects is generated as:
 # gmake sample-manifest METADATA_TEMPLATE=
 # then processed:
-# nawk '{if (sub(/\\$/,"")) printf "%s", $0; else print $0}' build/manifest-$(uname -p)-generated.p5m | sed -e '/^dir .*/d' > cups-objects
+# egrep -v 'path=mangled' build/manifest-$(uname -p)-generated.p5m | nawk '{if (sub(/\\$/,"")) printf "%s", $0; else print $0}' | sed -e '/^dir .*/d' > cups-objects
 <include cups-objects>
 #
 set name=pkg.fmri \
