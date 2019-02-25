@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		six
-COMPONENT_VERSION=	1.10.0
+COMPONENT_VERSION=	1.11.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:105f8d68616f8248e24bf0e9372ef04d3cc10104f1980f54d57b2ce73a5ad56a
+	sha256:70e8a77beed4562e7f14fe23a786b54f6296e34344c23bc42f07b15018ff98e9
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://bitbucket.org/gutworth/six
 COMPONENT_BUGDB=	python-mod/six
 COMPONENT_ANITYA_ID=	4027
 
-TPNO=			28745
+TPNO=			39455
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -47,6 +47,10 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_ARGS =	test_six.py
 COMPONENT_TEST_CMD =	py.test-$(PYTHON_VERSION)
+COMPONENT_TEST_TRANSFORMS += \
+  '-e "s/\(in \).*\(seconds\)/\1 x \2/"' \
+  '-e "/^platform/d"'
+
 
 # common targets
 build:		$(BUILD_NO_ARCH)

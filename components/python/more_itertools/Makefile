@@ -20,59 +20,43 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
 #
+
 include ../../../make-rules/shared-macros.mk
 
-PATH=/usr/bin:/usr/gnu/bin:/usr/sbin
-
-COMPONENT_NAME=		CherryPy
-COMPONENT_VERSION=	15.0.0
-COMPONENT_PROJECT_URL=	http://www.cherrypy.org/
+COMPONENT_NAME=		more-itertools
+COMPONENT_VERSION=	4.2.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:7404638da9cf8c6be672505168ccb63e16d33cb3aa16a02ec30a44641f7546af
+	sha256:2b6b9893337bfd9166bee6a62c2b0c9fe7735dcf85948b387ec8cba30e85d8e8
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_BUGDB=	python-mod/cherrypy
-COMPONENT_ANITYA_ID=	3799
+COMPONENT_PROJECT_URL=	https://pypi.org/project/more-itertools/
+COMPONENT_BUGDB=	python-mod/more_itertools
+COMPONENT_ANITYA_ID=	12201
 
-TPNO=			43435
-
-PATCH_LEVEL=0
+TPNO=			45198
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-COMPONENT_POST_INSTALL_ACTION = \
-	(cd $(PROTO_DIR)/usr/bin ; $(MV) cherryd cherryd$(PYTHON_VERSION))
-
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-COMPONENT_TEST_DIR = 	$(SOURCE_DIR)
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)
+COMPONENT_TEST_ARGS =
 COMPONENT_TEST_CMD =	py.test-$(PYTHON_VERSION)
-COMPONENT_TEST_ARGS = 
+COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \
-   '-e "s/\(in \).*\(seconds\).*/\1 x \2/"' \
-   '-e "/^platform/d"' \
-   '-e "/^SKIP/d"' \
-   '-e "s/\(tmp\).*/\1\/XXX/"' \
-   '-e "s/=*//"'
+  '-e "s/\(in \).*\(seconds\)/\1 x \2/"' \
+  '-e "/^platform/d"'
 
 # common targets
 build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-# test are not clean, so not appropriate to run at top level
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
-
-REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += library/python/six 
-REQUIRED_PACKAGES += library/python/cheroot 
-REQUIRED_PACKAGES += library/python/portend 
+system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)

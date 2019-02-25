@@ -1,0 +1,16 @@
+Solaris specific patch, not suitable for upstream.
+This is a workaround for an issue with the updated 
+six package related to metaclasses. More details at
+https://github.com/benjaminp/six/issues/210 
+https://github.com/benjaminp/six/pull/191
+--- six-1.11.0.old/six.py	2017-09-17 11:46:32.000000000 +0000
++++ six-1.11.0/six.py	2018-11-29 05:04:00.337481892 +0000
+@@ -821,7 +821,7 @@
+     # This requires a bit of explanation: the basic idea is to make a dummy
+     # metaclass for one level of class instantiation that replaces itself with
+     # the actual metaclass.
+-    class metaclass(type):
++    class metaclass(meta):
+ 
+         def __new__(cls, name, this_bases, d):
+             return meta(name, bases, d)

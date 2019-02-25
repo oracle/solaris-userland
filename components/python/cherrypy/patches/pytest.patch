@@ -1,0 +1,67 @@
+Solaris specific patch, not suitable for upstream.
+The pytest.ini changes are required as some of the 
+default options are not available in Solaris.
+The test suite related changes are for skipping tests
+which have inconsistent results. 
+--- pytest.ini.old	2018-05-11 11:40:19.000000000 +0000
++++ pytest.ini	2018-11-30 01:32:16.820977699 +0000
+@@ -1,4 +1,4 @@
+ [pytest]
+ norecursedirs=dist build .tox .eggs
+-addopts=-v -rxs --junitxml=.test-results/pytest/results.xml --cov=cherrypy --cov-report term-missing:skip-covered --cov-report xml --doctest-modules
++addopts=-v -rxs --junitxml=.test-results/pytest/results.xml --doctest-modules
+ doctest_optionflags=ALLOW_UNICODE ELLIPSIS
+--- cherrypy.old/test/test_static.py	2018-05-11 11:40:19.000000000 +0000
++++ cherrypy/test/test_static.py	2018-12-03 04:25:42.212800995 +0000
+@@ -282,7 +282,7 @@
+         self.assertHeader('Content-Length', 14)
+         self.assertMatchesBody('Fee\nfie\nfo\nfum')
+ 
+-    @pytest.mark.xfail(reason='#1475')
++    @pytest.mark.skip(reason='skipped...inconsistent test results')
+     def test_file_stream(self):
+         if cherrypy.server.protocol_version != 'HTTP/1.1':
+             return self.skip()
+--- cherrypy.old/test/test_tools.py	2018-05-11 11:40:19.000000000 +0000
++++ cherrypy/test/test_tools.py	2018-12-05 04:58:18.049138298 +0000
+@@ -8,6 +8,7 @@
+ import unittest
+ import operator
+ 
++import pytest
+ import six
+ from six.moves import range, map
+ from six.moves.http_client import IncompleteRead
+@@ -349,6 +350,7 @@
+         expected_msg = tmpl.format(attr='items' if six.PY3 else 'iteritems')
+         self.assertInBody(expected_msg)
+ 
++    @pytest.mark.skip(reason="skipped...inconsistent test results")
+     def testCombinedTools(self):
+         expectedResult = (ntou('Hello,world') +
+                           europoundUnicode).encode('utf-8')
+--- cherrypy.old/test/test_caching.py	2018-05-11 11:40:19.000000000 +0000
++++ cherrypy/test/test_caching.py	2018-12-05 13:30:58.887084748 +0000
+@@ -340,7 +340,9 @@
+         if not getattr(cherrypy.server, 'using_apache', False):
+             self.assertHeader('Age')
+ 
+-    @pytest.mark.xfail(reason='#1536')
++    @pytest.mark.skip(
++        reason='skipped...inconsistent test results.'
++    )
+     def test_antistampede(self):
+         SECONDS = 4
+         slow_url = '/long_process?seconds={SECONDS}'.format(**locals())
+--- cherrypy.old/test/test_conn.py	2018-05-11 11:40:19.000000000 +0000
++++ cherrypy/test/test_conn.py	2018-12-05 13:31:58.572567531 +0000
+@@ -722,6 +722,9 @@
+         self.assertBody('I too')
+         conn.close()
+ 
++    @pytest.mark.skip(
++        reason='skipped...inconsistent test results.'
++    )
+     def test_598(self):
+         tmpl = '{scheme}://{host}:{port}/one_megabyte_of_a/'
+         url = tmpl.format(
