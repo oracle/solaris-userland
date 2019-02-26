@@ -20,18 +20,13 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
-include $(WS_MAKE_RULES)/ruby.mk
 
-#
-# Override the inherited RUBY values in shared-macros.mk to be
-# a later release.
-#
-RUBY_VERSION=       2.1
-RUBY_LIB_VERSION=   2.1.0
-RUBY_VERSIONS=      2.1.0
+# Puppet and its modules are built to use the currently
+# supported version of Ruby runtime only.
+RUBY_VERSIONS = $(RUBY_PUPPET_VERSION)
 
 GIT_REPO=               https://github.com/stompgem/stomp
 GIT_BRANCH=             v1.4.4
@@ -47,18 +42,13 @@ COMPONENT_BUGDB=        utility/ruby-stomp
 COMPONENT_ANITYA_ID=    4499
 TPNO=                   40666
 
-
-# Copy files instead making symlinks. GEM does not handle symlinks.
-CLONEY = true
-COMPONENT_PRE_BUILD_ACTION += $(CP) -rp $(SOURCE_DIR)/* $(@D);
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/gem.mk
+include $(WS_MAKE_RULES)/ruby.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-# common targets
 build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
@@ -69,24 +59,5 @@ system-test:    $(NO_TESTS)
 
 
 REQUIRED_PACKAGES += network/amqp/rabbitmq
-REQUIRED_PACKAGES += runtime/ruby-21
+REQUIRED_PACKAGES += runtime/ruby-$(RUBY_PUPPET_NODOT_VERSION)
 REQUIRED_PACKAGES += system/core-os
-
-new-files:
-	####
-	# This is a convenience method for the package maintainer
-	# it displays a list of files not found in both the delivered source
-	# and package manifest. Output must be evaluated for correctness
-	# The first command lists non-spec non-ext .rb and .ddl plugin files
-	# The second lists all files installed by mycollective
-	( \
-	    $(PKGSEND) generate $(PROTO_DIR) | \
-		$(GSED) \
-		  -e 's|group=.*||' -e s'|^file |file path=|' \
-		  -e 's|$(VENDOR_GEM_DIR)|$$(VENDOR_GEM_DIR)|' \
-		  -e 's|$(COMPONENT_NAME)-$(COMPONENT_VERSION)|$(COMPONENT_NAME)-$$(COMPONENT_VERSION)|' \
-		  -e '/~[0-9]\+~$$/d' | \
-		$(CAT) *.p5m - | $(PKGFMT) -u | \
-		sort | uniq -c | \
-	    $(GSED) -e '/ 2 /d' -e 's/   1 //' -e '/^file/!d' \
-	)

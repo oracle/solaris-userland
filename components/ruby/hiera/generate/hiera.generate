@@ -18,20 +18,19 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
-set name=pkg.fmri value=pkg:/runtime/ruby@$(COMPONENT_VERSION),$(BUILD_VERSION)
-set name=pkg.summary value="Ruby, RubyGems, and Rake"
-set name=pkg.description \
-    value="Metapackage that ensures at least one version of Ruby is installed"
-set name=info.classification \
-    value=org.opensolaris.category.2008:Development/Ruby
-set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2015/113 value=PSARC/2018/119
-set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-license ruby.license license=Oracle
+# unexpand the VENDOR_GEM_DIR string
+<transform dir file link hardlink -> edit path $(VENDOR_GEM_DIR) $!(VENDOR_GEM_DIR)>
 
-# Any version of Ruby currently available
-depend type=require-any fmri=runtime/ruby-21 fmri=runtime/ruby-23 \
-    fmri=runtime/ruby-25
+# drop unused files
+<transform file path=.+gz$ -> drop>
+<transform file path=.+Win(|32).+ -> drop>
+<transform file path=.+win32.+ -> drop>
+<transform file path=.+spec/unit/fixtures/badconfig/.* -> drop>
+
+# fix expanded strings
+<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">

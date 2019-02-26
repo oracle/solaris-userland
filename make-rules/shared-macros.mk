@@ -612,15 +612,15 @@ endif
 CC =		$(CC.$(COMPILER).$(BITS))
 CXX =		$(CXX.$(COMPILER).$(BITS))
 
-RUBY_VERSION =	2.1
-RUBY_LIB_VERSION =	2.1.0
+RUBY_VERSION =	2.5
+RUBY_PUPPET_VERSION = 2.5
+
+# The default version should go last.
+RUBY_VERSIONS = 2.1 2.3 2.5
 RUBY.2.1 =	/usr/ruby/2.1/bin/ruby
 RUBY.2.3 =	/usr/ruby/2.3/bin/ruby
+RUBY.2.5 =	/usr/ruby/2.5/bin/ruby
 RUBY =		$(RUBY.$(RUBY_VERSION))
-# Use the ruby lib versions to represent the RUBY_VERSIONS that
-# need to get built.  This is done because during package transformations
-# both the ruby version and the ruby library version are needed. 
-RUBY_VERSIONS = $(RUBY_LIB_VERSION)
 
 # Transform Ruby scripts to call the supported
 # version-specific ruby; used in multiple *.mk files

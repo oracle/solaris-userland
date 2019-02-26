@@ -20,9 +20,10 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
+COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		vim
@@ -58,11 +59,7 @@ TEST_64 = 	$(NOX_VARIANT)/.tested
 
 include $(WS_MAKE_RULES)/common.mk
 
-# Studio 12.3 and 12.4 allow unknown __attribute__s, but complain about them,
-# making the build pretty loud about unknown "unused" attributes.  If we make
-# it an error, configure will turn off its use.  See bug 20230791.
-CFLAGS +=		-errwarn=E_ATTRIBUTE_UNKNOWN
-studio_C99MODE =	$(studio_C99_ENABLE)
+CFLAGS += -std=gnu99
 
 # Make sure we use a 64-bit, multithreaded perl
 CONFIGURE_ENV +=	vi_cv_path_perl=/usr/perl5/5.22/bin/perl
@@ -72,7 +69,6 @@ CONFIGURE_ENV +=	vi_cv_path_python3=/usr/bin/python3.5
 CONFIGURE_ENV +=	MSGFMT=gmsgfmt
 CONFIGURE_ENV +=	SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH)
 
-CONFIGURE_OPTIONS +=	LDFLAGS="$(studio_C99MODE)"
 CONFIGURE_OPTIONS +=	--with-features=huge
 CONFIGURE_OPTIONS +=	--with-compiledby="the Solaris Userland build environment"
 CONFIGURE_OPTIONS +=	--with-modified-by="Solaris Userland Team"
@@ -119,7 +115,7 @@ REQUIRED_PACKAGES += runtime/lua
 REQUIRED_PACKAGES += runtime/perl-522
 REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += runtime/python-35
-REQUIRED_PACKAGES += runtime/ruby-21
+REQUIRED_PACKAGES += runtime/ruby-25
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += text/gnu-gettext

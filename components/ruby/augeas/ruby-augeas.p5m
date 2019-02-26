@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
@@ -38,7 +38,9 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=$(VENDOR_GEM_DIR)/cache/ruby-augeas-$(COMPONENT_VERSION).gem
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/rdoc/Augeas.html
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/rdoc/Augeas/Error.html
-file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/rdoc/fonts.css
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/rdoc/Object.html
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/rdoc/css/fonts.css
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/rdoc/css/rdoc.css
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/rdoc/fonts/Lato-Light.ttf
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/rdoc/fonts/Lato-LightItalic.ttf
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/rdoc/fonts/Lato-Regular.ttf
@@ -77,22 +79,44 @@ file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/rdoc/js/navigat
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/rdoc/js/search.js
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/rdoc/js/search_index.js
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/rdoc/js/searcher.js
-file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/rdoc/rdoc.css
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/rdoc/table_of_contents.html
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/Error/cdesc-Error.ri
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/cdesc-Augeas.ri
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/clear-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/clear_transforms-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/clearm-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/close-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/context%3d-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/context-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/defnode-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/defvar-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/error-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/exists-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/get-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/insert-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/label-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/load%21-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/load-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/match-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/mv-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/open-c.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/open3-c.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/rename-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/rm-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/save%21-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/save-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/set%21-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/set-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/set_internal-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/setm-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/span-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/srun-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/text_retrieve-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/text_store-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/touch-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Augeas/transform-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Object/cdesc-Object.ri
+file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/Object/solaris%3f-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/ruby-augeas-$(COMPONENT_VERSION)/ri/cache.ri
 file path=$(VENDOR_GEM_DIR)/gems/ruby-augeas-$(COMPONENT_VERSION)/COPYING
 file path=$(VENDOR_GEM_DIR)/gems/ruby-augeas-$(COMPONENT_VERSION)/NEWS
@@ -105,8 +129,11 @@ file path=$(VENDOR_GEM_DIR)/gems/ruby-augeas-$(COMPONENT_VERSION)/tests/root/etc
 file path=$(VENDOR_GEM_DIR)/gems/ruby-augeas-$(COMPONENT_VERSION)/tests/root/etc/ssh/sshd_config
 file path=$(VENDOR_GEM_DIR)/gems/ruby-augeas-$(COMPONENT_VERSION)/tests/tc_augeas.rb
 file path=$(VENDOR_GEM_DIR)/specifications/ruby-augeas-$(COMPONENT_VERSION).gemspec
-file _augeas.so \
+file $(VENDOR_GEM_DIR)/extensions/$(MACH64)-solaris-$(SOLARIS_VERSION)/$(RUBY_LIB_VERSION)/ruby-augeas-$(COMPONENT_VERSION)/_augeas.so \
     path=$(VENDOR_RUBY)/extensions/$(MACH64)-solaris-$(SOLARIS_VERSION)/$(RUBY_LIB_VERSION)/ruby-augeas-$(COMPONENT_VERSION)/_augeas.so
-file gem.build_complete \
+file $(VENDOR_GEM_DIR)/extensions/$(MACH64)-solaris-$(SOLARIS_VERSION)/$(RUBY_LIB_VERSION)/ruby-augeas-$(COMPONENT_VERSION)/gem.build_complete \
     path=$(VENDOR_RUBY)/extensions/$(MACH64)-solaris-$(SOLARIS_VERSION)/$(RUBY_LIB_VERSION)/ruby-augeas-$(COMPONENT_VERSION)/gem.build_complete
 license ruby-augeas.license license=LGPLv2.1
+
+# force a dependency on ruby runtime
+depend type=require-any fmri=pkg:/runtime/ruby-$(RUBYV)

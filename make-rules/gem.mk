@@ -20,40 +20,29 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
 #
-GEM=/usr/ruby/$(RUBY_VERSION)/bin/gem
+GEM = /usr/ruby/$(RUBY_VERSION)/bin/gem
 
-VENDOR_GEM_DIR=usr/ruby/$(RUBY_VERSION)/lib/ruby/vendor_ruby/gems/$(RUBY_LIB_VERSION)
-PKG_MACROS += VENDOR_GEM_DIR=$(VENDOR_GEM_DIR)
+# Name of the gem spec to use (typically <component_name>.gemspec)
+GEMSPEC = $(COMPONENT_NAME).gemspec
 
-VENDOR_GEM_EXT_DIR=$(VENDOR_GEM_DIR)/extensions/$(MACH64)-solaris-$(SOLARIS_VERSION)/$(RUBY_LIB_VERSION)
-PKG_MACROS += VENDOR_GEM_EXT_DIR=$(VENDOR_GEM_EXT_DIR)
-
-# Name of the gem spec to use.  This will typically be
-# <component_name>.gemspec
-GEMSPEC=$(COMPONENT_NAME).gemspec
-
-
-# Some gems projects have to be built using rake
-# Allow GEM build/install commands to be overwritten
-# to account for possible differences
-GEM_BUILD_ACTION=(cd $(@D); $(GEM) build $(GEM_BUILD_ARGS) $(GEMSPEC))
+# Some gems projects have to be built using rake.  Allow GEM build/install
+# commands to be overwritten to account for possible differences.
+GEM_BUILD_ACTION = (cd $(@D); $(GEM) build $(GEM_BUILD_ARGS) $(GEMSPEC))
 
 # Build install args in a more readable fashion
-ifeq ($(firstword $(subst .,$(space),$(RUBY_VERSION))),2)
-# gem install 2.x does docs differently. Continue to generate both types
 GEM_INSTALL_ARGS += --document rdoc,ri
-endif
-
 GEM_INSTALL_ARGS += -V --local --force
 GEM_INSTALL_ARGS += --install-dir $(PROTO_DIR)/$(VENDOR_GEM_DIR)
 GEM_INSTALL_ARGS += --bindir $(PROTO_DIR)/$(VENDOR_GEM_DIR)/bin
 
 # cd into build directory
-# gem 2.2.3 uses .gem from the cwd ignoring command line .gem file
-# gem 1.8.23.2 uses command line .gem file OR .gem from cwd
 GEM_INSTALL_ACTION= (cd $(@D); $(GEM) install $(GEM_INSTALL_ARGS) $(COMPONENT_NAME))
+
+# Always copy files instead making symlinks. GEM does not handle symlinks.
+CLONEY = true
+COMPONENT_PRE_BUILD_ACTION += $(CP) -rp $(SOURCE_DIR)/* $(@D);
 
 
 $(BUILD_DIR)/%/.built:  $(SOURCE_DIR)/.prep

@@ -18,20 +18,16 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
-set name=pkg.fmri value=pkg:/runtime/ruby@$(COMPONENT_VERSION),$(BUILD_VERSION)
-set name=pkg.summary value="Ruby, RubyGems, and Rake"
-set name=pkg.description \
-    value="Metapackage that ensures at least one version of Ruby is installed"
-set name=info.classification \
-    value=org.opensolaris.category.2008:Development/Ruby
-set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2015/113 value=PSARC/2018/119
-set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-license ruby.license license=Oracle
+# Additional files from 'files' folder and directories
+file files/hiera.yaml path=etc/puppetlabs/puppet/hiera.yaml mode=0644 overlay=allow preserve=true
+file files/hiera.1 path=usr/share/man/man1/hiera.1
+dir path=var/lib/hiera
 
-# Any version of Ruby currently available
-depend type=require-any fmri=runtime/ruby-21 fmri=runtime/ruby-23 \
-    fmri=runtime/ruby-25
+# Link to hiera executable
+link path=usr/bin/hiera \
+    target=../ruby/$(RUBY_VERSION)/lib/ruby/vendor_ruby/gems/$(RUBY_LIB_VERSION)/gems/hiera-$(COMPONENT_VERSION)/bin/hiera

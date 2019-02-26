@@ -20,12 +20,13 @@
 #
 
 #
-# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
-RUBY_VERSION=2.1
-RUBY_LIB_VERSION=2.1.0
-RUBY_VERSIONS=2.1.0
+
+# Puppet and its modules are built to use the currently
+# supported version of Ruby runtime only.
+RUBY_VERSIONS = $(RUBY_PUPPET_VERSION)
 
 COMPONENT_NAME=		facter
 COMPONENT_VERSION=	2.5.1
@@ -44,10 +45,6 @@ TPNO=                   42024
 COMPONENT_POST_UNPACK_ACTION= \
     $(GEM) spec $(COMPONENT_ARCHIVE) --ruby > $(SOURCE_DIR)/$(GEMSPEC)
 
-# Copy files instead making symlinks. GEM does not handle symlinks.
-CLONEY = true
-COMPONENT_PRE_BUILD_ACTION += $(CP) -rp $(SOURCE_DIR)/* $(@D);
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/gem.mk
@@ -55,7 +52,6 @@ include $(WS_MAKE_RULES)/ruby.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-# common targets
 build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
@@ -68,5 +64,5 @@ test:		$(NO_TESTS)
 system-test:    $(NO_TESTS)
 
 
-REQUIRED_PACKAGES += runtime/ruby-21
+REQUIRED_PACKAGES += runtime/ruby-$(RUBY_PUPPET_NODOT_VERSION)
 REQUIRED_PACKAGES += system/core-os

@@ -159,55 +159,56 @@ ifneq ($(wildcard $(HISTORY)),)
 HISTORICAL_MANIFESTS = $(shell $(NAWK) -v FUNCTION=name -f $(GENERATE_HISTORY) < $(HISTORY))
 endif
 
+# Following section handles versioned component manifests
+#
+# NOPYTHON_MANIFESTS: Contains all manifests in the component directory which
+#   doesn't end with the PYVER or GENFRAG strings.
+# PY_MANIFESTS: Manifests with -PYVER string
+# PYV_MANIFESTS: Manifests with -PYVER replaced with all actual versions of Python
+# PYNV_MANIFESTS: Manifests from $(PY_MANIFESTS) with -PYVER string removed
+#
+# Other components (like perl, ruby and php) use the same mechanism,
+# just the variable names are different.
+
 # Look for manifests which need to be duplicated for each version of python.
 ifeq ($(findstring -PYVER,$(CANONICAL_MANIFESTS)),-PYVER)
-UNVERSIONED_MANIFESTS = $(filter-out %GENFRAG.p5m,$(filter-out %-PYVER.p5m,$(CANONICAL_MANIFESTS)))
+NOPYTHON_MANIFESTS = $(filter-out %GENFRAG.p5m,$(filter-out %-PYVER.p5m,$(CANONICAL_MANIFESTS)))
 PY_MANIFESTS = $(filter %-PYVER.p5m,$(CANONICAL_MANIFESTS))
-PYV_MANIFESTS = $(foreach v,$(shell echo $(PYTHON_VERSIONS) | tr -d .),$(shell echo $(PY_MANIFESTS) | sed -e 's/-PYVER.p5m/-$(v).p5m/g'))
+PYV_MANIFESTS = $(foreach v,$(shell echo $(PYTHON_VERSIONS) | tr -d .),\
+              $(shell echo $(PY_MANIFESTS) | sed -e 's/-PYVER.p5m/-$(v).p5m/g'))
 PYNV_MANIFESTS = $(shell echo $(PY_MANIFESTS) | sed -e 's/-PYVER//')
 else
-UNVERSIONED_MANIFESTS = $(CANONICAL_MANIFESTS)
+NOPYTHON_MANIFESTS = $(CANONICAL_MANIFESTS)
 endif
 
 # Look for manifests which need to be duplicated for each version of perl.
-ifeq ($(findstring -PERLVER,$(UNVERSIONED_MANIFESTS)),-PERLVER)
-NOPERL_MANIFESTS = $(filter-out %GENFRAG.p5m,$(filter-out %-PERLVER.p5m,$(UNVERSIONED_MANIFESTS)))
-PERL_MANIFESTS = $(filter %-PERLVER.p5m,$(UNVERSIONED_MANIFESTS))
-PERLV_MANIFESTS = $(foreach v,$(shell echo $(PERL_VERSIONS) | tr -d .),$(shell echo $(PERL_MANIFESTS) | sed -e 's/-PERLVER.p5m/-$(v).p5m/g'))
+ifeq ($(findstring -PERLVER,$(NOPYTHON_MANIFESTS)),-PERLVER)
+NOPERL_MANIFESTS = $(filter-out %GENFRAG.p5m,$(filter-out %-PERLVER.p5m,$(NOPYTHON_MANIFESTS)))
+PERL_MANIFESTS = $(filter %-PERLVER.p5m,$(NOPYTHON_MANIFESTS))
+PERLV_MANIFESTS = $(foreach v,$(shell echo $(PERL_VERSIONS) | tr -d .),\
+                $(shell echo $(PERL_MANIFESTS) | sed -e 's/-PERLVER.p5m/-$(v).p5m/g'))
 PERLNV_MANIFESTS = $(shell echo $(PERL_MANIFESTS) | sed -e 's/-PERLVER//')
 else
-NOPERL_MANIFESTS = $(UNVERSIONED_MANIFESTS)
+NOPERL_MANIFESTS = $(NOPYTHON_MANIFESTS)
 endif
 
 # Look for manifests which need to be duplicated for each version of ruby.
-# NOPERL_MANIFESTS represents the manifests that are not Python or
-# Perl manifests.  Extract the Ruby Manifests from NOPERL_MANIFESTS.
-# Any remaining manifests are stored in NONRUBY_MANIFESTS
 ifeq ($(findstring -RUBYVER,$(NOPERL_MANIFESTS)),-RUBYVER)
-NORUBY_MANIFESTS = $(filter-out %GENFRAG.p5m,\
-		   $(filter-out %-RUBYVER.p5m,$(NOPERL_MANIFESTS)))
+NORUBY_MANIFESTS = $(filter-out %GENFRAG.p5m,$(filter-out %-RUBYVER.p5m,$(NOPERL_MANIFESTS)))
 RUBY_MANIFESTS = $(filter %-RUBYVER.p5m,$(NOPERL_MANIFESTS))
-RUBYV_MANIFESTS = $(foreach v,$(shell echo $(RUBY_VERSIONS)),\
-                      $(shell echo $(RUBY_MANIFESTS) |\
-                      sed -e 's/-RUBYVER.p5m/-$(shell echo $(v) |\
-                      cut -d. -f1,2 | tr -d .).p5m/g'))
+RUBYV_MANIFESTS = $(foreach v,$(shell echo $(RUBY_VERSIONS) | tr -d .),\
+                $(shell echo $(RUBY_MANIFESTS) | sed -e 's/-RUBYVER.p5m/-$(v).p5m/g'))
 RUBYNV_MANIFESTS = $(shell echo $(RUBY_MANIFESTS) | sed -e 's/-RUBYVER//')
 else
 NORUBY_MANIFESTS = $(NOPERL_MANIFESTS)
 endif
 
 # Look for manifests which need to be duplicated for each version of PHP.
-# NORUBY_MANIFESTS represents the manifests that are not Python or
-# Perl or Ruby manifests.  Extract the PHP Manifests from NORUBY_MANIFESTS.
-# Any remaining manifests are stored in NOPHP_MANIFESTS
 ifeq ($(findstring -PHPVER,$(NORUBY_MANIFESTS)),-PHPVER)
-NOPHP_MANIFESTS = $(filter-out %GENFRAG.p5m,\
-		  $(filter-out %-PHPVER.p5m,$(NORUBY_MANIFESTS)))
+NOPHP_MANIFESTS = $(filter-out %GENFRAG.p5m,$(filter-out %-PHPVER.p5m,$(NORUBY_MANIFESTS)))
 PHP_MANIFESTS = $(filter %-PHPVER.p5m,$(NORUBY_MANIFESTS))
-PHPV_MANIFESTS = $(foreach v,$(shell echo $(PHP_VERSIONS)),\
-                      $(shell echo $(PHP_MANIFESTS) |\
-                      sed -e 's/-PHPVER.p5m/-$(shell echo $(v) |\
-                      cut -d. -f1,2 | tr -d .).p5m/g'))
+PHPV_MANIFESTS = $(foreach v,$(shell echo $(PHP_VERSIONS) | tr -d .),\
+               $(shell echo $(PHP_MANIFESTS) | sed -e 's/-PHPVER.p5m/-$(v).p5m/g'))
 PHPNV_MANIFESTS = $(shell echo $(PHP_MANIFESTS) | sed -e 's/-PHPVER//')
 else
 NOPHP_MANIFESTS = $(NORUBY_MANIFESTS)
@@ -358,23 +359,16 @@ $(MANIFEST_BASE)-%.p5m: %-PERLVER.p5m $(BUILD_DIR)/mkgeneric-perl
 # Creates build/manifest-*-modulename-##.p5m file where ## is replaced with
 # the version number.
 define ruby-manifest-rule
-$(MANIFEST_BASE)-%-$(shell echo $(1) | tr -d .).mogrified: \
-	PKG_MACROS += RUBY_VERSION=$(1) RUBY_LIB_VERSION=$(2) \
-	    RUBYV=$(subst .,,$(1))
-
-$(MANIFEST_BASE)-%-$(shell echo $(1) | tr -d .).p5m: %-RUBYVER.p5m
-	if [ -f $$*-$(shell echo $(1) | tr -d .)GENFRAG.p5m ]; then \
-		cat $$*-$(shell echo $(1) | tr -d .)GENFRAG.p5m >> $$@; \
-	fi
+$(MANIFEST_BASE)-%-$(2).p5m: %-RUBYVER.p5m
 	$(PKGFMT) $(PKGFMT_CHECK_ARGS) $(CANONICAL_MANIFESTS)
-	$(PKGMOGRIFY) -D RUBY_VERSION=$(1) -D RUBY_LIB_VERSION=$(2) \
-	    -D MAYBE_RUBY_VERSION_SPACE="$(1) " \
-	    -D MAYBE_SPACE_RUBY_VERSION=" $(1)" \
-	    -D RUBYV=$(shell echo $(1) | tr -d .) $$< > $$@
+	$(PKGMOGRIFY) -D RUBY_VERSION=$(1) -D RUBY_LIB_VERSION=$(1).0 \
+	    -D VENDOR_RUBY=usr/ruby/$(1)/lib/ruby/vendor_ruby/$(1).0 \
+	    -D VENDOR_GEM_DIR=usr/ruby/$(1)/lib/ruby/vendor_ruby/gems/$(1).0 \
+	    -D MAYBE_RUBYVER_SPACE="$(1) " -D MAYBE_SPACE_RUBYVER=" $(1)" \
+	    -D RUBYV=$(2) $$< > $$@
 endef
-$(foreach ver,$(RUBY_VERSIONS),\
-	$(eval $(call ruby-manifest-rule,$(shell echo $(ver) | \
-	    cut -d. -f1,2),$(ver))))
+$(foreach ver,$(RUBY_VERSIONS),$(eval \
+	$(call ruby-manifest-rule,$(ver),$(shell echo $(ver) | tr -d .))))
 
 # A rule to create a helper transform package for ruby, that will insert the
 # appropriate conditional dependencies into a ruby library's
@@ -382,19 +376,16 @@ $(foreach ver,$(RUBY_VERSIONS),\
 # corresponding version of ruby is on the system.
 $(BUILD_DIR)/mkgeneric-ruby: $(WS_MAKE_RULES)/shared-macros.mk
 	$(RM) $@
-	$(foreach ver,$(RUBY_VERSIONS),\
-		$(call mkgeneric,runtime/ruby,$(shell echo $(ver) | \
-		    cut -d. -f1,2 | tr -d .)))
+	$(foreach ver,$(shell echo $(RUBY_VERSIONS) | tr -d .), \
+		$(call mkgeneric,runtime/ruby,$(ver)))
 
 # Build Ruby version-wrapping manifests from the generic version.
-# Creates build/manifest-*-modulename.p5m file.
-#
 # See the block comment above about why "###PYV###" is used here even
 # though this is for Ruby rather than Python.
 $(MANIFEST_BASE)-%.p5m: %-RUBYVER.p5m $(BUILD_DIR)/mkgeneric-ruby
 	$(PKGFMT) $(PKGFMT_CHECK_ARGS) $(CANONICAL_MANIFESTS)
-	$(PKGMOGRIFY) -D RUBYV=###PYV### -D MAYBE_RUBY_VERSION_SPACE= \
-		-D MAYBE_SPACE_RUBY_VERSION= $(BUILD_DIR)/mkgeneric-ruby \
+	$(PKGMOGRIFY) -D RUBYV=###PYV### -D MAYBE_RUBYVER_SPACE= \
+		-D MAYBE_SPACE_RUBYVER= $(BUILD_DIR)/mkgeneric-ruby \
 		$(WS_TOP)/transforms/mkgeneric $< > $@
 	if [ -f $*-GENFRAG.p5m ]; then cat $*-GENFRAG.p5m >> $@; fi
 

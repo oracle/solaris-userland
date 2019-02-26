@@ -20,12 +20,13 @@
 #
 
 #
-# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
-RUBY_VERSION=2.1
-RUBY_LIB_VERSION=2.1.0
-RUBY_VERSIONS=2.1.0
+
+# Puppet and its modules are built to use the currently
+# supported version of Ruby runtime only.
+RUBY_VERSIONS = $(RUBY_PUPPET_VERSION)
 
 GIT_REPO= https://github.com/puppetlabs/puppet
 GIT_BRANCH= 5.5.0
@@ -48,8 +49,8 @@ include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/ruby.mk
 
 # puppet requires facter and hiera as part of the install phase
-FACTER_LIB=$(WS_TOP)/components/ruby/facter/build/$(MACH)/lib
-HIERA_LIB=$(WS_TOP)/components/ruby/hiera/build/$(MACH)/lib
+FACTER_LIB=$(WS_TOP)/components/ruby/facter/build/$(MACH)-$(RUBY_PUPPET_VERSION)/lib
+HIERA_LIB=$(WS_TOP)/components/ruby/hiera/build/$(MACH)-$(RUBY_PUPPET_VERSION)/lib
 COMPONENT_INSTALL_ENV	+= RUBYLIB="$(FACTER_LIB):$(HIERA_LIB)"
 
 ../facter/build/%/.installed:
@@ -71,8 +72,8 @@ clean::
 		cd ext; $(GMAKE) clean; $(RM) Makefile; \
 	fi
 
-$(BUILD_DIR)/puppet.conf: install
-	RUBYLIB=$(PROTO_DIR)/usr/ruby/$(RUBY_VERSION):$(PROTO_DIR)/$(VENDOR_RUBY) \
+$(BUILD_DIR)/puppet.conf: ext/PuppetAudit.so
+	RUBYLIB=$(PROTO_DIR)/usr/ruby/$(RUBY_VERSION):$(PROTO_DIR)/$(VENDOR_RUBY):$(COMPONENT_DIR)/ext \
 	  $(PROTO_DIR)/usr/sbin/puppet agent --genconfig > $@
 
 $(PROTOSVCMANIFESTDIR)/application/puppet.xml: $(BUILD_DIR)/puppet.conf
@@ -106,7 +107,9 @@ PKG_OPTIONS +=	-I $(BUILD_DIR)
 build::		$(BUILD_NO_ARCH)
 
 # make sure facter and hiera are installed first
-install:	../facter/build/$(MACH)/.installed ../hiera/build/$(MACH)/.installed $(INSTALL_NO_ARCH) ext/PuppetAudit.so $(PROTOSVCMANIFESTDIR)/application/puppet.xml
+install:	../facter/build/$(MACH)-$(RUBY_PUPPET_VERSION)/.installed \
+			../hiera/build/$(MACH)-$(RUBY_PUPPET_VERSION)/.installed \
+			$(INSTALL_NO_ARCH) ext/PuppetAudit.so $(PROTOSVCMANIFESTDIR)/application/puppet.xml
 
 # puppet requires the installation of the following rubygems to run
 # the unittests:  rspec rspec-expectations mocha rack rgen
@@ -115,7 +118,7 @@ test:		$(NO_TESTS)
 
 system-test:    $(NO_TESTS)
 
-REQUIRED_PACKAGES += runtime/ruby-21
+REQUIRED_PACKAGES += runtime/ruby-$(RUBY_PUPPET_NODOT_VERSION)
 REQUIRED_PACKAGES += library/ruby/hiera
 REQUIRED_PACKAGES += system/management/facter
 REQUIRED_PACKAGES += shell/ksh93
@@ -124,14 +127,3 @@ REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/network
-
-# This is a convenience method for the package maintainer
-new-files:
-	    $(PKGSEND) generate $(PROTO_DIR) | \
-		$(GSED) -e 's|group=.*||' -e s'|^file |file path=|' | \
-		$(CAT) *.p5m - | $(PKGFMT) -u |\
-		$(GSED) \
-		  -e '/~[0-9]\+~$$/d' \
-		  -e 's|$(VENDOR_RUBY)|$$(VENDOR_RUBY)|' | \
-		sort | uniq -c | \
-		$(GSED) -e '/ 2 /d' -e 's/   1 //' -e '/^file/!d'

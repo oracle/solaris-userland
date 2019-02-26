@@ -20,15 +20,17 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
+
+# Puppet and its modules are built to use the currently
+# supported version of Ruby runtime only.
+RUBY_VERSIONS = $(RUBY_PUPPET_VERSION)
+
 include $(WS_MAKE_RULES)/shared-targets.mk
 include $(WS_MAKE_RULES)/ruby.mk
 
-RUBY_VERSION=       2.1
-RUBY_LIB_VERSION=   2.1.0
-RUBY_VERSIONS=      2.1.0
 PATCH_EACH_ARCHIVE = 1
 
 PKG_MACROS += PLUGIN_PATH=usr/share/mcollective/mcollective/
@@ -102,7 +104,6 @@ INSTALL_RB_MANDIR_OPTION =
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-# common targets
 build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
@@ -112,7 +113,7 @@ test:		$(NO_TESTS)
 system-test:    $(NO_TESTS)
 
 
-REQUIRED_PACKAGES += runtime/ruby-21
+REQUIRED_PACKAGES += runtime/ruby-$(RUBY_PUPPET_NODOT_VERSION)
 REQUIRED_PACKAGES += system/core-os
 
 #COMP_SUFFIXES from ips.mk

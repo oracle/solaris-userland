@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
@@ -51,7 +51,9 @@ file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/Connection
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/Error.html
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/Error/BrokerException.html
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/Error/ConnectReadTimeout.html
+file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/Error/DestinationRequired.html
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/Error/DuplicateSubscription.html
+file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/Error/HandShakeDetectedError.html
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/Error/InvalidFormat.html
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/Error/InvalidHeartBeatHeaderError.html
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/Error/InvalidMessageLength.html
@@ -62,6 +64,7 @@ file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/Error/MaxR
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/Error/MessageIDRequiredError.html
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/Error/NilMessageError.html
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/Error/NoCurrentConnection.html
+file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/Error/NoListenerGiven.html
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/Error/PacketParsingTimeout.html
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/Error/ProducerFlowControlException.html
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/Error/ProtocolError11p.html
@@ -90,7 +93,8 @@ file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/Message.ht
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/NullLogger.html
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/SSLParams.html
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/Stomp/Version.html
-file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/fonts.css
+file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/css/fonts.css
+file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/css/rdoc.css
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/fonts/Lato-Light.ttf
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/fonts/Lato-LightItalic.ttf
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/fonts/Lato-Regular.ttf
@@ -129,7 +133,6 @@ file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/js/navigation.js
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/js/search.js
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/js/search_index.js
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/js/searcher.js
-file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/rdoc.css
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/rdoc/table_of_contents.html
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Hash/cdesc-Hash.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Hash/symbolize_keys-i.ri
@@ -216,12 +219,14 @@ file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Connection/_
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Connection/_decodeHeaders-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Connection/_dump_callstack-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Connection/_dump_ctx-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Connection/_dump_threads-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Connection/_encodeHeaders-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Connection/_expand_hosts-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Connection/_hdup-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Connection/_headerCheck-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Connection/_init_heartbeats-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Connection/_init_line_read-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Connection/_interruptible_gets-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Connection/_is_ready%3f-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Connection/_normalize_line_end-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Connection/_post_connect-i.ri
@@ -296,8 +301,12 @@ file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/Broker
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/BrokerException/receipt_id-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/ConnectReadTimeout/cdesc-ConnectReadTimeout.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/ConnectReadTimeout/message-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/DestinationRequired/cdesc-DestinationRequired.ri
+file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/DestinationRequired/message-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/DuplicateSubscription/cdesc-DuplicateSubscription.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/DuplicateSubscription/message-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/HandShakeDetectedError/cdesc-HandShakeDetectedError.ri
+file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/HandShakeDetectedError/message-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/InvalidFormat/cdesc-InvalidFormat.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/InvalidFormat/message-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/InvalidHeartBeatHeaderError/cdesc-InvalidHeartBeatHeaderError.ri
@@ -317,6 +326,8 @@ file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/NilMes
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/NilMessageError/message-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/NoCurrentConnection/cdesc-NoCurrentConnection.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/NoCurrentConnection/message-i.ri
+file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/NoListenerGiven/cdesc-NoListenerGiven.ri
+file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/NoListenerGiven/message-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/PacketParsingTimeout/cdesc-PacketParsingTimeout.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/PacketParsingTimeout/message-i.ri
 file path=$(VENDOR_GEM_DIR)/doc/stomp-$(COMPONENT_VERSION)/ri/Stomp/Error/ProducerFlowControlException/cdesc-ProducerFlowControlException.ri
@@ -434,6 +445,9 @@ file path=$(VENDOR_GEM_DIR)/gems/stomp-$(COMPONENT_VERSION)/adhoc/stomp_adhoc_co
 file path=$(VENDOR_GEM_DIR)/gems/stomp-$(COMPONENT_VERSION)/bin/catstomp
 file path=$(VENDOR_GEM_DIR)/gems/stomp-$(COMPONENT_VERSION)/bin/stompcat
 file path=$(VENDOR_GEM_DIR)/gems/stomp-$(COMPONENT_VERSION)/examples/amqdurasub.rb
+file path=$(VENDOR_GEM_DIR)/gems/stomp-$(COMPONENT_VERSION)/examples/artemis/artlogger.rb
+file path=$(VENDOR_GEM_DIR)/gems/stomp-$(COMPONENT_VERSION)/examples/artemis/cliwaiter_not_reliable.rb
+file path=$(VENDOR_GEM_DIR)/gems/stomp-$(COMPONENT_VERSION)/examples/artemis/cliwaiter_reliable.rb
 file path=$(VENDOR_GEM_DIR)/gems/stomp-$(COMPONENT_VERSION)/examples/client11_ex1.rb
 file path=$(VENDOR_GEM_DIR)/gems/stomp-$(COMPONENT_VERSION)/examples/client11_putget1.rb
 file path=$(VENDOR_GEM_DIR)/gems/stomp-$(COMPONENT_VERSION)/examples/conn11_ex1.rb
@@ -494,6 +508,7 @@ file path=$(VENDOR_GEM_DIR)/gems/stomp-$(COMPONENT_VERSION)/spec/message_spec.rb
 file path=$(VENDOR_GEM_DIR)/gems/stomp-$(COMPONENT_VERSION)/spec/spec_helper.rb
 file path=$(VENDOR_GEM_DIR)/gems/stomp-$(COMPONENT_VERSION)/stomp.gemspec
 file path=$(VENDOR_GEM_DIR)/gems/stomp-$(COMPONENT_VERSION)/test/.gitignore
+file path=$(VENDOR_GEM_DIR)/gems/stomp-$(COMPONENT_VERSION)/test/MultiBrokerUnitTestExample.sh
 file path=$(VENDOR_GEM_DIR)/gems/stomp-$(COMPONENT_VERSION)/test/funcs.sh
 file path=$(VENDOR_GEM_DIR)/gems/stomp-$(COMPONENT_VERSION)/test/test_anonymous.rb
 file path=$(VENDOR_GEM_DIR)/gems/stomp-$(COMPONENT_VERSION)/test/test_client.rb
@@ -510,4 +525,4 @@ file path=$(VENDOR_GEM_DIR)/specifications/stomp-$(COMPONENT_VERSION).gemspec
 license stomp.license license="Apache v2.0"
 
 # force a dependency on ruby runtime
-depend type=require-any fmri=pkg:/runtime/ruby-21
+depend type=require-any fmri=pkg:/runtime/ruby-$(RUBYV)
