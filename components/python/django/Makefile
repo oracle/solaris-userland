@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Django
-COMPONENT_VERSION=	1.11.16
+COMPONENT_VERSION=	1.11.20
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:29268cc47816a44f27308e60f71da635f549c47d8a1d003b28de55141df75791
+    sha256:43a99da08fee329480d27860d68279945b7d8bf7b537388ee2c8938c709b2041
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.djangoproject.com/
 COMPONENT_BUGDB=	python-mod/django
 COMPONENT_ANITYA_ID=	3828
 
-TPNO=			46336
+TPNO=			49824
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -91,5 +91,6 @@ COMPONENT_TEST_TRANSFORMS += \
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
+REQUIRED_PACKAGES += library/python/mock-27
 REQUIRED_PACKAGES += library/python/setuptools-27
 REQUIRED_PACKAGES += text/gnu-gettext

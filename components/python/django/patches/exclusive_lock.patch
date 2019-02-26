@@ -1,0 +1,16 @@
+Solaris fcntl() returns 'Bad file number' when an exclusive lock is requested
+on non-writable file.
+
+This is a Solaris specific patch.
+
+--- a/django/test/testcases.py	2019-03-27 13:14:20.757690981 +0100
++++ a/django/test/testcases.py	2019-03-27 11:06:34.553586680 +0100
+@@ -1398,7 +1398,7 @@
+             raise ValueError(
+                 "{}.lockfile isn't set. Set it to a unique value "
+                 "in the base class.".format(cls.__name__))
+-        cls._lockfile = open(cls.lockfile)
++        cls._lockfile = open(cls.lockfile, 'r+')
+         locks.lock(cls._lockfile, locks.LOCK_EX)
+         super(SerializeMixin, cls).setUpClass()
+ 
