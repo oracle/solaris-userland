@@ -1,0 +1,386 @@
+Backport from upstream git master to Xorg 1.19 of:
+ https://gitlab.freedesktop.org/xorg/xserver/merge_requests/126
+
+in order to fix:
+ Bug 29397885 Mouse stuck and Xorg crashes when run as guest in VMWare
+
+From 30d8b788134427fa336660f86a5266117ce09972 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Thu, 21 Feb 2019 14:51:22 -0800
+Subject: [PATCH xserver 1/4] os-support/solaris: Drop ExtendedEnabled global
+ variable
+
+Keeping track of kernel state in user space doesn't buy us anything,
+and introduces bugs, as we were keeping global state but the Solaris
+kernel tracks IOPL per thread.
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ hw/xfree86/os-support/solaris/sun_vid.c | 13 -------------
+ 1 file changed, 13 deletions(-)
+
+diff --git a/hw/xfree86/os-support/solaris/sun_vid.c b/hw/xfree86/os-support/solaris/sun_vid.c
+index 25f76181c..9601d039b 100644
+--- a/hw/xfree86/os-support/solaris/sun_vid.c
++++ b/hw/xfree86/os-support/solaris/sun_vid.c
+@@ -73,22 +73,14 @@ xf86OSInitVidMem(VidMemInfoPtr pVidMem)
+ /* I/O Permissions section						   */
+ /***************************************************************************/
+ 
+-#if defined(__i386__) || defined(__i386) || defined(__x86)
+-static Bool ExtendedEnabled = FALSE;
+-#endif
+-
+ Bool
+ xf86EnableIO(void)
+ {
+ #if defined(__i386__) || defined(__i386) || defined(__x86)
+-    if (ExtendedEnabled)
+-        return TRUE;
+-
+     if (sysi86(SI86V86, V86SC_IOPL, PS_IOPL) < 0) {
+         xf86Msg(X_WARNING, "xf86EnableIOPorts: Failed to set IOPL for I/O\n");
+         return FALSE;
+     }
+-    ExtendedEnabled = TRUE;
+ #endif                          /* i386 */
+     return TRUE;
+ }
+@@ -97,12 +89,7 @@ void
+ xf86DisableIO(void)
+ {
+ #if defined(__i386__) || defined(__i386) || defined(__x86)
+-    if (!ExtendedEnabled)
+-        return;
+-
+     if (sysi86(SI86V86, V86SC_IOPL, 0) < 0)
+         xf86Msg(X_WARNING, "xf86DisableIOPorts: Failed to set IOPL for I/O\n");
+-    else
+-        ExtendedEnabled = FALSE;
+ #endif                          /* i386 */
+ }
+
+From 360cc0acdd0784522cb23799970c75eaf00bfe9b Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Thu, 21 Feb 2019 15:22:57 -0800
+Subject: [PATCH xserver 2/4] Add ddxInputThread call from os layer into ddx
+ layer
+
+Allows ddx's to run additional code as necessary to set up the
+input thread.
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ hw/dmx/dmxinit.c             | 9 +++++++++
+ hw/kdrive/ephyr/ephyrinit.c  | 9 +++++++++
+ hw/vfb/InitOutput.c          | 9 +++++++++
+ hw/xfree86/common/xf86Init.c | 9 +++++++++
+ hw/xnest/Init.c              | 9 +++++++++
+ hw/xwayland/xwayland.c       | 9 +++++++++
+ hw/xwin/InitOutput.c         | 9 +++++++++
+ include/os.h                 | 2 ++
+ os/inputthread.c             | 2 ++
+ 9 files changed, 67 insertions(+)
+
+diff --git a/hw/dmx/dmxinit.c b/hw/dmx/dmxinit.c
+index 4fef30273..f80e58666 100644
+--- a/hw/dmx/dmxinit.c
++++ b/hw/dmx/dmxinit.c
+@@ -830,6 +830,15 @@ ddxBeforeReset(void)
+ }
+ #endif
+ 
++#if INPUTTHREAD
++/** This function is called in Xserver/os/inputthread.c when starting
++    the input thread. */
++void
++ddxInputThreadInit(void)
++{
++}
++#endif
++
+ /** This function is called in Xserver/os/osinit.c from \a OsInit(). */
+ void
+ OsVendorInit(void)
+diff --git a/hw/kdrive/ephyr/ephyrinit.c b/hw/kdrive/ephyr/ephyrinit.c
+index abc35dfca..47bd97ade 100644
+--- a/hw/kdrive/ephyr/ephyrinit.c
++++ b/hw/kdrive/ephyr/ephyrinit.c
+@@ -100,6 +100,15 @@ CloseInput(void)
+     KdCloseInput();
+ }
+ 
++#if INPUTTHREAD
++/** This function is called in Xserver/os/inputthread.c when starting
++    the input thread. */
++void
++ddxInputThreadInit(void)
++{
++}
++#endif
++
+ #ifdef DDXBEFORERESET
+ void
+ ddxBeforeReset(void)
+diff --git a/hw/vfb/InitOutput.c b/hw/vfb/InitOutput.c
+index be26467ea..240903b8e 100644
+--- a/hw/vfb/InitOutput.c
++++ b/hw/vfb/InitOutput.c
+@@ -226,6 +226,15 @@ ddxBeforeReset(void)
+ }
+ #endif
+ 
++#if INPUTTHREAD
++/** This function is called in Xserver/os/inputthread.c when starting
++    the input thread. */
++void
++ddxInputThreadInit(void)
++{
++}
++#endif
++
+ void
+ ddxUseMsg(void)
+ {
+diff --git a/hw/xfree86/common/xf86Init.c b/hw/xfree86/common/xf86Init.c
+index b148e1320..9e666643e 100644
+--- a/hw/xfree86/common/xf86Init.c
++++ b/hw/xfree86/common/xf86Init.c
+@@ -1340,3 +1340,12 @@ ddxBeforeReset(void)
+ {
+ }
+ #endif
++
++#if INPUTTHREAD
++/** This function is called in Xserver/os/inputthread.c when starting
++    the input thread. */
++void
++ddxInputThreadInit(void)
++{
++}
++#endif
+diff --git a/hw/xnest/Init.c b/hw/xnest/Init.c
+index 8edf03372..cd4ee61f9 100644
+--- a/hw/xnest/Init.c
++++ b/hw/xnest/Init.c
+@@ -159,3 +159,12 @@ ddxBeforeReset(void)
+     return;
+ }
+ #endif
++
++#if INPUTTHREAD
++/** This function is called in Xserver/os/inputthread.c when starting
++    the input thread. */
++void
++ddxInputThreadInit(void)
++{
++}
++#endif
+diff --git a/hw/xwayland/xwayland.c b/hw/xwayland/xwayland.c
+index 289683b6e..739f86cf1 100644
+--- a/hw/xwayland/xwayland.c
++++ b/hw/xwayland/xwayland.c
+@@ -66,6 +66,15 @@ ddxBeforeReset(void)
+ {
+     return;
+ }
++#endif
++
++#if INPUTTHREAD
++/** This function is called in Xserver/os/inputthread.c when starting
++    the input thread. */
++void
++ddxInputThreadInit(void)
++{
++}
+ #endif
+ 
+  _X_NORETURN
+diff --git a/hw/xwin/InitOutput.c b/hw/xwin/InitOutput.c
+index 98385a8c4..796b567d1 100644
+--- a/hw/xwin/InitOutput.c
++++ b/hw/xwin/InitOutput.c
+@@ -151,6 +151,15 @@ ddxBeforeReset(void)
+ }
+ #endif
+ 
++#if INPUTTHREAD
++/** This function is called in Xserver/os/inputthread.c when starting
++    the input thread. */
++void
++ddxInputThreadInit(void)
++{
++}
++#endif
++
+ int
+ main(int argc, char *argv[], char *envp[])
+ {
+diff --git a/include/os.h b/include/os.h
+index 553126734..a1835cd6a 100644
+--- a/include/os.h
++++ b/include/os.h
+@@ -559,6 +559,8 @@ enum ExitCode {
+ 
+ extern _X_EXPORT void
+ ddxGiveUp(enum ExitCode error);
++extern _X_EXPORT void
++ddxInputThreadInit(void);
+ extern _X_EXPORT int
+ TimeSinceLastInputEvent(void);
+ 
+diff --git a/os/inputthread.c b/os/inputthread.c
+index 97e59d21f..e6694afda 100644
+--- a/os/inputthread.c
++++ b/os/inputthread.c
+@@ -318,6 +318,8 @@ InputThreadDoWork(void *arg)
+     sigfillset(&set);
+     pthread_sigmask(SIG_BLOCK, &set, NULL);
+ 
++    ddxInputThreadInit();
++
+     inputThreadInfo->running = TRUE;
+ 
+ #if defined(HAVE_PTHREAD_SETNAME_NP_WITH_TID)
+-- 
+2.15.2
+
+From cfecf82a8761f28493d66955298cb64ac8539424 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Thu, 21 Feb 2019 15:35:38 -0800
+Subject: [PATCH xserver 3/4] Add xf86OSInputThreadInit call from common layer
+ into os-support layer
+
+Allows os backends to run additional code as necessary to set up the
+input thread.
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ hw/xfree86/common/xf86Init.c            | 1 +
+ hw/xfree86/os-support/bsd/bsd_init.c    | 6 ++++++
+ hw/xfree86/os-support/hurd/hurd_init.c  | 6 ++++++
+ hw/xfree86/os-support/linux/lnx_init.c  | 6 ++++++
+ hw/xfree86/os-support/solaris/sun_vid.c | 6 ++++++
+ hw/xfree86/os-support/xf86_OSproc.h     | 1 +
+ 6 files changed, 26 insertions(+)
+
+diff --git a/hw/xfree86/common/xf86Init.c b/hw/xfree86/common/xf86Init.c
+index 9e666643e..7d53987cb 100644
+--- a/hw/xfree86/common/xf86Init.c
++++ b/hw/xfree86/common/xf86Init.c
+@@ -1347,5 +1347,6 @@ ddxBeforeReset(void)
+ void
+ ddxInputThreadInit(void)
+ {
++    xf86OSInputThreadInit();
+ }
+ #endif
+diff --git a/hw/xfree86/os-support/bsd/bsd_init.c b/hw/xfree86/os-support/bsd/bsd_init.c
+index 75a719fc2..2cd2b57c7 100644
+--- a/hw/xfree86/os-support/bsd/bsd_init.c
++++ b/hw/xfree86/os-support/bsd/bsd_init.c
+@@ -661,3 +661,9 @@ xf86UseMsg()
+     ErrorF("don't detach controlling tty (for debugging only)\n");
+     return;
+ }
++
++void
++xf86OSInputThreadInit()
++{
++    return;
++}
+diff --git a/hw/xfree86/os-support/hurd/hurd_init.c b/hw/xfree86/os-support/hurd/hurd_init.c
+index fe1a76413..ee8fe92c0 100644
+--- a/hw/xfree86/os-support/hurd/hurd_init.c
++++ b/hw/xfree86/os-support/hurd/hurd_init.c
+@@ -87,3 +87,9 @@ xf86CloseConsole()
+     close(xf86Info.consoleFd);
+     return;
+ }
++
++void
++xf86OSInputThreadInit()
++{
++    return;
++}
+diff --git a/hw/xfree86/os-support/linux/lnx_init.c b/hw/xfree86/os-support/linux/lnx_init.c
+index 358d89f0f..9ef6a39b5 100644
+--- a/hw/xfree86/os-support/linux/lnx_init.c
++++ b/hw/xfree86/os-support/linux/lnx_init.c
+@@ -407,3 +407,9 @@ xf86UseMsg(void)
+     ErrorF("don't detach controlling tty (for debugging only)\n");
+     ErrorF("-masterfd <fd>         use the specified fd as the DRM master fd (not if setuid/gid)\n");
+ }
++
++void
++xf86OSInputThreadInit()
++{
++    return;
++}
+diff --git a/hw/xfree86/os-support/solaris/sun_vid.c b/hw/xfree86/os-support/solaris/sun_vid.c
+index 9601d039b..553010cc1 100644
+--- a/hw/xfree86/os-support/solaris/sun_vid.c
++++ b/hw/xfree86/os-support/solaris/sun_vid.c
+@@ -73,6 +73,12 @@ xf86OSInitVidMem(VidMemInfoPtr pVidMem)
+ /* I/O Permissions section						   */
+ /***************************************************************************/
+ 
++void
++xf86OSInputThreadInit()
++{
++    return;
++}
++
+ Bool
+ xf86EnableIO(void)
+ {
+diff --git a/hw/xfree86/os-support/xf86_OSproc.h b/hw/xfree86/os-support/xf86_OSproc.h
+index 42ef16aba..c6a201aea 100644
+--- a/hw/xfree86/os-support/xf86_OSproc.h
++++ b/hw/xfree86/os-support/xf86_OSproc.h
+@@ -136,6 +136,7 @@ extern _X_EXPORT int xf86GetSerialModemState(int fd);
+ extern _X_EXPORT int xf86SerialModemSetBits(int fd, int bits);
+ extern _X_EXPORT int xf86SerialModemClearBits(int fd, int bits);
+ extern _X_EXPORT int xf86LoadKernelModule(const char *pathname);
++extern _X_EXPORT void xf86OSInputThreadInit(void);
+ 
+ /* AGP GART interface */
+ 
+-- 
+2.15.2
+
+From 6fed30515d7afd28cbfdcad817a5e8c46d4b1b8a Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Thu, 21 Feb 2019 15:38:07 -0800
+Subject: [PATCH xserver 4/4] os-support/solaris: Set IOPL for input thread too
+
+Since the Solaris kernel tracks IOPL per thread, and doesn't inherit
+raised IOPL levels when creating a new thread, we need to turn it on
+in the input thread for input drivers like vmmouse that need register
+access to work correctly.
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ hw/xfree86/os-support/solaris/sun_vid.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/hw/xfree86/os-support/solaris/sun_vid.c b/hw/xfree86/os-support/solaris/sun_vid.c
+index 553010cc1..edb0a1172 100644
+--- a/hw/xfree86/os-support/solaris/sun_vid.c
++++ b/hw/xfree86/os-support/solaris/sun_vid.c
+@@ -76,7 +76,11 @@ xf86OSInitVidMem(VidMemInfoPtr pVidMem)
+ void
+ xf86OSInputThreadInit()
+ {
+-    return;
++    /*
++     * Need to enable in input thread as well, as Solaris kernel tracks
++     * IOPL per-thread and doesn't inherit when creating a new thread.
++     */
++    xf86EnableIO();
+ }
+ 
+ Bool
+-- 
+2.15.2
+
