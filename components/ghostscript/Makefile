@@ -94,14 +94,14 @@ $(GS_VARIANT)/.configured: COMPONENT_PRE_CONFIGURE_ACTION = \
 
 $(GS_VARIANT)/.installed: COMPONENT_INSTALL_TARGETS += \
 	install-exec install-so install-scripts install-data \
-	install-contrib-extras
+	install-contrib-extras install-cups
 
 $(GS_VARIANT_64)/.configured: COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
 
 $(GS_VARIANT_64)/.installed: COMPONENT_INSTALL_TARGETS += \
 	install-exec install-so install-scripts install-data \
-	install-contrib-extras
+	install-contrib-extras install-cups
 
 $(IJS_VARIANT)/.configured: COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR)/ijs $(@D); \
@@ -145,5 +145,6 @@ REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/toolkit/libxt

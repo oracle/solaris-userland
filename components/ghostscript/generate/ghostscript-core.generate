@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Do not add 32 bit executables
@@ -28,3 +28,16 @@
 
 # gsx is shipped in as a separate package
 <transform file path=usr/bin/gsx -> drop>
+
+# set mode of gstopxl and gstoraster files
+<transform file path=usr/lib/cups/filter/gstopxl -> set mode 0555>
+<transform file path=usr/lib/cups/filter/gstoraster -> set mode 0555>
+
+# add compatibility links
+<transform file path=usr/lib/cups/filter/gstopxl -> \
+	emit link path=usr/lib/cups/filter/pstopxl target=gstopxl>
+<transform file path=usr/lib/cups/filter/gstoraster -> \
+	emit link path=usr/lib/cups/filter/pstoraster target=gstoraster>
+
+<transform file path=etc/cups/gstoraster.convs -> \
+	emit link path=etc/cups/pstoraster.convs target=gstoraster.convs>
