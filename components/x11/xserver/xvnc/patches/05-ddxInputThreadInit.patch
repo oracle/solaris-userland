@@ -1,0 +1,24 @@
+Adapt Xvnc to work with the ddxInputThreadInit API from
+ https://gitlab.freedesktop.org/xorg/xserver/merge_requests/126
+
+that we brought in as ../xorg/patches/35-input-thread-iopl.patch order to fix:
+ Bug 29397885 Mouse stuck and Xorg crashes when run as guest in VMWare
+
+--- tigervnc-1.9.0/unix/xserver/hw/vnc/xvnc.c
++++ tigervnc-1.9.0/unix/xserver/hw/vnc/xvnc.c
+@@ -294,6 +294,15 @@ void ddxBeforeReset(void)
+ }
+ #endif
+ 
++#if INPUTTHREAD
++/** This function is called in Xserver/os/inputthread.c when starting
++    the input thread. */
++void
++ddxInputThreadInit(void)
++{
++}
++#endif
++
+ void ddxUseMsg(void)
+ {
+     vncPrintBanner();
