@@ -1,0 +1,24 @@
+Python 37 build is sometimes getting stuck in pgo test stage during the asyncio
+tests. This patch removes test_asyncio from the pgo run.
+
+This is Solaris specific workaround and not intended for upstream.
+
+Also, the issue should be investigated and fixed properly (Bug: 29359884).
+
+--- Python-3.7.1/Lib/test/test_asyncio/__init__.py
++++ Python-3.7.1/Lib/test/test_asyncio/__init__.py
+@@ -1,8 +1,14 @@
+ import os
++import unittest
++
++from test import support
+ from test.support import load_package_tests, import_module
+ 
+ # Skip tests if we don't have concurrent.futures.
+ import_module('concurrent.futures')
+ 
++if support.PGO:
++    raise unittest.SkipTest("This test causes occasional freezes during the build on Solaris")
++
+ def load_tests(*args):
+     return load_package_tests(os.path.dirname(__file__), *args)
