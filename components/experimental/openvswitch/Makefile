@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # parfait fails to compile us (22221056)
@@ -85,5 +85,6 @@ REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library/datalink
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/network

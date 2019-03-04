@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
@@ -41,4 +41,5 @@ LDFLAGS += -ldevinfo -lm
 
 COMPONENT_INSTALL_ARGS += pkgconfigdir="$(DESTDIR)/usr/share/pkgconfig"
 
+REQUIRED_PACKAGES += system/library/devinfo
 REQUIRED_PACKAGES += system/library/math

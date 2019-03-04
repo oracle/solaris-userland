@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64_and_32
@@ -211,6 +211,7 @@ REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library/ldap
 REQUIRED_PACKAGES += system/library/security/libsasl2
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/network/ldap/openldap

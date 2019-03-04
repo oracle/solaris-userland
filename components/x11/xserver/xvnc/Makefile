@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2007, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2007, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
@@ -180,6 +180,7 @@ REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/library/security/crypto
 REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/font-utilities

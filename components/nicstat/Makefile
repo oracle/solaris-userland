@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -48,3 +48,5 @@ PATCH_LEVEL =		0
 
 # Just get stuff from the build directory.
 PKG_PROTO_DIRS += $(BUILD_DIR_64)
+
+REQUIRED_PACKAGES += system/library/datalink

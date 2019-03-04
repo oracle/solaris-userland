@@ -64,12 +64,24 @@ $(WS_MACH)/depends.mk:     $(WS_MACH)/components.mk
 # remove whitespace from lines, drop empty lines, and REQUIRED_PACKAGES +=
 # to the lines.  Pass that through sort -u
 #
+# NOTE: the grep -v is due to package reorganisation within ON and is
+# needed until the Userland build starts to use the Solaris build with
+# the ON changes. Once that is done this comment and the grep -v lines
+# can be removed.
+#
 $(WS_MACH)/requires.mk:	$(WS_MACH)
 	@echo "Generating list of required packages to build consolidation..."
 	@$(GMAKE) component-hook \
 		COMPONENT_HOOK='@echo $$(REQUIRED_PACKAGES:%="%\\n")' | \
 		$(GSED) -e '/\S\s\S/d' -e 's/^ //g' -e '/^\s*$$/d' \
 		    -e 's/^/REQUIRED_PACKAGES += /' | \
+		grep -v ' system/device-allocation$$' | \
+		grep -v ' system/library/datalink$$' | \
+		grep -v ' system/library/devinfo$$' | \
+		grep -v ' system/library/ldap$$' | \
+		grep -v ' system/library/libc$$' | \
+		grep -v ' system/library/pam-core$$' | \
+		grep -v ' system/library/smf$$' | \
 		sort -u >$(@)
 
 system-check::	$(WS_MACH)/requires.mk

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -228,5 +228,6 @@ REQUIRED_PACKAGES += runtime/tcl-8
 REQUIRED_PACKAGES += runtime/tk-8
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library/datalink
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11

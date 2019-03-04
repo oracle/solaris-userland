@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
@@ -62,6 +62,7 @@ COMPONENT_POST_INSTALL_ACTION += \
 	$(CP) $(PROTO_DIR)/etc/X11/xdm/X* $(PROTO_DIR)/usr/lib/X11/xdm/; \
 	$(CP) $(PROTO_DIR)/etc/X11/xdm/xdm-config $(PROTO_DIR)/usr/lib/X11/xdm/;
 
+REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxau
 REQUIRED_PACKAGES += x11/library/libxdmcp

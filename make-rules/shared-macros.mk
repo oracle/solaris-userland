@@ -26,7 +26,7 @@
 .PHONY: void
 void:
 	@echo "Must specify target: prep, build, install, publish, test, etc."
-	@echo "See $(WS_TOP)/makefile-targets.txt for more info."
+	@echo "See $(WS_TOP)/doc/makefile-targets.txt for more info."
 
 PATH=/usr/bin:/usr/gnu/bin
 
@@ -1414,6 +1414,7 @@ REQUIRED_PACKAGES += security/sudo
 # Only a default dependency if component being built produces binaries.
 ifneq ($(strip $(BUILD_BITS)),NO_ARCH)
 REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 endif
 
 include $(WS_MAKE_RULES)/environment.mk

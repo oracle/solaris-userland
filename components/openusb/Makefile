@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -53,6 +53,7 @@ COMPONENT_POST_BUILD_ACTION = \
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += system/hal
 REQUIRED_PACKAGES += system/io/usb
+REQUIRED_PACKAGES += system/library/devinfo
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/libdbus-glib

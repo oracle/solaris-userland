@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=64
@@ -162,6 +162,7 @@ REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/perl-5/xml-parser
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += x11/library/libglu
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxext

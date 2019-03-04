@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 		64
 # All components using gobject-introspection must be built with gcc as
@@ -99,7 +99,9 @@ REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/io/audio
 REQUIRED_PACKAGES += system/library/accountsservice
 REQUIRED_PACKAGES += system/library/dbus
+REQUIRED_PACKAGES += system/library/devinfo
 REQUIRED_PACKAGES += system/library/fontconfig
+REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += terminal/xterm
 REQUIRED_PACKAGES += x11/keyboard/xkb-utilities
 REQUIRED_PACKAGES += x11/library/libx11

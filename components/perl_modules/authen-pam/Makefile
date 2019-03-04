@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -68,3 +68,5 @@ test:
 realtest:	$(TEST_64)
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
+
+REQUIRED_PACKAGES += system/library/pam-core

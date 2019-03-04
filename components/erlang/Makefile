@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Built in SFW with gcc and builds cleanly now only with gcc
@@ -147,6 +147,7 @@ REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library/datalink
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math

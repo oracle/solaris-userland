@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -103,4 +103,5 @@ REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library/smf
 REQUIRED_PACKAGES += system/network

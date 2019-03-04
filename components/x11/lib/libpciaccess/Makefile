@@ -44,3 +44,5 @@ COMPONENT_PREP_ACTION += (cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
 FIX_PC_FILES=pciaccess.pc.in
 
 include $(WS_MAKE_RULES)/x11-component.mk
+
+REQUIRED_PACKAGES += system/library/devinfo

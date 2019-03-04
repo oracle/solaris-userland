@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=             64_and_32
@@ -65,6 +65,7 @@ REQUIRED_PACKAGES += crypto/gnupg
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gcr
 REQUIRED_PACKAGES += network/ssh
+REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/security/libgcrypt
 

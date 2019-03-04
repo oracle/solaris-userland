@@ -20,12 +20,15 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 SUDO =		/usr/bin/sudo
 
+# Hardcode Python path because it is only used here to print a title
+# and putting a variable PYTHON to the path could side effect other
+# Makefiles including this one.
 define separator-line
-	@$(PYTHON) -c 'l="="*(40-len("$1")/2); print("%s%s%s" % (l, "$1", l))'
+	@/usr/bin/python -c 'l="="*(40-len("$1")/2); print("%s%s%s" % (l, "$1", l))'
 endef
 
 component-environment-check::

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -129,6 +129,7 @@ REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/library/security/crypto
 $(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += system/library/security/gss
 $(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += system/library/security/libsasl

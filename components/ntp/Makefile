@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -118,4 +118,5 @@ REQUIRED_PACKAGES += service/network/dns/mdns
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library/smf
 REQUIRED_PACKAGES += system/library/security/crypto

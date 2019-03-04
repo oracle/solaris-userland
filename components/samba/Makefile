@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS=	64_and_32
 COMPILER=	gcc
@@ -221,6 +221,7 @@ REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/security/crypto
+REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/network/avahi
 REQUIRED_PACKAGES += system/network/ldap/openldap

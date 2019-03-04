@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64
@@ -109,9 +109,11 @@ REQUIRED_PACKAGES += library/pcre
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += security/compliance/openscap
+REQUIRED_PACKAGES += system/library/datalink
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/security/libgcrypt
+REQUIRED_PACKAGES += system/library/smf
 REQUIRED_PACKAGES += system/library/libv12n
 REQUIRED_PACKAGES += system/management/rad
 REQUIRED_PACKAGES += system/management/rad/client/rad-c

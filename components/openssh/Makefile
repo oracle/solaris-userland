@@ -119,6 +119,7 @@ REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += text/groff/groff-core

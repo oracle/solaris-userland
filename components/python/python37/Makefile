@@ -208,5 +208,6 @@ REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/tcl-8
 REQUIRED_PACKAGES += runtime/tk-8
+REQUIRED_PACKAGES += system/library/datalink
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11

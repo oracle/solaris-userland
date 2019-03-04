@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		64_and_32
@@ -55,3 +55,5 @@ install:	$(INSTALL_32_and_64)
 	cd $(BUILD_DIR_64); \
 	$(MKDIR) -p $(PROTOUSRSHAREDOCDIR); \
 	$(CP) -r doc/html $(PROTOUSRSHAREDOCDIR)
+
+REQUIRED_PACKAGES += system/library/devinfo

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64
@@ -63,4 +63,6 @@ REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/header
 REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/datalink
 REQUIRED_PACKAGES += system/library/libpcap
+REQUIRED_PACKAGES += system/library/smf

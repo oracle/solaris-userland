@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -111,6 +111,7 @@ $(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += library/openldap
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/library/security/crypto
 REQUIRED_PACKAGES += system/network/ldap/openldap
 REQUIRED_PACKAGES += text/groff/groff-core

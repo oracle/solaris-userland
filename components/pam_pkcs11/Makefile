@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 # For this component, prefer 32-bit over 64-bit for now until sufficient
 # testing has been performed.
@@ -66,4 +66,5 @@ $(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += library/openldap
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/security/pcsc/pcsclite
 REQUIRED_PACKAGES += shell/bash
+REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/network/ldap/openldap 

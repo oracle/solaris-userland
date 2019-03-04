@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64_and_32
@@ -184,4 +184,5 @@ REQUIRED_PACKAGES += database/berkeleydb-5
 REQUIRED_PACKAGES += developer/build/automake-115
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += security/kerberos-5
+REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/network/ldap/openldap
