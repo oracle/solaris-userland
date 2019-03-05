@@ -1,0 +1,174 @@
+#
+# proftpd should not rely on fsio I/O is always instant
+#
+# when proftpd serves files from SAM-QFS volume,
+# it may expect latency up to several seconds,
+# when doing I/O. 5 seconds is enough to make
+# syscall() to fail with EINTR, because of
+# alarm timer, which is set to 5 secs period in 1.3.6
+#
+# similar patch has been submitted to upstream:
+#	https://github.com/proftpd/proftpd/pull/787
+# Note: the pull request contains change for master branch,
+# there are some differences between master and 1.3.6 branch
+#
+--- a/modules/mod_xfer.c
++++ b/modules/mod_xfer.c
+@@ -581,18 +581,32 @@ static int xfer_parse_cmdlist(const char *name, config_rec *c,
+ }
+ 
+ static int transmit_normal(pool *p, char *buf, size_t bufsz) {
+-  long sz = pr_fsio_read(retr_fh, buf, bufsz);
++  long sz;
+ 
+-  if (sz < 0) {
++  sz = pr_fsio_read(retr_fh, buf, bufsz);
++
++  while (sz < 0) {
+     int xerrno = errno;
+ 
++    if (xerrno == EAGAIN || xerrno == EINTR) {
++	/*
++	 * We should not assume FSIO is always instant. If FS served by slow
++	 * storage the I/O might take several seconds (where several > 5).
++	 * The call to pr_fsio_read_with_error() might bail out upon
++	 * reception of alarm.
++	 */
++	errno = EINTR;
++	pr_signals_handle();
++        sz = pr_fsio_read(retr_fh, buf, bufsz);
++	continue;
++    }
+     (void) pr_trace_msg("fileperms", 1, "RETR, user '%s' (UID %s, GID %s): "
+       "error reading from '%s': %s", session.user,
+       pr_uid2str(p, session.uid), pr_gid2str(p, session.gid),
+       retr_fh->fh_path, strerror(xerrno));
+ 
+     errno = xerrno;
+-    return 0;
++    return -1;
+   }
+ 
+   if (sz == 0) {
+@@ -1683,7 +1697,7 @@ MODRET xfer_pre_appe(cmd_rec *cmd) {
+ MODRET xfer_stor(cmd_rec *cmd) {
+   const char *path;
+   char *lbuf;
+-  int bufsz, len, xerrno = 0, res;
++  int bufsz, len, xerrno = 0, res, writen;
+   off_t nbytes_stored, nbytes_max_store = 0;
+   unsigned char have_limit = FALSE;
+   struct stat st;
+@@ -1970,8 +1984,31 @@ MODRET xfer_stor(cmd_rec *cmd) {
+       ftp_transfer_start(&proto);
+     }
+ #endif
++    writen = 0;
++    while (writen < len) {
++      res = pr_fsio_write(stor_fh, (char *)((int)lbuf + writen), len - writen);
++      if (res < 0) {
++	int xerrno = errno;
++	if (xerrno == EAGAIN || xerrno == EINTR) {
++	  errno = EINTR;
++	  pr_signals_handle();
++	  continue;
++	}
++        (void) pr_trace_msg("fileperms", 1, "%s, user '%s' (UID %s, GID %s): "
++          "error writing to '%s': %s", (char *) cmd->argv[0], session.user,
++          pr_uid2str(cmd->tmp_pool, session.uid),
++          pr_gid2str(cmd->tmp_pool, session.gid), stor_fh->fh_path,
++          strerror(xerrno));
+ 
+-    res = pr_fsio_write(stor_fh, lbuf, len);
++        stor_abort();
++        pr_data_abort(xerrno, FALSE);
++
++        pr_cmd_set_errno(cmd, xerrno);
++        errno = xerrno;
++        return PR_ERROR(cmd);
++      }
++      writen += res;
++    }
+ 
+ #ifdef _SOLARIS_DTRACE
+     if (ftp_transfer_done_enabled() && res == len) {
+@@ -1981,27 +2018,6 @@ MODRET xfer_stor(cmd_rec *cmd) {
+     }
+ #endif
+ 
+-    if (res != len) {
+-      xerrno = EIO;
+-
+-      if (res < 0) {
+-        xerrno = errno;
+-      }
+-
+-      (void) pr_trace_msg("fileperms", 1, "%s, user '%s' (UID %s, GID %s): "
+-        "error writing to '%s': %s", (char *) cmd->argv[0], session.user,
+-        pr_uid2str(cmd->tmp_pool, session.uid),
+-        pr_gid2str(cmd->tmp_pool, session.gid), stor_fh->fh_path,
+-        strerror(xerrno));
+-
+-      stor_abort();
+-      pr_data_abort(xerrno, FALSE);
+-
+-      pr_cmd_set_errno(cmd, xerrno);
+-      errno = xerrno;
+-      return PR_ERROR(cmd);
+-    }
+-
+     /* If no throttling is configured, this does nothing. */
+     pr_throttle_pause(nbytes_stored, FALSE);
+   }
+--- a/src/fsio.c
++++ b/src/fsio.c
+@@ -1902,10 +1902,39 @@ int pr_fs_copy_file2(const char *src, const char *dst, int flags,
+   }
+ #endif
+ 
+-  while ((res = pr_fsio_read(src_fh, buf, bufsz)) > 0) {
++  do {
+     size_t datalen;
+     off_t offset;
+ 
++    res = pr_fsio_read(src_fh, buf, bufsz);
++    if (res == -1) {
++      int xerrno = errno;
++      if (xerrno == EINTR || xerrno == EAGAIN) {
++	pr_signals_handle();
++	continue;
++      }
++
++      (void) pr_fsio_close(src_fh);
++      (void) pr_fsio_close(dst_fh);
++
++      /* Don't unlink the destination file if it already existed. */
++      if (!dst_existed) {
++        if (!(flags & PR_FSIO_COPY_FILE_FL_NO_DELETE_ON_FAILURE)) {
++          if (pr_fsio_unlink(dst) < 0) {
++            pr_trace_msg(trace_channel, 12,
++              "error deleting failed copy of '%s': %s", dst, strerror(errno));
++          }
++        }
++      }
++
++      pr_log_pri(PR_LOG_WARNING, "error copying to '%s': %s", dst,
++        strerror(xerrno));
++      free(buf);
++
++      errno = xerrno;
++      return -1;
++    }
++
+     pr_signals_handle();
+ 
+     /* Be sure to handle short writes. */
+@@ -1958,7 +1987,7 @@ int pr_fs_copy_file2(const char *src, const char *dst, int flags,
+       offset += res;
+       datalen -= res;
+     }
+-  }
++  } while (res != 0);
+ 
+   free(buf);
+ 
