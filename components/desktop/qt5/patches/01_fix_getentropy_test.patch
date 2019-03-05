@@ -1,0 +1,66 @@
+The patch resolves the following issues.
+
+1) The getentropy function is used instead of
+   getauxval during the bootstrap (build of qmake).
+
+2) Fixes the test that detects whether
+   getentropy function is available.
+
+3) Adds missing '#include <sys/random.h>'
+   if the Qt5 toolkit is built for Solaris.
+
+Not sure whether it is suitable for upstream, much better could
+be to add the following function prototype to the unistd.h header.
+
+int getentropy(void *buf, size_t buflen);
+
+Note that even if the getentropy function is available in the unistd.h file,
+the modification of the bootstrap configuration (qconfig-bootstrapped.h) or
+at least adding -DQT_FEATURE_getentropy=1 flag is necessary.
+
+--- qt-everywhere-src-5.12.3/qtbase/src/corelib/configure.json	2019-09-04 08:12:42.955133334 +0000
++++ qt-everywhere-src-5.12.3/qtbase/src/corelib/configure.json	2019-09-04 08:07:46.269250047 +0000
+@@ -368,6 +368,11 @@
+             "type": "compile",
+             "test": {
+                 "include": "unistd.h",
++                "head": [
++                    "#ifdef __sun",
++                    "#include <sys/random.h>",
++                    "#endif"
++                ],
+                 "main": [
+                     "char buf[32];",
+                     "(void) getentropy(buf, sizeof(buf));"
+--- qt-everywhere-src-5.12.3/qtbase/src/corelib/global/qrandom.cpp	2019-09-04 09:31:45.573759218 +0000
++++ qt-everywhere-src-5.12.3/qtbase/src/corelib/global/qrandom.cpp	2019-09-04 09:27:47.063725495 +0000
+@@ -57,6 +57,14 @@
+ #  endif
+ #endif // !QT_CONFIG(getentropy)
+ 
++#if QT_CONFIG(getentropy)
++#ifndef __sun
++#include <unistd.h>
++#else
++#include <sys/random.h>
++#endif
++#endif
++
+ #ifdef Q_OS_UNIX
+ #  include <fcntl.h>
+ #  include <private/qcore_unix_p.h>
+--- qt-everywhere-src-5.12.3/qtbase/src/corelib/global/qconfig-bootstrapped.h	2019-09-04 09:34:17.404194550 +0000
++++ qt-everywhere-src-5.12.3/qtbase/src/corelib/global/qconfig-bootstrapped.h	2019-09-04 09:21:55.341022461 +0000
+@@ -81,7 +81,11 @@
+ #define QT_FEATURE_datetimeparser -1
+ #define QT_FEATURE_etw -1
+ #define QT_FEATURE_getauxval (QT_HAS_INCLUDE(<sys/auxv.h>) ? 1 : -1)
+-#define QT_FEATURE_getentropy -1
++#ifndef __sun
++#define QT_FEATURE_getentropy (QT_HAS_INCLUDE(<unistd.h>) ? 1 : -1)
++#else
++#define QT_FEATURE_getentropy (QT_HAS_INCLUDE(<sys/random.h>) ? 1 : -1)
++#endif
+ #define QT_NO_GEOM_VARIANT
+ #define QT_FEATURE_iconv -1
+ #define QT_FEATURE_icu -1

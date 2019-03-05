@@ -1,0 +1,122 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+# Only the minimal installation required by Wireshark is delivered.
+
+# Do not deliver designer application.
+<transform file path=usr/bin/designer -> drop>
+<transform file link path=.*Qt5?Designer.* -> drop>
+<transform file link path=.*Qt5?UiPlugin.* -> drop>
+<transform file link path=.*Qt5?UiTools.* -> drop>
+<transform file path=.*/translations/designer_.* -> drop>
+<transform file path=.*/mkspecs/features/designer_defines.prf -> drop>
+<transform file path=.*/mkspecs/modules/qt_lib_(designer|uiplugin|uitools).* -> drop>
+
+# Do not deliver assistant application.
+<transform file path=usr/bin/assistant -> drop>
+<transform file path=.*/translations/assistant_.* -> drop>
+
+# Do not deliver linguist application.
+<transform file path=usr/bin/linguist -> drop>
+<transform file path=.*/translations/linguist_.* -> drop>
+<transform file path=usr/share/qt5/phrasebooks/.* -> drop>
+
+# Do not deliver qtdiag, qtpath, pixeltool, and qdbusviewer applications.
+<transform file path=usr/bin/(qtdiag|qtpath|pixeltool|qdbusviewer) -> drop>
+
+# Do not deliver qthelp (support for online documentation in qt5 applications).
+<transform file path=usr/bin/(qhelpgenerator|qcollectiongenerator) -> drop>
+<transform file link path=.*Qt5?Help.* -> drop>
+<transform file path=.*/mkspecs/modules/qt_lib_help.* -> drop>
+
+# Do not deliver qdoc (generation of documentation from source code).
+<transform file path=usr/bin/qdoc -> drop>
+
+# Do not deliver qvkgen (Vulkan generation tool).
+<transform file path=usr/bin/qvkgen -> drop>
+
+# Migration tool from Qt4 to Qt5 is not required.
+<transform file path=usr/bin/fixqt4headers.pl -> drop>
+
+# A tool required only for the development of Qt5 applications.
+<transform file path=usr/bin/syncqt.pl -> drop>
+
+# Do not deliver qtconcurrent (support for qt5 multi-threading).
+<transform file link path=.*Qt5?Concurrent.* -> drop>
+<transform file path=.*/mkspecs/modules/qt_lib_concurrent.* -> drop>
+
+# Do not deliver qtsql (support for SQL databases).
+<transform file link path=.*Qt5?Sql.* -> drop>
+<transform file path=.*/sqldrivers/libqsqlite.so -> drop>
+<transform file path=.*/mkspecs/modules/qt_lib_sql.* -> drop>
+
+# Do not deliver qttest (qt5 unit testing).
+<transform file link path=.*Qt5?Test.* -> drop>
+<transform file path=.*/mkspecs/modules/qt_lib_testlib.* -> drop>
+
+# Do not deliver static libraries and related files.
+<transform file link path=.*Qt5?Bootstrap.* -> drop>
+<transform file path=.*/mkspecs/modules/qt_lib_bootstrap.* -> drop>
+<transform file link path=.*Qt5?EdidSupport.* -> drop>
+<transform file path=.*/mkspecs/modules/qt_lib_edid_support.* -> drop>
+<transform file link path=.*Qt5?EventDispatcherSupport.* -> drop>
+<transform file path=.*/mkspecs/modules/qt_lib_eventdispatcher_support.* -> drop>
+<transform file link path=.*Qt5?FbSupport.* -> drop>
+<transform file path=.*/mkspecs/modules/qt_lib_fb_support.* -> drop>
+<transform file link path=.*Qt5?FontDatabaseSupport.* -> drop>
+<transform file path=.*/mkspecs/modules/qt_lib_fontdatabase_support.* -> drop>
+<transform file link path=.*Qt5?DeviceDiscoverySupport.* -> drop>
+<transform file path=.*/mkspecs/modules/qt_lib_devicediscovery_support.* -> drop>
+<transform file link path=.*Qt5?ServiceSupport.* -> drop>
+<transform file path=.*/mkspecs/modules/qt_lib_service_support.* -> drop>
+<transform file link path=.*Qt5?KmsSupport.* -> drop>
+<transform file path=.*/mkspecs/modules/qt_lib_kms_support.* -> drop>
+<transform file link path=.*Qt5?ThemeSupport.* -> drop>
+<transform file path=.*/mkspecs/modules/qt_lib_theme_support.* -> drop>
+<transform file path=.*AccessibilitySupport\.prl -> drop>
+<transform file path=.*/mkspecs/modules/qt_lib_(linux)?accessibility_support.* -> drop>
+
+# Documentation of Qt5 library is not delivered.
+<transform file path=usr/share/qt5/doc/.* -> drop>
+# MacOS specific file that introduces unnecessary copyright notices.
+<transform file path=.*/QtCore/private/qeventdispatcher_cf_p.h -> drop>
+# Linux performance events do not work under Solaris + extra license.
+<transform file path=.*/QtTest/private/linux_perf_event_p.h -> drop>
+# Valgrind is not available under Solaris, the header file is useless.
+<transform file path=.*/QtTest/private/callgrind_p.h -> drop>
+# Do not deliver specification files for other platforms.
+<transform file path=usr/mkspecs/(win|macx|unsupported|aix|qnx|linux|freebsd|lynxos|android).* -> drop>
+<transform file path=usr/mkspecs/(hurd|cygwin|haiku|hpuxi|integrity|darwin|netbsd|openbsd).* -> drop>
+# Do not deliver specification files for devices on other platforms.
+<transform file path=usr/mkspecs/devices/(linux|freebsd|integrity).* -> drop>
+<transform file path=usr/mkspecs/devices/common/(linux|freebsd|integrity).* -> drop>
+# Features of other platforms are not needed.
+<transform file path=usr/mkspecs/features/(android|mac|win).* -> drop>
+# Do not deliver translations for skipped modules.
+<transform file path=.*/translations/qt(connectivity_|declarative_|location_|quickcontrols).* -> drop>
+<transform file path=.*/translations/qt(script_|serialport_|webengine_|websockets_|xmlpatterns_).* -> drop>
+
+# The files with Qt5 usage information are specified in the qt5.static file.
+<transform file path=files/libqt.3lib -> drop>
