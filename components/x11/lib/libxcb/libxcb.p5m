@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr/share/xcb/.*\.xml$ -> default facet.devel true>
@@ -35,7 +35,6 @@ set name=pkg.summary value="libxcb - The X11 protocol C Binding"
 set name=pkg.description \
     value="The X protocol C-language Binding (XCB) is a replacement for Xlib featuring a small footprint, latency hiding, direct access to the protocol, improved threading support, and extensibility."
 set name=com.oracle.info.description value=libxcb
-set name=com.oracle.info.tpno value=$(TPNO)
 set name=info.classification value=org.opensolaris.category.2008:System/X11
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL) \
     value=$(COMPONENT_ARCHIVE_URL_1)
@@ -2485,7 +2484,14 @@ file path=usr/share/xcb/xproto.xml
 file path=usr/share/xcb/xtest.xml
 file path=usr/share/xcb/xv.xml
 file path=usr/share/xcb/xvmc.xml
-license COPYING license=MIT
+license COPYING license="MIT (libxcb)" \
+    com.oracle.info.description="libxcb - X protocol C-language binding library" \
+    com.oracle.info.name=libxcb com.oracle.info.tpno=$(TPNO) \
+    com.oracle.info.version=$(COMPONENT_VERSION)
+license $(COMPONENT_SRC_1)/COPYING license="MIT (xcb-proto)" \
+    com.oracle.info.description="xcb-proto - XML/XCB protocol descriptions for libxcb" \
+    com.oracle.info.name=xcb-proto com.oracle.info.tpno=$(TPNO_1) \
+    com.oracle.info.version=$(COMPONENT_VERSION_1)
 depend type=require fmri=pkg:/x11/header/x11-protocols facet.devel=true
 # pkg-config dependency from xcb.pc
 depend type=require fmri=pkg:/x11/library/libpthread-stubs facet.devel=true
