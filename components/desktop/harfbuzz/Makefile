@@ -20,47 +20,55 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		64_and_32
+
 # For now, all things built for C++11 require gcc.
 COMPILER= 		gcc
+
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		harfbuzz
-COMPONENT_VERSION=	1.0.6
+COMPONENT_VERSION=	2.3.1
 COMPONENT_PROJECT_URL=	http://www.freedesktop.org/wiki/Software/HarfBuzz/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f616a7fbdc78a627043f9029000bf08c0c71df59cde4143fc92a014f6a993b26
+    sha256:f205699d5b91374008d6f8e36c59e419ae2d9a7bb8c5d9f34041b9a5abcae468
 COMPONENT_ARCHIVE_URL=	http://www.freedesktop.org/software/harfbuzz/release/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/harfbuzz
 COMPONENT_ANITYA_ID=	1299
 
-TPNO=			25623
-
-include $(WS_MAKE_RULES)/common.mk
+TPNO=			49826
 
 CXXFLAGS += -std=c++11
 
-# For components using gobject-introspection, don't cache results in $HOME
-COMPONENT_BUILD_ENV += GI_SCANNER_DISABLE_CACHE=yes
+include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_ENV += CC="$(CC) $(CC_BITS)"
+
 # Required by other components.
 CONFIGURE_OPTIONS += --enable-introspection
-# Required by other components.
-CONFIGURE_OPTIONS += --with-glib
 # Required by other components.
 CONFIGURE_OPTIONS += --with-gobject
 # Requires GNU-ABI compatible build of ICU.
 CONFIGURE_OPTIONS += --with-icu
+# Required by other components.
+CONFIGURE_OPTIONS += --with-glib
 # build the API documentation
 CONFIGURE_OPTIONS += --enable-gtk-doc
 
+# For components using gobject-introspection, don't cache results in $HOME
+COMPONENT_BUILD_ENV += GI_SCANNER_DISABLE_CACHE=yes
+
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_ARGS =   -k -i
+
+# We unset SHELLOPTS to avoid 'unbound variable' errors during the tests.
+unexport SHELLOPTS
+
+COMPONENT_TEST_ENV = PATH=/usr/gnu/bin:/usr/bin
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/TOTAL:/p" ' \
