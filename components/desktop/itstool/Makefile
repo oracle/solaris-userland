@@ -20,30 +20,29 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 		NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		itstool
-COMPONENT_VERSION=	2.0.2
+COMPONENT_VERSION=	2.0.5
 COMPONENT_PROJECT_URL=	http://itstool.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-    sha256:bf909fb59b11a646681a8534d5700fec99be83bb2c57badf8c1844512227033a
+    sha256:100506f8df62cca6225ec3e631a8237e9c04650c77495af4919ac6a100d4b308
 COMPONENT_ARCHIVE_URL=	 http://files.itstool.org/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	13109
+COMPONENT_BUGDB=        utility/itstool
 
-TPNO=			25891
+TPNO=			50131
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 # pkgdepend complains if it doesn't find a version of python specified
-# Uses 2.7 as upstream is still working on Python 3 compatibility:
-#  https://github.com/itstool/itstool/pull/3
-CONFIGURE_OPTIONS += PYTHON="$(PYTHON.2.7)"
+PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/itstool
 
 REQUIRED_PACKAGES += library/python/libxml2-27
 REQUIRED_PACKAGES += runtime/python-27
