@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -49,27 +49,24 @@ include $(WS_MAKE_RULES)/ips.mk
 COMPONENT_POST_UNPACK_ACTION = \
     /usr/bin/find $(SOURCE_DIR) -type f -exec $(GSED) -i 's/\r//' '{}' \; ;
 
-PATH_32=		/usr/mysql/5.5/bin/$(MACH32):/usr/bin:$(SPRO_VROOT)/bin
-PATH_64=		/usr/mysql/5.5/bin:/usr/bin:$(SPRO_VROOT)/bin
+PATH_64=		/usr/mysql/5.7/bin:/usr/bin:$(SPRO_VROOT)/bin
 COMPONENT_BUILD_ENV +=		PATH=$(PATH_$(BITS)):$(PATH)
 COMPONENT_INSTALL_ENV +=	PATH=$(PATH_$(BITS)):$(PATH)
-
-CFLAGS_32=	-L/usr/mysql/5.5/lib -R/usr/mysql/5.5/lib
-CFLAGS_64=	-L/usr/mysql/5.5/lib/$(MACH64) -R/usr/mysql/5.5/lib/$(MACH64)
+CFLAGS_64=	-L/usr/mysql/5.7/lib/$(MACH64) -R/usr/mysql/5.7/lib/$(MACH64)
 CFLAGS +=	$(CFLAGS_$(BITS))
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
-build:		$(BUILD_32_and_64)
+build:		$(BUILD_64)
 
-install:	$(INSTALL_32_and_64)
+install:	$(INSTALL_64)
 
 test:		$(NO_TESTS)
 
 system-test:    $(NO_TESTS)
 
 
-REQUIRED_PACKAGES += database/mysql-55
-REQUIRED_PACKAGES += database/mysql-55/library
+REQUIRED_PACKAGES += database/mysql-57
+REQUIRED_PACKAGES += database/mysql-57/library
 REQUIRED_PACKAGES += system/library
