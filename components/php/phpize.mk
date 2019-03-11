@@ -100,7 +100,7 @@ $(BUILD_DIR)/$(MACH64)-7.1/.configured: \
 $(BUILD_DIR)/$(MACH64)-7.3/.configured: \
 	$(PHP_TOP_DIR)/php73/build/$(MACH64)/.installed
 
-$(PHP_TOP_DIR)/php71/build/$(MACH64)/.installed: \
+$(PHP_TOP_DIR)/php71/build/$(MACH64)/.installed \
 $(PHP_TOP_DIR)/php73/build/$(MACH64)/.installed:
 	cd $(PHP_HOME) ; $(GMAKE) install ;
 
