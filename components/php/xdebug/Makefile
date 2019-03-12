@@ -38,6 +38,8 @@ COMPONENT_ANITYA_ID=	13302
 
 TPNO=			35000
 
+PHP_VERSIONS= 7.1
+
 TEST_TARGET= $(NO_TESTS)
 include $(PHP_TOP_DIR)/phpize.mk
 include $(WS_MAKE_RULES)/common.mk
