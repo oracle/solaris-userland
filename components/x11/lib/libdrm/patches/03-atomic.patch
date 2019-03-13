@@ -1,8 +1,10 @@
-Existing set of patches from the X gate
+Solaris specific changes for clean builds on Solaris.
 
---- a/intel/intel_bufmgr_gem.c	Fri Feb 20 06:27:47 2015
-+++ b/intel/intel_bufmgr_gem.c	Fri Feb 20 07:00:16 2015
-@@ -93,7 +93,7 @@
+Not suitable for upstream
+
+--- a/intel/intel_bufmgr_gem.c	2019-03-13 09:57:08.601663471 -0700
++++ b/intel/intel_bufmgr_gem.c	2019-03-13 10:14:58.143408482 -0700
+@@ -106,7 +106,7 @@
  typedef struct _drm_intel_bufmgr_gem {
  	drm_intel_bufmgr bufmgr;
  
@@ -11,7 +13,7 @@ Existing set of patches from the X gate
  
  	int fd;
  
-@@ -147,7 +147,7 @@
+@@ -165,7 +165,7 @@
  struct _drm_intel_bo_gem {
  	drm_intel_bo bo;
  
@@ -20,7 +22,7 @@ Existing set of patches from the X gate
  	uint32_t gem_handle;
  	const char *name;
  
-@@ -416,7 +416,7 @@
+@@ -468,7 +468,7 @@
  {
  	drm_intel_bo_gem *bo_gem = (drm_intel_bo_gem *) bo;
  
@@ -29,7 +31,7 @@ Existing set of patches from the X gate
  }
  
  /**
-@@ -772,7 +772,7 @@
+@@ -829,7 +829,7 @@
  	}
  
  	bo_gem->name = name;
@@ -38,25 +40,25 @@ Existing set of patches from the X gate
  	bo_gem->validate_index = -1;
  	bo_gem->reloc_tree_fences = 0;
  	bo_gem->used_as_reloc_target = false;
-@@ -919,7 +919,7 @@
+@@ -949,7 +949,7 @@
+ 	if (!bo_gem)
+ 		return NULL;
+ 
+-	atomic_set(&bo_gem->refcount, 1);
++	bo_gem->refcount = 1;
  	DRMINITLISTHEAD(&bo_gem->vma_list);
  
- 	bo_gem->name = name;
+ 	bo_gem->bo.size = size;
+@@ -1126,7 +1126,7 @@
+ 	if (!bo_gem)
+ 		goto out;
+ 
 -	atomic_set(&bo_gem->refcount, 1);
 +	bo_gem->refcount = 1;
- 	bo_gem->validate_index = -1;
- 	bo_gem->reloc_tree_fences = 0;
- 	bo_gem->used_as_reloc_target = false;
-@@ -1010,7 +1010,7 @@
- 	bo_gem->bo.virtual = NULL;
- 	bo_gem->bo.bufmgr = bufmgr;
- 	bo_gem->name = name;
--	atomic_set(&bo_gem->refcount, 1);
-+	bo_gem->refcount = 1;
- 	bo_gem->validate_index = -1;
- 	bo_gem->gem_handle = open_arg.handle;
- 	bo_gem->bo.handle = open_arg.handle;
-@@ -1239,8 +1239,8 @@
+ 	DRMINITLISTHEAD(&bo_gem->vma_list);
+ 
+ 	bo_gem->bo.size = open_arg.size;
+@@ -1397,8 +1397,8 @@
  {
  	drm_intel_bo_gem *bo_gem = (drm_intel_bo_gem *) bo;
  
@@ -67,7 +69,7 @@ Existing set of patches from the X gate
  		drm_intel_gem_bo_unreference_final(bo, time);
  }
  
-@@ -1248,7 +1248,7 @@
+@@ -1406,7 +1406,7 @@
  {
  	drm_intel_bo_gem *bo_gem = (drm_intel_bo_gem *) bo;
  
@@ -76,7 +78,7 @@ Existing set of patches from the X gate
  
  	if (atomic_add_unless(&bo_gem->refcount, -1, 1)) {
  		drm_intel_bufmgr_gem *bufmgr_gem =
-@@ -1259,7 +1259,7 @@
+@@ -1417,7 +1417,7 @@
  
  		pthread_mutex_lock(&bufmgr_gem->lock);
  
@@ -85,16 +87,16 @@ Existing set of patches from the X gate
  			drm_intel_gem_bo_unreference_final(bo, time.tv_sec);
  			drm_intel_gem_cleanup_bo_cache(bufmgr_gem, time.tv_sec);
  		}
-@@ -2683,7 +2683,7 @@
- 
- 	bo_gem->gem_handle = handle;
+@@ -2660,7 +2660,7 @@
+ 	if (!bo_gem)
+ 		goto out;
  
 -	atomic_set(&bo_gem->refcount, 1);
 +	bo_gem->refcount = 1;
+ 	DRMINITLISTHEAD(&bo_gem->vma_list);
  
- 	bo_gem->name = "prime";
- 	bo_gem->validate_index = -1;
-@@ -3346,7 +3346,7 @@
+ 	/* Determine size of bo.  The fd-to-handle ioctl really should
+@@ -3428,7 +3428,7 @@
  
  	DRMLISTFOREACHENTRY(bufmgr_gem, &bufmgr_list, managers) {
  		if (bufmgr_gem->fd == fd) {
@@ -103,7 +105,7 @@ Existing set of patches from the X gate
  			return bufmgr_gem;
  		}
  	}
-@@ -3362,7 +3362,7 @@
+@@ -3444,7 +3444,7 @@
  	if (atomic_add_unless(&bufmgr_gem->refcount, -1, 1)) {
  		pthread_mutex_lock(&bufmgr_list_mutex);
  
@@ -112,7 +114,7 @@ Existing set of patches from the X gate
  			DRMLISTDEL(&bufmgr_gem->managers);
  			drm_intel_bufmgr_gem_destroy(bufmgr);
  		}
-@@ -3443,7 +3443,7 @@
+@@ -3614,7 +3614,7 @@
  		goto exit;
  
  	bufmgr_gem->fd = fd;

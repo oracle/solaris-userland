@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -28,15 +28,15 @@ COMPILER=               gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libdrm
-COMPONENT_VERSION=	2.4.67
+COMPONENT_VERSION=	2.4.97
 COMPONENT_PROJECT_URL=  https://dri.freedesktop.org/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:ee5b71e1113be37544d0752681c12f040c01f782e2933df7d7bc21fd0d10cebe
+	sha256:77d0ccda3e10d6593398edb70b1566bfe1a23a39bd3da98ace2147692eadd123
 COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)libdrm/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1596
-TPNO=			22887
+TPNO=			49166
 
 TEST_TARGET = $(NO_TESTS)
 

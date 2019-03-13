@@ -55,20 +55,3 @@ Existing set of patches from the X gate
  
      if(drmIoctl(fd, DRM_IOCTL_RM_MAP, &map))
  	return -errno;
---- a/tests/kms/Makefile.am	Sat May 14 22:57:02 2016
-+++ b/tests/kms/Makefile.am	Sat May 14 22:57:54 2016
-@@ -30,7 +30,12 @@
- endif
- 
- kms_steal_crtc_SOURCES = kms-steal-crtc.c
--kms_steal_crtc_LDADD = libkms-test.la ../util/libutil.la $(CAIRO_LIBS)
-+kms_steal_crtc_LDADD = \
-+	libkms-test.la \
-+	../../libdrm.la \
-+	../util/libutil.la $(CAIRO_LIBS)
- 
- kms_universal_planes_SOURCES = kms-universal-planes.c
--kms_universal_planes_LDADD = libkms-test.la $(CAIRO_LIBS)
-+kms_universal_planes_LDADD = \
-+	../../libdrm.la \
-+	libkms-test.la $(CAIRO_LIBS)

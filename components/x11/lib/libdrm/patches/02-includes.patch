@@ -31,10 +31,8 @@
 # those drivers not only compile, but continue to operate.
 #
 
-diff --git a/include/drm/drm.h b/include/drm/drm.h
-index a950b58..1e7c192 100644
---- a/include/drm/drm.h
-+++ b/include/drm/drm.h
+--- a/include/drm/drm.h	2019-03-13 09:32:58.255836542 -0700
++++ b/include/drm/drm.h	2019-03-13 09:52:00.593568247 -0700
 @@ -42,7 +42,7 @@
  #include <asm/ioctl.h>
  typedef unsigned int drm_handle_t;
@@ -44,10 +42,10 @@ index a950b58..1e7c192 100644
  
  #include <sys/ioccom.h>
  #include <sys/types.h>
-@@ -54,9 +54,40 @@ typedef int32_t  __s32;
- typedef uint32_t __u32;
+@@ -55,10 +55,40 @@
  typedef int64_t  __s64;
  typedef uint64_t __u64;
+ typedef size_t   __kernel_size_t;
 +
 +#if defined(__SOLARIS__) || defined(__sun)
 +#include <sys/types32.h>
@@ -55,12 +53,11 @@ index a950b58..1e7c192 100644
 +
 +#else /* !__SOLARIS__ */
  typedef unsigned long drm_handle_t;
++#endif  /* __SOLARIS__ || __sun */
  
 -#endif
-+#endif /* __SOLARIS__ || __sun */
-+
-+
 +#endif /* __linux__ */
+ 
 +/* Solaris-specific. */
 +#if defined(__SOLARIS__) || defined(__sun)
 +
@@ -80,13 +77,14 @@ index a950b58..1e7c192 100644
 +       ((nr)   << _IOC_NRSHIFT) | \
 +       ((size) << _IOC_SIZESHIFT))
 +
-+#define _IOC_TYPE(req)	((req >> _IOC_TYPESHIFT) & ((1 << _IOC_TYPEBITS) -1))
++#define _IOC_TYPE(req) ((req >> _IOC_TYPESHIFT) & ((1 << _IOC_TYPEBITS) -1))
 +
 +#endif /* __Solaris__ or __sun */
- 
- #define DRM_NAME	"drm"	  /**< Name in kernel, /dev, and /proc */
- #define DRM_MIN_ORDER	5	  /**< At least 2^5 bytes = 32 bytes */
-@@ -210,11 +241,11 @@ struct drm_ctx_priv_map {
++
+ #if defined(__cplusplus)
+ extern "C" {
+ #endif
+@@ -214,11 +244,11 @@
   * \sa drmAddMap().
   */
  struct drm_map {
@@ -96,11 +94,11 @@ index a950b58..1e7c192 100644
  	enum drm_map_type type;	 /**< Type of memory to map */
  	enum drm_map_flags flags;	 /**< Flags */
 -	void *handle;		 /**< User-space: "Handle" to pass to mmap() */
-+	unsigned long long handle;  /**< User-space: "Handle" to pass to mmap() */
++	unsigned long long handle;		 /**< User-space: "Handle" to pass to mmap() */
  				 /**< Kernel-space: kernel-virtual address */
  	int mtrr;		 /**< MTRR slot used */
  	/*   Private data */
-@@ -322,18 +353,22 @@ enum drm_dma_flags {
+@@ -326,18 +356,22 @@
   *
   * \sa drmAddBufs().
   */
@@ -130,7 +128,7 @@ index a950b58..1e7c192 100644
  	unsigned long agp_start; /**<
  				  * Start address of where the AGP buffers are
  				  * in the AGP aperture
-@@ -379,6 +414,7 @@ struct drm_buf_map {
+@@ -383,6 +417,7 @@
  	void *virtual;		/**< Mmap'd area in user-virtual */
  #endif
  	struct drm_buf_pub *list;	/**< Buffer information */
@@ -138,22 +136,13 @@ index a950b58..1e7c192 100644
  };
  
  /**
-@@ -473,6 +509,8 @@ enum drm_vblank_seq_type {
- 	_DRM_VBLANK_SECONDARY = 0x20000000,	/**< Secondary display controller */
- 	_DRM_VBLANK_SIGNAL = 0x40000000	/**< Send signal instead of blocking, unsupported */
- };
-+#define _DRM_VBLANK_HIGH_CRTC_SHIFT 1
-+#define	_DRM_VBLANK_HIGH_CRTC_MASK 0x0000003e
- 
- #define _DRM_VBLANK_TYPES_MASK (_DRM_VBLANK_ABSOLUTE | _DRM_VBLANK_RELATIVE)
- #define _DRM_VBLANK_FLAGS_MASK (_DRM_VBLANK_EVENT | _DRM_VBLANK_SIGNAL | \
-@@ -487,8 +525,13 @@ struct drm_wait_vblank_request {
+@@ -494,8 +529,13 @@
  struct drm_wait_vblank_reply {
  	enum drm_vblank_seq_type type;
  	unsigned int sequence;
 +#if defined(__sun)
-+	time_t tval_sec;
-+	suseconds_t tval_usec;
++       time_t tval_sec;
++       suseconds_t tval_usec;
 +#else
  	long tval_sec;
  	long tval_usec;
@@ -161,123 +150,43 @@ index a950b58..1e7c192 100644
  };
  
  /**
-@@ -612,6 +655,19 @@ struct drm_gem_open {
- 	__u64 size;
- };
- 
-+/*
-+ * The CURSOR_WIDTH and CURSOR_HEIGHT capabilities return a valid widthxheight
-+ * combination for the hardware cursor. The intention is that a hardware
-+ * agnostic userspace can query a cursor plane size to use.
-+ *
-+ * Note that the cross-driver contract is to merely return a valid size;
-+ * drivers are free to attach another meaning on top, eg. i915 returns the
-+ * maximum plane size.
-+ */
-+#define DRM_CAP_CURSOR_WIDTH		0x8
-+#define DRM_CAP_CURSOR_HEIGHT		0x9
-+#define DRM_CAP_ADDFB2_MODIFIERS	0x10
-+
- /** DRM_IOCTL_GET_CAP ioctl argument type */
- struct drm_get_cap {
- 	__u64 capability;
-@@ -662,10 +718,10 @@ struct drm_prime_handle {
- #include "drm_mode.h"
+@@ -780,10 +820,10 @@
+ #endif
  
  #define DRM_IOCTL_BASE			'd'
 -#define DRM_IO(nr)			_IO(DRM_IOCTL_BASE,nr)
 -#define DRM_IOR(nr,type)		_IOR(DRM_IOCTL_BASE,nr,type)
 -#define DRM_IOW(nr,type)		_IOW(DRM_IOCTL_BASE,nr,type)
 -#define DRM_IOWR(nr,type)		_IOWR(DRM_IOCTL_BASE,nr,type)
-+#define DRM_IO(nr)			_IO(DRM_IOCTL_BASE, (nr))
-+#define DRM_IOR(nr,type)		_IOR(DRM_IOCTL_BASE, (nr), type)
-+#define DRM_IOW(nr,type)		_IOW(DRM_IOCTL_BASE, (nr), type)
-+#define DRM_IOWR(nr,type)		_IOWR(DRM_IOCTL_BASE, (nr), type)
++#define DRM_IO(nr)                     _IO(DRM_IOCTL_BASE, (nr))
++#define DRM_IOR(nr,type)               _IOR(DRM_IOCTL_BASE, (nr), type)
++#define DRM_IOW(nr,type)               _IOW(DRM_IOCTL_BASE, (nr), type)
++#define DRM_IOWR(nr,type)              _IOWR(DRM_IOCTL_BASE, (nr), type)
  
  #define DRM_IOCTL_VERSION		DRM_IOWR(0x00, struct drm_version)
  #define DRM_IOCTL_GET_UNIQUE		DRM_IOWR(0x01, struct drm_unique)
-@@ -803,8 +859,13 @@ struct drm_event {
+@@ -938,8 +978,13 @@
  struct drm_event_vblank {
  	struct drm_event base;
  	__u64 user_data;
 +#if defined(__sun)
-+	time_t tv_sec;
-+	suseconds_t tv_usec;
++       time_t tv_sec;
++       suseconds_t tv_usec;
 +#else
  	__u32 tv_sec;
  	__u32 tv_usec;
 +#endif
  	__u32 sequence;
- 	__u32 reserved;
+ 	__u32 crtc_id; /* 0 on older kernels that do not support this */
  };
-@@ -864,4 +925,4 @@ typedef struct drm_agp_info drm_agp_info_t;
- typedef struct drm_scatter_gather drm_scatter_gather_t;
- typedef struct drm_set_version drm_set_version_t;
- 
--#endif
-+#endif /* _DRM_H_ */
-diff --git a/include/drm/drm_mode.h b/include/drm/drm_mode.h
-index 115f36e..cdaff66 100644
---- a/include/drm/drm_mode.h
-+++ b/include/drm/drm_mode.h
-@@ -362,6 +362,8 @@ struct drm_mode_fb_cmd2 {
- #define DRM_MODE_FB_DIRTY_ANNOTATE_FILL 0x02
- #define DRM_MODE_FB_DIRTY_FLAGS         0x03
- 
-+#define DRM_MODE_FB_DIRTY_MAX_CLIPS     256
-+
- /*
-  * Mark a region of a framebuffer as dirty.
-  *
-@@ -404,15 +406,16 @@ struct drm_mode_mode_cmd {
- 
- #define DRM_MODE_CURSOR_BO	(1<<0)
- #define DRM_MODE_CURSOR_MOVE	(1<<1)
-+#define DRM_MODE_CURSOR_FLAGS	(DRM_MODE_CURSOR_BO|DRM_MODE_CURSOR_MOVE)
- 
- /*
-- * depending on the value in flags diffrent members are used.
-+ * depending on the value in flags different members are used.
-  *
-  * CURSOR_BO uses
-  *    crtc
-  *    width
-  *    height
-- *    handle - if 0 turns the cursor of
-+ *    handle - if 0 turns the cursor off
-  *
-  * CURSOR_MOVE uses
-  *    crtc
-diff --git a/include/drm/drm_fourcc.h b/include/drm/drm_fourcc.h
-index e741b09..7af2285 100644
---- a/include/drm/drm_fourcc.h
-+++ b/include/drm/drm_fourcc.h
-@@ -21,6 +21,10 @@
-  * OTHER DEALINGS IN THE SOFTWARE.
-  */
- 
-+/*
-+ * Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
-+ */
-+
- #ifndef DRM_FOURCC_H
- #define DRM_FOURCC_H
- 
-@@ -29,7 +33,7 @@
- #define fourcc_code(a,b,c,d) ((uint32_t)(a) | ((uint32_t)(b) << 8) | \
- 			      ((uint32_t)(c) << 16) | ((uint32_t)(d) << 24))
+--- a/include/drm/drm_fourcc.h	2019-03-13 09:53:39.203106888 -0700
++++ b/include/drm/drm_fourcc.h	2019-03-13 09:55:15.178400394 -0700
+@@ -69,7 +69,7 @@
+ #define fourcc_code(a, b, c, d) ((__u32)(a) | ((__u32)(b) << 8) | \
+ 				 ((__u32)(c) << 16) | ((__u32)(d) << 24))
  
 -#define DRM_FORMAT_BIG_ENDIAN (1<<31) /* format is big endian instead of little endian */
 +#define DRM_FORMAT_BIG_ENDIAN (1UL<<31) /* format is big endian instead of little endian */
  
- /* color index */
- #define DRM_FORMAT_C8		fourcc_code('C', '8', ' ', ' ') /* [7:0] C */
-@@ -106,6 +110,8 @@
- #define DRM_FORMAT_NV21		fourcc_code('N', 'V', '2', '1') /* 2x2 subsampled Cb:Cr plane */
- #define DRM_FORMAT_NV16		fourcc_code('N', 'V', '1', '6') /* 2x1 subsampled Cr:Cb plane */
- #define DRM_FORMAT_NV61		fourcc_code('N', 'V', '6', '1') /* 2x1 subsampled Cb:Cr plane */
-+#define DRM_FORMAT_NV24		fourcc_code('N', 'V', '2', '4') /* non-subsampled Cr:Cb plane */
-+#define DRM_FORMAT_NV42		fourcc_code('N', 'V', '4', '2') /* non-subsampled Cb:Cr plane */
- 
- /*
-  * 3 plane YCbCr
+ /* Reserve 0 for the invalid format specifier */
+ #define DRM_FORMAT_INVALID	0
