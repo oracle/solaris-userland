@@ -11,10 +11,8 @@ Updated to include changes to ensure xkb directory & files are writable
 by gid 0, to fix bug:
 6916317 Changing xkb settings after login not working on snv130
 
-diff --git a/xkb/Makefile.am b/xkb/Makefile.am
-index fb3ccbf..5a82e09 100644
---- a/xkb/Makefile.am
-+++ b/xkb/Makefile.am
+--- a/xkb/Makefile.am	2019-02-12 10:33:44.699244809 -0800
++++ b/xkb/Makefile.am	2019-02-12 10:34:07.773223892 -0800
 @@ -1,6 +1,7 @@
  noinst_LTLIBRARIES = libxkb.la libxkbstubs.la
  
@@ -23,11 +21,9 @@ index fb3ccbf..5a82e09 100644
  
  DDX_SRCS = \
          ddxBeep.c \
-diff --git a/xkb/ddxLoad.c b/xkb/ddxLoad.c
-index d462957..9338a1c 100644
---- a/xkb/ddxLoad.c
-+++ b/xkb/ddxLoad.c
-@@ -68,14 +68,30 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
+--- a/xkb/ddxLoad.c	2019-02-12 10:34:22.951329549 -0800
++++ b/xkb/ddxLoad.c	2019-02-12 10:43:09.600768247 -0800
+@@ -56,6 +56,18 @@
  #define PATHSEPARATOR "/"
  #endif
  
@@ -43,7 +39,10 @@ index d462957..9338a1c 100644
 +# endif
 +#endif
 +
- static void
+ static unsigned
+ LoadXKM(unsigned want, unsigned need, const char *keymap, XkbDescPtr *xkbRtrn);
+ 
+@@ -63,9 +75,13 @@
  OutputDirectory(char *outdir, size_t size)
  {
  #ifndef WIN32
@@ -53,13 +52,11 @@ index d462957..9338a1c 100644
      /* Can we write an xkm and then open it too? */
      if (access(XKM_OUTPUT_DIR, W_OK | X_OK) == 0 &&
          (strlen(XKM_OUTPUT_DIR) < size)) {
--        (void) strcpy(outdir, XKM_OUTPUT_DIR);
 +#endif
-+        (void) strcpy (outdir, XKM_OUTPUT_DIR);
+         (void) strcpy(outdir, XKM_OUTPUT_DIR);
      }
      else
- #else
-@@ -113,6 +129,15 @@ XkbDDXCompileKeymapByNames(XkbDescPtr xkb,
+@@ -110,6 +126,15 @@
      const char *xkmfile = "-";
  #endif
  
@@ -71,11 +68,11 @@ index d462957..9338a1c 100644
 +        ErrorF("Error in setting regid to 0: %s\n", strerror(errno));
 +    if (setegid(0) < 0)
 +        ErrorF("Error in setting egid to 0: %s\n", strerror(errno));
-+    
++
      snprintf(keymap, sizeof(keymap), "server-%s", display);
  
      OutputDirectory(xkm_output_dir, sizeof(xkm_output_dir));
-@@ -164,6 +189,11 @@ XkbDDXCompileKeymapByNames(XkbDescPtr xkb,
+@@ -161,6 +186,11 @@
      out = fopen(tmpname, "w");
  #endif
  
@@ -85,5 +82,5 @@ index d462957..9338a1c 100644
 +        ErrorF("Error in resetting egid: %s\n", strerror(errno));
 +
      if (out != NULL) {
- #ifdef DEBUG
-         if (xkbDebugFlags) {
+         /* Now write to xkbcomp */
+         (*callback)(out, userdata);

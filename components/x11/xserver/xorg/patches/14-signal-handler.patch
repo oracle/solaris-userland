@@ -1,28 +1,31 @@
-Existing set of patches from the X gate 
+Part of fix for BUG 15394898 - SUNBT6554161 some SUN LDAP users can't login to
+X Window System on machines with CRT display after DRM is upgraded
 
-diff --git a/hw/xfree86/dri/dri.c b/hw/xfree86/dri/dri.c
-index 398178e..929dc7c 100644
---- a/hw/xfree86/dri/dri.c
-+++ b/hw/xfree86/dri/dri.c
-@@ -2500,7 +2500,11 @@ drmInstallSIGIOHandler(int fd, void (*f) (int, void *, void *))
+Not suitable for upstream
+
+--- a/hw/xfree86/dri/dri.c      2019-02-12 11:40:24.161415431 -0800
++++ b/hw/xfree86/dri/dri.c      2019-02-12 11:41:09.206826960 -0800
+@@ -339,7 +339,11 @@
      entry = drmGetEntry(fd);
      entry->f = f;
- 
+
 +#if defined(__sun) && defined(__SVR4)
 +    return 1;
 +#else
      return xf86InstallSIGIOHandler(fd, drmSIGIOHandler, 0);
 +#endif
  }
- 
- int
-@@ -2510,5 +2514,9 @@ drmRemoveSIGIOHandler(int fd)
- 
+
+ static int
+@@ -349,7 +353,11 @@
+
      entry->f = NULL;
- 
+
 +#if defined(__sun) && defined(__SVR4)
 +    return 1;
 +#else
      return xf86RemoveSIGIOHandler(fd);
 +#endif
  }
+
+ Bool

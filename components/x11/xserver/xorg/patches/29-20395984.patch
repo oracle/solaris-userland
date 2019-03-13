@@ -1,9 +1,10 @@
+Compiler workarounds that are Solaris specific
 
-Existing set of patches from the X gate 
+not suitable for upstream
 
---- a/hw/xfree86/utils/cvt/cvt.c	Fri Jan 16 02:27:48 2015
-+++ b/hw/xfree86/utils/cvt/cvt.c	Fri Jan 16 11:48:28 2015
-@@ -31,6 +31,14 @@
+--- a/hw/xfree86/utils/cvt/cvt.c	2019-02-12 12:56:18.713831370 -0800
++++ b/hw/xfree86/utils/cvt/cvt.c	2019-02-12 12:56:43.352244787 -0800
+@@ -30,6 +30,14 @@
  #include "regionstr.h"
  _X_EXPORT BoxRec RegionEmptyBox = { 0, 0, 0, 0 };
  _X_EXPORT RegDataRec RegionEmptyData = { 0, 0 };
@@ -18,10 +19,10 @@ Existing set of patches from the X gate
  #endif
  
  #include "xf86.h"
---- a/hw/dmx/config/xdmxconfig.c	Thu Jul 25 22:14:32 2013
-+++ b/hw/dmx/config/xdmxconfig.c	Wed Jan 21 08:51:48 2015
-@@ -55,6 +55,16 @@
- extern int yyparse(void);
+--- a/hw/dmx/config/xdmxconfig.c	2019-02-12 12:57:03.253116133 -0800
++++ b/hw/dmx/config/xdmxconfig.c	2019-02-12 12:57:18.490982833 -0800
+@@ -56,6 +56,16 @@
+ extern int yydebug;
  extern FILE *yyin;
  
 +#if (defined(__sparc__) || defined(__sparc))

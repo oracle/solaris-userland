@@ -1,15 +1,14 @@
+Specific manpage changes for Solaris
 
-Existing set of patches from the X gate 
+Not suitable for upstream
 
-diff --git a/man/Xserver.man b/man/Xserver.man
-index 506e5bb..f379451 100644
---- a/man/Xserver.man
-+++ b/man/Xserver.man
-@@ -1,4 +1,26 @@
+--- a/man/Xserver.man	2019-02-12 10:24:52.442517149 -0800
++++ b/man/Xserver.man	2019-02-12 10:29:34.221150088 -0800
+@@ -1,5 +1,27 @@
  '\" t
-+.\" 
+ .\"
 +.\" Copyright (c) 2007, 2018, Oracle and/or its affiliates. All rights reserved.
-+.\" 
++.\"
 +.\" Permission is hereby granted, free of charge, to any person obtaining a
 +.\" copy of this software and associated documentation files (the "Software"),
 +.\" to deal in the Software without restriction, including without limitation
@@ -29,10 +28,11 @@ index 506e5bb..f379451 100644
 +.\" FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 +.\" DEALINGS IN THE SOFTWARE.
 +.\"
- .\"
++.\"
  .\" Copyright 1984 - 1991, 1993, 1994, 1998  The Open Group
  .\"
-@@ -32,14 +54,22 @@ Xserver \- X Window System display server
+ .\" Permission to use, copy, modify, distribute, and sell this software and its
+@@ -32,14 +54,22 @@
  .SH SYNOPSIS
  .B X
  [option ...]
@@ -53,11 +53,11 @@ index 506e5bb..f379451 100644
 -\fIxdm\fP(1) or a similar display manager program.
 +On Oracle Solaris, the X server is usually started from the GNOME
 +Display Manager program \fIgdm\fP(__adminmansuffix__).   This role may also be performed
-+by the X Display Manager program \fIxdm\fP(1), or another display manager. 
++by the X Display Manager program \fIxdm\fP(1), or another display manager.
  This utility is run from the system boot files and takes care of keeping
  the server running, prompting for usernames and passwords, and starting up
  the user sessions.
-@@ -205,13 +235,14 @@ with
+@@ -205,13 +235,14 @@
  .BR "\-nolisten tcp" .
  This option may be issued multiple times to disable listening to different
  transport types.
@@ -74,22 +74,23 @@ index 506e5bb..f379451 100644
  local   Platform preferred local connection method
  .TE
  .TP 8
-@@ -592,8 +731,12 @@ Outline font directories
+@@ -592,9 +623,13 @@
  .I /tmp/.X11-unix/X\fBn\fP
  Unix domain socket for display number \fBn\fP
  .TP 30
 -.I /usr/adm/X\fBn\fPmsgs
--Error log file for display number \fBn\fP if run from \fIinit\fP(__adminmansuffix__)
+-Error log file for display number \fBn\fP if run from \fIinit\fP(@adminmansuffix@)
 +.I /tmp/.X11-pipe/X\fBn\fP
 +Named pipe (FIFO) for display number \fBn\fP
-+.TP 30
-+.I /var/log/gdm/:\fBn\fP.log
-+Default error log file for display number \fBn\fP if the server is run 
-+from \fIgdm\fP(__adminmansuffix__)
  .TP 30
- .I __projectroot__/lib/X11/xdm/xdm-errors
++.I /var/log/gdm/:\fBn\fP.log
++Default error log file for display number \fBn\fP if the server is run
++from \fIgdm\fP(__adminmansuffix__)
++.TP 30
+ .I @projectroot@/lib/X11/xdm/xdm-errors
  Default error log file if the server is run from \fIxdm\fP(1)
-@@ -615,14 +758,21 @@ Security: \fIXsecurity\fP(__miscmansuffix__), \fIxauth\fP(1), \fIXau\fP(1),
+ .SH "SEE ALSO"
+@@ -615,15 +650,22 @@
  \fIxdm\fP(1), \fIxhost\fP(1), \fIxfwp\fP(1),
  .I "Security Extension Specification"
  .PP
@@ -104,13 +105,14 @@ index 506e5bb..f379451 100644
 -\fIXorg\fP(1), \fIXdmx\fP(1), \fIXephyr\fP(1), \fIXnest\fP(1),
 -\fIXvfb\fP(1), \fIXquartz\fP(1), \fIXWin\fP(1).
 +\fIXorg\fP(1), \fIXdmx\fP(1), \fIXephyr\fP(1), \fIXvfb\fP(1), \fIXvnc\fP(1).
-+.PP
+ .PP
 +Service management framework configuration:
 +\fIapplication/x11/x11-server\fP(8s)
 +.PP
 +Dtrace probes:
 +\fI/usr/share/doc/Xserver/Xserver-DTrace.html\fP,
 +\fI/usr/share/doc/Xserver/Xserver-DTrace.txt\fP
- .PP
++.PP
  Server internal documentation:
  .I "Definition of the Porting Layer for the X v11 Sample Server"
+ .SH AUTHORS

@@ -27,13 +27,13 @@ BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xorg-server
-COMPONENT_VERSION=	1.19.5
+COMPONENT_VERSION=	1.20.3
 COMPONENT_ARCHIVE_HASH= \
-	sha256:18fffa8eb93d06d2800d06321fc0df4d357684d8d714315a66d8dfa7df251447
+	sha256:1b3ce466c12cacbe2252b3ad5b0ed561972eef9d09e75900d65fb1e21f9201de
 COMPONENT_BUGDB=        x11/xorg-server
 COMPONENT_ANITYA_ID=	5250
 
-TPNO=			45950
+TPNO=			49340
 
 PKG_PROTO_DIRS += $(SOURCE_DIR)/config
 PKG_PROTO_DIRS += $(COMPONENT_DIR)/sun-src/os/solaris/mdb/scripts
@@ -87,6 +87,15 @@ COMPONENT_PREP_ACTION +=(cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
 COMPONENT_POST_UNPACK_ACTION = \
         $(CP) -r sun-src/IA $(SOURCE_DIR); \
         $(CP) -r sun-src/os/* $(SOURCE_DIR)/os;
+
+LIBDRM_BASE = $(WS_COMPONENTS)/x11/lib/libdrm/build/prototype/$(MACH)
+PKG_CONFIG_PATHS += $(LIBDRM_BASE)$(USRLIB)/pkgconfig/
+CPPFLAGS += -I$(LIBDRM_BASE)/usr/include/ -I$(LIBDRM_BASE)/usr/include/libdrm
+LD_OPTIONS += -L $(LIBDRM_BASE)$(USRLIB)
+
+XORGPROTO_BASE += $(WS_COMPONENTS)/x11/proto/build/prototype/$(MACH)
+PKG_CONFIG_PATHS += $(XORGPROTO_BASE)/usr/share/pkgconfig/
+CPPFLAGS += -I$(XORGPROTO_BASE)/usr/include/
 
 LDFLAGS += -lm
 CFLAGS += -I/usr/include/pixman-1

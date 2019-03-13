@@ -1,14 +1,15 @@
+Patch provided by Intel to fix:
+BUG 15612467 - SUNBT6912996 Trying to bring up gdm on ironlake or GM45
+    with OpenSolaris 130 results in a black screen
 
-Existing set of patches from the X gate 
+Need to determine if it's still necessary or should be submitted upstream
 
-diff --git a/exa/exa.c b/exa/exa.c
-index d12344f..ba82382 100644
---- a/exa/exa.c
-+++ b/exa/exa.c
-@@ -59,7 +59,11 @@ exaGetPixmapOffset(PixmapPtr pPix)
+--- a/exa/exa.c 2019-02-12 12:06:17.636998979 -0800
++++ b/exa/exa.c 2019-02-12 12:07:01.728848309 -0800
+@@ -59,7 +59,11 @@
      ExaScreenPriv(pPix->drawable.pScreen);
      ExaPixmapPriv(pPix);
- 
+
 -    return (CARD8 *) pExaPixmap->fb_ptr - pExaScr->info->memoryBase;
 +    /* added in as a fix for 6912996 */
 +    if (exaPixmapHasGpuCopy(pPix) && pExaPixmap->fb_ptr)
@@ -16,5 +17,6 @@ index d12344f..ba82382 100644
 +    else
 +        return (CARD8 *) pExaPixmap->sys_ptr - pExaScr->info->memoryBase;
  }
- 
+
  void *
+

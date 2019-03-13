@@ -1,26 +1,25 @@
-Existing set of patches from the X gate 
+Fix to support SPARC kfb driver:
+BUG 15564782 - SUNBT6844102 missing miInitVisualsProc in Xorg 1.6
 
+Need to determine if we can drop now that kfb is no longer supported.
 
-diff --git a/mi/micmap.c b/mi/micmap.c
-index 3ef0c8c..41d53a7 100644
---- a/mi/micmap.c
-+++ b/mi/micmap.c
-@@ -464,6 +464,11 @@ maskShift(Pixel p)
+--- a/mi/micmap.c       2019-02-12 11:54:23.685212028 -0800
++++ b/mi/micmap.c       2019-02-12 11:55:01.265807330 -0800
+@@ -420,6 +420,10 @@
   * the set which can be used with this version of cfb.
   */
- 
+
 +#if defined(__sparc__) || defined(__sparc)
 +_X_EXPORT miInitVisualsProcPtr miInitVisualsProc = NULL;
 +#endif /* __sparc__ */
 +
-+
  Bool
  miInitVisuals(VisualPtr * visualp, DepthPtr * depthp, int *nvisualp,
                int *ndepthp, int *rootDepthp, VisualID * defaultVisp,
-@@ -482,6 +487,13 @@ miInitVisuals(VisualPtr * visualp, DepthPtr * depthp, int *nvisualp,
+@@ -438,6 +442,13 @@
      int *preferredCVCs, *prefp;
      int first_depth;
- 
+
 +#if defined(__sparc__) || defined(__sparc)
 +    if (miInitVisualsProc) {
 +       return (miInitVisualsProc(visualp, depthp, nvisualp, ndepthp,
@@ -31,3 +30,4 @@ index 3ef0c8c..41d53a7 100644
      /* none specified, we'll guess from pixmap formats */
      if (!miVisuals) {
          for (f = 0; f < screenInfo.numPixmapFormats; f++) {
+

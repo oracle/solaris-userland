@@ -1,0 +1,55 @@
+Solaris specific patches for clean builds
+
+Need to determine why the first one isn't applied upstream
+The next two are not suitable for upstream
+
+--- a/hw/xfree86/sdksyms.sh	2019-02-12 12:59:17.493801292 -0800
++++ b/hw/xfree86/sdksyms.sh	2019-02-12 13:37:42.546150349 -0800
+@@ -305,7 +305,13 @@
+ LC_ALL=C
+ export LC_ALL
+ ${CPP:-cpp} "$@" sdksyms.c > /dev/null || exit $?
+-${CPP:-cpp} "$@" sdksyms.c | ${AWK:-awk} -v topdir=$topdir '
++# Some cpps add spaces in the middle of __attribute__((visibility(...)))
++# so we need to remove them for the following awk script to work.
++# Changes by alanc upstream
++${CPP:-cpp} "$@" sdksyms.c | \
++    ${SED:-sed} -e 's/( /(/g' -e 's/_ (/_(/g' -e 's/ )/)/g' \
++    -e 's/visibility (/visibility(/' | \
++    ${AWK:-awk} -v topdir=$topdir '
+ BEGIN {
+     sdk = 0;
+     print("/*");
+--- a/hw/xfree86/utils/cvt/cvt.c	2019-02-12 20:41:05.255317595 -0800
++++ b/hw/xfree86/utils/cvt/cvt.c	2019-02-12 20:41:33.854506450 -0800
+@@ -38,6 +38,13 @@
+ {
+     abort();
+ }
++
++/* added to quieten LogMessage undefined symbol error while compiling with Studio 12.4 */
++#include "os.h"
++_X_HIDDEN void
++LogMessage(MessageType type, const char *format, ...) {
++       abort();
++}
+ #endif
+ 
+ #include "xf86.h"
+--- a/hw/dmx/config/xdmxconfig.c        Mon May  4 10:01:10 2015
++++ b/hw/dmx/config/xdmxconfig.c        Mon May  4 10:01:43 2015
+@@ -63,6 +63,13 @@
+ {
+     abort();
+ }
++
++/* added to quieten LogMessage undefined symbol error while compiling with Studio 12.4 */
++#include "os.h"
++_X_HIDDEN void
++LogMessage(MessageType type, const char *format, ...) {
++       abort();
++}
+ #endif
+
+ #define DMX_INFO "xdmxconfig v0.9\nCopyright 2002 Red Hat Inc.\n"
+

@@ -1,7 +1,10 @@
-# Remove this patch once Mesa is updated to the latest release
---- a/glx/glxdricommon.c	Fri Dec 13 16:15:57 2013
-+++ b/glx/glxdricommon.c	Fri Dec 13 16:22:22 2013
-@@ -209,6 +209,7 @@
+Remove this patch once Mesa is updated to the latest release
+
+Not suitable for upstream
+
+--- a/glx/glxdricommon.c	2019-02-12 12:52:53.219321827 -0800
++++ b/glx/glxdricommon.c	2019-02-12 12:54:58.061648159 -0800
+@@ -259,6 +259,7 @@
  
  static const char dri_driver_path[] = DRI_DRIVER_PATH;
  
@@ -9,7 +12,7 @@
  /* Temporary define to allow building without a dri_interface.h from
   * updated Mesa.  Some day when we don't care about Mesa that old any
   * more this can be removed.
-@@ -216,6 +217,7 @@
+@@ -266,6 +267,7 @@
  #ifndef __DRI_DRIVER_GET_EXTENSIONS
  #define __DRI_DRIVER_GET_EXTENSIONS "__driDriverGetExtensions"
  #endif
@@ -17,7 +20,7 @@
  
  void *
  glxProbeDriver(const char *driverName,
-@@ -238,6 +240,7 @@
+@@ -318,6 +320,7 @@
          goto cleanup_failure;
      }
  
@@ -25,11 +28,10 @@
      if (asprintf(&get_extensions_name, "%s_%s",
                   __DRI_DRIVER_GET_EXTENSIONS, driverName) != -1) {
          const __DRIextension **(*get_extensions)(void);
-@@ -249,7 +252,8 @@
-     }
+@@ -330,6 +333,8 @@
  
      if (!extensions)
--        extensions = dlsym(driver, __DRI_DRIVER_EXTENSIONS);
+         extensions = dlsym(driver, __DRI_DRIVER_EXTENSIONS);
 +#endif
 +    extensions = dlsym(driver, __DRI_DRIVER_EXTENSIONS);
      if (extensions == NULL) {

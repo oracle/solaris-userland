@@ -1,29 +1,19 @@
-# Copyright (c) 2006, 2009, Oracle and/or its affiliates. All rights reserved.
-#
-# Permission is hereby granted, free of charge, to any person obtaining a
-# copy of this software and associated documentation files (the "Software"),
-# to deal in the Software without restriction, including without limitation
-# the rights to use, copy, modify, merge, publish, distribute, sublicense,
-# and/or sell copies of the Software, and to permit persons to whom the
-# Software is furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice (including the next
-# paragraph) shall be included in all copies or substantial portions of the
-# Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
-# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-# DEALINGS IN THE SOFTWARE.
-diff --git a/hw/xfree86/common/xf86Config.c b/hw/xfree86/common/xf86Config.c
-index ab9a37a..891623d 100644
---- a/hw/xfree86/common/xf86Config.c
-+++ b/hw/xfree86/common/xf86Config.c
-@@ -533,6 +533,25 @@ fixup_video_driver_list(char **drivers)
-             }
+Patch to detect nvidia over nv
+
+possible for upstream but might get rejected
+
+--- a/hw/xfree86/common/xf86Config.c	2019-02-12 11:27:50.449786001 -0800
++++ b/hw/xfree86/common/xf86Config.c	2019-02-12 11:34:41.130603444 -0800
+@@ -965,6 +965,7 @@
+ freeDevice(InputInfoPtr * list, InputInfoPtr pInfo)
+ {
+     InputInfoPtr *devs;
++    char **end, **drv, **drivers, **x;
+ 
+     for (devs = list; devs && *devs; devs++) {
+         if (*devs == pInfo) {
+@@ -974,6 +975,25 @@
+             break;
          }
      }
 +    /*
@@ -31,14 +21,14 @@ index ab9a37a..891623d 100644
 +     * make sure to prefer nvidia if it's installed
 +     */
 +    for (drv = drivers; drv != end; drv++) {
-+	char **nv, **nvidia;
++       char **nv, **nvidia;
 +        if (!strcmp(*drv, "nv")) {
 +            nv = drv;
 +            for (drv = nv; drv != end; drv++) {
 +                if (!strcmp(*drv, "nvidia")) {
 +                    nvidia = drv;
 +                    x = *nvidia; *nvidia = *nv; *nv = x;
-+		    break;
++                   break;
 +                }
 +            }
 +            /* if we get here, nvidia was already ahead of nv */
@@ -47,4 +37,4 @@ index ab9a37a..891623d 100644
 +    }
  }
  
- static char **
+ /**

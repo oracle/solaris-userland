@@ -1,19 +1,21 @@
-Existing set of patches from the X gate 
+Fix for:
+BUG 15607496 - SUNBT6906694 X Server 1.7.1.902 (1.7.2 RC 2) causes server crash
+when enabling compiz
 
+Need to determine if it's still necessary or should be submitted upstream
 
-diff --git a/exa/exa_render.c b/exa/exa_render.c
-index 172e2b5..0463b3f 100644
---- a/exa/exa_render.c
-+++ b/exa/exa_render.c
-@@ -878,8 +878,9 @@ exaComposite(CARD8 op,
+--- a/exa/exa_render.c  2019-02-12 12:01:38.121595985 -0800
++++ b/exa/exa_render.c  2019-02-12 12:02:16.746951979 -0800
+@@ -881,8 +881,9 @@
      Bool saveMaskRepeat = pMask ? pMask->repeat : 0;
      RegionRec region;
- 
+
 -    if (pExaScr->swappedOut)
 -        goto fallback;
-+    if (pExaScr->swappedOut || pSrc->pDrawable == NULL || 
-+        (pMask != NULL && pMask->pDrawable == NULL))
-+            goto fallback;
- 
++    if (pExaScr->swappedOut || pSrc->pDrawable == NULL ||
++       (pMask != NULL && pMask->pDrawable == NULL))
++               goto fallback;
+
      /* Remove repeat in source if useless */
      if (pSrc->pDrawable && pSrc->repeat && !pSrc->transform && xSrc >= 0 &&
+

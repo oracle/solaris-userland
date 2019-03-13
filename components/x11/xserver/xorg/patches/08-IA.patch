@@ -1,11 +1,10 @@
+Solaris-specific support for the SolarisIA extension
 
-Existing set of patches from the X gate 
+Not suitable for upstream
 
-diff --git a/Makefile.am b/Makefile.am
-index f0fa2d8..2127601 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -58,6 +58,7 @@ SUBDIRS = \
+--- a/Makefile.am	2019-02-12 11:06:48.069252402 -0800
++++ b/Makefile.am	2019-02-12 11:07:02.819680328 -0800
+@@ -58,6 +58,7 @@
  	$(GLX_DIR) \
  	$(PRESENT_DIR) \
  	$(DRI3_DIR) \
@@ -13,11 +12,9 @@ index f0fa2d8..2127601 100644
  	exa \
  	$(GLAMOR_DIR) \
  	config \
-diff --git a/configure.ac b/configure.ac
-index c7379de..e09f020 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1421,6 +1421,10 @@ AC_DEFINE(XINPUT, 1, [Support X Input extension])
+--- a/configure.ac	2019-02-12 11:07:15.756272730 -0800
++++ b/configure.ac	2019-02-12 11:08:35.022110532 -0800
+@@ -1394,6 +1394,10 @@
  XI_LIB='$(top_builddir)/Xi/libXi.la'
  XI_INC='-I$(top_srcdir)/Xi'
  
@@ -28,18 +25,16 @@ index c7379de..e09f020 100644
  AM_CONDITIONAL(XF86UTILS, test "x$XF86UTILS" = xyes)
  AM_CONDITIONAL(VGAHW, test "x$VGAHW" = xyes)
  AM_CONDITIONAL(VBE, test "x$VBE" = xyes)
-@@ -2636,3 +2640,6 @@ xserver.ent
+@@ -2593,3 +2597,6 @@
  xorg-server.pc
  ])
  AC_OUTPUT
 +
 +# Add Sun IA extension
 +AC_OUTPUT([IA/Makefile])
-diff --git a/include/extinit.h b/include/extinit.h
-index fa5f293..62a0ab2 100644
---- a/include/extinit.h
-+++ b/include/extinit.h
-@@ -121,6 +121,14 @@ extern _X_EXPORT Bool noMITShmExtension;
+--- a/include/extinit.h	2019-02-12 11:09:17.830801151 -0800
++++ b/include/extinit.h	2019-02-12 11:09:41.001574924 -0800
+@@ -115,6 +115,14 @@
  extern void ShmExtensionInit(void);
  #endif
  
@@ -54,35 +49,21 @@ index fa5f293..62a0ab2 100644
  extern void SyncExtensionInit(void);
  
  extern void XCMiscExtensionInit(void);
-diff --git a/mi/miinitext.c b/mi/miinitext.c
-index 5872bf5..a9a3826 100644
---- a/mi/miinitext.c
-+++ b/mi/miinitext.c
-@@ -150,6 +150,9 @@ static ExtensionToggle ExtensionToggleList[] = {
- #ifdef XCSECURITY
-     {"SECURITY", &noSecurityExtension},
+--- a/mi/miinitext.c	2019-02-12 11:09:58.055428427 -0800
++++ b/mi/miinitext.c	2019-02-12 11:14:03.884738651 -0800
+@@ -174,6 +174,9 @@
+     {XvExtensionInit, "XVideo", &noXvExtension},
+     {XvMCExtensionInit, "XVideo-MotionCompensation", &noXvExtension},
  #endif
 +#ifdef SolarisIAExtension
-+    { IANAME /* "SolarisIA" */, &noIAExtension },
++    {IAExtensionInit, "SolarisIA", &noIAExtension},
 +#endif
- #ifdef RES
-     {"X-Resource", &noResExtension},
+ #ifdef XSELINUX
+     {SELinuxExtensionInit, "SELinux", &noSELinuxExtension},
  #endif
-@@ -296,6 +299,9 @@ static const ExtensionModule staticExtensions[] = {
- #ifdef RES
-     {ResExtensionInit, XRES_NAME, &noResExtension},
- #endif
-+#ifdef SolarisIAExtension
-+    {IAExtensionInit, IANAME, &noIAExtension},
-+#endif
- #ifdef XV
-     {XvExtensionInit, XvName, &noXvExtension},
-     {XvMCExtensionInit, XvMCName, &noXvExtension},
-diff --git a/os/utils.c b/os/utils.c
-index 1a070de..efaeef7 100644
---- a/os/utils.c
-+++ b/os/utils.c
-@@ -184,6 +184,9 @@ Bool noXvExtension = FALSE;
+--- a/os/utils.c	2019-02-12 11:14:17.355625198 -0800
++++ b/os/utils.c	2019-02-12 11:14:31.122468554 -0800
+@@ -173,6 +173,9 @@
  #ifdef DRI2
  Bool noDRI2Extension = FALSE;
  #endif

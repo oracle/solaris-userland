@@ -1,8 +1,10 @@
-Existing set of patches from the X gate 
+Solaris specific patch
+
+not suitable for upstream
 
 
---- a/dix/main.c	2017-02-01 15:05:08.248943479 -0800
-+++ b/dix/main.c	2017-02-01 15:07:26.499207921 -0800
+--- a/dix/main.c	2019-02-12 11:56:09.328185044 -0800
++++ b/dix/main.c	2019-02-12 11:57:18.789153689 -0800
 @@ -78,6 +78,8 @@
  #include <version-config.h>
  #endif
@@ -49,17 +51,18 @@ Existing set of patches from the X gate
  CallbackListPtr RootWindowFinalizeCallback = NULL;
  
  int
-@@ -132,6 +164,9 @@
- {
+@@ -133,6 +165,10 @@
      int i;
      HWEventQueueType alwaysCheckForInput[2];
+ 
 +#if defined(sun)
 +    char *xauthfile = NULL;
 +#endif
- 
++
      display = "0";
  
-@@ -145,6 +180,12 @@
+     InitRegions();
+@@ -145,6 +181,12 @@
  
      ProcessCommandLine(argc, argv);
  
@@ -72,9 +75,9 @@ Existing set of patches from the X gate
      alwaysCheckForInput[0] = 0;
      alwaysCheckForInput[1] = 1;
      while (1) {
---- a/hw/xfree86/os-support/solaris/sun_init.c	2017-02-01 15:07:50.575551326 -0800
-+++ b/hw/xfree86/os-support/solaris/sun_init.c	2017-02-01 15:08:25.999117101 -0800
-@@ -46,6 +46,9 @@
+--- a/hw/xfree86/os-support/solaris/sun_init.c	2019-02-12 11:57:33.263282065 -0800
++++ b/hw/xfree86/os-support/solaris/sun_init.c	2019-02-12 11:58:32.822418762 -0800
+@@ -45,6 +45,9 @@
  #define	CONSOLE_VTNO	1
  #define	SOL_CONSOLE_DEV	"/dev/console"
  
@@ -84,17 +87,17 @@ Existing set of patches from the X gate
  static Bool KeepTty = FALSE;
  static Bool UseConsole = FALSE;
  
-@@ -232,6 +235,8 @@
+@@ -216,6 +219,8 @@
  
              if (ioctl(xf86Info.consoleFd, VT_SETDISPINFO, atoi(display)) < 0)
                  xf86Msg(X_WARNING, "xf86OpenConsole: VT_SETDISPINFO failed\n");
 +
-+	    xf86ConsoleFd = xf86Info.consoleFd;
++            xf86ConsoleFd = xf86Info.consoleFd;
          }
  #endif
  
---- a/os/log.c	2017-02-01 15:08:49.899272429 -0800
-+++ b/os/log.c	2017-02-01 15:09:43.768274981 -0800
+--- a/os/log.c	2019-02-12 11:58:52.550657011 -0800
++++ b/os/log.c	2019-02-12 11:59:41.689337443 -0800
 @@ -108,6 +108,10 @@
  void (*OsVendorVErrorFProc) (const char *, va_list args) = NULL;
  #endif
@@ -106,7 +109,7 @@ Existing set of patches from the X gate
  static FILE *logFile = NULL;
  static int logFileFd = -1;
  static Bool logFlush = FALSE;
-@@ -1007,6 +1011,9 @@
+@@ -1009,6 +1013,9 @@
      VErrorFSigSafe(f, args);
      va_end(args);
      ErrorFSigSafe("\n");
