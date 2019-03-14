@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Create bin symlink just for perl 
@@ -42,3 +42,7 @@
 <transform link -> edit target "\$!\((.*)\)" "$(\1)">
 <transform link -> edit mediator-version "$(PERL_VERSION)" "$!(PERL_VERSION)">
 <transform link -> edit mediator-version "\$!\((.*)\)" "$(\1)">
+
+# We do not ship files which are created during testing
+<transform file path=.*/lib/Big/(Dummy|Liar).pm$ -> drop>
+<transform file path=.*/Big::Dummy\.3$ -> drop>

@@ -124,7 +124,39 @@ t/re/reg_email_thr ............................................ ok
 t/re/reg_eval ................................................. ok
 t/re/reg_eval_scope ........................................... ok
 t/re/reg_fold ................................................. ok
-t/re/reg_mesg ................................................. ok
+t/re/reg_mesg ................................................. # Failed test 461 -  use utf8; /ã(?[ \t ]/ at ./test.pl line 1485
+#      got 'Unexpected ']' with no following ')' in (?[... in regex; marked by <-- HERE in m/ネ(?[ \t ] <-- HERE / at (eval 241) line 1.
+# '
+# expected /(?^u:Syntax\ error\ in\ \(\?\[\.\.\.\]\)\ in\ regex\ m\/ネ\(\?\[\ \\t\ \]\/\ at\ )/
+# Failed test 463 -  /ï(?[ \t ]/ at ./test.pl line 1485
+#      got 'Unexpected ']' with no following ')' in (?[... in regex; marked by <-- HERE in m/ï(?[ \t ] <-- HERE / at (eval 242) line 1.
+# '
+# expected /(?^:Syntax\ error\ in\ \(\?\[\.\.\.\]\)\ in\ regex\ m\/\ï\(\?\[\ \\t\ \]\/\ at\ )/
+# Failed test 465 -  use utf8; /(?[ \t + \e \# ã This was supposed to be a comment ])/ at ./test.pl line 1485
+#      got 'Syntax error in (?[...]) in regex; marked by <-- HERE in m/(?[ \t + \e # ネ This was supposed to be a comment ]) <-- HERE / at (eval 243) line 1.
+# '
+# expected /(?^u:Syntax\ error\ in\ \(\?\[\.\.\.\]\)\ in\ regex\ m\/\(\?\[\ \\t\ \+\ \\e\ \#\ ネ\ This\ was\ supposed\ to\ be\ a\ comment\ \]\)\/\ at\ )/
+# Failed test 467 -  /(?[ \t + \e \# ï This was supposed to be a comment ])/ at ./test.pl line 1485
+#      got 'Syntax error in (?[...]) in regex; marked by <-- HERE in m/(?[ \t + \e # ï This was supposed to be a comment ]) <-- HERE / at (eval 244) line 1.
+# '
+# expected /(?^:Syntax\ error\ in\ \(\?\[\.\.\.\]\)\ in\ regex\ m\/\(\?\[\ \\t\ \+\ \\e\ \#\ \ï\ This\ was\ supposed\ to\ be\ a\ comment\ \]\)\/\ at\ )/
+# Failed test 945 - use re 'strict'; use utf8; /ã(?[ \t ]/ at ./test.pl line 1485
+#      got 'Unexpected ']' with no following ')' in (?[... in regex; marked by <-- HERE in m/ネ(?[ \t ] <-- HERE / at (eval 483) line 1.
+# '
+# expected /(?^u:Syntax\ error\ in\ \(\?\[\.\.\.\]\)\ in\ regex\ m\/ネ\(\?\[\ \\t\ \]\/\ at\ )/
+# Failed test 947 - use re 'strict'; /ï(?[ \t ]/ at ./test.pl line 1485
+#      got 'Unexpected ']' with no following ')' in (?[... in regex; marked by <-- HERE in m/ï(?[ \t ] <-- HERE / at (eval 484) line 1.
+# '
+# expected /(?^:Syntax\ error\ in\ \(\?\[\.\.\.\]\)\ in\ regex\ m\/\ï\(\?\[\ \\t\ \]\/\ at\ )/
+# Failed test 949 - use re 'strict'; use utf8; /(?[ \t + \e \# ã This was supposed to be a comment ])/ at ./test.pl line 1485
+#      got 'Syntax error in (?[...]) in regex; marked by <-- HERE in m/(?[ \t + \e # ネ This was supposed to be a comment ]) <-- HERE / at (eval 485) line 1.
+# '
+# expected /(?^u:Syntax\ error\ in\ \(\?\[\.\.\.\]\)\ in\ regex\ m\/\(\?\[\ \\t\ \+\ \\e\ \#\ ネ\ This\ was\ supposed\ to\ be\ a\ comment\ \]\)\/\ at\ )/
+# Failed test 951 - use re 'strict'; /(?[ \t + \e \# ï This was supposed to be a comment ])/ at ./test.pl line 1485
+#      got 'Syntax error in (?[...]) in regex; marked by <-- HERE in m/(?[ \t + \e # ï This was supposed to be a comment ]) <-- HERE / at (eval 486) line 1.
+# '
+# expected /(?^:Syntax\ error\ in\ \(\?\[\.\.\.\]\)\ in\ regex\ m\/\(\?\[\ \\t\ \+\ \\e\ \#\ \ï\ This\ was\ supposed\ to\ be\ a\ comment\ \]\)\/\ at\ )/
+FAILED at test 461
 t/re/reg_namedcapture ......................................... ok
 t/re/reg_nc_tie ............................................... ok
 t/re/reg_nocapture ............................................ ok
@@ -2401,6 +2433,49 @@ lib/utf8 ...................................................... ok
 lib/vars_carp ................................................. ok
 lib/vars ...................................................... ok
 lib/vmsish .................................................... ok
-lib/warnings .................................................. ok
-All tests successful.
+lib/warnings .................................................. PROG: 
+# OPTION fatal
+qr/(?[[[:word]]])/;
+EXPECTED:
+Assuming NOT a POSIX class since there is no terminating ':' in regex; marked by <-- HERE in m/(?[[[:word <-- HERE ]]])/ at - line 2.
+Unexpected ']' with no following ')' in (?[... in regex; marked by <-- HERE in m/(?[[[:word]] <-- HERE ])/ at - line 2.
+GOT:
+Unmatched ':' in POSIX class in regex; marked by <-- HERE in m/(?[[[:word <-- HERE ]]])/ at - line 2.
+# Failed test 691 - perl qr/(?[[[:word]]])/ XXX Why is 'syntax' lc? at lib/warnings/regcomp line 40
+PROG: 
+# OPTION fatal
+qr/(?[[[:digit: ])/;
+EXPECTED:
+Assuming NOT a POSIX class since no blanks are allowed in one in regex; marked by <-- HERE in m/(?[[[:digit: ] <-- HERE )/ at - line 2.
+syntax error in (?[...]) in regex; marked by <-- HERE in m/(?[[[:digit: ]) <-- HERE / at - line 2.
+GOT:
+Unmatched '[' in POSIX class in regex; marked by <-- HERE in m/(?[[[:digit: <-- HERE  ])/ at - line 2.
+# Failed test 692 - qr/(?[ [[:digit: ])/ at lib/warnings/regcomp line 47
+PROG: 
+# OPTION fatal
+qr/(?[[:digit: ])/
+EXPECTED:
+Assuming NOT a POSIX class since no blanks are allowed in one in regex; marked by <-- HERE in m/(?[[:digit: ] <-- HERE )/ at - line 2.
+syntax error in (?[...]) in regex; marked by <-- HERE in m/(?[[:digit: ]) <-- HERE / at - line 2.
+GOT:
+Unmatched '[' in POSIX class in regex; marked by <-- HERE in m/(?[[:digit: <-- HERE  ])/ at - line 2.
+# Failed test 693 - qr/(?[ [:digit: ])/ at lib/warnings/regcomp line 54
+FAILED at test 691
+Failed 2 tests out of 2295, 99.91% okay.
+	../lib/warnings.t
+	re/reg_mesg.t
+### Since not all tests were successful, you may want to run some of
+### them individually and examine any diagnostic messages they produce.
+### See the INSTALL document's section on "make test".
+### You have a good chance to get more information by running
+###   ./perl harness
+### in the 't' directory since most (>=80%) of the tests succeeded.
+### You may have to set your dynamic library search path,
+### LD_LIBRARY_PATH, to point to the build directory:
+###   setenv LD_LIBRARY_PATH `pwd`:$LD_LIBRARY_PATH; cd t; ./perl harness
+###   LD_LIBRARY_PATH=`pwd`:$LD_LIBRARY_PATH; export LD_LIBRARY_PATH; cd t; ./perl harness
+###   export LD_LIBRARY_PATH=`pwd`:$LD_LIBRARY_PATH; cd t; ./perl harness
+### for csh-style shells, like tcsh; or for traditional/modern
+### Bourne-style shells, like bash, ksh, and zsh, respectively.
+make[1]: *** [makefile:805: check] Error 1
 make[1]: Leaving directory '$(@D)'
