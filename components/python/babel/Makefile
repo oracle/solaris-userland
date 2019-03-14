@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -37,6 +37,9 @@ COMPONENT_ANITYA_ID=	11984
 
 TPNO=			29231
 
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
@@ -47,9 +50,9 @@ COMPONENT_POST_INSTALL_ACTION = \
 	(cd $(PROTO_DIR)/usr/bin ; \
          $(MV) -f pybabel pybabel-$(PYTHON_VERSION))
 
-COMPONENT_TEST_DIR =    $(SOURCE_DIR)
-COMPONENT_TEST_CMD =    /usr/bin/pytest
-COMPONENT_TEST_ARGS=
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
 
 # common targets
 build:		$(BUILD_NO_ARCH)
@@ -59,7 +62,3 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
-
-
-REQUIRED_PACKAGES += library/python/setuptools-27
-REQUIRED_PACKAGES += library/python/setuptools-34

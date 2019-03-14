@@ -20,26 +20,26 @@
 #
 
 #
-# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		jsonrpclib
-COMPONENT_VERSION=	0.2.6
+COMPONENT_VERSION=	0.4.0
 COMPONENT_PROJECT_URL=	https://github.com/tcalmant/jsonrpclib
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	v$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:17acc9f89f74fd9f4a22b2fe4bd26a97a7fe68a5ea0a9bd506fb96685cb0fed2
+    sha256:dfe491c11ede2d2177625c1938aea91b36d01831d0676aa031d7131311fe51d5
 COMPONENT_ARCHIVE_URL=https://github.com/tcalmant/jsonrpclib/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	python-mod/jsonrpclib
 COMPONENT_ANITYA_ID=	17230
 
-TPNO=			24886
+TPNO=			49450
 
-# upstream not Python 3.5 ready
-PYTHON_VERSIONS=	$(PYTHON2_VERSIONS) 3.4
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -47,21 +47,21 @@ include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-COMPONENT_TEST_DIR=	$(COMPONENT_SRC)
-COMPONENT_TEST_CMD= /usr/bin/nosetests
-COMPONENT_TEST_ARGS = tests
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)
+COMPONENT_TEST_CMD =	$(PYTHON) -m nose
+COMPONENT_TEST_ARGS =
+
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 COMPONENT_TEST_TRANSFORMS += \
     '-e "s|\(127.0.0.1\).*|\1|" ' \
-    '-e "s|\(^Ran 51 tests in\).*|\1|" '
+    '-e "s|\(^Ran 59 tests in\).*|\1|" '
 
 # common targets
 build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-# Ran 51 tests, OK.
 test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)

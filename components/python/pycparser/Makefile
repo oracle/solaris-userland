@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -37,6 +37,9 @@ COMPONENT_BUGDB=	python-mod/pycparser
 COMPONENT_ANITYA_ID=	8175
 
 TPNO=			28876
+
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -63,4 +66,3 @@ install:	$(INSTALL_NO_ARCH) $(BUILD_DIR)/license.ply
 test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
-

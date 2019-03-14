@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 COMPILER=		gcc
@@ -38,6 +38,9 @@ COMPONENT_BUGDB=	python-mod/asn1crypto
 COMPONENT_ANITYA_ID=	15550
 
 TPNO=			40851
+
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

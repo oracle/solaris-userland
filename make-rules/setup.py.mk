@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # $ (foreach suffix,$(VERSIONS),$(eval include $(WS_MAKE_RULES)/python-$(suffix).mk))
@@ -29,38 +29,42 @@
 $(BUILD_DIR)/%-2.7/.built:		PYTHON_VERSION=2.7
 $(BUILD_DIR)/%-3.4/.built:		PYTHON_VERSION=3.4
 $(BUILD_DIR)/%-3.5/.built:		PYTHON_VERSION=3.5
+$(BUILD_DIR)/%-3.7/.built:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/$(MACH32)-%/.built:	BITS=32
 $(BUILD_DIR)/$(MACH64)-%/.built:	BITS=64
 
 $(BUILD_DIR)/%-2.7/.installed:		PYTHON_VERSION=2.7
 $(BUILD_DIR)/%-3.4/.installed:		PYTHON_VERSION=3.4
 $(BUILD_DIR)/%-3.5/.installed:		PYTHON_VERSION=3.5
+$(BUILD_DIR)/%-3.7/.installed:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/$(MACH32)-%/.installed:	BITS=32
 $(BUILD_DIR)/$(MACH64)-%/.installed:	BITS=64
 
 $(BUILD_DIR)/%-2.7/.tested:		PYTHON_VERSION=2.7
 $(BUILD_DIR)/%-3.4/.tested:		PYTHON_VERSION=3.4
 $(BUILD_DIR)/%-3.5/.tested:		PYTHON_VERSION=3.5
+$(BUILD_DIR)/%-3.7/.tested:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/$(MACH32)-%/.tested:	BITS=32
 $(BUILD_DIR)/$(MACH64)-%/.tested:	BITS=64
 
 $(BUILD_DIR)/%-2.7/.tested-and-compared:	PYTHON_VERSION=2.7
 $(BUILD_DIR)/%-3.4/.tested-and-compared:	PYTHON_VERSION=3.4
 $(BUILD_DIR)/%-3.5/.tested-and-compared:	PYTHON_VERSION=3.5
+$(BUILD_DIR)/%-3.7/.tested-and-compared:	PYTHON_VERSION=3.7
 $(BUILD_DIR)/$(MACH32)-%/.tested-and-compared:	BITS=32
 $(BUILD_DIR)/$(MACH64)-%/.tested-and-compared:	BITS=64
 
-$(BUILD_DIR)/%-2.6/.system-tested:		PYTHON_VERSION=2.6
 $(BUILD_DIR)/%-2.7/.system-tested:		PYTHON_VERSION=2.7
 $(BUILD_DIR)/%-3.4/.system-tested:		PYTHON_VERSION=3.4
 $(BUILD_DIR)/%-3.5/.system-tested:		PYTHON_VERSION=3.5
+$(BUILD_DIR)/%-3.7/.system-tested:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/$(MACH32)-%/.system-tested:	BITS=32
 $(BUILD_DIR)/$(MACH64)-%/.system-tested:	BITS=64
 
-$(BUILD_DIR)/%-2.6/.system-tested-and-compared:		PYTHON_VERSION=2.6
 $(BUILD_DIR)/%-2.7/.system-tested-and-compared:		PYTHON_VERSION=2.7
 $(BUILD_DIR)/%-3.4/.system-tested-and-compared:		PYTHON_VERSION=3.4
 $(BUILD_DIR)/%-3.5/.system-tested-and-compared:		PYTHON_VERSION=3.5
+$(BUILD_DIR)/%-3.7/.system-tested-and-compared:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/$(MACH32)-%/.system-tested-and-compared:	BITS=32
 $(BUILD_DIR)/$(MACH64)-%/.system-tested-and-compared:	BITS=64
 
@@ -73,6 +77,9 @@ endif
 ifeq ($(PYTHON_VERSION),3.5)
 BUILD_32_and_64 = $(BUILD_64)
 endif
+ifeq ($(PYTHON_VERSION),3.7)
+BUILD_32_and_64 = $(BUILD_64)
+endif
 
 INSTALL_32 = $(PYTHON2_VERSIONS:%=$(BUILD_DIR)/$(MACH32)-%/.installed)
 INSTALL_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
@@ -81,6 +88,9 @@ ifeq ($(PYTHON_VERSION),3.4)
 INSTALL_32_and_64 = $(INSTALL_64)
 endif
 ifeq ($(PYTHON_VERSION),3.5)
+INSTALL_32_and_64 = $(INSTALL_64)
+endif
+ifeq ($(PYTHON_VERSION),3.7)
 INSTALL_32_and_64 = $(INSTALL_64)
 endif
 
@@ -107,6 +117,10 @@ endif
 ifneq ($(findstring 3.5,$(PYTHON_VERSIONS)),)
 $(BUILD_DIR)/%-2.7/.built:     $(BUILD_DIR)/%-3.5/.built
 $(BUILD_DIR)/%-2.7/.installed: $(BUILD_DIR)/%-3.5/.installed
+endif
+ifneq ($(findstring 3.7,$(PYTHON_VERSIONS)),)
+$(BUILD_DIR)/%-2.7/.built:     $(BUILD_DIR)/%-3.7/.built
+$(BUILD_DIR)/%-2.7/.installed: $(BUILD_DIR)/%-3.7/.installed
 endif
 
 # Create a distutils config file specific to the combination of build
@@ -185,6 +199,9 @@ endif
 ifeq ($(PYTHON_VERSION),3.5)
 TEST_32_and_64 = $(TEST_64)
 endif
+ifeq ($(PYTHON_VERSION),3.7)
+TEST_32_and_64 = $(TEST_64)
+endif
 ifeq ($(strip $(wildcard $(COMPONENT_SYSTEM_TEST_RESULTS_DIR)/results-*.master)),)
 SYSTEM_TEST_32 = $(PYTHON2_VERSIONS:%=$(BUILD_DIR)/$(MACH32)-%/.system-tested)
 SYSTEM_TEST_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.system-tested)
@@ -198,6 +215,9 @@ ifeq ($(PYTHON_VERSION),3.4)
 SYSTEM_TEST_32_and_64 = $(SYSTEM_TEST_64)
 endif
 ifeq ($(PYTHON_VERSION),3.5)
+SYSTEM_TEST_32_and_64 = $(SYSTEM_TEST_64)
+endif
+ifeq ($(PYTHON_VERSION),3.7)
 SYSTEM_TEST_32_and_64 = $(SYSTEM_TEST_64)
 endif
 
@@ -280,4 +300,8 @@ endif
 ifneq ($(findstring 3.5, $(PYTHON_VERSIONS)),)
 REQUIRED_PACKAGES += runtime/python-35
 REQUIRED_PACKAGES += library/python/setuptools-35
+endif
+ifneq ($(findstring 3.7, $(PYTHON_VERSIONS)),)
+REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += library/python/setuptools-37
 endif

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
@@ -51,6 +51,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/exceptions.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/fernet.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/_oid.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/interfaces.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/__init__.py
@@ -65,9 +66,11 @@ file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/op
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/encode_asn1.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/hashes.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/hmac.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/ocsp.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/rsa.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/utils.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/x25519.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/x448.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/x509.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/bindings/64/_constant_time.so
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/bindings/64/_openssl.so
@@ -88,6 +91,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/asymmetric/rsa.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/asymmetric/utils.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/asymmetric/x25519.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/asymmetric/x448.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/ciphers/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/ciphers/aead.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/ciphers/algorithms.py
@@ -107,7 +111,10 @@ file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/keywrap.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/mac.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/padding.py
-file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/serialization.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/serialization/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/serialization/base.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/serialization/pkcs12.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/serialization/ssh.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/twofactor/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/twofactor/hotp.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/twofactor/totp.py
@@ -119,8 +126,8 @@ file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/x509/certificate_t
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/x509/extensions.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/x509/general_name.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/x509/name.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/x509/ocsp.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/x509/oid.py
-
 #
 license cryptography.license license=BSD-like
 
@@ -140,14 +147,8 @@ depend type=require \
 # force a dependency on enum; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/enum-$(PYV)
 
-# force a dependency on idna; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/idna-$(PYV)
-
 # force a dependency on ipaddress; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/ipaddress-$(PYV)
-
-# force a dependency on setuptools; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/setuptools-$(PYV)
 
 # force a dependency on six; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/six-$(PYV)

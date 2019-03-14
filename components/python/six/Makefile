@@ -38,6 +38,9 @@ COMPONENT_ANITYA_ID=	4027
 
 TPNO=			39455
 
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
@@ -45,8 +48,8 @@ include $(WS_MAKE_RULES)/ips.mk
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
-COMPONENT_TEST_ARGS =	test_six.py
-COMPONENT_TEST_CMD =	py.test-$(PYTHON_VERSION)
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
 COMPONENT_TEST_TRANSFORMS += \
   '-e "s/\(in \).*\(seconds\)/\1 x \2/"' \
   '-e "/^platform/d"'

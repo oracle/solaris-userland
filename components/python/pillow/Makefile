@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 COMPILER=		gcc
@@ -39,6 +39,9 @@ COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/pil
 
 TPNO=			42560
+
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

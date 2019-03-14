@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -37,6 +37,9 @@ COMPONENT_BUGDB=	python-mod/requests
 COMPONENT_ANITYA_ID=	4004
 
 TPNO=			28405
+
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

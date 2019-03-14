@@ -1,0 +1,70 @@
+ test session starts ==============================
+cachedir: .cache
+rootdir: $(SOURCE_DIR), inifile: pytest.ini
+collecting ... collected 59 items
+
+cheroot/server.py::cheroot.server PASSED
+cheroot/test/test__compat.py::test_compat_functions_positive[func0-bar-bar] PASSED
+cheroot/test/test__compat.py::test_compat_functions_positive[func1-bar-bar] PASSED
+cheroot/test/test__compat.py::test_compat_functions_positive[func2-bar-bar] PASSED
+cheroot/test/test__compat.py::test_compat_functions_negative_nonnative[func0] PASSED
+cheroot/test/test__compat.py::test_compat_functions_negative_nonnative[func1] PASSED
+cheroot/test/test__compat.py::test_ntou_escape SKIPPED
+cheroot/test/test_conn.py::test_HTTP11_persistent_connections PASSED
+cheroot/test/test_conn.py::test_streaming_11[False] PASSED
+cheroot/test/test_conn.py::test_streaming_11[True] PASSED
+cheroot/test/test_conn.py::test_streaming_10[False] PASSED
+cheroot/test/test_conn.py::test_streaming_10[True] PASSED
+cheroot/test/test_conn.py::test_keepalive[HTTP/1.0] PASSED
+cheroot/test/test_conn.py::test_keepalive[HTTP/1.1] PASSED
+cheroot/test/test_conn.py::test_HTTP11_Timeout[True] PASSED
+cheroot/test/test_conn.py::test_HTTP11_Timeout[False] PASSED
+cheroot/test/test_conn.py::test_HTTP11_Timeout_after_request PASSED
+cheroot/test/test_conn.py::test_HTTP11_pipelining PASSED
+cheroot/test/test_conn.py::test_100_Continue PASSED
+cheroot/test/test_conn.py::test_readall_or_close[0] PASSED
+cheroot/test/test_conn.py::test_readall_or_close[1001] PASSED
+cheroot/test/test_conn.py::test_No_Message_Body PASSED
+cheroot/test/test_conn.py::test_Chunked_Encoding xfail
+cheroot/test/test_conn.py::test_Content_Length_in PASSED
+cheroot/test/test_conn.py::test_Content_Length_not_int PASSED
+cheroot/test/test_conn.py::test_Content_Length_out[/wrong_cl_buffered-500-The requested resource returned more bytes than the declared Content-Length.] SKIPPED
+cheroot/test/test_conn.py::test_Content_Length_out[/wrong_cl_unbuffered-200-I too] SKIPPED
+cheroot/test/test_conn.py::test_598 SKIPPED
+cheroot/test/test_conn.py::test_No_CRLF[\n\n] PASSED
+cheroot/test/test_conn.py::test_No_CRLF[\r\n\n] PASSED
+cheroot/test/test_core.py::test_http_connect_request PASSED
+cheroot/test/test_core.py::test_normal_request PASSED
+cheroot/test/test_core.py::test_query_string_request PASSED
+cheroot/test/test_core.py::test_parse_acceptable_uri[/hello] PASSED
+cheroot/test/test_core.py::test_parse_acceptable_uri[/query_string?test=True] PASSED
+cheroot/test/test_core.py::test_parse_acceptable_uri[/%D0%AE%D1%85%D1%85%D1%83%D1%83%D1%83?%D1%97=%D0%B9%D0%BE] PASSED
+cheroot/test/test_core.py::test_parse_uri_unsafe_uri PASSED
+cheroot/test/test_core.py::test_parse_uri_invalid_uri PASSED
+cheroot/test/test_core.py::test_parse_no_leading_slash_invalid[hello] PASSED
+cheroot/test/test_core.py::test_parse_no_leading_slash_invalid[привіт] PASSED
+cheroot/test/test_core.py::test_parse_uri_absolute_uri PASSED
+cheroot/test/test_core.py::test_parse_uri_asterisk_uri PASSED
+cheroot/test/test_core.py::test_parse_uri_fragment_uri PASSED
+cheroot/test/test_core.py::test_no_content_length PASSED
+cheroot/test/test_core.py::test_content_length_required PASSED
+cheroot/test/test_core.py::test_malformed_request_line[GET /-400-Malformed Request-Line] PASSED
+cheroot/test/test_core.py::test_malformed_request_line[GET / HTTPS/1.1-400-Malformed Request-Line: bad protocol] PASSED
+cheroot/test/test_core.py::test_malformed_request_line[GET / HTTP/2.15-505-Cannot fulfill request] PASSED
+cheroot/test/test_core.py::test_malformed_http_method PASSED
+cheroot/test/test_core.py::test_malformed_header PASSED
+cheroot/test/test_core.py::test_request_line_split_issue_1220 PASSED
+cheroot/test/test_core.py::test_garbage_in PASSED
+cheroot/test/test_core.py::test_send_header_before_closing PASSED
+cheroot/test/test_server.py::test_bind_addr_inet[0.0.0.0] PASSED
+cheroot/test/test_server.py::test_bind_addr_inet[::] PASSED
+cheroot/test/test_server.py::test_bind_addr_unix PASSED
+cheroot/test/test_server.py::test_bind_addr_unix_abstract SKIPPED
+cheroot/test/test_server.py::test_peercreds_unix_sock SKIPPED
+cheroot/test/webtest.py::cheroot.test.webtest.strip_netloc PASSED
+
+ generated xml file: $(SOURCE_DIR)/junit-test-results.xml 
+ short test summary info ============================
+XFAIL cheroot/test/test_conn.py::test_Chunked_Encoding
+  Server does not correctly read trailers/ending of the previous HTTP request, thus the second request fails as the server tries to parse b'Content-Type: application/json\r\n' as a Request-Line. This results in HTTP status code 400, instead of 413Ref: https://github.com/cherrypy/cheroot/issues/69
+ 52 passed, 6 skipped, 1 xfailed in x seconds ===============

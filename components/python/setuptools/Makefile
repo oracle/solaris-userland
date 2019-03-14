@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -38,6 +38,9 @@ COMPONENT_PROJECT_URL=	https://bitbucket.org/pypa/setuptools
 COMPONENT_BUGDB=	python-mod/setuptools
 
 TPNO=			43204
+
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

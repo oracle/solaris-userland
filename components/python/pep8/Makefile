@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -37,6 +37,9 @@ COMPONENT_BUGDB=	python-mod/pep8
 COMPONENT_ANITYA_ID=	3966
 
 TPNO=			27399
+
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -71,6 +74,7 @@ COMPONENT_SYSTEM_TEST_ARGS =	pep8.py --testsuite testsuite
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
+# common targets
 build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
@@ -81,3 +85,5 @@ system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += library/python/setuptools-27
 REQUIRED_PACKAGES += library/python/setuptools-34
+REQUIRED_PACKAGES += library/python/setuptools-35
+REQUIRED_PACKAGES += library/python/setuptools-37
