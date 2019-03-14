@@ -18,14 +18,10 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
-
-# HTML documents are obtained directly from source.
-<transform file path=usr/share/doc/bind/html/(.+)$ -> \
-    set action.hash doc/arm/%<1> >
 set name=pkg.fmri \
     value=pkg:/network/dns/bind@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="BIND DNS tools"
@@ -47,48 +43,52 @@ file path=usr/bin/arpaname
 file path=usr/bin/delv
 file path=usr/bin/dig
 file path=usr/bin/host
+file path=usr/bin/mdig
 file path=usr/bin/nslookup
 file path=usr/bin/nsupdate
-link path=usr/lib/dns/$(MACH64)/libbind9.so target=libbind9.so.141.0.4
-link path=usr/lib/dns/$(MACH64)/libbind9.so.141 target=libbind9.so.141.0.4
-file path=usr/lib/dns/$(MACH64)/libbind9.so.141.0.4
-link path=usr/lib/dns/$(MACH64)/libdns.so target=libdns.so.193.0.2
-link path=usr/lib/dns/$(MACH64)/libdns.so.193 target=libdns.so.193.0.2
-file path=usr/lib/dns/$(MACH64)/libdns.so.193.0.2
-link path=usr/lib/dns/$(MACH64)/libirs.so target=libirs.so.141.0.9
-link path=usr/lib/dns/$(MACH64)/libirs.so.141 target=libirs.so.141.0.9
-file path=usr/lib/dns/$(MACH64)/libirs.so.141.0.9
-link path=usr/lib/dns/$(MACH64)/libisc.so target=libisc.so.191.0.3
-link path=usr/lib/dns/$(MACH64)/libisc.so.191 target=libisc.so.191.0.3
-file path=usr/lib/dns/$(MACH64)/libisc.so.191.0.3
-link path=usr/lib/dns/$(MACH64)/libisccc.so target=libisccc.so.140.0.6
-link path=usr/lib/dns/$(MACH64)/libisccc.so.140 target=libisccc.so.140.0.6
-file path=usr/lib/dns/$(MACH64)/libisccc.so.140.0.6
-link path=usr/lib/dns/$(MACH64)/libisccfg.so target=libisccfg.so.144.1.1
-link path=usr/lib/dns/$(MACH64)/libisccfg.so.144 target=libisccfg.so.144.1.1
-file path=usr/lib/dns/$(MACH64)/libisccfg.so.144.1.1
-link path=usr/lib/dns/$(MACH64)/liblwres.so target=liblwres.so.141.0.5
-link path=usr/lib/dns/$(MACH64)/liblwres.so.141 target=liblwres.so.141.0.5
-file path=usr/lib/dns/$(MACH64)/liblwres.so.141.0.5
-dir  path=usr/lib/python$(PYVER)/vendor-packages
-dir  path=usr/lib/python$(PYVER)/vendor-packages/isc
-file path=usr/lib/python$(PYVER)/vendor-packages/isc-1.0-py$(PYVER).egg-info
-file path=usr/lib/python$(PYVER)/vendor-packages/isc/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/isc/checkds.py
-file path=usr/lib/python$(PYVER)/vendor-packages/isc/coverage.py
-file path=usr/lib/python$(PYVER)/vendor-packages/isc/dnskey.py
-file path=usr/lib/python$(PYVER)/vendor-packages/isc/eventlist.py
-file path=usr/lib/python$(PYVER)/vendor-packages/isc/keydict.py
-file path=usr/lib/python$(PYVER)/vendor-packages/isc/keyevent.py
-file path=usr/lib/python$(PYVER)/vendor-packages/isc/keyzone.py
-file path=usr/lib/python$(PYVER)/vendor-packages/isc/utils.py
+link path=usr/lib/dns/$(MACH64)/libbind9.so target=libbind9.so.161.0.1
+link path=usr/lib/dns/$(MACH64)/libbind9.so.161 target=libbind9.so.161.0.1
+file path=usr/lib/dns/$(MACH64)/libbind9.so.161.0.1
+link path=usr/lib/dns/$(MACH64)/libdns.so target=libdns.so.1105.0.0
+link path=usr/lib/dns/$(MACH64)/libdns.so.1105 target=libdns.so.1105.0.0
+file path=usr/lib/dns/$(MACH64)/libdns.so.1105.0.0
+link path=usr/lib/dns/$(MACH64)/libirs.so target=libirs.so.161.0.0
+link path=usr/lib/dns/$(MACH64)/libirs.so.161 target=libirs.so.161.0.0
+file path=usr/lib/dns/$(MACH64)/libirs.so.161.0.0
+link path=usr/lib/dns/$(MACH64)/libisc.so target=libisc.so.1100.0.1
+link path=usr/lib/dns/$(MACH64)/libisc.so.1100 target=libisc.so.1100.0.1
+file path=usr/lib/dns/$(MACH64)/libisc.so.1100.0.1
+link path=usr/lib/dns/$(MACH64)/libisccc.so target=libisccc.so.161.0.1
+link path=usr/lib/dns/$(MACH64)/libisccc.so.161 target=libisccc.so.161.0.1
+file path=usr/lib/dns/$(MACH64)/libisccc.so.161.0.1
+link path=usr/lib/dns/$(MACH64)/libisccfg.so target=libisccfg.so.163.0.1
+link path=usr/lib/dns/$(MACH64)/libisccfg.so.163 target=libisccfg.so.163.0.1
+file path=usr/lib/dns/$(MACH64)/libisccfg.so.163.0.1
+link path=usr/lib/dns/$(MACH64)/liblwres.so target=liblwres.so.161.0.1
+link path=usr/lib/dns/$(MACH64)/liblwres.so.161 target=liblwres.so.161.0.1
+file path=usr/lib/dns/$(MACH64)/liblwres.so.161.0.1
+file path=usr/lib/python3.4/vendor-packages/isc-2.0-py3.4.egg-info
+file path=usr/lib/python3.4/vendor-packages/isc/__init__.py
+file path=usr/lib/python3.4/vendor-packages/isc/checkds.py
+file path=usr/lib/python3.4/vendor-packages/isc/coverage.py
+file path=usr/lib/python3.4/vendor-packages/isc/dnskey.py
+file path=usr/lib/python3.4/vendor-packages/isc/eventlist.py
+file path=usr/lib/python3.4/vendor-packages/isc/keydict.py
+file path=usr/lib/python3.4/vendor-packages/isc/keyevent.py
+file path=usr/lib/python3.4/vendor-packages/isc/keymgr.py
+file path=usr/lib/python3.4/vendor-packages/isc/keyseries.py
+file path=usr/lib/python3.4/vendor-packages/isc/keyzone.py
+file path=usr/lib/python3.4/vendor-packages/isc/parsetab.py
+file path=usr/lib/python3.4/vendor-packages/isc/policy.py
+file path=usr/lib/python3.4/vendor-packages/isc/rndc.py
+file path=usr/lib/python3.4/vendor-packages/isc/utils.py
 link path=usr/sbin/arpaname target=../bin/arpaname
 link path=usr/sbin/dig target=../bin/dig
 link path=usr/sbin/host target=../bin/host
 link path=usr/sbin/nslookup target=../bin/nslookup
 link path=usr/sbin/nsupdate target=../bin/nsupdate
 file path=usr/sbin/rndc
-file doc/arm/Bv9ARM.pdf path=usr/share/doc/bind/Bv9ARM.pdf
+file path=usr/share/doc/bind/Bv9ARM.pdf
 file path=usr/share/doc/bind/html/Bv9ARM.ch01.html
 file path=usr/share/doc/bind/html/Bv9ARM.ch02.html
 file path=usr/share/doc/bind/html/Bv9ARM.ch03.html
@@ -113,32 +113,41 @@ file path=usr/share/doc/bind/html/man.dnssec-dsfromkey.html
 file path=usr/share/doc/bind/html/man.dnssec-importkey.html
 file path=usr/share/doc/bind/html/man.dnssec-keyfromlabel.html
 file path=usr/share/doc/bind/html/man.dnssec-keygen.html
+file path=usr/share/doc/bind/html/man.dnssec-keymgr.html
 file path=usr/share/doc/bind/html/man.dnssec-revoke.html
 file path=usr/share/doc/bind/html/man.dnssec-settime.html
 file path=usr/share/doc/bind/html/man.dnssec-signzone.html
 file path=usr/share/doc/bind/html/man.dnssec-verify.html
+file path=usr/share/doc/bind/html/man.dnstap-read.html
 file path=usr/share/doc/bind/html/man.genrandom.html
 file path=usr/share/doc/bind/html/man.host.html
 file path=usr/share/doc/bind/html/man.isc-hmac-fixup.html
+file path=usr/share/doc/bind/html/man.lwresd.html
+file path=usr/share/doc/bind/html/man.mdig.html
 file path=usr/share/doc/bind/html/man.named-checkconf.html
 file path=usr/share/doc/bind/html/man.named-checkzone.html
 file path=usr/share/doc/bind/html/man.named-journalprint.html
+file path=usr/share/doc/bind/html/man.named-nzd2nzf.html
 file path=usr/share/doc/bind/html/man.named-rrchecker.html
 file path=usr/share/doc/bind/html/man.named.conf.html
 file path=usr/share/doc/bind/html/man.named.html
 file path=usr/share/doc/bind/html/man.nsec3hash.html
+file path=usr/share/doc/bind/html/man.nslookup.html
 file path=usr/share/doc/bind/html/man.nsupdate.html
+file path=usr/share/doc/bind/html/man.pkcs11-destroy.html
+file path=usr/share/doc/bind/html/man.pkcs11-keygen.html
+file path=usr/share/doc/bind/html/man.pkcs11-list.html
+file path=usr/share/doc/bind/html/man.pkcs11-tokens.html
 file path=usr/share/doc/bind/html/man.rndc-confgen.html
 file path=usr/share/doc/bind/html/man.rndc.conf.html
 file path=usr/share/doc/bind/html/man.rndc.html
 file path=usr/share/doc/bind/html/notes.html
-file doc/arm/notes.pdf path=usr/share/doc/bind/notes.pdf
-
-# Standard Documentation
+file path=usr/share/doc/bind/notes.pdf
 file path=usr/share/man/man1/arpaname.1
 file path=usr/share/man/man1/delv.1
 file path=usr/share/man/man1/dig.1
 file path=usr/share/man/man1/host.1
+file path=usr/share/man/man1/mdig.1
 file path=usr/share/man/man1/named-rrchecker.1
 file path=usr/share/man/man1/nslookup.1
 file path=usr/share/man/man1/nsupdate.1
@@ -151,6 +160,7 @@ file path=usr/share/man/man8/dnssec-dsfromkey.8
 file path=usr/share/man/man8/dnssec-importkey.8
 file path=usr/share/man/man8/dnssec-keyfromlabel.8
 file path=usr/share/man/man8/dnssec-keygen.8
+file path=usr/share/man/man8/dnssec-keymgr.8
 file path=usr/share/man/man8/dnssec-revoke.8
 file path=usr/share/man/man8/dnssec-settime.8
 file path=usr/share/man/man8/dnssec-signzone.8
@@ -158,8 +168,8 @@ file path=usr/share/man/man8/dnssec-verify.8
 file path=usr/share/man/man8/genrandom.8
 file path=usr/share/man/man8/isc-hmac-fixup.8
 file path=usr/share/man/man8/named-checkconf.8
-link path=usr/share/man/man8/named-checkzone.8 target=named-compilezone.8
-file path=usr/share/man/man8/named-compilezone.8
+file path=usr/share/man/man8/named-checkzone.8
+link path=usr/share/man/man8/named-compilezone.8 target=named-checkzone.8
 file path=usr/share/man/man8/named-journalprint.8
 file path=usr/share/man/man8/named.8
 file path=usr/share/man/man8/nsec3hash.8

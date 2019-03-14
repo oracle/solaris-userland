@@ -1,0 +1,28 @@
+This patch was created by Oracle to allow compilation of BIND; caused
+by "Fix ECC algorithms unused constants in PKCS#11 build (c116fb96)",
+https://gitlab.isc.org/isc-projects/bind9/commit/c116fb963ac8aca0452722543eec8b607cad06a8
+
+The patch provided to ISC, https://gitlab.isc.org/isc-projects/bind9/issues/935
+
+--- orig-bind-9.11.6/bin/pkcs11/pkcs11-keygen.c	2019-02-27 15:28:15.000000000 -0800
++++ bind-9.11.6/bin/pkcs11/pkcs11-keygen.c	2019-03-11 09:20:50.955257469 -0700
+@@ -403,6 +403,10 @@
+ 		public_template[RSA_PUBLIC_EXPONENT].ulValueLen = expsize;
+ 		break;
+ 	case key_ecc:
++#if !defined(HAVE_PKCS11_ECDSA)
++		fprintf(stderr, "prime256v1 and secp3841r1 are not supported\n");
++		usage();
++#else
+ 		op_type = OP_EC;
+ 		if (bits == 0)
+ 			bits = 256;
+@@ -429,7 +433,7 @@
+ 			public_template[4].ulValueLen =
+ 				sizeof(pk11_ecc_secp384r1);
+ 		}
+-
++#endif
+ 		break;
+ 	case key_ecx:
+ #if !defined(CKM_EDDSA_KEY_PAIR_GEN)

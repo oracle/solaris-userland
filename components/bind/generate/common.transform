@@ -1,0 +1,56 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+# Assign all files and links to bind Client package; bindc.p5m.
+# Later rules will reassign as necessary.
+<transform file link -> default pkg.type client-pkg>
+
+# Identify derived Server package, bind.p5m, contents.
+# Everything delivered to usr/sbin - except for rndc.
+<transform file link hardlink path=usr/sbin/* -> set pkg.type server-pkg>
+<transform file path=usr/sbin/rndc$ -> set pkg.type client-pkg>
+
+# Historically named-rrchecker is delivered in the server package.
+<transform file path=usr/bin/named-rrchecker -> set pkg.type server-pkg>
+# SMF files are for server package.
+<transform file path=Solaris/(dns-server.sh|server.xml) -> set pkg.type bind>
+
+# Not delivering header files, we consider the libraries private.
+<transform file path=usr/include/.* -> drop>
+
+# Light Weight Resolver Daemon is not provided, the libraries are, but
+# they are considered private, and are being removed in 9.13, so no
+# documentation.
+<transform file link hardlink path=usr/sbin/lwresd -> drop>
+<transform file link hardlink path=usr/share/man/man./lwres.* -> drop>
+
+# Not providing sample keys file.
+<transform file path=etc/bind\.keys -> drop>
+
+# Not providing bind9-config (aka isc-config) at this time.
+<transform file link hardlink path=usr/bin/bind9-config -> drop>
+<transform file link hardlink path=usr/bin/isc-config.sh -> drop>
+<transform file link hardlink path=usr/share/man/man1/bind9-config.1 -> drop>
+<transform file link hardlink path=usr/share/man/man1/isc-config.sh.1 -> drop>
