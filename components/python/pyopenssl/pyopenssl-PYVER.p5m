@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
@@ -61,6 +61,13 @@ depend type=optional \
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
 
+# force a dependency on cryptography
+depend type=require fmri=library/python/cryptography-$(PYV)
+
 # force a dependency on the pyopenssl package
 depend type=require \
     fmri=library/python/pyopenssl@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+
+# force a dependency on six
+depend type=require fmri=library/python/six-$(PYV)
+

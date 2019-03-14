@@ -1,0 +1,22 @@
+This patch fixes a problem with non ASCII x509 names and is needed for IPS to work.
+
+It was already reported upstream and should be in next release:
+https://github.com/pyca/cryptography/issues/4810
+
+--- cryptography-2.5/src/cryptography/x509/name.py
++++ cryptography-2.5/src/cryptography/x509/name.py
+@@ -190,7 +190,7 @@ class RelativeDistinguishedName(object):
+         return len(self._attributes)
+ 
+     def __repr__(self):
+-        return "<RelativeDistinguishedName({0})>".format(self.rfc4514_string())
++        return "<RelativeDistinguishedName({0!r})>".format(self.rfc4514_string())
+ 
+ 
+ class Name(object):
+@@ -253,4 +253,4 @@ class Name(object):
+         return sum(len(rdn) for rdn in self._attributes)
+ 
+     def __repr__(self):
+-        return "<Name({0})>".format(self.rfc4514_string())
++        return "<Name({0!r})>".format(self.rfc4514_string())

@@ -1,6 +1,14 @@
 Solaris specific patch, not suitable for upstream.
-The pytest.ini changes are required as the flake8 tool
-is not available in Solaris.
+
+The pytest.ini changes are required as the flake8 tool is not available in Solaris.
+
+Pytest for python 3.7 is not happy with the docstring. Since there is no change
+in the actual functionality, it is safe just to remove it.
+
+mock module has a different import paths in Python version 2.x and 3.x.
+
+freezegun module is not in Solaris -> skip tests using it.
+
 --- tempora-1.12.old/pytest.ini	2018-06-26 06:01:55.000000000 +0000
 +++ tempora-1.12/pytest.ini	2018-08-31 06:05:26.199003252 +0000
 @@ -1,4 +1,4 @@
@@ -9,3 +17,53 @@ is not available in Solaris.
 -addopts=--doctest-modules --flake8
 +addopts=--doctest-modules
  doctest_optionflags=ALLOW_UNICODE ELLIPSIS
+--- tempora-1.12/tempora/__init__.py	2019-03-04 16:25:38.709855066 +0000
++++ tempora-1.12/tempora/__init__.py	2019-03-04 16:25:24.547851685 +0000
+@@ -432,14 +432,6 @@ def parse_timedelta(str):
+ 
+ 	>>> parse_timedelta('1 year, 1 month')
+ 	datetime.timedelta(days=395, seconds=58685)
+-
+-	Note that months and years strict intervals, not aligned
+-	to a calendar:
+-
+-	>>> now = datetime.datetime.now()
+-	>>> later = now + parse_timedelta('1 year')
+-	>>> later.replace(year=now.year) - now
+-	datetime.timedelta(seconds=20940)
+ 	"""
+ 	deltas = (_parse_timedelta_part(part.strip()) for part in str.split(','))
+ 	return sum(deltas, datetime.timedelta())
+--- tempora-1.12/tests/test_timing.py	2019-03-04 16:31:34.766068277 +0000
++++ tempora-1.12/tests/test_timing.py	2019-03-04 16:30:19.597717658 +0000
+@@ -2,7 +2,11 @@ import datetime
+ import time
+ import contextlib
+ import os
+-from unittest import mock
++
++try:
++	import mock
++except ImportError:
++	from unittest import mock
+ 
+ from tempora import timing
+ 
+--- tempora-1.12/tempora/tests/test_schedule.py	2019-03-04 16:38:04.250717543 +0000
++++ tempora-1.12/tempora/tests/test_schedule.py	2019-03-04 16:37:38.680204272 +0000
+@@ -4,7 +4,6 @@ import datetime
+ 
+ import pytest
+ import pytz
+-import freezegun
+ 
+ from tempora import schedule
+ 
+@@ -96,6 +95,7 @@ class TestTimezones:
+ 		cmd = schedule.DelayedCommand.at_time(target, target=None)
+ 		assert cmd.due()
+ 
++	@pytest.mark.skip(reason="We don't have a freezegun module in Solaris")
+ 	def test_daylight_savings(self):
+ 		"""
+ 		A command at 9am should always be 9am regardless of

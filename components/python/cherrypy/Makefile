@@ -39,6 +39,9 @@ COMPONENT_ANITYA_ID=	3799
 
 TPNO=			43435
 
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
+
 PATCH_LEVEL=0
 
 include $(WS_MAKE_RULES)/prep.mk
@@ -50,8 +53,12 @@ COMPONENT_POST_INSTALL_ACTION = \
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
+# Some tests can fail with proxy set
+COMPONENT_TEST_ENV += http_proxy= HTTP_PROXY=
+COMPONENT_TEST_ENV += https_proxy= HTTPS_PROXY=
+
 COMPONENT_TEST_DIR = 	$(SOURCE_DIR)
-COMPONENT_TEST_CMD =	py.test-$(PYTHON_VERSION)
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS = 
 COMPONENT_TEST_TRANSFORMS += \
    '-e "s/\(in \).*\(seconds\).*/\1 x \2/"' \

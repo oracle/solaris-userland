@@ -20,23 +20,27 @@
 #
 
 #
-# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
+COMPILER=	gcc
 
 COMPONENT_NAME=		simplejson
 COMPONENT_VERSION=	3.6.5
-COMPONENT_PROJECT_URL=	http://undefined.org/python/#simplejson
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
     sha256:2a3189f79d1c7b8a2149a0e783c0b4217fad9b30a6e7d60450f2553dc2c0e57e
-COMPONENT_ARCHIVE_URL=	https://pypi.python.org/packages/source/s/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	$(call pypi_url)
+COMPONENT_PROJECT_URL=	https://github.com/simplejson/simplejson
 COMPONENT_BUGDB=	python-mod/simplejson
 COMPONENT_ANITYA_ID=	4026
 
 TPNO=			21749
+
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -52,9 +56,9 @@ endif
 
 PKG_MACROS +=		OLD_DESKTOP_BUILD=$(OLD_DESKTOP_BUILD)
 
-COMPONENT_TEST_DIR= $(COMPONENT_SRC)/$(COMPONENT_NAME)/tests
-COMPONENT_TEST_CMD= /usr/bin/py.test-$(PYTHON_VERSION)
-COMPONENT_TEST_ARGS= -v
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/$(COMPONENT_NAME)/tests
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =	-v
 
 # The additional simplejson specific set of transforms to be applied
 # to the test results to try to normalize them.
@@ -65,14 +69,16 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^ *$$/d" ' \
 	'-e "/^platform sunos5 .*/d" ' \
 	'-e "/^plugins.*/d" ' \
+	'-e "/^cachedir:*/d" ' \
 	'-e "/pep8/d" ' \
 	'-e "/pyflakes/d" '
 
-COMPONENT_SYSTEM_TEST_DIR= $(COMPONENT_SRC)/$(COMPONENT_NAME)/tests
-COMPONENT_SYSTEM_TEST_CMD= /usr/bin/py.test-$(PYTHON_VERSION)
-COMPONENT_SYSTEM_TEST_ARGS= -v
+COMPONENT_SYSTEM_TEST_DIR = $(SOURCE_DIR)
+COMPONENT_SYSTEM_TEST_CMD = $(PYTHON) -m pytest
+COMPONENT_SYSTEM_TEST_ARGS = -v
 COMPONENT_SYSTEM_TEST_ENV =
 
+# common targets
 build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 COMPILER=		gcc
@@ -41,31 +41,30 @@ COMPONENT_ANITYA_ID=	5536
 
 TPNO=			40843
 
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-LDSHARED=      $(CC) -G
-PYTHON_ENV +=  LDSHARED="$(LDSHARED)"
-
 CFLAGS = -DXOPEN_SOURCE=700
 CFLAGS += $(CC_BITS)
 CFLAGS += -Dno_inline=noinline
-CFLAGS.studio += -xCC
 
-# We get spurious test failures with python 3.4
+
 COMPONENT_TEST_DIR =	$(@D)/tests
-COMPONENT_TEST_ENV =	PYTHON_VERSIONS="2.7 3.5"
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+
 COMPONENT_TEST_ENV +=	$(PYTHON_ENV)
 COMPONENT_TEST_ENV +=	PYTHONPATH=$(PROTO_DIR)/$(PYTHON_LIB)
-COMPONENT_TEST_ENV +=	TESTOWNLIB_CC="$(CC) $(CC_PIC) %s $(CC_BITS) -G -o %s"
-COMPONENT_TEST_CMD =	$(PYTHON.$(BITS)) /usr/bin/py.test-$(PYTHON_VERSION)
+COMPONENT_TEST_ENV +=	TESTOWNLIB_CC="$(CC) $(CC_PIC) %s $(CC_BITS) -shared -o %s"
+
 COMPONENT_TEST_ARGS =	--resultlog $(@D)/testresults
 COMPONENT_TEST_ARGS +=	-p no:codechecker
 COMPONENT_TEST_ARGS +=	-v
-COMPONENT_TEST_ARGS +=	$(TEST_SKIPS)
 COMPONENT_TEST_ARGS +=	c testing
 
 # Copy the tests and a few of the source files they read into a scratch
@@ -85,13 +84,14 @@ build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)
 
-test:		$(TEST_32_and_64)
+# We get spurious test failures with python 3.4 and 64bit version of python 2.7
+test:		$(BUILD_DIR)/i86-2.7/.tested \
+		$(BUILD_DIR)/amd64-3.5/.tested   \
+		$(BUILD_DIR)/amd64-3.7/.tested
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 
 REQUIRED_PACKAGES += library/libffi
-REQUIRED_PACKAGES += library/python/pycparser-27
-REQUIRED_PACKAGES += library/python/pycparser-34
-REQUIRED_PACKAGES += library/python/pycparser-35
+REQUIRED_PACKAGES += library/python/pycparser
 REQUIRED_PACKAGES += system/library

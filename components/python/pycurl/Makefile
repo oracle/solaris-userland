@@ -20,10 +20,11 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
+COMPILER=	gcc
 
 COMPONENT_NAME=		pycurl
 COMPONENT_VERSION=	7.43.0
@@ -38,12 +39,32 @@ COMPONENT_ANITYA_ID=	7973
 
 TPNO=			28055
 
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 # to make sure that the docs get installed in the right place.
 PYTHON_DATA = /usr
+
+# Testing environment must be clean
+test: ENV += -i
+
+# PYTHON_VENDOR_PACKAGES is incorrectly set by the shared-macros.mk
+%-3.4/.tested: PYTHON_VENDOR_PACKAGES = $(PYTHON_VENDOR_PACKAGES.32)
+%-3.5/.tested: PYTHON_VENDOR_PACKAGES = $(PYTHON_VENDOR_PACKAGES.32)
+%-3.7/.tested: PYTHON_VENDOR_PACKAGES = $(PYTHON_VENDOR_PACKAGES.32)
+
+# Rebuild downloaded .so files for each Python version
+COMPONENT_PRE_TEST_ACTION = ( \
+	cd $(COMPONENT_SRC)/tests/fake-curl/libcurl ; \
+	$(RM) *.so ; $(ENV) $(COMPONENT_BUILD_ENV) $(GMAKE) )
+
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -53,7 +74,7 @@ build:		$(BUILD_32_and_64)
 install:	$(INSTALL_32_and_64)
 
 # test requires bottle and vsftpd which haven't been integrated yet.
-test:		$(NO_TESTS)
+test:		$(TEST_32_and_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 

@@ -20,45 +20,46 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
+COMPILER=	gcc
 
 COMPONENT_NAME=		coverage
-COMPONENT_VERSION=	4.0.3
+COMPONENT_VERSION=	4.5.2
 COMPONENT_PROJECT_URL=	http://nedbatchelder.com/code/coverage/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:85b1275b6d7a61ccc8024a4e9a4c9e896394776edce1a5d075ec116f91925462
+    sha256:ab235d9fe64833f12d1334d29b558aacedfbca2356dfb9691f2d0d38a8a7bfb4
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/coverage
 COMPONENT_ANITYA_ID=	3811
 
-TPNO=			28339
+TPNO=			48548
+
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+COMPONENT_POST_INSTALL_ACTION =	\
+	(cd $(PROTO_DIR)/usr/bin ; $(MV) -f coverage coverage$(PYTHON_VERSION))
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
 build:		$(BUILD_32_and_64)
 
-COMPONENT_POST_INSTALL_ACTION =	\
-	(cd $(PROTO_DIR)/usr/bin ; $(MV) -f coverage coverage$(PYTHON_VERSION))
-
 install:	$(INSTALL_32_and_64)
 
-# test requires PyContracts and gevent which haven't been integrated yet.
+# Tests need unittest-mixins and flaky just to run
+# and several more to complete successfully
 test:		$(NO_TESTS)
 
 system-test:    $(NO_TESTS)
 
-
-REQUIRED_PACKAGES += library/python/setuptools-27
-REQUIRED_PACKAGES += library/python/setuptools-34
-REQUIRED_PACKAGES += library/python/setuptools-35
 REQUIRED_PACKAGES += system/library

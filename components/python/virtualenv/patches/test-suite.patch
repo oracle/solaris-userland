@@ -1,0 +1,17 @@
+Mock is imported from a different package in Python 3.x.
+This is already fixed in the upstream.
+
+--- virtualenv-15.0.1/tests/test_virtualenv.py
++++ virtualenv-15.0.1/tests/test_virtualenv.py
+@@ -7,7 +7,10 @@ import tempfile
+ import pytest
+ import platform  # noqa
+ 
+-from mock import patch, Mock
++try:
++    from mock import patch, Mock
++except:
++    from unittest.mock import patch, Mock
+ 
+ 
+ def test_version():

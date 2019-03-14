@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -38,6 +38,9 @@ COMPONENT_ANITYA_ID=	7874
 
 TPNO=			44998
 
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
@@ -45,13 +48,12 @@ include $(WS_MAKE_RULES)/ips.mk
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/testing
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
-COMPONENT_TEST_CMD =	py.test-$(PYTHON_VERSION)
-COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS = \
-  '-e "/^test\|^==/!d"' \
   '-e "s/\(in \).*\(seconds\)/\1 x \2/"' \
-  '-e "s/[^ A-z0-9:.]//g"'
+  '-n -e "/^test\|^==/p"'
+
 # common targets
 build:		$(BUILD_NO_ARCH)
 
