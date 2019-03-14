@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
@@ -29,11 +29,12 @@ COMPILER =		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xf86-video-ati
-COMPONENT_VERSION=	7.8.0
+COMPONENT_VERSION=	18.1.0
 COMPONENT_ARCHIVE_HASH= \
-	sha256:401f5de772928f3dc4ce43a885adb0a47a2f61aa4a9e45d2ab3d184136a9d6fa
+	sha256:6c335f423c1dc3d904550d41cb871ca4130ba7037dda67d82e3f1555e1bfb9ac
 COMPONENT_BUGDB=        x11/devices-ati
 COMPONENT_ANITYA_ID=	5214
+TPNO=			49208
 
 TEST_TARGET = $(NO_TESTS)
 

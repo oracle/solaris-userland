@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
@@ -29,11 +29,12 @@ COMPILER = 		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xf86-video-vmware
-COMPONENT_VERSION=	13.2.1
+COMPONENT_VERSION=	13.3.0
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e2f7f7101fba7f53b268e7a25908babbf155b3984fb5268b3d244eb6c11bf62b
+	sha256:47971924659e51666a757269ad941a059ef5afe7a47b5101c174a6022ac4066c
 COMPONENT_BUGDB=        x11/devices-x86
 COMPONENT_ANITYA_ID=	5245
+TPNO=			49216
 
 TEST_TARGET = $(NO_TESTS)
 

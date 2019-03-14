@@ -1,0 +1,41 @@
+Changes made upstream in commit a939aa56b3af4418d0c026a3775fde7288b0cca7
+result in a bus error on sparc.  
+
+Should be possible to send upstream
+
+--- a/src/mga_exa.c	2019-03-16 07:29:23.080813299 -0700
++++ b/src/mga_exa.c	2019-03-16 07:33:36.055988116 -0700
+@@ -695,6 +695,7 @@
+     OUTREG(MGAREG_YDSTLEN | MGAREG_EXEC, (dsty << 16) | (h & 0xffff));
+ }
+ 
++#ifndef __sparc__
+ struct unaligned_32 {
+     uint32_t val;
+ } __attribute__((packed));
+@@ -702,6 +703,7 @@
+ struct unaligned_64 {
+     uint64_t val;
+ } __attribute__((packed));
++#endif
+ 
+ static Bool
+ mgaUploadToScreen(PixmapPtr pDst, int x, int y, int w, int h,
+@@ -728,6 +730,7 @@
+     OUTREG(MGAREG_YDSTLEN | MGAREG_EXEC, (y << 16) | (h & 0xffff));
+ 
+     while (h--) {
++#ifndef __sparc__
+         int i = 0;
+ 
+         if (sizeof(long) == 8) {
+@@ -737,6 +740,9 @@
+ 
+         for (; i < bytes_padded; i += 4)
+             *(volatile uint32_t *)(pMga->ILOADBase + i) = ((struct unaligned_32 *)(src + i))->val;
++#else
++	 memcpy (pMga->ILOADBase, src, bytes_padded);
++#endif
+         src += src_pitch;
+     }
+ 
