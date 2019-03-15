@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -28,15 +28,15 @@ COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libvdpau
-COMPONENT_VERSION=	1.1.1
+COMPONENT_VERSION=	1.2
 COMPONENT_PROJECT_URL=  http://freedesktop.org/wiki/Software/VDPAU/
-COMPONENT_ARCHIVE_URL=	http://people.freedesktop.org/~aplattner/vdpau/$(COMPONENT_ARCHIVE)
-COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
+COMPONENT_ARCHIVE_URL=	https://gitlab.freedesktop.org/vdpau/libvdpau/uploads/14b620084c027d546fa0b3f083b800c6/$(COMPONENT_ARCHIVE)
+COMPONENT_SIG_URL=	https://gitlab.freedesktop.org/vdpau/libvdpau/uploads/0abd351387dbb4aa21a43caf847074f3/$(COMPONENT_ARCHIVE).sig
 COMPONENT_ARCHIVE_HASH= \
-	sha256:857a01932609225b9a3a5bf222b85e39b55c08787d0ad427dbd9ec033d58d736
+	sha256:6a499b186f524e1c16b4f5b57a6a2de70dfceb25c4ee546515f26073cd33fa06
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1755
-TPNO=			24731
+TPNO=			50171
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
