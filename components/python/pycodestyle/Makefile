@@ -25,18 +25,18 @@
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		pep8
-COMPONENT_VERSION=	1.7.0
+COMPONENT_NAME=		pycodestyle
+COMPONENT_VERSION=	2.5.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_PROJECT_URL=  http://pypi.python.org/pypi/pep8
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a113d5f5ad7a7abacef9df5ec3f2af23a20a28005921577b15dd584d099d5900
-COMPONENT_ARCHIVE_URL=	http://pypi.python.org/packages/source/p/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
-COMPONENT_BUGDB=	python-mod/pep8
-COMPONENT_ANITYA_ID=	3966
+    sha256:e40a936c9a450ad81df37f549d676d127b1b66000a6c500caa2b085bc0ca976c
+COMPONENT_ARCHIVE_URL=	$(call pypi_url)
+COMPONENT_PROJECT_URL=	https://pycodestyle.readthedocs.io/en/latest/
+COMPONENT_BUGDB=	python-mod/pycodestyle
+COMPONENT_ANITYA_ID=	11773
 
-TPNO=			27399
+TPNO=			50275
 
 # Temporary solution for Python3.7 ready components
 PYTHON_VERSIONS = $(PYTHON3.7_READY)
@@ -50,27 +50,35 @@ COMPONENT_PRE_BUILD_ACTION = \
 	/usr/bin/find $(SOURCE_DIR) -name *.py \
 		-exec $(GSED) -i -e 's/env python/python$(PYTHON_VERSION)/' "{}" \; ;
 
-# Put the correct pep8 version number on the .TH line in the man page in
+# Put the correct pycodestyle version number on the .TH line in the man page in
 # the proto area.
 COMPONENT_POST_INSTALL_ACTION += \
 	($(MKDIR) $(PROTO_DIR)/usr/share/man/man1; \
 	$(GSED) -e 's/XXX/$(COMPONENT_VERSION)/' \
-	    $(COMPONENT_DIR)/files/pep8.1 > \
-	    $(PROTO_DIR)/usr/share/man/man1/pep8.1);
+	    $(COMPONENT_DIR)/files/pycodestyle.1 > \
+	    $(PROTO_DIR)/usr/share/man/man1/pycodestyle.1);
+
+# Copy and compile pep8 file for backward compatibility
+COMPONENT_POST_INSTALL_ACTION += \
+	($(CP) files/pep8.py $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages/pep8.py ; \
+	$(PYTHON) -m compileall $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages/pep8.py);
 
 COMPONENT_POST_INSTALL_ACTION += \
-	(cd $(PROTO_DIR)/usr/bin ; $(MV) -f pep8 pep8-$(PYTHON_VERSION))
+	$(CP) $(PROTOUSRBINDIR)/pycodestyle $(PROTOUSRBINDIR)/pycodestyle-$(PYTHON_VERSION)
 
 # Master test results are the same for all versions of Python, so override
 # here, rather than create multiple identical master files.
 COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS = "-n -e '/^testsuite/p'"
 
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)
-COMPONENT_TEST_ARGS =	pep8.py --testsuite testsuite
+COMPONENT_TEST_DIR =	$(COMPONENT_SRC)
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
 
 COMPONENT_SYSTEM_TEST_DIR =	$(SOURCE_DIR)
+COMPONENT_SYSTEM_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_SYSTEM_TEST_ENV =
-COMPONENT_SYSTEM_TEST_ARGS =	pep8.py --testsuite testsuite
+COMPONENT_SYSTEM_TEST_ARGS =
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -82,8 +90,3 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
-
-REQUIRED_PACKAGES += library/python/setuptools-27
-REQUIRED_PACKAGES += library/python/setuptools-34
-REQUIRED_PACKAGES += library/python/setuptools-35
-REQUIRED_PACKAGES += library/python/setuptools-37
