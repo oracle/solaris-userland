@@ -21,18 +21,18 @@
 #
 
 #
-# Copyright (c) 2005, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2005, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME= 	timezone
-COMPONENT_VERSION=    	2018.6.1
+COMPONENT_VERSION=    	2018.8
 COMPONENT_PROJECT_URL=	http://www.iana.org/time-zones
 COMPONENT_SRC=
 COMPONENT_ARCHIVE_SRC=	none
-HUMAN_VERSION=		2018f
-TPNO=			46810
+HUMAN_VERSION=		2018i
+TPNO=			49973
 COMPONENT_ANITYA_ID=	5021
 
 OS_META_VERSION=	-$(PKG_SOLARIS_VERSION)
