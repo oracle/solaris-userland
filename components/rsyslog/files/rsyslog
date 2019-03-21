@@ -1,7 +1,7 @@
 #!/usr/sbin/sh
 
 #
-# Copyright (c) 2005, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2005, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 . /lib/svc/share/smf_include.sh
@@ -148,7 +148,7 @@ case "$1" in
 		exit $SMF_EXIT_ERR_CONFIG
 	fi
 
-	/usr/lib/rsyslog/rsyslogd >/dev/msglog 2>&1
+	env TZ=localtime /usr/lib/rsyslog/rsyslogd >/dev/msglog 2>&1
 	if [ $? -ne 0 ]; then
 		return 1
 	fi
