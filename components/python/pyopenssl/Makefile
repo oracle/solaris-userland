@@ -20,17 +20,15 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
-COMPILER=	gcc
 
 COMPONENT_NAME=		pyOpenSSL
 COMPONENT_VERSION=	16.2.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
-COMPONENT_ARCHIVE_HASH=	\
-	sha256:7779a3bbb74e79db234af6a08775568c6769b5821faecf6e2f4143edb227516e
+COMPONENT_ARCHIVE_HASH=	sha256:7779a3bbb74e79db234af6a08775568c6769b5821faecf6e2f4143edb227516e
 COMPONENT_ARCHIVE_URL=  $(call pypi_url)
 COMPONENT_PROJECT_URL=  https://pyopenssl.org/
 COMPONENT_BUGDB=	python-mod/pyopenssl
@@ -38,38 +36,40 @@ COMPONENT_ANITYA_ID=	5535
 
 TPNO=			32834
 
-# Temporary solution for Python3.7 ready components
-PYTHON_VERSIONS = $(PYTHON3.7_READY)
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-
-# Testing directly inside the build directory prevents ELFCLASS errors (because
-# both 32bit and 64bit versions of Python 2.7 have their own directory and
-# cached versions of 32/64 bit precompiled .so files are thus not a problem.)
 COMPONENT_PRE_TEST_ACTION = $(CP) -r $(COMPONENT_SRC)/tests $(@D)
-COMPONENT_TEST_DIR =	$(@D)
-COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =
-
-# Some tests require unicode characters, otherwise ~17 tests will fail
-COMPONENT_TEST_ENV += LC_ALL=en_US.UTF-8
-COMPONENT_TEST_ENV += PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES.32):$(PYTHON_VENDOR_PACKAGES)
 
 COMPONENT_TEST_TRANSFORMS += \
-	'-n -e "s/in [^ ]* seconds/in x seconds/" ' \
-	'-e "/tests/p" ' \
-	'-e "/===/p" '
+	'-n ' \
+	'-e "/^\. lib/p" ' \
+	'-e "/^\. tests/p" ' \
+	'-e "/^s tests/p" ' \
+	'-e "/^F tests/p" '
+
+# In tests/test_crypto.py::FunctionTests::test_dump_certificate, the serial number line
+# outputs the same hex as the key, so this is a false error.
+# In tests/test_ssl.py::ConnectionTests::test_set_seesion_wrong_method, This test doesn't
+# work for our version of OpenSSL, which is 1.0.2j; this test only supports OpenSSL 1.0.0
+COMPONENT_TEST_DIR = $(@D)
+COMPONENT_TEST_ENV += PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES.32):$(PYTHON_VENDOR_PACKAGES)
+# Some tests require unicode characters, otherwise ~17 tests will fail
+COMPONENT_TEST_ENV += LC_ALL=en_US.UTF-8
+COMPONENT_TEST_CMD = py.test-$(PYTHON_VERSION)
+COMPONENT_TEST_ARGS = --result-log=$(COMPONENT_TEST_OUTPUT)
+
+# The pep8 and pyflakes output lines sometimes come in a different order.
+COMPONENT_TEST_COMPARE_CMD = sort -o $(COMPONENT_TEST_SNAPSHOT) $(COMPONENT_TEST_SNAPSHOT); $(GDIFF) -uN
 
 build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)
 
-test:		$(TEST_32_and_64)
+test:		install $(TEST_32_and_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 

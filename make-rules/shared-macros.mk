@@ -242,9 +242,6 @@ PYTHON2_VERSIONS =	2.7
 PYTHON3_VERSIONS =	3.4 3.5
 PYTHON_VERSIONS =	$(PYTHON3_VERSIONS) $(PYTHON2_VERSIONS)
 
-# Temporary variable for python 3.7 ready components
-PYTHON3.7_READY = $(PYTHON3_VERSIONS) 3.7 $(PYTHON2_VERSIONS)
-
 # PYTHON3_SOABI variable defines the naming scheme
 # of python3 extension libraries: cpython or abi3.
 # Currently, most of the components use cpython naming scheme by default,
@@ -689,9 +686,6 @@ PYTHON.3.4.VENDOR_PACKAGES = $(PYTHON.3.4.VENDOR_PACKAGES.$(BITS))
 PYTHON.3.5.VENDOR_PACKAGES.64 = /usr/lib/python3.5/vendor-packages
 PYTHON.3.5.VENDOR_PACKAGES = $(PYTHON.3.5.VENDOR_PACKAGES.$(BITS))
 
-PYTHON.3.7.VENDOR_PACKAGES.64 = /usr/lib/python3.7/vendor-packages
-PYTHON.3.7.VENDOR_PACKAGES = $(PYTHON.3.7.VENDOR_PACKAGES.$(BITS))
-
 PYTHON_VENDOR_PACKAGES.32 = /usr/lib/python$(PYTHON_VERSION)/vendor-packages
 PYTHON_VENDOR_PACKAGES.64 = /usr/lib/python$(PYTHON_VERSION)/vendor-packages/64
 PYTHON_VENDOR_PACKAGES = $(PYTHON_VENDOR_PACKAGES.$(BITS))
@@ -699,7 +693,6 @@ PYTHON_VENDOR_PACKAGES = $(PYTHON_VENDOR_PACKAGES.$(BITS))
 PYTHON.2.7.TEST = /usr/lib/python2.7/test
 PYTHON.3.4.TEST = /usr/lib/python3.4/test
 PYTHON.3.5.TEST = /usr/lib/python3.5/test
-PYTHON.3.7.TEST = /usr/lib/python3.7/test
 
 USRBIN.32 =	/usr/bin
 USRBIN.64 =	/usr/bin/$(MACH64)

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -37,16 +37,9 @@ COMPONENT_ANITYA_ID=	3898
 
 TPNO=			14503
 
-# Temporary solution for Python3.7 ready components
-PYTHON_VERSIONS = $(PYTHON3.7_READY)
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)
-COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -55,9 +48,8 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-test:		$(TEST_NO_ARCH)
+# Needs unittest2; enable when that becomes available.
+test:		$(NO_TESTS)
 
 system-test:    $(NO_TESTS)
 
-
-REQUIRED_PACKAGES += library/python/mock
