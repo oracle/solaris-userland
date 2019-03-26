@@ -143,7 +143,6 @@ REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/gd
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libtool/libltdl
-REQUIRED_PACKAGES += library/poppler
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += print/filter/ghostscript
 REQUIRED_PACKAGES += print/filter/ghostscript-core
