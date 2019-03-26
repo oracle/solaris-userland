@@ -58,7 +58,6 @@ ANT_DIST_DIRS+=-Ddist.javadocs=$(PROTOUSRSHAREDOCDIR)/ant/manual/api
 ANT_DIST_DIRS+=-Ddist.lib=$(PROTOUSRSHARELIBDIR)/ant
 
 OPTIONAL_LIBS+=$(USRSHARELIBDIR)/java/junit.jar
-OPTIONAL_LIBS+=$(USRSHAREDIR)/antlr-2.7.7/antlr.jar
 
 COMPONENT_PRE_BUILD_ACTION = $(CP) $(OPTIONAL_LIBS) $(@D)/lib/optional
 
@@ -90,6 +89,5 @@ COMPONENT_TEST_TRANSFORMS +=  \
 	'-e "/^Total time: /d" '
 
 REQUIRED_PACKAGES += developer/java/junit
-REQUIRED_PACKAGES += developer/parser/antlr-2
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93
