@@ -1,0 +1,46 @@
+From e97327eafa12c1fe273aff62a7e2a6ab3566e346 Mon Sep 17 00:00:00 2001
+From: Debarshi Ray <debarshir@gnome.org>
+Date: Thu, 29 Jun 2017 17:10:25 +0200
+Subject: [PATCH] client: Prevent the GDBusMethodInvocation from being unref-ed
+ twice
+
+GsmExportedClientPrivate::handle-end-session-response, like every
+other gdbus-codegen-ed signal for handling methods on the server-side,
+expects a boolean return value from the callback. The lack of a return
+value might confuse the generated glue code into thinking that FALSE
+was returned and the call wasn't acknowledged. That inserts a call to
+g_dbus_method_invocation_return_error. Since we have already called
+g_dbus_method_invocation_return_value (via
+gsm_exported_client_private_complete_end_session_response), and both
+these methods drop GDBus' internal reference on the
+GDBusMethodInvocation we may up with a memory error.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=784349
+---
+ gnome-session/gsm-dbus-client.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/gnome-session/gsm-dbus-client.c b/gnome-session/gsm-dbus-client.c
+index 6f5099f97dcf..dcf96f0b0e20 100644
+--- a/gnome-session/gsm-dbus-client.c
++++ b/gnome-session/gsm-dbus-client.c
+@@ -75,7 +75,7 @@ setup_connection (GsmDBusClient *client)
+         return TRUE;
+ }
+ 
+-static void
++static gboolean
+ handle_end_session_response (GsmExportedClientPrivate *skeleton,
+                              GDBusMethodInvocation    *invocation,
+                              gboolean                  is_ok,
+@@ -87,6 +87,7 @@ handle_end_session_response (GsmExportedClientPrivate *skeleton,
+                                          is_ok, FALSE, FALSE, reason);
+ 
+         gsm_exported_client_private_complete_end_session_response (skeleton, invocation);
++        return TRUE;
+ }
+ 
+ static GObject *
+-- 
+2.9.4
+
