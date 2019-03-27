@@ -383,11 +383,20 @@ $(BUILD_DIR_64)/.built:		BITS=64
 # COMPONENT_MAKE_JOBS contains the maximal number of build
 # jobs per component. The default value is equal to the
 # number of physical cores. The maximal system load is
-# limited by the number of logical cores.
+# limited by the number of virtual processors.
 ifneq ($(wildcard /usr/sbin/psrinfo),)
+
 PSRINFO=/usr/sbin/psrinfo
-COMPONENT_MAKE_JOBS ?= $(shell $(PSRINFO) -pv | grep -c "The core")
+COMPONENT_MAKE_JOBS ?= $(shell $(PSRINFO) -t | grep -c core)
 SYSTEM_MAX_LOAD := $(shell $(PSRINFO) | wc -l)
+
+# If the number of physical cores cannot be determined from
+# 'psrinfo -t' output, we use the number of virtual processors
+# (hardware threads) as a workaround.
+ifeq ($(COMPONENT_MAKE_JOBS),0)
+COMPONENT_MAKE_JOBS := $(SYSTEM_MAX_LOAD)
+endif
+
 endif
 
 # If the memory is almost exhausted, then refuse to execute parallel build jobs.
