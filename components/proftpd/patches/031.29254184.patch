@@ -50,22 +50,24 @@
    }
  
    if (sz == 0) {
-@@ -1683,7 +1697,7 @@ MODRET xfer_pre_appe(cmd_rec *cmd) {
+@@ -1683,8 +1697,9 @@ MODRET xfer_pre_appe(cmd_rec *cmd) {
  MODRET xfer_stor(cmd_rec *cmd) {
    const char *path;
    char *lbuf;
 -  int bufsz, len, xerrno = 0, res;
-+  int bufsz, len, xerrno = 0, res, writen;
++  int bufsz, xerrno = 0, res;
    off_t nbytes_stored, nbytes_max_store = 0;
++  ssize_t len, writen;
    unsigned char have_limit = FALSE;
    struct stat st;
-@@ -1970,8 +1984,31 @@ MODRET xfer_stor(cmd_rec *cmd) {
+   off_t curr_offset, curr_pos = 0;
+@@ -1970,8 +1985,31 @@ MODRET xfer_stor(cmd_rec *cmd) {
        ftp_transfer_start(&proto);
      }
  #endif
 +    writen = 0;
 +    while (writen < len) {
-+      res = pr_fsio_write(stor_fh, (char *)((int)lbuf + writen), len - writen);
++      res = pr_fsio_write(stor_fh, lbuf + writen, len - writen);
 +      if (res < 0) {
 +	int xerrno = errno;
 +	if (xerrno == EAGAIN || xerrno == EINTR) {
@@ -92,7 +94,7 @@
  
  #ifdef _SOLARIS_DTRACE
      if (ftp_transfer_done_enabled() && res == len) {
-@@ -1981,27 +2018,6 @@ MODRET xfer_stor(cmd_rec *cmd) {
+@@ -1981,27 +2019,6 @@ MODRET xfer_stor(cmd_rec *cmd) {
      }
  #endif
  
