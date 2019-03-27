@@ -20,18 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXcursor
-COMPONENT_VERSION=	1.1.15
+COMPONENT_VERSION=	1.2.0
 COMPONENT_ARCHIVE_HASH= \
-	sha256:294e670dd37cd23995e69aae626629d4a2dfe5708851bbc13d032401b7a3df6b
+	sha256:3ad3e9f8251094af6fe8cb4afcf63e28df504d46bfa5a5529db74a505d628782
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1770
+TPNO=			50563
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -43,7 +44,7 @@ CONFIGURE_ENV += LIB_MAN_SUFFIX=3xcursor
 
 # Use /usr/share/icons only, not /usr/X11/share, for consistency with GNOME
 CONFIGURE_OPTIONS += --with-icondir=/usr/share/icons
-CONFIGURE_OPTIONS += --with-cursorpath='~/.icons:/usr/share/icons:/usr/share/pixmaps'
+CONFIGURE_OPTIONS += --with-cursorpath='~/.local/share/icons:~/.icons:/usr/share/icons:/usr/share/pixmaps'
 
 REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libx11

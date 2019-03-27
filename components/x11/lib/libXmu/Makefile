@@ -20,18 +20,19 @@
 #
 
 #
-# Copyright (c) 2008, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2008, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =		64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXmu
-COMPONENT_VERSION=	1.1.2
+COMPONENT_VERSION=	1.1.3
 COMPONENT_ARCHIVE_HASH= \
-	sha256:756edc7c383254eef8b4e1b733c3bf1dc061b523c9f9833ac7058378b8349d0b
+	sha256:9c343225e7c3dc0904f2122b562278da5fed639b1b5e880d25111561bac5b731
 COMPONENT_BUGDB=	x11/libraries
 COMPONENT_ANITYA_ID=	1785
+TPNO=			50573
 
 TEST_TARGET = $(NO_TESTS)
 

@@ -20,18 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXdamage
-COMPONENT_VERSION=	1.1.4
+COMPONENT_VERSION=	1.1.5
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7c3fe7c657e83547f4822bfde30a90d84524efb56365448768409b77f05355ad
+	sha256:b734068643cac3b5f3d2c8279dd366b5bf28c7219d9e9d8717e1383995e0ea45
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1771
+TPNO=			50566
 
 TEST_TARGET = $(NO_TESTS)
 

@@ -20,18 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXrandr
-COMPONENT_VERSION=	1.5.1
+COMPONENT_VERSION=	1.5.2
 COMPONENT_ARCHIVE_HASH= \
-	sha256:1ff9e7fa0e4adea912b16a5f0cfa7c1d35b0dcda0e216831f7715c8a3abcf51a
+	sha256:8aea0ebe403d62330bb741ed595b53741acf45033d3bda1792f1d4cc3daee023
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1788
+TPNO=			50574
 
 TEST_TARGET = $(NO_TESTS)
 

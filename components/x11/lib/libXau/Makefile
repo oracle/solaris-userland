@@ -20,18 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXau
-COMPONENT_VERSION=	1.0.8
+COMPONENT_VERSION=	1.0.9
 COMPONENT_ARCHIVE_HASH= \
-	sha256:fdd477320aeb5cdd67272838722d6b7d544887dfe7de46e1e7cc0c27c2bea4f2
+	sha256:ccf8cbf0dbf676faa2ea0a6d64bcc3b6746064722b606c8c52917ed00dcb73ec
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1765
+TPNO=			50559
 
 TEST_TARGET = $(NO_TESTS)
 

@@ -20,18 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXvMC
-COMPONENT_VERSION=	1.0.10
+COMPONENT_VERSION=	1.0.11
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e501a079b5dfaef0897c56152770c77e05e362065cec58910289aa567277ee2e
+	sha256:4a2e34d444a683a7c010b01b23cefe2b8043a063ce4dc6a9b855836b5262622d
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1796
+TPNO=			50575
 
 TEST_TARGET = $(NO_TESTS)
 

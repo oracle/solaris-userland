@@ -20,18 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xstdcmap
-COMPONENT_VERSION=	1.0.3
+COMPONENT_VERSION=	1.0.4
 COMPONENT_ARCHIVE_HASH= \
-	sha256:f648e2b0cf16aa29856de998e2c7204be39dc1f8daeda9464d32288e0b580fc1
+	sha256:06898b3f1eaad0b205ff3c75bdefa3207868b889d4cb37b32b8267b2bbfe6f8b
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	17150
+TPNO=			50391
 
 # Additional Sun-created utilties
 COMPONENT_NAME_1=	cmap_alloc

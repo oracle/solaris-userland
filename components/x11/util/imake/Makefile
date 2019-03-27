@@ -20,21 +20,22 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		imake
-COMPONENT_VERSION=	1.0.7
+COMPONENT_VERSION=	1.0.8
 COMPONENT_PROJECT_URL=  https://www.x.org
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-    sha256:690c2c4ac1fad2470a5ea73156cf930b8040dc821a0da4e322014a42c045f37e
+    sha256:b8d2e416b3f29cd6482bcffaaf19286d32917a164d07102a0e531ccd41a2a702
 COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)/releases/individual/util/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=        x11/builds
 COMPONENT_ANITYA_ID=	1373
+TPNO=			50400
 
 COMPONENT_NAME_1=       xorg-cf-files
 COMPONENT_VERSION_1=    1.0.6
@@ -44,6 +45,7 @@ COMPONENT_ARCHIVE_HASH_1= \
     sha256:4dcf5a9dbe3c6ecb9d2dd05e629b3d373eae9ba12d13942df87107fdc1b3934d
 COMPONENT_ARCHIVE_URL_1= $(COMPONENT_PROJECT_URL)/releases/individual/util/$(COMPONENT_ARCHIVE_1)
 COMPONENT_ANITYA_ID_1=	17168
+TPNO_1=			45946
 
 TEST_TARGET = $(NO_TESTS)
 SYSTEM_TEST_TARGET= $(SYSTEM_TEST_64)

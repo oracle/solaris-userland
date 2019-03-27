@@ -20,18 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		x11perf
-COMPONENT_VERSION=	1.6.0
+COMPONENT_VERSION=	1.6.1
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e87098dec1947572d70c62697a7b70bde1ab5668237d4660080eade6bc096751
+	sha256:1c7e0b8ffc2794b4ccf11e04d551823abe0ea47b4f7db0637390db6fbe817c34
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	15035
+TPNO=			50352
 
 TEST_TARGET = $(NO_TESTS)
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -30,7 +30,6 @@ set name=pkg.summary value="imake - makefile generation tool from X.Org"
 set name=pkg.description \
     value="Imake is used to generate Makefiles from a template, a set of cpp macro functions, and a per-directory input file called an Imakefile. This allows machine dependencies (such as compiler options, alternate command names, and special make rules) to be kept separate from the descriptions of the various items to be built."
 set name=com.oracle.info.description value=imake
-set name=com.oracle.info.tpno value=$(TPNO)
 set name=info.classification value=org.opensolaris.category.2008:Development/X11
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL) \
     value=$(COMPONENT_ARCHIVE_URL_1)
@@ -167,7 +166,13 @@ file path=usr/lib/X11/config/xorgversion.def
 file path=usr/share/man/man1/imake.1
 file path=usr/share/man/man1/mkdirhier.1
 file path=usr/share/man/man1/xmkmf.1
-license COPYING license=MIT
+license COPYING license="MIT (imake)" \
+    com.oracle.info.description="imake utilities" com.oracle.info.name=imake \
+    com.oracle.info.tpno=$(TPNO) com.oracle.info.version=$(COMPONENT_VERSION)
+license $(COMPONENT_SRC_1)/COPYING license="MIT (xorg-cf-files)" \
+    com.oracle.info.description="Data files for imake utility" \
+    com.oracle.info.name=xorg-cf-files com.oracle.info.tpno=$(TPNO_1) \
+    com.oracle.info.version=$(COMPONENT_VERSION_1)
 # imake uses GNU install from coreutils package in generated Makefiles
 depend type=require fmri=pkg:/file/gnu-coreutils
 

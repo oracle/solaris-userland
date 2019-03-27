@@ -20,18 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xev
-COMPONENT_VERSION=	1.2.2
+COMPONENT_VERSION=	1.2.3
 COMPONENT_ARCHIVE_HASH= \
-	sha256:d94ae62a6c1af56c2961d71f5782076ac4116f0fa4e401420ac7e0db33dc314f
+	sha256:66bc4f1cfa1946d62612737815c34164e4ce40fcebd2c9e1d7e7a1117ad3ad09
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	15026
+TPNO=			50528
 
 TEST_TARGET = $(NO_TESTS)
 

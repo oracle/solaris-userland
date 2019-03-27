@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libfontenc
-COMPONENT_VERSION=	1.1.3
+COMPONENT_VERSION=	1.1.4
 COMPONENT_ARCHIVE_HASH= \
-	sha256:70588930e6fc9542ff38e0884778fbc6e6febf21adbab92fd8f524fe60aefd21
+	sha256:2cfcce810ddd48f2e5dc658d28c1808e86dcf303eaff16728b9aa3dbc0092079
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1613
-TPNO=			14484
+TPNO=			50537
 
 COMPONENT_NAME_1=	encodings
 COMPONENT_VERSION_1=	1.0.4
@@ -42,6 +42,7 @@ COMPONENT_ARCHIVE_URL_1= $(COMPONENT_PROJECT_URL)/releases/individual/font/$(COM
 COMPONENT_ARCHIVE_HASH_1= \
 	sha256:ced6312988a45d23812c2ac708b4595f63fd7a49c4dcd9f66bdcd50d1057d539
 COMPONENT_ANITYA_ID_1=	15051
+TPNO_1=			45910
 
 TEST_TARGET = $(NO_TESTS)
 

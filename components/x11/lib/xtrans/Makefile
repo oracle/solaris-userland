@@ -20,18 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xtrans
-COMPONENT_VERSION=	1.3.5
+COMPONENT_VERSION=	1.4.0
 COMPONENT_ARCHIVE_HASH= \
-	sha256:adbd3b36932ce4c062cd10f57d78a156ba98d618bdb6f50664da327502bc8301
+	sha256:377c4491593c417946efcd2c7600d1e62639f7a8bbca391887e2c4679807d773
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	13441
+TPNO=			50578
 
 TEST_TARGET = $(NO_TESTS)
 

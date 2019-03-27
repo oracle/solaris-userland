@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -28,7 +28,7 @@ set name=pkg.fmri \
     value=pkg:/x11/library/libfs@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="libFS - X Font Service client library"
 set name=pkg.description \
-    value="Library used by X servers and clients to retreive font data from xfs font servers."
+    value="Library used by X servers and clients to retrieve font data from xfs font servers."
 set name=com.oracle.info.description value=libFS
 set name=com.oracle.info.tpno value=$(TPNO)
 set name=info.classification value=org.opensolaris.category.2008:System/X11
@@ -42,14 +42,15 @@ link path=usr/X11/lib/$(MACH64)/libFS.so.5 \
 link path=usr/X11/lib/libFS.so target=../../lib/libFS.so
 link path=usr/X11/lib/libFS.so.5 target=../../lib/libFS.so.5
 file path=usr/include/X11/fonts/FSlib.h
-link path=usr/lib/$(MACH64)/libFS.so target=libFS.so.5
+link path=usr/lib/$(MACH64)/libFS.so target=libFS.so.5.0.0
 link path=usr/lib/$(MACH64)/libFS.so.5 target=libFS.so.5.0.0
 file path=usr/lib/$(MACH64)/libFS.so.5.0.0
 file path=usr/lib/$(MACH64)/llib-lFS.ln
 file path=usr/lib/$(MACH64)/pkgconfig/libfs.pc
-link path=usr/lib/libFS.so target=libFS.so.5
+link path=usr/lib/libFS.so target=libFS.so.5.0.0
 link path=usr/lib/libFS.so.5 target=libFS.so.5.0.0
 file path=usr/lib/libFS.so.5.0.0
+file path=usr/lib/llib-lFS
 file path=usr/lib/llib-lFS.ln
 file path=usr/lib/pkgconfig/libfs.pc
 file path=usr/share/doc/libFS/FSlib.txt

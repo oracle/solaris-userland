@@ -20,19 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libFS
-COMPONENT_VERSION=	1.0.7
+COMPONENT_VERSION=	1.0.8
 COMPONENT_PROJECT_URL=  https://www.x.org
 COMPONENT_ARCHIVE_HASH= \
-	sha256:2e9d4c07026a7401d4fa4ffae86e6ac7fec83f50f3268fa85f52718e479dc4f3
+	sha256:c8e13727149b2ddfe40912027459b2522042e3844c5cd228c3300fe5eef6bd0f
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1618
+TPNO=			50538
 
 TEST_TARGET = $(NO_TESTS)
 
