@@ -6,9 +6,9 @@
 #
 # This patch is not going to upstream, the changes are Solaris-specific.
 
-diff -Naur pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/Makefile pflogd-OPENBSD_5_5-OPENBSD_5_5/Makefile
---- pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/Makefile	2016-02-17 02:08:53.410106245 -0800
-+++ pflogd-OPENBSD_5_5-OPENBSD_5_5/Makefile	2016-02-16 05:02:32.489035397 -0800
+diff -Naur pflogd-OPENBSD_5_5.001/Makefile pflogd-OPENBSD_5_5.002/Makefile
+--- pflogd-OPENBSD_5_5.001/Makefile	2019-03-14 02:51:33.265935591 +0000
++++ pflogd-OPENBSD_5_5.002/Makefile	2019-03-14 03:32:40.645869672 +0000
 @@ -3,7 +3,7 @@
  CFLAGS+= -m64 -errwarn
  
@@ -18,9 +18,9 @@ diff -Naur pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/Makefile pflogd-OPENBSD_5_5-OP
  OBJS=$(SRCS:.c=.o)
  MAN=pflogd.8
  
-diff -Naur pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.8 pflogd-OPENBSD_5_5-OPENBSD_5_5/pflogd.8
---- pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.8	2016-02-17 02:32:29.857912548 -0800
-+++ pflogd-OPENBSD_5_5-OPENBSD_5_5/pflogd.8	2016-03-14 07:10:13.031600727 -0700
+diff -Naur pflogd-OPENBSD_5_5.001/pflogd.8 pflogd-OPENBSD_5_5.002/pflogd.8
+--- pflogd-OPENBSD_5_5.001/pflogd.8	2019-03-14 02:51:33.268113004 +0000
++++ pflogd-OPENBSD_5_5.002/pflogd.8	2019-03-14 03:32:40.647112404 +0000
 @@ -33,7 +33,7 @@
  .Sh SYNOPSIS
  .Nm pflogd
@@ -205,9 +205,9 @@ diff -Naur pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.8 pflogd-OPENBSD_5_5-OP
  .Sh SEE ALSO
  .Xr pcap 3 ,
  .Xr pf.conf 5 ,
-diff -Naur pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c pflogd-OPENBSD_5_5-OPENBSD_5_5/pflogd.c
---- pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c	2016-02-18 12:05:03.256562087 -0800
-+++ pflogd-OPENBSD_5_5-OPENBSD_5_5/pflogd.c	2016-02-18 12:01:49.900876863 -0800
+diff -Naur pflogd-OPENBSD_5_5.001/pflogd.c pflogd-OPENBSD_5_5.002/pflogd.c
+--- pflogd-OPENBSD_5_5.001/pflogd.c	2019-03-14 02:51:33.265209927 +0000
++++ pflogd-OPENBSD_5_5.002/pflogd.c	2019-03-14 03:32:40.642565924 +0000
 @@ -54,6 +54,7 @@
  #include <strings.h>
  #include <zone.h>
@@ -250,7 +250,7 @@ diff -Naur pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c pflogd-OPENBSD_5_5-OP
  static int try_reset_dump(int);
  
  /* buffer must always be greater than snaplen */
-@@ -290,6 +300,8 @@
+@@ -291,6 +301,8 @@
  init_pcap(void)
  {
  	hpcap = pcap_open_live(interface, snaplen, 1, PCAP_TO_MS, errbuf);
@@ -259,7 +259,7 @@ diff -Naur pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c pflogd-OPENBSD_5_5-OP
  	if (hpcap == NULL) {
  		logmsg(LOG_ERR, "Failed to initialize: %s", errbuf);
  		return (-1);
-@@ -690,12 +702,20 @@
+@@ -691,12 +703,20 @@
  	int ch, np, ret, Xflag = 0;
  	pcap_handler phandler = dump_packet;
  	const char *errstr = NULL;
@@ -281,7 +281,7 @@ diff -Naur pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c pflogd-OPENBSD_5_5-OP
  		switch (ch) {
  		case 'D':
  			Debug = 1;
-@@ -704,12 +724,15 @@
+@@ -705,12 +725,15 @@
  			delay = strtonum(optarg, 5, 60*60, &errstr);
  			if (errstr)
  				usage();
@@ -297,7 +297,7 @@ diff -Naur pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c pflogd-OPENBSD_5_5-OP
  			break;
  		case 's':
  			snaplen = strtonum(optarg, 0, PFLOGD_MAXSNAPLEN,
-@@ -718,10 +741,27 @@
+@@ -719,10 +742,27 @@
  				snaplen = DEF_SNAPLEN;
  			if (errstr)
  				snaplen = PFLOGD_MAXSNAPLEN;
@@ -325,7 +325,7 @@ diff -Naur pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c pflogd-OPENBSD_5_5-OP
  		default:
  			usage();
  		}
-@@ -732,14 +772,14 @@
+@@ -733,14 +773,14 @@
  	argv += optind;
  
  	/* does interface exist */
@@ -342,7 +342,7 @@ diff -Naur pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c pflogd-OPENBSD_5_5-OP
  		openlog("pflogd", LOG_PID | LOG_CONS, LOG_DAEMON);
  		if (daemon(0, 0)) {
  			logmsg(LOG_WARNING, "Failed to become daemon: %s",
-@@ -757,6 +797,31 @@
+@@ -758,6 +798,31 @@
  			logmsg(LOG_NOTICE, "Failed to form filter expression");
  	}
  
@@ -374,7 +374,7 @@ diff -Naur pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c pflogd-OPENBSD_5_5-OP
  	/* initialize pcap before dropping privileges */
  	if (init_pcap()) {
  		logmsg(LOG_ERR, "Exiting, init failure");
-@@ -768,7 +833,6 @@
+@@ -769,7 +834,6 @@
  		logmsg(LOG_ERR, "unable to privsep");
  		exit(1);
  	}
@@ -382,9 +382,9 @@ diff -Naur pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c pflogd-OPENBSD_5_5-OP
  	setproctitle("[initializing]");
  	/* Process is now unprivileged and inside a chroot */
  #ifdef	_SOLARIS_
-diff -Naur pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.h pflogd-OPENBSD_5_5-OPENBSD_5_5/pflogd.h
---- pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.h	2016-02-18 12:08:42.414919276 -0800
-+++ pflogd-OPENBSD_5_5-OPENBSD_5_5/pflogd.h	2016-02-18 12:09:18.796727948 -0800
+diff -Naur pflogd-OPENBSD_5_5.001/pflogd.h pflogd-OPENBSD_5_5.002/pflogd.h
+--- pflogd-OPENBSD_5_5.001/pflogd.h	2019-03-14 02:51:33.262957538 +0000
++++ pflogd-OPENBSD_5_5.002/pflogd.h	2019-03-14 03:32:40.649199610 +0000
 @@ -18,6 +18,8 @@
  
  #ifdef	_SOLARIS_
@@ -422,9 +422,9 @@ diff -Naur pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.h pflogd-OPENBSD_5_5-OP
 +#define DROP_PRIV(priv)
 +#define DROP_PFLAG(flag)
 +#endif /* _SOLARIS_ */
-diff -Naur pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/privsep.c pflogd-OPENBSD_5_5-OPENBSD_5_5/privsep.c
---- pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/privsep.c	2016-02-18 12:07:34.219667793 -0800
-+++ pflogd-OPENBSD_5_5-OPENBSD_5_5/privsep.c	2016-02-18 11:55:14.949135348 -0800
+diff -Naur pflogd-OPENBSD_5_5.001/privsep.c pflogd-OPENBSD_5_5.002/privsep.c
+--- pflogd-OPENBSD_5_5.001/privsep.c	2019-03-14 02:51:33.264601881 +0000
++++ pflogd-OPENBSD_5_5.002/privsep.c	2019-03-14 03:32:40.643216082 +0000
 @@ -112,6 +112,7 @@
  #endif	/* !_SOLARIS_ */
  

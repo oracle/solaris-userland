@@ -8,9 +8,9 @@
 #
 # This patch is not going to upstream, the changes are Solaris-specific.
 
-diff -Naur ORIGINAL/Makefile pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/Makefile
---- ORIGINAL/Makefile	2013-06-18 20:51:30.000000000 -0700
-+++ pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/Makefile	2016-02-17 02:08:53.410106245 -0800
+diff -Naur ORIGINAL/Makefile pflogd-OPENBSD_5_5.001/Makefile
+--- ORIGINAL/Makefile	2013-06-18 20:51:30.000000000 +0000
++++ pflogd-OPENBSD_5_5.001/Makefile	2019-03-14 02:51:33.265935591 +0000
 @@ -1,15 +1,28 @@
  #	$OpenBSD: Makefile,v 1.9 2013/06/19 03:51:30 lteo Exp $
  
@@ -49,9 +49,9 @@ diff -Naur ORIGINAL/Makefile pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/Makefile
 +clean:
 +	rm -rf *.o
 +	rm -rf $(PROG)
-diff -Naur ORIGINAL/pflogd.8 pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.8
---- ORIGINAL/pflogd.8	2014-01-20 19:15:45.000000000 -0800
-+++ pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.8	2016-02-17 02:32:29.857912548 -0800
+diff -Naur ORIGINAL/pflogd.8 pflogd-OPENBSD_5_5.001/pflogd.8
+--- ORIGINAL/pflogd.8	2014-01-20 19:15:45.000000000 +0000
++++ pflogd-OPENBSD_5_5.001/pflogd.8	2019-03-14 02:51:33.268113004 +0000
 @@ -44,15 +44,15 @@
  .Nm
  is a background daemon which reads packets logged by
@@ -158,9 +158,9 @@ diff -Naur ORIGINAL/pflogd.8 pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.8
  .Sh AUTHORS
  .Nm
  was written by
-diff -Naur ORIGINAL/pflogd.c pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c
---- ORIGINAL/pflogd.c	2012-11-05 18:50:47.000000000 -0800
-+++ pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c	2016-02-18 12:05:03.256562087 -0800
+diff -Naur ORIGINAL/pflogd.c pflogd-OPENBSD_5_5.001/pflogd.c
+--- ORIGINAL/pflogd.c	2012-11-05 18:50:47.000000000 +0000
++++ pflogd-OPENBSD_5_5.001/pflogd.c	2019-03-14 02:51:33.265209927 +0000
 @@ -48,7 +48,15 @@
  #include <errno.h>
  #include <stdarg.h>
@@ -229,7 +229,7 @@ diff -Naur ORIGINAL/pflogd.c pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c
  		pcap_freecode(&bprog);
  	}
  }
-@@ -203,6 +241,31 @@
+@@ -203,6 +241,32 @@
  int
  if_exists(char *ifname)
  {
@@ -239,6 +239,7 @@ diff -Naur ORIGINAL/pflogd.c pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c
 +	zoneid_t	zid = getzoneid();
 +	dladm_status_t	dls;
 +	int		rv = 0;
++	static char	errorstr[DLADM_STRSIZE];
 +
 +	if (!dladm_valid_linkname(ifname) ||
 +	    (dladm_open(&dlh) != DLADM_STATUS_OK)) {
@@ -247,7 +248,7 @@ diff -Naur ORIGINAL/pflogd.c pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c
 +	}
 +
 +	dls = dladm_apply_linknamefilters(dlh, ifname, &linkid, 1, &zid,
-+	    DLADM_OPT_ACTIVE, zid, NULL);
++	    DLADM_OPT_ACTIVE, zid, errorstr);
 +	if ((dls == DLADM_STATUS_OK) && (linkid != DATALINK_INVALID_LINKID)) {
 +		rv = 1;
 +	}
@@ -261,7 +262,7 @@ diff -Naur ORIGINAL/pflogd.c pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c
  	int s, ret = 1;
  	struct ifreq ifr;
  	struct if_data ifrdat;
-@@ -220,6 +283,7 @@
+@@ -220,6 +284,7 @@
  		err(1, "close");
  
  	return (ret);
@@ -269,7 +270,7 @@ diff -Naur ORIGINAL/pflogd.c pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c
  }
  
  int
-@@ -243,10 +307,15 @@
+@@ -243,10 +308,15 @@
  	cur_snaplen = snaplen = pcap_snapshot(hpcap);
  
  	/* lock */
@@ -285,7 +286,7 @@ diff -Naur ORIGINAL/pflogd.c pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c
  
  	return (0);
  }
-@@ -371,7 +440,11 @@
+@@ -371,7 +441,11 @@
  scan_dump(FILE *fp, off_t size)
  {
  	struct pcap_file_header hdr;
@@ -297,7 +298,7 @@ diff -Naur ORIGINAL/pflogd.c pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c
  	off_t pos;
  
  	/*
-@@ -440,13 +513,26 @@
+@@ -440,13 +514,26 @@
  dump_packet_nobuf(u_char *user, const struct pcap_pkthdr *h, const u_char *sp)
  {
  	FILE *f = (FILE *)user;
@@ -325,7 +326,7 @@ diff -Naur ORIGINAL/pflogd.c pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c
  		off_t pos = ftello(f);
  
  		/* try to undo header to prevent corruption */
-@@ -520,9 +606,32 @@
+@@ -520,9 +607,32 @@
  dump_packet(u_char *user, const struct pcap_pkthdr *h, const u_char *sp)
  {
  	FILE *f = (FILE *)user;
@@ -359,7 +360,7 @@ diff -Naur ORIGINAL/pflogd.c pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c
  		logmsg(LOG_NOTICE, "invalid size %zu (%d/%d), packet dropped",
  		       len, cur_snaplen, snaplen);
  		packets_dropped++;
-@@ -548,8 +657,13 @@
+@@ -548,8 +658,13 @@
  	}
  
   append:
@@ -373,7 +374,7 @@ diff -Naur ORIGINAL/pflogd.c pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c
  
  	bufpos += len;
  	bufleft -= len;
-@@ -611,7 +725,6 @@
+@@ -611,7 +726,6 @@
  		default:
  			usage();
  		}
@@ -381,7 +382,7 @@ diff -Naur ORIGINAL/pflogd.c pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c
  	}
  
  	log_debug = Debug;
-@@ -658,12 +771,25 @@
+@@ -658,12 +772,25 @@
  
  	setproctitle("[initializing]");
  	/* Process is now unprivileged and inside a chroot */
@@ -407,7 +408,7 @@ diff -Naur ORIGINAL/pflogd.c pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c
  	alarm(delay);
  
  	buffer = malloc(PFLOGD_BUFSIZE);
-@@ -696,7 +822,7 @@
+@@ -696,7 +823,7 @@
  				ret = -1;
  				break;
  			}
@@ -416,9 +417,9 @@ diff -Naur ORIGINAL/pflogd.c pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.c
  		}
  
  		if (gotsig_close)
-diff -Naur ORIGINAL/pflogd.h pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.h
---- ORIGINAL/pflogd.h	2010-09-20 22:56:58.000000000 -0700
-+++ pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.h	2016-02-18 12:08:42.414919276 -0800
+diff -Naur ORIGINAL/pflogd.h pflogd-OPENBSD_5_5.001/pflogd.h
+--- ORIGINAL/pflogd.h	2010-09-20 22:56:58.000000000 +0000
++++ pflogd-OPENBSD_5_5.001/pflogd.h	2019-03-14 02:51:33.262957538 +0000
 @@ -16,7 +16,11 @@
   * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
   */
@@ -444,9 +445,9 @@ diff -Naur ORIGINAL/pflogd.h pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/pflogd.h
  #define PFLOGD_DEFAULT_IF	"pflog0"
  
  #define PFLOGD_MAXSNAPLEN	INT_MAX
-diff -Naur ORIGINAL/privsep.c pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/privsep.c
---- ORIGINAL/privsep.c	2013-09-13 01:49:17.000000000 -0700
-+++ pflogd-OPENBSD_5_5-OPENBSD_5_5.pre-smf/privsep.c	2016-02-18 12:07:34.219667793 -0800
+diff -Naur ORIGINAL/privsep.c pflogd-OPENBSD_5_5.001/privsep.c
+--- ORIGINAL/privsep.c	2013-09-13 01:49:17.000000000 +0000
++++ pflogd-OPENBSD_5_5.001/privsep.c	2019-03-14 02:51:33.264601881 +0000
 @@ -28,8 +28,6 @@
  #include <errno.h>
  #include <fcntl.h>
