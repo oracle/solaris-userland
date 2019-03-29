@@ -1,0 +1,22 @@
+PIP on Solaris should not use its bundled cacert.pem file, it should instead
+use system certificates file which is more likely to be updated in a timely
+manner when a CA cert is added/removed/modified.
+
+This also ensures that any site-specific CA certificates are also available
+to pip.
+
+Not suitable for upstream
+
+--- pip-10.0.1/src/pip/_vendor/certifi/core.py
++++ pip-10.0.1/src/pip/_vendor/certifi/core.py
+@@ -19,9 +19,7 @@ class DeprecatedBundleWarning(Deprecatio
+ 
+ 
+ def where():
+-    f = os.path.dirname(__file__)
+-
+-    return os.path.join(f, 'cacert.pem')
++    return "/etc/certs/ca-certificates.crt"
+ 
+ 
+ def old_where():
