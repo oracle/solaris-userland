@@ -48,18 +48,67 @@ have defaults, but can be overridden.
   as for the older versions of a component we ship multiple versions of).
 
 * COMPONENT_SIG_URL is the URL where the PGP signature for $(COMPONENT_ARCHIVE)
-  can be found.  This can be used in addition to the hash in
-  $(COMPONENT_ARCHIVE_HASH) to verify the correctness of the archive.  If
-  COMPONENT_SIG_URL is present, then COMPONENT_ARCHIVE_HASH needn't be, but its
-  presence is strongly encouraged to ensure that the archive contents don't
-  change silently.  Note that when merging, because
-  $WS/tools/.gnupg/pubring.gpg is a binary file, you will have to choose
-  the parent or child version.  Pick one, then run:
+  can be found. By default this is set to $(COMPONENT_ARCHIVE_URL).sig . This
+  is used to validate the source archive we download from internet. If we can
+  not verify the signature, setting COMPONENT_SIG_URL empty disables this
+  check.
+
+  Userland keyring is in $(hg root)/tools/.gnupg/pubring.gpg . If it does not
+  contain the public key to verify the signature it tries to download the
+  signature from hkp://keys.gnupg.net (as configured in
+  $(hg root)/tools/.gnupg/gpg.conf). If it can't get the appropriate key from
+  there, it fails.
+
+  The difference between COMPONENT_SIG_URL and COMPONENT_ARCHIVE_HASH is that
+  the former protects us while downloading sources from internet while the
+  later makes sure that the sources from our source cache were downloaded
+  correctly. Signature is not checked when downloading from the cache, because
+  the public key can expire in which case signature would be invalid and we
+  would not be able to download the archive.
+
+  We can manually import the key into our keyring via
+  gpg2 --homedir "$(hg root)/tools/.gnupg" --import <key file>
+
+  To see diff of your change to the keyring you can define listkeys shell
+  function:
+
+  listkeys() {
+    gpg2 --homedir "$(hg root)/tools/.gnupg" --import-options show-only --import 2>/dev/null
+  }
+
+  and use it in following way:
+
+  # Before the file is committed
+  diff -u \
+    <(hg cat --rev tip pubring.gpg | listkeys) \
+    <(cat pubring.gpg | listkeys)
+
+  # Once the file is committed
+  diff -u \
+    <(hg cat --rev ".^" pubring.gpg | listkeys) \
+    <(hg cat --rev tip pubring.gpg | listkeys)
+
+  # Between two revisions
+  diff -u \
+    <(hg cat --rev <OLDER REV> pubring.gpg | listkeys) \
+    <(hg cat --rev <NEWER REV> pubring.gpg | listkeys)
+
+  Note that when merging, because
+  tools/.gnupg/pubring.gpg is a binary file, you will have to choose
+  the parent or child version.  Pick either one, then import keys from both
+  parents:
 	for cset in $(hg log -r 'parents()' -T '{node} '); do
-		hg cat -r $cset $WS/tools/.gnupg/pubring.gpg | \
-			gpg2 --homedir=$WS/tools/.gnupg --import;
+		hg cat -r $cset $(hg root)/tools/.gnupg/pubring.gpg | \
+			gpg2 --homedir=$(hg root)/tools/.gnupg --import;
 	done
   before you 'hg commit' your merge.
+
+  If you are not using merging but rather rebase the process is very similar.
+  Once the rebase reports a conflict in pubring.gpg you need to import the keys
+  from both parents similarly as it is done for merging. Then
+
+  hg resolve --mark $(hg root)/toos/.gnupg/pubring.gpg
+  hg rebase --continue
 
 * COMPONENT_MAKE_JOBS contains the maximal number of parallel build jobs
   that are executed to accelerate the compilation process. If the
