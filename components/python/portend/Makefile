@@ -51,12 +51,6 @@ COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =	test_portend.py
 
-COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_TRANSFORMS += \
-  '-e "s/\(in \).*\(seconds\)/\1 x \2/"' \
-  '-e "/^platform/d"' \
-  '-e "s/\[2/\[AddressFamily.AF_INET/g"'
-
 # common targets
 build:		$(BUILD_NO_ARCH)
 

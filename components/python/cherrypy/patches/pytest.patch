@@ -11,9 +11,29 @@ which have inconsistent results.
 -addopts=-v -rxs --junitxml=.test-results/pytest/results.xml --cov=cherrypy --cov-report term-missing:skip-covered --cov-report xml --doctest-modules
 +addopts=-v -rxs --junitxml=.test-results/pytest/results.xml --doctest-modules
  doctest_optionflags=ALLOW_UNICODE ELLIPSIS
---- cherrypy.old/test/test_static.py	2018-05-11 11:40:19.000000000 +0000
-+++ cherrypy/test/test_static.py	2018-12-03 04:25:42.212800995 +0000
-@@ -282,7 +282,7 @@
+--- cherrypy/test/test_static.py
++++ cherrypy/test/test_static.py
+@@ -21,6 +21,10 @@ from cherrypy.test import helper
+ 
+ @pytest.fixture
+ def unicode_filesystem(tmpdir):
++    _check_unicode_filesystem(tmpdir)
++
++
++def _check_unicode_filesystem(tmpdir):
+     filename = tmpdir / ntou('☃', 'utf-8')
+     tmpl = 'File system encoding ({encoding}) cannot support unicode filenames'
+     msg = tmpl.format(encoding=sys.getfilesystemencoding())
+@@ -37,7 +41,7 @@ def ensure_unicode_filesystem():
+     """
+     tmpdir = py.path.local(tempfile.mkdtemp())
+     try:
+-        unicode_filesystem(tmpdir)
++        _check_unicode_filesystem(tmpdir)
+     finally:
+         tmpdir.remove()
+ 
+@@ -282,7 +286,7 @@ class StaticTest(helper.CPWebCase):
          self.assertHeader('Content-Length', 14)
          self.assertMatchesBody('Fee\nfie\nfo\nfum')
  
@@ -65,3 +85,19 @@ which have inconsistent results.
      def test_598(self):
          tmpl = '{scheme}://{host}:{port}/one_megabyte_of_a/'
          url = tmpl.format(
+--- cherrypy/test/test_states.py
++++ cherrypy/test/test_states.py
+@@ -222,11 +222,8 @@ class ServerStateTests(helper.CPWebCase)
+         self.assertEqual(db_connection.running, False)
+         self.assertEqual(len(db_connection.threads), 0)
+ 
+-    @pytest.mark.xfail(
+-        'sys.platform == "Darwin" '
+-        'and sys.version_info > (3, 7) '
+-        'and os.environ["TRAVIS"]',
+-        reason='https://github.com/cherrypy/cherrypy/issues/1693',
++    @pytest.mark.skip(
++        reason='skipped...inconsistent test results.'
+     )
+     def test_4_Autoreload(self):
+         # If test_3 has not been executed, the server won't be stopped,

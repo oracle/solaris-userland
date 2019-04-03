@@ -1,0 +1,59 @@
+== This file contains information regarding the testing of Python components ==
+
+
+=== Testing in general ===
+
+Almost all python components in Solaris have a test suite which is invoked with pytest. While
+there are several ways of doing that, a preferred way is with the following command:
+
+`$(PYTHON) -m pytest`
+
+The reason is that $(PYTHON) variable handles correctly 32 and 64-bit versions for Python 2.7,
+which is built for both. Invocations like `/usr/bin/python-$(PYTHON_VERSION)` and
+`py.test-$(PYTHON_VERSION)` are not doing that which makes them work for BITS independent
+components but not for compiled ones. To be consistent, `$(PYTHON) -m pytest` should be used
+as a default.
+
+Components which are not tested with pytest should use a similar approach if possible,
+e.g., `$(PYTHON)` or `$(PYTHON) -m nose`
+
+
+Example part of a Makefile:
+
+COMPONENT_TEST_DIR =   $(SOURCE_DIR)/tests
+COMPONENT_TEST_CMD =   $(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
+
+
+=== Master test files ===
+
+When creating or updating new package, consider, whether it needs master compare files for testing
+results as they can safely be omitted in some cases.
+
+Reasons for that are the following:
+
+   * Failing pytest will automatically fail the make target, and therefore even without the master
+     file, the test target will never succeed. This is not necessarily true for all components,
+     where visual inspection of results is sometimes needed if the master file is not present.
+
+   * It often happens that each python version has a slightly different result because of skipped
+     tests or other warnings. That forces us to create many (up to five) slightly different test
+     master files with no real gain from that.
+
+   * Colored output and directly visible progress makes for a better testing experience. The tester
+     can immediately see that something is wrong, stop tests and investigate.
+
+
+Master files should still be made in the following cases:
+
+   * A component uses a different command to execute tests than pytest (in all of its variants).
+     Some components are tested with either python executable directly or with another testing
+     module/package, e.g., nose.
+
+   * A component has some tests which are failing. To prevent regression, we should know what
+     tests were failing in previous versions. Also failing tests will (as described above) fail
+     the target and possibly prevent testing of other Python versions.
+
+      * Another possibility is to clean those tests in a reasonable way. E.g., tests using
+        component we don't have in Solaris can be disabled, and pytest failure thus prevented
+        without losing anything.

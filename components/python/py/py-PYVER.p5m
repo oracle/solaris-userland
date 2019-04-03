@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2015, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
@@ -45,7 +45,6 @@ file path=usr/lib/python$(PYVER)/vendor-packages/py-$(COMPONENT_VERSION)-py$(PYV
 file path=usr/lib/python$(PYVER)/vendor-packages/py-$(COMPONENT_VERSION)-py$(PYVER).egg-info/top_level.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/py/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/py/__metainfo.py
-file path=usr/lib/python$(PYVER)/vendor-packages/py/_apipkg.py
 file path=usr/lib/python$(PYVER)/vendor-packages/py/_builtin.py
 file path=usr/lib/python$(PYVER)/vendor-packages/py/_code/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/py/_code/_assertionnew.py
@@ -55,7 +54,6 @@ file path=usr/lib/python$(PYVER)/vendor-packages/py/_code/assertion.py
 file path=usr/lib/python$(PYVER)/vendor-packages/py/_code/code.py
 file path=usr/lib/python$(PYVER)/vendor-packages/py/_code/source.py
 file path=usr/lib/python$(PYVER)/vendor-packages/py/_error.py
-file path=usr/lib/python$(PYVER)/vendor-packages/py/_iniconfig.py
 file path=usr/lib/python$(PYVER)/vendor-packages/py/_io/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/py/_io/capture.py
 file path=usr/lib/python$(PYVER)/vendor-packages/py/_io/saferepr.py
@@ -74,6 +72,10 @@ file path=usr/lib/python$(PYVER)/vendor-packages/py/_process/cmdexec.py
 file path=usr/lib/python$(PYVER)/vendor-packages/py/_process/forkedfunc.py
 file path=usr/lib/python$(PYVER)/vendor-packages/py/_process/killproc.py
 file path=usr/lib/python$(PYVER)/vendor-packages/py/_std.py
+file path=usr/lib/python$(PYVER)/vendor-packages/py/_vendored_packages/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/py/_vendored_packages/apipkg.py
+file path=usr/lib/python$(PYVER)/vendor-packages/py/_vendored_packages/iniconfig.py
+file path=usr/lib/python$(PYVER)/vendor-packages/py/_version.py
 file path=usr/lib/python$(PYVER)/vendor-packages/py/_xmlgen.py
 file path=usr/lib/python$(PYVER)/vendor-packages/py/test.py
 #
@@ -89,6 +91,3 @@ depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
 # force a dependency on the py package
 depend type=require \
     fmri=library/python/py@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
-
-# force a dependency on pytest; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/pytest-$(PYV)

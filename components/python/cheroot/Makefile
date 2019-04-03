@@ -55,6 +55,7 @@ COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
 COMPONENT_TEST_TRANSFORMS += \
   '-e "s/\(in \).*\(seconds\)/\1x \2/"' \
+  '-e "/hypothesis/d"' \
   '-e "/^platform/d"' \
   '-e "/^SKIP/d"' \
   '-e "/^PASSED/d"' \

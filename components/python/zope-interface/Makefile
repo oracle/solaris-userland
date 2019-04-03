@@ -20,53 +20,43 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
+COMPILER=	gcc
 
 COMPONENT_NAME=		zope.interface
-COMPONENT_VERSION=	4.3.2
+COMPONENT_VERSION=	4.6.0
 COMPONENT_PROJECT_URL=	http://zope.org/Wikis/Interfaces/FrontPage
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:6a0e224a052e3ce27b3a7b1300a24747513f7a507217fcc2a4cb02eb92945cee
+    sha256:1b3d0dcabc7c90b470e59e38a9acaa361be43b3a6ea644c0063951964717f0e5
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/zope
 COMPONENT_ANITYA_ID=	4112
 
-TPNO=			32154
+TPNO=			50882
 
-# Syntax issues: not Python 3 ready.
-PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/src
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
+
+COMPONENT_SYSTEM_TEST_DIR =	$(SOURCE_DIR)/src
+COMPONENT_SYSTEM_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_SYSTEM_TEST_ARGS =
+
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-COMPONENT_TEST_ARGS=	../runtests.sh
-COMPONENT_TEST_CMD=	/bin/sh
-COMPONENT_TEST_DIR=	$(SOURCE_DIR)
-COMPONENT_TEST_ENV+=	PYTHON=$(PYTHON)
-
-# Master test results are the same for all supported versions of Python, so
-# override here, rather than create multiple identical master files.
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-
-# The additional zope.interface specific set of transforms to be applied
-# to the test results to try to normalize them.
-COMPONENT_TEST_TRANSFORMS += \
-	'-e "s|\(Ran 1 test in\).*|\1|" ' \
-	'-e "s|\(Ran .* tests in\).*|\1|" '
-
-COMPONENT_SYSTEM_TEST_ARGS=	../runtests.sh
-COMPONENT_SYSTEM_TEST_CMD=	/bin/sh
-COMPONENT_SYSTEM_TEST_DIR=	$(SOURCE_DIR)
-COMPONENT_SYSTEM_TEST_ENV+=	PYTHON=$(PYTHON)
-
+# common targets
 build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)

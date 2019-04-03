@@ -45,11 +45,12 @@ include $(WS_MAKE_RULES)/ips.mk
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
-COMPONENT_TEST_CMD =	py.test-$(PYTHON_VERSION)
 COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \
   '-e "s/\(in \).*\(seconds\)/\1 x \2/"' \
+  '-e "/hypothesis/d"' \
   '-e "/^platform/d"'
 
 # common targets

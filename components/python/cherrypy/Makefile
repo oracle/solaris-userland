@@ -59,9 +59,10 @@ COMPONENT_TEST_ENV += https_proxy= HTTPS_PROXY=
 
 COMPONENT_TEST_DIR = 	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS = 
+COMPONENT_TEST_ARGS =
 COMPONENT_TEST_TRANSFORMS += \
-   '-e "s/\(in \).*\(seconds\).*/\1 x \2/"' \
+   '-e "s/\(in \).*\(seconds.*\)/\1x \2/"' \
+   '-e "/hypothesis/d"' \
    '-e "/^platform/d"' \
    '-e "/^SKIP/d"' \
    '-e "s/\(tmp\).*/\1\/XXX/"' \

@@ -58,24 +58,11 @@ PKG_MACROS +=		OLD_DESKTOP_BUILD=$(OLD_DESKTOP_BUILD)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/$(COMPONENT_NAME)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =	-v
+COMPONENT_TEST_ARGS =
 
-# The additional simplejson specific set of transforms to be applied
-# to the test results to try to normalize them.
-COMPONENT_TEST_TRANSFORMS += \
-	'-e "/^_.*/d" ' \
-	'-e "/^=.*/d" ' \
-	'-e "/SOURCE_DIR.*/d" ' \
-	'-e "/^ *$$/d" ' \
-	'-e "/^platform sunos5 .*/d" ' \
-	'-e "/^plugins.*/d" ' \
-	'-e "/^cachedir:*/d" ' \
-	'-e "/pep8/d" ' \
-	'-e "/pyflakes/d" '
-
-COMPONENT_SYSTEM_TEST_DIR = $(SOURCE_DIR)
-COMPONENT_SYSTEM_TEST_CMD = $(PYTHON) -m pytest
-COMPONENT_SYSTEM_TEST_ARGS = -v
+COMPONENT_SYSTEM_TEST_DIR =	$(SOURCE_DIR)
+COMPONENT_SYSTEM_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_SYSTEM_TEST_ARGS =
 COMPONENT_SYSTEM_TEST_ENV =
 
 # common targets

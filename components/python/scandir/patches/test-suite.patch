@@ -1,0 +1,15 @@
+This is a mistake in logic leading up with not defined NameError.
+
+This should be offered upstream.
+
+--- scandir-1.9.0/scandir.py
++++ scandir-1.9.0/scandir.py
+@@ -586,7 +586,7 @@ elif sys.platform.startswith(('linux', '
+     if _scandir is not None:
+         scandir = scandir_c
+         DirEntry = DirEntry_c
+-    elif ctypes is not None:
++    elif ctypes is not None and have_dirent_d_type:
+         scandir = scandir_python
+         DirEntry = PosixDirEntry
+     else:

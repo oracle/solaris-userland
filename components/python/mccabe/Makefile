@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -45,12 +45,13 @@ include $(WS_MAKE_RULES)/ips.mk
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
-COMPONENT_TEST_CMD =	/usr/bin/py.test-$(PYTHON_VERSION)
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =   test_mccabe.py
 COMPONENT_TEST_TARGETS =
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^platform.*/d" ' \
+	'-e "/hypothesis/d" ' \
 	'-e "/^plugins.*/d" ' \
 	'-e "s|\(in \).*\(seconds\).*|\1 x \2|"'
 

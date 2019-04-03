@@ -1,0 +1,29 @@
+One test has a problem in 32bit Python 2.7 with too large numbers (this is a
+runtime problem, not pytest one). Other versions of Python are 64bit only,
+and therefore this problem doesn't appear there.
+
+Also, on Solaris it is not possible to remove cwd.
+
+Not suitable for upstream
+
+--- pytest-4.4.0/testing/test_assertrewrite.py
++++ pytest-4.4.0/testing/test_assertrewrite.py
+@@ -1233,6 +1233,8 @@ class TestIssue2121:
+ 
+ 
+ @pytest.mark.parametrize("offset", [-1, +1])
++@pytest.mark.skipif(sys.version_info < (3, 0),
++    reason="32-bit Python 2.x cannot work with numbers this big.")
+ def test_source_mtime_long_long(testdir, offset):
+     """Support modification dates after 2038 in rewritten files (#4903).
+ 
+@@ -1366,6 +1368,9 @@ class TestEarlyRewriteBailout(object):
+     @pytest.mark.skipif(
+         sys.platform.startswith("win32"), reason="cannot remove cwd on Windows"
+     )
++    @pytest.mark.skipif(
++        sys.platform.startswith("sun"), reason="cannot remove cwd on Solaris"
++    )
+     def test_cwd_changed(self, testdir, monkeypatch):
+         # Setup conditions for py's fspath trying to import pathlib on py34
+         # always (previously triggered via xdist only).

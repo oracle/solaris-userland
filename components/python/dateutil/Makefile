@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -42,21 +42,21 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
+# Run the tests in the build directory so as not to touch the source directory.
+# Because they're not copied over during the build, we do that now.
+COMPONENT_PRE_TEST_ACTION = \
+	$(CP) -r $(COMPONENT_SRC)/dateutil/test $(@D)
+
+COMPONENT_TEST_DIR = $(@D)
+COMPONENT_TEST_CMD = $(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
+
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
 build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
-
-# Run the tests in the build directory so as not to touch the source directory.
-# Because they're not copied over during the build, we do that now.
-COMPONENT_PRE_TEST_ACTION = \
-	$(CP) -r $(COMPONENT_SRC)/dateutil/test $(@D)
-COMPONENT_TEST_DIR = $(@D)
-COMPONENT_TEST_CMD = py.test-$(PYTHON_VERSION)
-COMPONENT_TEST_ARGS = --result-log=$(COMPONENT_TEST_OUTPUT)
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 test:		$(TEST_NO_ARCH)
 

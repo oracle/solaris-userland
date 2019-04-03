@@ -1,0 +1,27 @@
+We have patched version of funcsigs which doesn't have issues due to which 1.0
+is required. Because of that, we can safely remove this minimum version
+requirement.
+
+Our version of setuptools is sufficient enough to install pytest without any
+problem. Upstream overshoot a little bit.
+
+--- pytest-4.4.0/setup.py
++++ pytest-4.4.0/setup.py
+@@ -10,7 +10,7 @@ INSTALL_REQUIRES = [
+     'more-itertools>=4.0.0,<6.0.0;python_version<="2.7"',
+     'more-itertools>=4.0.0;python_version>"2.7"',
+     "atomicwrites>=1.0",
+-    'funcsigs>=1.0;python_version<"3.0"',
++    'funcsigs;python_version<"3.0"',
+     'pathlib2>=2.2.0;python_version<"3.6"',
+     'colorama;sys_platform=="win32"',
+     "pluggy>=0.9",
+@@ -20,7 +20,7 @@ INSTALL_REQUIRES = [
+ def main():
+     setup(
+         use_scm_version={"write_to": "src/_pytest/_version.py"},
+-        setup_requires=["setuptools-scm", "setuptools>=40.0"],
++        setup_requires=["setuptools-scm", "setuptools>=39.2"],
+         package_dir={"": "src"},
+         # fmt: off
+         extras_require={

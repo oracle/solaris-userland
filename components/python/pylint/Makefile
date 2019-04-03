@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= NO_ARCH
 include ../../../make-rules/shared-macros.mk
@@ -79,14 +79,9 @@ COMPONENT_POST_INSTALL_ACTION += \
 
 COMPONENT_TEST_ENV = PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)
 
-COMPONENT_TEST_CMD = /usr/bin/pytest-$(PYTHON_VERSION)
+COMPONENT_TEST_CMD = $(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
+COMPONENT_TEST_TRANSFORMS += '-n -e "s/\(in \).*\(seconds\)/\1x \2/p"'
 
-# The test output contains details from each test, in whatever order they
-# complete. Use nawk to extract just the sections that summarizes the test
-# result.
-COMPONENT_TEST_TRANSFORMER =	$(NAWK)
-COMPONENT_TEST_TRANSFORMS = "'/Ran (.+) test cases/{ sub(/in(.+)\)/, \"\"); print }/All (.+) modules OK/'"
-
-COMPONENT_SYSTEM_TEST_CMD = /usr/bin/pytest-$(PYTHON_VERSION)
+COMPONENT_SYSTEM_TEST_CMD = $(PYTHON) -m pytest
 COMPONENT_SYSTEM_TEST_ARGS =

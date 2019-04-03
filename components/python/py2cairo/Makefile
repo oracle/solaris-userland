@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            32_and_64
@@ -49,12 +49,11 @@ include $(WS_MAKE_RULES)/common.mk
 PYTHON_DATA = $(USRDIR)
 
 # the test scripts aren't hooked into the test target in pycairo, so run directly
-COMPONENT_TEST_ARGS = 	/usr/bin/py.test-$(PYTHON_VERSION)
-COMPONENT_TEST_TRANSFORMS += '-e "s|in [0-9\.]* seconds||g" '
-COMPONENT_TEST_TRANSFORMS += '-e "s|Python 2.7.[0-9]*|Python 2.7|g" '
+COMPONENT_TEST_DIR =   $(SOURCE_DIR)
+COMPONENT_TEST_CMD =   $(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
+
+COMPONENT_TEST_TRANSFORMS += '-n -e "s/\(in \).*\(seconds\)/\1x \2/p"'
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += library/desktop/cairo
-
-# py.test is required for testing, not building or runtime
-REQUIRED_PACKAGES += library/python/pytest

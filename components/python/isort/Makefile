@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -48,20 +48,13 @@ include $(WS_MAKE_RULES)/ips.mk
 COMPONENT_POST_INSTALL_ACTION += \
 	(cd $(PROTO_DIR)/usr/bin ; $(MV) -f isort isort-$(PYTHON_VERSION)) ;
 
-COMPONENT_TEST_DIR=	$(COMPONENT_SRC)
-COMPONENT_TEST_ARGS=	setup.py test
-
-COMPONENT_TEST_TRANSFORMS += \
-	'-e "s|\(in \).*\(seconds\).*|\1 x \2|"' \
-	'-n ' \
-	'-e "/^===/p" '
-
-COMPONENT_TEST_MASTER=	 $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
+# common targets
 build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-test:		$(TEST_NO_ARCH)
+test:		$(NO_TESTS)
+
+system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)

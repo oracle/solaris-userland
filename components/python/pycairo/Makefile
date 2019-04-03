@@ -104,15 +104,18 @@ COMPONENT_TEST_DIFFS =  $(COMPONENT_TEST_BUILD_DIR)/test-$(PYTHON_VERSION)-$(BIT
 COMPONENT_TEST_SNAPSHOT = $(COMPONENT_TEST_BUILD_DIR)/results-$(PYTHON_VERSION)-$(BITS).snapshot
 COMPONENT_TEST_TRANSFORM_CMD = $(COMPONENT_TEST_BUILD_DIR)/transform-$(PYTHON_VERSION)-$(BITS)-results
 
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
+
 # Test scripts just run 'python', but we need to specify the right version
-COMPONENT_PRE_TEST_ACTION += $(GSED) -i -e 's%/usr/bin/env python%$(PYTHON)%' \
-	-e "s%subprocess.call('python %subprocess.call('$(PYTHON) %" \
-	$(COMPONENT_TEST_DIR)/*.py
+#COMPONENT_PRE_TEST_ACTION += $(GSED) -i -e 's%/usr/bin/env python%$(PYTHON)%' \
+#	-e "s%subprocess.call('python %subprocess.call('$(PYTHON) %" \
+#	$(COMPONENT_TEST_DIR)/*.py
 
 # Exclude lines with version information of other packages, so we don't have
 # to update our results everytime one of them is updated.
-COMPONENT_TEST_TRANSFORMS += '-e "/^platform sunos5/d" ' '-e "/^plugins: /d"'
-COMPONENT_TEST_TRANSFORMS += '-e "s/ in [0-9]*\.[0-9]* seconds//" '
+COMPONENT_TEST_TRANSFORMS += '-n -e "s/\(in \).*\(seconds\)/\1x \2/p"'
 
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += runtime/python-34

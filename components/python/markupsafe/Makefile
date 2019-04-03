@@ -57,9 +57,7 @@ build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)
 
-# Tests are currently not running due to the old version of Pytest. When ran
-# with newer one, all seems to be ok.
-test:		$(NO_TESTS)
+test:		$(TEST_32_and_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 

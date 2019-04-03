@@ -228,8 +228,8 @@ $(BUILD_DIR)/%/.tested-and-compared:    $(COMPONENT_TEST_DEP)
 	$(MKDIR) $(COMPONENT_TEST_BUILD_DIR)
 	$(COMPONENT_PRE_TEST_ACTION)
 	-(cd $(COMPONENT_TEST_DIR) ; \
-		$(COMPONENT_TEST_ENV_CMD) $(COMPONENT_TEST_ENV) \
-		$(COMPONENT_TEST_CMD) $(COMPONENT_TEST_ARGS)) \
+		$(COMPONENT_TEST_ENV_CMD) $(COMPONENT_TEST_ENV) $(COMPONENT_TEST_CMD) \
+		$(if $(findstring pytest, $(COMPONENT_TEST_CMD)),-o console_output_style=classic,) $(COMPONENT_TEST_ARGS)) \
 		$(if $(findstring $(COMPONENT_TEST_OUTPUT),$(COMPONENT_TEST_ENV)$(COMPONENT_TEST_ARGS)),,&> $(COMPONENT_TEST_OUTPUT))
 	$(COMPONENT_POST_TEST_ACTION)
 	$(COMPONENT_TEST_CREATE_TRANSFORMS)
@@ -256,8 +256,8 @@ $(BUILD_DIR)/%/.system-tested-and-compared:    $(COMPONENT_SYSTEM_TEST_DEP)
 	$(MKDIR) $(@D)
 	$(COMPONENT_PRE_SYSTEM_TEST_ACTION)
 	-(cd $(COMPONENT_SYSTEM_TEST_DIR) ; \
-		$(COMPONENT_SYSTEM_TEST_ENV_CMD) $(COMPONENT_SYSTEM_TEST_ENV) \
-		$(COMPONENT_SYSTEM_TEST_CMD) $(COMPONENT_SYSTEM_TEST_ARGS)) \
+		$(COMPONENT_SYSTEM_TEST_ENV_CMD) $(COMPONENT_SYSTEM_TEST_ENV) $(COMPONENT_SYSTEM_TEST_CMD) \
+		$(if $(findstring pytest, $(COMPONENT_SYSTEM_TEST_CMD)),-o console_output_style=classic,) $(COMPONENT_SYSTEM_TEST_ARGS)) \
 		$(if $(findstring $(COMPONENT_TEST_OUTPUT),$(COMPONENT_SYSTEM_TEST_ENV)$(COMPONENT_SYSTEM_TEST_ARGS)),,&> $(COMPONENT_TEST_OUTPUT))
 	$(COMPONENT_POST_SYSTEM_TEST_ACTION)
 	$(COMPONENT_TEST_CREATE_TRANSFORMS)
@@ -292,16 +292,20 @@ pypi_url = $(if $(COMPONENT_NAME_$(1)),$(pypi_url_multi),$(pypi_url_single))
 ifneq ($(findstring 2.7, $(PYTHON_VERSIONS)),)
 REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += library/python/setuptools-27
+REQUIRED_PACKAGES += library/python/pytest-27
 endif
 ifneq ($(findstring 3.4, $(PYTHON_VERSIONS)),)
 REQUIRED_PACKAGES += runtime/python-34
 REQUIRED_PACKAGES += library/python/setuptools-34
+REQUIRED_PACKAGES += library/python/pytest-34
 endif
 ifneq ($(findstring 3.5, $(PYTHON_VERSIONS)),)
 REQUIRED_PACKAGES += runtime/python-35
 REQUIRED_PACKAGES += library/python/setuptools-35
+REQUIRED_PACKAGES += library/python/pytest-35
 endif
 ifneq ($(findstring 3.7, $(PYTHON_VERSIONS)),)
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += library/python/setuptools-37
+REQUIRED_PACKAGES += library/python/pytest-37
 endif

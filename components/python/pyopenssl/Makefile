@@ -54,7 +54,7 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 COMPONENT_PRE_TEST_ACTION = $(CP) -r $(COMPONENT_SRC)/tests $(@D)
 COMPONENT_TEST_DIR =	$(@D)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =
+COMPONENT_TEST_ARGS =	--disable-warnings
 
 # Some tests require unicode characters, otherwise ~17 tests will fail
 COMPONENT_TEST_ENV += LC_ALL=en_US.UTF-8
