@@ -1,33 +1,32 @@
 '\" te
-.\" Copyright (c) 2008, 2017, Oracle and/or its affiliates. All rights reserved.
-.TH php 1 "19 Aug 2016" "Solaris 11.4" "User Commands"
+.\" Copyright (c) 2008, 2019, Oracle and/or its affiliates. All rights reserved.
+.TH php 1 "3 Apr 2019" "Solaris 11.4" "User Commands"
 .SH "NAME"
 php \- PHP: Hypertext Preprocessor
 .SH "DESCRIPTION"
 PHP is a programming language frequently used for web applications.
 .PP
 If you are new to PHP, you should start with the PHP manual located on the PHP
-website at http://php.net/manual/ .
+website at https://php.net/manual/ .
 .SH "PLATFORM-SPECIFIC"
 The manual pages provided by the PHP distribution are installed in the directory
 along with the PHP installation, which is dependent on the version of PHP
-installed, for example, /usr/php/5.6/share/man .  You can view them with
+installed, for example, /usr/php/[version]/share/man .  You can view them with
 man(1) by including this directory in the MANPATH environment variable.
 .PP
 The PHP packages included in Solaris contain many PHP extensions. In order to
-use these extensions, you must enable them in a PHP configuration file. Starting
-with PHP 5.6, Solaris provides a file "conf.d/extensions.ini" under the
-appropriate /etc/php subdirectory. You may uncomment lines in this file to
+use these extensions, you must enable them in a PHP configuration file.
+Solaris provides a file "conf.d/extensions.ini" under the
+appropriate /etc/php/[version] subdirectory. You may uncomment lines in this file to
 enable the desired extensions.
 .PP
 To use PHP as an Apache web server module, you must configure Apache
-appropriately. Starting with PHP 5.6, Solaris provides a sample supplemental
-configuration file at /etc/apache2/2.4/samples-conf.d/php5.6.conf . To use it
+appropriately. Solaris provides a sample supplemental
+configuration file at /etc/apache2/2.4/samples-conf.d/php[version].conf . To use it
 without modification, copy it into /etc/apache2/2.4/conf.d/ .
 .PP
-No additional packages are required to run Apache for PHP 5.6; 
-an Apache 2.4 server module is included in the web/php-56 package.
-Apache 2.2 support is not provided with PHP 5.6 in Solaris.
+No additional packages are required to run Apache with PHP support; 
+an Apache 2.4 server module is included in the web/php-[version] package.
 .SH ATTRIBUTES
 See attributes(7) for descriptions of the  following  attributes:
 .sp
@@ -38,34 +37,10 @@ l | l .
 ATTRIBUTE TYPE	            ATTRIBUTE VALUE            
 =
 Availability	T{
-web/php-56
+web/php-[version]
 T}
 =
 Stability	Uncommitted Pass-through
 .TE
 .sp
-.SH NOTES
-.LP
-PHP 5.2 and PHP 5.3 are no longer supported in Solaris 12.
-PHP 5.6 is currently the only supported version.
-.LP
-Please migrate to a newer version.
-Migration documentation is available on the PHP website:
-.LP
-.nf
-http://php.net/manual/en/appendices.php
 .fi
-.LP
-If it is desired to keep the obsolete version of PHP then it should  be
-frozen to prevent its removal by a future update.
-.LP
-.nf
-pkg freeze 'web/php-53*' web/server/apache-22/module/apache-php53
-pkg change-facet --no-backup-be 'version-lock\&.web/php-53*=False' \e
-    version-lock\&.web/server/apache-22/module/apache-php53=False
-.fi
-.LP
-Please note that the freezing of packages may yield
-an unsupportable system so use with caution.
-.fi
-
