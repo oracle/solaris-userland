@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 32_and_64
 COMPILER= gcc
@@ -127,29 +127,34 @@ hg-local: clean prep
 # Right now you have to
 # - make sure that rst.patch and hgmanpage.patch applies
 # sudo pip --proxy $http_proxy install docutils
-# gmake patches/manpages.patch
+# gmake regenerate-man-patch
 #
 # This recipe is just for the component maintainer's benefit.
-.PHONY: patches/manpages.patch
-patches/manpages.patch:
+.PHONY: regenerate-man-patch
+regenerate-man-patch:
 	$(RM) "$@"
 	( \
 	    ( : First create a workspace without manpages.patch applied ); \
+	    $(RM) patches/manpages.patch; \
 	    $(MAKE) clean prep; \
 	    \
 	    ( : Backup all the existing man pages ); \
-	    cd $(COMPONENT_SRC)/doc; \
+	    cd $(COMPONENT_SRC); \
 	    for f in hg.1 hgignore.5 hgrc.5 hg-ssh.8; do \
-		$(CP) $$f $$f.orig; \
+		$(CP) doc/$$f doc/$$f.orig; \
 	    done; \
 	    \
 	    ( : Re-generate the man pages ); \
-	    gmake man || true; \
+	    gmake -C doc man || true; \
 	    \
 	    ( : Run a diff and create new patch ); \
 	    for f in hg.1 hgignore.5 hgrc.5 hg-ssh.8; do \
-		diff -u $$f.orig $$f || : ; \
-	    done > $(COMPONENT_DIR)/$@; \
+		diff -u ./doc/$$f.orig ./doc/$$f || : ; \
+	    done | \
+	    $$( : Remove timestamps by removing last three words \
+	          to keep the diffs a bit less cluttered ) \
+	    $(PERL) -pe 's/^(---|\+\+\+)(.*?)(\s+\S+){3}$$/$$1$$2/' > \
+		$(COMPONENT_DIR)/patches/manpages.patch; \
 	)
 
 REQUIRED_PACKAGES += file/gnu-coreutils
