@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -35,6 +35,9 @@ COMPONENT_BUGDB=	utility/pip
 COMPONENT_ANITYA_ID=	6529
 
 TPNO=			42704
+
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -57,9 +60,4 @@ test:           $(NO_TESTS)
 
 system-test:    $(NO_TESTS)
 
-REQUIRED_PACKAGES += library/python/requests-27
-REQUIRED_PACKAGES += library/python/requests-34
-REQUIRED_PACKAGES += library/python/requests-35
-REQUIRED_PACKAGES += library/python/setuptools-27
-REQUIRED_PACKAGES += library/python/setuptools-34
-REQUIRED_PACKAGES += library/python/setuptools-35
+REQUIRED_PACKAGES += library/python/requests
