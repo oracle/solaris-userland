@@ -20,20 +20,22 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		hg-git
-COMPONENT_VERSION=	0.8.5
+COMPONENT_VERSION=	0.8.12
+COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
+COMPONENT_ARCHIVE_HASH=	\
+    sha256:66a589baa5c6734320f2737c486abfabfd9bb2bf96bedbfe991f0a5bec1160d2
+COMPONENT_ARCHIVE_URL=	https://bitbucket.org/durin42/$(COMPONENT_NAME)/get/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://hg-git.github.io/
 COMPONENT_BUGDB=	python-mod/hg-git
-COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
-COMPONENT_ARCHIVE_URL=	https://bitbucket.org/durin42/$(COMPONENT_NAME)/get/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1314
 
-TPNO=			33779
+TPNO=			49404
 
 PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
 
@@ -41,18 +43,25 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-UNPACK_DIR=		durin42-$(COMPONENT_NAME)-53d514c9c7e6
+UNPACK_DIR=		durin42-$(COMPONENT_NAME)-c651bb6fcf33
 COMPONENT_POST_UNPACK_ACTION= ( $(MV) $(UNPACK_DIR) $(COMPONENT_SRC))
 
-COMPONENT_TEST_DIR=	$(SOURCE_DIR)/tests
-COMPONENT_TEST_ARGS=	run-tests.py --with-hg=$(HG)
-COMPONENT_TEST_MASTER=	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_ENV=	PATH=/usr/gnu/bin:/usr/bin
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
+COMPONENT_TEST_CMD =	$(PYTHON)
+COMPONENT_TEST_ARGS =	run-tests.py --with-hg=$(HG)
+
+COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS = '-n -e "/Ran .* tests/p"'
 
 CLEAN_PATHS +=		$(COMPONENT_ARCHIVE)
 
+# common targets
 build:		$(BUILD_NO_ARCH)
+
 install:	$(INSTALL_NO_ARCH)
-# until dulwich is generally available
-test:		$(NO_TESTS)
+
+test:		$(TEST_NO_ARCH)
+
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+
+REQUIRED_PACKAGES += library/python/dulwich
