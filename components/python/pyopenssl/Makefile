@@ -26,17 +26,17 @@ include ../../../make-rules/shared-macros.mk
 COMPILER=	gcc
 
 COMPONENT_NAME=		pyOpenSSL
-COMPONENT_VERSION=	16.2.0
+COMPONENT_VERSION=	19.0.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:7779a3bbb74e79db234af6a08775568c6769b5821faecf6e2f4143edb227516e
+	sha256:aeca66338f6de19d1aa46ed634c3b9ae519a64b458f8468aec688e7e3c20f200
 COMPONENT_ARCHIVE_URL=  $(call pypi_url)
 COMPONENT_PROJECT_URL=  https://pyopenssl.org/
 COMPONENT_BUGDB=	python-mod/pyopenssl
 COMPONENT_ANITYA_ID=	5535
 
-TPNO=			32834
+TPNO=			49036
 
 # Temporary solution for Python3.7 ready components
 PYTHON_VERSIONS = $(PYTHON3.7_READY)
@@ -62,9 +62,10 @@ COMPONENT_TEST_ENV += PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES.32):$(PYTH
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-n -e "s/in [^ ]* seconds/in x seconds/" ' \
-	'-e "/tests/p" ' \
+	'-e "/^tests/p" ' \
 	'-e "/===/p" '
 
+# common targets
 build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)
