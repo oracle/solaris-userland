@@ -20,18 +20,18 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gzip
-COMPONENT_VERSION=	1.8
+COMPONENT_VERSION=	1.10
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:1ff7aedb3d66a0d73f442f6261e4b3860df6fd6c94025c2cb31a202c9c60fe0e
+    sha256:c91f74430bf7bc20402e1f657d0b252cb80aa66ba333a25704512af346633c68
 COMPONENT_ANITYA_ID=	1290
 
-TPNO=			28039
+TPNO=			49597
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
