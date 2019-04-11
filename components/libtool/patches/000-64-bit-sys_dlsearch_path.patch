@@ -1,0 +1,35 @@
+Prevent libltdl.so from using 32-bit search path in 64-bit mode in Solaris OS.
+
+--- libtool-2.4.6.orig/m4/libtool.m4	Tue Jan 20 17:15:19 2015
++++ libtool-2.4.6/m4/libtool.m4	Thu Apr 11 19:20:11 2019
+@@ -1456,6 +1456,7 @@
+   if AC_TRY_EVAL(ac_compile); then
+     case `/usr/bin/file conftest.o` in
+     *64-bit*)
++      SOLARIS_ISA_BITS=64
+       case $lt_cv_prog_gnu_ld in
+       yes*)
+         case $host in
+@@ -1478,6 +1479,9 @@
+ 	;;
+       esac
+       ;;
++    *32-bit*)
++      SOLARIS_ISA_BITS=32
++      ;;
+     esac
+   fi
+   rm -rf conftest*
+@@ -2995,6 +2999,12 @@
+   hardcode_into_libs=yes
+   # ldd complains unless libraries are executable
+   postinstall_cmds='chmod +x $lib'
++  if test 32 = "$SOLARIS_ISA_BITS"; then
++    sys_lib_search_path_spec="/lib /usr/lib"
++  else
++    sys_lib_search_path_spec="/lib/64 /usr/lib/64"
++  fi
++  sys_lib_dlsearch_path_spec=$sys_lib_search_path_spec
+   ;;
+ 
+ sunos4*)
