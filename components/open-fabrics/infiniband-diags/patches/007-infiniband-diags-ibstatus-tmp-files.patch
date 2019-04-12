@@ -1,0 +1,89 @@
+#This patch was developed both in-house and from outside. We plan to submit it
+#upstream, but do not yet have a target date for doing so
+#
+# HG changeset patch
+# Parent  959601eb4e19f47d521ad5effd2c4ffbc4c8df68
+29596632 problem in UTILITY/OFUV_TOOLS
+
+diff -r 959601eb4e19 scripts/ibstatus
+--- a/scripts/ibstatus	Tue Mar 19 09:49:24 2019 -0700
++++ b/scripts/ibstatus	Tue Apr 09 15:34:42 2019 -0700
+@@ -3,8 +3,8 @@
+ # Usage ibstatus [devname[:port]]
+ 
+ ibvdevinfo="/usr/bin/ibv_devinfo"
+-ibvdevinfo_results="/tmp/ibvdevinfo.output.$$"
+-tmpout="/tmp/tmpout.$$"
++ibvdevinfo_results_template=ibvdevinfo.output.XXXXXX
++tmpout_template=ibstatus.tmp.XXXXXX
+ 
+ usage() {
+ 	prog=`basename $0`
+@@ -98,6 +98,24 @@
+ 	}' $tmpout
+ }
+ 
++
++# Create temporary files
++mktmpfiles() {
++	ibvdevinfo_results=$(mktemp -t $ibvdevinfo_results_template)
++	if [ -z "$ibvdevinfo_results" ]; then
++		echo "Couldn't create temporary file!"
++		exit 1
++	fi
++	trap '/usr/bin/rm -rf $ibvdevinfo_results' 0 1 2 3 13 15
++
++	tmpout=$(mktemp -t $tmpout_template)
++	if [ -z "$tmpout" ]; then
++		echo "Couldn't create temporary file!"
++		exit 1
++	fi
++	trap '/usr/bin/rm -rf $tmpout $ibvdevinfo_results' 0 1 2 3 13 15
++}
++
+ if [ "$1" = "-h" ]; then
+ 	usage
+ fi
+@@ -108,6 +126,8 @@
+ 	exit 1
+ fi
+ 
++mktmpfiles
++
+ # Run ibv_devinfo and direct the output to $ibvdevinfo_results.
+ $ibvdevinfo -v > $ibvdevinfo_results
+ if [ $? != 0 ]; then
+@@ -119,20 +139,16 @@
+ nhcas=`$ibvdevinfo -l | awk '/HCA/{print $1}'`
+ if [ -z $nhcas ]; then
+         echo "No HCAs!"
+-	rm -f $ibvdevinfo_results
+ 	exit 1
+ fi
+ 
+ egrep "port:|hca_id:|_lid|GID|state:|active_|link_layer:" $ibvdevinfo_results |grep -v _mtu | sed -e 's/(//' -e 's/)//' > $tmpout
+-rm -f $ibvdevinfo_results
+ 
+ if [ -z "$1" ]; then
+ 	get_status_ports "+" "+"
+ 	if [ $? != 0 ]; then
+-		rm -f $tmpout
+ 		exit 1
+ 	fi
+-	rm -f $tmpout
+ 	exit 0
+ fi
+ 
+@@ -146,10 +162,10 @@
+ 
+ 	get_status_ports $dev $port
+ 	if [ $? != 0 ]; then
+-		rm -f $tmpout
+ 		exit 1
+ 	fi
+ 
+ 	shift
+ done
+-rm -f $tmpout
++
++
