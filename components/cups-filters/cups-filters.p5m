@@ -1,0 +1,61 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+# {filters|backends} should be set executable even if those are not in .*/(s)?bin/.+ path
+<transform file path=usr/lib/cups/.+ ->default mode 0555>
+# avoid of complaints on ELF64's on non-{.+/$(MACH64)/.+}-path
+<transform file path=usr/.+/cups/.+ -> default pkg.depend.bypass-generate .*>
+<transform file path=usr/.+/cups/.+ -> default pkg.linted.userland.action001.1 true>
+<transform file path=usr/.+/cups/.+ -> default pkg.linted.userland.action001.5 true>
+# unsupported interface (as of PSARC/2019/031)
+<transform file link path=etc/.+ -> drop>
+<transform file link path=usr/(s)?bin/.+ -> drop>
+<transform file path=usr/include/.+ -> drop>
+<transform file path=usr/lib.*/pkgconfig/.+ -> drop>
+<transform file path=usr/share/man/.+ -> drop>
+#
+# gmake sample-manifest METADATA_TEMPLATE=
+# egrep -v 'path=mangled' build/manifest-$(uname -p)-generated.p5m | nawk '{if (sub(/\\$/,"")) printf "%s", $0; else print $0}' | sed -e '/^dir .*/d' > cups-filters.pkg-objects
+<include cups-filters.pkg-objects>
+#
+set name=pkg.fmri \
+    value=pkg:/print/cups/filters@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="CUPS suplement required on non-Apple platforms"
+set name=pkg.linted.pkglint.dupaction001.1 value=true
+set name=pkg.linted.pkglint.dupaction010.2 value=true
+set name=com.oracle.info.description value="the Common Unix Print System (CUPS)"
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification value=org.opensolaris.category.2008:System/Printing
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2019/031
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+#
+license COPYING license="Expat(MIT) BSD-4-clause"
+license GPL-2.txt license=GPLv2
+license GPL-3.txt license=GPLv3
+license LGPL-2.0.txt license=LGPLv2
+license LGPL-2.1.txt license=LGPLv2.1
+#
+# no qpdf no rip
+depend type=require fmri=pkg:/print/qpdf
