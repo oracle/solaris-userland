@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
@@ -37,11 +37,8 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2015/025
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file $(MACH64)/tea/libsqlite$(COMPONENT_VERSION).so \
-    path=usr/lib/tcl8.5/sqlite$(COMPONENT_VERSION)/64/libsqlite$(COMPONENT_VERSION).so
-file $(MACH32)/tea/libsqlite$(COMPONENT_VERSION).so \
-    path=usr/lib/tcl8.5/sqlite$(COMPONENT_VERSION)/libsqlite$(COMPONENT_VERSION).so
-file files/pkgIndex.tcl \
-    path=usr/lib/tcl8.5/sqlite$(COMPONENT_VERSION)/pkgIndex.tcl
+file path=usr/lib/tcl$(TCL_VERSION)/sqlite$(COMPONENT_VERSION)/32/libsqlite$(COMPONENT_VERSION).so
+file path=usr/lib/tcl$(TCL_VERSION)/sqlite$(COMPONENT_VERSION)/64/libsqlite$(COMPONENT_VERSION).so
+file path=usr/lib/tcl$(TCL_VERSION)/sqlite$(COMPONENT_VERSION)/pkgIndex.tcl
 license sqlite.license license="Public Domain"
 depend type=require fmri=database/sqlite-3
