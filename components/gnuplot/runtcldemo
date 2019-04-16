@@ -20,7 +20,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2010, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Unfortunately, the gnuplot demo wants run in the
@@ -46,7 +46,6 @@ GNUPLOT_DEMO_PROGRAM="${GNUPLOT_DEMO_PROGRAM:-./gpdemos.tcl}"
 GNUPLOT_DEMO_GSFONTS="${GNUPLOT_DEMO_GSFONTS:-/usr/share/ghostscript/fonts}"
 GNUPLOT_DEMO_P052003L_PFB="${GNUPLOT_DEMO_P052003L_PFB:-$GNUPLOT_DEMO_GSFONTS/p052003l.pfb}"
 GNUPLOT_DEMO_P052023L_PFB="${GNUPLOT_DEMO_P052023L_PFB:-$GNUPLOT_DEMO_GSFONTS/p052023l.pfb}"
-GNUPLOT_DEMO_TMPDIR="/tmp/gnuplot_demo_`logname`_$$"
 GNUPLOT_DEMO_LIST="$GNUPLOT_DEMO_DIR/*.bin \
     $GNUPLOT_DEMO_DIR/*.cfg \
     $GNUPLOT_DEMO_DIR/*.cor \
@@ -88,15 +87,18 @@ fi
 
 if [ "$GNUPLOT_DEMO_SAVE_FILES" = "y" ]
 then
-	trap "find $GNUPLOT_DEMO_TMPDIR -type f -a -exec cp -p {} . \; ; rm -rf $GNUPLOT_DEMO_TMPDIR; exit 1" INT TERM
+	trap 'find $GNUPLOT_DEMO_TMPDIR -type f -a -exec cp -p {} . \; ;
+		rm -rf $GNUPLOT_DEMO_TMPDIR; exit 1' INT TERM
 else
-	trap "rm -rf $GNUPLOT_DEMO_TMPDIR; exit 1" INT TERM
+	trap 'rm -rf $GNUPLOT_DEMO_TMPDIR; exit 1' INT TERM
 fi
 
 # Create a writeable temporary directory to run the demo from.
-
-mkdir $GNUPLOT_DEMO_TMPDIR
-chmod u+rwx $GNUPLOT_DEMO_TMPDIR
+GNUPLOT_DEMO_TMPDIR=$(mktemp -d -t gnuplot_demo_$(logname)_XXXXXX)
+if [ -z "$GNUPLOT_DEMO_TMPDIR" ]; then
+	print "Couldn't create temporary directory!" 1>&2
+	exit 1
+fi
 
 # Make symlinks in that directory to the demo sources
 
