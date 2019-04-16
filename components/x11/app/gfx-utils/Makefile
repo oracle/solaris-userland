@@ -59,5 +59,6 @@ COMPONENT_INSTALL_ACTION = \
 include $(WS_MAKE_RULES)/x11-component.mk
 
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library/smf
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxext
