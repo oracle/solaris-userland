@@ -20,26 +20,26 @@
 #
 
 #
-# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		rsyslog
-COMPONENT_VERSION=	8.38.0
+COMPONENT_VERSION=	8.1904.0
 COMPONENT_PROJECT_URL=	https://www.rsyslog.com/
-COMPONENT_ARCHIVE_HASH=	sha256:4d328ed3bcae784e15401c6c20ada2a9be380798ff6bf0da3fe2095915bba22c
+COMPONENT_ARCHIVE_HASH=	sha256:7098b459dfc3f8bfc35d5b114c56e7945614ba76efa4e513b1db9c38b0ff9c3d
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)files/download/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/rsyslog
 COMPONENT_ANITYA_ID=	4218
 
-TPNO=                   46847
+TPNO=                   51086
 
 # The documentation is in a separate download
 COMPONENT_SRC_DOC=		$(COMPONENT_NAME)-doc-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_DOC=		$(COMPONENT_SRC_DOC).tar.gz
-COMPONENT_ARCHIVE_HASH_DOC=	sha256:40f185c514b64fccbaf73c93ae39f347aae930b2586046a046f340b9b4a218ba
+COMPONENT_ARCHIVE_HASH_DOC=	sha256:ad2bb3522b261f2ab511b68cfcdb5e6168d2cc6b3e8fcea35b112d2ab3310fb1
 COMPONENT_ARCHIVE_URL_DOC=	$(COMPONENT_PROJECT_URL)files/download/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE_DOC)
 
 UNPACK_ARGS_DOC=		-r $(COMPONENT_SRC_DOC)
@@ -77,6 +77,8 @@ $(LIB_CONFIGURE): SOURCE_DIR = $(SOURCE_DIR_LIB)
 $(LIB_CONFIGURE): COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR_LIB) $(BUILD_DIR)/$(COMPONENT_SRC_LIB));
 # Build only static library to prevent accidental dynamic linking
 $(LIB_CONFIGURE): TS_CONFIGURE_OPTIONS = --disable-shared
+# Libfastjson should be built with these flags to prevent link time errors
+$(LIB_CONFIGURE): CFLAGS += -fPIC -DPIC
 
 # Libfastjson must be installed before rsyslog configure can starts
 $(BUILD_DIR)/$(MACH64)/.configured: $(LIB_BUILD)

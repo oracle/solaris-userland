@@ -1,5 +1,12 @@
+PASS: operatingstate-basic.sh
+PASS: operatingstate-empty.sh
+PASS: operatingstate-unclean.sh
 PASS: empty-hostname.sh
 SKIP: hostname-getaddrinfo-fail.sh
+PASS: msleep_usage_output.sh
+PASS: mangle_qi_usage_output.sh
+PASS: minitcpsrv_usage_output.sh
+PASS: test_id_usage_output.sh
 PASS: prop-programname.sh
 PASS: prop-programname-with-slashes.sh
 PASS: hostname-with-slash-pmrfc5424.sh
@@ -16,6 +23,7 @@ PASS: glbl_setenv_err.sh
 PASS: glbl_setenv_err_too_long.sh
 PASS: glbl_setenv.sh
 PASS: nested-call-shutdown.sh
+PASS: dnscache-TTL-0.sh
 PASS: invalid_nested_include.sh
 PASS: omfwd-keepalive.sh
 PASS: omfile-read-only-errmsg.sh
@@ -63,6 +71,8 @@ PASS: pmrfc3164-json.sh
 PASS: tcp_forwarding_tpl.sh
 PASS: tcp_forwarding_dflt_tpl.sh
 PASS: tcp_forwarding_retries.sh
+SKIP: queue-minbatch.sh
+SKIP: queue-minbatch-queuefull.sh
 PASS: arrayqueue.sh
 PASS: global_vars.sh
 PASS: no-parser-errmsg.sh
@@ -90,6 +100,7 @@ SKIP: rulesetmultiqueue.sh
 SKIP: rulesetmultiqueue-v6.sh
 SKIP: manytcp.sh
 PASS: rsf_getenv.sh
+PASS: msg-deadlock-headerless-noappname.sh
 PASS: imtcp_conndrop.sh
 PASS: imtcp_addtlframedelim.sh
 PASS: imtcp_no_octet_counted.sh
@@ -127,7 +138,7 @@ PASS: dynfile_invld_sync.sh
 PASS: dynfile_invalid2.sh
 SKIP: complex1.sh
 PASS: queue-persist.sh
-SKIP: pipeaction.sh
+PASS: pipeaction.sh
 PASS: execonlyonce.sh
 PASS: execonlywhenprevsuspended.sh
 PASS: execonlywhenprevsuspended2.sh
@@ -141,9 +152,9 @@ PASS: pipe_noreader.sh
 PASS: dircreate_dflt.sh
 PASS: dircreate_off.sh
 SKIP: imuxsock_logger.sh
-PASS: imuxsock_logger_ruleset.sh
-PASS: imuxsock_logger_ruleset_ratelimit.sh
-PASS: imuxsock_logger_err.sh
+SKIP: imuxsock_logger_ruleset.sh
+SKIP: imuxsock_logger_ruleset_ratelimit.sh
+SKIP: imuxsock_logger_err.sh
 SKIP: imuxsock_logger_parserchain.sh
 PASS: imuxsock_traillf.sh
 PASS: imuxsock_ccmiddle.sh
@@ -160,6 +171,8 @@ PASS: failover-basic.sh
 PASS: failover-rptd.sh
 PASS: failover-no-rptd.sh
 PASS: failover-no-basic.sh
+PASS: suspend-via-file.sh
+PASS: externalstate-failed-rcvr.sh
 PASS: rcvr_fail_restore.sh
 PASS: rscript_contains.sh
 PASS: rscript_bare_var_root.sh
@@ -228,6 +241,23 @@ PASS: lookup_table_rscript_reload.sh
 PASS: lookup_table_rscript_reload_without_stub.sh
 PASS: include-obj-text-from-file.sh
 PASS: multiple_lookup_tables.sh
+PASS: parsertest-parse1.sh
+PASS: parsertest-parse1-udp.sh
+PASS: parsertest-parse2.sh
+PASS: parsertest-parse2-udp.sh
+PASS: parsertest-parse_8bit_escape.sh
+PASS: parsertest-parse_8bit_escape-udp.sh
+PASS: parsertest-parse3.sh
+PASS: parsertest-parse3-udp.sh
+PASS: parsertest-parse_invld_regex.sh
+PASS: parsertest-parse_invld_regex-udp.sh
+PASS: parsertest-parse-3164-buggyday.sh
+PASS: parsertest-parse-3164-buggyday-udp.sh
+PASS: parsertest-parse-nodate.sh
+PASS: parsertest-parse-nodate-udp.sh
+PASS: parsertest-snare_ccoff_udp.sh
+PASS: parsertest-snare_ccoff_udp2.sh
+PASS: ommail_errmsg_no_params.sh
 PASS: rscript_http_request.sh
 PASS: impstats-hup.sh
 PASS: dynstats.sh
@@ -245,19 +275,34 @@ PASS: dynstats_reset_without_pstats_reset.sh
 PASS: dynstats_prevent_premature_eviction.sh
 PASS: omstdout-basic.sh
 PASS: imtcp_conndrop_tls.sh
+PASS: sndrcv_tls_anon_rebind.sh
 PASS: sndrcv_tls_anon_hostname.sh
 PASS: sndrcv_tls_anon_ipv4.sh
+SKIP: sndrcv_tls_anon_ipv6.sh
+PASS: sndrcv_tls_certless_clientonly.sh
+PASS: sndrcv_tls_gtls_servercert_gtls_clientanon.sh
+PASS: sndrcv_tls_gtls_servercert_gtls_clientanon_legacy.sh
+PASS: sndrcv_tls_gtls_serveranon_gtls_clientanon.sh
 PASS: sndrcv_tls_priorityString.sh
+PASS: sndrcv_tls_certvalid.sh
+PASS: sndrcv_tls_certvalid_expired.sh
+PASS: imtcp-tls-gtls-x509fingerprint-invld.sh
+PASS: imtcp-tls-gtls-x509fingerprint.sh
+PASS: imtcp-tls-gtls-x509name-invld.sh
+PASS: imtcp-tls-gtls-x509name.sh
 PASS: imtcp-tls-basic.sh
-PASS: sndrcv_tls_anon_rebind.sh
 PASS: uxsock_simple.sh
+PASS: imfile-basic-2GB-file.sh
+PASS: imfile-truncate-2GB-file.sh
 PASS: imfile-basic.sh
+PASS: imfile-basic-legacy.sh
 PASS: imfile-discard-truncated-line.sh
 PASS: imfile-truncate-line.sh
 PASS: imfile-file-not-found-error.sh
 PASS: imfile-fileNotFoundError-parameter.sh
 PASS: imfile-error-not-repeated.sh
 PASS: imfile-truncate.sh
+PASS: imfile-truncate-multiple.sh
 PASS: imfile-readmode2.sh
 PASS: imfile-readmode2-polling.sh
 PASS: imfile-readmode2-with-persists-data-during-stop.sh
@@ -272,6 +317,8 @@ PASS: imfile-endregex-timeout-none.sh
 SKIP: imfile-endregex-timeout-with-shutdown.sh
 PASS: imfile-endregex-timeout-with-shutdown-polling.sh
 PASS: imfile-endmsg.regex.sh
+PASS: imfile-statefile-no-file_id.sh
+PASS: imfile-statefile-no-file_id-TO-file_id.sh
 PASS: imfile-persist-state-1.sh
 PASS: imfile-freshStartTail1.sh
 PASS: imfile-freshStartTail2.sh
@@ -290,14 +337,18 @@ SKIP: imfile-rename-while-stopped.sh
 SKIP: imfile-rename.sh
 PASS: imfile-symlink.sh
 PASS: imfile-symlink-multi.sh
+SKIP: imfile-logrotate.sh
+SKIP: imfile-logrotate-multiple.sh
+SKIP: imfile-logrotate-copytruncate.sh
+SKIP: imfile-logrotate-nocopytruncate.sh
 SKIP: imfile-growing-file-id.sh
 SKIP: glbl-oversizeMsg-truncate-imfile.sh
 ============================================================================
-Testsuite summary for rsyslog 8.38.0
+Testsuite summary for rsyslog 8.1904.0
 ============================================================================
-# TOTAL: 295
-# PASS:  260
-# SKIP:  35
+# TOTAL: 346
+# PASS:  302
+# SKIP:  44
 # XFAIL: 0
 # FAIL:  0
 # XPASS: 0
