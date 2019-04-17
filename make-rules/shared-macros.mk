@@ -855,11 +855,11 @@ PHP.7.3 = /usr/php/7.3/bin/php
 
 # This is the default BUILD version of tcl
 # Not necessarily the system's default version, i.e. /usr/bin/tclsh
-TCL_VERSION =  8.5
-TCLSH.8.5.i386.32 =	/usr/bin/i86/tclsh8.5
-TCLSH.8.5.i386.64 =	/usr/bin/amd64/tclsh8.5
-TCLSH.8.5.sparc.32 =	/usr/bin/sparcv7/tclsh8.5
-TCLSH.8.5.sparc.64 =	/usr/bin/sparcv9/tclsh8.5
+TCL_VERSION =  8.6
+TCLSH.8.6.i386.32 =	/usr/bin/i86/tclsh8.6
+TCLSH.8.6.i386.64 =	/usr/bin/amd64/tclsh8.6
+TCLSH.8.6.sparc.32 =	/usr/bin/sparcv7/tclsh8.6
+TCLSH.8.6.sparc.64 =	/usr/bin/sparcv9/tclsh8.6
 TCLSH =		$(TCLSH.$(TCL_VERSION).$(MACH).$(BITS))
 
 CCSMAKE =	/usr/ccs/bin/make
