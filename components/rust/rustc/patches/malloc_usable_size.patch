@@ -1,0 +1,19 @@
+Temporary workaround for bug 29668068 to handle malloc_usable_size() only
+being defined in <stdlib.h> and not <malloc.h> in st_043.
+
+Not needed for upstream, as we'll fix malloc.h to include malloc_usable_size()
+before backporting to 11.4 / releasing publicly.
+
+When removing, don't forget to also remove the Makefile entry for
+COMPONENT_PREP_ACTION += (cd $(@D)/src/jemalloc/ ; autoconf )
+
+--- a/src/jemalloc/configure.ac
++++ b/src/jemalloc/configure.ac
+@@ -501,6 +501,7 @@ AC_CHECK_HEADERS([malloc.h], [
+   AC_MSG_CHECKING([whether malloc_usable_size definition can use const argument])
+   AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+     [#include <malloc.h>
++     #include <stdlib.h>
+      #include <stddef.h>
+     size_t malloc_usable_size(const void *ptr);
+     ],

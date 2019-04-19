@@ -62,6 +62,9 @@ LD_B_DIRECT =
 
 $(MANIFEST_BASE)-%.mogrified: RUST_PLATFORM = $(MACH64:amd64=x86_64)-sun-solaris
 
+# Need to run autoconf due to applying patches/malloc_usable_size.patch
+COMPONENT_PREP_ACTION += (cd $(@D)/src/jemalloc/ ; autoconf )
+
 # The configure Rust uses isn't autoconf; it's hand-rolled, and doesn't
 # recognize all the autoconf options, so we start from scratch.
 CONFIGURE_OPTIONS =	--prefix=$(CONFIGURE_PREFIX)
