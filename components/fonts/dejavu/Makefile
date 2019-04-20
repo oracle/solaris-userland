@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2007, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2007, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =		NO_ARCH
@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
 	sha256:fa9ca4d13871dd122f61258a80d01751d603b4d3ee14095d65453b4e846e17d7
 COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/project/dejavu/dejavu/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
-COMPONENT_BUGDB=	x11/fonts
+COMPONENT_BUGDB=	x11/font
 COMPONENT_ANITYA_ID=	418
 
 TPNO= 			30836

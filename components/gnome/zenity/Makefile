@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		64
@@ -32,6 +32,7 @@ COMPONENT_VERSION=	3.24.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Zenity
 COMPONENT_ARCHIVE_HASH= \
 	sha256:6ff0a026ec94e5bc1b30f78df91e54f4f82fd982f4c29b52fe5dacc886a9f7f7
+COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	13165
 
 TPNO=			34565

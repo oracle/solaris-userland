@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2008, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2008, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =		NO_ARCH
@@ -31,6 +31,7 @@ COMPONENT_VERSION= 	1.0.3
 COMPONENT_ARCHIVE_HASH=	\
 	sha256:2b18ce10b367ebafe95a17de799b6db9a24e2337188d124adaf68af05b1fac65
 COMPONENT_ANITYA_ID=	17194
+COMPONENT_BUGDB=	x11/font
 
 TPNO=			11716
 

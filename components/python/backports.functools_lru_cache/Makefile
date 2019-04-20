@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH=	\
 	sha256:9d98697f088eb1b0fa451391f91afb5e3ebde16bbdb272819fd091151fda4f1a
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.org/project/backports.functools_lru_cache/
-COMPONENT_BUGDB=	python-mod/backports.functools_lru_cache
+COMPONENT_BUGDB=	python-mod/functools-lru
 COMPONENT_ANITYA_ID=	12085
 
 TPNO=			45196

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -32,7 +32,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:0f7a323bf716d3cb6cb3910cd4fccbee0b3d3793322738566ecce163b01bbd31
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://repoze.org/
-COMPONENT_BUGDB=	python-mod/repoze-lru
+COMPONENT_BUGDB=	python-mod/repoze.lru
 COMPONENT_ANITYA_ID=	13214
 
 TPNO=			14503

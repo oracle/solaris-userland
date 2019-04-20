@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH=	\
 	sha256:2b6b9893337bfd9166bee6a62c2b0c9fe7735dcf85948b387ec8cba30e85d8e8
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.org/project/more-itertools/
-COMPONENT_BUGDB=	python-mod/more_itertools
+COMPONENT_BUGDB=	python-mod/moreitertools
 COMPONENT_ANITYA_ID=	12201
 
 TPNO=			45198

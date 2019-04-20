@@ -23,6 +23,13 @@
 # Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
+COMPILER=		gcc
+
+# Component uses ABI3 naming.
+PYTHON3_SOABI=abi3
+
+include ../../../make-rules/shared-macros.mk
+
 COMPONENT_NAME=		cryptography
 COMPONENT_VERSION=	2.5
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
@@ -36,12 +43,6 @@ COMPONENT_ANITYA_ID=	5532
 
 TPNO=			49366
 
-COMPILER=		gcc
-
-# Component uses ABI3 naming.
-PYTHON3_SOABI=abi3
-
-include ../../../make-rules/shared-macros.mk
 
 # Temporary solution for Python3.7 ready components
 PYTHON_VERSIONS = $(PYTHON3.7_READY)

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2008, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2008, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =		NO_ARCH
@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_HASH= \
 	sha256:b1bbf2df80f388ca1748a41068fafebc8efdfdee7612afb78a7a7cd31004d50f
 COMPONENT_ARCHIVE_URL=	\
 	https://releases.pagure.org/liberation-fonts/$(COMPONENT_ARCHIVE)
-COMPONENT_BUGDB=	x11/fonts
+COMPONENT_BUGDB=	x11/font
 COMPONENT_ANITYA_ID=	16833
 
 TPNO= 			9925

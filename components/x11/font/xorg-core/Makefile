@@ -20,11 +20,12 @@
 #
 
 #
-# Copyright (c) 2009, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2009, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =		NO_ARCH
 include ../../../../make-rules/shared-macros.mk
+COMPONENT_BUGDB=	x11/font
 
 COMPONENT_NAME=		font-adobe-100dpi
 COMPONENT_VERSION=	1.0.3

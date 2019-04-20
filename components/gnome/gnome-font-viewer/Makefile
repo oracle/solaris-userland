@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
@@ -31,6 +31,7 @@ COMPONENT_VERSION=	3.23.91
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/
 COMPONENT_ARCHIVE_HASH= \
 	sha256:f6ca813c388741ca5ffcdd5b5fb7a65ac5ba2da2818592ae3161bddba92e88d0
+COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	13130
 
 TPNO=			34519

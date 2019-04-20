@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2009, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2009, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =		NO_ARCH
@@ -43,6 +43,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_ARCHIVE_URL=	\
  https://github.com/oracle/solaris-xorg/releases/download/s12_25/$(COMPONENT_ARCHIVE)
 
+COMPONENT_BUGDB=	x11/font
 TPNO=			12030
 
 include $(WS_MAKE_RULES)/font.mk

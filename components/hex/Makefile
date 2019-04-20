@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Only bytecode and text files.
@@ -34,7 +34,7 @@ COMPONENT_PROJECT_URL=	https://hex.pm/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:526d2e14947845fc05878e6b6c600e88992b4c06271e2a101e8141e8146f4ff7
 COMPONENT_ARCHIVE_URL=	https://github.com/hexpm/$(COMPONENT_NAME)/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
-COMPONENT_BUGDB=	utility/hex
+COMPONENT_BUGDB=	utility/elixir
 COMPONENT_ANITYA_ID= N/A
 
 TPNO=			47513

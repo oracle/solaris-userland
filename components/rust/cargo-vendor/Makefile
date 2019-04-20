@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =	64
@@ -40,6 +40,7 @@ COMPONENT_ARCHIVE_URL =	https://github.com/alexcrichton/cargo-vendor/archive/$(C
 COMPONENT_ARCHIVE_HASH_crates = \
     sha256:91f6b947fe1b98f420697687cafe03aba0c37abfe8d0ec5ff43ecc367d4bbbeb
 
+COMPONENT_BUGDB =	utility/rust
 TPNO = 45484
 
 BUILD_STYLE = cargo
