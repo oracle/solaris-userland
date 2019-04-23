@@ -20,14 +20,14 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         tcl
 COMPONENT_VERSION=      8.6.7
-COMPONENT_MINOR_VERSION= $(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\([0-9]\+\)\.\([0-9]\+\)\.[0-9]\+/\1.\2/')
+COMPONENT_MAJOR_VERSION= $(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\([0-9]\+\)\.\([0-9]\+\)\.[0-9]\+/\1.\2/')
 COMPONENT_PROJECT_URL=	https://www.tcl.tk/
 COMPONENT_SRC=          $(COMPONENT_NAME)$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=      $(COMPONENT_NAME)-core$(COMPONENT_VERSION)-src.tar.gz
@@ -73,15 +73,23 @@ COMPONENT_TEST_TARGETS = test
 COMPONENT_TEST_TRANSFORMER =    $(NAWK)
 COMPONENT_TEST_TRANSFORMS =     "'/append.test/ {results = 1}; /httpold.test/ {results = 0}; /if-old.test/ {results = 1}; /Tests ended at/ {results = 0}; {if (results) print $0 } '"
 
-COMPONENT_POST_INSTALL_ACTION += \
-	sed -f $(COMPONENT_DIR)/files/tclsed.$(BITS) \
-		$(PROTO_DIR)$(USRLIB.$(BITS))/tclConfig.sh > \
-		$(PROTO_DIR)$(USRLIB.$(BITS))/tclConfig.sh.new; \
-	$(MV) $(PROTO_DIR)$(USRLIB.$(BITS))/tclConfig.sh.new \
-		$(PROTO_DIR)$(USRLIB.$(BITS))/tclConfig.sh; \
-	$(CHMOD) 555 $(PROTO_DIR)$(USRLIB.$(BITS))/tclConfig.sh
+LIB_SUFFIX := $(COMPONENT_MAJOR_VERSION)\\$$\{TCL_DBGX\}
 
-PKG_MACROS += COMPONENT_MINOR_VERSION=$(COMPONENT_MINOR_VERSION)
+COMPONENT_POST_INSTALL_ACTION += \
+  perl -i -pe "s|(TCL_CC)=.*$$|\1='$(CC)'|;" -e "s|(TCL_SRC_DIR)=.*$$|\1=|;" \
+	-e "s|(TCL_BUILD_LIB_SPEC)=.*$$|\1='-ltcl$(LIB_SUFFIX)'|;" \
+	-e "s|(TCL_BUILD_STUB_LIB_SPEC)=.*$$|\1='-ltclstub$(LIB_SUFFIX)'|;" \
+	-e "s|-lsunmath||g" $(PROTO_DIR)$(USRLIB.$(BITS))/tclConfig.sh;
+
+COMPONENT_POST_INSTALL_ACTION.32 += \
+  perl -i -pe "s|(TCL_BUILD_STUB_LIB_PATH)=.*$$|\1='/usr/lib/libtclstub$(LIB_SUFFIX).a'|;" \
+	-e "s|-L/usr/lib\s||g" $(PROTO_DIR)$(USRLIB.$(BITS))/tclConfig.sh;
+
+COMPONENT_POST_INSTALL_ACTION.64 += \
+  perl -i -pe "s|(TCL_BUILD_STUB_LIB_PATH)=.*$$|\1='/usr/lib/64/libtclstub$(LIB_SUFFIX).a'|;" \
+	-e "s|-L/usr/lib/amd64\s||g;" -e "s|-L/usr/lib/sparcv9\s||g" $(PROTO_DIR)$(USRLIB.$(BITS))/tclConfig.sh;
+
+PKG_MACROS += COMPONENT_MAJOR_VERSION=$(COMPONENT_MAJOR_VERSION)
 
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library/math
