@@ -1,17 +1,30 @@
-## Use the community link "How to use Ghostscript" to verify
-## various commandline options for running Ghostscript.
-https://www.ghostscript.com/doc/current/Use.htm
+1. Check version
 
+  $ build/amd64/bin/gs -h # update the path for sparc
+  GPL Ghostscript 9.27 (2019-04-04)
 
-## Identify version
-bash-4.4$ gs
-GPL Ghostscript 9.22 (2017-10-04)
-Copyright (C) 2017 Artifex Software, Inc.  All rights reserved.
-...
+2. Test functionality
 
-## Dependency on other components
-- 'graphviz' has build time dependency on ghostscript, thus any uprev
-  or interface change in Ghostscript should be tested by creating a
-  build machine with newer Ghostscript installed; then building
-  'graphviz' component on that build setup.
+  Use 'test' target to verify basic ghostscript functionality. It consists of two
+  tests:
+
+  a) The output of devices generating deterministic data is compared against
+  stored version.
+  b) Devices known to generate non empty output are tested to do so.
+
+  $ gmake test                                                    
+  ...
+  No differences found.
+
+  Tests could fail for various reasons. For a) case the most probable reason is
+  either rendering engine/font change or unused data change. For b) it is
+  probably device removal. Check and update appropriately.
+
+  'system-test' target runs the same set of tests while using system gs.
+
+3. Test dependency on other components
+
+  Ghostscipt is a build time dependecy for libspectre and graphviz. Any uprev or
+  interface change in ghostscript should be tested by creating a build machine
+  with new bits installed; then building each component.
 

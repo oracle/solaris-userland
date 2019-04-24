@@ -1,5 +1,4 @@
 #
-#
 # CDDL HEADER START
 #
 # The contents of this file are subject to the terms of the
@@ -23,112 +22,59 @@
 #
 # Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
-# parfait seems to spin when looking at the .bc files (13704877), so
-# for now disable it.
-export PARFAIT_BUILD=no
 
 BUILD_BITS= 64_and_32
 COMPILER= gcc
-gcc_OPT= -O0
 include ../../make-rules/shared-macros.mk
 
-
 COMPONENT_NAME=         ghostscript
-COMPONENT_VERSION=      9.26
+COMPONENT_VERSION=      9.27
 COMPONENT_PROJECT_URL=	http://ghostscript.com/
 COMPONENT_DOWNLOAD_URL= \
     https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download
 COMPONENT_ARCHIVE_HASH= \
-    sha256:831fc019bd477f7cc2d481dc5395ebfa4a593a95eb2fe1eb231a97e450d7540d
-COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/gs926/$(COMPONENT_ARCHIVE)
+    sha256:9760e8bdd07a08dbd445188a6557cb70e60ccb6a5601f7dbfba0d225e28ce285
+COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/gs927/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1157
 
-TPNO=			47816
+TPNO=			52182
 
-COMMON_TARGETS= no
+#COMMON_TARGETS= no
 include $(WS_MAKE_RULES)/common.mk
+# some backup files are copied to proto
+GPATCH_BACKUP=
 
-PATH=$(SPRO_VROOT)/bin:$(USRBINDIR):$(GNUBIN)
-
-# ghostscript uses a non-standard hybrid-build to build both 32 and 64-bit;
-# override these to prevent build failure.
-CC_FOR_BUILD=
-CONFIGURE_CPPFLAGS=
-
-# force use of shared system libtiff
-CONFIGURE_OPTIONS +=    --with-system-libtiff
-
-CONFIGURE_OPTIONS +=	--with-drivers=ALL
-CONFIGURE_OPTIONS +=	--with-ijs
-CONFIGURE_OPTIONS +=	--with-jbig2dec
-CONFIGURE_OPTIONS +=	--enable-cups
+CONFIGURE_OPTIONS +=	--with-fontpath=/usr/share/fonts
 CONFIGURE_OPTIONS +=	--enable-dynamic
 CONFIGURE_OPTIONS +=	--disable-compile-inits
-CONFIGURE_OPTIONS +=	--disable-freetype
-CONFIGURE_OPTIONS +=	--with-fontpath=/usr/share/ghostscript/$(COMPONENT_VERSION)/Resource:/usr/share/ghostscript/$(COMPONENT_VERSION)/Resource/Font:/usr/share/ghostscript/fonts:/usr/openwin/lib/X11/fonts/Type1:/usr/openwin/lib/X11/fonts/TrueType:/usr/openwin/lib/X11/fonts/Type3:/usr/X11/lib/X11/fonts/Type1:/usr/X11/lib/fonts/TrueType:/usr/X11/lib/X11/fonts/Type3:/usr/X11/lib/X11/fonts/Resource:/usr/X11/lib/X11/Resource/Font
 
 # configure options to generate 32 bit binaries
 $(BUILD_DIR)/$(MACH32)/.configured: CONFIGURE_OPTIONS += CC="$(CC) -m32"
-$(BUILD_DIR)/$(MACH32)/ijs/.configured: CONFIGURE_OPTIONS += CC="$(CC) -m32"
 
 # configure options to generate 64 bit binaries
 $(BUILD_DIR)/$(MACH64)/.configured: CONFIGURE_OPTIONS += CC="$(CC) -m64"
 
-# config env
-CONFIGURE_ENV += LDFLAGS_SO="-G"
-CONFIGURE_ENV += CUPSCONFIG=$(USRBINDIR)/cups-config
-
-GS_VARIANT = $(BUILD_DIR)/$(MACH32)
-GS_VARIANT_64 = $(BUILD_DIR)/$(MACH64)
-IJS_VARIANT = $(BUILD_DIR)/$(MACH32)/ijs
-IJS_VARIANT_64 = $(BUILD_DIR)/$(MACH64)/ijs
-
-VARIANTS = $(GS_VARIANT) $(IJS_VARIANT) $(GS_VARIANT_64) $(IJS_VARIANT_64)
-
-# autoconf - Generate configuration scripts
+# generate configuration scripts, otherwise libtiff configure fails
 COMPONENT_PREP_ACTION = \
 	 (cd $(@D); $(RM) -r libpng zlib jpeg tiff openjpeg; autoconf)
 
-$(GS_VARIANT)/.configured: COMPONENT_PRE_CONFIGURE_ACTION = \
+COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
 
-$(GS_VARIANT)/.installed: COMPONENT_INSTALL_TARGETS += \
+COMPONENT_INSTALL_TARGETS += \
 	install-exec install-so install-scripts install-data \
 	install-contrib-extras
 
-$(GS_VARIANT_64)/.configured: COMPONENT_PRE_CONFIGURE_ACTION = \
-	($(CLONEY) $(SOURCE_DIR) $(@D))
+COMPONENT_TEST_RESULTS_DIR = $(COMPONENT_DIR)/test
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_CMD = 	sh $(COMPONENT_DIR)/test/run
+COMPONENT_TEST_TRANSFORMS += "-e '/^Using/d'"
 
-$(GS_VARIANT_64)/.installed: COMPONENT_INSTALL_TARGETS += \
-	install-exec install-so install-scripts install-data \
-	install-contrib-extras
+COMPONENT_SYSTEM_TEST_CMD = 	sh $(COMPONENT_DIR)/test/run
+COMPONENT_SYSTEM_TEST_TARGETS = system-check
 
-$(IJS_VARIANT)/.configured: COMPONENT_PRE_CONFIGURE_ACTION = \
-	($(CLONEY) $(SOURCE_DIR)/ijs $(@D); \
-	cd $(@D) ; $(ENV) $(CONFIGURE_ENV) ./autogen.sh )
-
-$(IJS_VARIANT_64)/.configured: COMPONENT_PRE_CONFIGURE_ACTION = \
-	($(CLONEY) $(SOURCE_DIR)/ijs $(@D); \
-	cd $(@D) ; $(ENV) $(CONFIGURE_ENV) ./autogen.sh )
-
-CONFIGURE_SCRIPT = ./configure
-
-# ASLR disabled until sufficient testing can be performed.
-ASLR_MODE= $(ASLR_DISABLE)
-
-# configure gs and ijs
-configure: $(VARIANTS:%=%/.configured)
-
-# build gs and ijs
-build: $(VARIANTS:%=%/.built)
-
-# install gs and ijs
-install: $(VARIANTS:%=%/.installed)
-
-test:	$(NO_TESTS)
-
-system-test:    $(NO_TESTS)
-
+test:			$(TEST_64)
+system-test:		$(SYSTEM_TEST_64)
 
 REQUIRED_PACKAGES += image/library/openjpeg2
 REQUIRED_PACKAGES += image/library/libtiff
@@ -144,6 +90,7 @@ REQUIRED_PACKAGES += print/cups
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/fontconfig
+REQUIRED_PACKAGES += system/library/freetype-2
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/toolkit/libxt
