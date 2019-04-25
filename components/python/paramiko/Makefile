@@ -20,45 +20,47 @@
 #
 
 #
-# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		paramiko
-COMPONENT_VERSION=	2.0.8
+COMPONENT_VERSION=	2.0.9
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:3c479acfcdf8aa21c4b5f6c3d063a6318b94282744353c9c6cbad06ebe5a9abf
+	sha256:e48e5a3df4c4d52c62f651bcdf91e0fd2df90cf5163771a3ccb8b106aab6087c
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/paramiko/paramiko/
 COMPONENT_BUGDB=	python-mod/paramiko
 COMPONENT_ANITYA_ID=	3954
 
-TPNO=			42001
+TPNO=			51397
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
-
 # set LC_ALL for unicode sftp tests test_K_utf8 and test_L_utf8_chdir
-COMPONENT_TEST_ENV=	LC_ALL=en_US.UTF-8 PYTHONPATH=$(SOURCE_DIR)
-COMPONENT_TEST_DIR=	$(SOURCE_DIR)
-COMPONENT_TEST_CMD=	$(PYTHON)
-COMPONENT_TEST_ARGS=	test.py --verbose
+COMPONENT_TEST_ENV =	LC_ALL=en_US.UTF-8
+COMPONENT_TEST_ENV +=	PYTHONPATH=$(SOURCE_DIR)
+
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =	--verbose --disable-pytest-warnings
 
 # ============== is followed by hard-to-match tracebacks
 COMPONENT_TEST_TRANSFORMS += \
-    '-e "s/\<[.0-9]\+s\>/Xs/g"' \
-    '-e "/==============/q"'
+    '-n -e "s/in [0-9.]* seconds/in x seconds/"' \
+    '-e "/^collecting .../,\$$p"'
 
-COMPONENT_SYSTEM_TEST_ENV=	LC_ALL=en_US.UTF-8
-COMPONENT_SYSTEM_TEST_DIR=	$(SOURCE_DIR)
-COMPONENT_SYSTEM_TEST_CMD=	$(PYTHON)
-COMPONENT_SYSTEM_TEST_ARGS=	test.py --verbose
+COMPONENT_SYSTEM_TEST_ENV =	LC_ALL=en_US.UTF-8
+COMPONENT_SYSTEM_TEST_DIR =	$(SOURCE_DIR)/tests
+COMPONENT_SYSTEM_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_SYSTEM_TEST_ARGS =	--verbose
+
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
 build:		$(BUILD_NO_ARCH)

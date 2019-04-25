@@ -1,0 +1,19 @@
+Mock package is part of Python 3.x but must be imported from different path.
+
+This is not intended for upstream.
+
+--- paramiko-2.0.9/tests/test_transport.py
++++ paramiko-2.0.9/tests/test_transport.py
+@@ -30,7 +30,11 @@ import threading
+ import random
+ from hashlib import sha1
+ import unittest
+-from mock import Mock
++
++try:
++    from mock import Mock
++except:
++    from unittest.mock import Mock
+ 
+ from paramiko import (
+     Transport,
