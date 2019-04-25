@@ -1,0 +1,53 @@
+Add generator for usr/share/lib/pub/UTF-8 (29621392)
+
+Because the UTF-8 file is Solaris specific, we do not plan to submit the patch
+to upstream.
+
+--- tools.orig/tools/java/org/unicode/cldr/posix/GenerateUTF8.java
++++ tools/tools/java/org/unicode/cldr/posix/GenerateUTF8.java
+@@ -0,0 +1,45 @@
++package org.unicode.cldr.posix;
++
++import com.ibm.icu.text.UnicodeSet;
++
++import java.io.IOException;
++import java.io.PrintWriter;
++
++public class GenerateUTF8 {
++    public static void main(String[] args) throws IOException {
++        PrintWriter out = new PrintWriter("UTF-8", "UTF-8");
++
++        /* all characters, without Non-characters (Cn) and Surrogate (Cs) */
++        UnicodeSet us = new UnicodeSet("[^[:Noncharacter_Code_Point:][:Cn:][:Cs:]]");
++        /* wide and full-width characters - the characters occupy two positions */
++        UnicodeSet wide = new UnicodeSet("[[:East_Asian_Width=wide:][:East_Asian_Width=fullwidth:]]");
++
++        /* for u+0000 .. u+001F use the same shortcuts we used in previous releases */
++        out.println("U+0000    nul soh stx etx eot enq ack bel bs  ht  nl  vt  np  cr  so  si  ");
++        out.println("U+0010    dle dc1 dc2 dc3 dc4 nak syn etb can em  sub esc fs  gs  rs  us  ");
++
++        /* generate the table */
++        for (int i = 0x0020; i < 0x10FFFF; i += 0x10) {
++            /* skip unassigned area U+030000 .. U+0DFFFF */
++            if (i >= 0x030000 && i < 0x0E0000)
++                continue;
++
++            out.print(String.format("U+%0" + (i < 0xffff ? "4X    " : "6X  "), i));
++
++            for (int j = i; j < i + 0x10; j++) {
++                /* for u+007F .. u+009F use the same shortcuts we used in previous releases */
++                if (j == 0x7F) {
++                    out.print("del ");
++                } else if (j > 0x7F && j < 0xA0) {
++                    out.print("CTL ");
++                } else {
++                    out.print(us.contains(j) ? String.copyValueOf(Character.toChars(j)) : " ");
++                    out.print(wide.contains(j) ? "  " : "   ");
++                }
++            }
++            out.println();
++        }
++
++        out.close();
++    }
++}

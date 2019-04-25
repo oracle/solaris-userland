@@ -77,6 +77,7 @@ JAVA_CMD	= $(JAVA_HOME)/bin/java -cp $(CLASSPATH) $(JAVA_ARGS)
 GEN_DESCRIPTION	= $(JAVA_CMD) org.unicode.cldr.tool.LocaleDescription
 GEN_POSIX	= $(JAVA_CMD) org.unicode.cldr.posix.GeneratePOSIX
 GEN_CHARMAP	= $(JAVA_CMD) org.unicode.cldr.posix.GenerateCharmap
+GEN_UTF8	= $(JAVA_CMD) org.unicode.cldr.posix.GenerateUTF8
 
 #
 # static-locales are build from manually created posix sources
@@ -106,7 +107,7 @@ $(BUILD_DIR)/locale.mk: $(COMPONENT_DIR)/locale.list $(COMPONENT_DIR)/Makefile
 
 LOCALES = $(STATIC_LOCALES) $(CLDR_LOCALES)
 
-build: $(LOCALES:%=$(BUILD_DIR)/%/.compiled) $(BUILD_DIR)/common/.compiled $(BUILD_DIR)/.ldesc
+build: $(LOCALES:%=$(BUILD_DIR)/%/.compiled) $(BUILD_DIR)/common/.compiled $(BUILD_DIR)/.ldesc $(BUILD_DIR)/.utf-8
 
 #
 # build rules for non-CLDR locales
@@ -180,7 +181,7 @@ $(BUILD_DIR)/common.list: $(COMPONENT_DIR)/prepare_localedef.py $(LOCALES:%=$(BU
 	$(PYTHON.2.7) $(COMPONENT_DIR)/prepare_localedef.py $(BUILD_DIR) $(LOCALES) >$@
 	touch $@
 
-$(BUILD_DIR)/.installed: $(LOCALES:%=$(BUILD_DIR)/%/.compiled) $(BUILD_DIR)/common/.compiled $(BUILD_DIR)/.ldesc
+$(BUILD_DIR)/.installed: $(LOCALES:%=$(BUILD_DIR)/%/.compiled) $(BUILD_DIR)/common/.compiled $(BUILD_DIR)/.ldesc $(BUILD_DIR)/.utf-8
 	cat $(BUILD_DIR)/common.list | while read fn lc misc; do \
 		$(INSTALL) -D $(BUILD_DIR)/common/$$fn $(PROTOLOCALE)/common/$$lc/$$fn; \
 	done
@@ -190,11 +191,12 @@ $(BUILD_DIR)/.installed: $(LOCALES:%=$(BUILD_DIR)/%/.compiled) $(BUILD_DIR)/comm
 	$(MKDIR) $(PROTOLOCALEDEFSRC)/charmaps $(PROTOLOCALEDEFSRC)/extensions
 	$(CP) $(COMPONENT_DIR)/*.charmap $(BUILD_DIR)/*.charmap $(PROTOLOCALEDEFSRC)/charmaps/
 	$(CP) $(COMPONENT_DIR)/*.x $(PROTOLOCALEDEFSRC)/extensions/
+	$(INSTALL) -D $(BUILD_DIR)/UTF-8 $(PROTOUSRSHARELIBDIR)/pub/UTF-8
 	$(TOUCH) $@
 
 
 #
-# prepare the build tools and build area
+# prepare the build tools and build area and misc targets
 #
 $(BUILD_DIR)/.tools.prep: $(SOURCE_DIR_1)/.patched
 	$(ENV) JAVA_HOME=$(JAVA_HOME) $(ANT) -f $(SOURCE_DIR_1)/tools/java/build.xml jar
@@ -205,6 +207,10 @@ $(BUILD_DIR)/core/.prep: $(SOURCE_DIR)/.patched $(SOURCE_DIR_2)/.unpacked
 	$(CLONEY) $(SOURCE_DIR) $(@D)
 	$(CLONEY) $(SOURCE_DIR_2) $(@D)
 	$(TOUCH) $@
+
+$(BUILD_DIR)/.utf-8: $(BUILD_DIR)/.tools.prep
+	(cd $(@D); $(GEN_UTF8))
+	touch $(@)
 
 
 # this package needs to have installed itself because
