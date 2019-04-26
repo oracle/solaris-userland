@@ -1,0 +1,80 @@
+#    
+# Bug #4322 [1]: Can't see symlinks using any FTP client when using MLSD.
+# The bug also affects LIST and other commands; it is fallout from Bug#4219.
+#  
+# patch comes from 1.3.6a release branch. The release date is unknown yet.
+#
+# we also merge changes to fsio.c to this patch. The fsio.c change comes
+# from pull request 796 [3].
+#    
+# [1] http://bugs.proftpd.org/show_bug.cgi?id=4322
+# [2] http://bugs.proftpd.org/show_bug.cgi?id=4219
+# [3] https://github.com/proftpd/proftpd/pull/796
+#
+--- a/src/fsio.c
++++ b/src/fsio.c
+@@ -3073,7 +3073,8 @@ int pr_fs_resolve_path(const char *path, char *buf, size_t buflen, int op) {
+ 
+       fs = lookup_dir_fs(namebuf, op);
+ 
+-      if (fs_cache_lstat(fs, namebuf, &sbuf) == -1) {
++      if ((fs_cache_lstat(fs, namebuf, &sbuf) == -1) ||
++        (fs_cache_stat(fs, namebuf, &sbuf) == -1)) {
+         errno = ENOENT;
+         return -1;
+       }
+diff --git a/src/support.c b/src/support.c
+index 45d2126de..293dc7231 100644
+--- a/src/support.c
++++ b/src/support.c
+@@ -2,7 +2,7 @@
+  * ProFTPD - FTP server daemon
+  * Copyright (c) 1997, 1998 Public Flood Software
+  * Copyright (c) 1999, 2000 MacGyver aka Habeeb J. Dihu <macgyver@tos.net>
+- * Copyright (c) 2001-2016 The ProFTPD Project team
++ * Copyright (c) 2001-2017 The ProFTPD Project team
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+@@ -440,6 +440,9 @@ int dir_readlink(pool *p, const char *path, char *buf, size_t bufsz,
+     return -1;
+   }
+ 
++  pr_trace_msg("fsio", 9,
++    "dir_readlink() read link '%.*s' for path '%s'", (int) len, buf, path);
++
+   if (len == 0 ||
+       (size_t) len == bufsz) {
+     /* If we read nothing in, OR if the given buffer was completely
+@@ -530,15 +533,24 @@ int dir_readlink(pool *p, const char *path, char *buf, size_t bufsz,
+      */
+ 
+     ptr = strrchr(path, '/');
+-    if (ptr != NULL &&
+-        ptr != path) {
+-      char *parent_dir;
++    if (ptr != NULL) {
++      if (ptr != path) {
++        char *parent_dir;
+ 
+-      parent_dir = pstrndup(tmp_pool, path, (ptr - path));
+-      dst_path = pdircat(tmp_pool, parent_dir, dst_path, NULL);
++        parent_dir = pstrndup(tmp_pool, path, (ptr - path));
++        dst_path = pdircat(tmp_pool, parent_dir, dst_path, NULL);
+ 
+-    } else {
+-      dst_path = pdircat(tmp_pool, path, dst_path, NULL);
++      } else {
++        /* Watch out for the case where the destination path might start
++         * with a period.
++         */
++        if (*dst_path != '.') {
++          dst_path = pdircat(tmp_pool, path, dst_path, NULL);
++
++        } else {
++          dst_path = pdircat(tmp_pool, "/", dst_path, NULL);
++        }
++      }
+     }
+   }
+ 
