@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 # This code is built with gcc. See README.
 #
@@ -32,12 +32,12 @@ BUILD_BITS=	64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		emacs
-COMPONENT_VERSION=	25.2
+COMPONENT_VERSION=	26.1
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:505bbd6ea6c197947001d0f80bfccb6b30e1add584d6376f54d4fd6e4de72d2d
+    sha256:760382d5e8cdc5d0d079e8f754bce1136fbe1473be24bb885669b0e38fc56aa3
 COMPONENT_ANITYA_ID=	675
 
-TPNO=			35834
+TPNO=			50711
 
 INSTALL_TARGET=
 # The upstream emacs distribution does not have tests to be run
@@ -92,6 +92,9 @@ CONFIGURE_OPTIONS +=	--libexecdir=$(CONFIGURE_PREFIX)/lib
 CONFIGURE_OPTIONS +=	--libdir=$(CONFIGURE_LIBDIR.32) 
 CONFIGURE_OPTIONS +=	--with-gif=no
 CONFIGURE_OPTIONS +=	--without-imagemagick
+CONFIGURE_OPTIONS +=	--without-lcms2
+CONFIGURE_OPTIONS +=	--disable-build-details
+CONFIGURE_OPTIONS +=	--with-gameuser=no
 CONFIGURE_OPTIONS +=	ac_cv_sys_long_file_names=yes
 ifeq   ($(strip $(PARFAIT_BUILD)),yes)
 CONFIGURE_OPTIONS +=	emacs_cv_prog_cc_o=no
@@ -247,6 +250,7 @@ REQUIRED_PACKAGES += x11/library/libice
 REQUIRED_PACKAGES += x11/library/libsm
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcb
+REQUIRED_PACKAGES += x11/library/libxext
 REQUIRED_PACKAGES += x11/library/libxfixes
 REQUIRED_PACKAGES += x11/library/libxft
 REQUIRED_PACKAGES += x11/library/libxinerama
