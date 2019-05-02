@@ -23,10 +23,6 @@
 
 # {filters|backends} should be set executable even if those are not in .*/(s)?bin/.+ path
 <transform file path=usr/lib/cups/.+ ->default mode 0555>
-# avoid of complaints on ELF64's on non-{.+/$(MACH64)/.+}-path
-<transform file path=usr/.+/cups/.+ -> default pkg.depend.bypass-generate .*>
-<transform file path=usr/.+/cups/.+ -> default pkg.linted.userland.action001.1 true>
-<transform file path=usr/.+/cups/.+ -> default pkg.linted.userland.action001.5 true>
 # unsupported interface (as of PSARC/2019/031)
 <transform file link path=etc/.+ -> drop>
 <transform file link path=usr/(s)?bin/.+ -> drop>
@@ -56,6 +52,3 @@ license GPL-2.txt license=GPLv2
 license GPL-3.txt license=GPLv3
 license LGPL-2.0.txt license=LGPLv2
 license LGPL-2.1.txt license=LGPLv2.1
-#
-# no qpdf no rip
-depend type=require fmri=pkg:/print/qpdf
