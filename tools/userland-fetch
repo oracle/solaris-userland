@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.7
 #
 # CDDL HEADER START
 #
@@ -21,554 +21,523 @@
 #
 
 #
-# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
 #
+
 #
 # userland-fetch - a file download utility
 #
-#  A simple program similar to wget(1), but handles local file copy, ignores
-#  directories, and verifies file hashes.
+# A simple program similar to wget(1), but handles local file copy, ignores
+# directories, and verifies file hashes.
 #
 
+import argparse
+import bz2
+import enum
 import errno
+import gzip
+import hashlib
+import json
 import os
 import re
 import sys
 import shutil
-import json
 import subprocess
-from urllib import splittype, splithost
-from urllib2 import urlopen, HTTPError
-import hashlib
-import getopt
 
-def printIOError(e, txt):
-	""" Function to decode and print IOError type exception """
-	print "I/O Error: " + txt + ": "
-	try:
-		(code, message) = e
-		print str(message) + " (" + str(code) + ")"
-	except:
-		print str(e)
+from typing import List, Optional, Tuple, Generator
 
-def validate_signature(path, signature):
-	"""Given paths to a file and a detached PGP signature, verify that
-	the signature is valid for the file.  Current configuration allows for
-	unrecognized keys to be downloaded as necessary."""
-
-	# Find the root of the repo so that we can point
-	# GnuPG at the right configuration and keyring.
-	for get_root_cmd in [["hg", "root"], ["git", "rev-parse", "--show-toplevel"]]:
-		try:
-			proc = subprocess.Popen(get_root_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-			proc.wait()
-			if proc.returncode == 0:
-				out, _ = proc.communicate()
-				gpgdir = os.path.join(out.strip(), "tools", ".gnupg")
-				break
-		except OSError as e:
-			if e.errno != os.errno.ENOENT:
-				raise
-	else:
-		message = "Warning: No Mercurial or Git repository was detected!\n"
-		message += "Warning: Signature validation is disabled."
-		return (True, message)
-
-	try:
-		# Suppress the permissions warning: none of the information here is private,
-		# so not having to worry about getting mercurial keeping the directory
-		# unreadable is just simplest.
-		proc = subprocess.Popen(["/usr/bin/gpg2", "--verify", "--no-permission-warning",
-		                         "--homedir", gpgdir, signature, path], stdin=open("/dev/null"),
-		                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-
-		proc.wait()
-
-		if proc.returncode == 0:
-			return (True, "")
-		else:
-			return (False, proc.stdout.read())
-
-	except OSError as e:
-		# If the executable simply couldn't be found, just skip the validation.
-		if e.errno == errno.ENOENT:
-			message = "Warning: Cannot validate the signature, command 'gpg2' not found!"
-			return (True, message)
-		else:
-			raise    # Raise the unhandled exceptions to the caller function.
-
-	assert False, "This statement should be unreachable!"
-
-def validate(file, hash):
-	"""Given a file-like object and a hash string, verify that the hash
-	matches the file contents."""
-
-	try:
-		algorithm, hashvalue = hash.split(':')
-	except:
-		algorithm = "sha256"
-
-	# force migration away from sha1
-	if algorithm == "sha1":
-		algorithm = "sha256"
-	try:
-		m = hashlib.new(algorithm)
-	except ValueError:
-		return False
-
-	while True:
-		try:
-			block = file.read()
-		except IOError, err:
-			print str(err),
-			break
-
-		m.update(block)
-		if block == '':
-			break
-
-	return "%s:%s" % (algorithm, m.hexdigest())
-
-def validate_container(filename, hash):
-	"""Given a file path and a hash string, verify that the hash matches the
-	file contents."""
-
-	try:
-		file = open(filename, 'r')
-	except IOError as e:
-		printIOError(e, "Can't open file " + filename)
-		return False
-	return validate(file, hash)
+from urllib.error import HTTPError
+from urllib.error import URLError
+from urllib.parse import urlparse
+from urllib.request import urlopen
 
 
-def validate_payload(filename, hash):
-	"""Given a file path and a hash string, verify that the hash matches the
-	payload (uncompressed content) of the file."""
+def validate_signature(path: str, signature: str) -> Tuple[bool, str]:
+    """Validate that given signature is valid for given file.
 
-	import gzip
-	import bz2
+    Args:
+        path: Path to the to-be-checked file
+        signature: Path to the signature file
 
-	expr_bz = re.compile('.+\.bz2$', re.IGNORECASE)
-	expr_gz = re.compile('.+\.gz$', re.IGNORECASE)
-	expr_tgz = re.compile('.+\.tgz$', re.IGNORECASE)
+    Returns [Tuple]:
+        Whether was the signature validation successful.
+        Additional failure info from GnuPG (empty on success)
 
-	try:
-		if expr_bz.match(filename):
-			file = bz2.BZ2File(filename, 'r')
-		elif expr_gz.match(filename):
-			file = gzip.GzipFile(filename, 'r')
-		elif expr_tgz.match(filename):
-			file = gzip.GzipFile(filename, 'r')
-		else:
-			return False
-	except IOError as e:
-		printIOError(e, "Can't open archive " + filename)
-		return False
-	return validate(file, hash)
+    Raises:
+        FileNotFoundError: Repository root (and thus .gnupg file) or gpg2
+            executable were not found
+    """
 
-def download(url, timeout, filename=None, quiet=False):
-	"""Download the content at the given URL to the given filename
-	(defaulting to the basename of the URL if not given.  If 'quiet' is
-	True, throw away any error messages.  Returns the name of the file to
-	which the content was donloaded."""
+    # Find the repo root so that we can point GnuPG at the right configuration and keyring.
+    for get_root_cmd in [["hg", "root"], ["git", "rev-parse", "--show-toplevel"]]:
+        try:
+            proc = subprocess.run(get_root_cmd, capture_output=True)
+            if proc.returncode == 0:
+                gpgdir = os.path.join(proc.stdout.strip(), b"tools/.gnupg")
+                break
 
-	src = None
+        except FileNotFoundError:
+            continue
+    else:
+        raise OSError(errno.ENOENT, "No Mercurial or Git repository was detected!")
 
-	try:
-		src = urlopen(url=url, timeout=timeout)
-	except IOError as e:
-		if not quiet:
-			printIOError(e, "Can't open url " + url)
-		return None
-	except URLError as e:
-		if not quiet:
-			print "Can't open url " + url + ": " + str(e)
-		return None
+    # Suppress the permissions warning: none of the information here is private,
+    # so not having to worry about getting mercurial keeping the directory
+    # unreadable is just simplest.
+    proc = subprocess.run(["/usr/bin/gpg2", "--verify", "--no-permission-warning",
+                           "--homedir", gpgdir, signature, path],
+                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    if proc.returncode != 0:
+        return False, proc.stdout.decode()
+    return True, ""
 
-	# 3xx, 4xx and 5xx (f|ht)tp codes designate unsuccessfull action
-	if 3 <= int(src.getcode()/100) <= 5:
-		if not quiet:
-			print "Error code: " + str(src.getcode())
-		return None
 
-	if not filename:
-		filename = src.geturl().split('/')[-1]
+def calculate_hash(filename: str, algorithm: str, validate_payload: bool = False) -> str:
+    """Calculate hash of given file.
 
-	try:
-		dst = open(filename, 'wb')
-	except IOError as e:
-		if not quiet:
-			printIOError(e, "Can't open file " + filename + " for writing")
-		src.close()
-		return None
+    Args:
+        filename: file path for which hash should be calculated
+        algorithm: One of known hash algorithms (e.g., sha256)
+        validate_payload: Validate uncompressed content of the file rather than
+            the file itself. Disabled by default.
 
-	while True:
-		block = src.read()
-		if not block:
-			break
-		dst.write(block)
+    Returns:
+        Hex digest in standard string format {algorithm}:{hexdigest} or None if
+            payload validation cannot recognize given archive.
 
-	src.close()
-	dst.close()
+    Raises:
+        IOError: Cannot open given file
+        ValueError: Invalid hash algorithm was given
+        NotImplementedError: Validation of given file format is not implemented
+    """
 
-	# return the name of the file that we downloaded the data to.
-	return filename
+    def _calculate_hash(file, algorithm):
+        obj = hashlib.new(algorithm)  # raises ValueError
 
-def pypi_url(url, filename):
-	"""Given a pypi: URL, return the real URL for that component/version.
+        block = file.read()
+        obj.update(block)
 
-	The pypi scheme has a host (with an empty host defaulting to
-	pypi.python.org), and a path that should be of the form
-	"component==version".  Other specs could be supported, but == is the
-	only thing that makes sense in this context.
+        return f"{algorithm}:{obj.hexdigest()}"
 
-	The filename argument is the name of the expected file to download, so
-	that when pypi gives us multiple archives to choose from, we can pick
-	the right one.
-	"""
+    if not validate_payload:
+        with open(filename, 'rb') as file:
+            return _calculate_hash(file, algorithm)
+    elif filename.endswith(".bz2"):
+        with bz2.BZ2File(filename, 'rb') as bzfile:
+            return _calculate_hash(bzfile, algorithm)
+    elif filename.endswith((".gz", ".tgz")):
+        with gzip.GzipFile(filename, 'rb') as gzfile:
+            return _calculate_hash(gzfile, algorithm)
+    else:
+        raise NotImplementedError("File format not implemented")
 
-	host, path = splithost(splittype(url)[1])
 
-	# We have to use ==; anything fancier would require pkg_resources, but
-	# really that's the only thing that makes sense in this context.
-	try:
-		name, version = re.match("/(.*)==(.*)$", path).groups()
-	except AttributeError:
-		print "PyPI URLs must be of the form 'pypi:///component==version'"
-		return None
+def download(url: str, timeout: int, filename: str) -> None:
+    """Download the content at the given URL.
 
-	if not host:
-		host = "pypi.python.org"
+    Args:
+        url: URL to download from.
+        filename: Filename of newly downloaded file.
+        timeout: Timeout in seconds for blocking download operations.
 
-	for protocol in ["https", "http"]:
-		success = True
-		jsurl = "%s://%s/pypi/%s/json" % (protocol, host, name)
-		try:
-			# Don't wait very long for the connection
-			f = urlopen(jsurl, None, 2)
-		except HTTPError as e:
-			success = False
-			if e.getcode() == 404:
-				printIOError(e, "Unknown component '%s'" % name)
-			else:
-				printIOError(e, "Can't open PyPI JSON url %s - http error code = %d" % (jsurl, e.getcode()))
-		except IOError as e:
-			success = False
-			printIOError(e, "Can't open PyPI JSON url %s - IOError encountered" % jsurl)
+    Raises:
+        IOError: Cannot open filename for writing.
+        URLError: Can't open given url. Probable reason is that
+            the file doesn't exist on remote host.
+    """
 
-		if success:
-			break
+    with urlopen(url, timeout=timeout) as src, open(filename, 'wb') as dst:
+        dst.write(src.read())
 
-	if not success:
-		printIOError(e, "No protocol worked - bailing out.")
-		return None
 
-	js = json.load(f)
-	try:
-		verblock = js["releases"][version]
-	except KeyError:
-		print "Unknown version '%s'" % version
-		return None
+def get_pypi_url(url: str, filename: str) -> str:
+    """Given a pypi: URL, return the real URL for that component/version.
 
-	urls = [d["url"] for d in verblock]
-	for archiveurl in urls:
-		if archiveurl.endswith("/%s" % os.path.basename(filename)):
-			return archiveurl
+    The pypi scheme has a host (with an empty host defaulting to
+    pypi.python.org), and a path that should be of the form
+    "component==version".
 
-	if urls:
-		print "None of the following URLs delivers '%s':" % filename
-		print "  " + "\n  ".join(urls)
-	else:
-		print "Couldn't find any suitable URLs"
-	return None
+    Args:
+        url: PyPI URL string.
+        filename: Name of expected file to download. When pypi gives us
+            multiple archives to choose from, we can pick the right one.
 
-def get_trusted_paths():
-	""" Extracts trusted search paths from which archives
-	can be downloaded. Archives are uploaded to trusted paths
-	when the hash sum and signature are verified after an integration.
-	"""
-	trusted_paths = os.getenv('DOWNLOAD_SEARCH_PATH')
-	if trusted_paths:
-		return trusted_paths.split(' ')
-	else:
-		return []
+    Raises:
+        ValueError: Wrong PyPI URL string was given. This can mean wrong
+            format, unknown component, unknown version or version without any
+            downloadable files. Other possible reason for this exception is
+            that pypi does not deliver given filename.
+        HTTPError: Remote server returned non OK status code different
+            from 404, which is handled differently (Unknown component).
+            Note: HTTPError is a subclass of OSError.
+        OSError: Unexpected error has occurred during the urlopen operation.
+    """
 
-def download_paths(search, filename, url):
-	"""Returns a list of URLs where the file 'filename' might be found,
-	using 'url', 'search', and $DOWNLOAD_SEARCH_PATH as places to look.
+    _, host, path, *_ = urlparse(url)
 
-	If 'filename' is None, then the list will simply contain 'url'.
-	"""
+    # We have to use ==; anything fancier would require pkg_resources, but
+    # really that's the only thing that makes sense in this context.
+    try:
+        name, version = re.match("/(.*)==(.*)$", path).groups()  # type: ignore
+    except AttributeError as err:
+        raise ValueError("PyPI URLs must be of the form 'pypi:///component==version'") from None
 
-	urls = list()
+    if not host:
+        host = "pypi.python.org"
 
-	if filename:
+    # Access via unsecure http is no longer possible
+    json_url = f"https://{host}/pypi/{name}/json"
 
-		search += get_trusted_paths()
+    try:
+        response = urlopen(json_url, data=None, timeout=2)
+    except HTTPError as err:
+        if err.getcode() == 404:
+            raise ValueError(f"Unknown component '{name}'") from None
+        raise
 
-		file = os.path.basename(filename)
+    data = json.load(response)
+    try:
+        version_block = data['releases'][version]
+    except KeyError as err:
+        raise ValueError(f"Unknown version '{version}'") from None
 
-		urls = [base + '/' + file for base in search]
+    if not version_block:
+        raise ValueError("Couldn't find any suitable URLs")
 
-		# filename should always be first
-		if filename in urls:
-			urls.remove(filename)
-		urls.insert(0, filename)
+    for file in version_block:
+        if file['filename'] == os.path.basename(filename):
+            return file['url']
 
-	# command line url is a fallback, so it's last
-	if url != None and url not in urls:
-		urls.append(url)
+    message = f"None of the following URLs delivers '{filename}'\n"
+    message += "  " + "\n  ".join([file['url'] for file in version_block])
 
-	return urls
+    raise ValueError(message)
 
-def download_from_paths(search_list, file_arg, url, timeout_arg, link_arg, quiet=False):
-	"""Attempts to download a file from a number of possible locations.
-	Generates a list of paths where the file ends up on the local
-	filesystem.  This is a generator because while a download might be
-	successful, the signature or hash may not validate, and the caller may
-	want to try again from the next location.  The 'link_arg' argument is a
-	boolean which, when True, specifies that if the source is not a remote
-	URL and not already found where it should be, to make a symlink to the
-	source rather than copying it.
-	"""
-	for url in download_paths(search_list, file_arg, url):
-		if not quiet:
-			print "Source %s..." % url,
 
-		scheme, path = splittype(url)
-		name = file_arg
+def get_download_paths(filename: str, search_list: List[str], url: Optional[str]) \
+                         -> Generator[Tuple[str, bool], None, None]:
+    """Generate list of places where the file 'filename' might be found.
 
-		if scheme in [None, 'file']:
-			if os.path.exists(path) == False:
-				if not quiet:
-					print "not found, skipping file copy"
-				continue
-			elif name and name != path:
-				if link_arg == False:
-					if not quiet:
-						print "\n    copying..."
-					shutil.copy2(path, name)
-				else:
-					if not quiet:
-						print "\n    linking..."
-					os.symlink(path, name)
-		elif scheme in ['http', 'https', 'ftp']:
-			if not quiet:
-				print "\n    downloading...",
-			name = download(url, timeout_arg, file_arg, quiet)
-			if name == None:
-				if not quiet:
-					print "failed"
-				continue
-		# Hook back to component Makefile to allow special download cases:
-		# make://[component make target]/[archive name]
-		elif scheme == "make":
-			os.system("gmake " + path.split('/')[2])
-		elif scheme == "pypi":
-			nurl = pypi_url(url, file_arg)
-			if nurl:
-				if not quiet:
-					print "\n    translated %s to %s..." % (url, nurl),
-					print "\n    downloading...",
-			else:
-				if not quiet:
-					print "\n    unable to contact PyPI",
-				continue
-			name = download(nurl, timeout_arg, file_arg, quiet)
-			if name is None:
-				if not quiet:
-					print "failed"
-				continue
-		else:
-			print " unknown scheme '%s'" % scheme
-			return
+    Args:
+        filename: Name of the searched file.
+        search_list: Additional list of possible file locations.
+        url: Fallback URL to file download location.
 
-		# Indicate if the file is local or downloaded from a trusted source.
-		filename = os.path.basename(file_arg)
-		if filename == url or any(p in url for p in get_trusted_paths()):
-			trusted = True
-		else:
-			trusted = False
+    Yields [Tuple]:
+        Possible file location.
+        Whether the location is trusted.
+    """
 
-		yield (name, trusted)
+    # Get trusted paths
+    temp = os.getenv('DOWNLOAD_SEARCH_PATH')
+    trusted_paths = temp.split(' ') if temp else []
 
-def usage():
-	print "Usage: %s [-f|--file (file)] [-l|--link] [-h|--hash (hash)] " \
-          "[-s|--search (search-dir)] [-S|--sigurl (signature-url)] " \
-	  "[-t|--timeout (timeout)] --url (url)" % \
-          (sys.argv[0].split('/')[-1])
-	sys.exit(1)
+    # List of already yielded paths
+    returned = [filename]
+
+    yield filename, True
+
+    file = os.path.basename(filename)
+    for paths, trusted in [(trusted_paths, True), (search_list, False)]:
+        for base in paths:
+            path = f"{base}/{file}"
+            if path not in returned:
+                returned.append(path)
+                yield path, trusted
+
+    if url and url not in returned:
+        yield url, False
+
+
+def download_from_paths(search_list: List[str], file_arg: str, url_arg: Optional[str],
+                        timeout_arg: int, link: bool, quiet: bool = False) \
+                          -> Generator[Tuple[str, bool], None, None]:
+    """Attempt to download a file from a number of possible locations.
+
+    Generates a list of paths where the file ends up on the local filesystem.
+    This is a generator because while a download might be successful, the
+    signature or hash may not validate, and the caller may want to try again
+    from the next location.
+
+    The 'link' argument is a boolean which, when True, specifies that if
+    the source is not a remote URL and not already found where it should be,
+    to make a symlink to the source rather than copying it.
+
+    Args:
+        search_list: Additional list of possible file locations.
+        file_arg: Name of the searched file.
+        url_arg: Fallback URL to file download location.
+        timeout_arg: Timeout in seconds for blocking download operations.
+        link: Link local files rather than copying them.
+        quiet: Whether this function should output anything.
+
+    Yields [Tuple]:
+        Downloaded file name and location (path).
+        Whether the location is trusted.
+
+    Raises:
+        Nothing
+    """
+    qprint = print if not quiet else lambda *a, **k: None
+
+    def _download(url, timeout_arg, name):
+        try:
+            download(url, timeout_arg, name)
+        except URLError as err:
+            qprint("failed")
+            qprint(f"Can't open url {url}\n{err}")
+            return False
+        except IOError:
+            qprint("failed")
+            qprint(f"Can't open file {name} for writing\n{err}")
+            return False
+        return True
+
+    for url, trusted in get_download_paths(file_arg, search_list, url_arg):
+        qprint(f"Source {url}...", end=" ")
+
+        scheme, netloc, path, *_ = urlparse(url)
+        name = file_arg
+
+        if scheme in ['', 'file']:
+            if not os.path.exists(path):
+                qprint("not found, skipping file copy")
+                continue
+            elif name and name != path:
+                if link:
+                    qprint("\n    linking...")
+                    os.symlink(path, name)
+                else:
+                    qprint("\n    copying...")
+                    shutil.copy2(path, name)
+
+        elif scheme in ['http', 'https', 'ftp']:
+            qprint("\n    downloading...", end=" ")
+            if not _download(url, timeout_arg, name):
+                continue
+
+        # Hook back to component Makefile to allow special download cases:
+        # make://[component make target]/[archive name]
+        elif scheme == "make":
+            os.system(f"gmake {netloc}")
+
+        elif scheme == "pypi":
+            try:
+                nurl = get_pypi_url(url, file_arg)
+            except ValueError as err:
+                qprint(f"failed\n{err}")
+                continue
+            except OSError as err:
+                qprint(f"failed\n{err}")
+                continue
+
+            qprint(f"\n    translated {url} to {nurl}...", end=" ")
+            qprint("\n    downloading...", end=" ")
+            if not _download(nurl, timeout_arg, name):
+                continue
+
+        else:
+            print(f" unknown scheme '{scheme}'")
+            return
+
+        yield name, trusted
+
+
+class SigState(enum.Enum):
+    """State of signature validation."""
+    VALID = 0
+    UNKNOWN = 1
+    FAILURE = 2
+
+
+def signature_validation(name: str, trusted: bool, args: argparse.Namespace) -> SigState:
+    """Validate signature for the downloaded file.
+
+    Args:
+        name: Name of downloaded file (archive path).
+        trusted: Whether this archive was downloaded from trusted location.
+        args: Argument namespace from the ArgumentParser.
+
+    Returns:
+        State of the signature validation (from SigState enum):
+            VALID: Signature was successfully validated.
+            UNKNOWN: Signature was not validated for some reason.
+            FAILURE: Signature is invalid and archive possibly tampered.
+    """
+
+    if args.nosig:
+        print("\nWarning: Signature validation was disabled!")
+        return SigState.UNKNOWN
+
+    print("\n    validating signature...", end=" ")
+    if not args.sigurl:
+        print("skipped (no signature URL)")
+        return SigState.UNKNOWN
+
+    # Put the signature file in the same directory as the file we're downloading.
+    signature_file = os.path.join(os.path.dirname(args.file), os.path.basename(args.sigurl))
+
+    # Validate with the first signature we find.
+    for signature_file, _ in download_from_paths(args.search, signature_file, args.sigurl,
+                                                 args.timeout, args.link, quiet=True):
+
+        try:
+            ok, msg = validate_signature(name, signature_file)
+        except FileNotFoundError as err:
+            print(f"Signature validation failed due to the following error\n{err}")
+            return SigState.FAILURE
+
+        if ok and not msg:
+            print("ok")
+            return SigState.VALID
+
+        if ok or trusted:
+            print(f"skipped\n{msg}")
+            return SigState.UNKNOWN
+
+        print(f"failed\n{msg}")  # Error output from 'gpg2'.
+        print(f"Archive saved as {name} may be tampered.")
+        try:
+            os.remove(name)
+            print(f"File '{name}' was removed.")
+        except OSError:
+            print("Failed to remove the corrupted file!")
+
+        # Bad signature - return Failure
+        return SigState.FAILURE
+
+    if trusted:
+        print("skipped")
+        print("Warning: Cannot fetch the signature!")
+        return SigState.UNKNOWN
+
+    print("failed (couldn't fetch signature)")
+    return SigState.FAILURE
+
+
+def hash_validation(name: str, args: argparse.Namespace) -> bool:
+    """Validate hash of the downloaded file.
+
+    Args:
+        name: Name of downloaded file (archive path).
+        args: Argument namespace from the ArgumentParser.
+
+    Returns:
+        Whether the hash is valid. Returns true even if no hash was given in
+        the argument namespace (one of the program arguments).
+    """
+
+    print("    validating hash...", end=" ")
+
+    algorithm = args.hash.split(':')[0] if args.hash else "sha256"
+
+    try:
+        realhash = calculate_hash(name, algorithm)
+    except (IOError, ValueError) as err:
+        print("failed")
+        print(f"Can't calculate the archive hash due to the following error\n{err}")
+        return False
+
+    # No hash was given by the user
+    #  -> output archive hash and be ok with it
+    if not args.hash:
+        print("skipping (no hash)")
+        print(f"hash is: {realhash}")
+        return True
+
+    # Hash matched and everything seems nice and happy
+    if realhash == args.hash:
+        print("ok")
+        return True
+
+    try:
+        payloadhash = calculate_hash(name, algorithm, validate_payload=True)
+    except (IOError, ValueError) as err:
+        print("failed")
+        print(f"Can't calculate the payload hash due to the following error\n{err}")
+        return False
+    except NotImplementedError:
+        payloadhash = None
+    else:
+        if payloadhash == args.hash:
+            print("ok")
+            return True
+
+    # If the signature validated, we assume that the expected
+    # hash is just a typo, but we warn just in case.
+    print("invalid hash! Potential corruption detected!")
+
+    print(f"    expected: {args.hash}")
+    print(f"    actual:   {realhash}")
+    print(f"    payload:  {payloadhash}")
+
+    # If the hash is invalid and the signature validation succeeded, rename the
+    # downloaded archive (so the user doesn't have to re-download it) and fail.
+    newname = f"{name}.invalid-hash"
+    try:
+        os.rename(name, newname)
+        print(f"Archive saved as {newname}; "
+              f"if it isn't corrupted, rename it to {name}.")
+    except OSError:
+        print(f"Failed to rename {name} file to {newname}!")
+
+    return False
+
 
 def main():
-	# FLUSH STDOUT
-	sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+    sys.stdout.flush()
 
-	file_arg = None
-	link_arg = False
-	hash_arg = None
-	url_arg = None
-	sig_arg = None
-	skip_sig_arg = False
-	timeout_arg = 300
-	search_list = list()
+    parser = argparse.ArgumentParser(
+        description="Fetch component archive.")
+    parser.add_argument('-f', '--file', required=True,
+        help="File to download (basepath) and also its future location.")
+    parser.add_argument('-l', '--link', action='store_true',
+        help="Link file rather than copying it.")
+    parser.add_argument('-H', '--hash',
+        help="Expected hash of downloaded file.")
+    parser.add_argument('-s', '--search', action='append', default=list(),
+        help="List of possible file locations (also for signature files).")
+    parser.add_argument('-S', '--sigurl',
+        help="Url of signature file (fallback after trusted ones).")
+    parser.add_argument('-n', '--nosig', action='store_true',
+        help="Skip signature validation.")
+    parser.add_argument('-t', '--timeout', default=300, type=int,
+        help="Timeout in seconds for blocking download operations.")
+    parser.add_argument('-u', '--url',
+        help="Fallback URL to file download location.")
 
-	try:
-		opts, _ = getopt.getopt(sys.argv[1:], "f:h:ls:S:nt:u:",
-			["file=", "link", "hash=", "search=", "sigurl=", "nosig",
-			"timeout=", "url="])
-	except getopt.GetoptError, err:
-		print str(err)
-		usage()
+    args = parser.parse_args()
 
-	for opt, arg in opts:
-		if opt in ["-f", "--file"]:
-			file_arg = arg
-		elif opt in ["-l", "--link"]:
-			link_arg = True
-		elif opt in ["-h", "--hash"]:
-			hash_arg = arg
-		elif opt in ["-s", "--search"]:
-			search_list.append(arg)
-		elif opt in ["-S", "--sigurl"]:
-			sig_arg = arg
-		elif opt in ["-n", "--nosig"]:
-			skip_sig_arg = True
-		elif opt in ["-t", "--timeout"]:
-			try:
-				timeout_arg = int(arg)
-			except ValueError:
-				print "Invalid argument for %s, should be a " \
-				    "number, but is %s" % (opt, arg)
-				sys.exit(1)
-			if timeout_arg < 0:
-				print "Invalid argument for %s, should be a " \
-				    "positive number, but is %s" % (opt, arg)
-				sys.exit(1)
-		elif opt in ["-u", "--url"]:
-			url_arg = arg
-		else:
-			assert False, "unknown option"
+    if args.timeout < 0:
+        print(f"Invalid argument for timeout; should be a positive number, but is {args.timeout}.")
+        sys.exit(1)
 
-	for (name, trusted) in download_from_paths(search_list, file_arg, url_arg,
-	                                           timeout_arg, link_arg):
+    if args.file != urlparse(args.file).path:
+        print(f"File argument must be local path.")
+        sys.exit(1)
 
+    for name, trusted in download_from_paths(args.search, args.file, args.url, args.timeout, args.link):
 
-		# Variable sig_valid is set to True provided the signature is verified.
-		# If the verification is skipped, value in warning_message is emitted.
-		sig_valid = False
-		warning_message = ""
+        # Variable sig_valid is set to True provided the signature is verified.
+        # If the verification is skipped, value in warning_message is emitted.
 
-		if not skip_sig_arg:
+        sig_state = signature_validation(name, trusted, args)
+        if sig_state == SigState.FAILURE:
+            sys.exit(2)
 
-			print "\n    validating signature...",
-			if sig_arg:
-				# Put the signature file in the same directory as the
-				# file we're downloading.
-				sig_file = os.path.join(os.path.dirname(file_arg),
-				                        os.path.basename(sig_arg))
+        hash_valid = hash_validation(name, args)
 
-				# Validate with the first signature we find.
-				for (sig_file, _) in download_from_paths(search_list, sig_file, sig_arg,
-				                                         timeout_arg, link_arg, True):
-					if sig_file:
-						(ok, msg) = validate_signature(name, sig_file)
-						if ok == True and len(msg) == 0:
-							print "ok"
-							sig_valid = True
-						elif ok == True or trusted == True:
-							print "skipped"
-							warning_message = '\n'+msg
-						else:
-							print "failed"
-							print '\n'+msg    # Error output from 'gpg2'.
+        if not hash_valid:
+            # Invalid archive hash - exit with an error code.
+            sys.exit(3)
 
-							print "Archive saved as %s may be tampered." % (name)
-							try:
-								os.remove(name)
-								print "File '%s' was removed." % (name)
-							except OSError:
-								print "Failed to remove the corrupted file!"
+        # No corruption detected - exit with success.
+        sys.exit(0)
 
-							# Bad signature - exit with an error code.
-							sys.exit(1)
+    # Failed to download the package.
+    print("Cannot download the archives! Terminating...")
+    sys.exit(100)
 
-						assert (ok == True or trusted == True), "Invalid signature handling!"
-						break
-
-				else:
-					if trusted:
-						print "skipped"
-						warning_message = "\nWarning: Cannot fetch the signature!"
-					else:
-						print "failed (couldn't fetch signature)"
-						sys.exit(1)
-
-			else:
-				print "skipped (no signature URL)"
-
-		else:
-			print ""
-			warning_message = "Warning: Signature validation was disabled!"
-
-
-		print "    validating hash...",
-		realhash = validate_container(name, hash_arg)
-
-		hash_failed = False
-		if not hash_arg:
-			print "skipping (no hash)"
-			print "hash is: %s" % realhash
-		elif realhash == hash_arg:
-			print "ok"
-		else:
-			payloadhash = validate_payload(name, hash_arg)
-			if payloadhash == hash_arg:
-				print "ok"
-			else:
-				# If the signature validated, we assume
-				# that the expected hash is just a typo,
-				# but we warn just in case.
-				if sig_valid:
-					print "invalid hash! Did you forget to update it?"
-				else:
-					print "corruption detected"
-
-				print "    expected: %s" % hash_arg
-				print "    actual:   %s" % realhash
-				print "    payload:  %s" % payloadhash
-
-				if sig_valid:
-					# If the hash is invalid and the signature validation
-					# succeeded, rename the downloaded archive (so the
-					# user doesn't have to re-download it) and fail.
-					newname = name + ".invalid-hash"
-					try:
-						os.rename(name, newname)
-						print "Archive saved as %s; " \
-						    "if it isn't corrupted, " \
-						    "rename it to %s." % (newname, name)
-					except OSError:
-						print "Failed to rename %s file!" % name
-
-				hash_failed = True
-
-		# Print the accumulated warning messages before the exit.
-		if len(warning_message) > 0:
-			print warning_message
-
-		if not hash_failed:
-			# No corruption detected - exit with success.
-			sys.exit(0)
-		else:
-			# Invalid archive hash - exit with an error code.
-			sys.exit(1)
-
-	else:
-		# Failed to download the package.
-		print "Cannot download the archives! Terminating..."
-		sys.exit(1)
-
-	assert False, "This statement should be unreachable!"
 
 if __name__ == "__main__":
-	main()
+    main()

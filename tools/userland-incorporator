@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.7
 #
 # CDDL HEADER START
 #
@@ -21,76 +21,87 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 #
 # incorporator - an utility to incorporate packages in a repo
 #
 
+import argparse
 import subprocess
 import json
 import sys
-import getopt
 import re
-import os.path
+import os
 import platform
 
-Werror = False	# set to true to exit with any warning
+from typing import Dict
+
+# set to true to exit with any warning
+Werror = False
+
 
 def warning(msg):
-    if Werror == True:
-        print >>sys.stderr, "ERROR: %s" % msg
+    if Werror:
+        sys.stderr.write(f"ERROR: {msg}\n")
         sys.exit(1)
     else:
-        print >>sys.stderr, "WARNING: %s" % msg
+        sys.stderr.write(f"WARNING: {msg}\n")
 
-class Incorporation(object):
-    name = None
-    version = '5.12'
-    packages = {}
 
-    def __init__(self, name, version):
-        self.name = name
-        self.version = version
-        self.packages = {}
+class Incorporation:
 
-    def __package_to_str(self, name, version):
+    def __init__(self, name: str, version: str):
+        self._name = name
+        self._version = version
+        self._packages: Dict[str, str] = {}
+
+    @staticmethod
+    def __package_to_str(name: str, version: str) -> str:
         # strip the :timestamp from the version string
         version = version.split(':', 1)[0]
         # strip the ,{build-release} from the version string
-        version = re.sub(",[\d\.]+", "", version) 
+        version = re.sub(r",[\d\.]+", "", version)
 
-        return "depend fmri=%s@%s facet.version-lock.%s=true type=incorporate" % (name, version, name)
+        return f"depend fmri={name}@{version} facet.version-lock.{name}=true type=incorporate"
 
-    def add_package(self, name, version):
-        self.packages[name] = version
+    def __setitem__(self, name: str, version: str):
+        self._packages[name] = version
 
-    def __str__(self):
-        result = """
-set name=pkg.fmri value=pkg:/%s@%s
+    def __str__(self) -> str:
+        result = f"""
+set name=pkg.fmri value=pkg:/{self._name}@{self._version}
 set name=info.classification value="org.opensolaris.category.2008:Meta Packages/Incorporations"
 set name=org.opensolaris.consolidation value=userland
 set name=pkg.depend.install-hold value=core-os.userland
-set name=pkg.summary value="userland consolidation incorporation (%s)"
+set name=pkg.summary value="userland consolidation incorporation ({self._name})"
 set name=pkg.description value="This incorporation constrains packages from the userland consolidation"
-""" % (self.name, self.version, self.name)
+"""
 
-        names = self.packages.keys()
-        names.sort()
-        for name in names:
-            result += (self.__package_to_str(name, self.packages[name]) + '\n')
+        for name in sorted(self._packages):
+            result += self.__package_to_str(name, self._packages[name]) + '\n'
 
         return result
 
-#
-# This should probably use the pkg APIs at some point, but this appears to be
-# a stable and less complicated interface to gathering information from the
-# manifests in the package repo.
-#
-def get_incorporations(repository, publisher, inc_version='5.12',
-		       static_file=None):
-    packages = {}
-    incorporations = {}
+
+def get_incorporations(repository: str, publisher: str, inc_version: str, static_file: str = None):
+    """Get dict with Incorporations full of their packages.
+
+    Note: This should probably use the pkg APIs at some point, but this appears
+        to be a stable and less complicated interface to gathering information
+        from the manifests in the package repo.
+
+    Args:
+        repository: Repository to create incorporations from.
+        publisher: Selected publisher in given repository.
+        inc_version: Version of all newly created incorporations.
+        static_file [optional]: File with additional packages to be included.
+
+    Returns:
+        Dictionary with inc names as keys and Incorporations as values.
+    """
+
+    incorporations: Dict[str, Incorporation] = {}
     versions = {}
 
     #
@@ -99,36 +110,46 @@ def get_incorporations(repository, publisher, inc_version='5.12',
     #
     if static_file:
         current_arch = platform.processor()
-        with open(static_file, 'r') as fp:
-          for line in fp:
-            line = line.partition('#')[0]
-            line = line.rstrip()
+        with open(static_file, 'r') as src:
+            for line in src:
+                line = line.partition('#')[0]
+                line = line.rstrip()
 
-            try:
-                (incorporation, package, version) = re.split(':|@', line)
-            except ValueError:
-                pass
-            else:
-                if "=" in version:
-                    (version, pkg_arch) = version.split('=',1)
-                    if pkg_arch != current_arch:
-                        continue
-                if incorporation not in incorporations:
-                    incorporations[incorporation] = Incorporation(incorporation, inc_version)
-                # find the incorporation and add the package
-                tmp = incorporations[incorporation]
-                tmp.add_package(package, version)
-                versions[package] = version
+                try:
+                    inc_name, package, version = re.split(':|@', line)
+                except ValueError:
+                    pass
+                else:
+                    if "=" in version:
+                        version, pkg_arch = version.split('=', 1)
+                        if pkg_arch != current_arch:
+                            continue
+                    if inc_name not in incorporations:
+                        incorporations[inc_name] = Incorporation(inc_name, inc_version)
+                    # find the incorporation and add the package
+                    incorporation = incorporations[inc_name]
+                    incorporation[package] = version
+                    versions[package] = version
 
     #
     # Load the repository for packages to incorporate.
     #
-    if repository:
-        tmp = subprocess.Popen(["/usr/bin/pkgrepo", "list", "-F", "json",
-                                                            "-s", repository,
-                                                            "-p", publisher],
-                               stdout=subprocess.PIPE)
-        packages = json.load(tmp.stdout)
+    try:
+        proc = subprocess.run(["/usr/bin/pkgrepo", "list", "-F", "json",
+                                                           "-s", repository,
+                                                           "-p", publisher], capture_output=True)
+        if proc.returncode:
+            if proc.stderr:
+                message = proc.stderr.decode()
+            else:
+                message = "No error output: Can be wrong repository.\n"
+            print(f"Error during pkgrepo command:\n{message}", end="")
+            return {}
+        else:
+            packages = json.loads(proc.stdout)
+    except OSError as err:
+        print(f"Error during pkgrepo command:\n{err}")
+        return {}
 
     #
     # Check for multiple versions of packages in the repo, but keep track of
@@ -139,7 +160,7 @@ def get_incorporations(repository, publisher, inc_version='5.12',
         pkg_version = package['version']
 
         if pkg_name in versions:
-            warning("%s is in the repo at multiple versions (%s, %s)" % (pkg_name, pkg_version, versions[pkg_name]))
+            warning(f"{pkg_name} is in the repo at multiple versions ({pkg_version}, {versions[pkg_name]})")
             pkg_version = max(pkg_version, versions[pkg_name])
         versions[pkg_name] = pkg_version
 
@@ -156,64 +177,52 @@ def get_incorporations(repository, publisher, inc_version='5.12',
 
         # a dict inside a list inside a dict
         incorporate = package['pkg.tmp.incorporate'][0]['value']
-        
+
         for inc_name in incorporate:
             # if we haven't started to build this incorporation, create one.
             if inc_name not in incorporations:
                 incorporations[inc_name] = Incorporation(inc_name, inc_version)
             # find the incorporation and add the package
-            tmp = incorporations[inc_name]
-            tmp.add_package(pkg_name, pkg_version)
+            incorporation = incorporations[inc_name]
+            incorporation[pkg_name] = pkg_version
 
     return incorporations
 
-def main_func():
+
+def main():
     global Werror
 
-    try: 
-        opts, pargs = getopt.getopt(sys.argv[1:], "S:c:s:p:v:d:w",
-                                    ["repository=", "publisher=", "version=",
-                                     "consolidation=", "destdir=", "Werror",
-				     "static-content-file="])
-    except getopt.GetoptError, e:
-        usage(_("illegal option: %s") % e.opt)
+    parser = argparse.ArgumentParser(
+        description="Incorporate packages in the repo.")
+    parser.add_argument('-S', '--static-content-file', dest='static_file',
+        help="File with additional packages to be included.")
+    parser.add_argument('-s', '--repository', required=True,
+        help="Repository to create incorporations from.")
+    parser.add_argument('-p', '--publisher', required=True,
+        help="Selected publisher in given repository.")
+    parser.add_argument('-v', '--version', default='5.12',
+        help="Newly created incorporation version.")
+    parser.add_argument('-d', '--destdir', default='',
+        help="Directory of newly created incorporation manifest file.")
+    parser.add_argument('-w', '--Werror', action='store_true',
+        help="Make all warnings into errors.")
 
-    static_file = None
-    repository = None
-    publisher = None
-    version = None
-    destdir = None
-    consolidation = None
+    args = parser.parse_args()
 
-    for opt, arg in opts:
-        if opt in ("-S", "--static-content-file"):
-            static_file = arg
-        elif opt in ("-s", "--repository"):
-            repository = arg
-        elif opt in ("-p", "--publisher"):
-            publisher = arg
-        elif opt in ("-v", "--version"):
-            version = arg
-        elif opt in ("-d", "--destdir"):
-            destdir = arg
-        elif opt in ("-c", "--consolidation"):
-            consolidation = arg
-        elif opt in ("-w", "--Werror"):
-            Werror = True
+    if args.Werror:
+        Werror = True
 
-    incorporations = get_incorporations(repository, publisher, version,
-                                        static_file)
+    incorporations = get_incorporations(args.repository, args.publisher,
+                                        args.version, args.static_file)
 
-    for incorporation_name in incorporations.keys():
-        filename = ''
-        if destdir != None:
-            filename = destdir + '/'
-        filename += os.path.basename(incorporation_name) + '.p5m'
+    for incorporation_name in incorporations:
+        filename = os.path.join(args.destdir,
+                                f"{os.path.basename(incorporation_name)}.p5m")
 
-        print("Writing %s manifest to %s" % (incorporation_name, filename))
-        fd = open(filename, "w+")
-        fd.write(str(incorporations[incorporation_name]))
-        fd.close()
+        print(f"Writing {incorporation_name} manifest to {filename}")
+        with open(filename, 'w+') as out:
+            out.write(str(incorporations[incorporation_name]))
+
 
 if __name__ == "__main__":
-    main_func()
+    main()

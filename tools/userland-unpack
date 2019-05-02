@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.7
 #
 # CDDL HEADER START
 #
@@ -21,133 +21,133 @@
 #
 
 #
-# Copyright (c) 2010, 2016, Oracle and/or its affiliates. All rights reserved.
-#
-#
-# unpack.py - an archive unpack utility
-#
-#  A simple program to uncompress and unpack source archive files into a target
-#  directory and fix permissions if requested.
+# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
+#
+# userland-unpack - an archive unpack utility
+#
+# A simple program to uncompress and unpack source archive files into a target
+# directory and fix permissions if requested.
+#
+
+import argparse
 import os
+import stat
 import sys
+import tempfile
 
-def uncompress_unpack_commands(filename, verbose=False):
-	import re
+from typing import Tuple
 
-	uncompress = "/bin/cat"
-
-	if (re.search("(\.bz2|\.tbz|\.tbz2)$", filename) != None):
-		uncompress = "/usr/bin/bzip2 -dc"
-	elif (re.search("(\.gz|\.tgz)$", filename) != None):
-		uncompress = "/usr/bin/gzip -dc"
-	elif (re.search("(\.Z)$", filename) != None):
-		uncompress = "/usr/bin/uncompress -c"
-	elif (re.search("(\.7z)$", filename) != None):
-		uncompress = "/usr/bin/7z --s"
-	elif (re.search("(\.xz)$", filename) != None):
-		uncompress = "/usr/bin/xz -dc"
-	elif (re.search("(\.zip)$", filename) != None):
-		uncompress = "/usr/bin/unzip -qo"
-	elif (re.search("(\.gem)$", filename) != None):
-                ruby_ver = os.getenv('RUBY_VERSION', '')
-		uncompress = "/usr/ruby/" + ruby_ver + "/bin/gem unpack"
-
-	unpack = " | gtar -xf -"
-
-	if (re.search("(\.zip)$", filename) != None):
-		unpack = ""
-	elif (re.search("(\.jar)$", filename) != None):
-		unpack = " | jar xf -"
-	elif (re.search("(\.gem)$", filename) != None):
-		unpack = ""
-
-	if (verbose == True):
-		print "command: %s %s %s" % (uncompress, filename, unpack)
-
-	return uncompress, unpack
-
-#
-# recurse down a directory tree opening permissions so that others may access
-# files in the tree.
-#
-def fixup_permissions(dir, verbose):
-	for entry in os.listdir(dir):
-		import stat
-
-		path = "%s/%s" % (dir, entry)
-
-		st = os.lstat(path)
-		mode = stat.S_IMODE(st.st_mode)
-		mode |= (stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
-		if stat.S_ISDIR(st.st_mode):
-			mode |= (stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-
-		if (stat.S_IMODE(st.st_mode) != mode):
-			if (verbose == True):
-				print "Changing %s from %4.4o to %4.4o" % (path,
-						stat.S_IMODE(st.st_mode), mode)
-			os.chmod(path, mode)
-
-		if stat.S_ISDIR(st.st_mode):
-			fixup_permissions(path, verbose)
+# By default the verbose mode is off and thus verbose does nothing
+verbose = lambda *a, **k: None
 
 
-def usage():
-	print "Usage: %s [-v|--verbose] [-f|--fix-permissions] [-r|--relocate-to (dir)] (file)" % (sys.argv[0].split('/')[-1])
-	sys.exit(1)
+def uncompress_unpack_commands(filename: str) -> Tuple[str, str]:
+    """Get shell commands to uncompress and unpack given archive.
+
+    Several archives are supported with following results:
+
+      .bz2 | .tbz | .tbz2  -> /usr/bin/bzip2 -dc IN       | gtar -xf -
+      .tgz | .gz           -> /usr/bin/gzip -dc IN        | gtar -xf -
+      .Z                   -> /usr/bin/uncompress -c IN   | gtar -xf -
+      .7z                  -> /usr/bin/7z --s IN          | gtar -xf -
+      .xz                  -> /usr/bin/xz -dc IN          | gtar -xf -
+      .jar                 -> /bin/cat IN                 | jar xf -
+      .zip                 -> /usr/bin/unzip -qo IN
+      .gem                 -> /usr/ruby/RUBYVER/bin/gem unpack IN
+    """
+
+    uncompress = "/bin/cat"
+    unpack = " | gtar -xf -"
+
+    if filename.endswith((".bz2", ".tbz", ".tbz2")):
+        uncompress = "/usr/bin/bzip2 -dc"
+    elif filename.endswith((".gz", ".tgz")):
+        uncompress = "/usr/bin/gzip -dc"
+    elif filename.endswith(".Z"):
+        uncompress = "/usr/bin/uncompress -c"
+    elif filename.endswith(".7z"):
+        uncompress = "/usr/bin/7z --s"
+    elif filename.endswith(".xz"):
+        uncompress = "/usr/bin/xz -dc"
+    elif filename.endswith(".zip"):
+        uncompress = "/usr/bin/unzip -qo"
+    elif filename.endswith(".gem"):
+        ruby_ver = os.getenv("RUBY_VERSION", "")
+        uncompress = f"/usr/ruby/{ruby_ver}/bin/gem unpack"
+
+    if filename.endswith((".zip", ".gem")):
+        unpack = ""
+    elif filename.endswith((".jar")):
+        unpack = " | jar xf -"
+
+    verbose(f"command: {uncompress} {filename} {unpack}")
+
+    return uncompress, unpack
+
+
+def fixup_permissions(directory: str) -> None:
+    """Recurse down a directory tree opening permissions so that others may
+    access files in the tree.
+    """
+
+    for entry in os.listdir(directory):
+        path = f"{directory}/{entry}"
+
+        st = os.lstat(path)
+        mode = stat.S_IMODE(st.st_mode)
+        mode |= (stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
+        if stat.S_ISDIR(st.st_mode):
+            mode |= (stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+
+        if stat.S_IMODE(st.st_mode) != mode:
+            verbose(f"Changing {path} from {stat.S_IMODE(st.st_mode):4o} to {mode:4o}")
+            os.chmod(path, mode)
+
+        if stat.S_ISDIR(st.st_mode):
+            fixup_permissions(path)
+
 
 def main():
-	import getopt
-	import sys
-	import tempfile
+    parser = argparse.ArgumentParser(
+        description="Uncompress and unpack source archives.")
+    parser.add_argument('-v', '--verbose', action='store_true',
+        help="Make program more verbose.")
+    parser.add_argument('-f', '--fix-permissions', action='store_true',
+        help="Open permissions so that others may access unpacked files.")
+    parser.add_argument('-r', '--relocate-to',
+        help="Where should unpacked files be relocated.")
+    parser.add_argument('file')
 
-	verbose = False
-	permissions = None
-	relocate_to = None
+    args = parser.parse_args()
 
-	try:
-		opts, args = getopt.getopt(sys.argv[1:], "fr:v",
-			["fix-permissions", "relocate-to=", "verbose"])
-	except getopt.GetoptError, err:
-		print str(err)
-		usage()
+    if args.verbose:
+        global verbose
+        verbose = print
 
-	for opt, arg in opts:
-		if opt in [ "-v", "--verbose" ]:
-			verbose = True
-		elif opt in [ "-f", "--fix-permissions" ]:
-			permissions = True
-		elif opt in [ "-r", "--relocate-to" ]:
-			relocate_to = arg
-		else:
-			assert False, "unknown option"
+    filename = args.file if args.file.startswith("/") else f"../{args.file}"
+    uncompress, unpack = uncompress_unpack_commands(filename)
+    tempdir = tempfile.mkdtemp(dir='.')
 
-	filename = ((args[0] == '/') and "%s" or "../%s") % args[0]
-	uncompress, unpack = uncompress_unpack_commands(filename)
-	tempdir = tempfile.mkdtemp(dir='.')
+    # extract the archive contents
+    verbose(f"cd {tempdir}; {uncompress} {filename}{unpack}")
+    os.system(f"cd {tempdir}; {uncompress} {filename}{unpack}")
 
-	# extract the archive contents
-	if (verbose == True):	
-		print "cd %s ; %s %s%s" % (tempdir, uncompress, filename,
-						unpack)
-	os.system("cd %s ; %s %s%s" % (tempdir, uncompress, filename, unpack))
+    # open up the permissions on what we extracted
+    if args.fix_permissions:
+        fixup_permissions(tempdir)
 
-	# open up the permissions on what we extracted
-	if permissions:
-		fixup_permissions(tempdir, verbose)
-
-	if (relocate_to == None):
-		# move everything in the tempdir here
-		for entry in os.listdir(tempdir):
-			path= "%s/%s" % (tempdir, entry)
-			os.renames(path, entry)
-	else:
-		# rename the tempdir and open it's permissions
-		os.renames(tempdir, relocate_to)
-		os.chmod(relocate_to, 0755)
+    if args.relocate_to is None:
+        # move everything in the tempdir here
+        for entry in os.listdir(tempdir):
+            path = f"{tempdir}/{entry}"
+            os.renames(path, entry)
+    else:
+        # rename the tempdir and open it's permissions
+        os.renames(tempdir, args.relocate_to)
+        os.chmod(args.relocate_to, 0o0755)
 
 
 if __name__ == "__main__":
-	main()
+    main()

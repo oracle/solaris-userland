@@ -1,0 +1,75 @@
+#!/usr/bin/python3.7
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+#
+# userland-components
+#
+# A simple program to enumerate components in the userland gate.
+#
+
+import argparse
+import os
+import sys
+
+
+def main():
+    sys.stdout.flush()
+
+    parser = argparse.ArgumentParser(
+        description="Enumerate components in the userland gate.")
+    parser.add_argument('-w', '--workspace', default=os.getenv('WS_TOP'),
+        help="Root directory of current workspace.")
+    parser.add_argument('-v', '--verbose', action='store_true',
+        help="Make program more verbose.")
+
+    args = parser.parse_args()
+
+    if args.verbose:
+        verbose = print
+    else:
+        # By default the verbose mode is off and thus verbose does nothing
+        verbose = lambda *a, **k: None
+
+    # Locate SCM directories containing Userland components
+    verbose(f"searching {args.workspace} for component directories")
+
+    paths = []
+    for dirpath, dirnames, filenames in os.walk(f"{args.workspace}/components"):
+        for name in filenames:
+            # Find components by location their manifest files
+            if name.lower().endswith(".p5m"):
+                verbose(f"found {dirpath}")
+                paths.append(dirpath)
+                # Abort seach in the current directory
+                del dirnames[:]
+                break
+
+    paths.sort()
+    for path in paths:
+        print(path)
+
+
+if __name__ == "__main__":
+    main()

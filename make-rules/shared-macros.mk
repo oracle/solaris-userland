@@ -267,7 +267,7 @@ else
 $(error "Invalid python naming scheme '$(PYTHON3_SOABI)' selected!")
 endif
 
-BASS_O_MATIC =	$(WS_TOOLS)/bass-o-matic
+USERLAND_COMPONENTS = $(WS_TOOLS)/userland-components
 MANIFEST_GENERATE = $(WS_TOOLS)/manifest-generate
 MANIFEST_COMPARE = $(WS_TOOLS)/manifest-check
 

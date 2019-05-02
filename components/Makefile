@@ -33,7 +33,7 @@ include ../make-rules/shared-macros.mk
 # contain a component.
 $(WS_MACH)/components.mk:	$(WS_MACH) # Makefile # $(WS_TOP)/components
 	@echo "Generating component list..."
-	@$(BASS_O_MATIC) --workspace=$(WS_TOP) --components=paths \
+	@$(USERLAND_COMPONENTS) --workspace=$(WS_TOP) \
 		| sed -e 's;^$(shell readlink -f "$$PWD")/;COMPONENT_DIRS += ;g' >$@
 	@if [[ -n "$(PRIORITY_COMPONENTS)" ]]; then \
 		PRIORITY="`printf 'COMPONENT_DIRS += %s\n' $(PRIORITY_COMPONENTS)`"; \
@@ -52,7 +52,7 @@ $(WS_MACH)/components.mk:	$(WS_MACH) # Makefile # $(WS_TOP)/components
 # component directory.
 $(WS_MACH)/depends.mk:     $(WS_MACH)/components.mk
 	@echo "Generating component dependencies..."
-	@cat $(shell $(BASS_O_MATIC) --workspace=$(WS_TOP) --components=paths \
+	@cat $(shell $(USERLAND_COMPONENTS) --workspace=$(WS_TOP) \
 		| sed -e 's;^$(shell pwd)/;;g' -e 's;$$;/depend.mk;g') >$@ \
 		2>/dev/null
  
@@ -187,7 +187,7 @@ JOBS_PER_COMPONENT ?= 1
 $(COMPONENT_DIRS):	$(WS_LOGS) setup FORCE
 	@cd $@ && echo "$(TARGET) $@" && \
 	( env MAKELEVEL= COMPONENT_MAKE_JOBS=$(JOBS_PER_COMPONENT) \
-		time $(BASS_O_MATIC) $(@:%=--component %) --make $(TARGET) ) $(LOG)
+		time $(GMAKE) $(TARGET) ) $(LOG)
 
 # Turn userland-incorporator warnings into build failures
 INCORPORATE_WERROR ?= --Werror
@@ -199,7 +199,6 @@ incorporation:
 		--repository $(PKG_REPO) \
 		--version $(PKG_SOLARIS_VERSION),$(BUILD_VERSION) \
 		--publisher $(PUBLISHER) \
-		--consolidation $(CONSOLIDATION) \
 		--destdir $(WS_MACH) \
 		--static-content-file $(WS_COMPONENTS)/meta-packages/incorporation-cache \
 		$(INCORPORATE_WERROR)
@@ -233,7 +232,7 @@ endif
 $(COMPONENT_DIRS.nosetup):	$(WS_LOGS) FORCE
 	@cd $(@:%.nosetup=%) && echo "$(TARGET) $(@:%.nosetup=%)" && \
 	 env COMPONENT_MAKE_JOBS=$(JOBS_PER_COMPONENT) \
-	 $(BASS_O_MATIC) $(@:%.nosetup=--component %) --make $(TARGET) $(LOG)
+	 $(GMAKE) $(TARGET) $(LOG)
 
 # component report uses component-hook to process every component.
 # component-hook however executes on the 'components' directory itself (it's
