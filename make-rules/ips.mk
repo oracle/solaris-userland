@@ -524,6 +524,7 @@ PKGSEND_PUBLISH_OPTIONS += -T \*.py
 PKGREPO_REMOVE_BEFORE_PUBLISH ?= no
 
 $(MANIFEST_BASE)-%.published:	$(MANIFEST_BASE)-%.depend.res $(BUILD_DIR)/.linted-$(MACH)
+	$(call log-package-publish, $<)
 ifeq ($(PKGREPO_REMOVE_BEFORE_PUBLISH),yes)
 	-$(PKGREPO) -s $(PKG_REPO) remove \
 			$(shell $(CAT) $< $(WS_TOP)/transforms/print-pkgs | \

@@ -202,6 +202,7 @@ incorporation:
 		$(INCORPORATE_WERROR)
 	-$(RM) $(WS_MACH)/smcc-incorporation.p5m
 	for incorporation in $(WS_MACH)/*.p5m ; do \
+	    $(call log-package-publish, $${incorporation}) ; \
 	    $(PKGSEND) -s $(PKG_REPO) publish --fmri-in-manifest \
 	               $${incorporation} ; \
 	done

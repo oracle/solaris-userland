@@ -147,6 +147,13 @@ define prepare_env_args
 $(foreach env,$(1),"$(env)=$(call prepare_env_args_newline,$($(env)))")
 endef
 
+PUBLISH_LOG = $(WS_LOGS)/published.log
+define log-package-publish
+    $(CAT) $(1) $(WS_TOP)/transforms/print-published-pkgs | \
+	    $(PKGMOGRIFY) $(PKG_OPTIONS) /dev/fd/0 | \
+	    sed -e '/^$$/d' -e '/^#.*$$/d' >> $(PUBLISH_LOG)
+endef
+
 ROOT =			/
 
 # The changset and external source repo used in building the packages.

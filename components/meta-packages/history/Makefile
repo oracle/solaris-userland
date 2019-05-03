@@ -90,10 +90,12 @@ $(MANIFEST_BASE)-%.histogrified: $(MANIFEST_BASE)-%.p5m $(BUILD_DIR)
 	              $(WS_TOP)/transforms/incorporate > $@
 
 $(MANIFEST_BASE)-%.published: $(MANIFEST_BASE)-%.mogrified $(BUILD_DIR)
+	$(call log-package-publish, $<)
 	$(PKGSEND) -s $(PKG_REPO) publish --fmri-in-manifest --no-catalog $<
 	$(CP) $< $@
 
 $(MANIFEST_BASE)-%.published: $(MANIFEST_BASE)-%.histogrified $(BUILD_DIR)
+	$(call log-package-publish, $<)
 	$(PKGSEND) -s $(PKG_REPO) publish --fmri-in-manifest --no-catalog $<
 	$(CP) $< $@
 
