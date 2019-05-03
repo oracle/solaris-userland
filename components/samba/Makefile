@@ -36,6 +36,10 @@ else
 WAFOPTS = -j16
 endif
 
+ifeq ($(DEBUG), yes)
+gcc_OPT= -Og -g
+endif
+
 # parfait seems to spin on us
 export PARFAIT_BUILD=no
 
@@ -44,8 +48,8 @@ COMPONENT_PROJECT_URL=	http://www.samba.org/
 COMPONENT_BUGDB=	utility/samba
 COMPONENT_ANITYA_ID=	4758
 
-COMPONENT_VERSION=	4.9.3
-TPNO=			47629
+COMPONENT_VERSION=	4.9.6
+TPNO=			51075
 # Samba pre-releases are available on git only.
 # if you want to build Samba from git uncomment next 4 lines
 #GIT_REPO=		https://git.samba.org/samba.git
@@ -55,7 +59,7 @@ TPNO=			47629
 # clone of git.samba.org takes a long
 # if you want to build Samba from archive uncomment next 3 lines
 COMPONENT_ARCHIVE_URL=	https://download.samba.org/pub/samba/stable/$(COMPONENT_ARCHIVE)
-COMPONENT_ARCHIVE_HASH=	sha256:cf8fd8707e9ad7bce7832006aac5644155165745ba371170661b3004fa2135cf
+COMPONENT_ARCHIVE_HASH=	sha256:c9205a651a83d69e200fec9dd65e9fa360f0c75ab3275b3dcb74e5cbaec60807
 COMPONENT_SRC_URL=	$(COMPONENT_ARCHIVE_URL)
 
 include $(WS_MAKE_RULES)/common.mk
@@ -84,6 +88,8 @@ $(SAMBA_FULL_CONF): LIBS += -lsendfile -lavahi-common -lavahi-core
 
 CPPFLAGS +=	$(CPP_LARGEFILES)
 CPPFLAGS +=	$(CPP_XPG6MODE)
+# Linux.h
+CPPFLAGS +=	-DNAME_MAX=256
 
 LDFLAGS +=	-m$(BITS)
 LDFLAGS +=	-R/usr/lib/samba$(MACHLIBDIR)
@@ -207,6 +213,53 @@ $(WB_ONLY_CONF:.configured=.installed): $(WB_ONLY_CONF:.configured=.built)
 	"
 	$(TOUCH) $@
 
+# Create package objects lists with mutually exclusive contents.
+# Goal is the libsmbclient package should be a subset of samba
+# distribution and need to have only the necessary dependencies.
+# Branch of libsmbclient was motivated by limited space in miniroot.
+SAMBAOBJ =		samba.pkgobjs
+LIBSMBCLIENTOBJ =	libsmbclient.pkgobjs
+BSAMBAOBJ =		$(BUILD_DIR)/$(SAMBAOBJ)
+BLIBSMBCLIENTOBJ =	$(BUILD_DIR)/$(LIBSMBCLIENTOBJ)
+METADATA_TEMPLATE=
+
+new-manifest:	$(BLIBSMBCLIENTOBJ) $(BSAMBAOBJ)
+
+$(CHECKED): new-manifest
+
+# all.pkgobjs: collects pkg-rules for files + links + conf.dirs (/etc/samba/) + state dirs (/var/samba/)
+# note: rules for 'path=mangled' are not reasonable
+$(BUILD_DIR)/all.pkgobjs:	$(GENERATED).p5m
+	egrep -v 'path=mangled' $(GENERATED).p5m \
+		| nawk '{if (sub(/\\$$/,"")) printf "%s", $$0; else print $$0}' \
+		| /usr/xpg4/bin/egrep -e '^file|^link|^dir .*path=etc/samba/|^dir .*path=var/samba/' > $@
+
+# libsmbclient.deps: is a list of paths of all files to create libsmbclient package
+# - extract (only the paths) of libsmbclient.{so[.<ver>[.<subver>]]|h} from all.pkgobjs actions
+# - append paths of all internal Samba dependencies (in /usr/lib/samba/ priv.dir) of libsmbclient.so
+$(BUILD_DIR)/libsmbclient.deps: install $(BUILD_DIR)/all.pkgobjs
+	/usr/xpg4/bin/fgrep -e libsmbclient.so -e libsmbclient.h $(BUILD_DIR)/all.pkgobjs \
+		| sed -e 's/^.*path=//' | sed -e 's/ target=.*$$//' > $@
+	ldd -v $(PROTO_DIR)/usr/lib/samba/$(MACH64)/libsmbclient.so \
+		| grep =[\>-\>] | nawk '{print $$NF;}' | sort -u \
+		| sed -e 's@^/@@;s/$(MACH64)/\$$(MACH64)/' | egrep '^usr/lib/samba' >> $@
+
+# samba.pkgobjs (in build/) is created from all.pkgobjs by removing the actions belongs to libsmbclient.deps paths
+# then samba.pkgobjs in build/ is compared to samba.pkgobjs in component dir
+# if diff will find a differences it returns !0 then make fails
+# note: in such case the diff seen in build-log can be directly applied to samba.pkgobjs in component dir by gpatch
+$(BSAMBAOBJ): $(BUILD_DIR)/libsmbclient.deps $(BUILD_DIR)/all.pkgobjs
+	/usr/xpg4/bin/fgrep -v -f $(BUILD_DIR)/libsmbclient.deps $(BUILD_DIR)/all.pkgobjs >$@
+	gdiff -u $(SAMBAOBJ) $@
+
+# libsmbclient.pkgobjs (in build/) is created from all.pkgobjs by exclusive adding of the actions belongs to libsmbclient.deps paths
+# then libsmbclient.pkgobjs in build/ is compared to libsmbclient.pkgobjs in component dir
+# if diff will find a differences it returns !0 then make fails
+# note: in such case the diff seen in build-log can be directly applied to libsmbclient.pkgobjs in component dir by gpatch
+$(BLIBSMBCLIENTOBJ): $(BUILD_DIR)/all.pkgobjs $(BUILD_DIR)/libsmbclient.deps
+	/usr/xpg4/bin/fgrep -f $(BUILD_DIR)/libsmbclient.deps $(BUILD_DIR)/all.pkgobjs >$@
+	gdiff -u $(LIBSMBCLIENTOBJ) $@
+
 # no tests
 test:		$(NO_TESTS)
 
@@ -222,9 +275,10 @@ REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libdbus
-REQUIRED_PACKAGES += system/library/security/crypto
 REQUIRED_PACKAGES += system/library/pam-core
+REQUIRED_PACKAGES += system/library/security/crypto
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/network/avahi
 REQUIRED_PACKAGES += system/network/ldap/openldap

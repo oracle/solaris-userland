@@ -18,31 +18,11 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
-# prototype objects in "samba" and "libsmbclient" packages should be
-# mutually exclusive so ve need to create 2 files to include :
-#  - libsmbclient-objects
-#  - samba-objects2drop
-# here is the recipe:
-## # list all (recursive) deps of libsmbclient.so
-## ldd -v build/prototype/$(uname -p)/usr/lib/samba/amd64/libsmbclient.so | grep =[\>-\>] | nawk '{print $NF;}' | sort -u > libsmbclnt.deps
-## # edit libsmbclnt.deps file
-## vi libsmbclnt.deps
-## #  remove all other than /usr/lib/samba :1,.d
-## #  suppress leading '/' :1,$s#^/##
-## #  change amd64 to $(MACH64) :1,$s/amd64/\$(MACH64)/
-## # join continuing lines and replace samba.proto-objects
-## nawk '{if (sub(/\\$/,"")) printf "%s", $0; else print $0}' build/manifest-$(uname -p)-generated.p5m > samba.proto-objects
-## # select libsmbclient objects
-## /usr/xpg4/bin/fgrep -f libsmbclnt.deps samba.proto-objects > libsmbclient-objects
-## # create "drop" file
-## nawk '{print "<transform " $1 " " $2 " -> drop>";}' libsmbclient-objects > samba-objects2drop
-## # remove temporary file
-## rm libsmbclnt.deps
-
-<include libsmbclient-objects>
+# prototype objects in "samba" and "libsmbclient" packages should be mutually exclusive
+<include libsmbclient.pkgobjs>
 #
 set name=pkg.fmri \
     value=pkg:/library/samba/libsmbclient@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
@@ -57,15 +37,10 @@ set name=info.upstream-url value=(None)
 set name=org.opensolaris.arc-caseid value=PSARC/2015/512
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
-file path=usr/include/samba/libsmbclient.h
-# point to lib in samba-private area
+# public interface points to lib in samba-private area
 link path=usr/lib/$(MACH64)/libsmbclient.so \
     target=../samba/$(MACH64)/libsmbclient.so
 link path=usr/lib/$(MACH64)/libsmbclient.so.0 \
     target=../samba/$(MACH64)/libsmbclient.so.0
-#
-link path=usr/lib/samba/$(MACH64)/libsmbclient.so target=libsmbclient.so.0.4.0
-link path=usr/lib/samba/$(MACH64)/libsmbclient.so.0 target=libsmbclient.so.0.4.0
-file path=usr/lib/samba/$(MACH64)/libsmbclient.so.0.4.0
 #
 license samba.license license=GPLv3
