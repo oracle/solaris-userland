@@ -28,13 +28,13 @@ gcc_OPT= -O2
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cups-filters
-COMPONENT_VERSION=	1.21.6
-COMPONENT_TAG=		release-1-21-6
-TPNO=			48670
+COMPONENT_VERSION=	1.22.5
+COMPONENT_TAG=		release-1-22-5
+TPNO=			51796
+COMPONENT_ARCHIVE_HASH=	sha256:a0c716ab5fb27ede33fdef5d3bb3d019de887c9960a005b493837be8edce0498
 COMPONENT_PROJECT_URL=	http://www.openprinting.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_TAG)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
-COMPONENT_ARCHIVE_HASH=
 COMPONENT_ARCHIVE_URL=	https://github.com/OpenPrinting/cups-filters/archive/$(COMPONENT_TAG).zip
 COMPONENT_BUGDB=	utility/cups
 
