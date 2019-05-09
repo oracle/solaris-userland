@@ -33,13 +33,13 @@ include ../../../make-rules/shared-macros.mk
 ESR = esr
 
 COMPONENT_NAME =		firefox
-COMPONENT_VERSION =		60.6.2
+COMPONENT_VERSION =		60.6.3
 COMPONENT_PROJECT_URL =		http://www.mozilla.com/firefox
 COMPONENT_SRC_NAME =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC = 		$(COMPONENT_SRC_NAME)
 COMPONENT_ARCHIVE =		$(COMPONENT_SRC_NAME)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:cdb3d7b7648d9898e32d5fdb2eaac27d7cafa4eb0f88b39ccb1d30445ec77d3b
+    sha256:eebf34968c64cf8c007dd0da98124edf55cdda141f8b4c653e8e00b22650833e
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		        http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
@@ -49,20 +49,16 @@ COMPONENT_ARCHIVE_URL =		$(MOZILLA_FTP)/source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB =		firefox/browser
 COMPONENT_ANITYA_ID=    	16838
 
-TPNO=				51611
-# Version 60.6.2 intentionally doesn't ship new language packs (old ones
-# will continue to work fine).
-# See https://bugzilla.mozilla.org/show_bug.cgi?id=1549310.
-COMPONENT_ARCHIVE_1 =           $(COMPONENT_NAME)-60.6.1$(ESR)-xpi.tar.bz2
+TPNO=				51717
 
 # There are a set of .xpi files (as given in the LANG_LIST definition
 # below) that we need. We could download and unpack them individually, but
 # they doesn't contain version in its file name and there is lot of them.
 # Therefore we will download them and archive them in Userland cache using
 # one file with version number.
-#COMPONENT_ARCHIVE_1 =           $(COMPONENT_SRC_NAME)$(ESR)-xpi.tar.bz2
+COMPONENT_ARCHIVE_1 =           $(COMPONENT_SRC_NAME)$(ESR)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:8331c18f52fe0e200e72f3810b885944fb32a77134fa3b6777fa8d0d2e76d4f1
+    sha256:7371b88b3d40924da229032f41c487ab0ba46bc58b952fcf20677e92e3f36c9a
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ach af an ar as ast az be bg bn-BD bn-IN br bs ca cak cs cy \
