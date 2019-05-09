@@ -20,29 +20,30 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 COMPILER=	gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		qpdf
-COMPONENT_VERSION=	8.2.1
-GIT_REPO=	https://github.com/qpdf/qpdf
-GIT_COMMIT_ID=	release-qpdf-$(COMPONENT_VERSION)
-GIT_HASH=	sha256:16a74fd62323c548c6be8634776205ff2db4497d7779ed453018b7a6059c1ad3
-TPNO=		47762
-
+COMPONENT_VERSION=	8.4.1
+TPNO=			51704
 COMPONENT_PROJECT_URL=	http://qpdf.sourceforge.net/
-COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
+#GIT_REPO=	https://github.com/qpdf/qpdf
+# GitHub can also provide .zip files which is much faster variant
+COMPONENT_SRC=	$(COMPONENT_NAME)-release-$(COMPONENT_NAME)-$(COMPONENT_VERSION)
+COMPONENT_ARCHIVE=	release-$(COMPONENT_NAME)-$(COMPONENT_VERSION).zip
+COMPONENT_ARCHIVE_HASH=	sha256:ccbc645eefff47407d0295922e3f0265a7d123abd1275fd3adce413216418b08
+COMPONENT_ARCHIVE_URL=	https://github.com/qpdf/qpdf/archive/$(COMPONENT_ARCHIVE)
+
 COMPONENT_BUGDB=	utility/qpdf
 COMPONENT_ANITYA_ID=	5542
 
 COMPONENT_TEST_TARGET= $(TEST_64_and_32)
 include $(WS_MAKE_RULES)/common.mk
 
-COMPONENT_PREP_ACTION += (cd $(@D); aclocal -I m4 ; autoheader ; libtoolize -f ; autoreconf -f )
+COMPONENT_PREP_ACTION += (cd $(@D); $(CONFIG_SHELL) autogen.sh )
 
 COMPONENT_PRE_CONFIGURE_ACTION += $(CLONEY) $(SOURCE_DIR) $(@D)
 
