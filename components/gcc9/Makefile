@@ -28,16 +28,16 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gcc
-COMPONENT_VERSION=	7.3.0
+COMPONENT_VERSION=	9.1.0
 COMPONENT_PROJECT_URL=	https://gcc.gnu.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:fa06e455ca198ddc11ea4ddf2a394cf7cfb66aa7e0ab98cc1184189f1d405870
+    sha256:be303f7a8292982a35381489f5a9178603cbe9a4715ee4fa4a815d6bcd2b658d
 COMPONENT_ARCHIVE_URL=	https://ftp.gnu.org/gnu/gcc/$(COMPONENT_SRC)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=        utility/gnu-compiler
 COMPONENT_ANITYA_ID=	6502
 
-TPNO=			40886
+TPNO=			51613
 
 # Use gcc's default flags instead of userland's.
 CFLAGS=
@@ -88,7 +88,7 @@ CONFIGURE_LIBDIR.64 = $(CONFIGURE_PREFIX)/lib
 
 CONFIGURE_OPTIONS +=	--infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS +=	--libexecdir=$(CONFIGURE_PREFIX)/lib
-CONFIGURE_OPTIONS +=	--enable-languages="c,c++,fortran,objc"
+CONFIGURE_OPTIONS +=	--enable-languages="c,c++,fortran,go,objc"
 CONFIGURE_OPTIONS +=	--enable-shared
 CONFIGURE_OPTIONS +=	--enable-initfini-array
 CONFIGURE_OPTIONS +=	--disable-rpath
@@ -123,11 +123,7 @@ COMPONENT_POST_INSTALL_ACTION = \
 
 
 COMPONENT_PRE_TEST_ENV += TCL_LIBRARY="$(USRLIBDIR)/tcl8.5"
-
-# We don't have DejaGNU in S11.3.
-ifneq ($(OS_VERSION), 11.3)
-  COMPONENT_PRE_TEST_ENV += DEJAGNULIBS="$(USRSHAREDIR)/dejagnu"
-endif
+COMPONENT_PRE_TEST_ENV += DEJAGNULIBS="$(USRSHAREDIR)/dejagnu"
 
 #
 # Run the tests and generate a summary report, then output the summary
@@ -160,6 +156,17 @@ COMPONENT_TEST_TARGETS = mail-report.log
 COMPONENT_TEST_MASTER = \
 	$(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 
+# GCC ships some static libraries (.a).
+MANIFEST_CLEANUP_TRANSFORM=
+
+PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/g++
+PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gcc
+PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gcc-ar
+PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gcc-nm
+PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gcc-ranlib
+PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gccgo
+PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gfortran
+
 REQUIRED_PACKAGES += developer/test/dejagnu
 REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/isl
@@ -170,5 +177,3 @@ REQUIRED_PACKAGES += runtime/tcl-8
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime

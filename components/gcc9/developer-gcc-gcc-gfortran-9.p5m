@@ -33,24 +33,23 @@ set name=info.classification \
     value=org.opensolaris.category.2008:Development/GNU
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2015/499
+set name=org.opensolaris.arc-caseid value=PSARC/2019/064
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 hardlink path=$(GCC_BASEDIR)/bin/$(GNU_ARCH)-gfortran target=gfortran
 file path=$(GCC_BASEDIR)/bin/gfortran
-file path=$(GCC_BASEDIR)/lib/$(MACH64)/libgfortran.a variant.arch=drop
-file path=$(GCC_BASEDIR)/lib/$(MACH64)/libgfortran.la variant.arch=drop
 file path=$(GCC_BASEDIR)/lib/$(MACH64)/libgfortran.spec
-file path=$(GCC_BASEDIR)/lib/$(MACH64)/libquadmath.a variant.arch=drop
-file path=$(GCC_BASEDIR)/lib/$(MACH64)/libquadmath.la variant.arch=drop
-file \
-    path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/$(MACH64)/libcaf_single.a \
-    variant.arch=drop
 file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/32/finclude/ieee_arithmetic.mod
 file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/32/finclude/ieee_exceptions.mod
 file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/32/finclude/ieee_features.mod
+file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/32/finclude/omp_lib.f90
+file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/32/finclude/omp_lib.h
+file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/32/finclude/omp_lib.mod
+file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/32/finclude/omp_lib_kinds.mod
+file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/32/finclude/openacc.f90
 file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/32/finclude/openacc.mod
+file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/32/finclude/openacc_kinds.mod
+file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/32/finclude/openacc_lib.h
 file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/32/libcaf_single.a
-file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/32/libcaf_single.la
 file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/f951 mode=0555
 file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/finclude/ieee_arithmetic.mod
 file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/finclude/ieee_exceptions.mod
@@ -64,20 +63,8 @@ file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/finclude/opena
 file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/finclude/openacc_kinds.mod
 file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/finclude/openacc_lib.h
 file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/libcaf_single.a
-file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/libcaf_single.la
-file \
-    path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/libgfortranbegin.a \
-    variant.arch=drop
-file \
-    path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/libgfortranbegin.la \
-    variant.arch=drop
-file path=$(GCC_BASEDIR)/lib/libgfortran.a variant.arch=drop
-file path=$(GCC_BASEDIR)/lib/libgfortran.la variant.arch=drop
 file path=$(GCC_BASEDIR)/lib/libgfortran.spec
-file path=$(GCC_BASEDIR)/lib/libquadmath.a variant.arch=drop
-file path=$(GCC_BASEDIR)/lib/libquadmath.la variant.arch=drop
 file path=$(GCC_BASEDIR)/share/info/gfortran.info
-file path=$(GCC_BASEDIR)/share/info/libquadmath.info
 file path=$(GCC_BASEDIR)/share/man/man1/gfortran.1
 link path=usr/bin/gfortran target=../gcc/$(GCC_MAJOR_VERSION)/bin/gfortran \
     mediator=gcc mediator-version=$(GCC_MAJOR_VERSION)
@@ -93,6 +80,8 @@ license COPYING.LIB license=LGPLv2.1
 license COPYING3.LIB license=LGPLv3
 depend type=require fmri=pkg:/developer/gcc/gcc-c-$(GCC_MAJOR_VERSION)
 depend type=require fmri=pkg:/developer/gcc/gcc-common-$(GCC_MAJOR_VERSION)
+depend type=require \
+    fmri=pkg:/system/library/gcc/gcc-c-runtime-$(GCC_MAJOR_VERSION)
 depend type=require fmri=pkg:/system/library/gcc/gcc-gfortran-runtime
 depend type=require \
     fmri=pkg:/system/library/gcc/gcc-gfortran-runtime-$(GCC_MAJOR_VERSION)

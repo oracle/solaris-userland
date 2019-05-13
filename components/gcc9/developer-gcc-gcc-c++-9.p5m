@@ -38,11 +38,11 @@ set name=info.classification value=org.opensolaris.category.2008:Development/C \
     value=org.opensolaris.category.2008:Development/GNU
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2015/499
+set name=org.opensolaris.arc-caseid value=PSARC/2019/064
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-hardlink path=$(GCC_BASEDIR)/bin/$(GNU_ARCH)-c++ target=c++
+hardlink path=$(GCC_BASEDIR)/bin/$(GNU_ARCH)-c++ target=g++
 hardlink path=$(GCC_BASEDIR)/bin/$(GNU_ARCH)-g++ target=g++
-file path=$(GCC_BASEDIR)/bin/c++
+hardlink path=$(GCC_BASEDIR)/bin/c++ target=g++
 file path=$(GCC_BASEDIR)/bin/g++
 #
 # GNU C++ Standard Library header files
@@ -105,6 +105,7 @@ file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/backward/hash_map
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/backward/hash_set
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/backward/hashtable.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/backward/strstream
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bit
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/algorithmfwd.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/alloc_traits.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/allocated_ptr.h
@@ -118,7 +119,6 @@ file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/basic_string.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/basic_string.tcc
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/boost_concept_check.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/c++0x_warning.h
-file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/c++14_warning.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/char_traits.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/codecvt.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/concept_check.h
@@ -127,11 +127,16 @@ file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/cxxabi_forced.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/cxxabi_init_exception.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/deque.tcc
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/enable_special_members.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/erase_if.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/exception.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/exception_defines.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/exception_ptr.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/forward_list.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/forward_list.tcc
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/fs_dir.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/fs_fwd.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/fs_ops.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/fs_path.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/fstream.tcc
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/functexcept.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/functional_hash.h
@@ -221,6 +226,7 @@ file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/streambuf_iterato
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/string_view.tcc
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/stringfwd.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/uniform_int_dist.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/unique_lock.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/unique_ptr.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/unordered_map.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/bits/unordered_set.h
@@ -237,6 +243,7 @@ file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/cctype
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/cerrno
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/cfenv
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/cfloat
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/charconv
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/chrono
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/cinttypes
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/ciso646
@@ -300,27 +307,34 @@ file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/decimal/decimal
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/decimal/decimal.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/deque
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/exception
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/execution
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/algorithm
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/any
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/array
-file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/bits/erase_if.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/bits/fs_dir.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/bits/fs_fwd.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/bits/fs_ops.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/bits/fs_path.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/bits/lfts_config.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/bits/net.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/bits/shared_ptr.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/bits/string_view.tcc
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/buffer
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/chrono
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/deque
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/executor
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/filesystem
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/forward_list
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/functional
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/internet
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/io_context
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/iterator
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/list
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/map
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/memory
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/memory_resource
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/net
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/netfwd
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/numeric
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/optional
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/propagate_const
@@ -328,10 +342,12 @@ file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/random
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/ratio
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/regex
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/set
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/socket
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/source_location
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/string
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/string_view
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/system_error
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/timer
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/tuple
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/type_traits
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/experimental/unordered_map
@@ -626,6 +642,7 @@ file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/ext/vstring.tcc
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/ext/vstring_fwd.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/ext/vstring_util.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/fenv.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/filesystem
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/forward_list
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/fstream
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/functional
@@ -643,6 +660,7 @@ file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/locale
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/map
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/math.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/memory
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/memory_resource
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/mutex
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/new
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/numeric
@@ -722,6 +740,27 @@ file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/profile/unordered_base
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/profile/unordered_map
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/profile/unordered_set
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/profile/vector
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/pstl/algorithm_fwd.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/pstl/algorithm_impl.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/pstl/execution_defs.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/pstl/execution_impl.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/pstl/glue_algorithm_defs.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/pstl/glue_algorithm_impl.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/pstl/glue_execution_defs.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/pstl/glue_memory_defs.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/pstl/glue_memory_impl.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/pstl/glue_numeric_defs.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/pstl/glue_numeric_impl.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/pstl/memory_impl.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/pstl/numeric_fwd.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/pstl/numeric_impl.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/pstl/parallel_backend.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/pstl/parallel_backend_tbb.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/pstl/parallel_backend_utils.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/pstl/parallel_impl.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/pstl/pstl_config.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/pstl/unseq_backend_simd.h
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/pstl/utils.h
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/queue
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/random
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/ratio
@@ -817,28 +856,17 @@ file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/utility
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/valarray
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/variant
 file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/vector
+file path=$(GCC_BASEDIR)/include/c++/$(COMPONENT_VERSION)/version
 #
 # GNU C++ Standard Library Archive Libraries
 #
-file path=$(GCC_BASEDIR)/lib/$(MACH64)/libstdc++.a variant.arch=drop
-file path=$(GCC_BASEDIR)/lib/$(MACH64)/libstdc++.la variant.arch=drop
-file path=$(GCC_BASEDIR)/lib/$(MACH64)/libstdc++.so.6.0.24-gdb.py
-file path=$(GCC_BASEDIR)/lib/$(MACH64)/libstdc++fs.a variant.arch=drop
-file path=$(GCC_BASEDIR)/lib/$(MACH64)/libstdc++fs.la variant.arch=drop
-file path=$(GCC_BASEDIR)/lib/$(MACH64)/libsupc++.a variant.arch=drop
-file path=$(GCC_BASEDIR)/lib/$(MACH64)/libsupc++.la variant.arch=drop
+file path=$(GCC_BASEDIR)/lib/$(MACH64)/libstdc++.so.6.0.26-gdb.py
 file path=$(GCC_BASEDIR)/lib/gcc/$(GNU_ARCH)/$(COMPONENT_VERSION)/cc1plus \
     mode=0555
-file path=$(GCC_BASEDIR)/lib/libstdc++.a variant.arch=drop
-file path=$(GCC_BASEDIR)/lib/libstdc++.la variant.arch=drop
 #
 # GNU C++ Standard Library Python gdb support
 #
-file path=$(GCC_BASEDIR)/lib/libstdc++.so.6.0.24-gdb.py
-file path=$(GCC_BASEDIR)/lib/libstdc++fs.a variant.arch=drop
-file path=$(GCC_BASEDIR)/lib/libstdc++fs.la variant.arch=drop
-file path=$(GCC_BASEDIR)/lib/libsupc++.a variant.arch=drop
-file path=$(GCC_BASEDIR)/lib/libsupc++.la variant.arch=drop
+file path=$(GCC_BASEDIR)/lib/libstdc++.so.6.0.26-gdb.py
 file path=$(GCC_BASEDIR)/share/gcc-$(COMPONENT_VERSION)/python/libstdcxx/__init__.py
 file path=$(GCC_BASEDIR)/share/gcc-$(COMPONENT_VERSION)/python/libstdcxx/v6/__init__.py
 file path=$(GCC_BASEDIR)/share/gcc-$(COMPONENT_VERSION)/python/libstdcxx/v6/printers.py
@@ -851,8 +879,8 @@ link path=usr/bin/g++ target=../gcc/$(GCC_MAJOR_VERSION)/bin/g++ mediator=gcc \
 file path=usr/share/gcc-$(COMPONENT_VERSION)/python/libstdcxx/__init__.py
 file path=usr/share/gcc-$(COMPONENT_VERSION)/python/libstdcxx/v6/__init__.py
 file path=usr/share/gcc-$(COMPONENT_VERSION)/python/libstdcxx/v6/printers.py
-file path=usr/share/gdb/auto-load/usr/lib/$(MACH64)/libstdc++.so.6.0.24-gdb.py
-file path=usr/share/gdb/auto-load/usr/lib/libstdc++.so.6.0.24-gdb.py
+file path=usr/share/gdb/auto-load/usr/lib/$(MACH64)/libstdc++.so.6.0.26-gdb.py
+file path=usr/share/gdb/auto-load/usr/lib/libstdc++.so.6.0.26-gdb.py
 link path=usr/share/man/man1/c++.1 \
     target=../../../gcc/$(GCC_MAJOR_VERSION)/share/man/man1/g++.1 \
     mediator=gcc mediator-version=$(GCC_MAJOR_VERSION)
@@ -868,3 +896,7 @@ license COPYING.LIB license=LGPLv2.1
 license COPYING3.LIB license=LGPLv3
 depend type=require fmri=pkg:/developer/gcc/gcc-c-$(GCC_MAJOR_VERSION)
 depend type=require fmri=pkg:/developer/gcc/gcc-common-$(GCC_MAJOR_VERSION)
+depend type=require \
+    fmri=pkg:/system/library/gcc/gcc-c++-runtime-$(GCC_MAJOR_VERSION)
+depend type=require \
+    fmri=pkg:/system/library/gcc/gcc-c-runtime-$(GCC_MAJOR_VERSION)

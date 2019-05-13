@@ -1,0 +1,86 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+<include generate/common.transform>
+
+<transform file path=.*/\$\(MACH\)/(att\.h|i386-opts\.h|i386-protos\.h|i386\.h) -> set variant.arch i386>
+<transform file path=.*/\$\(MACH\)/(stringop\.def|unix\.h|x86-64\.h|x86-tune\.def) -> set variant.arch i386>
+
+<transform file path=.*/\$\(MACH\)/(default64\.h|sparc-opts\.h|sparc-protos\.h|sparc\.h) -> set variant.arch sparc>
+<transform file path=.*/\$\(MACH\)/(tso\.h) -> set variant.arch sparc>
+
+<transform file path=.*/include/(adxintrin\.h|ammintrin\.h|avx2intrin\.h|avx512.*\.h) -> set variant.arch i386>
+<transform file path=.*/include/(avxintrin\.h|bmi2intrin\.h|bmiintrin\.h|bmmintrin\.h) -> set variant.arch i386>
+<transform file path=.*/include/(cet\.h|cetintrin\.h|clflushoptintrin\.h|clwbintrin\.h) -> set variant.arch i386>
+<transform file path=.*/include/(clzerointrin\.h|cpuid\.h|cross-stdarg\.h|emmintrin\.h) -> set variant.arch i386>
+<transform file path=.*/include/(f16cintrin\.h|fma4intrin\.h|fmaintrin\.h|fxsrintrin\.h) -> set variant.arch i386>
+<transform file path=.*/include/(gfniintrin\.h|ia32intrin\.h|immintrin\.h|lwpintrin\.h) -> set variant.arch i386>
+<transform file path=.*/include/(lzcntintrin\.h|mm3dnow\.h|mm_malloc\.h|mmintrin\.h) -> set variant.arch i386>
+<transform file path=.*/include/(movdirintrin\.h|mwaitxintrin\.h|nmmintrin\.h) -> set variant.arch i386>
+<transform file path=.*/include/(pconfigintrin.h|pkuintrin.h|pmmintrin.h|popcntintrin.h) -> set variant.arch i386>
+<transform file path=.*/include/(prfchwintrin.h|quadmath.h|quadmath_weak.h|rdseedintrin.h) -> set variant.arch i386>
+<transform file path=.*/include/(rtmintrin\.h|sgxintrin\.h|shaintrin\.h|smmintrin\.h) -> set variant.arch i386>
+<transform file path=.*/include/(tbmintrin\.h|tmmintrin\.h|vaesintrin\.h) -> set variant.arch i386>
+<transform file path=.*/include/(vpclmulqdqintrin\.h|wbnoinvdintrin\.h|wmmintrin.h|x86intrin\.h) -> set variant.arch i386>
+<transform file path=.*/include/(xmmintrin\.h|xopintrin\.h|xsavecintrin\.h|xsaveintrin\.h) -> set variant.arch i386>
+<transform file path=.*/include/(xsavesintrin\.h|xsaveoptintrin\.h|xtestintrin\.h) -> set variant.arch i386>
+<transform file path=.*/include/(cldemoteintrin\.h|waitpkgintrin\.h) -> set variant.arch i386>
+
+<transform file path=.*/include/(visintrin\.h) -> set variant.arch sparc>
+
+<transform file path=.*/(crtprec32\.o$|crtprec64\.o$|crtprec80\.o$) -> set variant.arch i386>
+
+<transform file path=.*/(fixinc\.sh$|fixincl$|mkheaders$|mkinstalldirs$) -> set mode 0555>
+<transform file path=.*/(collect2$|lto-wrapper$|lto1$|plugin\/gengtype$|plugin\/gtype\.state$) -> set mode 0555>
+
+<transform file path=.*/include-fixed/lcms/lcms\.h -> set variant.arch sparc>
+<transform file path=.*/include-fixed/lcms/lcms2\.h -> set variant.arch sparc>
+<transform file path=.*/include-fixed/mps/prcpucfg\.h -> set variant.arch sparc>
+<transform file path=.*/include-fixed/sys/epm\.h -> set variant.arch sparc>
+<transform file path=.*/include-fixed/vm/sparse_impl\.h -> set variant.arch sparc>
+
+# we don't want these particular fixed headers
+<transform file path=.*/include-fixed/X11/Xtrans/Xtransint.h -> drop>
+<transform file path=.*/include-fixed/X11/Xw32defs.h -> drop>
+<transform link path=.*/include-fixed/Xm -> drop>
+<transform file path=.*/include-fixed/root/usr/dt/share/include/Xm/XmosP.h -> drop>
+<transform file path=.*/include-fixed/root/usr/dt/share/include/Xm/Xmos_r.h -> drop>
+<transform file path=.*/include-fixed/libical/icaltz-util.h -> drop>
+
+<transform file path=.*/libitm\.a$ -> drop>
+<transform file path=.*/libatomic\.a$ -> drop>
+<transform file path=.*/libgomp\.a$ -> drop>
+<transform file path=.*/libquadmath\.a$ -> drop>
+<transform file path=.*/libssp\.a$ -> drop>
+<transform file path=.*/libstdc\+\+.a$ -> drop>
+<transform file path=.*/libstdc\+\+fs\.a$ -> drop>
+<transform file path=.*/libsupc\+\+\.a$ -> drop>
+
+# added via static file as symlink to system
+<transform file path=.*/info/dir$ -> drop>
+
+# delete everything not belonging to this package
+<transform file link hardlink pkg.type=(?!developer-gcc-gcc-common-VER) -> drop>
+<transform file link hardlink -> delete pkg.type .*>

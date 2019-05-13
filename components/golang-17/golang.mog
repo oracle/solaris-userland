@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -56,11 +56,13 @@
     default pkg.linted.userland.action001.5 true>
 
 # Automatically add versioned mediators to any links in usr/bin, usr/share.
-<transform link hardlink path=usr/bin/.*$ -> \
+<transform link hardlink path=usr/lib/go($|fmt$) -> \
+    set mediator golang>
+<transform link hardlink path=usr/bin/go(dex|doc|imports|lint|mvpkg|rename|type|tour)$ -> \
     set mediator golang>
 <transform link hardlink path=usr/share/.*$ -> \
     set mediator golang>
-<transform link hardlink path=usr/bin/.*$ -> \
+<transform link hardlink path=usr/bin/go(dex|doc|imports|lint|mvpkg|rename|type|tour)$ -> \
     set mediator-version $(COMPONENT_MAJOR_VERSION) >
 <transform link hardlink path=usr/share/.*$ -> \
     set mediator-version $(COMPONENT_MAJOR_VERSION) >

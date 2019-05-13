@@ -18,13 +18,14 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
-    value=pkg:/developer/gcc@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
-set name=pkg.summary value=GCC
-set name=com.oracle.info.description value="the GNU Compiler Collection"
+    value=pkg:/developer/gcc-$(GCC_MAJOR_VERSION)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="GCC $(GCC_VERSION)"
+set name=com.oracle.info.description \
+    value="the GNU Compiler Collection - GCC $(GCC_VERSION)"
 set name=info.classification value=org.opensolaris.category.2008:Development/C \
     value=org.opensolaris.category.2008:Development/C++ \
     value=org.opensolaris.category.2008:Development/Fortran \
@@ -32,6 +33,10 @@ set name=info.classification value=org.opensolaris.category.2008:Development/C \
     value="org.opensolaris.category.2008:Development/Objective C"
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2015/499
+set name=org.opensolaris.arc-caseid value=PSARC/2019/064
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-depend type=require fmri=pkg:/developer/gcc-$(GCC_MAJOR_VERSION)
+depend type=group fmri=pkg:/developer/gcc/gcc-c++-$(GCC_MAJOR_VERSION)
+depend type=group fmri=pkg:/developer/gcc/gcc-c-$(GCC_MAJOR_VERSION)
+depend type=group fmri=pkg:/developer/gcc/gcc-common-$(GCC_MAJOR_VERSION)
+depend type=group fmri=pkg:/developer/gcc/gcc-gfortran-$(GCC_MAJOR_VERSION)
+depend type=group fmri=pkg:/developer/gcc/gcc-gobjc-$(GCC_MAJOR_VERSION)

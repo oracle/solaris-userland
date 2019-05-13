@@ -1,0 +1,93 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+# These are normally in transforms/manifest-check-cleanup which we don't use
+# because of *.a libraries.
+<transform dir -> drop>
+<transform file path=.*\.pyc$ -> drop>
+<transform file link path=mangled/.* -> edit path ^mangled/ "">
+
+# by default everything is winreshark-common package
+<transform file link hardlink -> default pkg.type developer-gcc-gcc-common-VER>
+
+<transform path=usr/gcc/9 -> edit path usr/gcc/9 \$\(GCC_BASEDIR\)>
+<transform path=.*sparcv9-sun-solaris2\.11.* -> edit path sparcv9-sun-solaris2\.11 \$\(GNU_ARCH\)>
+<transform path=.*x86_64-pc-solaris2\.11.* -> edit path x86_64-pc-solaris2\.11 \$\(GNU_ARCH\)>
+<transform hardlink path=.* -> edit target sparcv9-solaris2\.11 \$\(GNU_ARCH\)>
+<transform hardlink path=.* -> edit target x86_64-pc-solaris2\.11 \$\(GNU_ARCH\)>
+
+<transform hardlink path=\$\(GCC_BASEDIR\)/bin/\$\(GNU_ARCH\)-gfortran$ -> set pkg.type developer-gcc-gcc-gfortran-VER>
+<transform file path=\$\(GCC_BASEDIR\)/bin/gfortran$ -> set pkg.type developer-gcc-gcc-gfortran-VER>
+<transform file path=.*/libcaf_single(\.a$|\.la$) -> set pkg.type developer-gcc-gcc-gfortran-VER>
+<transform file path=.*/libgfortran(\.a$|\.la$|\.spec$) -> set pkg.type developer-gcc-gcc-gfortran-VER>
+<transform file path=\$\(GCC_BASEDIR\)/.*/gfortran(\.1$|\.info$) -> set pkg.type developer-gcc-gcc-gfortran-VER>
+<transform file path=.*/f951$ -> set pkg.type developer-gcc-gcc-gfortran-VER>
+<transform file path=.*/finclude/ -> set pkg.type developer-gcc-gcc-gfortran-VER>
+
+<transform hardlink path=\$\(GCC_BASEDIR\)/bin/\$\(GNU_ARCH\)-gcc$ -> set pkg.type developer-gcc-gcc-c-VER>
+<transform hardlink path=\$\(GCC_BASEDIR\)/bin/\$\(GNU_ARCH\)-gcc-\$\(COMPONENT_VERSION\)$ -> set pkg.type developer-gcc-gcc-c-VER>
+<transform file path=\$\(GCC_BASEDIR\)/bin/gcc$ -> set pkg.type developer-gcc-gcc-c-VER>
+<transform file path=\$\(GCC_BASEDIR\)/lib/.*/cc1$ -> set pkg.type developer-gcc-gcc-c-VER>
+<transform file path=.*/gcc(\.1$|\.info$|\.mo$) -> set pkg.type developer-gcc-gcc-c-VER>
+
+<transform file path=.*/include/objc/ -> set pkg.type developer-gcc-gcc-gobjc-VER>
+<transform file path=.*/libobjc(\.a$|\.la$) -> set pkg.type developer-gcc-gcc-gobjc-VER>
+<transform file path=\$\(GCC_BASEDIR\)/lib/.*/cc1obj$ -> set pkg.type developer-gcc-gcc-gobjc-VER>
+
+<transform file link path=\$\(GCC_BASEDIR\)/lib/.*libstdc\+\+\.so -> set pkg.type system-library-gcc-gcc-c++-runtime-VER>
+
+<transform hardlink path=\$\(GCC_BASEDIR\)/bin/\$\(GNU_ARCH\)-c\+\+ -> set pkg.type developer-gcc-gcc-c++-VER>
+<transform hardlink path=\$\(GCC_BASEDIR\)/bin/\$\(GNU_ARCH\)-g\+\+ -> set pkg.type developer-gcc-gcc-c++-VER>
+<transform hardlink path=\$\(GCC_BASEDIR\)/bin/c\+\+ -> set pkg.type developer-gcc-gcc-c++-VER>
+<transform file path=\$\(GCC_BASEDIR\)/.*/g\+\+($|\.1$) -> set pkg.type developer-gcc-gcc-c++-VER>
+<transform file path=\$\(GCC_BASEDIR\)/lib/.*/cc1plus$ -> set pkg.type developer-gcc-gcc-c++-VER>
+<transform file path=.*/libstdc\+\+(.*-gdb.py$) -> set pkg.type developer-gcc-gcc-c++-VER>
+<transform file path=.*/python/libstdcxx/ -> set pkg.type developer-gcc-gcc-c++-VER>
+<transform file path=.*/include/c\+\+/ -> set pkg.type developer-gcc-gcc-c++-VER>
+
+<transform hardlink path=\$\(GCC_BASEDIR\)/bin/\$\(GNU_ARCH\)-gccgo$ -> set pkg.type developer-gcc-gcc-go-VER>
+<transform file path=\$\(GCC_BASEDIR\)/bin/gccgo$ -> set pkg.type developer-gcc-gcc-go-VER>
+<transform file path=\$\(GCC_BASEDIR\)/.*/go(\.1$|$) -> set pkg.type developer-gcc-gcc-go-VER>
+<transform file path=\$\(GCC_BASEDIR\)/.*/gofmt(\.1$|$) -> set pkg.type developer-gcc-gcc-go-VER>
+<transform file path=\$\(GCC_BASEDIR\)/.*/gccgo(\.1$|\.info$) -> set pkg.type developer-gcc-gcc-go-VER>
+<transform file path=\$\(GCC_BASEDIR\)/lib/.*/(cgo$|go1$|buildid$|test2json$|vet$) -> set pkg.type developer-gcc-gcc-go-VER>
+<transform file path=\$\(GCC_BASEDIR\)/lib/.*libgo\.a -> set pkg.type developer-gcc-gcc-go-VER>
+<transform file path=\$\(GCC_BASEDIR\)/lib/.*libgobegin\.a -> set pkg.type developer-gcc-gcc-go-VER>
+<transform file path=\$\(GCC_BASEDIR\)/lib/.*libgolibbegin\.a -> set pkg.type developer-gcc-gcc-go-VER>
+<transform file path=\$\(GCC_BASEDIR\)/lib/.*go/ -> set pkg.type developer-gcc-gcc-go-VER>
+
+<transform file link path=\$\(GCC_BASEDIR\)/lib/.*libatomic\.so -> set pkg.type system-library-gcc-gcc-c-runtime-VER>
+<transform file link path=\$\(GCC_BASEDIR\)/lib/.*libgcc_s\.so -> set pkg.type system-library-gcc-gcc-c-runtime-VER>
+<transform file link path=\$\(GCC_BASEDIR\)/lib/.*libgomp\.so -> set pkg.type system-library-gcc-gcc-c-runtime-VER>
+<transform file link path=\$\(GCC_BASEDIR\)/lib/.*libitm\.so -> set pkg.type system-library-gcc-gcc-c-runtime-VER>
+<transform file link path=\$\(GCC_BASEDIR\)/lib/.*libquadmath\.so -> set pkg.type system-library-gcc-gcc-c-runtime-VER>
+<transform file link path=\$\(GCC_BASEDIR\)/lib/.*libssp\.so -> set pkg.type system-library-gcc-gcc-c-runtime-VER>
+<transform file path=\$\(GCC_BASEDIR\)/lib/(clearcap\.map|libgcc-unwind\.map) -> set pkg.type system-library-gcc-gcc-c-runtime-VER>
+
+<transform file link path=\$\(GCC_BASEDIR\)/lib/.*libobjc\.so -> set pkg.type system-library-gcc-gcc-gobjc-runtime-VER>
+
+<transform file link path=\$\(GCC_BASEDIR\)/lib/.*libgo\.so -> set pkg.type system-library-gcc-gcc-go-runtime-VER>
+
+<transform file link path=\$\(GCC_BASEDIR\)/lib/.*libgfortran\.so -> set pkg.type system-library-gcc-gcc-gfortran-runtime-VER>

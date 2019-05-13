@@ -1,0 +1,40 @@
+Fix following error message:
+
+$ /usr/gcc/9/bin/go build main.go
+# command-line-arguments
+ar: bad option: -D
+usage:
+    ar -d [-SvV] archive [file...]
+    ar -m [-SvV] [-{a|b|i} posname] archive [file...]
+    ar -p [-sSvV] archive [file ...]
+    ar -q [-cSvV] archive [file...]
+    ar -r [-cSuvV] [-{a|b|i} posname] archive [file...]
+    ar -t [-sSvV] archive [file...]
+    ar -x [-CsSTvV] archive [file...]
+    ar [-sSvV] archive
+
+The error is harmless, no functionality issue, GCCGO runs Solaris "ar" which
+doesn't know -D option, after failure, GCCGO runs it again without -D.
+
+--- a/libgo/go/cmd/go/internal/work/gccgo.go
++++ b/libgo/go/cmd/go/internal/work/gccgo.go
+@@ -46,7 +46,7 @@
+ func (gccgoToolchain) ar() string {
+ 	ar := os.Getenv("AR")
+ 	if ar == "" {
+-		ar = "ar"
++		ar = "/usr/gnu/bin/ar"
+ 	}
+ 	return ar
+ }
+--- a/libgo/go/go/internal/gccgoimporter/importer_test.go
++++ b/libgo/go/go/internal/gccgoimporter/importer_test.go
+@@ -186,7 +186,7 @@
+ 
+ 		runImporterTest(t, imp, initmap, &test)
+ 
+-		cmd = exec.Command("ar", "cr", afile, ofile)
++		cmd = exec.Command("/usr/gnu/bin/ar", "cr", afile, ofile)
+ 		out, err = cmd.CombinedOutput()
+ 		if err != nil {
+ 			t.Logf("%s", out)
