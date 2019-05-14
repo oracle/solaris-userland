@@ -26,17 +26,17 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		setuptools_scm
-COMPONENT_VERSION=	2.1.0
+COMPONENT_VERSION=	3.3.3
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:a767141fecdab1c0b3c8e4c788ac912d7c94a0d6c452d40777ba84f918316379
+	sha256:bd25e1fb5e4d603dcf490f1fde40fb4c595b357795674c3e5cb7f6217ab39ea5
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.org/project/setuptools_scm/
 COMPONENT_BUGDB=	python-mod/setuptools_scm
 COMPONENT_ANITYA_ID=	7874
 
-TPNO=			44998
+TPNO=			51808
 
 # Temporary solution for Python3.7 ready components
 PYTHON_VERSIONS = $(PYTHON3.7_READY)
