@@ -27,7 +27,7 @@ BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME= 	timezone
-COMPONENT_VERSION=    	2018.8
+COMPONENT_VERSION=    	2018.9.1
 COMPONENT_PROJECT_URL=	http://www.iana.org/time-zones
 COMPONENT_SRC=
 COMPONENT_ARCHIVE_SRC=	none
