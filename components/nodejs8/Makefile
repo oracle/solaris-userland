@@ -30,21 +30,24 @@ BUILD_ARCH=		i386
 include			../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		node
-COMPONENT_VERSION=	8.15.1
+COMPONENT_VERSION=	8.16.0
 COMPONENT_SUBVERSION=
 HUMAN_VERSION=		$(COMPONENT_VERSION)$(COMPONENT_SUBVERSION)
 COMPONENT_PROJECT_URL=	https://github.com/nodejs/node
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(HUMAN_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_ARCHIVE_HASH= \
-    sha256:6bd647959ccc386956d71071386f746e6ab61a66d671db4dbee861ce182b288a
+    sha256:9862da13d2b2c3b6891ded57a30c318acdf6422ca9dfa25ef325ea78eab8a449
 COMPONENT_ARCHIVE_URL=	\
     $(COMPONENT_PROJECT_URL)/archive/v$(COMPONENT_VERSION).zip
 COMPONENT_BUGDB=	utility/nodejs
-TPNO=			49900
+TPNO=			51846
 COMPONENT_ANITYA_ID=	8251
 
 CONFIGURE_DEFAULT_DIRS=	no
+
+TEST_TARGET=		$(TEST_64)
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include	$(WS_MAKE_RULES)/common.mk
 
@@ -61,12 +64,15 @@ CONFIGURE_OPTIONS+=	--with-intl=system-icu
 
 COMPONENT_BUILD_ENV+=	PATH=$(PATH):/usr/sbin
 
+# Make test does not like cloney, so a simple copy is used instead.
 COMPONENT_PRE_CONFIGURE_ACTION= \
-    ($(CLONEY) $(SOURCE_DIR) $(@D))
+	$(CP) -rp $(SOURCE_DIR)/. $(@D)
 
 COMPONENT_POST_INSTALL_ACTION= \
     $(MKDIR) -p $(PROTO_DIR)/usr/share/doc/release-notes/; \
     $(CP) runtime-nodejs-nodejs-8.txt $(PROTO_DIR)/usr/share/doc/release-notes/
+
+COMPONENT_TEST_ARGS=	test PATH=$(GNUBIN):$(PATH) CC=gcc
 
 PKG_MACROS+=		NODE_MAJOR_VERSION=$(NODE_MAJOR_VERSION)
 
