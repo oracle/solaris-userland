@@ -32,7 +32,7 @@
 # comments by using of the automate reformating tools.
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
-#
+# avoid of: "64b. object in 32b. path"
 <transform file path=usr/(s)?bin/.+ -> add pkg.linted.userland.action001.2 true>
 <transform file path=usr/lib/cups/.+/.+ -> add pkg.linted.userland.action001.2 true>
 #
@@ -108,7 +108,3 @@ user username=lp ftpuser=false gcos-field="Line Printer Admin" group=lp \
 license LICENSE license="Apache v2.0"
 # Without filters cups prints nothing and jobs are hanging in scheduler only
 depend type=require fmri=pkg:/print/cups/filters
-#
-# When USB/non-postscript printer is detected in desktop no test-page can be printed
-# if ghostscrip is not installed.
-depend type=require fmri=print/filter/ghostscript

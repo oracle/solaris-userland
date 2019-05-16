@@ -94,14 +94,14 @@ COMPONENT_INSTALL_ENV += STRIPPROG="strip -x"
 REQUIRED_PACKAGES += library/libusb-1
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += runtime/perl-522
+REQUIRED_PACKAGES += runtime/perl-526
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/device-allocation
-REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/iconv/iconv-core
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/pam-core
