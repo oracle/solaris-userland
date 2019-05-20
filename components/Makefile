@@ -181,10 +181,13 @@ tools:
 	+$(GMAKE) -C ../tools clean
 	+$(GMAKE) -C ../tools setup
 
+# The default number of build jobs per component if the full workspace is built.
+JOBS_PER_COMPONENT ?= 1
 
 $(COMPONENT_DIRS):	$(WS_LOGS) setup FORCE
 	@cd $@ && echo "$(TARGET) $@" && \
-	( MAKELEVEL= time $(BASS_O_MATIC) $(@:%=--component %) --make $(TARGET) ) $(LOG)
+	( env MAKELEVEL= COMPONENT_MAKE_JOBS=$(JOBS_PER_COMPONENT) \
+		time $(BASS_O_MATIC) $(@:%=--component %) --make $(TARGET) ) $(LOG)
 
 # Turn userland-incorporator warnings into build failures
 INCORPORATE_WERROR ?= --Werror
@@ -229,6 +232,7 @@ endif
 
 $(COMPONENT_DIRS.nosetup):	$(WS_LOGS) FORCE
 	@cd $(@:%.nosetup=%) && echo "$(TARGET) $(@:%.nosetup=%)" && \
+	 env COMPONENT_MAKE_JOBS=$(JOBS_PER_COMPONENT) \
 	 $(BASS_O_MATIC) $(@:%.nosetup=--component %) --make $(TARGET) $(LOG)
 
 # component report uses component-hook to process every component.

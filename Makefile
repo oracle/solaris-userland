@@ -44,10 +44,8 @@ component-hook:		TARGET = component-hook
 download setup unpack patch prep build install publish validate clean clobber \
 test system-test component-hook check_rtime: $(SUBDIRS)
 
-JOBS_PER_COMPONENT ?= 1
-
 $(SUBDIRS):	FORCE
-	@+echo "$(TARGET) $@" ; env COMPONENT_MAKE_JOBS=$(JOBS_PER_COMPONENT) $(MAKE) -C $@ $(TARGET)
+	@+echo "$(TARGET) $@" ; $(MAKE) -C $@ $(TARGET)
 
 FORCE:
 .PHONY: FORCE
