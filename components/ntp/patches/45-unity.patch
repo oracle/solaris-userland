@@ -1,0 +1,25 @@
+This patch fixes NTP Bug 3585 - Unity tests mix buffered and unbuffered output
+http://bugs.ntp.org/show_bug.cgi?id=3585
+
+This patch may be removed when upgrading to a version of NTP that has that 
+bug fixed.
+
+*** sntp/unity/unity.c
+--- sntp/unity/unity.c
+***************
+*** 10,16 ****
+  #define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; longjmp(Unity.AbortFrame, 1); }
+  /// return prematurely if we are already in failure or ignore state
+  #define UNITY_SKIP_EXECUTION  { if ((Unity.CurrentTestFailed != 0) || (Unity.CurrentTestIgnored != 0)) {return;} }
+! #define UNITY_PRINT_EOL       { UNITY_OUTPUT_CHAR('\n'); }
+  
+  struct _Unity Unity;
+  
+--- 10,16 ----
+  #define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; longjmp(Unity.AbortFrame, 1); }
+  /// return prematurely if we are already in failure or ignore state
+  #define UNITY_SKIP_EXECUTION  { if ((Unity.CurrentTestFailed != 0) || (Unity.CurrentTestIgnored != 0)) {return;} }
+! #define UNITY_PRINT_EOL       { UNITY_OUTPUT_CHAR('\n'); fflush(stdout); }
+  
+  struct _Unity Unity;
+  

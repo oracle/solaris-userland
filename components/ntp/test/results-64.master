@@ -33,14 +33,14 @@ keyFile.c:16:test_ReadKeyFileWithInvalidHex:PASS
 
 OK
 PASS test-keyFile (exit status: 0)
-An error occured while parsing the KoD db file /dev/null
-An error occured while parsing the KoD db file /dev/null
-An error occured while parsing the KoD db file /dev/null
-An error occured while parsing the KoD db file /dev/null
 kodDatabase.c:14:test_SingleEntryHandling:PASS
+An error occured while parsing the KoD db file /dev/null
 kodDatabase.c:15:test_MultipleEntryHandling:PASS
+An error occured while parsing the KoD db file /dev/null
 kodDatabase.c:16:test_NoMatchInSearch:PASS
+An error occured while parsing the KoD db file /dev/null
 kodDatabase.c:17:test_AddDuplicate:PASS
+An error occured while parsing the KoD db file /dev/null
 kodDatabase.c:18:test_DeleteEntry:PASS
 
 -----------------------
@@ -71,10 +71,10 @@ kodFile.c:24:test_WriteFileWithMultipleEntries:PASS
 OK
 PASS test-kodFile (exit status: 0)
 TESTING sntp_init_logging()
-Cannot open log file abcXX
-12345 ABC
 t-log.c:10:testChangePrognameInMysyslog:PASS
+Cannot open log file abcXX
 t-log.c:11:testOpenLogfileTest:PASS
+12345 ABC
 t-log.c:12:testWriteInCustomLogfile:PASS
 
 -----------------------
@@ -98,7 +98,6 @@ PASS test-log (exit status: 0)
 
 OK
 PASS test-networking (exit status: 0)
-KOD code DENY from 192.0.2.1 192.0.2.1
 packetHandling.c:17:test_GenerateUnauthenticatedPacket:PASS
 packetHandling.c:18:test_GenerateAuthenticatedPacket:PASS
 packetHandling.c:19:test_OffsetCalculationPositiveOffset:PASS
@@ -106,6 +105,7 @@ packetHandling.c:20:test_OffsetCalculationNegativeOffset:PASS
 packetHandling.c:21:test_HandleUnusableServer:PASS
 packetHandling.c:22:test_HandleUnusablePacket:PASS
 packetHandling.c:23:test_HandleServerAuthenticationFailure:PASS
+KOD code DENY from 192.0.2.1 192.0.2.1
 packetHandling.c:24:test_HandleKodDemobilize:PASS
 packetHandling.c:25:test_HandleKodRate:PASS
 packetHandling.c:26:test_HandleCorrectPacket:PASS
@@ -122,18 +122,11 @@ OK
 PASS test-packetHandling (exit status: 0)
 UnitTest: Incredible packet length: 47.  Discarding.
 UnitTest: Incredible packet length: 47.  Discarding.
+packetProcessing.c:23:test_TooShortLength:PASS
 UnitTest: Incredible packet length: 54.  Discarding.
 UnitTest: Incredible packet length: 51.  Discarding.
-UnitTest: Missing extension field.  Discarding.
-UnitTest: Packet shows wrong version (0)
-UnitTest: Packet shows wrong version (5)
-UnitTest: mode 3 stratum 0
-UnitTest: 0.0.0.0 not in sync, skipping this server
-0.0.0.0 response org expected to match sent xmt
-resp org: 000003e8.00000000  Thu, Feb  7 2036  6:44:56.000
-sent xmt: 000007d0.00000000  Thu, Feb  7 2036  7:01:36.000
-packetProcessing.c:23:test_TooShortLength:PASS
 packetProcessing.c:24:test_LengthNotMultipleOfFour:PASS
+UnitTest: Missing extension field.  Discarding.
 packetProcessing.c:25:test_TooShortExtensionFieldLength:PASS
 packetProcessing.c:26:test_UnauthenticatedPacketReject:PASS
 Crypto NAK = 0x00000000 from 0.0.0.0
@@ -141,12 +134,19 @@ packetProcessing.c:27:test_CryptoNAKPacketReject:PASS
 packetProcessing.c:28:test_AuthenticatedPacketInvalid:PASS
 unrecognized key ID = 0x00000032
 packetProcessing.c:29:test_AuthenticatedPacketUnknownKey:PASS
+UnitTest: Packet shows wrong version (0)
 packetProcessing.c:30:test_ServerVersionTooOld:PASS
+UnitTest: Packet shows wrong version (5)
 packetProcessing.c:31:test_ServerVersionTooNew:PASS
+UnitTest: mode 3 stratum 0
 packetProcessing.c:32:test_NonWantedMode:PASS
 packetProcessing.c:33:test_KoDRate:PASS
 packetProcessing.c:34:test_KoDDeny:PASS
+UnitTest: 0.0.0.0 not in sync, skipping this server
 packetProcessing.c:35:test_RejectUnsyncedServer:PASS
+0.0.0.0 response org expected to match sent xmt
+resp org: 000003e8.00000000  Thu, Feb  7 2036  6:44:56.000
+sent xmt: 000007d0.00000000  Thu, Feb  7 2036  7:01:36.000
 packetProcessing.c:36:test_RejectWrongResponseServerMode:PASS
 packetProcessing.c:37:test_AcceptNoSentPacketBroadcastMode:PASS
 packetProcessing.c:38:test_CorrectUnauthenticatedPacket:PASS

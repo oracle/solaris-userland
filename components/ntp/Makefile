@@ -69,6 +69,8 @@ COMPONENT_TEST_CREATE_TRANSFORMS = \
 		    >> $(COMPONENT_TEST_TRANSFORM_CMD); \
 		print 'grep -v no-leap |  \\' \
 		    >> $(COMPONENT_TEST_TRANSFORM_CMD); \
+		print 'grep -v add-leap |  \\' \
+		    >> $(COMPONENT_TEST_TRANSFORM_CMD); \
 		print 'sed -e "s/4.2..p[0-9]*//" | \\' \
 		    >> $(COMPONENT_TEST_TRANSFORM_CMD); \
 		print 'sed -e "s/^.*\[[0-9]*\]: //" \\' \
