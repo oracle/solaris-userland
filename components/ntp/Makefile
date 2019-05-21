@@ -42,6 +42,7 @@ COMPONENT_ARCHIVE_HASH=	 \
 COMPONENT_ARCHIVE_URL=	http://archive.ntp.org/ntp4/ntp-4.2/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB= service/ntp
 COMPONENT_ANITYA_ID=	9025
+COMPONENT_TEST_ENV += "TZ=UTC"
 
 # NTP tests log results in separate files. Instead of geting the output
 # of the build and test and deleting the extra lines, it is easier to just
