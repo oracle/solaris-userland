@@ -20,56 +20,32 @@
 #
 
 #
-# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		boto
-COMPONENT_VERSION=	2.40.0
+COMPONENT_VERSION=	2.49.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e12d5fca11fcabfd0acd18f78651e0f0dba60f958a0520ff4e9b73e35cd9928f
+    sha256:ea0d3b40a2d852767be77ca343b58a9e3a4b00d9db440efb8da74b4e58025e5a
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/boto/boto/
 COMPONENT_BUGDB=	python-mod/boto
 COMPONENT_ANITYA_ID=	11794
 
-TPNO=			29473
+TPNO=			51962
 
-# Syntax issues: not Python 3 ready.
-PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
-
-COMPONENT_POST_INSTALL_ACTION= \
-    (cd $(PROTO_DIR)/usr/demo/$(COMPONENT_NAME) ; \
-     $(MV) -f asadmin asadmin-$(PYTHON_VERSION) ; \
-     $(MV) -f bundle_image bundle_image-$(PYTHON_VERSION) ; \
-     $(MV) -f cfadmin cfadmin-$(PYTHON_VERSION) ; \
-     $(MV) -f cq cq-$(PYTHON_VERSION) ; \
-     $(MV) -f cwutil cwutil-$(PYTHON_VERSION) ; \
-     $(MV) -f dynamodb_dump dynamodb_dump-$(PYTHON_VERSION) ; \
-     $(MV) -f dynamodb_load dynamodb_load-$(PYTHON_VERSION) ; \
-     $(MV) -f elbadmin elbadmin-$(PYTHON_VERSION) ; \
-     $(MV) -f fetch_file fetch_file-$(PYTHON_VERSION) ; \
-     $(MV) -f glacier glacier-$(PYTHON_VERSION) ; \
-     $(MV) -f instance_events instance_events-$(PYTHON_VERSION) ; \
-     $(MV) -f kill_instance kill_instance-$(PYTHON_VERSION) ; \
-     $(MV) -f launch_instance launch_instance-$(PYTHON_VERSION) ; \
-     $(MV) -f list_instances list_instances-$(PYTHON_VERSION) ; \
-     $(MV) -f lss3 lss3-$(PYTHON_VERSION) ; \
-     $(MV) -f mturk mturk-$(PYTHON_VERSION) ; \
-     $(MV) -f pyami_sendmail pyami_sendmail-$(PYTHON_VERSION) ; \
-     $(MV) -f route53 route53-$(PYTHON_VERSION) ; \
-     $(MV) -f s3put s3put-$(PYTHON_VERSION) ; \
-     $(MV) -f sdbadmin sdbadmin-$(PYTHON_VERSION) ; \
-     $(MV) -f taskadmin taskadmin-$(PYTHON_VERSION))
 
 COMPONENT_INSTALL_ARGS +=	--install-script=/usr/demo/$(COMPONENT_NAME)
 
@@ -82,5 +58,3 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(NO_TESTS)
 
 system-test:	$(NO_TESTS)
-
-REQUIRED_PACKAGES += library/python/filechunkio-27
