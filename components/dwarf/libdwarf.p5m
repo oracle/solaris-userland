@@ -33,16 +33,20 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2017/014
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file $(MACH64)/dwarfdump/dwarfdump path=usr/bin/dwarfdump
-file libdwarf/dwarf.h path=usr/include/dwarf.h
-file $(MACH64)/libdwarf/libdwarf.h path=usr/include/libdwarf.h
-link path=usr/lib/$(MACH64)/libdwarf.so target=libdwarf.so.1
-file $(MACH64)/libdwarf/.libs/libdwarf.so.1 path=usr/lib/$(MACH64)/libdwarf.so.1
+file path=usr/bin/dwarfdump
+file path=usr/include/dwarf.h
+file path=usr/include/libdwarf.h
+link path=usr/lib/$(MACH64)/libdwarf.so target=libdwarf.so.1.0.0
+link path=usr/lib/$(MACH64)/libdwarf.so.1 target=libdwarf.so.1.0.0
+file path=usr/lib/$(MACH64)/libdwarf.so.1.0.0
 file $(MACH64)/llib-ldwarf.ln path=usr/lib/$(MACH64)/llib-ldwarf.ln
-link path=usr/lib/libdwarf.so target=libdwarf.so.1
-file $(MACH32)/libdwarf/.libs/libdwarf.so.1 path=usr/lib/libdwarf.so.1
+link path=usr/lib/libdwarf.so target=libdwarf.so.1.0.0
+link path=usr/lib/libdwarf.so.1 target=libdwarf.so.1.0.0
+file path=usr/lib/libdwarf.so.1.0.0
 file llib-ldwarf path=usr/lib/llib-ldwarf
 file $(MACH32)/llib-ldwarf.ln path=usr/lib/llib-ldwarf.ln
+file path=usr/share/dwarfdump/dwarfdump.conf
+file path=usr/share/man/man1/dwarfdump.1
 license libdwarf.license license=BSD
 license dwarfdump/GPL.txt license=GPLv2
 license libdwarf/LGPL.txt license=LGPLv2.1

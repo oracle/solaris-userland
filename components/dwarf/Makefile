@@ -58,7 +58,7 @@ include $(WS_MAKE_RULES)/common.mk
 LINT_FLAGS += -I$(SOURCE_DIR)/libdwarf
 LINT_FLAGS += -I$(BUILD_DIR_$(BITS))/libdwarf
 
-COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(USRBIN):$(GCC_ROOT)/bin"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(USRBIN):$(USRBIN.32):$(GCC_ROOT)/bin"
 
 CONFIGURE_OPTIONS +=	--enable-shared
 CONFIGURE_OPTIONS +=	--disable-nonshared
