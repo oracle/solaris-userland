@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../make-rules/shared-macros.mk
@@ -34,7 +34,8 @@ validate:	links pkglint time-$(MACH32).so time-$(MACH64).so
 # loops
 links:
 	@$(MKDIR) $(PARFAIT_TOOLS)
-	@[[ $$(uname -p) == i386 ]] && MACH=x86_64 || MACH=sparc; \
+	@MACH=$$(uname -p); \
+	[[ "$$MACH" == "i386" ]] && MACH=x86_64; \
 	for i in cc CC g++ ld ; do \
 		$(RM) $(PARFAIT_TOOLS)/$$i ; \
 		echo "#!/bin/ksh" > $(PARFAIT_TOOLS)/$$i ; \
@@ -44,10 +45,10 @@ links:
 		echo "export PARFAIT_NATIVEGCC=$(GCC_ROOT)/bin/gcc" >> $(PARFAIT_TOOLS)/$$i ; \
 		echo "export PARFAIT_NATIVEGXX=$(GCC_ROOT)/bin/g++" >> $(PARFAIT_TOOLS)/$$i ; \
 		echo "export PARFAIT_NATIVELD=/usr/bin/ld" >> $(PARFAIT_TOOLS)/$$i ; \
-		echo "exec" $(PARFAIT_ROOT)/$$MACH/parfait-$$i '$$*' >> $(PARFAIT_TOOLS)/$$i ; \
+		echo "exec" $(PARFAIT_VROOT)/$$MACH/parfait-$$i '$$*' >> $(PARFAIT_TOOLS)/$$i ; \
 		chmod +x $(PARFAIT_TOOLS)/$$i ; \
-	done
-	@for i in gcc ; do \
+	done; \
+	for i in gcc ; do \
 		$(RM) $(PARFAIT_TOOLS)/$$i ; \
 		echo "#!/bin/ksh" > $(PARFAIT_TOOLS)/$$i ; \
 		echo "IFS=" >> $(PARFAIT_TOOLS)/$$i ; \
@@ -56,7 +57,7 @@ links:
 		echo "export PARFAIT_NATIVEGCC=$(GCC_ROOT)/bin/gcc" >> $(PARFAIT_TOOLS)/$$i ; \
 		echo "export PARFAIT_NATIVEGXX=$(GCC_ROOT)/bin/g++" >> $(PARFAIT_TOOLS)/$$i ; \
 		echo "export PARFAIT_NATIVELD=/usr/bin/ld" >> $(PARFAIT_TOOLS)/$$i ; \
-		echo "exec" $(PARFAIT_ROOT)/$$MACH/parfait-$$i -D_Noreturn= '$$*' >> $(PARFAIT_TOOLS)/$$i ; \
+		echo "exec" $(PARFAIT_VROOT)/$$MACH/parfait-$$i -D_Noreturn= '$$*' >> $(PARFAIT_TOOLS)/$$i ; \
 		chmod +x $(PARFAIT_TOOLS)/$$i ; \
 	done
 
