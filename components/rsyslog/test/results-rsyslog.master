@@ -1,8 +1,9 @@
 PASS: operatingstate-basic.sh
 PASS: operatingstate-empty.sh
 PASS: operatingstate-unclean.sh
+PASS: smtradfile.sh
 PASS: empty-hostname.sh
-SKIP: hostname-getaddrinfo-fail.sh
+PASS: hostname-getaddrinfo-fail.sh
 PASS: msleep_usage_output.sh
 PASS: mangle_qi_usage_output.sh
 PASS: minitcpsrv_usage_output.sh
@@ -15,6 +16,10 @@ PASS: hostname-with-slash-dflt-invld.sh
 PASS: hostname-with-slash-dflt-slash-valid.sh
 PASS: stop-localvar.sh
 PASS: stop-msgvar.sh
+PASS: glbl-ruleset-queue-defaults.sh
+PASS: glbl-internalmsg_severity-info-shown.sh
+PASS: glbl-internalmsg_severity-debug-shown.sh
+PASS: glbl-internalmsg_severity-debug-not_shown.sh
 PASS: glbl-umask.sh
 PASS: glbl-unloadmodules.sh
 PASS: glbl-invld-param.sh
@@ -31,6 +36,7 @@ PASS: omfile-null-filename.sh
 PASS: omfile-whitespace-filename.sh
 PASS: omfile-read-only.sh
 PASS: omfile_both_files_set.sh
+PASS: omfile_hup.sh
 SKIP: msgvar-concurrency.sh
 SKIP: localvar-concurrency.sh
 SKIP: exec_tpl-concurrency.sh
@@ -38,6 +44,7 @@ SKIP: privdropuser.sh
 SKIP: privdropuserid.sh
 SKIP: privdropgroup.sh
 PASS: privdropgroupid.sh
+PASS: json-nonstring.sh
 PASS: template-json.sh
 PASS: template-pure-json.sh
 PASS: template-pos-from-to.sh
@@ -58,6 +65,7 @@ PASS: fac_invld1.sh
 PASS: fac_invld2.sh
 PASS: fac_invld3.sh
 PASS: fac_invld4_rfc5424.sh
+PASS: rfc5424parser-sp_at_msg_start.sh
 PASS: compresssp.sh
 PASS: compresssp-stringtpl.sh
 PASS: rawmsg-after-pri.sh
@@ -71,6 +79,8 @@ PASS: pmrfc3164-json.sh
 PASS: tcp_forwarding_tpl.sh
 PASS: tcp_forwarding_dflt_tpl.sh
 PASS: tcp_forwarding_retries.sh
+PASS: mainq_actq_DA.sh
+PASS: queue_warnmsg-oversize.sh
 SKIP: queue-minbatch.sh
 SKIP: queue-minbatch-queuefull.sh
 PASS: arrayqueue.sh
@@ -79,6 +89,7 @@ PASS: no-parser-errmsg.sh
 PASS: da-mainmsg-q.sh
 PASS: validation-run.sh
 SKIP: msgdup.sh
+PASS: msgdup_props.sh
 PASS: empty-ruleset.sh
 PASS: imtcp-discard-truncated-msg.sh
 PASS: imtcp-basic.sh
@@ -89,6 +100,7 @@ PASS: imtcp-NUL.sh
 PASS: imtcp-NUL-rawmsg.sh
 PASS: imtcp-multiport.sh
 PASS: imtcp_incomplete_frame_at_end.sh
+PASS: da-queue-persist.sh
 SKIP: daqueue-persist.sh
 SKIP: daqueue-invld-qi.sh
 PASS: daqueue-dirty-shutdown.sh
@@ -96,6 +108,7 @@ SKIP: diskq-rfc5424.sh
 PASS: diskqueue.sh
 SKIP: diskqueue-fsync.sh
 PASS: diskqueue-full.sh
+PASS: diskqueue-non-unique-prefix.sh
 SKIP: rulesetmultiqueue.sh
 SKIP: rulesetmultiqueue-v6.sh
 SKIP: manytcp.sh
@@ -133,6 +146,7 @@ PASS: gzipwr_flushInterval.sh
 PASS: gzipwr_flushOnTXEnd.sh
 PASS: gzipwr_large.sh
 PASS: gzipwr_large_dynfile.sh
+PASS: gzipwr_hup.sh
 PASS: dynfile_invld_async.sh
 PASS: dynfile_invld_sync.sh
 PASS: dynfile_invalid2.sh
@@ -219,6 +233,7 @@ PASS: rscript_parse_json.sh
 PASS: rscript_previous_action_suspended.sh
 PASS: rscript_str2num_negative.sh
 PASS: rscript-config_enable-on.sh
+PASS: config_output-o-option.sh
 PASS: rs-cnum.sh
 PASS: rs-substring.sh
 PASS: rs-int2hex.sh
@@ -319,6 +334,7 @@ PASS: imfile-endregex-timeout-with-shutdown-polling.sh
 PASS: imfile-endmsg.regex.sh
 PASS: imfile-statefile-no-file_id.sh
 PASS: imfile-statefile-no-file_id-TO-file_id.sh
+PASS: imfile-statefile-directory.sh
 PASS: imfile-persist-state-1.sh
 PASS: imfile-freshStartTail1.sh
 PASS: imfile-freshStartTail2.sh
@@ -343,12 +359,13 @@ SKIP: imfile-logrotate-copytruncate.sh
 SKIP: imfile-logrotate-nocopytruncate.sh
 SKIP: imfile-growing-file-id.sh
 SKIP: glbl-oversizeMsg-truncate-imfile.sh
+PASS: config_enabled-off.sh
 ============================================================================
-Testsuite summary for rsyslog 8.1904.0
+Testsuite summary for rsyslog 8.1907.0
 ============================================================================
-# TOTAL: 346
-# PASS:  302
-# SKIP:  44
+# TOTAL: 363
+# PASS:  320
+# SKIP:  43
 # XFAIL: 0
 # FAIL:  0
 # XPASS: 0
