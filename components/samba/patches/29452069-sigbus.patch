@@ -1,0 +1,50 @@
+This is continuation of the already closed issue:
+https://bugzilla.samba.org/show_bug.cgi?id=13704
+so it will need a separate community issue to be raised.
+
+--- a/source3/smbd/notify_msg.c	2018-07-12 10:23:36.000000000 +0000
++++ b/source3/smbd/notify_msg.c	2019-05-29 13:08:06.949243280 +0000
+@@ -111,7 +111,7 @@
+ {
+ 	struct notify_context *ctx = talloc_get_type_abort(
+ 		private_data, struct notify_context);
+-	struct notify_event_msg *event_msg;
++	struct notify_event_msg event_message, *event_msg = &event_message;
+ 	struct notify_event event;
+ 
+ 	if (data->length < offsetof(struct notify_event_msg, path) + 1) {
+@@ -123,7 +123,8 @@
+ 		return;
+ 	}
+ 
+-	event_msg = (struct notify_event_msg *)data->data;
++	/* avoid of SIGBUS */
++	memcpy((const void *)event_msg, (const void *)&data->data, sizeof(struct notify_event_msg));
+ 
+ 	event.action = event_msg->action;
+ 	event.path = event_msg->path;
+--- a/source3/smbd/notifyd/notifyd.c	2019-03-12 09:19:04.000000000 +0000
++++ b/source3/smbd/notifyd/notifyd.c	2019-05-29 13:47:19.838291290 +0000
+@@ -737,15 +737,19 @@
+ 				   void *private_data)
+ 
+ {
+-	struct notifyd_trigger_state *tstate = private_data;
+-	struct notify_event_msg msg = { .action = tstate->msg->action,
+-					.when = tstate->msg->when };
++	struct notifyd_trigger_state loctstate, *tstate = &loctstate;
++	struct notify_event_msg msg;
+ 	struct iovec iov[2];
+ 	size_t path_len = key.dsize;
+ 	struct notifyd_instance *instances = NULL;
+ 	size_t num_instances = 0;
+ 	size_t i;
+ 
++	/* avoid SIGBUS */
++	memcpy(tstate, private_data, sizeof(loctstate));
++	msg.action = tstate->msg->action;
++	memcpy((const void *)&msg.when, (const void *)&tstate->msg->when, sizeof(msg.when));
++
+ 	if (!notifyd_parse_entry(data.dptr, data.dsize, &instances,
+ 				 &num_instances)) {
+ 		DEBUG(1, ("%s: Could not parse notifyd_entry\n", __func__));
