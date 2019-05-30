@@ -1432,6 +1432,7 @@ define anitya-recipe
 	@ print '# $(COMPONENT_NAME$(1)) $(COMPONENT_VERSION$(1))'
 	@ print '# $(COMPONENT_PROJECT_URL$(1))'
 	@ if [[ -n "$(COMPONENT_ANITYA_ID$(1):N/A=)" ]] ; then \
+		print '# $(ANITYA_API_URL)/$(COMPONENT_ANITYA_ID$(1))'; \
 		curl -s $(ANITYA_API_URL)/$(COMPONENT_ANITYA_ID$(1)) ; \
 		print ; \
 	else \
