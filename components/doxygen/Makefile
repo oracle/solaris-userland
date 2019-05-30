@@ -20,28 +20,28 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		doxygen
-COMPONENT_VERSION=	1.8.13
-COMPONENT_PROJECT_URL=	http://www.stack.nl/~dimitri/doxygen/index.html
+COMPONENT_VERSION=	1.8.15
+COMPONENT_PROJECT_URL=	http://www.doxygen.nl/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).src.tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:af667887bd7a87dc0dbf9ac8d86c96b552dfb8ca9c790ed1cbffaa6131573f6b
-COMPONENT_ARCHIVE_URL=	http://ftp.stack.nl/pub/users/dimitri/$(COMPONENT_ARCHIVE)
+    sha256:bd9c0ec462b6a9b5b41ede97bede5458e0d7bb40d4cfa27f6f622eb33c59245d
+COMPONENT_ARCHIVE_URL=	http://doxygen.nl/files/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	457
 
 # Download the manual so that we don't have to keep updating it in the gate.
 COMPONENT_ARCHIVE_1 =	$(COMPONENT_NAME)_manual-$(COMPONENT_VERSION).pdf.zip
 COMPONENT_ARCHIVE_HASH_1 =	\
-    sha256:efc4937cf13b2e74f50ad8806d9b900f3c5e3f987ed503d763180053ee677ecd
-COMPONENT_ARCHIVE_URL_1 =	ftp://ftp.stack.nl/pub/users/dimitri/$(COMPONENT_ARCHIVE_1)
+    sha256:907a4176088797d5dc64983ba0e890c7b4f1ecbef8366cc3b8aa49ab63810041
+COMPONENT_ARCHIVE_URL_1 =	http://doxygen.nl/files/$(COMPONENT_ARCHIVE_1)
 
-TPNO=			34098
+TPNO=			50643
 
 BUILD_STYLE= cmake
 SYSTEM_TEST_TARGET= $(SYSTEM_TEST_64)
@@ -80,7 +80,7 @@ COMPONENT_TEST_MASTER = \
 # The additional doxygen specific set of transforms to be applied to the
 # test results to try to normalize them.
 COMPONENT_TEST_TRANSFORMS += \
-	'-e "/^ok/d" ' \
+	'-n -e "/All tests passed!/p" '
 
 COMPONENT_SYSTEM_TEST_ENV =	PATH="$(GNUBIN):$(PATH)"
 COMPONENT_SYSTEM_TEST_DIR =	$(SOURCE_DIR)/testing
