@@ -29,7 +29,7 @@ export PATH=/usr/bin
 
 if [ $# -eq 0 ]; then
 	cat <<-EOT
-	manifest-check target_file PKG_OPTIONS
+	manifest-check [--update] target_file PKG_OPTIONS
 	
 	This tool constructs a manifest according to files in 'generate'
 	directory and compares the result to existing .p5m manifest. Details
@@ -37,12 +37,23 @@ if [ $# -eq 0 ]; then
 
 	This tool expects a number of environment variables to be set for it's
 	function. See make-rules/ips.mk for details on how it is called.
+
+	If --update option is given, manifest is patched with resulting diff.
 	EOT
 	exit 0
 fi
 
 RESULT="$1"
 shift
+
+PKGFMT_ARGS=
+DO_MANIFEST_UPDATE=false
+if [[ "$1" == "--update" ]]; then
+	PKGFMT_ARGS=-u
+	DO_MANIFEST_UPDATE=true
+	shift
+fi
+
 PKG_OPTIONS=( "$@" )
 
 # Based on the result file name find out the original .p5m file we compare
@@ -183,7 +194,7 @@ HARDLINKS=()
 	[ ! -e "$STATIC" ] || cat "$STATIC"
 ) |
 sed -e '/^$/d' -e '/^#.*$/d' |
-pkgfmt > "$RESULT"
+pkgfmt $PKGFMT_ARGS > "$RESULT"
 
 PWDSLASH="$PWD/"
 RESULT_RELATIVE="${RESULT#$PWDSLASH}"
@@ -194,9 +205,35 @@ RET=0
 
 FILENAME="$(realpath --relative-to="$PWD" "$RESULT")"
 # To compare we have to remove comments from the orginal .p5m file too
-/usr/gnu/bin/diff -u \
+MANIFEST_DIFF=$(/usr/gnu/bin/diff -u \
 	--label "Generated $FILENAME" --label "Current $ORIGIN" \
-	"$RESULT" <( sed -e '/^$/d' -e '/^#.*$/d' "$ORIGIN" | pkgfmt ) || RET=$?
+	"$RESULT" <( sed -e '/^$/d' -e '/^#.*$/d' "$ORIGIN" | pkgfmt $PKGFMT_ARGS )) || RET=$?
+
+if [ "$DO_MANIFEST_UPDATE" = true ]; then
+
+	if [ $RET -eq 0 ]; then
+		echo "Nothing to update"
+		exit 0
+	fi
+
+	# Get current manifest without broken lines
+	CURRENT_MANIFEST=$(cat "$ORIGIN" | pkgfmt -u)
+
+	# Filter out removed lines
+	REMOVE_LINES=$(ggrep -oP "^\+\K[^\+].*$" <<< "$MANIFEST_DIFF")
+	ggrep -xFf <( echo "$REMOVE_LINES" ) -v <<< "$CURRENT_MANIFEST" > "$ORIGIN"
+
+	# Add newly added lines into the manifest
+	ggrep -oP "^-\K[^-].*$" <<< "$MANIFEST_DIFF" >> "$ORIGIN"
+
+	# Format manifest file back to normal
+	pkgfmt "$ORIGIN"
+	echo "Manifest updated"
+	exit 0
+fi
+
+[ -z "$MANIFEST_DIFF" ] || echo "$MANIFEST_DIFF"
+
 if [ $RET -ne 0 ]; then
 	echo "Comparing '${RESULT_RELATIVE}' to '$ORIGIN' failed"
 	DEBUG_RELATIVE="${DEBUG#$PWDSLASH}"

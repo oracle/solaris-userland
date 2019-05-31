@@ -249,7 +249,7 @@ $(MANIFEST_BASE)-%.constructed:
 	@env $(call prepare_env_args,\
 	    GENERATE_TRANSFORMS PROTO_DIR PKG_HARDLINKS \
 	    MANIFEST_BASE COMPONENT_DIR MANIFEST_CLEANUP_TRANSFORM \
-	    MANIFEST_GENERATE GENERATE_PROTO_DIRS) $(MANIFEST_COMPARE) "$@" $(PKG_OPTIONS)
+	    MANIFEST_GENERATE GENERATE_PROTO_DIRS) $(MANIFEST_COMPARE) "$@" $(MANIFEST_UPDATE) $(PKG_OPTIONS)
 
 # Make manifest-check perform any action only in components built for the
 # current architecture we run on
@@ -258,6 +258,9 @@ manifest-check: install $(CHECKED)
 else
 manifest-check:
 endif
+
+manifest-update: MANIFEST_UPDATE=--update
+manifest-update: manifest-check
 
 publish:		build install manifest-check $(PUBLISH_STAMP)
 
