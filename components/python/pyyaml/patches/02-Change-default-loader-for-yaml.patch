@@ -1,0 +1,96 @@
+Taken from upstream, should be removed after the update to PyYAML 5.2+.
+
+commit 69108fddd351acff2195907a16a57e79e9b84680
+Author: Tina Müller (tinita) <cpan2@tinita.de>
+Date:   Sun Mar 31 16:17:49 2019 +0200
+
+    Change default loader for yaml.add_constructor (#287)
+
+    * Change default loader for yaml.add_constructor
+
+    If the Loader parameter is not given, add constructor to
+    all three loaders
+
+
+diff --git a/lib/yaml/__init__.py b/lib/yaml/__init__.py
+index e7a419d..9f84c38 100644
+--- a/lib/yaml/__init__.py
++++ b/lib/yaml/__init__.py
+@@ -329,22 +329,32 @@ def add_path_resolver(tag, path, kind=None, Loader=Loader, Dumper=Dumper):
+     Loader.add_path_resolver(tag, path, kind)
+     Dumper.add_path_resolver(tag, path, kind)
+ 
+-def add_constructor(tag, constructor, Loader=Loader):
++def add_constructor(tag, constructor, Loader=None):
+     """
+     Add a constructor for the given tag.
+     Constructor is a function that accepts a Loader instance
+     and a node object and produces the corresponding Python object.
+     """
+-    Loader.add_constructor(tag, constructor)
++    if Loader == None:
++        loader.Loader.add_constructor(tag, constructor)
++        loader.FullLoader.add_constructor(tag, constructor)
++        loader.UnsafeLoader.add_constructor(tag, constructor)
++    else:
++        Loader.add_constructor(tag, constructor)
+ 
+-def add_multi_constructor(tag_prefix, multi_constructor, Loader=Loader):
++def add_multi_constructor(tag_prefix, multi_constructor, Loader=None):
+     """
+     Add a multi-constructor for the given tag prefix.
+     Multi-constructor is called for a node if its tag starts with tag_prefix.
+     Multi-constructor accepts a Loader instance, a tag suffix,
+     and a node object and produces the corresponding Python object.
+     """
+-    Loader.add_multi_constructor(tag_prefix, multi_constructor)
++    if Loader == None:
++        loader.Loader.add_multi_constructor(tag_prefix, multi_constructor)
++        loader.FullLoader.add_multi_constructor(tag_prefix, multi_constructor)
++        loader.UnsafeLoader.add_multi_constructor(tag_prefix, multi_constructor)
++    else:
++        Loader.add_multi_constructor(tag_prefix, multi_constructor)
+ 
+ def add_representer(data_type, representer, Dumper=Dumper):
+     """
+diff --git a/lib3/yaml/__init__.py b/lib3/yaml/__init__.py
+index 5df0bb5..a55206b 100644
+--- a/lib3/yaml/__init__.py
++++ b/lib3/yaml/__init__.py
+@@ -326,22 +326,32 @@ def add_path_resolver(tag, path, kind=None, Loader=Loader, Dumper=Dumper):
+     Loader.add_path_resolver(tag, path, kind)
+     Dumper.add_path_resolver(tag, path, kind)
+ 
+-def add_constructor(tag, constructor, Loader=Loader):
++def add_constructor(tag, constructor, Loader=None):
+     """
+     Add a constructor for the given tag.
+     Constructor is a function that accepts a Loader instance
+     and a node object and produces the corresponding Python object.
+     """
+-    Loader.add_constructor(tag, constructor)
++    if Loader == None:
++        loader.Loader.add_constructor(tag, constructor)
++        loader.FullLoader.add_constructor(tag, constructor)
++        loader.UnsafeLoader.add_constructor(tag, constructor)
++    else:
++        Loader.add_constructor(tag, constructor)
+ 
+-def add_multi_constructor(tag_prefix, multi_constructor, Loader=Loader):
++def add_multi_constructor(tag_prefix, multi_constructor, Loader=None):
+     """
+     Add a multi-constructor for the given tag prefix.
+     Multi-constructor is called for a node if its tag starts with tag_prefix.
+     Multi-constructor accepts a Loader instance, a tag suffix,
+     and a node object and produces the corresponding Python object.
+     """
+-    Loader.add_multi_constructor(tag_prefix, multi_constructor)
++    if Loader == None:
++        loader.Loader.add_multi_constructor(tag_prefix, multi_constructor)
++        loader.FullLoader.add_multi_constructor(tag_prefix, multi_constructor)
++        loader.UnsafeLoader.add_multi_constructor(tag_prefix, multi_constructor)
++    else:
++        Loader.add_multi_constructor(tag_prefix, multi_constructor)
+ 
+ def add_representer(data_type, representer, Dumper=Dumper):
+     """

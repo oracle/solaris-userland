@@ -1,0 +1,29 @@
+Taken from upstream, should be removed after the update to PyYAML 5.2+.
+
+commit 60ca52def0326209bb18d149d1f58e96bb41746e
+Author: Tina Müller (tinita) <cpan2@tinita.de>
+Date:   Sun Mar 31 16:14:50 2019 +0200
+
+    Fix logic for quoting special characters (#276)
+
+    * Fix logic for quoting special characters
+
+    * Remove has_ucs4 from condition
+
+    on systems with `sys.maxunicode <= 0xffff` the comparison
+    (u'\U00010000' <= ch < u'\U0010ffff') can't be true anyway I think
+
+
+diff --git a/lib/yaml/emitter.py b/lib/yaml/emitter.py
+index 9561a82..23c25ca 100644
+--- a/lib/yaml/emitter.py
++++ b/lib/yaml/emitter.py
+@@ -706,7 +706,7 @@ class Emitter(object):
+             if not (ch == u'\n' or u'\x20' <= ch <= u'\x7E'):
+                 if (ch == u'\x85' or u'\xA0' <= ch <= u'\uD7FF'
+                         or u'\uE000' <= ch <= u'\uFFFD'
+-                        or ((not has_ucs4) or (u'\U00010000' <= ch < u'\U0010ffff'))) and ch != u'\uFEFF':
++                        or (u'\U00010000' <= ch < u'\U0010ffff')) and ch != u'\uFEFF':
+                     unicode_characters = True
+                     if not self.allow_unicode:
+                         special_characters = True

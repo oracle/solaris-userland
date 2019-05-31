@@ -20,26 +20,32 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		PyYAML
-COMPONENT_VERSION=	3.11
+COMPONENT_VERSION=	5.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c36c938a872e5ff494938b33b14aaa156cb439ec67548fcab3535bb78b0846e8
+    sha256:436bc774ecf7c103814098159fbb84c2715d25980175292c648f2da143909f95
 COMPONENT_ARCHIVE_URL=	http://pyyaml.org/download/pyyaml/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://pyyaml.org/wiki/PyYAML
 COMPONENT_BUGDB=	python-mod/pyyaml
 COMPONENT_ANITYA_ID=	4123
 
-TPNO=			28704
+TPNO=			50638
+
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+# Library libyaml is not available in Solaris.
+COMPONENT_SETUP_ARGS += --without-libyaml
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -47,6 +53,7 @@ COMPONENT_TEST_DIR =		$(SOURCE_DIR)
 COMPONENT_TEST_ARGS.2.7 =	./tests/lib/test_all.py
 COMPONENT_TEST_ARGS.3.4 =	./tests/lib3/test_all.py
 COMPONENT_TEST_ARGS.3.5 =	./tests/lib3/test_all.py
+COMPONENT_TEST_ARGS.3.7 =	./tests/lib3/test_all.py
 COMPONENT_TEST_ARGS =		$(COMPONENT_TEST_ARGS.$(PYTHON_VERSION))
 
 # common targets
