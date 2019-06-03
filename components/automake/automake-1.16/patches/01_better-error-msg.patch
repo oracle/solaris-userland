@@ -1,0 +1,44 @@
+From 040f4cc6b8300af4812549d69b07926e5423988a Mon Sep 17 00:00:00 2001
+From: Libor Bukata <libor.bukata@oracle.com>
+Date: Thu, 23 May 2019 12:31:31 +0200
+Subject: [PATCH] Improve the error message when the dependency tracking fails
+
+The dependency tracking may fail with a non-intuitive error
+that "Something went wrong ..." if the package expects
+GNU make to process its Makefile.am files and other make
+implementation is used by default (e.g., Solaris make).
+This patch adds a hint to the error message that the user
+may try to specify GNU make command as a configure argument.
+
+Related bug with discussion:
+https://debbugs.gnu.org/cgi/bugreport.cgi?bug=35848
+
+* m4/depout.m4: Added a hint to the error message.
+---
+ m4/depout.m4 | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/m4/depout.m4 b/m4/depout.m4
+index 431c07d..b8cec38 100644
+--- a/m4/depout.m4
++++ b/m4/depout.m4
+@@ -38,10 +38,12 @@ AC_DEFUN([_AM_OUTPUT_DEPENDENCY_COMMANDS],
+         | $MAKE -f - am--depfiles]) || am_rc=$?
+   done
+   if test $am_rc -ne 0; then
+-    AC_MSG_FAILURE([Something went wrong bootstrapping makefile fragments
+-    for automatic dependency tracking.  Try re-running configure with the
+-    '--disable-dependency-tracking' option to at least be able to build
+-    the package (albeit without support for automatic dependency tracking).])
++    AC_MSG_FAILURE([Something went wrong during bootstrapping of makefile
++    fragments for automatic dependency tracking. If the GNU make is not
++    used by default, consider to rerun the configure script with MAKE="gmake".
++    You can also try to rerun configure with the '--disable-dependency-tracking'
++    option to at least be able to build the package (albeit without support
++    for automatic dependency tracking).])
+   fi
+   AS_UNSET([am_dirpart])
+   AS_UNSET([am_filepart])
+-- 
+1.8.3.1
+
