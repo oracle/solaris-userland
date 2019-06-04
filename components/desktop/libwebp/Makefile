@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64_and_32
@@ -28,17 +28,16 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libwebp
-COMPONENT_VERSION=	1.0.0
+COMPONENT_VERSION=	1.0.2
 COMPONENT_PROJECT_URL=	https://www.webmproject.org/
-COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-rc3
 COMPONENT_ARCHIVE_HASH= \
-	sha256:af7bb0c13dcc74ba733b3f115526bd4e77590d78ceb88e039483a112ef1eca87
+	sha256:3d47b48c40ed6476e8047b2ddb81d93835e0ca1b8d3e8c679afbb3004dd564b1
 COMPONENT_ARCHIVE_URL=	http://downloads.webmproject.org/releases/webp/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/libwebp
 COMPONENT_ANITYA_ID=	1761
 
-TPNO=			42648
+TPNO=			50063
 
 # Required for 64-bit builds.
 LDFLAGS += $(CC_BITS)
