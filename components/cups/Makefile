@@ -28,16 +28,10 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cups
 
-# cups 2.3 beta-6
-COMPONENT_VERSION=	2.3b7
-COMPONENT_ARCHIVE_HASH=	sha256:3feb8c4237f01a9998d408a95b28c361d66d372f4fd45d93e261a5233a48f969
-TPNO=			48983
-IPS_COMPONENT_VERSION=	2.2.99.7
-
-# cups 2.2
-#COMPONENT_VERSION=	2.2.9
-#COMPONENT_ARCHIVE_HASH=	sha256:df8bad570768204e3ffe048e6f8b9b8d6adbd587ec684d2255e63484924c48bb
-#TPNO=			47300
+COMPONENT_VERSION=	2.3rc1
+COMPONENT_ARCHIVE_HASH=	sha256:42e85110a65dde8b897970264aa0e42e0646a85690a189dc1dfbb3440bab2734
+TPNO=			52286
+IPS_COMPONENT_VERSION=	2.2.100
 
 COMPONENT_PROJECT_URL=	http://www.cups.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
@@ -70,7 +64,8 @@ CONFIGURE_OPTIONS +=	--with-cups-user=lp
 CONFIGURE_OPTIONS +=	--with-privateinclude=$(USRINCDIR)/cups/private
 CONFIGURE_OPTIONS +=	--with-cups-group=lp
 CONFIGURE_OPTIONS +=	--disable-static
-CONFIGURE_OPTIONS +=	--disable-gnutls
+# CDSA is first choice GNU TLS is second openssl is not supported
+#CONFIGURE_OPTIONS +=	--enable-gnutls
 CONFIGURE_OPTIONS +=	--without-php
 CONFIGURE_OPTIONS +=	--with-python
 
@@ -91,6 +86,43 @@ $(INSTALL_32):	COMPONENT_INSTALL_TARGETS=	install-libs
 # we want to remove debugging data but not the symbols.
 COMPONENT_INSTALL_ENV += STRIPPROG="strip -x"
 
+# Create package objects lists with mutually exclusive contents.
+# cups-libs:	cups API
+# cups:		cups scheduler
+CUPSOBJ =	cups.pkgobjs
+CUPSLIBSOBJ =	cups-libs.pkgobjs
+BCUPSOBJ =	$(BUILD_DIR)/$(CUPSOBJ)
+BCUPSLIBSOBJ =	$(BUILD_DIR)/$(CUPSLIBSOBJ)
+METADATA_TEMPLATE=
+
+new-manifest:	$(BCUPSOBJ) $(BCUPSLIBSOBJ)
+
+$(CHECKED): new-manifest
+
+# all.pkgobjs: collects pkg-rules for files + links + conf.dirs (/etc/samba/) + state dirs (/var/samba/)
+# - rules for 'path=mangled' are not reasonable
+# - objects in etc/pam.d/cups have conflict with system/core-os
+$(BUILD_DIR)/all.pkgobjs:	$(GENERATED).p5m
+	egrep -v 'path=mangled' $(GENERATED).p5m \
+		| nawk '{if (sub(/\\$$/,"")) printf "%s", $$0; else print $$0}' \
+		| /usr/xpg4/bin/egrep -e '^file|^link|^dir .*path=var.*/cups|^dir .*path=usr/lib/cups/' > $@
+
+# cups.pkgobjs: objects of scheduler
+# if diff will find a differences against CUPSOBJ it returns !0 then make fails
+# note: in such case the diff seen in build-log can be directly applied to samba.pkgobjs in component dir by gpatch
+$(BCUPSOBJ): $(BUILD_DIR)/all.pkgobjs
+	/usr/xpg4/bin/egrep -v -e 'usr/include/.*\.h|usr/lib.*/lib.*\.so.*' $(BUILD_DIR)/all.pkgobjs >$@
+	gdiff -u $(CUPSOBJ) $@
+
+# cups-libs.pkgobjs: objects of cups API pkg
+# - extract lib.+\.{so[.<ver>[.<subver>]]|h} from all.pkgobjs actions
+# if diff will find a differences against CUPSLIBSOBJ it returns !0 then make fails
+# note: in such case the diff seen in build-log can be directly applied to libsmbclient.pkgobjs in component dir by gpatch
+$(BCUPSLIBSOBJ): $(BUILD_DIR)/all.pkgobjs
+	/usr/xpg4/bin/egrep -e 'usr/include/.*\.h|usr/lib.*/lib.*\.so.*' $(BUILD_DIR)/all.pkgobjs >$@
+	gdiff -u $(CUPSLIBSOBJ) $@
+
+REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/libusb-1
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/zlib

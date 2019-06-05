@@ -36,29 +36,34 @@
 <transform file path=usr/(s)?bin/.+ -> add pkg.linted.userland.action001.2 true>
 <transform file path=usr/lib/cups/.+/.+ -> add pkg.linted.userland.action001.2 true>
 #
-<transform file path=etc/cups/cups-files.conf$ -> drop >
-# PAM entries - conflict with system/core-os
-<transform file path=etc/pam.d/cups -> drop >
 <transform file path=etc/cups/cupsd.conf$ -> default group lp >
 <transform file path=etc/cups/cupsd.conf$ -> default mode 640 >
 <transform file path=etc/cups/cupsd.conf$ -> default preserve yes >
 #
-<transform file path=usr/lib/cups/.+ -> default mode 0555>
-<transform dir path=usr/share/cups/data -> default group lp>
-<transform dir path=usr/share/cups/model -> default group lp>
-<transform dir path=usr/share/cups/profiles -> default group lp>
+<transform file path=usr/lib/cups/.+ -> default mode 0555 >
+<transform dir path=usr/share/cups/data -> default group lp >
+<transform dir path=usr/share/cups/model -> default group lp >
+<transform dir path=usr/share/cups/profiles -> default group lp >
+#
+<transform dir path=var/cups/cache/cups -> default group lp >
+<transform dir path=var/cups/cache/cups -> default mode 0775 >
+<transform dir path=var/cups/cache/cups/rss -> default group lp >
+<transform dir path=var/cups/cache/cups/rss -> default mode 0775 >
+<transform dir path=var/cups/run/cups/certs -> default group lp >
+<transform dir path=var/cups/run/cups/certs -> default mode 0440 >
+# spooler
+<transform dir path=var/cups/spool/cups -> default group lp >
+<transform dir path=var/cups/spool/cups -> default mode 0710 >
+<transform dir path=var/cups/spool/cups/tmp -> default group lp >
+<transform dir path=var/cups/spool/cups/tmp -> default mode 01770 >
+# log-file
+<transform dir path=var/log/cups -> default group lp >
+#
 # SMF service manifest install
 <transform file path=lib/svc/manifest/.+\.xml -> default mode 0444 >
 <transform file path=lib/svc/manifest/.+\.xml -> default restart_fmri svc:/system/manifest-import:default >
-# exclude cups-libs pkg
-<transform file link path=usr/lib/($(MACH64)/)?lib.+\.so.* -> drop >
 #
-# cups-objects is generated as:
-# gmake sample-manifest METADATA_TEMPLATE=
-# then processed:
-# egrep -v 'path=mangled' build/manifest-$(uname -p)-generated.p5m | nawk '{if (sub(/\\$/,"")) printf "%s", $0; else print $0}' | sed -e '/^dir .*/d' > cups-objects
-<include cups-objects>
-#
+<include cups.pkgobjs>
 set name=pkg.fmri \
     value=pkg:/print/cups@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Common Unix Print System (CUPS)"
@@ -69,13 +74,6 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2008/130
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-#
-# sysconf
-dir  path=etc/cups group=lp
-dir  path=etc/cups/interfaces group=lp
-dir  path=etc/cups/ppd group=lp
-dir  path=etc/cups/profiles group=lp
-dir  path=etc/cups/ssl group=lp mode=0700
 #
 file Solaris/auth_attr path=etc/security/auth_attr.d/cups
 file Solaris/prof_attr path=etc/security/prof_attr.d/cups
@@ -89,22 +87,10 @@ file Solaris/desktop-print-management-applet \
 #
 file Solaris/smb path=usr/lib/cups/backend/smb mode=0555
 #
-dir  path=var/cups/cache/cups group=lp mode=0775
-dir  path=var/cups/cache/cups/rss group=lp mode=0775
-dir  path=var/cups/run/cups/certs group=lp mode=0440
-# spooler
-dir  path=var/cups/spool/cups group=lp mode=0710
-dir  path=var/cups/spool/cups/tmp group=lp mode=01770
-#
-dir  path=var/log/cups group=lp
-
 # add user "lp" into the passwd table
 user username=lp ftpuser=false gcos-field="Line Printer Admin" group=lp \
     home-dir=/ lastchg=6445 login-shell=/bin/sh password=NP uid=71
 #
-# cups-2.2
-#license LICENSE.txt license="GPLv2 CUPS"
-# cups-2.3
 license LICENSE license="Apache v2.0"
 # Without filters cups prints nothing and jobs are hanging in scheduler only
 depend type=require fmri=pkg:/print/cups/filters
