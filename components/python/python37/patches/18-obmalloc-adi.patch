@@ -6,9 +6,9 @@ Use an explicit nonfaulting load to ignore the ADI tag.
 This patch should now work with both Studio and gcc compilers (and possibly
 many others). It might be pushed upstream.
 
---- Python-3.7.1/Objects/obmalloc.c	2018-11-28 06:45:07.211107966 +0000
-+++ Python-3.7.1/Objects/obmalloc.c	2018-11-28 06:44:33.820748372 +0000
-@@ -1327,6 +1327,39 @@ obmalloc controls.  Since this test is n
+--- Python-3.7.3/Objects/obmalloc.c
++++ Python-3.7.3/Objects/obmalloc.c
+@@ -1344,6 +1344,39 @@ obmalloc controls.  Since this test is n
  extremely desirable that it be this fast.
  */
  
@@ -45,10 +45,10 @@ many others). It might be pushed upstream.
 +#endif  /* __sparcv9 */
 +
 +
- static bool ATTRIBUTE_NO_ADDRESS_SAFETY_ANALYSIS
- address_in_range(void *p, poolp pool)
- {
-@@ -1335,7 +1368,7 @@ address_in_range(void *p, poolp pool)
+ static bool _Py_NO_ADDRESS_SAFETY_ANALYSIS
+             _Py_NO_SANITIZE_THREAD
+             _Py_NO_SANITIZE_MEMORY
+@@ -1354,7 +1387,7 @@ address_in_range(void *p, poolp pool)
      // another thread may be concurrently modifying the value without holding
      // the GIL. The following dance forces the compiler to read pool->arenaindex
      // only once.

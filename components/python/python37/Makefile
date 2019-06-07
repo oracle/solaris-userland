@@ -28,17 +28,17 @@ COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME        = Python
-COMPONENT_VERSION     = 3.7.1
+COMPONENT_VERSION     = 3.7.3
 COMPONENT_PROJECT_URL = https://python.org/
 COMPONENT_SRC         = $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE     = $(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:fa7e2b8e8c9402f192ad56dc4f814089d1c4466c97d780f5e5acc02c04243d6d
+    sha256:da60b54064d4cfcd9c26576f6df2690e62085123826cff2e667e72a91952d318
 COMPONENT_ARCHIVE_URL = $(COMPONENT_PROJECT_URL)ftp/python/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB       = utility/python
-COMPONENT_ANITYA_ID   = 13254
+COMPONENT_ANITYA_ID   = 19543
 
-TPNO = 47423
+TPNO = 50557
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/configure.mk
@@ -94,8 +94,9 @@ LINT_FLAGS += -I$(SOURCE_DIR)/Include
 # PYTHONPATH in the environment can be harmful, but setting it to empty via
 # _INSTALL_ENV causes problems too, so just ignore the entire environment.
 # (see 20396493) Because of this, we have to explicitly specify PATH in
-# multiple places below.
-ENV += -i
+# multiple places below. Also up the limit of maximum opened files for
+# testing purposes and pgo.
+ENV := ulimit -n 16384; $(ENV) -i
 
 # Configure script should look into sbin folder when looking for dtrace
 CONFIGURE_ENV += PATH="$(PATH):/usr/sbin"
@@ -119,6 +120,13 @@ CONFIGURE_OPTIONS += DFLAGS="-$(BITS)"
 CONFIGURE_OPTIONS += XPROFILE_DIR="$(XPROFILE_DIR)"
 
 CONFIGURE_OPTIONS += "ac_cv_func_getentropy=no"
+
+# Our newly introduced implementation of pthread_getcpuclockid and other
+# related functions is problematic because when called on the current thread,
+# it returns reserved value 'CURRENT_THREAD' and thus cannot be passed to
+# other threads. While not necessarily against the standard, it is different
+# from Linux Kernel and might cause problems.
+CONFIGURE_OPTIONS += "ac_cv_func_pthread_getcpuclockid=no"
 
 COMPONENT_BUILD_ENV += DFLAGS="-$(BITS)"
 COMPONENT_BUILD_ENV += XPROFILE_DIR="$(XPROFILE_DIR)"

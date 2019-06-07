@@ -9,9 +9,9 @@ Changes to directory inclusion: Bug 20367692
 
 Libsocket tweaks: Bug 21959680
 
---- Python-3.7.1/setup.py	2018-10-19 23:04:19.000000000 +0000
-+++ Python-3.7.1/setup.py	2018-12-07 08:27:51.898031835 +0000
-@@ -537,12 +537,15 @@ class PyBuildExt(build_ext):
+--- Python-3.7.3/setup.py
++++ Python-3.7.3/setup.py
+@@ -542,12 +542,15 @@ class PyBuildExt(build_ext):
              os.unlink(tmpfile)
  
      def detect_modules(self):
@@ -32,7 +32,7 @@ Libsocket tweaks: Bug 21959680
          # only change this for cross builds for 3.3, issues on Mageia
          if cross_compiling:
              self.add_gcc_paths()
-@@ -850,6 +853,13 @@ class PyBuildExt(build_ext):
+@@ -855,6 +858,13 @@ class PyBuildExt(build_ext):
                                                       ['/usr/lib/termcap'],
                                                       'termcap'):
                  readline_libs.append('termcap')
@@ -46,7 +46,7 @@ Libsocket tweaks: Bug 21959680
              exts.append( Extension('readline', ['readline.c'],
                                     library_dirs=['/usr/lib/termcap'],
                                     extra_link_args=readline_extra_link_args,
-@@ -873,7 +883,8 @@ class PyBuildExt(build_ext):
+@@ -878,7 +888,8 @@ class PyBuildExt(build_ext):
  
          # socket(2)
          exts.append( Extension('_socket', ['socketmodule.c'],
@@ -56,7 +56,7 @@ Libsocket tweaks: Bug 21959680
          # Detect SSL support for the socket module (via _ssl)
          ssl_ext, hashlib_ext = self._detect_openssl(inc_dirs, lib_dirs)
          if ssl_ext is not None:
-@@ -1362,6 +1373,10 @@ class PyBuildExt(build_ext):
+@@ -1367,6 +1378,10 @@ class PyBuildExt(build_ext):
              curses_defines.append(('_XOPEN_SOURCE_EXTENDED', '1'))
  
          if curses_library.startswith('ncurses'):
@@ -67,7 +67,7 @@ Libsocket tweaks: Bug 21959680
              curses_libs = [curses_library]
              exts.append( Extension('_curses', ['_cursesmodule.c'],
                                     include_dirs=curses_includes,
-@@ -1386,10 +1401,32 @@ class PyBuildExt(build_ext):
+@@ -1391,10 +1406,32 @@ class PyBuildExt(build_ext):
          # If the curses module is enabled, check for the panel module
          if (module_enabled(exts, '_curses') and
              self.compiler.find_library_file(lib_dirs, panel_library)):

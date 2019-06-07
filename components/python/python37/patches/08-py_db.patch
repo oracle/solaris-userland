@@ -1,9 +1,9 @@
 This patch adds Python debugger support.  It may be contributed upstream at
 some point, but the suitability (or lack thereof) has not yet been determined.
 
---- Python-3.7.1/Makefile.pre.in	2018-11-28 06:58:20.438851271 +0000
-+++ Python-3.7.1/Makefile.pre.in	2018-11-28 06:51:40.033155831 +0000
-@@ -451,7 +451,7 @@ DTRACE_DEPS = \
+--- Python-3.7.3/Makefile.pre.in
++++ Python-3.7.3/Makefile.pre.in
+@@ -459,7 +459,7 @@ DTRACE_DEPS = \
  # Default target
  all:		@DEF_MAKE_ALL_RULE@
  build_all:	check-clean-src $(BUILDPYTHON) oldsharedmods sharedmods gdbhooks \
@@ -12,7 +12,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
  
  # Check that the source is clean when building out of source.
  check-clean-src:
-@@ -695,6 +695,15 @@ Makefile Modules/config.c: Makefile.pre
+@@ -703,6 +703,15 @@ Makefile Modules/config.c: Makefile.pre
  	@mv config.c Modules
  	@echo "The Makefile was updated, you may need to re-run make."
  
@@ -28,7 +28,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
  
  Modules/Setup: $(srcdir)/Modules/Setup.dist
  	@if test -f Modules/Setup; then \
-@@ -1110,7 +1110,7 @@ multisslcompile: build_all
+@@ -1118,7 +1127,7 @@ multisslcompile: build_all
  multissltest: build_all
  	$(RUNSHARED) ./$(BUILDPYTHON) Tools/ssl/multissltests.py
  
@@ -37,8 +37,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
  	if test "x$(ENSUREPIP)" != "xno"  ; then \
  		case $(ENSUREPIP) in \
  			upgrade) ensurepip="--upgrade" ;; \
---- /dev/null	2015-05-14 14:46:26.000000000 -0700
-+++ Python-3.5.0/py_db/libpython35_db.c	2015-05-14 14:45:15.723529281 -0700
+--- Python-3.7.3/py_db/libpython35_db.c
++++ Python-3.7.3/py_db/libpython35_db.c
 @@ -0,0 +1,583 @@
 +/*
 + * CDDL HEADER START
@@ -623,8 +623,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +
 +	free(iter);
 +}
---- /dev/null
-+++ Python-3.5.0/py_db/libpython35_db.h
+--- Python-3.7.3/py_db/libpython35_db.h
++++ Python-3.7.3/py_db/libpython35_db.h
 @@ -0,0 +1,73 @@
 +/*
 + * CDDL HEADER START
@@ -699,8 +699,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +#endif
 +
 +#endif	/* _LIBPYTHON35_DB_H */
---- /dev/null
-+++ Python-3.5.0/py_db/libpython35_db_32.h
+--- Python-3.7.3/py_db/libpython35_db_32.h
++++ Python-3.7.3/py_db/libpython35_db_32.h
 @@ -0,0 +1,121 @@
 +/*
 + * CDDL HEADER START
@@ -823,8 +823,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +#endif
 +
 +#endif	/* _LIBPYTHON35_DB_32_H */
---- /dev/null
-+++ Python-3.5.0/py_db/mapfile-vers
+--- Python-3.7.3/py_db/mapfile-vers
++++ Python-3.7.3/py_db/mapfile-vers
 @@ -0,0 +1,39 @@
 +#
 +# CDDL HEADER START
