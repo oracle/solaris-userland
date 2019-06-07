@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 set name=pkg.fmri \
     value=pkg:/library/python/psutil-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
@@ -37,22 +37,21 @@ set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2015/530
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
-file path=usr/lib/python$(PYVER)/vendor-packages/64/_psutil_posix.so
-file path=usr/lib/python$(PYVER)/vendor-packages/64/_psutil_sunos.so
-file path=usr/lib/python$(PYVER)/vendor-packages/_psutil_posix.so
-file path=usr/lib/python$(PYVER)/vendor-packages/_psutil_sunos.so
 file path=usr/lib/python$(PYVER)/vendor-packages/psutil-$(COMPONENT_VERSION)-py$(PYVER).egg-info/PKG-INFO
 file path=usr/lib/python$(PYVER)/vendor-packages/psutil-$(COMPONENT_VERSION)-py$(PYVER).egg-info/SOURCES.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/psutil-$(COMPONENT_VERSION)-py$(PYVER).egg-info/dependency_links.txt
+file path=usr/lib/python$(PYVER)/vendor-packages/psutil-$(COMPONENT_VERSION)-py$(PYVER).egg-info/not-zip-safe
+$(PYTHON_2.7_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/psutil-$(COMPONENT_VERSION)-py$(PYVER).egg-info/requires.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/psutil-$(COMPONENT_VERSION)-py$(PYVER).egg-info/top_level.txt
+file path=usr/lib/python$(PYVER)/vendor-packages/psutil/64/_psutil_posix.so
+file path=usr/lib/python$(PYVER)/vendor-packages/psutil/64/_psutil_sunos.so
 file path=usr/lib/python$(PYVER)/vendor-packages/psutil/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/psutil/_common.py
-file path=usr/lib/python$(PYVER)/vendor-packages/psutil/_compat.py \
-    pkg.depend.bypass-generate=.*/builtins.*
-file path=usr/lib/python$(PYVER)/vendor-packages/psutil/_error.py
+file path=usr/lib/python$(PYVER)/vendor-packages/psutil/_compat.py
 file path=usr/lib/python$(PYVER)/vendor-packages/psutil/_psposix.py
 file path=usr/lib/python$(PYVER)/vendor-packages/psutil/_pssunos.py
-file path=usr/lib/python$(PYVER)/vendor-packages/psutil/error.py
+file path=usr/lib/python$(PYVER)/vendor-packages/psutil/_psutil_posix.so
+file path=usr/lib/python$(PYVER)/vendor-packages/psutil/_psutil_sunos.so
 license LICENSE license=BSD
 
 # force a dependency on the Python runtime
