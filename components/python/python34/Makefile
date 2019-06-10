@@ -28,18 +28,18 @@ COMPONENT_MAKE_JOBS=1
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Python
-COMPONENT_VERSION=	3.4.9
+COMPONENT_VERSION=	3.4.10
 COMPONENT_PROJECT_URL=	https://python.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:59629676ba2b01a798f5211d8f63c26ee52f1d5133cf37583e0bf1bad50c2bd9
+    sha256:d46a8f6fe91679e199c671b1b0a30aaf172d2acb5bcab25beb35f16c3d195b4e
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)ftp/python/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	utility/python
 COMPONENT_ANITYA_ID=	13256
 
-TPNO=			48462
+TPNO=			52230
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/configure.mk
@@ -180,6 +180,10 @@ install:	$(INSTALL_64)
 # may need to remove these files, or run "gmake clobber" or "gmake clean"
 # between tests.
 #
+
+# Up the limit of maximum opened files for testing purposes
+COMPONENT_TEST_ENV_CMD := ulimit -n 8192; $(COMPONENT_TEST_ENV_CMD)
+
 COMPONENT_TEST_ENV = EXTRATESTOPTS="-v -uall,-network $(TESTOPTS_PYTHON_TEST)"
 # The distutils tests need $CC in $PATH.
 COMPONENT_TEST_ENV += PATH="$(SPRO_VROOT)/bin:$(PATH)"
