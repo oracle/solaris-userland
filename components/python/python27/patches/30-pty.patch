@@ -2,9 +2,9 @@ This patch comes from upstream: http://bugs.python.org/issue26228
 It has not yet been committed, but seems on track to be, and we need
 it to fix a bug.
 
---- Python-2.7.13/Lib/pty.py.orig	2016-12-17 12:05:06.000000000 -0800
-+++ Python-2.7.13/Lib/pty.py	2017-04-26 13:34:02.125867738 -0700
-@@ -148,7 +148,7 @@
+--- Python-2.7.16/Lib/pty.py
++++ Python-2.7.16/Lib/pty.py
+@@ -148,7 +148,7 @@ def _copy(master_fd, master_read=_read,
          if master_fd in rfds:
              data = master_read(master_fd)
              if not data:  # Reached EOF.
@@ -13,7 +13,7 @@ it to fix a bug.
              else:
                  os.write(STDOUT_FILENO, data)
          if STDIN_FILENO in rfds:
-@@ -164,7 +164,15 @@
+@@ -164,7 +164,15 @@ def spawn(argv, master_read=_read, stdin
          argv = (argv,)
      pid, master_fd = fork()
      if pid == CHILD:
@@ -30,7 +30,7 @@ it to fix a bug.
      try:
          mode = tty.tcgetattr(STDIN_FILENO)
          tty.setraw(STDIN_FILENO)
-@@ -174,6 +182,10 @@
+@@ -174,6 +182,10 @@ def spawn(argv, master_read=_read, stdin
      try:
          _copy(master_fd, master_read, stdin_read)
      except (IOError, OSError):
@@ -41,9 +41,9 @@ it to fix a bug.
          if restore:
              tty.tcsetattr(STDIN_FILENO, tty.TCSAFLUSH, mode)
  
---- Python-2.7.15/Lib/test/test_pty.py.orig	2018-11-13 06:53:03.594389720 -0800
-+++ Python-2.7.15/Lib/test/test_pty.py	2018-11-13 07:54:27.508016318 -0800
-@@ -287,7 +287,7 @@
+--- Python-2.7.16/Lib/test/test_pty.py
++++ Python-2.7.16/Lib/test/test_pty.py
+@@ -284,7 +284,7 @@ class SmallPtyTests(unittest.TestCase):
          socketpair[1].close()
          os.close(write_to_stdin_fd)
  
@@ -52,7 +52,7 @@ it to fix a bug.
          pty.select = self._mock_select
          self.select_rfds_lengths.append(2)
          self.select_rfds_results.append([mock_stdin_fd, masters[0]])
-@@ -295,8 +295,7 @@
+@@ -292,8 +292,7 @@ class SmallPtyTests(unittest.TestCase):
          # both encountered an EOF before the second select call.
          self.select_rfds_lengths.append(0)
  

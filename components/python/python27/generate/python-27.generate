@@ -1,0 +1,80 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+<include generate/common.transform>
+
+# Delete everything not belonging to this package
+<transform file link pkg.type=(?!main) -> drop>
+<transform hardlink file link -> delete pkg.type .*>
+
+# Drop unused 64bit executables and files
+<transform file path=usr/bin/\$\(MACH64\)/2to3 -> drop>
+<transform file path=usr/bin/\$\(MACH64\)/idle -> drop>
+<transform file path=usr/bin/\$\(MACH64\)/pydoc -> drop>
+
+# Drop some additional undelivered files
+<transform file path=usr/bin/\$\(MACH64\)/smtpd.py -> drop>
+<transform file path=usr/bin/smtpd.py -> drop>
+
+# Rename python executables
+<transform file path=usr/bin/idle  -> set action.hash %(path)>
+<transform file path=usr/bin/idle  -> edit path idle idle-2.7>
+<transform file path=usr/bin/pydoc  -> set action.hash %(path)>
+<transform file path=usr/bin/pydoc  -> edit path pydoc pydoc-2.7>
+<transform file path=usr/bin/2to3  -> set action.hash %(path)>
+<transform file path=usr/bin/2to3  -> edit path 2to3 2to3-2.7>
+
+# Following are very different and would require a lot of
+# transformations and thus are added with .static file
+<transform file path=.*/llib-lpython27 -> drop>
+<transform link path=.*/python-config$ -> drop>
+<transform link path=.*/python.(pc|1)$ -> drop>
+<transform link path=.*/python2.pc$ -> drop>
+<transform link path=.*/python2.1$ -> drop>
+<transform link path=.*/python$ -> drop>
+
+# Add pkg.depend.bypass-generate variables
+<transform file path=usr/lib/python2.7/UserString.py -> set pkg.depend.bypass-generate .*test.*>
+<transform file path=usr/lib/python2.7/cProfile.py -> set pkg.depend.bypass-generate .*>
+<transform file path=usr/lib/python2.7/idlelib/PyShell.py -> set pkg.depend.bypass-generate .*>
+<transform file path=usr/lib/python2.7/pdb.py -> set pkg.depend.bypass-generate .*>
+<transform file path=usr/lib/python2.7/platform.py -> set pkg.depend.bypass-generate .*>
+<transform file path=usr/lib/python2.7/profile.py -> set pkg.depend.bypass-generate .*>
+<transform file path=usr/lib/python2.7/pydoc.py -> set pkg.depend.bypass-generate .*>
+<transform file path=usr/lib/python2.7/smtpd.py -> set pkg.depend.bypass-generate .*>
+<transform file path=usr/lib/python2.7/trace.py -> set pkg.depend.bypass-generate .*>
+
+# Set correct mode for some files
+<transform file path=usr/lib/\$\(MACH64\)/python2.7/config/install-sh -> set mode 0555>
+<transform file path=usr/lib/\$\(MACH64\)/python2.7/config/makesetup -> set mode 0555>
+<transform file path=usr/lib/python2.7/config/install-sh -> set mode 0555>
+<transform file path=usr/lib/python2.7/config/makesetup -> set mode 0555>
+<transform file path=usr/lib/python2.7/ctypes/macholib/fetch_macholib$ -> set mode 0555>
+<transform file path=usr/lib/python2.7/idlelib/idle.bat -> set mode 0555>
+<transform file path=usr/lib/python2.7/plat-sunos5/regen -> set mode 0555>
+
+# Emit some additional links
+<transform file path=(.*)/libpython2.7_db.so.1.0 \
+	-> emit link path=%<1>/libpython2.7_db.so target=libpython2.7_db.so.1.0>

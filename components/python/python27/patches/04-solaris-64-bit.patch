@@ -3,9 +3,9 @@ This patch ensures that 64-bit shared objects are in a subdirectory named
 Lib/distutils/tests/test_install.py avoid running tests that fail due to
 this patch.  As this is Solaris-specific, it is not suitable for upstream.
 
---- Python-2.7.6/Lib/distutils/command/build_ext.py.~1~	2013-11-09 23:36:40.000000000 -0800
-+++ Python-2.7.6/Lib/distutils/command/build_ext.py	2014-05-14 12:47:04.342901439 -0700
-@@ -637,6 +637,10 @@
+--- Python-2.7.16/Lib/distutils/command/build_ext.py
++++ Python-2.7.16/Lib/distutils/command/build_ext.py
+@@ -637,6 +637,10 @@ class build_ext (Command):
          filename = self.get_ext_filename(ext_name)
          filename = os.path.split(filename)[-1]
  
@@ -16,7 +16,7 @@ this patch.  As this is Solaris-specific, it is not suitable for upstream.
          if not self.inplace:
              # no further work needed
              # returning :
-@@ -677,7 +681,14 @@
+@@ -677,7 +681,14 @@ class build_ext (Command):
          so_ext = get_config_var('SO')
          if os.name == 'nt' and self.debug:
              return os.path.join(*ext_path) + '_d' + so_ext
@@ -32,9 +32,9 @@ this patch.  As this is Solaris-specific, it is not suitable for upstream.
  
      def get_export_symbols (self, ext):
          """Return the list of symbols that a shared extension has to
---- Python-2.7.12/Python/import.c.~1~	2016-06-25 14:49:32.000000000 -0700
-+++ Python-2.7.12/Python/import.c	2016-07-07 13:43:53.807164009 -0700
-@@ -1310,6 +1310,57 @@
+--- Python-2.7.16/Python/import.c
++++ Python-2.7.16/Python/import.c
+@@ -1332,6 +1332,57 @@ static int case_ok(char *, Py_ssize_t, P
  static int find_init_module(char *); /* Forward */
  static struct filedescr importhookdescr = {"", "", IMP_HOOK};
  
@@ -92,7 +92,7 @@ this patch.  As this is Solaris-specific, it is not suitable for upstream.
  static struct filedescr *
  find_module(char *fullname, char *subname, PyObject *path, char *buf,
              size_t buflen, FILE **p_fp, PyObject **p_loader)
-@@ -1324,11 +1375,10 @@
+@@ -1346,11 +1397,10 @@ find_module(char *fullname, char *subnam
      static struct filedescr fd_builtin = {"", "", C_BUILTIN};
      static struct filedescr fd_package = {"", "", PKG_DIRECTORY};
      char *name;
@@ -105,7 +105,7 @@ this patch.  As this is Solaris-specific, it is not suitable for upstream.
      if (p_loader != NULL)
          *p_loader = NULL;
  
-@@ -1535,15 +1585,17 @@
+@@ -1557,15 +1607,17 @@ find_module(char *fullname, char *subnam
                  }
              }
          }
@@ -125,7 +125,7 @@ this patch.  As this is Solaris-specific, it is not suitable for upstream.
  #if defined(PYOS_OS2) && defined(HAVE_DYNAMIC_LOADING)
              /* OS/2 limits DLLs to 8 character names (w/o
                 extension)
-@@ -1584,21 +1636,20 @@
+@@ -1606,21 +1658,20 @@ find_module(char *fullname, char *subnam
                      fp = NULL;
                  }
              }
@@ -150,9 +150,9 @@ this patch.  As this is Solaris-specific, it is not suitable for upstream.
          Py_XDECREF(copy);
          if (fp != NULL)
              break;
---- Python-2.7.1/Python/importdl.h.orig	Fri Jul 15 15:48:16 2011
-+++ Python-2.7.1/Python/importdl.h	Fri Jul 15 15:49:10 2011
-@@ -31,8 +31,9 @@
+--- Python-2.7.16/Python/importdl.h
++++ Python-2.7.16/Python/importdl.h
+@@ -31,8 +31,9 @@ extern const struct filedescr _PyImport_
  extern PyObject *_PyImport_LoadDynamicModule(char *name, char *pathname,
                                               FILE *);
  

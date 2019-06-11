@@ -1,0 +1,11 @@
+--- Python-2.7.16/Lib/test/test_test_support.py
++++ Python-2.7.16/Lib/test/test_test_support.py
+@@ -417,6 +417,8 @@ class TestSupport(unittest.TestCase):
+             self.assertTrue(support.match_test(test_access))
+             self.assertFalse(support.match_test(test_chdir))
+ 
++    @unittest.skipIf(sys.platform.startswith("sunos"),
++        "test doesn't work well on Solaris")
+     def test_fd_count(self):
+         # We cannot test the absolute value of fd_count(): on old Linux
+         # kernel or glibc versions, os.urandom() keeps a FD open on
