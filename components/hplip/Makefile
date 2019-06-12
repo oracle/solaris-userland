@@ -23,19 +23,22 @@
 #
 # Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
-BUILD_BITS=	32
+BUILD_BITS=	64
 COMPILER=	gcc
+# parallel build will not survive the build process atrocity 
+COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         hplip
-COMPONENT_VERSION=      3.17.10
-TPNO=			40319
-COMPONENT_ARCHIVE_HASH= sha256:0f7344174672f63a98a22f3c109005b6eb89fe738b7d466316bf2c53d083476c
+COMPONENT_VERSION=      3.19.5
+TPNO=			52183
+COMPONENT_ARCHIVE_HASH= sha256:8f5ac056c1a778b78511588f427072078703d683dfe5af6214ba179e89b453e1
 COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/project/$(COMPONENT_NAME)/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://hplipopensource.com/hplip-web/index.html
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	1327
 
+TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 # Not Python 3.x ready due to configure errors
@@ -43,54 +46,59 @@ PYTHON_VERSION = 2.7
 
 CONFIGURE_OPTIONS +=	--localedir=$(CONFIGURE_LOCALEDIR)
 CONFIGURE_OPTIONS +=	--with-hpppddir=$(USRSHAREDIR)/cups/model/hplip
-CONFIGURE_OPTIONS +=	--enable-fax-build
 CONFIGURE_OPTIONS +=	--enable-new-hpcups
-CONFIGURE_OPTIONS +=	--enable-hpcups-install
-CONFIGURE_OPTIONS +=	--enable-cups-drv-install
 CONFIGURE_OPTIONS +=	--enable-cups-ppd-install
-CONFIGURE_OPTIONS +=	--disable-pp-build
 CONFIGURE_OPTIONS +=	--disable-gui-build
-CONFIGURE_OPTIONS +=	--disable-qt4
 CONFIGURE_OPTIONS +=	PYTHON=$(PYTHON)
 CONFIGURE_OPTIONS +=	am_cv_python_pythondir="$(PYTHON_VENDOR_PACKAGES)"
 CONFIGURE_OPTIONS +=	am_cv_python_pyexecdir="$(PYTHON_VENDOR_PACKAGES)"
 # bye, bye SANE backends
 CONFIGURE_OPTIONS +=	--disable-scan-build
 
-LDFLAGS += $(LIBNSL)
-
-COMPONENT_INSTALL_ARGS += -e
-
 # Generate configuration scripts
 COMPONENT_PREP_ACTION = (cd $(@D) ; \
-   touch INSTALL NEWS README AUTHORS ChangeLog compile ; \
-   PATH="/usr/gnu/bin:$(PATH)" aclocal --force ; \
-   PATH="/usr/gnu/bin:$(PATH)" libtoolize --force ; \
-   PATH="/usr/gnu/bin:$(PATH)" autoreconf -fi )
+    libtoolize --force ; \
+    aclocal ; \
+    automake --foreign --add-missing ; \
+    autoconf )
 
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
 
-PYTHON_SCRIPTS += $(PROTO_DIR)/usr/lib/cups/backend/hpfax
-PYTHON_SCRIPTS += $(PROTO_DIR)/usr/lib/cups/filter/hpps
-PYTHON_SCRIPTS += $(PROTO_DIR)/usr/lib/cups/filter/pstotiff
-PYTHON_SCRIPTS += \
- $(shell nawk -F \= \
-  ' $$1 ~ /^file.*path/ && $$2 ~ /.*\.py$$/ {print "$(PROTO_DIR)/"$$2;} ' \
-  $(COMPONENT_DIR)/hplip.proto-objects)
+# if you are doing anything affecting the python-scripts list you will face to:
+#  "chicken/egg problem"
+# so you need to run "gmake python-scripts" first then remove:
+#  build/$(MACH64)/.installed  and  build/proto/$(MACH)/
+# then run "gmake install" again to fix python scripts while install
+# note: File python-scripts is committed in WS so you can see the changes by:
+#  "hg st" then "hg diff python-scripts"
+PYTHON_SCRIPTS = $(shell (while read f ; do echo $(PROTO_DIR)/$$f ; done ) < python-scripts )
+python-scripts: install
+	find $(PROTO_DIR) -type f |\
+	 (while read f ; do head -1 $$f |\
+	  /usr/xpg4/bin/grep '^\#!.*python' > /dev/null && echo $$f ;\
+	 done) | sed -e 's@$(PROTO_DIR)/@@' | sort > $@
 
 # build .pyc's
 COMPONENT_POST_INSTALL_ACTION += \
-	$(PYTHON) -m compileall $(PROTO_DIR)/usr/share/hplip/
+	$(PYTHON) -m compileall $(PROTO_DIR)/usr/share/hplip/ ;
 
-# empty test target
-test:	$(NO_TESTS)
+PKG_OBJ =       hplip-core
+# depend on pygobject (desktop)
+SUBPKG_OBJ =    hplip
+EXCLUSION_FILE = pygobject.deps
 
-system-test:    $(NO_TESTS)
+ADD_TO_HEAP = ^file|^link
+EXCLUDE_FROM_HEAP = usr/share/hplip/.*\.pyc
+include $(WS_MAKE_RULES)/pkgobjs.mk
+$(EXCLUSION_FILE_TARGET): $(HEAP_OBJ)
+	ggrep -rwl gobject --include=\*.py $(PROTO_DIR) \
+		| sed -e 's@$(PROTO_DIR)/@@' > $@
 
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += library/libusb-1
 REQUIRED_PACKAGES += library/print/cups-libs
+REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
