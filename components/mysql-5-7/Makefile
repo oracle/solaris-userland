@@ -36,11 +36,11 @@ include ../../make-rules/shared-macros.mk
 GCC_ROOT = /usr/gcc/7
 
 COMPONENT_NAME        = mysql
-COMPONENT_VERSION     = 5.7.25
+COMPONENT_VERSION     = 5.7.26
 COMPONENT_SRC         = $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE     = $(COMPONENT_NAME)-boost-$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-         sha256:354c427c8679c6a4774f60723ea211e54b4383307764d240940f960d110bf5cf
+         sha256:effca6d3aceebc286a9fb046257330d125cc2f4def87081c286bfc4df3d974d1
 COMPONENT_ARCHIVE_URL = https://dev.mysql.com/get/Downloads/MySQL-5.7/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL = https://dev.mysql.com/
 COMPONENT_BUGDB       = database/mysql
