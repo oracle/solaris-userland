@@ -1,0 +1,28 @@
+We do have an older version of mccabe in Userland, but it was tested with
+current pylint and works without any problem.
+
+Upstream change introducing these requirements also doesn't include any
+particular reason why previous versions should not work.
+
+
+--- pylint-2.3.1/pylint/__pkginfo__.py
++++ pylint-2.3.1/pylint/__pkginfo__.py
+@@ -34,7 +34,7 @@ if dev_version:
+ else:
+     version = string_version
+ 
+-install_requires = ["astroid>=2.2.0,<3", "isort>=4.2.5,<5", "mccabe>=0.6,<0.7"]
++install_requires = ["astroid>=2.2.0,<3", "isort>=4.2.5,<5", "mccabe"]
+ 
+ dependency_links = []  # type: ignore
+ 
+--- pylint-2.3.1/pylint.egg-info/requires.txt
++++ pylint-2.3.1/pylint.egg-info/requires.txt
+@@ -1,6 +1,6 @@
+ astroid<3,>=2.2.0
+ isort<5,>=4.2.5
+-mccabe<0.7,>=0.6
++mccabe
+ 
+ [:sys_platform=="win32"]
+ colorama

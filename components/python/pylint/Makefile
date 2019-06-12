@@ -26,19 +26,42 @@ BUILD_BITS= NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pylint
-COMPONENT_VERSION=	1.6.4
+COMPONENT_VERSION=	2.3.1
+COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=		\
-	sha256:ef901a34b62ed7a734370ba5b162d890231ba8822abe88c6dda1268e2575f5f1
+	sha256:723e3db49555abaf9bf79dc474c6b9e2935ad82230b10c1138a71ea41ac0fff1
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=  https://www.pylint.org/
+COMPONENT_BUGDB=	python-mod/pylint
 COMPONENT_ANITYA_ID=	5344
 
-TPNO=			31351
+TPNO=			51781
 
-BUILD_STYLE= setup.py
-include $(WS_MAKE_RULES)/common.mk
 
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+COMPONENT_NAME_OLD=		$(COMPONENT_NAME)
+COMPONENT_VERSION_OLD=	1.6.4
+COMPONENT_SRC_OLD=		$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
+COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
+COMPONENT_ARCHIVE_HASH_OLD=	\
+	sha256:ef901a34b62ed7a734370ba5b162d890231ba8822abe88c6dda1268e2575f5f1
+COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
+
+TPNO_OLD=		31351
+
+
+# This component is delivered in two different versions.
+# The newer one does no longer support Python 2.7 and 3.4 would need additional
+# dependencies for this new version and since it will be EOL very soon, it
+# doesn't really make sense to add them.
+
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
+
+include $(WS_MAKE_RULES)/prep.mk
+include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/ips.mk
+
 
 # There are several pylint documentation files that setup.py isn't installing
 # but are present in the pylint package on other distributions. Copy them into
@@ -68,20 +91,71 @@ COMPONENT_POST_INSTALL_ACTION += \
 COMPONENT_POST_INSTALL_ACTION += \
 	(cd $(PROTO_DIR)/usr/bin; $(MV) pylint pylint-$(PYTHON_VERSION)) ;
 COMPONENT_POST_INSTALL_ACTION += \
-	(cd $(PROTO_DIR)/usr/bin; $(MV) pylint-gui pylint-gui-$(PYTHON_VERSION)) ;
-COMPONENT_POST_INSTALL_ACTION += \
 	(cd $(PROTO_DIR)/usr/bin; $(MV) pyreverse pyreverse-$(PYTHON_VERSION)) ;
 COMPONENT_POST_INSTALL_ACTION += \
 	(cd $(PROTO_DIR)/usr/bin; $(MV) symilar symilar-$(PYTHON_VERSION)) ;
 
 COMPONENT_POST_INSTALL_ACTION += \
-	$(PYTHON) -m py_compile $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages/pylint/testutils.py
+	($(PYTHON) -m py_compile $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages/pylint/testutils.py) ;
 
-COMPONENT_TEST_ENV = PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)
 
-COMPONENT_TEST_CMD = $(PYTHON) -m pytest
+# Convenience variables
+TARGET_27 = $(BUILD_DIR)/$(MACH)-2.7/
+TARGET_34 = $(BUILD_DIR)/$(MACH)-3.4/
+SOURCE_DIR_OLD = $(COMPONENT_DIR)/$(COMPONENT_SRC_OLD)
+
+# pylint-gui is no longer delivered in newer version
+$(TARGET_27).installed: COMPONENT_POST_INSTALL_ACTION += \
+	(cd $(PROTO_DIR)/usr/bin; $(MV) pylint-gui pylint-gui-$(PYTHON_VERSION)) ;
+$(TARGET_34).installed: COMPONENT_POST_INSTALL_ACTION += \
+	(cd $(PROTO_DIR)/usr/bin; $(MV) pylint-gui pylint-gui-$(PYTHON_VERSION)) ;
+
+# Targets updated for older version build
+$(TARGET_27).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
+$(TARGET_34).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
+
+$(TARGET_27).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
+$(TARGET_34).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
+
+$(TARGET_27).tested-and-compared: COMPONENT_TEST_DIR = $(SOURCE_DIR_OLD)
+$(TARGET_34).tested-and-compared: COMPONENT_TEST_DIR = $(SOURCE_DIR_OLD)
+
+$(MANIFEST_BASE)-pylint-27.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
+$(MANIFEST_BASE)-pylint-34.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
+
+# Manifest convenience variables.
+$(MANIFEST_BASE)-pylint-27.mogrified: NEW_ONLY = \#
+$(MANIFEST_BASE)-pylint-34.mogrified: NEW_ONLY = \#
+$(MANIFEST_BASE)-pylint-35.mogrified: OLD_ONLY = \#
+$(MANIFEST_BASE)-pylint-37.mogrified: OLD_ONLY = \#
+
+PKG_MACROS += OLD_ONLY="$(OLD_ONLY)"
+PKG_MACROS += NEW_ONLY="$(NEW_ONLY)"
+
+# Meta package must have versions of older runtimes fixed
+FIX_MANIFEST_VERSIONS:
+	echo "<transform depend fmri=(.*)pylint-(27|34)@(.*) \
+		-> edit fmri $(COMPONENT_VERSION) $(COMPONENT_VERSION_OLD)>" | \
+	$(PKGMOGRIFY) /dev/fd/0 $(MANIFEST_BASE)-pylint.mogrified \
+		> $(MANIFEST_BASE)-pylint.mogrified-fixed ;
+	$(MV) $(MANIFEST_BASE)-pylint.mogrified-fixed \
+		$(MANIFEST_BASE)-pylint.mogrified
+
+$(MANIFEST_BASE)-pylint.mangled: FIX_MANIFEST_VERSIONS
+
+
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
 COMPONENT_TEST_TRANSFORMS += '-n -e "s/\(in \).*\(seconds\)/\1x \2/p"'
 
-COMPONENT_SYSTEM_TEST_CMD = $(PYTHON) -m pytest
-COMPONENT_SYSTEM_TEST_ARGS =
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+
+# common targets
+build:		$(BUILD_NO_ARCH)
+
+install:	$(INSTALL_NO_ARCH)
+
+test:		$(TEST_NO_ARCH)
+
+system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)

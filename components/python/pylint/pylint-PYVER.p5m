@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
@@ -42,9 +42,9 @@ file path=usr/bin/epylint-$(PYVER)
 link path=usr/bin/pylint target=pylint-$(PYVER) mediator=python \
     mediator-version=$(PYVER)
 file path=usr/bin/pylint-$(PYVER)
-link path=usr/bin/pylint-gui target=pylint-gui-$(PYVER) mediator=python \
-    mediator-version=$(PYVER)
-file path=usr/bin/pylint-gui-$(PYVER)
+$(OLD_ONLY)link path=usr/bin/pylint-gui target=pylint-gui-$(PYVER) \
+    mediator=python mediator-version=$(PYVER)
+$(OLD_ONLY)file path=usr/bin/pylint-gui-$(PYVER)
 link path=usr/bin/pyreverse target=pyreverse-$(PYVER) mediator=python \
     mediator-version=$(PYVER)
 file path=usr/bin/pyreverse-$(PYVER)
@@ -74,6 +74,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/pylint/checkers/misc.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/checkers/newstyle.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/checkers/python3.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/checkers/raw_metrics.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/pylint/checkers/refactoring.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/checkers/similar.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/checkers/spelling.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/checkers/stdlib.py
@@ -83,16 +84,21 @@ file path=usr/lib/python$(PYVER)/vendor-packages/pylint/checkers/utils.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/checkers/variables.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/config.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/epylint.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/pylint/exceptions.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/extensions/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/extensions/_check_docs_utils.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/extensions/bad_builtin.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/extensions/check_docs.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/extensions/check_elif.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/pylint/extensions/comparetozero.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/extensions/docparams.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/extensions/docstyle.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/pylint/extensions/emptystring.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/extensions/mccabe.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/pylint/extensions/overlapping_exceptions.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/pylint/extensions/redefined_variable_type.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/graph.py
-file path=usr/lib/python$(PYVER)/vendor-packages/pylint/gui.py
+$(OLD_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/pylint/gui.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/interfaces.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/lint.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/pyreverse/__init__.py
@@ -104,12 +110,12 @@ file path=usr/lib/python$(PYVER)/vendor-packages/pylint/pyreverse/utils.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/pyreverse/vcgutils.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/pyreverse/writer.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/reporters/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/pylint/reporters/guireporter.py
-file path=usr/lib/python$(PYVER)/vendor-packages/pylint/reporters/html.py
+$(OLD_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/pylint/reporters/guireporter.py
+$(OLD_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/pylint/reporters/html.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/reporters/json.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/reporters/text.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/reporters/ureports/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/pylint/reporters/ureports/html_writer.py
+$(OLD_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/pylint/reporters/ureports/html_writer.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/reporters/ureports/nodes.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/reporters/ureports/text_writer.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint/testutils.py
@@ -128,19 +134,14 @@ depend type=require \
 # force a dependency on astroid; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/astroid-$(PYV)
 
+# force a dependency on backports.functools_lru_cache; pkgdepend work is needed to flush this out.
+depend type=require fmri=library/python/backports.functools_lru_cache-$(PYV)
+
 # force a dependency on isort; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/isort-$(PYV)
 
-# force a dependency on logilab-common; pkgdepend work is needed to flush
-# this out.
-depend type=require fmri=library/python/logilab-common-$(PYV)
-
 # force a dependency on mccabe; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/mccabe-$(PYV)
-
-# force a dependency on repoze.lru-27; pkgdepend work is needed to flush
-# this out.
-$(PYTHON_2.7_ONLY)depend type=require fmri=library/python/repoze.lru-27
 
 # force a dependency on six; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/six-$(PYV)
