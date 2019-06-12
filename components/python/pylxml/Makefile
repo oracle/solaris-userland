@@ -20,27 +20,27 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
+COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		lxml
-COMPONENT_VERSION=	3.6.4
+COMPONENT_VERSION=	4.3.3
 COMPONENT_PROJECT_URL=	http://lxml.de/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:61d5d3e00b5821e6cda099b3b4ccfea4527bf7c595e0fb3a7a760490cedd6172
+    sha256:4a03dd682f8e35a10234904e0b9508d705ff98cf962c5851ed052e9340df3d90
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/lxml
 COMPONENT_ANITYA_ID=	3914
 
-TPNO=			31680
+TPNO=			50931
 
-# disable optimization to prevent the Studio compilers from spinning
-studio_OPT.i386.32 =
-studio_OPT.i386.64 =
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -75,7 +75,7 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/\(building\).*/d" ' \
 	'-e "/\(Compiling\).*/d" ' \
 	'-e "/\(Cythonizing\).*/d" ' \
-        '-e "/\(copying\).*/d" ' \
+	'-e "/\(copying\).*/d" ' \
 	'-e "/\(creating\).*/d" ' \
 	'-e "/\(prototype:\).*/d" ' \
 	'-e "/\(warning:\).*/d" ' \
@@ -84,6 +84,7 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/\(cannot find\).*/d" ' \
 	'-e "s|\(Ran [0-9][0-9]* tests\).*|\1|" '
 
+# common targets
 build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)
