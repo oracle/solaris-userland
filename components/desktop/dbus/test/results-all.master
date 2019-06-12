@@ -55,6 +55,8 @@ PASS: test-dbus-daemon 5 /echo/limited
 PASS: test-dbus-daemon 6 /no-reply/disconnect
 PASS: test-dbus-daemon 7 /no-reply/timeout
 PASS: test-dbus-daemon 8 /canonical-path/uae
+SKIP: test-dbus-daemon 9 /fd-limit/session # SKIP prlimit() not supported on this platform
+SKIP: test-dbus-daemon 10 /fd-limit/system # SKIP cannot use alternative uid when not uid 0
 PASS: test-dbus-daemon-eavesdrop 1 /eavedrop/match_keyword/broadcast
 PASS: test-dbus-daemon-eavesdrop 2 /eavedrop/match_keyword/unicast_to_receiver
 PASS: test-dbus-daemon-eavesdrop 3 /eavedrop/match_keyword/unicast_to_sender
@@ -83,11 +85,13 @@ PASS: test-monitor 7 /monitor/method-call
 PASS: test-monitor 8 /monitor/forbidden-method
 PASS: test-monitor 9 /monitor/dbus-daemon
 PASS: test-monitor 10 /monitor/selective
-PASS: test-monitor 11 /monitor/wildcard
-PASS: test-monitor 12 /monitor/no-rule
-PASS: test-monitor 13 /monitor/eavesdrop
-PASS: test-monitor 14 /monitor/no-eavesdrop
-PASS: test-monitor 15 /monitor/activation
+PASS: test-monitor 11 /monitor/well-known-destination
+PASS: test-monitor 12 /monitor/unique-destination
+PASS: test-monitor 13 /monitor/wildcard
+PASS: test-monitor 14 /monitor/no-rule
+PASS: test-monitor 15 /monitor/eavesdrop
+PASS: test-monitor 16 /monitor/no-eavesdrop
+PASS: test-monitor 17 /monitor/activation
 PASS: test-loopback 1 /connect/tcp
 PASS: test-loopback 2 /connect/nonce-tcp
 PASS: test-loopback 3 /connect/unix
@@ -124,11 +128,11 @@ SKIP: test-uid-permissions 4 /uid-permissions/monitor/other # SKIP cannot use al
 PASS: test-sd-activation 1 /sd-activation/activation
 PASS: test-sd-activation 2 /sd-activation/uae
 ============================================================================
-Testsuite summary for dbus 1.10.22
+Testsuite summary for dbus 1.10.28
 ============================================================================
-# TOTAL: 100
-# PASS:  96
-# SKIP:  4
+# TOTAL: 104
+# PASS:  98
+# SKIP:  6
 # XFAIL: 0
 # FAIL:  0
 # XPASS: 0
@@ -147,7 +151,7 @@ make[4]: Leaving directory '$(@D)/test/name-test'
 make[4]: Entering directory '$(@D)/test/name-test'
 make[5]: Entering directory '$(@D)/test/name-test'
 ============================================================================
-Testsuite summary for dbus 1.10.22
+Testsuite summary for dbus 1.10.28
 ============================================================================
 # TOTAL: 0
 # PASS:  0
