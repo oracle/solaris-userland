@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -38,28 +38,22 @@ COMPONENT_ANITYA_ID=	13210
 
 TPNO=			28112
 
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-COMPONENT_TEST_ARGS=	test
-COMPONENT_TEST_CMD=	$(MAKE)
-COMPONENT_TEST_DIR=	$(COMPONENT_SRC)
-# "make test" expects GNU Make as make(1)
-COMPONENT_TEST_ENV=	PATH=/usr/gnu/bin:/usr/bin
-
 # common targets
 build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-# tests require local, online svc:/application/database/memcached:default
-test:		$(TEST_NO_ARCH)
+test:		$(NO_TESTS)
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += library/python/six-27
-REQUIRED_PACKAGES += library/python/six-34
-REQUIRED_PACKAGES += library/python/six-35
+REQUIRED_PACKAGES += library/python/six

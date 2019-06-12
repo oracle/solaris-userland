@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # The old FMRI scheme of library/python-2/... was renamed to
@@ -32,3 +32,9 @@
 
 <transform depend fmri=library/python-2/.*-3\d@.*,5.12-5.12.0.0.0.4[14].0 \
     type=optional -> drop>
+
+
+# Python packages that were renamed should not have rename depend for runtimes
+# for which given package was never delivered.
+
+<transform depend fmri=library/python/logilab-astng-3\d@.* type=optional -> drop>

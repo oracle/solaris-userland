@@ -22,6 +22,7 @@
 # Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
+COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cx_Oracle
@@ -39,7 +40,7 @@ COMPONENT_ANITYA_ID=	13233
 #                       for email trail of the approval please see
 #                       /shared/sac/PSARC/2015/294/approvals)
 
-PYTHON_VERSIONS=	$(PYTHON3_VERSIONS)
+PYTHON_VERSIONS=	$(PYTHON3_VERSIONS) 3.7
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

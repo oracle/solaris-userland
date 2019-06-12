@@ -38,6 +38,9 @@ COMPONENT_ANITYA_ID=	6902
 
 TPNO=			31984
 
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
@@ -55,6 +58,7 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^plugins.*/d" ' \
 	'-e "s|\(in \).*\(seconds\).*|\1 x \2|"'
 
+# common targets
 build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)

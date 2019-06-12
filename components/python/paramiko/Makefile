@@ -38,6 +38,9 @@ COMPONENT_ANITYA_ID=	3954
 
 TPNO=			51397
 
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
@@ -48,7 +51,7 @@ COMPONENT_TEST_ENV +=	PYTHONPATH=$(SOURCE_DIR)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =	--verbose --disable-pytest-warnings
+COMPONENT_TEST_ARGS =
 
 # ============== is followed by hard-to-match tracebacks
 COMPONENT_TEST_TRANSFORMS += \

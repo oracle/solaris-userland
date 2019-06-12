@@ -38,6 +38,9 @@ COMPONENT_ANITYA_ID=	3828
 
 TPNO=			49824
 
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
@@ -91,6 +94,6 @@ COMPONENT_TEST_TRANSFORMS += \
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += library/python/mock-27
-REQUIRED_PACKAGES += library/python/setuptools-27
+REQUIRED_PACKAGES += library/python/mock
+REQUIRED_PACKAGES += library/python/setuptools
 REQUIRED_PACKAGES += text/gnu-gettext

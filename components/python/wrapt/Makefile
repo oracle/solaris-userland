@@ -20,9 +20,10 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
+COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		wrapt
@@ -38,6 +39,9 @@ COMPONENT_ANITYA_ID=	6108
 
 TPNO=			26813
 
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
@@ -49,6 +53,4 @@ build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)
 
-# see $(COMPONENT_SRC)/test-requirements.txt for the python modules
-# required to execute unittests.
 test:		$(NO_TESTS)
