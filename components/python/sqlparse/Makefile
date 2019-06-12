@@ -20,37 +20,44 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sqlparse
-COMPONENT_VERSION=	0.1.19
+COMPONENT_VERSION=	0.3.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d896be1a1c7f24bffe08d7a64e6f0176b260e281c5f3685afe7826f8bada4ee8
+    sha256:7c3dca29c022744e95b547e867cee89f4fce4373f3549ccd8797d8eb52cdb873
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://pypi.python.org/pypi/sqlparse/
 COMPONENT_BUGDB=	python-mod/sqlparse
 COMPONENT_ANITYA_ID=	4038
 
-TPNO=			29123
+TPNO=			51776
+
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
-
 COMPONENT_POST_INSTALL_ACTION = \
 	(cd $(PROTO_DIR)/usr/bin ; \
 	 $(MV) -f sqlformat sqlformat-$(PYTHON_VERSION))
+
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
+
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
 build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-test:		$(NO_TESTS)
+test:		$(TEST_NO_ARCH)
