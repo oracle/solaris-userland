@@ -18,14 +18,9 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
-# None of the astroid/test/testdata *.py files have *.pyc files,
-# and the *.pyc files for astroid tests are unnecessary and wouldn't
-# be tagged for optional.test (see below) if we auto generated them.
-<transform file path=.+/vendor-packages/astroid/tests/.+\.py$ -> default pkg.tmp.autopyc false>
-<transform file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/.* -> default facet.optional.test true>
 set name=pkg.fmri \
     value=pkg:/library/python/astroid-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary \
@@ -48,26 +43,52 @@ file path=usr/lib/python$(PYVER)/vendor-packages/astroid-$(COMPONENT_VERSION)-py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid-$(COMPONENT_VERSION)-py$(PYVER).egg-info/top_level.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/__pkginfo__.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/_ast.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/arguments.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/as_string.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/astpeephole.py
+$(OLD_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/astpeephole.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/bases.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_argparse.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_attrs.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_builtin_inference.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_collections.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_curses.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_dateutil.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_fstrings.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_functools.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_gi.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_hashlib.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_http.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_io.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_mechanize.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_multiprocessing.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_namedtuple_enum.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_nose.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_numpy.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_pkg_resources.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_pytest.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_qt.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_random.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_re.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_six.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_ssl.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_stdlib.py
+$(OLD_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_stdlib.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_subprocess.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_threading.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_typing.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/brain/brain_uuid.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/builder.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/context.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/decorators.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/exceptions.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/helpers.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/inference.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/interpreter/__init__.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/interpreter/_import/__init__.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/interpreter/_import/spec.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/interpreter/_import/util.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/interpreter/dunder_lookup.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/astroid/interpreter/objectmodel.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/manager.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/mixins.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/modutils.py
@@ -79,106 +100,6 @@ file path=usr/lib/python$(PYVER)/vendor-packages/astroid/raw_building.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/rebuilder.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/scoped_nodes.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/test_utils.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/resources.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/MyPyPa-0.1.0-py2.5.egg
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/MyPyPa-0.1.0-py2.5.zip
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/SSL1/Connection1.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/SSL1/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/absimp/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/absimp/sidepackage/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/absimp/string.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/absimport.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/all.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/appl/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/appl/myConnection.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/clientmodule_test.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/descriptor_crash.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/email.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/find_test/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/find_test/module.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/find_test/module2.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/find_test/noendingnewline.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/find_test/nonregr.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/format.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/joined_strings.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/lmfp/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/lmfp/foo.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/module.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/module1abs/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/module1abs/core.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/module2.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/noendingnewline.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/nonregr.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/notall.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/package/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/package/absimport.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/package/hello.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/package/import_package_subpackage_module.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/package/subpackage/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/package/subpackage/module.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/recursion.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/suppliermodule_test.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/unicode_package/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python2/data/unicode_package/core/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/MyPyPa-0.1.0-py2.5.egg
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/MyPyPa-0.1.0-py2.5.zip
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/SSL1/Connection1.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/SSL1/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/absimp/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/absimp/sidepackage/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/absimp/string.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/absimport.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/all.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/appl/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/appl/myConnection.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/clientmodule_test.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/descriptor_crash.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/email.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/find_test/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/find_test/module.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/find_test/module2.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/find_test/noendingnewline.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/find_test/nonregr.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/format.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/joined_strings.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/lmfp/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/lmfp/foo.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/module.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/module1abs/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/module1abs/core.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/module2.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/noendingnewline.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/nonregr.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/notall.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/package/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/package/absimport.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/package/hello.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/package/import_package_subpackage_module.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/package/subpackage/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/package/subpackage/module.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/recursion.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/suppliermodule_test.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/unicode_package/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/testdata/python3/data/unicode_package/core/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/unittest_brain.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/unittest_builder.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/unittest_inference.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/unittest_lookup.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/unittest_manager.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/unittest_modutils.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/unittest_nodes.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/unittest_objects.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/unittest_peephole.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/unittest_protocols.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/unittest_python3.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/unittest_raw_building.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/unittest_regrtest.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/unittest_scoped_nodes.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/unittest_transforms.py
-file path=usr/lib/python$(PYVER)/vendor-packages/astroid/tests/unittest_utils.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/transforms.py
 file path=usr/lib/python$(PYVER)/vendor-packages/astroid/util.py
 #
@@ -188,7 +109,7 @@ license astroid.license license=LGPLv2.1
 depend type=optional \
     fmri=library/python/logilab-astng-$(PYV)@0.24.0,5.12-5.12.0.0.0.82.0
 
-# force a dependency on the Python $(PYVER) runtime
+# force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
 
@@ -199,10 +120,6 @@ depend type=require \
 # force a dependency on lazy-object-proxy; pkgdepend work is needed to flush
 # this out.
 depend type=require fmri=library/python/lazy-object-proxy-$(PYV)
-
-# force a dependency on logilab-common; pkgdepend work is needed to flush
-# this out.
-depend type=require fmri=library/python/logilab-common-$(PYV)
 
 # force a dependency on six; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/six-$(PYV)
