@@ -20,17 +20,17 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		wget
-COMPONENT_VERSION=	1.19.5
-TPNO=			43017
+COMPONENT_VERSION=	1.20.3
+TPNO=			52321
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
-COMPONENT_ARCHIVE_HASH=	sha256:b39212abe1a73f2b28f4c6cb223c738559caac91d6e416a6d91d4b9d55c9faee
+COMPONENT_ARCHIVE_HASH= sha256:31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e
 COMPONENT_ANITYA_ID=	5124
 
 # Enable adiheap and adistack security extensions

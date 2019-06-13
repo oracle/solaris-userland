@@ -4,8 +4,10 @@ in /etc. sample.wgetrc, sample.wgetrc.munged_for_texi_inclusion and
 wget.texi shall be updated with this change. As this is Solaris specific
 patch it will not be pushed upstream.
 
---- wget-1.19.2/doc/sample.wgetrc.orig	2017-11-08 02:55:06.635950060 -0800
-+++ wget-1.19.2/doc/sample.wgetrc	2017-11-08 02:57:06.870726738 -0800
+diff --git a/doc/sample.wgetrc b/doc/sample.wgetrc
+index c0d0779..9a73ada 100644
+--- a/doc/sample.wgetrc
++++ b/doc/sample.wgetrc
 @@ -10,7 +10,7 @@
  ## Or online here:
  ##   https://www.gnu.org/software/wget/manual/wget.html#Startup-File
@@ -24,8 +26,10 @@ patch it will not be pushed upstream.
  ## Think well before you change them, since they may reduce wget's
  ## functionality, and make it behave contrary to the documentation:
  ##
---- wget-1.19.2/doc/sample.wgetrc.munged_for_texi_inclusion.orig	2017-11-08 02:57:36.224658702 -0800
-+++ wget-1.19.2/doc/sample.wgetrc.munged_for_texi_inclusion	2017-11-08 02:58:39.229563586 -0800
+diff --git a/doc/sample.wgetrc.munged_for_texi_inclusion b/doc/sample.wgetrc.munged_for_texi_inclusion
+index 3c7f2f4..521ef16 100644
+--- a/doc/sample.wgetrc.munged_for_texi_inclusion
++++ b/doc/sample.wgetrc.munged_for_texi_inclusion
 @@ -10,7 +10,7 @@
  ## Or online here:
  ##   https://www.gnu.org/software/wget/manual/wget.html#Startup-File
@@ -44,9 +48,11 @@ patch it will not be pushed upstream.
  ## Think well before you change them, since they may reduce wget's
  ## functionality, and make it behave contrary to the documentation:
  ##
---- wget-1.19.2/doc/wget.texi.orig	2017-11-08 02:59:03.681380979 -0800
-+++ wget-1.19.2/doc/wget.texi	2017-11-08 03:02:55.190773510 -0800
-@@ -191,7 +191,7 @@
+diff --git a/doc/wget.texi b/doc/wget.texi
+index 5c1d305..04c67ec 100644
+--- a/doc/wget.texi
++++ b/doc/wget.texi
+@@ -190,7 +190,7 @@ gauge can be customized to your preferences.
  Most of the features are fully configurable, either through command line
  options, or via the initialization file @file{.wgetrc} (@pxref{Startup
  File}).  Wget allows you to define @dfn{global} startup files
@@ -55,7 +61,7 @@ patch it will not be pushed upstream.
  specify the location of a startup file with the --config option.
  To disable the reading of config files, use --no-config.
  If both --config and --no-config are given, --no-config is ignored.
-@@ -200,7 +200,7 @@
+@@ -199,7 +199,7 @@ If both --config and --no-config are given, --no-config is ignored.
  @ignore
  @c man begin FILES
  @table @samp
@@ -64,7 +70,7 @@ patch it will not be pushed upstream.
  Default location of the @dfn{global} startup file.
  
  @item .wgetrc
-@@ -3143,8 +3143,7 @@
+@@ -3166,8 +3166,7 @@ commands.
  @cindex location of wgetrc
  
  When initializing, Wget will look for a @dfn{global} startup file,
@@ -74,7 +80,7 @@ patch it will not be pushed upstream.
  from there, if it exists.
  
  Then it will look for the user's file.  If the environmental variable
-@@ -3155,7 +3154,7 @@
+@@ -3178,7 +3177,7 @@ If @code{WGETRC} is not set, Wget will try to load @file{$HOME/.wgetrc}.
  
  The fact that user's settings are loaded after the system-wide ones
  means that in case of collision user's wgetrc @emph{overrides} the
