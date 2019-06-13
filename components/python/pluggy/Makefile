@@ -27,17 +27,17 @@ include ../../../make-rules/shared-macros.mk
 COMPILER=	gcc
 
 COMPONENT_NAME=		pluggy
-COMPONENT_VERSION=	0.8.1
+COMPONENT_VERSION=	0.9.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8ddc32f03971bfdf900a81961a48ccf2fb677cf7715108f85295c67405798616
+    sha256:19ecf9ce9db2fce065a7a0586e07cfb4ac8614fe96edf628a264b1c70116cf8f
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/untitaker/python-atomicwrites
 COMPONENT_BUGDB=	python-mod/pluggy
 COMPONENT_ANITYA_ID=	7500
 
-TPNO=			50276
+TPNO=			52319
 
 # Temporary solution for Python3.7 ready components
 PYTHON_VERSIONS = $(PYTHON3.7_READY)
