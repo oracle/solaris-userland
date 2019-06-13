@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 # Studio compiler failed to build ref-filter.c:
@@ -64,10 +64,6 @@ CONFIGURE_LIBDIR.64 =	$(CONFIGURE_PREFIX)/lib
 CONFIGURE_SCRIPT    =	$(@D)/configure
 CPPFLAGS += "-I/usr/include/pcre"
 
-# pcre on Solaris is not compiled with --enable-jit, so this needs to be
-# told to git
-CPPFLAGS += "-DNO_LIBPCRE1_JIT"
-
 # Needed to use the SHA1 implementation from OpenSSL (rather than git's).
 # All three are needed otherwise the git top-level Makefile outputs:
 # * new build flags
@@ -78,7 +74,7 @@ COMPONENT_TEST_ENV +=	OPENSSL_SHA1=1
 
 CONFIGURE_OPTIONS  +=	--sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS  +=	--libexecdir=$(USRLIBDIR)
-CONFIGURE_OPTIONS  +=	--with-libpcre
+CONFIGURE_OPTIONS  +=	--with-libpcre2
 CONFIGURE_OPTIONS  +=	--with-perl=$(PERL)
 CONFIGURE_OPTIONS  +=	--with-python=$(PYTHON.$(PYTHON_VERSION))
 
@@ -157,7 +153,7 @@ COMPONENT_PRE_CONFIGURE_ACTION += ; (cd $(@D); $(GMAKE) configure)
 
 REQUIRED_PACKAGES += crypto/gnupg
 REQUIRED_PACKAGES += library/expat
-REQUIRED_PACKAGES += library/pcre
+REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += $(PERL_PKG)
