@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2013, 2014, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
@@ -40,7 +40,20 @@ file path=usr/lib/python$(PYVER)/vendor-packages/cmd2-$(COMPONENT_VERSION)-py$(P
 file path=usr/lib/python$(PYVER)/vendor-packages/cmd2-$(COMPONENT_VERSION)-py$(PYVER).egg-info/dependency_links.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/cmd2-$(COMPONENT_VERSION)-py$(PYVER).egg-info/requires.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/cmd2-$(COMPONENT_VERSION)-py$(PYVER).egg-info/top_level.txt
-file path=usr/lib/python$(PYVER)/vendor-packages/cmd2.py
+$(OLD_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/cmd2.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/__init__.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/argparse_completer.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/clipboard.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/cmd2.py \
+    pkg.depend.bypass-generate=.*
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/constants.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/history.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/parsing.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/plugin.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/pyscript_bridge.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/rl_utils.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/transcript.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/utils.py
 license cmd2.license license=MIT
 
 # force the rename with an optional dependency on the old name
@@ -51,9 +64,21 @@ depend type=optional \
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
 
+# force a dependency on attrs; pkgdepend work is needed to flush this out.
+$(NEW_ONLY)depend type=require fmri=library/python/attrs-$(PYV)
+
 # force a dependency on the cmd2 package
 depend type=require \
     fmri=library/python/cmd2@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 
+# force a dependency on colorama; pkgdepend work is needed to flush this out.
+$(NEW_ONLY)depend type=require fmri=library/python/colorama-$(PYV)
+
 # force a dependency on pyparsing; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/pyparsing-$(PYV)
+$(OLD_ONLY)depend type=require fmri=library/python/pyparsing-$(PYV)
+
+# force a dependency on pyperclip; pkgdepend work is needed to flush this out.
+$(NEW_ONLY)depend type=require fmri=library/python/pyperclip-$(PYV)
+
+# force a dependency on wcwidth; pkgdepend work is needed to flush this out.
+$(NEW_ONLY)depend type=require fmri=library/python/wcwidth-$(PYV)

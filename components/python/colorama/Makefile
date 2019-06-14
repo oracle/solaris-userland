@@ -20,34 +20,27 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		pyparsing
-COMPONENT_VERSION=	2.4.0
+COMPONENT_NAME=		colorama
+COMPONENT_VERSION=	0.4.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:06151405855b18034a8624fe6635c1f5d9822cede49196aa99a4d53910c4fede
+    sha256:05eed71e2e327246ad6b38c540c4a3117230b19679b875190486ddd2d721422d
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/pyparsing/
-COMPONENT_BUGDB=	python-mod/pyparsing
-COMPONENT_ANITYA_ID=	3756
+COMPONENT_PROJECT_URL=	https://github.com/tartley/colorama
+COMPONENT_BUGDB=	python-mod/colorama
+COMPONENT_ANITYA_ID=	3807
 
-TPNO=			52342
+TPNO=			47775
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)
-COMPONENT_TEST_CMD =	$(PYTHON) unitTests.py
-COMPONENT_TEST_ARGS =
-
-COMPONENT_TEST_TRANSFORMS += '-n -e "/\.\.\./p"'
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -56,6 +49,6 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-test:		$(TEST_NO_ARCH)
+test:		$(NO_TESTS)
 
-system-test:    $(NO_TESTS)
+system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)

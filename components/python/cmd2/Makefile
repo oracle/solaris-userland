@@ -25,24 +25,79 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cmd2
-COMPONENT_VERSION=	0.6.8
+COMPONENT_VERSION=	0.9.13
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:ac780d8c31fc107bf6b4edcbcea711de4ff776d59d89bb167f8819d2d83764a8
+	sha256:b873ade57ebf6c42a9d4e8c705fc2b16777e9d2e53fec5b113914dc65f2eae38
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/cmd2
 COMPONENT_BUGDB=	python-mod/cmd2
 COMPONENT_ANITYA_ID=	13187
 
-TPNO=			28756
+TPNO=			52381
 
-# This component is not yet built for Python 3.7
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
+
+COMPONENT_NAME_OLD=		$(COMPONENT_NAME)
+COMPONENT_VERSION_OLD=	0.6.8
+COMPONENT_SRC_OLD=		$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
+COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
+COMPONENT_ARCHIVE_HASH_OLD=	\
+	sha256:ac780d8c31fc107bf6b4edcbcea711de4ff776d59d89bb167f8819d2d83764a8
+COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
+
+TPNO_OLD=		28756
+
+
+# This component is delivered in two different versions.
+# The newer one does no longer support Python 2.7 and 3.4 would need additional
+# dependencies for this new version and since it will be EOL very soon, it
+# doesn't really make sense to add them.
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+# Convenience variables
+TARGET_27 = $(BUILD_DIR)/$(MACH)-2.7/
+TARGET_34 = $(BUILD_DIR)/$(MACH)-3.4/
+TARGET_35 = $(BUILD_DIR)/$(MACH)-3.5/
+TARGET_37 = $(BUILD_DIR)/$(MACH)-3.7/
+SOURCE_DIR_OLD = $(COMPONENT_DIR)/$(COMPONENT_SRC_OLD)
+
+# Targets updated for older version build
+$(TARGET_27).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
+$(TARGET_34).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
+
+$(TARGET_27).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
+$(TARGET_34).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
+
+$(MANIFEST_BASE)-cmd2-27.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
+$(MANIFEST_BASE)-cmd2-34.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
+
+# Manifest convenience variables.
+$(MANIFEST_BASE)-cmd2-27.mogrified: NEW_ONLY = \#
+$(MANIFEST_BASE)-cmd2-34.mogrified: NEW_ONLY = \#
+$(MANIFEST_BASE)-cmd2-35.mogrified: OLD_ONLY = \#
+$(MANIFEST_BASE)-cmd2-37.mogrified: OLD_ONLY = \#
+
+PKG_MACROS += OLD_ONLY="$(OLD_ONLY)"
+PKG_MACROS += NEW_ONLY="$(NEW_ONLY)"
+
+# Meta package must have versions of older runtimes fixed
+FIX_MANIFEST_VERSIONS:
+	echo "<transform depend fmri=(.*)cmd2-(27|34)@(.*) \
+		-> edit fmri $(COMPONENT_VERSION) $(COMPONENT_VERSION_OLD)>" | \
+	$(PKGMOGRIFY) /dev/fd/0 $(MANIFEST_BASE)-cmd2.mogrified \
+		> $(MANIFEST_BASE)-cmd2.mogrified-fixed ;
+	$(MV) $(MANIFEST_BASE)-cmd2.mogrified-fixed \
+		$(MANIFEST_BASE)-cmd2.mogrified
+
+$(MANIFEST_BASE)-cmd2.mangled: FIX_MANIFEST_VERSIONS
+
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -51,7 +106,7 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-test:		$(NO_TESTS)
+test:		$(TARGET_35).tested $(TARGET_37).tested
 
 system-test:    $(NO_TESTS)
 

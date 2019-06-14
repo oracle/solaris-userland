@@ -20,34 +20,31 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		pyparsing
-COMPONENT_VERSION=	2.4.0
+COMPONENT_NAME=		wcwidth
+COMPONENT_VERSION=	0.1.7
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:06151405855b18034a8624fe6635c1f5d9822cede49196aa99a4d53910c4fede
+    sha256:ec99da6bc4b2c5d6ffef09c079f0a9b8aa29d95c27939b68d3a54a61defbd50b
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/pyparsing/
-COMPONENT_BUGDB=	python-mod/pyparsing
-COMPONENT_ANITYA_ID=	3756
+COMPONENT_PROJECT_URL=	https://github.com/jquast/wcwidth
+COMPONENT_BUGDB=	python-mod/wcwidth
+COMPONENT_ANITYA_ID=	8743
 
-TPNO=			52342
+TPNO=			32031
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
-COMPONENT_TEST_CMD =	$(PYTHON) unitTests.py
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
-
-COMPONENT_TEST_TRANSFORMS += '-n -e "/\.\.\./p"'
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -58,4 +55,4 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(NO_TESTS)
+system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
