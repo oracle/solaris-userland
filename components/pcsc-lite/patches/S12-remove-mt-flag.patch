@@ -1,0 +1,20 @@
+Patch Taken from: https://savannah.gnu.org/patch/index.php?8847#attached
+
+--- a/m4/ax_pthread.m4.orig	2015-04-10 11:30:14.000000000 -0700
++++ b/m4/ax_pthread.m4	2019-05-02 23:56:56.133890882 -0700
+@@ -256,14 +256,7 @@
+         flag=no
+         case ${host_os} in
+             aix* | freebsd* | darwin*) flag="-D_THREAD_SAFE";;
+-            osf* | hpux*) flag="-D_REENTRANT";;
+-            solaris*)
+-            if test "$GCC" = "yes"; then
+-                flag="-D_REENTRANT"
+-            else
+-                flag="-mt -D_REENTRANT"
+-            fi
+-            ;;
++	    osf* | hpux* | solaris*) flag="-D_REENTRANT";;
+         esac
+         AC_MSG_RESULT(${flag})
+         if test "x$flag" != xno; then
