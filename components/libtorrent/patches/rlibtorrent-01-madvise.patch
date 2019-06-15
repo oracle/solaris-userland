@@ -1,8 +1,11 @@
-Changes needed to allow libtorrent to compile with g++ and the Solaris
-version of madvise.
+Historically, <sys/mman.h> did not define madvise() properly for C++,
+leading libtorrent to compensate by defining it directly in the code.
+Since then, <sys/mman.h> has been fixed. Revert to the header, because
+it is the right thing to do, and because it allows us to get across the
+transition from the obsolete caddr_t definition to the modern (void *). See:
 
-These changes should be sent upstream if they can be adjusted to an
-acceptable form.
+	29897679 ON headers use caddr_t for standard interfaces
+		that should be (void *)
 
 --- libtorrent-0.13.6/scripts/common.m4.orig	2016-09-15 17:07:33.144629366 +0000
 +++ libtorrent-0.13.6/scripts/common.m4	2016-09-15 17:08:17.259446458 +0000
@@ -15,14 +18,18 @@ acceptable form.
        ])],
      [
        AC_MSG_RESULT(yes)
---- libtorrent-0.13.6/src/data/memory_chunk.cc.orig	2016-09-15 17:08:59.127701605 +0000
-+++ libtorrent-0.13.6/src/data/memory_chunk.cc	2016-09-15 17:24:27.343279729 +0000
-@@ -45,7 +45,7 @@
+--- libtorrent-0.13.6/src/data/memory_chunk.cc.orig	2019-06-15 03:49:32.429413467 +0000
++++ libtorrent-0.13.6/src/data/memory_chunk.cc	2019-06-15 03:50:00.246042180 +0000
+@@ -45,11 +45,7 @@
  #include "memory_chunk.h"
  
  #ifdef __sun__
 -extern "C" int madvise(void *, size_t, int);
-+extern "C" int madvise(caddr_t, size_t, int);
- //#include <sys/mman.h>
- //Should be the include line instead, but Solaris
- //has an annoying bug wherein it doesn't declare
+-//#include <sys/mman.h>
+-//Should be the include line instead, but Solaris
+-//has an annoying bug wherein it doesn't declare
+-//madvise for C++.
++#include <sys/mman.h>
+ #endif
+ 
+ namespace torrent {
