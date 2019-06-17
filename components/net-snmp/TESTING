@@ -1,0 +1,30 @@
+##Sanity testing
+For sanity testing, the snmpwalk command can be run over the entire MIB tree
+as given below.
+snmpwalk -v1 -c public localhost
+
+##SNMP v3 Encryption/Authentication
+Please refer the following link for detailed instructions for
+testing authentication and encryption.
+http://net-snmp.sourceforge.net/docs/README.snmpv3.html
+
+##Traps/Informs
+Instructions for setting up a TRAP/INFORM can be found at
+http://net-snmp.sourceforge.net/wiki/index.php/TUT:Configuring_snmptrapd_to_receive_SNMPv3_notifications.
+
+Please refer the "Real World Examples" for a sample output. 
+
+## Dependencies:
+Userland components:
+The hplip, php and python components have build time dependencies on net-snmp, thus any 
+uprev/interface change should be tested by creating a build machine with the updated 
+net-snmp packages and then building the dependent component on that build setup.
+
+ZFSSA:
+We need to build and test net-snmp on a ZFSSA system out of ON with the new packages. 
+The appliance package can be created by running a ON default build. 
+Package location : $SRC/data/pkg/fish-i386-nondebug/<pkgname>.pkg, where $SRC is the workspace root.
+
+Please refer the "Installing Appliance Media as an Update" section at
+http://fgw.us.oracle.com/twiki-bin/view/FishDevelopers/BuildIka 
+for more instructions on how to actually update the ZFSSA with the newly built package.
