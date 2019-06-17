@@ -37,11 +37,11 @@ COMPONENT_PROJECT_URL=	http://www.vim.org/
 COMPONENT_ANITYA_ID=	5092
 
 GIT_REPO=		https://github.com/vim/vim
-GIT_TAG=		v8.1.0209
-GIT_COMMIT_ID=		b6c8cd8dc
-GIT_HASH=		sha256:dbd725e76b869815638745eb65c97058ca7ceb57ebb3dddbcec401f1a74cc9df
+GIT_TAG=		v8.1.1561
+GIT_COMMIT_ID=		ae943150d
+GIT_HASH=		sha256:087c1ba657153c6a1220a352f1b15046a41f3688275c443f0b5d66e1a14bedb2
 
-TPNO=			44428
+TPNO=			52447
 
 PKG_MACROS +=	VIMVER=vim$(subst .,,$(COMPONENT_VERSION))
 
@@ -77,6 +77,7 @@ CONFIGURE_OPTIONS +=	--enable-perlinterp=dynamic
 CONFIGURE_OPTIONS +=	--enable-pythoninterp=dynamic
 CONFIGURE_OPTIONS +=	--enable-python3interp=dynamic
 CONFIGURE_OPTIONS +=	--enable-rubyinterp=dynamic
+CONFIGURE_OPTIONS +=	--disable-canberra
 
 # We build two variants: with and without X support.
 $(NOX_VARIANT)/.configured:	CONFIGURE_OPTIONS += --without-x
@@ -95,15 +96,6 @@ $(X_VARIANT)/.installed: COMPONENT_INSTALL_ARGS += -C src
 $(X_VARIANT)/.installed: COMPONENT_INSTALL_TARGETS = installvimbin
 
 COMPONENT_TEST_TARGETS = test
-
-$(SOURCE_DIR)/runtime/doc/uganda.txt: prep
-
-$(BUILD_DIR)/license: $(SOURCE_DIR)/runtime/doc/uganda.txt
-	nawk '/begin of license/ {p=1; getline; next} /end of license/ {p=0} p == 1 {print}' $< > $@
-
-# common targets
-install:	$(INSTALL_64) $(BUILD_DIR)/license
-
 
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf

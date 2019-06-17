@@ -4,13 +4,14 @@ run all the exit-vim autocommands, which end up busting the alternate stack
 at its default size. Increasing the default seems to do the trick, but it
 continues to be just a guess.
 
-The second change comes from Bram:
+The second change (already in upstream) comes from Bram:
 https://groups.google.com/d/msg/vim_dev/GrLf2ePQWDk/Gf3AMnjIAQAJ
-but is unknown whether this change will be made into official patch.
 
---- vim-8.1.0209-b6c8cd8dc/src/os_unix.c	2018-11-05 20:37:22.810775645 +0000
-+++ vim-8.1.0209-b6c8cd8dc/src/os_unix.c	2018-11-05 20:35:23.851831269 +0000
-@@ -912,9 +912,10 @@ mch_stackcheck(char *p)
+diff --git a/src/os_unix.c b/src/os_unix.c
+index 01f5f59..6069232 100644
+--- a/src/os_unix.c
++++ b/src/os_unix.c
+@@ -774,9 +774,10 @@ mch_stackcheck(char *p)
   * completely full.
   */
  
@@ -23,12 +24,3 @@ but is unknown whether this change will be made into official patch.
  
  # ifdef HAVE_SIGALTSTACK
  static stack_t sigstk;			/* for sigaltstack() */
-@@ -6198,7 +6199,7 @@ RealWaitForChar(int fd, long msec, int *
- 
- 	struct timeval  tv;
- 	struct timeval	*tvp;
--	fd_set		rfds, wfds, efds;
-+	static fd_set		rfds, wfds, efds;
- 	int		maxfd;
- 	long		towait = msec;
- 
