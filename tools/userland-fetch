@@ -81,6 +81,9 @@ def validate_signature(path: str, signature: str) -> Tuple[bool, str]:
     else:
         raise OSError(errno.ENOENT, "No Mercurial or Git repository was detected!")
 
+    if not os.path.exists(gpgdir):
+        raise OSError(errno.ENOENT, f"Directory {gpgdir} does not exists.")
+
     # Suppress the permissions warning: none of the information here is private,
     # so not having to worry about getting mercurial keeping the directory
     # unreadable is just simplest.
@@ -287,7 +290,7 @@ def download_from_paths(search_list: List[str], file_arg: str, url_arg: Optional
             qprint("failed")
             qprint(f"Can't open url {url}\n{err}")
             return False
-        except IOError:
+        except IOError as err:
             qprint("failed")
             qprint(f"Can't open file {name} for writing\n{err}")
             return False
