@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS = 64
 COMPILER = gcc
@@ -37,16 +37,16 @@ COMPONENT_ANITYA_ID    = 4223
 
 # Rubygems support
 COMPONENT_NAME_GEMS     = rubygems
-COMPONENT_VERSION_GEMS  = 2.7.8
+COMPONENT_VERSION_GEMS  = 3.0.4
 COMPONENT_SRC_NAME_GEMS = $(COMPONENT_NAME_GEMS)
 COMPONENT_SRC_GEMS      = $(COMPONENT_SRC_NAME_GEMS)-$(COMPONENT_VERSION_GEMS)
 COMPONENT_ARCHIVE_GEMS  = $(COMPONENT_SRC_GEMS).tgz
 COMPONENT_ARCHIVE_HASH_GEMS = \
-    sha256:f0d04b15a2dcf16c30895839366b0f0735651ade6cdaa424b15c0fe77e2fdf58
+    sha256:8292d0fb2e4dc6e074bb053894eb41f2ef533adcb088b7081450ae3cf62fe277
 COMPONENT_ARCHIVE_URL_GEMS = https://rubygems.org/rubygems/$(COMPONENT_ARCHIVE_GEMS)
 
 TPNO = 47006
-TPNO_GEMS = 47433
+TPNO_GEMS = 52373
 
 
 CFLAGS += "-std=gnu99"
