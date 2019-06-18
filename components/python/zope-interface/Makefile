@@ -66,3 +66,7 @@ test:		$(TEST_32_and_64)
 system-test:    $(SYSTEM_TEST_32_and_64)
 
 REQUIRED_PACKAGES += system/library
+
+# Testing related components
+REQUIRED_PACKAGES += library/python/coverage
+REQUIRED_PACKAGES += library/python/nose

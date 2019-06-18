@@ -57,9 +57,7 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-# requires pytest >= 2.8, which has not been upgraded yet
+# requires several components which are not in Solaris yet
 test:		$(NO_TESTS)
 
 system-test:    $(NO_TESTS)
-
-REQUIRED_PACKAGES += library/python/six

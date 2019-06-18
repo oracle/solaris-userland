@@ -60,5 +60,5 @@ test:		$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-
+# Setup related components
 REQUIRED_PACKAGES += library/python/setuptools_scm

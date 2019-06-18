@@ -56,4 +56,5 @@ test:		$(NO_TESTS)
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += library/python/six
+# Testing related components
+REQUIRED_PACKAGES += library/python/nose

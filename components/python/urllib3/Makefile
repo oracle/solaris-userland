@@ -54,5 +54,3 @@ install:	$(INSTALL_NO_ARCH)
 
 # Tests require Tornado 4.1
 test:		$(NO_TESTS)
-
-REQUIRED_PACKAGES += library/python/six

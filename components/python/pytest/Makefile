@@ -64,3 +64,9 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+
+# Testing related components
+REQUIRED_PACKAGES += library/python/hypothesis
+REQUIRED_PACKAGES += library/python/mock
+REQUIRED_PACKAGES += library/python/nose
+REQUIRED_PACKAGES += library/python/requests

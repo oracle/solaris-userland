@@ -70,5 +70,5 @@ test:		$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += library/python/backports.functools_lru_cache 
-REQUIRED_PACKAGES += library/python/more_itertools
+# Setup related components
+REQUIRED_PACKAGES += library/python/setuptools_scm

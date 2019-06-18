@@ -61,3 +61,6 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(TEST_NO_ARCH)
 
 system-test:	$(NO_TESTS)
+
+# Testing related components
+REQUIRED_PACKAGES += library/python/mock
