@@ -28,8 +28,10 @@ COMPILER=gcc
 
 include ../../make-rules/shared-macros.mk
 
+GCC_ROOT=/usr/gcc/9
+
 COMPONENT_NAME=		llvm
-COMPONENT_VERSION=	6.0.1
+COMPONENT_VERSION=	9.0.0
 COMPONENT_PROJECT_URL=	https://llvm.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)
 COMPONENT_BUGDB=	utility/llvm
@@ -38,18 +40,18 @@ COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC_NAME=	$(COMPONENT_SRC).src
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC_NAME).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b6d6c324f9c71494c0ccaf3dac1f16236d970002b42bb24a6c9e1634f7d0f4e2
+    sha256:d6a0565cf21f22e9b4353b2eb92622e8365000a9e90a16b09b56f8157eabfe84
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	1830
 
-TPNO=			45099
+TPNO=			54101
 
 COMPONENT_NAME_1 =	clang
 COMPONENT_SRC_1 =	cfe-$(COMPONENT_VERSION).src
 COMPONENT_ARCHIVE_1 =	$(COMPONENT_SRC_1).tar.xz
 COMPONENT_ARCHIVE_HASH_1 = \
-	sha256:7c243f1485bddfdfedada3cd402ff4792ea82362ff91fbdac2dae67c6026b667
+    sha256:7ba81eef7c22ca5da688fdf9d88c20934d2d6b40bfe150ffd338900890aa4610
 COMPONENT_ARCHIVE_URL_1 = $(COMPONENT_PROJECT_URL)/releases/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE_1)
 COMPONENT_SIG_URL_1=	$(COMPONENT_ARCHIVE_URL_1).sig
 COMPONENT_ANITYA_ID_1=	11811
@@ -393,6 +395,9 @@ test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
+# LLVM ships some static libraries (.a).
+MANIFEST_CLEANUP_TRANSFORM=
+
 REQUIRED_PACKAGES += developer/build/cmake
 REQUIRED_PACKAGES += developer/build/pkg-config
 REQUIRED_PACKAGES += developer/gnu-binutils
@@ -408,11 +413,11 @@ REQUIRED_PACKAGES += library/perl-5/xml-parser
 REQUIRED_PACKAGES += library/perl-5/xml-sax
 REQUIRED_PACKAGES += library/perl-5/xml-sax-base
 REQUIRED_PACKAGES += library/perl-5/xml-simple
-REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/header
-REQUIRED_PACKAGES += system/library/gcc/gcc-runtime-7
-REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime-7
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime-7
-REQUIRED_PACKAGES += system/library/gcc/gcc-gobjc-runtime-7
+REQUIRED_PACKAGES += system/library/gcc/gcc-runtime-9
+REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime-9
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime-9
+REQUIRED_PACKAGES += system/library/gcc/gcc-gobjc-runtime-9
 REQUIRED_PACKAGES += system/library/math

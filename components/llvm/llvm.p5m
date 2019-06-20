@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -43,6 +43,9 @@ file path=usr/bin/FileCheck
 file path=usr/bin/bugpoint
 file path=usr/bin/llc
 file path=usr/bin/lli
+file path=usr/bin/lli-child-target
+file path=usr/bin/llvm-PerfectShuffle
+link path=usr/bin/llvm-addr2line target=llvm-symbolizer
 file path=usr/bin/llvm-ar
 file path=usr/bin/llvm-as
 file path=usr/bin/llvm-bcanalyzer
@@ -54,18 +57,23 @@ file path=usr/bin/llvm-cov
 file path=usr/bin/llvm-cvtres
 file path=usr/bin/llvm-cxxdump
 file path=usr/bin/llvm-cxxfilt
+file path=usr/bin/llvm-cxxmap
 file path=usr/bin/llvm-diff
 file path=usr/bin/llvm-dis
-file path=usr/bin/llvm-dsymutil
+link path=usr/bin/llvm-dlltool target=llvm-ar
 file path=usr/bin/llvm-dwarfdump
 file path=usr/bin/llvm-dwp
+file path=usr/bin/llvm-elfabi
+file path=usr/bin/llvm-exegesis
 file path=usr/bin/llvm-extract
-hardlink path=usr/bin/llvm-lib target=llvm-ar
+file path=usr/bin/llvm-jitlink
+link path=usr/bin/llvm-lib target=llvm-ar
 file path=usr/bin/llvm-link
+file path=usr/bin/llvm-lipo
 file path=usr/bin/llvm-lto
 file path=usr/bin/llvm-lto2
 file path=usr/bin/llvm-mc
-file path=usr/bin/llvm-mcmarkup
+file path=usr/bin/llvm-mca
 file path=usr/bin/llvm-modextract
 file path=usr/bin/llvm-mt
 file path=usr/bin/llvm-nm
@@ -74,16 +82,19 @@ file path=usr/bin/llvm-objdump
 file path=usr/bin/llvm-opt-report
 file path=usr/bin/llvm-pdbutil
 file path=usr/bin/llvm-profdata
-hardlink path=usr/bin/llvm-ranlib target=llvm-ar
+link path=usr/bin/llvm-ranlib target=llvm-ar
 file path=usr/bin/llvm-rc
+link path=usr/bin/llvm-readelf target=llvm-readobj
 file path=usr/bin/llvm-readobj
 file path=usr/bin/llvm-rtdyld
 file path=usr/bin/llvm-size
 file path=usr/bin/llvm-split
 file path=usr/bin/llvm-stress
 file path=usr/bin/llvm-strings
+link path=usr/bin/llvm-strip target=llvm-objcopy
 file path=usr/bin/llvm-symbolizer
 file path=usr/bin/llvm-tblgen
+file path=usr/bin/llvm-undname
 file path=usr/bin/llvm-xray
 file path=usr/bin/obj2yaml
 file path=usr/bin/opt
@@ -91,12 +102,11 @@ file path=usr/bin/sancov
 file path=usr/bin/sanstats
 file path=usr/bin/verify-uselistorder
 file path=usr/bin/yaml2obj
-file path=usr/lib/$(MACH64)/BugpointPasses.so
-file path=usr/lib/$(MACH64)/LLVMHello.so
-link path=usr/lib/$(MACH64)/libLLVM-6.0.0.so target=libLLVM-6.0.so
-file path=usr/lib/$(MACH64)/libLLVM-6.0.so
-link path=usr/lib/$(MACH64)/libLLVM.so target=libLLVM-6.0.so
-file path=usr/lib/$(MACH64)/libLTO.so
+link path=usr/lib/$(MACH64)/libLLVM-$(COMPONENT_VERSION).so target=libLLVM-9.so
+file path=usr/lib/$(MACH64)/libLLVM-9.so
+link path=usr/lib/$(MACH64)/libLLVM.so target=libLLVM-9.so
+link path=usr/lib/$(MACH64)/libLTO.so target=libLTO.so.9
+file path=usr/lib/$(MACH64)/libLTO.so.9
 file path=usr/share/man/man1/FileCheck.1
 file path=usr/share/man/man1/bugpoint.1
 file path=usr/share/man/man1/lit.1
@@ -121,4 +131,4 @@ file path=usr/share/man/man1/llvm-stress.1
 file path=usr/share/man/man1/llvm-symbolizer.1
 file path=usr/share/man/man1/opt.1
 file path=usr/share/man/man1/tblgen.1
-license llvm.license license="University of Illinois/NCSA"
+license llvm.license license="Apache License v2.0 with LLVM Exceptions"
