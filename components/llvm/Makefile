@@ -29,7 +29,7 @@ COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		llvm
-COMPONENT_VERSION=	6.0.1
+COMPONENT_VERSION=	10.0.0
 COMPONENT_PROJECT_URL=	https://llvm.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)
 COMPONENT_BUGDB=	utility/llvm
@@ -38,19 +38,19 @@ COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC_NAME=	$(COMPONENT_SRC).src
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC_NAME).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b6d6c324f9c71494c0ccaf3dac1f16236d970002b42bb24a6c9e1634f7d0f4e2
-COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+    sha256:df83a44b3a9a71029049ec101fb0077ecbbdf5fe41e395215025779099a98fdf
+COMPONENT_ARCHIVE_URL=	https://github.com/llvm/llvm-project/releases/download/llvmorg-$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	1830
 
-TPNO=			45099
+TPNO=			57898
 
 COMPONENT_NAME_1 =	clang
-COMPONENT_SRC_1 =	cfe-$(COMPONENT_VERSION).src
+COMPONENT_SRC_1 =	clang-$(COMPONENT_VERSION).src
 COMPONENT_ARCHIVE_1 =	$(COMPONENT_SRC_1).tar.xz
 COMPONENT_ARCHIVE_HASH_1 = \
-	sha256:7c243f1485bddfdfedada3cd402ff4792ea82362ff91fbdac2dae67c6026b667
-COMPONENT_ARCHIVE_URL_1 = $(COMPONENT_PROJECT_URL)/releases/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE_1)
+    sha256:885b062b00e903df72631c5f98b9579ed1ed2790f74e5646b4234fa084eacb21
+COMPONENT_ARCHIVE_URL_1 = https://github.com/llvm/llvm-project/releases/download/llvmorg-$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE_1)
 COMPONENT_SIG_URL_1=	$(COMPONENT_ARCHIVE_URL_1).sig
 COMPONENT_ANITYA_ID_1=	11811
 
@@ -70,9 +70,6 @@ CLONEY = echo
 TEST_TARGET=
 SYSTEM_TEST_TARGET=
 include $(WS_MAKE_RULES)/common.mk
-
-# Not Python 3.x ready due to syntax errors
-PYTHON_VERSION = 2.7
 
 PATCH_LEVEL := 0
 DEBUG_BUILD := 0
@@ -117,7 +114,7 @@ COMPONENT_POST_BUILD_ACTION = \
       $(GMAKE) -C $(COMPONENT_DIR)/cxa_finalize build ; \
       fi
 
-COMPONENT_POST_INSTALL_ACTION = \
+COMPONENT_POST_INSTALL_ACTION += \
 	if test -d $(COMPONENT_DIR)/cxa_finalize ; then \
 	$(GMAKE) -C $(COMPONENT_DIR)/cxa_finalize install ; \
 	fi;
@@ -393,6 +390,26 @@ test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
+PERL_SCRIPTS += $(PROTO_DIR)/usr/libexec/ccc-analyzer
+PERL_SCRIPTS += $(PROTO_DIR)/usr/libexec/c++-analyzer
+PERL_SCRIPTS += $(PROTO_DIR)/usr/bin/scan-build
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/bin/git-clang-format
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/bin/hmaptool
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/bin/scan-build
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/bin/scan-view
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/lib/python$(PYTHON_VERSION)/vendor-packages/clang-format-diff.py
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/lib/python$(PYTHON_VERSION)/vendor-packages/Reporter.py
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/share/clang/clang-format-diff.py
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/share/scan-view/Reporter.py
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/share/scan-view/startfile.py
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/share/opt-viewer/opt-diff.py
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/share/opt-viewer/optrecord.py
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/share/opt-viewer/opt-stats.py
+PYTHON_SCRIPTS += $(PROTO_DIR)/usr/share/opt-viewer/opt-viewer.py
+
+# LLVM ships some static libraries (.a).
+MANIFEST_CLEANUP_TRANSFORM=
+
 REQUIRED_PACKAGES += developer/build/cmake
 REQUIRED_PACKAGES += developer/build/pkg-config
 REQUIRED_PACKAGES += developer/gnu-binutils
@@ -408,7 +425,7 @@ REQUIRED_PACKAGES += library/perl-5/xml-parser
 REQUIRED_PACKAGES += library/perl-5/xml-sax
 REQUIRED_PACKAGES += library/perl-5/xml-sax-base
 REQUIRED_PACKAGES += library/perl-5/xml-simple
-REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/header
 REQUIRED_PACKAGES += system/library/gcc/gcc-runtime-9

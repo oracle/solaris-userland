@@ -1,0 +1,28 @@
+Solaris specific packaging.
+
+--- tools/clang/tools/scan-build/bin/scan-build
++++ tools/clang/tools/scan-build/bin/scan-build
+@@ -1851,19 +1851,19 @@
+ 
+ # Determine the location of ccc-analyzer.
+ my $AbsRealBin = Cwd::realpath($RealBin);
+-my $Cmd = "$AbsRealBin/../libexec/ccc-analyzer";
+-my $CmdCXX = "$AbsRealBin/../libexec/c++-analyzer";
++my $Cmd = "$AbsRealBin/../lib/ccc-analyzer";
++my $CmdCXX = "$AbsRealBin/../lib/c++-analyzer";
+ 
+ # Portability: use less strict but portable check -e (file exists) instead of
+ # non-portable -x (file is executable). On some windows ports -x just checks
+ # file extension to determine if a file is executable (see Perl language
+ # reference, perlport)
+ if (!defined $Cmd || ! -e $Cmd) {
+-  $Cmd = "$AbsRealBin/ccc-analyzer";
++  $Cmd = "$AbsRealBin/../lib/ccc-analyzer";
+   DieDiag("'ccc-analyzer' does not exist at '$Cmd'\n") if(! -e $Cmd);
+ }
+ if (!defined $CmdCXX || ! -e $CmdCXX) {
+-  $CmdCXX = "$AbsRealBin/c++-analyzer";
++  $CmdCXX = "$AbsRealBin/../lib/c++-analyzer";
+   DieDiag("'c++-analyzer' does not exist at '$CmdCXX'\n") if(! -e $CmdCXX);
+ }
+ 
