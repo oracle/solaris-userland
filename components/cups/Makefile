@@ -95,6 +95,10 @@ BCUPSOBJ =	$(BUILD_DIR)/$(CUPSOBJ)
 BCUPSLIBSOBJ =	$(BUILD_DIR)/$(CUPSLIBSOBJ)
 METADATA_TEMPLATE=
 
+ADD_TO_HEAP =		^file|^link|^dir .*path=var.*/cups|^dir .*path=usr/lib/cups/
+EXCLUDE_FROM_HEAP =	path=etc/pam.d
+EXCLUSION_CRITERIA =	usr/include/.*\.h|usr/lib.*/lib.*\.so.*
+
 new-manifest:	$(BCUPSOBJ) $(BCUPSLIBSOBJ)
 
 $(CHECKED): new-manifest
@@ -103,15 +107,16 @@ $(CHECKED): new-manifest
 # - rules for 'path=mangled' are not reasonable
 # - objects in etc/pam.d/cups have conflict with system/core-os
 $(BUILD_DIR)/all.pkgobjs:	$(GENERATED).p5m
-	egrep -v 'path=mangled' $(GENERATED).p5m \
-		| nawk '{if (sub(/\\$$/,"")) printf "%s", $$0; else print $$0}' \
-		| /usr/xpg4/bin/egrep -e '^file|^link|^dir .*path=var.*/cups|^dir .*path=usr/lib/cups/' > $@
+	nawk '{if (sub(/\\$$/,"")) printf "%s", $$0; else print $$0}' $(GENERATED).p5m \
+		| egrep -v 'path=mangled' \
+		| /usr/xpg4/bin/egrep -e '$(ADD_TO_HEAP)' \
+		| /usr/xpg4/bin/egrep -v -e '$(EXCLUDE_FROM_HEAP)' > $@
 
 # cups.pkgobjs: objects of scheduler
 # if diff will find a differences against CUPSOBJ it returns !0 then make fails
 # note: in such case the diff seen in build-log can be directly applied to samba.pkgobjs in component dir by gpatch
 $(BCUPSOBJ): $(BUILD_DIR)/all.pkgobjs
-	/usr/xpg4/bin/egrep -v -e 'usr/include/.*\.h|usr/lib.*/lib.*\.so.*' $(BUILD_DIR)/all.pkgobjs >$@
+	/usr/xpg4/bin/egrep -v -e '$(EXCLUSION_CRITERIA)' $(BUILD_DIR)/all.pkgobjs >$@
 	gdiff -u $(CUPSOBJ) $@
 
 # cups-libs.pkgobjs: objects of cups API pkg
@@ -119,7 +124,7 @@ $(BCUPSOBJ): $(BUILD_DIR)/all.pkgobjs
 # if diff will find a differences against CUPSLIBSOBJ it returns !0 then make fails
 # note: in such case the diff seen in build-log can be directly applied to libsmbclient.pkgobjs in component dir by gpatch
 $(BCUPSLIBSOBJ): $(BUILD_DIR)/all.pkgobjs
-	/usr/xpg4/bin/egrep -e 'usr/include/.*\.h|usr/lib.*/lib.*\.so.*' $(BUILD_DIR)/all.pkgobjs >$@
+	/usr/xpg4/bin/egrep -e '$(EXCLUSION_CRITERIA)' $(BUILD_DIR)/all.pkgobjs >$@
 	gdiff -u $(CUPSLIBSOBJ) $@
 
 REQUIRED_PACKAGES += library/gnutls-3
