@@ -43,15 +43,6 @@ XORG_DIR=		$(COMPONENT_DIR:xvnc=xorg)
 get-xorg-value=		$(MAKE) --no-print-directory -C $(XORG_DIR) print-$(1) \
 				| $(PERL) -ne 'print "$$1\n" if m/^$(1)=(.*?)\s*\(origin:/'
 
-LIBDRM_BASE = $(WS_COMPONENTS)/x11/lib/libdrm/build/prototype/$(MACH)
-PKG_CONFIG_PATHS += $(LIBDRM_BASE)$(USRLIB)/pkgconfig/
-CPPFLAGS += -I$(LIBDRM_BASE)/usr/include/ -I$(LIBDRM_BASE)/usr/include/libdrm
-LD_OPTIONS += -L $(LIBDRM_BASE)$(USRLIB)
-
-XORGPROTO_BASE += $(WS_COMPONENTS)/x11/proto/build/prototype/$(MACH)
-PKG_CONFIG_PATHS += $(XORGPROTO_BASE)/usr/share/pkgconfig/
-CPPFLAGS += -I$(XORGPROTO_BASE)/usr/include/
-
 COMPONENT_NAME_1=	xorg-server
 COMPONENT_VERSION_1:=	$(shell $(call get-xorg-value,COMPONENT_VERSION))
 COMPONENT_SRC_1=     	$(COMPONENT_NAME_1)-$(COMPONENT_VERSION_1)

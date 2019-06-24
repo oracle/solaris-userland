@@ -27,13 +27,13 @@ BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xorg-server
-COMPONENT_VERSION=	1.20.3
+COMPONENT_VERSION=	1.20.6
 COMPONENT_ARCHIVE_HASH= \
-	sha256:1b3ce466c12cacbe2252b3ad5b0ed561972eef9d09e75900d65fb1e21f9201de
+	sha256:6316146304e6e8a36d5904987ae2917b5d5b195dc9fc63d67f7aca137e5a51d1
 COMPONENT_BUGDB=        x11/xorg-server
 COMPONENT_ANITYA_ID=	5250
 
-TPNO=			49340
+TPNO=			55669
 
 # Remove compiler specific visibility flag that breaks builds of drivers
 # with other compilers
@@ -87,15 +87,6 @@ COMPONENT_PREP_ACTION +=(cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
 COMPONENT_POST_UNPACK_ACTION = \
         $(CP) -r sun-src/IA $(SOURCE_DIR); \
         $(CP) -r sun-src/os/* $(SOURCE_DIR)/os;
-
-LIBDRM_BASE = $(WS_COMPONENTS)/x11/lib/libdrm/build/prototype/$(MACH)
-PKG_CONFIG_PATHS += $(LIBDRM_BASE)$(USRLIB)/pkgconfig/
-CPPFLAGS += -I$(LIBDRM_BASE)/usr/include/ -I$(LIBDRM_BASE)/usr/include/libdrm
-LD_OPTIONS += -L $(LIBDRM_BASE)$(USRLIB)
-
-XORGPROTO_BASE += $(WS_COMPONENTS)/x11/proto/build/prototype/$(MACH)
-PKG_CONFIG_PATHS += $(XORGPROTO_BASE)/usr/share/pkgconfig/
-CPPFLAGS += -I$(XORGPROTO_BASE)/usr/include/
 
 LDFLAGS += -lm
 CFLAGS += -I/usr/include/pixman-1

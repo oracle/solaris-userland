@@ -39,10 +39,5 @@ TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
-XCURSORGEN_BASE = $(WS_COMPONENTS)/x11/app/xcursorgen/build/prototype/$(MACH)
-PKG_CONFIG_PATHS += $(XCURSORGEN_BASE)/usr/lib/$(MACH64)/pkgconfig
-
-PATH = $(USRBINDIR):$(XCURSORGEN_BASE)/usr/bin
-
 REQUIRED_PACKAGES += image/xcursorgen
 REQUIRED_PACKAGES += x11/library/libxcursor

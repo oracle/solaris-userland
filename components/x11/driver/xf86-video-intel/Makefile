@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -52,14 +52,6 @@ CONFIGURE_OPTIONS += --disable-udev
 CFLAGS += -DHAVE_DRI1
 
 COMPONENT_PREP_ACTION +=(cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
-
-XVMC_BASE = $(WS_COMPONENTS)/x11/lib/libXvMC/build/prototype/$(MACH)
-
-PKG_CONFIG_PATHS += $(XVMC_BASE)$(PKG_CONFIG_PATH.$(BITS))
-CPPFLAGS += -I$(XVMC_BASE)$(USRINCDIR)
-LD_OPTIONS += -L$(XVMC_BASE)$(USRLIB.$(BITS))
-DEPENDED += $(WS_TOP)/components/x11/lib/libXvMC/build/manifest-$(MACH)-libXvMC.depend
-REQUIRED_PACKAGES += $(shell $(GSED) -n 's/REQUIRED_PACKAGES +=//p' ../../lib/libXvMC/Makefile)
 
 # Instead of allowing the default MODTYPE_LD_SHARED_OPTIONS to link everything
 # against the Xorg binary, 01-solaris-port.patch adds the XORG_EXTERNS_FLAG
