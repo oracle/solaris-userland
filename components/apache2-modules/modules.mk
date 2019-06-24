@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2014, 2015, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 COMPONENT_BUGDB ?=	utility/apache
 
@@ -64,7 +64,8 @@ ASLR_MODE= $(ASLR_NOT_APPLICABLE)
 DEFAULT_COMPILER ?= yes
 
 ifeq ($(strip $(BUILD_STYLE)),configure)
-CONFIGURE_OPTIONS += --with-apxs=$(APXS)
+CONFIGURE_OPTIONS.APXS = --with-apxs=$(APXS)
+CONFIGURE_OPTIONS += $(CONFIGURE_OPTIONS.APXS)
 endif
 
 # Attempt to define shared module targets.
