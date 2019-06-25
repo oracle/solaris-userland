@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # gobject-introspection bindings are only built correctly for gtk when building
@@ -39,22 +39,29 @@ COMPONENT_ANITYA_ID=	13158
 
 TPNO=			35809
 
+# Temporary workaround to add Python 3.7 into the PYTHON3_VERSIONS variable
+PYTHON3_VERSIONS := $(PYTHON3_VERSIONS) 3.7
+
 # replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses configure.mk
 CONFIGURE_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
 $(BUILD_DIR)/%-3.4/.configured:		PYTHON_VERSION=3.4
 $(BUILD_DIR)/%-3.4/.configured:		PYTHON_VENDOR_PACKAGES=$(PYTHON_VENDOR_PACKAGES.32)
 $(BUILD_DIR)/%-3.5/.configured:		PYTHON_VERSION=3.5
 $(BUILD_DIR)/%-3.5/.configured:		PYTHON_VENDOR_PACKAGES=$(PYTHON_VENDOR_PACKAGES.32)
+$(BUILD_DIR)/%-3.7/.configured:		PYTHON_VERSION=3.7
+$(BUILD_DIR)/%-3.7/.configured:		PYTHON_VENDOR_PACKAGES=$(PYTHON_VENDOR_PACKAGES.32)
 $(BUILD_DIR)/$(MACH64)-%/.configured:	BITS=64
 
 BUILD_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
 $(BUILD_DIR)/%-3.4/.built:		PYTHON_VERSION=3.4
 $(BUILD_DIR)/%-3.5/.built:		PYTHON_VERSION=3.5
+$(BUILD_DIR)/%-3.7/.built:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/$(MACH64)-%/.built:	BITS=64
 
 INSTALL_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
 $(BUILD_DIR)/%-3.4/.installed:		PYTHON_VERSION=3.4
 $(BUILD_DIR)/%-3.5/.installed:		PYTHON_VERSION=3.5
+$(BUILD_DIR)/%-3.7/.installed:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/$(MACH64)-%/.installed:	BITS=64
 
 # Tests do not yet work with Userland framework - 23712631
@@ -90,6 +97,7 @@ CPPFLAGS += -I $(PYCAIRO_BASE)/usr/include/pycairo
 # $(PYTHON)-config properly
 $(BUILD_DIR)/%-3.4/.configured:	PYTHON=$(PYTHON.3.4)m
 $(BUILD_DIR)/%-3.5/.configured:	PYTHON=$(PYTHON.3.5)m
+$(BUILD_DIR)/%-3.7/.configured:	PYTHON=$(PYTHON.3.7)m
 
 # Make install path match what autopyc transforms look for
 COMPONENT_POST_INSTALL_ACTION += \
@@ -109,3 +117,4 @@ REQUIRED_PACKAGES += library/python/pyflakes
 REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += runtime/python-34
 REQUIRED_PACKAGES += runtime/python-35
+REQUIRED_PACKAGES += runtime/python-37
