@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -37,6 +37,9 @@ COMPONENT_BUGDB=	python-mod/pybonjour
 COMPONENT_ANITYA_ID=	13251
 
 TPNO=			4453
+
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -59,8 +62,8 @@ install:	$(INSTALL_NO_ARCH)
 
 # svc:/network/dns/multicast:default needs to be online for tests to run
 $(SKIP_TEST_AT_TOP_LEVEL)
+
 # test_enumerate_domains is skipped
 test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
-
