@@ -41,6 +41,9 @@ include $(WS_MAKE_RULES)/x11-component.mk
 COMPONENT_PREP_ACTION +=(cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
 
 CONFIGURE_OPTIONS += --disable-dri
+ifeq ($(MACH), sparc)
+CONFIGURE_OPTIONS += --disable-exa
+endif
 
 # Extra flags to link mga_drv.so, but not util/stormdwg binary with
 DRIVER_LD_FLAGS = \
