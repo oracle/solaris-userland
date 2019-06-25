@@ -97,8 +97,7 @@ COMPONENT_TEST_TRANSFORMS += \
     '-e "1,/run-tests/d"' \
     '-e "/^e/d"' 
 
-COMPONENT_PREP_ACTION = \
-	(cd $(@D) ; ACLOCAL=aclocal-1.11 AUTOMAKE=automake-1.11 autoreconf -fiv)
+COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 
 $(BUILD_DIR)/$(MACH32)/.configured: CFLAGS += $(CFLAGS.shared)
 $(BUILD_DIR)/$(MACH32)/.configured: CONFIGURE_OPTIONS += $(CONFIGURE_OPTIONS.shared)
