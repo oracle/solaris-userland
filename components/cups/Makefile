@@ -49,21 +49,25 @@ $(CONFIGURE_64):	LDFLAGS += -m64
 CONFIGURE_ENV += DSOFLAGS="$(LDFLAGS)"
 
 # override MACH64
-CONFIGURE_OPTIONS +=	--bindir=/usr/bin
-CONFIGURE_OPTIONS +=	--sbindir=/usr/sbin
+CONFIGURE_OPTIONS.64 +=	--with-components=all
+CONFIGURE_OPTIONS.32 +=	--with-components=libcups
+CONFIGURE_OPTIONS.64 +=	--bindir=/usr/bin
+CONFIGURE_OPTIONS.32 +=	--bindir=/usr/bin/$(MACH32)
+CONFIGURE_OPTIONS.64 +=	--sbindir=/usr/sbin
 CONFIGURE_OPTIONS +=	--localedir=$(USRSHARELOCALEDIR)
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
-CONFIGURE_OPTIONS +=	--localstatedir=$(VARDIR)/cups
+CONFIGURE_OPTIONS +=	--localstatedir=$(VARDIR)
+CONFIGURE_OPTIONS +=	--with-cachedir=$(VARDIR)/cache/cups
 CONFIGURE_OPTIONS +=	--with-fontpath=$(USRSHAREFONTSDIR)
 CONFIGURE_OPTIONS +=	--with-logdir=$(VARDIR)/log/cups
-# /var/run links to /system/volatile
-CONFIGURE_OPTIONS +=	--with-domainsocket=$(VARDIR)/run/cups-socket
+CONFIGURE_OPTIONS +=	--with-rundir=/system/volatile/cups
 CONFIGURE_OPTIONS +=	--with-smfmanifestdir=$(LIBDIR)/svc/manifest/application
-CONFIGURE_OPTIONS +=	--with-printcap=$(ETCDIR)/printers.conf
+CONFIGURE_OPTIONS +=	--without-rcdir
 CONFIGURE_OPTIONS +=	--with-cups-user=lp
 CONFIGURE_OPTIONS +=	--with-privateinclude=$(USRINCDIR)/cups/private
 CONFIGURE_OPTIONS +=	--with-cups-group=lp
 CONFIGURE_OPTIONS +=	--disable-static
+#CONFIGURE_OPTIONS +=	--with-optim=-g0 -g
 # CDSA is first choice GNU TLS is second openssl is not supported
 #CONFIGURE_OPTIONS +=	--enable-gnutls
 CONFIGURE_OPTIONS +=	--without-php
@@ -76,11 +80,6 @@ COMPONENT_PREP_ACTION += (cd $(@D) ; \
    PATH="/usr/gnu/bin:$(PATH)" autoconf -f )
 
 COMPONENT_PRE_CONFIGURE_ACTION += $(CLONEY) $(SOURCE_DIR) $(@D)
-
-$(BUILD_64):	COMPONENT_BUILD_TARGETS=	all
-$(BUILD_32):	COMPONENT_BUILD_TARGETS=	libs unittests
-$(INSTALL_64):	COMPONENT_INSTALL_TARGETS=	install-data install-headers install-libs install-exec
-$(INSTALL_32):	COMPONENT_INSTALL_TARGETS=	install-libs
 
 # Make sure that "install-sh -s" calls "strip -x" and not "strip";
 # we want to remove debugging data but not the symbols.
@@ -96,7 +95,7 @@ BCUPSLIBSOBJ =	$(BUILD_DIR)/$(CUPSLIBSOBJ)
 METADATA_TEMPLATE=
 
 ADD_TO_HEAP =		^file|^link|^dir .*path=var.*/cups|^dir .*path=usr/lib/cups/
-EXCLUDE_FROM_HEAP =	path=etc/pam.d
+EXCLUDE_FROM_HEAP =	etc/pam.d/cups
 EXCLUSION_CRITERIA =	usr/include/.*\.h|usr/lib.*/lib.*\.so.*
 
 new-manifest:	$(BCUPSOBJ) $(BCUPSLIBSOBJ)

@@ -1,0 +1,24 @@
+Because the cups is testing the woking dirs on start for right mask and
+group ownership then fix those attributes it might happen the:
+ # pkg verify -v cups
+will report changes against the package. To avoid of this the following
+test should be performed on built package after uprev:
+
+ - stop cupsd
+  # svcadm disable svc:/application/cups/scheduler:default
+
+ - install new (nightly) packages:
+  # pkg change-facet --no-backup-be version-lock.library/print/cups-libs=false version-lock.print/cups=false
+  # pkg install --no-backup-be -g <nightly-repo> pkg://nightly/library/print/cups-libs pkg://nightly/print/cups
+
+ - pre-test verify the package
+  # pkg verify -v cups
+
+ - start cupsd
+  # svcadm enable svc:/application/cups/scheduler:default
+
+ - verify the package
+  # pkg verify -v cups
+
+If the directory masks are changed after start then pkg-attribs in cups.p5m
+should be fixed accordingly.

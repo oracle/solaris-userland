@@ -36,28 +36,19 @@
 <transform file path=usr/(s)?bin/.+ -> add pkg.linted.userland.action001.2 true>
 <transform file path=usr/lib/cups/.+/.+ -> add pkg.linted.userland.action001.2 true>
 #
-<transform file path=etc/cups/cupsd.conf$ -> default group lp >
-<transform file path=etc/cups/cupsd.conf$ -> default mode 640 >
-<transform file path=etc/cups/cupsd.conf$ -> default preserve yes >
-#
+<transform file path=etc/cups/.+\.conf.* -> default group lp >
+<transform file path=etc/cups/.+\.conf$ -> default mode 640 >
+<transform file path=etc/cups/.+\.conf.default -> default mode 440 >
+<transform file path=etc/cups/.+\.conf$ -> default preserve yes >
+# filters/backends and .so's should be executable files
 <transform file path=usr/lib/cups/.+ -> default mode 0555 >
-<transform dir path=usr/share/cups/data -> default group lp >
-<transform dir path=usr/share/cups/model -> default group lp >
-<transform dir path=usr/share/cups/profiles -> default group lp >
-#
-<transform dir path=var/cups/cache/cups -> default group lp >
-<transform dir path=var/cups/cache/cups -> default mode 0775 >
-<transform dir path=var/cups/cache/cups/rss -> default group lp >
-<transform dir path=var/cups/cache/cups/rss -> default mode 0775 >
-<transform dir path=var/cups/run/cups/certs -> default group lp >
-<transform dir path=var/cups/run/cups/certs -> default mode 0440 >
+# /var
+<transform dir path=var/.+/cups.* -> default group lp >
+<transform dir path=var/cache/cups$ -> default mode 0770 >
+<transform dir path=var/cache/cups/rss -> default mode 0775 >
 # spooler
-<transform dir path=var/cups/spool/cups -> default group lp >
-<transform dir path=var/cups/spool/cups -> default mode 0710 >
-<transform dir path=var/cups/spool/cups/tmp -> default group lp >
-<transform dir path=var/cups/spool/cups/tmp -> default mode 01770 >
-# log-file
-<transform dir path=var/log/cups -> default group lp >
+<transform dir path=var/spool/cups$ -> default mode 0710 >
+<transform dir path=var/spool/cups/tmp -> default mode 01770 >
 #
 # SMF service manifest install
 <transform file path=lib/svc/manifest/.+\.xml -> default mode 0444 >
@@ -74,6 +65,10 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2008/130
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+# sysconf
+dir  path=etc/cups group=lp
+dir  path=etc/cups/ppd group=lp
+dir  path=etc/cups/ssl group=lp mode=0700
 #
 file Solaris/auth_attr path=etc/security/auth_attr.d/cups
 file Solaris/prof_attr path=etc/security/prof_attr.d/cups

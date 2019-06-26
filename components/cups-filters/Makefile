@@ -53,7 +53,7 @@ CONFIGURE_OPTIONS +=	--libdir=/usr/lib/cups/$(MACH64)
 CONFIGURE_OPTIONS +=	--localedir=$(USRSHARELOCALEDIR)
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS +=	--localstatedir=$(VARDIR)
-CONFIGURE_OPTIONS +=	--with-cups-rundir=$(VARDIR)/cups
+CONFIGURE_OPTIONS +=	--with-cups-rundir=/system/volatile/cups
 CONFIGURE_OPTIONS +=	--with-ldap-includes=/usr/include/openldap
 CONFIGURE_OPTIONS +=	--with-fontdir=$(USRSHAREFONTSDIR)
 CONFIGURE_OPTIONS +=	--disable-static
