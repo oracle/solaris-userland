@@ -20,9 +20,9 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
-BUILD_BITS= 32
+BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gutenprint
@@ -67,9 +67,6 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libusb-1
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += print/cups
-REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += runtime/perl-522
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += x11/library/libx11
-REQUIRED_PACKAGES += x11/library/libxcursor
