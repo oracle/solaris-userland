@@ -48,7 +48,7 @@ COMPONENT_POST_UNPACK_ACTION += $(RM) $(SOURCE_DIR)/js/misc/config.js ;
 
 CXXFLAGS += -std=c++11 -D__EXTENSIONS__
 
-PYTHON_VERSION= 3.4
+PYTHON_VERSION= 3.7
 
 CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += --enable-man-pages
@@ -115,11 +115,11 @@ REQUIRED_PACKAGES += library/libcroco
 REQUIRED_PACKAGES += library/libical
 REQUIRED_PACKAGES += library/libmozjs-38
 REQUIRED_PACKAGES += library/libsoup
-REQUIRED_PACKAGES += library/python/pygobject-3-34
-REQUIRED_PACKAGES += library/python/simplejson-34
+REQUIRED_PACKAGES += library/python/pygobject-3-37
+REQUIRED_PACKAGES += library/python/simplejson-37
 REQUIRED_PACKAGES += library/telepathy-glib
 REQUIRED_PACKAGES += library/telepathy-logger
-REQUIRED_PACKAGES += runtime/python-34
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/display-manager/gdm
 REQUIRED_PACKAGES += system/input-method/ibus
 REQUIRED_PACKAGES += system/library/accountsservice

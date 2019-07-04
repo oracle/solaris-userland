@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 COMPILER =      	gcc
@@ -38,7 +38,7 @@ COMPONENT_ANITYA_ID=	10024
 TPNO=			34480
 
 # No need to build for older versions.
-PYTHON_VERSIONS= 3.4
+PYTHON_VERSIONS= 3.7
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -64,7 +64,7 @@ CONFIGURE_OPTIONS += --disable-dtrace
 # The build process modifies the shebang line to use the version of Python
 # automatically found; to avoid using the current system default, one is
 # explicitly specified here.
-CONFIGURE_OPTIONS += --with-python=$(PYTHON.3.4)
+CONFIGURE_OPTIONS += --with-python=$(PYTHON.3.7)
 
 # Configure doesn't find this since it's not in $PATH
 CONFIGURE_OPTIONS += DBUS_DAEMON=/usr/lib/dbus-daemon
@@ -110,10 +110,12 @@ COMPONENT_TEST_TRANSFORMS += \
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/TOTAL/p" ' \
-        '-e "/SKIP/p" ' \
-        '-e "/PASS/p" ' \
-        '-e "/FAIL/p" ' \
-        '-e "/ERROR/p" '
+        '-e "/SKIP:/p" ' \
+        '-e "/PASS:/p" ' \
+        '-e "/FAIL:/p" ' \
+        '-e "/ERROR:/p" '
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
 
 REQUIRED_PACKAGES += $(PERL_PKG)
 $(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += data/docbook
@@ -128,7 +130,7 @@ REQUIRED_PACKAGES += library/file-monitor/gamin
 REQUIRED_PACKAGES += library/libffi
 REQUIRED_PACKAGES += library/pcre
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += runtime/python-34
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/dbus
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

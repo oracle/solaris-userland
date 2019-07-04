@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -42,9 +42,9 @@ TPNO=			35414
 # Tests don't work on Solaris yet
 TEST_TARGET = $(SKIP_TEST)
 
-# Contains a single Python script written for Python 2.x/3.x; prefer 3.4.
-PYTHON=3.4
-PYTHON_VERSIONS=3.4
+# Contains a single Python script written for Python 2.x/3.x; prefer 3.7.
+PYTHON=3.7
+PYTHON_VERSIONS=3.7
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -70,4 +70,4 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/desktop/gssdp
 REQUIRED_PACKAGES += library/libsoup
 REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += runtime/python-34
+REQUIRED_PACKAGES += runtime/python-37

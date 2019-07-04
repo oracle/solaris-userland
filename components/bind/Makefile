@@ -69,8 +69,8 @@ include $(WS_MAKE_RULES)/common.mk
 # ------------------------
 
 # PYVER is important for packaging and computing requisites.
-PYTHON_VERSION =	3.4
-PKG_MACROS +=		PYVER=$(PYTHON_VERSION)
+PYTHON_VERSION =        3.7
+PKG_MACROS +=           PYVER=$(PYTHON_VERSION)
 
 # Patches to configure.in require configure script re-creation.
 # COMPONENT_PREP_ACTION +=(cd $(@D); autoreconf -vfi);
@@ -191,7 +191,7 @@ REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += network/dns/bind
-REQUIRED_PACKAGES += runtime/python-34
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os

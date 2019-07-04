@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =           64_and_32
@@ -69,5 +69,4 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libcroco
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += runtime/perl-522
-REQUIRED_PACKAGES += runtime/python-34
 REQUIRED_PACKAGES += system/library/math

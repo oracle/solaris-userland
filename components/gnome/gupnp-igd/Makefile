@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -38,10 +38,6 @@ COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13143
 
 TPNO=			25397
-
-# Contains a single Python script written for Python 2.x/3.x; prefer 3.4.
-PYTHON=3.4
-PYTHON_VERSIONS=3.4
 
 # Hook up tests once dependencies are installed
 TEST_TARGET = $(SKIP_TEST)
@@ -64,4 +60,3 @@ REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/desktop/gssdp
 REQUIRED_PACKAGES += library/desktop/gupnp
-REQUIRED_PACKAGES += runtime/python-34

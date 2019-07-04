@@ -52,7 +52,7 @@ FIX_PC_FILES=*.pc.in
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
-PYTHON_VERSION = 3.4
+PYTHON_VERSION = 3.7
 CONFIGURE_ENV += PYTHON="$(PYTHON)"
 PKG_MACROS += PYVER="$(PYTHON_VERSION)"
 
@@ -109,6 +109,6 @@ REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += image/graphviz
 # xcb-proto runs xmllint
 REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += runtime/python-34
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += x11/library/libxau
 REQUIRED_PACKAGES += x11/library/libxdmcp
