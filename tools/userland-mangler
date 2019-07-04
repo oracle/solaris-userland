@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.7
 #
 # CDDL HEADER START
 #
@@ -21,29 +21,31 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 #
 # userland-mangler - a file mangling utility
 #
-#  A simple program to mangle files to conform to Solaris WOS or Consoldation
-#  requirements.
+# A simple program to mangle files to conform to Solaris WOS or Consoldation
+# requirements.
 #
 
+import argparse
 import os
 import sys
 import re
-import gettext
 
 import pkg.fmri
 import pkg.manifest
 import pkg.actions
 import pkg.elf as elf
 
-attribute_oracle_table_header = """
+from typing import Optional
+
+ATTRIBUTE_ORACLE_TABLE_HEADER = """
 .\\\" Oracle has added the ARC stability level to this manual page"""
 
-attribute_table_header = """
+ATTRIBUTE_TABLE_HEADER = """
 .SH ATTRIBUTES
 See
 .BR attributes (7)
@@ -53,348 +55,351 @@ for descriptions of the following attributes:
 box;
 cbp-1 | cbp-1
 l | l .
-ATTRIBUTE TYPE	ATTRIBUTE VALUE """
+ATTRIBUTE TYPE\tATTRIBUTE VALUE """
 
-attribute_table_availability = """
+ATTRIBUTE_TABLE_AVAILABILITY = """
 =
-Availability	%s"""
+Availability\t{}"""
 
-attribute_table_stability = """
+ATTRIBUTE_TABLE_STABILITY = """
 =
-Stability	%s"""
+Stability\t{}"""
 
-attribute_table_footer = """
-.TE 
+ATTRIBUTE_TABLE_FOOTER = """
+.TE
 .PP
 """
-def attributes_section_text(availability, stability, modified_date):
-	result = ''
 
-	# is there anything to do?
-	if availability is not None or stability is not None:
-		result = attribute_oracle_table_header
-		if modified_date is not None:
-			result += ("\n.\\\" on %s" % modified_date)
-		result += attribute_table_header
 
-		if availability is not None:
-			result += (attribute_table_availability % availability)
-		if stability is not None:
-			result += (attribute_table_stability % stability.capitalize())
-		result += attribute_table_footer
+def attributes_section_text(availability: Optional[str], stability: Optional[str],
+                            modified_date: Optional[str]) -> bytes:
+    """Generate ATTRIBUTES manpage section."""
 
-	return result
+    # there is nothing to do
+    if availability is None and stability is None:
+        return b""
 
-notes_oracle_comment = """
+    result = [ATTRIBUTE_ORACLE_TABLE_HEADER]
+    if modified_date is not None:
+        result.append(f"\n.\\\" on {modified_date}")
+    result.append(ATTRIBUTE_TABLE_HEADER)
+
+    if availability is not None:
+        result.append(ATTRIBUTE_TABLE_AVAILABILITY.format(availability))
+    if stability is not None:
+        result.append(ATTRIBUTE_TABLE_STABILITY.format(stability.capitalize()))
+    result.append(ATTRIBUTE_TABLE_FOOTER)
+
+    return "".join(result).encode()
+
+
+NOTES_ORACLE_COMMENT = """
 .\\\" Oracle has added source availability information to this manual page"""
 
-notes_header = """
+NOTES_HEADER = """
 .SH NOTES
 """
-
-notes_community = """
-Further information about this software can be found on the open source community website at %s.
+NOTES_COMMUNITY = """
+Further information about this software can be found on the open source community website at {}.
 """
-notes_source = """
-This software was built from source available at https://github.com/oracle/solaris-userland.  The original community source was downloaded from  %s
+NOTES_SOURCE = """
+This software was built from source available at https://github.com/oracle/solaris-userland.  The original community source was downloaded from  {}
 """
 
-def notes_section_text(header_seen, community, source, modified_date):
-	result = ''
 
-	# is there anything to do?
-	if community is not None or source is not None:
-		if header_seen == False:
-			result += notes_header
-		result += notes_oracle_comment
-		if modified_date is not None:
-			result += ("\n.\\\" on %s" % modified_date)
-		if source is not None:
-			result += (notes_source % source)
-		if community is not None:
-			result += (notes_community % community)
+def notes_section_text(header_seen: bool, community: Optional[str],
+                       source: Optional[str], modified_date: Optional[str]) -> bytes:
+    """Generate NOTES manpage section.
 
-	return result
+    Args:
+        header_seen: whether was the NOTES header already seen in the manpage.
+        community: community website link.
+        source: original source download location.
+    """
 
-so_re = re.compile('^\.so.+$', re.MULTILINE)
-section_re = re.compile('\.SH "?([^"]+).*$', re.IGNORECASE)
-TH_re = re.compile('\.TH\s+(?:"[^"]+"|\S+)\s+(\S+)', re.IGNORECASE)
-#
-# mangler.man.stability = (mangler.man.stability)
-# mangler.man.modified_date = (mangler.man.modified-date)
-# mangler.man.availability = (pkg.fmri)
-# mangler.man.source-url = (pkg.source-url)
-# mangler.man.upstream-url = (pkg.upstream-url)
-# mangler.man.rewrite-section = ('true'/'false')   default 'true'
-#
-def mangle_manpage(manifest, action, text):
-	# manpages must have a taxonomy defined
-	stability = action.attrs.pop('mangler.man.stability', None)
-	if stability is None:
-		sys.stderr.write("ERROR: manpage action missing mangler.man.stability: %s" % action)
-		sys.exit(1)
+    if community is None and source is None:
+        return b""
 
-	# manpages may have a 'modified date'
-	modified_date = action.attrs.pop('mangler.man.modified-date', None)
+    result = []
+    if header_seen is False:
+        result.append(NOTES_HEADER)
+    result.append(NOTES_ORACLE_COMMENT)
+    if modified_date is not None:
+        result.append(f"\n.\\\" on {modified_date}")
+    if source is not None:
+        result.append(NOTES_SOURCE.format(source))
+    if community is not None:
+        result.append(NOTES_COMMUNITY.format(community))
+
+    return "".join(result).encode()
 
 
-        # Rewrite the section in the .TH line to match the section in which
-        # we're delivering it.
-        rewrite_sect = action.attrs.pop('mangler.man.rewrite-section', 'true')
+def mangle_manpage(manifest, action, text: bytes) -> bytes:
+    """Mangle manpage.
 
-	attributes_written = False
-	notes_seen = False
+    The resulting man page has additional information added such as ARC
+    stability level and source download locations. Additionally, it can handle
+    some section editing based on the mangler.man.rewrite-section attribute.
 
-	if 'pkg.fmri' in manifest.attributes:
-		fmri = pkg.fmri.PkgFmri(manifest.attributes['pkg.fmri'])
-		availability = fmri.pkg_name
+    Handles:
+        mangler.man.stability = (mangler.man.stability)
+        mangler.man.modified_date = (mangler.man.modified-date)
+        mangler.man.availability = (pkg.fmri)
+        mangler.man.source-url = (pkg.source-url)
+        mangler.man.upstream-url = (pkg.upstream-url)
+        mangler.man.rewrite-section = ('true'/'false')   default 'true'
+    """
 
-	community = None
-	if 'info.upstream-url' in manifest.attributes:
-		community = manifest.attributes['info.upstream-url']
+    so_re = re.compile(rb'^\.so.+$', re.MULTILINE)
+    TH_re = re.compile(rb'\.TH\s+(?:"[^"]+"|\S+)\s+(\S+)', re.IGNORECASE)
+    section_re = re.compile(rb'\.SH "?([^"]+).*$', re.IGNORECASE)
 
-	source = None
-	if 'info.source-url' in manifest.attributes:
-		source = manifest.attributes['info.source-url']
-	elif 'info.repository-url' in manifest.attributes:
-		source = manifest.attributes['info.repository-url']
+    # manpages must have a taxonomy defined
+    stability = action.attrs.pop('mangler.man.stability', None)
+    if stability is None:
+        sys.stderr.write("ERROR: manpage action missing mangler.man.stability: %s" % action)
+        sys.exit(1)
 
-	# skip reference only pages
-	if so_re.match(text) is not None:
-		return text
+    # manpages may have a 'modified date'
+    modified_date = action.attrs.pop('mangler.man.modified-date', None)
 
-	# tell man that we want tables (and eqn)
-	result = "'\\\" te\n"
+    # Rewrite the section in the .TH line to match the section in which
+    # we're delivering it.
+    rewrite_sect = action.attrs.pop('mangler.man.rewrite-section', 'true')
 
-	# write the orginal data
-	for line in text.split('\n'):
-		match = section_re.match(line)
-		if match is not None:
-			section = match.group(1)
-			if section in ['SEE ALSO', 'NOTES']:
-				if attributes_written == False:
-					result += attributes_section_text(
-								 availability,
-								 stability,
-								 modified_date)
-					attributes_written = True
-				if section == 'NOTES':
-					notes_seen = True
+    attributes_written = False
+    notes_seen = False
 
-                match = TH_re.match(line)
-                if match and rewrite_sect.lower() == "true":
-                        # Use the section defined by the filename, rather than
-                        # the directory in which it sits.
-                        sect = os.path.splitext(action.attrs["path"])[1][1:]
-                        line = line[:match.span(1)[0]] + sect + \
-                            line[match.span(1)[1]:]
+    if 'pkg.fmri' in manifest.attributes:
+        fmri = pkg.fmri.PkgFmri(manifest.attributes['pkg.fmri'])
+        availability = fmri.pkg_name
 
-		result += ("%s\n" % line)
+    community = None
+    if 'info.upstream-url' in manifest.attributes:
+        community = manifest.attributes['info.upstream-url']
 
-	if attributes_written == False:
-		result += attributes_section_text(availability, stability,
-		    modified_date)
+    source = None
+    if 'info.source-url' in manifest.attributes:
+        source = manifest.attributes['info.source-url']
+    elif 'info.repository-url' in manifest.attributes:
+        source = manifest.attributes['info.repository-url']
 
-	result += notes_section_text(notes_seen, community, source,
-	    modified_date)
+    # skip reference only pages
+    if so_re.match(text) is not None:
+        return text
 
-	return result
+    # tell man that we want tables (and eqn)
+    result = [b"'\\\" te\n"]
+
+    # write the orginal data
+    for line in text.split(b'\n'):
+        match = section_re.match(line)
+        if match is not None:
+            section = match.group(1)
+            if section in [b'SEE ALSO', b'NOTES']:
+                if attributes_written is False:
+                    result.append(attributes_section_text(availability, stability, modified_date))
+                    attributes_written = True
+                if section == b'NOTES':
+                    notes_seen = True
+
+        match = TH_re.match(line)
+        if match and rewrite_sect.lower() == "true":
+            # Use the section defined by the filename, rather than
+            # the directory in which it sits.
+            sect = os.path.splitext(action.attrs["path"])[1][1:]
+            line = line[:match.span(1)[0]] + sect.encode() + line[match.span(1)[1]:]
+
+        result.append(line + b"\n")
+
+    if attributes_written is False:
+        result.append(attributes_section_text(availability, stability, modified_date))
+
+    result.append(notes_section_text(notes_seen, community, source, modified_date))
+    return b"".join(result)
 
 
-#
-# mangler.elf.strip = (true|false)
-#
-def mangle_elf(manifest, action, src, dest):
-	pass
-
-#
-# mangler.script.file-magic =
-#
-def mangle_script(manifest, action, text):
-	return text
-
-lib_includes32bit_guard = """
+LIB_INCLUDES32BIT_GUARD = b"""
 /* Solaris specific check for correct build usage. */
 #if defined(__amd64) || defined(__sparcv9)
 #error "32-bits header file used for 64-bits build. You may need to set PKG_CONFIG_PATH=/usr/lib/64/pkgconfig."
 #endif
 """
-
-lib_includes64bit_guard = """
+LIB_INCLUDES64BIT_GUARD = b"""
 /* Solaris specific check for correct build usage. */
 #if (!defined(__amd64) && !defined(__sparcv9))
 #error "64-bits header file used for 32-bits build. You may need to set PKG_CONFIG_PATH=/usr/lib/pkgconfig."
 #endif
 """
-#
-# mangler.guard_lib_includes =
-#
-def mangle_lib_includes(manifest, action, text):
-	guard_lib_includes = action.attrs.pop('mangler.guard_lib_includes', 'false')
-	if guard_lib_includes is 'false':
-		return text
-	if any(x in action.attrs["path"] for x in ['/sparcv9/', '/amd64/']):
-		return text + lib_includes64bit_guard
-	return text + lib_includes32bit_guard
-
-#
-# mangler.strip_cddl = false
-#
-def mangle_cddl(manifest, action, text):
-	strip_cddl = action.attrs.pop('mangler.strip_cddl', 'true')
-	if strip_cddl is 'false':
-		return text
-	cddl_re = re.compile('^[^\n]*CDDL HEADER START.+CDDL HEADER END[^\n]*\n',
-			     re.MULTILINE|re.DOTALL)
-	return cddl_re.sub('', text)
-
-def mangle_path(manifest, action, src, dest):
-	if elf.is_elf_object(src):
-		mangle_elf(manifest, action, src, dest)
-	else:
-		# a 'text' document (script, man page, config file, ...
-		ifp = open(src, 'r')
-		text = ifp.read()
-		ifp.close()
-
-		# remove the CDDL from files
-		result = mangle_cddl(manifest, action, text)
-
-		if 'facet.doc.man' in action.attrs:
-		 	result = mangle_manpage(manifest, action, result)
-		elif 'mode' in action.attrs and int(action.attrs['mode'], 8) & 0111 != 0:
-			result = mangle_script(manifest, action, result)
-		elif re.match(r'usr/lib/.*/include/.*\.h$', action.attrs["path"]):
-			result = mangle_lib_includes(manifest, action, result)
-
-		if text != result:
-			destdir = os.path.dirname(dest)
-			if not os.path.exists(destdir):
-				os.makedirs(destdir)
-			with open(dest, 'w') as ofp:
-			    ofp.write(result)
-
-#
-# mangler.bypass = (true|false)
-#
-def mangle_paths(manifest, search_paths, destination):
-	for action in manifest.gen_actions_by_type("file"):
-		bypass = action.attrs.pop('mangler.bypass', 'false').lower()
-		if bypass == 'true':
-			continue
-
-		path = None
-		if 'path' in action.attrs:
-			path = action.attrs['path']
-		if action.hash and action.hash != 'NOHASH':
-			path = action.hash
-		if not path:
-			continue
-
-		if not os.path.exists(destination):
-			os.makedirs(destination)
-
-		dest = os.path.join(destination, path)
-		for directory in search_paths:
-			if directory != destination:
-				src = os.path.join(directory, path)
-				if os.path.isfile(src):
-					mangle_path(manifest, action, src, dest)
-					break
-
-def mangle_manifest(manifest):
-	# Check for file content and remove tpno data and license actions if
-	# there is no content in the package that can be licensed.
-	manifest_has_file_content = False
-
-	for action in manifest.gen_actions_by_type("file"):
-		manifest_has_file_content = True
-		break
-
-	if not manifest_has_file_content:
-		# search for and remove 'set name=com.oracle.info.tpno ...'
-		for action in manifest.gen_actions_by_type("set"):
-			if (action.attrs["name"] == "com.oracle.info.tpno"):
-				manifest.actions.remove(action)
-		for action in manifest.gen_actions_by_type("license"):
-			manifest.actions.remove(action)
-
-	# Check for pkg.obsolete and if found, remove any depend actions.
-	# Also remove any require dependency on the release/evalauation
-	# package for renamed packages.
-	manifest_is_obsolete = False
-	manifest_is_renamed = False
-
-	for action in manifest.gen_actions_by_type("set"):
-		if (action.attrs["name"] == "pkg.obsolete" and
-		    action.attrs["value"] == "true"):
-			manifest_is_obsolete = True
-		if (action.attrs["name"] == "pkg.renamed" and
-		    action.attrs["value"] == "true"):
-			manifest_is_renamed = True
-
-	if manifest_is_obsolete:
-		for action in manifest.gen_actions_by_type("depend"):
-			manifest.actions.remove(action)
-
-def load_manifest(manifest_file):
-	manifest = pkg.manifest.Manifest()
-	try:
-		manifest.set_content(pathname=manifest_file)
-	except pkg.client.api_errors.InvalidPackageErrors, err:
-		gettext.install("")
-		print(_(err))
-		sys.exit(1)
 
 
-	return manifest
+def mangle_lib_includes(manifest, action, text: bytes) -> bytes:
+    """Mangle libraries.
 
-def usage():
-	print "Usage: %s [-m|--manifest (file)] [-d|--search-directory (dir)] [-D|--destination (dir)] " % (sys.argv[0].split('/')[-1])
-	sys.exit(1)
+    Libraries are mangled by the addition of include guard,
+    which prevents incorrect 32/64bit inclusions.
+
+    Handles:
+        mangler.guard_lib_includes
+    """
+
+    guard_lib_includes = action.attrs.pop('mangler.guard_lib_includes', 'false')
+    if guard_lib_includes == 'false':
+        return text
+
+    if any(x in action.attrs["path"] for x in ['/sparcv9/', '/amd64/']):
+        return text + LIB_INCLUDES64BIT_GUARD
+    return text + LIB_INCLUDES32BIT_GUARD
+
+
+def mangle_cddl(manifest, action, text: bytes) -> bytes:
+    """Remove cddl header from given file content.
+
+    Handles:
+        mangler.strip_cddl = false
+    """
+
+    strip_cddl = action.attrs.pop('mangler.strip_cddl', 'true')
+    if strip_cddl == 'false':
+        return text
+
+    cddl_re = re.compile(rb'^[^\n]*CDDL HEADER START.+CDDL HEADER END[^\n]*\n',
+                         re.MULTILINE | re.DOTALL)
+    return cddl_re.sub(b'', text)
+
+
+def mangle_path(manifest, action, src: str, dest: str) -> None:
+    """Mangle given file based on its type."""
+
+    # we are not mangling elf objects
+    if elf.is_elf_object(src):
+        return
+
+    # this is either a text document (e.g., script, man page, config file, ...)
+    # OR a binary file without elf header (e.g., precompiled python scripts)
+    # and as such it must be opened in binary mode.
+    with open(src, 'rb') as file:
+        text = file.read()
+
+    # remove the CDDL from files
+    result = mangle_cddl(manifest, action, text)
+
+    # mangle file based on its type
+    if 'facet.doc.man' in action.attrs:
+        result = mangle_manpage(manifest, action, result)
+    elif 'mode' in action.attrs and int(action.attrs['mode'], 8) & 0o111 != 0:
+        # we are currently not mangling scripts in any way
+        pass
+    elif re.match(r'usr/lib/.*/include/.*\.h$', action.attrs["path"]):
+        result = mangle_lib_includes(manifest, action, result)
+
+    # if mangled file is different from the original one, save it
+    if text != result:
+        destdir = os.path.dirname(dest)
+        if not os.path.exists(destdir):
+            os.makedirs(destdir)
+        with open(dest, 'wb') as ofp:
+            ofp.write(result)
+
+
+def mangle_paths(manifest, search_paths: str, destination: str) -> None:
+    """Mangle everything listed in given manifest.
+
+    Handles:
+        mangler.bypass = (true|false)
+    """
+
+    for action in manifest.gen_actions_by_type("file"):
+        bypass = action.attrs.pop('mangler.bypass', 'false').lower()
+        if bypass == 'true':
+            continue
+
+        path = None
+        if 'path' in action.attrs:
+            path = action.attrs['path']
+        if action.hash and action.hash != 'NOHASH':
+            path = action.hash
+        if not path:
+            continue
+
+        if not os.path.exists(destination):
+            os.makedirs(destination)
+
+        dest = os.path.join(destination, path)
+        for directory in search_paths:
+            if directory == destination:
+                continue
+
+            src = os.path.join(directory, path)
+            if os.path.isfile(src):
+                mangle_path(manifest, action, src, dest)
+                break
+
+
+def mangle_manifest(manifest) -> None:
+    """Mangle manifest file itself."""
+
+    # Check for file content and remove tpno data and license actions if
+    # there is no content in the package that can be licensed.
+    if next(manifest.gen_actions_by_type("file"), None) is None:
+
+        # search for and remove 'set name=com.oracle.info.tpno ...'
+        # and all license actions
+        for action in manifest.gen_actions_by_type("set"):
+            if action.attrs["name"] == "com.oracle.info.tpno":
+                manifest.actions.remove(action)
+        for action in manifest.gen_actions_by_type("license"):
+            manifest.actions.remove(action)
+
+    # Check for pkg.obsolete and if found, remove any depend actions.
+    manifest_is_obsolete = False
+
+    for action in manifest.gen_actions_by_type("set"):
+        if action.attrs["name"] == "pkg.obsolete" and action.attrs["value"] == "true":
+            manifest_is_obsolete = True
+            break
+
+    if manifest_is_obsolete:
+        for action in manifest.gen_actions_by_type("depend"):
+            manifest.actions.remove(action)
+
+
+def load_manifest(manifest_file: str):
+    manifest = pkg.manifest.Manifest()
+    try:
+        manifest.set_content(pathname=manifest_file)
+    except pkg.client.api_errors.InvalidPackageErrors as err:
+        # Given manifest cannot be parsed (not valid)
+        print(err)
+        sys.exit(1)
+    except IOError as err:
+        # Manifest doesn't exist or the permissions forbid opening it
+        print(f"oops, {manifest_file}: {err}")
+        sys.exit(2)
+
+    return manifest
+
 
 def main():
-	import getopt
+    sys.stdout.flush()
 
-	# FLUSH STDOUT 
-	sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+    parser = argparse.ArgumentParser(
+        description="Mangle files to conform to Solaris WOS or Userland requirements.")
+    parser.add_argument('-D', '--destination', required=True,
+        help="Where should mangled files be saved.")
+    parser.add_argument('-d', '--search-directory', action='append', default=list(),
+        dest="search_paths", help="Directories to search for files listed in manifests.")
+    parser.add_argument('-m', '--manifest', action='append', default=list(),
+        dest="manifests", help="To be mangled manifest files.")
 
-	search_paths = []
-	destination = None
-	manifests = []
+    args = parser.parse_args()
 
-	try:
-		opts, args = getopt.getopt(sys.argv[1:], "D:d:m:",
-			["destination=", "search-directory=", "manifest="])
-	except getopt.GetoptError, err:
-		print str(err)
-		usage()
+    for file in args.manifests:
+        manifest = load_manifest(file)
+        mangle_paths(manifest, args.search_paths, args.destination)
+        mangle_manifest(manifest)
+        print(manifest)
 
-	for opt, arg in opts:
-		if opt in [ "-D", "--destination" ]:
-			destination = arg
-		elif opt in [ "-d", "--search-directory" ]:
-			search_paths.append(arg)
-		elif opt in [ "-m", "--manifest" ]:
-			try:
-				manifest = load_manifest(arg)
-			except IOError, err:
-				print "oops, %s: %s" % (arg, str(err))
-				usage()
-			else:
-				manifests.append(manifest)
-		else:
-			usage()
-
-	if destination == None:
-		usage()
-
-	for manifest in manifests:
-		mangle_paths(manifest, search_paths, destination)
-		mangle_manifest(manifest)
-		print manifest
-
-	sys.exit(0)
 
 if __name__ == "__main__":
-	main()
+    main()

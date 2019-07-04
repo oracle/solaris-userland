@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3.7
 #
 # CDDL HEADER START
 #
@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Some userland consolidation specific lint checks
@@ -146,7 +146,7 @@ class UserlandActionChecker(base.ActionChecker):
                                 variants = action.get_variant_template()
                                 variants.merge_unknown(pkg_vars)
                                 # Action attributes must be lists or strings.
-                                for k, v in variants.iteritems():
+                                for k, v in variants.items():
                                         if isinstance(v, set):
                                                 action.attrs[k] = list(v)
                                         else:
@@ -428,7 +428,7 @@ class UserlandActionChecker(base.ActionChecker):
 		if "mode" in action.attrs:
 			mode = action.attrs["mode"]
 
-			if (int(mode, 8) & 0222) != 0 and "preserve" not in action.attrs:
+			if (int(mode, 8) & 0o222) != 0 and "preserve" not in action.attrs:
 				engine.error(
 				_("%(path)s is writable (%(mode)s), but missing a preserve"
 				  " attribute") %  {"path": path, "mode": mode},
@@ -436,7 +436,7 @@ class UserlandActionChecker(base.ActionChecker):
 		elif "preserve" in action.attrs:
 			if "mode" in action.attrs:
 				mode = action.attrs["mode"]
-				if (int(mode, 8) & 0222) == 0:
+				if (int(mode, 8) & 0o222) == 0:
 					engine.error(
 					_("%(path)s has a preserve action, but is not writable (%(mode)s)") %  {"path": path, "mode": mode},
 				msgid="%s%s.4" % (self.name, pkglint_id))

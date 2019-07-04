@@ -1,7 +1,7 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.7
 
 #
-# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 # OSNet-specific pkglint(1) checks, called as part of pkglint commands in
