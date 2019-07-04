@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		bzip2
-COMPONENT_VERSION=	1.0.6
+COMPONENT_VERSION=	1.0.7
 COMPONENT_PROJECT_URL=	http://www.bzip.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a2848f34fcd5d6cf47def00461fcb528a0484d8edef8208d6d2e2909dc61d9cd
-COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+    sha256:e768a87c5b1a79511499beb41500bcc4caf203726fff46a6f5f9ad27fe08ab2b
+COMPONENT_ARCHIVE_URL=	https://sourceware.org/pub/bzip2/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/bzip
 COMPONENT_ANITYA_ID=	237
 
-TPNO=			27621
+TPNO=			52620
 
 BUILD_STYLE= justmake
 # build does this always
