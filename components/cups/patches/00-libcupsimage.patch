@@ -1,0 +1,20 @@
+In 32b. we build only: --with-components=libcups
+so the libcupsimage.so is not built but there are 32b. apps crying for it:
+
+usr/lib/libgs.so : print/filter/ghostscript-core
+usr/lib/evince/4/backends/libpsdocument.so : desktop/pdf-viewer/evince
+usr/lib/graphviz/libgvplugin_gs.so : image/graphviz
+
+This patch is temporary untill all those packages (and all their consumers)
+will be consuming the 32b. api of libcupsimage.so
+
+--- a/config-scripts/cups-common.m4	2019-05-21 18:59:32.000000000 +0000
++++ b/config-scripts/cups-common.m4	2019-07-07 23:39:37.870629238 +0000
+@@ -452,7 +452,6 @@
+ 
+ 	libcups)
+ 		BUILDDIRS="locale"
+-		cupsimagebase=""
+ 		;;
+ 
+ 	libcupslite)
