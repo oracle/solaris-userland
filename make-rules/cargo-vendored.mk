@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 CARGO = /usr/bin/cargo
@@ -61,3 +61,5 @@ download-vendored-sources:
 	/usr/bin/sha256sum $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_crates)
 
 CLEAN_PATHS += $(COMPONENT_DIR)/$(VENDORED_SOURCES_NAME)
+
+REQUIRED_PACKAGES += developer/rust/cargo-vendor
