@@ -85,46 +85,17 @@ COMPONENT_PRE_CONFIGURE_ACTION += $(CLONEY) $(SOURCE_DIR) $(@D)
 # we want to remove debugging data but not the symbols.
 COMPONENT_INSTALL_ENV += STRIPPROG="strip -x"
 
-# Create package objects lists with mutually exclusive contents.
-# cups-libs:	cups API
-# cups:		cups scheduler
-CUPSOBJ =	cups.pkgobjs
-CUPSLIBSOBJ =	cups-libs.pkgobjs
-BCUPSOBJ =	$(BUILD_DIR)/$(CUPSOBJ)
-BCUPSLIBSOBJ =	$(BUILD_DIR)/$(CUPSLIBSOBJ)
-METADATA_TEMPLATE=
+# cups scheduler
+PKG_OBJ =	cups
+# cups API
+SUBPKG_OBJ =	cups-libs
 
-ADD_TO_HEAP =		^file|^link|^dir .*path=var.*/cups|^dir .*path=usr/lib/cups/
-EXCLUDE_FROM_HEAP =	etc/pam.d/cups
-EXCLUSION_CRITERIA =	usr/include/.*\.h|usr/lib.*/lib.*\.so.*
-
-new-manifest:	$(BCUPSOBJ) $(BCUPSLIBSOBJ)
-
-$(CHECKED): new-manifest
-
-# all.pkgobjs: collects pkg-rules for files + links + conf.dirs (/etc/samba/) + state dirs (/var/samba/)
-# - rules for 'path=mangled' are not reasonable
-# - objects in etc/pam.d/cups have conflict with system/core-os
-$(BUILD_DIR)/all.pkgobjs:	$(GENERATED).p5m
-	nawk '{if (sub(/\\$$/,"")) printf "%s", $$0; else print $$0}' $(GENERATED).p5m \
-		| egrep -v 'path=mangled' \
-		| /usr/xpg4/bin/egrep -e '$(ADD_TO_HEAP)' \
-		| /usr/xpg4/bin/egrep -v -e '$(EXCLUDE_FROM_HEAP)' > $@
-
-# cups.pkgobjs: objects of scheduler
-# if diff will find a differences against CUPSOBJ it returns !0 then make fails
-# note: in such case the diff seen in build-log can be directly applied to samba.pkgobjs in component dir by gpatch
-$(BCUPSOBJ): $(BUILD_DIR)/all.pkgobjs
-	/usr/xpg4/bin/egrep -v -e '$(EXCLUSION_CRITERIA)' $(BUILD_DIR)/all.pkgobjs >$@
-	gdiff -u $(CUPSOBJ) $@
-
-# cups-libs.pkgobjs: objects of cups API pkg
-# - extract lib.+\.{so[.<ver>[.<subver>]]|h} from all.pkgobjs actions
-# if diff will find a differences against CUPSLIBSOBJ it returns !0 then make fails
-# note: in such case the diff seen in build-log can be directly applied to libsmbclient.pkgobjs in component dir by gpatch
-$(BCUPSLIBSOBJ): $(BUILD_DIR)/all.pkgobjs
-	/usr/xpg4/bin/egrep -e '$(EXCLUSION_CRITERIA)' $(BUILD_DIR)/all.pkgobjs >$@
-	gdiff -u $(CUPSLIBSOBJ) $@
+ADD_TO_HEAP = ^file|^link|^dir .*path=var.*/cups|^dir .*path=usr/lib/cups/
+EXCLUDE_FROM_HEAP = etc/pam.d/cups
+# - exclude lib.+\.{so[.<ver>[.<subver>]]|h} from $(HEAP_OBJ) actions into sub-pkg
+EXCLUSION_CRITERIA = usr/include/.*\.h|usr/lib.*/lib.*\.so.*
+# pkgobjs is used because manifest check do not support trash-can check
+include $(WS_MAKE_RULES)/pkgobjs.mk
 
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/libusb-1

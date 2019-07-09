@@ -95,11 +95,17 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/ FAIL:/p" ' \
 	'-e "/ ERROR:/p" '
 
+PKG_OBJ =	cups-filters
+ADD_TO_HEAP = ^file|^link
+# unsupported interface (as of PSARC/2019/031)
+EXCLUDE_FROM_HEAP = etc/rc|etc/init.d|usr/bin|cups-browsed|usr/include|usr/lib.*/pkgconfig|usr/share/man
+# pkgobjs is used because manifest check do not support trash-can check
+include $(WS_MAKE_RULES)/pkgobjs.mk
+
 REQUIRED_PACKAGES += desktop/pdf-viewer/poppler
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += image/library/libtiff
-REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/lcms2
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/zlib
@@ -109,7 +115,6 @@ REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += system/network/avahi
-REQUIRED_PACKAGES += system/network/ldap/openldap

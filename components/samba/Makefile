@@ -62,6 +62,7 @@ COMPONENT_ARCHIVE_URL=	https://download.samba.org/pub/samba/stable/$(COMPONENT_A
 COMPONENT_ARCHIVE_HASH=	sha256:c9205a651a83d69e200fec9dd65e9fa360f0c75ab3275b3dcb74e5cbaec60807
 COMPONENT_SRC_URL=	$(COMPONENT_ARCHIVE_URL)
 
+TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 # Winbind only build is 32b.
@@ -213,57 +214,22 @@ $(WB_ONLY_CONF:.configured=.installed): $(WB_ONLY_CONF:.configured=.built)
 	"
 	$(TOUCH) $@
 
-# Create package objects lists with mutually exclusive contents.
-# Goal is the libsmbclient package should be a subset of samba
-# distribution and need to have only the necessary dependencies.
+PKG_OBJ =	samba
+# libsmbclient API
 # Branch of libsmbclient was motivated by limited space in miniroot.
-SAMBAOBJ =		samba.pkgobjs
-LIBSMBCLIENTOBJ =	libsmbclient.pkgobjs
-BSAMBAOBJ =		$(BUILD_DIR)/$(SAMBAOBJ)
-BLIBSMBCLIENTOBJ =	$(BUILD_DIR)/$(LIBSMBCLIENTOBJ)
-METADATA_TEMPLATE=
+SUBPKG_OBJ =	libsmbclient
+# file lists libsmbclient API objs
+EXCLUSION_FILE = libsmbclient-deps
 
-new-manifest:	$(BLIBSMBCLIENTOBJ) $(BSAMBAOBJ)
-
-$(CHECKED): new-manifest
-
-# all.pkgobjs: collects pkg-rules for files + links + conf.dirs (/etc/samba/) + state dirs (/var/samba/)
-# note: rules for 'path=mangled' are not reasonable
-$(BUILD_DIR)/all.pkgobjs:	$(GENERATED).p5m
-	egrep -v 'path=mangled' $(GENERATED).p5m \
-		| nawk '{if (sub(/\\$$/,"")) printf "%s", $$0; else print $$0}' \
-		| /usr/xpg4/bin/egrep -e '^file|^link|^dir .*path=etc/samba/|^dir .*path=var/samba/' > $@
-
-# libsmbclient.deps: is a list of paths of all files to create libsmbclient package
-# - extract (only the paths) of libsmbclient.{so[.<ver>[.<subver>]]|h} from all.pkgobjs actions
-# - append paths of all internal Samba dependencies (in /usr/lib/samba/ priv.dir) of libsmbclient.so
-$(BUILD_DIR)/libsmbclient.deps: install $(BUILD_DIR)/all.pkgobjs
-	/usr/xpg4/bin/fgrep -e libsmbclient.so -e libsmbclient.h $(BUILD_DIR)/all.pkgobjs \
-		| sed -e 's/^.*path=//' | sed -e 's/ target=.*$$//' > $@
+ADD_TO_HEAP = ^file|^link|^dir .*path=etc/samba/|^dir .*path=var/samba/
+EXCLUDE_FROM_HEAP = nothing_to_exclude
+include $(WS_MAKE_RULES)/pkgobjs.mk
+$(EXCLUSION_FILE_TARGET): $(HEAP_OBJ)
+	/usr/xpg4/bin/fgrep -e libsmbclient.so -e libsmbclient.h $(HEAP_OBJ) \
+		| sed -e 's/^.*path=//' | sed -e 's/ target=.*$$//' > $@ ; \
 	ldd -v $(PROTO_DIR)/usr/lib/samba/$(MACH64)/libsmbclient.so \
 		| grep =[\>-\>] | nawk '{print $$NF;}' | sort -u \
 		| sed -e 's@^/@@;s/$(MACH64)/\$$(MACH64)/' | egrep '^usr/lib/samba' >> $@
-
-# samba.pkgobjs (in build/) is created from all.pkgobjs by removing the actions belongs to libsmbclient.deps paths
-# then samba.pkgobjs in build/ is compared to samba.pkgobjs in component dir
-# if diff will find a differences it returns !0 then make fails
-# note: in such case the diff seen in build-log can be directly applied to samba.pkgobjs in component dir by gpatch
-$(BSAMBAOBJ): $(BUILD_DIR)/libsmbclient.deps $(BUILD_DIR)/all.pkgobjs
-	/usr/xpg4/bin/fgrep -v -f $(BUILD_DIR)/libsmbclient.deps $(BUILD_DIR)/all.pkgobjs >$@
-	gdiff -u $(SAMBAOBJ) $@
-
-# libsmbclient.pkgobjs (in build/) is created from all.pkgobjs by exclusive adding of the actions belongs to libsmbclient.deps paths
-# then libsmbclient.pkgobjs in build/ is compared to libsmbclient.pkgobjs in component dir
-# if diff will find a differences it returns !0 then make fails
-# note: in such case the diff seen in build-log can be directly applied to libsmbclient.pkgobjs in component dir by gpatch
-$(BLIBSMBCLIENTOBJ): $(BUILD_DIR)/all.pkgobjs $(BUILD_DIR)/libsmbclient.deps
-	/usr/xpg4/bin/fgrep -f $(BUILD_DIR)/libsmbclient.deps $(BUILD_DIR)/all.pkgobjs >$@
-	gdiff -u $(LIBSMBCLIENTOBJ) $@
-
-# no tests
-test:		$(NO_TESTS)
-
-system-test:    $(NO_TESTS)
 
 REQUIRED_PACKAGES += library/file-monitor/gamin
 REQUIRED_PACKAGES += library/jansson
