@@ -50,7 +50,6 @@ include $(WS_MAKE_RULES)/common.mk
 # SPARC: Optimize the build for the oldest supported CPU that boots Solaris 11.4.
 OPT_FLAGS.i386 = -mtune=haswell
 OPT_FLAGS.sparc = -mcpu=niagara4
-GCC_ROOT = /usr/gcc/9
 
 CONFIGURE_OPTIONS  =  -opensource
 CONFIGURE_OPTIONS +=  -confirm-license

@@ -33,7 +33,6 @@ COMPILER              = gcc
 BUILD_BITS= 64
 export PARFAIT_BUILD=no
 include ../../make-rules/shared-macros.mk
-GCC_ROOT = /usr/gcc/7
 
 COMPONENT_NAME        = mysql
 COMPONENT_VERSION     = 5.7.27

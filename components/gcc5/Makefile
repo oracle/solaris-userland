@@ -27,6 +27,11 @@ BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
+# GCC 5 won't build with GCC 9 due some C++ standard issues:
+#  error: overloaded function with no contextual type information
+#  (e.g. for std::free vs free).
+GCC_ROOT= /usr/gcc/7
+
 COMPONENT_NAME=		gcc
 COMPONENT_VERSION=	5.5.0
 COMPONENT_PROJECT_URL=	https://gcc.gnu.org/
@@ -184,6 +189,7 @@ COMPONENT_TEST_TARGETS = mail-report.log
 COMPONENT_TEST_MASTER = \
 	$(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 
+REQUIRED_PACKAGES += developer/gcc-7
 REQUIRED_PACKAGES += developer/test/dejagnu
 REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/isl

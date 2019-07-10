@@ -28,8 +28,6 @@ COMPILER =	gcc
 include ../../../make-rules/shared-macros.mk
 include ../../../make-rules/cargo-vendored.mk
 
-GCC_ROOT =      /usr/gcc/9
-
 COMPONENT_NAME =	rustc
 COMPONENT_VERSION =	1.35.0
 COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-src

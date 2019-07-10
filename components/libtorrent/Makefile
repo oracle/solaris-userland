@@ -49,8 +49,6 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 # It can be removed when the upstream starts to use a newer automake version.
 COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 
-CXXFLAGS += -std=c++11
-
 CONFIGURE_OPTIONS  +=	--enable-shared
 CONFIGURE_OPTIONS  +=	--disable-debug
 CONFIGURE_OPTIONS  +=	--disable-static

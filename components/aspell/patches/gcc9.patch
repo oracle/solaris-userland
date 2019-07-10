@@ -1,0 +1,36 @@
+Without this it fails during install:
+
+make[1]: Entering directory '/builds/userland-gcc9-cbe/components/aspell/aspell6-en-7.1-0'
+/builds/userland-gcc9-cbe/components/aspell/build/prototype/i386/usr/bin/i86/prezip-bin -d < en-common.cwl | /builds/userland-gcc9-cbe/components/aspell/build/prototype/i386/usr/bin/i86/aspell --data-dir=/builds/userland-gcc9-cbe/components/aspell/build/prototype/i386/usr/lib/aspell-0.60 --lang=en create master ./en-common.rws
+/bin/sh: 28015: Memory fault(coredump)
+make[1]: *** [Makefile:108: en-common.rws] Segmentation Fault
+
+Stack:
+
+f74e63c8 libaspell.so.15.1.5`acommon::PosibErr<acommon::NormTable<acommon::FromUniNormEntry>*> acommon::create_norm_table<acommon::FromUniNormEntry>+0x45a(8ebbcf1, f74ed824, f74ea038, f238cafd, 1, 1)
+f74ed878 libaspell.so.15.1.5`acommon::PosibErr<acommon::NormTable<acommon::FromUniNormEntry>*> acommon::create_norm_table<acommon::FromUniNormEntry>+0x33d(f74ed900, f74ed900, f2375d1a,
+f239050b, f74ed9d0, f2350d24)
+f74eda68 libaspell.so.15.1.5`acommon::NormTables::get_new+0x55b(f74edae8, f2459a20, f238ffb0, f23970a3, f74edab8, f74edac0)
+f74edae8 libaspell.so.15.1.5`acommon::PosibErr<void> acommon::setup<acommon::NormTables>+0x153(f74edba8, f2459a20, f2396f50, f2391687, f74edb7c, 8ebbb40)
+f74edba8 libaspell.so.15.1.5`acommon::Convert::init_norm_to+0x227(f74edc48, f2459a20, f2391460, f23920b9, f74edc0c, 8ebbb28)
+f74edc48 libaspell.so.15.1.5`acommon::internal_new_convert+0x279(8ebb3f0, 8ebbae0, f23613c9, f23c882c, f74edca8, 8eb82a0)
+f74edcc8 libaspell.so.15.1.5`acommon::ConvObj::setup+0x9c(f74ede98, f2459a20, f23c8790, f23c6e50, f74ede04, 8eb9368)
+f74ede98 libaspell.so.15.1.5`aspeller::Language::setup+0x2290(f74edf18, f2459a20, f23c4bc0, f23c8def, f74edef8, 8eb9300)
+f74edf18 libaspell.so.15.1.5`acommon::PosibErr<aspeller::Language*> acommon::get_cache_data<aspeller::Language>+0x26f(f74edf88, f2459a20, f23c8b80, f23c7e17, f74edfd0, f23f5080)
+f74edf88 libaspell.so.15.1.5`aspeller::new_language+0x147(f74edff8, f2459a20, f23c7cd0, f23a0a0c, f74edfd0, 8eb82a0)
+f74edff8 libaspell.so.15.1.5`aspeller::create_default_readonly_dict+0x4c(f74ee068, f24546e0, f23a09c0, 805cfc4, f74ee03c, 8eb9270)
+f74ee068 master+0x144(f74ee04a, f74ee04e, 8eb8356, 806f75a, 0, 0)
+f74ee158 main+0x12fa(f74ee260, f74ee174, 80590e1)
+f74ee198 _start+0x46(6, f74ee2d2, f74ee32f, f74ee398, f74ee3a2, f74ee3a9)
+
+--- a/common/convert.cpp
++++ b/common/convert.cpp
+@@ -4,6 +4,8 @@
+ // license along with this library if you did not you can find
+ // it at http://www.gnu.org/.
+ 
++#pragma GCC optimize ("-fno-tree-slp-vectorize")
++
+ #include <assert.h>
+ #include <string.h>
+ #include <math.h>

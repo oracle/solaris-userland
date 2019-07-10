@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
@@ -43,6 +43,8 @@ TPNO=			36161
 TEST_TARGET = $(SKIP_TEST)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+
+CFLAGS += -Wno-cast-function-type
 
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 
