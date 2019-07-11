@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -39,6 +39,9 @@ COMPONENT_ANITYA_ID=	3938
 
 TPNO=			31169
 
+# Temporary solution for Python3.7 ready components
+PYTHON_VERSIONS = $(PYTHON3.7_READY)
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
@@ -47,7 +50,7 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # nose ships the tests in Python 2 syntax, and uses setup.py build_tests
 # to convert them to Python 3 syntax, but doing so requires running Python 3.
-$(UNPACK_STAMP):	PYTHON_VERSION=3.4
+$(UNPACK_STAMP):	PYTHON_VERSION=3.7
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_ARGS =	selftest.py
@@ -97,6 +100,3 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
-
-REQUIRED_PACKAGES += library/python/setuptools-27
-REQUIRED_PACKAGES += library/python/setuptools-34
