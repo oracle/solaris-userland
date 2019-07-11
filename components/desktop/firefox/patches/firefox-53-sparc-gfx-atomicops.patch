@@ -47,9 +47,10 @@ Couldn't convert chrome URL: chrome://branding/locale/brand.properties
 
 https://bugzilla.mozilla.org/show_bug.cgi?id=1344659
 
---- a/gfx/2d/Types.h
-+++ b/gfx/2d/Types.h
-@@ -76,15 +76,8 @@
+diff -r 20314a5ff8d3 -r 154d39af38e7 gfx/2d/Types.h
+--- a/gfx/2d/Types.h	Mon May 27 09:19:29 2019 +0200
++++ b/gfx/2d/Types.h	Mon May 27 09:25:07 2019 +0200
+@@ -85,15 +85,8 @@
  // The following values are endian-independent synonyms. The _UINT32 suffix
  // indicates that the name reflects the layout when viewed as a uint32_t
  // value.
@@ -60,8 +61,8 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1344659
 -  A8R8G8B8_UINT32 = A8R8G8B8,  // 0xAARRGGBB
 -  X8R8G8B8_UINT32 = X8R8G8B8   // 0x00RRGGBB
 -#else
--#error "bad endianness"
+-#  error "bad endianness"
 -#endif
  };
  
- inline bool IsOpaque(SurfaceFormat aFormat) {
+ static inline int BytesPerPixel(SurfaceFormat aFormat) {

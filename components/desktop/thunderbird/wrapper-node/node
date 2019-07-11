@@ -1,0 +1,61 @@
+#!/bin/bash
+
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+
+set -e
+
+MACH=`mach`
+CACHE_DIR=$(dirname "$0")/node-js-cache
+
+mkdir -p "$CACHE_DIR"
+
+if [ "$1" = "--version" ] ; then
+  if [ $MACH == "i386" ] ; then
+    /usr/bin/node $@  | tee "$CACHE_DIR"/version
+  else
+    cat "$CACHE_DIR"/version
+  fi
+  exit
+fi
+
+WSDIR="$PWD"
+while [ $(echo -n $WSDIR | wc -c ) -gt 1 ]; do
+  echo "$@" | grep "^$WSDIR" && break
+  WSDIR=`dirname $WSDIR`
+done
+SUM=`echo "$@" | gsed -e "s;^$WSDIR/;;" -e "s; $WSDIR/; ;g" | sha1sum | awk '{print $1}'`
+
+if [ $MACH == "i386" ] ; then
+  mkdir -p "$CACHE_DIR"/$SUM
+  truss -afeo "$CACHE_DIR"/$SUM/truss.log /usr/bin/node $@
+  grep "O_WRONLY" "$CACHE_DIR"/$SUM/truss.log \
+    | awk '{print $3}' |  cut -d '"' -f 2 \
+    | while read f; do cp -f $f "$CACHE_DIR"/$SUM; done
+  rm -f "$CACHE_DIR"/$SUM/truss.log
+else
+  cp "$CACHE_DIR"/$SUM/* .
+fi

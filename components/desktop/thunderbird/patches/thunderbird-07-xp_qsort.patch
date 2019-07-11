@@ -6,15 +6,23 @@ compilation terminated.
 
 --- a/comm/ldap/c-sdk/libraries/libldap/sort.c
 +++ b/comm/ldap/c-sdk/libraries/libldap/sort.c
-@@ -58,11 +58,7 @@
-  * We don't want to require use of libxp when linking with libldap, so
-  * I'll leave use of xp_qsort as a MOZILLA_CLIENT-only thing for now. --mcs
-  */
+@@ -51,18 +51,7 @@
+ 
+ #include "ldap-int.h"
+ 
+-/* This xp_qsort fixes a memory problem (ABR) on Solaris for the client.
+- * Server is welcome to use it too, but I wasn't sure if it
+- * would be ok to use XP code here.  -slamm
+- *
+- * We don't want to require use of libxp when linking with libldap, so
+- * I'll leave use of xp_qsort as a MOZILLA_CLIENT-only thing for now. --mcs
+- */
 -#if defined(MOZILLA_CLIENT) && defined(SOLARIS)
--#include "xp_qsort.h"
+-#  include "xp_qsort.h"
 -#else
- #define XP_QSORT qsort
+-#  define XP_QSORT qsort
 -#endif
++#define XP_QSORT qsort
  
  typedef struct keycmp {
-     void                 *kc_arg;
+   void *kc_arg;

@@ -1,0 +1,22 @@
+https://bugzilla.mozilla.org/show_bug.cgi?id=1579009
+
+--- a/js/xpconnect/src/XPCWrappedNative.cpp
++++ b/js/xpconnect/src/XPCWrappedNative.cpp
+@@ -1157,7 +1157,7 @@
+   return helper.get().Call();
+ }
+ 
+-#if (__GNUC__ && __linux__ && __PPC64__ && _LITTLE_ENDIAN)
++#if (__GNUC__ && __linux__ && __PPC64__ && defined(_LITTLE_ENDIAN))
+ // Work around a compiler bug on ppc64le (bug 1512162).
+ __attribute__ ((noinline,noclone))
+ #endif
+@@ -1319,7 +1319,7 @@
+   return true;
+ }
+ 
+-#if (__GNUC__ && __linux__ && __PPC64__ && _LITTLE_ENDIAN)
++#if (__GNUC__ && __linux__ && __PPC64__ && defined(_LITTLE_ENDIAN))
+ // Work around a compiler bug on ppc64le (bug 1512162).
+ __attribute__ ((noinline,noclone))
+ #endif

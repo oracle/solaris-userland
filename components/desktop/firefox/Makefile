@@ -26,47 +26,51 @@
 # parfait is a bit unhappy (22527218)
 export PARFAIT_BUILD=no
 
-BUILD_BITS= 64
-COMPILER= gcc
+BUILD_BITS = 64
+COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
+
+GCC_ROOT =      /usr/gcc/9
 
 ESR = esr
 
-COMPONENT_NAME =		firefox
-COMPONENT_VERSION =		60.9.0
-COMPONENT_PROJECT_URL =		http://www.mozilla.com/firefox
-COMPONENT_SRC_NAME =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_SRC = 		$(COMPONENT_SRC_NAME)
-COMPONENT_ARCHIVE =		$(COMPONENT_SRC_NAME)$(ESR).source.tar.xz
+COMPONENT_NAME =	firefox
+COMPONENT_VERSION =	68.1.0
+COMPONENT_PROJECT_URL =	http://www.mozilla.com/firefox
+COMPONENT_SRC_NAME =	$(COMPONENT_NAME)-$(COMPONENT_VERSION)
+COMPONENT_SRC = 	$(COMPONENT_SRC_NAME)
+COMPONENT_ARCHIVE =	$(COMPONENT_SRC_NAME)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:9f453c8cc5669e46e38f977764d49a36295bf0d023619d9aac782e6bb3e8c53f
+    sha256:f56f5fa5a4744be0b9acf259cb991254d708a50b9a0a12d1d846ffa5a6c409ac
 ifndef CANDIDATE_BUILD
-MOZILLA_FTP = 		        http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
+MOZILLA_FTP =		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
-MOZILLA_FTP = 		        http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/candidates/$(COMPONENT_VERSION)$(ESR)-candidates/build$(CANDIDATE_BUILD)
+MOZILLA_FTP =		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/candidates/$(COMPONENT_VERSION)$(ESR)-candidates/build$(CANDIDATE_BUILD)
 endif
-COMPONENT_ARCHIVE_URL =		$(MOZILLA_FTP)/source/$(COMPONENT_ARCHIVE)
-COMPONENT_BUGDB =		firefox/browser
-COMPONENT_ANITYA_ID=    	16838
+COMPONENT_ARCHIVE_URL =	$(MOZILLA_FTP)/source/$(COMPONENT_ARCHIVE)
+COMPONENT_BUGDB =	firefox/browser
+COMPONENT_ANITYA_ID =	16838
 
-TPNO=				53757
+TPNO=			53997
 
 # There are a set of .xpi files (as given in the LANG_LIST definition
 # below) that we need. We could download and unpack them individually, but
 # they doesn't contain version in its file name and there is lot of them.
 # Therefore we will download them and archive them in Userland cache using
 # one file with version number.
-COMPONENT_ARCHIVE_1 =           $(COMPONENT_SRC_NAME)$(ESR)-xpi.tar.bz2
+COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC_NAME)$(ESR)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:11a18784ff660ca774964763061de29f9e439186c89dbf4f47776c7b47f215ab
+    sha256:c494d0e271212c74fdb01415102cd763b1e6781baf9d0974baa1cba8ebc613b9
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
-LANG_LIST = ach af an ar as ast az be bg bn-BD bn-IN br bs ca cak cs cy \
-	da de dsb el en-GB en-US en-ZA eo es-AR es-CL es-ES es-MX et \
+LANG_LIST = ach af an ar ast az be bg bn br bs ca cak cs cy \
+	da de dsb el en-CA en-GB en-US eo es-AR es-CL es-ES es-MX et \
 	eu fa ff fi fr fy-NL ga-IE gd gl gn gu-IN he hi-IN hr hsb hu \
-	hy-AM ia id is it ja ka kab kk km kn ko lij lt lv mai mk ml mr ms my \
-	nb-NO ne-NP nl nn-NO oc or pa-IN pl pt-BR pt-PT rm ro ru si sk sl son \
+	hy-AM ia id is it ja ka kab kk km kn ko lij lt lv mk mr ms my \
+	nb-NO ne-NP nl nn-NO oc pa-IN pl pt-BR pt-PT rm ro ru si sk sl son \
 	sq sr sv-SE ta te th tr uk ur uz vi xh zh-CN zh-TW
+
+CLEAN_PATHS += $(COMPONENT_DIR)/xpi
 
 CONFIGURE_DEFAULT_DIRS=no
 
@@ -74,13 +78,15 @@ include $(WS_MAKE_RULES)/common.mk
 
 # /usr/gnu/bin needed to pick up the GNU version of tail and readelf.
 # /usr/sbin needed for dtrace.
-PATH =			$(dirname $(CC)):/usr/gnu/bin:/usr/bin:/usr/sbin
+PATH = $(COMPONENT_DIR)/wrapper-node:/usr/gnu/bin:/usr/bin:/usr/sbin
 
-CLEAN_PATHS +=		$(COMPONENT_DIR)/xpi
-
-MOZCONFIG = 		$(SOURCE_DIR)/mozconfig
+MOZCONFIG = $(SOURCE_DIR)/mozconfig
 
 ifdef DEBUG
+# disable code optimization
+CFLAGS =
+CXXFLAGS =
+
 MOZCONFIG_DEBUG =	$(MOZCONFIG)
 MOZCONFIG_NON_DEBUG =	/dev/null
 else
@@ -92,29 +98,32 @@ COMPONENT_PRE_CONFIGURE_ACTION += \
 	echo "ac_add_options MOZILLA_OFFICIAL=1" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --prefix=/usr" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --libdir=/usr/lib" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --enable-official-branding" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --disable-updater" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --disable-debug-symbols" >> $(MOZCONFIG_NON_DEBUG) ; \
-	echo "ac_add_options --enable-update-channel=esr" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --disable-tests" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --with-system-icu" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --with-system-zlib" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --with-system-bz2" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --with-system-libevent" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --enable-system-ffi" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --enable-jemalloc" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --disable-av1" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --disable-crashreporter" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --enable-pulseaudio" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --with-intl-api" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --enable-system-sqlite" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --enable-system-pixman" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --enable-startup-notification" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --enable-replace-malloc" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --enable-js-shell" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --enable-debug" >> $(MOZCONFIG_DEBUG) ; \
+	echo "ac_add_options --disable-debug-symbols" >> $(MOZCONFIG_NON_DEBUG) ; \
 	echo "ac_add_options --disable-install-strip" >> $(MOZCONFIG_DEBUG) ; \
+	echo "ac_add_options --disable-optimize" >> $(MOZCONFIG_DEBUG) ; \
+	echo "ac_add_options --disable-tests" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --disable-updater" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --enable-debug" >> $(MOZCONFIG_DEBUG) ; \
+	echo "ac_add_options --enable-jemalloc" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --enable-js-shell" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --enable-official-branding" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --enable-optimize" >> $(MOZCONFIG_NON_DEBUG) ; \
+	echo "ac_add_options --enable-pulseaudio" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --enable-replace-malloc" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --enable-startup-notification" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --enable-system-ffi" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --enable-system-pixman" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --enable-system-sqlite" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --enable-update-channel=esr" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --with-intl-api" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --with-system-bz2" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --with-system-icu" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --with-system-libevent" >> $(MOZCONFIG) ; \
+	echo "ac_add_options --with-system-zlib" >> $(MOZCONFIG) ; \
 
-CXXFLAGS +=     -Wno-invalid-offsetof -fpermissive
+CXXFLAGS += -Wno-invalid-offsetof -fpermissive
 
 LD_SECEXT_OPTIONS += $(SSBD_ENABLE)
 
@@ -130,30 +139,33 @@ LD_B_DIRECT=
 # because we touched old-configure.in and js/src/old-configure.in
 COMPONENT_PRE_CONFIGURE_ACTION += (cd $(COMPONENT_NAME)-$(COMPONENT_VERSION); autoreconf; touch configure; cd js/src; autoreconf; touch configure);
 
+# make sure that node wrapper is executable
+COMPONENT_PRE_CONFIGURE_ACTION += (chmod 555 $(COMPONENT_DIR)/wrapper-node/node);
+
 COMPONENT_POST_BUILD_ACTION = \
 	(cd $(@D)/browser/installer ; $(ENV) $(COMPONENT_BUILD_ENV) \
 		$(GMAKE) $(COMPONENT_BUILD_ARGS) $(COMPONENT_BUILD_TARGETS))
 
 COMPONENT_POST_INSTALL_ACTION += \
-        $(RM) -rf xpi ; \
+        $(MKDIR) $(PROTOUSRLIBDIR)/firefox/browser/extensions ; $(RM) -rf xpi ; \
         $(TAR) xvf $(COMPONENT_ARCHIVE_1) > /dev/null 2>&1 ; \
         list1='$(LANG_LIST)' ; for f in $$list1 ; do \
             $(CP) xpi/$$f.xpi \
                 $(PROTOUSRLIBDIR)/firefox/browser/extensions/langpack-$$f@firefox.mozilla.org.xpi ; \
         done ;
 
-FF_XPI = $(MOZILLA_FTP)/linux-i686/xpi
+MOZ_XPI = $(MOZILLA_FTP)/linux-i686/xpi
 
-# Run gmake download-xpis to download a tarball for xpi locally. 
+# Run gmake download-xpis to download a tarball for xpi locally.
 download-xpis:
 	@echo "download-xpis"
-	$(RM) -r $(COMPONENT_DIR)/$(COMPONENT_ARCHIVE_1)
+	$(RM) -r $(COMPONENT_DIR)/xpi $(COMPONENT_DIR)/$(COMPONENT_ARCHIVE_1)
 	$(MKDIR) $(COMPONENT_DIR)/xpi
-	@echo "downloading firefox xpis"
+	@echo "downloading $(COMPONENT_NAME) xpis"
 	list1='$(LANG_LIST)' ; for f in $$list1 ; do \
 	    echo $$f; \
 	    /usr/bin/curl -R -s -o $(COMPONENT_DIR)/xpi/$$f.xpi \
-	        $(FF_XPI)/$$f.xpi; \
+	        $(MOZ_XPI)/$$f.xpi; \
 	    file $(COMPONENT_DIR)/xpi/$$f.xpi | grep ZIP > /dev/null; \
 	    if [ $$? -ne 0 ]; then \
 	        echo "File $$f is not ZIP archive!"; exit 1; \
@@ -163,12 +175,19 @@ download-xpis:
 	    TZ=UTC gtar cjvf $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1) --mtime='1970-01-01' --owner=root --group=root xpi/* )
 	/usr/bin/sha256sum $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1)
 
-SIGNED_LIST = libsoftokn3.so libnssdbm3.so libfreebl3.so
+license: install
+	@echo "regenerating license text"
+	unzip -c $(PROTOUSRLIBDIR)/$(COMPONENT_NAME)/omni.ja chrome/toolkit/content/global/license.html \
+	    | lynx  -stdin --dump -nolist > $(COMPONENT_NAME).license
+
+SIGNED_LIST.i386 = libsoftokn3.so libnssdbm3.so libfreebl3.so
+SIGNED_LIST.sparc = libsoftokn3.so libnssdbm3.so libfreebl_64fpu_3.so libfreebl_64int_3.so
+SIGNED_LIST = $(SIGNED_LIST.$(MACH))
 
 COMPONENT_POST_INSTALL_ACTION += \
 	slist='$(SIGNED_LIST)' ; for f in $$slist ; do \
-	    mcs -d $(PROTOUSRLIBDIR)/firefox/$$f ; \
-	    LD_LIBRARY_PATH=$(PROTOUSRLIBDIR)/firefox $(BUILD_DIR_64)/dist/bin/shlibsign -v -i $(PROTOUSRLIBDIR)/firefox/$$f ; \
+	    mcs -d $(PROTOUSRLIBDIR)/$(COMPONENT_NAME)/$$f ; \
+	    LD_LIBRARY_PATH=$(PROTOUSRLIBDIR)/$(COMPONENT_NAME) $(BUILD_DIR_64)/dist/bin/shlibsign -v -i $(PROTOUSRLIBDIR)/$(COMPONENT_NAME)/$$f ; \
         done ;
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
@@ -176,13 +195,14 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 COMPONENT_TEST_DIR =    $(@D)/js/src
 COMPONENT_TEST_TARGETS=check-jit-test
 COMPONENT_TEST_TRANSFORMS = \
-        '-e "/^PASSED ALL/,/Failed:/p" ' \
-        '-e "/^FAILURES:/,/Failed:/p" ' \
+	'-e "/^PASSED ALL/,/Failed:/p" ' \
+	'-e "/^FAILURES:/,/Failed:/p" ' \
 	'-e "/.*/d" '
 
 REQUIRED_PACKAGES += codec/libogg
 REQUIRED_PACKAGES += codec/libvorbis
 REQUIRED_PACKAGES += compress/bzip2
+REQUIRED_PACKAGES += compress/unzip
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/build/autoconf-213
 ifneq ($(MACH), sparc)
@@ -201,6 +221,9 @@ REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/libevent
 REQUIRED_PACKAGES += library/libffi
 REQUIRED_PACKAGES += library/zlib
+ifneq ($(MACH), sparc)
+REQUIRED_PACKAGES += runtime/nodejs
+endif
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/freetype-2
@@ -209,6 +232,7 @@ REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/libdbus-glib
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += web/browser/lynx
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcb
 REQUIRED_PACKAGES += x11/library/libxext

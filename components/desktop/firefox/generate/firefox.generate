@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # pkg://library/myspell/dictionaries delivers symbolic links to use instead
@@ -33,8 +33,11 @@
 <transform link path=usr/bin/firefox -> edit target /usr ..>
 
 # i386 only libraries
-<transform file path=usr/lib/firefox/(libmozavcodec.so|libmozavutil.so) -> set variant.arch i386>
+<transform file path=usr/lib/firefox/(libfreebl3|libmozavcodec\.so|libmozavutil\.so) -> set variant.arch i386>
+
+# sparc only libraries
+<transform file path=usr/lib/firefox/libfreebl_64 -> set variant.arch sparc>
 
 # decorate some files
 <transform file path=usr/lib/firefox/(firefox|firefox-bin|plugin-container|pingsender) -> set mode 0555>
-<transform file path=usr/lib/firefox/(firefox|firefox-bin|plugin-container|pingsender) -> set pkg.linted.userland.action001.3 true>
+<transform file path=usr/lib/firefox/(libfreebl.*\.so|libnssdbm3\.so|libsoftokn3\.so) -> set com.oracle.elfsign false>
