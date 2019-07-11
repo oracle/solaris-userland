@@ -1,0 +1,23 @@
+To avoid linking of unnecessary libraries (crypto, zlib),
+'cups-config --libs' started to report only '-lcups' instead of
+'-lcups -lgssapi_krb5 -lkrb5 -lk5crypto -lcom_err -lz -lpthread -lresolv -lm -lz'.
+For that reason, the linkage phase fails during the creation of
+cups-browsed executable as 'res_init' symbol from libresolv library
+is undefined. The patch adds '-lresolv' flag to Solaris linker.
+
+cups-config: only CUPS libraries go in non-static `cups-config --libs`
+https://github.com/apple/cups/pull/5261
+
+The patch might be suitable for upstream, however,
+I do not know why this was not spotted on Linux.
+
+--- cups-filters-release-1-22-5/Makefile.am	2019-07-10 12:20:22.754593308 +0000
++++ cups-filters-release-1-22-5/Makefile.am	2019-07-10 12:20:20.157515767 +0000
+@@ -981,6 +982,7 @@ cups_browsed_LDADD = \
+ 	$(GLIB_LIBS) \
+ 	$(GIO_LIBS) \
+ 	$(GIO_UNIX_LIBS) \
++	-lresolv \
+ 	libcupsfilters.la
+ initrcdir = $(INITDDIR)
+ initrc_SCRIPTS = utils/cups-browsed
