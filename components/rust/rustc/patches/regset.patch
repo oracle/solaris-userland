@@ -2,10 +2,7 @@ Avoids name collision with definitions from Solaris header sys/regset.h.
 
 --- a/src/rustllvm/rustllvm.h
 +++ b/src/rustllvm/rustllvm.h
-@@ -8,6 +8,14 @@
- // option. This file may not be copied, modified, or distributed
- // except according to those terms.
- 
+@@ -1,3 +1,11 @@
 +// Avoid collision in llvm header files with CS and FS as these are
 +// defined in Solaris regset.h header (intel only issue + built with gcc).
 +#if defined(__sun__) && !defined(__sparc__)
@@ -19,10 +16,7 @@ Avoids name collision with definitions from Solaris header sys/regset.h.
  #include "llvm-c/ExecutionEngine.h"
 --- a/src/rustllvm/Linker.cpp
 +++ b/src/rustllvm/Linker.cpp
-@@ -8,6 +8,14 @@
- // option. This file may not be copied, modified, or distributed
- // except according to those terms.
- 
+@@ -1,3 +1,11 @@
 +// Avoid collision in llvm header files with CS and FS as these are
 +// defined in Solaris regset.h header (intel only issue + built with gcc).
 +#if defined(__sun__) && !defined(__sparc__)

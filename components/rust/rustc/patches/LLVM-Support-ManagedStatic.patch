@@ -1,0 +1,17 @@
+SPARC GCC issue causes problem during Rust bundled LLVM build
+(llvm-tblgen cores dump). Related to use of -fno-delayed-branch?!
+
+Need to be investigated.
+
+--- a/src/llvm-project/llvm/lib/Support/ManagedStatic.cpp
++++ b/src/llvm-project/llvm/lib/Support/ManagedStatic.cpp
+@@ -11,6 +11,9 @@
+ //
+ //===----------------------------------------------------------------------===//
+ 
++#if __sparc__ 
++#pragma GCC optimize ("-O0")
++#endif
+ #include "llvm/Support/ManagedStatic.h"
+ #include "llvm/Config/config.h"
+ #include "llvm/Support/Mutex.h"

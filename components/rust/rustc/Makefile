@@ -28,25 +28,25 @@ COMPILER =	gcc
 include ../../../make-rules/shared-macros.mk
 include ../../../make-rules/cargo-vendored.mk
 
+GCC_ROOT =      /usr/gcc/9
+
 COMPONENT_NAME =	rustc
-COMPONENT_VERSION =	1.28.0
+COMPONENT_VERSION =	1.35.0
 COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-src
 COMPONENT_PROJECT_URL =	http://www.rust-lang.org/
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:8a899afd4b502b4ebff5cfc82cba77a8cb37113b5e6018f15c09545936081848
+    sha256:169756df2298957bcf02da6a612996c24a51b9ac3b23409e6507d69eb2e6f523
 COMPONENT_ARCHIVE_URL =	https://static.rust-lang.org/dist/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL =	$(COMPONENT_ARCHIVE_URL).asc
 
 COMPONENT_BUGDB =	utility/rust
 COMPONENT_ANITYA_ID =	7635
 
-TPNO =			45247
+TPNO =			52475
 
 COMPONENT_ARCHIVE_HASH_crates = \
-    sha256:c375782bea7250b9a7dd86af64279bc6a3a4de8beced12353e82e7142890e814
-
-VENDORED_CARGO_LOCK = $(COMPONENT_SRC)/src/Cargo.lock
+    sha256:bbca78f09a3f9675463416405ab851b65a981989c5fcc8217ed0da97eaaca806
 
 PKG_VARS += RUST_PLATFORM
 
@@ -62,16 +62,11 @@ LD_B_DIRECT =
 
 $(MANIFEST_BASE)-%.mogrified: RUST_PLATFORM = $(MACH64:amd64=x86_64)-sun-solaris
 
-# Need to run autoconf due to applying patches/malloc_usable_size.patch
-COMPONENT_PREP_ACTION += (cd $(@D)/src/jemalloc/ ; autoconf )
-
 # The configure Rust uses isn't autoconf; it's hand-rolled, and doesn't
 # recognize all the autoconf options, so we start from scratch.
 CONFIGURE_OPTIONS =	--prefix=$(CONFIGURE_PREFIX)
 CONFIGURE_OPTIONS +=	--default-linker=gcc
 CONFIGURE_OPTIONS +=	--enable-local-rust
-CONFIGURE_OPTIONS +=	--enable-llvm-link-shared
-CONFIGURE_OPTIONS +=	--llvm-root=/usr
 
 COMPONENT_PRE_BUILD_ACTION = $(VENDORED_SOURCES_ENFORCE)
 

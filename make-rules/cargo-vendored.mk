@@ -23,7 +23,7 @@
 # Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
-CARGO = /usr/bin/cargo
+CARGO = cargo
 
 VENDORED_SOURCES_NAME = $(COMPONENT_SRC)-vendored-sources
 VENDORED_SOURCES = $(COMPONENT_DIR)/$(VENDORED_SOURCES_NAME)
@@ -51,7 +51,7 @@ download-vendored-sources:
 	gtar xf $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE) -C $(VENDORED_SOURCES); \
 	cd $(VENDORED_SOURCES)/$(COMPONENT_SRC); \
 	  for i in `find $(COMPONENT_DIR)/patches -name '*.patch'` ; do gpatch -p1 < $$i; done
-	cd $(VENDORED_SOURCES); \
+	cd $(VENDORED_SOURCES); PATH=$(PATH) \
 	  CARGO_HOME=$(VENDORED_SOURCES)/.cargo $(CARGO) vendor -s $(VENDORED_CARGO_LOCK)
 	$(MV) $(VENDORED_SOURCES)/vendor/* $(VENDORED_SOURCES)
 	$(RM) -r $(VENDORED_SOURCES)/.cargo $(VENDORED_SOURCES)/$(COMPONENT_SRC) \

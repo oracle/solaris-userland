@@ -1,0 +1,16 @@
+Don't generate debug information during Rust build till following SPARC
+issue is resolved:
+
+https://github.com/rust-lang/rust/issues/62001
+
+--- a/src/bootstrap/bootstrap.py
++++ b/src/bootstrap/bootstrap.py
+@@ -619,7 +619,7 @@
+         env["LIBRARY_PATH"] = os.path.join(self.bin_root(), "lib") + \
+             (os.pathsep + env["LIBRARY_PATH"]) \
+             if "LIBRARY_PATH" in env else ""
+-        env["RUSTFLAGS"] = "-Cdebuginfo=2 "
++        env["RUSTFLAGS"] = "-Cdebuginfo=0 "
+ 
+         build_section = "target.{}".format(self.build_triple())
+         target_features = []
