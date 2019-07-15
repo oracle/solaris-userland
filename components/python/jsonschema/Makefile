@@ -25,17 +25,17 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		jsonschema
-COMPONENT_VERSION=	2.0.0
+COMPONENT_VERSION=	3.0.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c2c8483be59aea3df568d8aad2b3296ef7ea767639efe6e0363c722f7f096322
+    sha256:0c0a81564f181de3212efa2d17de1910f8732fa1b71c42266d983cd74304e20d
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/Julian/jsonschema
 COMPONENT_BUGDB=	python-mod/jsonschema
 COMPONENT_ANITYA_ID=	3898
 
-TPNO=			14503
+TPNO=			51329
 
 # Temporary solution for Python3.7 ready components
 PYTHON_VERSIONS = $(PYTHON3.7_READY)
