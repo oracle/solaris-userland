@@ -12,20 +12,20 @@ thing is to patch the expected results.
 
 This is Solaris specific and it is unlikely to be accepted by upstream
 
---- mercurial-4.7.1/tests/test-merge1.t	2018-09-17 04:38:00.480000137 +0000
-+++ mercurial-4.7.1/tests/test-merge1.t	2018-09-17 04:37:58.669268055 +0000
-@@ -30,7 +30,7 @@ of the files in a commit we're updating
- 
+--- mercurial-4.9.1/tests/test-merge1.t
++++ mercurial-4.9.1/tests/test-merge1.t
+@@ -31,7 +31,7 @@ of the files in a commit we're updating 
    $ mkdir b && touch b/nonempty
    $ hg up
--  abort: Directory not empty: '$TESTTMP/t/b'
+   abort: Unlinking directory not permitted: *$TESTTMP/t/b* (glob) (windows !)
+-  abort: Directory not empty: '?\$TESTTMP/t/b'? (re) (no-windows !)
 +  abort: File exists: '$TESTTMP/t/b'
    [255]
    $ hg ci
    abort: last update was interrupted
---- mercurial-4.7.1/tests/test-narrow-expanddirstate.t	2018-09-17 04:43:30.311768878 +0000
-+++ mercurial-4.7.1/tests/test-narrow-expanddirstate.t	2018-09-17 04:42:51.595621697 +0000
-@@ -108,9 +108,9 @@ have this method available in narrowhg p
+--- mercurial-4.9.1/tests/test-narrow-expanddirstate.t
++++ mercurial-4.9.1/tests/test-narrow-expanddirstate.t
+@@ -103,9 +103,9 @@ have this method available in narrowhg p
  Since we do not have the ability to rely on a virtual filesystem or
  remotefilelog in the test, we just fake it by copying the data from the 'master'
  repo.
@@ -37,13 +37,13 @@ This is Solaris specific and it is unlikely to be accepted by upstream
  
  `hg status` will now add outside, but not patchdir.
    $ DIRSTATEINCLUDES=path:outside hg status
---- mercurial-4.7.1/tests/test-update-names.t	2018-09-17 05:14:22.331394767 +0000
-+++ mercurial-4.7.1/tests/test-update-names.t	2018-09-17 05:14:19.846672245 +0000
-@@ -50,7 +50,7 @@ make sure that this does not erase untra
-   $ hg st
+--- mercurial-4.9.1/tests/test-update-names.t
++++ mercurial-4.9.1/tests/test-update-names.t
+@@ -51,7 +51,7 @@ make sure that this does not erase untra
    ? name/file
    $ hg up 1
--  abort: Directory not empty: '$TESTTMP/r1/r2/name'
+   abort: Unlinking directory not permitted: *$TESTTMP/r1/r2/name* (glob) (windows !)
+-  abort: Directory not empty: '?\$TESTTMP/r1/r2/name'? (re) (no-windows !)
 +  abort: File exists: '$TESTTMP/r1/r2/name'
    [255]
    $ cat name/file

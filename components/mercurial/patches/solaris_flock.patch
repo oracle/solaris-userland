@@ -1,0 +1,49 @@
+The issue was reported to upstream
+https://bz.mercurial-scm.org/show_bug.cgi?id=6111
+
+The Mercurial test suite is failing on Solaris and so are the two modules I
+believe. The problem is that remotefilelog and fsannotate extensions are using
+
+fcntl.flock(lockfd, fcntl.LOCK_EX)
+
+flock is not implemented on Solaris, so python is emulating the behavior via
+fcntl F_SETLKW.
+
+https://github.com/python/cpython/blob/master/Modules/fcntlmodule.c
+420   ret = fcntl(fd, (code & LOCK_NB) ? F_SETLK : F_SETLKW, &l);
+
+But fcntl needs to have the lockfd file opened for writing as documented in
+fcntl(2):
+
+       An  exclusive lock will prevent any other process from setting a shared
+       lock or an exclusive lock on any  portion  of  the  protected  area.  A
+       request  for an exclusive lock will fail if the file descriptor was not
+       opened with write access.
+
+The extensions are opening the file as O_RDONLY. Changing that to O_RDWR makes
+the test suite to pass. The fcntl module is not opening the files but rather
+it's getting the fd from caller, so I believe that the fix should go to
+mercurial.
+
+--- mercurial-4.9.1/hgext/remotefilelog/extutil.py
++++ mercurial-4.9.1/hgext/remotefilelog/extutil.py
+@@ -43,7 +43,7 @@ def flock(lockpath, description, timeout
+     util.makedirs(os.path.dirname(lockpath))
+     with open(lockpath, 'a'):
+         pass
+-    lockfd = os.open(lockpath, os.O_RDONLY, 0o664)
++    lockfd = os.open(lockpath, os.O_RDWR, 0o664)
+     start = time.time()
+     while True:
+         try:
+--- mercurial-4.9.1/hgext/fastannotate/context.py
++++ mercurial-4.9.1/hgext/fastannotate/context.py
+@@ -766,7 +766,7 @@ class pathhelper(object):
+         import fcntl
+         lockpath = self.linelogpath
+         util.makedirs(os.path.dirname(lockpath))
+-        lockfd = os.open(lockpath, os.O_RDONLY | os.O_CREAT, 0o664)
++        lockfd = os.open(lockpath, os.O_RDWR | os.O_CREAT, 0o664)
+         fcntl.flock(lockfd, fcntl.LOCK_EX)
+         try:
+             yield

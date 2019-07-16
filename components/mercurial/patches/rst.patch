@@ -36,8 +36,8 @@ Solaris, or remove sections that are of no relevance to Solaris.
  Some commands (e.g. revert) produce backup files ending in ``.orig``,
  if the ``.orig`` file already exists and is not tracked by Mercurial,
  it will be overwritten.
---- mercurial-4.7.1/mercurial/help/config.txt	2018-09-17 00:47:27.332158470 +0000
-+++ mercurial-4.7.1/mercurial/help/config.txt	2018-09-17 00:46:56.412493622 +0000
+--- mercurial-4.9.1/mercurial/help/config.txt
++++ mercurial-4.9.1/mercurial/help/config.txt
 @@ -36,10 +36,6 @@ Local configuration is put into the per-
  
  Global configuration like the username setting is typically put into:
@@ -100,7 +100,7 @@ Solaris, or remove sections that are of no relevance to Solaris.
  Per-repository configuration options only apply in a
  particular repository. This file is not version-controlled, and
  will not get transferred during a "clone" operation. Options in
-@@ -105,7 +66,7 @@ this file override options in all other
+@@ -105,7 +66,7 @@ this file override options in all other 
  
  .. container:: unix.plan9
  
@@ -122,7 +122,7 @@ Solaris, or remove sections that are of no relevance to Solaris.
  order until one or more configuration files are detected.
  
  Per-system configuration files are for the system on which Mercurial
-@@ -635,14 +594,6 @@ filtered by the command. The string ``OU
+@@ -654,14 +613,6 @@ filtered by the command. The string ``OU
  of an empty temporary file, where the filtered data must be written by
  the command.
  
@@ -137,7 +137,31 @@ Solaris, or remove sections that are of no relevance to Solaris.
  This filter mechanism is used internally by the ``eol`` extension to
  translate line ending characters between Windows (CRLF) and Unix (LF)
  format. We suggest you use the ``eol`` extension for convenience.
-@@ -1122,13 +1073,6 @@ be ``$HG_HOOKTYPE=incoming`` and ``$HG_H
+@@ -926,23 +877,6 @@ They contain the type of hook which trig
+ of the hook in the config, respectively. In the example above, this will
+ be ``$HG_HOOKTYPE=incoming`` and ``$HG_HOOKNAME=incoming.email``.
+ 
+-.. container:: windows
+-
+-  Some basic Unix syntax can be enabled for portability, including ``$VAR``
+-  and ``${VAR}`` style variables.  A ``~`` followed by ``\`` or ``/`` will
+-  be expanded to ``%USERPROFILE%`` to simulate a subset of tilde expansion
+-  on Unix.  To use a literal ``$`` or ``~``, it must be escaped with a back
+-  slash or inside of a strong quote.  Strong quotes will be replaced by
+-  double quotes after processing.
+-
+-  This feature is enabled by adding a prefix of ``tonative.`` to the hook
+-  name on a new line, and setting it to ``True``.  For example::
+-
+-    [hooks]
+-    incoming.autobuild = /my/build/hook
+-    # enable translation to cmd.exe syntax for autobuild hook
+-    tonative.incoming.autobuild = True
+-
+ ``changegroup``
+   Run after a changegroup has been added via push, pull or unbundle.  The ID of
+   the first new changeset is in ``$HG_NODE`` and last is in ``$HG_NODE_LAST``.
+@@ -1151,13 +1085,6 @@ be ``$HG_HOOKTYPE=incoming`` and ``$HG_H
     Also, hooks like "commit" will be called in all contexts that
     generate a commit (e.g. tag) and not just the commit command.
  
@@ -151,7 +175,7 @@ Solaris, or remove sections that are of no relevance to Solaris.
  The syntax for Python hooks is as follows::
  
    hookname = python:modulename.submodule.callable
-@@ -1373,7 +1317,6 @@ Example ``~/.hgrc``::
+@@ -1416,7 +1343,6 @@ Example ``~/.hgrc``::
  
    # Define new tool
    myHtmlTool.args = -m $local $other $base $output
@@ -159,7 +183,7 @@ Solaris, or remove sections that are of no relevance to Solaris.
    myHtmlTool.priority = 1
  
  Supported arguments:
-@@ -1385,11 +1328,6 @@ Supported arguments:
+@@ -1428,11 +1354,6 @@ Supported arguments:
  ``executable``
    Either just the name of the executable or its pathname.
  
@@ -171,7 +195,7 @@ Solaris, or remove sections that are of no relevance to Solaris.
    (default: the tool name)
  
  ``args``
-@@ -1457,30 +1395,6 @@ Supported arguments:
+@@ -1500,30 +1421,6 @@ Supported arguments:
    ``keep-merge3``. See the corresponding variable in ``[ui]`` for more
    information.
  
@@ -202,7 +226,7 @@ Solaris, or remove sections that are of no relevance to Solaris.
  ``pager``
  ---------
  
-@@ -2255,10 +2169,6 @@ User interface controls.
+@@ -2323,10 +2220,6 @@ User interface controls.
      ``false``
        Alias for ``ignore``.
  
@@ -210,6 +234,6 @@ Solaris, or remove sections that are of no relevance to Solaris.
 -
 -      On Windows, this configuration option is ignored and the command aborted.
 -
- ``quiet``
-     Reduce the amount of output printed.
-     (default: False)
+ ``pre-merge-tool-output-template``
+     A template that is printed before executing an external merge tool. This can
+     be used to print out additional context that might be useful to have during
