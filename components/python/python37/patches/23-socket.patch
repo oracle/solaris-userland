@@ -11,8 +11,8 @@ This should not be a problem and can be ignored.
 
 This is not intended for upstream.
 
---- Python-3.7.3/Lib/socket.py
-+++ Python-3.7.3/Lib/socket.py
+--- Python-3.7.4/Lib/socket.py
++++ Python-3.7.4/Lib/socket.py
 @@ -301,6 +301,10 @@ class socket(_socket.socket):
                          blocksize = count - total_sent
                          if blocksize <= 0:
@@ -24,9 +24,9 @@ This is not intended for upstream.
                      try:
                          sent = os_sendfile(sockno, fileno, offset, blocksize)
                      except BlockingIOError:
---- Python-3.7.3/Lib/test/test_asyncio/test_events.py
-+++ Python-3.7.3/Lib/test/test_asyncio/test_events.py
-@@ -2497,6 +2497,8 @@ class SendfileMixin(SendfileBase):
+--- Python-3.7.4/Lib/test/test_asyncio/test_events.py
++++ Python-3.7.4/Lib/test/test_asyncio/test_events.py
+@@ -2498,6 +2498,8 @@ class SendfileMixin(SendfileBase):
          self.assertEqual(srv_proto.data, self.DATA)
          self.assertEqual(self.file.tell(), len(self.DATA))
  
@@ -35,8 +35,8 @@ This is not intended for upstream.
      def test_sendfile_close_peer_in_the_middle_of_receiving(self):
          srv_proto, cli_proto = self.prepare_sendfile(close_after=1024)
          with self.assertRaises(ConnectionError):
---- Python-3.7.3/Lib/asyncio/unix_events.py
-+++ Python-3.7.3/Lib/asyncio/unix_events.py
+--- Python-3.7.4/Lib/asyncio/unix_events.py
++++ Python-3.7.4/Lib/asyncio/unix_events.py
 @@ -356,6 +356,12 @@ class _UnixSelectorEventLoop(selector_ev
                  self._sock_sendfile_update_filepos(fileno, offset, total_sent)
                  fut.set_result(total_sent)

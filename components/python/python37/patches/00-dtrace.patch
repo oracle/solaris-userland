@@ -9,9 +9,9 @@ Rest of the Makefile wasn't entirely ready for dtrace compilation on Solaris.
 This patch was offered upstream:
 https://bugs.python.org/issue35520
 
---- Python-3.7.3/configure
-+++ Python-3.7.3/configure
-@@ -11415,7 +11415,7 @@ if ${ac_cv_dtrace_link+:} false; then :
+--- Python-3.7.4/configure
++++ Python-3.7.4/configure
+@@ -11403,7 +11403,7 @@ if ${ac_cv_dtrace_link+:} false; then :
    $as_echo_n "(cached) " >&6
  else
                ac_cv_dtrace_link=no
@@ -20,8 +20,8 @@ https://bugs.python.org/issue35520
              "$DTRACE" -G -s conftest.d -o conftest.o > /dev/null 2>&1 && \
                  ac_cv_dtrace_link=yes
  
---- Python-3.7.3/configure.ac
-+++ Python-3.7.3/configure.ac
+--- Python-3.7.4/configure.ac
++++ Python-3.7.4/configure.ac
 @@ -3487,7 +3487,7 @@ then
      AC_CACHE_CHECK([whether DTrace probes require linking],
          [ac_cv_dtrace_link], [dnl
@@ -31,9 +31,9 @@ https://bugs.python.org/issue35520
              "$DTRACE" -G -s conftest.d -o conftest.o > /dev/null 2>&1 && \
                  ac_cv_dtrace_link=yes
        ])
---- Python-3.7.3/Makefile.pre.in
-+++ Python-3.7.3/Makefile.pre.in
-@@ -451,8 +451,7 @@ LIBRARY_OBJS=	\
+--- Python-3.7.4/Makefile.pre.in
++++ Python-3.7.4/Makefile.pre.in
+@@ -453,8 +453,7 @@ LIBRARY_OBJS=	\
  # On some systems, object files that reference DTrace probes need to be modified
  # in-place by dtrace(1).
  DTRACE_DEPS = \
@@ -43,7 +43,7 @@ https://bugs.python.org/issue35520
  
  #########################################################################
  # Rules
-@@ -628,7 +627,7 @@ $(LIBRARY): $(LIBRARY_OBJS)
+@@ -630,7 +629,7 @@ $(LIBRARY): $(LIBRARY_OBJS)
  	-rm -f $@
  	$(AR) $(ARFLAGS) $@ $(LIBRARY_OBJS)
  
@@ -52,7 +52,7 @@ https://bugs.python.org/issue35520
  	if test $(INSTSONAME) != $(LDLIBRARY); then \
  		$(BLDSHARED) -Wl,-h$(INSTSONAME) -o $(INSTSONAME) $(LIBRARY_OBJS) $(MODLIBS) $(SHLIBS) $(LIBC) $(LIBM) $(LDLAST); \
  		$(LN) -f $(INSTSONAME) $@; \
-@@ -639,8 +638,8 @@ libpython$(LDVERSION).so: $(LIBRARY_OBJS
+@@ -641,8 +640,8 @@ libpython$(LDVERSION).so: $(LIBRARY_OBJS
  libpython3.so:	libpython$(LDVERSION).so
  	$(BLDSHARED) $(NO_AS_NEEDED) -o $@ -Wl,-h$@ $^
  
@@ -63,7 +63,7 @@ https://bugs.python.org/issue35520
  
  
  libpython$(VERSION).sl: $(LIBRARY_OBJS)
-@@ -756,6 +755,7 @@ Modules/getbuildinfo.o: $(PARSER_OBJS) \
+@@ -758,6 +757,7 @@ Modules/getbuildinfo.o: $(PARSER_OBJS) \
  		$(PYTHON_OBJS) \
  		$(MODULE_OBJS) \
  		$(MODOBJS) \
@@ -71,7 +71,7 @@ https://bugs.python.org/issue35520
  		$(srcdir)/Modules/getbuildinfo.c
  	$(CC) -c $(PY_CORE_CFLAGS) \
  	      -DGITVERSION="\"`LC_ALL=C $(GITVERSION)`\"" \
-@@ -926,6 +926,10 @@ Include/pydtrace_probes.h: $(srcdir)/Inc
+@@ -928,6 +928,10 @@ Include/pydtrace_probes.h: $(srcdir)/Inc
  	sed 's/PYTHON_/PyDTrace_/' $@ > $@.tmp
  	mv $@.tmp $@
  
