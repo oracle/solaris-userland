@@ -159,7 +159,7 @@ COMPONENT_TEST_TRANSFORMS += '-n -e "/No. tests: /p"'
 # of date and not generated with a known configuration.
 test: $(TEST_32_and_64)
 
-REQUIRED_PACKAGES += desktop/pdf-viewer/poppler
+REQUIRED_PACKAGES += desktop/pdf-viewer/poppler-viewer
 REQUIRED_PACKAGES += image/graphviz
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng14

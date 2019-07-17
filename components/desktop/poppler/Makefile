@@ -23,6 +23,7 @@
 # Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
+COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		poppler
@@ -53,9 +54,13 @@ TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk
 
-# For now, all things built for C++11 require gcc.
-# (Poppler provides a C++ wrapper.)
-COMPILER=gcc
+# everything works better if cmake is used as is intended to be used
+CLONEY= /bin/true
+COMPONENT_PRE_BUILD_ACTION += cd $(@D);
+COMPONENT_PRE_BUILD_ACTION += echo Running cmake with $(CMAKE_OPTIONS);
+COMPONENT_PRE_BUILD_ACTION += /usr/bin/env - $(COMPONENT_BUILD_ENV) \
+				$(CMAKE) $(CMAKE_OPTIONS) \
+				-H$(COMPONENT_DIR)/$(COMPONENT_SRC) -B. ;
 
 # There isn't a 64-bit version of pkg-config's nss.pc, so set these "manually".
 MPSLIB.32 = -L/usr/lib/mps -R/usr/lib/mps
@@ -116,6 +121,17 @@ COMPONENT_POST_BUILD_ACTION = \
 
 # Always show the build and link lines for easier debugging.
 COMPONENT_BUILD_ARGS += V=1
+
+PKG_OBJ =	poppler
+SUBPKG_OBJ =	poppler-desktop
+EXCLUSION_FILE = poppler-desktop-deps
+
+include $(WS_MAKE_RULES)/pkgobjs.mk
+$(EXCLUSION_FILE_TARGET): $(HEAP_OBJ)
+	find $(PROTO_DIR) -type f | (while read f; do file "$$f"; done) | grep -w ELF | cut -f1 -d\: | (while read f; do echo $$f: `ldd "$$f"`; done) | egrep 'libXrender|gobj|libX11|glib|libGL' | cut -f1 -d\: | sed -e 's$$$(PROTO_DIR)/$$$$' | sed -e 's/$(MACH64)/$$(MACH64)/' > $@.tmp ; \
+	find $(PROTO_DIR) -type f | egrep 'glib|gir|g-i-r' | sed -e 's$$$(PROTO_DIR)/$$$$' | sed -e 's/$(MACH64)/$$(MACH64)/' >> $@.tmp ; \
+	sort -u $@.tmp > $@ ; \
+	rm $@.tmp
 
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng14
