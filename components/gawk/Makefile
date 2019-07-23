@@ -20,20 +20,20 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 COMPILER= gcc
 
 COMPONENT_NAME=		gawk
-COMPONENT_VERSION=	4.2.1
+COMPONENT_VERSION=	5.0.1
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d1119785e746d46a8209d28b2de404a57f983aa48670f4e225531d3bdc175551
+    sha256:8e4e86f04ed789648b66f757329743a0d6dfb5294c3b91b756a474f1ce05a794
 COMPONENT_ANITYA_ID=	868
 
-TPNO=			44204
+TPNO=			52747
 
 # Adjust references to section 3am to be section 3 in the extensions man pages.
 COMPONENT_POST_CONFIGURE_ACTION = \
