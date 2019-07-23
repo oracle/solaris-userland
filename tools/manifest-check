@@ -220,11 +220,11 @@ if [ "$DO_MANIFEST_UPDATE" = true ]; then
 	CURRENT_MANIFEST=$(cat "$ORIGIN" | pkgfmt -u)
 
 	# Filter out removed lines
-	REMOVE_LINES=$(ggrep -oP "^\+\K[^\+].*$" <<< "$MANIFEST_DIFF")
+	REMOVE_LINES=$(ggrep -oP "^\+\K[^\+].*$" <<< "$MANIFEST_DIFF" || true)
 	ggrep -xFf <( echo "$REMOVE_LINES" ) -v <<< "$CURRENT_MANIFEST" > "$ORIGIN"
 
 	# Add newly added lines into the manifest
-	ggrep -oP "^-\K[^-].*$" <<< "$MANIFEST_DIFF" >> "$ORIGIN"
+	ggrep -oP "^-\K[^-].*$" <<< "$MANIFEST_DIFF" >> "$ORIGIN" || true
 
 	# Format manifest file back to normal
 	pkgfmt "$ORIGIN"
