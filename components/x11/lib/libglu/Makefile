@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            32_and_64
@@ -28,14 +28,15 @@ COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		glu
-COMPONENT_VERSION=	9.0.0
+COMPONENT_VERSION=	9.0.1
 COMPONENT_PROJECT_URL=	https://www.mesa3d.org/
+COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_URL=	https://mesa.freedesktop.org/archive/glu/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:1f7ad0d379a722fcbd303aa5650c6d7d5544fde83196b42a73d1193568a4df12
+	sha256:fb5a4c2dd6ba6d1c21ab7c05129b0769544e1d68e1e3b0ffecb18e73c93055bc
 COMPONENT_BUGDB=	x11/libraries
 COMPONENT_ANITYA_ID=	13518
-TPNO=			42862
+TPNO=			53102
 
 TEST_TARGET = $(NO_TESTS)
 
