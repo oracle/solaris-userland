@@ -28,16 +28,14 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pyatspi
 COMPONENT_VERSION=	2.18.0
-COMPONENT_PROJECT_URL=	http://www.linuxfoundation.org/en/AT-SPI_on_D-Bus
+COMPONENT_PROJECT_URL=	\
+	https://wiki.linuxfoundation.org/accessibility/atk/at-spi/at-spi_on_d-bus
 COMPONENT_ARCHIVE_HASH= \
 	sha256:f86f03ad05d0502cd60fe8b98f746f74ce3bc208e9f3798f6a2130b3c5f4ab46
 COMPONENT_BUGDB=	gnome/a11y-libs-core
 COMPONENT_ANITYA_ID=	13157
 
 TPNO=			30736
-
-# This component is not yet built for Python 3.7
-PYTHON3_VERSIONS = 3.4 3.5
 
 # This is needed for 32 bit variant of pyatspi
 PYTHON_VERSION = 2.7
@@ -47,24 +45,25 @@ CONFIGURE_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
 $(BUILD_DIR)/%-2.7/.configured:		PYTHON_VERSION=2.7
 $(BUILD_DIR)/%-3.4/.configured:		PYTHON_VERSION=3.4
 $(BUILD_DIR)/%-3.5/.configured:		PYTHON_VERSION=3.5
+$(BUILD_DIR)/%-3.7/.configured:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/$(MACH64)-%/.configured:	BITS=64
 
 BUILD_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
 $(BUILD_DIR)/%-2.7/.built:		PYTHON_VERSION=2.7
 $(BUILD_DIR)/%-3.4/.built:		PYTHON_VERSION=3.4
 $(BUILD_DIR)/%-3.5/.built:		PYTHON_VERSION=3.5
+$(BUILD_DIR)/%-3.7/.built:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/$(MACH64)-%/.built:	BITS=64
 
 INSTALL_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
 $(BUILD_DIR)/%-2.7/.installed:		PYTHON_VERSION=2.7
 $(BUILD_DIR)/%-3.4/.installed:		PYTHON_VERSION=3.4
 $(BUILD_DIR)/%-3.5/.installed:		PYTHON_VERSION=3.5
+$(BUILD_DIR)/%-3.7/.installed:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/$(MACH64)-%/.installed:	BITS=64
 
 # Tests require dbus python module, which we don't have for python3 yet
 TEST_TARGET= $(SKIP_TEST)
-
-# Requires pygobject3, not available in S11.
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -87,12 +86,13 @@ REQUIRED_PACKAGES += library/python/pygobject-3
 REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += runtime/python-34
 REQUIRED_PACKAGES += runtime/python-35
+REQUIRED_PACKAGES += runtime/python-37
 
 # These are needed to build & run tests, but not for distributed packages
-# REQUIRED_PACKAGES += library/desktop/atk
-# REQUIRED_PACKAGES += library/desktop/gtk2
-# REQUIRED_PACKAGES += library/glib2
-# REQUIRED_PACKAGES += library/libxml2
-# REQUIRED_PACKAGES += library/python/python-dbus
-# REQUIRED_PACKAGES += system/library/libdbus
-# REQUIRED_PACKAGES += system/library/libdbus-glib
+REQUIRED_PACKAGES += library/desktop/atk
+REQUIRED_PACKAGES += library/desktop/gtk2
+REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += library/libxml2
+REQUIRED_PACKAGES += library/python/python-dbus
+REQUIRED_PACKAGES += system/library/libdbus
+REQUIRED_PACKAGES += system/library/libdbus-glib
