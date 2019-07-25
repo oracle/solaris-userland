@@ -77,7 +77,7 @@ COMPONENT_TEST_ENV += "ftp_proxy="
 COMPONENT_TEST_ENV += "no_proxy="
 
 REQUIRED_PACKAGES += library/libidn2
-REQUIRED_PACKAGES += library/pcre
+REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/python-35
