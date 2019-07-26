@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability obsolete>
@@ -35,6 +35,7 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=LSARC/2006/368 value=LSARC/2007/063
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file path=etc/bash_completion.d/dbus-bash-completion.sh
 #
 file path=usr/bin/dbus-binding-tool
 file path=usr/include/dbus-1.0/dbus/dbus-glib-bindings.h
@@ -42,30 +43,40 @@ file path=usr/include/dbus-1.0/dbus/dbus-glib-lowlevel.h
 file path=usr/include/dbus-1.0/dbus/dbus-glib.h
 file path=usr/include/dbus-1.0/dbus/dbus-gtype-specialized.h
 file path=usr/include/dbus-1.0/dbus/dbus-gvalue-parse-variant.h
-link path=usr/lib/$(MACH64)/libdbus-glib-1.so target=libdbus-glib-1.so.2.2.2
-link path=usr/lib/$(MACH64)/libdbus-glib-1.so.2 target=libdbus-glib-1.so.2.2.2
-file path=usr/lib/$(MACH64)/libdbus-glib-1.so.2.2.2
+file path=usr/lib/$(MACH64)/dbus-bash-completion-helper
+link path=usr/lib/$(MACH64)/libdbus-glib-1.so target=libdbus-glib-1.so.2.3.4
+link path=usr/lib/$(MACH64)/libdbus-glib-1.so.2 target=libdbus-glib-1.so.2.3.4
+file path=usr/lib/$(MACH64)/libdbus-glib-1.so.2.3.4
 file path=usr/lib/$(MACH64)/pkgconfig/dbus-glib-1.pc
-link path=usr/lib/libdbus-glib-1.so target=libdbus-glib-1.so.2.2.2
-link path=usr/lib/libdbus-glib-1.so.2 target=libdbus-glib-1.so.2.2.2
-file path=usr/lib/libdbus-glib-1.so.2.2.2
+file path=usr/lib/dbus-bash-completion-helper
+link path=usr/lib/libdbus-glib-1.so target=libdbus-glib-1.so.2.3.4
+link path=usr/lib/libdbus-glib-1.so.2 target=libdbus-glib-1.so.2.3.4
+file path=usr/lib/libdbus-glib-1.so.2.3.4
 file path=usr/lib/pkgconfig/dbus-glib-1.pc
-file path=usr/share/gtk-doc/html/dbus-glib/DBusGProxy.html
-file path=usr/share/gtk-doc/html/dbus-glib/annotation-glossary.html
 file path=usr/share/gtk-doc/html/dbus-glib/api-index-full.html
 file path=usr/share/gtk-doc/html/dbus-glib/ch01.html
-file path=usr/share/gtk-doc/html/dbus-glib/dbus-glib-dbus-glib-lowlevel.html
-file path=usr/share/gtk-doc/html/dbus-glib/dbus-glib-dbus-gtype-specialized.html
-file path=usr/share/gtk-doc/html/dbus-glib/dbus-glib-dbus-gvalue-parse-variant.html
+file path=usr/share/gtk-doc/html/dbus-glib/ch02.html
+file path=usr/share/gtk-doc/html/dbus-glib/ch03.html
+file path=usr/share/gtk-doc/html/dbus-glib/dbus-binding-tool.html
+file path=usr/share/gtk-doc/html/dbus-glib/dbus-glib-DBus-GLib-low-level.html
+file path=usr/share/gtk-doc/html/dbus-glib/dbus-glib-DBus-GObject-related-functions.html
+file path=usr/share/gtk-doc/html/dbus-glib/dbus-glib-DBusGConnection.html
+file path=usr/share/gtk-doc/html/dbus-glib/dbus-glib-DBusGError.html
+file path=usr/share/gtk-doc/html/dbus-glib/dbus-glib-DBusGMessage.html
+file path=usr/share/gtk-doc/html/dbus-glib/dbus-glib-DBusGMethod.html
+file path=usr/share/gtk-doc/html/dbus-glib/dbus-glib-DBusGProxy.html
+file path=usr/share/gtk-doc/html/dbus-glib/dbus-glib-Specializable-GType-System.html
 file path=usr/share/gtk-doc/html/dbus-glib/dbus-glib.devhelp2
 file path=usr/share/gtk-doc/html/dbus-glib/home.png
 file path=usr/share/gtk-doc/html/dbus-glib/index.html
+file path=usr/share/gtk-doc/html/dbus-glib/left-insensitive.png
 file path=usr/share/gtk-doc/html/dbus-glib/left.png
-file path=usr/share/gtk-doc/html/dbus-glib/object-tree.html
+file path=usr/share/gtk-doc/html/dbus-glib/right-insensitive.png
 file path=usr/share/gtk-doc/html/dbus-glib/right.png
 file path=usr/share/gtk-doc/html/dbus-glib/style.css
+file path=usr/share/gtk-doc/html/dbus-glib/up-insensitive.png
 file path=usr/share/gtk-doc/html/dbus-glib/up.png
 file path=usr/share/man/man1/dbus-binding-tool.1
-file files/libdbus-glib-1.3lib path=usr/share/man/man3lib/libdbus-glib-1.3lib
+file path=usr/share/man/man3lib/libdbus-glib-1.3lib
 #
 license libdbus-glib.license license="libdbus-glib, GLPv2"
