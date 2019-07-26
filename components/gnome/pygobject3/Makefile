@@ -110,7 +110,7 @@ REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libffi
-REQUIRED_PACKAGES += library/python/pycairo-27
+REQUIRED_PACKAGES += library/python/pycairo
 # Pyflakes is needed for tests, but not build or install
 REQUIRED_PACKAGES += library/python/pyflakes
 REQUIRED_PACKAGES += runtime/python-27

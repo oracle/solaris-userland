@@ -1,0 +1,16 @@
+There is a mistake in selected_languages detection logic.
+
+Should be offered upstream.
+
+--- meld-3.20.1/meld/build_helpers.py
++++ meld-3.20.1/meld/build_helpers.py
+@@ -113,7 +113,8 @@ class build_help(distutils.cmd.Command):
+             self.selected_languages = os.environ["LINGUAS"].split()
+         else:
+             self.selected_languages = [
+-                d for d in os.listdir(self.help_dir) if os.path.isdir(d)
++                d for d in os.listdir(self.help_dir) if os.path.isdir(
++                    os.path.join(self.help_dir, d))
+             ]
+ 
+         if 'C' not in self.selected_languages:

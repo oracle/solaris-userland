@@ -23,105 +23,58 @@
 # Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
-BUILD_BITS =            64
-
-# Parallel build jobs are supported only if GNU make is used.
-COMPONENT_MAKE_JOBS=1
+COMPILER=		gcc
+BUILD_BITS=		32_and_64
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pycairo
-COMPONENT_VERSION=	1.10.0
-COMPONENT_PROJECT_URL=	http://cairographics.org/pycairo/
-COMPONENT_ARCHIVE=      $(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.bz2
+COMPONENT_VERSION=	1.18.1
+COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9aa4078e7eb5be583aeabbe8d87172797717f95e8c4338f0d4a17b683a7253be
-COMPONENT_ARCHIVE_URL=	http://cairographics.org/releases/$(COMPONENT_ARCHIVE)
+    sha256:83f4711ed0c7545427dd21665bdbf7f42484f90115016319e1877544b72f3848
+COMPONENT_ARCHIVE_URL=	$(call pypi_url)
+COMPONENT_PROJECT_URL=	http://cairographics.org/pycairo/
 COMPONENT_BUGDB=	python-mod/pycairo
 COMPONENT_ANITYA_ID=	13166
 
-TPNO=			30739
+TPNO=			53159
 
-# upstream delivers python2 support separately as "py2cairo"
-PYTHON3_VERSIONS=	3.4 3.5
-PYTHON_VERSIONS=	$(PYTHON3_VERSIONS)
+include $(WS_MAKE_RULES)/prep.mk
+include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/ips.mk
 
-BUILD_STYLE= waf
+# Manifest convenience variables
+$(MANIFEST_BASE)-pycairo-27.mogrified: PYTHON3_ONLY = \#
+$(MANIFEST_BASE)-pycairo-34.mogrified: PYTHON2_ONLY = \#
+$(MANIFEST_BASE)-pycairo-35.mogrified: PYTHON2_ONLY = \#
+$(MANIFEST_BASE)-pycairo-37.mogrified: PYTHON2_ONLY = \#
 
-# replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses waf.mk instead
-CONFIGURE_64 = $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
-BUILD_64     = $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
-INSTALL_64   = $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
-TEST_64      = $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.tested-and-compared)
+PKG_MACROS += PYTHON2_ONLY="$(PYTHON2_ONLY)"
+PKG_MACROS += PYTHON3_ONLY="$(PYTHON3_ONLY)"
 
-include $(WS_MAKE_RULES)/common.mk
-
-# Trick bundled waf into unpacking itself so we can patch it
-COMPONENT_POST_UNPACK_ACTION += \
-	(cd $(@D) ; $(PYTHON.3.5) waf --help >> /dev/null );
-
-# Do not install optimised compiled .pyo files
-CONFIGURE_OPTIONS += --nopyo
-
-# This needed to be added for pycairo to build cleanly s12_109 onwards
-studio_C99MODE = $(studio_C99_ENABLE)
-
-# The bundled waf compiles to the old pre-python-3.2 locations, so
-# tell it not to bother, and take care of it ourselves
-CONFIGURE_OPTIONS += --nopyc
-COMPONENT_POST_INSTALL_ACTION += \
-	$(PYTHON) -m compileall $(PROTO_DIR)$(PYTHON_LIB)/cairo ;
-
-# waf picks up the PYTHONDIR & PYTHONARCHDIR settings at configure time,
-# but still insists on installing to site-packages instead of vendor-packages
-PYTHON_SITE_DIR = $(USRLIB)/python$(PYTHON_VERSION)/site-packages
-COMPONENT_PRE_INSTALL_ACTION += \
-	$(MKDIR) $(PROTO_DIR)$(PYTHON_LIB)/cairo \
-		 $(PROTO_DIR)$(PYTHON_SITE_DIR) ; \
-	$(RM) -r $(PROTO_DIR)$(PYTHON_SITE_DIR) ; \
-	$(LN) -s $(PROTO_DIR)$(PYTHON_LIB) $(PROTO_DIR)$(PYTHON_SITE_DIR) ; \
-	$(RM) -r $(PROTO_DIR)$(PYTHON_LIB)/cairo/64 ; \
-	$(LN) -s . $(PROTO_DIR)$(PYTHON_LIB)/cairo/64
-
-# the test scripts aren't hooked into the test target in pycairo, so run directly
-COMPONENT_TEST_DIR = $(@D)/test
-COMPONENT_TEST_CMD = /usr/bin/py.test-$(PYTHON_VERSION)
-COMPONENT_TEST_TARGETS =
-# Display warnings that may be raised by tests
-COMPONENT_TEST_ARGS += -rw
-# Upstream hasn't made their code pep8 clean, and we're not forking to do it
-COMPONENT_TEST_ARGS += -p no:codechecker
-# Workaround Bug 26654485 (pytest_capturelog causes warnings if installed)
-COMPONENT_TEST_ARGS += -p no:capturelog
-
-# more bits replicated from $(WS_MAKE_RULES)/setup.py.mk
-COMPONENT_TEST_BUILD_DIR = $(BUILD_DIR)/test/$(MACH$(BITS))-$(PYTHON_VERSION)
-# This would separate results per python version, but pycairo can use a
-# common results file for all versions for now:
-# COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(PYTHON_VERSION)-$(BITS).master
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_OUTPUT = $(COMPONENT_TEST_BUILD_DIR)/test-$(PYTHON_VERSION)-$(BITS)-results
-COMPONENT_TEST_DIFFS =  $(COMPONENT_TEST_BUILD_DIR)/test-$(PYTHON_VERSION)-$(BITS)-diffs
-COMPONENT_TEST_SNAPSHOT = $(COMPONENT_TEST_BUILD_DIR)/results-$(PYTHON_VERSION)-$(BITS).snapshot
-COMPONENT_TEST_TRANSFORM_CMD = $(COMPONENT_TEST_BUILD_DIR)/transform-$(PYTHON_VERSION)-$(BITS)-results
+# Build testing related binary files
+COMPONENT_PRE_TEST_ACTION = (\
+	cd $(SOURCE_DIR) ; $(ENV) HOME=$(BUILD_DIR)/config-$* $(COMPONENT_BUILD_ENV) \
+	$(PYTHON.$(BITS)) ./setup.py $(COMPONENT_SETUP_ARGS) build_tests)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
 
-# Test scripts just run 'python', but we need to specify the right version
-#COMPONENT_PRE_TEST_ACTION += $(GSED) -i -e 's%/usr/bin/env python%$(PYTHON)%' \
-#	-e "s%subprocess.call('python %subprocess.call('$(PYTHON) %" \
-#	$(COMPONENT_TEST_DIR)/*.py
+# common targets
+build:		$(BUILD_32_and_64)
 
-# Exclude lines with version information of other packages, so we don't have
-# to update our results everytime one of them is updated.
-COMPONENT_TEST_TRANSFORMS += '-n -e "s/\(in \).*\(seconds\)/\1x \2/p"'
+install:	$(INSTALL_32_and_64)
+
+test:		$(TEST_32_and_64)
+
+system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += runtime/python-34
 REQUIRED_PACKAGES += runtime/python-35
 
-# py.test is required for testing, not building or runtime
+# Testing related components
 REQUIRED_PACKAGES += library/python/pytest
-
