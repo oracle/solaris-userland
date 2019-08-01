@@ -1,0 +1,32 @@
+Fix for 29487124 - g_object_unref: assertion 'G_IS_OBJECT (object) failed
+
+Fix should be applicable upstream but since ConsoleKit 0.4.x isn't
+maintained, it will probably go unnoticed.  Should be able to contribute
+the first change atleast to ConsoleKit2
+
+--- a/src/ck-manager.c	2019-08-01 11:41:13.181799445 -0700
++++ b/src/ck-manager.c	2019-08-01 11:43:44.107367188 -0700
+@@ -890,7 +893,8 @@
+                 dbus_g_method_return (context, FALSE);
+         }
+ 
+-        g_object_unref (ret);
++        if (ret != NULL)
++        	g_object_unref (ret);
+ }
+ 
+ static void
+--- a/src/ck-session.c   2019-08-01 12:59:22.837311222 -0700
++++ b/src/ck-session.c        2019-08-01 15:21:32.758493249 -0700
+@@ -985,7 +985,10 @@
+ {
+         g_return_val_if_fail (CK_IS_SESSION (session), FALSE);
+
+-        return g_object_ref (session->priv->display_template);
++        if (session->priv->display_template != NULL)
++          	return g_object_ref (session->priv->display_template);
++        else 
++	      	return NULL;
+ }
+
+ static void
