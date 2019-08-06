@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		SQLAlchemy
-COMPONENT_VERSION=	1.0.12
+COMPONENT_VERSION=	1.2.19
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6679e20eae780b67ba136a4a76f83bb264debaac2542beefe02069d0206518d1
+    sha256:5bb2c4fc2bcc3447ad45716c66581eab982c007dcf925482498d8733f86f17c7
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.sqlalchemy.org/
 COMPONENT_BUGDB=	python-mod/sqlalchemy
 COMPONENT_ANITYA_ID=	4034
 
-TPNO=			28376
+TPNO=			53244
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
