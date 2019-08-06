@@ -26,15 +26,15 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		rdesktop
-COMPONENT_VERSION=	1.6.0
+COMPONENT_VERSION=	1.8.4
 COMPONENT_PROJECT_URL=	http://www.rdesktop.org/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8430390d50be29f257d575a70abe38805916dc1897b18e5a244adb72c978d4e0
+	sha256:516f04df92f16eba04c96bbf9aeb05b9da686689c2bb5c107e0941583e09f933
 COMPONENT_ARCHIVE_URL=	https://github.com/rdesktop/$(COMPONENT_NAME)/archive/v$(COMPONENT_VERSION).tar.gz
 COMPONENT_BUGDB=	gnome/remote-desktop
 COMPONENT_ANITYA_ID=	4172
 
-TPNO=			9296
+TPNO=			53039
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -45,13 +45,12 @@ COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv)
 COMPONENT_PRE_CONFIGURE_ACTION = ($(CLONEY) $(SOURCE_DIR) $(@D))
 
 CONFIGURE_OPTIONS += --with-ipv6
-CONFIGURE_OPTIONS += --with-openssl=/usr
 CONFIGURE_OPTIONS += --x-includes=""
 CONFIGURE_OPTIONS += --x-libraries=""
-
-# configure automatically adds -R <openssl-path>/lib to LDFLAGS even though
-# that's a 32-bit path and we're doing a 64-bit build, so we override it
-COMPONENT_BUILD_ARGS += LDFLAGS="-lcrypto $(LIBSOCKET)"
+# we don't have libgssglue for this
+CONFIGURE_OPTIONS += --disable-credssp
 
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += x11/library/libx11
+REQUIRED_PACKAGES += x11/library/libxrandr
+REQUIRED_PACKAGES += library/security/pcsc/pcsclite
