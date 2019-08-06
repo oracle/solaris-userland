@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 COMPILER= gcc
@@ -28,16 +28,17 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ninja
-COMPONENT_VERSION=	1.8.2
+COMPONENT_VERSION=	1.9.0
 COMPONENT_PROJECT_URL=	https://ninja-build.org/
-COMPONENT_ARCHIVE=	v$(COMPONENT_VERSION).tar.gz
+# modifying the upstream tarball name since it has the same one as tigervnc
+COMPONENT_ARCHIVE=	ninja-v$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:86b8700c3d0880c2b44c2ff67ce42774aaf8c28cbf57725cb881569288c1c6f4
-COMPONENT_ARCHIVE_URL=	https://github.com/ninja-build/ninja/archive/$(COMPONENT_ARCHIVE)
+    sha256:5d7ec75828f8d3fd1a0c2f31b5b0cea780cdfe1031359228c428c1a48bfcd5b9
+COMPONENT_ARCHIVE_URL=	https://github.com/ninja-build/ninja/archive/v$(COMPONENT_VERSION).tar.gz
 COMPONENT_BUGDB=        utility/ninja
 COMPONENT_ANITYA_ID=	2089
 
-TPNO=			45004
+TPNO=			53286
 
 BUILD_STYLE = justmake
 	
