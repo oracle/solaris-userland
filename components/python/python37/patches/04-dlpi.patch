@@ -2,7 +2,7 @@ This patch provides Python dlpi support.  It may be contributed upstream at
 some point, but the suitability (or lack thereof) has not yet been determined.
 --- Python-3.7.4/Modules/dlpimodule.c
 +++ Python-3.7.4/Modules/dlpimodule.c
-@@ -0,0 +1,1219 @@
+@@ -0,0 +1,1226 @@
 +/*
 + * Permission is hereby granted, free of charge, to any person obtaining a copy
 + * of this software and associated documentation files (the "Software"), to
@@ -691,6 +691,9 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +    "PROMISC_PHYS     Promiscuous mode at the physical level(default)\n"
 +    "PROMISC_SAP      Promiscuous mode at the SAP level\n"
 +    "PROMISC_MULTI    Promiscuous mode for all multicast addresses\n"
++    "\n"
++    "The level modifier (OR'd with level) is:\n"
++    "PROMISC_NOLOOP   Do not loopback messages to the client\n"
 +    "See dlpi_promiscon(3DLPI).\n"
 +);
 +static PyObject *
@@ -725,6 +728,9 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +    "PROMISC_PHYS     Promiscuous mode at the physical level(default)\n"
 +    "PROMISC_SAP      Promiscuous mode at the SAP level\n"
 +    "PROMISC_MULTI    Promiscuous mode for all multicast addresses\n"
++    "\n"
++    "The level modifier (OR'd with level) is:\n"
++    "PROMISC_NOLOOP   Do not loopback messages to the client\n"
 +    "See dlpi_promiscoff(3DLPI).\n"
 +);
 +static PyObject *
@@ -1215,6 +1221,7 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 +	PyModule_AddIntConstant(mod, "PROMISC_PHYS", DL_PROMISC_PHYS);
 +	PyModule_AddIntConstant(mod, "PROMISC_SAP", DL_PROMISC_SAP);
 +	PyModule_AddIntConstant(mod, "PROMISC_MULTI", DL_PROMISC_MULTI);
++	PyModule_AddIntConstant(mod, "PROMISC_NOLOOP", DL_PROMISC_NOLOOP);
 +	PyModule_AddIntConstant(mod, "UNKNOWN", DL_UNKNOWN);
 +	PyModule_AddIntConstant(mod, "UNBOUND", DL_UNBOUND);
 +	PyModule_AddIntConstant(mod, "IDLE", DL_IDLE);
