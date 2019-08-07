@@ -1,0 +1,16 @@
+Compression library libzstd is not currently
+available in Solaris, as a result, test
+'pax-zstd' fails. The patch skips this test...
+
+Not suitable for upstream.
+
+--- cmake-3.15.1/Tests/RunCMake/CommandLineTar/RunCMakeTest.cmake	2019-08-06 14:48:03.903699476 +0000
++++ cmake-3.15.1/Tests/RunCMake/CommandLineTar/RunCMakeTest.cmake	2019-08-06 14:47:27.989056117 +0000
+@@ -27,7 +27,6 @@ run_cmake(gnutar)
+ run_cmake(gnutar-gz)
+ run_cmake(pax)
+ run_cmake(pax-xz)
+-run_cmake(pax-zstd)
+ run_cmake(paxr)
+ run_cmake(paxr-bz2)
+ run_cmake(zip)

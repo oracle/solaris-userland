@@ -2,9 +2,9 @@
 #
 # Patch is Solaris specific and not appropriate for upstream.
 
---- cmake-3.9.1/Modules/CMakeDetermineJavaCompiler.cmake.orig	2017-08-15 15:35:07.140770607 +0000
-+++ cmake-3.9.1/Modules/CMakeDetermineJavaCompiler.cmake	2017-08-15 15:39:28.440394117 +0000
-@@ -45,16 +45,11 @@
+--- cmake-3.15.1/Modules/CMakeDetermineJavaCompiler.cmake	2019-08-05 08:03:55.237996665 +0000
++++ cmake-3.15.1/Modules/CMakeDetermineJavaCompiler.cmake	2019-08-05 08:03:33.474339038 +0000
+@@ -45,16 +45,11 @@ if(NOT CMAKE_Java_COMPILER)
      /usr/bin
      /usr/lib/java/bin
      /usr/share/java/bin
@@ -21,9 +21,9 @@
      )
    # if no compiler has been specified yet, then look for one
    if(CMAKE_Java_COMPILER_INIT)
---- cmake-3.9.1/Modules/CMakeDetermineSystem.cmake.orig	2017-08-15 15:35:07.949078916 +0000
-+++ cmake-3.9.1/Modules/CMakeDetermineSystem.cmake	2017-08-15 15:39:53.402209847 +0000
-@@ -33,7 +33,7 @@
+--- cmake-3.15.1/Modules/CMakeDetermineSystem.cmake	2019-08-05 08:19:47.965602231 +0000
++++ cmake-3.15.1/Modules/CMakeDetermineSystem.cmake	2019-08-05 08:19:26.918018875 +0000
+@@ -32,7 +32,7 @@
  
  # find out on which system cmake runs
  if(CMAKE_HOST_UNIX)
@@ -32,87 +32,9 @@
    if(CMAKE_UNAME)
      if(CMAKE_HOST_SYSTEM_NAME STREQUAL "AIX")
        exec_program(${CMAKE_UNAME} ARGS -v OUTPUT_VARIABLE _CMAKE_HOST_SYSTEM_MAJOR_VERSION)
---- cmake-3.9.1/Modules/FindFLTK.cmake.orig	2017-08-15 15:35:08.580038470 +0000
-+++ cmake-3.9.1/Modules/FindFLTK.cmake	2017-08-15 15:40:28.299356706 +0000
-@@ -116,9 +116,7 @@
- 
-     PATHS
-     # Look in standard UNIX install locations.
--    /usr/local/lib/fltk
-     /usr/lib/fltk
--    /usr/local/fltk
-     /usr/X11R6/include
- 
-     # Help the user find it if we cannot.
-@@ -217,7 +215,6 @@
-     endif()
- 
-     set(FLTK_INCLUDE_SEARCH_PATH ${FLTK_INCLUDE_SEARCH_PATH}
--      /usr/local/fltk
-       /usr/X11R6/include
-       ${_FLTK_POSSIBLE_INCLUDE_DIRS}
-       )
-@@ -238,7 +235,6 @@
-     endif()
- 
-     set(FLTK_LIBRARY_SEARCH_PATH ${FLTK_LIBRARY_SEARCH_PATH}
--      /usr/local/fltk/lib
-       /usr/X11R6/lib
-       ${FLTK_INCLUDE_DIR}/lib
-       ${_FLTK_POSSIBLE_LIBRARY_DIR}
---- cmake-3.9.1/Modules/FindFLTK2.cmake.orig	2017-08-15 15:35:09.266750325 +0000
-+++ cmake-3.9.1/Modules/FindFLTK2.cmake	2017-08-15 15:41:02.455957825 +0000
-@@ -81,9 +81,7 @@
-     ${FLTK2_DIR_SEARCH}
- 
-     # Look in standard UNIX install locations.
--    /usr/local/lib/fltk2
-     /usr/lib/fltk2
--    /usr/local/fltk2
-     /usr/X11R6/include
- 
-     # Help the user find it if we cannot.
-@@ -176,14 +174,12 @@
-     endif()
- 
-     set(FLTK2_INCLUDE_SEARCH_PATH ${FLTK2_INCLUDE_SEARCH_PATH}
--      /usr/local/fltk2
-       /usr/X11R6/include
-       )
- 
-     find_path(FLTK2_INCLUDE_DIR fltk/run.h ${FLTK2_INCLUDE_SEARCH_PATH})
- 
-     set(FLTK2_LIBRARY_SEARCH_PATH ${FLTK2_LIBRARY_SEARCH_PATH}
--      /usr/local/fltk2/lib
-       /usr/X11R6/lib
-       ${FLTK2_INCLUDE_DIR}/lib
-       )
---- cmake-3.9.1/Modules/FindFreetype.cmake.orig	2017-08-15 15:35:10.065330245 +0000
-+++ cmake-3.9.1/Modules/FindFreetype.cmake	2017-08-15 15:41:25.423558871 +0000
-@@ -47,8 +47,6 @@
-     ENV FREETYPE_DIR
-   PATHS
-     /usr/X11R6
--    /usr/local/X11R6
--    /usr/local/X11
-     /usr/freeware
-     ENV GTKMM_BASEPATH
-     [HKEY_CURRENT_USER\\SOFTWARE\\gtkmm\\2.4;Path]
---- cmake-3.9.1/Modules/FindGTK.cmake.orig	2017-08-15 15:35:10.738753872 +0000
-+++ cmake-3.9.1/Modules/FindGTK.cmake	2017-08-15 15:41:45.128525572 +0000
-@@ -33,9 +33,7 @@
-   find_path( GTK_glibconfig_INCLUDE_PATH NAMES glibconfig.h
-     PATHS
-     /usr/openwin/share/include
--    /usr/local/include/glib12
-     /usr/lib/glib/include
--    /usr/local/lib/glib/include
-     /opt/gnome/include
-     /opt/gnome/lib/glib/include
-   )
---- cmake-3.9.1/Modules/FindGTK2.cmake.orig	2017-08-15 15:35:12.016669830 +0000
-+++ cmake-3.9.1/Modules/FindGTK2.cmake	2017-08-15 15:42:06.594048549 +0000
-@@ -292,9 +292,6 @@
+--- cmake-3.15.1/Modules/FindGTK2.cmake	2019-08-05 07:58:51.295499742 +0000
++++ cmake-3.15.1/Modules/FindGTK2.cmake	2019-08-05 07:58:41.491290362 +0000
+@@ -291,9 +291,6 @@ function(_GTK2_FIND_INCLUDE_DIR _var _hd
      find_path(GTK2_${_var}_INCLUDE_DIR ${_hdr}
          PATHS
              ${_gtk2_arch_dir}
@@ -122,9 +44,9 @@
              /usr/libx32
              /usr/lib64
              /usr/lib
---- cmake-3.9.1/Modules/FindIce.cmake.orig	2017-08-15 15:35:12.895256243 +0000
-+++ cmake-3.9.1/Modules/FindIce.cmake	2017-08-15 15:42:27.730399129 +0000
-@@ -332,7 +332,7 @@
+--- cmake-3.15.1/Modules/FindIce.cmake	2019-08-05 08:21:58.083350396 +0000
++++ cmake-3.15.1/Modules/FindIce.cmake	2019-08-05 08:21:35.466538327 +0000
+@@ -407,7 +407,7 @@ function(_Ice_FIND)
    # In common use on Linux, MacOS X (homebrew) and FreeBSD; prefer
    # version-specific dir
    list(APPEND ice_slice_paths
@@ -133,9 +55,9 @@
    list(APPEND ice_slice_suffixes
         "Ice-${Ice_VERSION_SLICE2CPP_FULL}/slice"
         "Ice-${Ice_VERSION_SLICE2CPP_SHORT}/slice"
---- cmake-3.9.1/Modules/FindJava.cmake.orig	2017-08-15 15:35:13.536923611 +0000
-+++ cmake-3.9.1/Modules/FindJava.cmake	2017-08-15 15:43:13.068301495 +0000
-@@ -100,15 +100,11 @@
+--- cmake-3.15.1/Modules/FindJava.cmake	2019-08-05 08:35:33.096519115 +0000
++++ cmake-3.15.1/Modules/FindJava.cmake	2019-08-05 08:35:18.488913133 +0000
+@@ -136,15 +136,11 @@ endif()
  set(_JAVA_PATHS
    /usr/lib/java/bin
    /usr/share/java/bin
@@ -151,74 +73,32 @@
    )
  find_program(Java_JAVA_EXECUTABLE
    NAMES java
---- cmake-3.9.1/Modules/FindJNI.cmake.orig	2017-08-15 15:35:14.234231247 +0000
-+++ cmake-3.9.1/Modules/FindJNI.cmake	2017-08-15 15:44:42.474214286 +0000
-@@ -127,12 +127,9 @@
-   )
- JAVA_APPEND_LIBRARY_DIRECTORIES(JAVA_AWT_LIBRARY_DIRECTORIES
-   /usr/lib
--  /usr/local/lib
-   /usr/lib/jvm/java/lib
-   /usr/lib/java/jre/lib/{libarch}
-   /usr/lib/jvm/jre/lib/{libarch}
--  /usr/local/lib/java/jre/lib/{libarch}
--  /usr/local/share/java/jre/lib/{libarch}
-   /usr/lib/j2sdk1.4-sun/jre/lib/{libarch}
-   /usr/lib/j2sdk1.5-sun/jre/lib/{libarch}
-   /opt/sun-jdk-1.5.0.04/jre/lib/{libarch}
-@@ -152,11 +149,6 @@
-   /usr/lib/jvm/java-8-openjdk-{libarch}/jre/lib/{libarch}     # Ubuntu 15.10
-   /usr/lib/jvm/java-7-openjdk-{libarch}/jre/lib/{libarch}     # Ubuntu 15.10
-   /usr/lib/jvm/java-6-openjdk-{libarch}/jre/lib/{libarch}     # Ubuntu 15.10
+--- cmake-3.15.1/Modules/FindJNI.cmake	2019-08-05 07:50:40.051875756 +0000
++++ cmake-3.15.1/Modules/FindJNI.cmake	2019-08-05 07:50:28.955082031 +0000
+@@ -189,8 +189,6 @@ set(_JNI_JAVA_DIRECTORIES_BASE
+   /usr/lib/jvm/java
+   /usr/lib/java
+   /usr/lib/jvm
+-  /usr/local/lib/java
+-  /usr/local/share/java
+   /usr/lib/j2sdk1.4-sun
+   /usr/lib/j2sdk1.5-sun
+   /opt/sun-jdk-1.5.0.04
+@@ -208,11 +206,6 @@ set(_JNI_JAVA_DIRECTORIES_BASE
+   /usr/lib/jvm/java-8-openjdk-{libarch}     # Ubuntu 15.10
+   /usr/lib/jvm/java-7-openjdk-{libarch}     # Ubuntu 15.10
+   /usr/lib/jvm/java-6-openjdk-{libarch}     # Ubuntu 15.10
 -  # OpenBSD specific paths for default JVM
--  /usr/local/jdk-1.7.0/jre/lib/{libarch}
--  /usr/local/jre-1.7.0/lib/{libarch}
--  /usr/local/jdk-1.6.0/jre/lib/{libarch}
--  /usr/local/jre-1.6.0/lib/{libarch}
+-  /usr/local/jdk-1.7.0
+-  /usr/local/jre-1.7.0
+-  /usr/local/jdk-1.6.0
+-  /usr/local/jre-1.6.0
    # SuSE specific paths for default JVM
-   /usr/lib64/jvm/java/jre/lib/{libarch}
-   /usr/lib64/jvm/jre/lib/{libarch}
-@@ -186,9 +178,7 @@
- 
- JAVA_APPEND_LIBRARY_DIRECTORIES(JAVA_AWT_INCLUDE_DIRECTORIES
-   /usr/include
--  /usr/local/include
-   /usr/lib/java/include
--  /usr/local/lib/java/include
-   /usr/lib/jvm/java/include
-   /usr/lib/jvm/java-6-sun/include
-   /usr/lib/jvm/java-1.5.0-sun/include
-@@ -197,7 +187,6 @@
-   /usr/lib/jvm/java-8-openjdk-{libarch}/include  # ubuntu 15.10
-   /usr/lib/jvm/java-7-openjdk-{libarch}/include  # ubuntu 15.10
-   /usr/lib/jvm/java-6-openjdk-{libarch}/include  # ubuntu 15.10
--  /usr/local/share/java/include
-   /usr/lib/j2sdk1.4-sun/include
-   /usr/lib/j2sdk1.5-sun/include
-   /opt/sun-jdk-1.5.0.04/include
-@@ -205,9 +194,6 @@
-   /usr/lib/jvm/default-java/include
-   # Arch specific path for default JVM
-   /usr/lib/jvm/default/include
--  # OpenBSD specific path for default JVM
--  /usr/local/jdk-1.7.0/include
--  /usr/local/jdk-1.6.0/include
-   # SuSE specific paths for default JVM
-   /usr/lib64/jvm/java/include
-   )
---- cmake-3.9.1/Modules/FindKDE3.cmake.orig	2017-08-15 15:35:14.835846206 +0000
-+++ cmake-3.9.1/Modules/FindKDE3.cmake	2017-08-15 15:45:01.139244258 +0000
-@@ -201,7 +201,6 @@
-   /opt/kde3/include
-   /opt/kde/include
-   /usr/include/kde
--  /usr/local/include/kde
-   )
- 
- #now the KDE library directory
---- cmake-3.9.1/Modules/FindPHP4.cmake.orig	2017-08-15 15:35:15.476743539 +0000
-+++ cmake-3.9.1/Modules/FindPHP4.cmake	2017-08-15 15:45:24.084546682 +0000
-@@ -18,10 +18,7 @@
+   /usr/lib64/jvm/java
+   /usr/lib64/jvm/jre
+--- cmake-3.15.1/Modules/FindPHP4.cmake	2019-08-05 07:56:30.510850802 +0000
++++ cmake-3.15.1/Modules/FindPHP4.cmake	2019-08-05 07:56:05.840344462 +0000
+@@ -19,10 +19,7 @@ the library is.  This code sets the foll
  
  set(PHP4_POSSIBLE_INCLUDE_PATHS
    /usr/include/php4
@@ -229,210 +109,75 @@
    )
  
  set(PHP4_POSSIBLE_LIB_PATHS
---- cmake-3.9.1/Modules/FindPike.cmake.orig	2017-08-15 15:35:16.145120598 +0000
-+++ cmake-3.9.1/Modules/FindPike.cmake	2017-08-15 15:45:50.525873939 +0000
-@@ -18,7 +18,7 @@
+--- cmake-3.15.1/Modules/FindQt.cmake	2019-08-05 08:59:44.492246008 +0000
++++ cmake-3.15.1/Modules/FindQt.cmake	2019-08-05 08:58:46.702315765 +0000
+@@ -49,37 +49,6 @@ if(GLOB_TEMP_VAR)
+ endif()
+ set(GLOB_TEMP_VAR)
  
- file(GLOB PIKE_POSSIBLE_INCLUDE_PATHS
-   /usr/include/pike/*
--  /usr/local/include/pike/*)
-+  )
- 
- find_path(PIKE_INCLUDE_PATH program.h
-   ${PIKE_POSSIBLE_INCLUDE_PATHS})
---- cmake-3.9.1/Modules/FindQt.cmake.orig	2017-08-15 15:35:16.754186631 +0000
-+++ cmake-3.9.1/Modules/FindQt.cmake	2017-08-15 15:46:25.055868054 +0000
-@@ -105,12 +105,9 @@
-   "[HKEY_CURRENT_USER\\Software\\Trolltech\\Versions\\4.0.0;InstallDir]/include/Qt"
-   ${qt_headers}/Qt
+-file(GLOB GLOB_TEMP_VAR /usr/local/qt-x11-commercial-3*/bin/qmake)
+-if(GLOB_TEMP_VAR)
+-  set(QT3_INSTALLED TRUE)
+-endif()
+-set(GLOB_TEMP_VAR)
+-
+-file(GLOB GLOB_TEMP_VAR /usr/local/lib/qt3/bin/qmake)
+-if(GLOB_TEMP_VAR)
+-  set(QT3_INSTALLED TRUE)
+-endif()
+-set(GLOB_TEMP_VAR)
+-
+-# look for qt4 installations
+-file(GLOB GLOB_TEMP_VAR /usr/local/qt-x11-commercial-4*/bin/qmake)
+-if(GLOB_TEMP_VAR)
+-  set(QT4_INSTALLED TRUE)
+-endif()
+-set(GLOB_TEMP_VAR)
+-
+-file(GLOB GLOB_TEMP_VAR /usr/local/Trolltech/Qt-4*/bin/qmake)
+-if(GLOB_TEMP_VAR)
+-  set(QT4_INSTALLED TRUE)
+-endif()
+-set(GLOB_TEMP_VAR)
+-
+-file(GLOB GLOB_TEMP_VAR /usr/local/lib/qt4/bin/qmake)
+-if(GLOB_TEMP_VAR)
+-  set(QT4_INSTALLED TRUE)
+-endif()
+-set(GLOB_TEMP_VAR)
+-
+ if (Qt_FIND_VERSION)
+   if (Qt_FIND_VERSION MATCHES "^([34])(\\.[0-9]+.*)?$")
+     set(DESIRED_QT_VERSION ${CMAKE_MATCH_1})
+@@ -116,7 +85,6 @@ find_file( QT4_QGLOBAL_H_FILE qglobal.h
    $ENV{QTDIR}/include/Qt
--  /usr/local/qt/include/Qt
--  /usr/local/include/Qt
    /usr/lib/qt/include/Qt
-   /usr/include/Qt
    /usr/share/qt4/include/Qt
 -  /usr/local/include/X11/qt4/Qt
-   C:/Progra~1/qt/include/Qt )
+   C:/Progra~1/qt/include/Qt
+   PATH_SUFFIXES qt/include/Qt include/Qt)
  
- if(QT4_QGLOBAL_H_FILE)
-@@ -125,12 +122,9 @@
-   C:/Qt/3.3.3Educational/include
+@@ -133,7 +101,6 @@ find_file( QT3_QGLOBAL_H_FILE qglobal.h
    $ENV{QTDIR}/include
    /usr/include/qt3/Qt
--  /usr/local/qt/include
--  /usr/local/include
-   /usr/lib/qt/include
-   /usr/include
    /usr/share/qt3/include
 -  /usr/local/include/X11/qt3
    C:/Progra~1/qt/include
-   /usr/include/qt3 )
+   PATH_SUFFIXES qt/include include/qt3)
  
---- cmake-3.9.1/Modules/FindQt3.cmake.orig	2017-08-15 15:35:17.408511789 +0000
-+++ cmake-3.9.1/Modules/FindQt3.cmake	2017-08-15 15:47:38.586691251 +0000
-@@ -61,14 +61,12 @@
-   "[HKEY_CURRENT_USER\\Software\\Trolltech\\Qt3Versions\\3.1.0;InstallDir]/include/Qt"
-   $ENV{QTDIR}/include
+--- cmake-3.15.1/Modules/FindQt3.cmake	2019-08-05 08:37:03.771444240 +0000
++++ cmake-3.15.1/Modules/FindQt3.cmake	2019-08-05 08:36:51.682607941 +0000
+@@ -64,7 +64,6 @@ find_path(QT_INCLUDE_DIR qt.h
    ${GLOB_PATHS}
--  /usr/local/qt/include
-   /usr/lib/qt/include
-   /usr/lib/qt3/include
-   /usr/include/qt
    /usr/share/qt3/include
    C:/Progra~1/qt/include
-   /usr/include/qt3
 -  /usr/local/include/X11/qt3
+   PATH_SUFFIXES lib/qt/include lib/qt3/include include/qt include/qt3 qt/include qt3/include
    )
  
- # if qglobal.h is not in the qt_include_dir then set
-@@ -101,7 +99,6 @@
-       "[HKEY_CURRENT_USER\\Software\\Trolltech\\Qt3Versions\\3.1.0;InstallDir]"
-       ENV QTDIR
-       ${GLOB_PATHS_LIB}
--      /usr/local/qt
-       /usr/lib/qt
-       /usr/lib/qt3
-       /usr/share/qt3
-@@ -122,7 +119,6 @@
-       "[HKEY_CURRENT_USER\\Software\\Trolltech\\Qt3Versions\\3.1.0;InstallDir]"
-       ENV QTDIR
-       ${GLOB_PATHS_LIB}
--      /usr/local/qt
-       /usr/lib/qt
-       /usr/lib/qt3
-       /usr/share/qt3
-@@ -141,7 +137,6 @@
-     "[HKEY_CURRENT_USER\\Software\\Trolltech\\Qt3Versions\\3.1.0;InstallDir]"
-     ENV QTDIR
-     ${GLOB_PATHS_LIB}
--    /usr/local/qt
-     /usr/lib/qt3
-     /usr/share/qt3
-     C:/Progra~1/qt
-@@ -159,8 +154,6 @@
-   "[HKEY_CURRENT_USER\\Software\\Trolltech\\Qt3Versions\\3.2.0;InstallDir]/include/Qt"
-   "[HKEY_CURRENT_USER\\Software\\Trolltech\\Qt3Versions\\3.1.0;InstallDir]/include/Qt"
-   ${GLOB_PATHS_BIN}
--    /usr/local/lib/qt3
--    /usr/local/qt
-     /usr/lib/qt
-     /usr/lib/qt3
-     /usr/share/qt3
-@@ -184,7 +177,6 @@
-   "[HKEY_CURRENT_USER\\Software\\Trolltech\\Qt3Versions\\3.2.0;InstallDir]/include/Qt"
-   "[HKEY_CURRENT_USER\\Software\\Trolltech\\Qt3Versions\\3.1.0;InstallDir]/include/Qt"
-   ${GLOB_PATHS_BIN}
--    /usr/local/qt
-     /usr/lib/qt
-     /usr/lib/qt3
-     /usr/share/qt3
---- cmake-3.9.1/Modules/FindSelfPackers.cmake.orig	2017-08-15 15:35:18.025696552 +0000
-+++ cmake-3.9.1/Modules/FindSelfPackers.cmake	2017-08-15 15:48:06.221420255 +0000
-@@ -22,7 +22,6 @@
-   ${CYGWIN_INSTALL_PATH}/bin
-   /bin
-   /usr/bin
--  /usr/local/bin
-   /sbin
- )
- 
-@@ -31,7 +30,6 @@
-   ${CYGWIN_INSTALL_PATH}/bin
-   /bin
-   /usr/bin
--  /usr/local/bin
-   /sbin
- )
- 
---- cmake-3.9.1/Modules/FindTCL.cmake.orig	2017-08-15 15:35:18.643327735 +0000
-+++ cmake-3.9.1/Modules/FindTCL.cmake	2017-08-15 15:48:41.615513283 +0000
-@@ -82,10 +82,6 @@
-   "${TK_LIBRARY_PATH}"
-   "${TCL_TCLSH_PATH_PARENT}/lib"
-   "${TK_WISH_PATH_PARENT}/lib"
--  /usr/local/lib/tcl/tcl8.5
--  /usr/local/lib/tcl/tk8.5
--  /usr/local/lib/tcl/tcl8.4
--  /usr/local/lib/tcl/tk8.4
-   )
- 
- if(WIN32)
-@@ -172,12 +168,6 @@
-   /usr/include/tcl8.3
-   /usr/include/tcl8.2
-   /usr/include/tcl8.0
--  /usr/local/include/tcl8.6
--  /usr/local/include/tk8.6
--  /usr/local/include/tcl8.5
--  /usr/local/include/tk8.5
--  /usr/local/include/tcl8.4
--  /usr/local/include/tk8.4
-   )
- 
- if(WIN32)
---- cmake-3.9.1/Modules/FindUnixCommands.cmake.orig	2017-08-15 15:35:19.254071401 +0000
-+++ cmake-3.9.1/Modules/FindUnixCommands.cmake	2017-08-15 15:50:01.475761496 +0000
-@@ -17,7 +17,6 @@
-   ${CYGWIN_INSTALL_PATH}/bin
-   /bin
-   /usr/bin
--  /usr/local/bin
-   /sbin
- )
- mark_as_advanced(
-@@ -29,7 +28,6 @@
-   ${CYGWIN_INSTALL_PATH}/bin
-   /bin
-   /usr/bin
--  /usr/local/bin
-   /sbin
- )
- mark_as_advanced(
-@@ -41,7 +39,6 @@
-   ${CYGWIN_INSTALL_PATH}/bin
-   /bin
-   /usr/bin
--  /usr/local/bin
-   /sbin
- )
- mark_as_advanced(
-@@ -53,7 +50,6 @@
-   ${CYGWIN_INSTALL_PATH}/bin
-   /bin
-   /usr/bin
--  /usr/local/bin
-   /sbin
- )
- mark_as_advanced(
-@@ -65,7 +61,6 @@
-   ${CYGWIN_INSTALL_PATH}/bin
-   /bin
-   /usr/bin
--  /usr/local/bin
-   /sbin
- )
- mark_as_advanced(
-@@ -80,7 +75,6 @@
-   ${CYGWIN_INSTALL_PATH}/bin
-   /bin
-   /usr/bin
--  /usr/local/bin
-   /sbin
- )
- mark_as_advanced(
---- cmake-3.9.1/Modules/GetPrerequisites.cmake.orig	2017-08-15 15:37:46.664712291 +0000
-+++ cmake-3.9.1/Modules/GetPrerequisites.cmake	2017-08-15 15:50:17.955458867 +0000
-@@ -688,7 +688,6 @@
-     "$ENV{VS71COMNTOOLS}/../../VC7/bin"
-     "C:/Program Files/Microsoft Visual Studio .NET 2003/VC7/BIN"
-     "C:/Program Files (x86)/Microsoft Visual Studio .NET 2003/VC7/BIN"
--    "/usr/local/bin"
-     "/usr/bin"
-     )
- 
---- cmake-3.9.1/Modules/UseJava.cmake.orig	2017-08-15 15:37:39.336337964 +0000
-+++ cmake-3.9.1/Modules/UseJava.cmake	2017-08-15 15:50:40.116693196 +0000
-@@ -828,7 +828,6 @@
+--- cmake-3.15.1/Modules/UseJava.cmake	2019-08-05 07:52:14.721888922 +0000
++++ cmake-3.15.1/Modules/UseJava.cmake	2019-08-05 07:51:30.562717534 +0000
+@@ -833,7 +833,6 @@ function (find_jar VARIABLE)
      set(_jar_versions)
      set(_jar_paths
          /usr/share/java/
@@ -440,3 +185,14 @@
          ${Java_JAR_PATHS})
      set(_jar_doc "NOTSET")
  
+--- cmake-3.15.1/Modules/Platform/UnixPaths.cmake	2019-08-05 08:50:15.805010356 +0000
++++ cmake-3.15.1/Modules/Platform/UnixPaths.cmake	2019-08-05 08:49:36.798403057 +0000
+@@ -23,7 +23,7 @@ get_filename_component(_CMAKE_INSTALL_DI
+ # search types.
+ list(APPEND CMAKE_SYSTEM_PREFIX_PATH
+   # Standard
+-  /usr/local /usr /
++  /usr /
+ 
+   # CMake install location
+   "${_CMAKE_INSTALL_DIR}"

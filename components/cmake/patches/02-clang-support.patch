@@ -1,0 +1,19 @@
+CMake does not support Clang compiler on Solaris since the options
+such as RPATH are not correctly passed to compiler and linker.
+This patch mimics the Linux implementation to add Clang support to CMake,
+the most of the GNU compiler options are compatible with Clang compiler.
+
+GitLab issue:
+https://gitlab.kitware.com/cmake/cmake/issues/19456
+
+GitLab pull request:
+https://gitlab.kitware.com/cmake/cmake/merge_requests/3672/
+
+--- /dev/null
++++ cmake-3.15.1/Modules/Platform/SunOS-Clang-C.cmake	2019-08-05 09:31:21.261692428 +0000
+@@ -0,0 +1 @@
++include(Platform/SunOS-GNU-C)
+--- /dev/null
++++ cmake-3.15.1/Modules/Platform/SunOS-Clang-CXX.cmake	2019-08-05 09:31:44.478943711 +0000
+@@ -0,0 +1 @@
++include(Platform/SunOS-GNU-CXX)
