@@ -20,9 +20,10 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
-BUILD_BITS= 32
+BUILD_BITS=	64
+COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		foomatic-db-engine
@@ -47,7 +48,6 @@ TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS +=	PERL=$(PERL)
-CONFIGURE_OPTIONS +=	FILEUTIL=$(BINDIR)/true
 CONFIGURE_OPTIONS +=	TAR=/usr/gnu/bin/tar
 # foomatic-filters (pkg:/.../foomatic-rip) keeps "filter.conf" here:
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)/gnu
