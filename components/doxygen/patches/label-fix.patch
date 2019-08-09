@@ -1,0 +1,39 @@
+This patch fixes sometimes corrupted dot files due to backslash not being escaped correctly.
+
+From f3a08615439a4e82f14a5dc9d1a758b401905e30 Mon Sep 17 00:00:00 2001
+From: albert-github <albert.tests@gmail.com>
+Date: Thu, 25 Apr 2019 14:15:31 +0200
+Subject: [PATCH] Handling digraph versus label
+
+In case a label contains a backslash (at the end), the digrapgh statement remains unchanged, though with the label= this backslash is converted to a double backslash.
+Especially at the end (just before the " this can lead to problems, making the handling uniform.
+
+--- doxygen-1.8.15/src/dot.cpp
++++ doxygen-1.8.15/src/dot.cpp
+@@ -231,6 +231,8 @@ static EdgeProperties umlEdgeProps =
+ };
+ 
+ 
++static QCString convertLabel(const QCString &l);
++
+ static QCString getDotFontName()
+ {
+   static QCString dotFontName = Config_getString(DOT_FONTNAME);
+@@ -259,7 +261,7 @@ static void writeGraphHeader(FTextStream
+   }
+   else
+   {
+-    t << "\"" << convertToXML(title) << "\"";
++    t << "\"" << convertLabel(title) << "\"";
+   }
+   t << endl << "{" << endl;
+   if (interactiveSVG) // insert a comment to force regeneration when this
+@@ -4799,7 +4801,7 @@ void DotGroupCollaboration::writeGraphHe
+   }
+   else
+   {
+-    t << "\"" << convertToXML(title) << "\"";
++    t << "\"" << convertLabel(title) << "\"";
+   }
+   t << endl;
+   t << "{" << endl;
