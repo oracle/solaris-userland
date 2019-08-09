@@ -48,7 +48,9 @@ COMPONENT_PREP_ACTION +=(cp elf_x86_64_efi_sol2.lds $(SOURCE_DIR))
 
 ORACLE_CERT=$(SOURCE_DIR)/../OL7Secureboot.cer
 export VENDOR_CERT_FILE=$(ORACLE_CERT)
-PATH=$(GNUBIN):/usr/bin
+PATH=$(dir $(CC)):$(GNUBIN):/usr/bin
+
+COMPONENT_BUILD_ARGS += CC="$(CC)"
 
 REQUIRED_PACKAGES += developer/gcc
 REQUIRED_PACKAGES += developer/gnu-binutils
