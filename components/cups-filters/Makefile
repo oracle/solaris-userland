@@ -86,8 +86,6 @@ COMPONENT_TEST_ENV +=   libtool_install_magic='%%%MAGIC variable%%%'
 COMPONENT_TEST_ENV +=   libtool_execute_magic='%%%MAGIC variable%%%'
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
-	'-e "/==========/p" ' \
-	'-e "/Testsuite summary/p" ' \
 	'-e "/ TOTAL:/p" ' \
 	'-e "/PASS:/p" ' \
 	'-e "/ SKIP:/p" ' \
@@ -95,10 +93,7 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/ FAIL:/p" ' \
 	'-e "/ ERROR:/p" '
 
-PKG_OBJ =	cups-filters
-include $(WS_MAKE_RULES)/pkgobjs.mk
-
-REQUIRED_PACKAGES += desktop/pdf-viewer/poppler
+REQUIRED_PACKAGES += print/filter/poppler
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += image/library/libtiff

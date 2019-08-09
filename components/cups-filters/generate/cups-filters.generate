@@ -18,19 +18,19 @@
 #
 # CDDL HEADER END
 #
-
-#
 # Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
-# add to heap: ^file|^link
+# package file link only
 <transform dir -> drop>
+# filters and backend should be executable even if those are not in .*bin/.* path
+<transform file path=^usr/lib/cups/(filter|backend)/.* -> default mode 0555>
 # unsupported interface (as of PSARC/2019/031)
-# exclude: etc/rc|etc/init.d|usr/bin|cups-browsed|usr/include|usr/lib.*/pkgconfig|usr/share/man
-<transform file link path=etc/rc/.+ -> drop>
-<transform file link path=etc/init.d/.+ -> drop>
-<transform file link path=usr/bin/.+ -> drop>
-<transform file link path=usr/include/.+ -> drop>
-<transform file link path=.+/pkgconfig/.+\.pc$ -> drop>
-<transform file link path=usr/share/man/.+ -> drop>
-<transform file link path=^.+cups-browsed.* -> drop>
+<transform file path=etc/rc/.* -> drop>
+<transform link path=etc/rc[0-6]\.d/.* -> drop>
+<transform file link path=etc/init\.d/.* -> drop>
+<transform file link path=usr/bin/.* -> drop>
+<transform file path=.+cups-browsed.* -> drop>
+<transform file link path=usr/include/.* -> drop>
+<transform file link path=usr/lib.*/pkgconfig/.* -> drop>
+<transform file link path=usr/share/man/.* -> drop>

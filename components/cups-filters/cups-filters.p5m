@@ -20,24 +20,129 @@
 #
 # Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
 #
-
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
-# {filters|backends} should be set executable even if those are not in .*/(s)?bin/.+ path
-<transform file path=usr/lib/cups/.+ ->default mode 0555>
-<include cups-filters.pkgobjs>
 #
 set name=pkg.fmri \
     value=pkg:/print/cups/filters@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="CUPS suplement required on non-Apple platforms"
-set name=pkg.linted.pkglint.dupaction001.1 value=true
-set name=pkg.linted.pkglint.dupaction010.2 value=true
 set name=com.oracle.info.description value="the Common Unix Print System (CUPS)"
 set name=com.oracle.info.tpno value=$(TPNO)
 set name=info.classification value=org.opensolaris.category.2008:System/Printing
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2019/031
+set name=org.opensolaris.arc-caseid value=PSARC/2019/031 value=PSARC/2019/152
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+#
+link path=usr/lib/cups/$(MACH64)/libcupsfilters.so \
+    target=libcupsfilters.so.1.0.0
+link path=usr/lib/cups/$(MACH64)/libcupsfilters.so.1 \
+    target=libcupsfilters.so.1.0.0
+file path=usr/lib/cups/$(MACH64)/libcupsfilters.so.1.0.0
+link path=usr/lib/cups/$(MACH64)/libfontembed.so target=libfontembed.so.1.0.0
+link path=usr/lib/cups/$(MACH64)/libfontembed.so.1 target=libfontembed.so.1.0.0
+file path=usr/lib/cups/$(MACH64)/libfontembed.so.1.0.0
+file path=usr/lib/cups/backend/beh mode=0555
+file path=usr/lib/cups/backend/cups-brf mode=0555
+file path=usr/lib/cups/backend/implicitclass mode=0555
+file path=usr/lib/cups/backend/parallel mode=0555
+file path=usr/lib/cups/backend/serial mode=0555
+file path=usr/lib/cups/filter/bannertopdf mode=0555
+file path=usr/lib/cups/filter/brftoembosser mode=0555
+file path=usr/lib/cups/filter/brftopagedbrf mode=0555
+link path=usr/lib/cups/filter/cgmtopdf target=vectortopdf
+link path=usr/lib/cups/filter/cmxtopdf target=vectortopdf
+file path=usr/lib/cups/filter/commandtoescpx mode=0555
+file path=usr/lib/cups/filter/commandtopclx mode=0555
+link path=usr/lib/cups/filter/emftopdf target=vectortopdf
+file path=usr/lib/cups/filter/foomatic-rip mode=0555
+file path=usr/lib/cups/filter/imagetobrf mode=0555
+file path=usr/lib/cups/filter/imagetopdf mode=0555
+file path=usr/lib/cups/filter/imagetops mode=0555
+file path=usr/lib/cups/filter/imagetoraster mode=0555
+link path=usr/lib/cups/filter/imagetoubrl target=imagetobrf
+file path=usr/lib/cups/filter/imageubrltoindexv3 mode=0555
+file path=usr/lib/cups/filter/imageubrltoindexv4 mode=0555
+file path=usr/lib/cups/filter/musicxmltobrf mode=0555
+file path=usr/lib/cups/filter/pdftopdf mode=0555
+file path=usr/lib/cups/filter/pdftops mode=0555
+file path=usr/lib/cups/filter/pdftoraster mode=0555
+file path=usr/lib/cups/filter/rastertoescpx mode=0555
+file path=usr/lib/cups/filter/rastertopclm mode=0555
+file path=usr/lib/cups/filter/rastertopclx mode=0555
+file path=usr/lib/cups/filter/rastertopdf mode=0555
+file path=usr/lib/cups/filter/rastertops mode=0555
+link path=usr/lib/cups/filter/svgtopdf target=vectortopdf
+file path=usr/lib/cups/filter/sys5ippprinter mode=0555
+file path=usr/lib/cups/filter/textbrftoindexv3 mode=0555
+link path=usr/lib/cups/filter/textbrftoindexv4 target=textbrftoindexv3
+file path=usr/lib/cups/filter/texttobrf mode=0555
+file path=usr/lib/cups/filter/texttopdf mode=0555
+file path=usr/lib/cups/filter/texttops mode=0555
+file path=usr/lib/cups/filter/texttotext mode=0555
+file path=usr/lib/cups/filter/vectortobrf mode=0555
+file path=usr/lib/cups/filter/vectortopdf mode=0555
+link path=usr/lib/cups/filter/vectortoubrl target=vectortobrf
+link path=usr/lib/cups/filter/wmftopdf target=vectortopdf
+link path=usr/lib/cups/filter/xfigtopdf target=vectortopdf
+file path=usr/share/cups/banners/classified
+file path=usr/share/cups/banners/confidential
+file path=usr/share/cups/banners/form
+file path=usr/share/cups/banners/secret
+file path=usr/share/cups/banners/standard
+file path=usr/share/cups/banners/topsecret
+file path=usr/share/cups/banners/unclassified
+file path=usr/share/cups/braille/cups-braille.sh
+file path=usr/share/cups/braille/index.sh
+file path=usr/share/cups/braille/indexv3.sh
+file path=usr/share/cups/braille/indexv4.sh
+link path=usr/share/cups/charsets/pdf.utf-8 target=pdf.utf-8.simple
+file path=usr/share/cups/charsets/pdf.utf-8.heavy
+file path=usr/share/cups/charsets/pdf.utf-8.simple
+file path=usr/share/cups/data/classified.pdf
+file path=usr/share/cups/data/confidential.pdf
+file path=usr/share/cups/data/default-testpage.pdf
+file path=usr/share/cups/data/default.pdf
+file path=usr/share/cups/data/form_english.pdf
+file path=usr/share/cups/data/form_english_in.odt
+file path=usr/share/cups/data/form_russian.pdf
+file path=usr/share/cups/data/form_russian_in.odt
+file path=usr/share/cups/data/secret.pdf
+file path=usr/share/cups/data/standard.pdf
+file path=usr/share/cups/data/testprint
+file path=usr/share/cups/data/topsecret.pdf
+file path=usr/share/cups/data/unclassified.pdf
+file path=usr/share/cups/drv/cupsfilters.drv
+file path=usr/share/cups/drv/generic-brf.drv
+file path=usr/share/cups/drv/generic-ubrl.drv
+file path=usr/share/cups/drv/indexv3.drv
+file path=usr/share/cups/drv/indexv4.drv
+file path=usr/share/cups/mime/braille.convs
+file path=usr/share/cups/mime/braille.types
+file path=usr/share/cups/mime/cupsfilters-poppler.convs
+file path=usr/share/cups/mime/cupsfilters.convs
+file path=usr/share/cups/mime/cupsfilters.types
+file path=usr/share/cups/ppdc/braille.defs
+file path=usr/share/cups/ppdc/escp.h
+file path=usr/share/cups/ppdc/fr-braille.po
+file path=usr/share/cups/ppdc/imagemagick.defs
+file path=usr/share/cups/ppdc/index.defs
+file path=usr/share/cups/ppdc/liblouis.defs
+file path=usr/share/cups/ppdc/liblouis1.defs
+file path=usr/share/cups/ppdc/liblouis2.defs
+file path=usr/share/cups/ppdc/liblouis3.defs
+file path=usr/share/cups/ppdc/liblouis4.defs
+file path=usr/share/cups/ppdc/media-braille.defs
+file path=usr/share/cups/ppdc/pcl.h
+file path=usr/share/doc/cups-filters/ABOUT-NLS
+file path=usr/share/doc/cups-filters/AUTHORS
+file path=usr/share/doc/cups-filters/COPYING
+file path=usr/share/doc/cups-filters/INSTALL
+file path=usr/share/doc/cups-filters/NEWS
+file path=usr/share/doc/cups-filters/README
+file path=usr/share/ppd/cupsfilters/Fuji_Xerox-DocuPrint_CM305_df-PDF.ppd
+file path=usr/share/ppd/cupsfilters/Generic-PDF_Printer-PDF.ppd
+file path=usr/share/ppd/cupsfilters/HP-Color_LaserJet_CM3530_MFP-PDF.ppd
+file path=usr/share/ppd/cupsfilters/Ricoh-PDF_Printer-PDF.ppd
 #
 license COPYING license="Expat(MIT) BSD-4-clause"
 license GPL-2.txt license=GPLv2
