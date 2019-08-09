@@ -29,16 +29,16 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		php
-COMPONENT_VERSION=	7.3.2
+COMPONENT_VERSION=	7.3.9
 UL_PHP_MINOR_VERSION=	7.3
 COMPONENT_PROJECT_URL=	http://php.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=\
-    sha256:010b868b4456644ae227d05ad236c8b0a1f57dc6320e7e5ad75e86c5baf0a9a8
+    sha256:4007f24a39822bef2805b75c625551d30be9eeed329d52eb0838fa5c1b91c1fd
 COMPONENT_ARCHIVE_URL=	http://php.net/get/$(COMPONENT_ARCHIVE)/from/this/mirror
 COMPONENT_ANITYA_ID=	3627
 
-TPNO=			49748
+TPNO=			53982
 TPNO_IMAP=		32942
 
 include $(WS_MAKE_RULES)/common.mk
@@ -53,7 +53,7 @@ include $(PHP_TOP_DIR)/php.mk
 # Both of these files are hand crafted.
 
 # need GCC_ROOT/bin for configure, usr/sbin for dtrace 
-export PATH=$(GCC_ROOT)/bin:$(USRBINDIR):$(USRSBINDIR):$(GNUBIN)
+export PATH=$(GCC_ROOT)/bin:$(GNUBIN):$(USRBINDIR):$(USRSBINDIR)
 
 # We patch configure.in to allow building just modules (no SAPI's), e.g. intl.
 # Since we are sharing the source, regenerate configure here.

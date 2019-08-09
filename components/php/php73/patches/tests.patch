@@ -129,3 +129,19 @@ http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
  --FILE--
  <?php
  
+--- a/sapi/fpm/tests/bug77934-reload-process-control.phpt
++++ b/sapi/fpm/tests/bug77934-reload-process-control.phpt
+@@ -1,7 +1,12 @@
+ --TEST--
+ FPM: bug77934 - php-fpm kill -USR2 not working
+ --SKIPIF--
+-<?php include "skipif.inc"; ?>
++<?php
++if (substr(PHP_OS, 0, 5) == 'SunOS') {
++    /* on SunOS it kills all tests by the signal */
++    die('skip.. Not valid for SunOS');
++}
++?>
+ --FILE--
+ <?php
+ 
