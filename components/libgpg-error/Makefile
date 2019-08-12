@@ -41,6 +41,9 @@ TPNO=			50966
 
 COMPONENT_BUILD_TARGETS = all info
 
+# File Makefile.am is patched, needed to regenerate the Makefiles.
+COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
+
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)
