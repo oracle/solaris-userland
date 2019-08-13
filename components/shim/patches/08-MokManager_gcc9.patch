@@ -1,0 +1,58 @@
+# Source: Internal
+# Info: Written internally so this component can be built on Solaris.
+# Status: An equivalent patch is offered at
+#         https://github.com/rhboot/shim/issues/161 for the shim-14 release,
+#         although the code has changed a lot.
+
+--- ORIGINAL/MokManager.c	2015-06-30 14:20:12.000000000 -0400
++++ shim-0.9/MokManager.c	2019-08-09 20:12:43.479980277 -0400
+@@ -1037,7 +1037,8 @@
+ 			continue;
+
+ 		DataSize += sizeof(EFI_SIGNATURE_LIST);
+-		if (CompareGuid(&(list[i].Type), &CertType) == 0)
++		if (CompareMem(&(list[i].Type), &CertType,
++				sizeof(EFI_GUID)) == 0)
+ 			DataSize += sizeof(EFI_GUID);
+ 		DataSize += list[i].MokSize;
+ 	}
+@@ -1059,7 +1060,8 @@
+ 		CertList->SignatureType = list[i].Type;
+ 		CertList->SignatureHeaderSize = 0;
+
+-		if (CompareGuid(&(list[i].Type), &CertType) == 0) {
++		if (CompareMem(&(list[i].Type), &CertType,
++				sizeof(EFI_GUID)) == 0) {
+ 			CertList->SignatureListSize = list[i].MokSize +
+ 						      sizeof(EFI_SIGNATURE_LIST) +
+ 						      sizeof(EFI_GUID);
+@@ -1100,7 +1102,8 @@
+ 	int i;
+
+ 	for (i = 0; i < mok_num; i++) {
+-		if (CompareGuid(&(mok[i].Type), &CertType) != 0)
++		if (CompareMem(&(mok[i].Type), &CertType,
++			sizeof(EFI_GUID)) != 0)
+ 			continue;
+
+ 		if (mok[i].MokSize == key_size &&
+@@ -1151,7 +1154,8 @@
+ 	sig_size = hash_size + sizeof(EFI_GUID);
+
+ 	for (i = 0; i < mok_num; i++) {
+-		if ((CompareGuid(&(mok[i].Type), &Type) != 0) ||
++		if ((CompareMem(&(mok[i].Type), &Type,
++			sizeof(EFI_GUID)) != 0) ||
+ 		    (mok[i].MokSize < sig_size))
+ 			continue;
+
+@@ -1322,7 +1326,8 @@
+
+ 	/* Search and destroy */
+ 	for (i = 0; i < del_num; i++) {
+-		if (CompareGuid(&(del_key[i].Type), &CertType) == 0) {
++		if (CompareMem(&(del_key[i].Type), &CertType,
++				sizeof(EFI_GUID)) == 0) {
+ 			delete_cert(del_key[i].Mok, del_key[i].MokSize,
+ 				    mok, mok_num);
+ 		} else if (is_sha2_hash(del_key[i].Type)) {
