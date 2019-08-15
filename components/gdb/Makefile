@@ -32,12 +32,12 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gdb
-COMPONENT_VERSION=	8.0
+COMPONENT_VERSION=	8.3.1
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8968a19e14e176ee026f0ca777657c43456514ad41bb2bc7273e8c4219555ac9
+    sha256:26ce655216cd03f4611518a7a1c31d80ec8e884c16715e9ba8b436822e51434b
 COMPONENT_ANITYA_ID=	11798
 
-TPNO=			36110
+TPNO=			54242
 
 # The traditional output from gmake test omits some
 # test results information that is contained in the 
@@ -79,10 +79,16 @@ PATH=/usr/gnu/bin:$(GCC_ROOT)/bin:/usr/bin:/usr/perl5/$(PERL_VERSION)/bin
 # Specify the C Standard to use when building
 CC += -std=gnu99
 
-CFLAGS_sparc =	-g -O2 -mcpu=ultrasparc -mtune=ultrasparc
+ifndef GDB_DEBUG
+CFLAGS_sparc = -O2 -mcpu=niagara4
+CFLAGS_i386 = -O2 -mtune=sandybridge
+else
+CFLAGS_sparc = -g -Og
+CFLAGS_i386 = -g -Og
+endif
+
 CFLAGS_sparc +=	-mno-unaligned-doubles
 CFLAGS_sparc += -mapp-regs -mhard-float
-CFLAGS_i386 =	-g -O2 -march=opteron -mtune=opteron
 CFLAGS_EXTRA = -Wall -Wno-long-long -Wcast-align -fno-omit-frame-pointer
 
 CFLAGS = $(CC_BITS) $(CFLAGS_EXTRA) $(CFLAGS_$(MACH))
@@ -95,7 +101,7 @@ CONFIGURE_OPTIONS += --disable-werror
 CONFIGURE_OPTIONS += --enable-plugins
 CONFIGURE_OPTIONS += --enable-tui
 CONFIGURE_OPTIONS += --without-auto-load-safe-path
-CONFIGURE_OPTIONS += --with-python=$(PYTHON.2.7)
+CONFIGURE_OPTIONS += --with-python=$(PYTHON.3.7)
 CONFIGURE_OPTIONS += --with-libexpat-prefix=$(USRLIBDIR)
 CONFIGURE_OPTIONS += --infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS += --with-system-zlib
@@ -117,11 +123,26 @@ COMPONENT_POST_BUILD_ACTION = \
 	( cd $(BUILD_DIR_64)/gdb/doc ; \
 	$(GMAKE) man )
 
+# The default version of gfortran compiler should correspond to gcc and g++ versions.
+COMPONENT_TEST_ENV += FC="$(GCC_ROOT)/bin/gfortran"
+
+# Add path to libgfortran.so.[0-9] library to avoid Fortran test failures.
+# The library preload can be removed after bug 30144732 is fixed.
+# Note that the library preload could also be removed if the mediator is
+# set to the latest GCC version but it is safer to keep it since it would
+# break again when a newer version of GNU compiler is added to CBE.
+COMPONENT_TEST_ENV +=   LD_LIBRARY_PATH="$(GCC_ROOT)/lib/$(MACH64)/"
+
 # The test gdb.mi/mi-exec-run.exp hangs up the test run, so skip it.
 COMPONENT_PRE_TEST_ACTION += \
-  ( cd $(SOURCE_DIR)/gdb/testsuite/gdb.mi ; \
+ (  cd $(SOURCE_DIR)/gdb/testsuite/gdb.mi ; \
     if test -e mi-exec-run.exp ; then \
-      $(MV) mi-exec-run.exp mi-exec-run.exp-save ; fi )
+      $(MV) mi-exec-run.exp mi-exec-run.exp-save ; \
+    fi ; \
+    cd "$(BUILD_DIR_64)/gdb/testsuite/" ; \
+    PATH=$(PATH) $(MAKE) site.exp ; \
+    echo "set gdb_test_timeout 120" >> site.exp \
+ )
 
 COMPONENT_POST_INSTALL_ACTION = \
   ( cd  $(PROTOUSRDIR)/share/gdb/python/gdb ; \
@@ -130,8 +151,6 @@ COMPONENT_POST_INSTALL_ACTION = \
       $(PYTHON) -m compileall . ; \
     cd  $(PROTOUSRDIR)/share/gdb/python/gdb/function ; \
       $(PYTHON) -m compileall . ; \
-    cd  $(PROTOUSRBINDIR)/ ; \
-      /usr/bin/strip -x gdb ; \
     cd  $(COMPONENT_DIR) ; \
       $(INSTALL) -m 0755 $(COMPONENT_DIR)/Solaris/gdbtui \
 	$(PROTOUSRBINDIR)/ ; \
@@ -158,7 +177,24 @@ COMPONENT_POST_INSTALL_ACTION = \
       $(MKDIR) $(PROTOGNUSHAREMAN1) ; \
       $(MKDIR) $(PROTOUSRSHAREMAN1DIR) ; \
       $(INSTALL) -m 0444 $(BUILD_DIR_64)/gdb/doc/gdb.1 \
-	$(PROTOUSRSHAREMAN1DIR) )
+	$(PROTOUSRSHAREMAN1DIR) );
+
+# The manifest check expects that the component does not
+# install files for other architecture to the proto area.
+# Remove these files to make manifest-check happy.
+COMPONENT_POST_INSTALL_ACTION += \
+	(	cd $(PROTOUSRSHAREDIR); \
+		if [ "$(MACH)" = "sparc" ]; then \
+			rm gdb/syscalls/i386-solaris.xml; \
+			rm gdb/syscalls/amd64-solaris.xml; \
+		elif [ "$(MACH)" = "i386" ]; then \
+			rm gdb/syscalls/sparc-solaris.xml; \
+			rm gdb/syscalls/sparc64-solaris.xml; \
+		else \
+			echo "Cannot detect the architecture!" >&2; \
+			exit 1; \
+		fi \
+	)
 
 # Disable ASLR: it's a debugger and we do not want to risk
 # altering the results of the debugging experiment.
@@ -173,4 +209,6 @@ REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += library/mpfr
 REQUIRED_PACKAGES += text/texinfo

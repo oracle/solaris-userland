@@ -1,0 +1,52 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+# Deliver gdbtui to enable ncurses interface (source file preview).
+<transform file path=usr/bin/gdbtui -> set mode 0555>
+<transform file path=usr/bin/gdbtui -> emit link \
+  path=usr/share/man/man1/gdbtui.1 target=gdb.1>
+
+# The bytecode for elinos.py and wrs-linux.py files is not generated.
+<transform file path=usr/share/gdb/system-gdbinit/elinos.py -> set pkg.tmp.autopyc false>
+<transform file path=usr/share/gdb/system-gdbinit/wrs-linux.py -> set pkg.tmp.autopyc false>
+
+# Only the relevant syscall files for a given architecture are delivered.
+<transform file path=usr/share/gdb/syscalls/amd64-solaris.xml -> set variant.arch i386>
+<transform file path=usr/share/gdb/syscalls/i386-solaris.xml -> set variant.arch i386>
+<transform file path=usr/share/gdb/syscalls/sparc64-solaris.xml -> set variant.arch sparc>
+<transform file path=usr/share/gdb/syscalls/sparc-solaris.xml -> set variant.arch sparc>
+# Linux and FreeBSD syscalls are not needed on Solaris.
+<transform file path=usr/share/gdb/syscalls/.*(linux|freebsd).xml$ -> drop>
+
+# Do not deliver gcore and gdb-add-index executables.
+<transform file path=usr/bin/gcore -> drop>
+<transform file path=usr/bin/gdb-add-index -> drop>
+
+# The same file already delivered by library/glib2.
+<transform file path=usr/lib/\$\(MACH64\)/charset.alias -> drop>
+
+# Do not deliver files already delivered by GNU binutils.
+<transform file path=usr/include/[^/]*$ -> drop>
+<transform file path=usr/share/info/bfd.info -> drop>

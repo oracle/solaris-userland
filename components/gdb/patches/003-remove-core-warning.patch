@@ -4,18 +4,18 @@
 # Note: this patch may not be appropriate for upstream;
 # it may eventually be removed.
 
---- gdb-8.0-orig/gdb/corelow.c	2017-06-04 08:54:54.000000000 -0700
-+++ gdb-8.0/gdb/corelow.c	2017-08-18 10:37:36.834113960 -0700
-@@ -542,11 +542,14 @@ get_core_register_section (struct regcac
-       warning (_("Section `%s' in core file too small."), section_name);
+--- gdb-8.3/gdb/corelow.c	2019-07-12 08:21:12.492240012 +0000
++++ gdb-8.3/gdb/corelow.c	2019-07-12 08:20:23.099849621 +0000
+@@ -590,11 +590,14 @@ core_target::get_core_register_section (
+ 	       section_name.c_str ());
        return;
      }
 +#if !defined(__sun) && !defined(__SVR4)
 +	/* skip this warning for Solaris */
-   if (size != min_size && !variable_size_section)
+   if (size != section_min_size && !variable_size_section)
      {
        warning (_("Unexpected size of section `%s' in core file."),
- 	       section_name);
+ 	       section_name.c_str ());
      }
 +#endif
  

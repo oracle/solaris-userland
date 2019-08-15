@@ -1,0 +1,42 @@
+The patch fixes the crash when os_rx is
+a null pointer and converted to C++ std::string.
+
+Steps to crash gdb (without this patch):
+$ gdb -q
+(gdb) file PATH_TO_EXECUTABLE
+(gdb) break main
+(gdb) run
+(gdb) compile code --;
+
+Note that additional work is required to enable compile
+and execute feature in Solaris, e.g., solaris_infcall_munmap
+method is needed and additional links are required to make
+*-pc-solaris2.11-* executables and libcc1 library visible...
+
+To get more information about this feature, please see the following link:
+https://developers.redhat.com/blog/2016/10/06/cxx-support-in-libcc1-a-comprehensive-update/
+
+The patch will be sent to upstream.
+
+--- gdb-8.3/gdb/osabi.c	2019-08-19 11:15:04.176948730 +0000
++++ gdb-8.3/gdb/osabi.c	2019-08-19 11:13:43.202284584 +0000
+@@ -63,7 +63,7 @@ static const struct osabi_names gdb_osab
+ 
+   { "SVR4", NULL },
+   { "GNU/Hurd", NULL },
+-  { "Solaris", NULL },
++  { "Solaris", "solaris[2-9]\.[0-9][0-9]" },
+   { "GNU/Linux", "linux(-gnu[^-]*)?" },
+   { "FreeBSD", NULL },
+   { "NetBSD", NULL },
+--- gdb-8.3/gdb/compile/compile.c	2019-08-19 13:07:57.669785758 +0000
++++ gdb-8.3/gdb/compile/compile.c	2019-08-19 13:07:33.865626973 +0000
+@@ -697,7 +697,7 @@ compile_to_object (struct command_line *
+       const char *arch_rx = gdbarch_gnu_triplet_regexp (gdbarch);
+ 
+       /* Allow triplets with or without vendor set.  */
+-      triplet_rx = std::string (arch_rx) + "(-[^-]*)?-" + os_rx;
++      triplet_rx = std::string (arch_rx) + "(-[^-]*)?-" + (os_rx ? : "");
+       compiler->set_triplet_regexp (triplet_rx.c_str ());
+     }
+ 

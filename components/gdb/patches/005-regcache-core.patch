@@ -1,50 +1,32 @@
 # For handling Solaris core files
 # Will contribute upstream if possible
 
---- gdb-8.0-orig/gdb/config/i386/i386sol2.mh	2017-06-04 08:54:54.000000000 -0700
-+++ gdb-8.0/gdb/config/i386/i386sol2.mh	2017-07-20 16:08:04.539896925 -0700
-@@ -1,4 +1,4 @@
- # Host: Solaris x86
--NATDEPFILES= fork-child.o i386-v4-nat.o i386-sol2-nat.o \
-+NATDEPFILES= sol2-core-regset.o fork-child.o i386-v4-nat.o i386-sol2-nat.o \
- 	procfs.o proc-api.o proc-events.o proc-flags.o proc-why.o
- HAVE_NATIVE_GCORE_HOST = 1
-
---- gdb-8.0-orig/gdb/config/sparc/sol2.mh	2017-06-04 08:54:54.000000000 -0700
-+++ gdb-8.0/gdb/config/sparc/sol2.mh	2017-07-20 16:08:27.231287470 -0700
-@@ -1,6 +1,6 @@
- # Host: Solaris SPARC & UltraSPARC
- NAT_FILE= nm-sol2.h
--NATDEPFILES= sparc-sol2-nat.o \
-+NATDEPFILES= sol2-core-regset.o sparc-sol2-nat.o \
- 	fork-child.o \
- 	procfs.o proc-api.o proc-events.o proc-flags.o proc-why.o
- HAVE_NATIVE_GCORE_HOST = 1
-
---- gdb-8.0-orig/gdb/regcache.c	2017-06-04 08:54:54.000000000 -0700
-+++ gdb-8.0/gdb/regcache.c	2017-07-11 16:01:53.975416470 -0700
-@@ -213,6 +213,8 @@ struct regcache
-   /* If this is a read-write cache, which thread's registers is
-      it connected to?  */
-   ptid_t ptid;
-+  /* Is this a corefile regcache or a live process */
-+  int from_corefile;
- };
- 
- /* See regcache.h.  */
-@@ -237,6 +239,7 @@ regcache_xmalloc_1 (struct gdbarch *gdba
-   regcache = XNEW (struct regcache);
-   regcache->descr = descr;
-   regcache->readonly_p = readonly_p;
-+  regcache->from_corefile = 0;
-   if (readonly_p)
-     {
-       regcache->registers
-@@ -1620,3 +1623,18 @@ Takes an optional file parameter."),
- 	   &maintenanceprintlist);
- 
+--- gdb-8.3/gdb/configure.nat	2019-07-12 09:33:08.985446726 +0000
++++ gdb-8.3/gdb/configure.nat	2019-07-12 09:28:06.822581940 +0000
+@@ -88,7 +88,7 @@ case ${gdb_host} in
+ 	    darwin-nat-info.o'
+ 	;;
+     sol2)
+-	NATDEPFILES='fork-child.o nat/fork-inferior.o \
++	NATDEPFILES='sol2-core-regset.o fork-child.o nat/fork-inferior.o \
+ 	    procfs.o proc-api.o proc-events.o proc-flags.o proc-why.o \
+ 	    sol-thread.o'
+ 	HAVE_NATIVE_GCORE_HOST=1
+--- gdb-8.3/gdb/regcache.c	2019-08-14 10:56:11.572447736 +0000
++++ gdb-8.3/gdb/regcache.c	2019-08-14 10:40:28.720010002 +0000
+@@ -199,7 +199,7 @@ reg_buffer::reg_buffer (gdbarch *gdbarch
+ regcache::regcache (gdbarch *gdbarch, const address_space *aspace_)
+ /* The register buffers.  A read/write register cache can only hold
+    [0 .. gdbarch_num_regs).  */
+-  : detached_regcache (gdbarch, false), m_aspace (aspace_)
++  : detached_regcache (gdbarch, false), m_aspace (aspace_), from_corefile(0)
+ {
+   m_ptid = minus_one_ptid;
  }
-+
+@@ -866,6 +866,20 @@ regcache::write_part (int regnum, int of
+   return REG_VALID;
+ }
+ 
 +int
 +set_regcache_from_corefile (struct regcache *regcache)
 +{
@@ -59,18 +41,36 @@
 +  return regcache->from_corefile;
 +}
 +
-
---- gdb-8.0-orig/gdb/regcache.h	2017-06-04 08:54:54.000000000 -0700
-+++ gdb-8.0/gdb/regcache.h	2017-07-11 15:56:42.826460635 -0700
-@@ -242,4 +242,7 @@ extern void regcache_debug_print_registe
- 					   struct regcache *regcache,
- 					   int regno);
+ /* See regcache.h.  */
+ 
+ void
+--- gdb-8.3/gdb/regcache.h	2019-08-14 10:56:22.975004406 +0000
++++ gdb-8.3/gdb/regcache.h	2019-08-14 10:42:14.379166768 +0000
+@@ -420,6 +420,9 @@ private:
+   /* If this is a read-write cache, which thread's registers is
+      it connected to?  */
+   ptid_t m_ptid;
++  /* Is this a corefile regcache or a live process */
++  int from_corefile;
++
+ 
+   friend struct regcache *
+   get_thread_arch_aspace_regcache (ptid_t ptid, struct gdbarch *gdbarch,
+@@ -427,8 +430,14 @@ private:
+ 
+   friend void
+   registers_changed_ptid (ptid_t ptid);
++
++  friend int set_regcache_from_corefile (struct regcache *regcache);
++  friend int regcache_from_corefile (const struct regcache *regcache);
+ };
  
 +extern int set_regcache_from_corefile (struct regcache *regcache);
 +extern int regcache_from_corefile (const struct regcache *regcache);
 +
- #endif /* REGCACHE_H */
-
+ class readonly_detached_regcache : public readable_regcache
+ {
+ public:
 --- gdb-8.0-orig/gdb/sol2-core-regset.c	1969-12-31 16:00:00.000000000 -0800
 +++ gdb-8.0/gdb/sol2-core-regset.c	2017-07-11 15:57:26.356435335 -0700
 @@ -0,0 +1,147 @@
@@ -147,7 +147,7 @@
 +  size_t gregset_size = sizeof (gregset);
 +  size_t fpregset_size = sizeof (fpregset);
 +  int pointer_size;
-+  struct gdbarch *gdbarch = get_regcache_arch (regcache);
++  struct gdbarch *gdbarch = regcache->arch();
 +  enum bfd_endian byte_order;
 +
 +  if (gdbarch_osabi (gdbarch) == GDB_OSABI_SOLARIS)
@@ -186,7 +186,7 @@
 +      else
 +	{
 +	  memcpy (&fpregset, core_reg_sect, fpregset_size);
-+	  if (gdbarch_fp0_regnum (get_regcache_arch (regcache)) >= 0)
++	  if (gdbarch_fp0_regnum (gdbarch) >= 0)
 +	    supply_fpregset (regcache,
 +			     (const gdb_fpregset_t *) fpregset_p);
 +	}
@@ -222,8 +222,8 @@
 +  deprecated_add_core_fns (&regset_core_fns);
 +}
 
---- gdb-8.0-orig/gdb/sparc-sol2-nat.c	2017-06-04 08:51:27.000000000 -0700
-+++ gdb-8.0/gdb/sparc-sol2-nat.c	2017-07-11 16:08:55.492555000 -0700
+--- gdb-8.3/gdb/sparc-sol2-nat.c	2019-08-14 10:56:45.728589493 +0000
++++ gdb-8.3/gdb/sparc-sol2-nat.c	2019-08-14 10:53:18.266223912 +0000
 @@ -24,13 +24,10 @@
  #include "gregset.h"
  
@@ -239,12 +239,11 @@
  /* Solaris 7 (Solaris 2.7, SunOS 5.7) and up support two process data
     models, the traditional 32-bit data model (ILP32) and the 64-bit
     data model (LP64).  The format of /proc depends on the data model
-@@ -48,54 +45,67 @@
+@@ -43,51 +40,65 @@
     Note that a 32-bit GDB won't be able to debug a 64-bit target
     process using /proc on Solaris.  */
  
--#if (defined (__arch64__) || \
--     (defined (PR_MODEL_NATIVE) && (PR_MODEL_NATIVE == PR_MODEL_LP64)))
+-#if PR_MODEL_NATIVE == PR_MODEL_LP64
 -
 -#include "sparc64-tdep.h"
 -
@@ -273,7 +272,7 @@
  supply_gregset (struct regcache *regcache, const prgregset_t *gregs)
  {
 -  sparc_supply_gregset (&sparc_sol2_gregmap, regcache, -1, gregs);
-+  struct gdbarch *gdbarch = get_regcache_arch (regcache);
++  struct gdbarch *gdbarch = regcache->arch();
 +  int pointer_size = gdbarch_ptr_bit (gdbarch);
 +
 +  if (from_corefile == -1)
@@ -289,7 +288,7 @@
  supply_fpregset (struct regcache *regcache, const prfpregset_t *fpregs)
  {
 -  sparc_supply_fpregset (&sparc_sol2_fpregmap, regcache, -1, fpregs);
-+  struct gdbarch *gdbarch = get_regcache_arch (regcache);
++  struct gdbarch *gdbarch = regcache->arch();
 +  int pointer_size = gdbarch_ptr_bit (gdbarch);
 +
 +  if (from_corefile == -1)
@@ -305,7 +304,7 @@
  fill_gregset (const struct regcache *regcache, prgregset_t *gregs, int regnum)
  {
 -  sparc_collect_gregset (&sparc_sol2_gregmap, regcache, regnum, gregs);
-+  struct gdbarch *gdbarch = get_regcache_arch (regcache);
++  struct gdbarch *gdbarch = regcache->arch();
 +  int pointer_size = gdbarch_ptr_bit (gdbarch);
 +
 +  if (from_corefile == -1)
@@ -322,7 +321,7 @@
  	       prfpregset_t *fpregs, int regnum)
  {
 -  sparc_collect_fpregset (&sparc_sol2_fpregmap, regcache, regnum, fpregs);
-+  struct gdbarch *gdbarch = get_regcache_arch (regcache);
++  struct gdbarch *gdbarch = regcache->arch();
 +  int pointer_size = gdbarch_ptr_bit (gdbarch);
 +
 +  if (from_corefile == -1)
@@ -333,5 +332,3 @@
 +  else
 +    sparc64_collect_fpregset (&sparc64_sol2_fpregmap, regcache, regnum, fpregs);
  }
- 
- /* Provide a prototype to silence -Wmissing-prototypes.  */
