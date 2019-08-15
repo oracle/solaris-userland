@@ -71,6 +71,9 @@ TEST_TARGET=
 SYSTEM_TEST_TARGET=
 include $(WS_MAKE_RULES)/common.mk
 
+# Not Python 3.x ready due to syntax errors
+PYTHON_VERSION = 2.7
+
 PATCH_LEVEL := 0
 DEBUG_BUILD := 0
 HAVE_SPHINX := 0

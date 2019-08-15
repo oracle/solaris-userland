@@ -39,9 +39,6 @@ COMPONENT_ANITYA_ID=	3914
 
 TPNO=			50931
 
-# Temporary solution for Python3.7 ready components
-PYTHON_VERSIONS = $(PYTHON3.7_READY)
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk

@@ -55,9 +55,6 @@ TPNO_OLD=		31346
 # dependencies for this new version and since it will be EOL very soon, it
 # doesn't really make sense to add them.
 
-# Temporary solution for Python3.7 ready components
-PYTHON_VERSIONS = $(PYTHON3.7_READY)
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk

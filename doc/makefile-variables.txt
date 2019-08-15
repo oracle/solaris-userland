@@ -434,6 +434,17 @@ publication, the following variables are available:
   appropriate macros in the package manifest.  Values cannot currently contain
   any characters that require shell escaping such as ", ', or *.
 
+* PYTHON_VERSION: default python version that is used by the gate in scripts
+  and in some cases during builds. Several other variables are also derived
+  from this one, e.g., PYTHON (python executable) or PYTHON_VENDOR_PACKAGES
+  (location of vendor-packages folder). Those are also affected by the BITS
+  variable.
+
+* PYTHON_VERSIONS: list of python versions, that are used to build given
+  component. This works only for the setup.py build style and does nothing
+  otherwise. Each target is then executed with PYTHON_VERSION set to each
+  version from the list.
+
 * PYVER is defined when processing package manifest files whose name end in
   -PYVER.p5m.  The package manifest will be processed for each version found in
   PYTHON_VERSIONS.  MAYBE_PYVER_SPACE (e.g. '2.7 ') and MAYBE_SPACE_PYVER

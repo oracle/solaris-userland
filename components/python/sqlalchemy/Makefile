@@ -38,6 +38,9 @@ COMPONENT_ANITYA_ID=	4034
 
 TPNO=			53244
 
+# This component is not yet built for Python 3.7
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
@@ -46,7 +49,6 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 COMPONENT_TEST_DIR=	$(SOURCE_DIR)
 COMPONENT_TEST_ARGS=	setup.py test
-COMPONENT_TEST_ENV=	PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES.32)
 
 # common targets
 build:		$(BUILD_32_and_64)

@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 COMPILER =		gcc
@@ -38,6 +38,9 @@ COMPONENT_BUGDB=	python-mod/cython
 COMPONENT_ANITYA_ID=	12679
 
 TPNO=			42613
+
+# This component is not yet built for Python 3.7
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
 
 # Avoid warnings about use of the deprecated NumPy API. Please see
 # http://docs.cython.org/en/latest/src/reference/compilation.html#configuring-the-c-build

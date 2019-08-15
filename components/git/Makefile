@@ -52,6 +52,8 @@ PKG_PROTO_DIRS +=	$(COMPONENT_SRC_1)
 
 include $(WS_MAKE_RULES)/common.mk
 
+PYTHON_VERSION = 2.7
+
 PKG_HARDLINKS +=	usr/lib/git-core/git
 PKG_HARDLINKS +=	usr/lib/git-core/git-cvsserver
 PKG_HARDLINKS +=	usr/lib/git-core/git-gui

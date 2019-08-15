@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -37,6 +37,10 @@ COMPONENT_BUGDB=	python-mod/logutils
 COMPONENT_ANITYA_ID=	3913
 
 TPNO=			22462
+
+# As per PSARC/2019/093, this component will soon be removed
+# This component is not yet built for Python 3.7
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

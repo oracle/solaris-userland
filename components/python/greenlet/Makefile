@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 COMPILER =	gcc
@@ -40,6 +40,9 @@ COMPONENT_ANITYA_ID=	6870
 
 TPNO=			26538
 
+# This component is not yet built for Python 3.7
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
@@ -52,7 +55,6 @@ COMPONENT_PRE_BUILD_ACTION = \
 # One of the tests, test_exception_switch (tests.test_cpp.CPPTests),
 # failed in 64-bit. Skip it for now.
 COMPONENT_TEST_ENV +=	GREENLET_TEST_CPP=no
-COMPONENT_TEST_ENV +=	PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES.32)
 COMPONENT_TEST_DIR=	$(COMPONENT_SRC)
 COMPONENT_TEST_ARGS=	setup.py test
 

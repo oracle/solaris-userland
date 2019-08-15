@@ -38,9 +38,6 @@ COMPONENT_ANITYA_ID=	5535
 
 TPNO=			49036
 
-# Temporary solution for Python3.7 ready components
-PYTHON_VERSIONS = $(PYTHON3.7_READY)
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
@@ -58,7 +55,6 @@ COMPONENT_TEST_ARGS =	--disable-warnings
 
 # Some tests require unicode characters, otherwise ~17 tests will fail
 COMPONENT_TEST_ENV += LC_ALL=en_US.UTF-8
-COMPONENT_TEST_ENV += PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES.32):$(PYTHON_VENDOR_PACKAGES)
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-n -e "s/in [^ ]* seconds/in x seconds/" ' \

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -39,6 +39,9 @@ SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/common.mk
 
 PATCH_LEVEL = 0
+
+# Not Python 3.x ready due to syntax errors
+PYTHON_VERSION = 2.7
 
 # AsciiDoc configuration and data files belong in /usr/share, not /etc based
 # on discussion from ARC pre-review.
@@ -72,13 +75,13 @@ COMPONENT_TEST_DIR =	$(@D)/tests
 COMPONENT_TEST_ENV_CMD =
 COMPONENT_TEST_ENV =	export PATH=$(@D):$$PATH;
 COMPONENT_TEST_CMD =	\
-	python$(PYTHON_VERSION) ./asciidocapi.py; \
+	$(PYTHON) ./asciidocapi.py; \
 	if [ $$? -eq 0 ] ; \
 		then print "asciidocapi test passed"; \
 		else print "asciidocapi test failed"; \
 	fi; \
-	python$(PYTHON_VERSION) ./testasciidoc.py update; \
-	python$(PYTHON_VERSION) ./testasciidoc.py run
+	$(PYTHON) ./testasciidoc.py update; \
+	$(PYTHON) ./testasciidoc.py run
 COMPONENT_TEST_TARGETS =
 COMPONENT_POST_TEST_ACTION = \
 	(cd $(@D); rm asciidoc)
@@ -96,13 +99,13 @@ COMPONENT_TEST_TRANSFORMS += \
 COMPONENT_SYSTEM_TEST_DIR =    $(@D)/tests
 COMPONENT_SYSTEM_TEST_ENV_CMD =
 COMPONENT_SYSTEM_TEST_CMD =    \
-	python$(PYTHON_VERSION) ./asciidocapi.py; \
+	$(PYTHON) ./asciidocapi.py; \
 	if [ $$? -eq 0 ] ; \
 		then print "asciidocapi test passed"; \
 		else print "asciidocapi test failed"; \
 	fi; \
-	python$(PYTHON_VERSION) ./testasciidoc.py update; \
-	python$(PYTHON_VERSION) ./testasciidoc.py run
+	$(PYTHON) ./testasciidoc.py update; \
+	$(PYTHON) ./testasciidoc.py run
 COMPONENT_SYSTEM_TEST_TARGETS =
 
 REQUIRED_PACKAGES += library/libxml2

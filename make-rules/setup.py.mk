@@ -23,9 +23,6 @@
 # Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
-# $ (foreach suffix,$(VERSIONS),$(eval include $(WS_MAKE_RULES)/python-$(suffix).mk))
-
-
 $(BUILD_DIR)/%-2.7/.built:		PYTHON_VERSION=2.7
 $(BUILD_DIR)/%-3.4/.built:		PYTHON_VERSION=3.4
 $(BUILD_DIR)/%-3.5/.built:		PYTHON_VERSION=3.5
@@ -71,26 +68,16 @@ $(BUILD_DIR)/$(MACH64)-%/.system-tested-and-compared:	BITS=64
 BUILD_32 = $(PYTHON2_VERSIONS:%=$(BUILD_DIR)/$(MACH32)-%/.built)
 BUILD_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
 BUILD_NO_ARCH = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH)-%/.built)
-ifeq ($(PYTHON_VERSION),3.4)
-BUILD_32_and_64 = $(BUILD_64)
-endif
-ifeq ($(PYTHON_VERSION),3.5)
-BUILD_32_and_64 = $(BUILD_64)
-endif
-ifeq ($(PYTHON_VERSION),3.7)
-BUILD_32_and_64 = $(BUILD_64)
-endif
 
 INSTALL_32 = $(PYTHON2_VERSIONS:%=$(BUILD_DIR)/$(MACH32)-%/.installed)
 INSTALL_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
 INSTALL_NO_ARCH = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH)-%/.installed)
-ifeq ($(PYTHON_VERSION),3.4)
-INSTALL_32_and_64 = $(INSTALL_64)
-endif
-ifeq ($(PYTHON_VERSION),3.5)
-INSTALL_32_and_64 = $(INSTALL_64)
-endif
-ifeq ($(PYTHON_VERSION),3.7)
+
+ifneq ($(findstring 2.7,$(PYTHON_VERSIONS)),)
+BUILD_32_and_64 = $(BUILD_32) $(BUILD_64)
+INSTALL_32_and_64 = $(INSTALL_32) $(INSTALL_64)
+else
+BUILD_32_and_64 = $(BUILD_64)
 INSTALL_32_and_64 = $(INSTALL_64)
 endif
 
@@ -109,18 +96,18 @@ COMPONENT_INSTALL_ENV += $(PYTHON_ENV)
 COMPONENT_TEST_ENV += $(PYTHON_ENV)
 COMPONENT_SYSTEM_TEST_ENV += $(PYTHON_ENV)
 
-# Build the canonical version (currently 2.7) last.
+# Build and install the canonical version (currently 3.7) last.
+ifneq ($(findstring 2.7,$(PYTHON_VERSIONS)),)
+$(BUILD_DIR)/%-3.7/.built:     $(BUILD_DIR)/%-2.7/.built
+$(BUILD_DIR)/%-3.7/.installed: $(BUILD_DIR)/%-2.7/.installed
+endif
 ifneq ($(findstring 3.4,$(PYTHON_VERSIONS)),)
-$(BUILD_DIR)/%-2.7/.built:     $(BUILD_DIR)/%-3.4/.built
-$(BUILD_DIR)/%-2.7/.installed: $(BUILD_DIR)/%-3.4/.installed
+$(BUILD_DIR)/%-3.7/.built:     $(BUILD_DIR)/%-3.4/.built
+$(BUILD_DIR)/%-3.7/.installed: $(BUILD_DIR)/%-3.4/.installed
 endif
 ifneq ($(findstring 3.5,$(PYTHON_VERSIONS)),)
-$(BUILD_DIR)/%-2.7/.built:     $(BUILD_DIR)/%-3.5/.built
-$(BUILD_DIR)/%-2.7/.installed: $(BUILD_DIR)/%-3.5/.installed
-endif
-ifneq ($(findstring 3.7,$(PYTHON_VERSIONS)),)
-$(BUILD_DIR)/%-2.7/.built:     $(BUILD_DIR)/%-3.7/.built
-$(BUILD_DIR)/%-2.7/.installed: $(BUILD_DIR)/%-3.7/.installed
+$(BUILD_DIR)/%-3.7/.built:     $(BUILD_DIR)/%-3.5/.built
+$(BUILD_DIR)/%-3.7/.installed: $(BUILD_DIR)/%-3.5/.installed
 endif
 
 # Create a distutils config file specific to the combination of build
@@ -161,6 +148,7 @@ $(BUILD_DIR)/%/.installed:	$(BUILD_DIR)/%/.built $(BUILD_DIR)/config-%/$(CFG)
 	$(COMPONENT_POST_INSTALL_ACTION)
 	$(TOUCH) $@
 
+
 # Define bit specific and Python version specific filenames.
 COMPONENT_TEST_BUILD_DIR = $(BUILD_DIR)/test/$(MACH$(BITS))-$(PYTHON_VERSION)
 COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-$(PYTHON_VERSION)-$(BITS).master
@@ -172,14 +160,14 @@ COMPONENT_TEST_TRANSFORM_CMD = $(COMPONENT_TEST_BUILD_DIR)/transform-$(PYTHON_VE
 COMPONENT_TEST_DEP =	$(BUILD_DIR)/%/.installed
 COMPONENT_TEST_DIR =	$(COMPONENT_SRC)/test
 COMPONENT_TEST_ENV_CMD =	$(ENV)
-COMPONENT_TEST_ENV +=	PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)
+COMPONENT_TEST_ENV +=	PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)
 COMPONENT_TEST_CMD =	$(PYTHON)
 COMPONENT_TEST_ARGS +=	./runtests.py
 
 COMPONENT_SYSTEM_TEST_DEP =	$(SOURCE_DIR)/.prep
 COMPONENT_SYSTEM_TEST_DIR =	$(COMPONENT_SRC)/test
 COMPONENT_SYSTEM_TEST_ENV_CMD =	$(ENV)
-COMPONENT_SYSTEM_TEST_ENV +=	PYTHONPATH=$(PYTHON_VENDOR_PACKAGES)
+COMPONENT_SYSTEM_TEST_ENV +=	PYTHONPATH=$(PYTHON_VENDOR_PACKAGES_BASE)
 COMPONENT_SYSTEM_TEST_CMD =	$(PYTHON)
 COMPONENT_SYSTEM_TEST_ARGS +=	./runtests.py
 
@@ -193,15 +181,7 @@ TEST_32 = $(PYTHON2_VERSIONS:%=$(BUILD_DIR)/$(MACH32)-%/.tested-and-compared)
 TEST_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.tested-and-compared)
 TEST_NO_ARCH = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH)-%/.tested-and-compared)
 endif
-ifeq ($(PYTHON_VERSION),3.4)
-TEST_32_and_64 = $(TEST_64)
-endif
-ifeq ($(PYTHON_VERSION),3.5)
-TEST_32_and_64 = $(TEST_64)
-endif
-ifeq ($(PYTHON_VERSION),3.7)
-TEST_32_and_64 = $(TEST_64)
-endif
+
 ifeq ($(strip $(wildcard $(COMPONENT_SYSTEM_TEST_RESULTS_DIR)/results-*.master)),)
 SYSTEM_TEST_32 = $(PYTHON2_VERSIONS:%=$(BUILD_DIR)/$(MACH32)-%/.system-tested)
 SYSTEM_TEST_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.system-tested)
@@ -211,13 +191,12 @@ SYSTEM_TEST_32 = $(PYTHON2_VERSIONS:%=$(BUILD_DIR)/$(MACH32)-%/.system-tested-an
 SYSTEM_TEST_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.system-tested-and-compared)
 SYSTEM_TEST_NO_ARCH = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH)-%/.system-tested-and-compared)
 endif
-ifeq ($(PYTHON_VERSION),3.4)
-SYSTEM_TEST_32_and_64 = $(SYSTEM_TEST_64)
-endif
-ifeq ($(PYTHON_VERSION),3.5)
-SYSTEM_TEST_32_and_64 = $(SYSTEM_TEST_64)
-endif
-ifeq ($(PYTHON_VERSION),3.7)
+
+ifneq ($(findstring 2.7,$(PYTHON_VERSIONS)),)
+TEST_32_and_64 = $(TEST_32) $(TEST_64)
+SYSTEM_TEST_32_and_64 = $(SYSTEM_TEST_32) $(SYSTEM_TEST_64)
+else
+TEST_32_and_64 = $(TEST_64)
 SYSTEM_TEST_32_and_64 = $(SYSTEM_TEST_64)
 endif
 

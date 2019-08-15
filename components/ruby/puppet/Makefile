@@ -79,7 +79,7 @@ $(BUILD_DIR)/puppet.conf: ext/PuppetAudit.so
 $(PROTOSVCMANIFESTDIR)/application/puppet.xml: $(BUILD_DIR)/puppet.conf
 	-$(RM) $@
 	$(MKDIR) $(PROTOSVCMANIFESTDIR)/application
-	$(PYTHON) tools/update_smf.py -c $(BUILD_DIR)/puppet.conf \
+	$(PYTHON.2.7) tools/update_smf.py -c $(BUILD_DIR)/puppet.conf \
 	  -s files/puppet.xml.stub -o $@
 	/usr/sbin/svccfg validate $@
 

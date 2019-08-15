@@ -107,7 +107,7 @@ CONFIGURE_OPTIONS +=	--with-randomdev=/dev/random
 CONFIGURE_OPTIONS +=	--with-gssapi=krb5-config
 CONFIGURE_OPTIONS +=	--with-docbook-xsl=/usr/share/sgml/docbook
 # - Python modules in vendor directory
-CONFIGURE_OPTIONS +=	--with-python-install-dir=$(PYTHON_VENDOR_PACKAGES.32)
+CONFIGURE_OPTIONS +=	--with-python-install-dir=$(PYTHON_VENDOR_PACKAGES_BASE)
 
 # Compiler and compiler options:
 # - configure will add "-mt" to CC which is already set in CFLAGS, so override.

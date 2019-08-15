@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -38,6 +38,7 @@ COMPONENT_ANITYA_ID=	10512
 
 TPNO=			27568
 
+# As per PSARC/2019/093, this component will soon be removed
 # Depends on oslo.utils which is not Python 3 ready.
 PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
 

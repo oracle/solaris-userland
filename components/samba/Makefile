@@ -65,6 +65,8 @@ COMPONENT_SRC_URL=	$(COMPONENT_ARCHIVE_URL)
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
+PYTHON_VERSION = 2.7
+
 # Winbind only build is 32b.
 WB_ONLY_CONF=		$(BUILD_DIR_32)/.configured
 SAMBA_FULL_CONF=	$(BUILD_DIR_64)/.configured

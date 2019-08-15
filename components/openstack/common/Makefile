@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -41,10 +41,10 @@ include $(WS_MAKE_RULES)/ips.mk
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # Used for placement of openstack_common.py
-PYTHON_VERSIONS=	2.7
+PYTHON_VERSION =	2.7
 
-PKG_MACROS +=		PYVER=$(PYTHON_VERSIONS)
-PKG_MACROS +=		PYV=$(shell echo $(PYTHON_VERSIONS) | tr -d .)
+PKG_MACROS +=		PYVER=$(PYTHON_VERSION)
+PKG_MACROS +=		PYV=$(shell echo $(PYTHON_VERSION) | tr -d .)
 
 build:		FRC
 

@@ -43,6 +43,9 @@ PYTHON_VERSIONS += 3.7
 
 PKG_PROTO_DIRS += $(SOURCE_DIR)/doc/
 
+# This component is not yet built for Python 3.7
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
+
 # replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses configure instead
 CONFIGURE_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
 BUILD_64     = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
@@ -55,6 +58,9 @@ $(foreach pyver, $(PYTHON_VERSIONS), \
   $(eval $(BUILD_DIR)/%-$(pyver)/.installed:           PYTHON_VERSION=$(pyver)) \
   $(eval $(BUILD_DIR)/%-$(pyver)/.tested-and-compared: PYTHON_VERSION=$(pyver)) \
 )
+
+# This is needed for 32 bit variant of dbus-python
+PYTHON_VERSION = 2.7
 
 $(BUILD_DIR)/$(MACH64)-%/.configured:		BITS=64
 $(BUILD_DIR)/$(MACH64)-%/.built:		BITS=64
@@ -85,10 +91,10 @@ CONFIGURE_OPTIONS += PYTHON="$(PYTHON)"
 CONFIGURE_OPTIONS += --disable-dependency-tracking
 
 # Ensure Python modules are installed into vendor package directories.
-CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES.32)
+CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES_BASE)
 CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON.$(PYTHON_VERSION).VENDOR_PACKAGES)
 
-COMPONENT_TEST_ENV +=   PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES.32)
+COMPONENT_TEST_ENV +=   PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)
 
 # Needed for "gmake test" to work successfully.
 unexport SHELLOPTS

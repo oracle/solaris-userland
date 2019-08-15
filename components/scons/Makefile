@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
@@ -38,6 +38,7 @@ TPNO=			34213
 # Per Q1.1.4 of the SCons FAQ, SCons is written to work with any Python
 # version >= 2.4 and < 3.0. Versions 3.0 and above are not supported at
 # this time.
+PYTHON_VERSION =	2.7
 PYTHON_VERSIONS =	2.7
 
 BUILD_STYLE= setup.py

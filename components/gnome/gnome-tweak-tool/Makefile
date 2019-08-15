@@ -37,7 +37,7 @@ COMPONENT_ANITYA_ID=	1198
 
 TPNO=			34578
 
-PYTHON_VERSIONS= 2.7
+PYTHON_VERSION = 2.7
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -59,7 +59,7 @@ CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
 CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
 
 # build .pyc's
-COMPONENT_POST_INSTALL_ACTION += $(PYTHON.$(PYTHON_VERSION)) -m compileall \
+COMPONENT_POST_INSTALL_ACTION += $(PYTHON) -m compileall \
 	$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES) ;
 
 # pkgdepend doesn't like the first line of a Python script to be:

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS = 		64_and_32
@@ -37,11 +37,11 @@ COMPONENT_ARCHIVE_URL=	http://freedesktop.org/software/$(COMPONENT_NAME)/release
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	3729
 
-TPNO=			32882	
+TPNO=			32882
 
 # Only build for 2.7 for now as we need 32-bit and 64-bit support; all of the
 # GNOME and desktop components must be built for Python 2.7 for now.
-PYTHON_VERSIONS= 2.7
+PYTHON_VERSION = 2.7
 
 include $(WS_MAKE_RULES)/common.mk
 

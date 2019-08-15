@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -37,7 +37,7 @@ COMPONENT_ANITYA_ID=	13129
 TPNO=			24907
 
 # Only supports Python 2.x.
-PYTHON_VERSIONS= 2.7
+PYTHON_VERSION = 2.7
 
 TEST_TARGET= $(NO_TESTS)
 

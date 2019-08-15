@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 COMPILER =		gcc
@@ -40,6 +40,9 @@ COMPONENT_ANITYA_ID=	2509
 
 TPNO=			42611
 
+# This component is not yet built for Python 3.7
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
+
 BUILD_STYLE= setup.py
 
 # Have not been able to get consistent test results yet, needs more work
@@ -56,15 +59,15 @@ studio_XBITS.i386.32 		+= -xarch=sse2
 PYTHON_ENV +=   CC="$(CC) $(CC_BITS)"
 PYTHON_ENV +=   PATH="$(SPRO_VROOT)/bin:$(PATH)"
 
-PYTHON_SCRIPTS += $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES.32)/numpy/*.py
-PYTHON_SCRIPTS += $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES.32)/numpy/*/*.py
-PYTHON_SCRIPTS += $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES.32)/numpy/*/*/*.py
+PYTHON_SCRIPTS += $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES_BASE)/numpy/*.py
+PYTHON_SCRIPTS += $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES_BASE)/numpy/*/*.py
+PYTHON_SCRIPTS += $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES_BASE)/numpy/*/*/*.py
 
 # Merge 32-bit & 64-bit versions of header with different SIZEOF values
 install: $(BUILD_DIR)/.merged-header
 $(BUILD_DIR)/.merged-header:	PYTHON_VERSION=2.7
 
-NUMPYCONFIG_H = $(PYTHON_VENDOR_PACKAGES.32)/numpy/core/include/numpy/_numpyconfig.h
+NUMPYCONFIG_H = $(PYTHON_VENDOR_PACKAGES_BASE)/numpy/core/include/numpy/_numpyconfig.h
 $(BUILD_DIR)/.merged-header: $(BUILD_DIR)/$(MACH32)-2.7/.installed $(BUILD_DIR)/$(MACH64)-2.7/.installed
 	-$(RM) $(PROTO_DIR)/$(NUMPYCONFIG_H)
 	print '#include <sys/isa_defs.h>' > $(PROTO_DIR)/$(NUMPYCONFIG_H)
@@ -79,7 +82,6 @@ $(BUILD_DIR)/.merged-header: $(BUILD_DIR)/$(MACH32)-2.7/.installed $(BUILD_DIR)/
 
 COMPONENT_TEST_DIR  = $(COMPONENT_DIR)
 COMPONENT_TEST_ARGS = -c 'import numpy; numpy.test()'
-COMPONENT_TEST_ENV += PYTHONPATH="$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES.32)"
 COMPONENT_TEST_ENV += F77="$(SPRO_VROOT)/bin/f77 -m$(BITS)"
 COMPONENT_TEST_ENV += F90="$(SPRO_VROOT)/bin/f90 -m$(BITS)"
 COMPONENT_TEST_TRANSFORMS += '-e "s|^\\(Ran [0-9]* tests\\) in .*s|\1|"'

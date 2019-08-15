@@ -38,7 +38,7 @@ TPNO=			34523
 
 TEST_TARGET = $(NO_TESTS)
 
-PYTHON_VERSIONS=2.7
+PYTHON_VERSION = 2.7
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

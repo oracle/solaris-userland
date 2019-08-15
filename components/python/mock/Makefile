@@ -42,9 +42,6 @@ TPNO=			51961
 # is still using this package rather than the included one, mostly because it
 # has all the newest features even for older versions of Python.
 
-# Temporary solution for Python3.7 ready components
-PYTHON_VERSIONS = $(PYTHON3.7_READY)
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk

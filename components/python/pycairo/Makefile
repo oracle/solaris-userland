@@ -43,7 +43,8 @@ COMPONENT_ANITYA_ID=	13166
 TPNO=			30739
 
 # upstream delivers python2 support separately as "py2cairo"
-PYTHON_VERSIONS=        $(PYTHON3_VERSIONS)
+PYTHON3_VERSIONS=	3.4 3.5
+PYTHON_VERSIONS=	$(PYTHON3_VERSIONS)
 
 BUILD_STYLE= waf
 

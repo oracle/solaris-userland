@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -38,7 +38,7 @@ COMPONENT_ANITYA_ID=	3829
 
 TPNO=			28036
 
-# Depends on django which is not Python 3 ready.
+# As per PSARC/2019/093, this component will soon be removed
 PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk

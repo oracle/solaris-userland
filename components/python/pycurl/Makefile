@@ -39,9 +39,6 @@ COMPONENT_ANITYA_ID=	7973
 
 TPNO=			28055
 
-# Temporary solution for Python3.7 ready components
-PYTHON_VERSIONS = $(PYTHON3.7_READY)
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
@@ -51,11 +48,6 @@ PYTHON_DATA = /usr
 
 # Testing environment must be clean
 test: ENV += -i
-
-# PYTHON_VENDOR_PACKAGES is incorrectly set by the shared-macros.mk
-%-3.4/.tested: PYTHON_VENDOR_PACKAGES = $(PYTHON_VENDOR_PACKAGES.32)
-%-3.5/.tested: PYTHON_VENDOR_PACKAGES = $(PYTHON_VENDOR_PACKAGES.32)
-%-3.7/.tested: PYTHON_VENDOR_PACKAGES = $(PYTHON_VENDOR_PACKAGES.32)
 
 # Rebuild downloaded .so files for each Python version
 COMPONENT_PRE_TEST_ACTION = ( \

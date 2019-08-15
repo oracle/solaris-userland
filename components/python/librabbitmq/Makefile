@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -50,7 +50,6 @@ CFLAGS +=		-erroff=E_EMPTY_DECLARATION $(studio_C99_ENABLE)
 
 COMPONENT_TEST_ARGS=	setup.py build test
 COMPONENT_TEST_DIR=	$(SOURCE_DIR)
-COMPONENT_TEST_ENV +=	PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES.32)
 
 # common targets
 build:		$(BUILD_32_and_64)

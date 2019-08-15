@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS=	32
 COMPILER=	gcc
@@ -38,6 +38,9 @@ COMPONENT_ANITYA_ID=	1327
 
 include $(WS_MAKE_RULES)/common.mk
 
+# Not Python 3.x ready due to configure errors
+PYTHON_VERSION = 2.7
+
 CONFIGURE_OPTIONS +=	--localedir=$(CONFIGURE_LOCALEDIR)
 CONFIGURE_OPTIONS +=	--with-hpppddir=$(USRSHAREDIR)/cups/model/hplip
 CONFIGURE_OPTIONS +=	--enable-fax-build
@@ -48,7 +51,7 @@ CONFIGURE_OPTIONS +=	--enable-cups-ppd-install
 CONFIGURE_OPTIONS +=	--disable-pp-build
 CONFIGURE_OPTIONS +=	--disable-gui-build
 CONFIGURE_OPTIONS +=	--disable-qt4
-CONFIGURE_OPTIONS +=	PYTHON=$(PYTHON.$(PYTHON_VERSION))
+CONFIGURE_OPTIONS +=	PYTHON=$(PYTHON)
 CONFIGURE_OPTIONS +=	am_cv_python_pythondir="$(PYTHON_VENDOR_PACKAGES)"
 CONFIGURE_OPTIONS +=	am_cv_python_pyexecdir="$(PYTHON_VENDOR_PACKAGES)"
 # bye, bye SANE backends
@@ -78,7 +81,7 @@ PYTHON_SCRIPTS += \
 
 # build .pyc's
 COMPONENT_POST_INSTALL_ACTION += \
-	$(PYTHON.$(PYTHON_VERSION)) -m compileall $(PROTO_DIR)/usr/share/hplip/
+	$(PYTHON) -m compileall $(PROTO_DIR)/usr/share/hplip/
 
 # empty test target
 test:	$(NO_TESTS)

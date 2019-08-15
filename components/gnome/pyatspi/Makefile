@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =		32_and_64
@@ -36,18 +36,27 @@ COMPONENT_ANITYA_ID=	13157
 
 TPNO=			30736
 
+# This component is not yet built for Python 3.7
+PYTHON3_VERSIONS = 3.4 3.5
+
+# This is needed for 32 bit variant of pyatspi
+PYTHON_VERSION = 2.7
+
 # replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses configure.mk
 CONFIGURE_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
+$(BUILD_DIR)/%-2.7/.configured:		PYTHON_VERSION=2.7
 $(BUILD_DIR)/%-3.4/.configured:		PYTHON_VERSION=3.4
 $(BUILD_DIR)/%-3.5/.configured:		PYTHON_VERSION=3.5
 $(BUILD_DIR)/$(MACH64)-%/.configured:	BITS=64
 
 BUILD_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
+$(BUILD_DIR)/%-2.7/.built:		PYTHON_VERSION=2.7
 $(BUILD_DIR)/%-3.4/.built:		PYTHON_VERSION=3.4
 $(BUILD_DIR)/%-3.5/.built:		PYTHON_VERSION=3.5
 $(BUILD_DIR)/$(MACH64)-%/.built:	BITS=64
 
 INSTALL_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
+$(BUILD_DIR)/%-2.7/.installed:		PYTHON_VERSION=2.7
 $(BUILD_DIR)/%-3.4/.installed:		PYTHON_VERSION=3.4
 $(BUILD_DIR)/%-3.5/.installed:		PYTHON_VERSION=3.5
 $(BUILD_DIR)/$(MACH64)-%/.installed:	BITS=64
@@ -71,7 +80,7 @@ CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
 # Make install path match what autopyc transforms look for
 COMPONENT_POST_INSTALL_ACTION += \
      case "$(PYTHON_VERSION)" in \
-	3.*) $(SYMLINK) 64/pyatspi $(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES.32)/pyatspi ;; \
+	3.*) $(SYMLINK) 64/pyatspi $(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)/pyatspi ;; \
      esac ;
 
 REQUIRED_PACKAGES += library/python/pygobject-3

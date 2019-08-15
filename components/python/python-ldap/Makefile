@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -49,7 +49,6 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 COMPONENT_TEST_DIR =    $(SOURCE_DIR)/Tests
 COMPONENT_TEST_CMD =	$(SHELL)
 COMPONENT_TEST_ARGS =   runtests.sh
-COMPONENT_TEST_ENV +=	PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES.32)
 # Needed to create a unique temporary directory.
 COMPONENT_TEST_ENV +=	BUILD_DIR=$(BUILD_DIR)
 

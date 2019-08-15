@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -37,6 +37,9 @@ COMPONENT_ANITYA_ID=	13249
 TPNO                   = 9483
 
 include $(WS_MAKE_RULES)/common.mk
+
+# Not Python 3.x ready due to syntax errors
+PYTHON_VERSION=2.7
 
 COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -if)
 

@@ -41,6 +41,7 @@ CFLAGS+=		-DNDEBUG
 CFLAGS+=		-DOSCAP_THREAD_SAFE
 CFLAGS+=		-D__$(MACH64)
 
+PYTHON_VERSION =	2.7
 PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
 
 # publish for only one version of perl

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -38,6 +38,7 @@ COMPONENT_ANITYA_ID=	12723
 
 TPNO=			27443
 
+# As per PSARC/2019/093, this component will soon be removed
 # included in Python 3.4+
 PYTHON_VERSIONS=        $(PYTHON2_VERSIONS)
 

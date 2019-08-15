@@ -47,7 +47,7 @@ TEST_TARGET= $(SKIP_TEST)
 
 # Only build for 2.7 for now as we need 32-bit and 64-bit support; all of the
 # GNOME and desktop components must be built for Python 2.7 for now.
-PYTHON_VERSIONS= 2.7
+PYTHON_VERSION = 2.7
 
 include $(WS_MAKE_RULES)/common.mk
 

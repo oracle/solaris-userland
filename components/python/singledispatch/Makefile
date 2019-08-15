@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -38,6 +38,7 @@ COMPONENT_ANITYA_ID=	12013
 
 TPNO=			22463
 
+# As per PSARC/2019/093, this component will soon be removed
 # singledispatch is superfluous in Python 3.4
 PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
 

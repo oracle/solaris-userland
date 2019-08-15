@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # gobject-introspection bindings are only built correctly for gtk when building
@@ -41,7 +41,7 @@ COMPONENT_ANITYA_ID=	13159
 TPNO=			19936
 
 # Only build for 2.7 as pygobject-3 will replace pygtk for python 3.x
-PYTHON_VERSIONS= 2.7
+PYTHON_VERSION = 2.7
 
 # Tests do not yet work with Userland framework - 23712629
 TEST_TARGET= $(SKIP_TEST)

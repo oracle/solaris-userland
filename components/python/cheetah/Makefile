@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -37,6 +37,7 @@ COMPONENT_ANITYA_ID=	13246
 
 TPNO=			14503
 
+# As per PSARC/2019/093, this component will soon be removed
 # Syntax issues: not Python 3 ready.
 PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
 
@@ -52,10 +53,9 @@ COMPONENT_POST_INSTALL_ACTION = \
 	 $(MV) -f cheetah-analyze cheetah-analyze-$(PYTHON_VERSION) ; \
 	 $(MV) -f cheetah-compile cheetah-compile-$(PYTHON_VERSION))
 
-COMPONENT_TEST_ARGS=	cheetah/Tests/Test.py
-COMPONENT_TEST_DIR=	$(SOURCE_DIR)
-COMPONENT_TEST_ENV=	PATH=$(PROTO_DIR)/usr/bin
-COMPONENT_TEST_ENV +=	PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES.32)
+COMPONENT_TEST_ARGS =	cheetah/Tests/Test.py
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)
+COMPONENT_TEST_ENV +=	PATH=$(PROTO_DIR)/usr/bin
 COMPONENT_TEST_ENV +=	PYTHON_VERSION=$(PYTHON_VERSION)
 
 # common targets

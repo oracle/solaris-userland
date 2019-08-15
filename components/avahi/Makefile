@@ -41,6 +41,9 @@ COMPONENT_ANITYA_ID=	147
 
 include $(WS_MAKE_RULES)/common.mk
 
+# Not Python 3.x ready due to configure errors
+PYTHON_VERSION=2.7
+
 CONFIGURE_SBINDIR.64 =	$(CONFIGURE_BINDIR.64)
 CONFIGURE_OPTIONS	+=	--enable-shared
 CONFIGURE_OPTIONS	+=	--disable-static

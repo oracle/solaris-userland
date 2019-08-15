@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =		32_and_64
@@ -44,6 +44,7 @@ TPNO=			33712
 
 # Requires pygobject-3 which is currently only built for Python 2.7
 PYTHON_VERSIONS= 2.7
+PYTHON_VERSION = 2.7
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -62,7 +63,7 @@ CONFIGURE_ENV += PYTHON=$(PYTHON)
 CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
 CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
 
-CONFIGURE_OPTIONS.64 += --with-pygi-overrides-dir=$(PYTHON_VENDOR_PACKAGES.32)/gi/overrides/64
+CONFIGURE_OPTIONS.64 += --with-pygi-overrides-dir=$(PYTHON_VENDOR_PACKAGES_BASE)/gi/overrides/64
 
 # for the tests
 unexport SHELLOPTS

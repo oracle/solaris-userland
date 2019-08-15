@@ -40,6 +40,8 @@ SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_32_and_64)
 
 include $(WS_MAKE_RULES)/common.mk
 
+PYTHON_VERSION = 2.7
+
 # The lint check requires the current version of libxml2 header files since
 # function declarations might have changed between the system and gate version.
 LINT_FLAGS +=	-I$(COMPONENT_DIR)/../libxml2/build/prototype/$(MACH)/$(USRINCDIR)/libxml2

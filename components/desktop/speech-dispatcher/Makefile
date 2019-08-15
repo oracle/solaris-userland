@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=             64
@@ -55,17 +55,16 @@ CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 
 # Same version as Orca uses
 PYTHON_VERSION = 3.5
-PYTHON_PKG_DIR = $(PYTHON_VENDOR_PACKAGES:/64=)
 PYV = "$(PYTHON_VERSION:3.%=3%)"
 CONFIGURE_ENV += PYTHON="$(PYTHON)"
 PKG_MACROS += PYVER="$(PYTHON_VERSION)" PYV="$(PYV)"
 
 # Ensure Python modules are installed into vendor package directories.
-CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_PKG_DIR)
-CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_PKG_DIR)
+CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
+CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
 
 PYTHON_SCRIPTS += $(PROTO_DIR)$(USRBINDIR)/spd-conf
-PYTHON_SCRIPTS += $(PROTO_DIR)$(PYTHON_PKG_DIR)/speechd/_test.py
+PYTHON_SCRIPTS += $(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)/speechd/_test.py
 
 REQUIRED_PACKAGES += library/audio/pulseaudio
 REQUIRED_PACKAGES += library/desktop/dotconf
