@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=  		64_and_32
@@ -41,6 +41,9 @@ TEST_TARGET = $(NO_TESTS)
 PYTHON_VERSIONS=2.7
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+
+# Use explicit Python version rather than the default one
+CONFIGURE_ENV +=	PYTHON=$(PYTHON.2.7)
 
 # Ensure Python modules are installed into vendor package directories.
 CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)

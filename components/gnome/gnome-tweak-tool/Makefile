@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		NO_ARCH
@@ -47,6 +47,9 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 COMPONENT_POST_UNPACK_ACTION += $(RM) $(SOURCE_DIR)/gtweak/defs.py ;
 
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
+
+# Use explicit Python version rather than the default one
+CONFIGURE_ENV += PYTHON=$(PYTHON.2.7)
 
 # Assumes GNU msgfmt & xgettext is first in $PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"

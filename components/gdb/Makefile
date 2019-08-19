@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 # There are a large number of macros in the GCB code written
@@ -95,7 +95,7 @@ CONFIGURE_OPTIONS += --disable-werror
 CONFIGURE_OPTIONS += --enable-plugins
 CONFIGURE_OPTIONS += --enable-tui
 CONFIGURE_OPTIONS += --without-auto-load-safe-path
-CONFIGURE_OPTIONS += --with-python=yes
+CONFIGURE_OPTIONS += --with-python=$(PYTHON.2.7)
 CONFIGURE_OPTIONS += --with-libexpat-prefix=$(USRLIBDIR)
 CONFIGURE_OPTIONS += --infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS += --with-system-zlib

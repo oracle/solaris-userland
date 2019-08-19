@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # When Firefox delivers 64-bit, we should change this as well to build
@@ -54,6 +54,9 @@ COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
 # Need to convert "#! /usr/bin/env python" to actual path for pkgdepend to work
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/chrome-gnome-shell
+
+# Use explicit Python version rather than the default one
+CMAKE_OPTIONS += -DPYTHON_EXECUTABLE=$(PYTHON.2.7)
 
 # Deliver into vendor-packages instead of site-packages
 COMPONENT_POST_INSTALL_ACTION += \

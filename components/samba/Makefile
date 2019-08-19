@@ -74,7 +74,7 @@ $(BUILD_DIR_64)/%:	MACHLIBDIR=/$(MACH64)
 
 # Uncomment the followin line to enable verbose and single-thread (readable) build.
 #override WAFOPTS	=	-v -j1
-WAF= ./buildtools/bin/waf
+WAF= $(PYTHON.2.7) ./buildtools/bin/waf
 
 PKG_VARS += COMPONENT_SRC_URL
 # Set the pkg... path to search files in ./Solaris/ dir (mainly the SMF manifests are there)
@@ -151,6 +151,9 @@ CONFIGURE_ENV +=	CUPS_CONFIG=$(USRBINDIR)/cups-config
 CONFIGURE_ENV += 	INSTALL="$(INSTALL)"
 CONFIGURE_ENV += 	PKG_CONFIG_PATH="$(PKGCONFIG_AUX_DIR):$(PKG_CONFIG_PATH)"
 
+# Use explicit Python version rather than the default one
+CONFIGURE_ENV += PYTHON=$(PYTHON.2.7)
+
 # cleanup unpacked archive
 COMPONENT_PREP_ACTION += (cd $(@D) ; $(WAF) distclean $(WAFOPTS) );
 
@@ -200,7 +203,7 @@ $(SAMBA_FULL_CONF:.configured=.installed): COMPONENT_POST_INSTALL_ACTION += \
    sed -f $(COMPONENT_DIR)/Solaris/smbconf.sed \
      > $(PROTO_DIR)/etc/samba/smb.conf-example \
      $(BUILD_DIR_SMB)/examples/smb.conf.default ; \
-   $(PYTHON) -m compileall $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES)/ ;
+   $(PYTHON.2.7) -m compileall $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES)/ ;
 
 # do not do waf install for winbind only - override the recipe
 $(WB_ONLY_CONF:.configured=.installed): $(WB_ONLY_CONF:.configured=.built)

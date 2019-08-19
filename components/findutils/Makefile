@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -45,6 +45,10 @@ CONFIGURE_OPTIONS  +=	ac_cv_func_newlocale=no
 # Disable the leaf optimisation feature, because the st_nlinks directory
 # field is incorrect on ZFS file systems.
 CONFIGURE_OPTIONS +=	--disable-leaf-optimisation
+
+# Explicitly specify the preferred Python version to prevent
+# possible unexpected future changes.
+CONFIGURE_ENV += PYTHON="$(PYTHON.2.7)"
 
 # Run all the tests even if there is a failure
 COMPONENT_TEST_ARGS += -k

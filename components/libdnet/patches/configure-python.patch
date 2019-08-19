@@ -1,0 +1,35 @@
+Libdnet configure is not able to detect other than default Python version, and
+thus it had to be patched so that we can pass exact runtime we want to use.
+
+Not intended for upstream.
+
+--- libdnet-1.12/configure.in
++++ libdnet-1.12/configure.in
+@@ -40,7 +40,7 @@ dnl Checks for Python.
+ dnl XXX - use AM_PATH_PYTHON after automake upgrade
+ AC_MSG_CHECKING(for Python)
+ AC_ARG_WITH(python,
+-[  --with-python=DIR       build Python module (using python in DIR)],
++[  --with-python=EXEC      build Python module (using python EXEC)],
+ [ case "$withval" in
+   yes)
+      AC_MSG_RESULT(yes)
+@@ -51,17 +51,7 @@ AC_ARG_WITH(python,
+      ;;
+   *)
+      AC_MSG_RESULT($withval)
+-     for subdir in . bin; do
+-        if test -x $withval/$subdir/python; then
+-	   owd=`pwd`
+-	   if cd $withval/$subdir; then withval=`pwd`; cd $owd; fi
+-	   PYTHON="$withval/python"
+-	   break
+-	fi
+-     done
+-     if test "x$PYTHON" = "x"; then
+-        AC_ERROR(python not found in $withval)
+-     fi
++     PYTHON="$withval"
+      ;;
+   esac 
+ ])

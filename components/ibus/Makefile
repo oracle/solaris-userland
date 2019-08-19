@@ -42,6 +42,9 @@ TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk
 
+# Use explicit Python version rather than the default one
+CONFIGURE_ENV +=	PYTHON=$(PYTHON.2.7)
+
 CONFIGURE_ENV +=	PATH=$(GNUBIN):$(USRBINDIR)
 CONFIGURE_ENV +=	GI_SCANNER_DISABLE_CACHE=1
 

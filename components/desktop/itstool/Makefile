@@ -41,6 +41,9 @@ TPNO=			50131
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
+# Use explicit Python version rather than the default one
+CONFIGURE_ENV +=	PYTHON=$(PYTHON.2.7)
+
 # pkgdepend complains if it doesn't find a version of python specified
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/itstool
 

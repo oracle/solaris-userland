@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -61,7 +61,7 @@ CONFIGURE_OPTIONS += ac_cv_dnet_linux_pf_packet=no
 CONFIGURE_OPTIONS +=	--with-check=/usr
 
 # Currently only support for Python 2.7.
-CONFIGURE_OPTIONS +=	--with-python
+CONFIGURE_OPTIONS +=	--with-python=$(PYTHON.2.7.$(BITS))
 
 PKG_MACROS +=		MACHINE=$(shell uname -m)
 

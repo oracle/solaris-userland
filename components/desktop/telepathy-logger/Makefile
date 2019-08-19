@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -47,6 +47,9 @@ CFLAGS += -U_POSIX_SOURCE
 CFLAGS += $(XPG6MODE)
 
 include $(WS_MAKE_RULES)/common.mk
+
+# Use explicit Python version rather than the default one
+CONFIGURE_ENV +=	PYTHON=$(PYTHON.2.7)
 
 CONFIGURE_OPTIONS += --disable-static
 # Required for other components.

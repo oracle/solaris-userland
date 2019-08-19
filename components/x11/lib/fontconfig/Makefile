@@ -46,6 +46,9 @@ COMPONENT_FIX_PC_FLAGS += -e 's| \@FREETYPE_CFLAGS\@||g;'
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
+# Use explicit Python version rather than the default one
+CONFIGURE_ENV += PYTHON=$(PYTHON.2.7)
+
 # GNU Build System files have to be regenerated for automake 1.16.
 # It can be removed when the upstream starts to use a newer automake version.
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv)

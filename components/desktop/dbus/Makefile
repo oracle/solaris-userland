@@ -58,6 +58,9 @@ CONFIGURE_OPTIONS +=	--libexecdir=$(USRLIBDIR)
 CONFIGURE_OPTIONS +=	--localstatedir=$(VARDIR)
 CONFIGURE_OPTIONS +=	--disable-static
 
+# Use explicit Python version rather than the default one
+CONFIGURE_ENV +=	PYTHON=$(PYTHON.2.7)
+
 # Makefile.am files of this component are not compatible with Solaris make.
 # Use GNU make to avoid the configuration error when makefile fragments are processed.
 CONFIGURE_OPTIONS +=	MAKE=$(GMAKE)

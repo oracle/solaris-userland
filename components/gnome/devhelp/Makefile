@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
@@ -39,6 +39,9 @@ TPNO=			25069
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+
+# Use explicit Python version rather than the default one
+CONFIGURE_ENV += PYTHON=$(PYTHON.2.7.32)
 
 # need to use gnu-gettext
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
