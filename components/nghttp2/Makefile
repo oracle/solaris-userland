@@ -26,15 +26,15 @@ BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nghttp2
-COMPONENT_VERSION=	1.35.0
+COMPONENT_VERSION=	1.39.2
 COMPONENT_PROJECT_URL=	https://nghttp2.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:ea04e4e749df13d60a88b706752e04f6f907227bf380aefd7aeeb4aa0db43407
+    sha256:fc820a305e2f410fade1a3260f09229f15c0494fc089b0100312cd64a33a38c0
 COMPONENT_ARCHIVE_URL=	https://github.com/tatsuhiro-t/nghttp2/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/nghttp2
 COMPONENT_ANITYA_ID=	8651
 
-TPNO = 47754
+TPNO = 53508
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
