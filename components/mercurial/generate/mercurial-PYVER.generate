@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 <include generate/common.transform>
@@ -32,8 +32,5 @@
 # pkgdepend complains about a "__main__" import: bug 15710704
 <transform file path=.*/statprof.py$ -> set pkg.depend.bypass-generate .*>
 
-<transform link path=usr/bin/hg target=hg-(\d.\d) -> set mediator python>
-<transform link path=usr/bin/hg target=hg-(\d.\d) -> set mediator-version $!(PYVER)>
-<transform link path=usr/bin/hg -> edit mediator-version "\$!\((.*)\)" "$(\1)">
 <transform link path=usr/bin/hg target=hg-(\d.\d) -> set target hg-$!(PYVER)>
 <transform link path=usr/bin/hg -> edit target "\$!\((.*)\)" "$(\1)">
