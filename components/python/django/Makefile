@@ -26,17 +26,17 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Django
-COMPONENT_VERSION=	1.11.22
+COMPONENT_VERSION=	1.11.23
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e33d2fbcc23efc10ed46bd83f06cc1ef4b0bdf5ec97d37ca405a8319c3090fea
+    sha256:e2ea3b61bbd21a34d0543969bc47542ee8bd7c7c364bf8208c0167a8aee9d70c
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.djangoproject.com/
 COMPONENT_BUGDB=	python-mod/django
 COMPONENT_ANITYA_ID=	3828
 
-TPNO=			52716
+TPNO=			53579
 
 # Temporary solution for Python3.7 ready components
 PYTHON_VERSIONS = $(PYTHON3.7_READY)
@@ -77,6 +77,7 @@ build:		$(BUILD_NO_ARCH)
 install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
+
 COMPONENT_TEST_ARGS += --parallel=1
 COMPONENT_TEST_ARGS += --verbosity=3
 
