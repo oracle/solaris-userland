@@ -412,14 +412,12 @@ endif
 # If the memory is almost exhausted, then refuse to execute parallel build jobs.
 ifneq ($(wildcard /usr/bin/kstat2),)
 ifneq ($(wildcard /usr/bin/pagesize),)
-ifneq ($(wildcard /usr/bin/vmstat),)
 
 KSTAT2 := /usr/bin/kstat2
-VMSTAT := /usr/bin/vmstat
 PAGE_SIZE := $(shell /usr/bin/pagesize)
 
 TOTAL_MEMORY_PAGES := $(shell $(KSTAT2) -p kstat:/vm/usage/memory:mem_total | cut -f 2)
-FREE_MEMORY_PAGES := $(shell $(VMSTAT) | sed  -e '$$!d' | awk '{print 1024*$$5/$(PAGE_SIZE)}')
+FREE_MEMORY_PAGES := $(shell $(KSTAT2) -p kstat:/pages/unix/system_pages:freemem | cut -f 2)
 ZFS_MEMORY_PAGES := $(shell $(KSTAT2) -p kstat:/vm/usage/memory:mem_zfs | cut -f 2)
 AVAILABLE_MEMORY_PAGES := $(shell echo $$(($(FREE_MEMORY_PAGES)+$(ZFS_MEMORY_PAGES))))
 AVAILABLE_MEMORY_PERCENTAGE := $(shell echo $$((100*$(AVAILABLE_MEMORY_PAGES)/$(TOTAL_MEMORY_PAGES))))
@@ -429,7 +427,6 @@ ifeq ($(shell expr $(AVAILABLE_MEMORY_PERCENTAGE) \<= 20),1)
 COMPONENT_MAKE_JOBS := 1
 endif
 
-endif
 endif
 endif
 
