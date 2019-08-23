@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =		64_and_32
@@ -28,16 +28,20 @@ COMPILER =		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dbus-python
-COMPONENT_VERSION=	1.2.0
+COMPONENT_VERSION=	1.2.8
 COMPONENT_PROJECT_URL=	http://dbus.freedesktop.org
 COMPONENT_ARCHIVE_HASH= \
-    sha256:e12c6c8b2bf3a9302f75166952cbe41d6b38c3441bbc6767dbd498942316c6df
+    sha256:abf12bbb765e300bf8e2a1b2f32f85949eab06998dbda127952c31cb63957b6f
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/dbus
 COMPONENT_ANITYA_ID=	402
 
-TPNO=			25524
+TPNO=			52290
+
+PYTHON_VERSIONS += 3.7
+
+PKG_PROTO_DIRS += $(SOURCE_DIR)/doc/
 
 # replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses configure instead
 CONFIGURE_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
@@ -78,6 +82,7 @@ include $(WS_MAKE_RULES)/common.mk
 COMPONENT_PREP_ACTION += (cd $(@D); rm -f py-compile ; autoreconf -fiv);
 
 CONFIGURE_OPTIONS += PYTHON="$(PYTHON)"
+CONFIGURE_OPTIONS += --disable-dependency-tracking
 
 # Ensure Python modules are installed into vendor package directories.
 CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES.32)
@@ -101,5 +106,6 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += runtime/python-34
 REQUIRED_PACKAGES += runtime/python-35
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/libdbus-glib
