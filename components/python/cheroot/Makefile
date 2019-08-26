@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/cherrypy/cheroot
 COMPONENT_BUGDB=	python-mod/cheroot
-COMPONENT_ANITYA_ID=	
+COMPONENT_ANITYA_ID=	20163
 
 TPNO=			45195
 
