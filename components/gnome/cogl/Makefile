@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,14 +30,14 @@ COMPILER =		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cogl
-COMPONENT_VERSION=	1.22.2
+COMPONENT_VERSION=	1.22.4
 COMPONENT_PROJECT_URL=  https://developer.gnome.org/cogl/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:39a718cdb64ea45225a7e94f88dddec1869ab37a21b339ad058a9d898782c00d
+	sha256:5217bf94cbca3df63268a3b79d017725382b9e592b891d1e7dc6212590ce0de0
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	315
 
-TPNO=			34511
+TPNO=			52150
 
 include $(WS_MAKE_RULES)/test-x11.mk
 
