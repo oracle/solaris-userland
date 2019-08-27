@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mutt
-COMPONENT_VERSION=	1.9.1
+COMPONENT_VERSION=	1.12.1
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:749b83a96373c6e2101ebe8c4b9a651735e02c478edb750750a5146a15d91bb1
+    sha256:01c565406ec4ffa85db90b45ece2260b25fac3646cc063bbc20a242c6ed4210c
 COMPONENT_ARCHIVE_URL=	ftp://ftp.mutt.org/pub/mutt/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://www.mutt.org/
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	2035
 
-TPNO=			39470
+TPNO=			53634
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)

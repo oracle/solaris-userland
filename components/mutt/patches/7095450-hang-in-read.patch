@@ -1,40 +1,58 @@
---- mutt-1.5.21/mutt_socket.c.orig
-+++ mutt-1.5.21/mutt_socket.c
-@@ -78,7 +78,11 @@
+This is internal patch, modified in accordance with the current mutt sources.
+The patch attempts to implement:
+Ticket #2064 wish: imap operations should be interruptable 
+http://dev.mutt.org/trac/ticket/2064 
+
+This link is no longer available as Mutt's issue ticketing system moved 
+since the time of creating this issue from http://dev.mutt.org/hg/mutt/ 
+to https://gitlab.com/muttmua/mutt 
+
+However, there is still at least the original discussion available at::
+http://www.does-not-exist.org/mail-archives/mutt-dev/msg11073.html
+
+"#2064: wish: imap operations should be interruptable
+
+Comment (by mlichvar):
+
+ The attached patch wraps the socket read and write functions in
+ mutt_allow_interrupt(). Seems to help, but I'm not sure it's the correct
+ fix."
+
+The attachment itself is not available but based on the text above it is
+safe to believe that is close to the implementation below.
+
+The original patch added the mutt_allow_interrupt() wrapping also to
+function mutt_socket_read. However, this function was removed on 2019-01-21
+as per the ChangeLog.
+
+--- mutt-1.12.1/mutt_socket.c.orig	2019-08-27 15:26:32.633157635 +0200
++++ mutt-1.12.1/mutt_socket.c	2019-08-27 15:53:12.792197394 +0200
+@@ -80,7 +80,11 @@
    if (conn->fd < 0)
      dprint (1, (debugfile, "mutt_socket_close: Attempt to close closed connection.\n"));
    else
 +  {
-+    mutt_allow_interrupt (1);
++    mutt_allow_interrupt (1);	
      rc = conn->conn_close (conn);
-+    mutt_allow_interrupt (0);
++    mutt_allow_interrupt (0);	
 +  }
  
    conn->fd = -1;
    conn->ssf = 0;
-@@ -96,7 +99,9 @@
-     return -1;
-   }
+@@ -106,7 +110,11 @@
  
-+  mutt_allow_interrupt (1);
-   rc = conn->conn_read (conn, buf, len);
-+  mutt_allow_interrupt (0);
-   /* EOF */
-   if (rc == 0)
-   {
-@@ -127,7 +132,10 @@
-   
    while (sent < len)
    {
 -    if ((rc = conn->conn_write (conn, buf + sent, len - sent)) < 0)
 +    mutt_allow_interrupt (1);
 +    rc = conn->conn_write (conn, buf + sent, len - sent);
 +    mutt_allow_interrupt (0);
++
 +    if (rc < 0)
      {
        dprint (1, (debugfile,
                    "mutt_socket_write: error writing (%s), closing socket\n",
-@@ -169,7 +177,11 @@
+@@ -148,7 +156,11 @@
    if (conn->bufpos >= conn->available)
    {
      if (conn->fd >= 0)
