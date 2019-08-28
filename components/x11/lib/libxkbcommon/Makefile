@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -28,15 +28,15 @@ COMPILER=               gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libxkbcommon
-COMPONENT_VERSION=	0.5.0
+COMPONENT_VERSION=	0.8.4
 COMPONENT_PROJECT_URL=	http://xkbcommon.org
 COMPONENT_ARCHIVE= 	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/download/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:90bd7824742b9a6f52a6cf80e2cadd6f5349cf600a358d08260772615b89d19c
+	sha256:60ddcff932b7fd352752d51a5c4f04f3d0403230a584df9a2e0d5ed87c486c8b
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1780
-TPNO=			23564
+TPNO=			50570
 
 FIX_PC_FILES=xkbcommon.pc.in xkbcommon-x11.pc.in
 
