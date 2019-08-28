@@ -13,9 +13,15 @@
 
 AWK=gawk
 ECHO=gecho
+SED=gsed
 
 
-TMPDIR=/tmp/ghostscript$$
+TMPDIR=$(mktemp -d) || {
+	echo Cannot create temp dir. >&2
+	exit 1
+}
+trap "rm -rf \"$TMPDIR\"" 0 1 2 3 6
+
 TEST_DIR=$(dirname "$0"); [ -z "$TEST_DIR" ] && TEST_DIR=.
 if [ "$1" = system-check ]; then
 	GS_BIN=$(which gs)
@@ -27,23 +33,27 @@ else
 	echo "Using $GS_BIN -I \"$GS_RESPATH\"."
 fi
 
+[ ! -x "$GS_BIN" ] && {
+	echo "Cannot find gs executable $GS_BIN." >&2
+	exit 1
+}
+
+GS_BIN_BITS=$(file "$GS_BIN" | "$SED" -e 's/^.*ELF \([[:digit:]]*\)-bit.*$/\1/')
+
 IN="$TEST_DIR/input.ps"
 OUT=$TMPDIR/testout
 
-TEST1_GENERATE_FILTER="bbox|devicen|display|ijs|nullpage|oprp|opvp|plib|plibc|plibg|plibk|plibm|rinkj|tiffsep1|uniprint|x11|x11alpha|x11cmyk|x11cmyk2|x11cmyk4|x11cmyk8|x11gray2|x11gray4|x11mono|x11rg16x|x11rg32x"
+[ ! -f "$IN" ] && {
+	echo "Cannot find test data $IN." >&2
+	exit 1
+}
+
+TEST1_GENERATE_FILTER="bbox|cif|devicen|display|ijs|nullpage|oprp|opvp|plib|plibc|plibg|plibk|plibm|rinkj|tiffsep1|uniprint|x11|x11alpha|x11cmyk|x11cmyk2|x11cmyk4|x11cmyk8|x11gray2|x11gray4|x11mono|x11rg16x|x11rg32x"
 
 TEST2_DEVS="bjccmyk cdeskjet cdj1600 cdj500 cdj550 cdj670 cdj850 cdj880 cdj890 cdj970 cdjcolor chp2200 devicen mj500c mj6000c mj700v2c mj8000c npdl photoex picty180 stcolor txtwrite"
 TEST2_GENERATE_TRIES=3
-TEST2_EXPECTED="$TEST_DIR/test2-$(uname -p)"
+TEST2_EXPECTED="$TEST_DIR/test2-$(uname -p)-$GS_BIN_BITS"
 TEST2_CKSUM=$TMPDIR/cksum
-
-tmpdir_init() {
-	trap "rm -rf \"$TMPDIR\"" 0 1 2 3 6
-	mkdir "$TMPDIR" || {
-		echo Cannot create temp dir. >&2
-		exit 1
-	}
-}
 
 GS() {
 	dev=$1
@@ -51,8 +61,12 @@ GS() {
 	out=$3
 
 	cmd="$GS_BIN -I \"$GS_RESPATH\" -q -dNOPAUSE -dBATCH -sDEVICE=\"$dev\" -sOutputFile=\"$out\" \"$in\""
+	[ -n "$DEBUG" ] && echo "\$ $cmd"
 
-	eval "$cmd"
+	eval "$cmd"; ret=$?
+	[ -n "$DEBUG" ] && echo "\$?=$ret"
+
+	return $ret
 }
 
 test1() {
@@ -143,19 +157,8 @@ check() {
 }
 
 generate() {
-	test1_generate
+	test2_generate
 }
-
-[ ! -f "$IN" ] && {
-	echo "Cannot find test data $IN." >&2
-	exit 1
-}
-[ ! -x "$GS_BIN" ] && {
-	echo "Cannot find gs binary $GS_BIN." >&2
-	exit 1
-}
-
-tmpdir_init
 
 case "$1" in
 	check|system-check)

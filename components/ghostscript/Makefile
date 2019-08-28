@@ -39,7 +39,6 @@ COMPONENT_ANITYA_ID=	1157
 
 TPNO=			52182
 
-#COMMON_TARGETS= no
 include $(WS_MAKE_RULES)/common.mk
 # some backup files are copied to proto
 GPATCH_BACKUP=
