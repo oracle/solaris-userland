@@ -90,3 +90,8 @@ set name=com.oracle.info.consolidation.repository-url \
     default facet.version-lock.%<1> true >
 <transform depend tmp.fmri=.*-> delete tmp.fmri .* >
 
+#
+# Add legacy namespace metadata to all packages renamed to legacy.
+#
+<transform set name=pkg.fmri value=pkg:/legacy/ -> \
+    emit set name=pkg.namespace value=legacy>
