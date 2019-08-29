@@ -168,9 +168,12 @@ COMPONENT_PRE_CONFIGURE_ACTION += \
    $(CP) $(COMPONENT_DIR)/Solaris/lber.pc $(PKGCONFIG_AUX_DIR); \
    $(CP) $(COMPONENT_DIR)/Solaris/openldap.pc $(PKGCONFIG_AUX_DIR);
 
-$(SAMBA_FULL_CONF): COMPONENT_PRE_CONFIGURE_ACTION += sed -e \
-    "s:@LIBDIR@:$(PROTO_DIR)/opt/SUNWsamfs/lib$(MACHLIBDIR):g;s:@INCLUDEDIR@:$(COMPONENT_DIR)/Solaris/include:g" \
-    $(COMPONENT_DIR)/Solaris/samfs.pc > $(PKGCONFIG_AUX_DIR)/samfs.pc;
+# fix samfs.pc to proto
+$(SAMBA_FULL_CONF): COMPONENT_PRE_CONFIGURE_ACTION += \
+   $(MKDIR) $(PROTO_DIR)/opt/SUNWsamfs/ ; \
+   $(CP) -r $(COMPONENT_DIR)/Solaris/include/ $(PROTO_DIR)/opt/SUNWsamfs/ ; \
+   sed -e "s:@MACHDIR@:$(MACHLIBDIR):g;s:@ROOT@:$(PROTO_DIR):g" \
+   $(COMPONENT_DIR)/Solaris/samfs.pc > $(PKGCONFIG_AUX_DIR)/samfs.pc;
 
 # Oracle HSM helper library
 $(SAMBA_FULL_CONF): COMPONENT_PRE_CONFIGURE_ACTION += \
@@ -227,7 +230,7 @@ SUBPKG_OBJ =	libsmbclient
 EXCLUSION_FILE = libsmbclient-deps
 
 ADD_TO_HEAP = ^file|^link|^dir .*path=etc/samba/|^dir .*path=var/samba/
-EXCLUDE_FROM_HEAP = nothing_to_exclude
+EXCLUDE_FROM_HEAP = path=opt
 include $(WS_MAKE_RULES)/pkgobjs.mk
 $(EXCLUSION_FILE_TARGET): $(HEAP_OBJ)
 	/usr/xpg4/bin/fgrep -e libsmbclient.so -e libsmbclient.h $(HEAP_OBJ) \

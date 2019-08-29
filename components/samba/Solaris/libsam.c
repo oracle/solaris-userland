@@ -20,7 +20,7 @@
  * CDDL HEADER END
  */
 /*
- * Copyright (c) 2007,2011, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007,2019, Oracle and/or its affiliates. All rights reserved.
  */
 
 /*
@@ -28,3 +28,4 @@
  */
 int sam_stat() { return (1); }
 int sam_segment_stat() { return (1); }
+int sam_release() { return (1); }

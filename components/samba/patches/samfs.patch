@@ -22,7 +22,7 @@ has changed so the community rejected to adopt the SAMFS support.
 +    if conf.CHECK_CFG(package='samfs', args="--cflags --libs", msg='Check for Oracle HSM (aka. SAMFS) API.', uselib_store="SAMFS") :
 +        conf.SET_TARGET_TYPE('samfs', 'SYSLIB')
 +        conf.CHECK_HEADERS('samfs/lib.h samfs/stat.h', lib='samfs')
-+        conf.env['LINKFLAGS_SAMFS'] = [ '-R/opt/SUNWsamfs/lib' ]
++        conf.env['LINKFLAGS_SAMFS'] = [ '-R/opt/SUNWsamfs/lib'+'/'+(conf.CONFIG_GET('LIBPATH_SAMFS')[-1].split('/'))[-1] ]
 +        conf.CHECK_FUNCS('sam_stat', lib='samfs')
 +        default_shared_modules.extend(TO_LIST('vfs_samfs'))
 +
