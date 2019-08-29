@@ -32,23 +32,22 @@ include ../../make-rules/shared-macros.mk
 PATH=$(dir $(CC)):$(SPRO_VROOT)/bin:$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=		subversion
-COMPONENT_VERSION=	1.9.7
+COMPONENT_VERSION=	1.10.6
 COMPONENT_PROJECT_URL=	https://subversion.apache.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c72a209c883e20245f14c4e644803f50ae83ae24652e385ff5e82300a0d06c3c
+    sha256:2ab75c61a62d96defc954b599585b79f627e4e235094a17da94dc55b564727c1
 COMPONENT_ARCHIVE_URL=	https://www.apache.org/dist/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	utility/svn
 COMPONENT_ANITYA_ID=	4905
 
-TPNO=			37222
+TPNO=			53704
 
 PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
 PYTHON_VERSION =	2.7
 
 include $(WS_MAKE_RULES)/common.mk
 
-PATCH_LEVEL := 0
 JAVA_ROOT = $(JAVA_HOME)
 GNUCP = $(GNUBIN)/cp
 
@@ -86,7 +85,8 @@ COMPONENT_TEST_TRANSFORMS += \
      '-e "s/^make\[[0-9]\{1,\}\]/make/g"' \
      '-e "/ld: warning/d"' \
      '-e "/warning/d"' \
-     '-e "/exists from a previous run/d"'
+     '-e "/exists from a previous run/d"' \
+     '-e "s/\.//g"'
 
 PERL_VERSION.32 = none
 PERL_VERSION.64 = 5.22
@@ -184,6 +184,9 @@ CONFIGURE_OPTIONS += --with-serf=$(CONFIGURE_PREFIIX)
 CONFIGURE_OPTIONS += --with-apr=$(APR-CONFIG.$(BITS))
 CONFIGURE_OPTIONS += --with-apr-util=$(APU-CONFIG.$(BITS))
 CONFIGURE_OPTIONS += --with-apache-libexecdir=$(APACHE_LIBEXECDIR)
+CONFIGURE_OPTIONS += --with-lz4=internal
+CONFIGURE_OPTIONS += --with-utf8proc=internal
+
 # libgnome-keyring was obsoleted upstream, disable support for storing svn
 # passwords in gnome-keyring until svn is updated to use libsecret instead
 CONFIGURE_OPTIONS += --without-gnome-keyring
@@ -236,3 +239,4 @@ REQUIRED_PACKAGES += runtime/perl-522
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += system/library/c++-runtime
 REQUIRED_PACKAGES += system/library/security/libsasl2
+REQUIRED_PACKAGES += system/library/math
