@@ -26,23 +26,26 @@ BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libarchive
-COMPONENT_VERSION=	3.3.3
+COMPONENT_VERSION=	3.4.0
 COMPONENT_PROJECT_URL=	http://www.libarchive.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:ba7eb1781c9fbbae178c4c6bad1c6eb08edab9a1496c64833d1715d022b30e2e
+    sha256:8643d50ed40c759f5412a3af4e353cffbce4fdf3b5cf321cb72cacf06b2d825e
 COMPONENT_ARCHIVE_URL=	\
     $(COMPONENT_PROJECT_URL)downloads/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libarchive
 COMPONENT_ANITYA_ID=	1558
 
-TPNO=			48736
+TPNO=			53703
 
 TEST_TARGET= install $(TEST_32_and_64)
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_32_and_64)
+
 include $(WS_MAKE_RULES)/common.mk
 
-# Userland default includes -mt which links with libthread which we don't need.
-studio_MT =
+# Use GNU compiler instead of Solaris Studio to get a properly aligned
+# uncompressed_size attribute (uint64_t) in alone_header structure.
+# See file: libarchive/archive_read_support_format_zip.c
+COMPILER=gcc
 
 CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += --enable-shared
@@ -53,12 +56,12 @@ CONFIGURE_OPTIONS += --with-openssl
 CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += --with-xml2
 CONFIGURE_OPTIONS += --with-zlib
+# Commands bsdtar, bsdcpio, and bsdcat are not delivered.
+CONFIGURE_OPTIONS += --disable-bsdtar
+CONFIGURE_OPTIONS += --disable-bsdcpio
+CONFIGURE_OPTIONS += --disable-bsdcat
 
-# libarchive's Makefile hard-codes some gcc-only flags in COMMON_CFLAGS, then
-# appends CFLAGS to that.  Reset the former here so we can build with Studio.
-COMPONENT_BUILD_ARGS +=	COMMON_CFLAGS=''
 COMPONENT_BUILD_ARGS +=	CFLAGS="$(CFLAGS)"
-COMPONENT_TEST_ARGS +=	COMMON_CFLAGS=''
 COMPONENT_TEST_ARGS +=	CFLAGS="$(CFLAGS)"
 COMPONENT_TEST_ENV +=	TMPDIR="$(COMPONENT_TEST_BUILD_DIR)"
 
