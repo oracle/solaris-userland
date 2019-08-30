@@ -28,20 +28,20 @@ COMPILER =	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	cargo-vendor
-COMPONENT_VERSION =	0.1.16
+COMPONENT_VERSION =	0.1.23
 COMPONENT_PROJECT_URL =	https://github.com/alexcrichton/cargo-vendor
 COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:dedeff410dd63626c44abb3cc01a78000d9720361d2dc12948f6ad510f3f29c8
+    sha256:787dd4a6ae729ebc508a452b89508a73c724c9915e3c8ac890aa145f1433c744
 COMPONENT_ARCHIVE_URL =	https://github.com/alexcrichton/cargo-vendor/archive/$(COMPONENT_VERSION).tar.gz
 
 # hash for vendored sources
 COMPONENT_ARCHIVE_HASH_crates = \
-    sha256:91f6b947fe1b98f420697687cafe03aba0c37abfe8d0ec5ff43ecc367d4bbbeb
+    sha256:8a01fb73e42412f7c3ec3bebcc99afcf1492a382500c49b1e558ebe2eff1fef7
 
 COMPONENT_BUGDB =	utility/rust
-TPNO = 45484
+TPNO = 52379
 
 BUILD_STYLE = cargo
 include $(WS_MAKE_RULES)/common.mk
