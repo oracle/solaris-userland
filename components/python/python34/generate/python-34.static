@@ -20,10 +20,15 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 file llib-lpython34m path=usr/lib/llib-lpython3.4m
 
 # Special Solaris 11.3 only line
 $(SOLARIS_11_3_ONLY)<transform file path=.+\.py$ -> default pkg.depend.bypass-generate .* >
+
+# Add release note informing about the obsolescence of this component
+file release-notes/legacy-runtime-python-34.txt \
+    path=usr/share/doc/release-notes/legacy-runtime-python-34.txt mode=0444 \
+    must-display=true release-note=feature/pkg/self@0
