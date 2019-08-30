@@ -5,7 +5,7 @@ file upstream bug
 
 --- a/Source/bmalloc/bmalloc/VMAllocate.h	2018-08-06 13:08:15.791977958 -0700
 +++ b/Source/bmalloc/bmalloc/VMAllocate.h	2018-08-06 13:09:11.064187008 -0700
-@@ -199,7 +199,7 @@
+@@ -202,7 +202,7 @@
  #if BOS(DARWIN)
      SYSCALL(madvise(p, vmSize, MADV_FREE_REUSABLE));
  #else
@@ -14,7 +14,7 @@ file upstream bug
  #if BOS(LINUX)
      SYSCALL(madvise(p, vmSize, MADV_DONTDUMP));
  #endif
-@@ -212,7 +212,7 @@
+@@ -215,7 +215,7 @@
  #if BOS(DARWIN)
      SYSCALL(madvise(p, vmSize, MADV_FREE_REUSE));
  #else
@@ -23,14 +23,3 @@ file upstream bug
  #if BOS(LINUX)
      SYSCALL(madvise(p, vmSize, MADV_DODUMP));
  #endif
---- a/Source/WTF/wtf/OSAllocatorPosix.cpp	2018-08-06 13:09:34.376041801 -0700
-+++ b/Source/WTF/wtf/OSAllocatorPosix.cpp	2018-08-06 13:10:15.211824683 -0700
-@@ -155,7 +155,7 @@
- #elif HAVE(MADV_FREE_REUSE)
-     while (madvise(address, bytes, MADV_FREE_REUSABLE) == -1 && errno == EAGAIN) { }
- #elif HAVE(MADV_FREE)
--    while (madvise(address, bytes, MADV_FREE) == -1 && errno == EAGAIN) { }
-+    while (madvise(reinterpret_cast<char*>(address), bytes, MADV_FREE) == -1 && errno == EAGAIN) { }
- #elif HAVE(MADV_DONTNEED)
-     while (madvise(address, bytes, MADV_DONTNEED) == -1 && errno == EAGAIN) { }
- #else

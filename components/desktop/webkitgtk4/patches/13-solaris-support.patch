@@ -4,29 +4,43 @@ Potentially suitable to send upstream
 
 --- a/Source/WTF/wtf/Platform.h	2018-08-15 09:53:48.950348332 -0700
 +++ b/Source/WTF/wtf/Platform.h	2018-08-15 10:09:02.845778665 -0700
-@@ -119,6 +119,7 @@
- #if defined(__sparc) && !defined(__arch64__) || defined(__sparcv8)
- #define WTF_CPU_SPARC32 1
- #define WTF_CPU_BIG_ENDIAN 1
-+#define WTF_CPU_KNOWN 1
+@@ -114,6 +114,26 @@
+ #define WTF_CPU_KNOWN 1
  #endif
  
- /* CPU(SPARC64) - SPARC 64-bit */
-@@ -125,11 +126,13 @@
- #if defined(__sparc__) && defined(__arch64__) || defined (__sparcv9)
- #define WTF_CPU_SPARC64 1
- #define WTF_CPU_BIG_ENDIAN 1
++/* CPU(SPARC32) - SPARC 32-bit */
++#if defined(__sparc) && !defined(__arch64__) || defined(__sparcv8)
++#define WTF_CPU_SPARC32 1
++#define WTF_CPU_BIG_ENDIAN 1
 +#define WTF_CPU_KNOWN 1
- #endif
- 
- /* CPU(SPARC) - any SPARC, true for CPU(SPARC32) and CPU(SPARC64) */
- #if CPU(SPARC32) || CPU(SPARC64)
- #define WTF_CPU_SPARC 1
++#endif
++
++/* CPU(SPARC64) - SPARC 64-bit */
++#if defined(__sparc__) && defined(__arch64__) || defined (__sparcv9)
++#define WTF_CPU_SPARC64 1
++#define WTF_CPU_BIG_ENDIAN 1
 +#define WTF_CPU_KNOWN 1
- #endif
- 
++#endif
++
++/* CPU(SPARC) - any SPARC, true for CPU(SPARC32) and CPU(SPARC64) */
++#if CPU(SPARC32) || CPU(SPARC64)
++#define WTF_CPU_SPARC 1
++#define WTF_CPU_KNOWN 1
++#endif
++
  /* CPU(X86) - i386 / x86 32-bit */
-@@ -427,6 +430,11 @@
+ #if   defined(__i386__) \
+     || defined(i386)     \
+@@ -322,7 +342,7 @@
+ #define WTF_CPU_UNKNOWN 1
+ #endif
+ 
+-#if CPU(ARM) || CPU(MIPS) || CPU(UNKNOWN)
++#if CPU(ARM) || CPU(MIPS) || CPU(UNKNOWN) || CPU(SPARC)
+ #define WTF_CPU_NEEDS_ALIGNED_ACCESS 1
+ #endif
+ 
+@@ -413,6 +433,11 @@
  #define WTF_OS_OPENBSD 1
  #endif
  
@@ -38,7 +52,7 @@ Potentially suitable to send upstream
  /* OS(WINDOWS) - Any version of Windows */
  #if defined(WIN32) || defined(_WIN32)
  #define WTF_OS_WINDOWS 1
-@@ -444,6 +452,7 @@
+@@ -430,6 +455,7 @@
      || OS(LINUX)            \
      || OS(NETBSD)           \
      || OS(OPENBSD)          \
@@ -46,7 +60,7 @@ Potentially suitable to send upstream
      || defined(unix)        \
      || defined(__unix)      \
      || defined(__unix__)
-@@ -1352,7 +1361,7 @@
+@@ -1373,7 +1401,7 @@
  #define HAVE_URL_FORMATTING 1
  #endif
  
@@ -55,9 +69,9 @@ Potentially suitable to send upstream
  #define HAVE_STACK_BOUNDS_FOR_NEW_THREAD 1
  #endif
  
---- a/Source/WTF/wtf/InlineASM.h	2018-12-13 16:06:19.982751155 -0800
-+++ b/Source/WTF/wtf/InlineASM.h	2018-12-13 16:10:32.537459700 -0800
-@@ -66,6 +66,7 @@
+--- a/Source/WTF/wtf/InlineASM.h	2019-05-17 09:39:04.020802993 -0700
++++ b/Source/WTF/wtf/InlineASM.h	2019-05-17 09:39:49.284823848 -0700
+@@ -67,6 +67,7 @@
  #define HIDE_SYMBOL(name) ".lglobl " #name
  #elif  OS(LINUX)               \
      || OS(FREEBSD)             \
@@ -65,8 +79,8 @@ Potentially suitable to send upstream
      || OS(FUCHSIA)             \
      || OS(OPENBSD)             \
      || OS(HPUX)                \
---- a/Source/WTF/wtf/NumberOfCores.cpp	2018-12-13 16:10:45.952092545 -0800
-+++ b/Source/WTF/wtf/NumberOfCores.cpp	2018-12-13 16:11:25.814192590 -0800
+--- a/Source/WTF/wtf/NumberOfCores.cpp	2019-05-17 09:40:04.686265040 -0700
++++ b/Source/WTF/wtf/NumberOfCores.cpp	2019-05-17 09:40:42.200543875 -0700
 @@ -34,7 +34,7 @@
  // data types defined in the former. See sysctl(3) and style(9).
  #include <sys/types.h>
@@ -85,8 +99,8 @@ Potentially suitable to send upstream
      long sysconfResult = sysconf(_SC_NPROCESSORS_ONLN);
  
      s_numberOfCores = sysconfResult < 0 ? defaultIfUnavailable : static_cast<int>(sysconfResult);
---- a/Source/WTF/wtf/StackBounds.cpp	2018-12-13 16:11:41.324922130 -0800
-+++ b/Source/WTF/wtf/StackBounds.cpp	2018-12-13 16:12:23.434054320 -0800
+--- a/Source/WTF/wtf/StackBounds.cpp	2019-05-17 09:40:57.235341831 -0700
++++ b/Source/WTF/wtf/StackBounds.cpp	2019-05-17 09:41:49.997962267 -0700
 @@ -33,6 +33,10 @@
  
  #include <windows.h>
@@ -116,18 +130,3 @@ Potentially suitable to send upstream
  #elif OS(UNIX)
  
  #if OS(OPENBSD)
---- a/Source/WTF/wtf/ThreadingPthreads.cpp	2018-12-13 16:12:42.664047375 -0800
-+++ b/Source/WTF/wtf/ThreadingPthreads.cpp	2018-12-13 16:13:06.801785115 -0800
-@@ -58,7 +58,12 @@
- #include <semaphore.h>
- #include <sys/mman.h>
- #include <unistd.h>
-+
-+#if OS(SOLARIS)
-+#include <thread.h>
-+#else
- #include <pthread.h>
-+#endif
- 
- #if HAVE(PTHREAD_NP_H)
- #include <pthread_np.h>

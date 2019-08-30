@@ -34,17 +34,17 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		webkitgtk
-COMPONENT_VERSION=	2.22.6
+COMPONENT_VERSION=	2.24.4
 COMPONENT_PROJECT_URL=	https://webkitgtk.org
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:df90db9c0db0a2072b945fa3e1d45865922bd686c4659cce6cb5897ce357c85b
+	sha256:8668b129c026624ec226a4cccf4995f9d26f3e88fc28ab75b0e965f3c32b7dd8
 COMPONENT_ARCHIVE_URL=	https://webkitgtk.org/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/webkitgtk
 COMPONENT_ANITYA_ID=	5355
 
-TPNO=			49483
+TPNO=			53684
 
 # Use project's own optimization flags instead.
 gcc_OPT=
@@ -91,6 +91,7 @@ CMAKE_OPTIONS += -DENABLE_SAMPLING_PROFILER=OFF
 CMAKE_OPTIONS += -DENABLE_SUBTLE_CRYPTO=OFF
 CMAKE_OPTIONS += -DENABLE_MEDIA_SOURCE=OFF
 CMAKE_OPTIONS += -DUSE_SYSTEM_MALLOC=OFF
+CMAKE_OPTIONS += -DUSE_OPENJPEG=OFF
 
 # Disabling for both architectures for now, otherwise x64 builds fail with
 # offlineasm: No magic values found. Skipping assembly file generation.
@@ -137,6 +138,7 @@ REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/desktop/libnotify
 REQUIRED_PACKAGES += library/libsoup
+REQUIRED_PACKAGES += library/libtasn1
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/libxslt
 REQUIRED_PACKAGES += library/spell-checking/enchant
