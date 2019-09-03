@@ -42,7 +42,8 @@ FIX_PC_FILES=xkbcommon.pc.in xkbcommon-x11.pc.in
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
-LDFLAGS += -Wl,-zgnu-version-script-compat
+LD_OPTIONS += -z gnu-version-script-compat
+CONFIGURE_ENV += $(COMPONENT_BUILD_ENV)
 
 CONFIGURE_OPTIONS += --with-default-rules=/usr/share/X11/xkb/rules
 CONFIGURE_OPTIONS += --enable-docs
