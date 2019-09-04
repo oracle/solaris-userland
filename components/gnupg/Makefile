@@ -117,23 +117,6 @@ CONFIGURE_OPTIONS  +=		--with-pic
 CONFIGURE_OPTIONS  +=		--with-readline=$(CONFIGURE_PREFIX)
 CONFIGURE_OPTIONS  +=		--enable-gpg-is-gpg2
 
-LIBKSBA_MANIFEST = 	manifest-$(MACH)-libksba.depend
-LIBASSUAN_MANIFEST =	manifest-$(MACH)-libassuan.depend
-GPGME_MANIFEST =	manifest-$(MACH)-gpgme.depend
-PINENTRY_MANIFEST =	manifest-$(MACH)-pinentry.depend
-
-# Work around pkgdepend bug which doesn't resolve dependencies from
-# the local workspace repo. Fortunately we only have to do this once.
-DEPENDED +=	$(WS_TOP)/components/libksba/build/$(LIBKSBA_MANIFEST)
-DEPENDED +=	$(WS_TOP)/components/libassuan/build/$(LIBASSUAN_MANIFEST)
-DEPENDED +=	$(WS_TOP)/components/gpgme/build/$(GPGME_MANIFEST)
-DEPENDED +=	$(WS_TOP)/components/pinentry/build/$(PINENTRY_MANIFEST)
-
-PKG_PROTO_DIRS += $(WS_TOP)/components/libksba
-PKG_PROTO_DIRS += $(WS_TOP)/components/libassuan
-PKG_PROTO_DIRS += $(WS_TOP)/components/gpgme
-PKG_PROTO_DIRS += $(WS_TOP)/components/pinentry
-
 COMPONENT_POST_INSTALL_ACTION += \
 	( cd $(PROTOUSRSHARELOCALEDIR) ; \
 	    $(CP) -R 'en@boldquot' en )
