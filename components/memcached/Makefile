@@ -27,15 +27,15 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		memcached
-COMPONENT_VERSION=	1.5.11
+COMPONENT_VERSION=	1.5.17
 COMPONENT_PROJECT_URL=	http://memcached.org/
 COMPONENT_ARCHIVE_HASH=	\
-sha256:697a91f8455865ca2625713c6ec56cb5f6b9541778f61d08bf34f0a131a2582a
+    sha256:ac7c5af6e8b1acf5d5c644d162e046d8acf9302174af9f24c3f18e5481ce3a0d
 COMPONENT_ARCHIVE_URL=	http://memcached.org/files/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	database/memcached
 COMPONENT_ANITYA_ID=	1965
 
-TPNO=			47491
+TPNO=			53729
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -59,6 +59,7 @@ CONFIGURE_SCRIPT = 	$(@D)/configure
 # cause BUILD_CACHE_TRUE to be set which will take us down a path such that
 # do_cache_alloc and do_cache_free are undefined symbols at link time.
 CONFIGURE_ENV +=	"ac_cv_header_umem_h=no"
+COMPONENT_BUILD_ENV +=	"MAKE=gmake"
 
 CONFIGURE_BINDIR.64 =	$(CONFIGURE_PREFIX)/lib
 CONFIGURE_OPTIONS.64 +=	--with-libevent=$(USRLIBDIR64)
