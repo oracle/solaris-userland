@@ -24,7 +24,7 @@
 #
 
 set name=pkg.fmri \
-    value=pkg:/library/python/singledispatch-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    value=pkg:/legacy/library/python/singledispatch-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Single-dispatch generic functions for Python"
 set name=pkg.description \
     value="The singledispatch Python module provides support for PEP 443, which defines a simple form of generic programming known as single-dispatch generic functions. A generic function is composed of multiple functions implementing the same operation for different types. Which implementation should be used during a call is determined by the dispatch algorithm. When the implementation is chosen based on the type of a single argument, this is known as single dispatch."
@@ -52,10 +52,14 @@ file path=usr/lib/python$(PYVER)/vendor-packages/singledispatch_helpers.py \
 #
 license singledispatch.license license=MIT
 
+# force the rename with an optional dependency on the old name
+depend type=optional \
+    fmri=library/python/singledispatch-$(PYV)@3.4.0.3-11.5.0.0.0.56.0
+
 # force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
 
 # force a dependency on the singledispatch package
 depend type=require \
-    fmri=library/python/singledispatch@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    fmri=legacy/library/python/singledispatch@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)

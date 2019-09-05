@@ -20,11 +20,11 @@
 #
 
 #
-# Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
-    value=pkg:/library/python/jsonpath-rw-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    value=pkg:/legacy/library/python/jsonpath-rw-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary \
     value="A robust and significantly extended implementation of JSONPath for Python, with a clear AST for metaprogramming."
 set name=com.oracle.info.description value="the Python jsonpath-rw module"
@@ -55,9 +55,13 @@ file path=usr/lib/python$(PYVER)/vendor-packages/jsonpath_rw/parser.py
 #
 license jsonpath-rw.license license="Apache v2.0"
 
+# force the rename with an optional dependency on the old name
+depend type=optional \
+    fmri=library/python/jsonpath-rw-$(PYV)@1.4.0-11.5.0.0.0.56.0
+
 # force a dependency on the jsonpath-rw package
 depend type=require \
-    fmri=library/python/jsonpath-rw@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    fmri=legacy/library/python/jsonpath-rw@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 
 # force a dependency on ply; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/ply-$(PYV)

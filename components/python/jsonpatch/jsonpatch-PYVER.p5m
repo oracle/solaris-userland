@@ -20,11 +20,11 @@
 #
 
 #
-# Copyright (c) 2013, 2014, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
-    value=pkg:/library/python/jsonpatch-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    value=pkg:/legacy/library/python/jsonpatch-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary \
     value="Python module for creating and applying JSON Patches"
 set name=pkg.description \
@@ -53,13 +53,16 @@ license jsonpatch.license license=BSD
 depend type=optional \
     fmri=library/python-2/jsonpatch-$(PYV)@1.1,5.12-5.12.0.0.0.41.0
 
+# force the rename with an optional dependency on the old name
+depend type=optional fmri=library/python/jsonpatch-$(PYV)@1.13-11.5.0.0.0.56.0
+
 # force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
 
 # force a dependency on the jsonpatch package
 depend type=require \
-    fmri=library/python/jsonpatch@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    fmri=legacy/library/python/jsonpatch@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 
 # force a dependency on jsonpointer; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/jsonpointer-$(PYV)
+depend type=require fmri=legacy/library/python/jsonpointer-$(PYV)

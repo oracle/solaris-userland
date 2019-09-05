@@ -20,11 +20,11 @@
 #
 
 #
-# Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
-    value=pkg:/library/python/os-client-config-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    value=pkg:/legacy/library/python/os-client-config-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="OpenStack Client Configuration Library"
 set name=pkg.description \
     value="Os-client-config is a library for collecting client configuration for using an OpenStack cloud in a consistent and comprehensive manner. "
@@ -84,24 +84,28 @@ license os-client-config.license license="Apache v2.0"
 # needed to flush this out.
 depend type=group fmri=library/python/keystoneclient-$(PYV)
 
+# force the rename with an optional dependency on the old name
+depend type=optional \
+    fmri=library/python/os-client-config-$(PYV)@1.16.0-11.5.0.0.0.56.0
+
 # force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
 
 # force a dependency on appdirs; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/appdirs-$(PYV)
+depend type=require fmri=legacy/library/python/appdirs-$(PYV)
+
+# force a dependency on the os-client-config package
+depend type=require \
+    fmri=legacy/library/python/os-client-config@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+
+# force a dependency on requestsexceptions; pkgdepend work is needed to flush
+# this out.
+depend type=require fmri=legacy/library/python/requestsexceptions-$(PYV)
 
 # force a dependency on keystoneauth1; pkgdepend work is needed to flush this
 # out.
 depend type=require fmri=library/python/keystoneauth1-$(PYV)
 
-# force a dependency on the os-client-config package
-depend type=require \
-    fmri=library/python/os-client-config@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
-
 # force a dependency on pyyaml; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/pyyaml-$(PYV)
-
-# force a dependency on requestsexceptions; pkgdepend work is needed to flush
-# this out.
-depend type=require fmri=library/python/requestsexceptions-$(PYV)

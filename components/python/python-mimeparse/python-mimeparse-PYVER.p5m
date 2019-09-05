@@ -20,11 +20,11 @@
 #
 
 #
-# Copyright (c) 2014, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
-    value=pkg:/library/python/python-mimeparse-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    value=pkg:/legacy/library/python/python-mimeparse-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Basic functions for handling mime-types"
 set name=pkg.description \
     value="This module provides basic functions for parsing mime-type names and matching them against a list of media-ranges."
@@ -46,10 +46,14 @@ file path=usr/lib/python$(PYVER)/vendor-packages/python_mimeparse-$(COMPONENT_VE
 #
 license LICENSE license=MIT
 
+# force the rename with an optional dependency on the old name
+depend type=optional \
+    fmri=library/python/python-mimeparse-$(PYV)@1.5.2-11.5.0.0.0.56.0
+
 # force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
 
 # force a dependency on the python-mimeparse package
 depend type=require \
-    fmri=library/python/python-mimeparse@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    fmri=legacy/library/python/python-mimeparse@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)

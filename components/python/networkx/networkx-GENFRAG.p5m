@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # we have to reverse the autopyc transform for stuff in /usr/share/doc
@@ -83,5 +83,11 @@ file path=usr/share/doc/networkx-$(COMPONENT_VERSION)/examples/pygraphviz/pygrap
 file path=usr/share/doc/networkx-$(COMPONENT_VERSION)/examples/pygraphviz/pygraphviz_draw.py
 file path=usr/share/doc/networkx-$(COMPONENT_VERSION)/examples/pygraphviz/pygraphviz_simple.py
 file path=usr/share/doc/networkx-$(COMPONENT_VERSION)/examples/pygraphviz/write_dotfile.py
+file release-notes/legacy-library-python-networkx.txt \
+    path=usr/share/doc/release-notes/legacy-library-python-networkx.txt \
+    mode=0444 must-display=true release-note=feature/pkg/self@0
 #
 license LICENSE.txt license=BSD
+
+# force the rename with an optional dependency on the old name
+depend type=optional fmri=library/python/networkx@1.11-11.5.0.0.0.56.0

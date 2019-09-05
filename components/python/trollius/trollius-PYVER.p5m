@@ -20,11 +20,11 @@
 #
 
 #
-# Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
-    value=pkg:/library/python/trollius-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    value=pkg:/legacy/library/python/trollius-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary \
     value="Port of the Tulip project (asyncio module, PEP 3156) on Python 2"
 set name=pkg.description \
@@ -84,10 +84,13 @@ depend type=group fmri=library/python/futures-$(PYV)
 # force a dependency on six; pkgdepend work is needed to flush this out.
 depend type=group fmri=library/python/six-$(PYV)
 
+# force the rename with an optional dependency on the old name
+depend type=optional fmri=library/python/trollius-$(PYV)@2.1-11.5.0.0.0.56.0
+
 # force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
 
 # force a dependency on the trollius package
 depend type=require \
-    fmri=library/python/trollius@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    fmri=legacy/library/python/trollius@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)

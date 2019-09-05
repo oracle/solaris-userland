@@ -20,11 +20,11 @@
 #
 
 #
-# Copyright (c) 2013, 2014, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
-    value=pkg:/library/python/warlock-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    value=pkg:/legacy/library/python/warlock-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary \
     value="Python object model built on JSON Schema and JSON Patch"
 set name=pkg.description \
@@ -56,16 +56,19 @@ license warlock.license license=Apache
 depend type=optional \
     fmri=library/python-2/warlock-$(PYV)@1.0.1,5.12-5.12.0.0.0.41.0
 
+# force the rename with an optional dependency on the old name
+depend type=optional fmri=library/python/warlock-$(PYV)@1.2.0-11.5.0.0.0.56.0
+
 # force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
 
 # force a dependency on jsonpatch; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/jsonpatch-$(PYV)
-
-# force a dependency on jsonschema; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/jsonschema-$(PYV)
+depend type=require fmri=legacy/library/python/jsonpatch-$(PYV)
 
 # force a dependency on the warlock package
 depend type=require \
-    fmri=library/python/warlock@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    fmri=legacy/library/python/warlock@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+
+# force a dependency on jsonschema; pkgdepend work is needed to flush this out.
+depend type=require fmri=library/python/jsonschema-$(PYV)

@@ -20,11 +20,11 @@
 #
 
 #
-# Copyright (c) 2014, 2015, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
-    value=pkg:/library/python/scp-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    value=pkg:/legacy/library/python/scp-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Paramiko SCP Module"
 set name=pkg.description \
     value="A pure Python implementation of scp using the paramiko transport to send and revieve files via the SCPv1 protocol."
@@ -46,10 +46,13 @@ file path=usr/lib/python$(PYVER)/vendor-packages/scp-$(COMPONENT_VERSION)-py$(PY
 file path=usr/lib/python$(PYVER)/vendor-packages/scp.py
 license scp.license license=LGPLv2.1
 
+# force the rename with an optional dependency on the old name
+depend type=optional fmri=library/python/scp-$(PYV)@0.10.2-11.5.0.0.0.56.0
+
 # force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
 
 # force a dependency on the scp package
 depend type=require \
-    fmri=library/python/scp@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    fmri=legacy/library/python/scp@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)

@@ -18,11 +18,11 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2013, 2014, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
-    value=pkg:/library/python/pydns-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    value=pkg:/legacy/library/python/pydns-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Python DNS library"
 set name=pkg.description \
     value="PyDNS provides a module for performing DNS queries from Python applications."
@@ -51,10 +51,13 @@ license pydns.license license=PSF
 depend type=optional \
     fmri=library/python-2/pydns-$(PYV)@2.3.6,5.12-5.12.0.0.0.41.0
 
+# force the rename with an optional dependency on the old name
+depend type=optional fmri=library/python/pydns-$(PYV)@2.3.6-11.5.0.0.0.56.0
+
 # force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
 
 # force a dependency on the pydns package
 depend type=require \
-    fmri=library/python/pydns@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    fmri=legacy/library/python/pydns@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)

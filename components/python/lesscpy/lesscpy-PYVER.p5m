@@ -20,11 +20,11 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
-    value=pkg:/library/python/lesscpy-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    value=pkg:/legacy/library/python/lesscpy-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Python LESS Compiler"
 set name=pkg.description \
     value="A compiler written in Python for the LESS dynamic stylesheet language. LESS extends CSS with dynamic behavior such as variables, mixins, operations, and functions."
@@ -83,9 +83,12 @@ license LICENSE license=MIT
 depend type=optional \
     fmri=library/python-2/lesscpy-$(PYV)@0.9.10,5.12-5.12.0.0.0.44.0
 
+# force the rename with an optional dependency on the old name
+depend type=optional fmri=library/python/lesscpy-$(PYV)@0.11.1-11.5.0.0.0.56.0
+
 # force a dependency on the lesscpy package
 depend type=require \
-    fmri=library/python/lesscpy@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    fmri=legacy/library/python/lesscpy@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 
 # force a dependency on ply; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/ply-$(PYV)

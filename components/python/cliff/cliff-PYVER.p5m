@@ -20,11 +20,11 @@
 #
 
 #
-# Copyright (c) 2013, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
-    value=pkg:/library/python/cliff-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    value=pkg:/legacy/library/python/cliff-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Command Line Interface Formulation Framework"
 set name=pkg.description \
     value="The Python cliff module is a framework for building command line programs. It uses setuptools entry points to provide subcommands, output formatters, and other extensions."
@@ -73,13 +73,19 @@ license cliff.license license="Apache v2.0, MIT"
 depend type=optional \
     fmri=library/python-2/cliff-$(PYV)@1.4.5,5.12-5.12.0.0.0.41.0
 
+# force the rename with an optional dependency on the old name
+depend type=optional fmri=library/python/cliff-$(PYV)@2.0.0-11.5.0.0.0.56.0
+
 # force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
 
 # force a dependency on the cliff package
 depend type=require \
-    fmri=library/python/cliff@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    fmri=legacy/library/python/cliff@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+
+# force a dependency on unicodecsv; pkgdepend work is needed to flush this out.
+depend type=require fmri=legacy/library/python/unicodecsv-$(PYV)
 
 # force a dependency on cmd2; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/cmd2-$(PYV)
@@ -98,6 +104,3 @@ depend type=require fmri=library/python/six-$(PYV)
 
 # force a dependency on stevedore; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/stevedore-$(PYV)
-
-# force a dependency on unicodecsv; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/unicodecsv-$(PYV)

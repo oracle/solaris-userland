@@ -20,11 +20,11 @@
 #
 
 #
-# Copyright (c) 2013, 2014, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
-    value=pkg:/library/python/d2to1-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    value=pkg:/legacy/library/python/d2to1-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Allow distutils2-like setup.cfg files with Python 2"
 set name=pkg.description \
     value="d2to1 allows developers to use distutils2-like setup.cfg files for a package's metadata with a distribute/setuptools setup.py script. It works by providing a distutils2-formatted setup.cfg file containing all of a package's metadata, and a very minimal setup.py which will slurp its arguments from the setup.cfg."
@@ -56,13 +56,16 @@ license d2to1.license license="BSD, MIT"
 depend type=optional \
     fmri=library/python-2/d2to1-$(PYV)@0.2.10,5.12-5.12.0.0.0.41.0
 
+# force the rename with an optional dependency on the old name
+depend type=optional fmri=library/python/d2to1-$(PYV)@0.2.12-11.5.0.0.0.56.0
+
 # force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
 
 # force a dependency on the d2to1 package
 depend type=require \
-    fmri=library/python/d2to1@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    fmri=legacy/library/python/d2to1@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 
 # force a dependency on setuptools; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/setuptools-$(PYV)
