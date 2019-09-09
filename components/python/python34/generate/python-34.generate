@@ -42,8 +42,12 @@
 <transform link path=usr/bin/python3-config -> set mediator-version 3.4>
 <transform link path=usr/bin/pyvenv -> set mediator python>
 <transform link path=usr/bin/pyvenv -> set mediator-version 3.4>
-<transform link path=usr/lib/\$\(MACH64\)/pkgconfig/python3.pc -> set mediator python>
+<transform link path=usr/lib/\$\(MACH64\)/pkgconfig/python3.pc -> set mediator python3>
 <transform link path=usr/lib/\$\(MACH64\)/pkgconfig/python3.pc -> set mediator-version 3.4>
+
+# Temporary pkglint supression for changed mediator
+<transform link path=usr/lib/\$\(MACH64\)/pkgconfig/python3.pc -> set pkg.linted.pkglint.dupaction010.3 true>
+
 <transform link path=usr/share/man/man1/python3.1 -> set mediator python>
 <transform link path=usr/share/man/man1/python3.1 -> set mediator-version 3.4>
 
@@ -90,7 +94,8 @@
 <transform file path=usr/lib/(.*)/python-3.4.pc \
 	-> emit link path=usr/lib/pkgconfig/python-3.4.pc target=../%<1>/python-3.4.pc>
 <transform link path=usr/lib/pkgconfig/python-3.4.pc \
-	-> emit link path=usr/lib/pkgconfig/python3.pc target=python-3.4.pc mediator=python mediator-version=3.4>
+	-> emit link path=usr/lib/pkgconfig/python3.pc target=python-3.4.pc mediator=python3 \
+		mediator-version=3.4 pkg.linted.pkglint.dupaction010.3=true>
 
 # move and rename ln lib
 <transform file path=.*/llib-lpython34m.ln -> set action.hash \$\(MACH64\)/llib-lpython34m.ln>
