@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -311,6 +311,11 @@ PERL_SCRIPTS= \
   $(PROTOUSRLIBDIR)/golang/$(COMPONENT_MAJOR_VERSION)/test/errchk
 
 COMPONENT_POST_INSTALL_ACTION += $(PERL_SCRIPTS_PROCESS)
+
+COMPONENT_POST_INSTALL_ACTION += \
+    $(MKDIR) -p $(PROTO_DIR)/usr/share/doc/release-notes/; \
+    $(CP) legacy-developer-golang-17.txt \
+	$(PROTO_DIR)/usr/share/doc/release-notes/ ;
 
 # Go's test suite is currently designed to be run from the build area.
 

@@ -32,7 +32,7 @@
     set timestamp $(TIMESTAMP) >
 #
 set name=pkg.fmri \
-    value=pkg:/developer/golang-$(COMPONENT_CMAJOR_VERSION)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    value=pkg:/legacy/developer/golang-$(COMPONENT_CMAJOR_VERSION)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="The Google Go programming language"
 set name=pkg.description \
     value="Google Go is an open source programming language that makes it easy to build simple, reliable, and efficient software."
@@ -50,7 +50,8 @@ link path=usr/bin/go target=../lib/go-golang mediator=go \
 link path=usr/bin/gofmt target=../lib/gofmt-golang mediator=go \
     mediator-implementation=golang mediator-priority=vendor
 link path=usr/lib/go-golang \
-    target=../lib/golang/$(COMPONENT_MAJOR_VERSION)/bin/go
+    target=../lib/golang/$(COMPONENT_MAJOR_VERSION)/bin/go \
+    pkg.linted.pkglint.dupaction010.2=true
 # All Go supplemental packages will generally be installed into these
 # directories, so they are declared here even though no supplemental
 # packages are.  Directories are normally omitted from most package
@@ -63,7 +64,8 @@ dir  path=usr/lib/gocode/$(COMPONENT_MAJOR_VERSION)/src/github.com/golang
 dir  path=usr/lib/gocode/$(COMPONENT_MAJOR_VERSION)/src/golang.org
 dir  path=usr/lib/gocode/$(COMPONENT_MAJOR_VERSION)/src/golang.org/x
 link path=usr/lib/gofmt-golang \
-    target=../lib/golang/$(COMPONENT_MAJOR_VERSION)/bin/gofmt
+    target=../lib/golang/$(COMPONENT_MAJOR_VERSION)/bin/gofmt \
+    pkg.linted.pkglint.dupaction010.2=true
 dir  path=usr/lib/golang/$(COMPONENT_MAJOR_VERSION)
 file path=usr/lib/golang/$(COMPONENT_MAJOR_VERSION)/AUTHORS
 file path=usr/lib/golang/$(COMPONENT_MAJOR_VERSION)/CONTRIBUTING.md
@@ -6428,6 +6430,8 @@ file path=usr/lib/golang/$(COMPONENT_MAJOR_VERSION)/test/varerr.go
 file path=usr/lib/golang/$(COMPONENT_MAJOR_VERSION)/test/varinit.go
 file path=usr/lib/golang/$(COMPONENT_MAJOR_VERSION)/test/writebarrier.go
 file path=usr/lib/golang/$(COMPONENT_MAJOR_VERSION)/test/zerodivide.go
+file path=usr/share/doc/release-notes/legacy-developer-golang-17.txt \
+    must-display=true release-note=feature/pkg/self@0
 file path=usr/share/golang/go-$(COMPONENT_MAJOR_VERSION).1
 link path=usr/share/man/man1/go.1 \
     target=../../golang/go-$(COMPONENT_MAJOR_VERSION).1
