@@ -10,6 +10,8 @@
 # a pull request [6], so we will know for sure whether the change
 # also got accepted by upstream or not.
 #
+# For 1.3.6 we also must increase number of connect(2) attempts
+# in case of connect(2) fails with EADDRINUSE
 #
 # [1] https://bug.oraclecorp.com/pls/bug/webbug_print.show?c_rptno=23124279
 # [2] https://bug.oraclecorp.com/pls/bug/webbug_print.show?c_rptno=15744390
@@ -17,6 +19,7 @@
 # [4] https://bug.oraclecorp.com/pls/bug/webbug_print.show?c_rptno=27889131
 # [5] https://bug.oraclecorp.com/pls/bug/webbug_print.show?c_rptno=30009346
 # [6] https://github.com/proftpd/proftpd/pull/812
+# [7] https://bug.oraclecorp.com/pls/bug/webbug_print.show?c_rptno=30216085
 #
 
 diff --git a/src/data.c b/src/data.c
@@ -52,7 +55,7 @@ index 05b3a34d8..5b3f923a1 100644
        session.data_port) < 0) {
      int xerrno = session.d->xerrno;
  
-+    if (xerrno == EADDRINUSE && retries < 16) {
++    if (xerrno == EADDRINUSE && retries < 42) {
 +      destroy_pool(session.d->pool);
 +      pr_signals_handle();
 +      /* Wait up to MSL to avoid TIME_WAIT. */
