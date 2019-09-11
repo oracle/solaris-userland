@@ -48,25 +48,8 @@
  *		!proc_session
  *	L: all
  *
- * On the other hand if the first authentication attempt fails, the session
- * process obtains sufficient privileges to retry authentication of client.
- * The privileges in this case look as follows:
- * 5277:   /usr/lib/inet/proftpd
- * flags = PRIV_AWARE|PRIV_PROC_SENSITIVE
- *	E: basic,file_dac_read,file_dac_search,file_dac_write,net_privaddr,
- *		proc_audit,proc_chroot,!proc_exec,!proc_fork,!proc_info,
- *		!proc_session,proc_setid,proc_taskid,sys_audit
- *	I: basic,!proc_exec,!proc_fork,!proc_info,!proc_session
- *	P: basic,file_dac_read,file_dac_search,file_dac_write,net_privaddr,
- *		proc_audit,proc_chroot,!proc_exec,!proc_fork,!proc_info,
- *		!proc_session,proc_setid,proc_taskid,sys_audit
- *	L: all
- *
- * Which privileges we assign to process depends on outcome of PASS command.
- * If authentication is successful, we call solaris_priv_post_pass_ok() to
- * drop privileges the FTP session won't need. If authentication fails
- * the process must keep sufficient privileges to retry, hence we call
- * solaris_priv_post_pass_fail() function, which keeps sufficient privileges.
+ * On the other hand if the authentication attempt fails, the session
+ * process won't become privilege aware.
  */
 
 #include <stdio.h>
@@ -421,27 +404,6 @@ MODRET solaris_priv_post_passwd_ok(cmd_rec *rec) {
   return (solaris_priv_post_passwd(rec, solaris_priv_flags));
 }
 
-static int solaris_priv_post_passwd_fail(cmd_rec *rec) {
-  /*
-   * Client passed wrong credentials. The session process can't drop privileges
-   * yet. The process must keep enough privileges to retry authentication. The
-   * privilege set here was determined by try and fail.
-   * 	PRIV_USE_SETID	- required to change to authenticated user
-   *	PRIV_USE_TASKID	- required by pam_unix_cred (avoids 'Not Owner' returned by
-   *				setproject(3PROJECT))
-   *	PRIV_USE_CHROOT	- the server may be told to chroot
-   *	PRIV_USE_AUDIT	- pam_unix_cred calls adt_set_proc(), which requires
-   *				PRIV_SYS_AUDIT.
-   *	PRIV_USE_DAC_READ
-   *			- required by unix_auth, to read /etc/shadow
-   *	PRIV_USE_DAC_WRITE
-   *			- required by accounting to update wtmp log
-   */
-  return (solaris_priv_post_passwd(rec, solaris_priv_flags |
-    (PRIV_USE_SETID | PRIV_USE_TASKID | PRIV_USE_CHROOT | PRIV_USE_AUDIT |
-    PRIV_USE_DAC_READ | PRIV_USE_DAC_WRITE)));
-}
-
 static int solaris_priv_module_init(void) {
 
   return 0;
@@ -459,7 +421,6 @@ static conftable solaris_priv_conftab[] = {
 
 static cmdtable solaris_priv_cmdtab[] = {
   { POST_CMD, C_PASS, G_NONE, solaris_priv_post_passwd_ok, FALSE, FALSE },
-  { POST_CMD_ERR, C_PASS, G_NONE, solaris_priv_post_passwd_fail, FALSE, FALSE },
   { 0, NULL }
 };
 
