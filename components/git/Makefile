@@ -52,7 +52,7 @@ PKG_PROTO_DIRS +=	$(COMPONENT_SRC_1)
 
 include $(WS_MAKE_RULES)/common.mk
 
-PYTHON_VERSION = 2.7
+PYTHON_VERSION = 3.7
 
 PKG_HARDLINKS +=	usr/lib/git-core/git
 PKG_HARDLINKS +=	usr/lib/git-core/git-cvsserver
@@ -78,7 +78,7 @@ CONFIGURE_OPTIONS  +=	--sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS  +=	--libexecdir=$(USRLIBDIR)
 CONFIGURE_OPTIONS  +=	--with-libpcre2
 CONFIGURE_OPTIONS  +=	--with-perl=$(PERL)
-CONFIGURE_OPTIONS  +=	--with-python=$(PYTHON.$(PYTHON_VERSION))
+CONFIGURE_OPTIONS  +=	--with-python=$(PYTHON)
 
 # Build fails if environment variable PROFILE is set.
 COMPONENT_BUILD_ENV+=	PROFILE=
@@ -159,7 +159,7 @@ REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += web/curl
