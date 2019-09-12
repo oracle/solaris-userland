@@ -98,7 +98,7 @@ test:		$(TEST_32_and_64)
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += developer/build/scons-27
+REQUIRED_PACKAGES += developer/build/scons
 REQUIRED_PACKAGES += library/apr-16
 REQUIRED_PACKAGES += library/apr-util-16
 REQUIRED_PACKAGES += library/expat

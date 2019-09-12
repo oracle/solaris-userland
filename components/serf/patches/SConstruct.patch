@@ -1,0 +1,37 @@
+Fix SConstruct file such that it works with new and Python 3.7 driven version of SCons.
+
+Upstream officially doesn't support this (newer) version of SCons and thus will not be offered.
+
+--- serf-1.3.9/SConstruct
++++ serf-1.3.9/SConstruct
+@@ -55,7 +55,7 @@ def RawListVariable(key, help, default):
+ # To be used to ensure a PREFIX directory is only created when installing.
+ def createPathIsDirCreateWithTarget(target):
+   def my_validator(key, val, env):
+-    build_targets = (map(str, BUILD_TARGETS))
++    build_targets = (list(map(str, BUILD_TARGETS)))
+     if target in build_targets:
+       return PathVariable.PathIsDirCreate(key, val, env)
+     else:
+@@ -163,9 +163,9 @@ env.Append(BUILDERS = {
+               suffix='.def', src_suffix='.h')
+   })
+ 
+-match = re.search('SERF_MAJOR_VERSION ([0-9]+).*'
+-                  'SERF_MINOR_VERSION ([0-9]+).*'
+-                  'SERF_PATCH_VERSION ([0-9]+)',
++match = re.search(b'SERF_MAJOR_VERSION ([0-9]+).*'
++                  b'SERF_MINOR_VERSION ([0-9]+).*'
++                  b'SERF_PATCH_VERSION ([0-9]+)',
+                   env.File('serf.h').get_contents(),
+                   re.DOTALL)
+ MAJOR, MINOR, PATCH = [int(x) for x in match.groups()]
+@@ -183,7 +183,7 @@ CALLOUT_OKAY = not (env.GetOption('clean
+ 
+ unknown = opts.UnknownVariables()
+ if unknown:
+-  print 'Warning: Used unknown variables:', ', '.join(unknown.keys())
++  print('Warning: Used unknown variables:', ', '.join(list(unknown.keys())))
+ 
+ apr = str(env['APR'])
+ apu = str(env['APU'])

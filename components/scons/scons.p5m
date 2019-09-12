@@ -18,11 +18,12 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
+<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
 set name=pkg.fmri \
-    value=pkg:/developer/build/scons-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+    value=pkg:/developer/build/scons@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="SCons - software construction tool"
 set name=pkg.description \
     value="SCons is a software construction tool that is a superior alternative to the classic Make build tool.  It is implemented as a Python script and set of modules, and SCons configuration files are actually executed as Python scripts. This gives SCons many powerful capabilities not found in other software build tools."
@@ -36,10 +37,14 @@ set name=org.opensolaris.arc-caseid value=PSARC/2015/151
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 link path=usr/bin/scons target=scons-$(COMPONENT_VERSION)
 file path=usr/bin/scons-$(COMPONENT_VERSION)
+link path=usr/bin/scons-configure-cache \
+    target=scons-configure-cache-$(COMPONENT_VERSION)
+file path=usr/bin/scons-configure-cache-$(COMPONENT_VERSION)
 link path=usr/bin/scons-time target=scons-time-$(COMPONENT_VERSION)
 file path=usr/bin/scons-time-$(COMPONENT_VERSION)
 link path=usr/bin/sconsign target=sconsign-$(COMPONENT_VERSION)
-file path=usr/bin/sconsign-$(COMPONENT_VERSION)
+file path=usr/bin/sconsign-$(COMPONENT_VERSION) \
+    pkg.depend.bypass-generate=.*whichdb.*
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Action.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Builder.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/CacheDir.py
@@ -55,12 +60,6 @@ file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Node/Alias.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Node/FS.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Node/Python.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Node/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Options/BoolOption.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Options/EnumOption.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Options/ListOption.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Options/PackageOption.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Options/PathOption.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Options/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/PathList.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Platform/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Platform/aix.py
@@ -68,9 +67,11 @@ file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Platform/cygwin.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Platform/darwin.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Platform/hpux.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Platform/irix.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Platform/mingw.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Platform/os2.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Platform/posix.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Platform/sunos.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Platform/virtualenv.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Platform/win32.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/SConf.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/SConsign.py
@@ -89,12 +90,9 @@ file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Script/Main.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Script/SConsOptions.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Script/SConscript.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Script/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Sig.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Subst.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Taskmaster.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/386asm.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/BitKeeper.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/CVS.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/DCommon.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/FortranCommon.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/GettextCommon.py
@@ -106,14 +104,11 @@ file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/MSCommon/netframewor
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/MSCommon/sdk.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/MSCommon/vc.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/MSCommon/vs.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/Perforce.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/PharLapCommon.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/RCS.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/SCCS.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/Subversion.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/aixc++.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/aixcc.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/aixcxx.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/aixf77.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/aixlink.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/applelink.py
@@ -122,7 +117,11 @@ file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/as.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/bcc32.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/c++.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/cc.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/clang.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/clangCommon/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/clangxx.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/cvf.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/cxx.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/cyglink.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/default.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/dmd.py
@@ -131,6 +130,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/dvi.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/dvipdf.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/dvips.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/f03.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/f08.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/f77.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/f90.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/f95.py
@@ -141,12 +141,14 @@ file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/g77.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/gas.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/gcc.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/gdc.py
-file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/gettext.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/gettext_tool.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/gfortran.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/gnulink.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/gs.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/gxx.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/hpc++.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/hpcc.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/hpcxx.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/hplink.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/icc.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/icl.py
@@ -186,9 +188,11 @@ file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/packaging/msi.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/packaging/rpm.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/packaging/src_tarbz2.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/packaging/src_targz.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/packaging/src_tarxz.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/packaging/src_zip.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/packaging/tarbz2.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/packaging/targz.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/packaging/tarxz.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/packaging/zip.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/pdf.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/pdflatex.py
@@ -201,10 +205,12 @@ file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/rpmutils.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/sgiar.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/sgic++.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/sgicc.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/sgicxx.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/sgilink.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/sunar.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/sunc++.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/suncc.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/suncxx.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/sunf77.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/sunf90.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Tool/sunf95.py
@@ -227,12 +233,19 @@ file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Variables/PathVariable.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Variables/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/Warnings.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/SCons/__main__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/compat/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/compat/_scons_dbm.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/cpp.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/dblite.py
 file path=usr/lib/python$(PYVER)/vendor-packages/SCons/exitfuncs.py
-file path=usr/lib/python$(PYVER)/vendor-packages/scons-$(COMPONENT_VERSION)-py2.7.egg-info
+file path=usr/lib/python$(PYVER)/vendor-packages/scons-$(COMPONENT_VERSION)-py$(PYVER).egg-info
+file usr/lib/python$(PYVER)/vendor-packages/man/man1/scons-time.1 \
+    path=usr/share/man/man1/scons-time.1
+file usr/lib/python$(PYVER)/vendor-packages/man/man1/scons.1 \
+    path=usr/share/man/man1/scons.1
+file usr/lib/python$(PYVER)/vendor-packages/man/man1/sconsign.1 \
+    path=usr/share/man/man1/sconsign.1
 license LICENSE.txt license=MIT
 
 # force a dependency on the scons package

@@ -26,38 +26,29 @@ BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		scons
-COMPONENT_VERSION=	2.5.1
+COMPONENT_VERSION=	3.1.1
 COMPONENT_PROJECT_URL=	http://www.scons.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:0b25218ae7b46a967db42f2a53721645b3d42874a65f9552ad16ce26d30f51f2
-COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/$(COMPONENT_NAME)/files/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)/download
+    sha256:32beeb908ef34d172e2121a39dae8680ed4033ece212cd31253e4ce118996ad1
+COMPONENT_ARCHIVE_URL=	\
+    https://sourceforge.net/projects/$(COMPONENT_NAME)/files/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)/download
 COMPONENT_ANITYA_ID=	4770
 
-TPNO=			34213
+TPNO=			54196
 
-# Per Q1.1.4 of the SCons FAQ, SCons is written to work with any Python
-# version >= 2.4 and < 3.0. Versions 3.0 and above are not supported at
-# this time.
-PYTHON_VERSION =	2.7
-PYTHON_VERSIONS =	2.7
+# we only need a single version of SCons
+PYTHON_VERSIONS = 3.7
 
 BUILD_STYLE= setup.py
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
+PKG_MACROS += PYVER=$(PYTHON_VERSION)
+
 # pkgdepend doesn't like the first line of a Python script to be:
 # '#!/usr/bin/env python' so turn it into '#!/usr/bin/python$(PYTHON_VERSION)'
 COMPONENT_POST_INSTALL_ACTION += \
 	$(GSED) -i -e 's?env python?python$(PYTHON_VERSION)?' \
-		$(PROTOUSRBINDIR)/scons-$(COMPONENT_VERSION);
-COMPONENT_POST_INSTALL_ACTION += \
-	$(GSED) -i -e 's?env python?python$(PYTHON_VERSION)?' \
-		$(PROTOUSRBINDIR)/scons-time-$(COMPONENT_VERSION);
-COMPONENT_POST_INSTALL_ACTION += \
-	$(GSED) -i -e 's?env python?python$(PYTHON_VERSION)?' \
-		$(PROTOUSRBINDIR)/sconsign-$(COMPONENT_VERSION);
+		$(PROTOUSRBINDIR)/*-$(COMPONENT_VERSION);
 
-PKG_PROTO_DIRS +=	$(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES)
-
-REQUIRED_PACKAGES += library/python/setuptools-27
-REQUIRED_PACKAGES += runtime/python-27
+PKG_PROTO_DIRS += $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES)
