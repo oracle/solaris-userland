@@ -46,7 +46,7 @@ CXXFLAGS=
 
 include $(WS_MAKE_RULES)/common.mk
 
-PYTHON_VERSION = 2.7
+PYTHON_VERSION = 3.7
 
 # The GNU compiler wants the GNU utilities.
 PATH=$(GNUBIN):$(USRBINDIR):$(USRDIR)/perl5/bin

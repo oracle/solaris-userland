@@ -1478,6 +1478,7 @@ REQUIRED_PACKAGES += developer/versioning/mercurial
 REQUIRED_PACKAGES += file/gnu-findutils
 REQUIRED_PACKAGES += package/pkg
 REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/linker
