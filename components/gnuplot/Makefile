@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -48,6 +48,7 @@ CONFIGURE_OPTIONS  += --libexecdir=$(CONFIGURE_LIBDIR.$(BITS))
 CONFIGURE_OPTIONS  += --sysconfdir=$(ETCDIR)/gnu
 CONFIGURE_OPTIONS  += --infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS  += --x-libraries=$(CONFIGURE_LIBDIR.$(BITS))
+CONFIGURE_OPTIONS  += --without-qt
 CONFIGURE_OPTIONS  += WX_CONFIG="$(USRBINDIR64)/wx-config"
 
 REQUIRED_PACKAGES += image/library/libjpeg

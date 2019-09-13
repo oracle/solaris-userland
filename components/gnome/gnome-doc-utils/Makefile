@@ -36,6 +36,9 @@ COMPONENT_ANITYA_ID=	13129
 
 TPNO=			24907
 
+# Use one job since the parallel build of this component is currently broken...
+COMPONENT_MAKE_JOBS=1
+
 # Only supports Python 2.x.
 PYTHON_VERSION = 2.7
 
