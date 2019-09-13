@@ -23,11 +23,12 @@
 # Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
-include ../../make-rules/shared-macros.mk
 COMPILER=gcc
 
+include ../../make-rules/shared-macros.mk
+
 COMPONENT_NAME        = graphviz
-COMPONENT_VERSION     = 2.40.1
+COMPONENT_VERSION     = 2.42.0
 COMPONENT_PROJECT_URL = http://www.graphviz.org/
 COMPONENT_SRC         = $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE     = $(COMPONENT_SRC).tar.gz
@@ -35,11 +36,11 @@ COMPONENT_ARCHIVE     = $(COMPONENT_SRC).tar.gz
 COMPONENT_ANITYA_ID   = 1249
 
 GIT_REPO = https://gitlab.com/graphviz/graphviz/
-GIT_TAG  = stable_release_2.40.1
-GIT_COMMIT_ID = 67cd2e51
-GIT_HASH = sha256:f1217dcd5178193c1308ec2e1c44f53a4100bc6cba4ba115d3e2536185757b4e
+GIT_TAG  = stable_release_2.42.0
+GIT_COMMIT_ID = 19088b82
+GIT_HASH = sha256:3d3cf60a0b60613f2bfab8601aaf5bce81272c66e606e9c1640fa14004a2e7f5
 
-TPNO = 49299
+TPNO = 54013
 
 COMPONENT_PREP_ACTION += \
 	( cd $(@D) ; PATH="$(PATH)" $(CONFIG_SHELL) autogen.sh NOCONFIG)
@@ -52,6 +53,7 @@ PERL_VERSIONS = $(PERL_VERSION)
 INSTALL_TARGET = $(INSTALL_$(MK_BITS))
 INSTALL_TARGET += $(PROTOUSRLIBDIR)/graphviz/config6
 INSTALL_TARGET += $(PROTO_DIR)/$(PYTHON.2.7.VENDOR_PACKAGES)/gv.pyc
+INSTALL_TARGET += $(PROTO_DIR)/$(PYTHON.3.7.VENDOR_PACKAGES)/gv.pyc
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -66,11 +68,15 @@ CPPFLAGS +=	-I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/solaris
 CPPFLAGS +=	$(shell PATH=$(PATH) php-config --includes)
 
 # Make sure to use the right python, depending on the 32/64-bit build.
-CONFIGURE_ENV +=	PYTHON27=$(PYTHON.2.7)
+CONFIGURE_ENV +=	PYTHON2=$(PYTHON.2.7)
+CONFIGURE_ENV +=	PYTHON3=$(PYTHON.3.7)
 CONFIGURE_OPTIONS +=	--without-included-ltdl
+CONFIGURE_OPTIONS +=    --with-qt=no
+CONFIGURE_OPTIONS +=	--enable-go=no
 CONFIGURE_OPTIONS +=	--enable-ocaml=no
 CONFIGURE_OPTIONS +=	--enable-python=no
-CONFIGURE_OPTIONS +=	--enable-python27=yes
+CONFIGURE_OPTIONS +=	--enable-python2=yes
+CONFIGURE_OPTIONS +=	--enable-python3=yes
 CONFIGURE_OPTIONS +=	--x-libraries=$(CONFIGURE_LIBDIR.$(BITS))
 CONFIGURE_OPTIONS +=	--with-gdincludedir=$(USRINCDIR)/gd2
 
@@ -113,6 +119,9 @@ $(PROTOUSRLIBDIR)/graphviz/config6: $(INSTALL_32)
 $(PROTO_DIR)/$(PYTHON.2.7.VENDOR_PACKAGES)/gv.pyc: $(INSTALL_32)
 	$(PYTHON.2.7.32) -m compileall -l -d $(PYTHON.2.7.VENDOR_PACKAGES) \
 		$(PROTO_DIR)/$(PYTHON.2.7.VENDOR_PACKAGES)
+$(PROTO_DIR)/$(PYTHON.3.7.VENDOR_PACKAGES)/gv.pyc: $(INSTALL_64)
+	$(PYTHON.3.7) -m compileall -l -d $(PYTHON.3.7.VENDOR_PACKAGES) \
+		$(PROTO_DIR)/$(PYTHON.3.7.VENDOR_PACKAGES)
 
 PKG_MACROS += PERL_PKG=$(PERL_PKG)
 PKG_MACROS += PERL_VERSION_NODOT=$(PERL_VERSION_NODOT)
@@ -138,6 +147,7 @@ REQUIRED_PACKAGES += image/graphviz
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += image/library/librsvg
+REQUIRED_PACKAGES += image/library/libwebp
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
@@ -153,6 +163,7 @@ REQUIRED_PACKAGES += print/filter/ghostscript-core
 REQUIRED_PACKAGES += runtime/lua
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += runtime/ruby-25
 REQUIRED_PACKAGES += runtime/tk-8
 REQUIRED_PACKAGES += shell/ksh93

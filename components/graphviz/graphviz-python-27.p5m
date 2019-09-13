@@ -33,21 +33,23 @@ set name=info.source-url value=$(GIT_REPO)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2011/269
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-link path=usr/lib/$(MACH64)/graphviz/python27/_gv.so target=libgv_python27.so
-file path=usr/lib/$(MACH64)/graphviz/python27/gv.py pkg.tmp.autopyc=false
-file path=usr/lib/$(MACH64)/graphviz/python27/libgv_python27.so
-link path=usr/lib/graphviz/python27/_gv.so target=libgv_python27.so
-file path=usr/lib/graphviz/python27/gv.py pkg.tmp.autopyc=false
-file path=usr/lib/graphviz/python27/libgv_python27.so
+link path=usr/lib/$(MACH64)/graphviz/python2/_gv.so target=libgv_python2.so
+file path=usr/lib/$(MACH64)/graphviz/python2/gv.py pkg.tmp.autopyc=false
+file path=usr/lib/$(MACH64)/graphviz/python2/libgv_python2.so
+# backward compatibility link
+link path=usr/lib/$(MACH64)/graphviz/python27 target=python2
+link path=usr/lib/graphviz/python2/_gv.so target=libgv_python2.so
+file path=usr/lib/graphviz/python2/gv.py pkg.tmp.autopyc=false
+file path=usr/lib/graphviz/python2/libgv_python2.so
+# backward compatibility link
+link path=usr/lib/graphviz/python27 target=python2
 link path=usr/lib/python2.7/vendor-packages/64/_gv.so \
-    target=../../../$(MACH64)/graphviz/python27/libgv_python27.so
+    target=../../../$(MACH64)/graphviz/python2/libgv_python2.so
 link path=usr/lib/python2.7/vendor-packages/64/gv.py \
-    target=../../../$(MACH64)/graphviz/python27/gv.py
+    target=../../../$(MACH64)/graphviz/python2/gv.py
 link path=usr/lib/python2.7/vendor-packages/_gv.so \
-    target=../../graphviz/python27/libgv_python27.so
+    target=../../graphviz/python2/libgv_python2.so
 link path=usr/lib/python2.7/vendor-packages/gv.py \
-    target=../../graphviz/python27/gv.py
+    target=../../graphviz/python2/gv.py
 file path=usr/lib/python2.7/vendor-packages/gv.pyc
-file path=usr/share/graphviz/doc/pdf/gv.3python.pdf
-file usr/share/man/man3/gv.3python path=usr/share/man/man3/gv-python.3
 license graphviz.license license=EPL1.0

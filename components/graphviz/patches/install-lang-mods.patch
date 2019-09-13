@@ -6,38 +6,22 @@ use of a 64-bit-specific directory, as needed.
 For Lua, the appropriate variable will need to be set during installation,
 since there's no corresponding config_lua.lua file.
 
-This is an in-house patch, but has not been passed upstream because it's
-against a version of graphviz that is out of date; submission will be
-reconsidered when we upgrade.  Note that at least the Python portion is
-Solaris-specific, and likely will not be accepted.
+This is an in-house Solaris specific patch not intended for upstream.
 
---- graphviz-2.40.1/config/config_python.py	2019-01-08 03:53:37.577717882 +0000
-+++ graphviz-2.40.1/config/config_python.py	2019-01-08 03:53:09.321578598 +0000
-@@ -1,12 +1,20 @@
- import sys
-+import struct
- from distutils import sysconfig
- 
-+if struct.calcsize('P') == 8:
-+    sixtyfour = "/64"
-+else:
-+    sixtyfour = ""
-+
-+pyver = ".".join(str(i) for i in sys.version_info[:2])
-+
- if sys.argv[1] == "archlib":
--    print sysconfig.get_python_lib(1,1)
-+    print sysconfig.get_python_lib(1,1) + sixtyfour
+--- graphviz-2.42.0/config/config_python.py
++++ graphviz-2.42.0/config/config_python.py
+@@ -6,7 +6,8 @@ if sys.argv[1] == "archlib":
  elif sys.argv[1] == "lib":
-     print sysconfig.get_python_lib(0,1)
+     print(sysconfig.get_python_lib(0,1))
  elif sys.argv[1] == "archsitelib":
--    print sysconfig.get_python_lib(1,0)
-+    print "/usr/lib/python%s/vendor-packages%s" % (pyver, sixtyfour)
+-    print(sysconfig.get_python_lib(1,0))
++    pyver = ".".join(str(i) for i in sys.version_info[:2])
++    print("/usr/lib/python{}/vendor-packages".format(pyver))
  elif sys.argv[1] == "sitelib":
-     print sysconfig.get_python_lib(0,0)
+     print(sysconfig.get_python_lib(0,0))
  
---- graphviz-2.40.1/tclpkg/Makefile.am	2019-01-08 03:59:09.785879955 +0000
-+++ graphviz-2.40.1/tclpkg/Makefile.am	2019-01-08 03:58:31.103729741 +0000
+--- graphviz-2.42.0/tclpkg/Makefile.am
++++ graphviz-2.42.0/tclpkg/Makefile.am
 @@ -38,9 +38,9 @@ pkgIndex.tcl: @TCL_PKGINDEX@ @TCL_PKGIND
  # without root priviledges.
  install-data-hook:
@@ -51,14 +35,3 @@ Solaris-specific, and likely will not be accepted.
  			cp -f $(DESTDIR)$(pkgluadir)/libgv_lua.so gv.so;) \
  	else \
  		echo "Warning: @LUA_INSTALL_DIR@ is not writable."; \
---- graphviz-2.40.1/tclpkg/gv/Makefile.am	2019-01-08 06:43:29.490862638 +0000
-+++ graphviz-2.40.1/tclpkg/gv/Makefile.am	2019-01-08 06:41:57.593441989 +0000
-@@ -183,7 +183,7 @@ libgv_php_la_CPPFLAGS = $(BASECPPFLAGS)
- gv.php: gv_php.cpp
- php_gv.h: gv_php.cpp
- gv_php.cpp: gv.i
--	$(SWIG) -c++ $(SWIG_PHP_OPT) -o gv_php.cpp $(srcdir)/gv.i
-+	$(SWIG) -c++ $(SWIG_PHP_OPT) -o gv_php.cpp $(srcdir)/gv.i
- 
- pkgpythondir = $(pkglibdir)/python
- PYTHON_data = gv.py
