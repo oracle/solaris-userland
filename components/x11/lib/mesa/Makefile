@@ -28,16 +28,16 @@ COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mesa
-COMPONENT_VERSION=	13.0.6
+COMPONENT_VERSION=	18.1.9
 COMPONENT_PROJECT_URL=  https://www.mesa3d.org
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.gz
-COMPONENT_ARCHIVE_URL=  https://mesa.freedesktop.org/archive/older-versions/13.x/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=  https://mesa.freedesktop.org/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ARCHIVE_HASH= \
-	sha256:1076590f29103f022a2cd87e6dff6ae77072013745603d06b0410c373ab2bb1a
-COMPONENT_BUGDB=        x11/libraries
+	sha256:0f825dc834b1b3e3d9a6c3ce58b42977f0d9a248a7627a36dd3b313ffe41a499
+COMPONENT_BUGDB=        x11/mesa
 COMPONENT_ANITYA_ID=	1970
-TPNO=			35915
+TPNO=			51903
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -53,6 +53,9 @@ FIX_PC_FILES += src/mapi/es2api/glesv2.pc.in
 
 LIBDRM_BASE = $(WS_COMPONENTS)/x11/lib/libdrm/libdrm-2.4.97
 
+# to find gnu egrep and gsed
+CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
+
 COMPONENT_PREP_ACTION +=(cd $(@D); $(AUTORECONF_ENV) autoreconf -fiv);
 
 COMPONENT_POST_UNPACK_ACTION += \
@@ -61,9 +64,10 @@ COMPONENT_POST_UNPACK_ACTION += \
 	fi; \
 	$(CP) $(LIBDRM_BASE)/intel/intel_aub.h $(SOURCE_DIR)/src/mesa/drivers/dri/i965; \
 
-CONFIGURE_OPTIONS.32 += --disable-gallium-llvm
-CONFIGURE_OPTIONS.64 += --enable-gallium-llvm --disable-llvm-shared-libs
+CONFIGURE_OPTIONS.32 += --disable-llvm
+CONFIGURE_OPTIONS.64 += --enable-llvm --disable-llvm-shared-libs
 CONFIGURE_OPTIONS += --enable-shared
+CONFIGURE_OPTIONS += --disable-glx-tls
 ifneq ($(MACH), sparc)
 CONFIGURE_OPTIONS += --with-dri-drivers='i915 i965 radeon r200 swrast'
 else
@@ -75,14 +79,15 @@ CONFIGURE_OPTIONS += --disable-shader-cache
 CONFIGURE_OPTIONS.32 += --with-dri-driverdir='/usr/lib/xorg/modules/dri'
 CONFIGURE_OPTIONS.64 += --with-dri-driverdir='/usr/lib/xorg/modules/dri/$(MACH64)'
 
-# Makefile.am files of this component are not compatible with Solaris make.
-# Use GNU make to avoid the configuration error when makefile fragments are processed.
-CONFIGURE_OPTIONS += MAKE=$(GMAKE)
+# Without these, we get pkgdepend failures with libEGL.so.1.0.0 
+LIBDRM_RUNPATH_32 = /usr/lib/xorg
+LIBDRM_RUNPATH_64 = /usr/lib/xorg/$(MACH64)
+LIBDRM_RUNPATH = $(LIBDRM_RUNPATH_$(BITS))
 
-CXXFLAGS += -std=c++11
-CFLAGS += -D__EXTENSIONS__ 
+CXXFLAGS += -std=c++11 -I/usr/include/llvm/Support/Solaris/sys
+CFLAGS += -D__EXTENSIONS__ -I/usr/include/llvm/Support/Solaris/sys
 CPPFLAGS += -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS
-LDFLAGS += -Wl,-z,rescan-now
+LDFLAGS += -Wl,-z,rescan-now -R$(LIBDRM_RUNPATH)
 CFLAGS.64 += -Wstack-protector -fdata-sections -fstack-protector-all
 LD_OPTIONS.64+=	-z nodefs -z ignore -lLLVM -lssp
 LD_OPTIONS += $(LD_OPTIONS.$(BITS))
