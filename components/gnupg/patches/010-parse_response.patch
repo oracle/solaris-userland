@@ -3,8 +3,8 @@
 # Developed in-house
 # Plan to send this upstream.
 diff -rupN old/dirmngr/http.c new/dirmngr/http.c
---- old/dirmngr/http.c	2018-04-12 21:48:54.231537397 +0000
-+++ new/dirmngr/http.c	2018-04-12 23:16:03.497480859 +0000
+--- gnupg-2.2.17/dirmngr/http.c
++++ gnupg-2.2.17/dirmngr/http.c
 @@ -157,7 +157,7 @@ static gpg_error_t send_request (http_t
  				 const char *srvtag, unsigned int timeout,
                                   strlist_t headers);
@@ -14,7 +14,7 @@ diff -rupN old/dirmngr/http.c new/dirmngr/http.c
  
  static gpg_error_t connect_server (const char *server, unsigned short port,
                                     unsigned int flags, const char *srvtag,
-@@ -1067,6 +1067,7 @@ gpg_error_t
+@@ -1115,6 +1115,7 @@ gpg_error_t
  http_wait_response (http_t hd)
  {
    gpg_error_t err;
@@ -22,7 +22,7 @@ diff -rupN old/dirmngr/http.c new/dirmngr/http.c
    cookie_t cookie;
    int use_tls;
  
-@@ -1112,10 +1113,12 @@ http_wait_response (http_t hd)
+@@ -1160,10 +1161,12 @@ http_wait_response (http_t hd)
        return err;
      }
  
