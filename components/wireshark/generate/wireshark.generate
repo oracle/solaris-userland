@@ -20,15 +20,10 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 <include generate/common.transform>
-
-# ship wireshark-gtk as wireshark
-<transform file path=.*/wireshark.desktop$ -> drop>
-<transform file path=.*/wireshark-gtk(\.desktop$|$) -> set action.hash %(path)>
-<transform file path=.*/wireshark-gtk(\.desktop$|$) -> edit path wireshark-gtk wireshark>
 
 # delete everything not belonging to this package
 <transform file link pkg.type=(?!wireshark) -> drop>
