@@ -1,0 +1,35 @@
+Script qtbase/configure updates qtbase/qmake/Makefile.unix file
+based on the platform definitions in qtbase/mkspecs/ directory.
+
+File qtbase/mkspecs/common/g++-base.conf:
+...
+QMAKE_CC                = gcc
+...
+QMAKE_CXX               = g++
+...
+
+The problem is that the full path is not specified. As a result,
+the bootstrap of qmake tool uses the mediated version of GNU compiler
+instead of the version specified by the GCC_ROOT variable.
+
+In general, we do not want to change the compiler setting globally,
+but only influence the compiler used to build Qt5 toolkit in Userland.
+For that reason, we do not modify platform files but set GNU compiler
+by CC and CXX variables. Since the Makefile variables take precedence
+over environment variables, the patch ensures that CC and CXX Makefile
+variables are not set.
+
+This hack is not suitable for upstream since it assumes that
+CC and CXX environment variables are set in component Makefile.
+
+--- qt-everywhere-src-5.12.3/qtbase/configure	2019-09-30 11:39:53.886052272 +0000
++++ qt-everywhere-src-5.12.3/qtbase/configure	2019-09-30 11:38:41.405412020 +0000
+@@ -733,8 +733,6 @@ setBootstrapVariable()
+         EXTRA_LFLAGS="\$(QMAKE_LFLAGS) \$(QMAKE_LFLAGS_GCSECTIONS)"
+ 
+         [ "$CFG_SILENT" = "yes" ] && CC_TRANSFORM='s,^,\@,' || CC_TRANSFORM=
+-        setBootstrapVariable QMAKE_CC CC "$CC_TRANSFORM"
+-        setBootstrapVariable QMAKE_CXX CXX "$CC_TRANSFORM"
+         setBootstrapVariable QMAKE_CXXFLAGS
+         setBootstrapVariable QMAKE_CXXFLAGS_CXX11
+         setBootstrapVariable QMAKE_CXXFLAGS_SPLIT_SECTIONS

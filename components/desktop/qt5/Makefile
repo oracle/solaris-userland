@@ -70,6 +70,12 @@ CONFIGURE_OPTIONS +=  -no-rpath
 CONFIGURE_OPTIONS +=  -no-use-gold-linker
 CONFIGURE_OPTIONS +=  QMAKE_CXXFLAGS+="$(CXXFLAGS) $(CC_PIC) $(OPT_FLAGS.$(MACH))"
 CONFIGURE_OPTIONS +=  QMAKE_CFLAGS+="$(CFLAGS) $(CC_PIC) $(OPT_FLAGS.$(MACH))"
+CONFIGURE_OPTIONS +=  QMAKE_CC=$(CC)
+CONFIGURE_OPTIONS +=  QMAKE_CXX=$(CXX)
+CONFIGURE_OPTIONS +=  QMAKE_LINK=$(CXX)
+# Set CC and CXX environment variables for qmake bootstrapping.
+# Please see patches/02_compiler_path.patch for explanation.
+COMPONENT_BUILD_ENV +=  CC=$(CC) CXX=$(CXX)
 
 CONFIGURE_OPTIONS +=  -system-zlib
 CONFIGURE_OPTIONS +=  -system-libpng
