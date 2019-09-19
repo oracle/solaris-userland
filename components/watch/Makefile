@@ -20,28 +20,41 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		procps-ng
-COMPONENT_VERSION=	3.3.12
-COMPONENT_PROJECT_URL=	https://sourceforge.net/projects/procps-ng/
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
+COMPONENT_VERSION=	3.3.15
+COMPONENT_PROJECT_URL=	https://gitlab.com/procps-ng/procps/
+COMPONENT_SRC=		procps-v$(COMPONENT_VERSION)
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6ed65ab86318f37904e8f9014415a098bec5bc53653e5d9ab404f95ca5e1a7d4
-COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)files/Production/$(COMPONENT_ARCHIVE)/download
+    sha256:fb2673f902c99b0c392c06b3eb074a5c80fc9fc215cfc42ed19daf7fb20cb41e
+COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)-/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/watch
 COMPONENT_ANITYA_ID=	3708
 
-TPNO=			33887
+TPNO=			54100
 
 INSTALL_TARGET= build
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
+# Required as there is no configure file in the component archive.
+COMPONENT_PREP_ACTION += \
+	( cd $(@D) ; PATH="$(GNUBIN):$(PATH)" $(CONFIG_SHELL) autogen.sh)
+
+# Build needs its file inside SOURCE_DIR.
+COMPONENT_PRE_CONFIGURE_ACTION = ($(CLONEY) $(SOURCE_DIR) $(@D))
+
+# Force the configure script to use gnu make.
+CONFIGURE_ENV +=	"MAKE=gmake"
+
+# Build directory is not detected automatically.
+CONFIGURE_OPTIONS +=	"--srcdir=$(BUILD_DIR_64)"
 
 CFLAGS +=			-I$(USRINCDIR)/ncurses
 
