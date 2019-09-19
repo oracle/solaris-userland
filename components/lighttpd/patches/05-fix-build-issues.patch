@@ -1,0 +1,46 @@
+The patch fixes build issue on Solaris platform.
+Besides the taken patch from upstream it was also
+necessary to remove asserts with POLLRDHUP since
+POLLRDHUP is not defined on Oracle Solaris.
+
+commit 32a8f0b3b51a7b7f7a274c9f7bad3ab01539a08a
+Author: Glenn Strauss <gstrauss@gluelogic.com>
+Date:   Thu May 30 00:19:06 2019 -0400
+
+    [core] fix compile error on Solaris (fixes #2959)
+    
+    (thx pyhalov)
+    
+    x-ref:
+      "Release 1.4.54 does not compile on an Open Solaris clone"
+      https://redmine.lighttpd.net/issues/2959
+
+--- src/fdevent_solaris_devpoll.c	2019-09-18 12:43:04.840425601 +0000
++++ src/fdevent_solaris_devpoll.c	2019-09-18 12:42:08.506267127 +0000
+@@ -75,7 +75,6 @@ int fdevent_solaris_devpoll_init(fdevent
+ 	force_assert(POLLERR   == FDEVENT_ERR);
+ 	force_assert(POLLHUP   == FDEVENT_HUP);
+ 	force_assert(POLLNVAL  == FDEVENT_NVAL);
+-	force_assert(POLLRDHUP == FDEVENT_RDHUP);
+ 
+ 	ev->type       = FDEVENT_HANDLER_SOLARIS_DEVPOLL;
+ 	ev->event_set  = fdevent_solaris_devpoll_event_set;
+--- src/fdevent_solaris_port.c	2019-09-18 12:43:27.963215929 +0000
++++ src/fdevent_solaris_port.c	2019-09-18 12:42:20.074275034 +0000
+@@ -20,7 +20,7 @@ static int fdevent_solaris_port_event_de
+ }
+ 
+ static int fdevent_solaris_port_event_set(fdevents *ev, fdnode *fdn, int events) {
+-    int fd = fdn->fdn_ndx = fdn->fd;
++    int fd = fdn->fde_ndx = fdn->fd;
+     intptr_t ud = events & (POLLIN|POLLOUT);
+     return port_associate(ev->port_fd,PORT_SOURCE_FD,fd,(int)ud,(void*)ud);
+ }
+@@ -84,7 +84,6 @@ int fdevent_solaris_port_init(fdevents *
+ 	force_assert(POLLERR   == FDEVENT_ERR);
+ 	force_assert(POLLHUP   == FDEVENT_HUP);
+ 	force_assert(POLLNVAL  == FDEVENT_NVAL);
+-	force_assert(POLLRDHUP == FDEVENT_RDHUP);
+ 
+ 	ev->type        = FDEVENT_HANDLER_SOLARIS_PORT;
+ 	ev->event_set   = fdevent_solaris_port_event_set;

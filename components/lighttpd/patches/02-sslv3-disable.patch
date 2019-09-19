@@ -1,16 +1,49 @@
 Patch origin: in-house
 Patch status: Not suitable for upstream.
 
-Always disable SSLv3 and don't allow to enable it ever again.
+Always disable SSLv2 and SSLv3 and don't allow to enable it ever again.
 
---- src/network.c
-+++ src/network.c
-@@ -845,7 +845,7 @@
- 			}
- 		}
+--- src/mod_openssl.c	2019-09-18 10:25:36.546906287 +0000
++++ src/mod_openssl.c	2019-09-18 10:23:53.990998037 +0000
+@@ -954,27 +954,23 @@ network_init_ssl (server *srv, void *p_d
+         SSL_CTX_set_info_callback(s->ssl_ctx, ssl_info_callback);
  
--		if (!s->ssl_use_sslv3) {
-+		if (1) {
- 			/* disable SSLv3 */
- 			if ((SSL_OP_NO_SSLv3 & SSL_CTX_set_options(s->ssl_ctx, SSL_OP_NO_SSLv3)) != SSL_OP_NO_SSLv3) {
- 				log_error_write(srv, __FILE__, __LINE__, "ss", "SSL:",
+       #ifndef HAVE_WOLFSSL_SSL_H /*(wolfSSL does not support SSLv2)*/
+-        if (!s->ssl_use_sslv2 && 0 != SSL_OP_NO_SSLv2) {
+-            /* disable SSLv2 */
+-            if ((SSL_OP_NO_SSLv2
+-                 & SSL_CTX_set_options(s->ssl_ctx, SSL_OP_NO_SSLv2))
+-                != SSL_OP_NO_SSLv2) {
+-                log_error_write(srv, __FILE__, __LINE__, "ss", "SSL:",
+-                                ERR_error_string(ERR_get_error(), NULL));
+-                return -1;
+-            }
++        /* disable SSLv2 */
++        if ((SSL_OP_NO_SSLv2
++             & SSL_CTX_set_options(s->ssl_ctx, SSL_OP_NO_SSLv2))
++            != SSL_OP_NO_SSLv2) {
++            log_error_write(srv, __FILE__, __LINE__, "ss", "SSL:",
++                            ERR_error_string(ERR_get_error(), NULL));
++            return -1;
+         }
+       #endif
+ 
+-        if (!s->ssl_use_sslv3 && 0 != SSL_OP_NO_SSLv3) {
+-            /* disable SSLv3 */
+-            if ((SSL_OP_NO_SSLv3
+-                 & SSL_CTX_set_options(s->ssl_ctx, SSL_OP_NO_SSLv3))
+-                != SSL_OP_NO_SSLv3) {
+-                log_error_write(srv, __FILE__, __LINE__, "ss", "SSL:",
+-                                ERR_error_string(ERR_get_error(), NULL));
+-                return -1;
+-            }
++        /* disable SSLv3 */
++        if ((SSL_OP_NO_SSLv3
++             & SSL_CTX_set_options(s->ssl_ctx, SSL_OP_NO_SSLv3))
++            != SSL_OP_NO_SSLv3) {
++            log_error_write(srv, __FILE__, __LINE__, "ss", "SSL:",
++                            ERR_error_string(ERR_get_error(), NULL));
++            return -1;
+         }
+ 
+         if (!buffer_string_is_empty(s->ssl_cipher_list)) {

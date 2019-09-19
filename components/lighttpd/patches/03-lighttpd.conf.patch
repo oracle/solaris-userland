@@ -1,8 +1,15 @@
 Developed in-house, not fed back.
 Solaris-specific: configuration file customization.
 
---- doc/config/lighttpd.conf	2013-11-04 08:53:35.317845225 -0800
-+++ doc/config/lighttpd.conf	2013-11-04 08:52:54.468735970 -0800
+Note that server.set-v6only is disabled to enable
+IPv4 connections by default, and recover the same
+behaviour as in lighttpd 1.4.45 and older.
+
+See the following webpage to get more information.
+https://redmine.lighttpd.net/boards/2/topics/7720
+
+--- doc/config/lighttpd.conf	2019-09-23 13:10:33.257471570 +0000
++++ doc/config/lighttpd.conf	2019-09-23 13:07:09.659551024 +0000
 @@ -13,11 +13,11 @@
  ## if you add a variable here. Add the corresponding variable in the
  ## chroot example aswell.
@@ -20,7 +27,7 @@ Solaris-specific: configuration file customization.
  
  ## 
  ## run the server chrooted.
-@@ -58,7 +58,7 @@
+@@ -58,7 +58,7 @@ var.vhosts_dir  = server_root + "/vhosts
  ## used in:
  ## conf.d/compress.conf
  ##
@@ -29,7 +36,17 @@ Solaris-specific: configuration file customization.
  
  ##
  ## Base directory for sockets.
-@@ -101,8 +101,8 @@
+@@ -92,6 +92,9 @@ server.port = 80
+ ##
+ server.use-ipv6 = "enable"
+ 
++# Enable IPv4 connections.
++server.set-v6only = "disable"
++
+ ##
+ ## bind to a specific IP
+ ##
+@@ -101,8 +104,8 @@ server.use-ipv6 = "enable"
  ## Run as a different username/groupname.
  ## This requires root permissions during startup. 
  ##
@@ -38,9 +55,9 @@ Solaris-specific: configuration file customization.
 +server.username  = "webservd"
 +server.groupname = "webservd"
  
- ## 
- ## enable core files.
-@@ -112,7 +112,7 @@
+ ##
+ ## Enable lighttpd to serve requests on sockets received from systemd
+@@ -118,7 +121,7 @@ server.groupname = "lighttpd"
  ##
  ## Document root
  ##
@@ -49,7 +66,7 @@ Solaris-specific: configuration file customization.
  
  ##
  ## The value for the "Server:" response field.
-@@ -124,7 +124,7 @@
+@@ -130,7 +133,7 @@ server.document-root = server_root + "/h
  ##
  ## store a pid file
  ##
@@ -58,7 +75,7 @@ Solaris-specific: configuration file customization.
  
  ##
  #######################################################################
-@@ -178,7 +178,7 @@
+@@ -184,7 +187,7 @@ include "conf.d/debug.conf"
  ##
  ## linux-sysepoll is recommended on kernel 2.6.
  ##
@@ -67,7 +84,7 @@ Solaris-specific: configuration file customization.
  
  ##
  ## The basic network interface for all platforms at the syscalls read()
-@@ -325,7 +325,7 @@
+@@ -331,7 +334,7 @@ server.max-connections = 1024
  ##                                 "index.htm", "default.htm" )
  ##
  index-file.names += (
@@ -76,7 +93,7 @@ Solaris-specific: configuration file customization.
  )
  
  ##
-@@ -380,7 +380,7 @@
+@@ -386,7 +389,7 @@ static-file.exclude-extensions = ( ".php
  ## Format: <errorfile-prefix><status-code>.html
  ## -> ..../status-404.html for 'File not found'
  ##

@@ -4,39 +4,29 @@ Solaris-specific: in order to start Lighttpd as non-root
 user, initial user needs elevated privileges. Those
 privileges are unnecessary and should be dropped.
 
---- src/network.c
-+++ src/network.c
-@@ -23,6 +23,8 @@
+--- src/network.c	2019-09-18 09:50:00.990465864 +0000
++++ src/network.c	2019-09-18 09:49:48.751440835 +0000
+@@ -20,6 +20,7 @@
+ #include <unistd.h>
+ #include <string.h>
  #include <stdlib.h>
- #include <assert.h>
- 
 +#include <priv.h>
-+
- #ifdef USE_OPENSSL
- # include <openssl/ssl.h>
- # include <openssl/err.h>
-@@ -677,6 +679,8 @@
- 	size_t i, j;
- 	network_backend_t backend;
  
-+	priv_set_t *tset;
-+
- #if OPENSSL_VERSION_NUMBER >= 0x0090800fL
- #ifndef OPENSSL_NO_ECDH
- 	EC_KEY *ecdh;
-@@ -1082,6 +1086,16 @@
+ void
+ network_accept_tcp_nagle_disable (const int fd)
+@@ -509,6 +510,16 @@ int network_init(server *srv, int stdin_
  		}
  	}
  
 +	/* here we drop privileges we won't need any more */
-+	tset = priv_allocset();
++	priv_set_t *tset = priv_allocset();
 +	priv_emptyset(tset);
 +	priv_addset(tset, PRIV_NET_PRIVADDR);
 +	if (setppriv(PRIV_OFF, PRIV_PERMITTED, tset) != 0) {
 +		perror("Unable to set privileges: ");
 +		return -1;
 +	}
-+	
++	priv_freeset(tset);
 +
  	return 0;
  }

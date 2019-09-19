@@ -1,0 +1,21 @@
+We need to follow links in fdevent_open_cloexec
+because /dev/null is symlink on Oracle Solaris.
+Component lighttpd fails to start without this patch.
+
+Will be sent to upstream.
+
+--- src/fdevent.c	2019-09-18 13:36:36.767348540 +0000
++++ src/fdevent.c	2019-09-18 13:35:57.724500269 +0000
+@@ -529,7 +529,11 @@ int fdevent_open_devnull(void) {
+   #if defined(_WIN32)
+     return fdevent_open_cloexec("nul", 0, O_RDWR, 0);
+   #else
+-    return fdevent_open_cloexec("/dev/null", 0, O_RDWR, 0);
++  #if defined(__sun)
++  return fdevent_open_cloexec("/dev/null", 1, O_RDWR, 0);
++  #else
++  return fdevent_open_cloexec("/dev/null", 0, O_RDWR, 0);
++  #endif
+   #endif
+ }
+ 
