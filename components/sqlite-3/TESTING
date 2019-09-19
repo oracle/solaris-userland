@@ -16,23 +16,25 @@ sqlite-3 for our version of sqlite-3 and modify userland-incorporation so that
 it refers our version of sqlite-3. After that create bootable iso from the
 modified IPS repo and test installing Solaris from it.
 
-# download zipped repo and install-repo.ksh
-# http://nana.us.oracle.com/products/Solaris_Trunk/st_trunk/010/zipped-repo/
+# download zipped repo (choose desired $BUILD) and install-repo.ksh
+# http://nana.us.oracle.com/products/Solaris_Trunk/st_trunk/${BUILD}/zipped-repo/
 
 # I perform whole action in zfs so that I can rollback easily
 zfs create scratch/repo
-./install-repo.ksh -d repo
+ksh ./install-repo.ksh -d repo
 zfs snapshot scratch/repo@after_unpack
 
 # Remove old sqlite
 PKG=database/sqlite-3
 # This is where the manifest will be found in the raw repository
 PKG_PATH="${PKG//\//%2F}"
-OLDVER=$( pkg list -Haf -g repo "$PKG" | awk '{ print $2 }' )
-pkgrepo remove -s repo "$PKG" 
+OLDVER=$( pkg list -Haf -g repo "$PKG" | sed "s/(.*)//" | awk '{ print $2 }' )
+pkgrepo remove -s repo "$PKG"
 
 # Copy sqlite to the repo
 pkgrepo create raw-repo
+# Make sure that you don't have multiple sqlite-3 packages in your repo
+# otherwise distro_const might fail later
 pkgrecv -d raw-repo --raw -s userland-gate/$(uname -p)/repo "$PKG"
 # changing publisher nightly -> solaris
 perl -pi -e "s,nightly/(\\Q${PKG}\\E),solaris/\$1," "raw-repo/$PKG_PATH"/*/manifest
@@ -41,8 +43,7 @@ pkgsend -s fix publish $( printf -- '-d %s ' raw-repo/*/* ) "raw-repo/$PKG_PATH"
 pkg list -af -g fix
 pkgrecv -v -d repo -s fix "$PKG"
 rm -rf fix raw-repo
-NEWVER=$( pkg list -Haf -g repo "$PKG" | awk '{ print $2 }' )
-
+NEWVER=$( pkg list -Haf -g repo "$PKG" | sed "s/(.*)//" | awk '{ print $2 }' )
 
 # Teach userland-incorporation about our new sqlite version. This is needed
 # only if we have built sqlite version different to what the repo contained
@@ -61,17 +62,29 @@ pkgrecv -v -d repo -s fix "$CONS"
 rm -rf fix raw-repo
 
 # Now create the iso definition file
-cp /usr/share/distro_const/dc_text_sparc.xml iso.xml
+[[ "`uname -p`" = "sparc" ]] && PLATFORM="sparc" || PLATFORM="x86"
+cp /usr/share/distro_const/dc_text_${PLATFORM}.xml iso.xml
 vi iso.xml
- - change set-ips-attributes to file:///scratch/repo
- - change transfer-ips-install to
-   - solaris - file:///scratch/repo
+
+# change both occurences of http://pkg.oracle.com/solaris/release to file:///scratch/repo
+gsed -i 's$http://pkg.oracle.com/solaris/release$file:///scratch/repo$' iso.xml
+
+# <software name="transfer-ips-install" type="IPS">
+#   <source>
+#     <publisher name="solaris">
+#       <origin name="CHANGE_THIS"/>
+#
+# <software name="set-ips-attributes" type="IPS">
+#   <source>
+#     <publisher name="solaris">
+#       <origin name="CHANGE_THIS"/>
+
 # The machine needs uucp installed otherwise building iso fails
 sudo pkg install -v service/network/uucp
 sudo distro_const build iso.xml
 
-# Now install machine from the iso and verify that we are looking at correct
-# sqlite version
+# Now install machine from the iso (see instructions bellow) and verify that
+# we are looking at correct sqlite version
 $ pkg list database/sqlite-3
 NAME (PUBLISHER)                                  VERSION                    IFO
 database/sqlite-3                                 3.21.0-11.4.0.0.0.10.0     i--
@@ -81,3 +94,22 @@ $ sqlite3 --version
 
 $ svcs -x
 <no output>
+
+================================================================================
+# iso image installation on our virtual machines
+
+## Intel ##
+# create new virtual machine
+/tank/vm/admin/bin/vm.create_new ${VM_MACHINE_NAME} Solaris_64 ${PATH_TO_IMAGE}/Oracle_Solaris_Text_X86.iso
+vm start $VM_MACHINE_NAME
+# connect with rdesktop, then follow installation instructions
+
+## SPARC ##
+# create new virtual machine
+/tank/vm/admin/bin/sparc/vm.create_new ${VM_MACHINE_NAME} ${PATH_TO_IMAGE}/Oracle_Solaris_Text_SPARC.iso
+# machine must be started with the -ok argument
+vm start -ok $VM_MACHINE_NAME
+# connect to the console
+vm console $VM_MACHINE_NAME
+# start boot with following command, then follow installation instructions
+boot cdrom
