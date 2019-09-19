@@ -221,7 +221,12 @@ if [ "$DO_MANIFEST_UPDATE" = true ]; then
 
 	# Filter out removed lines
 	REMOVE_LINES=$(ggrep -oP "^\+\K[^\+].*$" <<< "$MANIFEST_DIFF" || true)
-	ggrep -xFf <( echo "$REMOVE_LINES" ) -v <<< "$CURRENT_MANIFEST" > "$ORIGIN"
+	if [ -z "$REMOVE_LINES" ]; then
+		# If no removed lines were found, skip the line-deleting ggrep command
+		echo -E "$CURRENT_MANIFEST" > "$ORIGIN"
+	else
+		ggrep -xFf <( echo "$REMOVE_LINES" ) -v <<< "$CURRENT_MANIFEST" > "$ORIGIN"
+	fi
 
 	# Add newly added lines into the manifest
 	ggrep -oP "^-\K[^-].*$" <<< "$MANIFEST_DIFF" >> "$ORIGIN" || true
