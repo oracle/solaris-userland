@@ -1,0 +1,52 @@
+The ptpd daemon currently does it's signal handling with the "signal" syscall,
+which is not robust. We replace it with the sigaction syscall and set the
+SA_RESTART flag so that the signal handler is automatically replaced and
+in-progress system calls can automatically restart.
+
+--- ptpd-2.2.0/src/dep/startup.c
++++ ptpd-2.2.0/src/dep/startup.c
+@@ -120,9 +120,6 @@ void catch_signals(int sig)
+        */
+     break;
+   }
+-  /* Solaris needs the signals to be reenabled */
+-  signal(sig,  catch_signals);
+-
+ }
+ 
+ 
+@@ -652,6 +649,7 @@ is_zone(void) {
+ PtpClock *
+ ptpdStartup(int argc, char **argv, Integer16 * ret, RunTimeOpts * rtOpts)
+ {
++	struct sigaction new_action;
+ 	PtpClock * ptpClock;
+   int c, noclose = 0;
+   int mode_selected = 0;		// 1: slave / 2: master, with ntp / 3: master without ntp
+@@ -1396,16 +1394,19 @@ ptpdStartup(int argc, char **argv, Integ
+ 
+ 
+   /* use new syncronous signal handlers */
+-  signal(SIGINT,  catch_signals);
+-  signal(SIGTERM, catch_signals);
+-  signal(SIGHUP,  catch_signals);
++  new_action.sa_handler = catch_signals;
++  sigemptyset(&new_action.sa_mask);
++  new_action.sa_flags = SA_RESTART;
++  sigaction(SIGINT,  &new_action, NULL);
++  sigaction(SIGTERM, &new_action, NULL);
++  sigaction(SIGHUP,  &new_action, NULL);
+ 
+-  signal(SIGUSR1, catch_signals);
+-  signal(SIGUSR2, catch_signals);
++  sigaction(SIGUSR1, &new_action, NULL);
++  sigaction(SIGUSR2, &new_action, NULL);
+ 
+ #ifdef DBG_SIGRTMIN_LEAP_SECOND
+-  signal(SIGRTMIN,   catch_signals);
+-  signal(SIGRTMIN+1, catch_signals);
++  sigaction(SIGRTMIN,   &new_action, NULL);
++  sigaction(SIGRTMIN+1, &new_action, NULL);
+ #endif
+ 
+   *ret = 0;
