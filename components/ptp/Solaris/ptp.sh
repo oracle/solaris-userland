@@ -20,7 +20,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Standard prolog
@@ -125,6 +125,10 @@ done
 OTHER_OPTIONS="`get_prop other_options`"
 if [ -n "$OTHER_OPTIONS" ]; then
 	CMD_LINE_ARGS="$CMD_LINE_ARGS $OTHER_OPTIONS"
+fi
+STARTUPSTEP="`get_prop step_clock_seconds`"
+if [ "$STARTUPSTEP" -gt 0 ]; then
+	CMD_LINE_ARGS="$CMD_LINE_ARGS -A $STARTUPSTEP"
 fi
 
 # Delay starting the daemon by the specified amount.

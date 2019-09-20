@@ -1,0 +1,140 @@
+Enable a command line option for step at startup only.
+
+--- ptpd-2.2.0/src/datatypes.h
++++ ptpd-2.2.0/src/datatypes.h
+@@ -475,7 +475,7 @@ typedef struct {
+   int waiting_for_first_delayresp;		/* Just for information purposes */
+ 
+   Boolean offset_first_updated;
+-  Boolean clock_first_updated;
++  int clock_first_updated;
+ 
+   Statistics statistics;
+   
+@@ -569,7 +569,7 @@ typedef struct {
+   Boolean currentUtcOffsetValid;
+   Octet ifaceName[IFACE_NAME_LENGTH];
+   Boolean	noResetClock;
+-  Boolean resetClockStartupOnly;
++  Integer32 resetClockStartupOnly;
+   Integer32 maxReset; /* Maximum number of nanoseconds to reset */
+   TimeInternal maxDelay; /* Maximum number of nanoseconds of delay */
+   Boolean	noAdjust;
+--- ptpd-2.2.0/src/dep/servo.c
++++ ptpd-2.2.0/src/dep/servo.c
+@@ -575,8 +575,10 @@ updateClock(RunTimeOpts * rtOpts, PtpClo
+ 		if (!rtOpts->noAdjust) {
+ 			/* */
+ 			if (!rtOpts->noResetClock &&
+-			    (!rtOpts->resetClockStartupOnly || !ptpClock->clock_first_updated)) {
+-
++			    (!ptpClock->clock_first_updated ||
++	     		    !(rtOpts->resetClockStartupOnly &&
++			    (gethrtime()/1000000000) - rtOpts->resetClockStartupOnly >
++			    ptpClock->clock_first_updated))) {
+ 				servo_perform_clock_step(rtOpts, ptpClock, &ptpClock->offsetFromMaster);
+ 			} else {
+ 				/*
+@@ -665,7 +667,8 @@ updateClock(RunTimeOpts * rtOpts, PtpClo
+ 	/* If we get here, the clock has been updated. Used to enable syncing of
+ 	 * second servo in time both mode.
+ 	 */
+-	ptpClock->clock_first_updated = TRUE;
++        if (!ptpClock->clock_first_updated)
++		ptpClock->clock_first_updated = gethrtime()/1000000000;
+ 
+ 
+ display:
+--- ptpd-2.2.0/src/constants.h
++++ ptpd-2.2.0/src/constants.h
+@@ -48,7 +48,7 @@
+ #define DEFAULT_INBOUND_LATENCY      	0       /* in nsec */
+ #define DEFAULT_OUTBOUND_LATENCY     	0       /* in nsec */
+ #define DEFAULT_NO_RESET_CLOCK       	FALSE
+-#define DEFAULT_RESET_CLOCK_STARTUP_ONLY FALSE
++#define DEFAULT_RESET_CLOCK_STARTUP_ONLY 0 	/* in sec */
+ #define DEFAULT_NO_ADJUST_CLOCK      FALSE
+ #define DEFAULT_DOMAIN_NUMBER        	0
+ #define DEFAULT_DELAY_MECHANISM      	E2E
+--- ptpd-2.2.0/src/ptpd2.8
++++ ptpd-2.2.0/src/ptpd2.8
+@@ -18,6 +18,7 @@ ptpd \- Precision Time Protocol daemon (
+ [-D]
+ [-P]
+ [-x]
++[-A NUMBER]
+ [-O NUMBER]
+ [-M NUMBER]
+ [-t]
+@@ -166,6 +167,14 @@ Set the debug level. The default is zero
+ .TP
+ .BR  config/send_debug_to_stderr
+ Send debug messages to stderr if true, to the syslog if false. Default is true.
++.TP
++.BR  config/clock_step_seconds
++An integer that tells ptpd to allow stepping the system clock only when it first
++starts and for only the number of seconds specified by this property after the
++first time the system clock is set. After the interval expires no further clock
++steps will be allowed. The default value is zero, which allows the clock to
++be stepped at any time.
++number
+ .SH OPTIONS
+ .TP
+ .B \-?
+@@ -198,6 +207,10 @@ display stats in .csv format
+ .B \-x
+ do not reset the clock if off by more than one second
+ .TP
++.B \-A NUMBER
++Allow stepping the clock at startup only. Stepping the clock is allowed for
++NUMBER seconds after the first time the clock is set and then disallowed thereafter.
++.TP
+ .B \-M NUMBER
+ do not accept delay values of more than NUMBER nanoseconds
+ .TP
+--- ptpd-2.2.0/src/dep/startup.c
++++ ptpd-2.2.0/src/dep/startup.c
+@@ -665,15 +665,8 @@ ptpdStartup(int argc, char **argv, Integ
+   Boolean is_error;
+ 
+   dump_command_line_parameters(argc, argv);
+-/*
+-#ifdef PTPD_FULL_OPTIONS
+-  const char *getopt_string = "HcSdDEPf:R:X:B:txjO:M:a:w:b:l:T:u:o:i:n:y:m:v:r:s:p:q:Y:LZgGWK";
+-#else
+-  const char *getopt_string = "HcSdDEPf:R:X:B:txjM:a:w:b:l:T:o:i:n:y:m:v:r:s:p:q:Y:LZgGWK";
+-#endif
+-*/
+ 
+-   const char *getopt_string = "?HgGWb:cCf:ST:dDPR:xO:tM:a:w:u:ehzl:o:i:n:N:y:m:v:r:s:p:q:Y:BjLV:XZKFUJ:Q:";
++   const char *getopt_string = "?HgGWb:cCf:ST:dDPR:xO:tM:a:w:u:ehzl:o:i:n:N:y:m:v:r:s:p:q:Y:BjLV:XZKFUJ:Q:A:";
+ 
+   /* parse command line arguments */
+   while ((c = getopt(argc, argv, getopt_string)) != -1) {
+@@ -716,6 +709,7 @@ ptpdStartup(int argc, char **argv, Integ
+ 	"-P                display each received packet in detail\n"
+ 	"-R FILE           record data about sync packets in a seperate file\n"
+ 	"-x                do not reset the clock if off by more than one second\n"
++	"-A NUMBER         Reset the clock only for this many seconds.\n"
+ 	"-O NUMBER         do not reset the clock if offset is more than NUMBER nanoseconds\n"
+ 	"-t                do not make any changes to the system clock\n"
+ 	"-M NUMBER         do not accept delay values of more than NUMBER nanoseconds\n"
+@@ -1178,6 +1172,18 @@ ptpdStartup(int argc, char **argv, Integ
+         	return (0);
+       	 }
+          break;
++      case 'A':
++	 /* 
++	  * Only allow stepping the clock at startup and for this many
++	  * seconds after that.
++	  */
++	 rtOpts->resetClockStartupOnly = atoi(optarg);
++	 if (rtOpts->resetClockStartupOnly < 0) {
++		 ERROR("-A argument must be positive.\n");
++		 *ret = 3;
++		 return(0);
++	 }
++         break;
+ 
+     default:
+       ERROR("Unknown parameter %c \n", c);
