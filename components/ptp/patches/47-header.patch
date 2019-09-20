@@ -1,0 +1,48 @@
+When restarting the logfile, print a new header.
+
+--- ptpd-2.2.0/src/dep/ptpd_dep.h
++++ ptpd-2.2.0/src/dep/ptpd_dep.h
+@@ -306,6 +306,7 @@ void DBG_time(const char *name, const Ti
+ void message(int priority, const char *format, ...);
+ void dump(const char *text, void *addr, int len);
+ void displayStats(RunTimeOpts *rtOpts, PtpClock *ptpClock);
++void resetHeader(void);
+ Boolean nanoSleep(TimeInternal*);
+ double getRand(void);
+ 
+--- ptpd-2.2.0/src/dep/sys.c
++++ ptpd-2.2.0/src/dep/sys.c
+@@ -63,6 +63,9 @@ double round (double __x);
+ extern PtpClock *G_ptpClock;
+ extern PtpClock* G_timeBothClock;
+ 
++/* Do we need to print the header? */
++static int start = 1;
++
+ /*
+  returns a static char * for the representation of time, for debug purposes
+  DO NOT call this twice in the same printf!
+@@ -468,9 +471,12 @@ dump(const char *text, void *addr, int l
+ }
+ 
+ void
++resetHeader(void) {
++	start = 1;
++}
++void
+ displayStats(RunTimeOpts * rtOpts, PtpClock * ptpClock)
+ {
+-	static int start = 1;
+ 	static char sbuf[SCREEN_BUFSZ];
+ 	int len = 0;
+ 	TimeInternal now;
+--- ptpd-2.2.0/src/dep/startup.c
++++ ptpd-2.2.0/src/dep/startup.c
+@@ -153,6 +153,7 @@ do_signal_sighup(RunTimeOpts * rtOpts)
+ 	if(rtOpts->do_log_to_file)
+ 		if(!logToFile(rtOpts))
+ 			NOTIFY("SIGHUP logToFile failed\n");
++	resetHeader();
+ 
+   NOTIFY("I've been SIGHUP'd\n");
+ }
