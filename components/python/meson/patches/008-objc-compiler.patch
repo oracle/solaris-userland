@@ -1,0 +1,45 @@
+Patch from upstream:
+https://github.com/mesonbuild/meson/commit/52aba19b17a10c7edbef05f8dc86aa917b59f5c3
+
+Fixes test cases that look for an Objective C compiler and get upset
+because "cc" on Solaris doesn't support Objective C, while gcc & clang do.
+
+From 52aba19b17a10c7edbef05f8dc86aa917b59f5c3 Mon Sep 17 00:00:00 2001
+From: Dylan Baker <dylan@pnwbakers.com>
+Date: Mon, 19 Aug 2019 14:57:31 -0700
+Subject: [PATCH] environment: gcc/g++ and clang/clang++ are valid objc/objc++
+ compilers to try
+
+---
+ mesonbuild/environment.py | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/mesonbuild/environment.py b/mesonbuild/environment.py
+index aefa807b..62365271 100644
+--- a/mesonbuild/environment.py
++++ b/mesonbuild/environment.py
+@@ -499,16 +499,19 @@ class Environment:
+             # There is currently no pgc++ for Windows, only for  Mac and Linux.
+             self.default_cpp = ['icl', 'cl', 'c++', 'g++', 'clang++', 'clang-cl']
+             self.default_fortran = ['ifort', 'gfortran', 'flang', 'pgfortran', 'g95']
++            # Clang and clang++ are valid, but currently unsupported.
++            self.default_objc = ['cc', 'gcc']
++            self.default_objcpp = ['c++', 'g++']
+         else:
+             self.default_c = ['cc', 'gcc', 'clang', 'pgcc', 'icc']
+             self.default_cpp = ['c++', 'g++', 'clang++', 'pgc++', 'icpc']
+             self.default_fortran = ['gfortran', 'flang', 'pgfortran', 'ifort', 'g95']
++            self.default_objc = ['cc', 'gcc', 'clang']
++            self.default_objcpp = ['c++', 'g++', 'clang++']
+         if mesonlib.is_windows():
+             self.default_cs = ['csc', 'mcs']
+         else:
+             self.default_cs = ['mcs', 'csc']
+-        self.default_objc = ['cc']
+-        self.default_objcpp = ['c++']
+         self.default_d = ['ldc2', 'ldc', 'gdc', 'dmd']
+         self.default_java = ['javac']
+         self.default_cuda = ['nvcc']
+-- 
+2.19.2
+

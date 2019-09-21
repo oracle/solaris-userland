@@ -1,0 +1,29 @@
+Upstream has split out & reworked the linker flag code, so this needs to
+be adapted to that before it can be submitted upstream.
+
+From 91603f249a15b0309c690f70effed91dce7f5710 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Tue, 1 Aug 2017 04:08:04 -0700
+Subject: [PATCH] workaround until solaris linker is detected
+
+---
+ test cases/linuxlike/3 linker script/meson.build | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/test cases/linuxlike/3 linker script/meson.build b/test cases/linuxlike/3 linker script/meson.build
+index 63765e7c..2b5cedd3 100644
+--- a/test cases/linuxlike/3 linker script/meson.build	
++++ b/test cases/linuxlike/3 linker script/meson.build	
+@@ -1,5 +1,9 @@
+ project('linker script', 'c')
+ 
++if host_machine.system() == 'sunos'
++  add_project_link_arguments('-Wl,-z,gnu-version-script-compat', language: 'C')
++endif
++
+ # Static map file
+ mapfile = 'bob.map'
+ vflag = '-Wl,--version-script,@0@/@1@'.format(meson.current_source_dir(), mapfile)
+-- 
+2.19.2
+

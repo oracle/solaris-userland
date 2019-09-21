@@ -1,0 +1,42 @@
+This patch is necessary because Userland passes -z text in LD_OPTIONS_SO,
+which is good for most shared objects, but triggers an error in this test.
+It isn't necessary upstream when not built in such environments.
+
+From c766b709fb0adbbc468806b8a7809bbaf5cc5821 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Sat, 29 Jun 2019 19:09:52 -0700
+Subject: [PATCH] Fix "test cases/common/126 object only target" on Solaris
+
+If object is not built pic, trying to link it into libshr.so fails:
+
+[6/8] Linking target libshr.so.
+FAILED: libshr.so
+gcc  -o libshr.so 'shr@sha/source2.o' -Wl,--no-undefined -Wl,--as-needed -shared -fPIC -Wl,--start-group -Wl,-soname,libshr.so -Wl,--end-group
+Text relocation remains                         referenced
+    against symbol                  offset      in file
+.text (section)                     0x20        shr@sha/source2.o
+ld: fatal: relocations remain against allocatable but non-writable sections
+collect2: error: ld returned 1 exit status
+ninja: build stopped: subcommand failed.
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ test cases/common/126 object only target/obj_generator.py | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/test cases/common/126 object only target/obj_generator.py b/test cases/common/126 object only target/obj_generator.py
+index a33872aa..afdbc09a 100755
+--- a/test cases/common/126 object only target/obj_generator.py	
++++ b/test cases/common/126 object only target/obj_generator.py	
+@@ -13,6 +13,8 @@ if __name__ == '__main__':
+     ofile = sys.argv[3]
+     if compiler.endswith('cl'):
+         cmd = [compiler, '/nologo', '/MDd', '/Fo' + ofile, '/c', ifile]
++    elif sys.platform == 'sunos5':
++        cmd = [compiler, '-fpic', '-c', ifile, '-o', ofile]
+     else:
+         cmd = [compiler, '-c', ifile, '-o', ofile]
+     sys.exit(subprocess.call(cmd))
+-- 
+2.19.2
+

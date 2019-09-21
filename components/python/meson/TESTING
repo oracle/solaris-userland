@@ -1,0 +1,83 @@
+'gmake test' runs the full test suite.
+
+To run individual unit test cases:
+    python3.7 meson-0.51.2/run_unittests.py -k <test>
+
+For example, to run the test_flock unit test:
+    python3.7 meson-0.51.2/run_unittests.py -k test_flock
+
+For other test cases, cd to the test case directory and run:
+    env PKG_CONFIG_PATH=/usr/lib/64/pkgconfig python3 \
+ 	../../../meson.py builddir
+    cd builddir
+    ninja
+    ninja test
+
+Known, unfixed issues:
+
+======================================================================
+FAIL: test_flock (__main__.AllPlatformTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "run_unittests.py", line 2825, in test_flock
+    self.assertTrue(exception_raised, 'Double locking did not raise exception.')
+AssertionError: False is not true : Double locking did not raise exception.
+
+-- This appears to be because the test tries to lock the file twice
+   in the same process, but the fcntl calls underlying Python's fcntl.flock()
+   only lock out other processes, and allow a single process to get additional
+   locks on the same file.   Perhaps we need to find a way to fork a second
+   process for this test?
+
+   Reported upstream as https://github.com/mesonbuild/meson/issues/5903
+
+======================================================================
+FAIL: test_installed_modes (__main__.LinuxlikeTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "run_unittests.py", line 4579, in test_installed_modes
+    self.assertEqual(want_mode, found_mode[1:])
+AssertionError: 'rw------T' != 'rw-------'
+- rw------T
+?         ^
++ rw-------
+?         ^
+
+FAIL: test_installed_modes_extended (__main__.LinuxlikeTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "run_unittests.py", line 4654, in test_installed_modes_extended
+    (fsobj, want_mode, found_mode)))
+AssertionError: '-r--r--r-T' != '-r--r--r--'
+- -r--r--r-T
+?          ^
++ -r--r--r--
+?          ^
+ : Expected file include/rootdir.h to have mode -r--r--r-T but found -r--r--r-- instead.
+
+-- These appear to be because Solaris chmod(2) has an additional restriction:
+       If the process is not a privileged process and the file is not a direc-
+       tory, mode bit 01000 (S_ISVTX, the sticky bit) is cleared.
+
+   Reported upstream as https://github.com/mesonbuild/meson/issues/5902
+
+======================================================================
+[4/6] Linking target libsample.so.
+FAILED: libsample.so 
+/usr/gcc/9/bin/gcc  -o libsample.so 'sample@sha/meson-sample.c.o' -Wl,--no-undefined -Wl,--as-needed -shared -fPIC -Wl,--start-group -Wl,-soname,libsample.so -m64 -O3 samelibname/libsample.so /usr/lib/amd64/libgobject-2.0.so /usr/lib/amd64/libglib-2.0.so -Wl,--end-group '-Wl,-rpath,$ORIGIN/samelibname'
+ld: fatal: recording name conflict: file 'samelibname/libsample.so' and soname option (-h, -soname) provide identical dependency names: libsample.so
+collect2: error: ld returned 1 exit status
+ninja: build stopped: subcommand failed.
+
+-- This fails because it attempts to perform the illogical operation of
+   creating a shared object that depends on a shared object of the same
+   name, which makes no sense with our dynamic linker.
+
+   Reported upstream as https://github.com/mesonbuild/meson/issues/5915
+
+
+======================================================================
+meson.build:19:2: ERROR: Dependency "python3" not found, tried pkgconfig
+
+-- This is due to a python packaging bug in Userland on Solaris:
+   Bug 30277203 - python3.pc is missing due to incorrect mediation  

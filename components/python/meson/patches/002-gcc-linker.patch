@@ -1,0 +1,53 @@
+This patch is needed for 0.51, but git master has replaced the linker args
+code with a new interface that doesn't require this any longer, so this
+should be able to be dropped for 0.52 & beyond.
+
+From 4ab4213ea21f76ca2f549ecf333c892a0c9dbf19 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Sat, 29 Jun 2019 15:01:14 -0700
+Subject: [PATCH] On Solaris, use Solaris linker arguments, even with gcc
+
+gcc on Solaris is normally configured to use the Solaris linker, not
+GNU ld, so various tests were failing with:
+
+/usr/gcc/7/bin/gcc  -o main 'main@exe/main.c.o' -Wl,--no-undefined -Wl,--as-needed -Wl,-O1
+ld: fatal: unrecognized option '-O'
+ld: fatal: unrecognized option '-1'
+ld: fatal: use the '-z help' option for usage information
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ mesonbuild/compilers/compilers.py | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/mesonbuild/compilers/compilers.py b/mesonbuild/compilers/compilers.py
+index b188788b..bf7c03ee 100644
+--- a/mesonbuild/compilers/compilers.py
++++ b/mesonbuild/compilers/compilers.py
+@@ -229,6 +229,14 @@ pgi_buildtype_linker_args = {'plain': [],
+                              'custom': [],
+                              }
+ 
++sunos_buildtype_linker_args = {'plain': [],
++                             'debug': [],
++                             'debugoptimized': [],
++                             'release': [],
++                             'minsize': [],
++                             'custom': [],
++                             }
++
+ msvc_buildtype_linker_args = {'plain': [],
+                               'debug': [],
+                               'debugoptimized': [],
+@@ -1921,6 +1929,8 @@ class GnuLikeCompiler(abc.ABC):
+     def get_buildtype_linker_args(self, buildtype):
+         if self.compiler_type.is_osx_compiler:
+             return apple_buildtype_linker_args[buildtype]
++        elif mesonlib.is_sunos():
++            return sunos_buildtype_linker_args[buildtype]
+         return gnulike_buildtype_linker_args[buildtype]
+ 
+     @abc.abstractmethod
+-- 
+2.15.2
+

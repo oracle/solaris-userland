@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 #
@@ -36,6 +36,7 @@ PKGMOGRIFY_TRANSFORMS += $(WS_TOP)/transforms/gnome-incorporation
 
 include $(WS_MAKE_RULES)/common.mk
 
+ifeq ($(strip $(BUILD_STYLE)),configure)
 CONFIGURE_OPTIONS += --libexecdir="$(USRLIB)"
 CONFIGURE_OPTIONS += --localstatedir="$(VARDIR)"
 
@@ -55,6 +56,12 @@ CONFIGURE_OPTIONS += --sysconfdir="$(ETCDIR.$(BITS))"
 CONFIGURE_ENV += MAKE=$(MAKE)
 
 CONFIGURE_ENV += INTLTOOL_PERL="$(PERL)"
+endif # BUILD_STYLE == configure
+
+ifeq ($(strip $(BUILD_STYLE)),meson)
+# This is needed in the build environment for gobject-introspection
+COMPONENT_BUILD_ENV += CC="$(CC) $(CC_BITS)"
+endif
 
 # Tell g-ir-scanner not to cache results in homedir of user running the build
 COMPONENT_BUILD_ENV += GI_SCANNER_DISABLE_CACHE=""

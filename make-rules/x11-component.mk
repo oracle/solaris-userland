@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 #
@@ -74,6 +74,7 @@ REQUIRED_PACKAGES += developer/build/autoconf/xorg-macros
 XORG_DOCS = $(WS_COMPONENTS)/x11/doc/build/prototype/$(MACH)
 PKG_CONFIG_PATHS += $(XORG_DOCS)/usr/share/pkgconfig
 
+ifeq ($(strip $(BUILD_STYLE)),configure)
 # XORG_WITH_XMLTO check below makes sure we're using a version of that macro
 # compatible with xmlto 0.0.27 & later, as provided in util-macros > 0.19.0
 COMPONENT_PREP_ACTION += (cd $(@D) ; \
@@ -86,7 +87,7 @@ COMPONENT_PREP_ACTION += (cd $(@D) ; \
 	    fi ; \
 	fi );
 
-# Common documentation options for X.Org components
+# Common documentation options for X.Org components that use autoconf
 CONFIGURE_OPTIONS += --enable-specs
 CONFIGURE_OPTIONS += --with-asciidoc
 CONFIGURE_OPTIONS += --without-fop
@@ -108,6 +109,7 @@ ETCDIR.64 ?= $(ETCDIR)
 CONFIGURE_OPTIONS += --sysconfdir="$(ETCDIR.$(BITS))"
 
 CONFIGURE_ENV += INTLTOOL_PERL="$(PERL)"
+endif # BUILD_STYLE == configure
 
 
 # Special options for Xorg driver components
@@ -147,7 +149,9 @@ endif
 
 # Special options for Xorg library components
 ifeq ($(strip $(COMPONENT_CATEGORY)),lib)
+ifeq ($(strip $(BUILD_STYLE)),configure)
 CONFIGURE_OPTIONS += --enable-shared=yes --enable-static=no
+endif
 endif
 
 

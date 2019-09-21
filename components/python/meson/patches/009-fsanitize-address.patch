@@ -1,0 +1,40 @@
+Need to determine why gcc 9 doesn't support sanitize-address on Solaris
+despite now shipping libasan, before determining if we should submit this
+patch upstream to disable it.
+
+From a7398f502e7616db3e0d553051889af2f58b7a29 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Sat, 7 Sep 2019 21:19:00 -0700
+Subject: [PATCH] Don't try to use -fsanitize=address on Solaris, our gcc
+ doesn't like it
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ run_unittests.py | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/run_unittests.py b/run_unittests.py
+index c1e5c5d6..02991aa6 100755
+--- a/run_unittests.py
++++ b/run_unittests.py
+@@ -4392,6 +4392,8 @@ class LinuxlikeTests(BasePlatformTests):
+             raise unittest.SkipTest('asan not available on Cygwin')
+         if is_openbsd():
+             raise unittest.SkipTest('-fsanitize=address is not supported on OpenBSD')
++        if is_sunos():
++            raise unittest.SkipTest('-fsanitize=address is not supported on Solaris')
+ 
+         testdir = os.path.join(self.framework_test_dir, '7 gnome')
+         self.init(testdir, ['-Db_sanitize=address', '-Db_lundef=false'])
+@@ -4857,6 +4859,8 @@ class LinuxlikeTests(BasePlatformTests):
+             raise unittest.SkipTest('asan not available on Cygwin')
+         if is_openbsd():
+             raise unittest.SkipTest('-fsanitize=address is not supported on OpenBSD')
++        if is_sunos():
++            raise unittest.SkipTest('-fsanitize=address is not supported on Solaris')
+ 
+         testdir = os.path.join(self.common_test_dir, '13 pch')
+         self.init(testdir, ['-Db_sanitize=address'])
+-- 
+2.15.2
+
