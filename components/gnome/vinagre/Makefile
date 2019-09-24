@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=	    	64
@@ -26,14 +26,14 @@ COMPILER=      	       	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		vinagre
-COMPONENT_VERSION=	3.16.0
+COMPONENT_VERSION=	3.22.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Vinagre
 COMPONENT_ARCHIVE_HASH= \
-	sha256:93d79e18e71509647fe4bc00a0dcef5382b2e3a79c39d2b18a91334195995c34
+	sha256:cd1cdbacca25c8d1debf847455155ee798c3e67a20903df8b228d4ece5505e82
 COMPONENT_BUGDB=	gnome/remote-desktop
 COMPONENT_ANITYA_ID=	5573
 
-TPNO=			26597
+TPNO=			54134
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
