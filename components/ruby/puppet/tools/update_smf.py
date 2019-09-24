@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.7
 #
 # CDDL HEADER START
 #
@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2014, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 '''
@@ -38,17 +38,17 @@ properties that are allowed in the new version of puppet
 NOTE: This file should not be included with the puppet release
 '''
 
+import argparse
 import os
 import re
 import sys
 import textwrap
 
 from lxml import etree
-from optparse import OptionParser
 
 
-COMMENT_PATTERN = re.compile(".*# ?(.*)")
-CONFIG_VALUE_PATTERN = re.compile("([\S]+)\s*=\s*(\S*)")
+COMMENT_PATTERN = re.compile(r".*# ?(.*)")
+CONFIG_VALUE_PATTERN = re.compile(r"([\S]+)\s*=\s*(\S*)")
 
 DEFAULT_VALUE_STR = "The default value is "
 
@@ -117,7 +117,7 @@ def create_config_element(key, key_type, desc_text):
         required="false")
     desc = etree.SubElement(prop_pattern, "description")
     loctext = etree.SubElement(desc, "loctext")
-    loctext.text = "\n%s\n\t    " % desc_text
+    loctext.text = f"\n{desc_text}\n\t    "
     loctext.set('{http://www.w3.org/XML/1998/namespace}lang', 'C')
     return prop_pattern
 
@@ -159,8 +159,8 @@ def process_grouping(lines):
     match = CONFIG_VALUE_PATTERN.match(key_value)
     if not match:
         raise TypeError("Last line in grouping is not in expected "
-                        "format of 'key = value'\n%s" %
-                        "\n".join(lines))
+                        "format of 'key = value'{}".format(
+                            "\n".join(lines)))
     key = match.group(1)
     value = match.group(2)
 
@@ -172,7 +172,7 @@ def process_grouping(lines):
     key_type = determine_type(key, value)
 
     # remaining lines are the descriptor field
-    desc = textwrap.fill("\n".join(lines),79)
+    desc = textwrap.fill("\n".join(lines), 79)
     PUPPET_CONFIG_DICT[key] = (key, key_type, desc)
 
 
@@ -203,7 +203,6 @@ def parse_puppet_config(filename):
             if match:
                 line = match.group(1)
             parameter_list.append(line)
-    f_handle.close()
 
 
 def update_smf_file(smf_xml_file, output_file):
@@ -220,14 +219,11 @@ def update_smf_file(smf_xml_file, output_file):
         puppet_desc.text = "Puppet"
 
         pg_pattern = template.find("pg_pattern")
-    except IOError as msg:
+    except (IOError, etree.XMLSyntaxError) as msg:
         err(msg)
-        return -1
-    except etree.XMLSyntaxError as msg:
-        err(msg)
-        return -1
+        sys.exit(-1)
     except NameError as msg:
-        err("XML file %s does not match expected formated" % smf_xml_file)
+        err(f"XML file {smf_xml_file} does not match expected formated")
 
     # Delete the pg_pattern nodes and it's children
     # This is the structure that will be rebuilt based
@@ -242,72 +238,53 @@ def update_smf_file(smf_xml_file, output_file):
         name="config",
         type="application",
         required="false")
-    for key in sorted(PUPPET_CONFIG_DICT.iterkeys()):
+    for key in sorted(PUPPET_CONFIG_DICT.keys()):
         values = PUPPET_CONFIG_DICT[key]
         element = create_config_element(values[0], values[1], values[2])
         pg_pattern.append(element)
 
     # Write out the contents of the updated puppet SMF config file
-    print "Writting out contents of new SMF configuration file to: %s" % \
-        output_file
-    with open(output_file, "w") as f_handle:
+    print(f"Writting out contents of new SMF configuration file to: {output_file}")
+    with open(output_file, "wb") as f_handle:
         f_handle.write(etree.tostring(tree, pretty_print=True))
-    f_handle.close()
 
 
-def option_list():
+def get_args():
     '''Build the option list for this utility'''
-    desc = "Utility for assisting in the upgrading of Solaris Puppet SMF file"
-    usage = "usage: %prog -c <puppet_config_file> -s <smf_confilg_file> " \
-            "[-o <output_file>]\n"
-    opt_list = OptionParser(description=desc, usage=usage)
 
-    opt_list.add_option("-c", "--config", dest="config", default=None,
-                        action="store", type="string", nargs=1,
-                        metavar="<puppet_config_file>",
-                        help="Puppet configuration file generated via"
-                             "genconfig option to puppet. i.e. "
-                             "puppet agent --genconfig > puppet.conf")
-    opt_list.add_option("-s", "--smf", dest="smf_xml", default=None,
-                        action="store", type="string", nargs=1,
-                        metavar="<smf_config_file>",
-                        help="Current solaris Puppet SMF XML configuration"
-                             " file. This file is located in <userland_tree>"
-                             "/components/puppet/files/puppet.xml")
-    opt_list.add_option("-o", "--output", dest="output", default=None,
-                        action="store", type="string", nargs=1,
-                        metavar="<output_file>",
-                        help="The name of the new puppet.xml file ")
-    return opt_list
+    parser = argparse.ArgumentParser(
+        description="Utility for assisting in the upgrading of Solaris Puppet SMF file")
+    parser.add_argument("-c", "--config", metavar="<puppet_config_file>",
+        required=True, help="Puppet configuration file generated via genconfig "
+            "option to puppet. i.e. puppet agent --genconfig > puppet.conf")
+    parser.add_argument("-s", "--smf", dest="smf_xml", metavar="<smf_config_file>",
+        required=True, help="Current solaris Puppet SMF XML configuration file. "
+            "This file is located in <userland_tree> /components/puppet/files/puppet.xml")
+    parser.add_argument("-o", "--output", metavar="<output_file>",
+        required=True, help="The name of the new puppet.xml file ")
+
+    return parser.parse_args()
 
 
 def main():
-    '''Execute this utility based on the options supplied by the user'''
-    parser = option_list()
+    '''Execute this utility based on the arguments supplied by the user'''
+    args = get_args()
 
-    (options, _args) = parser.parse_args()
-
-    if not options.config or not options.smf_xml or \
-            not options.output:
-        err("Required options not specified")
-        parser.print_help()
+    if not os.path.isfile(args.config):
+        err(f"{args.config} does not exist or is not a regular file\n")
         sys.exit(-1)
 
-    if not os.path.isfile(options.config):
-        err("%s does not exist or is not a regular file\n"
-            % options.config)
-        sys.exit(-1)
-    if not os.path.isfile(options.smf_xml):
-        err("%s does not exist or is not a regular file\n"
-            % options.smf_xml)
-        sys.exit(-1)
-    if os.path.exists(options.output):
-        err("specified file %s already exist\n"
-            % options.output)
+    if not os.path.isfile(args.smf_xml):
+        err(f"{args.smf_xml} does not exist or is not a regular file\n")
         sys.exit(-1)
 
-    parse_puppet_config(options.config)
-    update_smf_file(options.smf_xml, options.output)
+    if os.path.exists(args.output):
+        err(f"specified file {args.output} already exist\n")
+        sys.exit(-1)
+
+    parse_puppet_config(args.config)
+    update_smf_file(args.smf_xml, args.output)
+
 
 if __name__ == '__main__':
     main()
