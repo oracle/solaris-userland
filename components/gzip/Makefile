@@ -96,6 +96,5 @@ install:      $(INSTALL_64) $(GZGREP_MAN_VARIANTS)
 
 PKG_HARDLINKS += usr/bin/gunzip
 
-REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += system/xopen/xcu4
