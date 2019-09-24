@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
-BUILD_BITS =		32_and_64
+BUILD_BITS =		64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libcroco
-COMPONENT_VERSION=	0.6.12
+COMPONENT_VERSION=	0.6.13
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Libcroco
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:ddc4b5546c9fb4280a5017e2707fbd4839034ed1aba5b7d4372212f34f84f860
+    sha256:767ec234ae7aa684695b3a735548224888132e063f92db585759b422570621d4
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	11787
 
-TPNO=			39550
+TPNO=			54082
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -45,6 +45,14 @@ COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 # doesn't support -Bsymbolic-functions currently.
 CONFIGURE_OPTIONS += --disable-Bsymbolic
 CONFIGURE_OPTIONS += --disable-static
+
+COMPONENT_POST_INSTALL_ACTION.64 += \
+	$(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libcroco-0.6.3lib \
+		$(PROTO_DIR)/usr/share/man/man3lib/libcroco-0.6.3lib; \
+	$(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/csslint-0.6.1 \
+		$(PROTO_DIR)/usr/share/man/man1/csslint-0.6.1; \
+	$(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/croco-0.6-config.1 \
+		$(PROTO_DIR)/usr/share/man/man1/croco-0.6-config.1; 
 
 # Needed to make tests work
 COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"

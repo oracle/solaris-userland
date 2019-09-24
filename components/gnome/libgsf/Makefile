@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,14 +30,14 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgsf
-COMPONENT_VERSION=	1.14.41
+COMPONENT_VERSION=	1.14.46
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/gsf/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:150b98586a1021d5c49b3d4d065d0aa3e3674ae31db131af5372499d2d3f08d3
+	sha256:ea36959b1421fc8e72caa222f30ec3234d0ed95990e2bf28943a85f33eadad2d
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	1980
 
-TPNO=			34501
+TPNO=			54085
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -51,6 +51,10 @@ CONFIGURE_OPTIONS += --enable-shared
 CONFIGURE_OPTIONS += --with-bz2
 CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += --with-zlib
+
+COMPONENT_POST_INSTALL_ACTION.64 += \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libgsf-1.3lib \
+                $(PROTO_DIR)/usr/share/man/man3lib/libgsf-1.3lib ;
 
 # for the tests
 unexport SHELLOPTS
