@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mousetweaks
-COMPONENT_VERSION=	3.12.0
+COMPONENT_VERSION=	3.32.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/Mousetweaks
 COMPONENT_ARCHIVE_HASH= \
-	sha256:c0db478ccb390665e3201e9d1ce08b1c6573a697b797c9e828debb94b1ae3b97
+	sha256:0ebd5cdef01547787cbc3697ae758c57db1eec10eab613704d4a17b27685ae00
 COMPONENT_BUGDB=	gnome/accessibility
 COMPONENT_ANITYA_ID=	13153
 
-TPNO=			25829
+TPNO=			52279
 
 TEST_TARGET = $(NO_TESTS)
 
