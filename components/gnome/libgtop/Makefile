@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
-BUILD_BITS =            32_and_64
+BUILD_BITS =            64_and_32
 # All components using gobject-introspection must be built with gcc as
 # gobject-introspection does not produce correct results when using Studio.
 COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgtop
-COMPONENT_VERSION=	2.36.0
+COMPONENT_VERSION=	2.40.0
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/libgtop/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:13bfe34c150b2b00b03df4732e8c7ccfae09ab15897ee4f4ebf0d16b0f3ba12b
+	sha256:78f3274c0c79c434c03655c1b35edf7b95ec0421430897fb1345a98a265ed2d4
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13146
 
-TPNO=			34656
+TPNO=			52276
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -53,6 +53,10 @@ CONFIGURE_OPTIONS += --enable-shared
 CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += --with-x
 CONFIGURE_OPTIONS += --enable-gtk-doc
+
+COMPONENT_POST_INSTALL_ACTION.64 += \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libgtop-2.0.3lib \
+                $(PROTO_DIR)/usr/share/man/man3lib/libgtop-2.0.3lib; \
 
 # Required due to patches.
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
