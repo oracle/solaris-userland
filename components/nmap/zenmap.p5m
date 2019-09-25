@@ -18,14 +18,10 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
-# Pull vendor-packages files from site-packages because nmap build installs
-# them there and doesn't offer an overide.
-<transform file path=(usr/lib/python.*)/vendor-packages/(.+) -> \
-    set action.hash %<1>/site-packages/%<2> >
 set name=pkg.fmri \
     value=pkg:/diagnostic/nmap/zenmap@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Network exploration and security / port scanner GUI"

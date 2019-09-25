@@ -29,23 +29,24 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         nmap
-COMPONENT_VERSION=      7.70
+COMPONENT_VERSION=      7.80
 COMPONENT_PROJECT_URL=  https://nmap.org/
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tgz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:78aafb025e3d93f58a61b9e3956371e2e8829b26f8edbd5ae14641076d5ce1bd
+    sha256:780cbf4a0ddb9e9cd49d8fbdfa5c7f368cc7ae857ddfc39102dd2b83a905d7a7
 COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)dist/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	2096
 
-TPNO=			44852
+TPNO=			53513
 
-TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 PYTHON_VERSION = 2.7
 
-COMPONENT_PRE_CONFIGURE_ACTION = \
-	($(CLONEY) $(SOURCE_DIR) $(@D))
+# Installation relies on file types in the build directory,
+# avoid cloney to properly install nmap and zenmap components.
+CLONEY = echo
+COMPONENT_PRE_CONFIGURE_ACTION = $(CP) -rp $(SOURCE_DIR)/. $(@D)
 
 PKG_MACROS +=		PYVER=$(PYTHON_VERSION)
 
@@ -67,12 +68,18 @@ CONFIGURE_OPTIONS  +=   --with-ncat
 CONFIGURE_OPTIONS  +=   --with-ndiff
 CONFIGURE_OPTIONS  +=   --with-system-ssl-certs=/etc/certs
 
-# The nmap libdnet-stripped configure script can't properly handle
-# finding / using three Solaris network header files. We override this.
-# When CR #26315554 is fixed, these three lines can be removed.
-CONFIGURE_OPTIONS  +=	ac_cv_header_net_pfvar_h=yes
-CONFIGURE_OPTIONS  +=	ac_cv_header_net_route_h=yes
-CONFIGURE_OPTIONS  +=	ac_cv_header_netinet_in_vars_h=yes
+# Python packages are delivered to vendor-packages instead of site-packages.
+CONFIGURE_OPTIONS  +=   am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES.32)
+
+# Ensure that the test results are reproducible.
+COMPONENT_TEST_TRANSFORMS += -E \
+	'-e "s|on port [0-9]+ \\(pid [0-9]+\\)|on port PORT (pid PID)|g" ' \
+	'-e "s|^(Ran [0-9]* tests) in .*s|\1|" ' '-e "/Nothing to be done for/d" ' \
+	'-e "s|Nmap .* \\( https://nmap.org \\) at .*\\$$|Nmap VERSION ( https://nmap.org ) at DATETIME|g" ' \
+	'-e "/Initiating NSE at .*/d" ' '-e "/Completed NSE at .*/d" ' \
+	'-e "s|scanned in (.*) seconds|scanned in TIME seconds|g" ' \
+	'-e "/ WARNING **/d" ' '-e "/python2\.7/d" ' '-e "/warnings\.warn/d" ' \
+	'-e "/\/usr\/gcc\/[0-9]+\/bin\/gcc/d" ' '-e "/\/usr\/gcc\/[0-9]+\/bin\/g\+\+/d" '
 
 REQUIRED_PACKAGES += library/libssh2
 REQUIRED_PACKAGES += library/pcre

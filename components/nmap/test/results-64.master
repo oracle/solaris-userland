@@ -1,0 +1,370 @@
+make[1]: Entering directory '$(@D)'
+make[2]: Entering directory '$(@D)/ncat'
+Compiling liblua
+make[3]: Entering directory '$(@D)/liblua'
+make[3]: 'liblua.a' is up to date.
+make[3]: Leaving directory '$(@D)/liblua'
+cd test && (./test-addrset.sh&& ./test-cmdline-split&& ./test-uri&& ./test-wildcard&& echo "All tests passed.")
+PASS 
+PASS 192.168.0.0
+PASS fe80::202:e3ff:fe14:1102
+PASS 1.2.3.4 1:2:3::4
+PASS 192.168.0.1-5
+PASS 192.168.1.1-5
+PASS 192.168-168.0.1
+PASS 192.168.3-8.1-5
+PASS 192.168.-3.0
+PASS 192.168.252-.0
+PASS 192.168.-.0
+PASS 192.168.0.2,3,5,7,11
+PASS 192-200,202.0.0.1,3-5
+PASS 192.168.0.*
+PASS 192.*.0.*
+PASS *.1-10,12.*.4-5,6,7
+PASS 192.168.0.0/24
+PASS 1.2.3.4/32
+PASS 5.5.5.5/0
+PASS 1-5.1-5.1-5.1-5/28
+PASS 192.168.0.5,30,191/30
+PASS 192.168.5,30,191.0/22
+PASS 1:2::0003/120
+PASS 1:2::0003/128
+PASS 1:2::0003/0
+PASS scanme.nmap.org
+PASS scanme.nmap.org/30
+PASS scanme.nmap.org/0
+PASS .
+PASS -
+PASS ,
+PASS 1.2.3.4,
+PASS ,1.2.3.4
+PASS 1.2.3.4.5
+PASS 1:2:3:4:5:6:7:8:9
+PASS 11::22::33
+PASS 256.256.256.256
+PASS FFFFF::FFFFF
+PASS 10-5.2.3.4
+PASS *10.10.10.10
+PASS 5-10-15.10.10.10
+PASS -10-15.10.10.10
+PASS 10-15-.10.10.10
+PASS ,.6.7.8
+PASS 5,.5.5.5
+PASS ,5.5.5.5
+PASS ,5.5.5.5
+PASS +1.2.3.4
+PASS +1.+2.+3.+4
+PASS 1.2.3.4/
+PASS 1.2.3.4/33
+PASS 1.2.3.4/+24
+PASS 1.2.3.4/24abc
+PASS 1.2.3.4//24
+PASS 1.2.3.4/-0
+PASS FF::FF/129
+56 / 56 passed
+PASS 'ncat -l -k'
+PASS 'ncat localhost 793'
+PASS './ncat scanme.nmap.org 80'
+PASS 't\ p\ s hello world how are you?'
+PASS 't\ p\ s hello world how\ are you?'
+PASS 'ncat\'
+PASS 'a\nb'
+PASS ' ncat a '
+PASS '\ncat \a'
+PASS 'ncat\\ a'
+PASS 'ncat\'
+PASS 'ncat\ \'
+PASS ''
+13 / 13 tests passed.
+PASS http://www.example.com
+PASS HTTP://www.example.com
+PASS http://WWW.EXAMPLE.COM
+PASS http://www.example.com:100
+PASS http://www.example.com:1
+PASS http://www.example.com:65535
+PASS http://www.example.com:
+PASS http://www.example.com:/
+PASS http://www.example.com/
+PASS http://www.example.com:100/
+PASS http://1.2.3.4
+PASS http://1.2.3.4:100
+PASS http://[::ffff]
+PASS http://[::ffff]:100
+PASS http://www.example.com/path?query#frag
+PASS http://www.exampl%65.com
+PASS http://www.exampl%6a.com
+PASS http://www.exampl%6A.com
+PASS http://www.exampl%2523.com
+PASS http://www.example.com:%380
+PASS http://www.example.com/a%23b
+PASS unknown://www.example.com
+PASS unknown:
+PASS 
+PASS /dir/file
+PASS http://www.example.com:-1
+PASS http://www.example.com:0
+PASS http://www.example.com:65536
+PASS http://user@www.example.com
+PASS http://user:pass@www.example.com
+30 / 30 tests passed.
+PASS CN[] DNS[]
+PASS CN[a.com] DNS[]
+PASS CN[www.a.com] DNS[]
+PASS CN[*.a.com] DNS[]
+PASS CN[w*.a.com] DNS[]
+PASS CN[*w.a.com] DNS[]
+PASS CN[www.*.com] DNS[]
+PASS CN[*.com] DNS[]
+PASS CN[*.com.] DNS[]
+PASS CN[*.*.com] DNS[]
+PASS CN[a.com\000evil.com] DNS[]
+PASS CN[] DNS[]
+PASS CN[] DNS[a.com]
+PASS CN[] DNS[www.a.com]
+PASS CN[] DNS[*.a.com]
+PASS CN[] DNS[w*.a.com]
+PASS CN[] DNS[*w.a.com]
+PASS CN[] DNS[www.*.com]
+PASS CN[] DNS[*.com]
+PASS CN[] DNS[*.com.]
+PASS CN[] DNS[*.*.com]
+PASS CN[] DNS[a.com\000evil.com]
+PASS CN[a.com] DNS[example.co.uk]
+PASS CN[a.com] DNS[b.com]
+PASS CN[] DNS[a.com example.co.uk b.com]
+PASS CN[a.com *.b.com sub.c.com sub.d.com *.sub.e.com *.sub.f.com sub.sub.g.com] DNS[]
+PASS CN[sub.sub.g.com *.sub.f.com *.sub.e.com sub.d.com sub.c.com *.b.com a.com] DNS[]
+PASS CN[a.com *.b.com sub.c.com sub.d.com *.sub.e.com *.sub.f.com] DNS[]
+PASS CN[*.sub.f.com *.sub.e.com sub.d.com sub.c.com *.b.com a.com] DNS[]
+PASS CN[a.com *.b.com sub.c.com *.sub.e.com *.sub.f.com] DNS[]
+PASS CN[*.sub.f.com *.sub.e.com sub.c.com *.b.com a.com] DNS[]
+PASS CN[a.com *.b.com *.sub.e.com *.sub.f.com] DNS[]
+PASS CN[*.sub.f.com *.sub.e.com *.b.com a.com] DNS[]
+PASS CN[*.b.com *.sub.e.com *.sub.f.com] DNS[]
+PASS CN[*.sub.f.com *.sub.e.com *.b.com] DNS[]
+PASS CN[*.b.com *.sub.e.com] DNS[]
+PASS CN[*.sub.e.com *.b.com] DNS[]
+37 / 37 tests passed.
+All tests passed.
+make[2]: Leaving directory '$(@D)/ncat'
+make[2]: Entering directory '$(@D)/nsock/src'
+cd ../tests && /usr/gnu/bin/make && ./run_tests.sh
+make[3]: Entering directory '$(@D)/nsock/tests'
+make[3]: Leaving directory '$(@D)/nsock/tests'
+which: no ncat in (/usr/bin:/usr/gnu/bin)
+Can't find your ncat: ncat
+Trying ../../ncat/ncat
+started UDP listener on port PORT (pid PID)
+started TCP listener on port PORT (pid PID)
+nsock pool user data                            [[1m[32mOK[0m]
+test timer operations                           [[1m[32mOK[0m]
+set standard log levels                         [[1m[32mOK[0m]
+check error log levels                          [[1m[32mOK[0m]
+simple tcp connection                           [[1m[32mOK[0m]
+tcp connection failure case                     [[1m[32mOK[0m]
+test nsock internal ghlists                     [[1m[32mOK[0m]
+test nsock internal ghheaps                     [[1m[32mOK[0m]
+test heaps conditions                           [[1m[32mOK[0m]
+schedule and cancel TCP connect                 [[1m[32mOK[0m]
+schedule and cancel UDP pseudo-connect          [[1m[32mOK[0m]
+schedule and cancel SSL connect                 [[1m[32mOK[0m]
+make[2]: Leaving directory '$(@D)/nsock/src'
+
+
+
+...............................
+----------------------------------------------------------------------
+Ran 31 tests
+
+OK
+./nmap -d --datadir . --script=unittest --script-args=unittest.run
+Starting Nmap VERSION ( https://nmap.org ) at DATETIME
+PORTS: Using top 1000 ports found open (TCP:1000, UDP:0, SCTP:0)
+--------------- Timing report ---------------
+  hostgroups: min 1, max 100000
+  rtt-timeouts: init 1000, min 100, max 10000
+  max-scan-delay: TCP 1000, UDP 1000, SCTP 1000
+  parallelism: min 0, max 0
+  max-retries: 10, host-timeout: 0
+  min-rate: 0, max-rate: 0
+---------------------------------------------
+NSE: Using Lua 5.3.
+NSE: Arguments from CLI: unittest.run
+NSE: Arguments parsed: unittest.run
+NSE: Loaded 1 scripts for scanning.
+NSE: Script Pre-scanning.
+NSE: Starting runlevel 1 (of 1) scan.
+NSE: Starting unittest.
+NSE: [unittest] Testing afp
+NSE: [unittest] Testing ajp
+NSE: [unittest] Unsupported Content-Encoding: mystery
+NSE: [unittest] Testing amqp
+NSE: [unittest] Testing anyconnect
+NSE: [unittest] Testing asn1
+NSE: [unittest] |_10 of 10 tests passed
+NSE: [unittest] Testing base32
+NSE: [unittest] |_26 of 26 tests passed
+NSE: [unittest] Testing base64
+NSE: [unittest] |_276 of 276 tests passed
+NSE: [unittest] Testing bitcoin
+NSE: [unittest] Testing bits
+NSE: [unittest] |_11 of 11 tests passed
+NSE: [unittest] Testing bittorrent
+NSE: [unittest] Testing bjnp
+NSE: [unittest] Testing brute
+NSE: [unittest] Testing cassandra
+NSE: [unittest] Testing citrixxml
+NSE: [unittest] Testing coap
+NSE: [unittest] |_1060 of 1060 tests passed
+NSE: [unittest] Testing comm
+NSE: [unittest] |_4 of 4 tests passed
+NSE: [unittest] Testing creds
+NSE: [unittest] Testing cvs
+NSE: [unittest] Testing datafiles
+NSE: [unittest] Testing datetime
+NSE: [unittest] Testing dhcp
+NSE: [unittest] Testing dhcp6
+NSE: [unittest] Testing dns
+NSE: [unittest] |_1 of 1 tests passed
+NSE: [unittest] Testing dnsbl
+NSE: [unittest] Testing dnssd
+NSE: [unittest] Testing drda
+NSE: [unittest] Testing eap
+NSE: [unittest] Testing eigrp
+NSE: [unittest] Testing formulas
+NSE: [unittest] |_1 of 1 tests passed
+NSE: [unittest] Testing ftp
+NSE: [unittest] Testing geoip
+NSE: [unittest] Testing giop
+NSE: [unittest] Testing gps
+NSE: [unittest] |_2 of 2 tests passed
+NSE: [unittest] Testing http
+NSE: [unittest] |_85 of 85 tests passed
+NSE: [unittest] Testing httpspider
+NSE: [unittest] Testing iax2
+NSE: [unittest] Testing idna
+NSE: [unittest] |_43 of 43 tests passed
+NSE: [unittest] Testing ike
+NSE: [unittest] Testing imap
+NSE: [unittest] Testing informix
+NSE: [unittest] Testing ipOps
+NSE: [unittest] |_81 of 81 tests passed
+NSE: [unittest] Testing ipmi
+NSE: [unittest] Testing ipp
+NSE: [unittest] Testing irc
+NSE: [unittest] Testing iscsi
+NSE: [unittest] Testing isns
+NSE: [unittest] Testing jdwp
+NSE: [unittest] Testing json
+NSE: [unittest] |_29 of 29 tests passed
+NSE: [unittest] Testing knx
+NSE: [unittest] Testing ldap
+NSE: [unittest] Testing lfs
+NSE: [unittest] Testing libssh2
+NSE: [unittest] Testing libssh2-utility
+NSE: [unittest] Testing listop
+NSE: [unittest] Testing lpeg
+NSE: [unittest] Testing lpeg-utility
+NSE: [unittest] Testing ls
+NSE: [unittest] Testing match
+NSE: [unittest] Testing membase
+NSE: [unittest] Testing mobileme
+NSE: [unittest] Testing mongodb
+NSE: [unittest] Testing mqtt
+NSE: [unittest] |_67 of 67 tests passed
+NSE: [unittest] Testing msrpc
+NSE: [unittest] Testing msrpcperformance
+NSE: [unittest] Testing msrpctypes
+NSE: [unittest] Testing mssql
+NSE: [unittest] Testing multicast
+NSE: [unittest] Testing mysql
+NSE: [unittest] Testing natpmp
+NSE: [unittest] Testing nbd
+NSE: [unittest] Testing ncp
+NSE: [unittest] Testing ndmp
+NSE: [unittest] Testing netbios
+NSE: [unittest] Testing nmap
+NSE: [unittest] Testing nrpc
+NSE: [unittest] Testing nsedebug
+NSE: [unittest] Testing omp2
+NSE: [unittest] Testing openssl
+NSE: [unittest] Testing ospf
+NSE: [unittest] Testing packet
+NSE: [unittest] Testing pcre
+NSE: [unittest] Testing pgsql
+NSE: [unittest] Testing pop3
+NSE: [unittest] Testing pppoe
+NSE: [unittest] Testing proxy
+NSE: [unittest] Testing punycode
+NSE: [unittest] |_10 of 10 tests passed
+NSE: [unittest] Testing rand
+NSE: [unittest] Testing rdp
+NSE: [unittest] Testing re
+NSE: [unittest] Testing redis
+NSE: [unittest] Testing rmi
+NSE: [unittest] Testing rpc
+NSE: [unittest] Testing rpcap
+NSE: [unittest] Testing rsync
+NSE: [unittest] Testing rtsp
+NSE: [unittest] Testing sasl
+NSE: [unittest] |_3 of 3 tests passed
+NSE: [unittest] Testing shortport
+NSE: [unittest] Testing sip
+NSE: [unittest] Testing slaxml
+NSE: [unittest] Testing smb
+NSE: [unittest] Testing smb2
+NSE: [unittest] Testing smbauth
+NSE: [unittest] |_4 of 4 tests passed
+NSE: [unittest] Testing smtp
+NSE: [unittest] Testing snmp
+NSE: [unittest] Testing socks
+NSE: [unittest] Testing srvloc
+NSE: [unittest] Testing ssh1
+NSE: [unittest] Testing ssh2
+NSE: [unittest] Testing sslcert
+NSE: [unittest] Testing sslv2
+NSE: [unittest] Testing stdnse
+NSE: [unittest] Testing strbuf
+NSE: [unittest] Testing stringaux
+NSE: [unittest] Testing stun
+NSE: [unittest] Testing tab
+NSE: [unittest] Testing tableaux
+NSE: [unittest] Testing target
+NSE: [unittest] Testing tftp
+NSE: [unittest] Testing tls
+NSE: [unittest] Testing tn3270
+NSE: [unittest] Testing tns
+NSE: [unittest] Testing unicode
+NSE: [unittest] |_16 of 16 tests passed
+NSE: [unittest] Testing unittest
+NSE: [unittest] |_15 of 15 tests passed
+NSE: [unittest] Testing unpwdb
+NSE: [unittest] Testing upnp
+NSE: [unittest] Testing url
+NSE: [unittest] |_50 of 50 tests passed
+NSE: [unittest] Testing versant
+NSE: [unittest] Testing vnc
+NSE: [unittest] |_4 of 4 tests passed
+NSE: [unittest] Testing vulns
+NSE: [unittest] Testing vuzedht
+NSE: [unittest] Testing wsdd
+NSE: [unittest] Testing xdmcp
+NSE: [unittest] Testing xmpp
+NSE: [unittest] Testing zlib
+NSE: Finished unittest.
+Pre-scan script results:
+|_unittest: All tests passed
+NSE: Script Post-scanning.
+NSE: Starting runlevel 1 (of 1) scan.
+Read from .: nmap-services.
+WARNING: No targets were specified, so 0 hosts scanned.
+Nmap done: 0 IP addresses (0 hosts up) scanned in TIME seconds
+.........................................................
+----------------------------------------------------------------------
+Ran 57 tests
+
+OK
+tests/check_dns
+Testing nmap_dns
+Testing nmap_dns finished without errors
+make[1]: Leaving directory '$(@D)'
