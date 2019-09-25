@@ -38,18 +38,28 @@ COMPONENT_ANITYA_ID=	3828
 
 TPNO=			53579
 
+COMPONENT_NAME_NEW=		$(COMPONENT_NAME)
+COMPONENT_VERSION_NEW=	2.2.5
+COMPONENT_SRC_NEW=		$(COMPONENT_NAME)-$(COMPONENT_VERSION_NEW)
+COMPONENT_ARCHIVE_NEW=	$(COMPONENT_SRC_NEW).tar.gz
+COMPONENT_ARCHIVE_HASH_NEW=	\
+	sha256:2e23ecb1a814d1c028fdf1e837a6749780ea488779d746f6b18cfa8e8213055c
+COMPONENT_ARCHIVE_URL_NEW=	$(call pypi_url,NEW)
+
+TPNO_NEW=		54222
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 # Replace "#!/usr/bin/env ..." shebang lines with properly versioned ones.
 COMPONENT_POST_BUILD_ACTION = \
-    /usr/bin/find $(BUILD_DIR)/$(MACH)-$(PYTHON_VERSION)/lib/django -name *.py \
+    /usr/bin/find $(@D)/lib/django -name *.py \
 	-exec $(GSED) -i -e 's/env python/python$(PYTHON_VERSION)/' "{}" \; ;
 
 COMPONENT_POST_INSTALL_ACTION = \
     (cd $(PROTO_DIR)/usr/bin ; \
-     $(MV) -f django-admin.py django-admin-$(PYTHON_VERSION))
+     $(MV) -f django-admin.py django-admin-$(PYTHON_VERSION)) ;
 
 # add 1 extra transform to get rid of the facet created on
 # locale/__init__.py
@@ -68,12 +78,37 @@ COMPONENT_TEST_ENV += https_proxy=
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
+$(MANIFEST_BASE)-django-27.mogrified: MULTI_VER = \#
+$(MANIFEST_BASE)-django-34.mogrified: MULTI_VER = \#
+$(MANIFEST_BASE)-django-35.mogrified: MULTI_VER = \#
+$(MANIFEST_BASE)-django-37.mogrified: SINGLE_VER = \#
+
+PKG_MACROS += SINGLE_VER="$(SINGLE_VER)"
+PKG_MACROS += MULTI_VER="$(MULTI_VER)"
+
+PKG_MACROS += COMPONENT_VERSION_NEW="$(COMPONENT_VERSION_NEW)"
+
+# Convenience variables
+TARGET_OLD = $(BUILD_DIR)/$(MACH)-3.7/
+TARGET_NEW = $(BUILD_DIR)/$(MACH)-2-3.7/
+SOURCE_DIR_NEW = $(COMPONENT_DIR)/$(COMPONENT_SRC_NEW)
+
+# Added targets for new and optional Django version
+$(TARGET_NEW).built: SOURCE_DIR = $(SOURCE_DIR_NEW)
+
+$(TARGET_NEW).installed: SOURCE_DIR = $(SOURCE_DIR_NEW)
+
+$(TARGET_OLD).installed: COMPONENT_POST_INSTALL_ACTION += ( \
+	$(MV) $(PROTO_DIR)$(PYTHON_LIB)/django $(PROTO_DIR)$(PYTHON_LIB)/django1.11 )
+$(TARGET_NEW).installed: COMPONENT_POST_INSTALL_ACTION += ( \
+	$(MV) $(PROTO_DIR)$(PYTHON_LIB)/django $(PROTO_DIR)$(PYTHON_LIB)/django2.5 )
+
 # common targets
-build:		$(BUILD_NO_ARCH)
+build:		$(BUILD_NO_ARCH) $(TARGET_NEW).built
 
-install:	$(INSTALL_NO_ARCH)
+install:	$(INSTALL_NO_ARCH) $(TARGET_NEW).installed
 
-test:		$(TEST_NO_ARCH)
+test:		$(TEST_NO_ARCH) $(TARGET_NEW).tested-and-compared
 
 COMPONENT_TEST_ARGS += --parallel=1
 COMPONENT_TEST_ARGS += --verbosity=3
@@ -94,4 +129,5 @@ system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += library/python/mock
 REQUIRED_PACKAGES += library/python/setuptools
+REQUIRED_PACKAGES += library/python/sqlparse
 REQUIRED_PACKAGES += text/gnu-gettext
