@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -84,8 +84,8 @@ build:		$(BUILD_64) $(COMPOVERRIDES:%=$(COMPONENT_SRC)/%)
 
 install:	build $(INSTALL_64) $(PROTOETCDIR)/zprofile $(PROTOETCDIR)/zshrc
 
-# Set main file for manifest generator - other one will be hardlink
-PKG_HARDLINKS += usr/bin/zsh
+# Deliver hardlinks as they appear in the proto area
+PKG_AUTO_HARDLINKS=1
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \

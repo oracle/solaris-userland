@@ -94,6 +94,9 @@ COMPONENT_TEST_TRANSFORMS += \
 
 install:      $(INSTALL_64) $(GZGREP_MAN_VARIANTS)
 
+# We can't use auto hardlink processing because we don't ship 'uncompress'
+# (we drop it in generate file), so it does not appear in the p5m and so it
+# can't be detected.
 PKG_HARDLINKS += usr/bin/gunzip
 
 REQUIRED_PACKAGES += shell/bash

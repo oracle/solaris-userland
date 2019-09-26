@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -79,8 +79,8 @@ COMPONENT_TEST_CMD =		$(SHELL)
 COMPONENT_TEST_ENV =		LC_ALL=en_US.UTF-8
 COMPONENT_TEST_TARGETS =	test.sh $(BUILD_DIR_64) $(BUILD_DIR_64)/test-rabbit
 
-# Hardlinks rabbitmq-plugins and rabbitmqctl are created from rabbitmq-diagnostics file.
-PKG_HARDLINKS += usr/lib/rabbitmq/escript/rabbitmq-diagnostics
+# Deliver hardlinks as they appear in the proto area
+PKG_AUTO_HARDLINKS=1
 
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += runtime/erlang

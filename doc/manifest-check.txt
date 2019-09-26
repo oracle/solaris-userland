@@ -163,4 +163,32 @@ Limitations
    $(PERLVER) are not available - you have to match strings like python-[0-9.]+
    instead of python-$(PYVER).
 
+
+Hardlinks
+=========
+If a manifest (p5m) contains hardlinks, one of the hardlinks is presented as
+a file action and the rest as hardlink action(s) targeting that one file. It is
+not predetermined which of the hardlinks will be the main file action
+(see pkgsend(1)). We need to supply additional information in order to get
+stable output and be able to perform 'manifest-check' and 'manifest-update'.
+
+First we can instruct sample-manifest to look into existing p5m file and
+generate the hardlinks accordingly. This is enabled in the Makefile by
+PKG_AUTO_HARDLINKS=1. This should be the preferred option for components
+delivering all hardlinks from the proto area as they are.
+
+Second option is to specify manually which files will be the main file
+actions. This is done by listing the files in PKG_HARDLINKS Makefile
+variable. This option should be used in components where you do something
+funny with the hardlinks. For example turning them into symlinks (mediated
+perhaps).
+
+There is one perhaps unexpected side effect. If you designate a file to be the
+main hardlink target (via either method) and such file is not found in the
+proto area, pkgsend will end up with this error message:
+
+pkgsend generate: No such file or directory: '<your proto directory>'
+
+
+
 # vim: fo=12tq autoindent

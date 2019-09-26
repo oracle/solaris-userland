@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -69,6 +69,7 @@ COMPONENT_INSTALL_ARGS += -f unix/Makefile
 COMPONENT_INSTALL_ARGS += BINDIR=$(PROTOUSRBINDIR)
 COMPONENT_INSTALL_ARGS += MANDIR=$(PROTOUSRSHAREMANDIR)
 
-PKG_HARDLINKS += usr/bin/unzip
+# Deliver hardlinks as they appear in the proto area
+PKG_AUTO_HARDLINKS=1
 
 REQUIRED_PACKAGES += shell/ksh93

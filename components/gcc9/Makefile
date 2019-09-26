@@ -161,6 +161,13 @@ COMPONENT_TEST_MASTER = \
 # GCC ships some static libraries (.a).
 MANIFEST_CLEANUP_TRANSFORM=
 
+# We can not use PKG_AUTO_HARDLINKS because the generate files always expect
+# given path to be either file or hardlink. The hardlinks are in several
+# packages, which means that generate files would 'see' correctly only the
+# hardlinks found in the currently processed p5m. We would have to change the
+# generate files so that they accept both file and hardlink action for given
+# path. But it is probably easier to just name the hardlinks manually.
+
 PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/g++
 PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gcc
 PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gcc-ar
@@ -168,6 +175,7 @@ PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gcc-nm
 PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gcc-ranlib
 PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gccgo
 PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gfortran
+
 
 REQUIRED_PACKAGES += developer/test/dejagnu
 REQUIRED_PACKAGES += library/gmp

@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set -eu -o pipefail
@@ -29,32 +29,147 @@ export PATH=/usr/bin
 
 if [ $# -eq 0 ]; then
 	cat <<-EOT
-	manifest-generate [--target file] dir [dir ...]
+	manifest-generate [--manifest target.p5m] [--target file] dir [dir ...]
 	
 	--target file - argument is passed to pkgsend(1), see details there
-	dir - a directory from which we create actions
+
+	--manifest - manifest file name which will be used to extract
+	   hardlinks and convert them to appropriate --target arguments.
+
+	-D... -I... - arguments passed to pkgsend(1)
+
+	dir - a proto directory from which we create actions
 	    - dir can be specified as dir^transpose which prepends
 	      string 'transpose/' in front of every 'path' attribute.
 	
 	The tool is intended to be replacement for 'pkgsend generate' adding
-	support for dir^transpose proto dir specification
+	support for dir^transpose proto dir specification and stable hardlink
+	generation.
 	EOT
 	exit 0
 fi
 
-# Collect the --target arguments
+function fail {
+	echo "ERROR: $@" 1>&2
+	exit 1
+}
+
+# Process the command line arguments
 HARDLINKS=()
-while [[ "$1" == --target ]]; do
-	if [[ $# -le 1 ]]; then
-		echo "Option --target needs an argument"
-		exit 1
-	fi
-	HARDLINKS+=( "$1" "$2" )
-	shift
-	shift
+PKG_OPTIONS=()
+TARGET_P5M=
+while [[ $# -gt 0 ]] ; do
+	case "$1" in
+		-D)
+			PKG_OPTIONS+=( "$1" "$2" )
+			shift 2
+			;;
+		-I)
+			PKG_OPTIONS+=( "$1" "$2" )
+			shift 2
+			;;
+		-D*)
+			PKG_OPTIONS+=( "$1" )
+			shift
+			;;
+		-I*)
+			PKG_OPTIONS+=( "$1" )
+			shift
+			;;
+		--target)
+			[[ $# -gt 1 ]] || fail "Option $1 needs an argument"
+			HARDLINKS+=( "$1" "$2" )
+			shift 2
+			;;
+		--manifest)
+			[[ $# -gt 1 ]] || fail "Option $1 needs an argument"
+			[[ -z "$TARGET_P5M" ]] || fail "Internal error, $1 can be specified only once"
+			TARGET_P5M="$2"
+			shift 2
+			;;
+		*) break ;;
+	esac
 done
 
-# Now call pkgsend generate on every directory specified on command line
+if [ -n "$TARGET_P5M" ] && [[ ${#HARDLINKS[@]} -gt 0 ]] ; then
+	fail "--target and --manifest options are mutualy exclusive"
+fi
+
+if [ -e "$TARGET_P5M" ]; then
+	# We were given the source p5m name, and so we need to turn it into
+	# series of --target command line parameters
+	OUT=$(
+		# For every hardlink print its path and target on separate
+		# lines
+		pkgmogrify "${PKG_OPTIONS[@]}" "${HARDLINKS[@]}" /dev/fd/0 "$TARGET_P5M" <<-EOT
+			<transform hardlink -> print %(path)>
+			<transform hardlink -> print %(target)>
+			<transform -> drop>
+		EOT
+	)
+
+	# Filter out comments and empty lines
+	OUT=$( ggrep -Ev "^$|^#" <<<"$OUT" || : )
+
+	TMP=$(
+		while read LINK_PATH; do
+			# If "OUT" is empty, we'll break here
+			read LINK_TARGET || break
+
+			# For example:
+			# LINK_PATH=usr/share/lib/zoneinfo/Chile/Continental
+			# LINK_TARGET=../America/Santiago
+
+			# We need to convert every path and relative target to
+			# full path
+
+			# First split the path components (delimited by '/')
+			# into an array
+			mapfile -d / -t LINK_TARGET <<<"$LINK_TARGET"
+
+			# now LINK_TARGET=(".." "America" "Santiago")
+
+			# Remove last part of the path which will be replaced
+			# by link target
+			LINK_PATH=$( dirname "$LINK_PATH" )
+
+			# Loop over every part of the link target
+			for PIECE in "${LINK_TARGET[@]}"; do
+
+				# We can ignore if the target contains blah/./blah
+				[[ "$PIECE" != . ]] || continue
+
+				# If it is '..', delete last part of the target path
+				if [[ "$PIECE" == .. ]]; then
+					LINK_PATH=$( dirname "$LINK_PATH" )
+					continue
+				fi
+
+				# Or just add the link part to the final path
+				LINK_PATH="${LINK_PATH}/$PIECE"
+			done
+
+			# Now LINK_PATH=usr/share/lib/zoneinfo/America/Santiago
+			echo "$LINK_PATH"
+		done <<<"$OUT" | sort -u
+	)
+
+	# Now turn that into list of --target command line
+	# options
+	if [ -n "$TMP" ]; then
+		while read L; do
+			HARDLINKS+=( "--target" "$L" )
+		done <<<"$TMP"
+	fi
+fi
+
+# First generate manifest for $(PROTO_DIR), which is always specified as a
+# first argument. The hardlinks apply only to this area
+pkgsend generate "${HARDLINKS[@]}" "$1"
+
+shift
+
+# Now process the optional $(GENERATE_PROTO_DIRS)
 for PROTO in "$@"; do
 	if [[ "$PROTO" == *^* ]]; then
 		# If the proto dir is specified as some/where^translate
@@ -73,7 +188,7 @@ for PROTO in "$@"; do
 		OFFSET=
 	fi
 
-	pkgsend generate "${HARDLINKS[@]}" $PROTO |
+	pkgsend generate $PROTO |
 	if [ -n "$OFFSET" ]; then
 		pkgmogrify /dev/fd/0 <(echo "<transform file link hardlink dir -> edit path ^ ${OFFSET#/}/>")
 	else

@@ -208,8 +208,8 @@ COMPONENT_TEST_TRANSFORMS =	"'/tests OK./ {results = 1}; /Re-running failed test
 test:				$(TEST_64)
 system-test:			$(SYSTEM_TEST_64)
 
-# Help manifest check to decide what will be a hardlink
-PKG_HARDLINKS += usr/bin/python3.4m
+# Deliver hardlinks as they appear in the proto area
+PKG_AUTO_HARDLINKS=1
 
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += compress/xz

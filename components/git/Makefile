@@ -54,11 +54,8 @@ include $(WS_MAKE_RULES)/common.mk
 
 PYTHON_VERSION = 3.7
 
-PKG_HARDLINKS +=	usr/lib/git-core/git
-PKG_HARDLINKS +=	usr/lib/git-core/git-cvsserver
-PKG_HARDLINKS +=	usr/lib/git-core/git-gui
-PKG_HARDLINKS +=	usr/lib/git-core/git-remote-ftps
-PKG_HARDLINKS +=	usr/lib/git-core/git-shell
+# Deliver hardlinks as they appear in the proto area
+PKG_AUTO_HARDLINKS=1
 
 PKG_MACROS +=		PYVER=$(PYTHON_VERSION)
 

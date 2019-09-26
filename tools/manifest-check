@@ -31,7 +31,7 @@ if [ $# -eq 0 ]; then
 	cat <<-EOT
 	manifest-check [--update] target_file PKG_OPTIONS
 	
-	This tool constructs a manifest according to files in 'generate'
+	This tool constructs a manifest according to instructions in 'generate'
 	directory and compares the result to existing .p5m manifest. Details
 	are in 'doc/manifest-check.txt'
 
@@ -62,6 +62,15 @@ ORIGIN="${RESULT#$MANIFEST_BASE-}"
 NAME="${ORIGIN%.constructed}" # This is used as a base for temporary file names
 ORIGIN="$NAME.p5m"
 
+# The environment variable PKG_AUTO_HARDLINKS is exported when this script is
+# bein called from Makefile. We need to turn it into command line argument
+# for manifest-generate
+if [ -n "${PKG_AUTO_HARDLINKS:-}" ]; then
+	TARGET_MANIFEST=( --manifest "$ORIGIN" )
+else
+	TARGET_MANIFEST=( )
+fi
+
 # Those are the files used to create the generated manifest
 TRANSFORM="$COMPONENT_DIR/generate/$NAME.generate"
 STATIC="$COMPONENT_DIR/generate/$NAME.static"
@@ -83,7 +92,7 @@ HARDLINKS=()
 (
 	# First generate the sample manifest as 'gmake sample-manifest' would do
 	# Then pass it though the $TRANSFORM with full debug output.
-	"$MANIFEST_GENERATE" ${HARDLINKS[@]} $PROTO_DIR $GENERATE_PROTO_DIRS |
+	"$MANIFEST_GENERATE" "${TARGET_MANIFEST[@]}" "${PKG_OPTIONS[@]}" ${HARDLINKS[@]} $PROTO_DIR $GENERATE_PROTO_DIRS |
 	pkgmogrify -v "${PKG_OPTIONS[@]}" /dev/fd/0 \
 		$GENERATE_TRANSFORMS $MANIFEST_CLEANUP_TRANSFORM $TRANSFORM > "$DEBUG"
 
