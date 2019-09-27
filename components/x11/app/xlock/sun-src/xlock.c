@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1988, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1988, 2019, Oracle and/or its affiliates. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -507,37 +507,6 @@ ReadXString(
 }
 
 
-static int
-CheckPassword(void)
-{
-    struct spwd *rspw, *uspw;
-    struct passwd *upw;
-    const char  *user;
-
-    rspw = getspnam("root");
-
-    upw = (struct passwd *)getpwuid(getuid());
-    if (upw == NULL) { 	/* should not pass NULL to getspnam  */
-	user = "";
-    }
-    else {
-	user = upw->pw_name;
-    }
-    uspw = getspnam(user);
-    if (!uspw) {
-	if (allowroot) {
-		if (!rspw)
-			return(1);
-		else
-			return(0);
-	}
-	return(1);
-    }
-
-    return(0);
-}
-
-
 static void passwordPrompt(const char *prompt)
 {
     int         y, left;
@@ -800,6 +769,8 @@ getPassword(void)
 #endif
     const char *authErrMsg = text_invalid;  
 
+    seteuid(0);
+
     rpw = getpwuid(0);
     if (rpw) {
        user = rpw->pw_name;
@@ -864,6 +835,8 @@ getPassword(void)
     }
 #endif /* USE_PAM */
 
+    seteuid(getuid());
+
     XGetWindowAttributes(dsp, win[screen], &xgwa);
 
     XChangeGrabbedCursor(passwdcursor);
@@ -905,6 +878,7 @@ getPassword(void)
 	    sigfinish();
 #ifdef USE_PAM
 	if (use_pam) {
+	    seteuid(0);
 
 	    pam_error = pam_authenticate(pamh, pam_flags);
 	    if (pam_error == PAM_SUCCESS) {
@@ -938,6 +912,7 @@ getPassword(void)
 		    PAM_ERROR_PRINT(pam_error_from);
 		}
 	    } else if (stoptryingfornow) {
+		seteuid(getuid());
 		break;
 	    } else {
 #ifdef	sun
@@ -949,6 +924,8 @@ getPassword(void)
 	    if (pam_error != PAM_SUCCESS) {
 		authErrMsg = pam_strerror(pamh, pam_error);
 	    }
+
+	    seteuid(getuid());
 	} else if (ReadXString(buffer, PAM_MAX_RESP_SIZE))
 	    break;
 #endif
@@ -1016,10 +993,12 @@ getPassword(void)
 		free(suserpass);
 	    }
 #ifdef USE_PAM
+	    seteuid(0);
 #ifdef	sun
 	    audit_unlock(pam_error);
 #endif	/* sun */
 	    pam_end(pamh, pam_error);
+	    seteuid(getuid());
 #endif
 	    return 0;
 	} else {
@@ -1054,7 +1033,9 @@ getPassword(void)
     }
 
 #ifdef USE_PAM
+    seteuid(0);
     pam_end(pamh, pam_error);
+    seteuid(getuid());
 #endif
     XChangeGrabbedCursor(mycursor);
     XUnmapWindow(dsp, icon[screen]);
@@ -1122,7 +1103,9 @@ lockDisplay(void)
 	sigprocmask(SIG_SETMASK, &oldsigmask, &oldsigmask);
     }
 #ifdef	sun
+    seteuid(0);
     audit_lock();
+    seteuid(getuid());
 #endif	/* sun */
     do {
 	justDisplay();
@@ -1138,6 +1121,12 @@ main(
 {
     XSetWindowAttributes xswa;
     XGCValues   xgcv;
+
+    if ((geteuid() != 0) || (seteuid(getuid()) != 0)) {
+	error("Not running with root privileges. Exiting ...\n"
+        "\tYou need to run xlock in setuid root mode on your local machine.\n"
+	"\tContact your system administrator.\n");
+    }
 
     ProgramName = strrchr(argv[0], '/');
     if (ProgramName)
@@ -1158,12 +1147,6 @@ main(
 	font = XLoadQueryFont(dsp, FALLBACK_FONTNAME);
 	if (font == NULL)
 	    error("can't even find %s!!!\n", FALLBACK_FONTNAME);
-    }
-
-    if (CheckPassword()) {
-	error("can't get the user password. Exiting ...\n"
-	"\tYou need to run xlock in setuid root mode on your local machine.\n"
-	"\tContact your system administrator.\n");
     }
 	
     screens = ScreenCount(dsp);
