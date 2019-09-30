@@ -1,0 +1,27 @@
+#
+# Bug 29930096 - SunSSH sftp rename fails for files owned by different user
+# Upstream code was dropping too many basic privileges for sftp.
+#
+# Logged as upstream bug https://bugzilla.mindrot.org/show_bug.cgi?id=3036
+#   
+# This patch should be removed after OpenSSH update to 8.1 or later.
+#
+--- old/openbsd-compat/port-solaris.c	2019-09-23 10:29:59.523877565 +0000
++++ new/openbsd-compat/port-solaris.c	2019-09-23 10:38:37.418172659 +0000
+@@ -297,7 +297,7 @@
+ 	    priv_addset(npset, PRIV_FILE_OWNER) != 0)
+ 		fatal("priv_addset: %s", strerror(errno));
+ 
+-	if (priv_delset(npset, PRIV_FILE_LINK_ANY) != 0 ||
++	if (priv_delset(npset, PRIV_PROC_EXEC) != 0 ||
+ #ifdef PRIV_NET_ACCESS
+ 	    priv_delset(npset, PRIV_NET_ACCESS) != 0 ||
+ #endif
+@@ -310,7 +310,6 @@
+ #ifdef PRIV_PROC_SELF
+ 	    priv_delset(npset, PRIV_PROC_SELF) != 0 ||
+ #endif
+-	    priv_delset(npset, PRIV_PROC_EXEC) != 0 ||
+ 	    priv_delset(npset, PRIV_PROC_FORK) != 0 ||
+ 	    priv_delset(npset, PRIV_PROC_INFO) != 0 ||
+ 	    priv_delset(npset, PRIV_PROC_SESSION) != 0)
