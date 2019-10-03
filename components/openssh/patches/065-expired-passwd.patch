@@ -1,0 +1,33 @@
+#
+# Bug 30326687 - OpenSSH not showing password expiry warning
+#
+# When password expires, SunSSH displays warning. Doing the
+# same for OpenSSH in order not to surprise customers
+# who migrated from SunSSH to OpenSSH.
+#
+# This is Solaris specific patch (not be to contributed to upstream).
+#
+--- old/auth-pam.c	2019-10-01 10:42:58.227183998 +0200
++++ new/auth-pam.c	2019-10-03 09:46:15.521271034 +0200
+@@ -379,6 +379,7 @@
+ 	int flags = (options.permit_empty_passwd == 0 ?
+ 	    PAM_DISALLOW_NULL_AUTHTOK : 0);
+ 	struct ssh *ssh = active_state; /* XXX */
++	Buffer buffer;
+ 
+ 	sshpam_conv.conv = sshpam_child_conv;
+ 	sshpam_conv.appdata_ptr = ctxt;
+@@ -403,6 +404,13 @@
+ 		goto auth_fail;
+ 	}
+ 	if (sshpam_authctxt->force_pwchange) {
++		buffer_init(&buffer);
++		buffer_put_cstring(&buffer,
++		    "Warning: Your password has expired,"
++		    " please change it now.");
++		ssh_msg_send(ctxt->pam_csock, PAM_TEXT_INFO, &buffer);
++		buffer_free(&buffer);
++
+ 		sshpam_err = pam_chauthtok(sshpam_handle,
+ 		    PAM_CHANGE_EXPIRED_AUTHTOK);
+ 		if (sshpam_err != PAM_SUCCESS)
