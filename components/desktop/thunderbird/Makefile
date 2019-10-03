@@ -30,6 +30,8 @@ BUILD_BITS = 64
 COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
 
+GCC_ROOT =      /usr/gcc/9
+
 COMPONENT_NAME =	thunderbird
 COMPONENT_VERSION =	68.1.0
 COMPONENT_PROJECT_URL =	https://www.thunderbird.net/

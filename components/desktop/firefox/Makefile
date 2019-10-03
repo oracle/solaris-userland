@@ -30,6 +30,8 @@ BUILD_BITS = 64
 COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
 
+GCC_ROOT =      /usr/gcc/9
+
 ESR = esr
 
 COMPONENT_NAME =	firefox
