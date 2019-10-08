@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		NO_ARCH
@@ -164,3 +164,4 @@ REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += text/gnu-sed

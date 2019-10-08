@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= NO_ARCH
@@ -48,5 +48,6 @@ $(BUILD_DIR)/.validated-smf-manifests-$(MACH): $(BUILD_DIR)
 validate-smf:	$(BUILD_DIR)/.validated-smf-manifests-$(MACH)
 build:		$(BUILD_DIR)/.validated-smf-manifests-$(MACH)
 
+REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += service/opengl/ogl-select
 REQUIRED_PACKAGES += system/core-os

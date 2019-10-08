@@ -61,3 +61,33 @@ NO_PKG_REPORT = 1
 
 clean clobber::
 	$(RM) -r $(BUILD_DIR)
+
+#
+# Packages with tools that are required by userland infrastructure
+#
+
+# Userland infrastructure is driven by GNU make
+REQUIRED_PACKAGES += developer/build/gnu-make
+
+# We use HG as a versioning system
+REQUIRED_PACKAGES += developer/versioning/mercurial
+
+# Utils to generate IPS packages
+REQUIRED_PACKAGES += package/pkg
+
+# Some of our tools need python 2.7, bash or ksh
+REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += shell/bash
+REQUIRED_PACKAGES += shell/ksh93
+
+# Public build machines do use sudo
+REQUIRED_PACKAGES += security/sudo
+
+# Generic tools our infrastructure uses
+REQUIRED_PACKAGES += file/gnu-findutils
+REQUIRED_PACKAGES += text/gawk
+REQUIRED_PACKAGES += text/gnu-grep
+REQUIRED_PACKAGES += text/gnu-sed
+
+# Generally usefull tools for development
+REQUIRED_PACKAGES += developer/build/autoconf
