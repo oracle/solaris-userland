@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		idna
-COMPONENT_VERSION=	2.0
+COMPONENT_NAME=		constantly
+COMPONENT_VERSION=	15.1.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:16199aad938b290f5be1057c0e1efc6546229391c23cea61ca940c115f7d3d3b
+    sha256:4e2d23bd0d0379710e238774aadfbcf79e5e19c145285cd007b66218631d6502
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	https://github.com/kjd/idna
-COMPONENT_BUGDB=	python-mod/idna
-COMPONENT_ANITYA_ID=	5487
+COMPONENT_PROJECT_URL=	https://github.com/twisted/constantly
+COMPONENT_BUGDB=	python-mod/constantly
+COMPONENT_ANITYA_ID=	19031
 
-TPNO=			25771
+TPNO=			47776
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -44,21 +44,11 @@ include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-COMPONENT_TEST_DIR = $(SOURCE_DIR)/tests
-COMPONENT_TEST_ARGS = -m unittest discover --pattern=*.py
-
-# The test output contains arbitrary output. Use nawk to extract just the
-# sections that summarizes the test result.
-# Most of the test cases skipped in Python 2.7 because 'Test requires Python 
-# wide Unicode support'.
-COMPONENT_TEST_TRANSFORMER = $(NAWK)
-COMPONENT_TEST_TRANSFORMS = "'/^Ran .+ / { sub(\" tests in .+s\", \" tests in\"); print }; /!NF/ { print }; /^OK/ { print };'"
-
 # common targets
-build:		$(BUILD_64)
+build:		$(BUILD_NO_ARCH)
 
-install:	$(INSTALL_64)
+install:	$(INSTALL_NO_ARCH)
 
-test:		$(TEST_64)
+test:		$(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)

@@ -20,56 +20,43 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
+COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Twisted
-COMPONENT_VERSION=	10.1.0
+COMPONENT_VERSION=	18.9.0
 COMPONENT_PROJECT_URL=	http://twistedmatrix.com/trac/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-    sha256:eda6e0e9e5ef6f6c19ab75bcb094f83a12ee25fe589fbcddf946e8a655c8070b
+    sha256:ab2d9e3c9cad99340d45a26d1432a695c7e2e804b95d5d907cf549509936ade8
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/twisted
 COMPONENT_ANITYA_ID=	4071
 
-TPNO=			9692
+TPNO=			54420
 
-# Syntax issues: not Python 3 ready.
-PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-COMPONENT_TEST_DIR= $(COMPONENT_SRC) 
-COMPONENT_TEST_CMD= $(@D)/scripts-$(PYTHON_VERSION)/trial twisted
-COMPONENT_TEST_ARGS=""
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/src/twisted/test
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =	--verbose
 
 # Unfortunately the master test results files are not only different for
 # each version of Python, they can also be different for 32-bit and 64-bit
 # versions and different for x86 and SPARC platforms.
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(PYTHON_VERSION)-$(BITS).$(MACH).master
 
-# Using gsed with a specific set of transforms to be applied to the test
-# results to try to normalize them, was problematic. It resulted in 8
-# different ~650Kb master test files. Several of these lines needed to be
-# deleted (as opposed to being normalized) because they appear in a
-# non-deterministic order.
-#
-# Using nawk to just extract lines starting with:
-# [FAIL]: ...
-# [ERROR]: ...
-# Ran XXXX tests in ...
-# FAILED ...
-# OK
-# and stripping out the random portions (like time to complete the tests),
-# resulted in 8 master test files each less than 1Kb in size.
-COMPONENT_TEST_TRANSFORMER =    $(NAWK)
-COMPONENT_TEST_TRANSFORMS = "'/^\[FAIL\]: / { print }; /^\[ERROR\]: / { print }; /^Ran / { sub(\" tests in .+s\", \" tests in\"); print }; /^FAILED / { print }; /^OK / { print };'"
+COMPONENT_TEST_TRANSFORMS += \
+	'-n -e "s/in .* seconds //p"' \
+	'-e "/::.*FAILED/p"' \
+	'-e "/::.*ERROR/p"'
 
 COMPONENT_SYSTEM_TEST_DIR=	$(COMPONENT_SRC)
 COMPONENT_SYSTEM_TEST_ENV=
@@ -86,4 +73,5 @@ test:		$(TEST_32_and_64)
 
 system-test:    $(SYSTEM_TEST_32_and_64)
 
+REQUIRED_PACKAGES += library/python/incremental
 REQUIRED_PACKAGES += system/library

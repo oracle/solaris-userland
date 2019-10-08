@@ -20,45 +20,43 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		idna
-COMPONENT_VERSION=	2.0
+COMPONENT_NAME=		Automat
+COMPONENT_VERSION=	0.7.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:16199aad938b290f5be1057c0e1efc6546229391c23cea61ca940c115f7d3d3b
+    sha256:caa10a4716e4eb8f3c67d8a6e0cc091251e6cf4dfcec6b436227aaae4e0d9e8d
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	https://github.com/kjd/idna
-COMPONENT_BUGDB=	python-mod/idna
-COMPONENT_ANITYA_ID=	5487
+COMPONENT_PROJECT_URL=	https://github.com/glyph/Automat
+COMPONENT_BUGDB=	python-mod/hyperlink
+COMPONENT_ANITYA_ID=	15101
 
-TPNO=			25771
+TPNO=			50703
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
+# make executable for each Python version
+COMPONENT_POST_INSTALL_ACTION += \
+	$(CP) $(PROTOUSRBINDIR)/automat-visualize $(PROTOUSRBINDIR)/automat-visualize-$(PYTHON_VERSION)
+
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/automat
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
+
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-COMPONENT_TEST_DIR = $(SOURCE_DIR)/tests
-COMPONENT_TEST_ARGS = -m unittest discover --pattern=*.py
-
-# The test output contains arbitrary output. Use nawk to extract just the
-# sections that summarizes the test result.
-# Most of the test cases skipped in Python 2.7 because 'Test requires Python 
-# wide Unicode support'.
-COMPONENT_TEST_TRANSFORMER = $(NAWK)
-COMPONENT_TEST_TRANSFORMS = "'/^Ran .+ / { sub(\" tests in .+s\", \" tests in\"); print }; /!NF/ { print }; /^OK/ { print };'"
-
 # common targets
-build:		$(BUILD_64)
+build:		$(BUILD_NO_ARCH)
 
-install:	$(INSTALL_64)
+install:	$(INSTALL_NO_ARCH)
 
-test:		$(TEST_64)
+test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
