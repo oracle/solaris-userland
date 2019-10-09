@@ -5,20 +5,21 @@
 5 # This is a Solaris specific patch and will not be contributed back to the
 6 # upstream community.
 7 #
---- old/ssh_config	2018-04-01 22:38:28.000000000 +0000
-+++ new/ssh_config	2018-11-09 17:10:45.082883119 +0000
-@@ -22,8 +22,9 @@
+--- old/ssh_config	2019-11-02 12:07:12.480120798 +0000
++++ new/ssh_config	2019-11-02 12:07:12.514733267 +0000
+@@ -22,9 +22,9 @@
  #   ForwardX11 no
  #   PasswordAuthentication yes
  #   HostbasedAuthentication no
 -#   GSSAPIAuthentication no
 +#   GSSAPIAuthentication yes
  #   GSSAPIDelegateCredentials no
+-#   GSSAPIKeyExchange no
 +#   GSSAPIKeyExchange yes
+ #   GSSAPITrustDNS no
  #   BatchMode no
  #   CheckHostIP yes
- #   AddressFamily any
-@@ -44,3 +45,7 @@
+@@ -45,3 +45,7 @@
  #   VisualHostKey no
  #   ProxyCommand ssh -q -W %h:%p gateway.example.com
  #   RekeyLimit 1G 1h
@@ -26,9 +27,9 @@
 +# Send the LANG and LC_* environment variables to server.
 +SendEnv LANG
 +SendEnv LC_*
---- old/sshd_config	2018-11-09 15:04:42.939624172 +0000
-+++ new/sshd_config	2018-11-09 17:23:34.958781241 +0000
-@@ -3,115 +3,93 @@
+--- old/sshd_config	2019-11-02 12:07:12.490520033 +0000
++++ new/sshd_config	2019-11-02 12:07:12.525193713 +0000
+@@ -3,116 +3,93 @@
  # This is the sshd server system-wide configuration file.  See
  # sshd_config(5) for more information.
  
@@ -157,6 +158,8 @@
 -# GSSAPI options
 -#GSSAPIAuthentication no
 -#GSSAPICleanupCredentials yes
+-#GSSAPIStrictAcceptorCheck yes
+-#GSSAPIKeyExchange no
 -
 -# Set this to 'yes' to enable PAM authentication, account processing,
 -# and session processing. If this is enabled, PAM authentication will
@@ -181,7 +184,6 @@
 -#PrintMotd yes
 -#PrintLastLog yes
 -#TCPKeepAlive yes
--#UseLogin no
 -#PermitUserEnvironment no
 -#Compression delayed
 -#ClientAliveInterval 0

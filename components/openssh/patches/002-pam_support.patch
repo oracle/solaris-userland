@@ -3,40 +3,36 @@
 # always on and not configurable on Solaris.  This is for Solaris only, so we
 # will not contribute the changes to the upstream community.
 #
-*** orig/servconf.c	Mon Dec  5 17:23:03 2011
---- new/servconf.c	Wed Dec  7 13:41:04 2011
-***************
-*** 240,246 ****
---- 240,251 ----
-
-  	/* Portable-specific options */
-  	if (options->use_pam == -1)
-+ #ifdef SET_USE_PAM
-+ 		/* use_pam should be always set to 1 on Solaris */
-+ 		options->use_pam = 1;
-+ #else
-  		options->use_pam = 0;
-+ #endif
-  
-  	/* Standard Options */
-  	if (options->num_host_key_files == 0) {
-***************
-*** 1196,1203 ****
---- 1201,1217 ----
-  	switch (opcode) {
-  	/* Portable-specific options */
-  	case sUsePAM:
-+ #ifdef SET_USE_PAM
-+ 		/* UsePAM is always on and not configurable on Solaris */
-+ 		logit("%s line %d: ignoring UsePAM option value."
-+ 		    " This option is always on.", filename, linenum);
-+ 		while (arg)
-+ 			arg = strdelim(&cp);
-+ 		break; 
-+ #else
-  		intptr = &options->use_pam;
-  		goto parse_flag;
-+ #endif
-  
-  	/* Standard Options */
-  	case sBadOption:
+--- old/servconf.c	2019-11-02 12:07:09.484085433 +0000
++++ new/servconf.c	2019-11-02 12:07:09.508844362 +0000
+@@ -276,7 +276,12 @@ fill_default_server_options(ServerOption
+ 
+ 	/* Portable-specific options */
+ 	if (options->use_pam == -1)
++#ifdef SET_USE_PAM
++		/* use_pam should be always set to 1 on Solaris */
++		options->use_pam = 1;
++#else
+ 		options->use_pam = 0;
++#endif
+ 
+ 	/* Standard Options */
+ 	if (options->num_host_key_files == 0) {
+@@ -1268,8 +1273,17 @@ process_server_config_line(ServerOptions
+ 	switch (opcode) {
+ 	/* Portable-specific options */
+ 	case sUsePAM:
++#ifdef SET_USE_PAM
++		/* UsePAM is always on and not configurable on Solaris */
++		logit("%s line %d: ignoring UsePAM option value."
++		    " This option is always on.", filename, linenum);
++		while (arg)
++			arg = strdelim(&cp);
++		break; 
++#else
+ 		intptr = &options->use_pam;
+ 		goto parse_flag;
++#endif
+ 
+ 	/* Standard Options */
+ 	case sBadOption:

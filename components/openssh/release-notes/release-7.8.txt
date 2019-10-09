@@ -1,0 +1,211 @@
+OpenSSH 7.8 was released on 2018-08-24. It is available from the
+mirrors listed at https://www.openssh.com/.
+
+OpenSSH is a 100% complete SSH protocol 2.0 implementation and
+includes sftp client and server support.
+
+Once again, we would like to thank the OpenSSH community for their
+continued support of the project, especially those who contributed
+code or patches, reported bugs, tested snapshots or donated to the
+project. More information on donations may be found at:
+http://www.openssh.com/donations.html
+
+Potentially-incompatible changes
+================================
+
+This release includes a number of changes that may affect existing
+configurations:
+
+ * ssh-keygen(1): write OpenSSH format private keys by default
+   instead of using OpenSSL's PEM format. The OpenSSH format,
+   supported in OpenSSH releases since 2014 and described in the
+   PROTOCOL.key file in the source distribution, offers substantially
+   better protection against offline password guessing and supports
+   key comments in private keys. If necessary, it is possible to write
+   old PEM-style keys by adding "-m PEM" to ssh-keygen's arguments
+   when generating or updating a key.
+
+ * sshd(8): remove internal support for S/Key multiple factor
+   authentication. S/Key may still be used via PAM or BSD auth.
+
+ * ssh(1): remove vestigal support for running ssh(1) as setuid. This
+   used to be required for hostbased authentication and the (long
+   gone) rhosts-style authentication, but has not been necessary for
+   a long time. Attempting to execute ssh as a setuid binary, or with
+   uid != effective uid will now yield a fatal error at runtime.
+
+ * sshd(8): the semantics of PubkeyAcceptedKeyTypes and the similar
+   HostbasedAcceptedKeyTypes options have changed. These now specify
+   signature algorithms that are accepted for their respective
+   authentication mechanism, where previously they specified accepted
+   key types. This distinction matters when using the RSA/SHA2
+   signature algorithms "rsa-sha2-256", "rsa-sha2-512" and their
+   certificate counterparts. Configurations that override these
+   options but omit these algorithm names may cause unexpected
+   authentication failures (no action is required for configurations
+   that accept the default for these options).
+
+ * sshd(8): the precedence of session environment variables has
+   changed. ~/.ssh/environment and environment="..." options in
+   authorized_keys files can no longer override SSH_* variables set
+   implicitly by sshd.
+
+ * ssh(1)/sshd(8): the default IPQoS used by ssh/sshd has changed.
+   They will now use DSCP AF21 for interactive traffic and CS1 for
+   bulk.  For a detailed rationale, please see the commit message:
+   https://cvsweb.openbsd.org/src/usr.bin/ssh/readconf.c#rev1.284
+
+Changes since OpenSSH 7.7
+=========================
+
+This is primarily a bugfix release.
+
+New Features
+------------
+
+ * ssh(1)/sshd(8): add new signature algorithms "rsa-sha2-256-cert-
+   v01@openssh.com" and "rsa-sha2-512-cert-v01@openssh.com" to
+   explicitly force use of RSA/SHA2 signatures in authentication.
+
+ * sshd(8): extend the PermitUserEnvironment option to accept a
+   whitelist of environment variable names in addition to global
+   "yes" or "no" settings.
+
+ * sshd(8): add a PermitListen directive to sshd_config(5) and a 
+   corresponding permitlisten= authorized_keys option that control
+   which listen addresses and port numbers may be used by remote
+   forwarding (ssh -R ...).
+
+ * sshd(8): add some countermeasures against timing attacks used for
+   account validation/enumeration. sshd will enforce a minimum time
+   or each failed authentication attempt consisting of a global 5ms
+   minimum plus an additional per-user 0-4ms delay derived from a
+   host secret.
+
+ * sshd(8): add a SetEnv directive to allow an administrator to
+   explicitly specify environment variables in sshd_config.
+   Variables set by SetEnv override the default and client-specified
+   environment.
+
+ * ssh(1): add a SetEnv directive to request that the server sets
+   an environment variable in the session. Similar to the existing
+   SendEnv option, these variables are set subject to server
+   configuration.
+
+ * ssh(1): allow "SendEnv -PATTERN" to clear environment variables
+   previously marked for sending to the server. bz#1285
+
+ * ssh(1)/sshd(8): make UID available as a %-expansion everywhere
+   that the username is available currently. bz#2870
+
+ * ssh(1): allow setting ProxyJump=none to disable ProxyJump
+   functionality. bz#2869
+
+Bugfixes
+--------
+
+ * sshd(8): avoid observable differences in request parsing that could
+   be used to determine whether a target user is valid.
+
+ * all: substantial internal refactoring
+
+ * ssh(1)/sshd(8): fix some memory leaks; bz#2366
+
+ * ssh(1): fix a pwent clobber (introduced in openssh-7.7) that could
+   occur during key loading, manifesting as crash on some platforms.
+
+ * sshd_config(5): clarify documentation for AuthenticationMethods
+   option; bz#2663
+
+ * ssh(1): ensure that the public key algorithm sent in a
+   public key SSH_MSG_USERAUTH_REQUEST matches the content of the
+   signature blob. Previously, these could be inconsistent when a
+   legacy or non-OpenSSH ssh-agent returned a RSA/SHA1 signature
+   when asked to make a RSA/SHA2 signature.
+
+ * sshd(8): fix failures to read authorized_keys caused by faulty
+   supplemental group caching. bz#2873
+
+ * scp(1): apply umask to directories, fixing potential mkdir/chmod
+   race when copying directory trees bz#2839
+
+ * ssh-keygen(1): return correct exit code when searching for and
+   hashing known_hosts entries in a single operation; bz#2772
+
+ * ssh(1): prefer the ssh binary pointed to via argv[0] to $PATH when
+   re-executing ssh for ProxyJump. bz#2831
+
+ * sshd(8): do not ban PTY allocation when a sshd session is
+   restricted because the user password is expired as it breaks
+   password change dialog. (regression in openssh-7.7).
+
+ * ssh(1)/sshd(8): fix error reporting from select() failures. 
+
+ * ssh(1): improve documentation for -w (tunnel) flag, emphasising
+   that -w implicitly sets Tunnel=point-to-point. bz#2365
+
+ * ssh-agent(1): implement EMFILE mitigation for ssh-agent. ssh-agent
+   will no longer spin when its file descriptor limit is exceeded.
+   bz#2576
+
+ * ssh(1)/sshd(8): disable SSH2_MSG_DEBUG messages for Twisted Conch
+   clients. Twisted Conch versions that lack a version number in
+   their identification strings will mishandle these messages when
+   running on Python 2.x (https://twistedmatrix.com/trac/ticket/9422)
+
+ * sftp(1): notify user immediately when underlying ssh process dies
+   expectedly. bz#2719
+
+ * ssh(1)/sshd(8): fix tunnel forwarding; regression in 7.7 release.
+   bz#2855
+
+ * ssh-agent(1): don't kill ssh-agent's listening socket entirely if
+   it fails to accept(2) a connection. bz#2837
+
+ * sshd(8): relax checking of authorized_keys environment="..."
+   options to allow underscores in variable names (regression
+   introduced in 7.7). bz#2851
+
+ * ssh(1): add some missing options in the configuration dump output
+   (ssh -G). bz#2835
+
+Portability
+-----------
+
+ * sshd(8): Expose details of completed authentication to PAM auth
+   modules via SSH_AUTH_INFO_0 in the PAM environment. bz#2408
+
+ * Fix compilation problems caused by fights between zlib and OpenSSL
+   colliding uses of "free_func"
+
+ * Improve detection of unsupported compiler options. Recently these
+   may have manifested as "unsupported -Wl,-z,retpoline" warnings
+   during linking.
+
+ * sshd(8): some sandbox support for Linux/s390 bz#2752.
+
+ * regress tests: unbreak key-options.sh test on platforms without
+   openpty(3). bz#2856
+
+ * use getrandom(2) for PRNG seeding when built without OpenSSL.
+
+Checksums:
+==========
+
+- SHA1 (openssh-7.8.tar.gz) = ed5511cd42b543cd15166a9cbc56705f23b847e7
+- SHA256 (openssh-7.8.tar.gz) = TDqIsMEmghsBUNCrSCPyCxChfitntyOLXNC694py1XE
+
+- SHA1 (openssh-7.8p1.tar.gz) = 27e267e370315561de96577fccae563bc2c37a60
+- SHA256 (openssh-7.8p1.tar.gz) = GkhLsVFSwYO7JRThEqow3TQTjDz7Ay7uVJCmbFBxRMo
+
+Please note that the SHA256 signatures are base64 encoded and not
+hexadecimal (which is the default for most checksum tools). The PGP
+key used to sign the releases is available as RELEASE_KEY.asc from
+the mirror sites.
+
+Reporting Bugs:
+===============
+
+- Please read http://www.openssh.com/report.html
+  Security bugs should be reported directly to openssh@openssh.com
+

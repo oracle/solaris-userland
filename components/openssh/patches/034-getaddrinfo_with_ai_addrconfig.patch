@@ -8,9 +8,9 @@
 # In the future, if this fix is accepted by the upsteam in a later release, we
 # will remove this patch when we upgrade to that release.
 #
---- old/canohost.c	2018-11-09 13:52:23.918270087 +0000
-+++ new/canohost.c	2018-11-09 14:02:22.314954352 +0000
-@@ -274,6 +274,10 @@ remote_hostname(struct ssh *ssh)
+--- old/canohost.c	2019-11-02 12:07:11.747991107 +0000
++++ new/canohost.c	2019-11-02 12:07:11.840146022 +0000
+@@ -105,6 +105,10 @@ remote_hostname(struct ssh *ssh)
  	memset(&hints, 0, sizeof(hints));
  	hints.ai_family = from.ss_family;
  	hints.ai_socktype = SOCK_STREAM;
@@ -21,9 +21,9 @@
  	if (getaddrinfo(name, NULL, &hints, &aitop) != 0) {
  		logit("reverse mapping checking getaddrinfo for %.700s "
  		    "[%s] failed.", name, ntop);
---- old/channels.c	2018-04-01 22:38:28.000000000 +0000
-+++ new/channels.c	2018-11-09 14:11:32.519271963 +0000
-@@ -3299,8 +3299,12 @@ channel_setup_fwd_listener_tcpip(struct
+--- old/channels.c	2019-11-02 12:07:11.758721336 +0000
++++ new/channels.c	2019-11-02 12:07:11.850859316 +0000
+@@ -3414,8 +3414,12 @@ channel_setup_fwd_listener_tcpip(struct
  	 */
  	memset(&hints, 0, sizeof(hints));
  	hints.ai_family = ssh->chanctxt->IPv4or6;
@@ -37,7 +37,7 @@
  	snprintf(strport, sizeof strport, "%d", fwd->listen_port);
  	if ((r = getaddrinfo(addr, strport, &hints, &aitop)) != 0) {
  		if (addr == NULL) {
-@@ -4088,6 +4092,10 @@ connect_to_helper(struct ssh *ssh, const
+@@ -4293,6 +4297,10 @@ connect_to_helper(struct ssh *ssh, const
  		memset(&hints, 0, sizeof(hints));
  		hints.ai_family = ssh->chanctxt->IPv4or6;
  		hints.ai_socktype = socktype;
@@ -48,7 +48,7 @@
  		snprintf(strport, sizeof strport, "%d", port);
  		if ((gaierr = getaddrinfo(name, strport, &hints, &cctx->aitop))
  		    != 0) {
-@@ -4389,8 +4397,12 @@ x11_create_display_inet(struct ssh *ssh,
+@@ -4600,8 +4608,12 @@ x11_create_display_inet(struct ssh *ssh,
  		port = 6000 + display_number;
  		memset(&hints, 0, sizeof(hints));
  		hints.ai_family = ssh->chanctxt->IPv4or6;
@@ -62,7 +62,7 @@
  		snprintf(strport, sizeof strport, "%d", port);
  		if ((gaierr = getaddrinfo(NULL, strport,
  		    &hints, &aitop)) != 0) {
-@@ -4610,6 +4622,10 @@ x11_connect_display(struct ssh *ssh)
+@@ -4821,6 +4833,10 @@ x11_connect_display(struct ssh *ssh)
  	memset(&hints, 0, sizeof(hints));
  	hints.ai_family = ssh->chanctxt->IPv4or6;
  	hints.ai_socktype = SOCK_STREAM;
@@ -73,8 +73,8 @@
  	snprintf(strport, sizeof strport, "%u", 6000 + display_number);
  	if ((gaierr = getaddrinfo(buf, strport, &hints, &aitop)) != 0) {
  		error("%.100s: unknown host. (%s)", buf,
---- old/regress/netcat.c	2018-04-01 22:38:28.000000000 +0000
-+++ new/regress_netcat.c	2018-11-09 14:16:33.858866325 +0000
+--- old/regress/netcat.c	2019-11-02 12:07:11.769079121 +0000
++++ new/regress/netcat.c	2019-11-02 12:07:11.861248425 +0000
 @@ -334,6 +334,10 @@ main(int argc, char *argv[])
  		hints.ai_protocol = uflag ? IPPROTO_UDP : IPPROTO_TCP;
  		if (nflag)
@@ -122,9 +122,9 @@
  	r = getaddrinfo(h, p, &hints, &res);
  	/* Don't fatal when attempting to convert a numeric address */
  	if (r != 0) {
---- old/servconf.c	2018-11-09 13:52:23.937072021 +0000
-+++ new/servconf.c	2018-11-09 14:50:47.098017138 +0000
-@@ -801,6 +801,10 @@ add_one_listen_addr(ServerOptions *optio
+--- old/servconf.c	2019-11-02 12:07:11.779556697 +0000
++++ new/servconf.c	2019-11-02 12:07:11.871653742 +0000
+@@ -862,6 +862,10 @@ add_one_listen_addr(ServerOptions *optio
  	hints.ai_family = options->address_family;
  	hints.ai_socktype = SOCK_STREAM;
  	hints.ai_flags = (addr == NULL) ? AI_PASSIVE : 0;
@@ -135,9 +135,9 @@
  	snprintf(strport, sizeof strport, "%d", port);
  	if ((gaierr = getaddrinfo(addr, strport, &hints, &aitop)) != 0)
  		fatal("bad addr or host: %s (%s)",
---- old/ssh-keyscan.c	2018-04-01 22:38:28.000000000 +0000
-+++ new/ssh-keyscan.c	2018-11-09 14:52:24.378401124 +0000
-@@ -334,6 +334,10 @@ tcpconnect(char *host)
+--- old/ssh-keyscan.c	2019-11-02 12:07:11.789823525 +0000
++++ new/ssh-keyscan.c	2019-11-02 12:07:11.881760103 +0000
+@@ -344,6 +344,10 @@ tcpconnect(char *host)
  	memset(&hints, 0, sizeof(hints));
  	hints.ai_family = IPv4or6;
  	hints.ai_socktype = SOCK_STREAM;
@@ -148,9 +148,9 @@
  	if ((gaierr = getaddrinfo(host, strport, &hints, &aitop)) != 0) {
  		error("getaddrinfo %s: %s", host, ssh_gai_strerror(gaierr));
  		return -1;
---- old/ssh.c	2018-04-01 22:38:28.000000000 +0000
-+++ new/ssh.c	2018-11-09 14:54:58.006342126 +0000
-@@ -253,6 +253,10 @@ resolve_host(const char *name, int port,
+--- old/ssh.c	2019-11-02 12:07:11.800179716 +0000
++++ new/ssh.c	2019-11-02 12:07:11.891996767 +0000
+@@ -249,6 +249,10 @@ resolve_host(const char *name, int port,
  	hints.ai_socktype = SOCK_STREAM;
  	if (cname != NULL)
  		hints.ai_flags = AI_CANONNAME;
@@ -161,7 +161,7 @@
  	if ((gaierr = getaddrinfo(name, strport, &hints, &res)) != 0) {
  		if (logerr || (gaierr != EAI_NONAME && gaierr != EAI_NODATA))
  			loglevel = SYSLOG_LEVEL_ERROR;
-@@ -326,6 +330,10 @@ resolve_addr(const char *name, int port,
+@@ -322,6 +326,10 @@ resolve_addr(const char *name, int port,
  	    AF_UNSPEC : options.address_family;
  	hints.ai_socktype = SOCK_STREAM;
  	hints.ai_flags = AI_NUMERICHOST|AI_NUMERICSERV;
@@ -172,9 +172,9 @@
  	if ((gaierr = getaddrinfo(name, strport, &hints, &res)) != 0) {
  		debug2("%s: could not resolve name %.100s as address: %s",
  		    __func__, name, ssh_gai_strerror(gaierr));
---- old/sshconnect.c	2018-11-09 13:52:24.137673994 +0000
-+++ new/sshconnect.c	2018-11-09 14:56:30.390798248 +0000
-@@ -370,6 +370,10 @@ ssh_create_socket(int privileged, struct
+--- old/sshconnect.c	2019-11-02 12:07:11.810518901 +0000
++++ new/sshconnect.c	2019-11-02 12:07:11.902242259 +0000
+@@ -390,6 +390,10 @@ ssh_create_socket(struct addrinfo *ai)
  		hints.ai_socktype = ai->ai_socktype;
  		hints.ai_protocol = ai->ai_protocol;
  		hints.ai_flags = AI_PASSIVE;

@@ -15,11 +15,9 @@
 # Reported upstream:
 # https://bugzilla.mindrot.org/show_bug.cgi?id=2549
 #
-
-diff -pur old/auth-pam.c new/auth-pam.c
---- old/auth-pam.c
-+++ new/auth-pam.c
-@@ -409,6 +409,9 @@ do_pam_auth(struct pam_ctxt *ctxt)
+--- old/auth-pam.c	2019-11-02 12:07:12.708054755 +0000
++++ new/auth-pam.c	2019-11-02 12:07:12.732660753 +0000
+@@ -431,6 +431,9 @@ do_pam_auth(struct pam_ctxt *ctxt)
  			goto auth_fail;
  		sshpam_password_change_required(0);
  	}
@@ -29,7 +27,7 @@ diff -pur old/auth-pam.c new/auth-pam.c
  
  	ctxt->pam_done = 1;
  
-@@ -1019,6 +1022,8 @@ do_pam_set_tty(const char *tty)
+@@ -1074,6 +1077,8 @@ do_pam_account(void)
  void
  do_pam_setcred(int init)
  {

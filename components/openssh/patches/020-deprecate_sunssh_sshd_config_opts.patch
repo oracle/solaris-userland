@@ -13,18 +13,14 @@
 # This is a Solaris specific change to ease the transition and will not be
 # offered upstream.
 #
-diff -pur old/servconf.c new/servconf.c
---- old/servconf.c
-+++ new/servconf.c
-@@ -568,6 +568,7 @@ static struct {
+--- old/servconf.c	2019-11-02 12:07:10.244291024 +0000
++++ new/servconf.c	2019-11-02 12:07:10.269133126 +0000
+@@ -605,10 +605,12 @@ static struct {
  	{ "afstokenpassing", sUnsupported, SSHCFG_GLOBAL },
  #ifdef GSSAPI
  	{ "gssapiauthentication", sGssAuthentication, SSHCFG_ALL },
 +	{ "gssauthentication", sGssAuthentication, SSHCFG_ALL },   /* alias */
- #ifdef USE_GSS_STORE_CRED
- 	{ "gssapicleanupcredentials", sUnsupported, SSHCFG_GLOBAL },
- #else /* USE_GSS_STORE_CRED */
-@@ -576,6 +577,7 @@ static struct {
+ 	{ "gssapicleanupcredentials", sGssCleanupCreds, SSHCFG_GLOBAL },
  	{ "gssapistrictacceptorcheck", sGssStrictAcceptor, SSHCFG_GLOBAL },
  #else
  	{ "gssapiauthentication", sUnsupported, SSHCFG_ALL },
@@ -32,7 +28,7 @@ diff -pur old/servconf.c new/servconf.c
  	{ "gssapicleanupcredentials", sUnsupported, SSHCFG_GLOBAL },
  	{ "gssapistrictacceptorcheck", sUnsupported, SSHCFG_GLOBAL },
  #endif
-@@ -642,6 +644,30 @@ static struct {
+@@ -677,6 +679,30 @@ static struct {
  	{ "pamserviceprefix", sPAMServicePrefix, SSHCFG_GLOBAL },
  	{ "pamservicename", sPAMServiceName, SSHCFG_GLOBAL },
  #endif

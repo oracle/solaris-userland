@@ -16,10 +16,9 @@
 # Per agreement with upstream developers, filed:
 #    https://bugzilla.mindrot.org/show_bug.cgi?id=2615
 #
-diff -pur old/sshd.c new/sshd.c
---- old/sshd.c
-+++ new/sshd.c
-@@ -245,7 +245,14 @@ Buffer loginmsg;
+--- old/sshd.c	2019-11-02 12:07:12.963064067 +0000
++++ new/sshd.c	2019-11-02 12:07:12.987873735 +0000
+@@ -256,7 +256,14 @@ struct sshbuf *loginmsg;
  /* Unprivileged user */
  struct passwd *privsep_pw = NULL;
  
@@ -33,16 +32,17 @@ diff -pur old/sshd.c new/sshd.c
 +static void stop_grace_watchdog(void);
  void destroy_sensitive_data(void);
  void demote_sensitive_data(void);
- static void do_ssh2_kex(void);
-@@ -357,12 +364,101 @@ grace_alarm_handler(int sig)
+ static void do_ssh2_kex(struct ssh *);
+@@ -368,6 +375,7 @@ grace_alarm_handler(int sig)
  		signal(SIGTERM, SIG_IGN);
  		kill(0, SIGTERM);
  	}
 +	stop_grace_watchdog();
  
+ 	/* XXX pre-format ipaddr/port so we don't need to access active_state */
  	/* Log error and exit. */
- 	sigdie("Timeout before authentication for %s port %d",
- 	    ssh_remote_ipaddr(active_state), ssh_remote_port(active_state));
+@@ -376,6 +384,94 @@ grace_alarm_handler(int sig)
+ 	    ssh_remote_port(the_active_state));
  }
  
 +static inline void
@@ -96,7 +96,7 @@ diff -pur old/sshd.c new/sshd.c
 +		exit(0);
 +	}
 +	error("Timeout before authentication for %s. Killing process %d "
-+	    "with SIGTERM.", ssh_remote_ipaddr(active_state), (int)ppid);
++	    "with SIGTERM.", ssh_remote_ipaddr(the_active_state), (int)ppid);
 +	kill(ppid, SIGTERM);
 +
 +	/* if neccessary, kill it with SIGKILL */
@@ -133,10 +133,10 @@ diff -pur old/sshd.c new/sshd.c
 +	grace_watchdog_pid = -1;
 +}
 +
- static void
- sshd_exchange_identification(struct ssh *ssh, int sock_in, int sock_out)
- {
-@@ -623,6 +719,7 @@ privsep_preauth(Authctxt *authctxt)
+ /* Destroy the host and server keys.  They will no longer be needed. */
+ void
+ destroy_sensitive_data(void)
+@@ -530,6 +626,7 @@ privsep_preauth(struct ssh *ssh)
  		/* child */
  		close(pmonitor->m_sendfd);
  		close(pmonitor->m_log_recvfd);
@@ -144,7 +144,7 @@ diff -pur old/sshd.c new/sshd.c
  
  		/* Arrange for logging to be sent to the monitor */
  		set_log_handler(mm_log_handler, pmonitor);
-@@ -2075,8 +2172,10 @@ main(int ac, char **av)
+@@ -2087,8 +2184,10 @@ main(int ac, char **av)
  	 * are about to discover the bug.
  	 */
  	signal(SIGALRM, grace_alarm_handler);
@@ -154,9 +154,9 @@ diff -pur old/sshd.c new/sshd.c
 +		start_grace_watchdog(options.login_grace_time);
 +	}
  
- 	sshd_exchange_identification(ssh, sock_in, sock_out);
- 	packet_set_nonblocking();
-@@ -2129,6 +2228,7 @@ main(int ac, char **av)
+ 	if (kex_exchange_identification(ssh, -1, options.version_addendum) != 0)
+ 		cleanup_exit(255); /* error already logged */
+@@ -2145,6 +2244,7 @@ main(int ac, char **av)
  	 */
  	alarm(0);
  	signal(SIGALRM, SIG_DFL);

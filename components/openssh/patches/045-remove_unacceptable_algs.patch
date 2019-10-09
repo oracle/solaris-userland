@@ -14,12 +14,12 @@
 #
 # Patch source: in-house
 #
---- old/mac.c	2018-11-12 17:30:28.381252255 +0000
-+++ new/mac.c	2018-11-12 17:50:08.833351257 +0000
+--- old/mac.c	2019-11-02 12:07:12.871652053 +0000
++++ new/mac.c	2019-11-02 12:07:12.918381234 +0000
 @@ -87,8 +87,10 @@ static const struct macalg macs[] = {
+ 	{ "hmac-sha1-96",			SSH_DIGEST, SSH_DIGEST_SHA1, 96, 0, 0, 0 },
  	{ "hmac-sha2-256",			SSH_DIGEST, SSH_DIGEST_SHA256, 0, 0, 0, 0 },
  	{ "hmac-sha2-512",			SSH_DIGEST, SSH_DIGEST_SHA512, 0, 0, 0, 0 },
- #endif
 +#ifndef WITHOUT_HMAC_MD5
  	{ "hmac-md5",				SSH_DIGEST, SSH_DIGEST_MD5, 0, 0, 0, 0 },
  	{ "hmac-md5-96",			SSH_DIGEST, SSH_DIGEST_MD5, 96, 0, 0, 0 },
@@ -27,10 +27,10 @@
  	{ "umac-64@openssh.com",		SSH_UMAC, 0, 0, 128, 64, 0 },
  	{ "umac-128@openssh.com",		SSH_UMAC128, 0, 0, 128, 128, 0 },
  
-@@ -99,8 +101,10 @@ static const struct macalg macs[] = {
+@@ -97,8 +99,10 @@ static const struct macalg macs[] = {
+ 	{ "hmac-sha1-96-etm@openssh.com",	SSH_DIGEST, SSH_DIGEST_SHA1, 96, 0, 0, 1 },
  	{ "hmac-sha2-256-etm@openssh.com",	SSH_DIGEST, SSH_DIGEST_SHA256, 0, 0, 0, 1 },
  	{ "hmac-sha2-512-etm@openssh.com",	SSH_DIGEST, SSH_DIGEST_SHA512, 0, 0, 0, 1 },
- #endif
 +#ifndef WITHOUT_HMAC_MD5
  	{ "hmac-md5-etm@openssh.com",		SSH_DIGEST, SSH_DIGEST_MD5, 0, 0, 0, 1 },
  	{ "hmac-md5-96-etm@openssh.com",	SSH_DIGEST, SSH_DIGEST_MD5, 96, 0, 0, 1 },
@@ -38,8 +38,8 @@
  	{ "umac-64-etm@openssh.com",		SSH_UMAC, 0, 0, 128, 64, 1 },
  	{ "umac-128-etm@openssh.com",		SSH_UMAC128, 0, 0, 128, 128, 1 },
  
---- old/sshd.8	2018-11-12 17:30:28.387657212 +0000
-+++ new/sshd.8	2018-11-12 17:52:58.106503003 +0000
+--- old/sshd.8	2019-11-02 12:07:12.882217562 +0000
++++ new/sshd.8	2019-11-02 12:07:12.928973461 +0000
 @@ -259,12 +259,12 @@ host key against its own database to ver
  Forward security is provided through a Diffie-Hellman key agreement.
  This key agreement results in a shared session key.
@@ -55,9 +55,9 @@
  hmac-sha2-256 or hmac-sha2-512).
  .Pp
  Finally, the server and the client enter an authentication dialog.
---- old/sshd_config.5	2018-11-12 17:30:28.390327332 +0000
-+++ new/sshd_config.5	2018-11-12 17:53:55.587343422 +0000
-@@ -1034,10 +1034,6 @@ The supported MACs are:
+--- old/sshd_config.5	2019-11-02 12:07:12.892852488 +0000
++++ new/sshd_config.5	2019-11-02 12:07:12.939686008 +0000
+@@ -1089,10 +1089,6 @@ The supported MACs are:
  .Pp
  .Bl -item -compact -offset indent
  .It
@@ -68,7 +68,7 @@
  hmac-sha1
  .It
  hmac-sha1-96
-@@ -1050,10 +1046,6 @@ umac-64@openssh.com
+@@ -1105,10 +1101,6 @@ umac-64@openssh.com
  .It
  umac-128@openssh.com
  .It

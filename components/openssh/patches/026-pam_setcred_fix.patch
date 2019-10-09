@@ -10,9 +10,9 @@
 # In the future, if these bug fixes are accepted by the upsteam in a later
 # release, we will remove this patch when we upgrade to that release.
 #
---- orig/auth-pam.c	Tue May 12 12:57:25 2015
-+++ new/auth-pam.c	Thu May 14 15:21:54 2015
-@@ -1127,6 +1127,12 @@
+--- old/auth-pam.c	2019-11-02 12:07:11.536707917 +0000
++++ new/auth-pam.c	2019-11-02 12:07:11.560755378 +0000
+@@ -1221,12 +1221,19 @@ do_pam_setcred(int init)
  		sshpam_cred_established = 1;
  		return;
  	}
@@ -25,7 +25,6 @@
  	if (sshpam_authenticated)
  		fatal("PAM: pam_setcred(): %s",
  		    pam_strerror(sshpam_handle, sshpam_err));
-@@ -1133,6 +1139,7 @@
  	else
  		debug("PAM: pam_setcred(): %s",
  		    pam_strerror(sshpam_handle, sshpam_err));
@@ -33,7 +32,7 @@
  }
  
  static int
-@@ -1228,10 +1235,16 @@
+@@ -1322,10 +1329,16 @@ do_pam_session(struct ssh *ssh)
  	if (sshpam_err == PAM_SUCCESS)
  		sshpam_session_open = 1;
  	else {

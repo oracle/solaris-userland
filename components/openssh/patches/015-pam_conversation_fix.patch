@@ -4,9 +4,9 @@
 # 2009, but it was not accepted by the upstream.  For more information, see
 # https://bugzilla.mindrot.org/show_bug.cgi?id=1681.
 #
---- orig/auth-pam.c	Mon Aug 15 16:16:17 2016
-+++ new/auth-pam.c	Mon Aug 15 16:26:40 2016
-@@ -1164,11 +1164,13 @@
+--- old/auth-pam.c	2019-11-02 12:07:09.816087610 +0000
++++ new/auth-pam.c	2019-11-02 12:07:09.840337720 +0000
+@@ -1255,11 +1255,13 @@ free_pam_environment(char **env)
  	free(env);
  }
  
@@ -20,7 +20,7 @@
  static int
  sshpam_passwd_conv(int n, sshpam_const struct pam_message **msg,
      struct pam_response **resp, void *data)
-@@ -1190,6 +1192,17 @@
+@@ -1281,12 +1283,24 @@ sshpam_passwd_conv(int n, sshpam_const s
  	for (i = 0; i < n; ++i) {
  		switch (PAM_MSG_MEMBER(msg, i, msg_style)) {
  		case PAM_PROMPT_ECHO_OFF:
@@ -38,7 +38,6 @@
  			if (sshpam_password == NULL)
  				goto fail;
  			if ((reply[i].resp = strdup(sshpam_password)) == NULL)
-@@ -1196,6 +1209,7 @@
  				goto fail;
  			reply[i].resp_retcode = PAM_SUCCESS;
  			break;
@@ -46,7 +45,7 @@
  		case PAM_ERROR_MSG:
  		case PAM_TEXT_INFO:
  			len = strlen(PAM_MSG_MEMBER(msg, i, msg));
-@@ -1231,6 +1245,9 @@
+@@ -1323,6 +1337,9 @@ static struct pam_conv passwd_conv = { s
  int
  sshpam_auth_passwd(Authctxt *authctxt, const char *password)
  {
@@ -56,7 +55,7 @@
  	int flags = (options.permit_empty_passwd == 0 ?
  	    PAM_DISALLOW_NULL_AUTHTOK : 0);
  	char *fake = NULL;
-@@ -1251,6 +1268,15 @@
+@@ -1343,6 +1360,15 @@ sshpam_auth_passwd(Authctxt *authctxt, c
  	    options.permit_root_login != PERMIT_YES))
  		sshpam_password = fake = fake_password(password);
  
@@ -72,7 +71,7 @@
  	sshpam_err = pam_set_item(sshpam_handle, PAM_CONV,
  	    (const void *)&passwd_conv);
  	if (sshpam_err != PAM_SUCCESS)
-@@ -1262,6 +1288,16 @@
+@@ -1354,6 +1380,16 @@ sshpam_auth_passwd(Authctxt *authctxt, c
  	free(fake);
  	if (sshpam_err == PAM_MAXTRIES)
  		sshpam_set_maxtries_reached(1);

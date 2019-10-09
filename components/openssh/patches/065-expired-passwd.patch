@@ -7,26 +7,29 @@
 #
 # This is Solaris specific patch (not be to contributed to upstream).
 #
---- old/auth-pam.c	2019-10-01 10:42:58.227183998 +0200
-+++ new/auth-pam.c	2019-10-03 09:46:15.521271034 +0200
-@@ -379,6 +379,7 @@
+--- old/auth-pam.c	2019-11-02 12:07:13.445906056 +0000
++++ new/auth-pam.c	2019-11-02 12:07:13.470133990 +0000
+@@ -401,6 +401,8 @@ do_pam_auth(struct pam_ctxt *ctxt)
+ 	struct pam_conv sshpam_conv;
  	int flags = (options.permit_empty_passwd == 0 ?
  	    PAM_DISALLOW_NULL_AUTHTOK : 0);
- 	struct ssh *ssh = active_state; /* XXX */
-+	Buffer buffer;
++	int r;
++	struct sshbuf *buffer = NULL;
  
  	sshpam_conv.conv = sshpam_child_conv;
  	sshpam_conv.appdata_ptr = ctxt;
-@@ -403,6 +404,13 @@
+@@ -425,6 +427,15 @@ do_pam_auth(struct pam_ctxt *ctxt)
  		goto auth_fail;
  	}
  	if (sshpam_authctxt->force_pwchange) {
-+		buffer_init(&buffer);
-+		buffer_put_cstring(&buffer,
++		if ((buffer = sshbuf_new()) == NULL)
++			fatal("%s: sshbuf_new failed", __func__);
++		if ((r = sshbuf_put_cstring(buffer,
 +		    "Warning: Your password has expired,"
-+		    " please change it now.");
-+		ssh_msg_send(ctxt->pam_csock, PAM_TEXT_INFO, &buffer);
-+		buffer_free(&buffer);
++		    " please change it now.")) != 0)
++			fatal("%s: buffer error: %s", __func__, ssh_err(r));
++		ssh_msg_send(ctxt->pam_csock, PAM_TEXT_INFO, buffer);
++		sshbuf_free(buffer);
 +
  		sshpam_err = pam_chauthtok(sshpam_handle,
  		    PAM_CHANGE_EXPIRED_AUTHTOK);

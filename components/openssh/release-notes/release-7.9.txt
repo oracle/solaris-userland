@@ -1,0 +1,130 @@
+OpenSSH 7.9 was released on 2018-10-19. It is available from the
+mirrors listed at https://www.openssh.com/.
+
+OpenSSH is a 100% complete SSH protocol 2.0 implementation and
+includes sftp client and server support.
+
+Once again, we would like to thank the OpenSSH community for their
+continued support of the project, especially those who contributed
+code or patches, reported bugs, tested snapshots or donated to the
+project. More information on donations may be found at:
+http://www.openssh.com/donations.html
+
+Potentially-incompatible changes
+================================
+
+This release includes a number of changes that may affect existing
+configurations:
+
+ * ssh(1), sshd(8): the setting of the new CASignatureAlgorithms
+   option (see below) bans the use of DSA keys as certificate
+   authorities.
+
+ * sshd(8): the authentication success/failure log message has
+   changed format slightly. It now includes the certificate
+   fingerprint (previously it included only key ID and CA key
+   fingerprint).
+
+Changes since OpenSSH 7.8
+=========================
+
+This is primarily a bugfix release.
+
+New Features
+------------
+
+ * ssh(1), sshd(8): allow most port numbers to be specified using
+   service names from getservbyname(3) (typically /etc/services).
+
+ * ssh(1): allow the IdentityAgent configuration directive to accept
+   environment variable names. This supports the use of multiple
+   agent sockets without needing to use fixed paths.
+
+ * sshd(8): support signalling sessions via the SSH protocol.
+   A limited subset of signals is supported and only for login or
+   command sessions (i.e. not subsystems) that were not subject to
+   a forced command via authorized_keys or sshd_config. bz#1424
+
+ * ssh(1): support "ssh -Q sig" to list supported signature options.
+   Also "ssh -Q help" to show the full set of supported queries.
+
+ * ssh(1), sshd(8): add a CASignatureAlgorithms option for the
+   client and server configs to allow control over which signature
+   formats are allowed for CAs to sign certificates. For example,
+   this allows banning CAs that sign certificates using the RSA-SHA1
+   signature algorithm.
+
+ * sshd(8), ssh-keygen(1): allow key revocation lists (KRLs) to
+   revoke keys specified by SHA256 hash.
+
+ * ssh-keygen(1): allow creation of key revocation lists directly
+   from base64-encoded SHA256 fingerprints. This supports revoking
+   keys using only the information contained in sshd(8)
+   authentication log messages.
+
+Bugfixes
+--------
+
+ * ssh(1), ssh-keygen(1): avoid spurious "invalid format" errors when
+   attempting to load PEM private keys while using an incorrect
+   passphrase. bz#2901
+
+ * sshd(8): when a channel closed message is received from a client,
+   close the stderr file descriptor at the same time stdout is
+   closed. This avoids stuck processes if they were waiting for
+   stderr to close and were insensitive to stdin/out closing. bz#2863
+
+ * ssh(1): allow ForwardX11Timeout=0 to disable the untrusted X11
+   forwarding timeout and support X11 forwarding indefinitely.
+   Previously the behaviour of ForwardX11Timeout=0 was undefined.
+
+ * sshd(8): when compiled with GSSAPI support, cache supported method
+   OIDs regardless of whether GSSAPI authentication is enabled in the
+   main section of sshd_config. This avoids sandbox violations if
+   GSSAPI authentication was later enabled in a Match block. bz#2107
+
+ * sshd(8): do not fail closed when configured with a text key
+   revocation list that contains a too-short key. bz#2897
+
+ * ssh(1): treat connections with ProxyJump specified the same as
+   ones with a ProxyCommand set with regards to hostname
+   canonicalisation (i.e. don't try to canonicalise the hostname
+   unless CanonicalizeHostname is set to 'always'). bz#2896
+
+ * ssh(1): fix regression in OpenSSH 7.8 that could prevent public-
+   key authentication using certificates hosted in a ssh-agent(1)
+   or against sshd(8) from OpenSSH <7.8.
+
+Portability
+-----------
+
+ * All: support building against the openssl-1.1 API (releases 1.1.0g
+   and later). The openssl-1.0 API will remain supported at least
+   until OpenSSL terminates security patch support for that API version.
+
+ * sshd(8): allow the futex(2) syscall in the Linux seccomp sandbox;
+   apparently required by some glibc/OpenSSL combinations.
+
+ * sshd(8): handle getgrouplist(3) returning more than
+   _SC_NGROUPS_MAX groups. Some platforms consider this limit more
+   as a guideline.
+
+Checksums:
+==========
+
+ - SHA1 (openssh-7.9.tar.gz) = 7c50a86b8f591decd172ed7f5527abc533098dec
+ - SHA256 (openssh-7.9.tar.gz) = nSVigtHGn3+xKXRqpSnp4YOyEPPAb+pCHdWS9Eh/IPY=
+
+ - SHA1 (openssh-7.9p1.tar.gz) = 993aceedea8ecabb1d0dd7293508a361891c4eaa
+ - SHA256 (openssh-7.9p1.tar.gz) = a0s7oiU9hO03ccgFByjVl8kc/OiYcTvre2SjBbbxGq0=
+
+Please note that the SHA256 signatures are base64 encoded and not
+hexadecimal (which is the default for most checksum tools). The PGP
+key used to sign the releases is available as RELEASE_KEY.asc from
+the mirror sites.
+
+Reporting Bugs:
+===============
+
+- Please read http://www.openssh.com/report.html
+  Security bugs should be reported directly to openssh@openssh.com

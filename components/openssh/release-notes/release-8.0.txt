@@ -1,0 +1,263 @@
+OpenSSH 8.0 was released on 2019-04-17. It is available from the
+mirrors listed at https://www.openssh.com/.
+
+OpenSSH is a 100% complete SSH protocol 2.0 implementation and
+includes sftp client and server support.
+
+Once again, we would like to thank the OpenSSH community for their
+continued support of the project, especially those who contributed
+code or patches, reported bugs, tested snapshots or donated to the
+project. More information on donations may be found at:
+http://www.openssh.com/donations.html
+
+Security
+========
+
+This release contains mitigation for a weakness in the scp(1) tool
+and protocol (CVE-2019-6111): when copying files from a remote system
+to a local directory, scp(1) did not verify that the filenames that
+the server sent matched those requested by the client. This could
+allow a hostile server to create or clobber unexpected local files
+with attacker-controlled content.
+
+This release adds client-side checking that the filenames sent from
+the server match the command-line request,
+
+The scp protocol is outdated, inflexible and not readily fixed. We
+recommend the use of more modern protocols like sftp and rsync for
+file transfer instead.
+
+Potentially-incompatible changes
+================================
+
+This release includes a number of changes that may affect existing
+configurations:
+
+ * scp(1): Relating to the above changes to scp(1); the scp protocol
+   relies on the remote shell for wildcard expansion, so there is no
+   infallible way for the client's wildcard matching to perfectly
+   reflect the server's. If there is a difference between client and
+   server wildcard expansion, the client may refuse files from the
+   server. For this reason, we have provided a new "-T" flag to scp
+   that disables these client-side checks at the risk of
+   reintroducing the attack described above.
+
+ * sshd(8): Remove support for obsolete "host/port" syntax. Slash-
+   separated host/port was added in 2001 as an alternative to
+   host:port syntax for the benefit of IPv6 users. These days there
+   are establised standards for this like [::1]:22 and the slash
+   syntax is easily mistaken for CIDR notation, which OpenSSH
+   supports for some things. Remove the slash notation from
+   ListenAddress and PermitOpen; bz#2335
+
+Changes since OpenSSH 7.9
+=========================
+
+This release is focused on new features and internal refactoring.
+
+New Features
+------------
+
+ * ssh(1), ssh-agent(1), ssh-add(1): Add support for ECDSA keys in
+   PKCS#11 tokens.
+
+ * ssh(1), sshd(8): Add experimental quantum-computing resistant
+   key exchange method, based on a combination of Streamlined NTRU
+   Prime 4591^761 and X25519.
+
+ * ssh-keygen(1): Increase the default RSA key size to 3072 bits,
+   following NIST Special Publication 800-57's guidance for a
+   128-bit equivalent symmetric security level.
+
+ * ssh(1): Allow "PKCS11Provider=none" to override later instances of
+   the PKCS11Provider directive in ssh_config; bz#2974
+
+ * sshd(8): Add a log message for situations where a connection is
+   dropped for attempting to run a command but a sshd_config
+   ForceCommand=internal-sftp restriction is in effect; bz#2960
+
+ * ssh(1): When prompting whether to record a new host key, accept
+   the key fingerprint as a synonym for "yes". This allows the user
+   to paste a fingerprint obtained out of band at the prompt and
+   have the client do the comparison for you.
+
+ * ssh-keygen(1): When signing multiple certificates on a single
+   command-line invocation, allow automatically incrementing the
+   certificate serial number.
+
+ * scp(1), sftp(1): Accept -J option as an alias to ProxyJump on
+   the scp and sftp command-lines.
+
+ * ssh-agent(1), ssh-pkcs11-helper(8), ssh-add(1): Accept "-v"
+   command-line flags to increase the verbosity of output; pass
+   verbose flags though to subprocesses, such as ssh-pkcs11-helper
+   started from ssh-agent.
+
+ * ssh-add(1): Add a "-T" option to allowing testing whether keys in
+   an agent are usable by performing a signature and a verification.
+
+ * sftp-server(8): Add a "lsetstat@openssh.com" protocol extension
+   that replicates the functionality of the existing SSH2_FXP_SETSTAT
+   operation but does not follow symlinks. bz#2067
+
+ * sftp(1): Add "-h" flag to chown/chgrp/chmod commands to request
+   they do not follow symlinks.
+
+ * sshd(8): Expose $SSH_CONNECTION in the PAM environment. This makes
+   the connection 4-tuple available to PAM modules that wish to use
+   it in decision-making. bz#2741
+
+ * sshd(8): Add a ssh_config "Match final" predicate Matches in same
+   pass as "Match canonical" but doesn't require hostname
+   canonicalisation be enabled. bz#2906
+
+ * sftp(1): Support a prefix of '@' to suppress echo of sftp batch
+   commands; bz#2926
+
+ * ssh-keygen(1): When printing certificate contents using
+   "ssh-keygen -Lf /path/certificate", include the algorithm that
+   the CA used to sign the cert.
+
+Bugfixes
+--------
+
+ * sshd(8): Fix authentication failures when sshd_config contains
+   "AuthenticationMethods any" inside a Match block that overrides
+   a more restrictive default.
+
+ * sshd(8): Avoid sending duplicate keepalives when ClientAliveCount
+   is enabled.
+
+ * sshd(8): Fix two race conditions related to SIGHUP daemon restart.
+   Remnant file descriptors in recently-forked child processes could
+   block the parent sshd's attempt to listen(2) to the configured
+   addresses. Also, the restarting parent sshd could exit before any
+   child processes that were awaiting their re-execution state had
+   completed reading it, leaving them in a fallback path.
+
+ * ssh(1): Fix stdout potentially being redirected to /dev/null when
+   ProxyCommand=- was in use.
+
+ * sshd(8): Avoid sending SIGPIPE to child processes if they attempt
+   to write to stderr after their parent processes have exited;
+   bz#2071
+
+ * ssh(1): Fix bad interaction between the ssh_config ConnectTimeout
+   and ConnectionAttempts directives - connection attempts after the
+   first were ignoring the requested timeout; bz#2918
+
+ * ssh-keyscan(1): Return a non-zero exit status if no keys were
+   found; bz#2903
+
+ * scp(1): Sanitize scp filenames to allow UTF-8 characters without
+   terminal control sequences;  bz#2434
+
+ * sshd(8): Fix confusion between ClientAliveInterval and time-based
+   RekeyLimit that could cause connections to be incorrectly closed.
+   bz#2757
+
+ * ssh(1), ssh-add(1): Correct some bugs in PKCS#11 token PIN
+   handling at initial token login. The attempt to read the PIN
+   could be skipped in some cases, particularly on devices with
+   integrated PIN readers. This would lead to an inability to
+   retrieve keys from these tokens. bz#2652
+
+ * ssh(1), ssh-add(1): Support keys on PKCS#11 tokens that set the
+   CKA_ALWAYS_AUTHENTICATE flag by requring a fresh login after the
+   C_SignInit operation. bz#2638
+
+ * ssh(1): Improve documentation for ProxyJump/-J, clarifying that
+   local configuration does not apply to jump hosts.
+
+ * ssh-keygen(1): Clarify manual - ssh-keygen -e only writes
+   public keys, not private.
+
+ * ssh(1), sshd(8): be more strict in processing protocol banners,
+   allowing \r characters only immediately before \n.
+
+ * Various: fix a number of memory leaks, including bz#2942 and
+   bz#2938
+
+ * scp(1), sftp(1): fix calculation of initial bandwidth limits.
+   Account for bytes written before the timer starts and adjust the
+   schedule on which recalculations are performed. Avoids an initial
+   burst of traffic and yields more accurate bandwidth limits;
+   bz#2927
+
+ * sshd(8): Only consider the ext-info-c extension during the initial
+   key eschange. It shouldn't be sent in subsequent ones, but if it
+   is present we should ignore it. This prevents sshd from sending a
+   SSH_MSG_EXT_INFO for REKEX for buggy these clients. bz#2929
+
+ * ssh-keygen(1): Clarify manual that ssh-keygen -F (find host in 
+   authorized_keys) and -R (remove host from authorized_keys) options
+   may accept either a bare hostname or a [hostname]:port combo.
+   bz#2935
+
+ * ssh(1): Don't attempt to connect to empty SSH_AUTH_SOCK; bz#2936
+
+ * sshd(8): Silence error messages when sshd fails to load some of
+   the default host keys. Failure to load an explicitly-configured
+   hostkey is still an error, and failure to load any host key is
+   still fatal. pr/103
+
+ * ssh(1): Redirect stderr of ProxyCommands to /dev/null when ssh is
+   started with ControlPersist; prevents random ProxyCommand output
+   from interfering with session output.
+
+ * ssh(1): The ssh client was keeping a redundant ssh-agent socket
+   (leftover from authentication) around for the life of the
+   connection; bz#2912
+
+ * sshd(8): Fix bug in HostbasedAcceptedKeyTypes and
+   PubkeyAcceptedKeyTypes options. If only RSA-SHA2 siganture types
+   were specified, then authentication would always fail for RSA keys
+   as the monitor checks only the base key (not the signature
+   algorithm) type against *AcceptedKeyTypes. bz#2746
+
+ * ssh(1): Request correct signature types from ssh-agent when
+   certificate keys and RSA-SHA2 signatures are in use.
+
+Portability
+-----------
+
+ * sshd(8): On Cygwin, run as SYSTEM where possible, using S4U for
+   token creation if it supports MsV1_0 S4U Logon.
+
+ * sshd(8): On Cygwin, use custom user/group matching code that
+   respects the OS' behaviour of case-insensitive matching.
+
+ * sshd(8): Don't set $MAIL if UsePAM=yes as PAM typically specifies
+   the user environment if it's enabled; bz#2937
+
+ * sshd(8) Cygwin: Change service name to cygsshd to avoid collision
+   with Microsoft's OpenSSH port.
+
+ * Allow building against OpenSSL -dev (3.x)
+
+ * Fix a number of build problems against version configurations and
+   versions of OpenSSL. Including bz#2931 and bz#2921
+
+ * Improve warnings in cygwin service setup. bz#2922
+
+ * Remove hardcoded service name in cygwin setup. bz#2922
+
+Checksums:
+==========
+
+ - SHA1 (openssh-8.0.tar.gz) = 8aaa99091fc7e5a92a4a320e1e5521046b3f95f0
+ - SHA256 (openssh-8.0.tar.gz) = 1xvSJk1KYSnOLPYEUzyCVwTEQ7MHOaCO65DzeNuuLdo=
+
+ - SHA1 (openssh-8.0p1.tar.gz) = 756dbb99193f9541c9206a667eaa27b0fa184a4f
+ - SHA256 (openssh-8.0p1.tar.gz) = vZQ4eeaUmOgDHra39E0IzcN9WaeraJqgtDcyDDSB/Wg=
+
+Please note that the SHA256 signatures are base64 encoded and not
+hexadecimal (which is the default for most checksum tools). The PGP
+key used to sign the releases is available as RELEASE_KEY.asc from
+the mirror sites.
+
+Reporting Bugs:
+===============
+
+- Please read http://www.openssh.com/report.html
+  Security bugs should be reported directly to openssh@openssh.com

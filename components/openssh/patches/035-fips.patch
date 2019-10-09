@@ -4,10 +4,9 @@
 #
 # This patch is unlikely to be accepted upstream.
 #
-diff -pur old/cipher.c new/cipher.c
---- old/cipher.c
-+++ new/cipher.c
-@@ -80,7 +80,34 @@ struct sshcipher {
+--- old/cipher.c	2019-11-02 12:07:11.925202439 +0000
++++ new/cipher.c	2019-11-02 12:07:12.185202573 +0000
+@@ -83,7 +83,34 @@ struct sshcipher {
  #endif
  };
  
@@ -40,11 +39,10 @@ diff -pur old/cipher.c new/cipher.c
  static const struct sshcipher ciphers[] = {
 +#endif /* ENABLE_OPENSSL_FIPS */
  #ifdef WITH_OPENSSL
+ #ifndef OPENSSL_NO_DES
  	{ "3des-cbc",		8, 24, 0, 0, CFLAG_CBC, EVP_des_ede3_cbc },
- 	{ "aes128-cbc",		16, 16, 0, 0, CFLAG_CBC, EVP_aes_128_cbc },
-diff -pur old/digest-openssl.c new/digest-openssl.c
---- old/digest-openssl.c
-+++ new/digest-openssl.c
+--- old/digest-openssl.c	2019-11-02 12:07:11.935230376 +0000
++++ new/digest-openssl.c	2019-11-02 12:07:12.195332666 +0000
 @@ -31,6 +31,7 @@
  #include "sshbuf.h"
  #include "digest.h"
@@ -53,7 +51,7 @@ diff -pur old/digest-openssl.c new/digest-openssl.c
  
  #ifndef HAVE_EVP_RIPEMD160
  # define EVP_ripemd160 NULL
-@@ -53,8 +54,21 @@ struct ssh_digest {
+@@ -57,8 +58,21 @@ struct ssh_digest {
  	const EVP_MD *(*mdfunc)(void);
  };
  
@@ -75,7 +73,7 @@ diff -pur old/digest-openssl.c new/digest-openssl.c
  	{ SSH_DIGEST_MD5,	"MD5",	 	16,	EVP_md5 },
  	{ SSH_DIGEST_SHA1,	"SHA1",	 	20,	EVP_sha1 },
  	{ SSH_DIGEST_SHA256,	"SHA256", 	32,	EVP_sha256 },
-@@ -66,6 +81,9 @@ const struct ssh_digest digests[] = {
+@@ -70,6 +84,9 @@ const struct ssh_digest digests[] = {
  static const struct ssh_digest *
  ssh_digest_by_alg(int alg)
  {
@@ -85,7 +83,7 @@ diff -pur old/digest-openssl.c new/digest-openssl.c
  	if (alg < 0 || alg >= SSH_DIGEST_MAX)
  		return NULL;
  	if (digests[alg].id != alg) /* sanity */
-@@ -78,6 +96,9 @@ ssh_digest_by_alg(int alg)
+@@ -82,6 +99,9 @@ ssh_digest_by_alg(int alg)
  int
  ssh_digest_alg_by_name(const char *name)
  {
@@ -95,28 +93,27 @@ diff -pur old/digest-openssl.c new/digest-openssl.c
  	int alg;
  
  	for (alg = 0; digests[alg].id != -1; alg++) {
-diff -pur old/gss-genr.c new/gss-genr.c
---- old/gss-genr.c
-+++ new/gss-genr.c
-@@ -43,6 +43,7 @@
+--- old/gss-genr.c	2019-11-02 12:07:11.945190722 +0000
++++ new/gss-genr.c	2019-11-02 12:07:12.205385877 +0000
+@@ -44,6 +44,7 @@
  #include "cipher.h"
- #include "key.h"
+ #include "sshkey.h"
  #include "kex.h"
 +#include "misc.h"
- #include <openssl/evp.h>
+ #include "digest.h"
+ #include "packet.h"
  
- #include "ssh-gss.h"
-@@ -99,6 +100,7 @@ ssh_gssapi_kex_mechs(gss_OID_set gss_sup
+@@ -132,6 +133,7 @@ ssh_gssapi_kex_mechs(gss_OID_set gss_sup
  	char deroid[2];
- 	const EVP_MD *evp_md = EVP_md5();
- 	EVP_MD_CTX md;
+ 	struct ssh_digest_ctx *md = NULL;
+ 	char *s, *cp, *p;
 +	int fips_mode;
  
  	if (gss_enc2oid != NULL) {
  		for (i = 0; gss_enc2oid[i].encoded != NULL; i++)
-@@ -111,6 +113,14 @@ ssh_gssapi_kex_mechs(gss_OID_set gss_sup
- 
- 	buffer_init(&buf);
+@@ -145,6 +147,14 @@ ssh_gssapi_kex_mechs(gss_OID_set gss_sup
+ 	if ((buf = sshbuf_new()) == NULL)
+ 		fatal("%s: sshbuf_new failed", __func__);
  
 +#ifdef ENABLE_OPENSSL_FIPS
 +	fips_mode = ssh_FIPS_mode();
@@ -127,20 +124,12 @@ diff -pur old/gss-genr.c new/gss-genr.c
 +	}
 +#endif
  	oidpos = 0;
+ 	s = cp = xstrdup(kex);
  	for (i = 0; i < gss_supported->count; i++) {
- 		if (gss_supported->elements[i].length < 128 &&
-@@ -118,7 +128,6 @@ ssh_gssapi_kex_mechs(gss_OID_set gss_sup
- 
- 			deroid[0] = SSH_GSS_OIDTYPE;
- 			deroid[1] = gss_supported->elements[i].length;
--
- 			EVP_DigestInit(&md, evp_md);
- 			EVP_DigestUpdate(&md, deroid, 2);
- 			EVP_DigestUpdate(&md,
-@@ -150,6 +159,12 @@ ssh_gssapi_kex_mechs(gss_OID_set gss_sup
- 			oidpos++;
+@@ -190,6 +200,12 @@ ssh_gssapi_kex_mechs(gss_OID_set gss_sup
  		}
  	}
+ 	free(s);
 +#ifdef ENABLE_OPENSSL_FIPS
 +	if (fips_mode) {
 +		ssh_FIPS_mode_set_if_capable();
@@ -150,10 +139,9 @@ diff -pur old/gss-genr.c new/gss-genr.c
  	gss_enc2oid[oidpos].oid = NULL;
  	gss_enc2oid[oidpos].encoded = NULL;
  
-diff -pur old/kex.c new/kex.c
---- old/kex.c
-+++ new/kex.c
-@@ -81,7 +81,43 @@ struct kexalg {
+--- old/kex.c	2019-11-02 12:07:11.955332314 +0000
++++ new/kex.c	2019-11-02 12:07:12.215460365 +0000
+@@ -88,7 +88,43 @@ struct kexalg {
  	int ec_nid;
  	int hash_alg;
  };
@@ -197,10 +185,28 @@ diff -pur old/kex.c new/kex.c
  #ifdef WITH_OPENSSL
  	{ KEX_DH1, KEX_DH_GRP1_SHA1, 0, SSH_DIGEST_SHA1 },
  	{ KEX_DH14_SHA1, KEX_DH_GRP14_SHA1, 0, SSH_DIGEST_SHA1 },
-diff -pur old/mac.c new/mac.c
---- old/mac.c
-+++ new/mac.c
-@@ -53,8 +53,33 @@ struct macalg {
+@@ -1238,10 +1274,18 @@ kex_exchange_identification(struct ssh *
+ 	sshbuf_reset(our_version);
+ 	if (version_addendum != NULL && *version_addendum == '\0')
+ 		version_addendum = NULL;
++#ifdef ENABLE_OPENSSL_FIPS
++	if ((r = sshbuf_putf(our_version, "SSH-%d.%d-%.100s%s%s%s\r\n",
++	    PROTOCOL_MAJOR_2, PROTOCOL_MINOR_2, SSH_VERSION,
++	    ssh_FIPS_mode() ? " FIPS" : " ",
++	    version_addendum == NULL ? "" : " ",
++	    version_addendum == NULL ? "" : version_addendum)) != 0) {
++#else
+ 	if ((r = sshbuf_putf(our_version, "SSH-%d.%d-%.100s%s%s\r\n",
+ 	   PROTOCOL_MAJOR_2, PROTOCOL_MINOR_2, SSH_VERSION,
+ 	    version_addendum == NULL ? "" : " ",
+ 	    version_addendum == NULL ? "" : version_addendum)) != 0) {
++#endif
+ 		error("%s: sshbuf_putf: %s", __func__, ssh_err(r));
+ 		goto out;
+ 	}
+--- old/mac.c	2019-11-02 12:07:11.965317554 +0000
++++ new/mac.c	2019-11-02 12:07:12.225439647 +0000
+@@ -55,8 +55,33 @@ struct macalg {
  	int		len;		/* just for UMAC */
  	int		etm;		/* Encrypt-then-MAC */
  };
@@ -234,10 +240,9 @@ diff -pur old/mac.c new/mac.c
  	/* Encrypt-and-MAC (encrypt-and-authenticate) variants */
  	{ "hmac-sha1",				SSH_DIGEST, SSH_DIGEST_SHA1, 0, 0, 0, 0 },
  	{ "hmac-sha1-96",			SSH_DIGEST, SSH_DIGEST_SHA1, 96, 0, 0, 0 },
-diff -pur old/misc.c new/misc.c
---- old/misc.c
-+++ new/misc.c
-@@ -45,12 +45,16 @@
+--- old/misc.c	2019-11-02 12:07:11.975442348 +0000
++++ new/misc.c	2019-11-02 12:07:12.235621106 +0000
+@@ -46,6 +46,7 @@
  #include <string.h>
  #include <time.h>
  #include <unistd.h>
@@ -245,8 +250,9 @@ diff -pur old/misc.c new/misc.c
  
  #include <netinet/in.h>
  #include <netinet/in_systm.h>
- #include <netinet/ip.h>
+@@ -53,6 +54,9 @@
  #include <netinet/tcp.h>
+ #include <arpa/inet.h>
  
 +#include <openssl/crypto.h>
 +#include <openssl/err.h>
@@ -254,7 +260,7 @@ diff -pur old/misc.c new/misc.c
  #include <ctype.h>
  #include <errno.h>
  #include <fcntl.h>
-@@ -88,6 +92,60 @@ chop(char *s)
+@@ -89,6 +93,60 @@ chop(char *s)
  
  }
  
@@ -315,13 +321,12 @@ diff -pur old/misc.c new/misc.c
  /* set/unset filedescriptor to non-blocking */
  int
  set_nonblock(int fd)
-diff -pur old/misc.h new/misc.h
---- old/misc.h
-+++ new/misc.h
-@@ -45,6 +45,11 @@ struct ForwardOptions {
- 
- char	*chop(char *);
+--- old/misc.h	2019-11-02 12:07:11.985413476 +0000
++++ new/misc.h	2019-11-02 12:07:12.245629530 +0000
+@@ -47,6 +47,11 @@ char	*chop(char *);
+ void	skip_space(char **);
  char	*strdelim(char **);
+ char	*strdelimw(char **);
 +#ifdef ENABLE_OPENSSL_FIPS
 +int	 ssh_FIPS_mode();
 +int	 ssh_FIPS_mode_set_if_capable();
@@ -330,30 +335,22 @@ diff -pur old/misc.h new/misc.h
  int	 set_nonblock(int);
  int	 unset_nonblock(int);
  void	 set_nodelay(int);
-diff -pur old/myproposal.h new/myproposal.h
---- old/myproposal.h
-+++ new/myproposal.h
-@@ -90,21 +90,33 @@
+--- old/myproposal.h	2019-11-02 12:07:11.995347836 +0000
++++ new/myproposal.h	2019-11-02 12:07:12.255590515 +0000
+@@ -90,16 +90,27 @@
  # else
  #  define KEX_CURVE25519_METHODS ""
  # endif
--#define KEX_COMMON_KEX \
-+
-+#define KEX_COMMON_KEX_DFLT \
+-#define KEX_SERVER_KEX \
++#define KEX_SERVER_KEX_DFLT \
  	KEX_CURVE25519_METHODS \
  	KEX_ECDH_METHODS \
- 	KEX_SHA2_METHODS
- 
--#define KEX_SERVER_KEX KEX_COMMON_KEX \
-+#define KEX_SERVER_KEX_DFLT KEX_COMMON_KEX_DFLT \
- 	KEX_SHA2_GROUP14 \
- 	"diffie-hellman-group14-sha1" \
- 
--#define KEX_CLIENT_KEX KEX_COMMON_KEX \
-+#define KEX_CLIENT_KEX_DFLT KEX_COMMON_KEX_DFLT \
- 	"diffie-hellman-group-exchange-sha1," \
+ 	KEX_SHA2_METHODS \
  	KEX_SHA2_GROUP14 \
  	"diffie-hellman-group14-sha1"
+ 
+-#define KEX_CLIENT_KEX KEX_SERVER_KEX
++#define KEX_CLIENT_KEX_DFLT KEX_SERVER_KEX_DFLT
  
 -#define	KEX_DEFAULT_PK_ALG	\
 +#define KEX_COMMON_KEX_FIPS \
@@ -370,8 +367,8 @@ diff -pur old/myproposal.h new/myproposal.h
 +#define	KEX_DEFAULT_PK_ALG_DFLT	\
  	HOSTKEY_ECDSA_CERT_METHODS \
  	"ssh-ed25519-cert-v01@openssh.com," \
- 	"ssh-rsa-cert-v01@openssh.com," \
-@@ -114,16 +114,32 @@
+ 	"rsa-sha2-512-cert-v01@openssh.com," \
+@@ -111,16 +122,32 @@
  	"rsa-sha2-256," \
  	"ssh-rsa"
  
@@ -407,7 +404,7 @@ diff -pur old/myproposal.h new/myproposal.h
  	"umac-64-etm@openssh.com," \
  	"umac-128-etm@openssh.com," \
  	"hmac-sha2-256-etm@openssh.com," \
-@@ -135,7 +165,42 @@
+@@ -132,7 +159,42 @@
  	"hmac-sha2-512," \
  	"hmac-sha1"
  
@@ -449,12 +446,11 @@ diff -pur old/myproposal.h new/myproposal.h
 + #define KEX_CLIENT_MAC KEX_CLIENT_MAC_DFLT
 +#endif /* ENABLE_OPENSSL_FIPS */
  
- #else /* WITH_OPENSSL */
- 
-diff -pur old/ssh-add.1 new/ssh-add.1
---- old/ssh-add.1
-+++ new/ssh-add.1
-@@ -115,6 +115,8 @@ and
+ /* Not a KEX value, but here so all the algorithm defaults are together */
+ #define	SSH_ALLOWED_CA_SIGALGS	\
+--- old/ssh-add.1	2019-11-02 12:07:12.005310287 +0000
++++ new/ssh-add.1	2019-11-02 12:07:12.265630158 +0000
+@@ -118,6 +118,8 @@ and
  .Dq sha256 .
  The default is
  .Dq sha256 .
@@ -463,12 +459,11 @@ diff -pur old/ssh-add.1 new/ssh-add.1
  .It Fl e Ar pkcs11
  Remove keys provided by the PKCS#11 shared library
  .Ar pkcs11 .
-diff -pur old/ssh-add.c new/ssh-add.c
---- old/ssh-add.c
-+++ new/ssh-add.c
-@@ -529,6 +529,12 @@ main(int argc, char **argv)
- 	__progname = ssh_get_progname(argv[0]);
- 	seed_rng();
+--- old/ssh-add.c	2019-11-02 12:07:12.015290750 +0000
++++ new/ssh-add.c	2019-11-02 12:07:12.275633087 +0000
+@@ -585,6 +585,13 @@ main(int argc, char **argv)
+ 
+ 	log_init(__progname, log_level, log_facility, 1);
  
 +#ifdef ENABLE_OPENSSL_FIPS
 +	if (ssh_FIPS_mode_set_if_capable()) {
@@ -476,12 +471,12 @@ diff -pur old/ssh-add.c new/ssh-add.c
 +		exit(1);
 +	}
 +#endif
- #ifdef WITH_OPENSSL
- 	OpenSSL_add_all_algorithms();
- #endif
-diff -pur old/ssh-agent.1 new/ssh-agent.1
---- old/ssh-agent.1
-+++ new/ssh-agent.1
++
+ 	setvbuf(stdout, NULL, _IOLBF, 0);
+ 
+ 	/* First, get a connection to the authentication agent. */
+--- old/ssh-agent.1	2019-11-02 12:07:12.025236525 +0000
++++ new/ssh-agent.1	2019-11-02 12:07:12.285618255 +0000
 @@ -118,6 +118,8 @@ and
  .Dq sha256 .
  The default is
@@ -491,28 +486,28 @@ diff -pur old/ssh-agent.1 new/ssh-agent.1
  .It Fl k
  Kill the current agent (given by the
  .Ev SSH_AGENT_PID
-diff -pur old/ssh-agent.c new/ssh-agent.c
---- old/ssh-agent.c
-+++ new/ssh-agent.c
-@@ -1059,6 +1059,7 @@ main(int ac, char **av)
- 	int timeout = -1; /* INFTIM */
+--- old/ssh-agent.c	2019-11-02 12:07:12.035338910 +0000
++++ new/ssh-agent.c	2019-11-02 12:07:12.295735089 +0000
+@@ -1103,6 +1103,7 @@ main(int ac, char **av)
  	struct pollfd *pfd = NULL;
  	size_t npfd = 0;
+ 	u_int maxfds;
 +	int fips_err;
  
- 	ssh_malloc_init();	/* must be called before any mallocs */
  	/* Ensure that fds 0, 1 and 2 are open or directed to /dev/null */
-@@ -1070,6 +1071,9 @@ main(int ac, char **av)
+ 	sanitise_stdfd();
+@@ -1113,6 +1114,10 @@ main(int ac, char **av)
  
  	platform_disable_tracing(0);	/* strict=no */
  
 +#ifdef ENABLE_OPENSSL_FIPS
 +	fips_err = ssh_FIPS_mode_set_if_capable();
 +#endif
- #ifdef WITH_OPENSSL
- 	OpenSSL_add_all_algorithms();
- #endif
-@@ -1208,8 +1212,19 @@ main(int ac, char **av)
++
+ 	if (getrlimit(RLIMIT_NOFILE, &rlim) == -1)
+ 		fatal("%s: getrlimit: %s", __progname, strerror(errno));
+ 
+@@ -1262,8 +1267,19 @@ main(int ac, char **av)
  		printf(format, SSH_AUTHSOCKET_ENV_NAME, socket_name,
  		    SSH_AUTHSOCKET_ENV_NAME);
  		printf("echo Agent pid %ld;\n", (long)parent_pid);
@@ -532,10 +527,9 @@ diff -pur old/ssh-agent.c new/ssh-agent.c
  	}
  	pid = fork();
  	if (pid == -1) {
-diff -pur old/ssh-keygen.1 new/ssh-keygen.1
---- old/ssh-keygen.1
-+++ new/ssh-keygen.1
-@@ -284,6 +284,8 @@ and
+--- old/ssh-keygen.1	2019-11-02 12:07:12.045505568 +0000
++++ new/ssh-keygen.1	2019-11-02 12:07:12.305867844 +0000
+@@ -307,6 +307,8 @@ and
  .Dq sha256 .
  The default is
  .Dq sha256 .
@@ -543,41 +537,39 @@ diff -pur old/ssh-keygen.1 new/ssh-keygen.1
 +.Dq sha256 .
  .It Fl e
  This option will read a private or public OpenSSH key file and
- print to stdout the key in one of the formats specified by the
-diff -pur old/ssh-keygen.c new/ssh-keygen.c
---- old/ssh-keygen.c
-+++ new/ssh-keygen.c
-@@ -2355,11 +2355,18 @@ main(int argc, char **argv)
+ print to stdout a public key in one of the formats specified by the
+--- old/ssh-keygen.c	2019-11-02 12:07:12.055900144 +0000
++++ new/ssh-keygen.c	2019-11-02 12:07:12.316362645 +0000
+@@ -2790,10 +2790,18 @@ main(int argc, char **argv)
  
  	__progname = ssh_get_progname(argv[0]);
  
 +#ifdef ENABLE_OPENSSL_FIPS
 +	ssh_FIPS_mode_set_if_capable();
 +#endif
- #ifdef WITH_OPENSSL
- 	OpenSSL_add_all_algorithms();
- #endif
++
+ 	seed_rng();
+ 
  	log_init(argv[0], SYSLOG_LEVEL_INFO, SYSLOG_FACILITY_USER, 1);
  
 +#ifdef ENABLE_OPENSSL_FIPS
 +	ssh_FIPS_check_status();
 +#endif
 +
- 	seed_rng();
- 
  	msetlocale();
-diff -pur old/ssh-keysign.c new/ssh-keysign.c
---- old/ssh-keysign.c
-+++ new/ssh-keysign.c
-@@ -178,6 +178,7 @@ main(int argc, char **argv)
+ 
+ 	/* we need this for the home * directory.  */
+--- old/ssh-keysign.c	2019-11-02 12:07:12.065987667 +0000
++++ new/ssh-keysign.c	2019-11-02 12:07:12.326543078 +0000
+@@ -172,6 +172,7 @@ main(int argc, char **argv)
  	u_char *signature, *data, rver;
  	char *host, *fp;
  	size_t slen, dlen;
 +	int fips_err;
- #ifdef WITH_OPENSSL
- 	u_int32_t rnd[256];
- #endif
-@@ -229,6 +230,16 @@ main(int argc, char **argv)
+ 
+ 	if (pledge("stdio rpath getpw dns id", NULL) != 0)
+ 		fatal("%s: pledge: %s", __progname, strerror(errno));
+@@ -219,6 +220,17 @@ main(int argc, char **argv)
  	if (found == 0)
  		fatal("could not open any host key");
  
@@ -591,13 +583,13 @@ diff -pur old/ssh-keysign.c new/ssh-keysign.c
 +		fatal("Setting FIPS mode failed!");
 +#endif
 +#endif
- #ifdef WITH_OPENSSL
- 	OpenSSL_add_all_algorithms();
- 	arc4random_buf(rnd, sizeof(rnd));
-diff -pur old/ssh.1 new/ssh.1
---- old/ssh.1
-+++ new/ssh.1
-@@ -96,6 +96,9 @@ If
++
+ 	found = 0;
+ 	for (i = 0; i < NUM_KEYTYPES; i++) {
+ 		keys[i] = NULL;
+--- old/ssh.1	2019-11-02 12:07:12.076092966 +0000
++++ new/ssh.1	2019-11-02 12:07:12.337267187 +0000
+@@ -96,6 +96,9 @@ If a
  is specified,
  it is executed on the remote host instead of a login shell.
  .Pp
@@ -607,10 +599,9 @@ diff -pur old/ssh.1 new/ssh.1
  The options are as follows:
  .Pp
  .Bl -tag -width Ds -compact
-diff -pur old/ssh.c new/ssh.c
---- old/ssh.c
-+++ new/ssh.c
-@@ -655,6 +655,11 @@ main(int ac, char **av)
+--- old/ssh.c	2019-11-02 12:07:12.086291570 +0000
++++ new/ssh.c	2019-11-02 12:07:12.347577751 +0000
+@@ -653,6 +653,11 @@ main(int ac, char **av)
  	 */
  	initialize_options(&options);
  
@@ -622,7 +613,7 @@ diff -pur old/ssh.c new/ssh.c
  	/*
  	 * Prepare main ssh transport/connection structures
  	 */
-@@ -1097,6 +1102,10 @@ main(int ac, char **av)
+@@ -1102,6 +1107,10 @@ main(int ac, char **av)
  #endif
  		);
  
@@ -631,12 +622,11 @@ diff -pur old/ssh.c new/ssh.c
 +#endif
 +
  	/* Parse the configuration files */
- 	process_config_files(host_arg, pw, 0);
- 
-diff -pur old/ssh_api.c new/ssh_api.c
---- old/ssh_api.c
-+++ new/ssh_api.c
-@@ -79,6 +79,10 @@ ssh_init(struct ssh **sshp, int is_serve
+ 	process_config_files(host_arg, pw, 0, &want_final_pass);
+ 	if (want_final_pass)
+--- old/ssh_api.c	2019-11-02 12:07:12.096225943 +0000
++++ new/ssh_api.c	2019-11-02 12:07:12.357619574 +0000
+@@ -91,6 +91,10 @@ ssh_init(struct ssh **sshp, int is_serve
  	int r;
  
  	if (!called) {
@@ -644,14 +634,13 @@ diff -pur old/ssh_api.c new/ssh_api.c
 +		ssh_FIPS_mode_set_if_capable();
 +		ssh_FIPS_check_status();
 +#endif
- #ifdef WITH_OPENSSL
- 		OpenSSL_add_all_algorithms();
- #endif /* WITH_OPENSSL */
-diff -pur old/ssh_config.5 new/ssh_config.5
---- old/ssh_config.5
-+++ new/ssh_config.5
-@@ -429,6 +429,13 @@ aes128-gcm@openssh.com,aes256-gcm@openss
- aes128-cbc,aes192-cbc,aes256-cbc
+ 		seed_rng();
+ 		called = 1;
+ 	}
+--- old/ssh_config.5	2019-11-02 12:07:12.106397296 +0000
++++ new/ssh_config.5	2019-11-02 12:07:12.367867952 +0000
+@@ -456,6 +456,13 @@ aes128-ctr,aes192-ctr,aes256-ctr,
+ aes128-gcm@openssh.com,aes256-gcm@openssh.com
  .Ed
  .Pp
 +The following ciphers are FIPS-140 approved and are supported in FIPS-140 mode:
@@ -664,7 +653,7 @@ diff -pur old/ssh_config.5 new/ssh_config.5
  The list of available ciphers may also be obtained using
  .Qq ssh -Q cipher .
  .It Cm ClearAllForwardings
-@@ -645,6 +652,8 @@ Valid options are:
+@@ -672,6 +679,8 @@ Valid options are:
  and
  .Cm sha256
  (the default).
@@ -673,7 +662,7 @@ diff -pur old/ssh_config.5 new/ssh_config.5
  .It Cm ForwardAgent
  Specifies whether the connection to the authentication agent (if any)
  will be forwarded to the remote machine.
-@@ -1127,6 +1136,16 @@ umac-64@openssh.com,umac-128@openssh.com
+@@ -1231,6 +1240,16 @@ umac-64@openssh.com,umac-128@openssh.com
  hmac-sha2-256,hmac-sha2-512,hmac-sha1
  .Ed
  .Pp
@@ -690,27 +679,8 @@ diff -pur old/ssh_config.5 new/ssh_config.5
  The list of available MAC algorithms may also be obtained using
  .Qq ssh -Q mac .
  .It Cm NoHostAuthenticationForLocalhost
-diff -pur old/sshconnect.c new/sshconnect.c
---- old/sshconnect.c
-+++ new/sshconnect.c
-@@ -641,8 +641,14 @@ send_client_banner(int connection_out, i
- send_client_banner(int connection_out, int minor1)
- {
- 	/* Send our own protocol version identification. */
-+#ifdef ENABLE_OPENSSL_FIPS
-+	xasprintf(&client_version_string, "SSH-%d.%d-%.100s%s\r\n",
-+	    PROTOCOL_MAJOR_2, PROTOCOL_MINOR_2, SSH_VERSION,
-+	    ssh_FIPS_mode() ? " FIPS" : "");
-+#else
- 	xasprintf(&client_version_string, "SSH-%d.%d-%.100s\r\n",
- 	    PROTOCOL_MAJOR_2, PROTOCOL_MINOR_2, SSH_VERSION);
-+#endif
- 	if (atomicio(vwrite, connection_out, client_version_string,
- 	    strlen(client_version_string)) != strlen(client_version_string))
- 		fatal("write: %.100s", strerror(errno));
-diff -pur old/sshd.8 new/sshd.8
---- old/sshd.8
-+++ new/sshd.8
+--- old/sshd.8	2019-11-02 12:07:12.116509842 +0000
++++ new/sshd.8	2019-11-02 12:07:12.378021000 +0000
 @@ -84,6 +84,9 @@ rereads its configuration file when it r
  by executing itself with the name and options it was started with, e.g.\&
  .Pa /usr/sbin/sshd .
@@ -721,29 +691,9 @@ diff -pur old/sshd.8 new/sshd.8
  The options are as follows:
  .Bl -tag -width Ds
  .It Fl 4
-diff -pur old/sshd.c new/sshd.c
---- old/sshd.c
-+++ new/sshd.c
-@@ -372,10 +372,18 @@ sshd_exchange_identification(struct ssh
- 	char buf[256];			/* Must not be larger than remote_version. */
- 	char remote_version[256];	/* Must be at least as big as buf. */
- 
-+#ifdef ENABLE_OPENSSL_FIPS
-+	xasprintf(&server_version_string, "SSH-%d.%d-%.100s%s%s%s\r\n",
-+	    PROTOCOL_MAJOR_2, PROTOCOL_MINOR_2, SSH_VERSION,
-+            ssh_FIPS_mode() ? " FIPS" : " ",
-+	    *options.version_addendum == '\0' ? "" : " ",
-+	    options.version_addendum);
-+#else
- 	xasprintf(&server_version_string, "SSH-%d.%d-%.100s%s%s\r\n",
- 	    PROTOCOL_MAJOR_2, PROTOCOL_MINOR_2, SSH_VERSION,
- 	    *options.version_addendum == '\0' ? "" : " ",
- 	    options.version_addendum);
-+#endif
- 
- 	/* Send our protocol version identification. */
- 	if (atomicio(vwrite, sock_out, server_version_string,
-@@ -1463,6 +1471,10 @@ main(int ac, char **av)
+--- old/sshd.c	2019-11-02 12:07:12.126718275 +0000
++++ new/sshd.c	2019-11-04 12:14:37.319393834 +0000
+@@ -1458,6 +1458,10 @@ main(int ac, char **av)
  	/* Ensure that fds 0, 1 and 2 are open or directed to /dev/null */
  	sanitise_stdfd();
  
@@ -751,10 +701,10 @@ diff -pur old/sshd.c new/sshd.c
 +	ssh_FIPS_mode_set_if_capable();
 +#endif
 +
- 	/* Initialize configuration options to their default values. */
- 	initialize_server_options(&options);
+ 	seed_rng();
  
-@@ -1602,6 +1614,10 @@ main(int ac, char **av)
+ 	/* Initialize configuration options to their default values. */
+@@ -1595,6 +1599,10 @@ main(int ac, char **av)
  	    SYSLOG_FACILITY_AUTH : options.log_facility,
  	    log_stderr || !inetd_flag);
  
@@ -765,10 +715,9 @@ diff -pur old/sshd.c new/sshd.c
  	/*
  	 * Unset KRB5CCNAME, otherwise the user's session may inherit it from
  	 * root's environment
-diff -pur old/sshd_config.5 new/sshd_config.5
---- old/sshd_config.5
-+++ new/sshd_config.5
-@@ -485,6 +485,13 @@ aes128-ctr,aes192-ctr,aes256-ctr,
+--- old/sshd_config.5	2019-11-02 12:07:12.136968617 +0000
++++ new/sshd_config.5	2019-11-02 12:07:12.398684059 +0000
+@@ -499,6 +499,13 @@ aes128-ctr,aes192-ctr,aes256-ctr,
  aes128-gcm@openssh.com,aes256-gcm@openssh.com
  .Ed
  .Pp
@@ -782,7 +731,7 @@ diff -pur old/sshd_config.5 new/sshd_config.5
  The list of available ciphers may also be obtained using
  .Qq ssh -Q cipher .
  .It Cm ClientAliveCountMax
-@@ -591,6 +598,8 @@ and
+@@ -605,6 +612,8 @@ and
  .Cm sha256 .
  The default is
  .Cm sha256 .
@@ -791,7 +740,7 @@ diff -pur old/sshd_config.5 new/sshd_config.5
  .It Cm ForceCommand
  Forces the execution of the command specified by
  .Cm ForceCommand ,
-@@ -1055,6 +1064,16 @@ umac-64@openssh.com,umac-128@openssh.com
+@@ -1110,6 +1119,16 @@ umac-64@openssh.com,umac-128@openssh.com
  hmac-sha2-256,hmac-sha2-512,hmac-sha1
  .Ed
  .Pp
@@ -808,10 +757,9 @@ diff -pur old/sshd_config.5 new/sshd_config.5
  The list of available MAC algorithms may also be obtained using
  .Qq ssh -Q mac .
  .It Cm Match
-diff -pur old/sshkey.c new/sshkey.c
---- old/sshkey.c
-+++ new/sshkey.c
-@@ -88,7 +88,45 @@ struct keytype {
+--- old/sshkey.c	2019-11-02 12:07:12.147426247 +0000
++++ new/sshkey.c	2019-11-04 12:12:47.077336872 +0000
+@@ -102,7 +102,50 @@ struct keytype {
  	int cert;
  	int sigonly;
  };
@@ -822,38 +770,43 @@ diff -pur old/sshkey.c new/sshkey.c
 +
 +static const struct keytype keytypes_fips[] = {
 +#ifdef WITH_OPENSSL
-+	{ "ssh-rsa", "RSA", KEY_RSA, 0, 0, 0 },
-+	{ "rsa-sha2-256", "RSA", KEY_RSA, 0, 0, 1 },
-+	{ "rsa-sha2-512", "RSA", KEY_RSA, 0, 0, 1 },
-+	{ "ssh-dss", "DSA", KEY_DSA, 0, 0, 0 },
++	{ "ssh-rsa", "RSA", NULL, KEY_RSA, 0, 0, 0 },
++	{ "rsa-sha2-256", "RSA", NULL, KEY_RSA, 0, 0, 1 },
++	{ "rsa-sha2-512", "RSA", NULL, KEY_RSA, 0, 0, 1 },
++	{ "ssh-dss", "DSA", NULL, KEY_DSA, 0, 0, 0 },
 +# ifdef OPENSSL_HAS_ECC
-+	{ "ecdsa-sha2-nistp256", "ECDSA", KEY_ECDSA, NID_X9_62_prime256v1, 0, 0 },
-+	{ "ecdsa-sha2-nistp384", "ECDSA", KEY_ECDSA, NID_secp384r1, 0, 0 },
++	{ "ecdsa-sha2-nistp256", "ECDSA", NULL, KEY_ECDSA, NID_X9_62_prime256v1,
++	    0, 0 },
++	{ "ecdsa-sha2-nistp384", "ECDSA", NULL, KEY_ECDSA, NID_secp384r1,
++	    0, 0 },
 +#  ifdef OPENSSL_HAS_NISTP521
-+	{ "ecdsa-sha2-nistp521", "ECDSA", KEY_ECDSA, NID_secp521r1, 0, 0 },
++	{ "ecdsa-sha2-nistp521", "ECDSA", NULL, KEY_ECDSA, NID_secp521r1,
++	    0, 0 },
 +#  endif /* OPENSSL_HAS_NISTP521 */
 +# endif /* OPENSSL_HAS_ECC */
-+	{ "ssh-rsa-cert-v01@openssh.com", "RSA-CERT", KEY_RSA_CERT, 0, 1, 0 },
-+	{ "ssh-dss-cert-v01@openssh.com", "DSA-CERT", KEY_DSA_CERT, 0, 1, 0 },
++	{ "ssh-rsa-cert-v01@openssh.com", "RSA-CERT", NULL, KEY_RSA_CERT,
++	    0, 1, 0 },
++	{ "ssh-dss-cert-v01@openssh.com", "DSA-CERT", NULL, KEY_DSA_CERT,
++	    0, 1, 0 },
 +# ifdef OPENSSL_HAS_ECC
-+	{ "ecdsa-sha2-nistp256-cert-v01@openssh.com", "ECDSA-CERT",
++	{ "ecdsa-sha2-nistp256-cert-v01@openssh.com", "ECDSA-CERT", NULL,
 +	    KEY_ECDSA_CERT, NID_X9_62_prime256v1, 1, 0 },
-+	{ "ecdsa-sha2-nistp384-cert-v01@openssh.com", "ECDSA-CERT",
++	{ "ecdsa-sha2-nistp384-cert-v01@openssh.com", "ECDSA-CERT", NULL,
 +	    KEY_ECDSA_CERT, NID_secp384r1, 1, 0 },
 +#  ifdef OPENSSL_HAS_NISTP521
-+	{ "ecdsa-sha2-nistp521-cert-v01@openssh.com", "ECDSA-CERT",
++	{ "ecdsa-sha2-nistp521-cert-v01@openssh.com", "ECDSA-CERT", NULL,
 +	    KEY_ECDSA_CERT, NID_secp521r1, 1, 0 },
 +#  endif /* OPENSSL_HAS_NISTP521 */
 +# endif /* OPENSSL_HAS_ECC */
 +#endif /* WITH_OPENSSL */
-+	{ "null", "null", KEY_NULL, 0, 0, 0 },
-+	{ NULL, NULL, -1, -1, 0, 0 }
++	{ "null", "null", NULL, KEY_NULL, 0, 0, 0 },
++	{ NULL, NULL, NULL, -1, -1, 0, 0 }
 +};
 +
 +static const struct keytype keytypes_dflt[] = {
 +#else /* ENABLE_OPENSSL_FIPS */
  static const struct keytype keytypes[] = {
 +#endif /* ENABLE_OPENSSL_FIPS */
- 	{ "ssh-ed25519", "ED25519", KEY_ED25519, 0, 0, 0 },
- 	{ "ssh-ed25519-cert-v01@openssh.com", "ED25519-CERT",
+ 	{ "ssh-ed25519", "ED25519", NULL, KEY_ED25519, 0, 0, 0 },
+ 	{ "ssh-ed25519-cert-v01@openssh.com", "ED25519-CERT", NULL,
  	    KEY_ED25519_CERT, 0, 1, 0 },

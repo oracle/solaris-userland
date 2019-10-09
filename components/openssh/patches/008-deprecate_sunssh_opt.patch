@@ -1,4 +1,3 @@
-
 #
 # To make the transition from SunSSH to OpenSSH as smooth as possible, we
 # added SunSSH-only options as deprecated options in OpenSSH. Note that this
@@ -7,9 +6,9 @@
 # changed from deprecated to supported. Since this is for Solaris only, we will
 # not contribute back this change to the upstream community.
 #
---- orig/readconf.c	2017-03-24 17:50:46.940073125 -0700
-+++ new/readconf.c	2017-03-24 17:56:01.403994460 -0700
-@@ -199,10 +199,14 @@
+--- old/readconf.c	2019-11-02 12:07:09.580191989 +0000
++++ new/readconf.c	2019-11-02 12:07:09.605139220 +0000
+@@ -202,10 +202,14 @@ static struct {
  	/* Sometimes-unsupported options */
  #if defined(GSSAPI)
  	{ "gssapiauthentication", oGssAuthentication },
@@ -23,8 +22,8 @@
 +	{ "gssdelegatecreds", oUnsupported },
  #endif
  #ifdef ENABLE_PKCS11
- 	{ "smartcarddevice", oPKCS11Provider },
-@@ -307,6 +311,23 @@
+ 	{ "pkcs11provider", oPKCS11Provider },
+@@ -311,6 +315,23 @@ static struct {
  	{ "ignoreunknown", oIgnoreUnknown },
  	{ "proxyjump", oProxyJump },
  

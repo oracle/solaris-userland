@@ -20,14 +20,12 @@
  */
 
 /*
- * Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
  */
 
 #include "includes.h"
 
 #include "sftp-audit-solaris.h"
-#include "buffer.h"
-#include "key.h"
 #include "hostfile.h"
 #include "auth.h"
 #include "log.h"

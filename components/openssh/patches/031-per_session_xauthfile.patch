@@ -7,8 +7,8 @@
 # In the future, if this fix is accepted by the upsteam in a later release, we
 # will remove this patch when we upgrade to that release.
 #
---- old/session.c	2018-04-01 22:38:28.000000000 +0000
-+++ new/session.c	2018-11-09 13:07:25.910809529 +0000
+--- old/session.c	2019-11-02 12:07:11.630014474 +0000
++++ new/session.c	2019-11-02 12:07:11.665028076 +0000
 @@ -63,6 +63,10 @@
  #include <unistd.h>
  #include <limits.h>
@@ -20,7 +20,7 @@
  #include "openbsd-compat/sys-queue.h"
  #include "xmalloc.h"
  #include "ssh.h"
-@@ -132,6 +136,11 @@ static void do_authenticated2(struct ssh
+@@ -130,6 +134,11 @@ static void do_authenticated2(struct ssh
  
  static int session_pty_req(struct ssh *, Session *);
  
@@ -32,9 +32,9 @@
  /* import */
  extern ServerOptions options;
  extern char *__progname;
-@@ -1053,6 +1062,11 @@ do_setup_env(struct ssh *ssh, Session *s
- 	if (getenv("TZ"))
- 		child_set_env(&env, &envsize, "TZ", getenv("TZ"));
+@@ -1100,6 +1109,11 @@ do_setup_env(struct ssh *ssh, Session *s
+ 		    auth_sock_name);
+ 
  
 +#ifdef PER_SESSION_XAUTHFILE
 +	if (s->auth_file != NULL)
@@ -44,9 +44,9 @@
  	/* Set custom environment options from pubkey authentication. */
  	if (options.permit_user_env) {
  		for (n = 0 ; n < auth_opts->nenv; n++) {
-@@ -1952,6 +1966,11 @@ session_x11_req(struct ssh *ssh, Session
- {
- 	int success;
+@@ -1997,6 +2011,11 @@ session_x11_req(struct ssh *ssh, Session
+ 	int r, success;
+ 	u_char single_connection = 0;
  
 +#ifdef PER_SESSION_XAUTHFILE
 +	int fd;
@@ -56,7 +56,7 @@
  	if (s->auth_proto != NULL || s->auth_data != NULL) {
  		error("session_x11_req: session %d: "
  		    "x11 forwarding already active", s->self);
-@@ -1976,6 +1995,50 @@ session_x11_req(struct ssh *ssh, Session
+@@ -2024,6 +2043,50 @@ session_x11_req(struct ssh *ssh, Session
  		s->auth_proto = NULL;
  		s->auth_data = NULL;
  	}
@@ -107,7 +107,7 @@
  	return success;
  }
  
-@@ -2165,6 +2228,50 @@ session_pty_cleanup(Session *s)
+@@ -2300,6 +2363,50 @@ session_pty_cleanup(Session *s)
  	PRIVSEP(session_pty_cleanup2(s));
  }
  
@@ -158,7 +158,7 @@
  static char *
  sig2name(int sig)
  {
-@@ -2304,6 +2411,9 @@ session_close(struct ssh *ssh, Session *
+@@ -2441,6 +2548,9 @@ session_close(struct ssh *ssh, Session *
  	free(s->auth_display);
  	free(s->auth_data);
  	free(s->auth_proto);
@@ -168,7 +168,7 @@
  	free(s->subsys);
  	if (s->env != NULL) {
  		for (i = 0; i < s->num_env; i++) {
-@@ -2548,6 +2658,10 @@ do_cleanup(struct ssh *ssh, Authctxt *au
+@@ -2692,6 +2802,10 @@ do_cleanup(struct ssh *ssh, Authctxt *au
  	/* remove agent socket */
  	auth_sock_cleanup_proc(authctxt->pw);
  
@@ -179,9 +179,9 @@
  	/* remove userauth info */
  	if (auth_info_file != NULL) {
  		temporarily_use_uid(authctxt->pw);
---- old/session.h	2018-04-01 22:38:28.000000000 +0000
-+++ new/session.h	2018-11-09 13:08:05.230838965 +0000
-@@ -49,6 +49,9 @@ struct Session {
+--- old/session.h	2019-11-02 12:07:11.640112394 +0000
++++ new/session.h	2019-11-02 12:07:11.675131143 +0000
+@@ -50,6 +50,9 @@ struct Session {
  	char	*auth_display;
  	char	*auth_proto;
  	char	*auth_data;

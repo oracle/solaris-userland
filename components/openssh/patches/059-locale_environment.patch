@@ -3,9 +3,9 @@
 # from the server environment to the child if they have not been
 # accepted from the client.
 #
---- old/session.c	2018-12-21 13:45:27.358370867 +0000
-+++ new/session.c	2019-01-04 11:35:29.862690975 +0000
-@@ -951,6 +951,39 @@
+--- old/session.c	2019-11-02 12:07:13.258501565 +0000
++++ new/session.c	2019-11-02 12:07:13.283166798 +0000
+@@ -959,6 +959,39 @@ read_etc_default_login(char ***env, u_in
  }
  #endif /* HAVE_ETC_DEFAULT_LOGIN */
  
@@ -45,9 +45,9 @@
  static void
  copy_environment_blacklist(char **source, char ***env, u_int *envsize,
      const char *blacklist)
-@@ -1066,6 +1099,8 @@
- 	if (getenv("TZ"))
- 		child_set_env(&env, &envsize, "TZ", getenv("TZ"));
+@@ -1113,6 +1146,8 @@ do_setup_env(struct ssh *ssh, Session *s
+ 		    auth_sock_name);
+ 
  
 +	pass_locale_env(env, &envsize);
 +

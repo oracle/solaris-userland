@@ -1,16 +1,14 @@
 #
 # This patch is to add a new DisableBanner option to the ssh client command,
 # which allows the ssh command to disable the display of the banner message.
-# We have contributed back this feature to the OpenSSH upstream community. For
-# more information, see https://bugzilla.mindrot.org/show_bug.cgi?id=2242.
-# In the future, if this feature is accepted by the upsteam in a later release,
-# we will remove this patch when we upgrade to that release.  
+# The patch was rejected by OpenSSH upstream community. For more information,
+# see https://bugzilla.mindrot.org/show_bug.cgi?id=2242.
 #
---- old/readconf.c	2018-11-07 15:53:57.525477537 +0000
-+++ new/readconf.c	2018-11-07 18:17:26.301042922 +0000
-@@ -163,6 +163,9 @@ typedef enum {
+--- old/readconf.c	2019-11-02 12:07:09.698955939 +0000
++++ new/readconf.c	2019-11-02 12:07:09.758948986 +0000
+@@ -165,6 +165,9 @@ typedef enum {
  	oServerAliveInterval, oServerAliveCountMax, oIdentitiesOnly,
- 	oSendEnv, oControlPath, oControlMaster, oControlPersist,
+ 	oSendEnv, oSetEnv, oControlPath, oControlMaster, oControlPersist,
  	oHashKnownHosts,
 +#ifdef DISABLE_BANNER 
 +	oDisableBanner,
@@ -18,7 +16,7 @@
  	oTunnel, oTunnelDevice,
  	oLocalCommand, oPermitLocalCommand, oRemoteCommand,
  	oVisualHostKey,
-@@ -285,6 +288,9 @@ static struct {
+@@ -289,6 +292,9 @@ static struct {
  	{ "controlmaster", oControlMaster },
  	{ "controlpersist", oControlPersist },
  	{ "hashknownhosts", oHashKnownHosts },
@@ -28,7 +26,7 @@
  	{ "include", oInclude },
  	{ "tunnel", oTunnel },
  	{ "tunneldevice", oTunnelDevice },
-@@ -807,6 +813,17 @@ static const struct multistate multistat
+@@ -849,6 +855,17 @@ static const struct multistate multistat
  	{ NULL, -1 }
  };
  
@@ -46,9 +44,9 @@
  /*
   * Processes a single option line as used in the configuration files. This
   * only sets those values that have not already been set.
-@@ -1665,6 +1682,13 @@ parse_keytypes:
- 		charptr = &options->identity_agent;
- 		goto parse_string;
+@@ -1762,6 +1779,13 @@ parse_keytypes:
+ 			*charptr = xstrdup(arg);
+ 		break;
  
 +#ifdef DISABLE_BANNER
 +	case oDisableBanner:
@@ -60,7 +58,7 @@
  	case oDeprecated:
  		debug("%s line %d: Deprecated option \"%s\"",
  		    filename, linenum, keyword);
-@@ -1855,6 +1879,9 @@ initialize_options(Options * options)
+@@ -1957,6 +1981,9 @@ initialize_options(Options * options)
  	options->ip_qos_bulk = -1;
  	options->request_tty = -1;
  	options->proxy_use_fdpass = -1;
@@ -70,7 +68,7 @@
  	options->ignored_unknown = NULL;
  	options->num_canonical_domains = 0;
  	options->num_permitted_cnames = 0;
-@@ -2032,6 +2059,10 @@ fill_default_options(Options * options)
+@@ -2135,6 +2162,10 @@ fill_default_options(Options * options)
  		options->canonicalize_fallback_local = 1;
  	if (options->canonicalize_hostname == -1)
  		options->canonicalize_hostname = SSH_CANONICALISE_NO;
@@ -81,9 +79,9 @@
  	if (options->fingerprint_hash == -1)
  		options->fingerprint_hash = SSH_FP_HASH_DEFAULT;
  	if (options->update_hostkeys == -1)
---- old/readconf.h	2018-04-01 22:38:28.000000000 +0000
-+++ new/readconf.h	2018-11-07 18:20:07.829484818 +0000
-@@ -165,6 +165,9 @@ typedef struct {
+--- old/readconf.h	2019-11-02 12:07:09.709626996 +0000
++++ new/readconf.h	2019-11-02 12:07:09.769698687 +0000
+@@ -166,6 +166,9 @@ typedef struct {
  	char   *jump_extra;
  
  	char	*ignored_unknown; /* Pattern list of unknown tokens to ignore */
@@ -93,7 +91,7 @@
  }       Options;
  
  #define SSH_CANONICALISE_NO	0
-@@ -196,6 +199,12 @@ typedef struct {
+@@ -197,6 +200,12 @@ typedef struct {
  #define SSH_STRICT_HOSTKEY_YES	2
  #define SSH_STRICT_HOSTKEY_ASK	3
  
@@ -106,9 +104,9 @@
  void     initialize_options(Options *);
  void     fill_default_options(Options *);
  void	 fill_default_options_for_canonicalization(Options *);
---- old/ssh_config.5	2018-04-01 22:38:28.000000000 +0000
-+++ new/ssh_config.5	2018-11-07 18:21:13.335850393 +0000
-@@ -551,6 +551,14 @@ If set to a time in seconds, or a time i
+--- old/ssh_config.5	2019-11-02 12:07:09.720585514 +0000
++++ new/ssh_config.5	2019-11-02 12:07:09.780581681 +0000
+@@ -578,6 +578,14 @@ If set to a time in seconds, or a time i
  then the backgrounded master connection will automatically terminate
  after it has remained idle (with no client connections) for the
  specified time.
@@ -123,37 +121,38 @@
  .It Cm DynamicForward
  Specifies that a TCP port on the local machine be forwarded
  over the secure channel, and the application
---- old/sshconnect2.c	2018-04-01 22:38:28.000000000 +0000
-+++ new/sshconnect2.c	2018-11-07 18:24:51.942589937 +0000
+--- old/sshconnect2.c	2019-11-02 12:07:09.731420264 +0000
++++ new/sshconnect2.c	2019-11-02 12:07:09.792115910 +0000
 @@ -82,6 +82,10 @@ extern char *client_version_string;
  extern char *server_version_string;
  extern Options options;
  
 +#ifdef DISABLE_BANNER
-+extern Buffer command;
++extern struct sshbuf *command;
 +#endif
 +
  /*
   * SSH2 key exchange
   */
-@@ -507,7 +511,20 @@ input_userauth_banner(int type, u_int32_
- 	debug3("%s", __func__);
- 	msg = packet_get_string(&len);
- 	lang = packet_get_string(NULL);
-+
+@@ -522,8 +526,21 @@ input_userauth_banner(int type, u_int32_
+ 	if ((r = sshpkt_get_cstring(ssh, &msg, &len)) != 0 ||
+ 	    (r = sshpkt_get_cstring(ssh, NULL, NULL)) != 0)
+ 		goto out;
 +#ifdef DISABLE_BANNER
 +	/*
 +	 * Banner is a warning message according to RFC 4252. So, never print
 +	 * a banner in error log level or lower. If the log level is higher,
 +	 * use DisableBanner option to decide whether to display it or not.
 +	 */
-+	if (len > 0 && options.log_level >= SYSLOG_LEVEL_INFO && 
++	if (len > 0 && options.log_level >= SYSLOG_LEVEL_INFO &&
 +	    (options.disable_banner == SSH_DISABLEBANNER_NO ||
 +	    (options.disable_banner == SSH_DISABLEBANNER_INEXECMODE &&
-+	    buffer_len(&command) == 0))) 
++	    sshbuf_len(command) == 0)))
 +#else
  	if (len > 0 && options.log_level >= SYSLOG_LEVEL_INFO)
 +#endif
  		fmprintf(stderr, "%s", msg);
++
+ 	r = 0;
+  out:
  	free(msg);
- 	free(lang);
