@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 SVN =		/usr/bin/svn
@@ -48,20 +48,19 @@ download::	$$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1))
 
 # First attempt to download a cached archive of the SCM repo at the proper
 # changeset ID.  If that fails, create an archive by cloning the SCM repo,
-# updating to the selected changeset, archiving that directory, and cleaning up # when complete.
+# and verify it by running userland-fetch over it again
 $$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1)):	$(MAKEFILE_PREREQ)
 	$$(FETCH) --file $$@ $$(SVN_HASH$(1):%=--hash %) || \
 	(TMP_REPO=$$$$(mktemp --directory --dry-run) && \
 	 $(SVN) export $$(SVN_REPO$(1)) $$(SVN_REV$(1):%=--revision %) \
 			$$$${TMP_REPO} && \
 	 /usr/gnu/bin/tar --create --file - --absolute-names \
+	      --sort=name --mtime="2018-10-05 00:00Z" --owner=0 --group=0 --numeric-owner \
 	      --transform="s;$$$${TMP_REPO};$$(COMPONENT_SRC$(1));g" \
 	      --bzip2 $$$${TMP_REPO} >$$@ && \
 	 $(RM) -rf $$$${TMP_REPO} && \
-	 SVN_HASH=$$$$(digest -a sha256 $$@) && \
-	 $(GSED) -i \
-		-e "s/^SVN_HASH$(1)=.*/SVN_HASH$(1)=  sha256:$$$${SVN_HASH}/" \
-		Makefile)
+	 $$(FETCH) --file $$@ $$(SVN_HASH$(1):%=--hash %) \
+	)
 
 REQUIRED_PACKAGES += developer/versioning/subversion
 
