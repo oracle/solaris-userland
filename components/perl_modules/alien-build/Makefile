@@ -20,23 +20,24 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
 #
+
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		XML-LibXML
-COMPONENT_VERSION=	2.201
-HUMAN_VERSION=		2.0201
-COMPONENT_SRC=		$(COMPONENT_NAME)-$(HUMAN_VERSION)
+COMPONENT_NAME=		Alien-Build
+COMPONENT_VERSION=	1.89
+COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e008700732502b3f1f0890696ec6e2dc70abf526cd710efd9ab7675cae199bc2
-COMPONENT_ARCHIVE_URL=	http://search.cpan.org/CPAN/authors/id/S/SH/SHLOMIF/$(COMPONENT_ARCHIVE)
-COMPONENT_PROJECT_URL=	http://search.cpan.org/~shlomif/XML-LibXML/
-COMPONENT_BUGDB=	perl-mod/xml-libxml
-COMPONENT_ANITYA_ID=	3527
+    sha256:ffe36fa5b43c2e9c8c72a074a5ebc7d17821c0e297cd226797b0c192362027cb
+COMPONENT_ARCHIVE_URL=	\
+    http://www.cpan.org/authors/id/P/PL/PLICEASE/$(COMPONENT_ARCHIVE)
+COMPONENT_PROJECT_URL=	http://search.cpan.org/dist/Alien-Build/
+COMPONENT_BUGDB=	perl-mod/alien-build
+COMPONENT_ANITYA_ID=	15795
 
-TPNO=			53418
+TPNO=			54534
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
@@ -47,25 +48,15 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 # man pages go in the common area
 COMPONENT_INSTALL_ENV += INSTALLVENDORMAN3DIR=$(USRSHAREMAN3DIR)
 
-COMPONENT_TEST_TARGETS = test
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-
-# Transform to remove machine-specific lines in test results
-COMPONENT_TEST_TRANSFORMS += '-n -e "/^Result:/p"'
-
 build:		$(BUILD_64)
 
 install:	$(INSTALL_64)
 
-test:		$(TEST_64)
+# too many obscure modules needed, some not available on Perl 5.22
+test:		$(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-
-REQUIRED_PACKAGES += library/libxml2
-
-# Needed for testing:
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/xml-namespacesupport-5%)
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/xml-sax-5%)
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/xml-sax-base-5%)
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/alien-libxml2-5%)
+REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/capture-tiny-5%)
+REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/path-tiny-5%)
+REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/file-which-5%)

@@ -20,23 +20,24 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
 #
+
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		XML-LibXML
-COMPONENT_VERSION=	2.201
-HUMAN_VERSION=		2.0201
-COMPONENT_SRC=		$(COMPONENT_NAME)-$(HUMAN_VERSION)
+COMPONENT_NAME=		PkgConfig
+COMPONENT_VERSION=	0.23026
+COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e008700732502b3f1f0890696ec6e2dc70abf526cd710efd9ab7675cae199bc2
-COMPONENT_ARCHIVE_URL=	http://search.cpan.org/CPAN/authors/id/S/SH/SHLOMIF/$(COMPONENT_ARCHIVE)
-COMPONENT_PROJECT_URL=	http://search.cpan.org/~shlomif/XML-LibXML/
-COMPONENT_BUGDB=	perl-mod/xml-libxml
-COMPONENT_ANITYA_ID=	3527
+    sha256:56c8ad9015af3799b99a21b8790997723406acf479f35d13fe9bf632db2d5c26
+COMPONENT_ARCHIVE_URL=	\
+    http://www.cpan.org/authors/id/P/PL/PLICEASE/$(COMPONENT_ARCHIVE)
+COMPONENT_PROJECT_URL=	http://search.cpan.org/dist/PkgConfig/
+COMPONENT_BUGDB=	perl-mod/pkgconfig
+COMPONENT_ANITYA_ID=	21232
 
-TPNO=			53418
+TPNO=			53416
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
@@ -49,9 +50,11 @@ COMPONENT_INSTALL_ENV += INSTALLVENDORMAN3DIR=$(USRSHAREMAN3DIR)
 
 COMPONENT_TEST_TARGETS = test
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-
-# Transform to remove machine-specific lines in test results
-COMPONENT_TEST_TRANSFORMS += '-n -e "/^Result:/p"'
+COMPONENT_TEST_TRANSFORMS += \
+	'-e "/^PERL_DL_NONLAZY/d" ' \
+	'-e "/^\#/d" ' \
+	'-e "/^Testing/d" ' \
+	'-e "s|\(^Files=\).*|\1|" '
 
 build:		$(BUILD_64)
 
@@ -61,11 +64,4 @@ test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-
-REQUIRED_PACKAGES += library/libxml2
-
-# Needed for testing:
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/xml-namespacesupport-5%)
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/xml-sax-5%)
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/xml-sax-base-5%)
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/alien-libxml2-5%)
+REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/capture-tiny-5%)
