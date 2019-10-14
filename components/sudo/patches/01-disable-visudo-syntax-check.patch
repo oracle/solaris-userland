@@ -14,11 +14,11 @@
 # directory isn't readable by unprivileged users (it's 0750) so if we
 # don't have privilege to read this directory we don't call 'visudo -c'.
 #
---- sudo-1.8.21p2/plugins/sudoers/Makefile.in.orig	2017-12-14 14:51:48.469764276 +0000
-+++ sudo-1.8.21p2/plugins/sudoers/Makefile.in	2017-12-14 15:08:22.249483694 +0000
-@@ -319,7 +319,7 @@
+--- sudo-1.8.28/plugins/sudoers/Makefile.in
++++ sudo-1.8.28/plugins/sudoers/Makefile.in
+@@ -384,7 +384,7 @@ sudoers: $(srcdir)/sudoers.in
  	cd $(top_builddir) && $(SHELL) config.status --file=plugins/sudoers/$@
-
+ 
  pre-install:
 -	@if test X"$(cross_compiling)" != X"yes" -a -r $(DESTDIR)$(sudoersdir)/sudoers; then \
 +	@if test X"$(cross_compiling)" != X"yes" -a -r $(DESTDIR)$(sudoersdir)/sudoers -a -x $(sudoersdir)/sudoers.d; then \

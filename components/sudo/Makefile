@@ -25,8 +25,8 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sudo
-SRC_VERSION=	1.8.21
-SRC_PATCH_VERSION=2
+SRC_VERSION=	1.8.28
+# SRC_PATCH_VERSION=0
 ifdef SRC_PATCH_VERSION
 COMPONENT_VERSION=	$(SRC_VERSION).$(SRC_PATCH_VERSION)
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(SRC_VERSION)p$(SRC_PATCH_VERSION)
@@ -35,13 +35,13 @@ COMPONENT_VERSION=	$(SRC_VERSION)
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(SRC_VERSION)
 endif
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:74c5746cd33a814e2431c39faf0d76f7f8a697379bd073862e3b156cf0d76368
+    sha256:3819362cf9aadec90d9702ec1ab0b8bb7c58bc18869e31f280ad942950aa09ac
 COMPONENT_ARCHIVE_URL=	https://www.sudo.ws/sudo/dist/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_PROJECT_URL=  https://www.sudo.ws/
 COMPONENT_ANITYA_ID=	4906
 
-TPNO=			39599
+TPNO=			54581
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -73,7 +73,7 @@ CONFIGURE_OPTIONS +=	--without-insults
 CONFIGURE_OPTIONS +=	--without-lecture
 CONFIGURE_OPTIONS +=	--with-ignore-dot
 CONFIGURE_OPTIONS +=	--with-solaris-audit
-CONFIGURE_OPTIONS +=	--libexecdir=$(USRLIBDIR64)/sudo
+CONFIGURE_OPTIONS +=	--libexecdir=$(USRLIBDIR64)
 CONFIGURE_OPTIONS +=	"sudo_cv_var_nroff_opt_Tascii=no"
 
 COMPONENT_INSTALL_TARGETS = install
@@ -97,9 +97,18 @@ COMPONENT_TEST_CMD = \
 	fi && \
 	$(GMAKE)
 
-# Tests may output some compilation lines, so just pull out the relevant test
-# output lines for the test results comparison
-COMPONENT_TEST_TRANSFORMS += '-e "/^parse_gids_test\|^strsplit_test\|^atofoo_test\|^hltq_test\|^sudo_conf\|^sudo_parseln\|^check_addr\|^check_base64\|^check_fill\|^iolog_path\|^check_symbols\|^sudoers\|^testsudoers\|^visudo\|^check_ttyname\|^ERROR/!d"'
+# Let's delete everything which is OK. This way the tests pass even if new scenarios are added
+# Compilation lines:
+COMPONENT_TEST_TRANSFORMS += '-e "/libtool/d"'
+COMPONENT_TEST_TRANSFORMS += '-e "/\/bin\/cc /d"'
+COMPONENT_TEST_TRANSFORMS += '-e "/^make/d"'
+COMPONENT_TEST_TRANSFORMS += '-e "/ \\\\$$/d"'
+COMPONENT_TEST_TRANSFORMS += '-e "/^done$$/d"'
+COMPONENT_TEST_TRANSFORMS += '-e "/^for d in/d"'
+# Successful lines
+COMPONENT_TEST_TRANSFORMS += '-e "/: OK/d"'
+COMPONENT_TEST_TRANSFORMS += '-e "/100% success rate$$/d"'
+COMPONENT_TEST_TRANSFORMS += '-e "/; 0\/.*tests failed$$/d"'
 
 # The terminal name can differ between runs. It can either be /dev/pts/<number> or
 # it can be word 'none'

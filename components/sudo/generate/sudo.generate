@@ -1,0 +1,50 @@
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+# The file should not be viewable by anyone by root
+<transform file path=etc/sudoers$ -> set group root>
+<transform file path=etc/sudoers$ -> set mode 0440>
+# This was used to help transition from SVR4 packaging
+<transform file path=etc/sudoers$ -> set original_name SUNWsudo:etc/sudoers>
+# Customer may create custom packages overriding the default sudo config
+<transform file path=etc/sudoers$ -> set overlay allow>
+# Do not overwrite customer's setup
+<transform file path=etc/sudoers$ -> set preserve true>
+
+# Both 'sudoers' and 'sudoers.dist' deliver the same content. I believe that
+# the intention is to deliver both, but don't overwrite 'sudoers' if it exists.
+# This allows user to compare his (potentially modified) config file to the
+# latest example shipped by sudo. Historically sudoers.dist was not delivered
+# so I'm keeping it that way.
+<transform file path=etc/sudoers\.dist$ -> drop>
+
+# sudo needs set-uid bit for it's operation
+<transform file path=usr/bin/sudo$ -> set mode 4511>
+
+# The two binaries do not need any special permissions. Traditionally they are
+# set to 0511.
+<transform file path=usr/sbin/visudo$ -> set mode 0511>
+<transform file path=usr/bin/sudoreplay$ -> set mode 0511>
+
+# The UTF-8 locale symlinks are delivered by text/locale
+<transform link path=usr/share/locale/.*\.UTF-8$ -> drop>

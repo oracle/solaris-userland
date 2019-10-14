@@ -128,24 +128,24 @@ sudo dtrace -l -n 'syscall::b*:entry'
 
 # Verify the following works
 
-$ sudo /usr/perl5/5.22/bin/perl -e 'print "before\n"; system("id -a"); print "after\n"'
+$ sudo /usr/perl5/5.26/bin/perl -e 'print "before\n"; system("id -a"); print "after\n"'
 before
 uid=0(root) gid=0(root) groups=0(root),1(other),2(bin),3(sys),4(adm),6(mail),7(tty),8(lp),12(daemon)
 after
 
 # Add the following to sudoers
 
-ALL     ALL = NOPASSWD: NOEXEC: /usr/perl5/5.22/bin/perl
+ALL     ALL = NOPASSWD: NOEXEC: /usr/perl5/5.26/bin/perl
 
 # Now Perl should be prevent to run further commands, so the output is
 
-$ sudo /usr/perl5/5.22/bin/perl -e 'print "before\n"; system("id -a"); print "after\n"'
+$ sudo /usr/perl5/5.26/bin/perl -e 'print "before\n"; system("id -a"); print "after\n"'
 before
 after
 
 # Perl itself works as expected
 
-$ /usr/perl5/5.22/bin/perl -e 'print "before\n"; system("id -a"); print "after\n"'
+$ /usr/perl5/5.26/bin/perl -e 'print "before\n"; system("id -a"); print "after\n"'
 before
 uid=101(rimmer) gid=10(staff) groups=10(staff)
 after
