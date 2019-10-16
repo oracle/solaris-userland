@@ -22,23 +22,28 @@
 #
 # Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
 #
+
+# Build requirements, needed before inclusion of shared-macros.
+# Building for Python 3.7 requires compiler to be gcc.
+COMPILER=	gcc
+
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		python-ldap
-COMPONENT_VERSION=	2.4.25
+COMPONENT_VERSION=	3.2.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:62d00dbc86f3f9b21beacd9b826e8f9895f900637a60a6d4e7ab59a1cdc64e56
+    sha256:7d1c4b15375a533564aad3d3deade789221e450052b21ebb9720fb822eccdb8e
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.python-ldap.org/
 COMPONENT_BUGDB=	python-mod/python-ldap
 COMPONENT_ANITYA_ID=	13261
 
-TPNO=			29571
+TPNO=			52715
 
-# This module has syntax issues and thus is not Python 3 ready.
-PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
+# Building for Python 2.7 and 3.7 only. Ref ../../make-rules/shared-macros.mk
+PYTHON_VERSIONS=	3.7 2.7
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -46,38 +51,20 @@ include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-COMPONENT_TEST_DIR =    $(SOURCE_DIR)/Tests
-COMPONENT_TEST_CMD =	$(SHELL)
-COMPONENT_TEST_ARGS =   runtests.sh
-# Needed to create a unique temporary directory.
-COMPONENT_TEST_ENV +=	BUILD_DIR=$(BUILD_DIR)
-
 # common targets
 build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)
 
-# Two tests are known to fail. These failures are not critical.
-#
-# One fails because it says the library does not throw a value error on a
-# bad URL. This one fails, as the bad url it is trying is an edge case:
-# ldap:///?????  and not that important.  The OpenLDAP library doesn't 
-# have the necessary code to check for that case and error out.  We (or
-# someone from the python-ldap team) would have to log an OpenLDAP bug,
-# propose a fix to the code, see it integrated, wait for a release, and
-# integrate the new release into Userland.
-#
-# The other failure is for a test case that has a comment before the test case:
-# # these two constants are pointless? XXX
-# The answer being yes.  And the constants are not defined in the latest
-# version of python-ldap.
-# 
-test:		$(TEST_32_and_64)
+# See README-TESTING.md for details on how to run provided tests and
+# a possible future addition to this Makefile.
+test:		$(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-$(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += library/openldap
-REQUIRED_PACKAGES += library/python/pyasn1-27
-REQUIRED_PACKAGES += library/python/pyasn1-modules-27
-REQUIRED_PACKAGES += system/library
+# Package dependencies.
+# ---------------------
+# Created by 'gmake REQUIRED_PACKAGES', manually verified.
+REQUIRED_PACKAGES += library/python/pyasn1
+REQUIRED_PACKAGES += library/python/pyasn1-modules
 REQUIRED_PACKAGES += system/network/ldap/openldap
