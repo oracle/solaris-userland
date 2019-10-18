@@ -1,0 +1,759 @@
+https://reviews.llvm.org/D35755?id=110190
+https://bugs.llvm.org/show_bug.cgi?id=24606
+
+Index: lib/Driver/ToolChains/Gnu.h
+===================================================================
+--- tools/clang/lib/Driver/ToolChains/Gnu.h
++++ tools/clang/lib/Driver/ToolChains/Gnu.h
+@@ -250,6 +250,10 @@
+                              SmallVectorImpl<StringRef> &BiarchLibDirs,
+                              SmallVectorImpl<StringRef> &BiarchTripleAliases);
+ 
++    void AddDefaultGCCPrefixes(const llvm::Triple &TargetTriple,
++                               SmallVectorImpl<std::string> &Prefixes,
++                               StringRef SysRoot);
++
+     bool ScanGCCForMultilibs(const llvm::Triple &TargetTriple,
+                              const llvm::opt::ArgList &Args,
+                              StringRef Path,
+@@ -261,12 +265,6 @@
+                                 StringRef CandidateTriple,
+                                 bool NeedsBiarchSuffix = false);
+ 
+-    void scanLibDirForGCCTripleSolaris(const llvm::Triple &TargetArch,
+-                                       const llvm::opt::ArgList &Args,
+-                                       const std::string &LibDir,
+-                                       StringRef CandidateTriple,
+-                                       bool NeedsBiarchSuffix = false);
+-
+     bool ScanGentooGccConfig(const llvm::Triple &TargetTriple,
+                              const llvm::opt::ArgList &Args,
+                              StringRef CandidateTriple,
+@@ -307,8 +305,8 @@
+   /// \brief Check whether the target triple's architecture is 32-bits.
+   bool isTarget32Bit() const { return getTriple().isArch32Bit(); }
+ 
+-  // FIXME: This should be final, but the Solaris tool chain does weird
+-  // things we can't easily represent.
++  // FIXME: This should be final, but the CrossWindows toolchain does weird
++  // things that can't be easily generalized.
+   void AddClangCXXStdlibIncludeArgs(
+       const llvm::opt::ArgList &DriverArgs,
+       llvm::opt::ArgStringList &CC1Args) const override;
+Index: lib/Driver/ToolChains/Gnu.cpp
+===================================================================
+--- tools/clang/lib/Driver/ToolChains/Gnu.cpp
++++ tools/clang/lib/Driver/ToolChains/Gnu.cpp
+@@ -1507,17 +1507,35 @@
+                                 StringRef Path, const ArgList &Args,
+                                 bool NeedsBiarchSuffix,
+                                 DetectedMultilibs &Result) {
++  Multilib Default;
++
+   // Some versions of SUSE and Fedora on ppc64 put 32-bit libs
+   // in what would normally be GCCInstallPath and put the 64-bit
+   // libs in a subdirectory named 64. The simple logic we follow is that
+   // *if* there is a subdirectory of the right name with crtbegin.o in it,
+   // we use that. If not, and if not a biarch triple alias, we look for
+   // crtbegin.o without the subdirectory.
+ 
+-  Multilib Default;
++  StringRef Suff64 = "/64";
++  // Solaris uses platform-specific suffixes instead of /64.
++  if (TargetTriple.getOS() == llvm::Triple::Solaris) {
++    switch (TargetTriple.getArch()) {
++    case llvm::Triple::x86:
++    case llvm::Triple::x86_64:
++      Suff64 = "/amd64";
++      break;
++    case llvm::Triple::sparc:
++    case llvm::Triple::sparcv9:
++      Suff64 = "/sparcv9";
++      break;
++    default:
++      break;
++    }
++  }
++
+   Multilib Alt64 = Multilib()
+-                       .gccSuffix("/64")
+-                       .includeSuffix("/64")
++                       .gccSuffix(Suff64)
++                       .includeSuffix(Suff64)
+                        .flag("-m32")
+                        .flag("+m64")
+                        .flag("-mx32");
+@@ -1714,21 +1732,17 @@
+     // If we have a SysRoot, try that first.
+     if (!D.SysRoot.empty()) {
+       Prefixes.push_back(D.SysRoot);
+-      Prefixes.push_back(D.SysRoot + "/usr");
++      AddDefaultGCCPrefixes(TargetTriple, Prefixes, D.SysRoot);
+     }
+ 
+     // Then look for gcc installed alongside clang.
+     Prefixes.push_back(D.InstalledDir + "/..");
+ 
+-    // Then look for distribution supplied gcc installations.
++    // Next, look for prefix(es) that correspond to distribution-supplied gcc
++    // installations.
+     if (D.SysRoot.empty()) {
+-      // Look for RHEL devtoolsets.
+-      Prefixes.push_back("/opt/rh/devtoolset-6/root/usr");
+-      Prefixes.push_back("/opt/rh/devtoolset-4/root/usr");
+-      Prefixes.push_back("/opt/rh/devtoolset-3/root/usr");
+-      Prefixes.push_back("/opt/rh/devtoolset-2/root/usr");
+-      // And finally in /usr.
+-      Prefixes.push_back("/usr");
++      // Typically /usr.
++      AddDefaultGCCPrefixes(TargetTriple, Prefixes, D.SysRoot);
+     }
+   }
+ 
+@@ -1799,6 +1813,51 @@
+   return false;
+ }
+ 
++void Generic_GCC::GCCInstallationDetector::AddDefaultGCCPrefixes(
++    const llvm::Triple &TargetTriple, SmallVectorImpl<std::string> &Prefixes,
++    StringRef SysRoot) {
++  if (TargetTriple.getOS() == llvm::Triple::Solaris) {
++    // Solaris is a special case.
++    // The GCC installation is under
++    //   /usr/gcc/<major>.<minor>/lib/gcc/<triple>/<major>.<minor>.<patch>/
++    // so we need to find those /usr/gcc/*/lib/gcc libdirs and go with
++    // /usr/gcc/<version> as a prefix.
++
++    std::string PrefixDir = SysRoot.str() + "/usr/gcc";
++    std::error_code EC;
++    for (vfs::directory_iterator LI = D.getVFS().dir_begin(PrefixDir, EC), LE;
++         !EC && LI != LE; LI = LI.increment(EC)) {
++      StringRef VersionText = llvm::sys::path::filename(LI->getName());
++      GCCVersion CandidateVersion = GCCVersion::Parse(VersionText);
++
++      // Filter out obviously bad entries.
++      if (CandidateVersion.Major == -1 || CandidateVersion.isOlderThan(4, 1, 1))
++        continue;
++
++      std::string CandidatePrefix = PrefixDir + "/" + VersionText.str();
++      std::string CandidateLibPath = CandidatePrefix + "/lib/gcc";
++      if (!D.getVFS().exists(CandidateLibPath))
++        continue;
++
++      Prefixes.push_back(CandidatePrefix);
++    }
++    return;
++  }
++
++  // Non-Solaris is much simpler - most systems just go with "/usr".
++  if (SysRoot.empty()) {
++    // Yet, still look for RHEL devtoolsets
++    // (should it be done Linux-only??)
++    Prefixes.push_back("/opt/rh/devtoolset-6/root/usr");
++    Prefixes.push_back("/opt/rh/devtoolset-4/root/usr");
++    Prefixes.push_back("/opt/rh/devtoolset-3/root/usr");
++    Prefixes.push_back("/opt/rh/devtoolset-2/root/usr");
++    Prefixes.push_back("/usr");
++  } else {
++    Prefixes.push_back(SysRoot.str() + "/usr");
++  }
++}
++
+ /*static*/ void Generic_GCC::GCCInstallationDetector::CollectLibDirsAndTriples(
+     const llvm::Triple &TargetTriple, const llvm::Triple &BiarchTriple,
+     SmallVectorImpl<StringRef> &LibDirs,
+@@ -1896,17 +1955,49 @@
+       "s390x-linux-gnu", "s390x-unknown-linux-gnu", "s390x-ibm-linux-gnu",
+       "s390x-suse-linux", "s390x-redhat-linux"};
+ 
+-  // Solaris.
+-  static const char *const SolarisSPARCLibDirs[] = {"/gcc"};
+-  static const char *const SolarisSPARCTriples[] = {"sparc-sun-solaris2.11",
+-                                                    "i386-pc-solaris2.11"};
+ 
+   using std::begin;
+   using std::end;
+ 
+   if (TargetTriple.getOS() == llvm::Triple::Solaris) {
+-    LibDirs.append(begin(SolarisSPARCLibDirs), end(SolarisSPARCLibDirs));
+-    TripleAliases.append(begin(SolarisSPARCTriples), end(SolarisSPARCTriples));
++    static const char *const SolarisLibDirs[] = {"/lib"};
++    static const char *const SolarisSparcV8Triples[] = {
++        "sparc-sun-solaris2.11", "sparc-sun-solaris2.12"};
++    static const char *const SolarisSparcV9Triples[] = {
++        "sparcv9-sun-solaris2.11", "sparcv9-sun-solaris2.12"};
++    static const char *const SolarisX86Triples[] = {"i386-pc-solaris2.11",
++                                                    "i386-pc-solaris2.12"};
++    static const char *const SolarisX86_64Triples[] = {"x86_64-pc-solaris2.11",
++                                                       "x86_64-pc-solaris2.12"};
++    LibDirs.append(begin(SolarisLibDirs), end(SolarisLibDirs));
++    BiarchLibDirs.append(begin(SolarisLibDirs), end(SolarisLibDirs));
++    switch (TargetTriple.getArch()) {
++    case llvm::Triple::x86:
++      TripleAliases.append(begin(SolarisX86Triples), end(SolarisX86Triples));
++      BiarchTripleAliases.append(begin(SolarisX86_64Triples),
++                                 end(SolarisX86_64Triples));
++      break;
++    case llvm::Triple::x86_64:
++      TripleAliases.append(begin(SolarisX86_64Triples),
++                           end(SolarisX86_64Triples));
++      BiarchTripleAliases.append(begin(SolarisX86Triples),
++                                 end(SolarisX86Triples));
++      break;
++    case llvm::Triple::sparc:
++      TripleAliases.append(begin(SolarisSparcV8Triples),
++                           end(SolarisSparcV8Triples));
++      BiarchTripleAliases.append(begin(SolarisSparcV9Triples),
++                                 end(SolarisSparcV9Triples));
++      break;
++    case llvm::Triple::sparcv9:
++      TripleAliases.append(begin(SolarisSparcV9Triples),
++                           end(SolarisSparcV9Triples));
++      BiarchTripleAliases.append(begin(SolarisSparcV8Triples),
++                                 end(SolarisSparcV8Triples));
++      break;
++    default:
++      break;
++    }
+     return;
+   }
+ 
+@@ -2061,56 +2152,6 @@
+     BiarchTripleAliases.push_back(BiarchTriple.str());
+ }
+ 
+-void Generic_GCC::GCCInstallationDetector::scanLibDirForGCCTripleSolaris(
+-    const llvm::Triple &TargetArch, const llvm::opt::ArgList &Args,
+-    const std::string &LibDir, StringRef CandidateTriple,
+-    bool NeedsBiarchSuffix) {
+-  // Solaris is a special case. The GCC installation is under
+-  // /usr/gcc/<major>.<minor>/lib/gcc/<triple>/<major>.<minor>.<patch>/, so we
+-  // need to iterate twice.
+-  std::error_code EC;
+-  for (vfs::directory_iterator LI = D.getVFS().dir_begin(LibDir, EC), LE;
+-       !EC && LI != LE; LI = LI.increment(EC)) {
+-    StringRef VersionText = llvm::sys::path::filename(LI->getName());
+-    GCCVersion CandidateVersion = GCCVersion::Parse(VersionText);
+-
+-    if (CandidateVersion.Major != -1) // Filter obviously bad entries.
+-      if (!CandidateGCCInstallPaths.insert(LI->getName()).second)
+-        continue; // Saw this path before; no need to look at it again.
+-    if (CandidateVersion.isOlderThan(4, 1, 1))
+-      continue;
+-    if (CandidateVersion <= Version)
+-      continue;
+-
+-    GCCInstallPath =
+-        LibDir + "/" + VersionText.str() + "/lib/gcc/" + CandidateTriple.str();
+-    if (!D.getVFS().exists(GCCInstallPath))
+-      continue;
+-
+-    // If we make it here there has to be at least one GCC version, let's just
+-    // use the latest one.
+-    std::error_code EEC;
+-    for (vfs::directory_iterator
+-             LLI = D.getVFS().dir_begin(GCCInstallPath, EEC),
+-             LLE;
+-         !EEC && LLI != LLE; LLI = LLI.increment(EEC)) {
+-
+-      StringRef SubVersionText = llvm::sys::path::filename(LLI->getName());
+-      GCCVersion CandidateSubVersion = GCCVersion::Parse(SubVersionText);
+-
+-      if (CandidateSubVersion > Version)
+-        Version = CandidateSubVersion;
+-    }
+-
+-    GCCTriple.setTriple(CandidateTriple);
+-
+-    GCCInstallPath += "/" + Version.Text;
+-    GCCParentLibPath = GCCInstallPath + "/../../../../";
+-
+-    IsValid = true;
+-  }
+-}
+-
+ bool Generic_GCC::GCCInstallationDetector::ScanGCCForMultilibs(
+     const llvm::Triple &TargetTriple, const ArgList &Args,
+     StringRef Path, bool NeedsBiarchSuffix) {
+@@ -2142,12 +2183,6 @@
+     const llvm::Triple &TargetTriple, const ArgList &Args,
+     const std::string &LibDir, StringRef CandidateTriple,
+     bool NeedsBiarchSuffix) {
+-  if (TargetTriple.getOS() == llvm::Triple::Solaris) {
+-    scanLibDirForGCCTripleSolaris(TargetTriple, Args, LibDir, CandidateTriple,
+-                                  NeedsBiarchSuffix);
+-    return;
+-  }
+-
+   llvm::Triple::ArchType TargetArch = TargetTriple.getArch();
+   // Locations relative to the system lib directory where GCC's triple-specific
+   // directories might reside.
+@@ -2160,31 +2195,33 @@
+     // Whether this library suffix is relevant for the triple.
+     bool Active;
+   } Suffixes[] = {
+-    // This is the normal place.
+-    {"gcc/" + CandidateTriple.str(), "../..", true},
+-
+-    // Debian puts cross-compilers in gcc-cross.
+-    {"gcc-cross/" + CandidateTriple.str(), "../..", true},
+-
+-    // The Freescale PPC SDK has the gcc libraries in
+-    // <sysroot>/usr/lib/<triple>/x.y.z so have a look there as well. Only do
+-    // this on Freescale triples, though, since some systems put a *lot* of
+-    // files in that location, not just GCC installation data.
+-    {CandidateTriple.str(), "..",
+-      TargetTriple.getVendor() == llvm::Triple::Freescale},
+-
+-    // Natively multiarch systems sometimes put the GCC triple-specific
+-    // directory within their multiarch lib directory, resulting in the
+-    // triple appearing twice.
+-    {CandidateTriple.str() + "/gcc/" + CandidateTriple.str(), "../../..", true},
+-
+-    // Deal with cases (on Ubuntu) where the system architecture could be i386
+-    // but the GCC target architecture could be (say) i686.
+-    // FIXME: It may be worthwhile to generalize this and look for a second
+-    // triple.
+-    {"i386-linux-gnu/gcc/" + CandidateTriple.str(), "../../..",
+-      TargetArch == llvm::Triple::x86}
+-  };
++      // This is the normal place.
++      {"gcc/" + CandidateTriple.str(), "../..", true},
++
++      // Debian puts cross-compilers in gcc-cross.
++      {"gcc-cross/" + CandidateTriple.str(), "../..",
++       TargetTriple.getOS() != llvm::Triple::Solaris},
++
++      // The Freescale PPC SDK has the gcc libraries in
++      // <sysroot>/usr/lib/<triple>/x.y.z so have a look there as well. Only do
++      // this on Freescale triples, though, since some systems put a *lot* of
++      // files in that location, not just GCC installation data.
++      {CandidateTriple.str(), "..",
++       TargetTriple.getVendor() == llvm::Triple::Freescale},
++
++      // Natively multiarch systems sometimes put the GCC triple-specific
++      // directory within their multiarch lib directory, resulting in the
++      // triple appearing twice.
++      {CandidateTriple.str() + "/gcc/" + CandidateTriple.str(), "../../..",
++       TargetTriple.getOS() != llvm::Triple::Solaris},
++
++      // Deal with cases (on Ubuntu) where the system architecture could be i386
++      // but the GCC target architecture could be (say) i686.
++      // FIXME: It may be worthwhile to generalize this and look for a second
++      // triple.
++      {"i386-linux-gnu/gcc/" + CandidateTriple.str(), "../../..",
++       (TargetArch == llvm::Triple::x86 &&
++        TargetTriple.getOS() != llvm::Triple::Solaris)}};
+ 
+   for (auto &Suffix : Suffixes) {
+     if (!Suffix.Active)
+Index: lib/Driver/ToolChains/Solaris.h
+===================================================================
+--- tools/clang/lib/Driver/ToolChains/Solaris.h
++++ tools/clang/lib/Driver/ToolChains/Solaris.h
+@@ -57,9 +57,13 @@
+ 
+   bool IsIntegratedAssemblerDefault() const override { return true; }
+ 
+-  void AddClangCXXStdlibIncludeArgs(
+-      const llvm::opt::ArgList &DriverArgs,
+-      llvm::opt::ArgStringList &CC1Args) const override;
++  void
++  AddClangSystemIncludeArgs(const llvm::opt::ArgList &DriverArgs,
++                            llvm::opt::ArgStringList &CC1Args) const override;
++
++  void
++  addLibStdCxxIncludePaths(const llvm::opt::ArgList &DriverArgs,
++                           llvm::opt::ArgStringList &CC1Args) const override;
+ 
+   unsigned GetDefaultDwarfVersion() const override { return 2; }
+ 
+Index: lib/Driver/ToolChains/Solaris.cpp
+===================================================================
+--- tools/clang/lib/Driver/ToolChains/Solaris.cpp
++++ tools/clang/lib/Driver/ToolChains/Solaris.cpp
+@@ -122,72 +122,121 @@
+   C.addCommand(llvm::make_unique<Command>(JA, *this, Exec, CmdArgs, Inputs));
+ }
+ 
++static StringRef getSolarisLibSuffix(const llvm::Triple &Triple) {
++  switch (Triple.getArch()) {
++  case llvm::Triple::x86:
++  case llvm::Triple::sparc:
++    break;
++  case llvm::Triple::x86_64:
++    return "/amd64";
++  case llvm::Triple::sparcv9:
++    return "/sparcv9";
++  default:
++    llvm_unreachable("Unsupported architecture");
++  }
++  return "";
++}
++
+ /// Solaris - Solaris tool chain which can call as(1) and ld(1) directly.
+ 
+ Solaris::Solaris(const Driver &D, const llvm::Triple &Triple,
+                  const ArgList &Args)
+     : Generic_ELF(D, Triple, Args) {
+ 
+   GCCInstallation.init(Triple, Args);
+ 
++  StringRef LibSuffix = getSolarisLibSuffix(Triple);
+   path_list &Paths = getFilePaths();
+-  if (GCCInstallation.isValid())
+-    addPathIfExists(D, GCCInstallation.getInstallPath(), Paths);
+-
+-  addPathIfExists(D, getDriver().getInstalledDir(), Paths);
+-  if (getDriver().getInstalledDir() != getDriver().Dir)
+-    addPathIfExists(D, getDriver().Dir, Paths);
+-
+-  addPathIfExists(D, getDriver().SysRoot + getDriver().Dir + "/../lib", Paths);
+-
+-  std::string LibPath = "/usr/lib/";
+-  switch (Triple.getArch()) {
+-  case llvm::Triple::x86:
+-  case llvm::Triple::sparc:
+-    break;
+-  case llvm::Triple::x86_64:
+-    LibPath += "amd64/";
+-    break;
+-  case llvm::Triple::sparcv9:
+-    LibPath += "sparcv9/";
+-    break;
+-  default:
+-    llvm_unreachable("Unsupported architecture");
++  if (GCCInstallation.isValid()) {
++    // On Solaris gcc uses both an architecture-specific path with triple in it
++    // as well as a more generic lib path (+arch suffix).
++    addPathIfExists(D,
++                    GCCInstallation.getInstallPath() +
++                        GCCInstallation.getMultilib().gccSuffix(),
++                    Paths);
++    addPathIfExists(D, GCCInstallation.getParentLibPath() + LibSuffix, Paths);
+   }
+ 
+-  addPathIfExists(D, getDriver().SysRoot + LibPath, Paths);
++  // If we are currently running Clang inside of the requested system root,
++  // add its parent library path to those searched.
++  if (StringRef(D.Dir).startswith(D.SysRoot))
++    addPathIfExists(D, D.Dir + "/../lib", Paths);
++
++  addPathIfExists(D, D.SysRoot + "/usr/lib" + LibSuffix, Paths);
+ }
+ 
+ Tool *Solaris::buildAssembler() const {
+   return new tools::solaris::Assembler(*this);
+ }
+ 
+ Tool *Solaris::buildLinker() const { return new tools::solaris::Linker(*this); }
+ 
+-void Solaris::AddClangCXXStdlibIncludeArgs(const ArgList &DriverArgs,
+-                                           ArgStringList &CC1Args) const {
+-  if (DriverArgs.hasArg(options::OPT_nostdlibinc) ||
+-      DriverArgs.hasArg(options::OPT_nostdincxx))
++void Solaris::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
++                                        ArgStringList &CC1Args) const {
++  const Driver &D = getDriver();
++
++  if (DriverArgs.hasArg(clang::driver::options::OPT_nostdinc))
++    return;
++
++  if (!DriverArgs.hasArg(options::OPT_nostdlibinc))
++    addSystemInclude(DriverArgs, CC1Args, D.SysRoot + "/usr/local/include");
++
++  if (!DriverArgs.hasArg(options::OPT_nobuiltininc)) {
++    SmallString<128> P(D.ResourceDir);
++    llvm::sys::path::append(P, "include");
++    addSystemInclude(DriverArgs, CC1Args, P);
++  }
++
++  if (DriverArgs.hasArg(options::OPT_nostdlibinc))
+     return;
+ 
+-  // Include the support directory for things like xlocale and fudged system
+-  // headers.
+-  // FIXME: This is a weird mix of libc++ and libstdc++. We should also be
+-  // checking the value of -stdlib= here and adding the includes for libc++
+-  // rather than libstdc++ if it's requested.
+-  addSystemInclude(DriverArgs, CC1Args, "/usr/include/c++/v1/support/solaris");
++  // Check for configure-time C include directories.
++  StringRef CIncludeDirs(C_INCLUDE_DIRS);
++  if (CIncludeDirs != "") {
++    SmallVector<StringRef, 5> dirs;
++    CIncludeDirs.split(dirs, ":");
++    for (StringRef dir : dirs) {
++      StringRef Prefix =
++          llvm::sys::path::is_absolute(dir) ? StringRef(D.SysRoot) : "";
++      addExternCSystemInclude(DriverArgs, CC1Args, Prefix + dir);
++    }
++    return;
++  }
+ 
++  // Add include directories specific to the selected multilib set and multilib.
+   if (GCCInstallation.isValid()) {
+-    GCCVersion Version = GCCInstallation.getVersion();
+-    addSystemInclude(DriverArgs, CC1Args,
+-                     getDriver().SysRoot + "/usr/gcc/" +
+-                     Version.MajorStr + "." +
+-                     Version.MinorStr +
+-                     "/include/c++/" + Version.Text);
+-    addSystemInclude(DriverArgs, CC1Args,
+-                     getDriver().SysRoot + "/usr/gcc/" + Version.MajorStr +
+-                     "." + Version.MinorStr + "/include/c++/" +
+-                     Version.Text + "/" +
+-                     GCCInstallation.getTriple().str());
++    const MultilibSet::IncludeDirsFunc &Callback =
++        Multilibs.includeDirsCallback();
++    if (Callback) {
++      for (const auto &Path : Callback(GCCInstallation.getMultilib()))
++        addExternCSystemIncludeIfExists(
++            DriverArgs, CC1Args, GCCInstallation.getInstallPath() + Path);
++    }
+   }
++
++  addExternCSystemInclude(DriverArgs, CC1Args, D.SysRoot + "/usr/include");
++}
++
++void Solaris::addLibStdCxxIncludePaths(
++    const llvm::opt::ArgList &DriverArgs,
++    llvm::opt::ArgStringList &CC1Args) const {
++  // We need a detected GCC installation on Solaris (similar to Linux)
++  // to provide libstdc++'s headers.
++  if (!GCCInstallation.isValid())
++    return;
++
++  // By default, look for the C++ headers in an include directory adjacent to
++  // the lib directory of the GCC installation.
++  // On Solaris this usually looks like /usr/gcc/X.Y/include/c++/X.Y.Z
++  StringRef LibDir = GCCInstallation.getParentLibPath();
++  StringRef TripleStr = GCCInstallation.getTriple().str();
++  const Multilib &Multilib = GCCInstallation.getMultilib();
++  const GCCVersion &Version = GCCInstallation.getVersion();
++
++  // The primary search for libstdc++ supports multiarch variants.
++  addLibStdCXXIncludePaths(LibDir.str() + "/../include", "/c++/" + Version.Text,
++                           TripleStr,
++                           /*GCCMultiarchTriple*/ "",
++                           /*TargetMultiarchTriple*/ "",
++                           Multilib.includeSuffix(), DriverArgs, CC1Args);
+ }
+Index: lib/Frontend/InitHeaderSearch.cpp
+===================================================================
+--- tools/clang/lib/Frontend/InitHeaderSearch.cpp
++++ tools/clang/lib/Frontend/InitHeaderSearch.cpp
+@@ -255,6 +255,7 @@
+ 
+   switch (os) {
+   case llvm::Triple::Linux:
++  case llvm::Triple::Solaris:
+     llvm_unreachable("Include management is handled in the driver.");
+ 
+   case llvm::Triple::CloudABI: {
+@@ -396,6 +397,7 @@
+ 
+   switch (os) {
+   case llvm::Triple::Linux:
++  case llvm::Triple::Solaris:
+     llvm_unreachable("Include management is handled in the driver.");
+     break;
+   case llvm::Triple::Win32:
+@@ -443,6 +445,7 @@
+     break; // Everything else continues to use this routine's logic.
+ 
+   case llvm::Triple::Linux:
++  case llvm::Triple::Solaris:
+     return;
+ 
+   case llvm::Triple::Win32:
+Index: test/Driver/solaris-header-search.cpp
+===================================================================
+--- tools/clang/test/Driver/solaris-header-search.cpp
++++ tools/clang/test/Driver/solaris-header-search.cpp
+@@ -1,11 +1,41 @@
+-// Test that the C++ headers are found.
++// Test that the C++ headers are found on Solaris with gcc toolchain detection
+ //
+-// RUN: %clang -no-canonical-prefixes %s -### 2>&1 \
++// Sparc, 32bit
++// RUN: %clang -no-canonical-prefixes %s -### -fsyntax-only 2>&1 \
+ // RUN:     --target=sparc-sun-solaris2.11 \
+-// RUN:     --gcc-toolchain="" \
+-// RUN:     --sysroot=%S/Inputs/sparc-sun-solaris2.11 \
+-// RUN:   | FileCheck %s
+-// CHECK: "{{[^"]*}}clang{{[^"]*}}" "-cc1"
+-// CHECK: "-internal-isystem" "{{.*}}/usr/include/c++/v1/support/solaris"
+-// CHECK: "-internal-isystem" "{{.*}}/usr/gcc/4.8/include/c++/4.8.2"
+-// CHECK: "-internal-isystem" "{{.*}}/usr/gcc/4.8/include/c++/4.8.2/sparc-sun-solaris2.11"
++// RUN:     --sysroot=%S/Inputs/solaris_sparc_tree \
++// RUN:   | FileCheck --check-prefix=CHECK_SOLARIS_SPARC %s
++// CHECK_SOLARIS_SPARC: "{{[^"]*}}clang{{[^"]*}}" "-cc1"
++// CHECK_SOLARIS_SPARC-SAME: "-isysroot" "[[SYSROOT:[^"]+]]"
++// CHECK_SOLARIS_SPARC-SAME: "-internal-isystem" "[[SYSROOT]]/usr/gcc/4.8/lib/gcc/sparc-sun-solaris2.11/4.8.2/../../../../include/c++/4.8.2"
++// CHECK_SOLARIS_SPARC-SAME: "-internal-isystem" "[[SYSROOT]]/usr/gcc/4.8/lib/gcc/sparc-sun-solaris2.11/4.8.2/../../../../include/c++/4.8.2/sparc-sun-solaris2.11"
++
++// Sparc, 64bit
++// RUN: %clang -no-canonical-prefixes -m64 %s -### -fsyntax-only 2>&1 \
++// RUN:     --target=sparc-sun-solaris2.11 \
++// RUN:     --sysroot=%S/Inputs/solaris_sparc_tree \
++// RUN:   | FileCheck --check-prefix=CHECK_SOLARIS_SPARC64 %s
++// CHECK_SOLARIS_SPARC64: "{{[^"]*}}clang{{[^"]*}}" "-cc1"
++// CHECK_SOLARIS_SPARC64-SAME: "-isysroot" "[[SYSROOT:[^"]+]]"
++// CHECK_SOLARIS_SPARC64-SAME: "-internal-isystem" "[[SYSROOT]]/usr/gcc/4.8/lib/gcc/sparc-sun-solaris2.11/4.8.2/../../../../include/c++/4.8.2"
++// CHECK_SOLARIS_SPARC64-SAME: "-internal-isystem" "[[SYSROOT]]/usr/gcc/4.8/lib/gcc/sparc-sun-solaris2.11/4.8.2/../../../../include/c++/4.8.2/sparc-sun-solaris2.11/sparcv9"
++
++// Intel, 32bit
++// RUN: %clang -no-canonical-prefixes %s -### -fsyntax-only 2>&1 \
++// RUN:     --target=i386-pc-solaris2.11 \
++// RUN:     --sysroot=%S/Inputs/solaris_x86_tree \
++// RUN:   | FileCheck --check-prefix=CHECK_SOLARIS_X86 %s
++// CHECK_SOLARIS_X86: "{{[^"]*}}clang{{[^"]*}}" "-cc1"
++// CHECK_SOLARIS_X86-SAME: "-isysroot" "[[SYSROOT:[^"]+]]"
++// CHECK_SOLARIS_X86-SAME: "-internal-isystem" "{{.*}}/usr/gcc/4.9/lib/gcc/i386-pc-solaris2.11/4.9.4/../../../../include/c++/4.9.4"
++// CHECK_SOLARIS_X86-SAME: "-internal-isystem" "{{.*}}/usr/gcc/4.9/lib/gcc/i386-pc-solaris2.11/4.9.4/../../../../include/c++/4.9.4/i386-pc-solaris2.11"
++
++// Intel, 64bit
++// RUN: %clang -no-canonical-prefixes -m64 %s -### -fsyntax-only 2>&1 \
++// RUN:     --target=i386-pc-solaris2.11 \
++// RUN:     --sysroot=%S/Inputs/solaris_x86_tree \
++// RUN:   | FileCheck --check-prefix=CHECK_SOLARIS_X64 %s
++// CHECK_SOLARIS_X64: "{{[^"]*}}clang{{[^"]*}}" "-cc1"
++// CHECK_SOLARIS_X64-SAME: "-isysroot" "[[SYSROOT:[^"]+]]"
++// CHECK_SOLARIS_X64-SAME: "-internal-isystem" "[[SYSROOT]]/usr/gcc/4.9/lib/gcc/i386-pc-solaris2.11/4.9.4/../../../../include/c++/4.9.4"
++// CHECK_SOLARIS_X64-SAME: "-internal-isystem" "[[SYSROOT]]/usr/gcc/4.9/lib/gcc/i386-pc-solaris2.11/4.9.4/../../../../include/c++/4.9.4/i386-pc-solaris2.11/amd64"
+Index: test/Driver/solaris-ld.c
+===================================================================
+--- tools/clang/test/Driver/solaris-ld.c
++++ tools/clang/test/Driver/solaris-ld.c
+@@ -1,33 +1,105 @@
+-// Test ld invocation on Solaris targets.
++// General tests that ld invocations on Solaris targets sane. Note that we use
++// sysroot to make these tests independent of the host system.
+ 
+-// Check sparc-sun-solaris2.1
++// Check sparc-sun-solaris2.11, 32bit
+ // RUN: %clang -no-canonical-prefixes %s -### -o %t.o 2>&1 \
+ // RUN:     --target=sparc-sun-solaris2.11 \
+-// RUN:     --gcc-toolchain="" \
+-// RUN:     --sysroot=%S/Inputs/sparc-sun-solaris2.11 \
+-// RUN:   | FileCheck %s
+-// CHECK: "-cc1" "-triple" "sparc-sun-solaris2.11"
+-// CHECK: ld{{.*}}"
+-// CHECK: "--dynamic-linker" "{{.*}}/usr/lib/ld.so.1"
+-// CHECK: "{{.*}}/usr/gcc/4.8/lib/gcc/sparc-sun-solaris2.11/4.8.2{{/|\\\\}}crt1.o"
+-// CHECK: "{{.*}}/usr/lib/crti.o"
+-// CHECK: "{{.*}}/usr/gcc/4.8/lib/gcc/sparc-sun-solaris2.11/4.8.2{{/|\\\\}}crtbegin.o"
+-// CHECK: "{{.*}}/usr/gcc/4.8/lib/gcc/sparc-sun-solaris2.11/4.8.2{{/|\\\\}}crtend.o"
+-// CHECK: "{{.*}}/usr/lib/crtn.o"
+-// CHECK "-lc"
+-// CHECK "-lgcc_s"
+-// CHECK "-lgcc"
+-// CHECK "-lm"
++// RUN:     --sysroot=%S/Inputs/solaris_sparc_tree \
++// RUN:   | FileCheck --check-prefix=CHECK-LD-SPARC32 %s
++// CHECK-LD-SPARC32-NOT: warning:
++// CHECK-LD-SPARC32: {{.*/clang}}" "-cc1" "-triple" "sparc-sun-solaris2.11"
++// CHECK-LD-SPARC32-SAME: "-isysroot" "[[SYSROOT:[^"]+]]"
++// CHECK-LD-SPARC32: {{.*/ld}}"
++// CHECK-LD-SPARC32-SAME: "--dynamic-linker" "[[SYSROOT]]/usr/lib/ld.so.1"
++// CHECK-LD-SPARC32-SAME: "[[SYSROOT]]/usr/gcc/4.8/lib/gcc/sparc-sun-solaris2.11/4.8.2/crt1.o"
++// CHECK-LD-SPARC32-SAME: "[[SYSROOT]]/usr/lib/crti.o"
++// CHECK-LD-SPARC32-SAME: "[[SYSROOT]]/usr/gcc/4.8/lib/gcc/sparc-sun-solaris2.11/4.8.2/crtbegin.o"
++// CHECK-LD-SPARC32-SAME: "-L[[SYSROOT]]/usr/gcc/4.8/lib/gcc/sparc-sun-solaris2.11/4.8.2"
++// CHECK-LD-SPARC32-SAME: "-L[[SYSROOT]]/usr/gcc/4.8/lib/gcc/sparc-sun-solaris2.11/4.8.2/../../.."
++// CHECK-LD-SPARC32-SAME: "-L[[SYSROOT]]/usr/lib"
++// CHECK-LD-SPARC32-SAME: "-lgcc_s"
++// CHECK-LD-SPARC32-SAME: "-lc"
++// CHECK-LD-SPARC32-SAME: "-lgcc"
++// CHECK-LD-SPARC32-SAME: "-lm"
++// CHECK-LD-SPARC32-SAME: "[[SYSROOT]]/usr/gcc/4.8/lib/gcc/sparc-sun-solaris2.11/4.8.2/crtend.o"
++// CHECK-LD-SPARC32-SAME: "[[SYSROOT]]/usr/lib/crtn.o"
++
++// Check sparc-sun-solaris2.11, 64bit
++// RUN: %clang -no-canonical-prefixes -m64 %s -### -o %t.o 2>&1 \
++// RUN:     --target=sparc-sun-solaris2.11 \
++// RUN:     --sysroot=%S/Inputs/solaris_sparc_tree \
++// RUN:   | FileCheck --check-prefix=CHECK-LD-SPARC64 %s
++// CHECK-LD-SPARC64-NOT: warning:
++// CHECK-LD-SPARC64: {{.*/clang}}" "-cc1" "-triple" "sparcv9-sun-solaris2.11"
++// CHECK-LD-SPARC64-SAME: "-isysroot" "[[SYSROOT:[^"]+]]"
++// CHECK-LD-SPARC64: {{.*/ld}}"
++// CHECK-LD-SPARC64-SAME: "--dynamic-linker" "[[SYSROOT]]/usr/lib/sparcv9/ld.so.1"
++// CHECK-LD-SPARC64-SAME: "[[SYSROOT]]/usr/gcc/4.8/lib/gcc/sparc-sun-solaris2.11/4.8.2/sparcv9/crt1.o"
++// CHECK-LD-SPARC64-SAME: "[[SYSROOT]]/usr/lib/sparcv9/crti.o"
++// CHECK-LD-SPARC64-SAME: "[[SYSROOT]]/usr/gcc/4.8/lib/gcc/sparc-sun-solaris2.11/4.8.2/sparcv9/crtbegin.o"
++// CHECK-LD-SPARC64-SAME: "-L[[SYSROOT]]/usr/gcc/4.8/lib/gcc/sparc-sun-solaris2.11/4.8.2/sparcv9"
++// CHECK-LD-SPARC64-SAME: "-L[[SYSROOT]]/usr/gcc/4.8/lib/gcc/sparc-sun-solaris2.11/4.8.2/../../../sparcv9"
++// CHECK-LD-SPARC64-SAME: "-L[[SYSROOT]]/usr/lib/sparcv9"
++// CHECK-LD-SPARC64-SAME: "-lgcc_s"
++// CHECK-LD-SPARC64-SAME: "-lc"
++// CHECK-LD-SPARC64-SAME: "-lgcc"
++// CHECK-LD-SPARC64-SAME: "-lm"
++// CHECK-LD-SPARC64-SAME: "[[SYSROOT]]/usr/gcc/4.8/lib/gcc/sparc-sun-solaris2.11/4.8.2/sparcv9/crtend.o"
++// CHECK-LD-SPARC64-SAME: "[[SYSROOT]]/usr/lib/sparcv9/crtn.o"
++
++// Check i386-pc-solaris2.11, 32bit
++// RUN: %clang -no-canonical-prefixes %s -### -o %t.o 2>&1 \
++// RUN:     --target=i386-pc-solaris2.11 \
++// RUN:     --sysroot=%S/Inputs/solaris_x86_tree \
++// RUN:   | FileCheck --check-prefix=CHECK-LD-X32 %s
++// CHECK-LD-X32-NOT: warning:
++// CHECK-LD-X32: {{.*/clang}}" "-cc1" "-triple" "i386-pc-solaris2.11"
++// CHECK-LD-X32-SAME: "-isysroot" "[[SYSROOT:[^"]+]]"
++// CHECK-LD-X32: {{.*/ld}}"
++// CHECK-LD-X32-SAME: "--dynamic-linker" "[[SYSROOT]]/usr/lib/ld.so.1"
++// CHECK-LD-X32-SAME: "[[SYSROOT]]/usr/lib/crt1.o"
++// CHECK-LD-X32-SAME: "[[SYSROOT]]/usr/lib/crti.o"
++// CHECK-LD-X32-SAME: "[[SYSROOT]]/usr/gcc/4.9/lib/gcc/i386-pc-solaris2.11/4.9.4/crtbegin.o"
++// CHECK-LD-X32-SAME: "-L[[SYSROOT]]/usr/gcc/4.9/lib/gcc/i386-pc-solaris2.11/4.9.4"
++// CHECK-LD-X32-SAME: "-L[[SYSROOT]]/usr/gcc/4.9/lib/gcc/i386-pc-solaris2.11/4.9.4/../../.."
++// CHECK-LD-X32-SAME: "-L[[SYSROOT]]/usr/lib"
++// CHECK-LD-X32-SAME: "-lgcc_s"
++// CHECK-LD-X32-SAME: "-lc"
++// CHECK-LD-X32-SAME: "-lgcc"
++// CHECK-LD-X32-SAME: "-lm"
++// CHECK-LD-X32-SAME: "[[SYSROOT]]/usr/gcc/4.9/lib/gcc/i386-pc-solaris2.11/4.9.4/crtend.o"
++// CHECK-LD-X32-SAME: "[[SYSROOT]]/usr/lib/crtn.o"
++
++// Check i386-pc-solaris2.11, 64bit
++// RUN: %clang -no-canonical-prefixes -m64 %s -### -o %t.o 2>&1 \
++// RUN:     --target=i386-pc-solaris2.11 \
++// RUN:     --sysroot=%S/Inputs/solaris_x86_tree \
++// RUN:   | FileCheck --check-prefix=CHECK-LD-X64 %s
++// CHECK-LD-X64-NOT: warning:
++// CHECK-LD-X64: {{.*/clang}}" "-cc1" "-triple" "x86_64-pc-solaris2.11"
++// CHECK-LD-X64-SAME: "-isysroot" "[[SYSROOT:[^"]+]]"
++// CHECK-LD-X64: {{.*/ld}}"
++// CHECK-LD-X64-SAME: "--dynamic-linker" "[[SYSROOT]]/usr/lib/amd64/ld.so.1"
++// CHECK-LD-X64-SAME: "[[SYSROOT]]/usr/lib/amd64/crt1.o"
++// CHECK-LD-X64-SAME: "[[SYSROOT]]/usr/lib/amd64/crti.o"
++// CHECK-LD-X64-SAME: "[[SYSROOT]]/usr/gcc/4.9/lib/gcc/i386-pc-solaris2.11/4.9.4/amd64/crtbegin.o"
++// CHECK-LD-X64-SAME: "-L[[SYSROOT]]/usr/gcc/4.9/lib/gcc/i386-pc-solaris2.11/4.9.4/amd64"
++// CHECK-LD-X64-SAME: "-L[[SYSROOT]]/usr/gcc/4.9/lib/gcc/i386-pc-solaris2.11/4.9.4/../../../amd64"
++// CHECK-LD-X64-SAME: "-L[[SYSROOT]]/usr/lib/amd64"
++// CHECK-LD-X64-SAME: "-lgcc_s"
++// CHECK-LD-X64-SAME: "-lc"
++// CHECK-LD-X64-SAME: "-lgcc"
++// CHECK-LD-X64-SAME: "-lm"
++// CHECK-LD-X64-SAME: "[[SYSROOT]]/usr/gcc/4.9/lib/gcc/i386-pc-solaris2.11/4.9.4/amd64/crtend.o"
++// CHECK-LD-X64-SAME: "[[SYSROOT]]/usr/lib/amd64/crtn.o"
+ 
+ // Check the right -l flags are present with -shared
+ // RUN: %clang -no-canonical-prefixes %s -### -o %t.o -shared 2>&1 \
+ // RUN:     --target=sparc-sun-solaris2.11 \
+-// RUN:     --gcc-toolchain="" \
+-// RUN:     --sysroot=%S/Inputs/sparc-sun-solaris2.11 \
+-// RUN:   | FileCheck --check-prefix=CHECK-SHARED %s
+-
+-// CHECK-SHARED: ld{{.*}}"
+-// CHECK-SHARED "-lc"
+-// CHECK-SHARED "-lgcc_s"
+-// CHECK-SHARED-NOT "-lgcc"
+-// CHECK-SHARED-NOT: "-lm"
++// RUN:     --sysroot=%S/Inputs/solaris_sparc_tree \
++// RUN:   | FileCheck --check-prefix=CHECK-SPARC32-SHARED %s
++// CHECK-SPARC32-SHARED: {{.*/ld}}"
++// CHECK-SPARC32-SHARED-SAME: "-lgcc_s"
++// CHECK-SPARC32-SHARED-SAME: "-lc"
++// CHECK-SPARC32-SHARED-NOT: "-lgcc"
++// CHECK-SPARC32-SHARED-NOT: "-lm"
