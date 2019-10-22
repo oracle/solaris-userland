@@ -1,0 +1,606 @@
+diff --git a/nsswitch/winbind_nss_solaris.c b/nsswitch/winbind_nss_solaris.c
+--- a/nsswitch/winbind_nss_solaris.c
++++ b/nsswitch/winbind_nss_solaris.c
+@@ -2,6 +2,9 @@
+   Solaris NSS wrapper for winbind
+   - Shirish Kalele 2000
+ 
++  Support for updated nscd interfaces in Solaris
++  - Tomas Heran <tomas.heran@oracle.com> 2019
++
+   Based on Luke Howard's ldap_nss module for Solaris
+   */
+ 
+@@ -26,7 +29,6 @@
+ 
+ #undef DEVELOPER
+ 
+-
+ #include "winbind_client.h"
+ #include <stdlib.h>
+ #include <sys/types.h>
+@@ -55,6 +57,60 @@
+ 
+ #define NSS_ARGS(args) ((nss_XbyY_args_t *)args)
+ 
++#if defined(SUNOS5)
++
++/* Let the nscd know we've updated to the new interfaces. */
++void *_nss_winbind_version = NULL;
++
++#ifdef NSS_DEBUG_NSCD
++#define	NSS_DEBUG _nss_winbind_printf
++#endif
++
++#define	LOGBUFLEN 1024
++extern void _nscd_vlogit(const char *format, va_list ap);
++
++#pragma weak _nscd_vlogit = _vlogit
++
++void
++_vlogit(const char *format, va_list ap)
++{
++	fprintf(stderr, "nss_winbind: ");
++	vfprintf(stderr, format, ap);
++}
++
++void
++_nss_winbind_printf(const char *fmt, ...)
++{
++	struct timeval  tv;
++	struct tm       ltime;
++	char            timestr[64];
++	char            fbuffer[LOGBUFLEN];
++	size_t          len;
++	va_list ap;
++
++	va_start(ap, fmt);
++	if (gettimeofday(&tv, NULL) != 0) {
++		(void) snprintf(fbuffer, LOGBUFLEN,
++		    "<time conversion failed> NSS_WINBIND [%d:%u]: ",
++		    (int)getpid(), thr_self());
++	} else {
++		(void) localtime_r(&tv.tv_sec, &ltime);
++		(void) strftime(timestr, 64, "%Y-%m-%dT%H:%M:%S", &ltime);
++		(void) snprintf(fbuffer,
++		    LOGBUFLEN, "%s.%06ld NSS_WINBIND [%d:%u]: ", timestr,
++		    tv.tv_usec, (int)getpid(), thr_self());
++	}
++	len = strlcat(fbuffer, fmt, LOGBUFLEN);
++	if ((len + 1) < LOGBUFLEN && len > 0 && fbuffer[len-1] != '\n') {
++		fbuffer[len] = '\n';
++		fbuffer[len+1] = '\0';
++	}
++
++	(*_nscd_vlogit)(fbuffer, ap);
++	va_end(ap);
++}
++#endif
++
+ #ifdef HPUX
+ 
+ /*
+@@ -90,30 +146,86 @@
+ 	return _nss_winbind_endpwent();
+ }
+ 
++static int
++update_password_buffer(nss_XbyY_args_t *argp,
++    const char *name,
++    uid_t uid, gid_t gid, const char *gecos,
++    const char *homedir, const char *shell)
++{
++	int     buflen;
++	char    *buffer;
++
++	buflen = snprintf(NULL, 0, "%s:%s:%u:%u:%s:%s:%s",
++	    name, "x", uid, gid, gecos, homedir, shell) + 1;
++
++	if (buflen > argp->buf.buflen)
++		return (-1);
++	buflen = argp->buf.buflen;
++	buffer = argp->buf.buffer;
++
++	(void) snprintf(buffer, buflen, "%s:%s:%u:%u:%s:%s:%s",
++	    name, "x", uid, gid, gecos, homedir, shell);
++
++	return (0);
++}
++
+ static NSS_STATUS
+ _nss_winbind_getpwent_solwrap (nss_backend_t* be, void *args)
+ {
+ 	NSS_STATUS ret;
+-	char* buffer = NSS_ARGS(args)->buf.buffer;
+-	int buflen = NSS_ARGS(args)->buf.buflen;
++	char* buffer = NULL;
++	int buflen = 0;
+ 	struct passwd* result = (struct passwd*) NSS_ARGS(args)->buf.result;
+-	int* errnop = &NSS_ARGS(args)->erange;
++	bool res_needed = (result != NULL); /* Is structured result needed? */
+ 	char logmsg[80];
+ 
++	NSS_DEBUG("_nss_winbind_getpwent_solwrap");
++
++	if (!res_needed) {
++		result = SMB_MALLOC_P(struct passwd);
++		buflen = NSS_ARGS(args)->buf.buflen;
++		buffer = calloc(1, buflen);
++	} else {
++		buflen = NSS_ARGS(args)->buf.buflen;
++		buffer = NSS_ARGS(args)->buf.buffer;
++	}
++
+ 	ret = _nss_winbind_getpwent_r(result, buffer,
+-				      buflen, errnop);
++				      buflen, &NSS_ARGS(args)->erange);
++
++	if(ret != NSS_STATUS_SUCCESS) {
++		snprintf(logmsg, 79,
++		    "_nss_winbind_getpwent_solwrap: Returning error: %d.\n",
++		    ret);
++		NSS_DEBUG(logmsg);
++		goto out;
++	}
++
++	snprintf(logmsg, 79,
++	    "_nss_winbind_getpwent_solwrap: Returning user: %s\n",
++	    result->pw_name);
++	NSS_DEBUG(logmsg);
+ 
+-	if(ret == NSS_STATUS_SUCCESS)
+-		{
+-			snprintf(logmsg, 79, "_nss_winbind_getpwent_solwrap: Returning user: %s\n",
+-				 result->pw_name);
+-			NSS_DEBUG(logmsg);
+-			NSS_ARGS(args)->returnval = (void*) result;
+-		} else {
+-			snprintf(logmsg, 79, "_nss_winbind_getpwent_solwrap: Returning error: %d.\n",ret);
+-			NSS_DEBUG(logmsg);
+-		}
+-
++	if (res_needed) {
++		NSS_ARGS(args)->returnval = (void*) result;
++	} else {
++		(void) update_password_buffer(NSS_ARGS(args),
++		    result->pw_name,
++		    result->pw_uid,
++		    result->pw_gid,
++		    result->pw_gecos,
++		    result->pw_dir,
++		    result->pw_shell);
++		NSS_ARGS(args)->returnval = NSS_ARGS(args)->buf.buffer;
++		NSS_ARGS(args)->returnlen = strlen(NSS_ARGS(args)->buf.buffer);
++	}
++out:
++	if (!res_needed) {
++		free(result);
++		free(buffer);
++		result = NULL;
++		buffer = NULL;
++	}
+ 	return ret;
+ }
+ 
+@@ -122,17 +234,51 @@
+ {
+ 	NSS_STATUS ret;
+ 	struct passwd* result = (struct passwd*) NSS_ARGS(args)->buf.result;
++	bool res_needed = (result != NULL); /* Is structured result needed? */
++	char *buffer = NULL;
++	int buflen = 0;
+ 
+ 	NSS_DEBUG("_nss_winbind_getpwnam_solwrap");
+ 
++	if (!res_needed) {
++		result = SMB_MALLOC_P(struct passwd);
++		buflen = NSS_ARGS(args)->buf.buflen;
++		buffer = calloc(1, buflen);
++	} else {
++		buflen = NSS_ARGS(args)->buf.buflen;
++		buffer = NSS_ARGS(args)->buf.buffer;
++	}
++
+ 	ret = _nss_winbind_getpwnam_r (NSS_ARGS(args)->key.name,
+ 						result,
+-						NSS_ARGS(args)->buf.buffer,
+-						NSS_ARGS(args)->buf.buflen,
++						buffer,
++						buflen,
+ 						&NSS_ARGS(args)->erange);
+-	if(ret == NSS_STATUS_SUCCESS)
++	if(ret != NSS_STATUS_SUCCESS) {
++		goto out;
++	}
++
++	if (res_needed) {
+ 		NSS_ARGS(args)->returnval = (void*) result;
++	} else {
++		(void) update_password_buffer(NSS_ARGS(args),
++		    result->pw_name,
++		    result->pw_uid,
++		    result->pw_gid,
++		    result->pw_gecos,
++		    result->pw_dir,
++		    result->pw_shell);
++		NSS_ARGS(args)->returnval = NSS_ARGS(args)->buf.buffer;
++		NSS_ARGS(args)->returnlen = strlen(NSS_ARGS(args)->buf.buffer);
++	}
+ 
++out:
++	if (!res_needed) {
++		free(result);
++		free(buffer);
++		result = NULL;
++		buffer = NULL;
++	}
+ 	return ret;
+ }
+ 
+@@ -141,16 +287,52 @@
+ {
+ 	NSS_STATUS ret;
+ 	struct passwd* result = (struct passwd*) NSS_ARGS(args)->buf.result;
++	bool res_needed = (result != NULL); /* Is structured result needed? */
++	char *buffer = NULL;
++	int buflen = 0;
+ 
+ 	NSS_DEBUG("_nss_winbind_getpwuid_solwrap");
++
++	if (!res_needed) {
++		result = SMB_MALLOC_P(struct passwd);
++		buflen = NSS_ARGS(args)->buf.buflen;
++		buffer = calloc(1, buflen);
++	} else {
++		buflen = NSS_ARGS(args)->buf.buflen;
++		buffer = NSS_ARGS(args)->buf.buffer;
++	}
++
+ 	ret = _nss_winbind_getpwuid_r (NSS_ARGS(args)->key.uid,
+ 				       result,
+-				       NSS_ARGS(args)->buf.buffer,
+-				       NSS_ARGS(args)->buf.buflen,
++				       buffer,
++				       buflen,
+ 				       &NSS_ARGS(args)->erange);
+-	if(ret == NSS_STATUS_SUCCESS)
++
++	if(ret != NSS_STATUS_SUCCESS) {
++		goto out;
++	}
++
++	if (res_needed) {
+ 		NSS_ARGS(args)->returnval = (void*) result;
++	} else {
++		(void) update_password_buffer(NSS_ARGS(args),
++		    result->pw_name,
++		    result->pw_uid,
++		    result->pw_gid,
++		    result->pw_gecos,
++		    result->pw_dir,
++		    result->pw_shell);
++		NSS_ARGS(args)->returnval = NSS_ARGS(args)->buf.buffer;
++		NSS_ARGS(args)->returnlen = strlen(NSS_ARGS(args)->buf.buffer);
++	}
+ 
++out:
++	if (!res_needed) {
++		free(result);
++		free(buffer);
++		result = NULL;
++		buffer = NULL;
++	}
+ 	return ret;
+ }
+ 
+@@ -205,29 +387,76 @@
+ 	return _nss_winbind_endgrent();
+ }
+ 
++static int
++update_group_buffer(nss_XbyY_args_t *argp, const char *name, gid_t gid,
++    const char **mem)
++{
++	int     buflen;
++	char    *buffer;
++
++	buflen = snprintf(NULL, 0, "%s:x:%u:%s",
++	    name, gid, *mem ? *mem : "") + 1;
++
++	if (buflen > argp->buf.buflen)
++		return (-1);
++	buflen = argp->buf.buflen;
++	buffer = argp->buf.buffer;
++
++	(void) snprintf(buffer, buflen, "%s:x:%u:%s",
++	    name, gid, *mem ? *mem : "");
++
++	return (0);
++}
++
+ static NSS_STATUS
+ _nss_winbind_getgrent_solwrap(nss_backend_t* be, void* args)
+ {
+ 	NSS_STATUS ret;
+-	char* buffer = NSS_ARGS(args)->buf.buffer;
+-	int buflen = NSS_ARGS(args)->buf.buflen;
++	char* buffer = NULL;
++	int buflen = 0;
+ 	struct group* result = (struct group*) NSS_ARGS(args)->buf.result;
+-	int* errnop = &NSS_ARGS(args)->erange;
++	bool res_needed = (result != NULL); /* Is structured result needed? */
+ 	char logmsg[80];
+ 
+-	ret = _nss_winbind_getgrent_r(result, buffer,
+-				      buflen, errnop);
++	NSS_DEBUG("_nss_winbind_getgrent_solwrap");
++
++	if (!res_needed) {
++		result = SMB_MALLOC_P(struct group);
++		buflen = NSS_ARGS(args)->buf.buflen;
++		buffer = calloc(1, buflen);
++	} else {
++		buflen = NSS_ARGS(args)->buf.buflen;
++		buffer = NSS_ARGS(args)->buf.buffer;
++	}
++
++	ret = _nss_winbind_getgrent_r(result, buffer, buflen,
++	    &NSS_ARGS(args)->erange);
++
++	if(ret != NSS_STATUS_SUCCESS) {
++		snprintf(logmsg, 79, "_nss_winbind_getgrent_solwrap: Returning error: %d.\n", ret);
++		NSS_DEBUG(logmsg);
++		goto out;
++	}
+ 
+-	if(ret == NSS_STATUS_SUCCESS)
+-		{
+-			snprintf(logmsg, 79, "_nss_winbind_getgrent_solwrap: Returning group: %s\n", result->gr_name);
+-			NSS_DEBUG(logmsg);
+-			NSS_ARGS(args)->returnval = (void*) result;
+-		} else {
+-			snprintf(logmsg, 79, "_nss_winbind_getgrent_solwrap: Returning error: %d.\n", ret);
+-			NSS_DEBUG(logmsg);
+-		}
+-
++	snprintf(logmsg, 79, "_nss_winbind_getgrent_solwrap: Returning group: %s\n", result->gr_name);
++	NSS_DEBUG(logmsg);
++	if (res_needed) {
++		NSS_ARGS(args)->returnval = (void*) result;
++	} else {
++		(void) update_group_buffer(NSS_ARGS(args),
++		    result->gr_name,
++		    result->gr_gid,
++		    (const char **)result->gr_mem);
++		NSS_ARGS(args)->returnval = NSS_ARGS(args)->buf.buffer;
++		NSS_ARGS(args)->returnlen = strlen(NSS_ARGS(args)->buf.buffer);
++	}
++out:
++	if (!res_needed) {
++		free(result);
++		free(buffer);
++		result = NULL;
++		buffer = NULL;
++	}
+ 	return ret;
+ 
+ }
+@@ -236,17 +465,50 @@
+ _nss_winbind_getgrnam_solwrap(nss_backend_t* be, void* args)
+ {
+ 	NSS_STATUS ret;
++	char* buffer = NULL;
++	int buflen = 0;
+ 	struct group* result = (struct group*) NSS_ARGS(args)->buf.result;
++	bool res_needed = (result != NULL); /* Is structured result needed? */
++	char logmsg[80];
+ 
+ 	NSS_DEBUG("_nss_winbind_getgrnam_solwrap");
++
++	if (!res_needed) {
++		result = SMB_MALLOC_P(struct group);
++		buflen = NSS_ARGS(args)->buf.buflen;
++		buffer = calloc(1, buflen);
++	} else {
++		buflen = NSS_ARGS(args)->buf.buflen;
++		buffer = NSS_ARGS(args)->buf.buffer;
++	}
++
+ 	ret = _nss_winbind_getgrnam_r(NSS_ARGS(args)->key.name,
+-				      result,
+-				      NSS_ARGS(args)->buf.buffer,
+-				      NSS_ARGS(args)->buf.buflen,
+-				      &NSS_ARGS(args)->erange);
++	    result,
++	    buffer,
++	    buflen,
++	    &NSS_ARGS(args)->erange);
++
++	if(ret != NSS_STATUS_SUCCESS) {
++		goto out;
++	}
+ 
+-	if(ret == NSS_STATUS_SUCCESS)
++	if (res_needed) {
+ 		NSS_ARGS(args)->returnval = (void*) result;
++	} else {
++		(void) update_group_buffer(NSS_ARGS(args),
++		    result->gr_name,
++		    result->gr_gid,
++		    (const char **)result->gr_mem);
++		NSS_ARGS(args)->returnval = NSS_ARGS(args)->buf.buffer;
++		NSS_ARGS(args)->returnlen = strlen(NSS_ARGS(args)->buf.buffer);
++	}
++out:
++	if (!res_needed) {
++		free(result);
++		free(buffer);
++		result = NULL;
++		buffer = NULL;
++	}
+ 
+ 	if (NSS_ARGS(args)->erange == ERANGE && ret == NSS_STATUS_TRYAGAIN)
+ 		return NSS_STATUS_UNAVAIL;
+@@ -258,17 +520,50 @@
+ _nss_winbind_getgrgid_solwrap(nss_backend_t* be, void* args)
+ {
+ 	NSS_STATUS ret;
++	char* buffer = NULL;
++	int buflen = 0;
+ 	struct group* result = (struct group*) NSS_ARGS(args)->buf.result;
++	bool res_needed = (result != NULL); /* Is structured result needed? */
++	char logmsg[80];
+ 
+ 	NSS_DEBUG("_nss_winbind_getgrgid_solwrap");
+-	ret = _nss_winbind_getgrgid_r (NSS_ARGS(args)->key.gid,
+-				       result,
+-				       NSS_ARGS(args)->buf.buffer,
+-				       NSS_ARGS(args)->buf.buflen,
+-				       &NSS_ARGS(args)->erange);
++
++	if (!res_needed) {
++		result = SMB_MALLOC_P(struct group);
++		buflen = NSS_ARGS(args)->buf.buflen;
++		buffer = calloc(1, buflen);
++	} else {
++		buflen = NSS_ARGS(args)->buf.buflen;
++		buffer = NSS_ARGS(args)->buf.buffer;
++	}
++
++	ret = _nss_winbind_getgrgid_r(NSS_ARGS(args)->key.gid,
++	    result,
++	    buffer,
++	    buflen,
++	    &NSS_ARGS(args)->erange);
+ 
+-	if(ret == NSS_STATUS_SUCCESS)
++	if(ret != NSS_STATUS_SUCCESS) {
++		goto out;
++	}
++
++	if (res_needed) {
+ 		NSS_ARGS(args)->returnval = (void*) result;
++	} else {
++		(void) update_group_buffer(NSS_ARGS(args),
++		    result->gr_name,
++		    result->gr_gid,
++		    (const char **)result->gr_mem);
++		NSS_ARGS(args)->returnval = NSS_ARGS(args)->buf.buffer;
++		NSS_ARGS(args)->returnlen = strlen(NSS_ARGS(args)->buf.buffer);
++	}
++out:
++	if (!res_needed) {
++		free(result);
++		free(buffer);
++		result = NULL;
++		buffer = NULL;
++	}
+ 
+ 	if (NSS_ARGS(args)->erange == ERANGE && ret == NSS_STATUS_TRYAGAIN)
+ 		return NSS_STATUS_UNAVAIL;
+@@ -374,12 +669,20 @@
+ 	   then construct list of addresses for hostent.
+ 	*/
+ 	p = strchr(response->data.winsresp, '\n');
+-	if(p) *p = '\0';
+-	else {/* it must be broken */
++	if(p) {
++		*p = '\0';
++	} else {/* it must be broken */
+ 		argp->h_errno = NO_DATA;
+ 		return NSS_STATUS_UNAVAIL;
+ 	}
+ 
++	if (he == NULL) {
++		(void) strncpy(buffer, response->data.winsresp, buflen);
++		argp->returnval = buffer;
++		argp->returnlen = strlen(response->data.winsresp);
++		return NSS_STATUS_SUCCESS;
++	}
++
+ 	for(; p != response->data.winsresp; p--) {
+ 		if(*p == '\t') addrcount++;
+ 	}
+@@ -484,6 +787,8 @@
+ 	NSS_STATUS ret;
+ 	int af;
+ 
++	NSS_DEBUG("_nss_winbind_ipnodes_getbyname");
++
+ 	ZERO_STRUCT(response);
+ 	ZERO_STRUCT(request);
+ 
+@@ -528,6 +833,8 @@
+ 	struct winbindd_request request;
+ 	NSS_STATUS ret;
+ 
++	NSS_DEBUG("_nss_winbind_hosts_getbyname");
++
+ 	ZERO_STRUCT(response);
+ 	ZERO_STRUCT(request);
+ 
+@@ -553,6 +860,9 @@
+ 	nss_XbyY_args_t	*argp = (nss_XbyY_args_t *)args;
+ 	const char *p;
+ 
++	NSS_DEBUG("_nss_winbind_hosts_getbyaddr");
++
++	ZERO_STRUCT(response);
+ 	ZERO_STRUCT(response);
+ 	ZERO_STRUCT(request);
+ 
+@@ -588,18 +898,21 @@
+ static NSS_STATUS
+ _nss_winbind_common_endent(nss_backend_t* be, void *args)
+ {
++	NSS_DEBUG("_nss_winbind_common_endent UNAVAIL");
+         return (NSS_STATUS_UNAVAIL);
+ }
+ 
+ static NSS_STATUS
+ _nss_winbind_common_setent(nss_backend_t* be, void *args)
+ {
++	NSS_DEBUG("_nss_winbind_common_setent UNAVAIL");
+         return (NSS_STATUS_UNAVAIL);
+ }
+ 
+ static NSS_STATUS
+ _nss_winbind_common_getent(nss_backend_t* be, void *args)
+ {
++	NSS_DEBUG("_nss_winbind_common_getent UNAVAIL");
+         return (NSS_STATUS_UNAVAIL);
+ }
+ 
+@@ -608,6 +921,8 @@
+ {
+ 	nss_backend_t* be;
+ 
++	NSS_DEBUG("_nss_winbind_common_constr");
++
+ 	if(!(be = SMB_MALLOC_P(nss_backend_t)) )
+ 	return NULL;
+ 
+@@ -621,6 +936,7 @@
+ _nss_winbind_common_destr (nss_backend_t* be, void* args)
+ {
+ 	SAFE_FREE(be);
++	NSS_DEBUG("_nss_winbind_common_destr");
+ 	return NSS_STATUS_SUCCESS;
+ }
+ 
+@@ -637,6 +953,7 @@
+ _nss_winbind_ipnodes_constr(dummy1, dummy2, dummy3)
+         const char      *dummy1, *dummy2, *dummy3;
+ {
++	NSS_DEBUG("Initialized nss_winbind ipnodes backend");
+ 	return (_nss_winbind_common_constr(ipnodes_ops,
+ 		sizeof (ipnodes_ops) / sizeof (ipnodes_ops[0])));
+ }
+@@ -654,6 +971,7 @@
+ _nss_winbind_hosts_constr(dummy1, dummy2, dummy3)
+         const char      *dummy1, *dummy2, *dummy3;
+ {
++	NSS_DEBUG("Initialized nss_winbind hosts backend");
+ 	return (_nss_winbind_common_constr(host_ops,
+ 		sizeof (host_ops) / sizeof (host_ops[0])));
+ }
