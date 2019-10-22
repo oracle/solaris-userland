@@ -1,0 +1,48 @@
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+<include generate/common.transform>
+
+# Drop everything not belonging to "xserver-common"
+<transform dir file link hardlink pkg.type=(?!xserver-common) -> drop>
+
+# Remove the mark
+<transform dir file link hardlink -> delete pkg.type .*>
+
+# Make scripts executable in unusual directory
+<transform file path=usr/demo/Xserver/mdb/list.* -> set mode 0555>
+
+# Move files into expected delivery location
+<transform file path=files/x11-server.8s -> set action.hash %(path)>
+<transform file path=files/x11-server.8s -> \
+    edit path ^files usr/share/man/man8s/application/x11 >
+
+# Links for compatibility with Solaris 10 paths - placed here instead of
+# in the static file so that the next rule will drop it on SPARC platforms
+link path=usr/X11/bin/amd64 target=../../bin/amd64 variant.arch=i386 \
+    pkg.type=xserver-common
+
+# Drop actions tagged with a variant.arch that's not this platform as
+# manifest-check will pull those from existing manifests and then complain
+# they are duplicated
+<transform file link dir variant.arch=(?!$(MACH)) -> drop>

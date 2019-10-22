@@ -35,10 +35,6 @@ COMPONENT_ANITYA_ID=	5250
 
 TPNO=			49340
 
-PKG_PROTO_DIRS += $(SOURCE_DIR)/config
-PKG_PROTO_DIRS += $(COMPONENT_DIR)/sun-src/os/solaris/mdb/scripts
-PKG_PROTO_DIRS += $(SOURCE_DIR)/hw/xfree86/os-support/bus
-
 # Remove compiler specific visibility flag that breaks builds of drivers
 # with other compilers
 FIX_PC_FILES = xorg-server.pc.in
@@ -133,6 +129,11 @@ COMPONENT_POST_CONFIGURE_ACTION += \
 	printf '\#undef BUILD_DATE\\n\#undef BUILD_TIME\\n' > \
 		$(@D)/hw/xfree86/common/xf86Build.h ;
 endif
+
+# Ensure xf86Sbus.h gets installed on x86, not just SPARC
+COMPONENT_POST_INSTALL_ACTION += \
+	$(INSTALL) -m 444 $(SOURCE_DIR)/hw/xfree86/os-support/bus/xf86Sbus.h \
+	    $(PROTO_DIR)/usr/include/xorg/xf86Sbus.h
 
 ## mdb module rules
 # Build & install mdb modules & scripts that aren't integrated to

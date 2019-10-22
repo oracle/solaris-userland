@@ -1,0 +1,61 @@
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+<include generate/common.transform>
+
+# Drop everything not belonging to "xorg-server"
+<transform dir file link hardlink pkg.type=(?!xorg-server) -> drop>
+
+# Remove the mark
+<transform dir file link hardlink -> delete pkg.type .*>
+
+# Xorg must be setuid root
+<transform file path=usr/bin/Xorg -> set owner root>
+<transform file path=usr/bin/Xorg -> set mode 4555>
+
+# modesetting driver requires KMS drivers in the kernel, which we only
+# deliver on x86 platforms in Solaris 11.4
+<transform file path=.*modesetting.* -> set variant.arch i386>
+
+# Inline assembly files used to build drivers with Studio compilers
+<transform file path=usr/include/xorg/solaris-.*\.il$ -> \
+    set facet.devel true>
+<transform file path=usr/include/xorg/solaris-amd64\.il$ -> \
+    set variant.arch i386>
+<transform file path=usr/include/xorg/solaris-sparcv8plus\.il$ -> \
+    set variant.arch sparc>
+
+# Special handling for the Mesa libglx to allow switching with Nvidia's
+<transform file path=usr/lib/xorg/modules/extensions/libglx.so -> \
+    set action.hash %(path)>
+<transform file path=usr/lib/xorg/modules/extensions/libglx.so -> \
+    edit path ^usr/lib/xorg usr/lib/mesa>
+<transform file path=usr/lib/mesa/modules/extensions/libglx.so -> \
+    set pkg.linted.pkglint.dupaction001.1 true>
+<transform file path=usr/lib/mesa/modules/extensions/libglx.so -> \
+    set pkg.linted.userland.action001.2 true>
+
+# Drop actions tagged with a variant.arch that's not this platform as
+# manifest-check will pull those from existing manifests and then complain
+# they are duplicated
+<transform file link dir variant.arch=(?!$(MACH)) -> drop>

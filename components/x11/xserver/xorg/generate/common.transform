@@ -1,0 +1,63 @@
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+# Links for compatibility with Solaris 10 paths
+# Unlike other servers, Xdmx was never installed under /usr/X11/bin
+<transform file path=usr/bin/(Xorg|Xephyr|Xvfb|Xvnc) -> emit \
+ link path=usr/X11/bin/%<1> target=../../bin/%<1> >
+<transform file path=usr/bin/(Xorg|Xephyr|Xvfb|Xvnc|Xdmx) -> emit \
+ link path=usr/bin/$(MACH64)/%<1> target=../%<1> variant.arch=i386>
+
+# Set a default package for all files
+<transform dir file link hardlink -> default pkg.type xorg-server>
+
+# cvt & gtf modeline utilities
+<transform file link path=.*/cvt -> set pkg.type x11-modeline-utilities>
+<transform file link path=.*/gtf -> set pkg.type x11-modeline-utilities>
+
+# Xdmx server & related utilities
+<transform file link path=.*dmx.* -> set pkg.type xdmx>
+
+# Xephyr server
+<transform file link path=.*Xephyr.* -> set pkg.type xephyr>
+
+# common files for all X servers
+<transform file path=.*Xserver.* -> set pkg.type xserver-common>
+<transform file path=.*x11-server.* -> set pkg.type xserver-common>
+<transform file path=usr/lib/xorg/protocol.txt -> set pkg.type xserver-common>
+<transform link path=usr/bin/X -> set pkg.type xserver-common>
+<transform link path=usr/bin/X -> set target Xserver>
+
+# Xephyr server
+<transform file link path=.*Xvfb.* -> set pkg.type xvfb>
+
+# Xvnc server
+<transform file link path=.*Xvnc.* -> set pkg.type xvnc>
+<transform file link path=.*vnc.* -> set pkg.type xvnc>
+
+# TigerVNC client
+<transform file link path=.*vncviewer.* -> set pkg.type tigervnc>
+<transform file link path=.*tigervnc.* -> set pkg.type tigervnc>
+
+# We can't deliver files under /var/run as it's a tmpfs regenerated every boot
+<transform file path=var/run/xkb/README.compiled$ -> drop>

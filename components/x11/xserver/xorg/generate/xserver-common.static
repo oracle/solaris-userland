@@ -1,0 +1,43 @@
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+# Directories that need special permissions
+dir  path=lib/svc/manifest/application/x11 group=sys
+
+# Compatibility with old path (dir entry to ensure link isn't dangling)
+link path=usr/share/doc/Xserver target=xorg-server
+dir  path=usr/share/doc/xorg-server
+
+# Files from the files directory, not the proto area
+file files/auth_attr path=etc/security/auth_attr.d/xserver-common group=sys
+file files/prof_attr path=etc/security/prof_attr.d/xserver-common group=sys
+file files/x11-server.xml path=lib/svc/manifest/application/x11/x11-server.xml \
+    group=sys
+file files/x11-server path=lib/svc/method/x11-server
+file files/Xserver path=usr/bin/Xserver
+file files/Xnest.1 path=usr/share/man/man1/Xnest.1 mangler.bypass=true
+
+# Links for compatibility with Solaris 10 paths
+link path=usr/X11/bin/X target=../../bin/X
+link path=usr/X11/bin/Xserver target=../../bin/Xserver
+link path=usr/X11/lib/X11/xserver target=../../../lib/xorg
