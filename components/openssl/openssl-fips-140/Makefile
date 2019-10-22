@@ -60,10 +60,14 @@ COPY_COMMON_FILES:= $(shell rsync -ac ../common/patches/ patches/ $(PATCH_DIR))
 # OpenSSL FIPS directory
 OPENSSL_FIPS_DIR = $(COMPONENT_DIR)/$(FIPSCANISTER_DIR)
 
-include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/configure.mk
-include $(WS_MAKE_RULES)/ips.mk
-include $(WS_MAKE_RULES)/lint-libraries.mk
+# There are also separate STC test suites 'openssl' and 'openssl-engine'
+# for regression testing. These internal tests are unit tests do not work
+# with libraries built in FIPS mode.
+$(SKIP_TEST_AT_TOP_LEVEL)
+TEST_TARGET = $(SKIP_TEST)
+SYSTEM_TEST_TARGET = $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+
+include $(WS_MAKE_RULES)/common.mk
 
 # OpenSSL does not use autoconf but its own configure system.
 CONFIGURE_SCRIPT = $(SOURCE_DIR)/Configure
@@ -209,14 +213,6 @@ $(BUILD_DIR_32)/llib-lcrypto.ln: LINT_FLAGS=$(LFLAGS_32) -I$(PROTOUSRINCDIR)
 $(BUILD_DIR_32)/llib-lssl.ln: LINT_FLAGS=$(LFLAGS_32) -I$(PROTOUSRINCDIR)
 $(BUILD_DIR_64)/llib-lcrypto.ln: LINT_FLAGS=$(LFLAGS_64) -I$(PROTOUSRINCDIR)
 $(BUILD_DIR_64)/llib-lssl.ln: LINT_FLAGS=$(LFLAGS_64) -I$(PROTOUSRINCDIR)
-
-# There are also separate STC test suites 'openssl' and 'openssl-engine'
-# for regression testing. These internal tests are unit tests only.
-COMPONENT_TEST_TARGETS = test
-test:		$(TEST_32_and_64)
-
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
-
 
 REQUIRED_PACKAGES += developer/build/makedepend
 REQUIRED_PACKAGES += network/rsync
