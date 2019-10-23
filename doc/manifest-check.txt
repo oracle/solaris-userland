@@ -66,6 +66,7 @@ In detail, these are the steps taken in order to form p5m file
     directories, moving files from "mangled" dir into root directory etc. That
     is by default transforms/manifest-check-cleanup.
   - $(TRANSFORM) - that is the generate/component.generate itself
+    See pkgmogrify(1) for the operations that can be performed in this file.
 
 7) The output is saved as build/manifest-*-generate.debug. That file is
    intended to help with debugging the manifest check process.
@@ -79,10 +80,13 @@ In detail, these are the steps taken in order to form p5m file
 9) manifest_generator takes all pkgmogrify transforms (<transform ... and
    <include ...), "set", "depend" and "license" actions from existing
    component.p5m file. It also takes all actions with variant.arch set to
-   anything else to what our current architecture is. These actions can not be
-   guessed so are copied out of exiting p5m file
+   anything other than what our current architecture is. These actions can not
+   be guessed so are copied out of the existing p5m file.
 
-10) The contents of generate/component.static is read if it exists
+10) The contents of generate/component.static is read, as-is, if it exists.
+    Transforms from the component.generate file / step 6 are *not* applied here.
+    Including lines with variant.arch settings here will result in duplication
+    with the variant.arch lines extracted from the existing manifest in step 9.
 
 11) The combined result is stripped of comments and formatted using pkgfmt(1)
 
