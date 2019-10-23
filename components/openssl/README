@@ -18,19 +18,19 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2009, 2015, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2009, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 
 Build Layout
 ---
 
-OpenSSL build is run four times. Once for regular dynamic non-fips, once 
-for static bits to link with standalone wanboot binary, once for fips-140,
+OpenSSL build is run five times. Twice for regular dynamic non-FIPS (1.0 and
+1.1), once for static bits to link with standalone wanboot binary, once for fips-140,
 and once for FIPS-140 canister (in the openssl-fips component)
-needed to build FIPS-140 certified libraries. All builds apart from 
+needed to build FIPS-140 certified libraries. All builds apart from
 static libraries for wanboot are done for 32 and 64 bits. So, in total, OpenSSL
-is built seven times. OpenSSL for wanboot is only built on sparc.
+is built nine times. OpenSSL for wanboot is only built on sparc.
 
 See also comments in all the Makefiles for more information.
 
@@ -44,7 +44,7 @@ The non-fips build is the 'default' build of OpenSSL and includes the regular
 binaries, libraries, man pages, and header files.
 
 
-The fips Build
+The FIPS Build
 ---
 
 We are now shipping FIPS-140 certified OpenSSL with S11.2 and later.
@@ -161,17 +161,17 @@ The reason for this is in how wanboot is loaded by OpenBoot Prom:
 5) obp copies .data section behind .text
 6) obp starts executing wanboot at entry address
 
-If the given address is too small, obp overwrites part of .data with
-instructions from .text in step 4. resulting in .data being corrupted.
+If the given address is too small, OBP overwrites part of .data section with
+instructions from .text section in step 4. resulting in .data section being corrupted.
 Initialized variables get bogus values and failure is inevitable.
 This is very hard to troubleshoot.
 
 
-Testing wanboot with new openssl
+Testing wanboot with new OpenSSL
 ----
 
 With every upgrade of OpenSSL, it is necessary to make sure wanboot builds and
-works well with the new bits (post lullaby).
+works well with the new bits.
 
 Provided you have a freshly built ON workspace, you can link wanboot with new
 OpenSSL bits as follows:
@@ -184,14 +184,10 @@ OpenSSL bits as follows:
     cd usr/src/psm/stand/boot/sparcv9/sun4
 
     # hack to force a rebuild
-    touch $ON/build.sparc/usr/src/psm/stand/boot/sparcv9/sun4/wanboot.o
-
-    # modify Makefile and assign the WAN_OPENSSL macro to your binary
-    # something like
-    WAN_OPENSSL    = /var/tmp/wanboot-openssl.o
+    touch $ON/data/build.sparc/usr/src/psm/stand/boot/sparcv9/sun4/wanboot.o
 
     # build a wanboot binary
-    build -i dmake all
+    build -i dmake all WAN_OPENSSL=/var/tmp/wanboot-openssl.o
 
 Wanboot should build without warning.
 
@@ -209,7 +205,7 @@ If there is something like this in the output:
     *** Error code 1
     dmake: Fatal error: Command failed for target `wanboot'
 
-some additional work has to be done in OpenSSL to either satisfy the function 
+some additional work has to be done in OpenSSL to either satisfy the function
 references listed in the linker error message, or to remove the calls to these
 functions.
 
@@ -222,7 +218,8 @@ Common Patches
 
 Common patch files are located in the components/openssl/common/patches dir,
 and they are copied to both FIPS and non-FIPS 'patches' dir as soon as the
-Makefile is parsed.  The Common patch filename has prefix '0',
+Makefile is parsed. OpenSSL 1.1.x cherry picks just some of the patches from
+there. The Common patch filename has prefix '0'.
 
 =========================
 Non-FIPS specific Patches

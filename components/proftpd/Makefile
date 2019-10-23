@@ -88,7 +88,7 @@ CONFIGURE_OPTIONS +=	--disable-static
 CONFIGURE_OPTIONS +=	--with-modules=mod_solaris_audit:mod_solaris_priv
 CONFIGURE_OPTIONS +=	--with-shared=mod_facl:mod_wrap:mod_tls:mod_tls-fips-140:mod_auth_gss:mod_gss:mod_ifsession
 CONFIGURE_OPTIONS +=	--enable-buffer-size=16384
-CONFIGURE_OPTIONS +=	FIPS_CPPFLAGS="-I/usr/include/openssl/fips-140"
+CONFIGURE_OPTIONS +=	FIPS_CPPFLAGS="-I/usr/openssl/fips-140/include"
 CONFIGURE_OPTIONS +=	FIPS_LDFLAGS="-R/lib/openssl/fips-140/64"
 
 # Copy Solaris modules and GSSAPI modules to proftpd source tree.

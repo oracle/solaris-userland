@@ -199,7 +199,8 @@ $(SOURCE_DIR)/.prep: $(FIPSCANISTER_DIR)/build/$(MACH32)/.installed \
 
 configure:	$(CONFIGURE_32_and_64)
 
-build:		FIPSCANISTER_DIR = fipscanister
+FIPSCANISTER_DIR = fipscanister
+
 build:		$(BUILD_32_and_64)
 build-dev:	FIPSCANISTER_DIR = fipscanister-dev
 build-dev:	$(BUILD_32_and_64)
