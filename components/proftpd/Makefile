@@ -102,6 +102,7 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 	$(UNPACK) $(UNPACK_ARGS) ../$(COMPONENT_ARCHIVE_1) ; \
 	cd $(COMPONENT_SRC_1) ; \
 	$(GPATCH) < ../../mod_gss-patches/001.24934631.patch ; \
+	$(GPATCH) < ../../mod_gss-patches/002.27914767.patch ; \
 	./configure CC="$(CC)" CFLAGS="-I/usr/include/kerberosv5"; \
 	$(CP) mod_gss.c mod_auth_gss.c $(SOURCE_DIR)/contrib ; \
 	$(CP) mod_gss.h $(SOURCE_DIR)/include ; \
