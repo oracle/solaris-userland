@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -68,20 +68,14 @@ COMPONENT_PREP_ACTION += (cd $(@D) ; cp ../mapfile libxml2.syms ; autoreconf -if
 # for 64-bit.  For 2.7, Python is built 32- and 64-bit, so .py files end
 # up in both places even though only the 32-bit location is needed, but the
 # superfluous files in the proto area are harmless; meanwhile, the .so files
-# end up in their proper 32- and 64-bit locations.  But Python 3.4 is built
+# end up in their proper 32- and 64-bit locations.  But Python 3.x is built
 # 64-bit only, so we have an extra sed edit below to force the .py files into
 # the 32-bit location and we manually specify the 32-bit path in the manifest
 # to correct for the .so file being installed there instead of the 64-bit path
 # where it belongs.  Further, Python 3.x needs an extra 'm' on the link and
 # include paths, plus a tweak to the binary path; see PEP 3149 for details.
 COMPONENT_POST_CONFIGURE_ACTION += \
-    (cd $(@D) ; cp -rp python python3.4 ; \
-    $(GSED) -i -e 's|-lpython2[.]7|-lpython3.4m|' \
-     -e 's|usr/bin/$(MACH64)/python2[.]7|usr/bin/python3.4m|' \
-     -e 's|usr/include/python2[.]7|usr/include/python3.4m|' \
-     -e 's/2[.]7/3.4/g' -e 's|vendor-packages/64|vendor-packages|' \
-     `find python3.4 -name Makefile` ; \
-    cd $(@D) ; cp -rp python python3.7 ; \
+    (cd $(@D) ; cp -rp python python3.7 ; \
     $(GSED) -i -e 's|-lpython2[.]7|-lpython3.7m|' \
      -e 's|usr/bin/$(MACH64)/python2[.]7|usr/bin/python3.7m|' \
      -e 's|usr/include/python2[.]7|usr/include/python3.7m|' \
@@ -92,8 +86,6 @@ COMPONENT_POST_CONFIGURE_ACTION += \
 # It's also nice to test python 3.x modules (LC_ALL is set to avoid test failure).
 COMPONENT_POST_TEST_ACTION += \
     ( if [ $(BITS) -eq 64 ]; then \
-	cd $(@D)/python3.4 ; \
-	LC_ALL=en_US.utf8  $(GMAKE) $(COMPONENT_TEST_ARGS) test ; \
 	cd $(@D)/python3.7 ; \
 	LC_ALL=en_US.utf8  $(GMAKE) $(COMPONENT_TEST_ARGS) test ; \
      else \
@@ -105,10 +97,8 @@ COMPONENT_POST_TEST_ACTION += \
 # end up using libxml2mod.so installed on system.
 $(BUILD_DIR)/$(MACH64)/.tested: COMPONENT_PRE_TEST_ACTION = ( \
     $(MKDIR) $(@D)/python/.libs/64 \
-             $(@D)/python3.4/.libs/64; \
              $(@D)/python3.7/.libs/64; \
     $(SYMLINK) ../libxml2mod.so $(@D)/python/.libs/64/libxml2mod.so; \
-    $(SYMLINK) ../libxml2mod.so $(@D)/python3.4/.libs/64/libxml2mod.so); \
     $(SYMLINK) ../libxml2mod.so $(@D)/python3.7/.libs/64/libxml2mod.so);
 
 COMPONENT_PRE_TEST_ACTION += \
@@ -129,11 +119,8 @@ COMPONENT_POST_INSTALL_ACTION.32 += \
 	$(PYTHON.2.7.32) -m compileall $(PROTOUSRLIBDIR)/python2.7/vendor-packages;
 
 # After we have built/installed libxml2, build/install the python
-# support for python 3.4 and 3.7
+# support for python 3.7
 COMPONENT_POST_INSTALL_ACTION.64 += \
-	cd $(@D)/python3.4 ; \
-	$(GMAKE) $(COMPONENT_INSTALL_ARGS) install ; \
-	$(PYTHON.3.4.64) -m compileall $(PROTOUSRLIBDIR)/python3.4/vendor-packages; \
 	cd $(@D)/python3.7 ; \
 	$(GMAKE) $(COMPONENT_INSTALL_ARGS) install ; \
 	$(PYTHON.3.7.64) -m compileall $(PROTOUSRLIBDIR)/python3.7/vendor-packages
@@ -142,7 +129,6 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/python-27
-REQUIRED_PACKAGES += legacy/runtime/python-34
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/math

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
@@ -38,7 +38,6 @@ TPNO=			27758
 # Don't use default CPPFLAGS; it causes Apache's custom CPP to fail.
 CONFIGURE_CPPFLAGS=
 VARIANTS_64 += $(BUILD_DIR)/apache24-python27
-VARIANTS_64 += $(BUILD_DIR)/apache24-python34
 VARIANTS_64 += $(BUILD_DIR)/apache24-python35
 VARIANTS_64 += $(BUILD_DIR)/apache24-python37
 include ../modules.mk
@@ -51,7 +50,6 @@ $(BUILD_DIR)/apache24-%/$(MACH64)/.built: BITS=64
 $(BUILD_DIR)/apache24-%/$(MACH64)/.tested: BITS=64
 
 $(BUILD_DIR)/apache2%-python27/$(MACH64)/.configured: PYTHON=$(PYTHON.2.7.64)
-$(BUILD_DIR)/apache2%-python34/$(MACH64)/.configured: PYTHON=$(PYTHON.3.4.64)
 $(BUILD_DIR)/apache2%-python35/$(MACH64)/.configured: PYTHON=$(PYTHON.3.5.64)
 $(BUILD_DIR)/apache2%-python37/$(MACH64)/.configured: PYTHON=$(PYTHON.3.7.64)
 
@@ -61,7 +59,6 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 CONFIGURE_OPTIONS += --with-python=$(PYTHON)
 
 REQUIRED_PACKAGES += runtime/python-27
-REQUIRED_PACKAGES += runtime/python-34
 REQUIRED_PACKAGES += runtime/python-35
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/library/math

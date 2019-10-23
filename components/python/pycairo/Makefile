@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -47,7 +47,6 @@ include $(WS_MAKE_RULES)/ips.mk
 
 # Manifest convenience variables
 $(MANIFEST_BASE)-pycairo-27.mogrified: PYTHON3_ONLY = \#
-$(MANIFEST_BASE)-pycairo-34.mogrified: PYTHON2_ONLY = \#
 $(MANIFEST_BASE)-pycairo-35.mogrified: PYTHON2_ONLY = \#
 $(MANIFEST_BASE)-pycairo-37.mogrified: PYTHON2_ONLY = \#
 
@@ -76,7 +75,6 @@ test:		$(TEST_32_and_64)
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += library/desktop/cairo
-REQUIRED_PACKAGES += runtime/python-34
 REQUIRED_PACKAGES += runtime/python-35
 
 # Testing related components

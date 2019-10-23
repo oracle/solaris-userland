@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -49,7 +49,6 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 COMPONENT_TEST_DIR =		$(SOURCE_DIR)
 COMPONENT_TEST_ARGS.2.7 =	./tests/lib/test_all.py
-COMPONENT_TEST_ARGS.3.4 =	./tests/lib3/test_all.py
 COMPONENT_TEST_ARGS.3.5 =	./tests/lib3/test_all.py
 COMPONENT_TEST_ARGS.3.7 =	./tests/lib3/test_all.py
 COMPONENT_TEST_ARGS =		$(COMPONENT_TEST_ARGS.$(PYTHON_VERSION))

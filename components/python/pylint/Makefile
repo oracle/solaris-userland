@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../../make-rules/shared-macros.mk
@@ -50,10 +50,8 @@ COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
 TPNO_OLD=		31351
 
 
-# This component is delivered in two different versions.
-# The newer one does no longer support Python 2.7 and 3.4 would need additional
-# dependencies for this new version and since it will be EOL very soon, it
-# doesn't really make sense to add them.
+# This component is delivered in two different versions because
+# the newer one is no longer Python 2.7 compatible.
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -98,31 +96,23 @@ COMPONENT_POST_INSTALL_ACTION += \
 
 # Convenience variables
 TARGET_27 = $(BUILD_DIR)/$(MACH)-2.7/
-TARGET_34 = $(BUILD_DIR)/$(MACH)-3.4/
 SOURCE_DIR_OLD = $(COMPONENT_DIR)/$(COMPONENT_SRC_OLD)
 
 # pylint-gui is no longer delivered in newer version
 $(TARGET_27).installed: COMPONENT_POST_INSTALL_ACTION += \
 	(cd $(PROTO_DIR)/usr/bin; $(MV) pylint-gui pylint-gui-$(PYTHON_VERSION)) ;
-$(TARGET_34).installed: COMPONENT_POST_INSTALL_ACTION += \
-	(cd $(PROTO_DIR)/usr/bin; $(MV) pylint-gui pylint-gui-$(PYTHON_VERSION)) ;
 
 # Targets updated for older version build
 $(TARGET_27).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
-$(TARGET_34).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
 
 $(TARGET_27).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
-$(TARGET_34).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
 
 $(TARGET_27).tested-and-compared: COMPONENT_TEST_DIR = $(SOURCE_DIR_OLD)
-$(TARGET_34).tested-and-compared: COMPONENT_TEST_DIR = $(SOURCE_DIR_OLD)
 
 $(MANIFEST_BASE)-pylint-27.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
-$(MANIFEST_BASE)-pylint-34.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
 
 # Manifest convenience variables.
 $(MANIFEST_BASE)-pylint-27.mogrified: NEW_ONLY = \#
-$(MANIFEST_BASE)-pylint-34.mogrified: NEW_ONLY = \#
 $(MANIFEST_BASE)-pylint-35.mogrified: OLD_ONLY = \#
 $(MANIFEST_BASE)-pylint-37.mogrified: OLD_ONLY = \#
 
@@ -131,7 +121,7 @@ PKG_MACROS += NEW_ONLY="$(NEW_ONLY)"
 
 # Meta package must have versions of older runtimes fixed
 FIX_MANIFEST_VERSIONS:
-	echo "<transform depend fmri=(.*)pylint-(27|34)@(.*) \
+	echo "<transform depend fmri=(.*)pylint-27@(.*) \
 		-> edit fmri $(COMPONENT_VERSION) $(COMPONENT_VERSION_OLD)>" | \
 	$(PKGMOGRIFY) /dev/fd/0 $(MANIFEST_BASE)-pylint.mogrified \
 		> $(MANIFEST_BASE)-pylint.mogrified-fixed ;

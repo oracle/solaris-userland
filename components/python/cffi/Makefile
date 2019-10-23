@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -80,7 +80,7 @@ build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)
 
-# We get spurious test failures with python 3.4 and 64bit version of python 2.7
+# We get spurious test failures with 64bit version of python 2.7
 test:		$(BUILD_DIR)/$(MACH32)-2.7/.tested \
 		$(BUILD_DIR)/$(MACH64)-3.5/.tested   \
 		$(BUILD_DIR)/$(MACH64)-3.7/.tested

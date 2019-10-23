@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64_and_32
@@ -79,7 +79,7 @@ include $(WS_MAKE_RULES)/common.mk
 
 # Need to replace the py-compile in the 1.2.0 tarball with the one from a
 # newer version of automake in order to output *pyc to the right paths for
-# Python 3.4 & 3.5
+# Python 3.5
 COMPONENT_PREP_ACTION += (cd $(@D); rm -f py-compile ; autoreconf -fiv);
 
 CONFIGURE_OPTIONS += PYTHON="$(PYTHON)"
@@ -105,7 +105,6 @@ COMPONENT_TEST_TRANSFORMS += \
 
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += runtime/python-27
-REQUIRED_PACKAGES += runtime/python-34
 REQUIRED_PACKAGES += runtime/python-35
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/library/libdbus

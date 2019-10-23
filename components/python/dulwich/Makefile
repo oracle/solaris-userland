@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -53,6 +53,4 @@ install:	$(INSTALL_32_and_64)
 test:		$(TEST_32_and_64)
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += library/python/urllib3-27
-REQUIRED_PACKAGES += library/python/urllib3-34
-REQUIRED_PACKAGES += library/python/urllib3-35
+REQUIRED_PACKAGES += library/python/urllib3

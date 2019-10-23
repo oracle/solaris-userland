@@ -79,7 +79,6 @@ COMPONENT_TEST_ENV += https_proxy=
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 $(MANIFEST_BASE)-django-27.mogrified: MULTI_VER = \#
-$(MANIFEST_BASE)-django-34.mogrified: MULTI_VER = \#
 $(MANIFEST_BASE)-django-35.mogrified: MULTI_VER = \#
 $(MANIFEST_BASE)-django-37.mogrified: SINGLE_VER = \#
 

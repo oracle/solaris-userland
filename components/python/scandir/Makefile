@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS = 64
@@ -42,7 +42,7 @@ COMPONENT_ANITYA_ID=	7185
 TPNO=			57867
 
 # Scandir has been included in the Python 3.5 standard library
-PYTHON_VERSIONS = $(PYTHON2_VERSIONS) 3.4
+PYTHON_VERSIONS = $(PYTHON2_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
