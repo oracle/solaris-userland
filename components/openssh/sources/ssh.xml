@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
 <!--
-Copyright (c) 2004, 2016, Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2004, 2019, Oracle and/or its affiliates. All rights reserved.
 
         NOTE:  This service manifest is not editable; its contents will
         be overwritten by package or patch operations, including
@@ -119,19 +119,679 @@ Copyright (c) 2004, 2016, Oracle and/or its affiliates. All rights reserved.
                 <propval name='reconfigurable' type='boolean' value='false' />
         </property_group>
 
+	<property_group name='sshd_stencil' type='configfile'>
+		<propval name='value_authorization' type='astring'
+			value='solaris.smf.value.ssh' />
+		<propval name='disabled' type='boolean' value='true' />
+		<propval name='path' type='astring'
+			value='/etc/ssh/sshd_config' />	
+		<propval name='stencil' type='astring'
+			value='sshd_config.stencil'/>
+		<propval name='owner' type='astring' value='root'/>
+		<propval name='group' type='astring' value='sys'/>
+		<propval name='mode' type='astring' value='0444'/>
+	</property_group>
+
 	<stability value='Unstable' />
 
 	<template>
 		<common_name>
-			<loctext xml:lang='C'>
-			SSH server
-			</loctext>
-		</common_name>
+			<loctext xml:lang='C'>SSH server</loctext>
+	    	</common_name>
 		<documentation>
-			<manpage title='sshd' section='1M' manpath='/usr/share/man' />
+			<manpage title='sshd' section='8' manpath='/usr/share/man' />
 		</documentation>
+
+		<pg_pattern name='config'
+			type='application' required='false'>
+
+			<description>
+			    <loctext xml:lang='C'>sshd_config(5) options</loctext>
+			</description>
+
+			<prop_pattern name='AcceptEnv'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='AddressFamily'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+				<constraints>
+					<value name='inet'>
+					<description> <loctext xml:lang='C'>
+					IPv4 only
+					</loctext></description>
+					</value>
+					<value name='inet6'>
+					<description> <loctext xml:lang='C'>
+					IPv6 only
+					</loctext></description>
+					</value>
+					<value name='any'>
+					<description> <loctext xml:lang='C'>
+					IPv4 or IPv6
+					</loctext></description>
+					</value>
+				</constraints>	
+			</prop_pattern>
+			<prop_pattern name='AllowAgentForwarding'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='AllowGroups'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='AllowStreamLocalForwarding'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+				<constraints>
+				    <value name="yes">
+				    <description> <loctext xml:lang='C'>
+				    Allow all forwarding
+				    </loctext></description></value>
+				    <value name="all">
+				    <description> <loctext xml:lang='C'>
+				    Allow all forwarding
+				    </loctext></description></value>
+				    <value name="no">
+				    <description> <loctext xml:lang='C'>
+				    Prevent all forwarding
+				    </loctext></description></value>
+				    <value name="local">
+				    <description> <loctext xml:lang='C'>
+				    Allow local forwarding only
+				    </loctext></description></value>
+				    <value name="remote">
+				    <description> <loctext xml:lang='C'>
+				    Allow remote forwarding only
+				    </loctext></description></value>
+				</constraints>
+			</prop_pattern>
+			<prop_pattern name='AllowTcpForwarding'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+				<constraints>
+				    <value name="yes">
+				    <description> <loctext xml:lang='C'>
+				    Allow all forwarding
+				    </loctext></description></value>
+				    <value name="all">
+				    <description> <loctext xml:lang='C'>
+				    Allow all forwarding
+				    </loctext></description></value>
+				    <value name="no">
+				    <description> <loctext xml:lang='C'>
+				    Prevent all forwarding
+				    </loctext></description></value>
+				    <value name="local">
+				    <description> <loctext xml:lang='C'>
+				    Allow local forwarding only
+				    </loctext></description></value>
+				    <value name="remote">
+				    <description> <loctext xml:lang='C'>
+				    Allow remote forwarding only
+				    </loctext></description></value>
+				</constraints>
+			</prop_pattern>
+			<prop_pattern name='AllowUsers'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='AuthenticationMethods'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='AuthorizedKeysCommand'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='AuthorizedKeysCommandUser'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='AuthorizedKeysFile'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='AuthorizedPrincipalsCommand'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='AuthorizedPrincipalsCommandUser'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='AuthorizedPrincipalsFile'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='Banner'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='ChallengeResponseAuthentication'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='ChrootDirectory'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='Ciphers'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='ClientAliveCountMax'
+				type='integer' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='ClientAliveInterval'
+				type='integer' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='Compression'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='DenyGroups'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='DenyUsers'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='DisableForwarding'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='ExposeAuthInfo'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='FingerprintHash'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+				<constraints>
+				    <value name="md5">
+				    <description> <loctext xml:lang='C'>
+				    </loctext></description></value>
+				    <value name="sha256">
+				    <description> <loctext xml:lang='C'>
+				    </loctext></description></value>
+				</constraints>
+			</prop_pattern>
+			<prop_pattern name='ForceCommand'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='GatewayPorts'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+				<constraints>
+				    <value name="yes">
+				    <description> <loctext xml:lang='C'>
+				    Allow all forwarding
+				    </loctext></description></value>
+				    <value name="no">
+				    <description> <loctext xml:lang='C'>
+				    Prevent remote forwarding
+				    </loctext></description></value>
+				    <value name="clientspecified">
+				    <description> <loctext xml:lang='C'>
+				    Client selects forwarding address
+				    </loctext></description></value>
+				</constraints>
+			</prop_pattern>
+			<prop_pattern name='GSSAPIAuthentication'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='GSSAPICleanupCredentials'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='GSSAPIKeyExchange'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='GSSAPIUseDefaultCCache'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='GSSAPIStrictAcceptorCheck'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='HostbasedAcceptedKeyTypes'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='HostbasedAuthentication'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='HostbasedUsesNameFromPacketOnly'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='HostCertificate'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='HostKeyAgent'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='HostKeyAlgorithms'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='IgnoreRhosts'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='IgnoreUserKnownHosts'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='IPQoS'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='KbdInteractiveAuthentication'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='KeepAlive'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='KerberosAuthentication'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='KerberosGetAFSToken'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='KerberosOrLocalPasswd'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='KerberosTicketCleanup'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='KexAlgorithms'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='KeyRegenerationInterval'
+				type='integer' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='ListenAddress'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1'/>
+			</prop_pattern>
+			<prop_pattern name='LogLevel'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='LoginGraceTime'
+				type='integer' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='MACs'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='MaxAuthTries'
+				type='integer' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='MaxSessions'
+				type='integer' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='MaxStartups'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='PAMServiceName'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='PAMServicePrefix'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='PasswordAuthentication'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='PermitEmptyPasswords'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='PermitOpen'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='PermitRootLogin'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+				<constraints>
+				    <value name="yes">
+				    <description> <loctext xml:lang='C'>
+				    Allow root login
+				    </loctext></description></value>
+				    <value name="no">
+				    <description> <loctext xml:lang='C'>
+				    Prevent root login
+				    </loctext></description></value>
+				    <value name="prohibit-password">
+				    <description> <loctext xml:lang='C'>
+				    Disable password and keyboard-interactive authentication
+				    </loctext></description></value>
+				    <value name="forced-commands-only">
+				    <description> <loctext xml:lang='C'>
+				    Publickey authentication only with a specific command
+				    </loctext></description></value>
+				</constraints>
+			</prop_pattern>
+			<prop_pattern name='PermitTTY'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='PermitTunnel'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+				<constraints>
+				    <value name="yes">
+				    <description> <loctext xml:lang='C'>
+				    Allow all tunnel device forwarding
+				    </loctext></description></value>
+				    <value name="no">
+				    <description> <loctext xml:lang='C'>
+				    Prevent all forwarding
+				    </loctext></description></value>
+				    <value name="point-to-point">
+				    <description> <loctext xml:lang='C'>
+				    Allow layer 3 forwarding only
+				    </loctext></description></value>
+				    <value name="ethernet">
+				    <description> <loctext xml:lang='C'>
+				    Allow layer 2 forwarding only
+				    </loctext></description></value>
+				</constraints>
+			</prop_pattern>
+			<prop_pattern name='PermitUserEnvironment'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='PermitUserRC'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='PidFile'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='PrintMotd'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='Protocol'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='PubkeyAcceptedKeyTypes'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='PubkeyAuthentication'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='RekeyLimit'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='RevokedKeys'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='StreamLocalBindMask'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='StreamLocalBindUnlink'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='StrictModes'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='SyslogFacility'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='TCPKeepAlive'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='TrustedUserCAKeys'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='UseDNS'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='VersionAddendum'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='X11DisplayOffset'
+				type='integer' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='X11Forwarding'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='X11UseLocalhost'
+				type='boolean' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+			<prop_pattern name='XAuthLocation'
+				type='astring' required='false'>
+				<description> <loctext xml:lang='C'>
+				</loctext> </description>
+				<cardinality min='1' max='1'/>
+			</prop_pattern>
+		</pg_pattern>
+		<pg_pattern name='config/server/subsystem'
+			type='application' required='false'>
+
+			<description>
+			    <loctext xml:lang='C'>SubSystem configurations</loctext>
+			</description>
+		</pg_pattern>
 	</template>
-
 </service>
-
 </service_bundle>
