@@ -20,21 +20,23 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            32_and_64
+COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		at-spi2-atk
-COMPONENT_VERSION=	2.24.0
+COMPONENT_VERSION=	2.34.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Accessibility
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:022d68497c05cc65ba7cd2b166132de9a160c8d90e9200b5faa473ef7e784c61
+    sha256:3a9a7e96a1eb549529e60a42201dd78ccce413d9c1706e16351cc5288e064500
 COMPONENT_BUGDB=        gnome/a11y-libs-core
 COMPONENT_ANITYA_ID=	7840
 
-TPNO=			34490
+TPNO=			53956
+BUILD_STYLE=		meson
 
 # Tests do not work on Solaris yet
 TEST_TARGET= $(SKIP_TEST)

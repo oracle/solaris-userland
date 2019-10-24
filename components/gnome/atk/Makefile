@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # All components using gobject-introspection must be built with gcc as
@@ -30,14 +30,15 @@ BUILD_BITS =            32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		atk
-COMPONENT_VERSION=	2.24.0
+COMPONENT_VERSION=	2.34.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Accessibility
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:bb2daa9a808c73a7a79d2983f333e0ba74be42fc51e3ba1faf2551a636487a49
+    sha256:d4f0e3b3d21265fcf2bc371e117da51c42ede1a71f6db1c834e6976bb20997cb
 COMPONENT_BUGDB=	gnome/a11y-libs-core
 COMPONENT_ANITYA_ID=	130
 
-TPNO=			34488
+TPNO=			53958
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -45,16 +46,21 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 # LDFLAGS, especially the -m32/64 flag, to g-ir-scanner
 COMPONENT_BUILD_ENV += CFLAGS="$(strip $(CFLAGS))"
 COMPONENT_BUILD_ENV += LDFLAGS="$(strip $(LDFLAGS))"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+
+COMPONENT_POST_INSTALL_ACTION.64 += \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libatk-1.0.3lib \
+                $(PROTO_DIR)/usr/share/man/man3lib/libatk-1.0.3lib;
 
 # Upstream's "gmake test" target builds tests but does not run them,
 # so run them manually for now.
 COMPONENT_TEST_TARGETS += ; cd tests; ./testdocument; ./testrole ; \
 	./testrelation ; ./teststateset ; ./testvalue
 
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+# get rid of the timestamps from the test results
+COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9].[0-9][0-9] s//" '
 
-CONFIGURE_OPTIONS += --enable-introspection
-CONFIGURE_OPTIONS += --disable-silent-rules
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection

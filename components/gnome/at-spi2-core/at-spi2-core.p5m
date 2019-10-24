@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -46,14 +46,11 @@ file path=usr/include/at-spi-2.0/atspi/atspi-application.h
 file path=usr/include/at-spi-2.0/atspi/atspi-collection.h
 file path=usr/include/at-spi-2.0/atspi/atspi-component.h
 file path=usr/include/at-spi-2.0/atspi/atspi-constants.h
-file path=usr/include/at-spi-2.0/atspi/atspi-device-listener-private.h
 file path=usr/include/at-spi-2.0/atspi/atspi-device-listener.h
 file path=usr/include/at-spi-2.0/atspi/atspi-document.h
 file path=usr/include/at-spi-2.0/atspi/atspi-editabletext.h
 file path=usr/include/at-spi-2.0/atspi/atspi-enum-types.h
-file path=usr/include/at-spi-2.0/atspi/atspi-event-listener-private.h
 file path=usr/include/at-spi-2.0/atspi/atspi-event-listener.h
-file path=usr/include/at-spi-2.0/atspi/atspi-gmain.c
 file path=usr/include/at-spi-2.0/atspi/atspi-gmain.h
 file path=usr/include/at-spi-2.0/atspi/atspi-hyperlink.h
 file path=usr/include/at-spi-2.0/atspi/atspi-hypertext.h
@@ -61,7 +58,6 @@ file path=usr/include/at-spi-2.0/atspi/atspi-image.h
 file path=usr/include/at-spi-2.0/atspi/atspi-matchrule.h
 file path=usr/include/at-spi-2.0/atspi/atspi-misc.h
 file path=usr/include/at-spi-2.0/atspi/atspi-object.h
-file path=usr/include/at-spi-2.0/atspi/atspi-private.h
 file path=usr/include/at-spi-2.0/atspi/atspi-registry.h
 file path=usr/include/at-spi-2.0/atspi/atspi-relation.h
 file path=usr/include/at-spi-2.0/atspi/atspi-selection.h
@@ -73,17 +69,22 @@ file path=usr/include/at-spi-2.0/atspi/atspi-types.h
 file path=usr/include/at-spi-2.0/atspi/atspi-value.h
 file path=usr/include/at-spi-2.0/atspi/atspi.h
 file path=usr/lib/$(MACH64)/girepository-1.0/Atspi-2.0.typelib
-link path=usr/lib/$(MACH64)/libatspi.so target=libatspi.so.0.0.1
+link path=usr/lib/$(MACH64)/libatspi.so target=libatspi.so.0
 link path=usr/lib/$(MACH64)/libatspi.so.0 target=libatspi.so.0.0.1
 file path=usr/lib/$(MACH64)/libatspi.so.0.0.1
 file path=usr/lib/$(MACH64)/pkgconfig/atspi-2.pc
-file path=usr/lib/at-spi-bus-launcher mode=0555
-file path=usr/lib/at-spi2-registryd mode=0555
+# To avoid pkglint error of ERROR userland.action001.2
+# 64-bit object 'usr/lib/at-spi-bus-launcher' in 32-bit path
+file path=usr/lib/at-spi-bus-launcher mode=0555 \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/at-spi2-registryd mode=0555 \
+    pkg.linted.userland.action001.2=true
 file path=usr/lib/girepository-1.0/Atspi-2.0.typelib
-link path=usr/lib/libatspi.so target=libatspi.so.0.0.1
+link path=usr/lib/libatspi.so target=libatspi.so.0
 link path=usr/lib/libatspi.so.0 target=libatspi.so.0.0.1
 file path=usr/lib/libatspi.so.0.0.1
 file path=usr/lib/pkgconfig/atspi-2.pc
+file path=usr/lib/systemd/user/at-spi-dbus-bus.service
 file path=usr/share/dbus-1/accessibility-services/org.a11y.atspi.Registry.service
 file path=usr/share/dbus-1/services/org.a11y.Bus.service
 file path=usr/share/defaults/at-spi2/accessibility.conf
@@ -132,6 +133,7 @@ file path=usr/share/locale/ml/LC_MESSAGES/at-spi2-core.mo
 file path=usr/share/locale/mr/LC_MESSAGES/at-spi2-core.mo
 file path=usr/share/locale/ms/LC_MESSAGES/at-spi2-core.mo
 file path=usr/share/locale/nb/LC_MESSAGES/at-spi2-core.mo
+file path=usr/share/locale/ne/LC_MESSAGES/at-spi2-core.mo
 file path=usr/share/locale/nl/LC_MESSAGES/at-spi2-core.mo
 file path=usr/share/locale/oc/LC_MESSAGES/at-spi2-core.mo
 file path=usr/share/locale/or/LC_MESSAGES/at-spi2-core.mo
@@ -158,7 +160,7 @@ file path=usr/share/locale/vi/LC_MESSAGES/at-spi2-core.mo
 file path=usr/share/locale/zh_CN/LC_MESSAGES/at-spi2-core.mo
 file path=usr/share/locale/zh_HK/LC_MESSAGES/at-spi2-core.mo
 file path=usr/share/locale/zh_TW/LC_MESSAGES/at-spi2-core.mo
-file files/at-spi-registryd.1 path=usr/share/man/man1/at-spi-registryd.1
+file path=usr/share/man/man1/at-spi-registryd.1
 license COPYING license=LGPLv2
 depend type=require fmri=__TBD \
     pkg.tmp.gsettings-schema=org.gnome.desktop.a11y.applications

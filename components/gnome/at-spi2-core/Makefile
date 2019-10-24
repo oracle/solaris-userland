@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64_and_32
@@ -30,29 +30,28 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		at-spi2-core
-COMPONENT_VERSION=	2.24.0
+COMPONENT_VERSION=	2.34.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Accessibility
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6179f314fbd903b3cd3477a57b6b1fecca88b76ce769ce777fda0d3e5f61afcd
+    sha256:d629cdbd674e539f8912028512af583990938c7b49e25184c126b00121ef11c6
 COMPONENT_BUGDB=	gnome/a11y-libs-core
 COMPONENT_ANITYA_ID=	7841
 
-TPNO=			34489
+TPNO=			53957
+BUILD_STYLE=		meson
 
 # Tests do not work on Solaris yet
 TEST_TARGET= $(SKIP_TEST)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+CONFIGURE_OPTIONS += -Ddbus_daemon=$(USRLIBDIR)/dbus-daemon
+CONFIGURE_OPTIONS += -Dintrospection=yes
 
-# Assumes GNU xgettext in PATH
-CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
-
-# Because Solaris doesn't use the libexec directory.
-CONFIGURE_OPTIONS += --with-dbus-daemondir=$(USRLIBDIR)
-CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
+COMPONENT_POST_INSTALL_ACTION.64 += \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/at-spi-registryd.1 \
+                $(PROTO_DIR)/usr/share/man/man1/at-spi-registryd.1;
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
