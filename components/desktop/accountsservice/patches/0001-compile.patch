@@ -1,0 +1,16 @@
+Solaris shadow.h definition is:
+extern struct spwd *fgetspent_r(FILE *, struct spwd *, char *, int);
+
+Not suitable for upstream
+
+--- a/src/daemon.c	2019-10-23 12:28:26.833678590 -0700
++++ b/src/daemon.c	2019-10-23 12:31:10.551285053 -0700
+@@ -201,7 +201,7 @@
+ 
+                         shadow_entry_buffers = g_malloc0 (sizeof (*shadow_entry_buffers));
+ 
+-                        ret = fgetspent_r (fp, &shadow_entry_buffers->spbuf, shadow_entry_buffers->buf, sizeof (shadow_entry_buffers->buf), &shadow_entry);
++                        ret = fgetspent_r (fp, &shadow_entry_buffers->spbuf, shadow_entry_buffers->buf, sizeof (shadow_entry_buffers->buf));
+                         if (ret == 0) {
+                                 g_hash_table_insert (shadow_users, g_strdup (shadow_entry->sp_namp), shadow_entry_buffers);
+                         } else {

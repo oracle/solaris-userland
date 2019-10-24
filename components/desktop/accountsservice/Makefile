@@ -30,17 +30,17 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		accountsservice
-COMPONENT_VERSION=	0.6.40
+COMPONENT_VERSION=	0.6.43
 COMPONENT_PROJECT_URL=	http://freedesktop.org/wiki/Software/AccountsService/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:f04f756600cbab558671658ab8e77212de2a000c07bc0469e7b51541871fcb2b
+	sha256:ed3ba94aa38ceb822a0e1a1ac71bf1a8123babf90be049397b3a00900e48d6cc
 COMPONENT_ARCHIVE_URL=	http://freedesktop.org/software/accountsservice/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13107
 
-TPNO=			25838
+TPNO=			34437
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -86,7 +86,11 @@ COMPONENT_INSTALL_ARGS.32 += SUBDIRS=src/libaccountsservice
 COMPONENT_INSTALL_ARGS += $(COMPONENT_INSTALL_ARGS.$(BITS))
 
 # SMF manifest & method
-PKG_PROTO_DIRS += $(COMPONENT_DIR)/files
+COMPONENT_POST_INSTALL_ACTION.64 += \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/accountsservice.xml \
+                $(PROTO_DIR)/lib/svc/manifest/system/accountsservice.xml; \
+        $(INSTALL) -D -m 0555 $(COMPONENT_DIR)/files/svc-accountsservice \
+                $(PROTO_DIR)/lib/svc/method/svc-accountsservice; 
 
 REQUIRED_PACKAGES += developer/documentation-tool/xmlto
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
