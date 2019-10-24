@@ -135,6 +135,19 @@ COMPONENT_POST_INSTALL_ACTION += \
 	$(INSTALL) -m 444 $(SOURCE_DIR)/hw/xfree86/os-support/bus/xf86Sbus.h \
 	    $(PROTO_DIR)/usr/include/xorg/xf86Sbus.h
 
+## Generate exec_attr files for each X server, except for Xorg
+EXEC_ATTR_SERVERS = Xdmx Xephyr Xvfb
+EXEC_ATTR_DIR = $(PROTO_DIR)/etc/security/exec_attr.d
+
+install: install_exec_attrs
+
+install_exec_attrs: files/exec_attr.template
+	$(MKDIR) $(EXEC_ATTR_DIR)
+	for f in $(EXEC_ATTR_SERVERS) ; do \
+		$(GSED) -e "s%@XSERVER@%$${f}%" $< > \
+		    $(EXEC_ATTR_DIR)/x11:server:$${f/X/x} ; \
+	done
+
 ## mdb module rules
 # Build & install mdb modules & scripts that aren't integrated to
 # normal build process.

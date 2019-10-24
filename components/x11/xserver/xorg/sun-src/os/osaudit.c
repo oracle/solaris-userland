@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -44,6 +44,7 @@ static DevPrivateKeyRec OSAuditPrivKeyRec;
 #include <ucred.h>
 #include <bsm/adt.h>
 #include <bsm/adt_event.h>
+#include <priv.h>
 
 #ifdef ADT_xconnect
 # define OS_AUDIT_IMPLEMENTED
@@ -64,12 +65,18 @@ OSAuditClientInit (ClientPtr pClient)
 
     OSAuditClientPrivatePtr	 priv = GetOSAuditClient(pClient);
 
-    saveid = geteuid();
-    if (saveid != 0) {
-	/* reset privs back to root */
-        if (seteuid(0) < 0) {
-	    ErrorF("OSAuditClientInit: seteuid(0): %s\n", strerror(errno));
-	    saveid = 0;
+    if (priv_ineffect(PRIV_PROC_AUDIT)) {
+	/* Have audit privilege, don't need to seteuid(0) to get it. */
+	saveid = 0;
+    } else {
+	saveid = geteuid();
+
+	if (saveid != 0) {
+	    /* reset privs back to root */
+	    if (seteuid(0) < 0) {
+		ErrorF("OSAuditClientInit: seteuid(0): %s\n", strerror(errno));
+		saveid = 0;
+	    }
 	}
     }
     
@@ -148,15 +155,20 @@ OSAudit (ClientPtr pClient, int event_id, int status, int reason)
 	ErrorF("OSAudit: unknown event_id: %s\n", strerror(errno));
     }
 
-    saveid = geteuid();
-    if (saveid != 0) {
-	/* reset privs back to root */
-        if (seteuid(0) < 0) {
-	    ErrorF("OSAuditClientInit: seteuid(0): %s\n", strerror(errno));
-	    saveid = 0;
-	}
+    if (priv_ineffect(PRIV_PROC_AUDIT)) {
+	/* Have audit privilege, don't need to seteuid(0) to get it. */
+	saveid = 0;
+    } else {
+	 saveid = geteuid();
+	 if (saveid != 0) {
+	     /* reset privs back to root */
+	     if (seteuid(0) < 0) {
+		 ErrorF("OSAudit: seteuid(0): %s\n", strerror(errno));
+		 saveid = 0;
+	     }
+	 }
     }
-    
+
     if (adt_put_event(event, status, reason) != 0) {
 	ErrorF("OSAudit: adt_put_event: %s\n", strerror(errno));
     }
@@ -164,7 +176,7 @@ OSAudit (ClientPtr pClient, int event_id, int status, int reason)
     if (saveid != 0) {
 	/* set privs back to user */
         if (seteuid(saveid) < 0) {
-	    ErrorF("OSAuditClientInit: seteuid(saveid): %s\n", strerror(errno));
+	    ErrorF("OSAudit: seteuid(saveid): %s\n", strerror(errno));
 	}
     }    
     

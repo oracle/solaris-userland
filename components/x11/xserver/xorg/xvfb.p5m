@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -46,9 +46,10 @@ set name=org.opensolaris.arc-caseid value=PSARC/2004/187 value=PSARC/2004/685 \
     value=PSARC/2012/320 value=PSARC/2013/091 value=PSARC/2015/251 \
     value=PSARC/2016/293 value=PSARC/2017/212
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file path=etc/security/exec_attr.d/x11:server:xvfb
 link path=usr/X11/bin/Xvfb target=../../bin/Xvfb
 link path=usr/bin/$(MACH64)/Xvfb target=../Xvfb variant.arch=i386
-file path=usr/bin/Xvfb
+file path=usr/bin/Xvfb owner=root group=root mode=6555
 link path=usr/lib/mdb/proc/$(MACH64)/Xvfb.so target=Xserver.so
 file path=usr/share/man/man1/Xvfb.1
 license xorg-server.license license=MIT

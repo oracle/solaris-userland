@@ -28,6 +28,13 @@
 <transform file path=usr/bin/(Xorg|Xephyr|Xvfb|Xvnc|Xdmx) -> emit \
  link path=usr/bin/$(MACH64)/%<1> target=../%<1> variant.arch=i386>
 
+# Xservers must be setuid root in order to be able to generate audit records,
+# and setgid root to set permissions on created directories as expected,
+# though exec_attr files limit the privileges they actually run with.
+<transform file path=usr/bin/(Xorg|Xephyr|Xvfb|Xvnc|Xdmx) -> set owner root>
+<transform file path=usr/bin/(Xorg|Xephyr|Xvfb|Xvnc|Xdmx) -> set group root>
+<transform file path=usr/bin/(Xorg|Xephyr|Xvfb|Xvnc|Xdmx) -> set mode 6555>
+
 # Set a default package for all files
 <transform dir file link hardlink -> default pkg.type xorg-server>
 
@@ -39,7 +46,7 @@
 <transform file link path=.*dmx.* -> set pkg.type xdmx>
 
 # Xephyr server
-<transform file link path=.*Xephyr.* -> set pkg.type xephyr>
+<transform file link path=.*(X|x)ephyr.* -> set pkg.type xephyr>
 
 # common files for all X servers
 <transform file path=.*Xserver.* -> set pkg.type xserver-common>
@@ -49,7 +56,7 @@
 <transform link path=usr/bin/X -> set target Xserver>
 
 # Xephyr server
-<transform file link path=.*Xvfb.* -> set pkg.type xvfb>
+<transform file link path=.*(X|x)vfb.* -> set pkg.type xvfb>
 
 # Xvnc server
 <transform file link path=.*Xvnc.* -> set pkg.type xvnc>

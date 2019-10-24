@@ -145,6 +145,8 @@ COMPONENT_BUILD_ENV += $(GNUTLS_ENV)
 BITS=64
 XSERVER_BUILD_DIR = $(BUILD_DIR_64)/unix/xserver
 
+EXEC_ATTR_DIR = $(PROTO_DIR)/etc/security/exec_attr.d
+
 configure:	$(XSERVER_BUILD_DIR)/.configured
 build:		$(XSERVER_BUILD_DIR)/.built
 install:	$(XSERVER_BUILD_DIR)/.installed
@@ -170,6 +172,9 @@ $(XSERVER_BUILD_DIR)/.installed: $(XSERVER_BUILD_DIR)/.built
 	(cd $(@D) ; $(ENV) $(COMPONENT_INSTALL_ENV) $(GMAKE) \
 		$(COMPONENT_INSTALL_ARGS) $(COMPONENT_INSTALL_TARGETS))
 	$(RM) $(PROTO_DIR)/usr/lib/xorg/modules/extensions/libvnc.so
+	$(MKDIR) $(EXEC_ATTR_DIR)
+	$(GSED) -e 's%@XSERVER@%Xvnc%' ../xorg/files/exec_attr.template > \
+		    $(EXEC_ATTR_DIR)/x11:server:xvnc ; \
 	$(TOUCH) $@
 
 

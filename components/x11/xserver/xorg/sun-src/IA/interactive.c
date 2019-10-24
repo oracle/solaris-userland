@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1993, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1993, 2019, Oracle and/or its affiliates. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -45,6 +45,7 @@
 #include <sys/types.h>
 #include <stdio.h>
 
+#include <priv.h>
 #include <sys/priocntl.h>
 #include <sys/iapriocntl.h>
 #include <unistd.h>
@@ -549,15 +550,21 @@ SetPriority(const ClientProcessPtr cpp, int cmd)
 {
     pcparms_t 	pcinfo;
     long	ret = Success;
-    gid_t	usr_egid = getegid();
+    gid_t	usr_egid;
     int		i;
 
     if ( (cpp == NULL) || (cpp->pids == NULL) || (cpp->count == 0) ) {
 	return Success;
     }
 
-    if ( setegid(0) < 0 ) {
-	ErrorF("Error in setting egid to 0: %s\n", strerror(errno));
+    if (priv_ineffect(PRIV_PROC_PRIOCNTL)) {
+	/* Have priocntl privilege, don't need to setegid(0) to get it. */
+	usr_egid = 0;
+    } else {
+	usr_egid = getegid();
+	if ((usr_egid != 0) && (setegid(0) < 0)) {
+	    ErrorF("Error in setting egid to 0: %s\n", strerror(errno));
+	}
     }
 
     for (i = 0; i < cpp->count ; i++) {
@@ -565,7 +572,7 @@ SetPriority(const ClientProcessPtr cpp, int cmd)
 
 	pcinfo.pc_cid = PC_CLNULL;
 	if ((priocntl(P_PID, pid, PC_GETPARMS, (caddr_t)&pcinfo)) < 0) {
-	    if ( setegid(usr_egid) < 0 ) {
+	    if ((usr_egid != 0) && (setegid(usr_egid) < 0)) {
 		ErrorF("Error in resetting egid: %s\n", strerror(errno));
 	    }
 	    return ~Success; /* Scary time; punt */
@@ -613,7 +620,7 @@ SetPriority(const ClientProcessPtr cpp, int cmd)
 	}
     }
 
-    if (setegid(usr_egid) < 0)
+    if ((usr_egid != 0) && (setegid(usr_egid) < 0))
 	ErrorF("Error in resetting egid: %s\n", strerror(errno));
 
     if (ret == Success) {

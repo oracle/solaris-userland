@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -46,11 +46,12 @@ set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2007/545 value=PSARC/2009/592 \
     value=PSARC/2017/212 value=PSARC/2017/236
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file path=etc/security/exec_attr.d/x11:server:xvnc
 file xvnc-inetd.xml path=lib/svc/manifest/application/x11/xvnc-inetd.xml \
     group=sys
 link path=usr/X11/bin/Xvnc target=../../bin/Xvnc
 link path=usr/bin/$(MACH64)/Xvnc target=../Xvnc variant.arch=i386
-file path=usr/bin/Xvnc group=root mode=2555
+file path=usr/bin/Xvnc owner=root group=root mode=6555
 file path=usr/bin/vncconfig
 file path=usr/bin/vncpasswd
 file path=usr/bin/vncserver
