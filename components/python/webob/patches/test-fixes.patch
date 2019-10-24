@@ -1,0 +1,14 @@
+Disable tests which are not working inside our network.
+
+Not intended for upstream.
+
+--- WebOb-1.8.5/tests/test_in_wsgiref.py
++++ WebOb-1.8.5/tests/test_in_wsgiref.py
+@@ -16,6 +16,7 @@ from webob.compat import Empty
+ log = logging.getLogger(__name__)
+ 
+ @pytest.mark.usefixtures("serve")
++@pytest.mark.skip("Doesn't work well due to the internal proxy")
+ def test_request_reading(serve):
+     """
+         Test actual request/response cycle in the presence of Request.copy()

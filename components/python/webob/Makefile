@@ -22,32 +22,31 @@
 #
 # Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
 #
+
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		WebOb
-COMPONENT_VERSION=	1.5.1
+COMPONENT_VERSION=	1.8.5
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d8a9a153577f74b275dfd441ee2de4910eb2c1228d94186285684327e3877009
+    sha256:3d40893acc3e61e920219c3b052b7fa68559c648af2f20d1f87080083b015207
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://webob.org/
 COMPONENT_BUGDB=	python-mod/webob
 COMPONENT_ANITYA_ID=	6181
 
-TPNO=			28750
-
-# This component is not yet built for Python 3.7
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
+TPNO=			50949
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
 
-COMPONENT_TEST_DIR=     $(COMPONENT_SRC)
-COMPONENT_TEST_ARGS=    ./setup.py test
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
 build:		$(BUILD_NO_ARCH)
