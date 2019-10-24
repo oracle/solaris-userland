@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Cairo uses atomic intrinsics not supported in Studio 12.4 (ER 19201298)
@@ -29,22 +29,26 @@ BUILD_BITS =            64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cairo
-COMPONENT_VERSION=	1.14.8
+COMPONENT_VERSION=	1.16.0
 COMPONENT_PROJECT_URL=	http://cairographics.org
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:d1f2d98ae9a4111564f6de4e013d639cf77155baf2556582295a0f00a9bc5e20
+    sha256:5e7b29b3f113ef870d1e3ecf8adf21f923396401604bda16d44be45e66052331
 COMPONENT_ARCHIVE_URL=	http://cairographics.org/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/cairo
 COMPONENT_ANITYA_ID=	247
 
-TPNO=			34482
+TPNO=			53377
 
 # Cairo tests currently require an X display & require more work to run properly
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 LDFLAGS += $(CC_BITS)
+
+COMPONENT_POST_INSTALL_ACTION.64 += \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libcairo.3lib\
+                $(PROTO_DIR)/usr/share/man/man3lib/libcairo.3lib;
 
 # Needed for "gmake test" to work successfully.
 unexport SHELLOPTS
