@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # All components using gobject-introspection must be built with gcc as
@@ -30,14 +30,14 @@ BUILD_BITS =		32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gdk-pixbuf
-COMPONENT_VERSION=	2.36.11
+COMPONENT_VERSION=	2.36.12
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GdkPixbuf
 COMPONENT_ARCHIVE_HASH= \
-    sha256:ae62ab87250413156ed72ef756347b10208c00e76b222d82d9ed361ed9dde2f3
+    sha256:fff85cf48223ab60e3c3c8318e2087131b590fd6f1737e42cb3759a3b427a334
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	9533
 
-TPNO=			41638
+TPNO=			42635
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -80,6 +80,12 @@ $(PROTOLCACHECONF.64):
 	  $(GSED) -e "s#$(PROTO_DIR)/##" > $(PROTOLCACHECONF.64)
 
 install: $(PROTOLCACHECONF.32) $(PROTOLCACHECONF.64)
+
+COMPONENT_POST_INSTALL_ACTION.64 += \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libgdk_pixbuf-2.0.3lib \
+                $(PROTO_DIR)/usr/share/man/man3lib/libgdk_pixbuf-2.0.3lib; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libgdk_pixbuf_xlib-2.0.3lib \
+                $(PROTO_DIR)/usr/share/man/man3lib/libgdk_pixbuf_xlib-2.0.3lib;
 
 # Needed for "gmake test" to work successfully.
 unexport SHELLOPTS
