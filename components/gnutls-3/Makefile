@@ -20,9 +20,10 @@
 #
 
 #
-# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
+COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnutls
@@ -58,12 +59,6 @@ endif
 include $(WS_MAKE_RULES)/common.mk
 
 CFLAGS += -I$(USRINCDIR)/idn
-
-# Force libtool to pass this flag through using -Wc.
-# https://www.gnu.org/software/libtool/manual/html_node/Stripped-link-flags.html
-CXXFLAGS.studio += -Wc,$(studio_NORUNPATH)
-# C++ library needs to link to libCrun.so
-CXXFLAGS += -library=Crun
 
 MCS = mcs
 STRIP = strip
@@ -310,4 +305,5 @@ REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/security/nettle
 REQUIRED_PACKAGES += library/security/trousers
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += system/library/c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
