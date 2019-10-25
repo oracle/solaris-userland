@@ -1,0 +1,62 @@
+#
+# Patch fixes CR 30460821. The change has been cherry-picked from
+# 1.3.6b. No merging/adjustment required. We took code as-is.
+# This was cherry-picked from 1.3.6b as-is.
+# below is comment from upstream:
+#
+#    Issue #846: Handle the case where a client tries to send too-large commands
+#    in an effort to DoS the server.
+#
+# more details can be found here:
+#	https://github.com/proftpd/proftpd/issues/846
+#
+
+diff --git a/src/main.c b/src/main.c
+index 1ead27fb9..78516b5f7 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -462,6 +462,7 @@ int pr_cmd_read(cmd_rec **res) {
+   static long cmd_bufsz = -1;
+   static char *cmd_buf = NULL;
+   int cmd_buflen;
++  unsigned int too_large_count = 0;
+   char *ptr;
+ 
+   if (res == NULL) {
+@@ -487,8 +488,15 @@ int pr_cmd_read(cmd_rec **res) {
+     if (cmd_buflen < 0) {
+       if (errno == E2BIG) {
+         /* The client sent a too-long command which was ignored; give
+-         * them another chance?
++         * them a few more chances, with minor delays?
+          */
++        too_large_count++;
++        pr_timer_usleep(250 * 1000);
++
++        if (too_large_count > 3) {
++          return -1;
++        }
++
+         continue;
+       }
+ 
+diff --git a/src/netio.c b/src/netio.c
+index d0adec190..e151a6a1c 100644
+--- a/src/netio.c
++++ b/src/netio.c
+@@ -1,6 +1,6 @@
+ /*
+  * ProFTPD - FTP server daemon
+- * Copyright (c) 2001-2016 The ProFTPD Project team
++ * Copyright (c) 2001-2019 The ProFTPD Project team
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+@@ -1446,6 +1446,7 @@ int pr_netio_read(pr_netio_stream_t *nstrm, char *buf, size_t buflen,
+       }
+ 
+       nstrm->strm_errno = 0;
++      errno = EOF;
+       break;
+     }
+ 
