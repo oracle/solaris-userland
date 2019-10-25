@@ -4,12 +4,12 @@ Exts skipped    :   15
 Exts tested     :   60
 ---------------------------------------------------------------------
 
-Number of tests : 16335             13978
-Tests skipped   : 2357 ( 14.4%) --------
+Number of tests : 16376             13979
+Tests skipped   : 2397 ( 14.6%) --------
 Tests warned    :    1 (  0.0%) (  0.0%)
-Tests failed    :  205 (  1.3%) (  1.5%)
+Tests failed    :  156 (  1.0%) (  1.1%)
 Expected fail   :   36 (  0.2%) (  0.3%)
-Tests passed    : 13736 ( 84.1%) ( 98.3%)
+Tests passed    : 13786 ( 84.2%) ( 98.6%)
 ---------------------------------------------------------------------
 =====================================================================
 
@@ -59,6 +59,8 @@ Bug #70219 Use after free vulnerability in session deserializer [ext/standard/te
 =====================================================================
 FAILED TEST SUMMARY
 ---------------------------------------------------------------------
+Timeout within shutdown function, variation [tests/basic/timeout_variation_10.phpt]
+Timeout within shutdown function [tests/basic/timeout_variation_9.phpt]
 Test stream_isatty with redirected STDERR [tests/output/stream_isatty_err.phpt]
 Test stream_isatty with redirected STDIN/STDERR [tests/output/stream_isatty_in-err.phpt]
 Test stream_isatty with redirected STDIN/STDOUT [tests/output/stream_isatty_in-out.phpt]
@@ -123,69 +125,16 @@ Test iconv_strpos() function : usage variations - pass different data types as $
 Test iconv_strrpos() function : error conditions - pass an unknown encoding [ext/iconv/tests/iconv_strrpos_error2.phpt]
 Test iconv_strrpos() function : usage variations - pass different data types as $encoding arg [ext/iconv/tests/iconv_strrpos_variation3.phpt]
 Test iconv_substr() function : error conditions - Pass an unknown encoding [ext/iconv/tests/iconv_substr_error2.phpt]
+Bug #76248 (Malicious LDAP-Server Response causes Crash) [ext/ldap/tests/bug76248.phpt]
 Bug #61367: open_basedir bypass in libxml RSHUTDOWN: write test [ext/libxml/tests/bug61367-write.phpt]
-#46127 php_openssl_tcp_sockop_accept forgets to set context on accepted stream [ext/openssl/tests/bug46127.phpt]
-Bug #48182: ssl handshake fails during asynchronous socket connection [ext/openssl/tests/bug48182.phpt]
-Bug #54992: Stream not closed and error not returned when SSL CN_match fails [ext/openssl/tests/bug54992.phpt]
-Bug #65538: SSL context "cafile" supports stream wrappers [ext/openssl/tests/bug65538_001.phpt]
 Bug #65538: SSL context "cafile" disallows URL stream wrappers [ext/openssl/tests/bug65538_002.phpt]
-Bug #65538: SSL context "cafile" supports phar wrapper [ext/openssl/tests/bug65538_003.phpt]
-Bug #65729: CN_match gives false positive when wildcard is used [ext/openssl/tests/bug65729.phpt]
-Bug #68265: SAN match fails with trailing DNS dot [ext/openssl/tests/bug68265.phpt]
-Bug #68879: Match IP address fields in subjectAltName checks [ext/openssl/tests/bug68879.phpt]
-Bug #68920: peer_fingerprint input checks should be strict [ext/openssl/tests/bug68920.phpt]
-Bug #69215: Crypto servers should send client CA list [ext/openssl/tests/bug69215.phpt]
-Bug #72333: fwrite() on non-blocking SSL sockets doesn't work [ext/openssl/tests/bug72333.phpt]
-Bug #73072: Invalid path SNI_server_certs causes segfault [ext/openssl/tests/bug73072.phpt]
-Bug #74159: Writing a large buffer to non-blocking encrypted streams fails [ext/openssl/tests/bug74159.phpt]
-Bug #76705: unusable ssl => peer_fingerprint in stream_context_create() [ext/openssl/tests/bug76705.phpt]
-Bug #76705: feof might hang on TLS streams in case of fragmented TLS records [ext/openssl/tests/bug77390.phpt]
-capture_peer_cert context captures on verify failure [ext/openssl/tests/capture_peer_cert_001.phpt]
-Testing peer fingerprint on connection [ext/openssl/tests/openssl_peer_fingerprint_basic.phpt]
 openssl_spki_export() tests for exporting public key [ext/openssl/tests/openssl_spki_export_basic.phpt]
 openssl_spki_export_challenge() tests for exporting challenge [ext/openssl/tests/openssl_spki_export_challenge_basic.phpt]
 openssl_spki_new() test for creating SPKI string [ext/openssl/tests/openssl_spki_new_basic.phpt]
-Peer verification enabled for client streams [ext/openssl/tests/peer_verification.phpt]
-Peer verification matches SAN names [ext/openssl/tests/san_peer_matching.phpt]
-Capture SSL session meta array in stream context [ext/openssl/tests/session_meta_capture.phpt]
-sni_server [ext/openssl/tests/sni_server.phpt]
-sni_server with separate pk and cert [ext/openssl/tests/sni_server_key_cert.phpt]
-Basic bitwise stream crypto context flag assignment [ext/openssl/tests/stream_crypto_flags_001.phpt]
-TLSv1.1 and TLSv1.2 bitwise stream crypto flag assignment [ext/openssl/tests/stream_crypto_flags_002.phpt]
-Server bitwise stream crypto flag assignment [ext/openssl/tests/stream_crypto_flags_003.phpt]
-Specific protocol method specification [ext/openssl/tests/stream_crypto_flags_004.phpt]
-Verify host name by default in client transfers [ext/openssl/tests/stream_verify_peer_name_001.phpt]
-Allow host name mismatch when "verify_host" disabled [ext/openssl/tests/stream_verify_peer_name_002.phpt]
-Host name mismatch triggers error [ext/openssl/tests/stream_verify_peer_name_003.phpt]
-Specific crypto method for ssl:// transports. [ext/openssl/tests/streams_crypto_method.phpt]
-tls stream wrapper with min version 1.0 and max version 1.1 [ext/openssl/tests/tls_min_v1.0_max_v1.1_wrapper.phpt]
-tls stream wrapper [ext/openssl/tests/tls_wrapper.phpt]
-tlsv1.0 stream wrapper [ext/openssl/tests/tlsv1.0_wrapper.phpt]
-tlsv1.1 stream wrapper [ext/openssl/tests/tlsv1.1_wrapper.phpt]
-tlsv1.2 stream wrapper [ext/openssl/tests/tlsv1.2_wrapper.phpt]
 pcntl: pcntl_sigprocmask(), pcntl_sigwaitinfo(), pcntl_sigtimedwait() [ext/pcntl/tests/002.phpt]
 Test posix_getgrgid() function : basic functionality [ext/posix/tests/posix_getgrgid_basic.phpt]
-Bug #64124 IPv6 malformed [ext/snmp/tests/bug64124.phpt]
-Bug #64159: Truncated snmpget [ext/snmp/tests/bug64159.phpt]
-IPv6 support [ext/snmp/tests/ipv6.phpt]
-OO API: getErrno & getError methods [ext/snmp/tests/snmp-object-errno-errstr.phpt]
-OO API [ext/snmp/tests/snmp-object.phpt]
-Function snmp2_get [ext/snmp/tests/snmp2_get.phpt]
-Function snmp2_getnext [ext/snmp/tests/snmp2_getnext.phpt]
-Function snmp2_real_walk [ext/snmp/tests/snmp2_real_walk.phpt]
-Function snmp2_set (without MIBs loading) [ext/snmp/tests/snmp2_set-nomib.phpt]
-Function snmp2_set [ext/snmp/tests/snmp2_set.phpt]
-Function snmp2_walk [ext/snmp/tests/snmp2_walk.phpt]
-SNMPv3 Support (errors) [ext/snmp/tests/snmp3-error.phpt]
-SNMPv3 Support [ext/snmp/tests/snmp3.phpt]
-Function snmp_getvalue [ext/snmp/tests/snmp_getvalue.phpt]
-Function snmp_read_mib [ext/snmp/tests/snmp_read_mib.phpt]
-Function snmpget [ext/snmp/tests/snmpget.phpt]
-Function snmpgetnext [ext/snmp/tests/snmpgetnext.phpt]
-Function snmprealwalk [ext/snmp/tests/snmprealwalk.phpt]
-Function snmpset (without MIBs loading) [ext/snmp/tests/snmpset-nomib.phpt]
-Function snmpset [ext/snmp/tests/snmpset.phpt]
-Function snmpwalk [ext/snmp/tests/snmpwalk.phpt]
+Bug #77812 (Interactive mode does not support PHP 7.3-style heredoc) [ext/readline/tests/bug77812-readline.phpt]
+Test basic function : variation4 use_trans_sid [ext/session/tests/session_basic4.phpt]
 SOAP Bug #69137 - Peer verification fails when using a proxy with SoapClient [ext/soap/tests/bug69137.phpt]
 SOAP Bug #71610 - Type Confusion Vulnerability - SOAP / make_http_soap_request() [ext/soap/tests/bug71610.phpt]
 Bug #73037 SoapServer reports Bad Request when gzipped, var 0 [ext/soap/tests/bug73037.phpt]
@@ -235,6 +184,7 @@ Test setlocale() function : usage variations - Setting system locale as empty st
 Test strptime() function : basic functionality [ext/standard/tests/time/strptime_basic.phpt]
 msg_set_queue() and msg_stat_queue() [ext/sysvmsg/tests/004.phpt]
 Bug #70103 (ZipArchive::addGlob ignores remove_all_path option) [ext/zip/tests/bug70103.phpt]
+Bug #78641 (addGlob can modify given remove_path value) [ext/zip/tests/bug78641.phpt]
 CLI -a and readline [sapi/cli/tests/016.phpt]
 Check cli_process_title support on Unix [sapi/cli/tests/cli_process_title_unix.phpt]
 FPM: bug68391 - Configuration inclusion in alphabetical order [sapi/fpm/tests/bug68391-conf-include-order.phpt]
@@ -243,6 +193,7 @@ FPM: bug68423 - Multiple pools with different PMs (dynamic + ondemand + static) 
 FPM: bug72573 - HTTP_PROXY - CVE-2016-5385 [sapi/fpm/tests/bug72573-http-proxy.phpt]
 FPM: bug73342 - Non-blocking stdin [sapi/fpm/tests/bug73342-nonblocking-stdio.phpt]
 FPM: bug75212 - php_value acts like php_admin_value [sapi/fpm/tests/bug75212-php-value-in-user-ini.phpt]
+FPM: bug78599 - env_path_info underflow - CVE-2019-11043 [sapi/fpm/tests/bug78599-path-info-underflow.phpt]
 FPM: Function fastcgi_finish_request basic test [sapi/fpm/tests/fastcgi_finish_request_basic.phpt]
 FPM: Function fpm_get_status basic test [sapi/fpm/tests/fpm_get_status_basic.phpt]
 FPM: Function getallheaders basic test [sapi/fpm/tests/getallheaders.phpt]

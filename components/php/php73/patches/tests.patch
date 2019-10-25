@@ -145,3 +145,19 @@ http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
  --FILE--
  <?php
  
+--- a/sapi/fpm/tests/log-bwd-multiple-msgs-stdout-stderr.phpt
++++ b/sapi/fpm/tests/log-bwd-multiple-msgs-stdout-stderr.phpt
+@@ -1,7 +1,12 @@
+ --TEST--
+ FPM: Buffered worker output decorated log with multiple continuous messages (stdout/stderr mixed)
+ --SKIPIF--
+-<?php include "skipif.inc"; ?>
++ <?php
++if (substr(PHP_OS, 0, 5) == 'SunOS') {
++    /* on SunOS it never ends */
++    die('skip.. Not good test for SunOS');
++ }
++ ?>
+ --FILE--
+ <?php
+ 
