@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability 'pass-thru volatile'>
@@ -892,6 +892,8 @@ link path=usr/bin/gcov target=../gcc/$(GCC_MAJOR_VERSION)/bin/gcov \
     mediator=gcc mediator-version=$(GCC_MAJOR_VERSION)
 link path=usr/bin/gcpp target=../gcc/$(GCC_MAJOR_VERSION)/bin/cpp mediator=gcc \
     mediator-version=$(GCC_MAJOR_VERSION)
+file release-note.txt path=usr/share/doc/release-notes/legacy-gcc-55.txt \
+    mode=0444 must-display=true release-note=feature/pkg/self@0
 link path=usr/share/man/man1/gcov.1 \
     target=../../../gcc/$(GCC_MAJOR_VERSION)/share/man/man1/gcov.1 \
     mediator=gcc mediator-version=$(GCC_MAJOR_VERSION)
