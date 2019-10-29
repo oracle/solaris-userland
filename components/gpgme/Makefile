@@ -20,9 +20,10 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
+COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 PATH=$(dir $(CC)):$(USRBINDIR):$(GNUBIN)
@@ -50,21 +51,6 @@ TPNO=			42836
 TEST_TARGET= $(SKIP_TEST)
 include $(WS_MAKE_RULES)/common.mk
 
-# Enable C99 mode + -Xc for its additional warnings.
-studio_C99MODE = -Xc $(studio_C99_ENABLE)
-
-# -xinline=%auto -- we like inlining where appropriate
-CFLAGS += -xinline=%auto
-
-# -xbuiltin=%none -- builtins have been known to be buggy
-CFLAGS += -xbuiltin=%none
-
-CFLAGS += $(CPP_LARGEFILES)
-CFLAGS += $(XPG6MODE)
-CFLAGS += $(CPP_POSIX)
-CFLAGS += $(CPP_C99_EXTENDED_MATH)
-CFLAGS += $(studio_PIC)
-
 # Needed to apply changes to *.am files
 # Please note that the autoreconf invocation expects GNU version of head(1) and
 # maybe others, wo we need to prepend the path
@@ -78,6 +64,8 @@ CONFIGURE_OPTIONS  +=		--enable-shared
 CONFIGURE_OPTIONS  +=		--disable-static
 CONFIGURE_OPTIONS  +=		--disable-silent-rules
 CONFIGURE_OPTIONS  +=		--with-gpg-error-prefix=$(CONFIGURE_PREFIX)
+# avoid enabling Qt bindings (gcc build fails there)
+CONFIGURE_OPTIONS  +=		--enable-languages=cl
 CONFIGURE_OPTIONS  +=		--enable-largefile
 CONFIGURE_OPTIONS  +=		--enable-gpg-test
 CONFIGURE_OPTIONS  +=		--enable-gpgsm-test
