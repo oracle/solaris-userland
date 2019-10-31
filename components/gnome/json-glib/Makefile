@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,33 +30,26 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		json-glib
-COMPONENT_VERSION=	1.2.8
+COMPONENT_VERSION=	1.4.4
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/JsonGlib
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:fd55a9037d39e7a10f0db64309f5f0265fa32ec962bf85066087b83a2807f40a
+    sha256:720c5f4379513dc11fd97dc75336eb0c0d3338c53128044d9fabec4374f4bc47
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13144
 
-TPNO=			34487
+TPNO=			54080
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
+CONFIGURE_OPTIONS += -Ddocs=true
+CONFIGURE_OPTIONS += -Dman=true
+COMPONENT_BUILD_ENV +=  PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV +=  PATH="$(GNUBIN):$(PATH)"
 
-# for the tests
-unexport SHELLOPTS
-COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR) $(@D));
-COMPONENT_TEST_DIR=     $(@D)/json-glib/tests
+# get rid of the timestamps from the test results
+COMPONENT_TEST_TRANSFORMS += '-e "s/K       [0-9].[0-9][0-9] s/K/" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_ARGS =   -k -i
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/ERROR:/p" '
 
 REQUIRED_PACKAGES += data/docbook/docbook-dtds
 REQUIRED_PACKAGES += data/docbook/docbook-style-dsssl

@@ -1,4 +1,3 @@
-#
 # CDDL HEADER START
 #
 # The contents of this file are subject to the terms of the
@@ -18,28 +17,21 @@
 #
 # CDDL HEADER END
 #
-
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
-BUILD_BITS= 		NO_ARCH
-include ../../../make-rules/shared-macros.mk
+# Drop 32-bit binaries
+<transform file path=usr/bin/\$\(MACH32\)/* -> drop>
 
-COMPONENT_NAME=		mm-common
-COMPONENT_VERSION=	0.9.12
-COMPONENT_PROJECT_URL=	https://developer.gnome.org/glibmm/stable/
-COMPONENT_ARCHIVE_HASH= \
-    sha256:ceffdcce1e5b52742884c233ec604bf6fded12eea9da077ce7a62c02c87e7c0b
-COMPONENT_BUGDB=        gnome/libraries
-COMPONENT_ANITYA_ID=	13152
+# We don't need to deliver installed-tests
+<transform file path=usr/lib/installed-tests/* -> drop>
+<transform file path=usr/share/installed-tests/* -> drop>
 
-TPNO=			54124
+# transform added to get rid of pkglint errors
+# ERROR userland.action001.2 64-bit object in 32-bit path
+<transform file path=usr/bin/json-glib-format -> \
+    set pkg.linted.userland.action001.2 true>
+<transform file path=usr/bin/json-glib-validate -> \
+    set pkg.linted.userland.action001.2 true>
 
-TEST_TARGET= $(NO_TESTS)
-
-include $(WS_MAKE_RULES)/gnome-component.mk
-
-CONFIGURE_OPTIONS += --disable-network
-
-REQUIRED_PACKAGES += shell/ksh93

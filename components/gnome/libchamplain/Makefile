@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            32_and_64
@@ -30,29 +30,19 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libchamplain
-COMPONENT_VERSION=	0.12.15
+COMPONENT_VERSION=	0.12.19
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/libchamplain
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:54721a210bdef6d73c5192ed83542023117bf5d7441257e7a7a9f8c05550b874
+	sha256:36842e326cdbe3cdbdab818472797eedb661dec842fe0579596a3a8d438b2aa4
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	1576
 
-TPNO=			34564
+TPNO=			54081
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
-
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --disable-memphis
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-gtk
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
-CONFIGURE_OPTIONS += --enable-shared
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-vala
-CONFIGURE_OPTIONS += --with-pic
 
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
