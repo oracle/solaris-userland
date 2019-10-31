@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -63,13 +63,13 @@ CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_ARGS =   -k -i
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/ERROR:/p" '
+COMPONENT_TEST_TRANSFORMS += '-ne "/ TOTAL: /p" '
+COMPONENT_TEST_TRANSFORMS += '-ne "/ PASS:  /p" '
+COMPONENT_TEST_TRANSFORMS += '-ne "/ SKIP:  /p" '
+COMPONENT_TEST_TRANSFORMS += '-ne "/ XFAIL: /p" '
+COMPONENT_TEST_TRANSFORMS += '-ne "/ FAIL:  /p" '
+COMPONENT_TEST_TRANSFORMS += '-ne "/ XPASS: /p" '
+COMPONENT_TEST_TRANSFORMS += '-ne "/ ERROR: /p" '
 
 REQUIRED_PACKAGES += crypto/gnupg
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen

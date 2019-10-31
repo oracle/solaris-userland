@@ -6,21 +6,93 @@ components/gnome/gcr/gcr-3.20.0/gck/gck-attributes.c: In function '_gck_format_a
 components/gnome/gcr/gcr-3.20.0/gck/gck-attributes.c:2817:33: warning: cast increases required alignment of target type [-Wcast-align]
      _gck_format_class (output, *((CK_OBJECT_CLASS_PTR)attr->value)); 
 
-Not suitable for upstream since we don't experience this on x64.
+https://gitlab.gnome.org/GNOME/gcr/merge_requests/26
 
---- a/gck/gck-attributes.c	2018-06-08 21:24:44.546071259 -0700
-+++ b/gck/gck-attributes.c	2018-06-11 22:07:42.768141011 -0700
-@@ -2814,7 +2814,13 @@
- 		if (attr->length == GCK_INVALID) {
- 			g_string_append_printf (output, " (-1) INVALID");
- 		} else if (_gck_attribute_is_ulong_of_type (attr, CKA_CLASS)) {
-+#ifdef __sparc && __LP64
-+                       gulong value;
-+                       memcpy(&value, attr->value, sizeof(gulong));
-+                       _gck_format_class (output, value);
-+#else 
- 			_gck_format_class (output, *((CK_OBJECT_CLASS_PTR)attr->value));
-+#endif
- 		} else if (_gck_attribute_is_ulong_of_type (attr, CKA_X_ASSERTION_TYPE)) {
- 			_gck_format_assertion_type (output, *((CK_X_ASSERTION_TYPE *)attr->value));
- 		} else if (_gck_attribute_is_ulong_of_type (attr, CKA_CERTIFICATE_TYPE)) {
+--- a/gck/gck-attributes.c
++++ b/gck/gck-attributes.c
+@@ -66,13 +66,25 @@
+ 
+ EGG_SECURE_DECLARE (attributes);
+ 
++
++/*
++ * When memory is allocated for value in this code it will carry also
++ * reference counter. Some platforms require that the value is aligned in
++ * memory according their bus size.
++ * The reference counter is gint type and it cannot be changed to glong type
++ * as there is no support for atomic operations for this type in glib. To
++ * achieve proper alignment on 64bit platforms for value padding need to be
++ * added. This is effectively done by reserving glong instead of gint. But
++ * reference counter is still used as gint.
++ */
++
+ static guchar *
+ value_take (gpointer data,
+             gsize length,
+             gboolean secure)
+ {
+-	gsize len = length + sizeof (gint);
+-	gint *value;
++	gsize len = length + sizeof (glong);
++	glong *value;
+ 
+ 	if (secure)
+ 		value = egg_secure_realloc (data, len);
+@@ -81,7 +93,7 @@
+ 	g_assert (value != NULL);
+ 
+ 	memmove (value + 1, value, length);
+-	g_atomic_int_set (value, 1);
++	g_atomic_int_set ((gint *)value, 1);
+ 	return (guchar *)(value + 1);
+ }
+ 
+@@ -89,8 +101,8 @@
+ value_blank (gsize length,
+              gboolean secure)
+ {
+-	gsize len = length + sizeof (gint);
+-	gint *value;
++	gsize len = length + sizeof (glong);
++	glong *value;
+ 
+ 	if (secure)
+ 		value = egg_secure_alloc (len);
+@@ -98,7 +110,7 @@
+ 		value = g_malloc (len);
+ 	g_assert (value != NULL);
+ 
+-	g_atomic_int_set (value, 1);
++	g_atomic_int_set ((gint *)value, 1);
+ 	return (guchar *)(value + 1);
+ }
+ 
+@@ -117,12 +129,12 @@
+ static guchar *
+ value_ref (guchar *data)
+ {
+-	gint *value = ((gint *)data) - 1;
++	glong *value = ((glong *)data) - 1;
+ 	gint previous;
+ 
+ 	g_assert (data != NULL);
+ 
+-	previous = g_atomic_int_add (value, 1);
++	previous = g_atomic_int_add ((gint *)value, 1);
+ 	if (G_UNLIKELY (previous <= 0)) {
+ 		g_warning ("An owned GckAttribute value has been modified outside of the "
+ 		           "gck library or an invalid attribute was passed to gck_builder_add_attribute()");
+@@ -135,11 +147,11 @@
+ static void
+ value_unref (gpointer data)
+ {
+-	gint *value = ((gint *)data) - 1;
++	glong *value = ((glong *)data) - 1;
+ 
+ 	g_assert (data != NULL);
+ 
+-	if (g_atomic_int_dec_and_test (value)) {
++	if (g_atomic_int_dec_and_test ((gint *)value)) {
+ 		if (egg_secure_check (value))
+ 			egg_secure_free (value);
+ 		else
