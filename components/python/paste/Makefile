@@ -22,7 +22,6 @@
 #
 # Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
 #
-
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Paste
@@ -38,21 +37,17 @@ COMPONENT_ANITYA_ID=	3955
 
 TPNO=			29477
 
+# This component is not yet built for Python 3.7
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-COMPONENT_TEST_ENV += http_proxy=
-COMPONENT_TEST_ENV += https_proxy=
-
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
-COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-# ignore proxy related tests not working inside our network
-COMPONENT_TEST_ARGS =	--ignore=test_proxy.py
-# ignore incorrectly imported txt files
-COMPONENT_TEST_ARGS +=	--ignore-glob=*.txt
-
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+
+COMPONENT_TEST_DIR=	$(COMPONENT_SRC)
+COMPONENT_TEST_ARGS=	./setup.py test
 
 # common targets
 build:		$(BUILD_NO_ARCH)
