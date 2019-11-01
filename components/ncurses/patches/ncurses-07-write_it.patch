@@ -1,0 +1,16 @@
+this is practically the same as CVE-2019-17595
+cherry picked from 
+https://github.com/mirror/ncurses/commit/eb952c651feed0502ec0d7ecaefc4931968eb358
+diff -r 46898bc9d70e progs/tic.c
+--- a/progs/tic.c	Thu Oct 31 09:48:12 2019 +0100
++++ b/progs/tic.c	Thu Oct 31 11:49:35 2019 +0100
+@@ -217,7 +217,8 @@
+ 	    while ((ch = *t++) != 0) {
+ 		*d++ = (char) ch;
+ 		if (ch == '\\') {
+-		    *d++ = *t++;
++		    if ((*d++ = *t++) == '\0')
++                        break;
+ 		} else if ((ch == '%')
+ 			   && (*t == L_BRACE)) {
+ 		    char *v = 0;
