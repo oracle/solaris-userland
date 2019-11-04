@@ -1,0 +1,27 @@
+Two members of the main MYSQL structure are incorrectly defined as unsigned
+integers rather than unsigned longs. This can result in incorrect values
+being returned on SPARC.
+
+Was offered and accepted upstream:
+https://github.com/PyMySQL/mysqlclient-python/pull/395
+
+--- mysqlclient-1.4.5/MySQLdb/_mysql.c
++++ mysqlclient-1.4.5/MySQLdb/_mysql.c
+@@ -2302,7 +2302,7 @@ static struct PyMemberDef _mysql_Connect
+     },
+     {
+         "server_capabilities",
+-        T_UINT,
++        T_ULONG,
+         offsetof(_mysql_ConnectionObject,connection.server_capabilities),
+         READONLY,
+         "Capabilities of server; consult MySQLdb.constants.CLIENT"
+@@ -2316,7 +2316,7 @@ static struct PyMemberDef _mysql_Connect
+     },
+     {
+         "client_flag",
+-        T_UINT,
++        T_ULONG,
+         offsetof(_mysql_ConnectionObject,connection.client_flag),
+         READONLY,
+         "Client flags; refer to MySQLdb.constants.CLIENT"
