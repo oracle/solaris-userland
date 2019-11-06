@@ -93,6 +93,6 @@ REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/gtk2
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += library/python/python-dbus
+REQUIRED_PACKAGES += library/python/dbus-python
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/libdbus-glib
