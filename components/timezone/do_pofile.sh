@@ -1,6 +1,6 @@
 #! /bin/sh
 #
-# Copyright (c) 2001, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2001, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 #
@@ -9,9 +9,9 @@
 AWK=/usr/bin/nawk
 ECHO=/usr/bin/echo
 
-ZONE_SUN_FILE=zone_sun.tab
-COUNTRY_FILE=country.tab
-CONTINENT_FILE=continent.tab
+ZONE_SUN_FILE="$1"
+COUNTRY_FILE="$2"
+CONTINENT_FILE="$3"
 
 DOMAIN=SUNW_OST_ZONEINFO
 

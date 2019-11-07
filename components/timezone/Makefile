@@ -27,15 +27,45 @@ BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME= 	timezone
-COMPONENT_VERSION=    	2019.2.1
+HUMAN_VERSION=		2019c
+# The last digit of COMPONENT_VERSION corresponds to the last letter of the
+# upstream archive name. 'a' -> 1, 'b' -> 2, etc.
+COMPONENT_VERSION=    	2019.3
 COMPONENT_PROJECT_URL=	http://www.iana.org/time-zones
-COMPONENT_SRC=
-COMPONENT_ARCHIVE_SRC=	none
-HUMAN_VERSION=		2019b
-TPNO=			53499	
+COMPONENT_ARCHIVE_URL=	https://data.iana.org/time-zones/releases/tzdata$(HUMAN_VERSION).tar.gz
+COMPONENT_ARCHIVE_HASH= sha256:8dbba650a85a686c8a7a774c54c1c4d88e013e7093a7935bdb1595e8ab7ae9d3
+
+TPNO=			55008	
 COMPONENT_ANITYA_ID=	5021
 
+# The timezone packages do not have normal FMRI version. This is because the
+# package version is not locked by any incorporation (it is floating). This
+# means that the latest timezone package can be installed on any SRU release.
 OS_META_VERSION=	-$(PKG_SOLARIS_VERSION)
+PKG_MACROS +=		OS_META_VERSION=$(OS_META_VERSION)
+
+
+# The archive has no directory so create our own and unpack it there
+UNPACK_ARGS=		--relocate-to $(SOURCE_DIR)
+
+# Include all files from the tarball into the package at
+# usr/share/lib/zoneinfo/src prefix. Exceptions will be handled by generate
+# rules
+GENERATE_PROTO_DIRS += $(SOURCE_DIR)^usr/share/lib/zoneinfo/src
+
+# Add COMPONENT_SRC variable to the p5m transforms so that we know we use
+# README from timezone package and not from this component directory.
+PKG_VARS += COMPONENT_SRC
+
+# We are considering all files in the tarball to be included in the package.
+# Having gnu patch create the backup files like *.~1~ would mess things up so
+# don't do that
+override GPATCH_BACKUP=--no-backup-if-mismatch
+
+BUILD_STYLE= archive
+include $(WS_MAKE_RULES)/common.mk
+
+POFILE=zoneinfo.po
 
 # "etcetera" must be listed before "backward" because it sets up links that
 # "backward" needs.
@@ -43,24 +73,28 @@ TZFILES= africa antarctica asia australasia etcetera europe \
 	 factory northamerica pacificnew \
 	 southamerica backward
 
-BUILD_STYLE= archive
-COMMON_TARGETS= no
-include $(WS_MAKE_RULES)/common.mk
+build: $(SOURCE_DIR)/.prep $(BUILD_DIR)
+	( \
+		cd $(SOURCE_DIR); \
+		/usr/sbin/zic -d $(PROTOUSRSHARELIBDIR)/zoneinfo $(TZFILES) \
+	)
 
-PKG_MACROS +=		OS_META_VERSION=$(OS_META_VERSION)
+	# According to LSARC/2001/015 zone_sun.tab has additional column when
+	# compared to zone.tab
+	./create_zone_sun.pl $(SOURCE_DIR)/zone.tab > $(BUILD_DIR)/zone_sun.tab
 
-POFILE=zoneinfo.po
-
-CLEAN_PATHS += $(POFILE)
-
-build:
-	@/bin/sh ./do_pofile.sh | /usr/bin/msguniq > $(POFILE)
+	# Extract strings into translation template
+	$(SHELL) ./do_pofile.sh \
+		$(BUILD_DIR)/zone_sun.tab \
+		$(SOURCE_DIR)/iso3166.tab \
+		$(COMPONENT_DIR)/continent.tab | \
+		/usr/bin/msguniq > $(BUILD_DIR)/$(POFILE)
 
 install: build
-	/usr/sbin/zic -d $(PROTOUSRSHARELIBDIR)/zoneinfo $(TZFILES)
 
 # empty test target
 test:	$(NO_TESTS)
 
 system-test:    $(NO_TESTS)
 
+PKG_AUTO_HARDLINKS=	1

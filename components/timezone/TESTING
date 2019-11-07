@@ -1,0 +1,117 @@
+To compare new build with what we previously delivered you can
+
+gmake clean
+hg update <previous changeset>
+gmake publish
+pkg image-create old
+pkg -R old install -g $(hg root)/$(uname -p)/repo system/data/timezone
+
+
+gmake clean
+hg update <our changeset>
+gmake publish
+pkg image-create new
+pkg -R new install -g $(hg root)/$(uname -p)/repo system/data/timezone
+
+gdiff --no-dereference --exclude .org.opensolaris,pkg -urN old new
+
+If gnu diff reports differecnes in binary files, you can compare them on a test
+machine via
+
+cd /usr/share/lib/zoneinfo
+cp .../old/usr/share/lib/zoneinfo/Asia/Gaza Asia/Gaza_old
+cp .../new/usr/share/lib/zoneinfo/Asia/Gaza Asia/Gaza_new
+
+diff -u \
+  <(zdump -v Asia/Gaza_old | perl -p -e 's,^[^/]+,,') \
+  <(zdump -v Asia/Gaza_new | perl -p -e 's,^[^/]+,,')
+
+
+
+Testing text installer
+======================
+Incorrect timezone package is known to break Solaris text installer. The way to
+test this is to
+ - install the new timezone package
+ - install system/install/text-install
+ - run /usr/bin/text-install
+If there is a problem it fails right away before displaying the first install
+screen
+
+
+Creating bootable iso
+=====================
+# This has to be done on a machine where you are root
+
+# Download the existing build IPS repo
+mkdir tmpdir
+cd tmpdir
+wget --no-directories --recursive --no-parent \
+    -R '*.iso.gz' -R '*.iso' -R '*.usb' -R '*.pkg' -R '*.ova' \
+    http://nana.us.oracle.com/products/Solaris_Trunk/st_trunk/056/zipped-repo
+mkdir repo
+# Unpack it
+ksh install-repo.ksh -d repo
+
+# Merge i386 and sparc packages you have built
+NEW_REPO_X=/net/machine_x/my/userland/ws/i386/repo
+NEW_REPO_S=/net/machine_s/my/userland/ws/sparc/repo
+rm -rf merged-repo
+pkgrepo create merged-repo
+pkgmerge -p nightly -d merged-repo \
+    -s arch=i386,$NEW_REPO_X -s arch=sparc,$NEW_REPO_S \
+    system/data/timezone
+
+# Change 'nightly' publisher into 'solaris'
+rm -rf raw-repo
+pkgrepo create raw-repo
+pkgrecv -v -d raw-repo --raw -s merged-repo '*'
+perl -p -i.backup -e "s,nightly/(\\Q${PKG}\\E),solaris/\$1," raw-repo/*timezone/*/manifest
+# See the difference
+gdiff -u raw-repo/*timezone/*/manifest{.backup,}
+
+# Remove the old timezone
+pkgrepo remove -s repo timezone
+
+# add the new package to the unpacked repo
+pkgsend -s repo publish $( printf -- '-d %s ' raw-repo/*/* ) raw-repo/*timezone/*/manifest
+
+# userland-incorporation in the unpacked repo has depend on the old timezone
+# we have to change that to new one
+NEWVER=$( pkg list -Haf -g repo "$PKG" | awk '{ print $2 }' )
+pkgrecv -v -d raw-repo --raw -s repo userland-incorporation
+perl -p -i.backup -e "s,timezone\@\S+,timezone\@$NEWVER," raw-repo/*incorporation/*/manifest
+# See the diff
+gdiff -u raw-repo/*incorporation/*/manifest{.backup,}
+
+# Remove the old userland-incorporation
+pkgrepo remove -s repo userland-incorporation
+
+# add the new userland-incorporation package to the unpacked repo
+pkgsend -s repo publish $( printf -- '-d %s ' raw-repo/*/* ) raw-repo/*incorporation/*/manifest
+
+# The unpacked repo now should show the new FMRI
+pkg contents -mr -g repo userland-incorporation | grep timezone
+
+# Setup distro constructor
+gcp -v /usr/share/distro_const/dc_text_*.xml iso.xml
+vi iso.xmp
+ - change transfer-ips-install <dc/distro/software/source/publisher/origin> to
+   - solaris - file:///where/is/our/new/repo
+
+sudo distro_const build iso.xml
+
+
+
+Test in DIY
+===========
+Go to http://diy.ie.oracle.com/cgi-bin/diy/diy-submit
+
+Enable
+ - MINIROOT/ai_installer[test~zones]
+ - MINIROOT/dc_image[type~text]
+ - USERLAND/i18n_on
+
+First two are because timezones were known to break installer and zone. Last
+because i18n_on contains some timezone tests.
+

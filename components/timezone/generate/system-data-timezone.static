@@ -1,0 +1,16 @@
+#
+# Copyright (c) 2001, 2019, Oracle and/or its affiliates. All rights reserved.
+#
+$(SOLARIS_11_4_5_ONLY)set name=com.oracle.info.version value=$(HUMAN_VERSION)
+
+link path=usr/share/lib/zoneinfo/localtime target=../../../../etc/localtime \
+    pkg.linted.userland.action002.0=true
+
+link path=usr/share/zoneinfo target=../../usr/share/lib/zoneinfo
+
+file zone_sun.tab path=usr/share/lib/zoneinfo/tab/zone_sun.tab
+file continent.tab path=usr/share/lib/zoneinfo/tab/continent.tab
+
+link path=usr/share/lib/zoneinfo/posixrules target=./US/Eastern
+
+file $(COMPONENT_SRC)/README path=usr/share/lib/zoneinfo/src/README
