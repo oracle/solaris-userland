@@ -26,15 +26,15 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		rdesktop
-COMPONENT_VERSION=	1.8.4
+COMPONENT_VERSION=	1.8.6
 COMPONENT_PROJECT_URL=	http://www.rdesktop.org/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:516f04df92f16eba04c96bbf9aeb05b9da686689c2bb5c107e0941583e09f933
+	sha256:ffb9f8e2f0b7a06e383e550698bdc9734ae33eb3ec971b0a094078434a4bba6d
 COMPONENT_ARCHIVE_URL=	https://github.com/rdesktop/$(COMPONENT_NAME)/archive/v$(COMPONENT_VERSION).tar.gz
 COMPONENT_BUGDB=	gnome/remote-desktop
 COMPONENT_ANITYA_ID=	4172
 
-TPNO=			53039
+TPNO=			52543
 
 TEST_TARGET = $(NO_TESTS)
 
