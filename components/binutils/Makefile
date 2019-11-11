@@ -27,14 +27,14 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		binutils
-COMPONENT_VERSION=	2.32
+COMPONENT_VERSION=	2.33.1
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:0ab6c55dd86a92ed561972ba15b9b70a8b9f75557f896446c82e8b36e473ee04
+    sha256:ab66fc2d1c3ec0359b8e08843c9f33b63e8707efdff5e4cc5c200eae24722cbf
 COMPONENT_BUGDB=	utility/gnu-binutils
 COMPONENT_ANITYA_ID=	7981
 
-TPNO=			49258
+TPNO=			55076
 
 #
 # for platform and cross platform support
@@ -51,7 +51,7 @@ $(BUILD_DIR_64)-cross/.configured: CONFIGURE_OPTIONS += --target=$(CROSS_ARCH)
 TEST_TARGET= $(TEST_64)
 include $(WS_MAKE_RULES)/gnu-component.mk
 
-IPS_COMPONENT_VERSION=	2.32.0
+IPS_COMPONENT_VERSION=	2.33.1
 
 export PATH=$(dirname $(CC)):$(GNUBIN):/usr/bin
 COMPONENT_TEST_ARGS += -k
