@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		openldap
-COMPONENT_VERSION=	2.4.46
-HUMAN_VERSION=		$(COMPONENT_VERSION)-S1
-IPS_COMPONENT_VERSION=	2.4.46.0.1
+COMPONENT_VERSION=	2.4.48
+HUMAN_VERSION=		$(COMPONENT_VERSION)
+IPS_COMPONENT_VERSION=	2.4.48.0.0
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_PROJECT_URL=	http://www.openldap.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9a90dcb86b99ae790ccab93b7585a31fbcbeec8c94bf0f7ab0ca0a87ea0c4b2d
+    sha256:d9523ffcab5cd14b709fcf3cb4d04e8bc76bb8970113255f372bc74954c6074d
 COMPONENT_ARCHIVE_URL=	ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/openldap
 COMPONENT_ANITYA_ID=	2551
 
-TPNO=			45033
+TPNO=			53534
 
 SDFVER=			sdf-2.001
 SDFBLIB=		$(BUILD_DIR_32)/${SDFVER}/blib
@@ -91,9 +91,17 @@ CONFIGURE_OPTIONS += --with-cyrus-sasl
 CONFIGURE_OPTIONS += --with-threads
 CONFIGURE_OPTIONS += --with-tls=openssl
 
+#
+# Test using test-and-compare framework as per ../../doc/testing.txt
+#
+# Set LD_LIBRARY_PATH to load built libraries from PROTO directories.
 COMPONENT_TEST_ENV += LD_LIBRARY_PATH="$(PROTOUSRLIBDIR):$(PROTOUSRLIBDIR64):"
+# Have gmake (COMPONENT_TEST_CMD) use environment variables.
 COMPONENT_TEST_ARGS += -e
-
+# Collect only action summaries to snapshot file using grep.
+COMPONENT_TEST_TRANSFORMER =	$(GNU_GREP)
+COMPONENT_TEST_TRANSFORMS =	'">>>>>"'
+COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 #
 # OpenLDAP must be built with cyrus-sasl out of the gate instead of the
 # installed copy.

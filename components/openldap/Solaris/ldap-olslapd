@@ -1,6 +1,6 @@
 #!/usr/bin/ksh93
 
-# Copyright (c) 2007, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2007, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 source /lib/svc/share/smf_include.sh
 
@@ -163,7 +163,7 @@ function version_check
 {
 	# Check for installed version against database version.
 	#
-	# When no version file exists then call version_seeding
+	# When no version file exists then call database_seed
 	# and if suitable create version file. Otherwise report error.
 	# Returns 255 for bad version, 0 on matched version and 1 for
 	# an acceptable version.
@@ -177,23 +177,26 @@ function version_check
 	if [[ -f $VERSION_FILE ]]; then
 		# Compare current version string to saved version string.
 		oldvers=$(grep 'OpenLDAP: slapd' $VERSION_FILE | cut -d" " -f4)
-		if [[ "$curvers" != "$oldvers" ]]; then
-			error "slapd version mismatch: $curvers v $oldvers"
+		if [[ "$curvers" == "$oldvers" ]]; then
+		   :
+		elif [[ $oldvers == "2.4.4"@([5-7]) ]]; then
+			logit "Notice: Compatible version $oldvers with $curvers"
+			version_update
+		else
+			error "slapd version incompatible: $curvers v $oldvers"
 			version_code=255
 		fi
 	else
-		logit "Warning: no version recorded!"
-		seed=$(version_seeding)
-		if [[ $seed == "None" || $seed == "ER!" ]]; then
+		logit "Notice: no prior version recorded."
+		db=$(database_seed)
+		if [[ $db == "None" || $db == "ER!" ]]; then
+			logit "Notice: no current database ($db)."
 			version_update
-		elif [[ $seed == "2.4.30" && $curvers == "2.4.30" ]] ||
-			    [[ $seed == "2.4.45" &&
-				$curvers == "2.4.4"@([5-6]) ]]; then
-			logit "Notice: Discovered compatible version $seed"
+		elif [[ $db == "MDB" && $curvers == "2.4.4"@([5-8]) ]]; then
+			logit "Notice: $db database compatible for $curvers"
 			version_update
 			version_code=1
 		else
-			error "slapd Version mismatch: $seed v $curvers"
 			version_code=255
 		fi
 	fi
@@ -254,7 +257,7 @@ function read_config_file
 }
 
 
-function version_seeding
+function database_seed
 {
 	# Very simple discovery based on configured database.
 	# Solaris has only shipped two versions of OpenLDAP.
@@ -263,9 +266,9 @@ function version_seeding
 	typeset db="None"
 	if [[ -d $DATA_DIR ]]; then
 		if [[ -f $DATA_BDB ]]; then
-			db="2.4.30"
+			db="BDB"
 		elif [[ -f $DATA_MDB ]]; then
-			db="2.4.45"
+			db="MDB"
 		else
 			# Is there anything in database directory?
 			for file in $DATA_DIR/*; do
@@ -281,7 +284,8 @@ function version_seeding
 			done
 		fi
 	else
-		# Directory should exist as it is in packaging.
+	    # Directory should exist as it is in packaging.
+		error "database directory missing! $DATA_DIR"
 		db="ER!"
 	fi
 	echo $db
@@ -319,8 +323,7 @@ start)
 		# Configure a sample configuration.
 		# ldapservercfg will start the server.
 		version_update
-		logit "Configuring an example LDAP server"
-		debug ${DO_LDAPSERVERCFG}
+		logit "Configuring an example LDAP server: ${DO_LDAPSERVERCFG}"
 		${DO_LDAPSERVERCFG}
 		err=$?
 		if (( $err == 0 )); then

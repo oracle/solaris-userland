@@ -2,9 +2,11 @@ Fixes problem with ldapmodify doesn't operate as expected due to solaris renamin
 Patch was developed in-house; it is Solaris specific and
 will not be contributed upstream.
 
---- openldap-2.4.44/clients/tools/ldapmodify.c.old	Tue Dec  1 15:57:11 2015
-+++ openldap-2.4.44/clients/tools/ldapmodify.c	Tue Dec  1 15:58:52 2015
-@@ -252,7 +252,8 @@
+diff --git a/clients/tools/ldapmodify.c b/clients/tools/ldapmodify.c
+index 5e59bf4..db484af 100644
+--- a/clients/tools/ldapmodify.c
++++ b/clients/tools/ldapmodify.c
+@@ -252,7 +252,8 @@ main( int argc, char **argv )
  	prog = lutil_progname( "ldapmodify", argc, argv );
  
  	/* strncmp instead of strcmp since NT binaries carry .exe extension */
