@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
@@ -37,6 +37,9 @@ set name=org.opensolaris.arc-caseid value=PSARC/2017/233
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 link path=etc/X11/fontpath.d/$(COMPONENT_NAME):pri=99 \
     target=../../../usr/share/fonts/TrueType/$(COMPONENT_NAME)
+file $(COMPONENT_NAME).conf path=etc/fonts/conf.avail/55-$(COMPONENT_NAME).conf
+link path=etc/fonts/conf.d/55-$(COMPONENT_NAME).conf \
+    target=../conf.avail/55-$(COMPONENT_NAME).conf
 file path=usr/share/doc/ttf-$(COMPONENT_NAME)/IPA_Font_License_Agreement_v1.0.txt
 file path=usr/share/doc/ttf-$(COMPONENT_NAME)/Readme_IPAfont00303.txt
 file path=usr/share/fonts/TrueType/$(COMPONENT_NAME)/fonts.alias
