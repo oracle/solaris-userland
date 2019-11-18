@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 # for the tests
@@ -28,13 +28,13 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		bison
-COMPONENT_VERSION=	3.0.4
+COMPONENT_VERSION=	3.4.2
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a72428c7917bdf9fa93cb8181c971b6e22834125848cf1d03ce10b1bb0716fe1
+  sha256:27d05534699735dc69e86add5b808d6cb35900ad3fd63fa82e3eb644336abfa0
 COMPONENT_ANITYA_ID=	193
 
-TPNO=			24440
+TPNO=			54877
 
 TEST_TARGET= $(TEST_64)
 # we need to first generate the test suite
@@ -49,6 +49,8 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 
 CONFIGURE_OPTIONS  +=		M4="/usr/gnu/bin/m4"
 CONFIGURE_OPTIONS  += 		--disable-silent-rules
+#compilation fails without the below configuration option
+CONFIGURE_OPTIONS  +=           --disable-dependency-tracking
 
 # the shared library we create needs to be built pic
 COMPONENT_BUILD_ARGS += CC_PIC="$(CC_PIC)"
@@ -101,3 +103,4 @@ COMPONENT_TEST_TRANSFORMS += \
     '-e "/^XXX_CC_XXX$$/d" '
 
 REQUIRED_PACKAGES += developer/macro/gnu-m4
+REQUIRED_PACKAGES += system/library/math

@@ -1,6 +1,11 @@
---- bison-3.0.4/Makefile.in.orig	Tue Oct 27 10:12:31 2015
-+++ bison-3.0.4/Makefile.in	Tue Oct 27 10:13:12 2015
-@@ -473,6 +473,12 @@
+#
+# This is a Solaris-specific patch 
+#
+# Linking the liby library with apropriate flags 
+
+--- bison-3.4.2/Makefile.in.orig	2019-09-25 09:31:43.851212289 -0700
++++ bison-3.4.2/Makefile.in	2019-11-13 21:08:52.669732132 -0800
+@@ -544,6 +544,12 @@
  @ENABLE_YACC_TRUE@am_lib_liby_a_OBJECTS = lib/main.$(OBJEXT) \
  @ENABLE_YACC_TRUE@	lib/yyerror.$(OBJEXT)
  lib_liby_a_OBJECTS = $(am_lib_liby_a_OBJECTS)
@@ -10,27 +15,30 @@
 +# being in our CFLAGS from shared-macros.mk
 +lib/yyerror.o lib/main.o: CFLAGS += $(CC_PIC)
 +
- @FLEX_CXX_WORKS_TRUE@am__EXEEXT_1 = examples/calc++/calc++$(EXEEXT)
- PROGRAMS = $(bin_PROGRAMS)
- am__objects_2 = examples/calc++/examples_calc___calc__-calc++-driver.$(OBJEXT) \
-@@ -2501,6 +2507,9 @@
+ am__objects_10 = examples/c++/calc++/calc__-driver.$(OBJEXT) \
+ 	examples/c++/calc++/calc__-scanner.$(OBJEXT) \
+ 	examples/c++/calc++/calc__-calc++.$(OBJEXT)
+@@ -3030,6 +3036,10 @@
+ @ENABLE_YACC_TRUE@lib_LIBRARIES = lib/liby.a
  @ENABLE_YACC_TRUE@EXTRA_LIBRARIES = lib/liby.a
  @ENABLE_YACC_TRUE@lib_liby_a_SOURCES = lib/main.c lib/yyerror.c
- LDADD = lib/libbison.a $(LIBINTL)
 +
++#Include the yacc library
 +lib_LIBRARIES += lib/liby.so.1
 +
  # Prettify Automake-computed names of compiled objects.
  src_bison_SHORTNAME = bison
- src_bison_CFLAGS = $(AM_CFLAGS) $(WERROR_CFLAGS)
-@@ -2624,6 +2633,10 @@
+ src_bison_CPPFLAGS = $(AM_CPPFLAGS) -DINSTALLDIR=\"$(bindir)\"
+@@ -3177,7 +3187,12 @@
+ gen_start_date = 2012-01-16
  all: $(BUILT_SOURCES)
  	$(MAKE) $(AM_MAKEFLAGS) all-recursive
- 
++#Compile the yacc library
 +lib/liby.so.1:    $(lib_liby_a_OBJECTS) $(lib_liby_a_DEPENDENCIES)
 +	-rm -f lib/liby.so.1
 +	$(CC) $(CFLAGS) -G -h liby.so.1 -o lib/liby.so.1 $(lib_liby_a_OBJECTS) $(lib_liby_a_LIBADD)
+ 
 +
  .SUFFIXES:
- .SUFFIXES: .gv .eps .pdf .png .yy .stamp .c .cc .dvi .l .ll .log .o .obj .ps .sed .sin .test .test$(EXEEXT) .trs .y
+ .SUFFIXES: .gv .eps .pdf .svg .yy .stamp .c .cc .dvi .l .ll .log .o .obj .ps .test .test$(EXEEXT) .trs .y
  am--refresh: Makefile
