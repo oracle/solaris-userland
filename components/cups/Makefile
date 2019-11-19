@@ -89,8 +89,6 @@ PKG_OBJ =	cups
 # cups API
 SUBPKG_OBJ =	cups-libs
 
-ADD_TO_HEAP = ^file|^link|^dir .*path=var.*/cups|^dir .*path=usr/lib/cups/
-EXCLUDE_FROM_HEAP = etc/pam.d/cups
 # - exclude lib.+\.{so[.<ver>[.<subver>]]|h} from $(HEAP_OBJ) actions into sub-pkg
 EXCLUSION_CRITERIA = usr/include/.*\.h|usr/lib.*/lib.*\.so.*
 # pkgobjs is used because manifest check do not support trash-can check

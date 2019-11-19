@@ -29,24 +29,27 @@
 # EXCLUSION_FILE - file listing the subset of objects of sub-pkg (the rest of the heap
 #   objects will be placed into the (core) pkg)
 # Note: if both "exclusion keys" are left undefined only the (core) pkg is created
-# Definition of the heap contents:
-# ADD_TO_HEAP - XPG4 grep regexp to select objects to add to "heap"
-# EXCLUDE_FROM_HEAP - XPG4 grep regexp to select objects removed from heap afterwardly
+#
+# Heap is created from build/manifest-*-generated.p5m by "pkgmogrify" using
+# the definition file named $(PKG_OBJ).gen (in PKG_OBJ is the name of the pkg-manifest
+# of the main pkg the same as the base-name of .p5m-manifest).
 
 PKGOBJ_BASE =	$(BUILD_DIR)/pkgobjs-$(MACH)
-COMPALL_OBJ =	$(PKGOBJ_BASE)-all
+INSTALLED_OBJ =	$(PKGOBJ_BASE)-all
 HEAP_OBJ =	$(PKGOBJ_BASE)-heap
 TRASH_CAN_OBJ =	$(PKGOBJ_BASE)-trash-can
 TRASH_CAN_IS_TESTED = $(BUILD_DIR)/.trash-can-is-tested
 $(HEAP_OBJ):	$(GENERATED).p5m
-	nawk '{if (sub(/\\$$/,"")) printf "%s", $$0; else print $$0}' $(GENERATED).p5m \
+	cat $(GENERATED).p5m | pkgfmt -u \
 		| egrep -v 'path=mangled' \
-		| tee $(COMPALL_OBJ) \
-		| /usr/xpg4/bin/egrep -e '$(ADD_TO_HEAP)' \
-		| /usr/xpg4/bin/egrep -v -e '$(EXCLUDE_FROM_HEAP)' > $@
+		| tee $(INSTALLED_OBJ) \
+		| $(PKGMOGRIFY) /dev/fd/0 $(PKG_OBJ).gen \
+		| sed -e '/^$$/d' -e '/^#.*$$/d' | /usr/bin/pkgfmt -u | cat - >$@
+
+# $(PKG_OPTIONS)
 
 $(TRASH_CAN_OBJ): $(HEAP_OBJ)
-	( gdiff -u $(COMPALL_OBJ) $(HEAP_OBJ) \
+	( gdiff -u $(INSTALLED_OBJ) $(HEAP_OBJ) \
 	   | /usr/xpg4/bin/sed -n -e '/^@@ /,$$p' \
 	   | /usr/xpg4/bin/egrep -e '^\+|^\-' > $@; \
 	   exit 0; )

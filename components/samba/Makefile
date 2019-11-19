@@ -229,8 +229,6 @@ SUBPKG_OBJ =	libsmbclient
 # file lists libsmbclient API objs
 EXCLUSION_FILE = libsmbclient-deps
 
-ADD_TO_HEAP = ^file|^link|^dir .*path=etc/samba/|^dir .*path=var/samba/
-EXCLUDE_FROM_HEAP = path=opt
 include $(WS_MAKE_RULES)/pkgobjs.mk
 $(EXCLUSION_FILE_TARGET): $(HEAP_OBJ)
 	/usr/xpg4/bin/fgrep -e libsmbclient.so -e libsmbclient.h $(HEAP_OBJ) \

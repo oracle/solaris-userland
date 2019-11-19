@@ -96,10 +96,6 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/ ERROR:/p" '
 
 PKG_OBJ =	cups-filters
-ADD_TO_HEAP = ^file|^link
-# unsupported interface (as of PSARC/2019/031)
-EXCLUDE_FROM_HEAP = etc/rc|etc/init.d|usr/bin|cups-browsed|usr/include|usr/lib.*/pkgconfig|usr/share/man
-# pkgobjs is used because manifest check do not support trash-can check
 include $(WS_MAKE_RULES)/pkgobjs.mk
 
 REQUIRED_PACKAGES += desktop/pdf-viewer/poppler

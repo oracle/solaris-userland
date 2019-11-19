@@ -88,8 +88,6 @@ PKG_OBJ =       hplip-core
 SUBPKG_OBJ =    hplip
 EXCLUSION_FILE = pygobject.deps
 
-ADD_TO_HEAP = ^file|^link
-EXCLUDE_FROM_HEAP = usr/share/hplip/.*\.pyc
 include $(WS_MAKE_RULES)/pkgobjs.mk
 $(EXCLUSION_FILE_TARGET): $(HEAP_OBJ)
 	ggrep -rwl gobject --include=\*.py $(PROTO_DIR) \
