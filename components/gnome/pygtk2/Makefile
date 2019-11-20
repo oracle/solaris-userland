@@ -43,6 +43,9 @@ TPNO=			19936
 # Only build for 2.7 as pygobject-3 will replace pygtk for python 3.x
 PYTHON_VERSION = 2.7
 
+# Ensure that pycairo.pc file is found and used during the configuration.
+PKG_CONFIG_PATHS+=$(PYTHON_VENDOR_PACKAGES_BASE)/lib/pkgconfig/
+
 # Tests do not yet work with Userland framework - 23712629
 TEST_TARGET= $(SKIP_TEST)
 

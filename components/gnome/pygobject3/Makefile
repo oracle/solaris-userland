@@ -41,6 +41,8 @@ TPNO=			35809
 
 PYTHON_VERSION = 2.7
 
+PKG_CONFIG_PATHS+=$(PYTHON_VENDOR_PACKAGES_BASE)/lib/pkgconfig/
+
 # replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses configure.mk
 CONFIGURE_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
 $(BUILD_DIR)/%-3.4/.configured:		PYTHON_VERSION=3.4
@@ -86,11 +88,6 @@ CONFIGURE_OPTIONS += --with-python=$(PYTHON)
 # Ensure Python modules are installed into vendor package directories.
 CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
 CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
-
-# Temporary until build machines install pycairo for python3
-PYCAIRO_BASE = $(WS_COMPONENTS)/python/pycairo/build/prototype/$(MACH)
-PKG_CONFIG_PATHS += $(PYCAIRO_BASE)$(PKG_CONFIG_DEFAULT)
-CPPFLAGS += -I $(PYCAIRO_BASE)/usr/include/pycairo
 
 # Override $(PYTHON) for configure step so that configure can find
 # $(PYTHON)-config properly

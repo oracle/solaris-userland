@@ -54,6 +54,9 @@ $(MANIFEST_BASE)-pycairo-37.mogrified: PYTHON2_ONLY = \#
 PKG_MACROS += PYTHON2_ONLY="$(PYTHON2_ONLY)"
 PKG_MACROS += PYTHON3_ONLY="$(PYTHON3_ONLY)"
 
+# Required to setup the prefix path to generate valid *.pc files.
+COMPONENT_INSTALL_ARGS+= --prefix $(PYTHON_VENDOR_PACKAGES_BASE)
+
 # Build testing related binary files
 COMPONENT_PRE_TEST_ACTION = (\
 	cd $(SOURCE_DIR) ; $(ENV) HOME=$(BUILD_DIR)/config-$* $(COMPONENT_BUILD_ENV) \
