@@ -60,3 +60,4 @@ system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/alien-build-5%)
 REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/file-chdir-5%)
+REQUIRED_PACKAGES += library/perl-5/pkgconfig

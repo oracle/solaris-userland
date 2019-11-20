@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 		32_and_64
 COMPILER= 		gcc
@@ -52,6 +52,7 @@ CMAKE_OPTIONS.64 = -DWITH_PERL=ON
 
 CMAKE_OPTIONS += -DINCLUDE_INSTALL_DIR="$(USRINCDIR)/$(COMPONENT_NAME)"
 CMAKE_OPTIONS += -DPERL_VENDORINSTALL=ON
+CMAKE_OPTIONS += -DPERL_EXECUTABLE=$(PERL)
 CMAKE_OPTIONS += -DPYTHON_EXECUTABLE="$(PYTHON)"
 CMAKE_OPTIONS += -DPYTHON_SITEPKG_DIR=$(PYTHON_LIB)
 # Required for other components.
