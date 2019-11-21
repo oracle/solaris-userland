@@ -1,0 +1,22 @@
+Patch out uses of sphinx so we can build manpages without everything else
+
+--- qemu-4.1.0/Makefile	2019-08-15 19:01:42.000000000 +0000
++++ new/Makefile	2019-11-19 15:45:00.229121914 +0000
+@@ -436,7 +436,7 @@
+ 
+ include $(SRC_PATH)/tests/Makefile.include
+ 
+-all: $(DOCS) $(if $(BUILD_DOCS),sphinxdocs) $(TOOLS) $(HELPERS-y) recurse-all modules $(vhost-user-json-y)
++all: $(DOCS) $(TOOLS) $(HELPERS-y) recurse-all modules $(vhost-user-json-y)
+ 
+ qemu-version.h: FORCE
+ 	$(call quiet-command, \
+@@ -796,7 +796,7 @@
+ 	$(call install-manual,interop)
+ 	$(call install-manual,specs)
+ 
+-install-doc: $(DOCS) install-sphinxdocs
++install-doc: $(DOCS)
+ 	$(INSTALL_DIR) "$(DESTDIR)$(qemu_docdir)"
+ 	$(INSTALL_DATA) qemu-doc.html "$(DESTDIR)$(qemu_docdir)"
+ 	$(INSTALL_DATA) qemu-doc.txt "$(DESTDIR)$(qemu_docdir)"

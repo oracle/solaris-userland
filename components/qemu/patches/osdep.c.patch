@@ -1,0 +1,14 @@
+We now have madvise(), should get this upstream.
+
+--- qemu-4.1.0/util/osdep.c	2019-08-15 19:01:43.000000000 +0000
++++ new/osdep.c	2019-11-14 20:46:16.413894814 +0000
+@@ -27,9 +27,6 @@
+ 
+ #ifdef CONFIG_SOLARIS
+ #include <sys/statvfs.h>
+-/* See MySQL bug #7156 (http://bugs.mysql.com/bug.php?id=7156) for
+-   discussion about Solaris header problems */
+-extern int madvise(char *, size_t, int);
+ #endif
+ 
+ #include "qemu-common.h"
