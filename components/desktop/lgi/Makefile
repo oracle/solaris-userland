@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -28,15 +28,15 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         lgi
-COMPONENT_VERSION=      0.9.0
+COMPONENT_VERSION=      0.9.2
 COMPONENT_PROJECT_URL=  https://github.com/pavouk/lgi
 COMPONENT_ARCHIVE_HASH= \
-        sha256:87c7870f8a1c60b48c4d5587b7fab46863e1cb9e76a68520f47e9ef2764cfe24
+        sha256:cfc4105482b4730b3a40097c9d9e7e35c46df2fb255370bdeb2f45a886548c4f
 COMPONENT_ARCHIVE_URL=  https://github.com/pavouk/lgi/archive/$(COMPONENT_VERSION).tar.gz
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	1851
 
-TPNO=                   27458
+TPNO=                   55245
 
 # Tests do not build on Solaris yet
 TEST_TARGET= $(SKIP_TEST)
