@@ -1,0 +1,15 @@
+# Add cert bundle path for Solaris derived operating systems.
+# The upstream patch comes from OpenIndiana.
+#
+#    https://github.com/OpenIndiana/oi-userland/pull/5370/commits/68d615d68511935fa31555eca220847ea5713da7
+#
+--- emacs-26.1.orig/lisp/net/gnutls.el	2018-04-23 08:17:48.000000000 +0000
++++ emacs-26.1/lisp/net/gnutls.el	2019-11-22 15:03:59.639463769 +0000
+@@ -87,6 +87,7 @@
+ 
+ (defcustom gnutls-trustfiles
+   '(
++    "/etc/certs/ca-certificates.crt"         ; Solaris
+     "/etc/ssl/certs/ca-certificates.crt"     ; Debian, Ubuntu, Gentoo and Arch Linux
+     "/etc/pki/tls/certs/ca-bundle.crt"       ; Fedora and RHEL
+     "/etc/ssl/ca-bundle.pem"                 ; Suse
