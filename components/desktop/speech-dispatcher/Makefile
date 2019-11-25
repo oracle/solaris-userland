@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=             64
@@ -28,16 +28,16 @@ COMPILER=               gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		speech-dispatcher
-COMPONENT_VERSION=	0.8.6
+COMPONENT_VERSION=	0.8.8
 COMPONENT_PROJECT_URL=	https://devel.freebsoft.org/speechd
 COMPONENT_ARCHIVE_HASH= \
-   sha256:c233dc3757c1f0d3676480d1052d42d88d18d29ab0cb0c8b5ce8edc3e7386ff8
+   sha256:3c2a89800d73403192b9d424a604f0e614c58db390428355a3b1c7c401986cf3
 COMPONENT_ARCHIVE_URL=	\
     https://devel.freebsoft.org/pub/projects/speechd/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/accessibility
 COMPONENT_ANITYA_ID=    13411
 
-TPNO=			32940
+TPNO=			55314
 
 TEST_TARGET = $(NO_TESTS)
 
