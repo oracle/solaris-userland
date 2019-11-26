@@ -7,7 +7,7 @@
 <transform path=usr/share/lib/zoneinfo/src/.*\.awk$ -> drop>
 <transform path=usr/share/lib/zoneinfo/src/(backzone|calendars|leap-seconds.list|leapseconds)$ -> drop>
 <transform path=usr/share/lib/zoneinfo/src/(theory.html|version|yearistype.sh|zoneinfo2tdf.pl)$ -> drop>
-<transform path=usr/share/lib/zoneinfo/src/(zone1970.tab|zone.tab)$ -> drop>
+<transform path=usr/share/lib/zoneinfo/src/(zone1970.tab|zone.tab|iso3166.tab)$ -> drop>
 <transform path=usr/share/lib/zoneinfo/src/(CONTRIBUTING|LICENSE|Makefile|NEWS)$ -> drop>
 
 # Drop all files beginning with '.' (those are created by userland
@@ -23,12 +23,7 @@
 # All the remaining files have to be found in $(COMPONENT_SRC) dir
 <transform file path=.*/(africa|antarctica|asia|australasia|backward|etcetera)$ -> set action.hash %<1>>
 <transform file path=.*/(europe|factory|northamerica|pacificnew)$ -> set action.hash %<1>>
-<transform file path=.*/(southamerica|systemv|zone_sun.tab|iso3166.tab)$ -> set action.hash %<1>>
-
-# Country.tab is to be renamed from original iso3166.tab placed into
-# .../zoneinfo/tab directory
-<transform file path=.*/iso3166.tab$ -> edit path /src/ /tab/>
-<transform file path=.*/iso3166.tab$ -> edit path iso3166.tab country.tab>
+<transform file path=.*/(southamerica|systemv)$ -> set action.hash %<1>>
 
 # Zoneinfo has to be found in component root directory
 <transform file path=(zoneinfo.5) -> set action.hash %<1>>

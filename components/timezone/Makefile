@@ -73,19 +73,25 @@ TZFILES= africa antarctica asia australasia etcetera europe \
 	 factory northamerica pacificnew \
 	 southamerica backward
 
+ZONEINFO_TAB_DIR=$(PROTO_DIR)/usr/share/lib/zoneinfo/tab
+
 build: $(SOURCE_DIR)/.prep $(BUILD_DIR)
 	( \
 		cd $(SOURCE_DIR); \
 		/usr/sbin/zic -d $(PROTOUSRSHARELIBDIR)/zoneinfo $(TZFILES) \
 	)
 
+	$(MKDIR) -p $(ZONEINFO_TAB_DIR)
 	# According to LSARC/2001/015 zone_sun.tab has additional column when
 	# compared to zone.tab
-	./create_zone_sun.pl $(SOURCE_DIR)/zone.tab > $(BUILD_DIR)/zone_sun.tab
+	./create_zone_sun.pl $(SOURCE_DIR)/zone.tab > $(ZONEINFO_TAB_DIR)/zone_sun.tab
+
+	# Remove utf-8 characters from country.tab
+	./create_country.pl $(SOURCE_DIR)/iso3166.tab > $(ZONEINFO_TAB_DIR)/country.tab
 
 	# Extract strings into translation template
 	$(SHELL) ./do_pofile.sh \
-		$(BUILD_DIR)/zone_sun.tab \
+		$(ZONEINFO_TAB_DIR)/zone_sun.tab \
 		$(SOURCE_DIR)/iso3166.tab \
 		$(COMPONENT_DIR)/continent.tab | \
 		/usr/bin/msguniq > $(BUILD_DIR)/$(POFILE)
