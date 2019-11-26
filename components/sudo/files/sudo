@@ -1,7 +1,12 @@
 #
-# Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 # PAM configuration for sudo(8) (explicit because we exclude
 # pam_unix_session(7)).
 #
 session required        pam_allow.so.1
+#
+# sudo service account stack (explicit because of non-usage of pam_roles.so.1)
+#
+account definitive      pam_user_policy.so.1
+account required        pam_unix_account.so.1
