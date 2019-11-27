@@ -35,11 +35,11 @@ export PARFAIT_BUILD=no
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME        = mysql
-COMPONENT_VERSION     = 5.7.27
+COMPONENT_VERSION     = 5.7.28
 COMPONENT_SRC         = $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE     = $(COMPONENT_NAME)-boost-$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-         sha256:036ab46a8a1216cfc1e87374bd1cba12e2208c02cf328a31851be7e1c7f57a2b
+         sha256:f16399315212117c08f9bdf8a0d682728b2ce82d691bcfbf25a770f413b6f2da
 COMPONENT_ARCHIVE_URL = https://dev.mysql.com/get/Downloads/MySQL-5.7/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL = https://dev.mysql.com/
 COMPONENT_BUGDB       = database/mysql
@@ -93,7 +93,7 @@ CMAKE_OPTIONS += -DCMAKE_C_COMPILER=$(CC)
 CMAKE_OPTIONS += '-DCOMPILATION_COMMENT=MySQL Community Server (GPL)'
 CMAKE_OPTIONS += -DFEATURE_SET=community
 
-CMAKE_OPTIONS += -DWITH_SSL=bundled
+CMAKE_OPTIONS += -DWITH_SSL=system
 CMAKE_OPTIONS += -DENABLE_DTRACE=1
 CMAKE_OPTIONS += -DWITH_INNODB_MEMCACHED=1
 CMAKE_OPTIONS += -DWITH_BOOST=boost
@@ -139,6 +139,7 @@ verify-p5m:
 	@echo "No problems found!"
 
 REQUIRED_PACKAGES += database/mysql-57/client
+REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += runtime/perl-522
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
