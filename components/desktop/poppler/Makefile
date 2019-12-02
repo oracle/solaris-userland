@@ -112,7 +112,7 @@ CMAKE_OPTIONS += -DFONT_CONFIGURATION=fontconfig
 # Install the poppler data files.
 COMPONENT_POST_BUILD_ACTION = \
 	(cd $(COMPONENT_DIR)/$(COMPONENT_SRC_1); \
-	$(GMAKE) prefix=$(CONFIGURE_PREFIX) DESTDIR=$(PROTO_DIR)/usr install)
+	$(GMAKE) prefix=/usr DESTDIR=$(PROTO_DIR) install)
 
 # Always show the build and link lines for easier debugging.
 COMPONENT_BUILD_ARGS += V=1

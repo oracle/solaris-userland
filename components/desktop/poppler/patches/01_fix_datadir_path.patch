@@ -1,0 +1,33 @@
+Avoid to read the path to encoding data
+files from poppler-data.pc until this
+file is delivered with a correct prefix
+in Common Build Environment.
+
+Not suitable for upstream.
+
+--- poppler-0.79.0/CMakeLists.txt	2019-12-02 15:38:07.990172092 +0100
++++ poppler-0.79.0/CMakeLists.txt	2019-12-02 15:40:33.882186558 +0100
+@@ -285,21 +285,8 @@
+   include_directories(${LCMS2_INCLUDE_DIR})
+ endif()
+ 
+-# Recent versions of poppler-data install a .pc file.
+-# Use it to determine the encoding data path, if available.
+-# Default to the same prefix otherwise.
+-pkg_check_modules(POPPLER_DATA poppler-data)
+-if(POPPLER_DATA_FOUND)
+-  execute_process(COMMAND "${PKG_CONFIG_EXECUTABLE}" --variable=poppler_datadir poppler-data
+-                  RESULT_VARIABLE _result_var
+-                  OUTPUT_VARIABLE _output_var OUTPUT_STRIP_TRAILING_WHITESPACE)
+-  if(_result_var STREQUAL "0" AND NOT _output_var STREQUAL "")
+-    set(POPPLER_DATADIR "${_output_var}")
+-  endif()
+-endif()
+-if(NOT DEFINED POPPLER_DATADIR)
+-  set(POPPLER_DATADIR "${CMAKE_INSTALL_PREFIX}/share/poppler")
+-endif()
++# Avoid to read a path to encoding files until poppler-data.pc is fixed.
++set(POPPLER_DATADIR "${CMAKE_INSTALL_PREFIX}/share/poppler")
+ 
+ if(EXTRA_WARN)
+   set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
