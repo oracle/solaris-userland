@@ -27,17 +27,20 @@ COMPILER=		gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libusb
-COMPONENT_VERSION=     1.0.21
-COMPONENT_ARCHIVE_HASH= sha256:1a5b08c05bc5e38c81c2d59c29954d5916646f4ff46f51381b3f624384e4ac01
-COMPONENT_ARCHIVE_URL=  https://sourceforge.net/projects/libusb/files/libusb-1.0/$(COMPONENT_SRC)/$(COMPONENT_ARCHIVE)
+COMPONENT_VERSION=	1.0.23
+COMPONENT_ARCHIVE_HASH= sha256:db11c06e958a82dac52cf3c65cb4dd2c3f339c8a988665110e0d24d19312ad8d
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
+COMPONENT_ARCHIVE_URL=	https://github.com/libusb/libusb/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=  http://libusb.info/
 COMPONENT_BUGDB=	library/libusb
 COMPONENT_ANITYA_ID=	1749
 
-TPNO=			39479
+TPNO=			54416
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 include $(WS_MAKE_RULES)/common.mk
+
+CPPFLAGS+=		-Wno-format-zero-length
 
 CONFIGURE_OPTIONS  +=	--enable-static=no
 CONFIGURE_OPTIONS  +=   --enable-log

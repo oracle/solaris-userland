@@ -1,0 +1,39 @@
+[PATCH] Solaris: fails to find USB devices on SPARC platform, see upstream bug https://github.com/libusb/libusb/issues/587
+
+diff -paruN b/libusb/os/sunos_usb.c c/libusb/os/sunos_usb.c
+--- b/libusb/os/sunos_usb.c	2019-06-17 18:01:58.277152425 +0000
++++ c/libusb/os/sunos_usb.c	2019-06-17 18:37:32.656750865 +0000
+@@ -401,8 +401,9 @@ sunos_detach_kernel_driver(struct libusb
+ 	if (r)
+ 		usbi_warn(HANDLE_CTX(dev_handle), "one or more ioctls failed");
+ 
+-	snprintf(path_arg, sizeof(path_arg), "^usb/%x.%x", dpriv->dev_descr.idVendor,
+-	    dpriv->dev_descr.idProduct);
++	snprintf(path_arg, sizeof(path_arg), "^usb/%x.%x",
++	    libusb_le16_to_cpu(dpriv->dev_descr.idVendor),
++	    libusb_le16_to_cpu(dpriv->dev_descr.idProduct));
+ 	sunos_physpath_to_devlink(dpriv->phypath, path_arg, &dpriv->ugenpath);
+ 
+ 	if (access(dpriv->ugenpath, F_OK) == -1) {
+@@ -516,7 +517,9 @@ sunos_fill_in_dev_info(di_node_t node, s
+ 	phypath = di_devfs_path(node);
+ 	if (phypath) {
+ 		dpriv->phypath = strdup(phypath);
+-		snprintf(match_str, sizeof(match_str), "^usb/%x.%x", dpriv->dev_descr.idVendor, dpriv->dev_descr.idProduct);
++		snprintf(match_str, sizeof(match_str), "^usb/%x.%x",
++		    libusb_le16_to_cpu(dpriv->dev_descr.idVendor),
++		    libusb_le16_to_cpu(dpriv->dev_descr.idProduct));
+ 		usbi_dbg("match is %s", match_str);
+ 		sunos_physpath_to_devlink(dpriv->phypath, match_str,  &dpriv->ugenpath);
+ 		di_devfs_path_free(phypath);
+@@ -547,7 +550,9 @@ sunos_fill_in_dev_info(di_node_t node, s
+ 	}
+ 
+ 	usbi_dbg("vid=%x pid=%x, path=%s, bus_nmber=0x%x, port_number=%d, "
+-	    "speed=%d", dpriv->dev_descr.idVendor, dpriv->dev_descr.idProduct,
++	    "speed=%d",
++	    libusb_le16_to_cpu(dpriv->dev_descr.idVendor),
++	    libusb_le16_to_cpu(dpriv->dev_descr.idProduct),
+ 	    dpriv->phypath, dev->bus_number, dev->port_number, dev->speed);
+ 
+ 	return (LIBUSB_SUCCESS);
