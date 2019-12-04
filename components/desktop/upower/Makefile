@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,16 +30,16 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		upower
-COMPONENT_VERSION=	0.99.3
+COMPONENT_VERSION=	0.99.11
 COMPONENT_PROJECT_URL=	http://upower.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:697199bcc113bb069e6fb6bf4135536a702ba9847e46c5fc6df87d19624ddd38
+	sha256:64b5ffbfccd5bdb15d925777979a4dbee1a957f9eaeb158dc76175267eddbdef
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/upower
 COMPONENT_ANITYA_ID=	5056
 
-TPNO=			25610
+TPNO=			55081
 
 # Tests do not work on Solaris yet
 TEST_TARGET= $(SKIP_TEST)
@@ -48,6 +48,9 @@ include $(WS_MAKE_RULES)/common.mk
 
 # Assumes GNU xgettext in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
+
+# Assumes GNU tail is first in PATH
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
 # Tell g-ir-scanner not to cache results in homedir of user running the build
 COMPONENT_BUILD_ENV += GI_SCANNER_DISABLE_CACHE=""
