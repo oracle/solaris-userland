@@ -30,14 +30,15 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgweather
-COMPONENT_VERSION=	3.24.0
+COMPONENT_VERSION=	3.34.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/LibGWeather
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:1089b932205085add19e5e1b63361c0cff1a2c46a67ab2dded6dd2ca87bdfa3d
+	sha256:02245395d639d9749fe2d19b7e66b64a152b9509ab0e5aad92514538b9c6f1b9
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13147
 
-TPNO=			34522
+TPNO=			54685
+BUILD_STYLE=		meson
 
 TEST_TARGET= $(NO_TESTS)
 
@@ -45,16 +46,10 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 
 CPPFLAGS += -std=gnu99 -D_XOPEN_SOURCE=700 -D__EXTENSIONS__
 
-CONFIGURE_OPTIONS += --disable-static
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
-CONFIGURE_OPTIONS += --enable-shared
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-vala
-CONFIGURE_OPTIONS += --with-pic
-CONFIGURE_OPTIONS += --with-zoneinfo-dir=/usr/share/lib/zoneinfo
+CONFIGURE_OPTIONS += -Dzoneinfo-dir=/usr/share/lib/zoneinfo
 
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala

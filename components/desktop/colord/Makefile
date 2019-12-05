@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -32,17 +32,16 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		colord
-COMPONENT_VERSION=	1.1.8
+COMPONENT_VERSION=	1.3.5
 COMPONENT_PROJECT_URL=	https://www.freedesktop.org/software/colord/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
-COMPONENT_ARCHIVE_HASH= \
-	sha256:f03e951641f39c2cea6ce7a6435608dd2bc0bd2c98e901ae331193f95f3e8907
+COMPONENT_ARCHIVE_HASH= sha256:2daa8ffd2a532d7094927cd1a4af595b8310cea66f7707edcf6ab743460feed2
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	10190
 
-TPNO=			25612
+TPNO=			34440
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -81,6 +80,8 @@ CONFIGURE_OPTIONS += --with-pic
 # Mostly a placebo value; udev support is disabled above, but it still delivers
 # 'rule' files for udev (omitted from package manifest).
 CONFIGURE_OPTIONS += --with-udevrulesdir=/etc/udev/rules.d
+# Requires spotread 
+CONFIGURE_OPTIONS += --disable-argyllcms-sensor
 
 # Assumes GNU xgettext and tail in PATH
 COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
@@ -88,6 +89,20 @@ CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 
 # Tell g-ir-scanner not to cache results in homedir of user running the build
 COMPONENT_BUILD_ENV += GI_SCANNER_DISABLE_CACHE=""
+
+COMPONENT_POST_INSTALL_ACTION.64 += \
+    $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/colord.xml \
+	$(PROTO_DIR)/lib/svc/manifest/system/colord.xml; \
+    $(INSTALL) -D -m 0555 $(COMPONENT_DIR)/files/svc-colord \
+	$(PROTO_DIR)/lib/svc/method/svc-colord; \
+    $(INSTALL) -D -m 0444 $(COMPONENT_SRC)/man/cd-create-profile.1 \
+	$(PROTO_DIR)/usr/share/man/man1/cd-create-profile.1; \
+    $(INSTALL) -D -m 0444 $(COMPONENT_SRC)/man/colormgr.1 \
+	$(PROTO_DIR)/usr/share/man/man1/colormgr.1; \
+    $(INSTALL) -D -m 0444 $(COMPONENT_SRC)/man/cd-it8.1 \
+	$(PROTO_DIR)/usr/share/man/man1/cd-it8.1; \
+    $(INSTALL) -D -m 0444 $(COMPONENT_SRC)/man/cd-fix-profile.1 \
+	$(PROTO_DIR)/usr/share/man/man1/cd-fix-profile.1;
 
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
