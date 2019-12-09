@@ -58,15 +58,9 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
-	'-e "/PASSED/p" ' \
-	'-e "/FAILED/p" ' \
-	'-e "/Total tests:/p" ' \
-	'-e "/Passes:/p" ' \
 	'-e "/Failures:/p" ' \
 	'-e "/Unexpected Passes:/p" ' \
-	'-e "/Expected Failures:/p" ' \
-	'-e "/Missing Tests:/p" ' \
-	'-e "/Extra Tests:/p" '
+	'-e "/Missing Tests:/p" '
 
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += library/zlib
