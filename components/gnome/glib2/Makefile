@@ -1,4 +1,4 @@
-#
+
 # CDDL HEADER START
 #
 # The contents of this file are subject to the terms of the
@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 COMPILER =      	gcc
@@ -28,56 +28,73 @@ BUILD_BITS =            32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		glib
-COMPONENT_VERSION=	2.52.0
+COMPONENT_VERSION=	2.62.2
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GLib/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:4578e3e077b1b978cafeec8d28b676c680aba0c0475923874c4c993403df311a
+    sha256:698824a413f76df039739c2a78f45b10939d526ae7495bab4e694e6730deb3f1
 COMPONENT_BUGDB=	gnome/glib
 COMPONENT_ANITYA_ID=	10024
 
-TPNO=			34480
+TPNO=			55007
+BUILD_STYLE=		meson
 
 # No need to build for older versions.
 PYTHON_VERSIONS= 3.7
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# Necessary to ensure patches applied to configure.ac take effect.
-COMPONENT_PREP_ACTION += ( cd $(@D); NOCONFIGURE=1 $(CONFIG_SHELL) autogen.sh );
-
 CFLAGS += $(CPP_XPG6MODE)
 CFLAGS.gcc += -std=gnu11
-CFLAGS.studio += -std=c11 -xlang=c11
 
 # using the setting from shared-macros.mk results in 23665701
 # overriding it here till we can get gdm rebuilt
 gcc_STACK_ALIGN.i386.32 =
 
-# Disabled by default (temporarily disabled here because it significantly
-# increases build time).
-CONFIGURE_OPTIONS += --disable-gtk-doc
-
-# Building dtrace probes doesn't work correctly (results in undefined symbols
-# in programs), disable until we can figure out how to fix.
-CONFIGURE_OPTIONS += --disable-dtrace
-
-# The build process modifies the shebang line to use the version of Python
-# automatically found; to avoid using the current system default, one is
-# explicitly specified here.
-CONFIGURE_OPTIONS += --with-python=$(PYTHON.3.7)
-
-# Configure doesn't find this since it's not in $PATH
-CONFIGURE_OPTIONS += DBUS_DAEMON=/usr/lib/dbus-daemon
-
-# configure sets this to gcc's -fvisibility=hidden, replace with correct
-# flag for Studio builds
-COMPONENT_BUILD_ARGS.studio += GLIB_HIDDEN_VISIBILITY_CFLAGS='-xldscope=hidden'
-COMPONENT_BUILD_ARGS += $(COMPONENT_BUILD_ARGS.$(COMPILER))
-
 # Assumes GNU msgfmt in PATH.
-# Need to include /usr/sbin so configure can find dtrace
-CONFIGURE_ENV += PATH="$(PATH):/usr/sbin"
-COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH):/usr/sbin"
+CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+
+CONFIGURE_OPTIONS += -Druntime_libdir=$(USRLIBDIR)
+CONFIGURE_OPTIONS += -Dcharsetalias_dir=$(USRLIBDIR)
+CONFIGURE_OPTIONS += -Dselinux=disabled
+CONFIGURE_OPTIONS += -Dxattr=false
+CONFIGURE_OPTIONS += -Dlibmount=false
+CONFIGURE_OPTIONS += -Dbsymbolic_functions=false
+CONFIGURE_OPTIONS += -Dman=true
+
+# Need to convert "#! /usr/bin/env python" to actual path for pkgdepend to work
+PYTHON_SCRIPTS += $(PROTO_DIR)$(CONFIGURE_BINDIR.$(BITS))/gtester-report
+PYTHON_SCRIPTS += $(PROTO_DIR)$(CONFIGURE_BINDIR.$(BITS))/gdbus-codegen
+PYTHON_SCRIPTS += $(PROTO_DIR)$(CONFIGURE_BINDIR.$(BITS))/glib-genmarshal
+PYTHON_SCRIPTS += $(PROTO_DIR)$(CONFIGURE_BINDIR.$(BITS))/glib-mkenums
+
+COMPONENT_POST_INSTALL_ACTION.64 += \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libgio-2.0.3lib \
+                $(PROTO_DIR)/usr/share/man/man3lib/libgio-2.0.3lib; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libglib-2.0.3lib \
+                $(PROTO_DIR)/usr/share/man/man3lib/libglib-2.0.3lib; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libgmodule-2.0.3lib \
+                $(PROTO_DIR)/usr/share/man/man3lib/libgmodule-2.0.3lib; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libgobject-2.0.3lib \
+                $(PROTO_DIR)/usr/share/man/man3lib/libgobject-2.0.3lib; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libgthread-2.0.3lib \
+                $(PROTO_DIR)/usr/share/man/man3lib/libgthread-2.0.3lib; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/gio-module-cache.xml \
+                $(PROTO_DIR)/lib/svc/manifest/application/desktop-cache/gio-module-cache.xml; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/glib-compile-schemas.xml \
+                $(PROTO_DIR)/lib/svc/manifest/application/desktop-cache/glib-compile-schemas.xml; \
+        $(INSTALL) -D -m 0555 $(COMPONENT_DIR)/files/gio-module-cache.sh \
+                $(PROTO_DIR)/lib/svc/method/gio-module-cache; \
+        $(INSTALL) -D -m 0555 $(COMPONENT_DIR)/files/glib-compile-schemas.sh \
+                $(PROTO_DIR)/lib/svc/method/glib-compile-schemas; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/gio-module-cache.8s \
+                $(PROTO_DIR)/usr/share/man/man8s/application/desktop-cache/gio-module-cache.8s; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/glib-compile-schemas.8s \
+                $(PROTO_DIR)/usr/share/man/man8s/application/desktop-cache/glib-compile-schemas.8s; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/gnome-interfaces.7 \
+                $(PROTO_DIR)/usr/share/man/man7/gnome-interfaces.7;
+
 
 # Make sure SMF manifests are valid
 $(BUILD_DIR)/.validated-smf-manifests-$(MACH): $(BUILD_DIR)
@@ -89,36 +106,22 @@ $(BUILD_DIR)/.validated-smf-manifests-$(MACH): $(BUILD_DIR)
 validate-smf:	$(BUILD_DIR)/.validated-smf-manifests-$(MACH)
 build:		$(BUILD_DIR)/.validated-smf-manifests-$(MACH)
 
-# Needed for "gmake test" to work successfully.
-# If SHELLOPTS is exported (as it is by the userland makefiles),
-# then all shell options get exported to child invocations of bash,
-# which results in test failures due to nounset and xtrace being
-# set unexpectedly, and errors such as "$1: unbound variable" and
-# diffs failing due to script tracing in output files.
-unexport SHELLOPTS
-
 # Strip random seeds from glib tests that use different values each run
+# Even though this is hooked up, the test results vary from system to
+# system, so gmake test isn't consistently passing
 COMPONENT_TEST_TRANSFORMS += \
-	'-e "s/seed:[0-9]*/seed:/"'
-
-# Strip filenames that are reported in different order between runs
-COMPONENT_TEST_TRANSFORMS += \
-	'-e "s%/bookmarks/parse/.*%%"' \
-	'-e "s%/markup/parse/.*%%"' \
-
-# Standard automake test framework results transform
+        '-e "s/seed:[0-9]*/seed:/"'
+# get rid of the timestamps from the test results
+COMPONENT_TEST_MASTER = \
+  	$(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
+COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9].[0-9][0-9] s//" '
+COMPONENT_TEST_TRANSFORMS += '-e "s/OK      [0-9]//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/TOTAL/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/ERROR:/p" '
-
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
+        '-e "/OK/p" ' \
+        '-e "/ok/p" '
 
 REQUIRED_PACKAGES += $(PERL_PKG)
-$(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += data/docbook
 REQUIRED_PACKAGES += data/docbook/docbook-dtds
 REQUIRED_PACKAGES += data/docbook/docbook-style-dsssl
 REQUIRED_PACKAGES += data/docbook/docbook-style-xsl

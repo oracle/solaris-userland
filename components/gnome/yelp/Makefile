@@ -45,6 +45,8 @@ TEST_TARGET = $(SKIP_TEST)
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CFLAGS += -Wno-cast-function-type
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=940164
+CFLAGS += -Wno-error
 
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 

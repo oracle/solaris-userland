@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -40,36 +40,44 @@ set name=org.opensolaris.arc-caseid value=LSARC/2001/384 value=PSARC/2012/339 \
     value=PSARC/2016/249 value=PSARC/2017/088
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
-file files/gio-module-cache.xml \
-    path=lib/svc/manifest/application/desktop-cache/gio-module-cache.xml
-file files/glib-compile-schemas.xml \
-    path=lib/svc/manifest/application/desktop-cache/glib-compile-schemas.xml
-file files/gio-module-cache.sh path=lib/svc/method/gio-module-cache
-file files/glib-compile-schemas.sh path=lib/svc/method/glib-compile-schemas
+file path=lib/svc/manifest/application/desktop-cache/gio-module-cache.xml
+file path=lib/svc/manifest/application/desktop-cache/glib-compile-schemas.xml
+file path=lib/svc/method/gio-module-cache
+file path=lib/svc/method/glib-compile-schemas
 file path=usr/bin/$(MACH64)/gio-querymodules
-file usr/bin/$(MACH64)/gapplication path=usr/bin/gapplication
-file usr/bin/$(MACH64)/gdbus path=usr/bin/gdbus
+file usr/bin/$(MACH64)/gapplication path=usr/bin/gapplication \
+    pkg.linted.userland.action001.2=true
+file usr/bin/$(MACH64)/gdbus path=usr/bin/gdbus \
+    pkg.linted.userland.action001.2=true
 # The bypass is necessary as glib uses a non-standard location for its
 # Python modules (by design); the dependencies are on modules provided by
 # this packages, so this shouldn't be a concern.
 file usr/bin/$(MACH64)/gdbus-codegen path=usr/bin/gdbus-codegen \
-    pkg.depend.bypass-generate=.*codegen.*
+    pkg.depend.bypass-generate=.*
 file path=usr/bin/gio
+file path=usr/bin/gio-launch-desktop
 file path=usr/bin/gio-querymodules
 file usr/bin/$(MACH64)/glib-compile-resources \
-    path=usr/bin/glib-compile-resources
-file usr/bin/$(MACH64)/glib-compile-schemas path=usr/bin/glib-compile-schemas
-file usr/bin/$(MACH64)/glib-genmarshal path=usr/bin/glib-genmarshal
+    path=usr/bin/glib-compile-resources pkg.linted.userland.action001.2=true
+file usr/bin/$(MACH64)/glib-compile-schemas path=usr/bin/glib-compile-schemas \
+    pkg.linted.userland.action001.2=true
+file usr/bin/$(MACH64)/glib-genmarshal path=usr/bin/glib-genmarshal \
+    pkg.depend.bypass-generate=.*
 file usr/bin/$(MACH64)/glib-gettextize path=usr/bin/glib-gettextize
-file usr/bin/$(MACH64)/glib-mkenums path=usr/bin/glib-mkenums
-file usr/bin/$(MACH64)/gobject-query path=usr/bin/gobject-query
-file usr/bin/$(MACH64)/gresource path=usr/bin/gresource
-file usr/bin/$(MACH64)/gsettings path=usr/bin/gsettings
-file usr/bin/$(MACH64)/gtester path=usr/bin/gtester
+file usr/bin/$(MACH64)/glib-mkenums path=usr/bin/glib-mkenums \
+    pkg.depend.bypass-generate=.*
+file usr/bin/$(MACH64)/gobject-query path=usr/bin/gobject-query \
+    pkg.linted.userland.action001.2=true
+file usr/bin/$(MACH64)/gresource path=usr/bin/gresource \
+    pkg.linted.userland.action001.2=true
+file usr/bin/$(MACH64)/gsettings path=usr/bin/gsettings \
+    pkg.linted.userland.action001.2=true
+file usr/bin/$(MACH64)/gtester path=usr/bin/gtester \
+    pkg.depend.bypass-generate=.* pkg.linted.userland.action001.2=true
 # The bypass is necessary as glib supports optional Python modules that we
 # don't currently have available in Solaris (subunit and testtools).
 file usr/bin/$(MACH64)/gtester-report path=usr/bin/gtester-report \
-    pkg.depend.bypass-generate=.*content.* \
+    pkg.depend.bypass-generate=.* pkg.depend.bypass-generate=.*content.* \
     pkg.depend.bypass-generate=.*subunit.* \
     pkg.depend.bypass-generate=.*testtools.*
 file path=usr/include/gio-unix-2.0/gio/gdesktopappinfo.h
@@ -169,6 +177,7 @@ file path=usr/include/glib-2.0/gio/gmenuexporter.h
 file path=usr/include/glib-2.0/gio/gmenumodel.h
 file path=usr/include/glib-2.0/gio/gmount.h
 file path=usr/include/glib-2.0/gio/gmountoperation.h
+file path=usr/include/glib-2.0/gio/gnativesocketaddress.h
 file path=usr/include/glib-2.0/gio/gnativevolumemonitor.h
 file path=usr/include/glib-2.0/gio/gnetworkaddress.h
 file path=usr/include/glib-2.0/gio/gnetworking.h
@@ -285,6 +294,9 @@ file path=usr/include/glib-2.0/glib/gqsort.h
 file path=usr/include/glib-2.0/glib/gquark.h
 file path=usr/include/glib-2.0/glib/gqueue.h
 file path=usr/include/glib-2.0/glib/grand.h
+file path=usr/include/glib-2.0/glib/grcbox.h
+file path=usr/include/glib-2.0/glib/grefcount.h
+file path=usr/include/glib-2.0/glib/grefstring.h
 file path=usr/include/glib-2.0/glib/gregex.h
 file path=usr/include/glib-2.0/glib/gscanner.h
 file path=usr/include/glib-2.0/glib/gsequence.h
@@ -318,6 +330,7 @@ file path=usr/include/glib-2.0/gobject/gbinding.h
 file path=usr/include/glib-2.0/gobject/gboxed.h
 file path=usr/include/glib-2.0/gobject/gclosure.h
 file path=usr/include/glib-2.0/gobject/genums.h
+file path=usr/include/glib-2.0/gobject/glib-enumtypes.h
 file path=usr/include/glib-2.0/gobject/glib-types.h
 file path=usr/include/glib-2.0/gobject/gmarshal.h
 file path=usr/include/glib-2.0/gobject/gobject-autocleanups.h
@@ -334,27 +347,26 @@ file path=usr/include/glib-2.0/gobject/gvalue.h
 file path=usr/include/glib-2.0/gobject/gvaluearray.h
 file path=usr/include/glib-2.0/gobject/gvaluecollector.h
 file path=usr/include/glib-2.0/gobject/gvaluetypes.h
-link path=usr/lib/$(MACH64)/charset.alias target=../charset.alias
-file path=usr/lib/$(MACH64)/gio/modules/libgiofam.so
+#link path=usr/lib/$(MACH64)/charset.alias target=../charset.alias
 file path=usr/lib/$(MACH64)/glib-2.0/include/glibconfig.h
-link path=usr/lib/$(MACH64)/libgio-2.0.so target=libgio-2.0.so.0.5200.0
-link path=usr/lib/$(MACH64)/libgio-2.0.so.0 target=libgio-2.0.so.0.5200.0
-file path=usr/lib/$(MACH64)/libgio-2.0.so.0.5200.0
-link path=usr/lib/$(MACH64)/libglib-2.0.so target=libglib-2.0.so.0.5200.0
-link path=usr/lib/$(MACH64)/libglib-2.0.so.0 target=libglib-2.0.so.0.5200.0
-file path=usr/lib/$(MACH64)/libglib-2.0.so.0.5200.0
-link path=usr/lib/$(MACH64)/libgmodule-2.0.so target=libgmodule-2.0.so.0.5200.0
+link path=usr/lib/$(MACH64)/libgio-2.0.so target=libgio-2.0.so.0
+link path=usr/lib/$(MACH64)/libgio-2.0.so.0 target=libgio-2.0.so.0.6200.2
+file path=usr/lib/$(MACH64)/libgio-2.0.so.0.6200.2
+link path=usr/lib/$(MACH64)/libglib-2.0.so target=libglib-2.0.so.0
+link path=usr/lib/$(MACH64)/libglib-2.0.so.0 target=libglib-2.0.so.0.6200.2
+file path=usr/lib/$(MACH64)/libglib-2.0.so.0.6200.2
+link path=usr/lib/$(MACH64)/libgmodule-2.0.so target=libgmodule-2.0.so.0
 link path=usr/lib/$(MACH64)/libgmodule-2.0.so.0 \
-    target=libgmodule-2.0.so.0.5200.0
-file path=usr/lib/$(MACH64)/libgmodule-2.0.so.0.5200.0
-link path=usr/lib/$(MACH64)/libgobject-2.0.so target=libgobject-2.0.so.0.5200.0
+    target=libgmodule-2.0.so.0.6200.2
+file path=usr/lib/$(MACH64)/libgmodule-2.0.so.0.6200.2
+link path=usr/lib/$(MACH64)/libgobject-2.0.so target=libgobject-2.0.so.0
 link path=usr/lib/$(MACH64)/libgobject-2.0.so.0 \
-    target=libgobject-2.0.so.0.5200.0
-file path=usr/lib/$(MACH64)/libgobject-2.0.so.0.5200.0
-link path=usr/lib/$(MACH64)/libgthread-2.0.so target=libgthread-2.0.so.0.5200.0
+    target=libgobject-2.0.so.0.6200.2
+file path=usr/lib/$(MACH64)/libgobject-2.0.so.0.6200.2
+link path=usr/lib/$(MACH64)/libgthread-2.0.so target=libgthread-2.0.so.0
 link path=usr/lib/$(MACH64)/libgthread-2.0.so.0 \
-    target=libgthread-2.0.so.0.5200.0
-file path=usr/lib/$(MACH64)/libgthread-2.0.so.0.5200.0
+    target=libgthread-2.0.so.0.6200.2
+file path=usr/lib/$(MACH64)/libgthread-2.0.so.0.6200.2
 file path=usr/lib/$(MACH64)/pkgconfig/gio-2.0.pc
 file path=usr/lib/$(MACH64)/pkgconfig/gio-unix-2.0.pc
 file path=usr/lib/$(MACH64)/pkgconfig/glib-2.0.pc
@@ -363,24 +375,23 @@ file path=usr/lib/$(MACH64)/pkgconfig/gmodule-export-2.0.pc
 file path=usr/lib/$(MACH64)/pkgconfig/gmodule-no-export-2.0.pc
 file path=usr/lib/$(MACH64)/pkgconfig/gobject-2.0.pc
 file path=usr/lib/$(MACH64)/pkgconfig/gthread-2.0.pc
-file path=usr/lib/charset.alias
-file path=usr/lib/gio/modules/libgiofam.so
+#file path=usr/lib/charset.alias
 file path=usr/lib/glib-2.0/include/glibconfig.h
-link path=usr/lib/libgio-2.0.so target=libgio-2.0.so.0.5200.0
-link path=usr/lib/libgio-2.0.so.0 target=libgio-2.0.so.0.5200.0
-file path=usr/lib/libgio-2.0.so.0.5200.0
-link path=usr/lib/libglib-2.0.so target=libglib-2.0.so.0.5200.0
-link path=usr/lib/libglib-2.0.so.0 target=libglib-2.0.so.0.5200.0
-file path=usr/lib/libglib-2.0.so.0.5200.0
-link path=usr/lib/libgmodule-2.0.so target=libgmodule-2.0.so.0.5200.0
-link path=usr/lib/libgmodule-2.0.so.0 target=libgmodule-2.0.so.0.5200.0
-file path=usr/lib/libgmodule-2.0.so.0.5200.0
-link path=usr/lib/libgobject-2.0.so target=libgobject-2.0.so.0.5200.0
-link path=usr/lib/libgobject-2.0.so.0 target=libgobject-2.0.so.0.5200.0
-file path=usr/lib/libgobject-2.0.so.0.5200.0
-link path=usr/lib/libgthread-2.0.so target=libgthread-2.0.so.0.5200.0
-link path=usr/lib/libgthread-2.0.so.0 target=libgthread-2.0.so.0.5200.0
-file path=usr/lib/libgthread-2.0.so.0.5200.0
+link path=usr/lib/libgio-2.0.so target=libgio-2.0.so.0
+link path=usr/lib/libgio-2.0.so.0 target=libgio-2.0.so.0.6200.2
+file path=usr/lib/libgio-2.0.so.0.6200.2
+link path=usr/lib/libglib-2.0.so target=libglib-2.0.so.0
+link path=usr/lib/libglib-2.0.so.0 target=libglib-2.0.so.0.6200.2
+file path=usr/lib/libglib-2.0.so.0.6200.2
+link path=usr/lib/libgmodule-2.0.so target=libgmodule-2.0.so.0
+link path=usr/lib/libgmodule-2.0.so.0 target=libgmodule-2.0.so.0.6200.2
+file path=usr/lib/libgmodule-2.0.so.0.6200.2
+link path=usr/lib/libgobject-2.0.so target=libgobject-2.0.so.0
+link path=usr/lib/libgobject-2.0.so.0 target=libgobject-2.0.so.0.6200.2
+file path=usr/lib/libgobject-2.0.so.0.6200.2
+link path=usr/lib/libgthread-2.0.so target=libgthread-2.0.so.0
+link path=usr/lib/libgthread-2.0.so.0 target=libgthread-2.0.so.0.6200.2
+file path=usr/lib/libgthread-2.0.so.0.6200.2
 file path=usr/lib/pkgconfig/gio-2.0.pc
 file path=usr/lib/pkgconfig/gio-unix-2.0.pc
 file path=usr/lib/pkgconfig/glib-2.0.pc
@@ -394,21 +405,24 @@ file path=usr/share/aclocal/glib-gettext.m4
 file path=usr/share/aclocal/gsettings.m4
 file path=usr/share/bash-completion/completions/gapplication
 file path=usr/share/bash-completion/completions/gdbus
+file path=usr/share/bash-completion/completions/gio
 file path=usr/share/bash-completion/completions/gresource
 file path=usr/share/bash-completion/completions/gsettings
-file path=usr/share/gdb/auto-load/usr/lib/$(MACH64)/libglib-2.0.so.0.5200.0-gdb.py
-file path=usr/share/gdb/auto-load/usr/lib/$(MACH64)/libgobject-2.0.so.0.5200.0-gdb.py
-file path=usr/share/gdb/auto-load/usr/lib/libglib-2.0.so.0.5200.0-gdb.py
-file path=usr/share/gdb/auto-load/usr/lib/libgobject-2.0.so.0.5200.0-gdb.py
+file path=usr/share/gdb/auto-load/usr/lib/$(MACH64)/libglib-2.0.so.0.6200.2-gdb.py
+file path=usr/share/gdb/auto-load/usr/lib/$(MACH64)/libgobject-2.0.so.0.6200.2-gdb.py
+file path=usr/share/gdb/auto-load/usr/lib/libglib-2.0.so.0.6200.2-gdb.py
+file path=usr/share/gdb/auto-load/usr/lib/libgobject-2.0.so.0.6200.2-gdb.py
+file path=usr/share/gettext/its/gschema.its
+file path=usr/share/gettext/its/gschema.loc
 file path=usr/share/glib-2.0/codegen/__init__.py
-file path=usr/share/glib-2.0/codegen/__pycache__/__init__.cpython-37.pyc
-file path=usr/share/glib-2.0/codegen/__pycache__/codegen.cpython-37.pyc
-file path=usr/share/glib-2.0/codegen/__pycache__/codegen_docbook.cpython-37.pyc
-file path=usr/share/glib-2.0/codegen/__pycache__/codegen_main.cpython-37.pyc
-file path=usr/share/glib-2.0/codegen/__pycache__/config.cpython-37.pyc
-file path=usr/share/glib-2.0/codegen/__pycache__/dbustypes.cpython-37.pyc
-file path=usr/share/glib-2.0/codegen/__pycache__/parser.cpython-37.pyc
-file path=usr/share/glib-2.0/codegen/__pycache__/utils.cpython-37.pyc
+#file path=usr/share/glib-2.0/codegen/__pycache__/__init__.cpython-37.pyc
+#file path=usr/share/glib-2.0/codegen/__pycache__/codegen.cpython-37.pyc
+#file path=usr/share/glib-2.0/codegen/__pycache__/codegen_docbook.cpython-37.pyc
+#file path=usr/share/glib-2.0/codegen/__pycache__/codegen_main.cpython-37.pyc
+#file path=usr/share/glib-2.0/codegen/__pycache__/config.cpython-37.pyc
+#file path=usr/share/glib-2.0/codegen/__pycache__/dbustypes.cpython-37pyc
+#file path=usr/share/glib-2.0/codegen/__pycache__/parser.cpython-37.pyc
+#file path=usr/share/glib-2.0/codegen/__pycache__/utils.cpython-37.pyc
 file path=usr/share/glib-2.0/codegen/codegen.py
 file path=usr/share/glib-2.0/codegen/codegen_docbook.py
 file path=usr/share/glib-2.0/codegen/codegen_main.py
@@ -533,18 +547,15 @@ file path=usr/share/man/man1/gresource.1
 file path=usr/share/man/man1/gsettings.1
 file path=usr/share/man/man1/gtester-report.1
 file path=usr/share/man/man1/gtester.1
-file files/libgio-2.0.3lib path=usr/share/man/man3lib/libgio-2.0.3lib
-file files/libglib-2.0.3lib path=usr/share/man/man3lib/libglib-2.0.3lib
-file files/libgmodule-2.0.3lib path=usr/share/man/man3lib/libgmodule-2.0.3lib
-file files/libgobject-2.0.3lib path=usr/share/man/man3lib/libgobject-2.0.3lib
-file files/libgthread-2.0.3lib path=usr/share/man/man3lib/libgthread-2.0.3lib
+file path=usr/share/man/man3lib/libgio-2.0.3lib
+file path=usr/share/man/man3lib/libglib-2.0.3lib
+file path=usr/share/man/man3lib/libgmodule-2.0.3lib
+file path=usr/share/man/man3lib/libgobject-2.0.3lib
+file path=usr/share/man/man3lib/libgthread-2.0.3lib
 # The normal mangler attributes don't make sense in gnome-interfaces.7
-file files/gnome-interfaces.7 path=usr/share/man/man7/gnome-interfaces.7 \
-    mangler.bypass=true
-file files/gio-module-cache.8s \
-    path=usr/share/man/man8s/application/desktop-cache/gio-module-cache.8s
-file files/glib-compile-schemas.8s \
-    path=usr/share/man/man8s/application/desktop-cache/glib-compile-schemas.8s
+file path=usr/share/man/man7/gnome-interfaces.7 mangler.bypass=true
+file path=usr/share/man/man8s/application/desktop-cache/gio-module-cache.8s
+file path=usr/share/man/man8s/application/desktop-cache/glib-compile-schemas.8s
 license COPYING license=LGPLv2
 # code in gio/gdesktopappinfo.c execs update-desktop-database
 depend type=require fmri=__TBD \
