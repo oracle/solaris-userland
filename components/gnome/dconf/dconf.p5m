@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 <transform file path=usr.*/man/.+ -> \
     default mangler.man.stability "pass-through volatile">
@@ -33,20 +33,20 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2016/317 value=PSARC/2017/166
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file path=usr/bin/dconf
+file path=usr/bin/dconf pkg.linted.userland.action001.2=true
 file path=usr/include/dconf/client/dconf-client.h
 file path=usr/include/dconf/common/dconf-changeset.h
 file path=usr/include/dconf/common/dconf-enums.h
 file path=usr/include/dconf/common/dconf-paths.h
 file path=usr/include/dconf/dconf.h
 file path=usr/lib/$(MACH64)/gio/modules/libdconfsettings.so
-link path=usr/lib/$(MACH64)/libdconf.so target=libdconf.so.1.0.0
+link path=usr/lib/$(MACH64)/libdconf.so target=libdconf.so.1
 link path=usr/lib/$(MACH64)/libdconf.so.1 target=libdconf.so.1.0.0
 file path=usr/lib/$(MACH64)/libdconf.so.1.0.0
 file path=usr/lib/$(MACH64)/pkgconfig/dconf.pc
-file path=usr/lib/dconf-service mode=0555
+file path=usr/lib/dconf-service mode=0555 pkg.linted.userland.action001.2=true
 file path=usr/lib/gio/modules/libdconfsettings.so
-link path=usr/lib/libdconf.so target=libdconf.so.1.0.0
+link path=usr/lib/libdconf.so target=libdconf.so.1
 link path=usr/lib/libdconf.so.1 target=libdconf.so.1.0.0
 file path=usr/lib/libdconf.so.1.0.0
 file path=usr/lib/pkgconfig/dconf.pc
@@ -83,7 +83,7 @@ file path=usr/share/man/man1/dconf.1
 file path=usr/share/man/man7/dconf.7
 file path=usr/share/vala/vapi/dconf.deps
 file path=usr/share/vala/vapi/dconf.vapi
-license COPYING license=LGPLv2.1
+license dconf.license license=LGPLv2.1
 
 # Older versions of vala deliver a usr/share/vala/vapi/dconf.vapi file
 # that conflicts with the one installed here

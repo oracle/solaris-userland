@@ -20,40 +20,37 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
+COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dconf
-COMPONENT_VERSION=	0.26.0
+COMPONENT_VERSION=	0.34.0
 COMPONENT_PROJECT_URL=	http://wiki.gnome.org/dconf
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8683292eb31a3fae31e561f0a4220d8569b0f6d882e9958b68373f9043d658c9
+	sha256:943a94ab16121de5580ceaed2605b87444d1bca1c6cd8beefb778bcb0aa2da52
 COMPONENT_BUGDB=        gnome/gconf
 COMPONENT_ANITYA_ID=	11683
 
-TPNO=			34496
+TPNO=			53994
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-studio_C99MODE=$(studio_C99_ENABLE)
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+CONFIGURE_OPTIONS += -Dgtk_doc=true
 
-# Uses gcc extensions for void returns.
-CFLAGS.studio += $(studio_FEATURES_EXTENSIONS)
-
-CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
-CONFIGURE_OPTIONS += --enable-gtk-doc
-
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_ARGS =   -k -i
+# get rid of the timestamps from the test results
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/XFAIL:/p" '
+        '-e "/OK/p" ' \
+        '-e "/ok/p" '
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala

@@ -1,0 +1,16 @@
+We don't deliver a .pc file for bash-completion so manually specify the 
+path
+
+Not suitable for upstream
+
+--- a/meson.build	2019-12-04 09:20:50.147389302 -0800
++++ b/meson.build	2019-12-04 09:21:06.732014960 -0800
+@@ -51,7 +51,7 @@
+ enable_bash_completion = get_option('bash_completion')
+ if enable_bash_completion
+   # FIXME: the `.pc` file is wrong because `completionsdir` should be relative to `datadir`, not `prefix`
+-  completions_dir = dependency('bash-completion').get_pkgconfig_variable('completionsdir', define_variable: ['prefix', dconf_prefix])
++  completions_dir = '/usr/share/bash-completion/completions/'
+ endif
+ 
+ configure_file(
