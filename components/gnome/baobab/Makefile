@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
@@ -30,22 +30,22 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		baobab
-COMPONENT_VERSION=	3.18.1
+COMPONENT_VERSION=	3.34.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Baobab
 COMPONENT_ARCHIVE_HASH= \
-	sha256:c2ac90426390e77147446a290c1480c49936c0a224f740b555ddaec2675b44b5
-COMPONENT_ARCHIVE_URL=	http://ftp.gnome.org/pub/GNOME/sources/$(COMPONENT_NAME)/3.18/$(COMPONENT_ARCHIVE)
+	sha256:46ebd9466da6a68c340653e9095f1e905b6fac79305879a9e644634f7da98607
+COMPONENT_ARCHIVE_URL=	http://ftp.gnome.org/pub/GNOME/sources/$(COMPONENT_NAME)/3.34/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	10907
 
-TPNO=			25525
+TPNO=			53991
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# Assumes GNU msgfmt in PATH.
-CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
 REQUIRED_PACKAGES += developer/vala
