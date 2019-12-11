@@ -28,10 +28,10 @@ COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME         = ruby
-COMPONENT_VERSION      = 2.5.5
+COMPONENT_VERSION      = 2.5.7
 COMPONENT_PROJECT_URL  = http://www.ruby-lang.org/
 COMPONENT_ARCHIVE_HASH = \
-    sha256:a5fddaf5ea6de48738575cd574e7333cc8335e6f6ac0941d5496f74be359de31
+    sha256:971c54adeae463d1f6a69d7527c94991d4e69f0d431800de81dcff5823e6706e
 COMPONENT_ARCHIVE_URL  = http://cache.ruby-lang.org/pub/ruby/2.5/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID    = 4223
 
@@ -45,7 +45,7 @@ COMPONENT_ARCHIVE_HASH_GEMS = \
     sha256:8292d0fb2e4dc6e074bb053894eb41f2ef533adcb088b7081450ae3cf62fe277
 COMPONENT_ARCHIVE_URL_GEMS = https://rubygems.org/rubygems/$(COMPONENT_ARCHIVE_GEMS)
 
-TPNO = 53217
+TPNO = 55581
 TPNO_GEMS = 52373
 
 
