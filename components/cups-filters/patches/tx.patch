@@ -1,0 +1,393 @@
+Changes implements the Trusted Extension functionality in bannertopdf filter
+used to fill the PDF form. Missing field values are gathered from the cups job
+and environment.
+
+diff --git a/Makefile.am b/Makefile.am
+index 9638c60..b3752e8 100644
+@@ -634,6 +636,7 @@ bannertopdf_LDADD = \
+ 	$(LIBQPDF_LIBS) \
+ 	$(TIFF_LIBS) \
+ 	$(FONTCONFIG_LIBS) \
++	$(LABELING_LIBS) \
+ 	libfontembed.la
+ 
+ bannertopdf_DEPENDENCIES = \
+diff --git a/configure.ac b/configure.ac
+index e0dcbc3..0a152f1 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -18,6 +18,7 @@ AC_CONFIG_MACRO_DIR([m4])
+ m4_include([m4/ac_define_dir.m4])
+ m4_include([m4/ax_compare_version.m4])
+ m4_include([m4/basic-directories.m4])
++m4_include([m4/labeling.m4])
+ AM_INIT_AUTOMAKE([1.11 gnu dist-xz dist-bzip2 subdir-objects])
+ AM_SILENT_RULES([yes])
+ AC_LANG([C++])
+diff --git a/filter/banner.c b/filter/banner.c
+index 1a4d0b1..f18899e 100644
+--- a/filter/banner.c
++++ b/filter/banner.c
+@@ -100,6 +100,26 @@
+             info |= INFO_TIME_AT_CREATION;
+         else if (!strcasecmp(tok, "time-at-processing"))
+             info |= INFO_TIME_AT_PROCESSING;
++#ifdef HAVE_TSOL
++        else if (!strcasecmp(tok, "job-hash"))
++            info |= INFO_JOB_HASH;
++        else if (!strcasecmp(tok, "job-classification"))
++            info |= INFO_JOB_CLASSIFICATION;
++        else if (!strcasecmp(tok, "protect-text1"))
++            info |= INFO_PROTECT_TEXT1;
++        else if (!strcasecmp(tok, "job-protect"))
++            info |= INFO_JOB_PROTECT;
++        else if (!strcasecmp(tok, "protect-text2"))
++            info |= INFO_PROTECT_TEXT2;
++        else if (!strcasecmp(tok, "job-caveats"))
++            info |= INFO_JOB_CAVEATS;
++        else if (!strcasecmp(tok, "job-channels"))
++            info |= INFO_JOB_CHANNELS;
++        else if (!strcasecmp(tok, "banner-page"))
++            info |= INFO_BANNER_PAGE;
++        else if (!strcasecmp(tok, "trailer-page"))
++            info |= INFO_TRAILER_PAGE;
++#endif /* HAVE_TSOL */
+         else
+             fprintf(stderr, "error: unknown value for 'Show': %s\n", tok);
+     }
+@@ -160,8 +180,24 @@
+             continue;
+         }
+ 
+-        if (!strcasecmp(key, "template"))
++#ifdef HAVE_TSOL
++        /*
++         * Fill template_file with value taken from either TemplateBanner or
++         * TemplateTrailer. Fallback to Template in case none of mentioned
++         * before exists.
++         */
++        if (!strcasecmp(key, "templatebanner") && is_system_labeled()) {
++          if (cupsGetOption("banner", *num_options, *options))
+             banner->template_file = template_path(value);
++        }
++        else if (!strcasecmp(key, "templatetrailer") && is_system_labeled()) {
++          if (cupsGetOption("trailer", *num_options, *options))
++            banner->template_file = template_path(value);
++        }
++        else
++#endif /* HAVE_TSOL */
++        if (!strcasecmp(key, "template") && !banner->template_file)
++            banner->template_file = template_path(value);
+         else if (!strcasecmp(key, "header"))
+             banner->header = strdup(value);
+         else if (!strcasecmp(key, "footer"))
+diff --git a/filter/banner.h b/filter/banner.h
+index 951baef..9b4eff7 100644
+--- a/filter/banner.h
++++ b/filter/banner.h
+@@ -40,6 +40,18 @@
+     INFO_PRINTER_NAME              = 1 << 15,
+     INFO_TIME_AT_CREATION          = 1 << 16,
+     INFO_TIME_AT_PROCESSING        = 1 << 17
++#ifdef HAVE_TSOL
++    ,
++    INFO_JOB_HASH                  = 1 << 18,
++    INFO_JOB_CLASSIFICATION        = 1 << 19,
++    INFO_PROTECT_TEXT1             = 1 << 20,
++    INFO_JOB_PROTECT               = 1 << 21,
++    INFO_PROTECT_TEXT2             = 1 << 22,
++    INFO_JOB_CAVEATS               = 1 << 23,
++    INFO_JOB_CHANNELS              = 1 << 24,
++    INFO_BANNER_PAGE               = 1 << 25,
++    INFO_TRAILER_PAGE              = 1 << 26
++#endif /* HAVE_TSOL */
+ };
+ 
+ 
+diff --git a/filter/bannertopdf.c b/filter/bannertopdf.c
+index 028bf60..58482cb 100644
+--- a/filter/bannertopdf.c
++++ b/filter/bannertopdf.c
+@@ -20,12 +20,12 @@
+ #include <stdio.h>
+ #include <stdarg.h>
+ #include <math.h>
++#include <errno.h>
+ 
+ #ifndef HAVE_OPEN_MEMSTREAM
+ #include <fcntl.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+-#include <errno.h>
+ #endif
+ 
+ #include <cups/cups.h>
+@@ -37,10 +37,97 @@
+ #include <cups/pwg.h>
+ #endif /* HAVE_CUPS_1_7 */
+ 
++#ifdef HAVE_TSOL
++#include <unistd.h>
++#include <tsol/label.h>
++#endif /* HAVE_TSOL */
++
+ #include "banner.h"
+ #include "pdf.h"
+ 
+ 
++#ifdef HAVE_TSOL
++#define ME "bannertopdf"
++char *header = NULL;		/* DIA banner page fields */
++char *label = NULL;
++char *caveats = NULL;
++char *channels = NULL;
++
++int tsol_init(char *input) {
++	if (is_system_labeled()) {
++		static m_label_t *FileLabel;
++		static char *plabel;
++
++		if ((FileLabel = m_label_alloc(MAC_LABEL)) == NULL)
++			return 1;
++		/*
++		 * peer label can be read from CLASSIFICATION environment variable.
++		 * If there is no CLASSIFICATION value, the file label can be
++		 * determined from its pathname.
++		 */
++		if ((plabel = getenv("CLASSIFICATION")) != NULL) {
++			int err;
++			m_label_free(FileLabel);
++			FileLabel = NULL;
++			if (str_to_label(plabel, &FileLabel, MAC_LABEL,
++				L_NO_CORRECTION, &err) == -1) {
++				fprintf (stderr,
++					"ERROR: %s: str_to_label: %s\n",
++					ME, strerror (errno));
++				return 1;
++			}
++		} else if (strcmp(input, "-") &&
++			fgetlabel(STDIN_FILENO, FileLabel) != 0) {
++			fprintf (stderr,
++				"ERROR: %s: cannot get label of: %s: %s\n",
++				ME, input, strerror(errno));
++			return 1;
++
++		} else if (getlabel(input, FileLabel) != 0) {
++			fprintf(stderr,
++				"ERROR: %s: cannot get label of %s: %s\n",
++				ME, input, strerror(errno));
++			return 1;
++		}
++
++		if (label_to_str(FileLabel, &header, PRINTER_TOP_BOTTOM,
++			DEF_NAMES) != 0) {
++			fprintf(stderr,
++				"ERROR: %s: label_to_str PRINTER_TOP_BOTTOM: %s.\n",
++				ME, strerror(errno));
++			return 1;
++		}
++		if (label_to_str(FileLabel, &label, PRINTER_LABEL,
++			DEF_NAMES) != 0) {
++			fprintf(stderr,
++				"ERROR: %s: label_to_str PRINTER_LABEL: %s.\n",
++				ME, strerror(errno));
++			return 1;
++		}
++		if (label_to_str(FileLabel, &caveats, PRINTER_CAVEATS,
++			DEF_NAMES) != 0) {
++			fprintf(stderr,
++				"ERROR: %s: label_to_str PRINTER_CAVEATS: %s.\n",
++				ME, strerror(errno));
++			return 1;
++		}
++		if (!strlen(caveats))
++			caveats = " "; // empty strings will be replaced by "N/A"
++		if (label_to_str(FileLabel, &channels, PRINTER_CHANNELS,
++			DEF_NAMES) != 0) {
++			fprintf(stderr,
++				"ERROR: %s: label_to_str PRINTER_CHANNELS: %s.\n",
++				ME, strerror(errno));
++			return 1;
++		}
++		if (!strlen(channels))
++			channels = " "; // empty strings will be replaced by "N/A"
++	}
++
++	return 0;
++}
++#endif /* HAVE_TSOL */
++
+ static float get_float_option(const char *name,
+                               int noptions,
+                               cups_option_t *options,
+@@ -226,6 +320,24 @@
+     return buf;
+ }
+ 
++#ifdef HAVE_TSOL
++static const char *hash(const char *timestamp)
++{
++    unsigned time;
++    int size = sizeof(char) * 8;
++    char *buf = malloc(size);
++    strcpy(buf, "unknown");
++
++    if (timestamp) {
++        time = (time_t)atoll(timestamp);
++        sprintf(buf, "%ld", time % 100000L);
++    }
++
++    return buf;
++}
++#endif /* HAVE_TSOL */
++
++
+ /*
+  * Add new key & value.
+  */
+@@ -262,7 +374,8 @@
+         const char *user,
+         const char *jobtitle,
+         int noptions,
+-        cups_option_t *options) {
++        cups_option_t *options,
++	char *input) {
+ 
+     ppd_attr_t *attr;
+     opt_t *opt = NULL;
+@@ -338,6 +451,36 @@
+     opt = add_opt(opt, "security-context-user",
+             cupsGetOption("security-context-user", noptions, options));
+ 
++#ifdef HAVE_TSOL
++    /* Job hash */
++    opt = add_opt(opt, "job-hash",
++            hash(cupsGetOption("time-at-creation", noptions, options)));
++
++    /* Job classification */
++    opt = add_opt(opt, "job-classification", header);
++
++    /* Protect text 1 */
++    opt = add_opt(opt, "protect-text1", "This output must be protected as:");
++
++    /* Job protect */
++    opt = add_opt(opt, "job-protect", label);
++
++    /* Protect text 2 */
++    opt = add_opt(opt, "protect-text2", "unless manually reviewed and downgraded.");
++
++    /* Job caveats */
++    opt = add_opt(opt, "job-caveats", caveats);
++
++    /* Job channels */
++    opt = add_opt(opt, "job-channels", channels);
++
++    /* Banner page */
++    opt = add_opt(opt, "banner-page", "JOB START");
++
++    /* Trailer page */
++    opt = add_opt(opt, "trailer-page", "JOB END");
++#endif /* HAVE_TSOL */
++
+     if (ppd) {
+       /* Driver */
+       opt = add_opt(opt, "driver", ppd->pcfilename);
+@@ -360,7 +503,8 @@
+                                const char *user,
+                                const char *jobtitle,
+                                int noptions,
+-                               cups_option_t *options)
++                               cups_option_t *options,
++			       char *input)
+ {
+     char *buf;
+     size_t len;
+@@ -375,6 +519,11 @@
+     struct stat st;
+ #endif
+ 
++#ifdef HAVE_TSOL
++    if(tsol_init(input))
++	return 1;
++#endif /* HAVE_TSOL */
++
+     if (!(doc = pdf_load_template(banner->template_file)))
+         return 1;
+ 
+@@ -469,6 +618,24 @@
+         info_line_time(s, "Printed at",
+                        cupsGetOption("time-at-processing", noptions, options));
+ 
++#ifdef HAVE_TSOL
++    if (banner->infos & INFO_JOB_HASH)
++        info_line(s, "Job hash",
++		hash(cupsGetOption("time-at-creation", noptions, options)));
++
++    if (banner->infos & INFO_JOB_CLASSIFICATION)
++        info_line(s, "Classification", header);
++
++    if (banner->infos & INFO_JOB_PROTECT)
++        info_line(s, "Protected as", label);
++
++    if (banner->infos & INFO_JOB_CAVEATS)
++        info_line(s, "Caveats", caveats);
++
++    if (banner->infos & INFO_JOB_CHANNELS)
++        info_line(s, "Channels", channels);
++#endif /* HAVE_TSOL */
++
+     fprintf(s, "ET\n");
+ #ifndef HAVE_OPEN_MEMSTREAM
+     fflush (s);
+@@ -492,7 +659,8 @@
+             user,
+             jobtitle,
+             noptions,
+-            options);
++            options,
++	    input);
+ 
+     /*
+      * Try to find a PDF form in PDF template and fill it.
+@@ -536,6 +704,7 @@
+     cups_option_t *options;
+     ppd_file_t *ppd;
+     int ret;
++    char *input;
+ 
+     if (argc < 6) {
+         fprintf(stderr,
+@@ -554,7 +723,9 @@
+       cupsMarkOptions(ppd, noptions, options);
+     }
+ 
+-    banner = banner_new_from_file(argc == 7 ? argv[6] : "-", &noptions, &options);
++    input = argc == 7 ? argv[6] : "-";
++
++    banner = banner_new_from_file(input, &noptions, &options);
+     if (!banner) {
+         fprintf(stderr, "Error: could not read banner file\n");
+         return 1;
+@@ -566,7 +737,8 @@
+                               argv[2],
+                               argv[3],
+                               noptions,
+-                              options);
++                              options,
++                              input);
+ 
+     banner_free(banner);
+     cupsFreeOptions(noptions, options);
+diff --git a/m4/labeling.m4 b/m4/labeling.m4
+new file mode 100644
+index 0000000..bceb1a9
+--- /dev/null
++++ b/m4/labeling.m4
+@@ -0,0 +1,7 @@
++AC_ARG_ENABLE(labeling, [   --enable-labeling      enable support for Solaris Trusted Extensions, default=auto])
++
++if test x"$enable_labeling" != xno; then
++	AC_CHECK_LIB(tsol, str_to_label, [LABELING_LIBS="-lbsm -ltsol" AC_SUBST(LABELING_LIBS)
++		AC_CHECK_HEADER(tsol/label.h)
++		AC_DEFINE(HAVE_TSOL, 1, [Define if Trusted Solaris is enabled.])])
++fi

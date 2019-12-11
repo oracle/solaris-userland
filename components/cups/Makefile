@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 32_and_64
 COMPILER= gcc
@@ -69,8 +69,6 @@ CONFIGURE_OPTIONS +=	--disable-static
 #CONFIGURE_OPTIONS +=	--with-optim=-g0 -g
 # CDSA is first choice GNU TLS is second openssl is not supported
 #CONFIGURE_OPTIONS +=	--enable-gnutls
-CONFIGURE_OPTIONS +=	--without-php
-CONFIGURE_OPTIONS +=	--with-python
 
 # cups do not use DESTDIR but DSTROOT
 COMPONENT_INSTALL_ARGS=	DSTROOT="$(PROTO_DIR)"
