@@ -1,0 +1,67 @@
+fribidi is built locally in pango when it doesn't detect it in the
+system.  But once pango is built with fribidi and installed on the build
+server, it will use that and not build the local one, in which case the 
+pango build fails.
+
+These changes and the addition of forcefallback in the Makefile allows 
+fribidi to be built locally even if there is a system version detected. 
+Other components (cairo, fontconfig, freetype, harfbuzz, glib) are excluded 
+from a local build. 
+
+Not suitable for upstream
+
+--- a/meson.build	2019-12-13 17:05:31.830997053 -0800
++++ b/meson.build	2019-12-13 17:06:27.628477999 -0800
+@@ -195,10 +195,8 @@
+ pango_deps += mathlib_dep
+ 
+ # gobject
+-glib_dep = dependency('glib-2.0', version: glib_req_version,
+-                      fallback: ['glib', 'libglib_dep'])
+-gobject_dep = dependency('gobject-2.0', version: glib_req_version,
+-                         fallback: ['glib', 'libgobject_dep'])
++glib_dep = dependency('glib-2.0', version: glib_req_version)
++gobject_dep = dependency('gobject-2.0', version: glib_req_version)
+ pango_deps += [glib_dep, gobject_dep]
+ 
+ fribidi_dep = dependency('fribidi', version: fribidi_req_version,
+@@ -230,8 +228,7 @@
+ freetype2_lib=''
+ fontconfig_lib=''
+ 
+-harfbuzz_dep = dependency('harfbuzz', version: harfbuzz_req_version, required: false,
+-                          fallback: ['harfbuzz', 'libharfbuzz_dep'])
++harfbuzz_dep = dependency('harfbuzz', version: harfbuzz_req_version, required: false)
+ if harfbuzz_dep.found()
+   harfbuzz_pc = 'harfbuzz'
+ else
+@@ -248,8 +245,7 @@
+   pango_deps += harfbuzz_dep
+ endif
+ 
+-fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version, required: false,
+-                            fallback: ['fontconfig', 'fontconfig_dep'])
++fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version, required: false)
+ if fontconfig_dep.found()
+   fontconfig_pc = 'fontconfig'
+ else
+@@ -284,8 +280,7 @@
+ 
+ # The first version of freetype with a pkg-config file is 2.1.5
+ # We require both fontconfig and freetype if we are to have either.
+-freetype_dep = dependency('freetype2', required: false,
+-                          fallback: ['freetype2', 'freetype_dep'])
++freetype_dep = dependency('freetype2', required: false)
+ 
+ if freetype_dep.found()
+   freetype2_pc = 'freetype2'
+@@ -332,8 +327,7 @@
+ endif
+ 
+ cairo_found_type = ''
+-cairo_dep = dependency('cairo', version: cairo_req_version, required: false,
+-                       fallback: ['cairo', 'libcairo_dep'])
++cairo_dep = dependency('cairo', version: cairo_req_version, required: false)
+ 
+ if cairo_dep.found()
+   cairo_found_type = cairo_dep.type_name()
