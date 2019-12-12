@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64_and_32
@@ -30,25 +30,22 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgxps
-COMPONENT_VERSION=	0.2.5
+COMPONENT_VERSION=	0.3.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/libgxps
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:3e7594c5c9b077171ec9ccd3ff2b4f4c4b29884d26d4f35e740c8887b40199a0
+    sha256:1a939fc8fcea9471b7eca46b1ac90cff89a30d26f65c7c9a375a4bf91223fa94
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	1629
 
-TPNO=			34503
+TPNO=			53309
+BUILD_STYLE=		meson
 
 TEST_TARGET= $(SKIP_TEST)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-CONFIGURE_OPTIONS += --disable-static
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
-CONFIGURE_OPTIONS += --enable-gtk-doc
-CONFIGURE_OPTIONS += --enable-man
-CONFIGURE_OPTIONS += --enable-shared
+CONFIGURE_OPTIONS += -Denable-gtk-doc=true
+CONFIGURE_OPTIONS += -Denable-man=true
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += image/library/libjpeg
