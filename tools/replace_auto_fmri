@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #
 # CDDL HEADER START
 #
@@ -23,10 +25,40 @@
 # Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
-#
-# These transforms print only the package name from the manifest.
-#
 
-<include auto_fmri>
-<transform set name=pkg.fmri value=pkg:/(.+)@.* -> print %<1> >
-<transform -> drop>
+set -Eeu -o pipefail
+
+UNCOMMITTED_CHANGES=$(
+	# Make sure that there are no other files changed than ips-buildinfo.mk
+	hg status -nmard |
+	( ggrep -v -F -x make-rules/ips-buildinfo.mk || : )
+)
+if [ -n "$UNCOMMITTED_CHANGES" ]; then
+	echo "There are some uncommitted changes, please fix first:"
+	echo -E "$UNCOMMITTED_CHANGES"
+	exit 1
+fi
+
+cd $(hg root)
+
+# Extract current BRANCHID
+BRANCHID=$(
+	gmake -f - <<'EOT'
+include make-rules/ips-buildinfo.mk
+
+all:
+	@echo $(BRANCHID)
+EOT
+)
+echo "Replacing AUTO_FMRI by $BRANCHID"
+
+# list all files |
+#   take into account only
+#          - history files
+#          - p5m files
+#   replace every AUTO_FMRI in the file unless the line starts with '#'
+hg manifest |
+	ggrep -P '(/history($|\.i386|\.sparc)|\.p5m$)' |
+	xargs perl -pi -e 's/AUTO_FMRI/'"$BRANCHID"'/g unless m/^\s*#/'
+
+hg diff

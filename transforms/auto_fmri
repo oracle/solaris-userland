@@ -23,10 +23,6 @@
 # Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
-#
-# These transforms print only the package name from the manifest.
-#
-
-<include auto_fmri>
-<transform set name=pkg.fmri value=pkg:/(.+)@.* -> print %<1> >
-<transform -> drop>
+# Change the AUTO_FMRI string into current $(BRANCHID)
+<transform depend fmri=.*AUTO_FMRI -> edit fmri AUTO_FMRI $(BRANCHID)>
+<transform set name=pkg.fmri value=.*AUTO_FMRI -> edit value AUTO_FMRI $(BRANCHID)>

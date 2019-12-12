@@ -291,33 +291,37 @@ Renames
 ============
 Package FMRI
 ============
-There are two kinds of FMRI in userland - automatic and manual.
+The FMRI is specified in manifest (*.p5m) file as
 
-Automatic is generated from make-rules/ips-buildinfo.mk. It is used for most of
-the components. Every time you build the component it receives FMRI according
-to ips-buildinfo.mk issues.
+value=pkg:/archiver/unrar@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 
-Manual FMRI is entered once by hand and remains the same until it's changed by
-hand again. This is used for obsolete and renamed packages. We say that package
-X was removed in build Y. And Y remains the same in every build since that
-moment. We could theoretically have Y automatic too (which would mean something
-like "yes, in this build package X is still obsoleted). But that would
-unnecessarily increase the IPS repository size.
+ - The package name is hardcoded
+ - IPS_COMPONENT_VERSION defaults to $(COMPONENT_VERSION), but you can override
+   it in the Makefile if you need to (for example when the component version
+   contains letters).
+ - BUILD_VERSION is specified in make-rules/ips-buildinfo.mk and is set by
+   gatekeeper when closing a gate
 
-For example, when userland build 5 is closed, all automatic FMRI packages have
-FMRI corresponding to build 5. While build 6 is opened, the packages still
-receive build 5 FMRI. Once the gate is closed again the packages receive FMRI
-corresponding to build 6. That means that the packages have all the time FMRI
-smaller than what they will have during the build release. For that reason if
-you touch manual FMRI package, you have to give it FMRI of the upcoming build.
-Otherwise your package will appear to be 'old' and the change won't be accepted
-by release engineering.
+This means that with every build the FMRI is increased as gatekeeper modifies
+ips-buildinfo.mk. This also means that if you have an old workspace you are
+generating packages with an old FMRI and pkglint will print an error saying
+that packages with the higher FMRI already exist.
 
-Since this is error prone there are automatic checks in the build process which
-will catch such issue. And because such checks must be able to determine
-whether package has automatic or manual FMRI all 'obsolete' and 'rename'
-packages are being treated as manual FMRI, other packages are automatic.
-Exceptions are possible after discussing with gatekeepers.
+Obsolete and renamed packages need special treatment. We need to specify that
+the obsolete package has 'fixed' FMRI. No matter in which build the package is
+built, it must have constant FMRI. This can be seen in the 'history' files. Or
+for example in
+
+components/meta-packages/history/docbook.p5m:
+  set name=pkg.fmri value=pkg:/data/docbook@2.30.0,5.11-0.175.0.0.0.0.0
+
+The problem is that engineer does not know into which build his change will go
+so can't specify the FMRI manually. In such situations he can use AUTO_FMRI
+keyword. This is replaced by transforms/auto_fmri script by current build
+number. During gate close the gatekeeper replaces all the AUTO_FMRI keywords by
+the current build number and so the FMRI value is 'fixed' since that moment.
+
+Gatekeeper uses $(hg root)/tools/replace_auto_fmri for that job.
 
 
 ==============================

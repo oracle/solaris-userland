@@ -72,6 +72,7 @@ PKG_MACROS =		CONSOLIDATION=$(CONSOLIDATION)
 PKG_MACROS +=		BUILD_VERSION=$(BUILD_VERSION)
 PKG_MACROS +=		OS_RELEASE=$(OS_RELEASE)
 PKG_MACROS +=		PKG_SOLARIS_VERSION=$(PKG_SOLARIS_VERSION)
+PKG_MACROS +=		BRANCHID=$(BRANCHID)
 
 PKG_OPTIONS +=		$(PKG_MACROS:%=-D %)
 
@@ -83,11 +84,13 @@ $(BUILD_DIR):
 
 $(MANIFEST_BASE)-%.mogrified: %.p5m $(BUILD_DIR)
 	$(PKGMOGRIFY) $(PKG_OPTIONS) $< \
-	              $(WS_TOP)/transforms/incorporate > $@
+	              $(WS_TOP)/transforms/incorporate \
+		      $(WS_TOP)/transforms/auto_fmri > $@
 
 $(MANIFEST_BASE)-%.histogrified: $(MANIFEST_BASE)-%.p5m $(BUILD_DIR)
 	$(PKGMOGRIFY) $(PKG_OPTIONS) $< \
-	              $(WS_TOP)/transforms/incorporate > $@
+	              $(WS_TOP)/transforms/incorporate \
+		      $(WS_TOP)/transforms/auto_fmri > $@
 
 $(MANIFEST_BASE)-%.published: $(MANIFEST_BASE)-%.mogrified $(BUILD_DIR)
 	$(call log-package-publish, $<)
