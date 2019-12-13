@@ -57,11 +57,8 @@ COMPONENT_PREP_ACTION = \
 
 # Remove Linux specific functionality.
 CONFIGURE_OPTIONS += ac_cv_dnet_linux_pf_packet=no
-
 CONFIGURE_OPTIONS +=	--with-check=/usr
-
-# Currently only support for Python 2.7.
-CONFIGURE_OPTIONS +=	--with-python=$(PYTHON.2.7.$(BITS))
+CONFIGURE_OPTIONS +=	--with-python=no
 
 PKG_MACROS +=		MACHINE=$(shell uname -m)
 
@@ -97,5 +94,4 @@ TEST_LIBPATH.64 =	$(PROTOUSRLIBDIR64)
 COMPONENT_TEST_ENV +=	LD_LIBRARY_PATH=$(TEST_LIBPATH.$(BITS))
 
 REQUIRED_PACKAGES += developer/test/check
-REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += shell/ksh93
