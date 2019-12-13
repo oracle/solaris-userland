@@ -20,24 +20,23 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libevent
-COMPONENT_VERSION=	2.1.8
+COMPONENT_VERSION=	2.1.11
 COMPONENT_PROJECT_URL=	http://libevent.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-stable
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:965cc5a8bb46ce4199a47e9b2c9e1cae3b137e8356ffdad6d94d3b9069b71dc2
+    sha256:d0c3b41baf7b8863a3dbae8be4277ea52f9a2698b3eff6d14991b8a60025cf16
 COMPONENT_ARCHIVE_URL=	https://github.com/libevent/libevent/releases/download/release-$(COMPONENT_VERSION)-stable/$(COMPONENT_ARCHIVE)
-COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/libevent
 COMPONENT_ANITYA_ID=	1606
 
-TPNO=			43396
+TPNO=			55621
 
 TEST_TARGET= install $(TEST_32_and_64)
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_32_and_64)
@@ -73,22 +72,17 @@ COMPONENT_TEST_ENV +=	LD_LIBRARY_PATH=$(TEST_LIBPATH.$(BITS))
 COMPONENT_TEST_TARGETS =	verify
 COMPONENT_SYSTEM_TEST_TARGETS =	verify
 
-# \x24 represents the character '$'
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+
 COMPONENT_TEST_TRANSFORMS += \
-	'-e "s/^type: .* OKAY\x24/TYPE-COUNT-LINE OKAY/" ' \
-	'-e "/cp test.sh test-script.sh/d" ' \
-	'-e "/Entering directory/d"' \
-	'-e "/Leaving directory/d"' \
-	'-e "/^mv -f/d"' \
-	'-e "/^make/d"' \
-	'-e "s|^[ ]*CC.*|XXX_CC_XXX|g" ' \
-	'-e "s|^.*$(CC).*$$|XXX_CC_XXX|g" ' \
-	'-e "s|^.*source=.*libtool=no.*$$|XXX_CC_XXX|g" ' \
-	'-e "s|^.*DEPDIR=.deps.*$$|XXX_CC_XXX|g" ' \
-	'-re "s|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+|XXX_IP_XXX|g" ' \
-	'-e "/^XXX_CC_XXX$$/d" '
+	'-n ' \
+	'-e "/TOTAL/p" ' \
+	'-e "/SKIP/p" ' \
+	'-e "/PASS/p" ' \
+	'-e "/FAIL/p" ' \
+	'-e "/ERROR/p" '
 
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
-REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
