@@ -38,17 +38,10 @@ TPNO                   = 9483
 
 include $(WS_MAKE_RULES)/common.mk
 
-# Not Python 3.x ready due to syntax errors
-PYTHON_VERSION=2.7
-
 COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -if)
 
 # The tests can leave a socket behind, which makes the tests fail next time
 COMPONENT_PRE_TEST_ACTION += rm -f /tmp/fam-$$LOGNAME/fam-test
-
-# The test suite sets permission on the temp dir to 000 and 'gmake clean' is
-# not able to remove it afterwards
-PRE_CLEAN_ACTION = chmod 777 $(BUILD_DIR)/*/python/tests/temp_dir &> /dev/null || :
 
 # Remove times from the test output
 COMPONENT_TEST_TRANSFORMS += '-e "s/^\(--- result\.[0-9][0-9]*\).*/\1/" '
@@ -67,27 +60,11 @@ COMPONENT_TEST_TRANSFORMS += '-e "/^\*/d"'
 COMPONENT_TEST_TRANSFORMS += '-e "/^!/d"'
 
 # glib-2.0 and friends
-CONFIGURE_OPTIONS +=	DAEMON_LIBS="-lglib-2.0 -lgobject-2.0 -lgio-2.0"
+CONFIGURE_OPTIONS += DAEMON_LIBS="-lglib-2.0 -lgobject-2.0 -lgio-2.0"
 
 # Where the gam_server will be located
-CONFIGURE_OPTIONS    +=      --libexecdir="$(USRLIBDIR)"
+CONFIGURE_OPTIONS += --libexecdir="$(USRLIBDIR)"
+CONFIGURE_OPTIONS += --with-python=no
 
-# Direct the python packages to vendor-packages dir instead of site-packages
-COMPONENT_BUILD_ARGS +=      PYTHON_SITE_PACKAGES=$(PYTHON_VENDOR_PACKAGES)
-
-# Use 64 bit python for 64 bit build
-CONFIGURE_OPTIONS +=      --with-python=$(PYTHON)
-
-# Use 64 bit install path for 64 bit python
-COMPONENT_INSTALL_ARGS += pythondir=$(PYTHON_VENDOR_PACKAGES)
-
-# The 64 bit compilation puts the .so module into .libs directory, but python
-# expects it in .libs/64
-$(BUILD_DIR_64)/.built: COMPONENT_POST_BUILD_ACTION = ( \
-	cd $(@D)/python/.libs ; \
-	mkdir -p 64 ; \
-	cp _gamin.so 64 \
-)
 
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += runtime/python-27
