@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            32_and_64
@@ -30,13 +30,13 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		clutter-gtk
-COMPONENT_VERSION=	1.8.2
+COMPONENT_VERSION=	1.8.4
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:da27d486325490ad3f65d2abf9413aeb8b4a8f7b559e4b2f73567a5344a26b94
+	sha256:521493ec038973c77edcb8bc5eac23eed41645117894aaee7300b2487cb42b06
 COMPONENT_BUGDB=        library/clutter
 COMPONENT_ANITYA_ID=	303
 
-TPNO=			34585
+TPNO=			53993
 
 # Requires a display
 TEST_TARGET = $(SKIP_TEST)
