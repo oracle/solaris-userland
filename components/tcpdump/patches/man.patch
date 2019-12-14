@@ -3,8 +3,8 @@ Patch status: Solaris-specific; not suitable for upstream
 
 Solaris specific documentation changes.
 
---- a/tcpdump.1.in	Thu Oct 24 13:18:23 2019 +0200
-+++ b/tcpdump.1.in	Thu Oct 24 13:19:48 2019 +0200
+--- tcpdump-4.9.2/tcpdump.1.in.orig	2017-07-23 01:33:49.000000000 +0200
++++ tcpdump-4.9.2/tcpdump.1.in  2017-10-03 16:19:45.549056645 +0200
 @@ -20,7 +20,7 @@
  .\" WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
  .\" MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
@@ -27,15 +27,15 @@ Solaris specific documentation changes.
  indicates that XO (`exactly once') was \fInot\fP set.
  
  .SH "SEE ALSO"
--stty(1), pcap(3PCAP), bpf(4), nit(4P), \%pcap-savefile(@MAN_FILE_FORMATS@),
-+stty(1), pcap(3PCAP), bpf(4d), nit(4P), \%pcap-savefile(@MAN_FILE_FORMATS@),
- \%pcap-filter(@MAN_MISC_INFO@), \%pcap-tstamp(@MAN_MISC_INFO@)
+-stty(1), pcap(3PCAP), bpf(4), nit(4P), pcap-savefile(@MAN_FILE_FORMATS@),
++stty(1), pcap(3PCAP), bpf(4d), nit(4P), pcap-savefile(@MAN_FILE_FORMATS@),
+ pcap-filter(@MAN_MISC_INFO@), pcap-tstamp(@MAN_MISC_INFO@)
  .LP
  .RS
---- a/Makefile.in	Thu Oct 24 13:18:23 2019 +0200
-+++ b/Makefile.in	Thu Oct 24 13:19:48 2019 +0200
-@@ -414,13 +414,13 @@
- 	    (mkdir -p $(DESTDIR)$(sbindir); chmod 755 $(DESTDIR)$(sbindir))
+--- tcpdump-4.9.2/Makefile.in.orig      2017-10-04 16:30:03.426803455 +0200
++++ tcpdump-4.9.2/Makefile.in   2017-10-04 16:31:44.545065060 +0200
+@@ -415,13 +415,13 @@
+	    (mkdir -p $(DESTDIR)$(sbindir); chmod 755 $(DESTDIR)$(sbindir))
  	$(INSTALL_PROGRAM) $(PROG) $(DESTDIR)$(sbindir)/$(PROG)
  	$(INSTALL_PROGRAM) $(PROG) $(DESTDIR)$(sbindir)/$(PROG).`cat ${srcdir}/VERSION`
 -	[ -d $(DESTDIR)$(mandir)/man1 ] || \
@@ -44,11 +44,11 @@ Solaris specific documentation changes.
 +	[ -d $(DESTDIR)$(mandir)/man8 ] || \
 +	    (mkdir -p $(DESTDIR)$(mandir)/man8; chmod 755 $(DESTDIR)$(mandir)/man8)
 +	$(INSTALL_DATA) $(PROG).1 $(DESTDIR)$(mandir)/man8/$(PROG).8
- 
+
  uninstall:
  	rm -f $(DESTDIR)$(sbindir)/$(PROG)
 -	rm -f $(DESTDIR)$(mandir)/man1/$(PROG).1
 +	rm -f $(DESTDIR)$(mandir)/man8/$(PROG).8
- 
+
  lint: $(GENSRC)
  	lint -hbxn $(SRC) | \

@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 # Prefer 32-bit as only "binary" delivered is a script with embedded paths.
 BUILD_BITS= 32_and_64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libpcap
-COMPONENT_VERSION=	1.9.1
+COMPONENT_VERSION=	1.8.1
 COMPONENT_PROJECT_URL=	https://www.tcpdump.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:635237637c5b619bcceba91900666b64d56ecb7be63f298f601ec786ce087094
+	sha256:673dbc69fdc3f5a86fb5759ab19899039a8e5e6c631749e48dcd9c6f0c83541e
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)release/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=	library/libpcap
 COMPONENT_ANITYA_ID=	1702
 
-TPNO=			55279
+TPNO=			39211
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
@@ -51,15 +51,7 @@ CFLAGS += -DHAVE_CONFIG_H
 CFLAGS += -DBUILDING_PCAP
 CONFIGURE_OPTIONS  +=	--disable-dbus
 
-#
-# the private header file now depends on other internal header files, but since
-# we use it only to get the pcap structure, it's safe to get rid of them
-#
-COMPONENT_POST_INSTALL_ACTION += $(GSED) -i -e 's/^\#include "varattrs.h"//' $(PROTO_DIR)/usr/include/pcap-int.h;
-COMPONENT_POST_INSTALL_ACTION += $(GSED) -i -e 's/^\#include "fmtutils.h"//' $(PROTO_DIR)/usr/include/pcap-int.h;
-
 REQUIRED_PACKAGES += developer/lexer/flex
 REQUIRED_PACKAGES += developer/parser/bison
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/network/bpf
-REQUIRED_PACKAGES += network/open-fabrics

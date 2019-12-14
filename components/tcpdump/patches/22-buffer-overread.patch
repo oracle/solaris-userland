@@ -1,0 +1,28 @@
+From 511915bef7e4de2f31b8d9f581b4a44b0cfbcf53 Mon Sep 17 00:00:00 2001
+From: Guy Harris <guy@alum.mit.edu>
+Date: Sat, 1 Jun 2019 14:42:09 -0700
+Subject: [PATCH] If decode_prefix6() returns a negative number, don't print
+ buf.
+
+If it returns a negative number, it hasn't necessarily filled in buf, so
+just return immediately; this is similar to the IPv4 code path, wherein
+we just return a negative number, and print nothing, on an error.
+
+This should fix GitHub issue #763.
+---
+ print-hncp.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/print-hncp.c b/print-hncp.c
+index 8be59e37e..3a3c01ea2 100644
+--- a/print-hncp.c
++++ b/print-hncp.c
+@@ -231,6 +231,8 @@ print_prefix(netdissect_options *ndo, const u_char *prefix, u_int max_length)
+         plenbytes += 1 + IPV4_MAPPED_HEADING_LEN;
+     } else {
+         plenbytes = decode_prefix6(ndo, prefix, max_length, buf, sizeof(buf));
++        if (plenbytes < 0)
++            return plenbytes;
+     }
+ 
+     ND_PRINT("%s", buf);

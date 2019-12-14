@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tcpdump
-COMPONENT_VERSION=	4.9.3
+COMPONENT_VERSION=	4.9.2
 COMPONENT_PROJECT_URL=	https://www.tcpdump.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2cd47cb3d460b6ff75f4a9940f594317ad456cfbf2bd2c8e5151e16559db6410
+    sha256:798b3536a29832ce0cbb07fafb1ce5097c95e308a6f592d14052e1ef1505fe79
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)release/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	4947
 
-TPNO=			55280
+TPNO=			37776
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -50,6 +50,10 @@ endif
 
 # Rebuild the configure script so the man pages are normalized.
 COMPONENT_PREP_ACTION = (cd $(@D); autoconf);
+
+# fix my alignment issues instead of falling over on sparc
+studio_ALIGN.sparc.64=-xmemalign=16i
+CONFIGURE_OPTIONS.sparc += ac_cv___attribute__=no
 
 # lazyloading (indirectly enabled by -Bdirect) seems to cause problems with
 # libpcap device enumeration.

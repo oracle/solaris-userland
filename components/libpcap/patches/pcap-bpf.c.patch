@@ -1,15 +1,11 @@
 Adding the "any" pseudo-device since Solaris supports it.
 This is an in-house patch and will eventually be sent upstream.
 
-updated to match changes in
-https://github.com/the-tcpdump-group/libpcap/commit/961ab5ebd1b1b91002dda27cbc79b715b178b6b4#diff-7c51406ee0e6a2ff88c99074abb9e9fa
-https://github.com/the-tcpdump-group/libpcap/commit/2a6286aa06b043240dd8c3524668455562d466d8#diff-86dce481a955f7222b7d09723d87f0e6
-
 --- a/pcap-bpf.c	2016-10-25 17:07:59.000000000 -0700
 +++ b/pcap-bpf.c	2017-10-03 16:14:50.480166759 -0700
 @@ -2661,7 +2661,17 @@
  	 */
- 	if (pcap_findalldevs_interfaces(devlistp, errbuf, check_bpf_bindable) == -1)
+ 	if (pcap_findalldevs_interfaces(alldevsp, errbuf, check_bpf_bindable) == -1)
  		return (-1);	/* failure */
 -
 + 
@@ -18,11 +14,11 @@ https://github.com/the-tcpdump-group/libpcap/commit/2a6286aa06b043240dd8c3524668
 +	 * Adding the "any" pseudo-device
 +	 */
 +	const char any_descr[] = "Pseudo-device that captures on all interfaces";
-+	if (add_dev(devlistp, "any", IFF_UP|IFF_RUNNING,
-+	    any_descr, errbuf) == NULL)
++	if (pcap_add_if(alldevsp, "any", IFF_UP|IFF_RUNNING,
++	    any_descr, errbuf) < 0)
 +		return (-1);
 +#endif
 + 
  #if defined(__FreeBSD__) && defined(SIOCIFCREATE2)
- 	if (finddevs_usb(devlistp, errbuf) == -1)
+ 	if (finddevs_usb(alldevsp, errbuf) == -1)
  		return (-1);
