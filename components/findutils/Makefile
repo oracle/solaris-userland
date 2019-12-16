@@ -48,7 +48,7 @@ CONFIGURE_OPTIONS +=	--disable-leaf-optimisation
 
 # Explicitly specify the preferred Python version to prevent
 # possible unexpected future changes.
-CONFIGURE_ENV += PYTHON="$(PYTHON.2.7)"
+CONFIGURE_ENV += PYTHON="$(PYTHON.3.7)"
 
 # Run all the tests even if there is a failure
 COMPONENT_TEST_ARGS += -k
@@ -69,5 +69,6 @@ unexport SHELLOPTS
 # test dependencies:
 REQUIRED_PACKAGES += developer/versioning/cvs
 REQUIRED_PACKAGES += developer/versioning/git
+REQUIRED_PACKAGES += runtime/python-37
 
 REQUIRED_PACKAGES += system/library/math
