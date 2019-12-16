@@ -7,20 +7,14 @@ optimization for our build process.
 
 Patch was written in-house.
 
-
-
---- Cython-0.28.2/Makefile.orig	2018-04-26 14:00:27.215975827 -0700
-+++ Cython-0.28.2/Makefile	2018-04-26 14:00:41.387250608 -0700
-@@ -7,11 +7,11 @@
- MANYLINUX_IMAGE_686=quay.io/pypa/manylinux1_i686
- 
+--- Cython-0.29.14/Makefile
++++ Cython-0.29.14/Makefile
+@@ -10,7 +10,7 @@ MANYLINUX_IMAGE_686=quay.io/pypa/manylin
  all:    local
  
  local:
 -	${PYTHON} setup.py build_ext --inplace
 +	${PYTHON} setup.py build_ext
  
- sdist: dist/Cython-$(VERSION).tar.gz
+ sdist: dist/$(PACKAGENAME)-$(VERSION).tar.gz
  
- dist/Cython-$(VERSION).tar.gz:
- 	$(PYTHON) setup.py sdist

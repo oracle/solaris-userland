@@ -27,20 +27,17 @@ BUILD_BITS =		32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Cython
-COMPONENT_VERSION=	0.28.2
+COMPONENT_VERSION=	0.29.14
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=		\
-    sha256:e0ab1a807792f60fb5cd9efc0044cbeefa0a69d39e1003bd9cfa7e66916608b9
+    sha256:6f91418bc9267d9d242fa0831f5afdd2b74224566f5fde3f1a808f24862a7c64
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=  http://cython.org/
 COMPONENT_BUGDB=	python-mod/cython
 COMPONENT_ANITYA_ID=	12679
 
-TPNO=			42613
-
-# This component is not yet built for Python 3.7
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
+TPNO=			55642
 
 # Avoid warnings about use of the deprecated NumPy API. Please see
 # http://docs.cython.org/en/latest/src/reference/compilation.html#configuring-the-c-build
@@ -64,16 +61,16 @@ COMPONENT_POST_INSTALL_ACTION += \
                 $(MV) $$c $(MACH64)/$$c-$(PYTHON_VERSION) ; \
             done; \
          else \
-	    for c in cython cythonize cygdb; do \
-	         $(MV) $$c $$c-$(PYTHON_VERSION) ; \
-	    done; fi )
-
+            for c in cython cythonize cygdb; do \
+                $(MV) $$c $$c-$(PYTHON_VERSION) ; \
+            done; fi )
 
 COMPONENT_TEST_ENV += CC=gcc CXX=g++ MAKE=gmake
 COMPONENT_TEST_DIR =    $(SOURCE_DIR)
 COMPONENT_TEST_CMD =    $(PYTHON) ./runtests.py
 COMPONENT_TEST_ARGS=    --no-cleanup-failures
 
+# common targets
 build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)
