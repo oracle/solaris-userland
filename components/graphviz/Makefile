@@ -57,15 +57,13 @@ INSTALL_TARGET += $(PROTO_DIR)/$(PYTHON.3.7.VENDOR_PACKAGES)/gv.pyc
 
 include $(WS_MAKE_RULES)/common.mk
 
-PATH =		/usr/php/7.1/bin:/usr/bin:/usr/gnu/bin
+PATH =		/usr/php/7.3/bin:/usr/bin:/usr/gnu/bin
 
 # GMP header files for the guile extension (no --with- flag)
 # The guile build is broken with studio (15732452), so we disable this for now.
 # CPPFLAGS +=	-I/usr/include/gmp
 # Java header files (--with-javaincludedir allows for only one directory)
 CPPFLAGS +=	-I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/solaris
-# PHP header files (no --with- flag)
-CPPFLAGS +=	$(shell PATH=$(PATH) php-config --includes)
 
 # Make sure to use the right python, depending on the 32/64-bit build.
 CONFIGURE_ENV +=	PYTHON2=$(PYTHON.2.7)
@@ -104,6 +102,25 @@ $(INSTALL_32): COMPONENT_INSTALL_ARGS += LUA_INSTALL_DIR=$(USRLIBDIR)/lua/5.2
 $(INSTALL_64): COMPONENT_INSTALL_ARGS += LUA_INSTALL_DIR=$(USRLIBDIR)/lua/5.2/64
 # Use GNU ln, which supports the -r (--relative) option.
 COMPONENT_INSTALL_ARGS += LN_S="gln -s"
+
+# build php module also for older php versions
+PHP_71_CONFIG = /usr/php/7.1/bin/php-config
+PHP_71_INCLUDES := $(shell $(PHP_71_CONFIG) --includes)
+PHP_71_INSTALL_DIR := $(shell $(PHP_71_CONFIG) --extension-dir)
+PHP_71_LDFLAGS := $(shell $(PHP_71_CONFIG) --ldflags)
+PHP_71_LIBS := $(shell $(PHP_71_CONFIG) --libs)
+
+$(CONFIGURE_64): COMPONENT_POST_CONFIGURE_ACTION += \
+    (cd $(@D) ; cp -rp tclpkg/gv tclpkg/gv-php-71 ; \
+    $(GSED) -i '/^SUBDIRS =/s|$$| gv-php-71|' tclpkg/Makefile ; \
+    $(GSED) -i \
+     -e '/^PHP_INCLUDES =/s|=.*$$|= $(PHP_71_INCLUDES)|' \
+     -e '/^PHP_INSTALL_DIR =/s|=.*$$|= $(PHP_71_INSTALL_DIR)|' \
+     -e '/^PHP_LIBS =/s|=.*$$|= $(PHP_71_LDFLAGS) $(PHP_71_LIBS)|' \
+     `find tclpkg/gv-php-71 -name Makefile` ) ;
+
+$(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
+    (cd $(@D)/tclpkg/gv-php-71 ; gmake V=1 libgv_php.la ) ;
 
 # Create the config file once the 32-bit build is complete.  This runs the bits
 # we just built, so we have to set a handful of variables to the right place.
@@ -174,6 +191,7 @@ REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += web/php-71
+REQUIRED_PACKAGES += web/php-73
 REQUIRED_PACKAGES += x11/library/freeglut
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcursor

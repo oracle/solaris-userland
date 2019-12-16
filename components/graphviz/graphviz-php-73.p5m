@@ -23,9 +23,9 @@
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
 set name=pkg.fmri \
-    value=pkg:/image/graphviz/graphviz-php@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
-set name=pkg.summary value="PHP bindings for Graphviz"
-set name=com.oracle.info.description value="PHP bindings for Graphviz"
+    value=pkg:/image/graphviz/graphviz-php-73@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="PHP 7.3 bindings for Graphviz"
+set name=com.oracle.info.description value="PHP 7.3 bindings for Graphviz"
 set name=com.oracle.info.tpno value=$(TPNO)
 set name=info.classification \
     value="org.opensolaris.category.2008:Applications/System Utilities"
@@ -33,14 +33,12 @@ set name=info.source-url value=$(GIT_REPO)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2011/269
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file path=usr/lib/$(MACH64)/graphviz/php/gv.php
-file path=usr/share/graphviz/demo/modgraph.php
-file path=usr/share/graphviz/doc/pdf/gv.3php.pdf
-file usr/share/man/man3/gv.3php path=usr/share/man/man3/gv-php.3
+file gv.ini path=etc/php/7.3/conf.d/gv.ini
+link path=usr/lib/$(MACH64)/graphviz/php/gv-73.so target=libgv_php73.so
+file build/$(MACH64)/tclpkg/gv/.libs/libgv_php.soT \
+    path=usr/lib/$(MACH64)/graphviz/php/libgv_php73.so
+link path=usr/php/7.3/lib/extensions/no-debug-zts-20180731/gv.so \
+    target=../../../../../lib/$(MACH64)/graphviz/php/libgv_php73.so
+link path=var/php/7.3/pear/gv.php \
+    target=../../../../usr/lib/$(MACH64)/graphviz/php/gv.php
 license graphviz.license license=EPL1.0
-depend type=conditional \
-    fmri=image/graphviz/graphviz-php-71@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION) \
-    predicate=web/php-71
-depend type=conditional \
-    fmri=image/graphviz/graphviz-php-73@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION) \
-    predicate=web/php-73
