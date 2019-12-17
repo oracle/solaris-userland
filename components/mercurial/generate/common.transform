@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file link -> default pkg.type genfrag>
@@ -34,3 +34,14 @@
 
 <transform file link path=usr/lib -> set pkg.type pyver>
 <transform file link path=usr/bin -> set pkg.type pyver>
+
+# Python versions deliver the .so files differently:versions
+# - Python 2.7 base85.so
+# - Python 3.7 base85.cpython-37m.so
+# In the manifest we use
+# file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/cext/base85.so
+# and we have transforms which make the manifest use the file accordingly for
+# each python.
+# Here we have opposite problem, we have to construct the
+# "base85.so" manifest out of ".cpython-37m.so".
+<transform file path=(.*)\.cpython-37m\.so$ -> set path %<1>.so>

@@ -32,5 +32,7 @@
 # pkgdepend complains about a "__main__" import: bug 15710704
 <transform file path=.*/statprof.py$ -> set pkg.depend.bypass-generate .*>
 
+<transform file path=.*/vendor-packages/mercurial/hg$ -> set mode 0555>
+
 <transform link path=usr/bin/hg target=hg-(\d.\d) -> set target hg-$!(PYVER)>
 <transform link path=usr/bin/hg -> edit target "\$!\((.*)\)" "$(\1)">

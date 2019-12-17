@@ -21,9 +21,9 @@ patches/manpage.patch" to regenerate the manpages with the updated text
 (found in rst.patch) with the patched hgmanpage.py, and updates the
 manpage.patch file.
 
---- mercurial.hg/doc/hgmanpage.py	2016-10-09 20:00:17.207404849 -0700
-+++ mercurial.hg/doc/hgmanpage.py	2016-10-10 10:04:03.695820057 -0700
-@@ -202,6 +202,7 @@
+--- mercurial-5.1.1/doc/hgmanpage.py
++++ mercurial-5.1.1/doc/hgmanpage.py
+@@ -202,6 +202,7 @@ self._docinfo_names = {}    # to get nam
          self._in_docinfo = None
          self._active_table = None
          self._in_literal = False
@@ -31,7 +31,7 @@ manpage.patch file.
          self.header_written = 0
          self._line_block = 0
          self.authors = []
-@@ -217,15 +218,15 @@
+@@ -217,15 +218,15 @@ # ``.ft P`` or ``\\fP`` pop from stack.
          # ``B`` bold, ``I`` italic, ``R`` roman should be available.
          # Hopefully ``C`` courier too.
          self.defs = {
@@ -50,7 +50,7 @@ manpage.patch file.
                  'emphasis': ('\\fI', '\\fP'),
                  'strong' : ('\\fB', '\\fP'),
                  'term' : ('\n.B ', '\n'),
-@@ -272,6 +273,7 @@
+@@ -272,6 +273,7 @@ elif (self.body[i - 1][:3] == '.B ' and
                      self.body[i - 2][:4] == '.TP\n'):
                      self.body[i] = '.\n'
                  elif (self.body[i - 1] == '\n' and
@@ -58,7 +58,7 @@ manpage.patch file.
                      self.body[i - 2][0] != '.' and
                      (self.body[i - 3][:7] == '.TP\n.B '
                          or self.body[i - 3][:4] == '\n.B ')
-@@ -289,7 +291,6 @@
+@@ -289,7 +291,6 @@ text = node.astext()
          text = text.replace('\\','\\e')
          replace_pairs = [
              (u'-', u'\\-'),
@@ -66,7 +66,7 @@ manpage.patch file.
              (u'´', u"\\'"),
              (u'`', u'\\(ga'),
              ]
-@@ -302,6 +303,15 @@
+@@ -302,6 +303,15 @@ # prevent interpretation of "." at line
              if text[0] == '.':
                  text = '\\&' + text
              text = text.replace('\n.', '\n\\&.')
@@ -82,7 +82,7 @@ manpage.patch file.
          self.body.append(text)
  
      def depart_Text(self, node):
-@@ -386,7 +396,6 @@
+@@ -389,7 +399,6 @@ # .TH title_upper section date source ma
          if self.header_written:
              return
          self.body.append(self.header())
@@ -90,7 +90,7 @@ manpage.patch file.
          self.header_written = 1
  
      def visit_address(self, node):
-@@ -800,8 +809,10 @@
+@@ -803,8 +812,10 @@ pass
  
      def visit_literal(self, node):
          self.body.append(self.defs['literal'][0])

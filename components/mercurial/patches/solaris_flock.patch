@@ -25,20 +25,9 @@ the test suite to pass. The fcntl module is not opening the files but rather
 it's getting the fd from caller, so I believe that the fix should go to
 mercurial.
 
---- mercurial-4.9.1/hgext/remotefilelog/extutil.py
-+++ mercurial-4.9.1/hgext/remotefilelog/extutil.py
-@@ -43,7 +43,7 @@ def flock(lockpath, description, timeout
-     util.makedirs(os.path.dirname(lockpath))
-     with open(lockpath, 'a'):
-         pass
--    lockfd = os.open(lockpath, os.O_RDONLY, 0o664)
-+    lockfd = os.open(lockpath, os.O_RDWR, 0o664)
-     start = time.time()
-     while True:
-         try:
---- mercurial-4.9.1/hgext/fastannotate/context.py
-+++ mercurial-4.9.1/hgext/fastannotate/context.py
-@@ -766,7 +766,7 @@ class pathhelper(object):
+--- mercurial-5.1.1/hgext/fastannotate/context.py
++++ mercurial-5.1.1/hgext/fastannotate/context.py
+@@ -766,7 +766,7 @@ creating temporary symlinks."""
          import fcntl
          lockpath = self.linelogpath
          util.makedirs(os.path.dirname(lockpath))
@@ -47,3 +36,14 @@ mercurial.
          fcntl.flock(lockfd, fcntl.LOCK_EX)
          try:
              yield
+--- mercurial-5.1.1/hgext/remotefilelog/extutil.py
++++ mercurial-5.1.1/hgext/remotefilelog/extutil.py
+@@ -43,7 +43,7 @@ # make sure lock file exists
+     util.makedirs(os.path.dirname(lockpath))
+     with open(lockpath, 'a'):
+         pass
+-    lockfd = os.open(lockpath, os.O_RDONLY, 0o664)
++    lockfd = os.open(lockpath, os.O_RDWR, 0o664)
+     start = time.time()
+     while True:
+         try:

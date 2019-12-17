@@ -8,10 +8,9 @@ sshpeer: try harder to snag stderr when stdout closes unexpectedly
 
 Resolves test failures on FreeBSD, but I'm not happy about the fix.
 
-diff --git a/mercurial/sshpeer.py b/mercurial/sshpeer.py
---- a/mercurial/sshpeer.py
-+++ b/mercurial/sshpeer.py
-@@ -127,9 +127,17 @@ class doublepipe(object):
+--- mercurial-5.1.1/mercurial/sshpeer.py
++++ mercurial-5.1.1/mercurial/sshpeer.py
+@@ -127,9 +127,17 @@ _forwardoutput(self._ui, self._side)
              if mainready:
                  meth = getattr(self._main, methname)
                  if data is None:
@@ -28,6 +27,6 @@ diff --git a/mercurial/sshpeer.py b/mercurial/sshpeer.py
 +                    # closed prematurely.
 +                    _forwardoutput(self._ui, self._side)
 +                return r
-
+ 
      def close(self):
          return self._main.close()

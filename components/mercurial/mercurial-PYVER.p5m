@@ -23,6 +23,10 @@
 # Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
+# Make sure that python 2.7 is default for now
+<transform link path=usr/bin/hg target=.*/python27/.* -> set mediator-priority vendor>
+# Concurrent module is available only for python 2.7
+<transform file dir link path=.*/python3.7/.*/concurrent/.* -> drop>
 set name=pkg.fmri \
     value=pkg:/developer/versioning/mercurial-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="The Mercurial Source Control Management System"
@@ -35,11 +39,10 @@ set name=info.classification \
     value="org.opensolaris.category.2008:Development/Source Code Management"
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2006/417
+set name=org.opensolaris.arc-caseid value=PSARC/2006/417 value=PSARC/2020/001
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-#
-link path=usr/bin/hg target=hg-$(PYVER)
-file path=usr/bin/hg-$(PYVER)
+link path=usr/bin/hg target=../lib/python$(PYVER)/vendor-packages/mercurial/hg \
+    mediator=hg-python mediator-version=$(PYVER)
 file path=usr/lib/python$(PYVER)/vendor-packages/hgdemandimport/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hgdemandimport/demandimportpy2.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hgdemandimport/demandimportpy3.py
@@ -172,7 +175,6 @@ file path=usr/lib/python$(PYVER)/vendor-packages/hgext/remotefilelog/shallowveri
 file path=usr/lib/python$(PYVER)/vendor-packages/hgext/remotenames.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hgext/schemes.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hgext/share.py
-file path=usr/lib/python$(PYVER)/vendor-packages/hgext/shelve.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hgext/show.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hgext/sparse.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hgext/split.py
@@ -280,6 +282,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/help/internals/change
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/help/internals/config.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/help/internals/extensions.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/help/internals/linelog.txt
+file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/help/internals/mergestate.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/help/internals/requirements.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/help/internals/revlogs.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/help/internals/wireprotocol.txt
@@ -294,6 +297,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/help/scripting.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/help/subrepos.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/help/templates.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/help/urls.txt
+file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/hg mode=0555
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/hg.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/hgweb/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/hgweb/common.py
@@ -379,6 +383,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/scmutil.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/scmwindows.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/server.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/setdiscovery.py
+file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/shelve.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/similar.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/simplemerge.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/smartset.py
@@ -609,9 +614,11 @@ file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/urllibcompat.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/util.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/utils/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/utils/cborutil.py
+file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/utils/compression.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/utils/dateutil.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/utils/interfaceutil.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/utils/procutil.py
+file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/utils/repoviewutil.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/utils/storageutil.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/utils/stringutil.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mercurial/verify.py
