@@ -1,6 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/python3.7
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 # this script finds common parts in <loc>.src files
 # the common parts are saved to 'common/<lc_type>/data.<hash>'
@@ -13,11 +13,11 @@
 
 import os, re, sys, hashlib
 
-hash_prefix=6
+hash_prefix = 6
 
 hdr = """
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 # The following content could be generated from following sources:
 #
@@ -52,56 +52,69 @@ locs = dict()
 build_dir = sys.argv[1]
 
 
-def read_posix(fn, cs = lcc):
+def read_posix(filename, cs=lcc):
+    # default comment_char and escape_char
     comment_char = '#'
     escape_char = '\\'
+
     doc = list()
-
     last = list()
-    with open(fn) as fd:
-        for l in fd:
-            l = l.strip()
+    with open(filename, errors="ignore") as ifile:
+        for line in ifile:
+            line = line.strip()
 
-            if l.startswith("comment_char"):
-                comment_char = l[13]
+            # handle comment_char and escape_char overrides
+            if line.startswith("comment_char"):
+                comment_char = line[13]
+            elif line.startswith("escape_char"):
+                escape_char = line[12]
 
-            elif l.startswith("escape_char"):
-                escape_char = l[12]
+            # skip all commented lines
+            elif not line.startswith(comment_char):
 
-            elif not l.startswith(comment_char):
-                l = l.replace("{0}{0}".format(escape_char), escape_char)
-                if l.endswith(escape_char):
-                    last.append(l[:-1])
+                # unescape escaped escapes '\\' to just a single '\'
+                line = line.replace(f"{escape_char}{escape_char}", escape_char)
+                if line.endswith(escape_char):
+                    # this line has escaped newline; save if for later
+                    last.append(line[:-1])
                 else:
                     if last:
-                        l = ''.join(last) + l
+                        # handle previous parts of the line
+                        line = ''.join(last) + line
                         last = list()
-                    if l:
-                        doc.append(l)
+                    if line:
+                        doc.append(line)
 
     loc = dict()
     for lc in cs:
-        d = "\n".join(doc[doc.index(lc)+1:doc.index("END "+lc)])
-        m = re_include.match(d)
-        loc.update(read_posix(os.path.join(build_dir, "include", m.group(1)), (lc,)) if m else { lc: d })
+        # get all lines corresponding to given LC_* variable
+        lines = doc[doc.index(lc) + 1:doc.index("END " + lc)]
+        joined = "\n".join(lines)
+
+        match = re_include.match(joined)
+        if match:
+            loc.update(read_posix(os.path.join(build_dir, "include", match.group(1)), (lc,)))
+        else:
+            loc.update({lc: joined})
 
     return loc
 
 
-for l in sys.argv[2:]:
-    cset = re_cset.match(l).group(1)
+for locale in sys.argv[2:]:
 
-    d = read_posix(os.path.join(build_dir,l,"posix.src"))
-    locs[l] = { lc: hashlib.sha1(cset + d[lc]).hexdigest()[:hash_prefix] for lc in d.keys() }
+    # get charset of given locale
+    cset = re_cset.match(locale).group(1)
 
-    for lc in locs[l].keys():
-        h = locs[l][lc]
+    d = read_posix(os.path.join(build_dir, locale, "posix.src"))
+    locs[locale] = {lc: hashlib.sha1((cset + d[lc]).encode()).hexdigest()[:hash_prefix] for lc in d}
+
+    for lc, h in locs[locale].items():
 
         # sanity checks that 8 chars prefix of sha1 is unique
         assert h not in data or data[h]['val'] == d[lc]
 
         if h not in data:
-            data[h] = { 'val': d[lc], 'n': 0, 'cset': cset }
+            data[h] = {'val': d[lc], 'n': 0, 'cset': cset}
         else:
             data[h]['n'] += 1
 
@@ -109,20 +122,21 @@ for l in sys.argv[2:]:
             assert data[h]['cset'] == cset
 
 
-for l,loc in locs.iteritems():
+for l, loc in locs.items():
     # generate "full" version for localedef src package
-    with open("{}/{}/posix.localedef_full".format(build_dir, l), "w") as fd:
-        fd.write(hdr)
+    with open(f"{build_dir}/{l}/posix.localedef_full", "w") as ofile:
+        ofile.write(hdr)
         for lc in lcc:
-            fd.write("\n\n{0}\n\n{1}\n\nEND {0}\n".format(lc, data[loc[lc]]['val']))
+            ofile.write(f"\n\n{lc}\n\n{data[loc[lc]]['val']}\n\nEND {lc}\n")
+
 
 common_done = list()
-for l,loc in locs.iteritems():
+for l, loc in locs.items():
     # generate "point" version for locale compilation
-    with open("{}/{}/posix.localedef".format(build_dir, l), "w") as fd:
+    with open(f"{build_dir}/{l}/posix.localedef", "w") as ofile:
         for lc in lcc:
             h = loc[lc]
-            cname = "data.{}".format(h)
+            cname = f"data.{h}"
 
             is_point = data[h]['n']
 
@@ -130,22 +144,22 @@ for l,loc in locs.iteritems():
             is_point = is_point and data[h]['cset'] == 'UTF-8'
 
             # the categories are not big enough to make sharing effective
-            is_point = is_point and lc not in [ 'LC_NUMERIC', 'LC_MONETARY', 'LC_TIME', 'LC_MESSAGES' ]
+            is_point = is_point and lc not in ['LC_NUMERIC', 'LC_MONETARY', 'LC_TIME', 'LC_MESSAGES']
 
             # if en_US.UTF-8 changed, the ON *.sort files need to be changed,
             # see 22014135 for details. To avoid it, en_US.UTF-8 is generated "standalone"
             is_point = is_point and l != 'en_US.UTF-8'
 
-            fd.write("\n\n{}\n\n".format(lc))
-            fd.write('point "common/{}/{}"'.format(lc,cname) if h not in data or is_point else data[h]['val'])
-            fd.write("\n\nEND {}\n".format(lc))
+            ofile.write(f"\n\n{lc}\n\n")
+            ofile.write(f'point "common/{lc}/{cname}"' if h not in data or is_point else data[h]['val'])
+            ofile.write(f"\n\nEND {lc}\n")
 
             if is_point and h not in common_done:
-                with open("{}/common/{}.localedef".format(build_dir, cname), "w") as fd2:
-                    fd2.write(hdr)
-                    fd2.write("\n\n{}\n\n".format(lc))
-                    fd2.write(data[h]['val'])
-                    fd2.write("\nEND {}\n".format(lc))
+                with open(f"{build_dir}/common/{cname}.localedef", "w") as ofile2:
+                    ofile2.write(hdr)
+                    ofile2.write(f"\n\n{lc}\n\n")
+                    ofile2.write(data[h]['val'])
+                    ofile2.write(f"\nEND {lc}\n")
 
-                print("{}\t{}\t{}\t{}".format(cname, lc, l, "\t".join([ x for x in locs.keys() if locs[x][lc] == h and l != x])))
+                print("{}\t{}\t{}\t{}".format(cname, lc, l, "\t".join([x for x in locs if locs[x][lc] == h and l != x])))
                 common_done.append(h)
