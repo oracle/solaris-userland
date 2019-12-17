@@ -11,8 +11,16 @@
 #	https://github.com/proftpd/proftpd/issues/846
 #
 
-diff --git a/src/main.c b/src/main.c
-index 1ead27fb9..78516b5f7 100644
+--- a/NEWS
++++ b/NEWS
+@@ -27,6 +27,7 @@
+ - Bug 4295 - AllowChrootSymlinks off does not check entire DefaultRoot path
+   for symlinks (CVE-2017-7418).
+ - Bug 4299 - TimeoutLogin not working for SFTP connections.
++- Issue 846 - Remote denial-of-service due to issue in network IO handling.
+ 
+ 1.3.6rc4 - Released 15-Jan-2017
+ --------------------------------
 --- a/src/main.c
 +++ b/src/main.c
 @@ -462,6 +462,7 @@ int pr_cmd_read(cmd_rec **res) {
