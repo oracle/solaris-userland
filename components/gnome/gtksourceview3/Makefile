@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gtksourceview
-COMPONENT_VERSION=	3.24.0
+COMPONENT_VERSION=	3.24.10
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/gtkmm/stable/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:4f7bfd06ea7a79886483e8a7769f7b05e1a41430cca258dd2b06be4a8a0e57f9
+    sha256:ab5406cdd0bdcf66afcd52b1e048a2f43c0f3ab391644ee30d9ac419b93cd59b
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	7724
 
-TPNO=			34528
+TPNO=			54077
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -51,6 +51,10 @@ CFLAGS.studio += $(studio_FEATURES_EXTENSIONS)
 
 # Assumes GNU xgettext in PATH.
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
+
+COMPONENT_POST_INSTALL_ACTION.64 += \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libgtksourceview-3.0.3lib \
+                $(PROTO_DIR)/usr/share/man/man3lib/libgtksourceview-3.0.3lib;
 
 # for the tests
 unexport SHELLOPTS
