@@ -7,8 +7,8 @@ any fix. The most straightforward fix is to disable this test.
 
 https://code.djangoproject.com/ticket/30617
 
---- Django-1.11.23/tests/pagination/tests.py
-+++ Django-1.11.23/tests/pagination/tests.py
+--- Django-1.11.27/tests/pagination/tests.py
++++ Django-1.11.27/tests/pagination/tests.py
 @@ -335,7 +335,7 @@ class ModelPaginationTests(TestCase):
          ))
          # The warning points at the Paginator caller (i.e. the stacklevel
@@ -17,8 +17,9 @@ https://code.djangoproject.com/ticket/30617
 +        self.assertEqual(warning.filename, __file__[:-1] if __file__.endswith('.pyc') else __file__)
  
      def test_paginating_unordered_object_list_raises_warning(self):
-         """--- Django-1.11.23/tests/backends/tests.py
-+++ Django-1.11.23/tests/backends/tests.py
+         """
+--- Django-1.11.27/tests/backends/tests.py
++++ Django-1.11.27/tests/backends/tests.py
 @@ -5,6 +5,7 @@ from __future__ import unicode_literals
  import datetime
  import re
