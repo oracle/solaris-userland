@@ -164,9 +164,10 @@ regen-patches:
 	    gawk '/^--- /	{exit} \
 		  /^diff -/	{exit} \
 				{print}' $$p > "new/$${p#$(PATCH_DIR)/}" ; \
-	    LC_COLLATE=C git diff --no-color --no-index \
+	    LC_COLLATE=C gdiff -ur --show-function-line=. \
 		tmp-regen/prev tmp-regen/next \
-		| $(GSED) -E -e 's% (a|b)/tmp-regen/(prev|next)/[^/]*/% \1/%g' \
+		| $(GSED) -E -e 's%^(---|\+\+\+) tmp-regen/(prev|next)/(.*?)\s+\S+\s+\S+\s+\S+$$%\1 \3%g' \
+		| grep -v '^diff' \
 		| grep -v '^Common subdirectories:' \
 		| grep -v '^Only in ' \
 		>> "new/$${p#$(PATCH_DIR)/}" ; \
