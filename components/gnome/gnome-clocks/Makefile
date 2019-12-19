@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=             64
@@ -28,26 +28,23 @@ COMPILER=               gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-clocks
-COMPONENT_VERSION=	3.18.0
+COMPONENT_VERSION=	3.34.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Clocks
 COMPONENT_ARCHIVE_HASH= \
-	sha256:ca0818ec89e3539201da6b5388365e3d66df815198beccc90e2be44c7822baa0
+	sha256:61195f357c63b65b75e209494e12a122a802c75333290e136813565dca94f03c
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	10905
 
-TPNO=			25788
+TPNO=			54034
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR) $(@D));
-
-CONFIGURE_OPTIONS += --disable-static
-
 # Assumes GNU msgfmt in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
-COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
