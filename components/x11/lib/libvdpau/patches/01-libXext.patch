@@ -1,0 +1,38 @@
+libXext library file name on Solaris
+
+Upstream patch request 90619 submitted
+
+diff --git a/test/dlclose.c b/test/dlclose.c
+index 0830c8d..7f5b2f0 100644
+--- a/test/dlclose.c
++++ b/test/dlclose.c
+@@ -28,13 +28,19 @@ static int countOpenFDs(void)
+     return count;
+ }
+
++#if defined(__sun)
++static const char libXext_so[] = "libXext.so.0";
++#else
++static const char libXext_so[] = "libXext.so.6";
++#endif
++
+ int main(void)
+ {
+     // Work around a bug in libXext: dlclosing it after it has registered the
+     // Generic Event Extension causes an identical bug to the one this program
+     // is trying to test for.
+     int nOpenFDs = countOpenFDs();
+-    void *libXext = dlopen("libXext.so.6", RTLD_LAZY);
++    void *libXext = dlopen(libXext_so, RTLD_LAZY);
+     void *libvdpau = dlopen("src/libvdpau.so", RTLD_LAZY);
+     Display *dpy = XOpenDisplay(NULL);
+     VdpDeviceCreateX11 *pvdp_device_create_x11;
+@@ -43,7 +49,7 @@ int main(void)
+     VdpStatus status;
+
+     if (!libXext) {
+-        fprintf(stderr, "Failed to open libXext.so.6: %s", dlerror());
++        fprintf(stderr, "Failed to open %s: %s", libXext_so, dlerror());
+         return SKIP;
+     }
+

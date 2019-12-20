@@ -25,32 +25,36 @@
 
 BUILD_BITS =            64_and_32
 COMPILER=		gcc
+BUILD_STYLE=		meson
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libvdpau
-COMPONENT_VERSION=	1.2
+COMPONENT_VERSION=	1.3
 COMPONENT_PROJECT_URL=  http://freedesktop.org/wiki/Software/VDPAU/
-COMPONENT_ARCHIVE_URL=	https://gitlab.freedesktop.org/vdpau/libvdpau/uploads/14b620084c027d546fa0b3f083b800c6/$(COMPONENT_ARCHIVE)
-COMPONENT_SIG_URL=	https://gitlab.freedesktop.org/vdpau/libvdpau/uploads/0abd351387dbb4aa21a43caf847074f3/$(COMPONENT_ARCHIVE).sig
+COMPONENT_ARCHIVE_URL=	https://gitlab.freedesktop.org/vdpau/libvdpau/-/archive/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:6a499b186f524e1c16b4f5b57a6a2de70dfceb25c4ee546515f26073cd33fa06
+	sha256:b5a52eeac9417edbc396f26c40591ba5df0cd18285f68d84614ef8f06196e50e
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1755
-TPNO=			50171
+TPNO=			55670
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
 # for tests
 unexport SHELLOPTS
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/ERROR:/p" '
+        '-e "/OK/p" ' \
+	'-e "/Ok/p" ' \
+        '-e "/Fail/p" ' \
+        '-e "/Pass/p" ' \
+        '-e "/Skipped/p" ' \
+        '-e "/Timeout/p" ' \
+        '-e "/ok/p" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += image/graphviz
 REQUIRED_PACKAGES += x11/library/libxext
+REQUIRED_PACKAGES += x11/library/libx11
