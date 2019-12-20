@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Pygments
-COMPONENT_VERSION=	2.3.1
+COMPONENT_VERSION=	2.5.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5ffada19f6203563680669ee7f53b64dabbeb100eb51b61996085e99c03b284a
+    sha256:bbd336327e9cba483b284abe3344c0267799a646cfc0a4f5081d450b10c813df
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://pygments.org/
 COMPONENT_BUGDB=	python-mod/pygments
 COMPONENT_ANITYA_ID=	3986
 
-TPNO=			50141
+TPNO=			55862
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -44,8 +44,8 @@ include $(WS_MAKE_RULES)/ips.mk
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
-COMPONENT_TEST_CMD =	$(PYTHON)
-COMPONENT_TEST_ARGS =	run.py
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
 
 COMPONENT_POST_INSTALL_ACTION = \
 	(cd $(PROTO_DIR)/usr/bin ; \
