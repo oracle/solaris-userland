@@ -1,0 +1,74 @@
+freezegun module is not in Solaris, hence remove tests which depend on it.
+
+--- python-dateutil-2.8.1/dateutil/test/test_utils.py
++++ python-dateutil-2.8.1/dateutil/test/test_utils.py
+@@ -9,26 +9,12 @@ from dateutil import utils
+ from dateutil.tz import UTC
+ from dateutil.utils import within_delta
+ 
+-from freezegun import freeze_time
++#from freezegun import freeze_time
+ 
+ NYC = tz.gettz("America/New_York")
+ 
+ 
+ class UtilsTest(unittest.TestCase):
+-    @freeze_time(datetime(2014, 12, 15, 1, 21, 33, 4003))
+-    def testToday(self):
+-        self.assertEqual(utils.today(), datetime(2014, 12, 15, 0, 0, 0))
+-
+-    @freeze_time(datetime(2014, 12, 15, 12), tz_offset=5)
+-    def testTodayTzInfo(self):
+-        self.assertEqual(utils.today(NYC),
+-                         datetime(2014, 12, 15, 0, 0, 0, tzinfo=NYC))
+-
+-    @freeze_time(datetime(2014, 12, 15, 23), tz_offset=5)
+-    def testTodayTzInfoDifferentDay(self):
+-        self.assertEqual(utils.today(UTC),
+-                         datetime(2014, 12, 16, 0, 0, 0, tzinfo=UTC))
+-
+     def testDefaultTZInfoNaive(self):
+         dt = datetime(2014, 9, 14, 9, 30)
+         self.assertIs(utils.default_tzinfo(dt, NYC).tzinfo,
+--- python-dateutil-2.8.1/dateutil/test/test_rrule.py
++++ python-dateutil-2.8.1/dateutil/test/test_rrule.py
+@@ -13,7 +13,7 @@ from dateutil.rrule import (
+     MO, TU, WE, TH, FR, SA, SU
+ )
+ 
+-from freezegun import freeze_time
++#from freezegun import freeze_time
+ 
+ import pytest
+ 
+@@ -4615,30 +4615,6 @@ class RRuleTest(unittest.TestCase):
+                              [datetime(1997, 1, 6)])
+ 
+ 
+-@pytest.mark.rrule
+-@freeze_time(datetime(2018, 3, 6, 5, 36, tzinfo=tz.UTC))
+-def test_generated_aware_dtstart():
+-    dtstart_exp = datetime(2018, 3, 6, 5, 36, tzinfo=tz.UTC)
+-    UNTIL = datetime(2018, 3, 6, 8, 0, tzinfo=tz.UTC)
+-
+-    rule_without_dtstart = rrule(freq=HOURLY, until=UNTIL)
+-    rule_with_dtstart = rrule(freq=HOURLY, dtstart=dtstart_exp, until=UNTIL)
+-    assert list(rule_without_dtstart) == list(rule_with_dtstart)
+-
+-
+-@pytest.mark.rrule
+-@pytest.mark.rrulestr
+-@pytest.mark.xfail(reason="rrulestr loses time zone, gh issue #637")
+-@freeze_time(datetime(2018, 3, 6, 5, 36, tzinfo=tz.UTC))
+-def test_generated_aware_dtstart_rrulestr():
+-    rrule_without_dtstart = rrule(freq=HOURLY,
+-                                  until=datetime(2018, 3, 6, 8, 0,
+-                                                 tzinfo=tz.UTC))
+-    rrule_r = rrulestr(str(rrule_without_dtstart))
+-
+-    assert list(rrule_r) == list(rrule_without_dtstart)
+-
+-
+ @pytest.mark.rruleset
+ class RRuleSetTest(unittest.TestCase):
+     def testSet(self):

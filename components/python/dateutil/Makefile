@@ -20,38 +20,31 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		python-dateutil
-COMPONENT_VERSION=	2.5.3
+COMPONENT_VERSION=	2.8.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:1408fdb07c6a1fa9997567ce3fcee6a337b39a503d80699e0f213de4aa4b32ed
+    sha256:5a4b362949477a91c41d002f8310a615c82482940fba548ea84e992314d2600f
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://dateutil.readthedocs.org
 COMPONENT_BUGDB=	python-mod/dateutil
 COMPONENT_ANITYA_ID=	5621
 
-TPNO=			28610
-
-# This component is not yet built for Python 3.7
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
+TPNO=			55914
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-# Run the tests in the build directory so as not to touch the source directory.
-# Because they're not copied over during the build, we do that now.
-COMPONENT_PRE_TEST_ACTION = \
-	$(CP) -r $(COMPONENT_SRC)/dateutil/test $(@D)
-
-COMPONENT_TEST_DIR = $(@D)
-COMPONENT_TEST_CMD = $(PYTHON) -m pytest
+COMPONENT_TEST_ENV +=	LC_ALL=en_US.UTF-8
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/dateutil/test
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
