@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
 #
 
 # All components using gobject-introspection must be built with gcc as
@@ -30,51 +30,39 @@ BUILD_BITS =		64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pango
-COMPONENT_VERSION=	1.43.0
+COMPONENT_VERSION=	1.40.4
 COMPONENT_PROJECT_URL=	http://www.pango.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:d2c0c253a5328a0eccb00cdd66ce2c8713fabd2c9836000b6e22a8b06ba3ddd2
+    sha256:f8fdc5fc66356dc4edf915048cceeee065a0e0cb70b3b2598f62bda320129a3e
 COMPONENT_BUGDB=	gnome/pango
 COMPONENT_ANITYA_ID=	11783
 
-TPNO=			53014
-BUILD_STYLE=		meson
+TPNO=			34484
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-CONFIGURE_OPTIONS += -Denable_docs=true
-# Added to build fribidi even if it finds the system installed version
-CONFIGURE_OPTIONS += --wrap-mode=forcefallback
+CONFIGURE_OPTIONS += --enable-gtk-doc
+# Required for other components.
+CONFIGURE_OPTIONS += --enable-introspection
 
 # Workaround for build failures due to pango Makefiles not passing CFLAGS or
 # LDFLAGS, especially the -m32/64 flag, to g-ir-scanner
 COMPONENT_BUILD_ENV += CFLAGS="$(strip $(CFLAGS))"
 COMPONENT_BUILD_ENV += LDFLAGS="$(strip $(LDFLAGS))"
 
-COMPONENT_POST_INSTALL_ACTION.64 += \
-        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libpango-1.0.3lib \
-                $(PROTO_DIR)/usr/share/man/man3lib/libpango-1.0.3lib; \
-        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libpangocairo-1.0.3lib \
-                $(PROTO_DIR)/usr/share/man/man3lib/libpangocairo-1.0.3lib; \
-        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libpangoft2-1.0.3lib \
-                $(PROTO_DIR)/usr/share/man/man3lib/libpangoft2-1.0.3lib; \
-        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libpangoxft-1.0.3lib \
-                $(PROTO_DIR)/usr/share/man/man3lib/libpangoxft-1.0.3lib; \
-        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libpangox-1.0.3lib \
-                $(PROTO_DIR)/usr/share/man/man3lib/libpangox-1.0.3lib; \
+# Needed for "gmake test" to work successfully.
+unexport SHELLOPTS
+COMPONENT_TEST_ARGS += -k
 
-COMPONENT_TEST_TARGETS += ; cd tests; ./cxx-test; ./markup-parse; \
-        ./test-font ; ./test-ot-tags; ./testattributes; \
-        ./testboundaries; ./testcolor; ./testiter; ./testscript;
-COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
+# Standard automake test framework results transform
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/OK/p" ' \
-        '-e "/Ok/p" ' \
-        '-e "/Fail/p" ' \
-        '-e "/Pass/p" ' \
-        '-e "/Skipped/p" ' \
-        '-e "/ok/p" '
+        '-e "/TOTAL/p" ' \
+        '-e "/SKIP/p" ' \
+        '-e "/PASS/p" ' \
+        '-e "/FAIL/p" ' \
+        '-e "/ERROR/p" '
+
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += library/desktop/cairo
