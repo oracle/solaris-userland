@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,39 +30,28 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gom
-COMPONENT_VERSION=	0.3.2
+COMPONENT_VERSION=	0.3.3
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Gom
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:bce8f0f94af6ff7847b853580ba6baebbab8ae531cedb0c78a5c473f39c758fd
+	sha256:ac57e34b5fe273ed306efaeabb346712c264e341502913044a782cdf8c1036d8
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13230
 
-TPNO=			34507
+TPNO=			54071
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU xgettext in PATH.
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
-CONFIGURE_OPTIONS += --disable-static
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --with-pic
-
-# Required due to patches.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
+CONFIGURE_OPTIONS += -Denable-gtk-doc=true
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_ARGS =   -k -i
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/ok/p" ' \
-        '-e "/ERROR:/p" '
+# get rid of the timestamps from the test results
+COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9].[0-9][0-9] s//" '
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9][0-9]//" '
 
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc

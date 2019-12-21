@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64_and_32
@@ -30,14 +30,14 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libmediaart
-COMPONENT_VERSION=	1.9.1
+COMPONENT_VERSION=	1.9.4
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/libmediaart/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:5b14aa4e0cc84eaec57b6cb28f39092d503fdaecf36d5d165fac37583b7fe949
+	sha256:a57be017257e4815389afe4f58fdacb6a50e74fd185452b23a652ee56b04813d
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	13148
 
-TPNO=			34502
+TPNO=			54120
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
