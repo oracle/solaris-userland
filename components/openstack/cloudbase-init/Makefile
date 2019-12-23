@@ -20,35 +20,31 @@
 #
 
 #
-# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
 
-BUILD_BITS=		NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cloudbase-init
-COMPONENT_VERSION=	0.9.9
+COMPONENT_VERSION=	1.1.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:0385c905952132ce944c821ea4f57ccffd660db7965ca8a62f28600939e659c1
-COMPONENT_ANITYA_ID=	13227
-
+    sha256:9df0b6dea409956aa799514bf4c7dcf870b7e96ed1e1700fb3f89e006634e87b
 COMPONENT_ARCHIVE_URL=	\
     https://github.com/openstack/cloudbase-init/archive/$(COMPONENT_ARCHIVE)
-COMPONENT_PROJECT_URL=	https://github.com/stackforge/cloudbase-init
+COMPONENT_PROJECT_URL=	https://github.com/cloudbase/cloudbase-init
 COMPONENT_BUGDB=	service/cloudbase-init
+COMPONENT_ANITYA_ID=	13227
 
-TPNO=			26420
+TPNO=			57119
 
-BUILD_STYLE= setup.py
+# We need just a single version
+PYTHON_VERSIONS=	3.7
 
-# Upstream only supports 3.3 from the Python 3 series
-PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
-
-include $(WS_MAKE_RULES)/common.mk
-
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+include $(WS_MAKE_RULES)/prep.mk
+include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/ips.mk
 
 PKG_MACROS +=		PYVER=$(PYTHON_VERSIONS)
 PKG_MACROS +=		PYV=$(shell echo $(PYTHON_VERSIONS) | tr -d .)
@@ -63,13 +59,17 @@ COMPONENT_POST_INSTALL_ACTION += \
         $(PROTO_DIR)$(PYTHON_LIB)/cloudbaseinit/metadata/services/osconfigdrive; \
     $(PYTHON) -m compileall $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES)
 
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+
 # common targets
 build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-# Tests require testr which is not integrated
+# Tests requires ddt which is not integrated
 test:		$(NO_TESTS)
+
+system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/network

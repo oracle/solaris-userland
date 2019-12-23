@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -38,10 +38,11 @@ set name=info.upstream \
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2016/010
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file files/cloudbase-init.xml \
+    path=lib/svc/manifest/application/cloudbase-init.xml
+file files/cloudbase-init path=lib/svc/method/cloudbase-init
+file files/cloudbase-init.stencil path=lib/svc/stencils/cloudbase-init.stencil
 #
-file cloudbase-init.xml path=lib/svc/manifest/application/cloudbase-init.xml
-file cloudbase-init path=lib/svc/method/cloudbase-init
-file cloudbase-init.stencil path=lib/svc/stencils/cloudbase-init.stencil
 file path=usr/bin/cloudbase-init
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbase_init-$(COMPONENT_VERSION)-py$(PYVER).egg-info/PKG-INFO
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbase_init-$(COMPONENT_VERSION)-py$(PYVER).egg-info/SOURCES.txt
@@ -51,25 +52,47 @@ file path=usr/lib/python$(PYVER)/vendor-packages/cloudbase_init-$(COMPONENT_VERS
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbase_init-$(COMPONENT_VERSION)-py$(PYVER).egg-info/requires.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbase_init-$(COMPONENT_VERSION)-py$(PYVER).egg-info/top_level.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/conf/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/conf/azure.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/conf/base.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/conf/cloudconfig.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/conf/cloudstack.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/conf/default.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/conf/ec2.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/conf/factory.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/conf/gce.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/conf/maas.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/conf/openstack.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/conf/opts.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/conf/ovf.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/conf/packet.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/conf/vmwareguestinfo.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/constant.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/exception.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/init.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/factory.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/services/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/services/azureservice.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/services/base.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/services/baseopenstackservice.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/services/cloudstack.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/services/configdrive.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/services/ec2service.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/services/gceservice.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/services/httpservice.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/services/maasservice.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/services/opennebulaservice.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/services/osconfigdrive/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/services/osconfigdrive/base.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/services/osconfigdrive/factory.py
-file files/solaris.py \
-    path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/services/osconfigdrive/solaris.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/services/osconfigdrive/solaris.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/services/osconfigdrive/windows.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/services/ovfservice.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/services/packet.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/metadata/services/vmwareguestinfoservice.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/models/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/models/network.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/osutils/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/osutils/base.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/osutils/factory.py
@@ -80,6 +103,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/__
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/base.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/constants.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/createuser.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/ephemeraldisk.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/execcmd.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/fileexecutils.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/localscripts.py
@@ -89,6 +113,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/nt
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/sethostname.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/setuserpassword.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/sshpublickeys.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/trim.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/userdata.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/userdataplugins/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/userdataplugins/base.py
@@ -97,8 +122,12 @@ file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/us
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/userdataplugins/cloudconfigplugins/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/userdataplugins/cloudconfigplugins/base.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/userdataplugins/cloudconfigplugins/factory.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/userdataplugins/cloudconfigplugins/groups.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/userdataplugins/cloudconfigplugins/runcmd.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/userdataplugins/cloudconfigplugins/set_hostname.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/userdataplugins/cloudconfigplugins/set_ntp.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/userdataplugins/cloudconfigplugins/set_timezone.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/userdataplugins/cloudconfigplugins/users.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/userdataplugins/cloudconfigplugins/write_files.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/userdataplugins/factory.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/userdataplugins/heat.py
@@ -108,10 +137,18 @@ file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/us
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/common/userdatautils.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/factory.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/windows/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/windows/azureguestagent.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/windows/bootconfig.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/windows/certificates.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/windows/createuser.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/windows/displayidletimeout.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/windows/extendvolumes.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/windows/licensing.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/windows/ntpclient.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/windows/pagefiles.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/windows/rdp.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/windows/sanpolicy.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/windows/updates.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/windows/winrmcertificateauth.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/plugins/windows/winrmlistener.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/shell.py
@@ -124,13 +161,25 @@ file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/encoding.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/hostname.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/log.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/network.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/network_team.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/retry_decorator.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/template_engine/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/template_engine/base_template.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/template_engine/factory.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/template_engine/jinja2_template.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/bootconfig.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/cryptoapi.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/disk.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/iphlpapi.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/kernel32.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/licensing.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/netlbfo.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/network.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/powercfg.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/privilege.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/productkeys.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/rdp.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/security.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/storage/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/storage/base.py
@@ -138,15 +187,20 @@ file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/sto
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/storage/vds_storage_manager.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/storage/wsm_storage_manager.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/timezone.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/updates.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/vds.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/vfat.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/winrmconfig.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/wmi_loader.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/ws2_32.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/windows/x509.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/utils/x509constants.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cloudbaseinit/version.py
 #
 license LICENSE license="Apache v2.0"
+
+# force a dependency on netaddr; pkgdepend work is needed to flush this out.
+depend type=require fmri=library/python/netaddr-$(PYV)
 
 # force a dependency on netifaces; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/netifaces-$(PYV)
@@ -171,3 +225,6 @@ depend type=require fmri=library/python/requests-$(PYV)
 
 # force a dependency on six; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/six-$(PYV)
+
+# force a dependency on system/install;
+depend type=require fmri=system/install

@@ -1,4 +1,4 @@
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2020, Oracle and/or its affiliates.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -51,7 +51,7 @@ class SolarisConfigDriveManager(base.BaseConfigDriveManager):
             # The device is currently hard coded to c1d1p0
             mounted = False
             if not os.path.exists(mountdir):
-                os.mkdir(mountdir, 0500)
+                os.mkdir(mountdir, 0o500)
 
             subprocess.check_call(['/usr/sbin/mount', '-F', 'hsfs',
                                    '/dev/dsk/c1d1p0', mountdir])
@@ -60,7 +60,7 @@ class SolarisConfigDriveManager(base.BaseConfigDriveManager):
             chkfile = os.path.join(mountdir, 'openstack/latest/meta_data.json')
             if os.path.exists(chkfile):
                 os.rmdir(self.target_path)
-                os.mkdir(self.target_path, 0500)
+                os.mkdir(self.target_path, 0o500)
                 copycmd = ['/usr/bin/cp', '-rp']
                 for d in os.listdir(mountdir):
                     copycmd.append(mountdir + '/' + d)

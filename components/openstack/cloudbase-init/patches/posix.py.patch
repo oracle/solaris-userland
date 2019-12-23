@@ -1,7 +1,7 @@
 Patches to run cloudbase-init plugins on Solaris.  Possibly upstreamable
 
---- ORIGINAL/cloudbaseinit/osutils/posix.py	2017-10-12 15:10:41.282101967 +0000
-+++ cloudbase-init-0.9.9/cloudbaseinit/osutils/posix.py	2018-02-06 08:17:15.651344916 +0000
+--- cloudbase-init-1.1.0/cloudbaseinit/osutils/posix.py
++++ cloudbase-init-1.1.0/cloudbaseinit/osutils/posix.py
 @@ -13,11 +13,86 @@
  #    under the License.
  
@@ -13,12 +13,11 @@ Patches to run cloudbase-init plugins on Solaris.  Possibly upstreamable
  from cloudbaseinit.osutils import base
  
  
--class PosixUtil(base.BaseOSUtils):
-+class PosixUtils(base.BaseOSUtils):
-+
+ class PosixUtils(base.BaseOSUtils):
+ 
 +    def __init__(self):
 +        self._config_value = {}
- 
++
      def reboot(self):
          os.system('reboot')
 +
