@@ -20,37 +20,35 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		oslo.config
-COMPONENT_VERSION=	3.9.0
+COMPONENT_VERSION=	6.12.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:ec7bdf4a3d85f90cf07d2fa03a20783558ad0f490d71bd8faf50bf4ee2923df1
+    sha256:7b71ea5035e981aba1f601dbd55d913cf2747f031c8763eb9f77ab81ded29fe0
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/oslo.config/
 COMPONENT_BUGDB=	python-mod/oslo.config
 COMPONENT_ANITYA_ID=	3946
 
-TPNO=			28362
-
-# This component is not yet built for Python 3.7
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
+TPNO=			56286
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
-
 COMPONENT_POST_INSTALL_ACTION += \
     ($(PYTHON) -m compileall $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES); \
      cd $(PROTO_DIR)/usr/bin ; \
-     $(MV) -f oslo-config-generator oslo-config-generator-$(PYTHON_VERSION))
+     $(MV) -f oslo-config-generator oslo-config-generator-$(PYTHON_VERSION); \
+     $(MV) -f oslo-config-validator oslo-config-validator-$(PYTHON_VERSION))
+
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
 build:		$(BUILD_NO_ARCH)
@@ -61,4 +59,4 @@ install:	$(INSTALL_NO_ARCH)
 # required to execute unittests.
 test:		$(NO_TESTS)
 
-system-test:	$(NO_TESTS)
+system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
