@@ -30,20 +30,17 @@ COMPILER =              gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gst-plugins-good
-COMPONENT_VERSION=	1.10.3
+COMPONENT_VERSION=	1.16.2
 COMPONENT_PROJECT_URL=	https://gstreamer.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:4e07e93e34d4b93208f1579c21e7d91a236577b36f128a5332ffee85b4465955
+	sha256:40bb3bafda25c0b739c8fc36e48380fccf61c4d3f83747e97ac3f9b0171b1319
 COMPONENT_ARCHIVE_URL=	https://gstreamer.freedesktop.org/src/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	1263
 
-TPNO=			33710
-
-# Hook up tests after build servers are installed with dependencies
-TEST_TARGET= $(SKIP_TEST)
+TPNO=			55665
 
 # Only build for 2.7 for now as we need 32-bit and 64-bit support; all of the
 # GNOME and desktop components must be built for Python 2.7 for now.
@@ -87,6 +84,8 @@ CONFIGURE_OPTIONS += --enable-vpx
 CONFIGURE_OPTIONS += --enable-x
 CONFIGURE_OPTIONS += --enable-xshm
 CONFIGURE_OPTIONS += --enable-zlib
+# missing header to build it
+CONFIGURE_OPTIONS += --disable-gst_v4l2
 CONFIGURE_OPTIONS += --with-x
 
 # Makefile.am files of this component are not compatible with Solaris make.
@@ -102,6 +101,16 @@ CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
 
 # Required due to patches.
 COMPONENT_PREP_ACTION += ( cd $(@D) ; NOCONFIGURE=1 $(CONFIG_SHELL) autogen.sh );
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS)-$(MACH).master
+COMPONENT_TEST_ARGS =   -k -i
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/TOTAL:/p" ' \
+        '-e "/SKIP:/p" ' \
+        '-e "/PASS:/p" ' \
+        '-e "/FAIL:/p" ' \
+        '-e "/ERROR:/p" '
 
 REQUIRED_PACKAGES += codec/flac
 REQUIRED_PACKAGES += codec/libogg
@@ -119,6 +128,7 @@ REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gstreamer-1
 REQUIRED_PACKAGES += library/desktop/gstreamer-1/gst-plugins-base
+REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libvisual
 REQUIRED_PACKAGES += library/desktop/orc
 REQUIRED_PACKAGES += library/desktop/pango
