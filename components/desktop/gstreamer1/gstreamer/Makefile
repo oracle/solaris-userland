@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            32_and_64
@@ -33,25 +33,18 @@ include ../../../../make-rules/shared-macros.mk
 # newest version which has no backwards API compatibility and we likely need to
 # ship both, hence the odd name.
 COMPONENT_NAME=		gstreamer
-COMPONENT_VERSION=	1.10.3
+COMPONENT_VERSION=	1.16.2
 COMPONENT_PROJECT_URL=	https://gstreamer.freedesktop.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:85b9dc1b2991f224fa90d534ec57014896c479e061dc9fa1bc16ae17cbebb63d
+	sha256:e3f044246783fd685439647373fa13ba14f7ab0b346eadd06437092f8419e94e
 COMPONENT_ARCHIVE_URL=	https://gstreamer.freedesktop.org/src/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	1263
 
-TPNO=			33707
-
-# Supports Python 2.x only.
-PYTHON_VERSIONS= 2.7
-
-# The results-all.master check passes on jagrafess but fails on slitheen
-# Disabling for now
-TEST_TARGET= $(SKIP_TEST)
+TPNO=			55540
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -70,7 +63,7 @@ CONFIGURE_OPTIONS += MAKE=$(GMAKE)
 # The build process modifies the shebang line to use the version of Python
 # automatically found; to avoid using the current system default, one is
 # explicitly specified here.
-CONFIGURE_ENV += PYTHON="$(PYTHON.2.7)"
+CONFIGURE_ENV += PYTHON="$(PYTHON.3.7)"
 
 # Required due to patches.
 COMPONENT_PREP_ACTION += (cd $(@D) ; NOCONFIGURE=1 $(CONFIG_SHELL) autogen.sh; autoreconf -fiv);
@@ -92,6 +85,6 @@ REQUIRED_PACKAGES += data/docbook/docbook-style-dsssl
 REQUIRED_PACKAGES += data/docbook/docbook-style-xsl
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxslt
-REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math

@@ -1,0 +1,46 @@
+some tests take longer to execute and this may cause some tests pass or fail at random
+diff -r b595277d4446 common/check.mak
+--- a/common/check.mak	Tue Jan 21 11:43:28 2020 +0000
++++ b/common/check.mak	Tue Jan 21 11:44:45 2020 +0000
+@@ -12,7 +12,7 @@
+ endif
+ 
+ LOOPS ?= 10
+-AM_TESTS_ENVIRONMENT = CK_DEFAULT_TIMEOUT=20
++AM_TESTS_ENVIRONMENT = CK_DEFAULT_TIMEOUT=60
+ 
+ # run any given test by running make test.check
+ # if the test fails, run it again at at least debug level 2
+diff -r b595277d4446 tests/check/Makefile.in
+--- a/tests/check/Makefile.in	Tue Jan 21 11:43:28 2020 +0000
++++ b/tests/check/Makefile.in	Tue Jan 21 11:44:45 2020 +0000
+@@ -1909,7 +1909,7 @@
+ top_build_prefix = @top_build_prefix@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+-AM_TESTS_ENVIRONMENT = CK_DEFAULT_TIMEOUT=20 \
++AM_TESTS_ENVIRONMENT = CK_DEFAULT_TIMEOUT=60 \
+ 	GST_STATE_IGNORE_ELEMENTS="$(STATE_IGNORE_ELEMENTS)" \
+ 	$(REGISTRY_ENVIRONMENT) GST_PLUGIN_SYSTEM_PATH_1_0= \
+ 	GST_PLUGIN_PATH_1_0=$(top_builddir)/gst:$(top_builddir)/sys:$(top_builddir)/ext:$(GST_PLUGINS_DIR) \
+diff -r b595277d4446 tests/check/meson.build
+--- a/tests/check/meson.build	Tue Jan 21 11:43:28 2020 +0000
++++ b/tests/check/meson.build	Tue Jan 21 11:44:45 2020 +0000
+@@ -155,7 +155,7 @@
+         pluginsdirs)
+     env.set('GST_PLUGIN_SYSTEM_PATH_1_0', '')
+     env.set('GST_STATE_IGNORE_ELEMENTS', 'cdio cdparanoiasrc libvisual_ alsasrc alsasink')
+-    env.set('CK_DEFAULT_TIMEOUT', '20')
++    env.set('CK_DEFAULT_TIMEOUT', '60')
+     env.set('GST_TAG_LICENSE_TRANSLATIONS_DICT', join_paths(gst_tag_dir, 'license-translations.dict'))
+     env.set('GST_PLUGIN_LOADING_WHITELIST', 'gstreamer',
+         'gst-plugins-base@' + meson.build_root())
+@@ -179,7 +179,7 @@
+       pluginsdirs)
+   env.set('GST_PLUGIN_SYSTEM_PATH_1_0', '')
+   env.set('GST_STATE_IGNORE_ELEMENTS', 'cdio cdparanoiasrc libvisual_ alsasrc alsasink')
+-  env.set('CK_DEFAULT_TIMEOUT', '20')
++  env.set('CK_DEFAULT_TIMEOUT', '60')
+   env.set('GST_TAG_LICENSE_TRANSLATIONS_DICT', join_paths(gst_tag_dir, 'license-translations.dict'))
+   env.set('GST_PLUGIN_LOADING_WHITELIST', 'gstreamer',
+       'gst-plugins-base@' + meson.build_root())
