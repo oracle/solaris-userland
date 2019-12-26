@@ -39,6 +39,19 @@ Patch for building on Solaris.  Evaluate for sending upstream
  #include "gst/video/video.h"
  #include "gst/video/gstvideometa.h"
  #include "gst/video/gstvideopool.h"
+--- gst-plugins-good-1.4.5/sys/v4l2/gstv4l2object.c	2014-12-16 06:04:56.000000000 -0800
++++ gst-plugins-good-1.4.5/sys/v4l2/gstv4l2object.c	2015-06-15 17:42:53.203101602 -0700
+@@ -36,6 +36,10 @@
+ #include <gudev/gudev.h>
+ #endif
+ 
++#ifdef HAVE_FIONREAD_IN_SYS_FILIO
++#include <sys/filio.h>
++#endif
++
+ #include "v4l2_calls.h"
+ #include "gstv4l2tuner.h"
+ #include "gstv4l2colorbalance.h"
 --- gst-plugins-good-1.4.5/sys/v4l2/gstv4l2radio.c	2014-10-19 04:41:09.000000000 -0700
 +++ gst-plugins-good-1.4.5/sys/v4l2/gstv4l2radio.c	2015-06-15 17:43:57.637287821 -0700
 @@ -42,6 +42,10 @@
@@ -78,17 +91,3 @@ Patch for building on Solaris.  Evaluate for sending upstream
  GST_DEBUG_CATEGORY_STATIC (gst_v4l2_video_dec_debug);
  #define GST_CAT_DEFAULT gst_v4l2_video_dec_debug
  
-diff -r f587a5f29735 sys/v4l2/gstv4l2object.c
---- a/sys/v4l2/gstv4l2object.c	Tue Dec 10 09:52:54 2019 +0100
-+++ b/sys/v4l2/gstv4l2object.c	Tue Dec 10 09:53:53 2019 +0100
-@@ -34,6 +34,10 @@
- #include <gudev/gudev.h>
- #endif
- 
-+#ifdef HAVE_FIONREAD_IN_SYS_FILIO
-+#include <sys/filio.h>
-+#endif
-+
- #include "ext/videodev2.h"
- #include "gstv4l2object.h"
- #include "gstv4l2tuner.h"

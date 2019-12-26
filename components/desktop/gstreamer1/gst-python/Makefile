@@ -23,27 +23,28 @@
 # Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
-BUILD_BITS =		64
+BUILD_BITS =		32_and_64
 # All components using gobject-introspection must be built with gcc as
 # gobject-introspection does not produce correct results when using Studio.
 COMPILER =		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gst-python
-COMPONENT_VERSION=	1.16.2
+COMPONENT_VERSION=	1.10.3
 COMPONENT_PROJECT_URL=	https://gstreamer.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:208df3148d73d9f416d016564737585d8ea763d91201732d44b5fe688c6288a8
+	sha256:bdfa2d06dfe0ce68f638b04fed6890db506416c1dcf1279e83458269d719a4e8
 COMPONENT_ARCHIVE_URL=	https://gstreamer.freedesktop.org/src/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	3881
 
-TPNO=			55778
+TPNO=			33712
 
-PYTHON_VERSIONS= 3.7
-PYTHON_VERSION = 3.7
+# Requires pygobject-3 which is currently only built for Python 2.7
+PYTHON_VERSIONS= 2.7
+PYTHON_VERSION = 2.7
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -56,7 +57,7 @@ CONFIGURE_OPTIONS += --disable-static
 # The build process modifies the shebang line to use the version of Python
 # automatically found; to avoid using the current system default, one is
 # explicitly specified here.
-CONFIGURE_ENV += PYTHON=/usr/bin/python3.7m
+CONFIGURE_ENV += PYTHON=$(PYTHON)
 
 # Ensure Python modules are installed into vendor package directories.
 CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
@@ -68,10 +69,7 @@ CONFIGURE_OPTIONS.64 += --with-pygi-overrides-dir=$(PYTHON_VENDOR_PACKAGES_BASE)
 unexport SHELLOPTS
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/^Ran 39 tests/d" '
 REQUIRED_PACKAGES += library/desktop/gstreamer-1
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/python/pygobject-3-27
-REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-27
