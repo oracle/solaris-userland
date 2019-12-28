@@ -20,9 +20,11 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
+# lcms2 extension is not built for 32bit
+<transform file path=usr/lib/python2.7/vendor-packages/PIL/_imagingcms.so$ -> drop>
 set name=pkg.fmri \
     value=pkg:/library/python/pillow-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Python image processing library"
@@ -37,7 +39,6 @@ set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2018/081
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
-
 file path=usr/lib/python$(PYVER)/vendor-packages/PIL/64/_imaging.so
 file path=usr/lib/python$(PYVER)/vendor-packages/PIL/64/_imagingcms.so
 file path=usr/lib/python$(PYVER)/vendor-packages/PIL/64/_imagingft.so
@@ -134,6 +135,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/PIL/XpmImagePlugin.py
 file path=usr/lib/python$(PYVER)/vendor-packages/PIL/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/PIL/_binary.py
 file path=usr/lib/python$(PYVER)/vendor-packages/PIL/_imaging.so
+file path=usr/lib/python$(PYVER)/vendor-packages/PIL/_imagingcms.so
 file path=usr/lib/python$(PYVER)/vendor-packages/PIL/_imagingft.so
 file path=usr/lib/python$(PYVER)/vendor-packages/PIL/_imagingmath.so
 file path=usr/lib/python$(PYVER)/vendor-packages/PIL/_imagingmorph.so

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -44,7 +44,7 @@ include $(WS_MAKE_RULES)/ips.mk
 
 # make executable for each Python version
 COMPONENT_POST_INSTALL_ACTION += \
-	$(CP) $(PROTOUSRBINDIR)/automat-visualize $(PROTOUSRBINDIR)/automat-visualize-$(PYTHON_VERSION)
+	$(MV) $(PROTOUSRBINDIR)/automat-visualize $(PROTOUSRBINDIR)/automat-visualize-$(PYTHON_VERSION)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/automat
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest

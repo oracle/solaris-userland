@@ -18,11 +18,10 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
-$(SOLARIS_11_3_ONLY)<transform file path=usr/lib/python$(PYVER)/vendor-packages/pycodestyle.py -> add pkg.depend.bypass-generate .*/time.* >
 #
 set name=pkg.fmri \
     value=pkg:/library/python/pycodestyle-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
@@ -58,12 +57,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/pycodestyle-$(COMPONENT_VERSION
 file path=usr/lib/python$(PYVER)/vendor-packages/pycodestyle-$(COMPONENT_VERSION)-py$(PYVER).egg-info/not-zip-safe
 file path=usr/lib/python$(PYVER)/vendor-packages/pycodestyle-$(COMPONENT_VERSION)-py$(PYVER).egg-info/top_level.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/pycodestyle.py \
-    pkg.depend.bypass-generate=.*/[Cc]onfig[Pp]arser.* \
-    pkg.depend.bypass-generate=.*/testsuite.*
-file usr/share/man/man1/pycodestyle.1 \
-    path=usr/share/man/man1/pycodestyle-$(PYVER).1
-link path=usr/share/man/man1/pycodestyle.1 target=pycodestyle-$(PYVER).1 \
-    mediator=python mediator-version=$(PYVER)
+    pkg.depend.bypass-generate=.*
 #
 license pycodestyle.license license=MIT
 
