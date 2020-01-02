@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 #
@@ -89,9 +89,3 @@ set name=com.oracle.info.consolidation.repository-url \
 <transform depend tmp.fmri=pkg:/(.+)@.*$ -> \
     default facet.version-lock.%<1> true >
 <transform depend tmp.fmri=.*-> delete tmp.fmri .* >
-
-#
-# Add legacy namespace metadata to all packages renamed to legacy.
-#
-<transform set name=pkg.fmri value=pkg:/legacy/ -> \
-    emit set name=pkg.namespace value=legacy>

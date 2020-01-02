@@ -1,3 +1,7 @@
+#
+# Copyright (c) 2010, 2020, Oracle and/or its affiliates. All rights reserved.
+#
+
 
                 Userland Consolidation Packaging Guidelines.
 
@@ -328,7 +332,85 @@ Gatekeeper uses $(hg root)/tools/replace_auto_fmri for that job.
 Component EOF (End Of Feature) 
 ==============================
 This is a brief description on how to remove a component from Userland for
-an EOF.
+an EOF. The process is described at PSARC/2018/018. That means that you will
+need to make three changes to the gate.
+
+a) Move components to legacy namespace
+b) Make sure that no package do depend on the legacy one
+c) Remove the component/package altogether
+
+The timing is defined that
+
+ - timer starts when a) is delivered to customer in SRU
+ - c) must not happen sooner than 6 months from a). In other words customer can
+   be sure that if the package was just renamed to legacy it will stay on the
+   machine for at least 6 more months.
+ - b) has to be completed at least three months before c). In other words, we
+   are sure that no other package shipped by us required that removed package
+   for at last three months
+ - it is expected that we release one SRU a month so if the rename happened in
+   SRU50 we can delete in SRU56 earliest
+ - if there are reasons to deviate from the process, it is documented in the
+   associated arc case
+
+ad a) Move components to legacy namespace
+-----------------------------------------
+The goal is simple, rename package pkg:/some/package into
+pkg:/legacy/some/package.
+
+The details are a bit more complex:
+ - as with any rename you need to create a 'rename package' under the original
+   name pkg:/some/package
+ - as with any rename you need to rename the pkg:/some/package to
+   pkg:/legacy/some/package
+ - you need to mark the legacy package by
+   set name=pkg.namespace value=legacy
+ - you need to tell pkglint to ignore the fact that the new legacy package
+   delivers the same content as the original one.
+ - you need to tell pkglint to ignore the fact that the new legacy package
+   seems to deliver the same symlink and so will force you to create mediated
+   links
+
+All of that with exception of the first step is done by transforms in the
+transforms/legacy file.
+
+So practically you have to
+ 1) edit transforms/legacy and 'mark' all affected packages by adding to them
+ attribute legacy_fmri=AUTO_FMRI
+ 2) go to the component directory and create there 'history' file with the contents
+ my/package@1.2.3-AUTO_FMRI legacy/my/package
+
+
+ad b) Verification who depends on given package
+-----------------------------------------------
+If you are removing mysql-55* for example, you can run:
+
+pkg search -r 'depend::database/mysql-56*'
+
+You can ignore
+ - consolidation/userland/userland-incorporation
+ - packages which themselves you are moving to legacy namespace
+
+You can potentially ignore 'developer/opensolaris/userland'. This package
+contains dependency on all REQUIRED_PACKAGES from all components. You should be
+removing such REQUIRED_PACKAGES while removing the named packages.
+
+Sadly pkg search is not optimal, so YMMW. Be sure to ask in mailing list if you
+have troubles.
+
+
+ad c) Finally removing the components
+-------------------------------------
+The last step is to remove the components. This consists of two steps
+ - hg rm components/my_component
+ - edit components/meta-packages/history/history and add all the affected
+   packages there. One line per package, but you have to include the legacy
+   packages too.
+
+  my/package@1.2.3-AUTO_FMRI
+  legacy/my/package@1.2.3-AUTO_FMRI
+
+
 
 Deleting the Component
 ----------------------

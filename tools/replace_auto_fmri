@@ -22,7 +22,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 
@@ -56,9 +56,10 @@ echo "Replacing AUTO_FMRI by $BRANCHID"
 #   take into account only
 #          - history files
 #          - p5m files
+#          - transforms/legacy
 #   replace every AUTO_FMRI in the file unless the line starts with '#'
 hg manifest |
-	ggrep -P '(/history($|\.i386|\.sparc)|\.p5m$)' |
+	ggrep -P '(/history($|\.i386|\.sparc)|\.p5m$|^transforms/legacy$)' |
 	xargs perl -pi -e 's/AUTO_FMRI/'"$BRANCHID"'/g unless m/^\s*#/'
 
 hg diff

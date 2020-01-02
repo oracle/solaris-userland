@@ -1,0 +1,114 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+#
+
+#
+# Specify which packages are to be moved to 'legacy' namespace
+#
+# Moving to legacy namespace consists of multiple things
+# a) we prefix the package name by 'legacy/' string, for example pkg:/legacy/abc.
+#    This happens here in this transform file.
+# b) we create history file record stating that the package was renamed to
+#    legacy/ one. Like
+#    abc@AUTO_FMRI legacy/abc
+# c) we declare that the just created legacy package requires the
+#    abc@AUTO_FMRI so user can't install abc@PREVIOUS_FMRI and
+#    legacy/abc@AUTO_FMRI at the same time.
+#
+#    If we ever change the legacy/abc package (for example fix before the
+#    package is removed) we still must generate the dependency on rename
+#    package with FMRI where the rename package was created. If we fail to do
+#    that we'll need to ship the non-legacy rename package again every time we
+#    ship new version of the legacy package.
+#
+
+#
+# Name the affected packages here. The lines here just 'mark' the packages by
+# setting 'legacy_fmri' attribute. All such marked packages will be processed
+# below. An example can be:
+# <transform set name=pkg.fmri value=(pkg:/+)?.*(my/package) -> set legacy_fmri AUTO_FMRI>
+# matching multiple packages is possible
+# <transform set name=pkg.fmri value=(pkg:/+)?.*(library/perl-5/.*-522.*) -> set legacy_fmri AUTO_FMRI>
+#
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# Automatic processing starts here, no change is needed beyond this line
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+#
+# Make sure that we don't modify packages created from the history files
+# (tools/generate-history adds do_not_move_to_legacy=true)
+#
+# First we remove (unmark) the package by removing legacy_fmri attribute
+<transform set name=pkg.fmri do_not_move_to_legacy=true legacy_fmri=.* -> delete legacy_fmri .*>
+# Now we can get rid of do_not_move_to_legacy attribute as we don't need it anymore
+<transform set name=pkg.fmri do_not_move_to_legacy=.* -> delete do_not_move_to_legacy .*>
+
+#
+# Force the rename with a dependency on the old name
+# Ex:
+#   set name=pkg.fmri value=pkg:/library/perl-5/CGI-522@4.37,5.11-11.5.0.0.0.61.0
+#   (the 'value' will be later changed to pkg:/legacy/library/...)
+#   Produces
+#   depend fmri=library/perl-5/CGI-522@4.37,11.5.0.0.0.61.0 type=optional
+#
+# This is like saying "if you are going to install this legacy package, make
+# sure that you also install the original package with at least the FMRI where
+# it was renamed.". This makes sure that you can't install the original package
+# in a version where it delivers some files.
+#
+<transform set name=pkg.fmri legacy_fmri=.* value=([^@]+[^,]+,) -> \
+    emit depend type=optional fmri=%<1>%(legacy_fmri) >
+
+
+#
+# Add legacy metadata to a package being renamed to legacy
+#
+<transform set name=pkg.fmri legacy_fmri=.* -> \
+    emit set name=pkg.namespace value=legacy>
+
+
+#
+# Move the package into 'legacy' namespace
+#
+# value=a/b/c -> value=legacy/a/b/c
+# value=pkg:/a/b/c -> value=pkg:/legacy/a/b/c
+# value=pkg://publisher/a/b/c -> value=pkg://publisher/legacy/a/b/c
+#
+<transform set name=pkg.fmri legacy_fmri=.* value=(pkg://[^/]+/|pkg:/|)(.*) -> set value %<1>legacy/%<2>>
+
+
+#
+# The legacy package content will clash with the regular package. We need to
+# add pkglint exceptions so that it can be published.
+#
+<transform set name=pkg.fmri legacy_fmri=.* -> \
+    emit set name=pkg.linted.pkglint.dupaction001.1 value=true>
+<transform set name=pkg.fmri legacy_fmri=.* -> \
+    emit set name=pkg.linted.pkglint.dupaction010.2 value=true>
+
+#
+# Remove our legacy_fmri help attribute
+#
+<transform set name=pkg.fmri legacy_fmri=.* -> delete legacy_fmri .*>
