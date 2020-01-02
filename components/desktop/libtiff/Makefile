@@ -18,23 +18,23 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libtiff
-COMPONENT_VERSION=	4.0.10
+COMPONENT_VERSION=	4.1.0
 COMPONENT_PROJECT_URL=	http://www.simplesystems.org/libtiff/
 COMPONENT_SRC=		tiff-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:2c52d11ccaf767457db0c46795d9c7d1a8d8f76f68b0b800a3dfe45786b996e4
+    sha256:5d29f32517dadb6dbcd1255ea5bbc93a2b54b94fbf83653b4d65c7d6775b8634
 COMPONENT_ARCHIVE_URL=	http://download.osgeo.org/libtiff/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libtiff
 COMPONENT_ANITYA_ID=	1738
 
-TPNO=			47502
+TPNO=			55835
 
 # Added to find the *.3tiff that go into /usr/share/man/man3tiff
 PKG_PROTO_DIRS += $(COMPONENT_SRC)/man
@@ -51,6 +51,9 @@ CONFIGURE_OPTIONS       += --disable-cxx
 CONFIGURE_OPTIONS       += --enable-shared --disable-static
 # Don't build tiffgt utility which drags in a pile of OpenGL dependencies
 CONFIGURE_OPTIONS       += ax_cv_check_gl_libgl="no"
+
+# Tests need GNU version of diff to work correctly
+COMPONENT_TEST_ENV +=   PATH="$(GNUBIN):$(PATH)"
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_ARGS =   -k -i
