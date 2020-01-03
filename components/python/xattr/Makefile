@@ -20,35 +20,31 @@
 #
 
 #
-# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Component uses ABI3 naming.
 PYTHON3_SOABI=abi3
+COMPILER=gcc
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xattr
-COMPONENT_VERSION=	0.9.3
+COMPONENT_VERSION=	0.9.7
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:cd010284c816bad19d271f33c14666583669455779d3f7cb0047f4368e49f80b
+    sha256:a7d83b64584314e4401f96ade71043fac5529d2a3196dc88fc3d98ac8dc309b6
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/xattr/xattr
 COMPONENT_BUGDB=	python-mod/xattr
-COMPONENT_ANITYA_ID=	7504
+COMPONENT_ANITYA_ID=	21273
 
-TPNO=			41361
-
-# This component is not yet built for Python 3.7
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
+TPNO=			56314
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 CFFI = $(WS_COMPONENTS)/python/cffi/build/prototype/$(MACH)/$(PYTHON_LIB)
 
@@ -59,8 +55,8 @@ COMPONENT_TEST_ENV +=		PYTHONPATH=$(CFFI):$(PROTO_DIR)/$(PYTHON_LIB)
 # locale.
 COMPONENT_TEST_ENV +=	LC_ALL=en_US.UTF-8
 COMPONENT_TEST_DIR =	$(@D)/tests
-COMPONENT_TEST_CMD =	$(PYTHON) setup.py
-COMPONENT_TEST_ARGS =	test
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
 
 COMPONENT_POST_INSTALL_ACTION += \
     (cd $(PROTO_DIR)/usr/bin; $(MV) xattr xattr-$(PYTHON_VERSION))
@@ -73,6 +69,8 @@ COMPONENT_POST_INSTALL_ACTION += \
 # finding in PYTHONPATH.
 COMPONENT_PRE_TEST_ACTION = $(CP) -r $(SOURCE_DIR) $(@D)/tests
 
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+
 # common targets
 build:		$(BUILD_32_and_64)
 
@@ -82,10 +80,5 @@ test:		$(TEST_32_and_64)
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += library/python/setuptools-27
-REQUIRED_PACKAGES += library/python/setuptools-34
-REQUIRED_PACKAGES += library/python/setuptools-35
-REQUIRED_PACKAGES += library/python/cffi-27
-REQUIRED_PACKAGES += library/python/cffi-34
-REQUIRED_PACKAGES += library/python/cffi-35
+REQUIRED_PACKAGES += library/python/cffi
 REQUIRED_PACKAGES += system/library
