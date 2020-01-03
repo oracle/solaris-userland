@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		64
@@ -26,15 +26,15 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		rdesktop
-COMPONENT_VERSION=	1.8.6
+COMPONENT_VERSION=	1.9.0
 COMPONENT_PROJECT_URL=	http://www.rdesktop.org/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:ffb9f8e2f0b7a06e383e550698bdc9734ae33eb3ec971b0a094078434a4bba6d
+	sha256:d547c2e6f3e4c818a7e69a0f39adb39fac303633e0c25aa804bb588507ffc230
 COMPONENT_ARCHIVE_URL=	https://github.com/rdesktop/$(COMPONENT_NAME)/archive/v$(COMPONENT_VERSION).tar.gz
 COMPONENT_BUGDB=	gnome/remote-desktop
 COMPONENT_ANITYA_ID=	4172
 
-TPNO=			52543
+TPNO=			55854
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -50,7 +50,13 @@ CONFIGURE_OPTIONS += --x-libraries=""
 # we don't have libgssglue for this
 CONFIGURE_OPTIONS += --disable-credssp
 
+REQUIRED_PACKAGES += library/audio/pulseaudio
+REQUIRED_PACKAGES += library/gmp
+REQUIRED_PACKAGES += library/gnutls-3
+REQUIRED_PACKAGES += library/libtasn1
+REQUIRED_PACKAGES += library/security/nettle
 REQUIRED_PACKAGES += library/security/openssl
-REQUIRED_PACKAGES += x11/library/libx11
-REQUIRED_PACKAGES += x11/library/libxrandr
 REQUIRED_PACKAGES += library/security/pcsc/pcsclite
+REQUIRED_PACKAGES += x11/library/libx11
+REQUIRED_PACKAGES += x11/library/libxcursor
+REQUIRED_PACKAGES += x11/library/libxrandr
