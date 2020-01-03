@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 # parfait is a bit unhappy (24796432)
@@ -33,14 +33,13 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libvpx
-COMPONENT_VERSION=	1.8.0
+COMPONENT_VERSION=	1.8.2
 COMPONENT_PROJECT_URL=	http://www.webmproject.org/
-COMPONENT_ARCHIVE= 	v$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:86df18c694e1c06cc8f83d2d816e9270747a0ce6abe316e93a4f4095689373f6
-COMPONENT_ARCHIVE_URL=	https://github.com/webmproject/libvpx/archive/$(COMPONENT_ARCHIVE)
+	sha256:8735d9fcd1a781ae6917f28f239a8aa358ce4864ba113ea18af4bb2dc8b474ac
+COMPONENT_ARCHIVE_URL=	https://github.com/webmproject/libvpx/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libvpx
-TPNO=			50091
+TPNO=			55852
 COMPONENT_ANITYA_ID=	11083
 
 # Required for 64-bit builds.
