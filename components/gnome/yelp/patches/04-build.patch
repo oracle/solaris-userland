@@ -1,0 +1,79 @@
+Changes to build on Solaris and the existing version of webkitgtk
+
+Not suitable for upstream
+
+--- a/Makefile.am	2019-12-27 09:30:12.808300531 -0800
++++ b/Makefile.am	2019-12-27 09:30:19.392318000 -0800
+@@ -289,7 +289,6 @@
+ 	$(AM_V_GEN)$(MSGFMT) --xml --template $< -d $(top_srcdir)/po -o $@
+ 
+ appstream_XML = data/yelp.appdata.xml
+-@APPSTREAM_XML_RULES@
+ 
+ gsettings_SCHEMAS = data/org.gnome.yelp.gschema.xml
+ @GSETTINGS_RULES@
+--- a/libyelp/yelp-view.c	2019-12-30 18:42:46.281061973 -0800
++++ b/libyelp/yelp-view.c	2019-12-30 18:52:19.254849852 -0800
+@@ -2060,6 +2060,44 @@
+         g_free (content_end);
+ }
+ 
++static gdouble
++get_screen_dpi (GdkScreen *screen)
++{
++    GtkSettings *settings = NULL;
++    gdouble dpi = -1;
++    gdouble dp, di;
++
++    settings = gtk_settings_get_for_screen (screen);
++    if (settings != NULL) {
++        gint gtk_xft_dpi = -1;
++        g_object_get (settings, "gtk-xft-dpi", &gtk_xft_dpi, NULL);
++        dpi = (gtk_xft_dpi != -1) ? gtk_xft_dpi / 1024.0 : -1;
++    }
++
++    if (dpi != -1)
++        return dpi;
++
++    dp = hypot (gdk_screen_get_width (screen), gdk_screen_get_height (screen));
++    di = hypot (gdk_screen_get_width_mm (screen), gdk_screen_get_height_mm (screen)) / 25.4;
++
++    return dp / di;
++}
++
++static guint
++convert_font_size_to_pixels (GtkWidget *widget,
++                             gdouble    font_size)
++{
++    GdkScreen *screen;
++    gdouble    dpi;
++
++    /* WebKit2 uses font sizes in pixels */
++    screen = gtk_widget_has_screen (widget) ?
++             gtk_widget_get_screen (widget) : gdk_screen_get_default ();
++    dpi = screen ? get_screen_dpi (screen) : 96;
++
++    return font_size / 72.0 * dpi;
++}
++
+ static void
+ settings_set_fonts (YelpSettings *settings,
+                     gpointer      user_data)
+@@ -2077,7 +2115,7 @@
+     g_object_set (webkit_web_view_get_settings (WEBKIT_WEB_VIEW (view)),
+                   "default-font-family", family,
+                   "sans-serif-font-family", family,
+-                  "default-font-size", webkit_settings_font_size_to_pixels (size),
++                  "default-font-size", convert_font_size_to_pixels (GTK_WIDGET (view), size),
+                   NULL);
+     g_free (family);
+ 
+@@ -2087,7 +2125,7 @@
+                                         YELP_SETTINGS_FONT_FIXED);
+     g_object_set (webkit_web_view_get_settings (WEBKIT_WEB_VIEW (view)),
+                   "monospace-font-family", family,
+-                  "default-monospace-font-size", webkit_settings_font_size_to_pixels (size),
++                  "default-monospace-font-size", convert_font_size_to_pixels (GTK_WIDGET (view), size),
+                   NULL);
+     g_free (family);
+ }

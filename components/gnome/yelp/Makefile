@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		yelp
-COMPONENT_VERSION=	3.22.0
+COMPONENT_VERSION=	3.34.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Yelp
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8616b77c239aaa731312609f192c9b2c71d54b2cae42ff23efa23b5b3188778e
+	sha256:e3d6527c5963d73206891b32f1f23363164be57de248555513bd0be77a7bd045
 COMPONENT_BUGDB=        gnome/docviewer
 COMPONENT_ANITYA_ID=	14867
 
-TPNO=			36161
+TPNO=			54135
 
 # gmake check works but produces no useful output
 TEST_TARGET = $(SKIP_TEST)
@@ -57,6 +57,13 @@ CONFIGURE_OPTIONS += --enable-bz2
 CONFIGURE_OPTIONS += --enable-lzma
 CONFIGURE_OPTIONS += --enable-shared
 CONFIGURE_OPTIONS += --with-pic
+
+COMPONENT_POST_INSTALL_ACTION.64 += \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/gnome-help.1 \
+                $(PROTO_DIR)/usr/share/man/man1/gnome-help.1; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/yelp.1 \
+                $(PROTO_DIR)/usr/share/man/man1/yelp.1; 
+
 
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
