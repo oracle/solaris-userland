@@ -79,19 +79,14 @@ python-scripts: install
 	  /usr/xpg4/bin/grep '^\#!.*python' > /dev/null && echo $$f ;\
 	 done) | sed -e 's@$(PROTO_DIR)/@@' | sort > $@
 
+# remove the printer-controll python-modules using python-gobject
+COMPONENT_POST_INSTALL_ACTION += \
+	ggrep -rwl gobject --include=\*.py $(PROTO_DIR) \
+	   | xargs $(RM) ;
+
 # build .pyc's
 COMPONENT_POST_INSTALL_ACTION += \
 	$(PYTHON) -m compileall $(PROTO_DIR)/usr/share/hplip/ ;
-
-PKG_OBJ =       hplip-core
-# depend on pygobject (desktop)
-SUBPKG_OBJ =    hplip
-EXCLUSION_FILE = pygobject.deps
-
-include $(WS_MAKE_RULES)/pkgobjs.mk
-$(EXCLUSION_FILE_TARGET): $(HEAP_OBJ)
-	ggrep -rwl gobject --include=\*.py $(PROTO_DIR) \
-		| sed -e 's@$(PROTO_DIR)/@@' > $@
 
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += library/libusb-1
@@ -100,6 +95,7 @@ REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/management/snmp/net-snmp
