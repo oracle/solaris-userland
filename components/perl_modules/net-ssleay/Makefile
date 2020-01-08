@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -45,7 +45,7 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # The component Makefile.PL file will ask some questions on whether we want
 # to run external tests, to which we want to answer with "n".
-COMPONENT_CONFIGURE_ENV += ; echo "n" |
+CONFIGURE_ENV += ; echo "n" |
 # Test failures.  keep going
 COMPONENT_TEST_ARGS = -k -i
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master

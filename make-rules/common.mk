@@ -73,6 +73,15 @@ endif
 CONFIGURE_ENV += LDFLAGS="$(strip $(LDFLAGS))"
 endif
 
+COMPONENT_BUILD_ENV += http_proxy=
+COMPONENT_BUILD_ENV += https_proxy=
+COMPONENT_BUILD_ENV += ftp_proxy=
+COMPONENT_INSTALL_ENV += http_proxy=
+COMPONENT_INSTALL_ENV += https_proxy=
+COMPONENT_INSTALL_ENV += ftp_proxy=
+CONFIGURE_ENV += http_proxy=
+CONFIGURE_ENV += https_proxy=
+CONFIGURE_ENV += ftp_proxy=
 ifeq ($(strip $(BUILD_STYLE)),justmake)
 # Assume these items should always be set in the build environment.
 COMPONENT_BUILD_ENV += CC="$(CC)"

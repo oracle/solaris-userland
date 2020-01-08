@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # makemaker.mk is used to build, install, test perl modules for
@@ -89,13 +89,13 @@ BUILD_64 +=	$(BUILD_DIR)/$(MACH64)-5.26/.built
 INSTALL_64 +=	$(BUILD_DIR)/$(MACH64)-5.26/.installed
 
 
-COMPONENT_CONFIGURE_ENV += $(COMMON_PERL_ENV)
-COMPONENT_CONFIGURE_ENV += PERL="$(PERL)"
+CONFIGURE_ENV += $(COMMON_PERL_ENV)
+CONFIGURE_ENV += PERL="$(PERL)"
 $(BUILD_DIR)/%/.configured:	$(SOURCE_DIR)/.prep
 	($(RM) -r $(@D) ; $(MKDIR) $(@D))
 	$(CLONEY) $(SOURCE_DIR) $(@D)
 	$(COMPONENT_PRE_CONFIGURE_ACTION)
-	(cd $(@D) ; $(COMPONENT_CONFIGURE_ENV) $(PERL) $(PERL_FLAGS) \
+	(cd $(@D) ; $(CONFIGURE_ENV) $(PERL) $(PERL_FLAGS) \
 				Makefile.PL $(CONFIGURE_OPTIONS))
 	$(COMPONENT_POST_CONFIGURE_ACTION)
 	$(TOUCH) $@

@@ -29,13 +29,27 @@ void:
 	@echo "See $(WS_TOP)/doc/makefile-targets.txt for more info."
 
 PATH=/usr/bin:/usr/gnu/bin
+DEFAULT_CONFIG_FILE ?= /etc/userland
+
+# $(1) - variable name
+# $(2) - default value
+# Produces 'VARIABLE?=default'
+#
+# Read configuration from DEFAULT_CONFIG_FILE providing default when the config
+# file is not found. Config file has the variables prefixed by DEFAULT_ so if
+# you want to configure CANONICAL_REPO the line in DEFAULT_CONFIG_FILE should
+# be:
+# DEFAULT_CANONICAL_REPO=http://.....
+define read-config
+	$(eval $(1)?=$(shell bash -c '[ -r "$(DEFAULT_CONFIG_FILE)" ] && . "$(DEFAULT_CONFIG_FILE)"; echo $${DEFAULT_$(1):-$(2)}'))
+endef
 
 # The location of an internal mirror of community source archives that we build
 # in this gate.  This mirror has been seeded to include "custom" source archives
 # for a few components where the communities either no longer provide matching
 # source archives or we have changes that aren't reflected in their archives or
 # anywhere else.
-INTERNAL_ARCHIVE_MIRROR ?=	http://userland.us.oracle.com/source-archives
+$(call read-config,INTERNAL_ARCHIVE_MIRROR,http://userland.us.oracle.com/source-archives)
 
 # The location of an external mirror of community source archives that we build
 # in this gate.  The external mirror is a replica of the internal mirror.
@@ -147,7 +161,7 @@ define prepare_env_args
 $(foreach env,$(1),"$(env)=$(call prepare_env_args_newline,$($(env)))")
 endef
 
-PUBLISH_LOG = $(WS_LOGS)/published.log
+PUBLISH_LOG = $(BUILD_DIR)/packages.$(MACH).log
 define log-package-publish
     $(CAT) $(1) $(WS_TOP)/transforms/print-published-pkgs | \
 	    $(PKGMOGRIFY) $(PKG_OPTIONS) /dev/fd/0 | \

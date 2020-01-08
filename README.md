@@ -66,17 +66,14 @@ Build the individual component
 
 ### Complete Top Down build
 Complete top down builds are also possible by simply running
+    $ tools/full-build # see --help for options
 
-    $ cd (your-workspace)/components
+That is generally wrapper around
+    $ cd (your-workspace)
+    $ # cleanup your workspace to pristine state
     $ gmake publish
+    $ # examine the log files and provide a summary
 
-The `publish` target will build each component and publish it to the
-workspace IPS repo.
-
-- You can add parallelism to your builds by adding `-j (jobs)` to your gmake
-  command line arguments.
-- The gate should only incrementally build what it needs to based on what has
-  changed since you last built it.
   
 # Copyright
-Copyright (c) 2010, 2017, Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.

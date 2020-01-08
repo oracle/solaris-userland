@@ -35,16 +35,6 @@ $(WS_MACH)/components.mk:	$(WS_MACH) # Makefile # $(WS_TOP)/components
 	@echo "Generating component list..."
 	@$(USERLAND_COMPONENTS) --workspace=$(WS_TOP) \
 		| sed -e 's;^$(shell readlink -f "$$PWD")/;COMPONENT_DIRS += ;g' >$@
-	@if [[ -n "$(PRIORITY_COMPONENTS)" ]]; then \
-		PRIORITY="`printf 'COMPONENT_DIRS += %s\n' $(PRIORITY_COMPONENTS)`"; \
-		OUT="` \
-			$$( : first print the prioritized components ); \
-			$(GNU_GREP)    -F -x -f <(echo -E "$$PRIORITY") "$@" || : ; \
-			$$( : then the rest ) ; \
-			$(GNU_GREP) -v -F -x -f <(echo -E "$$PRIORITY") "$@" || : \
-		`"; \
-		echo -E "$$OUT" > "$@"; \
-	fi
 
 -include $(WS_MACH)/components.mk
 
@@ -154,11 +144,13 @@ DUMMYPKG += "set info.classification=org.opensolaris.category.2008:System/Core"
 $(WS_LINT_CACHE):	$(WS_LOGS) tools
 ifdef CANONICAL_REPO
 	@echo "Generating pkglint(1) cache from CANONICAL_REPO $(CANONICAL_REPO)..."
-	@(echo $(DUMMYPKG) | $(PKGLINTVAR) \
+	@(echo $(DUMMYPKG) | time $(PKGLINTVAR) \
 		-c $(WS_LINT_CACHE) -r $(CANONICAL_REPO) /dev/fd/0 \
-		>$(WS_LOGS)/naughty-canonical-repo-actions 2>&1 || \
-		( echo "pkglint(1) failed, please see $(WS_LOGS)/naughty-canonical-repo-actions"; \
-		  exit 1 ) \
+		>$(WS_LOGS)/naughty-canonical-repo-actions 2>&1; \
+		RET=$$?; \
+		echo "TARGET_EXIT_CODE $$RET" >>$(WS_LOGS)/naughty-canonical-repo-actions 2>&1; \
+		[ $$RET -eq 0 ] || echo "pkglint(1) failed, please see $(WS_LOGS)/naughty-canonical-repo-actions"; \
+		exit $$RET \
 	)
 else
 	$(MKDIR) $(WS_LINT_CACHE)
@@ -175,27 +167,43 @@ JOBS_PER_COMPONENT ?= 1
 $(COMPONENT_DIRS):	$(WS_LOGS) setup FORCE
 	@cd $@ && echo "$(TARGET) $@" && \
 	( env MAKELEVEL= COMPONENT_MAKE_JOBS=$(JOBS_PER_COMPONENT) \
-		time $(GMAKE) $(TARGET) ) $(LOG)
+		time $(GMAKE) --no-keep-going $(TARGET); \
+		RET=$$?; \
+		echo TARGET_EXIT_CODE $$RET; \
+		exit $$RET \
+	) $(LOG)
 
 # Turn userland-incorporator warnings into build failures
 INCORPORATE_WERROR ?= --Werror
 
+# The incorporation target publishes some packages. Because of that it needs to
+# have PUBLISH_LOG set so that the created packages are noted somewhere by the
+# GNU Make function log-package-publish
+incorporation: PUBLISH_LOG=$(WS_TOOLS)/incorporator
 # rm of smcc-incorporation.p5m is a temporary hack to avoid unnecessary
 # republishing of it until Userland starts pkgsurf'ing its deliveries.
 incorporation:
-	$(WS_TOOLS)/userland-incorporator \
-		--repository $(PKG_REPO) \
-		--version $(PKG_SOLARIS_VERSION),$(BUILD_VERSION) \
-		--publisher $(PUBLISHER) \
-		--destdir $(WS_MACH) \
-		--static-content-file $(WS_COMPONENTS)/meta-packages/incorporation-cache \
-		$(INCORPORATE_WERROR)
-	-$(RM) $(WS_MACH)/smcc-incorporation.p5m
-	for incorporation in $(WS_MACH)/*.p5m ; do \
-	    $(call log-package-publish, $${incorporation}) ; \
-	    $(PKGSEND) -s $(PKG_REPO) publish --fmri-in-manifest \
-	               $${incorporation} ; \
-	done
+	@echo 'Creating incorporations'
+	@( \
+		set -x; \
+		$(WS_TOOLS)/userland-incorporator \
+			--repository $(PKG_REPO) \
+			--version $(PKG_SOLARIS_VERSION),$(BUILD_VERSION) \
+			--publisher $(PUBLISHER) \
+			--destdir $(WS_MACH) \
+			--static-content-file $(WS_COMPONENTS)/meta-packages/incorporation-cache \
+			$(INCORPORATE_WERROR) && \
+		$(RM) $(WS_MACH)/smcc-incorporation.p5m && \
+		for incorporation in $(WS_MACH)/*.p5m ; do \
+		    $(call log-package-publish, $${incorporation}) ; \
+		    $(PKGSEND) -s $(PKG_REPO) publish --fmri-in-manifest \
+			       $${incorporation} || exit $?; \
+		done \
+	) >$(WS_LOGS)/incorporator 2>&1; \
+	RET=$$?; \
+	echo "TARGET_EXIT_CODE $$RET" >>$(WS_LOGS)/incorporator; \
+	[ $$RET -eq 0 ] || echo "Incorporator failed, please see $(WS_LOGS)/incorporator"; \
+	exit $$RET
 
 # Use PKGLINT below instead of PKGLINTVAR because we know we always want the
 # real one for this set of rules.  We use $(wildcard ...) because not all
@@ -206,7 +214,12 @@ pkglint:
 			SOLARIS_VERSION=$(SOLARIS_VERSION) \
 			$(PKGLINT) \
 			-c $(WS_LINT_CACHE) -f $(WS_TOOLS)/pkglintrc \
-			$(wildcard $(COMPONENT_DIRS:%=%/build/manifest-*.published))
+			$(wildcard $(COMPONENT_DIRS:%=%/build/manifest-*.published)) \
+			>$(WS_LOGS)/pkglint 2>&1; \
+	RET=$$?; \
+	echo "TARGET_EXIT_CODE $$RET" >>$(WS_LOGS)/pkglint; \
+	[ $$RET -eq 0 ] || echo "Pkglint failed, please see $(WS_LOGS)/pkglint"; \
+	exit $$RET
 
 publish:
 	$(PKGREPO) refresh -s $(PKG_REPO)

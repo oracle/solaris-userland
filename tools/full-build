@@ -1,0 +1,428 @@
+#!/bin/bash
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+#
+
+
+set -eEu -o pipefail
+
+PROG="$( basename "${BASH_SOURCE[0]}" )"
+
+# Set default environment
+export PATH=/usr/bin
+export HGPLAIN=+strictflags # see 'hg help scripting'
+
+function usage {
+	cat <<-EOT
+	$ $PROG [help|-h|--help|-?] - print this help
+
+	$ $PROG --stop        - stop currently running background build
+
+	$ $PROG [opts] - run full build
+	   -j <num>            - override default number of parallel jobs
+	   -m|--mail           - send email with results
+	   -b|--background     - execute the build in background (implies --mail)
+	   --allow-dirty       - run the build even in presence of uncommited changes
+	   --do-not-purge      - do not remove any untracked files prior to build
+	   --master-repo       - first synch changes from given repository
+	   --pkglint-component - pkglint each component separately, mostly for gatekeepers
+	EOT
+}
+
+# Command line parameters
+PARM_JOBS=              # Number of components to be built in parallel
+PARM_ALLOW_DIRTY=       # Allow local changes in the repo
+PARM_PURGE=1            # Remove any files _not_ tracked by the repo
+PARM_MASTER_REPO=       # Synchronize to this repo before running the build
+PARM_RUN_DETACHED=      # Run the build in background
+PARM_SEND_EMAIL=        # Send email on completion
+PARM_STOP_RUNNING_JOB=  # Stop already running build
+PARM_PKGLINT_COMPONENT= # Enable pkglinting each component separately
+
+# Changing already running bash script may lead to it's crash. We may be
+# modified later by "hg pull" so we need to protect ourselves. The idea is to
+# copy ourselves to /tmp and re-exec from there.
+RE_EXECUTED=            # We need to behave differently when we re-executed ourselves
+# We may need to restart this script, so we should remember the parameters
+INPUT_PARAMS=( "$@" )
+
+################################################################################
+### PROCESS INPUT PARAMETERS
+################################################################################
+
+while [ $# -gt 0 ]; do
+	case "$1" in
+        help|-h|--help|-\?)
+            usage
+            exit 0
+            ;;
+		--do-not-puge)
+            PARM_PURGE=
+			;;
+		--allow-dirty)
+            PARM_ALLOW_UNCOMMITTED=1
+			;;
+		-b|--background)
+            PARM_RUN_DETACHED=1
+            PARM_SEND_EMAIL=1
+			;;
+		-m|--mail)
+            PARM_SEND_EMAIL=1
+			;;
+		--master-repo)
+			if [ $# -eq 0 ]; then
+				echo "Option $1 requires a parameter."
+				exit 1
+			fi
+			shift
+			PARM_MASTER_REPO="$1"
+			;;
+        -j)
+			if [ $# -eq 0 ]; then
+				echo "Option $1 requires a parameter."
+				exit 1
+			fi
+            shift
+            PARM_JOBS="$1"
+            ;;
+        --reexec)
+			RE_EXECUTED=1
+			;;
+		--stop)
+			PARM_STOP_RUNNING_JOB=1
+			;;
+		--pkglint-component)
+			# Userland infrastructure is checking for the word "yes"
+			PARM_PKGLINT_COMPONENT=yes
+			;;
+        *)
+            echo "Error, unknown argument '$1'"
+            exit 1
+            ;;
+	esac
+    shift
+done
+
+# Determine LOGNAME
+LOGNAME="${LOGNAME:-}"
+[ -n "$LOGNAME" ] || LOGNAME="${USER:-}"
+[ -n "$LOGNAME" ] || LOGNAME=$( id -un )
+if [ -z "$LOGNAME" ]; then
+	echo "Sorry, can't determine your \$LOGNAME ..."
+	exit 1
+fi
+
+# Convert local path to nfs-accessible one
+function convert_path_to_nfs {
+	if [ -e /etc/userland ]; then
+		. /etc/userland
+		# If /etc/userland defines ul_path_to_nfs then use it
+		if declare -F -f ul_path_to_nfs >/dev/null 2>/dev/null; then
+			ul_path_to_nfs "$1"
+			return
+		fi
+	fi
+	# Otherwise just print the original path
+	echo "$1"
+}
+
+################################################################################
+### SET SCRIPT-WIDE VARIABLES
+################################################################################
+
+typeset -r SOURCEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# If we are ran by user, let's set root according to where the this tool is
+# executed from. If we re-executed ourselves we are already sitting in the WS
+# root.
+if [ $RE_EXECUTED ]; then
+	typeset -r WS_ROOT="$PWD"
+else
+	typeset -r WS_ROOT="$(cd "$SOURCEDIR"; hg root)"
+	cd "$WS_ROOT"
+fi
+typeset -r PGID_FILE="$WS_ROOT/.hg/full-build.pgid"
+typeset -r BUILD_NAME="$(basename "$WS_ROOT")"
+typeset -r LOGDIR="$WS_ROOT/$(uname -p)/logs"
+typeset -r TEMP_LOGFILE="$WS_ROOT/.hg/full-build.temp.log"
+typeset -r FULL_BUILD_LOG_NAME=full-build
+typeset -r FINAL_LOGFILE="$LOGDIR/$FULL_BUILD_LOG_NAME"
+typeset -r FINAL_LOGFILE_NFS="$( convert_path_to_nfs "$FINAL_LOGFILE" )"
+
+# Number of jobs was not specified on a command line, try to read machine
+# defaults
+if [ -z "$PARM_JOBS" ] && [ -e /etc/userland ]; then
+	PARM_JOBS=$(
+		. /etc/userland
+		echo "${DEFAULT_FULL_BUILD_JOBS:-}"
+	)
+fi
+
+# Set conservative default
+if [ -z "$PARM_JOBS" ]; then
+	PARM_JOBS=10
+fi
+
+################################################################################
+### STOP RUNNING BUILD
+################################################################################
+
+if [ $PARM_STOP_RUNNING_JOB ]; then
+	if [ ! -e "$PGID_FILE" ]; then
+		echo "Sorry, this workspace does not appear to have build running (no $PGID_FILE found)"
+		exit 1
+	fi
+	PGID=$(<"$PGID_FILE")
+	SIGNAL=15 # SIGTERM
+	for i in {1..10}; do
+		if [[ ! -n "$(pgrep -g $PGID)" ]]; then
+			echo "Done"
+			exit 0
+		fi
+		if [ $i -gt 8 ]; then
+			SIGNAL=9 # SIGKILL
+		fi
+		pkill -$SIGNAL -g $PGID
+		sleep 1
+	done
+	echo "I don't seem to be able to kill all processes belonging to group $PGID, sorry"
+	exit 1
+fi
+
+################################################################################
+### DETERMINE USER'S MAIL
+################################################################################
+
+# Extract email from ~/.hgrc
+if [ -z "${MAILTO:-}" ]; then
+	MAILTO=$(hg config email.from || : )
+fi
+
+# Alternatively take a look if ui.username has email in it
+if [ -z "${MAILTO:-}" ]; then
+	MAILTO=$(
+		( hg config ui.username || : ) |
+		perl -ne 'print "$1\n" if m/<(.*?)>/'
+	)
+fi
+
+# If everything failed, use ldaplist
+if [ -z "${MAILTO:-}" ]; then
+	MAILTO=$( ldaplist -l passwd $LOGNAME | perl -ne 'print "$1\n" if m/^\s*mail:\s*(\S*)/' || : )
+fi
+
+if [ $PARM_SEND_EMAIL ] && [ -z "$MAILTO" ]; then
+	echo "Sorry, I am asked to send an email but I can not find your address!"
+	exit 1
+fi
+
+################################################################################
+### SETUP LOGGING
+################################################################################
+
+# Display what command is being executed
+function run {
+	(set -x; "$@")
+}
+
+# Rename existing logfile. That might be pointless as we later purge the
+# workspace, but it seems like a good practice for some corner cases
+if [ -e "$FINAL_LOGFILE" ]; then
+	mv "$FINAL_LOGFILE" "$FINAL_LOGFILE.$(date +'%Y.%m.%d-%H:%M:%S')"
+fi
+
+# This function is used to collect log file and send email
+function end_build_process {
+	RET=$1
+	rm -f "$PGID_FILE" # No longer we can be killed from command line
+
+	echo "Main log file is at \"$FINAL_LOGFILE_NFS\""
+	if [ $RET -eq 0 ]; then
+		echo "Full build completed successfully."
+	else
+		echo "Some problems found during full build, please examine the logs."
+	fi
+	echo "TARGET_EXIT_CODE $RET"
+
+	if [ -e "$TEMP_LOGFILE" ]; then
+		mkdir -p "$LOGDIR"
+		mv -f "$TEMP_LOGFILE" "$FINAL_LOGFILE"
+	else
+		# This should not happen, but if it does let's have at least some
+		# message ...
+		echo "Build in $WS_ROOT finished, but I can not find the temporary logfile \"$TEMP_LOGFILE\""
+		RET=1
+	fi
+
+	if [ $PARM_SEND_EMAIL ]; then
+		mailx -s "Userland build '$BUILD_NAME' on $(hostname) finished: return=$RET" "$MAILTO" < "$FINAL_LOGFILE"
+	fi
+	exit $RET
+}
+
+# Call the function on exit, pass the exit status as a parameter
+trap 'end_build_process $?' EXIT
+
+# We redirect stdout and stderr into a temp file. And this redirection still
+# works after re-exec, meaning that we must not redirect it second time.
+if [ ! $RE_EXECUTED ]; then
+	> "$TEMP_LOGFILE"
+	exec >  >(tee -ia "$TEMP_LOGFILE")
+	exec 2> >(tee -ia "$TEMP_LOGFILE" >&2)
+fi
+
+if [ ! $RE_EXECUTED ]; then
+	COPIED_SCRIPT=$( mktemp /tmp/$PROG.$LOGNAME.XXXXXX )
+	cp "${BASH_SOURCE[0]}" "$COPIED_SCRIPT"
+	chmod +x "$COPIED_SCRIPT"
+	CMD=( "$COPIED_SCRIPT" "${INPUT_PARAMS[@]}" --reexec )
+	if [ $PARM_RUN_DETACHED ]; then
+		# Execute us in new process group if we are going to be put into
+		# background
+		CMD=( setpgrp "${CMD[@]}" )
+	fi
+	exec "${CMD[@]}"
+else
+	# We can safely delete the file from /tmp ,bash is holding a file
+	# descriptor to it so it will continue working
+	rm "${BASH_SOURCE[0]}"
+fi
+
+echo "WS Root: $WS_ROOT"
+echo "Your email: $MAILTO"
+
+################################################################################
+### SYNC TO MASTER REPO
+################################################################################
+
+if [ -n "$PARM_MASTER_REPO" ]; then
+	# Try to preserve any outstanding changes. Even though we may just erase it
+	# in next few lines, it will still remain saved as bundles in the .hg
+	# directory
+	hg ci -m "outstanding changes" 1>/dev/null 2>/dev/null || :
+
+	# Looking for local changes to remove
+	while : ; do
+		# Look for revisions our master does not have
+		REVISION_TO_REMOVE=$(hg --quiet outgoing -l 1 --template '{rev}' "$PARM_MASTER_REPO") || :
+		[ -n "$REVISION_TO_REMOVE" ] || break
+		echo "... removing changeset '$REVISION_TO_REMOVE' and descendants"
+		run hg --config extensions.mq= strip $REVISION_TO_REMOVE
+	done
+
+	run hg pull "$PARM_MASTER_REPO"
+	PARENT_REV=$( hg -R "$PARM_MASTER_REPO" parent --template '{node}\n' )
+	OUR_REV=$( hg parent --template '{node}\n' )
+	if [[ $PARENT_REV != $OUR_REV ]]; then
+		run hg up --clean "$PARENT_REV"
+		COPIED_SCRIPT=$( mktemp /tmp/$PROG.$LOGNAME.XXXXXX )
+		# This will come handy if we update the script during hg pull, so that we
+		# can re-exec our latest version
+		run cp "$WS_ROOT/tools/full-build" "$COPIED_SCRIPT"
+		chmod +x "$COPIED_SCRIPT"
+		set -x
+		exec "$COPIED_SCRIPT" "${INPUT_PARAMS[@]}"
+	fi
+fi
+
+################################################################################
+### Workspace checks
+################################################################################
+
+echo "Workspace parent is:"
+hg parent
+
+OUT=$( hg status -mard )
+if [ -n "$OUT" ]; then
+	echo "There are uncommitted changes:"
+	echo -E "$OUT"
+	if [ ! $PARM_ALLOW_DIRTY ]; then
+		echo "... please commit them first (or use --allow-dirty option)."
+		exit 1
+	fi
+else
+	echo "No uncommitted changes found."
+	echo
+fi
+
+################################################################################
+### Build
+################################################################################
+
+function build {
+	if [ $PARM_PURGE ]; then
+		# Run the build from pristine workspace - erase all files which are not tracked
+		run time hg --config extensions.purge= purge --dirs --files --all
+	fi
+
+	echo
+	echo
+
+	# Run the actual build
+	RET=0
+	run time gmake publish --keep-going -j $PARM_JOBS PKGLINT_COMPONENT="$PARM_PKGLINT_COMPONENT" || RET=$?
+
+	# Print the results
+	if [ $RET -ne 0 ]; then
+		echo "Sorry, the build has failed"
+		cd "$LOGDIR"
+		WS=$( convert_path_to_nfs "$PWD" )
+		echo "Build logs are in $WS:"
+		echo "Failed components:"
+		( ggrep -r --exclude "$FULL_BUILD_LOG_NAME"$ -L -x -F 'TARGET_EXIT_CODE 0' || : ) |
+			sed -e 's/^/   /'
+	fi
+
+	exit $RET
+}
+
+echo
+if [ $PARM_RUN_DETACHED ]; then
+	PGID=$(echo $(ps -o pgid= -p $$))
+	echo "$PGID" > "$PGID_FILE"
+	echo "..................................................................."
+	echo "Detaching from terminal, you will get email once the build finishes"
+	echo "Temporary log file: $TEMP_LOGFILE"
+	echo "Final logfile once we are done: $FINAL_LOGFILE_NFS"
+	echo "You can stop the build process with this command:"
+	echo "   $WS_ROOT/tools/full-build --stop"
+	echo "..................................................................."
+	echo
+	(
+		# Process logs once we exit
+		trap 'end_build_process $?' EXIT
+		# Being killed means that the build failed
+		trap 'exit 1' INT TERM
+		RET=0
+		build >>"$TEMP_LOGFILE" 2>&1 || RET=$?
+	) </dev/null &
+	disown $!
+	# The trap is going to be executed in the sub-shell, not here in the parent
+	trap - EXIT
+else
+	build
+fi
+
+
+# vim: sw=4 ts=4

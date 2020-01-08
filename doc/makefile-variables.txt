@@ -202,18 +202,6 @@ if overriding the default:
   it is applied on top of this tranform) but for some corner cases it can do
   too much, so keeping it in separate variable makes it possible to disable it.
 
-* PRIORITY_COMPONENTS is a variable which may be used on command line during
-  full build. It says which components should be build before the rest of the
-  components. There are two reasons one may wish to use this feature
-    - component is taking long to build. During paralel build if such component
-    is built as last one all other parallel tasks have nothing to do already.
-    If you run build of such component at the beginning it will happily build
-    in parallel with rest of the components.
-    - debugging full build problems. You are having a problem in some component
-    only during full build and do not want to wait till all previous components
-    are built. This can be partially achieved by specifying COMPONENT_DIRS on
-    command line, but that would mean only given component would be built.
-
 * SOLARIS_11_*_ONLY - variable limiting the rest of the line to only given
   release allowing to use common source for multiple branches to ease
   backporting. For example in the Makefile

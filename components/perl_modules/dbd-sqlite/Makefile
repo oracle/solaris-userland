@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 # This variable has no impact on perl build, it is here merely to satisfy
@@ -63,7 +63,7 @@ COMPONENT_PRE_CONFIGURE_ACTION= ( \
 )
 
 # This makes the configuration process a bit more chatty
-COMPONENT_CONFIGURE_ENV += AUTOMATED_TESTING=1
+CONFIGURE_ENV += AUTOMATED_TESTING=1
 
 CLEAN_PATHS += $(LICENSE)
 

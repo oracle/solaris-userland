@@ -41,7 +41,7 @@ GPATCH_FLAGS =	--strip=$(PATCH_LEVEL) $(GPATCH_BACKUP)
 # PATCH_DIR can be overridden to move patches to a different location
 # PATCH_PATTERN can be overridden to adjust the patch naming scheme that the
 #     build recognizes.
-# EXTRA_PATCHES{version} can be defined in the component Makefile to include
+# ADDITIONAL_PATCHES can be defined in the component Makefile to include
 #     additional patches.
 #
 
