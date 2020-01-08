@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,35 +30,22 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		geocode-glib
-COMPONENT_VERSION=	3.23.90
+COMPONENT_VERSION=	3.26.1
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:f6b536a3b225ede73ef0592ad841640c5cde2a0e4bf3f416c893e8262b1dd7dc
+	sha256:5baa6ab76a76c9fc567e4c32c3af2cd1d1784934c255bc5a62c512e6af6bde1c
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13123
 
-TPNO=			34505
+TPNO=			54027
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-CONFIGURE_OPTIONS += --disable-static
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --with-pic
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+LDFLAGS +=  -Wl,-zgnu-version-script-compat
 
-# for tests to run
-unexport SHELLOPTS
-COMPONENT_TEST_ENV +=   libtool_install_magic='%%%MAGIC variable%%%'
-COMPONENT_TEST_ENV +=   libtool_execute_magic='%%%MAGIC variable%%%'
-COMPONENT_TEST_DIR =  $(BUILD_DIR)/$(MACH$(BITS))/geocode-glib
-COMPONENT_TEST_CMD = cd $(COMPONENT_TEST_DIR); gmake check;
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/ERROR:/p" '
+# get rid of the timestamps from the test results
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc

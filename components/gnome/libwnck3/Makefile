@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,28 +30,30 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libwnck3
-COMPONENT_VERSION=	3.20.1
+COMPONENT_VERSION=	3.32.0
 COMPONENT_PROJECT_URL=	https://www.gnome.org
 COMPONENT_SRC=		libwnck-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:1cb03716bc477058dfdf3ebfa4f534de3b13b1aa067fcd064d0b7813291cba72
-COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/libwnck/3.20/$(COMPONENT_ARCHIVE)
+    sha256:9595835cf28d0fc6af5526a18f77f2fcf3ca8c09e36741bb33915b6e69b8e3ca
+COMPONENT_ARCHIVE_URL=  https://download.gnome.org/sources/libwnck/3.32/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	11006
 
-TPNO=			35470
+TPNO=			54123
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
-CONFIGURE_OPTIONS += --with-x
-
 # Assumes GNU xgettext in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+
+LD_OPTIONS += -Wl,-zgnu-version-script-compat
+LD_OPTIONS += -M $(COMPONENT_DIR)/mapfile
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += library/desktop/atk
