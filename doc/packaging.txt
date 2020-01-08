@@ -331,6 +331,19 @@ Gatekeeper uses $(hg root)/tools/replace_auto_fmri for that job.
 ==============================
 Component EOF (End Of Feature) 
 ==============================
+TL;DR you have to:
+
+ 1) edit transforms/legacy and 'mark' all affected packages by adding to them
+ attribute legacy_fmri=AUTO_FMRI
+
+ 2) go to the component directory and create there 'history' file with the contents
+ my/package@1.2.3-AUTO_FMRI legacy/my/package. 1.2.3 is actual version of
+ my/package (It's current IPS_COMPONENT_VERSION usually derived from
+ COMPONENTVERSION. See 'gmake print-IPS_COMPONENT_VERSION')
+
+
+Longer description:
+
 This is a brief description on how to remove a component from Userland for
 an EOF. The process is described at PSARC/2018/018. That means that you will
 need to make three changes to the gate.
@@ -373,12 +386,6 @@ The details are a bit more complex:
 
 All of that with exception of the first step is done by transforms in the
 transforms/legacy file.
-
-So practically you have to
- 1) edit transforms/legacy and 'mark' all affected packages by adding to them
- attribute legacy_fmri=AUTO_FMRI
- 2) go to the component directory and create there 'history' file with the contents
- my/package@1.2.3-AUTO_FMRI legacy/my/package
 
 
 ad b) Verification who depends on given package

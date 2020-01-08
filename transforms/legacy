@@ -24,9 +24,10 @@
 #
 
 #
-# Specify which packages are to be moved to 'legacy' namespace
+# Specify which packages are to be moved to 'legacy' namespace. Please see
+# doc/packaging.txt section "Component EOF (End Of Feature)"
 #
-# Moving to legacy namespace consists of multiple things
+# Moving to legacy namespace consists of multiple things.
 # a) we prefix the package name by 'legacy/' string, for example pkg:/legacy/abc.
 #    This happens here in this transform file.
 # b) we create history file record stating that the package was renamed to
@@ -65,6 +66,15 @@
 # Now we can get rid of do_not_move_to_legacy attribute as we don't need it anymore
 <transform set name=pkg.fmri do_not_move_to_legacy=.* -> delete do_not_move_to_legacy .*>
 
+
+# Provide some support for the packages manually set in the legacy namespace
+<transform set name=pkg.fmri value=^(pkg://[^/]+/|pkg:/|)legacy/(.*) -> \
+    emit set name=pkg.namespace value=legacy>
+# But do not apply any other automation
+<transform set name=pkg.fmri value=^(pkg://[^/]+/|pkg:/|)legacy/(.*) -> \
+    delete legacy_fmri .*>
+
+
 #
 # Force the rename with a dependency on the old name
 # Ex:
@@ -96,7 +106,7 @@
 # value=pkg:/a/b/c -> value=pkg:/legacy/a/b/c
 # value=pkg://publisher/a/b/c -> value=pkg://publisher/legacy/a/b/c
 #
-<transform set name=pkg.fmri legacy_fmri=.* value=(pkg://[^/]+/|pkg:/|)(.*) -> set value %<1>legacy/%<2>>
+<transform set name=pkg.fmri legacy_fmri=.* value=^(pkg://[^/]+/|pkg:/|)(.*) -> set value %<1>legacy/%<2>>
 
 
 #
