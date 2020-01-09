@@ -20,21 +20,23 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
+COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-font-viewer
-COMPONENT_VERSION=	3.23.91
+COMPONENT_VERSION=	3.34.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:f6ca813c388741ca5ffcdd5b5fb7a65ac5ba2da2818592ae3161bddba92e88d0
+	sha256:aa6f0583e5f93aec095e537f0638b29de3d02491f0131ef584a7c55d39d6b98b
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	13130
 
-TPNO=			34519
+TPNO=			54040
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -42,11 +44,12 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes xgettext in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
-CONFIGURE_OPTIONS += --disable-static
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --with-pic
+COMPONENT_POST_INSTALL_ACTION.64 += \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/gnome-font-viewer.1 \
+                $(PROTO_DIR)/usr/share/man/man1/gnome-font-viewer.1; \
 
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf

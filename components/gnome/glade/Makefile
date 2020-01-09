@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		64_and_32
@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		glade
-COMPONENT_VERSION=	3.16.0
+COMPONENT_VERSION=	3.22.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Glade
 COMPONENT_ARCHIVE_HASH= \
-	sha256:b80773a294d3af07739d9d53bae12e11cf0bbf420bbc8931cc5e20b2647e3626
+	sha256:dff89a2ef2eaf000ff2a46979978d03cb9202cb04668e01d0ea5c5bb5547e39a
 COMPONENT_BUGDB=	gnome/libglade
 COMPONENT_ANITYA_ID=	1174
 
-TPNO=			25181
+TPNO=			54028
 
 # Requires a display
 TEST_TARGET = $(SKIP_TEST)
@@ -55,6 +55,7 @@ CONFIGURE_OPTIONS += --enable-gladeui
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
+REQUIRED_PACKAGES += library/desktop/webkitgtk4
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/python/pygobject-27
