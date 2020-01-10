@@ -20,25 +20,25 @@
 #
 
 #
-# Copyright (c) 2017, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 COMPILER=gcc
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dwarf
-COMPONENT_VERSION=	20190104
+COMPONENT_VERSION=	20191104
 # Convert YYYYMMDD -> YYYY.MM.DD
 COMPONENT_PROJECT_URL=	https://www.prevanders.net/dwarf.html
 COMPONENT_SRC=	lib$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_URL=	https://www.prevanders.net/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:10571c2c9042baa3127a72e0f2fcbde4ea62d84234cda6e8ff5750b5efbb17b9
+    sha256:45f50a966314421b7dab525859853616df6c9680f0ccf2f44b030c505236eaba
 COMPONENT_BUGDB=	library/libdwarf
 COMPONENT_ANITYA_ID=	1597
 
-TPNO=			48543
+TPNO=			56047
 
 HUMAN_VERSION= $(shell echo $(COMPONENT_VERSION) | \
 	$(GSED) -e 's/\(.\{4\}\)\(.\{2\}\)/0.\1.\2./')
