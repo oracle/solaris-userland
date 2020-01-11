@@ -341,6 +341,17 @@ TL;DR you have to:
  my/package (It's current IPS_COMPONENT_VERSION usually derived from
  COMPONENTVERSION. See 'gmake print-IPS_COMPONENT_VERSION')
 
+ 3) create release note (usually in release-notes/some-text.txt)
+
+ 4) Add the note into one of the packages. If there is multiple packages in the
+ component the note should be only in one (the main one supposedly). If the
+ 'generate' system is used, the note will go to generate/*.static file,
+ otherwise just into the *.p5m. It is specified like:
+
+    file release-notes/legacy-runtime-python-34.txt \
+        path=usr/share/doc/release-notes/legacy-runtime-python-34.txt mode=0444 \
+        must-display=true release-note=feature/pkg/self@0
+
 
 Longer description:
 
@@ -383,9 +394,12 @@ The details are a bit more complex:
  - you need to tell pkglint to ignore the fact that the new legacy package
    seems to deliver the same symlink and so will force you to create mediated
    links
+ - at the same time we create release note telling customer that the package is
+   going away soon-ish. That note is displayed to customer once he updates the
+   component to legacy one.
 
-All of that with exception of the first step is done by transforms in the
-transforms/legacy file.
+All of that with exception of the first (rename package) and last (release
+note) step is done by transforms in the transforms/legacy file.
 
 
 ad b) Verification who depends on given package
