@@ -1,0 +1,56 @@
+Use RESERVE_SEGMENT on SPARC to limit stack below 47bits of address space.
+
+Should be submitted to upstream to resolve:
+
+https://bugzilla.mozilla.org/show_bug.cgi?id=577056
+
+Bug 577056 fatval: Memory layout for 64-bit Solaris is different than other 64-bit systems.
+
+--- /dev/null
++++ b/js/mapfile.SolarisSPARC
+@@ -0,0 +1,9 @@
++# Mozilla JavaScript expects that no address above 47bits address range
++# will get ever used. Solaris SPARC is not limiting address space.
++# Therefore we need to enforce it artificially.
++
++$mapfile_version 2
++RESERVE_SEGMENT spidermonkey_reserve {
++      VADDR = 0x800000000000;
++      SIZE = 0xffff7fffffff0000;
++};
+--- a/browser/app/moz.build
++++ b/browser/app/moz.build
+@@ -118,6 +118,10 @@
+ if CONFIG['OS_ARCH'] == 'WINNT' and CONFIG['CC_TYPE'] not in ('clang', 'gcc'):
+     LDFLAGS += ['/HEAP:0x40000']
+ 
++# Enforce 47bits address space to resulting binary (Bug 577056).
++if CONFIG['OS_ARCH'] == 'SunOS' and CONFIG['CPU_ARCH'] == 'sparc64':
++    LDFLAGS += ['-Wl,-M%s/js/mapfile.SolarisSPARC' % TOPSRCDIR]
++
+ DisableStlWrapping()
+ 
+ if CONFIG['MOZ_LINKER']:
+--- a/js/src/shell/moz.build
++++ b/js/src/shell/moz.build
+@@ -51,3 +51,7 @@
+ 
+ # People expect the js shell to wind up in the top-level JS dir.
+ OBJDIR_FILES.js.src += ['!/dist/bin/js%s' % CONFIG['BIN_SUFFIX']]
++
++# Enforce 47bits address space to resulting binary (Bug 577056).
++if CONFIG['OS_ARCH'] == 'SunOS' and CONFIG['CPU_ARCH'] == 'sparc64':
++    LDFLAGS += ['-Wl,-M%s/js/mapfile.SolarisSPARC' % TOPSRCDIR]
+--- a/js/xpconnect/shell/moz.build
++++ b/js/xpconnect/shell/moz.build
+@@ -26,6 +26,10 @@
+     # a console application.
+     WIN32_EXE_LDFLAGS += ['-ENTRY:wmainCRTStartup']
+ 
++# Enforce 47bits address space to resulting binary (Bug 577056).
++if CONFIG['OS_ARCH'] == 'SunOS' and CONFIG['CPU_ARCH'] == 'sparc64':
++    LDFLAGS += ['-Wl,-M%s/js/mapfile.SolarisSPARC' % TOPSRCDIR]
++
+ # DELAYLOAD_DLLS in this block ensure that the DLL blocklist initializes
+ if CONFIG['OS_ARCH'] == 'WINNT':
+     RCINCLUDE = 'xpcshell.rc'
