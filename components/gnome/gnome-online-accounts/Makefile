@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
@@ -30,20 +30,22 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-online-accounts
-COMPONENT_VERSION=	3.24.0
+COMPONENT_VERSION=	3.34.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GnomeOnlineAccounts
 COMPONENT_ARCHIVE_HASH= \
-	sha256:9e2f780e061641dfd692cc82269b0cac6cce73c74ce2d8a0a5e80889ed07c17b
+	sha256:c44fbce4eeb54703a2ab4954d54f11eb29666f9cf61b5275b9fe0fc033377f57
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	10943
 
-TPNO=			36149
+TPNO=			54061
 
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
+
+LD_OPTIONS += -lresolv
 
 # Doesn't build currently; conflicts between Solaris krb5.h and p11-kit.
 CONFIGURE_OPTIONS += --disable-kerberos
@@ -63,11 +65,14 @@ CONFIGURE_OPTIONS += --enable-windows-live
 CONFIGURE_OPTIONS += --with-pic
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
+REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
+REQUIRED_PACKAGES += library/gnome/gcr
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/librest
+REQUIRED_PACKAGES += library/desktop/p11-kit
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/desktop/webkitgtk4
 REQUIRED_PACKAGES += library/glib2
@@ -76,4 +81,5 @@ REQUIRED_PACKAGES += library/json-glib
 REQUIRED_PACKAGES += library/libsoup
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/telepathy-glib
+REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

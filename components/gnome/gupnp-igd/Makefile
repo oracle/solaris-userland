@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gupnp-igd
-COMPONENT_VERSION=	0.2.4
+COMPONENT_VERSION=	0.2.5
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GUPnP
 COMPONENT_ARCHIVE_HASH= \
-	sha256:38c4a6d7718d17eac17df95a3a8c337677eda77e58978129ad3182d769c38e44
+	sha256:8b4a1aa38bacbcac2c1755153147ead7ee9af7d4d1f544b6577cfc35e10e3b20
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13143
 
-TPNO=			25397
+TPNO=			54078
 
 # Hook up tests once dependencies are installed
 TEST_TARGET = $(SKIP_TEST)
