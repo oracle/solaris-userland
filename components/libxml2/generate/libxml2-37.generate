@@ -20,14 +20,13 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 <include generate/common.transform>
 
 # move binary module to 64bit location
 <transform path=usr/lib/python([0-9]+\.[0-9]+)/vendor-packages/.*\.so$ -> set action.hash %(path)>
-<transform path=usr/lib/python([0-9]+\.[0-9]+)/vendor-packages/.*\.so$ -> edit path packages packages/64>
 
 # delete everything not belonging to this package
 <transform file link pkg.type=(?!python37) -> drop>
