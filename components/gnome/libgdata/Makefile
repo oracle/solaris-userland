@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
@@ -30,46 +30,30 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgdata
-COMPONENT_VERSION=	0.17.7
+COMPONENT_VERSION=	0.17.11
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/libgdata
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8a663ef314a6d20b73c762072e0c1353fa7ec1ca3c2dee6fb85927cbda0d44fd
+    sha256:6b9917122e4def6e6f78bcb660e49e146540832e296abcb5cde99829a04ea986
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13145
 
-TPNO=			34705
+TPNO=			54083
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# Documentation XML is malformed; skip building.
-CONFIGURE_OPTIONS += --disable-gtk-doc
-CONFIGURE_OPTIONS += --disable-static
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-gnome
-CONFIGURE_OPTIONS += --enable-goa
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-vala
-CONFIGURE_OPTIONS += --with-pic
-
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+LDFLAGS += -z gnu-version-script-compat
 
-# Requires updated gnome-online-accounts
-GOA_BASE = $(WS_COMPONENTS)/gnome/gnome-online-accounts/build/prototype/$(MACH)
-COMPONENT_BUILD_ENV  += \
-       XDG_DATA_DIRS="$(GOA_BASE)/usr/share:/usr/share"
-
-# for the tests
-unexport SHELLOPTS
-COMPONENT_TEST_ARGS =   -k -i
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/ERROR:/p" '
+        '-e "/OK/p" ' \
+        '-e "/Fail/p" ' \
+        '-e "/Pass/p" ' \
+        '-e "/Ok/p" ' \
+        '-e "/ok/p" '
 
 REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
