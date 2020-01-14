@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 COMPILER=gcc
@@ -160,6 +160,7 @@ COMPONENT_TEST_TRANSFORMS += '-n -e "/No. tests: /p"'
 test: $(TEST_32_and_64)
 
 REQUIRED_PACKAGES += desktop/pdf-viewer/poppler-viewer
+REQUIRED_PACKAGES += developer/swig
 REQUIRED_PACKAGES += image/graphviz
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng14

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=64_and_32
@@ -227,8 +227,9 @@ COMPONENT_POST_INSTALL_ACTION += \
 	fi ; )
 
 REQUIRED_PACKAGES += database/sqlite-3
-REQUIRED_PACKAGES += developer/versioning/subversion
 REQUIRED_PACKAGES += developer/build/scons
+REQUIRED_PACKAGES += developer/swig
+REQUIRED_PACKAGES += developer/versioning/subversion
 REQUIRED_PACKAGES += library/apr-16
 REQUIRED_PACKAGES += library/apr-util-16
 REQUIRED_PACKAGES += library/expat

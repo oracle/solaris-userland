@@ -20,23 +20,25 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 # parfait is suddenly unhappy with us (21638460)
 export PARFAIT_BUILD=no
 BUILD_BITS= 64
+COMPILER=	gcc
+
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		swig
-COMPONENT_VERSION=	3.0.12
+COMPONENT_VERSION=	4.0.1
 COMPONENT_PROJECT_URL=	http://www.swig.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:7cf9f447ae7ed1c51722efc45e7f14418d15d7a1e143ac9f09a668999f4fc94d
+    sha256:6e3c9901a2b2bbb807f4a29a457595ebdd4b0f436810aa7e4a6356a8f0534936
 COMPONENT_ARCHIVE_URL=	http://prdownloads.sourceforge.net/swig/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	4919
 
-TPNO=			35546
+TPNO=			56284
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -47,6 +49,17 @@ COMPONENT_PRE_CONFIGURE_ACTION =      ($(CLONEY) $(SOURCE_DIR) $(@D))
 
 CONFIGURE_ENV += JAVA_HOME="$(JAVA_HOME)"
 CONFIGURE_OPTIONS +=	--with-javaincl="$(JAVA_HOME)/include"
+
+PROTO_DOC_DIR = $(PROTO_DIR)/$(USRSHAREDIR)/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/doc
+BUILD_DOC_DIR = $(BUILD_DIR)/$(MACH64)/Doc
+
+# Copy documentation files into the proto area
+COMPONENT_POST_INSTALL_ACTION += ( \
+	$(MKDIR) -p $(PROTO_DOC_DIR)/devel; \
+	$(CP) $(BUILD_DOC_DIR)/Devel/* $(PROTO_DOC_DIR)/devel/; \
+	$(MKDIR) -p $(PROTO_DOC_DIR)/manual; \
+	$(CP) $(BUILD_DOC_DIR)/Manual/* $(PROTO_DOC_DIR)/manual/; \
+)
 
 # The additional swig specific set of transforms to be applied to the
 # test results to try to normalize them.
