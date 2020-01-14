@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -39,13 +39,15 @@ set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=LSARC/2001/384 value=LSARC/2001/781 \
     value=PSARC/2001/804 value=PSARC/2016/259
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file path=usr/bin/pango-list pkg.linted.userland.action001.2=true
 #
-file path=usr/bin/pango-view
+file path=usr/bin/pango-view pkg.linted.userland.action001.2=true
 file path=usr/include/pango-1.0/pango/pango-attributes.h
 file path=usr/include/pango-1.0/pango/pango-bidi-type.h
 file path=usr/include/pango-1.0/pango/pango-break.h
 file path=usr/include/pango-1.0/pango/pango-context.h
 file path=usr/include/pango-1.0/pango/pango-coverage.h
+file path=usr/include/pango-1.0/pango/pango-direction.h
 file path=usr/include/pango-1.0/pango/pango-engine.h
 file path=usr/include/pango-1.0/pango/pango-enum-types.h
 file path=usr/include/pango-1.0/pango/pango-features.h
@@ -79,25 +81,22 @@ file path=usr/lib/$(MACH64)/girepository-1.0/Pango-1.0.typelib
 file path=usr/lib/$(MACH64)/girepository-1.0/PangoCairo-1.0.typelib
 file path=usr/lib/$(MACH64)/girepository-1.0/PangoFT2-1.0.typelib
 file path=usr/lib/$(MACH64)/girepository-1.0/PangoXft-1.0.typelib
-link path=usr/lib/$(MACH64)/libpango-1.0.so target=libpango-1.0.so.0.4000.4
-link path=usr/lib/$(MACH64)/libpango-1.0.so.0 target=libpango-1.0.so.0.4000.4
-file path=usr/lib/$(MACH64)/libpango-1.0.so.0.4000.4
-link path=usr/lib/$(MACH64)/libpangocairo-1.0.so \
-    target=libpangocairo-1.0.so.0.4000.4
+link path=usr/lib/$(MACH64)/libpango-1.0.so target=libpango-1.0.so.0
+link path=usr/lib/$(MACH64)/libpango-1.0.so.0 target=libpango-1.0.so.0.4300.0
+file path=usr/lib/$(MACH64)/libpango-1.0.so.0.4300.0
+link path=usr/lib/$(MACH64)/libpangocairo-1.0.so target=libpangocairo-1.0.so.0
 link path=usr/lib/$(MACH64)/libpangocairo-1.0.so.0 \
-    target=libpangocairo-1.0.so.0.4000.4
-file path=usr/lib/$(MACH64)/libpangocairo-1.0.so.0.4000.4
-link path=usr/lib/$(MACH64)/libpangoft2-1.0.so \
-    target=libpangoft2-1.0.so.0.4000.4
+    target=libpangocairo-1.0.so.0.4300.0
+file path=usr/lib/$(MACH64)/libpangocairo-1.0.so.0.4300.0
+link path=usr/lib/$(MACH64)/libpangoft2-1.0.so target=libpangoft2-1.0.so.0
 link path=usr/lib/$(MACH64)/libpangoft2-1.0.so.0 \
-    target=libpangoft2-1.0.so.0.4000.4
-file path=usr/lib/$(MACH64)/libpangoft2-1.0.so.0.4000.4
-link path=usr/lib/$(MACH64)/libpangox-1.0.so.0 target=libpangoxft-1.0.so.0
-link path=usr/lib/$(MACH64)/libpangoxft-1.0.so \
-    target=libpangoxft-1.0.so.0.4000.4
+    target=libpangoft2-1.0.so.0.4300.0
+file path=usr/lib/$(MACH64)/libpangoft2-1.0.so.0.4300.0
+link path=usr/lib/$(MACH64)/libpangox-1.0.so.0 target=libpangoxft-1.0.so
+link path=usr/lib/$(MACH64)/libpangoxft-1.0.so target=libpangoxft-1.0.so.0
 link path=usr/lib/$(MACH64)/libpangoxft-1.0.so.0 \
-    target=libpangoxft-1.0.so.0.4000.4
-file path=usr/lib/$(MACH64)/libpangoxft-1.0.so.0.4000.4
+    target=libpangoxft-1.0.so.0.4300.0
+file path=usr/lib/$(MACH64)/libpangoxft-1.0.so.0.4300.0
 file path=usr/lib/$(MACH64)/pkgconfig/pango.pc
 file path=usr/lib/$(MACH64)/pkgconfig/pangocairo.pc
 file path=usr/lib/$(MACH64)/pkgconfig/pangoft2.pc
@@ -106,19 +105,78 @@ file path=usr/lib/girepository-1.0/Pango-1.0.typelib
 file path=usr/lib/girepository-1.0/PangoCairo-1.0.typelib
 file path=usr/lib/girepository-1.0/PangoFT2-1.0.typelib
 file path=usr/lib/girepository-1.0/PangoXft-1.0.typelib
-link path=usr/lib/libpango-1.0.so target=libpango-1.0.so.0.4000.4
-link path=usr/lib/libpango-1.0.so.0 target=libpango-1.0.so.0.4000.4
-file path=usr/lib/libpango-1.0.so.0.4000.4
-link path=usr/lib/libpangocairo-1.0.so target=libpangocairo-1.0.so.0.4000.4
-link path=usr/lib/libpangocairo-1.0.so.0 target=libpangocairo-1.0.so.0.4000.4
-file path=usr/lib/libpangocairo-1.0.so.0.4000.4
-link path=usr/lib/libpangoft2-1.0.so target=libpangoft2-1.0.so.0.4000.4
-link path=usr/lib/libpangoft2-1.0.so.0 target=libpangoft2-1.0.so.0.4000.4
-file path=usr/lib/libpangoft2-1.0.so.0.4000.4
+file path=usr/lib/installed-tests/pango/GraphemeBreakTest.txt
+file path=usr/lib/installed-tests/pango/all-unicode.txt
+file path=usr/lib/installed-tests/pango/boundaries.utf8
+file path=usr/lib/installed-tests/pango/cxx-test \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/installed-tests/pango/layouts/valid-1.expected
+file path=usr/lib/installed-tests/pango/layouts/valid-1.markup
+file path=usr/lib/installed-tests/pango/layouts/valid-2.expected
+file path=usr/lib/installed-tests/pango/layouts/valid-2.markup
+file path=usr/lib/installed-tests/pango/markup-parse \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/installed-tests/pango/markups/fail-1.expected
+file path=usr/lib/installed-tests/pango/markups/fail-1.markup
+file path=usr/lib/installed-tests/pango/markups/fail-2.expected
+file path=usr/lib/installed-tests/pango/markups/fail-2.markup
+file path=usr/lib/installed-tests/pango/markups/fail-3.expected
+file path=usr/lib/installed-tests/pango/markups/fail-3.markup
+file path=usr/lib/installed-tests/pango/markups/fail-4.expected
+file path=usr/lib/installed-tests/pango/markups/fail-4.markup
+file path=usr/lib/installed-tests/pango/markups/fail-5.expected
+file path=usr/lib/installed-tests/pango/markups/fail-5.markup
+file path=usr/lib/installed-tests/pango/markups/valid-1.expected
+file path=usr/lib/installed-tests/pango/markups/valid-1.markup
+file path=usr/lib/installed-tests/pango/markups/valid-2.expected
+file path=usr/lib/installed-tests/pango/markups/valid-2.markup
+file path=usr/lib/installed-tests/pango/markups/valid-3.expected
+file path=usr/lib/installed-tests/pango/markups/valid-3.markup
+file path=usr/lib/installed-tests/pango/markups/valid-4.expected
+file path=usr/lib/installed-tests/pango/markups/valid-4.markup
+file path=usr/lib/installed-tests/pango/markups/valid-5.expected
+file path=usr/lib/installed-tests/pango/markups/valid-5.markup
+file path=usr/lib/installed-tests/pango/markups/valid-6.expected
+file path=usr/lib/installed-tests/pango/markups/valid-6.markup
+file path=usr/lib/installed-tests/pango/markups/valid-7.expected
+file path=usr/lib/installed-tests/pango/markups/valid-7.markup
+file path=usr/lib/installed-tests/pango/markups/valid-8.expected
+file path=usr/lib/installed-tests/pango/markups/valid-8.markup
+file path=usr/lib/installed-tests/pango/markups/valid-9.expected
+file path=usr/lib/installed-tests/pango/markups/valid-9.markup
+file path=usr/lib/installed-tests/pango/test-font \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/installed-tests/pango/test-layout \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/installed-tests/pango/test-ot-tags \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/installed-tests/pango/test-pangocairo-threads \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/installed-tests/pango/testattributes \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/installed-tests/pango/testboundaries \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/installed-tests/pango/testboundaries_ucd \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/installed-tests/pango/testcolor \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/installed-tests/pango/testiter \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/installed-tests/pango/testscript \
+    pkg.linted.userland.action001.2=true
+link path=usr/lib/libpango-1.0.so target=libpango-1.0.so.0
+link path=usr/lib/libpango-1.0.so.0 target=libpango-1.0.so.0.4300.0
+file path=usr/lib/libpango-1.0.so.0.4300.0
+link path=usr/lib/libpangocairo-1.0.so target=libpangocairo-1.0.so.0
+link path=usr/lib/libpangocairo-1.0.so.0 target=libpangocairo-1.0.so.0.4300.0
+file path=usr/lib/libpangocairo-1.0.so.0.4300.0
+link path=usr/lib/libpangoft2-1.0.so target=libpangoft2-1.0.so.0
+link path=usr/lib/libpangoft2-1.0.so.0 target=libpangoft2-1.0.so.0.4300.0
+file path=usr/lib/libpangoft2-1.0.so.0.4300.0
 link path=usr/lib/libpangox-1.0.so.0 target=libpangoxft-1.0.so
-link path=usr/lib/libpangoxft-1.0.so target=libpangoxft-1.0.so.0.4000.4
-link path=usr/lib/libpangoxft-1.0.so.0 target=libpangoxft-1.0.so.0.4000.4
-file path=usr/lib/libpangoxft-1.0.so.0.4000.4
+link path=usr/lib/libpangoxft-1.0.so target=libpangoxft-1.0.so.0
+link path=usr/lib/libpangoxft-1.0.so.0 target=libpangoxft-1.0.so.0.4300.0
+file path=usr/lib/libpangoxft-1.0.so.0.4300.0
 file path=usr/lib/pkgconfig/pango.pc
 file path=usr/lib/pkgconfig/pangocairo.pc
 file path=usr/lib/pkgconfig/pangoft2.pc
@@ -133,6 +191,8 @@ file path=usr/share/gtk-doc/html/pango/PangoFcDecoder.html
 file path=usr/share/gtk-doc/html/pango/PangoFcFont.html
 file path=usr/share/gtk-doc/html/pango/PangoFcFontMap.html
 file path=usr/share/gtk-doc/html/pango/PangoMarkupFormat.html
+file path=usr/share/gtk-doc/html/pango/PangoRenderer.html
+file path=usr/share/gtk-doc/html/pango/annotation-glossary.html
 file path=usr/share/gtk-doc/html/pango/api-index-1-10.html
 file path=usr/share/gtk-doc/html/pango/api-index-1-12.html
 file path=usr/share/gtk-doc/html/pango/api-index-1-14.html
@@ -158,6 +218,7 @@ file path=usr/share/gtk-doc/html/pango/api-index-full.html
 file path=usr/share/gtk-doc/html/pango/home.png
 file path=usr/share/gtk-doc/html/pango/index.html
 file path=usr/share/gtk-doc/html/pango/layout.gif
+file path=usr/share/gtk-doc/html/pango/left-insensitive.png
 file path=usr/share/gtk-doc/html/pango/left.png
 file path=usr/share/gtk-doc/html/pango/lowlevel.html
 file path=usr/share/gtk-doc/html/pango/pango-Bidirectional-Text.html
@@ -181,19 +242,31 @@ file path=usr/share/gtk-doc/html/pango/pango-Vertical-Text.html
 file path=usr/share/gtk-doc/html/pango/pango-Win32-Fonts-and-Rendering.html
 file path=usr/share/gtk-doc/html/pango/pango-Xft-Fonts-and-Rendering.html
 file path=usr/share/gtk-doc/html/pango/pango-hierarchy.html
-file path=usr/share/gtk-doc/html/pango/pango-pango-renderer.html
 file path=usr/share/gtk-doc/html/pango/pango.devhelp2
 file path=usr/share/gtk-doc/html/pango/pango.html
 file path=usr/share/gtk-doc/html/pango/rendering.html
+file path=usr/share/gtk-doc/html/pango/right-insensitive.png
 file path=usr/share/gtk-doc/html/pango/right.png
 file path=usr/share/gtk-doc/html/pango/rotated-text.png
 file path=usr/share/gtk-doc/html/pango/style.css
+file path=usr/share/gtk-doc/html/pango/up-insensitive.png
 file path=usr/share/gtk-doc/html/pango/up.png
+file path=usr/share/installed-tests/pango/cxx-test.test
+file path=usr/share/installed-tests/pango/markup-parse.test
+file path=usr/share/installed-tests/pango/test-font.test
+file path=usr/share/installed-tests/pango/test-layout.test
+file path=usr/share/installed-tests/pango/test-ot-tags.test
+file path=usr/share/installed-tests/pango/test-pangocairo-threads.test
+file path=usr/share/installed-tests/pango/testattributes.test
+file path=usr/share/installed-tests/pango/testboundaries.test
+file path=usr/share/installed-tests/pango/testboundaries_ucd.test
+file path=usr/share/installed-tests/pango/testcolor.test
+file path=usr/share/installed-tests/pango/testiter.test
+file path=usr/share/installed-tests/pango/testscript.test
 file path=usr/share/man/man1/pango-view.1
-file files/libpango-1.0.3lib path=usr/share/man/man3lib/libpango-1.0.3lib
-file files/libpangocairo-1.0.3lib \
-    path=usr/share/man/man3lib/libpangocairo-1.0.3lib
-file files/libpangoft2-1.0.3lib path=usr/share/man/man3lib/libpangoft2-1.0.3lib
-file files/libpangox-1.0.3lib path=usr/share/man/man3lib/libpangox-1.0.3lib
-file files/libpangoxft-1.0.3lib path=usr/share/man/man3lib/libpangoxft-1.0.3lib
-license COPYING license=LGPLv2
+file path=usr/share/man/man3lib/libpango-1.0.3lib
+file path=usr/share/man/man3lib/libpangocairo-1.0.3lib
+file path=usr/share/man/man3lib/libpangoft2-1.0.3lib
+file path=usr/share/man/man3lib/libpangox-1.0.3lib
+file path=usr/share/man/man3lib/libpangoxft-1.0.3lib
+license pango.license license=LGPLv2
