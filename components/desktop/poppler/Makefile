@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		poppler
-COMPONENT_VERSION=	0.79.0
+COMPONENT_VERSION=	0.84.0
 COMPONENT_PROJECT_URL=	http://poppler.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:f985a4608fe592d2546d9d37d4182e502ff6b4c42f8db4be0a021a1c369528c8
+    sha256:c7a130da743b38a548f7a21fe5940506fb1949f4ebdd3209f0e5b302fa139731
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/poppler
 COMPONENT_ANITYA_ID=	3686
-TPNO_POPPLER=		53368
+TPNO_POPPLER=		56273
 
 COMPONENT_NAME_1=	poppler-data
 COMPONENT_VERSION_1=	0.4.9
