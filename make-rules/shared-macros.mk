@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 .PHONY: void
@@ -258,10 +258,10 @@ WITHOUT_PYTHON3.7 = 3.4 3.5 $(PYTHON2_VERSIONS)
 # only python/xattr and python/cryptography require abi3 naming.
 PYTHON3_SOABI ?= cpython
 ifeq ($(PYTHON3_SOABI),cpython)
-PY3_CYTHON_NAMING=
+PY3_CPYTHON_NAMING=
 PY3_ABI3_NAMING=\#
 else ifeq ($(PYTHON3_SOABI),abi3)
-PY3_CYTHON_NAMING=\#
+PY3_CPYTHON_NAMING=\#
 PY3_ABI3_NAMING=
 else
 $(error "Invalid python naming scheme '$(PYTHON3_SOABI)' selected!")
