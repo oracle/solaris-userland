@@ -1,20 +1,11 @@
 This patch was developed in-house and is planned to be contributed upstream.
 It is still needed for git 2.1r94.2.
 
---- git-2.19.2/git-compat-util.h.orig	2018-11-27 01:16:44.712750415 -0800
-+++ git-2.19.2/git-compat-util.h	2018-11-27 01:17:26.913124486 -0800
-@@ -769,7 +769,7 @@
- #endif
- 
- #ifdef NO_INET_NTOP
--const char *inet_ntop(int af, const void *src, char *dst, size_t size);
-+const char *inet_ntop(int af, const void *src, char *dst, socklen_t size);
- #endif
- 
- #ifdef NO_PTHREADS
---- git-2.19.2/compat/inet_ntop.c.orig	2018-11-27 01:17:55.949853466 -0800
-+++ git-2.19.2/compat/inet_ntop.c	2018-11-27 01:19:39.232805954 -0800
-@@ -168,7 +168,7 @@
+diff --git a/compat/inet_ntop.c b/compat/inet_ntop.c
+index 6830726..d6c757d 100644
+--- a/compat/inet_ntop.c
++++ b/compat/inet_ntop.c
+@@ -168,7 +168,7 @@ inet_ntop6(const u_char *src, char *dst, size_t size)
   *	Paul Vixie, 1996.
   */
  const char *
@@ -23,3 +14,16 @@ It is still needed for git 2.1r94.2.
  {
  	switch (af) {
  	case AF_INET:
+diff --git a/git-compat-util.h b/git-compat-util.h
+index 16316c6..e5a3234 100644
+--- a/git-compat-util.h
++++ b/git-compat-util.h
+@@ -773,7 +773,7 @@ int inet_pton(int af, const char *src, void *dst);
+ #endif
+ 
+ #ifdef NO_INET_NTOP
+-const char *inet_ntop(int af, const void *src, char *dst, size_t size);
++const char *inet_ntop(int af, const void *src, char *dst, socklen_t size);
+ #endif
+ 
+ #ifdef NO_PTHREADS
