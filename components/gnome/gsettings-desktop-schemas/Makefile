@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,14 +30,15 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gsettings-desktop-schemas
-COMPONENT_VERSION=	3.24.0
+COMPONENT_VERSION=	3.34.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/HowDoI/GSettings
 COMPONENT_ARCHIVE_HASH= \
-    sha256:f6573a3f661d22ff8a001cc2421d8647717f1c0e697e342d03c6102f29bbbb90
+    sha256:288b04260f7040b0e004a8d59c773cfb4e32df4f1b4a0f9d705c51afccc95ead
 COMPONENT_BUGDB=	gnome/gconf
 COMPONENT_ANITYA_ID=	13139
 
-TPNO=			34498
+TPNO=			54075
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -45,6 +46,8 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU xgettext in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += system/core-os
