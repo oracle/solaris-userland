@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -33,10 +33,10 @@
 <transform file path=usr/lib/samba/(s)?bin/.+ -> default pkg.linted.userland.action001.2 True>
 <transform file path=usr/lib/samba/samba/smbspool_krb5_wrapper -> default pkg.linted.userland.action001.2 True>
 
-# Remove the named files with strange deps breaking the pkglint
-<transform dir file path=usr/lib/python2.7/vendor-packages/(64/)?samba/samba/subunit.* -> drop>
-<transform file path=usr/lib/python2.7/vendor-packages/(64/)?samba/samba/tests/subunitrun.* -> drop>
-<transform file path=usr/lib/python2.7/vendor-packages/(64/)?samba/samba/tests/dcerpc/raw_protocol.* -> drop>
+# iso8601 is missing to run.py
+<transform file path=usr/lib/python3.7/vendor-packages/samba/samba/subunit/run.* -> drop>
+# many deps are missing to raw_protocol.py
+<transform file path=usr/lib/python3.7/vendor-packages/(64/)?samba/samba/tests/dcerpc/raw_protocol.* -> drop>
 
 # "new" deps - will change later
 <transform file path=usr/lib/samba/private/($(MACH64)/)?libcommon-auth-samba4\.so.* -> default pkg.depend.bypass-generate .*>
@@ -74,6 +74,8 @@
 set name=pkg.fmri \
     value=pkg:/service/network/samba@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="samba - A Windows SMB/CIFS fileserver for UNIX"
+set name=pkg.depend.bypass-generate \
+    value=usr/lib/python3.7/vendor-packages/samba/.*
 set name=com.oracle.info.description value="Samba, a SMB/CIFS fileserver"
 set name=com.oracle.info.tpno value=$(TPNO)
 set name=info.classification \

@@ -48,24 +48,24 @@ COMPONENT_PROJECT_URL=	http://www.samba.org/
 COMPONENT_BUGDB=	utility/samba
 COMPONENT_ANITYA_ID=	4758
 
-COMPONENT_VERSION=	4.9.18
-TPNO=			56563
+COMPONENT_VERSION=	4.11.6
+TPNO=			57487
 # Samba pre-releases are available on git only.
 # if you want to build Samba from git uncomment next 4 lines
 #GIT_REPO=		https://git.samba.org/samba.git
-#GIT_COMMIT_ID=		samba-4.7.0rc4
+#GIT_COMMIT_ID=		master
 #GIT_HASH=		sha256:6f210b7757b6b55ae0fafff0c21a1704cc1a7621d81462d630c162097959d47d
 #COMPONENT_SRC_URL=	$(GIT_REPO)
 # clone of git.samba.org takes a long
 # if you want to build Samba from archive uncomment next 3 lines
 COMPONENT_ARCHIVE_URL=	https://download.samba.org/pub/samba/stable/$(COMPONENT_ARCHIVE)
-COMPONENT_ARCHIVE_HASH=	sha256:c6d23982b7233ce8bc0c87b8b03585d782ddf3bd7c634c1ffa853d7d397d87f7
+COMPONENT_ARCHIVE_HASH=	sha256:91438f4d7b71f673421435fa7f26b03b613f214139636ce50af35bc2ff09ef38
 COMPONENT_SRC_URL=	$(COMPONENT_ARCHIVE_URL)
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
-PYTHON_VERSION = 2.7
+PYTHON_VERSION = 3.7
 
 # Winbind only build is 32b.
 WB_ONLY_CONF=		$(BUILD_DIR_32)/.configured
@@ -76,7 +76,7 @@ $(BUILD_DIR_64)/%:	MACHLIBDIR=/$(MACH64)
 
 # Uncomment the followin line to enable verbose and single-thread (readable) build.
 #override WAFOPTS	=	-v -j1
-WAF= $(PYTHON.2.7) ./buildtools/bin/waf
+WAF= $(PYTHON) ./buildtools/bin/waf
 
 PKG_VARS += COMPONENT_SRC_URL
 # Set the pkg... path to search files in ./Solaris/ dir (mainly the SMF manifests are there)
@@ -85,7 +85,7 @@ PKG_PROTO_DIRS += $(COMPONENT_DIR)
 # pkg-config files
 PKGCONFIG_AUX_DIR = $(BUILD_DIR)/lib$(MACHLIBDIR)/pkgconfig
 
-LIBS +=		-lrt -lsec -lcrypt -lmd5 -lsocket -lnsl
+LIBS +=		-lrt -lsec -lcrypt -lmd5 -lsocket -lnsl -lpthread -lposix4
 # More libs needed by Samba (libavahi, libgamin, ...)
 $(SAMBA_FULL_CONF): LIBS += -lsendfile -lavahi-common -lavahi-core
 
@@ -93,6 +93,10 @@ CPPFLAGS +=	$(CPP_LARGEFILES)
 CPPFLAGS +=	$(CPP_XPG6MODE)
 # Linux.h
 CPPFLAGS +=	-DNAME_MAX=256
+
+CFLAGS +=	-D_POSIX_C_SOURCE=200112L
+CFLAGS +=	-D__XOPEN_OR_POSIX
+CFLAGS +=	-D_POSIX_PTHREAD_SEMANTICS
 
 LDFLAGS +=	-m$(BITS)
 LDFLAGS +=	-R/usr/lib/samba$(MACHLIBDIR)
@@ -129,10 +133,10 @@ CONFIGURE_OPTIONS +=	--with-ldap
 CONFIGURE_OPTIONS +=	--with-system-mitkrb5
 CONFIGURE_OPTIONS +=	--without-ad-dc
 
-CONFIGURE_OPTIONS +=	--nocache
-CONFIGURE_OPTIONS +=	--nopyo
+$(WB_ONLY_CONF):	CONFIGURE_OPTIONS +=	--disable-python
+$(SAMBA_FULL_CONF):	CONFIGURE_OPTIONS +=	--python=$(PYTHON)
+$(SAMBA_FULL_CONF):	CONFIGURE_OPTIONS +=	--nopyo
 CONFIGURE_OPTIONS +=	--disable-rpath
-CONFIGURE_OPTIONS +=	--disable-gnutls
 CONFIGURE_OPTIONS +=	--bundled-libraries=ALL
 
 # PATH for 64-bit is already set in configure.mk
@@ -141,8 +145,8 @@ CONFIGURE_ENV += 	CC="$(CC)"
 CONFIGURE_ENV += 	CPP="$(CC) -E"
 CONFIGURE_ENV += 	AWK=gawk
 CONFIGURE_ENV += 	PERL=$(PERL)
-CONFIGURE_ENV += 	PYTHONDIR="$(PYTHON_VENDOR_PACKAGES)"
-CONFIGURE_ENV += 	PYTHONARCHDIR="$(PYTHON_VENDOR_PACKAGES)/samba"
+$(SAMBA_FULL_CONF):	CONFIGURE_ENV += 	PYTHONDIR="$(PYTHON_VENDOR_PACKAGES)"
+$(SAMBA_FULL_CONF):	CONFIGURE_ENV += 	PYTHONARCHDIR="$(PYTHON_VENDOR_PACKAGES)/samba"
 CONFIGURE_ENV += 	LD="$(LD)"
 CONFIGURE_ENV +=	CFLAGS="$(CFLAGS)"
 CONFIGURE_ENV +=	CPPFLAGS="$(CPPFLAGS) -I$(PROTO_DIR)/usr/include -I$(COMPONENT_DIR)/Solaris/include"
@@ -154,7 +158,7 @@ CONFIGURE_ENV += 	INSTALL="$(INSTALL)"
 CONFIGURE_ENV += 	PKG_CONFIG_PATH="$(PKGCONFIG_AUX_DIR):$(PKG_CONFIG_PATH)"
 
 # Use explicit Python version rather than the default one
-CONFIGURE_ENV += PYTHON=$(PYTHON.2.7)
+CONFIGURE_ENV += PYTHON=$(PYTHON)
 
 # cleanup unpacked archive
 COMPONENT_PREP_ACTION += (cd $(@D) ; $(WAF) distclean $(WAFOPTS) );
@@ -198,7 +202,7 @@ PYTHON_SCRIPTS += $(PROTO_DIR)/usr/lib/samba/sbin/samba-gpupdate
 PYTHON_SCRIPTS += \
  $(shell nawk -F \= \
   ' $$1 ~ /^file.*path/ && $$2 ~ /.*\.py$$/ {print "$(PROTO_DIR)/"$$2;} ' \
-  $(COMPONENT_DIR)/samba.proto-objects)
+  $(COMPONENT_DIR)/samba.pkgobjs)
 COMPONENT_INSTALL_ENV += PATH="$(PATH)"
 COMPONENT_INSTALL_ARGS = --destdir=$(PROTO_DIR)
 %/.installed: GMAKE= $(WAF) install $(WAFOPTS)
@@ -208,7 +212,10 @@ $(SAMBA_FULL_CONF:.configured=.installed): COMPONENT_POST_INSTALL_ACTION += \
    sed -f $(COMPONENT_DIR)/Solaris/smbconf.sed \
      > $(PROTO_DIR)/etc/samba/smb.conf-example \
      $(BUILD_DIR_SMB)/examples/smb.conf.default ; \
-   $(PYTHON.2.7) -m compileall $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES)/ ;
+   $(PYTHON) -m compileall $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES)/ ;
+
+# Do not use transform to create standard ABI version tagged .so files from Python 3 ABI
+PY3_CPYTHON_NAMING=\#
 
 # do not do waf install for winbind only - override the recipe
 $(WB_ONLY_CONF:.configured=.installed): $(WB_ONLY_CONF:.configured=.built)
@@ -238,19 +245,20 @@ $(EXCLUSION_FILE_TARGET): $(HEAP_OBJ)
 		| sed -e 's@^/@@;s/$(MACH64)/\$$(MACH64)/' | egrep '^usr/lib/samba' >> $@
 
 REQUIRED_PACKAGES += library/file-monitor/gamin
+REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/jansson
 REQUIRED_PACKAGES += library/libarchive
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/samba/libsmbclient
 REQUIRED_PACKAGES += runtime/perl-522
-REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += security/kerberos-5
+REQUIRED_PACKAGES += service/network/samba
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/pam-core
-REQUIRED_PACKAGES += system/library/security/crypto
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/network/avahi
 REQUIRED_PACKAGES += system/network/ldap/openldap

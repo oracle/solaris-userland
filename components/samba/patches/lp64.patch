@@ -1,12 +1,15 @@
 sun4v (sparc) is not detected as lp64
---- a/third_party/cmocka/cmocka.h	2017-07-25 02:05:53.000000000 +0000
-+++ b/third_party/cmocka/cmocka.h	2017-08-11 16:19:15.248062728 +0000
-@@ -56,7 +56,7 @@
+pull-request is hanging on cmocka community:
+https://github.com/clibs/cmocka/pull/8
+
+--- a/third_party/cmocka/cmocka.h	2019-12-06 10:46:57.000000000 +0000
++++ b/third_party/cmocka/cmocka.h	2020-01-08 18:25:32.322620606 +0000
+@@ -57,7 +57,7 @@
  
  /* If __WORDSIZE is not set, try to figure it out and default to 32 bit. */
  #ifndef __WORDSIZE
--# if defined(__x86_64__) && !defined(__ILP32__)
-+# if (defined(__x86_64__) || defined(_LP64)) && !defined(__ILP32__)
+-# if (defined(__x86_64__) && !defined(__ILP32__)) || defined(__sparc_v9__) || defined(__sparcv9)
++# if (defined(__x86_64__) && !defined(__ILP32__)) || defined(_LP64)
  #  define __WORDSIZE 64
  # else
  #  define __WORDSIZE 32

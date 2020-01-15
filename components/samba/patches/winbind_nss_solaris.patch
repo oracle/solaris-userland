@@ -1,6 +1,7 @@
-diff --git a/nsswitch/winbind_nss_solaris.c b/nsswitch/winbind_nss_solaris.c
---- a/nsswitch/winbind_nss_solaris.c
-+++ b/nsswitch/winbind_nss_solaris.c
+nss_winbind patch refactored for Samba 4.11+
+
+--- a/nsswitch/winbind_nss_solaris.c	2019-12-06 10:46:56.000000000 +0000
++++ b/nsswitch/winbind_nss_solaris.c	2020-02-17 14:57:57.253852048 +0000
 @@ -2,6 +2,9 @@
    Solaris NSS wrapper for winbind
    - Shirish Kalele 2000
@@ -134,7 +135,17 @@ diff --git a/nsswitch/winbind_nss_solaris.c b/nsswitch/winbind_nss_solaris.c
  	ret = _nss_winbind_getpwent_r(result, buffer,
 -				      buflen, errnop);
 +				      buflen, &NSS_ARGS(args)->erange);
-+
+ 
+-	if(ret == NSS_STATUS_SUCCESS)
+-		{
+-			snprintf(logmsg, 79, "_nss_winbind_getpwent_solwrap: Returning user: %s\n",
+-				 result->pw_name);
+-			NSS_DEBUG(logmsg);
+-			NSS_ARGS(args)->returnval = (void*) result;
+-		} else {
+-			snprintf(logmsg, 79, "_nss_winbind_getpwent_solwrap: Returning error: %d.\n",ret);
+-			NSS_DEBUG(logmsg);
+-		}
 +	if(ret != NSS_STATUS_SUCCESS) {
 +		snprintf(logmsg, 79,
 +		    "_nss_winbind_getpwent_solwrap: Returning error: %d.\n",
@@ -148,17 +159,6 @@ diff --git a/nsswitch/winbind_nss_solaris.c b/nsswitch/winbind_nss_solaris.c
 +	    result->pw_name);
 +	NSS_DEBUG(logmsg);
  
--	if(ret == NSS_STATUS_SUCCESS)
--		{
--			snprintf(logmsg, 79, "_nss_winbind_getpwent_solwrap: Returning user: %s\n",
--				 result->pw_name);
--			NSS_DEBUG(logmsg);
--			NSS_ARGS(args)->returnval = (void*) result;
--		} else {
--			snprintf(logmsg, 79, "_nss_winbind_getpwent_solwrap: Returning error: %d.\n",ret);
--			NSS_DEBUG(logmsg);
--		}
--
 +	if (res_needed) {
 +		NSS_ARGS(args)->returnval = (void*) result;
 +	} else {
@@ -209,12 +209,13 @@ diff --git a/nsswitch/winbind_nss_solaris.c b/nsswitch/winbind_nss_solaris.c
 +						buflen,
  						&NSS_ARGS(args)->erange);
 -	if(ret == NSS_STATUS_SUCCESS)
+-		NSS_ARGS(args)->returnval = (void*) result;
 +	if(ret != NSS_STATUS_SUCCESS) {
 +		goto out;
 +	}
-+
+ 
 +	if (res_needed) {
- 		NSS_ARGS(args)->returnval = (void*) result;
++		NSS_ARGS(args)->returnval = (void*) result;
 +	} else {
 +		(void) update_password_buffer(NSS_ARGS(args),
 +		    result->pw_name,
@@ -226,7 +227,7 @@ diff --git a/nsswitch/winbind_nss_solaris.c b/nsswitch/winbind_nss_solaris.c
 +		NSS_ARGS(args)->returnval = NSS_ARGS(args)->buf.buffer;
 +		NSS_ARGS(args)->returnlen = strlen(NSS_ARGS(args)->buf.buffer);
 +	}
- 
++
 +out:
 +	if (!res_needed) {
 +		free(result);
@@ -264,13 +265,14 @@ diff --git a/nsswitch/winbind_nss_solaris.c b/nsswitch/winbind_nss_solaris.c
 +				       buflen,
  				       &NSS_ARGS(args)->erange);
 -	if(ret == NSS_STATUS_SUCCESS)
-+
+-		NSS_ARGS(args)->returnval = (void*) result;
+ 
 +	if(ret != NSS_STATUS_SUCCESS) {
 +		goto out;
 +	}
 +
 +	if (res_needed) {
- 		NSS_ARGS(args)->returnval = (void*) result;
++		NSS_ARGS(args)->returnval = (void*) result;
 +	} else {
 +		(void) update_password_buffer(NSS_ARGS(args),
 +		    result->pw_name,
@@ -282,7 +284,7 @@ diff --git a/nsswitch/winbind_nss_solaris.c b/nsswitch/winbind_nss_solaris.c
 +		NSS_ARGS(args)->returnval = NSS_ARGS(args)->buf.buffer;
 +		NSS_ARGS(args)->returnlen = strlen(NSS_ARGS(args)->buf.buffer);
 +	}
- 
++
 +out:
 +	if (!res_needed) {
 +		free(result);
@@ -334,7 +336,16 @@ diff --git a/nsswitch/winbind_nss_solaris.c b/nsswitch/winbind_nss_solaris.c
 -	ret = _nss_winbind_getgrent_r(result, buffer,
 -				      buflen, errnop);
 +	NSS_DEBUG("_nss_winbind_getgrent_solwrap");
-+
+ 
+-	if(ret == NSS_STATUS_SUCCESS)
+-		{
+-			snprintf(logmsg, 79, "_nss_winbind_getgrent_solwrap: Returning group: %s\n", result->gr_name);
+-			NSS_DEBUG(logmsg);
+-			NSS_ARGS(args)->returnval = (void*) result;
+-		} else {
+-			snprintf(logmsg, 79, "_nss_winbind_getgrent_solwrap: Returning error: %d.\n", ret);
+-			NSS_DEBUG(logmsg);
+-		}
 +	if (!res_needed) {
 +		result = SMB_MALLOC_P(struct group);
 +		buflen = NSS_ARGS(args)->buf.buflen;
@@ -353,16 +364,6 @@ diff --git a/nsswitch/winbind_nss_solaris.c b/nsswitch/winbind_nss_solaris.c
 +		goto out;
 +	}
  
--	if(ret == NSS_STATUS_SUCCESS)
--		{
--			snprintf(logmsg, 79, "_nss_winbind_getgrent_solwrap: Returning group: %s\n", result->gr_name);
--			NSS_DEBUG(logmsg);
--			NSS_ARGS(args)->returnval = (void*) result;
--		} else {
--			snprintf(logmsg, 79, "_nss_winbind_getgrent_solwrap: Returning error: %d.\n", ret);
--			NSS_DEBUG(logmsg);
--		}
--
 +	snprintf(logmsg, 79, "_nss_winbind_getgrent_solwrap: Returning group: %s\n", result->gr_name);
 +	NSS_DEBUG(logmsg);
 +	if (res_needed) {
@@ -457,7 +458,8 @@ diff --git a/nsswitch/winbind_nss_solaris.c b/nsswitch/winbind_nss_solaris.c
 -				       NSS_ARGS(args)->buf.buffer,
 -				       NSS_ARGS(args)->buf.buflen,
 -				       &NSS_ARGS(args)->erange);
-+
+ 
+-	if(ret == NSS_STATUS_SUCCESS)
 +	if (!res_needed) {
 +		result = SMB_MALLOC_P(struct group);
 +		buflen = NSS_ARGS(args)->buf.buflen;
@@ -472,8 +474,7 @@ diff --git a/nsswitch/winbind_nss_solaris.c b/nsswitch/winbind_nss_solaris.c
 +	    buffer,
 +	    buflen,
 +	    &NSS_ARGS(args)->erange);
- 
--	if(ret == NSS_STATUS_SUCCESS)
++
 +	if(ret != NSS_STATUS_SUCCESS) {
 +		goto out;
 +	}
@@ -521,35 +522,34 @@ diff --git a/nsswitch/winbind_nss_solaris.c b/nsswitch/winbind_nss_solaris.c
  	for(; p != response->data.winsresp; p--) {
  		if(*p == '\t') addrcount++;
  	}
-@@ -484,6 +787,8 @@
+@@ -488,6 +791,8 @@
  	NSS_STATUS ret;
  	int af;
  
 +	NSS_DEBUG("_nss_winbind_ipnodes_getbyname");
 +
- 	ZERO_STRUCT(response);
- 	ZERO_STRUCT(request);
+ 	/* I assume there that AI_ADDRCONFIG cases are handled in nss
+ 	   frontend code, at least it seems done so in solaris...
  
-@@ -528,6 +833,8 @@
- 	struct winbindd_request request;
+@@ -533,6 +838,8 @@
+ 	};
  	NSS_STATUS ret;
  
 +	NSS_DEBUG("_nss_winbind_hosts_getbyname");
 +
- 	ZERO_STRUCT(response);
- 	ZERO_STRUCT(request);
+ 	strncpy(request.data.winsreq, argp->key.name, sizeof(request.data.winsreq) - 1);
+ 	request.data.winsreq[sizeof(request.data.winsreq) - 1] = '\0';
  
-@@ -553,6 +860,9 @@
+@@ -559,6 +866,8 @@
  	nss_XbyY_args_t	*argp = (nss_XbyY_args_t *)args;
  	const char *p;
  
 +	NSS_DEBUG("_nss_winbind_hosts_getbyaddr");
 +
-+	ZERO_STRUCT(response);
- 	ZERO_STRUCT(response);
- 	ZERO_STRUCT(request);
- 
-@@ -588,18 +898,21 @@
+ #if defined(AF_INET6)
+ 	/* winbindd currently does not resolve IPv6 */
+ 	if(argp->key.hostaddr.type == AF_INET6) {
+@@ -591,18 +900,21 @@
  static NSS_STATUS
  _nss_winbind_common_endent(nss_backend_t* be, void *args)
  {
@@ -571,7 +571,7 @@ diff --git a/nsswitch/winbind_nss_solaris.c b/nsswitch/winbind_nss_solaris.c
          return (NSS_STATUS_UNAVAIL);
  }
  
-@@ -608,6 +921,8 @@
+@@ -611,6 +923,8 @@
  {
  	nss_backend_t* be;
  
@@ -580,7 +580,7 @@ diff --git a/nsswitch/winbind_nss_solaris.c b/nsswitch/winbind_nss_solaris.c
  	if(!(be = SMB_MALLOC_P(nss_backend_t)) )
  	return NULL;
  
-@@ -621,6 +936,7 @@
+@@ -624,6 +938,7 @@
  _nss_winbind_common_destr (nss_backend_t* be, void* args)
  {
  	SAFE_FREE(be);
@@ -588,7 +588,7 @@ diff --git a/nsswitch/winbind_nss_solaris.c b/nsswitch/winbind_nss_solaris.c
  	return NSS_STATUS_SUCCESS;
  }
  
-@@ -637,6 +953,7 @@
+@@ -640,6 +955,7 @@
  _nss_winbind_ipnodes_constr(dummy1, dummy2, dummy3)
          const char      *dummy1, *dummy2, *dummy3;
  {
@@ -596,7 +596,7 @@ diff --git a/nsswitch/winbind_nss_solaris.c b/nsswitch/winbind_nss_solaris.c
  	return (_nss_winbind_common_constr(ipnodes_ops,
  		sizeof (ipnodes_ops) / sizeof (ipnodes_ops[0])));
  }
-@@ -654,6 +971,7 @@
+@@ -657,6 +973,7 @@
  _nss_winbind_hosts_constr(dummy1, dummy2, dummy3)
          const char      *dummy1, *dummy2, *dummy3;
  {

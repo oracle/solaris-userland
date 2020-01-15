@@ -24,9 +24,9 @@ the unused code on community.
          conf.CHECK_HEADERS('ufs/ufs/quota.h')
 +        # For quotas on Solaris (it works for any FS)
 +        conf.CHECK_HEADERS('sys/fs/ufs_quota.h')
+         # For quotas on AIX systems
+         conf.CHECK_HEADERS('jfs/quota.h')
          # For quotas on Linux XFS filesystems
-         if conf.CHECK_HEADERS('xfs/xqm.h'):
-             conf.DEFINE('HAVE_XFS_QUOTAS', '1')
 --- a/source3/smbd/quotas.c	2017-07-25 02:05:53.000000000 +0000
 +++ b/source3/smbd/quotas.c	2017-08-10 14:55:13.897953464 +0000
 @@ -41,10 +41,11 @@

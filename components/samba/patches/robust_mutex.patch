@@ -1,0 +1,42 @@
+Linux implementation do not use possibility to return with EBUSY if mutex object
+is already initialized by the other process.
+Will be sent to community.
+
+--- a/lib/tdb/common/mutex.c	2019-12-06 10:46:56.000000000 +0000
++++ b/lib/tdb/common/mutex.c	2020-01-29 01:59:56.371804497 +0000
+@@ -588,7 +588,7 @@
+ 		pthread_mutex_t *chain = &m->hashchains[i];
+ 
+ 		ret = pthread_mutex_init(chain, &ma);
+-		if (ret != 0) {
++		if (ret != 0 && ret != EBUSY) {
+ 			goto fail;
+ 		}
+ 	}
+@@ -596,7 +596,7 @@
+ 	m->allrecord_lock = F_UNLCK;
+ 
+ 	ret = pthread_mutex_init(&m->allrecord_mutex, &ma);
+-	if (ret != 0) {
++	if (ret != 0 && ret != EBUSY) {
+ 		goto fail;
+ 	}
+ 	ret = 0;
+@@ -689,7 +689,7 @@
+ 		goto cleanup_ma;
+ 	}
+ 	ret = pthread_mutex_init(&m, &ma);
+-	if (ret != 0) {
++	if (ret != 0 && ret != EBUSY) {
+ 		goto cleanup_ma;
+ 	}
+ 	ret = pthread_mutex_lock(&m);
+@@ -886,7 +886,7 @@
+ 		goto cleanup;
+ 	}
+ 	ret = pthread_mutex_init(ptr, &ma);
+-	if (ret != 0) {
++	if (ret != 0 && ret != EBUSY) {
+ 		goto cleanup;
+ 	}
+ 	m = (pthread_mutex_t *)ptr;

@@ -20,10 +20,19 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 # add to heap: ^file|^link|^dir .*path=etc/samba/|^dir .*path=var/samba/
 <transform dir path=^(?!(etc|var)/samba/.*) -> drop>
+
 # exclude: path=opt
 <transform file link path=opt/.* -> drop>
+
+# cpython
+#<transform file path=^(.+)\.cpython-.+\.so(.*)$ -> emit file path=%<1>.so%<2>>
+#<transform link path=^(.+)\.cpython-.+\.so(.*)$ target=^(.+)\.cpython-.+\.so(.*)$ -> emit link path=%<1>.so%<2> target=%<3>.so%<4>>
+#<transform file link path=^.+\.cpython-.+\..+$ -> drop>
+
+# drop .pyc's
+<transform file path=.+\.pyc$ -> drop>
