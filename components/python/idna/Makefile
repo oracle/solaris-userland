@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		idna
-COMPONENT_VERSION=	2.0
+COMPONENT_VERSION=	2.8
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:16199aad938b290f5be1057c0e1efc6546229391c23cea61ca940c115f7d3d3b
+    sha256:5e0cb55674e2ffd211ac27bd0c3380b535caa32e15d3e7ba6d0e41ee456fb1d0
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/kjd/idna
 COMPONENT_BUGDB=	python-mod/idna
 COMPONENT_ANITYA_ID=	5487
 
-TPNO=			25771
+TPNO=			48618
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
