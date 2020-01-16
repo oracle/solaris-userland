@@ -20,25 +20,25 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
-MAJOR_VERSION=3.0
-MICRO_VERSION=7
+MAJOR_VERSION=3.2
+MICRO_VERSION=1
 
 COMPONENT_NAME=		wireshark
 COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
 COMPONENT_PROJECT_URL=	http://www.wireshark.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:3b2b279017753398b8d5deb440db5f98a205eea35f9417e5fa2893947e7992f2
+    sha256:589f640058d6408ebbd695a80ebbd6e7bd99d8db64ecda253d27100dfd27e85b
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/src/all-versions/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	5137
 
-TPNO=			55509
+TPNO=			56385
 
 BUILD_STYLE=	cmake
 
@@ -74,6 +74,7 @@ CMAKE_OPTIONS += -DBUILD_dftest=OFF
 REQUIRED_PACKAGES += developer/lexer/flex
 REQUIRED_PACKAGES += developer/parser/bison
 REQUIRED_PACKAGES += diagnostic/wireshark/wireshark-common
+REQUIRED_PACKAGES += codec/speex
 REQUIRED_PACKAGES += library/desktop/qt5
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnutls-3
