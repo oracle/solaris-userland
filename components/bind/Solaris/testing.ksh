@@ -21,6 +21,7 @@
 #
 # Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
 #
+# Written to be compatible with ksh on Solaris 10.
 
 function usage
 {
@@ -74,6 +75,7 @@ function d
 function run
 {
     # Display command, execute it and display exit code.
+    typeset -i exp=0
     if [[ $1 == "-e" ]]; then
 	exp=$2
 	shift 2
@@ -133,13 +135,23 @@ BIN=${PROTO%*/}/usr/bin
 
 # Check commands are present.  Could read this list from the package
 # file, but for now just looks for those that are used here.
-for command in $SBIN/named $BIN/dig $SBIN/named-checkconf; do
+for command in $SBIN/named $SBIN/named-checkconf $SBIN/rndc; do
     if [[ ! -x $command ]]; then
 	e "$command missing!"
 	(( fail++ ))
     fi
 done
 (( fail > 0 )) && exit $fail
+
+# Set dig path, used to live in sbin.
+if [[ -x ${BIN}/dig ]]; then
+    dig=${BIN}/dig
+elif [[ -x ${SBIN}/dig ]]; then
+    dig=${SBIN}/dig
+else
+    e "dig missing!"
+    exit 1
+fi
 
 # set LD_LIBRARY_PATH only when PROTO is not root, and not already set.
 if [[ ${PROTO} != '/' && -z $LD_LIBRARY_PATH ]]; then
@@ -186,7 +198,7 @@ d "REDACT: Using nameservers : $nameservers"
 # Create named.conf file
 named_conf=${directory:+$directory/}named.conf
 print "
-acl \"loopback\" { 127.0.0.1/24; };
+acl \"loopback\" { 127.0.0.1; };
 options {
 	${directory:+directory \"${directory}\";} // working directory
 	pid-file \"named.pid\";                   // pid file in working dir.
@@ -224,8 +236,7 @@ zone \"0.0.127.in-addr.arpa\" in {
 
 server=$(uname -n).${domain}.
 email='root'.${server}
-# While todays date is the norm.  serial=$(date +'%Y%m%d00')
-# Let's keep it simple.
+# keep serial number simple.
 serial=20
 # Create localhost zone.
 print "
@@ -314,7 +325,8 @@ d "starting DNS server"
 run ${SBIN}/named -c ${named_conf} -p ${bind_port}
 
 d "checking for pid file"
-for (( i=0; i<5; i++ )); do
+let t=0
+while [[ $t -lt 5 ]]; do
     if [[ -f $directory/named.pid ]]; then
 	pid=$(<$directory/named.pid)
 	d "read named.pid"
@@ -322,6 +334,7 @@ for (( i=0; i<5; i++ )); do
     else
 	sleep 1
     fi
+    let 1=t+1
 done
 if [[ -z $pid ]]; then
     e 'failed to read named.pid'
@@ -332,19 +345,19 @@ d "Turning on tracing"
 run ${SBIN}/rndc -c ${rndc_conf} trace 3
 
 d "Look-up IPv4 (A) record"
-run ${BIN}/dig @0 -p ${bind_port} -t A ipboth.example.com.
+run ${dig} @0 -p ${bind_port} -t A ipboth.example.com.
 
 d "Look-up IPv6 (AAAA) record"
-run ${BIN}/dig @0 -p ${bind_port} -t AAAA ipboth.example.com.
+run ${dig} @0 -p ${bind_port} -t AAAA ipboth.example.com.
 
 d "Look-up known (ANY) records"
-run ${BIN}/dig @0 -p ${bind_port} -t ANY ipboth.example.com.
+run ${dig} @0 -p ${bind_port} -t ANY ipboth.example.com.
 
 d "Request zone transfer (axfr)"
-run ${BIN}/dig @0 -p ${bind_port} -t axfr example.com.
+run ${dig} @0 -p ${bind_port} -t axfr example.com.
 
 d "looking up host known to have DNAME"
-run ${BIN}/dig @0 -p ${bind_port} -t a jack.dname.example.com.
+run ${dig} @0 -p ${bind_port} -t a jack.dname.example.com.
 
 d "Requesting status"
 run ${SBIN}/rndc -c ${rndc_conf} status > $directory/rndc_status
@@ -357,12 +370,14 @@ run ${SBIN}/rndc -c ${rndc_conf} stop
 
 # Wait for upto five seconds for server to shutdown.
 if [[ -n $pid && -f $directory/named.pid ]]; then
-    for (( t=0; t<5; t++ )); do
+    let t=0
+    while [[ $t -lt 5 ]]; do
 	if [[ -f $directory/named.pid ]]; then
 	    sleep 1 # Give it a second to shutdown...
 	else
 	    break
 	fi
+	let t=t+1
     done
 fi
 
