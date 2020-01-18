@@ -20,43 +20,41 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
 #
+
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		CGI
-COMPONENT_VERSION=	4.37
+COMPONENT_NAME=		Test-Warn
+COMPONENT_VERSION=	0.36
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:1548c25841565908314e4591eb16236067bda4cc72618f68b6975c3b84cb0c99
-COMPONENT_ARCHIVE_URL=	http://search.cpan.org/CPAN/authors/id/L/LE/LEEJO/$(COMPONENT_ARCHIVE)
-COMPONENT_PROJECT_URL=	http://search.cpan.org/~leejo/CGI
-COMPONENT_BUGDB=	perl-mod/cgi
-COMPONENT_ANITYA_ID=	2687
+    sha256:6e09aaa0d7b9b9516bfb7f3466a7a92ef8b60d1556402cc96650855a5fc30dde
+COMPONENT_ARCHIVE_URL=	\
+    https://cpan.metacpan.org/authors/id/B/BI/BIGJ/$(COMPONENT_ARCHIVE)
+COMPONENT_PROJECT_URL=	https://metacpan.org/pod/Test::Warn
+COMPONENT_BUGDB=	perl-mod/test-warn
+COMPONENT_ANITYA_ID=	3425
 
-TPNO=			39158
+TPNO=			55323
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/makemaker.mk
 
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+
 COMPONENT_TEST_TARGETS = test
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += '-n -e "/^Result:/p"'
-
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 build:		$(BUILD_64)
 
 install:	$(INSTALL_64)
 
-# Please note that the failures are due to missing external modules. See
-# TESTING for info on how to test this module successfully
 test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/html-entities-5%)
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/test-deep-5%)
-REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/test-warn-5%)
+REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/sub-uplevel-5%)
