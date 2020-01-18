@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 #
@@ -43,6 +43,8 @@ import re
 import sys
 import shutil
 import subprocess
+import socket
+import time
 
 from typing import List, Optional, Tuple, Generator
 
@@ -90,6 +92,21 @@ def validate_signature(path: str, signature: str) -> Tuple[bool, str]:
     proc = subprocess.run(["/usr/bin/gpg2", "--verify", "--no-permission-warning",
                            "--homedir", gpgdir, signature, path],
                           stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+    # gpg2 executes dirmngr which binds to socket in gpgdir/S.dirmngr. dirmngr
+    # then never terminates by itself, so we ask it nicely to go away. This
+    # does not seem to be documented much, KILLDIRMNGR was found in
+    # gnupg/dirmngr/server.c
+    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    try:
+        sock.connect(gpgdir.decode() + "/S.dirmngr")
+        sock.sendall(b"KILLDIRMNGR\n")
+        # We must wait before closing the socket to have the command processed
+        time.sleep(1)
+        sock.close()
+    except:
+        pass
+
     if proc.returncode != 0:
         return False, proc.stdout.decode()
     return True, ""
