@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -38,27 +38,30 @@ set name=org.opensolaris.arc-caseid value=LSARC/2006/202 value=LSARC/2006/462 \
     value=LSARC/2007/146 value=LSARC/2007/520 value=LSARC/2008/207 \
     value=PSARC/2010/143
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file path=usr/bin/enchant
-file path=usr/bin/enchant-lsmod
-file path=usr/include/enchant/enchant++.h
-file path=usr/include/enchant/enchant-provider.h
-file path=usr/include/enchant/enchant.h
-file path=usr/lib/$(MACH64)/enchant/libenchant_ispell.so
-file path=usr/lib/$(MACH64)/enchant/libenchant_myspell.so
+link path=usr/bin/enchant target=enchant-2
+file path=usr/bin/enchant-2
+link path=usr/bin/enchant-lsmod target=enchant-lsmod-2
+file path=usr/bin/enchant-lsmod-2
+file path=usr/include/enchant-2/enchant++.h
+file path=usr/include/enchant-2/enchant-provider.h
+file path=usr/include/enchant-2/enchant.h
+link path=usr/lib/$(MACH64)/libenchant-2.so \
+    target=libenchant-2.so.$(COMPONENT_VERSION)
+file path=usr/lib/$(MACH64)/libenchant-2.so.$(COMPONENT_VERSION)
+link path=usr/lib/$(MACH64)/libenchant-2.so.2 \
+    target=libenchant-2.so.$(COMPONENT_VERSION)
 link path=usr/lib/$(MACH64)/libenchant.so \
-    target=libenchant.so.$(COMPONENT_VERSION)
-file path=usr/lib/$(MACH64)/libenchant.so.$(COMPONENT_VERSION)
-link path=usr/lib/$(MACH64)/libenchant.so.1 \
-    target=libenchant.so.$(COMPONENT_VERSION)
-file path=usr/lib/$(MACH64)/pkgconfig/enchant.pc
-file path=usr/lib/enchant/libenchant_ispell.so
-file path=usr/lib/enchant/libenchant_myspell.so
-link path=usr/lib/libenchant.so target=libenchant.so.$(COMPONENT_VERSION)
-file path=usr/lib/libenchant.so.$(COMPONENT_VERSION)
-link path=usr/lib/libenchant.so.1 target=libenchant.so.$(COMPONENT_VERSION)
-file path=usr/lib/pkgconfig/enchant.pc
+    target=libenchant-2.so.$(COMPONENT_VERSION)
+file path=usr/lib/$(MACH64)/pkgconfig/enchant-2.pc
+link path=usr/lib/$(MACH64)/pkgconfig/enchant.pc target=enchant-2.pc
+link path=usr/lib/libenchant-2.so target=libenchant-2.so.$(COMPONENT_VERSION)
+file path=usr/lib/libenchant-2.so.$(COMPONENT_VERSION)
+link path=usr/lib/libenchant-2.so.2 target=libenchant-2.so.$(COMPONENT_VERSION)
+link path=usr/lib/libenchant.so target=libenchant-2.so.$(COMPONENT_VERSION)
+file path=usr/lib/pkgconfig/enchant-2.pc
+link path=usr/lib/pkgconfig/enchant.pc target=enchant-2.pc
 file path=usr/share/enchant/enchant.ordering
-file files/enchant-lsmod.1 path=usr/share/man/man1/enchant-lsmod.1
-file path=usr/share/man/man1/enchant.1
+file path=usr/share/man/man1/enchant-2.1
+file path=usr/share/man/man1/enchant-lsmod-2.1
 file files/libenchant.3lib path=usr/share/man/man3lib/libenchant.3lib
 license COPYING.LIB license=LGPLv2.1
