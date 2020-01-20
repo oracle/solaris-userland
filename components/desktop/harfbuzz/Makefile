@@ -31,22 +31,23 @@ COMPILER= 		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		harfbuzz
-COMPONENT_VERSION=	2.3.1
-COMPONENT_PROJECT_URL=	http://www.freedesktop.org/wiki/Software/HarfBuzz/
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
+COMPONENT_VERSION=	2.6.4
+COMPONENT_PROJECT_URL=	https://www.freedesktop.org/wiki/Software/HarfBuzz/
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f205699d5b91374008d6f8e36c59e419ae2d9a7bb8c5d9f34041b9a5abcae468
-COMPONENT_ARCHIVE_URL=	http://www.freedesktop.org/software/harfbuzz/release/$(COMPONENT_ARCHIVE)
+    sha256:9413b8d96132d699687ef914ebb8c50440efc87b3f775d25856d7ec347c03c12
+COMPONENT_ARCHIVE_URL=	https://www.freedesktop.org/software/harfbuzz/release/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/harfbuzz
 COMPONENT_ANITYA_ID=	1299
 
-TPNO=			49826
+TPNO=			55397
 
 CXXFLAGS += -std=c++11
 
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_ENV += CC="$(CC) $(CC_BITS)"
+CONFIGURE_ENV += MAKE=gmake
 
 # Required by other components.
 CONFIGURE_OPTIONS += --enable-introspection
