@@ -20,22 +20,24 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64_and_32
 include ../../../make-rules/shared-macros.mk
+COMPILER =              gcc
 
-COMPONENT_NAME=		gtkspell
-COMPONENT_VERSION=	2.0.16
-COMPONENT_PROJECT_URL=	http://gtkspell.sourceforge.net/
+COMPONENT_NAME=         gtkspell3
+COMPONENT_VERSION=      3.0.10
+COMPONENT_PROJECT_URL=  http://sourceforge.net/
+COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:8fc7dc560167b2cb7193e76aca625a152dc19b0ebf49816b78539cbb90d80d02
-COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/download/$(COMPONENT_ARCHIVE)
-COMPONENT_BUGDB=	library/gtkspell
-COMPONENT_ANITYA_ID=	13110
+    sha256:b040f63836b347eb344f5542443dc254621805072f7141d49c067ecb5a375732
+COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)/projects/gtkspell/files/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+COMPONENT_BUGDB=        library/gtkspell
+COMPONENT_ANITYA_ID=    13110
 
-TPNO=			11953
+TPNO=                   56018
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
@@ -52,8 +54,13 @@ COMPONENT_PREP_ACTION = \
 	automake -a -c -f ; \
 	autoconf )
 
+COMPONENT_POST_INSTALL_ACTION.64 += \
+       $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libgtkspell.3 \
+               $(PROTO_DIR)/usr/share/man/man3/libgtkspell.3; \
+
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += library/desktop/gtk2
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/perl-5/xml-parser
 REQUIRED_PACKAGES += library/spell-checking/enchant
+REQUIRED_PACKAGES += library/desktop/gtk3 
