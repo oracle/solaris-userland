@@ -20,44 +20,40 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
+COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		msgpack-python
-COMPONENT_VERSION=	0.4.7
+COMPONENT_NAME=		msgpack
+COMPONENT_VERSION=	0.6.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:5e001229a54180a02dcdd59db23c9978351af55b1290c27bc549e381f43acd6b
+	sha256:385dc1707116009bc40d95285be19e0f36a21fb5d4c6f74983f88ef1618e2246
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	http://pypi.python.org/pypi/msgpack-python/
+COMPONENT_PROJECT_URL=	http://pypi.python.org/pypi/msgpack/
 COMPONENT_BUGDB=	python-mod/msgpack
-COMPONENT_ANITYA_ID=	3922
+COMPONENT_ANITYA_ID=	0000
 
-TPNO=			29203
-
-# This component is not yet built for Python 3.7
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
+TPNO=			56278
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/test
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
+
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-COMPONENT_TEST_DIR=	$(SOURCE_DIR)
-COMPONENT_TEST_ARGS=	""
-COMPONENT_TEST_CMD=	py.test-$(PYTHON_VERSION)
-
-# There's a C++ extension to build a shared library but distutils
-# doesn't seem to want to build it.  See bug 22674518 for more
-# information.
-
 # common targets
-build:		$(BUILD_NO_ARCH)
+build:		$(BUILD_32_and_64)
 
-install:	$(INSTALL_NO_ARCH)
+install:	$(INSTALL_32_and_64)
 
-test:		$(TEST_NO_ARCH)
+test:		$(TEST_32_and_64)
+
+system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
