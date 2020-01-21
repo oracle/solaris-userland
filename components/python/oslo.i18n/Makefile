@@ -20,26 +20,23 @@
 #
 
 #
-# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		oslo.i18n
-COMPONENT_VERSION=	3.5.0
+COMPONENT_VERSION=	3.25.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-   sha256:5fff5f6ceabed9d09b18d83e049864c29eff038efbbe67e03fe68c49cc189f10
+   sha256:b3a89f36d84a5897045ccfb3f801346144816bc8ca38d7f893972699838bd4a1
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/oslo.i18n/
 COMPONENT_BUGDB=	python-mod/oslo.i18n
 COMPONENT_ANITYA_ID=	3948
 
-TPNO=			27992
-
-# This component is not yet built for Python 3.7
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
+TPNO=			56310
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -56,4 +53,4 @@ install:	$(INSTALL_NO_ARCH)
 # required to execute unittests.
 test:		$(NO_TESTS)
 
-system-test:	$(NO_TESTS)
+system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
