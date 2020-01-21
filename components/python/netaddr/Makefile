@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -38,8 +38,7 @@ COMPONENT_ANITYA_ID=	12487
 
 TPNO=			31322
 
-# Depends on iPython which is not Python 3 ready.
-PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
+PYTHON_VERSIONS=	2.7 3.7
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -68,5 +67,3 @@ COMPONENT_TEST_TRANSFORMS += \
 test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
-
-REQUIRED_PACKAGES += library/python/ipython-27

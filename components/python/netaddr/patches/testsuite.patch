@@ -1,0 +1,16 @@
+inet_pton on Solaris is able to correctly translate addresses with leading
+zeroes (which is not something this test expects).
+
+Not for upstream
+
+--- netaddr-0.7.18/netaddr/tests/ip/test_platform_osx.py
++++ netaddr-0.7.18/netaddr/tests/ip/test_platform_osx.py
+@@ -143,8 +143,4 @@ def test_ip_behaviour_non_osx():
+         IPNetwork('::255.255.255.254/128'),
+     ]
+ 
+-    #   Sadly, inet_pton cannot help us here ...
+-    with pytest.raises(AddrFormatError):
+-        IPAddress('010.000.000.001', flags=INET_PTON)
+-
+     assert int_to_str(0xffff) == '::ffff'
