@@ -20,30 +20,31 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		debtcollector
-COMPONENT_VERSION=	1.3.0
+COMPONENT_VERSION=	1.22.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9a65cf09239eab75b961ef609b3176ed2487bedcfa0a465331661824e1c8db8f
+    sha256:c31bab1966e0c065d26e51951c0eabea160332beff8c7fd335b1adca78c428c4
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/debtcollector/
 COMPONENT_BUGDB=	python-mod/debtcollector
 COMPONENT_ANITYA_ID=	6107
 
-TPNO=			27395
-
-# This component is not yet built for Python 3.7
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
+TPNO=			56281
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/debtcollector/tests
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -52,6 +53,6 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-# See $(COMPONENT_SRC)/test-requirements.txt for the Python modules
-# required to execute unittests.
-test:		$(NO_TESTS)
+test:		$(TEST_NO_ARCH)
+
+system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)

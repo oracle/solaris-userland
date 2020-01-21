@@ -1,0 +1,24 @@
+--- debtcollector-1.22.0/debtcollector/tests/test_deprecation.py
++++ debtcollector-1.22.0/debtcollector/tests/test_deprecation.py
+@@ -12,11 +12,12 @@
+ #    License for the specific language governing permissions and limitations
+ #    under the License.
+ 
++import pytest
+ import inspect
+ import warnings
+ 
+ import debtcollector
+-from debtcollector.fixtures import disable
++#from debtcollector.fixtures import disable
+ from debtcollector import moves
+ from debtcollector import removals
+ from debtcollector import renames
+@@ -297,6 +298,7 @@ class MovedPropertyTest(test_base.TestCa
+         self.assertEqual(0, len(capture))
+ 
+ 
++@pytest.mark.skip("Fixtures package is not available in Solaris")
+ class DisabledTest(test_base.TestCase):
+     def test_basics(self):
+         dog = WoofWoof()
