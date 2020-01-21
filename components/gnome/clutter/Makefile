@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            32_and_64
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		clutter
-COMPONENT_VERSION=	1.26.0
+COMPONENT_VERSION=	1.26.2
 COMPONENT_PROJECT_URL=	http://www.clutter-project.org/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:67514e7824b3feb4723164084b36d6ce1ae41cb3a9897e9f1a56c8334993ce06
+	sha256:e7233314983055e9018f94f56882e29e7fc34d8d35de030789fdcd9b2d0e2e56
 COMPONENT_BUGDB=        library/clutter
 COMPONENT_ANITYA_ID=	302
 
-TPNO=			34584
+TPNO=			53992
 
 # Requires a display
 TEST_TARGET = $(SKIP_TEST)
