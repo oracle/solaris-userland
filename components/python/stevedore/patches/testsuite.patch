@@ -1,0 +1,45 @@
+Testtools is not being used on Solaris, hence remove dependency on it.
+We do not support stevedore.sphinxext on Solaris.
+
+Not intended for upstream
+
+--- stevedore-1.31.0/stevedore/tests/test_callback.py
++++ stevedore-1.31.0/stevedore/tests/test_callback.py
+@@ -12,7 +12,6 @@
+ 
+ """Tests for failure loading callback
+ """
+-from testtools.matchers import GreaterThan
+ import mock
+ 
+ from stevedore import extension
+@@ -32,7 +31,7 @@ class TestCallback(utils.TestCase):
+                                         on_load_failure_callback=
+                                         failure_callback)
+         extensions = list(em.extensions)
+-        self.assertTrue(len(extensions), GreaterThan(0))
++        self.assertTrue(len(extensions) > 0)
+         self.assertEqual(len(errors), 2)
+         for manager, entrypoint, error in errors:
+             self.assertIs(manager, em)
+--- stevedore-1.31.0/stevedore/tests/test_sphinxext.py
++++ stevedore-1.31.0/stevedore/tests/test_sphinxext.py
+@@ -14,14 +14,16 @@
+ 
+ from __future__ import unicode_literals
+ 
++import pytest
++pytestmark = pytest.mark.skip("We do not support sphinxext on Solaris")
++
+ from stevedore import extension
+-from stevedore import sphinxext
++#from stevedore import sphinxext
+ from stevedore.tests import utils
+ 
+ import mock
+ import pkg_resources
+ 
+-
+ def _make_ext(name, docstring):
+     def inner():
+         pass
