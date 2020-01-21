@@ -20,34 +20,32 @@
 #
 
 #
-# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
 
+COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		netifaces
-COMPONENT_VERSION=	0.10.4
+COMPONENT_VERSION=	0.10.9
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9656a169cb83da34d732b0eb72b39373d48774aee009a3d1272b7ea2ce109cde
+    sha256:4e0ad6c8153c131ffbd56c8da54b91de9e2b0cf123c9b34c52278ab4ad2db2eb
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://bitbucket.org/al45tair/netifaces
 COMPONENT_BUGDB=	python-mod/netifaces
 COMPONENT_ANITYA_ID=	5644
 
-TPNO=			21725
-
-# This component is not yet built for Python 3.7
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
+TPNO=			51157
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
-
 COMPONENT_BUILD_ENV += CC_BITS="$(CC_BITS)"
+
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
 build:		$(BUILD_32_and_64)
@@ -56,7 +54,6 @@ install:	$(INSTALL_32_and_64)
 
 test:		$(NO_TESTS)
 
-system-test:    $(NO_TESTS)
-
+system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += system/library
