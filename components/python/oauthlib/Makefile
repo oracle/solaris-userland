@@ -20,30 +20,31 @@
 #
 
 #
-# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		oauthlib
-COMPONENT_VERSION=	1.0.3
+COMPONENT_VERSION=	3.1.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:ef4bfe4663ca3b97a995860c0173b967ebd98033d02f38c9e1b2cbb6c191d9ad
+    sha256:34a32e13734dcb04aa75195814136495c6495938d01a4a11d8c64f181473dbb3
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/idan/oauthlib
 COMPONENT_BUGDB=	python-mod/oauthlib
 COMPONENT_ANITYA_ID=	5377
 
-TPNO=			29088
-
-# This component is not yet built for Python 3.7
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
+TPNO=			55271
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -52,8 +53,6 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-# tests require pycrypto, pyjwt, and blinker.  If/When these modules
-# become available, tests can be enabled.
-test:		$(NO_TESTS)
+test:		$(TEST_NO_ARCH)
 
-system-test:    $(NO_TESTS)
+system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)

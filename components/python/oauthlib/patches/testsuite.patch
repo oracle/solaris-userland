@@ -1,0 +1,223 @@
+Python modules pyjwt and blinker are not avaiable in Solaris, hence disable
+tests which depend on those.
+
+Not for upstream
+
+--- oauthlib-3.1.0/tests/oauth2/rfc6749/clients/test_service_application.py
++++ oauthlib-3.1.0/tests/oauth2/rfc6749/clients/test_service_application.py
+@@ -4,7 +4,10 @@ from __future__ import absolute_import,
+ import os
+ from time import time
+ 
+-import jwt
++import pytest
++pytestmark = pytest.mark.skip("We do not have jwt on Solaris")
++
++#import jwt
+ from mock import patch
+ 
+ from oauthlib.common import Request
+--- oauthlib-3.1.0/tests/oauth1/rfc5849/test_client.py
++++ oauthlib-3.1.0/tests/oauth1/rfc5849/test_client.py
+@@ -1,6 +1,8 @@
+ # -*- coding: utf-8 -*-
+ from __future__ import absolute_import, unicode_literals
+ 
++import pytest
++
+ from oauthlib.common import Request
+ from oauthlib.oauth1 import (SIGNATURE_PLAINTEXT, SIGNATURE_HMAC_SHA1,
+                              SIGNATURE_HMAC_SHA256, SIGNATURE_RSA,
+@@ -105,6 +107,7 @@ class SignatureMethodTest(TestCase):
+                    'oauth_signature="JzgJWBxX664OiMW3WE4MEjtYwOjI%2FpaUWHqtdHe68Es%3D"')
+         self.assertEqual(h['Authorization'], correct)
+ 
++    @pytest.mark.skip("Needs pyjwt, which is not avaiable in Solaris")
+     def test_rsa_method(self):
+         private_key = (
+             "-----BEGIN RSA PRIVATE KEY-----\nMIICXgIBAAKBgQDk1/bxy"
+--- oauthlib-3.1.0/tests/oauth1/rfc5849/test_signatures.py
++++ oauthlib-3.1.0/tests/oauth1/rfc5849/test_signatures.py
+@@ -1,6 +1,8 @@
+ # -*- coding: utf-8 -*-
+ from __future__ import absolute_import, unicode_literals
+ 
++import pytest
++
+ from oauthlib.common import unicode_type
+ from oauthlib.oauth1.rfc5849.signature import (collect_parameters,
+                                                signature_base_string,
+@@ -316,6 +318,7 @@ Ga6FHdjGPcfajt+nrpB1n8UQBEH9ZxniokR/IPvd
+         )
+ 
+ 
++    @pytest.mark.skip("Needs pyjwt, which is not avaiable in Solaris")
+     def test_sign_rsa_sha1(self):
+         """Verify RSA-SHA1 signature against one created by OpenSSL."""
+         base_string = self.control_base_string_rsa_sha1
+@@ -330,6 +333,7 @@ Ga6FHdjGPcfajt+nrpB1n8UQBEH9ZxniokR/IPvd
+         self.assertEqual(sign, control_signature)
+ 
+ 
++    @pytest.mark.skip("Needs pyjwt, which is not avaiable in Solaris")
+     def test_sign_rsa_sha1_with_client(self):
+         base_string = self.control_base_string_rsa_sha1
+ 
+--- oauthlib-3.1.0/tests/oauth1/rfc5849/endpoints/test_base.py
++++ oauthlib-3.1.0/tests/oauth1/rfc5849/endpoints/test_base.py
+@@ -1,5 +1,7 @@
+ from __future__ import absolute_import, unicode_literals
+ 
++import pytest
++
+ from re import sub
+ 
+ from mock import MagicMock
+@@ -391,6 +393,7 @@ class SignatureVerificationTest(TestCase
+         r = self.e._create_request(self.uri, 'GET', sig, URLENCODED)
+         self.assertTrue(self.e._check_signature(r))
+ 
++    @pytest.mark.skip("Needs pyjwt, which is not avaiable in Solaris")
+     def test_rsa_signature(self):
+         rsa_sig = ("fxFvCx33oKlR9wDquJ%2FPsndFzJphyBa3RFPPIKi3flqK%2BJ7yIrMVbH"
+                    "YTM%2FLHPc7NChWz4F4%2FzRA%2BDN1k08xgYGSBoWJUOW6VvOQ6fbYhMA"
+--- oauthlib-3.1.0/tests/oauth2/rfc6749/test_parameters.py
++++ oauthlib-3.1.0/tests/oauth2/rfc6749/test_parameters.py
+@@ -1,5 +1,7 @@
+ from __future__ import absolute_import, unicode_literals
+ 
++import pytest
++
+ from mock import patch
+ 
+ from oauthlib import signals
+@@ -220,6 +222,7 @@ class ParameterTests(TestCase):
+     def test_custom_json_error(self):
+         self.assertRaises(CustomOAuth2Error, parse_token_response, self.json_custom_error)
+ 
++    @pytest.mark.skip("Needs blinker signaling library, which is not avaiable in Solaris")
+     def test_json_token_response(self):
+         """Verify correct parameter parsing and validation for token responses. """
+         self.assertEqual(parse_token_response(self.json_response), self.json_dict)
+@@ -259,6 +262,7 @@ class ParameterTests(TestCase):
+         finally:
+             del os.environ['OAUTHLIB_STRICT_TOKEN_TYPE']
+ 
++    @pytest.mark.skip("Needs blinker signaling library, which is not avaiable in Solaris")
+     def test_url_encoded_token_response(self):
+         """Verify fallback parameter parsing and validation for token responses. """
+         self.assertEqual(parse_token_response(self.url_encoded_response), self.json_dict)
+--- oauthlib-3.1.0/tests/oauth2/rfc6749/test_server.py
++++ oauthlib-3.1.0/tests/oauth2/rfc6749/test_server.py
+@@ -1,6 +1,7 @@
+ # -*- coding: utf-8 -*-
+ from __future__ import absolute_import, unicode_literals
+ 
++import pytest
+ import json
+ 
+ import mock
+@@ -279,6 +280,7 @@ twIDAQAB
+             refresh_token_generator=tokens.random_token_generator
+         )
+ 
++    @pytest.mark.skip("Needs pyjwt, which is not avaiable in Solaris")
+     @mock.patch('oauthlib.common.generate_token', new=lambda: 'abc')
+     def test_authorization_grant(self):
+         body = 'client_id=me&redirect_uri=http%3A%2F%2Fback.to%2Fme&grant_type=authorization_code&code=abc&scope=all+of+them'
+@@ -319,6 +321,7 @@ twIDAQAB
+         }
+         self.assertEqual(body, token)
+ 
++    @pytest.mark.skip("Needs pyjwt, which is not avaiable in Solaris")
+     @mock.patch('oauthlib.common.generate_token', new=lambda: 'abc')
+     def test_password_grant(self):
+         body = 'grant_type=password&username=a&password=hello&scope=all+of+them'
+@@ -334,6 +337,7 @@ twIDAQAB
+         }
+         self.assertEqual(body, token)
+ 
++    @pytest.mark.skip("Needs pyjwt, which is not avaiable in Solaris")
+     @mock.patch('oauthlib.common.generate_token', new=lambda: 'abc')
+     def test_scopes_and_user_id_stored_in_access_token(self):
+         body = 'grant_type=password&username=a&password=hello&scope=all+of+them'
+@@ -347,6 +351,7 @@ twIDAQAB
+         self.assertEqual(claims['scope'], 'all of them')
+         self.assertEqual(claims['user_id'], 123)
+ 
++    @pytest.mark.skip("Needs pyjwt, which is not avaiable in Solaris")
+     @mock.patch('oauthlib.common.generate_token', new=lambda: 'abc')
+     def test_client_grant(self):
+         body = 'grant_type=client_credentials&scope=all+of+them'
+--- oauthlib-3.1.0/tests/oauth2/rfc6749/clients/test_backend_application.py
++++ oauthlib-3.1.0/tests/oauth2/rfc6749/clients/test_backend_application.py
+@@ -1,6 +1,7 @@
+ # -*- coding: utf-8 -*-
+ from __future__ import absolute_import, unicode_literals
+ 
++import pytest
+ import os
+ 
+ from mock import patch
+@@ -56,6 +57,7 @@ class BackendApplicationClientTest(TestC
+         body = client.prepare_request_body(body=self.body, **self.kwargs)
+         self.assertFormBodyEqual(body, self.body_kwargs)
+ 
++    @pytest.mark.skip("Needs blinker signaling library, which is not avaiable in Solaris")
+     def test_parse_token_response(self):
+         client = BackendApplicationClient(self.client_id)
+ 
+--- oauthlib-3.1.0/tests/oauth2/rfc6749/clients/test_legacy_application.py
++++ oauthlib-3.1.0/tests/oauth2/rfc6749/clients/test_legacy_application.py
+@@ -1,6 +1,7 @@
+ # -*- coding: utf-8 -*-
+ from __future__ import absolute_import, unicode_literals
+ 
++import pytest
+ import os
+ 
+ from mock import patch
+@@ -64,6 +65,7 @@ class LegacyApplicationClientTest(TestCa
+                 body=self.body, **self.kwargs)
+         self.assertFormBodyEqual(body, self.body_kwargs)
+ 
++    @pytest.mark.skip("Needs blinker signaling library, which is not avaiable in Solaris")
+     def test_parse_token_response(self):
+         client = LegacyApplicationClient(self.client_id)
+ 
+--- oauthlib-3.1.0/tests/oauth2/rfc6749/clients/test_mobile_application.py
++++ oauthlib-3.1.0/tests/oauth2/rfc6749/clients/test_mobile_application.py
+@@ -1,6 +1,7 @@
+ # -*- coding: utf-8 -*-
+ from __future__ import absolute_import, unicode_literals
+ 
++import pytest
+ import os
+ 
+ from mock import patch
+@@ -81,6 +82,7 @@ class MobileApplicationClientTest(TestCa
+         # credentials at this point.
+         self.assertIsNone(client.code)
+ 
++    @pytest.mark.skip("Needs blinker signaling library, which is not avaiable in Solaris")
+     def test_parse_token_response(self):
+         client = MobileApplicationClient(self.client_id)
+ 
+--- oauthlib-3.1.0/tests/oauth2/rfc6749/clients/test_web_application.py
++++ oauthlib-3.1.0/tests/oauth2/rfc6749/clients/test_web_application.py
+@@ -1,6 +1,7 @@
+ # -*- coding: utf-8 -*-
+ from __future__ import absolute_import, unicode_literals
+ 
++import pytest
+ import datetime
+ import os
+ import warnings
+@@ -144,6 +145,7 @@ class WebApplicationClientTest(TestCase)
+         self.assertIsNone(client.refresh_token)
+         self.assertIsNone(client.mac_key)
+ 
++    @pytest.mark.skip("Needs blinker signaling library, which is not avaiable in Solaris")
+     def test_parse_token_response(self):
+         client = WebApplicationClient(self.client_id)
+ 
