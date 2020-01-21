@@ -1,17 +1,17 @@
 In-house patch to allow the TCP keepalive parameters to be used on Solaris.
 Patch has not yet been submitted upstream.
 
---- oslo.utils-1.4.0/oslo_utils/netutils.py.orig	2015-10-21 10:11:23.275736933 -0600
-+++ oslo.utils-1.4.0/oslo_utils/netutils.py	2015-10-21 10:11:26.709349827 -0600
-@@ -20,6 +20,7 @@ Network-related utilities and helper fun
- import logging
+--- oslo.utils-3.42.1/oslo_utils/netutils.py
++++ oslo.utils-3.42.1/oslo_utils/netutils.py
+@@ -21,6 +21,7 @@ import logging
  import os
+ import re
  import socket
 +import sys
-
+ 
  import netaddr
  import netifaces
-@@ -317,26 +317,44 @@ def set_tcp_keepalive(sock, tcp_keepaliv
+@@ -442,26 +443,44 @@ def set_tcp_keepalive(sock, tcp_keepaliv
      if not tcp_keepalive:
          return
  
@@ -23,19 +23,21 @@ Patch has not yet been submitted upstream.
 -                            socket.TCP_KEEPIDLE,
 -                            tcp_keepidle)
 -        else:
--            LOG.warning(_LW('tcp_keepidle not available on your system'))
+-            LOG.warning('tcp_keepidle not available on your system')
 -    if tcp_keepalive_interval is not None:
 -        if hasattr(socket, 'TCP_KEEPINTVL'):
 -            sock.setsockopt(socket.IPPROTO_TCP,
 -                            socket.TCP_KEEPINTVL,
 -                            tcp_keepalive_interval)
 -        else:
--            LOG.warning(_LW('tcp_keepintvl not available on your system'))
+-            LOG.warning('tcp_keepintvl not available on your system')
 -    if tcp_keepalive_count is not None:
 -        if hasattr(socket, 'TCP_KEEPCNT'):
 -            sock.setsockopt(socket.IPPROTO_TCP,
 -                            socket.TCP_KEEPCNT,
 -                            tcp_keepalive_count)
+-        else:
+-            LOG.warning('tcp_keepcnt not available on your system')
 +    if sys.platform == 'sunos5':
 +        # Should match definitions in <netinet/tcp.h>
 +        TCP_KEEPALIVE_THRESHOLD = 0x16
@@ -47,10 +49,9 @@ Patch has not yet been submitted upstream.
 +        if tcp_keepalive_interval is None and tcp_keepalive_count is None:
 +            return
 +        if tcp_keepalive_interval is None or tcp_keepalive_count is None:
-+            LOG.warning(_LW('tcp_keepintvl and tcp_keepknt must be set '
-+                            'together'))
-         else:
--            LOG.warning(_LW('tcp_keepcnt not available on your system'))
++            LOG.warning('tcp_keepintvl and tcp_keepknt must be set '
++                            'together')
++        else:
 +            sock.setsockopt(
 +                socket.IPPROTO_TCP, TCP_KEEPALIVE_ABORT_THRESHOLD,
 +                tcp_keepalive_interval * tcp_keepalive_count * 1000)
@@ -63,18 +64,18 @@ Patch has not yet been submitted upstream.
 +                                socket.TCP_KEEPIDLE,
 +                                tcp_keepidle)
 +            else:
-+                LOG.warning(_LW('tcp_keepidle not available on your system'))
++                LOG.warning('tcp_keepidle not available on your system')
 +        if tcp_keepalive_interval is not None:
 +            if hasattr(socket, 'TCP_KEEPINTVL'):
 +                sock.setsockopt(socket.IPPROTO_TCP,
 +                                socket.TCP_KEEPINTVL,
 +                                tcp_keepalive_interval)
 +            else:
-+                LOG.warning(_LW('tcp_keepintvl not available on your system'))
++                LOG.warning('tcp_keepintvl not available on your system')
 +        if tcp_keepalive_count is not None:
 +            if hasattr(socket, 'TCP_KEEPCNT'):
 +                sock.setsockopt(socket.IPPROTO_TCP,
 +                                socket.TCP_KEEPCNT,
 +                                tcp_keepalive_count)
 +            else:
-+                LOG.warning(_LW('tcp_keepcnt not available on your system'))
++                LOG.warning('tcp_keepcnt not available on your system')

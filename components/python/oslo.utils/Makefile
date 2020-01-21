@@ -20,26 +20,25 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		oslo.utils
-COMPONENT_VERSION=	3.8.0
+COMPONENT_VERSION=	3.42.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c0e935b86e72facc02264271ed09dd9c5879d52452d7a1b4a116a6c7d05077aa
+    sha256:64b5d9ed121063dec6ac01a6e1cc97522525429c32befa6dadbd9a9ba89b87e9
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/oslo.utils/
 COMPONENT_BUGDB=	python-mod/oslo.utils
 COMPONENT_ANITYA_ID=	3951
 
-TPNO=			28358
+TPNO=			56289
 
-# Depends on netaddr which is not Python 3 ready.
-PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
+PYTHON_VERSIONS = 2.7 3.7
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -56,4 +55,4 @@ install:	$(INSTALL_NO_ARCH)
 # required to execute unittests.
 test:		$(NO_TESTS)
 
-system-test:	$(NO_TESTS)
+system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)

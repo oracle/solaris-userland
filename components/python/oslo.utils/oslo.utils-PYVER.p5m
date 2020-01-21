@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -47,6 +47,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/oslo.utils-$(COMPONENT_VERSION)
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo.utils-$(COMPONENT_VERSION)-py$(PYVER).egg-info/top_level.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_utils/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_utils/_i18n.py
+file path=usr/lib/python$(PYVER)/vendor-packages/oslo_utils/dictutils.py
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_utils/encodeutils.py
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_utils/eventletutils.py
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_utils/excutils.py
@@ -58,6 +59,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/oslo_utils/importutils.py
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_utils/netutils.py
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_utils/reflection.py
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_utils/secretutils.py
+file path=usr/lib/python$(PYVER)/vendor-packages/oslo_utils/specs_matcher.py
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_utils/strutils.py
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_utils/timeutils.py
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_utils/units.py
@@ -96,11 +98,11 @@ depend type=require fmri=library/python/oslo.i18n-$(PYV)
 depend type=require \
     fmri=library/python/oslo.utils@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 
+# force a dependency on pyparsing; pkgdepend work is needed to flush this out.
+depend type=require fmri=library/python/pyparsing-$(PYV)
+
 # force a dependency on pytz; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/pytz-$(PYV)
-
-# force a dependency on setuptools; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/setuptools-$(PYV)
 
 # force a dependency on six; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/six-$(PYV)
