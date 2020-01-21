@@ -1,0 +1,27 @@
+libsass undefines __EXTENSIONS__ to resolve build failures as described in
+https://github.com/sass/libsass/issues/2519
+
+Unfortunately, that also hides the definitions of quick_exit & at_quick_exit in
+<stdlib.h> when building with either C++ or a C standard prior to C11.
+
+The change below is to resolve the issue of 
+in file included from /usr/gcc/7/include/c++/7.3.0/ext/string_conversions.h:41:0,
+                 from /usr/gcc/7/include/c++/7.3.0/bits/basic_string.h:6349,
+                 from /usr/gcc/7/include/c++/7.3.0/string:52,
+                 from /builds/nrau/userland-test2/components/gnome/libsass/libsass-3.6.3/src/sass.hpp:55,
+                 from /builds/nrau/userland-test2/components/gnome/libsass/libsass-3.6.3/src/ast.cpp:3:
+/usr/gcc/7/include/c++/7.3.0/cstdlib:131:11: error: '::at_quick_exit' has not been declared
+   using ::at_quick_exit;
+
+--- a/src/sass.hpp	2020-01-20 17:31:53.749169991 -0800
++++ b/src/sass.hpp	2020-01-20 17:33:31.790499699 -0800
+@@ -7,6 +7,9 @@
+ // mainly fixes an issue on SmartOS (SEC macro)
+ #undef __EXTENSIONS__
+ 
++extern "C" int at_quick_exit(void (*)(void)) throw ();
++extern "C" void quick_exit(int) throw();
++
+ #ifdef _MSC_VER
+ #pragma warning(disable : 4005)
+ #endif
