@@ -20,26 +20,25 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		oslo.serialization
-COMPONENT_VERSION=	2.4.0
+COMPONENT_VERSION=	2.29.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9b95fc07310fd6df8cab064f89fd15327b259dec17a2e2b9a07b9ca4d96be0c6
+    sha256:d0b409eb9b892236cc997101d4af29590999afdccc2e2cbb1342b415c1485424
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/oslo.serialization/
 COMPONENT_BUGDB=	python-mod/oslo.serial
 COMPONENT_ANITYA_ID=	13181
 
-TPNO=			28354
+TPNO=			56287
 
-# Depends on oslo.utils which is not Python 3 ready.
-PYTHON_VERSIONS =	$(PYTHON2_VERSIONS)
+PYTHON_VERSIONS = 2.7 3.7
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -56,4 +55,4 @@ install:	$(INSTALL_NO_ARCH)
 # required to execute unittests.
 test:		$(NO_TESTS)
 
-system-test:	$(NO_TESTS)
+system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
