@@ -20,26 +20,23 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		oslo.context
-COMPONENT_VERSION=	2.2.0
+COMPONENT_VERSION=	2.23.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8c9fbbf56d3f37cf00a039cac3455cffeb6588f61537e36a36ce9447c4be72ec
+    sha256:1f011a6cb41a7e8261ff6c0bfb700d354f66639e264dc8848710277a7810a33c
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/oslo.context/
 COMPONENT_BUGDB=	python-mod/oslo.context
 COMPONENT_ANITYA_ID=	6109
 
-TPNO=			28365
-
-# This component is not yet built for Python 3.7
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
+TPNO=			56290
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -56,4 +53,4 @@ install:	$(INSTALL_NO_ARCH)
 # required to execute unittests.
 test:		$(NO_TESTS)
 
-system-test:	$(NO_TESTS)
+system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)

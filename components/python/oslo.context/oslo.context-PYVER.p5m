@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -48,12 +48,19 @@ file path=usr/lib/python$(PYVER)/vendor-packages/oslo.context-$(COMPONENT_VERSIO
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_context/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_context/context.py
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_context/fixture.py
+file path=usr/lib/python$(PYVER)/vendor-packages/oslo_context/version.py
 #
 license oslo.context.license license="Apache v2.0"
 
 # force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
+
+# force a dependency on babel; pkgdepend work is needed to flush this out.
+depend type=require fmri=library/python/babel-$(PYV)
+
+# force a dependency on debtcollector; pkgdepend work is needed to flush this out.
+depend type=require fmri=library/python/debtcollector-$(PYV)
 
 # force a dependency on the oslo.context package
 depend type=require \
