@@ -20,30 +20,33 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		oslo.log
-COMPONENT_VERSION=	3.3.0
+COMPONENT_VERSION=	3.45.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b3414b6f3b05f50571d8973543227f0d6445c297ba762262adfc28b704f8efd9
+    sha256:5fc9fdaa5b7d54a1d845ab0f62e3b3bc876eea32d595c7ce3d93b1214ca14f5f
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/oslo.log/
 COMPONENT_BUGDB=	python-mod/oslo.log
 COMPONENT_ANITYA_ID=	7001
 
-TPNO=			31344
+TPNO=			56309
 
-# Depends on oslo.serialization which is not Python 3 ready.
-PYTHON_VERSIONS =	$(PYTHON2_VERSIONS)
+PYTHON_VERSIONS = 2.7 3.7
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+COMPONENT_POST_INSTALL_ACTION += \
+	(cd $(PROTO_DIR)/usr/bin; \
+	$(MV) -f convert-json convert-json-$(PYTHON_VERSION))
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -56,4 +59,4 @@ install:	$(INSTALL_NO_ARCH)
 # required to execute unittests.
 test:		$(NO_TESTS)
 
-system-test:	$(NO_TESTS)
+system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
