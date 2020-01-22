@@ -85,7 +85,10 @@ check_rtime:		TARGET = check_rtime
 zone-build:		TARGET = component-zone-build
 component-hook:		TARGET = component-hook
 regen-patches:		TARGET = regen-patches
-zone-build prep build install publish test system-test check_rtime regen-patches:	LOG = >$(WS_LOGS)/$(subst /,.,$@).$(TARGET).log 2>&1
+zone-build prep build install publish test system-test check_rtime regen-patches:	\
+	LOG = >$(WS_LOGS)/$(subst /,.,$@).$(TARGET).log 2>&1 ; \
+	$(RM) $(WS_COMPONENTS)/$@/build/$(TARGET).log ; \
+	$(LN) -s $(WS_LOGS)/$(subst /,.,$@).$(TARGET).log $(WS_COMPONENTS)/$@/build/$(TARGET).$(MACH).log
 
 # turn off pkglint for the individual component builds.
 ifeq   ($(strip $(PKGLINT_COMPONENT)),)
