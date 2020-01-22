@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,13 +30,13 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-menus
-COMPONENT_VERSION=	3.13.3
+COMPONENT_VERSION=	3.32.0
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7c446eb8ff381df52b8ba04e5886497595e84d1bc46caf7af764d894736c654e
+	sha256:c850c64b2074265fe59e099a340b8689cf3dd4658dc9feddd2ab5e95f1a74b74
 COMPONENT_BUGDB=        gnome/menus
 COMPONENT_ANITYA_ID=	13134
 
-TPNO=			24752
+TPNO=			52175
 
 TEST_TARGET = $(NO_TESTS)
 
