@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -86,9 +86,6 @@ CONFIGURE_OPTIONS += --disable-argyllcms-sensor
 # Assumes GNU xgettext and tail in PATH
 COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
-
-# Tell g-ir-scanner not to cache results in homedir of user running the build
-COMPONENT_BUILD_ENV += GI_SCANNER_DISABLE_CACHE=""
 
 COMPONENT_POST_INSTALL_ACTION.64 += \
     $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/colord.xml \

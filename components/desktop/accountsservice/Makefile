@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -76,9 +76,6 @@ CONFIGURE_OPTIONS += --with-minimum-uid=100
 # Solaris does not have a wheel group, so we use the "sysadmin" group to
 # determine which accounts should be ACT_USER_ACCOUNT_TYPE_ADMINISTRATOR
 CONFIGURE_OPTIONS += --enable-admin-group=sysadmin
-
-# Tell g-ir-scanner not to cache results in homedir of user running the build
-COMPONENT_BUILD_ENV += GI_SCANNER_DISABLE_CACHE=""
 
 # Only need to install library from 32-bit builds, everything else overlaps
 # with 64-bit builds

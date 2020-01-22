@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -57,9 +57,6 @@ CONFIGURE_OPTIONS += --enable-introspection
 CONFIGURE_OPTIONS += --enable-shared
 CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += --libexecdir="$(USRLIBDIR)"
-
-# Tell g-ir-scanner not to cache results in homedir of user running the build
-COMPONENT_BUILD_ENV += GI_SCANNER_DISABLE_CACHE=""
 
 # Assumes GNU xgettext in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)

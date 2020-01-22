@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		64_and_32
@@ -63,9 +63,6 @@ COMPONENT_BUILD_ENV += CC="$(CC)"
 COMPONENT_BUILD_ENV += CFLAGS="$(CFLAGS)"
 COMPONENT_BUILD_ENV += CXX="$(CXX)"
 COMPONENT_BUILD_ENV += CXXFLAGS="$(CXXFLAGS)"
-
-# Tell g-ir-scanner not to cache results in homedir of user running the build
-COMPONENT_BUILD_ENV += GI_SCANNER_DISABLE_CACHE=""
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TARGETS = test

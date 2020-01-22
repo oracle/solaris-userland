@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 # parfait is a bit unhappy (24796481)
@@ -88,9 +88,6 @@ endif
 
 # Assumes GNU xgettext in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
-
-# Tell g-ir-scanner not to cache results in homedir of user running the build
-COMPONENT_BUILD_ENV += GI_SCANNER_DISABLE_CACHE=""
 
 # SMF manifest & method
 PKG_PROTO_DIRS += $(COMPONENT_DIR)/files

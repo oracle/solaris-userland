@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -55,9 +55,6 @@ CONFIGURE_OPTIONS += --with-pic
 # used instead of system default.
 CONFIGURE_ENV.32 += PYTHON="$(PYTHON.2.7.32)"
 CONFIGURE_ENV.64 += PYTHON="$(PYTHON.2.7.64)"
-
-# Tell g-ir-scanner not to cache results in homedir of user running the build
-COMPONENT_BUILD_ENV += GI_SCANNER_DISABLE_CACHE=""
 
 # for the tests 
 unexport SHELLOPTS

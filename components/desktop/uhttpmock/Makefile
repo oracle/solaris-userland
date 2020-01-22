@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS = 		64_and_32
@@ -43,9 +43,6 @@ TPNO=			34660
 TEST_TARGET= $(SKIP_TEST)
 
 include $(WS_MAKE_RULES)/common.mk
-
-# Tell g-ir-scanner not to cache results in homedir of user running the build
-COMPONENT_BUILD_ENV += GI_SCANNER_DISABLE_CACHE=""
 
 CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += --enable-gtk-doc

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -51,9 +51,6 @@ CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 
 # Assumes GNU tail is first in PATH
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
-
-# Tell g-ir-scanner not to cache results in homedir of user running the build
-COMPONENT_BUILD_ENV += GI_SCANNER_DISABLE_CACHE=""
 
 # XXX wants gudev for better backend support; alternatively, create solaris
 # native backend as was done for openbsd/freebsd.

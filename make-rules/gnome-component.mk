@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 #
@@ -57,12 +57,4 @@ CONFIGURE_ENV += MAKE=$(MAKE)
 
 CONFIGURE_ENV += INTLTOOL_PERL="$(PERL)"
 endif # BUILD_STYLE == configure
-
-ifeq ($(strip $(BUILD_STYLE)),meson)
-# This is needed in the build environment for gobject-introspection
-COMPONENT_BUILD_ENV += CC="$(CC) $(CC_BITS)"
-endif
-
-# Tell g-ir-scanner not to cache results in homedir of user running the build
-COMPONENT_BUILD_ENV += GI_SCANNER_DISABLE_CACHE=""
 

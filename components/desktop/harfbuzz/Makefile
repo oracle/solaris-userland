@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		64_and_32
@@ -59,9 +59,6 @@ CONFIGURE_OPTIONS += --with-icu
 CONFIGURE_OPTIONS += --with-glib
 # build the API documentation
 CONFIGURE_OPTIONS += --enable-gtk-doc
-
-# For components using gobject-introspection, don't cache results in $HOME
-COMPONENT_BUILD_ENV += GI_SCANNER_DISABLE_CACHE=yes
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_ARGS =   -k -i

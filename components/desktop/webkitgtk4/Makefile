@@ -101,9 +101,6 @@ CMAKE_OPTIONS += -DLIB_INSTALL_DIR="$(USRLIB)"
 CMAKE_OPTIONS += -DLIBEXEC_INSTALL_DIR="$(USRLIB)"
 CMAKE_OPTIONS += -DEXEC_INSTALL_DIR="$(USRBIN)"
 
-# Tell g-ir-scanner not to cache results in homedir of user running the build
-COMPONENT_BUILD_ENV += GI_SCANNER_DISABLE_CACHE=""
-
 # Expects GNU versions of utilities to be found in PATH (e.g. xgettext).
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
