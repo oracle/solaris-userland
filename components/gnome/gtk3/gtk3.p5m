@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -45,10 +45,8 @@ file path=etc/$(MACH64)/gtk-3.0/im-multipress.conf \
     preserve=true
 file path=etc/gtk-3.0/im-multipress.conf \
     original_name=SUNWgtk3:etc/gtk-3.0/im-multipress.conf preserve=true
-file files/gtk3-input-method-cache.xml \
-    path=lib/svc/manifest/application/desktop-cache/gtk3-input-method-cache.xml
-file files/gtk3-input-method-cache.sh \
-    path=lib/svc/method/gtk3-input-method-cache
+file path=lib/svc/manifest/application/desktop-cache/gtk3-input-method-cache.xml
+file path=lib/svc/method/gtk3-input-method-cache
 file path=usr/bin/$(MACH64)/gtk-encode-symbolic-svg
 file path=usr/bin/$(MACH64)/gtk-launch
 file path=usr/bin/$(MACH64)/gtk-query-immodules-3.0
@@ -147,6 +145,7 @@ file path=usr/include/gtk-3.0/gtk/a11y/gtkexpanderaccessible.h
 file path=usr/include/gtk-3.0/gtk/a11y/gtkflowboxaccessible.h
 file path=usr/include/gtk-3.0/gtk/a11y/gtkflowboxchildaccessible.h
 file path=usr/include/gtk-3.0/gtk/a11y/gtkframeaccessible.h
+file path=usr/include/gtk-3.0/gtk/a11y/gtkheaderbaraccessible.h
 file path=usr/include/gtk-3.0/gtk/a11y/gtkiconviewaccessible.h
 file path=usr/include/gtk-3.0/gtk/a11y/gtkimageaccessible.h
 file path=usr/include/gtk-3.0/gtk/a11y/gtkimagecellaccessible.h
@@ -293,6 +292,9 @@ file path=usr/include/gtk-3.0/gtk/gtkentrycompletion.h
 file path=usr/include/gtk-3.0/gtk/gtkenums.h
 file path=usr/include/gtk-3.0/gtk/gtkeventbox.h
 file path=usr/include/gtk-3.0/gtk/gtkeventcontroller.h
+file path=usr/include/gtk-3.0/gtk/gtkeventcontrollerkey.h
+file path=usr/include/gtk-3.0/gtk/gtkeventcontrollermotion.h
+file path=usr/include/gtk-3.0/gtk/gtkeventcontrollerscroll.h
 file path=usr/include/gtk-3.0/gtk/gtkexpander.h
 file path=usr/include/gtk-3.0/gtk/gtkfilechooser.h
 file path=usr/include/gtk-3.0/gtk/gtkfilechooserbutton.h
@@ -314,6 +316,7 @@ file path=usr/include/gtk-3.0/gtk/gtkgesturemultipress.h
 file path=usr/include/gtk-3.0/gtk/gtkgesturepan.h
 file path=usr/include/gtk-3.0/gtk/gtkgesturerotate.h
 file path=usr/include/gtk-3.0/gtk/gtkgesturesingle.h
+file path=usr/include/gtk-3.0/gtk/gtkgesturestylus.h
 file path=usr/include/gtk-3.0/gtk/gtkgestureswipe.h
 file path=usr/include/gtk-3.0/gtk/gtkgesturezoom.h
 file path=usr/include/gtk-3.0/gtk/gtkglarea.h
@@ -475,12 +478,12 @@ file path=usr/lib/$(MACH64)/gtk-3.0/3.0.0/printbackends/libprintbackend-lpr.so
 link path=usr/lib/$(MACH64)/libgailutil-3.so target=libgailutil-3.so.0.0.0
 link path=usr/lib/$(MACH64)/libgailutil-3.so.0 target=libgailutil-3.so.0.0.0
 file path=usr/lib/$(MACH64)/libgailutil-3.so.0.0.0
-link path=usr/lib/$(MACH64)/libgdk-3.so target=libgdk-3.so.0.2200.12
-link path=usr/lib/$(MACH64)/libgdk-3.so.0 target=libgdk-3.so.0.2200.12
-file path=usr/lib/$(MACH64)/libgdk-3.so.0.2200.12
-link path=usr/lib/$(MACH64)/libgtk-3.so target=libgtk-3.so.0.2200.12
-link path=usr/lib/$(MACH64)/libgtk-3.so.0 target=libgtk-3.so.0.2200.12
-file path=usr/lib/$(MACH64)/libgtk-3.so.0.2200.12
+link path=usr/lib/$(MACH64)/libgdk-3.so target=libgdk-3.so.0.2404.7
+link path=usr/lib/$(MACH64)/libgdk-3.so.0 target=libgdk-3.so.0.2404.7
+file path=usr/lib/$(MACH64)/libgdk-3.so.0.2404.7
+link path=usr/lib/$(MACH64)/libgtk-3.so target=libgtk-3.so.0.2404.7
+link path=usr/lib/$(MACH64)/libgtk-3.so.0 target=libgtk-3.so.0.2404.7
+file path=usr/lib/$(MACH64)/libgtk-3.so.0.2404.7
 file path=usr/lib/$(MACH64)/pkgconfig/gail-3.0.pc
 file path=usr/lib/$(MACH64)/pkgconfig/gdk-3.0.pc
 file path=usr/lib/$(MACH64)/pkgconfig/gdk-x11-3.0.pc
@@ -508,12 +511,12 @@ file path=usr/lib/gtk-3.0/3.0.0/printbackends/libprintbackend-lpr.so
 link path=usr/lib/libgailutil-3.so target=libgailutil-3.so.0.0.0
 link path=usr/lib/libgailutil-3.so.0 target=libgailutil-3.so.0.0.0
 file path=usr/lib/libgailutil-3.so.0.0.0
-link path=usr/lib/libgdk-3.so target=libgdk-3.so.0.2200.12
-link path=usr/lib/libgdk-3.so.0 target=libgdk-3.so.0.2200.12
-file path=usr/lib/libgdk-3.so.0.2200.12
-link path=usr/lib/libgtk-3.so target=libgtk-3.so.0.2200.12
-link path=usr/lib/libgtk-3.so.0 target=libgtk-3.so.0.2200.12
-file path=usr/lib/libgtk-3.so.0.2200.12
+link path=usr/lib/libgdk-3.so target=libgdk-3.so.0.2404.7
+link path=usr/lib/libgdk-3.so.0 target=libgdk-3.so.0.2404.7
+file path=usr/lib/libgdk-3.so.0.2404.7
+link path=usr/lib/libgtk-3.so target=libgtk-3.so.0.2404.7
+link path=usr/lib/libgtk-3.so.0 target=libgtk-3.so.0.2404.7
+file path=usr/lib/libgtk-3.so.0.2404.7
 file path=usr/lib/pkgconfig/gail-3.0.pc
 file path=usr/lib/pkgconfig/gdk-3.0.pc
 file path=usr/lib/pkgconfig/gdk-x11-3.0.pc
@@ -532,6 +535,7 @@ file path=usr/share/gir-1.0/Gtk-3.0.gir
 file path=usr/share/glib-2.0/schemas/org.gtk.Demo.gschema.xml
 file path=usr/share/glib-2.0/schemas/org.gtk.Settings.ColorChooser.gschema.xml
 file path=usr/share/glib-2.0/schemas/org.gtk.Settings.Debug.gschema.xml
+file path=usr/share/glib-2.0/schemas/org.gtk.Settings.EmojiChooser.gschema.xml
 file path=usr/share/glib-2.0/schemas/org.gtk.Settings.FileChooser.gschema.xml
 file path=usr/share/glib-2.0/schemas/org.gtk.exampleapp.gschema.xml
 file path=usr/share/gtk-3.0/gtkbuilder.rng
@@ -631,6 +635,8 @@ file path=usr/share/locale/fi/LC_MESSAGES/gtk30-properties.mo
 file path=usr/share/locale/fi/LC_MESSAGES/gtk30.mo
 file path=usr/share/locale/fr/LC_MESSAGES/gtk30-properties.mo
 file path=usr/share/locale/fr/LC_MESSAGES/gtk30.mo
+file path=usr/share/locale/fur/LC_MESSAGES/gtk30-properties.mo
+file path=usr/share/locale/fur/LC_MESSAGES/gtk30.mo
 file path=usr/share/locale/ga/LC_MESSAGES/gtk30-properties.mo
 file path=usr/share/locale/ga/LC_MESSAGES/gtk30.mo
 file path=usr/share/locale/gd/LC_MESSAGES/gtk30-properties.mo
@@ -799,14 +805,13 @@ file path=usr/share/man/man1/gtk3-demo-application.1
 file path=usr/share/man/man1/gtk3-demo.1
 file path=usr/share/man/man1/gtk3-icon-browser.1
 file path=usr/share/man/man1/gtk3-widget-factory.1
-file files/libgailutil-3.3lib path=usr/share/man/man3lib/libgailutil-3.3lib
-file files/libgtk-3.3lib path=usr/share/man/man3lib/libgtk-3.3lib
-file files/gnome-std-options.7 path=usr/share/man/man7/gnome-std-options.7
-file files/gtk3-input-method-cache.8s \
-    path=usr/share/man/man8s/application/desktop-cache/gtk3-input-method-cache.8s
+file path=usr/share/man/man3lib/libgailutil-3.3lib
+file path=usr/share/man/man3lib/libgtk-3.3lib
+file path=usr/share/man/man7/gnome-std-options.7
+file path=usr/share/man/man8s/application/desktop-cache/gtk3-input-method-cache.8s
 file path=usr/share/themes/Default/gtk-3.0/gtk-keys.css
 file path=usr/share/themes/Emacs/gtk-3.0/gtk-keys.css
-license COPYING license=LGPLv2
+license gtk3.license license=LGPLv2
 depend type=conditional \
     fmri=pkg:/library/desktop/gtk3/gtk-backend-cups@$(IPS_COMPONENT_VERSION) \
     predicate=library/print/cups-libs

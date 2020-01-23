@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            32_and_64
@@ -30,17 +30,17 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gtk3
-COMPONENT_VERSION=	3.22.12
+COMPONENT_VERSION=	3.24.11
 COMPONENT_PROJECT_URL=	http://www.gtk.org/
 COMPONENT_SRC=		gtk+-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:84fae0cefb6a11ee2b4e86b8ac42fe46a3d30b4ad16661d5fc51e8ae03e2a98c
-COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/gtk+/3.22/$(COMPONENT_ARCHIVE)
+    sha256:dba7658d0a2e1bfad8260f5210ca02988f233d1d86edacb95eceed7eca982895
+COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/gtk+/3.24/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/gtk+
 COMPONENT_ANITYA_ID=	10018
 
-TPNO=			34749
+TPNO=			54076
 
 ETCDIR.64="$(ETCDIR)/$(MACH64)"
 
@@ -89,6 +89,20 @@ COMPONENT_POST_INSTALL_ACTION += \
 	  $(PROTOGTKDIR)/immodules/*.so | \
 	  $(GSED) -e 's%$(PROTO_DIR)%%' > $(PROTOIMMCONF) ;
 
+COMPONENT_POST_INSTALL_ACTION.64 += \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/gnome-std-options.7 \
+                $(PROTO_DIR)/usr/share/man/man7/gnome-std-options.7; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/gtk3-input-method-cache.8s \
+                $(PROTO_DIR)/usr/share/man/man8s/application/desktop-cache/gtk3-input-method-cache.8s; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/gtk3-input-method-cache.sh  \
+                $(PROTO_DIR)/lib/svc/method/gtk3-input-method-cache; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/gtk3-input-method-cache.xml \
+                $(PROTO_DIR)/lib/svc/manifest/application/desktop-cache/gtk3-input-method-cache.xml ; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libgailutil-3.3lib \
+                $(PROTO_DIR)/usr/share/man/man3lib/libgailutil-3.3lib; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libgtk-3.3lib \
+                $(PROTO_DIR)/usr/share/man/man3lib/libgtk-3.3lib;
+
 # Standard automake test framework results transform
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
@@ -107,6 +121,7 @@ REQUIRED_PACKAGES += developer/gnu-indent
 REQUIRED_PACKAGES += library/desktop/at-spi2-atk
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
+REQUIRED_PACKAGES += library/desktop/fribidi
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/harfbuzz
