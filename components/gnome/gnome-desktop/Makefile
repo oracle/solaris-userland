@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,34 +30,40 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-desktop
-COMPONENT_VERSION=	3.24.0
+COMPONENT_VERSION=	3.34.0
 COMPONENT_PROJECT_URL= 	https://developer.gnome.org/gnome-desktop/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:86387aa12ba789afc0772d49fdfbab2d815669552e895be089252dd42aa68677
+	sha256:8d331ee655c1d56b2b97562a07c7a7598ff6706a11ff1cdce97423ebc6b62426
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13127
 
-TPNO=			34530
-
-TEST_TARGET = $(NO_TESTS)
+TPNO=			54037
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --enable-desktop-docs
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --with-gnome-distributor=Oracle
-CONFIGURE_OPTIONS += --with-pic
-CONFIGURE_OPTIONS += --with-x
-
-# Required due to patches.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
+CONFIGURE_OPTIONS += -Dgnome-distributor=Oracle
+CONFIGURE_OPTIONS += --libexecdir=$(USRLIB.$(BITS))
+LDFLAGS += -z gnu-version-script-compat
 
 # Assumes GNU versions of various utilities in PATH (e.g. msgfmt).
 COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
+
+COMPONENT_POST_INSTALL_ACTION.64 += \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libgnome-desktop-3.3lib \
+                $(PROTO_DIR)/usr/share/man/man3lib/libgnome-desktop-3.3lib;
+
+# get rid of the timestamps from the test results
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
+COMPONENT_TEST_TARGETS += ; cd tests; ./wall-clock;
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/Ok:/p" ' \
+        '-e "/Fail:/p" ' \
+        '-e "/Pass:/p" '
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/desktop/cairo
