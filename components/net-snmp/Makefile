@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 
@@ -70,9 +70,7 @@ CONFIGURE_OPTIONS  +=	--with-openssl=/lib/openssl
 CONFIGURE_OPTIONS  +=	--with-transports="UDP TCP UDPIPv6 TCPIPv6"
 
 # Which MIB modules do we want to build
-MIB_MOBULES.sparc = ucd-snmp/lmSensors
 MIB_MODULES = host disman/event-mib ucd-snmp/diskio udp-mib tcp-mib if-mib
-MIB_MOBULES += $(MIB_MODULES.$(MACH))
 CONFIGURE_OPTIONS  +=	--with-mib-modules="$(MIB_MODULES)"
 
 # Python bindings support.
