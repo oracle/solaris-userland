@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -46,8 +46,8 @@ COMPONENT_FIX_PC_FLAGS += -e 's| \@FREETYPE_CFLAGS\@||g;'
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
-# Use explicit Python version rather than the default one
-CONFIGURE_ENV += PYTHON=$(PYTHON.2.7)
+# Python is used only to generate fcblanks.h, however downloaded
+# tarball already contains it. The detected version is irrelevant.
 
 # GNU Build System files have to be regenerated for automake 1.16.
 # It can be removed when the upstream starts to use a newer automake version.

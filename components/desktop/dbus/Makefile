@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Static assertions fail when building with Studio
@@ -58,8 +58,8 @@ CONFIGURE_OPTIONS +=	--libexecdir=$(USRLIBDIR)
 CONFIGURE_OPTIONS +=	--localstatedir=$(VARDIR)
 CONFIGURE_OPTIONS +=	--disable-static
 
-# Use explicit Python version rather than the default one
-CONFIGURE_ENV +=	PYTHON=$(PYTHON.2.7)
+# Python is a dependency only if --enable-tests is given, which
+# is not. Because of that, the detected version is irrelevant.
 
 # Makefile.am files of this component are not compatible with Solaris make.
 # Use GNU make to avoid the configuration error when makefile fragments are processed.
