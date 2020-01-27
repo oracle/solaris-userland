@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -28,39 +28,49 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gvfs
-COMPONENT_VERSION=	1.32.0
+COMPONENT_VERSION=	1.42.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/gvfs
 COMPONENT_ARCHIVE_HASH= \
-	sha256:60acc16af9564ec00017b9196549839052e3f67b5c8f39dce319af0bb3439004
+	sha256:d0958d9ceefb54bb8ddda74ef51e10fe03dff93f74634784bd309ea434066cf1
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	5496
 
-TPNO=			34604
+TPNO=			54079
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU xgettext in PATH.
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 
-# Requires a reconf due to 01-major-minor.patch changing configure.ac.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -iv);
-
 # Assumes GNU xgettext is first in $PATH.
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --enable-archive
-CONFIGURE_OPTIONS += --enable-avahi
-CONFIGURE_OPTIONS += --enable-documentation
-CONFIGURE_OPTIONS += --enable-goa
-CONFIGURE_OPTIONS += --disable-gphoto2
-CONFIGURE_OPTIONS += --enable-gtk
-CONFIGURE_OPTIONS += --enable-http
-CONFIGURE_OPTIONS += --enable-keyring
-CONFIGURE_OPTIONS += --enable-shared
+# We build goa only 64-bit in Solaris
+CONFIGURE_OPTIONS.32 += -Dgoa=false
+CONFIGURE_OPTIONS += -Dsmb=false
+CONFIGURE_OPTIONS += -Dnfs=false
+# google backend requires goa which is only 64-bit in Solaris
+CONFIGURE_OPTIONS.32 += -Dgoogle=false
+CONFIGURE_OPTIONS += -Dman=true
+CONFIGURE_OPTIONS += -Ddevel_utils=true
 # admin requires libcap
-CONFIGURE_OPTIONS += --disable-admin
-CONFIGURE_OPTIONS += --with-pic
+CONFIGURE_OPTIONS += -Dadmin=false
+CONFIGURE_OPTIONS += -Dbluray=false
+CONFIGURE_OPTIONS += -Dfuse=false
+# Requires linux specific systemd
+CONFIGURE_OPTIONS += -Dlogind=false
+CONFIGURE_OPTIONS += -Dsystemduserunitdir=no
+CONFIGURE_OPTIONS += -Dtmpfilesdir=no
+CONFIGURE_OPTIONS += -Dgudev=false
+# Requires dependencies we don't have on Solaris - gudev
+CONFIGURE_OPTIONS += -Dudisks2=false
+CONFIGURE_OPTIONS += -Dcdda=false
+CONFIGURE_OPTIONS += -Dgphoto2=false
+CONFIGURE_OPTIONS += -Dmtp=false
+# Requires dependencies we don't have on Solaris - libimobiledevice, libplist
+CONFIGURE_OPTIONS += -Dafc=false
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
