@@ -935,6 +935,10 @@ file path=usr/lib/python$(PYVER)/vendor-packages/twisted/words/xish/xpathparser.
 file path=usr/lib/python$(PYVER)/vendor-packages/twisted/words/xmpproutertap.py
 license twisted.license license=MIT
 
+# force a group dependency on the optional service_identity; pkgdepend work is
+# needed to flush this out.
+depend type=group fmri=library/python/service_identity-$(PYV)
+
 # twisted was previously in the 'desktop' consolidation. This optional
 # dependency is here to facilitate the safe transfer of the package
 # to the 'userland' consolidation.
