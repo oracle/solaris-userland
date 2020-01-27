@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_ARCH= i386
 BUILD_BITS= 64_and_32
@@ -36,7 +36,7 @@ COMPONENT_ANITYA_ID=	5286
 
 TPNO=			23620
 
-PYTHON_VERSION = 2.7
+PYTHON_VERSION = 3.7
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -60,8 +60,7 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 	autoconf)
 
 # Use explicit Python version rather than the default one
-CONFIGURE_ENV += PYTHON=$(PYTHON.2.7)
-
+CONFIGURE_ENV += PYTHON=$(PYTHON)
 CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
 CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
 
@@ -91,3 +90,5 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 # Required for man pages.
 REQUIRED_PACKAGES += developer/documentation-tool/xmlto
+# Needed for testing purposes
+REQUIRED_PACKAGES += runtime/python-37
