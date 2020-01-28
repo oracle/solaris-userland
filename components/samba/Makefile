@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS=	64_and_32
 COMPILER=	gcc
@@ -48,8 +48,8 @@ COMPONENT_PROJECT_URL=	http://www.samba.org/
 COMPONENT_BUGDB=	utility/samba
 COMPONENT_ANITYA_ID=	4758
 
-COMPONENT_VERSION=	4.9.15
-TPNO=			55127
+COMPONENT_VERSION=	4.9.18
+TPNO=			56563
 # Samba pre-releases are available on git only.
 # if you want to build Samba from git uncomment next 4 lines
 #GIT_REPO=		https://git.samba.org/samba.git
@@ -59,7 +59,7 @@ TPNO=			55127
 # clone of git.samba.org takes a long
 # if you want to build Samba from archive uncomment next 3 lines
 COMPONENT_ARCHIVE_URL=	https://download.samba.org/pub/samba/stable/$(COMPONENT_ARCHIVE)
-COMPONENT_ARCHIVE_HASH=	sha256:377102b80b97941bf0d131b828cae8415190e5bdd2928c2e2c954e29f1904496
+COMPONENT_ARCHIVE_HASH=	sha256:c6d23982b7233ce8bc0c87b8b03585d782ddf3bd7c634c1ffa853d7d397d87f7
 COMPONENT_SRC_URL=	$(COMPONENT_ARCHIVE_URL)
 
 TEST_TARGET= $(NO_TESTS)
