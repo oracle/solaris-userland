@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 		32_and_64
 COMPILER= 		gcc
@@ -42,13 +42,15 @@ include $(WS_MAKE_RULES)/common.mk
 
 CXXFLAGS += -std=c++11
 
-# Only compatible with Python 2.x.
-PYTHON_VERSION=2.7
-PYTHON_VERSIONS=2.7
+PYTHON_VERSION=3.7
 
 # Our Perl 5.22 is 64-bit, so don't deliver Perl bindings for 32-bit build.
 CMAKE_OPTIONS.32 = -DWITH_PERL=OFF
 CMAKE_OPTIONS.64 = -DWITH_PERL=ON
+
+# Our Python 3.7 is 64-bit only, so don't deliver Python bindings for 32-bit build.
+CMAKE_OPTIONS.32 = -DWITH_PYTHON=OFF
+CMAKE_OPTIONS.64 = -DWITH_PYTHON=ON
 
 CMAKE_OPTIONS += -DINCLUDE_INSTALL_DIR="$(USRINCDIR)/$(COMPONENT_NAME)"
 CMAKE_OPTIONS += -DPERL_VENDORINSTALL=ON
@@ -57,8 +59,6 @@ CMAKE_OPTIONS += -DPYTHON_EXECUTABLE="$(PYTHON)"
 CMAKE_OPTIONS += -DPYTHON_SITEPKG_DIR=$(PYTHON_LIB)
 # Required for other components.
 CMAKE_OPTIONS += -DWITH_GNOME3=ON
-CMAKE_OPTIONS += -DWITH_PYTHON=ON
-# Required for other components.
 CMAKE_OPTIONS += -DWITH_VALA=ON
 # Always build pacrunner as a module.
 CMAKE_OPTIONS += -DBIPR=ON
@@ -74,7 +74,7 @@ endif
 COMPONENT_BUILD_ENV += PATH="/usr/gnu/bin:$(PATH)"
 
 COMPONENT_POST_INSTALL_ACTION=	\
-	$(PYTHON) -m py_compile $(PROTO_DIR)/$(PYTHON_LIB)/libproxy.py
+	[ $(BITS) -eq 64 ] && $(PYTHON) -m py_compile $(PROTO_DIR)/$(PYTHON_LIB)/libproxy.py || true
 
 REQUIRED_PACKAGES += developer/build/autoconf
 REQUIRED_PACKAGES += developer/build/automake
@@ -83,7 +83,7 @@ REQUIRED_PACKAGES += developer/build/gnu-make
 REQUIRED_PACKAGES += developer/build/pkg-config
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 
