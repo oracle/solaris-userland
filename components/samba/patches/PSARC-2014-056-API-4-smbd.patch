@@ -1,0 +1,36 @@
+Reason for this is only to avoid a sigbus in rare cases. Original purpose
+is to leave DEBUG() samba macro options as is because many of its options
+can not be copied into the buffer to move it on aligned address location.
+
+This feature can not be misused for "daily" use because of its expesiveness.
+
+--- a/source3/smbd/server.c	2018-05-16 12:09:25.000000000 +0000
++++ b/source3/smbd/server.c	2018-12-17 19:01:45.296243240 +0000
+@@ -1544,6 +1544,9 @@
+ 	return NT_STATUS_OK;
+ }
+ 
++#ifdef __sparcv9	/* works on 64bit SPARC !only! */
++int __sparc_fixalign(int);
++#endif
+ /****************************************************************************
+  main program.
+ ****************************************************************************/
+@@ -1615,6 +1618,17 @@
+ 		.exit_server_cleanly = smbd_exit_server_cleanly,
+ 	};
+ 
++#ifdef __sparcv9	/* works on 64bit SPARC !only! */
++	/* if the code will address misaligned memory address then no SIGBUS is triggered but
++	   kernel will emulate the instruction like it was performed against the properly aligned
++	   location. This is here because DEBUG macro options on high debug level sometimes needs
++	   to take argument from "buffer" where the location in buffer might be misaligned.
++	   Because of expensiveness of such oper. this is not intended for common usage
++		Based on API introduced by: PSARC/2014/056
++	 */
++	(void) __sparc_fixalign(1);
++#endif
++
+ 	/*
+ 	 * Do this before any other talloc operation
+ 	 */
