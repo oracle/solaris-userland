@@ -161,6 +161,18 @@ Thu Nov 10 08:24:57 UTC 2016
 
 # Verify that root role is able to run commands.
 
+# make sure root is a role
 usermod -K type=role root
-<relogin as root so the role is put into effect>
+# and has no pam_policy
+rolemod -K pam_policy= root
+# and there is no PAM_POLICY set in /etc/security/policy.conf
+gsed -ibackup 's/^PAM_POLICY=/##PAM_POLICY=/' /etc/security/policy.conf
+# assume the root role
+su - root
+# run commands as different user
 sudo -u webservd /sbin/uname
+sudo -i -u webservd /sbin/uname
+
+# Now retest with various pam_policy values (unix, ldap, ...)
+rolemod -K pam_policy=unix root
+# goto begin
