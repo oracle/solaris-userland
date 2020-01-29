@@ -129,7 +129,8 @@ EXCLUSION_FILE = poppler-desktop-deps
 include $(WS_MAKE_RULES)/pkgobjs.mk
 $(EXCLUSION_FILE_TARGET): $(HEAP_OBJ)
 	find $(PROTO_DIR) -type f | (while read f; do file "$$f"; done) | grep -w ELF | cut -f1 -d\: | (while read f; do echo $$f: `ldd "$$f"`; done) | egrep 'libXrender|gobj|libX11|glib|libGL' | cut -f1 -d\: | sed -e 's$$$(PROTO_DIR)/$$$$' | sed -e 's/$(MACH64)/$$(MACH64)/' > $@.tmp ; \
-	find $(PROTO_DIR) -type f | egrep 'glib|gir|g-i-r' | sed -e 's$$$(PROTO_DIR)/$$$$' | sed -e 's/$(MACH64)/$$(MACH64)/' >> $@.tmp ; \
+	find $(PROTO_DIR) -type f | egrep 'cairo' | sed -e 's$$$(PROTO_DIR)/$$$$' | sed -e 's/$(MACH64)/$$(MACH64)/' >> $@.tmp ; \
+	find $(PROTO_DIR) -type f -o -type l | egrep 'glib|gir|g-i-r' | sed -e 's$$$(PROTO_DIR)/$$$$' | sed -e 's/$(MACH64)/$$(MACH64)/' >> $@.tmp ; \
 	sort -u $@.tmp > $@ ; \
 	rm $@.tmp
 
