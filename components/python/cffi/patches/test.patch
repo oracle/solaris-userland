@@ -1,81 +1,25 @@
 
-The testsuite makes some incorrect assumptions:
 
-  - Don't use the -pthread flag for compilation; as Studio doesn't have any
-    clue what to do with it, and we don't need it on Solaris, anyway.
-
-  - Add the -Wno-unknown-pragmas because some Solaris' python runtimes are
-    build with Studio, which uses no_inline rather than noinline.
-
-  - Don't force the use of gcc when compiling a test shared object; get
-    that passed in from the makefile.
-
-
---- cffi-1.11.4/testing/cffi0/callback_in_thread.py
-+++ cffi-1.11.4/testing/cffi0/callback_in_thread.py
-@@ -22,7 +22,7 @@ def _run_callback_in_thread():
-             pthread_create(&thread, NULL, my_wait_function, (void*)mycb);
-             return 0;
-         }
--    """, extra_compile_args=['-pthread'])
-+    """)
-     seen = []
-     @ffi.callback('int(*)(int,int)')
-     def mycallback(x, y):
---- cffi-1.11.4/testing/cffi1/test_verify1.py
-+++ cffi-1.11.4/testing/cffi1/test_verify1.py
-@@ -21,7 +21,11 @@ else:
+--- cffi-1.14.0/testing/cffi0/test_ownlib.py
++++ cffi-1.14.0/testing/cffi0/test_ownlib.py
+@@ -160,7 +160,7 @@ class TestOwnLib(object):
+                 unicode_name = u+'testownlib'
+                 encoded = str(unicode_name)
+             subprocess.check_call(
+-                "cc testownlib.c -shared -fPIC -o '%s.so'" % (encoded,),
++                os.getenv('TESTOWNLIB_CC') % ('testownlib.c', encoded),
+                 cwd=str(udir), shell=True)
+             cls.module = os.path.join(str(udir), unicode_name + (u+'.so'))
+         print(repr(cls.module))
+--- cffi-1.14.0/testing/support.py
++++ cffi-1.14.0/testing/support.py
+@@ -109,6 +109,8 @@ else:
          extra_compile_args.append('-Qunused-arguments')
      else:
          # assume a standard gcc
--        extra_compile_args = ['-Werror', '-Wall', '-Wextra', '-Wconversion']
 +        # We add the -Wno-unknown-pragmas because Solaris' python is build
 +        # with Studio, which uses no_inline rather than noinline.
-+        extra_compile_args = ['-Werror', '-Wall',
-+                              '-Wextra', '-Wconversion',
-+                              '-Wno-unknown-pragmas']
- 
- class FFI(FFI):
-     error = _cffi_backend.FFI.error
---- cffi-1.11.4/testing/cffi0/test_ownlib.py
-+++ cffi-1.11.4/testing/cffi0/test_ownlib.py
-@@ -1,4 +1,4 @@
--import py, sys
-+import os, py, sys
- import subprocess, weakref
- from cffi import FFI
- from cffi.backend_ctypes import CTypesBackend
-@@ -112,7 +112,6 @@ class TestOwnLib(object):
-         from testing.udir import udir
-         udir.join('testownlib.c').write(SOURCE)
-         if sys.platform == 'win32':
--            import os
-             # did we already build it?
-             if os.path.exists(str(udir.join('testownlib.dll'))):
-                 cls.module = str(udir.join('testownlib.dll'))
-@@ -139,7 +138,7 @@ class TestOwnLib(object):
-                 cls.module = str(udir.join('testownlib.dll'))
-         else:
-             subprocess.check_call(
--                'cc testownlib.c -shared -fPIC -o testownlib.so',
-+                os.getenv('TESTOWNLIB_CC') % ('testownlib.c', 'testownlib.so'),
-                 cwd=str(udir), shell=True)
-             cls.module = str(udir.join('testownlib.so'))
- 
---- cffi-1.11.4/testing/cffi0/test_verify.py
-+++ cffi-1.11.4/testing/cffi0/test_verify.py
-@@ -19,8 +19,12 @@ else:
-         # special things for clang
-         extra_compile_args.append('-Qunused-arguments')
-     else:
--        # assume a standard gcc
--        extra_compile_args = ['-Werror', '-Wall', '-Wextra', '-Wconversion']
-+        # assume a standard gcc.
-+        # We add the -Wno-unknown-pragmas because Solaris' python is compiled with
-+        # Studio and uses no_inline rather than noinline.
-+        extra_compile_args = ['-Werror', '-Wall',
-+                              '-Wextra', '-Wconversion',
-+                              '-Wno-unknown-pragmas']
- 
-     class FFI(FFI):
-         def verify(self, *args, **kwds):
+         extra_compile_args = ['-Werror', '-Wall', '-Wextra', '-Wconversion',
+-                              '-Wno-unused-parameter',
++                              '-Wno-unused-parameter', '-Wno-unknown-pragmas',
+                               '-Wno-unreachable-code']

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 COMPILER=		gcc
@@ -29,17 +29,17 @@ BUILD_BITS=		32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cffi
-COMPONENT_VERSION=	1.11.4
+COMPONENT_VERSION=	1.14.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:df9083a992b17a28cd4251a3f5c879e0198bb26c9e808c4647e0a18739f1d11d
+    sha256:edd884e4ee79fae4699e34f625921a23f03fe7a1bc62e5d0b2a6d6b55ca31751
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://cffi.readthedocs.org/
 COMPONENT_BUGDB=	python-mod/cffi
 COMPONENT_ANITYA_ID=	5536
 
-TPNO=			40843
+TPNO=			57851
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -54,15 +54,14 @@ CFLAGS += -Dno_inline=noinline
 
 COMPONENT_TEST_DIR =	$(@D)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ENV +=	TESTOWNLIB_CC="$(CC) $(CC_PIC) %s $(CC_BITS) -shared -o %s.so"
 
-COMPONENT_TEST_ENV +=	$(PYTHON_ENV)
-COMPONENT_TEST_ENV +=	PYTHONPATH=$(PROTO_DIR)/$(PYTHON_LIB)
-COMPONENT_TEST_ENV +=	TESTOWNLIB_CC="$(CC) $(CC_PIC) %s $(CC_BITS) -shared -o %s"
-
-COMPONENT_TEST_ARGS =	--resultlog $(@D)/testresults
-COMPONENT_TEST_ARGS +=	-p no:codechecker
+COMPONENT_TEST_ARGS =	-p no:codechecker
 COMPONENT_TEST_ARGS +=	-v
 COMPONENT_TEST_ARGS +=	c testing
+
+COMPONENT_SYSTEM_TEST_DIR =	$(SOURCE_DIR)
+COMPONENT_SYSTEM_TEST_ENV +=	TESTOWNLIB_CC="$(CC) $(CC_PIC) %s $(CC_BITS) -shared -o %s.so"
 
 # Copy the tests and a few of the source files they read into a scratch
 # directory so running the tests don't leave turds in the source directory.
@@ -82,11 +81,13 @@ build:		$(BUILD_32_and_64)
 install:	$(INSTALL_32_and_64)
 
 # We get spurious test failures with python 3.4 and 64bit version of python 2.7
-test:		$(BUILD_DIR)/i86-2.7/.tested \
-		$(BUILD_DIR)/amd64-3.5/.tested   \
-		$(BUILD_DIR)/amd64-3.7/.tested
+test:		$(BUILD_DIR)/$(MACH32)-2.7/.tested \
+		$(BUILD_DIR)/$(MACH64)-3.5/.tested   \
+		$(BUILD_DIR)/$(MACH64)-3.7/.tested
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:	$(BUILD_DIR)/$(MACH32)-2.7/.system-tested \
+		$(BUILD_DIR)/$(MACH64)-3.5/.system-tested   \
+		$(BUILD_DIR)/$(MACH64)-3.7/.system-tested
 
 
 REQUIRED_PACKAGES += library/libffi
