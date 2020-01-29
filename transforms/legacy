@@ -45,21 +45,39 @@
 #
 
 #
-# Name the affected packages here. The lines here just 'mark' the packages by
-# setting 'legacy_fmri' attribute. All such marked packages will be processed
-# below. An example can be:
+# Name the affected packages and depend actions here. The lines here just
+# 'mark' the lines by setting 'legacy_fmri' attribute. All such marked lines
+# will be processed below. There always have to be two lines with identical
+# condition - one line for 'set pkg.fmri' and second line for 'depend' action.
+# An example can be:
 # <transform set name=pkg.fmri value=(pkg:/+)?.*(my/package) -> set legacy_fmri AUTO_FMRI>
+# <transform depend fmri=(pkg:/+)?.*(my/package) -> set legacy_fmri AUTO_FMRI>
 # matching multiple packages is possible
 # <transform set name=pkg.fmri value=(pkg:/+)?.*(library/perl-5/.*-522.*) -> set legacy_fmri AUTO_FMRI>
+# <transform depend fmri=(pkg:/+)?.*(library/perl-5/.*-522.*) -> set legacy_fmri AUTO_FMRI>
 #
 
 <transform set name=pkg.fmri value=(pkg:/+)?.*(apache-wsgi-34) -> set legacy_fmri 11.5.0.0.0.63.0>
+<transform depend fmri=(pkg:/+)?.*(apache-wsgi-34) -> set legacy_fmri 11.5.0.0.0.63.0>
+
 <transform set name=pkg.fmri value=(pkg:/+)?.*(developer/gcc.*-5) -> set legacy_fmri 11.5.0.0.0.63.0>
+<transform depend fmri=(pkg:/+)?.*(developer/gcc.*-5) -> set legacy_fmri 11.5.0.0.0.63.0>
+
 <transform set name=pkg.fmri value=(pkg:/+)?.*(library/python/django-(27|34|35)) -> set legacy_fmri 11.5.0.0.0.63.0>
+<transform depend fmri=(pkg:/+)?.*(library/python/django-(27|34|35)) -> set legacy_fmri 11.5.0.0.0.63.0>
+
 <transform set name=pkg.fmri value=(pkg:/+)?.*(python/[^/]*-34) -> set legacy_fmri 11.5.0.0.0.63.0>
+<transform depend fmri=(pkg:/+)?.*(python/[^/]*-34) -> set legacy_fmri 11.5.0.0.0.63.0>
+
 <transform set name=pkg.fmri value=(pkg:/+)?.*(runtime/python-34) -> set legacy_fmri 11.5.0.0.0.63.0>
+<transform depend fmri=(pkg:/+)?.*(runtime/python-34) -> set legacy_fmri 11.5.0.0.0.63.0>
+
 <transform set name=pkg.fmri value=(pkg:/+)?.*(system/library/gcc/gcc.*-runtime-5) -> set legacy_fmri 11.5.0.0.0.63.0>
+<transform depend fmri=(pkg:/+)?.*(system/library/gcc/gcc.*-runtime-5) -> set legacy_fmri 11.5.0.0.0.63.0>
+
 <transform set name=pkg.fmri value=(pkg:/+)?.*(web/php-71) -> set legacy_fmri 11.5.0.0.0.63.0>
+<transform depend fmri=(pkg:/+)?.*(web/php-71) -> set legacy_fmri 11.5.0.0.0.63.0>
+
 
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # Automatic processing starts here, no change is needed beyond this line
@@ -94,10 +112,11 @@
 # This is like saying "if you are going to install this legacy package, make
 # sure that you also install the original package with at least the FMRI where
 # it was renamed.". This makes sure that you can't install the original package
-# in a version where it delivers some files.
+# in a version where it delivers some files. We also must protect the depend
+# action form further processing by setting do_not_remove_version.
 #
 <transform set name=pkg.fmri legacy_fmri=.* value=([^@]+[^,]+,) -> \
-    emit depend type=optional fmri=%<1>%(legacy_fmri) >
+    emit depend do_not_remove_version=yes type=optional fmri=%<1>%(legacy_fmri) >
 
 
 #
@@ -130,3 +149,40 @@
 # Remove our legacy_fmri help attribute
 #
 <transform set name=pkg.fmri legacy_fmri=.* -> delete legacy_fmri .*>
+
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# depend processing
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+#
+# If the dependency is already in legacy package then cancel any automation
+#
+<transform depend legacy_fmri=.* fmri=^(pkg://[^/]+/|pkg:/|)legacy/(.*) -> delete legacy_fmri .*>
+
+#
+# If the dependency is of type=incorporate, cancel any automation too. This
+# makes sure that userland-incorporation (and other incorporations) still lock
+# all the packages in correct FMRI version
+#
+<transform depend type=incorporate legacy_fmri=.* -> delete legacy_fmri .*>
+
+#
+# Also abandon any modification in actions which are marked by
+# do_not_remove_version keyword
+#
+<transform depend legacy_fmri=.* do_not_remove_version=.* -> delete legacy_fmri .*>
+<transform depend do_not_remove_version=.* -> delete do_not_remove_version .*>
+
+#
+# Anything left is a depend action pointing to a package which was moved to
+# legacy. In other words pointing to the rename package. That rename package
+# FMRI version was set to the build in which we moved the package to legacy via
+# the AUTO_FMRI automation. That means that we should freeze all the depend
+# action targets to that specific FMRI too. That is not easy as the depend
+# actions are often created by some other automation. So instead we
+# remove the FMRI version at all and depend on userland-incorporation to hold
+# the correct package versions for given build.
+#
+<transform depend legacy_fmri=.* -> edit fmri @.* "">
+<transform depend legacy_fmri=.* -> delete legacy_fmri .*>
