@@ -1,0 +1,43 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+#
+
+# We need to mark the package as do_not_move_to_legacy similarly how
+# $WS/tools/generate-history would do.
+set name=pkg.fmri do_not_move_to_legacy=true \
+    value=pkg:/library/python/cffi-35@1.11.4-AUTO_FMRI
+
+# Any python module using cffi should have two depend actions:
+# depend fmri=library/python/cffi-$(PYVER) type=require
+# depend fmri=library/python/cffi-$(PYVER)@$(CURRENT_CFFI_VERSION) type=incorporate
+# The 'uses_cffi' check in userland.py looks for the first depend and makes
+# sure that the second is present too.
+# Now this logic has clashed with legacy automation where the legacy package
+# depends on the non-legacy one. Which triggers the check. But the check fails
+# since we don't have type=incorporate.
+# The easiest way around is to disable the check for this module as the
+# dependency here facilitates package rename and not actual functionality
+# requirement. So the check should be disabled anyway.
+set name=pkg.linted.userland.manifest003.2 value=true
+set name=pkg.renamed value=true
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+depend type=require fmri=legacy/library/python/cffi-35
