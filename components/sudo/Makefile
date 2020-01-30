@@ -19,13 +19,13 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sudo
-SRC_VERSION=	1.8.28
+SRC_VERSION=	1.8.30
 # SRC_PATCH_VERSION=0
 ifdef SRC_PATCH_VERSION
 COMPONENT_VERSION=	$(SRC_VERSION).$(SRC_PATCH_VERSION)
@@ -35,13 +35,13 @@ COMPONENT_VERSION=	$(SRC_VERSION)
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(SRC_VERSION)
 endif
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:3819362cf9aadec90d9702ec1ab0b8bb7c58bc18869e31f280ad942950aa09ac
+	sha256:a35ad3ddc7465703e04190d3ff0b8d78ded9246749becf9a014dcb9c31c579e7
 COMPONENT_ARCHIVE_URL=	https://www.sudo.ws/sudo/dist/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_PROJECT_URL=  https://www.sudo.ws/
 COMPONENT_ANITYA_ID=	4906
 
-TPNO=			54581
+TPNO=			56614
 
 include $(WS_MAKE_RULES)/common.mk
 
