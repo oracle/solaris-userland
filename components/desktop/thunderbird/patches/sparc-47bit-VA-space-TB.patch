@@ -1,0 +1,14 @@
+Use RESERVE_SEGMENT on SPARC to limit stack below 47bits of address space.
+
+See similar FF patch which provides js/mapfile.SolarisSPARC.
+
+--- a/comm/mail/app/moz.build
++++ b/comm/mail/app/moz.build
+@@ -92,3 +92,7 @@
+ JS_PREFERENCE_PP_FILES += [
+     'profile/all-thunderbird.js',
+ ]
++
++# Enforce 47bits address space to resulting binary (Bug 577056).
++if CONFIG['OS_ARCH'] == 'SunOS' and CONFIG['CPU_ARCH'] == 'sparc64':
++    LDFLAGS += ['-Wl,-M%s/js/mapfile.SolarisSPARC' % TOPSRCDIR]
