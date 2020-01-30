@@ -1,0 +1,83 @@
+From 0ff3e14a59c215b03d54cdb5a539788b1ce2189c Mon Sep 17 00:00:00 2001
+From: Will Thompson <will@willthompson.co.uk>
+Date: Tue, 8 Oct 2019 13:38:27 +0100
+Subject: [PATCH 1/5] language: don't crash if sort_key is NULL
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+On #85 we see the following backtrace, where the process has segfaulted:
+
+    #0  0x00007f40bd849c02 in __strcmp_avx2 () at /usr/lib/libc.so.6
+    #1  0x00007f40bd2c77cc in node_find_closest
+        (haystack=0x563cd8093760, needle=needle@entry=0x563cd8093430, end=0x563cd7ef4590, iter_cmp=iter_cmp@entry=0x7f40bd2c7890 <iter_compare>, cmp_data=cmp_data@entry=0x7ffcbeb8bd10)
+        at ../glib/glib/gsequence.c:1793
+    #2  0x00007f40bd2c9f5f in node_insert_sorted
+        (node=<optimized out>, new=new@entry=0x563cd8093430, end=<optimized out>, iter_cmp=iter_cmp@entry=0x7f40bd2c7890 <iter_compare>, cmp_data=cmp_data@entry=0x7ffcbeb8bd10) at ../glib/glib/gsequence.c:2031
+    #3  0x00007f40bd2cad96 in g_sequence_insert_sorted_iter (seq=0x563cd81225b0, data=<optimized out>, iter_cmp=iter_cmp@entry=0x7f40bd2c7890 <iter_compare>, cmp_data=cmp_data@entry=0x7ffcbeb8bd10)
+        at ../glib/glib/gsequence.c:1047
+    #4  0x00007f40bd2cae6d in g_sequence_insert_sorted (seq=<optimized out>, data=<optimized out>, cmp_func=<optimized out>, cmp_data=<optimized out>) at ../glib/glib/gsequence.c:740
+    #5  0x00007f40bcd30b75 in gtk_list_box_insert () at /usr/lib/libgtk-3.so.0
+    #6  0x00007f40bd3d3881 in g_cclosure_marshal_VOID__OBJECTv
+        (closure=0x563cd7940f80, return_value=<optimized out>, instance=<optimized out>, args=<optimized out>, marshal_data=<optimized out>, n_params=<optimized out>, param_types=0x563cd7944b70)
+        at ../glib/gobject/gmarshal.c:1910
+    #7  0x00007f40bd3c3bba in _g_closure_invoke_va (param_types=0x563cd7944b70, n_params=<optimized out>, args=0x7ffcbeb8bf50, instance=0x563cd8124370, return_value=0x0, closure=0x563cd7940f80)
+        at ../glib/gobject/gclosure.c:873
+    #8  0x00007f40bd3c3bba in g_signal_emit_valist (instance=0x563cd8124370, signal_id=<optimized out>, detail=<optimized out>, var_args=var_args@entry=0x7ffcbeb8bf50) at ../glib/gobject/gsignal.c:3306
+    #9  0x00007f40bd3c4868 in g_signal_emit (instance=<optimized out>, signal_id=<optimized out>, detail=<optimized out>) at ../glib/gobject/gsignal.c:3453
+    #10 0x00007f40bcdf90ee in gtk_container_add () at /usr/lib/libgtk-3.so.0
+    #11 0x0000563cd59f02e6 in add_one_language (chooser=chooser@entry=0x563cd7f50c40, locale_id=<optimized out>, is_initial=is_initial@entry=1)
+        at ../gnome-initial-setup-3.34.0/gnome-initial-setup/pages/language/cc-language-chooser.c:258
+
+I believe the call to strcmp() here is from sort_languages(), since this
+is the sort_func for the list box in the language chooser widget; it's a
+tail call so I think the sort_languages() stack frame has been optimized
+away.
+
+LanguageWidget.sort_key is defined as:
+
+    widget->sort_key = cc_util_normalize_casefold_and_unaccent (locale_name);
+
+locale_name is defined as:
+
+    locale_name = gnome_get_language_from_locale (locale_id, locale_id);
+
+gnome_get_language_from_locale() may return NULL in various situations.
+In this particular case, it may be because the user has not installed
+various locales, or perhaps the iso-codes package (which provides the
+human-readable names that libgnome-desktop uses) is not installed.
+
+Replace the strcmp() call with g_strcmp0(), which can tolerate NULLs.
+Since we want to impose a total order on the list of languages, fall
+back to comparing locale_id. There's an argument that (a sort key
+derived from) locale_current_name or locale_untranslated_name – which
+are the name of the locale in the current locale and in the C locale
+respectively – should be considered first, but using the locale_id as a
+last resort seems fine anyway.
+---
+ gnome-initial-setup/pages/language/cc-language-chooser.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+--- a/gnome-initial-setup/pages/language/cc-language-chooser.c	2020-06-18 18:34:16.179210034 -0700
++++ b/gnome-initial-setup/pages/language/cc-language-chooser.c	2020-06-18 18:36:16.828655533 -0700
+@@ -349,6 +349,7 @@
+                 gpointer       data)
+ {
+         LanguageWidget *la, *lb;
++        int ret;
+ 
+         la = get_language_widget (gtk_bin_get_child (GTK_BIN (a)));
+         lb = get_language_widget (gtk_bin_get_child (GTK_BIN (b)));
+@@ -365,7 +366,11 @@
+         if (!la->is_extra && lb->is_extra)
+                 return -1;
+ 
+-        return strcmp (la->sort_key, lb->sort_key);
++	ret = g_strcmp0 (la->sort_key, lb->sort_key);
++        if (ret != 0)
++                return ret;
++
++        return g_strcmp0 (la->locale_id, lb->locale_id);
+ }
+ 
+ static void

@@ -1,0 +1,42 @@
+https://gitlab.gnome.org/GNOME/gnome-initial-setup/-/merge_requests/82/diffs?commit_id=e5563bcce1123e5d079b7d5969f3be4013af2815
+
+--- a/gnome-initial-setup/pages/keyboard/cc-input-chooser.c	2020-07-02 09:32:05.257319942 -0700
++++ b/gnome-initial-setup/pages/keyboard/cc-input-chooser.c	2020-07-02 09:33:36.287834336 -0700
+@@ -884,7 +884,12 @@
+ {
+         CcInputChooserPrivate *priv = cc_input_chooser_get_instance_private (chooser);
+ 
+-	get_layout (chooser, priv->type, priv->id, layout, variant);
++ 	if (!get_layout (chooser, priv->type, priv->id, layout, variant)) {
++	                if (layout != NULL)
++	                        *layout = NULL;
++	                if (variant != NULL)
++	                        *variant = NULL;
++	}
+ }
+ 
+ void
+
+
+--- a/gnome-initial-setup/pages/keyboard/gis-keyboard-page.c	2020-07-02 10:18:24.410452230 -0700
++++ a/gnome-initial-setup/pages/keyboard/gis-keyboard-page.c	2020-07-02 10:19:58.009168807 -0700
+@@ -374,14 +374,14 @@
+          * add both system keyboard layout and the ibus input method. */
+         language = cc_common_language_get_current_language ();
+ 
+-        if (!priv->system_sources ||
+-            (gnome_get_input_source_from_locale (language, &type, &id) && g_strcmp0 (type, "xkb") != 0)) {
++        if (priv->system_sources) {
+                 cc_input_chooser_set_input (CC_INPUT_CHOOSER (priv->input_chooser),
+-                                            id, type);
+-        } else {
+-                cc_input_chooser_set_input (CC_INPUT_CHOOSER (priv->input_chooser),
+                                             (const gchar *) priv->system_sources->data,
+                                             "xkb");
++	} else if (gnome_get_input_source_from_locale (language, &type, &id) &&
++	                   g_strcmp0 (type, "xkb") != 0) {
++	          cc_input_chooser_set_input (CC_INPUT_CHOOSER (priv->input_chooser),
++	          				id, type);
+         }
+ 
+         g_free (language);

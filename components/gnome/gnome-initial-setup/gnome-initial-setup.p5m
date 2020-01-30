@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -38,14 +38,13 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=etc/xdg/autostart/gnome-initial-setup-copy-worker.desktop
 file path=etc/xdg/autostart/gnome-initial-setup-first-login.desktop
 file path=etc/xdg/autostart/gnome-welcome-tour.desktop
-file path=usr/lib/$(MACH64)/gnome-initial-setup mode=0555
-file path=usr/lib/$(MACH64)/gnome-initial-setup-copy-worker mode=0555
-file path=usr/lib/$(MACH64)/gnome-welcome-tour mode=0555
+file usr/lib/gnome-initial-setup path=usr/lib/$(MACH64)/gnome-initial-setup \
+    mode=0555
+file usr/lib/gnome-initial-setup-copy-worker \
+    path=usr/lib/$(MACH64)/gnome-initial-setup-copy-worker mode=0555
+file usr/lib/gnome-welcome-tour path=usr/lib/$(MACH64)/gnome-welcome-tour \
+    mode=0555
 file path=usr/share/gdm/greeter/applications/gnome-initial-setup.desktop
-file path=usr/share/gdm/greeter/applications/setup-shell.desktop
-# During the gnome 3.18 initial testing phase, we had decided that
-# we shouldn't be delivering this file - 25598692
-#file path=usr/share/gnome-session/sessions/gnome-initial-setup.session
 file path=usr/share/gnome-shell/modes/initial-setup.json
 file path=usr/share/locale/af/LC_MESSAGES/gnome-initial-setup.mo
 file path=usr/share/locale/an/LC_MESSAGES/gnome-initial-setup.mo
@@ -76,6 +75,7 @@ file path=usr/share/locale/gl/LC_MESSAGES/gnome-initial-setup.mo
 file path=usr/share/locale/gu/LC_MESSAGES/gnome-initial-setup.mo
 file path=usr/share/locale/he/LC_MESSAGES/gnome-initial-setup.mo
 file path=usr/share/locale/hi/LC_MESSAGES/gnome-initial-setup.mo
+file path=usr/share/locale/hr/LC_MESSAGES/gnome-initial-setup.mo
 file path=usr/share/locale/hu/LC_MESSAGES/gnome-initial-setup.mo
 file path=usr/share/locale/ia/LC_MESSAGES/gnome-initial-setup.mo
 file path=usr/share/locale/id/LC_MESSAGES/gnome-initial-setup.mo
@@ -87,6 +87,7 @@ file path=usr/share/locale/kn/LC_MESSAGES/gnome-initial-setup.mo
 file path=usr/share/locale/ko/LC_MESSAGES/gnome-initial-setup.mo
 file path=usr/share/locale/lt/LC_MESSAGES/gnome-initial-setup.mo
 file path=usr/share/locale/lv/LC_MESSAGES/gnome-initial-setup.mo
+file path=usr/share/locale/mjw/LC_MESSAGES/gnome-initial-setup.mo
 file path=usr/share/locale/ml/LC_MESSAGES/gnome-initial-setup.mo
 file path=usr/share/locale/mr/LC_MESSAGES/gnome-initial-setup.mo
 file path=usr/share/locale/nb/LC_MESSAGES/gnome-initial-setup.mo
@@ -117,7 +118,7 @@ file path=usr/share/locale/zh_CN/LC_MESSAGES/gnome-initial-setup.mo
 file path=usr/share/locale/zh_HK/LC_MESSAGES/gnome-initial-setup.mo
 file path=usr/share/locale/zh_TW/LC_MESSAGES/gnome-initial-setup.mo
 file path=usr/share/polkit-1/rules.d/20-gnome-initial-setup.rules
-license COPYING license=GPLv2
+license gnome-initial-setup.license license=GPLv2
 depend type=require fmri=__TBD \
     pkg.debug.depend.file=org.freedesktop.GeoClue2.service \
     pkg.debug.depend.path=usr/share/dbus-1/system-services \

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -40,17 +40,25 @@ set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2016/323
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/bin/gnome-session
-file path=usr/bin/gnome-session-inhibit
-file path=usr/bin/gnome-session-quit
-file path=usr/lib/gnome-session-binary mode=0555
-file path=usr/lib/gnome-session-check-accelerated mode=0555
-file path=usr/lib/gnome-session-check-accelerated-gl-helper mode=0555
-file path=usr/lib/gnome-session-check-accelerated-gles-helper mode=0555
-file path=usr/lib/gnome-session-failed mode=0555
+file path=usr/bin/gnome-session-custom-session
+file path=usr/bin/gnome-session-inhibit pkg.linted.userland.action001.2=true
+file path=usr/bin/gnome-session-quit pkg.linted.userland.action001.2=true
+file path=usr/bin/gnome-session-selector pkg.linted.userland.action001.2=true
+file path=usr/lib/gnome-session-binary mode=0555 \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/gnome-session-check-accelerated mode=0555 \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/gnome-session-check-accelerated-gl-helper mode=0555 \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/gnome-session-check-accelerated-gles-helper mode=0555 \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/gnome-session-failed mode=0555 \
+    pkg.linted.userland.action001.2=true
 file path=usr/share/GConf/gsettings/gnome-session.convert
 file path=usr/share/doc/gnome-session/dbus/gnome-session.html
 file path=usr/share/glib-2.0/schemas/org.gnome.SessionManager.gschema.xml
 file path=usr/share/gnome-session/hardware-compatibility
+file path=usr/share/gnome-session/session-selector.ui
 file path=usr/share/gnome-session/sessions/gnome-dummy.session
 file path=usr/share/gnome-session/sessions/gnome.session
 file path=usr/share/locale/af/LC_MESSAGES/gnome-session-3.0.mo
@@ -105,6 +113,7 @@ file path=usr/share/locale/is/LC_MESSAGES/gnome-session-3.0.mo
 file path=usr/share/locale/it/LC_MESSAGES/gnome-session-3.0.mo
 file path=usr/share/locale/ja/LC_MESSAGES/gnome-session-3.0.mo
 file path=usr/share/locale/ka/LC_MESSAGES/gnome-session-3.0.mo
+file path=usr/share/locale/kab/LC_MESSAGES/gnome-session-3.0.mo
 file path=usr/share/locale/kk/LC_MESSAGES/gnome-session-3.0.mo
 file path=usr/share/locale/km/LC_MESSAGES/gnome-session-3.0.mo
 file path=usr/share/locale/kn/LC_MESSAGES/gnome-session-3.0.mo
@@ -115,6 +124,7 @@ file path=usr/share/locale/lv/LC_MESSAGES/gnome-session-3.0.mo
 file path=usr/share/locale/mai/LC_MESSAGES/gnome-session-3.0.mo
 file path=usr/share/locale/mg/LC_MESSAGES/gnome-session-3.0.mo
 file path=usr/share/locale/mi/LC_MESSAGES/gnome-session-3.0.mo
+file path=usr/share/locale/mjw/LC_MESSAGES/gnome-session-3.0.mo
 file path=usr/share/locale/mk/LC_MESSAGES/gnome-session-3.0.mo
 file path=usr/share/locale/ml/LC_MESSAGES/gnome-session-3.0.mo
 file path=usr/share/locale/mn/LC_MESSAGES/gnome-session-3.0.mo
@@ -163,12 +173,11 @@ file path=usr/share/locale/zh_TW/LC_MESSAGES/gnome-session-3.0.mo
 file path=usr/share/locale/zu/LC_MESSAGES/gnome-session-3.0.mo
 file path=usr/share/man/man1/gnome-session-inhibit.1
 file path=usr/share/man/man1/gnome-session-quit.1
+file path=usr/share/man/man1/gnome-session-selector.1
 file path=usr/share/man/man1/gnome-session.1
-# Since we don't deliver Wayland, and Xorg is our default
-# omit displaying the option in the login screen
-#file path=usr/share/xsessions/gnome-xorg.desktop
+file path=usr/share/xsessions/gnome-custom-session.desktop
 file path=usr/share/xsessions/gnome.desktop
-license COPYING license=GPLv2
+license gnome-session.license license=GPLv2
 # Indirect dependencies - uses GDesktopAppInfo to get info from desktop db
 depend type=require fmri=__TBD pkg.debug.depend.file=desktop-mime-cache.xml \
     pkg.debug.depend.path=lib/svc/manifest/application/desktop-cache \

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS= 64
@@ -29,20 +29,18 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-initial-setup
-COMPONENT_VERSION=	3.24.0
+COMPONENT_VERSION=	3.34.1
 COMPONENT_ARCHIVE_HASH= \
-	sha256:c66fadfb5ec8febaecbd81d6bf976cbf9557e9f65efd4d8e59ef712700bae554
+	sha256:e71f10ef6b631cd92ffde774e4130b32b2494b4df5ef288375d8b1957eeabfa1
 COMPONENT_BUGDB=	gnome/session
 COMPONENT_ANITYA_ID=	13132
 
-TPNO=			34579
+TPNO=			59856
+BUILD_STYLE=		meson
 
 TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
-
-# Regenerate configure after patches modify configure.ac & Makefile.am files
-COMPONENT_PREP_ACTION += ( cd $(@D); autoreconf -fiv);
 
 ifeq ($(MACH),sparc)
 # Webkit expects that only 48 bits from the address are effectively used.
@@ -53,6 +51,11 @@ endif
 # Assumes GNU msgfmt in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+
+CONFIGURE_OPTIONS += -Dsystemd=false
+CONFIGURE_OPTIONS += -Dsoftware-sources=disabled
+CONFIGURE_OPTIONS += -Dcheese=disabled
 
 # gnome-initial-setup/pages/account/um-utils.c uses UT_NAMESIZE from the Linux
 # <utmp.h> - map it to the equivalent value in the Solaris <utmp.h>

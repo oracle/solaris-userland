@@ -12,63 +12,15 @@ all other modules that gnome-initial-setup depends on are updated to the latest.
 
 Not appropriate for upstream.
 
---- a/configure.ac	2017-07-29 02:39:56.629070370 -0700
-+++ b/configure.ac	2017-07-29 02:41:34.612227530 -0700
-@@ -31,8 +31,6 @@
- PACKAGEKIT_REQUIRED_VERSION=1.1.4
- 
- PKG_CHECK_MODULES(INITIAL_SETUP,
--                  libnm >= $LIBNM_REQUIRED_VERSION
--                  libnma >= $LIBNMA_REQUIRED_VERSION
-                   polkit-gobject-1 >= $POLKIT_REQUIRED_VERSION
-                   accountsservice
-                   gnome-desktop-3.0 >= $GNOME_DESKTOP_REQUIRED_VERSION
-@@ -49,7 +47,6 @@
-                   rest-0.7
-                   json-glib-1.0
- 		  libsecret-1
--                  pwquality
-                   webkit2gtk-4.0)
- 
- INITIAL_SETUP_CFLAGS="$INITIAL_SETUP_CFLAGS -DNM_VERSION_MIN_REQUIRED=NM_VERSION_1_2"
---- a/gnome-initial-setup/pages/Makefile.am	2017-07-29 02:42:20.385529680 -0700
-+++ b/gnome-initial-setup/pages/Makefile.am	2017-07-29 02:42:42.230318528 -0700
-@@ -4,11 +4,8 @@
- 	region \
- 	keyboard \
- 	eulas \
--	network \
- 	timezone \
- 	privacy \
- 	goa \
--	account \
--	password \
- 	summary \
- 	software
---- a/gnome-initial-setup/Makefile.am	2017-07-29 02:42:59.127149367 -0700
-+++ b/gnome-initial-setup/Makefile.am	2017-07-29 02:43:43.326723881 -0700
-@@ -35,12 +35,9 @@
- 	pages/region/libgisregion.la \
- 	pages/keyboard/libgiskeyboard.la \
- 	pages/eulas/libgiseulas.la \
--	pages/network/libgisnetwork.la \
- 	pages/timezone/libgistimezone.la \
- 	pages/privacy/libgisprivacy.la \
- 	pages/goa/libgisgoa.la \
--	pages/account/libgisaccount.la \
--	pages/password/libgispassword.la \
- 	pages/software/libgissoftware.la \
- 	pages/summary/libgissummary.la \
- 	$(INITIAL_SETUP_LIBS) \
---- a/gnome-initial-setup/gnome-initial-setup.c	2017-07-29 02:44:25.421477743 -0700
-+++ b/gnome-initial-setup/gnome-initial-setup.c	2017-07-29 02:44:45.370952811 -0700
-@@ -66,13 +66,10 @@
-   /* PAGE (region,   FALSE), */
+--- a/gnome-initial-setup/gnome-initial-setup.c	2020-01-23 11:17:20.504774142 -0800
++++ b/gnome-initial-setup/gnome-initial-setup.c	2020-01-23 11:17:34.227384566 -0800
+@@ -71,13 +71,9 @@
+ #endif /* ENABLE_REGION_PAGE */
    PAGE (keyboard, FALSE),
    PAGE (eula,     FALSE),
 -  PAGE (network,  FALSE),
    PAGE (privacy,  FALSE),
-   PAGE (timezone, TRUE),
+-  PAGE (timezone, TRUE),
    PAGE (software, TRUE),
    PAGE (goa,      FALSE),
 -  PAGE (account,  TRUE),
@@ -76,34 +28,38 @@ Not appropriate for upstream.
    PAGE (summary,  FALSE),
    { NULL },
  };
---- a/gnome-initial-setup/pages/Makefile.am	2017-07-29 08:20:06.631362428 -0700
-+++ b/gnome-initial-setup/pages/Makefile.am	2017-07-29 08:20:12.962854131 -0700
-@@ -4,7 +4,6 @@
- 	region \
- 	keyboard \
- 	eulas \
--	timezone \
- 	privacy \
- 	goa \
- 	summary \
-
---- a/gnome-initial-setup/Makefile.am	2017-07-29 08:25:31.696123399 -0700
-+++ b/gnome-initial-setup/Makefile.am	2017-07-29 08:25:40.144980054 -0700
-@@ -35,7 +35,6 @@
- 	pages/region/libgisregion.la \
- 	pages/keyboard/libgiskeyboard.la \
- 	pages/eulas/libgiseulas.la \
--	pages/timezone/libgistimezone.la \
- 	pages/privacy/libgisprivacy.la \
- 	pages/goa/libgisgoa.la \
- 	pages/software/libgissoftware.la \
---- a/gnome-initial-setup/gnome-initial-setup.c	2017-07-29 08:33:27.616791951 -0700
-+++ b/gnome-initial-setup/gnome-initial-setup.c	2017-07-29 08:33:42.653324845 -0700
-@@ -67,7 +67,6 @@
-   PAGE (keyboard, FALSE),
-   PAGE (eula,     FALSE),
-   PAGE (privacy,  FALSE),
--  PAGE (timezone, TRUE),
-   PAGE (software, TRUE),
-   PAGE (goa,      FALSE),
-   PAGE (summary,  FALSE),
+--- a/gnome-initial-setup/meson.build	2020-01-23 11:18:09.111643769 -0800
++++ b/gnome-initial-setup/meson.build	2020-01-23 11:18:28.599750508 -0800
+@@ -26,8 +26,6 @@
+ ]
+ 
+ dependencies = [
+-    dependency ('libnm', version: '>= 1.2'),
+-    dependency ('libnma', version: '>= 1.0'),
+     dependency ('polkit-gobject-1', version: '>= 0.103'),
+     dependency ('accountsservice'),
+     dependency ('gnome-desktop-3.0', version: '>= 3.7.5'),
+@@ -46,7 +44,6 @@
+     dependency ('json-glib-1.0'),
+     dependency ('krb5'),
+     dependency ('libsecret-1'),
+-    dependency ('pwquality'),
+     dependency ('webkit2gtk-4.0'),
+     cheese_dep,
+     cheese_gtk_dep,
+--- a/gnome-initial-setup/pages/meson.build	2020-01-23 11:19:14.297898179 -0800
++++ b/gnome-initial-setup/pages/meson.build	2020-01-23 11:19:55.526039092 -0800
+@@ -1,13 +1,9 @@
+ pages = [
+-   'account',
+    'language',
+    'keyboard',
+    'eulas',
+-   'network',
+-   'timezone',
+    'privacy',
+    'goa',
+-   'password',
+    'summary',
+    'software'
+ ]

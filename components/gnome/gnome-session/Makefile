@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS=             64
@@ -28,42 +28,31 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-session
-COMPONENT_VERSION=	3.24.0
+COMPONENT_VERSION=	3.34.2
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/SessionManagement
 COMPONENT_ARCHIVE_HASH= \
-	sha256:87e380a54628f0e6e4506887c409ec0f99024e7840d614edfeeb511dea884d2c
+	sha256:8bb77381650a03ae4be7260751363bd27da93f09bac1ddbc885f4ce44ebaf8e1
 COMPONENT_BUGDB=	gnome/session
 COMPONENT_ANITYA_ID=	13136
 
-TPNO=			34626
+TPNO=			59727
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# Use xdg autostart instead of gconf-based autostart; gconf is obsolete and has
-# been replaced by dconf.
-CONFIGURE_OPTIONS += --disable-gconf
 # Linux-specific.
-CONFIGURE_OPTIONS += --disable-systemd
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
-# ConsoleKit is deprecated; need to figure out long-term solution with
-# upstream.
-CONFIGURE_OPTIONS += --enable-consolekit
-CONFIGURE_OPTIONS += --enable-docbook-docs
-CONFIGURE_OPTIONS += --enable-ipv6
-CONFIGURE_OPTIONS += --enable-man
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --with-pic
-CONFIGURE_OPTIONS += --with-xtrans
-
-# Required due to patches.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
+CONFIGURE_OPTIONS += -Dsystemd_session=disable
+CONFIGURE_OPTIONS += -Dsystemd=false
+CONFIGURE_OPTIONS += -Dsystemd_journal=false
+CONFIGURE_OPTIONS += -Dconsolekit=true
+CONFIGURE_OPTIONS += -Dsession_selector=true
 
 # Assumes GNU msgfmt, xgettext, tail, etc. are first in PATH.
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 
 REQUIRED_PACKAGES += desktop/xdg/desktop-file-utils
 REQUIRED_PACKAGES += library/desktop/gtk3
