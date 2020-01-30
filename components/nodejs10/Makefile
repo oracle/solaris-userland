@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 COMPILER=		gcc
@@ -64,7 +64,18 @@ CONFIGURE_OPTIONS+=	--shared-openssl
 CONFIGURE_OPTIONS+=	--shared-zlib
 CONFIGURE_OPTIONS+=	--with-intl=system-icu
 
-COMPONENT_BUILD_ENV+=	PATH=$(PATH):/usr/sbin
+# Read NPM_CONFIG_REGISTRY from local configuration file.
+$(call read-config,NPM_CONFIG_REGISTRY,https://registry.npmjs.org/)
+
+NPM_ENV=		NPM_CONFIG_USERCONFIG=/dev/null \
+			NPM_CONFIG_CACHE=$(@D)/.npm \
+			NPM_CONFIG_REGISTRY=$(NPM_CONFIG_REGISTRY)
+
+#
+# Node.js has build time dependency on python2.7. It has a hack that adds
+# python->python2.7 symlink to out/tools/bin if python mediator is set to 3.x.
+#
+COMPONENT_BUILD_ENV+=	PATH=$(@D)/out/tools/bin:$(PATH):/usr/sbin $(NPM_ENV)
 
 # Make test does not like cloney, so a simple copy is used instead.
 COMPONENT_PRE_CONFIGURE_ACTION= \
@@ -85,8 +96,9 @@ LINK.OPENSSL11=		\
 
 COMPONENT_BUILD_ARGS+=	LINK=$(LINK.OPENSSL11)
 COMPONENT_INSTALL_ARGS+=LINK=$(LINK.OPENSSL11)
-COMPONENT_TEST_ARGS=	test PATH=$(GNUBIN):$(PATH) CC=gcc \
+COMPONENT_TEST_ARGS=	test PATH=$(@D)/out/tools/bin:$(GNUBIN):$(PATH) CC=gcc \
 			LINK=$(LINK.OPENSSL11)
+COMPONENT_TEST_ENV+=	$(NPM_ENV)
 
 PKG_MACROS+=		NODE_MAJOR_VERSION=$(NODE_MAJOR_VERSION)
 
@@ -97,3 +109,4 @@ REQUIRED_PACKAGES+=	library/icu
 REQUIRED_PACKAGES+=	library/nghttp2
 REQUIRED_PACKAGES+=	library/security/openssl-11
 REQUIRED_PACKAGES+=	library/zlib
+REQUIRED_PACKAGES+=	runtime/python-27
