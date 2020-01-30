@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS = 64_and_32
@@ -40,9 +40,6 @@ COMPONENT_ANITYA_ID=	2550
 TPNO=			50739
 
 BUILD_STYLE = cmake
-
-# Requires images from an external source
-TEST_TARGET = $(SKIP_TEST)
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -69,6 +66,17 @@ CMAKE_OPTIONS.64 += -DOPENJPEG_INSTALL_PACKAGE_DIR=lib/$(MACH64)/cmake/$(OPENJPE
 
 # Path to lcms2 headers is explicitly required, otherwise the library is not used.
 CMAKE_OPTIONS += -DLCMS2_INCLUDE_DIR=$(USRINCDIR)/lcms
+
+# Enable tests
+CMAKE_OPTIONS += -DBUILD_TESTING:BOOL=ON -DOPJ_DO_SUBMIT=0 -DOPJ_DATA_ROOT:PATH=$(COMPONENT_DIR)/${UPSTREAMTESTS}
+COMPONENT_TEST_TARGETS = test
+
+COMPONENT_TEST_TRANSFORMS += \
+	'-n ' \
+	'-e "s| *[\.0-9]* sec||g" ' \
+	'-e "/Test/p" '
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/${UPSTREAMTESTS}results-all.master
 
 REQUIRED_PACKAGES += developer/build/cmake
 REQUIRED_PACKAGES += image/library/libpng14
