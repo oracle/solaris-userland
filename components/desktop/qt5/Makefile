@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS=64
 COMPILER=gcc
@@ -28,19 +28,19 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 MAJOR_VERSION=5.12
-MICRO_VERSION=3
+MICRO_VERSION=7
 
 COMPONENT_NAME=		qt-everywhere
 COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
 COMPONENT_PROJECT_URL=  https://qt.io/
 COMPONENT_SRC=		$(COMPONENT_NAME)-src-$(MAJOR_VERSION).$(MICRO_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
-COMPONENT_ARCHIVE_HASH=	sha256:6462ac74c00ff466487d8ef8d0922971aa5b1d5b33c0753308ec9d57711f5a42
+COMPONENT_ARCHIVE_HASH=	sha256:873783a0302129d98a8f63de9afe4520fb5f8d5316be8ad7b760c59875cd8a8d
 COMPONENT_ARCHIVE_URL=	http://download.qt.io/official_releases/qt/$(MAJOR_VERSION)/$(COMPONENT_VERSION)/single/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/qt
 COMPONENT_ANITYA_ID=	7927
 
-TPNO=			52053
+TPNO=			56632
 
 CONFIGURE_DEFAULT_DIRS=no
 
