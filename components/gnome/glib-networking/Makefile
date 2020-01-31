@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS = 64_and_32
@@ -28,38 +28,33 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		glib-networking
-COMPONENT_VERSION=	2.50.0
+COMPONENT_VERSION=	2.62.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GLib
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:3f1a442f3c2a734946983532ce59ed49120319fdb10c938447c373d5e5286bee
+    sha256:9321685f7956df74acb54785a6b9e1013ed1546c193a153100798007b67afbdc
 COMPONENT_BUGDB=	gnome/glib
 COMPONENT_ANITYA_ID=	10024
 
-TPNO=			34497
+TPNO=			54029
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
-LD_OPTIONS += $(LD_OPTIONS.$(BITS))
-
 # Assumes GNU xgettext in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
-CONFIGURE_OPTIONS += --with-ca-certificates=/etc/certs/ca-certificates.crt
-CONFIGURE_OPTIONS += --with-pkcs11=no
 CONFIGURE_OPTIONS += --libexecdir=$(CONFIGURE_LIBDIR.$(BITS))
 
 # for the tests
-unexport SHELLOPTS
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_ARGS =   -k -i
+COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9].[0-9][0-9] s//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/ERROR:/p" '
+        '-e "/Ok:/p" ' \
+        '-e "/Pass:/p" ' \
+        '-e "/Fail:/p" '
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/intltool
