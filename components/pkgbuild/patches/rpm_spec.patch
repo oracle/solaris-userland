@@ -1,0 +1,29 @@
+--- pkgbuild-1.3.105/rpm_spec.pm.in.orig	2019-12-10 00:57:24.843663755 +0000
++++ pkgbuild-1.3.105/rpm_spec.pm.in	2019-12-10 00:58:28.552184718 +0000
+@@ -1894,14 +1894,14 @@
+     if (defined ($name)) {
+ 	if (defined ($package)) {
+ 	    $opt_line =~ s/\s*%$name.$package.$macro(\s*)/$1/;
+-	    $opt_line =~ s/\s*%{$name.$package.$macro}(\s*)/$1/;
++	    $opt_line =~ s/\s*%\{$name.$package.$macro}(\s*)/$1/;
+ 	} else {
+ 	    $opt_line =~ s/\s*%$name.$macro(\s*)/$1/;
+-	    $opt_line =~ s/\s*%{$name.$macro}(\s*)/$1/;
++	    $opt_line =~ s/\s*%\{$name.$macro}(\s*)/$1/;
+ 	}
+     } else {
+ 	$opt_line =~ s/\s*%$macro(\s*)/$1/;
+-	$opt_line =~ s/\s*%{$macro}(\s*)/$1/;
++	$opt_line =~ s/\s*%\{$macro}(\s*)/$1/;
+     }
+     $macro_opts{argc} = 0;
+     my @tokens = _split_opts ($opt_line);
+@@ -2461,7 +2461,7 @@
+ 	    } else {
+ 		print "WARNING: undefined macro $line\n";
+ 	    }
+-	} elsif (not $line =~ /^%(${all_keywords}|%{?)/) {
++	} elsif (not $line =~ /^%(${all_keywords}|%\{?)/) {
+ 	    if ($block_name =~ /(prep|build|install|check|clean|changelog)/) {
+ 		$self->_append_to_block ($block_name, $eline);
+ 	    } else {
