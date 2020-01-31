@@ -20,15 +20,13 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =	64
 COMPILER =	gcc
 include ../../../make-rules/shared-macros.mk
 include ../../../make-rules/cargo-vendored.mk
-
-GCC_ROOT =      /usr/gcc/9
 
 COMPONENT_NAME =	rustc
 COMPONENT_VERSION =	1.35.0
