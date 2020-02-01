@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2007, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2007, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
@@ -28,16 +28,16 @@ COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tigervnc
-COMPONENT_VERSION=	1.9.0
+COMPONENT_VERSION=	1.10.1
 COMPONENT_PROJECT_URL=	http://tigervnc.org/
 COMPONENT_ARCHIVE=	v$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:f15ced8500ec56356c3bf271f52e58ed83729118361c7103eab64a618441f740
+	sha256:19fcc80d7d35dd58115262e53cac87d8903180261d94c2a6b0c19224f50b58c4
 COMPONENT_ARCHIVE_URL=	https://github.com/TigerVNC/tigervnc/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=        x11/vnc
 COMPONENT_ANITYA_ID=	4970
 
-TPNO=			47610
+TPNO=			56638
 
 XORG_DIR=		$(COMPONENT_DIR:xvnc=xorg)
 get-xorg-value=		$(MAKE) --no-print-directory -C $(XORG_DIR) print-$(1) \

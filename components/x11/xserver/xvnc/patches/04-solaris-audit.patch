@@ -1,8 +1,8 @@
 Solaris Audit support - not suitable for upstream
 
---- a/common/rfb/VNCSConnectionST.cxx	2017-03-11 02:36:55.540218849 +0000
-+++ b/common/rfb/VNCSConnectionST.cxx	2017-03-11 02:39:43.674794316 +0000
-@@ -36,6 +36,10 @@
+--- a/common/rfb/VNCSConnectionST.cxx	2020-01-31 23:19:18.319185553 -0800
++++ b/common/rfb/VNCSConnectionST.cxx	2020-01-31 23:26:10.476493193 -0800
+@@ -37,6 +37,10 @@
  #define XK_XKB_KEYS
  #include <rfb/keysymdef.h>
  
@@ -13,10 +13,10 @@ Solaris Audit support - not suitable for upstream
  using namespace rfb;
  
  static LogWriter vlog("VNCSConnST");
-@@ -63,6 +67,26 @@
-   lastEventTime = time(0);
- 
-   server->clients.push_front(this);
+@@ -69,6 +73,26 @@
+     else
+       idleTimer.start(secsToMillis(rfb::Server::idleTimeout));
+   }
 +
 +#ifdef HAVE_LIBBSM
 +  if (adt_start_session(&audit_handle, NULL, 0) != 0) {
@@ -40,9 +40,9 @@ Solaris Audit support - not suitable for upstream
  }
  
  
-@@ -92,6 +116,10 @@
-   // Remove this client from the server
-   server->clients.remove(this);
+@@ -91,6 +115,10 @@
+     server->keyEvent(keysym, keycode, false);
+   }
  
 +#ifdef HAVE_LIBBSM
 +  adt_end_session(audit_handle);
@@ -51,11 +51,10 @@ Solaris Audit support - not suitable for upstream
    delete [] fenceData;
  }
  
-@@ -119,6 +147,32 @@
+@@ -115,6 +143,32 @@
+   else
+     vlog.debug("second close: %s (%s)", peerEndpoint.buf, reason);
  
-   if (authenticated()) {
-       server->lastDisconnectTime = time(0);
-+
 +#ifdef HAVE_LIBBSM
 +      adt_event_data_t    *event;
 +
@@ -81,10 +80,11 @@ Solaris Audit support - not suitable for upstream
 +      adt_free_event(event);
 +    }
 +#endif
-   }
- 
++
    // Just shutdown the socket and mark our state as closing.  Eventually the
-@@ -411,6 +465,20 @@
+   // calling code will call VNCServerST's removeSocket() method causing us to
+   // be deleted.
+@@ -417,6 +471,20 @@
  
  void VNCSConnectionST::authSuccess()
  {
@@ -102,11 +102,11 @@ Solaris Audit support - not suitable for upstream
 +  }
 +#endif
 +
-   lastEventTime = time(0);
+   if (rfb::Server::idleTimeout)
+     idleTimer.start(secsToMillis(rfb::Server::idleTimeout));
  
-   server->startDesktop();
---- a/common/rfb/VNCSConnectionST.h	2018-11-20 19:27:16.655100749 -0800
-+++ b/common/rfb/VNCSConnectionST.h	2018-11-20 19:28:30.691987864 -0800
+--- a/common/rfb/VNCSConnectionST.h	2020-01-31 23:26:48.082703357 -0800
++++ b/common/rfb/VNCSConnectionST.h	2020-01-31 23:28:11.052804756 -0800
 @@ -34,6 +34,15 @@
  #include <rfb/SConnection.h>
  #include <rfb/Timer.h>
@@ -123,10 +123,10 @@ Solaris Audit support - not suitable for upstream
  namespace rfb {
    class VNCServerST;
  
-@@ -212,6 +221,10 @@
+@@ -193,6 +202,10 @@
+     CharArray authFailureMsg;
  
      CharArray closeReason;
-     time_t startTime;
 +
 +#ifdef HAVE_LIBBSM
 +    adt_session_data_t  *audit_handle;
@@ -134,8 +134,8 @@ Solaris Audit support - not suitable for upstream
    };
  }
  #endif
---- a/common/rfb/CMakeLists.txt	2018-11-20 19:28:56.830363680 -0800
-+++ b/common/rfb/CMakeLists.txt	2018-11-20 19:29:19.020663908 -0800
+--- a/common/rfb/CMakeLists.txt	2020-01-31 23:28:50.115210371 -0800
++++ b/common/rfb/CMakeLists.txt	2020-01-31 23:29:12.697876596 -0800
 @@ -81,6 +81,10 @@
    set(RFB_LIBRARIES ${RFB_LIBRARIES} ${PAM_LIBS})
  endif()
