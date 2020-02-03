@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64_and_32
@@ -27,17 +27,17 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		exempi
-COMPONENT_VERSION=	2.4.4
+COMPONENT_VERSION=	2.5.1
 COMPONENT_PROJECT_URL=	https://libopenraw.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-	sha256:a2d59a9c5d449d88480dc9ffb3220f34b9789367dbe6fdc957ed2b9a78ec3db0
+	sha256:100b3d5b1b3370bc2e31c0978991716c4a4478246a2ac2df6382054a0ae89bc8
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/download/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/exempi
 COMPONENT_ANITYA_ID=	767
 
-TPNO=			41519
+TPNO=			56560
 
 # disable for now since it requires boost C++ libraries
 TEST_TARGET= $(SKIP_TEST)
@@ -59,3 +59,4 @@ REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library/security/crypto

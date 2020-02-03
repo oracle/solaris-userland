@@ -1,0 +1,145 @@
+do not build 4th party MD5 code, use the Solaris md5 library instead
+https://gitlab.freedesktop.org/libopenraw/exempi/issues/19
+
+diff -ur exempi-2.5.1/exempi/Makefile.am exempi-2.5.1.bak/exempi/Makefile.am
+--- exempi-2.5.1/exempi/Makefile.am	2016-12-07 05:07:54.000000000 +0000
++++ exempi-2.5.1.bak/exempi/Makefile.am	2020-01-27 18:34:57.440947177 +0000
+@@ -60,8 +60,7 @@
+ libexempi_la_LIBADD = $(top_builddir)/source/libxmpcommon.la \
+ 	$(top_builddir)/XMPCore/source/libXMPCore.la \
+ 	$(top_builddir)/XMPFiles/source/libXMPFiles.la \
+-	$(top_builddir)/third-party/zuid/interfaces/libmd5.la \
+-	-lexpat -lz -ldl
++	-lexpat -lz -ldl -lmd5
+ 
+ if UNIX_ENV
+ libexempi_la_LIBADD += -lrt
+diff -ur exempi-2.5.1/exempi/Makefile.in exempi-2.5.1.bak/exempi/Makefile.in
+--- exempi-2.5.1/exempi/Makefile.in	2019-07-28 13:00:55.000000000 +0000
++++ exempi-2.5.1.bak/exempi/Makefile.in	2020-01-27 18:34:57.445012334 +0000
+@@ -186,7 +186,6 @@
+ libexempi_la_DEPENDENCIES = $(top_builddir)/source/libxmpcommon.la \
+ 	$(top_builddir)/XMPCore/source/libXMPCore.la \
+ 	$(top_builddir)/XMPFiles/source/libXMPFiles.la \
+-	$(top_builddir)/third-party/zuid/interfaces/libmd5.la \
+ 	$(am__DEPENDENCIES_1)
+ am_libexempi_la_OBJECTS = exempi.lo
+ libexempi_la_OBJECTS = $(am_libexempi_la_OBJECTS)
+@@ -469,8 +468,8 @@
+ libexempi_la_LIBADD = $(top_builddir)/source/libxmpcommon.la \
+ 	$(top_builddir)/XMPCore/source/libXMPCore.la \
+ 	$(top_builddir)/XMPFiles/source/libXMPFiles.la \
+-	$(top_builddir)/third-party/zuid/interfaces/libmd5.la -lexpat \
+-	-lz -ldl $(am__append_1)
++	-lexpat \
++	-lz -ldl -lmd5 $(am__append_1)
+ libexempi_la_LDFLAGS = -version-info @EXEMPI_VERSION_INFO@ \
+ 	$(am__append_2)
+ dist_man1_MANS = exempi.1
+diff -ur exempi-2.5.1/samples/source/Makefile.am exempi-2.5.1.bak/samples/source/Makefile.am
+--- exempi-2.5.1/samples/source/Makefile.am	2016-12-07 05:07:54.000000000 +0000
++++ exempi-2.5.1.bak/samples/source/Makefile.am	2020-01-27 18:34:57.442024269 +0000
+@@ -50,7 +50,7 @@
+ XMPLIBS = $(top_builddir)/XMPCore/source/libXMPCore.la \
+ 	$(top_builddir)/XMPFiles/source/libXMPFiles.la \
+ 	$(top_builddir)/source/libxmpcommon.la -lexpat -lz \
+-	$(top_builddir)/third-party/zuid/interfaces/libmd5.la \
++	-lmd5 \
+ 	-ldl
+ 
+ if UNIX_ENV
+diff -ur exempi-2.5.1/samples/source/Makefile.in exempi-2.5.1.bak/samples/source/Makefile.in
+--- exempi-2.5.1/samples/source/Makefile.in	2019-07-28 13:00:55.000000000 +0000
++++ exempi-2.5.1.bak/samples/source/Makefile.in	2020-01-27 18:34:57.443554315 +0000
+@@ -166,7 +166,6 @@
+ am__DEPENDENCIES_2 = $(top_builddir)/XMPCore/source/libXMPCore.la \
+ 	$(top_builddir)/XMPFiles/source/libXMPFiles.la \
+ 	$(top_builddir)/source/libxmpcommon.la \
+-	$(top_builddir)/third-party/zuid/interfaces/libmd5.la \
+ 	$(am__DEPENDENCIES_1)
+ customschema_DEPENDENCIES = $(am__DEPENDENCIES_2)
+ am_dumpmainxmp_OBJECTS = DumpMainXMP.$(OBJEXT)
+@@ -438,7 +437,7 @@
+ XMPLIBS = $(top_builddir)/XMPCore/source/libXMPCore.la \
+ 	$(top_builddir)/XMPFiles/source/libXMPFiles.la \
+ 	$(top_builddir)/source/libxmpcommon.la -lexpat -lz \
+-	$(top_builddir)/third-party/zuid/interfaces/libmd5.la -ldl \
++	-lmd5 -ldl \
+ 	$(am__append_1)
+ noinst_LTLIBRARIES = libsamplescommon.la
+ libsamplescommon_la_SOURCES = common/DumpFile.cpp common/DumpFile.h \
+diff -ur exempi-2.5.1/third-party/Makefile.am exempi-2.5.1.bak/third-party/Makefile.am
+--- exempi-2.5.1/third-party/Makefile.am	2016-12-07 05:07:54.000000000 +0000
++++ exempi-2.5.1.bak/third-party/Makefile.am	2020-01-27 18:34:57.438445693 +0000
+@@ -1,4 +1,3 @@
+ 
+-SUBDIRS = zuid/interfaces
+ 
+-DIST_SUBDIRS = zuid/interfaces zlib expat
++DIST_SUBDIRS = zlib expat
+diff -ur exempi-2.5.1/third-party/Makefile.in exempi-2.5.1.bak/third-party/Makefile.in
+--- exempi-2.5.1/third-party/Makefile.in	2019-07-28 13:00:55.000000000 +0000
++++ exempi-2.5.1.bak/third-party/Makefile.in	2020-01-27 18:34:57.439729065 +0000
+@@ -327,8 +327,7 @@
+ top_build_prefix = @top_build_prefix@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+-SUBDIRS = zuid/interfaces
+-DIST_SUBDIRS = zuid/interfaces zlib expat
++DIST_SUBDIRS = zlib expat
+ all: all-recursive
+ 
+ .SUFFIXES:
+diff -ur exempi-2.5.1/third-party/zuid/interfaces/MD5.h exempi-2.5.1.bak/third-party/zuid/interfaces/MD5.h
+--- exempi-2.5.1/third-party/zuid/interfaces/MD5.h	2016-12-01 01:44:02.000000000 +0000
++++ exempi-2.5.1.bak/third-party/zuid/interfaces/MD5.h	2020-01-27 18:34:57.437318756 +0000
+@@ -1,48 +1,4 @@
+ #ifndef __MD5_h__
+ #define __MD5_h__
+-
+-/******************************************************************************/
+-
+-/*
+-	MD5C.C - RSA Data Security, Inc., MD5 message-digest algorithm
+-
+-	Copyright (C) 1991-2, RSA Data Security, Inc. Created 1991. All rights 
+-	reserved.
+-
+-	License to copy and use this software is granted provided that it is 
+-	identified as the "RSA Data Security, Inc. MD5 Message-Digest Algorithm" in 
+-	all material mentioning or referencing this software or this function. 
+-
+-	License is also granted to make and use derivative works provided that such 
+-	works are identified as "derived from the RSA Data Security, Inc. MD5 
+-	Message-Digest Algorithm" in all material mentioning or referencing the 
+-	derived work. 
+-	
+-	RSA Data Security, Inc. makes no representations concerning either the 
+-	merchantability of this software or the suitability of this software for 
+-	any particular purpose. It is provided "as is" without express or implied 
+-	warranty of any kind. 
+-	
+-	These notices must be retained in any copies of any part of this 
+-	documentation and/or software. 
+-*/
+-
+-/******************************************************************************/
+-
+-#include "public/include/XMP_Const.h"	// For safe fixed integer sizes.
+-
+-/* MD5 context. */
+-struct MD5_CTX
+-	{
+-	XMP_Uns32 state[4];                                   /* state (ABCD) */
+-	XMP_Uns32 count[2];        /* number of bits, modulo 2^64 (lsb first) */
+-	XMP_Uns8 buffer[64];                         /* input buffer */
+-	};
+-
+-extern void MD5Init (MD5_CTX *);
+-extern void MD5Update (MD5_CTX *, XMP_Uns8 *, XMP_Uns32);
+-extern void MD5Final(XMP_Uns8 [16], MD5_CTX *);
+-
+-/******************************************************************************/
+-
++#include <md5.h>
+ #endif
