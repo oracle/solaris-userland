@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64_and_32
@@ -95,11 +95,9 @@ COMPONENT_BUILD_ARGS += V=1
 # Needed to find GNU msgfmt.
 COMPONENT_BUILD_ENV += PATH="/usr/gnu/bin:$(PATH)"
 
-REQUIRED_PACKAGES += archiver/unrar
 REQUIRED_PACKAGES += desktop/pdf-viewer/poppler-viewer
 REQUIRED_PACKAGES += gnome/file-manager/nautilus
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
-REQUIRED_PACKAGES += gnome/theme/adwaita-icon-theme
 REQUIRED_PACKAGES += image/library/libtiff
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
@@ -115,11 +113,7 @@ REQUIRED_PACKAGES += library/gnome/libsecret
 REQUIRED_PACKAGES += library/libarchive
 REQUIRED_PACKAGES += library/libspectre
 REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += library/perl-5/xml-parser
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += print/filter/poppler
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += x11/library/libice
-REQUIRED_PACKAGES += x11/library/libsm
-REQUIRED_PACKAGES += x11/library/libx11

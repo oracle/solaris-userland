@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		64_and_32
@@ -107,13 +107,9 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/ERROR/p" '
 
 REQUIRED_PACKAGES += codec/flac
-REQUIRED_PACKAGES += codec/libogg
 REQUIRED_PACKAGES += codec/libvorbis
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += desktop/pdf-viewer/poppler-viewer
-REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
-REQUIRED_PACKAGES += developer/icu
-REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += gnome/file-manager/nautilus
 REQUIRED_PACKAGES += image/library/libexif
 REQUIRED_PACKAGES += image/library/libjpeg
@@ -122,22 +118,21 @@ REQUIRED_PACKAGES += image/library/libtiff
 REQUIRED_PACKAGES += library/audio/taglib
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
-REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gstreamer-1
 REQUIRED_PACKAGES += library/desktop/gstreamer-1/gst-plugins-base
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libgsf
+REQUIRED_PACKAGES += library/desktop/libgxps
 REQUIRED_PACKAGES += library/exempi
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/json-glib
-REQUIRED_PACKAGES += library/desktop/libgxps
-REQUIRED_PACKAGES += library/gnome/libmediaart
 REQUIRED_PACKAGES += library/icu
+REQUIRED_PACKAGES += library/json-glib
 REQUIRED_PACKAGES += library/libsoup
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/media-player/totem-pl-parser
+REQUIRED_PACKAGES += print/filter/poppler
 REQUIRED_PACKAGES += system/hal
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/libdbus-glib
 REQUIRED_PACKAGES += system/library/math
