@@ -22,7 +22,7 @@
 #
 
 #
-# Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 PATH=/usr/bin:/usr/sbin
@@ -58,7 +58,10 @@ MODULE_DIR_64="/usr/lib/64/gio/modules"
 CACHE_FILE_32="${MODULE_DIR_32}/giomodule.cache"
 CACHE_FILE_64="${MODULE_DIR_64}/giomodule.cache"
 
-if [[ ! -r "${CACHE_FILE_32}" ]] ; then
+if [[ ! -d "${MODULE_DIR_32}" || ! -d "${MODULE_DIR_64}" ]] ; then
+        # No /usr/lib/gio/modules or /usr/lib/$(MACH64)/gio/modules
+        NEED_COMPILE=0
+elif [[ ! -r "${CACHE_FILE_32}" ]] ; then
 	# Need to create initial file
 	NEED_COMPILE=1
 elif [[ ! -r "${CACHE_FILE_64}" ]] ; then
