@@ -55,6 +55,23 @@ COMPONENT_INSTALL_ENV +=	PATH=$(PATH_$(BITS)):$(PATH)
 CFLAGS_64=	-L/usr/mysql/5.7/lib/$(MACH64) -R/usr/mysql/5.7/lib/$(MACH64)
 CFLAGS +=	$(CFLAGS_$(BITS))
 
+# Convenience variables
+TARGET_27_32 = $(BUILD_DIR)/$(MACH32)-2.7/
+TARGET_27_64 = $(BUILD_DIR)/$(MACH64)-2.7/
+
+$(TARGET_27_32).built: COMPILER=	studio
+$(TARGET_27_64).built: COMPILER=	studio
+
+$(TARGET_27_32).built: CFLAGS_32=	-L/usr/mysql/5.6/lib -R/usr/mysql/5.6/lib
+$(TARGET_27_64).built: CFLAGS_64=	-L/usr/mysql/5.6/lib/$(MACH64) -R/usr/mysql/5.6/lib/$(MACH64)
+$(TARGET_27_32).built: PATH_32=		/usr/mysql/5.6/bin/$(MACH32):/usr/bin:$(SPRO_VROOT)/bin
+$(TARGET_27_64).built: PATH_64=		/usr/mysql/5.6/bin:/usr/bin:$(SPRO_VROOT)/bin
+
+$(TARGET_27_32).installed: CFLAGS_32=	-L/usr/mysql/5.6/lib -R/usr/mysql/5.6/lib
+$(TARGET_27_64).installed: CFLAGS_64=	-L/usr/mysql/5.6/lib/$(MACH64) -R/usr/mysql/5.6/lib/$(MACH64)
+$(TARGET_27_32).installed: PATH_32=		/usr/mysql/5.6/bin/$(MACH32):/usr/bin:$(SPRO_VROOT)/bin
+$(TARGET_27_64).installed: PATH_64=		/usr/mysql/5.6/bin:/usr/bin:$(SPRO_VROOT)/bin
+
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
@@ -154,15 +171,17 @@ COMPONENT_POST_TEST_ACTION = ( \
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
-build:		$(BUILD_64)
+build:		$(BUILD_32_and_64)
 
-install:	$(INSTALL_64)
+install:	$(INSTALL_32_and_64)
 
-test:		$(TEST_64)
+test:		$(TEST_32_and_64)
 
 system-test:    $(NO_TESTS)
 
 
+REQUIRED_PACKAGES += database/mysql-56
+REQUIRED_PACKAGES += database/mysql-56/library
 REQUIRED_PACKAGES += database/mysql-57
 REQUIRED_PACKAGES += database/mysql-57/library
 REQUIRED_PACKAGES += system/library
