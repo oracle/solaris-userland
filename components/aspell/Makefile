@@ -20,31 +20,31 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		aspell
-COMPONENT_VERSION=	0.60.6.1
+COMPONENT_VERSION=	0.60.8
 COMPONENT_PROJECT_URL=	http://aspell.net/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f52583a83a63633701c5f71db3dc40aab87b7f76b29723aeb27941eff42df6e1
+    sha256:f9b77e515334a751b2e60daab5db23499e26c9209f5e7b7443b05235ad0226f2
 COMPONENT_ANITYA_ID=	120
 
 COMPONENT_NAME_1=	aspell6-en
-COMPONENT_VERSION_1=	7.1-0
+COMPONENT_VERSION_1=	2019.10.06-0
 COMPONENT_SRC_1=	$(COMPONENT_NAME_1)-$(COMPONENT_VERSION_1)
 COMPONENT_ARCHIVE_1=	$(COMPONENT_SRC_1).tar.bz2
 COMPONENT_ARCHIVE_HASH_1= \
-    sha256:ff9df3c2e8c5bb19c6a66078b36a0ef4c4dfb0fcb969e29f7b5345e26d748d0a
+    sha256:24334b4daac6890a679084f4089e1ce7edbe33c442ace776fa693d8e334f51fd
 COMPONENT_ARCHIVE_URL_1= https://ftp.gnu.org/gnu/$(COMPONENT_NAME)/dict/en/$(COMPONENT_ARCHIVE_1)
 COMPONENT_SIG_URL_1=	$(COMPONENT_ARCHIVE_URL_1).sig
 SOURCE_DIR_1=		$(COMPONENT_DIR)/$(COMPONENT_SRC_1)
 COMPONENT_ANITYA_ID_1=	7838
 
-TPNO=			23575
+TPNO=			54796
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/gnu-component.mk
@@ -57,8 +57,20 @@ ASPELL_LIB_DIR.32 =	$(PROTOUSRLIBDIR)
 ASPELL_LIB_DIR.64 =	$(PROTOUSRLIBDIR64)
 ASPELL_LIB_DIR =	$(ASPELL_LIB_DIR.$(BITS))
 
+# To avoid issue with incompatible hash function for dictionaries, see:
+# http://aspell.net/0.61/man-html/Using-32_002dBit-Dictionaries-on-a-64_002dBit-System.html
+CONFIGURE_OPTIONS += --enable-32-bit-hash-fun
+
 # Needed to successfully find .../gen/mk-dirs_h.pl
 COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR) $(@D));
+
+# This is needed to get the two files below created; this is likely only 
+# a problem of the current aspell version; for more details, see:
+# https://github.com/GNUAspell/aspell/issues/591
+COMPONENT_POST_CONFIGURE_ACTION += \
+    (cd $(BUILD_DIR_$(BITS)); \
+			$(GMAKE) gen/dirs.h; \
+			$(GMAKE) gen/static_filters.src.cpp);
 
 # Needed to configure, build and install the aspell English dictionary.
 COMPONENT_POST_INSTALL_ACTION += \
