@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=          	64
@@ -30,16 +30,16 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		brltty
-COMPONENT_VERSION=	5.4
+COMPONENT_VERSION=	6.0
 COMPONENT_PROJECT_URL=	http://mielke.cc/brltty/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5d071bd6be9e7f3f85745088e00471c8dec6ebb77fd5b5c89e8f4cbc2d2c5d4f
+    sha256:cfa80c2d171a4d92d7a327b1942e6fc463669b1c3bb658bfb3323b723f9096f7
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/accessibility
 COMPONENT_ANITYA_ID=	220
 
-TPNO=			30456
+TPNO=			55332
 
 TEST_TARGET=		$(NO_TESTS)
 
@@ -108,3 +108,5 @@ REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxtst
 REQUIRED_PACKAGES += x11/library/toolkit/libxaw7
 REQUIRED_PACKAGES += x11/library/toolkit/libxt
+REQUIRED_PACKAGES += library/liblouis
+REQUIRED_PACKAGES += library/expat
