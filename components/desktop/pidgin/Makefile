@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64
@@ -86,6 +86,7 @@ CONFIGURE_OPTIONS +=	--enable-consoleui
 CONFIGURE_OPTIONS +=	--with-ncurses-headers=/usr/include/ncurses
 CONFIGURE_OPTIONS +=	--disable-vv
 CONFIGURE_OPTIONS +=	--with-system-ssl-certs=/etc/certs
+CONFIGURE_OPTIONS +=	--with-python=$(PYTHON)
 
 # We have two implementations of libcurses in Solaris. finch needs to use the
 # ncurses one. The curses implementations in turn, use libpanel, but the
