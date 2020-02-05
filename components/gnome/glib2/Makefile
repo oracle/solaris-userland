@@ -50,6 +50,12 @@ CFLAGS.gcc += -std=gnu11
 # overriding it here till we can get gdm rebuilt
 gcc_STACK_ALIGN.i386.32 =
 
+# The problem with not enough of FDs seems to show only during full build and
+# only on sparc
+# ninja: Entering directory `$WS/components/gnome/glib2/build/sparcv7'
+# ninja: fatal: pipe: Too many open files
+ENV := ulimit -n 16384; $(ENV)
+
 # Assumes GNU msgfmt in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"

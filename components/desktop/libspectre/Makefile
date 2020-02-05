@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64_and_32
@@ -56,5 +56,4 @@ CONFIGURE_OPTIONS +=	--with-pic
 # Always show the build and link lines for easier debugging.
 COMPONENT_BUILD_ARGS += V=1
 
-REQUIRED_PACKAGES += print/filter/ghostscript
-REQUIRED_PACKAGES += print/filter/ghostscript-core
+REQUIRED_PACKAGES += image/ghostscript
