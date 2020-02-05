@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../make-rules/shared-macros.mk
@@ -87,8 +87,10 @@ component-hook:		TARGET = component-hook
 regen-patches:		TARGET = regen-patches
 zone-build prep build install publish test system-test check_rtime regen-patches:	\
 	LOG = >$(WS_LOGS)/$(subst /,.,$@).$(TARGET).log 2>&1 ; \
-	$(RM) $(WS_COMPONENTS)/$@/build/$(TARGET).log ; \
-	$(LN) -s $(WS_LOGS)/$(subst /,.,$@).$(TARGET).log $(WS_COMPONENTS)/$@/build/$(TARGET).$(MACH).log
+	RET=$$? ; \
+	$(RM) $(WS_COMPONENTS)/$@/build/$(TARGET).$(MACH).log ; \
+	$(LN) -s $(WS_LOGS)/$(subst /,.,$@).$(TARGET).log $(WS_COMPONENTS)/$@/build/$(TARGET).$(MACH).log ; \
+	exit $$RET
 
 # turn off pkglint for the individual component builds.
 ifeq   ($(strip $(PKGLINT_COMPONENT)),)
