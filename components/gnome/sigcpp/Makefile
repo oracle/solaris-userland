@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            32_and_64
@@ -29,16 +29,16 @@ COMPILER =		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sigcpp
-COMPONENT_VERSION=	2.10.0
+COMPONENT_VERSION=	2.10.2
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/libsigc++/stable/
 COMPONENT_SRC=		libsigc++-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH= \
-    sha256:f843d6346260bfcb4426259e314512b99e296e8ca241d771d21ac64f28298d81
-COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/libsigc++/2.10/$(COMPONENT_ARCHIVE)
+    sha256:b1ca0253379596f9c19f070c83d362b12dfd39c0a3ea1dd813e8e21c1a097a98
+COMPONENT_ARCHIVE_URL= https://download.gnome.org/sources/libsigc++/2.10/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13161
 
-TPNO=			35828
+TPNO=			56447
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
