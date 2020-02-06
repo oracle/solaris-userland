@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -142,7 +142,7 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/python-27
-REQUIRED_PACKAGES += runtime/python-34
+REQUIRED_PACKAGES += legacy/runtime/python-34
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/math
