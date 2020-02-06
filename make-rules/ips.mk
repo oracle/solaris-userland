@@ -477,9 +477,14 @@ $(MANIFEST_BASE)-%.depend:	$(MANIFEST_BASE)-%.mangled
 # fragments that it uses.
 RESOLVE_DEPS=$(BUILD_DIR)/resolve.deps
 
+# Construct a list of packages which will be considered while looking for
+# package dependencies (see pkgdepend(1) resolve -e)
+# Here we take all the packages specified in REQUIRED_PACKAGES variable plus
+# their legacy variant.
 $(RESOLVE_DEPS):	$(MAKEFILE_PREREQ) $(BUILD_DIR)
 	@for pkg in $(REQUIRED_PACKAGES:%=/%) ; do \
 	    echo $${pkg} ; \
+	    echo /legacy$${pkg#/legacy} ; \
 	done | sort -u >$@
 
 # resolve the dependencies all at once
