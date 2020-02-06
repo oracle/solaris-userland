@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 COMPILER=gcc
@@ -29,19 +29,19 @@ include ../../make-rules/shared-macros.mk
 COMPONENT_NAME=			ImageMagick
 COMPONENT_VERSION=		6.9.10
 COMPONENT_MAJOR_VERSION=	$(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\([0-9]\+\)\.[0-9]\+\.[0-9]\+/\1/')
-COMPONENT_SUBVERSION=		68
+COMPONENT_SUBVERSION=		91
 HUMAN_VERSION=			$(COMPONENT_VERSION)-$(COMPONENT_SUBVERSION)
 COMPONENT_PROJECT_URL=		https://www.imagemagick.org/
 COMPONENT_SRC=			$(COMPONENT_NAME)-$(COMPONENT_VERSION)-$(COMPONENT_SUBVERSION)
 COMPONENT_ARCHIVE=		$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:bf6541ea8c6689d9d657065568e359fda75f773b42e6da085a188e857dac82d4
+	sha256:4a6cb28c7f8c9ff568e53959dfa328be322450ba062da88a973781cf9263afd6
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/download/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	utility/imagemagick
 COMPONENT_ANITYA_ID=	1372
 
-TPNO=			54691
+TPNO=			56663
 
 # Enable adiheap security extension.
 # adistack fails with libgcc exception unwinding code.
