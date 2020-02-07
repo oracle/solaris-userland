@@ -22,7 +22,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 
@@ -30,15 +30,12 @@ set -e
 
 MACH=`mach`
 CACHE_DIR=$(dirname "$0")/node-js-cache
+VERSION="v10.18.0"
 
 mkdir -p "$CACHE_DIR"
 
 if [ "$1" = "--version" ] ; then
-  if [ $MACH == "i386" ] ; then
-    /usr/bin/node $@  | tee "$CACHE_DIR"/version
-  else
-    cat "$CACHE_DIR"/version
-  fi
+  echo $VERSION
   exit
 fi
 
@@ -47,7 +44,11 @@ while [ $(echo -n $WSDIR | wc -c ) -gt 1 ]; do
   echo "$@" | grep "^$WSDIR" && break
   WSDIR=`dirname $WSDIR`
 done
-SUM=`echo "$@" | gsed -e "s;^$WSDIR/;;" -e "s; $WSDIR/; ;g" | sha1sum | awk '{print $1}'`
+
+NORMALIZED_ARGS=`echo "$@" | gsed \
+  -e "s;^$WSDIR/firefox-[0-9]*\.[0-9]*\.[0-9]*/;;" \
+  -e "s; $WSDIR/firefox-[0-9]*\.[0-9]*\.[0-9]*/; ;g" `
+SUM=`echo $NORMALIZED_ARGS | sha1sum | awk '{print $1}'`
 
 if [ $MACH == "i386" ] ; then
   mkdir -p "$CACHE_DIR"/$SUM
