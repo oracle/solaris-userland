@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -39,12 +39,12 @@ TPNO = 53508
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
-# Use explicit Python version rather than the default one
-CONFIGURE_ENV += PYTHON=$(PYTHON.2.7)
-
-# examples are not being shipped and currently do not build when using Studio.
+# examples are not being shipped
 CONFIGURE_OPTIONS += --disable-examples
 CONFIGURE_OPTIONS += --disable-hpack-tools
+# Python is a dependency only if --enable-python-bindings is given, which
+# is not. Because of that, the detected version is irrelevant.
+CONFIGURE_OPTIONS += --disable-python-bindings
 CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += ac_cv_prog_CYTHON=''
 CONFIGURE_OPTIONS += ZLIB_LIBS=-lz
