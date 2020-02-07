@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            32_and_64
@@ -29,14 +29,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pangomm
-COMPONENT_VERSION=	2.40.1
+COMPONENT_VERSION=      2.42.0
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/pangomm/stable/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:9762ee2a2d5781be6797448d4dd2383ce14907159b30bc12bf6b08e7227be3af
+    sha256:ca6da067ff93a6445780c0b4b226eb84f484ab104b8391fb744a45cbc7edbf56
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	7958
 
-TPNO=			35832
+TPNO=			56616
 
 TEST_TARGET = $(NO_TESTS)
 
