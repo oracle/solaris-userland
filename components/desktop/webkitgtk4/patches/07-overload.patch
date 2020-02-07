@@ -5,19 +5,19 @@ compiler bug.
 
 file upstream bug to determine correct fix
 
---- a/Source/WebCore/rendering/shapes/BoxShape.cpp	2018-12-13 20:01:51.336037555 -0800
-+++ b/Source/WebCore/rendering/shapes/BoxShape.cpp	2018-12-13 20:02:47.967934640 -0800
-@@ -43,7 +43,7 @@
+--- a/Source/JavaScriptCore/dfg/DFGOperations.cpp	2020-01-28 11:44:32.082790621 -0800
++++ b/Source/JavaScriptCore/dfg/DFGOperations.cpp	2020-01-28 11:44:50.981534484 -0800
+@@ -2677,7 +2677,7 @@
  
-     LayoutUnit ratio = radius / margin;
-     if (ratio < 1)
--        return radius + (margin * (1 + pow(ratio - 1, 3.0)));
-+        return radius + (margin * (1 + pow(static_cast<double>(ratio) - 1, 3.0)));
- 
-     return radius + margin;
+ double JIT_OPERATION operationFModOnInts(int32_t a, int32_t b)
+ {
+-    return fmod(a, b);
++    return fmod(float(a), float(b));
  }
---- a/Source/WebCore/rendering/shapes/RasterShape.cpp	2018-12-13 21:07:18.927950015 -0800
-+++ b/Source/WebCore/rendering/shapes/RasterShape.cpp	2018-12-13 21:07:45.293501930 -0800
+ 
+ #if USE(JSVALUE32_64)
+--- a/Source/WebCore/rendering/shapes/RasterShape.cpp	2020-01-28 11:45:15.079639404 -0800
++++ b/Source/WebCore/rendering/shapes/RasterShape.cpp	2020-01-28 11:45:45.572829747 -0800
 @@ -142,7 +142,7 @@
          return *m_intervals;
  
@@ -27,47 +27,14 @@ file upstream bug to determine correct fix
      if (!m_marginIntervals)
          m_marginIntervals = m_intervals->computeShapeMarginIntervals(std::min(shapeMarginInt, maxShapeMarginInt));
  
---- a/Source/JavaScriptCore/dfg/DFGOperations.cpp	2018-12-13 21:08:22.626424775 -0800
-+++ b/Source/JavaScriptCore/dfg/DFGOperations.cpp	2018-12-13 21:08:47.101981030 -0800
-@@ -2446,7 +2446,7 @@
+--- a/Source/WebCore/rendering/shapes/BoxShape.cpp	2020-01-28 11:46:09.490057546 -0800
++++ b/Source/WebCore/rendering/shapes/BoxShape.cpp	2020-01-28 11:46:25.148227681 -0800
+@@ -43,7 +43,7 @@
  
- double JIT_OPERATION operationFModOnInts(int32_t a, int32_t b)
- {
--    return fmod(a, b);
-+    return fmod(float(a), float(b));
+     LayoutUnit ratio = radius / margin;
+     if (ratio < 1)
+-        return LayoutUnit(radius + (margin * (1 + pow(ratio - 1, 3.0))));
++        return LayoutUnit(radius + (margin * (1 + pow(static_cast<double>(ratio) - 1, 3.0))));
+ 
+     return radius + margin;
  }
- 
- #if USE(JSVALUE32_64)
---- a/Source/JavaScriptCore/heap/MarkedSpace.cpp	2018-12-13 21:09:14.638699775 -0800
-+++ b/Source/JavaScriptCore/heap/MarkedSpace.cpp	2018-12-13 21:09:48.099389615 -0800
-@@ -76,7 +76,7 @@
-                 dataLog("    Marked block payload size: ", static_cast<size_t>(MarkedSpace::blockPayload), "\n");
-             
-             for (unsigned i = 0; ; ++i) {
--                double approximateSize = MarkedSpace::preciseCutoff * pow(Options::sizeClassProgression(), i);
-+                double approximateSize = MarkedSpace::preciseCutoff * pow(static_cast<double>(Options::sizeClassProgression()), static_cast<double>(i));
-                 
-                 if (Options::dumpSizeClasses())
-                     dataLog("    Next size class as a double: ", approximateSize, "\n");
---- a/Source/WebKit/Platform/classifier/ResourceLoadStatisticsClassifier.cpp	2018-12-13 21:10:16.880272760 -0800
-+++ a/Source/WebKit/Platform/classifier/ResourceLoadStatisticsClassifier.cpp	2018-12-13 21:11:01.110660635 -0800
-@@ -34,7 +34,7 @@
- 
- static double vectorLength(unsigned a, unsigned b, unsigned c)
- {
--    return sqrt(a * a + b * b + c * c);
-+    return sqrt(static_cast<float>(a * a + b * b + c * c));
- }
- 
- static const auto featureVectorLengthThresholdHigh = 3;
---- a/Source/JavaScriptCore/dfg/DFGStaticExecutionCountEstimationPhase.cpp	2018-12-13 21:11:29.194377980 -0800
-+++ b/Source/JavaScriptCore/dfg/DFGStaticExecutionCountEstimationPhase.cpp	2018-12-13 21:12:09.353128315 -0800
-@@ -53,7 +53,7 @@
-             if (!block)
-                 continue;
- 
--            block->executionCount = pow(10, m_graph.m_cpsNaturalLoops->loopDepth(block));
-+            block->executionCount = pow(static_cast<double>(10), static_cast<double>(m_graph.m_cpsNaturalLoops->loopDepth(block)));
-         }
-         
-         // Estimate branch weights based on execution counts. This isn't quite correct. It'll

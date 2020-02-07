@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 # parfait is a bit unhappy (24796572)
@@ -34,17 +34,17 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		webkitgtk
-COMPONENT_VERSION=	2.24.4
+COMPONENT_VERSION=	2.26.3
 COMPONENT_PROJECT_URL=	https://webkitgtk.org
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8668b129c026624ec226a4cccf4995f9d26f3e88fc28ab75b0e965f3c32b7dd8
+	sha256:add51153943cc11d90a7038d0ea5f6332281e6c0be0640f802a211b035f0e611
 COMPONENT_ARCHIVE_URL=	https://webkitgtk.org/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/webkitgtk
 COMPONENT_ANITYA_ID=	5355
 
-TPNO=			53684
+TPNO=			56711
 
 # Use project's own optimization flags instead.
 gcc_OPT=

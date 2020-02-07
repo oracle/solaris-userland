@@ -4,12 +4,12 @@ Not suitable for upstream
 
 --- a/Source/WTF/wtf/FileSystem.cpp	2019-05-17 10:40:34.456083574 -0700
 +++ b/Source/WTF/wtf/FileSystem.cpp	2019-05-17 10:40:44.201324871 -0700
-@@ -316,7 +316,7 @@
-         return;
+@@ -324,7 +324,7 @@
+         return true;
      }
  
--    void* data = mmap(0, size, PROT_READ, MAP_FILE | MAP_SHARED, fd, 0);
-+    void* data = mmap(0, size, PROT_READ, MAP_SHARED, fd, 0);
-     close(fd);
+-    void* data = mmap(0, size, PROT_READ, MAP_FILE | (mode == MappedFileMode::Shared ? MAP_SHARED : MAP_PRIVATE), fd, 0);
++    void* data = mmap(0, size, PROT_READ, (mode == MappedFileMode::Shared ? MAP_SHARED : MAP_PRIVATE), fd, 0);
  
      if (data == MAP_FAILED) {
+         return false;
