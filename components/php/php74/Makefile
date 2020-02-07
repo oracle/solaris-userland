@@ -119,6 +119,21 @@ CFLAGS += -DOPENSSL_NO_SSL3
 
 PROTOUSRPHPVERDIR = $(PROTO_DIR)/$(CONFIGURE_PREFIX)
 
+COMPONENT_PRE_CONFIGURE_ACTION += $(MKDIR) $(BUILD_DIR)/temp;
+COMPONENT_BUILD_ENV += TMPDIR=$(BUILD_DIR)/temp
+CONFIGURE_ENV += TMPDIR=$(BUILD_DIR)/temp
+COMPONENT_INSTALL_ENV += TMPDIR=$(BUILD_DIR)/temp
+
+# In order to build pear on public build machine every engineer needs to use
+# his own temporary directory and not /var/tmp/pear. Unfortunatelly this
+# temporary directory is then stored into pear.conf file. So we need to correct
+# it back to the default which would be used without us specifying TMPDIR -
+# that is to /tmp/pear/temp
+COMPONENT_POST_INSTALL_ACTION += \
+	../fix_temp_dirs.pl \
+	    $(PROTO_DIR)/etc/php/$(MAJOR_VERSION)/pear.conf \
+	    $(BUILD_DIR)/temp ;
+
 # Adapted from PHP 5.3 Makefile.
 # Creates alternate versions of the scripts needed for building extensions
 # separately, since the generated versions of these scripts hardcode
