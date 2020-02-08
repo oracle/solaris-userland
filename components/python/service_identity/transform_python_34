@@ -23,34 +23,16 @@
 # Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
-include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		service_identity
-COMPONENT_VERSION=	18.1.0
-COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:a6f74383cff70990cdf16a04250e4ba5641c1a497c9d85ee027f43a2ffc5e2d3
-COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	https://service-identity.readthedocs.io/en/stable/
-COMPONENT_BUGDB=	python-mod/service_identity
-COMPONENT_ANITYA_ID=	7917
+# service_identity-34 was never released as a non-legacy package which breaks
+# some legacy automation assumptions.
 
-TPNO=			56529
+# 1. the service_identity-34 should not depend on the non-legacy version. Sadly
+# we don't seem to be able to match against %{pkg.fmri}, but instead we can
+# detect that the legacy automation creates this dependency as 'optional'
+<transform depend type=optional fmri=.*/service_identity-34 -> drop>
 
-include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
-include $(WS_MAKE_RULES)/ips.mk
-
-PUBLISH_TRANSFORMS += transform_python_34
-
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
-
-# common targets
-build:		$(BUILD_NO_ARCH)
-
-install:	$(INSTALL_NO_ARCH)
-
-test:		$(NO_TESTS)
-
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+# 2. the meta package should not depend on the non-legacy version, it should
+# depend on the legacy one instead. This depend is of type 'conditional' so the
+# previous transform did not match.
+<transform depend fmri=.*/service_identity-34 -> edit fmri library/python legacy/library/python>
