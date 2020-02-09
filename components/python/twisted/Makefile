@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 COMPILER=	gcc
@@ -39,6 +39,7 @@ COMPONENT_ANITYA_ID=	4071
 
 TPNO=			54420
 
+PUBLISH_TRANSFORMS += transform_python_34
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
