@@ -2,8 +2,8 @@
 #
 # These changes should be submitted upstream.
 
---- pidgin-2.7.0/libpurple/network.c.old	2010-05-19 16:14:46.440830715 +0800
-+++ pidgin-2.7.0/libpurple/network.c	2010-05-19 16:38:25.005674810 +0800
+--- pidgin-2.13.0/libpurple/network.c
++++ pidgin-2.13.0/libpurple/network.c
 @@ -57,6 +57,16 @@
  #include <idna.h>
  #endif
@@ -21,7 +21,7 @@
  /*
   * Calling sizeof(struct ifreq) isn't always correct on
   * Mac OS X (and maybe others).
-@@ -219,7 +229,7 @@
+@@ -224,7 +234,7 @@ purple_network_get_all_local_system_ips(
  	}
  
  	for (ifa = start; ifa; ifa = ifa->ifa_next) {
@@ -30,7 +30,7 @@
  		char host[INET6_ADDRSTRLEN];
  		const char *tmp = NULL;
  
-@@ -265,7 +275,7 @@
+@@ -270,7 +280,7 @@ purple_network_get_all_local_system_ips(
  		ifr = (struct ifreq *)tmp;
  		tmp += HX_SIZE_OF_IFREQ(*ifr);
  

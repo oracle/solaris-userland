@@ -6,9 +6,9 @@ See PSARC/2016/385 for more details.
 
 This patch will not be submitted upsteam.
 
---- pidgin-2.11.0/configure.ac.orig	2016-08-17 07:39:38.956248926 -0700
-+++ pidgin-2.11.0/configure.ac	2016-08-17 07:41:48.502561778 -0700
-@@ -2469,6 +2469,18 @@
+--- pidgin-2.13.0/configure.ac
++++ pidgin-2.13.0/configure.ac
+@@ -2455,6 +2455,18 @@ if test "$zephyr" != "no" ; then
  	LDFLAGS="$orig_LDFLAGS"
  fi
  
@@ -27,9 +27,9 @@ This patch will not be submitted upsteam.
  AC_MSG_CHECKING(for me pot o' gold)
  AC_MSG_RESULT(no)
  AC_CHECK_FUNCS(gethostid lrand48 timegm)
---- pidgin-2.11.0/libpurple/core.c.orig	2016-08-17 08:59:22.042425765 -0700
-+++ pidgin-2.11.0/libpurple/core.c	2016-08-17 09:48:56.584454917 -0700
-@@ -161,6 +161,12 @@
+--- pidgin-2.13.0/libpurple/core.c
++++ pidgin-2.13.0/libpurple/core.c
+@@ -161,6 +161,12 @@ purple_core_init(const char *ui)
  	purple_connections_init();
  
  	purple_accounts_init();
@@ -42,9 +42,9 @@ This patch will not be submitted upsteam.
  	purple_savedstatuses_init();
  	purple_notify_init();
  	purple_certificate_init();
---- pidgin-2.11.0/libpurple/plugin.h.orig	2016-08-17 09:08:26.448023611 -0700
-+++ pidgin-2.11.0/libpurple/plugin.h	2016-08-17 09:49:20.857940837 -0700
-@@ -733,6 +733,12 @@
+--- pidgin-2.13.0/libpurple/plugin.h
++++ pidgin-2.13.0/libpurple/plugin.h
+@@ -733,6 +733,12 @@ PurplePluginAction *purple_plugin_action
   */
  void purple_plugin_action_free(PurplePluginAction *action);
  
@@ -57,9 +57,9 @@ This patch will not be submitted upsteam.
  #ifdef __cplusplus
  }
  #endif
---- pidgin-2.11.0/libpurple/plugin.c.orig	2016-08-17 07:42:35.456904439 -0700
-+++ pidgin-2.11.0/libpurple/plugin.c	2016-08-17 12:05:29.285059614 -0700
-@@ -54,6 +54,10 @@
+--- pidgin-2.13.0/libpurple/plugin.c
++++ pidgin-2.13.0/libpurple/plugin.c
+@@ -54,6 +54,10 @@ typedef struct
  
  } PurplePluginIpcCommand;
  
@@ -70,7 +70,7 @@ This patch will not be submitted upsteam.
  static GList *search_paths     = NULL;
  static GList *plugins          = NULL;
  static GList *loaded_plugins   = NULL;
-@@ -207,6 +211,10 @@
+@@ -207,6 +211,10 @@ purple_plugin_probe(const char *filename
  	gchar *basename = NULL;
  	gboolean (*purple_init_plugin)(PurplePlugin *);
  
@@ -81,7 +81,7 @@ This patch will not be submitted upsteam.
  	purple_debug_misc("plugins", "probing %s\n", filename);
  	g_return_val_if_fail(filename != NULL, NULL);
  
-@@ -216,6 +224,12 @@
+@@ -216,6 +224,12 @@ purple_plugin_probe(const char *filename
  	/* If this plugin has already been probed then exit */
  	basename = purple_plugin_get_basename(filename);
  	plugin = purple_plugins_find_with_basename(basename);
@@ -94,7 +94,7 @@ This patch will not be submitted upsteam.
  	g_free(basename);
  	if (plugin != NULL)
  	{
-@@ -484,6 +498,13 @@
+@@ -484,6 +498,13 @@ purple_plugin_probe(const char *filename
  		}
  	}
  
@@ -108,7 +108,7 @@ This patch will not be submitted upsteam.
  	return plugin;
  #else
  	return NULL;
-@@ -1673,3 +1694,15 @@
+@@ -1673,3 +1694,15 @@ purple_plugin_action_free(PurplePluginAc
  	g_free(action->label);
  	g_free(action);
  }

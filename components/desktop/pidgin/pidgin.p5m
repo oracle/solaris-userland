@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -210,6 +210,7 @@ file path=usr/include/pidgin/gtksourceundomanager.h
 file path=usr/include/pidgin/gtksourceview-marshal.h
 file path=usr/include/pidgin/gtkstatus-icon-theme.h
 file path=usr/include/pidgin/gtkstatusbox.h
+file path=usr/include/pidgin/gtkstyle.h
 file path=usr/include/pidgin/gtkthemes.h
 file path=usr/include/pidgin/gtkutils.h
 file path=usr/include/pidgin/gtkwhiteboard.h
@@ -229,13 +230,13 @@ link path=usr/lib/$(MACH64)/libgnt.so target=libgnt.so.0.8.10
 link path=usr/lib/$(MACH64)/libgnt.so.0 target=libgnt.so.0.8.10
 file path=usr/lib/$(MACH64)/libgnt.so.0.8.10
 link path=usr/lib/$(MACH64)/libpurple-client.so \
-    target=libpurple-client.so.0.12.0
+    target=libpurple-client.so.0.13.0
 link path=usr/lib/$(MACH64)/libpurple-client.so.0 \
-    target=libpurple-client.so.0.12.0
-file path=usr/lib/$(MACH64)/libpurple-client.so.0.12.0
-link path=usr/lib/$(MACH64)/libpurple.so target=libpurple.so.0.12.0
-link path=usr/lib/$(MACH64)/libpurple.so.0 target=libpurple.so.0.12.0
-file path=usr/lib/$(MACH64)/libpurple.so.0.12.0
+    target=libpurple-client.so.0.13.0
+file path=usr/lib/$(MACH64)/libpurple-client.so.0.13.0
+link path=usr/lib/$(MACH64)/libpurple.so target=libpurple.so.0.13.0
+link path=usr/lib/$(MACH64)/libpurple.so.0 target=libpurple.so.0.13.0
+file path=usr/lib/$(MACH64)/libpurple.so.0.13.0
 file path=usr/lib/$(MACH64)/pidgin/cap.so
 file path=usr/lib/$(MACH64)/pidgin/convcolors.so
 file path=usr/lib/$(MACH64)/pidgin/extplacement.so
@@ -257,6 +258,7 @@ file path=usr/lib/$(MACH64)/pidgin/themeedit.so
 file path=usr/lib/$(MACH64)/pidgin/ticker.so
 file path=usr/lib/$(MACH64)/pidgin/timestamp.so
 file path=usr/lib/$(MACH64)/pidgin/timestamp_format.so
+file path=usr/lib/$(MACH64)/pidgin/transparency.so
 file path=usr/lib/$(MACH64)/pidgin/xmppconsole.so
 file path=usr/lib/$(MACH64)/pidgin/xmppdisco.so
 file path=usr/lib/$(MACH64)/pkgconfig/finch.pc
@@ -980,9 +982,11 @@ file path=usr/share/sounds/purple/login.wav
 file path=usr/share/sounds/purple/logout.wav
 file path=usr/share/sounds/purple/receive.wav
 file path=usr/share/sounds/purple/send.wav
-license COPYING license=GPLv2
+license pidgin.license license=GPLv2
+
 # Needed for the pidgin-gnome-keyring plugin that saves passwords.
 depend type=require fmri=__TBD \
     pkg.debug.depend.file=usr/lib/64/purple-2/gnome-keyring.so
+
 # Needed for the plugin to do Tools->Preferences sound event previewing.
 depend type=require fmri=library/desktop/gstreamer-1/gst-plugins-good

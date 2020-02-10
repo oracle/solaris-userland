@@ -28,20 +28,19 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pidgin
-COMPONENT_VERSION=	2.12.0
+COMPONENT_VERSION=	2.13.0
 COMPONENT_PROJECT_URL=	https://www.pidgin.im
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-    sha256:8c3d3536d6d3c971bd433ff9946678af70a0f6aa4e6969cc2a83bb357015b7f8
+    sha256:21441733b4019241529e556327c36d36b0bb98aef5ec8e47ce7a6a1947fde344
 COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	3636
 
-TPNO=			34232
+TPNO=			50468
 
 # Use explicit version of Python
-# Pidgin 2.12.0 is not Python 3.x ready, newer ones should be
-PYTHON_VERSION = 2.7
+PYTHON_VERSION = 3.7
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
@@ -131,10 +130,10 @@ REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/nspr
 REQUIRED_PACKAGES += library/perl-5/xml-parser
-REQUIRED_PACKAGES += library/python/dbus-python-27
+REQUIRED_PACKAGES += library/python/dbus-python-37
 REQUIRED_PACKAGES += library/security/nss
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += runtime/tcl-8
 REQUIRED_PACKAGES += runtime/tk-8
 REQUIRED_PACKAGES += shell/ksh93
