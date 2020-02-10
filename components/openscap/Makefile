@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64
@@ -41,11 +41,14 @@ CFLAGS+=		-DNDEBUG
 CFLAGS+=		-DOSCAP_THREAD_SAFE
 CFLAGS+=		-D__$(MACH64)
 
-PYTHON_VERSION =	2.7
-PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
+PYTHON_VERSION =	3.7
+PYTHON_VERSIONS=	$(PYTHON_VERSION)
 
 # publish for only one version of perl
 PERL_VERSIONS = $(PERL_VERSION)
+
+# openscap is not adding cpython-37m string to shared libraries
+PY3_CPYTHON_NAMING = \#
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -71,9 +74,7 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 
 COMPONENT_POST_INSTALL_ACTION =	\
 	$(RM) $(PROTO_DIR)/usr/share/openscap/cpe/* && \
-	$(CP) files/cpe/* $(PROTO_DIR)/usr/share/openscap/cpe; \
-	$(MV) $(PROTO_DIR)/usr/lib/python2.7/vendor-packages/64/*.py* \
-	$(PROTO_DIR)/usr/lib/python2.7/vendor-packages/ ;
+	$(CP) files/cpe/* $(PROTO_DIR)/usr/share/openscap/cpe;
 
 
 # Needed to make "gmake test" work.
@@ -82,13 +83,13 @@ CPPFLAGS +=	-I$(SOURCE_DIR)/src/OVAL/probes
 CPPFLAGS +=	-I$(USRINCDIR)/pcre
 
 CONFIGURE_ENV +=        PERL="$(PERL)"
-CONFIGURE_ENV +=        PYTHON="$(PYTHON.$(BITS))"
+CONFIGURE_ENV +=        PYTHON3="$(PYTHON)"
 CONFIGURE_OPTIONS +=	--enable-debug=no
 CONFIGURE_OPTIONS +=	--enable-sce=yes
 CONFIGURE_OPTIONS +=	--enable-perl=yes
+CONFIGURE_OPTIONS +=	--enable-python=no
+CONFIGURE_OPTIONS +=	--enable-python3=yes
 CONFIGURE_OPTIONS +=	--libexecdir=$(CONFIGURE_LIBDIR.$(BITS))
-CONFIGURE_OPTIONS +=	am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
-CONFIGURE_OPTIONS +=	am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
 # Makefile.am files of this component are not compatible with Solaris make.
 # Use GNU make to avoid the configuration error when makefile fragments are processed.
 CONFIGURE_OPTIONS += MAKE=$(GMAKE)
@@ -111,7 +112,7 @@ REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/libxslt
 REQUIRED_PACKAGES += library/pcre
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += security/compliance/openscap
 REQUIRED_PACKAGES += system/library/datalink
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
