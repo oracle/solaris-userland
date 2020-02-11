@@ -1,0 +1,12 @@
+Fix RPATH to find libnss and libnspr
+
+--- a/plugins/smartcard/meson.build	2020-06-23 10:39:09.008841148 -0700
++++ b/plugins/smartcard/meson.build	2020-06-23 13:54:08.692677088 -0700
+@@ -44,6 +44,6 @@
+   dependencies: deps,
+   c_args: cflags,
+   install: true,
+-  install_rpath: gsd_pkglibdir,
++  install_rpath: gsd_pkglibdir + ':' + '/usr/lib/mps/64',
+   install_dir: gsd_libexecdir
+ )

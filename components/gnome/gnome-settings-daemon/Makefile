@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            64
@@ -28,16 +28,20 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-settings-daemon
-COMPONENT_VERSION=	3.24.0
+COMPONENT_VERSION=	3.34.2
 COMPONENT_PROJECT_URL=	http://wiki.gnome.org
 COMPONENT_ARCHIVE_HASH= \
-	sha256:4f31a68aebdd4e0c37336306a4eea4cf219d46ed8fc59e3f3081b7a3088900c4
+	sha256:9fbae67e217e53b99e4f9e7d392c91ffbe31253941c9b136ef09c2d9db7ad7ed
 COMPONENT_BUGDB=	gnome/session
 COMPONENT_ANITYA_ID=	12860
 
-TPNO=			34520
+TPNO=			59728
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/test-x11.mk
+
+# requires python-dbusmock
+TEST_TARGET = $(SKIP_TEST)
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
@@ -45,29 +49,23 @@ COMPONENT_TEST_TRANSFORMS += \
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# A pkg-config file isn't shipped in Solaris for nss/nspr 64-bit, so we
-# workaround this by using the one-off copy in the evolution-data-server
-# component directory
-PKG_CONFIG_PATHS.64 += $(WS_COMPONENTS)/gnome/evolution-data-server
-PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
-
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
 
 # gudev not yet supported on Solaris.
-CONFIGURE_OPTIONS += --disable-gudev
+CONFIGURE_OPTIONS += -Dgudev=false
 # GNOME NetworkManager not yet supported on Solaris.
-CONFIGURE_OPTIONS += --disable-network-manager
+CONFIGURE_OPTIONS += -Dnetwork_manager=false
 # Linux-specific.
-CONFIGURE_OPTIONS += --disable-rfkill
-CONFIGURE_OPTIONS += --disable-static
+CONFIGURE_OPTIONS += -Drfkill=false
 # Wayland not yet supported on Solaris.
-CONFIGURE_OPTIONS += --disable-wayland
-CONFIGURE_OPTIONS += --enable-man
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --with-pic
-
-# Required due to patches.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
+CONFIGURE_OPTIONS += -Dwayland=false
+CONFIGURE_OPTIONS += -Dwwan=false
+CONFIGURE_OPTIONS += -Dudev_dir=''
+CONFIGURE_OPTIONS += -Dsystemd=false
+CONFIGURE_OPTIONS += -Dalsa=false
+CONFIGURE_OPTIONS += --libexecdir=$(USRLIB.$(BITS))
 
 REQUIRED_PACKAGES += desktop/xdg/desktop-file-utils
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
@@ -87,6 +85,7 @@ REQUIRED_PACKAGES += library/lcms2
 REQUIRED_PACKAGES += library/nspr
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/security/nss
+REQUIRED_PACKAGES += library/security/nspr
 REQUIRED_PACKAGES += service/gnome/desktop-cache
 REQUIRED_PACKAGES += service/image/colord
 REQUIRED_PACKAGES += system/library/fontconfig
