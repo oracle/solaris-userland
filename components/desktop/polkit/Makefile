@@ -33,17 +33,18 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		polkit
-COMPONENT_VERSION=	0.113
+COMPONENT_VERSION=	0.116
 COMPONENT_PROJECT_URL=	http://www.freedesktop.org/wiki/Software/polkit/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e1c095093c654951f78f8618d427faf91cf62abdefed98de40ff65eca6413c81
+	sha256:88170c9e711e8db305a12fdb8234fac5706c61969b94e084d0f117d8ec5d34b1
 COMPONENT_ARCHIVE_URL=	http://www.freedesktop.org/software/polkit/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sign
 COMPONENT_BUGDB=	gnome/security
 COMPONENT_ANITYA_ID=	3682
+COMPONENT_SIG_URL=
 
-TPNO=			27381
+TPNO=			55168
 
 # Test don't work on Solaris
 TEST_TARGET = $(SKIP_TEST)
@@ -73,29 +74,30 @@ CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += --with-authfw=pam
 CONFIGURE_OPTIONS += --with-polkitd-user=_polkitd
 CONFIGURE_OPTIONS += --with-os-type=solaris
+CONFIGURE_OPTIONS += --disable-libsystemd-login
+CONFIGURE_OPTIONS += --disable-libelogind
 CONFIGURE_OPTIONS += --sysconfdir="$(ETCDIR)"
 
 # Workaround the mozjs issue described in 24935318
-LD_EXEC_OPTIONS += -M $(WS_COMPONENTS)/gnome/gjs/mapfile
+LD_EXEC_OPTIONS.64 += -M $(WS_COMPONENTS)/desktop/polkit/mapfile
+COMPONENT_BUILD_ENV.64 += LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS.64)"
+COMPONENT_INSTALL_ENV.64 += LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS.64)"
 ADIHEAP_MODE = $(ADIHEAP_DISABLE)
 ADISTACK_MODE = $(ADISTACK_DISABLE)
-
-# Largefile support breaks use of <procfs.h> when build environment is older
-# than s12_84 due to Solaris bug 21833491
-ifeq ($(OS_VERSION), 11.3)
-  CONFIGURE_OPTIONS += --disable-largefile
-endif
 
 # Assumes GNU xgettext in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 
-# SMF manifest & method
-PKG_PROTO_DIRS += $(COMPONENT_DIR)/files
+COMPONENT_POST_INSTALL_ACTION.64 += \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/polkit.xml \
+                $(PROTO_DIR)/lib/svc/manifest/system/polkit.xml; \
+        $(INSTALL) -D -m 0555 $(COMPONENT_DIR)/files/svc-polkit \
+                $(PROTO_DIR)/lib/svc/method/svc-polkit; \
 
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/libmozjs-38
+REQUIRED_PACKAGES += library/libmozjs-60
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/dbus
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

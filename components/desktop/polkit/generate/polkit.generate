@@ -1,0 +1,51 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+#
+
+# Set perms and owner
+<transform file path=usr/lib/polkit-1/polkit-agent-helper-1 -> set owner root>
+<transform file path=usr/lib/polkit-1/polkit-agent-helper-1 -> set mode 4555>
+<transform file path=usr/bin/pkexec -> set owner root>
+<transform file path=usr/bin/pkexec -> set mode 4555>
+<transform file path=usr/lib/polkit-1/polkitd -> set mode 0555>
+
+# Drop 32-bit binaries and polkit-1
+<transform file path=usr/bin/\$\(MACH32\)/* -> drop>
+<transform file path=etc/pam.d/polkit-1 -> drop>
+
+# tranform for the binaries and daemon pkglint errors of not being ASLR enabled
+<transform file path=usr/lib/polkit-1/polkit-agent-helper-1 -> \
+    set pkg.linted.userland.action001.5 true>
+<transform file path=usr/lib/polkit-1/polkitd -> \
+    set pkg.linted.userland.action001.5 true>
+<transform file path=usr/bin/pk-example-frobnicate -> \
+    set pkg.linted.userland.action001.5 true>
+<transform file path=usr/bin/pkaction -> \  
+    set pkg.linted.userland.action001.5 true>
+<transform file path=usr/bin/pkcheck -> \
+    set pkg.linted.userland.action001.5 true>
+<transform file path=usr/bin/pkexec-> \
+    set pkg.linted.userland.action001.5 true>
+<transform file path=usr/bin/pkttyagent -> \
+    set pkg.linted.userland.action001.5 true>

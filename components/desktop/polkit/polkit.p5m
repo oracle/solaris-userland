@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 
@@ -41,13 +41,14 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=etc/dbus-1/system.d/org.freedesktop.PolicyKit1.conf
 dir  path=etc/polkit-1/rules.d owner=_polkitd mode=700
 file path=etc/polkit-1/rules.d/50-default.rules
-file polkit.xml path=lib/svc/manifest/system/polkit.xml
-file svc-polkit path=lib/svc/method/svc-polkit
-file path=usr/bin/pk-example-frobnicate
-file path=usr/bin/pkaction
-file path=usr/bin/pkcheck
-file path=usr/bin/pkexec owner=root mode=4555
-file path=usr/bin/pkttyagent
+file path=lib/svc/manifest/system/polkit.xml
+file path=lib/svc/method/svc-polkit
+file path=usr/bin/pk-example-frobnicate pkg.linted.userland.action001.5=true
+file path=usr/bin/pkaction pkg.linted.userland.action001.5=true
+file path=usr/bin/pkcheck pkg.linted.userland.action001.5=true
+file path=usr/bin/pkexec owner=root mode=4555 \
+    pkg.linted.userland.action001.5=true
+file path=usr/bin/pkttyagent pkg.linted.userland.action001.5=true
 file path=usr/include/polkit-1/polkit/polkit.h
 file path=usr/include/polkit-1/polkit/polkitactiondescription.h
 file path=usr/include/polkit-1/polkit/polkitauthority.h
@@ -100,9 +101,13 @@ link path=usr/lib/libpolkit-gobject-1.so.0 target=libpolkit-gobject-1.so.0.0.0
 file path=usr/lib/libpolkit-gobject-1.so.0.0.0
 file path=usr/lib/pkgconfig/polkit-agent-1.pc
 file path=usr/lib/pkgconfig/polkit-gobject-1.pc
-file path=usr/lib/polkit-1/polkit-agent-helper-1 owner=root mode=4555
-file path=usr/lib/polkit-1/polkitd mode=0555
+file path=usr/lib/polkit-1/polkit-agent-helper-1 owner=root mode=4555 \
+    pkg.linted.userland.action001.5=true
+file path=usr/lib/polkit-1/polkitd mode=0555 \
+    pkg.linted.userland.action001.5=true
 file path=usr/share/dbus-1/system-services/org.freedesktop.PolicyKit1.service
+file path=usr/share/gettext/its/polkit.its
+file path=usr/share/gettext/its/polkit.loc
 file path=usr/share/gir-1.0/Polkit-1.0.gir
 file path=usr/share/gir-1.0/PolkitAgent-1.0.gir
 file path=usr/share/gtk-doc/html/polkit-1/Identities.html
@@ -163,6 +168,19 @@ file path=usr/share/gtk-doc/html/polkit-1/up-insensitive.png
 file path=usr/share/gtk-doc/html/polkit-1/up.png
 file path=usr/share/locale/cs/LC_MESSAGES/polkit-1.mo
 file path=usr/share/locale/da/LC_MESSAGES/polkit-1.mo
+file path=usr/share/locale/de/LC_MESSAGES/polkit-1.mo
+file path=usr/share/locale/hr/LC_MESSAGES/polkit-1.mo
+file path=usr/share/locale/hu/LC_MESSAGES/polkit-1.mo
+file path=usr/share/locale/id/LC_MESSAGES/polkit-1.mo
+file path=usr/share/locale/it/LC_MESSAGES/polkit-1.mo
+file path=usr/share/locale/pl/LC_MESSAGES/polkit-1.mo
+file path=usr/share/locale/pt_BR/LC_MESSAGES/polkit-1.mo
+file path=usr/share/locale/sk/LC_MESSAGES/polkit-1.mo
+file path=usr/share/locale/sv/LC_MESSAGES/polkit-1.mo
+file path=usr/share/locale/tr/LC_MESSAGES/polkit-1.mo
+file path=usr/share/locale/uk/LC_MESSAGES/polkit-1.mo
+file path=usr/share/locale/zh_CN/LC_MESSAGES/polkit-1.mo
+file path=usr/share/locale/zh_TW/LC_MESSAGES/polkit-1.mo
 file path=usr/share/man/man1/pkaction.1
 file path=usr/share/man/man1/pkcheck.1
 file path=usr/share/man/man1/pkexec.1
