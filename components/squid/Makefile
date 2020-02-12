@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -41,9 +41,11 @@ COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)Versions/v4/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=    $(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	4880
 
-# Enable adiheap and adistack security extensions
+# Enable adiheap security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
-ADISTACK_MODE =	$(ADISTACK_ENABLE)
+
+# Disable adistack security extension due to C++ exception handling issues
+ADISTACK_MODE =	$(ADISTACK_DISABLE)
 
 TEST_TARGET= $(TEST_64)
 include $(WS_MAKE_RULES)/common.mk
