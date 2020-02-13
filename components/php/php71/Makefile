@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 # Must use gcc because of 21090206
@@ -106,6 +106,21 @@ CFLAGS += -DOPENSSL_NO_SSL2
 CFLAGS += -DOPENSSL_NO_SSL3
 
 PROTOUSRPHPVERDIR = $(PROTO_DIR)/$(CONFIGURE_PREFIX)
+
+COMPONENT_PRE_CONFIGURE_ACTION += $(MKDIR) $(BUILD_DIR)/temp;
+COMPONENT_BUILD_ENV += TMPDIR=$(BUILD_DIR)/temp
+CONFIGURE_ENV += TMPDIR=$(BUILD_DIR)/temp
+COMPONENT_INSTALL_ENV += TMPDIR=$(BUILD_DIR)/temp
+
+# In order to build pear on public build machine every engineer needs to use
+# his own temporary directory and not /var/tmp/pear. Unfortunatelly this
+# temporary directory is then stored into pear.conf file. So we need to correct
+# it back to the default which would be used without us specifying TMPDIR -
+# that is to /tmp/pear/temp
+COMPONENT_POST_INSTALL_ACTION += \
+	../fix_temp_dirs.pl \
+	    $(PROTO_DIR)/etc/php/$(UL_PHP_MINOR_VERSION)/pear.conf \
+	    $(BUILD_DIR)/temp ;
 
 # Adapted from PHP 5.3 Makefile.
 # Creates alternate versions of the scripts needed for building extensions
