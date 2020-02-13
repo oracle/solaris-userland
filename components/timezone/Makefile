@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2005, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2005, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
@@ -97,6 +97,14 @@ build: $(SOURCE_DIR)/.prep $(BUILD_DIR)
 		/usr/bin/msguniq > $(BUILD_DIR)/$(POFILE)
 
 install: build
+
+# The following workaround is used to bring up SPARC Desktop before Release From Trunk 
+# and thereby fixes bug 29259680 but the original bugs will be seen on SPARC again 
+# and this is tracked by a new bug 30894518.
+ifeq ($(MACH), i386)
+	$(RM) $(PROTOUSRSHAREDIR)/zoneinfo
+	$(SYMLINK) ../..$(USRSHARELIBDIR)/zoneinfo $(PROTOUSRSHAREDIR)/zoneinfo
+endif
 
 # empty test target
 test:	$(NO_TESTS)

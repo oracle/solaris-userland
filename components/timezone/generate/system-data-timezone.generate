@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2001, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2001, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 # Initially we include all files from the tarball into
 # usr/share/lib/zoneinfo/src. Now we need to remove all files we don't want.
@@ -28,3 +28,8 @@
 # Zoneinfo has to be found in component root directory
 <transform file path=(zoneinfo.5) -> set action.hash %<1>>
 <transform file path=(zoneinfo.5) -> set path usr/share/man/man5/%<1>>
+
+# The following workaround is used to bring up SPARC Desktop before Release From Trunk 
+# and thereby fixes bug 29259680 but the original bugs will be seen on SPARC again 
+# and this is tracked by a new bug 30894518.
+<transform link path=usr/share/zoneinfo target=../../usr/share/lib/zoneinfo -> set variant.arch i386>
