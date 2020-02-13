@@ -20,32 +20,30 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pyasn1-modules
-COMPONENT_VERSION=	0.2.1
+COMPONENT_VERSION=	0.2.8
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:af00ea8f2022b6287dc375b2c70f31ab5af83989fc6fe9eacd4976ce26cd7ccc
+    sha256:6cfd5aaee019e3895cc05c465098bc32cb6de211b6654de073e733596a8227dc
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://pyasn1.sourceforge.net/
 COMPONENT_BUGDB=	python-mod/pyasn1
 COMPONENT_ANITYA_ID=	11987
 
-TPNO=			42637
+TPNO=			56825
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-COMPONENT_TEST_ENV +=	PATH=/usr/bin:$(SOURCE_DIR)/tools
-COMPONENT_TEST_ENV +=	PYTHON=$(PYTHON)
-COMPONENT_TEST_CMD =	$(SHELL)
-COMPONENT_TEST_ARGS =	$(COMPONENT_DIR)/files/runtests
-COMPONENT_TEST_DIR =	$(COMPONENT_SRC)
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
