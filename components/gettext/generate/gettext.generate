@@ -1,0 +1,51 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+#
+
+# Correct access rights
+<transform file path=usr/lib/\$\(MACH64\)/gettext/hostname -> set mode 0555>
+<transform file path=usr/lib/\$\(MACH64\)/gettext/project-id -> set mode 0555>
+<transform file path=usr/lib/\$\(MACH64\)/gettext/urlget -> set mode 0555>
+<transform file path=usr/lib/\$\(MACH64\)/gettext/user-email -> set mode 0555>
+<transform file path=usr/share/doc/gettext/examples/hello-c\+\+-kde/admin/mkinstalldirs \
+    -> set mode 0555>
+<transform file path=.*(\.|\-)sh$ -> set mode 0555>
+<transform file path=usr/share/gettext/config.rpath -> set mode 0555>
+<transform file path=usr/share/gettext/intl/config.charset -> set mode 0555>
+<transform file path=.*(team-address|trigger)$ -> set mode 0555>
+
+# Drop stuff we do not deliver historically
+# gettext-po.h is not needed for runtime, used in the development of gettext tools
+<transform file path=usr/include/gettext-po.h$ -> drop>
+# charset.alias is delivered by the package library/glib2
+<transform file path=usr/lib/\$\(MACH64\)/charset.alias -> drop>
+<transform file path=usr/lib/\$\(MACH64\)/gettext/cldr-plurals -> drop>
+<transform file path=.*\.3$ -> drop>
+
+# Create symlink to /usr/gnu/bin and install it to /usr/gnu/bin and /usr/gnu/share/man/man1
+<transform file path=usr/bin/(x?gettext|msgfmt)$ -> emit link path=/usr/bin/g%<1> target=../gnu/bin/%<1> facet.compat.gnulinks=true>
+<transform file path=usr/bin/(x?gettext|msgfmt)$ -> set action.hash %(path)>
+<transform file path=usr/bin/(x?gettext|msgfmt)$ -> set path usr/gnu/bin/%<1>>
+<transform file path=usr/share/man/man1/(x?gettext|msgfmt).1 -> set action.hash %(path)>
+<transform file path=usr/share/man/man1/(x?gettext|msgfmt).1 -> set path usr/gnu/share/man/man1/%<1>.1>
