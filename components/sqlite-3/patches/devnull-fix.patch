@@ -1,0 +1,25 @@
+Recently, O_NOFOLLOW was added to several calls into robust_open(). In that
+function, if the fd returned by open() is too low (in the stdio range 0-2),
+then it closes it, and opens /dev/null to pad out the fd's until we reach at
+least fd#3.
+
+However, it uses the same flags to open /dev/null as were passed in for the
+database open(), resulting in O_NOFOLLOW being passed to open("/dev/null").
+The issue we are seeing is that /dev/null is a symlink on Solaris, and hence
+this returns ELOOP, and robust_open() returns an error.
+
+This was offered and accepted upstream:
+https://www.mail-archive.com/sqlite-users@mailinglists.sqlite.org/msg119101.html
+https://www.sqlite.org/src/info/0c683c43a62fe25c
+
+--- sqlite-autoconf-3310000/sqlite3.c
++++ sqlite-autoconf-3310000/sqlite3.c
+@@ -33977,7 +33981,7 @@ static int robust_open(const char *z, in
+     sqlite3_log(SQLITE_WARNING, 
+                 "attempt to open \"%s\" as file descriptor %d", z, fd);
+     fd = -1;
+-    if( osOpen("/dev/null", f, m)<0 ) break;
++    if( osOpen("/dev/null", O_RDONLY, m)<0 ) break;
+   }
+   if( fd>=0 ){
+     if( m!=0 ){
