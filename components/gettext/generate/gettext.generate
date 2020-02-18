@@ -43,6 +43,9 @@
 <transform file path=usr/lib/\$\(MACH64\)/gettext/cldr-plurals -> drop>
 <transform file path=.*\.3$ -> drop>
 
+# Drop exe file as it's not required for Solaris
+<transform file path=usr/share/doc/gettext/examples/build-aux/csharpexec-test.exe -> drop>
+
 # Create symlink to /usr/gnu/bin and install it to /usr/gnu/bin and /usr/gnu/share/man/man1
 <transform file path=usr/bin/(x?gettext|msgfmt)$ -> emit link path=/usr/bin/g%<1> target=../gnu/bin/%<1> facet.compat.gnulinks=true>
 <transform file path=usr/bin/(x?gettext|msgfmt)$ -> set action.hash %(path)>
