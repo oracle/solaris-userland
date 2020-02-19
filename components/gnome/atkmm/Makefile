@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            32_and_64
@@ -29,14 +29,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		atkmm
-COMPONENT_VERSION=	2.24.2
+COMPONENT_VERSION=	2.28.0
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/atkmm/stable/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:ff95385759e2af23828d4056356f25376cfabc41e690ac1df055371537e458bd
+    sha256:4c4cfc917fd42d3879ce997b463428d6982affa0fb660cafcc0bc2d9afcedd3a
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	7962
 
-TPNO=			35831
+TPNO=			55821
 
 TEST_TARGET = $(NO_TESTS)
 
