@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 
@@ -65,11 +65,6 @@ CFLAGS += -D__EXTENSIONS__ -DDECCHECK -D_XOPEN_SOURCE=600
 CXXFLAGS += -D__EXTENSIONS__ -DDECCHECK -D_XOPEN_SOURCE=600 -std=c++11
 
 include ../../make-rules/shared-targets.mk
-
-PKG_PROTO_DIRS += $(WS_TOP)/components/icu59/build/prototype/$(MACH)
-
-# Install icu59 dependency.
-COMPONENT_POST_INSTALL_ACTION += (cd ../icu59 && $(GMAKE) install);
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
