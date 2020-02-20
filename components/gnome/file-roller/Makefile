@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -28,25 +28,32 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		file-roller
-COMPONENT_VERSION=	3.24.0
+COMPONENT_VERSION=	3.32.2
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/FileRoller
 COMPONENT_ARCHIVE_HASH= \
-	sha256:f4b72dba69b1984d96a1a9a6c544a9f94e54a531612b299251ef2702e0b0ad21
+	sha256:c60a79e0baf74cb1c09a1c8f5ffe0d6e311227ca14ecc5b1156beb3715341a71
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	5392
 
-TPNO=			36275
+TPNO=			54019
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-CONFIGURE_OPTIONS += --enable-libarchive
-CONFIGURE_OPTIONS += --disable-static
+CONFIGURE_OPTIONS += -Dpackagekit=false
 
 # Assumes GNU xgettext in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+
+CONFIGURE_OPTIONS += --libexecdir="$(USRLIB)"
+
+COMPONENT_POST_INSTALL_ACTION.64 += \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/file-roller.1 \
+                $(PROTO_DIR)/usr/share/man/man1/file-roller.1;
 
 REQUIRED_PACKAGES += gnome/file-manager/nautilus
 REQUIRED_PACKAGES += library/desktop/cairo
