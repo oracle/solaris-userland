@@ -1,0 +1,121 @@
+This patch fixes several issues in the CherryPy test suite.
+
+Mock is available in unittest only in newer runtimes; older ones have to
+import it from a separate mock package. Not for upstream.
+
+test_null_bytes - due to changes in the Python runtime, this test was
+failing. Patch taken from upstream, where this got fixed.
+
+We don't have the Path module in Solaris, hence dependency on it is
+removed. Not for upstream.
+
+--- cherrypy/test/test_logging.py
++++ cherrypy/test/test_logging.py
+@@ -1,7 +1,10 @@
+ """Basic tests for the CherryPy core: request handling."""
+ 
+ import os
+-from unittest import mock
++try:
++    from unittest import mock
++except ImportError:
++    import mock
+ 
+ import six
+ 
+--- cherrypy/test/test_encoding.py
++++ cherrypy/test/test_encoding.py
+@@ -2,7 +2,11 @@
+ 
+ import gzip
+ import io
+-from unittest import mock
++
++try:
++    from unittest import mock
++except ImportError:
++    import mock
+ 
+ from six.moves.http_client import IncompleteRead
+ from six.moves.urllib.parse import quote as url_quote
+--- cherrypy/test/test_http.py
++++ cherrypy/test/test_http.py
+@@ -4,7 +4,11 @@ import errno
+ import mimetypes
+ import socket
+ import sys
+-from unittest import mock
++
++try:
++    from unittest import mock
++except ImportError:
++    import mock
+ 
+ import six
+ from six.moves.http_client import HTTPConnection
+--- docs/conf.py
++++ docs/conf.py
+@@ -205,7 +205,10 @@ def mock_pywin32():
+     if try_import('win32api'):
+         return
+ 
+-    from unittest import mock
++    try:
++        from unittest import mock
++    except ImportError:
++        import mock
+ 
+     MOCK_MODULES = [
+         'win32api', 'win32con', 'win32event', 'win32service',
+--- cherrypy/test/test_static.py
++++ cherrypy/test/test_static.py
+@@ -8,8 +8,15 @@ import tempfile
+ 
+ from six import text_type as str
+ from six.moves import urllib
++from six.moves import http_client
+ from six.moves.http_client import HTTPConnection
+ 
++import re
++try:
++    from unittest import mock
++except ImportError:
++    import mock
++
+ import pytest
+ import py.path
+ 
+@@ -396,8 +407,11 @@ class StaticTest(helper.CPWebCase):
+         self.assertInBody("I couldn't find that thing")
+ 
+     def test_null_bytes(self):
++        keep = http_client._contains_disallowed_url_pchar_re
++        http_client._contains_disallowed_url_pchar_re = re.compile(r'[\n]')
+         self.getPage('/static/\x00')
+         self.assertStatus('404 Not Found')
++        http_client._contains_disallowed_url_pchar_re = keep
+ 
+     @staticmethod
+     @contextlib.contextmanager
+--- cherrypy/test/test_session.py
++++ cherrypy/test/test_session.py
+@@ -7,7 +7,6 @@ import importlib
+ from six.moves.http_client import HTTPConnection
+ 
+ import pytest
+-from path import Path
+ 
+ import cherrypy
+ from cherrypy._cpcompat import (
+@@ -146,8 +145,9 @@ class SessionTest(helper.CPWebCase):
+         # Clean up sessions.
+         for fname in os.listdir(localDir):
+             if fname.startswith(sessions.FileSession.SESSION_PREFIX):
+-                path = Path(localDir) / fname
+-                path.remove_p()
++                path = os.path.join(localDir, fname)
++                if os.path.exists(path):
++                    os.remove(path)
+ 
+     @pytest.mark.xfail(reason='#1534')
+     def test_0_Session(self):
