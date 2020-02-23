@@ -1,0 +1,29 @@
+reworked changes suggested in phabricator review D1010
+issue: https://gitlab.gnome.org/GNOME/mutter/issues/355
+http://gitlab.gnome.org/christian-rauch/mutter/commit/4e3ed17c42daac84b9d273d5d750fdb04a296430
+
+--- a/src/backends/meta-cursor.c	2020-02-20 09:26:11.573157848 -0800
++++ b/src/backends/meta-cursor.c	2020-02-20 09:27:12.381723217 -0800
+@@ -120,6 +120,22 @@
+ static XcursorImages *
+ load_cursor_on_client (MetaCursor cursor, int scale)
+ {
++  static const char envvar_cursor[] = "XCURSOR_PATH";
++  static const char def_cursor_path[] = "/usr/share/icons/";
++
++  const char *xcursor_paths = getenv(envvar_cursor);
++  char *xcursor_paths_ext;
++
++  if (xcursor_paths) {
++	/* prepend default path to environment variable */
++    	asprintf(&xcursor_paths_ext, "%s:%s\n", def_cursor_path, xcursor_paths);
++  } else {
++     	xcursor_paths_ext = strdup(def_cursor_path);
++  }
++ 
++  if (setenv(envvar_cursor, xcursor_paths_ext, TRUE)==-1)
++    	g_error("Failed to set %s", envvar_cursor);
++
+   return XcursorLibraryLoadImages (translate_meta_cursor (cursor),
+                                    meta_prefs_get_cursor_theme (),
+                                    meta_prefs_get_cursor_size () * scale);
