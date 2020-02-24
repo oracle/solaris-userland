@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:caa10a4716e4eb8f3c67d8a6e0cc091251e6cf4dfcec6b436227aaae4e0d9e8d
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/glyph/Automat
-COMPONENT_BUGDB=	python-mod/hyperlink
+COMPONENT_BUGDB=	python-mod/automat
 COMPONENT_ANITYA_ID=	15101
 
 TPNO=			50703

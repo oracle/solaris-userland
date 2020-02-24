@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =	64
@@ -40,6 +40,7 @@ COMPONENT_ARCHIVE_URL =	https://github.com/eqrion/cbindgen/archive/v$(COMPONENT_
 COMPONENT_ARCHIVE_HASH_crates = \
     sha256:36b406f71746c51feb2c0ba042780cef0c46641326aaf5945cb35efd19893be2
 
+COMPONENT_BUGDB =	utility/rust
 TPNO = 52376
 
 BUILD_STYLE = cargo

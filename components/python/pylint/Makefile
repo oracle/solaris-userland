@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= NO_ARCH
 include ../../../make-rules/shared-macros.mk
@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH=		\
 	sha256:723e3db49555abaf9bf79dc474c6b9e2935ad82230b10c1138a71ea41ac0fff1
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=  https://www.pylint.org/
-COMPONENT_BUGDB=	python-mod/pylint
+COMPONENT_BUGDB=	utility/pylint
 COMPONENT_ANITYA_ID=	5344
 
 TPNO=			51781

@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:a6f74383cff70990cdf16a04250e4ba5641c1a497c9d85ee027f43a2ffc5e2d3
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://service-identity.readthedocs.io/en/stable/
-COMPONENT_BUGDB=	python-mod/service_identity
+COMPONENT_BUGDB=	python-mod/serv_identity
 COMPONENT_ANITYA_ID=	7917
 
 TPNO=			56529
