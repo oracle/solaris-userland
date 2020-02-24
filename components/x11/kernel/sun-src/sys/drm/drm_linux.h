@@ -121,7 +121,9 @@
 #define abs(x) ((x < 0) ? -x : x)
 
 #define div_u64(x, y) ((unsigned long long)(x))/((unsigned long long)(y))  /* XXX FIXME */
+#ifndef roundup
 #define roundup(x, y) ((((x) + ((y) - 1)) / (y)) * (y))
+#endif
 
 #define put_user(val,ptr) DRM_COPY_TO_USER(ptr,(&val),sizeof(val))
 #define get_user(x,ptr) DRM_COPY_FROM_USER((&x),ptr,sizeof(x))
