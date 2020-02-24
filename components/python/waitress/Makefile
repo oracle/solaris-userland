@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		waitress
-COMPONENT_VERSION=	0.9.0
+COMPONENT_VERSION=	1.4.3
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5368b6f2c51823b60e01cd762610385cc2951b25cbf0e930445215d2527acbb4
+    sha256:1a616786da00bba69517e43ce8366f280880c34ae4e2f3b8adea95f193c20796
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/waitress
 COMPONENT_BUGDB=	python-mod/waitress
 COMPONENT_ANITYA_ID=	4085
 
-TPNO=			29067
+TPNO=			57052
 
 # This component is not yet built for Python 3.7
 PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
@@ -47,8 +47,9 @@ include $(WS_MAKE_RULES)/ips.mk
 COMPONENT_POST_INSTALL_ACTION += (cd $(PROTO_DIR)/usr/bin ; \
 	$(MV) -f waitress-serve waitress-serve-$(PYTHON_VERSION))
 
-COMPONENT_TEST_DIR=     $(SOURCE_DIR)
-COMPONENT_TEST_ARGS=    setup.py test
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/waitress/tests
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -64,6 +65,3 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
-
-REQUIRED_PACKAGES += library/python/setuptools-27
-REQUIRED_PACKAGES += library/python/setuptools-34
