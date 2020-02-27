@@ -42,19 +42,6 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-# Meta package has to rename 3.4 variant to legacy
-# as there was never a non legacy one
-FIX_MANIFEST_LEGACY:
-	echo "<transform depend fmri=(.*)rfc3986-34 \
-		-> edit fmri library/python legacy/library/python>" | \
-	$(PKGMOGRIFY) /dev/fd/0 $(MANIFEST_BASE)-rfc3986.mogrified \
-		> $(MANIFEST_BASE)-rfc3986.mogrified-fixed ;
-	$(MV) $(MANIFEST_BASE)-rfc3986.mogrified-fixed \
-		$(MANIFEST_BASE)-rfc3986.mogrified
-
-$(MANIFEST_BASE)-rfc3986.mangled: FIX_MANIFEST_LEGACY
-
-
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
