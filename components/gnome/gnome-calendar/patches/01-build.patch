@@ -1,0 +1,29 @@
+Don't check for specific function in libical once we have found the
+dependency.  
+
+--- a/meson.build	2020-02-06 14:25:58.038499465 -0800
++++ b/meson.build	2020-02-06 14:28:01.974046495 -0800
+@@ -133,9 +133,6 @@
+ libical_dep = dependency('libical', version: '>= 1.0')
+ config_h.set('HAVE_LIBICAL', libical_dep.found())
+ 
+-assert(cc.has_function('icaltime_days_in_year', dependencies: libical_dep),
+-       'Error: icaltime_days_in_year() not found in libical!. Upgrade your libical library.')
+-
+ gsettings_desktop_schemas_dep = dependency('gsettings-desktop-schemas', version: '>= 3.21.2')
+ libedataserverui_dep = dependency('libedataserverui-1.2', version: '>= 3.17.1')
+ libedataserver_dep = dependency('libedataserver-1.2', version: '>= 3.17.1')
+
+Change to avoid including the 32-bit libraries for ical which results in 
+ld: fatal: file /usr/lib/libical.so: wrong ELF class: ELFCLASS32
+
+--- a/src/meson.build	2020-02-13 14:08:20.501416435 -0800
++++ b/src/meson.build	2020-02-13 14:08:34.055262685 -0800
+@@ -8,7 +8,6 @@
+   libecal_dep,
+   libdazzle_dep,
+   libsoup_dep,
+-  libical_dep,
+   glib_dep,
+   gtk_dep,
+   gio_dep,
