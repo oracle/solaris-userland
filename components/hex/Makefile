@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Only bytecode and text files.
@@ -29,15 +29,15 @@ BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		hex
-COMPONENT_VERSION=	0.20.1
+COMPONENT_VERSION=	0.20.5
 COMPONENT_PROJECT_URL=	https://hex.pm/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6af8bda12e3c81d15b9d274c1ab2d6afd9a40e28c1db7bb50baf79b6a73bb3ea
+    sha256:b88dbccfeeef83f68ec4e9f457874177dd8b0497d533b8040528dad14a8808ba
 COMPONENT_ARCHIVE_URL=	https://github.com/hexpm/$(COMPONENT_NAME)/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/elixir
 COMPONENT_ANITYA_ID= N/A
 
-TPNO=			53553
+TPNO=			57088
 
 BUILD_STYLE= justmake
 include $(WS_MAKE_RULES)/common.mk
@@ -48,7 +48,8 @@ COMPONENT_PRE_BUILD_ACTION = $(CP) -r $(SOURCE_DIR)/. $(@D)
 # MIX_ENV=prod selects the production version of the component.
 # MIX_HOME=$(@D) changes the mix working directory from $HOME to build directory.
 # LC_ALL=en_US.UTF-8 is set to avoid warnings about possible Elixir malfunctions.
-MIX_BUILDTOOL_ENV= MIX_ENV=prod MIX_HOME=$(@D) LC_ALL=en_US.UTF-8
+# DO_NOT_LOAD_HEX_MODULES=1 ensures that system hex modules are not loaded (avoid warnings and errors).
+MIX_BUILDTOOL_ENV= MIX_ENV=prod MIX_HOME=$(@D) LC_ALL=en_US.UTF-8 DO_NOT_LOAD_HEX_MODULES=1
 COMPONENT_BUILD_ACTION = cd $(@D); \
 			$(MIX_BUILDTOOL_ENV) mix compile
 
