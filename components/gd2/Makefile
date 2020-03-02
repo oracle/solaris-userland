@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -70,7 +70,10 @@ COMPONENT_POST_INSTALL_ACTION.32 += \
 # When we update to a version of libgd that has this test in the
 # tarball, this can be removed along with files/php_bug_75571.gif
 COMPONENT_PRE_TEST_ACTION = \
-	cp files/php_bug_75571.gif $(@D)/tests/gif/
+	cp files/php_bug_75571.gif $(@D)/tests/gif/;
+# the below two files are needed for patches/009-CVE-2017-6363.patch
+COMPONENT_PRE_TEST_ACTION +=cp files/bug00383.gd $(@D)/tests/gd/;
+COMPONENT_PRE_TEST_ACTION +=cp files/bug00383.gd2 $(@D)/tests/gd2/
 
 COMPONENT_TEST_CMD = \
 	cmake -DBUILD_TEST=1 .; \
