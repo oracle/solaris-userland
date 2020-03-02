@@ -25,6 +25,5 @@
 
 <include ../generate/common.transform>
 
-# add pkg.depend bypass to suppress incorrect chardet dependency detection
-<transform file path=.*/requests/packages/chardet/chardetect.py$ \
-	-> set pkg.depend.bypass-generate .*/chardet.*>
+# add pkg.depend bypass to suppress non ascii characters in comments
+<transform file path=.*/requests/certs.py$ -> set pkg.depend.bypass-generate .*>

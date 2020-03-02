@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		requests
-COMPONENT_VERSION=	2.9.1
+COMPONENT_VERSION=	2.22.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c577815dd00f1394203fc44eb979724b098f88264a9ef898ee45b8e5e9cf587f
+    sha256:c728735a3188683af00f1a2a9c8bc7e8d59747e065ed15b543d64c746a159281
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://python-requests.org/
 COMPONENT_BUGDB=	python-mod/requests
 COMPONENT_ANITYA_ID=	4004
 
-TPNO=			28405
+TPNO=			52586
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -52,4 +52,4 @@ install:	$(INSTALL_NO_ARCH)
 # Tests require access to AWS services & the Internet
 test:		$(NO_TESTS)
 
-system-test:	$(NO_TESTS)
+system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
