@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		enum34
-COMPONENT_VERSION=	1.1.6
+COMPONENT_VERSION=	1.1.9
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8ad8c4783bf61ded74527bffb48ed9b54166685e4230386a9ed9b1279e2df5b1
+    sha256:7c88a4ad3b24b451baa910722bfa92ad14421a9d2ed837e34736eec253b12d89
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/enum34
 COMPONENT_BUGDB=	python-mod/enum34
-COMPONENT_ANITYA_ID=	6693
+COMPONENT_ANITYA_ID=	8176
 
-TPNO=			29059
+TPNO=			57872
 
 # enum34 is superfluous in Python 3.4
 PYTHON_VERSIONS =	$(PYTHON2_VERSIONS)
@@ -45,10 +45,10 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
-
 COMPONENT_TEST_ARGS=	enum/test.py
 COMPONENT_TEST_DIR=	$(COMPONENT_SRC)
+
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
 build:		$(BUILD_NO_ARCH)
@@ -56,3 +56,5 @@ build:		$(BUILD_NO_ARCH)
 install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
+
+system-test:    $(SYSTEM_TEST_NO_ARCH)
