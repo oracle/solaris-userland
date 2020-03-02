@@ -1,0 +1,60 @@
+When hex package is installed, elixir loads it automatically during the startup.
+It is the desired behaviour in almost all the cases but with one exception:
+a newer hex version is being built and old hex package is installed in CBE.
+
+The problem is that elixir compiler preloads old hex modules (erlang *.beam
+files in /usr/lib/elixir/lib/hex/ebin/ directory) to memory and these modules
+potentially colide with the newer hex modules that are being built.
+As a result, many warnings about the redefinition of modules are emitted
+and the build of hex package may fail if the API of hex modules changed.
+
+For example, the last time it failed with the following error.
+  ...
+  warning: redefining module Mix.Tasks.Hex.Config (current version loaded from /usr/lib/elixir/bin/../lib/hex/ebin/Elixir.Mix.Tasks.Hex.Config.beam)
+
+  == Compilation error in file lib/mix/tasks/hex.config.ex ==
+  ** (UndefinedFunctionError) function Hex.State.default_api_url/0 is undefined or private. Did you mean one of:
+
+    * default/2
+
+  Hex.State.default_api_url()
+  lib/mix/tasks/hex.config.ex:25: (module)
+  (stdlib 3.11) erl_eval.erl:680: :erl_eval.do_apply/6
+
+To overcome the problem, we modified the elixir script and added
+DO_NOT_LOAD_HEX_MODULES variable that controls whether hex modules
+are loaded or not. The hex modules are loaded by default.
+
+The problem was discussed on hex GitHub:
+https://github.com/hexpm/hex/issues/759
+
+The patch is not suitable for upstream since the community
+is not going to add custom code for unloading hex modules,
+see the aforementioned issue for details.
+
+Please do not remove this patch.
+
+--- elixir-1.10.2/bin/elixir	2020-03-02 09:48:03.251464703 +0000
++++ elixir-1.10.2/bin/elixir	2020-03-02 09:46:54.158063122 +0000
+@@ -210,8 +210,20 @@ if [ "$OS" != "Windows_NT" ] && [ -z "$N
+   if test -t 1 -a -t 2; then ERL="-elixir ansi_enabled true $ERL"; fi
+ fi
+ 
++LIB_PATH="${SCRIPT_PATH}/../lib"
++CODE_PATHS=$(gfind "${LIB_PATH}" -maxdepth 2 -name ebin | sort -r)
++
++# Avoid to load hex modules if requested.
++if [ -n "${DO_NOT_LOAD_HEX_MODULES:-}" ]; then
++  CODE_PATHS=$(echo "${CODE_PATHS}" | grep -v "hex/ebin")
++fi
++
++if [ -n "${CODE_PATHS}" ]; then
++  CODE_PATHS_ARGS=$(printf -- '-pa %s ' ${CODE_PATHS})
++fi
++
+ ERTS_BIN=
+-set -- "$ERTS_BIN$ERL_EXEC" -pa "$SCRIPT_PATH"/../lib/*/ebin $ELIXIR_ERL_OPTIONS $ERL "$@"
++set -- "$ERTS_BIN$ERL_EXEC" ${CODE_PATHS_ARGS:-} $ELIXIR_ERL_OPTIONS $ERL "$@"
+ 
+ if [ -n "$RUN_ERL_PIPE" ]; then
+   ESCAPED=""

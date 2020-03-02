@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Only executable scripts and bytecode files.
@@ -31,15 +31,15 @@ include ../../make-rules/shared-macros.mk
 PATH=/usr/gnu/bin:/usr/bin:/usr/sbin
 
 COMPONENT_NAME=		elixir
-COMPONENT_VERSION=	1.7.3
+COMPONENT_VERSION=	1.10.2
 COMPONENT_PROJECT_URL=	https://elixir-lang.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c9beabd05e820ee83a56610cf2af3f34acf3b445c8fabdbe98894c886d2aa28e
+    sha256:5adffcf4389aa82fcfbc84324ebbfa095fc657a0e15b2b055fc05184f96b2d50
 COMPONENT_ARCHIVE_URL=	https://github.com/elixir-lang/$(COMPONENT_NAME)/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/elixir
 COMPONENT_ANITYA_ID=	673
 
-TPNO=			45294
+TPNO=			57086
 
 BUILD_STYLE= justmake
 include $(WS_MAKE_RULES)/common.mk
