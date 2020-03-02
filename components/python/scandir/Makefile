@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS = 64
@@ -29,17 +29,17 @@ COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		scandir
-COMPONENT_VERSION=	1.9.0
+COMPONENT_VERSION=	1.10.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:44975e209c4827fc18a3486f257154d34ec6eaec0f90fef0cca1caa482db7064
+    sha256:87559e77cdf2f53d3fcf09d07ab8241563818c733395c732c8d0743a12cc5f50
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.org/project/pathlib2/
 COMPONENT_BUGDB=	python-mod/scandir
 COMPONENT_ANITYA_ID=	7185
 
-TPNO=			50837
+TPNO=			57867
 
 # Scandir has been included in the Python 3.5 standard library
 PYTHON_VERSIONS = $(PYTHON2_VERSIONS) 3.4
