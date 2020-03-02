@@ -1,0 +1,39 @@
+We don't have pypiserver and pytest_localserver.http packages available
+in Solaris, which doesn't matter that much because the only test using
+them (test_create_environment_with_local_https_pypi) doesn't work in our
+build infrastructure anyway. Hence we can safely comment them out.
+
+test_bootstrap.py has a small oversight in its assertion. Not for upstream,
+because they moved to a new codebase, which dropped test anymore.
+
+--- virtualenv-16.7.10/tests/test_virtualenv.py
++++ virtualenv-16.7.10/tests/test_virtualenv.py
+@@ -10,9 +10,7 @@ import tempfile
+ import textwrap
+ import zipfile
+ 
+-import pypiserver
+ import pytest
+-import pytest_localserver.http
+ import six
+ 
+ import virtualenv
+@@ -489,6 +487,7 @@ def test_create_environment_in_dir_with_
+     virtualenv.create_environment(ve_path)
+ 
+ 
++@pytest.mark.skip("Doesn't work on Solaris")
+ def test_create_environment_with_local_https_pypi(tmpdir):
+     """Create virtual environment using local PyPI listening https with
+     certificate signed with custom certificate authority
+--- virtualenv-16.7.10/tests/test_bootstrap.py
++++ virtualenv-16.7.10/tests/test_bootstrap.py
+@@ -36,7 +36,7 @@ def bootstrap():
+         print(
+             "exe at {}".format(
+                 subprocess.check_output(
+-                    [os.path.join(bin_dir, EXPECTED_EXE), "-c", "import sys; print(sys.executable)"],  # noqa: F821
++                    [os.path.realpath(os.path.join(bin_dir, EXPECTED_EXE)), "-c", "import sys; print(sys.executable)"],  # noqa: F821
+                     universal_newlines=True,
+                 )
+             )

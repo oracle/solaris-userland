@@ -20,28 +20,30 @@
 #
 
 #
-# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		virtualenv
-COMPONENT_VERSION=	15.0.1
+COMPONENT_VERSION=	16.7.10
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
-COMPONENT_ARCHIVE_HASH=	sha256:1a74278b8adb383ce4c7619e33c753b1eb7b58dc1e449601c096ca4b76125f84
+COMPONENT_ARCHIVE_HASH=	\
+    sha256:92f8fece996e62f97b6e56ee878a3f9c978781f59ab22bccdd0ab3e457371c33
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/pypa/virtualenv
 COMPONENT_BUGDB=	python-mod/virtualenv
 COMPONENT_ANITYA_ID=	6904
 
-TPNO=			29529
+TPNO=			57880
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+COMPONENT_TEST_ENV +=	PATH=$(GNUBIN):$(PATH)
+COMPONENT_SYSTEM_TEST_ENV +=	PATH=$(GNUBIN):$(PATH)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
@@ -50,6 +52,8 @@ COMPONENT_TEST_ARGS =
 COMPONENT_POST_INSTALL_ACTION +=	\
     (cd $(PROTO_DIR)/usr/bin; $(MV) virtualenv virtualenv-$(PYTHON_VERSION))
 
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+
 # common targets
 build:		$(BUILD_NO_ARCH)
 
@@ -57,7 +61,7 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:	$(NO_TESTS)
+system-test:	$(SYSTEM_TEST_NO_ARCH)
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/mock

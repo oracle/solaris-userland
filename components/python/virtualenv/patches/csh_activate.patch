@@ -1,0 +1,57 @@
+Csh activation script is incorrectly using : modifiers, which are not
+available for environment variables.
+
+Can be offered upstream.
+
+--- virtualenv-16.7.10/virtualenv_embedded/activate.csh
++++ virtualenv-16.7.10/virtualenv_embedded/activate.csh
+@@ -12,15 +12,15 @@ deactivate nondestructive
+ 
+ setenv VIRTUAL_ENV "__VIRTUAL_ENV__"
+ 
+-set _OLD_VIRTUAL_PATH="$PATH:q"
+-setenv PATH "$VIRTUAL_ENV:q/__BIN_NAME__:$PATH:q"
++set _OLD_VIRTUAL_PATH="$PATH"
++setenv PATH "$VIRTUAL_ENV/__BIN_NAME__:$PATH"
+ 
+ 
+ 
+ if ("__VIRTUAL_PROMPT__" != "") then
+     set env_name = "__VIRTUAL_PROMPT__"
+ else
+-    set env_name = '('"$VIRTUAL_ENV:t:q"') '
++    set env_name = '('`basename "$VIRTUAL_ENV"`') '
+ endif
+ 
+ if ( $?VIRTUAL_ENV_DISABLE_PROMPT ) then
+--- virtualenv-16.7.10/virtualenv.py
++++ virtualenv-16.7.10/virtualenv.py
+@@ -2341,17 +2341,17 @@ HaFntuLSEoJ5x7NQw1nr2NkOqV3T+g3qIQ54ubrX
+ # file activate.csh
+ ACTIVATE_CSH = convert(
+     """
+-eJx9VNtO4zAQffdXDKEiUEFhX8t22bJFWqRyEVuQVkKy3Hi6sZQ44Dit+sK379hJittG5KGqPZdz
+-fOZyCLNUlbBQGUJelRbmCFWJElbKphCVRWUShLnS5yKxaiksDpIyjaC/MEUO9Lc/YIfwt6ggEVoX
+-FkylQVmQymBis7Wz/jJIcRLma5iIpZIIEwXXmSgVfJf+Qs5//suFygZJkf8YMFaiBY2rTGkcxa8s
+-ZkxkSpQgsWUBsUVi27viD9MJf7l9mj2Pp/xxPPsNByO4gKMjoCSol+Dvot6e3/A9cl6VdmB71ksw
+-mIoyvYROnKeHu8dZiARvpMebHe0CeccvoLz9sjY5tq3h5v6lgY5eD4b9yGFFutCSrkzlRMAm554y
+-we3bWhYJqXcIzx5bGYMZLoW2sBRGiXmG5YAFsdsIvhA7rCDiPDhyHtXl2lOQpGhkZtuVCKKH7+ec
+-X9/e8/vx3Q3nw00EfWoBxwFWrRTBeSWiE7Apagb0OXRKz7XIEUbQFcMwK7HLOT6OtwlZQo9PIGao
+-pVrULKj64Ysnt3/G19ObtgkCJrXzF74jRz2MaCnJgtcN5B7wLfK2DedOp4vGydPcet5urq2XBEZv
+-DcnQpBZVJt0KUBqEa4YzpS0a3x7odFOm0Dlqe9oEkN8qVUlK01/iKfSa3LRRKmqkBc2vBKFpmyCs
+-XG4d2yYyEQZBzIvKOgLN+JDveiVoaXyqedVYOkTrmCRqutrfNVHr6xMFBhh9QD/qNQuGLvq72d03
+-3Jy2CtGCf0rca/tp+N4BXqsflKquRr0L2sjmuClOu+/8/NKvTQsNZ3l9ZqxeTew//1a6EA==
++eJx9VNtO4zAQffdXDKYiUEFhX8t22XaLtEjcxBaklZCME083lhKnOE6rvvDtaztJcduIPEDtOTNn
++fOZyCLNUljCXGUJelQZihKpEAStpUqBlUekEIZbqnCdGLrnBQVKmFPpzXeRgf/YH5BD+FhUkXKnC
++gK4USANCakxMtnbWXxqtn4B4DVO+lAJhKmGS8VLCd+EvRPzzX85lNkiK/MeAkBINKFxlUuEoeiUR
++ITyTvASBbRYQGbTZ9q7Yw+2Uvdw8zZ7Ht+xxPPsNByO4gKMjsEFQLcHf0d4ebvhOHapSjmzPegka
++U16ml9DJ8/Rw9zgLmWBh9ViY0S6RB35B5e2Xtcll2xqu718aavp6MOxTx0VVoYS90pUTAZuYe8oE
++t4u1KBKr3iE8e26pNWa45MrAkmvJ4wzLAQl8txl8IXayAspYcGSM1uXaU9BK4f5Rsl2HwPecscnN
++Pbsf310zNmzQ9pNzOA5Yao0skdeAnoBJURGwn+O1oZniOcIIunwIZiV2gaPj6C3mJfrjVlr0LTqB
++iKAScl4nY8sfPnl682c8ub1uuyBIqAZ/gR25F4QebWaiYHUHuXd8o962Sb0TdNGAfJpbr9yNtfWS
++wOitYTJ2VIsqE24HSAXcdcOZVAa17w908kldqByVOW0cLG6VyiS141/iKfSa2HalVLaT5naABXBl
++1wnCysVWkWk8E64ReFxUxiXQzI/Frlfcbo1PNa8aS4doHaNku67G25nbYH2gwACjD+jTXrNh7EV/
++N7r7hpvTViFa8k+Je21bDd87yGv1g1LV1aiXQevZHDfFaReeH2D716SFgrO8PhNS7ybyH9qButI=
+ """
+ )
+ 
