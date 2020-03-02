@@ -1,0 +1,57 @@
+Monotonic is available from Python 3.3 in the standard library as well.
+
+While we do have testtools package in Solaris, we are considering its removal
+(because it doesn't have new releases), and the standard unittest package
+contains everything we need.
+
+Not for upstream.
+
+--- fasteners-0.15/fasteners/_utils.py
++++ fasteners-0.15/fasteners/_utils.py
+@@ -36,7 +36,10 @@ except (ImportError, AttributeError):
+ 
+ import six
+ 
+-from monotonic import monotonic as now  # noqa
++try:
++    from time import monotonic as now
++except ImportError:
++    from monotonic import monotonic as now  # noqa
+ 
+ # log level for low-level debugging
+ BLATHER = 5
+--- fasteners-0.15/setup.py
++++ fasteners-0.15/setup.py
+@@ -26,7 +26,7 @@ with open("README.rst", "r") as readme:
+ 
+ install_requires = [
+     'six',
+-    'monotonic>=0.1',
++    'monotonic>=0.1;python_version<"3.3"',
+ ]
+ 
+ setup(
+--- fasteners-0.15/fasteners/test.py
++++ fasteners-0.15/fasteners/test.py
+@@ -16,8 +16,8 @@
+ #    License for the specific language governing permissions and limitations
+ #    under the License.
+ 
+-import testtools
++import unittest
+ 
+ 
+-class TestCase(testtools.TestCase):
++class TestCase(unittest.TestCase):
+     pass
+--- fasteners-0.15/fasteners/tests/test_process_lock.py
++++ fasteners-0.15/fasteners/tests/test_process_lock.py
+@@ -250,7 +250,7 @@ class ProcessLockTest(test.TestCase):
+ 
+             child_pipe.send(None)
+ 
+-    @test.testtools.skipIf(WIN32, "Windows cannot open file handles twice")
++    @test.unittest.skipIf(WIN32, "Windows cannot open file handles twice")
+     def test_non_destructive(self):
+         lock_file = os.path.join(self.lock_dir, 'not-destroyed')
+         with open(lock_file, 'w') as f:
