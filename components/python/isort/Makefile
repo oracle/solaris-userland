@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		isort
-COMPONENT_VERSION=	4.2.5
+COMPONENT_VERSION=	4.3.21
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:56b20044f43cf6e6783fe95d054e754acca52dd43fbe9277c1bdff835537ea5c
+    sha256:d0e911c29983cc42a391d258bf2def503889d97c71aa8f86f1a8b1fb24eee0b6
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/isort
 COMPONENT_BUGDB=	python-mod/isort
 COMPONENT_ANITYA_ID=	11430
 
-TPNO=			31386
+TPNO=			57866
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
