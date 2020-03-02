@@ -20,38 +20,37 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		backports.functools_lru_cache
-COMPONENT_VERSION=	1.5
+COMPONENT_VERSION=	1.6.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:9d98697f088eb1b0fa451391f91afb5e3ebde16bbdb272819fd091151fda4f1a
+	sha256:dde846807b38531fa7afc3977ebdbd5f2ee354cbf5c9933506ae79b9e4eb352e
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.org/project/backports.functools_lru_cache/
 COMPONENT_BUGDB=	python-mod/functools-lru
 COMPONENT_ANITYA_ID=	12085
 
-TPNO=			45196
+TPNO=			57863
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+# Remove pytest.ini which breaks our testing with unknown arguments
+COMPONENT_PRE_TEST_ACTION = $(RM) $(SOURCE_DIR)/pytest.ini
+COMPONENT_PRE_SYSTEM_TEST_ACTION = $(RM) $(SOURCE_DIR)/pytest.ini
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
-COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_TRANSFORMS += \
-  '-e "s/\(in \).*\(seconds\)/\1 x \2/"' \
-  '-e "/hypothesis/d"' \
-  '-e "/^platform/d"'
+
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
 build:		$(BUILD_NO_ARCH)
@@ -60,7 +59,7 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:	$(SYSTEM_TEST_NO_ARCH)
 
 # Setup related components
 REQUIRED_PACKAGES += library/python/setuptools_scm
