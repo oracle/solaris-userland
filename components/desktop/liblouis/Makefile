@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 		64
@@ -31,15 +31,15 @@ COMPONENT_MAKE_JOBS=1
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		liblouis
-COMPONENT_VERSION=	3.5.0
+COMPONENT_VERSION=	3.13.0
 COMPONENT_PROJECT_URL=	http://liblouis.org/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:cf9b9650f750ef19768773b3d882780d42a8674719d887255f00ad735a4ffa2a
+	sha256:2803b89a2bff9f02032125fa7b7d0a204a60d8d14f232242344b5f09535e9a01
 COMPONENT_ARCHIVE_URL=	https://github.com/liblouis/liblouis/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/accessibility
 COMPONENT_ANITYA_ID=	13112
 
-TPNO=			41699
+TPNO=			57203
 
 # Orca uses python 3.5, so we need to match
 PYTHON_VERSION=		3.5
