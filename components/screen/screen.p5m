@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2015, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -36,7 +36,8 @@ set name=org.opensolaris.arc-caseid value=PSARC/2008/413
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file etc/etcscreenrc path=etc/screenrc group=sys mode=0644 \
     original_name=SUNWscreen:etc/screenrc preserve=renamenew
-file path=usr/bin/screen
+link path=usr/bin/screen target=screen-$(COMPONENT_VERSION)
+file path=usr/bin/screen-$(COMPONENT_VERSION)
 file path=usr/share/info/screen.info
 file path=usr/share/lib/terminfo/s/screen-256color
 file path=usr/share/lib/terminfo/s/screen-bce
@@ -59,4 +60,4 @@ file path=usr/share/screen/utf8encodings/c8
 file path=usr/share/screen/utf8encodings/cc
 file path=usr/share/screen/utf8encodings/cd
 file path=usr/share/screen/utf8encodings/d6
-license COPYING license=GPLv3
+license screen.license license=GPLv3
