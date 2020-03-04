@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Mako
-COMPONENT_VERSION=	1.0.4
+COMPONENT_VERSION=	1.1.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:fed99dbe4d0ddb27a33ee4910d8708aca9ef1fe854e668387a9ab9a90cbf9059
+    sha256:01ea3c2e1974139090362370e30729127747c2e152304345304a52e61ef84188
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.makotemplates.org/
 COMPONENT_BUGDB=	python-mod/mako
 COMPONENT_ANITYA_ID=	3915
 
-TPNO=			28338
+TPNO=			57858
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -55,7 +55,7 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/mock
