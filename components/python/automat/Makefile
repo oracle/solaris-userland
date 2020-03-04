@@ -26,17 +26,17 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Automat
-COMPONENT_VERSION=	0.7.0
+COMPONENT_VERSION=	20.2.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:caa10a4716e4eb8f3c67d8a6e0cc091251e6cf4dfcec6b436227aaae4e0d9e8d
+    sha256:1542a0900008371490bfe8d2e95ed3d1e730caac6983314427bbeee07c0c6947
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/glyph/Automat
 COMPONENT_BUGDB=	python-mod/automat
 COMPONENT_ANITYA_ID=	15101
 
-TPNO=			50703
+TPNO=			57873
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -59,4 +59,4 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:    $(SYSTEM_TEST_NO_ARCH)
