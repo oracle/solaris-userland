@@ -3,29 +3,19 @@ suitable upower backend for Solaris.
 
 Not suitable for upstream unless made configurable.
 
---- gnome-control-center-3.18.2/panels/Makefile.am
-+++ gnome-control-center-3.18.2/panels/Makefile.am
-@@ -1,7 +1,6 @@
- SUBDIRS= \
- 	common \
- 	background \
--	power \
- 	color \
- 	display \
- 	mouse \
---- a/shell/Makefile.am
-+++ b/shell/Makefile.am
-@@ -86,7 +86,6 @@
- 	$(top_builddir)/panels/mouse/libmouse-properties.la		\
- 	$(top_builddir)/panels/notifications/libnotifications.la	\
- 	$(top_builddir)/panels/online-accounts/libonline-accounts.la	\
--	$(top_builddir)/panels/power/libpower.la			\
- 	$(top_builddir)/panels/privacy/libprivacy.la			\
- 	$(top_builddir)/panels/region/libregion.la			\
- 	$(top_builddir)/panels/search/libsearch.la			\
---- a/shell/cc-panel-loader.c	2017-11-07 13:40:42.837290331 -0800
-+++ b/shell/cc-panel-loader.c	2017-11-07 13:40:58.946344654 -0800
-@@ -44,7 +44,6 @@
+--- a/panels/meson.build	2020-03-04 13:26:32.601563186 -0800
++++ b/panels/meson.build	2020-03-04 13:26:38.853092535 -0800
+@@ -11,7 +11,6 @@
+   'mouse',
+   'notifications',
+   'online-accounts',
+-  'power',
+   'printers',
+   'privacy',
+   'region',
+--- a/shell/cc-panel-loader.c	2020-03-04 13:27:01.857324607 -0800
++++ b/shell/cc-panel-loader.c	2020-03-04 13:27:11.253320451 -0800
+@@ -50,7 +50,6 @@
  #endif /* BUILD_NETWORK */
  extern GType cc_notifications_panel_get_type (void);
  extern GType cc_goa_panel_get_type (void);
@@ -33,11 +23,11 @@ Not suitable for upstream unless made configurable.
  extern GType cc_printers_panel_get_type (void);
  extern GType cc_privacy_panel_get_type (void);
  extern GType cc_region_panel_get_type (void);
-@@ -86,7 +85,6 @@
+@@ -103,7 +102,6 @@
  #endif
-   PANEL_TYPE("notifications",    cc_notifications_panel_get_type),
-   PANEL_TYPE("online-accounts",  cc_goa_panel_get_type          ),
--  PANEL_TYPE("power",            cc_power_panel_get_type        ),
-   PANEL_TYPE("printers",         cc_printers_panel_get_type     ),
-   PANEL_TYPE("privacy",          cc_privacy_panel_get_type      ),
-   PANEL_TYPE("region",           cc_region_panel_get_type       ),
+   PANEL_TYPE("notifications",    cc_notifications_panel_get_type,        NULL),
+   PANEL_TYPE("online-accounts",  cc_goa_panel_get_type,                  NULL),
+-  PANEL_TYPE("power",            cc_power_panel_get_type,                NULL),
+   PANEL_TYPE("printers",         cc_printers_panel_get_type,             NULL),
+   PANEL_TYPE("privacy",          cc_privacy_panel_get_type,              NULL),
+   PANEL_TYPE("region",           cc_region_panel_get_type,               NULL),

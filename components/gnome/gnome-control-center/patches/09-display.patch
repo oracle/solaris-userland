@@ -1,0 +1,35 @@
+From d82f241a9f1f639326ee8b2c0fd58312ddf61abe Mon Sep 17 00:00:00 2001
+From: Robert Ancell <robert.ancell@canonical.com>
+Date: Tue, 14 Apr 2020 11:04:05 +1200
+Subject: [PATCH] display: Add missing parameter checks on CcDisplayConfig
+ methods
+
+Closes #945
+---
+ panels/display/cc-display-config.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/panels/display/cc-display-config.c b/panels/display/cc-display-config.c
+index 30c97c450..80aabc4f1 100644
+--- a/panels/display/cc-display-config.c
++++ b/panels/display/cc-display-config.c
+@@ -614,6 +614,7 @@ cc_display_config_set_minimum_size (CcDisplayConfig *self,
+                                     int              width,
+                                     int              height)
+ {
++  g_return_if_fail (CC_IS_DISPLAY_CONFIG (self));
+   CC_DISPLAY_CONFIG_GET_CLASS (self)->set_minimum_size (self, width, height);
+ }
+ 
+@@ -622,5 +623,7 @@ cc_display_config_is_scaled_mode_valid (CcDisplayConfig *self,
+                                         CcDisplayMode   *mode,
+                                         double           scale)
+ {
++  g_return_val_if_fail (CC_IS_DISPLAY_CONFIG (self), FALSE);
++  g_return_val_if_fail (CC_IS_DISPLAY_MODE (mode), FALSE);
+   return CC_DISPLAY_CONFIG_GET_CLASS (self)->is_scaled_mode_valid (self, mode, scale);
+ }
+-- 
+2.26.2
+
+

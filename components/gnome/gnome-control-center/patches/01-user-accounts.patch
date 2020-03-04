@@ -10,51 +10,33 @@ from the Linux passwd command, instead of using PAM or similar for Solaris.
 If this panel is ever restored, then you will also need to remove
 ../gnome-shell/patches/07-account-settings.patch to restore its menu entry.
 
---- gnome-control-center-3.18.2/configure.ac	2016-10-05 13:52:06.244424424 -0700
-+++ gnome-control-center-3.18.2/configure.ac	2016-10-05 14:09:43.829904386 -0700
-@@ -167,7 +167,6 @@
-                   polkit-gobject-1 >= $POLKIT_REQUIRED_VERSION
-                   gnome-desktop-3.0
-                   gdk-pixbuf-2.0 >= $GDKPIXBUF_REQUIRED_VERSION
--                  pwquality >= $PWQUALITY_REQUIRED_VERSION
-                   accountsservice >= $ACCOUNTSSERVICE_REQUIRED_VERSION)
- PKG_CHECK_MODULES(SHARING_PANEL, $COMMON_MODULES)
- PKG_CHECK_MODULES(REMOTE_LOGIN_HELPER, glib-2.0 >= $GLIB_REQUIRED_VERSION gio-2.0)
---- gnome-control-center-3.18.2/panels/Makefile.am	2016-10-05 14:10:42.367244420 -0700
-+++ gnome-control-center-3.18.2/panels/Makefile.am	2016-10-05 14:10:48.722872762 -0700
-@@ -12,7 +12,6 @@
- 	sound \
- 	keyboard \
- 	universal-access \
--	user-accounts \
- 	datetime \
- 	search \
- 	privacy \
---- a/shell/Makefile.am	2017-11-07 13:34:32.508060455 -0800
-+++ b/shell/Makefile.am	2017-11-07 13:34:57.626172458 -0800
-@@ -93,7 +93,6 @@
- 	$(top_builddir)/panels/sharing/libsharing.la			\
- 	$(top_builddir)/panels/sound/libsound.la			\
- 	$(top_builddir)/panels/universal-access/libuniversal-access.la	\
--	$(top_builddir)/panels/user-accounts/libuser-accounts.la	\
- 	$(top_builddir)/panels/printers/libprinters.la
+--- a/panels/meson.build	2019-11-15 17:12:29.455910001 -0800
++++ b/panels/meson.build	2019-11-15 17:12:53.695928226 -0800
+@@ -19,7 +19,6 @@
+   'sharing',
+   'sound',
+   'universal-access',
+-  'user-accounts'
+ ]
  
- if BUILD_WACOM
---- a/shell/cc-panel-loader.c	2017-11-07 13:35:20.043104014 -0800
-+++ b/shell/cc-panel-loader.c	2017-11-07 13:35:43.463644020 -0800
-@@ -52,7 +52,6 @@
- extern GType cc_sharing_panel_get_type (void);
- extern GType cc_sound_panel_get_type (void);
- extern GType cc_ua_panel_get_type (void);
--extern GType cc_user_panel_get_type (void);
- #ifdef BUILD_WACOM
- extern GType cc_wacom_panel_get_type (void);
- #endif /* BUILD_WACOM */
-@@ -94,7 +93,6 @@
-   PANEL_TYPE("sharing",          cc_sharing_panel_get_type      ),
-   PANEL_TYPE("sound",            cc_sound_panel_get_type        ),
-   PANEL_TYPE("universal-access", cc_ua_panel_get_type           ),
--  PANEL_TYPE("user-accounts",    cc_user_panel_get_type         ),
- #ifdef BUILD_WACOM
-   PANEL_TYPE("wacom",            cc_wacom_panel_get_type        ),
+ if host_is_linux
+--- a/shell/cc-panel-loader.c	2019-11-15 17:13:55.157377877 -0800
++++ b/shell/cc-panel-loader.c	2019-11-15 17:14:18.286585614 -0800
+@@ -114,7 +114,6 @@
+   PANEL_TYPE("thunderbolt",      cc_bolt_panel_get_type,                 NULL),
  #endif
+   PANEL_TYPE("universal-access", cc_ua_panel_get_type,                   NULL),
+-  PANEL_TYPE("user-accounts",    cc_user_panel_get_type,                 NULL),
+ #ifdef BUILD_WACOM
+   PANEL_TYPE("wacom",            cc_wacom_panel_get_type,                cc_wacom_panel_static_init_func),
+ #endif
+--- a/shell/cc-panel-list.c	2019-11-15 19:43:02.726448565 -0800
++++ b/shell/cc-panel-list.c	2019-11-15 19:43:24.282017484 -0800
+@@ -403,7 +403,6 @@
+   /* Details page */
+   "info-overview",
+   "datetime",
+-  "user-accounts",
+   "default-apps",
+   "reset-settings"
+ };

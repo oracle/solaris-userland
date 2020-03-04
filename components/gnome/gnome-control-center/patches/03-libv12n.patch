@@ -1,31 +1,10 @@
 Use libv12n to find virtualization environment instead of asking systemd
 
 Need to submit upstream
-
---- a/configure.ac	2017-11-07 13:36:12.640843834 -0800
-+++ b/configure.ac	2017-11-07 13:37:12.596600866 -0800
-@@ -65,6 +65,7 @@
  
- AC_CHECK_LIBM
- AC_SUBST(LIBM)
-+AC_CHECK_LIB(v12n, v12n_get_current_env)
- 
- # IBus support
- IBUS_REQUIRED_VERSION=1.5.2
---- a/panels/info/cc-info-panel.c	2017-11-07 13:37:46.237124276 -0800
-+++ b/panels/info/cc-info-panel.c	2017-11-07 13:39:28.478434856 -0800
-@@ -42,6 +42,10 @@
- #include <gdk/gdkx.h>
- #endif
- 
-+#ifdef HAVE_LIBV12N
-+#include <libv12n.h>
-+#endif
-+
- #include "gsd-disk-space-helper.h"
- 
- /* Autorun options */
-@@ -760,6 +764,10 @@
+--- a/panels/info/cc-info-overview-panel.c	2019-11-15 20:07:15.695967441 -0800
++++ b/panels/info/cc-info-overview-panel.c	2019-11-15 20:10:07.107834371 -0800
+@@ -657,6 +657,10 @@
    const char *id;
    const char *display;
  } const virt_tech[] = {
@@ -36,9 +15,9 @@ Need to submit upstream
    { "kvm", "KVM" },
    { "qemu", "QEmu" },
    { "vmware", "VMware" },
-@@ -808,14 +816,32 @@
+@@ -704,6 +708,28 @@
  static void
- info_panel_setup_virt (CcInfoPanel  *self)
+ info_overview_panel_setup_virt (CcInfoOverviewPanel *self)
  {
 +  char *str = NULL;
 +
@@ -61,22 +40,16 @@ Need to submit upstream
 +    }
 +  v12n_free_env(env);
 +#else /* systemd */
-   GError *error = NULL;
-   GDBusProxy *systemd_proxy;
-   GVariant *variant;
-   GVariant *inner;
--  char *str;
- 
--  str = NULL;
++
+   g_autoptr(GError) error = NULL;
+   g_autoptr(GDBusProxy) systemd_proxy = NULL;
+   g_autoptr(GVariant) variant = NULL;
+@@ -738,7 +764,7 @@
+       set_virtualization_label (self, NULL);
+       return;
+     }
 -
-   systemd_proxy = g_dbus_proxy_new_for_bus_sync (G_BUS_TYPE_SYSTEM,
-                                                  G_DBUS_PROXY_FLAGS_NONE,
-                                                  NULL,
-@@ -852,6 +878,7 @@
-   g_variant_unref (variant);
- 
-   g_object_unref (systemd_proxy);
 +#endif
- 
- bail:
-   set_virtualization_label (self, str);
+   g_variant_get (variant, "(v)", &inner);
+   set_virtualization_label (self, g_variant_get_string (inner, NULL));
+ }

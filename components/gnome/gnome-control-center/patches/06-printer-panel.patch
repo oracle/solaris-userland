@@ -6,21 +6,19 @@ further patching and testing, we are currently disabling it in the interim.
 
 Not suitable for upstream
 
---- a/configure.ac	2017-07-14 09:12:32.169062294 -0700
-+++ b/configure.ac	2017-07-14 09:36:42.665782812 -0700
-@@ -148,9 +148,6 @@
-                   colord-gtk >= $COLORD_GTK_REQUIRED_VERSION
-                   libsoup-2.4
-                   gnome-desktop-3.0 >= $GNOME_DESKTOP_REQUIRED_VERSION)
--PKG_CHECK_MODULES(PRINTERS_PANEL, $COMMON_MODULES
--                  polkit-gobject-1 >= $POLKIT_REQUIRED_VERSION
--                  smbclient)
- PKG_CHECK_MODULES(PRIVACY_PANEL, $COMMON_MODULES)
- PKG_CHECK_MODULES(REGION_PANEL, $COMMON_MODULES
-                   polkit-gobject-1 >= $POLKIT_REQUIRED_VERSION
---- a/shell/cc-panel-loader.c	2017-07-14 09:38:46.787179391 -0700
-+++ b/shell/cc-panel-loader.c	2017-07-14 09:38:53.710948587 -0700
-@@ -44,7 +44,6 @@
+--- a/panels/meson.build	2020-03-04 13:43:59.666181650 -0800
++++ b/panels/meson.build	2020-03-04 13:44:06.549973748 -0800
+@@ -11,7 +11,6 @@
+   'mouse',
+   'notifications',
+   'online-accounts',
+-  'printers',
+   'privacy',
+   'region',
+   'search',
+--- a/shell/cc-panel-loader.c	2020-03-04 13:44:30.506159781 -0800
++++ b/shell/cc-panel-loader.c	2020-03-04 13:44:48.819595259 -0800
+@@ -50,7 +50,6 @@
  #endif /* BUILD_NETWORK */
  extern GType cc_notifications_panel_get_type (void);
  extern GType cc_goa_panel_get_type (void);
@@ -28,35 +26,19 @@ Not suitable for upstream
  extern GType cc_privacy_panel_get_type (void);
  extern GType cc_region_panel_get_type (void);
  extern GType cc_search_panel_get_type (void);
-@@ -84,7 +83,6 @@
+@@ -102,7 +101,6 @@
  #endif
-   PANEL_TYPE("notifications",    cc_notifications_panel_get_type),
-   PANEL_TYPE("online-accounts",  cc_goa_panel_get_type          ),
--  PANEL_TYPE("printers",         cc_printers_panel_get_type     ),
-   PANEL_TYPE("privacy",          cc_privacy_panel_get_type      ),
-   PANEL_TYPE("region",           cc_region_panel_get_type       ),
-   PANEL_TYPE("search",           cc_search_panel_get_type       ),
---- a/panels/Makefile.am	2017-07-14 09:39:19.140643833 -0700
-+++ b/panels/Makefile.am	2017-07-14 09:39:26.584101705 -0700
-@@ -14,8 +14,7 @@
- 	datetime \
- 	search \
- 	privacy \
--	sharing \
--	printers
-+	sharing
+   PANEL_TYPE("notifications",    cc_notifications_panel_get_type,        NULL),
+   PANEL_TYPE("online-accounts",  cc_goa_panel_get_type,                  NULL),
+-  PANEL_TYPE("printers",         cc_printers_panel_get_type,             NULL),
+   PANEL_TYPE("privacy",          cc_privacy_panel_get_type,              NULL),
+   PANEL_TYPE("region",           cc_region_panel_get_type,               NULL),
+   PANEL_TYPE("search",           cc_search_panel_get_type,               NULL),
+--- a/tests/meson.build	2020-03-04 13:47:49.460971175 -0800
++++ b/tests/meson.build	2020-03-04 13:47:54.360846681 -0800
+@@ -6,5 +6,4 @@
  
- if BUILD_WACOM
- SUBDIRS += wacom
---- a/shell/Makefile.am	2017-07-14 09:56:43.343709343 -0700
-+++ b/shell/Makefile.am	2017-07-14 09:56:50.835131607 -0700
-@@ -91,8 +91,7 @@
- 	$(top_builddir)/panels/search/libsearch.la			\
- 	$(top_builddir)/panels/sharing/libsharing.la			\
- 	$(top_builddir)/panels/sound/libsound.la			\
--	$(top_builddir)/panels/universal-access/libuniversal-access.la	\
--	$(top_builddir)/panels/printers/libprinters.la
-+	$(top_builddir)/panels/universal-access/libuniversal-access.la
+ subdir('interactive-panels')
  
- if BUILD_WACOM
- gnome_control_center_LDADD += $(top_builddir)/panels/wacom/libwacom-properties.la
+-subdir('printers')
+ subdir('info')

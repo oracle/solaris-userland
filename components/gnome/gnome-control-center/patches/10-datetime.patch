@@ -1,0 +1,14 @@
+This patch is a temporary change to avoid a gnome-control-center crash
+when the datetime tab is clicked.  
+
+--- a/panels/datetime/tz.c	2020-06-21 18:02:27.911262765 -0700
++++ b/panels/datetime/tz.c	2020-06-21 20:30:45.881587642 -0700
+@@ -96,7 +96,7 @@
+ 		if (tmpstrarr[3] && *tmpstrarr[3] == '-' && tmpstrarr[4])
+ 			loc->comment = g_strdup (tmpstrarr[4]);
+ 
+-		if (tmpstrarr[3] && *tmpstrarr[3] != '-' && !islower(loc->zone)) {
++		if (tmpstrarr[3] && *tmpstrarr[3] != '-' && !islower((gchar)loc->zone)) {
+ 			TzLocation *locgrp;
+ 
+ 			/* duplicate entry */

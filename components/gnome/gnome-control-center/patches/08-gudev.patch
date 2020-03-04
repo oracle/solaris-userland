@@ -1,0 +1,74 @@
+No gudev support in Solaris.
+
+Not suitable for upstream
+
+--- a/meson.build	2020-03-04 13:10:52.906987329 -0800
++++ b/meson.build	2020-03-04 13:10:59.174613325 -0800
+@@ -129,7 +129,6 @@
+ pulse_dep = dependency('libpulse', version: pulse_req_version)
+ pulse_mainloop_dep = dependency('libpulse-mainloop-glib', version: pulse_req_version)
+ upower_glib_dep = dependency('upower-glib', version: '>= 0.99.8')
+-gudev_dep = dependency('gudev-1.0')
+ x11_dep = dependency('x11')
+ xi_dep = dependency('xi', version: '>= 1.2')
+
+--- a/panels/common/meson.build	2020-03-04 13:12:17.828482934 -0800
++++ b/panels/common/meson.build	2020-03-04 13:13:03.887028338 -0800
+@@ -75,18 +75,16 @@
+ )
+ 
+ gsd_headers = [
+-  'gsd-device-manager.h',
+   'gsd-input-helper.h'
+ ]
+ 
+ gsd_sources = [
+-  'gsd-device-manager.c',
+   'gsd-input-helper.c'
+ ]
+ 
+ sources = common_sources + files(gsd_sources)
+ 
+-deps = common_deps + [ gudev_dep ]
++deps = common_deps 
+ 
+ libdevice = static_library(
+   'device',
+--- a/panels/info/meson.build	2020-03-04 13:14:20.091313304 -0800
++++ b/panels/info/meson.build	2020-03-04 13:14:29.662352651 -0800
+@@ -57,7 +57,6 @@
+ 
+ deps = common_deps + [
+   polkit_gobject_dep,
+-  dependency('udisks2', version: '>= 2.1.8'),
+   dependency('libgtop-2.0')
+ ]
+ 
+--- a/panels/meson.build	2020-03-04 14:10:39.080165713 -0800
++++ b/panels/meson.build	2020-03-04 14:10:43.612095527 -0800
+@@ -8,7 +8,6 @@
+   'display',
+   'info',
+   'keyboard',
+-  'mouse',
+   'notifications',
+   'online-accounts',
+   'privacy',
+--- a/shell/cc-panel-loader.c	2020-03-04 14:13:35.361993010 -0800
++++ b/shell/cc-panel-loader.c	2020-03-04 14:13:43.228547997 -0800
+@@ -43,7 +43,6 @@
+ extern GType cc_info_default_apps_panel_get_type (void);
+ extern GType cc_info_removable_media_panel_get_type (void);
+ extern GType cc_keyboard_panel_get_type (void);
+-extern GType cc_mouse_panel_get_type (void);
+ #ifdef BUILD_NETWORK
+ extern GType cc_network_panel_get_type (void);
+ extern GType cc_wifi_panel_get_type (void);
+@@ -94,7 +93,6 @@
+   PANEL_TYPE("default-apps",     cc_info_default_apps_panel_get_type,    NULL),
+   PANEL_TYPE("removable-media",  cc_info_removable_media_panel_get_type, NULL),
+   PANEL_TYPE("keyboard",         cc_keyboard_panel_get_type,             NULL),
+-  PANEL_TYPE("mouse",            cc_mouse_panel_get_type,                NULL),
+ #ifdef BUILD_NETWORK
+   PANEL_TYPE("network",          cc_network_panel_get_type,              NULL),
+   PANEL_TYPE("wifi",             cc_wifi_panel_get_type,                 cc_wifi_panel_static_init_func),

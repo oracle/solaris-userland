@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,36 +30,41 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-control-center
-COMPONENT_VERSION=	3.24.0
+COMPONENT_VERSION=	3.34.4
 COMPONENT_PROJECT_URL=  https://git.gnome.org/browse/gnome-control-center
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8de5ea79068e2d6b441db8c41a64bd983dedaeba71c2351505a71b527e77d9e2
+	sha256:17ea6db4b9cee75e99e77f0161a0e5209a3b86444ae775c2068ec192aba6272e
 COMPONENT_BUGDB=	gnome/preferences
 COMPONENT_ANITYA_ID=	5408
 
-TPNO=			34518
-
-TEST_TARGET = $(NO_TESTS)
+TPNO=			57223
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
-CONFIGURE_OPTIONS += --disable-cups
-CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --disable-update-mimedb
-CONFIGURE_OPTIONS += --enable-documentation
-CONFIGURE_OPTIONS += --enable-ibus
+CONFIGURE_OPTIONS += -Dgnome_session_libexecdir=$(USRLIBDIR)
+CONFIGURE_OPTIONS += -Ddocumentation=true
+CONFIGURE_OPTIONS += -Dibus=true
 # Required for other components.
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --with-pic
-CONFIGURE_OPTIONS += --with-x
 # No webcam support.
-CONFIGURE_OPTIONS += --without-cheese
+CONFIGURE_OPTIONS += -Dcheese=false
+CONFIGURE_OPTIONS += -Dwayland=false
 
-# Needed due to patch to configure.ac.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
+CFLAGS += -Wstack-protector -fdata-sections -fstack-protector-all
+
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/Ok/p" ' \
+        '-e "/Fail/p" ' \
+        '-e "/Pass/p" ' \
+        '-e "/Skipped/p" ' \
+        '-e "/Timeout/p" '
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += gnome/gnome-settings-daemon
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
@@ -72,6 +77,7 @@ REQUIRED_PACKAGES += library/desktop/colord-gtk
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/grilo
+REQUIRED_PACKAGES += library/desktop/gsound
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libgweather
 REQUIRED_PACKAGES += library/desktop/pango
@@ -87,6 +93,7 @@ REQUIRED_PACKAGES += service/opengl/ogl-select
 REQUIRED_PACKAGES += system/input-method/ibus
 REQUIRED_PACKAGES += system/library/accountsservice
 REQUIRED_PACKAGES += system/library/fontconfig
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libv12n
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/polkit
