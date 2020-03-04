@@ -20,37 +20,41 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
 #
+
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dnspython
-COMPONENT_VERSION=	1.12.0
+COMPONENT_VERSION=	1.16.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:63bd1fae61809eedb91f84b2185816fac1270ae51494fbdd36ea25f904a8502f
+    sha256:36c5e8e38d4369a08b6780b7f27d790a292b2b08eea01607865bf0936c558e01
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/dnspython
 COMPONENT_BUGDB=	python-mod/dnspython
 COMPONENT_ANITYA_ID=	13190
 
-TPNO=			26537
+TPNO=			49641
 
-# dnspython is not Python3 ready.  dnspython3 should be used for
-# Python3
-PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
+PYTHON_VERSIONS=	$(PYTHON2_VERSIONS) 3.7
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
 
-COMPONENT_TEST_DIR=	$(SOURCE_DIR)/tests
-COMPONENT_TEST_CMD=	$(GMAKE)
-COMPONENT_TEST_ARGS=
-COMPONENT_TEST_ENV=	PYTHONPATH="../"
+# Python 2.7 cannot handle some test modules due to typing import
+$(BUILD_DIR)/$(MACH)-2.7/.tested: COMPONENT_TEST_ARGS = \
+	--ignore=test_name.py --ignore=test_rdtypeanydnskey.py --ignore=test_zone.py
+$(BUILD_DIR)/$(MACH)-2.7/.system-tested: COMPONENT_SYSTEM_TEST_ARGS = \
+	--ignore=test_name.py --ignore=test_rdtypeanydnskey.py --ignore=test_zone.py
+
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
 build:		$(BUILD_NO_ARCH)
@@ -59,5 +63,5 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:    $(SYSTEM_TEST_NO_ARCH)
 
