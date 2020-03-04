@@ -20,28 +20,26 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Babel
-COMPONENT_VERSION=	2.3.4
+COMPONENT_VERSION=	2.8.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c535c4403802f6eb38173cd4863e419e2274921a01a8aad8a5b497c131c62875
+    sha256:86d2e228973a8fd4d12716ed2c5f5a26ebb0efeef810ee167546eea4c47d3a0d
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://babel.pocoo.org/
 COMPONENT_BUGDB=	python-mod/babel
 COMPONENT_ANITYA_ID=	11984
 
-TPNO=			29231
+TPNO=			57859
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 COMPONENT_POST_INSTALL_ACTION = \
 	(cd $(PROTO_DIR)/usr/bin ; \
@@ -49,7 +47,10 @@ COMPONENT_POST_INSTALL_ACTION = \
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =
+# this file imports freezegun package, which we don't have
+COMPONENT_TEST_ARGS =	--ignore=tests/messages/test_frontend.py
+
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
 build:		$(BUILD_NO_ARCH)
@@ -58,4 +59,4 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:    $(SYSTEM_TEST_NO_ARCH)
