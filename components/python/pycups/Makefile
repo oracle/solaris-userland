@@ -20,9 +20,10 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
+COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pycups
@@ -38,8 +39,7 @@ COMPONENT_ANITYA_ID=	7975
 
 TPNO=			49647
 
-# Fails to compile: not Python 3 ready.
-PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
+PYTHON_VERSIONS=	$(PYTHON2_VERSIONS) 3.7
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -50,8 +50,12 @@ CFLAGS += -DVERSION=\\\"$(COMPONENT_VERSION)\\\"
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
+# you have to set up a printer for tests to work
 COMPONENT_TEST_ARGS=	test.py
 COMPONENT_TEST_DIR=	$(COMPONENT_SRC)
+
+# skip during automated tests because printer setup is needed
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 # common targets
 build:		$(BUILD_32_and_64)
@@ -60,7 +64,7 @@ install:	$(INSTALL_32_and_64)
 
 test:		$(TEST_32_and_64)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:    $(SYSTEM_TEST_32_and_64)
 
 
 REQUIRED_PACKAGES += library/print/cups-libs
