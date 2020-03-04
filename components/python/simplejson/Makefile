@@ -20,30 +20,28 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 COMPILER=	gcc
 
 COMPONENT_NAME=		simplejson
-COMPONENT_VERSION=	3.6.5
+COMPONENT_VERSION=	3.17.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:2a3189f79d1c7b8a2149a0e783c0b4217fad9b30a6e7d60450f2553dc2c0e57e
+    sha256:0cb9561b36bbf431222d2260bc39343dadcda66db273e338ebd72baa6d0061f0
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/simplejson/simplejson
 COMPONENT_BUGDB=	python-mod/simplejson
 COMPONENT_ANITYA_ID=	4026
 
-TPNO=			21749
+TPNO=			57860
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 ifeq ($(OS_VERSION),11.3)
 OLD_DESKTOP_BUILD=	0.5.11,5.11-0.175.2.0.0.20.0
@@ -57,10 +55,7 @@ COMPONENT_TEST_DIR =	$(SOURCE_DIR)/$(COMPONENT_NAME)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
 
-COMPONENT_SYSTEM_TEST_DIR =	$(SOURCE_DIR)
-COMPONENT_SYSTEM_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_SYSTEM_TEST_ARGS =
-COMPONENT_SYSTEM_TEST_ENV =
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
 build:		$(BUILD_32_and_64)
