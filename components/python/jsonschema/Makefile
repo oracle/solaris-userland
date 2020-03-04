@@ -20,26 +20,31 @@
 #
 
 #
-# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		jsonschema
-COMPONENT_VERSION=	2.0.0
+COMPONENT_VERSION=	3.2.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c2c8483be59aea3df568d8aad2b3296ef7ea767639efe6e0363c722f7f096322
+    sha256:8ef4e2466ccdcfe6752e08d55c73aabe981dfe5d2b1d00e902d3d2a52a0ce07d
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/Julian/jsonschema
 COMPONENT_BUGDB=	python-mod/jsonschema
 COMPONENT_ANITYA_ID=	3898
 
-TPNO=			14503
+TPNO=			57068
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+# Substitute package version in the __init__ script.
+# See patches for more info.
+COMPONENT_PRE_BUILD_ACTION = \
+	$(GSED) -i 's/JSONSCHEMA_VERSION/$(COMPONENT_VERSION)/' $(SOURCE_DIR)/jsonschema/__init__.py
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
@@ -54,7 +59,7 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(NO_TESTS)
+system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/mock

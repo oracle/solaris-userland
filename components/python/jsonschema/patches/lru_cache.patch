@@ -1,0 +1,37 @@
+We have a different backport of lru_cache available.
+
+Not for upstream.
+
+--- jsonschema-3.2.0/setup.cfg
++++ jsonschema-3.2.0/setup.cfg
+@@ -32,7 +32,7 @@ install_requires =
+ 	pyrsistent>=0.14.0
+ 	setuptools
+ 	six>=1.11.0
+-	functools32;python_version<'3'
++	backports.functools_lru_cache;python_version<'3'
+ 
+ [options.extras_require]
+ format = 
+--- jsonschema-3.2.0/jsonschema.egg-info/requires.txt
++++ jsonschema-3.2.0/jsonschema.egg-info/requires.txt
+@@ -4,7 +4,7 @@ setuptools
+ six>=1.11.0
+ 
+ [:python_version < "3"]
+-functools32
++backports.functools_lru_cache
+ 
+ [:python_version < "3.8"]
+ importlib_metadata
+--- jsonschema-3.2.0/jsonschema/compat.py
++++ jsonschema-3.2.0/jsonschema/compat.py
+@@ -39,7 +39,7 @@ else:
+     int_types = int, long
+     iteritems = operator.methodcaller("iteritems")
+ 
+-    from functools32 import lru_cache
++    from backports.functools_lru_cache import lru_cache
+ 
+ 
+ def urldefrag(url):
