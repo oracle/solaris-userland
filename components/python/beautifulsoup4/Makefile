@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		beautifulsoup4
-COMPONENT_VERSION=	4.2.1
+COMPONENT_VERSION=	4.8.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d5087c13b36fd16931e1bcb3172ba0f81b38a47336694c779a14232ba36da149
-COMPONENT_ARCHIVE_URL=	http://www.crummy.com/software/BeautifulSoup/bs4/download/4.2/$(COMPONENT_ARCHIVE)
+    sha256:3bd9f85621d54c0dffddf85c81ec883cca38937f519667e7d22cf0ae896d2c1d
+COMPONENT_ARCHIVE_URL=	http://www.crummy.com/software/BeautifulSoup/bs4/download/4.8/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/beautifulsoup4
 COMPONENT_BUGDB=	python-mod/beautifulsoup4
 COMPONENT_ANITYA_ID=	3779
 
-TPNO=			14503
+TPNO=			57857
 
 # This component is not yet built for Python 3.7
 PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
@@ -44,18 +44,17 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+COMPONENT_TEST_DIR =	$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES)/bs4/tests
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
 
-COMPONENT_TEST_DIR=	$(SOURCE_DIR)
-COMPONENT_TEST_ARGS=	setup.py test
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
 build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-# Tests require the discover, html5lib and unittest2 packages.
-test:		$(NO_TESTS)
+test:		$(TEST_NO_ARCH)
 
-system-test:    $(NO_TESTS)
-
+system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)

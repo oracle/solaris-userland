@@ -1,0 +1,26 @@
+Several tests pass only if soupsieve package is installed.
+
+Can be offered upstream.
+
+--- beautifulsoup4-4.8.2/bs4/tests/test_tree.py
++++ beautifulsoup4-4.8.2/bs4/tests/test_tree.py
+@@ -35,6 +35,11 @@ from bs4.testing import (
+     skipIf,
+ )
+ 
++try:
++    import soupsieve
++except ImportError:
++    soupsieve = None
++
+ XML_BUILDER_PRESENT = (builder_registry.lookup("xml") is not None)
+ LXML_PRESENT = (builder_registry.lookup("lxml") is not None)
+ 
+@@ -1840,6 +1845,7 @@ class TestNavigableStringSubclasses(Soup
+         d = Declaration("foo")
+         self.assertEqual("<?foo?>", d.output_ready())
+ 
++@skipIf(soupsieve is None, "The soupsieve package is not installed.")
+ class TestSoupSelector(TreeTest):
+ 
+     HTML = """
