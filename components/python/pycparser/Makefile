@@ -20,35 +20,33 @@
 #
 
 #
-# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pycparser
-COMPONENT_VERSION=	2.14
+COMPONENT_VERSION=	2.20
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:7959b4a74abdc27b312fed1c21e6caf9309ce0b29ea86b591fd2e99ecdf27f73
+    sha256:36df01e44c4350ae786feef1b8a5e4ac37792f97bc9d6c60793d4698dec60c78
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/eliben/pycparser
 COMPONENT_BUGDB=	python-mod/pycparser
 COMPONENT_ANITYA_ID=	8175
 
-TPNO=			28876
+TPNO=			57849
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
 
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)
-COMPONENT_TEST_CMD =	py.test-$(PYTHON_VERSION)
-COMPONENT_TEST_ARGS =	--resultlog $(@D)/testresults
-COMPONENT_TEST_ARGS +=	-p no:codechecker
-COMPONENT_TEST_ENV +=	PATH=$$PATH:$(BUILD_DIR)/bin
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 $(SOURCE_DIR)/pycparser/ply/lex.py: $(SOURCE_DIR)/.prep
 
@@ -62,4 +60,4 @@ install:	$(INSTALL_NO_ARCH) $(BUILD_DIR)/license.ply
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:    $(SYSTEM_TEST_NO_ARCH)
