@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		asn1crypto
-COMPONENT_VERSION=	0.24.0
+COMPONENT_VERSION=	1.3.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9d5c20441baf0cb60a4ac34cc447c6c189024b6b4c6cd7877034f4965c464e49
+    sha256:fd003a81969c35cbd15e87793b8f803e841f7ff33a7b502513de0819e5fc6ea9
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/wbond/asn1crypto
 COMPONENT_BUGDB=	python-mod/asn1crypto
 COMPONENT_ANITYA_ID=	15550
 
-TPNO=			40851
+TPNO=			57856
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
