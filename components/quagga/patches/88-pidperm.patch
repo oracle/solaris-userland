@@ -1,0 +1,80 @@
+This patch adds an extended privilege policy to the quagga daemons so that
+they can run no matter what the user and group they run with. This is to
+facilitate running as daemon by default, but the admin is allowed to change
+the user and group, so this change is needed for that as well.
+
+This change will be pushed upstream so this patch may be removed when upgrading
+to a version that aleready contains the change.
+
+--- solaris/quagga.xml.in
++++ solaris/quagga.xml.in
+@@ -65,7 +65,8 @@
+ 		timeout_seconds='60'>
+ 		<method_context>
+ 		  <method_credential
+-		   user='root' group='root'/>
++		   user='root' group='root'
++                   privileges='all,{zone}:/system/volatile/quagga,{zone}:/system/volatile/quagga/*' />
+  		</method_context>
+ 	</exec_method>
+ 
+@@ -195,7 +196,8 @@
+ 		timeout_seconds='60'>
+ 		<method_context>
+ 		  <method_credential
+-		   user='root' group='root'/>
++		   user='root' group='root'
++                   privileges='all,{zone}:/system/volatile/quagga,{zone}:/system/volatile/quagga/*' />
+  		</method_context>
+ 	</exec_method>
+ 
+@@ -316,7 +318,8 @@
+ 		timeout_seconds='60'>
+ 		<method_context>
+ 		  <method_credential
+-		   user='root' group='root'/>
++		   user='root' group='root'
++                   privileges='all,{zone}:/system/volatile/quagga,{zone}:/system/volatile/quagga/*' />
+  		</method_context>
+ 	</exec_method>
+ 
+@@ -437,7 +440,8 @@
+ 		timeout_seconds='60'>
+ 		<method_context>
+ 		  <method_credential
+-		   user='root' group='root'/>
++		   user='root' group='root'
++                   privileges='all,{zone}:/system/volatile/quagga,{zone}:/system/volatile/quagga/*' />
+  		</method_context>
+ 	</exec_method>
+ 
+@@ -561,7 +565,8 @@
+ 		timeout_seconds='60'>
+ 		<method_context>
+ 		  <method_credential
+-		   user='root' group='root'/>
++		   user='root' group='root'
++                   privileges='all,{zone}:/system/volatile/quagga,{zone}:/system/volatile/quagga/*' />
+  		</method_context>
+ 	</exec_method>
+ 
+@@ -680,7 +685,8 @@
+ 		timeout_seconds='60'>
+ 		<method_context>
+ 		  <method_credential
+-		   user='root' group='root'/>
++		   user='root' group='root'
++                   privileges='all,{zone}:/system/volatile/quagga,{zone}:/system/volatile/quagga/*' />
+  		</method_context>
+ 	</exec_method>
+ 
+@@ -814,7 +820,8 @@
+ 		timeout_seconds='60'>
+ 		<method_context>
+ 		  <method_credential
+-		   user='root' group='root' />
++		   user='root' group='root'
++                   privileges='all,{zone}:/system/volatile/quagga,{zone}:/system/volatile/quagga/*' />
+  		</method_context>
+ 	</exec_method>
+ 
