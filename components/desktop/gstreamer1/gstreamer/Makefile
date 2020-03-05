@@ -55,6 +55,7 @@ CONFIGURE_OPTIONS += --enable-docbook
 CONFIGURE_OPTIONS += --enable-introspection
 CONFIGURE_OPTIONS += --libexecdir=$(CONFIGURE_LIBDIR.$(BITS))
 CONFIGURE_OPTIONS += --with-bash-completion-dir=/etc/bash_completion.d
+CONFIGURE_OPTIONS += --with-ptp-helper-permissions=solaris-privileges
 
 # Makefile.am files of this component are not compatible with Solaris make.
 # Use GNU make to avoid the configuration error when makefile fragments are processed.
