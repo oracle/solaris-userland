@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		portend
-COMPONENT_VERSION=	2.3
+COMPONENT_VERSION=	2.6
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:b7ce7d35ea262415297cbfea86226513e77b9ee5f631d3baa11992d663963719
+	sha256:8c419b543157d218cd6bfe07b91b0b8dedc865b3c0ab411ee56bb51127be50f0
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.org/project/portend
 COMPONENT_BUGDB=	python-mod/portend
 COMPONENT_ANITYA_ID=	20203
 
-TPNO=	44996
+TPNO=	57855
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -55,7 +55,7 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:	$(SYSTEM_TEST_NO_ARCH)
 
 # Setup related components
 REQUIRED_PACKAGES += library/python/setuptools_scm
