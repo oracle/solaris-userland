@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		attrs
-COMPONENT_VERSION=	18.2.0
+COMPONENT_VERSION=	19.3.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:10cbf6e27dbce8c30807caf056c8eb50917e0eaafe86347671b57254006c3e69
+    sha256:20333997d8f245cc7cde85e93e0672a0df83425f6b29f9c1e7a177ce47fd8658
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://www.attrs.org/en/stable/
 COMPONENT_BUGDB=	python-mod/attrs
 COMPONENT_ANITYA_ID=	15099
 
-TPNO=			49612
+TPNO=			57854
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -55,7 +55,7 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/coverage
