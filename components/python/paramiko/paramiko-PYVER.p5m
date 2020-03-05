@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 set name=pkg.fmri \
@@ -59,11 +59,15 @@ file path=usr/lib/python$(PYVER)/vendor-packages/paramiko/compress.py
 file path=usr/lib/python$(PYVER)/vendor-packages/paramiko/config.py
 file path=usr/lib/python$(PYVER)/vendor-packages/paramiko/dsskey.py
 file path=usr/lib/python$(PYVER)/vendor-packages/paramiko/ecdsakey.py
+file path=usr/lib/python$(PYVER)/vendor-packages/paramiko/ed25519key.py
 file path=usr/lib/python$(PYVER)/vendor-packages/paramiko/file.py
 file path=usr/lib/python$(PYVER)/vendor-packages/paramiko/hostkeys.py
+file path=usr/lib/python$(PYVER)/vendor-packages/paramiko/kex_curve25519.py
+file path=usr/lib/python$(PYVER)/vendor-packages/paramiko/kex_ecdh_nist.py
 file path=usr/lib/python$(PYVER)/vendor-packages/paramiko/kex_gex.py
 file path=usr/lib/python$(PYVER)/vendor-packages/paramiko/kex_group1.py
 file path=usr/lib/python$(PYVER)/vendor-packages/paramiko/kex_group14.py
+file path=usr/lib/python$(PYVER)/vendor-packages/paramiko/kex_group16.py
 file path=usr/lib/python$(PYVER)/vendor-packages/paramiko/kex_gss.py
 file path=usr/lib/python$(PYVER)/vendor-packages/paramiko/message.py
 file path=usr/lib/python$(PYVER)/vendor-packages/paramiko/packet.py
@@ -92,6 +96,9 @@ license LICENSE license=LGPL2.1
 # force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
+
+# force a dependency on bcrypt; pkgdepend work is needed to flush this out.
+depend type=require fmri=library/python/bcrypt-$(PYV)
 
 # force a dependency on cryptography; pkgdepend work is needed to flush this
 # out.

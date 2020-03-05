@@ -1,12 +1,15 @@
 Mock package is part of Python 3.x but must be imported from different path.
 
+We don't have pytest_relaxed and invoke packages is Solaris. Because of that,
+raises decorator is implemented here and invoke related tests skipped.
+
 This is not intended for upstream.
 
---- paramiko-2.0.9/tests/test_transport.py
-+++ paramiko-2.0.9/tests/test_transport.py
-@@ -30,7 +30,11 @@ import threading
+--- paramiko-2.7.1/tests/test_transport.py
++++ paramiko-2.7.1/tests/test_transport.py
+@@ -29,7 +29,11 @@ import time
+ import threading
  import random
- from hashlib import sha1
  import unittest
 -from mock import Mock
 +
@@ -16,4 +19,43 @@ This is not intended for upstream.
 +    from unittest.mock import Mock
  
  from paramiko import (
-     Transport,
+     AuthHandler,
+--- paramiko-2.7.1/tests/test_client.py
++++ paramiko-2.7.1/tests/test_client.py
+@@ -33,7 +33,15 @@ import warnings
+ import weakref
+ from tempfile import mkstemp
+ 
+-from pytest_relaxed import raises
++def raises(expected):
++    def outer(func):
++        def inner(*args, **kwargs):
++            try:
++                func(*args, **kwargs)
++            except expected:
++                pass
++        return inner
++    return outer
+ from mock import patch, Mock
+ 
+ import paramiko
+--- paramiko-2.7.1/tests/test_config.py
++++ paramiko-2.7.1/tests/test_config.py
+@@ -6,7 +6,7 @@ from socket import gaierror
+ 
+ from paramiko.py3compat import string_types
+ 
+-from invoke import Result
++import pytest
+ from mock import patch
+ from pytest import raises, mark, fixture
+ 
+@@ -704,7 +704,7 @@ def _expect(success_on):
+ 
+     return inner
+ 
+-
++@pytest.mark.skip(reason="We don't have invoke in Solaris")
+ class TestMatchExec(object):
+     @patch("paramiko.config.invoke", new=None)
+     @patch("paramiko.config.invoke_import_error", new=ImportError("meh"))

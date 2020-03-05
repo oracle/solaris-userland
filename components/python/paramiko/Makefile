@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		paramiko
-COMPONENT_VERSION=	2.0.9
+COMPONENT_VERSION=	2.7.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:e48e5a3df4c4d52c62f651bcdf91e0fd2df90cf5163771a3ccb8b106aab6087c
+	sha256:81d265e2c0da5305040e699474d5da7d03c1487f80e630bfae4951a83bb6cd75
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/paramiko/paramiko/
 COMPONENT_BUGDB=	python-mod/paramiko
 COMPONENT_ANITYA_ID=	3954
 
-TPNO=			51397
+TPNO=			55900
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -45,20 +45,11 @@ include $(WS_MAKE_RULES)/ips.mk
 # set LC_ALL for unicode sftp tests test_K_utf8 and test_L_utf8_chdir
 COMPONENT_TEST_ENV =	LC_ALL=en_US.UTF-8
 COMPONENT_TEST_ENV +=	PYTHONPATH=$(SOURCE_DIR)
+COMPONENT_SYSTEM_TEST_ENV =	LC_ALL=en_US.UTF-8
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =
-
-# ============== is followed by hard-to-match tracebacks
-COMPONENT_TEST_TRANSFORMS += \
-    '-n -e "s/in [0-9.]* seconds/in x seconds/"' \
-    '-e "/^collecting .../,\$$p"'
-
-COMPONENT_SYSTEM_TEST_ENV =	LC_ALL=en_US.UTF-8
-COMPONENT_SYSTEM_TEST_DIR =	$(SOURCE_DIR)/tests
-COMPONENT_SYSTEM_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_SYSTEM_TEST_ARGS =	--verbose
+COMPONENT_TEST_ARGS =	--ignore=test_config.py
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
