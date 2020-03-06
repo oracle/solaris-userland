@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2006, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2006, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 32
 include ../../make-rules/shared-macros.mk
@@ -73,8 +73,8 @@ CONFIGURE_OPTIONS +=	--enable-trill
 CONFIGURE_OPTIONS +=	--disable-watchquagga
 CONFIGURE_OPTIONS +=	--enable-ospf6d
 CONFIGURE_OPTIONS +=	--enable-ripngd
-CONFIGURE_OPTIONS +=	--enable-user=root
-CONFIGURE_OPTIONS +=	--enable-group=root
+CONFIGURE_OPTIONS +=	--enable-user=daemon
+CONFIGURE_OPTIONS +=	--enable-group=daemon
 CONFIGURE_OPTIONS +=	--enable-solaris
 
 REQUIRED_PACKAGES += shell/ksh93
