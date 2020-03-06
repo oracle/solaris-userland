@@ -76,6 +76,7 @@ CONFIGURE_OPTIONS +=	--enable-ripngd
 CONFIGURE_OPTIONS +=	--enable-user=daemon
 CONFIGURE_OPTIONS +=	--enable-group=daemon
 CONFIGURE_OPTIONS +=	--enable-solaris
+CONFIGURE_OPTIONS +=	--enable-vty-group=daemon
 
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
