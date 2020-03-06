@@ -1,0 +1,15 @@
+This hides the error message that is expected from svcprop. This fix will be
+submitted to the upstream community and this patch may be removed when upgrading
+to a version with it already applied.
+
+--- solaris/quagga.init.in
++++ solaris/quagga.init.in
+@@ -91,7 +91,7 @@ routeadm_zebra_enable () {
+ 		routing/enable_zebra $SMF_FMRI 2> /dev/null`
+ 	if [ "$enable_zebra" != "false" ]; then
+ 		zenabled=`/usr/bin/svcprop -p general/enabled zebra:quagga`
+-		zenabledt=`/usr/bin/svcprop -p general_ovr/enabled zebra:quagga`
++		zenabledt=`/usr/bin/svcprop -p general_ovr/enabled zebra:quagga 2>/dev/null`
+ 		if [ "$zenabled" = "true" -o "$zenabledt" = "true" ]; then
+ 			/usr/sbin/svcadm disable zebra:quagga
+ 			/usr/sbin/svcadm enable -st zebra:quagga
