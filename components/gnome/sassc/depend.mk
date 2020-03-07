@@ -1,1 +1,0 @@
-gnome/sassc: gnome/libsass

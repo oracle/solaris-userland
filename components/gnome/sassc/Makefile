@@ -44,23 +44,4 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 
-### This should be deleted when build servers are installed with libsass ###
-# Use the build area of libsass
-LIBSASS_BASE = $(WS_COMPONENTS)/gnome/libsass/build/prototype/$(MACH)
-PKG_CONFIG_PATHS += $(LIBSASS_BASE)$(USRLIB)/pkgconfig/
-CPPFLAGS += -I$(LIBSASS_BASE)/usr/include
-LDFLAGS += -L$(LIBSASS_BASE)$(USRLIB)
-LD_OPTIONS += -L$(LIBSASS_BASE)$(USRLIB)
-
-# Remove RPATH pointing to build area
-COMPONENT_POST_INSTALL_ACTION += \
-        ($(ELFEDIT) -e 'dyn:delete RPATH' -e 'dyn:delete RUNPATH' \
-                "$(PROTOUSRBINDIR)/sassc" )
-
-# The dependency isn't installed, so add it manually since pkgdepend
-# can't resolve them yet: 15708323
-DEPENDED += $(WS_TOP)/components/gnome/libsass/build/manifest-$(MACH)-libsass.depend
-REQUIRED_PACKAGES += $(shell $(GSED) -n -e '/GSED/d' -e 's/REQUIRED_PACKAGES +=//p' ../../gnome/libsass/Makefile)
-### 30838877 handles the removal of the above section ###
-
 REQUIRED_PACKAGES += web/css/sass/libsass
