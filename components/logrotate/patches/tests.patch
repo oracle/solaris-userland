@@ -1,0 +1,65 @@
+The tests below expect GNU date but as absolute path is used we cannot just set
+proper path (as for other tools like sed / gsed, etc.) but we have to actually
+change date to gdate. This is in-house patch not suitable for upstream.
+
+--- logrotate-3.15.1/test/test-0050.sh.orig	2020-02-24 17:02:44.480952839 +0100
++++ logrotate-3.15.1/test/test-0050.sh	2020-02-24 17:03:17.924254069 +0100
+@@ -8,9 +8,9 @@
+ # test that hourly rotation works properly
+ preptest test.log 50 1 0
+ 
+-DATESTRING=$(/bin/date +%Y%m%d%H)
+-NOW=$(/bin/date "+%Y-%-m-%-d-%-H" 2>/dev/null)
+-HOURAGO=$(/bin/date "+%Y-%-m-%-d-%-H" --date "1 hour ago" 2>/dev/null)
++DATESTRING=$(/bin/gdate +%Y%m%d%H)
++NOW=$(/bin/gdate "+%Y-%-m-%-d-%-H" 2>/dev/null)
++HOURAGO=$(/bin/gdate "+%Y-%-m-%-d-%-H" --date "1 hour ago" 2>/dev/null)
+ GNUDATE=$?
+ 
+ # --force to trigger rotation
+--- logrotate-3.15.1/test/test-0054.sh.orig	2020-02-24 14:09:27.446082428 +0100
++++ logrotate-3.15.1/test/test-0054.sh	2020-02-24 14:09:51.652219896 +0100
+@@ -12,7 +12,7 @@
+ DATE=""
+ for i in $(seq 1 60)
+ do
+-    DATE=$(/bin/date "+%Y-%m-%d" --date "$i day ago" 2>/dev/null)   
++    DATE=$(/bin/gdate "+%Y-%m-%d" --date "$i day ago" 2>/dev/null)   
+     echo "x" > test.log-$DATE
+ done
+ 
+--- logrotate-3.15.1/test/test-0055.sh.orig	2020-02-24 14:09:33.623265527 +0100
++++ logrotate-3.15.1/test/test-0055.sh	2020-02-24 14:10:00.865188197 +0100
+@@ -12,7 +12,7 @@
+ DATE=""
+ for i in $(seq 1 60)
+ do
+-    DATE=$(/bin/date "+%s" --date "$i hour ago" 2>/dev/null)   
++    DATE=$(/bin/gdate "+%s" --date "$i hour ago" 2>/dev/null)   
+     echo "x" > test.log-$DATE.gz
+ done
+ 
+--- logrotate-3.15.1/test/test-0056.sh.orig	2020-02-24 14:09:39.539550371 +0100
++++ logrotate-3.15.1/test/test-0056.sh	2020-02-24 14:10:11.463581907 +0100
+@@ -12,7 +12,7 @@
+ DATE=""
+ for i in $(seq 1 60)
+ do
+-    DATE=$(/bin/date "+%d-%m-%Y" --date "$i day ago" 2>/dev/null)   
++    DATE=$(/bin/gdate "+%d-%m-%Y" --date "$i day ago" 2>/dev/null)   
+     echo "x" > test.log-$DATE
+ done
+ 
+--- logrotate-3.15.1/test/test-0066.sh.orig	2020-02-24 14:16:22.865758771 +0100
++++ logrotate-3.15.1/test/test-0066.sh	2020-02-24 14:16:44.056546851 +0100
+@@ -8,8 +8,8 @@
+ # When using %Y in the dateformat, the old logs are not removed
+ preptest test.log 66 1 0
+ 
+-DATESTRING=$(/bin/date +%Y%m%d)
+-DAYAGO=$(/bin/date "+%Y-%m-%d" --date "1 day ago" 2>/dev/null)
++DATESTRING=$(/bin/gdate +%Y%m%d)
++DAYAGO=$(/bin/gdate "+%Y-%m-%d" --date "1 day ago" 2>/dev/null)
+ 
+ echo removed > "test.log$DAYAGO"
+ 
