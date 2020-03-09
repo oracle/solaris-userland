@@ -194,12 +194,13 @@ http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
  
 --- a/sapi/fpm/tests/reload-uses-sigkill-as-last-measure.phpt
 +++ b/sapi/fpm/tests/reload-uses-sigkill-as-last-measure.phpt
-@@ -2,8 +2,10 @@
+@@ -2,9 +2,10 @@
  If SIGQUIT and SIGTERM during reloading fail, SIGKILL should be sent
  --SKIPIF--
  <?php
 -include "skipif.inc";
 -if (!function_exists('pcntl_sigprocmask')) die('skip Requires pcntl_sigprocmask()');
+-if (getenv('SKIP_SLOW_TESTS')) die('skip slow tests excluded by request');
 +if (substr(PHP_OS, 0, 5) == 'SunOS') {
 +    /* on SunOS it kills all tests by the signal */
 +    die('skip.. Not valid for SunOS');
