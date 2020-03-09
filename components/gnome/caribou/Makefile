@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=  		64_and_32
@@ -38,12 +38,12 @@ TPNO=			34523
 
 TEST_TARGET = $(NO_TESTS)
 
-PYTHON_VERSION = 2.7
+PYTHON_VERSION = 3.7
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Use explicit Python version rather than the default one
-CONFIGURE_ENV +=	PYTHON=$(PYTHON.2.7)
+CONFIGURE_ENV +=	PYTHON=$(PYTHON)
 
 # Ensure Python modules are installed into vendor package directories.
 CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
@@ -77,7 +77,7 @@ REQUIRED_PACKAGES += library/desktop/libgee
 REQUIRED_PACKAGES += library/desktop/libxklavier
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += library/python/pygobject-3-27
-REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += library/python/pygobject-3-37
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxtst
