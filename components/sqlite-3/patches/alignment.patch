@@ -1,0 +1,26 @@
+https://www.sqlite.org/src/info/04885763c4cd00cb
+
+Fixes problem with Firefox on SPARC.
+
+diff --git a/sqlite3.c b/sqlite3.c
+index 55dc686..71e88cf 100644
+--- a/sqlite3.c
++++ b/sqlite3.c
+@@ -121300,6 +121300,7 @@ SQLITE_PRIVATE void sqlite3GenerateConstraintChecks(
+             ** Hence, make a complete copy of the opcode, rather than using
+             ** a pointer to the opcode. */
+             x = *sqlite3VdbeGetOp(v, addrConflictCk);
++            const char *zP4;
+             if( x.opcode!=OP_IdxRowid ){
+               int p2;      /* New P2 value for copied conflict check opcode */
+               if( sqlite3OpcodeProperty[x.opcode]&OPFLG_JUMP ){
+@@ -121307,7 +121308,8 @@ SQLITE_PRIVATE void sqlite3GenerateConstraintChecks(
+               }else{
+                 p2 = x.p2;
+               }
+-              sqlite3VdbeAddOp4(v, x.opcode, x.p1, p2, x.p3, x.p4.z, x.p4type);
++              zP4 = x.p4type==P4_INT32 ? SQLITE_INT_TO_PTR(x.p4.i) : x.p4.z;
++              sqlite3VdbeAddOp4(v, x.opcode, x.p1, p2, x.p3, zP4, x.p4type);
+               sqlite3VdbeChangeP5(v, x.p5);
+               VdbeCoverageIf(v, p2!=x.p2);
+             }
