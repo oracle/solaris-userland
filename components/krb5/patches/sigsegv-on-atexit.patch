@@ -1,0 +1,60 @@
+Employ safe coding practices also in MIT-krb5:src/util/et/error_message.c
+Promoted to community code:
+https://github.com/krb5/krb5/pull/1048
+
+--- a/src/util/et/error_message.c	2018-05-03 16:34:47.000000000 +0000
++++ b/src/util/et/error_message.c	2020-03-09 12:02:41.359729190 +0000
+@@ -69,9 +69,9 @@
+         enext = e->next;
+         free(e);
+     }
++    et_list = NULL; terminated = 1;
+     k5_mutex_unlock(&et_list_lock);
+     k5_mutex_destroy(&et_list_lock);
+-    terminated = 1;
+ }
+ 
+ #ifndef DEBUG_TABLE_LIST
+@@ -278,24 +278,32 @@
+ errcode_t KRB5_CALLCONV
+ remove_error_table(const struct error_table *et)
+ {
+-    struct et_list **ep, *e;
++    struct et_list *epp, *ep;
+ 
++    /* be safe */
++    if (et_list == NULL || terminated)
++        return ENOENT;
+     if (CALL_INIT_FUNCTION(com_err_initialize))
+         return 0;
+     k5_mutex_lock(&et_list_lock);
+ 
+     /* Remove the entry that matches the error table instance. */
+-    for (ep = &et_list; *ep; ep = &(*ep)->next) {
+-        if ((*ep)->table == et) {
+-            e = *ep;
+-            *ep = e->next;
+-            free(e);
+-            k5_mutex_unlock(&et_list_lock);
+-            return 0;
+-        }
++    for (epp = NULL, ep = et_list; ep && ep->table != et; epp = ep, ep = ep->next) ;
++    if (!ep) {
++        k5_mutex_unlock(&et_list_lock);
++        return ENOENT;
++    }
++
++    /* is removed entry on head of the list? */
++    if (epp == NULL) {
++        et_list = ep->next;
++    } else {
++        epp->next = ep->next;
+     }
++
++    free(ep);
+     k5_mutex_unlock(&et_list_lock);
+-    return ENOENT;
++    return 0;
+ }
+ 
+ int com_err_finish_init()
