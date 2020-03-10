@@ -57,7 +57,7 @@ INSTALL_TARGET += $(PROTO_DIR)/$(PYTHON.3.7.VENDOR_PACKAGES)/gv.pyc
 
 include $(WS_MAKE_RULES)/common.mk
 
-PATH =		/usr/php/7.3/bin:/usr/bin:/usr/gnu/bin
+PATH =		/usr/php/7.4/bin:/usr/bin:/usr/gnu/bin
 
 # GMP header files for the guile extension (no --with- flag)
 # The guile build is broken with studio (15732452), so we disable this for now.
@@ -121,6 +121,24 @@ $(CONFIGURE_64): COMPONENT_POST_CONFIGURE_ACTION += \
 
 $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
     (cd $(@D)/tclpkg/gv-php-71 ; gmake V=1 libgv_php.la ) ;
+
+PHP_73_CONFIG = /usr/php/7.3/bin/php-config
+PHP_73_INCLUDES := $(shell $(PHP_73_CONFIG) --includes)
+PHP_73_INSTALL_DIR := $(shell $(PHP_73_CONFIG) --extension-dir)
+PHP_73_LDFLAGS := $(shell $(PHP_73_CONFIG) --ldflags)
+PHP_73_LIBS := $(shell $(PHP_73_CONFIG) --libs)
+
+$(CONFIGURE_64): COMPONENT_POST_CONFIGURE_ACTION += \
+    (cd $(@D) ; cp -rp tclpkg/gv tclpkg/gv-php-73 ; \
+    $(GSED) -i '/^SUBDIRS =/s|$$| gv-php-73|' tclpkg/Makefile ; \
+    $(GSED) -i \
+     -e '/^PHP_INCLUDES =/s|=.*$$|= $(PHP_73_INCLUDES)|' \
+     -e '/^PHP_INSTALL_DIR =/s|=.*$$|= $(PHP_73_INSTALL_DIR)|' \
+     -e '/^PHP_LIBS =/s|=.*$$|= $(PHP_73_LDFLAGS) $(PHP_73_LIBS)|' \
+     `find tclpkg/gv-php-73 -name Makefile` ) ;
+
+$(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
+    (cd $(@D)/tclpkg/gv-php-73 ; gmake V=1 libgv_php.la ) ;
 
 # Create the config file once the 32-bit build is complete.  This runs the bits
 # we just built, so we have to set a handful of variables to the right place.
@@ -186,6 +204,9 @@ REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += web/php-71
+REQUIRED_PACKAGES += web/php-73
+REQUIRED_PACKAGES += web/php-74
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxmu
 REQUIRED_PACKAGES += x11/library/toolkit/libxaw7
