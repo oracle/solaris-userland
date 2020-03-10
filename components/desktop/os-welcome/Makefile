@@ -20,14 +20,14 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         os-welcome
-COMPONENT_VERSION=      1.2.0
+COMPONENT_VERSION=      1.3.0
 COMPONENT_SRC=          files
 COMPONENT_ARCHIVE_SRC=	none
 COMPONENT_BUGDB=	gnome/applications
@@ -46,6 +46,6 @@ REQUIRED_PACKAGES += file/gnu-coreutils
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
-REQUIRED_PACKAGES += library/python/pygobject-3-27
-REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += library/python/pygobject-3-37
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += shell/ksh93
