@@ -490,6 +490,13 @@ $(RESOLVE_DEPS):	$(MAKEFILE_PREREQ) $(BUILD_DIR)
 # resolve the dependencies all at once
 $(BUILD_DIR)/.resolved-$(MACH):	$(DEPENDED) $(RESOLVE_DEPS)
 	$(PKGDEPEND) resolve $(RESOLVE_DEPS:%=-e %) -m $(DEPENDED)
+ifneq ($(strip $(POSTRESOLVE_TRANSFORMS)),)
+	for manifest in $(RESOLVED) ; do \
+		$(MV) $${manifest} $${manifest}.raw ; \
+		$(PKGMOGRIFY) $${manifest}.raw $(POSTRESOLVE_TRANSFORMS) \
+		    > $${manifest} ; \
+	done
+endif
 	$(TOUCH) $@
 
 #

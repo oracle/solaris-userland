@@ -23,7 +23,7 @@
 
 include ../make-rules/shared-macros.mk
 
-# for now, the assumption is we build any directory with a Makefile.  This may
+# For now, the assumption is we build any directory with a *.p5m file. This may
 # not always be the case. If we build a new make-like tool to drive the upper
 # level build, it may make different decisions and will need to include
 # appropriate dependency information.
@@ -45,7 +45,7 @@ $(WS_MACH)/depends.mk:     $(WS_MACH)/components.mk
 	@cat $(shell $(USERLAND_COMPONENTS) --workspace=$(WS_TOP) \
 		| sed -e 's;^$(shell pwd)/;;g' -e 's;$$;/depend.mk;g') >$@ \
 		2>/dev/null
- 
+
 -include $(WS_MACH)/depends.mk
 
 #
@@ -202,7 +202,7 @@ incorporation:
 		for incorporation in $(WS_MACH)/*.p5m ; do \
 		    $(call log-package-publish, $${incorporation}) ; \
 		    $(PKGSEND) -s $(PKG_REPO) publish --fmri-in-manifest \
-			       $${incorporation} || exit $?; \
+			       $${incorporation} || exit $$?; \
 		done \
 	) >$(WS_LOGS)/incorporator 2>&1; \
 	RET=$$?; \
