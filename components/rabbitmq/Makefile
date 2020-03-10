@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -28,17 +28,17 @@ include ../../make-rules/shared-macros.mk
 PATH=/usr/gnu/bin:/usr/bin:/usr/sbin
 
 COMPONENT_NAME=		rabbitmq-server
-COMPONENT_VERSION=	3.7.8
+COMPONENT_VERSION=	3.8.3
 COMPONENT_SRC_NAME=	rabbitmq-server
 COMPONENT_PROJECT_URL=	https://www.rabbitmq.com/
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.xz
 COMPONENT_BUGDB=	service/rabbitmq
 COMPONENT_ANITYA_ID=	5585
-COMPONENT_ARCHIVE_HASH= sha256:bed39fd72b8c932fe5f356fbbc7d30a19d651213e1667d81f084bc31468f5a02
+COMPONENT_ARCHIVE_HASH= sha256:aedc8458701a80167b35958c10090d468c3de11984510b49ec02e777c51b1aba
 COMPONENT_ARCHIVE_URL= https://github.com/rabbitmq/rabbitmq-server/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 
-TPNO=			46909
+TPNO=			57486
 
 BUILD_STYLE= justmake
 include $(WS_MAKE_RULES)/common.mk
@@ -51,6 +51,7 @@ CLONEY := echo
 # and use the system hex to extract sources of Elixir dependencies.
 COMPONENT_PRE_BUILD_ACTION = (	\
 	cp -rd $(SOURCE_DIR)/. $(@D);	cd $(@D); \
+	gmake deps/.hex/cache.ets; \
 	rm -Rf deps/.mix/; cd deps/rabbitmq_cli/; \
 	env HEX_OFFLINE=1 HOME=../ DEPS_DIR=../ MIX_ENV=prod \
 	LC_ALL=en_US.UTF-8 mix deps.get --only prod \

@@ -19,7 +19,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Script rabbitmq-server requires GNU version of grep.
@@ -186,7 +186,7 @@ PONG
 
 # Copy and extract required plugin dependencies.
 cd "${RABBITMQ_PLUGINS_DIR}/"
-cp amqp_client* rabbit_common* lager* goldrush* jsx* ranch* recon* "${PINGPONG_TEST_DIR}"
+cp amqp_client* credentials_obfuscation* rabbit_common* lager* goldrush* jsx* ranch* recon* "${PINGPONG_TEST_DIR}"
 
 cd "${PINGPONG_TEST_DIR}/"
 find . -name '*.ez' -exec unzip {} > /dev/null \;
@@ -232,10 +232,9 @@ wait "${PING_PID}"
 
 echo ""
 echo "Available queues on RabbitMQ server:"
-${RABBITMQ_CTL_BIN} list_queues name state | grep -vi timeout | gtail -n +2 | sort
+${RABBITMQ_CTL_BIN} list_queues name state | grep '_queue' | sort
 
 echo ""
-echo "Loaded RabbitMQ plugins:"
 ${RABBITMQ_PLUGINS_BIN} enable --all 1>/dev/null
 ${RABBITMQ_PLUGINS_BIN} list -Em
 
