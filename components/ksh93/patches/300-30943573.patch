@@ -1,0 +1,55 @@
+#
+# This is to workaround the issue described in bug 30943573 by patching back in
+# the original working values from before ON switched to Studio 12.6
+#
+diff -u INIT.2012-08-01.orig/src/cmd/ksh93/sh/pmain.c INIT.2012-08-01/src/cmd/ksh93/sh/pmain.c
+--- INIT.2012-08-01.orig/src/cmd/ksh93/sh/pmain.c	2020-03-04 23:05:51.381724295 +0000
++++ INIT.2012-08-01/src/cmd/ksh93/sh/pmain.c	2020-03-10 12:48:29.491315076 +0000
+@@ -42,5 +42,12 @@
+ 	mha.mha_pagesize = 64 * 1024;
+ 	(void)memcntl(NULL, 0, MC_HAT_ADVISE, (caddr_t)&mha, 0, 0);
+ #endif
++
++#ifdef	__amd64
++	/* Workaround for bug 30943573. */
++	extern void fixup_Sftable(void);
++	fixup_Sftable();
++#endif
++
+ 	return(sh_main(argc, argv, (Shinit_f)0));
+ }
+diff -u ast-base.2012-08-01.orig/src/lib/libast/sfio/sftable.c ast-base.2012-08-01/src/lib/libast/sfio/sftable.c
+--- ast-base.2012-08-01.orig/src/lib/libast/sfio/sftable.c	2012-03-27 19:45:50.000000000 +0100
++++ ast-base.2012-08-01/src/lib/libast/sfio/sftable.c	2020-03-10 12:50:57.212545746 +0000
+@@ -539,3 +539,31 @@
+ 
+ /* table for floating point and integer conversions */
+ #include	"FEATURE/sfinit"
++
++
++#ifdef	__amd64
++
++#include <strings.h>
++/*
++ * Workaround for bug 30943573.
++ * A compiler switch has modified the exact byte sequences for certain
++ * entries in _Sftable. Whilst that is worked out, patch back in the
++ * original values copied from ksh prior to being built on a libc built
++ * with Studio 12.6.
++ * Note that only the _Sfneg10 need patching.
++ */
++void
++fixup_Sftable(void)
++{
++	const unsigned long Sfneg10_patchtable[] = {
++		0xcccccccccccccccd, 0x0000000000003ffb,
++		0xa3d70a3d70a3d70a, 0x0000000000003ff8,
++		0xd1b71758e219652c, 0x0000000000003ff1,
++		0xabcc77118461cefd, 0x0000000000003fe4,
++		0xe69594bec44de15b, 0x0000000000003fc9,
++		0xcfb11ead453994ba, 0x0000000000003f94
++	};
++
++	bcopy(Sfneg10_patchtable, &_Sfneg10[0], sizeof (Sfneg10_patchtable));
++}
++#endif
