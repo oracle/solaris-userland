@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -42,9 +42,9 @@ include $(WS_MAKE_RULES)/common.mk
 CFLAGS += -D__ATTRIBUTE_DISABLED
 CONFIGURE_OPTIONS  +=	--with-external-zlib
 
-# Enable adiheap and adistack security extensions
-ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
-ADISTACK_MODE =	$(ADISTACK_ENABLE)
+# Disable adistack and adiheap security extensions
+ADISTACK_MODE = $(ADISTACK_DISABLE)
+ADIHEAP_MODE =  $(ADIHEAP_DISABLE)
 
 # need gnu grep
 COMPONENT_TEST_ENV += PATH=$(GNUBIN):$(PATH)
