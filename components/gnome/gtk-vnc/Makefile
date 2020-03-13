@@ -18,23 +18,24 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
-BUILD_BITS=            	64_and_32
+BUILD_BITS=            	64
 COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gtk-vnc
-COMPONENT_VERSION=	0.7.0
+COMPONENT_VERSION=	1.0.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/$(COMPONENT_NAME)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:3c2eae7c9053338939a32c9987156a12b802ffd5c7f80702ba8d483dfc6d483e
+    sha256:a81a1f1a79ad4618027628ffac27d3391524c063d9411c7a36a5ec3380e6c080
 COMPONENT_BUGDB=	gnome/remote-desktop
 COMPONENT_ANITYA_ID=	13142
 
-TPNO=			36162
+TPNO=			57513
 
+BUILD_STYLE=            meson
 TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -44,13 +45,11 @@ LD_OPTIONS += $(LD_OPTIONS.$(BITS))
 
 LD_OPTIONS += -z gnu-version-script-compat
 
-CONFIGURE_OPTIONS += --without-python
-CONFIGURE_OPTIONS += --with-gtk=3.0
-
 # Assumes GNU xgettext is first in $PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 # Assumes pod2man can be found somewhere in $PATH
 COMPONENT_BUILD_ENV += PATH="$(PATH):/usr/perl5/$(PERL_VERSION)/bin"
+COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 
 REQUIRED_PACKAGES += library/audio/pulseaudio
 REQUIRED_PACKAGES += library/desktop/cairo
