@@ -9,8 +9,8 @@ This patch is suitable for contribution upstream.  It should be
 confirmed on at least Solaris 11, and possibly Solaris 10, if that's
 still a target by the upstream community.
 
---- otp_src_21.0/erts/emulator/sys/unix/sys_uds.c	2018-08-03 05:37:02.736890205 +0000
-+++ otp_src_21.0/erts/emulator/sys/unix/sys_uds.c	2018-08-03 05:36:16.357838738 +0000
+--- a/erts/emulator/sys/unix/sys_uds.c	2020-02-25 13:47:31.541171839 +0000
++++ b/erts/emulator/sys/unix/sys_uds.c	2020-02-25 13:47:39.905234136 +0000
 @@ -22,10 +22,6 @@
  #  include "config.h"
  #endif
@@ -22,19 +22,3 @@ still a target by the upstream community.
  #include <limits.h>
  
  #include <sys/types.h>
-
---- otp_src_21.0/erts/etc/unix/run_erl.c	2018-08-03 05:40:30.930116521 +0000
-+++ otp_src_21.0/erts/etc/unix/run_erl.c	2018-08-03 05:40:08.088089206 +0000
-@@ -43,10 +43,10 @@
- #endif
- #ifdef HAVE_WORKING_POSIX_OPENPT
- #  ifndef _XOPEN_SOURCE
--     /* On OS X and BSD, we must leave _XOPEN_SOURCE undefined in order for
-+     /* On OS X, BSD and Solaris we must leave _XOPEN_SOURCE undefined in order for
-       * the prototype of vsyslog() to be included.
-       */
--#    if !(defined(__APPLE__) || defined(__FreeBSD__) || defined(__DragonFly__))
-+#    if !(defined(__APPLE__) || defined(__FreeBSD__) || defined(__DragonFly__) || defined(sun))
- #      define _XOPEN_SOURCE 600
- #    endif
- #  endif

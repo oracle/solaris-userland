@@ -2,7 +2,7 @@
 <!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
 <!--
 
- Copyright (c) 2013, 2016, Oracle and/or its affiliates. All rights reserved.
+ Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
 
  CDDL HEADER START
 
@@ -52,6 +52,13 @@
 		restart_on='error'
 		type='service'>
 		<service_fmri value='svc:/milestone/network' />
+	</dependency>
+
+	<dependency name='portmap'
+		grouping='require_all'
+		restart_on='none'
+		type='service'>
+		<service_fmri value='svc:/network/erlang/portmap' />
 	</dependency>
 
 	<method_context>

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Built in SFW with gcc and builds cleanly now only with gcc
@@ -31,22 +31,25 @@ include ../../make-rules/shared-macros.mk
 PATH=$(JAVA_HOME)/bin:$(USRBINDIR)
 
 COMPONENT_NAME=			erlang
-COMPONENT_VERSION=		21.0
+COMPONENT_VERSION=		22.2.8
 COMPONENT_PROJECT_URL=	http://www.erlang.org/
 COMPONENT_SRC_NAME=	otp_src
 COMPONENT_SRC=		$(COMPONENT_SRC_NAME)_$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c7d247c0cad2d2e718eaca2e2dff051136a1347a92097abf19ebf65ea2870131
-COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE)
+    sha256:71f73ddd59db521928a0f6c8d4354d6f4e9f4bfbd0b40d321cd5253a6c79b095
+COMPONENT_ARCHIVE_URL=  https://github.com/erlang/otp/archive/OTP-${COMPONENT_VERSION}.tar.gz
 COMPONENT_BUGDB=	utility/erlang
 COMPONENT_ANITYA_ID=	707
+COMPONENT_POST_UNPACK_ACTION= ( $(MV) otp-OTP-$(COMPONENT_VERSION) $(COMPONENT_SRC))
+COMPONENT_PREP_ACTION = (cd $(@D); ./otp_build autoconf)
+COMPONENT_VERSION_SHORT= $(shell echo $(COMPONENT_VERSION) | cut -d'.' -f1-2)
 
 # manpages
 COMPONENT_NAME_1=	otp_doc_man
-COMPONENT_SRC_1=	$(COMPONENT_NAME_1)_$(COMPONENT_VERSION)
+COMPONENT_SRC_1=	$(COMPONENT_NAME_1)_$(COMPONENT_VERSION_SHORT)
 COMPONENT_ARCHIVE_1=	$(COMPONENT_SRC_1).tar.gz
 COMPONENT_ARCHIVE_HASH_1=	\
-    sha256:10bf0e44b97ee8320c4868d5a4259c49d4d2a74e9c48583735ae0401f010fb31
+    sha256:aad7e3795a44091aa33a460e3fdc94efe8757639caeba0b5ba7d79bd91c972b3
 COMPONENT_ARCHIVE_URL_1=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE_1)
 UNPACK_ARGS_1=	-r $(COMPONENT_SRC_1)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_1)
@@ -54,16 +57,16 @@ COMPONENT_ANITYA_ID_1=	707
 
 # HTML documentation
 COMPONENT_NAME_2=	otp_doc_html
-COMPONENT_SRC_2=	$(COMPONENT_NAME_2)_$(COMPONENT_VERSION)
+COMPONENT_SRC_2=	$(COMPONENT_NAME_2)_$(COMPONENT_VERSION_SHORT)
 COMPONENT_ARCHIVE_2=	$(COMPONENT_SRC_2).tar.gz
 COMPONENT_ARCHIVE_HASH_2=	\
-    sha256:fcc10885e8bf2eef14f7d6e150c34eeccf3fcf29c19e457b4fb8c203e57e153c
+    sha256:09d41810d79fafde293feb48ebb249940eca6f9f5733abb235e37d06b8f482e3
 COMPONENT_ARCHIVE_URL_2=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE_2)
 UNPACK_ARGS_2=	-r $(COMPONENT_SRC_2)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_2)
 COMPONENT_ANITYA_ID_2=	707
 
-TPNO=			44817
+TPNO=			57244
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 
@@ -116,21 +119,18 @@ COMPONENT_BUILD_ARGS +=	V=1
 
 COMPONENT_INSTALL_ARGS += INSTALL_PREFIX=$(PROTO_DIR)
 
-COMPONENT_TEST_ENV +=		ERL_TOP=$(BUILD_DIR_64)
-COMPONENT_TEST_TARGETS =	tests
-
-COMPONENT_SYSTEM_TEST_ENV +=	ERL_TOP=$(BUILD_DIR_64)
-COMPONENT_SYSTEM_TEST_TARGETS =	tests
-
-COMPONENT_TEST_TRANSFORMS += \
-	'-e "/^gmake.*release_tests_spec/d" '
+# Run Erlang release tests; it takes many hours...
+COMPONENT_TEST_DIR = $(COMPONENT_DIR)
+COMPONENT_TEST_CMD = $(SHELL)
+COMPONENT_TEST_TARGETS = run_erlang_tests.sh $(BUILD_DIR_64)
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 
 # Some header files are architecture specific, therefore,
 # we must avoid to rename some i386 directories to $(MACH).
 GENERATE_TRANSFORMS := generate/pretrans $(GENERATE_TRANSFORMS)
 
 # Extra directories with documentation for 'gmake manifest-check'.
-GENERATE_PROTO_DIRS += otp_doc_man_21.0/man/ otp_doc_html_21.0/
+GENERATE_PROTO_DIRS += otp_doc_man_22.2/man/ otp_doc_html_22.2/ files^files
 
 # remove INSTALL_PREFIX from path
 COMPONENT_POST_INSTALL_ACTION += \

@@ -21,7 +21,7 @@ gmake test
 # Create a special user for testing purposes since
 # the default user "guest" can be used only for localhost.
 # The created user is assigned all the conf, write, and read permissions.
-sudo svcadm enable -s rabbitmq
+sudo svcadm enable -rs rabbitmq
 sudo rabbitmqctl add_user "${RABBIT_USER}" "${RABBIT_PASSWD}"
 sudo rabbitmqctl set_user_tags "${RABBIT_USER}" administrator
 sudo rabbitmqctl set_permissions -p / "${RABBIT_USER}" ".*" ".*" ".*"

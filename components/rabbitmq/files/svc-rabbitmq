@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 . /lib/svc/share/smf_include.sh
@@ -86,15 +86,7 @@ case "$1" in
 	;;
 "stop")
 	$RABBIT_CTL -n $RABBITMQ_NODENAME stop
-	# XXX epmd should be in a separate SMF service (16749936); for now,
-	# though, be sure to kill it here.
-	epmd_pid=$(pgrep -c $(svcs -H -o ctid $SMF_FMRI) epmd)
-	if [[ -n $epmd_pid ]]; then
-		sleep 2
-		epmd -kill
-	fi
 	;;
-
 *)
 	echo "Usage: $0 { start | stop }"
 	exit $SMF_EXIT_ERR_CONFIG

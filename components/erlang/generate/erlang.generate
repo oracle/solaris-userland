@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 <include generate/common.transform>
@@ -41,6 +41,13 @@
 # Enable to call 'gmake manifest-check' even after 'gmake publish'.
 # Do not allow to add manual pages twice...
 <transform file path=^man/(.+) -> drop>
+
+# Add files of Erlang Port Mapper service.
+<transform file path=files/portmap.xml -> set action.hash %(path)>
+<transform file path=files/portmap.xml -> edit path .* lib/svc/manifest/network/portmap.xml>
+<transform file path=files/svc-portmap -> set action.hash %(path)>
+<transform file path=files/svc-portmap -> edit path .* lib/svc/method/portmap>
+<transform file path=lib/svc/method/portmap -> set disable_fmri svc:/network/erlang/portmap:default>
 
 # Set appropriate permissions to the executable files.
 <transform file path=usr/lib/\$\(MACH64\)/erlang/erts-10.0/bin/beam.smp -> set mode 0555>

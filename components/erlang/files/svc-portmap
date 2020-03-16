@@ -1,0 +1,96 @@
+#!/usr/bin/bash
+
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+#
+
+. /lib/svc/share/smf_include.sh
+
+EPMD_EXE=/usr/bin/epmd
+EPMD_ARGS=""
+EPMD_SERVICE="$0"
+export HOME=/var/lib/_epmd
+
+if [ -z "$SMF_FMRI" ]; then
+  echo "This script can only be invoked by smf(5)!"
+  exit $SMF_EXIT_ERR_NOSMF
+fi
+
+EPMD_PORT="$(svcprop -p config/port $SMF_FMRI 2>/dev/null)"
+if [ -n "${EPMD_PORT}" ]; then
+  EPMD_ARGS+=" -port ${EPMD_PORT}"
+fi
+
+EPMD_ADDRS="$(svcprop -p config/address $SMF_FMRI 2>/dev/null)"
+if [ -n "${EPMD_ADDRS}" ]; then
+  EPMD_ARGS+=" -address $EPMD_ADDRS"
+fi
+
+EPMD_LOGGING="$(svcprop -p config/logging $SMF_FMRI 2>/dev/null)"
+if [ "${EPMD_LOGGING}" = "false" ]; then
+  EPMD_ARGS+=" -disable_syslog"
+fi
+
+case "$1" in
+"start")
+  $EPMD_EXE ${EPMD_ARGS} -names &> /dev/null
+  if [ $? -eq 0 ]; then
+    echo "Erlang Port Mapper daemon is already running!"
+    echo "Please terminate epmd processes and try again."
+    exit $SMF_EXIT_ERR_FATAL
+  fi
+
+  $EPMD_EXE ${EPMD_ARGS} -daemon
+  sleep 1
+  $EPMD_EXE ${EPMD_ARGS} -names &> /dev/null
+  if [ $? -ne 0 ]; then
+    echo "Failed to start portmap service!"
+    echo "Command: $EPMD_EXE ${EPMD_ARGS} -daemon"
+    exit $SMF_EXIT_ERR_FATAL
+  fi
+  ;;
+"stop")
+  epmd_pid=$(pgrep -c $(svcs -H -o ctid $SMF_FMRI) epmd)
+  if [ -n "${epmd_pid}" ]; then
+    # Try to terminate the daemon gracefully.
+    kill -TERM "${epmd_pid}"
+    sleep 1
+
+    # Kill all the processes that refused to terminate cleanly.
+    epmd_pid=$(ps -p "${epmd_pid}" -o pid=)
+    if [ -n "${epmd_pid}" ]; then
+      echo "Killing the epmd process of portmap service!"
+      kill -KILL "${epmd_pid}"
+    fi
+  else
+    echo "Cannot find the process associated with portmap service!"
+  fi
+  ;;
+*)
+  echo "Usage: $0 { start | refresh | stop }"
+  exit $SMF_EXIT_ERR_CONFIG
+  ;;
+esac
+
+exit $SMF_EXIT_OK
