@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
 COMPILER=	gcc
 
 COMPONENT_NAME=		pycurl
-COMPONENT_VERSION=	7.43.0
+COMPONENT_VERSION=	7.43.0.5
 COMPONENT_PROJECT_URL=	http://pycurl.sourceforge.net/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:aa975c19b79b6aa6c0518c0cc2ae33528900478f0b500531dbcdbf05beec584c
+    sha256:c6ee5fda5f630cb13499d0fe95edd443174ccbfc0ff9fa71b1cd63bb2194c68b
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/pycurl
 COMPONENT_ANITYA_ID=	7973
 
-TPNO=			28055
+TPNO=			57853
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -66,7 +66,7 @@ build:		$(BUILD_32_and_64)
 install:	$(INSTALL_32_and_64)
 
 # test requires bottle and vsftpd which haven't been integrated yet.
-test:		$(TEST_32_and_64)
+test:		$(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
