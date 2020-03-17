@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 $(BUILD_DIR)/%-2.7/.built:		PYTHON_VERSION=2.7
@@ -164,12 +164,15 @@ COMPONENT_TEST_ENV +=	PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)
 COMPONENT_TEST_CMD =	$(PYTHON)
 COMPONENT_TEST_ARGS +=	./runtests.py
 
+# use the same values as for component test
+COMPONENT_SYSTEM_TEST_DIR =	$(COMPONENT_TEST_DIR)
+COMPONENT_SYSTEM_TEST_ENV_CMD =	$(COMPONENT_TEST_ENV_CMD)
+COMPONENT_SYSTEM_TEST_CMD =	$(COMPONENT_TEST_CMD)
+COMPONENT_SYSTEM_TEST_ARGS =	$(COMPONENT_TEST_ARGS)
+
+# except for the following which are always different
 COMPONENT_SYSTEM_TEST_DEP =	$(SOURCE_DIR)/.prep
-COMPONENT_SYSTEM_TEST_DIR =	$(COMPONENT_SRC)/test
-COMPONENT_SYSTEM_TEST_ENV_CMD =	$(ENV)
 COMPONENT_SYSTEM_TEST_ENV +=	PYTHONPATH=$(PYTHON_VENDOR_PACKAGES_BASE)
-COMPONENT_SYSTEM_TEST_CMD =	$(PYTHON)
-COMPONENT_SYSTEM_TEST_ARGS +=	./runtests.py
 
 # determine the type of tests we want to run.
 ifeq ($(strip $(wildcard $(COMPONENT_TEST_RESULTS_DIR)/results-*.master)),)
@@ -246,6 +249,7 @@ $(BUILD_DIR)/%/.system-tested-and-compared:    $(COMPONENT_SYSTEM_TEST_DEP)
 	$(TOUCH) $@
 
 $(BUILD_DIR)/%/.system-tested:    $(COMPONENT_SYSTEM_TEST_DEP)
+	$(MKDIR) $(@D)
 	$(COMPONENT_PRE_SYSTEM_TEST_ACTION)
 	(cd $(COMPONENT_SYSTEM_TEST_DIR) ; \
 		$(COMPONENT_SYSTEM_TEST_ENV_CMD) $(COMPONENT_SYSTEM_TEST_ENV) \
