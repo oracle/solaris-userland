@@ -48,7 +48,12 @@ include $(WS_MAKE_RULES)/common.mk
 studio_C99MODE=$(studio_C99_ENABLE)
 
 # Needed due to patch to automake-related files.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
+# Remove the perl substitution when the patched gettext will get to CBE (bug 30997231).
+COMPONENT_PREP_ACTION += ( \
+	cd $(@D); \
+	autoreconf -fiv; \
+	perl -i -pe 's/\@MSGMERGE_FOR_MSGFMT_OPTION\@//' po/Makefile.in.in; \
+);
 
 CONFIGURE_ENV += CFLAGS="$(CFLAGS)"
 CONFIGURE_OPTIONS += --enable-doc
