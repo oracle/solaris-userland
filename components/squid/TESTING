@@ -4,40 +4,62 @@ and make sure that the output matches the master test results.
 These squid tests use cppunit. Currently this requires a version of cppunit
 installed that have been built with the GNU version 5.3 compilers.
 
+Install on lab machine:
+
+vm install <path to your WS-dir> squid
+
+ or in case of troubles:
+
+pkg change-facet --no-refresh version-lock.web/proxy/squid=False
+pkg install -g <your ws>/$(uname -p)/repo pkg://nightly/web/proxy/squid
 
 To test manually follow along in the book
 Squid Proxy Server 3.1 Beginner's Guide Page 34
 
-Add these three lines to the top of /etc/squid/squid.conf:
+Add the following line to the top of /etc/squid/squid.conf:
 
 cache_dir ufs /var/squid/cache/ 500 16 256
-acl my_machine src 192.0.2.21    # Replace this IP address with your IP address
-http_access allow my_machine
-
-You might need to remove or comment out the following lines or Squid
-will fail to start:
-
-  # acl manager proto cache_object
-
-Make sure apache is running.
-
-  $ sudo svcs apache24
 
 Start squid:
 
-  $ sudo svcadm enable squid
+   svcadm enable squid
 
-On your desktop set your web browser to proxy through this squid:
+Now you can check if squid listen on localhost:
 
-Edit -> Preferences -> Advanced -> Network -> Settings
+   curl -x localhost:3128 -v -o ipkg.html -L 'http://ipkg.cz.oracle.com/solaris11/support/'
 
-      Check: Manual proxy configuration
-      HTTP Proxy: <squid servers IP address>    Port: 3128
+then you should see something like a:
+...
+* Connected to localhost (::1) port 3128 (#0)
+> GET http://ipkg.cz.oracle.com/solaris11/support/ HTTP/1.1
+> Host: ipkg.cz.oracle.com
+> User-Agent: curl/7.64.0-DEV
+> Accept: */*
+> Proxy-Connection: Keep-Alive
+...
 
-  Save
+Also ipkg.html will contain the page.
 
-Enter <squid server URL> in your web browser. You should be accessing squid
-and seeing files stored in the http server on that machine.
+Now you can check failure test:
 
-Enter <squid server URL>:897 in your web browser and squid should complain.
-If those two things happen, then squid is working properly.
+   curl -x localhost:789 -v -o fail.html -L 'http://ipkg.cz.oracle.com/solaris11/support/'
+
+then you should see something like a:
+...
+*   Trying ::1...
+* TCP_NODELAY set
+* Failed to set TCP_KEEPALIVE on fd 4
+* Expire in 149999 ms for 3 (transfer 0x8eec298e70)
+* Expire in 200 ms for 4 (transfer 0x8eec298e70)
+* Connection failed
+* connect to ::1 port 789 failed: Connection refused
+*   Trying 127.0.0.1...
+* TCP_NODELAY set
+* Failed to set TCP_KEEPALIVE on fd 5
+* Expire in 149999 ms for 3 (transfer 0x8eec298e70)
+* Connection failed
+* connect to 127.0.0.1 port 789 failed: Connection refused
+* Failed to connect to localhost port 789: Connection refused
+* Closing connection 0
+
+

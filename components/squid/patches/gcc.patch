@@ -1,39 +1,19 @@
-GCC 7 issue - name collision with macro.
+name collision with macro DOMAIN
+ $ ggrep -rw DOMAIN /usr/include/
+/usr/include/math.h:#define     DOMAIN          1
+
 Need to be evaluated before submitting to upstream.
 
-In file included from /usr/gcc/7/include/c++/7.3.0/bits/std_abs.h:40:0,
-                 from /usr/gcc/7/include/c++/7.3.0/cstdlib:77,
-                 from /usr/gcc/7/include/c++/7.3.0/stdlib.h:36,
-                 from /scratch/userland-gate/components/squid/squid-3.5.27/compat/types.h:29,
-                 from /scratch/userland-gate/components/squid/squid-3.5.27/compat/compat.h:70,
-                 from /scratch/userland-gate/components/squid/squid-3.5.27/include/squid.h:43,
-                 from /scratch/userland-gate/components/squid/squid-3.5.27/helpers/basic_auth/SMB_LM/msntauth.cc:40:
-/scratch/userland-gate/components/squid/squid-3.5.27/helpers/basic_auth/SMB_LM/valid.h:18:94: error: expected ',' or '...' before numeric constant
- int Valid_User(char *USERNAME, char *PASSWORD, const char *SERVER, char *BACKUP, const char *DOMAIN);
-
-GCC 9 issue - truncation errors, reduced optimization in pconn.cc file.
-
-commit 02fc37ca9112cd2afd7d9f3acea06c53b900453a
-Author: Amos Jeffries <yadij@users.noreply.github.com>
-Date:   Fri Jul 19 15:11:49 2019 +0000
-
-    Bug 4969: GCC-9 build failure: stringop-truncation (#441)
-
-    GCC-9 with Squid use of -Werror makes these warning hard
-    errors which can no longer be ignored. We are thus required
-    to alter this third-party code when built for Squid.
-
-    Truncation of these strings is fine. Rather than suppress
-    GCC warnings, switch to xstrncpy() which has similar
-    behaviour but guarantees c-string terminator exists within
-    the copied range limit (removing need for two -1 hacks).
-
-    This change will add terminators on path and device_type
-    values in the rare case of overly long configured values.
-    It is not clear what ancient Domain Controllers would do
-    when handed un-terminated c-string in those cases, but was
-    unlikely to be good.
-
+################################################################################
+/builds/jsasek/squid/components/squid/squid-4.10/src/esi/VarState.cc: In member function 'char* ESIVariableUserAgent::getProductVersion(cons
+t char*)':
+/builds/jsasek/squid/components/squid/squid-4.10/src/esi/VarState.cc:153:9: error: 'index' was not declared in this scope
+     t = index(s,'/');
+         ^~~~~
+/builds/jsasek/squid/components/squid/squid-4.10/src/esi/VarState.cc:153:9: note: suggested alternative: 'index_t'
+     t = index(s,'/');
+         ^~~~~
+         index_t
 
 --- squid-4.8/src/auth/basic/SMB_LM/valid.h	2019-07-31 10:19:39.629726916 +0000
 +++ squid-4.8/src/auth/basic/SMB_LM/valid.h	2019-07-31 10:17:54.496968865 +0000
@@ -76,46 +56,3 @@ Date:   Fri Jul 19 15:11:49 2019 +0000
  
  char const *ESIVariableUserAgent::esiUserOs[]= {
      "WIN",
---- a/lib/smblib/smblib-util.c
-+++ b/lib/smblib/smblib-util.c
-@@ -401,7 +401,7 @@ int SMB_Negotiate(SMB_Handle_Type Con_Handle, const char *Prots[])
- 
-         p = (SMB_Hdr(pkt) + SMB_negrLM_buf_offset + Con_Handle -> Encrypt_Key_Len);
- 
--        strncpy(p, Con_Handle -> Svr_PDom, sizeof(Con_Handle -> Svr_PDom) - 1);
-+        xstrncpy(p, Con_Handle -> Svr_PDom, sizeof(Con_Handle -> Svr_PDom));
- 
-         break;
- 
-@@ -424,7 +424,7 @@ int SMB_Negotiate(SMB_Handle_Type Con_Handle, const char *Prots[])
- 
-         p = (SMB_Hdr(pkt) + SMB_negrLM_buf_offset + Con_Handle -> Encrypt_Key_Len);
- 
--        strncpy(p, Con_Handle -> Svr_PDom, sizeof(Con_Handle -> Svr_PDom) - 1);
-+        xstrncpy(p, Con_Handle -> Svr_PDom, sizeof(Con_Handle -> Svr_PDom));
- 
-         break;
- 
-@@ -538,8 +538,8 @@ SMB_Tree_Handle SMB_TreeConnect(SMB_Handle_Type Con_Handle,
- 
-     tree -> next = tree -> prev = NULL;
-     tree -> con = Con_Handle;
--    strncpy(tree -> path, path, sizeof(tree -> path));
--    strncpy(tree -> device_type, device, sizeof(tree -> device_type));
-+    xstrncpy(tree -> path, path, sizeof(tree -> path));
-+    xstrncpy(tree -> device_type, device, sizeof(tree -> device_type));
- 
-     /* Now plug in the values ... */
- 
---- squid-4.8/src/pconn.cc	2019-08-05 12:17:29.512625566 +0000
-+++ squid-4.8/src/pconn.cc	2019-08-05 12:16:25.672916550 +0000
-@@ -8,6 +8,9 @@
- 
- /* DEBUG: section 48    Persistent Connections */
- 
-+#pragma GCC diagnostic warning "-Wformat-truncation"
-+#pragma GCC optimize ("O2")
-+
- #include "squid.h"
- #include "CachePeer.h"
- #include "comm.h"

@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -36,12 +36,8 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=LSARC/2009/130
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-
-# special attributes
 file path=etc/squid/cachemgr.conf group=webservd mode=0644 \
     original_name=SUNWsquid:etc/squid/cachemgr.conf preserve=renamenew
-
-# from here on files have no modified attributes
 file path=etc/squid/cachemgr.conf.default
 file path=etc/squid/errorpage.css
 file path=etc/squid/errorpage.css.default
@@ -53,8 +49,6 @@ file path=etc/squid/squid.conf group=webservd mode=0644 \
 file path=etc/squid/squid.conf.default
 file path=etc/squid/squid.conf.documented
 file files/http-squid.xml path=lib/svc/manifest/network/http-squid.xml
-
-# smf stuff to control start/stop of squid
 file files/http-squid path=lib/svc/method/http-squid \
     restart_fmri=svc:/network/http:squid
 file path=usr/squid/bin/purge
@@ -2272,5 +2266,6 @@ file path=usr/squid/share/icons/silk/script_palette.png
 file path=usr/squid/share/mib.txt
 dir  path=var/squid/cache owner=webservd group=webservd mode=0755
 dir  path=var/squid/logs owner=webservd group=webservd mode=0755
+#
 license squid.license \
     license="GPLv2, BSD, LGPLv2.1, ISC, MIT, RSA, RFC, Boost Software License, CC BY 2.5, CC BY-SA 3.0"
