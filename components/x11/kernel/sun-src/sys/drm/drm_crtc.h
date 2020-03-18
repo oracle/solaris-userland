@@ -1,7 +1,7 @@
 /* BEGIN CSTYLED */
 
 /*
- * Copyright (c) 2006, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2020, Oracle and/or its affiliates. All rights reserved.
  */
 
 /*
@@ -200,6 +200,10 @@ enum subpixel_order {
 #define DRM_COLOR_FORMAT_RGB444		(1<<0)
 #define DRM_COLOR_FORMAT_YCRCB444	(1<<1)
 #define DRM_COLOR_FORMAT_YCRCB422	(1<<2)
+
+#ifndef DRM_DISPLAY_INFO_LEN
+#define DRM_DISPLAY_INFO_LEN 32
+#endif
 /*
  * Describes a given display (e.g. CRT or flat panel) and its limitations.
  */

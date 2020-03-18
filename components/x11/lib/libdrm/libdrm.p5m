@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -45,6 +45,7 @@ file path=usr/include/libdrm/drm_fourcc.h
 file path=usr/include/libdrm/drm_mode.h
 file path=usr/include/libdrm/drm_sarea.h
 file path=usr/include/libdrm/i915_drm.h
+file path=usr/include/libdrm/intel_aub.h variant.arch=i386
 file path=usr/include/libdrm/intel_bufmgr.h variant.arch=i386
 file path=usr/include/libdrm/intel_debug.h variant.arch=i386
 file path=usr/include/libdrm/mach64_drm.h
@@ -75,49 +76,41 @@ file path=usr/include/xf86drm.h
 file path=usr/include/xf86drmMode.h
 file path=usr/lib/$(MACH64)/pkgconfig/libdrm.pc
 file path=usr/lib/$(MACH64)/pkgconfig/libdrm_intel.pc variant.arch=i386
-file path=usr/lib/$(MACH64)/pkgconfig/libdrm_radeon.pc variant.arch=i386
+file path=usr/lib/$(MACH64)/pkgconfig/libdrm_radeon.pc
 file path=usr/lib/$(MACH64)/pkgconfig/libkms.pc
 file path=usr/lib/pkgconfig/libdrm.pc
 file path=usr/lib/pkgconfig/libdrm_intel.pc variant.arch=i386
-file path=usr/lib/pkgconfig/libdrm_radeon.pc variant.arch=i386
+file path=usr/lib/pkgconfig/libdrm_radeon.pc
 file path=usr/lib/pkgconfig/libkms.pc
-link path=usr/lib/xorg/$(MACH64)/libdrm.so target=libdrm.so.2
+link path=usr/lib/xorg/$(MACH64)/libdrm.so target=libdrm.so.2.4.0
 link path=usr/lib/xorg/$(MACH64)/libdrm.so.2 target=libdrm.so.2.4.0
 file path=usr/lib/xorg/$(MACH64)/libdrm.so.2.4.0
-link path=usr/lib/xorg/$(MACH64)/libdrm_intel.so target=libdrm_intel.so.1 \
+link path=usr/lib/xorg/$(MACH64)/libdrm_intel.so target=libdrm_intel.so.1.0.0 \
     variant.arch=i386
 link path=usr/lib/xorg/$(MACH64)/libdrm_intel.so.1 \
     target=libdrm_intel.so.1.0.0 variant.arch=i386
-file path=usr/lib/xorg/$(MACH64)/libdrm_intel.so.1.0.0 \
-    pkg.depend.bypass-generate=libdrm.so.2 variant.arch=i386
-link path=usr/lib/xorg/$(MACH64)/libdrm_radeon.so target=libdrm_radeon.so.1 \
-    variant.arch=i386
+file path=usr/lib/xorg/$(MACH64)/libdrm_intel.so.1.0.0 variant.arch=i386
+link path=usr/lib/xorg/$(MACH64)/libdrm_radeon.so target=libdrm_radeon.so.1.0.1
 link path=usr/lib/xorg/$(MACH64)/libdrm_radeon.so.1 \
-    target=libdrm_radeon.so.1.0.1 variant.arch=i386
-file path=usr/lib/xorg/$(MACH64)/libdrm_radeon.so.1.0.1 \
-    pkg.depend.bypass-generate=libdrm.so.2 variant.arch=i386
-link path=usr/lib/xorg/$(MACH64)/libkms.so target=libkms.so.1
+    target=libdrm_radeon.so.1.0.1
+file path=usr/lib/xorg/$(MACH64)/libdrm_radeon.so.1.0.1
+link path=usr/lib/xorg/$(MACH64)/libkms.so target=libkms.so.1.0.0
 link path=usr/lib/xorg/$(MACH64)/libkms.so.1 target=libkms.so.1.0.0
-file path=usr/lib/xorg/$(MACH64)/libkms.so.1.0.0 \
-    pkg.depend.bypass-generate=libdrm.so.2
-link path=usr/lib/xorg/libdrm.so target=libdrm.so.2
+file path=usr/lib/xorg/$(MACH64)/libkms.so.1.0.0
+link path=usr/lib/xorg/libdrm.so target=libdrm.so.2.4.0
 link path=usr/lib/xorg/libdrm.so.2 target=libdrm.so.2.4.0
 file path=usr/lib/xorg/libdrm.so.2.4.0
-link path=usr/lib/xorg/libdrm_intel.so target=libdrm_intel.so.1 \
+link path=usr/lib/xorg/libdrm_intel.so target=libdrm_intel.so.1.0.0 \
     variant.arch=i386
 link path=usr/lib/xorg/libdrm_intel.so.1 target=libdrm_intel.so.1.0.0 \
     variant.arch=i386
-file path=usr/lib/xorg/libdrm_intel.so.1.0.0 \
-    pkg.depend.bypass-generate=libdrm.so.2 variant.arch=i386
-link path=usr/lib/xorg/libdrm_radeon.so target=libdrm_radeon.so.1 \
-    variant.arch=i386
-link path=usr/lib/xorg/libdrm_radeon.so.1 target=libdrm_radeon.so.1.0.1 \
-    variant.arch=i386
-file path=usr/lib/xorg/libdrm_radeon.so.1.0.1 \
-    pkg.depend.bypass-generate=libdrm.so.2 variant.arch=i386
-link path=usr/lib/xorg/libkms.so target=libkms.so.1
+file path=usr/lib/xorg/libdrm_intel.so.1.0.0 variant.arch=i386
+link path=usr/lib/xorg/libdrm_radeon.so target=libdrm_radeon.so.1.0.1
+link path=usr/lib/xorg/libdrm_radeon.so.1 target=libdrm_radeon.so.1.0.1
+file path=usr/lib/xorg/libdrm_radeon.so.1.0.1
+link path=usr/lib/xorg/libkms.so target=libkms.so.1.0.0
 link path=usr/lib/xorg/libkms.so.1 target=libkms.so.1.0.0
-file path=usr/lib/xorg/libkms.so.1.0.0 pkg.depend.bypass-generate=libdrm.so.2
+file path=usr/lib/xorg/libkms.so.1.0.0
 file path=usr/share/man/man3/drmAvailable.3
 file path=usr/share/man/man3/drmHandleEvent.3
 file path=usr/share/man/man3/drmModeGetResources.3
