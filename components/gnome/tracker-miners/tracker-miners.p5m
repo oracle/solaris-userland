@@ -1,0 +1,187 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+
+<transform file path=usr.*/man/.+ -> \
+    default mangler.man.stability "pass-through volatile">
+set name=pkg.fmri \
+    value=pkg:/library/desktop/search/tracker-miners@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary \
+    value="An indexer daemon and tools to extract metadata from different filetypes"
+set name=pkg.description \
+    value="Tracker Miners contains the indexer daemon (tracker-miner-fs) and tools to extract metadata from many different filetypes."
+set name=pkg.depend.bypass-generate value=libtracker-extract.so \
+    value=libtracker-miner-2.0.so.0 value=libtracker-sparql-2.0.so.0
+set name=pkg.linted.pkglint.dupaction001.1 value=true
+set name=pkg.linted.pkglint.dupaction010.2 value=true
+set name=com.oracle.info.description value=$(COMPONENT_NAME)
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification \
+    value="org.opensolaris.category.2008:Applications/System Utilities"
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2020/037
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file path=etc/xdg/autostart/tracker-extract.desktop
+file path=etc/xdg/autostart/tracker-miner-fs.desktop
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-abw.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-bmp.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-desktop.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-dummy.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-dvi.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-epub.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-flac.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-gstreamer.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-html.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-icon.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-jpeg.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-mp3.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-msoffice-xml.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-msoffice.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-oasis.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-pdf.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-playlist.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-png.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-ps.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-text.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-tiff.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-vorbis.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-xmp.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-xps.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/libtracker-extract.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/writeback-modules/libwriteback-gstreamer.so
+file path=usr/lib/$(MACH64)/tracker-miners-2.0/writeback-modules/libwriteback-xmp.so
+file path=usr/lib/tracker-extract mode=0555 pkg.linted.userland.action001.2=true
+file path=usr/lib/tracker-miner-fs mode=0555 \
+    pkg.linted.userland.action001.2=true
+file path=usr/lib/tracker-writeback mode=0555 \
+    pkg.linted.userland.action001.2=true
+file path=usr/share/dbus-1/services/org.freedesktop.Tracker1.Miner.Extract.service
+file path=usr/share/dbus-1/services/org.freedesktop.Tracker1.Miner.Files.service
+file path=usr/share/dbus-1/services/org.freedesktop.Tracker1.Writeback.service
+file path=usr/share/glib-2.0/schemas/org.freedesktop.Tracker.Extract.gschema.xml
+file path=usr/share/glib-2.0/schemas/org.freedesktop.Tracker.Miner.Files.gschema.xml
+file path=usr/share/glib-2.0/schemas/org.freedesktop.Tracker.Writeback.gschema.xml
+file path=usr/share/glib-2.0/schemas/org.freedesktop.TrackerMiners.enums.xml
+file path=usr/share/locale/ar/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/as/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/be/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/be@latin/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/bg/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/bs/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/ca/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/ca@valencia/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/cs/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/da/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/de/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/dz/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/el/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/en_GB/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/eo/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/es/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/et/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/eu/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/fi/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/fr/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/fur/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/gl/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/he/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/hr/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/hu/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/id/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/it/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/ja/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/kk/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/ko/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/lt/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/lv/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/mk/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/ml/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/ms/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/nb/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/nds/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/ne/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/nl/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/oc/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/pa/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/pl/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/pt/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/pt_BR/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/ro/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/ru/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/sk/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/sl/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/sr/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/sr@latin/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/sv/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/te/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/tg/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/th/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/tr/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/uk/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/vi/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/zh_CN/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/zh_HK/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/locale/zh_TW/LC_MESSAGES/tracker-miners.mo
+file path=usr/share/man/man1/tracker-extract.1
+file path=usr/share/man/man1/tracker-miner-fs.1
+file path=usr/share/man/man1/tracker-writeback.1
+file path=usr/share/tracker-miners/extract-rules/10-abw.rule
+file path=usr/share/tracker-miners/extract-rules/10-bmp.rule
+file path=usr/share/tracker-miners/extract-rules/10-comics.rule
+file path=usr/share/tracker-miners/extract-rules/10-desktop.rule
+file path=usr/share/tracker-miners/extract-rules/10-dvi.rule
+file path=usr/share/tracker-miners/extract-rules/10-ebooks.rule
+file path=usr/share/tracker-miners/extract-rules/10-epub.rule
+file path=usr/share/tracker-miners/extract-rules/10-flac.rule
+file path=usr/share/tracker-miners/extract-rules/10-html.rule
+file path=usr/share/tracker-miners/extract-rules/10-ico.rule
+file path=usr/share/tracker-miners/extract-rules/10-jpeg.rule
+file path=usr/share/tracker-miners/extract-rules/10-mp3.rule
+file path=usr/share/tracker-miners/extract-rules/10-msoffice.rule
+file path=usr/share/tracker-miners/extract-rules/10-oasis.rule
+file path=usr/share/tracker-miners/extract-rules/10-pdf.rule
+file path=usr/share/tracker-miners/extract-rules/10-png.rule
+file path=usr/share/tracker-miners/extract-rules/10-ps.rule
+file path=usr/share/tracker-miners/extract-rules/10-svg.rule
+file path=usr/share/tracker-miners/extract-rules/10-tiff.rule
+file path=usr/share/tracker-miners/extract-rules/10-vorbis.rule
+file path=usr/share/tracker-miners/extract-rules/10-xmp.rule
+file path=usr/share/tracker-miners/extract-rules/10-xps.rule
+file path=usr/share/tracker-miners/extract-rules/11-msoffice-xml.rule
+file path=usr/share/tracker-miners/extract-rules/15-gstreamer-guess.rule
+file path=usr/share/tracker-miners/extract-rules/15-playlist.rule
+file path=usr/share/tracker-miners/extract-rules/15-source-code.rule
+file path=usr/share/tracker-miners/extract-rules/90-gstreamer-audio-generic.rule
+file path=usr/share/tracker-miners/extract-rules/90-gstreamer-image-generic.rule
+file path=usr/share/tracker-miners/extract-rules/90-gstreamer-video-generic.rule
+file path=usr/share/tracker-miners/extract-rules/90-text-generic.rule
+link \
+    path=usr/share/tracker/miners/org.freedesktop.Tracker1.Miner.Extract.service \
+    target=../../dbus-1/services/org.freedesktop.Tracker1.Miner.Extract.service
+link \
+    path=usr/share/tracker/miners/org.freedesktop.Tracker1.Miner.Files.service \
+    target=../../dbus-1/services/org.freedesktop.Tracker1.Miner.Files.service
+license tracker-miners.license license=LGPLv2.1,GPLv2
+depend type=require fmri=library/desktop/search/tracker@2.3.2-AUTO_FMRI
