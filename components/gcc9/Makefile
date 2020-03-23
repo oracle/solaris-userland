@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 export PARFAIT_BUILD=no
 BUILD_BITS= 64
@@ -28,16 +28,16 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gcc
-COMPONENT_VERSION=	9.2.0
+COMPONENT_VERSION=	9.3.0
 COMPONENT_PROJECT_URL=	https://gcc.gnu.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:a931a750d6feadacbeecb321d73925cd5ebb6dfa7eff0802984af3aef63759f4
+    sha256:5258a9b6afe9463c2e56b9e8355b1a4bee125ca828b8078f910303bc2ef91fa6
 COMPONENT_ARCHIVE_URL=	https://ftp.gnu.org/gnu/gcc/$(COMPONENT_SRC)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=        utility/gnu-compiler
 COMPONENT_ANITYA_ID=	6502
 
-TPNO=			53521
+TPNO=			57784
 
 # Use gcc's default flags instead of userland's.
 CFLAGS=
