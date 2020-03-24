@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		diffstat
-COMPONENT_VERSION=	1.61
+COMPONENT_VERSION=	1.63
 COMPONENT_PROJECT_URL=	http://invisible-island.net/diffstat/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:25359e0c27183f997b36c9202583b5dc2df390c20e22a92606af4bf7856a55ee
+    sha256:7eddd53401b99b90bac3f7ebf23dd583d7d99c6106e67a4f1161b7a20110dc6f
 COMPONENT_ARCHIVE_URL=	https://invisible-mirror.net/archives/diffstat/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	utility/diffstat
 COMPONENT_ANITYA_ID=	434
 
-TPNO=			27077
+TPNO=			57831
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/common.mk
