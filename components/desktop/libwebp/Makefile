@@ -28,16 +28,16 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libwebp
-COMPONENT_VERSION=	1.0.3
+COMPONENT_VERSION=	1.1.0
 COMPONENT_PROJECT_URL=	https://www.webmproject.org/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e20a07865c8697bba00aebccc6f54912d6bc333bb4d604e6b07491c1a226b34f
+	sha256:98a052268cc4d5ece27f76572a7f50293f439c17a98e67c4ea0c7ed6f50ef043
 COMPONENT_ARCHIVE_URL=	http://downloads.webmproject.org/releases/webp/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/libwebp
 COMPONENT_ANITYA_ID=	1761
 
-TPNO=			54200
+TPNO=			57963
 
 # Required for 64-bit builds.
 LDFLAGS += $(CC_BITS)
