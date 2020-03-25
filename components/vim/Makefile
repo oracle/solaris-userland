@@ -27,21 +27,17 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		vim
-COMPONENT_VERSION=	8.1
-COMPONENT_FULL_VERSION=	$(shell echo $(GIT_TAG) | sed -e 's/v//')
-IPS_COMPONENT_VERSION=	$(shell echo $(GIT_TAG) | perl -pe 's/v(8\.1\.)0?(\d+)/\1\2/')
-COMPONENT_LABEL=	$(COMPONENT_FULL_VERSION)
-# COMPONENT_SRC* is autodefined by the prep-{SCM} Makefile fragment
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
+COMPONENT_VERSION=	8.2
+IPS_COMPONENT_VERSION=	8.2.444
+COMPONENT_FULL_VERSION=$(shell echo $(IPS_COMPONENT_VERSION) | awk -F. '{printf("%d.%d.%04d\n", $$1, $$2, $$3)}')
+COMPONENT_SRC=	vim-$(COMPONENT_FULL_VERSION)
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
+COMPONENT_ARCHIVE_URL=	https://github.com/vim/vim/archive/v$(COMPONENT_FULL_VERSION).zip
+COMPONENT_ARCHIVE_HASH=	sha256:3a563f58081c68398b352566552a5da3b5271871219692626d436c0dbde37cc7
 COMPONENT_PROJECT_URL=	http://www.vim.org/
 COMPONENT_ANITYA_ID=	5092
 
-GIT_REPO=		https://github.com/vim/vim
-GIT_TAG=		v8.1.1561
-GIT_COMMIT_ID=		ae943150d
-GIT_HASH=		sha256:087c1ba657153c6a1220a352f1b15046a41f3688275c443f0b5d66e1a14bedb2
-
-TPNO=			52447
+TPNO=			57852
 
 PKG_MACROS +=	VIMVER=vim$(subst .,,$(COMPONENT_VERSION))
 
@@ -55,7 +51,7 @@ $(VARIANTS:%=%/.configured):	BITS=64
 BUILD_64 = 	$(VARIANTS:%=%/.built)
 INSTALL_64 = 	$(VARIANTS:%=%/.installed)
 # Test only the terminal variant.
-TEST_64 = 	$(NOX_VARIANT)/.tested
+TEST_64 = 	$(NOX_VARIANT)/.tested-and-compared
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -95,7 +91,12 @@ COMPONENT_PRE_CONFIGURE_ACTION = ($(CLONEY) $(SOURCE_DIR) $(@D))
 $(X_VARIANT)/.installed: COMPONENT_INSTALL_ARGS += -C src
 $(X_VARIANT)/.installed: COMPONENT_INSTALL_TARGETS = installvimbin
 
-COMPONENT_TEST_TARGETS = test
+# Setup the testing environment for non-X variant.
+$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TARGETS = test
+$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-ne "/Executed:.*Test/p" '
+$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-ne "/Skipped:.*Test/p" '
+$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_TRANSFORMS += '-ne "/FAILED:.*Test/p" '
+$(NOX_VARIANT)/.tested-and-compared: COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf

@@ -4,9 +4,9 @@ that the help cannot be displayed without vim package installed.
 This patch ensures that help_minimized.txt file is printed
 instead of missing help files to inform the user.
 
---- vim-8.1.1523-8d24104/src/ex_cmds.c	2019-06-13 15:31:59.547647525 +0000
-+++ vim-8.1.1523-8d24104/src/ex_cmds.c	2019-06-13 15:29:31.877285617 +0000
-@@ -6327,6 +6327,8 @@ ex_help(exarg_T *eap)
+--- vim-8.2.0430-5080b0a04/src/ex_cmds.c	2020-03-23 14:28:17.367485038 +0000
++++ vim-8.2.0430-5080b0a04/src/ex_cmds.c	2020-03-23 14:27:10.717293307 +0000
+@@ -5059,6 +5059,8 @@ ex_help(exarg_T *eap)
  #ifdef FEAT_FOLDING
      int		old_KeyTyped = KeyTyped;
  #endif
@@ -15,7 +15,7 @@ instead of missing help files to inform the user.
  
      if (eap != NULL)
      {
-@@ -6378,6 +6380,23 @@ ex_help(exarg_T *eap)
+@@ -5110,6 +5112,23 @@ ex_help(exarg_T *eap)
      n = find_help_tags(arg, &num_matches, &matches,
  						 eap != NULL && eap->forceit);
  
@@ -39,7 +39,7 @@ instead of missing help files to inform the user.
      i = 0;
  #ifdef FEAT_MULTI_LANG
      if (n != FAIL && lang != NULL)
-@@ -6390,7 +6409,7 @@ ex_help(exarg_T *eap)
+@@ -5122,7 +5141,7 @@ ex_help(exarg_T *eap)
  		break;
  	}
  #endif
@@ -48,11 +48,11 @@ instead of missing help files to inform the user.
      {
  #ifdef FEAT_MULTI_LANG
  	if (lang != NULL)
-@@ -6403,9 +6422,11 @@ ex_help(exarg_T *eap)
+@@ -5135,9 +5154,11 @@ ex_help(exarg_T *eap)
  	return;
      }
  
--    /* The first match (in the requested language) is the best match. */
+-    // The first match (in the requested language) is the best match.
 -    tag = vim_strsave(matches[i]);
 -    FreeWild(num_matches, matches);
 +    if (!nohelp) {
@@ -63,7 +63,7 @@ instead of missing help files to inform the user.
  
  #ifdef FEAT_GUI
      need_mouse_correct = TRUE;
-@@ -6431,12 +6452,14 @@ ex_help(exarg_T *eap)
+@@ -5163,12 +5184,14 @@ ex_help(exarg_T *eap)
  	     * There is no help window yet.
  	     * Try to open the file specified by the "helpfile" option.
  	     */
@@ -81,18 +81,18 @@ instead of missing help files to inform the user.
  	    }
 -	    fclose(helpfd);
  
- 	    /* Split off help window; put it at far top if no position
- 	     * specified, the current window is vertically split and
-@@ -6457,7 +6480,7 @@ ex_help(exarg_T *eap)
+ 	    // Split off help window; put it at far top if no position
+ 	    // specified, the current window is vertically split and
+@@ -5189,7 +5212,7 @@ ex_help(exarg_T *eap)
  	     * Set the alternate file to the previously edited file.
  	     */
  	    alt_fnum = curbuf->b_fnum;
 -	    (void)do_ecmd(0, NULL, NULL, NULL, ECMD_LASTL,
 +	    (void)do_ecmd(0, mhf, NULL, NULL, ECMD_LASTL,
  			  ECMD_HIDE + ECMD_SET_HELP,
- 			  NULL);  /* buffer is still open, don't store info */
+ 			  NULL);  // buffer is still open, don't store info
  	    if (!cmdmod.keepalt)
-@@ -6475,7 +6498,7 @@ ex_help(exarg_T *eap)
+@@ -5207,7 +5230,7 @@ ex_help(exarg_T *eap)
      KeyTyped = old_KeyTyped;
  #endif
  
@@ -100,8 +100,8 @@ instead of missing help files to inform the user.
 +    if (!nohelp && tag != NULL)
  	do_tag(tag, DT_HELP, 1, FALSE, TRUE);
  
-     /* Delete the empty buffer if we're not using it.  Careful: autocommands
-@@ -6493,7 +6516,8 @@ ex_help(exarg_T *eap)
+     // Delete the empty buffer if we're not using it.  Careful: autocommands
+@@ -5225,7 +5248,8 @@ ex_help(exarg_T *eap)
  	curwin->w_alt_fnum = alt_fnum;
  
  erret:

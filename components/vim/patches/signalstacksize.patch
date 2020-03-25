@@ -7,20 +7,18 @@ continues to be just a guess.
 The second change (already in upstream) comes from Bram:
 https://groups.google.com/d/msg/vim_dev/GrLf2ePQWDk/Gf3AMnjIAQAJ
 
-diff --git a/src/os_unix.c b/src/os_unix.c
-index 01f5f59..6069232 100644
---- a/src/os_unix.c
-+++ b/src/os_unix.c
-@@ -774,9 +774,10 @@ mch_stackcheck(char *p)
+--- a/src/os_unix.c	2020-03-23 14:18:00.347447949 +0100
++++ b/src/os_unix.c	2020-03-23 14:19:28.151278797 +0100
+@@ -773,9 +773,10 @@
   * completely full.
   */
  
 -#ifndef SIGSTKSZ
--# define SIGSTKSZ 8000    /* just a guess of how much stack is needed... */
+-# define SIGSTKSZ 8000    // just a guess of how much stack is needed...
 +#ifdef SIGSTKSZ
 +# undef SIGSTKSZ
  #endif
 +#define SIGSTKSZ 8*1024*1024  /* just a guess of how much stack is needed... */
  
  # ifdef HAVE_SIGALTSTACK
- static stack_t sigstk;			/* for sigaltstack() */
+ static stack_t sigstk;			// for sigaltstack()
