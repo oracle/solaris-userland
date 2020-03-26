@@ -20,12 +20,9 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
-# When Firefox delivers 64-bit, we should change this as well to build
-# and deliver 64-bit
-BUILD_BITS =            32
 # All components using gobject-introspection must be built with gcc as
 # gobject-introspection does not produce correct results when using Studio.
 COMPILER =              gcc
@@ -43,7 +40,7 @@ COMPONENT_ANITYA_ID=	17138
 
 TPNO=			41814
 
-PYTHON_VERSION = 2.7
+PYTHON_VERSION = 3.7
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -58,14 +55,14 @@ COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/chrome-gnome-shell
 
 # Use explicit Python version rather than the default one
-CMAKE_OPTIONS += -DPYTHON_EXECUTABLE=$(PYTHON.2.7)
+CMAKE_OPTIONS += -DPYTHON_EXECUTABLE=$(PYTHON)
 
 # Deliver into vendor-packages instead of site-packages
 COMPONENT_POST_INSTALL_ACTION += \
-	$(MKDIR) $(PROTOUSRLIBDIR)/python2.7/vendor-packages; \
-	$(MV) $(PROTOUSRLIBDIR)/python2.7/site-packages/* $(PROTOUSRLIBDIR)/python2.7/vendor-packages/
+	$(MKDIR) $(PROTOUSRLIBDIR)/python3.7/vendor-packages; \
+	$(MV) $(PROTOUSRLIBDIR)/python3.7/site-packages/* $(PROTOUSRLIBDIR)/python3.7/vendor-packages/
 
-REQUIRED_PACKAGES += library/python/pygobject-3-27
-REQUIRED_PACKAGES += library/python/requests-27
-REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += library/python/pygobject-3-37
+REQUIRED_PACKAGES += library/python/requests-37
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += text/jq
