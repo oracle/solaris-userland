@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -51,3 +51,5 @@ install:	$(INSTALL_NO_ARCH)
 
 # Tests require Tornado 4.1
 test:		$(NO_TESTS)
+
+system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
