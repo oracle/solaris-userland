@@ -20,18 +20,18 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER = gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libidn2
-COMPONENT_VERSION=	2.0.4
-TPNO=			39613
-COMPONENT_ARCHIVE_HASH=
-# Don't panic! URL is generated from GIT tag on https://gitlab.com/libidn/libidn2/tags
-COMPONENT_ARCHIVE_URL=	https://gitlab.com/libidn/libidn2/uploads/15020b7769a7c69cebd38654ddf0648a/libidn2-2.0.4.tar.gz
+COMPONENT_VERSION=	2.3.0
+TPNO=			57906
+COMPONENT_ARCHIVE_HASH= \
+    sha256:e1cb1db3d2e249a6a3eb6f0946777c2e892d5c5dc7bd91c74394fc3a01cab8b5
+COMPONENT_ARCHIVE_URL=	https://ftp.gnu.org/gnu/libidn/libidn2-2.3.0.tar.gz
 # libidn2 is continuation of libidn
 COMPONENT_PROJECT_URL=	https://www.gnu.org/software/libidn/#libidn2
 COMPONENT_BUGDB=	library/libidn
