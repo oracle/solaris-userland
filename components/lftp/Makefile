@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		lftp
-COMPONENT_VERSION=	4.8.4
+COMPONENT_VERSION=	4.9.1
 COMPONENT_PROJECT_URL=	https://lftp.yar.ru/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:19f3a4236558fbdb88eec01bc9d693c51b122d23487b6bedad4cc67ae6825fc2
+    sha256:02336d4ffc617b453e7cfd335f3a424758408ff31a10720d59add86e3737966a
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)ftp/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	1555
 
-TPNO=			47265
+TPNO=			57897
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
