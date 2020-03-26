@@ -1,0 +1,133 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+#
+
+link path=usr/lib/mesa/64 target=$(MACH64)
+
+# bundle more headers from source tree
+file mesa_glinterop.h path=usr/include/mesa/mesa_glinterop.h
+file osmesa.h path=usr/include/mesa/osmesa.h
+file wglext.h path=usr/include/mesa/wglext.h
+
+# some headers from usr/include/mesa will go also into usr/include/GL
+link path=usr/include/GL/glcorearb.h target=../mesa/glcorearb.h
+link path=usr/include/GL/internal/dri_interface.h \
+    target=../../mesa/internal/dri_interface.h
+link path=usr/include/GL/osmesa.h target=../mesa/osmesa.h
+link path=usr/include/GL/wglext.h target=../mesa/wglext.h
+
+# usr/lib/GL links to real files - 32 bits
+link path=usr/lib/GL/libEGL.so target=libEGL.so.1
+link path=usr/lib/GL/libEGL.so.1 target=libEGL.so.1.0.0
+link path=usr/lib/GL/libEGL.so.1.0.0 target=../mesa/libEGL.so.1.0.0
+link path=usr/lib/GL/libGLESv1_CM.so target=libGLESv1_CM.so.1
+link path=usr/lib/GL/libGLESv1_CM.so.1 target=libGLESv1_CM.so.1.1.0
+link path=usr/lib/GL/libGLESv1_CM.so.1.1.0 target=../mesa/libGLESv1_CM.so.1.1.0
+link path=usr/lib/GL/libGLESv2.so target=libGLESv2.so.2
+link path=usr/lib/GL/libGLESv2.so.2 target=libGLESv2.so.2.0.0
+link path=usr/lib/GL/libGLESv2.so.2.0.0 target=../mesa/libGLESv2.so.2.0.0
+link path=usr/lib/GL/libgbm.so target=libgbm.so.1
+link path=usr/lib/GL/libgbm.so.1 target=libgbm.so.1.0.0
+link path=usr/lib/GL/libgbm.so.1.0.0 target=../mesa/libgbm.so.1.0.0
+link path=usr/lib/GL/libglapi.so target=libglapi.so.0
+link path=usr/lib/GL/libglapi.so.0 target=libglapi.so.0.0.0
+link path=usr/lib/GL/libglapi.so.0.0.0 target=../mesa/libglapi.so.0.0.0
+
+# usr/lib/GL links to real files - 64 bits
+link path=usr/lib/GL/$(MACH64)/libEGL.so target=libEGL.so.1
+link path=usr/lib/GL/$(MACH64)/libEGL.so.1 target=libEGL.so.1.0.0
+link path=usr/lib/GL/$(MACH64)/libEGL.so.1.0.0 \
+    target=../../mesa/$(MACH64)/libEGL.so.1.0.0
+link path=usr/lib/GL/$(MACH64)/libGLESv1_CM.so target=libGLESv1_CM.so.1
+link path=usr/lib/GL/$(MACH64)/libGLESv1_CM.so.1 target=libGLESv1_CM.so.1.1.0
+link path=usr/lib/GL/$(MACH64)/libGLESv1_CM.so.1.1.0 \
+    target=../../mesa/$(MACH64)/libGLESv1_CM.so.1.1.0
+link path=usr/lib/GL/$(MACH64)/libGLESv2.so target=libGLESv2.so.2
+link path=usr/lib/GL/$(MACH64)/libGLESv2.so.2 target=libGLESv2.so.2.0.0
+link path=usr/lib/GL/$(MACH64)/libGLESv2.so.2.0.0 \
+    target=../../mesa/$(MACH64)/libGLESv2.so.2.0.0
+link path=usr/lib/GL/$(MACH64)/libgbm.so target=libgbm.so.1
+link path=usr/lib/GL/$(MACH64)/libgbm.so.1 target=libgbm.so.1.0.0
+link path=usr/lib/GL/$(MACH64)/libgbm.so.1.0.0 \
+    target=../../mesa/$(MACH64)/libgbm.so.1.0.0
+link path=usr/lib/GL/$(MACH64)/libglapi.so target=libglapi.so.0
+link path=usr/lib/GL/$(MACH64)/libglapi.so.0 target=libglapi.so.0.0.0
+link path=usr/lib/GL/$(MACH64)/libglapi.so.0.0.0 \
+    target=../../mesa/$(MACH64)/libglapi.so.0.0.0
+
+# usr/lib links to usr/lib/GL - 32 bits
+link path=usr/lib/libEGL.so target=libEGL.so.1
+link path=usr/lib/libEGL.so.1 target=libEGL.so.1.0.0
+link path=usr/lib/libEGL.so.1.0.0 target=GL/libEGL.so.1.0.0
+link path=usr/lib/libGLESv1_CM.so target=libGLESv1_CM.so.1
+link path=usr/lib/libGLESv1_CM.so.1 target=libGLESv1_CM.so.1.1.0
+link path=usr/lib/libGLESv1_CM.so.1.1.0 target=GL/libGLESv1_CM.so.1.1.0
+link path=usr/lib/libGLESv2.so target=libGLESv2.so.2
+link path=usr/lib/libGLESv2.so.2 target=libGLESv2.so.2.0.0
+link path=usr/lib/libGLESv2.so.2.0.0 target=GL/libGLESv2.so.2.0.0
+link path=usr/lib/libgbm.so target=libgbm.so.1
+link path=usr/lib/libgbm.so.1 target=libgbm.so.1.0.0
+link path=usr/lib/libgbm.so.1.0.0 target=GL/libgbm.so.1.0.0
+link path=usr/lib/libglapi.so target=libglapi.so.0
+link path=usr/lib/libglapi.so.0 target=libglapi.so.0.0.0
+link path=usr/lib/libglapi.so.0.0.0 target=GL/libglapi.so.0.0.0
+
+# usr/lib links to usr/lib/GL - 64 bits
+link path=usr/lib/$(MACH64)/libEGL.so target=libEGL.so.1
+link path=usr/lib/$(MACH64)/libEGL.so.1 target=libEGL.so.1.0.0
+link path=usr/lib/$(MACH64)/libEGL.so.1.0.0 \
+    target=../GL/$(MACH64)/libEGL.so.1.0.0
+link path=usr/lib/$(MACH64)/libGL.so target=libGL.so.1
+link path=usr/lib/$(MACH64)/libGL.so.1 target=../GL/$(MACH64)/libGL.so.1
+link path=usr/lib/$(MACH64)/libGLESv1_CM.so target=libGLESv1_CM.so.1
+link path=usr/lib/$(MACH64)/libGLESv1_CM.so.1 target=libGLESv1_CM.so.1.1.0
+link path=usr/lib/$(MACH64)/libGLESv1_CM.so.1.1.0 \
+    target=../GL/$(MACH64)/libGLESv1_CM.so.1.1.0
+link path=usr/lib/$(MACH64)/libGLESv2.so target=libGLESv2.so.2
+link path=usr/lib/$(MACH64)/libGLESv2.so.2 target=libGLESv2.so.2.0.0
+link path=usr/lib/$(MACH64)/libGLESv2.so.2.0.0 \
+    target=../GL/$(MACH64)/libGLESv2.so.2.0.0
+link path=usr/lib/$(MACH64)/libgbm.so target=libgbm.so.1
+link path=usr/lib/$(MACH64)/libgbm.so.1 target=libgbm.so.1.0.0
+link path=usr/lib/$(MACH64)/libgbm.so.1.0.0 \
+    target=../GL/$(MACH64)/libgbm.so.1.0.0
+link path=usr/lib/$(MACH64)/libglapi.so target=libglapi.so.0
+link path=usr/lib/$(MACH64)/libglapi.so.0 target=libglapi.so.0.0.0
+link path=usr/lib/$(MACH64)/libglapi.so.0.0.0 \
+    target=../GL/$(MACH64)/libglapi.so.0.0.0
+
+# X11 libglapi lins to usr/lib/GL - 32 bits
+link path=usr/X11/lib/libglapi.so target=libglapi.so.0
+link path=usr/X11/lib/libglapi.so.0 target=libglapi.so.0.0.0
+link path=usr/X11/lib/libglapi.so.0.0.0 target=../../lib/GL/libglapi.so.0.0.0
+
+# X11 libglapi lins to usr/lib/GL - 64 bits
+link path=usr/X11/lib/$(MACH64)/libglapi.so target=libglapi.so.0
+link path=usr/X11/lib/$(MACH64)/libglapi.so.0 target=libglapi.so.0.0.0
+link path=usr/X11/lib/$(MACH64)/libglapi.so.0.0.0 \
+    target=../../../lib/GL/$(MACH64)/libglapi.so.0.0.0
+
+# X11 library and include links to real files
+link path=usr/X11/lib/mesa target=../../lib/mesa
+link path=usr/X11/include/mesa target=../../include/mesa

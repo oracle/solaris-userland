@@ -1,0 +1,31 @@
+Workaround for following issue. Probably collision of EGLDisplay and
+EGLint type definition related to EGL_VERSION.
+
+The header is not distributed and the function definition is not really
+needed.
+ 
+/scratch/userland-gate/components/gnome/mutter/mutter-3.24.1/src/backends/meta-egl.c:396:1: error: conflicting types for 'meta_egl_query_wayland_buffer'
+  396 | meta_egl_query_wayland_buffer (MetaEgl            *egl,
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /scratch/userland-gate/components/gnome/mutter/mutter-3.24.1/src/backends/meta-backend-private.h:38,
+                 from /scratch/userland-gate/components/gnome/mutter/mutter-3.24.1/src/backends/meta-egl.c:27:
+/scratch/userland-gate/components/gnome/mutter/mutter-3.24.1/src/backends/meta-egl.h:80:10: note: previous declaration of 'meta_egl_query_wayland_buffer' was here
+   80 | gboolean meta_egl_query_wayland_buffer (MetaEgl            *egl,
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+--- a/src/backends/meta-egl.h
++++ b/src/backends/meta-egl.h
+@@ -77,13 +77,6 @@
+                                           const EGLint *attrib_list,
+                                           GError      **error);
+ 
+-gboolean meta_egl_query_wayland_buffer (MetaEgl            *egl,
+-                                        EGLDisplay          display,
+-                                        struct wl_resource *buffer,
+-                                        EGLint              attribute,
+-                                        EGLint             *value,
+-                                        GError            **error);
+-
+ gboolean meta_egl_query_devices (MetaEgl      *egl,
+                                  EGLint        max_devices,
+                                  EGLDeviceEXT *devices,
