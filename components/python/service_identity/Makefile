@@ -42,8 +42,6 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-PUBLISH_TRANSFORMS += transform_python_34
-
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
