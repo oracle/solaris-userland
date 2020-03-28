@@ -52,7 +52,7 @@ PKG_SOLARIS_VERSION ?= 11.$(UPDATENUM)
 # version string. Typically it should not be set unless all the packages
 # are being delivered within an SRU.
 #
-SRUNUM ?= 21
+SRUNUM ?= 24
 
 #
 # For distinguising between Server OS and Storage OS branches, and/or between
@@ -65,14 +65,14 @@ BRANCH_ORDER ?= 0
 # string. It should not be set unless there is a specific need to
 # release a platform update while the Solaris Update is being built.
 #
-PLATNUM ?= 1
+PLATNUM ?= 0
 
 #
 # Build Identifier. Used to indicate which build (or respin for
 # the development build) of the Solaris Update is being built.
 # This is set by the gatekeepers.
 #
-BUILDID ?= 69
+BUILDID ?= 70
 
 # Each (nightly) build of the code that produces packages needs to
 # be uniquely identified so that packages produced by different
