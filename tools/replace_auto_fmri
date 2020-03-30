@@ -59,7 +59,12 @@ echo "Replacing AUTO_FMRI by $BRANCHID"
 #          - transforms/legacy
 #   replace every AUTO_FMRI in the file unless the line starts with '#'
 hg manifest |
-	ggrep -P '(/history($|\.i386|\.sparc)|\.p5m$|^transforms/legacy$)' |
+	ggrep -P '((/history|\.p5m)(|\.i386|\.sparc)$|^transforms/legacy$)' |
 	xargs perl -pi -e 's/AUTO_FMRI/'"$BRANCHID"'/g unless m/^\s*#/'
+
+# Now make all the modified manifests pkgfmt clean
+hg status --no-status --modified |
+	ggrep -P '\.p5m(|\.i386|\.sparc)$' |
+	xargs pkgfmt
 
 hg diff
