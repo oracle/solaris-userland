@@ -653,7 +653,7 @@ export PARFAIT_NATIVEGXX=$(GCC_ROOT)/bin/g++
 ONBLD_ROOT ?=	$(BUILD_TOOLS)/onbld
 ONBLD_BIN ?=	$(ONBLD_ROOT)/bin
 
-GCC_ROOT =	/usr/gcc/9
+GCC_ROOT ?=	/usr/gcc/9
 
 CC.studio.32 =	$(SPRO_VROOT)/bin/cc
 CXX.studio.32 =	$(SPRO_VROOT)/bin/CC
@@ -1134,6 +1134,9 @@ gcc_OPT ?=		$(gcc_OPT.$(MACH).$(BITS)) \
 # GCC PIC code generation.  Use CC_PIC instead to select PIC code generation.
 gcc_PIC =	-fPIC -DPIC
 
+# Remove the build path from macros and debug information (requires GCC 9.0+).
+gcc_FIX_PATH ?= -ffile-prefix-map="$(COMPONENT_DIR)=."
+
 # Generic macro for PIC code generation.  Use this macro instead of the
 # compiler-specific variant.
 CC_PIC =		$($(COMPILER)_PIC)
@@ -1148,6 +1151,7 @@ CC_PIC_MODE =		$(CC_PIC_DISABLE)
 # configure environment.
 CFLAGS.gcc +=	$(gcc_OPT)
 CFLAGS.gcc +=	$(gcc_XREGS)
+CFLAGS.gcc +=	$(gcc_FIX_PATH)
 
 # Default GNU C++ compiler flags.  Add the required feature to your Makefile
 # with CXXFLAGS += $(FEATURE_MACRO) and add to the component build with
@@ -1156,6 +1160,7 @@ CFLAGS.gcc +=	$(gcc_XREGS)
 # configure environment.
 CXXFLAGS.gcc +=		$(gcc_OPT)
 CXXFLAGS.gcc +=		$(gcc_XREGS)
+CXXFLAGS.gcc +=		$(gcc_FIX_PATH)
 
 # Build 32 or 64 bit objects.
 CFLAGS +=	$(CC_BITS)

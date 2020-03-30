@@ -20,10 +20,15 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS = 64
 COMPILER = gcc
+
+# Disable reproducible paths to avoid build failure:
+# fatal error: ./ruby-2.6.5/debug_counter.h: No such file or directory
+#   252 | #include __FILE__
+gcc_FIX_PATH=
 
 include ../../../make-rules/shared-macros.mk
 

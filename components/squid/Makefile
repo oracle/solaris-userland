@@ -24,10 +24,13 @@
 #
 BUILD_BITS= 64
 COMPILER= gcc
-include ../../make-rules/shared-macros.mk
 
 # Upcoming squid version update will resolve GCC 9 build issues.
 GCC_ROOT= /usr/gcc/7
+# Disable reproducible paths in binaries since it requires GCC 9 or newer.
+gcc_FIX_PATH=
+
+include ../../make-rules/shared-macros.mk
 
 PATH=$(USRBINDIR):$(GNUBIN):$(USRSBINDIR):$(USRDIR)/perl5/bin
 

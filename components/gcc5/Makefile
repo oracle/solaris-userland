@@ -20,17 +20,20 @@
 #
 
 #
-# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 export PARFAIT_BUILD=no
 BUILD_BITS= 64
 COMPILER= gcc
-include ../../make-rules/shared-macros.mk
 
 # GCC 5 won't build with GCC 9 due some C++ standard issues:
 #  error: overloaded function with no contextual type information
 #  (e.g. for std::free vs free).
 GCC_ROOT= /usr/gcc/7
+# Disable reproducible paths in binaries since it requires GCC 9 or newer.
+gcc_FIX_PATH=
+
+include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gcc
 COMPONENT_VERSION=	5.5.0
