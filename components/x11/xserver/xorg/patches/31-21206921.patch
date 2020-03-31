@@ -38,8 +38,8 @@ the Solaris added sun-src/os/dtlogin.c
      xf86UpdateHasVTProperty(TRUE);
  
      input_unlock();
---- a/hw/xfree86/os-support/solaris/sun_vid.c	2019-02-12 13:03:00.584372350 -0800
-+++ b/hw/xfree86/os-support/solaris/sun_vid.c	2019-02-12 13:03:38.875621167 -0800
+--- a/hw/xfree86/os-support/solaris/sun_vid.c	2020-03-31 12:06:42.922428444 -0700
++++ b/hw/xfree86/os-support/solaris/sun_vid.c	2020-03-31 12:08:49.718086507 -0700
 @@ -22,7 +22,7 @@
   * OF THIS SOFTWARE.
   *
@@ -49,16 +49,12 @@ the Solaris added sun-src/os/dtlogin.c
   *
   * Permission is hereby granted, free of charge, to any person obtaining a
   * copy of this software and associated documentation files (the "Software"),
-@@ -100,8 +100,10 @@
-     if (!ExtendedEnabled)
-         return;
- 
+@@ -99,6 +99,7 @@
+ xf86DisableIO(void)
+ {
+ #if defined(__i386__) || defined(__i386) || defined(__x86)
 -    sysi86(SI86V86, V86SC_IOPL, 0);
 +    if (sysi86(SI86V86, V86SC_IOPL, 0) < 0)
 +        xf86Msg(X_WARNING, "xf86DisableIOPorts: Failed to set IOPL for I/O\n");
-+    else
-+        ExtendedEnabled = FALSE;
- 
--    ExtendedEnabled = FALSE;
  #endif                          /* i386 */
  }
