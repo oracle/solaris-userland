@@ -1,0 +1,18 @@
+Meson sets host_machine.cpu_family to x86_64 even for 32bit build 
+(intel). As a workaronud to distinguish bitness of the system we can
+use CFLAGS for the test.
+
+Should be evaluated whether there is no other possibility (e.g. to
+provide 32bit gcc binary) and eventually sent it to upstream.
+
+--- a/mesonbuild/environment.py
++++ b/mesonbuild/environment.py
+@@ -562,7 +562,7 @@
+         """
+         # Arguments to output compiler pre-processor defines to stdout
+         # gcc, g++, and gfortran all support these arguments
+-        args = compiler + ['-E', '-dM', '-']
++        args = compiler + os.environ.get('CFLAGS', '').split() + ['-E', '-dM', '-']
+         p, output, error = Popen_safe(args, write='', stdin=subprocess.PIPE)
+         if p.returncode != 0:
+             raise EnvironmentException('Unable to detect GNU compiler type:\n' + output + error)
