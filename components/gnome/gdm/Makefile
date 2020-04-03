@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
 #
 BUILD_BITS= 		64
 # All components using gobject-introspection must be built with gcc as
@@ -29,14 +29,14 @@ COMPILER= 		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gdm
-COMPONENT_VERSION=	3.24.2
+COMPONENT_VERSION=	3.34.1
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/GDM
 COMPONENT_ARCHIVE_HASH= \
-	sha256:4378b9fad5536e03c56ad138d0e249fbcaa09977b867895426cb41c978fe5de8
+	sha256:e85df657aa8d9361af4fb122014d8f123a93bfe45a7662fba2b373d839dbd8d3
 COMPONENT_BUGDB=        gnome/gdm
 COMPONENT_ANITYA_ID=	13122
 
-TPNO=			36164
+TPNO=			59855
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -74,11 +74,30 @@ CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += --without-plymouth
 CONFIGURE_OPTIONS += --without-systemd
 CONFIGURE_OPTIONS += --without-systemdsystemunitdir
+CONFIGURE_OPTIONS += --without-udevdir
 CONFIGURE_OPTIONS += --with-user=gdm --with-group=gdm
 CONFIGURE_OPTIONS += --with-default-path='$(USRBINDIR):$(USRSBINDIR)'
 CONFIGURE_OPTIONS += --with-xauth-dir=/tmp
 CONFIGURE_OPTIONS += --with-initial-vt=7
 CONFIGURE_OPTIONS += --libexecdir="$(USRLIBDIR)/gdm"
+
+COMPONENT_POST_INSTALL_ACTION.64 += \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/gdm-screenshot.1 \
+                $(PROTO_DIR)/usr/share/man/man1/gdm-screenshot.1; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/gdmflexiserver.1 \
+                $(PROTO_DIR)/usr/share/man/man1/gdmflexiserver.1; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/gdm.8 \
+                $(PROTO_DIR)/usr/share/man/man8/gdm.8; \
+        $(INSTALL) -D $(COMPONENT_DIR)/files/xterm.desktop \
+                $(PROTO_DIR)/usr/share/xsessions/xterm.desktop; \
+        $(INSTALL) -D $(COMPONENT_DIR)/files/gdm.xml \
+                $(PROTO_DIR)/lib/svc/manifest/application/graphical-login/gdm.xml; \
+        $(INSTALL) -D $(COMPONENT_DIR)/files/gdm-launch-environment.pam \
+                $(PROTO_DIR)/etc/gdm/gdm-launch-environment.pam; \
+        $(INSTALL) -D $(COMPONENT_DIR)/files/svc-gdm \
+                $(PROTO_DIR)/lib/svc/method/svc-gdm; \
+        $(INSTALL) -D $(COMPONENT_DIR)/files/org.gnome.login-screen.gschema.override \
+                $(PROTO_DIR)/usr/share/glib-2.0/schemas/org.gnome.login-screen.gschema.override;
 
 REQUIRED_PACKAGES += data/iso-codes
 REQUIRED_PACKAGES += developer/documentation-tool/itstool

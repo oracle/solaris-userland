@@ -12,29 +12,21 @@ This revision is based on that patch, but moves the calls from the
 launch-environment to the session-worker, where they can be run as
 root so that they actually work in gdm 3.18.
 
-Orig. date:2010-12-14 owner:yippi type:feature bugster:6998997 bugzilla:621581
----
- configure.ac                |  2 +-
- daemon/gdm-session-worker.c | 77 +++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 78 insertions(+), 1 deletion(-)
-
-diff --git a/configure.ac b/configure.ac
-index 5e97a41..cc58fbb 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1152,7 +1152,7 @@ AC_SUBST(EXTRA_TEST_LIBS)
- #
- AC_CHECK_LIB(devinfo, di_devperm_login, [
-                         AC_DEFINE(HAVE_LOGINDEVPERM)
--                            PAM_LIBS="$PAM_LIBS -ldevinfo" ])
-+                            EXTRA_DAEMON_LIBS="$EXTRA_DAEMON_LIBS -ldevinfo" ])
+--- a/configure.ac	2020-03-26 13:34:19.174873361 -0700
++++ b/configure.ac	2020-03-26 13:41:36.035607065 -0700
+@@ -1103,6 +1103,10 @@
+ AC_SUBST(EXTRA_SETUP_LIBS)
+ AC_SUBST(EXTRA_TEST_LIBS)
  
++AC_CHECK_LIB(devinfo, di_devperm_login, [
++                         AC_DEFINE(HAVE_LOGINDEVPERM)
++                            EXTRA_DAEMON_LIBS="$EXTRA_DAEMON_LIBS -ldevinfo" ])
++
  dnl ---------------------------------------------------------------------------
  dnl - Check for X Server location
-diff --git a/daemon/gdm-session-worker.c b/daemon/gdm-session-worker.c
-index 5fc83d6..f19a92f 100644
---- a/daemon/gdm-session-worker.c
-+++ b/daemon/gdm-session-worker.c
+ dnl ---------------------------------------------------------------------------
+--- a/daemon/gdm-session-worker.c	2020-03-26 13:41:52.824386827 -0700
++++ b/daemon/gdm-session-worker.c	2020-03-26 13:45:31.476131087 -0700
 @@ -46,6 +46,10 @@
  
  #include <security/pam_appl.h>
@@ -46,7 +38,7 @@ index 5fc83d6..f19a92f 100644
  #ifdef HAVE_LOGINCAP
  #include <login_cap.h>
  #endif
-@@ -1917,6 +1921,10 @@ run_script (GdmSessionWorker *worker,
+@@ -2111,6 +2115,10 @@
                                 worker->priv->x11_authority_file);
  }
  
@@ -57,7 +49,7 @@ index 5fc83d6..f19a92f 100644
  static void
  session_worker_child_watch (GPid              pid,
                              int               status,
-@@ -1944,6 +1952,11 @@ session_worker_child_watch (GPid              pid,
+@@ -2141,6 +2149,10 @@
          worker->priv->child_pid = -1;
          worker->priv->child_watch_id = 0;
          run_script (worker, GDMCONFDIR "/PostSession");
@@ -65,11 +57,10 @@ index 5fc83d6..f19a92f 100644
 +#ifdef HAVE_LOGINDEVPERM
 +        gdm_session_worker_revoke_console_permissions (worker);
 +#endif
-+
  }
  
  static void
-@@ -2103,6 +2116,66 @@ out:
+@@ -2300,6 +2312,66 @@
          return fd;
  }
  
@@ -136,7 +127,7 @@ index 5fc83d6..f19a92f 100644
  #ifdef __sun
  static void
  solaris_xserver_cred (const char *username, struct passwd *passwd_entry,
-@@ -2229,6 +2302,10 @@ gdm_session_worker_start_session (GdmSessionWorker  *worker,
+@@ -2429,6 +2501,10 @@
                           worker->priv->arguments[0]);
          }
  
@@ -147,6 +138,3 @@ index 5fc83d6..f19a92f 100644
  #ifdef __sun
          solaris_xserver_cred (worker->priv->username,
                                passwd_entry,
--- 
-2.7.4
-

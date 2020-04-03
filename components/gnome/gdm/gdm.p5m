@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -55,8 +55,7 @@ file path=etc/gdm/PostSession/Default mode=0555 preserve=true
 file path=etc/gdm/PreSession/Default mode=0555 preserve=true
 file path=etc/gdm/Xsession mode=0555 preserve=true
 file path=etc/gdm/custom.conf mode=0644 preserve=renameold
-file files/gdm-launch-environment.pam path=etc/gdm/gdm-launch-environment.pam \
-    preserve=renamenew
+file path=etc/gdm/gdm-launch-environment.pam preserve=renamenew
 file files/gdm-autologin path=etc/pam.d/gdm-autologin \
     original_name=system/core-os:etc/pam.d/gdm-autologin preserve=renamenew
 file files/gdm.auth_attr \
@@ -64,8 +63,8 @@ file files/gdm.auth_attr \
 file files/gdm.prof_attr \
     path=etc/security/prof_attr.d/system:display-manager:gdm
 file files/gdm.user_attr path=etc/user_attr.d/system:display-manager:gdm
-file files/gdm.xml path=lib/svc/manifest/application/graphical-login/gdm.xml
-file files/svc-gdm path=lib/svc/method/svc-gdm
+file path=lib/svc/manifest/application/graphical-login/gdm.xml
+file path=lib/svc/method/svc-gdm
 file path=usr/bin/gdm-screenshot
 file path=usr/bin/gdmflexiserver
 file path=usr/include/gdm/gdm-client-glue.h
@@ -79,6 +78,7 @@ file path=usr/lib/$(MACH64)/libgdm.so.1.0.0
 file path=usr/lib/$(MACH64)/pkgconfig/gdm.pc
 link path=usr/lib/gdm/ck-get-x11-display-device \
     target=../ck-get-x11-display-device
+file path=usr/lib/gdm/gdm-disable-wayland mode=0555
 file path=usr/lib/gdm/gdm-host-chooser mode=0555
 file path=usr/lib/gdm/gdm-session-worker mode=0555
 file path=usr/lib/gdm/gdm-simple-chooser mode=0555
@@ -97,9 +97,9 @@ file path=usr/share/gdm/greeter/applications/mimeapps.list
 file path=usr/share/gdm/greeter/autostart/orca-autostart.desktop
 file path=usr/share/gdm/locale.alias
 file path=usr/share/gir-1.0/Gdm-1.0.gir
-file files/org.gnome.login-screen.gschema.override \
-    path=usr/share/glib-2.0/schemas/org.gnome.login-screen.gschema.override
+file path=usr/share/glib-2.0/schemas/org.gnome.login-screen.gschema.override
 file path=usr/share/glib-2.0/schemas/org.gnome.login-screen.gschema.xml
+file path=usr/share/gnome-session/sessions/gnome-login.session
 file path=usr/share/help/C/gdm/index.docbook
 file path=usr/share/help/C/gdm/legal.xml
 file path=usr/share/help/ca/gdm/index.docbook
@@ -146,9 +146,6 @@ file path=usr/share/help/uk/gdm/index.docbook
 file path=usr/share/help/uk/gdm/legal.xml
 file path=usr/share/help/zh_CN/gdm/index.docbook
 file path=usr/share/help/zh_CN/gdm/legal.xml
-file path=usr/share/icons/hicolor/16x16/apps/gdm-xnest.png
-file path=usr/share/icons/hicolor/32x32/apps/gdm-setup.png
-file path=usr/share/icons/hicolor/32x32/apps/gdm-xnest.png
 file path=usr/share/locale/af/LC_MESSAGES/gdm.mo
 file path=usr/share/locale/am/LC_MESSAGES/gdm.mo
 file path=usr/share/locale/an/LC_MESSAGES/gdm.mo
@@ -212,6 +209,7 @@ file path=usr/share/locale/lv/LC_MESSAGES/gdm.mo
 file path=usr/share/locale/mai/LC_MESSAGES/gdm.mo
 file path=usr/share/locale/mg/LC_MESSAGES/gdm.mo
 file path=usr/share/locale/mi/LC_MESSAGES/gdm.mo
+file path=usr/share/locale/mjw/LC_MESSAGES/gdm.mo
 file path=usr/share/locale/mk/LC_MESSAGES/gdm.mo
 file path=usr/share/locale/ml/LC_MESSAGES/gdm.mo
 file path=usr/share/locale/mn/LC_MESSAGES/gdm.mo
@@ -256,16 +254,10 @@ file path=usr/share/locale/zh_CN/LC_MESSAGES/gdm.mo
 file path=usr/share/locale/zh_HK/LC_MESSAGES/gdm.mo
 file path=usr/share/locale/zh_TW/LC_MESSAGES/gdm.mo
 file path=usr/share/locale/zu/LC_MESSAGES/gdm.mo
-file files/gdm-screenshot.1 path=usr/share/man/man1/gdm-screenshot.1
-file files/gdmflexiserver.1 path=usr/share/man/man1/gdmflexiserver.1
-file files/gdm.8 path=usr/share/man/man8/gdm.8
-file path=usr/share/pixmaps/gdm-foot-logo.png
-file path=usr/share/pixmaps/gdm-setup.png
-file path=usr/share/pixmaps/gdm-xnest.png
-file path=usr/share/pixmaps/gdm.png
-file path=usr/share/pixmaps/nobody.png
-file path=usr/share/pixmaps/nohost.png
-file files/xterm.desktop path=usr/share/xsessions/xterm.desktop
+file path=usr/share/man/man1/gdm-screenshot.1
+file path=usr/share/man/man1/gdmflexiserver.1
+file path=usr/share/man/man8/gdm.8
+file path=usr/share/xsessions/xterm.desktop
 dir  path=var/cache/gdm group=gdm mode=0755
 dir  path=var/lib/gdm owner=gdm group=gdm mode=1770
 dir  path=var/lib/gdm/.local owner=gdm group=gdm mode=0770

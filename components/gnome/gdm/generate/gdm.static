@@ -1,0 +1,44 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2020, Oracle and/or its affiliates. 
+#
+
+# gdm special dir., user
+dir  path=var/cache/gdm group=gdm mode=0755
+dir  path=var/lib/gdm owner=gdm group=gdm mode=1770
+dir  path=var/lib/gdm/.local owner=gdm group=gdm mode=0770
+dir  path=var/lib/gdm/.local/share owner=gdm group=gdm mode=0770
+dir  path=var/lib/gdm/.local/share/applications owner=gdm group=gdm mode=0770
+dir  path=var/log/gdm group=gdm mode=0711
+group groupname=gdm gid=50
+user username=gdm gcos-field="GDM Reserved UID" group=gdm \
+    home-dir=/var/lib/gdm password=*LK* uid=50
+file files/gdm-autologin path=etc/pam.d/gdm-autologin \
+    original_name=system/core-os:etc/pam.d/gdm-autologin preserve=renamenew
+file files/gdm.auth_attr \
+    path=etc/security/auth_attr.d/system:display-manager:gdm
+file files/gdm.prof_attr \
+    path=etc/security/prof_attr.d/system:display-manager:gdm
+file files/gdm.user_attr path=etc/user_attr.d/system:display-manager:gdm
+link path=usr/lib/gdm/ck-get-x11-display-device \
+    target=../ck-get-x11-display-device

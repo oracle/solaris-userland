@@ -5,22 +5,16 @@ Subject: [PATCH 18/19] service log
 
 On Solaris, check for running under SMF control instead of for serviced
 to determine if we should log to syslog or stderr (for SMF to capture).
----
- common/gdm-log.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/common/gdm-log.c b/common/gdm-log.c
-index 03b7bcc..1303d5c 100644
---- a/common/gdm-log.c
-+++ b/common/gdm-log.c
-@@ -136,14 +136,16 @@ gdm_log_init (void)
-         initialized = TRUE;
+--- a/common/gdm-log.c	2020-06-20 11:26:40.429382314 -0700
++++ b/common/gdm-log.c	2020-06-20 11:27:57.084533786 -0700
+@@ -137,13 +137,15 @@
+ 
  #ifdef WITH_SYSTEMD
          is_sd_booted = sd_booted () > 0;
 +#elif defined(__sun)
 +        is_sd_booted = (g_getenv("SMF_FMRI") != NULL);
  #endif
- 
          g_log_set_default_handler (gdm_log_default_handler, NULL);
  
 -        /* Only set up syslog if !systemd, otherwise with systemd
@@ -32,6 +26,3 @@ index 03b7bcc..1303d5c 100644
           */
          if (!is_sd_booted) {
                  prg_name = g_get_prgname ();
--- 
-2.7.4
-

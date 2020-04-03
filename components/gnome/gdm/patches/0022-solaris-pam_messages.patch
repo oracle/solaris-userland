@@ -8,7 +8,7 @@ http://unixpapa.com/incnote/pam.html .
 
 --- a/daemon/gdm-session-worker.c
 +++ b/daemon/gdm-session-worker.c
-@@ -909,6 +909,9 @@ gdm_session_worker_pam_new_messages_handler (int                        number_o
+@@ -1027,6 +1027,9 @@
          struct pam_response *replies;
          int                  return_value;
          int                  i;
@@ -18,15 +18,15 @@ http://unixpapa.com/incnote/pam.html .
  
          g_debug ("GdmSessionWorker: %d new messages received from PAM\n", number_of_messages);
  
-@@ -936,7 +939,11 @@ gdm_session_worker_pam_new_messages_handler (int                        number_o
+@@ -1054,7 +1057,11 @@
  
-                 response_text = NULL;
+                 response = NULL;
                  got_response = gdm_session_worker_process_pam_message (worker,
 +#ifdef __sun
 +                                                                       m++,
 +#else
                                                                         messages[i],
 +#endif
-                                                                        &response_text);
+                                                                        &response);
                  if (!got_response) {
                          goto out;

@@ -1,0 +1,289 @@
+Solaris Auditing changes from the existing version
+
+--- a/daemon/gdm-session-solaris-auditor.h	2019-08-02 12:44:36.000000000 -0700
++++ b/daemon/gdm-session-solaris-auditor.h	2020-06-08 22:17:32.144089320 -0700
+@@ -34,8 +34,31 @@
+ G_BEGIN_DECLS
+ 
+ #define GDM_TYPE_SESSION_SOLARIS_AUDITOR (gdm_session_solaris_auditor_get_type ())
+-G_DECLARE_FINAL_TYPE (GdmSessionSolarisAuditor, gdm_session_solaris_auditor, GDM, SESSION_SOLARIS_AUDITOR, GdmSessionAuditor)
++#define GDM_SESSION_SOLARIS_AUDITOR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GDM_TYPE_SESSION_SOLARIS_AUDITOR, GdmSessionSolarisAuditor))
++#define GDM_SESSION_SOLARIS_AUDITOR_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GDM_TYPE_SESSION_SOLARIS_AUDITOR, GdmSessionSolarisAuditorClass))
+ 
++#define GDM_IS_SESSION_SOLARIS_AUDITOR_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GDM_TYPE_SESSION_SOLARIS_AUDITOR))
++#define GDM_SESSION_SOLARIS_AUDITOR_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), GDM_TYPE_SESSION_SOLARIS_AUDITOR, GdmSessionSolarisAuditorClass))
++#define GDM_SESSION_SOLARIS_AUDITOR_ERROR (gdm_session_solaris_auditor_error_quark ())
++typedef struct _GdmSessionSolarisAuditor        GdmSessionSolarisAuditor;
++typedef struct _GdmSessionSolarisAuditorClass   GdmSessionSolarisAuditorClass;
++typedef struct _GdmSessionSolarisAuditorPrivate GdmSessionSolarisAuditorPrivate;
++
++struct _GdmSessionSolarisAuditor
++{
++        GdmSessionAuditor                parent;
++
++        /*< private > */
++        GdmSessionSolarisAuditorPrivate *priv;
++};
++
++
++struct _GdmSessionSolarisAuditorClass
++{
++        GdmSessionAuditorClass parent_class;
++};
++
++GType              gdm_session_solaris_auditor_get_type                       (void);
+ GdmSessionAuditor *gdm_session_solaris_auditor_new                            (const char *hostname,
+                                                                                const char *display_device);
+ G_END_DECLS
+--- a/daemon/gdm-session-solaris-auditor.c	2020-06-08 22:22:58.243370643 -0700
++++ b/daemon/gdm-session-solaris-auditor.c	2020-06-08 22:52:02.992680803 -0700
+@@ -38,10 +38,8 @@
+ #include <glib-object.h>
+ #include <glib/gi18n.h>
+ 
+-struct GdmSessionSolarisAuditor
++struct _GdmSessionSolarisAuditorPrivate
+ {
+-        GdmSessionAuditor parent;
+-
+         adt_session_data_t *audit_session_handle;
+ 
+         guint password_change_initiated : 1;
+@@ -66,8 +64,8 @@
+         GdmSessionSolarisAuditor *solaris_auditor;
+ 
+         solaris_auditor = GDM_SESSION_SOLARIS_AUDITOR (auditor);
+-        solaris_auditor->password_change_initiated = TRUE;
+-        solaris_auditor->password_changed = TRUE;
++        solaris_auditor->priv->password_change_initiated = TRUE;
++        solaris_auditor->priv->password_changed = TRUE;
+ }
+ 
+ static void
+@@ -76,8 +74,8 @@
+         GdmSessionSolarisAuditor *solaris_auditor;
+ 
+         solaris_auditor = GDM_SESSION_SOLARIS_AUDITOR (auditor);
+-        solaris_auditor->password_change_initiated = TRUE;
+-        solaris_auditor->password_changed = FALSE;
++        solaris_auditor->priv->password_change_initiated = TRUE;
++        solaris_auditor->priv->password_changed = FALSE;
+ }
+ 
+ static void
+@@ -86,7 +84,7 @@
+         GdmSessionSolarisAuditor *solaris_auditor;
+ 
+         solaris_auditor = GDM_SESSION_SOLARIS_AUDITOR (auditor);
+-        solaris_auditor->user_accredited = TRUE;
++        solaris_auditor->priv->user_accredited = TRUE;
+ }
+ 
+ static void
+@@ -98,7 +96,7 @@
+ 
+        solaris_auditor = GDM_SESSION_SOLARIS_AUDITOR (auditor);
+ 
+-       g_return_if_fail (solaris_auditor->username != NULL);
++       g_return_if_fail (solaris_auditor->priv->username != NULL);
+ 
+        adt_ah = NULL;
+        if (adt_start_session (&adt_ah, NULL, ADT_USE_PROC_DATA) != 0) {
+@@ -107,12 +105,12 @@
+                goto cleanup;
+        }
+ 
+-       if (adt_set_user (adt_ah, solaris_auditor->uid,
+-           solaris_auditor->gid, solaris_auditor->uid,
+-           solaris_auditor->gid, NULL, ADT_USER) != 0) {
++       if (adt_set_user (adt_ah, solaris_auditor->priv->uid,
++           solaris_auditor->priv->gid, solaris_auditor->>priv->uid,
++           solaris_auditor->priv->gid, NULL, ADT_USER) != 0) {
+                syslog (LOG_AUTH | LOG_ALERT,
+                        "adt_set_user (ADT_login, %s): %m",
+-                       solaris_auditor->username);
++                       solaris_auditor->priv->username);
+        }
+ 
+        event = adt_alloc_event (adt_ah, ADT_login);
+@@ -123,9 +121,9 @@
+                        "adt_put_event (ADT_login, ADT_SUCCESS): %m");
+        }
+ 
+-       if (solaris_auditor->password_changed) {
++       if (solaris_auditor->priv->password_changed) {
+ 
+-               g_assert (solaris_auditor->password_change_initiated);
++               g_assert (solaris_auditor->priv->password_change_initiated);
+ 
+                /* Also audit password change */
+                adt_free_event (event);
+@@ -144,7 +142,7 @@
+        adt_free_event (event);
+ 
+ cleanup:
+-       solaris_auditor->audit_session_handle = adt_ah;
++       solaris_auditor->priv->audit_session_handle = adt_ah;
+ }
+ 
+ static void
+@@ -164,7 +162,7 @@
+                       "hostname", &hostname,
+                       "display-device", &display_device, NULL);
+ 
+-        if (solaris_auditor->user_accredited) {
++        if (solaris_auditor->priv->user_accredited) {
+                 if (adt_start_session (&ah, NULL, ADT_USE_PROC_DATA) != 0) {
+                         syslog (LOG_AUTH | LOG_ALERT,
+                                 "adt_start_session (ADT_login, ADT_FAILURE): %m");
+@@ -193,15 +191,15 @@
+                 }
+ 
+                 if (adt_set_user (ah,
+-                                  solaris_auditor->username != NULL ? solaris_auditor->uid : ADT_NO_ATTRIB,
+-                                  solaris_auditor->username != NULL ? solaris_auditor->gid : ADT_NO_ATTRIB,
+-                                  solaris_auditor->username != NULL ? solaris_auditor->uid : ADT_NO_ATTRIB,
+-                                  solaris_auditor->username != NULL ? solaris_auditor->gid : ADT_NO_ATTRIB,
++                                  solaris_auditor->priv->username != NULL ? solaris_auditor->priv->uid : ADT_NO_ATTRIB,
++                                  solaris_auditor->priv->username != NULL ? solaris_auditor->priv->gid : ADT_NO_ATTRIB,
++                                  solaris_auditor->priv->username != NULL ? solaris_auditor->priv->uid : ADT_NO_ATTRIB,
++                                  solaris_auditor->priv->username != NULL ? solaris_auditor->priv->gid : ADT_NO_ATTRIB,
+                                   tid, ADT_NEW) != 0) {
+ 
+                         syslog (LOG_AUTH | LOG_ALERT,
+                                 "adt_set_user (%s): %m",
+-                                solaris_auditor->username != NULL ? solaris_auditor->username : "ADT_NO_ATTRIB");
++                                solaris_auditor->priv->username != NULL ? solaris_auditor->priv->username : "ADT_NO_ATTRIB");
+                 }
+         }
+ 
+@@ -218,7 +216,7 @@
+                         pam_error_string);
+         }
+ 
+-        if (solaris_auditor->password_change_initiated) {
++        if (solaris_auditor->priv->password_change_initiated) {
+                 /* Also audit password change */
+                 adt_free_event (event);
+ 
+@@ -229,7 +227,7 @@
+                         goto done;
+                 }
+ 
+-                if (solaris_auditor->password_changed) {
++                if (solaris_auditor->priv->password_changed) {
+                         if (adt_put_event (event, ADT_SUCCESS,
+                                            ADT_SUCCESS) != 0) {
+ 
+@@ -274,7 +272,7 @@
+ 
+         solaris_auditor = GDM_SESSION_SOLARIS_AUDITOR (auditor);
+ 
+-        adt_ah = solaris_auditor->audit_session_handle;
++        adt_ah = solaris_auditor->priv->audit_session_handle;
+ 
+         event = adt_alloc_event (adt_ah, ADT_logout);
+         if (event == NULL) {
+@@ -296,7 +294,7 @@
+         }
+ 
+         (void) adt_end_session (adt_ah);
+-        solaris_auditor->audit_session_handle = NULL;
++        solaris_auditor->priv->audit_session_handle = NULL;
+ }
+ 
+ static void
+@@ -316,6 +314,7 @@
+         auditor_class->report_login = gdm_session_solaris_auditor_report_login;
+         auditor_class->report_login_failure = gdm_session_solaris_auditor_report_login_failure;
+         auditor_class->report_logout = gdm_session_solaris_auditor_report_logout;
++	g_type_class_add_private (auditor_class, sizeof (GdmSessionSolarisAuditorPrivate));
+ }
+ 
+ static void
+@@ -329,14 +328,14 @@
+         gdm_get_pwent_for_name (username, &passwd_entry);
+ 
+         if (passwd_entry != NULL) {
+-                auditor->uid = passwd_entry->pw_uid;
+-                auditor->gid = passwd_entry->pw_gid;
+-                auditor->username = g_strdup (passwd_entry->pw_name);
++                auditor->priv->uid = passwd_entry->pw_uid;
++                auditor->priv->gid = passwd_entry->pw_gid;
++                auditor->priv->username = g_strdup (passwd_entry->pw_name);
+         } else {
+                 g_free (auditor->username);
+-                auditor->username = NULL;
+-                auditor->uid = (uid_t) -1;
+-                auditor->gid = (gid_t) -1;
++                auditor->priv->username = NULL;
++                auditor->priv->uid = (uid_t) -1;
++                auditor->priv->gid = (gid_t) -1;
+         }
+ 
+         g_free (username);
+@@ -348,8 +347,8 @@
+         g_signal_connect (G_OBJECT (auditor), "notify::username",
+                           G_CALLBACK (on_username_set), NULL);
+ 
+-        auditor->uid = (uid_t) -1;
+-        auditor->gid = (gid_t) -1;
++        auditor->priv->uid = (uid_t) -1;
++        auditor->priv->gid = (gid_t) -1;
+ }
+ 
+ static void
+@@ -360,8 +359,8 @@
+ 
+         solaris_auditor = GDM_SESSION_SOLARIS_AUDITOR (object);
+ 
+-        g_free (solaris_auditor->username);
+-        solaris_auditor->username = NULL;
++        g_free (solaris_auditor->priv->username);
++        solaris_auditor->priv->username = NULL;
+ 
+         parent_class = G_OBJECT_CLASS (gdm_session_solaris_auditor_parent_class);
+ 
+--- a/daemon/gdm-session-solaris-auditor.c	2020-06-08 22:59:39.485229754 -0700
++++ b/daemon/gdm-session-solaris-auditor.c	2020-06-08 23:02:06.208977238 -0700
+@@ -106,7 +106,7 @@
+        }
+ 
+        if (adt_set_user (adt_ah, solaris_auditor->priv->uid,
+-           solaris_auditor->priv->gid, solaris_auditor->>priv->uid,
++           solaris_auditor->priv->gid, solaris_auditor->priv->uid,
+            solaris_auditor->priv->gid, NULL, ADT_USER) != 0) {
+                syslog (LOG_AUTH | LOG_ALERT,
+                        "adt_set_user (ADT_login, %s): %m",
+@@ -332,7 +332,7 @@
+                 auditor->priv->gid = passwd_entry->pw_gid;
+                 auditor->priv->username = g_strdup (passwd_entry->pw_name);
+         } else {
+-                g_free (auditor->username);
++                g_free (auditor->priv->username);
+                 auditor->priv->username = NULL;
+                 auditor->priv->uid = (uid_t) -1;
+                 auditor->priv->gid = (gid_t) -1;
+--- a/daemon/gdm-session-solaris-auditor.h	2020-06-18 11:49:06.433472192 -0700
++++ b/daemon/gdm-session-solaris-auditor.h	2020-06-18 11:51:42.930238452 -0700
+@@ -37,6 +37,7 @@
+ #define GDM_SESSION_SOLARIS_AUDITOR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GDM_TYPE_SESSION_SOLARIS_AUDITOR, GdmSessionSolarisAuditor))
+ #define GDM_SESSION_SOLARIS_AUDITOR_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GDM_TYPE_SESSION_SOLARIS_AUDITOR, GdmSessionSolarisAuditorClass))
+ 
++#define GDM_IS_SESSION_SOLARIS_AUDITOR(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GDM_TYPE_SESSION_SOLARIS_AUDITOR))
+ #define GDM_IS_SESSION_SOLARIS_AUDITOR_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GDM_TYPE_SESSION_SOLARIS_AUDITOR))
+ #define GDM_SESSION_SOLARIS_AUDITOR_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), GDM_TYPE_SESSION_SOLARIS_AUDITOR, GdmSessionSolarisAuditorClass))
+ #define GDM_SESSION_SOLARIS_AUDITOR_ERROR (gdm_session_solaris_auditor_error_quark ())
+--- a/daemon/gdm-session-solaris-auditor.c	2020-06-18 11:53:48.301360159 -0700
++++ b/daemon/gdm-session-solaris-auditor.c	2020-06-18 11:54:25.390655554 -0700
+@@ -344,6 +344,10 @@
+ static void
+ gdm_session_solaris_auditor_init (GdmSessionSolarisAuditor *auditor)
+ {
++	 auditor->priv = G_TYPE_INSTANCE_GET_PRIVATE (auditor,
++                                                     GDM_TYPE_SESSION_SOLARIS_AUDITOR,
++                                                     GdmSessionSolarisAuditorPrivate);
++
+         g_signal_connect (G_OBJECT (auditor), "notify::username",
+                           G_CALLBACK (on_username_set), NULL);
+ 

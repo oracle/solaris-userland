@@ -20,25 +20,9 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, Oracle and/or its affiliates. 
 #
 
-<transform file path=etc/X11/xinit/xinitrc.d/.+ -> set mode 0555>
-<transform file path=.*/(.*) -> set action.hash files/%<1>>
-set name=pkg.fmri \
-    value=pkg:/system/display-manager/desktop-startup@0.38.0,$(BUILD_VERSION)
-set name=pkg.summary value="Desktop startup scripts in xinitrc.d"
-set name=info.classification \
-    value="org.opensolaris.category.2008:Desktop (GNOME)/Scripts"
-set name=org.opensolaris.arc-caseid value=PSARC/2016/448
-set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-#
 file path=etc/X11/xinit/xinitrc.d/0011.env
 file path=etc/X11/xinit/xinitrc.d/0020.pre-localization
 file path=usr/bin/dtstart
-license files/dtstartup.copyright license=Oracle
-
-# Programs run by various scripts in this package
-depend type=require fmri=__TBD pkg.debug.depend.file=usr/bin/gnome-session
-depend type=require fmri=__TBD pkg.debug.depend.file=usr/bin/xmodmap
-depend type=require fmri=__TBD pkg.debug.depend.file=usr/bin/xrdb

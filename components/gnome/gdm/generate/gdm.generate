@@ -1,0 +1,60 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2020, Oracle and/or its affiliates. 
+#
+
+<include generate/common.transform>
+
+# Delete everything not belonging to this package
+<transform file link pkg.type=(?!gdm) -> drop>
+<transform file link -> delete pkg.type .*>
+
+# Set perms and other attributes
+<transform file path=etc/gdm/Init/Default -> set mode 0555> 
+<transform file path=etc/gdm/Init/Default -> set preserve true>
+<transform file path=etc/gdm/PostLogin/Default.sample -> set mode 0555>
+<transform file path=etc/gdm/PostSession/Default-> set mode 0555> 
+<transform file path=etc/gdm/PostSession/Default-> set preserve true>
+<transform file path=etc/gdm/PreSession/Default -> set mode 0555> 
+<transform file path=etc/gdm/PreSession/Default -> set preserve true>
+<transform file path=etc/gdm/Xsession -> set mode 0555> 
+<transform file path=etc/gdm/Xsession -> set preserve true>
+<transform file path=etc/gdm/custom.conf -> set mode 0644> 
+<transform file path=etc/gdm/custom.conf -> set preserve renameold>
+<transform file path=usr/lib/gdm/gdm-host-chooser -> set mode 0555>
+<transform file path=usr/lib/gdm/gdm-disable-wayland -> set mode 0555>
+<transform file path=usr/lib/gdm/gdm-session-worker -> set mode 0555>
+<transform file path=usr/lib/gdm/gdm-simple-chooser -> set mode 0555>
+<transform file path=usr/lib/gdm/gdm-x-session -> set mode 0555>
+<transform path=etc/gdm/gdm-launch-environment.pam -> set preserve renamenew>
+
+# These are delivered in desktop-startup.p5m
+<transform file path=files/0011.env -> drop>
+<transform file path=files/0020.pre-localization -> drop>
+<transform file path=files/dtstart -> drop>
+
+# Drop since Solaris doesn't support wayland
+<transform file path=usr/lib/gdm/gdm-wayland-session -> drop>
+
+
+

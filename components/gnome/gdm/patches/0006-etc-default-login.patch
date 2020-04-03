@@ -9,13 +9,11 @@ Original date:2009-03-31 owner:yippi type:feature
  daemon/gdm-session-worker.c | 83 +++++++++++++++++++++++++++++++++++++++++----
  1 file changed, 76 insertions(+), 7 deletions(-)
 
-diff --git a/daemon/gdm-session-worker.c b/daemon/gdm-session-worker.c
-index 93c9e82..5fc83d6 100644
---- a/daemon/gdm-session-worker.c
-+++ b/daemon/gdm-session-worker.c
-@@ -222,6 +222,33 @@ G_DEFINE_TYPE_WITH_CODE (GdmSessionWorker,
-                          G_IMPLEMENT_INTERFACE (GDM_DBUS_TYPE_WORKER,
-                                                 worker_interface_init))
+--- a/daemon/gdm-session-worker.c	2020-03-26 08:50:59.808310780 -0700
++++ b/daemon/gdm-session-worker.c	2020-03-26 08:55:19.870225847 -0700
+@@ -230,6 +230,34 @@
+                                                 worker_interface_init)
+                          G_ADD_PRIVATE (GdmSessionWorker))
  
 +#if __sun
 +#include <deflt.h>
@@ -44,10 +42,11 @@ index 93c9e82..5fc83d6 100644
 +}
 +#endif
 +
++
  #ifdef WITH_CONSOLE_KIT
  static gboolean
  open_ck_session (GdmSessionWorker  *worker)
-@@ -1351,6 +1378,28 @@ gdm_session_worker_authorize_user (GdmSessionWorker *worker,
+@@ -1545,6 +1573,28 @@
          g_debug ("GdmSessionWorker: determining if authenticated user (password required:%d) is authorized to session",
                   password_is_required);
  
@@ -76,15 +75,15 @@ index 93c9e82..5fc83d6 100644
          authentication_flags = 0;
  
          if (password_is_required) {
-@@ -1716,6 +1765,7 @@ gdm_session_worker_accredit_user (GdmSessionWorker  *worker,
+@@ -1909,6 +1959,7 @@
          gid_t    gid;
          char    *shell;
          char    *home;
-+        char    *path_str;
++	char	*path_str;
          int      error_code;
  
          ret = FALSE;
-@@ -1756,18 +1806,26 @@ gdm_session_worker_accredit_user (GdmSessionWorker  *worker,
+@@ -1949,18 +2000,26 @@
                                                                  home,
                                                                  shell);
  
@@ -105,11 +104,11 @@ index 93c9e82..5fc83d6 100644
                  if (strcmp (BINDIR, "/usr/bin") == 0) {
 -                        gdm_session_worker_set_environment_variable (worker, "PATH",
 -                                                                     GDM_SESSION_DEFAULT_PATH);
-+                        path_str = GDM_SESSION_DEFAULT_PATH;
++			path_str = GDM_SESSION_DEFAULT_PATH;
                  } else {
 -                        gdm_session_worker_set_environment_variable (worker, "PATH",
 -                                                                     BINDIR ":" GDM_SESSION_DEFAULT_PATH);
-+                        path_str = BINDIR ":" GDM_SESSION_DEFAULT_PATH;
++			path_str = BINDIR ":" GDM_SESSION_DEFAULT_PATH;
                  }
          }
  
@@ -118,7 +117,7 @@ index 93c9e82..5fc83d6 100644
          if (! _change_user (worker, uid, gid)) {
                  g_debug ("GdmSessionWorker: Unable to change to user");
                  error_code = PAM_SYSTEM_ERR;
-@@ -2768,6 +2826,17 @@ do_setup (GdmSessionWorker *worker)
+@@ -2997,6 +3056,17 @@
          GError  *error;
          gboolean res;
  
@@ -136,6 +135,3 @@ index 93c9e82..5fc83d6 100644
          error = NULL;
          res = gdm_session_worker_initialize_pam (worker,
                                                   worker->priv->service,
--- 
-2.7.4
-
