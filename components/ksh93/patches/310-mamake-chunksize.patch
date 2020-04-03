@@ -1,0 +1,21 @@
+The build of KornShell might spuriously fail
+with the following error.
+...
+/usr/bin/ksh: line 40: syntax error at line 44: `else unmatched
+mamake [lib/libast]: *** exit code 3 making ast.req
+mamake: *** exit code 139 making lib/libast
+
+The patch increases the buffer size of mamake to avoid
+spurious build failures. See bug 31123523 for more information.
+
+--- a/src/cmd/INIT/mamake.c	2020-04-03 04:22:06.073575252 +0000
++++ b/src/cmd/INIT/mamake.c	2020-04-03 04:21:24.933080170 +0000
+@@ -118,7 +118,7 @@ USAGE_LICENSE
+ #define set(b,o)	((b)->nxt=(b)->buf+(o))
+ #define use(b)		(*(b)->nxt=0,(b)->nxt=(b)->buf)
+ 
+-#define CHUNK		1024
++#define CHUNK		4096
+ #define KEY(a,b,c,d)	((((unsigned long)(a))<<15)|(((unsigned long)(b))<<10)|(((unsigned long)(c))<<5)|(((unsigned long)(d))))
+ #define NOW		((unsigned long)time((time_t*)0))
+ #define ROTATE(p,l,r,t)	((t)=(p)->l,(p)->l=(t)->r,(t)->r=(p),(p)=(t))
