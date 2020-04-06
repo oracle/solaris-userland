@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -28,10 +28,10 @@ gcc_OPT= -O2
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cups-filters
-COMPONENT_VERSION=	1.25.11
-COMPONENT_TAG=		release-1-25-11
-TPNO=			52837
-COMPONENT_ARCHIVE_HASH=	sha256:047275563b8e5b7c74e292ea24bac2ae7511a6aabe36590deb646eff09f24117
+COMPONENT_VERSION=	1.25.13
+COMPONENT_TAG=		release-1-25-13
+TPNO=			55446
+COMPONENT_ARCHIVE_HASH=	sha256:7982be6bbb60881238c069240d5e0587554365f7e0dacb0bf4a073e49d970c32
 COMPONENT_PROJECT_URL=	http://www.openprinting.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_TAG)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
@@ -93,13 +93,22 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/ FAIL:/p" ' \
 	'-e "/ ERROR:/p" '
 
-REQUIRED_PACKAGES += print/filter/poppler
+$(SOURCE_DIR)/cups-filters.license:
+	cat	$(@D)/COPYING \
+		$(COMPONENT_DIR)/GPL-2.txt \
+		$(COMPONENT_DIR)/GPL-3.txt \
+		$(COMPONENT_DIR)/LGPL-2.0.txt \
+		$(COMPONENT_DIR)/LGPL-2.1.txt > $@
+
+$(INSTALL_64):	$(SOURCE_DIR)/cups-filters.license
+
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng14
 REQUIRED_PACKAGES += image/library/libtiff
 REQUIRED_PACKAGES += library/lcms2
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += print/filter/poppler
 REQUIRED_PACKAGES += print/filter/qpdf
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
