@@ -54,6 +54,26 @@ from urllib.parse import urlparse
 from urllib.request import urlopen
 
 
+def get_gpg_home() -> str:
+    # Find the repo root so that we can point GnuPG at the right configuration and keyring.
+    for get_root_cmd in [["hg", "root"], ["git", "rev-parse", "--show-toplevel"]]:
+        try:
+            proc = subprocess.run(get_root_cmd, capture_output=True)
+            if proc.returncode == 0:
+                gpgdir = os.path.join(proc.stdout.strip(), b"tools/.gnupg")
+                break
+
+        except FileNotFoundError:
+            continue
+    else:
+        raise OSError(errno.ENOENT, "No Mercurial or Git repository was detected!")
+
+    if not os.path.exists(gpgdir):
+        raise OSError(errno.ENOENT, f"Directory {gpgdir} does not exists.")
+
+    return gpgdir
+
+
 def validate_signature(path: str, signature: str) -> Tuple[bool, str]:
     """Validate that given signature is valid for given file.
 
@@ -70,21 +90,8 @@ def validate_signature(path: str, signature: str) -> Tuple[bool, str]:
             executable were not found
     """
 
-    # Find the repo root so that we can point GnuPG at the right configuration and keyring.
-    for get_root_cmd in [["hg", "root"], ["git", "rev-parse", "--show-toplevel"]]:
-        try:
-            proc = subprocess.run(get_root_cmd, capture_output=True)
-            if proc.returncode == 0:
-                gpgdir = os.path.join(proc.stdout.strip(), b"tools/.gnupg")
-                break
-
-        except FileNotFoundError:
-            continue
-    else:
-        raise OSError(errno.ENOENT, "No Mercurial or Git repository was detected!")
-
-    if not os.path.exists(gpgdir):
-        raise OSError(errno.ENOENT, f"Directory {gpgdir} does not exists.")
+    # Get the GPG home directory with pubring.
+    gpgdir = get_gpg_home()
 
     # Suppress the permissions warning: none of the information here is private,
     # so not having to worry about getting mercurial keeping the directory
@@ -389,6 +396,19 @@ def signature_validation(name: str, trusted: bool, args: argparse.Namespace) -> 
         print("\nWarning: Signature validation was disabled!")
         return SigState.UNKNOWN
 
+    # Import the public key to pubring if the user provided a custom link.
+    if args.pubkey and args.sigurl and not trusted:
+        print("\n    importing public key...", end=" ")
+        # Download the public key to the component directory.
+        publickey_file = os.path.join(os.path.dirname(args.file), os.path.basename(args.pubkey))
+        download(args.pubkey, args.timeout, publickey_file)
+        # Import the downloaded public key.
+        proc = subprocess.run(["/usr/bin/gpg2", "--no-permission-warning", "--homedir",
+                              get_gpg_home(), "--import", publickey_file],
+                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        print(f"{'failed' if proc.returncode != 0 else 'ok'}\n\n{proc.stdout.decode()}")
+
+
     print("\n    validating signature...", end=" ")
     if not args.sigurl:
         print("skipped (no signature URL)")
@@ -519,6 +539,8 @@ def main():
         help="List of possible file locations (also for signature files).")
     parser.add_argument('-S', '--sigurl',
         help="Url of signature file (fallback after trusted ones).")
+    parser.add_argument('-P', '--pubkey',
+        help="Url to a public key if not on the key server.")
     parser.add_argument('-n', '--nosig', action='store_true',
         help="Skip signature validation.")
     parser.add_argument('-t', '--timeout', default=300, type=int,

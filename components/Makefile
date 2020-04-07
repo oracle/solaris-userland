@@ -88,8 +88,10 @@ regen-patches:		TARGET = regen-patches
 zone-build prep build install publish test system-test check_rtime regen-patches:	\
 	LOG = >$(WS_LOGS)/$(subst /,.,$@).$(TARGET).log 2>&1 ; \
 	RET=$$? ; \
+	if [ -d $(WS_COMPONENTS)/$@/build ]; then \
 	$(RM) $(WS_COMPONENTS)/$@/build/$(TARGET).$(MACH).log ; \
 	$(LN) -s $(WS_LOGS)/$(subst /,.,$@).$(TARGET).log $(WS_COMPONENTS)/$@/build/$(TARGET).$(MACH).log ; \
+	fi ; \
 	exit $$RET
 
 # turn off pkglint for the individual component builds.

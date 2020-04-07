@@ -57,7 +57,8 @@ have defaults, but can be overridden.
   contain the public key to verify the signature it tries to download the
   signature from hkp://keys.gnupg.net (as configured in
   $(hg root)/tools/.gnupg/gpg.conf). If it can't get the appropriate key from
-  there, it fails.
+  there, you can set COMPONENT_PUBLIC_KEY_URL to download and import the public
+  key from a custom location. The Userland keyring will be modified.
 
   The difference between COMPONENT_SIG_URL and COMPONENT_ARCHIVE_HASH is that
   the former protects us while downloading sources from internet while the
@@ -107,8 +108,19 @@ have defaults, but can be overridden.
   Once the rebase reports a conflict in pubring.gpg you need to import the keys
   from both parents similarly as it is done for merging. Then
 
-  hg resolve --mark $(hg root)/toos/.gnupg/pubring.gpg
+  hg resolve --mark $(hg root)/tools/.gnupg/pubring.gpg
   hg rebase --continue
+
+* COMPONENT_PUBLIC_KEY_URL contains a custom url to the public key that is
+  required to verify the validity of the signature. The most components do
+  not need to set this variable since the most of components have their keys
+  stored on public gpg key servers that are queried automatically if the key
+  is not found in the Userland keyring. If the variable is set, the public key
+  is downloaded and imported. You should check the output of 'gmake prep' to
+  decide whether we can trust the imported public keys. If not, you have to
+  revert the modifications to $(hg root)/tools/.gnupg/pubring.gpg file.
+  Note that COMPONENT_PUBLIC_KEY_URL is ignored if the source files are
+  downloaded from the cache (signature validation is skipped).
 
 * COMPONENT_MAKE_JOBS contains the maximal number of parallel build jobs
   that are executed to accelerate the compilation process. If the

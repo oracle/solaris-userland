@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 FETCH =		$(WS_TOOLS)/userland-fetch
@@ -65,7 +65,8 @@ $$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1)):	$(MAKEFILE_PREREQ)
 	$$(FETCH) --file $$@ \
 		$$(COMPONENT_ARCHIVE_URL$(1):%=--url '%') \
 		$$(COMPONENT_ARCHIVE_HASH$(1):%=--hash '%') \
-		$$(COMPONENT_SIG_URL$(1):%=--sigurl '%')
+		$$(COMPONENT_SIG_URL$(1):%=--sigurl '%') \
+		$$(COMPONENT_PUBLIC_KEY_URL$(1):%=--pubkey '%')
 	$$(TOUCH) $$@
 
 REQUIRED_PACKAGES += runtime/python-27
