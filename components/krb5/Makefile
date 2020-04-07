@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64_and_32
@@ -88,7 +88,7 @@ LDFLAGS += -lc $(LD_Z_DEFS)
 
 CONFIGURE_ENV += DEFCCNAME="FILE:/tmp/volatile-user/%{uid}/krb5cc_%{uid}"
 CONFIGURE_ENV += DEFKTNAME="FILE:$(ETCDIR)/krb5/krb5.keytab"
-CONFIGURE_ENV += DEFCKTNAME="FILE:/var/user/%{username}/client.keytab"
+CONFIGURE_ENV += DEFCKTNAME="FILE:/var/user/%{uid}/client.keytab"
 
 # Other CONFIGURE_OPTIONS assignments coming from make-rules/configure.mk
 CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)
