@@ -1,5 +1,5 @@
 diff --git a/Completion/Solaris/Command/_dladm b/Completion/Solaris/Command/_dladm
-index cb598de..d6d0aa0 100644
+index 5ce9872..da9545a 100644
 --- a/Completion/Solaris/Command/_dladm
 +++ b/Completion/Solaris/Command/_dladm
 @@ -60,15 +60,19 @@ _dladm_iblinks() {
@@ -451,8 +451,10 @@ index e4d682f..3dc5741 100644
  		'-p[parsable output]' \
  		'-P[persistent flow property information]' \
  		- set1 \
---- zsh-5.0.5/Completion/Solaris/Command/_ipadm	Wed Nov 27 11:00:18 2013
-+++ zsh-5.0.5/Completion/Solaris/Command/_ipadm	Fri Mar 28 16:02:55 2014
+diff --git a/Completion/Solaris/Command/_ipadm b/Completion/Solaris/Command/_ipadm
+index 34d1eac..bb9508a 100644
+--- a/Completion/Solaris/Command/_ipadm
++++ b/Completion/Solaris/Command/_ipadm
 @@ -1,5 +1,5 @@
  #compdef ipadm
 -# Synced with the S11U1 build 19 man page
@@ -460,7 +462,7 @@ index e4d682f..3dc5741 100644
  
  _ipadm_ifs() {
  	local -a extra
-@@ -122,11 +122,13 @@
+@@ -122,11 +122,13 @@ _ipadm() {
  
  	addrobj_properties=(
  		"addrobj" "type" "state" "current" "persistent" "addr"
@@ -477,7 +479,7 @@ index e4d682f..3dc5741 100644
  	proto_tcp_properties=( "cong_default" "cong_enabled" "ecn" "extra_priv_ports" "max_buf" "recv_buf"
  		"send_buf" "sack" "smallest_anon_port" "largest_anon_port" "smallest_nonpriv_port" )
  	proto_udp_properties=( "extra_priv_ports" "max_buf" "recv_buf" "send_buf" "smallest_anon_port"
-@@ -265,7 +267,7 @@
+@@ -265,7 +267,7 @@ _ipadm() {
  			case ${opt_args[-T]#-T:} in
  			("static:"*)
  				local -a addrthingsv4
@@ -486,7 +488,7 @@ index e4d682f..3dc5741 100644
  				_arguments -A "-*" \
  				'(-d --down)'{-d,--down}'[Address should be marked down]' \
  				'(-a --address)'{-a,--address}'[Address specification]:address:_values -s , "address" $addrthingsv4' \
-@@ -281,7 +283,7 @@
+@@ -281,13 +283,23 @@ _ipadm() {
  
  			("addrconf:"*)
  				local -a addrthingsv6 statefulness
@@ -495,7 +497,6 @@ index e4d682f..3dc5741 100644
  				statefulness=( "stateful:statefulness:(yes no)" "stateless:statelessness:(yes no)" )
  				_arguments -A "-*" \
  				'(-i --interface-id)'{-i,--interface-id}'[Interface ID]:address:_values -s , "interface id" $addrthingsv6' \
-@@ -288,6 +290,16 @@
  				'(-p --prop)'{-p,--prop}'[Statefulness configuration]:statefulness configuration:_values -s , "statefulness" $statefulness' \
  				':address object name:_ipadm_addrobjs_or_ifs'
  				;;
@@ -512,9 +513,23 @@ index e4d682f..3dc5741 100644
  			(*)
  				_wanted commands expl "address type" compadd static dhcp addrconf
  				;;
---- zsh-5.0.5/Completion/Solaris/Command/_svcadm	Thu Jan  2 14:23:56 2014
-+++ zsh-5.0.5/Completion/Solaris/Command/_svcadm	Tue Jan  7 16:11:20 2014
-@@ -23,8 +23,8 @@
+diff --git a/Completion/Solaris/Command/_pkg5 b/Completion/Solaris/Command/_pkg5
+index bcd4e3d..03cdd27 100644
+--- a/Completion/Solaris/Command/_pkg5
++++ b/Completion/Solaris/Command/_pkg5
+@@ -378,6 +378,7 @@ _pkg5() {
+ 			'--non-sticky[Make this publisher non-sticky]' \
+ 			'--search-after[Set publisher search-order]:publisher:_pkg5_pubs' \
+ 			'--search-before[Set publisher search-order]:publisher:_pkg5_pubs' \
++			'--search-first[Set publisher search-order]' \
+ 			'--approve-ca-cert[Add trusted CA certificate]:CA cert path:_path_files' \
+ 			'--revoke-ca-cert[Revoke CA certificate]:CA cert hash:(${${certs#/etc/openssl/certs/}%.0})' \
+ 			'--unset-ca-cert[Remove trusted CA certificate]:CA cert hash:' \
+diff --git a/Completion/Solaris/Command/_svcadm b/Completion/Solaris/Command/_svcadm
+index c9826f2..e88ebbc 100644
+--- a/Completion/Solaris/Command/_svcadm
++++ b/Completion/Solaris/Command/_svcadm
+@@ -23,16 +23,16 @@ _svcadm() {
  	(enable)
  		_arguments -A "-*" \
  			'-r[Recursively enable dependencies]' \
@@ -525,7 +540,6 @@ index e4d682f..3dc5741 100644
  			'-t[State change is temporary]' \
  			'*:instance FMRI:_svcs_fmri -i'
  		;;
-@@ -31,8 +31,8 @@
  
  	(disable)
  		_arguments -A "-*" \
@@ -536,7 +550,7 @@ index e4d682f..3dc5741 100644
  			'-t[State change is temporary]' \
  			'*:instance FMRI:_svcs_fmri -i'
  		;;
-@@ -40,8 +40,8 @@
+@@ -40,8 +40,8 @@ _svcadm() {
  	(mark)
  		_arguments -A "-*" \
  			'-I[Change state immediately]' \
@@ -547,7 +561,7 @@ index e4d682f..3dc5741 100644
  			'-t[State change is temporary]' \
  			':state:(degraded maintenance)' \
  			':instance FMRI:_svcs_fmri -i'
-@@ -49,15 +49,15 @@
+@@ -49,15 +49,15 @@ _svcadm() {
  
  	(restart|refresh|clear)
  		_arguments \
@@ -567,7 +581,7 @@ index e4d682f..3dc5741 100644
  			':restarter FMRI:_svcs_fmri -r' \
  			'*:FMRI:_svcs_fmri -i'
  		;;
-@@ -65,8 +65,8 @@
+@@ -65,8 +65,8 @@ _svcadm() {
  	(milestone)
  		_arguments -A "-*" \
  			'-d[Make milestone the default]' \
@@ -617,8 +631,10 @@ index c1f01ad..eab561a 100644
 -  '(-l -x)-\?[print help]' \
 +  '(-l -L -x)-\?[print help]' \
    '*:FMRI or pattern:_svcs_fmri -i'
---- zsh-5.6.2/Completion/Solaris/Command/_zlogin	2018-10-05 06:09:11.782200112 +0000
-+++ zsh-5.6.2/Completion/Solaris/Command/_zlogin	2018-10-05 06:09:05.537293090 +0000
+diff --git a/Completion/Solaris/Command/_zlogin b/Completion/Solaris/Command/_zlogin
+index 74cbafe..db5ccb5 100644
+--- a/Completion/Solaris/Command/_zlogin
++++ b/Completion/Solaris/Command/_zlogin
 @@ -1,5 +1,5 @@
  #compdef zlogin
 -# Synced with the Nevada build 162 man page
@@ -635,8 +651,10 @@ index c1f01ad..eab561a 100644
  		':zonename:_zones' \
  		- set1 \
  		'-C[Connect to zone console]' \
---- zsh-5.0.5/Completion/Solaris/Command/_zoneadm	Thu Jan  2 14:23:56 2014
-+++ zsh-5.0.5/Completion/Solaris/Command/_zoneadm	Sat Mar 29 11:19:44 2014
+diff --git a/Completion/Solaris/Command/_zoneadm b/Completion/Solaris/Command/_zoneadm
+index ab63dc0..3265aa6 100644
+--- a/Completion/Solaris/Command/_zoneadm
++++ b/Completion/Solaris/Command/_zoneadm
 @@ -1,20 +1,22 @@
  #compdef zoneadm
 -# Synced with the S11U1 man page
@@ -666,7 +684,7 @@ index c1f01ad..eab561a 100644
  	local -a extended_create_options extended_destroy_options
  	local brand brand_args
  
-@@ -22,11 +24,19 @@
+@@ -22,11 +24,19 @@ _zoneadm() {
  		attach boot clone detach halt help install list mark move
  		ready reboot uninstall verify
  	)
@@ -686,7 +704,7 @@ index c1f01ad..eab561a 100644
  	)
  
  	extended_destroy_options=(
-@@ -35,28 +45,44 @@
+@@ -35,28 +45,44 @@ _zoneadm() {
  	)
  
  	solaris_attach=(
@@ -695,10 +713,10 @@ index c1f01ad..eab561a 100644
 +		'-c[Specify configuration profile]:path:_files -g \*.xml'
 +		'-U[Update all packages to latest versions]'
 +		'-z[Attach existing zone boot environment]:zone boot environment: '
- 	)
++	)
 +	solaris_clone=(
 +		'-c[Specify configuration profile]:path:_files -g \*.xml'
-+	)
+ 	)
  	solaris_install=(
 +		'-c[Specify configuration profile]:path:_files -g \*.xml'
  		- set1
@@ -716,8 +734,8 @@ index c1f01ad..eab561a 100644
  		'-u[Unconfigure after installation]'
  		'-v[Verbose]'
 +		'(-d)-z[Name of zone in unified archive]:zone: '
- 	)
- 
++	)
++
 +	solariskz_attach=()
 +	solariskz_clone=( $solaris_clone )
 +	solariskz_install=(
@@ -728,8 +746,8 @@ index c1f01ad..eab561a 100644
 +		'-S[Specify root filesystem size]:size: '
 +		'-v[Verbose]'
 +		'-z[Name of zone in unified archive]:zone: '
-+	)
-+
+ 	)
+ 
  	solaris10_attach=(
  		'(-d)-a[Path to archive]:path:_path_files'
  		'(-a)-d[Path to zonepath]:directory:_path_files -/'
@@ -738,7 +756,7 @@ index c1f01ad..eab561a 100644
  	solaris10_install=(
  		'(-d)-a[Path to archive]:path:_path_files'
  		'(-a)-d[Path to installed zone root]:directory:path_files -/'
-@@ -70,9 +96,15 @@
+@@ -70,9 +96,15 @@ _zoneadm() {
  		_arguments -C -A "-*" \
  			'-R[Alternate root]:alternate root:_path_files -/' \
  			'-u[Zone UUID]:zone UUID: ' \
@@ -755,7 +773,7 @@ index c1f01ad..eab561a 100644
  		if (( CURRENT == 1 )); then
  			_wanted commands expl "zoneadm subcommand" compadd -a subcmds
  			return
-@@ -85,6 +117,7 @@
+@@ -85,22 +117,28 @@ _zoneadm() {
  	("boot")
  		# Completion of boot arguments after -- is kinda hacky.
  		_arguments -S -A "-*" \
@@ -763,7 +781,6 @@ index c1f01ad..eab561a 100644
  			'-w[Force writable root]' \
  			'-W[Boot in transient r/w mode]' \
  			'*:boot options:_zoneadm_bootargs'
-@@ -91,16 +124,21 @@
  		;;
  
  	("clone")
@@ -787,7 +804,7 @@ index c1f01ad..eab561a 100644
  			brand_args=${brand}_attach
  		fi
  		_arguments -A "-*" \
-@@ -116,7 +154,7 @@
+@@ -116,7 +154,7 @@ _zoneadm() {
  			'-n[Dry run]'
  		;;
  
@@ -796,7 +813,7 @@ index c1f01ad..eab561a 100644
  		;;
  
  
-@@ -126,7 +164,7 @@
+@@ -126,7 +164,7 @@ _zoneadm() {
  
  	("install")
  		if [[ -n $opt_args[-z] ]]; then
@@ -805,7 +822,7 @@ index c1f01ad..eab561a 100644
  			brand_args=${brand}_install
  		fi
  		_arguments -A "-*" \
-@@ -152,6 +190,12 @@
+@@ -152,6 +190,12 @@ _zoneadm() {
  			':new zone path:_path_files -/'
  		;;
  
@@ -818,8 +835,10 @@ index c1f01ad..eab561a 100644
  	("uninstall")
  		_arguments -A "-*" \
  			'-F[Force]' \
---- zsh-5.6.2/Completion/Unix/Command/_zfs	2018-10-05 06:10:54.788471417 +0000
-+++ zsh-5.6.2/Completion/Unix/Command/_zfs	2018-10-05 06:10:09.183498925 +0000
+diff --git a/Completion/Unix/Command/_zfs b/Completion/Unix/Command/_zfs
+index 814358b..32f0b36 100644
+--- a/Completion/Unix/Command/_zfs
++++ b/Completion/Unix/Command/_zfs
 @@ -1,5 +1,5 @@
  #compdef zfs
 -# Synced with the S11U1 man page
@@ -836,7 +855,7 @@ index c1f01ad..eab561a 100644
  		"share.path:path:"
  		$share_nfs_rw_properties
  		$share_smb_rw_properties
-@@ -310,8 +310,8 @@ _zfs() {
+@@ -318,8 +318,8 @@ _zfs() {
  			'-d[Depth]:value:' \
  			'-H[Scripting mode]' \
  			'-p[Display numbers exactly]' \
@@ -847,7 +866,7 @@ index c1f01ad..eab561a 100644
  			':property:_values -s , "property" $ro_properties $rw_propnames all' \
  			'*:filesystem/volume/snapshot:_zfs_dataset'
  		;;
-@@ -385,11 +385,13 @@ _zfs() {
+@@ -393,11 +393,13 @@ _zfs() {
  
  	("send")
  		_arguments -A "-*" \
@@ -863,8 +882,10 @@ index c1f01ad..eab561a 100644
  			- set1 \
  			'-I[Generate an incremental stream with intermediary snapshots]:snapshot:_zfs_dataset -t snap' \
  			'-R[Generate a replication stream package]' \
---- zsh-5.6.2/Completion/Unix/Command/_zpool	2018-10-05 06:11:28.027699881 +0000
-+++ zsh-5.6.2/Completion/Unix/Command/_zpool	2018-10-05 06:11:19.483108057 +0000
+diff --git a/Completion/Unix/Command/_zpool b/Completion/Unix/Command/_zpool
+index d9c2caa..dfb99e5 100644
+--- a/Completion/Unix/Command/_zpool
++++ b/Completion/Unix/Command/_zpool
 @@ -1,5 +1,5 @@
  #compdef zpool
 -# Synced with the S11U1 man page
@@ -892,7 +913,7 @@ index c1f01ad..eab561a 100644
  			':pool name:' \
  			'*:virtual device:_files'
  		;;
-@@ -246,11 +248,11 @@ _zpool() {
+@@ -254,11 +256,11 @@ _zpool() {
  			'-n[With -F; do not perform input]' \
  			'-R[Alternate root]:alternate root:_files -/' \
  			'-o[Set pool or dataset property]:property:_values -s , "property" $create_properties_dataset $rw_props' \
@@ -905,13 +926,3 @@ index c1f01ad..eab561a 100644
  			'-a[All pools]'
  		;;
  
---- zsh-5.6.2/Completion/Solaris/Command/_pkg5	2018-10-05 06:37:21.835218862 +0000
-+++ zsh-5.6.2/Completion/Solaris/Command/_pkg5	2018-10-05 06:36:54.513501515 +0000
-@@ -378,6 +378,7 @@ _pkg5() {
- 			'--non-sticky[Make this publisher non-sticky]' \
- 			'--search-after[Set publisher search-order]:publisher:_pkg5_pubs' \
- 			'--search-before[Set publisher search-order]:publisher:_pkg5_pubs' \
-+			'--search-first[Set publisher search-order]' \
- 			'--approve-ca-cert[Add trusted CA certificate]:CA cert path:_path_files' \
- 			'--revoke-ca-cert[Revoke CA certificate]:CA cert hash:(${${certs#/etc/openssl/certs/}%.0})' \
- 			'--unset-ca-cert[Remove trusted CA certificate]:CA cert hash:' \

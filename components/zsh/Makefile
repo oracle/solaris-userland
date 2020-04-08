@@ -20,28 +20,33 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 include $(WS_MAKE_RULES)/shared-targets.mk
 
 COMPONENT_NAME=		zsh
-COMPONENT_VERSION=	5.6.2
+COMPONENT_VERSION=	5.8
 COMPONENT_PROJECT_URL=	https://www.zsh.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a50bd66c0557e8eca3b8fa24e85d0de533e775d7a22df042da90488623752e9e
+    sha256:dcc4b54cc5565670a65581760261c163d720991f0d06486da61f8d839b52de27
 COMPONENT_ARCHIVE_URL=	\
 	https://downloads.sourceforge.net/project/zsh/zsh/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
+COMPONENT_PUBLIC_KEY_URL= https://raw.githubusercontent.com/clearlinux-pkgs/zsh/master/ACF8146CAE8CBBC4.pkey
 COMPONENT_ANITYA_ID=	5307
 
-TPNO = 46439
+TPNO = 58265
 
 BUILD_TARGET=
 INSTALL_TARGET=
 include $(WS_MAKE_RULES)/common.mk
+
+# We need to get also the man pages copied, so they can be installed
+COMPONENT_PRE_CONFIGURE_ACTION = \
+    ($(CLONEY) $(SOURCE_DIR) $(@D))
 
 CONFIGURE_LIBDIR.64= $(CONFIGURE_LIBDIR.32)
 
