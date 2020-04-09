@@ -1,0 +1,81 @@
+#
+# This patch make sure we load all lazy loaded libraries from plugins;
+# these are not loaded for plugins.
+#
+!!diff -u old/session.c new/session.c
+--- old/session.c	2020-03-03 09:24:06.995523972 +0100
++++ new/session.c	2020-03-04 14:16:50.721547209 +0100
+@@ -1318,7 +1318,62 @@
+ 	exit(254);
+ }
+ 
++#ifdef LOAD_ALL_LIBS
+ /*
++ * Check which plugins we have loaded; reload them again bit this time we
++ * load them with RTLD_NOW so we have everything loaded on chroot() and
++ * ld.so will no longer bail out.
++ * Libraries loaded with sshd directly are always loaded using "-z now".
++ */
++
++#include <dlfcn.h>
++#include <dirent.h>
++
++
++static void
++load_all_libs(void)
++{
++	DIR *d = opendir("/proc/self/path");
++	struct dirent *ent;
++
++	if (d == NULL) {
++		debug("cannot open /proc/self/path");
++		return;
++	}
++
++	while ((ent = readdir(d)) != NULL) {
++		char p[MAXPATHLEN];
++		ssize_t s;
++
++		/*
++		 * Ignore fds, cwd, root, ".", ".." and files in tmpfs.
++		 */
++		if (ent->d_name[0] == '.' || isdigit(ent->d_name[0]) ||
++		    strcmp(ent->d_name, "a.out") == 0 ||
++		    strcmp(ent->d_name, "cwd") == 0 ||
++		    strcmp(ent->d_name, "root") == 0 ||
++		    strncmp(ent->d_name, "tmpfs.", 6) == 0) {
++			continue;
++		}
++		if ((s = readlinkat(dirfd(d), ent->d_name, p, sizeof (p))) < 0) {
++			continue;
++		}
++		p[s] = '\0';
++		/* nsswitch and pam modules */
++		if (strstr(p, "/nss_") != NULL || strstr(p, "/security/") != NULL) {
++			void *lib;
++			debug3("preloading %s", p);
++			lib = dlopen(p, RTLD_NOW|RTLD_NODELETE);
++			if (lib != NULL) {
++				(void) dlclose(lib);
++			}
++		}
++	}
++	(void) closedir(d);
++}
++#endif
++
++/*
+  * Chroot into a directory after checking it for safety: all path components
+  * must be root-owned directories with strict permissions.
+  */
+@@ -1362,6 +1417,10 @@
+ 
+ 	}
+ 
++#ifdef LOAD_ALL_LIBS
++	load_all_libs();
++#endif
++
+ 	if (chdir(path) == -1)
+ 		fatal("Unable to chdir to chroot path \"%s\": "
+ 		    "%s", path, strerror(errno));
