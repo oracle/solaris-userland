@@ -1,0 +1,15 @@
+Fix taken from upstream 
+https://sourceforge.net/p/net-snmp/code/ci/78bf0069ddd24ea0cc716421c53e1daf46da7002/
+The unit test related changes have been skipped as our current version does not
+include the particular unit test. 
+--- net-snmp-5.8.old/snmplib/snmp_api.c	2020-03-18 07:41:22.460703120 +0000
++++ net-snmp-5.8/snmplib/snmp_api.c	2018-07-16 16:33:40.000000000 +0000
+@@ -768,7 +768,7 @@
+     session->retries = SNMP_DEFAULT_RETRIES;
+     session->version = SNMP_DEFAULT_VERSION;
+     session->securityModel = SNMP_DEFAULT_SECMODEL;
+-    session->rcvMsgMaxSize = SNMP_MAX_MSG_SIZE;
++    session->rcvMsgMaxSize = netsnmp_max_send_msg_size();
+     session->sndMsgMaxSize = netsnmp_max_send_msg_size();
+     session->flags |= SNMP_FLAGS_DONT_PROBE;
+ }
