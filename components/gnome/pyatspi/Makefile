@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =		32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pyatspi
-COMPONENT_VERSION=	2.18.0
+COMPONENT_VERSION=	2.34.0
 COMPONENT_PROJECT_URL=	\
 	https://wiki.linuxfoundation.org/accessibility/atk/at-spi/at-spi_on_d-bus
 COMPONENT_ARCHIVE_HASH= \
-	sha256:f86f03ad05d0502cd60fe8b98f746f74ce3bc208e9f3798f6a2130b3c5f4ab46
+       sha256:97bc5248cc376348ad5cf8a2e9929d3847a7710ad99fa72b52ccb40f64396e48
 COMPONENT_BUGDB=	gnome/a11y-libs-core
 COMPONENT_ANITYA_ID=	13157
 
-TPNO=			30736
+TPNO=		        56714
 
 # This is needed for 32 bit variant of pyatspi
 PYTHON_VERSION = 2.7
