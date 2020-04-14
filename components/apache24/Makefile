@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		apache2
-COMPONENT_VERSION=	2.4.41
+COMPONENT_VERSION=	2.4.43
 COMPONENT_PROJECT_URL=	https://httpd.apache.org/
 COMPONENT_SRC_NAME=	httpd
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:3c0f9663240beb0f008acf3b4501c4f339d7467ee345a36c86c46b4d6f3a5461
+    sha256:2624e92d89b20483caeffe514a7c7ba93ab13b650295ae330f01c35d5b50d87f
 COMPONENT_ARCHIVE_URL=	https://archive.apache.org/dist/httpd/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	utility/apache
 COMPONENT_ANITYA_ID=	1335
 
-TPNO=	53503
+TPNO=	58368
 
 CONFIGURE_DEFAULT_DIRS=no
 TEST_TARGET= $(NO_TESTS)
