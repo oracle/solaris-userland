@@ -4,10 +4,11 @@ that causes DHCP to be extremely slow.
 This patch was developed in-house. Since it is Solaris-specific, it is not
 suitable for upstream.
 
-diff -r 37614cb705be -r 4468e42e6443 src/dhcp-common.c
---- a/src/dhcp-common.c	Fri Oct 06 14:10:20 2017 +0100
-+++ b/src/dhcp-common.c	Fri Oct 06 14:11:14 2017 +0100
-@@ -493,6 +493,58 @@
+diff --git a/src/dhcp-common.c b/src/dhcp-common.c
+index ea449cb..0de7335 100644
+--- a/src/dhcp-common.c
++++ b/src/dhcp-common.c
+@@ -541,6 +541,58 @@ void  bindtodevice(char *device, int fd)
        errno != EPERM)
      die(_("failed to set SO_BINDTODEVICE on DHCP socket: %s"), NULL, EC_BADNET);
  }
@@ -66,11 +67,13 @@ diff -r 37614cb705be -r 4468e42e6443 src/dhcp-common.c
  #endif
  
  static const struct opttab_t {
---- dnsmasq-2.80/src/dnsmasq.c	2018-12-14 05:28:46.339028699 +0000
-+++ dnsmasq-2.80/src/dnsmasq.c	2018-12-14 05:27:58.711961389 +0000
-@@ -55,6 +55,10 @@ int main (int argc, char **argv)
-   char *bound_device = NULL;
+diff --git a/src/dnsmasq.c b/src/dnsmasq.c
+index 878167c..3def630 100644
+--- a/src/dnsmasq.c
++++ b/src/dnsmasq.c
+@@ -59,6 +59,10 @@ int main (int argc, char **argv)
    int did_bind = 0;
+   struct server *serv;
  #endif 
 +#if defined(HAVE_SOLARIS_NETWORK)
 +  int bound_ifindex = -1;
@@ -79,7 +82,7 @@ diff -r 37614cb705be -r 4468e42e6443 src/dhcp-common.c
  #if defined(HAVE_DHCP) || defined(HAVE_DHCP6)
    struct dhcp_context *context;
    struct dhcp_relay *relay;
-@@ -340,6 +344,23 @@ int main (int argc, char **argv)
+@@ -364,6 +368,23 @@ int main (int argc, char **argv)
  	      did_bind = 1;
  	    }
  	}
@@ -103,7 +106,7 @@ diff -r 37614cb705be -r 4468e42e6443 src/dhcp-common.c
  #endif
  
  #if defined(HAVE_LINUX_NETWORK) && defined(HAVE_DHCP6)
-@@ -348,6 +369,12 @@ int main (int argc, char **argv)
+@@ -372,6 +393,12 @@ int main (int argc, char **argv)
  	  bindtodevice(bound_device, daemon->dhcp6fd);
  	  did_bind = 1;
  	}
@@ -116,7 +119,7 @@ diff -r 37614cb705be -r 4468e42e6443 src/dhcp-common.c
  #endif
      }
    else 
-@@ -868,6 +895,9 @@ int main (int argc, char **argv)
+@@ -946,6 +973,9 @@ int main (int argc, char **argv)
  #  ifdef HAVE_LINUX_NETWORK
    if (did_bind)
      my_syslog(MS_DHCP | LOG_INFO, _("DHCP, sockets bound exclusively to interface %s"), bound_device);
@@ -126,9 +129,11 @@ diff -r 37614cb705be -r 4468e42e6443 src/dhcp-common.c
  #  endif
  
    /* after dhcp_construct_contexts */
---- dnsmasq-2.80/src/dnsmasq.h	2018-12-14 05:28:53.925237515 +0000
-+++ dnsmasq-2.80/src/dnsmasq.h	2018-12-14 05:27:58.713977461 +0000
-@@ -1567,6 +1567,9 @@ int config_has_mac(struct dhcp_config *c
+diff --git a/src/dnsmasq.h b/src/dnsmasq.h
+index 7efa29e..650c021 100644
+--- a/src/dnsmasq.h
++++ b/src/dnsmasq.h
+@@ -1575,6 +1575,9 @@ int config_has_mac(struct dhcp_config *config, unsigned char *hwaddr, int len, i
  #ifdef HAVE_LINUX_NETWORK
  char *whichdevice(void);
  void bindtodevice(char *device, int fd);

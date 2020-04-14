@@ -8,10 +8,11 @@ SIOCSXARP ioctl to specify the exact datalink.
 This patch was developed in-house. Since it is Solaris-specific it is not
 suitable for upstream.
 
-diff -r 25a63355244c -r 57a8838a38db src/dhcp.c
---- a/src/dhcp.c	Fri Oct 06 14:04:47 2017 +0100
-+++ b/src/dhcp.c	Fri Oct 06 14:07:58 2017 +0100
-@@ -439,17 +439,24 @@
+diff --git a/src/dhcp.c b/src/dhcp.c
+index bea4688..70c4a60 100644
+--- a/src/dhcp.c
++++ b/src/dhcp.c
+@@ -440,17 +440,24 @@ void dhcp_packet(time_t now, int pxe_fd)
    else
      {
        /* unicast to unconfigured client. Inject mac address direct into ARP cache. 

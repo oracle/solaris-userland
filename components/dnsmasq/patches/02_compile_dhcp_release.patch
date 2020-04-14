@@ -8,8 +8,10 @@ IP address of an interface on which Dnsmasq process is listening.
 This patch was developed in-house. Since it is Solaris-specific it is not
 suitable for upstream.
 
---- dnsmasq-2.80/Makefile	2018-12-14 05:22:38.586058360 +0000
-+++ dnsmasq-2.80/Makefile	2018-12-14 05:21:44.034550056 +0000
+diff --git a/Makefile b/Makefile
+index 78e25f0..ca6ee4f 100644
+--- a/Makefile
++++ b/Makefile
 @@ -19,6 +19,7 @@
  # Variables you may well want to override.
  
@@ -26,7 +28,7 @@ suitable for upstream.
  
  #################################################################
  
-@@ -79,6 +81,8 @@ objs = cache.o rfc1035.o util.o option.o
+@@ -79,6 +81,8 @@ objs = cache.o rfc1035.o util.o option.o forward.o network.o \
         domain.o dnssec.o blockdata.o tables.o loop.o inotify.o \
         poll.o rrfilter.o edns0.o arp.o crypto.o dump.o ubus.o metrics.o
  
@@ -64,7 +66,7 @@ suitable for upstream.
 @@ -112,7 +119,7 @@ all-i18n : $(BUILDDIR)
   i18n=-DLOCALEDIR=\'\"$(LOCALEDIR)\"\' \
   build_cflags="$(version) $(dbus_cflags) $(idn2_cflags) $(idn_cflags) $(ct_cflags) $(lua_cflags) $(nettle_cflags)" \
-  build_libs="$(dbus_libs) $(idn2_libs) $(idn_libs) $(ct_libs) $(lua_libs) $(sunos_libs) $(nettle_libs) $(gmp_libs)"  \
+  build_libs="$(dbus_libs) $(idn2_libs) $(idn_libs) $(ct_libs) $(lua_libs) $(sunos_libs) $(nettle_libs) $(gmp_libs) $(ubus_libs)"  \
 - -f $(top)/Makefile dnsmasq
 + -f $(top)/Makefile dnsmasq dhcp_release
  	for f in `cd $(PO); echo *.po`; do \
@@ -90,8 +92,10 @@ suitable for upstream.
  dnsmasq.pot : $(objs:.o=.c) $(hdrs)
  	$(XGETTEXT) -d dnsmasq --foreign-user --omit-header --keyword=_ -o $@ -i $(objs:.o=.c)
  
---- dnsmasq-2.80/contrib/lease-tools/dhcp_release.c	2018-12-14 05:23:02.690783450 +0000
-+++ dnsmasq-2.80/contrib/lease-tools/dhcp_release.c	2018-12-14 05:10:55.381820113 +0000
+diff --git a/contrib/lease-tools/dhcp_release.c b/contrib/lease-tools/dhcp_release.c
+index 30e77c6..64cc894 100644
+--- a/contrib/lease-tools/dhcp_release.c
++++ b/contrib/lease-tools/dhcp_release.c
 @@ -33,6 +33,10 @@
     The client-id is optional. If it is "*" then it treated as being missing.
  */
@@ -134,15 +138,15 @@ suitable for upstream.
  static int parse_hex(char *in, unsigned char *out, int maxlen, int *mac_type)
  {
    int i = 0;
-@@ -178,6 +189,7 @@ static int is_same_net(struct in_addr a,
+@@ -178,6 +189,7 @@ static int is_same_net(struct in_addr a, struct in_addr b, struct in_addr mask)
    return (a.s_addr & mask.s_addr) == (b.s_addr & mask.s_addr);
  }
  
 +#if !defined(HAVE_SOLARIS_NETWORK)
- static struct in_addr find_interface(struct in_addr client, int fd, unsigned int index)
+ static struct in_addr find_interface(struct in_addr client, int fd, unsigned int index, int ifrfd, struct ifreq *ifr)
  {
    struct sockaddr_nl addr;
-@@ -244,6 +256,7 @@ static struct in_addr find_interface(str
+@@ -254,6 +266,7 @@ static struct in_addr find_interface(struct in_addr client, int fd, unsigned int
   
    exit(0);
  }
@@ -150,7 +154,7 @@ suitable for upstream.
  
  int main(int argc, char **argv)
  { 
-@@ -254,7 +267,11 @@ int main(int argc, char **argv)
+@@ -264,7 +277,11 @@ int main(int argc, char **argv)
    struct sockaddr_in dest;
    struct ifreq ifr;
    int fd = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -162,7 +166,7 @@ suitable for upstream.
  
    if (argc < 4 || argc > 5)
      { 
-@@ -267,7 +284,8 @@ int main(int argc, char **argv)
+@@ -277,7 +294,8 @@ int main(int argc, char **argv)
        perror("cannot create socket");
        exit(1);
      }
@@ -172,7 +176,7 @@ suitable for upstream.
    /* This voodoo fakes up a packet coming from the correct interface, which really matters for 
       a DHCP server */
    strncpy(ifr.ifr_name, argv[1], sizeof(ifr.ifr_name)-1);
-@@ -277,6 +295,7 @@ int main(int argc, char **argv)
+@@ -287,6 +305,7 @@ int main(int argc, char **argv)
        perror("cannot setup interface");
        exit(1);
      }
@@ -180,7 +184,7 @@ suitable for upstream.
    
    if (inet_addr(argv[2]) == INADDR_NONE)
      {
-@@ -285,8 +304,40 @@ int main(int argc, char **argv)
+@@ -295,7 +314,39 @@ int main(int argc, char **argv)
      }
    
    lease.s_addr = inet_addr(argv[2]);
@@ -215,10 +219,8 @@ suitable for upstream.
 +    }
 +  freeifaddrs(ifp_head);
 +#else
-   server = find_interface(lease, nl, if_nametoindex(argv[1]));
--  
+   server = find_interface(lease, nl, if_nametoindex(argv[1]), fd, &ifr);
 +#endif
-+
+   
    memset(&packet, 0, sizeof(packet));
   
-   packet.hlen = parse_hex(argv[3], packet.chaddr, DHCP_CHADDR_MAX, &mac_type);

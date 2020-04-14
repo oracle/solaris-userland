@@ -1,25 +1,27 @@
-Patches to successfully compile dnsmasq-2.76 on Solaris.
+Patches to successfully compile dnsmasq on Solaris.
 
 This patch was developed in-house. Since it is Solaris-specific it is not
 suitable for upstream.
 
-diff -r ebc8338a8ccf -r 25a63355244c src/bpf.c
---- a/src/bpf.c	Fri Oct 06 14:03:20 2017 +0100
-+++ b/src/bpf.c	Fri Oct 06 14:04:47 2017 +0100
-@@ -32,8 +32,10 @@
+diff --git a/src/bpf.c b/src/bpf.c
+index 0ac1c8f..ea45802 100644
+--- a/src/bpf.c
++++ b/src/bpf.c
+@@ -31,7 +31,9 @@
+ #  include <net/if_var.h> 
  #endif
  #include <netinet/in_var.h>
- #ifdef HAVE_IPV6
 +#ifndef HAVE_SOLARIS_NETWORK
- #  include <netinet6/in6_var.h>
- #endif
+ #include <netinet6/in6_var.h>
 +#endif
  
  #ifndef SA_SIZE
  #define SA_SIZE(sa)                                             \
---- dnsmasq-2.80/src/config.h	2018-12-14 04:52:24.163287145 +0000
-+++ dnsmasq-2.80/src/config.h	2018-12-14 04:49:29.397508965 +0000
-@@ -305,7 +305,8 @@ HAVE_SOCKADDR_SA_LEN
+diff --git a/src/config.h b/src/config.h
+index 7d08f7d..37fd345 100644
+--- a/src/config.h
++++ b/src/config.h
+@@ -296,7 +296,8 @@ HAVE_SOCKADDR_SA_LEN
  #define HAVE_GETOPT_LONG
  #undef HAVE_SOCKADDR_SA_LEN
  #define ETHER_ADDR_LEN 6 
@@ -28,10 +30,12 @@ diff -r ebc8338a8ccf -r 25a63355244c src/bpf.c
 +
  #endif
  
- /* Decide if we're going to support IPv6 */
---- dnsmasq-2.80/src/dnsmasq.h	2018-12-14 04:52:42.564660119 +0000
-+++ dnsmasq-2.80/src/dnsmasq.h	2018-12-14 04:49:29.399869884 +0000
-@@ -1354,7 +1354,7 @@ int set_ipv6pktinfo(int fd);
+ /* rules to implement compile-time option dependencies and 
+diff --git a/src/dnsmasq.h b/src/dnsmasq.h
+index 68e6287..7efa29e 100644
+--- a/src/dnsmasq.h
++++ b/src/dnsmasq.h
+@@ -1362,7 +1362,7 @@ int set_ipv6pktinfo(int fd);
  #ifdef HAVE_DHCP6
  void join_multicast(int dienow);
  #endif
@@ -40,9 +44,23 @@ diff -r ebc8338a8ccf -r 25a63355244c src/bpf.c
  void newaddress(time_t now);
  #endif
  
-diff -r ebc8338a8ccf -r 25a63355244c src/ip6addr.h
---- a/src/ip6addr.h	Fri Oct 06 14:03:20 2017 +0100
-+++ b/src/ip6addr.h	Fri Oct 06 14:04:47 2017 +0100
+diff --git a/src/dump.c b/src/dump.c
+index 9bd3a5f..d6b761e 100644
+--- a/src/dump.c
++++ b/src/dump.c
+@@ -148,7 +148,7 @@ void dump_packet(int mask, void *packet, size_t len, union mysockaddr *src, unio
+       ip.ip_v = IPVERSION;
+       ip.ip_hl = sizeof(struct ip) / 4;
+       ip.ip_len = htons(sizeof(struct ip) + sizeof(struct udphdr) + len); 
+-      ip.ip_ttl = IPDEFTTL;
++      ip.ip_ttl = 64;
+       ip.ip_p = IPPROTO_UDP;
+       
+       if (src)
+diff --git a/src/ip6addr.h b/src/ip6addr.h
+index 352b330..ec8977b 100644
+--- a/src/ip6addr.h
++++ b/src/ip6addr.h
 @@ -14,8 +14,41 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -91,14 +109,3 @@ diff -r ebc8338a8ccf -r 25a63355244c src/ip6addr.h
           && ((__const uint32_t *) (a))[3] == 0)
 -
 +#endif /* HAVE_SOLARIS_NETWORK */
---- dnsmasq-2.80/src/dump.c	2019-01-10 05:26:50.262075136 +0000
-+++ dnsmasq-2.80/src/dump.c	2019-01-10 05:25:56.525363369 +0000
-@@ -148,7 +148,7 @@ void dump_packet(int mask, void *packet,
-       ip.ip_v = IPVERSION;
-       ip.ip_hl = sizeof(struct ip) / 4;
-       ip.ip_len = htons(sizeof(struct ip) + sizeof(struct udphdr) + len); 
--      ip.ip_ttl = IPDEFTTL;
-+      ip.ip_ttl = 64;
-       ip.ip_p = IPPROTO_UDP;
-       
-       if (src)
