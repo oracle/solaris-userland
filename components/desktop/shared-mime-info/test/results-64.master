@@ -1,27 +1,16 @@
 make[1]: Entering directory '$(@D)'
-  GEN      create-pot
+make -C po shared-mime-info.pot
+Making check in po
 make[2]: Entering directory '$(@D)/po'
-make[2]: '$(SOURCE_DIR)/po/shared-mime-info.pot' is up to date.
+make[2]: Nothing to be done for 'check'.
 make[2]: Leaving directory '$(@D)/po'
 Making check in .
 make[2]: Entering directory '$(@D)'
 make[2]: Leaving directory '$(@D)'
-Making check in po
-make[2]: Entering directory '$(@D)/po'
-rm -f missing notexist
-srcdir=$(SOURCE_DIR)/po /usr/bin/intltool-update -m
-if [ -r missing -o -r notexist ]; then \
-  exit 1; \
+xmllint --noout --valid ./freedesktop.org.xml || exit 1;	\
+if test -d $(SOURCE_DIR)/.git/ ; then \
+	./update-mime-database $(SOURCE_DIR)/mime-db-tests/ ; \
 fi
-make[2]: Leaving directory '$(@D)/po'
-if test -e ./freedesktop.org.xml; then \
-	xmllint --noout --valid ./freedesktop.org.xml || exit 1;	\
-else \
-	xmllint --noout --valid $(SOURCE_DIR)/freedesktop.org.xml || exit 1;	\
-fi; \
-if test -d .git/ && test -x ./update-mime-database && test -d $(SOURCE_DIR)/mime-db-tests ; then \
-	./update-mime-database mime-db-tests/ ; \
-fi
-Number of mime-types that might need generic-icon: 467
-Number of mime-types with a generic icon: 372
+Number of mime-types that might need generic-icon: 486
+Number of mime-types with a generic icon: 387
 make[1]: Leaving directory '$(@D)'

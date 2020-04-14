@@ -20,23 +20,24 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		shared-mime-info
-COMPONENT_VERSION=	1.8
+COMPONENT_VERSION=	1.15
 COMPONENT_PROJECT_URL=	https://freedesktop.org/wiki/Software/shared-mime-info/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:2af55ef1a0319805b74ab40d331a3962c905477d76c086f49e34dc96363589e9
-COMPONENT_ARCHIVE_URL=	http://freedesktop.org/~hadess/$(COMPONENT_ARCHIVE)
+	sha256:f482b027437c99e53b81037a9843fccd549243fd52145d016e9c7174a4f5db90
+COMPONENT_ARCHIVE_URL=	\
+	https://gitlab.freedesktop.org/xdg/shared-mime-info/uploads/b27eb88e4155d8fccb8bb3cd12025d5b/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	5524
 
-TPNO=			37223
+TPNO=			58366
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -47,6 +48,10 @@ CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 # generating from svc:/application/desktop-cache/mime-types-cache:default
 # so we don't suck them into the package and then have pkg verify errors
 CONFIGURE_OPTIONS += --disable-update-mimedb
+CONFIGURE_OPTIONS += --disable-dependency-tracking
+
+# Tests need GNU version of make to work correctly
+COMPONENT_TEST_ENV +=   PATH="$(GNUBIN):$(PATH)"
 
 REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += library/glib2
