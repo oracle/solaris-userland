@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER=gcc
@@ -50,7 +50,7 @@ COMPONENT_TEST_TRANSFORMS += '-ne "/^Please/p" '
 # The tests require 'python3' binary. We create symlink to /usr/bin/python3.5
 # in our test directory
 COMPONENT_PRE_TEST_ACTION += rm -f "$(COMPONENT_TEST_BUILD_DIR)/python3";
-COMPONENT_PRE_TEST_ACTION += ln -s /usr/bin/python3.5 "$(COMPONENT_TEST_BUILD_DIR)/python3";
+COMPONENT_PRE_TEST_ACTION += ln -s $(PYTHON.3.7) "$(COMPONENT_TEST_BUILD_DIR)/python3";
 COMPONENT_TEST_ENV += PATH="$$PATH:$(COMPONENT_TEST_BUILD_DIR)"
 
 # There are two sets of tests. First set fails unless we download some external
@@ -68,6 +68,7 @@ CONFIGURE_OPTIONS +=	--infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS +=	PATH="$(PATH):/usr/perl5/bin"
 CPPFLAGS +=	-I/usr/include/idn
 CONFIGURE_OPTIONS +=	CPPFLAGS="$(CPPFLAGS)"
+CONFIGURE_OPTIONS +=	PYTHON=$(PYTHON.3.7)
 
 # No proxy settings for the tests because it runs it's own server on localhost
 # which can be unreachable via proxy
@@ -80,5 +81,5 @@ REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += runtime/python-35
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += text/texinfo

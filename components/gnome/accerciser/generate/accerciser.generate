@@ -1,4 +1,4 @@
-
+#
 # CDDL HEADER START
 #
 # The contents of this file are subject to the terms of the
@@ -18,15 +18,10 @@
 #
 # CDDL HEADER END
 #
+
+#
 # Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
-<transform file path=usr/bin/orca -> set pkg.depend.bypass-generate .*setproctitle.*>
-
-#To over come the limitations of the manifest-check
-<transform dir file link hardlink -> edit path "/python3.7/" "/python$!(PYVER)/">
-<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
-
-# Transform the target path in the links
-<transform link path=usr/share/help/([^/]+)/(.*) \
-    target=/usr/share/help/([^/]+)/.* -> set target ../../../%<3>/%<2>>
+# make links relative
+<transform link -> edit target /usr/share/help ../../..>

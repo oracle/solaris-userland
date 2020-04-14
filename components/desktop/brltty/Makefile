@@ -54,8 +54,8 @@ CC +=			$(CC_BITS)
 CFLAGS += 		$(CC_PIC)
 CPPFLAGS += 		-D_SYS_UCONTEXT_H # Workaround Bug Id 15558893
 
-# Orca uses python 3.5, so we need to match
-PYTHON_VERSION = 3.5
+# Orca uses python 3.7, so we need to match
+PYTHON_VERSION = 3.7
 CONFIGURE_ENV += PYTHON="$(PYTHON)"
 PKG_MACROS += PYVER="$(PYTHON_VERSION)"
 
@@ -99,8 +99,8 @@ COMPONENT_INSTALL_ARGS +=	INSTALL_ROOT=$(PROTO_DIR)
 
 REQUIRED_PACKAGES += library/desktop/at-spi2-core
 REQUIRED_PACKAGES += library/icu
-REQUIRED_PACKAGES += library/python/cython-35
-REQUIRED_PACKAGES += runtime/python-35
+REQUIRED_PACKAGES += library/python/cython-37
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/libdbus

@@ -1,0 +1,27 @@
+From 613ee939c3062c952bfaff432395f890d044e8d1 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Miro=20Hron=C4=8Dok?= <miro@hroncok.cz>
+Date: Thu, 28 Jun 2018 19:20:17 +0200
+Subject: [PATCH] Python 3.7+ support, async is a keyword
+
+    File "accerciser/accerciser.py", line 106
+      pyatspi.Registry.start(async=True, gil=False)
+                                 ^
+    SyntaxError: invalid syntax
+---
+ src/lib/accerciser/accerciser.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/lib/accerciser/accerciser.py b/src/lib/accerciser/accerciser.py
+index fa6e5c7..065a7fe 100644
+--- a/src/lib/accerciser/accerciser.py
++++ b/src/lib/accerciser/accerciser.py
+@@ -103,7 +103,8 @@ def run(self):
+     '''
+     GLib.timeout_add(200, self._pumpEvents)
+     try:
+-      pyatspi.Registry.start(async=True, gil=False)
++      # async is a reserved keyword in Python 3.7+, so we pass the args as dict
++      pyatspi.Registry.start(**{'async': True, 'gil': False})
+     except KeyboardInterrupt:
+       self._shutDown()
+ 

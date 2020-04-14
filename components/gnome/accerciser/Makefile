@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		NO_ARCH
@@ -43,7 +43,7 @@ CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
 # Accerciser requires python >= 3.2
-PYTHON_VERSION = 3.5
+PYTHON_VERSION = 3.7
 CONFIGURE_ENV += PYTHON="$(PYTHON)"
 
 # Ensure Python modules are installed into vendor package directories.
@@ -62,6 +62,6 @@ REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libwnck3
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += library/python/pyatspi2-35
-REQUIRED_PACKAGES += library/python/pygobject-3-35
-REQUIRED_PACKAGES += runtime/python-35
+REQUIRED_PACKAGES += library/python/pyatspi2-37
+REQUIRED_PACKAGES += library/python/pygobject-3-37
+REQUIRED_PACKAGES += runtime/python-37

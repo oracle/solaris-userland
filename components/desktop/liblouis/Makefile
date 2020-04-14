@@ -41,8 +41,8 @@ COMPONENT_ANITYA_ID=	13112
 
 TPNO=			57203
 
-# Orca uses python 3.5, so we need to match
-PYTHON_VERSION=		3.5
+# Orca uses python 3.7, so we need to match
+PYTHON_VERSION=		3.7
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -87,8 +87,7 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/expected/p" '
 
 REQUIRED_PACKAGES += developer/documentation-tool/help2man
-REQUIRED_PACKAGES += library/python/setuptools-35
 REQUIRED_PACKAGES += runtime/perl-522
-REQUIRED_PACKAGES += runtime/python-35
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/core-os
 

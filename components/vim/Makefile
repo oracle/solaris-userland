@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -64,7 +64,7 @@ CFLAGS += -std=gnu99
 # Make sure we use a 64-bit, multithreaded perl
 CONFIGURE_ENV +=	vi_cv_path_perl=/usr/perl5/5.22/bin/perl
 # Vim's configure script looks for a "python3" executable, per PEP 394
-CONFIGURE_ENV +=	vi_cv_path_python3=/usr/bin/python3.5
+CONFIGURE_ENV +=	vi_cv_path_python3=$(PYTHON.3.7)
 # zh_CN.cp936.po has invalid characters which GNU msgfmt seems to be able to ignore.
 CONFIGURE_ENV +=	MSGFMT=gmsgfmt
 CONFIGURE_ENV +=	SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH)
@@ -106,7 +106,7 @@ REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += runtime/lua
 REQUIRED_PACKAGES += runtime/perl-522
 REQUIRED_PACKAGES += runtime/python-27
-REQUIRED_PACKAGES += runtime/python-35
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += runtime/ruby-25
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/math

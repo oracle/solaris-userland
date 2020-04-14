@@ -43,7 +43,7 @@ CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
 # Orca requires python >= 3.3
-PYTHON_VERSION = 3.5
+PYTHON_VERSION = 3.7
 CONFIGURE_ENV += PYTHON="$(PYTHON)"
 PKG_MACROS += PYVER="$(PYTHON_VERSION)" PYV="$(PYTHON_VERSION:3.%=3%)"
 
@@ -62,6 +62,6 @@ REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libwnck3
 REQUIRED_PACKAGES += library/liblouis
-REQUIRED_PACKAGES += library/python/pyatspi2-35
-REQUIRED_PACKAGES += library/python/pygobject-3-35
-REQUIRED_PACKAGES += runtime/python-35
+REQUIRED_PACKAGES += library/python/pyatspi2-37
+REQUIRED_PACKAGES += library/python/pygobject-3-37
+REQUIRED_PACKAGES += runtime/python-37

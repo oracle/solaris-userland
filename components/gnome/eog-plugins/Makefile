@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64
@@ -46,6 +46,7 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU msgfmt is in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
+CONFIGURE_ENV += PYTHON=$(PYTHON.3.7)
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
 CONFIGURE_OPTIONS += --disable-static
@@ -61,9 +62,6 @@ CONFIGURE_OPTIONS += --with-xmp
 # Enable postasa when an updated libgdata is delivered
 # And also fix the *.p5m file with it
 CONFIGURE_OPTIONS += --with-plugins="map,fit-to-width,exif-display,fullscreenbg,postr,pythonconsole,slideshowshuffle"
-
-# Requires python 3.2 or newer
-PYTHON_VERSION = 3.5
 
 REQUIRED_PACKAGES += image/library/libexif
 REQUIRED_PACKAGES += image/library/libjpeg
@@ -84,6 +82,6 @@ REQUIRED_PACKAGES += library/gnome/gnome-desktop
 REQUIRED_PACKAGES += library/desktop/libpeas
 REQUIRED_PACKAGES += library/lcms2
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += runtime/python-35
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11
