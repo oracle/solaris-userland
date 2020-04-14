@@ -1,0 +1,24 @@
+#
+# 30889561 problem in UTILITY/KSH93
+#
+--- INIT.2012-08-01.old/src/cmd/ksh93/sh/arith.c	2012-06-06 22:59:15.000000000 +0200
++++ INIT.2012-08-01/src/cmd/ksh93/sh/arith.c	2020-03-10 09:55:46.907436129 +0100
+@@ -521,10 +521,14 @@
+ 	d = strtonll(str,&last,&base,-1);
+ 	if(*last || errno)
+ 	{
+-		if(!last || *last!='.' || last[1]!='.')
+-			d = strval(shp,str,&last,arith,mode);
+-		if(!ptr && *last && mode>0)
+-			errormsg(SH_DICT,ERROR_exit(1),e_lexbadchar,*last,str);
++		if (sh_isstate(SH_INIT)) {
++			d = 0.0;
++		} else {
++			if(!last || *last!='.' || last[1]!='.')
++				d = strval(shp,str,&last,arith,mode);
++			if(!ptr && *last && mode>0)
++				errormsg(SH_DICT,ERROR_exit(1),e_lexbadchar,*last,str);
++		}
+ 	}
+ 	else if (!d && *str=='-')
+ 		d = -0.0;
