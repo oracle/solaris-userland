@@ -10,9 +10,11 @@ Assert changes are only to prevent deprecation warnings from the test suite.
 
 This should be reported / offered to upstream.
 
---- libxml2-2.9.9/python/libxml2-py.c
-+++ libxml2-2.9.9/python/libxml2-py.c
-@@ -5834,6 +5834,7 @@ libxml_xmlReadFile(PyObject *self ATTRIB
+diff --git a/python/libxml2-py.c b/python/libxml2-py.c
+index 705c171..16f7689 100644
+--- a/python/libxml2-py.c
++++ b/python/libxml2-py.c
+@@ -5834,6 +5834,7 @@ libxml_xmlReadFile(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
  
      c_retval = xmlReadFile(filename, encoding, options);
      py_retval = libxml_xmlDocPtrWrap((xmlDocPtr) c_retval);
@@ -20,7 +22,7 @@ This should be reported / offered to upstream.
      return(py_retval);
  }
  
-@@ -5853,6 +5854,7 @@ libxml_xmlReadMemory(PyObject *self ATTR
+@@ -5853,6 +5854,7 @@ libxml_xmlReadMemory(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
  
      c_retval = xmlReadMemory(buffer, size, URL, encoding, options);
      py_retval = libxml_xmlDocPtrWrap((xmlDocPtr) c_retval);
@@ -28,8 +30,10 @@ This should be reported / offered to upstream.
      return(py_retval);
  }
  
---- libxml2-2.9.9/python/tests/tstLastError.py
-+++ libxml2-2.9.9/python/tests/tstLastError.py
+diff --git a/python/tests/tstLastError.py b/python/tests/tstLastError.py
+index d5f9be7..a61fe91 100755
+--- a/python/tests/tstLastError.py
++++ b/python/tests/tstLastError.py
 @@ -40,12 +40,12 @@ class TestCase(unittest.TestCase):
                  print("file =",e.file())
                  print("line =",e.line())
