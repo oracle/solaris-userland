@@ -1,0 +1,16 @@
+This fixes autoreloader failing during server start in Python 3.7 and newer.
+
+Upstream issue:
+https://github.com/cherrypy/cherrypy/issues/1697
+
+--- cherrypy/process/plugins.py
++++ cherrypy/process/plugins.py
+@@ -637,7 +637,7 @@ class Autoreloader(Monitor):
+             except AttributeError:
+                 try:
+                     f = m.__file__
+-                    if not os.path.isabs(f):
++                    if f and not os.path.isabs(f):
+                         # ensure absolute paths so a os.chdir() in the app
+                         # doesn't break me
+                         f = os.path.normpath(
