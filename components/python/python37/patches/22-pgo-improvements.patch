@@ -1,0 +1,125 @@
+Reduce the number of unit tests run during the PGO build.
+
+This change speeds up Solaris PGO stage from roughly five hours to just five
+to ten minutes (depending on the architecture and build machine load).
+
+Cherry picked from upstream Python 3.8:
+https://github.com/python/cpython/commit/2406672984e4c1b18629e615edad52928a72ffcc
+https://github.com/python/cpython/commit/36fd7b6f01127bc6a8b4a37a363e0aa9cfd76506
+
+--- Python-3.7.5/Lib/test/libregrtest/cmdline.py
++++ Python-3.7.5/Lib/test/libregrtest/cmdline.py
+@@ -264,7 +264,9 @@ def _create_parser():
+                        help='only write the name of test cases that will be run'
+                             ' , don\'t execute them')
+     group.add_argument('-P', '--pgo', dest='pgo', action='store_true',
+-                       help='enable Profile Guided Optimization training')
++                       help='enable Profile Guided Optimization (PGO) training')
++    group.add_argument('--pgo-extended', action='store_true',
++                       help='enable extended PGO training (slower training)')
+     group.add_argument('--fail-env-changed', action='store_true',
+                        help='if a test file alters the environment, mark '
+                             'the test as failed')
+@@ -344,6 +346,8 @@ def _parse_args(args, **kwargs):
+         parser.error("-G/--failfast needs either -v or -W")
+     if ns.pgo and (ns.verbose or ns.verbose2 or ns.verbose3):
+         parser.error("--pgo/-v don't go together!")
++    if ns.pgo_extended:
++        ns.pgo = True  # pgo_extended implies pgo
+ 
+     if ns.nowindows:
+         print("Warning: the --nowindows (-n) option is deprecated. "
+--- Python-3.7.5/Lib/test/libregrtest/main.py
++++ Python-3.7.5/Lib/test/libregrtest/main.py
+@@ -17,6 +17,7 @@ from test.libregrtest.runtest import (
+     INTERRUPTED, CHILD_ERROR, TEST_DID_NOT_RUN, TIMEOUT,
+     PROGRESS_MIN_TIME, format_test_result, is_failed)
+ from test.libregrtest.setup import setup_tests
++from test.libregrtest.pgo import setup_pgo_tests
+ from test.libregrtest.utils import removepy, count, format_duration, printlist
+ from test import support
+ 
+@@ -217,6 +218,9 @@ class Regrtest:
+ 
+         removepy(self.tests)
+ 
++        # add default PGO tests if no tests are specified
++        setup_pgo_tests(self.ns)
++
+         stdtests = STDTESTS[:]
+         nottests = NOTTESTS.copy()
+         if self.ns.exclude:
+--- /dev/null
++++ Python-3.7.5/Lib/test/libregrtest/pgo.py
+@@ -0,0 +1,55 @@
++# Set of tests run by default if --pgo is specified.  The tests below were
++# chosen based on the following criteria: either they exercise a commonly used
++# C extension module or type, or they run some relatively typical Python code.
++# Long running tests should be avoided because the PGO instrumented executable
++# runs slowly.
++PGO_TESTS = [
++    'test_array',
++    'test_base64',
++    'test_binascii',
++    'test_binop',
++    'test_bisect',
++    'test_bytes',
++    'test_bz2',
++    'test_cmath',
++    'test_codecs',
++    'test_collections',
++    'test_complex',
++    'test_dataclasses',
++    'test_datetime',
++    'test_decimal',
++    'test_difflib',
++    'test_embed',
++    'test_float',
++    'test_fstring',
++    'test_functools',
++    'test_generators',
++    'test_hashlib',
++    'test_heapq',
++    'test_int',
++    'test_itertools',
++    'test_json',
++    'test_long',
++    'test_lzma',
++    'test_math',
++    'test_memoryview',
++    'test_operator',
++    'test_ordered_dict',
++    'test_pickle',
++    'test_pprint',
++    'test_re',
++    'test_set',
++    'test_sqlite',
++    'test_statistics',
++    'test_struct',
++    'test_tabnanny',
++    'test_time',
++    'test_unicode',
++    'test_xml_etree',
++    'test_xml_etree_c',
++]
++
++def setup_pgo_tests(ns):
++    if not ns.args and not ns.pgo_extended:
++        # run default set of tests for PGO training
++        ns.args = PGO_TESTS[:]
+--- Python-3.7.5/Makefile.pre.in
++++ Python-3.7.5/Makefile.pre.in
+@@ -256,9 +256,10 @@ TCLTK_INCLUDES=	@TCLTK_INCLUDES@
+ TCLTK_LIBS=	@TCLTK_LIBS@
+ 
+ # The task to run while instrumented when building the profile-opt target.
+-# We exclude unittests with -x that take a rediculious amount of time to
+-# run in the instrumented training build or do not provide much value.
+-PROFILE_TASK=-m test.regrtest --pgo
++# To speed up profile generation, we don't run the full unit test suite
++# by default. The default is "-m test --pgo". To run more tests, use
++# PROFILE_TASK="-m test --pgo-extended"
++PROFILE_TASK=-m test --pgo
+ 
+ # report files for gcov / lcov coverage report
+ COVERAGE_INFO=	$(abs_builddir)/coverage.info
