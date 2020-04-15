@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		32_and_64
@@ -28,16 +28,16 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nspr
-COMPONENT_VERSION=	4.19
+COMPONENT_VERSION=	4.25
 COMPONENT_PROJECT_URL=	https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSPR
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a6e43e437a2213c97de1ef32eda4a11d3703f842773c88e02a9085843d00380e
+    sha256:0bc309be21f91da4474c56df90415101c7f0c7c7cab2943cd943cd7896985256
 COMPONENT_ARCHIVE_URL=	http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/v$(COMPONENT_VERSION)/src/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/nspr
 COMPONENT_ANITYA_ID=	7953
 
-TPNO=			42670
+TPNO=			57828
 
 LDFLAGS += $(CC_BITS)
 
@@ -52,10 +52,11 @@ COMPONENT_PRE_TEST_ACTION = \
 	cd $(@D)/pr/tests; \
 	$(GMAKE) $(COMPONENT_BUILD_ARGS) OS_CFLAGS="$(CFLAGS)";
 COMPONENT_TEST_DIR =	$(@D)/pr/tests
-COMPONENT_TEST_CMD =	$(SOURCE_DIR)/nspr/pr/tests/runtests.sh
+COMPONENT_TEST_CMD =	$(SOURCE_DIR)/nspr/pr/tests/runtests.sh $(@D)/dist
 COMPONENT_TEST_TARGETS =
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += '-e "/^BEGIN/d" '
 COMPONENT_TEST_TRANSFORMS += '-e "/^END/d" '
+COMPONENT_TEST_TRANSFORMS += '-e "s/ ([012][0-9]:[0-5][0-9]:[0-5][0-9])//g" '
 
 include $(WS_MAKE_RULES)/common.mk

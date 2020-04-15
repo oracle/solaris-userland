@@ -1,0 +1,14 @@
+needed for getopt(3C)
+reported upstream
+https://bugzilla.mozilla.org/show_bug.cgi?id=1625133
+diff -r de0c28c9b517 nss/coreconf/SunOS5.mk
+--- a/nss/coreconf/SunOS5.mk	Fri Mar 20 15:27:26 2020 +0100
++++ b/nss/coreconf/SunOS5.mk	Fri Mar 20 15:28:27 2020 +0100
+@@ -35,6 +35,7 @@
+ ifdef NS_USE_GCC
+ 	CC         = gcc
+ 	OS_CFLAGS += -Wall -Wno-format -Werror-implicit-function-declaration -Wno-switch
++	OS_CFLAGS += -D__EXTENSIONS__
+ 	CCC        = g++
+ 	CCC       += -Wall -Wno-format
+ 	ASFLAGS	  += -x assembler-with-cpp

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		32_and_64
@@ -33,20 +33,20 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nss
-COMPONENT_VERSION=	3.45
+COMPONENT_VERSION=	3.51
 # NSS ips major version is incorrect for historical reasons.
-IPS_COMPONENT_VERSION=	4.45
+IPS_COMPONENT_VERSION=	4.51
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_UVERSION=	$(subst .,_,$(COMPONENT_VERSION))
 COMPONENT_PROJECT_URL=	https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:112f05223d1fde902c170966bfc6f011b24a838be16969b110ecf2bb7bc24e8b
+    sha256:75348b3b3229362486c57a880db917da1f96ef4eb639dc9cc2ff17d72268459c
 COMPONENT_ARCHIVE_URL=	http://ftp.mozilla.org/pub/security/$(COMPONENT_NAME)/releases/NSS_$(COMPONENT_UVERSION)_RTM/src/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/nss
 COMPONENT_ANITYA_ID=	2503
 
-TPNO=			52934
+TPNO=			57907
 
 BUILD_STYLE= justmake
 

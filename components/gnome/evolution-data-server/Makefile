@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		64
@@ -69,15 +69,17 @@ CMAKE_OPTIONS += -DSYSCONF_INSTALL_DIR="/etc"
 # for the tests
 unexport SHELLOPTS
 COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR) $(@D));
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+#
+# to locate dbus-daemon
+# NOTE: desktop must be running -> run
+# vncserver
+# and export DISPLAY
+#
+COMPONENT_TEST_ENV += PATH="$(PATH):/usr/lib"
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 COMPONENT_TEST_ARGS =   -k -i
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/ERROR:/p" '
+COMPONENT_TEST_TRANSFORMER =    $(NAWK)
+COMPONENT_TEST_TRANSFORMS =     "'/The following tests FAILED/ {results = 1}; /Errors while running CTest/ {results = 0}; {if (results) print $0 } ' "
 
 REQUIRED_PACKAGES += database/berkeleydb-5
 REQUIRED_PACKAGES += database/sqlite-3
