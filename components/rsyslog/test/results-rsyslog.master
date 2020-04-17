@@ -1,8 +1,15 @@
+PASS: immark.sh
 PASS: operatingstate-basic.sh
 PASS: operatingstate-empty.sh
 PASS: operatingstate-unclean.sh
 PASS: smtradfile.sh
+PASS: loadbalance.sh
 PASS: empty-hostname.sh
+PASS: timestamp-3164.sh
+PASS: timestamp-3339.sh
+PASS: timestamp-mysql.sh
+PASS: timestamp-pgsql.sh
+PASS: timestamp-subseconds.sh
 PASS: hostname-getaddrinfo-fail.sh
 PASS: msleep_usage_output.sh
 PASS: mangle_qi_usage_output.sh
@@ -14,6 +21,7 @@ PASS: hostname-with-slash-pmrfc5424.sh
 PASS: hostname-with-slash-pmrfc3164.sh
 PASS: hostname-with-slash-dflt-invld.sh
 PASS: hostname-with-slash-dflt-slash-valid.sh
+PASS: empty-app-name.sh
 PASS: stop-localvar.sh
 PASS: stop-msgvar.sh
 PASS: glbl-ruleset-queue-defaults.sh
@@ -27,14 +35,21 @@ PASS: glbl_setenv_2_vars.sh
 PASS: glbl_setenv_err.sh
 PASS: glbl_setenv_err_too_long.sh
 PASS: glbl_setenv.sh
+PASS: mmexternal-SegFault.sh
 PASS: nested-call-shutdown.sh
 PASS: dnscache-TTL-0.sh
 PASS: invalid_nested_include.sh
+PASS: omfwd-tls-invalid-permitExpiredCerts.sh
 PASS: omfwd-keepalive.sh
+PASS: omusrmsg-noabort-legacy.sh
+PASS: omusrmsg-errmsg-no-params.sh
+PASS: omusrmsg-noabort.sh
+PASS: omfile-module-params.sh
 PASS: omfile-read-only-errmsg.sh
 PASS: omfile-null-filename.sh
 PASS: omfile-whitespace-filename.sh
 PASS: omfile-read-only.sh
+PASS: omfile-outchannel.sh
 PASS: omfile_both_files_set.sh
 PASS: omfile_hup.sh
 SKIP: msgvar-concurrency.sh
@@ -83,6 +98,8 @@ PASS: mainq_actq_DA.sh
 PASS: queue_warnmsg-oversize.sh
 SKIP: queue-minbatch.sh
 SKIP: queue-minbatch-queuefull.sh
+PASS: queue-direct-with-no-params.sh
+PASS: queue-direct-with-params-given.sh
 PASS: arrayqueue.sh
 PASS: global_vars.sh
 PASS: no-parser-errmsg.sh
@@ -91,8 +108,14 @@ PASS: validation-run.sh
 SKIP: msgdup.sh
 PASS: msgdup_props.sh
 PASS: empty-ruleset.sh
+PASS: imtcp-listen-port-file-2.sh
+PASS: allowed-sender-tcp-ok.sh
+PASS: allowed-sender-tcp-fail.sh
+PASS: allowed-sender-tcp-hostname-ok.sh
+PASS: allowed-sender-tcp-hostname-fail.sh
 PASS: imtcp-discard-truncated-msg.sh
 PASS: imtcp-basic.sh
+PASS: imtcp-basic-hup.sh
 PASS: imtcp-maxFrameSize.sh
 PASS: imtcp-msg-truncation-on-number.sh
 PASS: imtcp-msg-truncation-on-number2.sh
@@ -136,16 +159,19 @@ PASS: asynwr_deadlock.sh
 PASS: asynwr_deadlock_2.sh
 PASS: asynwr_deadlock2.sh
 PASS: asynwr_deadlock4.sh
+PASS: asynwr_dynfile_flushtxend-off.sh
 PASS: abort-uncleancfg-goodcfg.sh
 PASS: abort-uncleancfg-goodcfg-check.sh
 PASS: abort-uncleancfg-badcfg-check.sh
 PASS: abort-uncleancfg-badcfg-check_1.sh
 PASS: variable_leading_underscore.sh
+PASS: gzipwr_hup_multi_file.sh
+PASS: gzipwr_hup_single_file.sh
 PASS: gzipwr_rscript.sh
 PASS: gzipwr_flushInterval.sh
 PASS: gzipwr_flushOnTXEnd.sh
 PASS: gzipwr_large.sh
-PASS: gzipwr_large_dynfile.sh
+SKIP: gzipwr_large_dynfile.sh
 PASS: gzipwr_hup.sh
 PASS: dynfile_invld_async.sh
 PASS: dynfile_invld_sync.sh
@@ -165,6 +191,7 @@ PASS: execonlywhenprevsuspended-nonsusp-queue.sh
 PASS: pipe_noreader.sh
 PASS: dircreate_dflt.sh
 PASS: dircreate_off.sh
+SKIP: imuxsock_legacy.sh
 SKIP: imuxsock_logger.sh
 SKIP: imuxsock_logger_ruleset.sh
 SKIP: imuxsock_logger_ruleset_ratelimit.sh
@@ -186,6 +213,7 @@ PASS: failover-rptd.sh
 PASS: failover-no-rptd.sh
 PASS: failover-no-basic.sh
 PASS: suspend-via-file.sh
+PASS: suspend-omfwd-via-file.sh
 PASS: externalstate-failed-rcvr.sh
 PASS: rcvr_fail_restore.sh
 PASS: rscript_contains.sh
@@ -209,6 +237,7 @@ PASS: rscript_wrap2.sh
 PASS: rscript_wrap3.sh
 PASS: rscript_re_extract.sh
 PASS: rscript_re_match.sh
+PASS: rscript_re_match-dbl_quotes.sh
 PASS: rscript_eq.sh
 PASS: rscript_eq_var.sh
 PASS: rscript_ge.sh
@@ -289,6 +318,8 @@ PASS: stats-json-es.sh
 PASS: dynstats_reset_without_pstats_reset.sh
 PASS: dynstats_prevent_premature_eviction.sh
 PASS: omstdout-basic.sh
+PASS: imtcp-tls-basic.sh
+PASS: imtcp-tls-basic-verifydepth.sh
 PASS: imtcp_conndrop_tls.sh
 PASS: sndrcv_tls_anon_rebind.sh
 PASS: sndrcv_tls_anon_hostname.sh
@@ -305,7 +336,6 @@ PASS: imtcp-tls-gtls-x509fingerprint-invld.sh
 PASS: imtcp-tls-gtls-x509fingerprint.sh
 PASS: imtcp-tls-gtls-x509name-invld.sh
 PASS: imtcp-tls-gtls-x509name.sh
-PASS: imtcp-tls-basic.sh
 PASS: uxsock_simple.sh
 PASS: imfile-basic-2GB-file.sh
 PASS: imfile-truncate-2GB-file.sh
@@ -332,6 +362,8 @@ PASS: imfile-endregex-timeout-none.sh
 SKIP: imfile-endregex-timeout-with-shutdown.sh
 PASS: imfile-endregex-timeout-with-shutdown-polling.sh
 PASS: imfile-endmsg.regex.sh
+PASS: imfile-escapelf.replacement.sh
+PASS: imfile-escapelf.replacement-empty.sh
 PASS: imfile-statefile-no-file_id.sh
 PASS: imfile-statefile-no-file_id-TO-file_id.sh
 PASS: imfile-statefile-directory.sh
@@ -359,13 +391,14 @@ SKIP: imfile-logrotate-copytruncate.sh
 SKIP: imfile-logrotate-nocopytruncate.sh
 SKIP: imfile-growing-file-id.sh
 SKIP: glbl-oversizeMsg-truncate-imfile.sh
+PASS: config_enabled-on.sh
 PASS: config_enabled-off.sh
 ============================================================================
-Testsuite summary for rsyslog 8.1907.0
+Testsuite summary for rsyslog 8.2002.0
 ============================================================================
-# TOTAL: 363
-# PASS:  320
-# SKIP:  43
+# TOTAL: 396
+# PASS:  351
+# SKIP:  45
 # XFAIL: 0
 # FAIL:  0
 # XPASS: 0
