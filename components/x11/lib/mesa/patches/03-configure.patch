@@ -1,0 +1,30 @@
+Setting LLVM_CXXFLAGS in the Makefile doesn't seem to take effect and ends up with g++: opteron: No such file or directory.  So patching the configure file to set LLVM_CXXFLAGS.
+
+--build-id is not available for Solaris
+
+Not suitable for upstream
+
+--- a/configure.ac	2019-05-20 09:00:38.220095721 -0700
++++ b/configure.ac	2019-05-20 09:07:29.837721047 -0700
+@@ -703,10 +703,10 @@
+ AM_CONDITIONAL(HAVE_LD_DYNAMIC_LIST, test "$have_ld_dynamic_list" = "yes")
+ 
+ dnl
+-dnl OSX linker does not support build-id
++dnl OSX linker does not support build-id neither does Solaris
+ dnl
+ case "$host_os" in
+-darwin*)
++darwin* | solaris*)
+     LD_BUILD_ID=""
+     ;;
+ *)
+@@ -2847,7 +2847,7 @@
+ 
+     LLVM_LDFLAGS=`$LLVM_CONFIG --ldflags`
+     LLVM_CFLAGS=$LLVM_CPPFLAGS   # CPPFLAGS seem to be sufficient
+-    LLVM_CXXFLAGS=`strip_unwanted_llvm_flags "$LLVM_CONFIG --cxxflags"`
++    LLVM_CXXFLAGS="-I/usr/include -I/usr/include/llvm/Support/Solaris -m64 -fno-common -pthread -fno-strict-aliasing -fexceptions -frtti -fstack-protector-all  -Wcast-align -Wno-long-long -Woverflow -Wstack-protector -fkeep-static-consts -std=c++11   -Wl,-z -Wl,relax=common -Wl,-z -Wl,relax=secadj -Wl,-z -Wl,relax=transtls -Wl,-z -Wl,relax=symbound -Wl,-z -Wl,relax=comdat -W -Wno-unused-parameter -Wwrite-strings  -Wno-missing-field-initializers  -Wno-long-long -Wno-maybe-uninitialized -Wdelete-non-virtual-dtor -Wno-comment -std=c++11   -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS"
+ 
+     dnl Set LLVM_LIBS - This is done after the driver configuration so
+     dnl that drivers can add additional components to LLVM_COMPONENTS.

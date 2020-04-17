@@ -2,11 +2,9 @@ Solaris specific changes for clean builds on Solaris.
 
 Not suitable for upstream
 
-diff --git a/intel/intel_bufmgr_gem.c b/intel/intel_bufmgr_gem.c
-index fbf4873..602d284 100644
---- a/intel/intel_bufmgr_gem.c
-+++ b/intel/intel_bufmgr_gem.c
-@@ -106,7 +106,7 @@ struct drm_intel_gem_bo_bucket {
+--- a/intel/intel_bufmgr_gem.c	2019-03-13 09:57:08.601663471 -0700
++++ b/intel/intel_bufmgr_gem.c	2019-03-13 10:14:58.143408482 -0700
+@@ -106,7 +106,7 @@
  typedef struct _drm_intel_bufmgr_gem {
  	drm_intel_bufmgr bufmgr;
  
@@ -15,7 +13,7 @@ index fbf4873..602d284 100644
  
  	int fd;
  
-@@ -165,7 +165,7 @@ typedef struct _drm_intel_reloc_target_info {
+@@ -165,7 +165,7 @@
  struct _drm_intel_bo_gem {
  	drm_intel_bo bo;
  
@@ -24,7 +22,7 @@ index fbf4873..602d284 100644
  	uint32_t gem_handle;
  	const char *name;
  
-@@ -468,7 +468,7 @@ drm_intel_gem_bo_reference(drm_intel_bo *bo)
+@@ -468,7 +468,7 @@
  {
  	drm_intel_bo_gem *bo_gem = (drm_intel_bo_gem *) bo;
  
@@ -33,7 +31,7 @@ index fbf4873..602d284 100644
  }
  
  /**
-@@ -829,7 +829,7 @@ retry:
+@@ -829,7 +829,7 @@
  	}
  
  	bo_gem->name = name;
@@ -42,7 +40,7 @@ index fbf4873..602d284 100644
  	bo_gem->validate_index = -1;
  	bo_gem->reloc_tree_fences = 0;
  	bo_gem->used_as_reloc_target = false;
-@@ -949,7 +949,7 @@ drm_intel_gem_bo_alloc_userptr(drm_intel_bufmgr *bufmgr,
+@@ -949,7 +949,7 @@
  	if (!bo_gem)
  		return NULL;
  
@@ -51,7 +49,7 @@ index fbf4873..602d284 100644
  	DRMINITLISTHEAD(&bo_gem->vma_list);
  
  	bo_gem->bo.size = size;
-@@ -1126,7 +1126,7 @@ drm_intel_bo_gem_create_from_name(drm_intel_bufmgr *bufmgr,
+@@ -1126,7 +1126,7 @@
  	if (!bo_gem)
  		goto out;
  
@@ -60,7 +58,7 @@ index fbf4873..602d284 100644
  	DRMINITLISTHEAD(&bo_gem->vma_list);
  
  	bo_gem->bo.size = open_arg.size;
-@@ -1397,8 +1397,8 @@ static void drm_intel_gem_bo_unreference_locked_timed(drm_intel_bo *bo,
+@@ -1397,8 +1397,8 @@
  {
  	drm_intel_bo_gem *bo_gem = (drm_intel_bo_gem *) bo;
  
@@ -71,7 +69,7 @@ index fbf4873..602d284 100644
  		drm_intel_gem_bo_unreference_final(bo, time);
  }
  
-@@ -1406,7 +1406,7 @@ static void drm_intel_gem_bo_unreference(drm_intel_bo *bo)
+@@ -1406,7 +1406,7 @@
  {
  	drm_intel_bo_gem *bo_gem = (drm_intel_bo_gem *) bo;
  
@@ -80,7 +78,7 @@ index fbf4873..602d284 100644
  
  	if (atomic_add_unless(&bo_gem->refcount, -1, 1)) {
  		drm_intel_bufmgr_gem *bufmgr_gem =
-@@ -1417,7 +1417,7 @@ static void drm_intel_gem_bo_unreference(drm_intel_bo *bo)
+@@ -1417,7 +1417,7 @@
  
  		pthread_mutex_lock(&bufmgr_gem->lock);
  
@@ -89,7 +87,7 @@ index fbf4873..602d284 100644
  			drm_intel_gem_bo_unreference_final(bo, time.tv_sec);
  			drm_intel_gem_cleanup_bo_cache(bufmgr_gem, time.tv_sec);
  		}
-@@ -2660,7 +2660,7 @@ drm_intel_bo_gem_create_from_prime(drm_intel_bufmgr *bufmgr, int prime_fd, int s
+@@ -2660,7 +2660,7 @@
  	if (!bo_gem)
  		goto out;
  
@@ -98,7 +96,7 @@ index fbf4873..602d284 100644
  	DRMINITLISTHEAD(&bo_gem->vma_list);
  
  	/* Determine size of bo.  The fd-to-handle ioctl really should
-@@ -3428,7 +3428,7 @@ drm_intel_bufmgr_gem_find(int fd)
+@@ -3428,7 +3428,7 @@
  
  	DRMLISTFOREACHENTRY(bufmgr_gem, &bufmgr_list, managers) {
  		if (bufmgr_gem->fd == fd) {
@@ -107,7 +105,7 @@ index fbf4873..602d284 100644
  			return bufmgr_gem;
  		}
  	}
-@@ -3444,7 +3444,7 @@ drm_intel_bufmgr_gem_unref(drm_intel_bufmgr *bufmgr)
+@@ -3444,7 +3444,7 @@
  	if (atomic_add_unless(&bufmgr_gem->refcount, -1, 1)) {
  		pthread_mutex_lock(&bufmgr_list_mutex);
  
@@ -116,7 +114,7 @@ index fbf4873..602d284 100644
  			DRMLISTDEL(&bufmgr_gem->managers);
  			drm_intel_bufmgr_gem_destroy(bufmgr);
  		}
-@@ -3614,7 +3614,7 @@ drm_intel_bufmgr_gem_init(int fd, int batch_size)
+@@ -3614,7 +3614,7 @@
  		goto exit;
  
  	bufmgr_gem->fd = fd;

@@ -1,0 +1,128 @@
+From 4a777e245da2e2dc748a94ba388cf01f9d1400ee Mon Sep 17 00:00:00 2001
+From: Eli Friedman <efriedma@codeaurora.org>
+Date: Thu, 30 Aug 2018 18:59:24 +0000
+Subject: [PATCH] [SROA] Fix alignment for uses of PHI nodes.
+
+Splitting an alloca can decrease the alignment of GEPs into the
+partition.  Normally, rewriting accounts for this, but the code was
+missing for uses of PHI nodes and select instructions.
+
+Fixes https://bugs.llvm.org/show_bug.cgi?id=38707 .
+
+Differential Revision: https://reviews.llvm.org/D51335
+
+
+
+git-svn-id: https://llvm.org/svn/llvm-project/llvm/trunk@341094 91177308-0d34-0410-b5e6-96231b3b80d8
+---
+ lib/Transforms/Scalar/SROA.cpp         | 42 ++++++++++++++++++++++++++
+ test/Transforms/SROA/phi-and-select.ll | 32 ++++++++++++++++++++
+ 2 files changed, 74 insertions(+)
+
+diff --git a/lib/Transforms/Scalar/SROA.cpp b/lib/Transforms/Scalar/SROA.cpp
+index 1d8ba73c9a27..8b591de1e992 100644
+--- lib/Transforms/Scalar/SROA.cpp
++++ lib/Transforms/Scalar/SROA.cpp
+@@ -3046,6 +3046,42 @@ class llvm::sroa::AllocaSliceRewriter
+     return true;
+   }
+ 
++  void fixLoadStoreAlign(Instruction &Root) {
++    // This algorithm implements the same visitor loop as
++    // hasUnsafePHIOrSelectUse, and fixes the alignment of each load
++    // or store found.
++    SmallPtrSet<Instruction *, 4> Visited;
++    SmallVector<Instruction *, 4> Uses;
++    Visited.insert(&Root);
++    Uses.push_back(&Root);
++    do {
++      Instruction *I = Uses.pop_back_val();
++
++      if (LoadInst *LI = dyn_cast<LoadInst>(I)) {
++        unsigned LoadAlign = LI->getAlignment();
++        if (!LoadAlign)
++          LoadAlign = DL.getABITypeAlignment(LI->getType());
++        LI->setAlignment(std::min(LoadAlign, getSliceAlign()));
++        continue;
++      }
++      if (StoreInst *SI = dyn_cast<StoreInst>(I)) {
++        unsigned StoreAlign = SI->getAlignment();
++        if (!StoreAlign) {
++          Value *Op = SI->getOperand(0);
++          StoreAlign = DL.getABITypeAlignment(Op->getType());
++        }
++        SI->setAlignment(std::min(StoreAlign, getSliceAlign()));
++        continue;
++      }
++
++      assert(isa<BitCastInst>(I) || isa<PHINode>(I) ||
++             isa<SelectInst>(I) || isa<GetElementPtrInst>(I));
++      for (User *U : I->users())
++        if (Visited.insert(cast<Instruction>(U)).second)
++          Uses.push_back(cast<Instruction>(U));
++    } while (!Uses.empty());
++  }
++
+   bool visitPHINode(PHINode &PN) {
+     LLVM_DEBUG(dbgs() << "    original: " << PN << "\n");
+     assert(BeginOffset >= NewAllocaBeginOffset && "PHIs are unsplittable");
+@@ -3069,6 +3105,9 @@ class llvm::sroa::AllocaSliceRewriter
+     LLVM_DEBUG(dbgs() << "          to: " << PN << "\n");
+     deleteIfTriviallyDead(OldPtr);
+ 
++    // Fix the alignment of any loads or stores using this PHI node.
++    fixLoadStoreAlign(PN);
++
+     // PHIs can't be promoted on their own, but often can be speculated. We
+     // check the speculation outside of the rewriter so that we see the
+     // fully-rewritten alloca.
+@@ -3093,6 +3132,9 @@ class llvm::sroa::AllocaSliceRewriter
+     LLVM_DEBUG(dbgs() << "          to: " << SI << "\n");
+     deleteIfTriviallyDead(OldPtr);
+ 
++    // Fix the alignment of any loads or stores using this select.
++    fixLoadStoreAlign(SI);
++
+     // Selects can't be promoted on their own, but often can be speculated. We
+     // check the speculation outside of the rewriter so that we see the
+     // fully-rewritten alloca.
+diff --git a/test/Transforms/SROA/phi-and-select.ll b/test/Transforms/SROA/phi-and-select.ll
+index fb76548b1d18..e7ba2e89d795 100644
+--- test/Transforms/SROA/phi-and-select.ll
++++ test/Transforms/SROA/phi-and-select.ll
+@@ -600,3 +600,35 @@ if.then5:                                         ; preds = %if.then2, %if.end
+   store %struct.S undef, %struct.S* %f1, align 4
+   ret void
+ }
++
++define i32 @phi_align(i32* %z) {
++; CHECK-LABEL: @phi_align(
++entry:
++  %a = alloca [8 x i8], align 8
++; CHECK: alloca [7 x i8]
++
++  %a0x = getelementptr [8 x i8], [8 x i8]* %a, i64 0, i32 1
++  %a0 = bitcast i8* %a0x to i32*
++  %a1x = getelementptr [8 x i8], [8 x i8]* %a, i64 0, i32 4
++  %a1 = bitcast i8* %a1x to i32*
++; CHECK: store i32 0, {{.*}}, align 1
++  store i32 0, i32* %a0, align 1
++; CHECK: store i32 1, {{.*}}, align 1
++  store i32 1, i32* %a1, align 4
++; CHECK: load {{.*}}, align 1
++  %v0 = load i32, i32* %a0, align 1
++; CHECK: load {{.*}}, align 1
++  %v1 = load i32, i32* %a1, align 4
++  %cond = icmp sle i32 %v0, %v1
++  br i1 %cond, label %then, label %exit
++
++then:
++  br label %exit
++
++exit:
++; CHECK: %phi = phi i32* [ {{.*}}, %then ], [ %z, %entry ]
++; CHECK-NEXT: %result = load i32, i32* %phi, align 1
++  %phi = phi i32* [ %a1, %then ], [ %z, %entry ]
++  %result = load i32, i32* %phi, align 4
++  ret i32 %result
++}

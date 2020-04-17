@@ -1,0 +1,36 @@
+Fixes following issue. To be investigated for propper solution.
+
+[ 78%] Linking CXX shared library ../../lib/libLTO.so
+cd /builds2/psumbera/userland-llvm/components/llvm/build/sparcv9/tools/lto && /usr/bin/cmake -E cmake_link_script CMakeFiles/LTO.dir/link.txt --verbose=1
+/usr/gcc/5/bin/g++ -fPIC  -m64 -O3  -mno-app-regs     -fno-delayed-branch -mtune=ultrasparc -mcpu=ultrasparc -mvis -mhard-float -fdata-sections -falign-functions=8 -mno-unal
+igned-doubles -mimpure-text  -pthread -fno-strict-aliasing -fexceptions -frtti -fstack-protector-all -Wall -Wcast-align -Wno-long-long -Woverflow -Wstack-protector -fkeep-st
+atic-consts -std=c++11 -fdata-sections -ffunction-sections -Wl,-z -Wl,relax=common -Wl,-z -Wl,relax=secadj -Wl,-z -Wl,relax=transtls -Wl,-z -Wl,relax=symbound -Wl,-z -Wl,rel
+ax=comdat -Wl,-R -Wl,/usr/gcc/5/lib/sparcv9 -fPIC -fvisibility-inlines-hidden -Wall -W -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wno-missing-field-initializers -ped
+antic -Wno-long-long -Wno-maybe-uninitialized -Wdelete-non-virtual-dtor -Wno-comment -Werror=date-time -std=c++11 -ffunction-sections -fdata-sections -include llvm/Support/S
+olaris.h -O3 -DNDEBUG  -Wl,-z -Wl,discard-unused=sections  -Wl,-M,/builds2/psumbera/userland-llvm/components/llvm/build/sparcv9/tools/lto/LTO.exports -m64 -Wl,-z,defs -share
+d -Wl,-hlibLTO.so.4 -o ../../lib/libLTO.so.4.0.1 CMakeFiles/LTO.dir/LTODisassembler.cpp.o CMakeFiles/LTO.dir/lto.cpp.o -Wl,-R/builds2/psumbera/userland-llvm/components/llvm/
+build/sparcv9/lib: ../../lib/libLLVM-4.0.so 
+Undefined                       first referenced
+ symbol                             in file
+LLVMDisasmDispose                   /builds2/psumbera/userland-llvm/components/llvm/build/sparcv9/tools/lto/LTO.exports
+LLVMCreateDisasmCPU                 /builds2/psumbera/userland-llvm/components/llvm/build/sparcv9/tools/lto/LTO.exports
+LLVMCreateDisasm                    /builds2/psumbera/userland-llvm/components/llvm/build/sparcv9/tools/lto/LTO.exports
+LLVMDisasmInstruction               /builds2/psumbera/userland-llvm/components/llvm/build/sparcv9/tools/lto/LTO.exports
+LLVMSetDisasmOptions                /builds2/psumbera/userland-llvm/components/llvm/build/sparcv9/tools/lto/LTO.exports
+ld: fatal: symbol referencing errors
+collect2: error: ld returned 1 exit status
+
+--- tools/lto/lto.exports
++++ tools/lto/lto.exports
+@@ -41,11 +41,6 @@
+ lto_codegen_compile_optimized
+ lto_codegen_set_should_internalize
+ lto_codegen_set_should_embed_uselists
+-LLVMCreateDisasm
+-LLVMCreateDisasmCPU
+-LLVMDisasmDispose
+-LLVMDisasmInstruction
+-LLVMSetDisasmOptions
+ thinlto_create_codegen
+ thinlto_codegen_dispose
+ thinlto_codegen_add_module

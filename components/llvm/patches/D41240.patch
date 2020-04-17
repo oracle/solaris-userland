@@ -1,0 +1,40 @@
+https://reviews.llvm.org/D41240
+
+--- tools/clang/lib/Basic/Targets/OSTargets.h
++++ tools/clang/lib/Basic/Targets/OSTargets.h
+@@ -545,12 +545,22 @@
+     Builder.defineMacro("_LARGEFILE64_SOURCE");
+     Builder.defineMacro("__EXTENSIONS__");
+     Builder.defineMacro("_REENTRANT");
++    if (this->HasFloat128)
++      Builder.defineMacro("__FLOAT128__");
+   }
+ 
+ public:
+   SolarisTargetInfo(const llvm::Triple &Triple, const TargetOptions &Opts)
+       : OSTargetInfo<Target>(Triple, Opts) {
+     // FIXME: WIntType should be SignedLong
++    switch (Triple.getArch()) {
++    default:
++      break;
++    case llvm::Triple::x86:
++    case llvm::Triple::x86_64:
++      this->HasFloat128 = true;
++      break;
++    }
+   }
+ };
+ 
+--- tools/clang/test/CodeGenCXX/float128-declarations.cpp
++++ tools/clang/test/CodeGenCXX/float128-declarations.cpp
+@@ -12,6 +12,10 @@
+ // RUN:   %s -o - | FileCheck %s -check-prefix=CHECK-X86
+ // RUN: %clang_cc1 -emit-llvm -triple amd64-pc-openbsd -std=c++11 \
+ // RUN:   %s -o - | FileCheck %s -check-prefix=CHECK-X86
++// RUN: %clang_cc1 -emit-llvm -triple i386-pc-solaris2.11 -std=c++11 \
++// RUN:   %s -o - | FileCheck %s -check-prefix=CHECK-X86
++// RUN: %clang_cc1 -emit-llvm -triple x86_64-pc-solaris2.11 -std=c++11 \
++// RUN:   %s -o - | FileCheck %s -check-prefix=CHECK-X86
+ //
+ /*  Various contexts where type __float128 can appear. The different check
+     prefixes are due to different mangling on X86 and different calling
