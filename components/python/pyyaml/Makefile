@@ -26,17 +26,17 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		PyYAML
-COMPONENT_VERSION=	5.2
+COMPONENT_VERSION=	5.3.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e35be2fb3753cff7429e5649afd9c164912d3f1ecbd85c31a2f1a3bf0cb9f240
+    sha256:b8eac752c5e14d3eca0e6dd9199cd627518cb5ec06add0de9d32baeee6fe645d
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://pyyaml.org/wiki/PyYAML
 COMPONENT_BUGDB=	python-mod/pyyaml
 COMPONENT_ANITYA_ID=	4123
 
-TPNO=			57570
+TPNO=			57919
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
