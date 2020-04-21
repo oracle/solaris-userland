@@ -1,8 +1,8 @@
 This patch is a Solaris-specific hack; it will not be submitted upstream.
 
---- Python-2.7.9/Lib/distutils/sysconfig.py.~1~	2014-12-10 07:59:34.000000000 -0800
-+++ Python-2.7.9/Lib/distutils/sysconfig.py	2014-12-11 09:28:01.439349129 -0800
-@@ -209,6 +209,15 @@
+--- Python-2.7.18/Lib/distutils/sysconfig.py
++++ Python-2.7.18/Lib/distutils/sysconfig.py
+@@ -219,6 +219,15 @@ def customize_compiler(compiler):
          else:
              archiver = ar + ' ' + ar_flags
  
@@ -18,9 +18,9 @@ This patch is a Solaris-specific hack; it will not be submitted upstream.
          cc_cmd = cc + ' ' + cflags
          compiler.set_executables(
              preprocessor=cpp,
---- Python-2.7.17/Lib/distutils/tests/test_sysconfig.py
-+++ Python-2.7.17/Lib/distutils/tests/test_sysconfig.py
-@@ -127,10 +127,10 @@ class SysconfigTestCase(support.EnvironG
+--- Python-2.7.18/Lib/distutils/tests/test_sysconfig.py
++++ Python-2.7.18/Lib/distutils/tests/test_sysconfig.py
+@@ -107,10 +107,10 @@ class SysconfigTestCase(support.EnvironG
          self.assertEqual(comp.exes['preprocessor'],
                           'env_cpp --env-cppflags')
          self.assertEqual(comp.exes['compiler'],
@@ -33,7 +33,7 @@ This patch is a Solaris-specific hack; it will not be submitted upstream.
          self.assertEqual(comp.exes['compiler_cxx'],
                           'env_cxx --env-cxx-flags')
          self.assertEqual(comp.exes['linker_exe'],
-@@ -156,9 +156,9 @@ class SysconfigTestCase(support.EnvironG
+@@ -136,9 +136,9 @@ class SysconfigTestCase(support.EnvironG
          self.assertEqual(comp.exes['preprocessor'],
                           'sc_cc -E')
          self.assertEqual(comp.exes['compiler'],

@@ -1,9 +1,9 @@
 This patch modifies the setup script to support Solaris.
 As it is Solaris-specific, it is not suitable for upstream.
 
---- Python-2.7.15/setup.py.orig	2018-11-13 01:17:19.607311395 -0800
-+++ Python-2.7.15/setup.py	2018-11-13 01:18:25.632668502 -0800
-@@ -6,6 +6,7 @@
+--- Python-2.7.18/setup.py
++++ Python-2.7.18/setup.py
+@@ -6,6 +6,7 @@ __version__ = "$Revision$"
  import sys, os, imp, re, optparse
  from glob import glob
  from platform import machine as platform_machine
@@ -11,7 +11,7 @@ As it is Solaris-specific, it is not suitable for upstream.
  import sysconfig
  
  from distutils import log
-@@ -454,10 +455,13 @@
+@@ -500,10 +501,13 @@ class PyBuildExt(build_ext):
              os.unlink(tmpfile)
  
      def detect_modules(self):
@@ -28,7 +28,7 @@ As it is Solaris-specific, it is not suitable for upstream.
          if cross_compiling:
              self.add_gcc_paths()
          self.add_multiarch_paths()
-@@ -785,6 +789,13 @@
+@@ -831,6 +835,13 @@ class PyBuildExt(build_ext):
                                                       ['/usr/lib/termcap'],
                                                       'termcap'):
                  readline_libs.append('termcap')
@@ -42,7 +42,7 @@ As it is Solaris-specific, it is not suitable for upstream.
              exts.append( Extension('readline', ['readline.c'],
                                     library_dirs=['/usr/lib/termcap'],
                                     extra_link_args=readline_extra_link_args,
-@@ -806,7 +817,7 @@
+@@ -852,7 +863,7 @@ class PyBuildExt(build_ext):
          # socket(2)
          exts.append( Extension('_socket', ['socketmodule.c', 'timemodule.c'],
                                 depends=['socketmodule.h'],
@@ -51,7 +51,7 @@ As it is Solaris-specific, it is not suitable for upstream.
          # Detect SSL support for the socket module (via _ssl)
          search_for_ssl_incs_in = [
                                '/usr/local/ssl/include',
-@@ -1082,7 +1093,8 @@
+@@ -1128,7 +1139,8 @@ class PyBuildExt(build_ext):
                                      db_dirs_to_check + lib_dirs, dblib )
                      if dblib_file:
                          dblib_dir = [ os.path.abspath(os.path.dirname(dblib_file)) ]
@@ -61,7 +61,7 @@ As it is Solaris-specific, it is not suitable for upstream.
                      else:
                          if db_setup_debug: print "db lib: ", dblib, "not found"
  
-@@ -1362,8 +1374,11 @@
+@@ -1408,8 +1420,11 @@ class PyBuildExt(build_ext):
                  # _curses_panel.so must link with panelw.
                  panel_library = 'panelw'
              curses_libs = [curses_library]
@@ -75,7 +75,7 @@ As it is Solaris-specific, it is not suitable for upstream.
              exts.append( Extension('_curses', ['_cursesmodule.c'],
                                     include_dirs = curses_incs,
                                     libraries = curses_libs) )
-@@ -1385,9 +1400,21 @@
+@@ -1431,9 +1446,21 @@ class PyBuildExt(build_ext):
          # If the curses module is enabled, check for the panel module
          if (module_enabled(exts, '_curses') and
              self.compiler.find_library_file(lib_dirs, panel_library)):
@@ -98,7 +98,7 @@ As it is Solaris-specific, it is not suitable for upstream.
          else:
              missing.append('_curses_panel')
  
-@@ -1552,6 +1579,35 @@
+@@ -1598,6 +1625,35 @@ class PyBuildExt(build_ext):
          else:
              missing.append('dl')
  
@@ -134,7 +134,7 @@ As it is Solaris-specific, it is not suitable for upstream.
          # Thomas Heller's _ctypes module
          self.detect_ctypes(inc_dirs, lib_dirs)
  
-@@ -1602,9 +1658,14 @@
+@@ -1648,9 +1704,14 @@ class PyBuildExt(build_ext):
                  sysconfig.get_config_var('POSIX_SEMAPHORES_NOT_ENABLED')):
                  multiprocessing_srcs.append('_multiprocessing/semaphore.c')
  
@@ -149,7 +149,7 @@ As it is Solaris-specific, it is not suitable for upstream.
                                      include_dirs=["Modules/_multiprocessing"]))
          else:
              missing.append('_multiprocessing')
-@@ -1619,8 +1680,8 @@
+@@ -1665,8 +1726,8 @@ class PyBuildExt(build_ext):
          else:
              missing.append('linuxaudiodev')
  
@@ -160,7 +160,7 @@ As it is Solaris-specific, it is not suitable for upstream.
              or host_platform.startswith("gnukfreebsd")):
              exts.append( Extension('ossaudiodev', ['ossaudiodev.c']) )
          else:
-@@ -2098,7 +2159,8 @@
+@@ -2144,7 +2205,8 @@ class PyBuildExt(build_ext):
              # this option. If you want to compile ctypes with the Sun
              # compiler, please research a proper solution, instead of
              # finding some -z option for the Sun compiler.

@@ -6,8 +6,8 @@ Use an explicit nonfaulting load to ignore the ADI tag.
 This patch only works with Studio; one which supports gcc and
 Studio is being worked on with an intent to push it upstream. 
 
---- a/Objects/obmalloc.c        Wed Apr 13 11:52:46 2016 -0700
-+++ b/Objects/obmalloc.c        Thu Apr 14 07:00:32 2016 -0700
+--- Python-2.7.18/Objects/obmalloc.c
++++ Python-2.7.18/Objects/obmalloc.c
 @@ -42,6 +42,18 @@
  static int running_on_valgrind = -1;
  #endif
@@ -27,7 +27,7 @@ Studio is being worked on with an intent to push it upstream.
  /* An object allocator for Python.
  
     Here is an introduction to the layers of the Python memory architecture,
-@@ -735,7 +747,7 @@
+@@ -741,7 +753,7 @@ execution.  The caller of the macro is r
  variable.
  */
  #define Py_ADDRESS_IN_RANGE(P, POOL)                    \

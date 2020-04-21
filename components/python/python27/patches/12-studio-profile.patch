@@ -4,9 +4,9 @@ is a workaround for build peculiarities and to meet Studio's requirement
 that the profiling options be used at all steps of the build -- not just
 compilation.  As it is Solaris-specific, it is not suitable for upstream.
 
---- Python-2.7.15/Makefile.pre.in.orig	2018-11-22 05:11:54.602653159 -0800
-+++ Python-2.7.15/Makefile.pre.in	2018-11-22 05:31:27.924733726 -0800
-@@ -211,7 +211,7 @@
+--- Python-2.7.18/Makefile.pre.in
++++ Python-2.7.18/Makefile.pre.in
+@@ -211,7 +211,7 @@ TCLTK_LIBS=	@TCLTK_LIBS@
  # The task to run while instrument when building the profile-opt target
  # We exclude unittests with -x that take a rediculious amount of time to
  # run in the instrumented training build or do not provide much value.
@@ -15,7 +15,7 @@ compilation.  As it is Solaris-specific, it is not suitable for upstream.
  
  # report files for gcov / lcov coverage report
  COVERAGE_INFO=	$(abs_builddir)/coverage.info
-@@ -436,16 +436,22 @@
+@@ -436,23 +436,32 @@ profile-opt:
  
  build_all_generate_profile:
  	$(MAKE) @DEF_MAKE_RULE@ CFLAGS="$(CFLAGS) $(PGO_PROF_GEN_FLAG) @LTOFLAGS@" LDFLAGS="$(LDFLAGS) $(PGO_PROF_GEN_FLAG) @LTOFLAGS@" LIBS="$(LIBS)"
@@ -41,7 +41,6 @@ compilation.  As it is Solaris-specific, it is not suitable for upstream.
  
  # Compile and run with gcov
  .PHONY=coverage coverage-lcov coverage-report
-@@ -452,7 +458,10 @@
  coverage:
  	@echo "Building with support for coverage checking:"
  	$(MAKE) clean profile-removal
@@ -53,7 +52,7 @@ compilation.  As it is Solaris-specific, it is not suitable for upstream.
  
  coverage-lcov:
  	@echo "Creating Coverage HTML report with LCOV:"
-@@ -1418,9 +1427,7 @@
+@@ -1424,9 +1433,7 @@ clean: pycremoval
  	-find build -type f -a ! -name '*.gc??' -exec rm -f {} ';'
  
  profile-removal:
