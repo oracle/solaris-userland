@@ -1,0 +1,40 @@
+Dulwich shouldn't use certificates bundled with certifi, it should instead use
+system certificates file which is more likely to be updated in a timely manner
+when a CA cert is added/removed/modified.
+
+Not suitable for upstream
+
+--- dulwich-0.19.2/dulwich/client.py
++++ dulwich-0.19.2/dulwich/client.py
+@@ -1294,12 +1294,7 @@ def default_urllib3_manager(config, **ov
+ 
+     # Try really hard to find a SSL certificate path
+     if 'ca_certs' not in kwargs and kwargs.get('cert_reqs') != 'CERT_NONE':
+-        try:
+-            import certifi
+-        except ImportError:
+-            pass
+-        else:
+-            kwargs['ca_certs'] = certifi.where()
++        kwargs['ca_certs'] = "/etc/certs/ca-certificates.crt"
+ 
+     import urllib3
+ 
+--- dulwich-0.19.2/dulwich.egg-info/requires.txt
++++ dulwich-0.19.2/dulwich.egg-info/requires.txt
+@@ -1,4 +1,3 @@
+-certifi
+ urllib3>=1.21
+ 
+ [fastimport]
+--- dulwich-0.19.2/setup.py
++++ dulwich-0.19.2/setup.py
+@@ -78,7 +78,7 @@ if has_setuptools:
+         'fastimport': ['fastimport'],
+         'https': ['urllib3[secure]>=1.21'],
+         }
+-    setup_kwargs['install_requires'] = ['urllib3>=1.21', 'certifi']
++    setup_kwargs['install_requires'] = ['urllib3>=1.21']
+     setup_kwargs['include_package_data'] = True
+     setup_kwargs['test_suite'] = 'dulwich.tests.test_suite'
+     setup_kwargs['tests_require'] = tests_require
