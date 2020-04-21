@@ -79,12 +79,15 @@ depend type=optional \
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
 
-# force dependency on chardet; pkgdepend work is needed to flush this out.
+# force a dependency on chardet; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/chardet-$(PYV)
+
+# force a dependency on idna; pkgdepend work is needed to flush this out.
+depend type=require fmri=library/python/idna-$(PYV)
 
 # force a dependency on the requests package
 depend type=require \
     fmri=library/python/requests@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 
-# force dependency on urllib3; pkgdepend work is needed to flush this out.
+# force a dependency on urllib3; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/urllib3-$(PYV)

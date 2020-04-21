@@ -77,9 +77,19 @@ depend type=optional \
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
 
+# force a dependency on attrs; pkgdepend work is needed to flush this out.
+depend type=require fmri=library/python/attrs-$(PYV)
+
+# force a dependency on backports.functools_lru_cache; pkgdepend work is needed
+# to flush this out.
+depend type=require fmri=library/python/backports.functools_lru_cache-$(PYV)
+
 # force a dependency on the jsonschema package
 depend type=require \
     fmri=library/python/jsonschema@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 
-# force dependency on pyrsistent; pkgdepend work is needed to flush this out.
+# force a dependency on pyrsistent; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/pyrsistent-$(PYV)
+
+# force a dependency on six; pkgdepend work is needed to flush this out.
+depend type=require fmri=library/python/six-$(PYV)
