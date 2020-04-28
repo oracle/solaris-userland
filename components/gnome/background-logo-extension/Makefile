@@ -20,25 +20,30 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		background-logo-extension
-COMPONENT_VERSION=	3.24.0
+COMPONENT_VERSION=	3.34.0
 COMPONENT_PROJECT_URL=  https://extensions.gnome.org/extension/889/background-logo
 COMPONENT_ARCHIVE_HASH= \
-	sha256:02be5afb7fc4e31e89b0090caeef189d938f861717ab8d773d653d6bfebded0c
+	sha256:0fd78087cfec985ab1f2e6b70c560ecac42aab7549fbb0a73760ace3433d9d98
 COMPONENT_ARCHIVE_URL=	http://releases.pagure.org/background-logo-extension/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/gnome-shell
 COMPONENT_ANITYA_ID=	13118
 
-TPNO=			39314
+TPNO=			53989
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+
+COMPONENT_POST_INSTALL_ACTION += \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/solaris/Oracle_Solaris_Logo.png \
+                $(PROTO_DIR)/usr/share/pixmaps/Oracle_Solaris_Logo.png;
 
 REQUIRED_PACKAGES += gnome/gnome-shell
 REQUIRED_PACKAGES += library/desktop/clutter
