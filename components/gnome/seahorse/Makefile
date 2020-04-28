@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		64
@@ -28,25 +28,25 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		seahorse
-COMPONENT_VERSION=	3.18.0
+COMPONENT_VERSION=	3.32.2
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Seahorse
 COMPONENT_ARCHIVE_HASH= \
-	sha256:530c889a01c4cad25df4c9ab58ab95d24747875789bc6116bef529d60fc1b667
+	sha256:9de021088fc9233087ef7759d9762d86b8162723f403417bdad29d4feb6f1f35
 COMPONENT_BUGDB=	gnome/security
 COMPONENT_ANITYA_ID=	9548
 
-TPNO=			25850
+TPNO=			54131
+
+BUILD_STYLE=            meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU msgfmt in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
-CONFIGURE_OPTIONS += --disable-hkp
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+CONFIGURE_OPTIONS += -Dhkp-support=false -Dmanpage=true
 
-# GNU Build System files have to be regenerated for automake 1.16.
-# It can be removed when the upstream starts to use a newer automake version.
-COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/desktop/atk
@@ -56,6 +56,9 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gcr
 REQUIRED_PACKAGES += library/gnome/libsecret
 REQUIRED_PACKAGES += library/libsoup
+# for manpage
+REQUIRED_PACKAGES += library/libxslt
 REQUIRED_PACKAGES += library/security/gpgme
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/network/avahi
 REQUIRED_PACKAGES += system/network/ldap/openldap
