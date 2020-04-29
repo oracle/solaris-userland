@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS = 64
 COMPILER = gcc
@@ -33,25 +33,25 @@ gcc_FIX_PATH=
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME         = ruby
-COMPONENT_VERSION      = 2.6.5
+COMPONENT_VERSION      = 2.6.6
 COMPONENT_PROJECT_URL  = http://www.ruby-lang.org/
 COMPONENT_ARCHIVE_HASH = \
-    sha256:29e4e3077526df6650999057be22e14b21782820cf396cbe8e87a1604d9bfa24
+    sha256:46b30c53b5e24e16e49916595cbe04b20ac1a8a586d9abca38833e90d738ce98
 COMPONENT_ARCHIVE_URL  = http://cache.ruby-lang.org/pub/ruby/2.6/$(COMPONENT_ARCHIVE)
-COMPONENT_ANITYA_ID    = 4223
+COMPONENT_ANITYA_ID    = 21281
 
 # Rubygems support
 COMPONENT_NAME_GEMS     = rubygems
-COMPONENT_VERSION_GEMS  = 3.0.4
+COMPONENT_VERSION_GEMS  = 3.1.2
 COMPONENT_SRC_NAME_GEMS = $(COMPONENT_NAME_GEMS)
 COMPONENT_SRC_GEMS      = $(COMPONENT_SRC_NAME_GEMS)-$(COMPONENT_VERSION_GEMS)
 COMPONENT_ARCHIVE_GEMS  = $(COMPONENT_SRC_GEMS).tgz
 COMPONENT_ARCHIVE_HASH_GEMS = \
-    sha256:8292d0fb2e4dc6e074bb053894eb41f2ef533adcb088b7081450ae3cf62fe277
+    sha256:e2ad0a1c993ef4c25efe8649eacd5326512f65d2708537900e09b9743ec5da57
 COMPONENT_ARCHIVE_URL_GEMS = https://rubygems.org/rubygems/$(COMPONENT_ARCHIVE_GEMS)
 
-TPNO = 54742
-TPNO_GEMS = 52373
+TPNO = 58473
+TPNO_GEMS = 58666
 
 
 CFLAGS += "-std=gnu99"
@@ -61,19 +61,12 @@ include $(WS_MAKE_RULES)/common.mk
 # Copy parts of rubygems into main ruby directory
 RUBYGEMS=$(COMPONENT_SRC_GEMS)
 COMPONENT_PREP_ACTION = \
-    $(TAR) xvzf $(COMPONENT_ARCHIVE_GEMS); \
-    $(FIND) $(COMPONENT_SRC_GEMS) -type d -name "PaxHeader" -exec $(RM) -r {} \;; \
+    $(RM) -r $(SOURCE_DIR)/lib/rubygems ; \
+    $(RM) -r $(SOURCE_DIR)/test/rubygems ; \
     $(CP) -r $(RUBYGEMS)/lib $(SOURCE_DIR); \
-    $(CP) -r $(RUBYGEMS)/bundler/exe $(SOURCE_DIR)/bin; \
-    $(CP) $(SOURCE_DIR)/bin/exe/* $(SOURCE_DIR)/bin; \
-    $(CP) -r $(RUBYGEMS)/bundler $(SOURCE_DIR)/gems; \
-    $(CP) -r $(RUBYGEMS)/bundler $(SOURCE_DIR)/ext; \
     $(CP) -r $(RUBYGEMS)/bin $(SOURCE_DIR); \
     $(CP) -r $(RUBYGEMS)/hide_lib_for_update $(SOURCE_DIR); \
-    $(CP) -r $(RUBYGEMS)/util $(SOURCE_DIR); \
-    $(CP) -r $(RUBYGEMS)/Rakefile $(SOURCE_DIR); \
     $(CP) -r $(RUBYGEMS)/test/rubygems $(SOURCE_DIR)/test;
-
 
 CONFIGURE_PREFIX = $(USRDIR)/$(COMPONENT_NAME)/$(RUBY_VER)
 
@@ -172,8 +165,13 @@ COMPONENT_POST_INSTALL_ACTION += \
         $(PROTORUBYDIR)/share/man/man1/ruby.1 ; \
     /usr/bin/sed -f Solaris/rbconfig.sedscript.mod \
     $(PROTO_RBCONFIG_FILE) > rbconfig.rb.mod ; \
-    $(MV) rbconfig.rb.mod $(PROTO_RBCONFIG_FILE)
+    $(MV) rbconfig.rb.mod $(PROTO_RBCONFIG_FILE) ;
 
+# Rubygems man pages are in the correct format and hence shouldn't be installed
+# with the ruby installer (which tries to convert them and corrupts them instead)
+COMPONENT_POST_INSTALL_ACTION += \
+    $(CP) -r $(SOURCE_DIR)/man/bundle*.1 $(PROTORUBYDIR)/share/man/man1/ ; \
+    $(CP) -r $(SOURCE_DIR)/man/gemfile.5 $(PROTORUBYDIR)/share/man/man5/
 
 ## these macros are used in the package manifest
 PKG_MACROS += RUBY_VER=$(RUBY_VER) RUBY_LIB_VER=$(RUBY_LIB_VER) RUBY_VER_NO_DOT=$(RUBY_VER_NO_DOT)
