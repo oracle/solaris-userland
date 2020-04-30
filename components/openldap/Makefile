@@ -26,18 +26,18 @@ BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		openldap
-COMPONENT_VERSION=	2.4.49
+COMPONENT_VERSION=	2.4.50
 HUMAN_VERSION=		$(COMPONENT_VERSION)
-IPS_COMPONENT_VERSION=	2.4.49.0.0
+IPS_COMPONENT_VERSION=	2.4.50.0.0
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_PROJECT_URL=	http://www.openldap.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e3b117944b4180f23befe87d0dcf47f29de775befbc469dcf4ac3dab3311e56e
+	sha256:5cb57d958bf5c55a678c6a0f06821e0e5504d5a92e6a33240841fbca1db586b8
 COMPONENT_ARCHIVE_URL=	ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/openldap
 COMPONENT_ANITYA_ID=	2551
 
-TPNO=			56709
+TPNO=			58716
 
 # Simple Document Format (SDF), to produce html documentation.
 SDFVER=			sdf-2.001

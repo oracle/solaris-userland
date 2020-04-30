@@ -1,10 +1,11 @@
 Fixes problem with OpenLDAP+OpenSSL cannot trust intermediate
-or leaf certificates. 
+or leaf certificates.
+
 Patch was developed in-house; it is Solaris specific and
 will not be contributed upstream.
 
 diff --git a/libraries/libldap/tls_o.c b/libraries/libldap/tls_o.c
-index 3f2813f..ca3df3a 100644
+index 4152cd9..2a872b1 100644
 --- a/libraries/libldap/tls_o.c
 +++ b/libraries/libldap/tls_o.c
 @@ -467,6 +467,16 @@ tlso_ctx_init( struct ldapoptions *lo, struct ldaptls *lt, int is_server )
