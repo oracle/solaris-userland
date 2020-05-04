@@ -20,30 +20,17 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
 #
-BUILD_BITS= 64
-include ../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=         xorriso
-COMPONENT_VERSION=      1.5.2
-COMPONENT_ARCHIVE_HASH=	\
-      sha256:3b69f5c93ae7c40c5bbe4a847fa3963f5efc9c565551622f77121c5792fc17e7
-COMPONENT_ANITYA_ID=	13270
-
-TPNO=			58801
-
-CPPFLAGS+=		-I./test
-
-TEST_TARGET= $(NO_TESTS)
-include $(WS_MAKE_RULES)/gnu-component.mk
-
-CONFIGURE_OPTIONS  +=           --enable-shared
-CONFIGURE_OPTIONS  +=           --disable-static
-CONFIGURE_OPTIONS  +=           --sysconfdir=$(ETCDIR)/gnu
-CONFIGURE_OPTIONS  +=		--infodir=$(CONFIGURE_INFODIR)
-
-REQUIRED_PACKAGES += compress/bzip2
-REQUIRED_PACKAGES += library/readline
-REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += runtime/tk-8
+# Files delivered by xorriso-core package
+<transform link path=usr/bin/osirrox target=xorriso -> drop>
+<transform link path=usr/bin/xorrecord target=xorriso -> drop>
+<transform file path=usr/bin/xorriso$ -> drop>
+<transform link path=usr/bin/xorrisofs target=xorriso -> drop>
+<transform file path=usr/share/info/xorrecord.info -> drop>
+<transform file path=usr/share/info/xorriso.info -> drop>
+<transform file path=usr/share/info/xorrisofs.info -> drop>
+<transform file path=usr/share/man/man1/xorrecord.1 -> drop>
+<transform file path=usr/share/man/man1/xorriso.1 -> drop>
+<transform file path=usr/share/man/man1/xorrisofs.1 -> drop>
