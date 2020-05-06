@@ -1,0 +1,49 @@
+
+The next changes will be sent to upstream.
+
+Function clear_scsi_pt_obj() intentionally calls memset
+to fill the ptp structure with zeros but incorrectly
+destroys the ptp->dev_fd file descriptor during the process.
+The fix is to temporarily save the dev_fd and recover it
+when memset completes.
+
+Missing a semicolon:
+	int dxfer_len = ptp->uscsi.uscsi_buflen
+
+Replaced structure sg_pt_freebsd_scsi with sg_pt_solaris_scsi.
+
+--- sg3_utils-1.45/lib/sg_pt_solaris.c
++++ sg3_utils-1.45/lib/sg_pt_solaris.c
+@@ -132,7 +132,9 @@ clear_scsi_pt_obj(struct sg_pt_base * vp
+     struct sg_pt_solaris_scsi * ptp = &vp->impl;
+ 
+     if (ptp) {
++	int fd = ptp->dev_fd;
+         memset(ptp, 0, sizeof(struct sg_pt_solaris_scsi));
++	ptp->dev_fd = fd;
+         ptp->uscsi.uscsi_timeout = DEF_TIMEOUT;
+         ptp->uscsi.uscsi_flags = USCSI_READ | USCSI_ISOLATE | USCSI_RQENABLE;
+         ptp->uscsi.uscsi_timeout = DEF_TIMEOUT;
+@@ -335,8 +337,8 @@ void
+ get_pt_req_lengths(const struct sg_pt_base * vp, int * req_dinp,
+                    int * req_doutp)
+ {
+-    const struct sg_pt_freebsd_scsi * ptp = &vp->impl;
+-    int dxfer_len = ptp->uscsi.uscsi_buflen
++    const struct sg_pt_solaris_scsi * ptp = &vp->impl;
++    int dxfer_len = ptp->uscsi.uscsi_buflen;
+     int flags = ptp->uscsi.uscsi_flags;
+ 
+     if (req_dinp) {
+@@ -357,8 +359,8 @@ void
+ get_pt_actual_lengths(const struct sg_pt_base * vp, int * act_dinp,
+                       int * act_doutp)
+ {
+-    const struct sg_pt_freebsd_scsi * ptp = &vp->impl;
+-    int dxfer_len = ptp->uscsi.uscsi_buflen
++    const struct sg_pt_solaris_scsi * ptp = &vp->impl;
++    int dxfer_len = ptp->uscsi.uscsi_buflen;
+     int flags = ptp->uscsi.uscsi_flags;
+ 
+     if (act_dinp) {
+
