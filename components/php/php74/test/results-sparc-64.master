@@ -4,12 +4,12 @@ Exts skipped    :   15
 Exts tested     :   58
 ---------------------------------------------------------------------
 
-Number of tests : 15596             13138
-Tests skipped   : 2458 ( 15.8%) --------
+Number of tests : 15640             13174
+Tests skipped   : 2466 ( 15.8%) --------
 Tests warned    :    1 (  0.0%) (  0.0%)
-Tests failed    :  244 (  1.6%) (  1.9%)
+Tests failed    :  250 (  1.6%) (  1.9%)
 Expected fail   :   35 (  0.2%) (  0.3%)
-Tests passed    : 12858 ( 82.4%) ( 97.9%)
+Tests passed    : 12888 ( 82.4%) ( 97.8%)
 ---------------------------------------------------------------------
 =====================================================================
 
@@ -96,6 +96,8 @@ Test curl_copy_handle() with User Agent [ext/curl/tests/curl_copy_handle_basic_0
 Test curl_copy_handle() with simple POST [ext/curl/tests/curl_copy_handle_basic_007.phpt]
 Test curl_copy_handle() with CURLOPT_PROGRESSFUNCTION [ext/curl/tests/curl_copy_handle_basic_008.phpt]
 curl_copy_handle() allows to post CURLFile multiple times [ext/curl/tests/curl_copy_handle_variation3.phpt]
+curl_copy_handle() allows to post CURLFile multiple times with curl_multi_exec() [ext/curl/tests/curl_copy_handle_variation4.phpt]
+curl_copy_handle() allows to post CURLFile multiple times if postfields change [ext/curl/tests/curl_copy_handle_variation5.phpt]
 curl_error() function - basic test for curl_error using a fake url [ext/curl/tests/curl_error_basic.phpt]
 CURL file uploading [ext/curl/tests/curl_file_upload.phpt]
 CURL file uploading from stream [ext/curl/tests/curl_file_upload_stream.phpt]
@@ -160,6 +162,7 @@ Bug #68879: Match IP address fields in subjectAltName checks [ext/openssl/tests/
 Bug #68920: peer_fingerprint input checks should be strict [ext/openssl/tests/bug68920.phpt]
 Bug #69215: Crypto servers should send client CA list [ext/openssl/tests/bug69215.phpt]
 Bug #72333: fwrite() on non-blocking SSL sockets doesn't work [ext/openssl/tests/bug72333.phpt]
+Bug #73072: Invalid path SNI_server_certs causes segfault [ext/openssl/tests/bug73072.phpt]
 Bug #74159: Writing a large buffer to non-blocking encrypted streams fails [ext/openssl/tests/bug74159.phpt]
 Bug #76705: unusable ssl => peer_fingerprint in stream_context_create() [ext/openssl/tests/bug76705.phpt]
 Bug #76705: feof might hang on TLS streams in case of fragmented TLS records [ext/openssl/tests/bug77390.phpt]
@@ -256,7 +259,6 @@ Test function getservbyname() by substituting argument 2 with boolean values. [e
 Test function proc_nice() by substituting argument 1 with int values. [ext/standard/tests/general_functions/proc_nice_variation5.phpt]
 Test ip2long() function : usage variation 2, 64 bit [ext/standard/tests/network/ip2long_variation2_x64.phpt]
 Bug#54946 stream_get_contents infinite loop [ext/standard/tests/streams/bug54946.phpt]
-Bug #73457. Wrong error message when fopen FTP wrapped fails to open data connection [ext/standard/tests/streams/bug73457.phpt]
 Glob wrapper bypasses open_basedir [ext/standard/tests/streams/glob-wrapper.phpt]
 stream context tcp_nodelay [ext/standard/tests/streams/stream_context_tcp_nodelay.phpt]
 stream context tcp_nodelay fopen [ext/standard/tests/streams/stream_context_tcp_nodelay_fopen.phpt]
@@ -284,6 +286,7 @@ FPM: bug78599 - env_path_info underflow - CVE-2019-11043 [sapi/fpm/tests/bug7859
 FPM: Function fastcgi_finish_request basic test [sapi/fpm/tests/fastcgi_finish_request_basic.phpt]
 FPM: Function fpm_get_status basic test [sapi/fpm/tests/fpm_get_status_basic.phpt]
 FPM: Function getallheaders basic test [sapi/fpm/tests/getallheaders.phpt]
+FPM: Log message in shutdown function [sapi/fpm/tests/log-bm-in-shutdown-fn.phpt]
 FPM: Buffered message output log with limit 1024 and msg 80 [sapi/fpm/tests/log-bm-limit-1024-msg-80.phpt]
 FPM: Buffered message output log with limit 2048 and msg 4000 [sapi/fpm/tests/log-bm-limit-2048-msg-4000.phpt]
 FPM: Buffered worker output decorated log with limit 1050 with 2048 msg [sapi/fpm/tests/log-bwd-limit-1050-msg-2048.phpt]
@@ -291,6 +294,8 @@ FPM: Buffered worker output decorated log with limit 1050 with 2900 msg [sapi/fp
 FPM: Buffered worker output decorated log with limit 8000 with 4096 msg [sapi/fpm/tests/log-bwd-limit-8000-msg-4096.phpt]
 FPM: Buffered worker output plain log with limit 1024 and msg 120 [sapi/fpm/tests/log-bwp-limit-1024-msg-120.phpt]
 FPM: Buffered worker output plain log with limit 1500 and msg 3300 [sapi/fpm/tests/log-bwp-limit-1500-msg-3300.phpt]
+FPM: Buffered worker output plain log with msg with flush split in buffer [sapi/fpm/tests/log-bwp-msg-flush-split-fallback.phpt]
+FPM: Buffered worker output plain log with msg with flush split in buffer [sapi/fpm/tests/log-bwp-msg-flush-split-real.phpt]
 FPM: Direct worker output decorated log with limit 1050 with 2048 msg [sapi/fpm/tests/log-dwd-limit-1050-msg-2048.phpt]
 FPM: Direct worker output decorated log with limit 1050 with 2900 msg [sapi/fpm/tests/log-dwd-limit-1050-msg-2900.phpt]
 FPM: Direct worker output decorated log with limit 8000 with 4096 msg [sapi/fpm/tests/log-dwd-limit-8000-msg-4096.phpt]
@@ -301,6 +306,7 @@ FPM: Process manager config option pm.start_servers missing [sapi/fpm/tests/proc
 FPM: Process user setting ignored when FPM is not running as root [sapi/fpm/tests/proc-user-ignored.phpt]
 FPM: Socket for IPv4 connection [sapi/fpm/tests/socket-ipv4-basic.phpt]
 FPM: Unix Domain Socket connection [sapi/fpm/tests/socket-uds-basic.phpt]
+FPM: UNIX socket owner and group settings can be numeric [sapi/fpm/tests/socket-uds-numeric-ugid-nonroot.phpt]
 FPM: Status basic test [sapi/fpm/tests/status-basic.phpt]
 =====================================================================
 
