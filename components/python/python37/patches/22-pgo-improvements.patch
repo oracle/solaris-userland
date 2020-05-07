@@ -5,6 +5,7 @@ to ten minutes (depending on the architecture and build machine load).
 
 Cherry picked from upstream Python 3.8:
 https://github.com/python/cpython/commit/2406672984e4c1b18629e615edad52928a72ffcc
+https://github.com/python/cpython/commit/f0807ab24cbd13163bff7e0de3a97fe83584b80d
 https://github.com/python/cpython/commit/36fd7b6f01127bc6a8b4a37a363e0aa9cfd76506
 
 --- Python-3.7.5/Lib/test/libregrtest/cmdline.py
@@ -39,19 +40,20 @@ https://github.com/python/cpython/commit/36fd7b6f01127bc6a8b4a37a363e0aa9cfd7650
  from test.libregrtest.utils import removepy, count, format_duration, printlist
  from test import support
  
-@@ -217,6 +218,9 @@ class Regrtest:
+@@ -217,6 +218,10 @@ class Regrtest:
  
          removepy(self.tests)
- 
-+        # add default PGO tests if no tests are specified
-+        setup_pgo_tests(self.ns)
+
++        if self.ns.pgo:
++            # add default PGO tests if no tests are specified
++            setup_pgo_tests(self.ns)
 +
          stdtests = STDTESTS[:]
          nottests = NOTTESTS.copy()
          if self.ns.exclude:
 --- /dev/null
 +++ Python-3.7.5/Lib/test/libregrtest/pgo.py
-@@ -0,0 +1,55 @@
+@@ -0,0 +1,54 @@
 +# Set of tests run by default if --pgo is specified.  The tests below were
 +# chosen based on the following criteria: either they exercise a commonly used
 +# C extension module or type, or they run some relatively typical Python code.
@@ -96,7 +98,6 @@ https://github.com/python/cpython/commit/36fd7b6f01127bc6a8b4a37a363e0aa9cfd7650
 +    'test_sqlite',
 +    'test_statistics',
 +    'test_struct',
-+    'test_tabnanny',
 +    'test_time',
 +    'test_unicode',
 +    'test_xml_etree',
