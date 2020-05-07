@@ -1,0 +1,56 @@
+This patch fixes the decodenetnum test failure. This has been reported
+as NTP community bug 3667 and this patch may be removed when that bug is
+fixed.
+
+--- libntp/decodenetnum.c
++++ libntp/decodenetnum.c
+@@ -49,6 +49,7 @@ decodenetnum(
+ 	char *pp;
+ 	char *np;
+ 	char nbuf[80];
++	int portnum = 0;
+ 
+ 	REQUIRE(num != NULL);
+ 
+@@ -75,6 +76,8 @@ decodenetnum(
+ 			pp = strchr(nbuf, ':');
+ 			*pp = '\0';
+ 			port_str = pp + 1;
++			if (!isnumstr(port_str))
++				port_str = servicename;
+ 		}
+ 	} else {
+ 		host_str = np = nbuf; 
+@@ -88,17 +91,18 @@ decodenetnum(
+ 		return FALSE;
+ 	if ( ! *port_str)
+ 		port_str = servicename;
+-	
++
+ 	ZERO(hints);
+ 	hints.ai_flags |= Z_AI_NUMERICHOST;
+ 	if (isnumstr(port_str))
+ 		hints.ai_flags |= Z_AI_NUMERICSERV;
+ 	err = getaddrinfo(host_str, port_str, &hints, &ai);
+-	/* retry with default service name if the service lookup failed */ 
+-	if (err == EAI_SERVICE && strcmp(port_str, servicename)) {
++	/* retry with default service name if the service lookup failed */
++	if ((err == EAI_SERVICE || err == EAI_NONAME) &&
++	    strcmp(port_str, servicename) && hints.ai_flags & Z_AI_NUMERICSERV) {
++		portnum = atoi(port_str);
+ 		hints.ai_flags &= ~Z_AI_NUMERICSERV;
+-		port_str = servicename;
+-		err = getaddrinfo(host_str, port_str, &hints, &ai);
++		err = getaddrinfo(host_str, servicename, &hints, &ai);
+ 	}
+ 	/* retry another time with default service port if the service lookup failed */ 
+ 	if (err == EAI_SERVICE && strcmp(port_str, serviceport)) {
+@@ -112,6 +116,8 @@ decodenetnum(
+ 	INSIST(ai->ai_addrlen <= sizeof(*netnum));
+ 	ZERO(*netnum);
+ 	memcpy(netnum, ai->ai_addr, ai->ai_addrlen);
++	if (portnum != 0)
++		SET_PORT(netnum, portnum);
+ 	freeaddrinfo(ai);
+ 
+ 	return TRUE;

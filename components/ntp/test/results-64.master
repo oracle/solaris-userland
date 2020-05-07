@@ -298,27 +298,50 @@ buftvtots.c:93:test_AlwaysFalseOnWindows:IGNORE: Non-Windows test, skipping...
 
 OK
 PASS test-buftvtots (exit status: 0)
-calendar.c:24:test_DaySplitMerge:PASS
-calendar.c:25:test_SplitYearDays1:PASS
-calendar.c:26:test_SplitYearDays2:PASS
-calendar.c:27:test_RataDie1:PASS
-calendar.c:28:test_LeapYears1:PASS
-calendar.c:29:test_LeapYears2:PASS
-calendar.c:30:test_RoundTripDate:PASS
-calendar.c:31:test_RoundTripYearStart:PASS
-calendar.c:32:test_RoundTripMonthStart:PASS
-calendar.c:33:test_RoundTripWeekStart:PASS
-calendar.c:34:test_RoundTripDayStart:PASS
-calendar.c:35:test_IsoCalYearsToWeeks:PASS
-calendar.c:36:test_IsoCalWeeksToYearStart:PASS
-calendar.c:37:test_IsoCalWeeksToYearEnd:PASS
-calendar.c:38:test_DaySecToDate:PASS
-calendar.c:40:test_NtpToNtp:PASS
-calendar.c:41:test_NtpToTime:PASS
+calendar.c:28:test_Constants:PASS
+calendar.c:29:test_DaySplitMerge:PASS
+calendar.c:30:test_WeekSplitMerge:PASS
+calendar.c:31:test_SplitYearDays1:PASS
+calendar.c:32:test_SplitYearDays2:PASS
+calendar.c:33:test_SplitEraDays:PASS
+calendar.c:34:test_SplitEraWeeks:PASS
+calendar.c:35:test_RataDie1:PASS
+calendar.c:36:test_LeapYears1:PASS
+calendar.c:37:test_LeapYears2:PASS
+calendar.c:38:test_LeapYears3:PASS
+calendar.c:39:test_RoundTripDate:PASS
+calendar.c:40:test_RoundTripYearStart:PASS
+calendar.c:41:test_RoundTripMonthStart:PASS
+calendar.c:42:test_RoundTripWeekStart:PASS
+calendar.c:43:test_RoundTripDayStart:PASS
+calendar.c:44:test_IsoCalYearsToWeeks:PASS
+calendar.c:45:test_IsoCalWeeksToYearStart:PASS
+calendar.c:46:test_IsoCalWeeksToYearEnd:PASS
+calendar.c:47:test_DaySecToDate:PASS
+basedate set to 2019-03-31
+gps base set to 2019-03-31 (week 2047)
+calendar.c:48:test_GpsRollOver:PASS
+basedate set to 2019-04-07
+gps base set to 2019-04-07 (week 2048)
+calendar.c:49:test_GpsRemapFunny:PASS
+basedate set to 1980-01-06
+gps base set to 1980-01-06 (week 0)
+calendar.c:51:test_GpsNtpFixpoints:PASS
+calendar.c:52:test_NtpToNtp:PASS
+calendar.c:53:test_NtpToTime:PASS
+calendar.c:55:test_CalUMod7:PASS
+calendar.c:56:test_CalIMod7:PASS
+calendar.c:57:test_RellezCentury1_1:PASS
+calendar.c:58:test_RellezCentury3_1:PASS
+calendar.c:59:test_RellezYearZero:PASS
+calendar.c:1059:test_RellezEra:PASS
+calendar.c:1144:test_zellerDirect:PASS
+calendar.c:1192:test_ZellerDirectBad:PASS
+calendar.c:1207:test_zellerModInv:PASS
 
 -----------------------
-17 Tests: 
-17 PASS 
+34 Tests: 
+34 PASS 
 0 XFAIL 
 0 Failures 
 0 XPASS 
@@ -391,18 +414,18 @@ OK
 PASS test-clocktime (exit status: 0)
 decodenetnum.c:8:test_IPv4AddressOnly:PASS
 decodenetnum.c:9:test_IPv4AddressWithPort:PASS
-decodenetnum.c:87:test_IPv6AddressOnly:IGNORE: IPV6 disabled in build, skipping.
-decodenetnum.c:118:test_IPv6AddressWithPort:IGNORE: IPV6 disabled in build, skipping.
+decodenetnum.c:10:test_IPv6AddressOnly:PASS
+decodenetnum.c:11:test_IPv6AddressWithPort:PASS
 decodenetnum.c:12:test_IllegalAddress:PASS
 decodenetnum.c:13:test_IllegalCharInPort:PASS
 
 -----------------------
 6 Tests: 
-4 PASS 
+6 PASS 
 0 XFAIL 
 0 Failures 
 0 XPASS 
-2 Ignored 
+0 Ignored 
 
 OK
 PASS test-decodenetnum (exit status: 0)
@@ -674,19 +697,19 @@ sfptostr.c:20:test_SingleDecimalRounding:PASS
 OK
 PASS test-sfptostr (exit status: 0)
 socktoa.c:11:test_IPv4AddressWithPort:PASS
-socktoa.c:64:test_IPv6AddressWithPort:IGNORE: IPV6 disabled in build, skipping.
-socktoa.c:155:test_IgnoreIPv6Fields:IGNORE: IPV6 disabled in build, skipping.
+socktoa.c:12:test_IPv6AddressWithPort:PASS
+socktoa.c:13:test_IgnoreIPv6Fields:PASS
 socktoa.c:14:test_ScopedIPv6AddressWithPort:PASS
 socktoa.c:15:test_HashEqual:PASS
-IPv4 comparision failed, expected: 192.0.2.2(192.0.2.1) but was: 192.0.2.2(192.0.2.2)socktoa.c:16:test_HashNotEqual:PASS
+IPv4 comparision failed, expected: 192.0.2.1(192.0.2.1) but was: 192.0.2.2(192.0.2.2)socktoa.c:16:test_HashNotEqual:PASS
 
 -----------------------
 6 Tests: 
-4 PASS 
+6 PASS 
 0 XFAIL 
 0 Failures 
 0 XPASS 
-2 Ignored 
+0 Ignored 
 
 OK
 PASS test-socktoa (exit status: 0)
@@ -2761,6 +2784,9 @@ PASS test-ntpq (exit status: 0)
 
 /* Define if C99-compliant `vsnprintf' is available. */
 #define HAVE_VSNPRINTF 1
+
+/* Define to 1 if you have the `waitpid' function. */
+#define HAVE_WAITPID 1
 
 /* Define to 1 if you have the <wchar.h> header file. */
 #define HAVE_WCHAR_H 1
