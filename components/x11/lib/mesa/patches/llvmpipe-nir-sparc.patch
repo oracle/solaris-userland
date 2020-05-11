@@ -1,0 +1,61 @@
+This is regression between Mesa 19 and 20. On SPARC system glxgears
+won't show wheels but just random rectangles.
+
+This came in with:
+
+llvmpipe: switch to NIR by default
+
+https://github.com/mesa3d/mesa/commit/e6b2af56cb037e3174d049478e0ad7c7715780e4#diff-ca9de5cfd0347994dacc6eca9816d334
+
+Reported here:
+
+https://lists.freedesktop.org/archives/mesa-dev/2020-May/224479.html
+
+diff --git a/src/gallium/drivers/llvmpipe/lp_screen.c b/src/gallium/drivers/llvmpipe/lp_screen.c
+index e951baa..e656f80 100644
+--- a/src/gallium/drivers/llvmpipe/lp_screen.c
++++ b/src/gallium/drivers/llvmpipe/lp_screen.c
+@@ -398,8 +398,12 @@
+    case PIPE_CAP_TGSI_VOTE:
+    case PIPE_CAP_LOAD_CONSTBUF:
+    case PIPE_CAP_PACKED_UNIFORMS: {
++#if !defined(__sparc__)
+       struct llvmpipe_screen *lscreen = llvmpipe_screen(screen);
+       return !lscreen->use_tgsi;
++#else
++      return !!(LP_DEBUG & DEBUG_TGSI_IR);
++#endif
+    }
+    default:
+       return u_pipe_screen_get_param_defaults(screen, param);
+@@ -414,15 +418,19 @@
+    switch(shader)
+    {
+    case PIPE_SHADER_COMPUTE:
++#if !defined(__sparc__)
+       if ((LP_DEBUG & DEBUG_CL) && param == PIPE_SHADER_CAP_SUPPORTED_IRS)
+          return (1 << PIPE_SHADER_IR_TGSI) | (1 << PIPE_SHADER_IR_NIR) | (1 << PIPE_SHADER_IR_NIR_SERIALIZED);
++#endif
+    case PIPE_SHADER_FRAGMENT:
+       if (param == PIPE_SHADER_CAP_PREFERRED_IR) {
+          struct llvmpipe_screen *lscreen = llvmpipe_screen(screen);
+          if (lscreen->use_tgsi)
+             return PIPE_SHADER_IR_TGSI;
++#if !defined(__sparc__)
+          else
+             return PIPE_SHADER_IR_NIR;
++#endif
+       }
+       switch (param) {
+       default:
+@@ -434,8 +442,10 @@
+          struct llvmpipe_screen *lscreen = llvmpipe_screen(screen);
+          if (lscreen->use_tgsi)
+             return PIPE_SHADER_IR_TGSI;
++#if !defined(__sparc__)
+          else
+             return PIPE_SHADER_IR_NIR;
++#endif
+       }
+ 
+       switch (param) {
