@@ -42,8 +42,6 @@ COMPONENT_ANITYA_ID=	2062
 
 TPNO=			47655
 
-PYTHON_VERSION = 2.7
-
 BUILD_32_and_64 += $(BUILD_DIR_32)/.docs
 INSTALL_TARGET= build $(INSTALL_32_and_64)
 TEST_TARGET= $(TEST_32_and_64)
@@ -84,6 +82,10 @@ CONFIGURE_OPTIONS.32  +=	--without-perl-modules
 CONFIGURE_OPTIONS.64  +=	PERLPROG="$(PERL)"
 CONFIGURE_OPTIONS.64  +=	--with-perl-modules="$(PERL_ARGS)"
 CONFIGURE_OPTIONS.64  +=	--disable-perl-cc-checks
+
+# After we have unpacked, make a copy of the python bits so we
+# can build separate python 2.7 support.
+COMPONENT_POST_UNPACK_ACTION = (cd $(@D) ; cp -rp python python2.7)
 
 # Install the net-snmp-57 libraries
 COMPONENT_PRE_CONFIGURE_ACTION = \
@@ -130,7 +132,11 @@ $(INSTALL_32): COMPONENT_INSTALL_ARGS += PYTHON_VENDOR_PACKAGES=$(PYTHON_VENDOR_
 
 $(INSTALL_32): COMPONENT_POST_INSTALL_ACTION= \
 	($(MKDIR) -p $(BUILD_DIR)/prototype/$(MACH)/etc/net-snmp/snmp/mibs; \
-	 cd $(BUILD_DIR)/$(MACH32)/sun ; ls agent; $(CCSMAKE) -e $(CCSMAKE_ARGS) install)
+		cd $(BUILD_DIR)/$(MACH32)/sun ; ls agent; $(CCSMAKE) -e $(CCSMAKE_ARGS) install)  ; \
+		(cd $(@D)/python2.7 ; env PYTHON=$(PYTHON.2.7.$(BITS)) \
+		$(PYTHON.2.7.$(BITS)) ./setup.py install \
+			--root $(PROTO_DIR) \
+			--install-lib=$(PYTHON.2.7.VENDOR_PACKAGES))
 
 $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION= \
 	($(MKDIR) -p $(BUILD_DIR)/prototype/$(MACH64)/etc/net-snmp/snmp/mibs; \
@@ -148,6 +154,7 @@ REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os

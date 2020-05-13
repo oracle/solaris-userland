@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64_and_32
 
@@ -41,8 +41,6 @@ COMPONENT_BUGDB=	service/net-snmp utility/net-snmp library/net-snmp
 COMPONENT_ANITYA_ID=	2062
 
 TPNO=			22670
-
-PYTHON_VERSION = 2.7
 
 BUILD_32_and_64 += $(BUILD_DIR_32)/.docs
 INSTALL_TARGET= build $(INSTALL_32_and_64)
@@ -75,10 +73,6 @@ MIB_MOBULES.sparc = ucd-snmp/lmSensors
 MIB_MODULES = host disman/event-mib ucd-snmp/diskio udp-mib tcp-mib if-mib
 MIB_MOBULES += $(MIB_MODULES.$(MACH))
 CONFIGURE_OPTIONS  +=	--with-mib-modules="$(MIB_MODULES)"
-
-# Python bindings support.
-PYTHON_ARGS =		--basedir=/usr/bin
-CONFIGURE_OPTIONS  +=	--with-python-modules="$(PYTHON_ARGS)"
 
 # Only build 64 bit Perl support
 PERL_ARGS =			DESTDIR=$(PROTO_DIR) INSTALLDIRS=vendor
