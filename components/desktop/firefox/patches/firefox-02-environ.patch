@@ -1,0 +1,33 @@
+Subprocesses launched by firefox via modules/subprocess have an empty environment
+due to incorrect assumptions about environ variable in the libc.
+
+On Solaris, environ variable is not part of libc.so (weak binding only) and hence
+loading it from libc yields only a null pointer. This workaround gets environ
+variable directly from the firefox process.
+
+Patch not suitable for upstream; the idea might be.
+
+--- firefox-68.7.0/toolkit/modules/subprocess/subprocess_unix.jsm
++++ firefox-68.7.0/toolkit/modules/subprocess/subprocess_unix.jsm
+@@ -109,7 +109,7 @@ var SubprocessUnix = {
+     if (OS.Constants.Sys.Name == "Darwin") {
+       environ = libc._NSGetEnviron().contents;
+     } else {
+-      environ = libc.environ;
++      environ = libenv.environ;
+     }
+ 
+     const EQUAL = "=".charCodeAt(0);
+--- firefox-68.7.0/toolkit/modules/subprocess/subprocess_shared_unix.js
++++ firefox-68.7.0/toolkit/modules/subprocess/subprocess_shared_unix.js
+@@ -36,6 +36,10 @@ const unix = {
+   },
+ };
+ 
++var libenv = new Library("libenv", ["a.out"], {
++  environ: [ctypes.char.ptr.ptr],
++})
++
+ var libc = new Library("libc", LIBC_CHOICES, {
+   environ: [ctypes.char.ptr.ptr],
+ 
