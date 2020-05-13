@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -29,16 +29,16 @@ include ../../make-rules/shared-macros.mk
 PATH=$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=		gnupg
-COMPONENT_VERSION=	2.2.17
+COMPONENT_VERSION=	2.2.20
 COMPONENT_PROJECT_URL=	http://www.gnupg.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a32f1036f8fedf2b4be89e7a0ad528afabf870f1ed827237e08b2188ccd07c8e
+    sha256:04a7c9d48b74c399168ee8270e548588ddbe52218c337703d7f06373d326ca30
 COMPONENT_ARCHIVE_URL=	https://www.gnupg.org/ftp/gcrypt/gnupg/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	1215
 
-TPNO=			53902
+TPNO=			58864
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
@@ -134,3 +134,4 @@ REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/security/libgcrypt
 REQUIRED_PACKAGES += system/network/ldap/openldap
+REQUIRED_PACKAGES += security/pinentry

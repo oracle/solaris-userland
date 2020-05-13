@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=             64_and_32
@@ -47,7 +47,6 @@ PAM_MODULE_DIR = $(PAM_MODULE_DIR.$(BITS))
 
 CONFIGURE_OPTIONS += --disable-selinux
 CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --enable-gpg-agent
 CONFIGURE_OPTIONS += --enable-pam
 CONFIGURE_OPTIONS += --enable-shared
 CONFIGURE_OPTIONS += --enable-ssh-agent
@@ -61,7 +60,6 @@ COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 
-REQUIRED_PACKAGES += crypto/gnupg
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gcr
 REQUIRED_PACKAGES += network/ssh
