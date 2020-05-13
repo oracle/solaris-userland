@@ -90,16 +90,21 @@
  #endif
  	} else if (options.chroot_directory != NULL &&
  	    strcasecmp(options.chroot_directory, "none") != 0) {
-@@ -1992,6 +2007,9 @@ session_subsystem_req(struct ssh *ssh, S
+@@ -1992,8 +2007,14 @@ session_subsystem_req(struct ssh *ssh, S
  					    prog, strerror(errno));
  				s->is_subsystem = SUBSYSTEM_EXT;
  				debug("subsystem: exec() %s", cmd);
 +#if defined(USE_SOLARIS_PRIVS) && defined(SFTP_AUDIT)
-+				solaris_add_audit_privs();
++				solaris_add_audit_privs(prog);
 +#endif
  			}
  			success = do_exec(ssh, s, cmd) == 0;
++#if defined(USE_SOLARIS_PRIVS) && defined(SFTP_AUDIT)
++			solaris_drop_audit_privs();
++#endif
  			break;
+ 		}
+ 	}
 @@ -2821,6 +2839,14 @@ do_cleanup(struct ssh *ssh, Authctxt *au
  	 */
  	if (!use_privsep || mm_is_monitor())
@@ -942,11 +947,12 @@
 +#endif
 --- old/openbsd-compat/port-solaris.c	2019-11-02 12:07:13.074911939 +0000
 +++ new/openbsd-compat/port-solaris.c	2019-11-02 12:07:13.178286303 +0000
-@@ -37,6 +37,10 @@
+@@ -37,6 +37,11 @@
  
  #include "log.h"
  
 +#ifdef SFTP_AUDIT
++#include <stdlib.h>
 +#include "sftp-audit-solaris.h"
 +#endif
 +
@@ -968,11 +974,13 @@
  	if (priv_addset(npset, PRIV_FILE_CHOWN) != 0 ||
  	    priv_addset(npset, PRIV_FILE_DAC_READ) != 0 ||
  	    priv_addset(npset, PRIV_FILE_DAC_SEARCH) != 0 ||
-@@ -358,4 +370,39 @@ solaris_drop_privs_root_pinfo_net_exec(v
+@@ -358,4 +370,74 @@ solaris_drop_privs_root_pinfo_net_exec(v
  	priv_freeset(pset);
  }
  
 +#ifdef SFTP_AUDIT
++ static boolean_t restore_priv;
++ 
 +/*
 + * Called by session_subsystem_req() for SFTP when not using the in-process
 + * sftp-server (internal-sftp) since sshd instead forks and execs the
@@ -981,13 +989,30 @@
 + * audit records.
 + */
 +void
-+solaris_add_audit_privs(void)
++solaris_add_audit_privs(char *prog)
 +{
 +	priv_set_t *pset = NULL;
++ 	char *rp = realpath(prog, NULL);
 +
++ 	if (rp == NULL || strcmp(rp, "/usr/lib/ssh/sftp-server") != 0) {
++ 		free(rp);
++ 		return;
++ 	}
++ 	free(rp);
++ 
 +	if ((pset = priv_allocset()) == NULL) {
 +		fatal("priv_allocset: %s", strerror(errno));
 +	}
++
++ 	if (getppriv(PRIV_INHERITABLE, pset) != 0) {
++ 		fatal("getppriv: %s", strerror(errno));
++ 	}
++
++ 	/* User has PROC_AUDIT, do not add/remove. */
++ 	if (priv_ismember(pset, PRIV_PROC_AUDIT)) {
++ 		priv_freeset(pset);
++ 		return;
++ 	}
 +
 +	if (getppriv(PRIV_PERMITTED, pset) != 0) {
 +		fatal("getppriv: %s", strerror(errno));
@@ -998,24 +1023,41 @@
 +	 * previously in permanently_set_uid_with_audit().
 +	 */
 +	if (priv_ismember(pset, PRIV_PROC_AUDIT)) {
-+		if (setppriv(PRIV_SET, PRIV_INHERITABLE, pset) != 0) {
-+			fatal("setppriv: %s", strerror(errno));
++		if (priv_set(PRIV_ON, PRIV_INHERITABLE, PRIV_PROC_AUDIT,
++		    NULL) != 0) {
++			fatal("priv_set: %s", strerror(errno));
 +		}
++ 		restore_priv = B_TRUE;
 +	}
 +
 +	priv_freeset(pset);
++}
++
++/*
++ * Called by session_subsystem_req() after do_exec() to get rid of the audit
++ * privilege.
++ */
++void
++solaris_drop_audit_privs(void)
++{
++ 	if (restore_priv) {
++ 		(void) priv_set(PRIV_OFF, PRIV_INHERITABLE, PRIV_PROC_AUDIT,
++ 		    NULL);
++ 	}
++ 	restore_priv = B_FALSE;
 +}
 +#endif /* SFTP_AUDIT */
 +
  #endif
 --- old/openbsd-compat/port-solaris.h	2019-11-02 12:07:13.085384446 +0000
 +++ new/openbsd-compat/port-solaris.h	2019-11-02 12:07:13.188630937 +0000
-@@ -30,6 +30,9 @@ priv_set_t *solaris_basic_privset(void);
+@@ -30,6 +30,10 @@ priv_set_t *solaris_basic_privset(void);
  void solaris_drop_privs_pinfo_net_fork_exec(void);
  void solaris_drop_privs_root_pinfo_net(void);
  void solaris_drop_privs_root_pinfo_net_exec(void);
 +#ifdef SFTP_AUDIT
-+void solaris_add_audit_privs(void);
++void solaris_add_audit_privs(char *);
++void solaris_drop_audit_privs(void);
 +#endif
  # endif /* USE_SOLARIS_PRIVS */
  
