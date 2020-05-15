@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		NO_ARCH
@@ -37,8 +37,6 @@ COMPONENT_ANITYA_ID=	1198
 
 TPNO=			34578
 
-PYTHON_VERSION = 2.7
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # gtweak/defs.py is accidentally included in the tarball - we remove it so
@@ -48,11 +46,13 @@ COMPONENT_POST_UNPACK_ACTION += $(RM) $(SOURCE_DIR)/gtweak/defs.py ;
 
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
 
-# Use explicit Python version rather than the default one
-CONFIGURE_ENV += PYTHON=$(PYTHON.2.7)
-
 # Assumes GNU msgfmt & xgettext is first in $PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
+
+# pkgdepend doesn't like the first line of a Python script to be:
+# '#!/usr/bin/env python' so turn it into '#!/usr/bin/python3'
+PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/gnome-tweak-tool
+PYTHON_SCRIPTS += $(PROTOUSRLIBDIR)/gnome-tweak-tool-lid-inhibitor
 
 # Ensure Python modules are installed into vendor package directories.
 CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
@@ -61,11 +61,6 @@ CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
 # build .pyc's
 COMPONENT_POST_INSTALL_ACTION += $(PYTHON) -m compileall \
 	$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES) ;
-
-# pkgdepend doesn't like the first line of a Python script to be:
-# '#!/usr/bin/env python' so turn it into '#!/usr/bin/python2.7'
-PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/gnome-tweak-tool
-PYTHON_SCRIPTS += $(PROTOUSRLIBDIR)/gnome-tweak-tool-lid-inhibitor
 
 REQUIRED_PACKAGES += gnome/file-manager/nautilus
 REQUIRED_PACKAGES += gnome/gnome-settings-daemon
@@ -79,5 +74,5 @@ REQUIRED_PACKAGES += library/desktop/libnotify
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
 REQUIRED_PACKAGES += library/libsoup
-REQUIRED_PACKAGES += library/python/pygobject-3-27
-REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += library/python/pygobject-3-37
+REQUIRED_PACKAGES += runtime/python-37

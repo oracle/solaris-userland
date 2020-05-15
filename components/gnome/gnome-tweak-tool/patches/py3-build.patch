@@ -1,0 +1,360 @@
+Changes to get this version working with python 3
+
+Patch from https://bugzilla.gnome.org/show_bug.cgi?id=740219
+plus one in-house patch from the error found during testing
+
+diff -urN old/gtweak/app.py new/gtweak/app.py
+--- old/gtweak/app.py	2014-09-17 20:52:13.000000000 +0530
++++ new/gtweak/app.py	2016-05-27 20:04:04.582893241 +0530
+@@ -14,6 +14,7 @@
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with gnome-tweak-tool.  If not, see <http://www.gnu.org/licenses/>.
++from __future__ import print_function
+ 
+ import os.path
+ 
+@@ -82,7 +83,7 @@
+         dialog.destroy()
+             
+     def help_cb(self, action, parameter):
+-        print "This does nothing. It is only a demonstration."
++        print("This does nothing. It is only a demonstration.")
+ 
+     def disable_cb(self, action, parameter):
+         ds = DisableExtension()
+diff -urN old/gtweak/egowrapper.py new/gtweak/egowrapper.py
+--- old/gtweak/egowrapper.py	2016-03-14 21:36:51.000000000 +0530
++++ new/gtweak/egowrapper.py	2016-05-27 20:03:51.685873927 +0530
+@@ -14,6 +14,7 @@
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with gnome-tweak-tool.  If not, see <http://www.gnu.org/licenses/>.
++from __future__ import print_function
+ 
+ import json
+ import logging
+@@ -43,7 +44,7 @@
+         if msg.status_code == 200:
+             #server returns a list of extensions which may contain duplicates, dont know
+             resp = json.loads(msg.response_body.data)
+-            print resp
++            print(resp)
+             for e in resp["extensions"]:
+                 self._extensions[e["uuid"]] = e
+             self.emit("got-extensions", self._extensions)
+@@ -75,7 +76,7 @@
+ 
+     def query_extension_info(self, extension_uuid):
+         if extension_uuid in self._extensions:
+-            print "CACHED"
++            print("CACHED")
+             self.emit("got-extension-info", self._extensions[extension_uuid])
+             return
+ 
+@@ -96,7 +97,7 @@
+     from gi.repository import Gtk, GLib
+ 
+     def _got_ext(ego, extensions):
+-        print "="*80
++        print("="*80)
+         pprint.pprint(extensions.values())
+ 
+     def _got_ext_info(ego, extension):
+diff -urN old/gtweak/gsettings.py new/gtweak/gsettings.py
+--- old/gtweak/gsettings.py	2015-04-08 18:51:32.000000000 +0530
++++ new/gtweak/gsettings.py	2016-05-27 20:05:13.873996495 +0530
+@@ -14,6 +14,7 @@
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with gnome-tweak-tool.  If not, see <http://www.gnu.org/licenses/>.
++from __future__ import print_function
+ 
+ import logging
+ import os.path
+@@ -146,7 +147,7 @@
+             self.connect("changed", self._on_changed)
+ 
+     def _on_changed(self, settings, key_name):
+-        print "Change: %s %s -> %s" % (self.props.schema, key_name, self[key_name])
++        print("Change: %s %s -> %s" % (self.props.schema, key_name, self[key_name]))
+ 
+     def _setting_check_is_list(self, key):
+         variant = Gio.Settings.get_value(self, key)
+@@ -193,7 +194,7 @@
+ 
+     key = "draw-background"
+     s = GSettingsSetting("org.gnome.desktop.background")
+-    print s.schema_get_summary(key), s.schema_get_description(key)
++    print(s.schema_get_summary(key), s.schema_get_description(key))
+ 
+     key = "disabled-extensions"
+     s = GSettingsSetting("org.gnome.shell")
+diff -urN old/gtweak/gshellwrapper.py new/gtweak/gshellwrapper.py
+--- old/gtweak/gshellwrapper.py	2015-05-19 20:00:34.000000000 +0530
++++ new/gtweak/gshellwrapper.py	2016-05-27 20:06:04.130070852 +0530
+@@ -14,6 +14,7 @@
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with gnome-tweak-tool.  If not, see <http://www.gnu.org/licenses/>.
++from __future__ import print_function
+ 
+ import os.path
+ import json
+@@ -172,7 +173,7 @@
+         try:
+             proxy = _ShellProxy()
+             settings = GSettingsSetting("org.gnome.shell")
+-            v = map(int,proxy.version.split("."))
++            v = list(map(int,proxy.version.split(".")))
+ 
+             if v >= [3,5,0]:
+                 self.shell = GnomeShell36(proxy, settings)
+@@ -198,7 +199,7 @@
+     logging.basicConfig(format="%(levelname)-8s: %(message)s", level=logging.DEBUG)
+ 
+     s = GnomeShellFactory().get_shell()
+-    print "Shell Version: %s" % s.version
+-    print s.list_extensions()
++    print("Shell Version: %s" % s.version)
++    print(s.list_extensions())
+ 
+-    print s == GnomeShellFactory().get_shell()
++    print(s == GnomeShellFactory().get_shell())
+diff -urN old/gtweak/tweakmodel.py new/gtweak/tweakmodel.py
+--- old/gtweak/tweakmodel.py	2015-04-06 21:01:47.000000000 +0530
++++ new/gtweak/tweakmodel.py	2016-05-27 20:06:58.803151241 +0530
+@@ -87,7 +87,7 @@
+ 
+ class TweakModel(Gtk.ListStore):
+     (COLUMN_NAME,
+-     COLUMN_TWEAK) = range(2)
++     COLUMN_TWEAK) = list(range(2))
+ 
+     def __init__(self):
+         super(TweakModel, self).__init__(str, object)
+diff -urN old/gtweak/tweaks/tweak_group_interface.py new/gtweak/tweaks/tweak_group_interface.py
+--- old/gtweak/tweaks/tweak_group_interface.py	2015-08-28 18:04:30.000000000 +0530
++++ new/gtweak/tweaks/tweak_group_interface.py	2016-05-27 20:09:16.287351129 +0530
+@@ -136,7 +136,7 @@
+ 
+                 else:
+                     error = _("Shell user-theme extension not enabled")
+-            except Exception, e:
++            except Exception as e:
+                 logging.warning("Could not list shell extensions", exc_info=True)
+                 error = _("Could not list shell extensions")
+ 
+diff -urN old/gtweak/tweaks/tweak_group_shell_extensions.py new/gtweak/tweaks/tweak_group_shell_extensions.py
+--- old/gtweak/tweaks/tweak_group_shell_extensions.py	2015-08-28 18:04:30.000000000 +0530
++++ new/gtweak/tweaks/tweak_group_shell_extensions.py	2016-05-27 20:10:01.855416676 +0530
+@@ -1,3 +1,5 @@
++from __future__ import print_function
++
+ import os.path
+ import zipfile
+ import tempfile
+@@ -164,7 +166,7 @@
+ 
+     def error_handler(self, proxy_object, result, user_data):
+         user_data.set_label(_("Error"))
+-        print result
++        print(result)
+ 
+     def add_update_button(self, uuid):
+         self.deleteButton.hide()
+diff -urN old/gtweak/tweaks/tweak_group_shell.py new/gtweak/tweaks/tweak_group_shell.py
+--- old/gtweak/tweaks/tweak_group_shell.py	2016-01-17 23:36:59.000000000 +0530
++++ new/gtweak/tweaks/tweak_group_shell.py	2016-05-27 20:12:48.211320427 +0530
+@@ -47,7 +47,7 @@
+         Gtk.Box.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
+         _GSettingsTweak.__init__(self, name, "org.gnome.mutter", "dynamic-workspaces", **options)
+ 
+-        default = self.STATUS.keys()[self.STATUS.values().index(self.settings[self.key_name])]
++        default = list(self.STATUS.keys())[list(self.STATUS.values()).index(self.settings[self.key_name])]
+         key_options = [("dynamic", _("Dynamic")), ("static", _("Static"))]
+ 
+         self.combo = build_combo_box_text(default, *key_options)
+diff -urN old/gtweak/tweaks/tweak_group_startup.py new/gtweak/tweaks/tweak_group_startup.py
+--- old/gtweak/tweaks/tweak_group_startup.py	2015-10-26 22:18:16.000000000 +0530
++++ new/gtweak/tweaks/tweak_group_startup.py	2016-05-27 20:13:15.739526968 +0530
+@@ -14,8 +14,6 @@
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with gnome-tweak-tool.  If not, see <http://www.gnu.org/licenses/>.
+-from __future__ import print_function
+-
+ import os.path
+ import subprocess
+ import logging
+diff -urN old/gtweak/tweaks/tweak_group_test.py new/gtweak/tweaks/tweak_group_test.py
+--- old/gtweak/tweaks/tweak_group_test.py	2014-02-14 20:50:45.000000000 +0530
++++ new/gtweak/tweaks/tweak_group_test.py	2016-05-27 20:13:36.852684826 +0530
+@@ -15,9 +15,6 @@
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with gnome-tweak-tool.  If not, see <http://www.gnu.org/licenses/>.
+-
+-from __future__ import print_function
+-
+ from gi.repository import Gtk, Gdk
+ 
+ from gtweak.tweakmodel import Tweak
+diff -urN old/gtweak/tweaks/tweak_wacom.py new/gtweak/tweaks/tweak_wacom.py
+--- old/gtweak/tweaks/tweak_wacom.py	2014-02-14 20:50:45.000000000 +0530
++++ new/gtweak/tweaks/tweak_wacom.py	2016-05-27 20:16:11.124824014 +0530
+@@ -15,11 +15,14 @@
+ #
+ # Author: Joaquim Rocha <jrocha@redhat.com>
+ #
++try:
++    import ConfigParser as configParser
++except ImportError:
++    import configParser
+ 
+ from gtweak.tweakmodel import TweakGroup
+ from gtweak.widgets import GSettingsSwitchTweak
+ import subprocess
+-import ConfigParser
+ import io
+ 
+ def N_(x): return x
+@@ -101,10 +104,10 @@
+                 match_id = config.get(DEVICE_SECTION, DEVICE_MATCH_LINE)
+                 # Use a dict to discard possible repeated devices
+                 configs_dict[match_id] = config
+-        return configs_dict.values()
++        return list(configs_dict.values())
+ 
+     def _text_to_config(self, text):
+-        config = ConfigParser.RawConfigParser(allow_no_value=True)
++        config = configParser.RawConfigParser(allow_no_value=True)
+         config.readfp(io.BytesIO(text))
+         return config
+ 
+diff -urN old/gtweak/tweakview.py new/gtweak/tweakview.py
+--- old/gtweak/tweakview.py	2015-10-26 22:17:55.000000000 +0530
++++ new/gtweak/tweakview.py	2016-05-27 20:07:20.261182652 +0530
+@@ -168,7 +168,7 @@
+             row.add(lbl)
+             return row
+ 
+-        groups = self._model._tweak_group_names.keys()
++        groups = list(self._model._tweak_group_names.keys())
+         groups = sorted(groups)
+ 
+         for g in groups:
+diff -urN old/gtweak/widgets.py new/gtweak/widgets.py
+--- old/gtweak/widgets.py	2016-01-18 00:52:59.000000000 +0530
++++ new/gtweak/widgets.py	2016-05-27 20:07:51.875228783 +0530
+@@ -144,7 +144,7 @@
+         if (key in GSettingsSetting(overridesSchema, schema_filename=overridesFile).list_keys()):
+             options['schema_filename'] = overridesFile
+             return overridesSchema
+-    except GSettingsMissingError, e:
++    except GSettingsMissingError as e:
+         logging.info("GSetting missing %s" % (e.message))
+ 
+     return originalSchema
+@@ -164,7 +164,7 @@
+                 name,
+                 options.get("description",self.settings.schema_get_description(key_name)),
+                 **options)
+-        except GSettingsMissingError, e:
++        except GSettingsMissingError as e:
+             self.settings = GSettingsFakeSetting()
+             Tweak.__init__(self,"","")
+             self.loaded = False
+--- a/gtweak/tweaks/tweak_group_xkb.py  2020-05-14 16:37:32.657673269 -0700
++++ b/gtweak/tweaks/tweak_group_xkb.py  2020-05-14 16:39:36.689285604 -0700
+@@ -59,14 +59,16 @@
+             model_values.append((option_id, desc))
+             self._possible_values.append(option_id)
+
+-        def values_cmp((av, ad), (bv, bd)):
++        def values_cmp(xxx_todo_changeme, xxx_todo_changeme1):
++            (av, ad) = xxx_todo_changeme
++            (bv, bd) = xxx_todo_changeme1
+             if not av:
+                 return -1
+             elif not bv:
+                 return 1
+             else:
+-                return cmp(ad, bd)
+-        model_values.sort(cmp=values_cmp)
++                return (ad > bd) - (ad < bd)
++        model_values.sort(key=values_cmp)
+
+         self._widgets = dict()
+         for (val, name) in model_values:
+--- a/gtweak/tweaks/tweak_group_xkb.py  2020-05-14 16:47:55.099292839 -0700
++++ b/gtweak/tweaks/tweak_group_xkb.py  2020-05-14 16:48:51.233335440 -0700
+@@ -59,6 +59,25 @@
+             model_values.append((option_id, desc))
+             self._possible_values.append(option_id)
+
++        def values_cmp_py3_wrap(f):
++            ''' https://docs.python.org/3/howto/sorting.html#the-old-way-using-the-cmp-parameter '''
++            class C:
++                def __init__(self, obj, *args):
++                    self.obj = obj
++                def __lt__(self, other):
++                    return f(self.obj, other.obj) < 0
++                def __gt__(self, other):
++                    return f(self.obj, other.obj) > 0
++                def __eq__(self, other):
++                    return f(self.obj, other.obj) == 0
++                def __le__(self, other):
++                    return f(self.obj, other.obj) <= 0
++                def __ge__(self, other):
++                    return f(self.obj, other.obj) >= 0
++                def __ne__(self, other):
++                    return f(self.obj, other.obj) != 0
++            return C
++
+         def values_cmp(xxx_todo_changeme, xxx_todo_changeme1):
+             (av, ad) = xxx_todo_changeme
+             (bv, bd) = xxx_todo_changeme1
+@@ -68,7 +87,7 @@
+                 return 1
+             else:
+                 return (ad > bd) - (ad < bd)
+-        model_values.sort(key=values_cmp)
++        model_values.sort(key=values_cmp_py3_wrap(values_cmp))
+
+         self._widgets = dict()
+         for (val, name) in model_values:
+--- a/gtweak/tweaks/tweak_group_shell_extensions.py     2020-05-14 16:41:36.427753575 -0700
++++ b/gtweak/tweaks/tweak_group_shell_extensions.py     2020-05-14 16:42:45.763354049 -0700
+@@ -284,7 +284,7 @@
+             ego = ExtensionsDotGnomeDotOrg(version)
+             try:
+                 #add a tweak for each installed extension
+-                extensions = sorted(shell.list_extensions().values(), key=itemgetter("name"))
++                extensions = sorted(list(shell.list_extensions().values()), key=itemgetter("name"))
+                 for extension in extensions:
+                     try:
+                         extension_widget = _ShellExtensionTweak(shell, extension, size_group=sg)
+
+Additional changes to build with python 3 that are not upstream
+Found when testing gnome-tweak-tool
+
+--- a/gtweak/tweaks/tweak_group_windows.py	2020-05-14 16:41:29.617330063 -0700
++++ a/gtweak/tweaks/tweak_group_windows.py	2020-05-14 16:41:57.021785964 -0700
+@@ -23,6 +23,7 @@
+ import gettext
+
+ from gi.repository import Gtk, GLib
++import functools
+
+ _shell = GnomeShellFactory().get_shell()
+ _shell_loaded = _shell is not None
+@@ -57,7 +57,7 @@
+                 return order.index(x) - order.index(y)
+             else:
+                 return 0
+-        rsplit.sort(cmp=sort_buttons)
++        rsplit.sort(key=functools.cmp_to_key(sort_buttons))
+ 
+         self.settings.set_string(self.key_name, left + colon + ",".join(rsplit))
+ 
