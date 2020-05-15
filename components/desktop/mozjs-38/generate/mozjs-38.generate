@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 # Handle js executable itself
@@ -30,3 +30,9 @@
 
 # We are not shipping .ajs files
 <transform file path=.+\.ajs -> drop>
+
+# needed to workaround pkglint error of not aslr 
+<transform file usr/bin/\$\(MACH64\)/js path=usr/bin/js -> \
+    set pkg.linted.userland.action001.5 true>
+<transform file path=usr/bin/js-config -> \
+    set pkg.linted.userland.action001.5 true>

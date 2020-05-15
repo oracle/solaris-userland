@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 # parfait is a bit unhappy (24796622)
@@ -78,6 +78,13 @@ CONFIGURE_OPTIONS.32 += --with-system-nspr
 # fail to find it, requiring manual specification of the flags and libs.
 CONFIGURE_OPTIONS.64 += --with-nspr-cflags="-I/usr/include/mps"
 CONFIGURE_OPTIONS.64 += --with-nspr-libs="-R/usr/lib/mps/64 -L/usr/lib/mps/64 -lplds4 -lplc4 -lnspr4"
+
+# js coredumps on sparc - see bug 24935318
+ifeq ($(MACH), sparc)
+LD_EXEC_OPTIONS.64 += -M $(WS_COMPONENTS)/desktop/polkit/mapfile
+COMPONENT_BUILD_ENV.64 += LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS.64)"
+COMPONENT_INSTALL_ENV.64 += LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS.64)"
+endif
 
 unexport SHELLOPTS
 COMPONENT_TEST_ARGS =   -k -i
