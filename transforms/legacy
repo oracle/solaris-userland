@@ -20,42 +20,27 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, Oracle and/or its affiliates.
 #
 
 #
 # Specify which packages are to be moved to 'legacy' namespace. Please see
 # doc/packaging.txt section "Component EOF (End Of Feature)"
 #
-# Moving to legacy namespace consists of multiple things.
-# a) we prefix the package name by 'legacy/' string, for example pkg:/legacy/abc.
-#    This happens here in this transform file.
-# b) we create history file record stating that the package was renamed to
-#    legacy/ one. Like
-#    abc@AUTO_FMRI legacy/abc
-# c) we declare that the just created legacy package requires the
-#    abc@AUTO_FMRI so user can't install abc@PREVIOUS_FMRI and
-#    legacy/abc@AUTO_FMRI at the same time.
-#
-#    If we ever change the legacy/abc package (for example fix before the
-#    package is removed) we still must generate the dependency on rename
-#    package with FMRI where the rename package was created. If we fail to do
-#    that we'll need to ship the non-legacy rename package again every time we
-#    ship new version of the legacy package.
-#
 
 #
 # Name the affected packages and depend actions here. The lines here just
-# 'mark' the lines by setting 'legacy_fmri' attribute. All such marked lines
-# will be processed below. There always have to be two lines with identical
-# condition - one line for 'set pkg.fmri' and second line for 'depend' action.
+# 'mark' the lines by setting 'mark_legacy' attribute. All such marked lines
+# will be processed below.
 # An example can be:
-# <transform set name=pkg.fmri value=(pkg:/+)?.*(my/package) -> set legacy_fmri AUTO_FMRI>
-# <transform depend fmri=(pkg:/+)?.*(my/package) -> set legacy_fmri AUTO_FMRI>
+# <transform set name=pkg.fmri value=(pkg:/+)?.*(my/package) -> set mark_legacy true>
 # matching multiple packages is possible
-# <transform set name=pkg.fmri value=(pkg:/+)?.*(library/perl-5/.*-522.*) -> set legacy_fmri AUTO_FMRI>
-# <transform depend fmri=(pkg:/+)?.*(library/perl-5/.*-522.*) -> set legacy_fmri AUTO_FMRI>
+# <transform set name=pkg.fmri value=(pkg:/+)?.*(library/perl-5/.*-522.*) -> set mark_legacy true>
 #
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# Older legacy processing bellow this line (before PSARC/2020/053).
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 <transform set name=pkg.fmri value=(pkg:/+)?.*(apache-wsgi-34) -> set legacy_fmri 11.4.21.0.1.69.0>
 <transform depend fmri=(pkg:/+)?.*(apache-wsgi-34) -> set legacy_fmri 11.4.21.0.1.69.0>
@@ -173,18 +158,25 @@
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 #
+# If the package is marked by both old and new legacy flag (which we should
+# avoid but can happen), make sure only one of them is being used.
+#
+<transform set name=pkg.fmri mark_legacy=.* legacy_fmri=.* -> delete mark_legacy .*>
+
+#
 # Make sure that we don't modify packages created from the history files
 # (tools/generate-history adds do_not_move_to_legacy=true)
 #
 # First we remove (unmark) the package by removing legacy_fmri attribute
 <transform set name=pkg.fmri do_not_move_to_legacy=true legacy_fmri=.* -> delete legacy_fmri .*>
+<transform set name=pkg.fmri do_not_move_to_legacy=true mark_legacy=.* -> delete mark_legacy .*>
 # Now we can get rid of do_not_move_to_legacy attribute as we don't need it anymore
 <transform set name=pkg.fmri do_not_move_to_legacy=.* -> delete do_not_move_to_legacy .*>
 
 
 # Provide some support for the packages manually set in the legacy namespace
 <transform set name=pkg.fmri value=^(pkg://[^/]+/|pkg:/|)legacy/(.*) -> \
-    emit set name=pkg.namespace value=legacy>
+    emit set name=pkg.legacy value=true>
 # But do not apply any other automation
 <transform set name=pkg.fmri value=^(pkg://[^/]+/|pkg:/|)legacy/(.*) -> \
     delete legacy_fmri .*>
@@ -212,7 +204,7 @@
 # Add legacy metadata to a package being renamed to legacy
 #
 <transform set name=pkg.fmri legacy_fmri=.* -> \
-    emit set name=pkg.namespace value=legacy>
+    emit set name=pkg.legacy value=true>
 
 
 #
@@ -262,6 +254,14 @@
 #
 <transform depend legacy_fmri=.* do_not_remove_version=.* -> delete legacy_fmri .*>
 <transform depend do_not_remove_version=.* -> delete do_not_remove_version .*>
+
+#
+# Add legacy metadata to packages handled by the newer legacy process
+#
+<transform set name=pkg.fmri mark_legacy=true -> \
+    emit set name=pkg.legacy value=true>
+# remove mark_legacy attribute as we don't need it anymore
+<transform set name=pkg.fmri mark_legacy=.* -> delete mark_legacy .*>
 
 #
 # Anything left is a depend action pointing to a package which was moved to

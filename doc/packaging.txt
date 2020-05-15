@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2010, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2020, Oracle and/or its affiliates.
 #
 
 
@@ -333,17 +333,12 @@ Component EOF (End Of Feature)
 ==============================
 TL;DR you have to:
 
- 1) edit transforms/legacy and 'mark' all affected packages and depend lines by
- adding to them the attribute legacy_fmri=AUTO_FMRI
+ 1) edit transforms/legacy and 'mark' all affected packages by
+ adding to them the attribute mark_legacy=true
 
- 2) go to the component directory and create there 'history' file with the contents
- my/package@1.2.3-AUTO_FMRI legacy/my/package. 1.2.3 is actual version of
- my/package (It's current IPS_COMPONENT_VERSION usually derived from
- COMPONENTVERSION. See 'gmake print-IPS_COMPONENT_VERSION')
+ 2) create release note (usually in release-notes/some-text.txt)
 
- 3) create release note (usually in release-notes/some-text.txt)
-
- 4) Add the note into one of the packages. If there is multiple packages in the
+ 3) Add the note into one of the packages. If there is multiple packages in the
  component the note should be only in one (the main one supposedly). If the
  'generate' system is used, the note will go to generate/*.static file,
  otherwise just into the *.p5m. It is specified like:
@@ -359,7 +354,7 @@ This is a brief description on how to remove a component from Userland for
 an EOF. The process is described at PSARC/2018/018. That means that you will
 need to make three changes to the gate.
 
-a) Move components to legacy namespace
+a) Mark component as legacy
 b) Make sure that no package do depend on the legacy one
 c) Remove the component/package altogether
 
@@ -367,7 +362,7 @@ The timing is defined that
 
  - timer starts when a) is delivered to customer in SRU
  - c) must not happen sooner than 6 months from a). In other words customer can
-   be sure that if the package was just renamed to legacy it will stay on the
+   be sure that if the package was just marked legacy it will stay on the
    machine for at least 6 more months.
  - b) has to be completed at least three months before c). In other words, we
    are sure that no other package shipped by us required that removed package
@@ -377,36 +372,24 @@ The timing is defined that
  - if there are reasons to deviate from the process, it is documented in the
    associated arc case
 
-ad a) Move components to legacy namespace
+ad a) Mark component as legacy
 -----------------------------------------
-The goal is simple, rename package pkg:/some/package into
-pkg:/legacy/some/package.
-
-The details are a bit more complex:
- - as with any rename you need to create a 'rename package' under the original
-   name pkg:/some/package
- - as with any rename you need to rename the pkg:/some/package to
-   pkg:/legacy/some/package
+This stage consists of two steps:
  - you need to mark the legacy package by
-   set name=pkg.namespace value=legacy
- - you need to tell pkglint to ignore the fact that the new legacy package
-   delivers the same content as the original one.
- - you need to tell pkglint to ignore the fact that the new legacy package
-   seems to deliver the same symlink and so will force you to create mediated
-   links
+   set name=pkg.legacy value=true
  - at the same time we create release note telling customer that the package is
    going away soon-ish. That note is displayed to customer once he updates the
    component to legacy one.
 
-All of that with exception of the first (rename package) and last (release
-note) step is done by transforms in the transforms/legacy file.
+Since PSARC/2020/053, we don't have to rename packages, making this stage of
+the process much simpler.
 
 
 ad b) Verification who depends on given package
 -----------------------------------------------
 If you are removing mysql-55* for example, you can run:
 
-pkg search -r 'depend::database/mysql-56*'
+pkg search -r 'depend::database/mysql-55*'
 
 You can ignore
  - consolidation/userland/userland-incorporation
