@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -37,17 +37,14 @@ COMPONENT_ANITYA_ID=	13140
 
 TPNO=			34485
 
-# Only supports Python 2.x.
-PYTHON_VERSIONS= 2.7
+PYTHON_VERSIONS= 3.7
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # The build process modifies the shebang line to use the version of Python
 # automatically found; to avoid using the current system default, one is
 # explicitly specified here.
-CONFIGURE_ENV += PYTHON="$(PYTHON.2.7)"
-# We need >= 5.18; the default is 5.22 in 12, but 5.12 in 11.3, so be explicit.
-CONFIGURE_ENV += PERL="$(PERL.5.22)"
+CONFIGURE_ENV += PYTHON="$(PYTHON.3.7)"
 
 # Assumes GNU msgfmt in PATH.
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
@@ -63,7 +60,6 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/FAIL:/p" ' \
         '-e "/ERROR:/p" '
 
-$(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += data/docbook
 REQUIRED_PACKAGES += data/docbook/docbook-dtds
 REQUIRED_PACKAGES += data/docbook/docbook-style-dsssl
 REQUIRED_PACKAGES += data/docbook/docbook-style-xsl 
@@ -71,15 +67,14 @@ REQUIRED_PACKAGES += data/sgml-common
 REQUIRED_PACKAGES += data/xml-common
 REQUIRED_PACKAGES += developer/documentation-tool/itstool
 REQUIRED_PACKAGES += developer/documentation-tool/openjade
-$(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += developer/gnome/gettext
 REQUIRED_PACKAGES += developer/gnome/gnome-doc-utils
 REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += editor/vim
 REQUIRED_PACKAGES += library/gnome/gnome-common
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/libxslt
-REQUIRED_PACKAGES += library/python/libxml2-27
-REQUIRED_PACKAGES += runtime/perl-522
-REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += library/python/libxml2-37
+REQUIRED_PACKAGES += runtime/perl-526
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += service/gnome/desktop-cache
 REQUIRED_PACKAGES += text/gnu-gettext

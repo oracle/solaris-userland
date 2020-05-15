@@ -1,0 +1,72 @@
+From fcae109d9e4bcd5ea704ddf263f89621681432fe Mon Sep 17 00:00:00 2001
+From: Niveditha Rau <niveditha.rau@oracle.com>
+Date: Mon, 18 May 2020 21:31:41 -0700
+Subject: [PATCH] Fix the python3 errors reported while running gtkdoc-depscan
+
+--- a/gtkdoc-depscan.in	2020-05-19 08:08:48.271700667 -0700
++++ b/gtkdoc-depscan.in	2020-05-19 08:11:05.200955054 -0700
+@@ -4,6 +4,7 @@
+ 
+ import gzip, os.path, re
+ 
++from functools import reduce
+ from os import environ, popen, walk
+ from optparse import OptionParser
+ from sys import stderr
+@@ -35,7 +36,7 @@
+                 lambda n: (os.path.getmtime(n), n),
+                 filter(os.path.isfile, catalogs))
+ 
+-            catalogs.sort()
++            catalogs = sorted(catalogs)
+ 
+             if catalogs:
+                 self.__catalog = catalogs[-1][1]
+@@ -153,7 +154,7 @@
+         def __init__(self, text):
+             match = re.match(r'^\w*\s*((?:\d+\.)*\d+)', text)
+ 
+-            self.__numbers = map(int, match.group(1).split('.'))
++            self.__numbers = list(map(int, match.group(1).split('.')))
+             self.__hash = reduce(lambda x, y: x * 1000 + y, reversed(self.__numbers))
+             self.__text = text.strip()
+ 
+@@ -214,9 +215,9 @@
+         if since: since = Symbol.VersionInfo(since)
+ 
+         if name.count(' '):
+-            print >>stderr, (
++            print(
+                 'WARNING: Malformed symbol name: "%s" (type=%s) in %s.' % (
+-                name, type, book.name))
++                name, type, book.name), file=stderr)
+ 
+         return Symbol(book, name, type, link, deprecated, since)
+ 
+@@ -322,7 +323,7 @@
+             return name, Book(name, options.dirs, version)
+ 
+         except IOError as  e:
+-            print >>stderr, 'WARNING: %s.' % e
++            print('WARNING: %s.' % e, file=stderr)
+ 
+     def scan_source_file(name):
+         contents = None
+@@ -331,7 +332,7 @@
+             contents = __comment_regex.sub('', file(name).read())
+ 
+         except IOError as e:
+-            print >>stderr, e
++            print(e, file=stderr)
+ 
+         if contents:
+             trace('scanning: %s', name)
+@@ -368,7 +369,7 @@
+ 
+     for book in books.values():
+         requirements = book.find_requirements().items()
+-        requirements.sort()
++        requirements = sorted(requirements)
+ 
+         if requirements:
+             for symbol in requirements[-1][1]:
