@@ -34,16 +34,16 @@ include ../../make-rules/shared-macros.mk
 #   BIND <x>.<y>.<z>-P<n>   =>   IPS <x>.<y>.<z>.<n>.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		bind
-COMPONENT_VERSION=	9.11.17
-IPS_COMPONENT_VERSION=	9.11.17.0.0
+COMPONENT_VERSION=	9.11.19
+IPS_COMPONENT_VERSION=	9.11.19.0.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	service/dns-server
-TPNO=			57730
+TPNO=			59139
 COMPONENT_PROJECT_URL=	http://www.isc.org/software/bind/
 
 # hash from: sha256sum $(COMPONENT_ARCHIVE) | sed 's/\(.[^ ]*\).*/sha256:\1/'
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:7037bc318d986ac9267b82e4bd0551e528f87a0a0db18593a911cd82ab24321e
+	sha256:0dee554a4caa368948b32da9a0c97b516c19103bc13ff5b3762c5d8552f52329
 
 COMPONENT_ARCHIVE_URL=	\
 	http://ftp.isc.org/isc/bind9/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
