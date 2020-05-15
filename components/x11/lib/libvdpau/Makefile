@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS =            64_and_32
@@ -39,6 +39,10 @@ COMPONENT_ANITYA_ID=	1755
 TPNO=			55670
 
 include $(WS_MAKE_RULES)/x11-component.mk
+
+# Documentation does not get reliably built anymore, so I am disabling it for
+# now
+CONFIGURE_OPTIONS += -Ddocumentation=false
 
 # for tests
 unexport SHELLOPTS
