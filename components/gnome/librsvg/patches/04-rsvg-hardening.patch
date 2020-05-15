@@ -1,0 +1,49 @@
+It adds extra sanity checks to terminate early instead of crashing ...
+
+1) It checks that Elliptic Arc is given 7 parameters.
+- Demonstration on http://xahlee.info/js/svg_path_ellipse_arc.html.
+2) It adds extra check to avoid stack overwrite.
+
+The patch is not suitable for upstream since the project 
+was migrated to rust and this C file was removed.
+
+--- librsvg-2.40.16/rsvg-path.c	2020-05-15 15:19:12.803348500 +0000
++++ librsvg-2.40.16/rsvg-path.c	2020-05-15 15:18:44.693047255 +0000
+@@ -34,6 +34,7 @@
+ #include <math.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include <stdio.h>
+ 
+ #include "rsvg-private.h"
+ 
+@@ -521,6 +522,11 @@ rsvg_parse_path_do_cmd (RSVGParsePathCtx
+             x1 = ctx->cp.point.x;
+             y1 = ctx->cp.point.y;
+ 
++            if (ctx->param != 7) {
++                fprintf(stderr, "Invalid number of parameters for Elliptic Arc!\n");
++                exit(1);
++            }
++
+             rx = ctx->params[0];
+             ry = ctx->params[1];
+ 
+@@ -591,8 +597,15 @@ rsvg_path_end_of_number (RSVGParsePathCt
+             break;
+         }
+     }
+-    ctx->params[ctx->param++] = val;
+-    rsvg_parse_path_do_cmd (ctx, FALSE);    
++
++    if (ctx->param < 7) {
++        ctx->params[ctx->param++] = val;
++        rsvg_parse_path_do_cmd (ctx, FALSE);    
++    } else {
++        // Avoid a possible out-of-bound write to ctx->params array (on the stack).
++        fprintf(stderr, "Exceeded the maximal number of parameters! Terminating...\n");
++        exit(1);
++    }
+ }
+ 
+ #define RSVGN_IN_PREINTEGER  0
