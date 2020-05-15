@@ -27,15 +27,15 @@ BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME= 	timezone
-HUMAN_VERSION=		2019c
+HUMAN_VERSION=		2020a
 # The last digit of COMPONENT_VERSION corresponds to the last letter of the
 # upstream archive name. 'a' -> 1, 'b' -> 2, etc.
-COMPONENT_VERSION=    	2019.3.1
+COMPONENT_VERSION=    	2020.1
 COMPONENT_PROJECT_URL=	http://www.iana.org/time-zones
 COMPONENT_ARCHIVE_URL=	https://data.iana.org/time-zones/releases/tzdata$(HUMAN_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH= sha256:8dbba650a85a686c8a7a774c54c1c4d88e013e7093a7935bdb1595e8ab7ae9d3
 
-TPNO=			55008	
+TPNO=			58586	
 COMPONENT_ANITYA_ID=	5021
 
 # The timezone packages do not have normal FMRI version. This is because the
