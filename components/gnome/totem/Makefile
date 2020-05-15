@@ -30,52 +30,31 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		totem
-COMPONENT_VERSION=	3.24.0
+COMPONENT_VERSION=	3.34.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Totem
 COMPONENT_ARCHIVE_HASH= \
-	sha256:9bd78f7b940e886b5c809acdfe00a610a834de5080dd40272b92835528a58d01
+	sha256:04d56ede3e04ad16579774b64908641e57f13731793c9a258e93fd04cca8d701
 COMPONENT_BUGDB=        gnome/multimedia
 COMPONENT_ANITYA_ID=	13162
 
-TPNO=			35135
+TPNO=			54133
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# The build process modifies the shebang line to use the version of Python
-# automatically found; to avoid using the current system default, one is
-# explicitly specified here.
-CONFIGURE_ENV += PYTHON="$(PYTHON)"
-
-# Only build Python 2.7 support; most of GNOME still uses Python 2.x.  Building
-# both would lead to the possibility of both Python runtimes being loaded into
-# the same process space (not a good idea).
-PYTHON_VERSION = 2.7
-
-# Ensure Python modules are installed to vendor-packages directory;
-# the default is site-packages.
-CONFIGURE_OPTIONS += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
-
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --disable-schemas-compile
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
-CONFIGURE_OPTIONS += --enable-nautilus
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-python=$(PYTHON)
-CONFIGURE_OPTIONS += --enable-shared
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-vala
-CONFIGURE_OPTIONS += --with-pic
-CONFIGURE_OPTIONS += --with-plugins=autodetect
-
 # Assumes GNU msgfmt is in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
+COMPONENT_POST_INSTALL_ACTION.64 += \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/totem-audio-preview.1 \
+                $(PROTO_DIR)/usr/share/man/man1/totem-audio-preview.1;
+ 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
-REQUIRED_PACKAGES += developer/python/pylint-27
+REQUIRED_PACKAGES += developer/python/pylint-37
 REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += gnome/file-manager/nautilus
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
