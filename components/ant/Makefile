@@ -30,17 +30,17 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ant
-COMPONENT_VERSION=	1.10.7
+COMPONENT_VERSION=	1.10.8
 COMPONENT_PROJECT_URL=	https://ant.apache.org/
 COMPONENT_SRC_NAME=	apache-ant
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-src.tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:39882eff327f4a056d77605f0a973d4f30d003083e54fa0885ddab6055b6c8de
+    sha256:d9bdc6da6180b05aef8c60b06c637fc36d3741cbce109aada9586ceef2664272
 COMPONENT_ARCHIVE_URL=	https://archive.apache.org/dist/ant/source/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	50
 
-TPNO=			54541
+TPNO=			59166
 
 BUILD_STYLE= justmake
 include $(WS_MAKE_RULES)/common.mk
@@ -76,12 +76,15 @@ PERL_SCRIPTS = \
 
 COMPONENT_TEST_TARGETS =	test
 COMPONENT_TEST_ENV +=		$(ANT_ENV)
+# Userland default LC_ALL=C doesn't do good for tests
+# (Malformed input or input contains unmappable characters).
+COMPONENT_TEST_ENV +=		LC_ALL=
 
 COMPONENT_TEST_TRANSFORMS +=  \
 	'-e "/=/d" ' \
 	'-e "s/, Time elapsed: [0-9][0-9]*\.*[0-9]* sec//" '  \
 	'-e "/propertyfilecli/d" ' \
-	'-e "/Building zip:/d" ' \
+	'-e "/Building .*\.zip/d" ' \
 	'-e "/Processing /d" ' \
 	'-e "/Transform time: /d" ' \
 	'-e "/Deleting: /d" ' \

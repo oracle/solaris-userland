@@ -1,5 +1,22 @@
 
-check_for_optional_packages:
+check-optional-packages:
+
+prepare:
+
+compile:
+
+compile-jdk9+:
+
+build:
+Deleting directory $(@D)/build/classes/org/apache/tools/ant/taskdefs/optional/junitlauncher/confined
+Compiling 11 source files to $(@D)/build/classes
+Support for javac --release has been added in Java9 ignoring it
+Creating empty $(@D)/build/classes/org/apache/tools/ant/taskdefs/optional/junitlauncher/confined/package-info.class
+Copying 2 files to $(@D)/build/classes
+
+compile-tests:
+
+probe-offline:
 
 xml-check:
 
@@ -9,23 +26,17 @@ run-which:
 
 dump-info:
 
-prepare:
-
-build:
-Copying 2 files to $(@D)/build/classes
-
-compile-tests:
-
-probe-offline:
-
 test-init:
+Created dir: $(@D)/build/testcases/tmp
 
 junit-batch:
-WARNING: multiple versions of ant detected in path for junit 
-         jar:file:$(@D)/bootstrap/lib/ant.jar!/org/apache/tools/ant/Project.class
-     and file:$(@D)/build/classes/org/apache/tools/ant/Project.class
+Created dir: $(@D)/build/failingTests
+Created dir: $(@D)/build/testcases/xml
+WARNING: multiple versions of ant detected in path for junit
+         file:$(@D)/build/classes/org/apache/tools/ant/Project.class
+     and jar:file:$(@D)/bootstrap/lib/ant.jar!/org/apache/tools/ant/Project.class
 Testsuite: org.apache.tools.ant.AntClassLoaderTest
-Tests run: 9, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.CaseTest
 Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
@@ -34,11 +45,8 @@ Testsuite: org.apache.tools.ant.DefaultLoggerTest
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.DirectoryScannerTest
-Tests run: 29, Failures: 0, Errors: 0, Skipped: 1
+Tests run: 30, Failures: 0, Errors: 0, Skipped: 1
 
-------------- Standard Error -----------------
-link exists pre-test? false
-------------- ---------------- ---------------
 Testcase: testAbsolute5(org.apache.tools.ant.DirectoryScannerTest):SKIPPED: Can't use drive letters on non DOS or Netware systems
 Testsuite: org.apache.tools.ant.DispatchTaskTest
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
@@ -53,7 +61,7 @@ Testsuite: org.apache.tools.ant.ImmutableTest
 Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.IntrospectionHelperTest
-Tests run: 14, Failures: 0, Errors: 0, Skipped: 1
+Tests run: 49, Failures: 0, Errors: 0, Skipped: 1
 
 Testcase: testGetAddTextMethod(org.apache.tools.ant.IntrospectionHelperTest):SKIPPED: This silently ignores a build exception
 Testsuite: org.apache.tools.ant.LoaderRefTest
@@ -69,7 +77,7 @@ Testsuite: org.apache.tools.ant.ProjectHelperRepositoryTest
 Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.ProjectTest
-Tests run: 10, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 12, Failures: 0, Errors: 0, Skipped: 1
 
 ------------- Standard Output ---------------
 bar
@@ -77,10 +85,10 @@ bar
 ------------- Standard Error -----------------
 bar
 ------------- ---------------- ---------------
+Testcase: testResolveFileWithDriveLetter(org.apache.tools.ant.ProjectTest):SKIPPED: Not DOS or Netware
 Testsuite: org.apache.tools.ant.PropertyExpansionTest
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 1
+Tests run: 17, Failures: 0, Errors: 0, Skipped: 0
 
-Testcase: oldtestQuirkyLegacyBehavior(org.apache.tools.ant.PropertyExpansionTest):SKIPPED: Previously disabled through naming convention
 Testsuite: org.apache.tools.ant.PropertyFileCLITest
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 
@@ -95,7 +103,7 @@ Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
 Testsuite: org.apache.tools.ant.UnknownElementTest
 Tests run: 2, Failures: 0, Errors: 0, Skipped: 1
 
-Testcase: XtestTaskFinishedEvent(org.apache.tools.ant.UnknownElementTest):SKIPPED: Previously disabled through naming convention
+Testcase: testTaskFinishedEvent(org.apache.tools.ant.UnknownElementTest):SKIPPED: Previously disabled through naming convention
 Testsuite: org.apache.tools.ant.XmlLoggerTest
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 
@@ -112,7 +120,7 @@ Testsuite: org.apache.tools.ant.filters.HeadTailTest
 Tests run: 11, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.filters.LineContainsTest
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.filters.NoNewLineTest
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
@@ -126,11 +134,10 @@ Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 Testsuite: org.apache.tools.ant.filters.TokenFilterTest
 Tests run: 23, Failures: 0, Errors: 0, Skipped: 2
 
-Testcase: testScriptFilter(org.apache.tools.ant.filters.TokenFilterTest):SKIPPED: Project does not have 'testScriptFilter' target
-Testcase: testScriptFilter2(org.apache.tools.ant.filters.TokenFilterTest):SKIPPED: Project does not have 'testScriptFilter' target
 Testsuite: org.apache.tools.ant.launch.LocatorTest
-Tests run: 9, Failures: 0, Errors: 0, Skipped: 1
+Tests run: 9, Failures: 0, Errors: 0, Skipped: 2
 
+Testcase: testFileFromRemoteShare(org.apache.tools.ant.launch.LocatorTest):SKIPPED: not Windows
 Testcase: testTripleForwardSlashNetworkURI(org.apache.tools.ant.launch.LocatorTest):SKIPPED: We don't appear to generate paths like this in the launcher
 Testsuite: org.apache.tools.ant.taskdefs.AntLikeTasksAtTopLevelTest
 Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
@@ -145,8 +152,9 @@ Testsuite: org.apache.tools.ant.taskdefs.AntlibTest
 Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.AvailableTest
-Tests run: 28, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 29, Failures: 0, Errors: 0, Skipped: 1
 
+Testcase: test14(org.apache.tools.ant.taskdefs.AvailableTest):SKIPPED: returns non null IBM JDK 1.3 Linux
 Testsuite: org.apache.tools.ant.taskdefs.BUnzip2Test
 Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
 
@@ -172,7 +180,7 @@ Testsuite: org.apache.tools.ant.taskdefs.ConditionTest
 Tests run: 50, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.CopyTest
-Tests run: 24, Failures: 0, Errors: 0, Skipped: 5
+Tests run: 25, Failures: 0, Errors: 0, Skipped: 5
 
 Testcase: testResourcePlain(org.apache.tools.ant.taskdefs.CopyTest):SKIPPED: Previously ignored due to naming convention
 Testcase: testResourcePlainWithFilter(org.apache.tools.ant.taskdefs.CopyTest):SKIPPED: Previously ignored due to naming convention
@@ -205,6 +213,9 @@ Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.EchoXMLTest
 Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+
+Testsuite: org.apache.tools.ant.taskdefs.ExecStreamRedirectorTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.ExecTaskTest
 Tests run: 2, Failures: 0, Errors: 0, Skipped: 1
@@ -245,7 +256,7 @@ Testsuite: org.apache.tools.ant.taskdefs.JarTest
 Tests run: 30, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.JavaTest
-Tests run: 33, Failures: 0, Errors: 0, Skipped: 2
+Tests run: 38, Failures: 0, Errors: 0, Skipped: 7
 
 ------------- Standard Error -----------------
 The jvmargs attribute is deprecated. Please use nested jvmarg elements.
@@ -254,7 +265,12 @@ The jvmargs attribute is deprecated. Please use nested jvmarg elements.
 The args attribute is deprecated. Please use nested arg elements.
 
 ------------- ---------------- ---------------
+Testcase: testSourceFileCantUseModule(org.apache.tools.ant.taskdefs.JavaTest):SKIPPED: Skipping test which requires a minimum of Java 11 runtime
+Testcase: testSimpleSourceFile(org.apache.tools.ant.taskdefs.JavaTest):SKIPPED: Skipping test which requires a minimum of Java 11 runtime
+Testcase: testSourceFileRequiresFork(org.apache.tools.ant.taskdefs.JavaTest):SKIPPED: Skipping test which requires a minimum of Java 11 runtime
+Testcase: testSourceFileCantUseClassname(org.apache.tools.ant.taskdefs.JavaTest):SKIPPED: Skipping test which requires a minimum of Java 11 runtime
 Testcase: testRunFailFoe(org.apache.tools.ant.taskdefs.JavaTest):SKIPPED: Fatal tests have not been set to run
+Testcase: testSourceFileCantUseJar(org.apache.tools.ant.taskdefs.JavaTest):SKIPPED: Skipping test which requires a minimum of Java 11 runtime
 Testcase: testRunFail(org.apache.tools.ant.taskdefs.JavaTest):SKIPPED: Fatal tests have not been set to run
 Testsuite: org.apache.tools.ant.taskdefs.JavacTest
 Tests run: 17, Failures: 0, Errors: 0, Skipped: 0
@@ -295,7 +311,7 @@ Testsuite: org.apache.tools.ant.taskdefs.ParallelTest
 Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.PathConvertTest
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.PreSetDefTest
 Tests run: 12, Failures: 0, Errors: 0, Skipped: 0
@@ -304,7 +320,7 @@ Testsuite: org.apache.tools.ant.taskdefs.ProcessDestroyerTest
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.PropertyTest
-Tests run: 10, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 11, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.ProtectedJarMethodsTest
 Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
@@ -321,10 +337,18 @@ Testsuite: org.apache.tools.ant.taskdefs.ReplaceTest
 Tests run: 11, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.RmicAdvancedTest
-Tests run: 39, Failures: 0, Errors: 0, Skipped: 3
+Tests run: 47, Failures: 0, Errors: 0, Skipped: 11
 
+Testcase: testXnewForkedJava9plus(org.apache.tools.ant.taskdefs.RmicAdvancedTest):SKIPPED: Current system is Java 8 or older
+Testcase: testIDLJava11plus(org.apache.tools.ant.taskdefs.RmicAdvancedTest):SKIPPED: Current system is Java 10 or older
 Testcase: XtestWlrmic(org.apache.tools.ant.taskdefs.RmicAdvancedTest):SKIPPED: WLRmic tests don't work
 Testcase: NotestFailingAdapter(org.apache.tools.ant.taskdefs.RmicAdvancedTest):SKIPPED: Previously named to prevent execution
+Testcase: testXnewCompilerDestJava9plus(org.apache.tools.ant.taskdefs.RmicAdvancedTest):SKIPPED: Current system is Java 8 or older
+Testcase: testXnewForkedDestJava9plus(org.apache.tools.ant.taskdefs.RmicAdvancedTest):SKIPPED: Current system is Java 8 or older
+Testcase: testXnewCompilerJava9plus(org.apache.tools.ant.taskdefs.RmicAdvancedTest):SKIPPED: Current system is Java 8 or older
+Testcase: testIIOPDestJava11plus(org.apache.tools.ant.taskdefs.RmicAdvancedTest):SKIPPED: Current system is Java 10 or older
+Testcase: testIDLDestJava11plus(org.apache.tools.ant.taskdefs.RmicAdvancedTest):SKIPPED: Current system is Java 10 or older
+Testcase: testIIOPJava11plus(org.apache.tools.ant.taskdefs.RmicAdvancedTest):SKIPPED: Current system is Java 10 or older
 Testcase: XtestWlrmicJArg(org.apache.tools.ant.taskdefs.RmicAdvancedTest):SKIPPED: WLRmic tests don't work
 Testsuite: org.apache.tools.ant.taskdefs.RmicTest
 Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
@@ -348,13 +372,13 @@ Testsuite: org.apache.tools.ant.taskdefs.SubAntTest
 Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.SyncTest
-Tests run: 10, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 11, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.TStampTest
 Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.TarTest
-Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 19, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.TaskdefTest
 Tests run: 10, Failures: 0, Errors: 0, Skipped: 0
@@ -391,7 +415,7 @@ Testsuite: org.apache.tools.ant.taskdefs.XmlnsTest
 Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.ZipExtraFieldTest
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
 
 ------------- Standard Error -----------------
 ------------- ---------------- ---------------
@@ -400,7 +424,13 @@ Tests run: 26, Failures: 0, Errors: 0, Skipped: 1
 
 Testcase: test4(org.apache.tools.ant.taskdefs.ZipTest):SKIPPED: Previously commented out
 Testsuite: org.apache.tools.ant.taskdefs.compilers.DefaultCompilerAdapterTest
-Tests run: 14, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+
+------------- Standard Output ---------------
+javac1.8
+------------- ---------------- ---------------
+Testsuite: org.apache.tools.ant.taskdefs.compilers.JavacExternalTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.condition.AntVersionTest
 Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
@@ -447,14 +477,8 @@ Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 Testsuite: org.apache.tools.ant.taskdefs.email.EmailAddressTest
 Tests run: 13, Failures: 0, Errors: 0, Skipped: 0
 
-Testsuite: org.apache.tools.ant.taskdefs.email.EmailTaskTest
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
-
 Testsuite: org.apache.tools.ant.taskdefs.email.MessageTest
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
-
-Testsuite: org.apache.tools.ant.taskdefs.optional.ANTLRTest
-Tests run: 16, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.optional.EchoPropertiesTest
 Tests run: 17, Failures: 0, Errors: 0, Skipped: 0
@@ -474,9 +498,8 @@ Testsuite: org.apache.tools.ant.taskdefs.optional.Native2AsciiTest
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.optional.PropertyFileTest
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 1
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
 
-Testcase: testDirect(org.apache.tools.ant.taskdefs.optional.PropertyFileTest):SKIPPED: Previously commented out
 Testsuite: org.apache.tools.ant.taskdefs.optional.ReplaceRegExpTest
 Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
 
@@ -498,26 +521,30 @@ Testsuite: org.apache.tools.ant.taskdefs.optional.XsltTest
 Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.optional.depend.DependTest
-Tests run: 9, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 1
 
+Testcase: testModuleInfo(org.apache.tools.ant.taskdefs.optional.depend.DependTest):SKIPPED: Skipping test execution since Java version is lesser than 9
 Testsuite: org.apache.tools.ant.taskdefs.optional.i18n.TranslateTest
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 
+Testsuite: org.apache.tools.ant.taskdefs.optional.image.ImageIOTest
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0
+
 Testsuite: org.apache.tools.ant.taskdefs.optional.junit.BatchTestTest
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 62, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.optional.junit.DOMUtilTest
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.optional.junit.JUnitTaskTest
-Tests run: 19, Failures: 0, Errors: 0, Skipped: 1
+Tests run: 21, Failures: 0, Errors: 0, Skipped: 1
 
 Testcase: testFailureRecorder(org.apache.tools.ant.taskdefs.optional.junit.JUnitTaskTest):SKIPPED: Skipping test since it fails with JUnit 4
 Testsuite: org.apache.tools.ant.taskdefs.optional.junit.JUnitTestListenerTest
 Tests run: 8, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunnerTest
-Tests run: 8, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 11, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.optional.junit.JUnitVersionHelperTest
 Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
@@ -538,7 +565,7 @@ Testsuite: org.apache.tools.ant.taskdefs.optional.sos.SOSTest
 Tests run: 11, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.optional.unix.SymlinkTest
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.taskdefs.optional.vss.MSVSSTest
 Tests run: 19, Failures: 0, Errors: 0, Skipped: 0
@@ -549,26 +576,29 @@ Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
 Testsuite: org.apache.tools.ant.types.AssertionsTest
 Tests run: 11, Failures: 0, Errors: 0, Skipped: 0
 
+Testsuite: org.apache.tools.ant.types.CharSetTest
+Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+
 Testsuite: org.apache.tools.ant.types.CommandlineJavaTest
 Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.CommandlineTest
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.DescriptionTest
 Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.DirSetTest
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 23, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.EnumeratedAttributeTest
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
-
-Testsuite: org.apache.tools.ant.types.FileListTest
 Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
 
+Testsuite: org.apache.tools.ant.types.FileListTest
+Tests run: 12, Failures: 0, Errors: 0, Skipped: 0
+
 Testsuite: org.apache.tools.ant.types.FileSetTest
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 22, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.FilterSetTest
 Tests run: 13, Failures: 0, Errors: 0, Skipped: 0
@@ -581,13 +611,16 @@ Testsuite: org.apache.tools.ant.types.FlexIntegerTest
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.MapperTest
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0
+
+Testsuite: org.apache.tools.ant.types.ModuleVersionTest
+Tests run: 9, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.PathTest
-Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 33, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.PatternSetTest
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 16, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.PermissionsTest
 Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
@@ -603,22 +636,22 @@ Testsuite: org.apache.tools.ant.types.RedirectorElementTest
 Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.ResourceOutputTest
-Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 9, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.TarFileSetTest
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 26, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.XMLCatalogBuildFileTest
 Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.XMLCatalogTest
-Tests run: 10, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 13, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.ZipFileSetTest
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 26, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.mappers.GlobMapperTest
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.mappers.RegexpPatternMapperTest
 Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
@@ -630,13 +663,13 @@ Testsuite: org.apache.tools.ant.types.resources.JavaResourceTest
 Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.resources.LazyResourceCollectionTest
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
-
-Testsuite: org.apache.tools.ant.types.resources.MultiRootFileSetTest
 Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
 
+Testsuite: org.apache.tools.ant.types.resources.MultiRootFileSetTest
+Tests run: 27, Failures: 0, Errors: 0, Skipped: 0
+
 Testsuite: org.apache.tools.ant.types.resources.ResourceListTest
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.resources.TarResourceTest
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
@@ -645,37 +678,44 @@ Testsuite: org.apache.tools.ant.types.selectors.ContainsRegexpTest
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.selectors.ContainsSelectorTest
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.selectors.DateSelectorTest
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 16, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.selectors.DependSelectorTest
 Tests run: 10, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.selectors.DepthSelectorTest
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.selectors.FilenameSelectorTest
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 1
+
+Testcase: testSelectionBehaviourWildcard(org.apache.tools.ant.types.selectors.FilenameSelectorTest):SKIPPED: Turned off due to a bug: SelectorUtils.matchPattern() is recursive without '**' on Windows
+Testsuite: org.apache.tools.ant.types.selectors.OwnedBySelectorTest
 Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
 
-Testsuite: org.apache.tools.ant.types.selectors.OwnedBySelectorTest
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+Testsuite: org.apache.tools.ant.types.selectors.PosixGroupSelectorTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+
+Testsuite: org.apache.tools.ant.types.selectors.PosixPermissionsSelectorTest
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.selectors.PresentSelectorTest
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.selectors.SignedSelectorTest
 Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.selectors.SizeSelectorTest
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 16, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.selectors.TokenizedPatternTest
 Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.types.selectors.TypeSelectorTest
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.util.Base64ConverterTest
 Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
@@ -690,12 +730,19 @@ Testsuite: org.apache.tools.ant.util.DateUtilsTest
 Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.util.DeweyDecimalTest
-Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 14, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.util.FileUtilsTest
-Tests run: 13, Failures: 0, Errors: 0, Skipped: 1
+Tests run: 28, Failures: 0, Errors: 0, Skipped: 8
 
 Testcase: testIsContextRelativePath(org.apache.tools.ant.util.FileUtilsTest):SKIPPED: Test only runs on DOS
+Testcase: testNormalizeBackSlashDosOrNetware(org.apache.tools.ant.util.FileUtilsTest):SKIPPED: Not DOS or Netware
+Testcase: testNormalizeDosOrNetware(org.apache.tools.ant.util.FileUtilsTest):SKIPPED: Not DOS or Netware
+Testcase: testFromURI(org.apache.tools.ant.util.FileUtilsTest):SKIPPED: Not DOS or Netware
+Testcase: isLeadingPathCanonicalVersionWorksAsExpectedOnDos(org.apache.tools.ant.util.FileUtilsTest):SKIPPED: Test only runs on DOS
+Testcase: testNormalizeSlashDosOrNetware(org.apache.tools.ant.util.FileUtilsTest):SKIPPED: Not DOS or Netware
+Testcase: isLeadingPathAndTrailingSlashesOnDos(org.apache.tools.ant.util.FileUtilsTest):SKIPPED: Test only runs on DOS
+Testcase: testResolveFileDosOrNetware(org.apache.tools.ant.util.FileUtilsTest):SKIPPED: Not DOS or Netware
 Testsuite: org.apache.tools.ant.util.GlobPatternMapperTest
 Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
 
@@ -703,11 +750,14 @@ Testsuite: org.apache.tools.ant.util.JAXPUtilsTest
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.util.JavaEnvUtilsTest
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 3
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 6
 
+Testcase: java11IsDetectedProperly(org.apache.tools.ant.util.JavaEnvUtilsTest):SKIPPED: got: <false>, expected: is <true>
+Testcase: java10IsDetectedProperly(org.apache.tools.ant.util.JavaEnvUtilsTest):SKIPPED: got: <false>, expected: is <true>
 Testcase: testGetExecutableWindows(org.apache.tools.ant.util.JavaEnvUtilsTest):SKIPPED: Test only runs on windows
 Testcase: testGetExecutableNetware(org.apache.tools.ant.util.JavaEnvUtilsTest):SKIPPED: Test only runs on netware
 Testcase: isJavaVersionSupportsBothVersionsOfJava9(org.apache.tools.ant.util.JavaEnvUtilsTest):SKIPPED: got: <false>, expected: is <true>
+Testcase: java12IsDetectedProperly(org.apache.tools.ant.util.JavaEnvUtilsTest):SKIPPED: got: <false>, expected: is <true>
 Testsuite: org.apache.tools.ant.util.LayoutPreservingPropertiesTest
 Tests run: 9, Failures: 0, Errors: 0, Skipped: 0
 
@@ -742,7 +792,7 @@ Testsuite: org.apache.tools.ant.util.ResourceUtilsTest
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.util.StringUtilsTest
-Tests run: 20, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 24, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.util.SymlinkUtilsTest
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
@@ -754,7 +804,7 @@ Testsuite: org.apache.tools.ant.util.UnicodeUtilTest
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.util.VectorSetTest
-Tests run: 25, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 27, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.ant.util.XMLFragmentTest
 Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
@@ -790,7 +840,7 @@ Testsuite: org.apache.tools.tar.TarRoundTripTest
 Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.zip.AsiExtraFieldTest
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
 
 Testsuite: org.apache.tools.zip.ExtraFieldUtilsTest
 Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
@@ -821,6 +871,7 @@ junit-single-test:
 junit-tests:
 
 junit-report-only:
+Created dir: $(@D)/build/testcases/reports
 Loading stylesheet jar:file:$(@D)/bootstrap/lib/ant-junit.jar!/org/apache/tools/ant/taskdefs/optional/junit/xsl/junit-frames.xsl
 
 junit-report:
