@@ -2,17 +2,16 @@ Disable for Solaris
 
 Not suitable for upstream
 
---- a/Source/WTF/wtf/Platform.h	2018-02-23 15:00:14.639341856 -0800
-+++ b/Source/WTF/wtf/Platform.h	2018-02-23 15:00:54.557763796 -0800
-@@ -578,8 +604,10 @@
- #define USE_HARFBUZZ 1
- #define USE_SOUP 1
- #define USE_WEBP 1
+--- a/Source/WTF/wtf/PlatformUse.h	2020-05-04 13:52:52.150402176 +0000
++++ b/Source/WTF/wtf/PlatformUse.h	2020-05-04 13:52:07.269592553 +0000
+@@ -88,8 +88,10 @@
+ #endif
+ 
+ #if PLATFORM(COCOA) || (PLATFORM(GTK) || PLATFORM(WPE))
 +#if !OS(SOLARIS)
  #define USE_FILE_LOCK 1
  #endif
 +#endif
-
- #if PLATFORM(GTK)
- #define GLIB_VERSION_MIN_REQUIRED GLIB_VERSION_2_36
-
+ 
+ #if PLATFORM(COCOA)
+ #define USE_FOUNDATION 1

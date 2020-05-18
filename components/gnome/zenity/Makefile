@@ -45,6 +45,12 @@ CONFIGURE_ENV += PERL="$(PERL)"
 CONFIGURE_OPTIONS += --enable-libnotify
 CONFIGURE_OPTIONS += --enable-webkitgtk
 
+ifeq ($(MACH),sparc)
+# Webkit expects that only 48 bits from the address are effectively used.
+# This is not true on Solaris SPARC platform, so we use a mapfile to limit virtual address space.
+LD_EXEC_OPTIONS += -M $(WS_COMPONENTS)/desktop/webkitgtk4/mapfile_sparc_48bits
+endif
+
 # Assumes GNU msgfmt in PATH.
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 

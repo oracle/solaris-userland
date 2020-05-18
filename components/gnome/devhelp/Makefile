@@ -40,6 +40,12 @@ TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
+ifeq ($(MACH),sparc)
+# Webkit expects that only 48 bits from the address are effectively used.
+# This is not true on Solaris SPARC platform, so we use a mapfile to limit virtual address space.
+LD_EXEC_OPTIONS += -M $(WS_COMPONENTS)/desktop/webkitgtk4/mapfile_sparc_48bits
+endif
+
 # need to use gnu-gettext
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 

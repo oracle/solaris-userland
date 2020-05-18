@@ -2,9 +2,9 @@ Solaris missing from define checks for inline-assembler calling convention.
 
 file upstream bug
 
---- a/Source/WTF/wtf/InlineASM.h	2018-02-14 09:21:18.884048689 -0800
-+++ b/Source/WTF/wtf/InlineASM.h	2018-02-14 09:22:51.207602610 -0800
-@@ -42,11 +42,11 @@
+--- webkitgtk-2.28.2/Source/WTF/wtf/InlineASM.h	2020-05-04 15:31:20.389555936 +0000
++++ webkitgtk-2.28.2/Source/WTF/wtf/InlineASM.h	2020-05-04 15:31:14.667652615 +0000
+@@ -43,11 +43,11 @@
  #define THUMB_FUNC_PARAM(name)
  #endif
  
@@ -18,11 +18,19 @@ file upstream bug
  #define GLOBAL_REFERENCE(name) SYMBOL_STRING(name) "@plt"
  #else
  #define GLOBAL_REFERENCE(name) SYMBOL_STRING(name)
-@@ -82,6 +82,7 @@
- #if OS(DARWIN)
- #define LOCAL_LABEL_STRING(name) "L" #name
- #elif  OS(LINUX)               \
-+    || OS(SOLARIS)             \
+@@ -69,6 +69,7 @@
      || OS(FREEBSD)             \
      || OS(FUCHSIA)             \
      || OS(OPENBSD)             \
++    || OS(SOLARIS)             \
+     || OS(HPUX)                \
+     || OS(NETBSD)
+     // ELF platform
+@@ -86,6 +87,7 @@
+     || OS(FREEBSD)             \
+     || OS(FUCHSIA)             \
+     || OS(OPENBSD)             \
++    || OS(SOLARIS)             \
+     || OS(HURD)                \
+     || OS(NETBSD)              \
+     || COMPILER(MINGW)

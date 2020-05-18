@@ -2,9 +2,9 @@ Changes for the build to work on Solaris
 
 Potentially suitable to send upstream
 
---- a/Source/WTF/wtf/Platform.h	2018-08-15 09:53:48.950348332 -0700
-+++ b/Source/WTF/wtf/Platform.h	2018-08-15 10:09:02.845778665 -0700
-@@ -114,6 +114,26 @@
+--- webkitgtk-2.28.2/Source/WTF/wtf/PlatformCPU.h	2020-05-04 15:11:26.079688193 +0000
++++ webkitgtk-2.28.2/Source/WTF/wtf/PlatformCPU.h	2020-05-04 15:10:37.429983685 +0000
+@@ -89,6 +89,26 @@
  #define WTF_CPU_KNOWN 1
  #endif
  
@@ -31,7 +31,7 @@ Potentially suitable to send upstream
  /* CPU(X86) - i386 / x86 32-bit */
  #if   defined(__i386__) \
      || defined(i386)     \
-@@ -322,7 +342,7 @@
+@@ -281,7 +301,7 @@
  #define WTF_CPU_UNKNOWN 1
  #endif
  
@@ -40,7 +40,9 @@ Potentially suitable to send upstream
  #define WTF_CPU_NEEDS_ALIGNED_ACCESS 1
  #endif
  
-@@ -413,6 +433,11 @@
+--- webkitgtk-2.28.2/Source/WTF/wtf/PlatformOS.h	2020-05-04 15:16:13.700197611 +0000
++++ webkitgtk-2.28.2/Source/WTF/wtf/PlatformOS.h	2020-05-04 15:13:50.446849339 +0000
+@@ -114,6 +114,11 @@
  #define WTF_OS_OPENBSD 1
  #endif
  
@@ -52,7 +54,7 @@ Potentially suitable to send upstream
  /* OS(WINDOWS) - Any version of Windows */
  #if defined(WIN32) || defined(_WIN32)
  #define WTF_OS_WINDOWS 1
-@@ -430,6 +455,7 @@
+@@ -129,6 +134,7 @@
      || OS(LINUX)            \
      || OS(NETBSD)           \
      || OS(OPENBSD)          \
@@ -60,7 +62,9 @@ Potentially suitable to send upstream
      || defined(unix)        \
      || defined(__unix)      \
      || defined(__unix__)
-@@ -1373,7 +1401,7 @@
+--- webkitgtk-2.28.2/Source/WTF/wtf/PlatformHave.h	2020-05-04 15:16:32.512420774 +0000
++++ webkitgtk-2.28.2/Source/WTF/wtf/PlatformHave.h	2020-05-04 15:15:36.240964050 +0000
+@@ -347,7 +347,7 @@
  #define HAVE_URL_FORMATTING 1
  #endif
  
@@ -69,16 +73,6 @@ Potentially suitable to send upstream
  #define HAVE_STACK_BOUNDS_FOR_NEW_THREAD 1
  #endif
  
---- a/Source/WTF/wtf/InlineASM.h	2019-05-17 09:39:04.020802993 -0700
-+++ b/Source/WTF/wtf/InlineASM.h	2019-05-17 09:39:49.284823848 -0700
-@@ -67,6 +67,7 @@
- #define HIDE_SYMBOL(name) ".lglobl " #name
- #elif  OS(LINUX)               \
-     || OS(FREEBSD)             \
-+    || OS(SOLARIS)             \
-     || OS(FUCHSIA)             \
-     || OS(OPENBSD)             \
-     || OS(HPUX)                \
 --- a/Source/WTF/wtf/NumberOfCores.cpp	2019-05-17 09:40:04.686265040 -0700
 +++ b/Source/WTF/wtf/NumberOfCores.cpp	2019-05-17 09:40:42.200543875 -0700
 @@ -34,7 +34,7 @@
@@ -130,3 +124,36 @@ Potentially suitable to send upstream
  #elif OS(UNIX)
  
  #if OS(OPENBSD)
+--- webkitgtk-2.28.2/Source/WTF/wtf/CurrentTime.cpp	2020-05-04 15:33:00.151316952 +0000
++++ webkitgtk-2.28.2/Source/WTF/wtf/CurrentTime.cpp	2020-05-04 15:32:30.860465903 +0000
+@@ -266,7 +266,7 @@ MonotonicTime MonotonicTime::now()
+     return fromRawSeconds((mach_absolute_time() * timebaseInfo.numer) / (1.0e9 * timebaseInfo.denom));
+ #elif OS(FUCHSIA)
+     return fromRawSeconds(zx_clock_get_monotonic() / static_cast<double>(ZX_SEC(1)));
+-#elif OS(LINUX) || OS(FREEBSD) || OS(OPENBSD) || OS(NETBSD)
++#elif OS(LINUX) || OS(FREEBSD) || OS(OPENBSD) || OS(SOLARIS) || OS(NETBSD)
+     struct timespec ts { };
+     clock_gettime(CLOCK_MONOTONIC, &ts);
+     return fromRawSeconds(static_cast<double>(ts.tv_sec) + ts.tv_nsec / 1.0e9);
+--- webkitgtk-2.28.2/Source/WebCore/inspector/InspectorFrontendHost.cpp	2020-05-04 15:34:43.528901116 +0000
++++ webkitgtk-2.28.2/Source/WebCore/inspector/InspectorFrontendHost.cpp	2020-05-04 15:34:14.749894025 +0000
+@@ -333,6 +333,8 @@ String InspectorFrontendHost::platform()
+     return "freebsd"_s;
+ #elif OS(OPENBSD)
+     return "openbsd"_s;
++#elif OS(SOLARIS)
++    return "solaris"_s;
+ #else
+     return "unknown"_s;
+ #endif
+--- webkitgtk-2.28.2/Source/WTF/wtf/PageBlock.h	2020-05-18 14:49:14.958903903 +0000
++++ webkitgtk-2.28.2/Source/WTF/wtf/PageBlock.h	2020-05-18 14:48:04.719917302 +0000
+@@ -51,7 +51,7 @@ namespace WTF {
+ constexpr size_t CeilingOnPageSize = 16 * KB;
+ #elif OS(WINDOWS) || CPU(MIPS) || CPU(MIPS64) || CPU(X86) || CPU(X86_64) || CPU(ARM) || CPU(ARM64)
+ constexpr size_t CeilingOnPageSize = 4 * KB;
+-#elif CPU(UNKNOWN) || CPU(PPC) || CPU(PPC64) || CPU(PPC64LE)
++#elif CPU(UNKNOWN) || CPU(PPC) || CPU(PPC64) || CPU(PPC64LE) || CPU(SPARC)
+ constexpr size_t CeilingOnPageSize = 64 * KB;
+ #else
+ #error Must set CeilingOnPageSize in PageBlock.h when adding a new CPU architecture!

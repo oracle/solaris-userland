@@ -34,17 +34,17 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		webkitgtk
-COMPONENT_VERSION=	2.26.4
+COMPONENT_VERSION=	2.28.2
 COMPONENT_PROJECT_URL=	https://webkitgtk.org
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:4386900713dfadf9741177210b32623cab22562a79ffd0d446b66569934b113f
+	sha256:b9d23525cfd8d22c37b5d964a9fe9a8ce7583042a2f8d3922e71e6bbc68c30bd
 COMPONENT_ARCHIVE_URL=	https://webkitgtk.org/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/webkitgtk
 COMPONENT_ANITYA_ID=	5355
 
-TPNO=			56870
+TPNO=			59169
 
 # Use project's own optimization flags instead.
 gcc_OPT=
@@ -58,6 +58,7 @@ BUILD_STYLE= cmake
 # in prep-patch.mk for ADDITIONAL_PATCHES
 ifeq ($(MACH), sparc)
 ADDITIONAL_PATCHES += patches/mapfile.$(MACH)
+LD_EXEC_OPTIONS += -M $(COMPONENT_DIR)/mapfile_sparc_48bits
 endif
 ifeq ($(MACH), i386)
 ADDITIONAL_PATCHES += patches/mapfile.$(MACH)
@@ -92,6 +93,7 @@ CMAKE_OPTIONS += -DENABLE_SUBTLE_CRYPTO=OFF
 CMAKE_OPTIONS += -DENABLE_MEDIA_SOURCE=OFF
 CMAKE_OPTIONS += -DUSE_SYSTEM_MALLOC=OFF
 CMAKE_OPTIONS += -DUSE_OPENJPEG=OFF
+CMAKE_OPTIONS += -DPYTHON_EXECUTABLE=$(PYTHON)
 
 # Disabling for both architectures for now, otherwise x64 builds fail with
 # offlineasm: No magic values found. Skipping assembly file generation.
@@ -141,7 +143,7 @@ REQUIRED_PACKAGES += library/libxslt
 REQUIRED_PACKAGES += library/spell-checking/enchant
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += runtime/ruby
 REQUIRED_PACKAGES += service/opengl/ogl-select
 REQUIRED_PACKAGES += system/library/fontconfig
