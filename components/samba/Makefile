@@ -48,8 +48,8 @@ COMPONENT_PROJECT_URL=	http://www.samba.org/
 COMPONENT_BUGDB=	utility/samba
 COMPONENT_ANITYA_ID=	4758
 
-COMPONENT_VERSION=	4.11.6
-TPNO=			57487
+COMPONENT_VERSION=	4.11.9
+TPNO=			59184
 # Samba pre-releases are available on git only.
 # if you want to build Samba from git uncomment next 4 lines
 #GIT_REPO=		https://git.samba.org/samba.git
@@ -59,7 +59,7 @@ TPNO=			57487
 # clone of git.samba.org takes a long
 # if you want to build Samba from archive uncomment next 3 lines
 COMPONENT_ARCHIVE_URL=	https://download.samba.org/pub/samba/stable/$(COMPONENT_ARCHIVE)
-COMPONENT_ARCHIVE_HASH=	sha256:91438f4d7b71f673421435fa7f26b03b613f214139636ce50af35bc2ff09ef38
+COMPONENT_ARCHIVE_HASH=	sha256:ad8cef354cf3f3a8835b04c896906b839270bee763d941db52af037ab5ec8dcc
 COMPONENT_SRC_URL=	$(COMPONENT_ARCHIVE_URL)
 
 TEST_TARGET= $(NO_TESTS)
@@ -249,11 +249,9 @@ REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/jansson
 REQUIRED_PACKAGES += library/libarchive
 REQUIRED_PACKAGES += library/print/cups-libs
-REQUIRED_PACKAGES += library/samba/libsmbclient
 REQUIRED_PACKAGES += runtime/perl-522
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += security/kerberos-5
-REQUIRED_PACKAGES += service/network/samba
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/libc
