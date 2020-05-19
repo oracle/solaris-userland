@@ -46,7 +46,12 @@ def start():
 
     # Initiate cloudbase-init service
     cmd_str = "/usr/bin/cloudbase-init"
-    subprocess.call(cmd_str, stdout=sys.stdout, stderr=sys.stderr)
+    p = subprocess.run(cmd_str, stdout=sys.stdout, stderr=sys.stderr)
+    if p.returncode != 0:
+        return smf_include.SMF_EXIT_ERR_FATAL
+
+    return smf_include.SMF_EXIT_OK
+
 
 if __name__ == "__main__":
     os.putenv("LC_ALL", "C")
