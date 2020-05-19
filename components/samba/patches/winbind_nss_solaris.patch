@@ -1,7 +1,90 @@
-nss_winbind patch refactored for Samba 4.11+
+From 192dfaaa07185e2da71d89e5bfb227204fd2bba1 Mon Sep 17 00:00:00 2001
+From: Jiri Sasek <Jiri.Sasek@Oracle.COM>
+Date: Wed, 22 Apr 2020 22:46:26 +0200
+Subject: [PATCH] Support for updated nscd interfaces in Solaris
 
---- a/nsswitch/winbind_nss_solaris.c	2019-12-06 10:46:56.000000000 +0000
-+++ b/nsswitch/winbind_nss_solaris.c	2020-02-17 14:57:57.253852048 +0000
+---
+ nsswitch/winbind_nss_linux.c   |  20 +-
+ nsswitch/winbind_nss_solaris.c | 417 +++++++++++++++++++++++++++++----
+ 2 files changed, 380 insertions(+), 57 deletions(-)
+
+diff --git a/nsswitch/winbind_nss_linux.c b/nsswitch/winbind_nss_linux.c
+index 635813ccd60..6d1422f9357 100644
+--- a/nsswitch/winbind_nss_linux.c
++++ b/nsswitch/winbind_nss_linux.c
+@@ -455,7 +455,9 @@ _nss_winbind_getpwent_r(struct passwd *result, char *buffer,
+ 		winbindd_free_response(&getpwent_response);
+ 	}
+ 
+-	ZERO_STRUCT(request);
++	request = (struct winbindd_request) {
++		.wb_flags = WBFLAG_FROM_NSS|WBFLAG_RECURSE,
++	};
+ 	ZERO_STRUCT(getpwent_response);
+ 
+ 	request.data.num_entries = MAX_GETPWENT_USERS;
+@@ -548,7 +550,7 @@ _nss_winbind_getpwuid_r(uid_t uid, struct passwd *result, char *buffer,
+ 			.length = 0,
+ 		};
+ 		request = (struct winbindd_request) {
+-			.wb_flags = WBFLAG_FROM_NSS,
++			.wb_flags = WBFLAG_FROM_NSS|WBFLAG_RECURSE,
+ 			.data = {
+ 				.uid = uid,
+ 			},
+@@ -627,7 +629,7 @@ _nss_winbind_getpwnam_r(const char *name, struct passwd *result, char *buffer,
+ 			.length = 0,
+ 		};
+ 		request = (struct winbindd_request) {
+-			.wb_flags = WBFLAG_FROM_NSS,
++			.wb_flags = WBFLAG_FROM_NSS|WBFLAG_RECURSE,
+ 		};
+ 
+ 		strncpy(request.data.username, name,
+@@ -787,7 +789,9 @@ winbind_getgrent(enum winbindd_cmd cmd,
+ 		winbindd_free_response(&getgrent_response);
+ 	}
+ 
+-	ZERO_STRUCT(request);
++	request = (struct winbindd_request) {
++		.wb_flags = WBFLAG_FROM_NSS|WBFLAG_RECURSE,
++	};
+ 	ZERO_STRUCT(getgrent_response);
+ 
+ 	request.data.num_entries = MAX_GETGRENT_USERS;
+@@ -908,7 +912,7 @@ _nss_winbind_getgrnam_r(const char *name,
+ 			.length = 0,
+ 		};
+ 		request = (struct winbindd_request) {
+-			.wb_flags = WBFLAG_FROM_NSS,
++			.wb_flags = WBFLAG_FROM_NSS|WBFLAG_RECURSE,
+ 		};
+ 
+ 		strncpy(request.data.groupname, name,
+@@ -995,7 +999,7 @@ _nss_winbind_getgrgid_r(gid_t gid,
+ 			.length = 0,
+ 		};
+ 		request = (struct winbindd_request) {
+-			.wb_flags = WBFLAG_FROM_NSS,
++			.wb_flags = WBFLAG_FROM_NSS|WBFLAG_RECURSE,
+ 		};
+ 
+ 
+@@ -1070,7 +1074,9 @@ _nss_winbind_initgroups_dyn(const char *user, gid_t group, long int *start,
+ 	pthread_mutex_lock(&winbind_nss_mutex);
+ #endif
+ 
+-	ZERO_STRUCT(request);
++	request = (struct winbindd_request) {
++		.wb_flags = WBFLAG_FROM_NSS|WBFLAG_RECURSE,
++	};
+ 	ZERO_STRUCT(response);
+ 
+ 	strncpy(request.data.username, user,
+diff --git a/nsswitch/winbind_nss_solaris.c b/nsswitch/winbind_nss_solaris.c
+index 495854fb9f3..85b92d0ef38 100644
+--- a/nsswitch/winbind_nss_solaris.c
++++ b/nsswitch/winbind_nss_solaris.c
 @@ -2,6 +2,9 @@
    Solaris NSS wrapper for winbind
    - Shirish Kalele 2000
@@ -81,7 +164,7 @@ nss_winbind patch refactored for Samba 4.11+
  #ifdef HPUX
  
  /*
-@@ -90,30 +146,86 @@
+@@ -90,30 +146,86 @@ _nss_winbind_endpwent_solwrap (nss_backend_t * be, void *args)
  	return _nss_winbind_endpwent();
  }
  
@@ -134,8 +217,7 @@ nss_winbind patch refactored for Samba 4.11+
 +
  	ret = _nss_winbind_getpwent_r(result, buffer,
 -				      buflen, errnop);
-+				      buflen, &NSS_ARGS(args)->erange);
- 
+-
 -	if(ret == NSS_STATUS_SUCCESS)
 -		{
 -			snprintf(logmsg, 79, "_nss_winbind_getpwent_solwrap: Returning user: %s\n",
@@ -146,6 +228,8 @@ nss_winbind patch refactored for Samba 4.11+
 -			snprintf(logmsg, 79, "_nss_winbind_getpwent_solwrap: Returning error: %d.\n",ret);
 -			NSS_DEBUG(logmsg);
 -		}
++				      buflen, &NSS_ARGS(args)->erange);
++
 +	if(ret != NSS_STATUS_SUCCESS) {
 +		snprintf(logmsg, 79,
 +		    "_nss_winbind_getpwent_solwrap: Returning error: %d.\n",
@@ -182,7 +266,7 @@ nss_winbind patch refactored for Samba 4.11+
  	return ret;
  }
  
-@@ -122,17 +234,51 @@
+@@ -122,17 +234,51 @@ _nss_winbind_getpwnam_solwrap (nss_backend_t* be, void* args)
  {
  	NSS_STATUS ret;
  	struct passwd* result = (struct passwd*) NSS_ARGS(args)->buf.result;
@@ -209,13 +293,12 @@ nss_winbind patch refactored for Samba 4.11+
 +						buflen,
  						&NSS_ARGS(args)->erange);
 -	if(ret == NSS_STATUS_SUCCESS)
--		NSS_ARGS(args)->returnval = (void*) result;
 +	if(ret != NSS_STATUS_SUCCESS) {
 +		goto out;
 +	}
- 
++
 +	if (res_needed) {
-+		NSS_ARGS(args)->returnval = (void*) result;
+ 		NSS_ARGS(args)->returnval = (void*) result;
 +	} else {
 +		(void) update_password_buffer(NSS_ARGS(args),
 +		    result->pw_name,
@@ -227,7 +310,7 @@ nss_winbind patch refactored for Samba 4.11+
 +		NSS_ARGS(args)->returnval = NSS_ARGS(args)->buf.buffer;
 +		NSS_ARGS(args)->returnlen = strlen(NSS_ARGS(args)->buf.buffer);
 +	}
-+
+ 
 +out:
 +	if (!res_needed) {
 +		free(result);
@@ -238,7 +321,7 @@ nss_winbind patch refactored for Samba 4.11+
  	return ret;
  }
  
-@@ -141,16 +287,52 @@
+@@ -141,16 +287,52 @@ _nss_winbind_getpwuid_solwrap(nss_backend_t* be, void* args)
  {
  	NSS_STATUS ret;
  	struct passwd* result = (struct passwd*) NSS_ARGS(args)->buf.result;
@@ -265,14 +348,13 @@ nss_winbind patch refactored for Samba 4.11+
 +				       buflen,
  				       &NSS_ARGS(args)->erange);
 -	if(ret == NSS_STATUS_SUCCESS)
--		NSS_ARGS(args)->returnval = (void*) result;
- 
++
 +	if(ret != NSS_STATUS_SUCCESS) {
 +		goto out;
 +	}
 +
 +	if (res_needed) {
-+		NSS_ARGS(args)->returnval = (void*) result;
+ 		NSS_ARGS(args)->returnval = (void*) result;
 +	} else {
 +		(void) update_password_buffer(NSS_ARGS(args),
 +		    result->pw_name,
@@ -284,7 +366,7 @@ nss_winbind patch refactored for Samba 4.11+
 +		NSS_ARGS(args)->returnval = NSS_ARGS(args)->buf.buffer;
 +		NSS_ARGS(args)->returnlen = strlen(NSS_ARGS(args)->buf.buffer);
 +	}
-+
+ 
 +out:
 +	if (!res_needed) {
 +		free(result);
@@ -295,7 +377,7 @@ nss_winbind patch refactored for Samba 4.11+
  	return ret;
  }
  
-@@ -205,29 +387,76 @@
+@@ -205,29 +387,76 @@ _nss_winbind_endgrent_solwrap (nss_backend_t * be, void *args)
  	return _nss_winbind_endgrent();
  }
  
@@ -335,8 +417,7 @@ nss_winbind patch refactored for Samba 4.11+
  
 -	ret = _nss_winbind_getgrent_r(result, buffer,
 -				      buflen, errnop);
-+	NSS_DEBUG("_nss_winbind_getgrent_solwrap");
- 
+-
 -	if(ret == NSS_STATUS_SUCCESS)
 -		{
 -			snprintf(logmsg, 79, "_nss_winbind_getgrent_solwrap: Returning group: %s\n", result->gr_name);
@@ -346,6 +427,8 @@ nss_winbind patch refactored for Samba 4.11+
 -			snprintf(logmsg, 79, "_nss_winbind_getgrent_solwrap: Returning error: %d.\n", ret);
 -			NSS_DEBUG(logmsg);
 -		}
++	NSS_DEBUG("_nss_winbind_getgrent_solwrap");
+ 
 +	if (!res_needed) {
 +		result = SMB_MALLOC_P(struct group);
 +		buflen = NSS_ARGS(args)->buf.buflen;
@@ -363,7 +446,7 @@ nss_winbind patch refactored for Samba 4.11+
 +		NSS_DEBUG(logmsg);
 +		goto out;
 +	}
- 
++
 +	snprintf(logmsg, 79, "_nss_winbind_getgrent_solwrap: Returning group: %s\n", result->gr_name);
 +	NSS_DEBUG(logmsg);
 +	if (res_needed) {
@@ -386,7 +469,7 @@ nss_winbind patch refactored for Samba 4.11+
  	return ret;
  
  }
-@@ -236,17 +465,50 @@
+@@ -236,17 +465,50 @@ static NSS_STATUS
  _nss_winbind_getgrnam_solwrap(nss_backend_t* be, void* args)
  {
  	NSS_STATUS ret;
@@ -442,7 +525,7 @@ nss_winbind patch refactored for Samba 4.11+
  
  	if (NSS_ARGS(args)->erange == ERANGE && ret == NSS_STATUS_TRYAGAIN)
  		return NSS_STATUS_UNAVAIL;
-@@ -258,17 +520,50 @@
+@@ -258,17 +520,50 @@ static NSS_STATUS
  _nss_winbind_getgrgid_solwrap(nss_backend_t* be, void* args)
  {
  	NSS_STATUS ret;
@@ -499,7 +582,7 @@ nss_winbind patch refactored for Samba 4.11+
  
  	if (NSS_ARGS(args)->erange == ERANGE && ret == NSS_STATUS_TRYAGAIN)
  		return NSS_STATUS_UNAVAIL;
-@@ -374,12 +669,20 @@
+@@ -374,12 +669,20 @@ parse_response(int af, nss_XbyY_args_t* argp, struct winbindd_response *response
  	   then construct list of addresses for hostent.
  	*/
  	p = strchr(response->data.winsresp, '\n');
@@ -522,7 +605,7 @@ nss_winbind patch refactored for Samba 4.11+
  	for(; p != response->data.winsresp; p--) {
  		if(*p == '\t') addrcount++;
  	}
-@@ -488,6 +791,8 @@
+@@ -488,6 +791,8 @@ _nss_winbind_ipnodes_getbyname(nss_backend_t* be, void *args)
  	NSS_STATUS ret;
  	int af;
  
@@ -531,7 +614,7 @@ nss_winbind patch refactored for Samba 4.11+
  	/* I assume there that AI_ADDRCONFIG cases are handled in nss
  	   frontend code, at least it seems done so in solaris...
  
-@@ -533,6 +838,8 @@
+@@ -533,6 +838,8 @@ _nss_winbind_hosts_getbyname(nss_backend_t* be, void *args)
  	};
  	NSS_STATUS ret;
  
@@ -540,7 +623,7 @@ nss_winbind patch refactored for Samba 4.11+
  	strncpy(request.data.winsreq, argp->key.name, sizeof(request.data.winsreq) - 1);
  	request.data.winsreq[sizeof(request.data.winsreq) - 1] = '\0';
  
-@@ -559,6 +866,8 @@
+@@ -559,6 +866,8 @@ _nss_winbind_hosts_getbyaddr(nss_backend_t* be, void *args)
  	nss_XbyY_args_t	*argp = (nss_XbyY_args_t *)args;
  	const char *p;
  
@@ -549,7 +632,7 @@ nss_winbind patch refactored for Samba 4.11+
  #if defined(AF_INET6)
  	/* winbindd currently does not resolve IPv6 */
  	if(argp->key.hostaddr.type == AF_INET6) {
-@@ -591,18 +900,21 @@
+@@ -591,18 +900,21 @@ _nss_winbind_hosts_getbyaddr(nss_backend_t* be, void *args)
  static NSS_STATUS
  _nss_winbind_common_endent(nss_backend_t* be, void *args)
  {
@@ -571,7 +654,7 @@ nss_winbind patch refactored for Samba 4.11+
          return (NSS_STATUS_UNAVAIL);
  }
  
-@@ -611,6 +923,8 @@
+@@ -611,6 +923,8 @@ _nss_winbind_common_constr (nss_backend_op_t ops[], int n_ops)
  {
  	nss_backend_t* be;
  
@@ -580,7 +663,7 @@ nss_winbind patch refactored for Samba 4.11+
  	if(!(be = SMB_MALLOC_P(nss_backend_t)) )
  	return NULL;
  
-@@ -624,6 +938,7 @@
+@@ -624,6 +938,7 @@ static NSS_STATUS
  _nss_winbind_common_destr (nss_backend_t* be, void* args)
  {
  	SAFE_FREE(be);
@@ -588,7 +671,7 @@ nss_winbind patch refactored for Samba 4.11+
  	return NSS_STATUS_SUCCESS;
  }
  
-@@ -640,6 +955,7 @@
+@@ -640,6 +955,7 @@ nss_backend_t *
  _nss_winbind_ipnodes_constr(dummy1, dummy2, dummy3)
          const char      *dummy1, *dummy2, *dummy3;
  {
@@ -596,7 +679,7 @@ nss_winbind patch refactored for Samba 4.11+
  	return (_nss_winbind_common_constr(ipnodes_ops,
  		sizeof (ipnodes_ops) / sizeof (ipnodes_ops[0])));
  }
-@@ -657,6 +973,7 @@
+@@ -657,6 +973,7 @@ nss_backend_t *
  _nss_winbind_hosts_constr(dummy1, dummy2, dummy3)
          const char      *dummy1, *dummy2, *dummy3;
  {
@@ -604,3 +687,6 @@ nss_winbind patch refactored for Samba 4.11+
  	return (_nss_winbind_common_constr(host_ops,
  		sizeof (host_ops) / sizeof (host_ops[0])));
  }
+-- 
+2.19.3
+
