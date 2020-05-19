@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -51,13 +51,13 @@ CONFIGURE_OPTIONS += --enable-shared
 CONFIGURE_OPTIONS += --enable-vala-bindings
 CONFIGURE_OPTIONS += --with-pic
 
-# Python is only used to generate build files; but ensure that Python 2.7 is
-# used instead of system default.
-CONFIGURE_ENV.32 += PYTHON="$(PYTHON.2.7.32)"
-CONFIGURE_ENV.64 += PYTHON="$(PYTHON.2.7.64)"
+PYTHON_VERSION = 3.7
+# Python is only used to generate build files
+CONFIGURE_ENV += PYTHON="$(PYTHON)"
 
 # for the tests 
 unexport SHELLOPTS
+COMPONENT_TEST_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_ARGS =   -k -i
 COMPONENT_TEST_TRANSFORMS += \
@@ -69,5 +69,6 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/ERROR:/p" ' \
 
 REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/libdbus-glib

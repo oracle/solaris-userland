@@ -1,0 +1,163 @@
+This test checks the generated code against the known valid source code. Since
+Python 3 sorts dictionaries differently, sorted containers must be iterated to
+achieve consistent results.
+
+Taken partially from upstream:
+https://github.com/TelepathyIM/telepathy-glib/commit/e92d895158feacf7b0e4b3b102525447d61b3013
+https://github.com/TelepathyIM/telepathy-glib/commit/76cc2d96a5601572639032d33c2e1a16ff8a8905
+
+Additional changes accepted upstream:
+https://github.com/TelepathyIM/telepathy-glib/pull/4
+
+--- telepathy-glib-0.24.1/tools/glib-gtypes-generator.py
++++ telepathy-glib-0.24.1/tools/glib-gtypes-generator.py
+@@ -213,7 +213,7 @@ class GTypesGenerator(object):
+         for mapping in mappings:
+             self.do_mapping_header(mapping)
+ 
+-        for sig in self.need_mappings:
++        for sig in sorted(self.need_mappings):
+             self.h('GType %stype_dbus_hash_%s (void);\n\n' %
+                               (self.prefix_, self.need_mappings[sig]))
+             self.c('GType\n%stype_dbus_hash_%s (void)\n{\n' %
+@@ -231,7 +231,7 @@ class GTypesGenerator(object):
+         for struct in structs:
+             self.do_struct_header(struct)
+ 
+-        for sig in self.need_structs:
++        for sig in sorted(self.need_structs):
+             self.h('GType %stype_dbus_struct_%s (void);\n\n' %
+                               (self.prefix_, self.need_structs[sig]))
+             self.c('GType\n%stype_dbus_struct_%s (void)\n{\n' %
+@@ -247,7 +247,7 @@ class GTypesGenerator(object):
+             self.c('  return t;\n')
+             self.c('}\n\n')
+ 
+-        for sig in self.need_struct_arrays:
++        for sig in sorted(self.need_struct_arrays):
+             self.h('GType %stype_dbus_array_%s (void);\n\n' %
+                               (self.prefix_, self.need_struct_arrays[sig]))
+             self.c('GType\n%stype_dbus_array_%s (void)\n{\n' %
+@@ -260,7 +260,7 @@ class GTypesGenerator(object):
+             self.c('  return t;\n')
+             self.c('}\n\n')
+ 
+-        for sig in self.need_other_arrays:
++        for sig in sorted(self.need_other_arrays):
+             self.h('GType %stype_dbus_array_of_%s (void);\n\n' %
+                               (self.prefix_, self.need_other_arrays[sig]))
+             self.c('GType\n%stype_dbus_array_of_%s (void)\n{\n' %
+--- telepathy-glib-0.24.1/tests/tools/expected-gtypes-body.h
++++ telepathy-glib-0.24.1/tests/tools/expected-gtypes-body.h
+@@ -5,12 +5,12 @@
+  */
+ 
+ GType
+-the_prefix_type_dbus_hash_ss (void)
++the_prefix_type_dbus_hash_saa_7bsv_7d (void)
+ {
+   static GType t = 0;
+ 
+   if (G_UNLIKELY (t == 0))
+-    t = dbus_g_type_get_map ("GHashTable", G_TYPE_STRING, G_TYPE_STRING);
++    t = dbus_g_type_get_map ("GHashTable", G_TYPE_STRING, (dbus_g_type_get_collection ("GPtrArray", (dbus_g_type_get_map ("GHashTable", G_TYPE_STRING, G_TYPE_VALUE)))));
+   return t;
+ }
+ 
+@@ -25,22 +25,22 @@ the_prefix_type_dbus_hash_sa_7bsv_7d (vo
+ }
+ 
+ GType
+-the_prefix_type_dbus_hash_sv (void)
++the_prefix_type_dbus_hash_ss (void)
+ {
+   static GType t = 0;
+ 
+   if (G_UNLIKELY (t == 0))
+-    t = dbus_g_type_get_map ("GHashTable", G_TYPE_STRING, G_TYPE_VALUE);
++    t = dbus_g_type_get_map ("GHashTable", G_TYPE_STRING, G_TYPE_STRING);
+   return t;
+ }
+ 
+ GType
+-the_prefix_type_dbus_hash_saa_7bsv_7d (void)
++the_prefix_type_dbus_hash_sv (void)
+ {
+   static GType t = 0;
+ 
+   if (G_UNLIKELY (t == 0))
+-    t = dbus_g_type_get_map ("GHashTable", G_TYPE_STRING, (dbus_g_type_get_collection ("GPtrArray", (dbus_g_type_get_map ("GHashTable", G_TYPE_STRING, G_TYPE_VALUE)))));
++    t = dbus_g_type_get_map ("GHashTable", G_TYPE_STRING, G_TYPE_VALUE);
+   return t;
+ }
+ 
+@@ -69,32 +69,32 @@ the_prefix_type_dbus_array_isu (void)
+ }
+ 
+ GType
+-the_prefix_type_dbus_array_of_a_7bsa_7bsv_7d_7d (void)
++the_prefix_type_dbus_array_of_a_7bsaa_7bsv_7d_7d (void)
+ {
+   static GType t = 0;
+ 
+   if (G_UNLIKELY (t == 0))
+-    t = dbus_g_type_get_collection ("GPtrArray", the_prefix_type_dbus_hash_sa_7bsv_7d ());
++    t = dbus_g_type_get_collection ("GPtrArray", the_prefix_type_dbus_hash_saa_7bsv_7d ());
+   return t;
+ }
+ 
+ GType
+-the_prefix_type_dbus_array_of_a_7bsv_7d (void)
++the_prefix_type_dbus_array_of_a_7bsa_7bsv_7d_7d (void)
+ {
+   static GType t = 0;
+ 
+   if (G_UNLIKELY (t == 0))
+-    t = dbus_g_type_get_collection ("GPtrArray", the_prefix_type_dbus_hash_sv ());
++    t = dbus_g_type_get_collection ("GPtrArray", the_prefix_type_dbus_hash_sa_7bsv_7d ());
+   return t;
+ }
+ 
+ GType
+-the_prefix_type_dbus_array_of_a_7bsaa_7bsv_7d_7d (void)
++the_prefix_type_dbus_array_of_a_7bsv_7d (void)
+ {
+   static GType t = 0;
+ 
+   if (G_UNLIKELY (t == 0))
+-    t = dbus_g_type_get_collection ("GPtrArray", the_prefix_type_dbus_hash_saa_7bsv_7d ());
++    t = dbus_g_type_get_collection ("GPtrArray", the_prefix_type_dbus_hash_sv ());
+   return t;
+ }
+ 
+--- telepathy-glib-0.24.1/tests/tools/expected-gtypes.h
++++ telepathy-glib-0.24.1/tests/tools/expected-gtypes.h
+@@ -18,13 +18,13 @@
+ 
+ #define THE_PREFIX_ARRAY_TYPE_STRING_VARIANT_MAP_LIST_MAP_LIST (the_prefix_type_dbus_array_of_a_7bsaa_7bsv_7d_7d ())
+ 
+-GType the_prefix_type_dbus_hash_ss (void);
++GType the_prefix_type_dbus_hash_saa_7bsv_7d (void);
+ 
+ GType the_prefix_type_dbus_hash_sa_7bsv_7d (void);
+ 
+-GType the_prefix_type_dbus_hash_sv (void);
++GType the_prefix_type_dbus_hash_ss (void);
+ 
+-GType the_prefix_type_dbus_hash_saa_7bsv_7d (void);
++GType the_prefix_type_dbus_hash_sv (void);
+ 
+ #define THE_PREFIX_STRUCT_TYPE_STRUCT (the_prefix_type_dbus_struct_isu ())
+ 
+@@ -34,9 +34,9 @@ GType the_prefix_type_dbus_struct_isu (v
+ 
+ GType the_prefix_type_dbus_array_isu (void);
+ 
++GType the_prefix_type_dbus_array_of_a_7bsaa_7bsv_7d_7d (void);
++
+ GType the_prefix_type_dbus_array_of_a_7bsa_7bsv_7d_7d (void);
+ 
+ GType the_prefix_type_dbus_array_of_a_7bsv_7d (void);
+ 
+-GType the_prefix_type_dbus_array_of_a_7bsaa_7bsv_7d_7d (void);
+-
