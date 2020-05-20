@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=		32_and_64
@@ -28,16 +28,17 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libexif
-COMPONENT_VERSION=	0.6.21
+COMPONENT_VERSION=	0.6.22
 COMPONENT_PROJECT_URL=  https://sourceforge.net/projects/$(COMPONENT_NAME)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:16cdaeb62eb3e6dfab2435f7d7bccd2f37438d21c5218ec4e58efa9157d4d41a
-COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/files/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+	sha256:5048f1c8fc509cc636c2f97f4b40c293338b6041a5652082d5ee2cf54b530c56
+COMPONENT_ARCHIVE_URL= \
+	https://github.com/libexif/libexif/releases/download/libexif-$(subst .,_,$(COMPONENT_VERSION))-release/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libexif
 COMPONENT_ANITYA_ID=	1607
 
-TPNO=			9321
+TPNO=			59197
 
 include $(WS_MAKE_RULES)/common.mk
 
