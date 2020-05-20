@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -40,8 +40,6 @@ SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_32_and_64)
 
 include $(WS_MAKE_RULES)/common.mk
 
-PYTHON_VERSION = 2.7
-
 # The lint check requires the current version of libxml2 header files since
 # function declarations might have changed between the system and gate version.
 LINT_FLAGS +=	-I$(COMPONENT_DIR)/../libxml2/build/prototype/$(MACH)/$(USRINCDIR)/libxml2
@@ -51,11 +49,10 @@ LDFLAGS +=	$(LD_Z_DEFS) $(LD_Z_TEXT)
 
 CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += --with-pic
-CONFIGURE_OPTIONS += --with-python=$(PYTHON.$(BITS))
+CONFIGURE_OPTIONS += --without-python
 CONFIGURE_OPTIONS += --without-crypto
 CONFIGURE_OPTIONS += --with-html-dir=$(USRSHARELIBDIR)/xslt/doc
 CONFIGURE_OPTIONS += --with-html-subdir=html
-CONFIGURE_OPTIONS += PYTHON_VENDOR_PACKAGES=$(PYTHON_VENDOR_PACKAGES)
 
 COMPONENT_PREP_ACTION = \
 	(cd $(@D) ; cp ../mapfile.xslt libxslt/libxslt.syms ; \
@@ -78,12 +75,8 @@ COMPONENT_TEST_TRANSFORMS += '-e "/http:\/\//d"'
 # system-test should really use system version library
 COMPONENT_PRE_SYSTEM_TEST_ACTION = ($(RM) $(@D)/libxslt/.libs/*)
 
-COMPONENT_POST_INSTALL_ACTION += \
-	$(PYTHON.2.7.32) -m compileall $(PROTOUSRLIBDIR)/python2.7/vendor-packages
-
 REQUIRED_PACKAGES += data/xml-common
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/libxslt
-REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/math

@@ -3,9 +3,6 @@ Solaris-specific version 2 mapfile which is incompatible with the
 ld --version-script option. Remove the upstream configure test that prefers
 to use --version-script if available, and force the use of -M.
 
-If PYTHON_VENDOR_PACKAGES is defined, set PYTHON_SITE_PACKAGES to the
-same value.
-
 The patch is not suitable for upstream.
 
 --- libxslt-1.1.33/configure.ac	2019-01-23 05:45:56.934112871 +0000
@@ -25,14 +22,3 @@ The patch is not suitable for upstream.
  AC_MSG_RESULT([$VERSION_SCRIPT_FLAGS])
  AC_SUBST(VERSION_SCRIPT_FLAGS)
  AM_CONDITIONAL([USE_VERSION_SCRIPT], [test "$VERSION_SCRIPT_FLAGS" != none])
-@@ -300,6 +296,10 @@ except: print 0"`
-     else
-         pythondir='$(libdir)/python$(PYTHON_VERSION)/site-packages'
-     fi
-+    if test "$PYTHON_VENDOR_PACKAGES" != ""
-+    then
-+        PYTHON_SITE_PACKAGES=$PYTHON_VENDOR_PACKAGES
-+    fi
- fi
- AM_CONDITIONAL(WITH_PYTHON, test "$PYTHON_INCLUDES" != "")
- if test "$PYTHON_INCLUDES" != ""
