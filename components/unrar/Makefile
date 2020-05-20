@@ -20,24 +20,25 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
+COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 PATH=$(SPRO_VROOT)/bin:$(USRBINDIR):$(GNUBIN):$(USRSBINDIR)
 
 COMPONENT_NAME=		unrar
-COMPONENT_VERSION=	5.5.7
+COMPONENT_VERSION=	5.9.2
 COMPONENT_SRC=		$(COMPONENT_NAME)
 COMPONENT_PROJECT_URL=	https://www.rarlabs.com/rar_add.htm
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)src-$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8aef0a0d91bf9c9ac48fab8a26049ac7ac49907e75a2dcbd511a4ba375322d8f
+    sha256:73d3baf18cf0a197976af2794a848893c35e7d42cee0ff364c89d2e476ebdaa6
 COMPONENT_ARCHIVE_URL=	https://www.rarlab.com/rar/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	13306
 
-TPNO=			37026
+TPNO=			59198
 
 # We need this before the default PKG_PROTO_DIRS, so set it before we include
 # common.mk, which will append the default set.
@@ -48,14 +49,9 @@ INSTALL_TARGET= build
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
-PATCH_LEVEL =	0
-
 # Needed by .../unrar/os.hpp to correctly define platform endianness.
 CXXFLAGS.i386 = -DLITTLE_ENDIAN
 CXXFLAGS.sparc = -DBIG_ENDIAN
-CXXFLAGS.studio += "-erroff=wvarhidemem"
-
-LDFLAGS += $(CC_BITS) $(studio_NORUNPATH)
 
 COMPONENT_BUILD_ENV += DEFINES="$(CPP_LARGEFILES)"
 
@@ -64,7 +60,6 @@ COMPONENT_BUILD_ARGS += STRIP="/bin/true"
 # Override component makefile flags.
 COMPONENT_BUILD_ARGS += CXX="$(CXX)"
 COMPONENT_BUILD_ARGS += CXXFLAGS="$(CXXFLAGS)"
-COMPONENT_BUILD_ARGS += LDFLAGS="$(LDFLAGS)"
 
 REQUIRED_PACKAGES += system/library/c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
