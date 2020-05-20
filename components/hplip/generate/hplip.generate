@@ -20,10 +20,16 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, Oracle and/or its affiliates.
 #
 
-# add to heap: ^file|^link
-<transform dir -> drop>
-# exclude: usr/share/hplip/.*\.pyc
-<transform file link path=usr/share/hplip/.+\.pyc$ -> drop>
+# Not all python scripts have executable set
+<transform file path=usr/lib/cups/backend/.* -> default mode 0555>
+<transform file path=usr/lib/cups/filter/.* -> default mode 0555>
+<transform file path=usr/share/hplip/.*\.py$ -> default mode 0555>
+
+# Disable pkgdepend for python code as I was not able to satisfy python about
+# where to look for modules. They are on non-standard directories.
+<transform file path=usr/share/hplip/.+\.py$ -> default pkg.depend.bypass-generate .*>
+<transform file path=usr/lib/cups/backend/hpfax -> default pkg.depend.bypass-generate .*>
+

@@ -21,8 +21,9 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
+
 BUILD_BITS=	64
 COMPILER=	gcc
 # parallel build will not survive the build process atrocity 
@@ -30,9 +31,9 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         hplip
-COMPONENT_VERSION=      3.19.5
-TPNO=			52183
-COMPONENT_ARCHIVE_HASH= sha256:8f5ac056c1a778b78511588f427072078703d683dfe5af6214ba179e89b453e1
+COMPONENT_VERSION=      3.20.3
+TPNO=			58896
+COMPONENT_ARCHIVE_HASH= sha256:41097ec52af5cce51ec7b0200d9f9ec82649b58ae7105259e82130e9cf63066a
 COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/project/$(COMPONENT_NAME)/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://hplipopensource.com/hplip-web/index.html
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
@@ -40,9 +41,6 @@ COMPONENT_ANITYA_ID=	1327
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
-
-# Not Python 3.x ready due to configure errors
-PYTHON_VERSION = 2.7
 
 CONFIGURE_OPTIONS +=	--localedir=$(CONFIGURE_LOCALEDIR)
 CONFIGURE_OPTIONS +=	--with-hpppddir=$(USRSHAREDIR)/cups/model/hplip
@@ -65,34 +63,26 @@ COMPONENT_PREP_ACTION = (cd $(@D) ; \
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
 
-# if you are doing anything affecting the python-scripts list you will face to:
-#  "chicken/egg problem"
-# so you need to run "gmake python-scripts" first then remove:
-#  build/$(MACH64)/.installed  and  build/proto/$(MACH)/
-# then run "gmake install" again to fix python scripts while install
-# note: File python-scripts is committed in WS so you can see the changes by:
-#  "hg st" then "hg diff python-scripts"
-PYTHON_SCRIPTS = $(shell (while read f ; do echo $(PROTO_DIR)/$$f ; done ) < python-scripts )
-python-scripts: install
-	find $(PROTO_DIR) -type f |\
-	 (while read f ; do head -1 $$f |\
-	  /usr/xpg4/bin/grep '^\#!.*python' > /dev/null && echo $$f ;\
-	 done) | sed -e 's@$(PROTO_DIR)/@@' | sort > $@
+# Do not use transform to create standard ABI version tagged .so files from Python 3 ABI
+PY3_CPYTHON_NAMING=\#
 
-# remove the printer-controll python-modules using python-gobject
+# Pre-compile python source code
 COMPONENT_POST_INSTALL_ACTION += \
-	ggrep -rwl gobject --include=\*.py $(PROTO_DIR) \
-	   | xargs $(RM) ;
+	$(PYTHON) -m compileall $(PROTO_DIR)/usr/share/hplip;
 
-# build .pyc's
+# Fix python script shebang
 COMPONENT_POST_INSTALL_ACTION += \
-	$(PYTHON) -m compileall $(PROTO_DIR)/usr/share/hplip/ ;
+	echo "Fixing python shebang..."; \
+	ggrep -rlI -m1 '^\#!.*python' $(PROTO_DIR) | while read file; do \
+		$(call PYTHON_SCRIPT_SHEBANG_FIX_FUNC,"$$file") \
+	done
 
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += library/libusb-1
 REQUIRED_PACKAGES += library/print/cups-libs
+REQUIRED_PACKAGES += library/python/dbus-python-37
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libc
