@@ -39,6 +39,10 @@ COMPONENT_ANITYA_ID=	2551
 
 TPNO=			58716
 
+# SOURCE_DATE_EPOCH when set to any non-null value prevents mkversion
+# from placing build machine information in deliverable files.
+COMPONENT_BUILD_ENV += SOURCE_DATE_EPOCH=1
+
 # Simple Document Format (SDF), to produce html documentation.
 SDFVER=			sdf-2.001
 SDFBLIB=		$(BUILD_DIR_32)/${SDFVER}/blib
