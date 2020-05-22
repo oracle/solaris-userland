@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            32_and_64
@@ -59,7 +59,8 @@ COMPONENT_BUILD_ENV += LD_LIBRARY_PATH_32="$(GST_BASE)$(USRLIB.$(BITS)):$(BUILD_
 COMPONENT_BUILD_ENV += LD_LIBRARY_PATH_64="$(GST_BASE)$(USRLIB.$(BITS)):$(BUILD_DIR_64)/gst-libs/gst/audio/.libs:$(BUILD_DIR_64)/gst-libs/gst/video/.libs:$(BUILD_DIR_64)/gst-libs/gst/rtp/.libs:$(BUILD_DIR_64)/gst-libs/gst/rtsp/.libs:$(BUILD_DIR_64)/gst-libs/gst/pbutils/.libs:$(BUILD_DIR_64)/gst-libs/gst/allocators/.libs:$(BUILD_DIR_64)/gst-libs/gst/tag/.libs:$(BUILD_DIR_64)/gst-libs/gst/app/.libs:$(BUILD_DIR_64)/gst-libs/gst/sdp/.libs:$(BUILD_DIR_64)/gst-libs/gst/gl/.libs"
 
 # needed for clutter-gst
-CONFIGURE_OPTIONS += --enable-introspection=yes
+CONFIGURE_OPTIONS.32 += --enable-introspection=no
+CONFIGURE_OPTIONS.64 += --enable-introspection=yes
 
 CFLAGS += -DHAVE_FIONREAD_IN_SYS_FILIO
 

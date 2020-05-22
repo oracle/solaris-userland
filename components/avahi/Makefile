@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. 
 #
 BUILD_BITS= 64_and_32
 # All components using gobject-introspection must be built with gcc as
@@ -61,6 +61,7 @@ CONFIGURE_OPTIONS	+=	--enable-tests
 CONFIGURE_OPTIONS	+=	--disable-autoipd
 CONFIGURE_OPTIONS	+=	--disable-gdbm
 CONFIGURE_OPTIONS	+=	--enable-dbm
+CONFIGURE_OPTIONS	+=	--disable-pygobject
 # xmltoman is not available
 CONFIGURE_OPTIONS	+=	--disable-manpages
 CONFIGURE_OPTIONS.64	+=	--enable-doxygen-man

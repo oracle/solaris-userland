@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS = 		64_and_32
@@ -47,10 +47,12 @@ include $(WS_MAKE_RULES)/common.mk
 CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += --enable-gtk-doc
 # Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
+CONFIGURE_OPTIONS.32 += --disable-introspection
+CONFIGURE_OPTIONS.64 += --enable-introspection
 CONFIGURE_OPTIONS += --enable-shared
 # Required for other components.
-CONFIGURE_OPTIONS += --enable-vala
+CONFIGURE_OPTIONS.32 += --disable-vala
+CONFIGURE_OPTIONS.64 += --enable-vala
 CONFIGURE_OPTIONS += --with-pic
 
 REQUIRED_PACKAGES += library/glib2

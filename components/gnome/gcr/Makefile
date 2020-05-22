@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -53,9 +53,11 @@ CFLAGS.studio += $(studio_FEATURES_EXTENSIONS)
 # Not available on Solaris.
 CONFIGURE_OPTIONS += --disable-valgrind
 # Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
+CONFIGURE_OPTIONS.32 += --disable-introspection
+CONFIGURE_OPTIONS.64 += --enable-introspection
 # Required for other components.
-CONFIGURE_OPTIONS += --enable-vala
+CONFIGURE_OPTIONS.32 += --disable-vala
+CONFIGURE_OPTIONS.64 += --enable-vala
 # Fix 64-bit builds.
 CONFIGURE_OPTIONS.64 += ac_cv_path_LIBGCRYPT_CONFIG=$(USRBINDIR64)/libgcrypt-config
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)

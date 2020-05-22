@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS=		64_and_32
@@ -59,7 +59,8 @@ CONFIGURE_OPTIONS += --enable-hal
 CONFIGURE_OPTIONS += --enable-icon
 CONFIGURE_OPTIONS += --enable-icu-charset-detection
 # Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
+CONFIGURE_OPTIONS.32 += --disable-introspection
+CONFIGURE_OPTIONS.64 += --enable-introspection
 CONFIGURE_OPTIONS += --enable-journal
 CONFIGURE_OPTIONS += --enable-libexif
 CONFIGURE_OPTIONS += --enable-libflac

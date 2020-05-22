@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS= 64_and_32
@@ -76,7 +76,8 @@ CONFIGURE_OPTIONS +=	--disable-static
 CONFIGURE_OPTIONS +=	--enable-comics
 CONFIGURE_OPTIONS +=	--enable-dbus
 # Required for other components.
-CONFIGURE_OPTIONS +=	--enable-introspection
+CONFIGURE_OPTIONS.32 +=	--disable-introspection
+CONFIGURE_OPTIONS.64 +=	--enable-introspection
 CONFIGURE_OPTIONS +=	--enable-libgnome-desktop
 CONFIGURE_OPTIONS +=	--enable-nautilus
 CONFIGURE_OPTIONS +=	--enable-pdf

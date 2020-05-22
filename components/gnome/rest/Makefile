@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            64_and_32
@@ -46,7 +46,8 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 
 CONFIGURE_OPTIONS += --with-ca-certificates=/etc/certs/ca-certificates.crt
 # Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
+CONFIGURE_OPTIONS.32 += --disable-introspection
+CONFIGURE_OPTIONS.64 += --enable-introspection
 
 # Needed because of Makefile.am patches.
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);

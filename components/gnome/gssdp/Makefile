@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            64_and_32
@@ -42,7 +42,8 @@ TPNO=			34513
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --enable-introspection
+CONFIGURE_OPTIONS.32 += --disable-introspection
+CONFIGURE_OPTIONS.64 += --enable-introspection
 CONFIGURE_OPTIONS += --enable-shared
 CONFIGURE_OPTIONS += --with-gtk
 CONFIGURE_OPTIONS += --with-pic

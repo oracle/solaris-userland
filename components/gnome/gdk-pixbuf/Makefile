@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. 
 #
 
 # All components using gobject-introspection must be built with gcc as
@@ -48,7 +48,8 @@ COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 CONFIGURE_OPTIONS += --enable-gtk-doc
 
 # Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
+CONFIGURE_OPTIONS.32 += --disable-introspection
+CONFIGURE_OPTIONS.64 += --enable-introspection
 
 # Build gdk-pixbuf-xlib required by xscreensaver & other software
 CONFIGURE_OPTIONS += --with-x11

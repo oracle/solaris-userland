@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS=		64_and_32
@@ -51,7 +51,8 @@ CXXFLAGS += -std=c++11 -D__EXTENSIONS__
 
 CMAKE_OPTIONS += -DSHARED_ONLY=true
 # Required for other components.
-CMAKE_OPTIONS += -DGOBJECT_INTROSPECTION=true
+CMAKE_OPTIONS.32 += -DGOBJECT_INTROSPECTION=false
+CMAKE_OPTIONS.64 += -DGOBJECT_INTROSPECTION=true
 # Always use Solaris-provided timezone data.
 CMAKE_OPTIONS += -DUSE_BUILTIN_TZDATA=false
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. 
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -52,7 +52,8 @@ CONFIGURE_OPTIONS +=	--disable-static
 CONFIGURE_OPTIONS +=	--enable-gtk2
 CONFIGURE_OPTIONS +=	--enable-gtk3
 CONFIGURE_OPTIONS +=	--enable-xim
-CONFIGURE_OPTIONS +=	--enable-introspection
+CONFIGURE_OPTIONS.32 +=	--disable-introspection
+CONFIGURE_OPTIONS.64 +=	--enable-introspection
 CONFIGURE_OPTIONS +=	--libexecdir="$(USRLIBDIR)/$(COMPONENT_NAME)"
 CONFIGURE_OPTIONS +=	--sysconfdir=/etc
 CONFIGURE_OPTIONS +=	--disable-emoji-dict

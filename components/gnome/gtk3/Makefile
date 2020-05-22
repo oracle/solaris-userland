@@ -56,7 +56,8 @@ gcc_OPT.i386.32 = -O2
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 CONFIGURE_OPTIONS += --enable-cloudprint
 # Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
+CONFIGURE_OPTIONS.32 += --disable-introspection
+CONFIGURE_OPTIONS.64 += --enable-introspection
 CONFIGURE_OPTIONS += --enable-libcanberra
 # Generate man pages
 CONFIGURE_OPTIONS += --enable-man

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            32_and_64
@@ -52,7 +52,8 @@ CONFIGURE_OPTIONS += --disable-static
 # Build documentation (man pages). 
 CONFIGURE_OPTIONS += --enable-docbook
 # Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
+CONFIGURE_OPTIONS.32 += --disable-introspection
+CONFIGURE_OPTIONS.64 += --enable-introspection
 CONFIGURE_OPTIONS += --libexecdir=$(CONFIGURE_LIBDIR.$(BITS))
 CONFIGURE_OPTIONS += --with-bash-completion-dir=/etc/bash_completion.d
 CONFIGURE_OPTIONS += --with-ptp-helper-permissions=solaris-privileges

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. 
 #
 
 # All components using gobject-introspection must be built with gcc as
@@ -50,7 +50,8 @@ CFLAGS += $(CPP_XPG6MODE)
 # Generate man pages.
 CONFIGURE_OPTIONS += --enable-man
 # Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
+CONFIGURE_OPTIONS.32 += --disable-introspection
+CONFIGURE_OPTIONS.64 += --enable-introspection
 CONFIGURE_OPTIONS += --with-x
 
 # Forcibly disable use of medialib since it's being removed soon in s12

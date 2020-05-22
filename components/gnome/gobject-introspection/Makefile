@@ -20,44 +20,36 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. 
 #
 
 # gobject-introspection must be built with gcc as gobject-introspection does
 # not produce correct results when using Studio and the source code itself does
 # not build successfully.
 COMPILER =		gcc
-BUILD_BITS =		32_and_64
+BUILD_BITS =		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gobject-introspection
-COMPONENT_VERSION=	1.52.0
+COMPONENT_VERSION=	1.62.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GObjectIntrospection
 COMPONENT_ARCHIVE_HASH= \
-    sha256:9fc6d1ebce5ad98942cb21e2fe8dd67b722dcc01981840632a1b233f7d0e2c1e
+    sha256:b1ee7ed257fdbc008702bdff0ff3e78a660e7e602efa8f211dc89b9d1e7d90a2
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	1223
 
-TPNO=			34486
+TPNO=			54070
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# Not compatible with Python 3.x.
-PYTHON_VERSION =	2.7
-PYTHON_VERSIONS =	$(PYTHON_VERSION)
+PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/g-ir-scanner
+PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/g-ir-annotation-tool
 
-# Ensure system default Python is not used.
-CONFIGURE_ENV += PYTHON=$(PYTHON)
+CONFIGURE_OPTIONS += -Dcairo=true
+CONFIGURE_OPTIONS += -Dpython=python3.7
 
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --with-cairo
-
-# pkgdepend doesn't like the first line of a Python script to be:
-# '#!/usr/bin/env ...' so turn it into '#!/usr/bin/python2.7'
-GIR_PY_SCRIPTS = g-ir-annotation-tool g-ir-doc-tool g-ir-scanner
-# This uses $(PROTO_DIR)$(USRBIN) instead of $(PROTOUSRBINDIR)
-# so that it expands to the right path for each BUILD_BITS type
-PYTHON_SCRIPTS += $(GIR_PY_SCRIPTS:%=$(PROTO_DIR)$(USRBIN)/%)
+PY3_CPYTHON_NAMING=\#
 
 # Needed for "gmake test" to work successfully.
 unexport SHELLOPTS
@@ -67,15 +59,15 @@ COMPONENT_TEST_ENV += CFLAGS="$(strip $(CFLAGS))"
 COMPONENT_TEST_ENV += LDFLAGS="$(strip $(LDFLAGS))"
 COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
 
+COMPONENT_POST_INSTALL_ACTION += \
+        $(MV) $(PROTOUSRLIBDIR)/$(MACH64)/gobject-introspection $(PROTOUSRLIBDIR)/ ;
+
 # Standard automake test framework results transform
+COMPONENT_TEST_TRANSFORMS += '-e "s/       [0-9].[0-9][0-9] s//"'
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/TOTAL/p" ' \
-        '-e "/SKIP/p" ' \
-        '-e "/PASS/p" ' \
-        '-e "/FAIL/p" ' \
+        '-e "/OK/p" ' \
         '-e "/ERROR/p" '
-
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 # Requires bison >= 3.0
@@ -83,7 +75,7 @@ REQUIRED_PACKAGES += developer/parser/bison
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libffi
-REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/iconv/iconv-core
 REQUIRED_PACKAGES += system/library/math

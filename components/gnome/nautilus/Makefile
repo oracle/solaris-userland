@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            64_and_32
@@ -58,7 +58,8 @@ CONFIGURE_OPTIONS += --disable-static
 # See --enable-tracker below.
 CONFIGURE_OPTIONS += --disable-tracker
 CONFIGURE_OPTIONS += --enable-gtk-doc
-CONFIGURE_OPTIONS += --enable-introspection
+CONFIGURE_OPTIONS.32 += --disable-introspection
+CONFIGURE_OPTIONS.64 += --enable-introspection
 CONFIGURE_OPTIONS += --enable-libexif
 CONFIGURE_OPTIONS += --enable-nst-extension
 CONFIGURE_OPTIONS += --enable-shared

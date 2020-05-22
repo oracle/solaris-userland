@@ -42,6 +42,9 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 
 CFLAGS += -Wstack-protector -fdata-sections -fstack-protector-all
 
+CONFIGURE_OPTIONS.32 += -Dwith_introspection=false
+CONFIGURE_OPTIONS.64 += -Dwith_introspection=true
+
 COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \

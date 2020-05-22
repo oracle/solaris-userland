@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS=		64_and_32
@@ -50,7 +50,8 @@ CONFIGURE_ENV += CC="$(CC) $(CC_BITS)"
 CONFIGURE_ENV += MAKE=gmake
 
 # Required by other components.
-CONFIGURE_OPTIONS += --enable-introspection
+CONFIGURE_OPTIONS.32 += --disable-introspection
+CONFIGURE_OPTIONS.64 += --enable-introspection
 # Required by other components.
 CONFIGURE_OPTIONS += --with-gobject
 # Requires GNU-ABI compatible build of ICU.

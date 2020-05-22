@@ -49,7 +49,8 @@ ifneq ($(MACH), sparc)
 CONFIGURE_OPTIONS += --enable-gl-texture-upload
 endif
 # Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
+CONFIGURE_OPTIONS.32 += --disable-introspection
+CONFIGURE_OPTIONS.64 += --enable-introspection
 CONFIGURE_OPTIONS += --enable-shared
 CONFIGURE_OPTIONS += --with-pic
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS= 64_and_32
@@ -47,7 +47,8 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 CONFIGURE_OPTIONS += -Ddbus_daemon=$(USRLIBDIR)/dbus-daemon
-CONFIGURE_OPTIONS += -Dintrospection=yes
+CONFIGURE_OPTIONS.32 += -Dintrospection=no
+CONFIGURE_OPTIONS.64 += -Dintrospection=yes
 
 COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/at-spi-registryd.1 \

@@ -26,7 +26,7 @@
 # gobject-introspection bindings are only built correctly for gtk when building
 # with gcc, this would otherwise build with Studio.
 COMPILER =		gcc
-BUILD_BITS =		64_and_32
+BUILD_BITS =		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pygobject
@@ -39,9 +39,9 @@ COMPONENT_ANITYA_ID=	13158
 
 TPNO=			35809
 
-PYTHON_VERSION = 2.7
-
 PKG_CONFIG_PATHS+=$(PYTHON_VENDOR_PACKAGES_BASE)/lib/pkgconfig/
+
+PYTHON_VERSIONS=        $(PYTHON3_VERSIONS)
 
 # replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses configure.mk
 CONFIGURE_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
@@ -89,13 +89,6 @@ CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
 # $(PYTHON)-config properly
 $(BUILD_DIR)/%-3.5/.configured:	PYTHON=$(PYTHON.3.5)m
 $(BUILD_DIR)/%-3.7/.configured:	PYTHON=$(PYTHON.3.7)m
-
-# Make install path match what autopyc transforms look for
-COMPONENT_POST_INSTALL_ACTION += \
-    case "$(PYTHON_VERSION)" in \
-	2.7) $(MKDIR) $(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)/gi ; \
-	     $(SYMLINK) ../64/gi $(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)/gi/64 ;; \
-    esac ;
 
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
