@@ -1,10 +1,12 @@
 # Solaris-specific core file processing.
 # Will contribute upstream if possible.
 
---- gdb-8.0-orig/bfd/elf-bfd.h	2017-06-04 08:54:54.000000000 -0700
-+++ gdb-8.0/bfd/elf-bfd.h	2017-06-14 10:17:25.000000000 -0700
-@@ -1253,6 +1253,11 @@ struct elf_backend_data
-   bfd_boolean (*elf_backend_grok_psinfo)
+diff --git a/bfd/elf-bfd.h b/bfd/elf-bfd.h
+index 6cfd1ac..00c1c05 100644
+--- a/bfd/elf-bfd.h
++++ b/bfd/elf-bfd.h
+@@ -1300,6 +1300,11 @@ struct elf_backend_data
+   bfd_boolean (*elf_backend_grok_freebsd_prstatus)
      (bfd *, Elf_Internal_Note *);
  
 +  /* This function, if defined, is called when an NT_LWPSTATUS
@@ -15,10 +17,11 @@
    /* This function, if defined, is called to write a note to a corefile.  */
    char *(*elf_backend_write_core_note)
      (bfd *abfd, char *buf, int *bufsiz, int note_type, ...);
-
---- gdb-8.0-orig/bfd/elf.c	2017-06-04 08:54:54.000000000 -0700
-+++ gdb-8.0/bfd/elf.c	2017-08-18 10:33:57.915665865 -0700
-@@ -9093,7 +9093,10 @@ elfcore_make_note_pseudosection (bfd *ab
+diff --git a/bfd/elf.c b/bfd/elf.c
+index 1aa2603..5d19de7 100644
+--- a/bfd/elf.c
++++ b/bfd/elf.c
+@@ -9503,7 +9503,10 @@ elfcore_make_note_pseudosection (bfd *abfd,
  static bfd_boolean
  elfcore_grok_prfpreg (bfd *abfd, Elf_Internal_Note *note)
  {
@@ -30,7 +33,7 @@
  }
  
  /* Linux dumps the Intel SSE regs in a note named "LINUX" with a note
-@@ -9558,6 +9561,9 @@ elfcore_grok_note (bfd *abfd, Elf_Intern
+@@ -10070,6 +10073,9 @@ elfcore_grok_note (bfd *abfd, Elf_Internal_Note *note)
  
  #if defined (HAVE_LWPSTATUS_T)
      case NT_LWPSTATUS:
@@ -40,7 +43,7 @@
        return elfcore_grok_lwpstatus (abfd, note);
  #endif
  
-@@ -10078,6 +10084,318 @@ elfcore_grok_openbsd_procinfo (bfd *abfd
+@@ -10755,6 +10761,318 @@ elfcore_grok_openbsd_procinfo (bfd *abfd, Elf_Internal_Note *note)
    return TRUE;
  }
  
@@ -359,22 +362,23 @@
  static bfd_boolean
  elfcore_grok_openbsd_note (bfd *abfd, Elf_Internal_Note *note)
  {
-@@ -10878,7 +11196,10 @@ elf_parse_notes (bfd *abfd, char *buf, s
- 	      GROKER_ELEMENT ("NetBSD-CORE", elfcore_grok_netbsd_note),
+@@ -11839,7 +12157,10 @@ elf_parse_notes (bfd *abfd, char *buf, size_t size, file_ptr offset,
  	      GROKER_ELEMENT ( "OpenBSD", elfcore_grok_openbsd_note),
  	      GROKER_ELEMENT ("QNX", elfcore_grok_nto_note),
--	      GROKER_ELEMENT ("SPU/", elfcore_grok_spu_note)
-+	      GROKER_ELEMENT ("SPU/", elfcore_grok_spu_note),
+ 	      GROKER_ELEMENT ("SPU/", elfcore_grok_spu_note),
+-	      GROKER_ELEMENT ("GNU", elfobj_grok_gnu_note)
++	      GROKER_ELEMENT ("GNU", elfobj_grok_gnu_note),
 +#if defined(__sun) || defined(__SVR4)
 +	      GROKER_ELEMENT ("CORE", call_elfcore_grok_solaris_note)
 +#endif
  	    };
  #undef GROKER_ELEMENT
  	    int i;
-
---- gdb-8.3/bfd/elfxx-target.h	2019-07-12 09:07:36.665006452 +0000
-+++ gdb-8.3/bfd/elfxx-target.h	2019-07-12 09:04:13.257052951 +0000
-@@ -610,6 +610,9 @@
+diff --git a/bfd/elfxx-target.h b/bfd/elfxx-target.h
+index 80c4776..b1f1f1d 100644
+--- a/bfd/elfxx-target.h
++++ b/bfd/elfxx-target.h
+@@ -617,6 +617,9 @@
  #ifndef elf_backend_grok_psinfo
  #define elf_backend_grok_psinfo			NULL
  #endif
@@ -384,7 +388,7 @@
  #ifndef elf_backend_grok_freebsd_prstatus
  #define elf_backend_grok_freebsd_prstatus	NULL
  #endif
-@@ -836,6 +839,7 @@ static struct elf_backend_data elfNN_bed
+@@ -847,6 +850,7 @@ static struct elf_backend_data elfNN_bed =
    elf_backend_sort_relocs_p,
    elf_backend_grok_prstatus,
    elf_backend_grok_psinfo,
@@ -392,9 +396,11 @@
    elf_backend_grok_freebsd_prstatus,
    elf_backend_write_core_note,
    elf_backend_lookup_section_flags_hook,
---- gdb-8.0-orig/include/elf/common.h	2017-06-04 08:51:27.000000000 -0700
-+++ gdb-8.0/include/elf/common.h	2017-07-07 10:54:58.000000000 -0700
-@@ -656,6 +656,29 @@
+diff --git a/include/elf/common.h b/include/elf/common.h
+index 75c4fb7..c2dd808 100644
+--- a/include/elf/common.h
++++ b/include/elf/common.h
+@@ -700,6 +700,29 @@
  #define NT_OPENBSD_WCOOKIE	23
  
  

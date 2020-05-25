@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 # There are a large number of macros in the GCB code written
@@ -32,12 +32,12 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gdb
-COMPONENT_VERSION=	8.3.1
+COMPONENT_VERSION=	9.2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:26ce655216cd03f4611518a7a1c31d80ec8e884c16715e9ba8b436822e51434b
+    sha256:38ef247d41ba7cc3f6f93a612a78bab9484de9accecbe3b0150a3c0391a3faf0
 COMPONENT_ANITYA_ID=	11798
 
-TPNO=			54242
+TPNO=			59276
 
 # The traditional output from gmake test omits some
 # test results information that is contained in the 

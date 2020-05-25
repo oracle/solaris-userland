@@ -18,20 +18,11 @@ https://developers.redhat.com/blog/2016/10/06/cxx-support-in-libcc1-a-comprehens
 
 The patch will be sent to upstream.
 
---- gdb-8.3/gdb/osabi.c	2019-08-19 11:15:04.176948730 +0000
-+++ gdb-8.3/gdb/osabi.c	2019-08-19 11:13:43.202284584 +0000
-@@ -63,7 +63,7 @@ static const struct osabi_names gdb_osab
- 
-   { "SVR4", NULL },
-   { "GNU/Hurd", NULL },
--  { "Solaris", NULL },
-+  { "Solaris", "solaris[2-9]\.[0-9][0-9]" },
-   { "GNU/Linux", "linux(-gnu[^-]*)?" },
-   { "FreeBSD", NULL },
-   { "NetBSD", NULL },
---- gdb-8.3/gdb/compile/compile.c	2019-08-19 13:07:57.669785758 +0000
-+++ gdb-8.3/gdb/compile/compile.c	2019-08-19 13:07:33.865626973 +0000
-@@ -697,7 +697,7 @@ compile_to_object (struct command_line *
+diff --git a/gdb/compile/compile.c b/gdb/compile/compile.c
+index a5978b4..41a9ed5 100644
+--- a/gdb/compile/compile.c
++++ b/gdb/compile/compile.c
+@@ -747,7 +747,7 @@ compile_to_object (struct command_line *cmd, const char *cmd_string,
        const char *arch_rx = gdbarch_gnu_triplet_regexp (gdbarch);
  
        /* Allow triplets with or without vendor set.  */
@@ -40,3 +31,16 @@ The patch will be sent to upstream.
        compiler->set_triplet_regexp (triplet_rx.c_str ());
      }
  
+diff --git a/gdb/osabi.c b/gdb/osabi.c
+index dec1bdd..9bf10f3 100644
+--- a/gdb/osabi.c
++++ b/gdb/osabi.c
+@@ -63,7 +63,7 @@ static const struct osabi_names gdb_osabi_names[] =
+ 
+   { "SVR4", NULL },
+   { "GNU/Hurd", NULL },
+-  { "Solaris", NULL },
++  { "Solaris", "solaris[2-9]\.[0-9][0-9]" },
+   { "GNU/Linux", "linux(-gnu[^-]*)?" },
+   { "FreeBSD", NULL },
+   { "NetBSD", NULL },

@@ -1,8 +1,10 @@
 # For handling Solaris core files
 # Will contribute upstream if possible
 
---- gdb-8.3/gdb/configure.nat	2019-07-12 09:33:08.985446726 +0000
-+++ gdb-8.3/gdb/configure.nat	2019-07-12 09:28:06.822581940 +0000
+diff --git a/gdb/configure.nat b/gdb/configure.nat
+index fb4522f..a906cf6 100644
+--- a/gdb/configure.nat
++++ b/gdb/configure.nat
 @@ -88,7 +88,7 @@ case ${gdb_host} in
  	    darwin-nat-info.o'
  	;;
@@ -12,9 +14,11 @@
  	    procfs.o proc-api.o proc-events.o proc-flags.o proc-why.o \
  	    sol-thread.o'
  	HAVE_NATIVE_GCORE_HOST=1
---- gdb-8.3/gdb/regcache.c	2019-08-14 10:56:11.572447736 +0000
-+++ gdb-8.3/gdb/regcache.c	2019-08-14 10:40:28.720010002 +0000
-@@ -199,7 +199,7 @@ reg_buffer::reg_buffer (gdbarch *gdbarch
+diff --git a/gdb/regcache.c b/gdb/regcache.c
+index 1580359..fd60881 100644
+--- a/gdb/regcache.c
++++ b/gdb/regcache.c
+@@ -199,7 +199,7 @@ reg_buffer::reg_buffer (gdbarch *gdbarch, bool has_pseudo)
  regcache::regcache (gdbarch *gdbarch, const address_space *aspace_)
  /* The register buffers.  A read/write register cache can only hold
     [0 .. gdbarch_num_regs).  */
@@ -23,7 +27,7 @@
  {
    m_ptid = minus_one_ptid;
  }
-@@ -866,6 +866,20 @@ regcache::write_part (int regnum, int of
+@@ -859,6 +859,20 @@ regcache::write_part (int regnum, int offset, int len,
    return REG_VALID;
  }
  
@@ -44,9 +48,11 @@
  /* See regcache.h.  */
  
  void
---- gdb-8.3/gdb/regcache.h	2019-08-14 10:56:22.975004406 +0000
-+++ gdb-8.3/gdb/regcache.h	2019-08-14 10:42:14.379166768 +0000
-@@ -420,6 +420,9 @@ private:
+diff --git a/gdb/regcache.h b/gdb/regcache.h
+index e2935ee..1f586bf 100644
+--- a/gdb/regcache.h
++++ b/gdb/regcache.h
+@@ -422,6 +422,9 @@ private:
    /* If this is a read-write cache, which thread's registers is
       it connected to?  */
    ptid_t m_ptid;
@@ -56,7 +62,7 @@
  
    friend struct regcache *
    get_thread_arch_aspace_regcache (ptid_t ptid, struct gdbarch *gdbarch,
-@@ -427,8 +430,14 @@ private:
+@@ -429,8 +432,14 @@ private:
  
    friend void
    registers_changed_ptid (ptid_t ptid);
@@ -71,8 +77,11 @@
  class readonly_detached_regcache : public readable_regcache
  {
  public:
---- gdb-8.0-orig/gdb/sol2-core-regset.c	1969-12-31 16:00:00.000000000 -0800
-+++ gdb-8.0/gdb/sol2-core-regset.c	2017-07-11 15:57:26.356435335 -0700
+diff --git a/gdb/sol2-core-regset.c b/gdb/sol2-core-regset.c
+new file mode 100644
+index 0000000..7f8bc71
+--- /dev/null
++++ b/gdb/sol2-core-regset.c
 @@ -0,0 +1,147 @@
 +/* Machine dependent GDB support for core files on Solaris using "regsets".
 +
@@ -221,25 +230,24 @@
 +{
 +  deprecated_add_core_fns (&regset_core_fns);
 +}
-
---- gdb-8.3/gdb/sparc-sol2-nat.c	2019-08-14 10:56:45.728589493 +0000
-+++ gdb-8.3/gdb/sparc-sol2-nat.c	2019-08-14 10:53:18.266223912 +0000
-@@ -24,13 +24,10 @@
+--- gdb-9.2/gdb/sparc-sol2-nat.c	2020-05-25 10:34:59.054665545 +0000
++++ gdb-9.2/gdb/sparc-sol2-nat.c	2020-05-25 10:34:38.990421383 +0000
+@@ -24,12 +24,10 @@
  #include "gregset.h"
  
  #include "sparc-tdep.h"
 +#include "sparc64-tdep.h"
  #include "target.h"
  #include "procfs.h"
- 
+-
 -/* This file provids the (temporary) glue between the Solaris SPARC
 -   target dependent code and the machine independent SVR4 /proc
 -   support.  */
--
++#include "gdbarch.h"
+ 
  /* Solaris 7 (Solaris 2.7, SunOS 5.7) and up support two process data
     models, the traditional 32-bit data model (ILP32) and the 64-bit
-    data model (LP64).  The format of /proc depends on the data model
-@@ -43,51 +40,65 @@
+@@ -43,51 +41,65 @@
     Note that a 32-bit GDB won't be able to debug a 64-bit target
     process using /proc on Solaris.  */
  
