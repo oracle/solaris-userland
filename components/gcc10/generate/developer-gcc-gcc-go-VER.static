@@ -23,17 +23,16 @@
 # Copyright (c) 2019, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
-file path=usr/share/gcc-$(COMPONENT_VERSION)/python/libstdcxx/__init__.py
-file path=usr/share/gcc-$(COMPONENT_VERSION)/python/libstdcxx/v6/__init__.py
-file path=usr/share/gcc-$(COMPONENT_VERSION)/python/libstdcxx/v6/printers.py
-file path=usr/share/gcc-$(COMPONENT_VERSION)/python/libstdcxx/v6/xmethods.py
-link path=usr/bin/c++ target=../gcc/$(GCC_MAJOR_VERSION)/bin/c++ mediator=gcc \
-    mediator-version=$(GCC_MAJOR_VERSION)
-link path=usr/bin/g++ target=../gcc/$(GCC_MAJOR_VERSION)/bin/g++ mediator=gcc \
-    mediator-version=$(GCC_MAJOR_VERSION)
-link path=usr/share/man/man1/c++.1 \
-    target=../../../gcc/$(GCC_MAJOR_VERSION)/share/man/man1/g++.1 \
+link path=usr/bin/gccgo target=../gcc/$(GCC_MAJOR_VERSION)/bin/gccgo \
     mediator=gcc mediator-version=$(GCC_MAJOR_VERSION)
-link path=usr/share/man/man1/g++.1 \
-    target=../../../gcc/$(GCC_MAJOR_VERSION)/share/man/man1/g++.1 \
+link path=usr/bin/go target=../lib/go-gcc mediator=go \
+    mediator-implementation=gcc pkg.linted.pkglint.dupaction010.3=true
+link path=usr/bin/gofmt target=../lib/gofmt-gcc mediator=go \
+    mediator-implementation=gcc pkg.linted.pkglint.dupaction010.3=true
+link path=usr/lib/go-gcc target=../gcc/$(GCC_MAJOR_VERSION)/bin/go \
+    mediator=gcc mediator-version=$(GCC_MAJOR_VERSION)
+link path=usr/lib/gofmt-gcc target=../gcc/$(GCC_MAJOR_VERSION)/bin/gofmt \
+    mediator=gcc mediator-version=$(GCC_MAJOR_VERSION)
+link path=usr/share/man/man1/gccgo.1 \
+    target=../../../gcc/$(GCC_MAJOR_VERSION)/share/man/man1/gccgo.1 \
     mediator=gcc mediator-version=$(GCC_MAJOR_VERSION)

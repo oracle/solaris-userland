@@ -35,7 +35,7 @@ set name=info.classification \
     value="org.opensolaris.category.2008:Development/Other Languages"
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2019/064
+set name=org.opensolaris.arc-caseid value=PSARC/2020/061
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 hardlink path=$(GCC_BASEDIR)/bin/$(GNU_ARCH)-gccgo target=gccgo
 file path=$(GCC_BASEDIR)/bin/gccgo
@@ -60,6 +60,7 @@ file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/crypt
 file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/crypto/des.gox
 file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/crypto/dsa.gox
 file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/crypto/ecdsa.gox
+file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/crypto/ed25519.gox
 file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/crypto/elliptic.gox
 file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/crypto/hmac.gox
 file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/crypto/md5.gox
@@ -113,6 +114,7 @@ file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/hash/
 file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/hash/crc32.gox
 file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/hash/crc64.gox
 file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/hash/fnv.gox
+file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/hash/maphash.gox
 file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/html.gox
 file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/html/template.gox
 file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/image.gox
@@ -123,6 +125,7 @@ file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/image
 file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/image/jpeg.gox
 file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/image/png.gox
 file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/index/suffixarray.gox
+file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/internal/reflectlite.gox
 file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/io.gox
 file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/io/ioutil.gox
 file path=$(GCC_BASEDIR)/lib/$(MACH64)/go/$(COMPONENT_VERSION)/$(GNU_ARCH)/log.gox
@@ -217,5 +220,7 @@ license COPYING.LIB license=LGPLv2.1
 license COPYING3.LIB license=LGPLv3
 depend type=require fmri=pkg:/developer/gcc/gcc-c-$(GCC_MAJOR_VERSION)
 depend type=require fmri=pkg:/developer/gcc/gcc-common-$(GCC_MAJOR_VERSION)
+depend type=require \
+    fmri=pkg:/system/library/gcc/gcc-c-runtime-$(GCC_MAJOR_VERSION)
 depend type=require \
     fmri=pkg:/system/library/gcc/gcc-go-runtime-$(GCC_MAJOR_VERSION)

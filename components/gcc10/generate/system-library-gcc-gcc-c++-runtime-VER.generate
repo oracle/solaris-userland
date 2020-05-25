@@ -23,17 +23,10 @@
 # Copyright (c) 2019, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
-file path=usr/share/gcc-$(COMPONENT_VERSION)/python/libstdcxx/__init__.py
-file path=usr/share/gcc-$(COMPONENT_VERSION)/python/libstdcxx/v6/__init__.py
-file path=usr/share/gcc-$(COMPONENT_VERSION)/python/libstdcxx/v6/printers.py
-file path=usr/share/gcc-$(COMPONENT_VERSION)/python/libstdcxx/v6/xmethods.py
-link path=usr/bin/c++ target=../gcc/$(GCC_MAJOR_VERSION)/bin/c++ mediator=gcc \
-    mediator-version=$(GCC_MAJOR_VERSION)
-link path=usr/bin/g++ target=../gcc/$(GCC_MAJOR_VERSION)/bin/g++ mediator=gcc \
-    mediator-version=$(GCC_MAJOR_VERSION)
-link path=usr/share/man/man1/c++.1 \
-    target=../../../gcc/$(GCC_MAJOR_VERSION)/share/man/man1/g++.1 \
-    mediator=gcc mediator-version=$(GCC_MAJOR_VERSION)
-link path=usr/share/man/man1/g++.1 \
-    target=../../../gcc/$(GCC_MAJOR_VERSION)/share/man/man1/g++.1 \
-    mediator=gcc mediator-version=$(GCC_MAJOR_VERSION)
+<include generate/common.transform>
+
+<transform file link path=.*/libquadmath -> set variant.arch i386>
+
+# delete everything not belonging to this package
+<transform file link hardlink pkg.type=(?!system-library-gcc-gcc-c\+\+-runtime-VER) -> drop>
+<transform file link hardlink -> delete pkg.type .*>
