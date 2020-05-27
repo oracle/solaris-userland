@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -173,6 +173,10 @@ license COPYING license=GPLv2
 depend type=require fmri=__TBD pkg.debug.depend.file=desktop-mime-cache.xml \
     pkg.debug.depend.path=lib/svc/manifest/application/desktop-cache \
     pkg.debug.depend.reason=gnome-session/gsm-autostart-app.c
+# require_dbus_session in main.c execs dbus-launch
+# add in the dbus-x11 dependency here
+depend type=require fmri=__TBD pkg.debug.depend.file=usr/bin/dbus-launch \
+    pkg.debug.depend.reason=gnome-session/main.c
 depend type=require fmri=__TBD \
     pkg.debug.depend.file=usr/bin/update-desktop-database \
     pkg.debug.depend.reason=gnome-session/gsm-autostart-app.c

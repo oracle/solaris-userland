@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 BUILD_BITS=             64
@@ -74,6 +74,7 @@ REQUIRED_PACKAGES += library/libxslt
 REQUIRED_PACKAGES += library/xdg/consolekit
 REQUIRED_PACKAGES += service/gnome/desktop-cache
 REQUIRED_PACKAGES += service/opengl/ogl-select
+REQUIRED_PACKAGES += system/library/dbus/dbus-x11
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/libdbus-glib
 REQUIRED_PACKAGES += x11/library/libice
