@@ -1,0 +1,24 @@
+Pylint can freeze when running in the background and encounters
+an 'import readline' statement.
+
+The reason is that pylint is trying to import everything it encounters, hence
+invoking import init functions. Python readline does call GNU readline init,
+which is supposed to be called only when terminal is available (and hence forces
+the SIGTTOU signal).
+
+We can safely ignore this signal, because readline is not used further.
+
+See bug 31397460 for more details.
+
+--- pylint-2.3.1/pylint/__init__.py
++++ pylint-2.3.1/pylint/__init__.py
+@@ -16,6 +16,9 @@ def run_pylint():
+     """run pylint"""
+     from pylint.lint import Run
+ 
++    import signal
++    signal.signal(signal.SIGTTOU, signal.SIG_IGN)
++
+     try:
+         Run(sys.argv[1:])
+     except KeyboardInterrupt:
