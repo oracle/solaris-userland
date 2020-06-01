@@ -20,10 +20,10 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
 #
 
-BUILD_BITS=             32_and_64
+BUILD_BITS=             64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-themes-standard

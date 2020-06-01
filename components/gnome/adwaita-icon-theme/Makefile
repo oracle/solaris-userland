@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS=             NO_ARCH
@@ -41,5 +41,8 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 # Assumes GNU xgettext in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 
-REQUIRED_PACKAGES += runtime/perl-522
-REQUIRED_PACKAGES += library/perl-5/xml-parser-522
+# Required so that configure can find and use 64-bit version
+CONFIGURE_ENV += ac_cv_path_GTK_ENCODE_SYMBOLIC_SVG=$(USRBINDIR64)/gtk-encode-symbolic-svg
+
+REQUIRED_PACKAGES += runtime/perl-526
+REQUIRED_PACKAGES += library/perl-5/xml-parser-526

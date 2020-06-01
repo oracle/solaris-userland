@@ -23,22 +23,22 @@
 # Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
 #
 
-BUILD_BITS =           64_and_32
+BUILD_BITS =            64
 # All components using gobject-introspection must be built with gcc as
 # gobject-introspection does not produce correct results when using Studio.
 COMPILER =		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		librsvg
-COMPONENT_VERSION=	2.40.16
+COMPONENT_VERSION=	2.48.8
 COMPONENT_MAJOR_MINOR=	$(basename $(COMPONENT_VERSION))
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/LibRsvg
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d48bcf6b03fa98f07df10332fb49d8c010786ddca6ab34cbba217684f533ff2e
+    sha256:f480a325bbdf26d1874eb6fb330ebc5920ba64e3e08de61931bb4506dfef2692
 COMPONENT_BUGDB=        library/librsvg
 COMPONENT_ANITYA_ID=	5420
 
-TPNO=			32695
+TPNO=			61309
 
 # Disable tests since there are some regressions.
 $(SKIP_TEST_AT_TOP_LEVEL)
@@ -48,19 +48,23 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 CONFIGURE_OPTIONS += --disable-Bsymbolic
 CONFIGURE_OPTIONS += --disable-static
 # Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-introspection
-CONFIGURE_OPTIONS.64 += --enable-introspection
-CONFIGURE_OPTIONS.32 += --disable-vala
-CONFIGURE_OPTIONS.64 += --enable-vala
+CONFIGURE_OPTIONS += --enable-introspection
+CONFIGURE_OPTIONS += --enable-vala
 
 # Requires a reconf due to patch to configure.ac.
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 
 # for the tests
 unexport SHELLOPTS
-# Ignore whether the test code was already built or not
-COMPONENT_TEST_TRANSFORMS += "-e '/^  CC.*/d'"
-COMPONENT_TEST_TRANSFORMS += "-e '/^make.* is up to date\.$$/d'"
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/^[mM]ake/d" ' \
+        '-e "/OK:/p" ' \
+        '-e "/TOTAL:/p" ' \
+        '-e "/PASS:/p" ' \
+        '-e "/FAIL:/p" ' \
+        '-e "/SKIP:/p" ' \
+        '-e "/ERROR:/p" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
@@ -73,5 +77,7 @@ REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libcroco
 REQUIRED_PACKAGES += library/libxml2
-REQUIRED_PACKAGES += runtime/perl-522
+REQUIRED_PACKAGES += runtime/perl-526
+REQUIRED_PACKAGES += system/library/fontconfig
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
