@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             64
@@ -54,10 +54,9 @@ CONFIGURE_OPTIONS += --with-pulse
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 
 # Same version as Orca uses
-PYTHON_VERSION = 3.5
-PYV = "$(PYTHON_VERSION:3.%=3%)"
+PYTHON_VERSION = 3.7
 CONFIGURE_ENV += PYTHON="$(PYTHON)"
-PKG_MACROS += PYVER="$(PYTHON_VERSION)" PYV="$(PYV)"
+PKG_MACROS += PYVER="$(PYTHON_VERSION)"
 
 # Ensure Python modules are installed into vendor package directories.
 CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
@@ -71,5 +70,4 @@ REQUIRED_PACKAGES += library/desktop/dotconf
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libsndfile
 REQUIRED_PACKAGES += library/speech/espeak
-REQUIRED_PACKAGES += runtime/python-$(PYV)
-
+REQUIRED_PACKAGES += runtime/python-37
