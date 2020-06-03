@@ -904,7 +904,7 @@ GUNZIP =	/usr/bin/gunzip
 PKGREPO =	/usr/bin/pkgrepo
 PKGSEND =	/usr/bin/pkgsend
 PKGMOGRIFY =	/usr/bin/pkgmogrify
-PKGLINT =	/usr/bin/64/python2.7 /usr/bin/pkglint
+PKGLINT =	/usr/bin/pkglint
 ifeq   ($(strip $(PKGLINT_COMPONENT)),)
 PKGLINTVAR =	$(PKGLINT)
 else

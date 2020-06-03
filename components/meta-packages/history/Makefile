@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -103,10 +103,9 @@ $(MANIFEST_BASE)-%.published: $(MANIFEST_BASE)-%.histogrified $(BUILD_DIR)
 	$(CP) $< $@
 
 $(BUILD_DIR)/.linted-$(MACH): $(MOGRIFIED) $(HISTOGRIFIED) $(BUILD_DIR)
-	$(ENV) PYTHONPATH=$(WS_TOOLS)/python \
-		SOLARIS_VERSION=$(SOLARIS_VERSION) \
+	$(ENV) SOLARIS_VERSION=$(SOLARIS_VERSION) \
 		$(PKGLINT) $(CANONICAL_REPO:%=-c $(WS_LINT_CACHE)) \
-			-f $(WS_TOOLS)/pkglintrc $(MOGRIFIED)
+			-e $(WS_TOOLS)/python/ -f $(WS_TOOLS)/pkglintrc $(MOGRIFIED)
 	$(TOUCH) $@
 
 $(BUILD_DIR)/.published-$(MACH): $(BUILD_DIR)/.linted-$(MACH) $(PUBLISHED)
