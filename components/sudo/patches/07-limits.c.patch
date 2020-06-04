@@ -1,0 +1,27 @@
+diff -r 637a585ee9ad src/limits.c
+--- a/src/limits.c	Thu Jun 04 12:34:08 2020 +0200
++++ b/src/limits.c	Thu Jun 04 12:36:35 2020 +0200
+@@ -198,6 +198,23 @@
+     int rc;
+     debug_decl(unlimit_sudo, SUDO_DEBUG_UTIL)
+ 
++#ifdef __sun
++    /*
++     * Some legacy applications want to close all possibly
++     * open files and might run close(2) two billion times
++     * causing extreme delays/lockups.
++     * Use a lower fd limit.
++     */
++    for (idx = 0; idx < nitems(saved_limits); idx++) {
++        struct saved_limit *slim = &saved_limits[idx];
++        if (slim->resource == RLIMIT_NOFILE) {
++            slim->newlimit.rlim_cur = 1024 * 1024;
++            slim->newlimit.rlim_max = 1024 * 1024;
++            break;
++        }
++    }
++#endif /* __sun */
++
+     /* Set resource limits to unlimited and stash the old values. */
+     for (idx = 0; idx < nitems(saved_limits); idx++) {
+ 	struct saved_limit *lim = &saved_limits[idx];
