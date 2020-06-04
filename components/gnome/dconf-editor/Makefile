@@ -30,14 +30,15 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dconf-editor
-COMPONENT_VERSION=	3.18.0
+COMPONENT_VERSION=	3.34.4
 COMPONENT_PROJECT_URL=	http://wiki.gnome.org/dconf
 COMPONENT_ARCHIVE_HASH= \
-	sha256:6579b8b216b068acae7d8301b5e2d57054c85a3f147c92355ffa46a62c052534
+	sha256:de5b2a30e0d6d4fb72a0d3e98b1b95aa2acdab62e59a9f1391d96eeee9142a89
 COMPONENT_BUGDB=        gnome/gconf
 COMPONENT_ANITYA_ID=	100776
 
-TPNO=			25274
+TPNO=			59449
+BUILD_STYLE=            meson
 
 TEST_TARGET= $(NO_TESTS)
 
@@ -45,6 +46,8 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU xgettext in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += library/desktop/pango
