@@ -40,33 +40,11 @@ COMPONENT_ARCHIVE_HASH = \
 COMPONENT_ARCHIVE_URL  = http://cache.ruby-lang.org/pub/ruby/2.6/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID    = 21281
 
-# Rubygems support
-COMPONENT_NAME_GEMS     = rubygems
-COMPONENT_VERSION_GEMS  = 3.1.2
-COMPONENT_SRC_NAME_GEMS = $(COMPONENT_NAME_GEMS)
-COMPONENT_SRC_GEMS      = $(COMPONENT_SRC_NAME_GEMS)-$(COMPONENT_VERSION_GEMS)
-COMPONENT_ARCHIVE_GEMS  = $(COMPONENT_SRC_GEMS).tgz
-COMPONENT_ARCHIVE_HASH_GEMS = \
-    sha256:e2ad0a1c993ef4c25efe8649eacd5326512f65d2708537900e09b9743ec5da57
-COMPONENT_ARCHIVE_URL_GEMS = https://rubygems.org/rubygems/$(COMPONENT_ARCHIVE_GEMS)
-
 TPNO = 58473
-TPNO_GEMS = 58666
-
 
 CFLAGS += "-std=gnu99"
 
 include $(WS_MAKE_RULES)/common.mk
-
-# Copy parts of rubygems into main ruby directory
-RUBYGEMS=$(COMPONENT_SRC_GEMS)
-COMPONENT_PREP_ACTION = \
-    $(RM) -r $(SOURCE_DIR)/lib/rubygems ; \
-    $(RM) -r $(SOURCE_DIR)/test/rubygems ; \
-    $(CP) -r $(RUBYGEMS)/lib $(SOURCE_DIR); \
-    $(CP) -r $(RUBYGEMS)/bin $(SOURCE_DIR); \
-    $(CP) -r $(RUBYGEMS)/hide_lib_for_update $(SOURCE_DIR); \
-    $(CP) -r $(RUBYGEMS)/test/rubygems $(SOURCE_DIR)/test;
 
 CONFIGURE_PREFIX = $(USRDIR)/$(COMPONENT_NAME)/$(RUBY_VER)
 
@@ -179,8 +157,7 @@ PKG_MACROS += TPNO_GEMS=$(TPNO_GEMS)
 
 
 CLEAN_PATHS += Solaris/gem.1 Solaris/rbconfig.sedscript.mod \
-    Solaris/ruby.1.sedscript.mod \
-    $(RUBYGEMS)
+    Solaris/ruby.1.sedscript.mod
 
 
 # Some tests produce warnings if HTTP_PROXY is set
