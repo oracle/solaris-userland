@@ -20,21 +20,23 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		fping
-COMPONENT_VERSION=	3.16
+COMPONENT_VERSION=	4.2
 COMPONENT_PROJECT_URL=	http://www.fping.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2f753094e4df3cdb1d99be1687c0fb7d2f14c0d526ebf03158c8c5519bc78f54
+    sha256:7d339674b6a95aae1d8ad487ff5056fd95b474c3650938268f6a905c3771b64a
+#gmake download fails (even with different proxies). Inform gatekeepers to 
+# download the tar ball and cache it in server
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)dist/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	834
 
-TPNO=			34404
+TPNO=			50617
 
 # Deliver 'sbin' binaries to 'bin'.
 CONFIGURE_SBINDIR.64= $(CONFIGURE_BINDIR.64)
