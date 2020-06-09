@@ -20,26 +20,27 @@
 #
 
 #
-# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnutls
-COMPONENT_VERSION=	3.5.16
+COMPONENT_VERSION=	3.6.14
 COMPONENT_PROJECT_URL=  https://www.gnutls.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:0924dec90c37c05f49fec966eba3672dab4d336d879e5c06e06e13325cbfec25
-COMPONENT_ARCHIVE_URL=  ftp://ftp.gnutls.org/gcrypt/gnutls/v3.5/$(COMPONENT_ARCHIVE)
+    sha256:5630751adec7025b8ef955af4d141d00d252a985769f51b4059e5affa3d39d63
+COMPONENT_ARCHIVE_URL=	https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=	library/gnutls
 COMPONENT_ANITYA_ID=	1221
 
-TPNO=			39829
+TPNO=			59588
 
 COMPONENT_BUILD_TARGETS = all info
+COMPONENT_PREP_ACTION += (cd $(@D); $(AUTORECONF_ENV) $(AUTORECONF) -fiv);
 
 # We need to build an extra static version of this library for
 # GRUB/Wanboot support.
@@ -62,6 +63,9 @@ CFLAGS += -I$(USRINCDIR)/idn
 
 MCS = mcs
 STRIP = strip
+
+# Some static libraries are delivered, avoid manifest cleanup.
+MANIFEST_CLEANUP_TRANSFORM=
 
 # Set the wanboot CFLAGS as needed for the wanboot compilation
 
@@ -101,6 +105,7 @@ CFLAGS.wanboot += -mno-stack-arg-probe
 
 # Set the wanboot configure options as needed for wanboot
 
+CONFIGURE_OPTIONS += MAKE=$(MAKE)
 CONFIGURE_OPTIONS.wanboot += --enable-largefile
 CONFIGURE_OPTIONS.wanboot += --disable-doc
 CONFIGURE_OPTIONS.wanboot += --disable-tools
@@ -181,6 +186,9 @@ CONFIGURE_OPTIONS.wanboot += ac_cv_func_clock_settime=no
 CONFIGURE_OPTIONS.wanboot += ac_cv_func_daemon=no
 CONFIGURE_OPTIONS.wanboot += ac_cv_func_dup2=no
 CONFIGURE_OPTIONS.wanboot += ac_cv_func_epoll_create=no
+CONFIGURE_OPTIONS.wanboot += ac_cv_func_explicit_memset=no
+CONFIGURE_OPTIONS.wanboot += ac_cv_func_memset_s=no
+CONFIGURE_OPTIONS.wanboot += ac_cv_func_explicit_bzero=no
 CONFIGURE_OPTIONS.wanboot += ac_cv_func_fchmod=no
 CONFIGURE_OPTIONS.wanboot += ac_cv_func_flockfile=no
 CONFIGURE_OPTIONS.wanboot += ac_cv_func_fmemopen=no
@@ -248,6 +256,7 @@ CONFIGURE_OPTIONS.wanboot += ac_cv_libiconv=no
 CONFIGURE_OPTIONS.wanboot += ac_cv_libnsl=no
 CONFIGURE_OPTIONS.wanboot += ac_cv_libpthread=no
 CONFIGURE_OPTIONS.wanboot += ac_cv_librt=no
+CONFIGURE_OPTIONS.wanboot += gl_cv_func_localtime_r_inline=no
 
 CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS += --infodir=$(CONFIGURE_INFODIR)
@@ -291,6 +300,9 @@ $(BUILD_DIR)/wanboot-amd64/.installed: \
 	COMPONENT_POST_INSTALL_ACTION += \
 	$(AR) ts $(PROTOUSRLIBDIR)/grub/wanboot/libgnutls.a;
 
+
+PKG_MACROS += COMPONENT_VERSION=$(COMPONENT_VERSION)
+
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 COMPONENT_TEST_TRANSFORMS += \
@@ -305,5 +317,6 @@ REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/security/nettle
 REQUIRED_PACKAGES += library/security/trousers
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime

@@ -5,12 +5,14 @@ Mostly it removes floating point support.
 
 Status: This patch is Solaris specific.  This will not be sent upstream.
 
---- gnutls-3.4.6/gl/printf-args.c 2015-01-19 09:38:09.000000000 -0800
-+++ gnutls-3.4.6/gl/printf-args.c 2015-12-10 17:46:30.949444885 -0800
-@@ -73,12 +73,14 @@
+diff --git a/gl/printf-args.c b/gl/printf-args.c
+index a781549..b134789 100644
+--- a/gl/printf-args.c
++++ b/gl/printf-args.c
+@@ -71,12 +71,14 @@ PRINTF_FETCHARGS (va_list args, arguments *a)
+       case TYPE_ULONGLONGINT:
          ap->a.a_ulonglongint = va_arg (args, unsigned long long int);
          break;
- #endif
 +#ifndef _BOOT
        case TYPE_DOUBLE:
          ap->a.a_double = va_arg (args, double);
@@ -22,9 +24,73 @@ Status: This patch is Solaris specific.  This will not be sent upstream.
        case TYPE_CHAR:
          ap->a.a_char = va_arg (args, int);
          break;
---- gnutls-3.4.6/src/gl/timespec.h 2015-01-19 09:38:09.000000000 -0800
-+++ gnutls-3.4.6/src/gl/timespec.h 2015-12-10 17:47:59.802282095 -0800
-@@ -97,12 +97,14 @@
+diff --git a/lib/priority.c b/lib/priority.c
+index 0a284ae..773160d 100644
+--- a/lib/priority.c
++++ b/lib/priority.c
+@@ -1302,6 +1302,7 @@ static int cfg_ini_handler(void *_ctx, const char *section, const char *name, co
+ 
+ static void _gnutls_update_system_priorities(void)
+ {
++#ifdef HAVE_FMEMOPEN
+ 	int ret;
+ 	struct stat sb;
+ 	FILE *fp;
+@@ -1343,6 +1344,7 @@ static void _gnutls_update_system_priorities(void)
+ 			  (unsigned long long)sb.st_mtime);
+ 
+ 	system_priority_last_mod = sb.st_mtime;
++#endif
+ }
+ 
+ void _gnutls_load_system_priorities(void)
+diff --git a/lib/random.c b/lib/random.c
+index 605fc8d..25a67a1 100644
+--- a/lib/random.c
++++ b/lib/random.c
+@@ -35,9 +35,18 @@
+ extern gnutls_crypto_rnd_st _gnutls_fuzz_rnd_ops;
+ #endif
+ 
++#ifndef _BOOT
+ /* Per thread context of random generator, and a flag to indicate initialization */
+ static _Thread_local void *gnutls_rnd_ctx;
+ static _Thread_local unsigned rnd_initialized = 0;
++#else
++/*
++ * Multithreading is not required for wanboot support in grub2 on x86 platform.
++ * Do not use thread local storage to avoid _GLOBAL_OFFSET_TABLE_ symbol in random.o
++ */
++static void *gnutls_rnd_ctx;
++static unsigned rnd_initialized = 0;
++#endif
+ 
+ struct rnd_ctx_list_st {
+ 	void *ctx;
+diff --git a/src/gl/printf-args.c b/src/gl/printf-args.c
+index 943b77c..3942f3e 100644
+--- a/src/gl/printf-args.c
++++ b/src/gl/printf-args.c
+@@ -71,12 +71,14 @@ PRINTF_FETCHARGS (va_list args, arguments *a)
+       case TYPE_ULONGLONGINT:
+         ap->a.a_ulonglongint = va_arg (args, unsigned long long int);
+         break;
++#ifndef _BOOT
+       case TYPE_DOUBLE:
+         ap->a.a_double = va_arg (args, double);
+         break;
+       case TYPE_LONGDOUBLE:
+         ap->a.a_longdouble = va_arg (args, long double);
+         break;
++#endif /* !_BOOT */
+       case TYPE_CHAR:
+         ap->a.a_char = va_arg (args, int);
+         break;
+diff --git a/src/gl/timespec.h b/src/gl/timespec.h
+index 02684ce..ab9c2a4 100644
+--- a/src/gl/timespec.h
++++ b/src/gl/timespec.h
+@@ -116,12 +116,14 @@ struct timespec timespec_sub (struct timespec, struct timespec)
  struct timespec dtotimespec (double)
    _GL_ATTRIBUTE_CONST;
  
@@ -37,22 +103,33 @@ Status: This patch is Solaris specific.  This will not be sent upstream.
  }
 +#endif /* !_BOOT */
  
- void gettime (struct timespec *);
- int settime (struct timespec const *);
---- gnutls-3.4.6/src/gl/printf-args.c 2015-01-19 09:38:09.000000000 -0800
-+++ gnutls-3.4.6/src/gl/printf-args.c 2015-12-10 17:51:12.619526033 -0800
-@@ -73,12 +73,14 @@
-         ap->a.a_ulonglongint = va_arg (args, unsigned long long int);
-         break;
- #endif
+ struct timespec current_timespec (void);
+ void gettime (struct timespec *) _GL_ARG_NONNULL ((1));
+--- gnutls-3.6.14/lib/nettle/Makefile.am	2020-06-09 02:19:19.590111860 +0000
++++ gnutls-3.6.14/lib/nettle/Makefile.am	2020-06-09 02:19:00.096271759 +0000
+@@ -103,7 +103,9 @@ noinst_PROGRAMS = ecc/eccdata$(EXEEXT)
+ 
+ ecc_eccdata_SOURCES = ecc/eccdata.c
+ ecc_eccdata_CFLAGS = $(GMP_CFLAGS)
+-ecc_eccdata_LDADD = $(GMP_LIBS) ../../gl/libgnu.la
++# Force to use '-lgmp' instead of GMP_LIBS since
++# the variable is empty if the mini nettle option is enabled.
++ecc_eccdata_LDADD = -lgmp ../../gl/libgnu.la
+ 
+ ecc/eccdata.stamp: $(ecc_eccdata_SOURCES)
+ 	$(AM_V_GEN)$(MAKE) $(AM_MAKEFLAGS) ecc/eccdata$(EXEEXT) && touch $@
+--- gnutls-3.6.14/lib/nettle/ecc/ecc-random.c	2020-06-10 03:42:03.773281304 +0000
++++ gnutls-3.6.14/lib/nettle/ecc/ecc-random.c	2020-06-10 03:41:04.072879630 +0000
+@@ -84,6 +84,7 @@ ecc_mod_random (const struct ecc_modulo
+   while (!ecdsa_in_range (m, xp, scratch));
+ }
+ 
 +#ifndef _BOOT
-       case TYPE_DOUBLE:
-         ap->a.a_double = va_arg (args, double);
-         break;
-       case TYPE_LONGDOUBLE:
-         ap->a.a_longdouble = va_arg (args, long double);
-         break;
-+#endif /* !_BOOT */
-       case TYPE_CHAR:
-         ap->a.a_char = va_arg (args, int);
-         break;
+ void
+ ecc_scalar_random (struct ecc_scalar *x,
+ 		   void *random_ctx, nettle_random_func *random)
+@@ -93,3 +94,4 @@ ecc_scalar_random (struct ecc_scalar *x,
+ 
+   ecc_mod_random (&x->ecc->q, x->p, random_ctx, random, scratch);
+ }
++#endif
