@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -65,6 +65,8 @@ CMAKE_OPTIONS += -DENABLE_GTK_DOC=ON
 CMAKE_OPTIONS += -DOPEN_LDAP=OFF
 CMAKE_OPTIONS += -DENABLE_VALA_BINDINGS=ON
 CMAKE_OPTIONS += -DSYSCONF_INSTALL_DIR="/etc"
+# Avoid to generate documentation since it might crash on sparc (see bug 31473179).
+CMAKE_OPTIONS += -DENABLE_GTK_DOC=OFF
 
 # for the tests
 unexport SHELLOPTS
