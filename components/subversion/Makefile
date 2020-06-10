@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=64_and_32
@@ -230,6 +230,9 @@ REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/build/scons
 REQUIRED_PACKAGES += developer/swig
 REQUIRED_PACKAGES += developer/versioning/subversion
+REQUIRED_PACKAGES += library/apr-1
+REQUIRED_PACKAGES += library/apr-util-1
+# to be removed after apr-1 gets into repo
 REQUIRED_PACKAGES += library/apr-16
 REQUIRED_PACKAGES += library/apr-util-16
 REQUIRED_PACKAGES += library/expat
