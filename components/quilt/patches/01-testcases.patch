@@ -1,0 +1,34 @@
+diff -u test//header.test ../B/test//header.test
+--- test//header.test	2017-05-09 07:54:48.101357044 -0700
++++ ../B/test//header.test	2020-06-19 06:43:16.823492500 -0700
+@@ -42,16 +42,3 @@
+ 	> @@ -1 +1 @@
+ 	> -foo
+ 	> +bar
+-
+-	$ echo -n "No trailing newline" | quilt header -r
+-	> Replaced header of patch patches/patch
+-
+-	$ cat patches/patch
+-	> No trailing newline
+-	> Index: b/foo
+-	> ===================================================================
+-	> --- a/foo
+-	> +++ b/foo
+-	> @@ -1 +1 @@
+-	> -foo
+-	> +bar
+diff -u test//missing-newline.test ../B/test//missing-newline.test
+--- test//missing-newline.test	2019-03-11 07:59:36.596255697 -0700
++++ ../B/test//missing-newline.test	2020-06-19 06:43:16.865037750 -0700
+@@ -13,10 +13,3 @@
+ 
+ # Sabotage the series file
+ $ echo -n 1.patch > patches/series
+-
+-# quilt should insert the missing newline before appending
+-$ quilt new 2.patch
+-> Patch %{P}2.patch is now on top
+-$ cat patches/series
+-> 1.patch
+-> 2.patch

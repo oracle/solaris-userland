@@ -1,0 +1,49 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+
+<transform file path=etc/bash_completion.d/quilt -> drop>
+<transform file path=etc/quilt.quiltrc -> drop>
+<transform file path=usr/share/doc/quilt/README -> drop>
+<transform file path=usr/share/doc/quilt/README.MAIL -> drop>
+<transform file path=usr/share/doc/quilt/quilt.pdf -> drop>
+
+<transform link path=usr/share/quilt/compat/7z target=/usr/bin/7zr -> set pkg.linted.userland.action002.0 true>
+
+#Relative paths are used in p5m file, so drop them here and include it in staticfile.
+<transform link path=usr/share/quilt/compat/awk target=/usr/bin/gawk -> drop>
+<transform link path=usr/share/quilt/compat/column target=/usr/bin/column -> drop>
+<transform link path=usr/share/quilt/compat/cp target=/usr/gnu/bin/cp -> drop>
+<transform link path=usr/share/quilt/compat/date target=/usr/gnu/bin/date -> drop>
+<transform link path=usr/share/quilt/compat/diff target=/usr/gnu/bin/diff -> drop>
+<transform link path=usr/share/quilt/compat/find target=/usr/gnu/bin/find -> drop>
+<transform link path=usr/share/quilt/compat/getopt target=/usr/gnu/bin/getopt -> drop>
+<transform link path=usr/share/quilt/compat/grep target=/usr/gnu/bin/grep -> drop>
+<transform link path=usr/share/quilt/compat/patch target=/usr/gnu/bin/patch -> drop>
+<transform link path=usr/share/quilt/compat/perl target=/usr/perl5/5.22/bin/perl -> drop>
+<transform link path=usr/share/quilt/compat/sed target=/usr/gnu/bin/sed -> drop>
+<transform link path=usr/share/quilt/compat/sendmail target=/usr/sbin/sendmail -> drop>
+<transform link path=usr/share/quilt/compat/tail target=/usr/gnu/bin/tail -> drop>
+<transform link path=usr/share/quilt/compat/tar target=/usr/bin/gtar -> drop>
+<transform link path=usr/share/quilt/compat/tr target=/usr/gnu/bin/tr -> drop>
