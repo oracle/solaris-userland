@@ -1,0 +1,12 @@
+Fix the RPATH to mutter 
+
+--- a/src/meson.build	2020-04-06 13:45:30.002806367 -0700
++++ b/src/meson.build	2020-04-06 13:46:07.704076742 -0700
+@@ -895,6 +895,7 @@
+   c_args: mutter_c_args,
+   dependencies: [libmutter_dep],
+   install_dir: bindir,
++  install_rpath: libdir + ':' + join_paths(libdir,'mutter-5'),
+   install: true,
+ )
+ 

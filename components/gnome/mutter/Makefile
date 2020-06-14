@@ -30,48 +30,42 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mutter
-COMPONENT_VERSION=	3.24.1
+COMPONENT_VERSION=	3.34.5
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/Mutter
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:acaa77f9705cc6ca4a3d41935524ff31ba7a4c677bdd3e1d4662bbf3ece86a24
+	sha256:d1d149b70ed7330771f4524886b98775fce5a11cf17f9683cba151075f2879c4
 COMPONENT_BUGDB=        gnome/window-manager
 COMPONENT_ANITYA_ID=	13154
 
-TPNO=			34756
+TPNO=			58000
+BUILD_STYLE=            meson
 
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# Workaround build failures when /usr/include/GL points to Nvidia's headers
-COMPONENT_PREP_ACTION += $(SYMLINK) /usr/include/mesa $(@D)/GL ;
-CPPFLAGS += -I $(SOURCE_DIR)
+COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
+CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 
 # Requires non-standard extensions.
 CFLAGS += -std=c99 -D__EXTENSIONS__
 
-CONFIGURE_OPTIONS += --disable-schemas-compile
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --disable-native-backend
-CONFIGURE_OPTIONS += --disable-wayland
-CONFIGURE_OPTIONS += --without-libwacom
-CONFIGURE_OPTIONS += --disable-wayland-egl-server
-# Enable additional compiler warnings, but leave them as warnings, not errors
-# (upstream default if this isn't specified is =error which breaks SPARC)
-CONFIGURE_OPTIONS += --enable-compile-warnings=yes
-CONFIGURE_OPTIONS += --enable-gtk-doc
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --enable-sm
-CONFIGURE_OPTIONS += --with-pic
-CONFIGURE_OPTIONS += --with-x
+CONFIGURE_OPTIONS += -Dnative_backend=false
+# Not supported on Solaris
+CONFIGURE_OPTIONS += -Dwayland=false
+CONFIGURE_OPTIONS += -Dwayland_eglstream=false
+CONFIGURE_OPTIONS += -Dxwayland_path=''
+CONFIGURE_OPTIONS += -Dudev=false
+CONFIGURE_OPTIONS += -Dlibwacom=false
+CONFIGURE_OPTIONS += -Dprofiler=false
+# Requires libpipewire
+CONFIGURE_OPTIONS += -Dremote_desktop=false
+CONFIGURE_OPTIONS += -Dtests=false
+LDFLAGS += -Wl,-zgnu-version-script-compat
+# Don't build subbprojects
+CONFIGURE_OPTIONS += --wrap-mode=nofallback
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
-
-# Needed due to patch to configure.ac.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
-
-CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += gnome/gnome-settings-daemon
@@ -79,6 +73,7 @@ REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/clutter
+REQUIRED_PACKAGES += library/desktop/fribidi
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
