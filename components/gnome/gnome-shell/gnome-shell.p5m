@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -28,7 +28,7 @@
 <transform depend fmri=__TBD pkg.tmp.gi-typelib=.* -> \
     add pkg.debug.depend.path usr/lib/$(MACH64)/gnome-shell>
 <transform depend fmri=__TBD pkg.tmp.gi-typelib=.* -> \
-    add pkg.debug.depend.path usr/lib/$(MACH64)/mutter>
+    add pkg.debug.depend.path usr/lib/$(MACH64)/mutter-5>
 set name=pkg.fmri \
     value=pkg:/gnome/gnome-shell@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="GNOME 3 User Shell"
@@ -40,25 +40,36 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2016/396
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file path=usr/bin/gnome-shell
-file path=usr/bin/gnome-shell-extension-prefs
-file path=usr/bin/gnome-shell-extension-tool
-file path=usr/bin/gnome-shell-perf-tool
+file path=etc/xdg/autostart/gnome-shell-overrides-migration.desktop
+file path=usr/bin/gnome-extensions pkg.linted.userland.action001.2=true
+file path=usr/bin/gnome-shell pkg.linted.userland.action001.2=true \
+    pkg.linted.userland.action001.3=true
+file path=usr/bin/gnome-shell-extension-prefs \
+    pkg.linted.userland.action001.2=true pkg.linted.userland.action001.3=true
+file path=usr/bin/gnome-shell-extension-tool \
+    pkg.linted.userland.action001.2=true pkg.linted.userland.action001.3=true
+file path=usr/bin/gnome-shell-perf-tool pkg.linted.userland.action001.2=true \
+    pkg.linted.userland.action001.3=true
 file path=usr/lib/$(MACH64)/gnome-shell-calendar-server mode=0555
 file path=usr/lib/$(MACH64)/gnome-shell-hotplug-sniffer mode=0555
+file path=usr/lib/$(MACH64)/gnome-shell-overrides-migration.sh
 file path=usr/lib/$(MACH64)/gnome-shell-perf-helper mode=0555
 file path=usr/lib/$(MACH64)/gnome-shell/Gvc-1.0.typelib
 file path=usr/lib/$(MACH64)/gnome-shell/Shell-0.1.typelib
-file path=usr/lib/$(MACH64)/gnome-shell/ShellMenu-0.1.typelib
 file path=usr/lib/$(MACH64)/gnome-shell/St-1.0.typelib
-file path=usr/lib/$(MACH64)/gnome-shell/libgnome-shell-menu.so
-file path=usr/lib/$(MACH64)/gnome-shell/libgnome-shell.so
-# 64-bit browser plugin won't work with our 32-bit Firefox
-# file path=usr/lib/$(MACH64)/mozilla/plugins/libgnome-shell-browser-plugin.so
+file path=usr/lib/$(MACH64)/gnome-shell/libgnome-shell-menu.so \
+    pkg.linted.userland.action001.3=true
+file path=usr/lib/$(MACH64)/gnome-shell/libgnome-shell.so \
+    pkg.linted.userland.action001.3=true
+file path=usr/lib/$(MACH64)/gnome-shell/libgvc.so
+file path=usr/lib/$(MACH64)/gnome-shell/libst-1.0.so \
+    pkg.linted.userland.action001.3=true
 file path=usr/share/GConf/gsettings/gnome-shell-overrides.convert
 file path=usr/share/applications/evolution-calendar.desktop
 file path=usr/share/applications/gnome-shell-extension-prefs.desktop
 file path=usr/share/applications/org.gnome.Shell.desktop
+file path=usr/share/dbus-1/interfaces/org.gnome.Shell.Extensions.xml
+file path=usr/share/dbus-1/interfaces/org.gnome.Shell.Introspect.xml
 file path=usr/share/dbus-1/interfaces/org.gnome.Shell.PadOsd.xml
 file path=usr/share/dbus-1/interfaces/org.gnome.Shell.Screencast.xml
 file path=usr/share/dbus-1/interfaces/org.gnome.Shell.Screenshot.xml
@@ -66,8 +77,14 @@ file path=usr/share/dbus-1/interfaces/org.gnome.ShellSearchProvider.xml
 file path=usr/share/dbus-1/interfaces/org.gnome.ShellSearchProvider2.xml
 file path=usr/share/dbus-1/services/org.gnome.Shell.CalendarServer.service
 file path=usr/share/dbus-1/services/org.gnome.Shell.HotplugSniffer.service
+file path=usr/share/glib-2.0/schemas/00_org.gnome.shell.gschema.override
 file path=usr/share/glib-2.0/schemas/org.gnome.shell.gschema.xml
 file path=usr/share/gnome-control-center/keybindings/50-gnome-shell-system.xml
+file path=usr/share/gnome-shell/Gvc-1.0.gir
+file path=usr/share/gnome-shell/Shell-0.1.gir
+file path=usr/share/gnome-shell/St-1.0.gir
+file path=usr/share/gnome-shell/gnome-shell-dbus-interfaces.gresource
+file path=usr/share/gnome-shell/gnome-shell-osk-layouts.gresource
 file path=usr/share/gnome-shell/gnome-shell-theme.gresource
 file path=usr/share/gnome-shell/perf-background.xml
 file path=usr/share/locale/af/LC_MESSAGES/gnome-shell.mo
@@ -82,6 +99,7 @@ file path=usr/share/locale/bn_IN/LC_MESSAGES/gnome-shell.mo
 file path=usr/share/locale/bs/LC_MESSAGES/gnome-shell.mo
 file path=usr/share/locale/ca/LC_MESSAGES/gnome-shell.mo
 file path=usr/share/locale/ca@valencia/LC_MESSAGES/gnome-shell.mo
+file path=usr/share/locale/ckb/LC_MESSAGES/gnome-shell.mo
 file path=usr/share/locale/cs/LC_MESSAGES/gnome-shell.mo
 file path=usr/share/locale/da/LC_MESSAGES/gnome-shell.mo
 file path=usr/share/locale/de/LC_MESSAGES/gnome-shell.mo
@@ -116,6 +134,7 @@ file path=usr/share/locale/ku/LC_MESSAGES/gnome-shell.mo
 file path=usr/share/locale/ky/LC_MESSAGES/gnome-shell.mo
 file path=usr/share/locale/lt/LC_MESSAGES/gnome-shell.mo
 file path=usr/share/locale/lv/LC_MESSAGES/gnome-shell.mo
+file path=usr/share/locale/mjw/LC_MESSAGES/gnome-shell.mo
 file path=usr/share/locale/mk/LC_MESSAGES/gnome-shell.mo
 file path=usr/share/locale/ml/LC_MESSAGES/gnome-shell.mo
 file path=usr/share/locale/mr/LC_MESSAGES/gnome-shell.mo
@@ -150,8 +169,10 @@ file path=usr/share/locale/vi/LC_MESSAGES/gnome-shell.mo
 file path=usr/share/locale/zh_CN/LC_MESSAGES/gnome-shell.mo
 file path=usr/share/locale/zh_HK/LC_MESSAGES/gnome-shell.mo
 file path=usr/share/locale/zh_TW/LC_MESSAGES/gnome-shell.mo
+file path=usr/share/man/man1/gnome-extensions.1
 file path=usr/share/man/man1/gnome-shell.1
-license COPYING license=GPLv2
+file path=usr/share/xdg-desktop-portal/portals/gnome-shell.portal
+license gnome-shell.license license=GPLv2
 # We want our logo displayed on gnome-shell backgrounds by default
 depend type=group fmri=pkg:/gnome/gnome-shell/background-logo-extension
 # Dependencies from imports.gi.<foo> statements in js/ui/*.js files
@@ -175,7 +196,6 @@ depend type=require fmri=__TBD pkg.tmp.gi-typelib=IBus-1.0
 depend type=require fmri=__TBD pkg.tmp.gi-typelib=Pango-1.0
 depend type=require fmri=__TBD pkg.tmp.gi-typelib=Polkit-1.0
 depend type=require fmri=__TBD pkg.tmp.gi-typelib=Shell-0.1
-depend type=require fmri=__TBD pkg.tmp.gi-typelib=ShellMenu-0.1
 depend type=require fmri=__TBD pkg.tmp.gi-typelib=Soup-2.4
 depend type=require fmri=__TBD pkg.tmp.gi-typelib=St-1.0
 depend type=require fmri=__TBD pkg.tmp.gi-typelib=TelepathyGLib-0.12

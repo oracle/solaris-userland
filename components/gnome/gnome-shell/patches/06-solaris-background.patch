@@ -1,25 +1,26 @@
 Solaris-specific patch to change the default background to our branded image
 
---- gnome-shell-3.18.3/data/theme/gnome-shell.css~	2015-11-17 13:21:03.000000000 +0000
-+++ gnome-shell-3.18.3/data/theme/gnome-shell.css	2016-10-13 22:40:15.790975576 +0000
-@@ -1649,7 +1649,7 @@
-   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4); }
+--- a/data/theme/gnome-shell-sass/_common.scss	2019-11-09 08:33:57.219290671 -0800
++++ b/data/theme/gnome-shell-sass/_common.scss	2019-11-09 08:34:49.088482009 -0800
+@@ -2130,8 +2130,8 @@
+ }
  
  #lockDialogGroup {
--  background: #2e3436 url(resource:///org/gnome/shell/theme/noise-texture.png);
--  background-repeat: repeat; }
-+  background: #2e3436 url(file:///usr/share/backgrounds/solaris/Polygons_Color.png);
-+  background-repeat: no-repeat; background-size: cover; }
+-  background: lighten(#2e3436, 8%) url(resource:///org/gnome/shell/theme/noise-texture.png);
+-  background-repeat: repeat;
++  background: lighten(#2e3436, 8%) url(file:///usr/share/backgrounds/solaris/Polygons_Color.png);
++  background-repeat: no-repeat; background-size: cover; 
+ }
  
- #screenShieldNotifications StButton#vhandle, #screenShieldNotifications StButton#hhandle {
---- gnome-shell-3.18.3/js/ui/background.js~	2015-11-17 13:11:17.000000000 +0000
-+++ gnome-shell-3.18.3/js/ui/background.js	2016-10-14 17:25:00.602762652 +0000
-@@ -464,7 +464,7 @@
-     Name: 'SystemBackground',
+ #screenShieldNotifications {
+--- a/js/ui/background.js	2019-11-09 08:35:10.682500380 -0800
++++ b/js/ui/background.js	2019-11-09 08:35:30.205330702 -0800
+@@ -499,7 +499,7 @@
  
-     _init: function() {
+ var SystemBackground = class SystemBackground {
+     constructor() {
 -        let file = Gio.File.new_for_uri('resource:///org/gnome/shell/theme/noise-texture.png');
 +        let file = Gio.File.new_for_uri('file:///usr/share/backgrounds/solaris/Polygons_Color.png');
  
          if (_systemBackground == null) {
-             _systemBackground = new Meta.Background({ meta_screen: global.screen });
+             _systemBackground = new Meta.Background({ meta_display: global.display });

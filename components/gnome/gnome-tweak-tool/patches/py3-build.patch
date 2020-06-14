@@ -358,3 +358,23 @@ Found when testing gnome-tweak-tool
  
          self.settings.set_string(self.key_name, left + colon + ",".join(rsplit))
  
+--- a/gtweak/widgets.py	2020-06-21 14:37:53.133171355 -0700
++++ b/gtweak/widgets.py	2020-06-21 14:38:12.871742564 -0700
+@@ -145,7 +145,7 @@
+             options['schema_filename'] = overridesFile
+             return overridesSchema
+     except GSettingsMissingError as e:
+-        logging.info("GSetting missing %s" % (e.message))
++        logging.info("GSetting missing %s" % str(e))
+ 
+     return originalSchema
+ 
+@@ -168,7 +168,7 @@
+             self.settings = GSettingsFakeSetting()
+             Tweak.__init__(self,"","")
+             self.loaded = False
+-            logging.info("GSetting missing %s" % (e.message))
++            logging.info("GSetting missing %s" % str(e))
+         except KeyError:
+             self.settings = GSettingsFakeSetting()
+             Tweak.__init__(self,"","")

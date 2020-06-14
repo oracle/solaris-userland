@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS=		64
@@ -28,53 +28,64 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-shell
-COMPONENT_VERSION=	3.24.0
+COMPONENT_VERSION=	3.34.5
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/GnomeShell
 COMPONENT_ARCHIVE_HASH= \
-	sha256:86e1bd1ee9f721b25ebcf7edd80f39fafe7342fc0695ba6ddf804152cd45ada7
+	sha256:d296f318a74a6d7883358a6ce1c4d8808b7903dbbb4f9c61ab4230f18e6d7550
 COMPONENT_BUGDB=        gnome/gnome-shell
 COMPONENT_ANITYA_ID=	5409
 
-TPNO=			34687
+TPNO=			58002
+BUILD_STYLE=            meson
 
-TEST_TARGET = $(NO_TESTS)
+# Workaround the mozjs issue described in 24935318
+ifeq ($(MACH), sparc)
+ADDITIONAL_PATCHES += patches/08_VM.sparc
+COMPONENT_POST_UNPACK_ACTION += $(CP) mapfile.js $(SOURCE_DIR)/src ;
+LD_EXEC_OPTIONS.64 += -M $(PWD)/mapfile.js
+endif
 
 include $(WS_MAKE_RULES)/gnome-component.mk
-
-# js/misc/config.js is accidentally included in the tarball - we remove it so
-# that it gets correctly rebuilt from js/misc/config.js.in with the settings
-# passed via the configure script
-COMPONENT_POST_UNPACK_ACTION += $(RM) $(SOURCE_DIR)/js/misc/config.js ;
 
 CXXFLAGS += -std=c++11 -D__EXTENSIONS__
 
 PYTHON_VERSION= 3.7
 
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --enable-man-pages
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --with-pic
-CONFIGURE_OPTIONS += --disable-networkmanager
-CONFIGURE_OPTIONS += --enable-introspection
-CONFIGURE_OPTIONS += PYTHON="$(PYTHON.$(PYTHON_VERSION))"
+COMPONENT_POST_UNPACK_ACTION += $(CP) files/* $(SOURCE_DIR)/data/dbus-interfaces ;
+
+# Linux specific
+CONFIGURE_OPTIONS += -Dnetworkmanager=false
+CONFIGURE_OPTIONS += -Dsystemd=false
+# Don't build subbprojects
+CONFIGURE_OPTIONS += --wrap-mode=nofallback
+CONFIGURE_OPTIONS += --libexecdir=$(USRLIB.$(BITS))
 
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 
-# Workaround the mozjs issue described in 24935318
-LD_EXEC_OPTIONS += -M $(WS_COMPONENTS)/gnome/gjs/mapfile
-ADIHEAP_MODE = $(ADIHEAP_DISABLE)
-ADISTACK_MODE =	$(ADISTACK_DISABLE)
+# pkgdepend doesn't like the first line of a Python script to be:
+# '#!/usr/bin/env python' so turn it into '#!/usr/bin/python$(PYTHON_VERSION)'
+COMPONENT_POST_INSTALL_ACTION += \
+        $(GSED) -i -e 's?python3?python$(PYTHON_VERSION)?' \
+                $(PROTOUSRBINDIR)/gnome-shell-extension-tool; \
+        $(GSED) -i -e 's?python3?python$(PYTHON_VERSION)?' \
+                $(PROTOUSRBINDIR)/gnome-shell-perf-tool;
 
 # evolution-data-server requires nss/nspr, but Solaris doesn't include a 64-bit
 # pkg-config file for it, so we workaround this by using the one-off copy in the
 # evolution-data-server component directory
 PKG_CONFIG_PATHS += $(WS_COMPONENTS)/gnome/evolution-data-server
 
-MUTTER_BASE = $(WS_COMPONENTS)/gnome/mutter/build/prototype/$(MACH)
-LD_OPTIONS += -L $(MUTTER_BASE)$(USRLIB)
-
-COMPONENT_BUILD_ENV += LD_LIBRARY_PATH_64="/usr/lib/$(MACH64):$(MUTTER_BASE)/$(USRLIB)/mutter:$(BUILD_DIR_64)/src/.libs"
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/Ok/p" ' \
+        '-e "/Fail/p" ' \
+        '-e "/Pass/p" ' \
+        '-e "/Skipped/p" ' \
+        '-e "/Timeout/p" '
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += gnome/accessibility/caribou
@@ -93,6 +104,7 @@ REQUIRED_PACKAGES += library/desktop/evolution-data-server
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/geocode-glib
 REQUIRED_PACKAGES += library/desktop/gjs
+REQUIRED_PACKAGES += library/desktop/gnome-autoar
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gstreamer-1
 REQUIRED_PACKAGES += library/desktop/gstreamer-1/gst-plugins-base
