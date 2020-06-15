@@ -1,0 +1,65 @@
+Solaris specific changes that help to make unit
+tests reproducible together with gsed transforms.
+
+Not suitable for upstream.
+
+--- lz4-1.9.2/tests/test_install.sh	2020-06-11 14:10:12.927834478 +0000
++++ lz4-1.9.2/tests/test_install.sh	2020-06-11 14:08:33.280402462 +0000
+@@ -1,7 +1,7 @@
+ #/usr/bin/env sh
+ set -e
+ 
+-make="make -C $lz4_root"
++make="gmake -C $lz4_root"
+ for cmd in install uninstall; do
+   for upper in DUMMY PREFIX EXEC_PREFIX LIBDIR INCLUDEDIR PKGCONFIGDIR BINDIR MANDIR MAN1DIR ; do
+     lower=$(echo $upper | tr '[:upper:]' '[:lower:]')
+--- lz4-1.9.2/tests/Makefile	2020-06-12 13:04:14.813138685 +0000
++++ lz4-1.9.2/tests/Makefile	2020-06-12 13:03:52.165111405 +0000
+@@ -173,20 +173,20 @@ test-install: lz4 lib liblz4.pc
+ test-lz4-sparse: lz4 datagen
+ 	@echo "\n ---- test sparse file support ----"
+ 	./datagen -g5M  -P100 > tmplsdg5M
+-	$(LZ4) -B4D tmplsdg5M -c | $(LZ4) -dv --sparse > tmplscB4
++	$(LZ4) -B4D tmplsdg5M -c | $(LZ4) -d --sparse > tmplscB4
+ 	$(DIFF) -s tmplsdg5M tmplscB4
+-	$(LZ4) -B5D tmplsdg5M -c | $(LZ4) -dv --sparse > tmplscB5
++	$(LZ4) -B5D tmplsdg5M -c | $(LZ4) -d --sparse > tmplscB5
+ 	$(DIFF) -s tmplsdg5M tmplscB5
+-	$(LZ4) -B6D tmplsdg5M -c | $(LZ4) -dv --sparse > tmplscB6
++	$(LZ4) -B6D tmplsdg5M -c | $(LZ4) -d --sparse > tmplscB6
+ 	$(DIFF) -s tmplsdg5M tmplscB6
+-	$(LZ4) -B7D tmplsdg5M -c | $(LZ4) -dv --sparse > tmplscB7
++	$(LZ4) -B7D tmplsdg5M -c | $(LZ4) -d --sparse > tmplscB7
+ 	$(DIFF) -s tmplsdg5M tmplscB7
+-	$(LZ4) tmplsdg5M -c | $(LZ4) -dv --no-sparse > tmplsnosparse
++	$(LZ4) tmplsdg5M -c | $(LZ4) -d --no-sparse > tmplsnosparse
+ 	$(DIFF) -s tmplsdg5M tmplsnosparse
+-	ls -ls tmpls*
++	gls -ls --block-size=1 tmpls* | awk '{print $$6" "$$NF}' | column -t
+ 	./datagen -s1 -g1200007 -P100 | $(LZ4) | $(LZ4) -dv --sparse > tmplsodd   # Odd size file (to generate non-full last block)
+ 	./datagen -s1 -g1200007 -P100 | $(DIFF) -s - tmplsodd
+-	ls -ls tmplsodd
++	gls -ls --block-size=1 tmplsodd | awk '{print $$6" "$$1" "$$NF}'
+ 	@$(RM) tmpls*
+ 	@echo "\n Compatibility with Console :"
+ 	echo "Hello World 1 !" | $(LZ4) | $(LZ4) -d -c
+@@ -198,7 +198,7 @@ test-lz4-sparse: lz4 datagen
+ 	$(LZ4) -B5 -v tmplsdg1M tmplsc
+ 	$(LZ4) -d -v tmplsc tmplsr
+ 	$(LZ4) -d -v tmplsc -c >> tmplsr
+-	ls -ls tmp*
++	gls -ls --block-size=1 tmp* | awk '{print $$6" "$$1" "$$NF}' | column -t
+ 	$(DIFF) tmpls2M tmplsr
+ 	@$(RM) tmpls*
+ 
+@@ -351,9 +351,7 @@ test-lz4-hugefile: lz4 datagen
+ 	./datagen -g5GB   | $(LZ4) -v4BD  | $(LZ4) -qt
+ 	# test large file size [2-4] GB
+ 	@./datagen -g3G -P100 | $(LZ4) -vv | $(LZ4) --decompress --force --sparse - tmphf1
+-	@ls -ls tmphf1
+ 	@./datagen -g3G -P100 | $(LZ4) --quiet --content-size | $(LZ4) --verbose --decompress --force --sparse - tmphf2
+-	@ls -ls tmphf2
+ 	$(DIFF) -s tmphf1 tmphf2
+ 	@$(RM) tmphf*
+ 

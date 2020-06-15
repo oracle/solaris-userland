@@ -1,0 +1,635 @@
+
+
+
+
+
+
+
+ ---- test lz4 basic compression/decompression ----
+./datagen -g0       | ../programs/lz4 -v     | ../programs/lz4 -t
+
+*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
+./datagen -g16KB    | ../programs/lz4 -9     | ../programs/lz4 -t
+
+./datagen -g20KB > tmp-tlb-dg20k
+
+../programs/lz4 < tmp-tlb-dg20k | ../programs/lz4 -d > tmp-tlb-dec
+gdiff -q tmp-tlb-dg20k tmp-tlb-dec
+../programs/lz4 --no-frame-crc < tmp-tlb-dg20k | ../programs/lz4 -d > tmp-tlb-dec
+gdiff -q tmp-tlb-dg20k tmp-tlb-dec
+./datagen           | ../programs/lz4 -BI    | ../programs/lz4 -t
+
+./datagen -g6M -P99 | ../programs/lz4 -9BD   | ../programs/lz4 -t
+
+./datagen -g17M     | ../programs/lz4 -9v    | ../programs/lz4 -qt
+*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
+./datagen -g33M     | ../programs/lz4 --no-frame-crc | ../programs/lz4 -t
+
+./datagen -g256MB   | ../programs/lz4 -vqB4D | ../programs/lz4 -t
+using blocks of size 64 KB 
+../programs/lz4 --rm -f tmp-tlb-hw tmp-tlb-hw.lz4
+test ! -f tmp-tlb-hw                      # must fail (--rm)
+test   -f tmp-tlb-hw.lz4
+../programs/lz4cat tmp-tlb-hw.lz4           # must display hello world
+hello world
+test   -f tmp-tlb-hw.lz4
+../programs/unlz4 --rm tmp-tlb-hw.lz4 tmp-tlb-hw
+test   -f tmp-tlb-hw
+test ! -f tmp-tlb-hw.lz4                  # must fail (--rm)
+test ! -f tmp-tlb-hw.lz4.lz4              # must fail (unlz4)
+../programs/lz4cat tmp-tlb-hw               # pass-through mode
+hello world
+test   -f tmp-tlb-hw
+test ! -f tmp-tlb-hw.lz4                  # must fail (lz4cat)
+../programs/lz4 tmp-tlb-hw tmp-tlb-hw.lz4          # creates tmp-tlb-hw.lz4
+../programs/lz4cat < tmp-tlb-hw.lz4 > tmp-tlb3  # checks lz4cat works with stdin (#285)
+gdiff -q tmp-tlb-hw tmp-tlb3
+../programs/lz4cat < tmp-tlb-hw > tmp-tlb2      # checks lz4cat works in pass-through mode
+gdiff -q tmp-tlb-hw tmp-tlb2
+cp tmp-tlb-hw ./-d
+../programs/lz4 --rm -- -d -d.lz4               # compresses ./d into ./-d.lz4
+test   -f ./-d.lz4
+test ! -f ./-d
+mv ./-d.lz4 ./-z
+../programs/lz4 -d --rm -- -z tmp-tlb4          # uncompresses ./-z into tmp-tlb4
+test ! -f ./-z
+gdiff -q tmp-tlb-hw tmp-tlb4
+../programs/lz4 -f tmp-tlb-hw
+Warning : using stdout as default output. Do not rely on this behavior: use explicit `-c` instead ! 
+"Md@hello world
+R../programs/lz4 --list tmp-tlb-hw.lz4           # test --list on valid single-frame file
+Warning : using stdout as default output. Do not rely on this behavior: use explicit `-c` instead ! 
+    Frames           Type Block  Compressed  Uncompressed     Ratio   Filename
+         1       LZ4Frame   B4I       31.00             -         -   tmp-tlb-hw.lz4
+cat tmp-tlb-hw >> tmp-tlb-hw.lz4
+../programs/lz4 -f tmp-tlb-hw.lz4               # uncompress valid frame followed by invalid data
+Warning : using stdout as default output. Do not rely on this behavior: use explicit `-c` instead ! 
+hello world
+../programs/lz4 -BX tmp-tlb-hw -c -q | ../programs/lz4 -tv  # test block checksum
+*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
+# ./datagen -g20KB generates the same file every single time
+# cannot save output of ./datagen -g20KB as input file to lz4 because the following shell commands are run before ./datagen -g20KB
+! ../programs/lz4 -c --fast=0 tmp-tlb-dg20K # lz4 should fail when fast=0
+Incorrect parameters
+Usage : 
+      lz4 [arg] [input] [output] 
+
+input   : a filename 
+          with no FILE, or when FILE is - or stdin, read standard input
+Arguments : 
+ -1     : Fast compression (default) 
+ -9     : High compression 
+ -d     : decompression (default for .lz4 extension)
+ -z     : force compression 
+ -D FILE: use FILE as dictionary 
+ -f     : overwrite output without prompting 
+ -k     : preserve source files(s)  (default) 
+--rm    : remove source file(s) after successful de/compression 
+ -h/-H  : display help/long help and exit 
+! ../programs/lz4 -c --fast=-1 tmp-tlb-dg20K # lz4 should fail when fast=-1
+Incorrect parameters
+Usage : 
+      lz4 [arg] [input] [output] 
+
+input   : a filename 
+          with no FILE, or when FILE is - or stdin, read standard input
+Arguments : 
+ -1     : Fast compression (default) 
+ -9     : High compression 
+ -d     : decompression (default for .lz4 extension)
+ -z     : force compression 
+ -D FILE: use FILE as dictionary 
+ -f     : overwrite output without prompting 
+ -k     : preserve source files(s)  (default) 
+--rm    : remove source file(s) after successful de/compression 
+ -h/-H  : display help/long help and exit 
+# Test for #596
+../programs/lz4 -m tmp-tlb-test
+../programs/lz4 tmp-tlb-test.lz4 tmp-tlb-test2
+gdiff -q tmp-tlb-test tmp-tlb-test2
+
+ ---- test multiple files ----
+# compress multiple files : one .lz4 per source file
+../programs/lz4 -f -m tmp-tlm*
+test -f tmp-tlm1.lz4
+test -f tmp-tlm2.lz4
+test -f tmp-tlm3.lz4
+# decompress multiple files : one output file per .lz4
+mv tmp-tlm1 tmp-tlm1-orig
+mv tmp-tlm2 tmp-tlm2-orig
+mv tmp-tlm3 tmp-tlm3-orig
+../programs/lz4 -d -f -m tmp-tlm*.lz4
+cmp tmp-tlm1 tmp-tlm1-orig   # must be identical
+cmp tmp-tlm2 tmp-tlm2-orig
+cmp tmp-tlm3 tmp-tlm3-orig
+# compress multiple files into stdout
+cat tmp-tlm1.lz4 tmp-tlm2.lz4 tmp-tlm3.lz4 > tmp-tlm-concat1
+rm -f *.lz4
+../programs/lz4 -m tmp-tlm1 tmp-tlm2 tmp-tlm3 -c > tmp-tlm-concat2
+test ! -f tmp-tlm1.lz4  # must not create .lz4 artefact
+cmp tmp-tlm-concat1 tmp-tlm-concat2  # must be equivalent
+# decompress multiple files into stdout
+rm -f tmp-tlm-concat1 tmp-tlm-concat2
+../programs/lz4 -f -m tmp-tlm1 tmp-tlm2 tmp-tlm3   # generate .lz4 to decompress
+cat tmp-tlm1 tmp-tlm2 tmp-tlm3 > tmp-tlm-concat1   # create concatenated reference
+rm -f tmp-tlm1 tmp-tlm2 tmp-tlm3
+../programs/lz4 -d -m tmp-tlm1.lz4 tmp-tlm2.lz4 tmp-tlm3.lz4 -c > tmp-tlm-concat2
+test ! -f tmp-tlm1  # must not create file artefact
+cmp tmp-tlm-concat1 tmp-tlm-concat2  # must be equivalent
+# compress multiple files, one of which is absent (must fail)
+! ../programs/lz4 -f -m tmp-tlm-concat1 notHere tmp-tlm-concat2  # must fail : notHere not present
+notHere: No such file or directory 
+
+ ---- test frame concatenation ----
+cat tmp-lfc-nonempty tmp-lfc-empty tmp-lfc-nonempty > tmp-lfc-src
+../programs/lz4 -zq tmp-lfc-empty -c > tmp-lfc-empty.lz4
+../programs/lz4 -zq tmp-lfc-nonempty -c > tmp-lfc-nonempty.lz4
+cat tmp-lfc-nonempty.lz4 tmp-lfc-empty.lz4 tmp-lfc-nonempty.lz4 > tmp-lfc-concat.lz4
+../programs/lz4 -d tmp-lfc-concat.lz4 -c > tmp-lfc-result
+cmp tmp-lfc-src tmp-lfc-result
+frame concatenation test completed
+
+ ---- bench mode ----
+../programs/lz4 -bi1
+
+ ---- test mode ----
+! ./datagen | ../programs/lz4 -t
+Error 44 : Unrecognized header : file cannot be decoded 
+! ./datagen | ../programs/lz4 -tf
+Error 44 : Unrecognized header : file cannot be decoded 
+
+ ---- pass-through mode ----
+! ../programs/lz4 -f tmp-tlt2.lz4 > /dev/null
+Warning : using stdout as default output. Do not rely on this behavior: use explicit `-c` instead ! 
+Error 44 : Unrecognized header : file cannot be decoded 
+! ./datagen | ../programs/lz4 -dc  > /dev/null
+Error 44 : Unrecognized header : file cannot be decoded 
+! ./datagen | ../programs/lz4 -df > /dev/null
+Error 44 : Unrecognized header : file cannot be decoded 
+./datagen | ../programs/lz4 -dcf > /dev/null
+
+../programs/lz4 -dcf tmp-tlt1
+Hello World !
+../programs/lz4 -dcfm tmp-tlt1 tmp-tlt2
+Hello World !
+from underground...
+
+ ---- non-existing source ----
+! ../programs/lz4     file-does-not-exist
+file-does-not-exist: is not a regular file 
+! ../programs/lz4 -f  file-does-not-exist
+file-does-not-exist: is not a regular file 
+! ../programs/lz4 -t  file-does-not-exist
+file-does-not-exist: is not a regular file 
+! ../programs/lz4 -fm file1-dne file2-dne
+file1-dne: is not a regular file 
+
+ ---- test original size support ----
+./datagen -g15M > tmplc1
+
+../programs/lz4 -v tmplc1 -c | ../programs/lz4 -t
+*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
+../programs/lz4 -v --content-size tmplc1 -c | ../programs/lz4 -d > tmplc2
+*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
+gdiff -s tmplc1 tmplc2
+Files tmplc1 and tmplc2 are identical
+
+ ---- test lz4 compression/decompression with dictionary ----
+./datagen -g16KB > tmp-dict
+
+./datagen -g32KB > tmp-dict-sample-32k
+
+< tmp-dict-sample-32k ../programs/lz4 -D tmp-dict | ../programs/lz4 -dD tmp-dict | diff - tmp-dict-sample-32k
+./datagen -g128MB > tmp-dict-sample-128m
+
+< tmp-dict-sample-128m ../programs/lz4 -D tmp-dict | ../programs/lz4 -dD tmp-dict | diff - tmp-dict-sample-128m
+touch tmp-dict-sample-0
+< tmp-dict-sample-0 ../programs/lz4 -D tmp-dict | ../programs/lz4 -dD tmp-dict | diff - tmp-dict-sample-0
+< tmp-dict-sample-32k ../programs/lz4 -D tmp-dict-sample-0 | ../programs/lz4 -dD tmp-dict-sample-0 | diff - tmp-dict-sample-32k
+< tmp-dict-sample-0 ../programs/lz4 -D tmp-dict-sample-0 | ../programs/lz4 -dD tmp-dict-sample-0 | diff - tmp-dict-sample-0
+
+ ---- test lz4 dictionary loading ----
+./datagen -g128KB > tmp-dict-data-128KB
+
+set -e; \
+for l in 0 1 4 128 32767 32768 32769 65535 65536 65537 98303 98304 98305 131071 131072 131073; do \
+./datagen -g$l > tmp-dict-$l; \
+dd if=tmp-dict-$l of=tmp-dict-$l-tail bs=1 count=65536 skip=$((l > 65536 ? l - 65536 : 0)); \
+< tmp-dict-$l      ../programs/lz4 -D stdin tmp-dict-data-128KB -c | ../programs/lz4 -dD tmp-dict-$l-tail | gdiff - tmp-dict-data-128KB; \
+< tmp-dict-$l-tail ../programs/lz4 -D stdin tmp-dict-data-128KB -c | ../programs/lz4 -dD tmp-dict-$l      | gdiff - tmp-dict-data-128KB; \
+done
+
+0+0 records in
+0+0 records out
+
+1+0 records in
+1+0 records out
+
+4+0 records in
+4+0 records out
+
+128+0 records in
+128+0 records out
+
+32767+0 records in
+32767+0 records out
+
+32768+0 records in
+32768+0 records out
+
+32769+0 records in
+32769+0 records out
+
+65535+0 records in
+65535+0 records out
+
+65536+0 records in
+65536+0 records out
+
+65536+0 records in
+65536+0 records out
+
+65536+0 records in
+65536+0 records out
+
+65536+0 records in
+65536+0 records out
+
+65536+0 records in
+65536+0 records out
+
+65536+0 records in
+65536+0 records out
+
+65536+0 records in
+65536+0 records out
+
+65536+0 records in
+65536+0 records out
+
+ ---- test opt-parser ----
+./datagen -g16KB      | ../programs/lz4 -12      | ../programs/lz4 -t
+
+./datagen -P10        | ../programs/lz4 -12B4    | ../programs/lz4 -t
+using blocks of size 64 KB 
+
+./datagen -g256K      | ../programs/lz4 -12B4D   | ../programs/lz4 -t
+using blocks of size 64 KB 
+
+./datagen -g512K -P25 | ../programs/lz4 -12BD    | ../programs/lz4 -t
+
+./datagen -g1M        | ../programs/lz4 -12B5    | ../programs/lz4 -t
+using blocks of size 256 KB 
+
+./datagen -g2M -P99   | ../programs/lz4 -11B4D   | ../programs/lz4 -t
+using blocks of size 64 KB 
+
+./datagen -g4M        | ../programs/lz4 -11vq    | ../programs/lz4 -qt
+
+./datagen -g8M        | ../programs/lz4 -11B4    | ../programs/lz4 -t
+using blocks of size 64 KB 
+
+./datagen -g16M -P90  | ../programs/lz4 -11B5    | ../programs/lz4 -t
+using blocks of size 256 KB 
+
+./datagen -g32M -P10  | ../programs/lz4 -11B5D   | ../programs/lz4 -t
+using blocks of size 256 KB 
+
+
+ ---- test sparse file support ----
+./datagen -g5M  -P100 > tmplsdg5M
+
+../programs/lz4 -B4D tmplsdg5M -c | ../programs/lz4 -d --sparse > tmplscB4
+using blocks of size 64 KB 
+gdiff -s tmplsdg5M tmplscB4
+Files tmplsdg5M and tmplscB4 are identical
+../programs/lz4 -B5D tmplsdg5M -c | ../programs/lz4 -d --sparse > tmplscB5
+using blocks of size 256 KB 
+gdiff -s tmplsdg5M tmplscB5
+Files tmplsdg5M and tmplscB5 are identical
+../programs/lz4 -B6D tmplsdg5M -c | ../programs/lz4 -d --sparse > tmplscB6
+using blocks of size 1024 KB 
+gdiff -s tmplsdg5M tmplscB6
+Files tmplsdg5M and tmplscB6 are identical
+../programs/lz4 -B7D tmplsdg5M -c | ../programs/lz4 -d --sparse > tmplscB7
+using blocks of size 4096 KB 
+gdiff -s tmplsdg5M tmplscB7
+Files tmplsdg5M and tmplscB7 are identical
+../programs/lz4 tmplsdg5M -c | ../programs/lz4 -d --no-sparse > tmplsnosparse
+gdiff -s tmplsdg5M tmplsnosparse
+Files tmplsdg5M and tmplsnosparse are identical
+gls -ls --block-size=1 tmpls* | awk '{print $6" "$NF}' | column -t
+5242880  tmplscB4
+5242880  tmplscB5
+5242880  tmplscB6
+5242880  tmplscB7
+5242880  tmplsdg5M
+5242880  tmplsnosparse
+./datagen -s1 -g1200007 -P100 | ../programs/lz4 | ../programs/lz4 -dv --sparse > tmplsodd   # Odd size file (to generate non-full last block)
+*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
+
+./datagen -s1 -g1200007 -P100 | gdiff -s - tmplsodd
+
+Files - and tmplsodd are identical
+gls -ls --block-size=1 tmplsodd | awk '{print $6" "$1" "$NF}'
+1200007 512 tmplsodd
+
+ Compatibility with Console :
+echo "Hello World 1 !" | ../programs/lz4 | ../programs/lz4 -d -c
+Hello World 1 !
+echo "Hello World 2 !" | ../programs/lz4 | ../programs/lz4 -d | cat
+Hello World 2 !
+echo "Hello World 3 !" | ../programs/lz4 --no-frame-crc | ../programs/lz4 -d -c
+Hello World 3 !
+
+ Compatibility with Append :
+./datagen -P100 -g1M > tmplsdg1M
+
+cat tmplsdg1M tmplsdg1M > tmpls2M
+../programs/lz4 -B5 -v tmplsdg1M tmplsc
+using blocks of size 256 KB 
+*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
+../programs/lz4 -d -v tmplsc tmplsr
+*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
+../programs/lz4 -d -v tmplsc -c >> tmplsr
+*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
+gls -ls --block-size=1 tmp* | awk '{print $6" "$1" "$NF}' | column -t
+2097152  512  tmpls2M
+4192     512  tmplsc
+1048576  512  tmplsdg1M
+2097152  512  tmplsr
+gdiff tmpls2M tmplsr
+
+ ---- test huge files compression/decompression ----
+./datagen -g6GB   | ../programs/lz4 -vB5D  | ../programs/lz4 -qt
+using blocks of size 256 KB 
+*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
+./datagen -g5GB   | ../programs/lz4 -v4BD  | ../programs/lz4 -qt
+*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
+# test large file size [2-4] GB
+*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
+_POSIX_VERSION defined: 200809L
+PLATFORM_POSIX_VERSION defined: 200112L
+_FILE_OFFSET_BITS defined: 64L
+Using stdin for input
+Using stdout for output
+Sparse File Support is automatically disabled on stdout ; try --sparse 
+*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
+gdiff -s tmphf1 tmphf2
+Files tmphf1 and tmphf2 are identical
+
+ ---- test lz4c variant ----
+./datagen -g256MB | ../programs/lz4c -l -v    | ../programs/lz4c   -t
+*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
+! Generating LZ4 Legacy format (deprecated) ! 
+./frametest -v -T90s
+Starting lz4frame tester (64-bits, 1.9.2)
+LZ4F_compressBound(0) =  65551 
+LZ4F_compressFrame, compress null content : null content encoded into a 11 bytes frame 
+LZ4F_createDecompressionContext 
+LZ4F_getFrameInfo on null-content frame (#157) 
+LZ4F_freeDecompressionContext 
+LZ4F_compressFrame, using fast level -3 : Compressed X bytes into Y bytes frame 
+LZ4F_compressFrame, using default preferences : Compressed X bytes into Y bytes frame 
+Decompression test : 
+Single Pass decompression : Regenerated 2097152 bytes 
+Reusing decompression context 
+Missing last 4 bytes : indeed, requests 4 bytes 
+Start by feeding 0 bytes, to get next input size :  OK  
+LZ4F_getFrameInfo on zero-size input :  correctly failed : ERROR_frameHeader_incomplete 
+LZ4F_getFrameInfo on not enough input :  correctly failed : ERROR_frameHeader_incomplete 
+LZ4F_getFrameInfo on enough input :  correctly decoded 
+Decode a buggy input : error detected : ERROR_maxBlockSize_invalid 
+Reset decompression context, since it's left in error state 
+Byte after byte : Regenerated 2097152/2097152 bytes 
+Using 64 KB block : Compressed X bytes into Y bytes frame 
+without checksum : Compressed X bytes into Y bytes frame 
+Using 256 KB block : Compressed X bytes into Y bytes frame 
+Decompression test : 
+random segment sizes : Regenerated 2097152 bytes 
+without checksum : Compressed X bytes into Y bytes frame 
+Using 1 MB block : Compressed X bytes into Y bytes frame 
+without frame checksum : Compressed X bytes into Y bytes frame 
+Using 4 MB block : Compressed X bytes into Y bytes frame 
+without frame checksum : Compressed X bytes into Y bytes frame 
+LZ4F_compressFrame with block checksum : Compressed X bytes into Y bytes frame 
+Decompress with block checksum : Regenerated 2097152 bytes 
+compress without frameSize : Compressed X bytes into Y bytes frame 
+compress with frameSize : Compressed X bytes into Y bytes frame 
+compress with wrong frameSize : Error correctly detected : ERROR_frameSize_wrong 
+insert a dictID : created frame header of size 11 bytes  
+read a dictID : 153 
+LZ4F_compressFrame_usingCDict, with NULL dict : X bytes 
+LZ4F_compressFrame_usingCDict, with dict : Compressed X bytes into Y bytes 
+LZ4F_decompress_usingDict : Regenerated 64512 bytes 
+LZ4F_compressFrame_usingCDict, with dict, negative level : X bytes 
+LZ4F_compressFrame_usingCDict, with dict, level max : X bytes 
+LZ4F_compressFrame_usingCDict, multiple linked blocks : Compressed X bytes into Y bytes 
+LZ4F_decompress_usingDict on multiple linked blocks : Regenerated 193536 bytes 
+LZ4F_compressFrame_usingCDict, multiple independent blocks : Compressed X bytes into Y bytes 
+LZ4F_decompress_usingDict on multiple independent blocks : Regenerated 193536 bytes 
+getBlockSize test: 
+Returned block size of 65536 bytes for blockID 4 
+Returned block size of 262144 bytes for blockID 5 
+Returned block size of 1048576 bytes for blockID 6 
+Returned block size of 4194304 bytes for blockID 7 
+Skippable frame test : 
+random segment sizes : 
+Skipped 2097152 bytes 
+zero-size skippable frame
+Skipped 0 bytes 
+Skippable frame header complete in first call 
+Skipped 10 bytes 
+Basic tests completed 
+./fullbench --no-prompt -i1 COPYING
+*** LZ4 speed analyzer v1.9.2 64-bits, by Yann Collet ***
+- 1 iterations -
+Compression functions : 
+ 1-LZ4_compress_default               :     18092 COMPRESS_RATE
+ 2-LZ4_compress_default(small dst)    :     18092 COMPRESS_RATE
+ 3-LZ4_compress_destSize              :     18092 COMPRESS_RATE
+ 4-LZ4_compress_fast(0)               :     18092 COMPRESS_RATE
+ 5-LZ4_compress_fast(1)               :     18092 COMPRESS_RATE
+ 6-LZ4_compress_fast(2)               :     18092 COMPRESS_RATE
+ 7-LZ4_compress_fast(17)              :     18092 COMPRESS_RATE
+ 8-LZ4_compress_fast_extState(0)      :     18092 COMPRESS_RATE
+ 9-LZ4_compress_fast_continue(0)      :     18092 COMPRESS_RATE
+10-LZ4_compress_HC                    :     18092 COMPRESS_RATE
+12-LZ4_compress_HC_extStateHC         :     18092 COMPRESS_RATE
+14-LZ4_compress_HC_continue           :     18092 COMPRESS_RATE
+20-LZ4_compress_forceDict             :     18092 COMPRESS_RATE
+30-LZ4F_compressFrame                 :     18092 COMPRESS_RATE
+40-LZ4_saveDict                       :     18092 COMPRESS_RATE
+41-LZ4_saveDictHC                     :     18092 COMPRESS_RATE
+Decompression functions : 
+ 1-LZ4_decompress_fast                :     18092 COMPRESS_RATE
+ 2-LZ4_decompress_fast_usingDict(pref :     18092 COMPRESS_RATE
+ 3-LZ4_decompress_fast_using(Ext)Dict :     18092 COMPRESS_RATE
+ 4-LZ4_decompress_safe                :     18092 COMPRESS_RATE
+ 6-LZ4_decompress_safe_usingDict      :     18092 COMPRESS_RATE
+ 7-LZ4_decompress_safe_partial        :     18092 COMPRESS_RATE
+ 8-LZ4_decompress_safe_forceExtDict   :     18092 COMPRESS_RATE
+10-LZ4F_decompress                    :     18092 COMPRESS_RATE
+11-LZ4F_decompress_followHint         :     18092 COMPRESS_RATE
+./fuzzer -T90s
+Starting LZ4 fuzzer (64-bits, v1.9.2)
+Overflow tests : 64 bits mode : no overflow 
+All unit tests completed successfully compressionLevel=9 
+Overflow tests : 64 bits mode : no overflow 
+All unit tests completed successfully compressionLevel=10 
+lz4_root=.. ./test_install.sh
+cat ../lib/lz4.c ../lib/lz4hc.c ../lib/lz4frame.c > lz4_all.c
+QEMU_SYS= python3 test-lz4-list.py
+test_block (__main__.TestNonVerbose) ... ok
+test_compressed_size (__main__.TestNonVerbose) ... ok
+test_frame_types (__main__.TestNonVerbose) ... ok
+test_frames (__main__.TestNonVerbose) ... ok
+test_ratio (__main__.TestNonVerbose) ... ok
+test_uncompressed_size (__main__.TestNonVerbose) ... ok
+test_block (__main__.TestVerbose) ... ok
+test_checksum (__main__.TestVerbose) ... ok
+test_compressed (__main__.TestVerbose) ... ok
+test_filename (__main__.TestVerbose) ... ok
+test_frame_number (__main__.TestVerbose) ... ok
+test_frame_type (__main__.TestVerbose) ... ok
+test_ratio (__main__.TestVerbose) ... ok
+test_uncompressed (__main__.TestVerbose) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in TIME
+
+OK
+DATETIME - Generating /tmp/test_list_3M
+DATETIME - > $(@D)/tests/../lz4 --content-size /tmp/test_list_3M /tmp/test_list_3M-lz4f-1f--content-size.lz4
+DATETIME - > $(@D)/tests/../lz4 -BI /tmp/test_list_3M /tmp/test_list_3M-lz4f-1f-BI.lz4
+DATETIME - > $(@D)/tests/../lz4 -BD /tmp/test_list_3M /tmp/test_list_3M-lz4f-1f-BD.lz4
+DATETIME - > $(@D)/tests/../lz4 -BX /tmp/test_list_3M /tmp/test_list_3M-lz4f-1f-BX.lz4
+DATETIME - > $(@D)/tests/../lz4 --no-frame-crc /tmp/test_list_3M /tmp/test_list_3M-lz4f-1f--no-frame-crc.lz4
+DATETIME - > $(@D)/tests/../lz4 -l /tmp/test_list_3M /tmp/test_list_3M-legc-1f.lz4
+DATETIME - Generating /tmp/test_list_11M
+DATETIME - > $(@D)/tests/../lz4 --content-size /tmp/test_list_11M /tmp/test_list_11M-lz4f-1f--content-size.lz4
+DATETIME - > $(@D)/tests/../lz4 -BI /tmp/test_list_11M /tmp/test_list_11M-lz4f-1f-BI.lz4
+DATETIME - > $(@D)/tests/../lz4 -BD /tmp/test_list_11M /tmp/test_list_11M-lz4f-1f-BD.lz4
+DATETIME - > $(@D)/tests/../lz4 -BX /tmp/test_list_11M /tmp/test_list_11M-lz4f-1f-BX.lz4
+DATETIME - > $(@D)/tests/../lz4 --no-frame-crc /tmp/test_list_11M /tmp/test_list_11M-lz4f-1f--no-frame-crc.lz4
+DATETIME - > $(@D)/tests/../lz4 -l /tmp/test_list_11M /tmp/test_list_11M-legc-1f.lz4
+DATETIME - > $(@D)/tests/../lz4 --list -m /tmp/test_list_*.lz4
+    Frames           Type Block  Compressed  Uncompressed     Ratio   Filename
+         1    LegacyFrame     -       5.54M             -         -   test_list_11M-legc-1f.lz4
+         1       LZ4Frame   B7I       5.53M        11.00M     50.29%  test_list_11M-lz4f-1f--content-size.lz4 
+         1       LZ4Frame   B7I       5.53M             -         -   test_list_11M-lz4f-1f--no-frame-crc.lz4
+         1       LZ4Frame   B7D       5.53M             -         -   test_list_11M-lz4f-1f-BD.lz4
+         1       LZ4Frame   B7I       5.53M             -         -   test_list_11M-lz4f-1f-BI.lz4
+         1       LZ4Frame   B7I       5.53M             -         -   test_list_11M-lz4f-1f-BX.lz4
+         1 SkippableFrame     -      11.01K             -         -   test_list_11M-skip-1f.lz4
+         2       LZ4Frame   B7I       7.04M        14.00M     50.31%  test_list_14M-lz4f-2f--content-size.lz4 
+         1    LegacyFrame     -       1.51M             -         -   test_list_3M-legc-1f.lz4
+         1       LZ4Frame   B7I       1.51M         3.00M     50.39%  test_list_3M-lz4f-1f--content-size.lz4 
+         1       LZ4Frame   B7I       1.51M             -         -   test_list_3M-lz4f-1f--no-frame-crc.lz4
+         1       LZ4Frame   B7I       1.51M             -         -   test_list_3M-lz4f-1f-BD.lz4
+         1       LZ4Frame   B7I       1.51M             -         -   test_list_3M-lz4f-1f-BI.lz4
+         1       LZ4Frame   B7I       1.51M             -         -   test_list_3M-lz4f-1f-BX.lz4
+         1 SkippableFrame     -       3.01K             -         -   test_list_3M-skip-1f.lz4
+        16              -     -      49.33M             -         -   test_list_concat-all.lz4
+
+DATETIME - > $(@D)/tests/../lz4 --list -m -v /tmp/test_list_concat-all.lz4 /tmp/test_list_*M-lz4f-2f--content-size.lz4
+*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
+test_list_concat-all.lz4(1/2)
+     Frame           Type Block Checksum           Compressed         Uncompressed     Ratio
+         1       LZ4Frame   B7I    XXH32               X              3145728     50.39%
+         2       LZ4Frame   B7I    XXH32               X                    -         - 
+         3       LZ4Frame   B7I    XXH32               X                    -         - 
+         4       LZ4Frame   B7I    XXH32               X                    -         - 
+         5       LZ4Frame   B7I        -               X                    -         - 
+         6 SkippableFrame     -        -                  X                    -         -
+         7    LegacyFrame     -        -               X                    -         -
+         8       LZ4Frame   B7I    XXH32               X             11534336     50.29%
+         9       LZ4Frame   B7I    XXH32               X                    -         - 
+        10       LZ4Frame   B7D    XXH32               X                    -         - 
+        11       LZ4Frame   B7I    XXH32               X                    -         - 
+        12       LZ4Frame   B7I        -               X                    -         - 
+        13 SkippableFrame     -        -                 X                    -         -
+        14    LegacyFrame     -        -               X                    -         -
+        15       LZ4Frame   B7I    XXH32               X              3145728     50.39%
+        16       LZ4Frame   B7I    XXH32               X             11534336     50.29%
+
+test_list_14M-lz4f-2f--content-size.lz4(2/2)
+     Frame           Type Block Checksum           Compressed         Uncompressed     Ratio
+         1       LZ4Frame   B7I    XXH32               X              3145728     50.39%
+         2       LZ4Frame   B7I    XXH32               X             11534336     50.29%
+
+
+
+=== Print Version ===
+./printVersion
+Hello World ! LZ4 Library version = 10902
+
+=== Simple compression example ===
+./simpleBuffer
+We successfully compressed some data! Ratio: 0.83
+We successfully decompressed some data!
+Validation done. The string we ended up with is:
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor site amat.
+
+=== Double-buffer ===
+./doubleBuffer Makefile
+inp = [Makefile]
+lz4 = [Makefile.lz4s-8192]
+dec = [Makefile.lz4s-8192.dec]
+compress : Makefile -> Makefile.lz4s-8192
+compress : done
+decompress : Makefile.lz4s-8192 -> Makefile.lz4s-8192.dec
+decompress : done
+verify : Makefile <-> Makefile.lz4s-8192.dec
+verify : OK
+
+=== Ring Buffer ===
+./ringBuffer   Makefile
+inp = [Makefile]
+lz4 = [Makefile.lz4s-0]
+dec = [Makefile.lz4s-0.dec]
+Verify : OK
+
+=== Ring Buffer + LZ4 HC ===
+./ringBufferHC Makefile
+input   = [Makefile]
+lz4     = [Makefile.lz4s-9]
+decoded = [Makefile.lz4s-9.dec]
+Verify : OK
+
+=== Compress line by line ===
+./lineCompress Makefile
+inp = [Makefile]
+lz4 = [Makefile.lz4s]
+dec = [Makefile.lz4s.dec]
+Verify : OK
+
+=== Dictionary Random Access ===
+./dictionaryRandomAccess Makefile Makefile 1100 1400
+inp    = [Makefile]
+lz4    = [Makefile.lz4s-1024]
+dec    = [Makefile.lz4s-1024.dec]
+dict   = [Makefile]
+offset = [1100]
+length = [1400]
+compress : Makefile -> Makefile.lz4s-1024
+compress : done
+decompress : Makefile.lz4s-1024 -> Makefile.lz4s-1024.dec
+decompress : done
+verify : Makefile <-> Makefile.lz4s-1024.dec
+verify : OK
+
+=== Frame compression ===
+./frameCompress Makefile
+inp = [Makefile]
+lz4 = [Makefile.lz4]
+dec = [Makefile.lz4.dec]
+compress : Makefile -> Makefile.lz4
+Buffer size is 262152 bytes, header size 7 bytes 
+compress : done
+decompress : Makefile.lz4 -> Makefile.lz4.dec
+decompress : done
+verify : Makefile <-> Makefile.lz4.dec
+verify : OK
+../programs/lz4 -vt Makefile.lz4
+*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
