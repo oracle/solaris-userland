@@ -1,0 +1,19 @@
+Patch developed inhouse, not submitted upstream.
+--- INIT.2012-08-01.old/src/lib/libast/comp/spawnveg.c	2020-05-18 08:22:28.415542276 +0000
++++ INIT.2012-08-01/src/lib/libast/comp/spawnveg.c	2020-05-18 08:22:04.492715225 +0000
+@@ -62,8 +62,13 @@
+ 		if (err = posix_spawnattr_setflags(&attr, POSIX_SPAWN_SETPGROUP))
+ 			goto bad;
+ 	}
+-	if (err = posix_spawn(&pid, path, NiL, &attr, argv, envv ? envv : environ))
+-		goto bad;
++        if (err = posix_spawn(&pid, path, NiL, &attr, argv, envv ? envv : environ))
++        {
++                if ((err != EPERM) ||
++                        (err = posix_spawn(&pid, path, NiL, NiL,
++                                        argv, envv ? envv : environ)))
++                                goto bad;
++        }
+ 	posix_spawnattr_destroy(&attr);
+ #if _lib_posix_spawn < 2
+ 	if (waitpid(pid, &err, WNOHANG|WNOWAIT) == pid && EXIT_STATUS(err) == 127)
