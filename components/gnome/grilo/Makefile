@@ -30,36 +30,35 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		grilo
-COMPONENT_VERSION=	0.3.3
+COMPONENT_VERSION=	0.3.9
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Grilo
 COMPONENT_ARCHIVE_HASH= \
-	sha256:5c874222c7bdf42490cd56765a593c41407247706bb1f24a1bd5d007aa38a0e3
+	sha256:730581cc62f2cfaadeac815760b80da8dcf3d08c454adad0d6128c930c5bcaf2
 COMPONENT_BUGDB=        gnome/multimedia
 COMPONENT_ANITYA_ID=	10928
 
-TPNO=			34587
-
-# Tests don't seem to do anything - 23712784
-TEST_TARGET = $(SKIP_TEST)
+TPNO=			54073
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU xgettext in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 
-CONFIGURE_OPTIONS += --disable-debug
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --enable-gtk-doc
-# Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-introspection
-CONFIGURE_OPTIONS.64 += --enable-introspection
-CONFIGURE_OPTIONS += --enable-grl-net
-CONFIGURE_OPTIONS += --enable-grl-pls
-CONFIGURE_OPTIONS += --enable-shared
-# Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-vala
-CONFIGURE_OPTIONS.64 += --enable-vala
-CONFIGURE_OPTIONS += --with-pic
+CONFIGURE_OPTIONS.32 += -Denable-introspection=false
+CONFIGURE_OPTIONS.32 += -Denable-vala=false
+
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/Ok/p" ' \
+        '-e "/Fail/p" ' \
+        '-e "/Pass/p" ' \
+        '-e "/Skipped/p" ' \
+        '-e "/Timeout/p" '
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala
