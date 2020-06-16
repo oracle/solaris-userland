@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 
 # Built in SFW with gcc and builds cleanly now only with gcc
@@ -88,6 +88,8 @@ CONFIGURE_OPTIONS += --enable-dynamic-ssl-lib
 # can be very interesting if issues occur.
 CONFIGURE_OPTIONS.i386  = --enable-hipe
 CONFIGURE_OPTIONS.sparc = --disable-hipe
+# Disable kernel poll on sparc to avoid hangs in erl_child_setup (bug 31443512).
+CONFIGURE_OPTIONS.sparc += --disable-kernel-poll
 
 # Erlang doesn't appear to like ASLR: it uses mmap() with MAP_FIXED, and
 # makes assumptions about memory layout that aren't true on Solaris x86,
