@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 # Build requirements, needed before inclusion of shared-macros.
 BUILD_BITS=		64
@@ -34,16 +34,16 @@ include ../../make-rules/shared-macros.mk
 #   BIND <x>.<y>.<z>-P<n>   =>   IPS <x>.<y>.<z>.<n>.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		bind
-COMPONENT_VERSION=	9.11.19
-IPS_COMPONENT_VERSION=	9.11.19.0.0
+COMPONENT_VERSION=	9.11.20
+IPS_COMPONENT_VERSION=	9.11.20.0.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	service/dns-server
-TPNO=			59139
+TPNO=			59815
 COMPONENT_PROJECT_URL=	http://www.isc.org/software/bind/
 
 # hash from: sha256sum $(COMPONENT_ARCHIVE) | sed 's/\(.[^ ]*\).*/sha256:\1/'
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:0dee554a4caa368948b32da9a0c97b516c19103bc13ff5b3762c5d8552f52329
+	sha256:306831a738a275693bbe1d6839a09b34a2c8b5c26f8a42ea57ef000a6a99c2b6
 
 COMPONENT_ARCHIVE_URL=	\
 	http://ftp.isc.org/isc/bind9/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
