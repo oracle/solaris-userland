@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # Must use gcc because of 21090206
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=\
     sha256:6a30304c27f7e7a94538f5ffec599f600ee93aedbbecad8aa4f8bec539b10ad8
 COMPONENT_ARCHIVE_URL=	http://php.net/get/$(COMPONENT_ARCHIVE)/from/this/mirror
-COMPONENT_ANITYA_ID=	3627
+COMPONENT_ANITYA_ID=	19262
 
 TPNO=			58798
 TPNO_IMAP=		32942

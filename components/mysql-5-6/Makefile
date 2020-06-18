@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 export PARFAIT_BUILD=no
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL = https://cdn.mysql.com/Downloads/MySQL-5.6/$(COMPONENT_AR
 COMPONENT_SIG_URL=      $(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_PROJECT_URL = https://dev.mysql.com/ 
 COMPONENT_BUGDB       = database/mysql
-COMPONENT_ANITYA_ID=	334
+COMPONENT_ANITYA_ID=	21279
 
 #We use cp(1) instead of cloney because we use TAR to copy files and the TAR 
 #used doesn't handle long links

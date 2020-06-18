@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 # gnupth only delivers scripts that embed paths, so prefer 32-bit.
 BUILD_BITS= 32_and_64
@@ -36,7 +36,6 @@ COMPONENT_BUGDB=	library/pth
 COMPONENT_ANITYA_ID=	2505
 
 COMPONENT_ARCHIVE_URL=https://gnupg.org/ftp/gcrypt/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
-COMPONENT_ARCHIVE_URL=https://gnupg.org/ftp/gcrypt/npth/npth-1.5.tar.bz2
 COMPONENT_SIG_URL=$(COMPONENT_ARCHIVE_URL).sig
 
 TPNO=		42737

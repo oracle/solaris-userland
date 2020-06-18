@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -37,6 +37,7 @@ COMPONENT_ARCHIVE_HASH= \
     sha256:0585b64a8d4138b96ed721f01c749b86b8b5d7b015fd4426af62afae067c110d
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/pil
+COMPONENT_ANITYA_ID=	7974
 
 TPNO=			56435
 
