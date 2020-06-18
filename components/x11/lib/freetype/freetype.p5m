@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -57,6 +57,7 @@ file path=usr/include/freetype2/freetype/ftbzip2.h
 file path=usr/include/freetype2/freetype/ftcache.h
 file path=usr/include/freetype2/freetype/ftchapters.h
 file path=usr/include/freetype2/freetype/ftcid.h
+file path=usr/include/freetype2/freetype/ftcolor.h
 file path=usr/include/freetype2/freetype/ftdriver.h
 file path=usr/include/freetype2/freetype/fterrdef.h
 file path=usr/include/freetype2/freetype/fterrors.h
@@ -92,16 +93,59 @@ file path=usr/include/freetype2/freetype/ttnameid.h
 file path=usr/include/freetype2/freetype/tttables.h
 file path=usr/include/freetype2/freetype/tttags.h
 file path=usr/include/freetype2/ft2build.h
-link path=usr/lib/$(MACH64)/libfreetype.so target=libfreetype.so.6.16.1
-link path=usr/lib/$(MACH64)/libfreetype.so.6 target=libfreetype.so.6.16.1
-file path=usr/lib/$(MACH64)/libfreetype.so.6.16.1
+link path=usr/lib/$(MACH64)/libfreetype.so \
+    target=libfreetype.so.$(FREETYPE_SOVERSION)
+file path=usr/lib/$(MACH64)/libfreetype.so.$(FREETYPE_SOVERSION)
+link path=usr/lib/$(MACH64)/libfreetype.so.6 \
+    target=libfreetype.so.$(FREETYPE_SOVERSION)
 file path=usr/lib/$(MACH64)/pkgconfig/freetype2.pc
-link path=usr/lib/libfreetype.so target=libfreetype.so.6.16.1
-link path=usr/lib/libfreetype.so.6 target=libfreetype.so.6.16.1
-file path=usr/lib/libfreetype.so.6.16.1
+link path=usr/lib/libfreetype.so target=libfreetype.so.$(FREETYPE_SOVERSION)
+file path=usr/lib/libfreetype.so.$(FREETYPE_SOVERSION)
+link path=usr/lib/libfreetype.so.6 target=libfreetype.so.$(FREETYPE_SOVERSION)
 file path=usr/lib/pkgconfig/freetype2.pc
 file path=usr/share/aclocal/freetype2.m4
+file path=usr/share/doc/freetype/404.html
 file path=usr/share/doc/freetype/VERSIONS.TXT
+file path=usr/share/doc/freetype/assets/fonts/font-awesome.css
+file path=usr/share/doc/freetype/assets/fonts/material-icons.css
+file path=usr/share/doc/freetype/assets/fonts/specimen/FontAwesome.ttf
+file path=usr/share/doc/freetype/assets/fonts/specimen/FontAwesome.woff
+file path=usr/share/doc/freetype/assets/fonts/specimen/FontAwesome.woff2
+file path=usr/share/doc/freetype/assets/fonts/specimen/MaterialIcons-Regular.ttf
+file path=usr/share/doc/freetype/assets/fonts/specimen/MaterialIcons-Regular.woff
+file path=usr/share/doc/freetype/assets/fonts/specimen/MaterialIcons-Regular.woff2
+file path=usr/share/doc/freetype/assets/images/favicon.png
+file path=usr/share/doc/freetype/assets/images/icons/bitbucket.1b09e088.svg
+file path=usr/share/doc/freetype/assets/images/icons/github.f0b8504a.svg
+file path=usr/share/doc/freetype/assets/images/icons/gitlab.6dd19c00.svg
+file path=usr/share/doc/freetype/assets/javascripts/application.c33a9706.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.ar.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.da.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.de.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.du.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.es.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.fi.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.fr.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.hu.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.it.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.ja.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.jp.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.multi.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.nl.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.no.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.pt.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.ro.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.ru.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.stemmer.support.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.sv.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.th.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.tr.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/lunr.vi.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/tinyseg.js
+file path=usr/share/doc/freetype/assets/javascripts/lunr/wordcut.js
+file path=usr/share/doc/freetype/assets/javascripts/modernizr.86422ebf.js
+file path=usr/share/doc/freetype/assets/stylesheets/application-palette.a8b3c06d.css
+file path=usr/share/doc/freetype/assets/stylesheets/application.adb8469c.css
 file path=usr/share/doc/freetype/formats.txt
 file path=usr/share/doc/freetype/ft2-auto_hinter.html
 file path=usr/share/doc/freetype/ft2-base_interface.html
@@ -112,6 +156,7 @@ file path=usr/share/doc/freetype/ft2-bzip2.html
 file path=usr/share/doc/freetype/ft2-cache_subsystem.html
 file path=usr/share/doc/freetype/ft2-cff_driver.html
 file path=usr/share/doc/freetype/ft2-cid_fonts.html
+file path=usr/share/doc/freetype/ft2-color_management.html
 file path=usr/share/doc/freetype/ft2-computations.html
 file path=usr/share/doc/freetype/ft2-error_code_values.html
 file path=usr/share/doc/freetype/ft2-error_enumerations.html
@@ -126,7 +171,8 @@ file path=usr/share/doc/freetype/ft2-header_file_macros.html
 file path=usr/share/doc/freetype/ft2-header_inclusion.html
 file path=usr/share/doc/freetype/ft2-incremental.html
 file path=usr/share/doc/freetype/ft2-index.html
-file path=usr/share/doc/freetype/ft2-lcd_filtering.html
+file path=usr/share/doc/freetype/ft2-layer_management.html
+file path=usr/share/doc/freetype/ft2-lcd_rendering.html
 file path=usr/share/doc/freetype/ft2-list_processing.html
 file path=usr/share/doc/freetype/ft2-lzw.html
 file path=usr/share/doc/freetype/ft2-mac_specific.html
@@ -144,7 +190,6 @@ file path=usr/share/doc/freetype/ft2-sfnt_names.html
 file path=usr/share/doc/freetype/ft2-sizes_management.html
 file path=usr/share/doc/freetype/ft2-system_interface.html
 file path=usr/share/doc/freetype/ft2-t1_cid_driver.html
-file path=usr/share/doc/freetype/ft2-toc.html
 file path=usr/share/doc/freetype/ft2-truetype_engine.html
 file path=usr/share/doc/freetype/ft2-truetype_tables.html
 file path=usr/share/doc/freetype/ft2-tt_driver.html
@@ -152,7 +197,13 @@ file path=usr/share/doc/freetype/ft2-type1_tables.html
 file path=usr/share/doc/freetype/ft2-user_allocation.html
 file path=usr/share/doc/freetype/ft2-version.html
 file path=usr/share/doc/freetype/ft2-winfnt_fonts.html
-link path=usr/share/doc/freetype/index.html target=ft2-toc.html
+file path=usr/share/doc/freetype/images/favico.ico
+file path=usr/share/doc/freetype/index.html
+file path=usr/share/doc/freetype/javascripts/extra.js
+file path=usr/share/doc/freetype/search/search_index.json
+file path=usr/share/doc/freetype/sitemap.xml
+file path=usr/share/doc/freetype/sitemap.xml.gz
+file path=usr/share/doc/freetype/stylesheets/extra.css
 file path=usr/share/man/man1/freetype-config.1 mangler.man.stability=obsolete
 file path=usr/share/man/man3lib/libfreetype.3lib
 license freetype.license license=MIT,Freetype
