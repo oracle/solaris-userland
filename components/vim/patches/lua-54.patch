@@ -1,0 +1,49 @@
+From 5551b131daef3a621a28dcbbe118920f5b9fabe6 Mon Sep 17 00:00:00 2001
+From: Bram Moolenaar <Bram@vim.org>
+Date: Tue, 14 Jul 2020 21:54:28 +0200
+Subject: [PATCH] patch 8.2.1212: cannot build with Lua 5.4
+
+Problem:    Cannot build with Lua 5.4.
+Solution:   Use luaL_typeerror instead defining it. (closes #6454)
+
+--- vim-8.2.0444/src/if_lua.c
++++ vim-8.2.0444/src/if_lua.c
+@@ -109,6 +109,9 @@ static luaV_Funcref *luaV_pushfuncref(lu
+ #define luaL_loadbufferx dll_luaL_loadbufferx
+ #define luaL_argerror dll_luaL_argerror
+ #endif
++#if LUA_VERSION_NUM >= 504
++#define luaL_typeerror dll_luaL_typeerror
++#endif
+ #define luaL_checkany dll_luaL_checkany
+ #define luaL_checklstring dll_luaL_checklstring
+ #define luaL_checkinteger dll_luaL_checkinteger
+@@ -203,6 +206,9 @@ int (*dll_luaL_loadfilex) (lua_State *L,
+ int (*dll_luaL_loadbufferx) (lua_State *L, const char *buff, size_t sz, const char *name, const char *mode);
+ int (*dll_luaL_argerror) (lua_State *L, int numarg, const char *extramsg);
+ #endif
++#if LUA_VERSION_NUM >= 504
++int (*dll_luaL_typeerror) (lua_State *L, int narg, const char *tname);
++#endif
+ void (*dll_luaL_checkany) (lua_State *L, int narg);
+ const char *(*dll_luaL_checklstring) (lua_State *L, int numArg, size_t *l);
+ lua_Integer (*dll_luaL_checkinteger) (lua_State *L, int numArg);
+@@ -315,6 +321,9 @@ static const luaV_Reg luaV_dll[] = {
+     {"luaL_loadbufferx", (luaV_function) &dll_luaL_loadbufferx},
+     {"luaL_argerror", (luaV_function) &dll_luaL_argerror},
+ #endif
++#if LUA_VERSION_NUM >= 504
++    {"luaL_typeerror", (luaV_function) &dll_luaL_typeerror},
++#endif
+     {"luaL_checkany", (luaV_function) &dll_luaL_checkany},
+     {"luaL_checklstring", (luaV_function) &dll_luaL_checklstring},
+     {"luaL_checkinteger", (luaV_function) &dll_luaL_checkinteger},
+@@ -443,7 +452,7 @@ lua_enabled(int verbose)
+ }
+ #endif
+ 
+-#if LUA_VERSION_NUM > 501
++#if LUA_VERSION_NUM > 501 && LUA_VERSION_NUM < 504
+     static int
+ luaL_typeerror(lua_State *L, int narg, const char *tname)
+ {

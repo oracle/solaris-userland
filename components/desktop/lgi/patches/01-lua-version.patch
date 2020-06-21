@@ -1,4 +1,4 @@
-components/lua is 5.2.1 - not suitable for upstream
+components/lua is 5.4.0 - not suitable for upstream
 
 --- lgi-0.9.2/lgi/Makefile.orig 2019-11-18 04:25:31.096072164 -0800
 +++ lgi-0.9.2/lgi/Makefile      2019-11-18 04:25:49.182673007 -0800
@@ -7,19 +7,19 @@ components/lua is 5.2.1 - not suitable for upstream
 
  ifneq ($(filter cygwin% msys% mingw%, $(HOST_OS)),)
 -CORE = corelgilua51.dll
-+CORE = corelgilua52.dll
++CORE = corelgilua54.dll
  LIBFLAG = -shared
  LIBS += -llua
  else
  ifeq ($(HOST_OS),darwin)
 -CORE = corelgilua51.so
-+CORE = corelgilua52.so
++CORE = corelgilua54.so
  LIBFLAG = -bundle -undefined dynamic_lookup
  CCSHARED = -fno-common
  GOBJECT_INTROSPECTION_LIBDIR = $(shell $(PKG_CONFIG) --variable=libdir $(GINAME))
  else
 -CORE = corelgilua51.so
-+CORE = corelgilua52.so
++CORE = corelgilua54.so
  LIBFLAG = -shared
  CCSHARED = -fPIC
  endif
@@ -30,7 +30,7 @@ components/lua is 5.2.1 - not suitable for upstream
 
  G_MODULE_EXPORT int
 -luaopen_lgi_corelgilua51 (lua_State* L)
-+luaopen_lgi_corelgilua52 (lua_State* L)
++luaopen_lgi_corelgilua54 (lua_State* L)
  {
    LgiStateMutex *mutex;
    gint state_id;
@@ -41,7 +41,7 @@ components/lua is 5.2.1 - not suitable for upstream
  -- Currently only one implementation exists, standard-Lua C-side
  -- implementation, LuaJIT-FFI-based one is planned.
 -local core = require 'lgi.corelgilua51'
-+local core = require 'lgi.corelgilua52'
++local core = require 'lgi.corelgilua54'
  
  -- Helper methods for converting between CamelCase and uscore_delim
  -- names.

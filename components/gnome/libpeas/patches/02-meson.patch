@@ -1,16 +1,7 @@
-Patch to use Lua 5.2 instead of Lua 5.1.
+Patch to use Lua 5.4 instead of Lua 5.1.
 
 --- libpeas-1.24.0/meson.build	2019-09-09 17:41:29.000000000 -0700
 +++ B/meson.build	2020-05-18 00:51:25.995659095 -0700
-@@ -90,7 +90,7 @@
- python2_req = '>= 2.5.2'
- python3_req = '>= 3.2.0'
- pygobject_req = '>= 3.2.0'
--lua_req = '>= 5.1.0'
-+lua_req = '>= 5.2.0'
- lua_lgi_req = '>= 0.9.0'
- luajit_req = '>= 2.0'
- 
 @@ -110,10 +110,10 @@
    python3_dep = dependency('python3', version: python3_req, required: false)
  endif
@@ -20,8 +11,8 @@ Patch to use Lua 5.2 instead of Lua 5.1.
  pygobject_dep = dependency('pygobject-3.0', version: pygobject_req, required: false)
 -lua51_dep = dependency('lua5.1', version: lua_req, required: false)
 -lua51_lgi_dep = dependency('lua5.1-lgi', version: lua_lgi_req, required: false)
-+lua52_dep = dependency('lua', version: lua_req, required: false)
-+lua52_lgi_dep = dependency('lgi', version: lua_lgi_req, required: false)
++lua54_dep = dependency('lua', version: lua_req, required: false)
++lua54_lgi_dep = dependency('lgi', version: lua_lgi_req, required: false)
  luajit_dep = dependency('luajit', version: luajit_req, required: false)
  
  luajit_prg = find_program('luajit', required: false)
@@ -33,10 +24,10 @@ Patch to use Lua 5.2 instead of Lua 5.1.
 -lua51_found = lua51_dep.found() and lua51_lgi_dep.found()
 -if build_lua51_loader and not lua51_found
 -  build_lua51_loader = false
-+build_lua52_loader = get_option('lua52')
-+lua52_found = lua52_dep.found() and lua52_lgi_dep.found()
-+if build_lua52_loader and not lua52_found
-+  build_lua52_loader = false
++build_lua54_loader = get_option('lua54')
++lua54_found = lua54_dep.found() and lua54_lgi_dep.found()
++if build_lua54_loader and not lua54_found
++  build_lua54_loader = false
  endif
  
  build_python2_loader = get_option('python2')
@@ -45,7 +36,7 @@ Patch to use Lua 5.2 instead of Lua 5.1.
    '     GTK+ widgetry: @0@'.format(build_gtk_widgetry),
    '     Introspection: @0@'.format(generate_gir),
 -  '   Lua 5.1 support: @0@'.format(build_lua51_loader),
-+  '   Lua 5.2 support: @0@'.format(build_lua52_loader),
++  '   Lua 5.4 support: @0@'.format(build_lua54_loader),
    '  Python 2 support: @0@'.format(build_python2_loader),
    '  Python 3 support: @0@'.format(build_python3_loader),
    '',
@@ -53,10 +44,10 @@ Patch to use Lua 5.2 instead of Lua 5.1.
 +++ B/meson_options.txt	2020-05-09 03:35:18.898649295 -0700
 @@ -1,6 +1,6 @@
 -option('lua51',
-+option('lua52',
++option('lua54',
         type: 'boolean', value: true,
 -       description: 'Enable Lua 5.1 support (requires lua-lgi)')
-+       description: 'Enable Lua 5.2 support (requires lua-lgi)')
++       description: 'Enable Lua 5.4 support (requires lua-lgi)')
  
  option('python2',
         type: 'boolean', value: false,
@@ -65,8 +56,8 @@ Patch to use Lua 5.2 instead of Lua 5.1.
 @@ -1,5 +1,5 @@
 -if build_lua51_loader == true
 -  subdir('lua5.1')
-+if build_lua52_loader == true
-+  subdir('lua5.2')
++if build_lua54_loader == true
++  subdir('lua5.4')
  endif
  
  if build_python2_loader == true
@@ -74,60 +65,60 @@ Patch to use Lua 5.2 instead of Lua 5.1.
 +++ B/loaders/lua5.1/meson.build	2020-05-09 03:35:18.692578715 -0700
 @@ -1,38 +1,38 @@
 -lua51_loader_name = 'lua51loader'
-+lua52_loader_name = 'lua52loader'
++lua54_loader_name = 'lua54loader'
  
 -lua51_lgi_version = lua51_lgi_dep.version()
 -lua51_lgi_version_arr = lua51_lgi_version.split('.')
 -lua51_lgi_version_major = lua51_lgi_version_arr[0].to_int()
 -lua51_lgi_version_minor = lua51_lgi_version_arr[1].to_int()
 -lua51_lgi_version_micro = lua51_lgi_version_arr[2].to_int()
-+lua52_lgi_version = lua52_lgi_dep.version()
-+lua52_lgi_version_arr = lua52_lgi_version.split('.')
-+lua52_lgi_version_major = lua52_lgi_version_arr[0].to_int()
-+lua52_lgi_version_minor = lua52_lgi_version_arr[1].to_int()
-+lua52_lgi_version_micro = lua52_lgi_version_arr[2].to_int()
++lua54_lgi_version = lua54_lgi_dep.version()
++lua54_lgi_version_arr = lua54_lgi_version.split('.')
++lua54_lgi_version_major = lua54_lgi_version_arr[0].to_int()
++lua54_lgi_version_minor = lua54_lgi_version_arr[1].to_int()
++lua54_lgi_version_micro = lua54_lgi_version_arr[2].to_int()
  
 -lua51_loader_c = files(
-+lua52_loader_c = files(
++lua54_loader_c = files(
    'peas-lua-internal.c',
    'peas-lua-utils.c',
    'peas-plugin-loader-lua.c',
  )
  
 -subdir('resources') # Declares 'lua51_loader_res'
-+subdir('resources') # Declares 'lua52_loader_res'
++subdir('resources') # Declares 'lua54_loader_res'
  
 -lua51_loader_deps = [
-+lua52_loader_deps = [
++lua54_loader_deps = [
    libpeas_dep,
 -  lua51_dep,
 -  lua51_lgi_dep,
-+  lua52_dep,
-+  lua52_lgi_dep,
++  lua54_dep,
++  lua54_lgi_dep,
  ]
  
 -lua51_loader_c_args = [
-+lua52_loader_c_args = [
++lua54_loader_c_args = [
    '-DHAVE_CONFIG_H',
 -  '-DLGI_MAJOR_VERSION=@0@'.format(lua51_lgi_version_major),
 -  '-DLGI_MINOR_VERSION=@0@'.format(lua51_lgi_version_minor),
 -  '-DLGI_MICRO_VERSION=@0@'.format(lua51_lgi_version_micro),
-+  '-DLGI_MAJOR_VERSION=@0@'.format(lua52_lgi_version_major),
-+  '-DLGI_MINOR_VERSION=@0@'.format(lua52_lgi_version_minor),
-+  '-DLGI_MICRO_VERSION=@0@'.format(lua52_lgi_version_micro),
++  '-DLGI_MAJOR_VERSION=@0@'.format(lua54_lgi_version_major),
++  '-DLGI_MINOR_VERSION=@0@'.format(lua54_lgi_version_minor),
++  '-DLGI_MICRO_VERSION=@0@'.format(lua54_lgi_version_micro),
  ]
  
 -lua51_loader_sha = shared_library(
 -  lua51_loader_name,
 -  lua51_loader_c + lua51_loader_res,
-+lua52_loader_sha = shared_library(
-+  lua52_loader_name,
-+  lua52_loader_c + lua52_loader_res,
++lua54_loader_sha = shared_library(
++  lua54_loader_name,
++  lua54_loader_c + lua54_loader_res,
    include_directories: rootdir,
 -  dependencies: lua51_loader_deps,
 -  c_args: lua51_loader_c_args,
-+  dependencies: lua52_loader_deps,
-+  c_args: lua52_loader_c_args,
++  dependencies: lua54_loader_deps,
++  c_args: lua54_loader_c_args,
    install: true,
    install_dir: join_paths(
      pkglibdir,
@@ -135,7 +126,7 @@ Patch to use Lua 5.2 instead of Lua 5.1.
 +++ B/loaders/lua5.1/resources/meson.build	2020-05-09 03:35:18.663260050 -0700
 @@ -1,4 +1,4 @@
 -lua51_loader_res = gnome.compile_resources(
-+lua52_loader_res = gnome.compile_resources(
++lua54_loader_res = gnome.compile_resources(
    'peas-lua-resources',
    'peas-lua.gresource.xml',
    export: true,
@@ -145,7 +136,7 @@ Patch to use Lua 5.2 instead of Lua 5.1.
  subdir('helloworld')
  
 -if build_lua51_loader == true
-+if build_lua52_loader == true
++if build_lua54_loader == true
    subdir('luahello')
  endif
  
@@ -157,8 +148,8 @@ Patch to use Lua 5.2 instead of Lua 5.1.
  
 -if build_lua51_loader == true
 -  libpeas_tests_sources += [['extension-lua', [lua51_dep]]]
-+if build_lua52_loader == true
-+  libpeas_tests_sources += [['extension-lua', [lua52_dep]]]
++if build_lua54_loader == true
++  libpeas_tests_sources += [['extension-lua', [lua54_dep]]]
  endif
  
  if build_python3_loader == true
@@ -212,7 +203,7 @@ Patch to use Lua 5.2 instead of Lua 5.1.
  libpeas_plugins_data = [
    'extension-c-nonexistent.plugin',
 -  'extension-lua51-nonexistent.plugin',
-+  'extension-lua52-nonexistent.plugin',
++  'extension-lua54-nonexistent.plugin',
    'extension-python-nonexistent.plugin',
    'extension-python3-nonexistent.plugin',
    'info-missing-module.plugin',
@@ -221,7 +212,7 @@ Patch to use Lua 5.2 instead of Lua 5.1.
  subdir('extension-c')
  
 -if build_lua51_loader == true
-+if build_lua52_loader == true
++if build_lua54_loader == true
    subdir('extension-lua')
  endif
  
@@ -234,61 +225,61 @@ Patch to use Lua 5.2 instead of Lua 5.1.
 -  'extension-lua51.gschema.xml',
 -  'extension-lua51.lua',
 -  'extension-lua51.plugin',
-+  'extension-lua52.gschema.xml',
-+  'extension-lua52.lua',
-+  'extension-lua52.plugin',
++  'extension-lua54.gschema.xml',
++  'extension-lua54.lua',
++  'extension-lua54.plugin',
  ]
  
  custom_target(
---- libpeas-1.24.0/loaders/lua5.2/meson.build	2020-05-13 01:59:09.666119315 -0700
-+++ B/loaders/lua5.2/meson.build	2020-05-13 03:41:44.860040725 -0700
+--- libpeas-1.24.0/loaders/lua5.4/meson.build	2020-05-13 01:59:09.666119315 -0700
++++ B/loaders/lua5.4/meson.build	2020-05-13 03:41:44.860040725 -0700
 @@ -0,0 +1,42 @@
-+lua52_loader_name = 'lua52loader'
++lua54_loader_name = 'lua54loader'
 +
-+#lua52_lgi_version = lua52_lgi_dep.version()
-+lua52_lgi_version = '0.9.2'
-+lua52_lgi_version_arr = lua52_lgi_version.split('.')
-+lua52_lgi_version_major = lua52_lgi_version_arr[0].to_int()
-+lua52_lgi_version_minor = lua52_lgi_version_arr[1].to_int()
-+lua52_lgi_version_micro = lua52_lgi_version_arr[2].to_int()
++#lua54_lgi_version = lua54_lgi_dep.version()
++lua54_lgi_version = '0.9.2'
++lua54_lgi_version_arr = lua54_lgi_version.split('.')
++lua54_lgi_version_major = lua54_lgi_version_arr[0].to_int()
++lua54_lgi_version_minor = lua54_lgi_version_arr[1].to_int()
++lua54_lgi_version_micro = lua54_lgi_version_arr[2].to_int()
 +
-+lua52_loader_c = files(
++lua54_loader_c = files(
 +  'peas-lua-internal.c',
 +  'peas-lua-utils.c',
 +  'peas-plugin-loader-lua.c',
 +)
 +
-+subdir('resources') # Declares 'lua52_loader_res'
++subdir('resources') # Declares 'lua54_loader_res'
 +
-+lua52_loader_deps = [
++lua54_loader_deps = [
 +  libpeas_dep,
-+  lua52_dep,
-+  lua52_lgi_dep,
++  lua54_dep,
++  lua54_lgi_dep,
 +]
 +
-+lua52_loader_c_args = [
++lua54_loader_c_args = [
 +  '-DHAVE_CONFIG_H',
-+  '-DLGI_MAJOR_VERSION=@0@'.format(lua52_lgi_version_major),
-+  '-DLGI_MINOR_VERSION=@0@'.format(lua52_lgi_version_minor),
-+  '-DLGI_MICRO_VERSION=@0@'.format(lua52_lgi_version_micro),
++  '-DLGI_MAJOR_VERSION=@0@'.format(lua54_lgi_version_major),
++  '-DLGI_MINOR_VERSION=@0@'.format(lua54_lgi_version_minor),
++  '-DLGI_MICRO_VERSION=@0@'.format(lua54_lgi_version_micro),
 +]
 +
-+lua52_loader_sha = shared_library(
-+  lua52_loader_name,
-+  lua52_loader_c + lua52_loader_res,
++lua54_loader_sha = shared_library(
++  lua54_loader_name,
++  lua54_loader_c + lua54_loader_res,
 +  include_directories: rootdir,
-+  dependencies: lua52_loader_deps,
-+  c_args: lua52_loader_c_args,
++  dependencies: lua54_loader_deps,
++  c_args: lua54_loader_c_args,
 +  install: true,
 +  install_dir: join_paths(
 +    pkglibdir,
 +    'loaders',
 +  )
 +)
---- libpeas-1.24.0/loaders/lua5.2/resources/meson.build	2020-05-13 04:47:28.281113750 -0700
-+++ B/loaders/lua5.2/resources/meson.build	2020-05-13 04:42:27.994151855 -0700
+--- libpeas-1.24.0/loaders/lua5.4/resources/meson.build	2020-05-13 04:47:28.281113750 -0700
++++ B/loaders/lua5.4/resources/meson.build	2020-05-13 04:42:27.994151855 -0700
 @@ -0,0 +1,5 @@
-+lua52_loader_res = gnome.compile_resources(
++lua54_loader_res = gnome.compile_resources(
 +  'peas-lua-resources',
 +  'peas-lua.gresource.xml',
 +  export: true,

@@ -1,0 +1,19 @@
+Recently released Lua 5.4 introduced additional argument in lua_resume function.
+
+Taken from upsream:
+https://github.com/pavouk/lgi/pull/199
+
+--- a/lgi/callable.c
++++ b/lgi/callable.c
+@@ -1351,7 +1351,10 @@ closure_callback (ffi_cif *cif, void *ret, void **args, void *closure_arg)
+     }
+   else
+     {
+-#if LUA_VERSION_NUM >= 502
++#if LUA_VERSION_NUM >= 504
++      int nresults;
++      res = lua_resume (L, NULL, npos, &nresults);
++#elif LUA_VERSION_NUM >= 502
+       res = lua_resume (L, NULL, npos);
+ #else
+       res = lua_resume (L, npos);

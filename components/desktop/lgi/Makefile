@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -47,10 +47,13 @@ include $(WS_MAKE_RULES)/common.mk
 
 LDFLAGS += $(CC_BITS)
 
+LUA_VERSION = 5.4
+PKG_MACROS += LUA_VERSION=$(LUA_VERSION)
+
 COMPONENT_BUILD_ENV += PKG_CONFIG_PATH="$(PKG_CONFIG_PATH)"
 
-COMPONENT_INSTALL_ARGS += LUA_VERSION=5.2 PREFIX=$(USRDIR)
-COMPONENT_INSTALL_ARGS.64 += LUA_LIBDIR=$(USRDIR)/lib/lua/5.2/64
+COMPONENT_INSTALL_ARGS += LUA_VERSION=$(LUA_VERSION) PREFIX=$(USRDIR)
+COMPONENT_INSTALL_ARGS.64 += LUA_LIBDIR=$(USRDIR)/lib/lua/$(LUA_VERSION)/64
 
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/glib2

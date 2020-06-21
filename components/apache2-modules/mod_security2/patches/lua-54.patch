@@ -1,0 +1,22 @@
+Patch in Lua 5.4 compatibility.
+
+--- modsecurity-2.9.2/apache2/msc_lua.c
++++ modsecurity-2.9.2/apache2/msc_lua.c
+@@ -429,7 +429,7 @@ int lua_execute(msc_script *script, char
+ #else
+ 
+     /* Create new state. */
+-#if LUA_VERSION_NUM == 502 || LUA_VERSION_NUM == 503 || LUA_VERSION_NUM == 501
++#if LUA_VERSION_NUM == 502 || LUA_VERSION_NUM == 503 || LUA_VERSION_NUM == 501 || LUA_VERSION_NUM == 504
+     L = luaL_newstate();
+ #elif LUA_VERSION_NUM == 500
+     L = lua_open();
+@@ -459,7 +459,7 @@ int lua_execute(msc_script *script, char
+     /* Register functions. */
+ #if LUA_VERSION_NUM == 500 || LUA_VERSION_NUM == 501
+     luaL_register(L, "m", mylib);
+-#elif LUA_VERSION_NUM == 502 || LUA_VERSION_NUM == 503
++#elif LUA_VERSION_NUM == 502 || LUA_VERSION_NUM == 503 || LUA_VERSION_NUM == 504
+     luaL_setfuncs(L, mylib, 0);
+ #else
+ #error We are only tested under Lua 5.0, 5.1, 5.2, or 5.3.

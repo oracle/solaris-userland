@@ -1,10 +1,10 @@
---- Makefile.~1~	2012-05-17 07:05:54.000000000 -0700
-+++ Makefile	2012-09-06 17:26:51.006475447 -0700
+--- lua-5.4.0/Makefile
++++ lua-5.4.0/Makefile
 @@ -4,25 +4,26 @@
  # == CHANGE THE SETTINGS BELOW TO SUIT YOUR ENVIRONMENT =======================
  
  # Your platform. See PLATS for possible values.
--PLAT= none
+-PLAT= guess
 +PLAT= solaris
  
  # Where to install. The installation starts in the src and doc directories,
@@ -33,12 +33,7 @@
  #
  # If you don't have "install" you can use "cp" instead.
  # INSTALL= cp -p
-@@ -36,13 +37,14 @@
- # == END OF USER SETTINGS -- NO NEED TO CHANGE ANYTHING BELOW THIS LINE =======
- 
- # Convenience platforms targets.
--PLATS= aix ansi bsd freebsd generic linux macosx mingw posix solaris
-+PLATS= solaris
+@@ -40,9 +41,10 @@ PLATS= guess aix bsd c89 freebsd generic
  
  # What to install.
  TO_BIN= lua luac
@@ -47,23 +42,22 @@
 +TO_INC= lua.h luaconf.h lualib.h lauxlib.h
 +TO_LIB= liblua.so
  TO_MAN= lua.1 luac.1
-+TO_DOC= contents.html osi-certified-72x60.png logo.gif lua.css manual.css manual.html readme.html
++TO_DOC= contents.html index.css osi-certified-72x60.png logo.gif lua.css manual.css manual.html readme.html
  
  # Lua version and release.
- V= 5.2
-@@ -58,11 +60,13 @@
- 	src/lua -v
+ V= 5.4
+@@ -55,11 +57,12 @@ $(PLATS) help test clean:
+ 	@cd src && $(MAKE) $@
  
  install: dummy
 -	cd src && $(MKDIR) $(INSTALL_BIN) $(INSTALL_INC) $(INSTALL_LIB) $(INSTALL_MAN) $(INSTALL_LMOD) $(INSTALL_CMOD)
-+	cd src && $(MKDIR) $(INSTALL_BIN) $(INSTALL_INC) $(INSTALL_LIB) $(INSTALL_DOC) $(INSTALL_MAN) $(INSTALL_TEST)
++	cd src && $(MKDIR) $(INSTALL_BIN) $(INSTALL_INC) $(INSTALL_LIB) $(INSTALL_DOC) $(INSTALL_MAN)
  	cd src && $(INSTALL_EXEC) $(TO_BIN) $(INSTALL_BIN)
  	cd src && $(INSTALL_DATA) $(TO_INC) $(INSTALL_INC)
 -	cd src && $(INSTALL_DATA) $(TO_LIB) $(INSTALL_LIB)
 +	cd src && $(INSTALL_EXEC) $(TO_LIB) $(INSTALL_LIB)
  	cd doc && $(INSTALL_DATA) $(TO_MAN) $(INSTALL_MAN)
 +	cd doc && $(INSTALL_DATA) $(TO_DOC) $(INSTALL_DOC)
-+	
  
  uninstall:
  	cd src && cd $(INSTALL_BIN) && $(RM) $(TO_BIN)

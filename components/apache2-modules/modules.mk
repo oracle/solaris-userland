@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
 COMPONENT_BUGDB ?=	utility/apache
 
@@ -42,6 +42,8 @@ BUILD_64 = $(VARIANTS_64:%=%/$(MACH64)/.built)
 INSTALL_64 = $(VARIANTS_64:%=%/$(MACH64)/.installed)
 
 TEST_64 = $(VARIANTS_64:%=%/$(MACH64)/.tested)
+
+TEST_AND_COMPARE_64 = $(VARIANTS_64:%=%/$(MACH64)/.tested-and-compared)
 
 $(VARIANT_APACHE_24)/$(MACH64)/.configured: BITS=64
 

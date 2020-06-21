@@ -20,41 +20,42 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
+
 BUILD_BITS= 64_and_32
+COMPILER=	gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		lua
-COMPONENT_VERSION=	5.2.1
+COMPONENT_VERSION=	5.4.0
 COMPONENT_PROJECT_URL=	http://www.lua.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:64304da87976133196f9e4c15250b70f444467b6ed80d7cfd7b3b982b5177be5
+    sha256:084c7fdaec954074f1728e6140df9fb25342b2b9fb854bbd9ab4e11c729f87b3
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)ftp/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1847
 
-LUA_TESTS=		lua-5.2.1-tests
-COMPONENT_ARCHIVE_1=	$(LUA_TESTS).tar.gz
-COMPONENT_ARCHIVE_HASH_1= \
-    sha256:2346d635ee392c8d8024b07beaa10b7b66a3f861c41d575753d03155751cf114
-COMPONENT_ARCHIVE_URL_1= $(COMPONENT_PROJECT_URL)tests/$(COMPONENT_ARCHIVE_1)
+# As per https://www.lua.org/tests/: if test suite for our release is not
+# available, download one for the closest Lua release of the same version.
+COMPONENT_SRC_TESTS=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-tests
+COMPONENT_ARCHIVE_TESTS=	$(COMPONENT_SRC_TESTS).tar.gz
+COMPONENT_ARCHIVE_HASH_TESTS=	\
+	sha256:a3a2b42c70cd830b39774101a224b65dbe40e093441fb015244ec9a3225d2b78
+COMPONENT_ARCHIVE_URL_TESTS=	$(COMPONENT_PROJECT_URL)tests/$(COMPONENT_ARCHIVE_TESTS)
 
-TPNO=			43186
+TPNO=			60064
 
 BUILD_STYLE= justmake
 INSTALL_32_and_64 += $(BUILD_DIR)/lua-64.pc
 SYSTEM_TEST_TARGET= $(SYSTEM_TEST_32_and_64)
 include $(WS_MAKE_RULES)/common.mk
 
-PATCH_LEVEL= 0
-
 # This is because lua uses $(CC) to build its shared libraries.
-CC +=		$(CC_BITS)
-
 CFLAGS +=	$(CC_PIC) $(CPP_LARGEFILES)
 
-COMPONENT_BUILD_ARGS += CC="$(CC)"
-COMPONENT_BUILD_ARGS += USRCFLAGS="$(CFLAGS)"
+COMPONENT_BUILD_ARGS += MYCFLAGS="$(CFLAGS)"
+COMPONENT_BUILD_ARGS += MYLDFLAGS="$(CC_BITS)"
+
 COMPONENT_INSTALL_ARGS += INSTALL=$(INSTALL)
 COMPONENT_INSTALL_ARGS += INSTALL_TOP=$(PROTOUSRDIR)
 $(INSTALL_32):	COMPONENT_INSTALL_ARGS += INSTALL_BIN=$(PROTOUSRBINDIR)/$(MACH32)
@@ -63,22 +64,11 @@ $(INSTALL_64):	COMPONENT_INSTALL_ARGS += INSTALL_LIB=$(PROTOUSRLIBDIR64)
 $(BUILD_DIR)/lua-64.pc:		files/lua-64.pc
 	$(GSED) -e "s#MACH64#$(MACH64)#g" < $< > $@
 
-CLEAN_PATHS +=	$(LUA_TESTS)
+LUA_ENV =	LD_LIBRARY_PATH=$(COMPONENT_DIR)/build/$(MACH$(BITS))/src/
+LUA_EXE =	$(BUILD_DIR)/$(MACH$(BITS))/src/$(COMPONENT_NAME)
 
-LUA_EXE_32 =	$(BUILD_DIR)/$(MACH32)/src/$(COMPONENT_NAME)
-LUA_EXE_64 =	$(BUILD_DIR)/$(MACH64)/src/$(COMPONENT_NAME)
-LUA_EXE =	$(LUA_EXE_$(BITS))
-
-# Unpack and patch the tests once, and work around CR #19661394, which is
-# causing the lua self-tests to fail.
-COMPONENT_PRE_TEST_ACTION = \
-	(if ! test -d $(LUA_TESTS) ; then \
-		$(UNPACK) $(UNPACK_ARGS) $(LUA_TESTS).tar.gz ; \
-		(cd $(LUA_TESTS); $(GPATCH) $(GPATCH_FLAGS) \
-			<$(COMPONENT_DIR)/files/fix-tests.patch) ; \
-	fi)
-
-COMPONENT_TEST_DIR =		$(LUA_TESTS)
+COMPONENT_TEST_DIR =		$(COMPONENT_SRC_TESTS)
+COMPONENT_TEST_ENV = 		$(LUA_ENV)
 COMPONENT_TEST_CMD =		$(LUA_EXE)
 COMPONENT_TEST_ARGS =		-e"_U=true"
 COMPONENT_TEST_TARGETS =	all.lua
@@ -91,20 +81,14 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 # test results to try to normalize them.
 COMPONENT_TEST_TRANSFORMS += \
 	'-e "/---- total memory:/d" ' \
-	'-e "s|elements in .\... sec|elements in x.xx sec|g" ' \
-	'-e "s|\(total time:\).*|\1|" ' \
+	'-e "s|\(time:\).*|\1|" ' \
+	'-e "s|elements in ..\?\... |elements in \#\#\# |g" ' \
+	'-e "s|[0-9]|\#|g" ' \
+	'-e "s|\(calls:\).*|\1|" ' \
+	'-e "s|\(seeds:\).*|\1|" ' \
 	'-e "s|\(test done on\).*|\1|" '
 
-# Unpack and patch the tests once, and work around CR #19661394, which is
-# causing the lua self-tests to fail.
-COMPONENT_PRE_SYSTEM_TEST_ACTION = \
-	(if ! test -d $(LUA_TESTS) ; then \
-		$(UNPACK) $(UNPACK_ARGS) $(LUA_TESTS).tar.gz ; \
-		(cd $(LUA_TESTS); $(GPATCH) $(GPATCH_FLAGS) \
-			<$(COMPONENT_DIR)/files/fix-tests.patch) ; \
-	fi)
-
-COMPONENT_SYSTEM_TEST_DIR =	$(LUA_TESTS)
+COMPONENT_SYSTEM_TEST_DIR =	$(COMPONENT_SRC_TESTS)
 COMPONENT_SYSTEM_TEST_CMD =	$(USRBINDIR)/lua
 COMPONENT_SYSTEM_TEST_ARGS =	-e"_U=true"
 COMPONENT_SYSTEM_TEST_TARGETS =	all.lua
