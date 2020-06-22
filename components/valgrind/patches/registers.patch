@@ -1,0 +1,109 @@
+With changes introduced in Enh 15320009, short ia32 register names are no
+longer available when sys/regset.h is included. New long ia32 register names
+are prefixed with REG32_.
+
+Several test files must also be adjusted for this change.
+
+--- valgrind-3.15.0/include/vki/vki-solaris.h
++++ valgrind-3.15.0/include/vki/vki-solaris.h
+@@ -1386,25 +1386,25 @@ typedef struct sigaction vki_sigaction_f
+ /* This section also contains items defined in sys/regset.h, this file
+    is directly included in sys/ucontext.h. */
+ #if defined(VGP_x86_solaris)
+-#define VKI_SS SS
+-#define VKI_UESP UESP
+-#define VKI_EFL EFL
+-#define VKI_CS CS
+-#define VKI_EIP EIP
+-#define VKI_ERR 13 /* ERR */
+-#define VKI_TRAPNO TRAPNO
+-#define VKI_EAX EAX
+-#define VKI_ECX ECX
+-#define VKI_EDX EDX
+-#define VKI_EBX EBX
+-#define VKI_ESP ESP
+-#define VKI_EBP EBP
+-#define VKI_ESI ESI
+-#define VKI_EDI EDI
+-#define VKI_DS DS
+-#define VKI_ES ES
+-#define VKI_FS FS
+-#define VKI_GS GS
++#define VKI_SS REG32_SS
++#define VKI_UESP REG32_UESP
++#define VKI_EFL REG32_EFL
++#define VKI_CS REG32_CS
++#define VKI_EIP REG32_EIP
++#define VKI_ERR REG32_ERR
++#define VKI_TRAPNO REG32_TRAPNO
++#define VKI_EAX REG32_EAX
++#define VKI_ECX REG32_ECX
++#define VKI_EDX REG32_EDX
++#define VKI_EBX REG32_EBX
++#define VKI_ESP REG32_ESP
++#define VKI_EBP REG32_EBP
++#define VKI_ESI REG32_ESI
++#define VKI_EDI REG32_EDI
++#define VKI_DS REG32_DS
++#define VKI_ES REG32_ES
++#define VKI_FS REG32_FS
++#define VKI_GS REG32_GS
+ 
+ /* Definitions for compatibility with amd64-solaris. */
+ #define VKI_REG_ERR VKI_ERR
+--- valgrind-3.15.0/memcheck/tests/x86-solaris/context_eflags.c
++++ valgrind-3.15.0/memcheck/tests/x86-solaris/context_eflags.c
+@@ -62,7 +62,7 @@ int main(void)
+ 
+    printf("Values in the signal handler:\n");
+    printf("  overflow=%d, sign=%d\n",
+-          OBIT(uc.uc_mcontext.gregs[EFL]), SBIT(uc.uc_mcontext.gregs[EFL]));
++          OBIT(uc.uc_mcontext.gregs[REG32_EFL]), SBIT(uc.uc_mcontext.gregs[REG32_EFL]));
+ 
+    printf("Values after the return from the signal handler:\n");
+    printf("  overflow=%d, sign=%d\n", OBIT(eflags), SBIT(eflags));
+--- valgrind-3.15.0/memcheck/tests/x86-solaris/context_eflags2.c
++++ valgrind-3.15.0/memcheck/tests/x86-solaris/context_eflags2.c
+@@ -25,7 +25,7 @@ static void sighandler(int sig, siginfo_
+    uc = *ucp;
+ 
+    /* Break out of the endless loop. */
+-   *(uintptr_t*)&ucp->uc_mcontext.gregs[EIP] = (uintptr_t)break_out;
++   *(uintptr_t*)&ucp->uc_mcontext.gregs[REG32_EIP] = (uintptr_t)break_out;
+ }
+ 
+ int main(void)
+@@ -71,7 +71,7 @@ int main(void)
+ 
+       Note: This actually fails because the eflags are only approximate
+       (always initialised) in the signal handler. */
+-   if (!OBIT(uc.uc_mcontext.gregs[EFL]) || !SBIT(uc.uc_mcontext.gregs[EFL]))
++   if (!OBIT(uc.uc_mcontext.gregs[REG32_EFL]) || !SBIT(uc.uc_mcontext.gregs[REG32_EFL]))
+       assert(0);
+ 
+    /* Check that the overflow and sign flags are uninitialised. */
+--- valgrind-3.15.0/memcheck/tests/x86-solaris/context_gpr.c
++++ valgrind-3.15.0/memcheck/tests/x86-solaris/context_gpr.c
+@@ -21,7 +21,7 @@ static void sighandler(int sig, siginfo_
+    si = *sip;
+    uc = *ucp;
+ 
+-   ucp->uc_mcontext.gregs[ECX] = x0;
++   ucp->uc_mcontext.gregs[REG32_ECX] = x0;
+ }
+ 
+ int main(void)
+@@ -77,10 +77,10 @@ int main(void)
+ 
+    printf("Values in the signal handler:\n");
+    printf("  eax=%#x, edx=%#x, esi=%#x, edi=%#x\n",
+-          uc.uc_mcontext.gregs[EAX], uc.uc_mcontext.gregs[EDX],
+-          uc.uc_mcontext.gregs[ESI], uc.uc_mcontext.gregs[EDI]);
++          uc.uc_mcontext.gregs[REG32_EAX], uc.uc_mcontext.gregs[REG32_EDX],
++          uc.uc_mcontext.gregs[REG32_ESI], uc.uc_mcontext.gregs[REG32_EDI]);
+    /* Check that ebx contains an uninitialised value (origin is py[0]). */
+-   if (uc.uc_mcontext.gregs[EBX])
++   if (uc.uc_mcontext.gregs[REG32_EBX])
+       assert(0);
+ 
+    printf("Values after the return from the signal handler:\n");
