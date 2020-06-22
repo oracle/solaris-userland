@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
@@ -50,16 +50,6 @@ include $(WS_MAKE_RULES)/setup.py.mk
 ODPI312_BASE = $(WS_COMPONENTS)/odpi-312/build/prototype/$(MACH)
 LD_OPTIONS += -L $(ODPI312_BASE)$(USRLIB.$(BITS))
 CPPFLAGS += -I$(ODPI312_BASE)$(USRINCDIR)
-
-# The dependency isn't installed, so add it manually since pkgdepend
-# can't resolve them yet: 15708323
-DEPENDED += $(WS_TOP)/components/odpi-312/build/manifest-$(MACH)-odpi-312.depend
-
-# Temporary until dependencies are all on build machines
-REQUIRED_PACKAGES += $(shell $(GSED) -n 's/REQUIRED_PACKAGES +=//p' ../../odpi-312/Makefile)
-#end Delete
-
-
 
 EXTRA_ENV =		ODPIC_INC_DIR=$(ODPI312_BASE)/usr/include/odpi-312
 EXTRA_ENV +=		ODPIC_LIB_DIR=$(ODPI312_BASE)/usr/lib
