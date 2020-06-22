@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -57,9 +57,8 @@ COMPONENT_TEST_ENV +=	LD_LIBRARY_PATH=$(TEST_LIBPATH.$(BITS))
 COMPONENT_TEST_ENV +=   PATH="$(GNUBIN):$(PATH)"
 COMPONENT_SYSTEM_TEST_ENV +=   PATH="$(GNUBIN):$(PATH)"
 
-# Two tests fail for 32-bit SPARC, so we have 4 master test files.
 COMPONENT_TEST_MASTER = \
-	$(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS)-$(MACH).master
+	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-e "s|libsndfile-1\.0\...|libsndfile-1\.0\.xx|g" ' \
