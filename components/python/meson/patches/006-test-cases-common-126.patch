@@ -1,11 +1,13 @@
 This patch is necessary because Userland passes -z text in LD_OPTIONS_SO,
 which is good for most shared objects, but triggers an error in this test.
-It isn't necessary upstream when not built in such environments.
 
-From c766b709fb0adbbc468806b8a7809bbaf5cc5821 Mon Sep 17 00:00:00 2001
+Submitted & accepted upstream for a release after 0.54.3:
+https://github.com/mesonbuild/meson/pull/7370
+
+From bf5c8de48c2d8c0b1a5085eb181661d98221046b Mon Sep 17 00:00:00 2001
 From: Alan Coopersmith <alan.coopersmith@oracle.com>
 Date: Sat, 29 Jun 2019 19:09:52 -0700
-Subject: [PATCH] Fix "test cases/common/126 object only target" on Solaris
+Subject: [PATCH] Fix "test cases/common/125 object only target" on Solaris
 
 If object is not built pic, trying to link it into libshr.so fails:
 
@@ -21,13 +23,13 @@ ninja: build stopped: subcommand failed.
 
 Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
 ---
- test cases/common/126 object only target/obj_generator.py | 2 ++
+ test cases/common/125 object only target/obj_generator.py | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/test cases/common/126 object only target/obj_generator.py b/test cases/common/126 object only target/obj_generator.py
-index a33872aa..afdbc09a 100755
---- a/test cases/common/126 object only target/obj_generator.py	
-+++ b/test cases/common/126 object only target/obj_generator.py	
+diff --git a/test cases/common/125 object only target/obj_generator.py b/test cases/common/125 object only target/obj_generator.py
+index a33872aac..afdbc09ad 100755
+--- a/test cases/common/125 object only target/obj_generator.py	
++++ b/test cases/common/125 object only target/obj_generator.py	
 @@ -13,6 +13,8 @@ if __name__ == '__main__':
      ofile = sys.argv[3]
      if compiler.endswith('cl'):
@@ -38,5 +40,5 @@ index a33872aa..afdbc09a 100755
          cmd = [compiler, '-c', ifile, '-o', ofile]
      sys.exit(subprocess.call(cmd))
 -- 
-2.19.2
+2.19.3
 

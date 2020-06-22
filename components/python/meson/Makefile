@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -29,17 +29,17 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		meson
-COMPONENT_VERSION=	0.51.2
+COMPONENT_VERSION=	0.54.3
 COMPONENT_PROJECT_URL=	http://mesonbuild.com/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:23688f0fc90be623d98e80e1defeea92bbb7103bf9336a5f5b9865d36e892d76
+    sha256:f2bdf4cf0694e696b48261cdd14380fb1d0fe33d24744d8b2df0c12f33ebb662
 COMPONENT_ARCHIVE_URL=	https://github.com/mesonbuild/meson/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 
 COMPONENT_BUGDB=        utility/meson
 COMPONENT_ANITYA_ID=	6472
 
-TPNO=			53918
+TPNO=			59806
 
 # As of 0.51.0, meson requires Python 3.5 or newer, and we only need
 # to build for a single version, not all of them.
@@ -66,7 +66,7 @@ COMPONENT_TEST_MASTER=	$(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/Total .* time/d" ' \
-	'-e "s/[0-9][0-9\.]* s//" ' \
+	'-e "s/[0-9][0-9\.]* *s//" ' \
         '-e "/Total/p" ' \
 	'-e "/^test/p" ' \
         '-e "/PASS/p" ' \

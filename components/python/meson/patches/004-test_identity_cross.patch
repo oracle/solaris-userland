@@ -1,0 +1,56 @@
+Submitted & accepted upstream for a release after 0.54.3:
+https://github.com/mesonbuild/meson/pull/7370
+
+From 105c194b8477e76e8875accb16b02c205c3c4b12 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Mon, 8 Jun 2020 18:58:48 -0700
+Subject: [PATCH] unittests: Fix test_identity_cross on Solaris
+
+Since mesonbuild/environment.py doesn't recognize Studio compilers,
+force use of gcc on Solaris for now.
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ test cases/unit/61 identity cross/build_wrapper.py | 10 ++++++++--
+ test cases/unit/61 identity cross/host_wrapper.py  | 10 ++++++++--
+ 2 files changed, 16 insertions(+), 4 deletions(-)
+
+diff --git a/test cases/unit/61 identity cross/build_wrapper.py b/test cases/unit/61 identity cross/build_wrapper.py
+index b5fe7bb89..15d5c07dd 100755
+--- a/test cases/unit/61 identity cross/build_wrapper.py	
++++ b/test cases/unit/61 identity cross/build_wrapper.py	
+@@ -1,5 +1,11 @@
+ #!/usr/bin/env python3
+ 
+-import subprocess, sys
++import subprocess, sys, platform
+ 
+-subprocess.call(["cc", "-DEXTERNAL_BUILD"] + sys.argv[1:])
++# Meson does not yet support Studio cc on Solaris, only gcc or clang
++if platform.system() == 'SunOS':
++    cc = 'gcc'
++else:
++    cc = 'cc'
++
++subprocess.call([cc, "-DEXTERNAL_BUILD"] + sys.argv[1:])
+diff --git a/test cases/unit/61 identity cross/host_wrapper.py b/test cases/unit/61 identity cross/host_wrapper.py
+index e88577c9a..a3a694a4c 100755
+--- a/test cases/unit/61 identity cross/host_wrapper.py	
++++ b/test cases/unit/61 identity cross/host_wrapper.py	
+@@ -1,5 +1,11 @@
+ #!/usr/bin/env python3
+ 
+-import subprocess, sys
++import subprocess, sys, platform
+ 
+-subprocess.call(["cc", "-DEXTERNAL_HOST"] + sys.argv[1:])
++# Meson does not yet support Studio cc on Solaris, only gcc or clang
++if platform.system() == 'SunOS':
++    cc = 'gcc'
++else:
++    cc = 'cc'
++
++subprocess.call([cc, "-DEXTERNAL_HOST"] + sys.argv[1:])
+-- 
+2.19.3
+

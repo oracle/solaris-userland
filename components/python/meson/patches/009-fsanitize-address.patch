@@ -2,7 +2,7 @@ Need to determine why gcc 9 doesn't support sanitize-address on Solaris
 despite now shipping libasan, before determining if we should submit this
 patch upstream to disable it.
 
-From a7398f502e7616db3e0d553051889af2f58b7a29 Mon Sep 17 00:00:00 2001
+From 97a6f3f998decf5d6d91127ff008248e4f0614b1 Mon Sep 17 00:00:00 2001
 From: Alan Coopersmith <alan.coopersmith@oracle.com>
 Date: Sat, 7 Sep 2019 21:19:00 -0700
 Subject: [PATCH] Don't try to use -fsanitize=address on Solaris, our gcc
@@ -14,10 +14,10 @@ Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
  1 file changed, 4 insertions(+)
 
 diff --git a/run_unittests.py b/run_unittests.py
-index c1e5c5d6..02991aa6 100755
+index 0c5b3943c..bdf9f4257 100755
 --- a/run_unittests.py
 +++ b/run_unittests.py
-@@ -4392,6 +4392,8 @@ class LinuxlikeTests(BasePlatformTests):
+@@ -5485,6 +5485,8 @@ class LinuxlikeTests(BasePlatformTests):
              raise unittest.SkipTest('asan not available on Cygwin')
          if is_openbsd():
              raise unittest.SkipTest('-fsanitize=address is not supported on OpenBSD')
@@ -25,8 +25,8 @@ index c1e5c5d6..02991aa6 100755
 +            raise unittest.SkipTest('-fsanitize=address is not supported on Solaris')
  
          testdir = os.path.join(self.framework_test_dir, '7 gnome')
-         self.init(testdir, ['-Db_sanitize=address', '-Db_lundef=false'])
-@@ -4857,6 +4859,8 @@ class LinuxlikeTests(BasePlatformTests):
+         self.init(testdir, extra_args=['-Db_sanitize=address', '-Db_lundef=false'])
+@@ -6020,6 +6022,8 @@ class LinuxlikeTests(BasePlatformTests):
              raise unittest.SkipTest('asan not available on Cygwin')
          if is_openbsd():
              raise unittest.SkipTest('-fsanitize=address is not supported on OpenBSD')
@@ -34,7 +34,7 @@ index c1e5c5d6..02991aa6 100755
 +            raise unittest.SkipTest('-fsanitize=address is not supported on Solaris')
  
          testdir = os.path.join(self.common_test_dir, '13 pch')
-         self.init(testdir, ['-Db_sanitize=address'])
+         self.init(testdir, extra_args=['-Db_sanitize=address', '-Db_lundef=false'])
 -- 
-2.15.2
+2.19.3
 

@@ -1,23 +1,29 @@
-Upstream has split out & reworked the linker flag code, so this needs to
-be adapted to that before it can be submitted upstream.
+Submitted & accepted upstream for a release after 0.54.3:
+https://github.com/mesonbuild/meson/pull/7370
 
-From 91603f249a15b0309c690f70effed91dce7f5710 Mon Sep 17 00:00:00 2001
+From c83222cb95ba7c0c1858421295a738ac17de0e32 Mon Sep 17 00:00:00 2001
 From: Alan Coopersmith <alan.coopersmith@oracle.com>
-Date: Tue, 1 Aug 2017 04:08:04 -0700
-Subject: [PATCH] workaround until solaris linker is detected
+Date: Mon, 8 Jun 2020 11:39:57 -0700
+Subject: [PATCH] test: Fix linuxlike/3 linker script on Solaris 11.4
 
+Solaris linker added support for GNU-style --version-script in Solaris 11.4,
+but requires adding the -z gnu-version-script-compat flag to enable it.
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
 ---
- test cases/linuxlike/3 linker script/meson.build | 4 ++++
- 1 file changed, 4 insertions(+)
+ test cases/linuxlike/3 linker script/meson.build | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
 diff --git a/test cases/linuxlike/3 linker script/meson.build b/test cases/linuxlike/3 linker script/meson.build
-index 63765e7c..2b5cedd3 100644
+index 63765e7ca..5901bf7cf 100644
 --- a/test cases/linuxlike/3 linker script/meson.build	
 +++ b/test cases/linuxlike/3 linker script/meson.build	
-@@ -1,5 +1,9 @@
+@@ -1,5 +1,11 @@
  project('linker script', 'c')
  
-+if host_machine.system() == 'sunos'
++# Solaris 11.4 ld supports --version-script only when you also specify
++# -z gnu-version-script-compat
++if meson.get_compiler('c').get_linker_id() == 'ld.solaris'
 +  add_project_link_arguments('-Wl,-z,gnu-version-script-compat', language: 'C')
 +endif
 +
@@ -25,5 +31,5 @@ index 63765e7c..2b5cedd3 100644
  mapfile = 'bob.map'
  vflag = '-Wl,--version-script,@0@/@1@'.format(meson.current_source_dir(), mapfile)
 -- 
-2.19.2
+2.19.3
 

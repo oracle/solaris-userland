@@ -1,77 +1,33 @@
-Upstream has split out & reworked the linker flag code, so this needs to
-be adapted to that before it can be submitted upstream.
+Submitted & accepted upstream for a release after 0.54.3:
+https://github.com/mesonbuild/meson/pull/7370
 
-From 3c69d6890190999f9d118cf8d59c1092fba9faa7 Mon Sep 17 00:00:00 2001
+From 20cd3bde8ae28909123edf41208ee38788d82bd7 Mon Sep 17 00:00:00 2001
 From: Alan Coopersmith <alan.coopersmith@oracle.com>
-Date: Sat, 29 Jun 2019 17:19:24 -0700
-Subject: [PATCH] Return the empty string for export_dynamic_link_args on
- Solaris
+Date: Mon, 8 Jun 2020 12:15:39 -0700
+Subject: [PATCH] unittests: Fix 51 ldflagdedup on Solaris
 
-Solaris exports all symbols by default, and doesn't recognize the flag.
-
-Fixes test failures with errors of:
-/usr/gcc/7/bin/gcc  -o prog 'prog@exe/prog.c.o' -Wl,--no-undefined -Wl,--as-needed -Wl,-export-dynamic -m64 -O3 -Wl,--start-group libruntime.so -ldl -Wl,--end-group '-Wl,-rpath,$ORIGIN/'
-ld: fatal: entry point symbol 'xport-dynamic' is undefined
-
-Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+If the linker doesn't support --export-dynamic, skip test to deduplicate
+it, since it always fails finding 0 copies instead of 1.
 ---
- mesonbuild/compilers/clike.py | 2 ++
- mesonbuild/envconfig.py       | 6 ++++++
- run_unittests.py              | 4 ++--
- 3 files changed, 10 insertions(+), 2 deletions(-)
+ run_unittests.py | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/mesonbuild/compilers/clike.py b/mesonbuild/compilers/clike.py
-index 6be5a1ea..c10fe1d3 100644
---- a/mesonbuild/compilers/clike.py
-+++ b/mesonbuild/compilers/clike.py
-@@ -279,6 +279,8 @@ class CLikeCompiler:
-             return ['-Wl,--export-all-symbols']
-         elif env.machines[self.for_machine].is_darwin():
-             return []
-+        elif m.is_sunos():
-+            return []
-         else:
-             return ['-Wl,-export-dynamic']
- 
-diff --git a/mesonbuild/envconfig.py b/mesonbuild/envconfig.py
-index 03c6346a..f8a0d78f 100644
---- a/mesonbuild/envconfig.py
-+++ b/mesonbuild/envconfig.py
-@@ -236,6 +236,12 @@ class MachineInfo:
-         """
-         return self.system == 'openbsd'
- 
-+    def is_sunos(self) -> bool:
-+        """
-+        Machine is SunOS (Solaris/illumos)?
-+        """
-+        return self.system == 'sunos'
-+
-     # Various prefixes and suffixes for import libraries, shared libraries,
-     # static libraries, and executables.
-     # Versioning is added to these names in the backends as-needed.
 diff --git a/run_unittests.py b/run_unittests.py
-index 569bbea9..05843ec1 100755
+index 393e6b31e..0c5b3943c 100755
 --- a/run_unittests.py
 +++ b/run_unittests.py
-@@ -47,7 +47,7 @@ import mesonbuild.modules.gnome
- from mesonbuild.interpreter import Interpreter, ObjectHolder
- from mesonbuild.ast import AstInterpreter
- from mesonbuild.mesonlib import (
--    BuildDirLock, LibType, MachineChoice, PerMachine, Version,
-+    BuildDirLock, LibType, MachineChoice, PerMachine, Version, is_sunos,
-     is_windows, is_osx, is_cygwin, is_dragonflybsd, is_openbsd, is_haiku,
-     windows_proof_rmtree, python_command, version_compare,
- )
-@@ -5190,7 +5190,7 @@ endian = 'little'
-     @skipIfNoPkgconfigDep('gmodule-2.0')
-     def test_ldflag_dedup(self):
-         testdir = os.path.join(self.unit_test_dir, '51 ldflagdedup')
--        if is_cygwin() or is_osx():
-+        if is_cygwin() or is_osx() or is_sunos():
+@@ -6387,6 +6387,11 @@ class LinuxlikeTests(BasePlatformTests):
+         testdir = os.path.join(self.unit_test_dir, '52 ldflagdedup')
+         if is_cygwin() or is_osx():
              raise unittest.SkipTest('Not applicable on Cygwin or OSX.')
++        env = get_fake_env()
++        cc = env.detect_c_compiler(MachineChoice.HOST)
++        linker = cc.linker
++        if not linker.export_dynamic_args(env):
++            raise unittest.SkipTest('Not applicable for linkers without --export-dynamic')
          self.init(testdir)
          build_ninja = os.path.join(self.builddir, 'build.ninja')
+         max_count = 0
 -- 
-2.15.2
+2.19.3
 

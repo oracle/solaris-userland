@@ -1,0 +1,40 @@
+Submitted & accepted upstream for a release after 0.54.3:
+https://github.com/mesonbuild/meson/pull/7370
+
+From d05f9da2c9c93f52c1d27d67fb0e9fe049dbefb1 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Mon, 8 Jun 2020 16:08:19 -0700
+Subject: [PATCH] unittests: Fix test_compiler_detection on Solaris
+
+Accept Solaris linker in addition to GNU linker.  Previously using the
+system provided gcc (which calls the Solaris linker) caused it to fail with:
+
+======================================================================
+FAIL: test_compiler_detection (__main__.AllPlatformTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "run_unittests.py", line 2525, in test_compiler_detection
+    self.assertIsInstance(cc.linker, mesonbuild.linkers.GnuLikeDynamicLinkerMixin)
+AssertionError: <SolarisDynamicLinker: v9.2.0 `gcc`> is not an instance of <class 'mesonbuild.linkers.GnuLikeDynamicLinkerMixin'>
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ run_unittests.py | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/run_unittests.py b/run_unittests.py
+index 102c04198..393e6b31e 100755
+--- a/run_unittests.py
++++ b/run_unittests.py
+@@ -2521,6 +2521,8 @@ class AllPlatformTests(BasePlatformTests):
+                 self.assertIsInstance(linker, ar)
+                 if is_osx():
+                     self.assertIsInstance(cc.linker, mesonbuild.linkers.AppleDynamicLinker)
++                elif is_sunos():
++                    self.assertIsInstance(cc.linker, (mesonbuild.linkers.SolarisDynamicLinker, mesonbuild.linkers.GnuLikeDynamicLinkerMixin))
+                 else:
+                     self.assertIsInstance(cc.linker, mesonbuild.linkers.GnuLikeDynamicLinkerMixin)
+             if isinstance(cc, clangcl):
+-- 
+2.19.3
+

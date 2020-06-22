@@ -1,10 +1,10 @@
 'gmake test' runs the full test suite.
 
 To run individual unit test cases:
-    python3.7 meson-0.51.2/run_unittests.py -k <test>
+    python3.7 meson-0.54.3/run_unittests.py -k <test>
 
 For example, to run the test_flock unit test:
-    python3.7 meson-0.51.2/run_unittests.py -k test_flock
+    python3.7 meson-0.54.3/run_unittests.py -k test_flock
 
 For other test cases, cd to the test case directory and run:
     env PKG_CONFIG_PATH=/usr/lib/64/pkgconfig python3 \
@@ -74,10 +74,3 @@ ninja: build stopped: subcommand failed.
    name, which makes no sense with our dynamic linker.
 
    Reported upstream as https://github.com/mesonbuild/meson/issues/5915
-
-
-======================================================================
-meson.build:19:2: ERROR: Dependency "python3" not found, tried pkgconfig
-
--- This is due to a python packaging bug in Userland on Solaris:
-   Bug 30277203 - python3.pc is missing due to incorrect mediation  
