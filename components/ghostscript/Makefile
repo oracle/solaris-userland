@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -28,16 +28,16 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         ghostscript
-COMPONENT_VERSION=      9.27
+COMPONENT_VERSION=      9.52
 COMPONENT_PROJECT_URL=	http://ghostscript.com/
 COMPONENT_DOWNLOAD_URL= \
     https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download
 COMPONENT_ARCHIVE_HASH= \
-    sha256:9760e8bdd07a08dbd445188a6557cb70e60ccb6a5601f7dbfba0d225e28ce285
-COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/gs927/$(COMPONENT_ARCHIVE)
+    sha256:c2501d8e8e0814c4a5aa7e443e230e73d7af7f70287546f7b697e5ef49e32176
+COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/gs952/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1157
 
-TPNO=			52182
+TPNO=			59680
 
 include $(WS_MAKE_RULES)/common.mk
 # some backup files are copied to proto
@@ -46,6 +46,7 @@ GPATCH_BACKUP=
 CONFIGURE_OPTIONS +=	--with-fontpath=/usr/share/fonts
 CONFIGURE_OPTIONS +=	--enable-dynamic
 CONFIGURE_OPTIONS +=	--disable-compile-inits
+CONFIGURE_OPTIONS +=	--without-libidn
 
 # configure options to generate 32 bit binaries
 $(BUILD_DIR)/$(MACH32)/.configured: CONFIGURE_OPTIONS += CC="$(CC) -m32"
