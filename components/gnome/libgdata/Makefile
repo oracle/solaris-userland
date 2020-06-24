@@ -49,6 +49,7 @@ LDFLAGS += -z gnu-version-script-compat
 COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
+        '-e "/GLib-Net-WARNING/d" ' \
         '-e "/OK/p" ' \
         '-e "/Fail/p" ' \
         '-e "/Pass/p" ' \

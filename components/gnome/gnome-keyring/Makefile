@@ -28,16 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-keyring
-COMPONENT_VERSION=	3.20.0
+COMPONENT_VERSION=	3.34.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GnomeKeyring
 COMPONENT_ARCHIVE_HASH= \
-	sha256:bc17cecd748a0e46e302171d11c3ae3d76bba5258c441fabec3786f418e7ec99
+sha256:e9cda9542a3e37c61636145e7e9e2513c569092ea8020752a834e1f40ad41943
 COMPONENT_BUGDB=	gnome/security
 COMPONENT_ANITYA_ID=	13133
 
-TPNO=			35133
-
-TEST_TARGET = $(NO_TESTS)
+TPNO=			56357
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -59,6 +57,16 @@ CONFIGURE_OPTIONS += --without-libcap-ng
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS).master
+COMPONENT_TEST_ARGS =   -k -i
+COMPONENT_TEST_TRANSFORMS += \
+       '-n ' \
+       '-e "/TOTAL:/p" ' \
+       '-e "/SKIP:/p" ' \
+       '-e "/PASS:/p" ' \
+       '-e "/FAIL:/p" ' \
+       '-e "/ERROR:/p" '
 
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gcr

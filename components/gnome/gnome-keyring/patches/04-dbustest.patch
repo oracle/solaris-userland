@@ -1,0 +1,12 @@
+Not suitable for upstream.
+Disable dbus-related tests as they won't exit when X and dbus
+aren't running.
+diff -r be4139dafdb8 daemon/dbus/Makefile.am
+--- a/daemon/dbus/Makefile.am	Wed Feb 12 20:58:45 2020 +0000
++++ b/daemon/dbus/Makefile.am	Wed Feb 12 20:59:13 2020 +0000
+@@ -144,4 +144,4 @@
+ test_dbus_lock_LDADD = $(daemon_dbus_LIBS)
+ 
+ check_PROGRAMS += $(daemon_dbus_TESTS)
+-TESTS += $(daemon_dbus_TESTS)
++# TESTS += $(daemon_dbus_TESTS)
