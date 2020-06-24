@@ -39,14 +39,14 @@ include ../../../make-rules/shared-macros.mk
 # GNOME stores and various components now expect it to be present.
 
 COMPONENT_NAME=		evolution-data-server
-COMPONENT_VERSION=	3.24.0
+COMPONENT_VERSION=	3.34.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Evolution
 COMPONENT_ARCHIVE_HASH= \
-	sha256:41ddb60b08ee287e82be52ebbe49b5a336984e52584a5fd34c82d45493f8031b
+	sha256:fb9db0a824ae01ecc63c82cf8e503fecdcba7118b919f04bda7d8d91f3e486cf
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	10935
 
-TPNO=			34706
+TPNO=			54018
 
 BUILD_STYLE= cmake
 
@@ -61,7 +61,6 @@ CFLAGS += $(XPG6MODE)
 CMAKE_OPTIONS += -DENABLE_GOOGLE_AUTH=OFF
 CMAKE_OPTIONS += -DENABLE_UOA=OFF
 CMAKE_OPTIONS += -DENABLE_INTROSPECTION=ON
-CMAKE_OPTIONS += -DENABLE_GTK_DOC=ON
 CMAKE_OPTIONS += -DOPEN_LDAP=OFF
 CMAKE_OPTIONS += -DENABLE_VALA_BINDINGS=ON
 CMAKE_OPTIONS += -DSYSCONF_INSTALL_DIR="/etc"
@@ -94,19 +93,26 @@ REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/libgdata
 REQUIRED_PACKAGES += library/desktop/libgweather
 REQUIRED_PACKAGES += library/desktop/pango
+REQUIRED_PACKAGES += library/desktop/webkitgtk4
+REQUIRED_PACKAGES += library/desktop/xdg/libcanberra
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gcr
 REQUIRED_PACKAGES += library/gnome/gnome-online-accounts
 REQUIRED_PACKAGES += library/gnome/libsecret
 REQUIRED_PACKAGES += library/icu
+REQUIRED_PACKAGES += library/json-glib
 REQUIRED_PACKAGES += library/libical
 REQUIRED_PACKAGES += library/libsoup
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/nspr
 REQUIRED_PACKAGES += library/security/nss
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += runtime/perl-526
+REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += security/kerberos-5/kdc
 REQUIRED_PACKAGES += system/library/iconv
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/security/gss
+REQUIRED_PACKAGES += system/network/ldap/openldap
+
