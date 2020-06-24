@@ -1,0 +1,50 @@
+Solaris specific patch developed inhouse, not submitted upstream.
+--- net-snmp-5.8.old/agent/mibgroup/if-mib/data_access/interface_solaris2.c	2018-07-16 07:33:40.000000000 +0000
++++ net-snmp-5.8/agent/mibgroup/if-mib/data_access/interface_solaris2.c	2020-06-11 02:44:39.748389405 +0000
+@@ -17,6 +17,7 @@
+ #include <sys/sockio.h>
+ #include <strings.h>
+ #include <string.h>
++#include <priv.h>
+ 
+ netsnmp_feature_child_of(interface_arch_set_admin_status, interface_all)
+ 
+@@ -92,17 +93,27 @@
+         }
+         entry->ns_flags = 0;
+ 
+-        if (l_flags & NETSNMP_ACCESS_INTERFACE_LOAD_IP4_ONLY &&
+-            _set_ip_flags_v4(entry, &ife) == 0) {
+-            netsnmp_access_interface_entry_free(entry);
+-            continue;
+-        } else if (l_flags & NETSNMP_ACCESS_INTERFACE_LOAD_IP6_ONLY &&
+-                   _set_ip_flags_v6(entry, &ife) == 0) {
+-            netsnmp_access_interface_entry_free(entry);
+-            continue;
+-        } else { 
+-            (void) _set_ip_flags_v4(entry, &ife);
+-            (void) _set_ip_flags_v6(entry, &ife);
++        /*
++         *  For shared-ip zones, the logical interfaces(for eg. "net0:1")
++         *  use the same  indices as the corresponding physical interfaces
++         *  which causes interface lookups to fail as the physical interface
++         *  is not part of the zone, so we'll skip shared-ip zones here. 
++         *  The PRIV_SYS_IP_CONFIG privilege is used to identify if we are
++         *  in a shared-ip zone
++         */
++        if (priv_ineffect(PRIV_SYS_IP_CONFIG)) {
++            if (l_flags & NETSNMP_ACCESS_INTERFACE_LOAD_IP4_ONLY &&
++                _set_ip_flags_v4(entry, &ife) == 0) {
++                netsnmp_access_interface_entry_free(entry);
++                continue;
++            } else if (l_flags & NETSNMP_ACCESS_INTERFACE_LOAD_IP6_ONLY &&
++                       _set_ip_flags_v6(entry, &ife) == 0) {
++                netsnmp_access_interface_entry_free(entry);
++                continue;
++            } else { 
++                (void) _set_ip_flags_v4(entry, &ife);
++                (void) _set_ip_flags_v6(entry, &ife);
++            }
+         }
+ 
+         /*
