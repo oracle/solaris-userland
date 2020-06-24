@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1988, 2019, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1988, 2020, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -145,7 +145,6 @@
 #include <crypt.h>
 #include <shadow.h>
 #include <pwd.h>
-#include <dlfcn.h>
 #ifdef __sun
 # include <note.h>
 #else
@@ -177,8 +176,6 @@ Display    *dsp = NULL;		/* server display connection */
 int         screen;		/* current screen */
 void        (*callback) (Window win) = NULL;
 void        (*init) (Window win) = NULL;
-static void (*exp_bzero) (void *s, size_t n);
-#define EXPLICIT_BZERO(s, n)	(*exp_bzero)(s, n)
 
 static int  screens;		/* number of screens */
 static Window win[MAXSCREENS];	/* window used to cover screen */
@@ -966,29 +963,29 @@ getPassword(void)
         }
 
 	/* clear plaintext password so you can't grunge around /dev/kmem */
-	EXPLICIT_BZERO(buffer, sizeof(buffer));
+	explicit_bzero(buffer, sizeof(buffer));
 
 	displayTextInfo(text_valid);
 
 	if (done) {
 	    /* clear encrypted passwords just in case */
 	    if (rootpass) {
-		EXPLICIT_BZERO(rootpass, strlen(rootpass));
+		explicit_bzero(rootpass, strlen(rootpass));
 		free(rootpass);
 		rootpass = NULL;
 	    }
 	    if (userpass) {
-		EXPLICIT_BZERO(userpass, strlen(userpass));
+		explicit_bzero(userpass, strlen(userpass));
 		free(userpass);
 		userpass = NULL;
 	    }
 	    if (srootpass) {
-		EXPLICIT_BZERO(srootpass, strlen(srootpass));
+		explicit_bzero(srootpass, strlen(srootpass));
 		free(srootpass);
 		srootpass = NULL;
 	    }
 	    if (suserpass) {
-		EXPLICIT_BZERO(suserpass, strlen(suserpass));
+		explicit_bzero(suserpass, strlen(suserpass));
 		free(suserpass);
 		suserpass = NULL;
 	    }
@@ -1016,22 +1013,22 @@ getPassword(void)
     }
     /* clear encrypted passwords just in case */
     if (rootpass) {
-	EXPLICIT_BZERO(rootpass, strlen(rootpass));
+	explicit_bzero(rootpass, strlen(rootpass));
 	free(rootpass);
 	rootpass = NULL;
     }
     if (userpass) {
-	EXPLICIT_BZERO(userpass, strlen(userpass));
+	explicit_bzero(userpass, strlen(userpass));
 	free(userpass);
 	userpass = NULL;
     }
     if (srootpass) {
-	EXPLICIT_BZERO(srootpass, strlen(srootpass));
+	explicit_bzero(srootpass, strlen(srootpass));
 	free(srootpass);
 	srootpass = NULL;
     }
     if (suserpass) {
-	EXPLICIT_BZERO(suserpass, strlen(suserpass));
+	explicit_bzero(suserpass, strlen(suserpass));
 	free(suserpass);
 	suserpass = NULL;
     }
@@ -1138,21 +1135,6 @@ main(
 	ProgramName = argv[0];
 
     srandom((uint_t) time((long *) 0));	/* random mode needs the seed set. */
-
-    exp_bzero =
-	(void (*)(void *, size_t)) dlsym(RTLD_DEFAULT, "explicit_bzero");
-    if (exp_bzero == NULL) {
-	/* If the explicit version isn't found, at least the compilers we
-	   use won't optimize out a call to a function found via dlsym(). */
-	exp_bzero = (void (*)(void *, size_t)) dlsym(RTLD_DEFAULT, "bzero");
-	if (exp_bzero == NULL) {
-	    const char *dle = dlerror();
-	    char errmsg[BUFSIZ];
-
-	    snprintf(errmsg, sizeof(errmsg), "%s\n Exiting ...\n", dle);
-	    error(errmsg);
-	}
-    }
 
     GetResources(argc, argv);
 
