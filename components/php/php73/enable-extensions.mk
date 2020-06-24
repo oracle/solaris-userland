@@ -1,4 +1,5 @@
 #
+#
 # CDDL HEADER START
 #
 # The contents of this file are subject to the terms of the
@@ -20,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 # This file specifies configure-line options to enable as many extensions as
@@ -103,7 +104,7 @@ CONFIGURE_OPTIONS += --with-jpeg-dir=/usr
 REQUIRED_PACKAGES += x11/library/libxpm
 REQUIRED_PACKAGES += system/library/freetype-2
 REQUIRED_PACKAGES += image/library/libjpeg
-REQUIRED_PACKAGES += image/library/libpng14
+REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += library/zlib
 
 CONFIGURE_OPTIONS += --with-gmp=shared		# patched config.m4

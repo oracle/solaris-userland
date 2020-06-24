@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
 #
 COMPILER= gcc
 BUILD_BITS= 64
@@ -62,7 +62,7 @@ CC += -Du_int64_t=uint64_t
 CONFIGURE_OPTIONS +=	c_cv_type_u_int64_t=yes
 
 REQUIRED_PACKAGES += database/berkeleydb-5
-REQUIRED_PACKAGES += image/library/libpng14
+REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += library/gd
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library/math

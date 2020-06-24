@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 # Cairo uses atomic intrinsics not supported in Studio 12.4 (ER 19201298)
@@ -83,7 +83,7 @@ CONFIGURE_OPTIONS += --with-x
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
-REQUIRED_PACKAGES += image/library/libpng14
+REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += library/glib2
 # Requires pixman >= 0.30
 REQUIRED_PACKAGES += library/graphics/pixman

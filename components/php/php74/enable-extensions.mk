@@ -107,7 +107,7 @@ CONFIGURE_OPTIONS += --with-jpeg
 REQUIRED_PACKAGES += x11/library/libxpm
 REQUIRED_PACKAGES += system/library/freetype-2
 REQUIRED_PACKAGES += image/library/libjpeg
-REQUIRED_PACKAGES += image/library/libpng14
+REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += library/zlib
 
 CONFIGURE_OPTIONS += --with-gmp=shared		# patched config.m4
