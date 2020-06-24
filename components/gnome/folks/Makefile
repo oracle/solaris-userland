@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,17 +30,15 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		folks
-COMPONENT_VERSION=	0.11.3
+COMPONENT_VERSION=	0.13.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Folks
 COMPONENT_ARCHIVE_HASH= \
-	sha256:2a2828a7c87fd39e5786f8f2cf0ebe47576a74974f1355c478a6dc747d7bcb64
+	sha256:3df1c663b82fe211aead2b31cae1fc41d124e85436375762f6745c45ba46aa5d
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13121
 
-TPNO=			35115
-
-# Tests do not yet work with Userland framework
-TEST_TARGET = $(SKIP_TEST)
+TPNO=			54020
+BUILD_STYLE=            meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -58,33 +56,17 @@ PKG_CONFIG_PATHS.64 += $(WS_COMPONENTS)/gnome/evolution-data-server
 PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
 
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
-# Requires valadoc.
-CONFIGURE_OPTIONS += --disable-docs
-CONFIGURE_OPTIONS += --disable-schemas-compile
-CONFIGURE_OPTIONS += --disable-static
-# Linux-specific bluetooth support.
-CONFIGURE_OPTIONS += --disable-bluez-backend
+# bluetooth support (unnecessary)
+CONFIGURE_OPTIONS += -Dbluez-backend=false
 # GSM Telephony Support (unnecessary).
-CONFIGURE_OPTIONS += --disable-ofono-backend
-# Not currently shipping libsocialweb (https://github.com/GNOME/libsocialweb).
-CONFIGURE_OPTIONS += --disable-libsocialweb-backend
-# Not currently shipping zeitgeist (http://zeitgeist-project.com/), so disable
-# support.
-CONFIGURE_OPTIONS += --disable-zeitgeist
-CONFIGURE_OPTIONS += --enable-eds-backend
-CONFIGURE_OPTIONS += --enable-import-tool
-CONFIGURE_OPTIONS += --enable-inspect-tool
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --enable-telepathy-backend
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-tracker-backend
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-vala
-CONFIGURE_OPTIONS += --with-pic
-CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
+CONFIGURE_OPTIONS += -Dofono-backend=false
+CONFIGURE_OPTIONS += -Dinspect_tool=false
+CONFIGURE_OPTIONS += -Dtracker_backend=true
 
-# Requires tracker and evolution data server be installed on the build servers
+LDFLAGS += -z gnu-version-script-compat
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala
