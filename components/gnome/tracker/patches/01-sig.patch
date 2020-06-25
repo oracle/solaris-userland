@@ -1,0 +1,26 @@
+Changes to get a clean build on Solaris
+
+--- a/src/tracker-store/tracker-main.vala	2020-02-19 10:37:07.863658715 -0800
++++ b/src/tracker-store/tracker-main.vala	2020-02-19 10:37:55.074100175 -0800
+@@ -112,8 +112,8 @@
+ 		}
+ 
+ 		switch (signo) {
+-		case Posix.Signal.TERM:
+-		case Posix.Signal.INT:
++		case Posix.SIGTERM:
++		case Posix.SIGINT:
+ 			in_loop = true;
+ 			do_shutdown ();
+ 
+@@ -134,8 +134,8 @@
+ 	}
+ 
+ 	static void initialize_signal_handler () {
+-		Unix.signal_add (Posix.Signal.TERM, () => signal_handler (Posix.Signal.TERM));
+-		Unix.signal_add (Posix.Signal.INT, () => signal_handler (Posix.Signal.INT));
++		Unix.signal_add (Posix.SIGTERM, () => signal_handler (Posix.SIGTERM));
++		Unix.signal_add (Posix.SIGINT, () => signal_handler (Posix.SIGINT));
+ 	}
+ 
+ 	static void initialize_priority () {

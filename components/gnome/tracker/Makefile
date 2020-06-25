@@ -23,89 +23,44 @@
 # Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
 #
 
-BUILD_BITS=		64_and_32
+BUILD_BITS=		64
 # All components using gobject-introspection must be built with gcc as
 # gobject-introspection does not produce correct results when using Studio.
 COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tracker
-COMPONENT_VERSION=	1.12.0
+COMPONENT_VERSION=	2.3.2
 COMPONENT_ARCHIVE_HASH= \
-	sha256:83193dd8c05e3e8b05fa8f1cfb80964fa78f7aeb86f3302fa4be6ec7e6ff596f
+	sha256:a4782b8ec7e4ee50f8f53865b24c5489823337fa94f785a7d9d34ccdf9b6ebdb
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	5578
 
-TPNO=			35136
+TPNO=			56951
+BUILD_STYLE=            meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CFLAGS += $(XPG6MODE)
 
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
-CONFIGURE_OPTIONS += --disable-libstemmer
-CONFIGURE_OPTIONS += --disable-maemo
-CONFIGURE_OPTIONS += --disable-schemas-compile
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --disable-upower
-CONFIGURE_OPTIONS += --enable-artwork
-CONFIGURE_OPTIONS += --enable-cfg-man-pages
-CONFIGURE_OPTIONS += --enable-dvi
-CONFIGURE_OPTIONS += --enable-generic-media-extractor=gstreamer
-# Disabled for now because of errors
-#CONFIGURE_OPTIONS += --enable-gtk-doc
-CONFIGURE_OPTIONS += --enable-hal
-CONFIGURE_OPTIONS += --enable-icon
-CONFIGURE_OPTIONS += --enable-icu-charset-detection
-# Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-introspection
-CONFIGURE_OPTIONS.64 += --enable-introspection
-CONFIGURE_OPTIONS += --enable-journal
-CONFIGURE_OPTIONS += --enable-libexif
-CONFIGURE_OPTIONS += --enable-libflac
-CONFIGURE_OPTIONS += --enable-libgsf
-CONFIGURE_OPTIONS += --enable-libgxps
-CONFIGURE_OPTIONS += --enable-libjpeg
-CONFIGURE_OPTIONS += --enable-libmediaart
-CONFIGURE_OPTIONS += --enable-libpng
-CONFIGURE_OPTIONS += --enable-libtiff
-CONFIGURE_OPTIONS += --enable-libvorbis
-CONFIGURE_OPTIONS += --enable-libxml2
-CONFIGURE_OPTIONS += --enable-miner-apps
-CONFIGURE_OPTIONS += --enable-miner-fs
-CONFIGURE_OPTIONS += --enable-miner-user-guides
-CONFIGURE_OPTIONS += --enable-mp3
-CONFIGURE_OPTIONS += --enable-nautilus-extension
-CONFIGURE_OPTIONS += --enable-playlist
-CONFIGURE_OPTIONS += --enable-poppler
-CONFIGURE_OPTIONS += --enable-ps
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --enable-taglib
-CONFIGURE_OPTIONS += --enable-text
-CONFIGURE_OPTIONS += --enable-tracker-fts
-CONFIGURE_OPTIONS += --enable-tracker-needle
-CONFIGURE_OPTIONS += --enable-tracker-preferences
-CONFIGURE_OPTIONS += --enable-tracker-writeback
-CONFIGURE_OPTIONS += --with-pic
-CONFIGURE_OPTIONS += --with-unicode-support=libicu
-CONFIGURE_OPTIONS += --with-bash-completion-dir=/etc/bash_completion.d
+CONFIGURE_OPTIONS += -Dnetwork_manager=disabled
+CONFIGURE_OPTIONS += -Dstemmer=disabled
+CONFIGURE_OPTIONS += -Dsystemd_user_services=no
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
-
-# Required due to patches.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
+LDFLAGS += -z gnu-version-script-compat
 
 # Add tests
-unexport SHELLOPTS
-COMPONENT_TEST_TARGETS = check
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/TOTAL/p" ' \
-        '-e "/SKIP/p" ' \
-        '-e "/PASS/p" ' \
-        '-e "/FAIL/p" ' \
-        '-e "/ERROR/p" '
+        '-e "/Ok:/p" ' \
+        '-e "/Pass:/p" ' \
+        '-e "/Fail:/p" '
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += codec/flac
 REQUIRED_PACKAGES += codec/libvorbis

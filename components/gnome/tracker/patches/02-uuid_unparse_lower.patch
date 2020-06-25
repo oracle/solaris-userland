@@ -3,30 +3,10 @@ however, libuuid's uuid_unparse always returns lowercase characters so is
 the equivalent of uuid_unparse_lower.  Regardless, bug 21395188 has been
 filed to add these to Solaris.
 
-Not appropriate for upstream.
---- a/src/libtracker-sparql/tracker-utils.c	2018-04-25 08:43:54.837556647 -0700
-+++ b/src/libtracker-sparql/tracker-utils.c	2018-04-25 08:44:29.251751239 -0700
-@@ -36,7 +36,7 @@
- gchar* tracker_sparql_escape_uri (const gchar* uri);
- gchar* tracker_sparql_escape_string (const gchar* literal);
- void uuid_generate (guchar* uuid);
--void uuid_unparse_lower (guchar* uuid, gchar* out);
-+void uuid_unparse (guchar* uuid, gchar* out);
- gchar* tracker_sparql_get_uuid_urn (void);
- 
- 
-@@ -284,7 +284,7 @@
- #line 118 "/home/carlos/Source/gnome/tracker/src/libtracker-sparql/tracker-utils.vala"
- 	uuid_generate (base_uuid);
- #line 119 "/home/carlos/Source/gnome/tracker/src/libtracker-sparql/tracker-utils.vala"
--	uuid_unparse_lower (base_uuid, (gchar*) lower);
-+	uuid_unparse (base_uuid, (gchar*) lower);
- #line 122 "/home/carlos/Source/gnome/tracker/src/libtracker-sparql/tracker-utils.vala"
- 	_tmp2_ = g_strdup_printf ("urn:uuid:%s", lower);
- #line 122 "/home/carlos/Source/gnome/tracker/src/libtracker-sparql/tracker-utils.vala"
---- a/src/libtracker-sparql/tracker-utils.vala	2018-04-25 09:35:04.021326063 -0700
-+++ b/src/libtracker-sparql/tracker-utils.vala	2018-04-25 09:35:28.293331966 -0700
-@@ -95,8 +95,8 @@
+Not appropriate for upstream
+--- a/src/libtracker-sparql/tracker-utils.vala	2020-02-19 10:49:34.489544000 -0800
++++ b/src/libtracker-sparql/tracker-utils.vala	2020-02-19 10:51:06.112330640 -0800
+@@ -98,8 +98,8 @@
  	[CCode (cname = "uuid_generate")]
  	private extern static void uuid_generate ([CCode (array_length = false)] uchar[] uuid);
  
@@ -37,7 +17,7 @@ Not appropriate for upstream.
  
  	/**
  	 * tracker_sparql_get_uuid_urn:
-@@ -116,7 +116,7 @@
+@@ -119,7 +119,7 @@
  		string lower = (string) new char[37];
  
  		uuid_generate (base_uuid);
