@@ -29,18 +29,21 @@ COMPILER= 		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libical
-COMPONENT_VERSION=	1.0.1
+COMPONENT_VERSION=	3.0.5
 COMPONENT_PROJECT_URL=	http://libical.github.io/libical/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:089ce3c42d97fbd7a5d4b3c70adbdd82115dd306349c1f5c46a8fb3f8c949592
+	sha256:7ad550c8c49c9b9983658e3ab3e68b1eee2439ec17b169a6b1e6ecb5274e78e6
 COMPONENT_ARCHIVE_URL=	https://github.com/$(COMPONENT_NAME)/$(COMPONENT_NAME)/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	1637
 
-TPNO=			24898
+TPNO=			53633
 
 BUILD_STYLE= cmake
 include $(WS_MAKE_RULES)/common.mk
+
+# The Makefile of this component does not support multiple build jobs.
+COMPONENT_MAKE_JOBS=1 
 
 # Use project's own optimisation flags instead.
 gcc_OPT=
@@ -55,6 +58,9 @@ CMAKE_OPTIONS.32 += -DGOBJECT_INTROSPECTION=false
 CMAKE_OPTIONS.64 += -DGOBJECT_INTROSPECTION=true
 # Always use Solaris-provided timezone data.
 CMAKE_OPTIONS += -DUSE_BUILTIN_TZDATA=false
+CMAKE_OPTIONS.32 += -DICAL_GLIB=false
+CMAKE_OPTIONS.64 += -DICAL_GLIB=true
+CMAKE_OPTIONS.64 += -DICAL_GLIB_VAPI=true
 
 # Workaround g-ir-scanner breakage.
 LD_Z_IGNORE=
@@ -65,7 +71,7 @@ COMPONENT_BUILD_ENV += CFLAGS="$(CFLAGS)"
 COMPONENT_BUILD_ENV += CXX="$(CXX)"
 COMPONENT_BUILD_ENV += CXXFLAGS="$(CXXFLAGS)"
 
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS).master
 COMPONENT_TEST_TARGETS = test
 
 # Enable libadimalloc or libumem (only ADI caught the heap-use-after-free case)
@@ -79,6 +85,14 @@ TEST_MEMCHECK_ENV.64	= $(TEST_MEMCHECK_ENV.32)
 endif
 TEST_MEMCHECK_ENV	= $(TEST_MEMCHECK_ENV.$(BITS))
 
+COMPONENT_POST_INSTALL_ACTION.64 += \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libical.3lib \
+                $(PROTO_DIR)/usr/share/man/man3lib/libical.3lib; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libicalss.3lib \
+                $(PROTO_DIR)/usr/share/man/man3lib/libicalss.3lib; \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libicalvcal.3lib \
+                $(PROTO_DIR)/usr/share/man/man3lib/libicalvcal.3lib;
+
 # Check upstream test case from https://github.com/libical/libical/issues/253
 COMPONENT_POST_TEST_ACTION += \
 	(cd $(COMPONENT_TEST_DIR) ; \
@@ -91,4 +105,10 @@ COMPONENT_POST_TEST_ACTION += \
 # Remove time measurements from results when comparing
 COMPONENT_TEST_TRANSFORMS += '-e "s|[\.0-9]* sec||g" '
 
+REQUIRED_PACKAGES += database/berkeleydb-5
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
+REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += library/icu
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/math
