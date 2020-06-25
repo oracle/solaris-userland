@@ -1,0 +1,36 @@
+From 6a81382482bf84598b1dc1ed3990df65b041f2f3 Mon Sep 17 00:00:00 2001
+From: "Jan Alexander Steffens (heftig)" <jan.steffens@gmail.com>
+Date: Sun, 1 Mar 2020 19:53:10 -0800
+Subject: [PATCH] object: Fix dangling pointer crash
+
+The linked list is used by update_heap_wrapper_weak_pointers() which is
+responsible for clearing weak pointers to the ObjectInstance wrapper
+that become dangling.
+
+There's a chance the GC sweeps the wrapper between the call to
+gobj_dispose_notify() and the ObjectInstance being destroyed. The GC
+will call the weak pointer callback when it does this.
+
+If the ObjectInstance is missing from the list at this point (because of
+the unlink()) then the weak pointer will be missed and become dangling.
+Afterwards, when the ObjectInstance is being destroyed, the Heap
+destructor will trigger the write pre-barrier, causing a crash.
+
+Closes: #301
+---
+ gi/object.cpp | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/gi/object.cpp b/gi/object.cpp
+index 8c1362670..7bc942b92 100644
+--- a/gi/object.cpp
++++ b/gi/object.cpp
+@@ -1071,7 +1071,6 @@ void
+ ObjectInstance::gobj_dispose_notify(void)
+ {
+     m_gobj_disposed = true;
+-    unlink();
+ }
+ 
+ void ObjectInstance::iterate_wrapped_gobjects(
+

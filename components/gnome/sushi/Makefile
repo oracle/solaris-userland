@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            64
@@ -55,7 +55,7 @@ CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
 
 # Workaround the mozjs issue described in 24935318
 # without with sushi has issues described in 28062328
-LD_EXEC_OPTIONS += -M $(WS_COMPONENTS)/gnome/gjs/mapfile
+LD_EXEC_OPTIONS += -M $(COMPONENT_DIR)/mapfile
 ADIHEAP_MODE = $(ADIHEAP_DISABLE)
 ADISTACK_MODE = $(ADISTACK_DISABLE)
 
