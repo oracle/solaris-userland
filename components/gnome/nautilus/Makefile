@@ -23,50 +23,47 @@
 # Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
 #
 
-BUILD_BITS =            64_and_32
+BUILD_BITS =            64
 # All components using gobject-introspection must be built with gcc as
 # gobject-introspection does not produce correct results when using Studio.
 COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nautilus
-COMPONENT_VERSION=	3.24.0
+COMPONENT_VERSION=	3.34.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Files
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8a499247caff3c02437c0ad955f043e675a056912d8553d9c9783c762f5dbbbd
+	sha256:666494ec976688d9500123c77b77fdfb882e7e3b3520f9bdb869c9ae2a2c9ad9
 COMPONENT_BUGDB=        gnome/nautilus
 COMPONENT_ANITYA_ID=	2050
 
-TPNO=			35134
+TPNO=			54127
+BUILD_STYLE=            meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Uses c99 language types (bool, etc.).
 CFLAGS += -std=gnu99
 
-# 32-bit gcc builds cause segfaults in Nautilus; see bug 21393975.
-gcc_OPT.i386.32 = -O2
-
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
 
-# Not yet available for Solaris.
-CONFIGURE_OPTIONS += --disable-packagekit
-CONFIGURE_OPTIONS += --disable-selinux
+# Not available for Solaris.
+CONFIGURE_OPTIONS += -Dpackagekit=false
+CONFIGURE_OPTIONS += -Dselinux=false
 # Not desired for production builds.
-CONFIGURE_OPTIONS += --disable-profiling
-CONFIGURE_OPTIONS += --disable-static
-# See --enable-tracker below.
-CONFIGURE_OPTIONS += --disable-tracker
-CONFIGURE_OPTIONS += --enable-gtk-doc
-CONFIGURE_OPTIONS.32 += --disable-introspection
-CONFIGURE_OPTIONS.64 += --enable-introspection
-CONFIGURE_OPTIONS += --enable-libexif
-CONFIGURE_OPTIONS += --enable-nst-extension
-CONFIGURE_OPTIONS += --enable-shared
-# Cyclic dependency; must build nautilus first, then build tracker, then build
-# nautilus again.
-# CONFIGURE_OPTIONS += --enable-tracker
-CONFIGURE_OPTIONS += --enable-xmp
+CONFIGURE_OPTIONS += -Dprofiling=false
+CONFIGURE_OPTIONS += -Ddocs=true
+
+# get rid of the timestamps from the test results
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/Ok:/p" ' \
+        '-e "/Pass:/p" ' \
+        '-e "/Fail:/p" '
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += desktop/xdg/desktop-file-utils
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
@@ -77,8 +74,11 @@ REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gnome-autoar
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
+REQUIRED_PACKAGES += library/desktop/gstreamer-1
+REQUIRED_PACKAGES += library/desktop/gstreamer-1/gst-plugins-base
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/pango
+REQUIRED_PACKAGES += library/desktop/search/tracker
 REQUIRED_PACKAGES += library/exempi
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop

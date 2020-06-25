@@ -1,0 +1,982 @@
+Disables GCC 7 format-nonliteral error.
+
+--- a/src/nautilus-properties-window.c	2020-02-19 12:52:07.592628395 -0800
++++ b/src/nautilus-properties-window.c	2020-02-19 12:52:56.323630565 -0800
+@@ -629,9 +629,11 @@
+ {
+     NautilusFile *file;
+ 
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+     gtk_label_set_text_with_mnemonic (window->name_label,
+                                       ngettext ("_Name:", "_Names:",
+                                                 get_not_gone_original_file_count (window)));
++#pragma GCC diagnostic pop
+ 
+     if (is_multi_file_window (window))
+     {
+@@ -2325,10 +2327,14 @@
+     {
+         char *size_str;
+         size_str = g_format_size (total_size);
++
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         text = g_strdup_printf (ngettext ("%'d item, with size %s",
+                                           "%'d items, totalling %s",
+                                           total_count),
+                                 total_count, size_str);
++#pragma GCC diagnostic pop
++
+         g_free (size_str);
+ 
+         if (unreadable_directory_count != 0)
+--- a/src/gtk/nautilusgtkplacesviewrow.c	2020-02-19 12:54:19.495076105 -0800
++++ b/src/gtk/nautilusgtkplacesviewrow.c	2020-02-19 12:54:47.534164790 -0800
+@@ -133,8 +133,10 @@
+    * should be based on the free space available.
+    * i.e. 1 GB / 24 GB available.
+    */
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+   label = g_strdup_printf (dngettext (GETTEXT_PACKAGE, "%s / %s available", "%s / %s available", plural_form),
+                            formatted_free_size, formatted_total_size);
++#pragma GCC diagnostic pop
+ 
+   gtk_label_set_label (row->available_space_label, label);
+ 
+--- a/src/nautilus-location-entry.c	2020-02-19 12:56:02.476745675 -0800
++++ b/src/nautilus-location-entry.c	2020-02-19 12:56:44.120559170 -0800
+@@ -264,6 +264,7 @@
+     name_count = g_strv_length (names);
+     if (name_count > 1)
+     {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         prompt = g_strdup_printf (ngettext ("Do you want to view %d location?",
+                                             "Do you want to view %d locations?",
+                                             name_count),
+@@ -272,6 +273,7 @@
+                                             "This will open %d separate windows.",
+                                             name_count),
+                                   name_count);
++#pragma GCC diagnostic pop
+         /* eel_run_simple_dialog should really take in pairs
+          * like gtk_dialog_new_with_buttons() does. */
+         new_windows_for_extras = eel_run_simple_dialog (GTK_WIDGET (window),
+--- a/src/nautilus-mime-actions.c	2020-02-19 12:57:17.505873815 -0800
++++ b/src/nautilus-mime-actions.c	2020-02-19 12:57:45.557670920 -0800
+@@ -939,6 +939,7 @@
+     prompt = _("Are you sure you want to open all files?");
+     if (use_tabs)
+     {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         detail = g_strdup_printf (ngettext ("This will open %d separate tab.",
+                                             "This will open %d separate tabs.", count), count);
+     }
+@@ -947,6 +948,7 @@
+         detail = g_strdup_printf (ngettext ("This will open %d separate window.",
+                                             "This will open %d separate windows.", count), count);
+     }
++#pragma GCC diagnostic pop
+     dialog = eel_show_yes_no_dialog (prompt, detail,
+                                      _("_OK"), _("_Cancel"),
+                                      parent_window);
+--- a/src/nautilus-progress-persistence-handler.c	2020-02-19 12:58:06.253332515 -0800
++++ b/src/nautilus-progress-persistence-handler.c	2020-02-19 12:58:30.485493950 -0800
+@@ -108,10 +108,12 @@
+     g_notification_add_button (notification, _("Show Details"),
+                                "app.show-file-transfers");
+ 
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+     body = g_strdup_printf (ngettext ("%'d file operation active",
+                                       "%'d file operations active",
+                                       self->active_infos),
+                             self->active_infos);
++#pragma GCC diagnostic pop
+     g_notification_set_body (notification, body);
+ 
+     nautilus_application_send_notification (self->app,
+--- a/src/nautilus-files-view.c	2020-02-19 12:58:59.976994145 -0800
++++ b/src/nautilus-files-view.c	2020-02-19 13:00:54.932657210 -0800
+@@ -1191,6 +1191,7 @@
+     }
+ 
+     prompt = _("Are you sure you want to open all files?");
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+     if (tabs)
+     {
+         detail = g_strdup_printf (ngettext ("This will open %'d separate tab.",
+@@ -1201,6 +1202,8 @@
+         detail = g_strdup_printf (ngettext ("This will open %'d separate window.",
+                                             "This will open %'d separate windows.", count), count);
+     }
++#pragma GCC diagnostic pop
++
+     dialog = eel_show_yes_no_dialog (prompt, detail,
+                                      _("_OK"), _("_Cancel"),
+                                      parent_window);
+@@ -3411,10 +3414,12 @@
+         }
+         else
+         {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+             folder_count_str = g_strdup_printf (ngettext ("%'d folder selected",
+                                                           "%'d folders selected",
+                                                           folder_count),
+                                                 folder_count);
++#pragma GCC diagnostic pop
+         }
+ 
+         if (folder_count == 1)
+@@ -3425,10 +3430,12 @@
+             }
+             else
+             {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+                 folder_item_count_str = g_strdup_printf (ngettext ("(containing %'d item)",
+                                                                    "(containing %'d items)",
+                                                                    folder_item_count),
+                                                          folder_item_count);
++#pragma GCC diagnostic pop
+             }
+         }
+         else
+@@ -3440,10 +3447,12 @@
+             else
+             {
+                 /* translators: this is preceded with a string of form 'N folders' (N more than 1) */
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+                 folder_item_count_str = g_strdup_printf (ngettext ("(containing a total of %'d item)",
+                                                                    "(containing a total of %'d items)",
+                                                                    folder_item_count),
+                                                          folder_item_count);
++#pragma GCC diagnostic pop
+             }
+         }
+     }
+--- a/src/nautilus-mime-actions.c	2020-02-19 13:02:50.830322255 -0800
++++ b/src/nautilus-mime-actions.c	2020-02-19 13:03:22.620322655 -0800
+@@ -2151,10 +2151,12 @@
+     }
+     else
+     {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         parameters->timed_wait_prompt = g_strdup_printf (ngettext ("Opening %d item.",
+                                                                    "Opening %d items.",
+                                                                    file_count),
+                                                          file_count);
++#pragma GCC diagnostic pop
+     }
+ 
+ 
+--- a/src/nautilus-files-view.c	2020-02-19 13:03:48.712592015 -0800
++++ b/src/nautilus-files-view.c	2020-02-19 13:04:57.942893405 -0800
+@@ -3468,19 +3468,23 @@
+             }
+             else
+             {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+                 non_folder_count_str = g_strdup_printf (ngettext ("%'d item selected",
+                                                                   "%'d items selected",
+                                                                   non_folder_count),
+                                                         non_folder_count);
++#pragma GCC diagnostic pop
+             }
+         }
+         else
+         {
+             /* Folders selected also, use "other" terminology */
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+             non_folder_count_str = g_strdup_printf (ngettext ("%'d other item selected",
+                                                               "%'d other items selected",
+                                                               non_folder_count),
+                                                     non_folder_count);
++#pragma GCC diagnostic pop
+         }
+ 
+         if (non_folder_size_known)
+@@ -7832,10 +7836,12 @@
+     show_stop = (selection != NULL && selection_count == 1);
+     show_detect_media = (selection != NULL && selection_count == 1);
+     start_stop_type = G_DRIVE_START_STOP_TYPE_UNKNOWN;
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+     item_label = g_strdup_printf (ngettext ("New Folder with Selection (%'d Item)",
+                                             "New Folder with Selection (%'d Items)",
+                                             selection_count),
+                                   selection_count);
++#pragma GCC diagnostic pop
+     menu_item = g_menu_item_new (item_label, "view.new-folder-with-selection");
+     g_menu_item_set_attribute (menu_item, "hidden-when", "s", "action-disabled");
+     nautilus_gmenu_add_item_in_submodel (priv->selection_menu_model,
+--- a/src/nautilus-window.c	2020-02-19 13:15:07.443694280 -0800
++++ b/src/nautilus-window.c	2020-02-19 13:15:58.037945750 -0800
+@@ -1630,7 +1630,9 @@
+     {
+         /* Translators: one or more items might have been deleted, and %d
+          * is the count. */
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         label = g_markup_printf_escaped (ngettext ("%d file deleted", "%d files deleted", length), length);
++#pragma GCC diagnostic pop
+     }
+ 
+     return label;
+@@ -1657,7 +1659,9 @@
+     {
+         /* Translators: one or more items have been unstarred, and %d
+          * is the count. */
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         label = g_markup_printf_escaped (ngettext ("%d file unstarred", "%d files unstarred", length), length);
++#pragma GCC diagnostic pop
+     }
+ 
+     return label;
+--- a/src/nautilus-file-operations.c	2020-02-19 13:16:29.279284355 -0800
++++ b/src/nautilus-file-operations.c	2020-02-19 13:23:55.870921640 -0800
+@@ -331,13 +331,17 @@
+ 
+     if (seconds < 60)
+     {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         return g_strdup_printf (ngettext ("%'d second", "%'d seconds", (int) seconds), (int) seconds);
++#pragma GCC diagnostic pop
+     }
+ 
+     if (seconds < 60 * 60)
+     {
+         minutes = seconds / 60;
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         return g_strdup_printf (ngettext ("%'d minute", "%'d minutes", minutes), minutes);
++#pragma GCC diagnostic pop
+     }
+ 
+     hours = seconds / (60 * 60);
+@@ -348,8 +352,10 @@
+ 
+         minutes = (seconds - hours * 60 * 60) / 60;
+ 
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         h = g_strdup_printf (ngettext ("%'d hour", "%'d hours", hours), hours);
+         m = g_strdup_printf (ngettext ("%'d minute", "%'d minutes", minutes), minutes);
++#pragma GCC diagnostic pop
+         res = g_strconcat (h, ", ", m, NULL);
+         g_free (h);
+         g_free (m);
+@@ -356,9 +362,11 @@
+         return res;
+     }
+ 
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+     return g_strdup_printf (ngettext ("%'d hour",
+                                       "%'d hours",
+                                       hours), hours);
++#pragma GCC diagnostic pop
+ }
+ 
+ static char *
+@@ -1547,6 +1555,7 @@
+     }
+     else
+     {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         prompt = g_strdup_printf (ngettext ("Are you sure you want to permanently delete "
+                                             "the %'d selected item from the trash?",
+                                             "Are you sure you want to permanently delete "
+@@ -1553,6 +1562,7 @@
+                                             "the %'d selected items from the trash?",
+                                             file_count),
+                                   file_count);
++#pragma GCC diagnostic pop
+     }
+ 
+     response = run_warning (job,
+@@ -1623,11 +1633,13 @@
+     }
+     else
+     {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         prompt = g_strdup_printf (ngettext ("Are you sure you want to permanently delete "
+                                             "the %'d selected item?",
+                                             "Are you sure you want to permanently delete "
+                                             "the %'d selected items?", file_count),
+                                   file_count);
++#pragma GCC diagnostic pop
+     }
+ 
+     response = run_warning (job,
+@@ -1697,6 +1709,7 @@
+     }
+     else
+     {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         if (files_left == 0)
+         {
+             status = ngettext ("Deleted %'d file",
+@@ -1709,6 +1722,7 @@
+                                "Deleting %'d files",
+                                source_info->num_files);
+         }
++#pragma GCC diagnostic pop
+         nautilus_progress_info_take_status (job->progress,
+                                             g_strdup_printf (status,
+                                                              source_info->num_files));
+@@ -1759,6 +1773,7 @@
+              *
+              * The singular/plural form will be used depending on the remaining time (i.e. the %s argument).
+              */
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+             time_left_message = ngettext ("%'d / %'d \xE2\x80\x94 %s left",
+                                           "%'d / %'d \xE2\x80\x94 %s left",
+                                           seconds_count_format_time_units (remaining_time));
+@@ -1766,6 +1781,7 @@
+             files_per_second_message = ngettext ("(%d file/sec)",
+                                                  "(%d files/sec)",
+                                                  (int) transfer_rate);
++#pragma GCC diagnostic pop
+             concat_detail = g_strconcat (time_left_message, " ", files_per_second_message, NULL);
+ 
+             formatted_time = get_formatted_time (remaining_time);
+@@ -3085,11 +3101,13 @@
+             g_autofree gchar *formatted_size = NULL;
+ 
+             formatted_size = g_format_size (source_info->num_bytes);
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+             s = g_strdup_printf (ngettext ("Preparing to copy %'d file (%s)",
+                                            "Preparing to copy %'d files (%s)",
+                                            source_info->num_files),
+                                  source_info->num_files,
+                                  formatted_size);
++#pragma GCC diagnostic pop
+         }
+         break;
+ 
+@@ -3098,11 +3116,13 @@
+             g_autofree gchar *formatted_size = NULL;
+ 
+             formatted_size = g_format_size (source_info->num_bytes);
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+             s = g_strdup_printf (ngettext ("Preparing to move %'d file (%s)",
+                                            "Preparing to move %'d files (%s)",
+                                            source_info->num_files),
+                                  source_info->num_files,
+                                  formatted_size);
++#pragma GCC diagnostic pop
+         }
+         break;
+ 
+@@ -3111,28 +3131,34 @@
+             g_autofree gchar *formatted_size = NULL;
+ 
+             formatted_size = g_format_size (source_info->num_bytes);
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+             s = g_strdup_printf (ngettext ("Preparing to delete %'d file (%s)",
+                                            "Preparing to delete %'d files (%s)",
+                                            source_info->num_files),
+                                  source_info->num_files,
+                                  formatted_size);
++#pragma GCC diagnostic pop
+         }
+         break;
+ 
+         case OP_KIND_TRASH:
+         {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+             s = g_strdup_printf (ngettext ("Preparing to trash %'d file",
+                                            "Preparing to trash %'d files",
+                                            source_info->num_files),
+                                  source_info->num_files);
++#pragma GCC diagnostic pop
+         }
+         break;
+ 
+         case OP_KIND_COMPRESS:
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+             s = g_strdup_printf (ngettext ("Preparing to compress %'d file",
+                                            "Preparing to compress %'d files",
+                                            source_info->num_files),
+                                  source_info->num_files);
++#pragma GCC diagnostic pop
+     }
+ 
+     nautilus_progress_info_take_details (job->progress, s);
+@@ -3857,6 +3883,7 @@
+                 {
+                     g_autofree gchar *basename = NULL;
+ 
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+                     if (is_move)
+                     {
+                         status = ngettext ("Moving %'d file to “%s”",
+@@ -3869,6 +3896,7 @@
+                                            "Copying %'d files to “%s”",
+                                            source_info->num_files);
+                     }
++#pragma GCC diagnostic pop
+ 
+                     basename = get_basename (G_FILE (copy_job->destination));
+                     tmp = g_strdup_printf (status,
+@@ -3882,6 +3910,7 @@
+                 {
+                     g_autofree gchar *basename = NULL;
+ 
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+                     if (is_move)
+                     {
+                         status = ngettext ("Moved %'d file to “%s”",
+@@ -3894,6 +3923,7 @@
+                                            "Copied %'d files to “%s”",
+                                            source_info->num_files);
+                     }
++#pragma GCC diagnostic pop
+ 
+                     basename = get_basename (G_FILE (copy_job->destination));
+                     tmp = g_strdup_printf (status,
+@@ -3913,9 +3943,11 @@
+                 basename = get_basename (parent);
+                 if (files_left > 0)
+                 {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+                     status = ngettext ("Duplicating %'d file in “%s”",
+                                        "Duplicating %'d files in “%s”",
+                                        source_info->num_files);
++#pragma GCC diagnostic pop
+                     nautilus_progress_info_take_status (job->progress,
+                                                         g_strdup_printf (status,
+                                                                          source_info->num_files,
+@@ -3923,9 +3955,11 @@
+                 }
+                 else
+                 {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+                     status = ngettext ("Duplicated %'d file in “%s”",
+                                        "Duplicated %'d files in “%s”",
+                                        source_info->num_files);
++#pragma GCC diagnostic pop
+                     nautilus_progress_info_take_status (job->progress,
+                                                         g_strdup_printf (status,
+                                                                          source_info->num_files,
+@@ -4005,6 +4039,7 @@
+                  *
+                  * The singular/plural form will be used depending on the remaining time (i.e. the %s argument).
+                  */
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+                 details = g_strdup_printf (ngettext ("%s / %s \xE2\x80\x94 %s left (%s/sec)",
+                                                      "%s / %s \xE2\x80\x94 %s left (%s/sec)",
+                                                      seconds_count_format_time_units (remaining_time)),
+@@ -4012,6 +4047,7 @@
+                                            formatted_size_total_size,
+                                            formatted_time,
+                                            formatted_size_transfer_rate);
++#pragma GCC diagnostic pop
+             }
+             else
+             {
+@@ -4039,6 +4075,7 @@
+                  *
+                  * The singular/plural form will be used depending on the remaining time (i.e. the %s argument).
+                  */
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+                 details = g_strdup_printf (ngettext ("%'d / %'d \xE2\x80\x94 %s left (%s/sec)",
+                                                      "%'d / %'d \xE2\x80\x94 %s left (%s/sec)",
+                                                      seconds_count_format_time_units (remaining_time)),
+@@ -4045,6 +4082,7 @@
+                                            transfer_info->num_files + 1, source_info->num_files,
+                                            formatted_time,
+                                            formatted_size);
++#pragma GCC diagnostic pop
+             }
+             else
+             {
+@@ -5833,11 +5871,13 @@
+                                         g_strdup_printf (_("Preparing to move to “%s”"),
+                                                          basename));
+ 
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+     nautilus_progress_info_take_details (job->progress,
+                                          g_strdup_printf (ngettext ("Preparing to move %'d file",
+                                                                     "Preparing to move %'d files",
+                                                                     left),
+                                                           left));
++#pragma GCC diagnostic pop
+ 
+     nautilus_progress_info_pulse_progress (job->progress);
+ }
+@@ -6451,11 +6491,13 @@
+                                         g_strdup_printf (_("Creating links in “%s”"),
+                                                          basename));
+ 
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+     nautilus_progress_info_take_details (job->progress,
+                                          g_strdup_printf (ngettext ("Making link to %'d file",
+                                                                     "Making links to %'d files",
+                                                                     left),
+                                                           left));
++#pragma GCC diagnostic pop
+ 
+     nautilus_progress_info_set_progress (job->progress, left, total);
+ }
+@@ -7932,6 +7974,7 @@
+          * The singular/plural form will be used depending on the
+          * remaining time (i.e. the %s argument).
+          */
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         details = g_strdup_printf (ngettext ("%s / %s \xE2\x80\x94 %s left (%s/sec)",
+                                              "%s / %s \xE2\x80\x94 %s left (%s/sec)",
+                                              seconds_count_format_time_units (remaining_time)),
+@@ -7939,6 +7982,7 @@
+                                    formatted_size_total_compressed_size,
+                                    formatted_time,
+                                    formatted_size_transfer_rate);
++#pragma GCC diagnostic pop
+     }
+ 
+     nautilus_progress_info_take_details (common->progress, details);
+@@ -8077,11 +8121,13 @@
+     }
+     else
+     {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         status = g_strdup_printf (ngettext ("Extracted %'d file to “%s”",
+                                             "Extracted %'d files to “%s”",
+                                             total_files),
+                                   total_files,
+                                   basename_dest);
++#pragma GCC diagnostic pop
+     }
+ 
+     nautilus_progress_info_take_status (extract_job->common.progress,
+@@ -8304,11 +8350,13 @@
+     }
+     else
+     {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         status = g_strdup_printf (ngettext ("Compressing %'d file into “%s”",
+                                             "Compressing %'d files into “%s”",
+                                             compress_job->total_files),
+                                   compress_job->total_files,
+                                   basename_output_file);
++#pragma GCC diagnostic pop
+     }
+     nautilus_progress_info_take_status (common->progress, status);
+ 
+@@ -8374,6 +8422,7 @@
+                  *
+                  * The singular/plural form will be used depending on the remaining time (i.e. the %s argument).
+                  */
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+                 details = g_strdup_printf (ngettext ("%s / %s \xE2\x80\x94 %s left (%s/sec)",
+                                                      "%s / %s \xE2\x80\x94 %s left (%s/sec)",
+                                                      seconds_count_format_time_units (remaining_time)),
+@@ -8381,6 +8430,7 @@
+                                            formatted_size_total_size,
+                                            formatted_time,
+                                            formatted_size_transfer_rate);
++#pragma GCC diagnostic pop
+             }
+             else
+             {
+@@ -8404,6 +8454,7 @@
+                  *
+                  * The singular/plural form will be used depending on the remaining time (i.e. the %s argument).
+                  */
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+                 details = g_strdup_printf (ngettext ("%'d / %'d \xE2\x80\x94 %s left (%s/sec)",
+                                                      "%'d / %'d \xE2\x80\x94 %s left (%s/sec)",
+                                                      seconds_count_format_time_units (remaining_time)),
+@@ -8410,6 +8461,7 @@
+                                            completed_files + 1, compress_job->total_files,
+                                            formatted_time,
+                                            formatted_size);
++#pragma GCC diagnostic pop
+             }
+             else
+             {
+@@ -8458,11 +8510,13 @@
+     }
+     else
+     {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         status = g_strdup_printf (ngettext ("Error compressing %'d file into “%s”",
+                                             "Error compressing %'d files into “%s”",
+                                             compress_job->total_files),
+                                   compress_job->total_files,
+                                   basename_output_file);
++#pragma GCC diagnostic pop
+     }
+     nautilus_progress_info_take_status (compress_job->common.progress,
+                                         status);
+@@ -8499,11 +8553,13 @@
+     }
+     else
+     {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         status = g_strdup_printf (ngettext ("Compressed %'d file into “%s”",
+                                             "Compressed %'d files into “%s”",
+                                             compress_job->total_files),
+                                   compress_job->total_files,
+                                   basename_output_file);
++#pragma GCC diagnostic pop
+     }
+ 
+     nautilus_progress_info_take_status (compress_job->common.progress,
+--- a/src/nautilus-file.c	2020-02-19 13:24:31.525841360 -0800
++++ b/src/nautilus-file.c	2020-02-19 13:24:52.352972285 -0800
+@@ -6903,11 +6903,13 @@
+ {
+     g_assert (includes_directories || includes_files);
+ 
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+     return g_strdup_printf (includes_directories
+                             ? (includes_files
+                                ? ngettext ("%'u item", "%'u items", item_count)
+                                : ngettext ("%'u folder", "%'u folders", item_count))
+                             : ngettext ("%'u file", "%'u files", item_count), item_count);
++#pragma GCC diagnostic pop
+ }
+ 
+ /**
+--- a/src/nautilus-file-operations.c	2020-02-19 13:26:56.777219855 -0800
++++ b/src/nautilus-file-operations.c	2020-02-19 13:28:01.176851090 -0800
+@@ -2102,6 +2102,7 @@
+     }
+     else
+     {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         if (files_left > 0)
+         {
+             status = ngettext ("Trashing %'d file",
+@@ -2114,6 +2115,7 @@
+                                "Trashed %'d files",
+                                source_info->num_files);
+         }
++#pragma GCC diagnostic pop
+         nautilus_progress_info_take_status (job->progress,
+                                             g_strdup_printf (status,
+                                                              source_info->num_files));
+@@ -2165,6 +2167,7 @@
+              *
+              * The singular/plural form will be used depending on the remaining time (i.e. the %s argument).
+              */
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+             time_left_message = ngettext ("%'d / %'d \xE2\x80\x94 %s left",
+                                           "%'d / %'d \xE2\x80\x94 %s left",
+                                           seconds_count_format_time_units (remaining_time));
+@@ -2171,6 +2174,7 @@
+             files_per_second_message = ngettext ("(%d file/sec)",
+                                                  "(%d files/sec)",
+                                                  (int) (transfer_rate + 0.5));
++#pragma GCC diagnostic pop
+             concat_detail = g_strconcat (time_left_message, " ", files_per_second_message, NULL);
+ 
+             formatted_time = get_formatted_time (remaining_time);
+--- a/src/nautilus-file-undo-operations.c	2020-02-19 13:28:19.963347755 -0800
++++ b/src/nautilus-file-undo-operations.c	2020-02-19 13:31:16.333787510 -0800
+@@ -442,6 +442,7 @@
+     {
+         if (count > 1)
+         {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+             *undo_description = g_strdup_printf (ngettext ("Move %d item back to “%s”",
+                                                            "Move %d items back to “%s”", count),
+                                                  count, source);
+@@ -455,6 +456,7 @@
+             *redo_label = g_strdup_printf (ngettext ("_Redo Move %d item",
+                                                      "_Redo Move %d items", count),
+                                            count);
++#pragma GCC diagnostic pop
+         }
+         else
+         {
+@@ -472,6 +474,7 @@
+ 
+         if (count > 1)
+         {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+             *undo_description = g_strdup_printf (ngettext ("Move %d item back to trash",
+                                                            "Move %d items back to trash", count),
+                                                  count);
+@@ -478,6 +481,7 @@
+             *redo_description = g_strdup_printf (ngettext ("Restore %d item from trash",
+                                                            "Restore %d items from trash", count),
+                                                  count);
++#pragma GCC diagnostic pop
+         }
+         else
+         {
+@@ -489,6 +493,7 @@
+     {
+         if (count > 1)
+         {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+             *undo_description = g_strdup_printf (ngettext ("Delete %d copied item",
+                                                            "Delete %d copied items", count),
+                                                  count);
+@@ -502,6 +507,7 @@
+             *redo_label = g_strdup_printf (ngettext ("_Redo Copy %d item",
+                                                      "_Redo Copy %d items", count),
+                                            count);
++#pragma GCC diagnostic pop
+         }
+         else
+         {
+@@ -516,6 +522,7 @@
+     {
+         if (count > 1)
+         {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+             *undo_description = g_strdup_printf (ngettext ("Delete %d duplicated item",
+                                                            "Delete %d duplicated items", count),
+                                                  count);
+@@ -529,6 +536,7 @@
+             *redo_label = g_strdup_printf (ngettext ("_Redo Duplicate %d item",
+                                                      "_Redo Duplicate %d items", count),
+                                            count);
++#pragma GCC diagnostic pop
+         }
+         else
+         {
+@@ -544,6 +552,7 @@
+     {
+         if (count > 1)
+         {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+             *undo_description = g_strdup_printf (ngettext ("Delete links to %d item",
+                                                            "Delete links to %d items", count),
+                                                  count);
+@@ -550,6 +559,7 @@
+             *redo_description = g_strdup_printf (ngettext ("Create links to %d item",
+                                                            "Create links to %d items", count),
+                                                  count);
++#pragma GCC diagnostic pop
+         }
+         else
+         {
+@@ -1130,6 +1140,7 @@
+ {
+     NautilusFileUndoInfoBatchRename *self = NAUTILUS_FILE_UNDO_INFO_BATCH_RENAME (info);
+ 
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+     *undo_description = g_strdup_printf (ngettext ("Batch rename %d file",
+                                                    "Batch rename %d files",
+                                                    g_list_length (self->new_files)),
+@@ -1138,6 +1149,7 @@
+                                                    "Batch rename %d files",
+                                                    g_list_length (self->new_files)),
+                                          g_list_length (self->new_files));
++#pragma GCC diagnostic pop
+ 
+     *undo_label = g_strdup (_("_Undo Batch Rename"));
+     *redo_label = g_strdup (_("_Redo Batch Rename"));
+@@ -1354,6 +1366,7 @@
+ 
+     if (self->starred)
+     {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         *undo_description = g_strdup_printf (ngettext ("Unstar %d file",
+                                                        "Unstar %d files",
+                                                        g_list_length (self->files)),
+@@ -1362,11 +1375,13 @@
+                                                        "Star %d files",
+                                                        g_list_length (self->files)),
+                                              g_list_length (self->files));
++#pragma GCC diagnostic pop
+         *undo_label = g_strdup (_("_Undo Starring"));
+         *redo_label = g_strdup (_("_Redo Starring"));
+     }
+     else
+     {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         *undo_description = g_strdup_printf (ngettext ("Star %d file",
+                                                        "Star %d files",
+                                                        g_list_length (self->files)),
+@@ -1375,6 +1390,7 @@
+                                                        "Unstar %d files",
+                                                        g_list_length (self->files)),
+                                              g_list_length (self->files));
++#pragma GCC diagnostic pop
+         *undo_label = g_strdup (_("_Undo Unstarring"));
+         *redo_label = g_strdup (_("_Redo Unstarring"));
+     }
+@@ -1574,6 +1590,7 @@
+ 
+     if (count != 1)
+     {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         *undo_description = g_strdup_printf (ngettext ("Restore %d item from trash",
+                                                        "Restore %d items from trash", count),
+                                              count);
+@@ -1580,6 +1597,7 @@
+         *redo_description = g_strdup_printf (ngettext ("Move %d item to trash",
+                                                        "Move %d items to trash", count),
+                                              count);
++#pragma GCC diagnostic pop
+     }
+     else
+     {
+@@ -2326,10 +2344,12 @@
+     }
+     else
+     {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         *undo_description = g_strdup_printf (ngettext ("Delete %d extracted file",
+                                                        "Delete %d extracted files",
+                                                        total_outputs),
+                                              total_outputs);
++#pragma GCC diagnostic pop
+     }
+ 
+     if (total_sources == 1)
+@@ -2344,10 +2364,12 @@
+     }
+     else
+     {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         *redo_description = g_strdup_printf (ngettext ("Extract %d file",
+                                                        "Extract %d files",
+                                                        total_sources),
+                                              total_sources);
++#pragma GCC diagnostic pop
+     }
+ }
+ 
+@@ -2495,10 +2517,12 @@
+     }
+     else
+     {
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+         *redo_description = g_strdup_printf (ngettext ("Compress %d file",
+                                                        "Compress %d files",
+                                                        sources_count),
+                                              sources_count);
++#pragma GCC diagnostic pop
+     }
+ 
+     *undo_label = g_strdup (_("_Undo Compress"));
+--- a/src/nautilus-batch-rename-dialog.c	2020-02-19 13:32:56.685076625 -0800
++++ b/src/nautilus-batch-rename-dialog.c	2020-02-19 13:33:41.440885580 -0800
+@@ -2183,6 +2183,7 @@
+     }
+ 
+     dialog_title = g_string_new ("");
++#pragma GCC diagnostic warning "-Wformat-nonliteral"
+     if (all_targets_are_folders)
+     {
+         g_string_append_printf (dialog_title,
+@@ -2209,6 +2210,7 @@
+                                           g_list_length (selection)),
+                                 g_list_length (selection));
+     }
++#pragma GCC diagnostic pop
+ 
+     gtk_window_set_title (GTK_WINDOW (dialog), dialog_title->str);
+ 
+--- a/src/nautilus-file-operations.c	2020-02-19 13:42:33.779726990 -0800
++++ b/src/nautilus-file-operations.c	2020-02-19 13:46:38.686260725 -0800
+@@ -1722,10 +1722,10 @@
+                                "Deleting %'d files",
+                                source_info->num_files);
+         }
+-#pragma GCC diagnostic pop
+         nautilus_progress_info_take_status (job->progress,
+                                             g_strdup_printf (status,
+                                                              source_info->num_files));
++#pragma GCC diagnostic pop
+     }
+ 
+     elapsed = g_timer_elapsed (job->time, NULL);
+@@ -1781,7 +1781,6 @@
+             files_per_second_message = ngettext ("(%d file/sec)",
+                                                  "(%d files/sec)",
+                                                  (int) transfer_rate);
+-#pragma GCC diagnostic pop
+             concat_detail = g_strconcat (time_left_message, " ", files_per_second_message, NULL);
+ 
+             formatted_time = get_formatted_time (remaining_time);
+@@ -1789,6 +1788,7 @@
+                                        transfer_info->num_files + 1, source_info->num_files,
+                                        formatted_time,
+                                        (int) transfer_rate);
++#pragma GCC diagnostic pop
+ 
+             g_free (concat_detail);
+         }
+@@ -2115,10 +2115,10 @@
+                                "Trashed %'d files",
+                                source_info->num_files);
+         }
+-#pragma GCC diagnostic pop
+         nautilus_progress_info_take_status (job->progress,
+                                             g_strdup_printf (status,
+                                                              source_info->num_files));
++#pragma GCC diagnostic pop
+     }
+ 
+ 
+@@ -2174,7 +2174,6 @@
+             files_per_second_message = ngettext ("(%d file/sec)",
+                                                  "(%d files/sec)",
+                                                  (int) (transfer_rate + 0.5));
+-#pragma GCC diagnostic pop
+             concat_detail = g_strconcat (time_left_message, " ", files_per_second_message, NULL);
+ 
+             formatted_time = get_formatted_time (remaining_time);
+@@ -2183,6 +2182,7 @@
+                                        source_info->num_files,
+                                        formatted_time,
+                                        (int) transfer_rate + 0.5);
++#pragma GCC diagnostic pop
+ 
+             g_free (concat_detail);
+         }
+@@ -3900,7 +3900,6 @@
+                                            "Copying %'d files to “%s”",
+                                            source_info->num_files);
+                     }
+-#pragma GCC diagnostic pop
+ 
+                     basename = get_basename (G_FILE (copy_job->destination));
+                     tmp = g_strdup_printf (status,
+@@ -3909,6 +3908,7 @@
+ 
+                     nautilus_progress_info_take_status (job->progress,
+                                                         tmp);
++#pragma GCC diagnostic pop
+                 }
+                 else
+                 {
+@@ -3927,12 +3927,12 @@
+                                            "Copied %'d files to “%s”",
+                                            source_info->num_files);
+                     }
+-#pragma GCC diagnostic pop
+ 
+                     basename = get_basename (G_FILE (copy_job->destination));
+                     tmp = g_strdup_printf (status,
+                                            source_info->num_files,
+                                            basename);
++#pragma GCC diagnostic pop
+ 
+                     nautilus_progress_info_take_status (job->progress,
+                                                         tmp);
+@@ -3951,11 +3951,11 @@
+                     status = ngettext ("Duplicating %'d file in “%s”",
+                                        "Duplicating %'d files in “%s”",
+                                        source_info->num_files);
+-#pragma GCC diagnostic pop
+                     nautilus_progress_info_take_status (job->progress,
+                                                         g_strdup_printf (status,
+                                                                          source_info->num_files,
+                                                                          basename));
++#pragma GCC diagnostic pop
+                 }
+                 else
+                 {
+@@ -3963,11 +3963,11 @@
+                     status = ngettext ("Duplicated %'d file in “%s”",
+                                        "Duplicated %'d files in “%s”",
+                                        source_info->num_files);
+-#pragma GCC diagnostic pop
+                     nautilus_progress_info_take_status (job->progress,
+                                                         g_strdup_printf (status,
+                                                                          source_info->num_files,
+                                                                          basename));
++#pragma GCC diagnostic pop
+                 }
+                 g_object_unref (parent);
+             }
