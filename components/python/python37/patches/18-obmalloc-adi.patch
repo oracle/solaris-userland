@@ -6,8 +6,8 @@ Use an explicit nonfaulting load to ignore the ADI tag.
 This patch should now work with both Studio and gcc compilers (and possibly
 many others). It might be pushed upstream.
 
---- Python-3.7.4/Objects/obmalloc.c
-+++ Python-3.7.4/Objects/obmalloc.c
+--- Python-3.7.8/Objects/obmalloc.c
++++ Python-3.7.8/Objects/obmalloc.c
 @@ -1350,6 +1350,39 @@ obmalloc controls.  Since this test is n
  extremely desirable that it be this fast.
  */
@@ -45,7 +45,7 @@ many others). It might be pushed upstream.
 +#endif  /* __sparcv9 */
 +
 +
- static bool _Py_NO_ADDRESS_SAFETY_ANALYSIS
+ static bool _Py_NO_SANITIZE_ADDRESS
              _Py_NO_SANITIZE_THREAD
              _Py_NO_SANITIZE_MEMORY
 @@ -1360,7 +1393,7 @@ address_in_range(void *p, poolp pool)

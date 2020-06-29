@@ -8,9 +8,9 @@ https://github.com/python/cpython/commit/2406672984e4c1b18629e615edad52928a72ffc
 https://github.com/python/cpython/commit/f0807ab24cbd13163bff7e0de3a97fe83584b80d
 https://github.com/python/cpython/commit/36fd7b6f01127bc6a8b4a37a363e0aa9cfd76506
 
---- Python-3.7.5/Lib/test/libregrtest/cmdline.py
-+++ Python-3.7.5/Lib/test/libregrtest/cmdline.py
-@@ -264,7 +264,9 @@ def _create_parser():
+--- Python-3.7.8/Lib/test/libregrtest/cmdline.py
++++ Python-3.7.8/Lib/test/libregrtest/cmdline.py
+@@ -271,7 +271,9 @@ def _create_parser():
                         help='only write the name of test cases that will be run'
                              ' , don\'t execute them')
      group.add_argument('-P', '--pgo', dest='pgo', action='store_true',
@@ -21,7 +21,7 @@ https://github.com/python/cpython/commit/36fd7b6f01127bc6a8b4a37a363e0aa9cfd7650
      group.add_argument('--fail-env-changed', action='store_true',
                         help='if a test file alters the environment, mark '
                              'the test as failed')
-@@ -344,6 +346,8 @@ def _parse_args(args, **kwargs):
+@@ -352,6 +354,8 @@ def _parse_args(args, **kwargs):
          parser.error("-G/--failfast needs either -v or -W")
      if ns.pgo and (ns.verbose or ns.verbose2 or ns.verbose3):
          parser.error("--pgo/-v don't go together!")
@@ -30,8 +30,8 @@ https://github.com/python/cpython/commit/36fd7b6f01127bc6a8b4a37a363e0aa9cfd7650
  
      if ns.nowindows:
          print("Warning: the --nowindows (-n) option is deprecated. "
---- Python-3.7.5/Lib/test/libregrtest/main.py
-+++ Python-3.7.5/Lib/test/libregrtest/main.py
+--- Python-3.7.8/Lib/test/libregrtest/main.py
++++ Python-3.7.8/Lib/test/libregrtest/main.py
 @@ -17,6 +17,7 @@ from test.libregrtest.runtest import (
      INTERRUPTED, CHILD_ERROR, TEST_DID_NOT_RUN, TIMEOUT,
      PROGRESS_MIN_TIME, format_test_result, is_failed)
@@ -40,10 +40,10 @@ https://github.com/python/cpython/commit/36fd7b6f01127bc6a8b4a37a363e0aa9cfd7650
  from test.libregrtest.utils import removepy, count, format_duration, printlist
  from test import support
  
-@@ -217,6 +218,10 @@ class Regrtest:
+@@ -224,6 +225,10 @@ class Regrtest:
  
          removepy(self.tests)
-
+ 
 +        if self.ns.pgo:
 +            # add default PGO tests if no tests are specified
 +            setup_pgo_tests(self.ns)
@@ -51,8 +51,8 @@ https://github.com/python/cpython/commit/36fd7b6f01127bc6a8b4a37a363e0aa9cfd7650
          stdtests = STDTESTS[:]
          nottests = NOTTESTS.copy()
          if self.ns.exclude:
---- /dev/null
-+++ Python-3.7.5/Lib/test/libregrtest/pgo.py
+--- Python-3.7.8/Lib/test/libregrtest/pgo.py
++++ Python-3.7.8/Lib/test/libregrtest/pgo.py
 @@ -0,0 +1,54 @@
 +# Set of tests run by default if --pgo is specified.  The tests below were
 +# chosen based on the following criteria: either they exercise a commonly used
@@ -108,8 +108,8 @@ https://github.com/python/cpython/commit/36fd7b6f01127bc6a8b4a37a363e0aa9cfd7650
 +    if not ns.args and not ns.pgo_extended:
 +        # run default set of tests for PGO training
 +        ns.args = PGO_TESTS[:]
---- Python-3.7.5/Makefile.pre.in
-+++ Python-3.7.5/Makefile.pre.in
+--- Python-3.7.8/Makefile.pre.in
++++ Python-3.7.8/Makefile.pre.in
 @@ -256,9 +256,10 @@ TCLTK_INCLUDES=	@TCLTK_INCLUDES@
  TCLTK_LIBS=	@TCLTK_LIBS@
  
