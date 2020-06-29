@@ -1,7 +1,7 @@
 #!/usr/bin/python3.7
 
 #
-# Copyright (c) 2008, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2008, 2020, Oracle and/or its affiliates.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ def get_solaris_dashboard_url():
         proc = subprocess.Popen(["/usr/sbin/host", hostname],
                                 stdin=None, stdout=subprocess.PIPE,
                                 stderr=None, shell=False, close_fds=True,
-                                bufsize=-1)
+                                bufsize=-1, text=True)
         stdoutdata, _ = proc.communicate()
         if proc.returncode == 0:
             hostname = stdoutdata.split(' ', 1)[0]
