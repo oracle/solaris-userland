@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 # All components using gobject-introspection must be built with gcc as
@@ -28,36 +28,30 @@
 COMPILER=		gcc
 BUILD_BITS =		32_and_64
 include ../../../make-rules/shared-macros.mk
+BUILD_STYLE=            meson
 
 COMPONENT_NAME=		gdk-pixbuf
-COMPONENT_VERSION=	2.36.12
+COMPONENT_VERSION=	2.39.2
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GdkPixbuf
 COMPONENT_ARCHIVE_HASH= \
-    sha256:fff85cf48223ab60e3c3c8318e2087131b590fd6f1737e42cb3759a3b427a334
+     sha256:63e59387b5c5504f3bf07530bac0b69542e55936e09283400d32529b2b32e1ca
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	9533
 
-TPNO=			42635
+TPNO=		        56020
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 include $(WS_MAKE_RULES)/gnome-component.mk
-
-# Requires a reconf due to patch to configure.ac.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
-
-CONFIGURE_OPTIONS += --enable-gtk-doc
-
-# Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-introspection
-CONFIGURE_OPTIONS.64 += --enable-introspection
-
-# Build gdk-pixbuf-xlib required by xscreensaver & other software
-CONFIGURE_OPTIONS += --with-x11
 
 # Workaround for build failures due to gdk-pixbuf Makefiles not passing CFLAGS
 # or LDFLAGS, especially the -m32/64 flag, to g-ir-scanner
 COMPONENT_BUILD_ENV += CFLAGS="$(strip $(CFLAGS))"
 COMPONENT_BUILD_ENV += LDFLAGS="$(strip $(LDFLAGS))"
+
+# Assumes GNU xgettext in PATH
+CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 # Generate and install architecture-specific configuration files that define
 # the set of plugins available.
@@ -98,13 +92,12 @@ COMPONENT_TEST_TRANSFORMS += \
 
 # Standard automake test framework results transform
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+# get rid of the timestamps from the test results
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/TOTAL/p" ' \
-        '-e "/SKIP/p" ' \
-        '-e "/PASS/p" ' \
-        '-e "/FAIL/p" ' \
-        '-e "/ERROR/p" '
+        '-e "/OK/p" ' \
+        '-e "/ok/p" '
 
 # Requires >= 2.69 autoconf
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
