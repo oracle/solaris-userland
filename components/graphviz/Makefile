@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=gcc
@@ -104,24 +104,6 @@ $(INSTALL_64): COMPONENT_INSTALL_ARGS += LUA_INSTALL_DIR=$(USRLIBDIR)/lua/5.2/64
 COMPONENT_INSTALL_ARGS += LN_S="gln -s"
 
 # build php module also for older php versions
-PHP_71_CONFIG = /usr/php/7.1/bin/php-config
-PHP_71_INCLUDES := $(shell $(PHP_71_CONFIG) --includes)
-PHP_71_INSTALL_DIR := $(shell $(PHP_71_CONFIG) --extension-dir)
-PHP_71_LDFLAGS := $(shell $(PHP_71_CONFIG) --ldflags)
-PHP_71_LIBS := $(shell $(PHP_71_CONFIG) --libs)
-
-$(CONFIGURE_64): COMPONENT_POST_CONFIGURE_ACTION += \
-    (cd $(@D) ; cp -rp tclpkg/gv tclpkg/gv-php-71 ; \
-    $(GSED) -i '/^SUBDIRS =/s|$$| gv-php-71|' tclpkg/Makefile ; \
-    $(GSED) -i \
-     -e '/^PHP_INCLUDES =/s|=.*$$|= $(PHP_71_INCLUDES)|' \
-     -e '/^PHP_INSTALL_DIR =/s|=.*$$|= $(PHP_71_INSTALL_DIR)|' \
-     -e '/^PHP_LIBS =/s|=.*$$|= $(PHP_71_LDFLAGS) $(PHP_71_LIBS)|' \
-     `find tclpkg/gv-php-71 -name Makefile` ) ;
-
-$(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
-    (cd $(@D)/tclpkg/gv-php-71 ; gmake V=1 libgv_php.la ) ;
-
 PHP_73_CONFIG = /usr/php/7.3/bin/php-config
 PHP_73_INCLUDES := $(shell $(PHP_73_CONFIG) --includes)
 PHP_73_INSTALL_DIR := $(shell $(PHP_73_CONFIG) --extension-dir)
@@ -204,7 +186,6 @@ REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += web/php-71
 REQUIRED_PACKAGES += web/php-73
 REQUIRED_PACKAGES += web/php-74
 REQUIRED_PACKAGES += x11/library/libx11
