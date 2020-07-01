@@ -20,15 +20,15 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		curl
-COMPONENT_VERSION=	$(COMPONENT_NAME)-7_64_0
-IPS_COMPONENT_VERSION=	7.64.0
-TPNO=			49327
+COMPONENT_VERSION=	$(COMPONENT_NAME)-7_71_0
+IPS_COMPONENT_VERSION=	7.71.0
+TPNO=			59970
 COMPONENT_PROJECT_URL=	http://curl.haxx.se/
 
 #GIT_REPO=	https://github.com/curl/curl.git
@@ -38,7 +38,7 @@ COMPONENT_PROJECT_URL=	http://curl.haxx.se/
 
 # git clone is fine but download of the archive is much faster
 COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).zip
-COMPONENT_ARCHIVE_HASH=	sha256:767c6039f247439885d87662f91e7e24aed2d15c80437de9f91d1034e68ac7fd
+COMPONENT_ARCHIVE_HASH=	sha256:2c53773969978dd6477e7bcd9ae30cc10de4970c50fa53fc7dbe72b35305d1f0
 COMPONENT_ARCHIVE_URL=	https://github.com/curl/curl/archive/$(COMPONENT_ARCHIVE)
 
 COMPONENT_BUGDB=	library/curl
@@ -126,8 +126,9 @@ REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/libssh2
 REQUIRED_PACKAGES += library/nghttp2
 REQUIRED_PACKAGES += library/security/openssl
+REQUIRED_PACKAGES += library/security/openssl-11
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/network/ldap/openldap

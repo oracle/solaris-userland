@@ -1,0 +1,171 @@
+Component curl is employed in AI boot for retrieving of the archives from the
+WAN-Boot server. This is the reason why AI iso image should be also tested when
+curl is updated.
+
+
+Also the /usr/share/distro_const/boot_archive_contents_x86.xml (contents of miniroot)
+need to reflect changes like the library releases changes or a new dependencies and so.
+Whenever the library dependencies will change the boot_archive_contents_x86.xml need to
+list these files needed otherwise the run time linker will not find it. This is because
+the miniroot image is using only the "hand picked" files not the full packages.
+
+
+Miniroot can be tested on VirtualBox setup in vxlan env. 3-virtual
+machines are needed:
+ distro build box - build .iso then communicate and data handling
+ AI server
+ installed client
+Here are the steps to setup:
+
+### distro build box ###
+vm 123root --memory=8G ST_userland_build aitst
+pkg change-facet --no-backup-be version-lock.web/curl=false
+ eventually:
+  version-lock.library/nghttp2=false
+
+pkg install --no-backup-be -g <your_workspace>/$(uname -p)/repo \
+  pkg://nightly/web/curl
+ eventually:
+  pkg://nightly/library/nghttp2
+
+In case if only curl package has beed changed then it can be simplified using:
+vm install --memory=8G <your_workspace>/components/curl/ aitst
+
+#-------------------------------------------------------------------------------
+Example of change of miniroot contents in:
+  /usr/share/distro_const/boot_archive_contents_x86.xml
+        (boot_archive_contents_sparc.xml for sparc)
+if libcurl release is changed (also the libnghttpd has been changed but not soaked):
+
+@@ -233,8 +233,8 @@
+   <name>usr/lib/fm/libfmd_agent.so.1</name>
+   <name>usr/lib/fm/libfmd_zfs.so.1</name>
+   <name>usr/lib/libcurl.so.4</name>
+-  <name>usr/lib/libcurl.so.4.4.0</name>
+   <name>usr/lib/libcurl.so.4.5.0</name>
++  <name>usr/lib/libcurl.so.4.6.0</name>
+   <name>usr/lib/libdiskmgt.so.1</name>
+   <name>usr/lib/64/libdiskmgt.so.1</name>
+   <name>usr/lib/libgss.so.1</name>
+@@ -278,8 +278,8 @@
+   <name>usr/lib/rad/client/c/amd64/libdlmgr1_client.so.1</name>
+   <!-- Curl libraries  needed for /usr/sbin/dlmgmtd and AI -->
+   <name>usr/lib/64/libcurl.so.4</name>
+-  <name>usr/lib/64/libcurl.so.4.4.0</name>
+   <name>usr/lib/64/libcurl.so.4.5.0</name>
++  <name>usr/lib/64/libcurl.so.4.6.0</name>
+   <name>usr/lib/64/libgss.so.1</name>
+   <name>usr/lib/64/libgssapi_krb5.so</name>
+   <name>usr/lib/64/libgssapi_krb5.so.2</name>
+@@ -303,12 +303,12 @@
+   <name>usr/lib/64/libidn2.so.0.3.3</name>
+   <name>usr/lib/libnghttp2.so</name>
+   <name>usr/lib/libnghttp2.so.14</name>
+-  <name>usr/lib/libnghttp2.so.14.17.1</name>
+   <name>usr/lib/libnghttp2.so.14.18.0</name>
++  <name>usr/lib/libnghttp2.so.14.20.0</name>
+   <name>usr/lib/64/libnghttp2.so</name>
+   <name>usr/lib/64/libnghttp2.so.14</name>
+-  <name>usr/lib/64/libnghttp2.so.14.17.1</name>
+   <name>usr/lib/64/libnghttp2.so.14.18.0</name>
++  <name>usr/lib/64/libnghttp2.so.14.20.0</name>
+   <!-- liblofi library needed by lofiadm(8) -->
+   <name>usr/lib/64/liblofi.so.1</name>
+   <name>usr/lib/libpkcs11.so.1</name>
+
+Example of the patch of the distro_const(8) manifest:
+ /usr/share/distro_const/dc_ai_x86.xml
+is on the end of this file and can be directly applied by:
+  (cd /usr/share/distro_const/ ; gpatch -p0 ) < AI_README.txt
+then run distro-constructor:
+  distro_const build -v /usr/share/distro_const/dc_ai_x86.xml
+when distro-constructor is finished (take couple of tenths minutes) we can check
+  ls /dc/ai/media/
+Oracle_Solaris_AI_X86.iso has been built. Then we can stop machine to set netw.
+  poweroff
+
+#-- Setup networking -----------------------------------------------------------
+  vm net aitst  1 vxlan
+  VBoxManage modifyvm aitst --macaddress2 02C0C0D0D0C0
+  vm start aitst
+  vm sshroot aitst
+
+#-- Set interfaces -------------------------------------------------------------
+  hostname aitst
+  echo '192.168.1.7 aitst.local aitst' >> /etc/inet/hosts
+  ipadm create-ip net1
+  ipadm create-addr -T static -a local=192.168.1.7/24 net1/v4
+  ipadm create-addr -T addrconf net1/v6
+# export Oracle_Solaris_AI_X86.iso
+  share -F nfs /dc/ai/media/
+  exit
+
+#-- Create aisvr ---------------------------------------------------------------
+  vm create S11.4_SRU aisvr
+  vm net aisvr 0 vxlan
+  VBoxManage modifyvm aisvr --macaddress1 02C0C0D0D0D0
+# VBoxManage showvminfo aisvr --details | grep MAC: # to check
+  vm start aisvr
+
+#-- Setup aisvr ----------------------------------------------------------------
+  vm sshroot aitst
+  ping -n -A inet6 -i net1 'fe80::c0:c0ff:fed0:d0d0'
+  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -B net1 root@'fe80::c0:c0ff:fed0:d0d0'
+### Setup AI server ###
+  hostname aisvr
+  echo '192.168.1.1 aisvr.local aisvr' >> /etc/inet/hosts
+  ipadm delete-addr net0/v4
+  ipadm create-addr -T static -a local=192.168.1.1/24 net0/v4
+  installadm set-server -m -i 192.168.1.16 -c 16
+# install service from .iso-image built by distro-constructor
+  installadm create-service -n s11x -s /net/[fe80::c0:c0ff:fed0:d0c0]/dc/ai/media/Oracle_Solaris_AI_X86.iso -d /ai/s11x
+  ln -s etc/netboot /tftpboot
+  (cd /tftpboot ; ln -s . tftpboot)
+  installadm create-client -e 02:C0:C0:D0:D0:E0 -n s11x # MAC of nbb
+
+### client ###
+  vm new -T Solaris11_64 -M 8G nbb
+  vm net nbb 0 vxlan
+  VBoxManage modifyvm nbb --macaddress1 02C0C0D0D0E0
+  VBoxManage modifyvm nbb --boot1 net
+  vm start nbb
+# connect on rdp-port
+# notes:
+# - boot into shell is enough to test if curl can act as a wanboot client
+# - to install OS the package repo is needed. http-proxy can be used instead
+# client can be reset by
+  vm reset nbb
+ 
+
+--- Modify the AI manifest -----------------------------------------------------
+Goal is to set appropriate facets to use nightly components on distro build box
+and also to set reachable pkg-repository,
+
+  cd /usr/share/distro_const/
+then modify dc_ai_x86.xml (on sparc: dc_ai_sparc.xml)
+  gpatch -p0 < AI_README.txt
+
+Note: also the nghttp2 package can be updated but not soaked to distribution. Also
+this (updated) pkg should be installed on distro build box then .xml-manifests
+should reflects both changes.
+
+--- dc_ai_x86.xml	2020-07-02 18:02:32.674719722 +0000
++++ dc_ai_x86.xml	2020-07-02 19:05:49.477679578 +0000
+@@ -107,6 +107,8 @@
+            Exclude documentation, man pages, header files and lint libraries
+            for AI image
+            -->
++           <facet set="false">facet.version-lock.web/curl</facet>
++           <facet set="false">facet.version-lock.library/nghttp2</facet>
+            <facet set="false">facet.devel</facet>
+            <facet set="false">facet.doc</facet>
+            <facet set="false">facet.doc.*</facet>
+@@ -137,7 +139,7 @@
+       </destination>
+       <source>
+         <publisher name="solaris">
+-          <origin name="http://pkg.oracle.com/solaris/release"/>
++          <origin name="http://ipkg.cz.oracle.com/solaris11/trunk/"/>
+           <!--
+             If mirrors for this publisher need to be set, specify them here.
+           -->
