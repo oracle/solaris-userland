@@ -60,6 +60,7 @@ include $(WS_MAKE_RULES)/ips.mk
 TARGET_27 = $(BUILD_DIR)/$(MACH)-2.7/
 TARGET_35 = $(BUILD_DIR)/$(MACH)-3.5/
 TARGET_37 = $(BUILD_DIR)/$(MACH)-3.7/
+TARGET_39 = $(BUILD_DIR)/$(MACH)-3.9/
 SOURCE_DIR_OLD = $(COMPONENT_DIR)/$(COMPONENT_SRC_OLD)
 
 # Targets updated for older version build
@@ -73,6 +74,7 @@ $(MANIFEST_BASE)-cmd2-27.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
 $(MANIFEST_BASE)-cmd2-27.mogrified: NEW_ONLY = \#
 $(MANIFEST_BASE)-cmd2-35.mogrified: OLD_ONLY = \#
 $(MANIFEST_BASE)-cmd2-37.mogrified: OLD_ONLY = \#
+$(MANIFEST_BASE)-cmd2-39.mogrified: OLD_ONLY = \#
 
 PKG_MACROS += OLD_ONLY="$(OLD_ONLY)"
 PKG_MACROS += NEW_ONLY="$(NEW_ONLY)"
@@ -99,7 +101,7 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-test:		$(TARGET_35).tested $(TARGET_37).tested
+test:		$(TARGET_35).tested $(TARGET_37).tested $(TARGET_39).tested
 
 system-test:    $(NO_TESTS)
 

@@ -1,12 +1,20 @@
-Patch to use Lua 5.4 instead of Lua 5.1.
+Patch to use Lua 5.4 instead of Lua 5.1 and to use Python 3.7.
 
---- libpeas-1.24.0/meson.build	2019-09-09 17:41:29.000000000 -0700
-+++ B/meson.build	2020-05-18 00:51:25.995659095 -0700
-@@ -110,10 +110,10 @@
-   python3_dep = dependency('python3', version: python3_req, required: false)
- endif
+--- libpeas-1.24.0/meson.build	2020-10-18 22:58:56.779280779 +0000
++++ libpeas-1.24.0/meson.build	2020-10-18 22:57:47.937572647 +0000
+@@ -104,16 +104,12 @@ gtk_dep = dependency('gtk+-3.0', version
+ gtk_doc_dep = dependency('gtk-doc', version: gtk_doc_req, required: false)
+ gladeui_dep = dependency('gladeui-2.0', required: false)
  
+-# From python 3.8 we neeed python3-embed
+-python3_dep = dependency('python3-embed', required: false)
+-if not python3_dep.found()
+-  python3_dep = dependency('python3', version: python3_req, required: false)
+-endif
+-
 -python2_dep = dependency('python2', version: python2_req, required: false)
++# Force to use python 3.7 until we switch to a newer version.
++python3_dep = dependency('python-3.7m', version: ['>= 3.7', '< 3.8'], required: false)
 +python2_dep = dependency('python-27', version: python2_req, required: false)
  pygobject_dep = dependency('pygobject-3.0', version: pygobject_req, required: false)
 -lua51_dep = dependency('lua5.1', version: lua_req, required: false)
@@ -16,7 +24,7 @@ Patch to use Lua 5.4 instead of Lua 5.1.
  luajit_dep = dependency('luajit', version: luajit_req, required: false)
  
  luajit_prg = find_program('luajit', required: false)
-@@ -181,10 +181,10 @@
+@@ -181,10 +177,10 @@ if generate_gir and not introspection_de
    generate_gir = false
  endif
  
@@ -31,7 +39,7 @@ Patch to use Lua 5.4 instead of Lua 5.1.
  endif
  
  build_python2_loader = get_option('python2')
-@@ -225,7 +225,7 @@
+@@ -225,7 +221,7 @@ summary = [
    '     Glade catalog: @0@'.format(install_glade_catalog),
    '     GTK+ widgetry: @0@'.format(build_gtk_widgetry),
    '     Introspection: @0@'.format(generate_gir),

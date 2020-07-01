@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -37,6 +37,9 @@ COMPONENT_BUGDB=	python-mod/functools-lru
 COMPONENT_ANITYA_ID=	12085
 
 TPNO=			57863
+
+# This component is not necessary for Python 3.9
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.9)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

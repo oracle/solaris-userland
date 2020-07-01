@@ -1,0 +1,104 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
+#
+
+<include generate/common.transform>
+
+# Delete everything not belonging to this package
+<transform file link pkg.type=(?!main) -> drop>
+<transform hardlink file link -> delete pkg.type .*>
+
+# Add python version mediators to existing links
+<transform link path=usr/bin/2to3 -> set mediator python>
+<transform link path=usr/bin/2to3 -> set mediator-version 3.9>
+<transform link path=usr/bin/idle3 -> set mediator python3>
+<transform link path=usr/bin/idle3 -> set mediator-version 3.9>
+<transform link path=usr/bin/pydoc3 -> set mediator python3>
+<transform link path=usr/bin/pydoc3 -> set mediator-version 3.9>
+<transform link path=usr/bin/python3$ -> set mediator python3>
+<transform link path=usr/bin/python3$ -> set mediator-version 3.9>
+<transform link path=usr/bin/python3-config -> set mediator python3>
+<transform link path=usr/bin/python3-config -> set mediator-version 3.9>
+<transform link path=usr/lib/\$\(MACH64\)/pkgconfig/python3.pc -> set mediator python3>
+<transform link path=usr/lib/\$\(MACH64\)/pkgconfig/python3.pc -> set mediator-version 3.9>
+<transform link path=usr/lib/\$\(MACH64\)/pkgconfig/python3-embed.pc -> set mediator python3>
+<transform link path=usr/lib/\$\(MACH64\)/pkgconfig/python3-embed.pc -> set mediator-version 3.9>
+
+<transform link path=usr/share/man/man1/python3.1 -> set mediator python>
+<transform link path=usr/share/man/man1/python3.1 -> set mediator-version 3.9>
+
+# Emit new non version-tied links
+<transform link path=usr/bin/pydoc3 \
+	-> emit link path=usr/bin/pydoc target=pydoc3.9 mediator=python mediator-version=3.9>
+<transform link path=usr/bin/idle3 \
+	-> emit link path=usr/bin/idle target=idle3.9 mediator=python mediator-version=3.9>
+<transform link path=usr/bin/python3 \
+	-> emit link path=usr/bin/python target=python3.9 mediator=python mediator-version=3.9>
+<transform link path=usr/bin/python3-config \
+	-> emit link path=usr/bin/python-config target=python3.9-config mediator=python mediator-version=3.9>
+
+# Add pkg.tmp.autopyc variables (don't ship their corresponding .pyc files)
+<transform file path=usr/lib/python3.9/config-3.9/python-config.py -> set pkg.tmp.autopyc false>
+<transform file path=usr/lib/python3.9/lib2to3/tests/data/.*.py -> set pkg.tmp.autopyc false>
+<transform file path=usr/lib/python3.9/test/bad_coding.*.py -> set pkg.tmp.autopyc false>
+<transform file path=usr/lib/python3.9/test/badsyntax_.* -> set pkg.tmp.autopyc false>
+
+# For some unknown reason, llib-lpython39m can be sometimes found in the proto
+# area and sometimes not.  This fixes this inconsistency by always removing the
+# file and by adding it via .static file
+<transform file path=llib-lpython39m$ -> drop>
+
+# Emit some additional links
+<transform file path=(.*)/libpython3.9_db.so.1.0 \
+	-> emit link path=%<1>/libpython3.9_db.so target=libpython3.9_db.so.1.0>
+
+# Add links into non 64bit directory
+<transform file path=usr/lib/(.*)/python-3.9.pc \
+	-> emit link path=usr/lib/pkgconfig/python-3.9.pc target=../%<1>/python-3.9.pc>
+<transform link path=usr/lib/pkgconfig/python-3.9.pc \
+	-> emit link path=usr/lib/pkgconfig/python3.pc target=python-3.9.pc mediator=python3 mediator-version=3.9>
+
+# Add pkg.linted.userland.action variables
+<transform file path=usr/lib/python3.9/config-3.9/python.o -> set pkg.linted.userland.action001.2 true>
+
+# Add mediated libpython3.so
+<transform file path=.*/libpython3.so$ -> set action.hash %(path)>
+<transform file path=.*/libpython3.so$ -> edit path libpython3.so libpython3-39.so>
+<transform file path=.*/libpython3-39.so$ \
+       -> emit link path=usr/lib/$(MACH64)/libpython3.so target=libpython3-39.so mediator=python3 mediator-version=3.9>
+
+# move and rename ln lib
+<transform file path=.*/llib-lpython39m.ln -> set action.hash \$\(MACH64\)/llib-lpython39m.ln>
+<transform file path=(.*)/llib-lpython39m.ln -> set path %<1>/llib-lpython3.9m.ln>
+
+# remove incorrect conditional dependency on tkinter
+<transform file path=.*/idlelib/pyshell.py -> set pkg.depend.bypass-generate .*>
+<transform file path=.*/turtledemo/__main__.py -> set pkg.depend.bypass-generate .*>
+
+<transform file path=.*/(different_encoding|false_encoding|pytree_idempotency).py \
+	-> set pkg.depend.bypass-generate .*>
+
+# remove dtrace related tests as they won't work on Solaris (see 30640154)
+<transform file path=.*/test/test_dtrace.py$ -> drop>
+<transform file path=.*/test/dtracedata/.* -> drop>

@@ -41,7 +41,8 @@ TPNO=			35809
 
 PKG_CONFIG_PATHS+=$(PYTHON_VENDOR_PACKAGES_BASE)/lib/pkgconfig/
 
-PYTHON_VERSIONS=        $(PYTHON3_VERSIONS)
+# This component is not yet built for Python 3.9
+PYTHON_VERSIONS=        3.5 3.7
 
 # replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses configure.mk
 CONFIGURE_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)

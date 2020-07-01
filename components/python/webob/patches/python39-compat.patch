@@ -1,0 +1,16 @@
+Python 3.9 removed old isAlive() function which is long replaced by is_alive():
+https://github.com/python/cpython/commit/44046fe4fc7f00a6eb855b33e6a3f953cf5233a5
+
+Upstream is already fixing this.
+
+--- WebOb-1.8.5/tests/conftest.py
++++ WebOb-1.8.5/tests/conftest.py
+@@ -60,7 +60,7 @@ def serve():
+             log.debug("shutting server down")
+             server.shutdown()
+             worker.join(1)
+-            if worker.isAlive():
++            if worker.is_alive():
+                 log.warning('worker is hanged')
+             else:
+                 log.debug("server stopped")

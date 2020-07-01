@@ -89,11 +89,13 @@ COMPONENT_PRE_TEST_ACTION = \
 # We get spurious test failures with 64bit version of python 2.7
 test:		$(BUILD_DIR)/$(MACH32)-2.7/.tested \
 		$(BUILD_DIR)/$(MACH64)-3.5/.tested   \
-		$(BUILD_DIR)/$(MACH64)-3.7/.tested
+		$(BUILD_DIR)/$(MACH64)-3.7/.tested   \
+		$(BUILD_DIR)/$(MACH64)-3.9/.tested
 
 system-test:	$(BUILD_DIR)/$(MACH32)-2.7/.system-tested \
 		$(BUILD_DIR)/$(MACH64)-3.5/.system-tested   \
-		$(BUILD_DIR)/$(MACH64)-3.7/.system-tested
+		$(BUILD_DIR)/$(MACH64)-3.7/.system-tested   \
+		$(BUILD_DIR)/$(MACH64)-3.9/.system-tested
 
 endif
 

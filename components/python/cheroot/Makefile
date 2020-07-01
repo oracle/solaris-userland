@@ -42,25 +42,15 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-# Tests do not pass because of insufficient gsed filtering.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
-
 COMPONENT_POST_INSTALL_ACTION = \
         (cd $(PROTO_DIR)/usr/bin ; $(MV) cheroot cheroot-$(PYTHON_VERSION))
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
-COMPONENT_TEST_TRANSFORMS += \
-  '-e "s/\(in \).*\(seconds\)/\1x \2/"' \
-  '-e "/hypothesis/d"' \
-  '-e "/^platform/d"' \
-  '-e "/^SKIP/d"' \
-  '-e "/^PASSED/d"' \
-  '-e "s/=*//"'
-  
+
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+
 # common targets
 build:		$(BUILD_NO_ARCH)
 

@@ -262,11 +262,12 @@ endif
 # The default version should go last.
 PYTHON_VERSION =	3.7
 PYTHON2_VERSIONS =	2.7
-PYTHON3_VERSIONS =	3.5 3.7
+PYTHON3_VERSIONS =	3.5 3.7 3.9
 PYTHON_VERSIONS =	$(PYTHON2_VERSIONS) $(PYTHON3_VERSIONS)
 
-# Convenience variable for builds without Python 3.7
+# Convenience variable for builds without Python 3.7 and 3.9
 WITHOUT_PYTHON3.7 = 3.5 $(PYTHON2_VERSIONS)
+WITHOUT_PYTHON3.9 = 3.5 3.7 $(PYTHON2_VERSIONS)
 
 # PYTHON3_SOABI variable defines the naming scheme
 # of python3 extension libraries: cpython or abi3.
@@ -730,6 +731,10 @@ PYTHON.3.7.VENDOR_PACKAGES.32 =
 PYTHON.3.7.VENDOR_PACKAGES.64 = /usr/lib/python3.7/vendor-packages
 PYTHON.3.7.VENDOR_PACKAGES = $(PYTHON.3.7.VENDOR_PACKAGES.64)
 
+PYTHON.3.9.VENDOR_PACKAGES.32 =
+PYTHON.3.9.VENDOR_PACKAGES.64 = /usr/lib/python3.9/vendor-packages
+PYTHON.3.9.VENDOR_PACKAGES = $(PYTHON.3.9.VENDOR_PACKAGES.64)
+
 # Base path to vendor packages shared between all Python versions
 PYTHON_VENDOR_PACKAGES_BASE = /usr/lib/python$(PYTHON_VERSION)/vendor-packages
 
@@ -740,6 +745,7 @@ PYTHON_VENDOR_PACKAGES = $(PYTHON.$(PYTHON_VERSION).VENDOR_PACKAGES)
 PYTHON.2.7.TEST = /usr/lib/python2.7/test
 PYTHON.3.5.TEST = /usr/lib/python3.5/test
 PYTHON.3.7.TEST = /usr/lib/python3.7/test
+PYTHON.3.9.TEST = /usr/lib/python3.9/test
 
 USRBIN.32 =	/usr/bin
 USRBIN.64 =	/usr/bin/$(MACH64)
@@ -764,6 +770,10 @@ PYTHON.3.5 =	$(USRBIN.32)/python3.5
 PYTHON.3.7.32 =	$(USRBIN.32)/python3.7
 PYTHON.3.7.64 =	$(USRBIN.32)/python3.7
 PYTHON.3.7 =	$(USRBIN.32)/python3.7
+
+PYTHON.3.9.32 =	$(USRBIN.32)/python3.9
+PYTHON.3.9.64 =	$(USRBIN.32)/python3.9
+PYTHON.3.9 =	$(USRBIN.32)/python3.9
 
 PYTHON.32 =	$(PYTHON.$(PYTHON_VERSION).32)
 PYTHON.64 =	$(PYTHON.$(PYTHON_VERSION).64)

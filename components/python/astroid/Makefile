@@ -53,6 +53,9 @@ TPNO_OLD=		31346
 # This component is delivered in two different versions because
 # the newer one is no longer Python 2.7 compatible.
 
+# This component is not Python 3.9 ready yet
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.9)
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk

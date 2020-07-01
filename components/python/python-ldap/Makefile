@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
 #
 
 # Build requirements, needed before inclusion of shared-macros.
@@ -42,8 +42,8 @@ COMPONENT_ANITYA_ID=	13261
 
 TPNO=			52715
 
-# Building for Python 2.7 and 3.7 only. Ref ../../make-rules/shared-macros.mk
-PYTHON_VERSIONS=	3.7 2.7
+# Building for Python 2.7, 3.7 and 3.9 only. Ref ../../make-rules/shared-macros.mk
+PYTHON_VERSIONS=	3.7 3.9 2.7
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

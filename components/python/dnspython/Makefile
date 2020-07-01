@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -38,7 +38,7 @@ COMPONENT_ANITYA_ID=	13190
 
 TPNO=			49641
 
-PYTHON_VERSIONS=	$(PYTHON2_VERSIONS) 3.7
+PYTHON_VERSIONS=	$(PYTHON2_VERSIONS) 3.7 3.9
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

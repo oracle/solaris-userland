@@ -1,0 +1,32 @@
+Long deprecated base64.encodestring() and base64.decodestring()
+have been removed in Python 3.9.
+
+======
+
+From f60fc2ff0846ee23a82623d72967fb97a244d833 Mon Sep 17 00:00:00 2001
+From: Sviatoslav Sydorenko <wk@sydorenko.org.ua>
+Date: Sun, 30 Sep 2018 22:43:22 +0200
+Subject: [PATCH] Adjust reprconf to match Python 3.8 changes
+
+--- cherrypy/_cpcompat.py
++++ cherrypy/_cpcompat.py
+@@ -90,7 +90,7 @@ def assert_native(n):
+ 
+ def base64_decode(n, encoding='ISO-8859-1'):
+     """Return the native string base64-decoded (as a native string)."""
+-    decoded = base64.decodestring(n.encode('ascii'))
++    decoded = base64.b64decode(n.encode('ascii'))
+     return tonative(decoded, encoding)
+ 
+ 
+--- cherrypy/lib/reprconf.py
++++ cherrypy/lib/reprconf.py
+@@ -468,6 +468,8 @@ class _Builder3:
+     def build_NameConstant(self, o):
+         return o.value
+ 
++    build_Constant = build_NameConstant  # Python 3.8 change
++
+     def build_UnaryOp(self, o):
+         op, operand = map(self.build, [o.op, o.operand])
+         return op(operand)

@@ -51,11 +51,15 @@ COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
 
 TPNO_OLD=		42611
 
+# This component is not yet built for Python 3.9
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.9)
+
 # This component is delivered in two different versions because
 # the newer one is no longer Python 2.7 & 3.5 compatible.
 
 BUILD_STYLE= setup.py
-TEST_TARGET = $(BUILD_DIR)/$(MACH64)-3.7/.tested-and-compared
+TEST_TARGET = $(BUILD_DIR)/$(MACH64)-3.7/.tested-and-compared \
+	$(BUILD_DIR)/$(MACH64)-3.9/.tested-and-compared
 include $(WS_MAKE_RULES)/common.mk
 
 # Convenience variables
@@ -80,6 +84,7 @@ $(MANIFEST_BASE)-numpy-35.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD
 $(MANIFEST_BASE)-numpy-27.mogrified: NEW_ONLY = \#
 $(MANIFEST_BASE)-numpy-35.mogrified: NEW_ONLY = \#
 $(MANIFEST_BASE)-numpy-37.mogrified: OLD_ONLY = \#
+$(MANIFEST_BASE)-numpy-39.mogrified: OLD_ONLY = \#
 
 PKG_MACROS += OLD_ONLY="$(OLD_ONLY)"
 PKG_MACROS += NEW_ONLY="$(NEW_ONLY)"

@@ -45,10 +45,6 @@ $(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# build Python 3.7 support
-PYTHON_VERSIONS=3.7
-CONFIGURE_ENV += PYTHON=$(PYTHON)
-
 CONFIGURE_OPTIONS += -Dpython2=false
 CONFIGURE_OPTIONS += -Dpython3=true
 

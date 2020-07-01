@@ -37,6 +37,9 @@ COMPONENT_ANITYA_ID=	13157
 
 TPNO=		        56714
 
+# This component is not yet built for Python 3.9
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.9)
+
 # This is needed for 32 bit variant of pyatspi
 PYTHON_VERSION = 2.7
 

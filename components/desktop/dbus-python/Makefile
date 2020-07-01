@@ -39,6 +39,9 @@ COMPONENT_ANITYA_ID=	402
 
 TPNO=			52290
 
+# This component is not yet built for Python 3.9
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.9)
+
 PKG_PROTO_DIRS += $(SOURCE_DIR)/doc/
 
 # replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses configure instead

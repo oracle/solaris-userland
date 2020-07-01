@@ -39,6 +39,9 @@ COMPONENT_ANITYA_ID=	4071
 
 TPNO=			54420
 
+# This component is not Python 3.9 ready yet
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.9)
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk

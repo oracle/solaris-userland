@@ -52,6 +52,7 @@ $(SKIP_TEST_AT_TOP_LEVEL)
 $(MANIFEST_BASE)-pycairo-27.mogrified: PYTHON3_ONLY = \#
 $(MANIFEST_BASE)-pycairo-35.mogrified: PYTHON2_ONLY = \#
 $(MANIFEST_BASE)-pycairo-37.mogrified: PYTHON2_ONLY = \#
+$(MANIFEST_BASE)-pycairo-39.mogrified: PYTHON2_ONLY = \#
 
 PKG_MACROS += PYTHON2_ONLY="$(PYTHON2_ONLY)"
 PKG_MACROS += PYTHON3_ONLY="$(PYTHON3_ONLY)"
@@ -78,7 +79,6 @@ test:		$(TEST_32_and_64)
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += library/desktop/cairo
-REQUIRED_PACKAGES += runtime/python-35
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/pytest

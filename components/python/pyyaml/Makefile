@@ -51,6 +51,7 @@ COMPONENT_TEST_DIR =		$(SOURCE_DIR)
 COMPONENT_TEST_ARGS.2.7 =	./tests/lib/test_all.py
 COMPONENT_TEST_ARGS.3.5 =	./tests/lib3/test_all.py
 COMPONENT_TEST_ARGS.3.7 =	./tests/lib3/test_all.py
+COMPONENT_TEST_ARGS.3.9 =	./tests/lib3/test_all.py
 COMPONENT_TEST_ARGS =		$(COMPONENT_TEST_ARGS.$(PYTHON_VERSION))
 
 # common targets

@@ -41,9 +41,6 @@ COMPONENT_ANITYA_ID=	6077
 
 TPNO=			61974
 
-# Mirror versions for Mercurial (and historically 3.5)
-PYTHON_VERSIONS = 2.7 3.5 3.7
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk

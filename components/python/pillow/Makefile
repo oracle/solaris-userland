@@ -87,6 +87,7 @@ $(MANIFEST_BASE)-pillow-27.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OL
 $(MANIFEST_BASE)-pillow-27.mogrified: NEW_ONLY = \#
 $(MANIFEST_BASE)-pillow-35.mogrified: OLD_ONLY = \#
 $(MANIFEST_BASE)-pillow-37.mogrified: OLD_ONLY = \#
+$(MANIFEST_BASE)-pillow-39.mogrified: OLD_ONLY = \#
 
 PKG_MACROS += OLD_ONLY="$(OLD_ONLY)"
 PKG_MACROS += NEW_ONLY="$(NEW_ONLY)"
