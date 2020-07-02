@@ -20,26 +20,26 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		icu4c
-COMPONENT_VERSION=	65_1
-IPS_COMPONENT_VERSION=	65.1
+COMPONENT_VERSION=	67_1
+IPS_COMPONENT_VERSION=	67.1
 HUMAN_VERSION=		$(COMPONENT_VERSION)-1
 COMPONENT_PROJECT_URL=  http://site.icu-project.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-src.tgz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:53e37466b3d6d6d01ead029e3567d873a43a5d1c668ed2278e253b683136d948
-COMPONENT_ARCHIVE_URL=  https://github.com/unicode-org/icu/releases/download/release-65-1/$(COMPONENT_ARCHIVE)
+	sha256:94a80cd6f251a53bd2a997f6f1b5ac6653fe791dfab66e1eb0227740fb86d5dc
+COMPONENT_ARCHIVE_URL=  https://github.com/unicode-org/icu/releases/download/release-67-1/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/icu
 COMPONENT_ANITYA_ID=	16134
 
-TPNO=			54474
+TPNO=			59835
 
 # OpenPGP Key obtained from https://ssl.icu-project.org/KEYS
 
