@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 SUDO =		/usr/bin/sudo
 
@@ -28,7 +28,7 @@ SUDO =		/usr/bin/sudo
 # and putting a variable PYTHON to the path could side effect other
 # Makefiles including this one.
 define separator-line
-	@/usr/bin/python -c 'l="="*(40-len("$1")/2); print("%s%s%s" % (l, "$1", l))'
+	@/usr/bin/python -c 'l="="*(40-len("$1")//2); print("%s%s%s" % (l, "$1", l))'
 endef
 
 component-environment-check::
