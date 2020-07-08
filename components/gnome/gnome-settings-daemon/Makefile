@@ -85,7 +85,6 @@ REQUIRED_PACKAGES += library/lcms2
 REQUIRED_PACKAGES += library/nspr
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/security/nss
-REQUIRED_PACKAGES += library/security/nspr
 REQUIRED_PACKAGES += service/gnome/desktop-cache
 REQUIRED_PACKAGES += service/image/colord
 REQUIRED_PACKAGES += system/library/fontconfig
