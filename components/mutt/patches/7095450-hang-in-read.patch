@@ -25,9 +25,11 @@ The original patch added the mutt_allow_interrupt() wrapping also to
 function mutt_socket_read. However, this function was removed on 2019-01-21
 as per the ChangeLog.
 
---- mutt-1.12.1/mutt_socket.c.orig	2019-08-27 15:26:32.633157635 +0200
-+++ mutt-1.12.1/mutt_socket.c	2019-08-27 15:53:12.792197394 +0200
-@@ -80,7 +80,11 @@
+diff --git a/mutt_socket.c b/mutt_socket.c
+index 5a2800b..3068795 100644
+--- a/mutt_socket.c
++++ b/mutt_socket.c
+@@ -80,7 +80,11 @@ int mutt_socket_close (CONNECTION* conn)
    if (conn->fd < 0)
      dprint (1, (debugfile, "mutt_socket_close: Attempt to close closed connection.\n"));
    else
@@ -39,7 +41,7 @@ as per the ChangeLog.
  
    conn->fd = -1;
    conn->ssf = 0;
-@@ -106,7 +110,11 @@
+@@ -108,7 +112,11 @@ int mutt_socket_write_d (CONNECTION *conn, const char *buf, int len, int dbg)
  
    while (sent < len)
    {
@@ -52,7 +54,7 @@ as per the ChangeLog.
      {
        dprint (1, (debugfile,
                    "mutt_socket_write: error writing (%s), closing socket\n",
-@@ -148,7 +156,11 @@
+@@ -180,7 +188,11 @@ int mutt_socket_readchar (CONNECTION *conn, char *c)
    if (conn->bufpos >= conn->available)
    {
      if (conn->fd >= 0)
