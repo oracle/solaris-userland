@@ -20,40 +20,41 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =	64
 COMPILER =	gcc
 include ../../../make-rules/shared-macros.mk
-include ../../../make-rules/cargo-vendored.mk
 
 COMPONENT_NAME =	rustc
-COMPONENT_VERSION =	1.35.0
+COMPONENT_VERSION =	1.44.1
 COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-src
 COMPONENT_PROJECT_URL =	http://www.rust-lang.org/
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:169756df2298957bcf02da6a612996c24a51b9ac3b23409e6507d69eb2e6f523
+    sha256:e0386295dd5f2c7842835a509e4c57989eec6c29f989a1c85478b0e06f9d38ea
 COMPONENT_ARCHIVE_URL =	https://static.rust-lang.org/dist/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL =	$(COMPONENT_ARCHIVE_URL).asc
 
 COMPONENT_BUGDB =	utility/rust
 COMPONENT_ANITYA_ID =	7635
 
-TPNO =			52475
-
-COMPONENT_ARCHIVE_HASH_crates = \
-    sha256:bbca78f09a3f9675463416405ab851b65a981989c5fcc8217ed0da97eaaca806
+TPNO =			59999
 
 PKG_VARS += RUST_PLATFORM
+
+# Workaround for https://github.com/rust-lang/rust/issues/74551
+ifeq ($(MACH), sparc)
+ADDITIONAL_PATCHES += patches/Bug74551.patch-SPARC
+endif
 
 include $(WS_MAKE_RULES)/common.mk
 
 $(SOURCE_DIR_crates)/.patched: PATCH_LEVEL=0
 
 # Everything expects GNU utilities, so make sure those are preferred.
-PATH =			/usr/gnu/bin:/usr/bin
+PATH =			$(COMPONENT_DIR)/epoll:/usr/gnu/bin:/usr/bin
 
 # LD_B_DIRECT breaks the build.
 LD_B_DIRECT =
@@ -65,6 +66,23 @@ $(MANIFEST_BASE)-%.mogrified: RUST_PLATFORM = $(MACH64:amd64=x86_64)-sun-solaris
 CONFIGURE_OPTIONS =	--prefix=$(CONFIGURE_PREFIX)
 CONFIGURE_OPTIONS +=	--default-linker=gcc
 CONFIGURE_OPTIONS +=	--enable-local-rust
+
+COMPONENT_PRE_CONFIGURE_ACTION += \
+       ( cd $(COMPONENT_DIR)/epoll; \
+       $(GCC_ROOT)/bin/gcc -shared -DDEBUG=0 -o libepoll.so -fPIC -c epoll.c ; \
+       echo "\#!/bin/sh" > gcc ; \
+       echo "$(GCC_ROOT)/bin/gcc -L$(COMPONENT_DIR)/epoll -lepoll \$$@" >> gcc ; \
+       chmod a+x gcc ) ;
+
+CLEAN_PATHS += epoll/libepoll.so
+CLEAN_PATHS += epoll/gcc
+
+VENDORED_SOURCES_ENFORCE = \
+        cd $(BUILD_DIR); mkdir -p .cargo; \
+        echo "[source.crates-io]" > .cargo/config; \
+        echo "replace-with = \"vendored-sources\"" >> .cargo/config; \
+        echo "[source.vendored-sources]" >> .cargo/config; \
+        echo "directory = \"$(SOURCE_DIR)/vendor\"" >> .cargo/config;
 
 COMPONENT_PRE_BUILD_ACTION = $(VENDORED_SOURCES_ENFORCE)
 
