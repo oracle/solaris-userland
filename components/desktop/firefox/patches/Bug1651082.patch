@@ -1,0 +1,43 @@
+https://bugzilla.mozilla.org/show_bug.cgi?id=1651082
+
+js/src> Creating config.status
+Creating config.status
+Reticulating splines...
+ 0:01.92 File already read. Skipping: /builds/psumbera/userland-ff-78/components/desktop/firefox/firefox-78.0.1/gfx/angle/targets/angle_common/moz.build
+Traceback (most recent call last):
+  File "/builds/psumbera/userland-ff-78/components/desktop/firefox/firefox-78.0.1/configure.py", line 181, in <module>
+    sys.exit(main(sys.argv))
+  File "/builds/psumbera/userland-ff-78/components/desktop/firefox/firefox-78.0.1/configure.py", line 57, in main
+    return config_status(config)
+  File "/builds/psumbera/userland-ff-78/components/desktop/firefox/firefox-78.0.1/configure.py", line 176, in config_status
+    return config_status(args=[], **normalize(sanitized_config))
+  File "/builds/psumbera/userland-ff-78/components/desktop/firefox/firefox-78.0.1/python/mozbuild/mozbuild/config_status.py", line 148, in config_status
+    the_backend.consume(definitions)
+  File "/builds/psumbera/userland-ff-78/components/desktop/firefox/firefox-78.0.1/python/mozbuild/mozbuild/backend/base.py", line 130, in consume
+    if (not self.consume_object(obj) and
+  File "/builds/psumbera/userland-ff-78/components/desktop/firefox/firefox-78.0.1/python/mozbuild/mozbuild/backend/recursivemake.py", line 619, in consume_object
+    self._process_shared_library(obj, backend_file)
+  File "/builds/psumbera/userland-ff-78/components/desktop/firefox/firefox-78.0.1/python/mozbuild/mozbuild/backend/recursivemake.py", line 1279, in _process_shared_library
+    if libdef.symbols_link_arg:
+AttributeError: symbols_link_arg
+
+# HG changeset patch
+# User Petr Sumbera <petr.sumbera@oracle.com>
+# Date 1569411726 -7200
+#      Wed Sep 25 13:42:06 2019 +0200
+# Node ID 130fd5609657b7d2e87c435449d4f77ac228aa2a
+# Parent  a0266036208aa75bec4c8a1c2563574e509705cc
+solaris front end linking
+
+diff -r a0266036208a -r 130fd5609657 python/mozbuild/mozbuild/frontend/data.py
+--- a/python/mozbuild/mozbuild/frontend/data.py	Fri Jun 07 12:49:57 2019 +0200
++++ b/python/mozbuild/mozbuild/frontend/data.py	Wed Sep 25 13:42:06 2019 +0200
+@@ -835,6 +835,8 @@
+             os_target = context.config.substs['OS_TARGET']
+             if os_target == 'Darwin':
+                 self.symbols_link_arg = '-Wl,-exported_symbols_list,' + self.symbols_file
++            elif os_target == 'SunOS':
++                self.symbols_link_arg = '-z gnu-version-script-compat -Wl,--version-script,' + self.symbols_file
+             elif os_target == 'WINNT':
+                 if context.config.substs.get('GNU_CC'):
+                     self.symbols_link_arg = self.symbols_file

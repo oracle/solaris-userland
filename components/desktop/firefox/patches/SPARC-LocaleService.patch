@@ -1,0 +1,20 @@
+Firefox on SPARC cores dump early during start. With disabled
+GCC optimization (-O0) stack differs.
+
+Should be investigated closely (possible compiler error around
+nsTArray?!).
+
+As a workaround we don't call problematic function.
+
+--- a/intl/locale/LocaleService.cpp
++++ b/intl/locale/LocaleService.cpp
+@@ -629,7 +629,9 @@
+ 
+   if (newLocales != mAvailableLocales) {
+     mAvailableLocales = std::move(newLocales);
++#if ! defined(__sparc__)
+     LocalesChanged();
++#endif
+   }
+ 
+   return NS_OK;

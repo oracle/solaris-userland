@@ -33,13 +33,13 @@ include ../../../make-rules/shared-macros.mk
 ESR = esr
 
 COMPONENT_NAME =	firefox
-COMPONENT_VERSION =	68.11.0
+COMPONENT_VERSION =	78.1.0
 COMPONENT_PROJECT_URL =	http://www.mozilla.com/firefox
 COMPONENT_SRC_NAME =	$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC = 	$(COMPONENT_SRC_NAME)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC_NAME)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:91c1f7caaf1ba785b74799865227456bf784ba614d17cf5f0f41a5f25d6d2160
+    sha256:3600a396d9312c5e9f637b267926ca4771d84a56b26b960cc7d72e98683b64a2
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP =		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
@@ -49,7 +49,7 @@ COMPONENT_ARCHIVE_URL =	$(MOZILLA_FTP)/source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB =	firefox/browser
 COMPONENT_ANITYA_ID =	16838
 
-TPNO=			60606
+TPNO=			60695
 
 # There are a set of .xpi files (as given in the LANG_LIST definition
 # below) that we need. We could download and unpack them individually, but
@@ -58,7 +58,7 @@ TPNO=			60606
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC_NAME)$(ESR)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:b609d28518bcdf2be7be5964b8f6623bed77f22e89debbadbe68979c6dd46d0a
+    sha256:acc92b8eec43588fb8b4b834353d70b7d4ce8eea9779d9cd97411110ed8af36a
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ach af an ar ast az be bg bn br bs ca cak cs cy \
@@ -115,13 +115,10 @@ COMPONENT_PRE_CONFIGURE_ACTION += \
 	echo "ac_add_options --enable-optimize" >> $(MOZCONFIG_NON_DEBUG) ; \
 	echo "ac_add_options --enable-pulseaudio" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-replace-malloc" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --enable-startup-notification" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-system-ffi" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-system-pixman" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --enable-system-sqlite" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-update-channel=esr" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-intl-api" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --with-system-bz2" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-icu" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-libevent" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-zlib" >> $(MOZCONFIG) ; \
@@ -139,6 +136,9 @@ LD_Z_IGNORE=
 
 # missing symbols from gtk3 during Firefox start
 LD_B_DIRECT=
+
+# SPARC build seems to require more open files for "Reticulating splines" phase
+ENV := ulimit -n 16384; $(ENV)
 
 # because we touched old-configure.in and js/src/old-configure.in
 COMPONENT_PRE_CONFIGURE_ACTION += (cd $(COMPONENT_NAME)-$(COMPONENT_VERSION); autoreconf; touch configure; cd js/src; autoreconf; touch configure);

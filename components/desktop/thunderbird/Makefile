@@ -31,11 +31,11 @@ COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	thunderbird
-COMPONENT_VERSION =	68.11.0
+COMPONENT_VERSION =	78.1.1
 COMPONENT_PROJECT_URL =	https://www.thunderbird.net/
 COMPONENT_ARCHIVE = 	$(COMPONENT_SRC).source.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:0d2f403c7aca55ab130b7262ff8afc0254e5c0471db01f1631976df68a6af5f2
+    sha256:75edb172faa6b6ab67995031e9b1a442f231282407b561acb9f5f3d831786ce1
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)
 else
@@ -45,7 +45,7 @@ COMPONENT_ARCHIVE_URL =	$(MOZILLA_FTP)/source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB =	tbird/mailer
 COMPONENT_ANITYA_ID =	4967
 
-TPNO =			60610
+TPNO =			61178
 
 # There are a set of .xpi files (as given in the LANG_LIST definition
 # below) that we need. We could download and unpack them individually, but
@@ -121,12 +121,9 @@ COMPONENT_PRE_CONFIGURE_ACTION += \
 	echo "ac_add_options --enable-official-branding" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-optimize" >> $(MOZCONFIG_NON_DEBUG) ; \
 	echo "ac_add_options --enable-replace-malloc" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --enable-startup-notification" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-system-ffi" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-system-pixman" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --enable-system-sqlite" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-intl-api" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --with-system-bz2" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-icu" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-libevent" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --with-system-zlib" >> $(MOZCONFIG) ; \
@@ -142,6 +139,9 @@ LD_Z_IGNORE=
 
 # missing symbols from gtk3 during Firefox start
 LD_B_DIRECT=
+
+# SPARC build seems to require more open files for "Reticulating splines" phase
+ENV := ulimit -n 16384; $(ENV)
 
 # because we touched old-configure.in and js/src/old-configure.in
 COMPONENT_PRE_CONFIGURE_ACTION += (cd $(COMPONENT_NAME)-$(COMPONENT_VERSION); autoreconf; touch configure; cd js/src; autoreconf; touch configure);
@@ -161,7 +161,8 @@ COMPONENT_POST_INSTALL_ACTION += \
                 $(PROTOUSRLIBDIR)/thunderbird/distribution/extensions/langpack-$$f@thunderbird.mozilla.org.xpi ; \
         done ;
 
-MOZ_XPI = $(MOZILLA_FTP)/linux-i686/xpi
+# xpi directory is missing with version 78 now
+MOZ_XPI = $(MOZILLA_FTP)/../68.11.0/linux-i686/xpi
 
 # Run gmake download-xpis to download a tarball for xpi locally.
 download-xpis:

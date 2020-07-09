@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
 # pkg://library/myspell/dictionaries delivers symbolic links to use instead
@@ -37,6 +37,9 @@
 
 # sparc only libraries
 <transform file path=usr/lib/firefox/libfreebl_64 -> set variant.arch sparc>
+
+# libclearkey.so in its directory doesn't see other Firefox libraries
+<transform file path=usr/lib/firefox/gmp-clearkey/0.1/libclearkey.so -> set pkg.depend.bypass-generate .*>
 
 # decorate some files
 <transform file path=usr/lib/firefox/(firefox|firefox-bin|plugin-container|pingsender) -> set mode 0555>

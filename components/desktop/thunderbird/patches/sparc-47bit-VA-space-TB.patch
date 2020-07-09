@@ -4,10 +4,10 @@ See similar FF patch which provides js/mapfile.SolarisSPARC.
 
 --- a/comm/mail/app/moz.build
 +++ b/comm/mail/app/moz.build
-@@ -92,3 +92,7 @@
- JS_PREFERENCE_PP_FILES += [
-     'profile/all-thunderbird.js',
- ]
+@@ -103,3 +103,7 @@
+ for icon in ('messengerWindow', 'newmail', 'writeMessage', 'addressbook'):
+     DEFINES[icon.upper() + '_ICO'] = '"%s/%s/%s.ico"' % (
+         TOPSRCDIR, CONFIG['MOZ_BRANDING_DIRECTORY'], icon)
 +
 +# Enforce 47bits address space to resulting binary (Bug 577056).
 +if CONFIG['OS_ARCH'] == 'SunOS' and CONFIG['CPU_ARCH'] == 'sparc64':

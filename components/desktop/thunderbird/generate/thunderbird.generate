@@ -1,0 +1,40 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+
+# files from files/ are added in .static file
+<transform file path=files/ -> drop>
+
+# make link target relative
+<transform link path=usr/bin/thunderbird -> edit target /usr ..>
+
+# i386 only libraries
+<transform file path=usr/lib/thunderbird/(libfreebl3|libmozavcodec\.so|libmozavutil\.so) -> set variant.arch i386>
+
+# sparc only libraries
+<transform file path=usr/lib/thunderbird/libfreebl_64 -> set variant.arch sparc>
+
+# decorate some files
+<transform file path=usr/lib/thunderbird/(thunderbird|thunderbird-bin|plugin-container|pingsender) -> set mode 0555>
+<transform file path=usr/lib/thunderbird/(libfreebl.*\.so|libnssdbm3\.so|libsoftokn3\.so) -> set com.oracle.elfsign false>
