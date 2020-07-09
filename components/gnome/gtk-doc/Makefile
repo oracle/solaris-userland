@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -67,7 +67,6 @@ REQUIRED_PACKAGES += data/sgml-common
 REQUIRED_PACKAGES += data/xml-common
 REQUIRED_PACKAGES += developer/documentation-tool/itstool
 REQUIRED_PACKAGES += developer/documentation-tool/openjade
-REQUIRED_PACKAGES += developer/gnome/gnome-doc-utils
 REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += editor/vim
 REQUIRED_PACKAGES += library/gnome/gnome-common
