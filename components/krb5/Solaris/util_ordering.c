@@ -22,7 +22,7 @@
  */
 
 /*
- * Copyright (c) 1999, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1999, 2020, Oracle and/or its affiliates.
  */
 
 /*
@@ -308,4 +308,14 @@ g_queue_internalize(void **vqueue, unsigned char **buf, size_t *lenremain)
     *lenremain -= sizeof(queue);
     *vqueue = q;
     return 0;
+}
+
+uint64_t
+g_queue_firstnum(void **vqueue)
+{
+	queue	*q;
+
+	q = (queue *) (*vqueue);
+
+	return (q->firstnum);
 }

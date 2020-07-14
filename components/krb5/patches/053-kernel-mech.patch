@@ -72,23 +72,27 @@
    $(BUILDTOP)/include/gssapi/gssapi_alloc.h $(COM_ERR_DEPS) \
 --- a/src/lib/gssapi/generic/gssapiP_generic.h
 +++ b/src/lib/gssapi/generic/gssapiP_generic.h
-@@ -116,6 +116,12 @@
+@@ -116,6 +116,14 @@
  #define g_seqstate_size         gssint_g_seqstate_size
  #define g_seqstate_externalize  gssint_g_seqstate_externalize
  #define g_seqstate_internalize  gssint_g_seqstate_internalize
++#define g_seqstate_rebase       gssint_g_seqstate_rebase
 +#define	g_order_init		gssint_g_order_init
 +#define	g_order_check		gssint_g_order_check
 +#define	g_order_free		gssint_g_order_free
 +#define	g_queue_size		gssint_g_queue_size
 +#define	g_queue_externalize	gssint_g_queue_externalize
 +#define	g_queue_internalize	gssint_g_queue_internalize
++#define	g_queue_firstnum	gssint_g_queue_firstnum
  #define g_canonicalize_host     gssint_g_canonicalize_host
  #define g_local_host_name       gssint_g_local_host_name
  #define g_strdup                gssint_g_strdup
-@@ -185,6 +191,19 @@ long g_seqstate_externalize(g_seqnum_state state, unsigned char **buf,
+@@ -184,6 +192,21 @@ long g_seqstate_externalize(g_seqnum_state state, unsigned char **buf,
+                             size_t *lenremain);
  long g_seqstate_internalize(g_seqnum_state *state_out, unsigned char **buf,
                              size_t *lenremain);
- 
++uint64_t g_seqstate_rebase(g_seqnum_state state);
++
 +gss_int32 g_order_init (void **queue, uint64_t seqnum,
 +				  int do_replay, int do_sequence, int wide);
 +
@@ -101,10 +105,22 @@
 +			       size_t *lenremain);
 +gss_uint32 g_queue_internalize(void **vqueue, unsigned char **buf,
 +			       size_t *lenremain);
-+
++uint64_t g_queue_firstnum(void **vqueue);
+ 
  char *g_strdup (char *str);
  
- /** declarations of internal name mechanism functions **/
+--- a/src/lib/gssapi/generic/util_seqstate.c
++++ b/src/lib/gssapi/generic/util_seqstate.c
+@@ -161,3 +161,9 @@ g_seqstate_internalize(g_seqnum_state *state_out, unsigned char **buf,
+     *state_out = state;
+     return 0;
+ }
++
++uint64_t
++g_seqstate_rebase(g_seqnum_state state)
++{
++	return (state->base + state->next);
++}
 --- a/src/lib/gssapi/krb5/accept_sec_context.c
 +++ b/src/lib/gssapi/krb5/accept_sec_context.c
 @@ -437,6 +437,7 @@ kg_accept_krb5(minor_status, context_handle,
@@ -212,10 +228,11 @@
  
 --- a/src/lib/gssapi/krb5/ser_sctx.c
 +++ b/src/lib/gssapi/krb5/ser_sctx.c
-@@ -150,6 +150,22 @@ kg_oid_size(kcontext, arg, sizep)
+@@ -149,6 +149,22 @@ kg_oid_size(kcontext, arg, sizep)
+     return(kret);
  }
  
- static krb5_error_code
++static krb5_error_code
 +kg_queue_externalize(kcontext, arg, buffer, lenremain)
 +    krb5_context        kcontext;
 +    krb5_pointer        arg;
@@ -231,14 +248,14 @@
 +    return err;
 +}
 +
-+static krb5_error_code
+ static krb5_error_code
  kg_seqstate_externalize(kcontext, arg, buffer, lenremain)
      krb5_context        kcontext;
-     g_seqnum_state      arg;
-@@ -166,6 +182,48 @@ kg_seqstate_externalize(kcontext, arg, buffer, lenremain)
+@@ -165,6 +181,48 @@ kg_seqstate_externalize(kcontext, arg, buffer, lenremain)
+     return err;
  }
  
- static krb5_error_code
++static krb5_error_code
 +kg_queue_internalize(kcontext, argp, buffer, lenremain)
 +    krb5_context        kcontext;
 +    krb5_pointer        *argp;
@@ -280,14 +297,14 @@
 +    return 0;
 +}
 +
-+static krb5_error_code
+ static krb5_error_code
  kg_seqstate_internalize(kcontext, argp, buffer, lenremain)
      krb5_context        kcontext;
-     g_seqnum_state      *argp;
-@@ -208,6 +266,26 @@ kg_seqstate_internalize(kcontext, argp, buffer, lenremain)
+@@ -207,6 +265,26 @@ kg_seqstate_internalize(kcontext, argp, buffer, lenremain)
+     return 0;
  }
  
- static krb5_error_code
++static krb5_error_code
 +kg_queue_size(kcontext, arg, sizep)
 +    krb5_context        kcontext;
 +    krb5_pointer        arg;
@@ -307,10 +324,9 @@
 +    return(kret);
 +}
 +
-+static krb5_error_code
+ static krb5_error_code
  kg_seqstate_size(kcontext, arg, sizep)
      krb5_context        kcontext;
-     g_seqnum_state      arg;
 @@ -319,8 +397,9 @@ kg_ctx_size(kcontext, arg, sizep)
                                 &required);
  
@@ -353,7 +369,7 @@
              (void) krb5_ser_pack_int32((krb5_int32) ctx->have_acceptor_subkey,
                                         &bp, &remain);
              (void) krb5_ser_pack_int32((krb5_int32) ctx->seed_init,
-@@ -467,10 +551,21 @@ kg_ctx_externalize(kcontext, arg, buffer, lenremain)
+@@ -467,10 +551,27 @@ kg_ctx_externalize(kcontext, arg, buffer, lenremain)
                                                 &ctx->seq->keyblock,
                                                 &bp, &remain);
  
@@ -362,8 +378,14 @@
 -                                               ctx->seqstate, &bp, &remain);
 +            if (!kret && ctx->seqstate) {
 +                void *q = NULL;
- 
-+                kret = g_order_init(&q, ctx->seq_recv,
++
++                /*
++                 * we need to pass next (exepected) sequence number,
++                 * when exporting context, so context receiver can
++                 * continue with sequence number checks, when integrity
++                 * protection is enabled.
++                 */
++                kret = g_order_init(&q, g_seqstate_rebase(ctx->seqstate),
 +                                    (ctx->gss_flags & GSS_C_REPLAY_FLAG) != 0,
 +                                    (ctx->gss_flags & GSS_C_SEQUENCE_FLAG) != 0,
 +                                    ctx->proto);
@@ -373,12 +395,12 @@
 +                    g_order_free(&q);
 +                }
 +            }
-+
+ 
 +#if 0 /* PROVIDE_KERNEL_IMPORT */
              if (!kret)
                  kret = krb5_externalize_opaque(kcontext,
                                                 KV5M_CONTEXT,
-@@ -482,6 +577,7 @@ kg_ctx_externalize(kcontext, arg, buffer, lenremain)
+@@ -482,6 +583,7 @@ kg_ctx_externalize(kcontext, arg, buffer, lenremain)
                                                 KV5M_AUTH_CONTEXT,
                                                 (krb5_pointer) ctx->auth_context,
                                                 &bp, &remain);
@@ -386,7 +408,7 @@
  
              if (!kret)
                  kret = krb5_ser_pack_int32((krb5_int32) ctx->proto,
-@@ -501,6 +597,7 @@ kg_ctx_externalize(kcontext, arg, buffer, lenremain)
+@@ -501,6 +603,7 @@ kg_ctx_externalize(kcontext, arg, buffer, lenremain)
              if (!kret)
                  kret = krb5_ser_pack_int32((krb5_int32) ctx->cred_rcache,
                                             &bp, &remain);
@@ -394,7 +416,7 @@
              if (!kret) {
                  krb5_int32 i = 0;
  
-@@ -534,6 +631,7 @@ kg_ctx_externalize(kcontext, arg, buffer, lenremain)
+@@ -534,6 +637,7 @@ kg_ctx_externalize(kcontext, arg, buffer, lenremain)
                                                     &remain);
                  }
              }
@@ -402,7 +424,7 @@
              /* trailer */
              if (!kret)
                  kret = krb5_ser_pack_int32(KG_CONTEXT, &bp, &remain);
-@@ -611,6 +709,8 @@ kg_ctx_internalize(kcontext, argp, buffer, lenremain)
+@@ -611,6 +715,8 @@ kg_ctx_internalize(kcontext, argp, buffer, lenremain)
              (void) krb5_ser_unpack_int32(&ibuf, &bp, &remain);
              ctx->established = (int) ibuf;
              (void) krb5_ser_unpack_int32(&ibuf, &bp, &remain);
@@ -411,7 +433,7 @@
              ctx->have_acceptor_subkey = (int) ibuf;
              (void) krb5_ser_unpack_int32(&ibuf, &bp, &remain);
              ctx->seed_init = (int) ibuf;
-@@ -695,12 +795,13 @@ kg_ctx_internalize(kcontext, argp, buffer, lenremain)
+@@ -695,12 +801,13 @@ kg_ctx_internalize(kcontext, argp, buffer, lenremain)
              }
  
              if (!kret) {
@@ -426,7 +448,7 @@
              if (!kret)
                  kret = krb5_internalize_opaque(kcontext,
                                                 KV5M_CONTEXT,
-@@ -712,10 +813,19 @@ kg_ctx_internalize(kcontext, argp, buffer, lenremain)
+@@ -712,10 +819,26 @@ kg_ctx_internalize(kcontext, argp, buffer, lenremain)
                                                 KV5M_AUTH_CONTEXT,
                                                 (krb5_pointer *) &ctx->auth_context,
                                                 &bp, &remain);
@@ -437,8 +459,15 @@
              ctx->proto = ibuf;
 +
 +            if (!kret) {
++		uint64_t base = g_queue_firstnum((void **)&(ctx->seqstate));
++
 +                g_order_free((void **)&(ctx->seqstate));
-+                kret = g_seqstate_init(&(ctx->seqstate), ctx->seq_recv,
++                /*
++		 * The seqstate number we've imported becomes our first
++		 * sequence number received (base number for us), so we can
++		 * continue with integrity protection in imported context.
++                 */
++                kret = g_seqstate_init(&(ctx->seqstate), base,
 +                    (ctx->gss_flags & GSS_C_REPLAY_FLAG) != 0,
 +                    (ctx->gss_flags & GSS_C_SEQUENCE_FLAG) != 0, ctx->proto);
 +            }
@@ -446,7 +475,7 @@
              if (!kret)
                  kret = krb5_ser_unpack_int32(&ibuf, &bp, &remain);
              ctx->cksumtype = ibuf;
-@@ -731,6 +841,7 @@ kg_ctx_internalize(kcontext, argp, buffer, lenremain)
+@@ -731,6 +854,7 @@ kg_ctx_internalize(kcontext, argp, buffer, lenremain)
              if (!kret)
                  kret = krb5_ser_unpack_int32(&ibuf, &bp, &remain);
              ctx->cred_rcache = ibuf;
@@ -454,7 +483,7 @@
              /* authdata */
              if (!kret)
                  kret = krb5_ser_unpack_int32(&ibuf, &bp, &remain);
-@@ -769,6 +880,7 @@ kg_ctx_internalize(kcontext, argp, buffer, lenremain)
+@@ -769,6 +893,7 @@ kg_ctx_internalize(kcontext, argp, buffer, lenremain)
                          kret = 0;
                  }
              }
