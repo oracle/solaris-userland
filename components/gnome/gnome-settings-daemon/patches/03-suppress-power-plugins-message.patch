@@ -1,0 +1,29 @@
+Don't create notification for suspend/hibernate since we don't provide
+the upower backend for that 
+
+This will prevent the notification in the lock screen once the session is
+idle for a few mins.
+
+Not suitable for upstream
+
+--- a/plugins/power/gsd-power-manager.c	2020-07-16 10:47:19.894606160 -0700
++++ b/plugins/power/gsd-power-manager.c	2020-07-16 10:52:19.430475133 -0700
+@@ -2052,14 +2052,18 @@
+                                      &manager->notification_sleep_warning);
+                 break;
+         case GSD_POWER_ACTION_SUSPEND:
++#ifndef __sun
+                 create_notification (_("Automatic suspend"), _("Computer will suspend very soon because of inactivity."),
+                                      NULL, NOTIFICATION_PRIVACY_SYSTEM,
+                                      &manager->notification_sleep_warning);
++#endif
+                 break;
+         case GSD_POWER_ACTION_HIBERNATE:
++#ifndef __sun
+                 create_notification (_("Automatic hibernation"), _("Computer will suspend very soon because of inactivity."),
+                                      NULL, NOTIFICATION_PRIVACY_SYSTEM,
+                                      &manager->notification_sleep_warning);
++#endif
+                 break;
+         default:
+                 g_assert_not_reached ();
