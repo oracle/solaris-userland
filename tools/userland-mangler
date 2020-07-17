@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 #
 # userland-mangler - a file mangling utility
@@ -102,17 +102,21 @@ NOTES_HEADER = """
 NOTES_COMMUNITY = """
 Further information about this software can be found on the open source community website at {}.
 """
+NOTES_SOURCE_ORACLE_WEB = """
+Source code for open source software components in Oracle Solaris can be found at https://www.oracle.com/downloads/opensource/solaris-source-code-downloads.html.
+"""
 NOTES_SOURCE = """
-This software was built from source available at https://github.com/oracle/solaris-userland.  The original community source was downloaded from  {}
+This software was built from source available at https://github.com/oracle/solaris-userland.  The original community source was downloaded from  {}.
 """
 
 
-def notes_section_text(header_seen: bool, community: Optional[str],
+def notes_section_text(header_seen: bool, closedsrc: bool, community: Optional[str],
                        source: Optional[str], modified_date: Optional[str]) -> bytes:
     """Generate NOTES manpage section.
 
     Args:
         header_seen: whether was the NOTES header already seen in the manpage.
+        closedsrc: whether this is closed source component.
         community: community website link.
         source: original source download location.
     """
@@ -126,6 +130,8 @@ def notes_section_text(header_seen: bool, community: Optional[str],
     result.append(NOTES_ORACLE_COMMENT)
     if modified_date is not None:
         result.append(f"\n.\\\" on {modified_date}")
+    if closedsrc is False:
+        result.append(NOTES_SOURCE_ORACLE_WEB)
     if source is not None:
         result.append(NOTES_SOURCE.format(source))
     if community is not None:
@@ -134,7 +140,7 @@ def notes_section_text(header_seen: bool, community: Optional[str],
     return "".join(result).encode()
 
 
-def mangle_manpage(manifest, action, text: bytes) -> bytes:
+def mangle_manpage(manifest, action, text: bytes, closedsrc: bool) -> bytes:
     """Mangle manpage.
 
     The resulting man page has additional information added such as ARC
@@ -215,7 +221,7 @@ def mangle_manpage(manifest, action, text: bytes) -> bytes:
     if attributes_written is False:
         result.append(attributes_section_text(availability, stability, modified_date))
 
-    result.append(notes_section_text(notes_seen, community, source, modified_date))
+    result.append(notes_section_text(notes_seen, closedsrc, community, source, modified_date))
     return b"".join(result)
 
 
@@ -268,7 +274,7 @@ def mangle_cddl(manifest, action, text: bytes) -> bytes:
     return cddl_re.sub(b'', text)
 
 
-def mangle_path(manifest, action, src: str, dest: str) -> None:
+def mangle_path(manifest, action, src: str, dest: str, closedsrc: bool) -> None:
     """Mangle given file based on its type."""
 
     # we are not mangling elf objects
@@ -286,7 +292,7 @@ def mangle_path(manifest, action, src: str, dest: str) -> None:
 
     # mangle file based on its type
     if 'facet.doc.man' in action.attrs:
-        result = mangle_manpage(manifest, action, result)
+        result = mangle_manpage(manifest, action, result, closedsrc)
     elif 'mode' in action.attrs and int(action.attrs['mode'], 8) & 0o111 != 0:
         # we are currently not mangling scripts in any way
         pass
@@ -302,7 +308,7 @@ def mangle_path(manifest, action, src: str, dest: str) -> None:
             ofp.write(result)
 
 
-def mangle_paths(manifest, search_paths: str, destination: str) -> None:
+def mangle_paths(manifest, search_paths: str, destination: str, closedsrc: bool) -> None:
     """Mangle everything listed in given manifest.
 
     Handles:
@@ -332,7 +338,7 @@ def mangle_paths(manifest, search_paths: str, destination: str) -> None:
 
             src = os.path.join(directory, path)
             if os.path.isfile(src):
-                mangle_path(manifest, action, src, dest)
+                mangle_path(manifest, action, src, dest, closedsrc)
                 break
 
 
@@ -396,7 +402,8 @@ def main():
 
     for file in args.manifests:
         manifest = load_manifest(file)
-        mangle_paths(manifest, args.search_paths, args.destination)
+        closedsrc = 'components/closed' in file
+        mangle_paths(manifest, args.search_paths, args.destination, closedsrc)
         mangle_manifest(manifest)
         print(manifest)
 
