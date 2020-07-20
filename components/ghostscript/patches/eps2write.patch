@@ -1,0 +1,283 @@
+From: Ken Sharp <ken.sharp@artifex.com>
+Date: Tue, 30 Jun 2020 08:27:41 +0000 (+0100)
+Subject: Improve eps2write
+X-Git-Url: https://git.ghostscript.com/?p=ghostpdl.git;a=commitdiff_plain;h=71d0b343a3f20d298b9abbe6261bcb01ecb48dcb
+
+Improve eps2write
+
+Bug #702521 "eps2write hygiene enhancements"
+
+If processing a multi-page input file, throw an error on the second
+page and write a message explaining the problem.
+
+Encapsulate the 'global configuration' switches which affect the prolog
+processing, and are written from the ps2write device, in a dictionary
+because EPS files should not affect the current dictionary. Read those
+parameters back from the dictionary when establishing the EPS file's
+own dictionary, ensuring that a dictionary is actually present.
+
+Use the global configuration to determine whether to install a custom
+error handler. If its an EPS file, then don't.
+---
+
+This is a fix for:
+31643073 - Ghostscript 9.52 eps2write generates invalid postscript
+
+Upstream bug:
+https://bugs.ghostscript.com/show_bug.cgi?id=702521
+
+This issue is going to be fixed in upstream so the patch should be removed during next uprev.
+
+diff --git a/devices/vector/gdevpdf.c b/devices/vector/gdevpdf.c
+index b108105a0..3583744a7 100644
+--- a/devices/vector/gdevpdf.c
++++ b/devices/vector/gdevpdf.c
+@@ -1410,6 +1410,11 @@ pdf_output_page(gx_device * dev, int num_copies, int flush)
+     gx_device_pdf *const pdev = (gx_device_pdf *) dev;
+     int code;
+ 
++    if (pdev->Eps2Write && pdev->next_page != 0 && !gx_outputfile_is_separate_pages(pdev->fname, dev->memory)) {
++       emprintf(pdev->memory, "\n   *** EPS files may not contain multiple pages.\n   *** Use of the %%d filename format is required to output pages to multiple EPS files.\n");
++       return_error(gs_error_ioerror);
++    }
++
+     if (pdev->ForOPDFRead) {
+         code = pdf_close_page(pdev, num_copies);
+         if (code < 0)
+diff --git a/devices/vector/gdevpdfu.c b/devices/vector/gdevpdfu.c
+index 311bab658..2b2af1d32 100644
+--- a/devices/vector/gdevpdfu.c
++++ b/devices/vector/gdevpdfu.c
+@@ -568,6 +568,7 @@ int ps2write_dsc_header(gx_device_pdf * pdev, int pages)
+             if (code < 0)
+                 return code;
+         }
++        stream_puts(s, "10 dict dup begin\n");
+         stream_puts(s, "/DSC_OPDFREAD true def\n");
+         if (pdev->Eps2Write) {
+             stream_puts(s, "/SetPageSize false def\n");
+@@ -577,6 +578,7 @@ int ps2write_dsc_header(gx_device_pdf * pdev, int pages)
+                 stream_puts(s, "/SetPageSize true def\n");
+             stream_puts(s, "/EPS2Write false def\n");
+         }
++        stream_puts(s, "end\n");
+ 
+         code = copy_procsets(s, pdev->HaveTrueTypes, false);
+         if (code < 0)
+@@ -626,6 +628,7 @@ pdfwrite_pdf_open_document(gx_device_pdf * pdev)
+                     if (code < 0)
+                         return code;
+                 }
++                stream_puts(s, "10 dict dup begin\n");
+                 stream_puts(s, "/DSC_OPDFREAD false def\n");
+                 code = copy_procsets(s, pdev->HaveTrueTypes, true);
+                 if (code < 0)
+@@ -646,6 +649,7 @@ pdfwrite_pdf_open_document(gx_device_pdf * pdev)
+                     stream_puts(s, "/FitPages true def\n");
+                 if(pdev->CenterPages)
+                     stream_puts(s, "/CenterPages true def\n");
++                stream_puts(s, "end\n");
+                 pdev->OPDFRead_procset_length = stell(s);
+             }
+         }
+diff --git a/devices/vector/opdfread.ps b/devices/vector/opdfread.ps
+index 057a718a7..e0d6f1128 100644
+--- a/devices/vector/opdfread.ps
++++ b/devices/vector/opdfread.ps
+@@ -46,25 +46,44 @@
+ % ====================== Error handler =======================
+ % A general error handler prints an error to page.
+ 
+-currentdict /DSC_OPDFREAD known {
+-  % See if our notification from ps2write is present. If it is
+-  % then pick it up. Otherwise define it as false. Used to prevent
+-  % use of setmatrix at start of each page. The DSC-compliant
+-  % output from ps2write wraps pages in a save/restore, so we don't
+-  % need the setmatrix, and it breaks use of psnup with the output.
+-
+-  currentdict /DSC_OPDFREAD get
+-}{
+-  false
++% At this point if we have been written by the (e)ps2write device, there will
++% be a dictionary on the operand stack which contains some flags controlling the
++% later behaviour of this ProcSet. Be aware that this dictionary is present until
++% it is processed by the main dictionary handling at line 155 of this file, it is
++% important to make sure this dictionary is preserved, and remains top of the stack
++% when we reach that point.
++% For safety, the code between now and that point which also uses that configuration
++% information must check to see that the operand stack has at least one operand and that
++% its a dictionary, and must preserve that dictionary if it uses it.
++
++% Determine whether to create a custom error handler.
++% Check to see there's at least one object on the stack,
++% and that said object is a dicitonary. If either is not true
++% then create a custom error handler. If there is a dictionary,
++% assume its the 'global config' dictionary written by ps2write
++% (this should always be true!) and look to see if it has a
++% EPS2Write key. If it does get it. If EPS2Write is true then
++% don't create a custom error handler. If it is false or not present
++% then do create a custom error handler.
++count 0 ne {
++  dup type /dicttype eq {
++    dup /EPS2Write known {
++      dup /EPS2Write get not
++    }
++    {
++      true
++    }ifelse
++  }
++  {
++    true
++  } ifelse
++}
++{
++  true
+ } ifelse
+ 
+ 10 dict begin % A dictionary for local binding
+ 
+-% This switch used to control paeg independent values, like
+-% whether to use InitialMatrix in SetupPageView
+-%
+-/DSC_OPDFREAD exch def
+-
+ /this currentdict def
+ /y 720 def
+ /ebuf 200 string def
+@@ -79,63 +98,86 @@ currentdict /DSC_OPDFREAD known {
+   //this /y 2 copy get 12 sub put
+ } bind def
+ 
+-errordict /handleerror
+-{ systemdict begin
+-  $error begin
+-  newerror
+-  { (%%[ Error handled by opdfread.ps : ) print errorname //ebuf cvs print (; OffendingCommand: )
+-    print /command load //ebuf cvs print ( ]%%) = flush
+-    /newerror false store vmstatus pop pop 0 ne
+-    { grestoreall
+-    } if
+-    errorname (VMerror) ne
+-    { showpage
+-    } if
+-    initgraphics
+-    0 720 moveto
+-    errorname (VMerror) eq
+-    { //this /ehsave known
+-      { clear //this /ehsave get restore 2 vmreclaim
++% We only actually create and push the custom error handler if we are not an EPS.
++{
++  errordict /handleerror
++  { systemdict begin
++    $error begin
++    newerror
++    { (%%[ Error handled by opdfread.ps : ) print errorname //ebuf cvs print (; OffendingCommand: )
++      print /command load //ebuf cvs print ( ]%%) = flush
++      /newerror false store vmstatus pop pop 0 ne
++      { grestoreall
+       } if
+-      vmstatus exch pop exch pop
+-    }
+-    /Courier 12 selectfont
+-    {
+-      (ERROR: ) //prnt exec errorname //prnt exec
+-      (OFFENDING COMMAND: ) //prnt exec
+-      /command load //prnt exec
+-      $error /ostack known {
+-        (%%[STACK:) =
+-        (STACK:) //prnt exec
+-        $error /ostack get aload length {
+-          //newline exec
+-          dup mark eq {
+-            (-mark-) dup = show
+-          } {
+-            dup type /nametype eq {
+-              dup xcheck not {
+-                (/) show
+-                (/) print
+-             } if
+-          } if
+-          dup = //ebuf cvs show
+-          } ifelse
+-        } repeat
++      errorname (VMerror) ne
++      { showpage
+       } if
+-    } ifelse
+-    (%%]%) =
+-    //systemdict /showpage get exec
+-    quit
+-  } if
+-  end
+-  end
+-} bind readonly put
++      initgraphics
++      0 720 moveto
++      errorname (VMerror) eq
++      { //this /ehsave known
++        { clear //this /ehsave get restore 2 vmreclaim
++        } if
++        vmstatus exch pop exch pop
++      }
++      /Courier 12 selectfont
++      {
++        (ERROR: ) //prnt exec errorname //prnt exec
++        (OFFENDING COMMAND: ) //prnt exec
++        /command load //prnt exec
++        $error /ostack known {
++          (%%[STACK:) =
++          (STACK:) //prnt exec
++          $error /ostack get aload length {
++            //newline exec
++            dup mark eq {
++              (-mark-) dup = show
++            } {
++              dup type /nametype eq {
++                dup xcheck not {
++                  (/) show
++                  (/) print
++               } if
++            } if
++            dup = //ebuf cvs show
++            } ifelse
++          } repeat
++        } if
++      } ifelse
++      (%%]%) =
++      //systemdict /showpage get exec
++      quit
++    } if
++    end
++    end
++  } bind readonly put
++} if
+ 
+ end % A dictionary for local binding
+ 
+-
+ 50 dict begin
+ 
++% Read the definitions of various global parameters from the dictionary
++% written at the head of the file by ps2write, and define the parameters
++% in this dictionary. Check first to make sure we have a dictionary on the
++% stack; if we do, assume its the 'global configuration' dictionary.
++count 0 ne {
++  dup type /dicttype eq {
++    {def} forall
++    false
++  }
++  {
++    true
++  } ifelse
++}
++{
++  true
++} ifelse
++
++{
++  (   *** Warning: global definitions dictionary not found, file may be corrupted.\n) print flush
++} if
++
+ % ===================== Debugging =========================================
+ 
+ /DefaultSwitch  % <name> DefaultSwitch -
