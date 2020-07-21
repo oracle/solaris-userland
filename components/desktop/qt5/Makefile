@@ -47,9 +47,12 @@ CONFIGURE_DEFAULT_DIRS=no
 include $(WS_MAKE_RULES)/common.mk
 
 # X86: Optimize the instruction scheduling for Haswell (running on all x86-64 cpus).
-# SPARC: Optimize the build for the oldest supported CPU that boots Solaris 11.4.
 OPT_FLAGS.i386 = -mtune=haswell
-OPT_FLAGS.sparc = -mcpu=niagara4
+# SPARC: Optimize the build for the oldest supported CPU that boots Solaris 11.4.
+OPT_FLAGS.sparc = -mcpu=ultrasparc3 -mtune=niagara4
+
+# Report used instruction sets in ELF's capability section.
+LD_OPTIONS += -z discap
 
 CONFIGURE_OPTIONS  =  -opensource
 CONFIGURE_OPTIONS +=  -confirm-license

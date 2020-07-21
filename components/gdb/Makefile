@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # There are a large number of macros in the GCB code written
@@ -80,12 +80,18 @@ PATH=/usr/gnu/bin:$(GCC_ROOT)/bin:/usr/bin:/usr/perl5/$(PERL_VERSION)/bin
 CC += -std=gnu99
 
 ifndef GDB_DEBUG
-CFLAGS_sparc = -O2 -mcpu=niagara4
+# The oldest supported SPARC processor for Solaris 11.4 is SPARC64-X.
+CFLAGS_sparc = -O2 -mcpu=ultrasparc3 -mtune=niagara4
+# Tune the generated code to better fit newer Intel architectures
+# but still keep compatibility with older x86-64 machines.
 CFLAGS_i386 = -O2 -mtune=sandybridge
 else
 CFLAGS_sparc = -g -Og
 CFLAGS_i386 = -g -Og
 endif
+
+# Report used instruction sets in ELF's capability section.
+LD_OPTIONS += -z discap
 
 CFLAGS_sparc +=	-mno-unaligned-doubles
 CFLAGS_sparc += -mapp-regs -mhard-float
