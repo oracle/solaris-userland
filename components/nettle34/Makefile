@@ -26,18 +26,20 @@ BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nettle
-COMPONENT_VERSION=	3.5.1
+COMPONENT_VERSION=	3.4
 COMPONENT_PROJECT_URL=	http://www.lysator.liu.se/~nisse/nettle/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:75cca1998761b02e16f2db56da52992aef622bf55a3b45ec538bc2eedadc9419
+    sha256:ae7a42df026550b85daca8389b6a60ba6313b0567f374392e54918588a411e94
 COMPONENT_BUGDB=	library/nettle
 COMPONENT_ANITYA_ID=	2073
 
-TPNO=	55302
+TPNO=	46020
+
+# We need to build an extra static version of these libraries for
+# GRUB/Wanboot support.
 
 ifeq ($(MACH),i386)
 
-# We need to build an extra static version of these libraries for GRUB/Wanboot support.
 WANBOOT_CONFIGURE = $(BUILD_DIR)/wanboot-amd64/.configured
 WANBOOT_BUILD = $(BUILD_DIR)/wanboot-amd64/.built
 WANBOOT_INSTALL = $(BUILD_DIR)/wanboot-amd64/.installed
@@ -52,9 +54,6 @@ include $(WS_MAKE_RULES)/gnu-component.mk
 
 MCS = mcs
 STRIP = strip
-
-# Some static libraries are delivered, avoid manifest cleanup.
-MANIFEST_CLEANUP_TRANSFORM=
 
 # Set the wanboot CFLAGS as needed for the wanboot compilation
 
@@ -76,8 +75,6 @@ CFLAGS.wanboot += -mno-stack-arg-probe
 CONFIGURE_OPTIONS  += --libexecdir=$(CONFIGURE_LIBDIR.$(BITS))
 CONFIGURE_OPTIONS  += --infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS  += --with-include-path=$(USRINCDIR)/gmp
-# Disable __builtin_bswap64 to avoid linkage errors.
-CONFIGURE_OPTIONS  += nettle_cv_c_builtin_bswap64=no
 
 # Set the wanboot configure options as needed for wanboot
 
@@ -102,6 +99,10 @@ COMPONENT_TEST_TRANSFORMS += \
 
 COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 
+$(BUILD_DIR)/$(MACH32)/.configured: CFLAGS += $(CFLAGS.shared)
+$(BUILD_DIR)/$(MACH32)/.configured: CONFIGURE_OPTIONS += $(CONFIGURE_OPTIONS.shared)
+$(BUILD_DIR)/$(MACH64)/.configured: CFLAGS += $(CFLAGS.shared)
+$(BUILD_DIR)/$(MACH64)/.configured: CONFIGURE_OPTIONS += $(CONFIGURE_OPTIONS.shared)
 $(BUILD_DIR)/wanboot-amd64/.configured: BITS=64
 $(BUILD_DIR)/wanboot-amd64/.configured: COMPILER=gcc
 $(BUILD_DIR)/wanboot-amd64/.configured: CFLAGS += $(CFLAGS.wanboot)
@@ -134,16 +135,5 @@ $(BUILD_DIR)/wanboot-amd64/.installed: \
 $(BUILD_DIR)/wanboot-amd64/.installed: \
 	COMPONENT_POST_INSTALL_ACTION += \
 	$(AR) ts $(PROTO_DIR)/usr/lib/grub/wanboot/libhogweed.a;
-
-# Install nettle 3.4.0 and copy the shared libraries.
-COMPONENT_POST_INSTALL_ACTION += ( \
-	cd ../nettle34; \
-	$(GMAKE) install; \
-	$(MKDIR) $(PROTO_DIR)/usr/lib/$(MACH64)/; \
-	gcp -av build/prototype/$(MACH)/usr/lib/libhogweed.so.4* $(PROTO_DIR)/usr/lib/; \
-	gcp -av build/prototype/$(MACH)/usr/lib/libnettle.so.6* $(PROTO_DIR)/usr/lib/; \
-	gcp -av build/prototype/$(MACH)/usr/lib/$(MACH64)/libhogweed.so.4* $(PROTO_DIR)/usr/lib/$(MACH64)/; \
-	gcp -av build/prototype/$(MACH)/usr/lib/$(MACH64)/libnettle.so.6* $(PROTO_DIR)/usr/lib/$(MACH64)/; \
-);
 
 REQUIRED_PACKAGES += library/gmp

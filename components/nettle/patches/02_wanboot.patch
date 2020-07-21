@@ -1,0 +1,16 @@
+Avoid undefined references to nettle_cnd_memcpy
+function for wanboot on x86 platform (grub 2, on-gate).
+
+Not suitable for upstream.
+
+--- nettle-3.5.1/Makefile.in	2020-03-13 13:24:51.218178636 +0000
++++ nettle-3.5.1/Makefile.in	2020-03-13 13:23:48.306728292 +0000
+@@ -143,7 +143,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
+ 		  bignum.c bignum-random.c bignum-random-prime.c \
+ 		  sexp2bignum.c \
+ 		  pkcs1.c pkcs1-encrypt.c pkcs1-decrypt.c \
+-		  pkcs1-sec-decrypt.c \
++		  pkcs1-sec-decrypt.c cnd-memcpy.c \
+ 		  pkcs1-rsa-digest.c pkcs1-rsa-md5.c pkcs1-rsa-sha1.c \
+ 		  pkcs1-rsa-sha256.c pkcs1-rsa-sha512.c \
+ 		  pss.c pss-mgf1.c \

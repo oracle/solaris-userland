@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -37,6 +37,7 @@ set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2015/187
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/bin/nettle-hash
+file path=usr/bin/nettle-lfib-stream
 file path=usr/bin/nettle-pbkdf2
 file path=usr/bin/pkcs1-conv
 file path=usr/bin/sexp-conv
@@ -53,11 +54,12 @@ file path=usr/include/nettle/camellia.h
 file path=usr/include/nettle/cast128.h
 file path=usr/include/nettle/cbc.h
 file path=usr/include/nettle/ccm.h
+file path=usr/include/nettle/cfb.h
 file path=usr/include/nettle/chacha-poly1305.h
 file path=usr/include/nettle/chacha.h
+file path=usr/include/nettle/cmac.h
 file path=usr/include/nettle/ctr.h
 file path=usr/include/nettle/curve25519.h
-file path=usr/include/nettle/des-compat.h
 file path=usr/include/nettle/des.h
 file path=usr/include/nettle/dsa-compat.h
 file path=usr/include/nettle/dsa.h
@@ -65,22 +67,27 @@ file path=usr/include/nettle/eax.h
 file path=usr/include/nettle/ecc-curve.h
 file path=usr/include/nettle/ecc.h
 file path=usr/include/nettle/ecdsa.h
+file path=usr/include/nettle/eddsa.h
 file path=usr/include/nettle/gcm.h
 file path=usr/include/nettle/gosthash94.h
+file path=usr/include/nettle/hkdf.h
 file path=usr/include/nettle/hmac.h
+file path=usr/include/nettle/knuth-lfib.h
 file path=usr/include/nettle/macros.h
 file path=usr/include/nettle/md2.h
 file path=usr/include/nettle/md4.h
 file path=usr/include/nettle/md5-compat.h
 file path=usr/include/nettle/md5.h
+file path=usr/include/nettle/memops.h
 file path=usr/include/nettle/memxor.h
 file path=usr/include/nettle/nettle-meta.h
-file path=usr/include/nettle/nettle-stdint.h
 file path=usr/include/nettle/nettle-types.h
 file path=usr/include/nettle/pbkdf2.h
 file path=usr/include/nettle/pgp.h
 file path=usr/include/nettle/pkcs1.h
 file path=usr/include/nettle/poly1305.h
+file path=usr/include/nettle/pss-mgf1.h
+file path=usr/include/nettle/pss.h
 file path=usr/include/nettle/realloc.h
 file path=usr/include/nettle/ripemd160.h
 file path=usr/include/nettle/rsa.h
@@ -94,23 +101,32 @@ file path=usr/include/nettle/sha3.h
 file path=usr/include/nettle/twofish.h
 file path=usr/include/nettle/umac.h
 file path=usr/include/nettle/version.h
+file path=usr/include/nettle/xts.h
 file path=usr/include/nettle/yarrow.h
-link path=usr/lib/$(MACH64)/libhogweed.so target=libhogweed.so.4.4
+link path=usr/lib/$(MACH64)/libhogweed.so target=libhogweed.so.5.0
 link path=usr/lib/$(MACH64)/libhogweed.so.4 target=libhogweed.so.4.4
 file path=usr/lib/$(MACH64)/libhogweed.so.4.4
-link path=usr/lib/$(MACH64)/libnettle.so target=libnettle.so.6.4
+link path=usr/lib/$(MACH64)/libhogweed.so.5 target=libhogweed.so.5.0
+file path=usr/lib/$(MACH64)/libhogweed.so.5.0
+link path=usr/lib/$(MACH64)/libnettle.so target=libnettle.so.7.0
 link path=usr/lib/$(MACH64)/libnettle.so.6 target=libnettle.so.6.4
 file path=usr/lib/$(MACH64)/libnettle.so.6.4
+link path=usr/lib/$(MACH64)/libnettle.so.7 target=libnettle.so.7.0
+file path=usr/lib/$(MACH64)/libnettle.so.7.0
 file path=usr/lib/$(MACH64)/pkgconfig/hogweed.pc
 file path=usr/lib/$(MACH64)/pkgconfig/nettle.pc
 file path=usr/lib/grub/wanboot/libhogweed.a variant.arch=i386
 file path=usr/lib/grub/wanboot/libnettle.a variant.arch=i386
-link path=usr/lib/libhogweed.so target=libhogweed.so.4.4
+link path=usr/lib/libhogweed.so target=libhogweed.so.5.0
 link path=usr/lib/libhogweed.so.4 target=libhogweed.so.4.4
 file path=usr/lib/libhogweed.so.4.4
-link path=usr/lib/libnettle.so target=libnettle.so.6.4
+link path=usr/lib/libhogweed.so.5 target=libhogweed.so.5.0
+file path=usr/lib/libhogweed.so.5.0
+link path=usr/lib/libnettle.so target=libnettle.so.7.0
 link path=usr/lib/libnettle.so.6 target=libnettle.so.6.4
 file path=usr/lib/libnettle.so.6.4
+link path=usr/lib/libnettle.so.7 target=libnettle.so.7.0
+file path=usr/lib/libnettle.so.7.0
 file path=usr/lib/pkgconfig/hogweed.pc
 file path=usr/lib/pkgconfig/nettle.pc
 file path=usr/share/info/nettle.info
