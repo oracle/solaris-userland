@@ -71,6 +71,9 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 dir  path=etc/cups group=lp
 dir  path=etc/cups/ppd group=lp
 dir  path=etc/cups/ssl group=lp mode=0700
+# PAM configuration
+file Solaris/pam-cups path=etc/pam.d/cups mode=0644 overlay=allow \
+    preserve=renamenew
 #
 file Solaris/auth_attr path=etc/security/auth_attr.d/cups
 file Solaris/prof_attr path=etc/security/prof_attr.d/cups
