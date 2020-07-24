@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 #
 # Rules and Macros for building open source software written in Rust and using
@@ -57,7 +57,7 @@ endif
 
 COMPONENT_INSTALL_ACTION ?= \
 	cd $(@D) ; $(ENV) $(COMPONENT_INSTALL_ENV) \
-	$(CARGO) install --root=$(PROTO_DIR) --force
+	$(CARGO) install --path . --root=$(PROTO_DIR) --force
 
 # install the built source into a prototype area
 $(BUILD_DIR)/%/.installed:	$(BUILD_DIR)/%/.built

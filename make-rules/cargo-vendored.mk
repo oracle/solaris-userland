@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
 CARGO = cargo
@@ -51,15 +51,11 @@ download-vendored-sources:
 	gtar xf $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE) -C $(VENDORED_SOURCES); \
 	cd $(VENDORED_SOURCES)/$(COMPONENT_SRC); \
 	  for i in `find $(COMPONENT_DIR)/patches -name '*.patch'` ; do gpatch -p1 < $$i; done
-	cd $(VENDORED_SOURCES); PATH=$(PATH) \
-	  CARGO_HOME=$(VENDORED_SOURCES)/.cargo $(CARGO) vendor -s $(VENDORED_CARGO_LOCK)
-	$(MV) $(VENDORED_SOURCES)/vendor/* $(VENDORED_SOURCES)
-	$(RM) -r $(VENDORED_SOURCES)/.cargo $(VENDORED_SOURCES)/$(COMPONENT_SRC) \
-	  $(VENDORED_SOURCES)/vendor
+	cd $(VENDORED_SOURCES)/$(COMPONENT_SRC); PATH=$(PATH) \
+	  CARGO_HOME=$(VENDORED_SOURCES)/.cargo $(CARGO) vendor ..
+	$(RM) -r $(VENDORED_SOURCES)/.cargo $(VENDORED_SOURCES)/$(COMPONENT_SRC)
 	TZ=UTC gtar cjf $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_crates) --sort=name \
 	  --mtime='1970-01-01' --owner=root --group=root $(VENDORED_SOURCES_NAME)
 	/usr/bin/sha256sum $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_crates)
 
 CLEAN_PATHS += $(COMPONENT_DIR)/$(VENDORED_SOURCES_NAME)
-
-REQUIRED_PACKAGES += developer/rust/cargo-vendor

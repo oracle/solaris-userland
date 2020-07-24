@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =	64
@@ -28,20 +28,20 @@ COMPILER =	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	cbindgen
-COMPONENT_VERSION =	0.8.7
+COMPONENT_VERSION =	0.14.2
 COMPONENT_PROJECT_URL =	https://github.com/eqrion/cbindgen
 COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:6034b954a709a0041111445aa2e5656f747165eb9da0915e21b94b23f1a719f0
+    sha256:8047238adf82fbd33d92c362585de24d80fe594cab0909c5bf91d046f1b598ff
 COMPONENT_ARCHIVE_URL =	https://github.com/eqrion/cbindgen/archive/v$(COMPONENT_VERSION).tar.gz
 
 # hash for vendored sources
 COMPONENT_ARCHIVE_HASH_crates = \
-    sha256:36b406f71746c51feb2c0ba042780cef0c46641326aaf5945cb35efd19893be2
+    sha256:2db6d10228a3100f39a61a67d38eba6bd806ff731911722f0a20f8f53a3afcf2
 
 COMPONENT_BUGDB =	utility/rust
-TPNO = 52376
+TPNO = 59919
 
 BUILD_STYLE = cargo
 include $(WS_MAKE_RULES)/common.mk
