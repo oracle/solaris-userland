@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=	gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		qpdf
-COMPONENT_VERSION=	8.4.1
-TPNO=			51704
+COMPONENT_VERSION=	9.1.1
+TPNO=			60672
 COMPONENT_PROJECT_URL=	http://qpdf.sourceforge.net/
 #GIT_REPO=	https://github.com/qpdf/qpdf
 # GitHub can also provide .zip files which is much faster variant
 COMPONENT_SRC=	$(COMPONENT_NAME)-release-$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	release-$(COMPONENT_NAME)-$(COMPONENT_VERSION).zip
-COMPONENT_ARCHIVE_HASH=	sha256:ccbc645eefff47407d0295922e3f0265a7d123abd1275fd3adce413216418b08
+COMPONENT_ARCHIVE_HASH=	sha256:291d92d409ca135828a4f3ddf83acf07db90e989f4c1629f652fd918ae6988cd
 COMPONENT_ARCHIVE_URL=	https://github.com/qpdf/qpdf/archive/$(COMPONENT_ARCHIVE)
 
 COMPONENT_BUGDB=	utility/qpdf
@@ -63,8 +63,9 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/Missing Tests:/p" '
 
 REQUIRED_PACKAGES += image/library/libjpeg
+REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
