@@ -1,0 +1,26 @@
+This patch is not yet submitted upstream.
+
+---------
+
+## svccfg setprop does not require escaping special characters as long as a
+## property value of type string/string array is enclosed within
+## single quotes or double quotes. This patch removes those special characters that caused
+## some of the network services to fail, from gsub() regular expression.
+--- a/lib/puppet_x/oracle/solaris_providers/util/svcs.rb.orig	2020-07-23 09:07:20.325257479 +0000
++++ b/lib/puppet_x/oracle/solaris_providers/util/svcs.rb	2020-07-23 09:08:04.820741299 +0000
+@@ -1,5 +1,5 @@
+ #
+-# Copyright (c) 2013, 2106, Oracle and/or its affiliates. All rights reserved.
++# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
+ #
+ # Licensed under the Apache License, Version 2.0 (the "License");
+ # you may not use this file except in compliance with the License.
+@@ -24,7 +24,7 @@
+ 
+   def svcs_escape(value=self)
+     if value.kind_of? String
+-      value.gsub(/([;&()|^<>\n \t\\\"\'`~*\[\]\$\!])/, '\\\\\1')
++      value.gsub(/([;|^<>\n\t\\\"\'`~\[\]\$\!])/, '\\\\\1')
+     else
+       value
+     end
