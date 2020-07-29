@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xterm
-COMPONENT_VERSION=	333
+COMPONENT_VERSION=	358
 COMPONENT_PROJECT_URL=	http://invisible-island.net/xterm/
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_URL=  https://invisible-mirror.net/archives/xterm/$(COMPONENT_ARCHIVE:.tar.gz=.tgz)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ARCHIVE_HASH= \
-	sha256:2f1d42014e55c8036c6b29a847b31d3b5c1a3a35b126993ae6d3f05e8da0ef78
+	sha256:7cdb106962910a99700b3c45fa1a1493e46e97a5aa3785093a786e07196fbf7b
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	5272
-TPNO=			43016
+TPNO=			60684
 
 PKG_PROTO_DIRS += $(SOURCE_DIR)
 
@@ -68,6 +68,7 @@ REQUIRED_PACKAGES += terminal/luit
 REQUIRED_PACKAGES += text/groff
 REQUIRED_PACKAGES += x11/library/libice
 REQUIRED_PACKAGES += x11/library/libx11
+REQUIRED_PACKAGES += x11/library/libxext
 REQUIRED_PACKAGES += x11/library/libxft
 REQUIRED_PACKAGES += x11/library/libxinerama
 REQUIRED_PACKAGES += x11/library/libxmu
