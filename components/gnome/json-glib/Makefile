@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -44,6 +44,7 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 
 CONFIGURE_OPTIONS += -Ddocs=true
 CONFIGURE_OPTIONS += -Dman=true
+CONFIGURE_OPTIONS.32 += -Dintrospection=false
 COMPONENT_BUILD_ENV +=  PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV +=  PATH="$(GNUBIN):$(PATH)"
 

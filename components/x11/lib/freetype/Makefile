@@ -57,7 +57,9 @@ CONFIGURE_OPTIONS += --with-zlib
 CONFIGURE_OPTIONS += --with-bzip2
 CONFIGURE_OPTIONS += --with-png
 CONFIGURE_OPTIONS += --with-pic
-CONFIGURE_OPTIONS += --with-harfbuzz
+# Avoid to bring a desktop dependency (harfbuzz links glib)
+# into poppler that links libfreetype library.
+CONFIGURE_OPTIONS += --without-harfbuzz
 
 LDFLAGS += -lc
 

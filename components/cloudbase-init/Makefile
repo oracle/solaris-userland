@@ -73,3 +73,5 @@ system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/network
+REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += system/library/python/solaris-core-37

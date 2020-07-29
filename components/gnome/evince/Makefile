@@ -23,7 +23,7 @@
 # Copyright (c) 2016, 2020, Oracle and/or its affiliates. 
 #
 
-BUILD_BITS= 64_and_32
+BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		evince

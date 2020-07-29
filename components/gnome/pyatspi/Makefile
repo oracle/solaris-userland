@@ -23,7 +23,7 @@
 # Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
-BUILD_BITS =		32_and_64
+BUILD_BITS =		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pyatspi
@@ -42,7 +42,7 @@ PYTHON_VERSION = 2.7
 
 # replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses configure.mk
 CONFIGURE_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
-$(BUILD_DIR)/%-2.7/.configured:		PYTHON_VERSION=2.7
+$(BUILD_DIR)/%-2.7/.configured:		PYTHON_VERSION=2.7 PYTHON_VENDOR_PACKAGES_BASE=$(PYTHON_VENDOR_PACKAGES.32)
 $(BUILD_DIR)/%-3.5/.configured:		PYTHON_VERSION=3.5
 $(BUILD_DIR)/%-3.7/.configured:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/$(MACH64)-%/.configured:	BITS=64
@@ -70,8 +70,8 @@ CONFIGURE_OPTIONS += --disable-tests
 CONFIGURE_OPTIONS += --with-python=$(PYTHON)
 
 # Ensure Python modules are installed into vendor package directories.
-CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
-CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
+CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES_BASE)
+CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES_BASE)
 
 # Make install path match what autopyc transforms look for
 COMPONENT_POST_INSTALL_ACTION += \

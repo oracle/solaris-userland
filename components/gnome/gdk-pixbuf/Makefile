@@ -48,6 +48,8 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 COMPONENT_BUILD_ENV += CFLAGS="$(strip $(CFLAGS))"
 COMPONENT_BUILD_ENV += LDFLAGS="$(strip $(LDFLAGS))"
 
+CONFIGURE_OPTIONS.32 += -Dgir=false
+
 # Assumes GNU xgettext in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"

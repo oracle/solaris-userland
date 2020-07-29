@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -60,6 +60,7 @@ CONFIGURE_OPTIONS += -Dcdma-source=false
 CONFIGURE_OPTIONS += -Dmodem-gps-source=false
 CONFIGURE_OPTIONS += -Dnmea-source=false
 CONFIGURE_OPTIONS += -Ddemo-agent=false
+CONFIGURE_OPTIONS.32 += -Dintrospection=false
 
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libsoup

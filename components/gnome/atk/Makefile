@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 # All components using gobject-introspection must be built with gcc as
@@ -41,6 +41,8 @@ TPNO=			53958
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+
+CONFIGURE_OPTIONS.32 += -Dintrospection=false
 
 # Workaround for build failures due to atk Makefiles not passing CFLAGS or
 # LDFLAGS, especially the -m32/64 flag, to g-ir-scanner

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -40,6 +40,8 @@ TPNO=			54027
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+
+CONFIGURE_OPTIONS.32 += -Denable-introspection=false
 
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 LDFLAGS +=  -Wl,-zgnu-version-script-compat

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS=	64_and_32
 COMPILER=	gcc
@@ -260,3 +260,4 @@ REQUIRED_PACKAGES += system/library/pam-core
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/network/avahi
 REQUIRED_PACKAGES += system/network/ldap/openldap
+REQUIRED_PACKAGES += library/python/iso8601

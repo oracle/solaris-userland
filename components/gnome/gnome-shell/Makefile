@@ -139,3 +139,4 @@ REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/polkit
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxfixes
+REQUIRED_PACKAGES += web/css/sass/sassc
