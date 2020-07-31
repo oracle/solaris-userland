@@ -51,9 +51,6 @@ OPT_FLAGS.i386 = -mtune=haswell
 # SPARC: Optimize the build for the oldest supported CPU that boots Solaris 11.4.
 OPT_FLAGS.sparc = -mcpu=ultrasparc3 -mtune=niagara4
 
-# Report used instruction sets in ELF's capability section.
-LD_OPTIONS += -z discap
-
 CONFIGURE_OPTIONS  =  -opensource
 CONFIGURE_OPTIONS +=  -confirm-license
 CONFIGURE_OPTIONS +=  -release
