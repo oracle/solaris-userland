@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -40,6 +40,10 @@ COMPONENT_ANITYA_ID=	1863
 TPNO=			21553
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TEST_64)
+
+# The unit tests failed to start.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 # Needed to successfully find lynx.pot.

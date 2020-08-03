@@ -41,6 +41,9 @@ COMPONENT_ANITYA_ID=	1223
 TPNO=			54070
 BUILD_STYLE=		meson
 
+# The unit tests failed to start.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/g-ir-scanner

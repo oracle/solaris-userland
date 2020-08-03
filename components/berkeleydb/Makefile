@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -49,6 +49,9 @@ INSTALL_32_and_64 += $(BUILD_DIR)/test-$(MACH64)/.installed
 $(BUILD_DIR)/test-$(MACH32)/.installed:    BITS=32
 $(BUILD_DIR)/test-$(MACH64)/.installed:    BITS=64
 TEST_TARGET= $(BUILD_DIR)/test-$(MACH32)/.tested $(BUILD_DIR)/test-$(MACH64)/.tested
+
+# Tests failed to execute.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 PATH=$(SPRO_VROOT)/bin:/usr/bin
 
@@ -113,8 +116,6 @@ CONFIGURE_OPTIONS += --enable-dbm
 CONFIGURE_OPTIONS += $(configure_test)
 
 COMPONENT_TEST_TARGETS = test
-
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 $(BUILD_DIR)/test-%/.configured: configure_test= --enable-test
 

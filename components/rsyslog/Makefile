@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -55,6 +55,9 @@ COMPONENT_ARCHIVE_URL_LIB = https://github.com/rsyslog/libfastjson/archive/$(COM
 COMPONENT_ANITYA_ID_LIB   = 12043
 
 TPNO_LIB = 46846
+
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

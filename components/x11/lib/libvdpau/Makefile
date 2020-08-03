@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -37,6 +37,9 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1755
 TPNO=			55670
+
+# Tests do not pass because of insufficient gsed filtering.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/x11-component.mk
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # using gcc makes parfait happy.
@@ -37,6 +37,9 @@ COMPONENT_ANITYA_ID=	4958
 
 TPNO_TEXINFO=		27244
 TPNO_TEXI2HTML=		9089
+
+# Disable the unit tests since the test results are outdated.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 

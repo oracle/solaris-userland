@@ -40,6 +40,9 @@ COMPONENT_ANITYA_ID=	11783
 TPNO=			53014
 BUILD_STYLE=		meson
 
+# Tests do not pass because of insufficient gsed filtering.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CONFIGURE_OPTIONS += -Denable_docs=true

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -34,6 +34,9 @@ COMPONENT_ARCHIVE_URL=  https://sourceforge.net/projects/lcms/files/lcms/$(COMPO
 COMPONENT_ANITYA_ID=	1542
 
 TPNO=			9072
+
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

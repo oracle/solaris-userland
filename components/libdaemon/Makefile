@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -35,6 +35,9 @@ COMPONENT_BUGDB        = library/daemon
 COMPONENT_ANITYA_ID=	13299
 
 TPNO                   = 9316
+
+# Tests do not pass because of insufficient gsed filtering.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

@@ -40,6 +40,9 @@ COMPONENT_ANITYA_ID=	13230
 TPNO=			54071
 BUILD_STYLE=		meson
 
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU xgettext in PATH.

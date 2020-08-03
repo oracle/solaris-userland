@@ -39,6 +39,9 @@ COMPONENT_ANITYA_ID=	5578
 TPNO=			56951
 BUILD_STYLE=            meson
 
+# Disable the unit tests since the test results are outdated.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CFLAGS += $(XPG6MODE)

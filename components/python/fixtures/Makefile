@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -44,6 +44,9 @@ PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+# Disable tests since it requires packages that are not available in CBE.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 32
 include ../../make-rules/shared-macros.mk
@@ -38,6 +38,9 @@ TPNO=			5546
 
 # Use version of Java defined in ../../make-rules/shared-macros.mk
 PATH=$(SPRO_VROOT)/bin:$(JAVA_HOME)/bin:$(USRBINDIR)
+
+# Tests do not pass because of invalid python syntax.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

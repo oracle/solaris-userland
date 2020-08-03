@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
 export PARFAIT_BUILD=no
 BUILD_BITS= 64
@@ -43,6 +43,9 @@ TPNO=			57784
 CFLAGS=
 CPPFLAGS=
 CXXFLAGS=
+
+# Do not automatically run the unit tests since the results are not reproducible.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

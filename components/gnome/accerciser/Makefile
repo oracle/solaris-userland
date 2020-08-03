@@ -36,6 +36,9 @@ COMPONENT_ANITYA_ID=	13116
 
 TPNO=			25184
 
+# The unit tests failed to start.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU gettext & msgfmt are first in PATH.

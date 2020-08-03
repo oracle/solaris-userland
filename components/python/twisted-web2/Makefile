@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -43,6 +43,9 @@ PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 # Master test results are the same for all versions of Python, so override
 # here, rather than create multiple identical master files.

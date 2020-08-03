@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -40,6 +40,9 @@ TPNO=			55682
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+# There are some test failures, the master test file is missing.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 PYTHON_VERSIONS = PYTHON3
 

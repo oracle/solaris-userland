@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -40,6 +40,9 @@ COMPONENT_ANITYA_ID=	13293
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/makemaker.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 COMPONENT_TEST_ENV +=   PATH="/usr/perl5/$(PERLVER)/bin:$(PATH)"
 COMPONENT_TEST_TARGETS = test

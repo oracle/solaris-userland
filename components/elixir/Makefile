@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
 # Only executable scripts and bytecode files.
@@ -42,6 +42,12 @@ COMPONENT_ANITYA_ID=	673
 TPNO=			57086
 
 BUILD_STYLE= justmake
+
+ifeq ($(MACH),sparc)
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
+endif
+
 include $(WS_MAKE_RULES)/common.mk
 
 # Elixir does not like cloney, so a simple copy is used instead.

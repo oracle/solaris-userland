@@ -39,6 +39,9 @@ COMPONENT_ANITYA_ID=	315
 
 TPNO=			52150
 
+# Tests are disabled since they require a running desktop.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/test-x11.mk
 
 COMPONENT_TEST_TRANSFORMS += '-e "/\(make\).*/d" '

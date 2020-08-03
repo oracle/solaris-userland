@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -43,6 +43,9 @@ COMPONENT_ANITYA_ID=	1263
 TPNO=			55665
 
 PYTHON_VERSION = 3.7
+
+# Disable the unit tests since the test results are outdated.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

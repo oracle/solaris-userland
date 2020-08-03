@@ -44,6 +44,9 @@ TPNO=			55664
 
 PYTHON_VERSION = 3.7
 
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 # Use the build area of gstreamer

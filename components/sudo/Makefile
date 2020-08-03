@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -42,6 +42,9 @@ COMPONENT_PROJECT_URL=  https://www.sudo.ws/
 COMPONENT_ANITYA_ID=	4906
 
 TPNO=			59484
+
+# Tests do not pass because of insufficient gsed filtering.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

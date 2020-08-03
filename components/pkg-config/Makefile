@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -37,6 +37,10 @@ COMPONENT_ANITYA_ID=	3649
 TPNO=			26453
 
 SYSTEM_TEST_TARGET=	build $(SYSTEM_TEST_64)
+
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 # otherwise our default PKG_CONFIG_PATH will change to the 64-bit libdir

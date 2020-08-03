@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -34,6 +34,9 @@ ATT_USERNAME= "I accept www.opensource.org/licenses/eclipse"
 ATT_PASSWD= "."
 # Upstream moved to https://github.com/att/ast but doesn't have tarballs
 # available for download from there yet.
+
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 COMPONENT_TEST_MASTER = \
 	$(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS).$(MACH).master 

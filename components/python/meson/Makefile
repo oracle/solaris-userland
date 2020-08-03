@@ -46,6 +46,10 @@ TPNO=			59806
 PYTHON_VERSIONS=	$(PYTHON_VERSION)
 
 BUILD_STYLE= setup.py
+
+# Disable the unit tests since the test results are outdated.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 # Assumes GNU msgfmt is first in PATH

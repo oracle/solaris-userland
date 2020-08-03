@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -37,6 +37,8 @@ COMPONENT_BUGDB=	library/ncurses
 COMPONENT_ANITYA_ID=	2057
 
 TPNO=			48516
+
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -70,7 +72,5 @@ COMPONENT_POST_INSTALL_ACTION.32 += \
 # tied to the build.
 COMPONENT_TEST_DIR =		$(BUILD_DIR)/$(MACH$(BITS))/test
 COMPONENT_TEST_TARGETS =
-
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 REQUIRED_PACKAGES += shell/bash

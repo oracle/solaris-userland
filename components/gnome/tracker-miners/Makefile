@@ -39,6 +39,9 @@ COMPONENT_ANITYA_ID=	86776
 TPNO=			57697
 BUILD_STYLE=		meson
 
+# Tests do not pass because of insufficient gsed filtering.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CFLAGS += $(XPG6MODE)

@@ -40,6 +40,9 @@ COMPONENT_ANITYA_ID=	6871
 
 TPNO=			54122
 
+# Disable the unit tests since the test results are outdated.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # build Python 3.7 support

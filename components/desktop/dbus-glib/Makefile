@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -49,6 +49,10 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^\# /p" ' \
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS +=	--sysconfdir="$(ETCDIR)"

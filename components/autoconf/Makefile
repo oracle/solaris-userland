@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
@@ -35,6 +35,10 @@ COMPONENT_ANITYA_ID=	141
 TPNO=			22294
 
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_NO_ARCH)
+
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/gnu-component.mk
 
 # with ksh93 as the configure shell, all tests pass

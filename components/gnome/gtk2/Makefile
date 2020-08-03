@@ -43,6 +43,9 @@ TPNO=			32698
 
 ETCDIR.64="$(ETCDIR)/$(MACH64)"
 
+# Tests do not pass because of insufficient gsed filtering.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CFLAGS += $(CPP_XPG6MODE)

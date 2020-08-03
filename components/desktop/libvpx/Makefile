@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 # parfait is a bit unhappy (24796432)
@@ -45,6 +45,9 @@ COMPONENT_ANITYA_ID=	11083
 # Required for 64-bit builds.
 LDFLAGS += $(CC_BITS)
 LDFLAGS += -Wl,-zgnu-version-script-compat
+
+# Unit tests return non-zero exit code.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

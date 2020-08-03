@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../../make-rules/shared-macros.mk
@@ -34,6 +34,10 @@ COMPONENT_ARCHIVE_SRC=	none
 COMPONENT_BUGDB=	library/libusb
 
 BUILD_STYLE= justmake
+
+# The unit tests failed to start.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 $(BUILD_DIR_32)/.built:	BITS=32

@@ -44,6 +44,9 @@ COMPONENT_ANITYA_ID=	57896
 TPNO=			60858
 TPNO_IMAP=		32942
 
+# test results are unstable between runs but still useful for humans.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 include $(PHP_TOP_DIR)/php.mk
 
@@ -173,9 +176,6 @@ COMPONENT_TEST_TRANSFORMS += \
     '-e "/.*/d" '
 
 CLEAN_PATHS += proto-scripts
-
-# test results are unstable between runs but still useful for humans.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 clobber::
 	cd ../uw-imap; gmake clobber

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -37,6 +37,10 @@ TPNO=			29463
 
 # the test suite needs to be configured first
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
+
+# Disable tests since it requires packages that are not available in CBE.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/gnu-component.mk
 
 PATH=$(SPRO_VROOT)/bin:$(USRBINDIR):$(GNUBIN)

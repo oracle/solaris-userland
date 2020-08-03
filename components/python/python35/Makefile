@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -42,6 +42,11 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/configure.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/lint-libraries.mk
+
+ifeq ($(MACH),sparc)
+# The unit tests failed to start.
+$(SKIP_TEST_AT_TOP_LEVEL)
+endif
 
 # Need to preserve timestamp for Grammar files.  If the pickle files are older,
 # Python will try to rebuild them.

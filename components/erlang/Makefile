@@ -70,6 +70,9 @@ TPNO=			57244
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 
+# The unit tests failed to start.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 # Fix 64-bit linking.

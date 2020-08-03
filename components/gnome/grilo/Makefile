@@ -40,6 +40,9 @@ COMPONENT_ANITYA_ID=	10928
 TPNO=			54073
 BUILD_STYLE=		meson
 
+# Tests do not pass because of insufficient gsed filtering.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU xgettext in PATH

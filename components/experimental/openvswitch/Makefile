@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 # parfait fails to compile us (22221056)
@@ -44,6 +44,9 @@ COMPONENT_ANITYA_ID=	2568
 TPNO=			35287
 
 PYTHON_VERSIONS =	$(PYTHON2_VERSIONS)
+
+# There are some test regressions and gsed filtering is insufficient.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

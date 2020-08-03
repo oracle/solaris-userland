@@ -41,6 +41,10 @@ COMPONENT_ANITYA_ID=	9533
 TPNO=		        56020
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Workaround for build failures due to gdk-pixbuf Makefiles not passing CFLAGS

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -39,6 +39,12 @@ COMPONENT_ANITYA_ID=	434
 TPNO=			57831
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TEST_64)
+
+ifeq ($(MACH),i386)
+# The unit tests failed to start.
+$(SKIP_TEST_AT_TOP_LEVEL)
+endif
+
 include $(WS_MAKE_RULES)/common.mk
 
 # Fix 64-bit linking done via compiler.

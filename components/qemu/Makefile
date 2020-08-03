@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, Oracle and/or its affiliates.
 #
 
 BUILD_ARCH=     i386
@@ -49,6 +49,9 @@ BUILD_STYLE= configure
 # Disable non-tools targets
 CONFIGURE_OPTIONS=  --disable-system --disable-user --disable-tpm \
     --disable-guest-agent --disable-blobs
+
+# There are some test failures, the master test file is missing.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

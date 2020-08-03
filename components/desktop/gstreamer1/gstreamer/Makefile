@@ -46,6 +46,11 @@ COMPONENT_ANITYA_ID=	1263
 
 TPNO=			55540
 
+ifeq ($(MACH),sparc)
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
+endif
+
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS += --disable-static

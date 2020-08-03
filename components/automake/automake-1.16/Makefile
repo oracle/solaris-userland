@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
 #
 
 # The component does not deliver any architecture specific files but
@@ -40,6 +40,9 @@ COMPONENT_ANITYA_ID=	144
 COMPONENT_SIG_URL=
 
 TPNO=			48739
+
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 

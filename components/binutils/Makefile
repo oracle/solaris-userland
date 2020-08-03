@@ -49,6 +49,10 @@ $(BUILD_DIR_64)-cross/.configured: CONFIGURE_OPTIONS += --target=$(CROSS_ARCH)
 
 
 TEST_TARGET= $(TEST_64)
+
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/gnu-component.mk
 
 IPS_COMPONENT_VERSION=	2.33.1

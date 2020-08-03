@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -37,6 +37,9 @@ COMPONENT_BUGDB=	utility/smputils
 COMPONENT_ANITYA_ID=	4840
 
 TPNO=			39251
+
+# The unit tests failed to start.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

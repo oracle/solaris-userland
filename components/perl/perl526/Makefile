@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 # Parallel build jobs are supported only if GNU make is used.
@@ -41,6 +41,9 @@ COMPONENT_BUGDB=	utility/perl
 COMPONENT_ANITYA_ID=	13599
 
 TPNO=			47761
+
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/configure.mk

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -35,6 +35,9 @@ COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/gimp-print/files/gutenpr
 COMPONENT_ANITYA_ID=	1285
 
 TPNO=			39288
+
+# the tests mostly pass, but it can't find several drivers for ppd files
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -58,9 +61,6 @@ COMPONENT_BUILD_TARGETS = all
 unexport SHELLOPTS
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-$(SKIP_TEST_AT_TOP_LEVEL)
-
-# the tests mostly pass, but it can't find several drivers for ppd files
 
 REQUIRED_PACKAGES += library/desktop/gtk2
 REQUIRED_PACKAGES += library/glib2

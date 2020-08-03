@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2012, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -49,6 +49,9 @@ PERL_VERSIONS = $(PERL_VERSION)
 
 # openscap is not adding cpython-37m string to shared libraries
 PY3_CPYTHON_NAMING = \#
+
+# There are some test failures, the master test file is missing.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

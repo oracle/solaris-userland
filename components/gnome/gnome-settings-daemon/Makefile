@@ -38,6 +38,9 @@ COMPONENT_ANITYA_ID=	12860
 TPNO=			59728
 BUILD_STYLE=		meson
 
+# Tests are disabled since they require a running desktop.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/test-x11.mk
 
 # note many tests fail because they require python-dbusmock

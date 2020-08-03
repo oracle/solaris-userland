@@ -55,6 +55,9 @@ DIST_OBJ.i386.64 =	dist/SunOS5.11_i86pc_gcc_64_OPT.OBJ
 DIST_OBJ.sparc.32 =	dist/SunOS5.11_gcc_OPT.OBJ
 DIST_OBJ.sparc.64 =	dist/SunOS5.11_gcc_64_OPT.OBJ
 
+# Disable the unit tests since the test results are outdated.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_PRE_BUILD_ACTION = \

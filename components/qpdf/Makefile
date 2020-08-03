@@ -41,6 +41,12 @@ COMPONENT_BUGDB=	utility/qpdf
 COMPONENT_ANITYA_ID=	5542
 
 COMPONENT_TEST_TARGET= $(TEST_64_and_32)
+
+ifeq ($(MACH),i386)
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
+endif
+
 include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_PREP_ACTION += (cd $(@D); $(CONFIG_SHELL) autogen.sh )

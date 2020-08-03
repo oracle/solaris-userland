@@ -44,6 +44,10 @@ TPNO = 58473
 
 CFLAGS += "-std=gnu99"
 
+# master test results are not entirely clean, so not
+# appropriate to run at top level
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_PREFIX = $(USRDIR)/$(COMPONENT_NAME)/$(RUBY_VER)
@@ -182,10 +186,6 @@ COMPONENT_TEST_TRANSFORMS += \
     '-e "/Running tests/p"' \
     '-e "/Finished tests in Xs, X tests\/s, X assertions/p"' \
     '-e "/.* tests, X assertions, .* failures, .* errors, X skips/p"'
-
-# master test results are not entirely clean, so not
-# appropriate to run at top level
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 REQUIRED_PACKAGES += library/database/gdbm
 REQUIRED_PACKAGES += library/gmp

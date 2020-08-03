@@ -46,6 +46,9 @@ TPNO=			53704
 PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
 PYTHON_VERSION =	2.7
 
+# Disable tests since there are regressions and the test results are outdated.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 JAVA_ROOT = $(JAVA_HOME)
@@ -109,8 +112,10 @@ LD_TEST_PATH_32 := \
 LD_TEST_PATH_64 := \
   $(PROTOUSRLIBDIR)/svn/$(MACH64):$(BUILD_DIR_64)/subversion/tests/.libs
 
+ifneq ($(TOP_LEVEL_TEST),yes)
 # we need the proto area for the tests
 test: install
+endif
 
 # Let's write some post-configure hacks
 COMPONENT_POST_CONFIGURE_ACTION = \

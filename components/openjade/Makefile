@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 COMPILER= gcc
 BUILD_BITS= 64_and_32
@@ -47,6 +47,9 @@ PKG_PROTO_DIRS += $(COMPONENT_SRC)/grove
 PKG_PROTO_DIRS += $(COMPONENT_SRC)/spgrove
 PKG_PROTO_DIRS += $(COMPONENT_SRC)/generic
 PKG_PROTO_DIRS += $(COMPONENT_SRC)/dsssl
+
+# Unit tests require the component to be installed to proto area.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

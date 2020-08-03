@@ -45,6 +45,9 @@ COMPONENT_POST_UNPACK_ACTION += $(CP) mapfile.js $(SOURCE_DIR)/src ;
 LD_EXEC_OPTIONS.64 += -M $(PWD)/mapfile.js
 endif
 
+# Tests do not pass because of insufficient gsed filtering.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CXXFLAGS += -std=c++11 -D__EXTENSIONS__

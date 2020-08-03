@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -37,6 +37,10 @@ COMPONENT_ANITYA_ID=	7664
 TPNO =			27272
 
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_64)
+
+# Tests do not pass because of insufficient gsed filtering.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 export PATH=$(GCC_ROOT)/bin:$(GNUBIN):$(USRBINDIR)

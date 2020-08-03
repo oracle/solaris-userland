@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -40,6 +40,10 @@ TPNO=			34235
 
 BUILD_STYLE= cmake
 SYSTEM_TEST_TARGET= $(SYSTEM_TEST_32_and_64)
+
+# The unit tests failed to start.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 CMAKE_OPTIONS += -DBUILD_TAB2SPACE=ON

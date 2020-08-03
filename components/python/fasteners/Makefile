@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -41,6 +41,9 @@ TPNO=			57870
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+# Disable tests since it requires packages that are not available in CBE.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/fasteners/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest

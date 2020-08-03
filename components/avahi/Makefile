@@ -37,6 +37,9 @@ COMPONENT_PROJECT_URL=	http://www.avahi.org/
 COMPONENT_BUGDB=	library/avahi
 COMPONENT_ANITYA_ID=	147
 
+# There are some test failures, the master test file is missing.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_SBINDIR.64 =	$(CONFIGURE_BINDIR.64)

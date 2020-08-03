@@ -44,6 +44,10 @@ COMPONENT_BUGDB =	utility/rust
 TPNO = 59919
 
 BUILD_STYLE = cargo
+
+# There are some test failures, the master test file is missing.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 # Everything expects GNU utilities, so make sure those are preferred.

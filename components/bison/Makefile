@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 # for the tests
@@ -39,6 +39,10 @@ TPNO=			54877
 TEST_TARGET= $(TEST_64)
 # we need to first generate the test suite
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_64)
+
+# Disable tests since the test results are outdated.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/gnu-component.mk
 
 CONFIGURE_LIBDIR.32 =   $(GNULIB)

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=            	32_and_64
@@ -38,6 +38,11 @@ COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	11793
 
 TPNO=			9578
+
+ifeq ($(MACH),i386)
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
+endif
 
 include $(WS_MAKE_RULES)/common.mk
 

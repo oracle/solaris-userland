@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -44,6 +44,9 @@ PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+# Unit tests fail because of the invalid python syntax.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 COMPONENT_TEST_DIR= $(COMPONENT_SRC)
 COMPONENT_TEST_ARGS= ./setup.py test

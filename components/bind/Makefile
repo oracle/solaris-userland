@@ -63,6 +63,9 @@ COMPONENT_ANITYA_ID=	14923
 TEST_TARGET=		$(TEST_64)
 SYSTEM_TEST_TARGET=	$(SYSTEM_TEST_64)
 
+# Disable tests since it requires packages that are not available in CBE.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 # Component Configuration.

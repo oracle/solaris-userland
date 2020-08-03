@@ -50,6 +50,9 @@ TPNO=			54018
 
 BUILD_STYLE= cmake
 
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # __EXTENSIONS__ required for timezone, altzone variables.

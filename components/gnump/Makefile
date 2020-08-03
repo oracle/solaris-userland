@@ -19,7 +19,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=gcc
@@ -49,6 +49,8 @@ COMPONENT_ARCHIVE_HASH_1= \
 COMPONENT_ARCHIVE_URL_1=  http://ftp.gnu.org/gnu/gmp/$(COMPONENT_ARCHIVE_1)
 COMPONENT_SIG_URL_1=	  $(COMPONENT_ARCHIVE_URL_1).sig
 
+# Skipping this during automated tests since it hangs sometimes
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 COMPONENT_PREP_ACTION = (cd $(@D) ; $(AUTORECONF) -fiv)
 
@@ -168,9 +170,6 @@ COMPONENT_POST_INSTALL_ACTION.wanboot = \
 	$(STRIP) -x $(PROTOUSRLIBDIR)/grub/wanboot/libgmp.a; \
 	$(MCS) -d $(PROTOUSRLIBDIR)/grub/wanboot/libgmp.a; \
 	$(AR) ts $(PROTOUSRLIBDIR)/grub/wanboot/libgmp.a )
-
-# Skipping this during automated tests since it hangs sometimes
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 # common targets
 configure:	$(CONFIGURE_32_and_64)

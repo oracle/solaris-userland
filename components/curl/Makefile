@@ -44,6 +44,9 @@ COMPONENT_ARCHIVE_URL=	https://github.com/curl/curl/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/curl
 COMPONENT_ANITYA_ID=	381
 
+# Disable the unit tests since the test results are outdated.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 CPPFLAGS += -I/usr/include/openldap

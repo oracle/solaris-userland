@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -34,6 +34,11 @@ COMPONENT_ANITYA_ID=	882
 
 TPNO=			8440
 
+# The tests build but they are not run automatically.  You have to
+# manually run the tests (testdbm, testgdbm, etc) by hand and verify
+# the DB operations. (No master test files).
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/gnu-component.mk
 
 CONFIGURE_OPTIONS +=	--disable-static
@@ -41,10 +46,5 @@ CONFIGURE_OPTIONS +=	--enable-shared
 
 COMPONENT_INSTALL_ENV +=	INSTALL_ROOT="$(PROTO_DIR)"
 
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 # common targets
-# The tests build but they are not run automatically.  You have to
-# manually run the tests (testdbm, testgdbm, etc) by hand and verify
-# the DB operations. (No master test files).
 COMPONENT_TEST_TARGETS =	progs

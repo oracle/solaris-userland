@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -41,6 +41,9 @@ TPNO=			40395
 CXXFLAGS += -std=c++11
 
 COMPONENT_BUILD_TARGETS = all info
+
+# Tests are disabled since they require a running desktop.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

@@ -77,6 +77,9 @@ ifndef BROKEN_TESTS
 TEST_TARGET= $(SKIP_TEST)
 endif
 
+# The unit tests are disabled since they never finish.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 # /usr/gnu/bin needed to pick up the GNU version of tail and readelf.

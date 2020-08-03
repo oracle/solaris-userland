@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -37,6 +37,11 @@ COMPONENT_BUGDB=	utility/gnu-gettext
 COMPONENT_ANITYA_ID=	898
 
 TPNO=			56895
+
+ifeq ($(MACH),sparc)
+# Disable the unit tests since the test results are outdated.
+$(SKIP_TEST_AT_TOP_LEVEL)
+endif
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 

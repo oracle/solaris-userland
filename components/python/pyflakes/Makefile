@@ -45,6 +45,9 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
+# There are some test failures, the master test file is missing.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 COMPONENT_POST_INSTALL_ACTION += (cd $(PROTO_DIR)/usr/bin ; \
 	$(MV) -f pyflakes pyflakes-$(PYTHON_VERSION))
 

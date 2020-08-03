@@ -41,6 +41,9 @@ COMPONENT_ANITYA_ID=	1720
 
 TPNO=			34114
 
+# Unit tests fail because of the invalid python syntax.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/prep.mk
 # Needed by the test: target. We override build and install.
 include $(WS_MAKE_RULES)/justmake.mk

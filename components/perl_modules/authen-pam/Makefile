@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -42,6 +42,9 @@ TPNO=			9303
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/makemaker.mk
+
+# The unit tests are disabled since they never finish.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 # Pick up the patch to configure.ac in the 01-solaris.patch file
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);

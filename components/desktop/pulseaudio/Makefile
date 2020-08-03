@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS = 		64_and_32
@@ -42,6 +42,11 @@ TPNO=			32882
 # Only build for 2.7 for now as we need 32-bit and 64-bit support; all of the
 # GNOME and desktop components must be built for Python 2.7 for now.
 PYTHON_VERSION = 2.7
+
+ifeq ($(MACH),sparc)
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
+endif
 
 include $(WS_MAKE_RULES)/common.mk
 

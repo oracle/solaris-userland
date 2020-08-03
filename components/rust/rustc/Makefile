@@ -49,6 +49,9 @@ ifeq ($(MACH), sparc)
 ADDITIONAL_PATCHES += patches/Bug74551.patch-SPARC
 endif
 
+# The unit tests failed to start.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 $(SOURCE_DIR_crates)/.patched: PATCH_LEVEL=0

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -39,6 +39,9 @@ TPNO=			58045
 # with other compilers
 FIX_PC_FILES = xorg-server.pc.in
 COMPONENT_FIX_PC_FLAGS += -e 's|\@symbol_visibility\@||'
+
+# Disable the unit tests since the test results are outdated.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/x11-component.mk
 

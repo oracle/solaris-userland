@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 COMPILER =		gcc
@@ -48,6 +48,9 @@ CFLAGS +=		$(CPPFLAGS)
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/setup.py.mk
+
+# There are crashes during the unit tests execution.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 # Since each version of the package delivers the same
 # files to usr/bin, we need mediation. This is enabled

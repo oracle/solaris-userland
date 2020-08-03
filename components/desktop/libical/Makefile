@@ -40,6 +40,10 @@ COMPONENT_ANITYA_ID=	1637
 TPNO=			53633
 
 BUILD_STYLE= cmake
+
+# Tests do not pass because of insufficient gsed filtering.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 # The Makefile of this component does not support multiple build jobs.

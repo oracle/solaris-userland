@@ -40,6 +40,9 @@ COMPONENT_ANITYA_ID=	2050
 TPNO=			54127
 BUILD_STYLE=            meson
 
+# There are some test failures, the master test file is missing.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Uses c99 language types (bool, etc.).

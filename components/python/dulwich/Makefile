@@ -45,6 +45,9 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
+# The unit tests failed to start.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 COMPONENT_TEST_DIR=		$(SOURCE_DIR)
 COMPONENT_TEST_ARGS=		setup.py test
 

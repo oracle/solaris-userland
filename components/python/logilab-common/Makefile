@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -44,6 +44,9 @@ PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/setup.py.mk
+
+# The unit tests failed to start.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 # rename pytest to its versioned name; mediated links (depending on
 # the python version) in the manifest will create the link from pytest

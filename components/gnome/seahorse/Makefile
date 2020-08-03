@@ -39,6 +39,9 @@ TPNO=			54131
 
 BUILD_STYLE=            meson
 
+# The unit tests failed to start.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU msgfmt in PATH.

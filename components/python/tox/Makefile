@@ -45,6 +45,9 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
+# The unit tests failed to start.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 COMPONENT_POST_INSTALL_ACTION += (cd $(PROTO_DIR)/usr/bin ; \
 	$(MV) -f tox tox-$(PYTHON_VERSION); \
 	$(MV) -f tox-quickstart tox-quickstart-$(PYTHON_VERSION))

@@ -43,6 +43,11 @@ TPNO=			39231
 BUILD_STYLE= justmake
 CONFIGURE_DEFAULT_DIRS= no
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_64)
+
+# Tests do not pass because of missing packages in CBE
+# and insufficient gsed filtering.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 PATCH_LEVEL=0

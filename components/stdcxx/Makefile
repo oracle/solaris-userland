@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 
@@ -50,6 +50,10 @@ TPNO=			9048
 CLEAN_PATHS += install.sh
 
 INSTALL_TARGET=
+
+# There are crashes during the unit tests execution.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 SUNPRO_VERSION	:= $(shell $(CXX) -V 2>&1 | head -n1 \

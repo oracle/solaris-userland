@@ -592,24 +592,33 @@ SYSTEM_TEST_64 =		$(BUILD_DIR_64)/.system-tested-and-compared
 endif
 SYSTEM_TEST_32_and_64 =	$(SYSTEM_TEST_32) $(SYSTEM_TEST_64)
 ifeq ($(strip $(wildcard $(COMPONENT_TEST_RESULTS_DIR)/results-*.master)),)
-TEST_NO_ARCH =		$(BUILD_DIR_NO_ARCH)/.tested
-TEST_32 =		$(BUILD_DIR_32)/.tested
-TEST_64 =		$(BUILD_DIR_64)/.tested
+TEST_NO_ARCH ?=		$(BUILD_DIR_NO_ARCH)/.tested
+TEST_32 ?=		$(BUILD_DIR_32)/.tested
+TEST_64 ?=		$(BUILD_DIR_64)/.tested
 else
-TEST_NO_ARCH =		$(BUILD_DIR_NO_ARCH)/.tested-and-compared
-TEST_32 =		$(BUILD_DIR_32)/.tested-and-compared
-TEST_64 =		$(BUILD_DIR_64)/.tested-and-compared
+TEST_NO_ARCH ?=		$(BUILD_DIR_NO_ARCH)/.tested-and-compared
+TEST_32 ?=		$(BUILD_DIR_32)/.tested-and-compared
+TEST_64 ?=		$(BUILD_DIR_64)/.tested-and-compared
 endif
-TEST_32_and_64 =	$(TEST_32) $(TEST_64)
+TEST_32_and_64 ?=	$(TEST_32) $(TEST_64)
 
 # When running tests at the top level, skip those tests,
 # by redefining the above TEST_* targets,
 # when a component Makefile includes $(SKIP_TEST_AT_TOP_LEVEL).
-# It's done in separate skip-test.mk file, to allow inclusion of
-# a multi-line ifdef statement which is evaluated at the component
-# Makefile level
 
-SKIP_TEST_AT_TOP_LEVEL = $(eval include $(WS_MAKE_RULES)/skip-test.mk)
+define SKIP_TEST_AT_TOP_LEVEL_HELPER
+ifeq ($$(TOP_LEVEL_TEST),yes)
+TEST_32 = $$(SKIP_TEST)
+TEST_64 = $$(SKIP_TEST)
+TEST_32_and_64 = $$(SKIP_TEST)
+TEST_NO_ARCH = $$(SKIP_TEST)
+TEST_TARGET = $$(NO_TESTS)
+endif
+endef
+
+define SKIP_TEST_AT_TOP_LEVEL
+$(eval $(call SKIP_TEST_AT_TOP_LEVEL_HELPER))
+endef
 
 $(BUILD_DIR_NO_ARCH)/.system-tested:			BITS=32
 $(BUILD_DIR_32)/.system-tested:				BITS=32

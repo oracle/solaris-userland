@@ -39,6 +39,9 @@ COMPONENT_ANITYA_ID=	11801
 
 TPNO=			54022
 
+# The unit tests failed to start.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU xgettext in PATH.

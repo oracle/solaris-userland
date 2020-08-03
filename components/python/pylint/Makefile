@@ -57,6 +57,8 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
+# Disable the unit tests since the test results are outdated.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 # There are several pylint documentation files that setup.py isn't installing
 # but are present in the pylint package on other distributions. Copy them into

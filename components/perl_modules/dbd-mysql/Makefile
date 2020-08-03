@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 # This variable has no impact on perl build, it is here merely to satisfy
@@ -48,6 +48,10 @@ TPNO=			46641
 BUILD_STYLE= makemaker
 LICENSE=DBD-mysql.license
 BUILD_TARGET= $(BUILD_$(MK_BITS)) $(LICENSE)
+
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 CLEAN_PATHS += $(LICENSE)

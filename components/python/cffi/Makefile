@@ -45,6 +45,9 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
+# The unit tests fail because of permission errors.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 CFLAGS = -DXOPEN_SOURCE=700
@@ -63,6 +66,14 @@ COMPONENT_TEST_ARGS +=	c testing
 COMPONENT_SYSTEM_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_SYSTEM_TEST_ENV +=	TESTOWNLIB_CC="$(CC) $(CC_PIC) %s $(CC_BITS) -shared -o %s.so"
 
+# common targets
+build:		$(BUILD_32_and_64)
+
+install:	$(INSTALL_32_and_64)
+
+
+ifneq ($(TOP_LEVEL_TEST),yes)
+
 # Copy the tests and a few of the source files they read into a scratch
 # directory so running the tests don't leave turds in the source directory.
 COMPONENT_PRE_TEST_ACTION = \
@@ -75,11 +86,6 @@ COMPONENT_PRE_TEST_ACTION = \
 	    $(SOURCE_DIR)/doc/source/installation.rst \
 	    $(@D)/tests/doc/source
 
-# common targets
-build:		$(BUILD_32_and_64)
-
-install:	$(INSTALL_32_and_64)
-
 # We get spurious test failures with 64bit version of python 2.7
 test:		$(BUILD_DIR)/$(MACH32)-2.7/.tested \
 		$(BUILD_DIR)/$(MACH64)-3.5/.tested   \
@@ -88,6 +94,8 @@ test:		$(BUILD_DIR)/$(MACH32)-2.7/.tested \
 system-test:	$(BUILD_DIR)/$(MACH32)-2.7/.system-tested \
 		$(BUILD_DIR)/$(MACH64)-3.5/.system-tested   \
 		$(BUILD_DIR)/$(MACH64)-3.7/.system-tested
+
+endif
 
 
 REQUIRED_PACKAGES += library/libffi

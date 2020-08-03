@@ -44,6 +44,9 @@ CFLAGS=
 CPPFLAGS=
 CXXFLAGS=
 
+# Do not automatically run the unit tests since the results are not reproducible.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 PYTHON_VERSION = 3.7

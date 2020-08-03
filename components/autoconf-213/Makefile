@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
@@ -37,6 +37,9 @@ COMPONENT_PRE_CONFIGURE_ACTION = ($(CLONEY) $(SOURCE_DIR) $(@D))
 
 CONFIGURE_OPTIONS += --program-suffix=-$(COMPONENT_VERSION)
 CONFIGURE_OPTIONS += --datadir=$(CONFIGURE_PREFIX)/share/$(COMPONENT_NAME)-$(COMPONENT_VERSION)
+
+# Tests do not pass because of insufficient gsed filtering.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 

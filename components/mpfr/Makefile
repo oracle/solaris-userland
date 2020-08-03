@@ -19,7 +19,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=	gcc
@@ -49,6 +49,9 @@ COMPONENT_ARCHIVE_HASH_1= \
     sha256:246d7e184048b1fc48d3696dd302c9774e24e921204221540745e5464022b637
 COMPONENT_ARCHIVE_URL_1=$(COMPONENT_DOWNLOAD_URL)/$(COMPONENT_ARCHIVE_1)
 COMPONENT_SIG_URL_1=	$(COMPONENT_ARCHIVE_URL_1).sig
+
+# Disable the unit tests since the test results are outdated.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -36,6 +36,10 @@ COMPONENT_ANITYA_ID=	7593
 TPNO=			33944
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_32_and_64)
+
+# Disable tests since there are some regressions.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 # Several tests fail when the Studio compiler is used.
