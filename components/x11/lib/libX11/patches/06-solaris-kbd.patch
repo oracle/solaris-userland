@@ -22,10 +22,10 @@
 #
 
 diff --git a/src/KeyBind.c b/src/KeyBind.c
-index d7c78b3..3457759 100644
+index fe6a909..dcd84f5 100644
 --- a/src/KeyBind.c
 +++ b/src/KeyBind.c
-@@ -840,6 +840,17 @@ _XTranslateKeySym(
+@@ -845,6 +845,17 @@ _XTranslateKeySym(
      hiBytes = symbol >> 8;
      if (!(nbytes &&
  	  ((hiBytes == 0) ||
@@ -43,7 +43,7 @@ index d7c78b3..3457759 100644
  	   ((hiBytes == 0xFF) &&
  	    (((symbol >= XK_BackSpace) && (symbol <= XK_Clear)) ||
  	     (symbol == XK_Return) ||
-@@ -857,10 +868,20 @@ _XTranslateKeySym(
+@@ -862,10 +873,20 @@ _XTranslateKeySym(
  	c = XK_space & 0x7F; /* patch encoding botch */
      else if (hiBytes == 0xFF)
  	c = symbol & 0x7F;
@@ -65,7 +65,7 @@ index d7c78b3..3457759 100644
  	else if (c == '2') c = '\000';
  	else if (c >= '3' && c <= '7') c -= ('3' - '\033');
 diff --git a/src/imConv.c b/src/imConv.c
-index c3c1974..bfb01b2 100644
+index 48bc790..2c54fd1 100644
 --- a/src/imConv.c
 +++ b/src/imConv.c
 @@ -213,7 +213,9 @@ _XimLookupMBText(

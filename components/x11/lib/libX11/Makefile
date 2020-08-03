@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libX11
-COMPONENT_VERSION=	1.6.7
+COMPONENT_VERSION=	1.6.10
 COMPONENT_ARCHIVE_HASH= \
-	sha256:910e9e30efba4ad3672ca277741c2728aebffa7bc526f04dcfa74df2e52a1348
+	sha256:af48626989b8515c994777896bd7b7ba2bd5b1ef4e1efaee0a55d8852bbe6226
 COMPONENT_BUGDB=	x11/libraries
 COMPONENT_ANITYA_ID=	1764
-TPNO=			49155
+TPNO=			60782
 
 PKG_PROTO_DIRS += $(SOURCE_DIR)/src/xlibi18n/
 

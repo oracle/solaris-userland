@@ -35,11 +35,11 @@ make the call to XInitThreads, even if the client has already made
 other Xlib calls.
 
 diff --git a/include/X11/Xlibint.h b/include/X11/Xlibint.h
-index 4431559..bc32bdf 100644
+index 4214b23..0c94cf1 100644
 --- a/include/X11/Xlibint.h
 +++ b/include/X11/Xlibint.h
 @@ -207,6 +207,10 @@ struct _XDisplay
- 	void *cookiejar;  /* cookie events returned but not claimed */
+ 	Bool req_seq_syncing; /* requests syncing is in-progress */
  };
  
 +#if defined(XTHREADS) && defined(SUNSOFT)
@@ -48,9 +48,9 @@ index 4431559..bc32bdf 100644
 +
  #define XAllocIDs(dpy,ids,n) (*(dpy)->idlist_alloc)(dpy,ids,n)
  
- #ifndef _XEVENT_
+ /*
 diff --git a/src/OpenDis.c b/src/OpenDis.c
-index 3793814..a14d13b 100644
+index 59ffacc..db394eb 100644
 --- a/src/OpenDis.c
 +++ b/src/OpenDis.c
 @@ -38,6 +38,21 @@ in this Software without prior written authorization from The Open Group.
@@ -75,7 +75,7 @@ index 3793814..a14d13b 100644
  #ifdef XTHREADS
  #include "locking.h"
  int  (*_XInitDisplayLock_fn)(Display *dpy) = NULL;
-@@ -208,6 +223,13 @@ XOpenDisplay (
+@@ -209,6 +224,13 @@ XOpenDisplay (
  		return(NULL);
  	}
  
@@ -89,7 +89,7 @@ index 3793814..a14d13b 100644
  	if (!_XPollfdCacheInit(dpy)) {
  	        OutOfMemory (dpy);
  		return(NULL);
-@@ -576,6 +598,10 @@ XOpenDisplay (
+@@ -577,6 +599,10 @@ XOpenDisplay (
  
  void _XFreeDisplayStructure(Display *dpy)
  {
@@ -100,7 +100,7 @@ index 3793814..a14d13b 100644
  	/* move all cookies in the EQ to the jar, then free them. */
  	if (dpy->qfree) {
  	    _XQEvent *qelt = dpy->qfree;
-@@ -704,6 +730,103 @@ void _XFreeDisplayStructure(Display *dpy)
+@@ -697,6 +723,103 @@ void _XFreeDisplayStructure(Display *dpy)
  	Xfree (dpy);
  }
  
