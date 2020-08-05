@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -37,6 +37,9 @@ COMPONENT_BUGDB=	python-mod/pathlib2
 COMPONENT_ANITYA_ID=	12723
 
 TPNO=			50836
+
+# Pathlib2 provides no additional functionality in Python 3.7 and later
+PYTHON_VERSIONS = $(PYTHON2_VERSIONS) 3.5
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
