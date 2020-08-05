@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -32,7 +32,7 @@ COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:e9b2c70ecade3135629e66945a7ac19c6df18c59b3d8f02e95d24bc8e066c7cf
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	https://github.com/testing-cabal/testrepository
+COMPONENT_PROJECT_URL=	https://launchpad.net/testresources
 COMPONENT_BUGDB=	python-mod/testresources
 COMPONENT_ANITYA_ID=	9608
 

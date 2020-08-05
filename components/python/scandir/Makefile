@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:87559e77cdf2f53d3fcf09d07ab8241563818c733395c732c8d0743a12cc5f50
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	https://pypi.org/project/pathlib2/
+COMPONENT_PROJECT_URL=	https://pypi.org/project/scandir/
 COMPONENT_BUGDB=	python-mod/scandir
 COMPONENT_ANITYA_ID=	7185
 
