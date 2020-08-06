@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -93,8 +93,12 @@ CONFIGURE_OPTIONS +=    --enable-largefile
 CONFIGURE_OPTIONS +=    --enable-nls
 CONFIGURE_OPTIONS +=    --enable-plugins
 CONFIGURE_OPTIONS +=    --with-system-zlib
-CONFIGURE_OPTIONS +=    --with-sysroot
 CONFIGURE_OPTIONS +=    --build=$(GNU_ARCH)
+
+# --with-sysroot does 2 things: (1) enable the --sysroot option for gld.
+# (2) Specify the default sysroot. Hence, the '=/' is required, and must
+# not be omitted, or set to a non-existent default.
+CONFIGURE_OPTIONS +=    --with-sysroot=/
 
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library/math
