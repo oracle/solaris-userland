@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -52,9 +52,6 @@ CONFIGURE_OPTIONS += --localstatedir="$(VARDIR)"
 CONFIGURE_OPTIONS += --sysconfdir="$(ETCDIR)"
 CONFIGURE_ENV += CFLAGS="$(CFLAGS)"
 CONFIGURE_ENV += SED="$(GSED)"
-# override needed because library/security/nss is missing a pkgconfig file
-# for $(MACH64).
-CONFIGURE_ENV.64 += NSS_LIBS="-R/usr/lib/mps/$(MACH64) -L/usr/lib/mps/$(MACH64) -lnss3 -lsmime3 -lssl3 -lnssutil3 -lplds4 -lplc4 -lnspr4"
 
 # Required to use generate and use non-broken version of libtool macros.
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);

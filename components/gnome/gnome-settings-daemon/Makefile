@@ -40,12 +40,11 @@ BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/test-x11.mk
 
-# requires python-dbusmock
-TEST_TARGET = $(SKIP_TEST)
-
+# note many tests fail because they require python-dbusmock
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
-	'-e "/^\# /p" ' \
+	'-e "s/[0-9][0-9]*\.[0-9][0-9]*s//g" ' \
+	'-e "/^..\/10 /p" ' \
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

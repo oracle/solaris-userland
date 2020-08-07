@@ -1,0 +1,261 @@
+From b841f2c0b1e9cf24d991cc8b5d21e5a3b7c6ad80 Mon Sep 17 00:00:00 2001
+From: Alon Bar-Lev <alon.barlev@gmail.com>
+Date: Wed, 17 Apr 2019 02:04:28 +0300
+Subject: [PATCH] fix disabled/skipped tests after --X509-skip-strict-checks
+ was added
+
+---
+ apps/xmlsec.c     | 33 ++++++++++++++++++---------------
+ tests/testDSig.sh | 30 +++++++++++++++---------------
+ tests/testrun.sh  | 18 +++++++++---------
+ 3 files changed, 42 insertions(+), 39 deletions(-)
+
+diff --git a/apps/xmlsec.c b/apps/xmlsec.c
+index 2da9cd19..fdc6b880 100644
+--- a/apps/xmlsec.c
++++ b/apps/xmlsec.c
+@@ -127,19 +127,20 @@ static const char helpCheckTransforms[] =
+     "Usage: xmlsec check-transforms <transform-name> [<transform-name> ... ]\n"
+     "Checks the given transforms against the list of known transform klasses\n";
+ 
+-#define xmlSecAppCmdLineTopicGeneral            0x0001
+-#define xmlSecAppCmdLineTopicDSigCommon         0x0002
+-#define xmlSecAppCmdLineTopicDSigSign           0x0004
+-#define xmlSecAppCmdLineTopicDSigVerify         0x0008
+-#define xmlSecAppCmdLineTopicEncCommon          0x0010
+-#define xmlSecAppCmdLineTopicEncEncrypt         0x0020
+-#define xmlSecAppCmdLineTopicEncDecrypt         0x0040
++#define xmlSecAppCmdLineTopicGeneral            0x00001
++#define xmlSecAppCmdLineTopicDSigCommon         0x00002
++#define xmlSecAppCmdLineTopicDSigSign           0x00004
++#define xmlSecAppCmdLineTopicDSigVerify         0x00008
++#define xmlSecAppCmdLineTopicEncCommon          0x00010
++#define xmlSecAppCmdLineTopicEncEncrypt         0x00020
++#define xmlSecAppCmdLineTopicEncDecrypt         0x00040
+ /* #define UNUSED         0x0080 */
+-#define xmlSecAppCmdLineTopicKeysMngr           0x1000
+-#define xmlSecAppCmdLineTopicX509Certs          0x2000
+-#define xmlSecAppCmdLineTopicVersion            0x4000
+-#define xmlSecAppCmdLineTopicCryptoConfig       0x8000
+-#define xmlSecAppCmdLineTopicAll                0xFFFF
++#define xmlSecAppCmdLineTopicKeysMngr           0x01000
++#define xmlSecAppCmdLineTopicX509Certs          0x02000
++#define xmlSecAppCmdLineTopicVersion            0x04000
++#define xmlSecAppCmdLineTopicCryptoConfig       0x08000
++#define xmlSecAppCmdLineTopicX509CertsChecks    0x10000
++#define xmlSecAppCmdLineTopicAll                0xFFFFF
+ 
+ /****************************************************************
+  *
+@@ -771,7 +772,7 @@ static xmlSecAppCmdLineParam depthParam = {
+ };
+ 
+ static xmlSecAppCmdLineParam X509SkipStrictChecksParam = { 
+-    xmlSecAppCmdLineTopicX509Certs,
++    xmlSecAppCmdLineTopicX509CertsChecks,
+     "--X509-skip-strict-checks",
+     NULL,    
+     "--X509-skip-strict-checks"
+@@ -2796,7 +2797,8 @@ xmlSecAppParseCommand(const char* cmd, xmlSecAppCmdLineParamTopic* cmdLineTopics
+                         xmlSecAppCmdLineTopicDSigCommon |
+                         xmlSecAppCmdLineTopicDSigVerify |
+                         xmlSecAppCmdLineTopicKeysMngr |
+-                        xmlSecAppCmdLineTopicX509Certs;
++                        xmlSecAppCmdLineTopicX509Certs |
++                        xmlSecAppCmdLineTopicX509CertsChecks;
+         return(xmlSecAppCommandVerify);
+     } else 
+ #ifndef XMLSEC_NO_TMPL_TEST
+@@ -2833,7 +2835,8 @@ xmlSecAppParseCommand(const char* cmd, xmlSecAppCmdLineParamTopic* cmdLineTopics
+                         xmlSecAppCmdLineTopicEncCommon |
+                         xmlSecAppCmdLineTopicEncDecrypt |
+                         xmlSecAppCmdLineTopicKeysMngr |
+-                        xmlSecAppCmdLineTopicX509Certs;
++                        xmlSecAppCmdLineTopicX509Certs |
++                        xmlSecAppCmdLineTopicX509CertsChecks;
+         return(xmlSecAppCommandDecrypt);
+     } else 
+ 
+diff --git a/tests/testDSig.sh b/tests/testDSig.sh
+index 77372311..f2014464 100755
+--- a/tests/testDSig.sh
++++ b/tests/testDSig.sh
+@@ -805,98 +805,98 @@ execDSigTest $res_success \
+     "signature-rsa-detached-b64-transform" \
+     "base64 sha1 rsa-sha1" \
+     "rsa x509" \
+-    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --X509-skip-strict-checks --verification-time 2009-01-01+10:00:00  $url_map_rfc3161"
++    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --verification-time 2009-01-01+10:00:00  $url_map_rfc3161"
+ 
+ execDSigTest $res_success \
+     "phaos-xmldsig-three" \
+     "signature-rsa-detached" \
+     "sha1 rsa-sha1" \
+     "rsa x509" \
+-    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --X509-skip-strict-checks --verification-time 2009-01-01+10:00:00  $url_map_rfc3161"
++    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --verification-time 2009-01-01+10:00:00  $url_map_rfc3161"
+ 
+ execDSigTest $res_success \
+     "phaos-xmldsig-three" \
+     "signature-rsa-detached-xpath-transform" \
+     "xpath sha1 rsa-sha1" \
+     "rsa x509" \
+-    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --X509-skip-strict-checks --verification-time 2009-01-01+10:00:00  $url_map_rfc3161"
++    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --verification-time 2009-01-01+10:00:00  $url_map_rfc3161"
+ 
+ execDSigTest $res_success \
+     "phaos-xmldsig-three" \
+     "signature-rsa-detached-xslt-transform-retrieval-method" \
+     "xslt sha1 rsa-sha1" \
+     "rsa x509" \
+-    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --X509-skip-strict-checks --verification-time 2009-01-01+10:00:00  $url_map_rfc3161"
++    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --verification-time 2009-01-01+10:00:00  $url_map_rfc3161"
+ 
+ execDSigTest $res_success \
+     "phaos-xmldsig-three" \
+     "signature-rsa-detached-xslt-transform" \
+     "xslt sha1 rsa-sha1" \
+     "rsa x509" \
+-    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --X509-skip-strict-checks --verification-time 2009-01-01+10:00:00  $url_map_rfc3161"
++    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --verification-time 2009-01-01+10:00:00  $url_map_rfc3161"
+ 
+ execDSigTest $res_success \
+     "phaos-xmldsig-three" \
+     "signature-rsa-enveloped" \
+     "enveloped-signature sha1 rsa-sha1" \
+     "rsa x509" \
+-    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --X509-skip-strict-checks --verification-time 2009-01-01+10:00:00"
++    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --verification-time 2009-01-01+10:00:00"
+ 
+ execDSigTest $res_success \
+     "phaos-xmldsig-three" \
+     "signature-rsa-enveloping" \
+     "sha1 rsa-sha1" \
+     "rsa x509" \
+-    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --X509-skip-strict-checks --verification-time 2009-01-01+10:00:00"
++    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --verification-time 2009-01-01+10:00:00"
+ 
+ execDSigTest $res_success \
+     "phaos-xmldsig-three" \
+     "signature-rsa-manifest-x509-data-cert-chain" \
+     "sha1 rsa-sha1" \
+     "rsa x509" \
+-    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --X509-skip-strict-checks --verification-time 2009-01-01+10:00:00 $url_map_rfc3161"
++    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --verification-time 2009-01-01+10:00:00 $url_map_rfc3161"
+ 
+ execDSigTest $res_success \
+     "phaos-xmldsig-three" \
+     "signature-rsa-manifest-x509-data-cert" \
+     "sha1 rsa-sha1" \
+     "rsa x509" \
+-    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --X509-skip-strict-checks --verification-time 2009-01-01+10:00:00 $url_map_rfc3161"
++    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --verification-time 2009-01-01+10:00:00 $url_map_rfc3161"
+ 
+ execDSigTest $res_success \
+     "phaos-xmldsig-three" \
+     "signature-rsa-manifest-x509-data-issuer-serial" \
+     "sha1 rsa-sha1" \
+     "rsa x509" \
+-    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --untrusted-$cert_format certs/rsa-cert.$cert_format --X509-skip-strict-checks --verification-time 2009-01-01+10:00:00 $url_map_rfc3161"
++    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --untrusted-$cert_format certs/rsa-cert.$cert_format --verification-time 2009-01-01+10:00:00 $url_map_rfc3161"
+ 
+ execDSigTest $res_success \
+     "phaos-xmldsig-three" \
+     "signature-rsa-manifest-x509-data-ski" \
+     "sha1 rsa-sha1" \
+     "rsa x509" \
+-    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --untrusted-$cert_format certs/rsa-cert.$cert_format --X509-skip-strict-checks --verification-time 2009-01-01+10:00:00 $url_map_rfc3161"
++    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --untrusted-$cert_format certs/rsa-cert.$cert_format --verification-time 2009-01-01+10:00:00 $url_map_rfc3161"
+ 
+ execDSigTest $res_success \
+     "phaos-xmldsig-three" \
+     "signature-rsa-manifest-x509-data-subject-name" \
+     "sha1 rsa-sha1" \
+     "rsa x509" \
+-    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --untrusted-$cert_format certs/rsa-cert.$cert_format --X509-skip-strict-checks --verification-time 2009-01-01+10:00:00 $url_map_rfc3161"
++    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --untrusted-$cert_format certs/rsa-cert.$cert_format --verification-time 2009-01-01+10:00:00 $url_map_rfc3161"
+ 
+ execDSigTest $res_success \
+     "phaos-xmldsig-three" \
+     "signature-rsa-manifest" \
+     "sha1 rsa-sha1" \
+     "rsa x509" \
+-    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --X509-skip-strict-checks --verification-time 2009-01-01+10:00:00 $url_map_rfc3161"
++    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --verification-time 2009-01-01+10:00:00 $url_map_rfc3161"
+ 
+ execDSigTest $res_success \
+     "phaos-xmldsig-three" \
+     "signature-rsa-xpath-transform-enveloped" \
+     "enveloped-signature xpath sha1 rsa-sha1" \
+     "rsa x509" \
+-    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --X509-skip-strict-checks --verification-time 2009-01-01+10:00:00"
++    "--trusted-$cert_format certs/rsa-ca-cert.$cert_format --verification-time 2009-01-01+10:00:00"
+ 
+ 
+ ##########################################################################
+@@ -940,7 +940,7 @@ execDSigTest $res_fail \
+     "merlin-xmldsig-twenty-three/signature-x509-crt-crl" \
+     "sha1 rsa-sha1" \
+     "rsa x509" \
+-    "--X509-skip-strict-checks --trusted-$cert_format $topfolder/merlin-xmldsig-twenty-three/certs/ca.$cert_format $url_map_xml_stylesheet_2018"
++    "--trusted-$cert_format $topfolder/merlin-xmldsig-twenty-three/certs/ca.$cert_format $url_map_xml_stylesheet_2018"
+ 
+ execDSigTest $res_fail \
+     "" \
+diff --git a/tests/testrun.sh b/tests/testrun.sh
+index ea65802b..425bd398 100755
+--- a/tests/testrun.sh
++++ b/tests/testrun.sh
+@@ -59,7 +59,7 @@ if [ "z$XMLSEC_DEFAULT_CRYPTO" != "z" ] ; then
+ elif [ "z$crypto" != "z" ] ; then
+     xmlsec_params="$xmlsec_params --crypto $crypto"
+ fi
+-xmlsec_params="$xmlsec_params --X509-skip-strict-checks --crypto-config $crypto_config"
++xmlsec_params="$xmlsec_params --crypto-config $crypto_config"
+ 
+ #
+ # Setup keys config
+@@ -308,8 +308,8 @@ execDSigTest() {
+     # run tests
+     if [ -n "$params1" ] ; then
+         printf "    Verify existing signature                            "
+-        echo "$VALGRIND $xmlsec_app verify $xmlsec_params $params1 $full_file.xml" >> $curlogfile
+-        $VALGRIND $xmlsec_app verify $xmlsec_params $params1 $full_file.xml >> $curlogfile 2>> $curlogfile
++        echo "$VALGRIND $xmlsec_app verify --X509-skip-strict-checks $xmlsec_params $params1 $full_file.xml" >> $curlogfile
++        $VALGRIND $xmlsec_app verify --X509-skip-strict-checks $xmlsec_params $params1 $full_file.xml >> $curlogfile 2>> $curlogfile
+         printRes $expected_res $?
+         if [ $? != 0 ]; then
+             failures=`expr $failures + 1`
+@@ -328,8 +328,8 @@ execDSigTest() {
+ 
+     if [ -n "$params3" -a -z "$PERF_TEST" ] ; then
+         printf "    Verify new signature                                 "
+-        echo "$VALGRIND $xmlsec_app verify $xmlsec_params $params3 $tmpfile" >> $curlogfile
+-        $VALGRIND $xmlsec_app verify $xmlsec_params $params3 $tmpfile >> $curlogfile 2>> $curlogfile
++        echo "$VALGRIND $xmlsec_app verify --X509-skip-strict-checks $xmlsec_params $params3 $tmpfile" >> $curlogfile
++        $VALGRIND $xmlsec_app verify --X509-skip-strict-checks $xmlsec_params $params3 $tmpfile >> $curlogfile 2>> $curlogfile
+         printRes $res_success $?
+         if [ $? != 0 ]; then
+             failures=`expr $failures + 1`
+@@ -406,8 +406,8 @@ execEncTest() {
+     if [ -n "$params1" ] ; then
+         rm -f $tmpfile
+         printf "    Decrypt existing document                            "
+-        echo "$VALGRIND $xmlsec_app decrypt $xmlsec_params $params1 $full_file.xml" >>  $curlogfile 
+-        $VALGRIND $xmlsec_app decrypt $xmlsec_params $params1 --output $tmpfile $full_file.xml >> $curlogfile  2>> $curlogfile
++        echo "$VALGRIND $xmlsec_app decrypt --X509-skip-strict-checks $xmlsec_params $params1 $full_file.xml" >>  $curlogfile
++        $VALGRIND $xmlsec_app decrypt --X509-skip-strict-checks $xmlsec_params $params1 --output $tmpfile $full_file.xml >> $curlogfile  2>> $curlogfile
+         res=$?
+         echo "=== TEST RESULT: $res; expected: $expected_res" >> $curlogfile
+         if [ $res = 0 -a "$expected_res" = "$res_success" ]; then
+@@ -439,8 +439,8 @@ execEncTest() {
+     if [ -n "$params3" -a -z "$PERF_TEST" ] ; then 
+         rm -f $tmpfile.2
+         printf "    Decrypt new document                                 "
+-        echo "$VALGRIND $xmlsec_app decrypt $xmlsec_params $params3 --output $tmpfile.2 $tmpfile" >>  $curlogfile
+-        $VALGRIND $xmlsec_app decrypt $xmlsec_params $params3 --output $tmpfile.2 $tmpfile >> $curlogfile 2>> $curlogfile
++        echo "$VALGRIND $xmlsec_app decrypt --X509-skip-strict-checks $xmlsec_params $params3 --output $tmpfile.2 $tmpfile" >>  $curlogfile
++        $VALGRIND $xmlsec_app decrypt --X509-skip-strict-checks $xmlsec_params $params3 --output $tmpfile.2 $tmpfile >> $curlogfile 2>> $curlogfile
+         res=$?
+         if [ $res = 0 ]; then
+             if [ "z$outputTransform" != "z" ] ; then

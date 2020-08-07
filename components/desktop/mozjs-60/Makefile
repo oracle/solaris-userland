@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, Oracle and/or its affiliates.
 #
 
 # parfait is a bit unhappy (24796622)
@@ -75,11 +75,7 @@ CONFIGURE_OPTIONS += --enable-threadsafe
 CONFIGURE_OPTIONS += --with-system-zlib
 CONFIGURE_OPTIONS += --with-x
 CONFIGURE_OPTIONS += --enable-strip
-CONFIGURE_OPTIONS.32 += --with-system-nspr
-# A pkg-config file isn't shipped in Solaris for nspr 64-bit, so configure will
-# fail to find it, requiring manual specification of the flags and libs.
-CONFIGURE_OPTIONS.64 += --with-nspr-cflags="-I/usr/include/mps"
-CONFIGURE_OPTIONS.64 += --with-nspr-libs="-R/usr/lib/mps/64 -L/usr/lib/mps/64 -lplds4 -lplc4 -lnspr4"
+CONFIGURE_OPTIONS += --with-system-nspr
 LDFLAGS += -z gnu-version-script-compat
 CONFIGURE_OPTIONS.32 += --bindir=$(PROTOUSRBINDIR)/$(MACH32)
 CONFIGURE_OPTIONS.64 += --bindir=$(PROTOUSRBINDIR)/$(MACH64)

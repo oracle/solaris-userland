@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -39,15 +39,22 @@ TPNO=			52162
 
 PKG_CONFIG_PATH.64=	/usr/lib/64/pkgconfig
 
-TEST_TARGET= $(NO_TESTS)
+#
+# most of tests using the gcrypt/gnutls backend skipped as they try
+# to use secure memory, which requires additional privileges
+# run sudo gmake test to get a better pass rate
+#
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_ARGS =   -k -i
+COMPONENT_TEST_TRANSFORMS += '-e "/^--- TOTAL/p" ' \
+	'-e "/.*/d" '
+
 include $(WS_MAKE_RULES)/common.mk
 
 # Make docs does not like cloney, so a simple copy is used instead.
 COMPONENT_PRE_CONFIGURE_ACTION= \
 	$(CP) -rp $(SOURCE_DIR)/. $(@D)
 
-CONFIGURE_OPTIONS.64+=	NSS_LIBS="-L/usr/lib/64 -R/usr/lib/64"
-CONFIGURE_OPTIONS.64+=	NSPR_LIBS="-L/usr/lib/64 -R/usr/lib/64"
 CONFIGURE_OPTIONS+=	PATH="$(GNUBIN):$$PATH"
 
 REQUIRED_PACKAGES+=	system/library
