@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -201,6 +201,7 @@ file path=usr/mysql/5.6/mysql-test/include/allowed_ciphers.inc
 file path=usr/mysql/5.6/mysql-test/include/analyze-sync_with_master.test
 file path=usr/mysql/5.6/mysql-test/include/analyze-timeout.test
 file path=usr/mysql/5.6/mysql-test/include/assert.inc
+file path=usr/mysql/5.6/mysql-test/include/assert_binlog_events.inc
 file path=usr/mysql/5.6/mysql-test/include/assert_command_output.inc
 file path=usr/mysql/5.6/mysql-test/include/assert_grep.inc
 file path=usr/mysql/5.6/mysql-test/include/begin_include_file.inc
@@ -555,6 +556,7 @@ file path=usr/mysql/5.6/mysql-test/include/rpl_sync.inc
 file path=usr/mysql/5.6/mysql-test/include/rpl_udf.inc
 file path=usr/mysql/5.6/mysql-test/include/running_event_scheduler.inc
 file path=usr/mysql/5.6/mysql-test/include/safe_set_to_maybe_ro_var.inc
+file path=usr/mysql/5.6/mysql-test/include/save_binlog_position.inc
 file path=usr/mysql/5.6/mysql-test/include/save_io_thread_pos.inc
 file path=usr/mysql/5.6/mysql-test/include/save_master_pos.inc
 file path=usr/mysql/5.6/mysql-test/include/search_pattern.inc
@@ -6329,9 +6331,11 @@ file path=usr/mysql/5.6/mysql-test/suite/rpl/r/rpl_grant_plugin.result
 file path=usr/mysql/5.6/mysql-test/suite/rpl/r/rpl_group_commit_deadlock.result
 file path=usr/mysql/5.6/mysql-test/suite/rpl/r/rpl_gtid_binary_log_as_relay_log.result
 file path=usr/mysql/5.6/mysql-test/suite/rpl/r/rpl_gtid_binlog_errors.result
+file path=usr/mysql/5.6/mysql-test/suite/rpl/r/rpl_gtid_delete_memory_table_after_start_server.result
 file path=usr/mysql/5.6/mysql-test/suite/rpl/r/rpl_gtid_deleted_binlog_fail_to_connect.result
 file path=usr/mysql/5.6/mysql-test/suite/rpl/r/rpl_gtid_do_table_filter_insensitive.result
 file path=usr/mysql/5.6/mysql-test/suite/rpl/r/rpl_gtid_do_table_filter_sensitive.result
+file path=usr/mysql/5.6/mysql-test/suite/rpl/r/rpl_gtid_drop_mem_table.result
 file path=usr/mysql/5.6/mysql-test/suite/rpl/r/rpl_gtid_drop_table.result
 file path=usr/mysql/5.6/mysql-test/suite/rpl/r/rpl_gtid_empty_transaction.result
 file path=usr/mysql/5.6/mysql-test/suite/rpl/r/rpl_gtid_execution.result
@@ -6441,6 +6445,7 @@ file path=usr/mysql/5.6/mysql-test/suite/rpl/r/rpl_multi_update4.result
 file path=usr/mysql/5.6/mysql-test/suite/rpl/r/rpl_mysql_upgrade.result
 file path=usr/mysql/5.6/mysql-test/suite/rpl/r/rpl_mysqlbinlog_gtid_on.result
 file path=usr/mysql/5.6/mysql-test/suite/rpl/r/rpl_name_const.result
+file path=usr/mysql/5.6/mysql-test/suite/rpl/r/rpl_no_gtid_delete_memory_table_after_start_server.result
 file path=usr/mysql/5.6/mysql-test/suite/rpl/r/rpl_non_direct_mixed_mixing_engines.result
 file path=usr/mysql/5.6/mysql-test/suite/rpl/r/rpl_non_direct_row_mixing_engines.result
 file path=usr/mysql/5.6/mysql-test/suite/rpl/r/rpl_non_direct_stm_mixing_engines.result
@@ -6862,12 +6867,15 @@ file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_group_commit_deadlock.test
 file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_gtid_binary_log_as_relay_log.test
 file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_gtid_binlog_errors-master.opt
 file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_gtid_binlog_errors.test
+file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_gtid_delete_memory_table_after_start_server.test
 file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_gtid_deleted_binlog_fail_to_connect.test
 file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_gtid_do_table_filter_insensitive-master.opt
 file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_gtid_do_table_filter_insensitive-slave.opt
 file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_gtid_do_table_filter_insensitive.test
 file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_gtid_do_table_filter_sensitive-slave.opt
 file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_gtid_do_table_filter_sensitive.test
+file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_gtid_drop_mem_table.cnf
+file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_gtid_drop_mem_table.test
 file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_gtid_drop_table.cnf
 file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_gtid_drop_table.test
 file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_gtid_empty_transaction.cnf
@@ -7053,6 +7061,7 @@ file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_multi_update4.test
 file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_mysql_upgrade.test
 file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_mysqlbinlog_gtid_on.test
 file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_name_const.test
+file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_no_gtid_delete_memory_table_after_start_server.test
 file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_non_direct_mixed_mixing_engines.test
 file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_non_direct_row_mixing_engines.test
 file path=usr/mysql/5.6/mysql-test/suite/rpl/t/rpl_non_direct_stm_mixing_engines.test
