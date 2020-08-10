@@ -1,0 +1,84 @@
+# Apache testing overview:
+# 1) Install Apache packages to virtual machines with static IP address.
+# 2) Verify that http static content can be served.
+# 3) Enable https in Apache and verify that it works.
+# 4) Browse Apache manual in English (MultiViews).
+# 5) Run Apache related tests in pkg test suite.
+
+### Add 2) ###
+
+# Enable Apache service.
+sudo svcadm enable svc:/network/http:apache24
+
+# Check that "It works!" is displayed in Firefox on your local machine.
+firefox http://VIRT_MACHINE_IP_ADDRESS
+
+### Add 3) ###
+
+# Generate self-signed certificate, private key, and Diffie-Hellman parameters.
+# You will be asked for Country, State, Locality, Email Address, ...
+# ... but the most important is FQDN (Fully Qualified Domain Name), which is
+# an IP address or domain name of your virtual machine with Apache HTTP Server.
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /scratch/server.key -out /scratch/server.crt
+openssl dhparam -out /scratch/server.pem 2048
+
+# Configure Apache to use encrypted connection on port 443.
+# Insert the following to /etc/apache2/2.4/httpd.conf file.
+# Adjust ServerName and remove the line that contains "Listen 80".
+
+LoadModule ssl_module libexec/mod_ssl.so
+
+Listen 443
+<VirtualHost *:443>
+    ServerName VIRT_MACHINE_IP_ADDRESS
+    SSLEngine on
+    SSLCertificateFile "/scratch/server.crt"
+    SSLCertificateKeyFile "/scratch/server.key"
+    SSLOpenSSLConfCmd DHParameters "/scratch/server.pem"
+</VirtualHost>
+
+# Restart Apache and verify that "It works!" is displayed in Firefox.
+sudo svcadm restart svc:/network/http:apache24
+# You will have to "Accept the Risk and Continue" after reviewing your generated certificate.
+firefox https://VIRT_MACHINE_IP_ADDRESS
+
+### Add 4) ###
+
+# Select English language for Apache manual.
+# MultiViews will automatically select *.html.en pages.
+# Add the following to /etc/apache2/2.4/httpd.conf file.
+
+LoadModule negotiation_module libexec/mod_negotiation.so
+AddLanguage en .en
+LanguagePriority en
+ForceLanguagePriority Fallback
+
+# Change Options and AllowOverride in DocumentRoot's directory.
+Options +FollowSymLinks +MultiViews +Indexes
+AllowOverride Options=Indexes,MultiViews
+
+# Copy the Apache documentation to the document root.
+sudo cp -R /usr/apache2/2.4/manual/* /var/apache2/2.4/htdocs/
+cd /var/apache2/2.4/htdocs/
+
+# Remove all *.html files that specify language variants,
+# otherwise, the language selection does not work.
+sudo gfind . -name '*.html' -delete
+
+# Restart the server to reload configuration.
+sudo svcadm restart svc:/network/http:apache24
+
+# Browse Apache HTTP Server manual...
+firefox https://VIRT_MACHINE_IP_ADDRESS
+
+### Add 5) ###
+
+# Install Apache packages to other x86 and sparc virtual machines since
+# TestHttpDepot.test_16_htfragment requires a default configuration and document root.
+# Clone and build IPS gate according to the instructions on Userland Trunk CBE webpage.
+
+# Run the Apache related tests:
+sudo ./run.py -o t_pkg_install -o t_pkg_sysrepo -o t_sysrepo -o t_https -o t_depot_config
+
+# Currently, the following tests fail:
+# cli.t_pkg_install.py TestPkgInstallUpgrade.test_file_preserve_abandon: fail

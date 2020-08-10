@@ -1,0 +1,108 @@
+Support building against Lua 5.4 by adjusting to the 3-arg form of
+lua_resume().
+
+* modules/lua/config.m4 (CHECK_LUA): Check for lua5.4 paths.
+
+* modules/lua/mod_lua.c (lua_output_filter_handle,
+  lua_input_filter_handle): Check that exactly one item is on the
+  stack as indicated by lua_resume().
+
+Submitted by: Lubos Uhliarik <luhliari redhat.com>, jorton
+PR: 64591
+Github: closes #130, closes #133, closes #134
+
+https://svn.apache.org/viewvc?view=revision&revision=1880678
+
+--- modules/lua/mod_lua.h	2020/08/07 11:56:03	1880677
++++ modules/lua/mod_lua.h	2020/08/07 12:21:35	1880678
+@@ -48,7 +48,15 @@
+ #if LUA_VERSION_NUM > 501
+ /* Load mode for lua_load() */
+ #define lua_load(a,b,c,d)  lua_load(a,b,c,d,NULL)
+-#define lua_resume(a,b)    lua_resume(a, NULL, b)
++
++#if LUA_VERSION_NUM > 503
++#define lua_resume(a,b,c)    lua_resume(a, NULL, b, c)
++#else
++/* ### For version < 5.4, assume that exactly one stack item is on the
++ * stack, which is what the code did before but seems dubious. */
++#define lua_resume(a,b,c)    (*(c) = 1, lua_resume(a, NULL, b))
++#endif
++
+ #define luaL_setfuncs_compat(a,b) luaL_setfuncs(a,b,0)
+ #else
+ #define lua_rawlen(L,i)    lua_objlen(L, (i))
+--- modules/lua/mod_lua.c	2020/08/07 11:56:03	1880677
++++ modules/lua/mod_lua.c	2020/08/07 12:21:35	1880678
+@@ -342,7 +342,7 @@
+ {
+     apr_pool_t *pool;
+     ap_lua_vm_spec *spec;
+-    int n, rc;
++    int n, rc, nres;
+     lua_State *L;
+     lua_filter_ctx *ctx;    
+     ap_lua_server_cfg *server_cfg = ap_get_module_config(r->server->module_config,
+@@ -410,7 +410,7 @@
+             /* If a Lua filter is interested in filtering a request, it must first do a yield, 
+              * otherwise we'll assume that it's not interested and pretend we didn't find it.
+              */
+-            rc = lua_resume(L, 1);
++            rc = lua_resume(L, 1, &nres);
+             if (rc == LUA_YIELD) {
+                 if (f->frec->providers == NULL) { 
+                     /* Not wired by mod_filter */
+@@ -432,7 +432,7 @@
+ static apr_status_t lua_output_filter_handle(ap_filter_t *f, apr_bucket_brigade *pbbIn)
+ {
+     request_rec *r = f->r;
+-    int rc;
++    int rc, nres;
+     lua_State *L;
+     lua_filter_ctx* ctx;
+     conn_rec *c = r->connection;
+@@ -492,7 +492,7 @@
+             lua_setglobal(L, "bucket");
+             
+             /* If Lua yielded, it means we have something to pass on */
+-            if (lua_resume(L, 0) == LUA_YIELD) {
++            if (lua_resume(L, 0, &nres) == LUA_YIELD && nres == 1) {
+                 size_t olen;
+                 const char* output = lua_tolstring(L, 1, &olen);
+                 if (olen > 0) { 
+@@ -524,7 +524,7 @@
+             apr_bucket *pbktEOS;
+             lua_pushnil(L);
+             lua_setglobal(L, "bucket");
+-            if (lua_resume(L, 0) == LUA_YIELD) {
++            if (lua_resume(L, 0, &nres) == LUA_YIELD && nres == 1) {
+                 apr_bucket *pbktOut;
+                 size_t olen;
+                 const char* output = lua_tolstring(L, 1, &olen);
+@@ -558,7 +558,7 @@
+                                        apr_off_t nBytes) 
+ {
+     request_rec *r = f->r;
+-    int rc, lastCall = 0;
++    int rc, lastCall = 0, nres;
+     lua_State *L;
+     lua_filter_ctx* ctx;
+     conn_rec *c = r->connection;
+@@ -621,7 +621,7 @@
+             lua_setglobal(L, "bucket");
+             
+             /* If Lua yielded, it means we have something to pass on */
+-            if (lua_resume(L, 0) == LUA_YIELD) {
++            if (lua_resume(L, 0, &nres) == LUA_YIELD && nres == 1) {
+                 size_t olen;
+                 const char* output = lua_tolstring(L, 1, &olen);
+                 pbktOut = apr_bucket_heap_create(output, olen, 0, c->bucket_alloc);
+@@ -643,7 +643,7 @@
+             apr_bucket *pbktEOS = apr_bucket_eos_create(c->bucket_alloc);
+             lua_pushnil(L);
+             lua_setglobal(L, "bucket");
+-            if (lua_resume(L, 0) == LUA_YIELD) {
++            if (lua_resume(L, 0, &nres) == LUA_YIELD && nres == 1) {
+                 apr_bucket *pbktOut;
+                 size_t olen;
+                 const char* output = lua_tolstring(L, 1, &olen);
