@@ -1,0 +1,21 @@
+From 8f47297fa2e19c426a42b06bb5f8bf1406b8f0f3 Mon Sep 17 00:00:00 2001
+From: Paul Ganssle <paul@ganssle.io>
+Date: Mon, 29 Apr 2019 15:12:28 -0400
+Subject: [PATCH] Add support for positional only arguments
+
+PEP 570 adds "positional only" arguments to Python, which changes the
+code object constructor. This adds support for Python 3.8.
+
+--- hypothesis-4.57.1/src/hypothesis/internal/compat.py
++++ hypothesis-4.57.1/src/hypothesis/internal/compat.py
+@@ -411,6 +411,10 @@ else:
+         "co_cellvars",
+     ]
+ 
++    if sys.version_info >= (3, 8, 0):
++        # PEP 570 added "positional only arguments"
++        CODE_FIELD_ORDER.insert(1, "co_posonlyargcount")
++
+ 
+ def update_code_location(code, newfile, newlineno):
+     """Take a code object and lie shamelessly about where it comes from.

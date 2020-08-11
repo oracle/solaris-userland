@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		hypothesis
-COMPONENT_VERSION=	4.57.1
+COMPONENT_NAME=		sortedcontainers
+COMPONENT_VERSION=	2.2.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2f6e6e5dbc7b37187f76fe0ec936fbbb1038ddef2191993f9c3def4532586273
+    sha256:7c35fe5d808537e9d8ff7126c985fc743fd5797c23c61c7cd07ec23916884a58
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
-COMPONENT_PROJECT_URL=	https://github.com/HypothesisWorks/hypothesis
-COMPONENT_BUGDB=	python-mod/hypothesis
-COMPONENT_ANITYA_ID=	7372
+COMPONENT_PROJECT_URL=	http://www.grantjenks.com/docs/sortedcontainers/
+COMPONENT_BUGDB=	python-mod/sortedcontainers
+COMPONENT_ANITYA_ID=	15939
 
-TPNO=			61030
+TPNO=			61031
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -51,4 +51,4 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(NO_TESTS)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
