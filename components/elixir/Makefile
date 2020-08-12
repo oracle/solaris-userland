@@ -48,6 +48,12 @@ ifeq ($(MACH),sparc)
 $(SKIP_TEST_AT_TOP_LEVEL)
 endif
 
+# This is just a workaround to a problem we occasionally see on sparc. The
+# build stops and never finishes. The process erl_child_setup seems to be
+# stuck. Elixir normally builds under five minutes, so 15 minutes timeout
+# should be more than enough. This change makes sure that the automated builds
+# are not halted but rather fail quickly.
+ENV=timeout --kill-after=30s 15m /usr/bin/env
 include $(WS_MAKE_RULES)/common.mk
 
 # Elixir does not like cloney, so a simple copy is used instead.
