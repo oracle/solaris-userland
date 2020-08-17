@@ -1,0 +1,13 @@
+Fix undefined sumbol errors for __stack_chk_fail and __stack_chk_guard
+
+--- vte-0.58.3/bindings/gir/meson.build.orig	2020-06-25 23:53:57.457743800 -0700
++++ vte-0.58.3/bindings/gir/meson.build	2020-06-26 00:03:31.255407462 -0700
+@@ -28,7 +28,7 @@
+     sources: libvte_gtk3_public_headers + libvte_common_doc_sources,
+     includes: libvte_gtk3_gir_includes,
+     dependencies: libvte_gtk3_dep,
+-    extra_args: '-DVTE_COMPILATION',
++    extra_args: ['-DVTE_COMPILATION', '-lssp'],
+     nsversion: vte_gtk3_api_version,
+     namespace: 'Vte',
+     export_packages: vte_gtk3_api_name,

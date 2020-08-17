@@ -23,21 +23,22 @@
 # Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
 #
 
-BUILD_BITS =            64_and_32
+BUILD_BITS =            64
 # All components using gobject-introspection must be built with gcc as
 # gobject-introspection does not produce correct results when using Studio.
 COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		vte
-COMPONENT_VERSION=	0.42.1
+COMPONENT_VERSION=	0.58.3
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Terminal/VTE
 COMPONENT_ARCHIVE_HASH= \
-	sha256:9e00e2e9e94f4202b979c871f407a8815890bc0f4a8448a08534f76ab0fc9d34
+	sha256:22dcb54ac2ad1a56ab0a745e16ccfeb383f0b5860b5bfa1784561216f98d4975
 COMPONENT_BUGDB=        gnome/terminal
 COMPONENT_ANITYA_ID=	10895
 
-TPNO=			25406
+TPNO=			61152
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -45,34 +46,29 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU xgettext in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 
 PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
 LD_OPTIONS += $(LD_OPTIONS.$(BITS))
+LDFLAGS += -lssp
 
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --disable-Bsymbolic
-# Needed to ensure we can log which users use which applications (setuid).
-CONFIGURE_OPTIONS += --enable-gnome-pty-helper
-# Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-introspection
-CONFIGURE_OPTIONS.64 += --enable-introspection
-CONFIGURE_OPTIONS += --enable-shared
-# Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-vala
-CONFIGURE_OPTIONS.64 += --enable-vala
-
-# Needed due to patch to configure.ac.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
+CONFIGURE_OPTIONS += -D_b_symbolic_functions=false
+CONFIGURE_OPTIONS += -D_systemd=false
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
+REQUIRED_PACKAGES += library/desktop/fribidi
+REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnutls-3
+REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/math

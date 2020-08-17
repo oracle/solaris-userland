@@ -1,0 +1,26 @@
+Patch taken from 
+https://gitweb.gentoo.org/proj/musl.git/plain/x11-libs/vte/files/vte-0.54.2-musl-remove-W_EXITCODE.patch
+
+Expanded non-standard W_EXITCODE macro for Musl compatibility
+
+diff -Naur vte-0.54.2.orig/src/widget.cc vte-0.54.2/src/widget.cc
+--- vte-0.54.2.orig/src/widget.cc	2018-09-28 10:06:12.000000000 +0200
++++ vte-0.54.2/src/widget.cc	2018-11-06 15:04:30.275949689 +0100
+@@ -20,8 +20,6 @@
+ 
+ #include "widget.hh"
+ 
+-#include <sys/wait.h> // for W_EXITCODE
+-
+ #include <new>
+ #include <string>
+ 
+@@ -126,7 +124,7 @@
+ Widget::dispose() noexcept
+ {
+         if (m_terminal->terminate_child()) {
+-                int status = W_EXITCODE(0, SIGKILL);
++                int status = (0) << 8 | (SIGKILL); // W_EXITCODE(ret, sig)
+                 emit_child_exited(status);
+         }
+ }

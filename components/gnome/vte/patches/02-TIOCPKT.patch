@@ -1,0 +1,91 @@
+Reverting TIOCPKT changes. Not suitable for upstream.
+Without this patch, gnome-terminal was not functioning as expected 
+and following issues were seen:
+1. Alignment(whitespace) issue.
+2. Username sometimes doesn’t display the first character(“dmin” instead of “admin”). This issue maybe a result of the above mentioned alignment issue.
+3. Also, whatever commands are typed weren’t being displayed and only output of the command were displayed.
+
+--- a/src/pty.cc	2020-07-30 19:19:30.499754629 -0700
++++ b/src/pty.cc	2020-07-30 20:01:58.521085045 -0700
+@@ -601,7 +601,7 @@
+ }
+ 
+ static int
+-fd_set_nonblocking(int fd)
++fd_set_cpkt(int fd)
+ {
+         int flags = fcntl(fd, F_GETFL, 0);
+         if (flags < 0)
+@@ -612,12 +612,22 @@
+ }
+ 
+ static int
+-fd_set_cpkt(int fd)
++fd_set_nonblocking(int fd)
+ {
+-        /* tty_ioctl(4) -> every read() gives an extra byte at the beginning
+-         * notifying us of stop/start (^S/^Q) events. */
+-        int one = 1;
+-        return ioctl(fd, TIOCPKT, &one);
++        int flags = fcntl(fd, F_GETFL, 0);
++        if (flags >= 0 &&
++            (flags & O_NONBLOCK) == 0)
++                flags = fcntl(fd, F_SETFL, flags | O_NONBLOCK);
++
++        if (flags < 0) {
++                int errsv = errno; GError **error=NULL;
++                g_set_error(error, VTE_PTY_ERROR,
++                            VTE_PTY_ERROR_PTY98_FAILED,
++                            "%s failed: %s", "Setting O_NONBLOCK flag", g_strerror(errsv));
++                errno = errsv;
++                return FALSE;
++        }
++        return TRUE;
+ }
+ 
+ static int
+--- a/src/vte.cc	2020-07-31 12:49:20.282063505 -0700
++++ b/src/vte.cc	2020-07-31 12:51:09.162590527 -0700
+@@ -4100,11 +4100,15 @@
+                                  * We need to see what that byte is, but otherwise drop it
+                                  * and write continuously to chunk->data.
+                                  */
++#if 0
+                                 char pkt_header;
+                                 char save = bp[-1];
++#endif
+                                 int ret = read (fd, bp - 1, rem + 1);
++#if 0
+                                 pkt_header = bp[-1];
+                                 bp[-1] = save;
++#endif
+ 				switch (ret){
+ 					case -1:
+ 						err = errno;
+@@ -4113,6 +4117,7 @@
+ 						eof = TRUE;
+ 						goto out;
+ 					default:
++#if 0
+                                                 ret--;
+ 
+                                                 if (pkt_header & TIOCPKT_IOCTL) {
+@@ -4133,6 +4138,7 @@
+                                                 } else if (pkt_header & TIOCPKT_START) {
+                                                         pty_scroll_lock_changed(false);
+                                                 }
++#endif
+ 
+ 						bp += ret;
+ 						rem -= ret;
+--- a/src/vte.cc	2020-07-31 15:42:54.360231388 -0700
++++ b/src/vte.cc	2020-07-31 15:43:06.907345961 -0700
+@@ -4104,7 +4104,7 @@
+                                 char pkt_header;
+                                 char save = bp[-1];
+ #endif
+-                                int ret = read (fd, bp - 1, rem + 1);
++                                int ret = read (fd, bp, rem);
+ #if 0
+                                 pkt_header = bp[-1];
+                                 bp[-1] = save;
