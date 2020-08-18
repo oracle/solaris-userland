@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-terminal
-COMPONENT_VERSION=	3.18.2
+COMPONENT_VERSION=	3.34.2
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Terminal
 COMPONENT_ARCHIVE_HASH= \
-	sha256:5e35c0fa1395258bab83952cfabe4c1828b8655bcd761f8faed70b452bd89efa
+	sha256:3bd723f4058ec014da4715db4181b7d73eccc797b85ad5e6236996951c01803d
 COMPONENT_BUGDB=        gnome/terminal
 COMPONENT_ANITYA_ID=	10896
 
-TPNO=			25405
+TPNO=			61162
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -58,6 +58,7 @@ CONFIGURE_OPTIONS += --enable-introspection
 CONFIGURE_OPTIONS += --enable-shared
 CONFIGURE_OPTIONS += --disable-migration
 CONFIGURE_OPTIONS += --enable-nautilus-extension
+CONFIGURE_OPTIONS += --without-systemd
 
 unexport SHELLOPTS
 

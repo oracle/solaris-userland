@@ -1,7 +1,3 @@
-Patch taken from upstream:
-https://gitlab.gnome.org/GNOME/gnome-terminal/-/commit/8e897c7bf3a49e03c9ea5411b4dae445a284aefb
-and backported to gnome-terminal 3.18.2.
-
 From 8e897c7bf3a49e03c9ea5411b4dae445a284aefb Mon Sep 17 00:00:00 2001
 From: Debarshi Ray <debarshir@gnome.org>
 Date: Wed, 17 Jun 2020 12:59:48 +0200
@@ -18,21 +14,21 @@ https://gitlab.gnome.org/GNOME/gnome-terminal/-/issues/277
  create mode 100644 man/gnome-terminal.xml
 
 diff --git a/Makefile.am b/Makefile.am
-index f6f41a6..8946b31 100644
+index eb374169..5ec65d8f 100644
 --- a/Makefile.am
 +++ b/Makefile.am
 @@ -1,4 +1,4 @@
--SUBDIRS = src po help
-+SUBDIRS = man src po help
+-SUBDIRS = data src po help
++SUBDIRS = data man src po help
  
  NULL =
  
 diff --git a/configure.ac b/configure.ac
-index d0fce54..c8b38f8 100644
+index c816e36f..6c1a2a23 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -194,6 +194,14 @@ if test -z "$DESKTOP_FILE_VALIDATE"; then
-   AC_MSG_ERROR([desktop-file-validate not found])
+@@ -169,6 +169,14 @@ if test -z "$DESKTOP_FILE_VALIDATE"; then
+   fi
  fi
  
 +AC_ARG_VAR([XSLTPROC],[the xsltproc programme])
@@ -46,17 +42,17 @@ index d0fce54..c8b38f8 100644
  # ***************************
  # GNOME Shell search provider
  # ***************************
-@@ -360,6 +368,7 @@ AC_DEFINE_UNQUOTED([GDK_VERSION_MAX_ALLOWED],[GDK_VERSION_[]AS_TR_SH([$GTK_MAX_A
- AC_CONFIG_FILES([
- Makefile
- gnome-terminal.desktop.in
+@@ -307,6 +315,7 @@ Makefile
+ org.gnome.Terminal.desktop.in
+ data/Makefile
+ data/icons/Makefile
 +man/Makefile
  src/Makefile
  src/terminal-version.h
  help/Makefile
 diff --git a/man/Makefile.am b/man/Makefile.am
 new file mode 100644
-index 0000000..ecce224
+index 00000000..ecce224d
 --- /dev/null
 +++ b/man/Makefile.am
 @@ -0,0 +1,18 @@
@@ -80,7 +76,7 @@ index 0000000..ecce224
 +CLEANFILES = $(man_MANS)
 diff --git a/man/gnome-terminal.xml b/man/gnome-terminal.xml
 new file mode 100644
-index 0000000..abdac00
+index 00000000..abdac002
 --- /dev/null
 +++ b/man/gnome-terminal.xml
 @@ -0,0 +1,385 @@
@@ -469,3 +465,6 @@ index 0000000..abdac00
 +    </para>
 +  </refsect1>
 +</refentry>
+-- 
+GitLab
+
