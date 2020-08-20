@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -71,3 +71,5 @@ REQUIRED_PACKAGES += library/python/libxml2-27
 REQUIRED_PACKAGES += runtime/perl-522
 REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += service/gnome/desktop-cache
+# Requires itself to successfully build....
+REQUIRED_PACKAGES += developer/gnome/gnome-doc-utils

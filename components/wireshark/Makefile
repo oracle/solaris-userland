@@ -82,6 +82,7 @@ REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/nghttp2
 REQUIRED_PACKAGES += library/snappy
 REQUIRED_PACKAGES += library/zlib
+REQUIRED_PACKAGES += compress/lz4
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += system/library/libpcap
 REQUIRED_PACKAGES += system/library/math

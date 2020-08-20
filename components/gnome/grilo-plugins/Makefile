@@ -78,3 +78,4 @@ REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/media-player/totem-pl-parser
 REQUIRED_PACKAGES += runtime/lua
 REQUIRED_PACKAGES += system/network/avahi
+REQUIRED_PACKAGES += system/network/avahi/gui
