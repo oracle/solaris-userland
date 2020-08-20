@@ -20,15 +20,10 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
-
-# Upcoming squid version update will resolve GCC 9 build issues.
-GCC_ROOT= /usr/gcc/7
-# Disable reproducible paths in binaries since it requires GCC 9 or newer.
-gcc_FIX_PATH=
 
 include ../../make-rules/shared-macros.mk
 

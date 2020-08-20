@@ -15,6 +15,16 @@ t char*)':
          ^~~~~
          index_t
 
+################################################################################
+squid-4.11/src/pconn.cc: In member function 'void PconnPool::push(const ConnectionPointer&, const char*)':
+squid-4.11/src/pconn.cc:435:46: error: '%s' directive output may be truncated writing up to 777 bytes into a region of size 51 [-Werror=format-truncation=]
+  435 |     snprintf(desc, FD_DESC_SZ, "Idle server: %s", aKey);
+      |                                              ^~
+squid-4.11/src/pconn.cc:435:13: note: 'snprintf' output between 14 and 791 bytes into a destination of size 64
+  435 |     snprintf(desc, FD_DESC_SZ, "Idle server: %s", aKey);
+      |     ~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+cc1plus: all warnings being treated as errors
+
 --- squid-4.8/src/auth/basic/SMB_LM/valid.h	2019-07-31 10:19:39.629726916 +0000
 +++ squid-4.8/src/auth/basic/SMB_LM/valid.h	2019-07-31 10:17:54.496968865 +0000
 @@ -15,7 +15,7 @@
@@ -56,3 +66,20 @@ t char*)':
  
  char const *ESIVariableUserAgent::esiUserOs[]= {
      "WIN",
+--- squid-4.11/src/pconn.cc
++++ squid-4.11/src/pconn.cc
+@@ -432,7 +432,14 @@
+     assert(!comm_has_incomplete_write(conn->fd));
+ 
+     LOCAL_ARRAY(char, desc, FD_DESC_SZ);
++#ifdef __GNUC__
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wformat-truncation"
++#endif
+     snprintf(desc, FD_DESC_SZ, "Idle server: %s", aKey);
++#ifdef __GNUC__
++#pragma GCC diagnostic pop
++#endif
+     fd_note(conn->fd, desc);
+     debugs(48, 3, HERE << "pushed " << conn << " for " << aKey);
+ 
