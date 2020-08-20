@@ -448,7 +448,7 @@
              if (!kret)
                  kret = krb5_internalize_opaque(kcontext,
                                                 KV5M_CONTEXT,
-@@ -712,10 +819,26 @@ kg_ctx_internalize(kcontext, argp, buffer, lenremain)
+@@ -712,10 +819,27 @@ kg_ctx_internalize(kcontext, argp, buffer, lenremain)
                                                 KV5M_AUTH_CONTEXT,
                                                 (krb5_pointer *) &ctx->auth_context,
                                                 &bp, &remain);
@@ -458,7 +458,7 @@
                  kret = krb5_ser_unpack_int32(&ibuf, &bp, &remain);
              ctx->proto = ibuf;
 +
-+            if (!kret) {
++            if (!kret && (ctx->seqstate != NULL)) {
 +		uint64_t base = g_queue_firstnum((void **)&(ctx->seqstate));
 +
 +                g_order_free((void **)&(ctx->seqstate));
@@ -470,12 +470,13 @@
 +                kret = g_seqstate_init(&(ctx->seqstate), base,
 +                    (ctx->gss_flags & GSS_C_REPLAY_FLAG) != 0,
 +                    (ctx->gss_flags & GSS_C_SEQUENCE_FLAG) != 0, ctx->proto);
-+            }
++            } else if (ctx->gss_flags & (GSS_C_REPLAY_FLAG|GSS_C_SEQUENCE_FLAG))
++                kret = EINVAL;
 +
              if (!kret)
                  kret = krb5_ser_unpack_int32(&ibuf, &bp, &remain);
              ctx->cksumtype = ibuf;
-@@ -731,6 +854,7 @@ kg_ctx_internalize(kcontext, argp, buffer, lenremain)
+@@ -731,6 +855,7 @@ kg_ctx_internalize(kcontext, argp, buffer, lenremain)
              if (!kret)
                  kret = krb5_ser_unpack_int32(&ibuf, &bp, &remain);
              ctx->cred_rcache = ibuf;
@@ -483,7 +484,7 @@
              /* authdata */
              if (!kret)
                  kret = krb5_ser_unpack_int32(&ibuf, &bp, &remain);
-@@ -769,6 +893,7 @@ kg_ctx_internalize(kcontext, argp, buffer, lenremain)
+@@ -769,6 +894,7 @@ kg_ctx_internalize(kcontext, argp, buffer, lenremain)
                          kret = 0;
                  }
              }
