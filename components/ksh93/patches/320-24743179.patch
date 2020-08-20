@@ -1,0 +1,33 @@
+Patch developed inhouse.
+This fixes an issue with ksh93 printf output missing trailing quotes
+in multibyte locales. See CR 24743179 for more details
+
++++ INIT.2012-08-01.old/src/cmd/ksh93/sh/string.c	2020-07-22 04:08:35.666650934 +0000
++++ INIT.2012-08-01/src/cmd/ksh93/sh/string.c	2020-07-22 04:08:35.666650934 +0000
+@@ -336,6 +336,9 @@
+ 	int offset;
+ 	if(!cp)
+ 		return((char*)0);
++#if SHOPT_MULTIBYTE
++	mbinit();
++#endif
+ 	offset = staktell();
+ 	state = ((c= mbchar(cp))==0);
+ 	if(isaletter(c))
+--- INIT.2012-08-01.old/src/lib/libast/comp/setlocale.c	2020-07-22 03:59:46.399402356 +0000
++++ INIT.2012-08-01/src/lib/libast/comp/setlocale.c	2020-07-15 04:16:24.807792330 +0000
+@@ -603,7 +603,13 @@
+ 	register int		c;
+ 	register wchar_t	w = 0;
+ 
+-	if (!sp || !n)
++	if (!sp)
++	{
++		if(!wp)
++			ast.mb_sync = 0;
++		return 0;
++	}
++	if(!n)
+ 		return 0;
+ 	if ((m = utf8tab[*sp]) > 0)
+ 	{
