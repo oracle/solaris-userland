@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 32_and_64
 COMPILER= gcc
@@ -61,6 +61,7 @@ CONFIGURE_OPTIONS +=	--with-fontpath=$(USRSHAREFONTSDIR)
 CONFIGURE_OPTIONS +=	--with-logdir=$(VARDIR)/log/cups
 CONFIGURE_OPTIONS +=	--with-rundir=/system/volatile/cups
 CONFIGURE_OPTIONS +=	--with-smfmanifestdir=$(LIBDIR)/svc/manifest/application
+CONFIGURE_OPTIONS +=	--with-printcap=$(ETCDIR)/printers.conf
 CONFIGURE_OPTIONS +=	--without-rcdir
 CONFIGURE_OPTIONS +=	--with-cups-user=lp
 CONFIGURE_OPTIONS +=	--with-privateinclude=$(USRINCDIR)/cups/private
