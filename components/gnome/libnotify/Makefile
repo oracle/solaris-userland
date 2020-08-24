@@ -26,32 +26,33 @@
 BUILD_BITS = 64_and_32
 COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
+BUILD_STYLE=            meson
 
 COMPONENT_NAME=		libnotify
-COMPONENT_VERSION=	0.7.7
+COMPONENT_VERSION=	0.7.8
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/libnotify/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:9cb4ce315b2655860c524d46b56010874214ec27e854086c1a1d0260137efc04
+	sha256:69209e0b663776a00c7b6c0e560302a8dbf66b2551d55616304f240bba66e18c
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13149
 
-TPNO=			34499
+TPNO=			54121
 
 # Tests do not work on Solaris yet
 TEST_TARGET= $(SKIP_TEST)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+LDFLAGS += -Wl,-zgnu-version-script-compat
 
-CONFIGURE_OPTIONS += --disable-static
 # Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-introspection
-CONFIGURE_OPTIONS.64 += --enable-introspection
-CONFIGURE_OPTIONS += --disable-docbook-docs
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --with-pic
+CONFIGURE_OPTIONS.32 += -Dintrospection=disabled
+CONFIGURE_OPTIONS.64 += -Dintrospection=enabled
+CONFIGURE_OPTIONS += -Ddocbook-docs=disable
 
-# Required due to patches.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
+CONFIGURE_OPTIONS += -Ddefault_library=shared
+
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/documentation-tool/xmlto

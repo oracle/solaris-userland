@@ -1,0 +1,31 @@
+Temporary workaround for the fact that the Solaris linker
+doesn't currently support arbitrary globbing of symbols via '*'.  For now,
+this is worked around with a manual definition of all of the symbols that
+should be exported by the relevant library.  The right fix is probably to
+detect whether we're using the GNU linker, and if not, use a combination of
+perl, sed, etc. to generate the mapfile at build time.
+
+Why setting LDFLAGS += -Wl,-zgnu-version-script-compat doesn't work is a
+mystery that needs to be eventually figured out.
+
+--- libnotify-0.7.N/libnotify/libnotify.map	2020-08-20 02:34:33.919362673 -0700
++++ libnotify-0.7.8/libnotify/libnotify.map	2020-08-23 23:42:42.916616107 -0700
+@@ -1,6 +1,15 @@
+ {
+ global:
+-    notify_*;
+-local:
+-    *;
++notify_notification_set_hint_byte_array;
++notify_is_initted;
++notify_set_app_name;
++notify_marshal_VOID__UINT_STRING;
++notify_notification_set_icon_from_pixbuf;
++notify_get_app_name;
++notify_notification_clear_actions;
++notify_marshal_VOID__UINT_UINT;
++notify_notification_clear_hints;
++notify_urgency_get_type;
++notify_notification_get_closed_reason;
++notify_notification_set_hint_uint32;
+ };
