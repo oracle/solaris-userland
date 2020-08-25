@@ -1,0 +1,70 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+
+# components/openldap/generate/common.transform, common rules for openldap packages.
+#
+# This file is included by the two openldap package generation files, as per its
+# name it has common rules to be applied to the generated package files.
+
+# Step 1. Temporarily assign all files and links to the client package.
+# ---------------------------------------------------------------------
+# Later rules will reassign as necessary to the other package.
+
+<transform file link -> default pkg.type client-pkg>
+
+# Step 2.  Identify Server package contents
+# ------------------------------------------
+
+# Everything delivered to etc/openldap - except for ldap.conf
+<transform file path=etc/openldap/.* -> set pkg.type server-pkg>
+<transform file path=etc/openldap/(ldap\.conf\.default|ldap\.conf)$ -> set pkg.type client-pkg>
+
+# header file
+<transform file path=usr/include/openldap/slapi-plugin.h -> set pkg.type server-pkg>
+
+# Solaris specific files, as specified in openldap-server.static
+<transform file path=Solaris/.* -> drop>
+
+# Documentation, section 8, most of section 5 and the admin guide.
+<transform file link path=usr/share/man/man[85]/.* -> set pkg.type server-pkg>
+# Exceptions for section 5.
+<transform file path=usr/share/man/man5/(ldap.conf|ldif).5 -> set pkg.type client-pkg>
+# Admin guide
+<transform file path=usr/share/doc/openldap/.* -> set pkg.type server-pkg>
+
+# slapd commands
+<transform file link path=usr/(sbin|lib)/slap.* -> set pkg.type server-pkg>
+<transform file link path=usr/(sbin|lib)/.*/slap.* -> set pkg.type server-pkg>
+
+# Step 3. Discard files and links that are not delivered.
+# -------------------------------------------------------
+
+# 32 bit commands (not the libraries)
+<transform file link path=usr/bin/.*/.* -> drop>
+<transform file link path=usr/sbin/.*/.* -> drop>
+
+# Some schema directory noise (contents are identical to schema directory).
+<transform file path=etc/openldap/schema\..* -> drop>
+
+# drop files where patch didn't apply cleanly and gnu patch did create a backup
+<transform file path=.*~$ -> drop>

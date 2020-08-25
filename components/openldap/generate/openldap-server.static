@@ -1,0 +1,74 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+
+# components/openldap/generate/openldap-server.static, Fixed set of package actions.
+
+# Some elements, such as transformations, are automatically copied in to the generated
+# file and so do not need to be present in either the static or generated file.
+
+# directories
+# ===========
+dir  path=var/openldap owner=openldap group=openldap
+dir  path=var/openldap/openldap-data owner=openldap group=openldap mode=700
+dir  path=var/openldap/run owner=openldap group=openldap mode=700
+
+# Complicated deliverables
+# ==========================
+# file path=etc/openldap/slapd.conf owner=openldap group=openldap mode=0600 \
+#     original_name=library/openldap:etc/openldap/slapd.conf overlay=allow \
+#     preserve=true
+
+# slapd is delivered to lib directory.
+file usr/lib/$(MACH64)/slapd path=usr/lib/slapd mode=0555 \
+    pkg.depend.bypass-generate=libsasl2.so.3
+ 
+# historical link.
+link path=usr/include/slapi-plugin.h target=openldap/slapi-plugin.h
+
+# Manually add Solaris files as they are not copied into proto area.
+# ==================================================================
+file Solaris/exec_attr path=etc/security/exec_attr.d/library:openldap
+file Solaris/prof_attr path=etc/security/prof_attr.d/library:openldap
+file Solaris/user_attr path=etc/user_attr.d/library:openldap
+file Solaris/ldap-olslapd.xml \
+    path=lib/svc/manifest/network/ldap/ldap-olslapd.xml
+file Solaris/ldap-olslapd path=lib/svc/method/ldap-olslapd
+# Notice which is displayed upon first installation.
+file Solaris/openldap-notice.txt \
+    path=usr/share/doc/release-notes/openldap-install.txt owner=root \
+    group=sys mode=0444 must-display=true release-note=feature/pkg/self@0
+# Notice which is displayed on upgrade of openldap version.
+file Solaris/openldap-notice.txt \
+    path=usr/share/doc/release-notes/openldap-update.txt owner=root group=sys \
+    mode=0444 must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)
+# Transition documentation referenced in the above notices.
+file Solaris/openldap-transition.txt \
+    path=usr/share/doc/release-notes/openldap-transition.txt owner=root \
+    group=sys mode=0444
+
+
+
+

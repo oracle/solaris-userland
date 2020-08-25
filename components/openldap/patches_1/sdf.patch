@@ -1,0 +1,125 @@
+Patch to remove "$* is no longer supported" perl errors.
+The errors are due to use of multi-line matching being deprecated in modern Perl.
+Applying changes as per Perl Doc https://perldoc.perl.org/5.8.8/perlvar.html#%40LAST_MATCH_END
+allows `make test` to complete without error output using perl v5.26.3.
+
+Patch provided upstream.
+--- ./build/sparcv7/sdf-2.001/perllib/sdf/subs.pl	1999-05-12 05:39:14.000000000 -0700
++++ ./build/sparcv7/sdf-2.001/blib/lib/sdf/subs.pl	2020-09-03 10:03:41.496404660 -0700
+@@ -621,8 +621,6 @@
+     local($old_match_rule);
+ 
+     # Ensure multi-line matching is enabled
+-    $old_match_rule = $*;
+-    $* = 1;
+ 
+     for ($event = $#code; $event >= 0; $event--) {
+ 
+@@ -632,7 +632,7 @@
+ 
+         # Mask out events
+         $mask = $mask[$event];
+-        next if $mask ne '' && $style !~ /^$mask$/;
++        next if $mask ne '' && $style !~ /^$mask$/ms;
+         return if $attr{'noevents'};
+ 
+         # execute the action
+@@ -641,7 +641,6 @@
+     }
+ 
+     # Restore the multi-line match flag setting
+-    $* = $old_match_rule;
+ }
+ 
+ #
+@@ -657,8 +657,6 @@
+     local($old_match_rule);
+ 
+     # Ensure multi-line matching is enabled
+-    $old_match_rule = $*;
+-    $* = 1;
+ 
+     for ($event = $#code; $event >= 0; $event--) {
+ 
+@@ -668,7 +668,7 @@
+ 
+         # Mask out events
+         $mask = $mask[$event];
+-        next if $mask ne '' && $name !~ /^$mask$/;
++        next if $mask ne '' && $name !~ /^$mask$/ms;
+ 
+         # execute the action
+         eval $action;
+@@ -676,7 +676,7 @@
+     }
+ 
+     # Restore the multi-line match flag setting
+-    $* = $old_match_rule;
++#    $* = $old_match_rule;
+ }
+ #
+ # >>Description::
+--- ./build/sparcv7/sdf-2.001/perllib/sdf/tohtml.pl	1999-05-24 01:44:27.000000000 -0700
++++ ./build/sparcv7/sdf-2.001/blib/lib/sdf/tohtml.pl	2020-09-03 10:07:28.558629391 -0700
+@@ -841,17 +841,14 @@
+     local($old_match_flag);
+ 
+     # Enable multi-line matching
+-    $old_match_flag = $*;
+-    $* = 1;
+ 
+     # Escape the symbols
+-    $text =~ s/\&/&amp;/g;
+-    $text =~ s/\</&lt;/g;
+-    $text =~ s/\>/&gt;/g;
+-    $text =~ s/\"/&quot;/g;
++    $text =~ s/\&/&amp;/msg;
++    $text =~ s/\</&lt;/msg;
++    $text =~ s/\>/&gt;/msg;
++    $text =~ s/\"/&quot;/msg;
+ 
+     # Reset multi-line matching flag
+-    $* = $old_match_flag;
+ 
+     # Return result
+     $text;
+@@ -981,8 +981,6 @@
+     local($old_match_flag);
+ 
+     # Enable multi-line matching
+-    $old_match_flag = $*;
+-    $* = 1;
+ 
+     # For hypertext jumps, surround the text. If the
+     # text contains a jump, the existing jump is removed.
+@@ -994,11 +994,11 @@
+         $value = $attr{'jump'};
+         $user_ext = $SDF_USER'var{'HTML_EXT'};
+         if ($user_ext) {
+-            $value =~ s/\.html/.$user_ext/;
++            $value =~ s/\.html/.$user_ext/ms;
+         }
+         $value = &_HtmlEscape($value);
+ 
+-        $text =~ s/\<A HREF\=[^>]+\>(.*)\<\/A\>/$1/;
++        $text =~ s/\<A HREF\=[^>]+\>(.*)\<\/A\>/$1/ms;
+         $text = "<A HREF=\"$value\">$text</A>";
+         delete $attr{'jump'};
+         $result++;
+@@ -1009,7 +1009,7 @@
+     # jump and id definitions don't clash.
+     if ($attr{'id'} ne '') {
+         $value = &_HtmlEscape($attr{'id'});
+-        if ($text =~ /\<A /) {
++        if ($text =~ /\<A /ms) {
+             $text = "<A NAME=\"$value\"> </A>$text";
+         }
+         else {
+@@ -1020,7 +1020,6 @@
+     }
+ 
+     # Reset multi-line matching flag
+-    $* = $old_match_flag;
+ 
+     # Return result
+     return $result;

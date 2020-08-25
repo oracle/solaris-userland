@@ -1,0 +1,86 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+
+# components/openldap/generate/openldap-server.generate, dynamic package actions.
+
+<include generate/common.transform>
+
+# Delete everything not belonging to this package.
+<transform file link pkg.type=(?!server-pkg) -> drop>
+# Remove temporarily assigned pkg.type definitions.
+<transform file link -> delete pkg.type .*>
+
+# Discard files added in openldap-server.static file.
+# ---------------------------------------------------
+<transform file path=Solaris/.* -> drop>
+<transform file path=usr/lib/slapd -> drop>
+<transform file path=usr/lib/\$\(MACH(32|64)\)/slapd -> drop>
+
+# 64bit slapd is placed directly into lib directory (since 11.4 FCS).
+# -------------------------------------------------------------------
+# move slapd links from 64bit directory to lib directory.
+<transform link path=\.\./lib/\$\(MACH64\)/slapd$ -> edit path .* ../lib/slapd>
+
+# Fix links, select (hash) and then edit target path to remove machine portion.
+<transform link path=usr/sbin/slap(.*) -> edit target ../lib/.*/slapd ../lib/slapd>
+
+# Manual pages are shipped in section <n>oldap and not <n>.
+# ---------------------------------------------------------
+# Not shipping bdb or hdb as we don't support them (we know the admin
+# guide has reference).
+<transform file link path=usr/share/man/man5/slapd-[bh]db.5$ -> drop>
+
+# Emit new locations for all the other manual pages rather than edit
+# path.  This keeps the p5m format as it was before, relying on actual
+# p5m transform-hash lines to locate the original prototype files for
+# the package.
+
+<transform file path=(usr/share/man/man[58])/(.*)\.(.*) -> emit file path=%<1>oldap/%<2>.%<3>oldap pkg.type=server-pkg>
+<transform link path=(usr/share/man/man5)/(.+)$ target=(.+)$ -> emit link path=%<1>oldap/%<2>oldap target=%<3>oldap pkg.type=server-pkg>
+# Discard the actual object, pkg will use transform to locate it.
+<transform file link path=usr/share/man/man[58]/.*$ -> drop>
+
+# Guide book.
+# -----------
+# Add link of index.html to guide.html.
+<transform file path=(usr/share/doc/openldap/.*)/guide.html -> emit link path=%<1>/index.html target=guide.html>
+
+# Decorate (add File Actions) as required.
+# ----------------------------------------
+
+# slapd.conf / slapd.ldif is very decorated
+<transform file path=etc/openldap/slapd.(conf|ldif)$ -> set owner openldap>
+<transform file path=etc/openldap/slapd.(conf|ldif)$ -> set group openldap>
+<transform file path=etc/openldap/slapd.(conf|ldif)$ -> set mode 0600>
+<transform file path=etc/openldap/slapd.conf$ -> set original_name library/openldap:etc/openldap/slapd.conf>
+<transform file path=etc/openldap/slapd.conf$ -> set overlay allow>
+<transform file path=etc/openldap/slapd.(conf|ldif)$ -> set preserve true>
+
+# Identify facets (optional components).
+# --------------------------------------
+# Add doc.html facet to all html pages and associated graphic files.
+<transform file link path=usr/share/doc/openldap/.*\.html -> set facet.doc.html true>
+<transform file path=usr/share/doc/openldap/.*\.(gif|png) -> set facet.doc.html true>
+

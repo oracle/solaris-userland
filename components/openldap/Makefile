@@ -20,24 +20,44 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
+# Build requirements, needed before inclusion of shared-macros.
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
+# Component information, used for download and packaging.
+# -------------------------------------------------------
+# openLDAP version encoding within IPS, our rule is:
+#   openLDAP <x>.<y>.<z>        =>   IPS <x>.<y>.<z>.0.<s>
+# <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		openldap
-COMPONENT_VERSION=	2.4.50
+COMPONENT_VERSION=	2.4.53
 HUMAN_VERSION=		$(COMPONENT_VERSION)
-IPS_COMPONENT_VERSION=	2.4.50.0.0
+IPS_COMPONENT_VERSION=	2.4.53.0.0
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_PROJECT_URL=	http://www.openldap.org/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:5cb57d958bf5c55a678c6a0f06821e0e5504d5a92e6a33240841fbca1db586b8
-COMPONENT_ARCHIVE_URL=	ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/$(COMPONENT_ARCHIVE)
+	sha256:035860e2fb812f2e294ea3e9914944691e4e4f52521b8945a5aacdcd088d8ae8
+COMPONENT_ARCHIVE_URL=	\
+	ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/openldap
+# For check_anitya target, see 'gmake print-ANITYA_API_URL'
 COMPONENT_ANITYA_ID=	2551
 
-TPNO=			58716
+TPNO=			61638
+
+# Set DEBUG=yes in environment to make this a debug build.
+ifeq ($(DEBUG), yes)
+# Override optimization setting from ../../make-rules/shared-macros.mk
+studio_OPT= -g
+# Define LDAP_DEBUG
+CFLAGS += -DLDAP_DEBUG
+endif
+# Threading debug, set THREAD_DEBUG=yes
+ifeq ($(THREAD_DEBUG), yes)
+CFLAGS += -DLDAP_THREAD_DEBUG
+endif
 
 # SOURCE_DATE_EPOCH when set to any non-null value prevents mkversion
 # from placing build machine information in deliverable files.
@@ -52,18 +72,14 @@ COMPONENT_ARCHIVE_HASH_1= \
     sha256:6f9bcdc884a9f450208c740e45effdfeb7e65c689f57b05d3c15208193a8a6ea
 COMPONENT_ARCHIVE_URL_1= ftp://ftp.eenet.ee/pub/cpan/authors/id/I/IA/IANC/$(COMPONENT_ARCHIVE_1)
 
-
 include $(WS_MAKE_RULES)/common.mk
 
-COMPONENT_PRE_CONFIGURE_ACTION = \
-        ($(CLONEY) $(SOURCE_DIR) $(@D))
+COMPONENT_PRE_CONFIGURE_ACTION += \
+	($(CLONEY) $(SOURCE_DIR) $(@D))
 
-COMPONENT_PRE_BUILD_ACTION = \
-	 (cd $(BUILD_DIR_32); \
-	 gzip -dc ../../$(SDFVER).tar.gz | tar xopf -; \
-	  cd $(SDFVER); $(PERL) Makefile.PL; \
-		$(GMAKE))
-
+#
+# Configuration settings, options and modes.
+#
 # we need to enable large file support and build PIC for our shared libraries
 CFLAGS += $(CPP_LARGEFILES) $(CC_PIC) $(studio_NORUNPATH)
 
@@ -96,6 +112,10 @@ CONFIGURE_OPTIONS += --with-cyrus-sasl
 CONFIGURE_OPTIONS += --with-threads
 CONFIGURE_OPTIONS += --with-tls=openssl
 
+# Enable adiheap and adistack security extensions
+ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
+ADISTACK_MODE =	$(ADISTACK_ENABLE)
+
 #
 # Test using test-and-compare framework as per ../../doc/testing.txt
 #
@@ -107,7 +127,9 @@ COMPONENT_TEST_ARGS += -e
 COMPONENT_TEST_TRANSFORMER =	$(GNU_GREP)
 COMPONENT_TEST_TRANSFORMS =	'">>>>>"'
 COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+
 #
+# Cyrus-sasl is a requirement.
 # OpenLDAP must be built with cyrus-sasl out of the gate instead of the
 # installed copy.
 #
@@ -124,10 +146,6 @@ COMPONENT_BUILD_ENV += LD_UNSET="$(LD_UNSET)"
 COMPONENT_BUILD_ENV += LTCFLAGS="-m$(BITS)"
 COMPONENT_INSTALL_ENV += LD_UNSET="$(LD_UNSET)"
 
-# Enable adiheap and adistack security extensions
-ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
-ADISTACK_MODE =	$(ADISTACK_ENABLE)
-
 # special targets due to dependency on cyrus-sasl
 ../cyrus-sasl/build/%/.installed:
 	(cd ../cyrus-sasl && $(GMAKE) install)
@@ -135,10 +153,44 @@ ADISTACK_MODE =	$(ADISTACK_ENABLE)
 $(CONFIGURE_32):       ../cyrus-sasl/build/$(MACH32)/.installed
 $(CONFIGURE_64):       ../cyrus-sasl/build/$(MACH64)/.installed
 
-COMPONENT_POST_BUILD_ACTION += \
+#
+# Simple Document Format (SDF), produce html documentation.
+#
+# SDF: Unpack, patch and Build; only needed once.
+COMPONENT_PRE_BUILD_ACTION.32 += \
+	(cd $(BUILD_DIR_32); \
+		gzip -dc $(COMPONENT_DIR)/$(SDFVER).tar.gz | tar xopf -; \
+		$(GPATCH) -p 3 < $(COMPONENT_DIR)/patches_1/sdf.patch; \
+		cd $(SDFVER); $(PERL) Makefile.PL; \
+		$(GMAKE))
+
+# SDF: Build guide.html using SDF script.
+COMPONENT_POST_BUILD_ACTION.32 += \
 	(cd $(BUILD_DIR_32)/doc/guide/admin; \
-	$(PERL) -I$(SDFBLIB)/lib $(SDFBLIB)/script/sdf -2html guide.sdf; \
-	$(PERL) -I$(SDFBLIB)/lib $(SDFBLIB)/script/sdf -2html index.sdf)
+	$(PERL) -I$(SDFBLIB)/lib $(SDFBLIB)/script/sdf -2html guide.sdf)
+
+# SDF: Install the guide and associated files into PROTO_DIR to ease
+# package generation.
+COMPONENT_POST_INSTALL_ACTION.32 +=	\
+	$(MKDIR) $(PROTO_DIR)/usr/share/doc/openldap/admin24; \
+	sed -e 's:../images/::' \
+	    $(BUILD_DIR_32)/doc/guide/admin/guide.html \
+	    > $(PROTO_DIR)/usr/share/doc/openldap/admin24/guide.html; \
+	$(FIND) $(BUILD_DIR_32)/doc/guide -name '*\.png' -o -name '*\.gif' | \
+	    while read file; do \
+		if grep -q "$${file\#\#*/}" \
+		    $(PROTO_DIR)/usr/share/doc/openldap/admin24/guide.html; \
+		then cp $$file $(PROTO_DIR)/usr/share/doc/openldap/admin24/.; \
+		else echo "Image file not used: $${file\#$(WS_TOP)/}"; \
+		fi; \
+	    done;
+
+# slapd is stripped by install, so copy non-stripped version to proto
+# area before publish.
+ifeq ($(DEBUG), yes)
+COMPONENT_POST_INSTALL_ACTION.64 +=	\
+	cp $(BUILD_DIR_64)/servers/slapd/.libs/slapd $(PROTO_DIR)/$(USRLIB)/slapd
+endif
 
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += shell/ksh93
