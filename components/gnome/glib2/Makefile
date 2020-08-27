@@ -71,6 +71,7 @@ CONFIGURE_OPTIONS += -Dxattr=false
 CONFIGURE_OPTIONS += -Dlibmount=false
 CONFIGURE_OPTIONS += -Dbsymbolic_functions=false
 CONFIGURE_OPTIONS += -Dman=true
+CONFIGURE_OPTIONS += -Dfam=true
 
 # Need to convert "#! /usr/bin/env python" to actual path for pkgdepend to work
 PYTHON_SCRIPTS += $(PROTO_DIR)$(CONFIGURE_BINDIR.$(BITS))/gtester-report
