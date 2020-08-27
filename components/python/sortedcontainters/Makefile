@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:7c35fe5d808537e9d8ff7126c985fc743fd5797c23c61c7cd07ec23916884a58
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.grantjenks.com/docs/sortedcontainers/
-COMPONENT_BUGDB=	python-mod/sortedcontainers
+COMPONENT_BUGDB=	python-mod/sortedconts
 COMPONENT_ANITYA_ID=	15939
 
 TPNO=			61031
