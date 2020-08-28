@@ -39,9 +39,6 @@ COMPONENT_ARCHIVE_URL=  https://launchpad.net/ubuntu/+archive/primary/+files/$(C
 
 TPNO=		        27912	
 
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/common.mk
 
 studio_C99MODE= $(studio_C99_ENABLE) 
