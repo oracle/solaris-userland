@@ -54,12 +54,6 @@ COMPONENT_PREP_ACTION += \
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 
-# uuid detection fails due to Solaris bug 15586738.
-CONFIGURE_OPTIONS += ac_cv_search_uuid_to_string=generic
-CONFIGURE_ENV += UUID_CFLAGS="-I$(USRINCDIR)/uuid"
-CONFIGURE_ENV.32 += UUID_LIBS="-luuid"
-CONFIGURE_ENV.64 += UUID_LIBS="-L$(USRLIBDIR64) -luuid"
-
 # intltool may or may not be run depending on previous state of build dir
 COMPONENT_TEST_TRANSFORMS += "-e '/\/usr\/bin\/intltool-update/d'"
 

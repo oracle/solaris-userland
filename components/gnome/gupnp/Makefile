@@ -48,12 +48,6 @@ PYTHON_VERSIONS=3.7
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# uuid detection fails due to Solaris bug 15586738.
-CONFIGURE_OPTIONS += ac_cv_search_uuid_to_string=generic
-CONFIGURE_ENV += UUID_CFLAGS="-I/usr/include/uuid"
-CONFIGURE_ENV.32 += UUID_LIBS="-luuid"
-CONFIGURE_ENV.64 += UUID_LIBS="-L/usr/lib/$(MACH64) -luuid"
-
 CONFIGURE_OPTIONS += --disable-static
 # Required for documentation.
 CONFIGURE_OPTIONS += --enable-gtk-doc

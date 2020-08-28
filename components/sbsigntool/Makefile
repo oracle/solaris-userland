@@ -46,7 +46,6 @@ include $(WS_MAKE_RULES)/common.mk
 
 studio_C99MODE= $(studio_C99_ENABLE) 
 CFLAGS += -I. -I/usr/gnu/include -I/usr/include/ -I/usr/include/efi/x86_64 -I/usr/include/efi/
-CONFIGURE_OPTIONS  +=  uuid_CFLAGS="-I/usr/include/uuid" uuid_LIBS="-luuid"
 PATH=/usr/gnu/bin:/usr/bin
 
 # GNU Build System files have to be regenerated for automake 1.16.

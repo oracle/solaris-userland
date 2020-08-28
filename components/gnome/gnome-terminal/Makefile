@@ -50,9 +50,6 @@ CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
 PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
 LD_OPTIONS += $(LD_OPTIONS.$(BITS))
 
-# uuid detection fails due to Solaris bug 15586738, use local uuid.pc to avoid
-PKG_CONFIG_PATHS  += $(COMPONENT_DIR)
-
 CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += --enable-introspection
 CONFIGURE_OPTIONS += --enable-shared
