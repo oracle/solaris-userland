@@ -4,9 +4,7 @@ test_gdb is not deterministic and sometimes fails for unimportant reasons (only
 when ran with gmake test from component root). Same is true for on ofe the
 test_normalization tests. [Not for upstream]
 
-test_time changes used locale to region specific utf8 as python is not able to
-work with non utf8 region specific encodings in Solaris. [Not for upstream].
-Second change changes skip reason string to reflect the actual platform.
+test_time changes skip reason string to reflect the actual platform.
 [Can be offered upstream]
 
 test_socket fixes problem with sparc specific behavior of CMSG_SPACE(). Needed
@@ -22,9 +20,6 @@ platforms. This just skips given test [Not for upstream].
 
 test_re those two test are probably also locale related but I have no idea what
 is the root cause of these... [Should be reported upstream]
-
-test_float changes encodings for the same reason as in test_time.
-[Not for upstream]
 
 test_site is not deterministic and sometimes fails not sure why.
 [Not for upstream]
@@ -58,18 +53,6 @@ differences. We can safely comment it out. [Not for upstream]
              testdata = open_urlresource(TESTDATAURL, encoding="utf-8",
 --- Python-3.7.8/Lib/test/test_time.py
 +++ Python-3.7.8/Lib/test/test_time.py
-@@ -583,9 +583,9 @@ class TestLocale(unittest.TestCase):
- 
-     def test_bug_3061(self):
-         try:
--            tmp = locale.setlocale(locale.LC_ALL, "fr_FR")
-+            tmp = locale.setlocale(locale.LC_ALL, "fr_FR.UTF-8")
-         except locale.Error:
--            self.skipTest('could not set locale.LC_ALL to fr_FR')
-+            self.skipTest('could not set locale.LC_ALL to fr_FR.UTF-8')
-         # This should not cause an exception
-         time.strftime("%B", (2009,2,1,0,0,0,0,0,0))
- 
 @@ -626,7 +626,7 @@ class _TestStrftimeYear:
              self.test_year('%04d', func=year4d)
  
@@ -169,17 +152,6 @@ differences. We can safely comment it out. [Not for upstream]
      def test_locale_compiled(self):
          oldlocale = locale.setlocale(locale.LC_CTYPE)
          self.addCleanup(locale.setlocale, locale.LC_CTYPE, oldlocale)
---- Python-3.7.8/Lib/test/test_float.py
-+++ Python-3.7.8/Lib/test/test_float.py
-@@ -144,7 +144,7 @@ class GeneralFloatCases(unittest.TestCas
-         # non-UTF-8 byte string
-         check(b'123\xa0')
- 
--    @support.run_with_locale('LC_NUMERIC', 'fr_FR', 'de_DE')
-+    @support.run_with_locale('LC_NUMERIC', 'fr_FR.UTF-8', 'de_DE.UTF-8')
-     def test_float_with_comma(self):
-         # set locale to something that doesn't use '.' for the decimal point
-         # float must not accept the locale specific decimal point but
 --- Python-3.7.8/Lib/test/test_site.py
 +++ Python-3.7.8/Lib/test/test_site.py
 @@ -504,6 +504,8 @@ class ImportSideEffectTests(unittest.Tes
