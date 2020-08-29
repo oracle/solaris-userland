@@ -1,0 +1,201 @@
+https://bug1488552.bmoattachments.org/attachment.cgi?id=9045370
+https://build.opensuse.org/package/view_file/mozilla:Factory/mozjs60/enddianness.patch?expand=1
+
+--- a/js/src/gc/RelocationOverlay.h	2020-04-06 19:57:27.794944043 -0700
++++ b/js/src/gc/RelocationOverlay.h	2020-04-06 19:58:25.061858145 -0700
+@@ -34,8 +34,9 @@
+     /* See comment in js/public/HeapAPI.h. */
+     static const uint32_t Relocated = js::gc::Relocated;
+ 
++#if MOZ_LITTLE_ENDIAN || JS_BITS_PER_WORD == 32
+     /*
+-     * Keep the low 32 bits untouched. Use them to distinguish strings from
++     * Keep the first 32 bits untouched. Use them to distinguish strings from
+      * objects in the nursery.
+      */
+     uint32_t preserve_;
+@@ -42,6 +43,16 @@
+ 
+     /* Set to Relocated when moved. */
+     uint32_t magic_;
++#elif JS_BITS_PER_WORD == 64
++  /*
++   * On big-endian, we need to reorder to keep preserve_ lined up with the
++   * low 32 bits of the aligned group_ pointer in JSObject.
++   */
++  uint32_t magic_;
++  uint32_t preserve_;
++#else
++#  error "Unknown endianness or word size"
++#endif
+ 
+     /* The location |this| was moved to. */
+     Cell* newLocation_;
+--- a/js/src/vm/StringType.h	2020-04-06 19:59:41.560108987 -0700
++++ b/js/src/vm/StringType.h	2020-04-06 20:00:48.115095990 -0700
+@@ -7,6 +7,7 @@
+ #ifndef vm_StringType_h
+ #define vm_StringType_h
+ 
++#include "mozilla/EndianUtils.h"
+ #include "mozilla/MemoryReporting.h"
+ #include "mozilla/PodOperations.h"
+ #include "mozilla/Range.h"
+@@ -166,8 +167,20 @@
+     {
+         union {
+             struct {
++#if MOZ_LITTLE_ENDIAN || JS_BITS_PER_WORD == 32
+                 uint32_t           flags;               /* JSString */
+                 uint32_t           length;              /* JSString */
++#elif JS_BITS_PER_WORD == 64
++        /*
++         * On big-endian, we need to reorder to keep flags lined up
++         * with the low 32 bits of the aligned group_ pointer in
++         * JSObject.
++         */
++        uint32_t length; /* JSString */
++        uint32_t flags;  /* JSString */
++#else
++#  error "Unknown endianness or word size"
++#endif
+             };
+             uintptr_t              flattenData;         /* JSRope (temporary while flattening) */
+         } u1;
+--- a/js/src/jsfriendapi.h	2020-04-06 21:12:00.297022313 -0700
++++ b/js/src/jsfriendapi.h	2020-04-06 21:13:20.400418650 -0700
+@@ -9,6 +9,7 @@
+ 
+ #include "mozilla/Atomics.h"
+ #include "mozilla/Casting.h"
++#include "mozilla/EndianUtils.h"
+ #include "mozilla/Maybe.h"
+ #include "mozilla/MemoryReporting.h"
+ #include "mozilla/UniquePtr.h"
+@@ -640,8 +641,15 @@
+     static const uint32_t LATIN1_CHARS_BIT = JS_BIT(6);
+     static const uint32_t EXTERNAL_FLAGS   = LINEAR_BIT | NON_ATOM_BIT | JS_BIT(5);
+     static const uint32_t TYPE_FLAGS_MASK  = JS_BIT(6) - 1;
++#if MOZ_LITTLE_ENDIAN || JS_BITS_PER_WORD == 32
+     uint32_t flags;
+     uint32_t length;
++#elif JS_BITS_PER_WORD == 64
++    uint32_t length;
++    uint32_t flags;
++#else
++#  error "Unknown endianness or word size"
++#endif
+     union {
+         const JS::Latin1Char* nonInlineCharsLatin1;
+         const char16_t* nonInlineCharsTwoByte;
+--- a/js/src/gc/Marking-inl.h	2020-04-06 21:15:37.000894035 -0700
++++ b/js/src/gc/Marking-inl.h	2020-04-06 21:17:11.363705640 -0700
+@@ -92,10 +92,26 @@
+     MOZ_ASSERT(!isForwarded());
+     // The location of magic_ is important because it must never be valid to see
+     // the value Relocated there in a GC thing that has not been moved.
++#if MOZ_LITTLE_ENDIAN || JS_BITS_PER_WORD == 32
++  // On 32-bit, the magic_ aliases with whatever comes after the first
++  // pointer; on little-endian 64-bit, the magic_ aliases with the
++  // 32 most significant bits of the pointer, which are the second half.
+     static_assert(offsetof(RelocationOverlay, magic_) == offsetof(JSObject, group_) + sizeof(uint32_t),
+                   "RelocationOverlay::magic_ is in the wrong location");
+     static_assert(offsetof(RelocationOverlay, magic_) == offsetof(js::Shape, base_) + sizeof(uint32_t),
+                   "RelocationOverlay::magic_ is in the wrong location");
++#elif JS_BITS_PER_WORD == 64
++  // On big-endian 64-bit, the magic_ aliases with the 32 most
++  // significant bits of the pointer, but now that's the first half.
++  static_assert(offsetof(RelocationOverlay, magic_) ==
++                    offsetof(JSObject, group_),
++                "RelocationOverlay::magic_ is in the wrong location");
++  static_assert(offsetof(RelocationOverlay, magic_) ==
++                    offsetof(js::Shape, base_),
++                "RelocationOverlay::magic_ is in the wrong location");
++#else
++#  error "Unknown endianness or word size"
++#endif
+     static_assert(offsetof(RelocationOverlay, magic_) == offsetof(JSString, d.u1.length),
+                   "RelocationOverlay::magic_ is in the wrong location");
+     magic_ = Relocated;
+
+--- a/js/src/js-config.h.in	2020-04-07 09:51:05.670177307 -0700
++++ b/js/src/js-config.h.in	2020-04-07 09:53:14.917833585 -0700
+@@ -38,6 +38,13 @@
+ /* Define to 1 if SpiderMonkey should include ctypes support.  */
+ #undef JS_HAS_CTYPES
+ 
++/* Define to 1 if SpiderMonkey should include trace logging support. */
++#undef JS_TRACE_LOGGING
++
++/* Define to 1 if SpiderMonkey should include a breakpoint function for
++ * artificial OOMs. */
++#undef JS_OOM_BREAKPOINT
++
+ /* Define to 1 if SpiderMonkey should support the ability to perform
+    entirely too much GC.  */
+ #undef JS_GC_ZEAL
+@@ -48,6 +55,10 @@
+ /* Define to 1 to perform extra assertions and heap poisoning. */
+ #undef JS_CRASH_DIAGNOSTICS
+ 
++/* Define to 1 if SpiderMonkey is compiled with support for private values at
++ * odd-numbered memory addresses. */
++#undef JS_UNALIGNED_PRIVATE_VALUES
++
+ /* Define to 1 if SpiderMonkey is in NUNBOX32 mode. */
+ #undef JS_NUNBOX32
+ 
+@@ -54,6 +65,15 @@
+ /* Define to 1 if SpiderMonkey is in PUNBOX64 mode. */
+ #undef JS_PUNBOX64
+ 
++/* Define exactly one of these to 1 to indicate JIT code generation mode. */
++#undef JS_CODEGEN_NONE
++#undef JS_CODEGEN_ARM
++#undef JS_CODEGEN_ARM64
++#undef JS_CODEGEN_MIPS32
++#undef JS_CODEGEN_MIPS64
++#undef JS_CODEGEN_X86
++#undef JS_CODEGEN_X64
++
+ /* MOZILLA JSAPI version number components */
+ #undef MOZJS_MAJOR_VERSION
+ #undef MOZJS_MINOR_VERSION
+--- a/js/src/jsapi.cpp	2020-04-07 09:53:45.828020655 -0700
++++ b/js/src/jsapi.cpp	2020-04-07 09:54:32.910977295 -0700
+@@ -115,6 +115,14 @@
+ #define JS_ADDRESSOF_VA_LIST(ap) (&(ap))
+ #endif
+ 
++// See preprocessor definition of JS_BITS_PER_WORD in jstypes.h; make sure
++// JS_64BIT (used internally) agrees with it
++#ifdef JS_64BIT
++static_assert(JS_BITS_PER_WORD == 64, "values must be in sync");
++#else
++static_assert(JS_BITS_PER_WORD == 32, "values must be in sync");
++#endif
++
+ JS_PUBLIC_API(bool)
+ JS::CallArgs::requireAtLeast(JSContext* cx, const char* fnname, unsigned required) const
+ {
+--- a/js/src/jstypes.h	2020-04-07 09:54:52.896930787 -0700
++++ b/js/src/jstypes.h	2020-04-07 09:55:50.245099372 -0700
+@@ -139,12 +139,17 @@
+ #define JS_BITS_PER_BYTE 8
+ #define JS_BITS_PER_BYTE_LOG2 3
+ 
+-#if defined(JS_64BIT)
++#if (defined(__SIZEOF_POINTER__) && __SIZEOF_POINTER__ == 8) || \
++    (defined(UINTPTR_MAX) && UINTPTR_MAX == 0xFFFFFFFFFFFFFFFFu)
+ # define JS_BITS_PER_WORD 64
+ #else
+ # define JS_BITS_PER_WORD 32
+ #endif
+ 
++static_assert(sizeof(void*) == 8 ? JS_BITS_PER_WORD == 64
++                                 : JS_BITS_PER_WORD == 32,
++              "preprocessor and compiler must agree");
++
+ /***********************************************************************
+ ** MACROS:      JS_FUNC_TO_DATA_PTR
+ **              JS_DATA_TO_FUNC_PTR
