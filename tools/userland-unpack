@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2020, Oracle and/or its affiliates.
 #
 
 #
@@ -56,6 +56,7 @@ def uncompress_unpack_commands(filename: str) -> Tuple[str, str]:
       .jar                 -> /bin/cat IN                 | jar xf -
       .zip                 -> /usr/bin/unzip -qo IN
       .gem                 -> /usr/ruby/RUBYVER/bin/gem unpack IN
+      .tlz4 | .tar.lz4     -> /usr/bin/unlz4 -c           | gtar -xf -
     """
 
     uncompress = "/bin/cat"
@@ -76,6 +77,8 @@ def uncompress_unpack_commands(filename: str) -> Tuple[str, str]:
     elif filename.endswith(".gem"):
         ruby_ver = os.getenv("RUBY_VERSION", "")
         uncompress = f"/usr/ruby/{ruby_ver}/bin/gem unpack"
+    elif filename.endswith((".tlz4", ".tar.lz4")):
+        uncompress = "/usr/bin/unlz4 -c"
 
     if filename.endswith((".zip", ".gem")):
         unpack = ""
