@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 # This file specifies configure-line options to enable as many extensions as
@@ -72,6 +72,9 @@ CONFIGURE_OPTIONS += --enable-bcmath=shared
 
 CONFIGURE_OPTIONS += --with-bz2=shared
 REQUIRED_PACKAGES += compress/bzip2
+
+CONFIGURE_OPTIONS += --with-zip
+REQUIRED_PACKAGES += compress/libzip
 
 CONFIGURE_OPTIONS += --enable-calendar=shared
 

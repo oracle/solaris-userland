@@ -93,9 +93,6 @@ CONFIGURE_OPTIONS +=	--with-pear=$(VARPHPDIR)/pear
 CONFIGURE_OPTIONS +=	--disable-phpdbg
 CONFIGURE_OPTIONS +=	--disable-phpdbg-webhelper
 CONFIGURE_OPTIONS +=	--disable-phpdbg-debug
-# Do not look for system libzip until it is added to Solaris
-# (this means since version 7.4 we won't have zip extension)
-#CONFIGURE_OPTIONS +=	--without-libzip
 # if debug is desired do this
 # https://bugs.php.net/bugs-generating-backtrace.php
 # CONFIGURE_OPTIONS +=    --enable-debug
