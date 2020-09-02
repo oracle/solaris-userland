@@ -63,7 +63,6 @@ CONFIGURE_OPTIONS +=	--with-pdftops=pdftops
 CONFIGURE_OPTIONS +=	--disable-mutool
 # gs has better collor management but crashes
 CONFIGURE_OPTIONS +=	--enable-poppler
-CONFIGURE_OPTIONS +=	--disable-ghostscript
 CONFIGURE_OPTIONS +=	CFLAGS="$(CFLAGS)"
 CONFIGURE_OPTIONS +=	--enable-driverless=no
 CONFIGURE_OPTIONS +=	ENABLE_DRIVERLESS_FALSE="Y"

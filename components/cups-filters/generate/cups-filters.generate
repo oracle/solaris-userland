@@ -18,11 +18,16 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, Oracle and/or its affiliates.
 #
 
 # package file link only
 <transform dir -> drop>
+# add compatibility links
+<transform file path=usr/lib/cups/filter/gstopxl -> \
+	emit link path=usr/lib/cups/filter/pstopxl target=gstopxl>
+<transform file path=usr/lib/cups/filter/gstoraster -> \
+	emit link path=usr/lib/cups/filter/pstoraster target=gstoraster>
 # filters and backend should be executable even if those are not in .*bin/.* path
 <transform file path=^usr/lib/cups/(filter|backend)/.* -> default mode 0555>
 # unsupported interface (as of PSARC/2019/031)
