@@ -1,0 +1,85 @@
+https://github.com/Libvisual/libvisual/commit/6b911ccbcf16c09a24393302533cae1e95df0512
+
+From 6b911ccbcf16c09a24393302533cae1e95df0512 Mon Sep 17 00:00:00 2001
+From: Chong Kai Xiong <kaixiong@codeleft.sg>
+Date: Fri, 23 Mar 2012 07:00:09 +0800
+Subject: [PATCH] Fixed all compiler warnings in oinksie
+
+---
+ plugins/actor/oinksie/config.c       |  2 +-
+ plugins/actor/oinksie/{config.h => oink-config.h}  |  0
+ plugins/actor/oinksie/scene.c        |  2 +-
+ plugins/actor/oinksie/table.c        |  7 ++++++-
+ plugins/actor/oinksie/table.h        | 10 +++++-----
+ 5 files changed, 13 insertions(+), 8 deletions(-)
+ rename plugins/actor/oinksie/{config.h => oink-config.h} (100%)
+
+diff --git a/plugins/actor/oinksie/config.c b/plugins/actor/oinksie/config.c
+index 1e1fcd31..13d9c43b 100644
+--- a/plugins/actor/oinksie/config.c
++++ b/plugins/actor/oinksie/config.c
+@@ -27,7 +27,7 @@
+ #include "gfx-misc.h"
+ #include "screen.h"
+ #include "misc.h"
+-#include "config.h"
++#include "oink-config.h"
+ 
+ /* random configs */
+ void _oink_config_random_blurmode (OinksiePrivate *priv)
+diff --git a/plugins/actor/oinksie/config.h b/plugins/actor/oinksie/oink-config.h
+similarity index 100%
+rename from plugins/actor/oinksie/config.h
+rename to plugins/actor/oinksie/oink-config.h
+diff --git a/plugins/actor/oinksie/scene.c b/plugins/actor/oinksie/scene.c
+index e55418d0..f2df8d45 100644
+--- a/plugins/actor/oinksie/scene.c
++++ b/plugins/actor/oinksie/scene.c
+@@ -31,7 +31,7 @@
+ #include "gfx-misc.h"
+ #include "gfx-analyzer.h"
+ #include "gfx-background.h"
+-#include "config.h"
++#include "oink-config.h"
+ #include "misc.h"
+ #include "scene.h"
+ 
+diff --git a/plugins/actor/oinksie/table.c b/plugins/actor/oinksie/table.c
+index d4809d6f..9513a24e 100644
+--- a/plugins/actor/oinksie/table.c
++++ b/plugins/actor/oinksie/table.c
+@@ -26,7 +26,12 @@
+ #include "common.h"
+ #include "table.h"
+ 
+-void _oink_table_init ()
++float _oink_table_sin[OINK_TABLE_NORMAL_SIZE];
++float _oink_table_cos[OINK_TABLE_NORMAL_SIZE];
++float _oink_table_sinlarge[OINK_TABLE_LARGE_SIZE];
++float _oink_table_coslarge[OINK_TABLE_LARGE_SIZE];
++
++void _oink_table_init (void)
+ {
+ 	float adder;
+ 	int i;
+diff --git a/plugins/actor/oinksie/table.h b/plugins/actor/oinksie/table.h
+index a39b669a..857b3da2 100644
+--- a/plugins/actor/oinksie/table.h
++++ b/plugins/actor/oinksie/table.h
+@@ -27,11 +27,11 @@
+ #define OINK_TABLE_NORMAL_SIZE	1200
+ #define OINK_TABLE_LARGE_SIZE	12000
+ 
+-float _oink_table_sin[OINK_TABLE_NORMAL_SIZE];
+-float _oink_table_cos[OINK_TABLE_NORMAL_SIZE];
+-float _oink_table_sinlarge[OINK_TABLE_LARGE_SIZE];
+-float _oink_table_coslarge[OINK_TABLE_LARGE_SIZE];
++extern float _oink_table_sin[OINK_TABLE_NORMAL_SIZE];
++extern float _oink_table_cos[OINK_TABLE_NORMAL_SIZE];
++extern float _oink_table_sinlarge[OINK_TABLE_LARGE_SIZE];
++extern float _oink_table_coslarge[OINK_TABLE_LARGE_SIZE];
+ 
+-void _oink_table_init ();
++void _oink_table_init (void);
+ 
+ #endif /* _OINK_TABLE_H */

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -38,6 +38,9 @@ TPNO=			33599
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
+
+# GCC 10 defaults to -fnocommon - which is problem for this old version.
+CFLAGS += -fcommon
 
 # Need to recreate the configure script for gethrtime checks.
 COMPONENT_PREP_ACTION +=	(cd $(@D); autoreconf -fiv);

@@ -1,0 +1,16 @@
+Fixes:
+
+ld: fatal: symbol 'longVersion' is multiply-defined:
+        (file objects/version.o type=OBJT; file objects/main.o type=OBJT);
+
+--- vim-8.2.0444/src/globals.h
++++ vim-8.2.0444/src/globals.h
+@@ -1242,7 +1242,7 @@
+ #if defined(HAVE_DATE_TIME) && defined(VMS) && defined(VAXC)
+ extern char longVersion[];
+ #else
+-EXTERN char *longVersion;
++extern char *longVersion;
+ #endif
+ 
+ /*

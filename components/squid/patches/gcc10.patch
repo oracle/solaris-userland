@@ -1,0 +1,22 @@
+Should be investigated why the issue can be seen only on SPARC
+and submitted to upstream.
+
+libtool: compile:  /usr/gcc/10/bin/g++ -DHAVE_CONFIG_H -DDEFAULT_CONFIG_FILE=\"/etc/squid/squid.conf\" -DDEFAULT_SQUID_DATA_DIR=\"/usr/squid/share\" -DDEFAULT_SQUID_CONFIG_DIR=\"/etc/squid\" -I/builds/userland-gcc-10-cbe/components/squid/squid-4.13 -I/builds/userland-gcc-10-cbe/components/squid/squid-4.13/include -I/builds/userland-gcc-10-cbe/components/squid/squid-4.13/lib -I/builds/userland-gcc-10-cbe/components/squid/squid-4.13/src -I../../include -I/usr/include/kerberosv5 -m64 -I/usr/include/libxml2 -Wall -Wpointer-arith -Wwrite-strings -Wcomments -Wshadow -Woverloaded-virtual -Werror -pipe -D_REENTRANT -pthreads -I/usr/include/libxml2 -m64 -I/usr/include/idn -m64 -O3 -mno-app-regs -ffile-prefix-map=/builds/userland-gcc-10-cbe/components/squid=. -MT Expression.lo -MD -MP -MF .deps/Expression.Tpo -c /builds/userland-gcc-10-cbe/components/squid/squid-4.13/src/esi/Expression.cc  -fPIC -DPIC -o .libs/Expression.o
+/builds/userland-gcc-10-cbe/components/squid/squid-4.13/src/esi/Expression.cc: In static member function 'static int ESIExpression::Evaluate(const char*)':
+/builds/userland-gcc-10-cbe/components/squid/squid-4.13/src/esi/Expression.cc:861:12: error: '*((void*)& rv +8)' may be used uninitialized in this function [-Werror=maybe-uninitialized]
+  861 |     return rv;
+      |            ^~
+/builds/userland-gcc-10-cbe/components/squid/squid-4.13/src/esi/Expression.cc:861:12: error: '*((void*)& rv +8)' may be used uninitialized in this function [-Werror=maybe-uninitialized]
+/builds/userland-gcc-10-cbe/components/squid/squid-4.13/src/esi/Expression.cc:861:12: error: '*((void*)& rv +8)' may be used uninitialized in this function [-Werror=maybe-uninitialized]
+cc1plus: all warnings being treated as errors
+
+--- squid-4.13/src/esi/Expression.cc
++++ squid-4.13/src/esi/Expression.cc
+@@ -691,6 +691,7 @@
+     rv.valuetype = ESI_EXPR_INVALID;
+     rv.valuestored = ESI_LITERAL_INVALID;
+     rv.precedence = 1; /* A literal */
++    rv.value.integral = 0; /* to avoid need for -Werror=maybe-uninitialized on SPARC */
+ 
+     if (('0' <= *s && *s <= '9') || *s == '-') {
+         size_t length = strspn(s, "0123456789.");

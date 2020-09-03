@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../ofed-component-macros.mk
@@ -33,6 +33,9 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=	utility/ofuv_tools
 
 include ../ofed-component.mk
+
+# GCC 10 defaults to -fnocommon - which is problem.
+CFLAGS += -fcommon
 
 LIBS +=	-lopensm -losmvendor -losmcomp -libumad -libmad
 
