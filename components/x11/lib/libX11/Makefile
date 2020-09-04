@@ -27,16 +27,14 @@ BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libX11
-COMPONENT_VERSION=	1.6.10
+COMPONENT_VERSION=	1.6.12
 COMPONENT_ARCHIVE_HASH= \
-	sha256:af48626989b8515c994777896bd7b7ba2bd5b1ef4e1efaee0a55d8852bbe6226
+	sha256:f108227469419ac04d196df0f3b80ce1f7f65059bb54c0de811f4d8e03fd6ec7
 COMPONENT_BUGDB=	x11/libraries
 COMPONENT_ANITYA_ID=	1764
-TPNO=			60782
+TPNO=			61581
 
 PKG_PROTO_DIRS += $(SOURCE_DIR)/src/xlibi18n/
-
-TEST_TARGET = $(NO_TESTS)
 
 FIX_PC_FILES=x11.pc.in x11-xcb.pc.in
 
@@ -76,6 +74,17 @@ CPPFLAGS += -DSUNSOFT -DMOTIFBC -DSUNSOFT_KBD
 
 # Need additional mapfile for additional symbols in 64-bit versions
 COMPONENT_BUILD_ARGS.64 += ADD_libX11_LDFLAGS="-Wl,-M,$(CURDIR)/mapfile-vers-64"
+
+# for tests
+unexport SHELLOPTS
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/TOTAL:/p" ' \
+        '-e "/SKIP:/p" ' \
+        '-e "/PASS:/p" ' \
+        '-e "/FAIL:/p" ' \
+        '-e "/ERROR:/p" '
 
 # The default Userland locale transforms don't work with libX11 locale files
 LOCALE_TRANSFORMS =
