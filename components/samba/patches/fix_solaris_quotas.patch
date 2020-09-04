@@ -16,9 +16,11 @@ recent Solaris releases so it can be activated by adding:
 on cc options. I am leaving the decission if completely remove
 the unused code on community.
 
---- a/source3/wscript	2017-07-25 02:05:53.000000000 +0000
-+++ b/source3/wscript	2017-08-10 11:49:23.441352329 +0000
-@@ -1451,6 +1480,8 @@
+diff --git a/source3/wscript b/source3/wscript
+index 335cfd7..0f24f2d 100644
+--- a/source3/wscript
++++ b/source3/wscript
+@@ -1581,6 +1581,8 @@ main() {
          conf.CHECK_HEADERS('sys/quota.h')
          # For quotas on BSD systems
          conf.CHECK_HEADERS('ufs/ufs/quota.h')
@@ -27,8 +29,10 @@ the unused code on community.
          # For quotas on AIX systems
          conf.CHECK_HEADERS('jfs/quota.h')
          # For quotas on Linux XFS filesystems
---- a/source3/smbd/quotas.c	2017-07-25 02:05:53.000000000 +0000
-+++ b/source3/smbd/quotas.c	2017-08-10 14:55:13.897953464 +0000
+diff --git a/source3/smbd/quotas.c b/source3/smbd/quotas.c
+index 604631f..0aa878b 100644
+--- a/source3/smbd/quotas.c
++++ b/source3/smbd/quotas.c
 @@ -41,10 +41,11 @@
  #ifdef WITH_QUOTAS
  
@@ -42,7 +46,7 @@ the unused code on community.
  #include <sys/mnttab.h>
  #include <sys/mntent.h>
  
-@@ -102,7 +103,7 @@
+@@ -102,7 +103,7 @@ static int my_xdr_getquota_args(XDR *xdrsp, struct getquota_args *args)
  	return (1);
  }
  
@@ -51,7 +55,7 @@ the unused code on community.
  static bool nfs_quotas(char *nfspath, uid_t euser_id, uint64_t *bsize, uint64_t *dfree, uint64_t *dsize)
  {
  	uid_t uid = euser_id;
-@@ -210,6 +211,7 @@
+@@ -210,6 +211,7 @@ static bool nfs_quotas(char *nfspath, uid_t euser_id, uint64_t *bsize, uint64_t
  	DEBUG(10,("nfs_quotas: End of nfs_quotas\n" ));
  	return ret;
  }
@@ -59,7 +63,7 @@ the unused code on community.
  
  /****************************************************************************
  try to get the disk space from disk quotas (SunOS & Solaris2 version)
-@@ -224,7 +226,9 @@
+@@ -224,7 +226,9 @@ bool disk_quotas(connection_struct *conn, struct smb_filename *fname,
  	struct dqblk D;
  	struct quotctl command;
  	int file;
@@ -69,7 +73,7 @@ the unused code on community.
  	char *name = NULL;
  	FILE *fd;
  	SMB_STRUCT_STAT sbuf;
-@@ -237,6 +241,7 @@
+@@ -237,6 +241,7 @@ bool disk_quotas(connection_struct *conn, struct smb_filename *fname,
  	devno = fname->st.st_ex_dev;
  	DEBUG(5,("disk_quotas: looking for path \"%s\" devno=%x\n",
  		path, (unsigned int)devno));
@@ -77,7 +81,7 @@ the unused code on community.
  	if ((fd = fopen(MNTTAB, "r")) == NULL) {
  		return false;
  	}
-@@ -281,7 +286,10 @@
+@@ -281,7 +286,10 @@ bool disk_quotas(connection_struct *conn, struct smb_filename *fname,
  		unbecome_root();
  		return retval;
  	}

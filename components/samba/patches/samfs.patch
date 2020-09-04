@@ -13,25 +13,11 @@ Originally promoted into the community by:
 ...but during the SAMFS version change also the licensing conditions
 has changed so the community rejected to adopt the SAMFS support.
 
---- a/source3/wscript	2016-08-03 06:29:54.129142866 -0700
-+++ b/source3/wscript	2016-08-03 06:15:24.109052374 -0700
-@@ -1549,6 +1549,13 @@
-     if conf.CHECK_HEADERS('cephfs/libcephfs.h', False, False, 'cephfs') and conf.CHECK_LIB('cephfs'):
-         conf.DEFINE('HAVE_CEPH', '1')
-
-+    if conf.CHECK_CFG(package='samfs', args="--cflags --libs", msg='Check for Oracle HSM (aka. SAMFS) API.', uselib_store="SAMFS") :
-+        conf.SET_TARGET_TYPE('samfs', 'SYSLIB')
-+        conf.CHECK_HEADERS('samfs/lib.h samfs/stat.h', lib='samfs')
-+        conf.env['LINKFLAGS_SAMFS'] = [ '-R/opt/SUNWsamfs/lib'+'/'+(conf.CONFIG_GET('LIBPATH_SAMFS')[-1].split('/'))[-1] ]
-+        conf.CHECK_FUNCS('sam_stat', lib='samfs')
-+        default_shared_modules.extend(TO_LIST('vfs_samfs'))
-+
-     if Options.options.with_glusterfs:
-         conf.CHECK_CFG(package='glusterfs-api', args='"glusterfs-api >= 4" --cflags --libs',
-                        msg='Checking for glusterfs-api >= 4', uselib_store="GFAPI")
---- a/source3/modules/wscript_build	2016-01-26 12:25:54.000000000 -0800
-+++ b/source3/modules/wscript_build	2016-07-28 16:27:45.819924564 -0700
-@@ -194,6 +194,14 @@
+diff --git a/source3/modules/wscript_build b/source3/modules/wscript_build
+index 09528f3..fca8321 100644
+--- a/source3/modules/wscript_build
++++ b/source3/modules/wscript_build
+@@ -242,6 +242,14 @@ bld.SAMBA3_MODULE('vfs_solarisacl',
                   internal_module=bld.SAMBA3_IS_STATIC_MODULE('vfs_solarisacl'),
                   enabled=bld.SAMBA3_IS_ENABLED_MODULE('vfs_solarisacl'))
  
@@ -46,3 +32,21 @@ has changed so the community rejected to adopt the SAMFS support.
  bld.SAMBA3_MODULE('vfs_zfsacl',
                   subsystem='vfs',
                   source='vfs_zfsacl.c',
+diff --git a/source3/wscript b/source3/wscript
+index 74008a6..48572bb 100644
+--- a/source3/wscript
++++ b/source3/wscript
+@@ -1755,6 +1755,13 @@ main() {
+                       or lack of ceph_statx support''')
+             conf.undefine('HAVE_CEPH')
+ 
++    if conf.CHECK_CFG(package='samfs', args="--cflags --libs", msg='Check for Oracle HSM (aka. SAMFS) API.', uselib_store="SAMFS") :
++        conf.SET_TARGET_TYPE('samfs', 'SYSLIB')
++        conf.CHECK_HEADERS('samfs/lib.h samfs/stat.h', lib='samfs')
++        conf.env['LINKFLAGS_SAMFS'] = [ '-R/opt/SUNWsamfs/lib'+'/'+(conf.CONFIG_GET('LIBPATH_SAMFS')[-1].split('/'))[-1] ]
++        conf.CHECK_FUNCS('sam_stat', lib='samfs')
++        default_shared_modules.extend(TO_LIST('vfs_samfs'))
++
+     if Options.options.with_glusterfs:
+         conf.CHECK_CFG(package='glusterfs-api', args='"glusterfs-api >= 4" --cflags --libs',
+                        msg='Checking for glusterfs-api >= 4', uselib_store="GFAPI")

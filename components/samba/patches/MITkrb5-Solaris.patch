@@ -4,10 +4,12 @@ Solaris place krb5 headers into /usr/include/kerberosv5/ so
 the -I/usr/include/kerberosv5 option need to be passed into the
 test by pointing to "lib" entity from where it can be retrieved.
 
---- a/wscript_configure_system_mitkrb5	2018-06-26 07:42:46.000000000 +0000
-+++ b/wscript_configure_system_mitkrb5	2018-08-06 06:54:35.736827959 +0000
-@@ -75,8 +75,8 @@
-             Logs.info('MIT Kerberos %s detected, MIT krb5 build can proceed' % (krb5_version))
+diff --git a/wscript_configure_system_mitkrb5 b/wscript_configure_system_mitkrb5
+index b0bf2a8..47df3df 100644
+--- a/wscript_configure_system_mitkrb5
++++ b/wscript_configure_system_mitkrb5
+@@ -81,8 +81,8 @@ if conf.env.KRB5_CONFIG:
+         conf.DEFINE('HAVE_MIT_KRB5_PRE_1_18', 1)
  
  conf.CHECK_CFG(args="--cflags --libs", package="com_err", uselib_store="com_err")
 -conf.CHECK_FUNCS_IN('_et_list', 'com_err')
@@ -17,7 +19,7 @@ test by pointing to "lib" entity from where it can be retrieved.
  conf.CHECK_HEADERS('kdb.h', lib='kdb5')
  
  conf.CHECK_HEADERS('krb5.h krb5/locate_plugin.h', lib='krb5')
-@@ -84,12 +84,12 @@
+@@ -90,12 +90,12 @@ conf.CHECK_HEADERS('krb5.h krb5/localauth_plugin.h', lib='krb5')
  possible_gssapi_headers="gssapi.h gssapi/gssapi_generic.h gssapi/gssapi.h gssapi/gssapi_ext.h gssapi/gssapi_krb5.h gssapi/gssapi_oid.h"
  conf.CHECK_HEADERS(possible_gssapi_headers, lib='gssapi')
  
@@ -35,7 +37,7 @@ test by pointing to "lib" entity from where it can be retrieved.
  
  if conf.CHECK_FUNCS_IN('gss_display_status', 'gssapi gssapi_krb5'):
      have_gssapi=True
-@@ -111,7 +111,7 @@
+@@ -117,7 +117,7 @@ conf.CHECK_FUNCS_IN('''
         gss_import_cred gss_export_cred
         gss_acquire_cred_from
         ''', 'gssapi gssapi_krb5')
@@ -44,7 +46,7 @@ test by pointing to "lib" entity from where it can be retrieved.
  conf.CHECK_FUNCS_IN('krb5_mk_req_extended krb5_kt_compare', 'krb5')
  conf.CHECK_FUNCS('''
         krb5_auth_con_getrecvsubkey
-@@ -149,25 +149,25 @@
+@@ -155,27 +155,27 @@ conf.CHECK_FUNCS('''
  conf.CHECK_DECLS('''krb5_get_credentials_for_user
                      krb5_auth_con_set_req_cksumtype''',
                      headers='krb5.h', always=True)
@@ -78,11 +80,15 @@ test by pointing to "lib" entity from where it can be retrieved.
 +                            define='HAVE_TICKET_POINTER_IN_KRB5_AP_REQ', lib='krb5')
  conf.CHECK_STRUCTURE_MEMBER('krb5_prompt', 'type', headers='krb5.h',
 -                            define='HAVE_KRB5_PROMPT_TYPE')
+-conf.CHECK_CODE('krb5_trace_info', 'HAVE_KRB5_TRACE_INFO', headers='krb5.h')
+-conf.CHECK_CODE('struct krb5_trace_info', 'HAVE_KRB5_TRACE_INFO_STRUCT', headers='krb5.h')
 +                            define='HAVE_KRB5_PROMPT_TYPE', lib='krb5')
- 
++conf.CHECK_CODE('krb5_trace_info', 'HAVE_KRB5_TRACE_INFO', headers='krb5.h', lib='krb5')
++conf.CHECK_CODE('struct krb5_trace_info', 'HAVE_KRB5_TRACE_INFO_STRUCT', headers='krb5.h', lib='krb5')
  conf.CHECK_TYPE('krb5_encrypt_block', headers='krb5.h')
  
-@@ -177,7 +177,7 @@
+ conf.CHECK_CODE('''
+@@ -184,7 +184,7 @@ conf.CHECK_CODE('''
         krb5_get_init_creds_opt_free(ctx, opt);
         ''',
      'KRB5_CREDS_OPT_FREE_REQUIRES_CONTEXT',
@@ -91,7 +97,7 @@ test by pointing to "lib" entity from where it can be retrieved.
      msg="Checking whether krb5_get_init_creds_opt_free takes a context argument")
  conf.CHECK_CODE('''
         const krb5_data *pkdata;
-@@ -288,7 +288,7 @@
+@@ -295,7 +295,7 @@ conf.CHECK_CODE('''
  conf.CHECK_CODE('''#define KRB5_DEPRECATED 1
         #include <krb5.h>''',
     'HAVE_KRB5_DEPRECATED_WITH_IDENTIFIER', addmain=False,

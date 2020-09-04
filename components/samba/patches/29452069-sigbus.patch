@@ -2,9 +2,11 @@ This is continuation of the already closed issue:
 https://bugzilla.samba.org/show_bug.cgi?id=13704
 so it will need a separate community issue to be raised.
 
---- a/source3/smbd/notify_msg.c	2018-07-12 10:23:36.000000000 +0000
-+++ b/source3/smbd/notify_msg.c	2019-05-29 13:08:06.949243280 +0000
-@@ -111,7 +111,7 @@
+diff --git a/source3/smbd/notify_msg.c b/source3/smbd/notify_msg.c
+index ff38b96..1c6525f 100644
+--- a/source3/smbd/notify_msg.c
++++ b/source3/smbd/notify_msg.c
+@@ -111,7 +111,7 @@ static void notify_handler(struct messaging_context *msg, void *private_data,
  {
  	struct notify_context *ctx = talloc_get_type_abort(
  		private_data, struct notify_context);
@@ -13,7 +15,7 @@ so it will need a separate community issue to be raised.
  	struct notify_event event;
  
  	if (data->length < offsetof(struct notify_event_msg, path) + 1) {
-@@ -123,7 +123,8 @@
+@@ -123,7 +123,8 @@ static void notify_handler(struct messaging_context *msg, void *private_data,
  		return;
  	}
  
@@ -23,9 +25,11 @@ so it will need a separate community issue to be raised.
  
  	event.action = event_msg->action;
  	event.path = event_msg->path;
---- a/source3/smbd/notifyd/notifyd.c	2019-03-12 09:19:04.000000000 +0000
-+++ b/source3/smbd/notifyd/notifyd.c	2019-05-29 13:47:19.838291290 +0000
-@@ -737,15 +737,19 @@
+diff --git a/source3/smbd/notifyd/notifyd.c b/source3/smbd/notifyd/notifyd.c
+index 6ff1de5..26f7134 100644
+--- a/source3/smbd/notifyd/notifyd.c
++++ b/source3/smbd/notifyd/notifyd.c
+@@ -737,15 +737,19 @@ static void notifyd_trigger_parser(TDB_DATA key, TDB_DATA data,
  				   void *private_data)
  
  {
