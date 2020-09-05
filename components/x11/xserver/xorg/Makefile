@@ -40,9 +40,6 @@ TPNO=			58045
 FIX_PC_FILES = xorg-server.pc.in
 COMPONENT_FIX_PC_FLAGS += -e 's|\@symbol_visibility\@||'
 
-# Disable the unit tests since the test results are outdated.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/x11-component.mk
 
 CFLAGS.studio += $(studio_FEATURES_EXTENSIONS)
