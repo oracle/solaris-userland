@@ -30,14 +30,14 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgsf
-COMPONENT_VERSION=	1.14.46
+COMPONENT_VERSION=	1.14.47
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/gsf/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:ea36959b1421fc8e72caa222f30ec3234d0ed95990e2bf28943a85f33eadad2d
+	sha256:d188ebd3787b5375a8fd38ee6f761a2007de5e98fa0cf5623f271daa67ba774d
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	1980
 
-TPNO=			54085
+TPNO=			62679
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
