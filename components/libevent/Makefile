@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libevent
-COMPONENT_VERSION=	2.1.11
+COMPONENT_VERSION=	2.1.12
 COMPONENT_PROJECT_URL=	http://libevent.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-stable
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d0c3b41baf7b8863a3dbae8be4277ea52f9a2698b3eff6d14991b8a60025cf16
+    sha256:92e6de1be9ec176428fd2367677e61ceffc2ee1cb119035037a27d346b0403bb
 COMPONENT_ARCHIVE_URL=	https://github.com/libevent/libevent/releases/download/release-$(COMPONENT_VERSION)-stable/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libevent
 COMPONENT_ANITYA_ID=	1606
 
-TPNO=			55621
+TPNO=			61123
 
 TEST_TARGET= install $(TEST_32_and_64)
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_32_and_64)
