@@ -26,17 +26,17 @@ BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libarchive
-COMPONENT_VERSION=	3.4.2
+COMPONENT_VERSION=	3.4.3
 COMPONENT_PROJECT_URL=	http://www.libarchive.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b60d58d12632ecf1e8fad7316dc82c6b9738a35625746b47ecdcaf4aed176176
+    sha256:ee1e749213c108cb60d53147f18c31a73d6717d7e3d2481c157e1b34c881ea39
 COMPONENT_ARCHIVE_URL= \
     https://github.com/libarchive/libarchive/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libarchive
 COMPONENT_ANITYA_ID=	1558
 
 
-TPNO=			57245
+TPNO=			61945
 
 TEST_TARGET= install $(TEST_32_and_64)
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_32_and_64)
