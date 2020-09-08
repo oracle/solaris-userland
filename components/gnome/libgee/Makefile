@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgee
-COMPONENT_VERSION=	0.20.2
+COMPONENT_VERSION=	0.20.3
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Libgee
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:9e035c4b755f46bfae70ba81cdcf8328b03f554373cec8c816e8b5680f85353c
+	sha256:d0b5edefc88cbca5f1709d19fa62aef490922c6577a14ac4e7b085507911a5de
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	1625
 
-TPNO=			54084
+TPNO=			62683
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
