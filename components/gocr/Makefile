@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gocr
-COMPONENT_VERSION=	0.50
+COMPONENT_VERSION=	0.52
 COMPONENT_PROJECT_URL=	http://jocr.sourceforge.net/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:bc261244f887419cba6d962ec1ad58eefd77176885093c4a43061e7fd565f5b5
+    sha256:df906463105f5f4273becc2404570f187d4ea52bd5769d33a7a8661a747b8686
 COMPONENT_ARCHIVE_URL=	http://www-e.uni-magdeburg.de/jschulen/ocr/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	1225
 
-TPNO=			21551
+TPNO=			62655
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
