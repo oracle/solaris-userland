@@ -1,0 +1,19 @@
+# Install Tomcat 8
+pkg install tomcat-8/tomcat-examples
+
+# Enable AJP protocol in Tomcat
+gsed -i -f /dev/stdin /var/tomcat8/conf/server.xml << EOF
+/<!-- Define an AJP 1.3 Connector on port 8009 -->/a\
+<Connector protocol="AJP/1.3" address="::1" port="8009" redirectPort="8443" secretRequired="false"/>
+EOF
+
+# Start Apache with mod_jk and Tomcat
+cp /etc/apache2/2.4/samples-conf.d/workers.properties /etc/apache2/2.4/conf.d/
+cp /etc/apache2/2.4/samples-conf.d/jk.conf /etc/apache2/2.4/conf.d/
+svcadm enable tomcat8 apache24
+
+# Print mod_jk version from log file
+sleep 5; grep 'resuming normal operations' /var/apache2/2.4/logs/error_log  | tail -1
+
+# Test basic communication between Apache and Tomcat
+curl --silent localhost/examples/ | ggrep -e 'Servlets examples' > /dev/null && echo OK || echo ERROR
