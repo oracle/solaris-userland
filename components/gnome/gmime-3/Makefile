@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            32_and_64
@@ -33,14 +33,14 @@ include ../../../make-rules/shared-macros.mk
 # directly now, presumably because the original author abandoned it and GNOME
 # depends on it.
 COMPONENT_NAME=		gmime
-COMPONENT_VERSION=	3.2.3
+COMPONENT_VERSION=	3.2.7
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/gmime/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:6a0875eeb552ab447dd54853a68ced62217d863631048737dd97eaa2713e7311
+	sha256:2aea96647a468ba2160a64e17c6dc6afe674ed9ac86070624a3f584c10737d44
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13124
 
-TPNO=			48166
+TPNO=			62449
 
 # Disable tests since there are some regressions.
 $(SKIP_TEST_AT_TOP_LEVEL)
