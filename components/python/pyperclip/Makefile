@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pyperclip
-COMPONENT_VERSION=	1.7.0
+COMPONENT_VERSION=	1.8.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:979325468ccf682104d5dcaf753f869868100631301d3e72f47babdea5700d1c
+    sha256:b75b975160428d84608c26edba2dec146e7799566aea42c1fe1b32e72b6028f2
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/asweigart/pyperclip
 COMPONENT_BUGDB=	python-mod/pyperclip
 COMPONENT_ANITYA_ID=	19701
 
-TPNO=			52395
+TPNO=			62339
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
