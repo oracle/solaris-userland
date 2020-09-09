@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -37,6 +37,7 @@ COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_TAG)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_ARCHIVE_URL=	https://github.com/OpenPrinting/cups-filters/archive/$(COMPONENT_TAG).zip
 COMPONENT_BUGDB=	utility/cups
+COMPONENT_ANITYA_ID=	5541
 
 include $(WS_MAKE_RULES)/common.mk
 

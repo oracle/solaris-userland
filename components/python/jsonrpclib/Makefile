@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:dfe491c11ede2d2177625c1938aea91b36d01831d0676aa031d7131311fe51d5
 COMPONENT_ARCHIVE_URL=https://github.com/tcalmant/jsonrpclib/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	python-mod/jsonrpclib
-COMPONENT_ANITYA_ID=	17230
+COMPONENT_ANITYA_ID=	19644
 
 TPNO=			49450
 

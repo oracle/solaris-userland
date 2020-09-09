@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS=		64_and_32
 COMPILER=		gcc
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_ARCHIVE_URL=	\
 	$(BASEURL)/releases/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/lasso
-COMPONENT_ANITYA_ID=	N/A
+COMPONENT_ANITYA_ID=	96894
 
 TPNO=			50795
 

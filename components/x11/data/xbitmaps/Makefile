@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            NO_ARCH
@@ -32,7 +32,7 @@ COMPONENT_PROJECT_URL=  https://www.x.org
 COMPONENT_ARCHIVE_HASH= \
 	sha256:b9f0c71563125937776c8f1f25174ae9685314cbd130fb4c2efce811981e07ee
 COMPONENT_BUGDB=        x11/other
-COMPONENT_ANITYA_ID=	5254
+COMPONENT_ANITYA_ID=	13645
 TPNO=			49119
 
 TEST_TARGET = $(NO_TESTS)

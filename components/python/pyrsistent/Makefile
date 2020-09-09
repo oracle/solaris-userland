@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/tobgu/pyrsistent/
 COMPONENT_BUGDB=	python-mod/pyrsistent
-COMPONENT_ANITYA_ID=	0000
+COMPONENT_ANITYA_ID=	19676
 
 TPNO=			57878
 

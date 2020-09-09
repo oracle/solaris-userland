@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
 # Only bytecode and text files.
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:b88dbccfeeef83f68ec4e9f457874177dd8b0497d533b8040528dad14a8808ba
 COMPONENT_ARCHIVE_URL=	https://github.com/hexpm/$(COMPONENT_NAME)/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/elixir
-COMPONENT_ANITYA_ID= N/A
+COMPONENT_ANITYA_ID=	132546
 
 TPNO=			57088
 
