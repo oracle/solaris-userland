@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 # for the tests
@@ -28,20 +28,17 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		bison
-COMPONENT_VERSION=	3.4.2
+COMPONENT_VERSION=	3.7.3
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-  sha256:27d05534699735dc69e86add5b808d6cb35900ad3fd63fa82e3eb644336abfa0
+  sha256:88d9e36856b004c0887a12ba00ea3c47db388519629483dd8c3fce9694d4da6f
 COMPONENT_ANITYA_ID=	193
 
-TPNO=			54877
+TPNO=			63159
 
 TEST_TARGET= $(TEST_64)
 # we need to first generate the test suite
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_64)
-
-# Disable tests since the test results are outdated.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
@@ -51,6 +48,9 @@ CONFIGURE_LIBDIR.64 =   $(GNULIB)/$(MACH64)
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
 
+# Sparcv9 cores on test 316 because of wrong compiler optimization with -O3
+gcc_OPT.sparc.64 = -O2
+
 CONFIGURE_OPTIONS  +=		M4="/usr/gnu/bin/m4"
 CONFIGURE_OPTIONS  += 		--disable-silent-rules
 #compilation fails without the below configuration option
@@ -58,11 +58,6 @@ CONFIGURE_OPTIONS  +=           --disable-dependency-tracking
 
 # the shared library we create needs to be built pic
 COMPONENT_BUILD_ARGS += CC_PIC="$(CC_PIC)"
-
-# this is cheesy but the tests don't seem to
-# get compiled with the CFLAGS we built bison
-# with, so they are 32-bit otherwise.
-CONFIGURE_OPTIONS  +=		WARN_CXXFLAGS_TEST="$(CFLAGS)"
 
 CONFIGURE_OPTIONS += --infodir=$(CONFIGURE_INFODIR)
 
@@ -93,18 +88,24 @@ COMPONENT_TEST_TRANSFORMS += \
     '-e "s|^.*source=.*libtool=no.*$$|XXX_CC_XXX|g" ' \
     '-e "s|^.*DEPDIR=.deps.*$$|XXX_CC_XXX|g" ' \
     '-e "s|^config.status: .*$$|XXX_CC_XXX|g" ' \
-    '-e "s|^make.*: Leaving directory.*$$|XXX_CC_XXX|g" ' \
-    '-e "s|^make.*: Entering directory.*$$|XXX_CC_XXX|g" ' \
-    '-e "s|^make.*: Nothing to be done for.*$$|XXX_CC_XXX|g" ' \
-    '-e "s|^make.*: .*is up to date.*$$|XXX_CC_XXX|g" ' \
+    '-e "s|^make\[.*$$|XXX_CC_XXX|g" ' \
+    '-e "s|^/usr/gnu/bin/make.*$$|XXX_CC_XXX|g" ' \
     '-e "s|^mv -f.*$$|XXX_CC_XXX|g" ' \
     '-e "s|^.$$|XXX_CC_XXX|g" ' \
     '-e "s|^updating examples.*$$|XXX_CC_XXX|g" ' \
     '-e "s|.*build-aux/ylwrap.*$$|XXX_CC_XXX|g" ' \
     '-e "s|.*examples/calc++/calc++-parser.stamp.*$$|XXX_CC_XXX|g" ' \
-    '-e "s|.*tests/bison -o y.tab.c.*$$|XXX_CC_XXX|g" ' \
-    '-e "s|^rm:.*directory renamed.*$$|XXX_CC_XXX|g" ' \
-    '-e "/^XXX_CC_XXX$$/d" '
+    '-e "s|^.*tests/bison.*$$|XXX_CC_XXX|g" ' \
+    '-e "s|^rm.*$$|XXX_CC_XXX|g" ' \
+    '-e "s|^touch.*$$|XXX_CC_XXX|g" ' \
+    '-e "s|^.*gmkdir.*$$|XXX_CC_XXX|g" ' \
+    '-e "s|^.*javacomp\.sh.*$$|XXX_CC_XXX|g" ' \
+    '-e "s|^warning:.*bootstrap class path not set in conjunction with.*$$|XXX_CC_XXX|g" ' \
+    '-e "s|^1 warning$$|XXX_CC_XXX|g" ' \
+    '-e "/^XXX_CC_XXX$$/d" ' \
 
 REQUIRED_PACKAGES += developer/macro/gnu-m4
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/bison-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
