@@ -40,15 +40,28 @@ import pkg.manifest
 import pkg.actions
 import pkg.elf as elf
 
+from typing import Type
 from typing import Optional
 
 ATTRIBUTE_ORACLE_TABLE_HEADER = """
 .\\\" Oracle has added the ARC stability level to this manual page"""
 
-ATTRIBUTE_TABLE_HEADER = """
+ATTRIBUTE_TABLE_HEADER_TROFF = """
 .SH ATTRIBUTES
 See
 .BR attributes (7)
+for descriptions of the following attributes:
+.sp
+.TS
+box;
+cbp-1 | cbp-1
+l | l .
+ATTRIBUTE TYPE\tATTRIBUTE VALUE """
+
+ATTRIBUTE_TABLE_HEADER_MDOC = """
+.Sh ATTRIBUTES
+See
+.Xr attributes 7
 for descriptions of the following attributes:
 .sp
 .TS
@@ -65,14 +78,21 @@ ATTRIBUTE_TABLE_STABILITY = """
 =
 Stability\t{}"""
 
-ATTRIBUTE_TABLE_FOOTER = """
+ATTRIBUTE_TABLE_FOOTER_TROFF = """
 .TE
+
 .PP
+"""
+
+ATTRIBUTE_TABLE_FOOTER_MDOC = """
+.TE
+
+.Pp
 """
 
 
 def attributes_section_text(availability: Optional[str], stability: Optional[str],
-                            modified_date: Optional[str]) -> bytes:
+                            modified_date: Optional[str], page_format: Type[str]) -> bytes:
     """Generate ATTRIBUTES manpage section."""
 
     # there is nothing to do
@@ -82,13 +102,21 @@ def attributes_section_text(availability: Optional[str], stability: Optional[str
     result = [ATTRIBUTE_ORACLE_TABLE_HEADER]
     if modified_date is not None:
         result.append(f"\n.\\\" on {modified_date}")
-    result.append(ATTRIBUTE_TABLE_HEADER)
+
+    if page_format == "troff":
+        result.append(ATTRIBUTE_TABLE_HEADER_TROFF)
+    else:
+        result.append(ATTRIBUTE_TABLE_HEADER_MDOC)
 
     if availability is not None:
         result.append(ATTRIBUTE_TABLE_AVAILABILITY.format(availability))
     if stability is not None:
         result.append(ATTRIBUTE_TABLE_STABILITY.format(stability.capitalize()))
-    result.append(ATTRIBUTE_TABLE_FOOTER)
+
+    if page_format == "troff":
+        result.append(ATTRIBUTE_TABLE_FOOTER_TROFF)
+    else:
+        result.append(ATTRIBUTE_TABLE_FOOTER_MDOC)
 
     return "".join(result).encode()
 
@@ -96,8 +124,11 @@ def attributes_section_text(availability: Optional[str], stability: Optional[str
 NOTES_ORACLE_COMMENT = """
 .\\\" Oracle has added source availability information to this manual page"""
 
-NOTES_HEADER = """
+NOTES_HEADER_TROFF = """
 .SH NOTES
+"""
+NOTES_HEADER_MDOC = """
+.Sh NOTES
 """
 NOTES_COMMUNITY = """
 Further information about this software can be found on the open source community website at {}.
@@ -111,7 +142,7 @@ This software was built from source available at https://github.com/oracle/solar
 
 
 def notes_section_text(header_seen: bool, closedsrc: bool, community: Optional[str],
-                       source: Optional[str], modified_date: Optional[str]) -> bytes:
+                       source: Optional[str], modified_date: Optional[str], page_format: Type[str]) -> bytes:
     """Generate NOTES manpage section.
 
     Args:
@@ -119,6 +150,8 @@ def notes_section_text(header_seen: bool, closedsrc: bool, community: Optional[s
         closedsrc: whether this is closed source component.
         community: community website link.
         source: original source download location.
+        modified_date: The date of modification of notes section.
+        page_format: String "roff" or "mdoc" based on the format of manpage.
     """
 
     if community is None and source is None:
@@ -126,7 +159,10 @@ def notes_section_text(header_seen: bool, closedsrc: bool, community: Optional[s
 
     result = []
     if header_seen is False:
-        result.append(NOTES_HEADER)
+        if page_format == "troff":
+            result.append(NOTES_HEADER_TROFF)
+        else:
+            result.append(NOTES_HEADER_MDOC)
     result.append(NOTES_ORACLE_COMMENT)
     if modified_date is not None:
         result.append(f"\n.\\\" on {modified_date}")
@@ -160,6 +196,13 @@ def mangle_manpage(manifest, action, text: bytes, closedsrc: bool) -> bytes:
     TH_re = re.compile(rb'\.TH\s+(?:"[^"]+"|\S+)\s+(\S+)', re.IGNORECASE)
     section_re = re.compile(rb'\.SH "?([^"]+).*$', re.IGNORECASE)
 
+    # Detect whether the manual page format is mdoc or troff, the case is important.
+    check_mdoc_re = re.compile(rb'\n\.Sh')
+    if check_mdoc_re.search(text):
+        page_format = "mdoc"
+    else:
+        page_format = "troff"
+
     # manpages must have a taxonomy defined
     stability = action.attrs.pop('mangler.man.stability', None)
     if stability is None:
@@ -172,9 +215,6 @@ def mangle_manpage(manifest, action, text: bytes, closedsrc: bool) -> bytes:
     # Rewrite the section in the .TH line to match the section in which
     # we're delivering it.
     rewrite_sect = action.attrs.pop('mangler.man.rewrite-section', 'true')
-
-    attributes_written = False
-    notes_seen = False
 
     if 'pkg.fmri' in manifest.attributes:
         fmri = pkg.fmri.PkgFmri(manifest.attributes['pkg.fmri'])
@@ -197,14 +237,23 @@ def mangle_manpage(manifest, action, text: bytes, closedsrc: bool) -> bytes:
     # tell man that we want tables (and eqn)
     result = [b"'\\\" te\n"]
 
+    attributes_written = False
+    notes_seen = False
+    notes_written = False
+
     # write the orginal data
     for line in text.split(b'\n'):
         match = section_re.match(line)
         if match is not None:
+            # Write Oracle notes now before the next sections (NOTES section might not be the last one).
+            if notes_seen and not notes_written:
+                result.append(notes_section_text(notes_seen, closedsrc, community, source, modified_date, page_format))
+                notes_written = True
+
             section = match.group(1)
             if section in [b'SEE ALSO', b'NOTES']:
                 if attributes_written is False:
-                    result.append(attributes_section_text(availability, stability, modified_date))
+                    result.append(attributes_section_text(availability, stability, modified_date, page_format))
                     attributes_written = True
                 if section == b'NOTES':
                     notes_seen = True
@@ -219,9 +268,11 @@ def mangle_manpage(manifest, action, text: bytes, closedsrc: bool) -> bytes:
         result.append(line + b"\n")
 
     if attributes_written is False:
-        result.append(attributes_section_text(availability, stability, modified_date))
+        result.append(attributes_section_text(availability, stability, modified_date, page_format))
 
-    result.append(notes_section_text(notes_seen, closedsrc, community, source, modified_date))
+    if notes_written is False:
+        result.append(notes_section_text(notes_seen, closedsrc, community, source, modified_date, page_format))
+
     return b"".join(result)
 
 

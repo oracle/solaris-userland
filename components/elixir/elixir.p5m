@@ -20,12 +20,11 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
-# Manual pages are patched (see 01_man_mangling.patch file) to add Solaris specific information.
-# Userland mangler cannot be used since the manual pages are in the BSD-style format.
-<transform file path=usr/share/man/.+$ -> add mangler.bypass true >
+#
+<transform file path=usr/share/man/.+$ -> default mangler.man.stability "pass-through volatile">
 #
 <transform file path=.*lib/.*\.app$ -> default mode 0444>
 <transform file path=.*lib/.*\.beam$ -> default mode 0444>
