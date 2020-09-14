@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dconf-editor
-COMPONENT_VERSION=	3.34.4
+COMPONENT_VERSION=	3.38.0
 COMPONENT_PROJECT_URL=	http://wiki.gnome.org/dconf
 COMPONENT_ARCHIVE_HASH= \
-	sha256:de5b2a30e0d6d4fb72a0d3e98b1b95aa2acdab62e59a9f1391d96eeee9142a89
+	sha256:6d89249a379082de6a8e95a2a202d0ca5fe1c9776bc0d5d3ef065567d8183eb4
 COMPONENT_BUGDB=        gnome/gconf
 COMPONENT_ANITYA_ID=	100776
 
-TPNO=			59449
+TPNO=			61947
 BUILD_STYLE=            meson
 
 TEST_TARGET= $(NO_TESTS)
