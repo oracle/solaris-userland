@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		yelp-tools
-COMPONENT_VERSION=	3.32.2
+COMPONENT_VERSION=	3.38.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Yelp/Tools
 COMPONENT_ARCHIVE_HASH= \
-	sha256:183856b5ed0b0bb2c05dd1204af023946ed436943e35e789afb0295e5e71e8f9
+	sha256:607ce4b3ee8517c42db924a01a78660a03317595c75825731ea86a920e2b04b0
 COMPONENT_BUGDB=        gnome/docviewer
 COMPONENT_ANITYA_ID=	8420
 
-TPNO=			54136
+TPNO=			63012
 
 TEST_TARGET= $(NO_TESTS)
 
