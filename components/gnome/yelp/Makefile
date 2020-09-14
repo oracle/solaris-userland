@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		yelp
-COMPONENT_VERSION=	3.34.0
+COMPONENT_VERSION=	3.38.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Yelp
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e3d6527c5963d73206891b32f1f23363164be57de248555513bd0be77a7bd045
+	sha256:74359e170be2bdc386d1bfb03b6f4fa887ca3b8406f9c144b86d0b24e1445f80
 COMPONENT_BUGDB=        gnome/docviewer
 COMPONENT_ANITYA_ID=	14867
 
-TPNO=			54135
+TPNO=			63011
 
 # gmake check works but produces no useful output
 TEST_TARGET = $(SKIP_TEST)
