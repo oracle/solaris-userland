@@ -40,9 +40,6 @@ COMPONENT_ANITYA_ID=	13230
 TPNO=			54071
 BUILD_STYLE=		meson
 
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU xgettext in PATH.
@@ -54,7 +51,7 @@ CONFIGURE_OPTIONS.32 += -Denable-introspection=false
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 # get rid of the timestamps from the test results
-COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9].[0-9][0-9] s//" '
+COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9].[0-9][0-9]s//" '
 COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9][0-9]//" '
 
 REQUIRED_PACKAGES += database/sqlite-3

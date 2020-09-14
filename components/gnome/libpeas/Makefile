@@ -62,7 +62,7 @@ unexport SHELLOPTS
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 # get rid of the timestamps from the test results
-COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9]s//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/OK/p" ' \

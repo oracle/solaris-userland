@@ -41,9 +41,6 @@ BUILD_STYLE=		meson
 # No need to build for older versions.
 PYTHON_VERSIONS= 3.7
 
-# Disable the unit tests since the test results are outdated.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CFLAGS += $(CPP_XPG6MODE)
@@ -124,7 +121,7 @@ COMPONENT_TEST_TRANSFORMS += \
 # get rid of the timestamps from the test results
 COMPONENT_TEST_MASTER = \
   	$(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
-COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9].[0-9][0-9] s//" '
+COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9]*[0-9].[0-9][0-9]s//" '
 COMPONENT_TEST_TRANSFORMS += '-e "s/OK      [0-9]//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \

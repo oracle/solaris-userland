@@ -66,7 +66,7 @@ COMPONENT_POST_INSTALL_ACTION += \
         $(MV) $(PROTOUSRLIBDIR)/$(MACH64)/gobject-introspection $(PROTOUSRLIBDIR)/ ;
 
 # Standard automake test framework results transform
-COMPONENT_TEST_TRANSFORMS += '-e "s/       [0-9].[0-9][0-9] s//"'
+COMPONENT_TEST_TRANSFORMS += '-e "s/       [0-9].[0-9][0-9]s//"'
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/OK/p" ' \

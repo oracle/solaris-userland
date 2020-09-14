@@ -68,7 +68,7 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 COMPONENT_TEST_TARGETS += ; cd tests; ./cxx-test; ./markup-parse; \
         ./test-font ; ./test-ot-tags; ./testattributes; \
         ./testboundaries; ./testcolor; ./testiter; ./testscript;
-COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9]s//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/OK/p" ' \

@@ -27,19 +27,17 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		re2c
-COMPONENT_VERSION=	0.16
+COMPONENT_VERSION=	2.0.3
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_PROJECT_URL=	http://re2c.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:48c12564297641cceb5ff05aead57f28118db6277f31e2262437feba89069e84
+    sha256:b2bc1eb8aaaa21ff2fcd26507b7e6e72c5e3d887e58aa515c2155fb17d744278
 COMPONENT_ARCHIVE_URL=	https://github.com/skvadrik/$(COMPONENT_NAME)/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	7664
 
-TPNO =			27272
+TPNO =			61681
 
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_64)
-
-# Tests do not pass because of insufficient gsed filtering.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

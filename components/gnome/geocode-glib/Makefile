@@ -39,9 +39,6 @@ COMPONENT_ANITYA_ID=	13123
 TPNO=			54027
 BUILD_STYLE=		meson
 
-# Tests do not pass because of insufficient gsed filtering.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CONFIGURE_OPTIONS.32 += -Denable-introspection=false
@@ -50,7 +47,7 @@ COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 LDFLAGS +=  -Wl,-zgnu-version-script-compat
 
 # get rid of the timestamps from the test results
-COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9]s//" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc

@@ -38,9 +38,6 @@ COMPONENT_ANITYA_ID=	11683
 TPNO=			53994
 BUILD_STYLE=		meson
 
-# Disable the unit tests since the test results are outdated.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
@@ -48,7 +45,7 @@ COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 CONFIGURE_OPTIONS += -Dgtk_doc=true
 
 # get rid of the timestamps from the test results
-COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9]s//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/OK/p" ' \

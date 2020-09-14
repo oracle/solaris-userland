@@ -40,9 +40,6 @@ COMPONENT_ANITYA_ID=	130
 TPNO=			53958
 BUILD_STYLE=		meson
 
-# Tests do not pass because of insufficient gsed filtering.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CONFIGURE_OPTIONS.32 += -Dintrospection=false
@@ -63,7 +60,7 @@ COMPONENT_TEST_TARGETS += ; cd tests; ./testdocument; ./testrole ; \
 	./testrelation ; ./teststateset ; ./testvalue
 
 # get rid of the timestamps from the test results
-COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9].[0-9][0-9] s//" '
+COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9].[0-9][0-9]s//" '
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
