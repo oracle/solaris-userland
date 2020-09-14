@@ -30,14 +30,14 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		at-spi2-core
-COMPONENT_VERSION=	2.34.0
+COMPONENT_VERSION=	2.38.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Accessibility
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d629cdbd674e539f8912028512af583990938c7b49e25184c126b00121ef11c6
+    sha256:84e36c3fe66862133f5fe229772b76aa2526e10de5014a3778f2fa46ce550da5
 COMPONENT_BUGDB=	gnome/a11y-libs-core
 COMPONENT_ANITYA_ID=	7841
 
-TPNO=			53957
+TPNO=			61939
 BUILD_STYLE=		meson
 
 # Tests do not work on Solaris yet
