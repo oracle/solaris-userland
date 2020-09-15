@@ -1,0 +1,68 @@
+This is temporary patch for:
+
+31936297 Ghostscript-9.53.1 dumps core on SPARCv7
+
+It will be removed with the new uprev.
+
+From: Chris Liddell <chris.liddell@artifex.com>
+Date: Fri, 25 Sep 2020 11:40:01 +0000 (+0100)
+Subject: Bug 702938: Allocating cached glyphs, account for alignment
+X-Git-Url: https://git.ghostscript.com/?p=ghostpdl.git;a=commitdiff_plain;h=260c443bc1
+
+Bug 702938: Allocating cached glyphs, account for alignment
+
+For efficiency, the glyph cache allocates "large" blocks of memory into which
+it parcels out offsets for individual glyph cache bitmaps, as required.
+
+Since cached glyphs are usually fairly small, and potentially can be short
+lived, this saves the overheads of "full" memory for every cached glyph.
+
+Unfortunately, in calculating the offsets for the cached glyph, it was failing
+to account for the required alignment of the system. In any environment that
+strictly enforces aligned memory accesses, this will potentially cause a bus
+error.
+
+In this case, it was switching the gs_glyph type to a 64 bit type that triggered
+the issue. But any changed to the contents of the cached_char struct could have
+resulted in it happening.
+---
+
+diff --git a/base/gxbcache.c b/base/gxbcache.c
+index adcd9b468..2150aec7f 100644
+--- a/base/gxbcache.c
++++ b/base/gxbcache.c
+@@ -18,6 +18,7 @@
+ #include "memory_.h"
+ #include "stdint_.h"
+ #include "gx.h"
++#include "gxobj.h"
+ #include "gsmdebug.h"
+ #include "gxbcache.h"
+ 
+@@ -59,8 +60,10 @@ gx_bits_cache_chunk_init(gx_bits_cache_chunk * bck, byte * data, uint size)
+ /* If there isn't enough room, set *pcbh to an entry requiring freeing, */
+ /* or to 0 if we are at the end of the chunk, and return -1. */
+ int
+-gx_bits_cache_alloc(gx_bits_cache * bc, ulong lsize, gx_cached_bits_head ** pcbh)
++gx_bits_cache_alloc(gx_bits_cache * bc, ulong lsize0, gx_cached_bits_head ** pcbh)
+ {
++    ulong lsize = ROUND_UP(lsize0, obj_align_mod);
++
+ #define ssize ((uint)lsize)
+     ulong lsize1 = lsize + sizeof(gx_cached_bits_head);
+ 
+diff --git a/base/lib.mak b/base/lib.mak
+index 0c2dffb9a..368edeb62 100644
+--- a/base/lib.mak
++++ b/base/lib.mak
+@@ -676,8 +676,8 @@ $(GLOBJ)gxacpath.$(OBJ) : $(GLSRC)gxacpath.c $(AK) $(gx_h)\
+  $(gzacpath_h) $(gzcpath_h) $(gzpath_h) $(gxdevsop_h) $(LIB_MAK) $(MAKEDIRS)
+ 	$(GLCC) $(GLO_)gxacpath.$(OBJ) $(C_) $(GLSRC)gxacpath.c
+ 
+-$(GLOBJ)gxbcache.$(OBJ) : $(GLSRC)gxbcache.c $(AK) $(gx_h) $(memory__h)\
+- $(gsmdebug_h) $(gxbcache_h) $(LIB_MAK) $(MAKEDIRS)
++$(GLOBJ)gxbcache.$(OBJ) : $(GLSRC)gxbcache.c $(AK) $(gx_h) $(gxobj_h) \
++ $(memory__h) $(gsmdebug_h) $(gxbcache_h) $(LIB_MAK) $(MAKEDIRS)
+ 	$(GLCC) $(GLO_)gxbcache.$(OBJ) $(C_) $(GLSRC)gxbcache.c
+ 
+ $(GLOBJ)gxccache.$(OBJ) : $(GLSRC)gxccache.c $(AK) $(gx_h)\

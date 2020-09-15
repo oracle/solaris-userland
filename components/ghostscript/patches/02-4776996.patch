@@ -3,26 +3,19 @@ GNU Ghostscript should not enable decryption of PDFs when shipped with Solaris
 
 Note : Not suitable for fixing upstream, as this Solaris specific.
 
-diff --git a/Resource/Init/pdf_sec.ps b/Resource/Init/pdf_sec.ps
-index 0f77e55..693660d 100644
---- a/Resource/Init/pdf_sec.ps
-+++ b/Resource/Init/pdf_sec.ps
-@@ -505,12 +505,12 @@ systemdict /check_r6_password .forceundef
+--- a/Resource/Init/pdf_sec.ps	2020-09-15 09:58:29.594090948 +0200
++++ b/Resource/Init/pdf_sec.ps	2020-09-15 09:59:22.813148097 +0200
+@@ -561,7 +561,13 @@
+       /pdf_process_Encrypt cvx /invalidfileaccess signalerror
      } ifelse
    } ifelse
- 
--%   Trailer /Encrypt oget /P oget 4 and 0 eq #? and
--%    { (   ****This owner of this file has requested you do not print it.\n)
--%      pdfformaterror printProducer
--%      /pdf_process_Encrypt cvx /invalidfileaccess signalerror
--%    }
--%   if
 +  Trailer /Encrypt oget /P oget 4 and 0 eq #? and
-+   { (   ****This owner of this file has requested you do not print it.\n)
-+     pdfformaterror printProducer
-+     /pdf_process_Encrypt cvx /invalidfileaccess signalerror
-+   }
++  { (   ****This owner of this file has requested you do not print it.\n)
++    pdfformaterror printProducer
++    /pdf_process_Encrypt cvx /invalidfileaccess signalerror
+   }
 +  if
- } bind executeonly def
- 
- % Calculate the key used to decrypt an object (to pass to .decpdfrun or
++  }
+   {
+       (   **** This file has an Encryption dictionary, but both the StmF and StrF entries\n) pdfformatwarning
+       (   **** are /Identity, and AuthEvent allows the document to be opened. It is possible\n) pdfformatwarning

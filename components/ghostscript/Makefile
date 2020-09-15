@@ -28,16 +28,16 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         ghostscript
-COMPONENT_VERSION=      9.52
+COMPONENT_VERSION=      9.53.1
 COMPONENT_PROJECT_URL=	http://ghostscript.com/
 COMPONENT_DOWNLOAD_URL= \
     https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download
 COMPONENT_ARCHIVE_HASH= \
-    sha256:c2501d8e8e0814c4a5aa7e443e230e73d7af7f70287546f7b697e5ef49e32176
-COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/gs952/$(COMPONENT_ARCHIVE)
+    sha256:c89652ab2cf1a43688d8055d1ae55a9814d152e4b1c77c002a32c7d83621b12a
+COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/gs9531/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1157
 
-TPNO=			59680
+TPNO=			61952
 
 include $(WS_MAKE_RULES)/common.mk
 # some backup files are copied to proto
@@ -72,9 +72,6 @@ COMPONENT_TEST_TRANSFORMS += "-e '/^Using/d'"
 
 COMPONENT_SYSTEM_TEST_CMD = 	sh $(COMPONENT_DIR)/test/run
 COMPONENT_SYSTEM_TEST_TARGETS = system-check
-
-test:			$(TEST_64)
-system-test:		$(SYSTEM_TEST_64)
 
 REQUIRED_PACKAGES += image/library/openjpeg2
 REQUIRED_PACKAGES += image/library/libtiff
