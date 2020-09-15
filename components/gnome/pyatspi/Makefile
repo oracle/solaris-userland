@@ -46,19 +46,16 @@ PYTHON_VERSION = 2.7
 # replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses configure.mk
 CONFIGURE_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
 $(BUILD_DIR)/%-2.7/.configured:		PYTHON_VERSION=2.7 PYTHON_VENDOR_PACKAGES_BASE=$(PYTHON_VENDOR_PACKAGES.32)
-$(BUILD_DIR)/%-3.5/.configured:		PYTHON_VERSION=3.5
 $(BUILD_DIR)/%-3.7/.configured:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/$(MACH64)-%/.configured:	BITS=64
 
 BUILD_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
 $(BUILD_DIR)/%-2.7/.built:		PYTHON_VERSION=2.7
-$(BUILD_DIR)/%-3.5/.built:		PYTHON_VERSION=3.5
 $(BUILD_DIR)/%-3.7/.built:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/$(MACH64)-%/.built:	BITS=64
 
 INSTALL_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
 $(BUILD_DIR)/%-2.7/.installed:		PYTHON_VERSION=2.7
-$(BUILD_DIR)/%-3.5/.installed:		PYTHON_VERSION=3.5
 $(BUILD_DIR)/%-3.7/.installed:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/$(MACH64)-%/.installed:	BITS=64
 
@@ -84,7 +81,6 @@ COMPONENT_POST_INSTALL_ACTION += \
 
 REQUIRED_PACKAGES += library/python/pygobject-3
 REQUIRED_PACKAGES += runtime/python-27
-REQUIRED_PACKAGES += runtime/python-35
 REQUIRED_PACKAGES += runtime/python-37
 
 # These are needed to build & run tests, but not for distributed packages

@@ -50,7 +50,6 @@ $(SKIP_TEST_AT_TOP_LEVEL)
 
 # Manifest convenience variables
 $(MANIFEST_BASE)-pycairo-27.mogrified: PYTHON3_ONLY = \#
-$(MANIFEST_BASE)-pycairo-35.mogrified: PYTHON2_ONLY = \#
 $(MANIFEST_BASE)-pycairo-37.mogrified: PYTHON2_ONLY = \#
 $(MANIFEST_BASE)-pycairo-39.mogrified: PYTHON2_ONLY = \#
 

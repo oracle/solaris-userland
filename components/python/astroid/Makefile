@@ -76,7 +76,6 @@ $(MANIFEST_BASE)-astroid-27.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_O
 
 # Manifest convenience variables.
 $(MANIFEST_BASE)-astroid-27.mogrified: NEW_ONLY = \#
-$(MANIFEST_BASE)-astroid-35.mogrified: OLD_ONLY = \#
 $(MANIFEST_BASE)-astroid-37.mogrified: OLD_ONLY = \#
 
 PKG_MACROS += OLD_ONLY="$(OLD_ONLY)"

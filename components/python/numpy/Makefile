@@ -55,7 +55,7 @@ TPNO_OLD=		42611
 PYTHON_VERSIONS = $(WITHOUT_PYTHON3.9)
 
 # This component is delivered in two different versions because
-# the newer one is no longer Python 2.7 & 3.5 compatible.
+# the newer one is no longer Python 2.7 compatible.
 
 BUILD_STYLE= setup.py
 TEST_TARGET = $(BUILD_DIR)/$(MACH64)-3.7/.tested-and-compared \
@@ -65,24 +65,19 @@ include $(WS_MAKE_RULES)/common.mk
 # Convenience variables
 TARGET_27  = $(BUILD_DIR)/$(MACH32)-2.7/
 TARGET_27x = $(BUILD_DIR)/$(MACH64)-2.7/
-TARGET_35  = $(BUILD_DIR)/$(MACH64)-3.5/
 SOURCE_DIR_OLD = $(COMPONENT_DIR)/$(COMPONENT_SRC_OLD)
 
 # Targets updated for older version build
 $(TARGET_27).built:  SOURCE_DIR = $(SOURCE_DIR_OLD)
 $(TARGET_27x).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
-$(TARGET_35).built:  SOURCE_DIR = $(SOURCE_DIR_OLD)
 
 $(TARGET_27).installed:  SOURCE_DIR = $(SOURCE_DIR_OLD)
 $(TARGET_27x).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
-$(TARGET_35).installed:  SOURCE_DIR = $(SOURCE_DIR_OLD)
 
 $(MANIFEST_BASE)-numpy-27.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
-$(MANIFEST_BASE)-numpy-35.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
 
 # Manifest convenience variables.
 $(MANIFEST_BASE)-numpy-27.mogrified: NEW_ONLY = \#
-$(MANIFEST_BASE)-numpy-35.mogrified: NEW_ONLY = \#
 $(MANIFEST_BASE)-numpy-37.mogrified: OLD_ONLY = \#
 $(MANIFEST_BASE)-numpy-39.mogrified: OLD_ONLY = \#
 
@@ -91,7 +86,7 @@ PKG_MACROS += NEW_ONLY="$(NEW_ONLY)"
 
 # Meta package must have versions of older runtimes fixed
 FIX_MANIFEST_VERSIONS:
-	echo "<transform depend fmri=(.*)numpy-(27|35)@(.*) \
+	echo "<transform depend fmri=(.*)numpy-27@(.*) \
 		-> edit fmri $(COMPONENT_VERSION) $(COMPONENT_VERSION_OLD)>" | \
 	$(PKGMOGRIFY) /dev/fd/0 $(MANIFEST_BASE)-numpy.mogrified \
 		> $(MANIFEST_BASE)-numpy.mogrified-fixed ;

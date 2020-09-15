@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER=gcc
@@ -47,7 +47,7 @@ COMPONENT_TEST_TRANSFORMS += '-ne "/^\# /p" '
 COMPONENT_TEST_TRANSFORMS += '-ne "/^See/p" '
 COMPONENT_TEST_TRANSFORMS += '-ne "/^Please/p" '
 
-# The tests require 'python3' binary. We create symlink to /usr/bin/python3.5
+# The tests require 'python3' binary. We create symlink to /usr/bin/python3
 # in our test directory
 COMPONENT_PRE_TEST_ACTION += rm -f "$(COMPONENT_TEST_BUILD_DIR)/python3";
 COMPONENT_PRE_TEST_ACTION += ln -s $(PYTHON.3.7) "$(COMPONENT_TEST_BUILD_DIR)/python3";

@@ -67,7 +67,6 @@ install:	$(INSTALL_32_and_64)
 # hypothesis>=1.11.4 and pyasn1_modules, some of which have not yet integrated.
 # On a i386 kernel zone with the test dependencies installed, test results are:
 # Python2.7: 96918 passed, 8972 skipped
-# Python3.5: 96918 passed, 8972 skipped
 # Python3.7: 96914 passed, 8976 skipped
 #
 test:		$(NO_TESTS)

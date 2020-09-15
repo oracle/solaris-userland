@@ -48,7 +48,7 @@ COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =	prettytable_test.py
 
 # Non-ascii symbols can break the depthlimiter.py when ran with
-# Python 3.5 unless UTF-8 locale is set (see bug 31983111):
+# Python 3.7+ unless UTF-8 locale is set (see bug 31983111):
 COMPONENT_PUBLISH_ENV  +=	LC_ALL=en_US.UTF-8
 
 # common targets

@@ -38,7 +38,6 @@ TPNO=			62529
 # Don't use default CPPFLAGS; it causes Apache's custom CPP to fail.
 CONFIGURE_CPPFLAGS=
 VARIANTS_64 += $(BUILD_DIR)/apache24-python27
-VARIANTS_64 += $(BUILD_DIR)/apache24-python35
 VARIANTS_64 += $(BUILD_DIR)/apache24-python37
 VARIANTS_64 += $(BUILD_DIR)/apache24-python39
 include ../modules.mk
@@ -51,7 +50,6 @@ $(BUILD_DIR)/apache24-%/$(MACH64)/.built: BITS=64
 $(BUILD_DIR)/apache24-%/$(MACH64)/.tested: BITS=64
 
 $(BUILD_DIR)/apache2%-python27/$(MACH64)/.configured: PYTHON=$(PYTHON.2.7.64)
-$(BUILD_DIR)/apache2%-python35/$(MACH64)/.configured: PYTHON=$(PYTHON.3.5.64)
 $(BUILD_DIR)/apache2%-python37/$(MACH64)/.configured: PYTHON=$(PYTHON.3.7.64)
 $(BUILD_DIR)/apache2%-python39/$(MACH64)/.configured: PYTHON=$(PYTHON.3.9.64)
 
@@ -61,7 +59,6 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 CONFIGURE_OPTIONS += --with-python=$(PYTHON)
 
 REQUIRED_PACKAGES += runtime/python-27
-REQUIRED_PACKAGES += runtime/python-35
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += runtime/python-39
 REQUIRED_PACKAGES += system/library/math

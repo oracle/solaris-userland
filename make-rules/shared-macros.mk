@@ -262,12 +262,12 @@ endif
 # The default version should go last.
 PYTHON_VERSION =	3.7
 PYTHON2_VERSIONS =	2.7
-PYTHON3_VERSIONS =	3.5 3.7 3.9
+PYTHON3_VERSIONS =	3.7 3.9
 PYTHON_VERSIONS =	$(PYTHON2_VERSIONS) $(PYTHON3_VERSIONS)
 
 # Convenience variable for builds without Python 3.7 and 3.9
-WITHOUT_PYTHON3.7 = 3.5 $(PYTHON2_VERSIONS)
-WITHOUT_PYTHON3.9 = 3.5 3.7 $(PYTHON2_VERSIONS)
+WITHOUT_PYTHON3.7 = $(PYTHON2_VERSIONS)
+WITHOUT_PYTHON3.9 = 3.7 $(PYTHON2_VERSIONS)
 
 # PYTHON3_SOABI variable defines the naming scheme
 # of python3 extension libraries: cpython or abi3.
@@ -723,10 +723,6 @@ PYTHON.2.7.VENDOR_PACKAGES.32 = /usr/lib/python2.7/vendor-packages
 PYTHON.2.7.VENDOR_PACKAGES.64 = /usr/lib/python2.7/vendor-packages/64
 PYTHON.2.7.VENDOR_PACKAGES = $(PYTHON.2.7.VENDOR_PACKAGES.$(BITS))
 
-PYTHON.3.5.VENDOR_PACKAGES.32 =
-PYTHON.3.5.VENDOR_PACKAGES.64 = /usr/lib/python3.5/vendor-packages
-PYTHON.3.5.VENDOR_PACKAGES = $(PYTHON.3.5.VENDOR_PACKAGES.64)
-
 PYTHON.3.7.VENDOR_PACKAGES.32 =
 PYTHON.3.7.VENDOR_PACKAGES.64 = /usr/lib/python3.7/vendor-packages
 PYTHON.3.7.VENDOR_PACKAGES = $(PYTHON.3.7.VENDOR_PACKAGES.64)
@@ -743,7 +739,6 @@ PYTHON_VENDOR_PACKAGES.64 = $(PYTHON.$(PYTHON_VERSION).VENDOR_PACKAGES.64)
 PYTHON_VENDOR_PACKAGES = $(PYTHON.$(PYTHON_VERSION).VENDOR_PACKAGES)
 
 PYTHON.2.7.TEST = /usr/lib/python2.7/test
-PYTHON.3.5.TEST = /usr/lib/python3.5/test
 PYTHON.3.7.TEST = /usr/lib/python3.7/test
 PYTHON.3.9.TEST = /usr/lib/python3.9/test
 
@@ -763,10 +758,6 @@ PYTHON.2.7 =	$(USRBIN)/python2.7
 # in such a way that we still need the .32 macro below.  And since we build
 # 64-bit only, we stick it directly in usr/bin (i.e., the 32-bit path) rather
 # than the 64-bit path.
-PYTHON.3.5.32 =	$(USRBIN.32)/python3.5
-PYTHON.3.5.64 =	$(USRBIN.32)/python3.5
-PYTHON.3.5 =	$(USRBIN.32)/python3.5
-
 PYTHON.3.7.32 =	$(USRBIN.32)/python3.7
 PYTHON.3.7.64 =	$(USRBIN.32)/python3.7
 PYTHON.3.7 =	$(USRBIN.32)/python3.7

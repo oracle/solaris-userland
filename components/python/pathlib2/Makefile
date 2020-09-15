@@ -39,7 +39,7 @@ COMPONENT_ANITYA_ID=	12723
 TPNO=			50836
 
 # Pathlib2 provides no additional functionality in Python 3.7 and later
-PYTHON_VERSIONS = $(PYTHON2_VERSIONS) 3.5
+PYTHON_VERSIONS = $(PYTHON2_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

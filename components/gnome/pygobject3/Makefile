@@ -42,23 +42,19 @@ TPNO=			35809
 PKG_CONFIG_PATHS+=$(PYTHON_VENDOR_PACKAGES_BASE)/lib/pkgconfig/
 
 # This component is not yet built for Python 3.9
-PYTHON_VERSIONS=        3.5 3.7
+PYTHON_VERSIONS=        3.7
 
 # replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses configure.mk
 CONFIGURE_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
-$(BUILD_DIR)/%-3.5/.configured:		PYTHON_VERSION=3.5
-$(BUILD_DIR)/%-3.5/.configured:		PYTHON_VENDOR_PACKAGES=$(PYTHON_VENDOR_PACKAGES_BASE)
 $(BUILD_DIR)/%-3.7/.configured:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/%-3.7/.configured:		PYTHON_VENDOR_PACKAGES=$(PYTHON_VENDOR_PACKAGES_BASE)
 $(BUILD_DIR)/$(MACH64)-%/.configured:	BITS=64
 
 BUILD_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
-$(BUILD_DIR)/%-3.5/.built:		PYTHON_VERSION=3.5
 $(BUILD_DIR)/%-3.7/.built:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/$(MACH64)-%/.built:	BITS=64
 
 INSTALL_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
-$(BUILD_DIR)/%-3.5/.installed:		PYTHON_VERSION=3.5
 $(BUILD_DIR)/%-3.7/.installed:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/$(MACH64)-%/.installed:	BITS=64
 
@@ -88,7 +84,6 @@ CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
 
 # Override $(PYTHON) for configure step so that configure can find
 # $(PYTHON)-config properly
-$(BUILD_DIR)/%-3.5/.configured:	PYTHON=$(PYTHON.3.5)m
 $(BUILD_DIR)/%-3.7/.configured:	PYTHON=$(PYTHON.3.7)m
 
 REQUIRED_PACKAGES += library/desktop/cairo
@@ -99,5 +94,4 @@ REQUIRED_PACKAGES += library/python/pycairo
 # Pyflakes is needed for tests, but not build or install
 REQUIRED_PACKAGES += library/python/pyflakes
 REQUIRED_PACKAGES += runtime/python-27
-REQUIRED_PACKAGES += runtime/python-35
 REQUIRED_PACKAGES += runtime/python-37

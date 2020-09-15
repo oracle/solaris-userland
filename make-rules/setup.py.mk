@@ -24,42 +24,36 @@
 #
 
 $(BUILD_DIR)/%-2.7/.built:		PYTHON_VERSION=2.7
-$(BUILD_DIR)/%-3.5/.built:		PYTHON_VERSION=3.5
 $(BUILD_DIR)/%-3.7/.built:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/%-3.9/.built:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/$(MACH32)-%/.built:	BITS=32
 $(BUILD_DIR)/$(MACH64)-%/.built:	BITS=64
 
 $(BUILD_DIR)/%-2.7/.installed:		PYTHON_VERSION=2.7
-$(BUILD_DIR)/%-3.5/.installed:		PYTHON_VERSION=3.5
 $(BUILD_DIR)/%-3.7/.installed:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/%-3.9/.installed:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/$(MACH32)-%/.installed:	BITS=32
 $(BUILD_DIR)/$(MACH64)-%/.installed:	BITS=64
 
 $(BUILD_DIR)/%-2.7/.tested:		PYTHON_VERSION=2.7
-$(BUILD_DIR)/%-3.5/.tested:		PYTHON_VERSION=3.5
 $(BUILD_DIR)/%-3.7/.tested:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/%-3.9/.tested:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/$(MACH32)-%/.tested:	BITS=32
 $(BUILD_DIR)/$(MACH64)-%/.tested:	BITS=64
 
 $(BUILD_DIR)/%-2.7/.tested-and-compared:	PYTHON_VERSION=2.7
-$(BUILD_DIR)/%-3.5/.tested-and-compared:	PYTHON_VERSION=3.5
 $(BUILD_DIR)/%-3.7/.tested-and-compared:	PYTHON_VERSION=3.7
 $(BUILD_DIR)/%-3.9/.tested-and-compared:	PYTHON_VERSION=3.9
 $(BUILD_DIR)/$(MACH32)-%/.tested-and-compared:	BITS=32
 $(BUILD_DIR)/$(MACH64)-%/.tested-and-compared:	BITS=64
 
 $(BUILD_DIR)/%-2.7/.system-tested:		PYTHON_VERSION=2.7
-$(BUILD_DIR)/%-3.5/.system-tested:		PYTHON_VERSION=3.5
 $(BUILD_DIR)/%-3.7/.system-tested:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/%-3.9/.system-tested:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/$(MACH32)-%/.system-tested:	BITS=32
 $(BUILD_DIR)/$(MACH64)-%/.system-tested:	BITS=64
 
 $(BUILD_DIR)/%-2.7/.system-tested-and-compared:		PYTHON_VERSION=2.7
-$(BUILD_DIR)/%-3.5/.system-tested-and-compared:		PYTHON_VERSION=3.5
 $(BUILD_DIR)/%-3.7/.system-tested-and-compared:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/%-3.9/.system-tested-and-compared:		PYTHON_VERSION=3.9
 $(BUILD_DIR)/$(MACH32)-%/.system-tested-and-compared:	BITS=32
@@ -100,10 +94,6 @@ COMPONENT_SYSTEM_TEST_ENV += $(PYTHON_ENV)
 ifneq ($(findstring 2.7,$(PYTHON_VERSIONS)),)
 $(BUILD_DIR)/%-3.7/.built:     $(BUILD_DIR)/%-2.7/.built
 $(BUILD_DIR)/%-3.7/.installed: $(BUILD_DIR)/%-2.7/.installed
-endif
-ifneq ($(findstring 3.5,$(PYTHON_VERSIONS)),)
-$(BUILD_DIR)/%-3.7/.built:     $(BUILD_DIR)/%-3.5/.built
-$(BUILD_DIR)/%-3.7/.installed: $(BUILD_DIR)/%-3.5/.installed
 endif
 ifneq ($(findstring 3.9,$(PYTHON_VERSIONS)),)
 $(BUILD_DIR)/%-3.7/.built:     $(BUILD_DIR)/%-3.9/.built
@@ -276,11 +266,6 @@ ifneq ($(findstring 2.7, $(PYTHON_VERSIONS)),)
 REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += library/python/setuptools-27
 REQUIRED_PACKAGES += library/python/pytest-27
-endif
-ifneq ($(findstring 3.5, $(PYTHON_VERSIONS)),)
-REQUIRED_PACKAGES += runtime/python-35
-REQUIRED_PACKAGES += library/python/setuptools-35
-REQUIRED_PACKAGES += library/python/pytest-35
 endif
 ifneq ($(findstring 3.7, $(PYTHON_VERSIONS)),)
 REQUIRED_PACKAGES += runtime/python-37

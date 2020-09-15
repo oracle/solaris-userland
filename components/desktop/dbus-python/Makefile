@@ -85,7 +85,7 @@ include $(WS_MAKE_RULES)/common.mk
 
 # Need to replace the py-compile in the 1.2.0 tarball with the one from a
 # newer version of automake in order to output *pyc to the right paths for
-# Python 3.5
+# Python 3.7
 COMPONENT_PREP_ACTION += (cd $(@D); rm -f py-compile ; autoreconf -fiv);
 
 CONFIGURE_OPTIONS += PYTHON="$(PYTHON)"
@@ -111,7 +111,6 @@ COMPONENT_TEST_TRANSFORMS += \
 
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += runtime/python-27
-REQUIRED_PACKAGES += runtime/python-35
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/libdbus-glib

@@ -118,7 +118,6 @@ $(MANIFEST_BASE)-pylint-27.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OL
 
 # Manifest convenience variables.
 $(MANIFEST_BASE)-pylint-27.mogrified: NEW_ONLY = \#
-$(MANIFEST_BASE)-pylint-35.mogrified: OLD_ONLY = \#
 $(MANIFEST_BASE)-pylint-37.mogrified: OLD_ONLY = \#
 
 PKG_MACROS += OLD_ONLY="$(OLD_ONLY)"

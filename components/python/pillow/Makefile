@@ -85,7 +85,6 @@ $(MANIFEST_BASE)-pillow-27.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OL
 
 # Manifest convenience variables.
 $(MANIFEST_BASE)-pillow-27.mogrified: NEW_ONLY = \#
-$(MANIFEST_BASE)-pillow-35.mogrified: OLD_ONLY = \#
 $(MANIFEST_BASE)-pillow-37.mogrified: OLD_ONLY = \#
 $(MANIFEST_BASE)-pillow-39.mogrified: OLD_ONLY = \#
 
