@@ -1,0 +1,15 @@
+Fix taken from the community
+Details at https://github.com/ksh93/ksh/issues/127
+In ksh93, it seems that the handling of ${$} is different in causing an error
+
+--- INIT.2012-08-01/src/cmd/ksh93/data/lexstates.c	2020-09-14 03:35:50.206260516 +0000
++++ INIT.2012-08-01/src/cmd/ksh93/data/lexstates.c.new	2020-09-14 22:20:56.995153876 +0000
+@@ -274,7 +274,7 @@
+ 	S_ERR,	S_ERR,	S_ERR,	S_ERR,	S_ERR,	S_ERR,	S_ERR,	S_ERR,
+ 	S_ERR,	S_ERR,	S_ERR,	S_ERR,	S_ERR,	S_ERR,	S_ERR,	S_ERR,
+ 
+-	S_ERR,	S_ERR,	S_ERR,	S_MOD2,	S_ERR,	S_MOD2,	S_ERR,	S_ERR,
++	S_ERR,	0,	S_ERR,	S_MOD2,	0,	S_MOD2,	S_ERR,	S_ERR,
+ 	S_ERR,	S_ERR,	S_MOD1,	S_MOD1,	S_ERR,	S_MOD1,	S_DOT,	S_MOD2,
+ 	0,	0,	0,	0,	0,	0,	0,	0,
+ 	0,	0,	S_MOD1,	S_ERR,	S_ERR,	S_MOD1,	S_ERR,	S_MOD1,
