@@ -1,0 +1,39 @@
+This resolves the issue of gdm login screen not restarting
+after a logout post the gnome 3.34 update
+
+Not suitable for upstream
+
+--- a/daemon/gdm-local-display-factory.c	2020-09-16 16:35:35.983035125 -0700
++++ b/daemon/gdm-local-display-factory.c	2020-09-16 16:36:22.790490264 -0700
+@@ -345,10 +345,13 @@
+         char            *session_class = NULL;
+         gboolean         is_initial = TRUE;
+         gboolean         is_local = TRUE;
++ 	GdmDisplayStore *store;
+ 
+         num = -1;
+         gdm_display_get_x11_display_number (display, &num, NULL);
+ 
++ 	store = gdm_display_factory_get_display_store (GDM_DISPLAY_FACTORY (factory));
++
+         g_object_get (display,
+                       "seat-id", &seat_id,
+                       "is-initial", &is_initial,
+@@ -367,7 +370,7 @@
+                 if (num != -1) {
+                         g_hash_table_remove (factory->used_display_numbers, GUINT_TO_POINTER (num));
+                 }
+-                gdm_display_factory_queue_purge_displays (GDM_DISPLAY_FACTORY (factory));
++                gdm_display_store_remove (store, display);
+ 
+                 /* if this is a local display, do a full resync.  Only
+                  * seats without displays will get created anyway.  This
+@@ -384,7 +387,7 @@
+         case GDM_DISPLAY_FAILED:
+                 /* leave the display number in factory->used_display_numbers
+                    so that it doesn't get reused */
+-                gdm_display_factory_queue_purge_displays (GDM_DISPLAY_FACTORY (factory));
++                gdm_display_store_remove (store, display);
+ 
+                 /* Create a new equivalent display if it was static */
+                 if (is_local) {
