@@ -20,8 +20,14 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, Oracle and/or its affiliates.
 #
 
-# force the rename with an optional dependency on the old name
-depend type=optional fmri=library/python-2/django@1.4.10,5.12-5.12.0.0.0.44.0
+<include ../generate/common.transform>
+
+# We are not shipping .po locale files
+<transform file path=.+/LC_MESSAGES/django(|js).po -> drop>
+
+# Handle django-admin file/link
+<transform file path=usr/bin/django-admin$ -> emit link path=usr/bin/django-admin target=django-admin-$(PYVER) mediator=python mediator-version=$(PYVER)>
+<transform file path=usr/bin/django-admin$ -> drop>

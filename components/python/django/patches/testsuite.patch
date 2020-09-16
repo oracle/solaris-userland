@@ -1,38 +1,26 @@
-One test sometimes fails due to compiled .pyc file in Python 2.7 variant
-of Django. This is fixed by forcing the use of the non-compiled .py file.
+Django 2.2 test suite errors out when the selenium package
+is not present. This way, it passes without any issue.
 
-test_check_constraints sometimes fails due to a database table missing;
-the exact reason is unknown. It was reported upstream but closed without
-any fix. The most straightforward fix is to disable this test.
+Also, due to temporary removal of usr/share/zoneinfo in 29259680,
+one test is failing on SPARC (causing many others to fail as well).
 
-https://code.djangoproject.com/ticket/30617
+Not intended for upstream.
 
---- Django-1.11.27/tests/pagination/tests.py
-+++ Django-1.11.27/tests/pagination/tests.py
-@@ -335,7 +335,7 @@ class ModelPaginationTests(TestCase):
-         ))
-         # The warning points at the Paginator caller (i.e. the stacklevel
-         # is appropriate).
--        self.assertEqual(warning.filename, __file__)
-+        self.assertEqual(warning.filename, __file__[:-1] if __file__.endswith('.pyc') else __file__)
+--- Django-2.2.9/tests/admin_inlines/tests.py
++++ Django-2.2.9/tests/admin_inlines/tests.py
+@@ -1,4 +1,4 @@
+-from selenium.common.exceptions import NoSuchElementException
++#from selenium.common.exceptions import NoSuchElementException
  
-     def test_paginating_unordered_object_list_raises_warning(self):
-         """
---- Django-1.11.27/tests/backends/tests.py
-+++ Django-1.11.27/tests/backends/tests.py
-@@ -5,6 +5,7 @@ from __future__ import unicode_literals
- import datetime
- import re
- import threading
-+import sys
- import unittest
- import warnings
- from decimal import Decimal, Rounded
-@@ -1006,6 +1007,7 @@ class FkConstraintsTests(TransactionTest
-                 self.fail("IntegrityError should not have occurred.")
-             transaction.set_rollback(True)
+ from django.contrib.admin import ModelAdmin, TabularInline
+ from django.contrib.admin.helpers import InlineAdminForm
+--- Django-2.2.11/tests/settings_tests/tests.py
++++ Django-2.2.11/tests/settings_tests/tests.py
+@@ -320,6 +320,7 @@ class SettingsTests(SimpleTestCase):
  
-+    @unittest.skipIf(sys.platform.startswith("sunos"), "Sometimes fails on Solaris")
-     def test_check_constraints(self):
-         """
-         Constraint checks should raise an IntegrityError when bad data is in the DB.
+     @requires_tz_support
+     @mock.patch('django.conf.global_settings.TIME_ZONE', 'test')
++    @unittest.skipIf(sys.platform.startswith("sunos"), "Fails on SPARC due to 29259680")
+     def test_incorrect_timezone(self):
+         with self.assertRaisesMessage(ValueError, 'Incorrect timezone setting: test'):
+             settings._setup()
