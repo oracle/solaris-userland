@@ -18,8 +18,9 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
+
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_VERSION_SHORT = 1.1
@@ -74,6 +75,12 @@ CONFIG_SHELL=
 CONFIGURE_ENV += CC_FOR_BUILD=
 CONFIGURE_ENV += CC=
 CONFIGURE_ENV += CXX=
+
+# Developer Studio 12.6 defaults to C11 standard which brings now unneeded
+# dependency on libatomic on SPARC (on intel there is -Xa used).
+ifeq ($(MACH), sparc)
+CFLAGS += -std=c99
+endif
 
 # This is to force OpenSSL's Configure script to use gmake for 'make links'.
 # Otherwise it fails with:

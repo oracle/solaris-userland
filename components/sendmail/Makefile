@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -99,7 +99,7 @@ SM_DEFS=	-DSOLARIS=$(SOLARIS)
 SM_INCLUDES=	-I$(SM_BUILD_DIR)/libmilter -I$(SOURCE_DIR)/sendmail \
     -I$(SOURCE_DIR)/include -I$(SOURCE_DIR) -I.
 LINT_FLAGS =	-nsvx $(SM_DEFS) $(SM_INCLUDES)
-CCOPTS =	-erroff=E_STATEMENT_NOT_REACHED $(CC_BITS)
+CCOPTS =	-erroff=E_STATEMENT_NOT_REACHED $(CC_BITS) -std=c89
 
 COMPONENT_BUILD_ARGS += CC="$(CC)"
 COMPONENT_BUILD_ARGS += CCOPTS="$(CCOPTS)"

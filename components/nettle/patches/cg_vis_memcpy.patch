@@ -1,0 +1,21 @@
+symbols-test started to fail on SPARC when we moved from Studio 12.4 to 12.6.
+The reason is that the new version now adds __cg_vis_memcpy function.
+We need to add another exception for this to the test.
+
+diff --git a/testsuite/symbols-test b/testsuite/symbols-test
+index 01ca30c..c50967a 100755
+--- a/testsuite/symbols-test
++++ b/testsuite/symbols-test
+@@ -18,9 +18,11 @@ fi
+ # * LLVM shipped with Xcode/CLT 10+ on macOS builds the symbol
+ #   ____chkstk_darwin into the majority of binaries/libraries, including
+ #   both the libraries checked here.
++# * Developer Studio may add on Solaris SPARC __cg_vis_memcpy in many cases
++#   including libnettle.
+ 
+ ( $NM -g ../libnettle.a || $NM ../libnettle.a ) \
+-    | grep ' [DRT] ' | egrep -v '( |^|\.)(\.?_?(_?nettle_)|get_pc_thunk|(_*chkstk_darwin))' \
++    | grep ' [DRT] ' | egrep -v '( |^|\.)(\.?_?(_?nettle_)|get_pc_thunk|(_*chkstk_darwin)|__cg_vis_memcpy)' \
+     | sort -k3 > test1.out
+ 
+ if [ -s test1.out ] ; then

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -164,6 +164,8 @@ $(BUILD_DIR_WANBOOT)/.configured:	CONFIGURE_OPTIONS += no-threads
 $(BUILD_DIR_WANBOOT)/.configured:	CONFIGURE_OPTIONS += no-shared
 $(BUILD_DIR_WANBOOT)/.configured:	CONFIGURE_OPTIONS += \
 	solaris64-sparcv9-cc-sunw-wanboot
+# To avoid usage of _stack_grow(3C) which is causing ON build failure.
+$(BUILD_DIR_WANBOOT)/.configured:	CONFIGURE_OPTIONS += "-xcheck=%none"
 
 # OpenSSL has its own configure system which must be run from the fully
 # populated source code directory. However, the Userland configuration phase is

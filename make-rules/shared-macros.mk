@@ -649,7 +649,7 @@ $(BUILD_DIR_32) $(BUILD_DIR_64):
 BUILD_TOOLS ?=	/opt
 
 SPRO_ROOT ?=	$(BUILD_TOOLS)
-SPRO_VROOT ?=	$(SPRO_ROOT)/solarisstudio12.4
+SPRO_VROOT ?=	$(SPRO_ROOT)/developerstudio12.6
 
 PARFAIT_VER ?=	parfait-tools-2.3.0
 PARFAIT_ROOT =	$(BUILD_TOOLS)/parfait
@@ -1002,12 +1002,12 @@ CC_BITS =	-m$(BITS)
 
 # Code generation instruction set and optimization 'hints'.  Use studio_XBITS
 # and not the .arch.bits variety directly.
-studio_XBITS.sparc.32 =	-xtarget=ultra2 -xarch=sparcvis -xchip=ultra2
+studio_XBITS.sparc.32 =	-xtarget=generic -xarch=sparcvis -xchip=generic
 studio_XBITS.sparc.64 =
 ifneq   ($(strip $(PARFAIT_BUILD)),yes)
-studio_XBITS.sparc.64 += -xtarget=ultra2
+studio_XBITS.sparc.64 += -xtarget=generic
 endif
-studio_XBITS.sparc.64 += -xarch=sparcvis -xchip=ultra2
+studio_XBITS.sparc.64 += -xarch=sparcvis -xchip=generic
 studio_XBITS.i386.32 =	-xchip=pentium
 studio_XBITS.i386.64 =	-xchip=generic -Ui386 -U__i386
 studio_XBITS = $(studio_XBITS.$(MACH).$(BITS))
