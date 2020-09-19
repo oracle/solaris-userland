@@ -28,25 +28,19 @@ COMPILER = 		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pulseaudio
-COMPONENT_VERSION=	9.0
+COMPONENT_VERSION=	13.99.1
 COMPONENT_PROJECT_URL=	http://freedesktop.org/software/pulseaudio
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:c3d3d66b827f18fbe903fe3df647013f09fc1e2191c035be1ee2d82a9e404686
+    sha256:e6a111cc078e6039bf657a3fd1f73dc804c8ee362ca03a0732dc5c38c13e0a0c
 COMPONENT_ARCHIVE_URL=	http://freedesktop.org/software/$(COMPONENT_NAME)/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	3729
 
-TPNO=			32882
+TPNO=			61903
 
-# Only build for 2.7 for now as we need 32-bit and 64-bit support; all of the
-# GNOME and desktop components must be built for Python 2.7 for now.
-PYTHON_VERSION = 2.7
-
-ifeq ($(MACH),sparc)
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
-endif
+# Build for python 3.7
+PYTHON_VERSION = 3.7
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -74,15 +68,19 @@ CONFIGURE_OPTIONS += --enable-solaris
 CONFIGURE_OPTIONS += --with-database=gdbm
 CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS += --with-zsh-completion-dir=/usr/share/zsh/vendor-functions/Completion
+CONFIGURE_OPTIONS += --disable-tests
 
 # To avoid using the current system default, one is explicitly specified here.
 CONFIGURE_ENV += PYTHON=$(PYTHON)
+
+CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
 
 # Required due to patches; must use special bootstrap script and not standard
 # autoreconf due to use of both gettext and intltool in the same project! If
 # you use standard autoreconf, configure will fail.
 COMPONENT_PREP_ACTION += ( cd $(@D) ; NOCONFIGURE=1 $(CONFIG_SHELL) bootstrap.sh );
 
+COMPONENT_SYSTEM_TEST_ENV +=    PATH=/usr/gnu/bin:/usr/bin
 unexport SHELLOPTS
 COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR) $(@D));
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
@@ -95,6 +93,9 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/FAIL:/p" ' \
         '-e "/ERROR:/p" '
 
+# Need to convert "#! /usr/bin/env python" to actual path for pkgdepend to work
+PYTHON_SCRIPTS += $(PROTO_DIR)$(CONFIGURE_BINDIR.$(BITS))/qpaeq
+
 # qpaeq (equalizer gui) needs Qt4 and PyQt4 so is omitted from p5m for now.
 REQUIRED_PACKAGES += codec/speex
 REQUIRED_PACKAGES += library/database/gdbm
@@ -105,6 +106,7 @@ REQUIRED_PACKAGES += library/json-c
 REQUIRED_PACKAGES += library/libsndfile
 REQUIRED_PACKAGES += library/libtool/libltdl
 REQUIRED_PACKAGES += library/security/openssl
+REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/math
@@ -114,3 +116,5 @@ REQUIRED_PACKAGES += x11/library/libsm
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcb
 REQUIRED_PACKAGES += x11/library/libxtst
+REQUIRED_PACKAGES += library/desktop/gstreamer-1
+REQUIRED_PACKAGES += library/desktop/gstreamer-1/gst-plugins-base
