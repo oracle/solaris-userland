@@ -20,18 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXpm
-COMPONENT_VERSION=	3.5.12
+COMPONENT_VERSION=	3.5.13
 COMPONENT_ARCHIVE_HASH= \
-	sha256:fd6a6de3da48de8d1bb738ab6be4ad67f7cb0986c39bd3f7d51dd24f7854bdec
+	sha256:9cd1da57588b6cb71450eff2273ef6b657537a9ac4d02d0014228845b935ac25
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1787
+TPNO=			61935
 
 PKG_PROTO_DIRS += $(BUILD_DIR_64)/cxpm
 PKG_PROTO_DIRS += $(BUILD_DIR_64)/sxpm
@@ -50,6 +51,10 @@ XPM_DOC_DIR = $(PROTOUSRSHAREDOCDIR)/$(COMPONENT_NAME)
 COMPONENT_POST_INSTALL_ACTION += \
 	$(MKDIR) $(XPM_DOC_DIR) ; \
 	gzcat $(@D)/doc/xpm.PS.gz > $(XPM_DOC_DIR)/xpm.ps;
+
+COMPONENT_POST_INSTALL_ACTION.64 += \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libXpm.3lib \
+                $(PROTO_DIR)/usr/share/man/man3lib/libXpm.3lib; \
 
 REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libx11
