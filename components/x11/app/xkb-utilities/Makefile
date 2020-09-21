@@ -20,30 +20,33 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		setxkbmap
-COMPONENT_VERSION=	1.3.1
+COMPONENT_VERSION=	1.3.2
 COMPONENT_ARCHIVE_HASH= \
-	sha256:a9ddb3963f263ba13f0ea105d8c45a531832140530217cc559587bb94f02d3e1
+	sha256:8ff27486442725e50b02d7049152f51d125ecad71b7ce503cfa09d5d8ceeb9f5
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	12314
+TPNO=			61937
 
 COMPONENT_NAME_1=       xkbutils
 COMPONENT_VERSION_1=    1.0.4
 COMPONENT_ARCHIVE_HASH_1=       \
     sha256:d2a18ab90275e8bca028773c44264d2266dab70853db4321bdbc18da75148130
 COMPONENT_ANITYA_ID_1=	15016
+TPNO_1=			45811
 
 COMPONENT_NAME_2=       xkbprint
 COMPONENT_VERSION_2=    1.0.4
 COMPONENT_ARCHIVE_HASH_2=       \
     sha256:0b3faab8fefad03dfb7e866f634cf859822801de6b5fc6cf5e0a62857ed93e12
 COMPONENT_ANITYA_ID_2=	17159
+TPNO_2=			45812
 
 TEST_TARGET = $(NO_TESTS)
 

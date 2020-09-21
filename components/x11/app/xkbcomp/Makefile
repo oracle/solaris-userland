@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xkbcomp
-COMPONENT_VERSION=	1.4.2
+COMPONENT_VERSION=	1.4.3
 COMPONENT_ARCHIVE_HASH= \
-	sha256:6dd8bcb9be7e85bd7294abe261b8c7b0539d2fc93e41b80fb8bd013767ce8424
+	sha256:06242c169fc11caf601cac46d781d467748c6a330e15b36dce46520b8ac8d435
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	15018
-TPNO=			49518
+TPNO=			57021
 
 TEST_TARGET = $(NO_TESTS)
 

@@ -27,16 +27,16 @@ BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xterm
-COMPONENT_VERSION=	358
+COMPONENT_VERSION=	360
 COMPONENT_PROJECT_URL=	http://invisible-island.net/xterm/
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_URL=  https://invisible-mirror.net/archives/xterm/$(COMPONENT_ARCHIVE:.tar.gz=.tgz)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7cdb106962910a99700b3c45fa1a1493e46e97a5aa3785093a786e07196fbf7b
+	sha256:a5f6e1f1de01fa9fddf132d9fb7a9a749a411f1e77ee6a7fdf1c8c0c1db80dba
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	5272
-TPNO=			60684
+TPNO=			61934
 
 PKG_PROTO_DIRS += $(SOURCE_DIR)
 
