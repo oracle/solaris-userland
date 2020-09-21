@@ -12,9 +12,6 @@ values are not linear as the test expects and that might cause an exception for
 last byte. Other problems in this test are related to known issues also
 affecting other platforms. [Can be atleast reported upstream]
 
-test_socket also disables testRecvmsgTrunc because MSG_TRUNC flag on Solaris is
-currently broken (see 29193312) [Not for upstream].
-
 test_structures is related to known bad support of reference passing on many
 platforms. This just skips given test [Not for upstream].
 
@@ -64,15 +61,6 @@ differences. We can safely comment it out. [Not for upstream]
              time.strftime('%Y', (y,) + (0,) * 8)
 --- Python-3.7.8/Lib/test/test_socket.py
 +++ Python-3.7.8/Lib/test/test_socket.py
-@@ -2717,6 +2717,8 @@ class RecvmsgGenericTests(SendrecvmsgBas
-     def _testRecvmsgShorter(self):
-         self.sendToServer(MSG)
- 
-+    @unittest.skipIf(sys.platform.startswith("sunos"),
-+        "skipping, MSG_TRUNC flag on Solaris is currently broken (see 29193312)")
-     def testRecvmsgTrunc(self):
-         # Receive part of message, check for truncation indicators.
-         msg, ancdata, flags, addr = self.doRecvmsg(self.serv_sock,
 @@ -3011,7 +3013,7 @@ class CmsgMacroTests(unittest.TestCase):
          # Test CMSG_SPACE() with various valid and invalid values,
          # checking the assumptions used by sendmsg().

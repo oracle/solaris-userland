@@ -45,9 +45,6 @@
 <transform link path=usr/lib/\$\(MACH64\)/pkgconfig/python3.pc -> set mediator python3>
 <transform link path=usr/lib/\$\(MACH64\)/pkgconfig/python3.pc -> set mediator-version 3.7>
 
-# Temporary pkglint supression for changed mediator
-<transform link path=usr/lib/\$\(MACH64\)/pkgconfig/python3.pc -> set pkg.linted.pkglint.dupaction010.3 true>
-
 <transform link path=usr/share/man/man1/python3.1 -> set mediator python>
 <transform link path=usr/share/man/man1/python3.1 -> set mediator-version 3.7>
 
@@ -80,11 +77,16 @@
 <transform file path=usr/lib/(.*)/python-3.7.pc \
 	-> emit link path=usr/lib/pkgconfig/python-3.7.pc target=../%<1>/python-3.7.pc>
 <transform link path=usr/lib/pkgconfig/python-3.7.pc \
-	-> emit link path=usr/lib/pkgconfig/python3.pc target=python-3.7.pc mediator=python3 \
-		mediator-version=3.7 pkg.linted.pkglint.dupaction010.3=true>
+	-> emit link path=usr/lib/pkgconfig/python3.pc target=python-3.7.pc mediator=python3 mediator-version=3.7>
 
 # Add pkg.linted.userland.action variables
 <transform file path=usr/lib/python3.7/config-3.7m/python.o -> set pkg.linted.userland.action001.2 true>
+
+# Add mediated libpython3.so
+<transform file path=.*/libpython3.so$ -> set action.hash %(path)>
+<transform file path=.*/libpython3.so$ -> edit path libpython3.so libpython3-37.so>
+<transform file path=.*/libpython3-37.so$ \
+	-> emit link path=usr/lib/$(MACH64)/libpython3.so target=libpython3-37.so mediator=python3 mediator-version=3.7>
 
 # move and rename ln lib
 <transform file path=.*/llib-lpython37m.ln -> set action.hash \$\(MACH64\)/llib-lpython37m.ln>
