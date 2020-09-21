@@ -1,0 +1,32 @@
+Configure phase might fail with the following error.
+
+##################################################
+ist/Math-BigRat/t/trap.t: No such file or directory
+
+THIS PACKAGE SEEMS TO BE INCOMPLETE.
+
+You have the option of continuing the configuration process, despite the
+distinct possibility that your kit is damaged, by typing 'y'es.  If you
+do, don't blame me if something goes wrong.  I advise you to type 'n'o
+and contact the author (perlbug@perl.org).
+##################################################
+
+Based on the investigation, there seems to be a bug in split
+command that causes that the first letter is cut when output
+is divided into multiple files. As a workaround, this patch
+replaces Solaris split command with GNU split.
+
+Not suitable for upstream.
+
+--- perl-5.22.1/Configure	2020-09-20 23:19:59.195842746 +0000
++++ perl-5.22.1/Configure	2020-09-20 23:19:18.856014486 +0000
+@@ -2064,8 +2064,7 @@ rm -f .echotmp
+ echo " "
+ if test -f "$rsrc/MANIFEST"; then
+ 	echo "First let's make sure your kit is complete.  Checking..." >&4
+-	awk '$1 !~ /PACK[A-Z]+/ {print $1}' "$rsrc/MANIFEST" | \
+-		(split -l 50 2>/dev/null || split -50)
++	awk '$1 !~ /PACK[A-Z]+/ {print $1}' "$rsrc/MANIFEST" | gsplit -l 50
+ 	rm -f missing
+ 	tmppwd=`pwd`
+ 	for filelist in x??; do
