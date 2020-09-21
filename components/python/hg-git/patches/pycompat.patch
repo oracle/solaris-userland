@@ -1,0 +1,22 @@
+Our version of Mercurial doesn't have iteritems & itervalues available
+for import; those were added in Mercurial 5.2.
+
+--- hg-git-0.9.0/hggit/compat.py
++++ hg-git-0.9.0/hggit/compat.py
+@@ -42,9 +42,13 @@ except ImportError:
+ try:
+     from mercurial.pycompat import iteritems, itervalues
+ except ImportError:
+-    assert not pycompat.ispy3
+-    iteritems = lambda x: x.iteritems()
+-    itervalues = lambda x: x.itervalues()
++    # we have older version of Mercurial, which doesn't have these yet
++    if pycompat.ispy3:
++        iteritems = lambda x: x.items()
++        itervalues = lambda x: x.values()
++    else:
++        iteritems = lambda x: x.iteritems()
++        itervalues = lambda x: x.itervalues()
+ 
+ try:
+     unicode = unicode

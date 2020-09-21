@@ -4,9 +4,9 @@ when a CA cert is added/removed/modified.
 
 Not suitable for upstream
 
---- dulwich-0.19.2/dulwich/client.py
-+++ dulwich-0.19.2/dulwich/client.py
-@@ -1294,12 +1294,7 @@ def default_urllib3_manager(config, **ov
+--- dulwich-0.19.16/dulwich/client.py
++++ dulwich-0.19.16/dulwich/client.py
+@@ -1486,12 +1486,7 @@ def default_urllib3_manager(config, **ov
  
      # Try really hard to find a SSL certificate path
      if 'ca_certs' not in kwargs and kwargs.get('cert_reqs') != 'CERT_NONE':
@@ -20,21 +20,21 @@ Not suitable for upstream
  
      import urllib3
  
---- dulwich-0.19.2/dulwich.egg-info/requires.txt
-+++ dulwich-0.19.2/dulwich.egg-info/requires.txt
+--- dulwich-0.19.16/dulwich.egg-info/requires.txt
++++ dulwich-0.19.16/dulwich.egg-info/requires.txt
 @@ -1,4 +1,3 @@
 -certifi
- urllib3>=1.21
+ urllib3>=1.24.1
  
  [fastimport]
---- dulwich-0.19.2/setup.py
-+++ dulwich-0.19.2/setup.py
-@@ -78,7 +78,7 @@ if has_setuptools:
-         'fastimport': ['fastimport'],
-         'https': ['urllib3[secure]>=1.21'],
+--- dulwich-0.19.16/setup.py
++++ dulwich-0.19.16/setup.py
+@@ -80,7 +80,7 @@ if has_setuptools:
+         'https': ['urllib3[secure]>=1.24.1'],
+         'pgp': ['gpg'],
          }
--    setup_kwargs['install_requires'] = ['urllib3>=1.21', 'certifi']
-+    setup_kwargs['install_requires'] = ['urllib3>=1.21']
+-    setup_kwargs['install_requires'] = ['urllib3>=1.24.1', 'certifi']
++    setup_kwargs['install_requires'] = ['urllib3>=1.24.1']
      setup_kwargs['include_package_data'] = True
      setup_kwargs['test_suite'] = 'dulwich.tests.test_suite'
      setup_kwargs['tests_require'] = tests_require

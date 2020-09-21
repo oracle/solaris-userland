@@ -23,23 +23,26 @@
 # Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
+COMPILER=		gcc
+BUILD_BITS=		32_and_64
+
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dulwich
-COMPONENT_VERSION=	0.19.2
+COMPONENT_VERSION=	0.19.16
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c51e10c260543240e0806052af046e1a78b98cbe1ac1ef3880a78d2269e09da4
+    sha256:8cd84aa0474a87314d23350e66ee7ed9673395d69b45db958da2939902cba4b9
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://www.dulwich.io/
 COMPONENT_BUGDB=	python-mod/dulwich
 COMPONENT_ANITYA_ID=	6077
 
-TPNO=			43216
+TPNO=			61974
 
-# This component is not yet built for Python 3.7
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
+# Mirror versions for Mercurial (and historically 3.5)
+PYTHON_VERSIONS = 2.7 3.5 3.7
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -48,12 +51,22 @@ include $(WS_MAKE_RULES)/ips.mk
 # The unit tests failed to start.
 $(SKIP_TEST_AT_TOP_LEVEL)
 
-COMPONENT_TEST_DIR=		$(SOURCE_DIR)
-COMPONENT_TEST_ARGS=		setup.py test
+# make executables for each Python version
+COMPONENT_POST_INSTALL_ACTION += \
+	$(MV) $(PROTOUSRBINDIR)/dul-receive-pack $(PROTOUSRBINDIR)/dul-receive-pack$(PYTHON_VERSION); \
+	$(MV) $(PROTOUSRBINDIR)/dul-upload-pack $(PROTOUSRBINDIR)/dul-upload-pack$(PYTHON_VERSION); \
+	$(MV) $(PROTOUSRBINDIR)/dulwich $(PROTOUSRBINDIR)/dulwich$(PYTHON_VERSION);
+
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/$(COMPONENT_NAME)/tests
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
 
 build:		$(BUILD_32_and_64)
+
 install:	$(INSTALL_32_and_64)
+
 test:		$(TEST_32_and_64)
+
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += library/python/urllib3

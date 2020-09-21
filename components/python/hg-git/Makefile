@@ -26,37 +26,34 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		hg-git
-COMPONENT_VERSION=	0.8.12
-COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
+COMPONENT_VERSION=	0.9.0
+COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:66a589baa5c6734320f2737c486abfabfd9bb2bf96bedbfe991f0a5bec1160d2
-COMPONENT_ARCHIVE_URL=	https://bitbucket.org/durin42/$(COMPONENT_NAME)/get/$(COMPONENT_ARCHIVE)
+    sha256:8a3596474283558ff838c5d85bace43f9cd0aca863a706d99d052a3e28f08653
+COMPONENT_ARCHIVE_URL= \
+    https://foss.heptapod.net/mercurial/$(COMPONENT_NAME)/-/archive/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://hg-git.github.io/
 COMPONENT_BUGDB=	python-mod/hg-git
 COMPONENT_ANITYA_ID=	1314
 
-TPNO=			49404
+TPNO=			61973
 
-PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
+# Mirror versions for Mercurial
+PYTHON_VERSIONS = 2.7 3.7
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
-UNPACK_DIR=		durin42-$(COMPONENT_NAME)-c651bb6fcf33
-COMPONENT_POST_UNPACK_ACTION= ( $(MV) $(UNPACK_DIR) $(COMPONENT_SRC))
-
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON)
 COMPONENT_TEST_ARGS =	run-tests.py --with-hg=$(HG)
 
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+
 COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS = '-n -e "/Ran .* tests/p"'
-
-CLEAN_PATHS +=		$(COMPONENT_ARCHIVE)
 
 # common targets
 build:		$(BUILD_NO_ARCH)
