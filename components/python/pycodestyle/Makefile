@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -54,11 +54,6 @@ COMPONENT_POST_INSTALL_ACTION += \
 	$(GSED) -e 's/XXX/$(COMPONENT_VERSION)/' \
 	    $(COMPONENT_DIR)/files/pycodestyle.1 > \
 	    $(PROTO_DIR)/usr/share/man/man1/pycodestyle.1);
-
-# Copy and compile pep8 file for backward compatibility
-COMPONENT_POST_INSTALL_ACTION += \
-	($(CP) files/pep8.py $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages/pep8.py ; \
-	$(PYTHON) -m compileall $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages/pep8.py);
 
 COMPONENT_POST_INSTALL_ACTION += \
 	$(MV) $(PROTOUSRBINDIR)/pycodestyle $(PROTOUSRBINDIR)/pycodestyle-$(PYTHON_VERSION)

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, Oracle and/or its affiliates.
 #
 
 <include ../generate/common.transform>
@@ -30,9 +30,3 @@
 
 # bypass pkg.depend for some imports
 <transform file path=.*/pycodestyle.py$ -> set pkg.depend.bypass-generate .*>
-
-# emit pep8 links for backward compatibility
-<transform file path=usr/bin/pycodestyle-\$\(PYVER\) -> \
-	emit link path=usr/bin/pep8-$(PYVER) target=pycodestyle-$(PYVER)>
-<transform file path=usr/bin/pycodestyle-\$\(PYVER\) -> \
-	emit link path=usr/bin/pep8 target=pycodestyle-$(PYVER) mediator=python mediator-version=$(PYVER)>
