@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
@@ -96,3 +96,7 @@
 
 <transform file path=.*/(different_encoding|false_encoding|pytree_idempotency).py \
 	-> set pkg.depend.bypass-generate .*>
+
+# remove dtrace related tests as they won't work on Solaris (see 30640154)
+<transform file path=.*/test/test_dtrace.py$ -> drop>
+<transform file path=.*/test/dtracedata/.* -> drop>
