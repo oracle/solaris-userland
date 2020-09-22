@@ -1,0 +1,59 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+
+# Set perms
+<transform file path=usr/lib/X11/xdm/Xsession -> set mode 0555>
+<transform file path=usr/lib/X11/xdm/Xsetup_0 -> set mode 0555>
+<transform file path=usr/lib/X11/xdm/Xstartup -> set mode 0555>
+<transform file path=usr/lib/X11/xdm/Xwilling -> set mode 0555>
+<transform file path=usr/lib/X11/xdm/chooser -> set mode 0555>
+<transform file path=usr/lib/X11/xdm/Xreset -> set mode 0555>
+<transform file path=usr/lib/X11/xdm/xdmshell -> set mode 0555>
+<transform file path=usr/lib/X11/xdm/TakeConsole -> set mode 0555>
+<transform file path=usr/lib/X11/xdm/GiveConsole -> set mode 0555>
+
+# pkg transforms
+<transform file path=usr/lib/X11/xdm/libXdmGreet.so -> \
+	set pkg.linted.userland.action001.2 true>
+
+<transform file path=etc/X11/xdm/Xservers -> set group sys> 
+<transform file path=etc/X11/xdm/Xservers -> \
+	set original_name SUNWxdm:etc/X11/xdm/Xservers>
+<transform file path=etc/X11/xdm/Xservers -> set preserve true>
+
+<transform file path=etc/X11/xdm/Xaccess -> set group sys>
+<transform file path=etc/X11/xdm/Xaccess -> \
+	set original_name SUNWxdm:etc/X11/xdm/Xaccess>
+<transform file path=etc/X11/xdm/Xaccess -> set preserve true>
+
+<transform file path=etc/X11/xdm/Xresources -> set group sys>
+<transform file path=etc/X11/xdm/Xresources -> \
+	set original_name SUNWxdm:etc/X11/xdm/Xresources>
+<transform file path=etc/X11/xdm/Xresources -> set preserve true>
+
+<transform file path=etc/X11/xdm/xdm-config -> set group sys> 
+<transform file path=etc/X11/xdm/xdm-config -> \
+	set original_name SUNWxdm:etc/X11/xdm/xdm-config>
+<transform file path=etc/X11/xdm/xdm-config -> set preserve true> 

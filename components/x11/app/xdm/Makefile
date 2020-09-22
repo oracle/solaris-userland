@@ -20,18 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xdm
-COMPONENT_VERSION=	1.1.9
+COMPONENT_VERSION=	1.1.12
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e7b1db0e1b0d0113a301d94e40b0314e55f7e0006415f50a9cf06f636b11b134
+	sha256:0dd283f72dda098d09e2925b9278c95e21551e693a5802ab442d1b577d8327f4
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	5255
+TPNO=			49913
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -47,6 +48,7 @@ CONFIGURE_OPTIONS += --with-xdmconfigdir=/etc/X11/xdm
 CONFIGURE_OPTIONS += --disable-secure-rpc
 CONFIGURE_OPTIONS += --with-piddir=/var/run/xdm
 CONFIGURE_OPTIONS += --with-authdir=/var/run/xdm
+CONFIGURE_OPTIONS += --enable-xdmshell
 CONFIGURE_OPTIONS += --bindir=$(USRSBINDIR)
 CONFIGURE_OPTIONS += --libdir=$(CONFIGURE_LIBDIR.32)
 # Find xrdb & xterm in /usr/bin even with --bindir set to /usr/sbin
