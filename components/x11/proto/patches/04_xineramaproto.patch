@@ -10,7 +10,7 @@ For more info, see:
 diff -urp -x '*~' -x '*.orig' panoramiXproto.h panoramiXproto.h
 --- a/include/X11/extensions/panoramiXproto.h	2009-08-26 18:39:59.000000000 -0700
 +++ b/include/X11/extensions/panoramiXproto.h	2009-11-02 14:56:50.107356009 -0800
-@@ -190,4 +190,83 @@ typedef struct {
+@@ -190,4 +190,83 @@
  } xXineramaScreenInfo;
  #define sz_XineramaScreenInfo 8
  
@@ -41,56 +41,56 @@ diff -urp -x '*~' -x '*.orig' panoramiXproto.h panoramiXproto.h
 + * DEALINGS IN THE SOFTWARE.
 + */
 +
-+#define X_PanoramiXGetInfo	4
-+#define X_XineramaInfo		4
++#define X_PanoramiXGetInfo     4
++#define X_XineramaInfo         4
 +
-+#define XINERAMA_PLACE_TOP	1
-+#define XINERAMA_PLACE_BOTTOM	2
-+#define XINERAMA_PLACE_RIGHT	4
-+#define XINERAMA_PLACE_LEFT	8
++#define XINERAMA_PLACE_TOP     1
++#define XINERAMA_PLACE_BOTTOM  2
++#define XINERAMA_PLACE_RIGHT   4
++#define XINERAMA_PLACE_LEFT    8
 +
 +#ifndef _XINERAMAINFO_
 +#define _XINERAMAINFO_
 +
-+#define XinID	int
++#define XinID  int
 +#define MAXSCREEN 16
-+#define DELTA	int
-+#define POINT	int
++#define DELTA  int
++#define POINT  int
 +
 +typedef struct subwid
 +{
-+	XinID	wid;	/* sub window id */
-+	DELTA	dx,dy;	/* delta in screen co-ord from virtual zero */
-+	POINT	x,y;	/* location of window in screen co-ord */
-+	DELTA 	wdx,wdy;/* size of window in screen co-ord */
++       XinID   wid;    /* sub window id */
++       DELTA   dx,dy;  /* delta in screen co-ord from virtual zero */
++       POINT   x,y;    /* location of window in screen co-ord */
++       DELTA   wdx,wdy;/* size of window in screen co-ord */
 +} SubWID, *pSubWID;
 +
 +typedef struct xineramainfo
 +{
-+	XinID 	wid;	/* Window ID of requested virtual window */
-+	SubWID	subs[MAXSCREEN];	/* there will be 16 slots */
++       XinID   wid;    /* Window ID of requested virtual window */
++       SubWID  subs[MAXSCREEN];        /* there will be 16 slots */
 +} XineramaInfo, *pXineramaInfo;
 +#endif /* _XINERAMAINFO_ */
 +
 +typedef struct _XXineramaInfoReply
 +{
-+	BYTE	type;
-+	CARD8	unused;
-+	CARD16	sequenceNumber B16;
-+	CARD32	length B32;
-+	XinID 	wid;	/* Window ID of requested virtual window */
-+	SubWID	subs[MAXSCREEN];	/* there will be 16 slots */
++       BYTE    type;
++       CARD8   unused;
++       CARD16  sequenceNumber B16;
++       CARD32  length B32;
++       XinID   wid;    /* Window ID of requested virtual window */
++       SubWID  subs[MAXSCREEN];        /* there will be 16 slots */
 +}xXineramaInfoReply;
 +
 +typedef struct _XXineramaInfoReq
 +{
-+	CARD8	reqType;
-+	CARD8	xXineramaReqType;
-+	CARD16	length B16;
-+	CARD32	visual B32;
++       CARD8   reqType;
++       CARD8   xXineramaReqType;
++       CARD16  length B16;
++       CARD32  visual B32;
 +}xXineramaInfoReq;
 +
 +#define sz_xXineramaInfoReq 8
 +#endif /* SUNSOFT & !XORGSERVER */
 +
- #endif 
+ #endif

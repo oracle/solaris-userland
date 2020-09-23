@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            64_and_32
@@ -28,38 +28,34 @@ COMPILER=               gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libxkbcommon
-COMPONENT_VERSION=	0.8.4
+COMPONENT_VERSION=	1.0.1
 COMPONENT_PROJECT_URL=	http://xkbcommon.org
 COMPONENT_ARCHIVE= 	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/download/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:60ddcff932b7fd352752d51a5c4f04f3d0403230a584df9a2e0d5ed87c486c8b
+	sha256:ab68b25341c99f2218d7cf3dad459c1827f411219901ade05bbccbdb856b6c8d
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1780
-TPNO=			50570
+TPNO=			62004
 
-FIX_PC_FILES=xkbcommon.pc.in xkbcommon-x11.pc.in
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
-LD_OPTIONS += -z gnu-version-script-compat
-CONFIGURE_ENV += $(COMPONENT_BUILD_ENV)
-
-CONFIGURE_OPTIONS += --with-default-rules=/usr/share/X11/xkb/rules
-CONFIGURE_OPTIONS += --enable-docs
+CONFIGURE_OPTIONS += -Denable-wayland=false
 
 # for tests
-unexport SHELLOPTS
+COMPONENT_TEST_TRANSFORMS += '-e "s/            [0-9].[0-9][0-9]s//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/ERROR:/p" '
+        '-e "/Ok:/p" ' \
+        '-e "/Pass:/p" ' \
+        '-e "/Fail:/p" ' \
+        '-e "/OK/p" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += developer/parser/bison
 REQUIRED_PACKAGES += image/graphviz
+REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += x11/library/libxcb

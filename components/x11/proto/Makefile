@@ -20,20 +20,20 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xorgproto
-COMPONENT_VERSION=	2018.4
+COMPONENT_VERSION=	2020.1
 COMPONENT_CATEGORY=	proto
 COMPONENT_ARCHIVE_HASH= \
-	sha256:fee885e0512899ea5280c593fdb2735beb1693ad170c22ebcc844470eec415a0
+	sha256:54a153f139035a376c075845dd058049177212da94d7a9707cf9468367b699d2
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	17190
-TPNO=			45954
+TPNO=			59275
 
 # sun-ext-protos just delivers headers and xcb-proto is part of libxcb
 

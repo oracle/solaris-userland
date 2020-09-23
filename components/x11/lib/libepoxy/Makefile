@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            64_and_32
@@ -28,15 +28,15 @@ COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libepoxy
-COMPONENT_VERSION=	1.5.3
+COMPONENT_VERSION=	1.5.4
 COMPONENT_PROJECT_URL=  https://github.com/anholt/libepoxy
 COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:c2f1e2c9c12dcc57dee07cd4ca47de83cf19d0226a225b695066ce58ebb4b117
+	sha256:c926fcc606901f3e03e371027056fd478da43e01ce2da7ffc48b5a0de0ca107c
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	6090
-TPNO=			49319
+TPNO=			61936
 
 # Tests need work to compile
 TEST_TARGET = $(SKIP_TEST)

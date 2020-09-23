@@ -20,20 +20,22 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libpthread-stubs
-COMPONENT_VERSION=	0.3
+COMPONENT_VERSION=	0.4
 COMPONENT_CATEGORY=	xcb
 COMPONENT_PROJECT_URL=	https://xcb.freedesktop.org/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:35b6d54e3cc6f3ba28061da81af64b9a92b7b757319098172488a660e3d87299
+	sha256:e4d05911a3165d3b18321cc067fdd2f023f06436e391c6a28dff618a78d2e733
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	13519
+TPNO=			49321
+COMPONENT_SIG_URL=
 
 TEST_TARGET = $(NO_TESTS)
 

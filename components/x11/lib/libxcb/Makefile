@@ -20,31 +20,32 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libxcb
-COMPONENT_VERSION=	1.13.1
+COMPONENT_VERSION=	1.14
 COMPONENT_CATEGORY=	xcb
 COMPONENT_PROJECT_URL=	https://xcb.freedesktop.org/
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:a89fb7af7a11f43d2ce84a844a4b38df688c092bf4b67683aef179cdf2a647c4
+	sha256:2c7fcddd1da34d9b238c9caeda20d3bd7486456fc50b3cc6567185dbd5b0ad02
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1767
-TPNO=			49914
+TPNO=			62007
 
 COMPONENT_NAME_1=	xcb-proto
-COMPONENT_VERSION_1=	1.13
+COMPONENT_VERSION_1=	1.14
 COMPONENT_SRC_1=	$(COMPONENT_NAME_1)-$(COMPONENT_VERSION_1)
-COMPONENT_ARCHIVE_1=	$(COMPONENT_SRC_1).tar.bz2
+COMPONENT_ARCHIVE_1=	$(COMPONENT_SRC_1).tar.gz
 COMPONENT_ARCHIVE_URL_1=$(COMPONENT_PROJECT_URL)/dist/$(COMPONENT_ARCHIVE_1)
 COMPONENT_ARCHIVE_HASH_1= \
-        sha256:7b98721e669be80284e9bbfeab02d2d0d54cd11172b72271e47a2fe875e2bde1
+        sha256:1c3fa23d091fb5e4f1e9bf145a902161cec00d260fabf880a7a248b02ab27031
 COMPONENT_ANITYA_ID_1=  13646
-TPNO_1=			49165
+TPNO_1=			62008
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -88,6 +89,9 @@ CONFIGURE_OPTIONS += --with-queue-size=32768
 CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += INSTALL="$(INSTALL) -p"
 CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
+
+XCBPROTO_BASE = $(WS_COMPONENTS)/x11/lib/libxcb/build/prototype/$(MACH)
+PKG_CONFIG_PATHS += $(XCBPROTO_BASE)/usr/share/pkgconfig/
 
 $(BUILD_TARGET): $(INSTALL_32:%/.installed=%_1/.installed)
 $(BUILD_TARGET:.built=.configured):  $(INSTALL_32:%/.installed=%_1/.installed)
