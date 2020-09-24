@@ -165,6 +165,7 @@ fi
 typeset -r PGID_FILE="$WS_ROOT/.hg/full-build.pgid"
 typeset -r BUILD_NAME="$(basename "$WS_ROOT")"
 typeset -r LOGDIR="$WS_ROOT/$(uname -p)/logs"
+typeset -r REPODIR="$WS_ROOT/$(uname -p)/repo"
 typeset -r TEMP_LOGFILE="$WS_ROOT/.hg/full-build.temp.log"
 typeset -r FULL_BUILD_LOG_NAME=full-build
 typeset -r FINAL_LOGFILE="$LOGDIR/$FULL_BUILD_LOG_NAME"
@@ -392,6 +393,10 @@ function build {
 		echo "Failed components:"
 		( ggrep -r --exclude "$FULL_BUILD_LOG_NAME"$ -L -x -F 'TARGET_EXIT_CODE 0' || : ) |
 			sed -e 's/^/   /'
+		# Most probably if the full build failed then the repo wasn't
+		# "refresh"ed, so one can't list the packages in it even though the files
+		# are there. Let's try to call the refresh here to improve that situation
+		pkgrepo refresh -s "$REPODIR" || :
 	fi
 
 	exit $RET
