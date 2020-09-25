@@ -1,135 +1,27 @@
-Fixes bug 31546357.
+Fixes Python CGI being confused about binary files (bugs 31546357 & 31936635).
 
-Taken from upstream:
+Upstream issue:
 https://bugs.python.org/issue27777
-https://github.com/python/cpython/pull/21457
+
+WIP patch taken from upstream is still buggy, so we use
+this in-house developed one.
 
 --- Python-3.7.8/Lib/cgi.py
 +++ Python-3.7.8/Lib/cgi.py
-@@ -684,7 +684,7 @@ class FieldStorage:
-     def read_single(self):
-         """Internal: read an atomic part."""
-         if self.length >= 0:
--            self.read_binary()
-+            self.read_content()
-             self.skip_lines()
-         else:
-             self.read_lines()
-@@ -692,31 +692,31 @@ class FieldStorage:
- 
-     bufsize = 8*1024            # I/O buffering size for copy to file
- 
--    def read_binary(self):
--        """Internal: read binary data."""
--        self.file = self.make_file()
-+    def read_content(self):
-+        """Internal: read data up until content-length len."""
-+        if self.length > 1000:
-+            self.file = self.make_file()
-+        else:
-+            self.file = self.io_object()
-+        self.__file = self.file
-         todo = self.length
-         if todo >= 0:
-             while todo > 0:
-                 data = self.fp.read(min(todo, self.bufsize)) # bytes
--                if not isinstance(data, bytes):
--                    raise ValueError("%s should return bytes, got %s"
--                                     % (self.fp, type(data).__name__))
-                 self.bytes_read += len(data)
+@@ -706,7 +706,10 @@
                  if not data:
                      self.done = -1
                      break
 -                self.file.write(data)
-+                self.__write(data)
++                if self._binary_file:
++                    self.file.write(data)
++                else:
++                    self.file.write(data.decode())
                  todo = todo - len(data)
  
      def read_lines(self):
-         """Internal: read lines until EOF or outerboundary."""
--        if self._binary_file:
--            self.file = self.__file = BytesIO() # store data as bytes for files
--        else:
--            self.file = self.__file = StringIO() # as strings for other fields
-+        self.file = self.__file = self.io_object()
-         if self.outerboundary:
-             self.read_lines_to_outerboundary()
-+        elif self.length >= 0:
-+            self.read_content()
-         else:
-             self.read_lines_to_eof()
- 
-@@ -738,7 +738,7 @@ class FieldStorage:
-     def read_lines_to_eof(self):
-         """Internal: read lines until EOF."""
-         while 1:
--            line = self.fp.readline(1<<16) # bytes
-+            line = self.fp.read(1<<16) # bytes
-             self.bytes_read += len(line)
-             if not line:
-                 self.done = -1
-@@ -847,6 +847,12 @@ class FieldStorage:
-             return tempfile.TemporaryFile("w+",
-                 encoding=self.encoding, newline = '\n')
- 
-+    def io_object(self):
-+        if self._binary_file:
-+            return BytesIO() # store data as bytes for files
-+        else:
-+            return StringIO() # as strings for other fields
-+
- 
- # Test/debug code
- # ===============
 --- Python-3.7.8/Lib/test/test_cgi.py
 +++ Python-3.7.8/Lib/test/test_cgi.py
-@@ -226,22 +226,22 @@ Content-Length: 3
-             self.addCleanup(cgi.closelog)
-             cgi.log("Testing log 4")
- 
--    def test_fieldstorage_readline(self):
--        # FieldStorage uses readline, which has the capacity to read all
--        # contents of the input file into memory; we use readline's size argument
--        # to prevent that for files that do not contain any newlines in
-+    def test_fieldstorage_read(self):
-+        # FieldStorage uses read, which has the capacity to read all contents
-+        # of the input file into memory; we use read's size argument to
-+        # prevent that for files that do not contain any newlines in
-         # non-GET/HEAD requests
--        class TestReadlineFile:
-+        class TestReadFile:
-             def __init__(self, file):
-                 self.file = file
-                 self.numcalls = 0
- 
--            def readline(self, size=None):
-+            def read(self, size=None):
-                 self.numcalls += 1
-                 if size:
--                    return self.file.readline(size)
-+                    return self.file.read(size)
-                 else:
--                    return self.file.readline()
-+                    return self.file.read()
- 
-             def __getattr__(self, name):
-                 file = self.__dict__['file']
-@@ -250,14 +250,14 @@ Content-Length: 3
-                     setattr(self, name, a)
-                 return a
- 
--        f = TestReadlineFile(tempfile.TemporaryFile("wb+"))
-+        f = TestReadFile(tempfile.TemporaryFile("wb+"))
-         self.addCleanup(f.close)
-         f.write(b'x' * 256 * 1024)
-         f.seek(0)
-         env = {'REQUEST_METHOD':'PUT'}
-         fs = cgi.FieldStorage(fp=f, environ=env)
-         self.addCleanup(fs.file.close)
--        # if we're not chunking properly, readline is only called twice
-+        # if we're not chunking properly, read is only called twice
-         # (by read_binary); if we are chunking properly, it will be called 5 times
-         # as long as the chunksize is 1 << 16.
-         self.assertGreater(f.numcalls, 2)
 @@ -377,6 +377,18 @@ Larry
          self.assertEqual(fs.list[0].name, 'submit-name')
          self.assertEqual(fs.list[0].value, 'Larry')
