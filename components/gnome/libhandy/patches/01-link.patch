@@ -1,0 +1,12 @@
+The libhandy introspection library needs to be linked with libssp.
+
+--- libhandy-1.0.2/src/meson.build
++++ libhandy-1.0.2/src/meson.build
+@@ -253,6 +253,7 @@ if introspection
+      '--c-include=handy.h',
+      '--quiet',
+      '-DHANDY_COMPILATION',
++     '-lssp',
+    ]
+ 
+    libhandy_gir = gnome.generate_gir(libhandy,
