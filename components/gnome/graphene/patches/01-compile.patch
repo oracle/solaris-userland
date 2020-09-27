@@ -1,0 +1,16 @@
+On Solaris, `struct winsize` and `TIOCGWINSZ` are hidden within <sys/termios.h>
+header, which hence needs to be included as well.
+
+--- graphene-1.10.2/subprojects/mutest/src/mutest-main.c
++++ graphene-1.10.2/subprojects/mutest/src/mutest-main.c
+@@ -13,6 +13,10 @@
+ #include <stdlib.h>
+ #include <string.h>
+ 
++#ifdef __sun
++#include <sys/termios.h>
++#endif
++
+ #ifdef HAVE_SYS_IOCTL_H
+ #include <sys/ioctl.h>
+ #endif
