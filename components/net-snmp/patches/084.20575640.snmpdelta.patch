@@ -1,0 +1,33 @@
+snmpdelta -C[pPv], without values being passed to it, dumps core. This patch has not been submitted upstream yet.
+----------------------------------------------------------------------------------------------------------
+--- a/apps/snmpdelta.c.orig	2020-09-22 03:31:46.789697780 +0000
++++ b/apps/snmpdelta.c	2020-09-22 03:31:58.441964510 +0000
+@@ -138,13 +138,25 @@
+ 					  NETSNMP_DS_APP_DONT_FIX_PDUS);
+                 break;
+             case 'p':
+-                period = atoi(argv[optind++]);
++                if (optind >= argc) {
++                        usage();
++                        exit (1);
++                }
++                period = (int) strtol(argv[optind++], NULL, 0);
+                 break;
+             case 'P':
+-                peaks = atoi(argv[optind++]);
++                if (optind >= argc) {
++                        usage();
++                        exit (1);
++                }
++                peaks = (int) strtol(argv[optind++], NULL, 0);
+                 break;
+             case 'v':
+-                varbindsPerPacket = atoi(argv[optind++]);
++                if (optind >= argc) {
++                        usage();
++                        exit (1);
++                }
++                varbindsPerPacket = (int) strtol(argv[optind++], NULL, 0);
+                 break;
+             case 't':
+                 deltat = 1;
