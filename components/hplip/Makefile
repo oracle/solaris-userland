@@ -31,9 +31,9 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         hplip
-COMPONENT_VERSION=      3.20.3
-TPNO=			58896
-COMPONENT_ARCHIVE_HASH= sha256:41097ec52af5cce51ec7b0200d9f9ec82649b58ae7105259e82130e9cf63066a
+COMPONENT_VERSION=      3.20.9
+TPNO=			62171
+COMPONENT_ARCHIVE_HASH= sha256:4ce5284fc08ef34e9bbe68876f9e638ac2cd2f78a576abcbd23082668652f279
 COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/project/$(COMPONENT_NAME)/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://hplipopensource.com/hplip-web/index.html
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
@@ -89,3 +89,4 @@ REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/management/snmp/net-snmp
+REQUIRED_PACKAGES += system/network/avahi
