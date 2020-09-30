@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
-BUILD_BITS =            64
-COMPILER =              gcc
+BUILD_BITS =		64
+COMPILER =		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-screenshot
-COMPONENT_VERSION=	3.34.0
+COMPONENT_VERSION=	3.38.0
 COMPONENT_PROJECT_URL=	https://en.wikipedia.org/wiki/GNOME_Screenshot
 COMPONENT_ARCHIVE_HASH= \
-	sha256:c80af5f7a2bed4348585eb18dc4e60af5beba4f13d8ccf6ab1ee1d0912c2b1e6
-COMPONENT_BUGDB=        gnome/applications
+	sha256:e556d3dd134d91344d2857c066434bfb64f7c85bdec7bc33739366b9bcd29fc0
+COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	13135
 
-TPNO=			54062
+TPNO=			63594
 BUILD_STYLE=		meson
 
 TEST_TARGET= $(NO_TESTS)
@@ -49,6 +49,7 @@ COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
+REQUIRED_PACKAGES += library/desktop/libhandy
 REQUIRED_PACKAGES += library/desktop/xdg/libcanberra
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += system/library/math
