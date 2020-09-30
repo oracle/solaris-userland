@@ -28,9 +28,9 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cups
 
-COMPONENT_VERSION=	2.3.1
-COMPONENT_ARCHIVE_HASH=	sha256:73ef9aa29707770feea2923654f598dac2a8f965373c232d200f7db7e050622e
-TPNO=			58403
+COMPONENT_VERSION=	2.3.3
+COMPONENT_ARCHIVE_HASH=	sha256:e7759f70df318814f96cd408d3677f4ebed796d505ad58d89936c97cb19dffe1
+TPNO=			62028
 
 COMPONENT_PROJECT_URL=	http://www.cups.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
@@ -38,7 +38,10 @@ COMPONENT_ARCHIVE_URL=	https://github.com/apple/cups/archive/v$(COMPONENT_VERSIO
 COMPONENT_BUGDB=	utility/cups
 COMPONENT_ANITYA_ID=	380
 
-TEST_TARGET= $(NO_TESTS)
+# Test just 64 bit as we are building just libcups in 32-bit mode. Disable system-test.
+TEST_32 =		$(SKIP_TEST)
+system-test:    	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
+
 include $(WS_MAKE_RULES)/common.mk
 
 $(CONFIGURE_32):	LDFLAGS += -m32
@@ -92,6 +95,14 @@ SUBPKG_OBJ =	cups-libs
 EXCLUSION_CRITERIA = usr/include/.*\.h|usr/lib.*/lib.*\.so.*
 # pkgobjs is used because manifest check do not support trash-can check
 include $(WS_MAKE_RULES)/pkgobjs.mk
+
+# Work in our test dir, not /tmp.
+COMPONENT_TEST_ENV += CUPS_TESTBASE=$(COMPONENT_TEST_DIR)/test/work
+# Keep just fails.
+COMPONENT_TEST_TRANSFORMS = \
+	'-e "/: FAIL/p" ' \
+	'-e "/ tests failed./p" ' \
+	'-e "d" '
 
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/libusb-1

@@ -1,0 +1,79 @@
+Use randomly generated port between 30000 and 40000 for cupsd. In case the port
+is already used run-stp-tests.sh returns 2 to be re-run.
+
+Remove preloading of libCrun as it is not needed.
+
+Install trap to kill leftover cupsd.
+
+Restart test if cupsd fails to start.
+
+This patch is not for upstream. The change was made to make the tests more
+reliable in Userland infrastructure.
+
+--- a/test/run-stp-tests.sh	2020-10-12 11:58:22.243548554 +0200
++++ b/test/run-stp-tests.sh	2020-10-12 12:00:04.366936122 +0200
+@@ -179,7 +179,12 @@
+ 	fi
+ fi
+ 
+-port="${CUPS_TESTPORT:=8631}"
++port=$(netstat -f inet -an | perl -ne '
++	$x{$1}=1 if m/^\s*[0-9\.\*]*?\.(\d+)\s.*LISTEN$/;
++	END {
++		while ($port=int(rand(10000)+30000)) { last unless defined $x{$port} };
++		print "$port\n"
++	}')
+ cwd=`pwd`
+ root=`dirname $cwd`
+ CUPS_TESTROOT="$root"; export CUPS_TESTROOT
+@@ -596,9 +601,6 @@
+ 	fi
+ 
+ 	LD_PRELOAD="$root/cups/libcups.so.2:$root/cups/libcupsimage.so.2"
+-	if test `uname` = SunOS -a -r /usr/lib/libCrun.so.1; then
+-		LD_PRELOAD="/usr/lib/libCrun.so.1:$LD_PRELOAD"
+-	fi
+ fi
+ 
+ if test -f "$root/cups/libcups.2.dylib"; then
+@@ -681,6 +683,7 @@
+ $runcups $VALGRIND ../scheduler/cupsd -c $BASE/cupsd.conf -f >$BASE/log/debug_log 2>&1 &
+ 
+ cupsd=$!
++trap "trap - SIGTERM && kill $cupsd >/dev/null 2>&1; exit 130" SIGINT SIGTERM                                                
+ 
+ if test "x$testtype" = x0; then
+ 	# Not running tests...
+@@ -698,8 +701,8 @@
+ 	echo $ac_n "Press ENTER to continue... $ac_c"
+ 	read junk
+ else
+-	echo "Scheduler is PID $cupsd."
+-	sleep 2
++	echo "Scheduler is PID $cupsd on port $port."
++	sleep 5
+ fi
+ 
+ while true; do
+@@ -708,8 +711,8 @@
+ 		break
+ 	fi
+ 
+-	echo "Waiting for scheduler to become ready..."
+-	sleep 10
++	echo "Cupsd is not ready after 5 seconds. Port in use? Terminating with 2 to try again."
++	exit 2
+ done
+ 
+ #
+--- a/Makefile	2020-04-27 20:04:29.000000000 +0200
++++ b/Makefile	2020-10-13 12:26:24.922379349 +0200
+@@ -237,7 +237,7 @@
+ 
+ check:	all unittests
+ 	echo Running CUPS test suite with defaults...
+-	cd test; ./run-stp-tests.sh 1 0 n n
++	cd test; while ./run-stp-tests.sh 1 0 n n; [ $$? -eq 2 ]; do :; done
+ 
+ debugcheck:	all unittests
+ 	echo Running CUPS test suite with debug printfs...
