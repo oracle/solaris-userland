@@ -1,0 +1,40 @@
+This is a temporary patch for:
+
+31692136 - lpstat hangs with stopped cupsd 
+
+Solaris poll() behaves differently in comparison with Linux. On Solaris
+getsockopt() is necessary after poll() to verify the socket is connected and
+without errors.
+
+The patch should be removed once the fix gets to the upstream.
+
+--- a/cups/http-addrlist.c	2019-12-13 15:44:10.000000000 +0100
++++ b/cups/http-addrlist.c	2020-09-30 16:06:13.739750802 +0200
+@@ -306,9 +306,17 @@
+ 
+       for (i = 0; i < nfds; i ++)
+       {
++        int		sres, serr;
++        socklen_t	slen = sizeof(serr);
++
++        sres = getsockopt(fds[i], SOL_SOCKET, SO_ERROR, &serr, &slen);
++#  ifdef DEBUG
++	DEBUG_printf(("1httpAddrConnect2: getsockopt res: %d  s_err: %d", sres, serr));
++#  endif
++
+ #  ifdef HAVE_POLL
+ 	DEBUG_printf(("pfds[%d].revents=%x\n", i, pfds[i].revents));
+-	if (pfds[i].revents && !(pfds[i].revents & (POLLERR | POLLHUP)))
++	if (pfds[i].revents && !(pfds[i].revents & (POLLERR | POLLHUP)) && !sres && !serr)
+ #  else
+ 	if (FD_ISSET(fds[i], &input_set) && !FD_ISSET(fds[i], &error_set))
+ #  endif /* HAVE_POLL */
+@@ -325,7 +333,7 @@
+           break;
+ 	}
+ #  ifdef HAVE_POLL
+-	else if (pfds[i].revents & (POLLERR | POLLHUP))
++	else if ((pfds[i].revents & (POLLERR | POLLHUP)) || (sres || serr))
+ #  else
+ 	else if (FD_ISSET(fds[i], &error_set))
+ #  endif /* HAVE_POLL */
