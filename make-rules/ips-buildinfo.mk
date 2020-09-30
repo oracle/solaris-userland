@@ -65,7 +65,7 @@ BRANCH_ORDER ?= 0
 # string. It should not be set unless there is a specific need to
 # release a platform update while the Solaris Update is being built.
 #
-PLATNUM ?= 0
+PLATNUM ?= 1
 
 #
 # Build Identifier. Used to indicate which build (or respin for
