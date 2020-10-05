@@ -29,20 +29,17 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		php
-COMPONENT_VERSION=	7.3.20
+COMPONENT_VERSION=	7.3.23
 UL_PHP_MINOR_VERSION=	7.3
 COMPONENT_PROJECT_URL=	http://php.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=\
-    sha256:43292046f6684eb13acb637276d4aa1dd9f66b0b7045e6f1493bc90db389b888
+    sha256:2bdd36176f318f451fb3942bf1e935aabb3c2786cac41a9080f084ad6390e034
 COMPONENT_ARCHIVE_URL=	http://php.net/get/$(COMPONENT_ARCHIVE)/from/this/mirror
 COMPONENT_ANITYA_ID=	19262
 
-TPNO=			60857
+TPNO=			62255
 TPNO_IMAP=		32942
-
-# test results are unstable between runs but still useful for humans.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 include $(PHP_TOP_DIR)/php.mk
@@ -156,10 +153,20 @@ COMPONENT_POST_INSTALL_ACTION += \
 	 > proto-scripts/php-config-proto ; \
 	chmod 755 proto-scripts/php-config-proto ) ;
 
-# sapi/fpm/tests/002.phpt leaves php-fpm running
-COMPONENT_PRE_TEST_ACTION += (pkill -u `id -u` php-fpm; exit 0);
+# need to avoid clashes in /var/tmp directory
+COMPONENT_PRE_TEST_ACTION += ( rm -rf $(BUILD_DIR)/tmp-$(MACH); \
+	mkdir $(BUILD_DIR)/tmp-$(MACH) );
+COMPONENT_TEST_ENV += TMPDIR=$(BUILD_DIR)/tmp-$(MACH)
+# some PHP sapi tests leave php-fpm running
+COMPONENT_POST_TEST_ACTION += ( ps -ef -o "pid,comm" \
+	| grep "$(BUILD_DIR)/$(MACH64)/sapi/fpm/php-fpm" \
+	| awk '{print $$1}' \
+	| while read pid; do kill $$pid; done );
 # test failures; keep going
 COMPONENT_TEST_ARGS += -k -i
+# some tests goes to internet and others behaves differently when proxy is set
+COMPONENT_TEST_ENV += http_proxy=
+COMPONENT_TEST_ENV += SKIP_ONLINE_TESTS=1
 # different results for different architectures
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
 COMPONENT_TEST_TRANSFORMS += \

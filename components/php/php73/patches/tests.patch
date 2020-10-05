@@ -161,3 +161,14 @@ http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
  --FILE--
  <?php
  
+--- a/ext/date/tests/bug33532.phpt
++++ b/ext/date/tests/bug33532.phpt
+@@ -5,7 +5,7 @@
+ date.timezone=UTC
+ --SKIPIF--
+ <?php
+-if(PHP_OS == 'Darwin' || defined('PHP_WINDOWS_VERSION_MAJOR')) die("skip strftime uses system TZ on Darwin and Windows");
++if(PHP_OS == 'Darwin' || PHP_OS == 'SunOS' || defined('PHP_WINDOWS_VERSION_MAJOR')) die("skip strftime uses system TZ on Darwin and Windows");
+ ?>
+ --FILE--
+ <?php
