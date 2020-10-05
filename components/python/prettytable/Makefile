@@ -25,17 +25,17 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		PrettyTable
-COMPONENT_VERSION=	0.7.2
+COMPONENT_VERSION=	1.0.0
 COMPONENT_SRC=		prettytable-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2d5460dc9db74a32bcc8f9f67de68b2c4f4d2f01fa3bd518764c69156d9cacd9
+    sha256:d5f55531672b45271eb2473df1bf73323f9d109a9bb9f21029b817fe94554a90
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://code.google.com/p/prettytable/
 COMPONENT_BUGDB=	python-mod/prettytable
 COMPONENT_ANITYA_ID=	19994
 
-TPNO=			14503
+TPNO=			62337
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -46,6 +46,10 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =	prettytable_test.py
+
+# Non-ascii symbols can break the depthlimiter.py when ran with
+# Python 3.5 unless UTF-8 locale is set (see bug 31983111):
+COMPONENT_PUBLISH_ENV  +=	LC_ALL=en_US.UTF-8
 
 # common targets
 build:		$(BUILD_NO_ARCH)
