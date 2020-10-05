@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		PyHamcrest
-COMPONENT_VERSION=	1.9.0
+COMPONENT_VERSION=	1.10.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5d433cf6f5070fb55ae209f3f4ea54bfd4896ab62be510a2be37929c93b5a8db
+    sha256:74efac903a361ee05076679d12c84ad278970d55dcf7508fa7669d244a19dc8b
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/hamcrest/PyHamcrest
 COMPONENT_BUGDB=	python-mod/pyhamcrest
 COMPONENT_ANITYA_ID=	11633
 
-TPNO=			50745
+TPNO=			62248
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
