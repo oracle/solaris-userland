@@ -1,0 +1,24 @@
+From b5544878bc799bdd77d63d3c9e78c4fcc4e018ad Mon Sep 17 00:00:00 2001
+From: Michael Twomey <mick@twomeylee.name>
+Date: Sat, 12 Sep 2020 00:03:19 +0100
+Subject: [PATCH] Fix reading of README.rst in python 3.5, 3.6 and pypy3
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Turns out thanking someone with an ä in their name uncovers years old python unicode fun :)
+
+Taken from upstream:
+https://github.com/micktwomey/pyiso8601/commit/b5544878bc799bdd77d63d3c9e78c4fcc4e018ad
+
+--- iso8601-0.1.13/setup.py
++++ iso8601-0.1.13/setup.py
+@@ -5,7 +5,7 @@ try:
+ except ImportError:
+     from distutils import setup
+ 
+-long_description = open(os.path.join(os.path.dirname(__file__), "README.rst")).read()
++long_description = open(os.path.join(os.path.dirname(__file__), "README.rst"), "rb").read().decode("UTF-8")
+ 
+ setup(
+     name="iso8601",
