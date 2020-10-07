@@ -171,7 +171,9 @@ endef
 ROOT =			/
 
 # The changset and external source repo used in building the packages.
-CONSOLIDATION_CHANGESET=$(shell hg identify -i)
+CONSOLIDATION_CHANGESET=	\
+	$(shell hg --config ui.report_untrusted=False identify -i)
+
 CONSOLIDATION_REPOSITORY_URL=https://github.com/oracle/solaris-userland.git
 
 # Native OS version

@@ -567,16 +567,6 @@ print-package-paths:	canonical-manifests
 		$(PKGMOGRIFY) $(PKG_OPTIONS) /dev/fd/0 | \
  		sed -e '/^$$/d' -e '/^#.*$$/d' | sort -u
 
-install-packages:	publish
-	@if [ $(IS_GLOBAL_ZONE) = 0 -o x$(ROOT) != x ]; then \
-	    cat $(VERSIONED_MANIFESTS) $(WS_TOP)/transforms/print-paths | \
-		$(PKGMOGRIFY) $(PKG_OPTIONS) /dev/fd/0 | \
- 		sed -e '/^$$/d' -e '/^#.*$$/d' -e 's;/;;' | sort -u | \
-		(cd $(PROTO_DIR) ; pfexec /bin/cpio -dump $(ROOT)) ; \
-	else ; \
-	    echo "unsafe to install package(s) automatically" ; \
-        fi
-
 $(RESOLVED):	install
 
 canonical-manifests:	$(CANONICAL_MANIFESTS) $(MAKEFILE_PREREQ) $(ALL_PATCHES) \
@@ -620,3 +610,5 @@ $(foreach suffix, $(COMP_SUFFIXES), \
         $(eval PKG_OPTIONS += $(call mkdefine,$(macro),$$($(macro)))) \
     ) \
 )
+
+include $(WS_MAKE_RULES)/pkg_install.mk

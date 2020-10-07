@@ -160,3 +160,45 @@ regen-patches:
   to decide which existing patches to replace with the new versions and if
   any manual edits are necessary.  You may then discard the new/ directory
   and any remaining patch files in it.
+
+pkg_install::
+  This target is present in component Makefiles. It is defined by including
+  $(WS_MAKE_RULES)/{common.mk,ips.mk}. The target is used by a privileged user
+  to install a particular component from repository to local system. The
+  component can be installed in a single step along with its dependencies.
+  Dependencies can be passed on command line in REQUIRED_COMPONENTS macro. An
+  alternative IPS repository can be specified in PKG_REPO macro. It is a
+  requirement that the component and all dependencies (REQUIRED_COMPONENTS) are
+  built and published as pkg_install target is going to process manifest files
+  created during the build. To debug and display what pkg commands are going to
+  be run define macro PKG_INST_DEBUG=1.
+
+  Usage examples follow.
+
+  Example for single component (nodejs12):
+  cd components/nodejs12 && sudo gmake pkg_install
+
+  Example for single component (nodejs12) with its dependency (nghttp2):
+  cd components/nodejs12 && \
+  	sudo gmake pkg_install REQUIRED_COMPONENTS=nghttp2
+ 
+  Example of using wildcard in dependency specification (install whole gnome):
+  cd components/gnome/gnome-desktop && \
+	  sudo gmake pkg_install PKG_INST_FORCE=1 REQUIRED_COMPONENTS=gnome/*
+
+  Example of passing an alternative IPS repository for installation:
+  cd components/nodejs12 && sudo gmake pkg_install PKG_REPO=/path/to/repo
+
+  Debugging example:
+  cd gnome/pygobject3 && gmake pkg_install PKG_INST_DEBUG=1
+
+  The installation consists of 3 steps: making publisher non-sticky, unlocking
+  version-locks facets and final pkg install. These actions are internally
+  defined in macros:
+
+  * PKG_INST_SET_PUBLISHER
+  * PKG_INST_CHANGE_FACET
+  * PKG_INST_INSTALL
+
+  Should the component require special installation instructions it might be
+  necessary to override above macros, e.g. in component-level Makefile.

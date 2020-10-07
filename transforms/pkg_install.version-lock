@@ -18,35 +18,11 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2010, 2020, Oracle and/or its affiliates.
+
 #
-
-SUBDIRS =	components
-
-TARGETS =	\
-		download \
-		unpack \
-		patch \
-		prep \
-		build \
-		install \
-		publish \
-		validate \
-		clean \
-		clobber \
-		setup \
-		test \
-		system-test \
-		check_rtime \
-		component-hook
-
-$(foreach target, $(TARGETS), $(eval $(target): TARGET = $(target)))
-
-.DEFAULT_GOAL :=	publish
-
-$(TARGETS): $(SUBDIRS)
-
-$(SUBDIRS):
-	@+echo "$(TARGET) $@" ; $(MAKE) -C $@ $(TARGET)
-
-.PHONY: $(SUBDIRS)
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+<transform set name=pkg.fmri value=pkg:/([^/].*)@ -> \
+	print version-lock.%<1>=False >
+<transform set name=pkg.fmri value=pkg://[^/]*/(.*)@ -> \
+	print version-lock.%<1>=False >
