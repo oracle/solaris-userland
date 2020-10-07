@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -30,10 +30,8 @@ set name=info.classification \
     value="org.opensolaris.category.2008:Desktop (GNOME)/Documentation"
 set name=org.opensolaris.arc-caseid value=PSARC/2010/143
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file path=etc/xdg/autostart/os-icons-copy.desktop
 file path=usr/bin/os-about
 file path=usr/bin/os-next-steps
-file path=usr/lib/os-welcome/os-icons-copy.sh mode=0555
 file path=usr/share/applications/os-about.desktop
 file path=usr/share/applications/os-next-steps.desktop
 file path=usr/share/doc/os-welcome/html/C/css/master.css
@@ -88,8 +86,6 @@ file path=usr/share/pixmaps/next-steps.png
 license os-welcome.license license=Oracle
 
 
-# called in os-icons-copy.sh
-depend type=require fmri=__TBD pkg.debug.depend.file=usr/bin/stat
 # pkgdepend doesn't know that importing gi requires the gobject-introspection
 # data files (RFE 24463417), so we have to list them manually
 depend type=require fmri=__TBD pkg.tmp.gi-typelib=Gdk-3.0 \

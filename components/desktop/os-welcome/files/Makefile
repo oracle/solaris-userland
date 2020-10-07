@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2010, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2020, Oracle and/or its affiliates.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -64,9 +64,7 @@ DIST_FILES= $(ALL_FILES) \
 	images/about-os-background.jpg \
 	images/personalize.png \
 	images/participate.png \
-	images/resources.png \
-	os-icons-copy.sh \
-	os-icons-copy.desktop
+	images/resources.png
 
 NEXT_STEPS_DIR = /usr/share/os-about
 WELCOME_DIR= /usr/share/doc/os-welcome
@@ -114,10 +112,6 @@ install: $(DATA)
 	$(INSTALL) -d -m 755 $(DESTDIR)$(BIN_DIR)
 	$(INSTALL) -m 755 -f $(DESTDIR)$(BIN_DIR)/$$dir os-about
 	$(INSTALL) -m 755 -f $(DESTDIR)$(BIN_DIR)/$$dir os-next-steps
-	$(INSTALL) -d -m 755 $(DESTDIR)$(LIB_DIR)
-	$(INSTALL) -m 755 -f $(DESTDIR)$(LIB_DIR)/$$dir os-icons-copy.sh
-	$(INSTALL) -d -m 755 $(DESTDIR)$(XDG_DIR)
-	$(INSTALL) -m 755 -f $(DESTDIR)$(XDG_DIR)/$$dir os-icons-copy.desktop
 	$(INSTALL) -d -m 755 $(DESTDIR)$(ICON_DIR)
 	$(INSTALL) -m 644 -f $(DESTDIR)$(ICON_DIR)/$$dir images/next-steps.png
 	$(INSTALL) -m 644 -f $(DESTDIR)$(ICON_DIR)/$$dir images/about-os-window-icon.png

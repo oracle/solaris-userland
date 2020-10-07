@@ -26,24 +26,17 @@
 <transform file \
     path=usr/share/gnome-session/sessions/gnome-initial-setup.session -> drop>
 
-# Set perms and move to MACH64
+# Set perms and get rid of pkglint warning
 <transform file path=usr/lib/gnome-initial-setup-copy-worker -> \
-    set action.hash %(path)>
-<transform file path=usr/lib/gnome-initial-setup-copy-worker -> \
-    edit path ^.*$ usr/lib/\$\(MACH64\)/gnome-initial-setup-copy-worker>
-<transform file path=usr/lib/\$\(MACH64\)/gnome-initial-setup-copy-worker -> \
     set mode 0555>
+<transform file path=usr/lib/gnome-initial-setup-copy-worker -> \
+    set pkg.linted.userland.action001.2 true>
 
-<transform file path=usr/lib/gnome-initial-setup -> set action.hash %(path)>
 <transform file path=usr/lib/gnome-initial-setup -> \
-    edit path ^.*$ usr/lib/\$\(MACH64\)/gnome-initial-setup>
-<transform file path=usr/lib/\$\(MACH64\)/gnome-initial-setup -> \
     set mode 0555>
+<transform file path=usr/lib/gnome-initial-setup -> \
+    set pkg.linted.userland.action001.2 true>
 
 <transform file path=usr/lib/gnome-welcome-tour -> \
-    set action.hash %(path)>
-<transform file path=usr/lib/gnome-welcome-tour -> \
-    edit path ^.*$ usr/lib/\$\(MACH64\)/gnome-welcome-tour>
-<transform file path=usr/lib/\$\(MACH64\)/gnome-welcome-tour -> \
     set mode 0555>
 
