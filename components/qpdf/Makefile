@@ -27,14 +27,14 @@ COMPILER=	gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		qpdf
-COMPONENT_VERSION=	9.1.1
-TPNO=			60672
+COMPONENT_VERSION=	10.0.1
+TPNO=			62327
 COMPONENT_PROJECT_URL=	http://qpdf.sourceforge.net/
 #GIT_REPO=	https://github.com/qpdf/qpdf
 # GitHub can also provide .zip files which is much faster variant
 COMPONENT_SRC=	$(COMPONENT_NAME)-release-$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	release-$(COMPONENT_NAME)-$(COMPONENT_VERSION).zip
-COMPONENT_ARCHIVE_HASH=	sha256:291d92d409ca135828a4f3ddf83acf07db90e989f4c1629f652fd918ae6988cd
+COMPONENT_ARCHIVE_HASH=	sha256:96fad632cbfee6e8d3e92ee7a2695e6d040e9922b004811407d461568857d2a9
 COMPONENT_ARCHIVE_URL=	https://github.com/qpdf/qpdf/archive/$(COMPONENT_ARCHIVE)
 
 COMPONENT_BUGDB=	utility/qpdf
@@ -56,6 +56,8 @@ COMPONENT_PRE_CONFIGURE_ACTION += $(CLONEY) $(SOURCE_DIR) $(@D)
 CONFIGURE_OPTIONS	+= --enable-shared
 CONFIGURE_OPTIONS	+= --disable-static
 CONFIGURE_OPTIONS	+= --disable-largefile
+#The openssl implementation is making use of deprecated APIs
+CONFIGURE_OPTIONS       += --disable-crypto-openssl
 
 # It would be nice to align this perl-script with perl version but it breaks a build.
 #PERL_SCRIPTS += $(PROTO_DIR)/usr/bin/fix-qdf
