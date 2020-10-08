@@ -43,6 +43,8 @@ BUILD_STYLE=		meson
 include $(WS_MAKE_RULES)/x11-component.mk
 
 CONFIGURE_OPTIONS += -Denable-wayland=false
+LD_OPTIONS += -z gnu-version-script-compat 
+CONFIGURE_ENV += $(COMPONENT_BUILD_ENV)
 
 # for tests
 COMPONENT_TEST_TRANSFORMS += '-e "s/            [0-9].[0-9][0-9]s//" '
