@@ -1,8 +1,14 @@
---- tcsh-6.19.00/Makefile.in.orig	Tue May 26 11:17:35 2015
-+++ tcsh-6.19.00/Makefile.in	Tue May 26 11:18:18 2015
-@@ -740,6 +740,17 @@
- check: atconfig $(srcdir)/tests/testsuite
- 	$(SHELL) $(srcdir)/tests/testsuite
+diff --git a/Makefile.in b/Makefile.in
+index c6b5f25..ffb93e8 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -740,9 +740,20 @@ $(srcdir)/stamp-h.in: $(srcdir)/configure.ac
+ 
+ check test: atconfig $(srcdir)/tests/testsuite
+ 	$(ENVCMD) - \
+-		USER="$(USER)" \
++		USER="$(USER)" PATH="$(PATH)" \
+ 		$(SHELL) $(srcdir)/tests/testsuite
  
 +sys-atconfig: atconfig
 +	@gsed -e "s,AUTOTEST_PATH='.'",AUTOTEST_PATH='/usr/gnu/bin:/usr/bin', < \

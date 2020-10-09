@@ -2,19 +2,21 @@ Changes to the tcsh man specific to Solaris.
 
 These changes will not be sent upstream.
 
---- tcsh-6.20.00/tcsh.man.orig	2017-03-15 07:57:56.786489271 +0000
-+++ tcsh-6.20.00/tcsh.man	2017-03-15 07:59:19.157374928 +0000
-@@ -78,6 +78,9 @@
+diff --git a/tcsh.man b/tcsh.man
+index b01d07e..6300705 100644
+--- a/tcsh.man
++++ b/tcsh.man
+@@ -77,6 +77,9 @@
  .\"   used here if you can. In particular, please don't use nroff commands
  .\"   which aren't already used herein.
  .\" 
-+.\" modified to reference existing Solaris man pages, to add the Solaris
++.\" Modified to reference existing Solaris man pages, to add the Solaris
 +.\" stability classification, and to add a note about source availability.
 +.\"
- .TH TCSH 1 "24 November 2016" "Astron 6.20.00"
+ .TH TCSH 1 "11 Nov 2020" "Astron 6.22.03"
  .SH NAME
  tcsh \- C shell with file name completion and command line editing
-@@ -152,7 +155,7 @@
+@@ -151,7 +154,7 @@ flag specified.
  .TP 4
  .B \-m
  The shell loads \fI~/.tcshrc\fR even if it does not belong to the effective
@@ -23,7 +25,7 @@ These changes will not be sent upstream.
  .TP 4
  .B \-n
  The shell parses commands but does not execute them.
-@@ -203,7 +206,7 @@
+@@ -202,7 +205,7 @@ comment.
  Remaining arguments are placed in the \fBargv\fR shell variable.
  .SS "Startup and shutdown"
  A login shell begins by executing commands from the system files
@@ -32,7 +34,7 @@ These changes will not be sent upstream.
  It then executes commands from files in the user's \fBhome\fR directory:
  first \fI~/.tcshrc\fR (+)
  or, if \fI~/.tcshrc\fR is not found, \fI~/.cshrc\fR,
-@@ -211,17 +214,17 @@
+@@ -210,17 +213,17 @@ then the contents of \fI~/.history\fR (or the value of the \fBhistfile\fR shell
  then \fI~/.login\fR,
  and finally \fI~/.cshdirs\fR (or the value of the \fBdirsfile\fR shell variable) (+).
  The shell may read \fI/etc/csh.login\fR before instead of after
@@ -53,7 +55,7 @@ These changes will not be sent upstream.
  which need be run only once per login, usually go in one's \fI~/.login\fR file.
  Users who need to use the same set of files with both \fIcsh\fR(1) and
  \fItcsh\fR can have only a \fI~/.cshrc\fR which checks for the existence of the
-@@ -2040,7 +2043,7 @@
+@@ -2055,7 +2058,7 @@ In either case, 7-bit ASCII is the default character code
  and changing the \fBLANG\fR or \fBLC_CTYPE\fR environment variables
  causes a check for possible changes in these respects.
  .PP
@@ -62,7 +64,7 @@ These changes will not be sent upstream.
  to determine appropriate character code/classification and sorting
  (e.g., a 'en_CA.UTF-8' would yield "UTF-8" as a character code).
  This function typically examines the \fBLANG\fR and \fBLC_CTYPE\fR
-@@ -2741,7 +2744,7 @@
+@@ -2756,7 +2759,7 @@ The \fBecho_style\fR shell variable may be set to emulate (or not) the flags and
  sequences of the BSD and/or System V versions of \fIecho\fR; see \fIecho\fR(1).
  .TP 8
  .B echotc \fR[\fB\-sv\fR] \fIarg\fR ... (+)
@@ -71,7 +73,7 @@ These changes will not be sent upstream.
  For example, 'echotc home' sends the cursor to the home position,
  \&'echotc cm 3 10' sends it to column 3 and row 10, and
  \&'echotc ts 0; echo "This is a test."; echotc fs' prints "This is a test."
-@@ -2792,7 +2795,7 @@
+@@ -2807,7 +2810,7 @@ shell and executes the resulting command(s) in the context
  of the current shell.  This is usually used to execute commands
  generated as the result of command or variable substitution,
  because parsing occurs before these substitutions.
@@ -80,7 +82,7 @@ These changes will not be sent upstream.
  .TP 8
  .B exec \fIcommand\fR
  Executes the specified command in place of the current shell.
-@@ -3400,7 +3403,7 @@
+@@ -3415,7 +3418,7 @@ Sets the system execution path.  (TCF only)
  .TP 8
  .B settc \fIcap value \fR(+)
  Tells the shell to believe that the terminal capability \fIcap\fR
@@ -89,7 +91,7 @@ These changes will not be sent upstream.
  No sanity checking is done.
  Concept terminal users may have to `settc xn no' to get proper
  wrapping at the rightmost column.
-@@ -3453,7 +3456,7 @@
+@@ -3468,7 +3471,7 @@ the current job.
  .B suspend
  Causes the shell to stop in its tracks, much as if it had
  been sent a stop signal with \fB^Z\fR.  This is most often used to
@@ -98,7 +100,7 @@ These changes will not be sent upstream.
  .PP
  .B switch (\fIstring\fB)
  .br
-@@ -3487,11 +3490,11 @@
+@@ -3502,11 +3505,11 @@ there is no default, execution continues after the \fIendsw\fR.
  .PD
  .TP 8
  .B telltc \fR(+)
@@ -112,7 +114,7 @@ These changes will not be sent upstream.
  terminfo(5) database. Prints the terminal type to stdout and returns 0
  if an entry is present otherwise returns 1.
  .TP 8
-@@ -4729,8 +4732,8 @@
+@@ -4745,8 +4748,8 @@ nls
  The system's NLS is used; default for systems with NLS
  .TP 6
  lf
@@ -123,7 +125,7 @@ These changes will not be sent upstream.
  \fI~/.tcshrc\fR and \fI~/.history\fR.
  .TP 6
  dl
-@@ -4757,7 +4760,7 @@
+@@ -4773,7 +4776,7 @@ Kanji is used if appropriate according to locale settings,
  unless the \fBnokanji\fR shell variable is set
  .TP 6
  sm
@@ -132,7 +134,7 @@ These changes will not be sent upstream.
  .TP 6
  hb
  The `#!<program> <args>' convention is emulated when executing shell scripts
-@@ -4851,7 +4854,8 @@
+@@ -4867,7 +4870,8 @@ The full name is printed if it is an IP address or an X Window System display.
  .PD
  .PP
  %M and %m are available on only systems that store the remote hostname in
@@ -142,7 +144,7 @@ These changes will not be sent upstream.
  If unset, `%n has %a %l from %m.' is used, or `%n has %a %l.' on systems
  which don't store the remote hostname.
  .RE
-@@ -4871,7 +4875,7 @@
+@@ -4887,7 +4891,7 @@ Equivalent to the \fBafsuser\fR shell variable.
  The number of columns in the terminal.  See \fBTerminal management\fR.
  .TP 8
  .B DISPLAY
@@ -151,7 +153,7 @@ These changes will not be sent upstream.
  If set, the shell does not set \fBautologout\fR (q.v.).
  .TP 8
  .B EDITOR
-@@ -4888,7 +4892,7 @@
+@@ -4904,7 +4908,7 @@ Equivalent to the \fBhome\fR shell variable.
  .TP 8
  .B HOST \fR(+)
  Initialized to the name of the machine on which the shell
@@ -160,7 +162,7 @@ These changes will not be sent upstream.
  .TP 8
  .B HOSTTYPE \fR(+)
  Initialized to the type of machine on which the shell
-@@ -5126,7 +5130,7 @@
+@@ -5142,7 +5146,7 @@ ConvexOS, Stellix and Intel use \fI/etc/cshrc\fR and
  NeXTs use \fI/etc/cshrc.std\fR.
  A/UX, AMIX, Cray and IRIX have no equivalent in \fIcsh\fR(1),
  but read this file in \fItcsh\fR anyway.
@@ -169,7 +171,7 @@ These changes will not be sent upstream.
  .TP 16
  .I /etc/csh.login
  Read by login shells after \fI/etc/csh.cshrc\fR.
-@@ -5333,11 +5337,11 @@
+@@ -5349,11 +5353,11 @@ an argument list.
  To detect looping, the shell restricts the number of \fIalias\fR
  substitutions on a single line to 20.
  .SH "SEE ALSO"
@@ -184,9 +186,9 @@ These changes will not be sent upstream.
 +malloc(3C), setlocale(3C), tty(7D), a.out(4), terminfo(5), environ(7),
 +termio(7I), Introduction to the C Shell
  .SH VERSION
- This manual documents tcsh 6.20.00 (Astron) 2016-11-24.
+ This manual documents tcsh 6.22.03 (Astron) 2020-11-18.
  .SH AUTHORS
-@@ -5516,3 +5520,9 @@
+@@ -5532,3 +5536,9 @@ All the people on the net, for putting up with,
  reporting bugs in, and suggesting new additions to each and every version
  .PP
  Richard M. Alderson III, for writing the `T in tcsh' section
