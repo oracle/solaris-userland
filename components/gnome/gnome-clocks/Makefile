@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
-BUILD_BITS=             64
-COMPILER=               gcc
+BUILD_BITS=		64
+COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-clocks
-COMPONENT_VERSION=	3.34.0
+COMPONENT_VERSION=	3.38.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Clocks
 COMPONENT_ARCHIVE_HASH= \
-	sha256:61195f357c63b65b75e209494e12a122a802c75333290e136813565dca94f03c
+	sha256:d956cb050f1ca46b443519e4f59ab204290d6270dec91c74b53895aecc794438
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	10905
 
-TPNO=			54034
+TPNO=			63593
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
@@ -45,6 +45,7 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 # Assumes GNU msgfmt in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
 REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
@@ -55,7 +56,7 @@ REQUIRED_PACKAGES += library/desktop/geocode-glib
 REQUIRED_PACKAGES += library/desktop/gsound
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libgweather
-REQUIRED_PACKAGES += library/desktop/pango
+REQUIRED_PACKAGES += library/desktop/libhandy
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
 REQUIRED_PACKAGES += system/library/math
