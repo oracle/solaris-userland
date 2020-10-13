@@ -27,15 +27,15 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		poppler
-COMPONENT_VERSION=	0.87.0
-COMPONENT_PROJECT_URL=	http://poppler.freedesktop.org/
+COMPONENT_VERSION=	20.10.0
+COMPONENT_PROJECT_URL=	https://poppler.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:6f602b9c24c2d05780be93e7306201012e41459f289b8279a27a79431ad4150e
+    sha256:434ecbbb539c1a75955030a1c9b24c7b58200b7f68d2e4269e29acf2f8f13336
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/poppler
 COMPONENT_ANITYA_ID=	3686
-TPNO_POPPLER=		57961
+TPNO_POPPLER=		62723
 
 COMPONENT_NAME_1=	poppler-data
 COMPONENT_VERSION_1=	0.4.9
@@ -57,22 +57,9 @@ include $(WS_MAKE_RULES)/common.mk
 # everything works better if cmake is used as is intended to be used
 CLONEY= /bin/true
 COMPONENT_PRE_BUILD_ACTION += cd $(@D);
-COMPONENT_PRE_BUILD_ACTION += echo Running cmake with $(CMAKE_OPTIONS);
 COMPONENT_PRE_BUILD_ACTION += /usr/bin/env - $(COMPONENT_BUILD_ENV) \
 				$(CMAKE) $(CMAKE_OPTIONS) \
 				-H$(COMPONENT_DIR)/$(COMPONENT_SRC) -B. ;
-
-# There isn't a 64-bit version of pkg-config's nss.pc, so set these "manually".
-MPSLIB.32 = -L/usr/lib/mps -R/usr/lib/mps
-MPSLIB.64 = -L/usr/lib/mps/64 -R/usr/lib/mps/64
-NSS3_LIBS = $(MPSLIB.$(BITS)) -lnss3 -lsmime3 -lssl3 -lnssutil3 -lplds4 -lplc4 -lnspr4 -lpthread -ldl -lposix4
-
-# Uses strcpy_s, etc. c11 functions.
-CFLAGS += -std=c11
-CXXFLAGS += -std=c++11 -D__STDC_WANT_LIB_EXT1__=1 $(NSS3_LIBS)
-# Set CC environment variable to the compiler path, it is required by g-ir-scanner.
-COMPONENT_BUILD_ENV.32 += CC="$(CC) -m32"
-COMPONENT_BUILD_ENV.64 += CC="$(CC) -m64"
 
 # The path to cmake configure file has to be specified explicitly,
 # otherwise 32-bit openjpeg library is attempted to be linked to 64-bit 
@@ -93,7 +80,6 @@ CMAKE_OPTIONS += -DBUILD_SHARED_LIBS=ON
 # Not necessary for the userland consolidation.
 CMAKE_OPTIONS += -DENABLE_ZLIB=OFF
 CMAKE_OPTIONS += -DENABLE_QT5=OFF
-CMAKE_OPTIONS += -DENABLE_GTK_DOC=OFF
 
 # Required by other components.
 CMAKE_OPTIONS += -DWITH_Cairo=ON
@@ -106,14 +92,7 @@ CMAKE_OPTIONS += -DWITH_PNG=ON
 CMAKE_OPTIONS += -DWITH_TIFF=ON
 CMAKE_OPTIONS.32 += -DWITH_GObjectIntrospection=OFF
 CMAKE_OPTIONS.64 += -DWITH_GObjectIntrospection=ON
-CMAKE_OPTIONS += -DENABLE_CPP=ON
-CMAKE_OPTIONS += -DENABLE_SPLASH=ON
-CMAKE_OPTIONS += -DENABLE_LIBCURL=ON
 CMAKE_OPTIONS += -DENABLE_UNSTABLE_API_ABI_HEADERS=ON
-CMAKE_OPTIONS += -DENABLE_CMS=lcms2
-CMAKE_OPTIONS += -DENABLE_LIBOPENJPEG=openjpeg2
-CMAKE_OPTIONS += -DENABLE_DCTDECODER=libjpeg
-CMAKE_OPTIONS += -DFONT_CONFIGURATION=fontconfig
 
 # Install the poppler data files.
 COMPONENT_POST_BUILD_ACTION = \
@@ -140,18 +119,16 @@ REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += image/library/libtiff
 REQUIRED_PACKAGES += image/library/openjpeg2
 REQUIRED_PACKAGES += library/desktop/cairo
-REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
-REQUIRED_PACKAGES += library/desktop/gtk2
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/lcms2
-REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/nspr
 REQUIRED_PACKAGES += library/security/nss
-REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += system/library/c++-runtime
+REQUIRED_PACKAGES += print/filter/poppler
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/freetype-2
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += web/curl
