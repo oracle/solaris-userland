@@ -64,16 +64,10 @@ CONFIGURE_OPTIONS += --enable-man-pages
 CONFIGURE_OPTIONS.32 += --with-locale-lib-dir='$${exec_prefix}/lib/X11/locale'
 CONFIGURE_OPTIONS.64 += --with-locale-lib-dir='$${exec_prefix}/lib/X11/locale/$(MACH64)'
 
-# -xF is needed for mapfile reordering to work
-CFLAGS += -xF
-
 # -DSUNSOFT enables Solaris extensions
 # -DMOTIFBC enables compatibility with bugs in Motif & other apps
 # -DSUNSOFT_KBD enables Solaris traditional keyboard handling
 CPPFLAGS += -DSUNSOFT -DMOTIFBC -DSUNSOFT_KBD
-
-# Need additional mapfile for additional symbols in 64-bit versions
-COMPONENT_BUILD_ARGS.64 += ADD_libX11_LDFLAGS="-Wl,-M,$(CURDIR)/mapfile-vers-64"
 
 # for tests
 unexport SHELLOPTS

@@ -2,7 +2,7 @@
 #
 # libX11 version mapfile
 #
-# Copyright (c) 2008, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2008, 2020, Oracle and/or its affiliates.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -25,9 +25,36 @@
 #
 #
 
-# library versioning was first added to libX11 after the X11R6.4 merge, so
-# all symbols from X11R6.4 and earlier are included in SUNW_1.1
-SUNW_1.1 {
+$mapfile_version 2
+
+# [Note that the usr/src path below is found in the ON gate, not Userland]
+#
+# MAPFILE HEADER START
+#
+# WARNING:  STOP NOW.  DO NOT MODIFY THIS FILE.
+# Object versioning must comply with the rules detailed in
+#
+#	usr/src/lib/README.mapfiles
+#
+# You should not be making modifications here until you've read the most current
+# copy of that file. If you need help, contact a gatekeeper for guidance.
+#
+# MAPFILE HEADER END
+#
+
+#
+# README README README README README README: how to update this file
+#   1) All new public symbols go in SUNWpublic (not yet added)
+#   2) Any private symbols that need to be available to other objects
+#      go in SUNWprivate
+#   3) Do not remove or alter any other existing versions
+#
+
+
+
+# library versioning was first added to Solaris libX11 after the X11R6.4 merge,
+# so all symbols from X11R6.4 and earlier are included in SUNW_1.1
+SYMBOL_VERSION SUNW_1.1 {
     global:
 	XActivateScreenSaver;
 	XAddConnectionWatch;
@@ -732,7 +759,7 @@ SUNW_1.1 {
 };
 
 # The Xutf8 symbols came in later from XFree86/X11R6.7
-SUNW_1.2 {
+SYMBOL_VERSION SUNW_1.2 {
     global:
 	Xutf8DrawImageString;
 	Xutf8DrawString;
@@ -748,22 +775,22 @@ SUNW_1.2 {
 } SUNW_1.1;
 
 # New functions added in libX11 1.3 for Event Cookies
-SUNW_1.3 {
+SYMBOL_VERSION SUNW_1.3 {
 	XGetEventData;
 	XFreeEventData;
 } SUNW_1.2;
 
 # New function added in libX11 1.5 for extension request handling
-SUNW_1.4 {
+SYMBOL_VERSION SUNW_1.4 {
 	_XGetRequest;
 } SUNW_1.3;
 
-SUNWprivate {
+SYMBOL_VERSION SUNWprivate {
     global:
-	XauDisposeAuth 		= FUNCTION FILTER libXau.so.6;
-	XauFileName 		= FUNCTION FILTER libXau.so.6;
-	XauGetBestAuthByAddr 	= FUNCTION FILTER libXau.so.6;
-	XauReadAuth 		= FUNCTION FILTER libXau.so.6;
+	XauDisposeAuth 		{ TYPE = FUNCTION; FILTER = libXau.so.6 };
+	XauFileName 		{ TYPE = FUNCTION; FILTER = libXau.so.6 };
+	XauGetBestAuthByAddr 	{ TYPE = FUNCTION; FILTER = libXau.so.6 };
+	XauReadAuth 		{ TYPE = FUNCTION; FILTER = libXau.so.6 };
 
 	xlocaledir;
 	KeySymToUcs4;
@@ -1039,4 +1066,12 @@ SUNWprivate {
 	# Needed for open-src/lib/libXmu/sun-src/src/VisGamma.c:
 	_XcmsGetElement;
 	_XcmsGetProperty;
+
+$if _ELF64
+	_XData32;
+	_XRead32;
+	_XkbReadBufferCopy32;
+	_XkbReadCopyData32;
+	_XkbWriteCopyData32;
+$endif
 };
