@@ -20,28 +20,26 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		asciidoc
-COMPONENT_VERSION=	8.6.9
-COMPONENT_PROJECT_URL=	http://www.methods.co.nz/asciidoc/
+COMPONENT_VERSION=	9.0.2
+COMPONENT_PROJECT_URL=	https://asciidoc.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:78db9d0567c8ab6570a6eff7ffdf84eadd91f2dfc0a92a2d0105d323cab4e1f0
-COMPONENT_ARCHIVE_URL=	 http://downloads.sourceforge.net/project/$(COMPONENT_NAME)/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+    sha256:2494b54e87dd1018a0b809de401b7e6cb957ab2ad3840e91db5de08c372e4c45
+COMPONENT_ARCHIVE_URL=	\
+    https://github.com/asciidoc/asciidoc-py3/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	13262
 
-TPNO=			30220
+TPNO=			62592
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/common.mk
 
-PATCH_LEVEL = 0
-
-# Not Python 3.x ready due to syntax errors
-PYTHON_VERSION = 2.7
+PYTHON_VERSION = 3.7
 
 # AsciiDoc configuration and data files belong in /usr/share, not /etc based
 # on discussion from ARC pre-review.
@@ -52,39 +50,27 @@ CONFIGURE_OPTIONS +=    --sysconfdir=$(USRSHAREDIR)
 # '#!/usr/bin/env python' so turn it into '#!/usr/bin/python$(PYTHON_VERSION)'
 #
 COMPONENT_POST_INSTALL_ACTION += \
-        $(GSED) -i -e 's?env python?python$(PYTHON_VERSION)?' \
+        $(GSED) -i -e 's?env python3?python$(PYTHON_VERSION)?' \
                 $(PROTOUSRBINDIR)/asciidoc.py;
 COMPONENT_POST_INSTALL_ACTION += \
-        $(GSED) -i -e 's?env python?python$(PYTHON_VERSION)?' \
+        $(GSED) -i -e 's?env python3?python$(PYTHON_VERSION)?' \
                 $(PROTOUSRBINDIR)/a2x.py;
 
 COMPONENT_PRE_CONFIGURE_ACTION = \
         ($(CLONEY) $(SOURCE_DIR) $(@D))
 
-# common targets
-# Tests require image/graphviz to be installed.  Some tests also want to run
-# programs which are not automatically available on Solaris (latex, abc2ly
-# and lilypad), so these tests will output messages of the form:
-# latex2png.py: failed command: latex ...
-# music2png.py: failed command: abc2ly ...
-# music2png.py: failed command: lilypond ...
-COMPONENT_PRE_TEST_ACTION = \
-	(cd $(@D); ln -s asciidoc.py asciidoc)
-
 COMPONENT_TEST_DIR =	$(@D)/tests
 COMPONENT_TEST_ENV_CMD =
 COMPONENT_TEST_ENV =	export PATH=$(@D):$$PATH;
 COMPONENT_TEST_CMD =	\
-	$(PYTHON) ./asciidocapi.py; \
+	$(PYTHON) ../asciidocapi.py; \
 	if [ $$? -eq 0 ] ; \
 		then print "asciidocapi test passed"; \
 		else print "asciidocapi test failed"; \
 	fi; \
-	$(PYTHON) ./testasciidoc.py update; \
+	$(PYTHON) ./testasciidoc.py update --force; \
 	$(PYTHON) ./testasciidoc.py run
 COMPONENT_TEST_TARGETS =
-COMPONENT_POST_TEST_ACTION = \
-	(cd $(@D); rm asciidoc)
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
@@ -99,15 +85,20 @@ COMPONENT_TEST_TRANSFORMS += \
 COMPONENT_SYSTEM_TEST_DIR =    $(@D)/tests
 COMPONENT_SYSTEM_TEST_ENV_CMD =
 COMPONENT_SYSTEM_TEST_CMD =    \
-	$(PYTHON) ./asciidocapi.py; \
+	$(PYTHON) ../asciidocapi.py; \
 	if [ $$? -eq 0 ] ; \
 		then print "asciidocapi test passed"; \
 		else print "asciidocapi test failed"; \
 	fi; \
-	$(PYTHON) ./testasciidoc.py update; \
+	$(PYTHON) ./testasciidoc.py update --force; \
 	$(PYTHON) ./testasciidoc.py run
 COMPONENT_SYSTEM_TEST_TARGETS =
 
+
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/libxslt
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += web/browser/lynx
+# test dependencies
+REQUIRED_PACKAGES += image/graphviz
+REQUIRED_PACKAGES += library/python/pygments
