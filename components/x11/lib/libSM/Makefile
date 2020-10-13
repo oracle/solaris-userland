@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -43,7 +43,7 @@ include $(WS_MAKE_RULES)/x11-component.mk
 CONFIGURE_OPTIONS += --enable-unix-transport
 CONFIGURE_OPTIONS += --enable-tcp-transport
 CONFIGURE_OPTIONS += --enable-IPv6
-CONFIGURE_OPTIONS += --without-libuuid
+CONFIGURE_OPTIONS += --with-libuuid
 
 LD_OPTIONS += -M$(COMPONENT_DIR)/mapfile
 
