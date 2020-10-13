@@ -19,30 +19,6 @@ diff -ur smp_utils-0.98/debian/smp-utils.install smp_utils-0.98-new/debian/smp-u
 -usr/bin/*
 +usr/sbin/*
  usr/share/man/man8/*
-diff -ur smp_utils-0.98/lib/Makefile.am smp_utils-0.98-new/lib/Makefile.am
---- smp_utils-0.98/lib/Makefile.am	2014-05-15 05:55:44.000000000 -0700
-+++ smp_utils-0.98-new/lib/Makefile.am	2017-11-27 16:11:40.994655815 -0800
-@@ -45,7 +45,7 @@
- ## CC = clang++
- 
- # -std=<s> can be c99, c11, gnu11, etc. Default is gnu89 (gnu90 is the same)
--AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -W
-+AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -v
- ## AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -W -pedantic -std=c11
- 
- lib_LTLIBRARIES = libsmputils1.la
-diff -ur smp_utils-0.98/lib/Makefile.in smp_utils-0.98-new/lib/Makefile.in
---- smp_utils-0.98/lib/Makefile.in	2014-05-15 05:55:44.000000000 -0700
-+++ smp_utils-0.98-new/lib/Makefile.in	2017-11-27 16:13:02.334566255 -0800
-@@ -350,7 +350,7 @@
- # for C++ testing
- 
- # -std=<s> can be c99, c11, gnu11, etc. Default is gnu89 (gnu90 is the same)
--AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -W
-+AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -v
- lib_LTLIBRARIES = libsmputils1.la
- libsmputils1_la_LDFLAGS = -version-info 1:0:0
- libsmputils1_la_LIBADD = @os_libs@
 diff -ur smp_utils-0.98/lib/smp_sol_usmp.c smp_utils-0.98-new/lib/smp_sol_usmp.c
 --- smp_utils-0.98/lib/smp_sol_usmp.c	2012-12-16 14:43:41.000000000 -0800
 +++ smp_utils-0.98-new/lib/smp_sol_usmp.c	2017-11-27 16:13:54.380675524 -0800
@@ -67,15 +43,6 @@ diff -ur smp_utils-0.98/src/Makefile.am smp_utils-0.98-new/src/Makefile.am
  	smp_conf_general smp_conf_phy_event smp_conf_route_info \
  	smp_conf_zone_man_pass smp_conf_zone_perm_tbl \
  	smp_conf_zone_phy_info smp_discover smp_discover_list \
-@@ -34,7 +34,7 @@
- ## CC = clang++
- 
- # -std=<s> can be c99, c11, gnu11, etc. Default is gnu89 (gnu90 is the same)
--AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -W
-+AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -v
- ## AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -W -pedantic -std=c11
- ## AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -W -pedantic -std=c++11
- 
 diff -ur smp_utils-0.98/src/Makefile.in smp_utils-0.98-new/src/Makefile.in
 --- smp_utils-0.98/src/Makefile.in	2014-05-15 05:55:44.000000000 -0700
 +++ smp_utils-0.98-new/src/Makefile.in	2017-11-27 16:13:19.036570863 -0800
@@ -99,15 +66,6 @@ diff -ur smp_utils-0.98/src/Makefile.in smp_utils-0.98-new/src/Makefile.in
  am_smp_conf_general_OBJECTS = smp_conf_general.$(OBJEXT)
  smp_conf_general_OBJECTS = $(am_smp_conf_general_OBJECTS)
  smp_conf_general_DEPENDENCIES = ../lib/libsmputils1.la
-@@ -416,7 +416,7 @@
- # for C++ testing
- 
- # -std=<s> can be c99, c11, gnu11, etc. Default is gnu89 (gnu90 is the same)
--AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -W
-+AM_CFLAGS = -I ../include -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -v
- smp_conf_general_SOURCES = smp_conf_general.c
- smp_conf_general_LDADD = ../lib/libsmputils1.la @os_libs@
- smp_conf_phy_event_SOURCES = smp_conf_phy_event.c
 @@ -509,12 +509,12 @@
  $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
  	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh

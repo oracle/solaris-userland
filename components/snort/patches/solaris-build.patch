@@ -13,9 +13,6 @@ Changes needed to get snort to successfully build on Solaris.
    in the snort component Makefile by #include'ing "sf_types.h" in
    snort-2.9.9.0/src/sfutil/sf_ip.h
 
-4/ Prevent "-Wall" being added to CFLAGS by removing a bogus piece of
-   code in configure.in
-
 The gethrtime() changes will be pushed upstream and the other configure.in
 change. The others should be fixed by changes to standard Solaris headers.
 
@@ -51,18 +48,6 @@ change. The others should be fixed by changes to standard Solaris headers.
  
  # modified from gnulib/m4/visibility.m4
  AC_DEFUN([CC_VISIBILITY],
-@@ -1489,11 +1470,6 @@
-     fi
- fi
- 
--# Question: Does ICC not support -Wall (VJR - Jan 14, 2015)
--if test "$ICC" = "no"; then
--    CFLAGS="$CFLAGS -Wall"
--fi
--
- echo $CFLAGS > cflags.out
- echo $CPPFLAGS > cppflags.out
- 
 diff -urN snort-2.9.9.0.orig/src/cpuclock.h snort-2.9.9.0/src/cpuclock.h
 --- snort-2.9.9.0.orig/src/cpuclock.h	2016-06-07 00:47:47.000000000 +0000
 +++ snort-2.9.9.0/src/cpuclock.h	2017-01-25 09:41:13.229685320 +0000
