@@ -28,16 +28,16 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         ghostscript
-COMPONENT_VERSION=      9.53.1
+COMPONENT_VERSION=      9.53.3
 COMPONENT_PROJECT_URL=	http://ghostscript.com/
 COMPONENT_DOWNLOAD_URL= \
     https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download
 COMPONENT_ARCHIVE_HASH= \
-    sha256:c89652ab2cf1a43688d8055d1ae55a9814d152e4b1c77c002a32c7d83621b12a
-COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/gs9531/$(COMPONENT_ARCHIVE)
+    sha256:6eaf422f26a81854a230b80fd18aaef7e8d94d661485bd2e97e695b9dce7bf7f
+COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/gs9533/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1157
 
-TPNO=			61952
+TPNO=			62503
 
 include $(WS_MAKE_RULES)/common.mk
 # some backup files are copied to proto
