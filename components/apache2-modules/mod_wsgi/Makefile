@@ -26,20 +26,21 @@ BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mod_wsgi
-COMPONENT_VERSION=	4.5.1
-COMPONENT_ARCHIVE_HASH=	sha256:5ed31abf1978099ec0b4a00970c1be3c9cd3bef47830773cba441ca9770d4a2e
+COMPONENT_VERSION=	4.7.1
+COMPONENT_ARCHIVE_HASH=	sha256:a82467c80369c02dbe487e6559d8db3b1170073c767a946a8c4851e99690ab16
 COMPONENT_ARCHIVE_URL=	https://pypi.python.org/packages/source/m/mod_wsgi/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=  https://modwsgi.readthedocs.io/
 COMPONENT_BUGDB=	utility/apache
 COMPONENT_ANITYA_ID=	2001
 
-TPNO=			27758
+TPNO=			62529
 
 # Don't use default CPPFLAGS; it causes Apache's custom CPP to fail.
 CONFIGURE_CPPFLAGS=
 VARIANTS_64 += $(BUILD_DIR)/apache24-python27
 VARIANTS_64 += $(BUILD_DIR)/apache24-python35
 VARIANTS_64 += $(BUILD_DIR)/apache24-python37
+VARIANTS_64 += $(BUILD_DIR)/apache24-python39
 include ../modules.mk
 
 # Python is now built in C99 mode and we need it too (24743682).
@@ -52,6 +53,7 @@ $(BUILD_DIR)/apache24-%/$(MACH64)/.tested: BITS=64
 $(BUILD_DIR)/apache2%-python27/$(MACH64)/.configured: PYTHON=$(PYTHON.2.7.64)
 $(BUILD_DIR)/apache2%-python35/$(MACH64)/.configured: PYTHON=$(PYTHON.3.5.64)
 $(BUILD_DIR)/apache2%-python37/$(MACH64)/.configured: PYTHON=$(PYTHON.3.7.64)
+$(BUILD_DIR)/apache2%-python39/$(MACH64)/.configured: PYTHON=$(PYTHON.3.9.64)
 
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
@@ -61,4 +63,5 @@ CONFIGURE_OPTIONS += --with-python=$(PYTHON)
 REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += runtime/python-35
 REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-39
 REQUIRED_PACKAGES += system/library/math
