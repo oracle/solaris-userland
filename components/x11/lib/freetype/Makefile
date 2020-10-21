@@ -29,16 +29,16 @@ COMPILER =		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		freetype
-COMPONENT_VERSION=	2.10.2
+COMPONENT_VERSION=	2.10.4
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_PROJECT_URL=	https://www.freetype.org/
 COMPONENT_ARCHIVE_URL=	https://download.savannah.gnu.org/releases/freetype/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:1543d61025d2e6312e0a1c563652555f17378a204a61e99928c9fcef030a2d8b
+	sha256:86a854d8905b19698bbc8f23b860bc104246ce4854dcea8e3b0fb21284f75784
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=        x11/font
 COMPONENT_ANITYA_ID=	854
-TPNO=			59492
+TPNO=			62650
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -46,7 +46,7 @@ FIX_PC_FILES=builds/unix/freetype2.in
 
 # Set here so we only have to update this one line, instead of multiple lines
 # in the *.p5m file on every new version
-FREETYPE_SOVERSION =	6.17.2
+FREETYPE_SOVERSION =	6.17.4
 PKG_VARS += FREETYPE_SOVERSION
 
 include $(WS_MAKE_RULES)/x11-component.mk
@@ -80,5 +80,4 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += image/library/libpng16
-REQUIRED_PACKAGES += library/desktop/harfbuzz
 REQUIRED_PACKAGES += library/zlib
