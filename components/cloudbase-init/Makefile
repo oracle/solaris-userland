@@ -57,6 +57,12 @@ COMPONENT_POST_INSTALL_ACTION += \
     $(CP) \
         files/solaris.py \
         $(PROTO_DIR)$(PYTHON_LIB)/cloudbaseinit/metadata/services/osconfigdrive; \
+    $(CP) \
+	files/oraclecloud.py \
+	$(PROTO_DIR)$(PYTHON_LIB)/cloudbaseinit/conf; \
+    $(CP) \
+	files/oraclecloudservice.py \
+	$(PROTO_DIR)$(PYTHON_LIB)/cloudbaseinit/metadata/services; \
     $(PYTHON) -m compileall $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES)
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)

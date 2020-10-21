@@ -1,0 +1,96 @@
+Patch in pieces to allow Oracle Cloud metadata V2 service enhancements
+to work.  Based on patches OCI group wrote for their Windows images.
+Could be upstreamed in cooperation with OCI image team.
+
+diff --git a/cloudbaseinit/conf/factory.py b/cloudbaseinit/conf/factory.py
+index ad2b37e..57aa5a9 100644
+--- a/cloudbaseinit/conf/factory.py
++++ b/cloudbaseinit/conf/factory.py
+@@ -21,6 +21,7 @@ _OPT_PATHS = (
+     'cloudbaseinit.conf.ec2.EC2Options',
+     'cloudbaseinit.conf.maas.MAASOptions',
+     'cloudbaseinit.conf.openstack.OpenStackOptions',
++    'cloudbaseinit.conf.oraclecloud.OracleCloudOptions',
+     'cloudbaseinit.conf.azure.AzureOptions',
+     'cloudbaseinit.conf.ovf.OvfOptions',
+     'cloudbaseinit.conf.packet.PacketOptions',
+diff --git a/cloudbaseinit/metadata/services/base.py b/cloudbaseinit/metadata/services/base.py
+index 8f80ec8..b12c427 100644
+--- a/cloudbaseinit/metadata/services/base.py
++++ b/cloudbaseinit/metadata/services/base.py
+@@ -50,7 +50,7 @@ class BaseMetadataService(object):
+         self._cache = {}
+ 
+     @abc.abstractmethod
+-    def _get_data(self, path):
++    def _get_data(self, path, headers=None):
+         pass
+ 
+     def _exec_with_retry(self, action):
+@@ -67,14 +67,14 @@ class BaseMetadataService(object):
+                 else:
+                     raise
+ 
+-    def _get_cache_data(self, path, decode=False):
++    def _get_cache_data(self, path, decode=False, headers=None):
+         """Get meta data with caching and decoding support."""
+-        key = (path, decode)
++        key = (path, decode, str(headers))
+         if key in self._cache:
+             LOG.debug("Using cached copy of metadata: '%s'" % path)
+             return self._cache[key]
+         else:
+-            data = self._exec_with_retry(lambda: self._get_data(path))
++            data = self._exec_with_retry(lambda: self._get_data(path, headers=headers))
+             if decode:
+                 data = encoding.get_as_string(data)
+             self._cache[key] = data
+@@ -319,10 +319,10 @@ class BaseHTTPMetadataService(BaseMetadataService):
+         response.raise_for_status()
+         return response.content
+ 
+-    def _get_data(self, path):
++    def _get_data(self, path, headers=None):
+         """Getting the required information using metadata service."""
+         try:
+-            response = self._http_request(path)
++            response = self._http_request(path, headers=headers)
+         except requests.HTTPError as exc:
+             if exc.response.status_code == 404:
+                 raise NotExistingMetadataException(
+@@ -352,7 +352,7 @@ class EmptyMetadataService(BaseMetadataService):
+     def __init__(self):
+         super(EmptyMetadataService, self).__init__()
+ 
+-    def _get_data(self, path):
++    def _get_data(self, path, headers=None):
+         pass
+ 
+     def load(self):
+diff --git a/cloudbaseinit/metadata/services/opennebulaservice.py b/cloudbaseinit/metadata/services/opennebulaservice.py
+index 9c8b8e7..d64c900 100644
+--- a/cloudbaseinit/metadata/services/opennebulaservice.py
++++ b/cloudbaseinit/metadata/services/opennebulaservice.py
+@@ -139,7 +139,7 @@ class OpenNebulaService(base.BaseMetadataService):
+             )
+             self._dict_content.update(vardict)
+ 
+-    def _get_data(self, name):
++    def _get_data(self, name, headers=None):
+         # Return the requested field's value or raise an error if not found.
+         if name not in self._dict_content:
+             msg = "Metadata {} not found".format(name)
+diff --git a/cloudbaseinit/tests/metadata/services/test_cloudstack.py b/cloudbaseinit/tests/metadata/services/test_cloudstack.py
+index d171d30..7fbf421 100644
+--- a/cloudbaseinit/tests/metadata/services/test_cloudstack.py
++++ b/cloudbaseinit/tests/metadata/services/test_cloudstack.py
+@@ -124,7 +124,7 @@ class CloudStackTest(unittest.TestCase):
+ 
+         response = self._service._get_cache_data(mock.sentinel.metadata)
+         self.assertEqual(mock.sentinel.metadata, response)
+-        mock_get_data.assert_called_once_with(mock.sentinel.metadata)
++        mock_get_data.assert_called_once_with(mock.sentinel.metadata, headers=None)
+         mock_get_data.reset_mock()
+ 
+         response = self._service._get_cache_data(mock.sentinel.metadata)
+
