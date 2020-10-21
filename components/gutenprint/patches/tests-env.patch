@@ -2,90 +2,83 @@
 # Disables escp2-weavetest for the time being since this takes days to run
 # Patch source internal, not passing upstream.  This is just for Userland testing.
 
-diff -Naur gutenprint-5.2.7-orig/src/cups/Makefile.am gutenprint-5.2.7/src/cups/Makefile.am
---- gutenprint-5.2.7-orig/src/cups/Makefile.am  2011-01-18 00:20:51.000000000 +0100
-+++ gutenprint-5.2.7/src/cups/Makefile.am   2012-02-09 09:21:22.493187000 +0100
-@@ -77,6 +77,7 @@
- sbin_SCRIPTS = cups-genppdupdate
- cupsexec_filter_PROGRAMS = rastertogutenprint.@GUTENPRINT_MAJOR_VERSION@.@GUTENPRINT_MINOR_VERSION@ commandtoepson commandtocanon
- 
+--- gutenprint-5.3.3/src/cups/Makefile.am	2019-05-25 08:08:51.000000000 -0700
++++ gutenprint-5.3.3-mod/src/cups/Makefile.am	2020-10-13 22:54:20.506881422 -0700
+@@ -100,6 +100,7 @@
+ AM_TESTS_ENVIRONMENT=$(STP_ENV)
+ test-rastertogutenprint: min-pagesize
+ test-rastertogutenprint.test: test-rastertogutenprint
 +TESTS_ENVIRONMENT= STP_MODULE_PATH=$(top_builddir)/src/main/.libs:$(top_builddir)/src/main STP_DATA_PATH=$(top_srcdir)/src/xml
- TESTS= test-ppds test-rastertogutenprint
- noinst_SCRIPTS=test-rastertogutenprint
- endif
-diff -Naur gutenprint-5.2.7-orig/src/cups/Makefile.in gutenprint-5.2.7/src/cups/Makefile.in
---- gutenprint-5.2.7-orig/src/cups/Makefile.in  2011-05-02 03:32:20.000000000 +0200
-+++ gutenprint-5.2.7/src/cups/Makefile.in   2012-02-09 09:22:53.311217000 +0100
-@@ -399,6 +399,7 @@
- @BUILD_TRANSLATED_CUPS_PPDS_TRUE@TRANSLATE_PPDS = -DCUPS_TRANSLATED_PPDS
+ TESTS= test-ppds.test test-rastertogutenprint.test
+ test-rastertogutenprint.log: test-ppds.log
+ 
+--- gutenprint-5.3.3/src/cups/Makefile.in	2019-08-25 08:14:20.000000000 -0700
++++ gutenprint-5.3.3-mod/src/cups/Makefile.in	2020-10-21 23:51:05.335908905 -0700
+@@ -770,6 +770,7 @@
  @BUILD_SIMPLIFIED_CUPS_PPDS_TRUE@BUILD_SIMPLE_PPDS = -DGENERATE_SIMPLIFIED_PPDS
  @BUILD_CUPS_TRUE@sbin_SCRIPTS = cups-genppdupdate
+ @BUILD_CUPS_TRUE@AM_TESTS_ENVIRONMENT = $(STP_ENV)
 +@BUILD_CUPS_TRUE@TESTS_ENVIRONMENT= STP_MODULE_PATH=$(top_builddir)/src/main/.libs:$(top_builddir)/src/main STP_DATA_PATH=$(top_srcdir)/src/xml
- @BUILD_CUPS_TRUE@TESTS = test-ppds test-rastertogutenprint
- @BUILD_CUPS_TRUE@noinst_SCRIPTS = test-rastertogutenprint
- @BUILD_GENPPD_STATIC_TRUE@STATIC_LDOPTS = -static -export-dynamic
-diff -Naur gutenprint-5.2.13-orig/src/cups/test-ppds gutenprint-5.2.13/src/cups/test-ppds
---- gutenprint-5.2.13-orig/src/cups/test-ppds	2011-01-17 23:53:05.000000000 +0100
-+++ gutenprint-5.2.13/src/cups/test-ppds	2012-02-09 11:01:07.638462000 +0100
-@@ -28,7 +28,7 @@
+ @BUILD_CUPS_TRUE@TESTS = test-ppds.test test-rastertogutenprint.test
+ @BUILD_CUPS_TRUE@noinst_SCRIPTS = test-ppds.test \
+ @BUILD_CUPS_TRUE@	test-rastertogutenprint \
+--- gutenprint-5.3.3/src/cups/test-ppds.test.in	2018-10-13 12:08:09.000000000 -0700
++++ gutenprint-5.3.3-mod/src/cups/test-ppds.test.in	2020-10-13 22:54:20.514406097 -0700
+@@ -106,7 +106,7 @@
  # Also, a number of our media sizes aren't named correctly, but we'll
  # accept those issues rather than cluttering the namespace further and/or
  # changing tag names.
 -cupstestppdopts='-I profiles -W sizes -I filters'
 +cupstestppdopts='-I profiles -W sizes -I filters -W translations'
  
- ppd_count=`find ppd \( -name '*.ppd.gz' -o -name '*.ppd' \) -print | wc -l`
- 
-diff -Naur gutenprint-5.2.7-orig/src/testpattern/Makefile.am gutenprint-5.2.7/src/testpattern/Makefile.am
---- gutenprint-5.2.7-orig/src/testpattern/Makefile.am   2007-12-08 19:41:56.000000000 +0100
-+++ gutenprint-5.2.7/src/testpattern/Makefile.am    2012-02-09 09:21:51.525890000 +0100
-@@ -26,6 +26,7 @@
- 
- pkgdatadir = $(datadir)/$(PACKAGE)/samples
+ # This lets us report progress
+ testcmd="echo -n . 1>&2; cupstestppd $cupstestppdopts "'"$@"'
+--- gutenprint-5.3.3/src/testpattern/Makefile.am	2019-05-26 09:30:05.000000000 -0700
++++ gutenprint-5.3.3-mod/src/testpattern/Makefile.am	2020-10-13 22:54:20.465127214 -0700
+@@ -50,6 +50,7 @@
+ AM_TESTS_ENVIRONMENT=STP_MODULE_PATH=$(top_builddir)/src/main/.libs:$(top_builddir)/src/main STP_DATA_PATH=$(top_srcdir)/src/xml
+ run-testpattern-2.test: run-testpattern-2
  
 +TESTS_ENVIRONMENT= STP_MODULE_PATH=$(top_builddir)/src/main/.libs:$(top_builddir)/src/main STP_DATA_PATH=$(top_srcdir)/src/xml
- TESTS = run-testpattern-1 run-testpattern-2
+ TESTS = run-testpattern-1.test run-testpattern-2.test
+ run-testpattern-2.log: run-testpattern-1.log
  
- 
-diff -Naur gutenprint-5.2.13-orig/src/testpattern/Makefile.in gutenprint-5.2.13/src/testpattern/Makefile.in
---- gutenprint-5.2.13-orig/src/testpattern/Makefile.in	2011-05-02 03:32:20.000000000 +0200
-+++ gutenprint-5.2.13/src/testpattern/Makefile.in	2012-02-09 09:23:19.496457000 +0100
-@@ -640,6 +640,7 @@
+--- gutenprint-5.3.3/src/testpattern/Makefile.in	2019-08-25 08:14:20.000000000 -0700
++++ gutenprint-5.3.3-mod/src/testpattern/Makefile.in	2020-10-14 00:10:05.881454811 -0700
+@@ -666,6 +666,7 @@
+ testpattern_LDADD = $(GUTENPRINT_LIBS) $(LIBM)
+ printers_LDADD = $(GUTENPRINT_LIBS)
+ printer_options_LDADD = $(GUTENPRINT_LIBS)
++TESTS_ENVIRONMENT= STP_MODULE_PATH=$(top_builddir)/src/main/.libs:$(top_builddir)/src/main STP_DATA_PATH=$(top_srcdir)/src/xml
+ @INSTALL_SAMPLES_TRUE@pkgdata_DATA = testpattern.sample extended.sample
+ @BUILD_TESTPATTERN_TRUE@AM_TESTS_ENVIRONMENT = STP_MODULE_PATH=$(top_builddir)/src/main/.libs:$(top_builddir)/src/main STP_DATA_PATH=$(top_srcdir)/src/xml
+ @BUILD_TESTPATTERN_TRUE@TESTS = run-testpattern-1.test run-testpattern-2.test
+--- gutenprint-5.3.3/test/Makefile.am	2018-10-07 09:21:50.000000000 -0700
++++ gutenprint-5.3.3-mod/test/Makefile.am	2020-10-13 22:54:20.569907717 -0700
+@@ -28,6 +28,7 @@
+ ## It is essentially a giant unit test for the weave code.
+ ## testdither doesn't actually test anything; there appears to be no way
+ ## for it to actually return anything.
++TESTS_ENVIRONMENT= STP_MODULE_PATH=$(top_builddir)/src/main/.libs:$(top_builddir)/src/main STP_DATA_PATH=$(top_srcdir)/src/xml
+ TESTS = test-curve.test run-weavetest.test run-testdither.test
+ run-testdither.log: run-weavetest.log
+ test-curve.log: run-testdither.log
+--- gutenprint-5.3.3/test/Makefile.in	2019-08-25 08:14:21.000000000 -0700
++++ gutenprint-5.3.3-mod/test/Makefile.in	2020-10-13 22:54:20.580897287 -0700
+@@ -666,6 +666,7 @@
  top_srcdir = @top_srcdir@
  AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_builddir)/include $(LOCAL_CPPFLAGS) $(GNUCFLAGS)
- GUTENPRINTUI_LIBS = $(top_builddir)/src/gutenprintui/libgutenprintui.la
+ LOCAL_CPPFLAGS = -I$(top_srcdir)/src/main $(GUTENPRINT_CFLAGS)
 +TESTS_ENVIRONMENT= STP_MODULE_PATH=$(top_builddir)/src/main/.libs:$(top_builddir)/src/main STP_DATA_PATH=$(top_srcdir)/src/xml
- @BUILD_TESTPATTERN_TRUE@TESTS = run-testpattern-1 run-testpattern-2
- @BUILD_TESTPATTERN_TRUE@noinst_SCRIPTS = run-testpattern-2 compare-checksums compress-checksums
- AM_LFLAGS = -i
-diff -Naur gutenprint-5.2.13-orig/test/Makefile.am gutenprint-5.2.13/test/Makefile.am
---- gutenprint-5.2.13-orig/test/Makefile.am	2008-05-31 03:56:45.000000000 +0200
-+++ gutenprint-5.2.13/test/Makefile.am	2012-02-09 09:22:05.458655000 +0100
-@@ -28,6 +28,7 @@
- ## run-weavetest is extremely time consuming and provides little value for
- ## release testing since the last material change was made in 2008.
- ## It is essentially a giant unit test for the weave code.
-+TESTS_ENVIRONMENT= STP_MODULE_PATH=$(top_builddir)/src/main/.libs:$(top_builddir)/src/main STP_DATA_PATH=$(top_srcdir)/src/xml
- TESTS = curve run-testdither
- 
- ## Programs
-diff -Naur gutenprint-5.2.13-orig/test/Makefile.in gutenprint-5.2.13/test/Makefile.in
---- gutenprint-5.2.13-orig/test/Makefile.in	2011-05-02 03:32:21.000000000 +0200
-+++ gutenprint-5.2.13/test/Makefile.in	2012-02-09 09:23:39.619567000 +0100
-@@ -86,6 +86,7 @@
- DIST_COMMON = $(top_srcdir)/scripts/global.mk $(srcdir)/Makefile.in \
- 	$(srcdir)/Makefile.am $(top_srcdir)/scripts/depcomp \
- 	$(top_srcdir)/scripts/test-driver
-+TESTS_ENVIRONMENT= STP_MODULE_PATH=$(top_builddir)/src/main/.libs:$(top_builddir)/src/main STP_DATA_PATH=$(top_srcdir)/src/xml
- TESTS = curve$(EXEEXT) run-testdither
- @BUILD_TEST_TRUE@noinst_PROGRAMS = testdither$(EXEEXT) \
- @BUILD_TEST_TRUE@	escp2-weavetest$(EXEEXT) unprint$(EXEEXT) \
-@@ -660,7 +660,7 @@
+ TESTS = test-curve.test run-weavetest.test run-testdither.test
+ @BUILD_TEST_TRUE@AM_TESTS_ENVIRONMENT = STP_MODULE_PATH=$(top_builddir)/src/main/.libs:$(top_builddir)/src/main STP_DATA_PATH=$(top_srcdir)/src/xml
+ noinst_SCRIPTS = test-curve.test run-weavetest.test run-testdither.test
+@@ -690,7 +691,7 @@
  #run-weavetest: escp2-weavetest
  CLEANFILES = mixed-color-1bit.ppm
  MAINTAINERCLEANFILES = Makefile.in
--EXTRA_DIST = cyan-sweep.tif parse-escp2 run-weavetest run-testdither
-+EXTRA_DIST = cyan-sweep.tif parse-escp2 run-testdither
+-EXTRA_DIST = cyan-sweep.tif parse-escp2 run-weavetest.test run-testdither.test test-curve.test
++EXTRA_DIST = cyan-sweep.tif parse-escp2 run-testdither.test test-curve.test
  all: all-am
  
  .SUFFIXES:

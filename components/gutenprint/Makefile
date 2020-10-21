@@ -23,18 +23,19 @@
 # Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
+COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gutenprint
-COMPONENT_VERSION=	5.2.13
+COMPONENT_VERSION=	5.3.3
 COMPONENT_PROJECT_URL=	http://gimp-print.sourceforge.net/
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d9a9745d83668096e89e762e380b40629ea2dcb44a1b7027b9068c543cd02742
-COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/gimp-print/files/gutenprint-5.2/5.2.13/$(COMPONENT_ARCHIVE)
+ sha256:7279ecbc8e67d1858c53cb24e423ea1be98e214872006b79e6e03650dd54a072
+COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/gimp-print/files/gutenprint-5.3/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1285
 
-TPNO=			39288
+TPNO=			62340
 
 # the tests mostly pass, but it can't find several drivers for ppd files
 $(SKIP_TEST_AT_TOP_LEVEL)
@@ -61,6 +62,14 @@ COMPONENT_BUILD_TARGETS = all
 unexport SHELLOPTS
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/ TOTAL:/p" ' \
+        '-e "/PASS:/p" ' \
+        '-e "/ SKIP:/p" ' \
+        '-e "/ XFAIL:/p" ' \
+        '-e "/ FAIL:/p" ' \
+        '-e "/ ERROR:/p" '
 
 REQUIRED_PACKAGES += library/desktop/gtk2
 REQUIRED_PACKAGES += library/glib2
