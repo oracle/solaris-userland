@@ -28,19 +28,17 @@ COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME        = graphviz
-COMPONENT_VERSION     = 2.42.0
+COMPONENT_VERSION     = 2.44.1
 COMPONENT_PROJECT_URL = http://www.graphviz.org/
 COMPONENT_SRC         = $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE     = $(COMPONENT_SRC).tar.gz
-
+COMPONENT_ARCHIVE_HASH= \
+    sha256:3aac783a15341c2808141cc38ead408bf3d6ad203e0ed3946c9df595b760edda
+COMPONENT_ARCHIVE_URL = \
+    http://gitlab.com/graphviz/graphviz/-/archive/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID   = 1249
 
-GIT_REPO = https://gitlab.com/graphviz/graphviz/
-GIT_TAG  = stable_release_2.42.0
-GIT_COMMIT_ID = 19088b82
-GIT_HASH = sha256:3d3cf60a0b60613f2bfab8601aaf5bce81272c66e606e9c1640fa14004a2e7f5
-
-TPNO = 54013
+TPNO = 62678
 
 COMPONENT_PREP_ACTION += \
 	( cd $(@D) ; PATH="$(PATH)" $(CONFIG_SHELL) autogen.sh NOCONFIG)
@@ -54,6 +52,7 @@ INSTALL_TARGET = $(INSTALL_$(MK_BITS))
 INSTALL_TARGET += $(PROTOUSRLIBDIR)/graphviz/config6
 INSTALL_TARGET += $(PROTO_DIR)/$(PYTHON.2.7.VENDOR_PACKAGES)/gv.pyc
 INSTALL_TARGET += $(PROTO_DIR)/$(PYTHON.3.7.VENDOR_PACKAGES)/gv.pyc
+INSTALL_TARGET += $(PROTO_DIR)/$(PYTHON.3.9.VENDOR_PACKAGES)/gv.pyc
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -67,7 +66,7 @@ CPPFLAGS +=	-I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/solaris
 
 # Make sure to use the right python, depending on the 32/64-bit build.
 CONFIGURE_ENV +=	PYTHON2=$(PYTHON.2.7)
-CONFIGURE_ENV +=	PYTHON3=$(PYTHON.3.7)
+CONFIGURE_ENV +=	PYTHON3=$(PYTHON.3.9)
 CONFIGURE_OPTIONS +=	--without-included-ltdl
 CONFIGURE_OPTIONS +=    --with-qt=no
 CONFIGURE_OPTIONS +=	--enable-go=no
@@ -104,24 +103,46 @@ $(INSTALL_64): COMPONENT_INSTALL_ARGS += LUA_INSTALL_DIR=$(USRLIBDIR)/lua/5.4/64
 # Use GNU ln, which supports the -r (--relative) option.
 COMPONENT_INSTALL_ARGS += LN_S="gln -s"
 
-# build php module also for older php versions
+# build php and python modules for older versions as well
 PHP_73_CONFIG = /usr/php/7.3/bin/php-config
 PHP_73_INCLUDES := $(shell $(PHP_73_CONFIG) --includes)
 PHP_73_INSTALL_DIR := $(shell $(PHP_73_CONFIG) --extension-dir)
 PHP_73_LDFLAGS := $(shell $(PHP_73_CONFIG) --ldflags)
 PHP_73_LIBS := $(shell $(PHP_73_CONFIG) --libs)
 
+PKG_CONFIG = /usr/bin/pkg-config
+PYTHON_37_INCLUDES := $(shell $(PKG_CONFIG) --cflags python-3.7)
+PYTHON_37_LIBS = $(shell $(PKG_CONFIG) --libs python-3.7)
+PYTHON_37_INSTALL_DIR := /usr/lib/python3.7/vendor-packages
+
 $(CONFIGURE_64): COMPONENT_POST_CONFIGURE_ACTION += \
-    (cd $(@D) ; cp -rp tclpkg/gv tclpkg/gv-php-73 ; \
-    $(GSED) -i '/^SUBDIRS =/s|$$| gv-php-73|' tclpkg/Makefile ; \
+    (cd $(@D) ; cp -rp tclpkg/gv tclpkg/gv-additional ; \
+    $(GSED) -i '/^SUBDIRS =/s|$$| gv-additional|' tclpkg/Makefile ; \
     $(GSED) -i \
      -e '/^PHP_INCLUDES =/s|=.*$$|= $(PHP_73_INCLUDES)|' \
      -e '/^PHP_INSTALL_DIR =/s|=.*$$|= $(PHP_73_INSTALL_DIR)|' \
      -e '/^PHP_LIBS =/s|=.*$$|= $(PHP_73_LDFLAGS) $(PHP_73_LIBS)|' \
-     `find tclpkg/gv-php-73 -name Makefile` ) ;
+     -e '/^PYTHON3 =/s|=.*$$|= $(PYTHON.3.7)|' \
+     -e '/^PYTHON3_INCLUDES =/s|=.*$$|= $(PYTHON_37_INCLUDES)|' \
+     -e '/^PYTHON3_INSTALL_DIR =/s|=.*$$|= $(PYTHON_37_INSTALL_DIR)|' \
+     -e '/^PYTHON3_LIBS =/s|=.*$$|= $(PYTHON_37_LIBS)|' \
+     `find tclpkg/gv-additional -name Makefile` ) ;
 
 $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
-    (cd $(@D)/tclpkg/gv-php-73 ; gmake V=1 libgv_php.la ) ;
+    (cd $(@D)/tclpkg/gv-additional ; gmake V=1 libgv_php.la libgv_python3.la ) ;
+
+# correctly install multiple Python bindings into the corresponding
+# vendor-packages directories.
+37_VENDOR_PROTO := $(PROTO_DIR)$(PYTHON.3.7.VENDOR_PACKAGES)
+39_VENDOR_PROTO := $(PROTO_DIR)$(PYTHON.3.9.VENDOR_PACKAGES)
+
+$(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
+	($(RM) -r $(37_VENDOR_PROTO); $(MKDIR) $(37_VENDOR_PROTO); \
+	$(RM) -r $(39_VENDOR_PROTO); $(MKDIR) $(39_VENDOR_PROTO); \
+	$(INSTALL) -m 644 $(@D)/tclpkg/gv-additional/gv.py $(37_VENDOR_PROTO)/gv.py ; \
+	$(INSTALL) $(@D)/tclpkg/gv-additional/.libs/libgv_python3.soT $(37_VENDOR_PROTO)/_gv.cpython-37m.so; \
+	$(INSTALL) -m 644 $(@D)/tclpkg/gv/gv.py $(39_VENDOR_PROTO)/gv.py ; \
+	$(INSTALL) $(@D)/tclpkg/gv/.libs/libgv_python3.soT $(39_VENDOR_PROTO)/_gv.cpython-39.so; ) ;
 
 # Create the config file once the 32-bit build is complete.  This runs the bits
 # we just built, so we have to set a handful of variables to the right place.
@@ -140,6 +161,9 @@ $(PROTO_DIR)/$(PYTHON.2.7.VENDOR_PACKAGES)/gv.pyc: $(INSTALL_32)
 $(PROTO_DIR)/$(PYTHON.3.7.VENDOR_PACKAGES)/gv.pyc: $(INSTALL_64)
 	$(PYTHON.3.7) -m compileall -l -d $(PYTHON.3.7.VENDOR_PACKAGES) \
 		$(PROTO_DIR)/$(PYTHON.3.7.VENDOR_PACKAGES)
+$(PROTO_DIR)/$(PYTHON.3.9.VENDOR_PACKAGES)/gv.pyc: $(INSTALL_64)
+	$(PYTHON.3.9) -m compileall -l -d $(PYTHON.3.9.VENDOR_PACKAGES) \
+		$(PROTO_DIR)/$(PYTHON.3.9.VENDOR_PACKAGES)
 
 PKG_MACROS += PERL_PKG=$(PERL_PKG)
 PKG_MACROS += PERL_VERSION_NODOT=$(PERL_VERSION_NODOT)
@@ -149,6 +173,8 @@ COMPONENT_PRE_TEST_ACTION = \
     (cd $(@D)/rtest; \
     if ! test -L rtest.sh ; then \
         ln -s $(SOURCE_DIR)/rtest/* . ; \
+        ln -s $(SOURCE_DIR)/rtest/graphs/* graphs ; \
+        ln -s $(SOURCE_DIR)/rtest/linux.x86/* linux.x86 ; \
     fi )
 COMPONENT_TEST_DIR = $(@D)/rtest
 COMPONENT_TEST_ENV = PATH=$(BUILD_DIR_$(BITS)):$(GNUBIN):$(PATH)
@@ -180,6 +206,7 @@ REQUIRED_PACKAGES += runtime/lua
 REQUIRED_PACKAGES += runtime/perl-522
 REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-39
 REQUIRED_PACKAGES += runtime/ruby-25
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library

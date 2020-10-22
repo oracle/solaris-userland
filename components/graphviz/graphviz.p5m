@@ -32,7 +32,7 @@ set name=com.oracle.info.description \
 set name=com.oracle.info.tpno value=$(TPNO)
 set name=info.classification \
     value="org.opensolaris.category.2008:Applications/System Utilities"
-set name=info.source-url value=$(GIT_REPO)
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2011/269
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
@@ -276,8 +276,8 @@ file path=usr/lib/pkgconfig/liblab_gamut.pc
 file path=usr/lib/pkgconfig/libpathplan.pc
 file path=usr/lib/pkgconfig/libxdot.pc
 file path=usr/share/graphviz/doc/AUTHORS
+file path=usr/share/graphviz/doc/CHANGELOG.md
 file path=usr/share/graphviz/doc/COPYING
-file path=usr/share/graphviz/doc/ChangeLog
 file path=usr/share/graphviz/doc/Dot.ref
 file path=usr/share/graphviz/doc/NEWS
 file path=usr/share/graphviz/doc/addingLayout.txt
@@ -442,7 +442,6 @@ file path=usr/share/graphviz/doc/html/info/record2.gif
 file path=usr/share/graphviz/doc/html/info/rect.gif
 file path=usr/share/graphviz/doc/html/info/rectangle.gif
 file path=usr/share/graphviz/doc/html/info/round.gif
-file path=usr/share/graphviz/doc/html/info/sdlshapes.jpg
 file path=usr/share/graphviz/doc/html/info/sdlshapes.png
 file path=usr/share/graphviz/doc/html/info/septagon.gif
 file path=usr/share/graphviz/doc/html/info/shapes.html
@@ -499,7 +498,6 @@ file path=usr/share/graphviz/doc/pdf/gvpr.1.pdf
 file path=usr/share/graphviz/doc/pdf/gvpr.3.pdf
 link path=usr/share/graphviz/doc/pdf/gxl2dot.1.pdf target=gxl2gv.1.pdf
 file path=usr/share/graphviz/doc/pdf/gxl2gv.1.pdf
-file path=usr/share/graphviz/doc/pdf/lab_gamut.3.pdf
 file path=usr/share/graphviz/doc/pdf/lefty.1.pdf
 file path=usr/share/graphviz/doc/pdf/leftyguide.pdf
 file path=usr/share/graphviz/doc/pdf/libguide.pdf
@@ -513,7 +511,7 @@ file path=usr/share/graphviz/doc/pdf/osage.1.pdf
 file path=usr/share/graphviz/doc/pdf/pack.3.pdf
 file path=usr/share/graphviz/doc/pdf/patchwork.1.pdf
 file path=usr/share/graphviz/doc/pdf/pathplan.3.pdf
-file path=usr/share/graphviz/doc/pdf/prune.pdf
+file path=usr/share/graphviz/doc/pdf/prune.1.pdf
 file path=usr/share/graphviz/doc/pdf/sccmap.1.pdf
 link path=usr/share/graphviz/doc/pdf/sfdp.1.pdf target=dot.1.pdf
 file path=usr/share/graphviz/doc/pdf/smyrna.pdf
@@ -676,7 +674,6 @@ file path=usr/share/man/man3/cgraph.3
 file path=usr/share/man/man3/expr.3
 file path=usr/share/man/man3/gvc.3
 file path=usr/share/man/man3/gvpr.3
-file path=usr/share/man/man3/lab_gamut.3
 file path=usr/share/man/man3/pack.3
 file path=usr/share/man/man3/pathplan.3
 file path=usr/share/man/man3/xdot.3
@@ -697,13 +694,16 @@ depend type=conditional \
     predicate=$(PERL_PKG)
 depend type=conditional \
     fmri=image/graphviz/graphviz-php@$(IPS_COMPONENT_VERSION) \
-    predicate=web/php-71
+    predicate=web/php-common
 depend type=conditional \
     fmri=image/graphviz/graphviz-python-27@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION) \
     predicate=runtime/python-27
 depend type=conditional \
     fmri=image/graphviz/graphviz-python-37@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION) \
     predicate=runtime/python-37
+depend type=conditional \
+    fmri=image/graphviz/graphviz-python-39@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION) \
+    predicate=runtime/python-39
 depend type=conditional \
     fmri=image/graphviz/graphviz-ruby@$(IPS_COMPONENT_VERSION) \
     predicate=runtime/ruby-25
