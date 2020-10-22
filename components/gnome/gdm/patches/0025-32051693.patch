@@ -1,0 +1,34 @@
+From 7998813b2284638be9f826ca10a0fff32aeadd48 Mon Sep 17 00:00:00 2001
+From: Benjamin Berg <bberg@redhat.com>
+Date: Fri, 21 Aug 2020 12:14:32 +0200
+Subject: [PATCH] manager: Fix possible crash by initializing display
+
+Some people insist on running sessions in ways where we cannot detect
+them properly. In that case, we shouldn't find a display, but the
+variable was not initialized and we could end up accessing random memory
+resulting in a crash.
+
+Fix it by adding the missing initializer.
+
+Closes: #555
+---
+ daemon/gdm-manager.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/daemon/gdm-manager.c b/daemon/gdm-manager.c
+index efcce9b6..25beecb5 100644
+--- a/daemon/gdm-manager.c
++++ b/daemon/gdm-manager.c
+@@ -811,7 +811,7 @@ gdm_manager_handle_register_session (GdmDBusManager        *manager,
+                                      GVariant              *details)
+ {
+         GdmManager      *self = GDM_MANAGER (manager);
+-        GdmDisplay      *display;
++        GdmDisplay      *display = NULL;
+         const char      *sender;
+         GDBusConnection *connection;
+ 
+-- 
+GitLab
+
+
