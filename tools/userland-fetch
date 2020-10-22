@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2010, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2020, Oracle and/or its affiliates.
 #
 
 #
@@ -51,7 +51,7 @@ from typing import List, Optional, Tuple, Generator
 from urllib.error import HTTPError
 from urllib.error import URLError
 from urllib.parse import urlparse
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 
 
 def get_gpg_home() -> str:
@@ -159,21 +159,24 @@ def calculate_hash(filename: str, algorithm: str, validate_payload: bool = False
         raise NotImplementedError("File format not implemented")
 
 
-def download(url: str, timeout: int, filename: str) -> None:
+def download(url: str, timeout: int, filename: str, user_agent: str = None) -> None:
     """Download the content at the given URL.
 
     Args:
         url: URL to download from.
         filename: Filename of newly downloaded file.
         timeout: Timeout in seconds for blocking download operations.
+        user_agent: Value of the User-Agent header
 
     Raises:
         IOError: Cannot open filename for writing.
         URLError: Can't open given url. Probable reason is that
             the file doesn't exist on remote host.
     """
+    headers = {"User-Agent": user_agent} if user_agent is not None else {}
 
-    with urlopen(url, timeout=timeout) as src, open(filename, 'wb') as dst:
+    req = Request(url, headers=headers)
+    with urlopen(req, timeout=timeout) as src, open(filename, 'wb') as dst:
         dst.write(src.read())
 
 
@@ -308,8 +311,20 @@ def download_from_paths(search_list: List[str], file_arg: str, url_arg: Optional
     qprint = print if not quiet else lambda *a, **k: None
 
     def _download(url, timeout_arg, name):
+        qprint("\n    downloading...", end=" ")
         try:
-            download(url, timeout_arg, name)
+            try:
+                download(url, timeout_arg, name)
+            except URLError as err:
+                if err.code == 403:
+                    # Some servers (e.g. GitLab) might be blocking requests
+                    # with the 'Python-urllib/3.7' User-Agent header.
+                    qprint("failed")
+                    qprint("This might have happened due to remote User-Agent related blocking.")
+                    qprint("    retrying with empty User-Agent header...", end=" ", flush=True)
+                    download(url, timeout_arg, name, user_agent="")
+                else:
+                    raise
         except URLError as err:
             qprint("failed")
             qprint(f"Can't open url {url}\n{err}")
@@ -339,7 +354,6 @@ def download_from_paths(search_list: List[str], file_arg: str, url_arg: Optional
                     shutil.copy2(path, name)
 
         elif scheme in ['http', 'https', 'ftp']:
-            qprint("\n    downloading...", end=" ")
             if not _download(url, timeout_arg, name):
                 continue
 
@@ -359,7 +373,6 @@ def download_from_paths(search_list: List[str], file_arg: str, url_arg: Optional
                 continue
 
             qprint(f"\n    translated {url} to {nurl}...", end=" ")
-            qprint("\n    downloading...", end=" ")
             if not _download(nurl, timeout_arg, name):
                 continue
 
