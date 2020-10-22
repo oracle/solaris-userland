@@ -31,11 +31,11 @@ COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	thunderbird
-COMPONENT_VERSION =	78.3.0
+COMPONENT_VERSION =	78.4.0
 COMPONENT_PROJECT_URL =	https://www.thunderbird.net/
 COMPONENT_ARCHIVE = 	$(COMPONENT_SRC).source.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:b4e4784c981862d35fd1f89dfbe2ef5dc90df40fc002ea9b8add2f826c62e04d
+    sha256:341a63c22a06c4d3d2468410d26248253a2d4eddc7d1f6aaaa1ac974005dca67
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)
 else
@@ -45,7 +45,7 @@ COMPONENT_ARCHIVE_URL =	$(MOZILLA_FTP)/source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB =	tbird/mailer
 COMPONENT_ANITYA_ID =	4967
 
-TPNO =			62021
+TPNO =			62692
 
 # There are a set of .xpi files (as given in the LANG_LIST definition
 # below) that we need. We could download and unpack them individually, but
@@ -54,7 +54,7 @@ TPNO =			62021
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:2c3d75a278e2d700d439ab51f2c525eb8be6a1566ecdf7898fe666f65f05c4d6
+    sha256:e7c422f8dd4945d436e415753c39765ea43543475386a2cb0f234c0edb473a5c
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ar ast be bg br ca cak cs cy \
