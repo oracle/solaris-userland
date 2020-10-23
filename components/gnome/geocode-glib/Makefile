@@ -30,13 +30,13 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		geocode-glib
-COMPONENT_VERSION=	3.26.1
+COMPONENT_VERSION=	3.26.2
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:5baa6ab76a76c9fc567e4c32c3af2cd1d1784934c255bc5a62c512e6af6bde1c
+	sha256:01fe84cfa0be50c6e401147a2bc5e2f1574326e2293b55c69879be3e82030fd1
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13123
 
-TPNO=			54027
+TPNO=			62432
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
