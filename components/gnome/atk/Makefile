@@ -30,14 +30,14 @@ BUILD_BITS =            32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		atk
-COMPONENT_VERSION=	2.34.1
+COMPONENT_VERSION=	2.36.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Accessibility
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d4f0e3b3d21265fcf2bc371e117da51c42ede1a71f6db1c834e6976bb20997cb
+    sha256:fb76247e369402be23f1f5c65d38a9639c1164d934e40f6a9cf3c9e96b652788
 COMPONENT_BUGDB=	gnome/a11y-libs-core
 COMPONENT_ANITYA_ID=	130
 
-TPNO=			53958
+TPNO=			61940
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
