@@ -43,7 +43,7 @@ TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 # Use explicit Python version rather than the default one
-CONFIGURE_ENV +=	PYTHON=$(PYTHON.2.7)
+CONFIGURE_ENV +=	PYTHON=$(PYTHON.3.7)
 
 CONFIGURE_ENV +=	PATH=$(GNUBIN):$(USRBINDIR)
 CONFIGURE_ENV +=	GI_SCANNER_DISABLE_CACHE=1
@@ -76,6 +76,6 @@ REQUIRED_PACKAGES +=	library/desktop/pango
 REQUIRED_PACKAGES +=	library/glib2
 REQUIRED_PACKAGES +=	library/gnome/dconf
 REQUIRED_PACKAGES +=	library/popt
-REQUIRED_PACKAGES +=	runtime/python-27
+REQUIRED_PACKAGES +=	runtime/python-37
 REQUIRED_PACKAGES +=	x11/library/libx11
 REQUIRED_PACKAGES +=	x11/library/libxi
