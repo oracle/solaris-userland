@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dconf
-COMPONENT_VERSION=	0.34.0
+COMPONENT_VERSION=	0.38.0
 COMPONENT_PROJECT_URL=	http://wiki.gnome.org/dconf
 COMPONENT_ARCHIVE_HASH= \
-	sha256:943a94ab16121de5580ceaed2605b87444d1bca1c6cd8beefb778bcb0aa2da52
+	sha256:45f60f41330d27715cce1315af123f94f1c2cdedb68b6bed3b309866eec44f58
 COMPONENT_BUGDB=        gnome/gconf
 COMPONENT_ANITYA_ID=	11683
 
-TPNO=			53994
+TPNO=			62429
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
