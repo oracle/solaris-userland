@@ -1,5 +1,5 @@
 ;
-; Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+; Copyright (c) 2019, 2020, Oracle and/or its affiliates.
 ;
 ; String property with a default we prefer to always emit
 $%define PROP_def property default {$%{config/$%property:-#}$%property $%{config/$%property:-$%default}$%{config/$%property}}
@@ -16,7 +16,7 @@ $%define PROP_list_ws property {$%{config/%$property:+$%property $%{config/$%pro
 ; Multiple instance property, present only if set in SMF
 $%define PROP_multi property {$%{config/$%property:+$%property $%{config/$%property:,\n$%property }}}
 #
-# Copyright (c) 2001, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2001, 2020, Oracle and/or its affiliates.
 #
 #
 #
@@ -25,8 +25,9 @@ $%define PROP_multi property {$%{config/$%property:+$%property $%{config/$%prope
 #
 # To use the contents of this file as the master configuration, run:
 #
-#    svccfg -s network/service/ssh:default \
+#    svccfg -s svc:/network/ssh:default \
 #         setprop sshd_stencil/disabled= boolean: true
+#    svcadm refresh svc:/network/ssh:default
 #
 
 # This is the sshd server system-wide configuration file.  See
