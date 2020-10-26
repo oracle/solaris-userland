@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2006, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2006, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 32
 include ../../make-rules/shared-macros.mk
@@ -59,6 +59,9 @@ CFLAGS.studio += -errtags=yes -xc99=%all
 CFLAGS.studio += -erroff=E_TRAILING_COMMA_IN_ENUM
 CFLAGS.studio += -erroff=E_STATEMENT_NOT_REACHED
 CFLAGS.studio += -erroff=E_EMPTY_TRANSLATION_UNIT
+
+SMF_MANIFESTS= $(BUILD_DIR_$(BUILD_BITS))/solaris/quagga.xml
+$(BUILD_DIR_$(BUILD_BITS))/solaris/quagga.xml: $(BUILD_$(MK_BITS))
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk

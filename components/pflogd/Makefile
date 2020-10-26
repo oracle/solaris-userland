@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -42,6 +42,7 @@ COMPONENT_BUGDB=	service/pflogd
 TPNO=	24254
 
 BUILD_STYLE= justmake
+SMF_MANIFESTS= $(COMPONENT_DIR)/pflogd.Solaris/firewall-pflog.xml
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 

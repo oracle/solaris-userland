@@ -39,6 +39,8 @@ COMPONENT_ANITYA_ID=	1875
 
 TPNO=			59127
 
+SMF_MANIFESTS= $(COMPONENT_DIR)/files/mailman.xml
+
 # There are no tests that can be executed automatically,
 # the unit tests require some setup as described in file TESTING.
 TEST_TARGET= $(NO_TESTS)

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -95,23 +95,16 @@ PKG_PROTO_DIRS +=  $(COMPONENT_NAME_4)-$(GIT_COMMIT_ID_4)
 COMPONENT_ANITYA_ID_4= N/A
 TPNO_4=            26723
 
-include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/install.rb.mk
-include $(WS_MAKE_RULES)/ips.mk
+BUILD_STYLE= install.rb
+ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+SMF_MANIFESTS= $(COMPONENT_DIR)/files/mcollective.xml
+BUILD_TARGET += $(VALIDATE_SMF_TARGET)
+TEST_TARGET= $(NO_TESTS)
+
+include $(WS_MAKE_RULES)/common.mk
 
 # --mandir option not supported by mcollective install.rb
 INSTALL_RB_MANDIR_OPTION =
-
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
-
-build:		$(BUILD_NO_ARCH)
-
-install:	$(INSTALL_NO_ARCH)
-
-test:		$(NO_TESTS)
-
-system-test:    $(NO_TESTS)
-
 
 REQUIRED_PACKAGES += runtime/ruby-$(RUBY_PUPPET_NODOT_VERSION)
 REQUIRED_PACKAGES += system/core-os

@@ -56,6 +56,8 @@ COMPONENT_ANITYA_ID_LIB   = 12043
 
 TPNO_LIB = 46846
 
+SMF_MANIFESTS= $(COMPONENT_DIR)/files/rsyslog.xml
+
 # Disable tests since there are some regressions.
 $(SKIP_TEST_AT_TOP_LEVEL)
 

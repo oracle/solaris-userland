@@ -45,6 +45,7 @@ COMPONENT_ARCHIVE_URL_1= http://archive.eclipse.org/eclipse/downloads/drops4/R-4
 TPNO=			62542
 
 BUILD_STYLE= ant
+SMF_MANIFESTS= $(COMPONENT_DIR)/Solaris/http-tomcat.xml
 TEST_TARGET= $(SKIP_TEST)
 SYSTEM_TEST_TARGET= $(SKIP_TEST)
 include $(WS_MAKE_RULES)/common.mk

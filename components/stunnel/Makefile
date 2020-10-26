@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 
@@ -39,6 +39,7 @@ COMPONENT_PREP_ACTION += (cd $(@D) ; autoreconf -f)
 
 TPNO=                   31069
 
+SMF_MANIFESTS= $(COMPONENT_DIR)/files/stunnel.xml
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 

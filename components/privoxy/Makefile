@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -38,6 +38,7 @@ COMPONENT_ANITYA_ID=	3712
 
 TPNO=		 	34236
 
+SMF_MANIFESTS= $(COMPONENT_DIR)/files/http-privoxy.xml
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 

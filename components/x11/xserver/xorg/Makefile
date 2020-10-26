@@ -40,6 +40,8 @@ TPNO=			58045
 FIX_PC_FILES = xorg-server.pc.in
 COMPONENT_FIX_PC_FLAGS += -e 's|\@symbol_visibility\@||'
 
+SMF_MANIFESTS= $(COMPONENT_DIR)/files/x11-server.xml
+
 include $(WS_MAKE_RULES)/x11-component.mk
 
 CFLAGS.studio += $(studio_FEATURES_EXTENSIONS)

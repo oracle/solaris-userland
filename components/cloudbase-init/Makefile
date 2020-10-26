@@ -23,6 +23,7 @@
 # Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
 
+BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cloudbase-init
@@ -42,9 +43,15 @@ TPNO=			57119
 # We need just a single version
 PYTHON_VERSIONS=	3.7
 
-include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
-include $(WS_MAKE_RULES)/ips.mk
+# Tests requires ddt which is not integrated
+TEST_TARGET= $(NO_TESTS)
+
+BUILD_STYLE= setup.py
+
+ASLR_MODE= $(ASLR_NOT_APPLICABLE)
+SMF_MANIFESTS= $(COMPONENT_DIR)/files/cloudbase-init.xml
+
+include $(WS_MAKE_RULES)/common.mk
 
 PKG_MACROS +=		PYVER=$(PYTHON_VERSIONS)
 PKG_MACROS +=		PYV=$(shell echo $(PYTHON_VERSIONS) | tr -d .)
@@ -64,18 +71,6 @@ COMPONENT_POST_INSTALL_ACTION += \
 	files/oraclecloudservice.py \
 	$(PROTO_DIR)$(PYTHON_LIB)/cloudbaseinit/metadata/services; \
     $(PYTHON) -m compileall $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES)
-
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
-
-# common targets
-build:		$(BUILD_NO_ARCH)
-
-install:	$(INSTALL_NO_ARCH)
-
-# Tests requires ddt which is not integrated
-test:		$(NO_TESTS)
-
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/network

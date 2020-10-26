@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -43,6 +43,8 @@ FIX_PC_FILES=fontconfig.pc.in
 # Don't include path to freetype headers in our proto area in the *.pc files.
 # The 'Requires: freetype2' will handle the right -I flags for us.
 COMPONENT_FIX_PC_FLAGS += -e 's| \@FREETYPE_CFLAGS\@||g;'
+
+SMF_MANIFESTS= $(COMPONENT_DIR)/files/fc-cache.xml
 
 include $(WS_MAKE_RULES)/x11-component.mk
 

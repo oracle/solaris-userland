@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -40,6 +40,7 @@ COMPONENT_ANITYA_ID=	3693
 TPNO=			36084
 
 BUILD_STYLE= justmake
+SMF_MANIFESTS= $(COMPONENT_DIR)/files/postfix.xml
 TEST_TARGET= $(NO_TESTS)
 include ../../make-rules/common.mk
 

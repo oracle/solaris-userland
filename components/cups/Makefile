@@ -38,6 +38,9 @@ COMPONENT_ARCHIVE_URL=	https://github.com/apple/cups/archive/v$(COMPONENT_VERSIO
 COMPONENT_BUGDB=	utility/cups
 COMPONENT_ANITYA_ID=	380
 
+SMF_MANIFESTS= $(PROTOSVCMANIFESTDIR)/application/cups.xml
+$(PROTOSVCMANIFESTDIR)/application/cups.xml: $(INSTALL_$(MK_BITS))
+
 # Test just 64 bit as we are building just libcups in 32-bit mode. Disable system-test.
 TEST_32 =		$(SKIP_TEST)
 system-test:    	$(SYSTEM_TESTS_NOT_IMPLEMENTED)

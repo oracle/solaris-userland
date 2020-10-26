@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 # parfait is a bit unhappy (24796481)
@@ -46,16 +46,16 @@ COMPONENT_SIG_URL=
 
 TPNO=			55168
 
-# Test don't work on Solaris
+# Tests don't work on Solaris
 TEST_TARGET = $(SKIP_TEST)
+
+# Make sure we haven't broken the SMF manifest formatting
+SMF_MANIFESTS= $(COMPONENT_DIR)/files/polkit.xml
 
 include $(WS_MAKE_RULES)/common.mk
 
 # Regenerate configure after applying patches that modify configure.ac
 COMPONENT_PREP_ACTION += ( cd $(@D); autoreconf -fiv);
-# Make sure we haven't broken the SMF manifest formatting
-COMPONENT_PREP_ACTION += \
-    ( /usr/sbin/svccfg validate $(COMPONENT_DIR)/files/polkit.xml );
 
 # Need C99 or later to get fpclassify() & isfinite() in <math.h>
 CFLAGS += -ggdb

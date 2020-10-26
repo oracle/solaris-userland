@@ -39,6 +39,8 @@ TPNO=			7882
 
 TEST_TARGET = $(NO_TESTS)
 
+SMF_MANIFESTS= $(COMPONENT_DIR)/files/consolekit.xml
+
 include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_PRE_CONFIGURE_ACTION = ($(CLONEY) $(SOURCE_DIR) $(@D))

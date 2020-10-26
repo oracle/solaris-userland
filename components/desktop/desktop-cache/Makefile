@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= NO_ARCH
@@ -36,17 +36,14 @@ COMPONENT_ANITYA_ID=	N/A
 # nothing to download or build; just package
 BUILD_STYLE= pkg
 
+SMF_MANIFESTS += $(COMPONENT_DIR)/files/desktop-mime-cache.xml
+SMF_MANIFESTS += $(COMPONENT_DIR)/files/gconf-cache.xml
+SMF_MANIFESTS += $(COMPONENT_DIR)/files/icon-cache.xml
+SMF_MANIFESTS += $(COMPONENT_DIR)/files/input-method-cache.xml
+SMF_MANIFESTS += $(COMPONENT_DIR)/files/mime-types-cache.xml
+SMF_MANIFESTS += $(COMPONENT_DIR)/files/pixbuf-loaders-installer.xml
+
 include $(WS_MAKE_RULES)/common.mk
-
-$(BUILD_DIR)/.validated-smf-manifests-$(MACH): $(BUILD_DIR)
-	@for f in files/*.xml ; do \
-	    [[ "$$f" == "files/com.oracle.solaris.gdm-temporary.xml" ]] || \
-	    (set -ex ; /usr/sbin/svccfg validate "$$f") ; \
-	done
-	$(TOUCH) $@
-
-validate-smf:	$(BUILD_DIR)/.validated-smf-manifests-$(MACH)
-build:		$(BUILD_DIR)/.validated-smf-manifests-$(MACH)
 
 REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += service/opengl/ogl-select

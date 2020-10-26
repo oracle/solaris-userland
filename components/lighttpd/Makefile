@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -38,6 +38,8 @@ TPNO=			54090
 COMPILER=gcc
 
 LIGHTTPD_INSTALLDIR=$(USRDIR)/lighttpd/1.4
+
+SMF_MANIFESTS= $(COMPONENT_DIR)/Solaris/http-lighttpd14.xml
 
 include $(WS_MAKE_RULES)/common.mk
 

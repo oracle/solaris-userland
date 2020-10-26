@@ -41,6 +41,9 @@ BUILD_STYLE=		meson
 # No need to build for older versions.
 PYTHON_VERSIONS= 3.7
 
+SMF_MANIFESTS += $(COMPONENT_DIR)/files/gio-module-cache.xml
+SMF_MANIFESTS += $(COMPONENT_DIR)/files/glib-compile-schemas.xml
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CFLAGS += $(CPP_XPG6MODE)
@@ -102,17 +105,6 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/gnome-interfaces.7 \
                 $(PROTO_DIR)/usr/share/man/man7/gnome-interfaces.7;
 
-
-# Make sure SMF manifests are valid
-$(BUILD_DIR)/.validated-smf-manifests-$(MACH): $(BUILD_DIR)
-	@for f in files/*.xml ; do \
-	    (set -ex ; /usr/sbin/svccfg validate "$$f") ; \
-	done
-	$(TOUCH) $@
-
-validate-smf:	$(BUILD_DIR)/.validated-smf-manifests-$(MACH)
-build:		$(BUILD_DIR)/.validated-smf-manifests-$(MACH)
-
 # Strip random seeds from glib tests that use different values each run
 # Even though this is hooked up, the test results vary from system to
 # system, so gmake test isn't consistently passing
@@ -120,7 +112,7 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "s/seed:[0-9]*/seed:/"'
 # get rid of the timestamps from the test results
 COMPONENT_TEST_MASTER = \
-  	$(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
+	$(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
 COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9]*[0-9].[0-9][0-9]s//" '
 COMPONENT_TEST_TRANSFORMS += '-e "s/OK      [0-9]//" '
 COMPONENT_TEST_TRANSFORMS += \

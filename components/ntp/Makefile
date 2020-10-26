@@ -44,6 +44,8 @@ COMPONENT_BUGDB= service/ntp
 COMPONENT_ANITYA_ID=	9025
 COMPONENT_TEST_ENV += "TZ=UTC"
 
+SMF_MANIFESTS= $(COMPONENT_DIR)/Solaris/ntp.xml
+
 # NTP tests log results in separate files. Instead of geting the output
 # of the build and test and deleting the extra lines, it is easier to just
 # cat together all of the logs. The test TEST_PROGNAME3 tests the system

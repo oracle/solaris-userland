@@ -38,6 +38,8 @@ COMPONENT_ANITYA_ID=	4958
 TPNO_TEXINFO=		27244
 TPNO_TEXI2HTML=		9089
 
+SMF_MANIFESTS= $(COMPONENT_DIR)/texinfo-update.xml
+
 # Disable the unit tests since the test results are outdated.
 $(SKIP_TEST_AT_TOP_LEVEL)
 

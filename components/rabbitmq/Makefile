@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -41,6 +41,7 @@ COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 TPNO=			57486
 
 BUILD_STYLE= justmake
+SMF_MANIFESTS= $(COMPONENT_DIR)/files/rabbitmq.xml
 include $(WS_MAKE_RULES)/common.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)

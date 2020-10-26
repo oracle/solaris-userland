@@ -72,6 +72,8 @@ COMPONENT_ARCHIVE_HASH_1= \
     sha256:6f9bcdc884a9f450208c740e45effdfeb7e65c689f57b05d3c15208193a8a6ea
 COMPONENT_ARCHIVE_URL_1= ftp://ftp.eenet.ee/pub/cpan/authors/id/I/IA/IANC/$(COMPONENT_ARCHIVE_1)
 
+SMF_MANIFESTS= $(COMPONENT_DIR)/Solaris/ldap-olslapd.xml
+
 include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_PRE_CONFIGURE_ACTION += \

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -58,6 +58,8 @@ TPNO_MOD_GSS=		42688
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
 ADISTACK_MODE =	$(ADISTACK_ENABLE)
+
+SMF_MANIFESTS= $(COMPONENT_DIR)/ftp.xml
 
 # libcheck and specific Perl Test::Unit version is required for full test
 TEST_TARGET= $(SKIP_TEST)

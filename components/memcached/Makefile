@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 
@@ -36,6 +36,8 @@ COMPONENT_BUGDB=	database/memcached
 COMPONENT_ANITYA_ID=	1965
 
 TPNO=			53729
+
+SMF_MANIFESTS= $(COMPONENT_DIR)/Solaris/memcached.xml
 
 include $(WS_MAKE_RULES)/common.mk
 

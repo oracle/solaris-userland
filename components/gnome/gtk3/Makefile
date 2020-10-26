@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -43,6 +43,8 @@ COMPONENT_ANITYA_ID=	10018
 TPNO=			54076
 
 ETCDIR.64="$(ETCDIR)/$(MACH64)"
+
+SMF_MANIFESTS= $(COMPONENT_DIR)/files/gtk3-input-method-cache.xml
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -68,16 +70,6 @@ CONFIGURE_OPTIONS += --enable-colord=no
 
 # Needed due to patch to configure.ac.
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
-
-# Make sure SMF manifests are valid
-$(BUILD_DIR)/.validated-smf-manifests-$(MACH): $(BUILD_DIR)
-	@for f in files/*.xml ; do \
-	    (set -ex ; /usr/sbin/svccfg validate "$$f") ; \
-	done
-	$(TOUCH) $@
-
-validate-smf:	$(BUILD_DIR)/.validated-smf-manifests-$(MACH)
-build:		$(BUILD_DIR)/.validated-smf-manifests-$(MACH)
 
 # Generate and install architecture-specific configuration files.
 PROTOGTKDIR=		$(PROTO_DIR)$(USRLIB)/gtk-3.0/3.0.0

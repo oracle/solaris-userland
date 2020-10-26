@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		NO_ARCH
@@ -44,12 +44,14 @@ COMPONENT_ANITYA_ID=	13115
 
 TPNO=			9656
 
+BUILD_STYLE=		archive
+SMF_MANIFESTS= 		$(COMPONENT_DIR)/files/docbook-style-xsl-update.xml
+
 TEST_TARGET = $(NO_TESTS)
 
 PKG_VARS += COMPONENT_ARCHIVE_URL_1
 
-include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/common.mk
 
 # Docs archive tries to unpack into a subdir of the main archive, so we
 # need to redirect to its own source dir to make userland-unpack work
@@ -61,7 +63,7 @@ XSL_DIR=/usr/share/sgml/docbook/xsl-stylesheets-$(COMPONENT_VERSION)
 DOC_DIR=/usr/share/doc/docbook-style-xsl/doc
 GNUTAR = $(GNUBIN)/tar
 
-install:        $(SOURCE_DIR)/.prep
+install:        $(SOURCE_DIR)/.prep $(VALIDATE_SMF_TARGET)
 	-$(RM) -r $(PROTO_DIR)/usr
 	$(MKDIR) $(PROTO_DIR)$(XSL_DIR) $(PROTO_DIR)$(DOC_DIR)
 	$(GNUTAR) -C $(SOURCE_DIR) --exclude-ignore=$(COMPONENT_DIR)/exclude \

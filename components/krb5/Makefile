@@ -49,6 +49,10 @@ COMPONENT_BUGDB=	utility/kerberos
 
 TPNO=		43971
 
+SMF_MANIFESTS += $(COMPONENT_DIR)/Solaris/kadmin.xml
+SMF_MANIFESTS += $(COMPONENT_DIR)/Solaris/krb5_prop.xml
+SMF_MANIFESTS += $(COMPONENT_DIR)/Solaris/krb5kdc.xml
+
 # The unit tests failed to start.
 $(SKIP_TEST_AT_TOP_LEVEL)
 

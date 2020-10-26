@@ -40,6 +40,8 @@ COMPONENT_ANITYA_ID=	147
 # There are some test failures, the master test file is missing.
 $(SKIP_TEST_AT_TOP_LEVEL)
 
+SMF_MANIFESTS = $(COMPONENT_DIR)/files/avahi-bridge-dsd.xml
+
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_SBINDIR.64 =	$(CONFIGURE_BINDIR.64)

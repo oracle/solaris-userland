@@ -62,6 +62,10 @@ COMPONENT_ARCHIVE_URL=	https://download.samba.org/pub/samba/stable/$(COMPONENT_A
 COMPONENT_ARCHIVE_HASH=	sha256:f11d52aee8db0aa50ac614143f2ccefead29e8f8ff585358792221557cade7f6
 COMPONENT_SRC_URL=	$(COMPONENT_ARCHIVE_URL)
 
+SMF_MANIFESTS += $(COMPONENT_DIR)/Solaris/samba.xml
+SMF_MANIFESTS += $(COMPONENT_DIR)/Solaris/winbind.xml
+SMF_MANIFESTS += $(COMPONENT_DIR)/Solaris/wins.xml
+
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 

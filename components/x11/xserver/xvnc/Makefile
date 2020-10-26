@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2007, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2007, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -55,6 +55,8 @@ TEST_TARGET = $(NO_TESTS)
 # If only it was this simple - the outer layer of tigervnc code is built
 # with cmake, but the inner unix/xserver code uses configure.
 BUILD_STYLE= cmake
+
+SMF_MANIFESTS= $(COMPONENT_DIR)/files/xvnc-inetd.xml
 
 include $(WS_MAKE_RULES)/x11-component.mk
 

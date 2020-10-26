@@ -49,6 +49,7 @@ ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
 # Disable adistack security extension due to C++ exception handling issues
 ADISTACK_MODE =	$(ADISTACK_DISABLE)
 
+SMF_MANIFESTS= $(COMPONENT_DIR)/files/http-squid.xml
 TEST_TARGET= $(TEST_64)
 include $(WS_MAKE_RULES)/common.mk
 
@@ -106,7 +107,7 @@ CONFIGURE_OPTIONS += PERL=$(PERL)
 # This starts up squid as user webservd. 
 COMPONENT_POST_INSTALL_ACTION += \
 	(cd $(PROTO_DIR)/etc/squid ; \
- 	echo '\ncache_effective_user webservd' >> squid.conf)
+	echo '\ncache_effective_user webservd' >> squid.conf)
 
 # Adjust '#!/usr/bin/perl'
 PERL_SCRIPTS= $(PROTOUSRDIR)/squid/libexec/helper-mux.pl

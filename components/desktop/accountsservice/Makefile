@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -44,17 +44,17 @@ TPNO=			34437
 
 TEST_TARGET = $(NO_TESTS)
 
+SMF_MANIFESTS= $(COMPONENT_DIR)/files/accountsservice.xml
+
 include $(WS_MAKE_RULES)/common.mk
 
 # Assumes GNU xgettext in PATH
 COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 
-# Make sure we haven't broken the SMF manifest formatting
 # GNU Build System files have to be regenerated for automake 1.16.
 COMPONENT_PREP_ACTION += \
-    ( /usr/sbin/svccfg validate $(COMPONENT_DIR)/files/accountsservice.xml; \
-		  cd $(@D) ; autoreconf -fiv );
+    ( cd $(@D) ; autoreconf -fiv );
 
 # Solaris doesn't have a defined authpriv facility in syslog, so map it to
 # an unused one for now

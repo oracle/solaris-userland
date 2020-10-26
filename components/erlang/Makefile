@@ -68,6 +68,8 @@ COMPONENT_ANITYA_ID_2=	707
 
 TPNO=			57244
 
+SMF_MANIFESTS= $(COMPONENT_DIR)/files/portmap.xml
+
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 
 # The unit tests failed to start.

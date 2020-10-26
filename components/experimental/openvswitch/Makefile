@@ -45,6 +45,9 @@ TPNO=			35287
 
 PYTHON_VERSIONS =	$(PYTHON2_VERSIONS)
 
+SMF_MANIFESTS += $(COMPONENT_DIR)/files/ovsdb.xml
+SMF_MANIFESTS += $(COMPONENT_DIR)/files/vswitch.xml
+
 # There are some test regressions and gsed filtering is insufficient.
 $(SKIP_TEST_AT_TOP_LEVEL)
 

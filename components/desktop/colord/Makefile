@@ -45,6 +45,8 @@ TPNO=			34440
 
 TEST_TARGET = $(NO_TESTS)
 
+SMF_MANIFESTS= $(COMPONENT_DIR)/files/colord.xml
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Requires fpclassify (c99).
@@ -52,10 +54,6 @@ CFLAGS += -std=gnu99
 
 # Required due to patches.
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv; intltoolize --force);
-
-# Make sure we haven't broken the SMF manifest formatting
-COMPONENT_PREP_ACTION += \
-    ( /usr/sbin/svccfg validate $(COMPONENT_DIR)/files/colord.xml );
 
 # Requires external package (https://bash-completion.alioth.debian.org) that we
 # don't currently have in Solaris.

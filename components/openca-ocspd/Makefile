@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -41,6 +41,8 @@ GIT_COMMIT_ID= 0f16341
 GIT_HASH=  sha256:0f894c7f19d658bdbda88887a3d748e8a968c6fd5cfc5f7be8ace9399b2f878d
 
 TPNO =			28048
+
+SMF_MANIFESTS= $(COMPONENT_DIR)/Solaris/ocspd.xml
 
 # Skip test because of set up requirements.
 #

@@ -46,6 +46,9 @@ TPNO=			23958
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
 ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
+SMF_MANIFESTS += $(COMPONENT_DIR)/files/sendmail-client.xml
+SMF_MANIFESTS += $(COMPONENT_DIR)/files/smtp-sendmail.xml
+
 BUILD_STYLE= justmake
 INSTALL_TARGET=
 include $(WS_MAKE_RULES)/common.mk
@@ -206,7 +209,7 @@ COMPONENT_TEST_TRANSFORMS += \
 INSTALL_64=
 
 # common targets
-install:	$(INSTALL_32_and_64)
+install:	$(INSTALL_32_and_64) $(VALIDATE_SMF_TARGET)
 
 REQUIRED_PACKAGES += database/berkeleydb-5
 REQUIRED_PACKAGES += library/libmilter

@@ -38,6 +38,9 @@ COMPONENT_ANITYA_ID=	13122
 
 TPNO=			59855
 
+# Make sure we haven't broken the SMF manifest formatting
+SMF_MANIFESTS= files/gdm.xml
+
 # Tests do not pass because of insufficient gsed filtering.
 $(SKIP_TEST_AT_TOP_LEVEL)
 
@@ -45,10 +48,6 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Regenerate configure after patches modify configure.ac
 COMPONENT_PREP_ACTION += ( cd $(@D); autoreconf -fiv);
-
-# Make sure we haven't broken the SMF manifest formatting
-COMPONENT_PREP_ACTION += \
-    ( /usr/sbin/svccfg validate $(COMPONENT_DIR)/files/gdm.xml );
 
 # Assumes GNU msgfmt in PATH.
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"

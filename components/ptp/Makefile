@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -40,6 +40,7 @@ TPNO_PTP=		12665
 TPNO_SOLARFLARE=	15817
 
 BUILD_STYLE= justmake
+SMF_MANIFESTS= $(COMPONENT_DIR)/Solaris/ptp.xml
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 

@@ -43,6 +43,8 @@ TPNO=			60493
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
+SMF_MANIFESTS= $(COMPONENT_DIR)/files/dbus.xml
+
 include $(WS_MAKE_RULES)/common.mk
 
 # Needed for "gmake test" to work successfully.
