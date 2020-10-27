@@ -315,7 +315,7 @@ def download_from_paths(search_list: List[str], file_arg: str, url_arg: Optional
         try:
             try:
                 download(url, timeout_arg, name)
-            except URLError as err:
+            except HTTPError as err:
                 if err.code == 403:
                     # Some servers (e.g. GitLab) might be blocking requests
                     # with the 'Python-urllib/3.7' User-Agent header.
