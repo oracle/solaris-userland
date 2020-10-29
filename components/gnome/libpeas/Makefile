@@ -31,14 +31,14 @@ include ../../../make-rules/shared-macros.mk
 BUILD_STYLE=               meson
 
 COMPONENT_NAME=		libpeas
-COMPONENT_VERSION=	1.24.0
+COMPONENT_VERSION=	1.28.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/Libpeas
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:0b9a00138c129a663de3eef5569b00ace03ce31d345f7af783768e9f35c8e6f9
+    sha256:42d91993b46ed50f16add6d9577ecc22beb8e2dffa7101e2232c2b63733b8b15
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	6871
 
-TPNO=			54122
+TPNO=			62699
 
 # Disable the unit tests since the test results are outdated.
 $(SKIP_TEST_AT_TOP_LEVEL)

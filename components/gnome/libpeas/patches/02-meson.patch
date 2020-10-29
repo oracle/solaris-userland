@@ -1,8 +1,8 @@
 Patch to use Lua 5.4 instead of Lua 5.1 and to use Python 3.7.
 
---- libpeas-1.24.0/meson.build	2020-10-18 22:58:56.779280779 +0000
-+++ libpeas-1.24.0/meson.build	2020-10-18 22:57:47.937572647 +0000
-@@ -104,16 +104,12 @@ gtk_dep = dependency('gtk+-3.0', version
+--- libpeas-1.28.0/meson.build	2020-09-12 11:35:30.638345000 -0700
++++ libpeas-1.28.0-mod/meson.build	2020-10-29 04:41:15.904998628 -0700
+@@ -109,29 +109,25 @@
  gtk_doc_dep = dependency('gtk-doc', version: gtk_doc_req, required: false)
  gladeui_dep = dependency('gladeui-2.0', required: false)
  
@@ -17,29 +17,55 @@ Patch to use Lua 5.4 instead of Lua 5.1 and to use Python 3.7.
 +python3_dep = dependency('python-3.7m', version: ['>= 3.7', '< 3.8'], required: false)
 +python2_dep = dependency('python-27', version: python2_req, required: false)
  pygobject_dep = dependency('pygobject-3.0', version: pygobject_req, required: false)
--lua51_dep = dependency('lua5.1', version: lua_req, required: false)
--lua51_lgi_dep = dependency('lua5.1-lgi', version: lua_lgi_req, required: false)
+-lua51_dep = dependency('lua51', version: lua_req, required: false)
+-if not lua51_dep.found()
+-  lua51_dep = dependency('lua-5.1', version: lua_req, required: false)
 +lua54_dep = dependency('lua', version: lua_req, required: false)
-+lua54_lgi_dep = dependency('lgi', version: lua_lgi_req, required: false)
++if not lua54_dep.found()
++  lua54_dep = dependency('lua', version: lua_req, required: false)
+ endif
  luajit_dep = dependency('luajit', version: luajit_req, required: false)
- 
+ lua_lgi_found = false
+ lua_lgi_ver = 'not found'
+-lua51_prg = find_program('lua5.1', required: false)
++lua51_prg = find_program('lua', required: false)
+ if not lua51_prg.found()
+-  lua51_prg = find_program('lua51', required: false)
++  lua51_prg = find_program('lua', required: false)
+ endif
  luajit_prg = find_program('luajit', required: false)
-@@ -181,10 +177,10 @@ if generate_gir and not introspection_de
+ xmllint_prg = find_program('xmllint', required: false)
+ 
+-if (luajit_dep.found() and luajit_prg.found()) or (lua51_dep.found() and lua51_prg.found())
++if (luajit_dep.found() and luajit_prg.found()) or (lua54_dep.found() and lua51_prg.found())
+     if luajit_prg.found()
+         lua_prg = luajit_prg
+     else
+@@ -141,7 +137,7 @@
+     if lua_lgi_check.returncode() == 0
+         lua_lgi_ver = lua_lgi_check.stdout().strip()
+         if lua_lgi_ver.version_compare(lua_lgi_req)
+-            lua51_lgi_dep = declare_dependency(version: lua_lgi_ver)
++            lua54_lgi_dep = declare_dependency(version: lua_lgi_ver)
+             lua_lgi_found = true
+         endif
+     endif
+@@ -222,10 +218,10 @@
    generate_gir = false
  endif
  
 -build_lua51_loader = get_option('lua51')
--lua51_found = lua51_dep.found() and lua51_lgi_dep.found()
+-lua51_found = (luajit_dep.found() or lua51_dep.found()) and lua_lgi_found
 -if build_lua51_loader and not lua51_found
 -  build_lua51_loader = false
 +build_lua54_loader = get_option('lua54')
-+lua54_found = lua54_dep.found() and lua54_lgi_dep.found()
++lua54_found = (luajit_dep.found() or lua54_dep.found()) and lua_lgi_found
 +if build_lua54_loader and not lua54_found
 +  build_lua54_loader = false
  endif
  
  build_python2_loader = get_option('python2')
-@@ -225,7 +221,7 @@ summary = [
+@@ -268,7 +264,7 @@
    '     Glade catalog: @0@'.format(install_glade_catalog),
    '     GTK+ widgetry: @0@'.format(build_gtk_widgetry),
    '     Introspection: @0@'.format(generate_gir),
@@ -48,8 +74,8 @@ Patch to use Lua 5.4 instead of Lua 5.1 and to use Python 3.7.
    '  Python 2 support: @0@'.format(build_python2_loader),
    '  Python 3 support: @0@'.format(build_python3_loader),
    '',
---- libpeas-1.24.0/meson_options.txt	2019-09-09 17:41:29.000000000 -0700
-+++ B/meson_options.txt	2020-05-09 03:35:18.898649295 -0700
+--- libpeas-1.28.0/meson_options.txt	2020-09-12 11:35:30.638345000 -0700
++++ libpeas-1.28.0-mod/meson_options.txt	2020-10-29 03:39:54.208583808 -0700
 @@ -1,6 +1,6 @@
 -option('lua51',
 +option('lua54',
@@ -59,8 +85,55 @@ Patch to use Lua 5.4 instead of Lua 5.1 and to use Python 3.7.
  
  option('python2',
         type: 'boolean', value: false,
---- libpeas-1.24.0/loaders/meson.build	2019-09-09 17:41:29.000000000 -0700
-+++ B/loaders/meson.build	2020-05-09 03:35:18.706889505 -0700
+--- libpeas-1.28.0/tests/libpeas/plugins/extension-lua/meson.build	2020-09-12 11:35:30.648345000 -0700
++++ libpeas-1.28.0-mod/tests/libpeas/plugins/extension-lua/meson.build	2020-10-29 04:21:17.721772854 -0700
+@@ -1,9 +1,9 @@
+ extension_lua_name = 'extension-lua'
+ 
+ extension_lua_plugin_data = [
+-  'extension-lua51.gschema.xml',
+-  'extension-lua51.lua',
+-  'extension-lua51.plugin',
++  'extension-lua54.gschema.xml',
++  'extension-lua54.lua',
++  'extension-lua54.plugin',
+ ]
+ 
+ custom_target(
+--- libpeas-1.28.0/tests/libpeas/plugins/meson.build	2020-09-12 11:35:30.649345000 -0700
++++ libpeas-1.28.0-mod/tests/libpeas/plugins/meson.build	2020-10-29 04:18:34.158995911 -0700
+@@ -1,6 +1,6 @@
+ libpeas_plugins_data = [
+   'extension-c-nonexistent.plugin',
+-  'extension-lua51-nonexistent.plugin',
++  'extension-lua54-nonexistent.plugin',
+   'extension-python-nonexistent.plugin',
+   'extension-python3-nonexistent.plugin',
+   'info-missing-module.plugin',
+@@ -24,7 +24,7 @@
+ subdir('embedded')
+ subdir('extension-c')
+ 
+-if build_lua51_loader == true
++if build_lua54_loader == true
+   subdir('extension-lua')
+ endif
+ 
+--- libpeas-1.28.0/tests/libpeas/meson.build	2020-09-12 11:35:30.648345000 -0700
++++ libpeas-1.28.0-mod/tests/libpeas/meson.build	2020-10-29 04:11:10.684784109 -0700
+@@ -8,8 +8,8 @@
+ 
+ libpeas_tests_c_args = ['-UG_DISABLE_ASSERT', '-UG_DISABLE_CAST_CHECKS']
+ 
+-if build_lua51_loader == true
+-  libpeas_tests_sources += [['extension-lua', [lua51_dep, luajit_dep]]]
++if build_lua54_loader == true
++  libpeas_tests_sources += [['extension-lua', [lua54_dep, luajit_dep]]]
+ endif
+ 
+ if build_python3_loader == true
+--- libpeas-1.28.0/loaders/meson.build	2020-09-12 11:35:30.638345000 -0700
++++ libpeas-1.28.0-mod/loaders/meson.build	2020-10-29 03:49:43.013576785 -0700
 @@ -1,5 +1,5 @@
 -if build_lua51_loader == true
 -  subdir('lua5.1')
@@ -69,11 +142,19 @@ Patch to use Lua 5.4 instead of Lua 5.1 and to use Python 3.7.
  endif
  
  if build_python2_loader == true
---- libpeas-1.24.0/loaders/lua5.1/meson.build	2019-09-09 17:41:29.000000000 -0700
-+++ B/loaders/lua5.1/meson.build	2020-05-09 03:35:18.692578715 -0700
-@@ -1,38 +1,38 @@
+--- libpeas-1.28.0/loaders/lua5.1/resources/meson.build	2020-09-12 11:35:30.637344800 -0700
++++ libpeas-1.28.0-mod/loaders/lua5.1/resources/meson.build	2020-10-29 03:56:29.845876834 -0700
+@@ -1,4 +1,4 @@
+-lua51_loader_res = gnome.compile_resources(
++lua54_loader_res = gnome.compile_resources(
+   'peas-lua-resources',
+   'peas-lua.gresource.xml',
+   export: true,
+--- libpeas-1.28.0/loaders/lua5.1/meson.build	2020-09-12 11:35:30.637344800 -0700
++++ libpeas-1.28.0-mod/loaders/lua5.1/meson.build	2020-10-29 03:55:28.038582307 -0700
+@@ -1,39 +1,39 @@
 -lua51_loader_name = 'lua51loader'
-+lua54_loader_name = 'lua54loader'
++ua54_loader_name = 'lua54loader'
  
 -lua51_lgi_version = lua51_lgi_dep.version()
 -lua51_lgi_version_arr = lua51_lgi_version.split('.')
@@ -103,6 +184,7 @@ Patch to use Lua 5.4 instead of Lua 5.1 and to use Python 3.7.
 -  lua51_lgi_dep,
 +  lua54_dep,
 +  lua54_lgi_dep,
+   luajit_dep,
  ]
  
 -lua51_loader_c_args = [
@@ -116,10 +198,10 @@ Patch to use Lua 5.4 instead of Lua 5.1 and to use Python 3.7.
 +  '-DLGI_MICRO_VERSION=@0@'.format(lua54_lgi_version_micro),
  ]
  
--lua51_loader_sha = shared_library(
+-lua51_loader_sha = shared_module(
 -  lua51_loader_name,
 -  lua51_loader_c + lua51_loader_res,
-+lua54_loader_sha = shared_library(
++lua54_loader_sha = shared_module(
 +  lua54_loader_name,
 +  lua54_loader_c + lua54_loader_res,
    include_directories: rootdir,
@@ -130,16 +212,8 @@ Patch to use Lua 5.4 instead of Lua 5.1 and to use Python 3.7.
    install: true,
    install_dir: join_paths(
      pkglibdir,
---- libpeas-1.24.0/loaders/lua5.1/resources/meson.build	2019-09-09 17:41:29.000000000 -0700
-+++ B/loaders/lua5.1/resources/meson.build	2020-05-09 03:35:18.663260050 -0700
-@@ -1,4 +1,4 @@
--lua51_loader_res = gnome.compile_resources(
-+lua54_loader_res = gnome.compile_resources(
-   'peas-lua-resources',
-   'peas-lua.gresource.xml',
-   export: true,
---- libpeas-1.24.0/peas-demo/plugins/meson.build	2019-09-09 17:41:29.000000000 -0700
-+++ B/peas-demo/plugins/meson.build	2020-05-09 03:35:19.256502175 -0700
+--- libpeas-1.28.0/peas-demo/plugins/meson.build	2020-09-12 11:35:30.639345000 -0700
++++ libpeas-1.28.0-mod/peas-demo/plugins/meson.build	2020-10-29 04:09:06.595638015 -0700
 @@ -1,6 +1,6 @@
  subdir('helloworld')
  
@@ -147,100 +221,9 @@ Patch to use Lua 5.4 instead of Lua 5.1 and to use Python 3.7.
 +if build_lua54_loader == true
    subdir('luahello')
  endif
- 
---- libpeas-1.24.0/tests/libpeas/meson.build	2019-09-09 17:41:29.000000000 -0700
-+++ B/tests/libpeas/meson.build	2020-05-09 03:35:18.122145885 -0700
-@@ -8,8 +8,8 @@
- 
- libpeas_tests_c_args = []
- 
--if build_lua51_loader == true
--  libpeas_tests_sources += [['extension-lua', [lua51_dep]]]
-+if build_lua54_loader == true
-+  libpeas_tests_sources += [['extension-lua', [lua54_dep]]]
- endif
- 
- if build_python3_loader == true
---- libpeas-1.24.0/tests/testing-util/meson.build	2019-09-09 17:41:29.000000000 -0700
-+++ B/tests/testing-util/meson.build	2020-05-09 03:35:17.728584140 -0700
-@@ -22,7 +22,7 @@
- ]
- 
- libtesting_util_link_args = [
--  '-export-dynamic',
-+  '-rdynamic',
- ]
- 
- libtesting_util_lib = library(
---- libpeas-1.24.0/tests/libpeas-gtk/testing/meson.build	2019-09-09 17:41:29.000000000 -0700
-+++ B/tests/libpeas-gtk/testing/meson.build	2020-05-09 03:35:18.264701610 -0700
-@@ -24,7 +24,7 @@
- ]
- 
- libpeas_gtk_testing_link_args = [
--  '-export-dynamic',
-+ '-rdynamic',
- ]
- 
- libpeas_gtk_testing_lib = library(
---- libpeas-1.24.0/tests/libpeas/introspection/meson.build	2019-09-09 17:41:29.000000000 -0700
-+++ B/tests/libpeas/introspection/meson.build	2020-05-09 03:35:17.861192720 -0700
-@@ -30,7 +30,7 @@
- ]
- 
- libintrospection_link_args = [
--  '-export-dynamic',
-+'-rdynamic',
- ]
- 
- libintrospection_lib = library(
---- libpeas-1.24.0/tests/libpeas/testing/meson.build	2019-09-09 17:41:29.000000000 -0700
-+++ B/tests/libpeas/testing/meson.build	2020-05-09 03:35:17.753253375 -0700
-@@ -26,7 +26,7 @@
- ]
- 
- libpeas_testing_link_args = [
--  '-export-dynamic',
-+  '-rdynamic',
- ]
- 
- libpeas_testing_lib = library(
---- libpeas-1.24.0/tests/libpeas/plugins/meson.build	2019-09-09 17:41:29.000000000 -0700
-+++ B/tests/libpeas/plugins/meson.build	2020-05-09 03:35:17.884874860 -0700
-@@ -1,6 +1,6 @@
- libpeas_plugins_data = [
-   'extension-c-nonexistent.plugin',
--  'extension-lua51-nonexistent.plugin',
-+  'extension-lua54-nonexistent.plugin',
-   'extension-python-nonexistent.plugin',
-   'extension-python3-nonexistent.plugin',
-   'info-missing-module.plugin',
-@@ -24,7 +24,7 @@
- subdir('embedded')
- subdir('extension-c')
- 
--if build_lua51_loader == true
-+if build_lua54_loader == true
-   subdir('extension-lua')
- endif
- 
---- libpeas-1.24.0/tests/libpeas/plugins/extension-lua/meson.build	2019-09-09 17:41:29.000000000 -0700
-+++ B/tests/libpeas/plugins/extension-lua/meson.build	2020-05-09 03:35:17.994568320 -0700
-@@ -1,9 +1,9 @@
- extension_lua_name = 'extension-lua'
- 
- extension_lua_plugin_data = [
--  'extension-lua51.gschema.xml',
--  'extension-lua51.lua',
--  'extension-lua51.plugin',
-+  'extension-lua54.gschema.xml',
-+  'extension-lua54.lua',
-+  'extension-lua54.plugin',
- ]
- 
- custom_target(
---- libpeas-1.24.0/loaders/lua5.4/meson.build	2020-05-13 01:59:09.666119315 -0700
-+++ B/loaders/lua5.4/meson.build	2020-05-13 03:41:44.860040725 -0700
+
+--- libpeas-1.24.0/loaders/lua5.4/meson.build   2020-05-13 01:59:09.666119315 -0700
++++ B/loaders/lua5.4/meson.build        2020-05-13 03:41:44.860040725 -0700
 @@ -0,0 +1,42 @@
 +lua54_loader_name = 'lua54loader'
 +
@@ -284,11 +267,12 @@ Patch to use Lua 5.4 instead of Lua 5.1 and to use Python 3.7.
 +    'loaders',
 +  )
 +)
---- libpeas-1.24.0/loaders/lua5.4/resources/meson.build	2020-05-13 04:47:28.281113750 -0700
-+++ B/loaders/lua5.4/resources/meson.build	2020-05-13 04:42:27.994151855 -0700
+--- libpeas-1.24.0/loaders/lua5.4/resources/meson.build 2020-05-13 04:47:28.281113750 -0700
++++ B/loaders/lua5.4/resources/meson.build      2020-05-13 04:42:27.994151855 -0700
 @@ -0,0 +1,5 @@
 +lua54_loader_res = gnome.compile_resources(
 +  'peas-lua-resources',
 +  'peas-lua.gresource.xml',
 +  export: true,
 +)
+ 
