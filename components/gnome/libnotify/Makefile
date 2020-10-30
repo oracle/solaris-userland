@@ -29,14 +29,14 @@ include ../../../make-rules/shared-macros.mk
 BUILD_STYLE=            meson
 
 COMPONENT_NAME=		libnotify
-COMPONENT_VERSION=	0.7.8
+COMPONENT_VERSION=	0.7.9
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/libnotify/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:69209e0b663776a00c7b6c0e560302a8dbf66b2551d55616304f240bba66e18c
+	sha256:66c0517ed16df7af258e83208faaf5069727dfd66995c4bbc51c16954d674761
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13149
 
-TPNO=			54121
+TPNO=			62685
 
 # Tests do not work on Solaris yet
 TEST_TARGET= $(SKIP_TEST)
@@ -47,8 +47,8 @@ LDFLAGS += -Wl,-zgnu-version-script-compat
 # Required for other components.
 CONFIGURE_OPTIONS.32 += -Dintrospection=disabled
 CONFIGURE_OPTIONS.64 += -Dintrospection=enabled
-CONFIGURE_OPTIONS += -Ddocbook-docs=disable
 
+CONFIGURE_OPTIONS += -Dman=false
 CONFIGURE_OPTIONS += -Ddefault_library=shared
 
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
