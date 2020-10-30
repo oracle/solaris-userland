@@ -30,14 +30,14 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgdata
-COMPONENT_VERSION=	0.17.11
+COMPONENT_VERSION=	0.17.13
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/libgdata
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6b9917122e4def6e6f78bcb660e49e146540832e296abcb5cde99829a04ea986
+    sha256:eab9ef792c3c2b9ece19d45aea15225aba8df2521bc12785b1b2d3318d8c472e
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13145
 
-TPNO=			54083
+TPNO=			62899
 BUILD_STYLE=		meson
 
 # Disable tests since there are some regressions.
@@ -48,6 +48,9 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 LDFLAGS += -z gnu-version-script-compat
+
+CONFIGURE_OPTIONS += -Dinstalled_tests=true
+CONFIGURE_OPTIONS += -Dgtk_doc=true
 
 COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9]s//" '
 COMPONENT_TEST_TRANSFORMS += \

@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		clutter
-COMPONENT_VERSION=	1.26.2
+COMPONENT_VERSION=	1.26.4
 COMPONENT_PROJECT_URL=	http://www.clutter-project.org/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:e7233314983055e9018f94f56882e29e7fc34d8d35de030789fdcd9b2d0e2e56
+	sha256:8b48fac159843f556d0a6be3dbfc6b083fc6d9c58a20a49a6b4919ab4263c4e6
 COMPONENT_BUGDB=        library/clutter
 COMPONENT_ANITYA_ID=	302
 
-TPNO=			53992
+TPNO=			62889
 
 # Requires a display
 TEST_TARGET = $(SKIP_TEST)

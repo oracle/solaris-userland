@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libchamplain
-COMPONENT_VERSION=	0.12.19
+COMPONENT_VERSION=	0.12.20
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/libchamplain
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:36842e326cdbe3cdbdab818472797eedb661dec842fe0579596a3a8d438b2aa4
+	sha256:0232b4bfcd130a1c5bda7b6aec266bf2d06e701e8093df1886f1e26bc1ba3066
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	1576
 
-TPNO=			54081
+TPNO=			62900
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)

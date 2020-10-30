@@ -30,14 +30,14 @@ COMPILER =		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cogl
-COMPONENT_VERSION=	1.22.4
+COMPONENT_VERSION=	1.22.8
 COMPONENT_PROJECT_URL=  https://developer.gnome.org/cogl/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:5217bf94cbca3df63268a3b79d017725382b9e592b891d1e7dc6212590ce0de0
+	sha256:a805b2b019184710ff53d0496f9f0ce6dcca420c141a0f4f6fcc02131581d759
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	315
 
-TPNO=			52150
+TPNO=			62888
 
 # Tests are disabled since they require a running desktop.
 $(SKIP_TEST_AT_TOP_LEVEL)
