@@ -128,6 +128,10 @@ have defaults, but can be overridden.
   variable has to be set to 1 (sequential build). Note that the real number
   of parallel jobs depends on the current load of the system.
 
+* COMPONENT_MAKE_WRAPPER allows you to "wrap" the gmake call as another binary
+  parameter. For example you can set COMPONENT_MAKE_WRAPPER='timeout -k 60s 8h'
+  or COMPONENT_MAKE_WRAPPER='env LD_BIND_NOW=1' and such.
+
 * JOBS_PER_COMPONENT variable has to be used instead of COMPONENT_MAKE_JOBS
   variable if the full userland gate is built. The reason is that if
   COMPONENT_MAKE_JOBS variable is passed on the command line, it overrides

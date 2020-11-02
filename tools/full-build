@@ -43,10 +43,11 @@ function usage {
 	   -j <num>            - override default number of parallel jobs
 	   -m|--mail           - send email with results
 	   -b|--background     - execute the build in background (implies --mail)
+	   --target <target>   - run specified target (default is 'publish')
 	   --allow-dirty       - run the build even in presence of uncommited changes
 	   --do-not-purge      - do not remove any untracked files prior to build
 	   --master-repo       - first synch changes from given repository
-	   --pkglint-component - pkglint each component separately, mostly for gatekeepers
+	   --param <blah>      - pass additional gmake parameter (like --param AAA=BBB)
 	EOT
 }
 
@@ -58,7 +59,7 @@ PARM_MASTER_REPO=       # Synchronize to this repo before running the build
 PARM_RUN_DETACHED=      # Run the build in background
 PARM_SEND_EMAIL=        # Send email on completion
 PARM_STOP_RUNNING_JOB=  # Stop already running build
-PARM_PKGLINT_COMPONENT= # Enable pkglinting each component separately
+PARM_TARGET=publish     # gmake target to execute
 
 # Changing already running bash script may lead to it's crash. We may be
 # modified later by "hg pull" so we need to protect ourselves. The idea is to
@@ -66,6 +67,9 @@ PARM_PKGLINT_COMPONENT= # Enable pkglinting each component separately
 RE_EXECUTED=            # We need to behave differently when we re-executed ourselves
 # We may need to restart this script, so we should remember the parameters
 INPUT_PARAMS=( "$@" )
+
+# Additional parameters passed to gmake
+GMAKE_PARAM=( )
 
 ################################################################################
 ### PROCESS INPUT PARAMETERS
@@ -81,7 +85,7 @@ while [ $# -gt 0 ]; do
             PARM_PURGE=
 			;;
 		--allow-dirty)
-            PARM_ALLOW_UNCOMMITTED=1
+            PARM_ALLOW_DIRTY=1
 			;;
 		-b|--background)
             PARM_RUN_DETACHED=1
@@ -91,7 +95,7 @@ while [ $# -gt 0 ]; do
             PARM_SEND_EMAIL=1
 			;;
 		--master-repo)
-			if [ $# -eq 0 ]; then
+			if [ $# -eq 1 ]; then
 				echo "Option $1 requires a parameter."
 				exit 1
 			fi
@@ -99,22 +103,34 @@ while [ $# -gt 0 ]; do
 			PARM_MASTER_REPO="$1"
 			;;
         -j)
-			if [ $# -eq 0 ]; then
+			if [ $# -eq 1 ]; then
 				echo "Option $1 requires a parameter."
 				exit 1
 			fi
-            shift
-            PARM_JOBS="$1"
-            ;;
+			shift
+			PARM_JOBS="$1"
+			;;
         --reexec)
 			RE_EXECUTED=1
 			;;
 		--stop)
 			PARM_STOP_RUNNING_JOB=1
 			;;
-		--pkglint-component)
-			# Userland infrastructure is checking for the word "yes"
-			PARM_PKGLINT_COMPONENT=yes
+		--param)
+			if [ $# -eq 1 ]; then
+				echo "Option $1 requires a parameter."
+				exit 1
+			fi
+			shift
+			GMAKE_PARAM+=( "$1" )
+			;;
+		--target)
+			if [ $# -eq 1 ]; then
+				echo "Option $1 requires a parameter."
+				exit 1
+			fi
+			shift
+			PARM_TARGET="$1"
 			;;
         *)
             echo "Error, unknown argument '$1'"
@@ -297,17 +313,39 @@ if [ ! $RE_EXECUTED ]; then
 	COPIED_SCRIPT=$( mktemp /tmp/$PROG.$LOGNAME.XXXXXX )
 	cp "${BASH_SOURCE[0]}" "$COPIED_SCRIPT"
 	chmod +x "$COPIED_SCRIPT"
-	CMD=( "$COPIED_SCRIPT" "${INPUT_PARAMS[@]}" --reexec )
-	if [ $PARM_RUN_DETACHED ]; then
-		# Execute us in new process group if we are going to be put into
-		# background
-		CMD=( setpgrp "${CMD[@]}" )
-	fi
-	exec "${CMD[@]}"
+	# Re-execute the script as s process leader
+	exec setpgrp "$COPIED_SCRIPT" "${INPUT_PARAMS[@]}" --reexec
 else
-	# We can safely delete the file from /tmp ,bash is holding a file
+	# We can safely delete the file from /tmp, bash is holding a file
 	# descriptor to it so it will continue working
 	rm "${BASH_SOURCE[0]}"
+
+	# This script can be executed via ssh. In such case, when you press ctrl+c
+	# ssh does not transfer SIGINT to the distant machine, rather it kills the
+	# local process (unless -t was specfied). If that happens, the ssh on the
+	# distant side terminates but keeps the build running. To catch that
+	# situation we periodically check that our parent pid exists. And if it
+	# does not exist anymore we kill ourselves. This way we can reliably stop
+	# the distant build via ctrl+c
+	function killer {
+		local PGID="$1"
+		# Wait for the parent to disappear
+		pwait $PPID
+		# If it does, kill whole process group
+		pkill -15 -g $PGID
+		# Not reached, pkill also killed us
+		exit 0
+	}
+
+	PGID=$(ps -o pgid= -p $BASHPID)
+	if [[ $BASHPID -ne $PGID ]]; then
+		echo "Error, we are not process group ID?"
+		typeset -p BASHPID PGID
+		ptree $$
+		exit 1
+	fi
+
+	killer $PGID </dev/null &
 fi
 
 echo "WS Root: $WS_ROOT"
@@ -382,7 +420,7 @@ function build {
 
 	# Run the actual build
 	RET=0
-	run time gmake publish --keep-going -j $PARM_JOBS PKGLINT_COMPONENT="$PARM_PKGLINT_COMPONENT" || RET=$?
+	run time gmake $PARM_TARGET --keep-going -j $PARM_JOBS "${GMAKE_PARAM[@]}" || RET=$?
 
 	# Print the results
 	if [ $RET -ne 0 ]; then
@@ -430,4 +468,4 @@ else
 fi
 
 
-# vim: sw=4 ts=4
+# vim: sw=4 ts=4 noexpandtab

@@ -174,7 +174,7 @@ JOBS_PER_COMPONENT ?= 1
 $(COMPONENT_DIRS):	$(WS_LOGS) setup FORCE
 	@cd $@ && echo "$(TARGET) $@" && \
 	( env MAKELEVEL= COMPONENT_MAKE_JOBS=$(JOBS_PER_COMPONENT) \
-		time $(GMAKE) --no-keep-going $(TARGET); \
+		time $(COMPONENT_MAKE_WRAPPER) $(GMAKE) --no-keep-going $(TARGET); \
 		RET=$$?; \
 		echo TARGET_EXIT_CODE $$RET; \
 		exit $$RET \
