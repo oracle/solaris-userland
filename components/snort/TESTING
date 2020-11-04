@@ -1,0 +1,29 @@
+# configure snort alert and select output format (for u2boat and u2spewfoo testing)
+gsed -i '/include\ \$RULE_PATH\/local.rules/s/^#//' /etc/snort/snort.conf
+echo 'alert tcp any any <> any any (content:"youtube.com";sid:361000000;rev:1;msg:"youtube.com detected";)' > /etc/snort/rules/local.rules
+gsed -i '/output\ unified2/s/^#//' /etc/snort/snort.conf
+
+# test configuration
+snort -T -i 0 -c /etc/snort/snort.conf 2>&1 | grep 'Snort successfully validated the configuration!' || echo 'Error in configuration!'
+
+# enable snort service and wait to start it
+svcadm enable snort
+while $(svcs snort | grep -q online && echo false || echo true); do echo "Waiting for SNORT.."; sleep 1; done
+svcs snort
+
+# test snort (you may need to set http_proxy)
+wget youtube.com && sleep 3
+
+# disable snort
+svcadm disable snort
+
+# convert unified log to pcap file and see it
+u2boat  /var/log/snort/merged.log /var/log/snort/merged.log.pcap
+tcpdump -r /var/log/snort/merged.log.pcap
+
+# view begging of data using u2spewfoo tool
+u2spewfoo /var/log/snort/merged.log | head
+
+# print snort version and SMF status
+snort --version
+svcs snort

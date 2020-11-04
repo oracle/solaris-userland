@@ -1,0 +1,48 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+
+file Solaris/auth_attr path=etc/security/auth_attr.d/snort
+file Solaris/exec_attr path=etc/security/exec_attr.d/snort
+file etc/attribute_table.dtd path=etc/snort/attribute_table.dtd
+file etc/classification.config path=etc/snort/classification.config mode=0644 \
+    original_name=SUNWsnort:etc/classification.config overlay=allow \
+    preserve=renamenew
+file etc/file_magic.conf path=etc/snort/file_magic.conf
+file etc/gen-msg.map path=etc/snort/gen-msg.map
+dir  path=etc/snort/preproc_rules
+file etc/reference.config path=etc/snort/reference.config mode=0644 \
+    original_name=SUNWsnort:etc/reference.config overlay=allow \
+    preserve=renamenew
+dir  path=etc/snort/rules
+file etc/snort.conf path=etc/snort/snort.conf mode=0644 \
+    original_name=SUNWsnort:etc/snort.conf overlay=allow preserve=renamenew
+dir  path=etc/snort/so_rules
+file etc/threshold.conf path=etc/snort/threshold.conf mode=0644 \
+    original_name=SUNWsnort:etc/threshold.conf overlay=allow preserve=renamenew
+file etc/unicode.map path=etc/snort/unicode.map
+file Solaris/snort.xml path=lib/svc/manifest/network/snort.xml
+file Solaris/snortd path=lib/svc/method/snortd
+dir  path=usr/lib/$(MACH64)/snort_dynamicrules
+dir  path=var/log/snort owner=noaccess group=noaccess

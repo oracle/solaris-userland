@@ -24,24 +24,22 @@
 #
 BUILD_BITS= 64
 COMPILER= gcc
+
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		snort
-COMPONENT_VERSION=	2.9.9.0
+COMPONENT_VERSION=	2.9.16.1
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:71b147125e96390a12f3d55796ed5073df77206bd3563d84d3e5a1f19e7d7a56
+    sha256:e3ac45a1a3cc2c997d52d19cd92f1adf5641c3a919387adab47a4d13a9dc9f8e
 COMPONENT_PROJECT_URL=	https://www.snort.org/
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)downloads/archive/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	13263
 
-TPNO=			33599
+TPNO=			63013
 
 SMF_MANIFESTS= $(COMPONENT_DIR)/Solaris/snort.xml
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
-
-# GCC 10 defaults to -fnocommon - which is problem for this old version.
-CFLAGS += -fcommon
 
 # Need to recreate the configure script for gethrtime checks.
 COMPONENT_PREP_ACTION +=	(cd $(@D); autoreconf -fiv);
@@ -49,6 +47,7 @@ COMPONENT_PREP_ACTION +=	(cd $(@D); autoreconf -fiv);
 CONFIGURE_OPTIONS +=	--with-libpcre-libraries="$(USRLIBDIR64)"
 CONFIGURE_OPTIONS +=	--with-dnet-libraries="$(USRLIBDIR64)"
 CONFIGURE_OPTIONS +=	--disable-static-daq
+CONFIGURE_OPTIONS +=	--disable-open-appid
 
 REQUIRED_PACKAGES += compress/xz
 REQUIRED_PACKAGES += developer/lexer/flex

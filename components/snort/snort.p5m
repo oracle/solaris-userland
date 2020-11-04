@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -33,7 +33,7 @@ set name=info.classification \
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2009/256 value=PSARC/2013/113 \
-    value=PSARC/2014/347
+    value=PSARC/2014/347 value=PSARC/2020/128
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file Solaris/auth_attr path=etc/security/auth_attr.d/snort
 file Solaris/exec_attr path=etc/security/exec_attr.d/snort
@@ -59,6 +59,8 @@ file etc/unicode.map path=etc/snort/unicode.map
 file Solaris/snort.xml path=lib/svc/manifest/network/snort.xml
 file Solaris/snortd path=lib/svc/method/snortd
 file path=usr/bin/snort
+file path=usr/bin/u2boat
+file path=usr/bin/u2spewfoo
 file path=usr/include/snort/dynamic_output/bitop.h
 file path=usr/include/snort/dynamic_output/ipv6_port.h
 file path=usr/include/snort/dynamic_output/obfuscation.h
@@ -76,10 +78,10 @@ file path=usr/include/snort/dynamic_output/sfrt_dir.h
 file path=usr/include/snort/dynamic_output/sfrt_trie.h
 file path=usr/include/snort/dynamic_output/snort_debug.h
 file path=usr/include/snort/dynamic_output/stream_api.h
+file path=usr/include/snort/dynamic_preproc/appdata_adjuster.h
 file path=usr/include/snort/dynamic_preproc/bitop.h
 file path=usr/include/snort/dynamic_preproc/cpuclock.h
 file path=usr/include/snort/dynamic_preproc/file_api.h
-file path=usr/include/snort/dynamic_preproc/file_mail_common.h
 file path=usr/include/snort/dynamic_preproc/idle_processing.h
 file path=usr/include/snort/dynamic_preproc/ipv6_port.h
 file path=usr/include/snort/dynamic_preproc/mempool.h
@@ -89,11 +91,14 @@ file path=usr/include/snort/dynamic_preproc/packet_time.h
 file path=usr/include/snort/dynamic_preproc/perf_indicators.h
 file path=usr/include/snort/dynamic_preproc/preprocids.h
 file path=usr/include/snort/dynamic_preproc/profiler.h
+file path=usr/include/snort/dynamic_preproc/reg_test.h
+file path=usr/include/snort/dynamic_preproc/reload_api.h
 file path=usr/include/snort/dynamic_preproc/segment_mem.h
 file path=usr/include/snort/dynamic_preproc/session_api.h
 file path=usr/include/snort/dynamic_preproc/sfPolicy.h
 file path=usr/include/snort/dynamic_preproc/sfPolicyUserData.h
 file path=usr/include/snort/dynamic_preproc/sf_decompression.h
+file path=usr/include/snort/dynamic_preproc/sf_decompression_define.h
 file path=usr/include/snort/dynamic_preproc/sf_dynamic_common.h
 file path=usr/include/snort/dynamic_preproc/sf_dynamic_define.h
 file path=usr/include/snort/dynamic_preproc/sf_dynamic_engine.h
@@ -109,14 +114,12 @@ file path=usr/include/snort/dynamic_preproc/sf_snort_packet.h
 file path=usr/include/snort/dynamic_preproc/sf_snort_plugin_api.h
 file path=usr/include/snort/dynamic_preproc/sfcommon.h
 file path=usr/include/snort/dynamic_preproc/sfcontrol.h
-file path=usr/include/snort/dynamic_preproc/sfdebug.h
 file path=usr/include/snort/dynamic_preproc/sfrt.h
 file path=usr/include/snort/dynamic_preproc/sfrt_dir.h
 file path=usr/include/snort/dynamic_preproc/sfrt_flat.h
 file path=usr/include/snort/dynamic_preproc/sfrt_flat_dir.h
 file path=usr/include/snort/dynamic_preproc/sfrt_trie.h
 file path=usr/include/snort/dynamic_preproc/sidechannel_define.h
-file path=usr/include/snort/dynamic_preproc/sip_common.h
 file path=usr/include/snort/dynamic_preproc/snort_bounds.h
 file path=usr/include/snort/dynamic_preproc/snort_debug.h
 file path=usr/include/snort/dynamic_preproc/ssl.h
@@ -127,6 +130,9 @@ file path=usr/include/snort/dynamic_preproc/ssl_inspect.h
 file path=usr/include/snort/dynamic_preproc/ssl_session.h
 file path=usr/include/snort/dynamic_preproc/str_search.h
 file path=usr/include/snort/dynamic_preproc/stream_api.h
+link path=usr/lib/$(MACH64)/libsf_sorules.so target=libsf_sorules.so.0.0.0
+link path=usr/lib/$(MACH64)/libsf_sorules.so.0 target=libsf_sorules.so.0.0.0
+file path=usr/lib/$(MACH64)/libsf_sorules.so.0.0.0
 file path=usr/lib/$(MACH64)/pkgconfig/snort.pc
 file path=usr/lib/$(MACH64)/pkgconfig/snort_output.pc
 file path=usr/lib/$(MACH64)/pkgconfig/snort_preproc.pc

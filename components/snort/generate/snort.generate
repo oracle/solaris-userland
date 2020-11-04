@@ -1,4 +1,3 @@
-#!/sbin/sh
 #
 # CDDL HEADER START
 #
@@ -19,25 +18,13 @@
 #
 # CDDL HEADER END
 #
-#
-# Copyright (c) 2009, 2020, Oracle and/or its affiliates.
-#
 
-. /lib/svc/share/smf_include.sh
-
-# This script is being used for two purposes: as part of an SMF
-# start method, and as a snort(8) application.
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
 #
 
-case $1 in 
-'start')
-	pfexec /usr/bin/snort -d -D -c /etc/snort/snort.conf
-	;;
+# Solaris/* files are described in .static file.
+<transform path=Solaris -> drop>
 
-*)
-	echo "Usage: $0 { start }"
-	exit 1
-	;;
-esac	
-
-exit $?
+# No need to deliver snort_dynamicsrc/* development files.
+<transform path=usr/src/snort_dynamicsrc -> drop>
