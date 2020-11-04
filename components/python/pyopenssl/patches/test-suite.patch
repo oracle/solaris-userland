@@ -1,32 +1,35 @@
-test_crypto:
-* Solaris doesn't have flaky python package and, therefore, all tests depending
-  on it are disabled.
+* Solaris doesn't have flaky and pretend python packages and, therefore, all
+  tests depending on those are disabled.
 
-* Serial numbers of both dumps can be displayed in two ways which are both
-  valid, but simple string comparison fails due to that.  Patch fixes this by
-  comparing both serial numbers first and than replacing both strings with the
-  same one.
+test_crypto:
+* OpenSSL X509_VERIFY_PARAM_set_time() time_t argument is starting to have an
+  insufficient size for some used timestamps in 32-bit binaries.
 
 test_set_default_verify_paths:
-* Solaris doesn't have pretend python package and, therefore, all tests
-  depending on it are disabled.
-
 * This patch disables the test set default verify paths, which tries to connect
   to an external server. This tries to connect using s_client, which does
   not work within OWAN, even if proxy vaeriables are set.
 
---- pyOpenSSL-19.0.0/tests/test_crypto.py
-+++ pyOpenSSL-19.0.0/tests/test_crypto.py
-@@ -20,8 +20,6 @@ from cryptography.hazmat.backends.openss
+--- pyOpenSSL-20.0.1/tests/test_crypto.py
++++ pyOpenSSL-20.0.1/tests/test_crypto.py
+@@ -8,6 +8,7 @@ Unit tests for :py:mod:`OpenSSL.crypto`.
+ from warnings import simplefilter
+ 
+ import base64
++import ctypes
+ from subprocess import PIPE, Popen
+ from datetime import datetime, timedelta
+ import sys
+@@ -19,8 +20,6 @@ from cryptography.hazmat.backends.openss
  from cryptography.hazmat.primitives import serialization
  from cryptography.hazmat.primitives.asymmetric import rsa
  
 -import flaky
 -
- from OpenSSL.crypto import TYPE_RSA, TYPE_DSA, Error, PKey, PKeyType
- from OpenSSL.crypto import X509, X509Type, X509Name, X509NameType
+ from OpenSSL.crypto import TYPE_RSA, TYPE_DSA, Error, PKey
+ from OpenSSL.crypto import X509, X509Name
  from OpenSSL.crypto import (
-@@ -1646,7 +1644,7 @@ WpOdIpB8KksUTCzV591Nr1wd
+@@ -1852,7 +1851,7 @@ class TestX509(_PKeyInteractionTestsMixi
          with pytest.raises(TypeError):
              cert.gmtime_adj_notBefore(None)
  
@@ -35,7 +38,7 @@ test_set_default_verify_paths:
      def test_gmtime_adj_notBefore(self):
          """
          `X509.gmtime_adj_notBefore` changes the not-before timestamp to be the
-@@ -1672,7 +1670,7 @@ WpOdIpB8KksUTCzV591Nr1wd
+@@ -1878,7 +1877,7 @@ class TestX509(_PKeyInteractionTestsMixi
          with pytest.raises(TypeError):
              cert.gmtime_adj_notAfter(None)
  
@@ -44,61 +47,40 @@ test_set_default_verify_paths:
      def test_gmtime_adj_notAfter(self):
          """
          `X509.gmtime_adj_notAfter` changes the not-after timestamp
-@@ -2714,7 +2712,30 @@ class TestFunction(object):
-         dumped_text = dump_certificate(FILETYPE_TEXT, cert)
-         good_text = _runopenssl(
-             dumped_pem, b"x509", b"-noout", b"-text", b"-nameopt", b"")
--        assert dumped_text == good_text
-+
-+        # On Solaris, the serial number is displayed differently between both
-+        # dumps (but both are correct). Add additional check for equality of
-+        # those serial numbers.
-+        import re
-+        def get_serial_number(text):
-+            match = re.search(b'Serial Number:[^\(]+\(0x(.*)\)', text)
-+            if match:
-+                return match.group(1)
-+
-+            match = re.search(b'Serial Number:\n[ ]*([^\n]+)', text)
-+            if match:
-+                return match.group(1).replace(':', '')
-+            return None
-+
-+        good_serial_number = get_serial_number(good_text)
-+        dumped_serial_number = get_serial_number(dumped_text)
-+        assert good_serial_number == dumped_serial_number
-+
-+        # remove differences between both strings
-+        def fix_text(text):
-+            return re.sub(b'Serial Number:[ \n][^\n]+\n', b'Serial Number: ###\n', text)
-+
-+        assert fix_text(dumped_text) == fix_text(good_text)
+@@ -4095,6 +4094,8 @@ class TestX509StoreContext(object):
+         store_ctx.set_store(store_good)
+         assert store_ctx.verify_certificate() is None
  
-     def test_dump_certificate_bad_type(self):
++    @pytest.mark.skipif(ctypes.sizeof(ctypes.c_voidp) == 4,
++                        reason="We don't have flaky python package in Solaris")
+     def test_verify_with_time(self):
          """
-@@ -3205,9 +3226,7 @@ class TestCRL(object):
-             x509.NameAttribute(x509.NameOID.COMMON_NAME, u"Testing Root CA"),
-         ])
+         `verify_certificate` raises error when the verification time is
+--- pyOpenSSL-20.0.1/tests/test_ssl.py
++++ pyOpenSSL-20.0.1/tests/test_ssl.py
+@@ -26,12 +26,8 @@ from os.path import join
+ from weakref import ref
+ from warnings import simplefilter
  
--    # Flaky because we compare the output of running commands which sometimes
--    # varies by 1 second
--    @flaky.flaky
-+    @pytest.mark.skip(reason="We don't have flaky python package in Solaris")
-     def test_export_text(self):
-         """
-         If passed ``FILETYPE_TEXT`` for the format, ``CRL.export`` returns a
---- pyOpenSSL-19.0.0/tests/test_ssl.py
-+++ pyOpenSSL-19.0.0/tests/test_ssl.py
-@@ -20,8 +20,6 @@ from warnings import simplefilter
- 
+-import flaky
+-
  import pytest
  
 -from pretend import raiser
 -
- from six import PY3, text_type
+ from six import PY2, text_type
  
  from cryptography import x509
-@@ -1150,6 +1148,7 @@ class TestContext(object):
+@@ -503,7 +499,7 @@ class TestContext(object):
+         with pytest.raises(TypeError):
+             context.set_cipher_list(object())
+ 
+-    @flaky.flaky
++    @pytest.mark.skip(reason="We don't have flaky python package in Solaris")
+     def test_set_cipher_list_no_cipher_match(self, context):
+         """
+         `Context.set_cipher_list` raises `OpenSSL.SSL.Error` with a
+@@ -1212,6 +1208,7 @@ class TestContext(object):
          assert context._check_env_vars_set(dir_var, file_var) is True
          assert context._check_env_vars_set(dir_var, file_var) is True
  
@@ -106,9 +88,9 @@ test_set_default_verify_paths:
      def test_verify_no_fallback_if_env_vars_set(self, monkeypatch):
          """
          Test that we don't use the fallback path if env vars are set.
-@@ -1180,6 +1179,9 @@ class TestContext(object):
+@@ -1240,6 +1237,9 @@ class TestContext(object):
          reason="set_default_verify_paths appears not to work on Windows.  "
-         "See LP#404343 and LP#404344."
+         "See LP#404343 and LP#404344.",
      )
 +    @pytest.mark.skip(
 +        reason="This test doesn't work within OWAN, even with proxy set"

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -31,17 +31,17 @@ PYTHON3_SOABI=abi3
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cryptography
-COMPONENT_VERSION=	2.5
+COMPONENT_VERSION=	3.3.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:4946b67235b9d2ea7d31307be9d5ad5959d6c4a8f98f900157b47abddf698401
+    sha256:c509e2d4f95a7867878d90e1f53e928f6a948cd100708323ea97b4910bae8aab
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://cryptography.io/
 COMPONENT_BUGDB=	python-mod/cryptography
 COMPONENT_ANITYA_ID=	5532
 
-TPNO=			49366
+TPNO=			64242
 
 
 include $(WS_MAKE_RULES)/prep.mk
@@ -57,22 +57,34 @@ CFFI = $(WS_COMPONENTS)/python/cffi/build/prototype/$(MACH)/$(PYTHON_LIB)
 COMPONENT_BUILD_ENV +=		PYTHONPATH=$(CFFI)
 COMPONENT_INSTALL_ENV +=	PYTHONPATH=$(CFFI)
 
+# OpenSSL 1.1 temporarily lives in non-standard directory.
+CFLAGS += -I/usr/openssl/1.1/include
+LDFLAGS += -L/usr/openssl/1.1/lib/$(BITS)
+
+COMPONENT_BUILD_ENV += LDFLAGS="$(LDFLAGS)"
+
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
+
 # common targets
 build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)
 
 #
-# tests require cryptography_vectors, iso8601, pretend, pytest>= 2.8.7,
-# hypothesis>=1.11.4 and pyasn1_modules, some of which have not yet integrated.
+# tests require cryptography_vectors, iso8601, pretend, pytest>= 2.8.7 and
+# hypothesis>=1.11.4, some of which have not yet integrated.
 # On a i386 kernel zone with the test dependencies installed, test results are:
-# Python2.7: 96918 passed, 8972 skipped
-# Python3.7: 96914 passed, 8976 skipped
+# Python2.7: 84675 passed, 22541 skipped
+#            84677 passed, 22539 skipped
+# Python3.7: 84677 passed, 22539 skipped
+# Python3.9: 84677 passed, 22539 skipped
 #
 test:		$(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += library/python/cffi
-REQUIRED_PACKAGES += library/security/openssl
+REQUIRED_PACKAGES += library/security/openssl-11
 REQUIRED_PACKAGES += system/library

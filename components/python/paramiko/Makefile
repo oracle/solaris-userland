@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2012, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		paramiko
-COMPONENT_VERSION=	2.7.1
+COMPONENT_VERSION=	2.7.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:81d265e2c0da5305040e699474d5da7d03c1487f80e630bfae4951a83bb6cd75
+	sha256:a87d4a1365c9cdf7f737f13c243b2b1f4ea451697f468c67d8e680137e0ac2c7
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/paramiko/paramiko/
 COMPONENT_BUGDB=	python-mod/paramiko
 COMPONENT_ANITYA_ID=	3954
 
-TPNO=			55900
+TPNO=			62562
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

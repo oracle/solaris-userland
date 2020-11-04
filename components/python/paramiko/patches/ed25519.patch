@@ -4,8 +4,8 @@ that, we have to disable Ed25519 for now.
 Original introduction pull request:
 https://github.com/paramiko/paramiko/pull/972/files
 
---- paramiko-2.7.1/paramiko/__init__.py
-+++ paramiko-2.7.1/paramiko/__init__.py
+--- paramiko-2.7.2/paramiko/__init__.py
++++ paramiko-2.7.2/paramiko/__init__.py
 @@ -50,7 +50,6 @@ from paramiko.server import ServerInterf
  from paramiko.rsakey import RSAKey
  from paramiko.dsskey import DSSKey
@@ -22,8 +22,8 @@ https://github.com/paramiko/paramiko/pull/972/files
      "HostKeys",
      "Message",
      "MissingHostKeyPolicy",
---- paramiko-2.7.1/paramiko/client.py
-+++ paramiko-2.7.1/paramiko/client.py
+--- paramiko-2.7.2/paramiko/client.py
++++ paramiko-2.7.2/paramiko/client.py
 @@ -33,7 +33,6 @@ from paramiko.common import DEBUG
  from paramiko.config import SSH_PORT
  from paramiko.dsskey import DSSKey
@@ -49,8 +49,8 @@ https://github.com/paramiko/paramiko/pull/972/files
              ]:
                  # ~/ssh/ is for windows
                  for directory in [".ssh", "ssh"]:
---- paramiko-2.7.1/paramiko/hostkeys.py
-+++ paramiko-2.7.1/paramiko/hostkeys.py
+--- paramiko-2.7.2/paramiko/hostkeys.py
++++ paramiko-2.7.2/paramiko/hostkeys.py
 @@ -34,7 +34,6 @@ from paramiko.dsskey import DSSKey
  from paramiko.rsakey import RSAKey
  from paramiko.util import get_logger, constant_time_bytes_eq
@@ -68,8 +68,8 @@ https://github.com/paramiko/paramiko/pull/972/files
              else:
                  log.info("Unable to handle key of type {}".format(keytype))
                  return None
---- paramiko-2.7.1/paramiko/transport.py
-+++ paramiko-2.7.1/paramiko/transport.py
+--- paramiko-2.7.2/paramiko/transport.py
++++ paramiko-2.7.2/paramiko/transport.py
 @@ -87,7 +87,6 @@ from paramiko.common import (
  )
  from paramiko.compress import ZlibCompressor, ZlibDecompressor
@@ -95,8 +95,8 @@ https://github.com/paramiko/paramiko/pull/972/files
      }
  
      _kex_info = {
---- paramiko-2.7.1/tests/test_client.py
-+++ paramiko-2.7.1/tests/test_client.py
+--- paramiko-2.7.2/tests/test_client.py
++++ paramiko-2.7.2/tests/test_client.py
 @@ -52,7 +52,6 @@ FINGERPRINTS = {
      "ssh-dss": b"\x44\x78\xf0\xb9\xa2\x3c\xc5\x18\x20\x09\xff\x75\x5b\xc1\xd2\x6c",  # noqa
      "ssh-rsa": b"\x60\x73\x38\x44\xcb\x51\x86\x65\x7f\xde\xda\xa2\x2b\x5a\x57\xd5",  # noqa
@@ -115,7 +115,7 @@ https://github.com/paramiko/paramiko/pull/972/files
      def test_multiple_key_files(self):
          """
          verify that SSHClient accepts and tries multiple key files.
-@@ -311,7 +315,7 @@ class SSHClientTest(ClientTest):
+@@ -311,7 +307,7 @@ class SSHClientTest(ClientTest):
          # They're similar except for which path is given; the expected auth and
          # server-side behavior is 100% identical.)
          # NOTE: only bothered whipping up one cert per overall class/family.
@@ -124,7 +124,7 @@ https://github.com/paramiko/paramiko/pull/972/files
              cert_name = "test_{}.key-cert.pub".format(type_)
              cert_path = _support(os.path.join("cert_support", cert_name))
              self._test_connection(
-@@ -326,7 +330,7 @@ class SSHClientTest(ClientTest):
+@@ -326,7 +322,7 @@ class SSHClientTest(ClientTest):
          # about the server-side key object's public blob. Thus, we can prove
          # that a specific cert was found, along with regular authorization
          # succeeding proving that the overall flow works.
@@ -133,8 +133,8 @@ https://github.com/paramiko/paramiko/pull/972/files
              key_name = "test_{}.key".format(type_)
              key_path = _support(os.path.join("cert_support", key_name))
              self._test_connection(
---- paramiko-2.7.1/tests/test_pkey.py
-+++ paramiko-2.7.1/tests/test_pkey.py
+--- paramiko-2.7.2/tests/test_pkey.py
++++ paramiko-2.7.2/tests/test_pkey.py
 @@ -26,7 +26,7 @@ import os
  from binascii import hexlify
  from hashlib import md5
@@ -143,8 +143,8 @@ https://github.com/paramiko/paramiko/pull/972/files
 +from paramiko import RSAKey, DSSKey, ECDSAKey, Message, util
  from paramiko.py3compat import StringIO, byte_chr, b, bytes, PY2
  
- from .util import _support
-@@ -503,50 +503,6 @@ class KeyTest(unittest.TestCase):
+ from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateNumbers
+@@ -523,50 +523,6 @@ class KeyTest(unittest.TestCase):
          comparable = TEST_KEY_BYTESTR_2 if PY2 else TEST_KEY_BYTESTR_3
          self.assertEqual(str(key), comparable)
  
@@ -195,7 +195,7 @@ https://github.com/paramiko/paramiko/pull/972/files
      def test_keyfile_is_actually_encrypted(self):
          # Read an existing encrypted private key
          file_ = _support("test_rsa_password.key")
-@@ -589,12 +545,3 @@ class KeyTest(unittest.TestCase):
+@@ -609,12 +565,3 @@ class KeyTest(unittest.TestCase):
          self.assertEqual(n, key.public_numbers.n)
          # Serial number
          self.assertEqual(msg.get_int64(), 1234)
@@ -208,8 +208,8 @@ https://github.com/paramiko/paramiko/pull/972/files
 -            key1.load_certificate,
 -            _support("test_rsa.key-cert.pub"),
 -        )
---- paramiko-2.7.1/setup.py
-+++ paramiko-2.7.1/setup.py
+--- paramiko-2.7.2/setup.py
++++ paramiko-2.7.2/setup.py
 @@ -88,6 +88,6 @@ setup(
      ],
      # TODO 3.0: remove bcrypt, pynacl and update installation docs noting that
@@ -218,8 +218,8 @@ https://github.com/paramiko/paramiko/pull/972/files
 +    install_requires=["bcrypt>=3.1.3", "cryptography>=2.5"],
      extras_require=extras_require,
  )
---- paramiko-2.7.1/paramiko.egg-info/requires.txt
-+++ paramiko-2.7.1/paramiko.egg-info/requires.txt
+--- paramiko-2.7.2/paramiko.egg-info/requires.txt
++++ paramiko-2.7.2/paramiko.egg-info/requires.txt
 @@ -1,6 +1,5 @@
  bcrypt>=3.1.3
  cryptography>=2.5
