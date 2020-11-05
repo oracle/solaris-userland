@@ -2,10 +2,10 @@
 # Will contribute upstream if possible.
 
 diff --git a/bfd/elf-bfd.h b/bfd/elf-bfd.h
-index 6cfd1ac..00c1c05 100644
+index eebdf9a..876bbb6 100644
 --- a/bfd/elf-bfd.h
 +++ b/bfd/elf-bfd.h
-@@ -1300,6 +1300,11 @@ struct elf_backend_data
+@@ -1348,6 +1348,11 @@ struct elf_backend_data
    bfd_boolean (*elf_backend_grok_freebsd_prstatus)
      (bfd *, Elf_Internal_Note *);
  
@@ -18,10 +18,10 @@ index 6cfd1ac..00c1c05 100644
    char *(*elf_backend_write_core_note)
      (bfd *abfd, char *buf, int *bufsiz, int note_type, ...);
 diff --git a/bfd/elf.c b/bfd/elf.c
-index 1aa2603..5d19de7 100644
+index 5a02f8d..4997699 100644
 --- a/bfd/elf.c
 +++ b/bfd/elf.c
-@@ -9503,7 +9503,10 @@ elfcore_make_note_pseudosection (bfd *abfd,
+@@ -9670,7 +9670,10 @@ elfcore_make_note_pseudosection (bfd *abfd,
  static bfd_boolean
  elfcore_grok_prfpreg (bfd *abfd, Elf_Internal_Note *note)
  {
@@ -33,7 +33,7 @@ index 1aa2603..5d19de7 100644
  }
  
  /* Linux dumps the Intel SSE regs in a note named "LINUX" with a note
-@@ -10070,6 +10073,9 @@ elfcore_grok_note (bfd *abfd, Elf_Internal_Note *note)
+@@ -10292,6 +10295,9 @@ elfcore_grok_note (bfd *abfd, Elf_Internal_Note *note)
  
  #if defined (HAVE_LWPSTATUS_T)
      case NT_LWPSTATUS:
@@ -43,7 +43,7 @@ index 1aa2603..5d19de7 100644
        return elfcore_grok_lwpstatus (abfd, note);
  #endif
  
-@@ -10755,6 +10761,318 @@ elfcore_grok_openbsd_procinfo (bfd *abfd, Elf_Internal_Note *note)
+@@ -10991,6 +10997,285 @@ elfcore_grok_openbsd_procinfo (bfd *abfd, Elf_Internal_Note *note)
    return TRUE;
  }
  
@@ -56,11 +56,11 @@ index 1aa2603..5d19de7 100644
 +static bfd_boolean
 +elfcore_grok_solaris_note (bfd *abfd, Elf_Internal_Note *note)
 +{
-+  asection *sect;
++  asection *sect = NULL;
 +  size_t fpregset_size;
 +  size_t prgregset_size;
 +  size_t prgregset_offset;
-+  char reg2_section_name[16];
++  char reg2_section_name[16] = { 0 };
 +
 +#ifdef DEBUG
 +  static const char* note_type[] = { "NONE (0)", "NT_PRSTATUS", "NT_PRFPREG",
@@ -73,8 +73,6 @@ index 1aa2603..5d19de7 100644
 +
 +  if (note == NULL)
 +    return TRUE;
-+
-+  sect = bfd_get_section_by_name (abfd, reg2_section_name);
 +
 +  /* core files are identified as 32- or 64-bit, SPARC or x86,
 +     by the size of the descsz which matches the sizeof()
@@ -99,8 +97,6 @@ index 1aa2603..5d19de7 100644
 +          bfd_get_32 (abfd, note->descdata + 216);
 +        elf_tdata (abfd)->core->lwpid =
 +          bfd_get_32 (abfd, note->descdata + 308);
-+        (void) snprintf (reg2_section_name, 16, "%s/%i", ".reg2",
-+            *(int*)(note->descdata + 308));
 +      }
 +      else if (note->descsz == 904) /* sizeof(prstatus_t) SPARC 64-bit */
 +      {
@@ -113,8 +109,6 @@ index 1aa2603..5d19de7 100644
 +          bfd_get_32 (abfd, note->descdata + 360);
 +        elf_tdata (abfd)->core->lwpid =
 +          bfd_get_32 (abfd, note->descdata + 520);
-+        (void) snprintf (reg2_section_name, 16, "%s/%i", ".reg2",
-+            *(int*)(note->descdata + 520));
 +      }
 +      else if (note->descsz == 432) /* sizeof(prstatus_t) Intel 32-bit */
 +      {
@@ -127,8 +121,6 @@ index 1aa2603..5d19de7 100644
 +          bfd_get_32 (abfd, note->descdata + 216);
 +        elf_tdata (abfd)->core->lwpid =
 +          bfd_get_32 (abfd, note->descdata + 308);
-+        (void) snprintf (reg2_section_name, 16, "%s/%i", ".reg2",
-+            *(int*)(note->descdata + 308));
 +      }
 +      else if (note->descsz == 824) /* sizeof(prstatus_t) Intel 64-bit */
 +      {
@@ -141,20 +133,14 @@ index 1aa2603..5d19de7 100644
 +          bfd_get_32 (abfd, note->descdata + 360);
 +        elf_tdata (abfd)->core->lwpid =
 +          bfd_get_32 (abfd, note->descdata + 520);
-+        (void) snprintf (reg2_section_name, 16, "%s/%i", ".reg2",
-+            *(int*)(note->descdata + 520));
 +      }
 +
 +      sect = bfd_get_section_by_name (abfd, ".reg");
-+
 +      if (sect != NULL)
 +        sect->size = prgregset_size;
 +
 +      return _bfd_elfcore_make_pseudosection (abfd, ".reg",
 +          prgregset_size, note->descpos + prgregset_offset);
-+      break;
-+    case SOLARIS_NT_PRFPREG:
-+      break;
 +    case SOLARIS_NT_PRPSINFO:
 +      if (note->descsz == 260) /* sizeof(prpsinfo_t) */
 +      {
@@ -165,13 +151,6 @@ index 1aa2603..5d19de7 100644
 +        elf_tdata (abfd)->core->command
 +          = _bfd_elfcore_strndup (abfd, note->descdata + 100, 80);
 +      }
-+      break;
-+    case SOLARIS_NT_PRXREG:
-+    case SOLARIS_NT_PLATFORM:
-+    case SOLARIS_NT_GWINDOWS:
-+    case SOLARIS_NT_ASRS:
-+    case SOLARIS_NT_LDT:
-+    case SOLARIS_NT_PSTATUS:
 +      break;
 +    case SOLARIS_NT_PSINFO:
 +      if (note->descsz == 336) /* sizeof(psinfo_t) SPARC */
@@ -192,9 +171,6 @@ index 1aa2603..5d19de7 100644
 +        elf_tdata (abfd)->core->command
 +          = _bfd_elfcore_strndup (abfd, note->descdata + 104, 80);
 +      }
-+      break;
-+    case SOLARIS_NT_PRCRED:
-+    case SOLARIS_NT_UTSNAME:
 +      break;
 +    case SOLARIS_NT_LWPSTATUS:
 +          /* offsetof(lwpstatus_t, pr_lwpid */
@@ -231,7 +207,7 @@ index 1aa2603..5d19de7 100644
 +            return TRUE;
 +          }
 +          else
-+            return _bfd_elfcore_make_pseudosection (abfd, reg2_section_name,
++            return _bfd_elfcore_make_pseudosection (abfd, ".reg2",
 +                fpregset_size, note->descpos + 496);
 +        }
 +        else if (note->descsz == 1392) /* sizeof(lwpstatus_t) SPARC 64-bit */
@@ -259,7 +235,7 @@ index 1aa2603..5d19de7 100644
 +            return TRUE;
 +          }
 +          else
-+            return _bfd_elfcore_make_pseudosection (abfd, reg2_section_name,
++            return _bfd_elfcore_make_pseudosection (abfd, ".reg2",
 +                fpregset_size, note->descpos + 848);
 +        }
 +        else if (note->descsz == 800) /* sizeof(lwpstatus_t) Intel 32-bit */
@@ -287,7 +263,7 @@ index 1aa2603..5d19de7 100644
 +            return TRUE;
 +          }
 +          else
-+            return _bfd_elfcore_make_pseudosection (abfd, reg2_section_name,
++            return _bfd_elfcore_make_pseudosection (abfd, ".reg2",
 +                fpregset_size, note->descpos + 420);
 +        }
 +        else if (note->descsz == 1296) /* sizeof(lwpstatus_t) Intel 64-bit */
@@ -315,7 +291,7 @@ index 1aa2603..5d19de7 100644
 +            return TRUE;
 +          }
 +          else
-+            return _bfd_elfcore_make_pseudosection (abfd, reg2_section_name,
++            return _bfd_elfcore_make_pseudosection (abfd, ".reg2",
 +                fpregset_size, note->descpos + 768);
 +        }
 +      break;
@@ -326,19 +302,10 @@ index 1aa2603..5d19de7 100644
 +            bfd_get_32 (abfd, note->descdata + 4);
 +        }
 +        break;
-+    case SOLARIS_NT_PRPRIV:
-+    case SOLARIS_NT_PRPRIVINFO:
-+    case SOLARIS_NT_CONTENT:
-+    case SOLARIS_NT_ZONENAME:
-+    case SOLARIS_NT_PRCPUXREG:
-+    case SOLARIS_NT_AUXV:
-+      break;
 +    default:
 +      break;
 +  }
 +
-+  /* add support for .auxv sections */
-+  sect = bfd_get_section_by_name (abfd, ".auxv");
 +  return TRUE;
 +}
 +
@@ -362,7 +329,7 @@ index 1aa2603..5d19de7 100644
  static bfd_boolean
  elfcore_grok_openbsd_note (bfd *abfd, Elf_Internal_Note *note)
  {
-@@ -11839,7 +12157,10 @@ elf_parse_notes (bfd *abfd, char *buf, size_t size, file_ptr offset,
+@@ -12089,7 +12374,10 @@ elf_parse_notes (bfd *abfd, char *buf, size_t size, file_ptr offset,
  	      GROKER_ELEMENT ( "OpenBSD", elfcore_grok_openbsd_note),
  	      GROKER_ELEMENT ("QNX", elfcore_grok_nto_note),
  	      GROKER_ELEMENT ("SPU/", elfcore_grok_spu_note),
@@ -375,10 +342,10 @@ index 1aa2603..5d19de7 100644
  #undef GROKER_ELEMENT
  	    int i;
 diff --git a/bfd/elfxx-target.h b/bfd/elfxx-target.h
-index 80c4776..b1f1f1d 100644
+index a137c46..3c9dc0d 100644
 --- a/bfd/elfxx-target.h
 +++ b/bfd/elfxx-target.h
-@@ -617,6 +617,9 @@
+@@ -624,6 +624,9 @@
  #ifndef elf_backend_grok_psinfo
  #define elf_backend_grok_psinfo			NULL
  #endif
@@ -388,7 +355,7 @@ index 80c4776..b1f1f1d 100644
  #ifndef elf_backend_grok_freebsd_prstatus
  #define elf_backend_grok_freebsd_prstatus	NULL
  #endif
-@@ -847,6 +850,7 @@ static struct elf_backend_data elfNN_bed =
+@@ -875,6 +878,7 @@ static struct elf_backend_data elfNN_bed =
    elf_backend_sort_relocs_p,
    elf_backend_grok_prstatus,
    elf_backend_grok_psinfo,
@@ -397,10 +364,10 @@ index 80c4776..b1f1f1d 100644
    elf_backend_write_core_note,
    elf_backend_lookup_section_flags_hook,
 diff --git a/include/elf/common.h b/include/elf/common.h
-index 75c4fb7..c2dd808 100644
+index 571e21a..f9c4baa 100644
 --- a/include/elf/common.h
 +++ b/include/elf/common.h
-@@ -700,6 +700,29 @@
+@@ -712,6 +712,29 @@
  #define NT_OPENBSD_WCOOKIE	23
  
  

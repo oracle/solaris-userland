@@ -5,10 +5,10 @@
 # it may eventually be removed.
 
 diff --git a/gdb/corelow.c b/gdb/corelow.c
-index b576060..7d2eabb 100644
+index 96ec739..7f63b5e 100644
 --- a/gdb/corelow.c
 +++ b/gdb/corelow.c
-@@ -616,11 +616,14 @@ core_target::get_core_register_section (struct regcache *regcache,
+@@ -654,11 +654,14 @@ core_target::get_core_register_section (struct regcache *regcache,
  	       section_name.c_str ());
        return;
      }
@@ -21,5 +21,5 @@ index b576060..7d2eabb 100644
      }
 +#endif
  
-   contents = (char *) alloca (size);
-   if (! bfd_get_section_contents (core_bfd, section, contents,
+   gdb::byte_vector contents (size);
+   if (!bfd_get_section_contents (core_bfd, section, contents.data (),

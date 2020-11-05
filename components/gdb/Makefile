@@ -32,12 +32,12 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gdb
-COMPONENT_VERSION=	9.2
+COMPONENT_VERSION=	10.1
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:38ef247d41ba7cc3f6f93a612a78bab9484de9accecbe3b0150a3c0391a3faf0
+    sha256:f12f388b99e1408c01308c3f753313fafa45517740c81ab7ed0d511b13e2cf55
 COMPONENT_ANITYA_ID=	11798
 
-TPNO=			59276
+TPNO=			62915
 
 # The traditional output from gmake test omits some
 # test results information that is contained in the 
@@ -211,7 +211,7 @@ REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/readline
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math

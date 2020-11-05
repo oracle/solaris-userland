@@ -1,0 +1,37 @@
+GNU debugger does not work well with Korn shell, it
+either fails with the fatal assertion or breakpoints
+are completely ignored. To workaround Korn shell issues,
+we force GDB to internally use well-tested bash shell.
+
+Not suitable for upstream.
+
+diff --git a/gdbsupport/pathstuff.cc b/gdbsupport/pathstuff.cc
+index 1f60fd0..50b3a1c 100644
+--- a/gdbsupport/pathstuff.cc
++++ b/gdbsupport/pathstuff.cc
+@@ -271,11 +271,7 @@ get_standard_temp_dir ()
+ const char *
+ get_shell ()
+ {
+-  const char *ret = getenv ("SHELL");
+-  if (ret == NULL)
+-    ret = "/bin/sh";
+-
+-  return ret;
++  return "/bin/bash";
+ }
+ 
+ /* See gdbsupport/pathstuff.h.  */
+diff --git a/sim/cris/sim-if.c b/sim/cris/sim-if.c
+index 67e8d69..4a4ff5d 100644
+--- a/sim/cris/sim-if.c
++++ b/sim/cris/sim-if.c
+@@ -39,7 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+ extern char **environ;
+ #define GET_ENVIRON() environ
+ #else
+-char *missing_environ[] = { "SHELL=/bin/sh", "PATH=/bin:/usr/bin", NULL };
++char *missing_environ[] = { "SHELL=/bin/bash", "PATH=/bin:/usr/bin", NULL };
+ #define GET_ENVIRON() missing_environ
+ #endif
+ 

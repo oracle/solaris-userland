@@ -1,0 +1,20 @@
+https://sourceware.org/pipermail/gdb/2020-June/048660.html
+
+Should be contributed to upstream (once upstream sources are build-
+able).
+
+diff --git a/gdb/procfs.c b/gdb/procfs.c
+index b628c2d..01c9543 100644
+--- a/gdb/procfs.c
++++ b/gdb/procfs.c
+@@ -2246,8 +2246,8 @@ wait_again:
+ 		      printf_unfiltered (_("[%s exited]\n"),
+ 					 target_pid_to_str (retval).c_str ());
+ 		    delete_thread (find_thread_ptid (this, retval));
+-		    status->kind = TARGET_WAITKIND_SPURIOUS;
+-		    return retval;
++		    target_continue_no_signal (ptid);
++		    goto wait_again;
+ 		  }
+ 		else
+ 		  {
