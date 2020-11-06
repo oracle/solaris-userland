@@ -9,9 +9,9 @@
 # Patch offered upstream:
 #     https://bugzilla.mindrot.org/show_bug.cgi?id=2378
 #
---- old/auth-pam.c	2019-11-02 12:07:11.342651264 +0000
-+++ new/auth-pam.c	2019-11-02 12:07:11.442475713 +0000
-@@ -1156,6 +1156,20 @@ start_pam(struct ssh *ssh)
+--- old/auth-pam.c	2020-03-31 12:54:57.912890602 +0000
++++ new/auth-pam.c	2020-03-31 12:57:32.771710393 +0000
+@@ -1158,6 +1158,20 @@ start_pam(struct ssh *ssh)
  		fatal("PAM: initialisation failed");
  }
  
@@ -32,8 +32,8 @@
  void
  finish_pam(void)
  {
---- old/auth-pam.h	2019-11-02 12:07:11.352668757 +0000
-+++ new/auth-pam.h	2019-11-02 12:07:11.452400687 +0000
+--- old/auth-pam.h	2020-03-31 12:54:57.920485368 +0000
++++ new/auth-pam.h	2020-03-31 12:57:32.779165150 +0000
 @@ -31,6 +31,9 @@ void start_pam(struct ssh *);
  void finish_pam(void);
  u_int do_pam_account(void);
@@ -44,8 +44,8 @@
  void do_pam_setcred(int );
  void do_pam_chauthtok(void);
  int do_pam_putenv(char *, char *);
---- old/auth.h	2019-11-02 12:07:11.362691647 +0000
-+++ new/auth.h	2019-11-02 12:07:11.462333823 +0000
+--- old/auth.h	2020-03-31 12:54:57.927641960 +0000
++++ new/auth.h	2020-03-31 12:57:32.786451830 +0000
 @@ -96,6 +96,9 @@ struct Authctxt {
  #ifdef PAM_ENHANCEMENT
  	char		*authmethod_name;
@@ -56,8 +56,8 @@
  };
  
  /*
---- old/auth2-hostbased.c	2019-11-02 12:07:11.372660394 +0000
-+++ new/auth2-hostbased.c	2019-11-02 12:07:11.472294029 +0000
+--- old/auth2-hostbased.c	2020-03-31 12:54:57.934843300 +0000
++++ new/auth2-hostbased.c	2020-03-31 12:57:32.793601608 +0000
 @@ -82,6 +82,9 @@ userauth_hostbased(struct ssh *ssh)
  	debug("signature:");
  	sshbuf_dump_data(sig, slen, stderr);
@@ -69,7 +69,7 @@
  	if (pktype == KEY_UNSPEC) {
  		/* this is perfectly legal */
 @@ -154,6 +157,13 @@ userauth_hostbased(struct ssh *ssh)
- 	    sshbuf_ptr(b), sshbuf_len(b), pkalg, ssh->compat)) == 0)
+ 	    sshbuf_ptr(b), sshbuf_len(b), pkalg, ssh->compat, NULL)) == 0)
  		authenticated = 1;
  
 +#ifdef HAVE_PAM_AUSER
@@ -82,8 +82,8 @@
  	auth2_record_key(authctxt, authenticated, key);
  	sshbuf_free(b);
  done:
---- old/auth2.c	2019-11-02 12:07:11.382609009 +0000
-+++ new/auth2.c	2019-11-02 12:07:11.482264244 +0000
+--- old/auth2.c	2020-03-31 12:54:57.941942612 +0000
++++ new/auth2.c	2020-03-31 12:57:32.800716478 +0000
 @@ -396,6 +396,14 @@ userauth_finish(struct ssh *ssh, int aut
  #endif
  	}
@@ -99,9 +99,9 @@
  	if (authenticated && options.num_auth_methods != 0) {
  
  #if defined(USE_PAM) && defined(PAM_ENHANCEMENT)
---- old/config.h.in	2019-11-02 12:07:11.392797821 +0000
-+++ new/config.h.in	2019-11-02 12:07:11.492386545 +0000
-@@ -971,6 +971,9 @@
+--- old/config.h.in	2020-03-31 12:54:57.949358274 +0000
++++ new/config.h.in	2020-03-31 12:57:32.808154975 +0000
+@@ -994,6 +994,9 @@
  /* Define if you have Digital Unix Security Integration Architecture */
  #undef HAVE_OSF_SIA
  
@@ -111,9 +111,9 @@
  /* Define to 1 if you have the `pam_getenvlist' function. */
  #undef HAVE_PAM_GETENVLIST
  
---- old/configure.ac	2019-11-02 12:07:11.403419602 +0000
-+++ new/configure.ac	2019-11-02 12:07:11.503140934 +0000
-@@ -1063,6 +1063,7 @@ mips-sony-bsd|mips-sony-newsos4)
+--- old/configure.ac	2020-03-31 12:54:57.957319244 +0000
++++ new/configure.ac	2020-03-31 12:57:32.816054447 +0000
+@@ -1073,6 +1073,7 @@ mips-sony-bsd|mips-sony-newsos4)
  		],
  	)
  	TEST_SHELL=$SHELL	# let configure find us a capable shell
@@ -121,9 +121,9 @@
  	;;
  *-*-sunos4*)
  	CPPFLAGS="$CPPFLAGS -DSUNOS4"
---- old/monitor.c	2019-11-02 12:07:11.413700052 +0000
-+++ new/monitor.c	2019-11-02 12:07:11.513508491 +0000
-@@ -405,6 +405,12 @@ monitor_child_preauth(struct ssh *ssh, s
+--- old/monitor.c	2020-03-31 12:54:57.965564275 +0000
++++ new/monitor.c	2020-03-31 12:57:32.823590878 +0000
+@@ -406,6 +406,12 @@ monitor_child_preauth(struct ssh *ssh, s
  		}
  	}
  
@@ -136,7 +136,7 @@
  	if (!authctxt->valid)
  		fatal("%s: authenticated invalid user", __func__);
  	if (strcmp(auth_method, "unknown") == 0)
-@@ -615,14 +621,16 @@ monitor_reset_key_state(void)
+@@ -616,14 +622,16 @@ monitor_reset_key_state(void)
  {
  	/* reset state */
  	free(key_blob);
@@ -154,7 +154,7 @@
  	hostbased_chost = NULL;
  }
  
-@@ -1093,6 +1101,11 @@ mm_answer_pam_account(struct ssh *ssh, i
+@@ -1094,6 +1102,11 @@ mm_answer_pam_account(struct ssh *ssh, i
  	if (!options.use_pam)
  		fatal("%s: PAM not enabled", __func__);
  

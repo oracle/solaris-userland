@@ -1,6 +1,6 @@
---- old/openbsd-compat/port-solaris.c	2019-11-02 12:07:13.377784622 +0000
-+++ new/openbsd-compat/port-solaris.c	2019-11-02 12:07:13.411907075 +0000
-@@ -300,6 +300,15 @@ solaris_drop_privs_pinfo_net_fork_exec(v
+--- old/openbsd-compat/port-solaris.c	2020-05-15 10:08:58.632249190 +0000
++++ new/openbsd-compat/port-solaris.c	2020-05-15 10:09:33.838632221 +0000
+@@ -301,6 +301,15 @@ solaris_drop_privs_pinfo_net_fork_exec(v
  #ifdef PRIV_NET_ACCESS
  	    priv_delset(npset, PRIV_NET_ACCESS) != 0 ||
  #endif
@@ -16,8 +16,8 @@
  	    priv_delset(npset, PRIV_PROC_FORK) != 0 ||
  	    priv_delset(npset, PRIV_PROC_INFO) != 0 ||
  	    priv_delset(npset, PRIV_PROC_SESSION) != 0)
---- old/sandbox-solaris.c	2019-11-02 12:07:13.388244573 +0000
-+++ new/sandbox-solaris.c	2019-11-02 12:07:13.422464567 +0000
+--- old/sandbox-solaris.c	2020-05-15 10:08:58.640177882 +0000
++++ new/sandbox-solaris.c	2020-05-15 10:09:33.846584962 +0000
 @@ -68,6 +68,9 @@ ssh_sandbox_init(struct monitor *monitor
  #ifdef PRIV_SYS_IB_INFO
  	    priv_delset(box->pset, PRIV_SYS_IB_INFO) != 0 ||

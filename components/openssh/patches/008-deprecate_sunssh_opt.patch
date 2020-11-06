@@ -6,9 +6,9 @@
 # changed from deprecated to supported. Since this is for Solaris only, we will
 # not contribute back this change to the upstream community.
 #
---- old/readconf.c	2019-11-02 12:07:09.580191989 +0000
-+++ new/readconf.c	2019-11-02 12:07:09.605139220 +0000
-@@ -202,10 +202,14 @@ static struct {
+--- old/readconf.c	2020-03-26 09:37:03.109751146 +0000
++++ new/readconf.c	2020-03-26 09:40:39.336388294 +0000
+@@ -204,10 +204,14 @@ static struct {
  	/* Sometimes-unsupported options */
  #if defined(GSSAPI)
  	{ "gssapiauthentication", oGssAuthentication },
@@ -24,8 +24,8 @@
  #ifdef ENABLE_PKCS11
  	{ "pkcs11provider", oPKCS11Provider },
 @@ -311,6 +315,23 @@ static struct {
- 	{ "ignoreunknown", oIgnoreUnknown },
  	{ "proxyjump", oProxyJump },
+ 	{ "securitykeyprovider", oSecurityKeyProvider },
  
 +#ifdef DEPRECATE_SUNSSH_OPT
 +        /*

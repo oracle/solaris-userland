@@ -4,9 +4,9 @@
 # The patch was rejected by OpenSSH upstream community. For more information,
 # see https://bugzilla.mindrot.org/show_bug.cgi?id=2242.
 #
---- old/readconf.c	2019-11-02 12:07:09.698955939 +0000
-+++ new/readconf.c	2019-11-02 12:07:09.758948986 +0000
-@@ -165,6 +165,9 @@ typedef enum {
+--- old/readconf.c	2020-03-26 11:50:08.955600608 +0000
++++ new/readconf.c	2020-03-26 11:55:18.086426923 +0000
+@@ -163,6 +163,9 @@ typedef enum {
  	oServerAliveInterval, oServerAliveCountMax, oIdentitiesOnly,
  	oSendEnv, oSetEnv, oControlPath, oControlMaster, oControlPersist,
  	oHashKnownHosts,
@@ -16,7 +16,7 @@
  	oTunnel, oTunnelDevice,
  	oLocalCommand, oPermitLocalCommand, oRemoteCommand,
  	oVisualHostKey,
-@@ -289,6 +292,9 @@ static struct {
+@@ -288,6 +291,9 @@ static struct {
  	{ "controlmaster", oControlMaster },
  	{ "controlpersist", oControlPersist },
  	{ "hashknownhosts", oHashKnownHosts },
@@ -26,7 +26,7 @@
  	{ "include", oInclude },
  	{ "tunnel", oTunnel },
  	{ "tunneldevice", oTunnelDevice },
-@@ -849,6 +855,17 @@ static const struct multistate multistat
+@@ -866,6 +872,17 @@ static const struct multistate multistat
  	{ NULL, -1 }
  };
  
@@ -44,7 +44,7 @@
  /*
   * Processes a single option line as used in the configuration files. This
   * only sets those values that have not already been set.
-@@ -1762,6 +1779,13 @@ parse_keytypes:
+@@ -1809,6 +1826,13 @@ parse_keytypes:
  			*charptr = xstrdup(arg);
  		break;
  
@@ -58,7 +58,7 @@
  	case oDeprecated:
  		debug("%s line %d: Deprecated option \"%s\"",
  		    filename, linenum, keyword);
-@@ -1957,6 +1981,9 @@ initialize_options(Options * options)
+@@ -2006,6 +2030,9 @@ initialize_options(Options * options)
  	options->ip_qos_bulk = -1;
  	options->request_tty = -1;
  	options->proxy_use_fdpass = -1;
@@ -68,7 +68,7 @@
  	options->ignored_unknown = NULL;
  	options->num_canonical_domains = 0;
  	options->num_permitted_cnames = 0;
-@@ -2135,6 +2162,10 @@ fill_default_options(Options * options)
+@@ -2191,6 +2218,10 @@ fill_default_options(Options * options)
  		options->canonicalize_fallback_local = 1;
  	if (options->canonicalize_hostname == -1)
  		options->canonicalize_hostname = SSH_CANONICALISE_NO;
@@ -78,10 +78,10 @@
 +#endif
  	if (options->fingerprint_hash == -1)
  		options->fingerprint_hash = SSH_FP_HASH_DEFAULT;
- 	if (options->update_hostkeys == -1)
---- old/readconf.h	2019-11-02 12:07:09.709626996 +0000
-+++ new/readconf.h	2019-11-02 12:07:09.769698687 +0000
-@@ -166,6 +166,9 @@ typedef struct {
+ #ifdef ENABLE_SK_INTERNAL
+--- old/readconf.h	2020-03-26 11:50:08.962776440 +0000
++++ new/readconf.h	2020-03-26 11:55:18.093584429 +0000
+@@ -168,6 +168,9 @@ typedef struct {
  	char   *jump_extra;
  
  	char	*ignored_unknown; /* Pattern list of unknown tokens to ignore */
@@ -91,7 +91,7 @@
  }       Options;
  
  #define SSH_CANONICALISE_NO	0
-@@ -197,6 +200,12 @@ typedef struct {
+@@ -199,6 +202,12 @@ typedef struct {
  #define SSH_STRICT_HOSTKEY_YES	2
  #define SSH_STRICT_HOSTKEY_ASK	3
  
@@ -101,12 +101,12 @@
 +#define SSH_DISABLEBANNER_INEXECMODE	2
 +#endif
 +
+ const char *kex_default_pk_alg(void);
  void     initialize_options(Options *);
  void     fill_default_options(Options *);
- void	 fill_default_options_for_canonicalization(Options *);
---- old/ssh_config.5	2019-11-02 12:07:09.720585514 +0000
-+++ new/ssh_config.5	2019-11-02 12:07:09.780581681 +0000
-@@ -578,6 +578,14 @@ If set to a time in seconds, or a time i
+--- old/ssh_config.5	2020-03-26 11:50:08.969931976 +0000
++++ new/ssh_config.5	2020-03-26 11:55:18.100747825 +0000
+@@ -583,6 +583,14 @@ If set to a time in seconds, or a time i
  then the backgrounded master connection will automatically terminate
  after it has remained idle (with no client connections) for the
  specified time.
@@ -121,9 +121,9 @@
  .It Cm DynamicForward
  Specifies that a TCP port on the local machine be forwarded
  over the secure channel, and the application
---- old/sshconnect2.c	2019-11-02 12:07:09.731420264 +0000
-+++ new/sshconnect2.c	2019-11-02 12:07:09.792115910 +0000
-@@ -82,6 +82,10 @@ extern char *client_version_string;
+--- old/sshconnect2.c	2020-03-26 11:50:08.977229033 +0000
++++ new/sshconnect2.c	2020-03-26 11:55:18.107989839 +0000
+@@ -84,6 +84,10 @@ extern char *client_version_string;
  extern char *server_version_string;
  extern Options options;
  
@@ -134,7 +134,7 @@
  /*
   * SSH2 key exchange
   */
-@@ -522,8 +526,21 @@ input_userauth_banner(int type, u_int32_
+@@ -535,8 +539,21 @@ input_userauth_banner(int type, u_int32_
  	if ((r = sshpkt_get_cstring(ssh, &msg, &len)) != 0 ||
  	    (r = sshpkt_get_cstring(ssh, NULL, NULL)) != 0)
  		goto out;

@@ -9,8 +9,8 @@
 # Patch source: in-house
 # Solaris specific, upstream already has per-session ccache.
 #
---- old/gss-serv.c	2019-11-02 12:07:12.756475292 +0000
-+++ new/gss-serv.c	2019-11-02 12:07:12.816233405 +0000
+--- old/gss-serv.c	2020-04-06 19:42:14.108520097 +0000
++++ new/gss-serv.c	2020-04-06 19:45:55.289206889 +0000
 @@ -51,6 +51,8 @@
  #include "ssh-gss.h"
  #include "monitor_wrap.h"
@@ -104,9 +104,9 @@
  }
  
  /* This allows GSSAPI methods to do things to the childs environment based
---- old/servconf.c	2019-11-02 12:07:12.767440144 +0000
-+++ new/servconf.c	2019-11-02 12:07:12.827047886 +0000
-@@ -187,6 +187,7 @@ initialize_server_options(ServerOptions
+--- old/servconf.c	2020-04-06 19:42:14.116621566 +0000
++++ new/servconf.c	2020-04-06 19:45:55.297361890 +0000
+@@ -197,6 +197,7 @@ initialize_server_options(ServerOptions
  	 */
  	options->pam_service_per_authmethod = 1;
  #endif /* PAM_ENHANCEMENT */
@@ -114,7 +114,7 @@
  	options->authorized_principals_file = NULL;
  	options->authorized_principals_command = NULL;
  	options->authorized_principals_command_user = NULL;
-@@ -457,7 +458,8 @@ fill_default_server_options(ServerOption
+@@ -486,7 +487,8 @@ fill_default_server_options(ServerOption
  	if (options->pam_service_prefix == NULL)
  		options->pam_service_prefix = _SSH_PAM_SERVICE_PREFIX;
  #endif
@@ -124,7 +124,7 @@
  	if (options->fwd_opts.streamlocal_bind_mask == (mode_t)-1)
  		options->fwd_opts.streamlocal_bind_mask = 0177;
  	if (options->fwd_opts.streamlocal_bind_unlink == -1)
-@@ -552,6 +554,7 @@ typedef enum {
+@@ -585,6 +587,7 @@ typedef enum {
  	sRevokedKeys, sTrustedUserCAKeys, sAuthorizedPrincipalsFile,
  	sAuthorizedPrincipalsCommand, sAuthorizedPrincipalsCommandUser,
  	sKexAlgorithms, sCASignatureAlgorithms, sIPQoS, sVersionAddendum,
@@ -132,7 +132,7 @@
  	sAuthorizedKeysCommand, sAuthorizedKeysCommandUser,
  	sAuthenticationMethods, sHostKeyAgent, sPermitUserRC,
  	sStreamLocalBindMask, sStreamLocalBindUnlink,
-@@ -736,6 +739,7 @@ static struct {
+@@ -772,6 +775,7 @@ static struct {
  	{ "authorizedprincipalscommand", sAuthorizedPrincipalsCommand, SSHCFG_ALL },
  	{ "authorizedprincipalscommanduser", sAuthorizedPrincipalsCommandUser, SSHCFG_ALL },
  	{ "versionaddendum", sVersionAddendum, SSHCFG_GLOBAL },
@@ -140,7 +140,7 @@
  	{ "authenticationmethods", sAuthenticationMethods, SSHCFG_ALL },
  	{ "streamlocalbindmask", sStreamLocalBindMask, SSHCFG_ALL },
  	{ "streamlocalbindunlink", sStreamLocalBindUnlink, SSHCFG_ALL },
-@@ -1600,6 +1604,10 @@ process_server_config_line(ServerOptions
+@@ -1660,6 +1664,10 @@ process_server_config_line_depth(ServerO
  		intptr = &options->gss_strict_acceptor;
  		goto parse_flag;
  
@@ -151,7 +151,7 @@
  	case sGssStoreRekey:
  		intptr = &options->gss_store_rekey;
  		goto parse_flag;
-@@ -2767,6 +2775,7 @@ dump_config(ServerOptions *o)
+@@ -2959,6 +2967,7 @@ dump_config(ServerOptions *o)
  	dump_cfg_fmtint(sStreamLocalBindUnlink, o->fwd_opts.streamlocal_bind_unlink);
  	dump_cfg_fmtint(sFingerprintHash, o->fingerprint_hash);
  	dump_cfg_fmtint(sExposeAuthInfo, o->expose_userauth_info);
@@ -159,19 +159,19 @@
  
  	/* string arguments */
  	dump_cfg_string(sPidFile, o->pid_file);
---- old/servconf.h	2019-11-02 12:07:12.778013671 +0000
-+++ new/servconf.h	2019-11-02 12:07:12.837703554 +0000
-@@ -224,6 +224,7 @@ typedef struct {
- 	int	fingerprint_hash;
+--- old/servconf.h	2020-04-06 19:42:14.124441774 +0000
++++ new/servconf.h	2020-04-06 19:45:55.305280444 +0000
+@@ -231,6 +231,7 @@ typedef struct {
  	int	expose_userauth_info;
  	u_int64_t timing_secret;
+ 	char   *sk_provider;
 +	int	gss_use_default_ccache;
  }       ServerOptions;
  
  /* Information about the incoming connection as used by Match */
---- old/sshd_config.5	2019-11-02 12:07:12.789558443 +0000
-+++ new/sshd_config.5	2019-11-02 12:07:12.848376473 +0000
-@@ -664,6 +664,18 @@ Specifies whether to automatically destr
+--- old/sshd_config.5	2020-11-05 14:50:12.446873291 +0000
++++ new/sshd_config.5	2020-11-05 14:50:42.005183313 +0000
+@@ -655,6 +655,18 @@ Specifies whether to automatically destr
  on logout.
  The default is
  .Cm yes .
@@ -190,9 +190,9 @@
  .It Cm GSSAPIKeyExchange
  Specifies whether key exchange based on GSSAPI is allowed. GSSAPI key exchange
  doesn't rely on ssh keys to verify host identity.
---- old/sshd.c	2019-11-02 13:56:29.251666670 +0000
-+++ new/sshd.c	2019-11-02 13:58:57.000199252 +0000
-@@ -2159,9 +2159,19 @@ main(int ac, char **av)
+--- old/sshd.c	2020-04-06 19:42:14.140486835 +0000
++++ new/sshd.c	2020-04-06 19:45:55.321385043 +0000
+@@ -2239,9 +2239,19 @@ main(int ac, char **av)
  
  #ifdef GSSAPI
  	if (options.gss_authentication) {

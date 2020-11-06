@@ -1,0 +1,383 @@
+OpenSSH 8.2 was released on 2020-02-14. It is available from the
+mirrors listed at https://www.openssh.com/.
+
+OpenSSH is a 100% complete SSH protocol 2.0 implementation and
+includes sftp client and server support.
+
+Once again, we would like to thank the OpenSSH community for their
+continued support of the project, especially those who contributed
+code or patches, reported bugs, tested snapshots or donated to the
+project. More information on donations may be found at:
+https://www.openssh.com/donations.html
+
+Future deprecation notice
+=========================
+
+It is now possible[1] to perform chosen-prefix attacks against the
+SHA-1 hash algorithm for less than USD$50K. For this reason, we will
+be disabling the "ssh-rsa" public key signature algorithm that depends
+on SHA-1 by default in a near-future release.
+
+This algorithm is unfortunately still used widely despite the
+existence of better alternatives, being the only remaining public key
+signature algorithm specified by the original SSH RFCs.
+
+The better alternatives include:
+
+ * The RFC8332 RSA SHA-2 signature algorithms rsa-sha2-256/512. These
+   algorithms have the advantage of using the same key type as
+   "ssh-rsa" but use the safe SHA-2 hash algorithms. These have been
+   supported since OpenSSH 7.2 and are already used by default if the
+   client and server support them.
+
+ * The ssh-ed25519 signature algorithm. It has been supported in
+   OpenSSH since release 6.5.
+
+ * The RFC5656 ECDSA algorithms: ecdsa-sha2-nistp256/384/521. These
+   have been supported by OpenSSH since release 5.7.
+
+To check whether a server is using the weak ssh-rsa public key
+algorithm for host authentication, try to connect to it after
+removing the ssh-rsa algorithm from ssh(1)'s allowed list:
+
+    ssh -oHostKeyAlgorithms=-ssh-rsa user@host
+
+If the host key verification fails and no other supported host key
+types are available, the server software on that host should be
+upgraded.
+
+A future release of OpenSSH will enable UpdateHostKeys by default
+to allow the client to automatically migrate to better algorithms.
+Users may consider enabling this option manually.
+
+[1] "SHA-1 is a Shambles: First Chosen-Prefix Collision on SHA-1 and
+    Application to the PGP Web of Trust" Leurent, G and Peyrin, T
+    (2020) https://eprint.iacr.org/2020/014.pdf
+
+Security
+========
+
+ * ssh(1), sshd(8), ssh-keygen(1): this release removes the "ssh-rsa"
+   (RSA/SHA1) algorithm from those accepted for certificate signatures
+   (i.e. the client and server CASignatureAlgorithms option) and will
+   use the rsa-sha2-512 signature algorithm by default when the
+   ssh-keygen(1) CA signs new certificates.
+
+   Certificates are at special risk to the aforementioned SHA1
+   collision vulnerability as an attacker has effectively unlimited
+   time in which to craft a collision that yields them a valid
+   certificate, far more than the relatively brief LoginGraceTime
+   window that they have to forge a host key signature.
+
+   The OpenSSH certificate format includes a CA-specified (typically
+   random) nonce value near the start of the certificate that should
+   make exploitation of chosen-prefix collisions in this context
+   challenging, as the attacker does not have full control over the
+   prefix that actually gets signed. Nonetheless, SHA1 is now a
+   demonstrably broken algorithm and futher improvements in attacks
+   are highly likely.
+
+   OpenSSH releases prior to 7.2 do not support the newer RSA/SHA2
+   algorithms and will refuse to accept certificates signed by an
+   OpenSSH 8.2+ CA using RSA keys unless the unsafe algorithm is
+   explicitly selected during signing ("ssh-keygen -t ssh-rsa").
+   Older clients/servers may use another CA key type such as
+   ssh-ed25519 (supported since OpenSSH 6.5) or one of the
+   ecdsa-sha2-nistp256/384/521 types (supported since OpenSSH 5.7)
+   instead if they cannot be upgraded.
+
+Potentially-incompatible changes
+================================
+
+This release includes a number of changes that may affect existing
+configurations:
+
+ * ssh(1), sshd(8): the above removal of "ssh-rsa" from the accepted
+   CASignatureAlgorithms list.
+
+ * ssh(1), sshd(8): this release removes diffie-hellman-group14-sha1
+   from the default key exchange proposal for both the client and
+   server.
+
+ * ssh-keygen(1): the command-line options related to the generation
+   and screening of safe prime numbers used by the
+   diffie-hellman-group-exchange-* key exchange algorithms have
+   changed. Most options have been folded under the -O flag.
+
+ * sshd(8): the sshd listener process title visible to ps(1) has
+   changed to include information about the number of connections that
+   are currently attempting authentication and the limits configured
+   by MaxStartups.
+
+ * ssh-sk-helper(8): this is a new binary. It is used by the FIDO/U2F
+   support to provide address-space isolation for token middleware
+   libraries (including the internal one). It needs to be installed
+   in the expected path, typically under /usr/libexec or similar.
+
+Changes since OpenSSH 8.1
+=========================
+
+This release contains some significant new features.
+
+FIDO/U2F Support
+----------------
+
+This release adds support for FIDO/U2F hardware authenticators to
+OpenSSH. U2F/FIDO are open standards for inexpensive two-factor
+authentication hardware that are widely used for website
+authentication.  In OpenSSH FIDO devices are supported by new public
+key types "ecdsa-sk" and "ed25519-sk", along with corresponding
+certificate types.
+
+ssh-keygen(1) may be used to generate a FIDO token-backed key, after
+which they may be used much like any other key type supported by
+OpenSSH, so long as the hardware token is attached when the keys are
+used. FIDO tokens also generally require the user explicitly authorise
+operations by touching or tapping them.
+
+Generating a FIDO key requires the token be attached, and will usually
+require the user tap the token to confirm the operation:
+
+  $ ssh-keygen -t ecdsa-sk -f ~/.ssh/id_ecdsa_sk
+  Generating public/private ecdsa-sk key pair.
+  You may need to touch your security key to authorize key generation.
+  Enter file in which to save the key (/home/djm/.ssh/id_ecdsa_sk): 
+  Enter passphrase (empty for no passphrase): 
+  Enter same passphrase again: 
+  Your identification has been saved in /home/djm/.ssh/id_ecdsa_sk
+  Your public key has been saved in /home/djm/.ssh/id_ecdsa_sk.pub
+
+This will yield a public and private key-pair. The private key file
+should be useless to an attacker who does not have access to the
+physical token. After generation, this key may be used like any other
+supported key in OpenSSH and may be listed in authorized_keys, added
+to ssh-agent(1), etc. The only additional stipulation is that the FIDO
+token that the key belongs to must be attached when the key is used.
+
+FIDO tokens are most commonly connected via USB but may be attached
+via other means such as Bluetooth or NFC. In OpenSSH, communication
+with the token is managed via a middleware library, specified by the
+SecurityKeyProvider directive in ssh/sshd_config(5) or the
+$SSH_SK_PROVIDER environment variable for ssh-keygen(1) and
+ssh-add(1). The API for this middleware is documented in the sk-api.h
+and PROTOCOL.u2f files in the source distribution.
+
+OpenSSH includes a middleware ("SecurityKeyProvider=internal") with
+support for USB tokens. It is automatically enabled in OpenBSD and may
+be enabled in portable OpenSSH via the configure flag
+--with-security-key-builtin. If the internal middleware is enabled
+then it is automatically used by default. This internal middleware
+requires that libfido2 (https://github.com/Yubico/libfido2) and its
+dependencies be installed. We recommend that packagers of portable
+OpenSSH enable the built-in middleware, as it provides the
+lowest-friction experience for users.
+
+Note: FIDO/U2F tokens are required to implement the ECDSA-P256
+"ecdsa-sk" key type, but hardware support for Ed25519 "ed25519-sk" is
+less common. Similarly, not all hardware tokens support some of the
+optional features such as resident keys.
+
+The protocol-level changes to support FIDO/U2F keys in SSH are
+documented in the PROTOCOL.u2f file in the OpenSSH source
+distribution.
+
+There are a number of supporting changes to this feature:
+
+ * ssh-keygen(1): add a "no-touch-required" option when generating
+   FIDO-hosted keys, that disables their default behaviour of
+   requiring a physical touch/tap on the token during authentication.
+   Note: not all tokens support disabling the touch requirement.
+
+ * sshd(8): add a sshd_config PubkeyAuthOptions directive that
+   collects miscellaneous public key authentication-related options
+   for sshd(8). At present it supports only a single option
+   "no-touch-required". This causes sshd to skip its default check for
+   FIDO/U2F keys that the signature was authorised by a touch or press
+   event on the token hardware.
+
+ * ssh(1), sshd(8), ssh-keygen(1): add a "no-touch-required" option
+   for authorized_keys and a similar extension for certificates. This
+   option disables the default requirement that FIDO key signatures
+   attest that the user touched their key to authorize them, mirroring
+   the similar PubkeyAuthOptions sshd_config option.
+
+ * ssh-keygen(1): add support for the writing the FIDO attestation
+   information that is returned when new keys are generated via the
+   "-O write-attestation=/path" option. FIDO attestation certificates
+   may be used to verify that a FIDO key is hosted in trusted
+   hardware. OpenSSH does not currently make use of this information,
+   beyond optionally writing it to disk.
+
+FIDO2 resident keys
+-------------------
+
+FIDO/U2F OpenSSH keys consist of two parts: a "key handle" part stored
+in the private key file on disk, and a per-device private key that is
+unique to each FIDO/U2F token and that cannot be exported from the
+token hardware. These are combined by the hardware at authentication
+time to derive the real key that is used to sign authentication
+challenges.
+
+For tokens that are required to move between computers, it can be
+cumbersome to have to move the private key file first. To avoid this
+requirement, tokens implementing the newer FIDO2 standard support
+"resident keys", where it is possible to effectively retrieve the key
+handle part of the key from the hardware.
+
+OpenSSH supports this feature, allowing resident keys to be generated
+using the ssh-keygen(1) "-O resident" flag. This will produce a
+public/private key pair as usual, but it will be possible to retrieve
+the private key part from the token later. This may be done using
+"ssh-keygen -K", which will download all available resident keys from
+the tokens attached to the host and write public/private key files
+for them. It is also possible to download and add resident keys
+directly to ssh-agent(1) without writing files to the file-system
+using "ssh-add -K".
+
+Resident keys are indexed on the token by the application string and
+user ID. By default, OpenSSH uses an application string of "ssh:" and
+an empty user ID. If multiple resident keys on a single token are
+desired then it may be necessary to override one or both of these
+defaults using the ssh-keygen(1) "-O application=" or "-O user="
+options. Note: OpenSSH will only download and use resident keys whose
+application string begins with "ssh:"
+
+Storing both parts of a key on a FIDO token increases the likelihood
+of an attacker being able to use a stolen token device. For this
+reason, tokens should enforce PIN authentication before allowing
+download of keys, and users should set a PIN on their tokens before
+creating any resident keys.
+
+Other New Features
+------------------
+
+ * sshd(8): add an Include sshd_config keyword that allows including
+   additional configuration files via glob(3) patterns. bz2468
+
+ * ssh(1)/sshd(8): make the LE (low effort) DSCP code point available
+   via the IPQoS directive; bz2986,
+
+ * ssh(1): when AddKeysToAgent=yes is set and the key contains no
+   comment, add the key to the agent with the key's path as the
+   comment. bz2564
+    
+ * ssh-keygen(1), ssh-agent(1): expose PKCS#11 key labels and X.509
+   subjects as key comments, rather than simply listing the PKCS#11
+   provider library path. PR138
+
+ * ssh-keygen(1): allow PEM export of DSA and ECDSA keys; bz3091
+
+ * ssh(1), sshd(8): make zlib compile-time optional, available via the
+   Makefile.inc ZLIB flag on OpenBSD or via the --with-zlib configure
+   option for OpenSSH portable.
+
+ * sshd(8): when clients get denied by MaxStartups, send a
+   notification prior to the SSH2 protocol banner according to
+   RFC4253 section 4.2.
+
+ * ssh(1), ssh-agent(1): when invoking the $SSH_ASKPASS prompt
+   program, pass a hint to the program to describe the type of
+   desired prompt.  The possible values are "confirm" (indicating
+   that a yes/no confirmation dialog with no text entry should be
+   shown), "none" (to indicate an informational message only), or
+   blank for the original ssh-askpass behaviour of requesting a
+   password/phrase.
+
+ * ssh(1): allow forwarding a different agent socket to the path
+   specified by $SSH_AUTH_SOCK, by extending the existing ForwardAgent
+   option to accepting an explicit path or the name of an environment
+   variable in addition to yes/no.
+   
+ * ssh-keygen(1): add a new signature operations "find-principals" to
+   look up the principal associated with a signature from an allowed-
+   signers file.
+    
+ * sshd(8): expose the number of currently-authenticating connections
+   along with the MaxStartups limit in the process title visible to
+   "ps".
+
+Bugfixes
+--------
+
+ * sshd(8): make ClientAliveCountMax=0 have sensible semantics: it
+   will now disable connection killing entirely rather than the
+   current behaviour of instantly killing the connection after the
+   first liveness test regardless of success. bz2627
+    
+ * sshd(8): clarify order of AllowUsers / DenyUsers vs AllowGroups /
+   DenyGroups in the sshd(8) manual page. bz1690
+
+ * sshd(8): better describe HashKnownHosts in the manual page. bz2560
+
+ * sshd(8): clarify that that permitopen=/PermitOpen do no name or
+   address translation in the manual page. bz3099
+
+ * sshd(8): allow the UpdateHostKeys feature to function when
+   multiple known_hosts files are in use. When updating host keys,
+   ssh will now search subsequent known_hosts files, but will add
+   updated host keys to the first specified file only. bz2738
+    
+ * All: replace all calls to signal(2) with a wrapper around
+   sigaction(2). This wrapper blocks all other signals during the
+   handler preventing races between handlers, and sets SA_RESTART
+   which should reduce the potential for short read/write operations.
+    
+ * sftp(1): fix a race condition in the SIGCHILD handler that could
+   turn in to a kill(-1); bz3084
+
+ * sshd(8): fix a case where valid (but extremely large) SSH channel
+   IDs were being incorrectly rejected. bz3098
+
+ * ssh(1): when checking host key fingerprints as answers to new
+   hostkey prompts, ignore whitespace surrounding the fingerprint
+   itself.
+
+ * All: wait for file descriptors to be readable or writeable during
+   non-blocking connect, not just readable. Prevents a timeout when
+   the server doesn't immediately send a banner (e.g. multiplexers
+   like sslh)
+ 
+ * sshd_config(5): document the sntrup4591761x25519-sha512@tinyssh.org
+   key exchange algorithm. PR#151
+
+Portability
+-----------
+
+ * sshd(8): multiple adjustments to the Linux seccomp sandbox:
+   - Non-fatally deny IPC syscalls in sandbox
+   - Allow clock_gettime64() in sandbox (MIPS / glibc >= 2.31)
+   - Allow clock_nanosleep_time64 in sandbox (ARM) bz3100
+   - Allow clock_nanosleep() in sandbox (recent glibc) bz3093
+
+ * Explicit check for memmem declaration and fix up declaration if the
+   system headers lack it. bz3102
+ 
+Checksums:
+==========
+
+ - SHA1 (openssh-8.2.tar.gz) = 0daae2a8c47c489a8784f2c38c4b39e6159ba678
+ - SHA256 (openssh-8.2.tar.gz) = +UmInEIoHJqYqWneMb/kgRbLcq8WDCo7+ooYcjzW4jg=
+
+ - SHA1 (openssh-8.2p1.tar.gz) = d1ab35a93507321c5db885e02d41ce1414f0507c
+ - SHA256 (openssh-8.2p1.tar.gz) = Q5JRUebPbO4UUBkMDpr03Da0HBJzdhnt/4vOvf9k5nE=
+
+Note: the openssh-8.2 tarball for OpenBSD that was initially released
+advertised an incorrect version for "ssh -V" and the sshd server
+banner. The above tarball replace the incorrect release, which has
+been renamed to openssh-8.2.tar.gz.incorrect. These are the checksums
+for the original, incorrect tarball:
+
+ - SHA1 (openssh-8.2.tar.gz) = 77584c22fbb89269398acdf53c1e554400584ba8
+ - SHA256 (openssh-8.2.tar.gz) = UttLaaSYXVK1O65cYvyQzyQ5sCfuJ4Lwrs8zNsPrluQ=
+
+Please note that the SHA256 signatures are base64 encoded and not
+hexadecimal (which is the default for most checksum tools). The PGP
+key used to sign the releases is available as RELEASE_KEY.asc from
+the mirror sites.
+
+Reporting Bugs:
+===============
+
+- Please read https://www.openssh.com/report.html
+  Security bugs should be reported directly to openssh@openssh.com
+

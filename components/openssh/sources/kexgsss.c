@@ -23,7 +23,7 @@
  */
 
 /*
- * Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2020, Oracle and/or its affiliates.
  */
 
 #include "includes.h"
@@ -32,9 +32,11 @@
 
 #include <signal.h>     /* for sig_atomic_t in kex.h */
 #include <string.h>
+#include <stdarg.h>	/* for va_list in xmalloc.h */
 
 #include <openssl/crypto.h>
 #include <openssl/bn.h>
+#include <openssl/dh.h>
 
 #include "xmalloc.h"
 #include "sshbuf.h"

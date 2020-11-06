@@ -2,15 +2,14 @@
 # This patch make sure we load all lazy loaded libraries from plugins;
 # these are not loaded for plugins.
 #
-!!diff -u old/session.c new/session.c
---- old/session.c	2020-03-03 09:24:06.995523972 +0100
-+++ new/session.c	2020-03-04 14:16:50.721547209 +0100
-@@ -1318,7 +1318,62 @@
+--- old/session.c	2020-05-15 10:17:59.487917904 +0000
++++ new/session.c	2020-05-15 10:18:50.879445300 +0000
+@@ -1356,6 +1356,61 @@ do_nologin(struct passwd *pw)
  	exit(254);
  }
  
 +#ifdef LOAD_ALL_LIBS
- /*
++/*
 + * Check which plugins we have loaded; reload them again bit this time we
 + * load them with RTLD_NOW so we have everything loaded on chroot() and
 + * ld.so will no longer bail out.
@@ -64,11 +63,10 @@
 +}
 +#endif
 +
-+/*
+ /*
   * Chroot into a directory after checking it for safety: all path components
   * must be root-owned directories with strict permissions.
-  */
-@@ -1362,6 +1417,10 @@
+@@ -1400,6 +1455,10 @@ safely_chroot(const char *path, uid_t ui
  
  	}
  

@@ -36,21 +36,21 @@ include ../../make-rules/shared-macros.mk
 # Then add a line to network-ssh.p5m to deliver them.
 
 COMPONENT_NAME=		openssh
-COMPONENT_VERSION=	8.1p1
+COMPONENT_VERSION=	8.2p1
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_ANITYA_ID=	2565
 
 # Version for IPS.  The encoding rules are:
 #   OpenSSH <x>.<y>p<n>     => IPS <x>.<y>.0.<n>
 #   OpenSSH <x>.<y>.<z>p<n> => IPS <x>.<y>.<z>.<n>
-IPS_COMPONENT_VERSION=	8.1.0.1
+IPS_COMPONENT_VERSION=	8.2.0.1
 
 COMPONENT_PROJECT_URL=	https://www.openssh.com/
-COMPONENT_ARCHIVE_HASH=	sha256:02f5dbef3835d0753556f973cd57b4c19b6b1f6cd24c03445e23ac77ca1b93ff
+COMPONENT_ARCHIVE_HASH=	sha256:43925151e6cf6cee1450190c0e9af4dc36b41c12737619edff8bcebdff64e671
 COMPONENT_ARCHIVE_URL=	https://mirrors.sonic.net/pub/OpenBSD/OpenSSH/portable/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 
-TPNO_OPENSSH=		56313
+TPNO_OPENSSH=		62961
 TPNO_GSSKEX=		20377
 
 SMF_MANIFESTS= $(COMPONENT_DIR)/sources/ssh.xml
@@ -105,6 +105,7 @@ CONFIGURE_OPTIONS += --sbindir=$(USRLIBDIR)/ssh
 CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)/ssh
 CONFIGURE_OPTIONS += --disable-lastlog
 CONFIGURE_OPTIONS += --without-hardening
+CONFIGURE_OPTIONS += --disable-security-key
 
 # Copy the sftp dtrace provider file and the header file to source directory
 COMPONENT_PRE_BUILD_ACTION = \
