@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gssdp
-COMPONENT_VERSION=	1.0.2
+COMPONENT_VERSION=	1.0.5
 COMPONENT_PROJECT_URL=  https://developer.gnome.org/gssdp/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:a1e17c09c7e1a185b0bd84fd6ff3794045a3cd729b707c23e422ff66471535dc
+	sha256:19c90f54b95319578dc2e2d0f27fc112c11c296d16266a3954d98d98610c2776
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	1262
 
-TPNO=			34513
+TPNO=			63003
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
