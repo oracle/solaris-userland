@@ -39,9 +39,6 @@ COMPONENT_ANITYA_ID=	13143
 
 TPNO=			54078
 
-# Hook up tests once dependencies are installed
-TEST_TARGET = $(SKIP_TEST)
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CONFIGURE_OPTIONS += --disable-static
@@ -55,6 +52,25 @@ CONFIGURE_OPTIONS += --with-pic
 
 # Ancient configure script needs regeneration.
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
+
+# To prevent "libtool_install_magic: unbound variable"
+unexport SHELLOPTS
+
+#
+# note the tests still fail with 
+# GLib-Net-FATAL-WARNING: Failed to load TLS database:
+# Failed to load system trust store:
+# GnuTLS was not configured with a system trust
+#
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_ARGS =   -k -i
+COMPONENT_TEST_TRANSFORMS += \
+	'-n ' \
+	'-e "/TOTAL:/p" ' \
+	'-e "/SKIP:/p" ' \
+	'-e "/PASS:/p" ' \
+	'-e "/FAIL:/p" ' \
+	'-e "/ERROR:/p" '
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection

@@ -1,0 +1,31 @@
+To prevent the below test failure:
+Bail out! GLib-FATAL-WARNING: GError set over the top of a previous GError or uninitialized memory.
+This indicates a bug in someone's code. You must ensure an error is NULL before it's set.
+The overwriting error message was: Failed to find IP of interface lo
+
+This is a crude hack, not suitable for upstream.
+Also the tests do not pass yet due to other reasons (GnuTLS)
+diff -r 6c6d95a4359f tests/gtest/test-bugs.c
+--- a/tests/gtest/test-bugs.c	Wed Nov 04 18:22:09 2020 +0100
++++ b/tests/gtest/test-bugs.c	Wed Nov 04 18:23:55 2020 +0100
+@@ -214,7 +214,7 @@
+ 
+     data.loop = g_main_loop_new (NULL, FALSE);
+ 
+-    context = gupnp_context_new (NULL, "lo", 0, &error);
++    context = gupnp_context_new (NULL, "lo0", 0, &error);
+     g_assert (context != NULL);
+     g_assert (error == NULL);
+ 
+diff -r 6c6d95a4359f tests/gtest/test-context.c
+--- a/tests/gtest/test-context.c	Wed Nov 04 18:22:09 2020 +0100
++++ b/tests/gtest/test-context.c	Wed Nov 04 18:23:55 2020 +0100
+@@ -135,7 +135,7 @@
+         file_length = g_mapped_file_get_length (file);
+ 
+         context = gupnp_context_new (NULL,
+-                                     "lo",
++                                     "lo0",
+                                      0,
+                                      &error);
+         g_assert (context != NULL);

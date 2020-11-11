@@ -30,17 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gupnp
-COMPONENT_VERSION=	1.0.2
+COMPONENT_VERSION=	1.0.6
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/GUPnP
 COMPONENT_ARCHIVE_HASH= \
-	sha256:5173fda779111c6b01cd4a5e41b594322be9d04f8c74d3361f0a0c2069c77610
+	sha256:4d1c26b0d176c269905a62c1fd069f36b3c5abcc23090c427a2edac9e63c6f38
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	1281
 
-TPNO=			35414
-
-# Tests don't work on Solaris yet
-TEST_TARGET = $(SKIP_TEST)
+TPNO=			63005
 
 # Contains a single Python script written for Python 2.x/3.x; prefer 3.7.
 PYTHON=3.7
@@ -57,6 +54,25 @@ CONFIGURE_OPTIONS.64 += --enable-introspection
 CONFIGURE_OPTIONS += --enable-largefile
 CONFIGURE_OPTIONS += --enable-shared
 CONFIGURE_OPTIONS += --with-pic
+
+# To prevent "libtool_install_magic: unbound variable"
+unexport SHELLOPTS
+
+#
+# note the tests still fail with 
+# GLib-Net-FATAL-WARNING: Failed to load TLS database:
+# Failed to load system trust store:
+# GnuTLS was not configured with a system trust
+#
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_ARGS =   -k -i
+COMPONENT_TEST_TRANSFORMS += \
+	'-n ' \
+	'-e "/TOTAL:/p" ' \
+	'-e "/SKIP:/p" ' \
+	'-e "/PASS:/p" ' \
+	'-e "/FAIL:/p" ' \
+	'-e "/ERROR:/p" '
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala
