@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER=gcc
@@ -37,7 +37,7 @@ TPNO=			42799
 
 # The .1 refers to version 2.7.6-1 to distinguish between community version
 # binutils and this package, which contains all known fixes.  A similar approach
-# is addopted by some Linux distros.
+# is adopted by some Linux distros.
 IPS_COMPONENT_VERSION=	2.7.6.1
 HUMAN_VERSION=		$(COMPONENT_VERSION)-1
 

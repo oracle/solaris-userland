@@ -48,7 +48,7 @@ SMF_MANIFESTS= $(COMPONENT_DIR)/Solaris/ocspd.xml
 #
 # The upstream archive includes a test script (test.sh), which tries to run
 # "openssl ocsp" command multiple times. However, it assumes that we already
-# have necessary pem files (keys/certficates for CA, ocspd daemon, and others,
+# have necessary pem files (keys/certificates for CA, ocspd daemon, and others,
 # and also the CRL), and those files are not included in the archive.
 #
 # To test manually, follow a guide document for the smartcard project.

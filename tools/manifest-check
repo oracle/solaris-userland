@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
 set -eu -o pipefail
@@ -135,7 +135,7 @@ HARDLINKS=()
 			# Match anything we can _not_ detect from the proto area
 
 			^	# Beginning of line
-			\s*	# Potentialy whitespace
+			\s*	# Potentially whitespace
 			(?:
 				(?&SPECIAL_LINE)
 				| # or
@@ -213,7 +213,7 @@ echo "Comparing '$RESULT_RELATIVE' to '$ORIGIN'"
 RET=0
 
 FILENAME="$(realpath --relative-to="$PWD" "$RESULT")"
-# To compare we have to remove comments from the orginal .p5m file too
+# To compare we have to remove comments from the original .p5m file too
 MANIFEST_DIFF=$(/usr/gnu/bin/diff -u \
 	--label "Generated $FILENAME" --label "Current $ORIGIN" \
 	"$RESULT" <( sed -e '/^$/d' -e '/^#.*$/d' "$ORIGIN" | pkgfmt $PKGFMT_ARGS )) || RET=$?

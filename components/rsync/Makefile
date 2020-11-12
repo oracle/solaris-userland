@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2009, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2009, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -40,7 +40,7 @@ include $(WS_MAKE_RULES)/common.mk
 
 # The .1 refers to version 3.1.3-1 to distinguish between community version
 # of rsync and this package, which contains all known fixes. A similar approach
-# is addopted by some Linux distros.
+# is adopted by some Linux distros.
 IPS_COMPONENT_VERSION=	3.1.3
 HUMAN_VERSION=		$(COMPONENT_VERSION)-1
 

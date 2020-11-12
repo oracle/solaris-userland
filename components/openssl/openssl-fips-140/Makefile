@@ -161,7 +161,7 @@ $(FIPSCANISTER_DIR)/build/$(MACH64)/.installed:
 	( unset BITS; \
 	$(MAKE) -C $(FIPSCANISTER_DIR) install; )
 
-# download, clean, and clobber should all propogate to the fips bits
+# download, clean, and clobber should all propagate to the fips bits
 download clobber clean::
 	(cd fipscanister; $(GMAKE) $@; cd ../fipscanister-dev; $(GMAKE) $@;)
 

@@ -418,7 +418,7 @@ In this tutorial, we create a program that fetches the latest commits
 of a repository in \fI\%GitHub\fP over the web. \fI\%GitHub API\fP uses JSON, so
 the result can be parsed using Jansson.
 .sp
-To stick to the the scope of this tutorial, we will only cover the the
+To stick to the scope of this tutorial, we will only cover the
 parts of the program related to handling JSON data. For the best user
 experience, the full source code is available:
 \fBgithub_commits.c\fP\&. To compile it (on Unix\-like systems with
@@ -503,7 +503,7 @@ static char *request(const char *url);
 .UNINDENT
 .UNINDENT
 .sp
-It takes the URL as a parameter, preforms a HTTP GET request, and
+It takes the URL as a parameter, performs a HTTP GET request, and
 returns a newly allocated string that contains the response body. If
 the request fails, an error message is printed to stderr and the
 return value is \fINULL\fP\&. For full details, refer to \fBthe code\fP, as the actual implementation is not important
@@ -1013,7 +1013,7 @@ A string representation of the current version, e.g. \fB"1.2.1"\fP or
 .B \fBJANSSON_VERSION_HEX\fP
 A 3\-byte hexadecimal representation of the version, e.g.
 \fB0x010201\fP for version 1.2.1 and \fB0x010300\fP for version 1.3.
-This is useful in numeric comparisions, e.g.:
+This is useful in numeric comparisons, e.g.:
 .INDENT 7.0
 .INDENT 3.5
 .sp
@@ -1363,7 +1363,7 @@ Like \fBjson_string_nocheck()\fP, but with explicit length, so
 Returns the associated value of \fIstring\fP as a null terminated UTF\-8
 encoded string, or \fINULL\fP if \fIstring\fP is not a JSON string.
 .sp
-The retuned value is read\-only and must not be modified or freed by
+The returned value is read\-only and must not be modified or freed by
 the user. It is valid as long as \fIstring\fP exists, i.e. as long as
 its reference count has not dropped to zero.
 .UNINDENT
@@ -1591,7 +1591,7 @@ removed value is decremented.
 .INDENT 0.0
 .TP
 .B int json_array_clear(json_t\fI\ *array\fP)
-Removes all elements from \fIarray\fP\&. Returns 0 on sucess and \-1 on
+Removes all elements from \fIarray\fP\&. Returns 0 on success and \-1 on
 error. The reference count of all removed values are decremented.
 .UNINDENT
 .INDENT 0.0
@@ -2002,7 +2002,7 @@ separators are \fB", "\fP and \fB": "\fP for more readable output.
 .TP
 .B \fBJSON_ENSURE_ASCII\fP
 If this flag is used, the output is guaranteed to consist only of
-ASCII characters. This is achived by escaping all Unicode
+ASCII characters. This is achieved by escaping all Unicode
 characters outside the ASCII range.
 .TP
 .B \fBJSON_SORT_KEYS\fP
@@ -2022,7 +2022,7 @@ its own. Without it, only objects and arrays can be passed as the
 \fIroot\fP value to the encoding functions.
 .sp
 \fBNote:\fP Encoding any value may be useful in some scenarios, but
-it\(aqs generally discouraged as it violates strict compatiblity with
+it\(aqs generally discouraged as it violates strict compatibility with
 \fI\%RFC 4627\fP\&. If you use this flag, don\(aqt expect interoperatibility
 with other JSON systems.
 .sp
@@ -2130,7 +2130,7 @@ macros can be ORed together to obtain \fIflags\fP\&.
 .B \fBJSON_REJECT_DUPLICATES\fP
 Issue a decoding error if any JSON object in the input text
 contains duplicate keys. Without this flag, the value of the last
-occurence of each key ends up in the result. Key equivalence is
+occurrence of each key ends up in the result. Key equivalence is
 checked byte\-by\-byte, without special Unicode comparison
 algorithms.
 .sp
@@ -2142,7 +2142,7 @@ By default, the decoder expects an array or object as the input.
 With this flag enabled, the decoder accepts any valid JSON value.
 .sp
 \fBNote:\fP Decoding any value may be useful in some scenarios, but
-it\(aqs generally discouraged as it violates strict compatiblity with
+it\(aqs generally discouraged as it violates strict compatibility with
 \fI\%RFC 4627\fP\&. If you use this flag, don\(aqt expect interoperatibility
 with other JSON systems.
 .sp
@@ -2460,7 +2460,7 @@ json_pack("[[i,i],{s:b}]", 1, 2, "cool", 1);
 char buffer[4] = {\(aqt\(aq, \(aqe\(aq, \(aqs\(aq, \(aqt\(aq};
 json_pack("s#", buffer, 4);
 
-/* Concatentate strings together to build the JSON string "foobarbaz" */
+/* Concatenate strings together to build the JSON string "foobarbaz" */
 json_pack("s++", "foo", "bar", "baz");
 .ft R
 .fi
@@ -3057,7 +3057,7 @@ value based on its argument (#86).
 Add \fBjson_load_callback()\fP that calls a callback function
 repeatedly to read the JSON input (#57).
 .IP \(bu 2
-Add JSON_ESCAPE_SLASH encoding flag to escape all occurences of
+Add JSON_ESCAPE_SLASH encoding flag to escape all occurrences of
 \fB/\fP with \fB\e/\fP\&.
 .UNINDENT
 .IP \(bu 2
@@ -3190,13 +3190,13 @@ Fix real number encoding and decoding under non\-C locales. (#32)
 Fix identifier decoding under non\-UTF\-8 locales. (#35)
 .IP \(bu 2
 \fBjson_load_file()\fP: Open the input file in binary mode for maximum
-compatiblity.
+compatibility.
 .UNINDENT
 .IP \(bu 2
 Documentation:
 .INDENT 2.0
 .IP \(bu 2
-Clarify the lifecycle of the result of the \fBs\fP fromat of
+Clarify the lifecycle of the result of the \fBs\fP format of
 \fBjson_unpack()\fP\&. (#31)
 .IP \(bu 2
 Add some portability info. (#36)
@@ -3325,7 +3325,7 @@ details.
 Backwards incompatible changes:
 .INDENT 2.0
 .IP \(bu 2
-Unify unsigned integer usage in the API: All occurences of
+Unify unsigned integer usage in the API: All occurrences of
 unsigned int and unsigned long have been replaced with size_t.
 .IP \(bu 2
 Change JSON integer\(aqs underlying type to the widest signed integer
@@ -3403,7 +3403,7 @@ keys.
 Bug fixes:
 .INDENT 2.0
 .IP \(bu 2
-Fix an error that occured when an array or object was first
+Fix an error that occurred when an array or object was first
 encoded as empty, then populated with some data, and then
 re\-encoded
 .IP \(bu 2

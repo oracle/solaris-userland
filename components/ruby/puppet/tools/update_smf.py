@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
 
 '''
@@ -223,7 +223,7 @@ def update_smf_file(smf_xml_file, output_file):
         err(msg)
         sys.exit(-1)
     except NameError as msg:
-        err(f"XML file {smf_xml_file} does not match expected formated")
+        err(f"XML file {smf_xml_file} does not match expected format")
 
     # Delete the pg_pattern nodes and it's children
     # This is the structure that will be rebuilt based
@@ -244,7 +244,7 @@ def update_smf_file(smf_xml_file, output_file):
         pg_pattern.append(element)
 
     # Write out the contents of the updated puppet SMF config file
-    print(f"Writting out contents of new SMF configuration file to: {output_file}")
+    print(f"Writing out contents of new SMF configuration file to: {output_file}")
     with open(output_file, "wb") as f_handle:
         f_handle.write(etree.tostring(tree, pretty_print=True))
 

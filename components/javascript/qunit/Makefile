@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -53,7 +53,7 @@ publish: download prep
 # Finally run `grunt` to start running all the test tasks.
 # However, phantomjs is not supported well in Solaris and there is not an intuitive
 # patch for fixing it, therefore `npm install` fails when it tries to install
-# phantomjs, and the test taks can't be run.
+# phantomjs, and the test task can't be run.
 # The phantomjs issue is discussed at:
 #
 # 	https://github.com/ariya/phantomjs/issues/10521

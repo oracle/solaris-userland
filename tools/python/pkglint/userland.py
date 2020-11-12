@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2010, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2020, Oracle and/or its affiliates.
 #
 
 # Some userland consolidation specific lint checks
@@ -677,7 +677,7 @@ class UserlandManifestChecker(base.ManifestChecker):
                                 (manifest.fmri, v[1], arch, v),
                                 msgid="%s%s.1" % (self.name, pkglint_id))
 
-                # Then go throught all actions in the manifest
+                # Then go through all actions in the manifest
                 for m in manifest.gen_actions():
                         # scan all variants
                         for v in m.get_variant_template():

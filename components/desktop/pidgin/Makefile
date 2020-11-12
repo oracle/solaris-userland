@@ -90,7 +90,7 @@ CONFIGURE_OPTIONS +=	--with-python=$(PYTHON)
 # We have two implementations of libcurses in Solaris. finch needs to use the
 # ncurses one. The curses implementations in turn, use libpanel, but the
 # ncurses one is under /usr/gnu/lib. To make sure that it correctly uses that
-# one, and not the one under /usr/lib, we need to remove all occurences of
+# one, and not the one under /usr/lib, we need to remove all occurrences of
 # -L/usr/lib/$(MACH64), -L/usr/lib, -L/lib/$(MACH64) and -L/lib from all
 # Makefiles.
 COMPONENT_POST_CONFIGURE_ACTION = \

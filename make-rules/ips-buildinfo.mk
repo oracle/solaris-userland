@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2020, Oracle and/or its affiliates.
 #
 
 
@@ -48,7 +48,7 @@ UPDATENUM ?= 4
 PKG_SOLARIS_VERSION ?= 11.$(UPDATENUM)
 
 #
-# Support Respository Update number. This is here to reserve space within the
+# Support Repository Update number. This is here to reserve space within the
 # version string. Typically it should not be set unless all the packages
 # are being delivered within an SRU.
 #

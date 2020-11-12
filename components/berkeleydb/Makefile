@@ -31,7 +31,7 @@ COMPILER= gcc
 #   Userland default optimization level is 4, but that causes test failures.
 #   Upstream recommends level 2, which allows the tests to run, so we use that.
 #
-# Therefore we are overridding the default and setting it to -O2 for both
+# Therefore we are overriding the default and setting it to -O2 for both
 # platforms and both architectures.
 gcc_OPT =	-O2
 

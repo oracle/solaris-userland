@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -89,5 +89,5 @@ REQUIRED_PACKAGES += text/gawk
 REQUIRED_PACKAGES += text/gnu-grep
 REQUIRED_PACKAGES += text/gnu-sed
 
-# Generally usefull tools for development
+# Generally useful tools for development
 REQUIRED_PACKAGES += developer/build/autoconf

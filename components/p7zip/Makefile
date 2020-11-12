@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # When building with Studio, p7zip has many warnings about extra semicolons,
@@ -53,7 +53,7 @@ include $(WS_MAKE_RULES)/common.mk
 
 # The .3 refers to version 16.02-3 to distinguish between community version
 # of p7zip and this package, which contains all known fixes. A similar approach
-# is addopted by some Linux distros.
+# is adopted by some Linux distros.
 IPS_COMPONENT_VERSION=	16.2.3
 HUMAN_VERSION=		$(COMPONENT_VERSION)-3
 

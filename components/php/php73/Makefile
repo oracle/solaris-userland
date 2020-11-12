@@ -117,7 +117,7 @@ CONFIGURE_ENV += TMPDIR=$(BUILD_DIR)/temp
 COMPONENT_INSTALL_ENV += TMPDIR=$(BUILD_DIR)/temp
 
 # In order to build pear on public build machine every engineer needs to use
-# his own temporary directory and not /var/tmp/pear. Unfortunatelly this
+# his own temporary directory and not /var/tmp/pear. Unfortunately this
 # temporary directory is then stored into pear.conf file. So we need to correct
 # it back to the default which would be used without us specifying TMPDIR -
 # that is to /tmp/pear/temp

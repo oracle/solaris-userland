@@ -1,8 +1,8 @@
 '\" te
 .\" Copyright (c) 2000, 2001, 2002, 2003, 2004 by Martin C. Shepherd. All Rights Reserved.
 .\" Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, provided that the above copyright notice(s) and this permission notice appear in all copies of the Software and that both the above copyright notice(s) and this permission notice appear in supporting documentation.  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.  Except as contained in this notice, the name of a copyright holder shall not be used in advertising or otherwise to promote the sale, use or other dealings in this Software without prior written authorization of the copyright holder.
-.\" Portions Copyright (c) 2007, 2017, Oracle and/or its affiliates. All rights reserved.
-.TH gl_get_line 3TECLA "17 Aug 2017" "Solaris 11.4" "Interactive Command-line Input Library Functions"
+.\" Portions Copyright (c) 2007, 2020, Oracle and/or its affiliates.
+.TH gl_get_line 3TECLA "22 Dec 2020" "Solaris 11.4" "Interactive Command-line Input Library Functions"
 .SH NAME
 gl_get_line, new_GetLine, del_GetLine, gl_customize_completion, gl_change_terminal, gl_configure_getline, gl_load_history, gl_save_history, gl_group_history, gl_show_history, gl_watch_fd, gl_inactivity_timeout, gl_terminal_size, gl_set_term_size, gl_resize_history, gl_limit_history, gl_clear_history, gl_toggle_history, gl_lookup_history, gl_state_of_history, gl_range_of_history, gl_size_of_history, gl_echo_mode, gl_replace_prompt, gl_prompt_style, gl_ignore_signal, gl_trap_signal, gl_last_signal, gl_completion_action, gl_register_action, gl_display_text, gl_return_status, gl_error_message, gl_catch_blocked, gl_list_signals, gl_bind_keyseq, gl_erase_terminal, gl_automatic_history, gl_append_history, gl_query_char, gl_read_char \- allow the user to compose an input line
 .SH SYNOPSIS
@@ -350,7 +350,7 @@ The inactivity timer expired while \fBgl_get_line()\fR was waiting for input, an
 .ad
 .RS 15n
 .rt  
-An application I/O callback returned \fBGLFD_ABORT\fR. Ssee \fBgl_watch_fd()\fR.
+An application I/O callback returned \fBGLFD_ABORT\fR. See \fBgl_watch_fd()\fR.
 .RE
 
 .sp
@@ -578,7 +578,7 @@ gl_configure_getline(gl, "edit-mode vi \n nobeep",
 
 .sp
 .LP
-The \fIapp_string\fR argument causes the calling application to start in \fBvi\fR(1) edit-mode, instead of the default \fBemacs\fR mode, and turns off the use of the terminal bell by the library. It then attempts to read system-wide configuration commands from an optional file called \fB/usr/share/myapp/teclarc\fR, then finally reads user-specific configuration commands from an optional \fB\&.teclarc\fR file in the user's home directory. Note that the arguments are listed in ascending order of priority, with the contents of \fIapp_string\fR being potentially over riden by commands in \fIapp_file\fR, and commands in \fIapp_file\fR potentially being overriden by commands in \fIuser_file\fR.
+The \fIapp_string\fR argument causes the calling application to start in \fBvi\fR(1) edit-mode, instead of the default \fBemacs\fR mode, and turns off the use of the terminal bell by the library. It then attempts to read system-wide configuration commands from an optional file called \fB/usr/share/myapp/teclarc\fR, then finally reads user-specific configuration commands from an optional \fB\&.teclarc\fR file in the user's home directory. Note that the arguments are listed in ascending order of priority, with the contents of \fIapp_string\fR being potentially over riden by commands in \fIapp_file\fR, and commands in \fIapp_file\fR potentially being overridden by commands in \fIuser_file\fR.
 .sp
 .LP
 You can call this function as many times as needed, the results being cumulative, but note that copies of any file names specified with the \fIapp_file\fR and \fIuser_file\fR arguments are recorded internally for subsequent use by the read-init-files key-binding function, so if you plan to call this function multiple times, be sure that the last call specifies the filenames that you want re-read when the user requests that the configuration files be re-read.
@@ -625,7 +625,7 @@ The \fIdata\fR argument provides a way for your application to pass arbitrary, a
 The callback function is responsible for looking backwards in the input line from the point at which the user pressed TAB, to find the start of the word being completed. It then must lookup possible completions of this word, and record them one by one in the \fBWordCompletion\fR object that is passed to it as an argument, by calling the \fBcpl_add_completion()\fR function. If the callback function wants to provide filename completion in addition to its own specific completions, it has the option of itself calling the builtin filename completion callback. This also is documented on the \fBcpl_complete_word\fR(3TECLA) manual page.
 .sp
 .LP
-If you would like \fBgl_get_line()\fR to return the current input line when a successful completion is been made, you can arrange this when you call \fBcpl_add_completion()\fR by making the last character of the continuation suffix a newline character. The input line will be updated to display the completion, together with any contiuation suffix up to the newline character, and \fBgl_get_line()\fR will return this input line.
+If you would like \fBgl_get_line()\fR to return the current input line when a successful completion is been made, you can arrange this when you call \fBcpl_add_completion()\fR by making the last character of the continuation suffix a newline character. The input line will be updated to display the completion, together with any continuation suffix up to the newline character, and \fBgl_get_line()\fR will return this input line.
 .sp
 .LP
 If your callback function needs to write something to the terminal, it must call \fBgl_normal_io()\fR before doing so. This will start a new line after the input line that is currently being edited, reinstate normal terminal I/O, and notify \fBgl_get_line()\fR that the input line will need to be redrawn when the callback returns.
@@ -737,7 +737,7 @@ Along with each history line, additional information about it, such as its nesti
 The \fImax_lines\fR argument must be either -1 to specify that all lines in the history list be saved, or a positive number specifying a ceiling on how many of the most recent lines should be saved.
 .sp
 .LP
-Both fuctions return non-zero on error, after writing an error message to \fBstderr\fR. Note that \fBgl_load_history()\fR does not consider the non-existence of a file to be an error.
+Both functions return non-zero on error, after writing an error message to \fBstderr\fR. Note that \fBgl_load_history()\fR does not consider the non-existence of a file to be an error.
 .SS "Multiple History Lists"
 .sp
 .LP
@@ -847,7 +847,7 @@ Beware that the string returned in \fIhline\fR->\fIline\fR is part of the histor
 By default, whenever a line is entered by the user, it is automatically appended to the history list, just before \fBgl_get_line()\fR returns the line to the caller. This is convenient for the majority of applications, but there are also applications that need finer-grained control over what gets added to the history list. In such cases, the automatic addition of entered lines to the history list can be turned off by calling the \fBgl_automatic_history()\fR function.
 .sp
 .LP
-If this function is called with its \fIenable\fR argument set to 0, \fBgl_get_line()\fR will not automatically archive subsequently entered lines. Automatic archiving can be reenabled at a later time by calling this function again, with its \fIenable\fR argument set to 1. While automatic history archiving is disabled, the calling application can use the \fBgl_append_history()\fR to append lines to the history list as needed.
+If this function is called with its \fIenable\fR argument set to 0, \fBgl_get_line()\fR will not automatically archive subsequently entered lines. Automatic archiving can be re-enabled at a later time by calling this function again, with its \fIenable\fR argument set to 1. While automatic history archiving is disabled, the calling application can use the \fBgl_append_history()\fR to append lines to the history list as needed.
 .sp
 .LP
 The \fIline\fR argument specifies the line to be added to the history list. This must be a normal '\e0 ' terminated string. If this string contains any newline characters, the line that gets archived in the history list will be terminated by the first of these. Otherwise it will be terminated by the '\e0 ' terminator. If the line is longer than the maximum input line length that was specified when \fBnew_GetLine()\fR was called, it will be truncated to the actual \fBgl_get_line()\fR line length when the line is recalled.
@@ -1456,7 +1456,7 @@ So that you do not need to end each output line with \er\en, instead of just \en
 .RE
 .sp
 .LP
-The \fBGL_RESTORE_ENV\fR combination is the same as \fBGL_SUSPEND_INPUT\fR, except that it does not move the cursor. If your signal handler does not read or write anything to the terminal, the user will not see any visible indication that a signal was caught. This can be useful if you have a signal handler that only occasionally writes to the terminal, where using \fBGL_SUSPEND_LINE\fR would cause the input line to be unnecessarily duplicated when nothing had been written to the terminal. Such a signal handler, when it does write to the terminal, should be sure to start a new line at the start of its first write, by writing a new line before returning. If the signal arrives while the user is entering a line that only occupies a signal terminal line, or if the cursor is on the last terminal line of a longer input line, this will have the same effect as \fBGL_SUSPEND_INPUT\fR. Otherwise it will start writing on a line that already contains part of the displayed input line. This does not do any harm, but it looks a bit ugly, which is why the \fBGL_SUSPEND_INPUT\fR combination is better if you know that you are always going to be writting to the terminal.
+The \fBGL_RESTORE_ENV\fR combination is the same as \fBGL_SUSPEND_INPUT\fR, except that it does not move the cursor. If your signal handler does not read or write anything to the terminal, the user will not see any visible indication that a signal was caught. This can be useful if you have a signal handler that only occasionally writes to the terminal, where using \fBGL_SUSPEND_LINE\fR would cause the input line to be unnecessarily duplicated when nothing had been written to the terminal. Such a signal handler, when it does write to the terminal, should be sure to start a new line at the start of its first write, by writing a new line before returning. If the signal arrives while the user is entering a line that only occupies a signal terminal line, or if the cursor is on the last terminal line of a longer input line, this will have the same effect as \fBGL_SUSPEND_INPUT\fR. Otherwise it will start writing on a line that already contains part of the displayed input line. This does not do any harm, but it looks a bit ugly, which is why the \fBGL_SUSPEND_INPUT\fR combination is better if you know that you are always going to be writing to the terminal.
 .sp
 .LP
 The \fIafter\fR argument, which determines what \fBgl_get_line()\fR does after the application's signal handler returns (if  it returns), can take any one of the following values:
@@ -1499,7 +1499,7 @@ The \fIerrno_value\fR argument is intended to be combined with the \fBGLS_ABORT\
 .SS "Reliable Signal Handling"
 .sp
 .LP
-Signal handling is suprisingly hard to do reliably without race conditions. In \fBgl_get_line()\fR a lot of care has been taken to allow applications to perform reliable signal handling around \fBgl_get_line()\fR. This section explains how to make use of this.
+Signal handling is surprisingly hard to do reliably without race conditions. In \fBgl_get_line()\fR a lot of care has been taken to allow applications to perform reliable signal handling around \fBgl_get_line()\fR. This section explains how to make use of this.
 .sp
 .LP
 As an example of the problems that can arise if the application is not written correctly, imagine that one's application has a \fBSIGINT\fR signal handler that sets a global flag. Now suppose that the application tests this flag just before invoking \fBgl_get_line()\fR. If a \fBSIGINT\fR signal happens to be received in the small window of time between the statement that tests the value of this flag, and the statement that calls \fBgl_get_line()\fR, then \fBgl_get_line()\fR will not see the signal, and will not be interrupted. As a result, the application will not be able to respond to the signal until the user gets around to finishing entering the input line and \fBgl_get_line()\fR returns. Depending on the application, this might or might not be a disaster, but at the very least it would puzzle the user.
@@ -1710,7 +1710,7 @@ Between calls to \fBgl_get_line()\fR, the \fBgl_display_text()\fR function provi
 If \fIgl\fR is not currently connected to a terminal, for example if the output of a program that uses \fBgl_get_line()\fR is being piped to another program or redirected to a file, then the value of the \fIdef_width\fR parameter is used as the terminal width.
 .sp
 .LP
-The \fIindentation\fR argument specifies the number of characters to use to indent each line of ouput. The \fIfill_char\fR argument specifies the character that will be used to perform this indentation.
+The \fIindentation\fR argument specifies the number of characters to use to indent each line of output. The \fIfill_char\fR argument specifies the character that will be used to perform this indentation.
 .sp
 .LP
 The \fIprefix\fR argument can be either \fINULL\fR or a string to place at the beginning of each new line (after any indentation). Similarly, the \fIsuffix\fR argument can be either \fINULL\fR or a string to place at the end of each line. The suffix is placed flush against the right edge of the terminal, and any space between its first character and the last word on that line is filled with the character specified by the \fIfill_char\fR argument. Normally the fill-character is a space.

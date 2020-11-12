@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -34,7 +34,7 @@ COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	17150
 TPNO=			50391
 
-# Additional Sun-created utilties
+# Additional Sun-created utilities
 COMPONENT_NAME_1=	cmap_alloc
 COMPONENT_NAME_2=	cmap_compact
 COMPONENT_NAME_3=	xcolor

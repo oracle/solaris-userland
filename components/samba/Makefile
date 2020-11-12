@@ -82,7 +82,7 @@ SAMBA_FULL_CONF=	$(BUILD_DIR_64)/.configured
 $(BUILD_DIR_32)/%:	MACHLIBDIR=
 $(BUILD_DIR_64)/%:	MACHLIBDIR=/$(MACH64)
 
-# Uncomment the followin line to enable verbose and single-thread (readable) build.
+# Uncomment the following line to enable verbose and single-thread (readable) build.
 #override WAFOPTS	=	-v -j1
 WAF= $(PYTHON) ./buildtools/bin/waf
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 32
 
@@ -76,7 +76,7 @@ COMPONENT_SYSTEM_TEST_ENV	+= "_JAVA_OPTIONS=-Djava.io.tmpdir=$(BUILD_DIR_32)/tmp
 COMPONENT_SYSTEM_TEST_TARGETS	 = test
 
 # Test transforms
-# 	remove everything upto "test" which is build noise
+# 	remove everything up to "test" which is build noise
 #	remove time
 COMPONENT_TEST_TRANSFORMS += \
 	'-e "1,/^test/d"' \

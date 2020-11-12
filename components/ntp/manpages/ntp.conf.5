@@ -18,7 +18,7 @@
 .\"
 .\" CDDL HEADER END
 .\"
-.\" Copyright (c) 2009, 2018, Oracle and/or its affiliates. All rights reserved.
+.\" Copyright (c) 2009, 2020, Oracle and/or its affiliates.
 .\"
 .TH "ntp.conf" "5" "" "" "File Formats"
 .SH NAME
@@ -54,7 +54,7 @@ These commands specify the time server name or address to be used and the mode i
 .ad
 .sp .25
 .RS 4n
-For type s and r addresses (only), this command mobilizes a persistent client mode association with the specified remote server or local reference clock. If the \fBpreempt\fR flag is specified, a preemptable client mode association is mobilized instead.
+For type s and r addresses (only), this command mobilizes a persistent client mode association with the specified remote server or local reference clock. If the \fBpreempt\fR flag is specified, a preemptible client mode association is mobilized instead.
 .RE
 .sp .3
 .ne 2
@@ -96,7 +96,7 @@ For type m addresses (only), this command mobilizes a manycast client mode assoc
 .RS 4n
 For type s messages (only) this command mobilizes a client mode association for servers implementing the pool automatic server discovery scheme described on the Association Management page at file:///usr/share/doc/ntp/assoc.html. The address is a DNS name in the form \fB\fIarea\fP.pool.ntp.org\fR, where \fB\fIarea\fP\fR is a qualifier designating the server geographic area such as \fBus\fR or \fBeurope\fR.
 .SS "Command Options"
-Each of the above configuation commands takes zero or more options from the list below:
+Each of the above configuration commands takes zero or more options from the list below:
 .sp .3
 .ne 2
 .mk
@@ -177,7 +177,7 @@ Marks the server or peer to be ignored by the selection algorithm but visible to
 .ad
 .sp .25
 .RS 4n
-Specifies the association as preemptable rather than the default persistent. This option is ignored with the  \fBbroadcast\fR command and is most useful with the \fBmanycastclient\fR and \fBpool\fR commands.
+Specifies the association as preemptible rather than the default persistent. This option is ignored with the  \fBbroadcast\fR command and is most useful with the \fBmanycastclient\fR and \fBpool\fR commands.
 .RE
 .sp .3
 .ne 2
@@ -207,7 +207,7 @@ Mark the association to assume truechimer status; that is, always survive the se
 .ad
 .sp .25
 .RS 4n
-This option specifies the time-to-live \fIttl\fP for the \fBbroadcast\fR commmand and the maximum \fIttl\fP for the expanding ring search used by the \fBmanycastclient\fR command. Selection of the proper value, which defaults to 127, is something of a black art and should be coordinated with the network administrator.
+This option specifies the time-to-live \fIttl\fP for the \fBbroadcast\fR command and the maximum \fIttl\fP for the expanding ring search used by the \fBmanycastclient\fR command. Selection of the proper value, which defaults to 127, is something of a black art and should be coordinated with the network administrator.
 .RE
 .sp .3
 .ne 2
@@ -398,7 +398,7 @@ Specifies the key identifier to use with the \fBntpq\fR utility, which uses the 
 .ad
 .sp .25
 .RS 4n
-This command requires the OpenSSL library. It activates public key cryptography and loads the required public/private encryption and sign kyes and public certificat. If one or more files are left unspecified, the default names are used as described below. Unless the complete path and name of the file are specified, the location of a file is relative to the keys directory specified in the \fBkeysdir\fR command or default \fB/etc/inet\fR. Following are the subcommands.
+This command requires the OpenSSL library. It activates public key cryptography and loads the required public/private encryption and sign kyes and public certificate. If one or more files are left unspecified, the default names are used as described below. Unless the complete path and name of the file are specified, the location of a file is relative to the keys directory specified in the \fBkeysdir\fR command or default \fB/etc/inet\fR. Following are the subcommands.
 .RE
 .sp .3
 .ne 2
@@ -511,7 +511,7 @@ Set the parameters of the \fBlimited\fR facility which protects the server from 
 .RS 4n
 The \fIaddress\fP argument expressed in dotted-quad form is the address of a host or network. Alternatively, the \fB\fIaddress\fP\fR argument can be a valid host DNS&nbsp;name. The \fImask\fP argument expressed in dotted-quad form defaults to \fB255.255.255.255\fR, meaning that the \fIaddress\fP is treated as the address of an individual host. A default entry (address \fB0.0.0.0\fR, mask \fB0.0.0.0\fR) is always included and is always the first entry in the list. Note that text string \fBdefault\fR, with no mask option, may be used to indicate the default entry.
 .LP
-In the current implementation, \fIflag\fP always restricts access, i.e., an entry with no flags indicates that free access to the server is to be given. The flags are not orthogonal, in that more restrictive flags will often make less restrictive ones redundant. The flags can generally be classed into two catagories, those which restrict time service and those which restrict informational queries and attempts to do run-time reconfiguration of the server. One or more of the following flags may be specified:
+In the current implementation, \fIflag\fP always restricts access, i.e., an entry with no flags indicates that free access to the server is to be given. The flags are not orthogonal, in that more restrictive flags will often make less restrictive ones redundant. The flags can generally be classed into two categories, those which restrict time service and those which restrict informational queries and attempts to do run-time reconfiguration of the server. One or more of the following flags may be specified:
 .RE
 .sp .3
 .ne 2
@@ -1214,7 +1214,7 @@ If \fB\fIstratum\fP\fR is set at some value less than 16 a special orphan mode i
 .ad
 .sp .25
 .RS 6n
-The slection algorithm normally pads each intersection a minimum of one millisecond to avoid needless classification. In some cases, such as reference clocks with high jitter and a PPS signal, it is useful to increase the padding. This command can be used for that purpose. As a general rule, set the mindistance to the maximum expected offset plus the maxiumum expected jitter, in seconds.
+The selection algorithm normally pads each intersection a minimum of one millisecond to avoid needless classification. In some cases, such as reference clocks with high jitter and a PPS signal, it is useful to increase the padding. This command can be used for that purpose. As a general rule, set the mindistance to the maximum expected offset plus the maximum expected jitter, in seconds.
 .RE
 .sp .3
 .ne 2
@@ -1224,7 +1224,7 @@ The slection algorithm normally pads each intersection a minimum of one millisec
 .ad
 .sp .25
 .RS 6n
-The selection algorithm accumulates a number of packets before setting the clock in order to use the best data available. The number is determined by the synchronization distance for each association and a limit called the distance threshold. The synchronization distance starts at 16, then drops by a factor of about two as each packet is received. The default distance threshold is 1.0, which usually results in four packets. Setting maxdistance to some value between 1 and 16 can be used to change the number of packets required. For instance, setting it to 16 will set the clock on the first packet received; howver, setting it to this value essentially disables the mitigation and grooming algorithms.
+The selection algorithm accumulates a number of packets before setting the clock in order to use the best data available. The number is determined by the synchronization distance for each association and a limit called the distance threshold. The synchronization distance starts at 16, then drops by a factor of about two as each packet is received. The default distance threshold is 1.0, which usually results in four packets. Setting maxdistance to some value between 1 and 16 can be used to change the number of packets required. For instance, setting it to 16 will set the clock on the first packet received; however, setting it to this value essentially disables the mitigation and grooming algorithms.
 .RE
 .sp .3
 .ne 2

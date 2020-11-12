@@ -62,7 +62,7 @@ COMPONENT_INSTALL_ACTION = cd $(@D); \
 			cd $(ELIXIR_INSTALL_PATH); \
 			unzip $(@D)/hex.ez 1> /dev/null
 
-# Hex provides automated tests but it requires external depedencies and postgresql database.
+# Hex provides automated tests but it requires external dependencies and postgresql database.
 # As a result, the manual testing according to the TESTING file is preferred.
 test:		$(NO_TESTS)
 system-test: $(NO_TESTS)
