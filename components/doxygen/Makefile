@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -57,9 +57,6 @@ endif
 # This test fails because we don't have bibtext. Unfortunately the testing
 # stops there and does not continue. As a workaround we remove this test.
 COMPONENT_POST_UNPACK_ACTION += ( cd $(@D); $(RM) testing/012_cite.dox )
-
-# Missing files in build dir for configure without this.
-COMPONENT_PRE_CONFIGURE_ACTION =	($(CLONEY) $(SOURCE_DIR) $(@D))
 
 CONFIGURE_OPTIONS +=	--platform solaris-g++
 CONFIGURE_OPTIONS +=	--enable-langs=am,ar,br,ca,cn,cz,de,dk,en,eo,es,fa,fi,fr,gr,hr,hu,id,it,je,jp,ke,kr,lt,lv,mk,nl,no,pl,pt,ro,ru,sc,si,sk,sr,sv,tr,tw,ua,vi,za

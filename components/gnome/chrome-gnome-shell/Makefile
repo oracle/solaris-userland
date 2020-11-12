@@ -49,6 +49,7 @@ BUILD_STYLE = cmake
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Need to use GNU head
+CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
 # Need to convert "#! /usr/bin/env python" to actual path for pkgdepend to work

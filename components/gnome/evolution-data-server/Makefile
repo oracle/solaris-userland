@@ -72,7 +72,7 @@ CMAKE_OPTIONS += -DENABLE_GTK_DOC=OFF
 
 # for the tests
 unexport SHELLOPTS
-COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR) $(@D));
+
 #
 # to locate dbus-daemon
 # NOTE: desktop must be running -> run

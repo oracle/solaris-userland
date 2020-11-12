@@ -54,13 +54,6 @@ TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk
 
-# everything works better if cmake is used as is intended to be used
-CLONEY= /bin/true
-COMPONENT_PRE_BUILD_ACTION += cd $(@D);
-COMPONENT_PRE_BUILD_ACTION += /usr/bin/env - $(COMPONENT_BUILD_ENV) \
-				$(CMAKE) $(CMAKE_OPTIONS) \
-				-H$(COMPONENT_DIR)/$(COMPONENT_SRC) -B. ;
-
 # The path to cmake configure file has to be specified explicitly,
 # otherwise 32-bit openjpeg library is attempted to be linked to 64-bit 
 OPENJPEG_CMAKE_DIR = $(shell pkg-config --modversion libopenjp2 | \

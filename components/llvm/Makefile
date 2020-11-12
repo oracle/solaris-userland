@@ -66,7 +66,6 @@ BUILD_STYLE = cmake
 # Building with debug info results in ~7GB of package data, so while preferred,
 # is not practical.
 CMAKE_BUILD_TYPE = Release
-CLONEY = echo
 TEST_TARGET=
 SYSTEM_TEST_TARGET=
 
@@ -95,6 +94,12 @@ ifeq ($(DEBUG_BUILD), 1)
   GFLAG=-g3
 else
   GFLAG=
+endif
+
+ifeq ($(TOP_LEVEL_RUN),yes)
+# Enable a reasonable amount of parallelization during
+# the full build to avoid waiting on this last job :-).
+COMPONENT_BUILD_ARGS += -j4
 endif
 
 # Because LLVM's install target doesn't install everything that
@@ -178,6 +183,9 @@ COMPONENT_POST_INSTALL_ACTION += \
 	for f in arcmt-test c-index-test c-arcmt-test diagtool llvm-lto; do \
 	$(ELFEDIT) -e "dyn:runpath $(LLVM_RUNPATH_64)" \
 	  $(PROTOUSRBINDIR)/$$f; done
+
+# The component uses check target for unit tests.
+COMPONENT_TEST_TARGETS = check
 
 # Results output is slightly different on Intel vs. SPARC.
 COMPONENT_TEST_MASTER = \

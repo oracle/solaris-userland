@@ -109,10 +109,6 @@ COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 # Ensure cmake finds the matching 32/64-bit version of dependencies.
 COMPONENT_BUILD_ENV += PKG_CONFIG_PATH="$(PKG_CONFIG_PATH)"
 
-COMPONENT_PRE_BUILD_ACTION += cd $(@D);
-COMPONENT_PRE_BUILD_ACTION += echo Running cmake with $(CMAKE_OPTIONS);
-COMPONENT_PRE_BUILD_ACTION += $(ENV) $(COMPONENT_BUILD_ENV) $(CMAKE) . $(CMAKE_OPTIONS);
-
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/build/cmake
 REQUIRED_PACKAGES += developer/build/gnu-make

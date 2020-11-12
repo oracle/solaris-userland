@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 #
@@ -29,13 +29,11 @@
 #
 # Most cmake-based components require intltools.
 include $(WS_MAKE_RULES)/intltool.mk
-# cmake components don't generally use autoconf.
-include $(WS_MAKE_RULES)/justmake.mk
 
 # Ensure correct version of libraries are linked to.
 LDFLAGS += $(CC_BITS)
 
-# This component uses cmake to generate Makefiles and so has no configure
+# This component uses cmake to generate Makefiles.
 CMAKE = $(shell which cmake)
 CMAKE_BUILD_TYPE ?= RelWithDebInfo
 
@@ -96,13 +94,87 @@ CMAKE_OPTIONS += -DCMAKE_BUILD_TYPE=$(CMAKE_BUILD_TYPE)
 CMAKE_OPTIONS += $(CMAKE_OPTIONS.$(BITS))
 
 # Ensure cmake finds the matching 32/64-bit version of dependencies.
+CONFIGURE_ENV += PKG_CONFIG_PATH="$(PKG_CONFIG_PATH)"
 COMPONENT_BUILD_ENV += PKG_CONFIG_PATH="$(PKG_CONFIG_PATH)"
 
-COMPONENT_PRE_BUILD_ACTION += cd $(@D);
-COMPONENT_PRE_BUILD_ACTION += echo Running cmake with $(CMAKE_OPTIONS);
-COMPONENT_PRE_BUILD_ACTION += /usr/bin/env - $(COMPONENT_BUILD_ENV) \
-			      $(CMAKE) $(CMAKE_OPTIONS) \
-			      $(COMPONENT_DIR)/$(COMPONENT_SRC);
+# Install the bits to proto directory instead to CMake PREFIX.
+COMPONENT_INSTALL_ARGS += DESTDIR=$(PROTO_DIR)
+COMPONENT_INSTALL_ARGS += $(COMPONENT_INSTALL_ARGS.$(BITS))
+
+# Ensure valid configure options for 32/64 bit builds.
+$(BUILD_DIR_32)/.configured:	BITS=32
+$(BUILD_DIR_64)/.configured:	BITS=64
+
+# CMake uses test as a default test target.
+COMPONENT_TEST_TARGETS := test
+
+
+### Makefile rules adopted from justmake.mk and configure.mk ###
+
+# Run CMake configuration with the user and default options.
+configure:  $(CONFIGURE_$(MK_BITS))
+$(BUILD_DIR)/%/.configured:	$(SOURCE_DIR)/.prep
+	($(RM) -rf $(@D) ; $(MKDIR) $(@D))
+	$(COMPONENT_PRE_CONFIGURE_ACTION)
+	(cd $(@D) ; $(ENV) $(CONFIGURE_ENV) $(CMAKE) \
+		$(CMAKE_OPTIONS) $(COMPONENT_DIR)/$(COMPONENT_SRC)/)
+	$(COMPONENT_POST_CONFIGURE_ACTION)
+	$(TOUCH) $@
+
+# CMake supports out-of-tree builds, no need for cloney.
+$(BUILD_DIR)/%/.built:	$(BUILD_DIR)/%/.configured
+	$(COMPONENT_PRE_BUILD_ACTION)
+	(cd $(@D); $(ENV) $(COMPONENT_BUILD_ENV) \
+		$(GMAKE) $(COMPONENT_BUILD_ARGS) $(COMPONENT_BUILD_TARGETS))
+	$(COMPONENT_POST_BUILD_ACTION)
+ifeq ($(strip $(PARFAIT_BUILD)),yes)
+	-$(PARFAIT) $(@D)
+endif
+	$(TOUCH) $@
+
+# The fully customizable install phase ...
+$(BUILD_DIR)/%/.installed:	$(BUILD_DIR)/%/.built
+	$(COMPONENT_PRE_INSTALL_ACTION)
+	(cd $(@D) ; $(ENV) $(COMPONENT_INSTALL_ENV) $(GMAKE) \
+			$(COMPONENT_INSTALL_ARGS) $(COMPONENT_INSTALL_TARGETS))
+	$(COMPONENT_POST_INSTALL_ACTION)
+	$(TOUCH) $@
+
+# Copied the test rules from justmake.mk.
+$(BUILD_DIR)/%/.tested-and-compared:    $(BUILD_DIR)/%/.built
+	$(RM) -rf $(COMPONENT_TEST_BUILD_DIR)
+	$(MKDIR) $(COMPONENT_TEST_BUILD_DIR)
+	$(COMPONENT_PRE_TEST_ACTION)
+	-(cd $(COMPONENT_TEST_DIR) ; \
+		$(COMPONENT_TEST_ENV_CMD) $(COMPONENT_TEST_ENV) \
+		$(COMPONENT_TEST_CMD) \
+		$(COMPONENT_TEST_ARGS) $(COMPONENT_TEST_TARGETS)) \
+		$(if $(findstring $(COMPONENT_TEST_OUTPUT),$(COMPONENT_TEST_ENV)$(COMPONENT_TEST_ARGS)),,&> $(COMPONENT_TEST_OUTPUT))
+	$(COMPONENT_POST_TEST_ACTION)
+	$(COMPONENT_TEST_CREATE_TRANSFORMS)
+	$(COMPONENT_TEST_PERFORM_TRANSFORM)
+	$(COMPONENT_TEST_COMPARE)
+	$(COMPONENT_TEST_CLEANUP)
+	$(TOUCH) $@
+
+$(BUILD_DIR)/%/.tested:    $(BUILD_DIR)/%/.built
+	$(COMPONENT_PRE_TEST_ACTION)
+	(cd $(COMPONENT_TEST_DIR) ; \
+		$(COMPONENT_TEST_ENV_CMD) $(COMPONENT_TEST_ENV) \
+		$(COMPONENT_TEST_CMD) \
+		$(COMPONENT_TEST_ARGS) $(COMPONENT_TEST_TARGETS))
+	$(COMPONENT_POST_TEST_ACTION)
+	$(COMPONENT_TEST_CLEANUP)
+	$(TOUCH) $@
+
+
+ifeq   ($(strip $(PARFAIT_BUILD)),yes)
+parfait: build
+else
+parfait:
+	$(MAKE) PARFAIT_BUILD=yes parfait
+endif
+
 
 REQUIRED_PACKAGES += developer/build/cmake
 REQUIRED_PACKAGES += developer/build/pkg-config

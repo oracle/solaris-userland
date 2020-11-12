@@ -38,11 +38,6 @@ COMPONENT_PROJECT_URL = https://dev.mysql.com/
 COMPONENT_BUGDB       = database/mysql
 COMPONENT_ANITYA_ID=	21279
 
-#We use cp(1) instead of cloney because we use TAR to copy files and the TAR 
-#used doesn't handle long links
-CLONEY = echo
-COMPONENT_PRE_BUILD_ACTION +=  $(CP) -rp $(SOURCE_DIR)/* $(@D);
-
 BUILD_STYLE= cmake
 SMF_MANIFESTS= $(COMPONENT_DIR)/Solaris/mysql_56.xml
 TEST_TARGET= $(NO_TESTS)
@@ -54,7 +49,6 @@ include $(WS_MAKE_RULES)/common.mk
 
 # This component uses cmake to generate Makefiles and thus does not
 # run any configure script
-CMAKE               = $(shell which cmake)
 CMAKE_PREFIX        = $(USRDIR)/mysql/5.6
 CONFDIR             = $(ETCDIR)/mysql/5.6
 DATA_PREFIX         = $(VARDIR)/mysql/5.6

@@ -39,10 +39,10 @@ COMPONENT_ANITYA_ID=	13267
 TPNO=			34235
 
 BUILD_STYLE= cmake
-SYSTEM_TEST_TARGET= $(SYSTEM_TEST_32_and_64)
 
-# The unit tests failed to start.
-$(SKIP_TEST_AT_TOP_LEVEL)
+# There are not unit tests.
+TEST_TARGET= $(NO_TESTS)
+SYSTEM_TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk
 

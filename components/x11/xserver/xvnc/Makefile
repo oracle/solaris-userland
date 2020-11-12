@@ -58,6 +58,7 @@ BUILD_STYLE= cmake
 
 SMF_MANIFESTS= $(COMPONENT_DIR)/files/xvnc-inetd.xml
 
+include $(WS_MAKE_RULES)/configure.mk
 include $(WS_MAKE_RULES)/x11-component.mk
 
 # We need to unpack the xserver source in the unix/xserver directory of the
@@ -80,6 +81,9 @@ COMPONENT_POST_UNPACK_ACTION_1 += \
         $(CP) -r $(XORG_DIR)/sun-src/IA $(XSERVER_SRC)/IA ; \
         $(CP) -r $(XORG_DIR)/sun-src/os/* $(XSERVER_SRC)/os/ ;
 
+# Copy xserver sources to enable autotools separate build.
+COMPONENT_POST_CONFIGURE_ACTION += \
+        $(CP) -r $(SOURCE_DIR)/* $(@D)/ ;
 
 # Apply patches from upstream tigervnc tarball and xorg directory to
 # embedded xserver sources
@@ -103,8 +107,6 @@ CMAKE_OPTIONS += -DBUILD_JAVA:BOOL=FALSE
 CMAKE_OPTIONS += -DCMAKE_SKIP_RPATH:BOOL=TRUE
 
 ### Xvnc (embedded in unix/xserver in TigerVNC sources) is built w/ autotools
-
-include $(WS_MAKE_RULES)/configure.mk
 
 # common.mk would set these if BUILD_STYLE=configure, but not for cmake
 CONFIGURE_ENV += CFLAGS="$(strip $(CFLAGS))"

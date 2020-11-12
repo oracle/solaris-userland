@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2010, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2020, Oracle and/or its affiliates.
 #
 
 include ../make-rules/shared-macros.mk
@@ -108,6 +108,10 @@ publish:		MAKEFLAGS += DISABLE_IPS_CATALOG_AND_INDEX_UPDATES=yes
 # For cases in which a component test should be skipped at at the top level
 test:			MAKEFLAGS += TOP_LEVEL_TEST=yes
 system-test:		MAKEFLAGS += TOP_LEVEL_TEST=yes
+
+# We need to distinguish between the full and one component build
+# in order to tune the number of parallel build jobs.
+build install publish:	MAKEFLAGS += TOP_LEVEL_RUN=yes
 
 .DEFAULT_GOAL :=	publish
 
