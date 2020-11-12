@@ -46,8 +46,10 @@ BUILD_STYLE= makemaker
 LICENSE=DBD-SQLite.license
 BUILD_TARGET= $(BUILD_$(MK_BITS)) $(LICENSE)
 
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
+PERL_VERSIONS=5.22 5.26
+
+CLONEY=echo
+COMPONENT_PRE_CONFIGURE_ACTION = $(CP) -r $(SOURCE_DIR)/* $(@D);
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -60,7 +62,7 @@ COMPONENT_TEST_TRANSFORMS += '-n -e "/^Result:/p"'
 # break the build process. The next best thing is to make the files empty. The
 # macro $(RM) is intentionaly not used here, as it contains '-f' parameter.
 # Using plain 'rm' makes the action fail if the files are not found.
-COMPONENT_PRE_CONFIGURE_ACTION= ( \
+COMPONENT_PRE_CONFIGURE_ACTION+= ( \
 	cd $(SOURCE_DIR) && \
 	rm sqlite3.h sqlite3.c && \
 	$(TOUCH) sqlite3.h sqlite3.c; \

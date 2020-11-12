@@ -1,32 +1,4 @@
 ################################################################################
-################### Making all tests pass in the workspace: ####################
-################################################################################
-
-# download:
-#  HTML::Parser
-#  Test::Deep
-#  Test::Warn
-#  Sub::Uplevel
-
-CCPATH="$( gmake print-CC.studio.64 | perl -ne 'print "$1\n" if m,=(\S+)/\S+?,' )"
-MODULEPATH="$PWD/p"
-SITE_PERL="$MODULEPATH/lib/site_perl"
-
-# for all modules
-  tar xf blah.tar.gz
-  cd blah
-  /usr/perl5/5.22/bin/perl Makefile.PL PREFIX="$MODULEPATH"
-  PATH="$CCPATH:$PATH" gmake install
-
-
-PERL5LIB=$SITE_PERL:$SITE_PERL/*/*/ gmake test COMPONENT_TEST_RESULTS_DIR=/
-
-Now all tests should pass
-
-
-
-
-################################################################################
 ########################## Testing on a test machine ###########################
 ################################################################################
 

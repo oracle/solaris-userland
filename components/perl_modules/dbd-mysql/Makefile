@@ -44,21 +44,17 @@ COMPONENT_ANITYA_ID=	2807
 
 TPNO=			46641
 
-
 BUILD_STYLE= makemaker
 LICENSE=DBD-mysql.license
 BUILD_TARGET= $(BUILD_$(MK_BITS)) $(LICENSE)
-
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 
 CLEAN_PATHS += $(LICENSE)
 
 COMPONENT_TEST_TARGETS = test
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += '-n -e "/^Result:/p"'
+COMPONENT_TEST_TRANSFORMS += '-e "/Failed:/p"'
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -172,6 +168,7 @@ COMPONENT_PRE_TEST_ACTION = ( \
 	: "Run job which will kill mysqld in 10 minutes"; \
 	( $(SET_X) PID=`cat "$$TEST_LINK"/pid`; sleep 600; ps -p $$PID && kill $$PID || : ) $(SILENT) & \
 	echo $$! > "$$TEST_LINK"/pid_of_guard; \
+	sleep 60; \
 )
 
 COMPONENT_POST_TEST_ACTION = ( \
@@ -186,3 +183,4 @@ $(LICENSE): $(LICENSE).template
 REQUIRED_PACKAGES += database/mysql-57/library
 REQUIRED_PACKAGES += library/perl-5/database
 REQUIRED_PACKAGES += system/library/c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

@@ -75,3 +75,4 @@ REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxft
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

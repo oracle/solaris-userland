@@ -43,7 +43,8 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/makemaker.mk
 
-# The unit tests are disabled since they never finish.
+# The unit tests are disabled since they require user input and thus will never
+# finish
 $(SKIP_TEST_AT_TOP_LEVEL)
 
 # Pick up the patch to configure.ac in the 01-solaris.patch file

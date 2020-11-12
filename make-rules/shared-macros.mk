@@ -815,10 +815,11 @@ PERL_VERSION_NODOT = $(subst .,,$(PERL_VERSION))
 # multiple packages for each version of perl listed here.  Used by
 # perl_modules/* but also used for those components that deliver a perl
 # package like graphviz and openscap.
-PERL_VERSIONS = 5.22 5.26
+PERL_VERSIONS = 5.22 5.26 5.32
 
 PERL.5.22 =     /usr/perl5/5.22/bin/perl
 PERL.5.26 =     /usr/perl5/5.26/bin/perl
+PERL.5.32 =     /usr/perl5/5.32/bin/perl
 
 define test-perl-availability
 TEST_PERL_PATH=$$(PERL.$(1))

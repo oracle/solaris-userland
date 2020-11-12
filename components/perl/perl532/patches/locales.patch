@@ -1,0 +1,57 @@
+Without this patch many of perl tests fail. The reason is that perl sets the
+locale via thread local newlocale(3C)/uselocale(3C), but reads the maximum
+character size from global MB_CUR_MAX. At some point the MB_CUR_MAX value stops
+to reflect the local thread settings. It will require deeper investigation to
+find out why. For the time being I have replaced reading the global MB_CUR_MAX
+with looking into thread local locale_t structure. This makes all tests but two
+pass.
+
+First failing test (ext/POSIX/t/mb.t) checks directly MB_CUR_MAX.
+Second failing test (ext/re/t/re_funcs_u.t) does some regex testing with
+  non-utf locale. I don't know why it fails and it does not seem directly
+  related to the MB_CUR_MAX issue. If this test still fails once MB_CUR_MAX is
+  fixed then it will need more attention.
+
+Because this is rather workaround than real fix (which I suppose might be in
+Solaris rather than in Perl) it is probably not suited for upstream.
+
+--- perl-5.32.0/locale.c
++++ perl-5.32.0/locale.c
+@@ -56,6 +56,9 @@
+ #ifdef I_WCTYPE
+ #  include <wctype.h>
+ #endif
++#if defined(__sun__)
++#  include <sys/localedef.h>
++#endif
+ 
+ /* If the environment says to, we can output debugging information during
+  * initialization.  This is done before option parsing, and before any thread
+@@ -4730,10 +4733,23 @@ Perl__is_cur_LC_category_utf8(pTHX_ int
+ 
+             DEBUG_L(PerlIO_printf(Perl_debug_log, "%s: %d: MB_CUR_MAX=%d\n",
+                                        __FILE__, __LINE__, (int) MB_CUR_MAX));
+-            if ((unsigned) MB_CUR_MAX < STRLENs(MAX_UNICODE_UTF8)) {
+-                is_utf8 = FALSE;
+-                restore_switched_locale(LC_CTYPE, original_ctype_locale);
+-                goto finish_and_return;
++            {
++                unsigned mb_cur_max = MB_CUR_MAX;
++#if defined(__sun__)
++                /* Solaris does not always set global MB_CUR_MAX so instead we
++                 * are looking at internal locale_t structure which is more
++                 * relevant to our current thread */
++                locale_t actual = uselocale((locale_t)0);
++                if (actual != LC_GLOBAL_LOCALE) {
++                    mb_cur_max = (*actual)->lc_charmap->cm_mb_cur_max;
++                }
++#endif
++
++                if (mb_cur_max < STRLENs(MAX_UNICODE_UTF8)) {
++                    is_utf8 = FALSE;
++                    restore_switched_locale(LC_CTYPE, original_ctype_locale);
++                    goto finish_and_return;
++                }
+             }
+ 
+ #    endif

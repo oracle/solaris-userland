@@ -1,0 +1,3860 @@
+## Files:
+perl-5.32.0/inline.h
+
+/*    inline.h
+ *
+ *    Copyright (C) 2012 by Larry Wall and others
+Copyright (c) 2008-2009 Bjoern Hoehrmann <bjoern@hoehrmann.de>
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ *    This file contains tables and code adapted from
+ *    https://bjoern.hoehrmann.de/utf-8/decoder/dfa/, which requires this
+ *    copyright notice:
+
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+ *
+ * This file is a home for static inline functions that cannot go in other
+ * header files, because they depend on proto.h (included after most other
+ * headers) or struct definitions.
+ *
+ * Each section names the header file that the functions "belong" to.
+ */
+
+
+## Files:
+perl-5.32.0/time64.c
+
+/*
+
+Copyright (c) 2007-2008  Michael G Schwern
+
+This software originally derived from Paul Sheer's pivotal_gmtime_r.c.
+
+The MIT License:
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+*/
+
+
+## Files:
+perl-5.32.0/perl.h
+
+/* The tables below are adapted from
+ * https://bjoern.hoehrmann.de/utf-8/decoder/dfa/, which requires this copyright
+ * notice:
+
+Copyright (c) 2008-2009 Bjoern Hoehrmann <bjoern@hoehrmann.de>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+*/
+
+
+## Files:
+perl-5.32.0/ebcdic_tables.h
+
+/* This file contains definitions for various tables used in EBCDIC handling.
+ * More info is in utfebcdic.h
+ *
+ * Some of the tables are adapted from
+ *      https://bjoern.hoehrmann.de/utf-8/decoder/dfa/
+ * which requires this copyright notice:
+
+Copyright (c) 2008-2009 Bjoern Hoehrmann <bjoern@hoehrmann.de>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+*/
+
+
+## Files:
+perl-5.32.0/ext/File-Glob/bsd_glob.h
+
+/*
+ * Copyright (c) 1989, 1993
+ *	The Regents of the University of California.  All rights reserved.
+ *
+ * This code is derived from software contributed to Berkeley by
+ * Guido van Rossum.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ *	@(#)glob.h	8.1 (Berkeley) 6/2/93
+ *	[lots of perl-specific changes since then--see bsd_glob.c]
+ */
+
+
+## Files:
+perl-5.32.0/ext/File-Glob/bsd_glob.c
+
+/*
+ * Copyright (c) 1989, 1993
+ *	The Regents of the University of California.  All rights reserved.
+ *
+ * This code is derived from software contributed to Berkeley by
+ * Guido van Rossum.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+
+
+## Files:
+perl-5.32.0/cpan/Sys-Syslog/fallback/syslog.h
+
+/*
+ * Copyright (c) 1982, 1986, 1988, 1993
+ *	The Regents of the University of California.  All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 4. Neither the name of the University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ *	@(#)syslog.h	8.1 (Berkeley) 6/2/93
+ */
+
+
+## Files:
+perl-5.32.0/vms/vms.c
+
+/*
+ * @(#)argproc.c 2.2 94/08/16	Mark Pizzolato (mark AT infocomm DOT com)
+ *
+ *****************************************************************************
+ *                                                                           *
+ *  Copyright (C) 1989-1994, 2007 by                                         *
+ *  Mark Pizzolato - INFO COMM, Danville, California  (510) 837-5600         *
+ *                                                                           *
+ *  Permission is hereby granted for the reproduction of this software       *
+ *  on condition that this copyright notice is included in source            *
+ *  distributions of the software.  The code may be modified and             *
+ *  distributed under the same terms as Perl itself.                         *
+ *                                                                           *
+ *  27-Aug-1994 Modified for inclusion in perl5                              *
+ *              by Charles Bailey  (bailey AT newman DOT upenn DOT edu)      *
+ *****************************************************************************
+ */
+
+## Files:
+perl-5.32.0/taint.c
+
+/*    taint.c
+ *
+ *    Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+ *    2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/mathoms.c
+
+/*    mathoms.c
+ *
+ *    Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010,
+ *    2011, 2012 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/symbian/PerlApp.cpp
+
+/* The PerlApp application is licensed under the same terms as Perl itself.
+ *
+ * Note that this PerlApp is for Symbian/Series 60/80/UIQ smartphones
+ * and it has nothing whatsoever to do with the ActiveState PerlApp. */
+
+## Files:
+perl-5.32.0/dist/Devel-PPPort/module2.c
+perl-5.32.0/dist/Devel-PPPort/module3.c
+
+/*******************************************************************************
+*
+*  Perl/Pollution/Portability
+*
+********************************************************************************
+*
+*  Version 3.x, Copyright (C) 2004-2013, Marcus Holland-Moritz.
+*  Version 2.x, Copyright (C) 2001, Paul Marquess.
+*  Version 1.x, Copyright (C) 1999, Kenneth Albanowski.
+*
+*  This program is free software; you can redistribute it and/or
+*  modify it under the same terms as Perl itself.
+*
+*******************************************************************************/
+
+## Files:
+perl-5.32.0/utfebcdic.h
+
+/*    utfebcdic.h
+ *
+ *    Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2009,
+ *    2010, 2011 by Larry Wall, Nick Ing-Simmons, and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ * Macros to implement UTF-EBCDIC as perl's internal encoding
+ * Adapted from version 7.1 of Unicode Technical Report #16:
+ *  http://www.unicode.org/unicode/reports/tr16
+ *
+ * To summarize, the way it works is:
+ * To convert an EBCDIC code point to UTF-EBCDIC:
+ *  1)	convert to Unicode.  No conversion is necesary for code points above
+ *      255, as Unicode and EBCDIC are identical in this range.  For smaller
+ *      code points, the conversion is done by lookup in the PL_e2a table (with
+ *      inverse PL_a2e) in the generated file 'ebcdic_tables.h'.  The 'a'
+ *      stands for ASCII platform, meaning 0-255 Unicode.
+ *  2)	convert that to a utf8-like string called I8 ('I' stands for
+ *	intermediate) with variant characters occupying multiple bytes.  This
+ *	step is similar to the utf8-creating step from Unicode, but the details
+ *	are different.  This transformation is called UTF8-Mod.  There is a
+ *	chart about the bit patterns in a comment later in this file.  But
+ *	essentially here are the differences:
+ *			    UTF8		I8
+ *	invariant byte	    starts with 0	starts with 0 or 100
+ *	continuation byte   starts with 10	starts with 101
+ *	start byte	    same in both: if the code point requires N bytes,
+ *			    then the leading N bits are 1, followed by a 0.  If
+ *			    all 8 bits in the first byte are 1, the code point
+ *			    will occupy 14 bytes (compared to 13 in Perl's
+ *			    extended UTF-8).  This is incompatible with what
+ *			    tr16 implies should be the representation of code
+ *			    points 2**30 and above, but allows Perl to be able
+ *			    to represent all code points that fit in a 64-bit
+ *			    word in either our extended UTF-EBCDIC or UTF-8.
+ *  3)	Use the algorithm in tr16 to convert each byte from step 2 into
+ *	final UTF-EBCDIC.  This is done by table lookup from a table
+ *	constructed from the algorithm, reproduced in ebcdic_tables.h as
+ *	PL_utf2e, with its inverse being PL_e2utf.  They are constructed so that
+ *	all EBCDIC invariants remain invariant, but no others do, and the first
+ *	byte of a variant will always have its upper bit set.  But note that
+ *	the upper bit of some invariants is also 1.  The table also is designed
+ *	so that lexically comparing two UTF-EBCDIC-variant characters yields
+ *	the Unicode code point order.  (To get native code point order, one has
+ *	to convert the latin1-range characters to their native code point
+ *	value.)
+ *
+ *  For example, the ordinal value of 'A' is 193 in EBCDIC, and also is 193 in
+ *  UTF-EBCDIC.  Step 1) converts it to 65, Step 2 leaves it at 65, and Step 3
+ *  converts it back to 193.  As an example of how a variant character works,
+ *  take LATIN SMALL LETTER Y WITH DIAERESIS, which is typically 0xDF in
+ *  EBCDIC.  Step 1 converts it to the Unicode value, 0xFF.  Step 2 converts
+ *  that to two bytes = 11000111 10111111 = C7 BF, and Step 3 converts those to
+ *  0x8B 0x73.
+ *
+ * If you're starting from Unicode, skip step 1.  For UTF-EBCDIC to straight
+ * EBCDIC, reverse the steps.
+ *
+ * The EBCDIC invariants have been chosen to be those characters whose Unicode
+ * equivalents have ordinal numbers less than 160, that is the same characters
+ * that are expressible in ASCII, plus the C1 controls.  So there are 160
+ * invariants instead of the 128 in UTF-8.
+ *
+ * The purpose of Step 3 is to make the encoding be invariant for the chosen
+ * characters.  This messes up the convenient patterns found in step 2, so
+ * generally, one has to undo step 3 into a temporary to use them.  However,
+ * one "shadow", or parallel table, PL_utf8skip, has been constructed that
+ * doesn't require undoing things.  It is such that for each byte, it says
+ * how long the sequence is if that (UTF-EBCDIC) byte were to begin it
+ *
+ * There are actually 3 slightly different UTF-EBCDIC encodings in
+ * ebcdic_tables.h, one for each of the code pages recognized by Perl.  That
+ * means that there are actually three different sets of tables, one for each
+ * code page.  (If Perl is compiled on platforms using another EBCDIC code
+ * page, it may not compile, or Perl may silently mistake it for one of the
+ * three.)
+ *
+ * Note that tr16 actually only specifies one version of UTF-EBCDIC, based on
+ * the 1047 encoding, and which is supposed to be used for all code pages.
+ * But this doesn't work.  To illustrate the problem, consider the '^' character.
+ * On a 037 code page it is the single byte 176, whereas under 1047 UTF-EBCDIC
+ * it is the single byte 95.  If Perl implemented tr16 exactly, it would mean
+ * that changing a string containing '^' to UTF-EBCDIC would change that '^'
+ * from 176 to 95 (and vice-versa), violating the rule that ASCII-range
+ * characters are the same in UTF-8 or not.  Much code in Perl assumes this
+ * rule.  See for example
+ * http://grokbase.com/t/perl/mvs/025xf0yhmn/utf-ebcdic-for-posix-bc-malformed-utf-8-character
+ * What Perl does is create a version of UTF-EBCDIC suited to each code page;
+ * the one for the 1047 code page is identical to what's specified in tr16.
+ * This complicates interchanging files between computers using different code
+ * pages.  Best is to convert to I8 before sending them, as the I8
+ * representation is the same no matter what the underlying code page is.
+ *
+ * Because of the way UTF-EBCDIC is constructed, the lowest 32 code points that
+ * aren't equivalent to ASCII characters nor C1 controls form the set of
+ * continuation bytes; the remaining 64 non-ASCII, non-control code points form
+ * the potential start bytes, in order.  (However, the first 5 of these lead to
+ * malformed overlongs, so there really are only 59 start bytes, and the first
+ * three of the 59 are the start bytes for the Latin1 range.)  Hence the
+ * UTF-EBCDIC for the smallest variant code point, 0x160, will have likely 0x41
+ * as its continuation byte, provided 0x41 isn't an ASCII or C1 equivalent.
+ * And its start byte will be the code point that is 37 (32+5) non-ASCII,
+ * non-control code points past it.  (0 - 3F are controls, and 40 is SPACE,
+ * leaving 41 as the first potentially available one.)  In contrast, on ASCII
+ * platforms, the first 64 (not 32) non-ASCII code points are the continuation
+ * bytes.  And the first 2 (not 5) potential start bytes form overlong
+ * malformed sequences.
+ *
+ * EBCDIC characters above 0xFF are the same as Unicode in Perl's
+ * implementation of all 3 encodings, so for those Step 1 is trivial.
+ *
+ * (Note that the entries for invariant characters are necessarily the same in
+ * PL_e2a and PL_e2utf; likewise for their inverses.)
+ *
+ * UTF-EBCDIC strings are the same length or longer than UTF-8 representations
+ * of the same string.  The maximum code point representable as 2 bytes in
+ * UTF-EBCDIC is 0x3FFF, instead of 0x7FFF in UTF-8.
+ */
+
+## Files:
+perl-5.32.0/cop.h
+
+/*    cop.h
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+ *    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ * Control ops (cops) are one of the two ops OP_NEXTSTATE and OP_DBSTATE,
+ * that (loosely speaking) are statement separators.
+ * They hold information important for lexical state and error reporting.
+ * At run time, PL_curcop is set to point to the most recently executed cop,
+ * and thus can be used to determine our current state.
+ */
+
+## Files:
+perl-5.32.0/opnames.h
+
+/* -*- buffer-read-only: t -*-
+ *
+ *    opnames.h
+ *
+ *    Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,
+ *    2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ * !!!!!!!   DO NOT EDIT THIS FILE   !!!!!!!
+ * This file is built by regen/opcode.pl from its data.
+ * Any changes made here will be lost!
+ */
+
+## Files:
+perl-5.32.0/perlio.c
+
+/*
+ * perlio.c
+ * Copyright (c) 1996-2006, Nick Ing-Simmons
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Larry Wall and others
+ *
+ * You may distribute under the terms of either the GNU General Public License
+ * or the Artistic License, as specified in the README file.
+ */
+
+## Files:
+perl-5.32.0/op.c
+
+/*    op.c
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+ *    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/symbian/symbian_stubs.h
+
+/*
+ *	symbian_stubs.h
+ *
+ *	Copyright (c) Nokia 2004-2005.  All rights reserved.
+ *      This code is licensed under the same terms as Perl itself.
+ *
+ */
+
+## Files:
+perl-5.32.0/cpan/Compress-Raw-Zlib/zlib-src/compress.c
+
+/* compress.c -- compress a memory buffer
+ * Copyright (C) 1995-2005, 2014, 2016 Jean-loup Gailly, Mark Adler
+ * For conditions of distribution and use, see copyright notice in zlib.h
+ */
+
+## Files:
+perl-5.32.0/proto.h
+
+/* -*- buffer-read-only: t -*-
+ *
+ *    proto.h
+ *
+ *    Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+ *    2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ * !!!!!!!   DO NOT EDIT THIS FILE   !!!!!!!
+ * This file is built by regen/embed.pl from data in embed.fnc,
+ * regen/embed.pl, regen/opcodes, intrpvar.h and perlvars.h.
+ * Any changes made here will be lost!
+ *
+ * Edit those files and run 'make regen_headers' to effect changes.
+ */
+
+## Files:
+perl-5.32.0/invlist_inline.h
+
+/*    invlist_inline.h
+ *
+ *    Copyright (C) 2012 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ */
+
+## Files:
+perl-5.32.0/cpan/Compress-Raw-Zlib/zlib-src/infback.c
+
+/* infback.c -- inflate using a call-back interface
+ * Copyright (C) 1995-2016 Mark Adler
+ * For conditions of distribution and use, see copyright notice in zlib.h
+ */
+
+## Files:
+perl-5.32.0/pp_hot.c
+
+/*    pp_hot.c
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+ *    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/perl.h
+
+/*    perl.h
+ *
+ *    Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
+ *    2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/win32/fcrypt.c
+
+/* Copyright (C) 1993 Eric Young - see README for more details */
+
+## Files:
+perl-5.32.0/handy.h
+
+/*    handy.h
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1999, 2000,
+ *    2001, 2002, 2004, 2005, 2006, 2007, 2008, 2012 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/gv.h
+
+/*    gv.h
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+ *    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/symbian/symbian_proto.h
+
+/*
+ *	symbian_proto.h
+ *
+ *	Copyright (c) Nokia 2004-2005.  All rights reserved.
+ *      This code is licensed under the same terms as Perl itself.
+ *
+ */
+
+## Files:
+perl-5.32.0/cpan/Compress-Raw-Bzip2/bzip2-src/crctable.c
+perl-5.32.0/cpan/Compress-Raw-Bzip2/bzip2-src/bzlib.c
+perl-5.32.0/cpan/Compress-Raw-Bzip2/bzip2-src/blocksort.c
+perl-5.32.0/cpan/Compress-Raw-Bzip2/bzip2-src/compress.c
+perl-5.32.0/cpan/Compress-Raw-Bzip2/bzip2-src/randtable.c
+perl-5.32.0/cpan/Compress-Raw-Bzip2/bzip2-src/huffman.c
+perl-5.32.0/cpan/Compress-Raw-Bzip2/bzip2-src/bzlib.h
+perl-5.32.0/cpan/Compress-Raw-Bzip2/bzip2-src/decompress.c
+perl-5.32.0/cpan/Compress-Raw-Bzip2/bzip2-src/bzlib_private.h
+
+/* ------------------------------------------------------------------
+   This file is part of bzip2/libbzip2, a program and library for
+   lossless, block-sorting data compression.
+
+   bzip2/libbzip2 version 1.0.8 of 13 July 2019
+   Copyright (C) 1996-2019 Julian Seward <jseward@acm.org>
+
+   Please read the WARNING, DISCLAIMER and PATENTS sections in the 
+   README file.
+
+   This program is released under the terms of the license contained
+   in the file LICENSE.
+   ------------------------------------------------------------------ */
+
+## Files:
+perl-5.32.0/cpan/Compress-Raw-Zlib/zlib-src/deflate.c
+
+/* deflate.c -- compress data using the deflation algorithm
+ * Copyright (C) 1995-2017 Jean-loup Gailly and Mark Adler
+ * For conditions of distribution and use, see copyright notice in zlib.h
+ */
+
+## Files:
+perl-5.32.0/inline.h
+
+/* This is the inlined portion of utf8n_to_uvchr_msgs.  It handles the
+ * simple cases, and, if necessary calls a helper function to deal with the
+ * more complex ones.  Almost all well-formed non-problematic code points
+ * are considered simple, so that it's unlikely that the helper function
+ * will need to be called.
+ *
+ * This is an adaptation of the tables and algorithm given in
+ * https://bjoern.hoehrmann.de/utf-8/decoder/dfa/, which provides
+ * comprehensive documentation of the original version.  A copyright notice
+ * for the original version is given at the beginning of this file.  The
+ * Perl adapation is documented at the definition of PL_strict_utf8_dfa_tab[].
+ */
+
+## Files:
+perl-5.32.0/op.h
+
+/*    op.h
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+ *    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/NetWare/Nwpipe.c
+perl-5.32.0/NetWare/CLIBstuf.c
+perl-5.32.0/NetWare/nwperlsys.h
+perl-5.32.0/NetWare/nwstdio.h
+perl-5.32.0/NetWare/NWTInfo.c
+perl-5.32.0/NetWare/nwhashcls.cpp
+perl-5.32.0/NetWare/perllib.cpp
+perl-5.32.0/NetWare/interface.h
+perl-5.32.0/NetWare/Main.c
+perl-5.32.0/NetWare/nw5thread.c
+perl-5.32.0/NetWare/nw5iop.h
+perl-5.32.0/NetWare/CLIBstr.h
+perl-5.32.0/NetWare/nwutil.h
+perl-5.32.0/NetWare/nwplglob.c
+perl-5.32.0/NetWare/nw5sck.h
+perl-5.32.0/NetWare/interface.cpp
+perl-5.32.0/NetWare/interface.c
+perl-5.32.0/NetWare/CLIBsdio.h
+perl-5.32.0/NetWare/intdef.h
+perl-5.32.0/NetWare/nwpipe.h
+perl-5.32.0/NetWare/CLIBstuf.h
+perl-5.32.0/NetWare/nwperlhost.h
+perl-5.32.0/NetWare/nwperlsys.c
+perl-5.32.0/NetWare/nwtinfo.h
+perl-5.32.0/NetWare/nwvmem.h
+perl-5.32.0/NetWare/nwplglob.h
+perl-5.32.0/NetWare/Nwmain.c
+perl-5.32.0/NetWare/nw5sck.c
+perl-5.32.0/NetWare/win32ish.h
+perl-5.32.0/NetWare/NWUtil.c
+perl-5.32.0/NetWare/iperlhost.h
+perl-5.32.0/NetWare/deb.h
+perl-5.32.0/NetWare/netware.h
+perl-5.32.0/NetWare/nw5.c
+perl-5.32.0/NetWare/nwhashcls.h
+perl-5.32.0/NetWare/nw5thread.h
+
+/*
+ * Copyright © 2001 Novell, Inc. All Rights Reserved.
+ *
+ * You may distribute under the terms of either the GNU General Public
+ * License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/patchlevel.h
+
+/*    patchlevel.h
+ *
+ *    Copyright (C) 1993, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002,
+ *    2003, 2004, 2005, 2006, 2007, 2008, 2009, by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/mg.c
+
+/*    mg.c
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+ *    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/cpan/Digest-SHA/src/sha.c
+
+/*
+ * sha.c: routines to compute SHA-1/224/256/384/512 digests
+ *
+ * Ref: NIST FIPS PUB 180-4 Secure Hash Standard
+ *
+ * Copyright (C) 2003-2018 Mark Shelor, All Rights Reserved
+ *
+ * Version: 6.02
+ * Fri Apr 20 16:25:30 MST 2018
+ *
+ */
+
+## Files:
+perl-5.32.0/mg.h
+
+/*    mg.h
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1999,
+ *    2000, 2002, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/cpan/Compress-Raw-Zlib/zlib-src/zconf.h
+
+/* zconf.h -- configuration of the zlib compression library
+ * Copyright (C) 1995-2016 Jean-loup Gailly, Mark Adler
+ * For conditions of distribution and use, see copyright notice in zlib.h
+ */
+
+## Files:
+perl-5.32.0/cpan/Digest-SHA/src/sha64bit.h
+
+/*
+ * sha64bit.h: placeholder values for 64-bit data and routines
+ *
+ * Ref: NIST FIPS PUB 180-4 Secure Hash Standard
+ *
+ * Copyright (C) 2003-2018 Mark Shelor, All Rights Reserved
+ *
+ * Version: 6.02
+ * Fri Apr 20 16:25:30 MST 2018
+ *
+ * The following macros supply placeholder values that enable the
+ * sha.c module to successfully compile when 64-bit integer types
+ * aren't present.
+ *
+ * They are appropriately redefined in sha64bit.c if the compiler
+ * provides a 64-bit type (i.e. when SHA_384_512 is defined).
+ *
+ */
+
+## Files:
+perl-5.32.0/pp_sort.c
+
+/*    pp_sort.c
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+ *    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/cpan/Compress-Raw-Zlib/zlib-src/adler32.c
+
+/* adler32.c -- compute the Adler-32 checksum of a data stream
+ * Copyright (C) 1995-2011, 2016 Mark Adler
+ * For conditions of distribution and use, see copyright notice in zlib.h
+ */
+
+## Files:
+perl-5.32.0/embedvar.h
+
+/* -*- buffer-read-only: t -*-
+ *
+ *    embedvar.h
+ *
+ *    Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+ *    2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ * !!!!!!!   DO NOT EDIT THIS FILE   !!!!!!!
+ * This file is built by regen/embed.pl from data in embed.fnc,
+ * regen/embed.pl, regen/opcodes, intrpvar.h and perlvars.h.
+ * Any changes made here will be lost!
+ *
+ * Edit those files and run 'make regen_headers' to effect changes.
+ */
+
+## Files:
+perl-5.32.0/pad.c
+
+/*    pad.c
+ *
+ *    Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008
+ *    by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ */
+
+## Files:
+perl-5.32.0/vms/vmsish.h
+
+/*    vmsish.h
+ *
+ *    VMS-specific C header file for perl5.
+ *
+ *    Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+ *    2002, 2003, 2004, 2005, 2006, 2007 by Charles Bailey and others.
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ *    Please see Changes*.* or the Perl Repository Browser for revision history.
+ */
+
+## Files:
+perl-5.32.0/parser.h
+
+/*    parser.h
+ *
+ *    Copyright (c) 2006, 2007, 2009, 2010, 2011 Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ * 
+ * This file defines the layout of the parser object used by the parser
+ * and lexer (perly.c, toke.c).
+ */
+
+## Files:
+perl-5.32.0/cpan/Compress-Raw-Zlib/zlib-src/zlib.h
+
+/* zlib.h -- interface of the 'zlib' general purpose compression library
+  version 1.2.11, January 15th, 2017
+
+  Copyright (C) 1995-2017 Jean-loup Gailly and Mark Adler
+
+  This software is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+  1. The origin of this software must not be misrepresented; you must not
+     claim that you wrote the original software. If you use this software
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original software.
+  3. This notice may not be removed or altered from any source distribution.
+
+  Jean-loup Gailly        Mark Adler
+  jloup@gzip.org          madler@alumni.caltech.edu
+
+
+  The data format used by the zlib library is described by RFCs (Request for
+  Comments) 1950 to 1952 in the files http://tools.ietf.org/html/rfc1950
+  (zlib format), rfc1951 (deflate format) and rfc1952 (gzip format).
+*/
+
+## Files:
+perl-5.32.0/win32/perlhost.h
+
+/* perlhost.h
+ *
+ * (c) 1999 Microsoft Corporation. All rights reserved.
+ * Portions (c) 1999 ActiveState Tool Corp, http://www.ActiveState.com/
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ */
+
+## Files:
+perl-5.32.0/utf8.h
+
+/*    utf8.h
+ *
+ * This file contains definitions for use with the UTF-8 encoding.  It
+ * actually also works with the variant UTF-8 encoding called UTF-EBCDIC, and
+ * hides almost all of the differences between these from the caller.  In other
+ * words, someone should #include this file, and if the code is being compiled
+ * on an EBCDIC platform, things should mostly just work.
+ *
+ *    Copyright (C) 2000, 2001, 2002, 2005, 2006, 2007, 2009,
+ *    2010, 2011 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/regexp.h
+
+/*    regexp.h
+ *
+ *    Copyright (C) 1993, 1994, 1996, 1997, 1999, 2000, 2001, 2003,
+ *    2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/hints/linux.sh
+
+# record the version, formats:
+# icc (ICC) 10.1 20080801
+# icpc (ICC) 10.1 20080801
+# followed by a copyright on the second line
+
+## Files:
+perl-5.32.0/symbian/PerlApp.h
+
+/* The PerlApp application is licensed under the same terms as Perl itself. */
+
+## Files:
+perl-5.32.0/regcomp.c
+
+/*
+ * pregcomp and pregexec -- regsub and regerror are not used in perl
+ *
+ *	Copyright (c) 1986 by University of Toronto.
+ *	Written by Henry Spencer.  Not derived from licensed software.
+ *
+ *	Permission is granted to anyone to use this software for any
+ *	purpose on any computer system, and to redistribute it freely,
+ *	subject to the following restrictions:
+ *
+ *	1. The author is not responsible for the consequences of use of
+ *		this software, no matter how awful, even if they arise
+ *		from defects in it.
+ *
+ *	2. The origin of this software must not be misrepresented, either
+ *		by explicit claim or by omission.
+ *
+ *	3. Altered versions must be plainly marked as such, and must not
+ *		be misrepresented as being the original software.
+ *
+ *
+ ****    Alterations to Henry's code are...
+ ****
+ ****    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
+ ****    2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008
+ ****    by Larry Wall and others
+ ****
+ ****    You may distribute under the terms of either the GNU General Public
+ ****    License or the Artistic License, as specified in the README file.
+
+ *
+ * Beware that some of this code is subtly aware of the way operator
+ * precedence is structured in regular expressions.  Serious changes in
+ * regular-expression syntax might require a total rethink.
+ */
+
+## Files:
+perl-5.32.0/vms/vms.c
+
+/*
+** The following routines are provided to make life easier when
+** converting among VMS-style and Unix-style directory specifications.
+** All will take input specifications in either VMS or Unix syntax. On
+** failure, all return NULL.  If successful, the routines listed below
+** return a pointer to a buffer containing the appropriately
+** reformatted spec (and, therefore, subsequent calls to that routine
+** will clobber the result), while the routines of the same names with
+** a _ts suffix appended will return a pointer to a mallocd string
+** containing the appropriately reformatted spec.
+** In all cases, only explicit syntax is altered; no check is made that
+** the resulting string is valid or that the directory in question
+** actually exists.
+**
+**   fileify_dirspec() - convert a directory spec into the name of the
+**     directory file (i.e. what you can stat() to see if it's a dir).
+**     The style (VMS or Unix) of the result is the same as the style
+**     of the parameter passed in.
+**   pathify_dirspec() - convert a directory spec into a path (i.e.
+**     what you prepend to a filename to indicate what directory it's in).
+**     The style (VMS or Unix) of the result is the same as the style
+**     of the parameter passed in.
+**   tounixpath() - convert a directory spec into a Unix-style path.
+**   tovmspath() - convert a directory spec into a VMS-style path.
+**   tounixspec() - convert any file spec into a Unix-style file spec.
+**   tovmsspec() - convert any file spec into a VMS-style spec.
+**   xxxxx_utf8() - Variants that support UTF8 encoding of Unix-Style file spec.
+**
+** Copyright 1996 by Charles Bailey  <bailey@newman.upenn.edu>
+** Permission is given to distribute this code as part of the Perl
+** standard distribution under the terms of the GNU General Public
+** License or the Perl Artistic License.  Copies of each may be
+** found in the Perl standard distribution.
+ */
+
+## Files:
+perl-5.32.0/perlio.h
+
+/*    perlio.h
+ *
+ *    Copyright (C) 1996, 1997, 1999, 2000, 2001, 2002, 2003,
+ *    2004, 2005, 2006, 2007, by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/perlapi.h
+
+/* -*- buffer-read-only: t -*-
+ *
+ *    perlapi.h
+ *
+ *    Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+ *    2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ * !!!!!!!   DO NOT EDIT THIS FILE   !!!!!!!
+ * This file is built by regen/embed.pl from data in embed.fnc,
+ * regen/embed.pl, regen/opcodes, intrpvar.h and perlvars.h.
+ * Any changes made here will be lost!
+ *
+ * Edit those files and run 'make regen_headers' to effect changes.
+ */
+
+## Files:
+perl-5.32.0/sv.h
+
+/*    sv.h
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+ *    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/cpan/Compress-Raw-Zlib/zlib-src/uncompr.c
+
+/* uncompr.c -- decompress a memory buffer
+ * Copyright (C) 1995-2003, 2010, 2014, 2016 Jean-loup Gailly, Mark Adler
+ * For conditions of distribution and use, see copyright notice in zlib.h
+ */
+
+## Files:
+perl-5.32.0/perlsdio.h
+
+/*    perlsdio.h
+ *
+ *    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001,
+ *    2002, 2003, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/embed.h
+
+/* -*- buffer-read-only: t -*-
+ *
+ *    embed.h
+ *
+ *    Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+ *    2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ * !!!!!!!   DO NOT EDIT THIS FILE   !!!!!!!
+ * This file is built by regen/embed.pl from data in embed.fnc,
+ * regen/embed.pl, regen/opcodes, intrpvar.h and perlvars.h.
+ * Any changes made here will be lost!
+ *
+ * Edit those files and run 'make regen_headers' to effect changes.
+ */
+
+## Files:
+perl-5.32.0/symbian/PerlBase.cpp
+perl-5.32.0/symbian/PerlBase.h
+
+/* The CPerlBase class is licensed under the same terms as Perl itself. */
+
+## Files:
+perl-5.32.0/fakesdio.h
+
+/*    fakesdio.h
+ *
+ *    Copyright (C) 2000, by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/win32/vmem.h
+
+/* vmem.h
+ *
+ * (c) 1999 Microsoft Corporation. All rights reserved. 
+ * Portions (c) 1999 ActiveState Tool Corp, http://www.ActiveState.com/
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ * Options:
+ *
+ * Defining _USE_MSVCRT_MEM_ALLOC will cause all memory allocations
+ * to be forwarded to the compiler's MSVCR*.DLL. Defining _USE_LINKED_LIST as
+ * well will track all allocations in a doubly linked list, so that the host can
+ * free all memory allocated when it goes away.
+ * If _USE_MSVCRT_MEM_ALLOC is not defined then Knuth's boundary tag algorithm
+ * is used; defining _USE_BUDDY_BLOCKS will use Knuth's algorithm R
+ * (Buddy system reservation)
+ *
+ */
+
+## Files:
+perl-5.32.0/deb.c
+
+/*    deb.c
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001,
+ *    2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/universal.c
+
+/*    universal.c
+ *
+ *    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
+ *    2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/regcharclass.h
+
+/* -*- buffer-read-only: t -*-
+ *
+ *    regcharclass.h
+ *
+ *    Copyright (C) 2007, 2011 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ * !!!!!!!   DO NOT EDIT THIS FILE   !!!!!!!
+ * This file is built by regen/regcharclass.pl.
+ * Any changes made here will be lost!
+ * WARNING: These macros are for internal Perl core use only, and may be
+ * changed or removed without notice.
+ */
+
+## Files:
+perl-5.32.0/pp.h
+
+/*    pp.h
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001,
+ *    2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/reentr.c
+
+/* -*- buffer-read-only: t -*-
+ *
+ *    reentr.c
+ *
+ *    Copyright (C) 2002, 2003, 2005, 2006, 2007 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ * !!!!!!!   DO NOT EDIT THIS FILE   !!!!!!!
+ * This file is built by regen/reentr.pl from data in regen/reentr.pl.
+ * Any changes made here will be lost!
+ */
+
+## Files:
+perl-5.32.0/util.h
+
+/*    util.h
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1999, 2001, 2002, 2003, 2004, 2005,
+ *    2007, by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/av.c
+
+/*    av.c
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+ *    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/utf8.c
+
+/*    utf8.c
+ *
+ *    Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008
+ *    by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/symbian/PerlUi.cpp
+perl-5.32.0/symbian/PerlUi.h
+
+/* The PerlUi class is licensed under the same terms as Perl itself. */
+
+## Files:
+perl-5.32.0/intrpvar.h
+
+/*   intrpvar.h 
+ *
+ *    Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005,
+ *    2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/cpan/Compress-Raw-Zlib/zlib-src/crc32.c
+
+/* crc32.c -- compute the CRC-32 of a data stream
+ * Copyright (C) 1995-2006, 2010, 2011, 2012, 2016 Mark Adler
+ * For conditions of distribution and use, see copyright notice in zlib.h
+ *
+ * Thanks to Rodney Brown <rbrown64@csc.com.au> for his contribution of faster
+ * CRC methods: exclusive-oring 32 bits of data at a time, and pre-computing
+ * tables for updating the shift register in one step with three exclusive-ors
+ * instead of four steps with four exclusive-ors.  This results in about a
+ * factor of two increase in speed on a Power PC G4 (PPC7455) using gcc -O3.
+ */
+
+## Files:
+perl-5.32.0/vms/vms.c
+
+/*    vms.c
+ *
+ *    VMS-specific routines for perl5
+ *
+ *    Copyright (C) 1993-2015 by Charles Bailey and others.
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ */
+
+## Files:
+perl-5.32.0/symbian/PerlUtil.h
+perl-5.32.0/symbian/PerlUtil.cpp
+
+/* The PerlUtil class is licensed under the same terms as Perl itself. */
+
+## Files:
+perl-5.32.0/dist/IO/poll.c
+
+/*
+ * poll.c
+ *
+ * Copyright (c) 1997-8 Graham Barr <gbarr@pobox.com>. All rights reserved.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the same terms as Perl itself.
+ *
+ * For systems that do not have the poll() system call (for example Linux
+ * kernels < v2.1.23) try to emulate it as closely as possible using select()
+ *
+ */
+
+## Files:
+perl-5.32.0/malloc.c
+
+/*
+ * malloc.c (Caltech) 2/21/82
+ * Chris Kingsley, kingsley@cit-20.
+ *
+ * This is a very fast storage allocator.  It allocates blocks of a small 
+ * number of different sizes, and keeps free lists of each size.  Blocks that
+ * don't exactly fit are passed up to the next larger size.  In this 
+ * implementation, the available sizes are 2^n-4 (or 2^n-12) bytes long.
+ * If PACK_MALLOC is defined, small blocks are 2^n bytes long.
+ * This is designed for use in a program that uses vast quantities of memory,
+ * but bombs when it runs out.
+ * 
+ * Modifications Copyright Ilya Zakharevich 1996-99.
+ * 
+ * Still very quick, but much more thrifty.  (Std config is 10% slower
+ * than it was, and takes 67% of old heap size for typical usage.)
+ *
+ * Allocations of small blocks are now table-driven to many different
+ * buckets.  Sizes of really big buckets are increased to accommodate
+ * common size=power-of-2 blocks.  Running-out-of-memory is made into
+ * an exception.  Deeply configurable and thread-safe.
+ * 
+ */
+
+## Files:
+perl-5.32.0/unixish.h
+
+/*    unixish.h
+ *
+ *    Copyright (C) 1993, 1994, 1995, 1996, 1997, 1999, 2000, 2001, 2002,
+ *    2003, 2006, 2007, by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/cpan/Compress-Raw-Zlib/zlib-src/inffast.h
+
+/* inffast.h -- header to use inffast.c
+ * Copyright (C) 1995-2003, 2010 Mark Adler
+ * For conditions of distribution and use, see copyright notice in zlib.h
+ */
+
+## Files:
+perl-5.32.0/reentr.h
+
+/* -*- buffer-read-only: t -*-
+ *
+ *    reentr.h
+ *
+ *    Copyright (C) 2002, 2003, 2005, 2006, 2007 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ * !!!!!!!   DO NOT EDIT THIS FILE   !!!!!!!
+ * This file is built by regen/reentr.pl from data in regen/reentr.pl.
+ * Any changes made here will be lost!
+ */
+
+## Files:
+perl-5.32.0/op.c
+
+/* The very first range is marked as adjacent to the
+ * non-existent range below it, as it causes things to "just
+ * work" (TradeMark)
+ *
+ * If the lowest code point in this chunk is M, it adjoins the
+ * J-L range */
+
+## Files:
+perl-5.32.0/cpan/Compress-Raw-Zlib/zlib-src/trees.c
+
+/* trees.c -- output deflated data using Huffman coding
+ * Copyright (C) 1995-2017 Jean-loup Gailly
+ * detect_data_type() function provided freely by Cosmin Truta, 2006
+ * For conditions of distribution and use, see copyright notice in zlib.h
+ */
+
+## Files:
+perl-5.32.0/toke.c
+
+/*    toke.c
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+ *    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/dump.c
+
+/*    dump.c
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+ *    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/regexec.c
+
+/*
+ * pregcomp and pregexec -- regsub and regerror are not used in perl
+ *
+ *	Copyright (c) 1986 by University of Toronto.
+ *	Written by Henry Spencer.  Not derived from licensed software.
+ *
+ *	Permission is granted to anyone to use this software for any
+ *	purpose on any computer system, and to redistribute it freely,
+ *	subject to the following restrictions:
+ *
+ *	1. The author is not responsible for the consequences of use of
+ *		this software, no matter how awful, even if they arise
+ *		from defects in it.
+ *
+ *	2. The origin of this software must not be misrepresented, either
+ *		by explicit claim or by omission.
+ *
+ *	3. Altered versions must be plainly marked as such, and must not
+ *		be misrepresented as being the original software.
+ *
+ ****    Alterations to Henry's code are...
+ ****
+ ****    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
+ ****    2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008
+ ****    by Larry Wall and others
+ ****
+ ****    You may distribute under the terms of either the GNU General Public
+ ****    License or the Artistic License, as specified in the README file.
+ *
+ * Beware that some of this code is subtly aware of the way operator
+ * precedence is structured in regular expressions.  Serious changes in
+ * regular-expression syntax might require a total rethink.
+ */
+
+## Files:
+perl-5.32.0/doio.c
+
+/*    doio.c
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+ *    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/regcomp.h
+
+/*    regcomp.h
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
+ *    2000, 2001, 2002, 2003, 2005, 2006, 2007, by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/cpan/Compress-Raw-Zlib/zlib-src/inflate.h
+
+/* inflate.h -- internal inflate state definition
+ * Copyright (C) 1995-2016 Mark Adler
+ * For conditions of distribution and use, see copyright notice in zlib.h
+ */
+
+## Files:
+perl-5.32.0/symbian/PerlApp.cpp
+perl-5.32.0/symbian/PerlApp.h
+perl-5.32.0/symbian/PerlBase.cpp
+perl-5.32.0/symbian/PerlBase.h
+perl-5.32.0/symbian/PerlUtil.h
+perl-5.32.0/symbian/PerlUtil.cpp
+perl-5.32.0/symbian/PerlRecog.cpp
+
+/* Copyright (c) 2004-2005 Nokia. All rights reserved. */
+
+## Files:
+perl-5.32.0/miniperlmain.c
+
+/*    miniperlmain.c or perlmain.c - a generated file
+ *
+ *    Copyright (C) 1994, 1995, 1996, 1997, 1999, 2000, 2001, 2002, 2003,
+ *    2004, 2005, 2006, 2007, 2016 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/symbian/PerlRecog.cpp
+
+/* The PerlRecog application is licensed under the same terms as Perl itself. */
+
+## Files:
+perl-5.32.0/hv.c
+
+/*    hv.c
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+ *    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/pad.h
+
+/*    pad.h
+ *
+ *    Copyright (C) 2002, 2003, 2005, 2006, 2007, 2008,
+ *    2009, 2010, 2011 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ * This file defines the types and macros associated with the API for
+ * manipulating scratchpads, which are used by perl to store lexical
+ * variables, op targets and constants.
+ */
+
+## Files:
+perl-5.32.0/XSUB.h
+
+/*    XSUB.h
+ *
+ *    Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002,
+ *    2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/cpan/Compress-Raw-Zlib/zlib-src/inffast.c
+
+/* inffast.c -- fast decoding
+ * Copyright (C) 1995-2017 Mark Adler
+ * For conditions of distribution and use, see copyright notice in zlib.h
+ */
+
+## Files:
+perl-5.32.0/thread.h
+
+/*    thread.h
+ *
+ *    Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
+ *    by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/perly.h
+
+/* Bison interface for Yacc-like parsers in C
+
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2019 Free Software Foundation,
+   Inc.
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+
+## Files:
+perl-5.32.0/gv.c
+
+/*    gv.c
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+ *    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/pp_sys.c
+
+/*    pp_sys.c
+ *
+ *    Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
+ *    2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/numeric.c
+
+/*    numeric.c
+ *
+ *    Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+ *    2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/symbian/PerlUi.cpp
+perl-5.32.0/symbian/PerlUi.h
+
+/* Copyright (c) 2005 Nokia. All rights reserved. */
+
+## Files:
+perl-5.32.0/perly.c
+
+/*    perly.c
+ *
+ *    Copyright (c) 2004, 2005, 2006, 2007, 2008,
+ *    2009, 2010, 2011 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ * 
+ *    Note that this file was originally generated as an output from
+ *    GNU bison version 1.875, but now the code is statically maintained
+ *    and edited; the bits that are dependent on perly.y are now
+ *    #included from the files perly.tab and perly.act.
+ *
+ *    Here is an important copyright statement from the original, generated
+ *    file:
+ *
+ *	As a special exception, when this file is copied by Bison into a
+ *	Bison output file, you may use that output file without
+ *	restriction.  This special exception was added by the Free
+ *	Software Foundation in version 1.24 of Bison.
+ *
+ */
+
+## Files:
+perl-5.32.0/util.c
+
+/*    util.c
+ *
+ *    Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+ *    2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/INTERN.h
+
+/*    INTERN.h
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1995, 1996, 1998, 2000, 2001,
+ *    by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/cpan/Compress-Raw-Zlib/zlib-src/inftrees.h
+
+/* inftrees.h -- header to use inftrees.c
+ * Copyright (C) 1995-2005, 2010 Mark Adler
+ * For conditions of distribution and use, see copyright notice in zlib.h
+ */
+
+## Files:
+perl-5.32.0/cpan/Compress-Raw-Zlib/zlib-src/deflate.h
+
+/* deflate.h -- internal compression state
+ * Copyright (C) 1995-2016 Jean-loup Gailly
+ * For conditions of distribution and use, see copyright notice in zlib.h
+ */
+
+## Files:
+perl-5.32.0/inline.h
+
+/*
+
+=for apidoc isUTF8_CHAR
+
+Evaluates to non-zero if the first few bytes of the string starting at C<s> and
+looking no further than S<C<e - 1>> are well-formed UTF-8, as extended by Perl,
+that represents some code point; otherwise it evaluates to 0.  If non-zero, the
+value gives how many bytes starting at C<s> comprise the code point's
+representation.  Any bytes remaining before C<e>, but beyond the ones needed to
+form the first code point in C<s>, are not examined.
+
+The code point can be any that will fit in an IV on this machine, using Perl's
+extension to official UTF-8 to represent those higher than the Unicode maximum
+of 0x10FFFF.  That means that this macro is used to efficiently decide if the
+next few bytes in C<s> is legal UTF-8 for a single character.
+
+Use C<L</isSTRICT_UTF8_CHAR>> to restrict the acceptable code points to those
+defined by Unicode to be fully interchangeable across applications;
+C<L</isC9_STRICT_UTF8_CHAR>> to use the L<Unicode Corrigendum
+#9|http://www.unicode.org/versions/corrigendum9.html> definition of allowable
+code points; and C<L</isUTF8_CHAR_flags>> for a more customized definition.
+
+Use C<L</is_utf8_string>>, C<L</is_utf8_string_loc>>, and
+C<L</is_utf8_string_loclen>> to check entire strings.
+
+Note also that a UTF-8 "invariant" character (i.e. ASCII on non-EBCDIC
+machines) is a valid UTF-8 character.
+
+=cut
+
+This uses an adaptation of the table and algorithm given in
+https://bjoern.hoehrmann.de/utf-8/decoder/dfa/, which provides comprehensive
+documentation of the original version.  A copyright notice for the original
+version is given at the beginning of this file.  The Perl adapation is
+documented at the definition of PL_extended_utf8_dfa_tab[].
+
+*/
+
+## Files:
+perl-5.32.0/nostdio.h
+
+/*    nostdio.h
+ *
+ *    Copyright (C) 1996, 2000, 2001, 2005, by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/cpan/Compress-Raw-Zlib/zlib-src/zutil.h
+
+/* zutil.h -- internal interface and configuration of the compression library
+ * Copyright (C) 1995-2016 Jean-loup Gailly, Mark Adler
+ * For conditions of distribution and use, see copyright notice in zlib.h
+ */
+
+## Files:
+perl-5.32.0/cv.h
+
+/*    cv.h
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1999, 2000, 2001,
+ *    2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/keywords.h
+
+/* -*- buffer-read-only: t -*-
+ *
+ *    keywords.h
+ *
+ *    Copyright (C) 1994, 1995, 1996, 1997, 1999, 2000, 2001, 2002, 2005,
+ *    2006, 2007 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ * !!!!!!!   DO NOT EDIT THIS FILE   !!!!!!!
+ * This file is built by regen/keywords.pl from its data.
+ * Any changes made here will be lost!
+ */
+
+## Files:
+perl-5.32.0/inline.h
+
+/*
+
+=for apidoc isC9_STRICT_UTF8_CHAR
+
+Evaluates to non-zero if the first few bytes of the string starting at C<s> and
+looking no further than S<C<e - 1>> are well-formed UTF-8 that represents some
+Unicode non-surrogate code point; otherwise it evaluates to 0.  If non-zero,
+the value gives how many bytes starting at C<s> comprise the code point's
+representation.  Any bytes remaining before C<e>, but beyond the ones needed to
+form the first code point in C<s>, are not examined.
+
+The largest acceptable code point is the Unicode maximum 0x10FFFF.  This
+differs from C<L</isSTRICT_UTF8_CHAR>> only in that it accepts non-character
+code points.  This corresponds to
+L<Unicode Corrigendum #9|http://www.unicode.org/versions/corrigendum9.html>.
+which said that non-character code points are merely discouraged rather than
+completely forbidden in open interchange.  See
+L<perlunicode/Noncharacter code points>.
+
+Use C<L</isUTF8_CHAR>> to check for Perl's extended UTF-8; and
+C<L</isUTF8_CHAR_flags>> for a more customized definition.
+
+Use C<L</is_c9strict_utf8_string>>, C<L</is_c9strict_utf8_string_loc>>, and
+C<L</is_c9strict_utf8_string_loclen>> to check entire strings.
+
+=cut
+
+This uses an adaptation of the tables and algorithm given in
+https://bjoern.hoehrmann.de/utf-8/decoder/dfa/, which provides comprehensive
+documentation of the original version.  A copyright notice for the original
+version is given at the beginning of this file.  The Perl adapation is
+documented at the definition of PL_c9_utf8_dfa_tab[].
+
+*/
+
+## Files:
+perl-5.32.0/scope.h
+
+/*    scope.h
+ *
+ *    Copyright (C) 1993, 1994, 1996, 1997, 1998, 1999, 2000, 2001,
+ *    2002, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/symbian/symbian_dll.cpp
+
+/*
+ *	symbian_dll.cpp
+ *
+ *	Copyright (c) Nokia 2004-2005.  All rights reserved.
+ *      This code is licensed under the same terms as Perl itself.
+ *
+ */
+
+## Files:
+perl-5.32.0/l1_char_class_tab.h
+
+/* 0xB4 U+A9 I8=DE COPYRIGHT */
+
+## Files:
+perl-5.32.0/form.h
+
+/*    form.h
+ *
+ *    Copyright (C) 1991, 1992, 1993, 2000, 2004, 2011 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/locale.c
+
+/*    locale.c
+ *
+ *    Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+ *    2002, 2003, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/win32/win32.h
+
+/* WIN32.H
+ *
+ * (c) 1995 Microsoft Corporation. All rights reserved.
+ * 		Developed by hip communications inc.
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ */
+
+## Files:
+perl-5.32.0/caretx.c
+
+/*    caretx.c
+ *
+ *    Copyright (C) 2013
+ *     by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/EXTERN.h
+
+/*    EXTERN.h
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1995, 1996, 1997, 1998, 1999,
+ *    2000, 2001, by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/doop.c
+
+/*    doop.c
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+ *    2001, 2002, 2004, 2005, 2006, 2007, 2008, 2009 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/dist/IO/poll.h
+
+/*
+ * poll.h
+ *
+ * Copyright (c) 1997-8 Graham Barr <gbarr@pobox.com>. All rights reserved.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the same terms as Perl itself.
+ *
+ */
+
+## Files:
+perl-5.32.0/cpan/Compress-Raw-Zlib/zlib-src/inftrees.c
+
+/* inftrees.c -- generate Huffman trees for efficient decoding
+ * Copyright (C) 1995-2017 Mark Adler
+ * For conditions of distribution and use, see copyright notice in zlib.h
+ */
+
+## Files:
+perl-5.32.0/win32/win32.c
+
+/* WIN32.C
+ *
+ * (c) 1995 Microsoft Corporation. All rights reserved.
+ * 		Developed by hip communications inc.
+ * Portions (c) 1993 Intergraph Corporation. All rights reserved.
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ */
+
+## Files:
+perl-5.32.0/inline.h
+
+/*
+
+=for apidoc isSTRICT_UTF8_CHAR
+
+Evaluates to non-zero if the first few bytes of the string starting at C<s> and
+looking no further than S<C<e - 1>> are well-formed UTF-8 that represents some
+Unicode code point completely acceptable for open interchange between all
+applications; otherwise it evaluates to 0.  If non-zero, the value gives how
+many bytes starting at C<s> comprise the code point's representation.  Any
+bytes remaining before C<e>, but beyond the ones needed to form the first code
+point in C<s>, are not examined.
+
+The largest acceptable code point is the Unicode maximum 0x10FFFF, and must not
+be a surrogate nor a non-character code point.  Thus this excludes any code
+point from Perl's extended UTF-8.
+
+This is used to efficiently decide if the next few bytes in C<s> is
+legal Unicode-acceptable UTF-8 for a single character.
+
+Use C<L</isC9_STRICT_UTF8_CHAR>> to use the L<Unicode Corrigendum
+#9|http://www.unicode.org/versions/corrigendum9.html> definition of allowable
+code points; C<L</isUTF8_CHAR>> to check for Perl's extended UTF-8;
+and C<L</isUTF8_CHAR_flags>> for a more customized definition.
+
+Use C<L</is_strict_utf8_string>>, C<L</is_strict_utf8_string_loc>>, and
+C<L</is_strict_utf8_string_loclen>> to check entire strings.
+
+=cut
+
+This uses an adaptation of the tables and algorithm given in
+https://bjoern.hoehrmann.de/utf-8/decoder/dfa/, which provides comprehensive
+documentation of the original version.  A copyright notice for the original
+version is given at the beginning of this file.  The Perl adapation is
+documented at the definition of strict_extended_utf8_dfa_tab[].
+
+*/
+
+## Files:
+perl-5.32.0/mydtrace.h
+
+/*    mydtrace.h
+ *
+ *    Copyright (C) 2008, 2010, 2011 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ *	Provides macros that wrap the various DTrace probes we use. We add
+ *	an extra level of wrapping to encapsulate the _ENABLED tests.
+ */
+
+## Files:
+perl-5.32.0/globals.c
+
+/*    globals.c
+ *
+ *    Copyright (C) 1995, 1999, 2000, 2001, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/win32/vdir.h
+
+/* vdir.h
+ *
+ * (c) 1999 Microsoft Corporation. All rights reserved. 
+ * Portions (c) 1999 ActiveState Tool Corp, http://www.ActiveState.com/
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ */
+
+## Files:
+perl-5.32.0/cpan/Digest-SHA/src/sha.h
+
+/*
+ * sha.h: header file for SHA-1/224/256/384/512 routines
+ *
+ * Ref: NIST FIPS PUB 180-4 Secure Hash Standard
+ *
+ * Copyright (C) 2003-2018 Mark Shelor, All Rights Reserved
+ *
+ * Version: 6.02
+ * Fri Apr 20 16:25:30 MST 2018
+ *
+ */
+
+## Files:
+perl-5.32.0/symbian/symbian_stubs.c
+
+/*
+ *	symbian_stubs.c
+ *
+ *	Copyright (c) Nokia 2004-2005.  All rights reserved.
+ *      This code is licensed under the same terms as Perl itself.
+ *
+ */
+
+## Files:
+perl-5.32.0/vms/vms.c
+
+/*  rmscopy - copy a file using VMS RMS routines
+ *
+ *  Copies contents and attributes of spec_in to spec_out, except owner
+ *  and protection information.  Name and type of spec_in are used as
+ *  defaults for spec_out.  The third parameter specifies whether rmscopy()
+ *  should try to propagate timestamps from the input file to the output file.
+ *  If it is less than 0, no timestamps are preserved.  If it is 0, then
+ *  rmscopy() will behave similarly to the DCL COPY command: timestamps are
+ *  propagated to the output file at creation iff the output file specification
+ *  did not contain an explicit name or type, and the revision date is always
+ *  updated at the end of the copy operation.  If it is greater than 0, then
+ *  it is interpreted as a bitmask, in which bit 0 indicates that timestamps
+ *  other than the revision date should be propagated, and bit 1 indicates
+ *  that the revision date should be propagated.
+ *
+ *  Returns 1 on success; returns 0 and sets errno and vaxc$errno on failure.
+ *
+ *  Copyright 1996 by Charles Bailey <bailey@newman.upenn.edu>.
+ *  Incorporates, with permission, some code from EZCOPY by Tim Adye
+ *  <T.J.Adye@rl.ac.uk>.  Permission is given to distribute this code
+ * as part of the Perl standard distribution under the terms of the
+ * GNU General Public License or the Perl Artistic License.  Copies
+ * of each may be found in the Perl standard distribution.
+ */
+
+## Files:
+perl-5.32.0/hv.h
+
+/*    hv.h
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1996, 1997, 1998, 1999,
+ *    2000, 2001, 2002, 2003, 2005, 2006, 2007, 2008, by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/win32/win32sck.c
+
+/* win32sck.c
+ *
+ * (c) 1995 Microsoft Corporation. All rights reserved. 
+ * 		Developed by hip communications inc.
+ * Portions (c) 1993 Intergraph Corporation. All rights reserved.
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ */
+
+## Files:
+perl-5.32.0/scope.c
+
+/*    scope.c
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+ *    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/opcode.h
+
+/* -*- buffer-read-only: t -*-
+ *
+ *    opcode.h
+ *
+ *    Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+ *    2002, 2003, 2004, 2005, 2006, 2007 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ * !!!!!!!   DO NOT EDIT THIS FILE   !!!!!!!
+ * This file is built by regen/opcode.pl from its data.
+ * Any changes made here will be lost!
+ */
+
+## Files:
+perl-5.32.0/ebcdic_tables.h
+perl-5.32.0/ebcdic_tables.h
+perl-5.32.0/ebcdic_tables.h
+perl-5.32.0/ebcdic_tables.h
+perl-5.32.0/ebcdic_tables.h
+perl-5.32.0/ebcdic_tables.h
+
+/* The table below is adapted from
+ *      https://bjoern.hoehrmann.de/utf-8/decoder/dfa/
+ * See copyright notice at the beginning of this file.
+ */
+
+## Files:
+perl-5.32.0/overload.h
+
+/* -*- buffer-read-only: t -*-
+ *
+ *    overload.h
+ *
+ *    Copyright (C) 1997, 1998, 2000, 2001, 2005, 2006, 2007, 2011
+ *    by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ * !!!!!!!   DO NOT EDIT THIS FILE   !!!!!!!
+ * This file is built by regen/overload.pl.
+ * Any changes made here will be lost!
+ */
+
+## Files:
+perl-5.32.0/l1_char_class_tab.h
+
+/* 0xB4 U+A9 I8=DD COPYRIGHT */
+
+## Files:
+perl-5.32.0/perlvars.h
+
+/*    perlvars.h
+ *
+ *    Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,
+ *    by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/run.c
+
+/*    run.c
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
+ *    2000, 2001, 2004, 2005, 2006, by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/dosish.h
+
+/*    dosish.h
+ *
+ *    Copyright (C) 1993, 1994, 1996, 1997, 1998, 1999,
+ *    2000, 2001, 2002, 2007, by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/symbian/symbianish.h
+
+/*
+ *	symbianish.h
+ *
+ *	Copyright (c) Nokia 2004-2005.  All rights reserved.
+ *      This code is licensed under the same terms as Perl itself.
+ *
+ */
+
+## Files:
+perl-5.32.0/cpan/Compress-Raw-Zlib/zlib-src/inflate.c
+
+/* inflate.c -- zlib decompression
+ * Copyright (C) 1995-2016 Mark Adler
+ * For conditions of distribution and use, see copyright notice in zlib.h
+ */
+
+## Files:
+perl-5.32.0/op_reg_common.h
+
+/*    op_reg_common.h
+ *
+ *    Definitions common to by op.h and regexp.h
+ *
+ *    Copyright (C) 2010, 2011 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/cpan/Locale-Maketext-Simple/t/po_with_i_default/i_default.po
+perl-5.32.0/cpan/Locale-Maketext-Simple/t/po_with_i_default/fr.po
+perl-5.32.0/cpan/Locale-Maketext-Simple/t/po_with_i_default/en.po
+perl-5.32.0/cpan/Locale-Maketext-Simple/t/po_without_i_default/en.po
+perl-5.32.0/cpan/Locale-Maketext-Simple/t/po_without_i_default/fr.po
+
+# Locale Maketext Simple language translations
+# Copyright (C) All Perl Hackers everywhere
+# Ton Voon <ton.voon@opsera.com>, 2009.
+#
+
+## Files:
+perl-5.32.0/mro_core.c
+
+/*    mro_core.c
+ *
+ *    Copyright (c) 2007 Brandon L Black
+ *    Copyright (c) 2007, 2008, 2009, 2010, 2011 Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ *    This was 'mro.c', but changed because there is another mro.c in /ext, and
+ *    the os390 loader can't cope with this situation (which involves the two
+ *    files calling functions defined in the other)
+ */
+
+## Files:
+perl-5.32.0/perlapi.c
+
+/* -*- buffer-read-only: t -*-
+ *
+ *    perlapi.c
+ *
+ *    Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+ *    2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ * !!!!!!!   DO NOT EDIT THIS FILE   !!!!!!!
+ * This file is built by regen/embed.pl from data in embed.fnc,
+ * regen/embed.pl, regen/opcodes, intrpvar.h and perlvars.h.
+ * Any changes made here will be lost!
+ *
+ * Edit those files and run 'make regen_headers' to effect changes.
+ *
+ *
+ * Up to the threshold of the door there mounted a flight of twenty-seven
+ * broad stairs, hewn by some unknown art of the same black stone.  This
+ * was the only entrance to the tower; ...
+ *
+ *     [p.577 of _The Lord of the Rings_, III/x: "The Voice of Saruman"]
+ *
+ */
+
+## Files:
+perl-5.32.0/perly.h
+
+/* As a special exception, you may create a larger work that contains
+   part or all of the Bison parser skeleton and distribute that work
+   under terms of your choice, so long as that work isn't itself a
+   parser generator using the skeleton or a modified version thereof
+   as a parser skeleton.  Alternatively, if you modify or redistribute
+   the parser skeleton itself, you may (at your option) remove this
+   special exception, which will cause the skeleton and the resulting
+   Bison output files to be licensed under the GNU General Public
+   License without this special exception.
+
+   This special exception was added by the Free Software Foundation in
+   version 2.2 of Bison.  */
+
+## Files:
+perl-5.32.0/pp_ctl.c
+
+/*    pp_ctl.c
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+ *    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/symbian/symbian_utils.cpp
+
+/*
+ *      symbian_utils.cpp
+ *
+ *      Copyright (c) Nokia 2004-2005.  All rights reserved.
+ *      This code is licensed under the same terms as Perl itself.
+ *
+ */
+
+## Files:
+perl-5.32.0/cpan/DB_File/version.c
+
+/* 
+
+ version.c -- Perl 5 interface to Berkeley DB 
+
+ written by Paul Marquess <pmqs@cpan.org>
+ last modified 2nd Jan 2002
+ version 1.802
+
+ All comments/suggestions/problems are welcome
+
+     Copyright (c) 1995-2002 Paul Marquess. All rights reserved.
+     This program is free software; you can redistribute it and/or
+     modify it under the same terms as Perl itself.
+
+ Changes:
+        1.71 -  Support for Berkeley DB version 3.
+                Support for Berkeley DB 2/3's backward compatibility mode.
+        1.72 -  No change.
+        1.73 -  Added support for threading
+        1.74 -  Added Perl core patch 7801.
+
+
+*/
+
+## Files:
+perl-5.32.0/cpan/Digest-SHA/src/sha64bit.c
+
+/*
+ * sha64bit.c: routines to compute SHA-384/512 digests
+ *
+ * Ref: NIST FIPS PUB 180-4 Secure Hash Standard
+ *
+ * Copyright (C) 2003-2018 Mark Shelor, All Rights Reserved
+ *
+ * Version: 6.02
+ * Fri Apr 20 16:25:30 MST 2018
+ *
+ */
+
+## Files:
+perl-5.32.0/pp.c
+
+/*    pp.c
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+ *    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/util.c
+
+/*
+* Copyright (c) 1993 Martin Birgmeier
+* All rights reserved.
+*
+* You may redistribute unmodified or modified versions of this source
+* code provided that the above copyright notice and this and the
+* following conditions are retained.
+*
+* This software is provided ``as is'', and comes with no warranties
+* of any kind. I shall in no event be liable for anything that happens
+* to anyone/anything when using this software.
+*/
+
+## Files:
+perl-5.32.0/pp_pack.c
+
+/*    pp_pack.c
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+ *    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/l1_char_class_tab.h
+
+/* U+A9 COPYRIGHT */
+
+## Files:
+perl-5.32.0/perl.c
+
+/*    perl.c
+ *
+ *    Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
+ *    2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012
+ *    2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/cpan/Compress-Raw-Zlib/zlib-src/deflate.c
+perl-5.32.0/cpan/Compress-Raw-Zlib/zlib-src/inftrees.c
+
+/*
+  If you use the zlib library in a product, an acknowledgment is welcome
+  in the documentation of your product. If for some reason you cannot
+  include such an acknowledgment, I would appreciate that you keep this
+  copyright string in the executable of your product.
+ */
+
+## Files:
+perl-5.32.0/ext/Win32CORE/Win32CORE.c
+
+/*    Win32CORE.c
+ *
+ *    Copyright (C) 2007 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/sv.c
+
+/*    sv.c
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+ *    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 by Larry Wall
+ *    and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/cpan/Compress-Raw-Zlib/zlib-src/zutil.c
+
+/* zutil.c -- target dependent utility functions for the compression library
+ * Copyright (C) 1995-2017 Jean-loup Gailly
+ * For conditions of distribution and use, see copyright notice in zlib.h
+ */
+
+## Files:
+perl-5.32.0/av.h
+
+/*    av.h
+ *
+ *    Copyright (C) 1991, 1992, 1993, 1995, 1996, 1997, 1998, 1999, 2000,
+ *    2001, 2002, 2005, 2006, 2007, 2008, by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/Copying
+
+                    GNU GENERAL PUBLIC LICENSE
+                     Version 1, February 1989
+
+ Copyright (C) 1989 Free Software Foundation, Inc.
+                    51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+
+                            Preamble
+
+  The license agreements of most software companies try to keep users
+at the mercy of those companies.  By contrast, our General Public
+License is intended to guarantee your freedom to share and change free
+software--to make sure the software is free for all its users.  The
+General Public License applies to the Free Software Foundation's
+software and to any other program whose authors commit to using it.
+You can use it for your programs, too.
+
+  When we speak of free software, we are referring to freedom, not
+price.  Specifically, the General Public License is designed to make
+sure that you have the freedom to give away or sell copies of free
+software, that you receive source code or can get it if you want it,
+that you can change the software or use pieces of it in new free
+programs; and that you know you can do these things.
+
+  To protect your rights, we need to make restrictions that forbid
+anyone to deny you these rights or to ask you to surrender the rights.
+These restrictions translate to certain responsibilities for you if you
+distribute copies of the software, or if you modify it.
+
+  For example, if you distribute copies of a such a program, whether
+gratis or for a fee, you must give the recipients all the rights that
+you have.  You must make sure that they, too, receive or can get the
+source code.  And you must tell them their rights.
+
+  We protect your rights with two steps: (1) copyright the software, and
+(2) offer you this license which gives you legal permission to copy,
+distribute and/or modify the software.
+
+  Also, for each author's protection and ours, we want to make certain
+that everyone understands that there is no warranty for this free
+software.  If the software is modified by someone else and passed on, we
+want its recipients to know that what they have is not the original, so
+that any problems introduced by others will not reflect on the original
+authors' reputations.
+
+  The precise terms and conditions for copying, distribution and
+modification follow.
+
+                    GNU GENERAL PUBLIC LICENSE
+   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+  0. This License Agreement applies to any program or other work which
+contains a notice placed by the copyright holder saying it may be
+distributed under the terms of this General Public License.  The
+"Program", below, refers to any such program or work, and a "work based
+on the Program" means either the Program or any work containing the
+Program or a portion of it, either verbatim or with modifications.  Each
+licensee is addressed as "you".
+
+  1. You may copy and distribute verbatim copies of the Program's source
+code as you receive it, in any medium, provided that you conspicuously and
+appropriately publish on each copy an appropriate copyright notice and
+disclaimer of warranty; keep intact all the notices that refer to this
+General Public License and to the absence of any warranty; and give any
+other recipients of the Program a copy of this General Public License
+along with the Program.  You may charge a fee for the physical act of
+transferring a copy.
+
+  2. You may modify your copy or copies of the Program or any portion of
+it, and copy and distribute such modifications under the terms of Paragraph
+1 above, provided that you also do the following:
+
+    a) cause the modified files to carry prominent notices stating that
+    you changed the files and the date of any change; and
+
+    b) cause the whole of any work that you distribute or publish, that
+    in whole or in part contains the Program or any part thereof, either
+    with or without modifications, to be licensed at no charge to all
+    third parties under the terms of this General Public License (except
+    that you may choose to grant warranty protection to some or all
+    third parties, at your option).
+
+    c) If the modified program normally reads commands interactively when
+    run, you must cause it, when started running for such interactive use
+    in the simplest and most usual way, to print or display an
+    announcement including an appropriate copyright notice and a notice
+    that there is no warranty (or else, saying that you provide a
+    warranty) and that users may redistribute the program under these
+    conditions, and telling the user how to view a copy of this General
+    Public License.
+
+    d) You may charge a fee for the physical act of transferring a
+    copy, and you may at your option offer warranty protection in
+    exchange for a fee.
+
+Mere aggregation of another independent work with the Program (or its
+derivative) on a volume of a storage or distribution medium does not bring
+the other work under the scope of these terms.
+
+  3. You may copy and distribute the Program (or a portion or derivative of
+it, under Paragraph 2) in object code or executable form under the terms of
+Paragraphs 1 and 2 above provided that you also do one of the following:
+
+    a) accompany it with the complete corresponding machine-readable
+    source code, which must be distributed under the terms of
+    Paragraphs 1 and 2 above; or,
+
+    b) accompany it with a written offer, valid for at least three
+    years, to give any third party free (except for a nominal charge
+    for the cost of distribution) a complete machine-readable copy of the
+    corresponding source code, to be distributed under the terms of
+    Paragraphs 1 and 2 above; or,
+
+    c) accompany it with the information you received as to where the
+    corresponding source code may be obtained.  (This alternative is
+    allowed only for noncommercial distribution and only if you
+    received the program in object code or executable form alone.)
+
+Source code for a work means the preferred form of the work for making
+modifications to it.  For an executable file, complete source code means
+all the source code for all modules it contains; but, as a special
+exception, it need not include source code for modules which are standard
+libraries that accompany the operating system on which the executable
+file runs, or for standard header files or definitions files that
+accompany that operating system.
+
+  4. You may not copy, modify, sublicense, distribute or transfer the
+Program except as expressly provided under this General Public License.
+Any attempt otherwise to copy, modify, sublicense, distribute or transfer
+the Program is void, and will automatically terminate your rights to use
+the Program under this License.  However, parties who have received
+copies, or rights to use copies, from you under this General Public
+License will not have their licenses terminated so long as such parties
+remain in full compliance.
+
+  5. By copying, distributing or modifying the Program (or any work based
+on the Program) you indicate your acceptance of this license to do so,
+and all its terms and conditions.
+
+  6. Each time you redistribute the Program (or any work based on the
+Program), the recipient automatically receives a license from the original
+licensor to copy, distribute or modify the Program subject to these
+terms and conditions.  You may not impose any further restrictions on the
+recipients' exercise of the rights granted herein.
+
+  7. The Free Software Foundation may publish revised and/or new versions
+of the General Public License from time to time.  Such new versions will
+be similar in spirit to the present version, but may differ in detail to
+address new problems or concerns.
+
+Each version is given a distinguishing version number.  If the Program
+specifies a version number of the license which applies to it and "any
+later version", you have the option of following the terms and conditions
+either of that version or of any later version published by the Free
+Software Foundation.  If the Program does not specify a version number of
+the license, you may choose any version ever published by the Free Software
+Foundation.
+
+  8. If you wish to incorporate parts of the Program into other free
+programs whose distribution conditions are different, write to the author
+to ask for permission.  For software which is copyrighted by the Free
+Software Foundation, write to the Free Software Foundation; we sometimes
+make exceptions for this.  Our decision will be guided by the two goals
+of preserving the free status of all derivatives of our free software and
+of promoting the sharing and reuse of software generally.
+
+                            NO WARRANTY
+
+  9. BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
+FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.  EXCEPT WHEN
+OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
+PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED
+OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  THE ENTIRE RISK AS
+TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU.  SHOULD THE
+PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING,
+REPAIR OR CORRECTION.
+
+  10. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
+WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
+REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES,
+INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING
+OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED
+TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY
+YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER
+PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGES.
+
+                     END OF TERMS AND CONDITIONS
+
+        Appendix: How to Apply These Terms to Your New Programs
+
+  If you develop a new program, and you want it to be of the greatest
+possible use to humanity, the best way to achieve this is to make it
+free software which everyone can redistribute and change under these
+terms.
+
+  To do so, attach the following notices to the program.  It is safest to
+attach them to the start of each source file to most effectively convey
+the exclusion of warranty; and each file should have at least the
+"copyright" line and a pointer to where the full notice is found.
+
+    <one line to give the program's name and a brief idea of what it does.>
+    Copyright (C) 19yy  <name of author>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 1, or (at your option)
+    any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA  02110-1301 USA
+
+
+Also add information on how to contact you by electronic and paper mail.
+
+If the program is interactive, make it output a short notice like this
+when it starts in an interactive mode:
+
+    Gnomovision version 69, Copyright (C) 19xx name of author
+    Gnomovision comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+    This is free software, and you are welcome to redistribute it
+    under certain conditions; type `show c' for details.
+
+The hypothetical commands `show w' and `show c' should show the
+appropriate parts of the General Public License.  Of course, the
+commands you use may be called something other than `show w' and `show
+c'; they could even be mouse-clicks or menu items--whatever suits your
+program.
+
+You should also get your employer (if you work as a programmer) or your
+school, if any, to sign a "copyright disclaimer" for the program, if
+necessary.  Here a sample; alter the names:
+
+  Yoyodyne, Inc., hereby disclaims all copyright interest in the
+  program `Gnomovision' (a program to direct compilers to make passes
+  at assemblers) written by James Hacker.
+
+  <signature of Ty Coon>, 1 April 1989
+  Ty Coon, President of Vice
+
+That's all there is to it!
+
+##Files:
+perl-5.32.0/README
+
+Perl is Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012,
+2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 by Larry Wall and others.
+All rights reserved.
+
+## Files:
+perl-5.32.0/perly.y
+
+/*    perly.y
+ *
+ *    Copyright (c) 1991-2002, 2003, 2004, 2005, 2006 Larry Wall
+ *    Copyright (c) 2007, 2008, 2009, 2010, 2011 by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ */
+
+## Files:
+perl-5.32.0/README.symbian
+
+Copyright (c) 2004-2005 Nokia.  All rights reserved.
+
+Copyright (c) 2006-2007 Jarkko Hietaniemi.
+
+## Files:
+perl-5.32.0/mkppport
+
+Copyright 2006 by Marcus Holland-Moritz <mhx@cpan.org>.
+
+This program is free software; you may redistribute it
+and/or modify it under the same terms as Perl itself.
+
+
+## Files:
+perl-5.32.0/Artistic
+
+
+
+                         The "Artistic License"
+
+                                Preamble
+
+The intent of this document is to state the conditions under which a
+Package may be copied, such that the Copyright Holder maintains some
+semblance of artistic control over the development of the package,
+while giving the users of the package the right to use and distribute
+the Package in a more-or-less customary fashion, plus the right to make
+reasonable modifications.
+
+Definitions:
+
+        "Package" refers to the collection of files distributed by the
+        Copyright Holder, and derivatives of that collection of files
+        created through textual modification.
+
+        "Standard Version" refers to such a Package if it has not been
+        modified, or has been modified in accordance with the wishes
+        of the Copyright Holder as specified below.
+
+        "Copyright Holder" is whoever is named in the copyright or
+        copyrights for the package.
+
+        "You" is you, if you're thinking about copying or distributing
+        this Package.
+
+        "Reasonable copying fee" is whatever you can justify on the
+        basis of media cost, duplication charges, time of people involved,
+        and so on.  (You will not be required to justify it to the
+        Copyright Holder, but only to the computing community at large
+        as a market that must bear the fee.)
+
+        "Freely Available" means that no fee is charged for the item
+        itself, though there may be fees involved in handling the item.
+        It also means that recipients of the item may redistribute it
+        under the same conditions they received it.
+
+1. You may make and give away verbatim copies of the source form of the
+Standard Version of this Package without restriction, provided that you
+duplicate all of the original copyright notices and associated disclaimers.
+
+2. You may apply bug fixes, portability fixes and other modifications
+derived from the Public Domain or from the Copyright Holder.  A Package
+modified in such a way shall still be considered the Standard Version.
+
+3. You may otherwise modify your copy of this Package in any way, provided
+that you insert a prominent notice in each changed file stating how and
+when you changed that file, and provided that you do at least ONE of the
+following:
+
+    a) place your modifications in the Public Domain or otherwise make them
+    Freely Available, such as by posting said modifications to Usenet or
+    an equivalent medium, or placing the modifications on a major archive
+    site such as uunet.uu.net, or by allowing the Copyright Holder to include
+    your modifications in the Standard Version of the Package.
+
+    b) use the modified Package only within your corporation or organization.
+
+    c) rename any non-standard executables so the names do not conflict
+    with standard executables, which must also be provided, and provide
+    a separate manual page for each non-standard executable that clearly
+    documents how it differs from the Standard Version.
+
+    d) make other distribution arrangements with the Copyright Holder.
+
+4. You may distribute the programs of this Package in object code or
+executable form, provided that you do at least ONE of the following:
+
+    a) distribute a Standard Version of the executables and library files,
+    together with instructions (in the manual page or equivalent) on where
+    to get the Standard Version.
+
+    b) accompany the distribution with the machine-readable source of
+    the Package with your modifications.
+
+    c) give non-standard executables non-standard names, and clearly
+    document the differences in manual pages (or equivalent), together
+    with instructions on where to get the Standard Version.
+
+    d) make other distribution arrangements with the Copyright Holder.
+
+5. You may charge a reasonable copying fee for any distribution of this
+Package.  You may charge any fee you choose for support of this
+Package.  You may not charge a fee for this Package itself.  However,
+you may distribute this Package in aggregate with other (possibly
+commercial) programs as part of a larger (possibly commercial) software
+distribution provided that you do not advertise this Package as a
+product of your own.  You may embed this Package's interpreter within
+an executable of yours (by linking); this shall be construed as a mere
+form of aggregation, provided that the complete Standard Version of the
+interpreter is so embedded.
+
+6. The scripts and library files supplied as input to or produced as
+output from the programs of this Package do not automatically fall
+under the copyright of this Package, but belong to whoever generated
+them, and may be sold commercially, and may be aggregated with this
+Package.  If such scripts or library files are aggregated with this
+Package via the so-called "undump" or "unexec" methods of producing a
+binary executable image, then distribution of such an image shall
+neither be construed as a distribution of this Package nor shall it
+fall under the restrictions of Paragraphs 3 and 4, provided that you do
+not represent such an executable image as a Standard Version of this
+Package.
+
+7. C subroutines (or comparably compiled subroutines in other
+languages) supplied by you and linked into this Package in order to
+emulate subroutines and variables of the language defined by this
+Package shall not be considered part of this Package, but are the
+equivalent of input as in Paragraph 6, provided these subroutines do
+not change the language in any way that would cause it to fail the
+regression tests for the language.
+
+8. Aggregation of this Package with a commercial distribution is always
+permitted provided that the use of this Package is embedded; that is,
+when no overt attempt is made to make this Package's interfaces visible
+to the end user of the commercial distribution.  Such use shall not be
+construed as a distribution of this Package.
+
+9. The name of the Copyright Holder may not be used to endorse or promote
+products derived from this software without specific prior written permission.
+
+10. THIS PACKAGE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+                                The End
+
+
+## Files:
+perl-5.32.0/overload.inc
+
+/* -*- buffer-read-only: t -*-
+ *
+ *    overload.inc
+ *
+ *    Copyright (C) 1997, 1998, 2000, 2001, 2005, 2006, 2007, 2011
+ *    by Larry Wall and others
+ *
+ *    You may distribute under the terms of either the GNU General Public
+ *    License or the Artistic License, as specified in the README file.
+ *
+ * !!!!!!!   DO NOT EDIT THIS FILE   !!!!!!!
+ * This file is built by regen/overload.pl.
+ * Any changes made here will be lost!
+ */
+
+
+## Files:
+perl-5.32.0/configpm
+
+# Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+# 2002, 2003, 2004, 2005, 2006, 2007 Larry Wall and others.
+
+## Files:
+perl-5.32.0/lib/deprecate.pm
+
+Copyright (C) 2009, 2011
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.10.0 or,
+at your option, any later version of Perl 5 you may have available.
+
+
+## Files:
+perl-5.32.0/symbian/PerlUiS60.rss
+
+/* Copyright (c) 2004-2005 Nokia. All rights reserved. */ 
+
+/* The PerlUi class is licensed under the same terms as Perl itself. */
+
+
+## Files:
+perl-5.32.0/symbian/README
+
+The PerlApp* files are a demonstration application for the CPerlBase
+class, which is defined and implemented by the PerlBase* files. 
+The rest of the files are part of the Symbian base port.
+
+All files are Copyright (c) Nokia, 2004-2005, all rights reserved,
+and licensed under the same terms as Perl itself.
+
+
+## Files:
+perl-5.32.0/symbian/PerlBase.pod
+
+=head1 COPYRIGHT
+
+Copyright (c) 2004-2005 Nokia.  All rights reserved.
+
+=head1 LICENSE
+
+The CPerlBase class is licensed under the same terms as Perl itself.
+
+## Files:
+perl-5.32.0/ext/SDBM_File/readme.ms
+perl-5.32.0/ext/SDBM_File/README
+
+     The sources accompanying this notice - sdbm  -  consti-
+tute  the  first  public  release  (Dec. 1990) of a complete
+clone of the Berkeley UN*X ndbm library. The sdbm library is
+meant  to  clone the proven functionality of ndbm as closely
+as possible, including a few improvements. It is  practical,
+easy to understand, and compatible.  The sdbm library is not
+derived  from  any  licensed,  proprietary  or   copyrighted
+software.
+
+     The sdbm implementation is based on  a  1978  algorithm
+[Lar78] by P.-A. (Paul) Larson known as "Dynamic Hashing".
+In the course of searching for a substitute for ndbm, I pro-
+totyped  three different external-hashing algorithms [Lar78,
+Fag79, Lit80] and ultimately chose Larson's algorithm  as  a
+basis  of  the  sdbm  implementation. The Bell Labs dbm (and
+therefore ndbm) is based on an  algorithm  invented  by  Ken
+Thompson, [Tho90, Tor87] and predates Larson's work.
+
+
+## Files:
+perl-5.32.0/ext/XS-Typemap/README
+
+Tim Jenness <t.jenness@jach.hawaii.edu>
+
+Copyright (C) 2001 Tim Jenness All Rights Reserved.  This program is
+free software; you can redistribute it and/or modify it under the same
+terms as Perl itself.
+
+## Files:
+perl-5.32.0/Porting/git-deltatool
+
+This software is copyright (c) 2010 by David Golden.
+
+This is free software; you can redistribute it and/or modify it under the same
+terms as the Perl 5 programming language system itself.
+
+
+## Fiels:
+perl-5.32.0/dist/Devel-PPPort/typemap
+perl-5.32.0/dist/Devel-PPPort/soak
+perl-5.32.0/dist/Devel-PPPort/HACKERS
+perl-5.32.0/dist/Devel-PPPort/devel/scanprov
+perl-5.32.0/dist/Devel-PPPort/devel/regenerate
+perl-5.32.0/dist/Devel-PPPort/devel/mktodo
+perl-5.32.0/dist/Devel-PPPort/parts/ppport.fnc
+perl-5.32.0/dist/Devel-PPPort/parts/inc/pvs
+perl-5.32.0/dist/Devel-PPPort/parts/inc/variables
+perl-5.32.0/dist/Devel-PPPort/parts/inc/exception
+perl-5.32.0/dist/Devel-PPPort/parts/inc/version
+perl-5.32.0/dist/Devel-PPPort/parts/inc/Sv_set
+perl-5.32.0/dist/Devel-PPPort/parts/inc/subparse
+perl-5.32.0/dist/Devel-PPPort/parts/inc/mPUSH
+perl-5.32.0/dist/Devel-PPPort/parts/inc/magic_defs
+perl-5.32.0/dist/Devel-PPPort/parts/inc/uv
+perl-5.32.0/dist/Devel-PPPort/parts/inc/mess
+perl-5.32.0/dist/Devel-PPPort/parts/inc/strlfuncs
+perl-5.32.0/dist/Devel-PPPort/parts/inc/01_test
+perl-5.32.0/dist/Devel-PPPort/parts/inc/newSVpv
+perl-5.32.0/dist/Devel-PPPort/parts/inc/shared_pv
+perl-5.32.0/dist/Devel-PPPort/parts/inc/pv_tools
+perl-5.32.0/dist/Devel-PPPort/parts/inc/ppphdoc
+perl-5.32.0/dist/Devel-PPPort/parts/inc/warn
+perl-5.32.0/dist/Devel-PPPort/parts/inc/SvPV
+perl-5.32.0/dist/Devel-PPPort/parts/inc/sv_xpvf
+perl-5.32.0/dist/Devel-PPPort/parts/inc/sprintf
+perl-5.32.0/dist/Devel-PPPort/parts/inc/ppphbin
+perl-5.32.0/dist/Devel-PPPort/parts/inc/podtest
+perl-5.32.0/dist/Devel-PPPort/parts/inc/MY_CXT
+perl-5.32.0/dist/Devel-PPPort/parts/inc/snprintf
+perl-5.32.0/dist/Devel-PPPort/parts/inc/gv
+perl-5.32.0/dist/Devel-PPPort/parts/inc/ppphtest
+perl-5.32.0/dist/Devel-PPPort/parts/inc/cop
+perl-5.32.0/dist/Devel-PPPort/parts/inc/newSV_type
+perl-5.32.0/dist/Devel-PPPort/parts/inc/misc
+perl-5.32.0/dist/Devel-PPPort/parts/inc/newRV
+perl-5.32.0/dist/Devel-PPPort/parts/inc/threads
+perl-5.32.0/dist/Devel-PPPort/parts/inc/call
+perl-5.32.0/dist/Devel-PPPort/parts/inc/limits
+perl-5.32.0/dist/Devel-PPPort/parts/inc/newCONSTSUB
+perl-5.32.0/dist/Devel-PPPort/parts/inc/format
+perl-5.32.0/dist/Devel-PPPort/parts/inc/HvNAME
+perl-5.32.0/dist/Devel-PPPort/parts/inc/SvREFCNT
+perl-5.32.0/dist/Devel-PPPort/parts/inc/memory
+perl-5.32.0/dist/Devel-PPPort/parts/inc/grok
+perl-5.32.0/dist/Devel-PPPort/parts/inc/magic
+
+################################################################################
+#
+#  Version 3.x, Copyright (C) 2004-2013, Marcus Holland-Moritz.
+#  Version 2.x, Copyright (C) 2001, Paul Marquess.
+#  Version 1.x, Copyright (C) 1999, Kenneth Albanowski.
+#
+#  This program is free software; you can redistribute it and/or
+#  modify it under the same terms as Perl itself.
+#
+################################################################################
+
+
+## Files:
+perl-5.32.0/dist/Module-CoreList/corelist
+
+Copyright (c) 2002-2007 by D.H. aka PodMaster
+
+Currently maintained by the perl 5 porters E<lt>perl5-porters@perl.orgE<gt>.
+
+This program is distributed under the same terms as perl itself.
+See http://perl.org/ or http://cpan.org/ for more info on that.
+
+
+## Files:
+perl-5.32.0/dist/Module-CoreList/README
+
+Copyright (C) 2002-2009 Richard Clamp.  All Rights Reserved.
+
+This module is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+
+## Files:
+perl-5.32.0/dist/Carp/README
+
+COPYRIGHT
+
+Copyright (C) 1994-2013 Larry Wall
+
+Copyright (C) 2011, 2012, 2013 Andrew Main (Zefram) <zefram@fysh.org>
+
+LICENSE
+
+This module is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+## Files:
+perl-5.32.0/dist/I18N-LangTags/README
+
+Copyright 1998+, Sean M. Burke <sburke@cpan.org>, all rights
+reserved.
+
+The programs and documentation in this dist are distributed in
+the hope that they will be useful, but without any warranty; without
+even the implied warranty of merchantability or fitness for a
+particular purpose.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+
+## Files:
+perl-5.32.0/dist/Locale-Maketext/README
+
+COPYRIGHT
+
+Copyright 1999-2004, Sean M. Burke <sburke@cpan.org>, all rights
+reserved.  This program is free software; you can redistribute it
+and/or modify it under the same terms as Perl itself.
+
+
+## Files:
+perl-5.32.0/dist/ExtUtils-CBuilder/LICENSE
+
+This software is copyright (c) 2020 by Ken Williams.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+Terms of the Perl programming language system itself
+
+a) the GNU General Public License as published by the Free
+   Software Foundation; either version 1, or (at your option) any
+   later version, or
+b) the "Artistic License"
+
+--- The GNU General Public License, Version 1, February 1989 ---
+
+This software is Copyright (c) 2020 by Ken Williams.
+
+This is free software, licensed under:
+
+  The GNU General Public License, Version 1, February 1989
+
+                    GNU GENERAL PUBLIC LICENSE
+                     Version 1, February 1989
+
+ Copyright (C) 1989 Free Software Foundation, Inc.
+ 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+
+                            Preamble
+
+  The license agreements of most software companies try to keep users
+at the mercy of those companies.  By contrast, our General Public
+License is intended to guarantee your freedom to share and change free
+software--to make sure the software is free for all its users.  The
+General Public License applies to the Free Software Foundation's
+software and to any other program whose authors commit to using it.
+You can use it for your programs, too.
+
+  When we speak of free software, we are referring to freedom, not
+price.  Specifically, the General Public License is designed to make
+sure that you have the freedom to give away or sell copies of free
+software, that you receive source code or can get it if you want it,
+that you can change the software or use pieces of it in new free
+programs; and that you know you can do these things.
+
+  To protect your rights, we need to make restrictions that forbid
+anyone to deny you these rights or to ask you to surrender the rights.
+These restrictions translate to certain responsibilities for you if you
+distribute copies of the software, or if you modify it.
+
+  For example, if you distribute copies of a such a program, whether
+gratis or for a fee, you must give the recipients all the rights that
+you have.  You must make sure that they, too, receive or can get the
+source code.  And you must tell them their rights.
+
+  We protect your rights with two steps: (1) copyright the software, and
+(2) offer you this license which gives you legal permission to copy,
+distribute and/or modify the software.
+
+  Also, for each author's protection and ours, we want to make certain
+that everyone understands that there is no warranty for this free
+software.  If the software is modified by someone else and passed on, we
+want its recipients to know that what they have is not the original, so
+that any problems introduced by others will not reflect on the original
+authors' reputations.
+
+  The precise terms and conditions for copying, distribution and
+modification follow.
+
+                    GNU GENERAL PUBLIC LICENSE
+   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+  0. This License Agreement applies to any program or other work which
+contains a notice placed by the copyright holder saying it may be
+distributed under the terms of this General Public License.  The
+"Program", below, refers to any such program or work, and a "work based
+on the Program" means either the Program or any work containing the
+Program or a portion of it, either verbatim or with modifications.  Each
+licensee is addressed as "you".
+
+  1. You may copy and distribute verbatim copies of the Program's source
+code as you receive it, in any medium, provided that you conspicuously and
+appropriately publish on each copy an appropriate copyright notice and
+disclaimer of warranty; keep intact all the notices that refer to this
+General Public License and to the absence of any warranty; and give any
+other recipients of the Program a copy of this General Public License
+along with the Program.  You may charge a fee for the physical act of
+transferring a copy.
+
+  2. You may modify your copy or copies of the Program or any portion of
+it, and copy and distribute such modifications under the terms of Paragraph
+1 above, provided that you also do the following:
+
+    a) cause the modified files to carry prominent notices stating that
+    you changed the files and the date of any change; and
+
+    b) cause the whole of any work that you distribute or publish, that
+    in whole or in part contains the Program or any part thereof, either
+    with or without modifications, to be licensed at no charge to all
+    third parties under the terms of this General Public License (except
+    that you may choose to grant warranty protection to some or all
+    third parties, at your option).
+
+    c) If the modified program normally reads commands interactively when
+    run, you must cause it, when started running for such interactive use
+    in the simplest and most usual way, to print or display an
+    announcement including an appropriate copyright notice and a notice
+    that there is no warranty (or else, saying that you provide a
+    warranty) and that users may redistribute the program under these
+    conditions, and telling the user how to view a copy of this General
+    Public License.
+
+    d) You may charge a fee for the physical act of transferring a
+    copy, and you may at your option offer warranty protection in
+    exchange for a fee.
+
+Mere aggregation of another independent work with the Program (or its
+derivative) on a volume of a storage or distribution medium does not bring
+the other work under the scope of these terms.
+
+  3. You may copy and distribute the Program (or a portion or derivative of
+it, under Paragraph 2) in object code or executable form under the terms of
+Paragraphs 1 and 2 above provided that you also do one of the following:
+
+    a) accompany it with the complete corresponding machine-readable
+    source code, which must be distributed under the terms of
+    Paragraphs 1 and 2 above; or,
+
+    b) accompany it with a written offer, valid for at least three
+    years, to give any third party free (except for a nominal charge
+    for the cost of distribution) a complete machine-readable copy of the
+    corresponding source code, to be distributed under the terms of
+    Paragraphs 1 and 2 above; or,
+
+    c) accompany it with the information you received as to where the
+    corresponding source code may be obtained.  (This alternative is
+    allowed only for noncommercial distribution and only if you
+    received the program in object code or executable form alone.)
+
+Source code for a work means the preferred form of the work for making
+modifications to it.  For an executable file, complete source code means
+all the source code for all modules it contains; but, as a special
+exception, it need not include source code for modules which are standard
+libraries that accompany the operating system on which the executable
+file runs, or for standard header files or definitions files that
+accompany that operating system.
+
+  4. You may not copy, modify, sublicense, distribute or transfer the
+Program except as expressly provided under this General Public License.
+Any attempt otherwise to copy, modify, sublicense, distribute or transfer
+the Program is void, and will automatically terminate your rights to use
+the Program under this License.  However, parties who have received
+copies, or rights to use copies, from you under this General Public
+License will not have their licenses terminated so long as such parties
+remain in full compliance.
+
+  5. By copying, distributing or modifying the Program (or any work based
+on the Program) you indicate your acceptance of this license to do so,
+and all its terms and conditions.
+
+  6. Each time you redistribute the Program (or any work based on the
+Program), the recipient automatically receives a license from the original
+licensor to copy, distribute or modify the Program subject to these
+terms and conditions.  You may not impose any further restrictions on the
+recipients' exercise of the rights granted herein.
+
+  7. The Free Software Foundation may publish revised and/or new versions
+of the General Public License from time to time.  Such new versions will
+be similar in spirit to the present version, but may differ in detail to
+address new problems or concerns.
+
+Each version is given a distinguishing version number.  If the Program
+specifies a version number of the license which applies to it and "any
+later version", you have the option of following the terms and conditions
+either of that version or of any later version published by the Free
+Software Foundation.  If the Program does not specify a version number of
+the license, you may choose any version ever published by the Free Software
+Foundation.
+
+  8. If you wish to incorporate parts of the Program into other free
+programs whose distribution conditions are different, write to the author
+to ask for permission.  For software which is copyrighted by the Free
+Software Foundation, write to the Free Software Foundation; we sometimes
+make exceptions for this.  Our decision will be guided by the two goals
+of preserving the free status of all derivatives of our free software and
+of promoting the sharing and reuse of software generally.
+
+                            NO WARRANTY
+
+  9. BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
+FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.  EXCEPT WHEN
+OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
+PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED
+OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  THE ENTIRE RISK AS
+TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU.  SHOULD THE
+PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING,
+REPAIR OR CORRECTION.
+
+  10. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
+WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
+REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES,
+INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING
+OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED
+TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY
+YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER
+PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGES.
+
+                     END OF TERMS AND CONDITIONS
+
+        Appendix: How to Apply These Terms to Your New Programs
+
+  If you develop a new program, and you want it to be of the greatest
+possible use to humanity, the best way to achieve this is to make it
+free software which everyone can redistribute and change under these
+terms.
+
+  To do so, attach the following notices to the program.  It is safest to
+attach them to the start of each source file to most effectively convey
+the exclusion of warranty; and each file should have at least the
+"copyright" line and a pointer to where the full notice is found.
+
+    <one line to give the program's name and a brief idea of what it does.>
+    Copyright (C) 19yy  <name of author>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 1, or (at your option)
+    any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA  02110-1301 USA
+
+
+Also add information on how to contact you by electronic and paper mail.
+
+If the program is interactive, make it output a short notice like this
+when it starts in an interactive mode:
+
+    Gnomovision version 69, Copyright (C) 19xx name of author
+    Gnomovision comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+    This is free software, and you are welcome to redistribute it
+    under certain conditions; type `show c' for details.
+
+The hypothetical commands `show w' and `show c' should show the
+appropriate parts of the General Public License.  Of course, the
+commands you use may be called something other than `show w' and `show
+c'; they could even be mouse-clicks or menu items--whatever suits your
+program.
+
+You should also get your employer (if you work as a programmer) or your
+school, if any, to sign a "copyright disclaimer" for the program, if
+necessary.  Here a sample; alter the names:
+
+  Yoyodyne, Inc., hereby disclaims all copyright interest in the
+  program `Gnomovision' (a program to direct compilers to make passes
+  at assemblers) written by James Hacker.
+
+  <signature of Ty Coon>, 1 April 1989
+  Ty Coon, President of Vice
+
+That's all there is to it!
+
+
+--- The Artistic License 1.0 ---
+
+This software is Copyright (c) 2020 by Ken Williams.
+
+This is free software, licensed under:
+
+  The Artistic License 1.0
+
+The Artistic License
+
+Preamble
+
+The intent of this document is to state the conditions under which a Package
+may be copied, such that the Copyright Holder maintains some semblance of
+artistic control over the development of the package, while giving the users of
+the package the right to use and distribute the Package in a more-or-less
+customary fashion, plus the right to make reasonable modifications.
+
+Definitions:
+
+  - "Package" refers to the collection of files distributed by the Copyright
+    Holder, and derivatives of that collection of files created through
+    textual modification. 
+  - "Standard Version" refers to such a Package if it has not been modified,
+    or has been modified in accordance with the wishes of the Copyright
+    Holder. 
+  - "Copyright Holder" is whoever is named in the copyright or copyrights for
+    the package. 
+  - "You" is you, if you're thinking about copying or distributing this Package.
+  - "Reasonable copying fee" is whatever you can justify on the basis of media
+    cost, duplication charges, time of people involved, and so on. (You will
+    not be required to justify it to the Copyright Holder, but only to the
+    computing community at large as a market that must bear the fee.) 
+  - "Freely Available" means that no fee is charged for the item itself, though
+    there may be fees involved in handling the item. It also means that
+    recipients of the item may redistribute it under the same conditions they
+    received it. 
+
+1. You may make and give away verbatim copies of the source form of the
+Standard Version of this Package without restriction, provided that you
+duplicate all of the original copyright notices and associated disclaimers.
+
+2. You may apply bug fixes, portability fixes and other modifications derived
+from the Public Domain or from the Copyright Holder. A Package modified in such
+a way shall still be considered the Standard Version.
+
+3. You may otherwise modify your copy of this Package in any way, provided that
+you insert a prominent notice in each changed file stating how and when you
+changed that file, and provided that you do at least ONE of the following:
+
+  a) place your modifications in the Public Domain or otherwise make them
+     Freely Available, such as by posting said modifications to Usenet or an
+     equivalent medium, or placing the modifications on a major archive site
+     such as ftp.uu.net, or by allowing the Copyright Holder to include your
+     modifications in the Standard Version of the Package.
+
+  b) use the modified Package only within your corporation or organization.
+
+  c) rename any non-standard executables so the names do not conflict with
+     standard executables, which must also be provided, and provide a separate
+     manual page for each non-standard executable that clearly documents how it
+     differs from the Standard Version.
+
+  d) make other distribution arrangements with the Copyright Holder.
+
+4. You may distribute the programs of this Package in object code or executable
+form, provided that you do at least ONE of the following:
+
+  a) distribute a Standard Version of the executables and library files,
+     together with instructions (in the manual page or equivalent) on where to
+     get the Standard Version.
+
+  b) accompany the distribution with the machine-readable source of the Package
+     with your modifications.
+
+  c) accompany any non-standard executables with their corresponding Standard
+     Version executables, giving the non-standard executables non-standard
+     names, and clearly documenting the differences in manual pages (or
+     equivalent), together with instructions on where to get the Standard
+     Version.
+
+  d) make other distribution arrangements with the Copyright Holder.
+
+5. You may charge a reasonable copying fee for any distribution of this
+Package.  You may charge any fee you choose for support of this Package. You
+may not charge a fee for this Package itself. However, you may distribute this
+Package in aggregate with other (possibly commercial) programs as part of a
+larger (possibly commercial) software distribution provided that you do not
+advertise this Package as a product of your own.
+
+6. The scripts and library files supplied as input to or produced as output
+from the programs of this Package do not automatically fall under the copyright
+of this Package, but belong to whomever generated them, and may be sold
+commercially, and may be aggregated with this Package.
+
+7. C or perl subroutines supplied by you and linked into this Package shall not
+be considered part of this Package.
+
+8. The name of the Copyright Holder may not be used to endorse or promote
+products derived from this software without specific prior written permission.
+
+9. THIS PACKAGE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+The End
+
+## Files:
+perl-5.32.0/dist/Storable/README
+
+                         Storable 3.05c
+               Copyright (c) 1995-2000, Raphael Manfredi
+               Copyright (c) 2001-2004, Larry Wall
+               Copyright (c) 2016,2017 cPanel Inc
+
+------------------------------------------------------------------------
+    This program is free software; you can redistribute it and/or modify
+    it under the same terms as Perl 5 itself.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    Perl 5 License schemes for more details.
+------------------------------------------------------------------------
+
+## Files:
+perl-5.32.0/cpan/Encode/Encode/README.e2x
+
+Copyright (C) 2002 Your Name <your@address.domain>
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
+
+## Files:
+perl-5.32.0/cpan/Encode/bin/encguess
+
+Copyright 2015 Michael LaGrasta and Dan Kogai.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the the Artistic License (2.0). You may obtain a
+copy of the full license at:
+
+
+## Files:
+perl-5.32.0/cpan/Encode/ucm/koi8-u.ucm
+
+#
+# $Id: koi8-u.ucm,v 2.2 2015/07/31 02:18:28 dankogai Exp $
+#
+# Written $Id: koi8-u.ucm,v 2.2 2015/07/31 02:18:28 dankogai Exp $
+# ./compile -n koi8-u -o Encode/koi8-u.ucm Encode/koi8-u.enc
+#
+# Original table can be obtained at
+# http://www.unicode.org/Public/MAPPINGS/VENDORS/MISC/KOI8-U.TXT
+#
+#       Copyright (c) 1991-2008 Unicode, Inc.  All Rights reserved.
+#
+#       This file is provided as-is by Unicode, Inc. (The Unicode Consortium).
+#       No claims are made as to fitness for any particular purpose.  No
+#       warranties of any kind are expressed or implied.  The recipient
+#       agrees to determine applicability of information provided.  If this
+#       file has been provided on optical media by Unicode, Inc., the sole
+#       remedy for any claim will be exchange of defective media within 90
+#       days of receipt.
+#
+#       Unicode, Inc. hereby grants the right to freely use the information
+#       supplied in this file in the creation of products supporting the
+#       Unicode Standard, and to make copies of this file in any form for
+#       internal or external distribution as long as this notice remains
+#       attached.
+#
+
+## Files:
+perl-5.32.0/cpan/JSON-PP/bin/json_pp
+
+Copyright 2010 by Makamaka Hannyaharamitu
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
+
+## Files:
+perl-5.32.0/cpan/CPAN/scripts/cpan
+
+Copyright (c) 2001-2015, brian d foy, All Rights Reserved.
+
+You may redistribute this under the same terms as Perl itself.
+
+## Files:
+perl-5.32.0/cpan/Digest-SHA/shasum
+
+	## shasum: filter for computing SHA digests (ref. sha1sum/md5sum)
+	##
+	## Copyright (C) 2003-2018 Mark Shelor, All Rights Reserved
+	##
+	## Version: 6.02
+	## Fri Apr 20 16:25:30 MST 2018
+
+
+## Files:
+perl-5.32.0/cpan/Archive-Tar/bin/ptargrep
+
+Copyright 2010 Grant McLean E<lt>grantm@cpan.orgE<gt>
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+
+## Files:
+perl-5.32.0/cpan/IO-Compress/bin/streamzip
+perl-5.32.0/cpan/IO-Compress/bin/zipdetails
+
+Copyright (c) 2019 Paul Marquess. All rights reserved.
+
+This program is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself.
+
+## Files:
+perl-5.32.0/cpan/podlators/t/data/basic.man
+perl-5.32.0/cpan/podlators/t/data/basic.ovr
+perl-5.32.0/cpan/podlators/t/data/basic.clr
+perl-5.32.0/cpan/podlators/t/data/basic.cap
+perl-5.32.0/cpan/podlators/t/data/snippets/README
+
+    Copyright 2001, 2004, 2016, 2018 Russ Allbery <rra@cpan.org>
+
+    Copying and distribution of this file, with or without modification, are
+    permitted in any medium without royalty provided the copyright notice
+    and this notice are preserved. This file is offered as-is, without any
+    warranty.
+
+    SPDX-License-Identifier: FSFAP
+
+## Files:
+perl-5.32.0/cpan/podlators/t/data/snippets/man/uppercase-license
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+SPDX-License-Identifier: MIT
+
+
+## Files:
+perl-5.32.0/cpan/Compress-Raw-Bzip2/bzip2-src/LICENSE
+
+This program, "bzip2", the associated library "libbzip2", and all
+documentation, are copyright (C) 1996-2019 Julian R Seward.  All
+rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+
+2. The origin of this software must not be misrepresented; you must 
+   not claim that you wrote the original software.  If you use this 
+   software in a product, an acknowledgment in the product 
+   documentation would be appreciated but is not required.
+
+3. Altered source versions must be plainly marked as such, and must
+   not be misrepresented as being the original software.
+
+4. The name of the author may not be used to endorse or promote 
+   products derived from this software without specific prior written 
+   permission.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS
+OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Julian Seward, jseward@acm.org
+bzip2/libbzip2 version 1.0.8 of 13 July 2019
+
+--------------------------------------------------------------------------
+
+##Files:
+perl-5.32.0/cpan/DB_File/dbinfo
+
+#     Copyright (c) 1998-2020 Paul Marquess. All rights reserved.
+#     This program is free software; you can redistribute it and/or
+#     modify it under the same terms as Perl itself.
+
+## Files:
+perl-5.32.0/NetWare/Makefile
+
+/*
+ * Copyright (C) 2000-01 Novell, Inc. All Rights Reserved.
+ *
+ * You may distribute under the terms of either the GNU General Public
+ * License or the Artistic License, as specified in the README file.
+ *
+ */

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -58,3 +58,4 @@ test:		$(TEST_64)
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/html-tagset-5%)
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
