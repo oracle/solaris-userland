@@ -75,6 +75,9 @@ CONFIGURE_OPTIONS += --testuser=$(MYSQL_TEST_USER)
 CONFIGURE_OPTIONS += --testpassword=$(MYSQL_TEST_PASSWORD)
 CONFIGURE_OPTIONS += --testsocket=CHANGEME
 
+# Avoid unnecessary RPATH to Developer Studio 12.6
+COMPONENT_PRE_BUILD_ACTION += (cd $(@D) ; $(GSED) -i 's/-latomic//' Makefile)
+
 # For the testing we need to run mysql database first. The database needs it's
 # directory, which will be $(MYSQL_TEST_DATADIR). The directory will also
 # contain socket over which the testing will be performed. Problem is that the
