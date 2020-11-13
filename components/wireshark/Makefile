@@ -78,6 +78,7 @@ REQUIRED_PACKAGES += codec/speex
 REQUIRED_PACKAGES += library/desktop/qt5
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnutls-3
+REQUIRED_PACKAGES += library/libcares
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/nghttp2
 REQUIRED_PACKAGES += library/snappy
