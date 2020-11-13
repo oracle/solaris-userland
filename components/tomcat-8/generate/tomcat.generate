@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
@@ -35,12 +35,12 @@
 <transform file path=Solaris/ -> drop>
 
 # decorate conf/ files
-<transform file path=.*/conf/tomcat-users.xml -> set mode 0600>
+<transform file path=.*/conf/(server\.xml|tomcat-users\.xml) -> set mode 0600>
 <transform file path=.*/conf/(catalina.policy|catalina.properties|context.xml|jaspic-providers.xml) -> set mode 0644>
-<transform file path=.*/conf/(jaspic-providers.xsd|logging.properties|server.xml|web.xml) -> set mode 0644>
+<transform file path=.*/conf/(jaspic-providers.xsd|logging.properties|web.xml) -> set mode 0644>
 <transform file path=.*/conf/(?!CONF.tar.gz|tomcat-users.xsd) -> set preserve renamenew>
-<transform file path=.*/conf/tomcat-users.xml -> set owner webservd>
-<transform file path=.*/conf/tomcat-users.xml -> set group webservd>
+<transform file path=.*/conf/(server\.xml|tomcat-users\.xml) -> set owner webservd>
+<transform file path=.*/conf/(server\.xml|tomcat-users\.xml) -> set group webservd>
 <transform file path=.*/conf/catalina.properties -> set original_name SUNWtcat:var/tomcat6/conf/catalina.properties>
 <transform file path=.*/conf/logging.properties -> set original_name SUNWtcat:var/tomcat6/conf/logging.properties>
 
