@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -42,9 +42,9 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/bin/arcmt-test
 file path=usr/bin/c-arcmt-test
 file path=usr/bin/c-index-test
-link path=usr/bin/clang target=clang-10
+link path=usr/bin/clang target=clang-11
 link path=usr/bin/clang++ target=clang
-file path=usr/bin/clang-10
+file path=usr/bin/clang-11
 file path=usr/bin/clang-check
 link path=usr/bin/clang-cl target=clang
 link path=usr/bin/clang-cpp target=clang
@@ -52,7 +52,6 @@ file path=usr/bin/clang-extdef-mapping
 # Intentionally elided; msvc target driver.
 # link path=usr/bin/clang-cl target=clang
 file path=usr/bin/clang-format
-file path=usr/bin/clang-import-test
 file path=usr/bin/clang-offload-bundler
 file path=usr/bin/clang-offload-wrapper
 file path=usr/bin/clang-refactor
@@ -68,20 +67,28 @@ file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_comp
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_device_functions.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_intrinsics.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_libdevice_declares.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_math.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_math_forward_declares.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_cuda_runtime_wrapper.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_hip_libdevice_declares.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_hip_math.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__clang_hip_runtime_wrapper.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__stddef_max_align_t.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__wmmintrin_aes.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/__wmmintrin_pclmul.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/adxintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/altivec.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/ammintrin.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/amxintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/arm64intr.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/arm_acle.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/arm_bf16.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/arm_cde.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/arm_cmse.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/arm_fp16.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/arm_mve.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/arm_neon.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/arm_sve.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/armintr.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx2intrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512bf16intrin.h
@@ -113,6 +120,7 @@ file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avx512vpopcntdqvl
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/avxintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/bmi2intrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/bmiintrin.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/cet.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/cetintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/cldemoteintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/clflushoptintrin.h
@@ -151,10 +159,12 @@ file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/mwaitxintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/nmmintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/opencl-c-base.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/opencl-c.h
-file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/__clang_openmp_math.h
-file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/__clang_openmp_math_declares.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/__clang_openmp_device_functions.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/cmath
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/complex
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/complex.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/math.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/openmp_wrappers/new
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/pconfigintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/pkuintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/pmmintrin.h
@@ -171,6 +181,7 @@ file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/ptwriteintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/rdseedintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/rtmintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/s390intrin.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/serializeintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/sgxintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/shaintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/smmintrin.h
@@ -184,6 +195,7 @@ file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/stdnoreturn.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/tbmintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/tgmath.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/tmmintrin.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/tsxldtrkintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/unwind.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/vadefs.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/vaesintrin.h
@@ -191,6 +203,7 @@ file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/varargs.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/vecintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/vpclmulqdqintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/waitpkgintrin.h
+file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/wasm_simd128.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/wbnoinvdintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/wmmintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/x86intrin.h
@@ -201,10 +214,10 @@ file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/xsaveintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/xsaveoptintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/xsavesintrin.h
 file path=usr/lib/$(MACH64)/clang/$(COMPONENT_VERSION)/include/xtestintrin.h
-link path=usr/lib/$(MACH64)/libclang-cpp.so target=libclang-cpp.so.10
-file path=usr/lib/$(MACH64)/libclang-cpp.so.10
-link path=usr/lib/$(MACH64)/libclang.so target=libclang.so.10
-file path=usr/lib/$(MACH64)/libclang.so.10
+link path=usr/lib/$(MACH64)/libclang-cpp.so target=libclang-cpp.so.11
+file path=usr/lib/$(MACH64)/libclang-cpp.so.11
+link path=usr/lib/$(MACH64)/libclang.so target=libclang.so.11
+file path=usr/lib/$(MACH64)/libclang.so.11
 file usr/libexec/c++-analyzer path=usr/lib/c++-analyzer mode=0555
 file usr/libexec/ccc-analyzer path=usr/lib/ccc-analyzer mode=0555
 file path=usr/lib/clang/$(MACH64)/cxa_finalize.o

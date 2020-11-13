@@ -29,7 +29,7 @@ COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		llvm
-COMPONENT_VERSION=	10.0.0
+COMPONENT_VERSION=	11.0.0
 COMPONENT_PROJECT_URL=	https://llvm.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)
 COMPONENT_BUGDB=	utility/llvm
@@ -38,18 +38,18 @@ COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC_NAME=	$(COMPONENT_SRC).src
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC_NAME).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:df83a44b3a9a71029049ec101fb0077ecbbdf5fe41e395215025779099a98fdf
+    sha256:913f68c898dfb4a03b397c5e11c6a2f39d0f22ed7665c9cefa87a34423a72469
 COMPONENT_ARCHIVE_URL=	https://github.com/llvm/llvm-project/releases/download/llvmorg-$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	1830
 
-TPNO=			57898
+TPNO=			63285
 
 COMPONENT_NAME_1 =	clang
 COMPONENT_SRC_1 =	clang-$(COMPONENT_VERSION).src
 COMPONENT_ARCHIVE_1 =	$(COMPONENT_SRC_1).tar.xz
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:885b062b00e903df72631c5f98b9579ed1ed2790f74e5646b4234fa084eacb21
+    sha256:0f96acace1e8326b39f220ba19e055ba99b0ab21c2475042dbc6a482649c5209
 COMPONENT_ARCHIVE_URL_1 = https://github.com/llvm/llvm-project/releases/download/llvmorg-$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE_1)
 COMPONENT_SIG_URL_1=	$(COMPONENT_ARCHIVE_URL_1).sig
 COMPONENT_ANITYA_ID_1=	11811
@@ -194,7 +194,7 @@ COMPONENT_TEST_MASTER = \
 # Do not change the order of these regexp transforms.
 COMPONENT_TEST_TRANSFORMS += \
     '-e "s/^Testing Time: .*$$/Test results:/" ' \
-    '-e "/^Test results:/,/Unexpected Failures:/p" ' \
+    '-e "/^Failed Tests /,/^  Failed/p" ' \
     '-e "/.*/d" '
 
 # -fstack-protector-all:

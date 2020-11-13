@@ -690,27 +690,27 @@ gnome-shell cores dump on sparc when mesa is build with llvm without this.
      // Create function stubs for both PLT and GOT references, regardless of
 --- include/llvm/Object/ELFObjectFile.h
 +++ include/llvm/Object/ELFObjectFile.h
-@@ -1072,8 +1072,9 @@
+@@ -1110,8 +1110,9 @@
      case ELF::EM_RISCV:
-       return "ELF32-riscv";
+       return "elf32-littleriscv";
      case ELF::EM_SPARC:
 -    case ELF::EM_SPARC32PLUS:
-       return "ELF32-sparc";
+       return "elf32-sparc";
 +    case ELF::EM_SPARC32PLUS:
-+      return "ELF32-sparc32plus";
++      return "elf32-sparc32plus";
      case ELF::EM_AMDGPU:
-       return "ELF32-amdgpu";
+       return "elf32-amdgpu";
      default:
-@@ -1094,7 +1095,7 @@
+@@ -1132,7 +1133,7 @@
      case ELF::EM_S390:
-       return "ELF64-s390";
+       return "elf64-s390";
      case ELF::EM_SPARCV9:
--      return "ELF64-sparc";
-+      return "ELF64-sparcv9";
+-      return "elf64-sparc";
++      return "elf64-sparcv9";
      case ELF::EM_MIPS:
-       return "ELF64-mips";
+       return "elf64-mips";
      case ELF::EM_AMDGPU:
-@@ -1156,8 +1157,8 @@
+@@ -1196,8 +1197,8 @@
      return Triple::systemz;
  
    case ELF::EM_SPARC:
