@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 # 32-bit is preferred until sufficient testing can be done.
 BUILD_BITS= 32_and_64
@@ -93,6 +93,7 @@ CONFIGURE_OPTIONS  +=	--without-pth-test
 CONFIGURE_OPTIONS  +=	--with-libiconv-prefix=$(CONFIGURE_PREFIX)
 CONFIGURE_OPTIONS  +=	--disable-ltdl-install
 CONFIGURE_OPTIONS  +=	--with-pic
+CONFIGURE_OPTIONS  +=   MAKE="$(GMAKE)"
 
 CONFIGURE_ENV  +=   LD="$(CC) $(CFLAGS) $(LDFLAGS)"
 CONFIGURE_ENV  +=   INSTALL="$(INSTALL)"

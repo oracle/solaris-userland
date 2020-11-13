@@ -64,6 +64,8 @@ CONFIGURE_OPTIONS += --with-gui=openssl
 CONFIGURE_OPTIONS += LD="$(CC)"
 CONFIGURE_OPTIONS += LIBS="$(LIBS)"
 
+CONFIGURE_OPTIONS += MAKE="$(GMAKE)"
+
 COMPONENT_POST_CONFIGURE_ACTION = (cd $(COMPONENT_SRC); \
 	for f in `ls src/include/tss/*.h` ; do \
 		/usr/bin/dos2unix $$f $$f; \
