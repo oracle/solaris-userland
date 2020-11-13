@@ -251,12 +251,20 @@ SUBPKG_OBJ =	libsmbclient
 EXCLUSION_FILE = libsmbclient-deps
 
 include $(WS_MAKE_RULES)/pkgobjs.mk
-$(EXCLUSION_FILE_TARGET): $(HEAP_OBJ)
+$(EXCLUSION_FILE_TARGET):: $(HEAP_OBJ)
 	/usr/xpg4/bin/fgrep -e libsmbclient.so -e libsmbclient.h $(HEAP_OBJ) \
 		| sed -e 's/^.*path=//' | sed -e 's/ target=.*$$//' > $@ ; \
 	ldd -v $(PROTO_DIR)/usr/lib/samba/$(MACH64)/libsmbclient.so \
 		| grep =[\>-\>] | nawk '{print $$NF;}' | sort -u \
 		| sed -e 's@^/@@;s/$(MACH64)/\$$(MACH64)/' | egrep '^usr/lib/samba' >> $@
+
+# Macros in pkgobjs.mk file do not support architecture based division of files into packages.
+# As a workaround for CBE 84 (see bug 32150642), we force that libndr-samba4.so is added to
+# libsmbclient-deps file on both architectures...
+ifeq ($(MACH),sparc)
+$(EXCLUSION_FILE_TARGET):: $(HEAP_OBJ)
+	echo 'usr/lib/samba/private/$$(MACH64)/libndr-samba4.so' >> $@
+endif
 
 REQUIRED_PACKAGES += library/desktop/search/tracker
 REQUIRED_PACKAGES += library/file-monitor/gamin
@@ -265,7 +273,10 @@ REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/jansson
 REQUIRED_PACKAGES += library/libarchive
+REQUIRED_PACKAGES += library/perl-5/parse-yapp
+REQUIRED_PACKAGES += library/python/iso8601
 REQUIRED_PACKAGES += library/print/cups-libs
+REQUIRED_PACKAGES += library/samba/libsmbclient
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/perl-526
 REQUIRED_PACKAGES += runtime/python-37
