@@ -20,18 +20,17 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../../make-rules/shared-macros.mk
 
 GIT_REPO= https://github.com/puppetlabs/puppetlabs-inifile
-GIT_BRANCH= 2.1.0
-GIT_COMMIT_ID=  86f7d19
+GIT_COMMIT_ID=  2.1.0
 GIT_HASH=sha256:984a67a98a25850530cfff4cfdbaa4cdcdc3a355ef10b473b4b7b99249dfc9f2
 
 COMPONENT_NAME=		puppetlabs-inifile
-COMPONENT_VERSION=	$(GIT_BRANCH)
+COMPONENT_VERSION=	$(GIT_COMMIT_ID)
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_BUGDB=	utility/puppet

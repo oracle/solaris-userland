@@ -20,18 +20,17 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 include ../../../../make-rules/shared-macros.mk
 
 GIT_REPO= https://github.com/voxpupuli/puppet-staging
-GIT_BRANCH= v3.0.0
-GIT_COMMIT_ID= 1b0aa2d
+GIT_COMMIT_ID= v3.0.0
 GIT_HASH=sha256:642418f5e61c764c3326ce968a2f497606fdf452481ac4dd94ba21b9b93b57f6
 
 COMPONENT_NAME=		puppet-staging
-COMPONENT_VERSION=	3.0.0
+COMPONENT_VERSION=	$(GIT_COMMIT_ID:v%=%)
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	14518

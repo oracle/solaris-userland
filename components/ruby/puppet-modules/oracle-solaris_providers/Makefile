@@ -20,22 +20,19 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
 #
 include ../../../../make-rules/shared-macros.mk
 
 
 GIT_REPO= https://github.com/oracle/puppet-solaris_providers
-GIT_BRANCH= v2.0.1
-GIT_COMMIT_ID= 932309
+GIT_COMMIT_ID= v2.0.1
 GIT_HASH=  sha256:b858d0615642a6eff3215ecdee32dace3988bb296c6b02894b89eabbb907f4fc
 
 COMPONENT_NAME=		puppet-solaris_providers
-COMPONENT_VERSION=	2.0.1
+COMPONENT_VERSION=	$(GIT_COMMIT_ID:v%=%)
 COMPONENT_PROJECT_URL=	https://github.com/oracle/puppet-solaris_providers
-# Construct our own SRC instead of using the default with GIT_COMMIT_ID
-# archive from github strips leading v from release for vN named release tags
-COMPONENT_SRC=$(COMPONENT_NAME)-$(shell echo $(GIT_BRANCH) | sed -e 's/v//')
+COMPONENT_SRC=$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	13323
 

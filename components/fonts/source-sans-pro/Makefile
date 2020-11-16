@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -37,7 +37,6 @@ COMPONENT_ARCHIVE_HASH_1= \
     sha256:bb45283fa9979c4821c99da3b54313012821aba0246e2ec0057f2b03ca24912c
 
 #GIT_REPO=		https://github.com/adobe-fonts/source-sans-pro
-#GIT_TAG=		$(COMPONENT_VERSION)
 #GIT_COMMIT_ID=		778e10a
 #GIT_HASH=		sha256:bb45283fa9979c4821c99da3b54313012821aba0246e2ec0057f2b03ca24912c
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -29,12 +29,11 @@ include ../../../make-rules/shared-macros.mk
 RUBY_VERSIONS = $(RUBY_PUPPET_VERSION)
 
 GIT_REPO= https://github.com/puppetlabs/puppet
-GIT_BRANCH= 5.5.0
-GIT_COMMIT_ID=  6d635b0
+GIT_COMMIT_ID=  5.5.0
 GIT_HASH=sha256:15d172ef6a8a109df58ace8f0cbfb1bfe57617ec0c78e25d2f08cc88deb09a22
 
 COMPONENT_NAME=		puppet
-COMPONENT_VERSION=	$(GIT_BRANCH)
+COMPONENT_VERSION=	$(GIT_COMMIT_ID)
 COMPONENT_PROJECT_URL=	http://puppetlabs.com/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz

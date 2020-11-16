@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2020, Oracle and/or its affiliates.
 #
 
 FETCH =		$(WS_TOOLS)/userland-fetch
@@ -37,13 +37,8 @@ FETCH =		$(WS_TOOLS)/userland-fetch
 # the file and signature for verification of its contents.
 #
 
-# Filter out any suffixes which correspond to auto-generated github archive
-# URLs (see prep-git.mk for the definition of GITHUB_ARCHIVE_SUFFIXES).  If
-# the primary archive shouldn't be processed here, we check for it before
-# evaling.
-URL_SUFFIXES = $(filter-out $(GITHUB_ARCHIVE_SUFFIXES), \
-		$(subst COMPONENT_ARCHIVE_URL_,, \
-		 $(filter COMPONENT_ARCHIVE_URL_%, $(.VARIABLES))))
+URL_SUFFIXES = $(subst COMPONENT_ARCHIVE_URL_,, \
+		$(filter COMPONENT_ARCHIVE_URL_%, $(.VARIABLES)))
 
 # Templates for download variables and rules.  We separate the variable
 # assignments from the rules so that all the variable assignments are given a
@@ -69,20 +64,19 @@ $$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1)):	$(MAKEFILE_PREREQ)
 		$$(COMPONENT_PUBLIC_KEY_URL$(1):%=--pubkey '%')
 	$$(TOUCH) $$@
 
-REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += runtime/python-37
 
 endif
 endef
 
-# Evaluate the variable assignments immediately.  If we're pulling the main
-# (unsuffixed) archive from github, gia prep-git.mk, then skip doing that here.
+# Evaluate the variable assignments immediately.
 # Use $(if) instead of ifeq() because the latter is evaluated immediately.
-$(if $(findstring __BLANK__,$(GITHUB_ARCHIVE_SUFFIXES)),,$(eval $(call download-variables,)))
+$(eval $(call download-variables,))
 $(foreach suffix, $(URL_SUFFIXES), $(eval $(call download-variables,_$(suffix))))
 
 # Put the rule evaluations in a variable for deferred evaluation.
 define eval-download-rules
-$(if $(findstring __BLANK__,$(GITHUB_ARCHIVE_SUFFIXES)),,$(eval $(call download-rules,)))
+$(eval $(call download-rules,))
 $(foreach suffix, $(URL_SUFFIXES), $(eval $(call download-rules,_$(suffix))))
 endef
 

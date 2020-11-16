@@ -245,6 +245,7 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libserf
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/perl-522
+REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += system/library/c++-runtime
 REQUIRED_PACKAGES += system/library/security/libsasl2

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2020, Oracle and/or its affiliates.
 #
 
 GIT =		/usr/bin/git
@@ -38,33 +38,21 @@ GIT_SUFFIXES = $(subst GIT_REPO_,, $(filter GIT_REPO_%, $(.VARIABLES)))
 # they'll be expanded immediately.
 define git-variables
 ifdef GIT_REPO$(1)
-ifeq ("",$(strip $(or $(GIT_BRANCH$(1)),$(GIT_COMMIT_ID$(1)))))
-  $$(error GIT_BRANCH$(1) and/or GIT_COMMIT_ID$(1) must be defined)
+ifeq ($(strip $(or $(GIT_COMMIT_ID$(1)),$(GIT_BRANCH$(1)))),)
+  $$(error GIT_COMMIT_ID$(1) or GIT_BRANCH$(1) must be defined)
 endif
 
 ifdef GIT_BRANCH$(1)
   GIT_BRANCH_ARG$(1) = -b $$(GIT_BRANCH$(1))
-else
-  GIT_BRANCH_ARG$(1) = -b master
+  $$(info GIT_BRANCH should only be used for testing, not committed to the gate)
 endif
 
 # If the label is not already defined (including to empty), set it to the version.
 COMPONENT_LABEL$(1) ?= $$(COMPONENT_VERSION$(1))
-# The source directory is <name>-(<label>|<version>)[-(<tag>|<branch>)][-<commit].
-COMPONENT_SRC$(1) ?= $$(COMPONENT_NAME$(1))$$(COMPONENT_LABEL$(1):%=-%)$$($$(or $$(GIT_TAG$(1)),$$(GIT_BRANCH$(1))))$$(GIT_COMMIT_ID$(1):%=-%)
+# The source directory is <name>-(<label>|<version>)[-<branch>][-<commit>].
+COMPONENT_SRC$(1) ?= $$(COMPONENT_NAME$(1))$$(COMPONENT_LABEL$(1):%=-%)$$(GIT_BRANCH$(1):%=-%)$$(GIT_COMMIT_ID$(1):%=-%)
 COMPONENT_ARCHIVE$(1) ?= $$(COMPONENT_SRC$(1)).tar.gz
-# If the source is github attempt to generate an archive url.  Defining
-# COMPONENT_ARCHIVE_URL here messes with prep-download.mk, which keys off of
-# that variable to build download rules, so keep track of which suffixes
-# generated a github archive URL, and prep-download.mk will use that list to
-# remove those URLs.  If the primary (unsuffixed) archive is from github, then
-# we add a dummy __BLANK__ suffix to the list, and filter that out separately.
-ifeq (github,$(findstring github,$(GIT_REPO$(1))))
-  COMPONENT_ARCHIVE_URL$(1) ?= $(GIT_REPO$(1))/archive/$(GIT_BRANCH$(1)).tar.gz
-  GITHUB_ARCHIVE_SUFFIXES += $(or $(strip $(1:_%=%)),__BLANK__)
-else
-  COMPONENT_ARCHIVE_SRC$(1) = git
-endif
+COMPONENT_ARCHIVE_SRC$(1) = git
 
 CLEAN_PATHS += $$(COMPONENT_SRC$(1))
 CLOBBER_PATHS += $$(COMPONENT_ARCHIVE$(1))
@@ -77,8 +65,7 @@ ifdef GIT_REPO$(1)
 download::	$$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1))
 
 # First attempt to download a cached archive of the SCM repo at the proper
-# changeset ID, If COMPONENT_ARCHIVE_URL is defined try that as well.
-# If that fails, create an archive by cloning the SCM repo,
+# changeset ID. If that fails, create an archive by cloning the SCM repo,
 # updating to the selected changeset, archiving that directory, and cleaning up
 # when complete.
 #
@@ -96,8 +83,6 @@ $$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1)):	$(MAKEFILE_PREREQ)
 		$$(COMPONENT_ARCHIVE_URL$(1):%=--url %) || \
 	(TMP_REPO=$$$$(mktemp --directory) && \
 	$(GIT) clone $$(GIT_REPO$(1)) $$(GIT_BRANCH_ARG$(1)) $$$${TMP_REPO} && \
-	(cd $$$${TMP_REPO} ; $(GIT) checkout \
-	$$(GIT_COMMIT_ID$(1))) && \
 	(cd $$$${TMP_REPO} ; \
 		$(GIT) config tar.tar.bz2.command "bzip2 -c"; \
 		$(GIT) config tar.tar.xz.command "xz -c"; \

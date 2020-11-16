@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -29,12 +29,11 @@ include ../../../make-rules/shared-macros.mk
 RUBY_VERSIONS = $(RUBY_PUPPET_VERSION)
 
 GIT_REPO=               https://github.com/stompgem/stomp
-GIT_BRANCH=             v1.4.4
-GIT_COMMIT_ID=          1236aca
+GIT_COMMIT_ID=          v1.4.4
 GIT_HASH=sha256:8e80208ec2300f138dfd9e92da02280643d046e22b529ce1d31dc905882cd34f
 
 COMPONENT_NAME=         stomp
-COMPONENT_VERSION=      $(GIT_BRANCH:v%=%)
+COMPONENT_VERSION=      $(GIT_COMMIT_ID:v%=%)
 COMPONENT_PROJECT_URL=  $(GIT_REPO)
 COMPONENT_SRC=          $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.gz
