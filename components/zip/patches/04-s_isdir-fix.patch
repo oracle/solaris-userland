@@ -1,0 +1,14 @@
+--- zip30/unix/unix.c.orig 2020-11-16 20:54:26.395252694 -0500
++++ zip30/unix/unix.c      2020-11-16 20:55:58.614187592 -0500
+@@ -427,8 +427,8 @@
+     }
+   }
+   if (n != NULL)
+-#ifdef S_ISDIR
+-    *n = S_ISDIR(s.st_mode) ? s.st_size : -1L;
++#ifdef S_ISREG
++    *n = S_ISREG(s.st_mode) ? s.st_size : -1L;
+ #else
+     *n = (s.st_mode & S_IFMT) == S_IFREG ? s.st_size : -1L;
+ #endif
+
