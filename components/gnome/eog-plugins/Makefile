@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,15 +30,15 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		eog-plugins
-COMPONENT_VERSION=	3.16.3
+COMPONENT_VERSION=	3.26.5
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/EyeOfGnome
 COMPONENT_ARCHIVE_HASH= \
-	sha256:2d2198ed026b1c28329ac3d353b3031c2024277d81d60f3c1e626f4701a73bd2
-COMPONENT_ARCHIVE_URL=	http://ftp.gnome.org/pub/GNOME/sources/$(COMPONENT_NAME)/3.16/$(COMPONENT_ARCHIVE)
+	sha256:44968e09059272be038c00aaf9796b442a6cd68163a5cb08c98824492a9b5498
+COMPONENT_ARCHIVE_URL=	http://ftp.gnome.org/pub/GNOME/sources/$(COMPONENT_NAME)/3.26/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	13120
 
-TPNO=			26904
+TPNO=			62731
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -59,9 +59,6 @@ CONFIGURE_OPTIONS += --with-librsvg
 CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += --with-x
 CONFIGURE_OPTIONS += --with-xmp
-# Enable postasa when an updated libgdata is delivered
-# And also fix the *.p5m file with it
-CONFIGURE_OPTIONS += --with-plugins="map,fit-to-width,exif-display,fullscreenbg,postr,pythonconsole,slideshowshuffle"
 
 REQUIRED_PACKAGES += image/library/libexif
 REQUIRED_PACKAGES += image/library/libjpeg

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,15 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		eog
-COMPONENT_VERSION=	3.24.0
+COMPONENT_VERSION=	3.38.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/EyeOfGnome
 COMPONENT_ARCHIVE_HASH= \
-	sha256:c640bb76f202d06858e4d82be626d83256326f9cedfb46ae3b450a82ff3f11cc
+	sha256:e1a3a47c38688cd538deda627c0eff113d05c316b1dde6243150437259d2d963
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	5393
 
-TPNO=			34563
+TPNO=			62735
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -46,24 +47,21 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 # Assumes GNU msgfmt is in PATH.
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 
-CONFIGURE_OPTIONS += --disable-static
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-introspection
-CONFIGURE_OPTIONS += --with-cms
-CONFIGURE_OPTIONS += --with-libexif
-CONFIGURE_OPTIONS += --with-libjpeg
-CONFIGURE_OPTIONS += --with-librsvg
-CONFIGURE_OPTIONS += --with-pic
-CONFIGURE_OPTIONS += --with-x
-CONFIGURE_OPTIONS += --with-xmp
+CONFIGURE_OPTIONS += -Dlibportal=false
 
 CFLAGS += $(CPP_XPG6MODE)
+
+COMPONENT_POST_INSTALL_ACTION.64 += \
+        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/eog.1 \
+                $(PROTO_DIR)/usr/share/man/man1/eog.1;
 
 REQUIRED_PACKAGES += data/shared-mime-info
 REQUIRED_PACKAGES += image/library/libexif
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/librsvg
+REQUIRED_PACKAGES += image/viewer/eog/eog-plugins
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo

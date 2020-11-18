@@ -1,0 +1,18 @@
+Bundled eog plugins do not have RPATH set resulting in ldd not being able to
+find libeog.so. This isn't that big of a deal because libeog will always be
+already present when plugins are being loaded, but pkgdepend flips out because
+of that. This simple change fixes this issue.
+
+This was reported upstream:
+https://gitlab.gnome.org/GNOME/eog/-/issues/159
+
+--- eog-3.38.0/plugins/meson.build
++++ eog-3.38.0/plugins/meson.build
+@@ -25,6 +25,7 @@ foreach plugin: plugins
+     dependencies: libeog_dep,
+     install: true,
+     install_dir: eog_pluginsdir,
++    install_rpath: eog_prefix / eog_pkglibdir,
+   )
+ 
+   plugin_data = plugin + '.plugin'

@@ -1,0 +1,17 @@
+Librsvg required version is set that high not because it is really needed, but
+because the older ones are no longer being maintained. Because of that, we can
+safely move it back a little bit.
+
+Not intended for upstream, can be removed once newer librsvg is available in Solaris.
+
+--- eog-3.38.0/meson.build
++++ eog-3.38.0/meson.build
+@@ -206,7 +206,7 @@ config_h.set('HAVE_INTROSPECTION', enabl
+ # RSVG (optional for scaling svg image)
+ enable_librsvg = get_option('librsvg')
+ if enable_librsvg
+-  common_deps += dependency('librsvg-2.0', version: '>= 2.44.0')
++  common_deps += dependency('librsvg-2.0', version: '>= 2.40.0')
+ endif
+ config_h.set('HAVE_RSVG', enable_librsvg)
+ 
