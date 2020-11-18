@@ -19,22 +19,22 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         pip
-COMPONENT_VERSION=      19.1.1
+COMPONENT_VERSION=      20.2.4
 COMPONENT_SRC=          $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:3675b6c7a3115ab199ad2e6d4b39ec373596aa4f2968deef6b205c2fac2bc70e
+    sha256:f3a068a9ff1986747514dd07f0a465a5a498c9f426c3198fa88f8a208c98d6a4
 COMPONENT_ARCHIVE_URL=  https://github.com/pypa/pip/archive/$(COMPONENT_VERSION).tar.gz
 COMPONENT_PROJECT_URL=  https://github.com/pypa/pip
 COMPONENT_BUGDB=	utility/pip
 COMPONENT_ANITYA_ID=	6529
 
-TPNO=			52889
+TPNO=			63294
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

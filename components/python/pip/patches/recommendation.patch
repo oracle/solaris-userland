@@ -4,28 +4,33 @@ message about newer available versions is unnecessary and potentially risky.
 
 Not for upstream contribution
 
---- pip-19.1.1/src/pip/_internal/utils/outdated.py
-+++ pip-19.1.1/src/pip/_internal/utils/outdated.py
-@@ -139,22 +139,6 @@ def pip_version_check(session, options):
+--- pip-20.2.4/src/pip/_internal/self_outdated_check.py.orig	2020-11-13 16:58:50.654942516 +0100
++++ pip-20.2.4/src/pip/_internal/self_outdated_check.py	2020-11-13 16:59:48.859958579 +0100
+@@ -177,27 +177,6 @@
  
          remote_version = packaging_version.parse(pypi_version)
  
+-        local_version_is_older = (
+-            pip_version < remote_version and
+-            pip_version.base_version != remote_version.base_version and
+-            was_installed_by_pip('pip')
+-        )
+-
 -        # Determine if our pypi_version is older
--        if (pip_version < remote_version and
--                pip_version.base_version != remote_version.base_version and
--                was_installed_by_pip('pip')):
--            # Advise "python -m pip" on Windows to avoid issues
--            # with overwriting pip.exe.
--            if WINDOWS:
--                pip_cmd = "python -m pip"
--            else:
--                pip_cmd = "pip"
--            logger.warning(
--                "You are using pip version %s, however version %s is "
--                "available.\nYou should consider upgrading via the "
--                "'%s install --upgrade pip' command.",
--                pip_version, pypi_version, pip_cmd
--            )
+-        if not local_version_is_older:
+-            return
+-
+-        # We cannot tell how the current pip is available in the current
+-        # command context, so be pragmatic here and suggest the command
+-        # that's always available. This does not accommodate spaces in
+-        # `sys.executable`.
+-        pip_cmd = "{} -m pip".format(sys.executable)
+-        logger.warning(
+-            "You are using pip version %s; however, version %s is "
+-            "available.\nYou should consider upgrading via the "
+-            "'%s install --upgrade pip' command.",
+-            pip_version, pypi_version, pip_cmd
+-        )
      except Exception:
          logger.debug(
              "There was an error checking the latest version of pip",
