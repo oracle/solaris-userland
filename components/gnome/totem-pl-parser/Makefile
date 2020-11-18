@@ -30,34 +30,37 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		totem-pl-parser
-COMPONENT_VERSION=	3.10.7
+COMPONENT_VERSION=	3.26.5
 COMPONENT_PROJECT_URL=  https://developer.gnome.org/totem-pl-parser/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:9c8285bc3131faa309d5cba5a919d5166abc2b8cc5a0c850fe861be8b14e089c
+	sha256:5370de46f2e848221779275479b96ac39115b1efd2b0293d4afa87e22c8c528c
 COMPONENT_BUGDB=        gnome/multimedia
 COMPONENT_ANITYA_ID=	13163
 
-TPNO=			34606
+TPNO=			63210
 
+BUILD_STYLE=         meson
 TEST_TARGET  = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU xgettext in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+
+LD_OPTIONS += -z gnu-version-script-compat
 
 # Required so that configure can find and use 64-bit version of config program.
 CONFIGURE_ENV.64 += ac_cv_path_LIBGCRYPT_CONFIG=$(USRBINDIR64)/libgcrypt-config
 
-CONFIGURE_OPTIONS += --disable-quvi
-CONFIGURE_OPTIONS += --disable-static
 # Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-introspection
-CONFIGURE_OPTIONS.64 += --enable-introspection
-CONFIGURE_OPTIONS += --enable-libarchive
-CONFIGURE_OPTIONS += --enable-libgcrypt
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --with-pic
+CONFIGURE_OPTIONS += -Denable-quvi=no
+CONFIGURE_OPTIONS.32 += -Dintrospection=false
+CONFIGURE_OPTIONS.64 += -Dintrospection=true
+CONFIGURE_OPTIONS += -Denable-libarchive=yes
+CONFIGURE_OPTIONS += -Denable-libgcrypt=yes
+CONFIGURE_OPTIONS += -Ddefault_library=shared
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
