@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		totem
-COMPONENT_VERSION=	3.34.0
+COMPONENT_VERSION=	3.38.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Totem
 COMPONENT_ARCHIVE_HASH= \
-	sha256:04d56ede3e04ad16579774b64908641e57f13731793c9a258e93fd04cca8d701
+	sha256:a829f2b5aa0435aa431816153193d5547fade9eb8d489f56be22afbe651c432f
 COMPONENT_BUGDB=        gnome/multimedia
 COMPONENT_ANITYA_ID=	13162
 
-TPNO=			54133
+TPNO=			63214
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
@@ -72,6 +72,7 @@ REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
 REQUIRED_PACKAGES += library/desktop/grilo
+REQUIRED_PACKAGES += library/desktop/grilo-plugins
 REQUIRED_PACKAGES += library/desktop/libpeas
 REQUIRED_PACKAGES += library/graphics/cogl
 REQUIRED_PACKAGES += library/media-player/totem-pl-parser
