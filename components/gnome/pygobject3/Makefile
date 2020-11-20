@@ -30,61 +30,54 @@ BUILD_BITS =		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pygobject
-COMPONENT_VERSION=	3.24.1
-COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/PyGObject
+COMPONENT_VERSION=	3.38.0
+COMPONENT_PROJECT_URL=	https://pygobject.readthedocs.io/en/latest
 COMPONENT_ARCHIVE_HASH= \
-	sha256:a628a95aa0909e13fb08230b1b98fc48adef10b220932f76d62f6821b3fdbffd
+	sha256:0372d1bb9122fc19f500a249b1f38c2bb67485000f5887497b4b205b3e7084d5
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13158
 
-TPNO=			35809
+TPNO=			63377
+BUILD_STYLE=		meson
+
+PYTHON_VERSIONS=	$(PYTHON3_VERSIONS)
 
 PKG_CONFIG_PATHS+=$(PYTHON_VENDOR_PACKAGES_BASE)/lib/pkgconfig/
 
-# This component is not yet built for Python 3.9
-PYTHON_VERSIONS=        3.7
-
 # replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses configure.mk
-CONFIGURE_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
+CONFIGURE_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
 $(BUILD_DIR)/%-3.7/.configured:		PYTHON_VERSION=3.7
-$(BUILD_DIR)/%-3.7/.configured:		PYTHON_VENDOR_PACKAGES=$(PYTHON_VENDOR_PACKAGES_BASE)
-$(BUILD_DIR)/$(MACH64)-%/.configured:	BITS=64
+$(BUILD_DIR)/%-3.9/.configured:		PYTHON_VERSION=3.9
 
-BUILD_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
+BUILD_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
 $(BUILD_DIR)/%-3.7/.built:		PYTHON_VERSION=3.7
-$(BUILD_DIR)/$(MACH64)-%/.built:	BITS=64
+$(BUILD_DIR)/%-3.9/.built:		PYTHON_VERSION=3.9
 
-INSTALL_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
+INSTALL_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
 $(BUILD_DIR)/%-3.7/.installed:		PYTHON_VERSION=3.7
-$(BUILD_DIR)/$(MACH64)-%/.installed:	BITS=64
+$(BUILD_DIR)/%-3.9/.installed:		PYTHON_VERSION=3.9
 
-# Tests do not yet work with Userland framework - 23712631
-TEST_TARGET= $(SKIP_TEST)
+TEST_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.tested-and-compared)
+$(BUILD_DIR)/%-3.7/.tested-and-compared:		PYTHON_VERSION=3.7
+$(BUILD_DIR)/%-3.9/.tested-and-compared:		PYTHON_VERSION=3.9
+
+include $(WS_MAKE_RULES)/test-x11.mk
+
+COMPONENT_TEST_TRANSFORMS += '-n -e "/:/p"'
+
 include $(WS_MAKE_RULES)/gnome-component.mk
-
-# Required due to patch to configure.ac.
-# The TERM is required because autogen.sh calls /usr/bin/gnome-autogen.sh which
-# in turn calls `tput bold` which may fail if you have TERM unknown to the
-# current build machine.
-COMPONENT_PREP_ACTION += ( cd $(@D) ; TERM=vt100 NOCONFIGURE=1 $(CONFIG_SHELL) autogen.sh );
-
-# Needs -std=c99 at minimum for 'NAN', etc.
-CFLAGS += -std=c11
-
-CONFIGURE_OPTIONS += --disable-static
 
 # The build process modifies the shebang line to use the version of Python
 # automatically found; to avoid using the current system default, one is
 # explicitly specified here.
-CONFIGURE_OPTIONS += --with-python=$(PYTHON)
+CONFIGURE_OPTIONS += -Dpython=$(PYTHON)
+CONFIGURE_OPTIONS += -Dtests=true
 
-# Ensure Python modules are installed into vendor package directories.
-CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
-CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
-
-# Override $(PYTHON) for configure step so that configure can find
-# $(PYTHON)-config properly
-$(BUILD_DIR)/%-3.7/.configured:	PYTHON=$(PYTHON.3.7)m
+# Move into vendor-packages and pycompile all python sources
+COMPONENT_POST_INSTALL_ACTION += \
+	$(MV) $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/site-packages \
+		$(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages; \
+	$(PYTHON) -m compileall $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages
 
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
@@ -93,5 +86,5 @@ REQUIRED_PACKAGES += library/libffi
 REQUIRED_PACKAGES += library/python/pycairo
 # Pyflakes is needed for tests, but not build or install
 REQUIRED_PACKAGES += library/python/pyflakes
-REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-39
