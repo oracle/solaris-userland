@@ -40,9 +40,6 @@ COMPONENT_ANITYA_ID=	13145
 TPNO=			62899
 BUILD_STYLE=		meson
 
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
@@ -52,7 +49,7 @@ LDFLAGS += -z gnu-version-script-compat
 CONFIGURE_OPTIONS += -Dinstalled_tests=true
 CONFIGURE_OPTIONS += -Dgtk_doc=true
 
-COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9]s//" '
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9]*.[0-9][0-9]s//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/GLib-Net-WARNING/d" ' \

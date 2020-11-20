@@ -274,6 +274,7 @@ CONFIGURE_OPTIONS += --with-included-unistring
 CONFIGURE_OPTIONS += --without-p11-kit
 CONFIGURE_OPTIONS += --disable-openssl-compatibility
 CONFIGURE_OPTIONS += --disable-tests
+CONFIGURE_OPTIONS += --with-default-trust-store-file=/etc/certs/ca-certificates.crt
 
 include ../../make-rules/shared-targets.mk
 

@@ -56,12 +56,10 @@ COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 # To prevent "libtool_install_magic: unbound variable"
 unexport SHELLOPTS
 
-#
-# note the tests still fail with 
-# GLib-Net-FATAL-WARNING: Failed to load TLS database:
-# Failed to load system trust store:
-# GnuTLS was not configured with a system trust
-#
+# After the fix for 32137918, the tests can proceed to GnuTLS stuff
+# and the test hangs there.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_ARGS =   -k -i
 COMPONENT_TEST_TRANSFORMS += \
