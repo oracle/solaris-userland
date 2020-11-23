@@ -18,11 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
-#
-
-# prototype objects in "samba" and "libsmbclient" packages should be mutually exclusive
-<include libsmbclient.pkgobjs>
+# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 set name=pkg.fmri \
     value=pkg:/library/samba/libsmbclient@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
@@ -37,10 +33,6 @@ set name=info.upstream-url value=(None)
 set name=org.opensolaris.arc-caseid value=PSARC/2015/512
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
-# public interface points to lib in samba-private area
-link path=usr/lib/$(MACH64)/libsmbclient.so \
-    target=../samba/$(MACH64)/libsmbclient.so
-link path=usr/lib/$(MACH64)/libsmbclient.so.0 \
-    target=../samba/$(MACH64)/libsmbclient.so.0
-#
+# pkg has been emptied because miniroot dropped its dependence on it
+#   see: ON:usr/src/cmd/distro_const/manifest/boot_archive_contents_sparc.xml and i386 one
 license samba.license license=GPLv3
