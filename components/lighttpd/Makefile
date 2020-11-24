@@ -23,27 +23,24 @@
 # Copyright (c) 2011, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
+COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		lighttpd
-COMPONENT_VERSION=	1.4.54
+COMPONENT_VERSION=	1.4.55
 COMPONENT_PROJECT_URL=	http://www.lighttpd.net/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5151d38cb7c4c40effa13710e77ebdbef899f945b062cf32befc02d128ac424c
+    sha256:065259fb618774df516add13df22a52cac76a8f59e4561f143fe3ec810f4a03a
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1817
 
-TPNO=			54090
-
-COMPILER=gcc
+TPNO=			63334
 
 LIGHTTPD_INSTALLDIR=$(USRDIR)/lighttpd/1.4
 
 SMF_MANIFESTS= $(COMPONENT_DIR)/Solaris/http-lighttpd14.xml
 
 include $(WS_MAKE_RULES)/common.mk
-
-PATCH_LEVEL=0
 
 # lighttpd is logging using __FILE__ macro. Cloning will make this happen
 # using just source file names (without full absolute paths).
@@ -72,9 +69,8 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/.*/d" '
 
 REQUIRED_PACKAGES += compress/bzip2
-$(SOLARIS_11_4_5_ONLY)REQUIRED_PACKAGES += database/mysql-57
-$(SOLARIS_11_4_5_ONLY)REQUIRED_PACKAGES += database/mysql-57/library
-$(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += library/openldap
+REQUIRED_PACKAGES += database/mysql-57
+REQUIRED_PACKAGES += database/mysql-57/library
 REQUIRED_PACKAGES += library/pcre
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140

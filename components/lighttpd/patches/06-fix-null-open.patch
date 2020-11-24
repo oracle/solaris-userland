@@ -4,9 +4,11 @@ Component lighttpd fails to start without this patch.
 
 Will be sent to upstream.
 
---- src/fdevent.c	2019-09-18 13:36:36.767348540 +0000
-+++ src/fdevent.c	2019-09-18 13:35:57.724500269 +0000
-@@ -529,7 +529,11 @@ int fdevent_open_devnull(void) {
+diff --git a/src/fdevent.c b/src/fdevent.c
+index bdea359..2a950d1 100644
+--- a/src/fdevent.c
++++ b/src/fdevent.c
+@@ -575,7 +575,11 @@ int fdevent_open_devnull(void) {
    #if defined(_WIN32)
      return fdevent_open_cloexec("nul", 0, O_RDWR, 0);
    #else

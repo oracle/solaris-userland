@@ -3,9 +3,11 @@ Patch status: Not suitable for upstream.
 
 Always disable SSLv2 and SSLv3 and don't allow to enable it ever again.
 
---- src/mod_openssl.c	2019-09-18 10:25:36.546906287 +0000
-+++ src/mod_openssl.c	2019-09-18 10:23:53.990998037 +0000
-@@ -954,27 +954,23 @@ network_init_ssl (server *srv, void *p_d
+diff --git a/src/mod_openssl.c b/src/mod_openssl.c
+index 27015f9..f66d868 100644
+--- a/src/mod_openssl.c
++++ b/src/mod_openssl.c
+@@ -954,27 +954,23 @@ network_init_ssl (server *srv, void *p_d)
          SSL_CTX_set_info_callback(s->ssl_ctx, ssl_info_callback);
  
        #ifndef HAVE_WOLFSSL_SSL_H /*(wolfSSL does not support SSLv2)*/

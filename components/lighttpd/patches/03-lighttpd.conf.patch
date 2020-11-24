@@ -8,8 +8,25 @@ behaviour as in lighttpd 1.4.45 and older.
 See the following webpage to get more information.
 https://redmine.lighttpd.net/boards/2/topics/7720
 
---- doc/config/lighttpd.conf	2019-09-23 13:10:33.257471570 +0000
-+++ doc/config/lighttpd.conf	2019-09-23 13:07:09.659551024 +0000
+diff --git a/doc/config/conf.d/fastcgi.conf b/doc/config/conf.d/fastcgi.conf
+index 0760af0..01d9ba9 100644
+--- a/doc/config/conf.d/fastcgi.conf
++++ b/doc/config/conf.d/fastcgi.conf
+@@ -22,8 +22,8 @@ server.modules += ( "mod_fastcgi" )
+ #fastcgi.server = ( ".php" =>
+ #                   ( "php-local" =>
+ #                     (
+-#                       "socket" => socket_dir + "/php-fastcgi-1.socket",
+-#                       "bin-path" => server_root + "/cgi-bin/php5",
++#                       "socket" => socket_dir + "/php-fastcgi.socket",
++#                       "bin-path" => "/usr/php/bin/php-cgi",
+ #                       "max-procs" => 1,
+ #                       "broken-scriptfilename" => "enable",
+ #                     ),
+diff --git a/doc/config/lighttpd.conf b/doc/config/lighttpd.conf
+index 3e687c2..e8cf43a 100644
+--- a/doc/config/lighttpd.conf
++++ b/doc/config/lighttpd.conf
 @@ -13,11 +13,11 @@
  ## if you add a variable here. Add the corresponding variable in the
  ## chroot example aswell.
@@ -27,7 +44,7 @@ https://redmine.lighttpd.net/boards/2/topics/7720
  
  ## 
  ## run the server chrooted.
-@@ -58,7 +58,7 @@ var.vhosts_dir  = server_root + "/vhosts
+@@ -58,7 +58,7 @@ var.vhosts_dir  = server_root + "/vhosts"
  ## used in:
  ## conf.d/compress.conf
  ##
@@ -66,7 +83,7 @@ https://redmine.lighttpd.net/boards/2/topics/7720
  
  ##
  ## The value for the "Server:" response field.
-@@ -130,7 +133,7 @@ server.document-root = server_root + "/h
+@@ -130,7 +133,7 @@ server.document-root = server_root + "/htdocs"
  ##
  ## store a pid file
  ##
@@ -93,7 +110,7 @@ https://redmine.lighttpd.net/boards/2/topics/7720
  )
  
  ##
-@@ -386,7 +389,7 @@ static-file.exclude-extensions = ( ".php
+@@ -386,7 +389,7 @@ static-file.exclude-extensions = ( ".php", ".pl", ".fcgi", ".scgi" )
  ## Format: <errorfile-prefix><status-code>.html
  ## -> ..../status-404.html for 'File not found'
  ##
@@ -102,16 +119,3 @@ https://redmine.lighttpd.net/boards/2/topics/7720
  
  ##
  ## mimetype mapping
---- doc/config/conf.d/fastcgi.conf	2013-10-07 07:21:24.418114603 -0700
-+++ doc/config/conf.d/fastcgi.conf	2013-10-07 07:24:01.824986033 -0700
-@@ -22,8 +22,8 @@
- #fastcgi.server = ( ".php" =>
- #                   ( "php-local" =>
- #                     (
--#                       "socket" => socket_dir + "/php-fastcgi-1.socket",
--#                       "bin-path" => server_root + "/cgi-bin/php5",
-+#                       "socket" => socket_dir + "/php-fastcgi.socket",
-+#                       "bin-path" => "/usr/php/bin/php-cgi",
- #                       "max-procs" => 1,
- #                       "broken-scriptfilename" => "enable",
- #                     )

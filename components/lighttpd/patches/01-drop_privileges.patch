@@ -4,8 +4,10 @@ Solaris-specific: in order to start Lighttpd as non-root
 user, initial user needs elevated privileges. Those
 privileges are unnecessary and should be dropped.
 
---- src/network.c	2019-09-18 09:50:00.990465864 +0000
-+++ src/network.c	2019-09-18 09:49:48.751440835 +0000
+diff --git a/src/network.c b/src/network.c
+index dc55169..f4c5db5 100644
+--- a/src/network.c
++++ b/src/network.c
 @@ -20,6 +20,7 @@
  #include <unistd.h>
  #include <string.h>
@@ -14,7 +16,7 @@ privileges are unnecessary and should be dropped.
  
  void
  network_accept_tcp_nagle_disable (const int fd)
-@@ -509,6 +510,16 @@ int network_init(server *srv, int stdin_
+@@ -513,6 +514,16 @@ int network_init(server *srv, int stdin_fd) {
  		}
  	}
  

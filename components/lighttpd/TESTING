@@ -1,0 +1,28 @@
+# Test data to serve
+echo "Hello world!" > /var/lighttpd/1.4/docroot/index.html
+
+# Configure SSL 
+ETCDIR=/etc/lighttpd/1.4
+cat >> $ETCDIR/lighttpd.conf <<EOF
+\$SERVER["socket"] == ":443" {
+ssl.engine = "enable"
+ssl.pemfile = "$ETCDIR/server.pem"
+}
+EOF
+gsed -i '/server.modules = (/a\ \ "mod_openssl",' $ETCDIR/modules.conf
+
+# Prepare SSL certificate
+HOSTNAME=$(host `/usr/sbin/ifconfig -a | awk 'BEGIN { count=0; } { if ( $1 ~ /inet/ ) { count++; if( count==2 ) { print $2; } } }'` |   cut -d ' ' -f 5 | sed 's/\.$//') \
+  openssl req -new -x509 -nodes -out $ETCDIR/server.crt -keyout $ETCDIR/server.key -subj "/C=CZ/ST=Czech/L=Prague/O=MyCompany/OU=MyDepartment/CN=$HOSTNAME"
+cat $ETCDIR/server.key $ETCDIR/server.crt > $ETCDIR/server.pem
+
+# Enable service
+svcadm enable lighttpd14
+
+# Basic testing
+svcs lighttpd14
+cat /var/lighttpd/1.4/logs/error.log
+curl http://localhost
+curl --insecure https://localhost
+
+# End
