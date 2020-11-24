@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		grilo
-COMPONENT_VERSION=	0.3.9
+COMPONENT_VERSION=	0.3.13
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Grilo
 COMPONENT_ARCHIVE_HASH= \
-	sha256:730581cc62f2cfaadeac815760b80da8dcf3d08c454adad0d6128c930c5bcaf2
+	sha256:d14837f22341943ed8a189d9f0827a17016b802d18d0ed080e1413de0fdc927b
 COMPONENT_BUGDB=        gnome/multimedia
 COMPONENT_ANITYA_ID=	10928
 
-TPNO=			54073
+TPNO=			63398
 BUILD_STYLE=		meson
 
 # Tests do not pass because of insufficient gsed filtering.
