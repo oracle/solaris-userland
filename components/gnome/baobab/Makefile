@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,15 +30,15 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		baobab
-COMPONENT_VERSION=	3.34.0
+COMPONENT_VERSION=	3.38.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Baobab
 COMPONENT_ARCHIVE_HASH= \
-	sha256:46ebd9466da6a68c340653e9095f1e905b6fac79305879a9e644634f7da98607
-COMPONENT_ARCHIVE_URL=	http://ftp.gnome.org/pub/GNOME/sources/$(COMPONENT_NAME)/3.34/$(COMPONENT_ARCHIVE)
+	sha256:048468147860816b97f15d50b3c84e9acf0539c1441cfeb63703d112e8728329
+COMPONENT_ARCHIVE_URL=	http://ftp.gnome.org/pub/GNOME/sources/$(COMPONENT_NAME)/3.38/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	10907
 
-TPNO=			53991
+TPNO=			63378
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
