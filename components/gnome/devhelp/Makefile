@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -36,9 +36,14 @@ COMPONENT_ANITYA_ID=	13119
 
 TPNO=			25069
 
+COMPILER= gcc
+
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+
+# Reduce the compiler optimization to workaround assertion issues on x86 platform (pages not loaded).
+CFLAGS += -O2
 
 ifeq ($(MACH),sparc)
 # Webkit expects that only 48 bits from the address are effectively used.

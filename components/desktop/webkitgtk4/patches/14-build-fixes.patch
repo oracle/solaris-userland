@@ -38,3 +38,26 @@ webkitgtk-2.26.3/Source/WTF/wtf/Assertions.h:438:35: error: there are no argumen
  #define COMPILE_ASSERT(exp, name) _Static_assert((exp), #name)
  #else
 
+--- webkitgtk-2.30.3/Source/WebCore/platform/graphics/x11/PlatformDisplayX11.cpp	2020-11-24 08:18:12.262272055 +0000
++++ webkitgtk-2.30.3/Source/WebCore/platform/graphics/x11/PlatformDisplayX11.cpp	2020-11-24 08:16:21.147847085 +0000
+@@ -30,6 +30,7 @@
+ 
+ #if PLATFORM(X11)
+ #include <X11/Xlib.h>
++#include <X11/Xutil.h>
+ #include <X11/extensions/Xcomposite.h>
+ #if PLATFORM(GTK)
+ #include <X11/extensions/Xdamage.h>
+--- webkitgtk-2.30.3/Source/WebCore/platform/network/DNS.h	2020-11-24 08:56:39.793872970 +0000
++++ webkitgtk-2.30.3/Source/WebCore/platform/network/DNS.h	2020-11-24 08:55:12.049846595 +0000
+@@ -32,6 +32,10 @@
+ #include <netinet/in.h>
+ #endif
+ 
++#ifdef __sun__
++#include <sys/socket.h>
++#endif
++
+ #include <wtf/Forward.h>
+ #include <wtf/Optional.h>
+ #include <wtf/Variant.h>

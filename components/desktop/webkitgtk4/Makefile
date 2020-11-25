@@ -23,28 +23,28 @@
 # Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 
-# parfait is a bit unhappy (24796572)
+# parfait is a bit unhappy (bug 24796572)
 export PARFAIT_BUILD=no
 
 BUILD_BITS= 64
-# For now, all things built for C++11 require gcc; the cmake files for this
+# For now, all things built for C++17 require gcc; the cmake files for this
 # project already specify the required -std.
 COMPILER= gcc
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		webkitgtk
-COMPONENT_VERSION=	2.28.4
+COMPONENT_VERSION=	2.30.3
 COMPONENT_PROJECT_URL=	https://webkitgtk.org
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:821952e8c9303ed752f1fb1d4283f612c25249d00d705d2b79c2db1bc49c9464
+	sha256:6dea14f03916882816f2fed9497a5103fc54b2ab8602ab145ca991e4951e5e7f
 COMPONENT_ARCHIVE_URL=	https://webkitgtk.org/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/webkitgtk
 COMPONENT_ANITYA_ID=	5355
 
-TPNO=			60959
+TPNO=			63535
 
 # Use project's own optimization flags instead.
 gcc_OPT=
@@ -68,37 +68,60 @@ include $(WS_MAKE_RULES)/common.mk
 
 # The sequential build is broken, use multiple build jobs to avoid the following error.
 # *** No rule to make target 'JavaScriptCore-4.0.gir', needed by 'WebKit2-4.0.gir'.  Stop.
+# See upstream bug: https://bugs.webkit.org/show_bug.cgi?id=195251
+ifeq ($(COMPONENT_MAKE_JOBS),1)
 COMPONENT_BUILD_ARGS += -j4
+endif
 
 PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
 LD_OPTIONS += $(LD_OPTIONS.$(BITS))
 LDFLAGS +=  -Wl,-zgnu-version-script-compat
 
 # This should have avoided the need for mapfile.$(MACH) above
-# why its not working needs to be eventually figured out (27639813)
+# why its not working needs to be eventually figured out (bug 27639813)
 LD_OPTIONS+=-zgnu-version-script-compat
 
-# Required to ensure expected defines are set; also, ensures project's
-# optimisation level set appropriately.  Would prefer RelWithDebInfo, but that
-# target is curently broken.
+# Enable a release build and GTK port.
 CMAKE_OPTIONS += -DCMAKE_BUILD_TYPE=Release
-CMAKE_OPTIONS += -DENABLE_MINIBROWSER=ON
 CMAKE_OPTIONS += -DPORT=GTK
-CMAKE_OPTIONS += -DENABLE_GLES2=OFF
-CMAKE_OPTIONS += -DUSE_GSTREAMER_GL=OFF
-CMAKE_OPTIONS += -DUSE_LIBHYPHEN=OFF
-CMAKE_OPTIONS += -DUSE_WOFF2=OFF
-CMAKE_OPTIONS += -DENABLE_SAMPLING_PROFILER=OFF
-CMAKE_OPTIONS += -DENABLE_SUBTLE_CRYPTO=OFF
-CMAKE_OPTIONS += -DENABLE_MEDIA_SOURCE=OFF
-CMAKE_OPTIONS += -DUSE_SYSTEM_MALLOC=OFF
-CMAKE_OPTIONS += -DUSE_OPENJPEG=OFF
-CMAKE_OPTIONS += -DPYTHON_EXECUTABLE=$(PYTHON)
 
+ifeq ($(MACH),sparc)
+# Use system malloc to avoid crashes on SPARC (bugs 31513265 and 31433939).
+CMAKE_OPTIONS += -DUSE_SYSTEM_MALLOC=ON
+# Disable OpenGL to workaround rendering issues on SPARC (bug 31433578).
+CMAKE_OPTIONS += -DUSE_GSTREAMER_GL=OFF
+CMAKE_OPTIONS += -DENABLE_GLES2=OFF
+CMAKE_OPTIONS += -DENABLE_GRAPHICS_CONTEXT_GL=OFF
+endif
+
+ifeq ($(MACH),i386)
+# Prefer to use embedded bmalloc allocator on x86 platform.
+CMAKE_OPTIONS += -DUSE_SYSTEM_MALLOC=OFF
+endif
+
+# OpenJPEG library is well tested, reasonable to enable it.
+CMAKE_OPTIONS += -DUSE_OPENJPEG=ON
 # Disabling for both architectures for now, otherwise x64 builds fail with
 # offlineasm: No magic values found. Skipping assembly file generation.
 CMAKE_OPTIONS += -DENABLE_JIT=OFF
-
+# Sushi requires that introspection is enabled.
+CMAKE_OPTIONS += -DENABLE_INTROSPECTION=ON
+# Avoid to accidentally use ld.gold linker on Solaris.
+CMAKE_OPTIONS += -DUSE_LD_GOLD=OFF
+# Use a default python3 interpreter.
+CMAKE_OPTIONS += -DPYTHON_EXECUTABLE=$(PYTHON)
+# Solaris uses SMF and not systemd.
+CMAKE_OPTIONS += -DUSE_SYSTEMD=OFF
+# We need video playback support for gnome-welcome-tour.
+CMAKE_OPTIONS += -DENABLE_VIDEO=ON
+# Disable features we do not need for gnome desktop.
+CMAKE_OPTIONS += -DENABLE_MINIBROWSER=OFF
+CMAKE_OPTIONS += -DUSE_LIBHYPHEN=OFF
+CMAKE_OPTIONS += -DUSE_WOFF2=OFF
+CMAKE_OPTIONS += -DENABLE_SAMPLING_PROFILER=OFF
+CMAKE_OPTIONS += -DENABLE_WEB_CRYPTO=OFF
+CMAKE_OPTIONS += -DENABLE_MEDIA_SOURCE=OFF
+# Setup Solaris install paths...
 CMAKE_OPTIONS += -DLIB_INSTALL_DIR="$(USRLIB)"
 CMAKE_OPTIONS += -DLIBEXEC_INSTALL_DIR="$(USRLIB)"
 CMAKE_OPTIONS += -DEXEC_INSTALL_DIR="$(USRBIN)"
@@ -118,6 +141,7 @@ REQUIRED_PACKAGES += developer/parser/bison
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += image/library/libwebp
+REQUIRED_PACKAGES += image/library/openjpeg2
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
