@@ -1,0 +1,40 @@
+Solaris specific patch developed inhouse.
+This fixes a coredump issue in the alias builtin due to
+a missing longjmp buffer setting for error handling. 
+See CR 30841535 for more details.
+
+--- INIT.2012-08-01.old/src/cmd/alias/alias.c	2020-10-05 03:51:04.603189536 +0000
++++ INIT.2012-08-01/src/cmd/alias/alias.c	2020-10-05 03:49:43.311455719 +0000
+@@ -20,7 +20,7 @@
+  */
+ 
+ /*
+- * Copyright (c) 2009, 2015, Oracle and/or its affiliates. All rights reserved.
++ * Copyright (c) 2009, 2020, Oracle and/or its affiliates.
+  */
+ 
+ /*
+@@ -30,10 +30,12 @@
+  * /usr/bin/cut will call the ksh "cut" builtin etc.
+  */
+ 
++#include "../ksh93/include/defs.h"
+ #include <shell.h>
+ #include <nval.h>
+ #include <stdio.h>
+ #include <alias.h>
++#include <setjmp.h>
+ 
+ typedef struct {
+ 	const char *name;
+@@ -212,7 +214,9 @@
+ 	shp = sh_init(argc+1, xargv, 0);
+ 	if (!shp)
+ 		error(ERROR_exit(1), "shell initialisation failed.");
+-	(void) sh_trap(script, 0);
++	if (setjmp(*shp->jmplist) == 0) {
++		(void) sh_trap(script, 0);
++	}
+ 
+ 	np = nv_open("exitval", shp->var_tree, 0);
+ 	if (!np)
