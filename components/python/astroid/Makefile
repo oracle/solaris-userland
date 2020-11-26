@@ -26,17 +26,17 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		astroid
-COMPONENT_VERSION=	2.2.5
+COMPONENT_VERSION=	2.4.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:6560e1e1749f68c64a4b5dee4e091fce798d2f0d84ebe638cf0e0585a343acf4
+	sha256:c9b18220bb53c58ab8fea9a94c1f4b88e1a8233f9885c205f99e7638601634c4
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/PyCQA/astroid
 COMPONENT_BUGDB=	python-mod/astroid
 COMPONENT_ANITYA_ID=	12725
 
-TPNO=			51724
+TPNO=			63909
 
 
 COMPONENT_NAME_OLD=		$(COMPONENT_NAME)
@@ -52,9 +52,6 @@ TPNO_OLD=		31346
 
 # This component is delivered in two different versions because
 # the newer one is no longer Python 2.7 compatible.
-
-# This component is not Python 3.9 ready yet
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.9)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -77,6 +74,7 @@ $(MANIFEST_BASE)-astroid-27.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_O
 # Manifest convenience variables.
 $(MANIFEST_BASE)-astroid-27.mogrified: NEW_ONLY = \#
 $(MANIFEST_BASE)-astroid-37.mogrified: OLD_ONLY = \#
+$(MANIFEST_BASE)-astroid-39.mogrified: OLD_ONLY = \#
 
 PKG_MACROS += OLD_ONLY="$(OLD_ONLY)"
 PKG_MACROS += NEW_ONLY="$(NEW_ONLY)"

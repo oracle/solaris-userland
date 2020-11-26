@@ -1,0 +1,148 @@
+From 3ffe25f8e3cdb30f0dcfb68f4373370828894727 Mon Sep 17 00:00:00 2001
+From: Karthikeyan Singaravelan <tir.karthi@gmail.com>
+Date: Tue, 4 Aug 2020 10:11:44 +0000
+Subject: [PATCH] Skip test for | in dictionaries due to PEP-584 in Python 3.9+
+
+
+From 8dafae9732bd4f3c16c4472952dfcb98dded5a78 Mon Sep 17 00:00:00 2001
+From: hippo91 <guillaume.peillex@gmail.com>
+Date: Sun, 22 Nov 2020 15:03:33 +0100
+Subject: [PATCH 1/8] When inferring argument takes into account possible
+ posonyargs before raising 'too many positional arguments'
+
+From 736930cc28d37d7a79a26123f4a93f1e77d761fb Mon Sep 17 00:00:00 2001
+From: hippo91 <guillaume.peillex@gmail.com>
+Date: Sun, 22 Nov 2020 15:04:12 +0100
+Subject: [PATCH 2/8] Thanks to the preceeding commit the inference is more
+ precise for class decorated with dataclasses
+
+From 80d2f63afdb652625e97f6fe10221f27e3a6af38 Mon Sep 17 00:00:00 2001
+From: hippo91 <guillaume.peillex@gmail.com>
+Date: Sun, 22 Nov 2020 15:29:20 +0100
+Subject: [PATCH 5/8] Takes into account the fact that in python3.9 NamedTuple
+ in typing module is no more a class but a function.
+
+Upstream PRs:
+https://github.com/PyCQA/astroid/pull/829
+https://github.com/PyCQA/astroid/pull/858
+
+--- astroid-2.4.2/tests/unittest_inference.py
++++ astroid-2.4.2/tests/unittest_inference.py
+@@ -2459,7 +2459,6 @@ class InferenceTest(resources.SysPathSet
+         1 ** (lambda x: x) #@
+         {} * {} #@
+         {} - {} #@
+-        {} | {} #@
+         {} >> {} #@
+         [] + () #@
+         () + [] #@
+@@ -2504,7 +2503,6 @@ class InferenceTest(resources.SysPathSet
+             msg.format(op="**", lhs="int", rhs="function"),
+             msg.format(op="*", lhs="dict", rhs="dict"),
+             msg.format(op="-", lhs="dict", rhs="dict"),
+-            msg.format(op="|", lhs="dict", rhs="dict"),
+             msg.format(op=">>", lhs="dict", rhs="dict"),
+             msg.format(op="+", lhs="list", rhs="tuple"),
+             msg.format(op="+", lhs="tuple", rhs="list"),
+@@ -2519,6 +2517,12 @@ class InferenceTest(resources.SysPathSet
+             msg.format(op="+=", lhs="int", rhs="A"),
+             msg.format(op="+=", lhs="int", rhs="list"),
+         ]
++
++        # PEP-584 supports | for dictionary union
++        if sys.version_info < (3, 9):
++            ast_nodes.append(extract_node("{} | {} #@"))
++            expected.append(msg.format(op="|", lhs="dict", rhs="dict"))
++
+         for node, expected_value in zip(ast_nodes, expected):
+             errors = node.type_errors()
+             self.assertEqual(len(errors), 1)
+@@ -5667,6 +5671,10 @@ def test_custom_decorators_for_classmeth
+ 
+ 
+ @pytest.mark.skipif(sys.version_info < (3, 8), reason="Needs dataclasses available")
++@pytest.mark.skipif(
++    sys.version_info >= (3, 9),
++    reason="Exact inference with dataclasses (replace function) in python3.9",
++)
+ def test_dataclasses_subscript_inference_recursion_error():
+     code = """
+     from dataclasses import dataclass, replace
+@@ -5687,6 +5695,31 @@ def test_dataclasses_subscript_inference
+     assert helpers.safe_infer(node) is None
+ 
+ 
++@pytest.mark.skipif(
++    sys.version_info < (3, 9),
++    reason="Exact inference with dataclasses (replace function) in python3.9",
++)
++def test_dataclasses_subscript_inference_recursion_error_39():
++    code = """
++    from dataclasses import dataclass, replace
++
++    @dataclass
++    class ProxyConfig:
++        auth: str = "/auth"
++
++
++    a = ProxyConfig("")
++    test_dict = {"proxy" : {"auth" : "", "bla" : "f"}}
++
++    foo = test_dict['proxy']
++    replace(a, **test_dict['proxy']) # This fails
++    """
++    node = extract_node(code)
++    infer_val = helpers.safe_infer(node)
++    assert isinstance(infer_val, Instance)
++    assert infer_val.pytype() == ".ProxyConfig"
++
++
+ def test_self_reference_infer_does_not_trigger_recursion_error():
+     # Prevents https://github.com/PyCQA/pylint/issues/1285
+     code = """
+--- astroid-2.4.2/astroid/arguments.py
++++ astroid-2.4.2/astroid/arguments.py
+@@ -173,7 +173,7 @@ class CallSite:
+ 
+         # Too many arguments given and no variable arguments.
+         if len(self.positional_arguments) > len(funcnode.args.args):
+-            if not funcnode.args.vararg:
++            if not funcnode.args.vararg and not funcnode.args.posonlyargs:
+                 raise exceptions.InferenceError(
+                     "Too many positional arguments "
+                     "passed to {func!r} that does "
+--- astroid-2.4.2/astroid/brain/brain_namedtuple_enum.py
++++ astroid-2.4.2/astroid/brain/brain_namedtuple_enum.py
+@@ -399,6 +399,21 @@ def infer_typing_namedtuple_class(class_
+     return iter((generated_class_node,))
+ 
+ 
++def infer_typing_namedtuple_function(node, context=None):
++    """
++    Starting with python3.9, NamedTuple is a function of the typing module.
++    The class NamedTuple is build dynamically through a call to `type` during
++    initialization of the `_NamedTuple` variable.
++    """
++    klass = extract_node(
++        """
++        from typing import _NamedTuple
++        _NamedTuple
++        """
++    )
++    return klass.infer(context)
++
++
+ def infer_typing_namedtuple(node, context=None):
+     """Infer a typing.NamedTuple(...) call."""
+     # This is essentially a namedtuple with different arguments
+@@ -451,5 +466,10 @@ MANAGER.register_transform(
+     nodes.ClassDef, inference_tip(infer_typing_namedtuple_class), _has_namedtuple_base
+ )
+ MANAGER.register_transform(
++    nodes.FunctionDef,
++    inference_tip(infer_typing_namedtuple_function),
++    lambda node: node.name == "NamedTuple" and node.parent.name == "typing",
++)
++MANAGER.register_transform(
+     nodes.Call, inference_tip(infer_typing_namedtuple), _looks_like_typing_namedtuple
+ )
