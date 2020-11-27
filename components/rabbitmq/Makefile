@@ -42,6 +42,13 @@ TPNO=			57486
 
 BUILD_STYLE= justmake
 SMF_MANIFESTS= $(COMPONENT_DIR)/files/rabbitmq.xml
+
+# This is just a workaround to a problem we occasionally see. The build stops
+# and never finishes. The process erl_child_setup seems to be stuck. Rabbitmq
+# normally builds under 15 minutes, so 45 minutes timeout should be more than
+# enough. This change makes sure that the automated builds are not halted but
+# rather fail quickly.
+ENV=timeout --kill-after=30s 45m /usr/bin/env
 include $(WS_MAKE_RULES)/common.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
