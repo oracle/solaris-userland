@@ -1,0 +1,40 @@
+# Developed in house to disable MD4
+# Internal only, will not be submitted upstream.
+
+
+diff --git a/ext/openssl/openssl.c b/ext/openssl/openssl.c
+index 18c822e..1d18b8a 100644
+--- a/ext/openssl/openssl.c
++++ b/ext/openssl/openssl.c
+@@ -68,7 +68,9 @@
+ 
+ #define OPENSSL_ALGO_SHA1 	1
+ #define OPENSSL_ALGO_MD5	2
++#ifdef HAVE_OPENSSL_MD4_H
+ #define OPENSSL_ALGO_MD4	3
++#endif
+ #ifdef HAVE_OPENSSL_MD2_H
+ #define OPENSSL_ALGO_MD2	4
+ #endif
+@@ -1010,9 +1012,11 @@ static EVP_MD * php_openssl_get_evp_md_from_algo(zend_long algo) { /* {{{ */
+ 		case OPENSSL_ALGO_MD5:
+ 			mdtype = (EVP_MD *) EVP_md5();
+ 			break;
++#ifdef HAVE_OPENSSL_MD4_H
+ 		case OPENSSL_ALGO_MD4:
+ 			mdtype = (EVP_MD *) EVP_md4();
+ 			break;
++#endif
+ #ifdef HAVE_OPENSSL_MD2_H
+ 		case OPENSSL_ALGO_MD2:
+ 			mdtype = (EVP_MD *) EVP_md2();
+@@ -1182,7 +1186,9 @@ PHP_MINIT_FUNCTION(openssl)
+ 	/* digest algorithm constants */
+ 	REGISTER_LONG_CONSTANT("OPENSSL_ALGO_SHA1", OPENSSL_ALGO_SHA1, CONST_CS|CONST_PERSISTENT);
+ 	REGISTER_LONG_CONSTANT("OPENSSL_ALGO_MD5", OPENSSL_ALGO_MD5, CONST_CS|CONST_PERSISTENT);
++#ifdef HAVE_OPENSSL_MD4_H
+ 	REGISTER_LONG_CONSTANT("OPENSSL_ALGO_MD4", OPENSSL_ALGO_MD4, CONST_CS|CONST_PERSISTENT);
++#endif
+ #ifdef HAVE_OPENSSL_MD2_H
+ 	REGISTER_LONG_CONSTANT("OPENSSL_ALGO_MD2", OPENSSL_ALGO_MD2, CONST_CS|CONST_PERSISTENT);
+ #endif

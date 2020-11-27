@@ -1,0 +1,59 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
+#
+
+<transform path=.*/php/8.0 -> edit path php/8.0 php/\$\(MAJOR_VERSION\)>
+<transform path=.*/php8.0 -> edit path php8.0 php\$\(MAJOR_VERSION\)>
+<transform path=.* -> edit target 8.0 \$\(MAJOR_VERSION\)>
+<transform path=.* -> edit mediator-version 8.0 \$\(MAJOR_VERSION\)>
+<transform path=.*/lib/extensions/no-debug-zts-20200930/ -> edit path no-debug-zts-20200930 \$\(EXTENSIONS\)>
+
+# Set action for already existing config files
+<transform file path=etc/php/\$\(MAJOR_VERSION\)/pear.conf -> set preserve renamenew>
+<transform file path=files/extensions.ini -> set preserve renamenew>
+
+# Create symlinks for several php folders
+<transform file dir path=usr/php/\$\(MAJOR_VERSION\)/(bin|include|lib|sbin) \
+	-> emit link path=/usr/php/%<1> target=$(MAJOR_VERSION)/%<1> mediator=php mediator-version=$(MAJOR_VERSION)>
+
+# Create bin symlinks for php executables
+<transform file link path=usr/php/\$\(MAJOR_VERSION\)/bin/(.*) \
+	-> emit link path=/usr/bin/%<1> target=../php/$(MAJOR_VERSION)/bin/%<1> mediator=php mediator-version=$(MAJOR_VERSION)>
+
+# Add several files from files directory (not in proto area)
+# Set action hash to current path so that IPS can find it
+<transform file path=files/php.conf -> set action.hash %(path)>
+<transform file path=files/extensions.ini -> set action.hash %(path)>
+<transform file path=usr/apache2/2.4/libexec/libphp.so -> set action.hash %(path)>
+
+# "Move" the file to it's new location
+<transform file path=files/php.conf -> edit path files/php.conf etc/apache2/2.4/samples-conf.d/php\$\(MAJOR_VERSION\).conf>
+<transform file path=files/extensions.ini -> edit path files etc/php/\$\(MAJOR_VERSION\)/conf.d>
+<transform file path=usr/apache2/2.4/libexec/libphp.so -> edit path libphp libphp\$\(MAJOR_VERSION\)>
+
+# prevent 64-bit object in 32-bit path errors
+<transform path=usr/apache2/2.4/libexec/libphp\$\(MAJOR_VERSION\).so -> set pkg.linted.userland.action001.2 true>
+
+# Drop hidden pear files we are not shipping
+<transform path=\..* -> drop>

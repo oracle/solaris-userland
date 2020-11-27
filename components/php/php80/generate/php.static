@@ -20,32 +20,18 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
-BUILD_BITS= 64
-COMPILER= gcc
-include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		xdebug
-COMPONENT_VERSION=	3.0.1
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
-COMPONENT_ARCHIVE_HASH= \
-	sha256:0b95317153a2254f3da1fc9010fdffc40c9eec232be3ede088ec4c9bd94049b5
-COMPONENT_ARCHIVE_URL=	http://xdebug.org/files/$(COMPONENT_ARCHIVE)
-COMPONENT_PROJECT_URL=	http://xdebug.org/
-COMPONENT_BUGDB=	utility/php
-COMPONENT_ANITYA_ID=	13302
+# directories which are empty but we want them created
+dir  path=usr/php/$(MAJOR_VERSION)/include/php/include
+dir  path=var/php/$(MAJOR_VERSION)/log
+dir  path=var/php/$(MAJOR_VERSION)/pear/.registry/.channel.__uri
+dir  path=var/php/$(MAJOR_VERSION)/pear/.registry/.channel.doc.php.net
+dir  path=var/php/$(MAJOR_VERSION)/pear/.registry/.channel.pecl.php.net
+dir  path=var/php/$(MAJOR_VERSION)/run
 
-TPNO=			63720
-
-TEST_TARGET= $(NO_TESTS)
-include $(PHP_TOP_DIR)/phpize.mk
-include $(WS_MAKE_RULES)/common.mk
-include $(PHP_TOP_DIR)/php.mk
-
-CONFIGURE_OPTIONS +=	--enable-xdebug
-
-REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += web/php-73
-REQUIRED_PACKAGES += web/php-74
-REQUIRED_PACKAGES += web/php-80
+# several files from package source folder
+file php.ini-production path=etc/php/$(MAJOR_VERSION)/php.ini preserve=renamenew
+file php.ini-development path=etc/php/$(MAJOR_VERSION)/php.ini-development
+file php.ini-production path=etc/php/$(MAJOR_VERSION)/php.ini-production
