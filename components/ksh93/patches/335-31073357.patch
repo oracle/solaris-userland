@@ -1,0 +1,15 @@
+Patch taken from the upstream fix for
+https://github.com/ksh93/ksh/issues/79
+This fixes an issue with ksh93 returning wrong exit codes in case of error conditions. 
+More details can be found in CR 31073357.
+--- INIT.2012-08-01.old/src/cmd/ksh93/sh/xec.c	2020-07-22 04:15:17.355968136 +0000
++++ INIT.2012-08-01/src/cmd/ksh93/sh/xec.c	2020-10-16 02:32:26.174270305 +0000
+@@ -1692,7 +1692,7 @@
+ #else
+ #if SHOPT_SPAWN
+ #   ifdef _lib_fork
+-				if(com)
++				if(com && !job.jobcontrol)
+ 					parent = sh_ntfork(shp,t,com,&jobid,ntflag);
+ 				else
+ 					parent = sh_fork(shp,type,&jobid);
