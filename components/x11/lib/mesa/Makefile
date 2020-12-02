@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -81,6 +81,10 @@ endif
 CFLAGS += -D__EXTENSIONS__ -Wno-incompatible-pointer-types
 CPPFLAGS += -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS
 LDFLAGS += -Wl,-zgnu-version-script-compat
+# This code has init cycles and multiple C++ libraries, and misbehaves
+# when lazy loading is used. Since we're unable to restructure third
+# party code at that level, we must instead disable lazy loading.
+LDFLAGS += -Wl,-znolazyload
 LDFLAGS += -Wl,-z,rescan-now
 CFLAGS.64 += -Wstack-protector -fdata-sections -fstack-protector-all
 LD_OPTIONS.64+=	-z nodefs -z ignore -lLLVM -lssp

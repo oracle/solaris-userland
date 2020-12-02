@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,31 +30,27 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gjs
-COMPONENT_VERSION=	1.58.8
+COMPONENT_VERSION=	1.66.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Gjs
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7fb3eb746c17363d9ee47f4a5d0bb048f0075611763eb0da11d85e0e57aff381
-COMPONENT_BUGDB=        gnome/libraries
+	sha256:8d4240455eff642c8bf6d9805077e33e0a60cb2ea13f77a55f7f30c29668344c
+COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	9532
 
-TPNO=			59603
+TPNO=			63540
+BUILD_STYLE=		meson
 
 # Tests do not work in Solaris yet
 TEST_TARGET = $(SKIP_TEST)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-CXXFLAGS += -std=c++14
+CXXFLAGS += -std=c++17
 
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --with-cairo
-CONFIGURE_OPTIONS += --with-gtk
-CONFIGURE_OPTIONS += --with-pic
-CONFIGURE_OPTIONS += --disable-profiler
-CONFIGURE_OPTIONS += --disable-installed-tests
-CONFIGURE_OPTIONS += --with-xvfb-tests
-CONFIGURE_OPTIONS += --without-dbus-tests
+CONFIGURE_OPTIONS += -Dcairo=enabled
+CONFIGURE_OPTIONS += -Dprofiler=disabled
+# we don't need to distribute gjs tests
+CONFIGURE_OPTIONS += -Dinstalled_tests=false
 
 # Workaround the mozjs issue described in 24935318
 ifeq ($(MACH), sparc)
@@ -63,16 +59,13 @@ COMPONENT_BUILD_ENV.64 += LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS.64)"
 COMPONENT_INSTALL_ENV.64 += LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS.64)"
 endif
 
-# Required due to patches.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
-
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libffi
-REQUIRED_PACKAGES += library/libmozjs-60
+REQUIRED_PACKAGES += library/libmozjs-78
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/readline
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime

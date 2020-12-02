@@ -18,11 +18,18 @@
 #
 # CDDL HEADER END
 #
-
-#
 # Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
+# move js-config to correct location
+<transform file path=usr/bin/js\$\(COMPONENT_VERSION\)-config -> \
+    set action.hash %(path)>
+<transform file path=usr/bin/js\$\(COMPONENT_VERSION\)-config -> \
+    edit path bin/js bin/\$\(MACH64\)/js>
+
 # allow 64-bit object in 32-bit path
-<transform file path=usr/bin/gjs-console -> \
+<transform file path=usr/bin/js\$\(COMPONENT_VERSION\) -> \
     set pkg.linted.userland.action001.2 true>
+
+# drop static library (with a weird extension)
+<transform file path=usr/lib/\$\(MACH64\)/libjs_static.ajs$ -> drop>
