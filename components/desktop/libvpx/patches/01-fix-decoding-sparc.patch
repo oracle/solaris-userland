@@ -1,0 +1,112 @@
+The patch fixes two problems on SPARC architecture:
+1) Videos with VP9 codec fail to decode.
+$ vpxdec /usr/share/help/C/gnome-help/figures/gnome-windows-and-workspaces.webm -o output_file
+Warning: Failed to decode frame 130: Corrupt frame detected
+Warning: Additional information: Failed to decode tile data
+2) Videos in gnome-welcome-tour stop after a few seconds.
+
+------------------------------------------------------------
+The root cause is a neglection of endianess introduced
+between libvpx 1.5.0 and libvpx 1.6.1 in this commit:
+
+commit a2a97b869f0f4a8dec2a9d8d0c0dcdd56e5a0477
+Author: Scott LaVarnway <slavarnway@google.com>
+Date:   Tue Mar 29 15:03:12 2016 -0700
+
+    VP9: Refactor vp9_decode_block_tokens()
+
+    Change-Id: I30ab27808ec903f9490f36621fb16c197bd35d16
+------------------------------------------------------------
+
+The proper fix is to use HToLE16, HToLE32, and TToLE64 functions
+to ensure least-significant byte ordering that is assumed...
+To avoid unaligned writes on SPARC, we use memcpy function.
+
+The patch is suitable for upstream.
+
+diff --git a/vp9/decoder/vp9_detokenize.c b/vp9/decoder/vp9_detokenize.c
+index c2e6b3d54..bb43d255d 100644
+--- a/vp9/decoder/vp9_detokenize.c
++++ b/vp9/decoder/vp9_detokenize.c
+@@ -19,6 +19,7 @@
+ #endif
+ 
+ #include "vp9/decoder/vp9_detokenize.h"
++#include "vpx_util/endian_inl.h"
+ 
+ #define EOB_CONTEXT_NODE 0
+ #define ZERO_CONTEXT_NODE 1
+@@ -285,6 +286,10 @@ int vp9_decode_block_tokens(TileWorkerData *twd, int plane,
+   int ctx_shift_a = 0;
+   int ctx_shift_l = 0;
+ 
++  uint16_t va16 = 0, vl16 = 0;
++  uint32_t va32 = 0, vl32 = 0;
++  uint64_t va64 = 0, vl64 = 0;
++
+   switch (tx_size) {
+     case TX_4X4:
+       ctx = a[0] != 0;
+@@ -299,8 +304,10 @@ int vp9_decode_block_tokens(TileWorkerData *twd, int plane,
+       ctx += !!*(const uint16_t *)l;
+       eob = decode_coefs(xd, get_plane_type(plane), pd->dqcoeff, tx_size,
+                          dequant, ctx, sc->scan, sc->neighbors, r);
+-      *(uint16_t *)a = ((eob > 0) * 0x0101) >> ctx_shift_a;
+-      *(uint16_t *)l = ((eob > 0) * 0x0101) >> ctx_shift_l;
++      va16 = HToLE16(((eob > 0) * 0x0101) >> ctx_shift_a);
++      vl16 = HToLE16(((eob > 0) * 0x0101) >> ctx_shift_l);
++      memcpy(a, &va16, sizeof(uint16_t));
++      memcpy(l, &vl16, sizeof(uint16_t));
+       break;
+     case TX_16X16:
+       get_ctx_shift(xd, &ctx_shift_a, &ctx_shift_l, x, y, 1 << TX_16X16);
+@@ -308,8 +315,10 @@ int vp9_decode_block_tokens(TileWorkerData *twd, int plane,
+       ctx += !!*(const uint32_t *)l;
+       eob = decode_coefs(xd, get_plane_type(plane), pd->dqcoeff, tx_size,
+                          dequant, ctx, sc->scan, sc->neighbors, r);
+-      *(uint32_t *)a = ((eob > 0) * 0x01010101) >> ctx_shift_a;
+-      *(uint32_t *)l = ((eob > 0) * 0x01010101) >> ctx_shift_l;
++      va32 = HToLE32(((eob > 0) * 0x01010101) >> ctx_shift_a);
++      vl32 = HToLE32(((eob > 0) * 0x01010101) >> ctx_shift_l);
++      memcpy(a, &va32, sizeof(uint32_t));
++      memcpy(l, &vl32, sizeof(uint32_t));
+       break;
+     case TX_32X32:
+       get_ctx_shift(xd, &ctx_shift_a, &ctx_shift_l, x, y, 1 << TX_32X32);
+@@ -320,8 +329,10 @@ int vp9_decode_block_tokens(TileWorkerData *twd, int plane,
+       ctx += !!*(const uint64_t *)l;
+       eob = decode_coefs(xd, get_plane_type(plane), pd->dqcoeff, tx_size,
+                          dequant, ctx, sc->scan, sc->neighbors, r);
+-      *(uint64_t *)a = ((eob > 0) * 0x0101010101010101ULL) >> ctx_shift_a;
+-      *(uint64_t *)l = ((eob > 0) * 0x0101010101010101ULL) >> ctx_shift_l;
++      va64 = HToLE64(((eob > 0) * 0x0101010101010101ULL) >> ctx_shift_a);
++      vl64 = HToLE64(((eob > 0) * 0x0101010101010101ULL) >> ctx_shift_l);
++      memcpy(a, &va64, sizeof(uint64_t));
++      memcpy(l, &vl64, sizeof(uint64_t));
+       break;
+     default:
+       assert(0 && "Invalid transform size.");
+diff --git a/vpx_util/endian_inl.h b/vpx_util/endian_inl.h
+index 1b6ef56c6..5e99d29fc 100644
+--- a/vpx_util/endian_inl.h
++++ b/vpx_util/endian_inl.h
+@@ -37,15 +37,19 @@
+ #endif
+ 
+ #if defined(WORDS_BIGENDIAN)
++#define HToLE64 BSwap64
+ #define HToLE32 BSwap32
+ #define HToLE16 BSwap16
+ #define HToBE64(x) (x)
+ #define HToBE32(x) (x)
++#define HToBE16(x) (x)
+ #else
++#define HToLE64(x) (x)
+ #define HToLE32(x) (x)
+ #define HToLE16(x) (x)
+ #define HToBE64(X) BSwap64(X)
+ #define HToBE32(X) BSwap32(X)
++#define HToBE16(x) BSwap16(x)
+ #endif
+ 
+ #if LOCAL_GCC_PREREQ(4, 8) || __has_builtin(__builtin_bswap16)

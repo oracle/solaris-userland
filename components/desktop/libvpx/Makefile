@@ -46,7 +46,7 @@ COMPONENT_ANITYA_ID=	11083
 LDFLAGS += $(CC_BITS)
 LDFLAGS += -Wl,-zgnu-version-script-compat
 
-# Unit tests return non-zero exit code.
+# The unit tests require about 40 hours to finish...
 $(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
@@ -71,17 +71,25 @@ CONFIGURE_OPTIONS.i386.64 += --target=x86_64-solaris-gcc
 
 # Tests are hooked up but they take over 3 hours to run
 unexport SHELLOPTS
+
 COMPONENT_TEST_ARGS += -k -i
 COMPONENT_TEST_TARGETS = test
 COMPONENT_TEST_TRANSFORMS += \
+        '-e "s/ ([0-9]\+ ms.*)//" ' \
         '-n ' \
         '-e "/PASSED/p" ' \
         '-e "/tests/p" ' \
         '-e "/RUN/p" ' \
         '-e "/OK/p" ' \
         '-e "/ERROR/p" '
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH$(BITS)).master
 
+# Ensure that test_libvpx is linked to libvpx.so from the proto area.
+TEST_LIBPATH.32 =	$(PROTOUSRLIBDIR)
+TEST_LIBPATH.64 =	$(PROTOUSRLIBDIR64)
+COMPONENT_TEST_ENV +=	LD_LIBRARY_PATH=$(TEST_LIBPATH.$(BITS))
+
+test: install
 
 ifneq ($(MACH), sparc)
 REQUIRED_PACKAGES += developer/yasm
