@@ -1,49 +1,14 @@
 #
 # OpenSSH 8.2 delivered support for FIDO/U2F hardware authenticators.
-# It depends on libfido2 library (and its dependencies) which is currently
-# not available in Solaris. Thus, the patch disables FIDO/U2F in Solaris.
+# OpenSSH client side of FIDO support depends on libfido2 library
+# and its dependencies (currently libcbor library, but there might
+# be more in future) which is currently not available in Solaris.
+# Thus, the patch removes mentions of FIDO/U2F suppport
+# from OpenSSH client man pages. The server side remains FIDO capable
+# which means that the server accepts FIDO keys.
 #
 # As such, this is Solaris specific patch.
 #
---- old/sshkey.c	2020-11-19 15:16:11.497051026 +0000
-+++ new/sshkey.c	2020-11-19 15:22:03.844421491 +0000
-@@ -150,10 +150,12 @@ static const struct keytype keytypes[] =
- 	{ "ssh-ed25519", "ED25519", NULL, KEY_ED25519, 0, 0, 0 },
- 	{ "ssh-ed25519-cert-v01@openssh.com", "ED25519-CERT", NULL,
- 	    KEY_ED25519_CERT, 0, 1, 0 },
-+#ifdef ENABLE_SK
- 	{ "sk-ssh-ed25519@openssh.com", "ED25519-SK", NULL,
- 	    KEY_ED25519_SK, 0, 0, 0 },
- 	{ "sk-ssh-ed25519-cert-v01@openssh.com", "ED25519-SK-CERT", NULL,
- 	    KEY_ED25519_SK_CERT, 0, 1, 0 },
-+#endif /* ENABLE_SK */
- #ifdef WITH_XMSS
- 	{ "ssh-xmss@openssh.com", "XMSS", NULL, KEY_XMSS, 0, 0, 0 },
- 	{ "ssh-xmss-cert-v01@openssh.com", "XMSS-CERT", NULL,
-@@ -173,10 +175,12 @@ static const struct keytype keytypes[] =
- 	{ "ecdsa-sha2-nistp521", "ECDSA", NULL,
- 	    KEY_ECDSA, NID_secp521r1, 0, 0 },
- #  endif /* OPENSSL_HAS_NISTP521 */
-+#  ifdef ENABLE_SK
- 	{ "sk-ecdsa-sha2-nistp256@openssh.com", "ECDSA-SK", NULL,
- 	    KEY_ECDSA_SK, NID_X9_62_prime256v1, 0, 0 },
- 	{ "webauthn-sk-ecdsa-sha2-nistp256@openssh.com", "ECDSA-SK", NULL,
- 	    KEY_ECDSA_SK, NID_X9_62_prime256v1, 0, 1 },
-+#  endif /* ENABLE_SK */
- # endif /* OPENSSL_HAS_ECC */
- 	{ "ssh-rsa-cert-v01@openssh.com", "RSA-CERT", NULL,
- 	    KEY_RSA_CERT, 0, 1, 0 },
-@@ -195,8 +199,10 @@ static const struct keytype keytypes[] =
- 	{ "ecdsa-sha2-nistp521-cert-v01@openssh.com", "ECDSA-CERT", NULL,
- 	   KEY_ECDSA_CERT, NID_secp521r1, 1, 0 },
- #  endif /* OPENSSL_HAS_NISTP521 */
-+#  ifdef ENABLE_SK
- 	{ "sk-ecdsa-sha2-nistp256-cert-v01@openssh.com", "ECDSA-SK-CERT", NULL,
- 	    KEY_ECDSA_SK_CERT, NID_X9_62_prime256v1, 1, 0 },
-+#  endif /* ENABLE_SK */
- # endif /* OPENSSL_HAS_ECC */
- #endif /* WITH_OPENSSL */
- 	{ "null", "null", NULL, KEY_NULL, 0, 0, 0 },
 --- old/ssh-keygen.1	2020-11-19 15:16:11.503596093 +0000
 +++ new/ssh-keygen.1	2020-11-19 15:22:03.850115492 +0000
 @@ -51,7 +51,7 @@
@@ -95,7 +60,7 @@
  Specifies a path to a library that will be used when loading any
  FIDO authenticator-hosted keys, overriding the default of using
 -the built-in USB HID support.
-+the built-in USB HID support. Not used on Solaris.
++the built-in USB HID support. Not supported on Solaris.
  .El
  .Sh FILES
  .Bl -tag -width Ds -compact
@@ -180,59 +145,6 @@
  rsa-sha2-512,rsa-sha2-256,ssh-rsa
  .Ed
  .Pp
---- old/sshd_config.5	2020-11-19 15:16:11.515006805 +0000
-+++ new/sshd_config.5	2020-11-19 15:22:03.860985243 +0000
-@@ -729,15 +729,12 @@ The default for this option is:
- ecdsa-sha2-nistp256-cert-v01@openssh.com,
- ecdsa-sha2-nistp384-cert-v01@openssh.com,
- ecdsa-sha2-nistp521-cert-v01@openssh.com,
--sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
- ssh-ed25519-cert-v01@openssh.com,
--sk-ssh-ed25519-cert-v01@openssh.com,
- rsa-sha2-512-cert-v01@openssh.com,
- rsa-sha2-256-cert-v01@openssh.com,
- ssh-rsa-cert-v01@openssh.com,
- ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
--sk-ecdsa-sha2-nistp256@openssh.com,
--ssh-ed25519,sk-ssh-ed25519@openssh.com,
-+ssh-ed25519,
- rsa-sha2-512,rsa-sha2-256,ssh-rsa
- .Ed
- .Pp
-@@ -812,15 +809,12 @@ The default for this option is:
- ecdsa-sha2-nistp256-cert-v01@openssh.com,
- ecdsa-sha2-nistp384-cert-v01@openssh.com,
- ecdsa-sha2-nistp521-cert-v01@openssh.com,
--sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
- ssh-ed25519-cert-v01@openssh.com,
--sk-ssh-ed25519-cert-v01@openssh.com,
- rsa-sha2-512-cert-v01@openssh.com,
- rsa-sha2-256-cert-v01@openssh.com,
- ssh-rsa-cert-v01@openssh.com,
- ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
--sk-ecdsa-sha2-nistp256@openssh.com,
--ssh-ed25519,sk-ssh-ed25519@openssh.com,
-+ssh-ed25519,
- rsa-sha2-512,rsa-sha2-256,ssh-rsa
- .Ed
- .Pp
-@@ -1528,15 +1522,12 @@ The default for this option is:
- ecdsa-sha2-nistp256-cert-v01@openssh.com,
- ecdsa-sha2-nistp384-cert-v01@openssh.com,
- ecdsa-sha2-nistp521-cert-v01@openssh.com,
--sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,
- ssh-ed25519-cert-v01@openssh.com,
--sk-ssh-ed25519-cert-v01@openssh.com,
- rsa-sha2-512-cert-v01@openssh.com,
- rsa-sha2-256-cert-v01@openssh.com,
- ssh-rsa-cert-v01@openssh.com,
- ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
--sk-ecdsa-sha2-nistp256@openssh.com,
--ssh-ed25519,sk-ssh-ed25519@openssh.com,
-+ssh-ed25519,
- rsa-sha2-512,rsa-sha2-256,ssh-rsa
- .Ed
- .Pp
 --- old/ssh.1	2020-11-19 15:16:11.520321689 +0000
 +++ new/ssh.1	2020-11-19 15:22:03.866267040 +0000
 @@ -289,9 +289,7 @@ public key authentication is read.
@@ -291,51 +203,3 @@
  .It Pa ~/.ssh/id_rsa.pub
  Contains the public key for authentication.
  These files are not
---- old/sshd.8	2020-11-19 15:16:11.525392742 +0000
-+++ new/sshd.8	2020-11-19 15:22:03.871720235 +0000
-@@ -433,16 +433,12 @@ The supported key types are:
- .Pp
- .Bl -item -compact -offset indent
- .It
--sk-ecdsa-sha2-nistp256@openssh.com
--.It
- ecdsa-sha2-nistp256
- .It
- ecdsa-sha2-nistp384
- .It
- ecdsa-sha2-nistp521
- .It
--sk-ssh-ed25519@openssh.com
--.It
- ssh-ed25519
- .It
- ssh-dss
-@@ -459,9 +455,7 @@ Note that lines in this file can be seve
- You don't want to type them in; instead, copy the
- .Pa id_dsa.pub ,
- .Pa id_ecdsa.pub ,
--.Pa id_ecdsa_sk.pub ,
- .Pa id_ed25519.pub ,
--.Pa id_ed25519_sk.pub ,
- or the
- .Pa id_rsa.pub
- file and edit it.
-@@ -640,7 +634,8 @@ the user, e.g. via a PIN.
- This option only makes sense for the FIDO authenticator algorithms
- .Cm ecdsa-sk
- and
--.Cm ed25519-sk .
-+.Cm ed25519-sk
-+which are not supported on Solaris.
- .It Cm restrict
- Enable all restrictions, i.e. disable port, agent and X11 forwarding,
- as well as disabling PTY allocation
-@@ -684,8 +679,6 @@ restrict,command="uptime" ssh-rsa AAAA1C
- user@example.net
- restrict,pty,command="nethack" ssh-rsa AAAA1f8...IrrC5==
- user@example.net
--no-touch-required sk-ecdsa-sha2-nistp256@openssh.com AAAAInN...Ko==
--user@example.net
- .Ed
- .Sh SSH_KNOWN_HOSTS FILE FORMAT
- The
