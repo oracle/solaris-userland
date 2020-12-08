@@ -30,13 +30,13 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tracker
-COMPONENT_VERSION=	2.3.2
+COMPONENT_VERSION=	2.3.6
 COMPONENT_ARCHIVE_HASH= \
-	sha256:a4782b8ec7e4ee50f8f53865b24c5489823337fa94f785a7d9d34ccdf9b6ebdb
+	sha256:bd1eb4122135296fa7b57b1c3fa0ed602cf7d06c0b8e534d0bd17ff5f97feef2
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	5578
 
-TPNO=			56951
+TPNO=			63651
 BUILD_STYLE=            meson
 
 # Disable the unit tests since the test results are outdated.
