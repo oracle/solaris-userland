@@ -30,13 +30,13 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tracker-miners
-COMPONENT_VERSION=	2.3.3
+COMPONENT_VERSION=	2.3.5
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7472aa28d7862620d3ca2bbec3b103df547d7319c12e95a7f7aa9f9f6dee4b19
+	sha256:9509d37fb29acd233058f4df5bd1234b692ac6f946bc2e5f7b8dbf51dfe5b9fa
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	86776
 
-TPNO=			57697
+TPNO=			63652
 BUILD_STYLE=		meson
 
 # Tests do not pass because of insufficient gsed filtering.
