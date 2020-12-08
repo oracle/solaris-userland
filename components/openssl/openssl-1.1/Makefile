@@ -28,20 +28,20 @@ COMPONENT_NAME =	openssl-$(COMPONENT_VERSION_SHORT)
 
 # When new version of OpenSSL comes in, you must update both COMPONENT_VERSION
 # and IPS_COMPONENT_VERSION.
-COMPONENT_VERSION =	1.1.1d
+COMPONENT_VERSION =	1.1.1i
 # Version for IPS. It is easier to do it manually than convert the letter to a
 # number while taking into account that there might be no letter at all.
-IPS_COMPONENT_VERSION = 1.1.1.4
+IPS_COMPONENT_VERSION = 1.1.1.9
 COMPONENT_PROJECT_URL=	http://www.openssl.org/
 COMPONENT_SRC =		openssl-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:1e3a91bc1f9dfce01af26026f856e064eab4c8ee0a8f457b5ae30b40b8b711f2
+    sha256:e8be6a35fe41d10603c3cc635e93289ed00bf34b79671a3a4de64fcee00d5242
 COMPONENT_ARCHIVE_URL =	$(COMPONENT_PROJECT_URL)source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/openssl
 COMPONENT_ANITYA_ID=	2566
 
-TPNO=			53920
+TPNO=			63663
 
 # Clone the patch files to the patches-all dir.
 # COPY_COMMON_FILES is there so that the copy is called as soon as

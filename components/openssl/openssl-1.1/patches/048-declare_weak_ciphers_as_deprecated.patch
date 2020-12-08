@@ -8,8 +8,7 @@
 # There are also algorithms disabled totally via top level Makefile.
 #
 # This patch is not suitable for upstream because it reflects
-# internal policies. That said, the changes in opensslconf.h.in
-# were submitted as https://github.com/openssl/openssl/pull/9575
+# internal policies.
 #
 # In the individual header files, concrete version of the macro is used
 # (DEPRECATEDIN_1_1_0) otherwise 01-test_symbol_presence.t would fail
@@ -17,24 +16,6 @@
 # code for the DEPRECATEDIN* macros but not for the generic DECLARE_DEPRECATED
 # macro.
 #
---- openssl-1.1.1c/include/openssl/opensslconf.h.in.orig	2019-07-19 17:32:00.426818104 +0200
-+++ openssl-1.1.1c/include/openssl/opensslconf.h.in	2019-07-19 17:33:41.588474609 +0200
-@@ -72,12 +72,12 @@
-  */
- #ifndef DECLARE_DEPRECATED
- # define DECLARE_DEPRECATED(f)   f;
--# ifdef __GNUC__
--#  if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ > 0)
-+#  if (defined(__GNUC__) && (__GNUC__ > 3 || \
-+       (__GNUC__ == 3 && __GNUC_MINOR__ > 0))) || \
-+       (defined(__SUNPRO_C) && (__SUNPRO_C >= 0x5130))
- #   undef DECLARE_DEPRECATED
- #   define DECLARE_DEPRECATED(f)    f __attribute__ ((deprecated));
- #  endif
--# endif
- #endif
- 
- #ifndef OPENSSL_FILE
 --- openssl-1.1.1c/include/openssl/md5.h.orig	2019-07-22 14:14:17.690925565 +0200
 +++ openssl-1.1.1c/include/openssl/md5.h	2019-07-22 14:14:52.644704947 +0200
 @@ -37,11 +37,11 @@
