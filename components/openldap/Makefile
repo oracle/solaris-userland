@@ -32,20 +32,20 @@ include ../../make-rules/shared-macros.mk
 #   openLDAP <x>.<y>.<z>        =>   IPS <x>.<y>.<z>.0.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		openldap
-COMPONENT_VERSION=	2.4.53
+COMPONENT_VERSION=	2.4.55
 HUMAN_VERSION=		$(COMPONENT_VERSION)
-IPS_COMPONENT_VERSION=	2.4.53.0.0
+IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_PROJECT_URL=	http://www.openldap.org/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:035860e2fb812f2e294ea3e9914944691e4e4f52521b8945a5aacdcd088d8ae8
+	sha256:97357bd6ba8ff73d204c1f8208c5e6ab97d60c9e779f989057aa1229bbe98434
 COMPONENT_ARCHIVE_URL=	\
 	ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/openldap
 # For check_anitya target, see 'gmake print-ANITYA_API_URL'
 COMPONENT_ANITYA_ID=	2551
 
-TPNO=			61638
+TPNO=			63657
 
 # Set DEBUG=yes in environment to make this a debug build.
 ifeq ($(DEBUG), yes)
