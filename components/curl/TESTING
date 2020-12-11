@@ -76,13 +76,24 @@ if libcurl release is changed (also the libnghttpd has been changed but not soak
 Example of the patch of the distro_const(8) manifest:
  /usr/share/distro_const/dc_ai_x86.xml
 is on the end of this file and can be directly applied by:
-  (cd /usr/share/distro_const/ ; gpatch -p0 ) < AI_README.txt
+  (cd /usr/share/distro_const/ ; gpatch -p0 ) < TESTING.txt
+please note: distro_const do not deal with python 3.9 so if:
+ # python3 --version
+ Python 3.9...
+then you should set python3 mediator to 3.7 :
+  pkg set-mediator --no-backup-be -v -V 3.7 python3
 then run distro-constructor:
   distro_const build -v /usr/share/distro_const/dc_ai_x86.xml
 when distro-constructor is finished (take couple of tenths minutes) we can check
-  ls /dc/ai/media/
+  ls /rpool/dc/ai/media/
 Oracle_Solaris_AI_X86.iso has been built. Then we can stop machine to set netw.
   poweroff
+
+When fixes are tested on distro_const server then the changes should be placed
+into related ON files:
+./usr/src/cmd/distro_const/manifest/boot_archive_contents_sparc.xml
+./usr/src/cmd/distro_const/manifest/boot_archive_contents_x86.xml
+and committed/pushed.
 
 #-- Setup networking -----------------------------------------------------------
   vm net aitst  1 vxlan
@@ -97,7 +108,7 @@ Oracle_Solaris_AI_X86.iso has been built. Then we can stop machine to set netw.
   ipadm create-addr -T static -a local=192.168.1.7/24 net1/v4
   ipadm create-addr -T addrconf net1/v6
 # export Oracle_Solaris_AI_X86.iso
-  share -F nfs /dc/ai/media/
+  share -F nfs /rpool/dc/ai/media/
   exit
 
 #-- Create aisvr ---------------------------------------------------------------
@@ -118,7 +129,7 @@ Oracle_Solaris_AI_X86.iso has been built. Then we can stop machine to set netw.
   ipadm create-addr -T static -a local=192.168.1.1/24 net0/v4
   installadm set-server -m -i 192.168.1.16 -c 16
 # install service from .iso-image built by distro-constructor
-  installadm create-service -n s11x -s /net/[fe80::c0:c0ff:fed0:d0c0]/dc/ai/media/Oracle_Solaris_AI_X86.iso -d /ai/s11x
+  installadm create-service -n s11x -s /net/[fe80::c0:c0ff:fed0:d0c0]/rpool/dc/ai/media/Oracle_Solaris_AI_X86.iso -d /ai/s11x
   ln -s etc/netboot /tftpboot
   (cd /tftpboot ; ln -s . tftpboot)
   installadm create-client -e 02:C0:C0:D0:D0:E0 -n s11x # MAC of nbb
@@ -143,7 +154,7 @@ and also to set reachable pkg-repository,
 
   cd /usr/share/distro_const/
 then modify dc_ai_x86.xml (on sparc: dc_ai_sparc.xml)
-  gpatch -p0 < AI_README.txt
+  gpatch -p0 < TESTING # this file
 
 Note: also the nghttp2 package can be updated but not soaked to distribution. Also
 this (updated) pkg should be installed on distro build box then .xml-manifests
