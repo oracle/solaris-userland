@@ -44,6 +44,9 @@ TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
+# Set runpath to find libeog.so library.
+LDFLAGS += -Wl,-R$(USRLIBDIR64)/eog
+
 # Assumes GNU msgfmt is in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 CONFIGURE_ENV += PYTHON=$(PYTHON.3.7)
