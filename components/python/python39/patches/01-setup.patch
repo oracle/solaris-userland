@@ -9,9 +9,9 @@ Changes to directory inclusion: Bug 20367692
 
 Libsocket tweaks: Bug 21959680
 
---- Python-3.9.0/setup.py
-+++ Python-3.9.0/setup.py
-@@ -740,12 +740,15 @@ class PyBuildExt(build_ext):
+--- Python-3.9.1/setup.py
++++ Python-3.9.1/setup.py
+@@ -725,12 +725,15 @@ class PyBuildExt(build_ext):
                          add_dir_to_list(dir_list, directory)
  
      def configure_compiler(self):
@@ -32,7 +32,7 @@ Libsocket tweaks: Bug 21959680
          # only change this for cross builds for 3.3, issues on Mageia
          if CROSS_COMPILING:
              self.add_cross_compiling_paths()
-@@ -1057,6 +1060,13 @@ class PyBuildExt(build_ext):
+@@ -1042,6 +1045,13 @@ class PyBuildExt(build_ext):
                                                       ['/usr/lib/termcap'],
                                                       'termcap'):
                  readline_libs.append('termcap')
@@ -46,7 +46,7 @@ Libsocket tweaks: Bug 21959680
              self.add(Extension('readline', ['readline.c'],
                                 library_dirs=['/usr/lib/termcap'],
                                 extra_link_args=readline_extra_link_args,
-@@ -1091,6 +1101,10 @@ class PyBuildExt(build_ext):
+@@ -1076,6 +1086,10 @@ class PyBuildExt(build_ext):
  
          curses_enabled = True
          if curses_library.startswith('ncurses'):
@@ -57,7 +57,7 @@ Libsocket tweaks: Bug 21959680
              curses_libs = [curses_library]
              self.add(Extension('_curses', ['_cursesmodule.c'],
                                 include_dirs=curses_includes,
-@@ -1118,10 +1132,34 @@ class PyBuildExt(build_ext):
+@@ -1103,10 +1117,34 @@ class PyBuildExt(build_ext):
          skip_curses_panel = True if AIX else False
          if (curses_enabled and not skip_curses_panel and
                  self.compiler.find_library_file(self.lib_dirs, panel_library)):
@@ -93,7 +93,7 @@ Libsocket tweaks: Bug 21959680
          elif not skip_curses_panel:
              self.missing.append('_curses_panel')
  
-@@ -1149,6 +1187,7 @@ class PyBuildExt(build_ext):
+@@ -1134,6 +1172,7 @@ class PyBuildExt(build_ext):
                  # Issue #35569: Expose RFC 3542 socket options.
                  kwargs['extra_compile_args'] = ['-D__APPLE_USE_RFC_3542']
  

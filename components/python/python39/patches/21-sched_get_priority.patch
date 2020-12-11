@@ -5,9 +5,9 @@ in Solaris (where some policies return -60 as a valid value).
 This was reported and patch offered upstream:
 https://bugs.python.org/issue41839
 
---- Python-3.9.0/Modules/posixmodule.c
-+++ Python-3.9.0/Modules/posixmodule.c
-@@ -6283,7 +6283,7 @@ os_sched_get_priority_max_impl(PyObject
+--- Python-3.9.1/Modules/posixmodule.c
++++ Python-3.9.1/Modules/posixmodule.c
+@@ -6626,7 +6626,7 @@ os_sched_get_priority_max_impl(PyObject
      int max;
  
      max = sched_get_priority_max(policy);
@@ -16,7 +16,7 @@ https://bugs.python.org/issue41839
          return posix_error();
      return PyLong_FromLong(max);
  }
-@@ -6302,7 +6302,7 @@ os_sched_get_priority_min_impl(PyObject
+@@ -6645,7 +6645,7 @@ os_sched_get_priority_min_impl(PyObject
  /*[clinic end generated code: output=7595c1138cc47a6d input=21bc8fa0d70983bf]*/
  {
      int min = sched_get_priority_min(policy);

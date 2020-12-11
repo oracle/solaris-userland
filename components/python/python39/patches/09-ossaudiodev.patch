@@ -1,9 +1,9 @@
 This patch is needed to make Python understand it can build the OSS plugin.  
 Some OSS ioctls are not supported on Solaris, so they are ifdef'd out.  As
 the patch is Solaris-specific, it is not suitable for upstream.
---- Python-3.9.0/setup.py
-+++ Python-3.9.0/setup.py
-@@ -1616,7 +1616,7 @@ class PyBuildExt(build_ext):
+--- Python-3.9.1/setup.py
++++ Python-3.9.1/setup.py
+@@ -1601,7 +1601,7 @@ class PyBuildExt(build_ext):
              self.missing.extend(['resource', 'termios'])
  
          # Platform-specific libraries
@@ -12,8 +12,8 @@ the patch is Solaris-specific, it is not suitable for upstream.
              self.add(Extension('ossaudiodev', ['ossaudiodev.c']))
          elif not AIX:
              self.missing.append('ossaudiodev')
---- Python-3.9.0/Modules/ossaudiodev.c
-+++ Python-3.9.0/Modules/ossaudiodev.c
+--- Python-3.9.1/Modules/ossaudiodev.c
++++ Python-3.9.1/Modules/ossaudiodev.c
 @@ -1210,6 +1210,7 @@ PyInit_ossaudiodev(void)
      _EXPORT_INT(m, SOUND_MIXER_MONITOR);
  #endif

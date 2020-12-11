@@ -9,9 +9,9 @@ breaks on Solaris when non UTF-8 locale is used. See bug 31790476.
 To fix this, we have to convert given wchar_t to utf32 each time locale is not
 UTF-8 encoded (or ASCII, which can safely be ignored).
 
---- Python-3.9.0/Include/unicodeobject.h
-+++ Python-3.9.0/Include/unicodeobject.h
-@@ -97,6 +97,11 @@ typedef wchar_t Py_UNICODE /* Py_DEPRECA
+--- Python-3.9.1/Include/unicodeobject.h
++++ Python-3.9.1/Include/unicodeobject.h
+@@ -97,6 +97,11 @@ Copyright (c) Corporation for National R
  #  include <wchar.h>
  #endif
  
@@ -23,9 +23,9 @@ UTF-8 encoded (or ASCII, which can safely be ignored).
  /* Py_UCS4 and Py_UCS2 are typedefs for the respective
     unicode representations. */
  typedef uint32_t Py_UCS4;
---- Python-3.9.0/Objects/unicodeobject.c
-+++ Python-3.9.0/Objects/unicodeobject.c
-@@ -2183,6 +2183,15 @@ PyUnicode_FromUnicode(const Py_UNICODE *
+--- Python-3.9.1/Objects/unicodeobject.c
++++ Python-3.9.1/Objects/unicodeobject.c
+@@ -2187,6 +2187,15 @@ PyUnicode_FromUnicode(const Py_UNICODE *
      return PyUnicode_FromWideChar(u, size);
  }
  
@@ -41,7 +41,7 @@ UTF-8 encoded (or ASCII, which can safely be ignored).
  PyObject *
  PyUnicode_FromWideChar(const wchar_t *u, Py_ssize_t size)
  {
-@@ -2206,6 +2215,58 @@ PyUnicode_FromWideChar(const wchar_t *u,
+@@ -2210,6 +2219,58 @@ PyUnicode_FromWideChar(const wchar_t *u,
      if (size == 0)
          _Py_RETURN_UNICODE_EMPTY();
  

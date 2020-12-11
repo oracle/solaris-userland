@@ -4,8 +4,8 @@ of, and hence we can reenable it within the shutil module.
 This was requested upstream as well:
 https://bugs.python.org/issue41843
 
---- Python-3.9.0/Lib/shutil.py
-+++ Python-3.9.0/Lib/shutil.py
+--- Python-3.9.1/Lib/shutil.py
++++ Python-3.9.1/Lib/shutil.py
 @@ -50,7 +50,7 @@ elif _WINDOWS:
      import nt
  
@@ -14,9 +14,9 @@ https://bugs.python.org/issue41843
 +_USE_CP_SENDFILE = hasattr(os, "sendfile")
  _HAS_FCOPYFILE = posix and hasattr(posix, "_fcopyfile")  # macOS
  
- __all__ = ["copyfileobj", "copyfile", "copymode", "copystat", "copy", "copy2",
---- Python-3.9.0/Doc/library/shutil.rst
-+++ Python-3.9.0/Doc/library/shutil.rst
+ # CMD defaults in Windows 10
+--- Python-3.9.1/Doc/library/shutil.rst
++++ Python-3.9.1/Doc/library/shutil.rst
 @@ -452,7 +452,8 @@ the use of userspace buffers in Python a
  
  On macOS `fcopyfile`_ is used to copy the file content (not metadata).

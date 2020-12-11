@@ -3,8 +3,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 
 diff --git Python-2.6.4/Modules/authattr.c Python-2.6.4/Modules/authattr.c
 new file mode 100644
---- Python-3.9.0/Modules/authattr.c
-+++ Python-3.9.0/Modules/authattr.c
+--- Python-3.9.1/Modules/authattr.c
++++ Python-3.9.1/Modules/authattr.c
 @@ -0,0 +1,254 @@
 +/*
 + * CDDL HEADER START
@@ -260,8 +260,8 @@ new file mode 100644
 +	0,                            /* tp_free */
 +	0,                            /* tp_is_gc */
 +};
---- Python-3.9.0/Modules/execattr.c
-+++ Python-3.9.0/Modules/execattr.c
+--- Python-3.9.1/Modules/execattr.c
++++ Python-3.9.1/Modules/execattr.c
 @@ -0,0 +1,305 @@
 +/*
 + * CDDL HEADER START
@@ -568,8 +568,8 @@ new file mode 100644
 +	0,                            /* tp_free */
 +	0,                            /* tp_is_gc */
 +};
---- Python-3.9.0/Modules/privileges.c
-+++ Python-3.9.0/Modules/privileges.c
+--- Python-3.9.1/Modules/privileges.c
++++ Python-3.9.1/Modules/privileges.c
 @@ -0,0 +1,237 @@
 +/*
 + * CDDL HEADER START
@@ -808,8 +808,8 @@ new file mode 100644
 +
 +       return m;
 +}
---- Python-3.9.0/Modules/pyrbac.c
-+++ Python-3.9.0/Modules/pyrbac.c
+--- Python-3.9.1/Modules/pyrbac.c
++++ Python-3.9.1/Modules/pyrbac.c
 @@ -0,0 +1,81 @@
 +/*
 + * CDDL HEADER START
@@ -892,8 +892,8 @@ new file mode 100644
 +	return m;
 +
 +}
---- Python-3.9.0/Modules/pyrbac.h
-+++ Python-3.9.0/Modules/pyrbac.h
+--- Python-3.9.1/Modules/pyrbac.h
++++ Python-3.9.1/Modules/pyrbac.h
 @@ -0,0 +1,45 @@
 +/*
 + * CDDL HEADER START
@@ -935,13 +935,13 @@ new file mode 100644
 +#define PYRBAC_NAM_MODE 4
 +#define PYRBAC_UID_MODE 5
 +
-+PyTypeObject AuthattrType;
-+PyTypeObject ExecattrType;
-+PyTypeObject UserattrType;
++extern PyTypeObject AuthattrType;
++extern PyTypeObject ExecattrType;
++extern PyTypeObject UserattrType;
 +
 +#endif
---- Python-3.9.0/Modules/userattr.c
-+++ Python-3.9.0/Modules/userattr.c
+--- Python-3.9.1/Modules/userattr.c
++++ Python-3.9.1/Modules/userattr.c
 @@ -0,0 +1,301 @@
 +/*
 + * CDDL HEADER START
@@ -1244,9 +1244,9 @@ new file mode 100644
 +	0,                            /* tp_free */
 +	0,                            /* tp_is_gc */
 +};
---- Python-3.9.0/setup.py
-+++ Python-3.9.0/setup.py
-@@ -1842,6 +1842,24 @@ class PyBuildExt(build_ext):
+--- Python-3.9.1/setup.py
++++ Python-3.9.1/setup.py
+@@ -1827,6 +1827,24 @@ class PyBuildExt(build_ext):
          if dlpi_inc is not None:
              self.add(Extension('dlpi', ['dlpimodule.c'], libraries=['dlpi']))
  
@@ -1271,7 +1271,7 @@ new file mode 100644
      def detect_modules(self):
          self.configure_compiler()
          self.init_inc_lib_dirs()
-@@ -1864,6 +1882,8 @@ class PyBuildExt(build_ext):
+@@ -1849,6 +1867,8 @@ class PyBuildExt(build_ext):
          self.detect_decimal()
          self.detect_ucred()
          self.detect_dlpi()
@@ -1280,8 +1280,8 @@ new file mode 100644
          self.detect_ctypes()
          self.detect_multiprocessing()
          if not self.detect_tkinter():
---- Python-3.9.0/Lib/test/privrbactest.py
-+++ Python-3.9.0/Lib/test/privrbactest.py
+--- Python-3.9.1/Lib/test/privrbactest.py
++++ Python-3.9.1/Lib/test/privrbactest.py
 @@ -0,0 +1,289 @@
 +#!/usr/bin/python3.9
 +#
