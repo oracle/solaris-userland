@@ -92,6 +92,8 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D); $(CLONEY) $(COMPONENT_DIR)/sun $(@D)/sun; \
 	cd ../net-snmp-57 && $(GMAKE) install);	
 
+PRE_CLEAN_ACTION += cd ../net-snmp-57 && $(GMAKE) clean;
+
 # Make a copy of the python bits so we can build separate python 3.9 support
 COMPONENT_PREP_ACTION += (cd $(@D) ; cp -rp python python3.9);
 

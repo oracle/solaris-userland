@@ -1,0 +1,60 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates.
+#
+syntax: regexp
+
+# ignore builds artifacts
+^(i386|sparc)/.*
+^tools/(i386|sparc)/parfait/(CC|cc|g\+\+|gcc|ld)$
+^tools/parfait
+^tools/pkglint
+^tools/time-(amd64|i86|sparc|sparcv9).(o|so)$
+^tools/.gnupg/crls.d/DIR.txt
+^tools/.gnupg/trustdb.gpg
+^tools/incorporator
+
+# ignore build dirs
+^components/.*/build
+
+# ignore make targets
+/\.patched.*$
+/\.prep$
+/\.prev-version$
+/\.unpacked$
+\.invalid-hash$
+
+# ignore archives
+\.tar.(gz|bz2|xz)$
+\.(zip|tgz|jar|gem)$
+\.(sig|asc)$
+^components/fonts/indic-fonts-core/MalOtf.ttf$
+
+# ignore webrevs at the top level
+^[^/]*webrev[^/]*
+
+# ignore hg merge turds
+\.bak$
+\.chg$
+\.orig$
+\.rej$
+
+# ignore vim swap and backup files
+\.sw[a-z]$
+\.~$
+
+# ignore emacs backup files
+\.~[0-9]+~$
+.*~$
+
+# ignore nohup.out files
+nohup\.out$
+
+# ignore compiled python
+\.pyc$
+
+# Ignore .nfs files
+^\.nfs[0-9A-F][0-9A-F][0-9A-F][0-9A-F]$
+/\.nfs[0-9A-F][0-9A-F][0-9A-F][0-9A-F]$
+
+# ignore .hgignore itself 
+^\.hgignore

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2020, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -61,5 +61,7 @@ COMPONENT_INSTALL_ACTION = \
 COMPONENT_PRE_INSTALL_ACTION += \
 	$(MKDIR) $(PROTOUSRSHAREDOCDIR)/ttf-$(COMPONENT_NAME); \
 	$(MKDIR) $(PROTOFONTSDIR)/$(COMPONENT_NAME);
+
+CLEAN_PATHS += ._AnonymousPro-1.002.001
 
 REQUIRED_PACKAGES += x11/font-utilities

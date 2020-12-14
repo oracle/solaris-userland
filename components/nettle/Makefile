@@ -146,4 +146,6 @@ COMPONENT_POST_INSTALL_ACTION += ( \
 	gcp -av build/prototype/$(MACH)/usr/lib/$(MACH64)/libnettle.so.6* $(PROTO_DIR)/usr/lib/$(MACH64)/; \
 );
 
+PRE_CLEAN_ACTION += cd ../nettle34 && $(GMAKE) clean;
+
 REQUIRED_PACKAGES += library/gmp
