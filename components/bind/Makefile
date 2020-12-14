@@ -24,7 +24,7 @@
 #
 # Build requirements, needed before inclusion of shared-macros.
 BUILD_BITS=		64
-COMPILER=		gcc
+COMPILER=		studio
 include ../../make-rules/shared-macros.mk
 
 # Component information, used for download and packaging.
@@ -34,16 +34,16 @@ include ../../make-rules/shared-macros.mk
 #   BIND <x>.<y>.<z>-P<n>   =>   IPS <x>.<y>.<z>.<n>.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		bind
-COMPONENT_VERSION=	9.11.22
-IPS_COMPONENT_VERSION=	9.11.22.0.0
+COMPONENT_VERSION=	9.11.26
+IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	service/dns-server
-TPNO=			61201
+TPNO=			63911
 COMPONENT_PROJECT_URL=	http://www.isc.org/software/bind/
 
 # hash from: sha256sum $(COMPONENT_ARCHIVE) | sed 's/\(.[^ ]*\).*/sha256:\1/'
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:afc6d8015006f1cabf699ff19f517bb8fd9c1811e5231f26baf51c3550262ac9
+	sha256:c93a7be0ff76027ab799f030aafe8b4eede8bd2fa2c40a83858c2c43c5bee8b3
 
 COMPONENT_ARCHIVE_URL=	\
 	http://ftp.isc.org/isc/bind9/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
@@ -54,6 +54,12 @@ COMPONENT_ARCHIVE_URL=	\
 # Care must be taken if mercurial merge required!
 #   see ../../doc/makefile-variables.txt
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sha512.asc
+
+# Append to Studio optimization level (-xO4)
+# -g with -xO4 : best-effort symbolic information with full optimization.
+studio_OPT.sparc.64 +=	-g
+# And preserve all argument values on AMD64.
+studio_OPT.i386.64 +=	-g -preserve_argvalues=complete
 
 # For check_anitya target, see 'gmake print-ANITYA_API_URL'
 COMPONENT_ANITYA_ID=	14923
