@@ -26,17 +26,17 @@ BUILD_BITS= NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pylint
-COMPONENT_VERSION=	2.3.1
+COMPONENT_VERSION=	2.6.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=		\
-	sha256:723e3db49555abaf9bf79dc474c6b9e2935ad82230b10c1138a71ea41ac0fff1
+	sha256:21b1d21d50295c3f0e7e99cbb50bbb217311cc2b967b25c6ef05d700bf100830
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=  https://www.pylint.org/
 COMPONENT_BUGDB=	utility/pylint
 COMPONENT_ANITYA_ID=	5344
 
-TPNO=			51781
+TPNO=			63907
 
 
 COMPONENT_NAME_OLD=		$(COMPONENT_NAME)
@@ -52,9 +52,6 @@ TPNO_OLD=		31351
 
 # This component is delivered in two different versions because
 # the newer one is no longer Python 2.7 compatible.
-
-# This component is not Python 3.9 ready yet
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.9)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -119,6 +116,7 @@ $(MANIFEST_BASE)-pylint-27.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OL
 # Manifest convenience variables.
 $(MANIFEST_BASE)-pylint-27.mogrified: NEW_ONLY = \#
 $(MANIFEST_BASE)-pylint-37.mogrified: OLD_ONLY = \#
+$(MANIFEST_BASE)-pylint-39.mogrified: OLD_ONLY = \#
 
 PKG_MACROS += OLD_ONLY="$(OLD_ONLY)"
 PKG_MACROS += NEW_ONLY="$(NEW_ONLY)"

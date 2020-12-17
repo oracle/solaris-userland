@@ -1,0 +1,12 @@
+Benchamrk tests require pytest-benchmark, which is not available on Solaris.
+
+--- pylint-2.6.0/tests/benchmark/test_baseline_benchmarks.py
++++ pylint-2.6.0/tests/benchmark/test_baseline_benchmarks.py
+@@ -78,6 +78,7 @@ class NoWorkChecker(BaseChecker):
+         pass
+ 
+ 
++@pytest.mark.skip("fixture 'benchmark' is not available")
+ @pytest.mark.benchmark(group="baseline",)
+ class TestEstablishBaselineBenchmarks:
+     """ Naive benchmarks for the high-level pylint framework
