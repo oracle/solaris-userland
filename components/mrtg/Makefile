@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mrtg
-COMPONENT_VERSION=	2.17.4
+COMPONENT_VERSION=	2.17.7
 COMPONENT_PROJECT_URL=	https://oss.oetiker.ch/mrtg
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:5efa7fae8040159208472e5f889be5b41d8c8a2ea6b31616f0f75cc7f48d2365
+    sha256:9b94cb268fb15b0304ad3bb3ec92b9a8a16dacfcee72baac19298224a2c332c3
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/pub/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	2023
 
-TPNO=			25709
+TPNO=			63920
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
