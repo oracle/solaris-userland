@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 
@@ -29,28 +29,22 @@ COMPONENT_MAKE_JOBS=1
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mod_perl
-COMPONENT_VERSION=	2.0.10
+COMPONENT_VERSION=	2.0.11
 COMPONENT_PROJECT_URL=	https://perl.apache.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d1cf83ed4ea3a9dfceaa6d9662ff645177090749881093051020bf42f9872b64
+    sha256:ca2a9e18cdf90f9c6023e786369d5ba75e8dac292ebfea9900c29bf42dc16f74
 COMPONENT_ARCHIVE_URL=	https://www.apache.org/dist/perl/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	utility/apache
 COMPONENT_ANITYA_ID=	1998
 
-TPNO=			39231
+TPNO=			63801
 
 BUILD_STYLE= justmake
 CONFIGURE_DEFAULT_DIRS= no
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_64)
 
-# Tests do not pass because of missing packages in CBE
-# and insufficient gsed filtering.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/common.mk
-
-PATCH_LEVEL=0
 
 APACHE_USR_PREFIX=/usr/apache2/2.4
 
@@ -81,8 +75,24 @@ else
 PATH=$(SPRO_VROOT)/bin:$(USRBINDIR):$(GNUBIN)
 endif
 
+COMPONENT_PRE_TEST_ACTION= ( \
+	$(MKDIR) $(@D)/Solaris ; \
+	$(CP) -f /etc/apache2/2.4/original/httpd.conf $(@D)/Solaris; \
+	$(LN) -s ../Solaris $(@D)/ModPerl-Registry/Solaris; \
+	$(LN) -s ../Solaris $(@D)/Apache-Reload/Solaris; \
+	$(GSED) -e '/IfDefine/d' \
+		-e '/mpm_worker_module/d' \
+		-e '/mpm_event_module/d' \
+		-e '/auth_digest_module/s/^\#//' \
+		-e '/deflate_module/s/^\#//' \
+		-e '/proxy_module/s/^\#//' \
+		-e '/proxy_http_module/s/^\#//' \
+		-e '/rewrite_module/s/^\#//' \
+		-i $(@D)/Solaris/httpd.conf )
+
 COMPONENT_TEST_TRANSFORMS += \
 	'-e "s/\[pid [0-9][0-9]*:tid [0-9][0-9]*\] //" ' \
+	'-e "s/\[pid [0-9][0-9]*\] //" ' \
 	'-e "/\[.* 20[0-9][0-9]\] \[/s/\[.* 20[0-9][0-9]\]/[date]/" ' \
 	'-e "/^server localhost/s/ (.*)//" ' \
 	'-e "/base server + [0-9][0-9] vhosts ready to run tests/d" ' \
@@ -103,9 +113,6 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += library/apr-1
 REQUIRED_PACKAGES += library/apr-util-1
-# to be removed after apr-1 gets into repo
-REQUIRED_PACKAGES += library/apr-16
-REQUIRED_PACKAGES += library/apr-util-16
 REQUIRED_PACKAGES += library/perl-5/CGI-522
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += web/server/apache-24

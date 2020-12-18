@@ -1,0 +1,32 @@
+# Prepare configuration and enable Apache
+cp /etc/apache2/2.4/samples-conf.d/perl.conf /etc/apache2/2.4/conf.d/
+mkdir -p /var/apache2/2.4/perl
+cat >> /etc/apache2/2.4/conf.d/perl.conf << EOF
+Alias /perl/ /var/apache2/2.4/perl/
+<Location /perl/>
+    SetHandler perl-script
+    PerlResponseHandler ModPerl::Registry
+    PerlOptions +ParseHeaders
+    Options +ExecCGI
+    Require all granted
+</Location>
+<Location /perl-status>
+    SetHandler perl-script
+    PerlHandler +Apache2::Status
+</Location>
+EOF
+cat > /var/apache2/2.4/perl/rock.pl <<EOF
+#!/usr/bin/perl
+print "Content-type: text/plain\n\n";
+print "mod_perl 2.0 rocks!\n";
+EOF
+svcadm enable apache24
+
+# Verify Apache Web server logs
+tail /var/apache2/2.4/logs/error_log
+
+# Basic tests
+curl localhost/perl/rock.pl
+lynx --dump localhost/perl-status
+
+# End

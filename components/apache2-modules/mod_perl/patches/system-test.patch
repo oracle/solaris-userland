@@ -4,9 +4,11 @@ Patch status: will be submitted to upstream
 Add support for system-test which allows to test mod_perl installed on
 system.
 
---- Apache-Test/lib/Apache/TestMM.pm
-+++ Apache-Test/lib/Apache/TestMM.pm
-@@ -101,8 +101,15 @@
+diff --git a/Apache-Test/lib/Apache/TestMM.pm b/Apache-Test/lib/Apache/TestMM.pm
+index f9b862f..4cf0b19 100644
+--- a/Apache-Test/lib/Apache/TestMM.pm
++++ b/Apache-Test/lib/Apache/TestMM.pm
+@@ -101,8 +101,15 @@ run_tests :
  	$(FULLPERL) -I$(INST_ARCHLIB) -I$(INST_LIB) \
  	t/TEST $(APACHE_TEST_EXTRA_ARGS) -bugreport -verbose=$(TEST_VERBOSE) $(TEST_FILES)
  
@@ -22,9 +24,11 @@ system.
  test_config :
  	$(PASSENV) \
  	$(FULLPERL) -I$(INST_ARCHLIB) -I$(INST_LIB) \
---- Makefile.PL
-+++ Makefile.PL
-@@ -850,22 +850,38 @@
+diff --git a/Makefile.PL b/Makefile.PL
+index 2ceb943..5b3f462 100644
+--- a/Makefile.PL
++++ b/Makefile.PL
+@@ -850,22 +850,38 @@ run_tests : test_clean
  	$(FULLPERL) -I$(INST_ARCHLIB) -I$(INST_LIB) \
  	t/TEST -bugreport -verbose=$(TEST_VERBOSE) $(TEST_FILES)
  

@@ -1,0 +1,21 @@
+Patch origin: in-house
+Patch status: Solaris-specific; not suitable for upstream
+
+Forces tests to look for modified Apache httpd.conf.
+Solaris httpd.conf file contains ifdefs around MPM modules.
+We want to use MPM prefork mode which behaves best with mod_perl tests.
+See also UL Makefile which prepares modified version of httpd.conf.
+
+diff --git a/Apache-Test/lib/Apache/TestConfig.pm b/Apache-Test/lib/Apache/TestConfig.pm
+index 85689b0..d247c08 100644
+--- a/Apache-Test/lib/Apache/TestConfig.pm
++++ b/Apache-Test/lib/Apache/TestConfig.pm
+@@ -471,7 +471,7 @@ sub configure_apxs {
+     $vars->{bindir}   ||= $self->apxs('BINDIR', 1);
+     $vars->{sbindir}  ||= $self->apxs('SBINDIR');
+     $vars->{target}   ||= $self->apxs('TARGET');
+-    $vars->{conf_dir} ||= $self->apxs('SYSCONFDIR');
++    $vars->{conf_dir} ||= "$vars->{top_dir}/Solaris";
+ 
+     if ($vars->{conf_dir}) {
+         $vars->{httpd_conf} ||= catfile $vars->{conf_dir}, 'httpd.conf';

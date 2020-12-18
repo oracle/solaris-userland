@@ -263,9 +263,10 @@ APACHE_TEST_APXS= APACHE_TEST_GROUP= APACHE_TEST_HTTPD= APACHE_TEST_PORT= APACHE
 t/TEST -bugreport -verbose=0 
 [warning] Skipping 'set unlimited ulimit for coredumps', since we are running as a non-root user on Solaris
 /usr/apache2/2.4/bin/httpd  -d $(@D)/t -f $(@D)/t/conf/httpd.conf -D APACHE2 -D APACHE2_4 -D PERL_USEITHREADS
-using Apache/2.x.x (event MPM)
+using Apache/2.x.x (prefork MPM)
 
-waiting 300 seconds for server to start: [date] [env:warn] AH01506: PassEnv variable LD_LIBRARY_PATH was undefined
+waiting 300 seconds for server to start: [date] [core:trace3] core.c(3361): Setting LogLevel for all modules to trace8
+[date] [env:warn] AH01506: PassEnv variable LD_LIBRARY_PATH was undefined
 [date] [perl:info] 6 Apache2:: modules loaded
 [date] [perl:info] 0 APR:: modules loaded
 waiting 300 seconds for server to start: ok
@@ -320,22 +321,22 @@ t/apache/read2.t ........................ ok
 t/apache/read3.t ........................ ok
 t/apache/read4.t ........................ ok
 t/apache/scanhdrs.t ..................... ok
-t/apache/scanhdrs2.t .................... skipped: cannot find module 'HTML::HeadParser'
+t/apache/scanhdrs2.t .................... ok
 t/apache/send_cgi_header.t .............. ok
 t/apache/subprocess.t ................... ok
 t/apache/util.t ......................... ok
 t/apache/write.t ........................ ok
 t/api/access.t .......................... ok
 t/api/access2.t ......................... skipped: mod_perl is not compiled with httpd-2.2
-t/api/access2_24.t ...................... skipped: libwww-perl is not installed, cannot find module 'HTML::HeadParser'
+t/api/access2_24.t ...................... skipped: libwww-perl is not installed
 t/api/add_config.t ...................... ok
 t/api/aplog.t ........................... ok
 t/api/command.t ......................... ok
 t/api/conn_rec.t ........................ ok
 t/api/conn_util.t ....................... ok
 t/api/content_encoding.t ................ ok
-t/api/custom_response.t ................. skipped: libwww-perl is not installed, cannot find module 'HTML::HeadParser'
-t/api/err_headers_out.t ................. skipped: cannot find module 'HTML::HeadParser'
+t/api/custom_response.t ................. skipped: libwww-perl is not installed
+t/api/err_headers_out.t ................. ok
 t/api/in_out_filters.t .................. ok
 t/api/internal_redirect.t ............... ok
 t/api/internal_redirect_handler.t ....... ok
@@ -350,7 +351,7 @@ t/api/request_subclass.t ................ ok
 t/api/request_util.t .................... ok
 t/api/response.t ........................ ok
 t/api/rflush.t .......................... ok
-t/api/sendfile.t ........................ skipped: cannot find module 'HTML::HeadParser'
+t/api/sendfile.t ........................ ok
 t/api/server_const.t .................... ok
 t/api/server_rec.t ...................... ok
 t/api/server_util.t ..................... ok
@@ -386,7 +387,7 @@ t/apr/ipsubnet.t ........................ ok
 t/apr/os.t .............................. ok
 t/apr/perlio.t .......................... ok
 t/apr/pool.t ............................ ok
-t/apr/pool_lifetime.t ................... skipped: cannot find module 'HTML::HeadParser'
+t/apr/pool_lifetime.t ................... ok
 t/apr/sockaddr.t ........................ ok
 t/apr/socket.t .......................... ok
 t/apr/status.t .......................... ok
@@ -403,14 +404,14 @@ t/compat/apache_module.t ................ ok
 t/compat/apache_table.t ................. ok
 t/compat/apache_uri.t ................... ok
 t/compat/apache_util.t .................. ok
-t/compat/conn_authen.t .................. skipped: libwww-perl is not installed, cannot find module 'HTML::HeadParser'
+t/compat/conn_authen.t .................. skipped: libwww-perl is not installed
 t/compat/conn_rec.t ..................... ok
 t/compat/request.t ...................... ok
 t/compat/request_body.t ................. ok
-t/compat/send_fd.t ...................... skipped: cannot find module 'HTML::HeadParser'
+t/compat/send_fd.t ...................... ok
 t/directive/cmdparms.t .................. ok
 t/directive/env.t ....................... ok
-t/directive/perl.t ...................... skipped: cannot find module 'HTML::HeadParser'
+t/directive/perl.t ...................... ok
 t/directive/perlcleanuphandler.t ........ skipped: libwww-perl is not installed
 t/directive/perldo.t .................... ok
 t/directive/perlloadmodule.t ............ ok
@@ -428,10 +429,10 @@ t/error/api.t ........................... ok
 t/error/runtime.t ....................... ok
 t/error/syntax.t ........................ ok
 t/filter/both_str_con_add.t ............. ok
-t/filter/both_str_native_remove.t ....... skipped: cannot find module 'deflate', cannot find module 'include'
+t/filter/both_str_native_remove.t ....... skipped: cannot find module 'include'
 t/filter/both_str_req_add.t ............. ok
-t/filter/both_str_req_mix.t ............. skipped: cannot find module 'deflate', cannot find module 'include'
-t/filter/both_str_req_proxy.t ........... skipped: cannot find module 'mod_proxy', cannot find module 'proxy_http.c'
+t/filter/both_str_req_mix.t ............. skipped: cannot find module 'include'
+t/filter/both_str_req_proxy.t ........... ok
 t/filter/in_autoload.t .................. ok
 t/filter/in_bbs_body.t .................. ok
 t/filter/in_bbs_consume.t ............... ok
@@ -447,7 +448,7 @@ t/filter/in_str_declined_read.t ......... ok
 t/filter/in_str_lc.t .................... ok
 t/filter/in_str_msg.t ................... ok
 t/filter/in_str_sandwich.t .............. ok
-t/filter/out_apache.t ................... skipped: cannot find module 'include', cannot find module 'HTML::HeadParser'
+t/filter/out_apache.t ................... skipped: cannot find module 'include'
 t/filter/out_bbs_basic.t ................ ok
 t/filter/out_bbs_ctx.t .................. ok
 t/filter/out_bbs_filebucket.t ........... ok
@@ -465,10 +466,10 @@ t/filter/out_str_reverse.t .............. ok
 t/filter/out_str_subreq_default.t ....... ok
 t/filter/out_str_subreq_modperl.t ....... ok
 t/filter/with_subrequest.t .............. ok
-t/hooks/access.t ........................ skipped: cannot find module 'HTML::HeadParser'
-t/hooks/authen_basic.t .................. skipped: libwww-perl is not installed, cannot find module 'HTML::HeadParser'
-t/hooks/authen_digest.t ................. skipped: libwww-perl is not installed, cannot find module 'auth_digest', cannot find module 'HTML::HeadParser'
-t/hooks/authz.t ......................... skipped: libwww-perl is not installed, cannot find module 'HTML::HeadParser'
+t/hooks/access.t ........................ ok
+t/hooks/authen_basic.t .................. skipped: libwww-perl is not installed
+t/hooks/authen_digest.t ................. skipped: libwww-perl is not installed
+t/hooks/authz.t ......................... skipped: libwww-perl is not installed
 t/hooks/cleanup.t ....................... ok
 t/hooks/cleanup2.t ...................... ok
 t/hooks/error.t ......................... ok
@@ -476,7 +477,7 @@ t/hooks/fixup.t ......................... ok
 t/hooks/headerparser.t .................. ok
 t/hooks/hookrun.t ....................... ok
 t/hooks/init.t .......................... ok
-t/hooks/inlined_handlers.t .............. skipped: cannot find module 'HTML::HeadParser'
+t/hooks/inlined_handlers.t .............. ok
 t/hooks/push_handlers.t ................. ok
 t/hooks/push_handlers_anon.t ............ ok
 t/hooks/push_handlers_blessed.t ......... ok
@@ -485,9 +486,9 @@ t/hooks/set_handlers.t .................. ok
 t/hooks/stacked_handlers.t .............. ok
 t/hooks/stacked_handlers2.t ............. ok
 t/hooks/startup.t ....................... ok
-t/hooks/trans.t ......................... skipped: cannot find module 'HTML::HeadParser'
-t/modperl/cookie.t ...................... skipped: cannot find module 'HTML::HeadParser'
-t/modperl/cookie2.t ..................... skipped: cannot find module 'HTML::HeadParser'
+t/hooks/trans.t ......................... ok
+t/modperl/cookie.t ...................... ok
+t/modperl/cookie2.t ..................... ok
 t/modperl/current_callback.t ............ ok
 t/modperl/dir_config.t .................. ok
 t/modperl/endav.t ....................... ok
@@ -520,27 +521,27 @@ t/modperl/request_rec_tie_api.t ......... skipped: perl 5.022001: PerlIO is used
 t/modperl/setauth.t ..................... ok
 t/modperl/setupenv.t .................... skipped: libwww-perl is not installed
 t/modperl/setupenv2.t ................... ok
-t/modperl/status.t ...................... skipped: cannot find module 'HTML::HeadParser'
+t/modperl/status.t ...................... ok
 t/modperl/stdfd.t ....................... ok
 t/modperl/stdfd2.t ...................... ok
 t/modperl/subenv.t ...................... ok
 t/modperl/taint.t ....................... ok
 t/modperl/util.t ........................ ok
 t/modules/apache_resource.t ............. skipped: cannot find module 'BSD::Resource'
-t/modules/apache_status.t ............... skipped: cannot find module 'HTML::HeadParser'
-t/modules/cgi.t ......................... skipped: CGI version 9.99 or higher is required
-t/modules/cgi2.t ........................ skipped: CGI version 9.99 or higher is required
+t/modules/apache_status.t ............... ok
+t/modules/cgi.t ......................... ok
+t/modules/cgi2.t ........................ ok
 t/modules/cgipost.t ..................... ok
 t/modules/cgipost2.t .................... ok
 t/modules/cgiupload.t ................... skipped: libwww-perl is not installed
 t/modules/cgiupload2.t .................. skipped: libwww-perl is not installed
 t/modules/include.t ..................... skipped: cannot find module 'mod_include'
-t/modules/include2.t .................... skipped: cannot find module 'include', cannot find module 'HTML::HeadParser'
+t/modules/include2.t .................... skipped: cannot find module 'include'
 t/modules/include_subreq.t .............. skipped: cannot find module 'include'
-t/modules/proxy.t ....................... skipped: cannot find module 'mod_proxy', cannot find module 'proxy_http.c'
+t/modules/proxy.t ....................... ok
 t/perl/api.t ............................ ok
 t/perl/hash_attack.t .................... skipped: relevant only for perl 5.8.2 and up to 5.17.6
-t/perl/signals.t ........................ skipped: works only for prefork
+t/perl/signals.t ........................ ok
 t/preconnection/note.t .................. ok
 t/protocol/echo_bbs.t ................... ok
 t/protocol/echo_bbs2.t .................. ok
@@ -566,32 +567,32 @@ APACHE_TEST_APXS= APACHE_TEST_GROUP= APACHE_TEST_HTTPD= APACHE_TEST_PORT= APACHE
 t/TEST  -bugreport -verbose=0 
 [warning] Skipping 'set unlimited ulimit for coredumps', since we are running as a non-root user on Solaris
 /usr/apache2/2.4/bin/httpd  -d $(@D)/ModPerl-Registry/t -f $(@D)/ModPerl-Registry/t/conf/httpd.conf -D APACHE2 -D APACHE2_4 -D PERL_USEITHREADS
-using Apache/2.x.x (event MPM)
+using Apache/2.x.x (prefork MPM)
 
-waiting 180 seconds for server to start: 
+waiting 180 seconds for server to start: [date] [core:trace3] core.c(3361): Setting LogLevel for all modules to trace8
 waiting 180 seconds for server to start: ok
 server localhost:8529 started
-t/206.t ........................ skipped: cannot find module 'HTML::HeadParser'
-t/304.t ........................ skipped: cannot find module 'HTML::HeadParser'
+t/206.t ........................ ok
+t/304.t ........................ ok
 t/404-filename-with-newline.t .. ok
-t/404.t ........................ skipped: cannot find module 'HTML::HeadParser'
+t/404.t ........................ ok
 t/500.t ........................ ok
 t/bad_scripts.t ................ ok
 t/basic.t ...................... ok
 t/bin_resp.t ................... ok
-t/cgi.t ........................ skipped: cannot find module 'HTML::HeadParser'
-t/closure.t .................... skipped: cannot find module 'HTML::HeadParser'
-t/dirindex.t ................... skipped: cannot find module 'HTML::HeadParser'
+t/cgi.t ........................ ok
+t/closure.t .................... ok
+t/dirindex.t ................... ok
 t/fatalstobrowser.t ............ skipped: cannot find one of cgi.c or cgid.c, fatalsToBrowser known not to work, CGI version 99.99 or higher is required
-t/flush.t ...................... skipped: cannot find module 'deflate', cannot find module 'HTML::HeadParser'
+t/flush.t ...................... ok
 t/ithreads.t ................... ok
 t/nph.t ........................ ok
-t/perlrun_extload.t ............ skipped: cannot find module 'HTML::HeadParser'
+t/perlrun_extload.t ............ ok
 t/prefork.t .................... skipped: can't run under threaded MPMs
-t/redirect.t ................... skipped: libwww-perl is not installed, cannot find module 'HTML::HeadParser'
+t/redirect.t ................... skipped: libwww-perl is not installed
 t/regex.t ...................... ok
-t/rewrite_env.t ................ skipped: cannot find module 'mod_rewrite.c'
-t/special_blocks.t ............. skipped: cannot find module 'HTML::HeadParser'
+t/rewrite_env.t ................ ok
+t/special_blocks.t ............. ok
 All tests successful.
 Files=21
 Result: PASS
@@ -607,15 +608,17 @@ APACHE_TEST_APXS= APACHE_TEST_GROUP= APACHE_TEST_HTTPD= APACHE_TEST_PORT= APACHE
 t/TEST  -bugreport -verbose=0 
 [warning] Skipping 'set unlimited ulimit for coredumps', since we are running as a non-root user on Solaris
 /usr/apache2/2.4/bin/httpd  -d $(@D)/Apache-Reload/t -f $(@D)/Apache-Reload/t/conf/httpd.conf -D APACHE2 -D APACHE2_4 -D PERL_USEITHREADS
-using Apache/2.x.x (event MPM)
+using Apache/2.x.x (prefork MPM)
 
-waiting 60 seconds for server to start: 
+waiting 60 seconds for server to start: [date] [core:trace3] core.c(3361): Setting LogLevel for all modules to trace8
+
 waiting 60 seconds for server to start: ok
 server localhost:8529 started
 [   info] adding source lib $(@D)/Apache-Reload/../Apache-Test/lib to @INC
-t/reload.t .. skipped: cannot find module 'HTML::HeadParser'
+t/reload.t .. ok
+All tests successful.
 Files=1
-Result: NOTESTS
+Result: PASS
 [warning] server localhost:8529 shutdown
 make[2]: Leaving directory `$(@D)/Apache-Reload'
 make[1]: Leaving directory '$(@D)'
