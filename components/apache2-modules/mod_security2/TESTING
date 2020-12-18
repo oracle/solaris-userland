@@ -1,0 +1,15 @@
+# ModSecurity requires mod_unique_id to be installed
+gsed -i '/mod_unique_id/s/^#//' /etc/apache2/2.4/httpd.conf
+
+# Prepare configuration
+cp /etc/apache2/2.4/samples-conf.d/security2.conf /etc/apache2/2.4/conf.d/
+cp /etc/apache2/2.4/samples-conf.d/unicode.mapping /etc/apache2/2.4/conf.d/
+gsed -i '/^SecAuditEngine/s/RelevantOnly/On/' /etc/apache2/2.4/conf.d/security2.conf
+svcadm enable apache24
+
+# Verify Apache Web server logs
+tail /var/apache2/2.4/logs/error_log
+
+# Test auditing
+wget localhost/DOESNTEXIST
+tail /var/apache2/2.4/logs/modsec_audit.log
