@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS=		64_and_32
@@ -29,15 +29,15 @@ COMPILER= 		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libical
-COMPONENT_VERSION=	3.0.5
+COMPONENT_VERSION=	3.0.8
 COMPONENT_PROJECT_URL=	http://libical.github.io/libical/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:7ad550c8c49c9b9983658e3ab3e68b1eee2439ec17b169a6b1e6ecb5274e78e6
+	sha256:09fecacaf75ba5a242159e3a9758a5446b5ce4d0ab684f98a7040864e1d1286f
 COMPONENT_ARCHIVE_URL=	https://github.com/$(COMPONENT_NAME)/$(COMPONENT_NAME)/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	1637
 
-TPNO=			53633
+TPNO=			62897
 
 BUILD_STYLE= cmake
 

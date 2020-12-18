@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 # All components using gobject-introspection must be built with gcc as
@@ -31,14 +31,14 @@ include ../../../make-rules/shared-macros.mk
 BUILD_STYLE=            meson
 
 COMPONENT_NAME=		gdk-pixbuf
-COMPONENT_VERSION=	2.39.2
+COMPONENT_VERSION=	2.40.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GdkPixbuf
 COMPONENT_ARCHIVE_HASH= \
-     sha256:63e59387b5c5504f3bf07530bac0b69542e55936e09283400d32529b2b32e1ca
+     sha256:1582595099537ca8ff3b99c6804350b4c058bb8ad67411bbaae024ee7cead4e6
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	9533
 
-TPNO=		        56020
+TPNO=		        63906
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
