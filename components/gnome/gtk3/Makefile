@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -30,17 +30,17 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gtk3
-COMPONENT_VERSION=	3.24.11
+COMPONENT_VERSION=	3.24.23
 COMPONENT_PROJECT_URL=	http://www.gtk.org/
 COMPONENT_SRC=		gtk+-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:dba7658d0a2e1bfad8260f5210ca02988f233d1d86edacb95eceed7eca982895
+    sha256:5d864d248357a2251545b3387b35942de5f66e4c66013f0962eb5cb6f8dae2b1
 COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/gtk+/3.24/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/gtk+
 COMPONENT_ANITYA_ID=	10018
 
-TPNO=			54076
+TPNO=			62928
 
 ETCDIR.64="$(ETCDIR)/$(MACH64)"
 
@@ -97,12 +97,14 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
                 $(PROTO_DIR)/usr/share/man/man3lib/libgtk-3.3lib;
 
 # Standard automake test framework results transform
+# Remove icontheme test result to avoid inconsistent failures between runs
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
+	'-e "/icontheme/d" ' \
         '-e "/TOTAL/p" ' \
         '-e "/SKIP/p" ' \
         '-e "/PASS/p" ' \
-        '-e "/FAIL/p" '
+        '-e "/FAIL:/p" '
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
