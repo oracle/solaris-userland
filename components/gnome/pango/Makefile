@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 # All components using gobject-introspection must be built with gcc as
@@ -30,23 +30,22 @@ BUILD_BITS =		64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pango
-COMPONENT_VERSION=	1.43.0
+COMPONENT_VERSION=	1.46.2
 COMPONENT_PROJECT_URL=	http://www.pango.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:d2c0c253a5328a0eccb00cdd66ce2c8713fabd2c9836000b6e22a8b06ba3ddd2
+    sha256:d89fab5f26767261b493279b65cfb9eb0955cd44c07c5628d36094609fc51841
 COMPONENT_BUGDB=	gnome/pango
 COMPONENT_ANITYA_ID=	11783
 
-TPNO=			53014
+TPNO=			62890
 BUILD_STYLE=		meson
-
-# Tests do not pass because of insufficient gsed filtering.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CONFIGURE_OPTIONS += -Denable_docs=true
 CONFIGURE_OPTIONS.32 += -Dgir=false
+CONFIGURE_OPTIONS.32 += -Dintrospection=false
+CONFIGURE_OPTIONS += -Dinstall-tests=true
 
 # Workaround for build failures due to pango Makefiles not passing CFLAGS or
 # LDFLAGS, especially the -m32/64 flag, to g-ir-scanner
@@ -65,10 +64,16 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libpangox-1.0.3lib \
                 $(PROTO_DIR)/usr/share/man/man3lib/libpangox-1.0.3lib; \
 
+# cp boundaries.utf8 to tests directory in the build area
+COMPONENT_PRE_TEST_ACTION += cp $(SOURCE_DIR)/tests/boundaries.utf8 \
+	  $(BUILD_DIR_$(BITS))/tests/
 COMPONENT_TEST_TARGETS += ; cd tests; ./cxx-test; ./markup-parse; \
         ./test-font ; ./test-ot-tags; ./testattributes; \
-        ./testboundaries; ./testcolor; ./testiter; ./testscript;
+        ./testboundaries; ./testcolor; ./testiter; ./testscript; \
+	./test-ellipsize; ./test-harfbuzz; ./test-itemize; ./test-layout; \
+	./test-pangocairo-threads; ./test-shape; ./testmisc;
 COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9]s//" '
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9][0-9].[0-9][0-9]s//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/OK/p" ' \

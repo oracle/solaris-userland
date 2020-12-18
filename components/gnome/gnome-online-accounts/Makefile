@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -77,6 +77,7 @@ REQUIRED_PACKAGES += library/gnome/gcr
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
+REQUIRED_PACKAGES += library/desktop/harfbuzz
 REQUIRED_PACKAGES += library/desktop/librest
 REQUIRED_PACKAGES += library/desktop/p11-kit
 REQUIRED_PACKAGES += library/desktop/pango
