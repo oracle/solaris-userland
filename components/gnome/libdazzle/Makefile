@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -28,14 +28,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libdazzle
-COMPONENT_VERSION=	3.34.1
+COMPONENT_VERSION=	3.38.0
 COMPONENT_PROJECT_URL=	https://gitlab.gnome.org/GNOME/libdazzle
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:3d981cbb9d9bb87bfaff7bfd44d9847223b3ef81e69225e4d1f6ac725a669505
+	sha256:e18af28217943bcec106585298a91ec3da48aa3ad62fd0992f23f0c70cd1678f
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=    73149
 
-TPNO=			56751
+TPNO=			63936
 BUILD_STYLE=		meson
 
 # Tests do not pass because of insufficient gsed filtering.
