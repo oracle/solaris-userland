@@ -60,6 +60,8 @@ CONFIGURE_OPTIONS +=	--with-normal
 CONFIGURE_OPTIONS +=	--enable-rpath
 CONFIGURE_OPTIONS +=	--enable-widec
 CONFIGURE_OPTIONS +=	--enable-symlinks
+CONFIGURE_OPTIONS +=	--enable-pc-files
+CONFIGURE_OPTIONS +=	--with-pkg-config-libdir=$(PKG_CONFIG_DEFAULT)
 CONFIGURE_OPTIONS +=	--includedir=$(USRINCDIR)/ncurses
 CONFIGURE_OPTIONS +=	--with-default-terminfo-dir=$(GNUSHARE)/terminfo
 
