@@ -1,21 +1,21 @@
-Explanation and suggested change by Libor Bukata to fix the qt5 build 
-failure seen 
+Reverting https://gitlab.gnome.org/GNOME/glib/-/commit/5f38ae5f
+since it results in full UL build failures in several components
+that use studio to build.
 
-GNU compiler defines __STDC_VERSION__ and sets its value to 201112 if 
-C++17 or newer is used (flags -std=c++17 or -std=c++1z). As a result, 
-G_STATIC_ASSERT definition uses _Static_assert that is not available in C++.
+"/usr/include/glib-2.0/glib/gmacros.h", line 562: unexpected "("
 
-The change just ensures that _Static_assert is not used in C++ code; generic 
-definitions are used instead. 
+Reverting to what we have with the existing version of glib
 
---- a/glib/gmacros.h	2020-01-07 14:10:04.469716536 -0800
-+++ b/glib/gmacros.h	2020-01-07 14:10:47.201124696 -0800
-@@ -734,7 +734,7 @@
- #ifndef __GI_SCANNER__ /* The static assert macro really confuses the introspection parser */
- #define G_PASTE_ARGS(identifier1,identifier2) identifier1 ## identifier2
- #define G_PASTE(identifier1,identifier2)      G_PASTE_ARGS (identifier1, identifier2)
--#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
-+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L && !defined(__cplusplus)
- #define G_STATIC_ASSERT(expr) _Static_assert (expr, "Expression evaluates to false")
- #elif (defined(__cplusplus) && __cplusplus >= 201103L) || \
-       (defined(__cplusplus) && defined (_MSC_VER) && (_MSC_VER >= 1600)) || \
+Not suitable for upstream
+
+--- a/glib/gmacros.h	2020-09-26 06:30:09.767195634 -0700
++++ b/glib/gmacros.h	2020-09-26 06:31:03.323332828 -0700
+@@ -559,8 +559,6 @@
+  */
+ #if    __GNUC__ > 6
+ #define G_GNUC_FALLTHROUGH __attribute__((fallthrough))
+-#elif g_macro__has_attribute (fallthrough)
+-#define G_GNUC_FALLTHROUGH __attribute__((fallthrough))
+ #else
+ #define G_GNUC_FALLTHROUGH
+ #endif /* __GNUC__ */

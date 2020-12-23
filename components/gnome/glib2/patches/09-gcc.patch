@@ -62,3 +62,16 @@ Not suitable for upstream
    child_argv[0] = argv0;
    child_argv[1] = "mapchild";
    child_argv[2] = pid;
+--- a/gio/tests/file.c	2020-09-17 16:33:33.060284970 -0700
++++ b/gio/tests/file.c	2020-09-17 16:34:24.747513461 -0700
+@@ -881,7 +881,10 @@
+   /* Reset the umask after querying it above. There’s no way to query it without
+    * changing it. */
+   umask (current_umask);
++
++#pragma GCC diagnostic warning "-Wformat"
+   g_test_message ("Current umask: %u", current_umask);
++#pragma GCC diagnostic pop
+ 
+   for (i = 0; i < G_N_ELEMENTS (vectors); i++)
+     {

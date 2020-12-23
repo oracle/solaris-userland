@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 COMPILER =      	gcc
@@ -28,14 +28,14 @@ BUILD_BITS =            32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		glib
-COMPONENT_VERSION=	2.62.5
+COMPONENT_VERSION=	2.66.2
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GLib/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b8d1cdafa46658b63d7512efbe2cd21bd36cd7be83140e44930c47b79f82452e
+    sha256:ec390bed4e8dd0f89e918f385e8d4cfd7470b1ef7c1ce93ec5c4fc6e3c6a17c4
 COMPONENT_BUGDB=	gnome/glib
 COMPONENT_ANITYA_ID=	10024
 
-TPNO=			57251
+TPNO=			62898
 BUILD_STYLE=		meson
 
 # No need to build for older versions.
@@ -68,7 +68,7 @@ CONFIGURE_OPTIONS += -Druntime_libdir=$(USRLIBDIR)
 CONFIGURE_OPTIONS += -Dcharsetalias_dir=$(USRLIBDIR)
 CONFIGURE_OPTIONS += -Dselinux=disabled
 CONFIGURE_OPTIONS += -Dxattr=false
-CONFIGURE_OPTIONS += -Dlibmount=false
+CONFIGURE_OPTIONS += -Dlibmount=disabled
 CONFIGURE_OPTIONS += -Dbsymbolic_functions=false
 CONFIGURE_OPTIONS += -Dman=true
 CONFIGURE_OPTIONS += -Dfam=true
@@ -117,6 +117,7 @@ COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9]*[0-9].[0-9][0-9]s//" '
 COMPONENT_TEST_TRANSFORMS += '-e "s/OK      [0-9]//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
+	'-e "/DEBUG/d" ' \
         '-e "/OK/p" ' \
         '-e "/ok/p" '
 
