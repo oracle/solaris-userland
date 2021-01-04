@@ -16,8 +16,8 @@
 # Per agreement with upstream developers, filed:
 #    https://bugzilla.mindrot.org/show_bug.cgi?id=2615
 #
---- old/sshd.c	2020-04-06 20:10:14.606176279 +0000
-+++ new/sshd.c	2020-04-06 20:14:19.489151375 +0000
+--- old/sshd.c	2020-11-19 14:55:11.092846916 +0000
++++ new/sshd.c	2020-11-19 14:55:33.916322951 +0000
 @@ -260,7 +260,14 @@ struct sshbuf *loginmsg;
  /* Unprivileged user */
  struct passwd *privsep_pw = NULL;
@@ -33,7 +33,7 @@
  void destroy_sensitive_data(void);
  void demote_sensitive_data(void);
  static void do_ssh2_kex(struct ssh *);
-@@ -373,6 +380,7 @@ grace_alarm_handler(int sig)
+@@ -372,6 +379,7 @@ grace_alarm_handler(int sig)
  		ssh_signal(SIGTERM, SIG_IGN);
  		kill(0, SIGTERM);
  	}
@@ -41,7 +41,7 @@
  
  	/* XXX pre-format ipaddr/port so we don't need to access active_state */
  	/* Log error and exit. */
-@@ -381,6 +389,94 @@ grace_alarm_handler(int sig)
+@@ -380,6 +388,94 @@ grace_alarm_handler(int sig)
  	    ssh_remote_port(the_active_state));
  }
  
@@ -136,7 +136,7 @@
  /* Destroy the host and server keys.  They will no longer be needed. */
  void
  destroy_sensitive_data(void)
-@@ -535,6 +631,7 @@ privsep_preauth(struct ssh *ssh)
+@@ -534,6 +630,7 @@ privsep_preauth(struct ssh *ssh)
  		/* child */
  		close(pmonitor->m_sendfd);
  		close(pmonitor->m_log_recvfd);
@@ -144,7 +144,7 @@
  
  		/* Arrange for logging to be sent to the monitor */
  		set_log_handler(mm_log_handler, pmonitor);
-@@ -2167,8 +2264,10 @@ main(int ac, char **av)
+@@ -2212,8 +2309,10 @@ main(int ac, char **av)
  	 * are about to discover the bug.
  	 */
  	ssh_signal(SIGALRM, grace_alarm_handler);
@@ -154,9 +154,9 @@
 +		start_grace_watchdog(options.login_grace_time);
 +	}
  
- 	if (kex_exchange_identification(ssh, -1, options.version_addendum) != 0)
- 		cleanup_exit(255); /* error already logged */
-@@ -2225,6 +2324,7 @@ main(int ac, char **av)
+ 	if ((r = kex_exchange_identification(ssh, -1,
+ 	    options.version_addendum)) != 0)
+@@ -2271,6 +2370,7 @@ main(int ac, char **av)
  	 */
  	alarm(0);
  	ssh_signal(SIGALRM, SIG_DFL);

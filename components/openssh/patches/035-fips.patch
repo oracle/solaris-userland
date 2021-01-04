@@ -4,8 +4,8 @@
 #
 # This patch is unlikely to be accepted upstream.
 #
---- old/cipher.c	2020-03-31 14:47:51.730145478 +0000
-+++ new/cipher.c	2020-03-31 15:07:11.870069850 +0000
+--- old/cipher.c	2020-11-19 14:23:17.556096010 +0000
++++ new/cipher.c	2020-11-19 14:29:30.507401986 +0000
 @@ -83,7 +83,34 @@ struct sshcipher {
  #endif
  };
@@ -41,8 +41,8 @@
  #ifdef WITH_OPENSSL
  #ifndef OPENSSL_NO_DES
  	{ "3des-cbc",		8, 24, 0, 0, CFLAG_CBC, EVP_des_ede3_cbc },
---- old/digest-openssl.c	2020-03-31 14:47:51.738222543 +0000
-+++ new/digest-openssl.c	2020-03-31 15:07:11.878832149 +0000
+--- old/digest-openssl.c	2020-11-19 14:23:17.561945225 +0000
++++ new/digest-openssl.c	2020-11-19 14:29:30.513359383 +0000
 @@ -31,6 +31,7 @@
  #include "sshbuf.h"
  #include "digest.h"
@@ -93,8 +93,8 @@
  	int alg;
  
  	for (alg = 0; digests[alg].id != -1; alg++) {
---- old/gss-genr.c	2020-03-31 14:47:51.746104732 +0000
-+++ new/gss-genr.c	2020-03-31 15:07:11.887135124 +0000
+--- old/gss-genr.c	2020-11-19 14:23:17.567494860 +0000
++++ new/gss-genr.c	2020-11-19 14:29:30.518984520 +0000
 @@ -44,6 +44,7 @@
  #include "cipher.h"
  #include "sshkey.h"
@@ -139,8 +139,8 @@
  	gss_enc2oid[oidpos].oid = NULL;
  	gss_enc2oid[oidpos].encoded = NULL;
  
---- old/kex.c	2020-03-31 14:47:51.753656560 +0000
-+++ new/kex.c	2020-11-05 15:06:12.578672942 +0000
+--- old/kex.c	2020-11-19 14:23:17.573020999 +0000
++++ new/kex.c	2020-11-19 14:29:30.524127897 +0000
 @@ -90,7 +90,43 @@ struct kexalg {
  	int ec_nid;
  	int hash_alg;
@@ -185,7 +185,7 @@
  #ifdef WITH_OPENSSL
  	{ KEX_DH1, KEX_DH_GRP1_SHA1, 0, SSH_DIGEST_SHA1 },
  	{ KEX_DH14_SHA1, KEX_DH_GRP14_SHA1, 0, SSH_DIGEST_SHA1 },
-@@ -1243,10 +1279,18 @@ kex_exchange_identification(struct ssh *
+@@ -1242,10 +1278,18 @@ kex_exchange_identification(struct ssh *
  	sshbuf_reset(our_version);
  	if (version_addendum != NULL && *version_addendum == '\0')
  		version_addendum = NULL;
@@ -201,11 +201,11 @@
  	    version_addendum == NULL ? "" : " ",
  	    version_addendum == NULL ? "" : version_addendum)) != 0) {
 +#endif
+ 		oerrno = errno;
  		error("%s: sshbuf_putf: %s", __func__, ssh_err(r));
  		goto out;
- 	}
---- old/mac.c	2020-03-31 14:47:51.761333359 +0000
-+++ new/mac.c	2020-03-31 15:07:11.902980073 +0000
+--- old/mac.c	2020-11-19 14:23:17.578454180 +0000
++++ new/mac.c	2020-11-19 14:29:30.529163907 +0000
 @@ -55,8 +55,33 @@ struct macalg {
  	int		len;		/* just for UMAC */
  	int		etm;		/* Encrypt-then-MAC */
@@ -240,9 +240,9 @@
  	/* Encrypt-and-MAC (encrypt-and-authenticate) variants */
  	{ "hmac-sha1",				SSH_DIGEST, SSH_DIGEST_SHA1, 0, 0, 0, 0 },
  	{ "hmac-sha1-96",			SSH_DIGEST, SSH_DIGEST_SHA1, 96, 0, 0, 0 },
---- old/misc.c	2020-03-31 14:47:51.768952416 +0000
-+++ new/misc.c	2020-03-31 15:07:11.911117039 +0000
-@@ -48,6 +48,7 @@
+--- old/misc.c	2020-11-19 14:23:17.583955813 +0000
++++ new/misc.c	2020-11-19 14:29:30.534802865 +0000
+@@ -42,6 +42,7 @@
  #include <string.h>
  #include <time.h>
  #include <unistd.h>
@@ -250,7 +250,7 @@
  
  #include <netinet/in.h>
  #include <netinet/in_systm.h>
-@@ -55,6 +56,9 @@
+@@ -49,6 +50,9 @@
  #include <netinet/tcp.h>
  #include <arpa/inet.h>
  
@@ -260,7 +260,7 @@
  #include <ctype.h>
  #include <errno.h>
  #include <fcntl.h>
-@@ -91,6 +95,60 @@ chop(char *s)
+@@ -85,6 +89,60 @@ chop(char *s)
  
  }
  
@@ -321,8 +321,8 @@
  /* set/unset filedescriptor to non-blocking */
  int
  set_nonblock(int fd)
---- old/misc.h	2020-03-31 14:47:51.776701827 +0000
-+++ new/misc.h	2020-03-31 15:07:11.919189148 +0000
+--- old/misc.h	2020-11-19 14:23:17.589355791 +0000
++++ new/misc.h	2020-11-19 14:29:30.540033820 +0000
 @@ -47,6 +47,11 @@ char	*chop(char *);
  void	skip_space(char **);
  char	*strdelim(char **);
@@ -335,8 +335,8 @@
  int	 set_nonblock(int);
  int	 unset_nonblock(int);
  void	 set_nodelay(int);
---- old/myproposal.h	2020-03-31 14:47:51.784099449 +0000
-+++ new/myproposal.h	2020-03-31 15:28:53.458426830 +0000
+--- old/myproposal.h	2020-11-19 14:23:17.594862282 +0000
++++ new/myproposal.h	2020-11-19 14:29:30.545361191 +0000
 @@ -24,7 +24,7 @@
   * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
@@ -454,9 +454,9 @@
  
  /* Not a KEX value, but here so all the algorithm defaults are together */
  #define	SSH_ALLOWED_CA_SIGALGS	\
---- old/ssh-add.1	2020-03-31 14:47:51.791713557 +0000
-+++ new/ssh-add.1	2020-03-31 15:07:11.935269416 +0000
-@@ -121,6 +121,8 @@ and
+--- old/ssh-add.1	2020-11-19 14:23:17.600251411 +0000
++++ new/ssh-add.1	2020-11-19 14:29:30.550623303 +0000
+@@ -126,6 +126,8 @@ and
  .Dq sha256 .
  The default is
  .Dq sha256 .
@@ -465,9 +465,9 @@
  .It Fl e Ar pkcs11
  Remove keys provided by the PKCS#11 shared library
  .Ar pkcs11 .
---- old/ssh-add.c	2020-03-31 14:47:51.799084472 +0000
-+++ new/ssh-add.c	2020-03-31 15:07:11.942682505 +0000
-@@ -636,6 +636,13 @@ main(int argc, char **argv)
+--- old/ssh-add.c	2020-11-19 14:23:17.605542825 +0000
++++ new/ssh-add.c	2020-11-19 14:29:30.556267043 +0000
+@@ -679,6 +679,13 @@ main(int argc, char **argv)
  
  	log_init(__progname, log_level, log_facility, 1);
  
@@ -481,9 +481,9 @@
  	setvbuf(stdout, NULL, _IOLBF, 0);
  
  	/* First, get a connection to the authentication agent. */
---- old/ssh-agent.1	2020-03-31 14:47:51.806676745 +0000
-+++ new/ssh-agent.1	2020-03-31 15:07:11.949949450 +0000
-@@ -93,6 +93,8 @@ and
+--- old/ssh-agent.1	2020-11-19 14:23:17.611167021 +0000
++++ new/ssh-agent.1	2020-11-19 14:29:30.561738331 +0000
+@@ -98,6 +98,8 @@ and
  .Dq sha256 .
  The default is
  .Dq sha256 .
@@ -492,9 +492,9 @@
  .It Fl k
  Kill the current agent (given by the
  .Ev SSH_AGENT_PID
---- old/ssh-agent.c	2020-03-31 14:47:51.814205023 +0000
-+++ new/ssh-agent.c	2020-03-31 15:07:11.957542270 +0000
-@@ -1195,6 +1195,7 @@ main(int ac, char **av)
+--- old/ssh-agent.c	2020-11-19 14:23:17.616827176 +0000
++++ new/ssh-agent.c	2020-11-19 14:29:30.566858431 +0000
+@@ -1288,6 +1288,7 @@ main(int ac, char **av)
  	struct pollfd *pfd = NULL;
  	size_t npfd = 0;
  	u_int maxfds;
@@ -502,7 +502,7 @@
  
  	/* Ensure that fds 0, 1 and 2 are open or directed to /dev/null */
  	sanitise_stdfd();
-@@ -1205,6 +1206,10 @@ main(int ac, char **av)
+@@ -1298,6 +1299,10 @@ main(int ac, char **av)
  
  	platform_disable_tracing(0);	/* strict=no */
  
@@ -513,7 +513,7 @@
  #ifdef RLIMIT_NOFILE
  	if (getrlimit(RLIMIT_NOFILE, &rlim) == -1)
  		fatal("%s: getrlimit: %s", __progname, strerror(errno));
-@@ -1356,8 +1361,19 @@ main(int ac, char **av)
+@@ -1455,8 +1460,19 @@ main(int ac, char **av)
  		printf(format, SSH_AUTHSOCKET_ENV_NAME, socket_name,
  		    SSH_AUTHSOCKET_ENV_NAME);
  		printf("echo Agent pid %ld;\n", (long)parent_pid);
@@ -533,9 +533,9 @@
  	}
  	pid = fork();
  	if (pid == -1) {
---- old/ssh-keygen.1	2020-03-31 14:47:51.821904848 +0000
-+++ new/ssh-keygen.1	2020-03-31 15:07:11.965031437 +0000
-@@ -307,6 +307,8 @@ and
+--- old/ssh-keygen.1	2020-11-19 14:23:17.622244116 +0000
++++ new/ssh-keygen.1	2020-11-19 14:29:30.572057519 +0000
+@@ -316,6 +316,8 @@ and
  .Dq sha256 .
  The default is
  .Dq sha256 .
@@ -544,9 +544,9 @@
  .It Fl e
  This option will read a private or public OpenSSH key file and
  print to stdout a public key in one of the formats specified by the
---- old/ssh-keygen.c	2020-03-31 14:47:51.829870899 +0000
-+++ new/ssh-keygen.c	2020-03-31 15:07:11.972942601 +0000
-@@ -3131,10 +3131,18 @@ main(int argc, char **argv)
+--- old/ssh-keygen.c	2020-11-19 14:23:17.627841752 +0000
++++ new/ssh-keygen.c	2020-11-19 14:29:30.577751424 +0000
+@@ -3175,10 +3175,18 @@ main(int argc, char **argv)
  
  	__progname = ssh_get_progname(argv[0]);
  
@@ -565,8 +565,8 @@
  	msetlocale();
  
  	/* we need this for the home * directory.  */
---- old/ssh-keysign.c	2020-03-31 14:47:51.837408481 +0000
-+++ new/ssh-keysign.c	2020-03-31 15:07:11.980211560 +0000
+--- old/ssh-keysign.c	2020-11-19 14:23:17.633317643 +0000
++++ new/ssh-keysign.c	2020-11-19 14:29:30.583118756 +0000
 @@ -172,6 +172,7 @@ main(int argc, char **argv)
  	u_char *signature, *data, rver;
  	char *host, *fp;
@@ -593,8 +593,8 @@
  	found = 0;
  	for (i = 0; i < NUM_KEYTYPES; i++) {
  		keys[i] = NULL;
---- old/ssh.1	2020-03-31 14:47:51.844982026 +0000
-+++ new/ssh.1	2020-03-31 15:07:11.988454932 +0000
+--- old/ssh.1	2020-11-19 14:23:17.639314380 +0000
++++ new/ssh.1	2020-11-19 14:29:30.588258225 +0000
 @@ -96,6 +96,9 @@ If a
  is specified,
  it is executed on the remote host instead of a login shell.
@@ -605,9 +605,9 @@
  The options are as follows:
  .Pp
  .Bl -tag -width Ds -compact
---- old/ssh.c	2020-03-31 14:47:51.852990005 +0000
-+++ new/ssh.c	2020-03-31 15:07:11.996742315 +0000
-@@ -661,6 +661,11 @@ main(int ac, char **av)
+--- old/ssh.c	2020-11-19 14:23:17.645178257 +0000
++++ new/ssh.c	2020-11-19 14:29:30.593439395 +0000
+@@ -715,6 +715,11 @@ main(int ac, char **av)
  	 */
  	initialize_options(&options);
  
@@ -619,7 +619,7 @@
  	/*
  	 * Prepare main ssh transport/connection structures
  	 */
-@@ -1129,6 +1134,10 @@ main(int ac, char **av)
+@@ -1183,6 +1188,10 @@ main(int ac, char **av)
  #endif
  		);
  
@@ -630,8 +630,8 @@
  	/* Parse the configuration files */
  	process_config_files(host_arg, pw, 0, &want_final_pass);
  	if (want_final_pass)
---- old/ssh_api.c	2020-03-31 14:47:51.860542483 +0000
-+++ new/ssh_api.c	2020-03-31 15:07:12.004931973 +0000
+--- old/ssh_api.c	2020-11-19 14:23:17.650592796 +0000
++++ new/ssh_api.c	2020-11-19 14:29:30.598519192 +0000
 @@ -92,6 +92,10 @@ ssh_init(struct ssh **sshp, int is_serve
  	int r;
  
@@ -643,9 +643,9 @@
  		seed_rng();
  		called = 1;
  	}
---- old/ssh_config.5	2020-03-31 14:47:51.868477558 +0000
-+++ new/ssh_config.5	2020-03-31 15:07:12.013233359 +0000
-@@ -460,6 +460,13 @@ aes128-ctr,aes192-ctr,aes256-ctr,
+--- old/ssh_config.5	2020-11-19 14:23:17.656187736 +0000
++++ new/ssh_config.5	2020-11-19 14:29:30.603704316 +0000
+@@ -471,6 +471,13 @@ aes128-ctr,aes192-ctr,aes256-ctr,
  aes128-gcm@openssh.com,aes256-gcm@openssh.com
  .Ed
  .Pp
@@ -659,7 +659,7 @@
  The list of available ciphers may also be obtained using
  .Qq ssh -Q cipher .
  .It Cm ClearAllForwardings
-@@ -677,6 +684,8 @@ Valid options are:
+@@ -690,6 +697,8 @@ Valid options are:
  and
  .Cm sha256
  (the default).
@@ -668,7 +668,7 @@
  .It Cm ForwardAgent
  Specifies whether the connection to the authentication agent (if any)
  will be forwarded to the remote machine.
-@@ -1253,6 +1262,16 @@ umac-64@openssh.com,umac-128@openssh.com
+@@ -1277,6 +1286,16 @@ umac-64@openssh.com,umac-128@openssh.com
  hmac-sha2-256,hmac-sha2-512,hmac-sha1
  .Ed
  .Pp
@@ -685,8 +685,8 @@
  The list of available MAC algorithms may also be obtained using
  .Qq ssh -Q mac .
  .It Cm NoHostAuthenticationForLocalhost
---- old/sshd.8	2020-03-31 14:47:51.875974818 +0000
-+++ new/sshd.8	2020-03-31 15:07:12.021391016 +0000
+--- old/sshd.8	2020-11-19 14:23:17.661662204 +0000
++++ new/sshd.8	2020-11-19 14:29:30.609231479 +0000
 @@ -84,6 +84,9 @@ rereads its configuration file when it r
  by executing itself with the name and options it was started with, e.g.\&
  .Pa /usr/sbin/sshd .
@@ -697,9 +697,9 @@
  The options are as follows:
  .Bl -tag -width Ds
  .It Fl 4
---- old/sshd.c	2020-03-31 14:47:51.883787324 +0000
-+++ new/sshd.c	2020-03-31 15:07:12.029515283 +0000
-@@ -1529,6 +1529,10 @@ main(int ac, char **av)
+--- old/sshd.c	2020-11-19 14:23:17.667285553 +0000
++++ new/sshd.c	2020-11-19 14:29:30.614708406 +0000
+@@ -1568,6 +1568,10 @@ main(int ac, char **av)
  	/* Ensure that fds 0, 1 and 2 are open or directed to /dev/null */
  	sanitise_stdfd();
  
@@ -710,7 +710,7 @@
  	seed_rng();
  
  	/* Initialize configuration options to their default values. */
-@@ -1666,6 +1670,10 @@ main(int ac, char **av)
+@@ -1705,6 +1709,10 @@ main(int ac, char **av)
  	    SYSLOG_FACILITY_AUTH : options.log_facility,
  	    log_stderr || !inetd_flag || debug_flag);
  
@@ -721,9 +721,9 @@
  	/*
  	 * Unset KRB5CCNAME, otherwise the user's session may inherit it from
  	 * root's environment
---- old/sshd_config.5	2020-11-05 14:44:16.227417495 +0000
-+++ new/sshd_config.5	2020-11-05 14:46:29.496576990 +0000
-@@ -493,6 +493,13 @@ aes128-ctr,aes192-ctr,aes256-ctr,
+--- old/sshd_config.5	2020-11-19 14:23:17.672943060 +0000
++++ new/sshd_config.5	2020-11-19 14:29:30.620326720 +0000
+@@ -491,6 +491,13 @@ aes128-ctr,aes192-ctr,aes256-ctr,
  aes128-gcm@openssh.com,aes256-gcm@openssh.com
  .Ed
  .Pp
@@ -737,7 +737,7 @@
  The list of available ciphers may also be obtained using
  .Qq ssh -Q cipher .
  .It Cm ClientAliveCountMax
-@@ -596,6 +603,8 @@ and
+@@ -594,6 +601,8 @@ and
  .Cm sha256 .
  The default is
  .Cm sha256 .
@@ -746,7 +746,7 @@
  .It Cm ForceCommand
  Forces the execution of the command specified by
  .Cm ForceCommand ,
-@@ -1112,6 +1121,16 @@ umac-64@openssh.com,umac-128@openssh.com
+@@ -1123,6 +1132,16 @@ umac-64@openssh.com,umac-128@openssh.com
  hmac-sha2-256,hmac-sha2-512,hmac-sha1
  .Ed
  .Pp
@@ -763,8 +763,8 @@
  The list of available MAC algorithms may also be obtained using
  .Qq ssh -Q mac .
  .It Cm Match
---- old/sshkey.c	2020-03-31 14:47:51.899721814 +0000
-+++ new/sshkey.c	2020-03-31 15:07:12.046555626 +0000
+--- old/sshkey.c	2020-11-19 14:23:17.678732108 +0000
++++ new/sshkey.c	2020-11-19 14:29:30.625909706 +0000
 @@ -103,7 +103,50 @@ struct keytype {
  	int cert;
  	int sigonly;

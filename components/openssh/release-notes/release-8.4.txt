@@ -1,0 +1,306 @@
+OpenSSH 8.4 was released on 2020-09-27. It is available from the
+mirrors listed at https://www.openssh.com/.
+
+OpenSSH is a 100% complete SSH protocol 2.0 implementation and
+includes sftp client and server support.
+
+Once again, we would like to thank the OpenSSH community for their
+continued support of the project, especially those who contributed
+code or patches, reported bugs, tested snapshots or donated to the
+project. More information on donations may be found at:
+https://www.openssh.com/donations.html
+
+Future deprecation notice
+=========================
+
+It is now possible[1] to perform chosen-prefix attacks against the
+SHA-1 algorithm for less than USD$50K. For this reason, we will be
+disabling the "ssh-rsa" public key signature algorithm by default in a
+near-future release.
+
+This algorithm is unfortunately still used widely despite the
+existence of better alternatives, being the only remaining public key
+signature algorithm specified by the original SSH RFCs.
+
+The better alternatives include:
+
+ * The RFC8332 RSA SHA-2 signature algorithms rsa-sha2-256/512. These
+   algorithms have the advantage of using the same key type as
+   "ssh-rsa" but use the safe SHA-2 hash algorithms. These have been
+   supported since OpenSSH 7.2 and are already used by default if the
+   client and server support them.
+
+ * The ssh-ed25519 signature algorithm. It has been supported in
+   OpenSSH since release 6.5.
+
+ * The RFC5656 ECDSA algorithms: ecdsa-sha2-nistp256/384/521. These
+   have been supported by OpenSSH since release 5.7.
+
+To check whether a server is using the weak ssh-rsa public key
+algorithm, for host authentication, try to connect to it after
+removing the ssh-rsa algorithm from ssh(1)'s allowed list:
+
+    ssh -oHostKeyAlgorithms=-ssh-rsa user@host
+
+If the host key verification fails and no other supported host key
+types are available, the server software on that host should be
+upgraded.
+
+We intend to enable UpdateHostKeys by default in the next OpenSSH
+release. This will assist the client by automatically migrating to
+better algorithms. Users may consider enabling this option manually.
+
+[1] "SHA-1 is a Shambles: First Chosen-Prefix Collision on SHA-1 and
+    Application to the PGP Web of Trust" Leurent, G and Peyrin, T
+    (2020) https://eprint.iacr.org/2020/014.pdf
+
+Security
+========
+
+ * ssh-agent(1): restrict ssh-agent from signing web challenges for
+   FIDO/U2F keys.
+
+   When signing messages in ssh-agent using a FIDO key that has an
+   application string that does not start with "ssh:", ensure that the
+   message being signed is one of the forms expected for the SSH protocol
+   (currently public key authentication and sshsig signatures).
+
+   This prevents ssh-agent forwarding on a host that has FIDO keys
+   attached granting the ability for the remote side to sign challenges
+   for web authentication using those keys too.
+
+   Note that the converse case of web browsers signing SSH challenges is
+   already precluded because no web RP can have the "ssh:" prefix in the
+   application string that we require.
+
+ * ssh-keygen(1): Enable FIDO 2.1 credProtect extension when generating
+   a FIDO resident key.
+
+   The recent FIDO 2.1 Client to Authenticator Protocol introduced a
+   "credProtect" feature to better protect resident keys. We use this
+   option to require a PIN prior to all operations that may retrieve
+   a resident key from a FIDO token.
+
+Potentially-incompatible changes
+================================
+
+This release includes a number of changes that may affect existing
+configurations:
+
+ * For FIDO/U2F support, OpenSSH recommends the use of libfido2 1.5.0
+   or greater. Older libraries have limited support at the expense of
+   disabling particular features. These include resident keys, PIN-
+   required keys and multiple attached tokens.
+
+ * ssh-keygen(1): the format of the attestation information optionally
+   recorded when a FIDO key is generated has changed. It now includes
+   the authenticator data needed to validate attestation signatures. 
+
+ * The API between OpenSSH and the FIDO token middleware has changed
+   and the SSH_SK_VERSION_MAJOR version has been incremented as a
+   result. Third-party middleware libraries must support the current
+   API version (7) to work with OpenSSH 8.4.
+
+ * The portable OpenSSH distribution now requires automake to rebuild
+   the configure script and supporting files. This is not required when
+   simply building portable OpenSSH from a release tar file.
+
+Changes since OpenSSH 8.3
+=========================
+
+New features
+------------
+
+ * ssh(1), ssh-keygen(1): support for FIDO keys that require a PIN for
+   each use. These keys may be generated using ssh-keygen using a new
+   "verify-required" option. When a PIN-required key is used, the user
+   will be prompted for a PIN to complete the signature operation.
+
+ * sshd(8): authorized_keys now supports a new "verify-required"
+   option to require FIDO signatures assert that the token verified
+   that the user was present before making the signature. The FIDO
+   protocol supports multiple methods for user-verification, but
+   currently OpenSSH only supports PIN verification.
+
+ * sshd(8), ssh-keygen(1): add support for verifying FIDO webauthn
+   signatures. Webauthn is a standard for using FIDO keys in web
+   browsers. These signatures are a slightly different format to plain
+   FIDO signatures and thus require explicit support.
+
+ * ssh(1): allow some keywords to expand shell-style ${ENV}
+   environment variables. The supported keywords are CertificateFile,
+   ControlPath, IdentityAgent and IdentityFile, plus LocalForward and
+   RemoteForward when used for Unix domain socket paths. bz#3140
+
+ * ssh(1), ssh-agent(1): allow some additional control over the use of
+   ssh-askpass via a new $SSH_ASKPASS_REQUIRE environment variable,
+   including forcibly enabling and disabling its use. bz#69
+
+ * ssh(1): allow ssh_config(5)'s AddKeysToAgent keyword accept a time
+   limit for keys in addition to its current flag options. Time-
+   limited keys will automatically be removed from ssh-agent after
+   their expiry time has passed.
+
+ * scp(1), sftp(1): allow the -A flag to explicitly enable agent
+   forwarding in scp and sftp. The default remains to not forward an
+   agent, even when ssh_config enables it.
+
+ * ssh(1): add a '%k' TOKEN that expands to the effective HostKey of
+   the destination. This allows, e.g., keeping host keys in individual
+   files using "UserKnownHostsFile ~/.ssh/known_hosts.d/%k". bz#1654
+
+ * ssh(1): add %-TOKEN, environment variable and tilde expansion to
+   the UserKnownHostsFile directive, allowing the path to be
+   completed by the configuration (e.g. bz#1654)
+
+ * ssh-keygen(1): allow "ssh-add -d -" to read keys to be deleted
+   from stdin. bz#3180
+
+ * sshd(8): improve logging for MaxStartups connection throttling.
+   sshd will now log when it starts and stops throttling and periodically
+   while in this state. bz#3055
+
+Bugfixes
+--------
+
+ * ssh(1), ssh-keygen(1): better support for multiple attached FIDO
+   tokens. In cases where OpenSSH cannot unambiguously determine which
+   token to direct a request to, the user is now required to select a
+   token by touching it. In cases of operations that require a PIN to
+   be verified, this avoids sending the wrong PIN to the wrong token
+   and incrementing the token's PIN failure counter (tokens
+   effectively erase their keys after too many PIN failures).
+
+ * sshd(8): fix Include before Match in sshd_config; bz#3122
+
+ * ssh(1): close stdin/out/error when forking after authentication
+   completes ("ssh -f ...") bz#3137
+
+ * ssh(1), sshd(8): limit the amount of channel input data buffered,
+   avoiding peers that advertise large windows but are slow to read
+   from causing high memory consumption.
+
+ * ssh-agent(1): handle multiple requests sent in a single write() to
+   the agent.
+
+ * sshd(8): allow sshd_config longer than 256k
+
+ * sshd(8): avoid spurious "Unable to load host key" message when sshd
+   load a private key but no public counterpart
+
+ * ssh(1): prefer the default hostkey algorithm list whenever we have
+   a hostkey that matches its best-preference algorithm.
+
+ * sshd(1): when ordering the hostkey algorithms to request from a
+   server, prefer certificate types if the known_hosts files contain a key
+   marked as a @cert-authority; bz#3157
+
+ * ssh(1): perform host key fingerprint comparisons for the "Are you
+   sure you want to continue connecting (yes/no/[fingerprint])?"
+   prompt with case sensitivity.
+
+ * sshd(8): ensure that address/masklen mismatches in sshd_config
+   yield fatal errors at daemon start time rather than later when
+   they are evaluated.
+
+ * ssh-keygen(1): ensure that certificate extensions are lexically
+   sorted. Previously if the user specified a custom extension then
+   the everything would be in order except the custom ones. bz#3198
+
+ * ssh(1): also compare username when checking for JumpHost loops.
+   bz#3057
+
+ * ssh-keygen(1): preserve group/world read permission on known_hosts
+   files across runs of "ssh-keygen -Rf /path". The old behaviour was
+   to remove all rights for group/other. bz#3146
+
+ * ssh-keygen(1): Mention the [-a rounds] flag in the ssh-keygen
+   manual page and usage().
+
+ * sshd(8): explicitly construct path to ~/.ssh/rc rather than
+   relying on it being relative to the current directory, so that it
+   can still be found if the shell startup changes its directory.
+   bz#3185
+
+ * sshd(8): when redirecting sshd's log output to a file, undo this
+   redirection after the session child process is forked(). Fixes
+   missing log messages when using this feature under some
+   circumstances.
+
+ * sshd(8): start ClientAliveInterval bookkeeping before first pass
+   through select() loop; fixed theoretical case where busy sshd may
+   ignore timeouts from client.
+
+ * ssh(1): only reset the ServerAliveInterval check when we receive
+   traffic from the server and ignore traffic from a port forwarding
+   client, preventing a client from keeping a connection alive when
+   it should be terminated. bz#2265
+
+ * ssh-keygen(1): avoid spurious error message when ssh-keygen
+   creates files outside ~/.ssh
+
+ * sftp-client(1): fix off-by-one error that caused sftp downloads to
+   make one more concurrent request that desired. This prevented using
+   sftp(1) in unpipelined request/response mode, which is useful when
+   debugging. bz#3054
+
+ * ssh(1), sshd(8): handle EINTR in waitfd() and timeout_connect()
+   helpers. bz#3071
+
+ * ssh(1), ssh-keygen(1): defer creation of ~/.ssh until we attempt to
+   write to it so we don't leave an empty .ssh directory when it's not
+   needed. bz#3156
+
+ * ssh(1), sshd(8): fix multiplier when parsing time specifications
+   when handling seconds after other units. bz#3171
+
+Portability
+-----------
+
+ * sshd(8): always send any PAM account messages. If the PAM account
+   stack returns any messages, always send them to the user and not
+   just if the check succeeds. bz#2049
+
+ * Implement some backwards compatibility for libfido2 libraries
+   older than 1.5.0. Note that use of an older library will result
+   in the loss of certain features including resident key support,
+   PIN support and support for multiple attached tokens.
+
+ * configure fixes for XCode 12
+
+ * gnome-ssh-askpass3: ensure the "close" button is not focused by
+   default for SSH_ASKPASS_PROMPT=none prompts. Avoids space/enter
+   accidentally dismissing FIDO touch notifications.
+
+ * gnome-ssh-askpass3: allow some control over textarea colour via
+   $GNOME_SSH_ASKPASS_FG_COLOR and $GNOME_SSH_ASKPASS_BG_COLOR
+   environment variables.
+
+ * sshd(8): document another PAM spec problem in a frustrated comment
+
+ * sshd(8): support NetBSD's utmpx.ut_ss address field. bz#960
+
+ * Add the ssh-sk-helper binary and its manpage to the RPM spec file
+
+ * Detect the Frankenstein monster of Linux/X32 and allow the sandbox
+   to function there. bz#3085
+
+Checksums:
+==========
+
+- SHA1 (openssh-8.4.tar.gz) = 71675139df6807f396e6bd92ff8cb9b0356385d8
+- SHA256 (openssh-8.4.tar.gz) = JhBgLYkyRge/zQK8ylBSRcOYvrV/tHwQcvVXfExGB70=
+
+- SHA1 (openssh-8.4p1.tar.gz) = 69305059e10a60693ebe6f17731f962c9577535c
+- SHA256 (openssh-8.4p1.tar.gz) = WgHSLkB+scBbqKj3xlTTiKE+nyJuTtM704dI2vodKyQ=
+
+Please note that the SHA256 signatures are base64 encoded and not
+hexadecimal (which is the default for most checksum tools). The PGP
+key used to sign the releases is available as RELEASE_KEY.asc from
+the mirror sites.
+
+Reporting Bugs:
+===============
+
+- Please read https://www.openssh.com/report.html
+  Security bugs should be reported directly to openssh@openssh.com

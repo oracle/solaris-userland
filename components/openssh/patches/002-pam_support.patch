@@ -3,9 +3,11 @@
 # always on and not configurable on Solaris.  This is for Solaris only, so we
 # will not contribute the changes to the upstream community.
 #
---- old/servconf.c	2020-03-25 13:51:56.735505004 +0000
-+++ new/servconf.c	2020-03-25 13:52:58.824056123 +0000
-@@ -298,7 +298,12 @@ fill_default_server_options(ServerOption
+diff --git a/servconf.c b/servconf.c
+index f08e374..82b84ff 100644
+--- a/servconf.c
++++ b/servconf.c
+@@ -299,7 +299,12 @@ fill_default_server_options(ServerOptions *options)
  
  	/* Portable-specific options */
  	if (options->use_pam == -1)
@@ -18,7 +20,7 @@
  
  	/* Standard Options */
  	if (options->num_host_key_files == 0) {
-@@ -1310,8 +1315,17 @@ process_server_config_line_depth(ServerO
+@@ -1316,8 +1321,17 @@ process_server_config_line_depth(ServerOptions *options, char *line,
  	switch (opcode) {
  	/* Portable-specific options */
  	case sUsePAM:

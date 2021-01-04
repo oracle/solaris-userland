@@ -5,8 +5,8 @@
 #
 # As such, this is Solaris specific patch.
 #
---- old/sshkey.c	2020-05-15 14:18:46.809191759 +0000
-+++ new/sshkey.c	2020-05-15 14:24:00.323688656 +0000
+--- old/sshkey.c	2020-11-19 15:16:11.497051026 +0000
++++ new/sshkey.c	2020-11-19 15:22:03.844421491 +0000
 @@ -150,10 +150,12 @@ static const struct keytype keytypes[] =
  	{ "ssh-ed25519", "ED25519", NULL, KEY_ED25519, 0, 0, 0 },
  	{ "ssh-ed25519-cert-v01@openssh.com", "ED25519-CERT", NULL,
@@ -20,18 +20,20 @@
  #ifdef WITH_XMSS
  	{ "ssh-xmss@openssh.com", "XMSS", NULL, KEY_XMSS, 0, 0, 0 },
  	{ "ssh-xmss-cert-v01@openssh.com", "XMSS-CERT", NULL,
-@@ -173,8 +175,10 @@ static const struct keytype keytypes[] =
+@@ -173,10 +175,12 @@ static const struct keytype keytypes[] =
  	{ "ecdsa-sha2-nistp521", "ECDSA", NULL,
  	    KEY_ECDSA, NID_secp521r1, 0, 0 },
  #  endif /* OPENSSL_HAS_NISTP521 */
 +#  ifdef ENABLE_SK
  	{ "sk-ecdsa-sha2-nistp256@openssh.com", "ECDSA-SK", NULL,
  	    KEY_ECDSA_SK, NID_X9_62_prime256v1, 0, 0 },
+ 	{ "webauthn-sk-ecdsa-sha2-nistp256@openssh.com", "ECDSA-SK", NULL,
+ 	    KEY_ECDSA_SK, NID_X9_62_prime256v1, 0, 1 },
 +#  endif /* ENABLE_SK */
  # endif /* OPENSSL_HAS_ECC */
  	{ "ssh-rsa-cert-v01@openssh.com", "RSA-CERT", NULL,
  	    KEY_RSA_CERT, 0, 1, 0 },
-@@ -193,8 +197,10 @@ static const struct keytype keytypes[] =
+@@ -195,8 +199,10 @@ static const struct keytype keytypes[] =
  	{ "ecdsa-sha2-nistp521-cert-v01@openssh.com", "ECDSA-CERT", NULL,
  	   KEY_ECDSA_CERT, NID_secp521r1, 1, 0 },
  #  endif /* OPENSSL_HAS_NISTP521 */
@@ -42,18 +44,18 @@
  # endif /* OPENSSL_HAS_ECC */
  #endif /* WITH_OPENSSL */
  	{ "null", "null", NULL, KEY_NULL, 0, 0, 0 },
---- old/ssh-keygen.1	2020-05-15 14:34:05.528667007 +0000
-+++ new/ssh-keygen.1	2020-05-15 15:53:32.942591914 +0000
-@@ -48,7 +48,7 @@
- .Op Fl C Ar comment
- .Op Fl f Ar output_keyfile
+--- old/ssh-keygen.1	2020-11-19 15:16:11.503596093 +0000
++++ new/ssh-keygen.1	2020-11-19 15:22:03.850115492 +0000
+@@ -51,7 +51,7 @@
  .Op Fl m Ar format
--.Op Fl t Cm dsa | ecdsa | ecdsa-sk | ed25519 | ed25519-sk | rsa
-+.Op Fl t Cm dsa | ecdsa | ed25519 | rsa
  .Op Fl N Ar new_passphrase
  .Op Fl O Ar option
+-.Op Fl t Cm dsa | ecdsa | ecdsa-sk | ed25519 | ed25519-sk | rsa
++.Op Fl t Cm dsa | ecdsa | ed25519 | rsa
  .Op Fl w Ar provider
-@@ -282,7 +282,7 @@ flag determines the key length by select
+ .Nm ssh-keygen
+ .Fl p
+@@ -291,7 +291,7 @@ flag determines the key length by select
  curve sizes: 256, 384 or 521 bits.
  Attempting to use bit lengths other than these three values for ECDSA keys
  will fail.
@@ -62,7 +64,7 @@
  .Fl b
  flag will be ignored.
  .It Fl C Ar comment
-@@ -553,14 +553,12 @@ by key ID or serial number.
+@@ -574,14 +574,12 @@ by key ID or serial number.
  See the
  .Sx KEY REVOCATION LISTS
  section for details.
@@ -78,7 +80,7 @@
  or
  .Dq rsa .
  .Pp
-@@ -956,7 +954,8 @@ of user presence (e.g. by having the use
+@@ -977,7 +975,8 @@ of user presence (e.g. by having the use
  This option only makes sense for the FIDO authenticator algorithms
  .Cm ecdsa-sk
  and
@@ -88,7 +90,7 @@
  .Pp
  .It Ic source-address Ns = Ns Ar address_list
  Restrict the source addresses from which the certificate is considered valid.
-@@ -1120,18 +1119,16 @@ user2@example.com namespaces="file" ssh-
+@@ -1151,18 +1150,16 @@ user2@example.com namespaces="file" ssh-
  .It Ev SSH_SK_PROVIDER
  Specifies a path to a library that will be used when loading any
  FIDO authenticator-hosted keys, overriding the default of using
@@ -110,7 +112,7 @@
  This file should not be readable by anyone but the user.
  It is possible to
  specify a passphrase when generating the key; that passphrase will be
-@@ -1144,12 +1141,10 @@ will read this file when a login attempt
+@@ -1175,12 +1172,10 @@ will read this file when a login attempt
  .Pp
  .It Pa ~/.ssh/id_dsa.pub
  .It Pa ~/.ssh/id_ecdsa.pub
@@ -125,9 +127,9 @@
  The contents of this file should be added to
  .Pa ~/.ssh/authorized_keys
  on all machines
---- old/ssh_config.5	2020-05-25 10:52:08.132929153 +0000
-+++ new/ssh_config.5	2020-05-25 10:51:39.853164214 +0000
-@@ -888,15 +888,12 @@ The default for this option is:
+--- old/ssh_config.5	2020-11-19 15:16:11.509246658 +0000
++++ new/ssh_config.5	2020-11-19 15:22:03.855660245 +0000
+@@ -901,15 +901,12 @@ The default for this option is:
  ecdsa-sha2-nistp256-cert-v01@openssh.com,
  ecdsa-sha2-nistp384-cert-v01@openssh.com,
  ecdsa-sha2-nistp521-cert-v01@openssh.com,
@@ -144,7 +146,7 @@
  rsa-sha2-512,rsa-sha2-256,ssh-rsa
  .Ed
  .Pp
-@@ -925,15 +922,12 @@ The default for this option is:
+@@ -938,15 +935,12 @@ The default for this option is:
  ecdsa-sha2-nistp256-cert-v01@openssh.com,
  ecdsa-sha2-nistp384-cert-v01@openssh.com,
  ecdsa-sha2-nistp521-cert-v01@openssh.com,
@@ -161,7 +163,7 @@
  rsa-sha2-512,rsa-sha2-256,ssh-rsa
  .Ed
  .Pp
-@@ -1423,15 +1417,12 @@ The default for this option is:
+@@ -1447,15 +1441,12 @@ The default for this option is:
  ecdsa-sha2-nistp256-cert-v01@openssh.com,
  ecdsa-sha2-nistp384-cert-v01@openssh.com,
  ecdsa-sha2-nistp521-cert-v01@openssh.com,
@@ -178,9 +180,9 @@
  rsa-sha2-512,rsa-sha2-256,ssh-rsa
  .Ed
  .Pp
---- old/sshd_config.5	2020-05-25 10:52:08.132578021 +0000
-+++ new/sshd_config.5	2020-05-25 10:51:39.852572356 +0000
-@@ -731,15 +731,12 @@ The default for this option is:
+--- old/sshd_config.5	2020-11-19 15:16:11.515006805 +0000
++++ new/sshd_config.5	2020-11-19 15:22:03.860985243 +0000
+@@ -729,15 +729,12 @@ The default for this option is:
  ecdsa-sha2-nistp256-cert-v01@openssh.com,
  ecdsa-sha2-nistp384-cert-v01@openssh.com,
  ecdsa-sha2-nistp521-cert-v01@openssh.com,
@@ -197,7 +199,7 @@
  rsa-sha2-512,rsa-sha2-256,ssh-rsa
  .Ed
  .Pp
-@@ -814,15 +811,12 @@ The default for this option is:
+@@ -812,15 +809,12 @@ The default for this option is:
  ecdsa-sha2-nistp256-cert-v01@openssh.com,
  ecdsa-sha2-nistp384-cert-v01@openssh.com,
  ecdsa-sha2-nistp521-cert-v01@openssh.com,
@@ -214,7 +216,7 @@
  rsa-sha2-512,rsa-sha2-256,ssh-rsa
  .Ed
  .Pp
-@@ -1516,15 +1510,12 @@ The default for this option is:
+@@ -1528,15 +1522,12 @@ The default for this option is:
  ecdsa-sha2-nistp256-cert-v01@openssh.com,
  ecdsa-sha2-nistp384-cert-v01@openssh.com,
  ecdsa-sha2-nistp521-cert-v01@openssh.com,
@@ -231,9 +233,9 @@
  rsa-sha2-512,rsa-sha2-256,ssh-rsa
  .Ed
  .Pp
---- old/ssh.1	2020-05-25 10:52:08.133255976 +0000
-+++ new/ssh.1	2020-05-25 10:51:39.853484855 +0000
-@@ -286,9 +286,7 @@ public key authentication is read.
+--- old/ssh.1	2020-11-19 15:16:11.520321689 +0000
++++ new/ssh.1	2020-11-19 15:22:03.866267040 +0000
+@@ -289,9 +289,7 @@ public key authentication is read.
  The default is
  .Pa ~/.ssh/id_dsa ,
  .Pa ~/.ssh/id_ecdsa ,
@@ -243,7 +245,7 @@
  and
  .Pa ~/.ssh/id_rsa .
  Identity files may also be specified on
-@@ -921,12 +919,8 @@ This stores the private key in
+@@ -924,12 +922,8 @@ This stores the private key in
  (DSA),
  .Pa ~/.ssh/id_ecdsa
  (ECDSA),
@@ -256,7 +258,7 @@
  or
  .Pa ~/.ssh/id_rsa
  (RSA)
-@@ -935,12 +929,8 @@ and stores the public key in
+@@ -938,12 +932,8 @@ and stores the public key in
  (DSA),
  .Pa ~/.ssh/id_ecdsa.pub
  (ECDSA),
@@ -269,7 +271,7 @@
  or
  .Pa ~/.ssh/id_rsa.pub
  (RSA)
-@@ -1517,9 +1507,7 @@ above.
+@@ -1539,9 +1529,7 @@ above.
  .Pp
  .It Pa ~/.ssh/id_dsa
  .It Pa ~/.ssh/id_ecdsa
@@ -279,7 +281,7 @@
  .It Pa ~/.ssh/id_rsa
  Contains the private key for authentication.
  These files
-@@ -1533,9 +1521,7 @@ sensitive part of this file using AES-12
+@@ -1555,9 +1543,7 @@ sensitive part of this file using AES-12
  .Pp
  .It Pa ~/.ssh/id_dsa.pub
  .It Pa ~/.ssh/id_ecdsa.pub
@@ -289,8 +291,8 @@
  .It Pa ~/.ssh/id_rsa.pub
  Contains the public key for authentication.
  These files are not
---- old/sshd.8	2020-05-25 10:52:08.133529679 +0000
-+++ new/sshd.8	2020-05-25 10:51:39.853684603 +0000
+--- old/sshd.8	2020-11-19 15:16:11.525392742 +0000
++++ new/sshd.8	2020-11-19 15:22:03.871720235 +0000
 @@ -433,16 +433,12 @@ The supported key types are:
  .Pp
  .Bl -item -compact -offset indent
@@ -318,7 +320,7 @@
  or the
  .Pa id_rsa.pub
  file and edit it.
-@@ -633,7 +627,8 @@ for signatures made using this key.
+@@ -640,7 +634,8 @@ the user, e.g. via a PIN.
  This option only makes sense for the FIDO authenticator algorithms
  .Cm ecdsa-sk
  and
@@ -328,7 +330,7 @@
  .It Cm restrict
  Enable all restrictions, i.e. disable port, agent and X11 forwarding,
  as well as disabling PTY allocation
-@@ -677,8 +672,6 @@ restrict,command="uptime" ssh-rsa AAAA1C
+@@ -684,8 +679,6 @@ restrict,command="uptime" ssh-rsa AAAA1C
  user@example.net
  restrict,pty,command="nethack" ssh-rsa AAAA1f8...IrrC5==
  user@example.net

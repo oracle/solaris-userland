@@ -11,8 +11,8 @@
 # The interface to sftp MUST NOT BE CHANGED here without coordinating
 # with ZFSSA.
 #
---- old/sftp-server.c	2020-05-28 08:40:30.113152054 +0000
-+++ new/sftp-server.c	2020-05-28 09:25:35.771024542 +0000
+--- old/sftp-server.c	2020-11-19 15:04:37.818147639 +0000
++++ new/sftp-server.c	2020-11-19 15:05:13.740161780 +0000
 @@ -39,6 +39,7 @@
  #include <time.h>
  #include <unistd.h>
@@ -31,7 +31,7 @@
  /* Packet handlers */
  static void process_open(u_int32_t id);
  static void process_close(u_int32_t id);
-@@ -1919,7 +1923,10 @@ sftp_server_cleanup_exit(int i)
+@@ -1920,7 +1924,10 @@ sftp_server_cleanup_exit(int i)
  		    pw->pw_name, client_addr);
  	}
  #ifdef SFTP_AUDIT
@@ -43,7 +43,7 @@
  #endif
  	_exit(i);
  }
-@@ -1938,11 +1945,18 @@ sftp_server_usage(void)
+@@ -1939,11 +1946,18 @@ sftp_server_usage(void)
  	exit(1);
  }
  
@@ -62,7 +62,7 @@
  	ssize_t len, olen, set_size;
  	SyslogFacility log_facility = SYSLOG_FACILITY_AUTH;
  	char *cp, *homedir = NULL, uidstr[32], buf[4*4096];
-@@ -1957,7 +1971,7 @@ sftp_server_main(int argc, char **argv,
+@@ -1958,7 +1972,7 @@ sftp_server_main(int argc, char **argv,
  	pw = pwcopy(user_pw);
  
  	while (!skipargs && (ch = getopt(argc, argv,
@@ -71,7 +71,7 @@
  		switch (ch) {
  		case 'Q':
  			if (strcasecmp(optarg, "requests") != 0) {
-@@ -2019,6 +2033,20 @@ sftp_server_main(int argc, char **argv,
+@@ -2020,6 +2034,20 @@ sftp_server_main(int argc, char **argv,
  				fatal("Invalid umask \"%s\"", optarg);
  			(void)umask((mode_t)mask);
  			break;
@@ -92,7 +92,7 @@
  		case 'h':
  		default:
  			sftp_server_usage();
-@@ -2090,6 +2118,7 @@ sftp_server_main(int argc, char **argv,
+@@ -2091,6 +2119,7 @@ sftp_server_main(int argc, char **argv,
  	}
  
  	set_size = howmany(max + 1, NFDBITS) * sizeof(fd_mask);
@@ -100,7 +100,7 @@
  	for (;;) {
  		memset(rset, 0, set_size);
  		memset(wset, 0, set_size);
-@@ -2111,13 +2140,23 @@ sftp_server_main(int argc, char **argv,
+@@ -2112,13 +2141,23 @@ sftp_server_main(int argc, char **argv,
  		if (olen > 0)
  			FD_SET(out, wset);
  

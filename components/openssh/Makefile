@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -36,21 +36,21 @@ include ../../make-rules/shared-macros.mk
 # Then add a line to network-ssh.p5m to deliver them.
 
 COMPONENT_NAME=		openssh
-COMPONENT_VERSION=	8.2p1
+COMPONENT_VERSION=	8.4p1
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_ANITYA_ID=	2565
 
 # Version for IPS.  The encoding rules are:
 #   OpenSSH <x>.<y>p<n>     => IPS <x>.<y>.0.<n>
 #   OpenSSH <x>.<y>.<z>p<n> => IPS <x>.<y>.<z>.<n>
-IPS_COMPONENT_VERSION=	8.2.0.1
+IPS_COMPONENT_VERSION=	8.4.0.1
 
 COMPONENT_PROJECT_URL=	https://www.openssh.com/
-COMPONENT_ARCHIVE_HASH=	sha256:43925151e6cf6cee1450190c0e9af4dc36b41c12737619edff8bcebdff64e671
+COMPONENT_ARCHIVE_HASH=	sha256:5a01d22e407eb1c05ba8a8f7c654d388a13e9f226e4ed33bd38748dafa1d2b24
 COMPONENT_ARCHIVE_URL=	https://mirrors.sonic.net/pub/OpenBSD/OpenSSH/portable/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 
-TPNO_OPENSSH=		62961
+TPNO_OPENSSH=		64060
 TPNO_GSSKEX=		20377
 
 SMF_MANIFESTS= $(COMPONENT_DIR)/sources/ssh.xml

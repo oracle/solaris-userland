@@ -4,8 +4,10 @@
 # The patch was rejected by OpenSSH upstream community. For more information,
 # see https://bugzilla.mindrot.org/show_bug.cgi?id=2242.
 #
---- old/readconf.c	2020-03-26 11:50:08.955600608 +0000
-+++ new/readconf.c	2020-03-26 11:55:18.086426923 +0000
+diff --git a/readconf.c b/readconf.c
+index 038f99a..bbf70d4 100644
+--- a/readconf.c
++++ b/readconf.c
 @@ -163,6 +163,9 @@ typedef enum {
  	oServerAliveInterval, oServerAliveCountMax, oIdentitiesOnly,
  	oSendEnv, oSetEnv, oControlPath, oControlMaster, oControlPersist,
@@ -26,9 +28,9 @@
  	{ "include", oInclude },
  	{ "tunnel", oTunnel },
  	{ "tunneldevice", oTunnelDevice },
-@@ -866,6 +872,17 @@ static const struct multistate multistat
- 	{ NULL, -1 }
- };
+@@ -913,6 +919,17 @@ parse_multistate_value(const char *arg, const char *filename, int linenum,
+ 	return -1;
+ }
  
 +#ifdef DISABLE_BANNER
 +static const struct multistate multistate_disablebanner[] = {
@@ -44,7 +46,7 @@
  /*
   * Processes a single option line as used in the configuration files. This
   * only sets those values that have not already been set.
-@@ -1809,6 +1826,13 @@ parse_keytypes:
+@@ -1874,6 +1891,13 @@ parse_keytypes:
  			*charptr = xstrdup(arg);
  		break;
  
@@ -58,7 +60,7 @@
  	case oDeprecated:
  		debug("%s line %d: Deprecated option \"%s\"",
  		    filename, linenum, keyword);
-@@ -2006,6 +2030,9 @@ initialize_options(Options * options)
+@@ -2072,6 +2096,9 @@ initialize_options(Options * options)
  	options->ip_qos_bulk = -1;
  	options->request_tty = -1;
  	options->proxy_use_fdpass = -1;
@@ -68,7 +70,7 @@
  	options->ignored_unknown = NULL;
  	options->num_canonical_domains = 0;
  	options->num_permitted_cnames = 0;
-@@ -2191,6 +2218,10 @@ fill_default_options(Options * options)
+@@ -2259,6 +2286,10 @@ fill_default_options(Options * options)
  		options->canonicalize_fallback_local = 1;
  	if (options->canonicalize_hostname == -1)
  		options->canonicalize_hostname = SSH_CANONICALISE_NO;
@@ -79,9 +81,11 @@
  	if (options->fingerprint_hash == -1)
  		options->fingerprint_hash = SSH_FP_HASH_DEFAULT;
  #ifdef ENABLE_SK_INTERNAL
---- old/readconf.h	2020-03-26 11:50:08.962776440 +0000
-+++ new/readconf.h	2020-03-26 11:55:18.093584429 +0000
-@@ -168,6 +168,9 @@ typedef struct {
+diff --git a/readconf.h b/readconf.h
+index d6a1555..0774ae6 100644
+--- a/readconf.h
++++ b/readconf.h
+@@ -169,6 +169,9 @@ typedef struct {
  	char   *jump_extra;
  
  	char	*ignored_unknown; /* Pattern list of unknown tokens to ignore */
@@ -91,7 +95,7 @@
  }       Options;
  
  #define SSH_CANONICALISE_NO	0
-@@ -199,6 +202,12 @@ typedef struct {
+@@ -200,6 +203,12 @@ typedef struct {
  #define SSH_STRICT_HOSTKEY_YES	2
  #define SSH_STRICT_HOSTKEY_ASK	3
  
@@ -102,11 +106,13 @@
 +#endif
 +
  const char *kex_default_pk_alg(void);
- void     initialize_options(Options *);
- void     fill_default_options(Options *);
---- old/ssh_config.5	2020-03-26 11:50:08.969931976 +0000
-+++ new/ssh_config.5	2020-03-26 11:55:18.100747825 +0000
-@@ -583,6 +583,14 @@ If set to a time in seconds, or a time i
+ char	*ssh_connection_hash(const char *thishost, const char *host,
+     const char *portstr, const char *user);
+diff --git a/ssh_config.5 b/ssh_config.5
+index 6be1f1a..3a9f129 100644
+--- a/ssh_config.5
++++ b/ssh_config.5
+@@ -596,6 +596,14 @@ If set to a time in seconds, or a time in any of the formats documented in
  then the backgrounded master connection will automatically terminate
  after it has remained idle (with no client connections) for the
  specified time.
@@ -121,8 +127,10 @@
  .It Cm DynamicForward
  Specifies that a TCP port on the local machine be forwarded
  over the secure channel, and the application
---- old/sshconnect2.c	2020-03-26 11:50:08.977229033 +0000
-+++ new/sshconnect2.c	2020-03-26 11:55:18.107989839 +0000
+diff --git a/sshconnect2.c b/sshconnect2.c
+index f64aae6..6ca4021 100644
+--- a/sshconnect2.c
++++ b/sshconnect2.c
 @@ -84,6 +84,10 @@ extern char *client_version_string;
  extern char *server_version_string;
  extern Options options;
@@ -134,7 +142,7 @@
  /*
   * SSH2 key exchange
   */
-@@ -535,8 +539,21 @@ input_userauth_banner(int type, u_int32_
+@@ -582,8 +586,21 @@ input_userauth_banner(int type, u_int32_t seq, struct ssh *ssh)
  	if ((r = sshpkt_get_cstring(ssh, &msg, &len)) != 0 ||
  	    (r = sshpkt_get_cstring(ssh, NULL, NULL)) != 0)
  		goto out;

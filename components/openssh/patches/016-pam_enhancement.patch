@@ -9,9 +9,9 @@
 # In the future, if these enhancements are accepted by the upstream in a
 # later release, we will remove this patch when we upgrade to that release.
 #
---- old/auth-pam.c	2020-03-26 13:04:14.419333642 +0000
-+++ new/auth-pam.c	2020-03-26 13:10:54.749344205 +0000
-@@ -614,6 +614,66 @@ sshpam_null_conv(int n, sshpam_const str
+--- old/auth-pam.c	2020-11-19 13:45:11.789763772 +0000
++++ new/auth-pam.c	2020-11-19 13:51:38.688876422 +0000
+@@ -618,6 +618,66 @@ sshpam_null_conv(int n, sshpam_const str
  
  static struct pam_conv null_conv = { sshpam_null_conv, NULL };
  
@@ -78,7 +78,7 @@
  static int
  sshpam_store_conv(int n, sshpam_const struct pam_message **msg,
      struct pam_response **resp, void *data)
-@@ -685,23 +745,77 @@ sshpam_init(struct ssh *ssh, Authctxt *a
+@@ -689,23 +749,77 @@ sshpam_init(struct ssh *ssh, Authctxt *a
  	const char *pam_user, *user = authctxt->user;
  	const char **ptr_pam_user = &pam_user;
  
@@ -156,8 +156,8 @@
  	sshpam_authctxt = authctxt;
  
  	if (sshpam_err != PAM_SUCCESS) {
---- old/auth.h	2020-03-26 13:04:14.426520078 +0000
-+++ new/auth.h	2020-03-26 13:10:54.756501912 +0000
+--- old/auth.h	2020-11-19 13:45:11.795181579 +0000
++++ new/auth.h	2020-11-19 13:51:38.694419458 +0000
 @@ -93,6 +93,9 @@ struct Authctxt {
  
  	/* Information exposed to session */
@@ -168,8 +168,8 @@
  };
  
  /*
---- old/auth2.c	2020-03-26 13:04:14.433798129 +0000
-+++ new/auth2.c	2020-03-26 13:10:54.763481137 +0000
+--- old/auth2.c	2020-11-19 13:45:11.800344016 +0000
++++ new/auth2.c	2020-11-19 13:51:38.699824451 +0000
 @@ -296,7 +296,15 @@ input_userauth_request(int type, u_int32
  #endif
  		}
@@ -263,11 +263,11 @@
 +#else
  	if (options.use_pam && authenticated) {
 +#endif /* PAM_ENHANCEMENT */
- 		int r;
+ 		int r, success = PRIVSEP(do_pam_account());
  
- 		if (!PRIVSEP(do_pam_account())) {
---- old/monitor_wrap.c	2020-03-26 13:04:14.440925452 +0000
-+++ new/monitor_wrap.c	2020-03-26 13:10:54.770454749 +0000
+ 		/* If PAM returned a message, send it to the user. */
+--- old/monitor_wrap.c	2020-11-19 13:45:11.805588258 +0000
++++ new/monitor_wrap.c	2020-11-19 13:51:38.705181950 +0000
 @@ -385,6 +385,27 @@ mm_inform_authserv(char *service, char *
  	sshbuf_free(m);
  }
@@ -296,18 +296,18 @@
  /* Do the password authentication */
  int
  mm_auth_password(struct ssh *ssh, char *password)
---- old/monitor_wrap.h	2020-03-26 13:04:14.448046500 +0000
-+++ new/monitor_wrap.h	2020-03-26 13:10:54.777486557 +0000
-@@ -47,6 +47,7 @@ DH *mm_choose_dh(int, int, int);
- #endif
+--- old/monitor_wrap.h	2020-11-19 13:45:11.810881979 +0000
++++ new/monitor_wrap.h	2020-11-19 13:51:38.710480461 +0000
+@@ -48,6 +48,7 @@ DH *mm_choose_dh(int, int, int);
  int mm_sshkey_sign(struct ssh *, struct sshkey *, u_char **, size_t *,
-     const u_char *, size_t, const char *, const char *, u_int compat);
+     const u_char *, size_t, const char *, const char *,
+     const char *, u_int compat);
 +void mm_inform_authmethod(char *);
  void mm_inform_authserv(char *, char *);
  struct passwd *mm_getpwnamallow(struct ssh *, const char *);
  char *mm_auth2_read_banner(void);
---- old/monitor.c	2020-03-26 13:04:14.455311065 +0000
-+++ new/monitor.c	2020-03-26 13:10:54.784714475 +0000
+--- old/monitor.c	2020-11-19 13:45:11.816309000 +0000
++++ new/monitor.c	2020-11-19 13:51:38.715740155 +0000
 @@ -118,6 +118,9 @@ int mm_answer_sign(struct ssh *, int, st
  int mm_answer_pwnamallow(struct ssh *, int, struct sshbuf *);
  int mm_answer_auth2_read_banner(struct ssh *, int, struct sshbuf *);
@@ -424,8 +424,8 @@
  int
  mm_answer_authserv(struct ssh *ssh, int sock, struct sshbuf *m)
  {
---- old/monitor.h	2020-03-26 13:04:14.462384554 +0000
-+++ new/monitor.h	2020-03-26 13:10:54.791705806 +0000
+--- old/monitor.h	2020-11-19 13:45:11.821604810 +0000
++++ new/monitor.h	2020-11-19 13:51:38.721011257 +0000
 @@ -63,6 +63,9 @@ enum monitor_reqtype {
  	MONITOR_REQ_PAM_FREE_CTX = 110, MONITOR_ANS_PAM_FREE_CTX = 111,
  	MONITOR_REQ_AUDIT_EVENT = 112, MONITOR_REQ_AUDIT_COMMAND = 113,
@@ -436,9 +436,9 @@
  };
  
  struct ssh;
---- old/servconf.c	2020-03-26 13:04:14.469732604 +0000
-+++ new/servconf.c	2020-03-26 13:10:54.798899425 +0000
-@@ -181,6 +181,18 @@ initialize_server_options(ServerOptions
+--- old/servconf.c	2020-11-19 13:45:11.827630612 +0000
++++ new/servconf.c	2020-11-19 13:51:38.726316269 +0000
+@@ -182,6 +182,18 @@ initialize_server_options(ServerOptions
  	options->revoked_keys_file = NULL;
  	options->sk_provider = NULL;
  	options->trusted_user_ca_keys = NULL;
@@ -457,7 +457,7 @@
  	options->authorized_principals_file = NULL;
  	options->authorized_principals_command = NULL;
  	options->authorized_principals_command_user = NULL;
-@@ -449,6 +461,12 @@ fill_default_server_options(ServerOption
+@@ -450,6 +462,12 @@ fill_default_server_options(ServerOption
  		options->ip_qos_bulk = IPTOS_DSCP_CS1;
  	if (options->version_addendum == NULL)
  		options->version_addendum = xstrdup("");
@@ -470,7 +470,7 @@
  	if (options->fwd_opts.streamlocal_bind_mask == (mode_t)-1)
  		options->fwd_opts.streamlocal_bind_mask = 0177;
  	if (options->fwd_opts.streamlocal_bind_unlink == -1)
-@@ -540,6 +558,9 @@ typedef enum {
+@@ -532,6 +550,9 @@ typedef enum {
  	sMatch, sPermitOpen, sPermitListen, sForceCommand, sChrootDirectory,
  	sUsePrivilegeSeparation, sAllowAgentForwarding,
  	sHostCertificate, sInclude,
@@ -480,7 +480,7 @@
  	sRevokedKeys, sTrustedUserCAKeys, sAuthorizedPrincipalsFile,
  	sAuthorizedPrincipalsCommand, sAuthorizedPrincipalsCommandUser,
  	sKexAlgorithms, sCASignatureAlgorithms, sIPQoS, sVersionAddendum,
-@@ -679,6 +700,10 @@ static struct {
+@@ -672,6 +693,10 @@ static struct {
  	{ "forcecommand", sForceCommand, SSHCFG_ALL },
  	{ "chrootdirectory", sChrootDirectory, SSHCFG_ALL },
  	{ "hostcertificate", sHostCertificate, SSHCFG_GLOBAL },
@@ -491,7 +491,7 @@
  	{ "revokedkeys", sRevokedKeys, SSHCFG_ALL },
  	{ "trustedusercakeys", sTrustedUserCAKeys, SSHCFG_ALL },
  	{ "authorizedprincipalsfile", sAuthorizedPrincipalsFile, SSHCFG_ALL },
-@@ -2352,6 +2377,37 @@ process_server_config_line_depth(ServerO
+@@ -2372,6 +2397,37 @@ process_server_config_line_depth(ServerO
  			*charptr = xstrdup(arg);
  		break;
  
@@ -529,11 +529,11 @@
  	case sDeprecated:
  	case sIgnore:
  	case sUnsupported:
---- old/servconf.h	2020-03-26 13:04:14.476841493 +0000
-+++ new/servconf.h	2020-03-26 13:10:54.805946490 +0000
-@@ -47,6 +47,10 @@
- /* PubkeyAuthOptions flags */
- #define PUBKEYAUTH_TOUCH_REQUIRED	1
+--- old/servconf.h	2020-11-19 13:45:11.833180513 +0000
++++ new/servconf.h	2020-11-19 13:51:38.731500848 +0000
+@@ -53,6 +53,10 @@
+ #define PUBKEYAUTH_TOUCH_REQUIRED	(1)
+ #define PUBKEYAUTH_VERIFY_REQUIRED	(1<<1)
  
 +#ifdef PAM_ENHANCEMENT
 +#define _SSH_PAM_SERVICE_PREFIX "sshd"
@@ -542,7 +542,7 @@
  struct ssh;
  struct fwd_perm_list;
  
-@@ -214,6 +218,12 @@ typedef struct {
+@@ -220,6 +224,12 @@ typedef struct {
  	u_int	num_auth_methods;
  	char   **auth_methods;
  
@@ -555,9 +555,9 @@
  	int	fingerprint_hash;
  	int	expose_userauth_info;
  	u_int64_t timing_secret;
---- old/sshd.8	2020-03-26 13:04:14.483900286 +0000
-+++ new/sshd.8	2020-03-26 13:10:54.812858476 +0000
-@@ -986,6 +986,33 @@ concurrently for different ports, this c
+--- old/sshd.8	2020-11-19 13:45:11.838960410 +0000
++++ new/sshd.8	2020-11-19 13:51:38.736702265 +0000
+@@ -993,6 +993,33 @@ concurrently for different ports, this c
  started last).
  The content of this file is not sensitive; it can be world-readable.
  .El
@@ -591,9 +591,9 @@
  .Sh SEE ALSO
  .Xr scp 1 ,
  .Xr sftp 1 ,
---- old/sshd_config.5	2020-03-26 13:04:14.491230057 +0000
-+++ new/sshd_config.5	2020-11-05 14:21:18.715982834 +0000
-@@ -1223,6 +1223,21 @@ will refuse connection attempts with a p
+--- old/sshd_config.5	2020-11-19 13:45:11.844357230 +0000
++++ new/sshd_config.5	2020-11-19 13:51:38.742016818 +0000
+@@ -1235,6 +1235,21 @@ will refuse connection attempts with a p
  if there are currently start (10) unauthenticated connections.
  The probability increases linearly and all connection attempts
  are refused if the number of unauthenticated connections reaches full (60).
@@ -615,7 +615,7 @@
  .It Cm PasswordAuthentication
  Specifies whether password authentication is allowed.
  The default is
-@@ -1693,8 +1708,7 @@ If
+@@ -1716,8 +1731,7 @@ If
  is enabled, you will not be able to run
  .Xr sshd 8
  as a non-root user.

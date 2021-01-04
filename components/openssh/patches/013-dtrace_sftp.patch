@@ -4,8 +4,10 @@
 # Because this is Solaris-specific and not suitable for upstream, we will not
 # contribute the changes to the upstream community.
 #
---- old/Makefile.in	2020-03-26 11:19:59.707397643 +0000
-+++ new/Makefile.in	2020-03-26 11:40:37.659029094 +0000
+diff --git a/Makefile.in b/Makefile.in
+index 43205c9..e3e98af 100644
+--- a/Makefile.in
++++ b/Makefile.in
 @@ -25,6 +25,7 @@ SFTP_SERVER=$(libexecdir)/sftp-server
  SSH_KEYSIGN=$(libexecdir)/ssh-keysign
  SSH_PKCS11_HELPER=$(libexecdir)/ssh-pkcs11-helper
@@ -14,15 +16,15 @@
  PRIVSEP_PATH=@PRIVSEP_PATH@
  SSH_PRIVSEP_USER=@SSH_PRIVSEP_USER@
  STRIP_OPT=@STRIP_OPT@
-@@ -102,6 +103,7 @@ LIBSSH_OBJS=${LIBOPENSSH_OBJS} \
+@@ -100,6 +101,7 @@ LIBSSH_OBJS=${LIBOPENSSH_OBJS} \
  	monitor_fdpass.o rijndael.o ssh-dss.o ssh-ecdsa.o ssh-ecdsa-sk.o \
  	ssh-ed25519-sk.o ssh-rsa.o dh.o \
  	msg.o progressmeter.o dns.o entropy.o gss-genr.o umac.o umac128.o \
 +	sftp_provider.o \
  	ssh-pkcs11.o smult_curve25519_ref.o \
- 	poly1305.o chacha.o cipher-chachapoly.o \
+ 	poly1305.o chacha.o cipher-chachapoly.o cipher-chachapoly-libcrypto.o \
  	ssh-ed25519.o digest-openssl.o digest-libc.o \
-@@ -127,7 +129,7 @@ SSHDOBJS=sshd.o auth-rhosts.o auth-passw
+@@ -125,7 +127,7 @@ SSHDOBJS=sshd.o auth-rhosts.o auth-passwd.o \
  	monitor.o monitor_wrap.o auth-krb5.o \
  	auth2-gss.o gss-serv.o gss-serv-krb5.o \
  	loginrec.o auth-pam.o auth-shadow.o auth-sia.o md5crypt.o \
@@ -31,7 +33,7 @@
  	sandbox-null.o sandbox-rlimit.o sandbox-systrace.o sandbox-darwin.o \
  	sandbox-seccomp-filter.o sandbox-capsicum.o sandbox-pledge.o \
  	sandbox-solaris.o uidswap.o $(SKOBJS)
-@@ -148,7 +150,7 @@ SKHELPER_OBJS=	ssh-sk-helper.o ssh-sk.o
+@@ -146,7 +148,7 @@ SKHELPER_OBJS=	ssh-sk-helper.o ssh-sk.o sk-usbhid.o
  
  SSHKEYSCAN_OBJS=ssh-keyscan.o $(SKOBJS)
  
@@ -40,7 +42,7 @@
  
  SFTP_OBJS=	sftp.o sftp-client.o sftp-common.o sftp-glob.o progressmeter.o
  
-@@ -266,9 +268,18 @@ $(CONFIGFILES): $(CONFIGFILES_IN)
+@@ -264,9 +266,18 @@ $(CONFIGFILES): $(CONFIGFILES_IN)
  moduli:
  	echo
  
@@ -60,7 +62,7 @@
  	rm -f regress/check-perm$(EXEEXT)
  	rm -f regress/mkdtemp$(EXEEXT)
  	rm -f regress/unittests/test_helper/*.a
-@@ -415,6 +426,7 @@ install-files:
+@@ -421,6 +432,7 @@ install-files:
  	$(INSTALL) -m 644 ssh-keysign.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-keysign.8
  	$(INSTALL) -m 644 ssh-pkcs11-helper.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-pkcs11-helper.8
  	$(INSTALL) -m 644 ssh-sk-helper.8.out $(DESTDIR)$(mandir)/$(mansubdir)8/ssh-sk-helper.8
@@ -68,8 +70,10 @@
  
  install-sysconf:
  	$(MKDIR_P) $(DESTDIR)$(sysconfdir)
---- old/sftp-server.c	2020-03-26 11:19:59.714572686 +0000
-+++ new/sftp-server.c	2020-03-26 11:40:37.659520656 +0000
+diff --git a/sftp-server.c b/sftp-server.c
+index 55386fa..3b72bf9 100644
+--- a/sftp-server.c
++++ b/sftp-server.c
 @@ -50,6 +50,9 @@
  
  #include "sftp.h"
@@ -131,7 +135,7 @@
  
  	if (fd < 0)
 @@ -802,7 +815,13 @@ process_write(u_int32_t id)
- 			error("process_write: seek failed");
+ 			error("%s: seek failed", __func__);
  		} else {
  /* XXX ATOMICIO ? */
 +#ifdef DTRACE_SFTP
@@ -142,5 +146,5 @@
 +			SFTP_TRANSFER_DONE_OP("write", fd, fpath, ret);
 +#endif
  			if (ret == -1) {
- 				error("process_write: write failed");
- 				status = errno_to_portable(errno);
+ 				error("%s: write: %s", __func__,
+ 				    strerror(errno));

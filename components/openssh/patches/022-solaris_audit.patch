@@ -20,9 +20,9 @@
 # An additional patch relying on the --with-audit=solaris configuration
 #  should/will be created for sftp Solaris Audit and password change.
 #
---- old/INSTALL	2020-03-31 10:58:30.081711023 +0000
-+++ new/INSTALL	2020-03-31 11:01:22.881263593 +0000
-@@ -105,9 +105,13 @@ http://www.gnu.org/software/autoconf/
+--- old/INSTALL	2020-11-19 14:07:11.034567614 +0000
++++ new/INSTALL	2020-11-19 14:08:02.001752839 +0000
+@@ -105,9 +105,13 @@ http://www.gnu.org/software/automake/
  
  Basic Security Module (BSM):
  
@@ -39,7 +39,7 @@
  
  makedepend:
  
-@@ -172,8 +176,9 @@ name).
+@@ -173,8 +177,9 @@ name).
  There are a few other options to the configure script:
  
  --with-audit=[module] enable additional auditing via the specified module.
@@ -51,9 +51,9 @@
  
  --with-pam enables PAM support. If PAM support is compiled in, it must
  also be enabled in sshd_config (refer to the UsePAM directive).
---- old/Makefile.in	2020-03-31 10:58:30.089043954 +0000
-+++ new/Makefile.in	2020-03-31 11:01:22.888687596 +0000
-@@ -120,7 +120,7 @@ SSHOBJS= ssh.o readconf.o clientloop.o s
+--- old/Makefile.in	2020-11-19 14:07:11.040318329 +0000
++++ new/Makefile.in	2020-11-19 14:08:02.008143519 +0000
+@@ -118,7 +118,7 @@ SSHOBJS= ssh.o readconf.o clientloop.o s
  	sshconnect.o sshconnect2.o mux.o $(SKOBJS)
  
  SSHDOBJS=sshd.o auth-rhosts.o auth-passwd.o \
@@ -62,8 +62,8 @@
  	sshpty.o sshlogin.o servconf.o serverloop.o \
  	auth.o auth2.o auth-options.o session.o \
  	auth2-chall.o groupaccess.o \
---- old/README.platform	2020-03-31 10:58:30.096375300 +0000
-+++ new/README.platform	2020-03-31 11:01:22.896190224 +0000
+--- old/README.platform	2020-11-19 14:07:11.045756046 +0000
++++ new/README.platform	2020-11-19 14:08:02.013597876 +0000
 @@ -71,8 +71,8 @@ zlib-devel and pam-devel, on Debian base
  libssl-dev, libz-dev and libpam-dev.
  
@@ -87,9 +87,9 @@
  Platforms using PAM
  -------------------
  As of OpenSSH 4.3p1, sshd will no longer check /etc/nologin itself when
---- old/config.h.in	2020-03-31 10:58:30.104021588 +0000
-+++ new/config.h.in	2020-03-31 11:01:22.904170800 +0000
-@@ -1922,6 +1922,9 @@
+--- old/config.h.in	2020-11-19 14:07:11.051383723 +0000
++++ new/config.h.in	2020-11-19 14:08:02.018724080 +0000
+@@ -1956,6 +1956,9 @@
  /* Use Linux audit module */
  #undef USE_LINUX_AUDIT
  
@@ -99,9 +99,9 @@
  /* Enable OpenSSL engine support */
  #undef USE_OPENSSL_ENGINE
  
---- old/configure	2020-03-31 10:58:30.120496801 +0000
-+++ new/configure	2020-03-31 11:01:22.922112598 +0000
-@@ -1455,7 +1455,7 @@ Optional Packages:
+--- old/configure	2020-11-19 14:07:11.057950842 +0000
++++ new/configure	2020-11-19 14:08:02.025506833 +0000
+@@ -1465,7 +1465,7 @@ Optional Packages:
    --without-zlib-version-check Disable zlib version check
    --with-ldns[=PATH]      Use ldns for DNSSEC support (optionally in PATH)
    --with-libedit[=PATH]   Enable libedit support for sftp
@@ -110,7 +110,7 @@
    --with-pie              Build Position Independent Executables if possible
    --with-security-key-builtin include builtin U2F/FIDO support
    --with-ssl-dir=PATH     Specify path to OpenSSL installation
-@@ -10720,6 +10720,31 @@ if test "${with_audit+set}" = set; then
+@@ -11002,6 +11002,31 @@ if test "${with_audit+set}" = set; then
  	  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for supported audit module" >&5
  $as_echo_n "checking for supported audit module... " >&6; }
  	  case "$withval" in
@@ -142,9 +142,9 @@
  	  bsm)
  		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: bsm" >&5
  $as_echo "bsm" >&6; }
---- old/configure.ac	2020-03-31 10:58:30.138175163 +0000
-+++ new/configure.ac	2020-03-31 11:01:22.931039984 +0000
-@@ -1635,10 +1635,21 @@ AC_ARG_WITH([libedit],
+--- old/configure.ac	2020-11-19 14:07:11.064029968 +0000
++++ new/configure.ac	2020-11-19 14:08:02.031332995 +0000
+@@ -1653,10 +1653,21 @@ AC_ARG_WITH([libedit],
  
  AUDIT_MODULE=none
  AC_ARG_WITH([audit],
@@ -167,9 +167,9 @@
  	  bsm)
  		AC_MSG_RESULT([bsm])
  		AUDIT_MODULE=bsm
---- old/defines.h	2020-03-31 10:58:30.145505776 +0000
-+++ new/defines.h	2020-03-31 11:01:22.938598921 +0000
-@@ -667,6 +667,11 @@ struct winsize {
+--- old/defines.h	2020-11-19 14:07:11.069587481 +0000
++++ new/defines.h	2020-11-19 14:08:02.036911933 +0000
+@@ -674,6 +674,11 @@ struct winsize {
  # define CUSTOM_SSH_AUDIT_EVENTS
  #endif
  
@@ -181,9 +181,9 @@
  #if !defined(HAVE___func__) && defined(HAVE___FUNCTION__)
  #  define __func__ __FUNCTION__
  #elif !defined(HAVE___func__)
---- old/sshd.c	2020-03-31 10:58:30.152893627 +0000
-+++ new/sshd.c	2020-03-31 11:01:22.946378345 +0000
-@@ -2223,7 +2223,9 @@ main(int ac, char **av)
+--- old/sshd.c	2020-11-19 14:07:11.075282348 +0000
++++ new/sshd.c	2020-11-19 14:08:02.042267865 +0000
+@@ -2269,7 +2269,9 @@ main(int ac, char **av)
  	}
  
  #ifdef SSH_AUDIT_EVENTS
@@ -193,7 +193,7 @@
  #endif
  
  #ifdef GSSAPI
-@@ -2239,6 +2241,10 @@ main(int ac, char **av)
+@@ -2285,6 +2287,10 @@ main(int ac, char **av)
  		do_pam_session(ssh);
  	}
  #endif
