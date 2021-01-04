@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 
@@ -65,4 +65,5 @@ COMPONENT_BUILD_ARGS += CCOM=cc64
 # cdrtools doesn't work with gmake for sparc 64-bit compile.
 GMAKE = $(CCSMAKE)
 
+REQUIRED_PACKAGES += developer/build/make
 REQUIRED_PACKAGES += shell/ksh93
