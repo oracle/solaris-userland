@@ -107,7 +107,7 @@ COMPONENT_POST_TEST_ACTION += \
 	  >> /dev/null && print 'Passed' ) &>> $(COMPONENT_TEST_OUTPUT)
 
 # Remove time measurements from results when comparing
-COMPONENT_TEST_TRANSFORMS += '-e "s|[\.0-9]* sec||g" '
+COMPONENT_TEST_TRANSFORMS += '-e "s|  *[\.0-9]* sec||g" '
 
 REQUIRED_PACKAGES += database/berkeleydb-5
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection

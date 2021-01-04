@@ -3,10 +3,11 @@
 #
 Prevent buffer overrun in PropNameData::findPropertyValueNameGroup
 http://bugs.icu-project.org/trac/ticket/12385
-diff --git a/source/common/propname.cpp b/source/common/propname.cpp
+diff --git a/icu/source/common/propname.cpp b/icu/source/common/propname.cpp
+index a12eb7d..6302f9c 100644
 --- a/icu/source/common/propname.cpp
 +++ b/icu/source/common/propname.cpp
-@@ -168,11 +168,17 @@ int32_t PropNameData::findPropertyValueN
+@@ -168,11 +168,17 @@ int32_t PropNameData::findPropertyValueNameGroup(int32_t valueMapIndex, int32_t
          return 0;  // The property does not have named values.
      }
      ++valueMapIndex;  // Skip the BytesTrie offset.
@@ -24,7 +25,7 @@ diff --git a/source/common/propname.cpp b/source/common/propname.cpp
              int32_t start=valueMaps[valueMapIndex];
              int32_t limit=valueMaps[valueMapIndex+1];
              valueMapIndex+=2;
-@@ -180,6 +186,8 @@ int32_t PropNameData::findPropertyValueN
+@@ -180,6 +186,8 @@ int32_t PropNameData::findPropertyValueNameGroup(int32_t valueMapIndex, int32_t
                  break;
              }
              if(value<limit) {
@@ -33,7 +34,7 @@ diff --git a/source/common/propname.cpp b/source/common/propname.cpp
                  return valueMaps[valueMapIndex+value-start];
              }
              valueMapIndex+=limit-start;  // Skip all entries for this range.
-@@ -189,11 +197,15 @@ int32_t PropNameData::findPropertyValueN
+@@ -189,11 +197,15 @@ int32_t PropNameData::findPropertyValueNameGroup(int32_t valueMapIndex, int32_t
          int32_t valuesStart=valueMapIndex;
          int32_t nameGroupOffsetsStart=valueMapIndex+numRanges-0x10;
          do {
@@ -49,7 +50,7 @@ diff --git a/source/common/propname.cpp b/source/common/propname.cpp
                  return valueMaps[nameGroupOffsetsStart+valueMapIndex-valuesStart];
              }
          } while(++valueMapIndex<nameGroupOffsetsStart);
-@@ -274,12 +286,18 @@ int32_t PropNameData::getPropertyValueEn
+@@ -274,12 +286,18 @@ int32_t PropNameData::getPropertyValueEnum(int32_t property, const char *alias)
      if(valueMapIndex==0) {
          return UCHAR_INVALID_CODE;  // Not a known property.
      }

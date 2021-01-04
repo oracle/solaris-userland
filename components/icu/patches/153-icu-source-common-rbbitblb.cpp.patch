@@ -1,0 +1,52 @@
+to avoid a crash on SPARC
+from https://github.com/unicode-org/icu/commit/8251d93e823945158afea82c3b53690b6b39a4b4
+
+From 8251d93e823945158afea82c3b53690b6b39a4b4 Mon Sep 17 00:00:00 2001
+From: Frank Tang <ftang@chromium.org>
+Date: Thu, 12 Nov 2020 15:39:40 -0800
+Subject: [PATCH] ICU-21395 Fix UBSan breakage on 8bit of rbbi
+
+---
+ icu4c/source/common/rbbitblb.cpp | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
+
+diff --git a/icu4c/source/common/rbbitblb.cpp b/icu4c/source/common/rbbitblb.cpp
+index bcbdab9227c..70e260fc08b 100644
+--- a/icu/source/common/rbbitblb.cpp
++++ b/icu/source/common/rbbitblb.cpp
+@@ -1402,12 +1402,13 @@ void RBBITableBuilder::exportTable(void *where) {
+             U_ASSERT (sd->fAccepting <= 255);
+             U_ASSERT (sd->fLookAhead <= 255);
+             U_ASSERT (0 <= sd->fTagsIdx && sd->fTagsIdx <= 255);
+-            row->r8.fAccepting = sd->fAccepting;
+-            row->r8.fLookAhead = sd->fLookAhead;
+-            row->r8.fTagsIdx   = sd->fTagsIdx;
++            RBBIStateTableRow8 *r8 = (RBBIStateTableRow8*)row;
++            r8->fAccepting = sd->fAccepting;
++            r8->fLookAhead = sd->fLookAhead;
++            r8->fTagsIdx   = sd->fTagsIdx;
+             for (col=0; col<catCount; col++) {
+                 U_ASSERT (sd->fDtran->elementAti(col) <= kMaxStateFor8BitsTable);
+-                row->r8.fNextState[col] = sd->fDtran->elementAti(col);
++                r8->fNextState[col] = sd->fDtran->elementAti(col);
+             }
+         } else {
+             U_ASSERT (sd->fAccepting <= 0xffff);
+@@ -1603,12 +1604,13 @@ void RBBITableBuilder::exportSafeTable(void *where) {
+         UnicodeString *rowString = (UnicodeString *)fSafeTable->elementAt(state);
+         RBBIStateTableRow   *row = (RBBIStateTableRow *)(table->fTableData + state*table->fRowLen);
+         if (use8BitsForSafeTable()) {
+-            row->r8.fAccepting = 0;
+-            row->r8.fLookAhead = 0;
+-            row->r8.fTagsIdx    = 0;
++            RBBIStateTableRow8 *r8 = (RBBIStateTableRow8*)row;
++            r8->fAccepting = 0;
++            r8->fLookAhead = 0;
++            r8->fTagsIdx    = 0;
+             for (col=0; col<catCount; col++) {
+                 U_ASSERT(rowString->charAt(col) <= kMaxStateFor8BitsTable);
+-                row->r8.fNextState[col] = static_cast<uint8_t>(rowString->charAt(col));
++                r8->fNextState[col] = static_cast<uint8_t>(rowString->charAt(col));
+             }
+         } else {
+             row->r16.fAccepting = 0;

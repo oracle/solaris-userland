@@ -1,0 +1,122 @@
+from https://trac.webkit.org/changeset/269325/webkit
+Index: /trunk/Source/WTF/wtf/text/icu/UTextProvider.h
+===================================================================
+--- trunk/Source/WTF/wtf/text/icu/UTextProvider.h	(revision 269324)
++++ trunk/Source/WTF/wtf/text/icu/UTextProvider.h	(revision 269325)
+@@ -80,10 +80,10 @@
+             ASSERT(offset < std::numeric_limits<int32_t>::max());
+             text->chunkOffset = offset < std::numeric_limits<int32_t>::max() ? static_cast<int32_t>(offset) : 0;
+-            isAccessible = TRUE;
++            isAccessible = true;
+             return true;
+         }
+         if (nativeIndex >= nativeLength && text->chunkNativeLimit == nativeLength) {
+             text->chunkOffset = text->chunkLength;
+-            isAccessible = FALSE;
++            isAccessible = false;
+             return true;
+         }
+@@ -94,10 +94,10 @@
+             ASSERT(offset < std::numeric_limits<int32_t>::max());
+             text->chunkOffset = offset < std::numeric_limits<int32_t>::max() ? static_cast<int32_t>(offset) : 0;
+-            isAccessible = TRUE;
++            isAccessible = true;
+             return true;
+         }
+         if (nativeIndex <= 0 && !text->chunkNativeStart) {
+             text->chunkOffset = 0;
+-            isAccessible = FALSE;
++            isAccessible = false;
+             return true;
+         }
+Index: /trunk/Source/WTF/wtf/text/icu/UTextProviderLatin1.cpp
+===================================================================
+--- trunk/Source/WTF/wtf/text/icu/UTextProviderLatin1.cpp	(revision 269324)
++++ trunk/Source/WTF/wtf/text/icu/UTextProviderLatin1.cpp	(revision 269325)
+@@ -101,10 +101,10 @@
+             // Already inside the buffer. Set the new offset.
+             uText->chunkOffset = static_cast<int32_t>(index - uText->chunkNativeStart);
+-            return TRUE;
++            return true;
+         }
+         if (index >= length && uText->chunkNativeLimit == length) {
+             // Off the end of the buffer, but we can't get it.
+             uText->chunkOffset = static_cast<int32_t>(index - uText->chunkNativeStart);
+-            return FALSE;
++            return false;
+         }
+     } else {
+@@ -112,10 +112,10 @@
+             // Already inside the buffer. Set the new offset.
+             uText->chunkOffset = static_cast<int32_t>(index - uText->chunkNativeStart);
+-            return TRUE;
++            return true;
+         }
+         if (!index && !uText->chunkNativeStart) {
+             // Already at the beginning; can't go any farther.
+             uText->chunkOffset = 0;
+-            return FALSE;
++            return false;
+         }
+     }
+@@ -145,5 +145,5 @@
+     uText->nativeIndexingLimit = uText->chunkLength;
+ 
+-    return TRUE;
++    return true;
+ }
+ 
+@@ -338,5 +338,5 @@
+ {
+     if (!text->context)
+-        return FALSE;
++        return false;
+     int64_t nativeLength = uTextLatin1ContextAwareNativeLength(text);
+     UBool isAccessible;
+@@ -358,5 +358,5 @@
+         textLatin1ContextAwareSwitchToPriorContext(text, nativeIndex, nativeLength, forward);
+     }
+-    return TRUE;
++    return true;
+ }
+ 
+Index: /trunk/Source/WTF/wtf/text/icu/UTextProviderUTF16.cpp
+===================================================================
+--- trunk/Source/WTF/wtf/text/icu/UTextProviderUTF16.cpp	(revision 269324)
++++ trunk/Source/WTF/wtf/text/icu/UTextProviderUTF16.cpp	(revision 269325)
+@@ -127,5 +127,5 @@
+ {
+     if (!text->context)
+-        return FALSE;
++        return false;
+     int64_t nativeLength = uTextUTF16ContextAwareNativeLength(text);
+     UBool isAccessible;
+@@ -147,5 +147,5 @@
+         textUTF16ContextAwareSwitchToPriorContext(text, nativeIndex, nativeLength, forward);
+     }
+-    return TRUE;
++    return true;
+ }
+ 
+Index: /trunk/Source/WebCore/platform/text/TextCodecICU.cpp
+===================================================================
+--- trunk/Source/WebCore/platform/text/TextCodecICU.cpp	(revision 269324)
++++ trunk/Source/WebCore/platform/text/TextCodecICU.cpp	(revision 269325)
+@@ -195,5 +195,5 @@
+     m_converter = ICUConverterPtr { ucnv_open(m_canonicalConverterName, &error), ucnv_close };
+     if (m_converter)
+-        ucnv_setFallback(m_converter.get(), TRUE);
++        ucnv_setFallback(m_converter.get(), true);
+ }
+ 
+Index: /trunk/Source/WebKit/UIProcess/CoordinatedGraphics/DrawingAreaProxyCoordinatedGraphics.cpp
+===================================================================
+--- trunk/Source/WebKit/UIProcess/CoordinatedGraphics/DrawingAreaProxyCoordinatedGraphics.cpp	(revision 269324)
++++ trunk/Source/WebKit/UIProcess/CoordinatedGraphics/DrawingAreaProxyCoordinatedGraphics.cpp	(revision 269325)
+@@ -403,5 +403,5 @@
+ {
+     monitor->didDraw();
+-    return FALSE;
++    return false;
+ }
+ 

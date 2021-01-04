@@ -3,10 +3,11 @@
 #
 Fix a memory leak
 http://bugs.icu-project.org/trac/ticket/12374
-diff --git a/source/common/rbbiscan.cpp b/source/common/rbbiscan.cpp
+diff --git a/icu/source/common/rbbiscan.cpp b/icu/source/common/rbbiscan.cpp
+index 9c406af..0fa438f 100644
 --- a/icu/source/common/rbbiscan.cpp
 +++ b/icu/source/common/rbbiscan.cpp
-@@ -777,7 +777,13 @@ void RBBIRuleScanner::findSetFor(const U
+@@ -782,7 +782,13 @@ void RBBIRuleScanner::findSetFor(const UnicodeString &s, RBBINode *node, Unicode
      // Add the new set to the set hash table.
      //
      el      = (RBBISetTableEl *)uprv_malloc(sizeof(RBBISetTableEl));

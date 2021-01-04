@@ -3,10 +3,11 @@
 #
 Add NULL checks to getBuffer calls and catch a potential file leak
 http://bugs.icu-project.org/trac/ticket/12378
-diff --git a/source/extra/uconv/uconv.cpp b/source/extra/uconv/uconv.cpp
+diff --git a/icu/source/extra/uconv/uconv.cpp b/icu/source/extra/uconv/uconv.cpp
+index 3be4e8e..5223ce6 100644
 --- a/icu/source/extra/uconv/uconv.cpp
 +++ b/icu/source/extra/uconv/uconv.cpp
-@@ -445,7 +445,10 @@ getChunkLimit(const UnicodeString &prev,
+@@ -445,7 +445,10 @@ getChunkLimit(const UnicodeString &prev, const UnicodeString &s) {
          }
      }
  

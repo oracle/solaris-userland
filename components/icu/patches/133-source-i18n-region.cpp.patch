@@ -2,12 +2,13 @@
 # Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
 #
 prevent a null pointer dereference
-diff --git a/source/i18n/region.cpp b/source/i18n/region.cpp
+diff --git a/icu/source/i18n/region.cpp b/icu/source/i18n/region.cpp
+index d8a5ffd..b7b918c 100644
 --- a/icu/source/i18n/region.cpp
 +++ b/icu/source/i18n/region.cpp
-@@ -531,6 +531,10 @@ Region::getInstance (int32_t code, UErro
+@@ -527,6 +527,10 @@ Region::getInstance (int32_t code, UErrorCode &status) {
  
-     if ( r->type == URGN_DEPRECATED && r->preferredValues->size() == 1) {
+     if ( r->fType == URGN_DEPRECATED && r->preferredValues->size() == 1) {
          StringEnumeration *pv = r->getPreferredValues(status);
 +	if ( U_FAILURE(status) ) {
 +	    delete r;

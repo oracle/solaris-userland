@@ -3,10 +3,11 @@
 #
 avoid potential buffer overrun in enumEitherTrie
 http://bugs.icu-project.org/trac/ticket/12387
-diff --git a/source/common/utrie2.cpp b/source/common/utrie2.cpp
+diff --git a/icu/source/common/utrie2.cpp b/icu/source/common/utrie2.cpp
+index 24ef578..5e3d8ba 100644
 --- a/icu/source/common/utrie2.cpp
 +++ b/icu/source/common/utrie2.cpp
-@@ -32,6 +32,7 @@
+@@ -31,6 +31,7 @@
  #include "unicode/utf.h"
  #include "unicode/utf8.h"
  #include "unicode/utf16.h"
@@ -14,7 +15,7 @@ diff --git a/source/common/utrie2.cpp b/source/common/utrie2.cpp
  #include "cmemory.h"
  #include "utrie2.h"
  #include "utrie2_impl.h"
-@@ -554,6 +555,10 @@ enumEitherTrie(const UTrie2 *trie,
+@@ -450,6 +451,10 @@ enumEitherTrie(const UTrie2 *trie,
      UChar32 c, prev, highStart;
      int32_t j, i2Block, prevI2Block, index2NullOffset, block, prevBlock, nullBlock;
  

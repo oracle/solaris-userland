@@ -5,7 +5,8 @@ Description: supply manual page for program that doesn't have one
 Author: Jay Berkenbilt <qjb@debian.org>
 Bug: http://bugs.icu-project.org/trac/ticket/7665
 https://ssl.icu-project.org/trac/ticket/7554
-diff --git a/source/tools/gennorm2/Makefile.in b/source/tools/gennorm2/Makefile.in
+diff --git a/icu/source/tools/gennorm2/Makefile.in b/icu/source/tools/gennorm2/Makefile.in
+index 84f5830..b041dc1 100644
 --- a/icu/source/tools/gennorm2/Makefile.in
 +++ b/icu/source/tools/gennorm2/Makefile.in
 @@ -18,8 +18,13 @@ subdir = tools/gennorm2
@@ -23,7 +24,7 @@ diff --git a/source/tools/gennorm2/Makefile.in b/source/tools/gennorm2/Makefile.
  
  ## Target information
  TARGET = $(BINDIR)/$(TARGET_STUB_NAME)$(EXEEXT)
-@@ -46,12 +51,16 @@ distclean : distclean-local
+@@ -47,12 +52,16 @@ distclean : distclean-local
  dist: dist-local
  check: all check-local
  
@@ -42,7 +43,7 @@ diff --git a/source/tools/gennorm2/Makefile.in b/source/tools/gennorm2/Makefile.
  dist-local:
  
  clean-local:
-@@ -72,6 +81,11 @@ Makefile: $(srcdir)/Makefile.in  $(top_b
+@@ -73,6 +82,11 @@ $(TARGET) : $(OBJECTS)
  	$(POST_BUILD_STEP)
  
  
@@ -54,8 +55,9 @@ diff --git a/source/tools/gennorm2/Makefile.in b/source/tools/gennorm2/Makefile.
  ifeq (,$(MAKECMDGOALS))
  -include $(DEPS)
  else
-diff --git a/source/tools/gennorm2/Makefile.in.orig b/source/tools/gennorm2/Makefile.in.orig
+diff --git a/icu/source/tools/gennorm2/Makefile.in.orig b/icu/source/tools/gennorm2/Makefile.in.orig
 new file mode 100644
+index 0000000..729a3d0
 --- /dev/null
 +++ b/icu/source/tools/gennorm2/Makefile.in.orig
 @@ -0,0 +1,81 @@
@@ -140,8 +142,9 @@ new file mode 100644
 +-include $(DEPS)
 +endif
 +endif
-diff --git a/source/tools/gennorm2/gennorm2.8.in b/source/tools/gennorm2/gennorm2.8.in
+diff --git a/icu/source/tools/gennorm2/gennorm2.8.in b/icu/source/tools/gennorm2/gennorm2.8.in
 new file mode 100644
+index 0000000..221f2ee
 --- /dev/null
 +++ b/icu/source/tools/gennorm2/gennorm2.8.in
 @@ -0,0 +1,71 @@
@@ -216,7 +219,8 @@ new file mode 100644
 +this is a good trade-off.)
 +.SH COPYRIGHT
 +Copyright (C) 2009-2010 International Business Machines Corporation and others
-diff --git a/source/tools/icuinfo/Makefile.in b/source/tools/icuinfo/Makefile.in
+diff --git a/icu/source/tools/icuinfo/Makefile.in b/icu/source/tools/icuinfo/Makefile.in
+index 68eeb08..f52b011 100644
 --- a/icu/source/tools/icuinfo/Makefile.in
 +++ b/icu/source/tools/icuinfo/Makefile.in
 @@ -16,8 +16,15 @@ include $(top_builddir)/icudefs.mk
@@ -236,7 +240,7 @@ diff --git a/source/tools/icuinfo/Makefile.in b/source/tools/icuinfo/Makefile.in
  
  ## Target information
  TARGET = icuinfo$(EXEEXT)
-@@ -37,7 +44,8 @@ ICUINFO_OPTS=-i ../../data/out/build/$(I
+@@ -39,7 +46,8 @@ ICUINFO_OPTS=-i ../../data/out/build/$(ICUDATA_PLATFORM_NAME) -x $(top_builddir)
  
  ## List of phony targets
  .PHONY : all all-local install install-local clean clean-local		\
@@ -246,7 +250,7 @@ diff --git a/source/tools/icuinfo/Makefile.in b/source/tools/icuinfo/Makefile.in
  
  ## Clear suffix list
  .SUFFIXES :
-@@ -50,12 +58,16 @@ distclean : distclean-local
+@@ -52,12 +60,16 @@ distclean : distclean-local
  dist: dist-local
  check: all check-local
  
@@ -265,7 +269,7 @@ diff --git a/source/tools/icuinfo/Makefile.in b/source/tools/icuinfo/Makefile.in
  dist-local:
  
  clean-local:
-@@ -105,6 +117,9 @@ plugin plugin-check $(PLUGIN):
+@@ -107,6 +119,9 @@ plugin plugin-check $(PLUGIN):
  	@echo "Plugins are disabled (use --enable-plugins to enable)"
  endif
  
@@ -275,8 +279,9 @@ diff --git a/source/tools/icuinfo/Makefile.in b/source/tools/icuinfo/Makefile.in
  ifeq (,$(MAKECMDGOALS))
  -include $(DEPS)
  else
-diff --git a/source/tools/icuinfo/Makefile.in.orig b/source/tools/icuinfo/Makefile.in.orig
+diff --git a/icu/source/tools/icuinfo/Makefile.in.orig b/icu/source/tools/icuinfo/Makefile.in.orig
 new file mode 100644
+index 0000000..ddbb2ee
 --- /dev/null
 +++ b/icu/source/tools/icuinfo/Makefile.in.orig
 @@ -0,0 +1,115 @@
@@ -395,8 +400,9 @@ new file mode 100644
 +endif
 +endif
 +
-diff --git a/source/tools/icuinfo/icuinfo.1.in b/source/tools/icuinfo/icuinfo.1.in
+diff --git a/icu/source/tools/icuinfo/icuinfo.1.in b/icu/source/tools/icuinfo/icuinfo.1.in
 new file mode 100644
+index 0000000..76c5b0c
 --- /dev/null
 +++ b/icu/source/tools/icuinfo/icuinfo.1.in
 @@ -0,0 +1,76 @@

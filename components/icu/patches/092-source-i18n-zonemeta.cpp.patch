@@ -3,10 +3,11 @@
 #
 Add NULL checks for TimeZone::createTimeZoneIDEnumeration calls
 http://bugs.icu-project.org/trac/ticket/12377
-diff --git a/source/i18n/dtfmtsym.cpp b/source/i18n/dtfmtsym.cpp
+diff --git a/icu/source/i18n/dtfmtsym.cpp b/icu/source/i18n/dtfmtsym.cpp
+index 690f6a4..864ae63 100644
 --- a/icu/source/i18n/dtfmtsym.cpp
 +++ b/icu/source/i18n/dtfmtsym.cpp
-@@ -1288,6 +1288,10 @@ DateFormatSymbols::initZoneStringsArray(
+@@ -1290,6 +1290,10 @@ DateFormatSymbols::initZoneStringsArray(void) {
      do { // dummy do-while
  
          tzids = TimeZone::createTimeZoneIDEnumeration(ZONE_SET, NULL, NULL, status);
@@ -17,10 +18,11 @@ diff --git a/source/i18n/dtfmtsym.cpp b/source/i18n/dtfmtsym.cpp
          rows = tzids->count(status);
          if (U_FAILURE(status)) {
              break;
-diff --git a/source/i18n/zonemeta.cpp b/source/i18n/zonemeta.cpp
+diff --git a/icu/source/i18n/zonemeta.cpp b/icu/source/i18n/zonemeta.cpp
+index 72c590f..ea0a83c 100644
 --- a/icu/source/i18n/zonemeta.cpp
 +++ b/icu/source/i18n/zonemeta.cpp
-@@ -464,12 +464,14 @@ ZoneMeta::getCanonicalCountry(const Unic
+@@ -464,12 +464,14 @@ ZoneMeta::getCanonicalCountry(const UnicodeString &tzid, UnicodeString &country,
              u_UCharsToChars(region, regionBuf, 2);
  
              StringEnumeration *ids = TimeZone::createTimeZoneIDEnumeration(UCAL_ZONE_TYPE_CANONICAL_LOCATION, regionBuf, NULL, status);

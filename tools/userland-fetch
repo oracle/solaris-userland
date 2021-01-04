@@ -93,11 +93,16 @@ def validate_signature(path: str, signature: str) -> Tuple[bool, str]:
     # Get the GPG home directory with pubring.
     gpgdir = get_gpg_home()
 
+    # get proxy if set
+    http_proxy = os.environ.get('http_proxy')
+    http_proxy = '' if http_proxy is None else http_proxy
+    proxy = "http-proxy=" + http_proxy
+
     # Suppress the permissions warning: none of the information here is private,
     # so not having to worry about getting mercurial keeping the directory
     # unreadable is just simplest.
     proc = subprocess.run(["/usr/bin/gpg2", "--verify", "--no-permission-warning",
-                           "--homedir", gpgdir, signature, path],
+                           "--homedir", gpgdir, "--keyserver-options", proxy, signature, path],
                           stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
     # gpg2 executes dirmngr which binds to socket in gpgdir/S.dirmngr. dirmngr
