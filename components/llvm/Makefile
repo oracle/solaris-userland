@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 export PARFAIT_BUILD=no
 BUILD_BITS=64
@@ -442,8 +442,8 @@ REQUIRED_PACKAGES += library/perl-5/xml-simple
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/header
-REQUIRED_PACKAGES += system/library/gcc/gcc-runtime-9
-REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime-9
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime-9
-REQUIRED_PACKAGES += system/library/gcc/gcc-gobjc-runtime-9
+REQUIRED_PACKAGES += system/library/gcc/gcc-runtime-10
+REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime-10
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime-10
+REQUIRED_PACKAGES += system/library/gcc/gcc-gobjc-runtime-10
 REQUIRED_PACKAGES += system/library/math
