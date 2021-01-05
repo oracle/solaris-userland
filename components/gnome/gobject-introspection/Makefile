@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates. 
 #
 
 # gobject-introspection must be built with gcc as gobject-introspection does
@@ -31,14 +31,14 @@ BUILD_BITS =		64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gobject-introspection
-COMPONENT_VERSION=	1.62.0
+COMPONENT_VERSION=	1.66.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GObjectIntrospection
 COMPONENT_ARCHIVE_HASH= \
-    sha256:b1ee7ed257fdbc008702bdff0ff3e78a660e7e602efa8f211dc89b9d1e7d90a2
+    sha256:dd44a55ee5f426ea22b6b89624708f9e8d53f5cc94e5485c15c87cb30e06161d
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	1223
 
-TPNO=			54070
+TPNO=			64098
 BUILD_STYLE=		meson
 
 # The unit tests failed to start.
@@ -49,7 +49,7 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/g-ir-scanner
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/g-ir-annotation-tool
 
-CONFIGURE_OPTIONS += -Dcairo=true
+CONFIGURE_OPTIONS += -Dcairo=enabled
 CONFIGURE_OPTIONS += -Dpython=python3.7
 
 PY3_CPYTHON_NAMING=\#
