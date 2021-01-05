@@ -1,0 +1,43 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+
+set name=pkg.fmri \
+    value=pkg:/library/javascript/jquery@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="Fast, small, and feature-rich JavaScript library"
+set name=pkg.description \
+    value="jQuery is a fast, small, and feature-rich JavaScript library. It makes things like HTML document traversal and manipulation, event handling, animation, and Ajax much simpler with an easy-to-use API that works across a multitude of browsers."
+set name=com.oracle.info.description value="jQuery, a Javascript library"
+set name=com.oracle.info.tpno value=$(TPNO)
+set name=info.classification \
+    value="org.opensolaris.category.2008:Development/Other Languages"
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2021/008
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+#
+file path=usr/share/lib/javascript/jquery/$(COMPONENT_VERSION)/jquery.js
+file path=usr/share/lib/javascript/jquery/$(COMPONENT_VERSION)/jquery.min.js
+file path=usr/share/lib/javascript/jquery/$(COMPONENT_VERSION)/jquery.min.map
+link path=usr/share/lib/javascript/jquery/latest target=$(COMPONENT_VERSION)
+#
+license jquery.license license=MIT
