@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -86,6 +86,7 @@ CONFIGURE_OPTIONS += --with-zlib=$(USRDIR) --with-libidn2=$(USRDIR)
 CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += --with-libssh2
 CONFIGURE_OPTIONS += --with-nghttp2
+CONFIGURE_OPTIONS += --without-libpsl
 CONFIGURE_OPTIONS += "curl_disallow_getifaddrs=yes"
 
 # Makefile.am files of this component are not compatible with Solaris make.
