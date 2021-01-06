@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            64
@@ -30,15 +30,15 @@ COMPILER =		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		librsvg
-COMPONENT_VERSION=	2.48.8
+COMPONENT_VERSION=	2.50.2
 COMPONENT_MAJOR_MINOR=	$(basename $(COMPONENT_VERSION))
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/LibRsvg
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f480a325bbdf26d1874eb6fb330ebc5920ba64e3e08de61931bb4506dfef2692
+    sha256:6211f271ce4cd44a7318190d36712e9cea384a933d3e3570004edeb210a056d3
 COMPONENT_BUGDB=        library/librsvg
 COMPONENT_ANITYA_ID=	5420
 
-TPNO=			61309
+TPNO=			64121
 
 # Disable tests since there are some regressions.
 $(SKIP_TEST_AT_TOP_LEVEL)
@@ -59,12 +59,7 @@ unexport SHELLOPTS
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/^[mM]ake/d" ' \
-        '-e "/OK:/p" ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/ERROR:/p" '
+        '-e "/test result/p" '
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
