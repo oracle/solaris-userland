@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -64,7 +64,8 @@ CONFIGURE_OPTIONS += -Dbluez-backend=false
 # GSM Telephony Support (unnecessary).
 CONFIGURE_OPTIONS += -Dofono-backend=false
 CONFIGURE_OPTIONS += -Dinspect_tool=false
-CONFIGURE_OPTIONS += -Dtracker_backend=true
+# reverting to default of tracker being disabled 
+# to avoid issues with the gir generation with the updated vala
 
 LDFLAGS += -z gnu-version-script-compat
 
