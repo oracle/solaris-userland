@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # parfait fails to compile us (21334808)
@@ -28,19 +28,17 @@ export PARFAIT_BUILD=no
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tar
-COMPONENT_VERSION=	1.32
+COMPONENT_VERSION=	1.33
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e4bb9e08e12e7fa9f11fef544efc85e59ba34538593d9ad38148c7ca2bfbb566
+    sha256:85b6953f4bc9666eb7db61b48f150dca21b941d85090171ea8c4f89902e460af
 COMPONENT_BUGDB=	utility/gtar
 COMPONENT_ANITYA_ID=	4939
 
-TPNO=			53607
+TPNO=			64190
 
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/gnu-component.mk
-
-PATCH_LEVEL=0
 
 # tests (ttyemu.c) requires c99
 studio_C99MODE = $(studio_C99_ENABLE)
