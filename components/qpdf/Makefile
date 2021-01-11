@@ -20,32 +20,27 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=	gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		qpdf
-COMPONENT_VERSION=	10.0.1
-TPNO=			62327
+COMPONENT_VERSION=	10.1.0
+TPNO=			64216
 COMPONENT_PROJECT_URL=	http://qpdf.sourceforge.net/
 #GIT_REPO=	https://github.com/qpdf/qpdf
 # GitHub can also provide .zip files which is much faster variant
 COMPONENT_SRC=	$(COMPONENT_NAME)-release-$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	release-$(COMPONENT_NAME)-$(COMPONENT_VERSION).zip
-COMPONENT_ARCHIVE_HASH=	sha256:96fad632cbfee6e8d3e92ee7a2695e6d040e9922b004811407d461568857d2a9
+COMPONENT_ARCHIVE_HASH=	sha256:771e6ecd8551d08361023cc66df5f8007a188a3e69d58789cb7e49d44e888cf3
 COMPONENT_ARCHIVE_URL=	https://github.com/qpdf/qpdf/archive/$(COMPONENT_ARCHIVE)
 
 COMPONENT_BUGDB=	utility/qpdf
 COMPONENT_ANITYA_ID=	5542
 
 COMPONENT_TEST_TARGET= $(TEST_64_and_32)
-
-ifeq ($(MACH),i386)
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
-endif
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -62,13 +57,15 @@ CONFIGURE_OPTIONS       += --disable-crypto-openssl
 # It would be nice to align this perl-script with perl version but it breaks a build.
 #PERL_SCRIPTS += $(PROTO_DIR)/usr/bin/fix-qdf
 
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+# Note that filter-tokens test fails on 32-bit x86 architecture, see bug 32344732 for details.
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
 COMPONENT_TEST_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
+	'-e "/Total tests:/p" ' \
+	'-e "/Passes:/p" ' \
 	'-e "/Failures:/p" ' \
-	'-e "/Unexpected Passes:/p" ' \
-	'-e "/Missing Tests:/p" '
+	'-e "/Tests:/p" '
 
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += library/gnutls-3
