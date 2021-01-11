@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -38,15 +38,14 @@ COMPONENT_ANITYA_ID=	8047
 
 TPNO=			28000
 
-# This component is not yet built for Python 3.7
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.7)
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-# Disable tests since it requires packages that are not available in CBE.
-$(SKIP_TEST_AT_TOP_LEVEL)
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/$(COMPONENT_NAME)/tests
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+# one test is problematic with Python 2.7
+COMPONENT_TEST_ARGS =	-k 'not test_useFixture_uses_raise_first'
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -55,13 +54,8 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-# Run the tests in the build directory so as not to touch the source directory.
-# The tests are copied over during the build, so we don't have to do that now.
-COMPONENT_TEST_DIR = $(@D)
-COMPONENT_TEST_CMD = py.test-$(PYTHON_VERSION)
-COMPONENT_TEST_ARGS = --result-log=$(COMPONENT_TEST_OUTPUT)
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-
 test:		$(TEST_NO_ARCH)
 
 system-test:	$(NO_TESTS)
+
+REQUIRED_PACKAGES += library/python/testtools

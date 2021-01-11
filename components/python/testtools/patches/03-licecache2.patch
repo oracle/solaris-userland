@@ -1,0 +1,21 @@
+--- testtools-2.4.0/testtools/tests/test_compat.py
++++ testtools-2.4.0/testtools/tests/test_compat.py
+@@ -4,7 +4,6 @@
+ 
+ import ast
+ import io
+-import linecache2 as linecache
+ import os
+ import sys
+ import tempfile
+--- testtools-2.4.0/testtools/compat.py
++++ testtools-2.4.0/testtools/compat.py
+@@ -30,8 +30,6 @@ from extras import try_import, try_impor
+ 
+ BytesIO = try_imports(['StringIO.StringIO', 'io.BytesIO'])
+ StringIO = try_imports(['StringIO.StringIO', 'io.StringIO'])
+-# To let setup.py work, make this a conditional import.
+-linecache = try_import('linecache2')
+ 
+ try:
+     from testtools import _compat2x as _compat

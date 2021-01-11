@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -46,11 +46,9 @@ file path=usr/lib/python$(PYVER)/vendor-packages/testtools-$(COMPONENT_VERSION)-
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools-$(COMPONENT_VERSION)-py$(PYVER).egg-info/requires.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools-$(COMPONENT_VERSION)-py$(PYVER).egg-info/top_level.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/__init__.py
-$(PYTHON_2.7_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/testtools/_compat2x.py
-file path=usr/lib/python$(PYVER)/vendor-packages/testtools/_deferred.py
-file path=usr/lib/python$(PYVER)/vendor-packages/testtools/_deferreddebug.py
-file path=usr/lib/python$(PYVER)/vendor-packages/testtools/_deferredmatchers.py
-file path=usr/lib/python$(PYVER)/vendor-packages/testtools/_spinner.py
+file path=usr/lib/python$(PYVER)/vendor-packages/testtools/_compat2x.py \
+    pkg.tmp.autopyc=false
+file path=usr/lib/python$(PYVER)/vendor-packages/testtools/_compat3x.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/assertions.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/compat.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/content.py
@@ -60,6 +58,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/testtools/distutilscmd.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/helpers.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/matchers/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/matchers/_basic.py
+file path=usr/lib/python$(PYVER)/vendor-packages/testtools/matchers/_const.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/matchers/_datastructures.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/matchers/_dict.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/matchers/_doctest.py
@@ -67,6 +66,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/testtools/matchers/_exception.p
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/matchers/_filesystem.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/matchers/_higherorder.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/matchers/_impl.py
+file path=usr/lib/python$(PYVER)/vendor-packages/testtools/matchers/_warnings.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/monkey.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/run.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/runtest.py
@@ -77,6 +77,11 @@ file path=usr/lib/python$(PYVER)/vendor-packages/testtools/testresult/doubles.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/testresult/real.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/testsuite.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/twistedsupport/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/testtools/twistedsupport/_deferred.py
+file path=usr/lib/python$(PYVER)/vendor-packages/testtools/twistedsupport/_deferreddebug.py
+file path=usr/lib/python$(PYVER)/vendor-packages/testtools/twistedsupport/_matchers.py
+file path=usr/lib/python$(PYVER)/vendor-packages/testtools/twistedsupport/_runtest.py
+file path=usr/lib/python$(PYVER)/vendor-packages/testtools/twistedsupport/_spinner.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/utils.py
 #
 license testtools.license license=MIT
@@ -93,6 +98,9 @@ depend type=require fmri=library/python/fixtures-$(PYV)
 
 # force a dependency on pbr; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/pbr-$(PYV)
+
+# force a dependency on six; pkgdepend work is needed to flush this out.
+depend type=require fmri=library/python/six-$(PYV)
 
 # force a dependency on the testtools package
 depend type=require \

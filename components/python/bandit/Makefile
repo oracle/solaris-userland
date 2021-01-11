@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -55,6 +55,9 @@ COMPONENT_TEST_ARGS = \
 	--ignore bandit/core/test_properties.py \
 	--ignore tests/unit/cli/test_baseline.py \
 	--ignore tests/functional/test_baseline.py
+# runtime test needs path to bandit executable
+COMPONENT_TEST_ENV += \
+	PATH=$(PROTOUSRBINDIR):$(PATH)
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -68,6 +71,7 @@ test:		$(TEST_NO_ARCH)
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 # Testing related components
-REQUIRED_PACKAGES += library/python/mock
-REQUIRED_PACKAGES += library/python/testtools
 REQUIRED_PACKAGES += library/python/beautifulsoup4
+REQUIRED_PACKAGES += library/python/mock
+REQUIRED_PACKAGES += library/python/stevedore
+REQUIRED_PACKAGES += library/python/testtools
