@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 32_and_64
 COMPILER= gcc
@@ -108,6 +108,11 @@ HGTEST_JOBS = 20
 $(BUILD_DIR)/$(MACH64)-3.7/.built:  COMPONENT_BUILD_ENV += HGPYTHON3=1
 $(BUILD_DIR)/$(MACH64)-3.7/.installed: COMPONENT_INSTALL_ENV += HGPYTHON3=1
 $(BUILD_DIR)/$(MACH64)-3.7/.tested: COMPONENT_TEST_ENV += HGPYTHON3=1
+
+# Recompile Python 3 mercurial into its custom bytecode.
+$(BUILD_DIR)/$(MACH64)-3.7/.installed:	COMPONENT_POST_INSTALL_ACTION += \
+	(cd $(PROTOUSRLIBDIR)/python3.7/vendor-packages; \
+	 $(PYTHON.3.7) $(COMPONENT_DIR)/recompiler.py );
 
 COMPONENT_TEST_DIR =	$(COMPONENT_SRC)/tests
 COMPONENT_TEST_ENV =	PYTHONPATH=$(PROTO_DIR)/$(PYTHON_LIB)
