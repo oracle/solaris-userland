@@ -1,0 +1,24 @@
+Fixes problem with libldap ldap_get_option that prevents an
+assert error when libldap is compiled with debugging enabled
+(The default on Solaris for LDAP diagnostics output) and an
+invalid ld is passed to the API.  The API is documented to
+return an LDAP_OPT_ERROR error, but in debug we get the assert.
+The multi-threaded code in libsldap expects to get the error rc.
+
+This patch has been integrated upstream as:
+ITS#9465 remove assert in ldap_get_option()
+and can be removed once it is released in a future upstream delivery.
+
+diff --git a/libraries/libldap/options.c b/libraries/libldap/options.c
+index edabb98..1650bb8 100644
+--- a/libraries/libldap/options.c
++++ b/libraries/libldap/options.c
+@@ -111,8 +111,6 @@ ldap_get_option(
+ 	}
+ 
+ 	if(ld != NULL) {
+-		assert( LDAP_VALID( ld ) );
+-
+ 		if( !LDAP_VALID( ld ) ) {
+ 			return LDAP_OPT_ERROR;
+ 		}
