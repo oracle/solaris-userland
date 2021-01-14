@@ -16,10 +16,10 @@ Subject: [PATCH] Meson should set correctly host_machine.cpu_family for 32bit
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/mesonbuild/environment.py b/mesonbuild/environment.py
-index 52a305d2e..c7334aecf 100644
+index 7194d03..52f0e96 100644
 --- a/mesonbuild/environment.py
 +++ b/mesonbuild/environment.py
-@@ -694,7 +694,7 @@ class Environment:
+@@ -813,7 +813,7 @@ class Environment:
          """
          # Arguments to output compiler pre-processor defines to stdout
          # gcc, g++, and gfortran all support these arguments
@@ -28,6 +28,3 @@ index 52a305d2e..c7334aecf 100644
          p, output, error = Popen_safe(args, write='', stdin=subprocess.PIPE)
          if p.returncode != 0:
              raise EnvironmentException('Unable to detect GNU compiler type:\n' + output + error)
--- 
-2.19.3
-

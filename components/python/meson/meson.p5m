@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 
 
@@ -51,6 +51,8 @@ file path=usr/lib/python$(PYVER)/vendor-packages/meson-$(COMPONENT_VERSION)-py$(
 file path=usr/lib/python$(PYVER)/vendor-packages/meson-$(COMPONENT_VERSION)-py$(PYVER).egg-info/requires.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/meson-$(COMPONENT_VERSION)-py$(PYVER).egg-info/top_level.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/_pathlib.py
+file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/arglist.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/ast/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/ast/interpreter.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/ast/introspection.py
@@ -69,12 +71,11 @@ file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/build.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/cmake/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/cmake/client.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/cmake/common.py
-file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/cmake/data/preload.cmake
-file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/cmake/data/run_ctgt.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/cmake/executor.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/cmake/fileapi.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/cmake/generator.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/cmake/interpreter.py
+file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/cmake/toolchain.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/cmake/traceparser.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/compilers/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/compilers/c.py
@@ -92,6 +93,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/compilers/mixins/c20
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/compilers/mixins/ccrx.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/compilers/mixins/clang.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/compilers/mixins/clike.py
+file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/compilers/mixins/compcert.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/compilers/mixins/elbrus.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/compilers/mixins/emscripten.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/compilers/mixins/gnu.py
@@ -111,9 +113,6 @@ file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/dependencies/base.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/dependencies/boost.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/dependencies/coarrays.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/dependencies/cuda.py
-file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/dependencies/data/CMakeLists.txt
-file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/dependencies/data/CMakeListsLLVM.txt
-file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/dependencies/data/CMakePathInfo.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/dependencies/dev.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/dependencies/hdf5.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/dependencies/misc.py
@@ -130,6 +129,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/linkers.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/mcompile.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/mconf.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/mdist.py
+file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/mesondata.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/mesonlib.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/mesonmain.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/minit.py
@@ -143,6 +143,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/modules/fs.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/modules/gnome.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/modules/hotdoc.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/modules/i18n.py
+file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/modules/keyval.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/modules/modtest.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/modules/pkgconfig.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/modules/python.py
@@ -153,8 +154,8 @@ file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/modules/qt5.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/modules/rpm.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/modules/sourceset.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/modules/unstable_cuda.py
+file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/modules/unstable_external_project.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/modules/unstable_icestorm.py
-file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/modules/unstable_kconfig.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/modules/unstable_simd.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/modules/windows.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/mparser.py
@@ -170,11 +171,13 @@ file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/scripts/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/scripts/clangformat.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/scripts/clangtidy.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/scripts/cleantrees.py
+file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/scripts/cmake_run_ctgt.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/scripts/commandrunner.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/scripts/coverage.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/scripts/delwithsuffix.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/scripts/depfixer.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/scripts/dirchanger.py
+file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/scripts/externalproject.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/scripts/gettext.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/scripts/gtkdochelper.py
 file path=usr/lib/python$(PYVER)/vendor-packages/mesonbuild/scripts/hotdochelper.py

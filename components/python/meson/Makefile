@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -29,26 +29,23 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		meson
-COMPONENT_VERSION=	0.54.3
+COMPONENT_VERSION=	0.56.1
 COMPONENT_PROJECT_URL=	http://mesonbuild.com/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f2bdf4cf0694e696b48261cdd14380fb1d0fe33d24744d8b2df0c12f33ebb662
+    sha256:5780725304eaa28aac5e7de99d2d8d045112fbc10cf9f4181498b877de0ecf28
 COMPONENT_ARCHIVE_URL=	https://github.com/mesonbuild/meson/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 
 COMPONENT_BUGDB=        utility/meson
 COMPONENT_ANITYA_ID=	6472
 
-TPNO=			59806
+TPNO=			64304
 
 # As of 0.51.0, meson requires Python 3.5 or newer, and we only need
 # to build for a single version, not all of them.
 PYTHON_VERSIONS=	$(PYTHON_VERSION)
 
 BUILD_STYLE= setup.py
-
-# Disable the unit tests since the test results are outdated.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -67,18 +64,15 @@ COMPONENT_TEST_ARGS=
 COMPONENT_TEST_MASTER=	$(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 
 # Test transforms retain only reproducible summaries of results output.
+# -E flag enables extended regular expressions, so that | can be used
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/Total .* time/d" ' \
-	'-e "s/[0-9][0-9\.]* *s//" ' \
-        '-e "/Total/p" ' \
-	'-e "/^test/p" ' \
-        '-e "/PASS/p" ' \
-        '-e "/FAIL/p" ' \
-        '-e "/ERROR/p" '
+        '-e "/^Total .*time:/d" ' \
+        '-e "s/[0-9][0-9\.]* *s//" ' \
+        '-e "/^Total/p" ' \
+        '-E -e "/(^test| \.\.\. |PASS|FAIL|ERROR)/p" '
 
 PKG_MACROS +=	PYVER=$(PYTHON_VERSION)
 
 # Ninja is needed at runtime, including when running tests, but not to build
 REQUIRED_PACKAGES += developer/build/ninja
-
