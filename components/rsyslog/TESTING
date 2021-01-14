@@ -32,7 +32,6 @@ svcs -x
 ======================= Create /etc/rsyslog.d/filegroup ========================
 $FileGroup openldap
 *.* /var/tmp/openldap
-$ResetConfigVariables
 ================================================================================
 rm -f /var/tmp/openldap
 svcadm restart system/system-log:rsyslog
@@ -74,6 +73,7 @@ mail -p # should contain our "Message 2 - send"
 ====================== Create /etc/rsyslog.d/follow_file =======================
 module(load="imfile" mode="polling" PollingInterval="1")
 
+global(workDirectory="/root")
 input(type="imfile"
       file="/var/tmp/file_to_follow"
       tag="foobar"
@@ -204,7 +204,7 @@ import socket
 sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
 sock.bind('/tmp/socksample')
 while True:
-        print('!!! ' + sock.recv(4096))
+        print('!!! ' + sock.recv(4096).decode('utf-8'))
 ================================================================================
 
 ========================= Create /etc/rsyslog.d/socket =========================
@@ -246,7 +246,7 @@ Replace A.B.C.D by ip of server machine
 !!! logger -p error 'udp log'
 !!!
 !!! # Server should have the log
-!!! dmest | tail
+!!! dmesg | tail
 !!! 2016-06-18T23:22:56+00:00 S12-101 root: [ID 702911 user.error] udp log
 
 dmesg | tail # should show 'udp log' message
