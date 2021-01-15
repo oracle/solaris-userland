@@ -1,0 +1,20 @@
+Avoid:
+
+../deps/v8/src/base/platform/platform-solaris.cc:73:11: error: 'pthread_attr_get_np' was not declared in this scope; did you mean 'pthread_attr_getname_np'?
+   73 |   error = pthread_attr_get_np(pthread_self(), &attr);
+      |           ^~~~~~~~~~~~~~~~~~~
+      |           pthread_attr_getname_np
+
+diff -ru node-14.13.1.orig/deps/v8/src/base/platform/platform-solaris.cc node-14.13.1/deps/v8/src/base/platform/platform-solaris.cc
+--- node-14.13.1.orig/deps/v8/src/base/platform/platform-solaris.cc	2020-10-13 09:35:52.975205230 +0000
++++ node-14.13.1/deps/v8/src/base/platform/platform-solaris.cc	2020-10-13 09:50:54.850530130 +0000
+@@ -69,8 +69,7 @@
+ void* Stack::GetStackStart() {
+   pthread_attr_t attr;
+   int error;
+-  pthread_attr_init(&attr);
+-  error = pthread_attr_get_np(pthread_self(), &attr);
++  error = pthread_getattr_np(pthread_self(), &attr);
+   if (!error) {
+     void* base;
+     size_t size;
