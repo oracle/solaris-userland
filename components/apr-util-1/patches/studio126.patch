@@ -1,0 +1,19 @@
+Patch origin: in-house
+Patch status: Solaris-specific; not suitable for upstream
+
+Workaround for Studio 12.6 issue of not removing unreferenced static functions.
+
+--- dbd/apr_dbd_mysql.c
++++ dbd/apr_dbd_mysql.c
+@@ -14,6 +14,11 @@
+  * limitations under the License.
+  */
+ 
++/* Workaround for Studio 12.6 issue of not removing unreferenced static functions */
++#if __sparc__
++unsigned long long my_getsystime() { return 0; }
++#endif
++
+ #include "apu.h"
+ 
+ #if APU_HAVE_MYSQL
