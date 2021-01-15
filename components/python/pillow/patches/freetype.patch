@@ -1,0 +1,131 @@
+Pillow test suite uses 'packaging' module to check whether the FreeType version
+is sufficient. We don't have Python packaging, and it doesn't seem worthwhile
+to add it just to check something we already know.
+
+Our current FreeType version is high enough to pass all Pillow tests, hence it
+is safe to remove all of these checks.
+
+--- Pillow-8.1.0/Tests/test_imagefontctl.py
++++ Pillow-8.1.0/Tests/test_imagefontctl.py
+@@ -1,5 +1,4 @@
+ import pytest
+-from packaging.version import parse as parse_version
+ 
+ from PIL import Image, ImageDraw, ImageFont, features
+ 
+@@ -330,14 +329,6 @@ combine_tests = (
+     "name, text, anchor, dir, epsilon", combine_tests, ids=[r[0] for r in combine_tests]
+ )
+ def test_combine(name, text, dir, anchor, epsilon):
+-    if (
+-        parse_version(features.version_module("freetype2")) < parse_version("2.5.1")
+-        and dir == "ttb"
+-    ):
+-        # FreeType 2.5.1 README: Miscellaneous Changes:
+-        # Improved computation of emulated vertical metrics for TrueType fonts.
+-        pytest.skip("FreeType <2.5.1 has incompatible ttb metrics")
+-
+     path = f"Tests/images/test_combine_{name}.png"
+     f = ImageFont.truetype("Tests/fonts/NotoSans-Regular.ttf", 48)
+ 
+--- Pillow-8.1.0/Tests/test_imagefont.py
++++ Pillow-8.1.0/Tests/test_imagefont.py
+@@ -6,7 +6,6 @@ import sys
+ from io import BytesIO
+ 
+ import pytest
+-from packaging.version import parse as parse_version
+ 
+ from PIL import Image, ImageDraw, ImageFont, features
+ 
+@@ -621,14 +620,6 @@ class TestImageFont:
+     def test_variation_get(self):
+         font = self.get_font()
+ 
+-        freetype = parse_version(features.version_module("freetype2"))
+-        if freetype < parse_version("2.9.1"):
+-            with pytest.raises(NotImplementedError):
+-                font.get_variation_names()
+-            with pytest.raises(NotImplementedError):
+-                font.get_variation_axes()
+-            return
+-
+         with pytest.raises(OSError):
+             font.get_variation_names()
+         with pytest.raises(OSError):
+@@ -693,12 +684,6 @@ class TestImageFont:
+     def test_variation_set_by_name(self):
+         font = self.get_font()
+ 
+-        freetype = parse_version(features.version_module("freetype2"))
+-        if freetype < parse_version("2.9.1"):
+-            with pytest.raises(NotImplementedError):
+-                font.set_variation_by_name("Bold")
+-            return
+-
+         with pytest.raises(OSError):
+             font.set_variation_by_name("Bold")
+ 
+@@ -717,12 +702,6 @@ class TestImageFont:
+     def test_variation_set_by_axes(self):
+         font = self.get_font()
+ 
+-        freetype = parse_version(features.version_module("freetype2"))
+-        if freetype < parse_version("2.9.1"):
+-            with pytest.raises(NotImplementedError):
+-                font.set_variation_by_axes([100])
+-            return
+-
+         with pytest.raises(OSError):
+             font.set_variation_by_axes([500, 50])
+ 
+@@ -754,11 +733,7 @@ class TestImageFont:
+         name, text = "quick", "Quick"
+         path = f"Tests/images/test_anchor_{name}_{anchor}.png"
+ 
+-        freetype = parse_version(features.version_module("freetype2"))
+-        if freetype < parse_version("2.4"):
+-            width, height = (129, 44)
+-            left = left_old
+-        elif self.LAYOUT_ENGINE == ImageFont.LAYOUT_RAQM:
++        if self.LAYOUT_ENGINE == ImageFont.LAYOUT_RAQM:
+             width, height = (129, 44)
+         else:
+             width, height = (128, 44)
+@@ -968,15 +943,3 @@ def test_render_mono_size():
+ 
+     draw.text((10, 10), "r" * 10, "black", ttf)
+     assert_image_equal_tofile(im, "Tests/images/text_mono.gif")
+-
+-
+-def test_freetype_deprecation(monkeypatch):
+-    # Arrange: mock features.version_module to return fake FreeType version
+-    def fake_version_module(module):
+-        return "2.7"
+-
+-    monkeypatch.setattr(features, "version_module", fake_version_module)
+-
+-    # Act / Assert
+-    with pytest.warns(DeprecationWarning):
+-        ImageFont.truetype(FONT_PATH, FONT_SIZE)
+--- Pillow-8.1.0/Tests/helper.py
++++ Pillow-8.1.0/Tests/helper.py
+@@ -11,7 +11,6 @@ import tempfile
+ from io import BytesIO
+ 
+ import pytest
+-from packaging.version import parse as parse_version
+ 
+ from PIL import Image, ImageMath, features
+ 
+@@ -168,9 +167,7 @@ def skip_unless_feature_version(feature,
+         return pytest.mark.skip(f"{feature} not available")
+     if reason is None:
+         reason = f"{feature} is older than {version_required}"
+-    version_required = parse_version(version_required)
+-    version_available = parse_version(features.version(feature))
+-    return pytest.mark.skipif(version_available < version_required, reason=reason)
++    return pytest.mark.skipif(False, reason=reason)
+ 
+ 
+ @pytest.mark.skipif(sys.platform.startswith("win32"), reason="Requires Unix or macOS")

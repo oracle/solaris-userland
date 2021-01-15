@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -29,17 +29,17 @@ BUILD_BITS=		32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Pillow
-COMPONENT_VERSION=	7.2.0
+COMPONENT_VERSION=	8.1.0
 COMPONENT_PROJECT_URL=	https://github.com/python-pillow/Pillow
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:e811de93960d9a1bc96b575e363d9a44c571c2b9a0388a0efac7a94f297b882d
+    sha256:2b82d68fb3eba9f3614002fc4359f6a7c3a001c8615f2c5896720979a3e72dc1
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/pil
 COMPONENT_ANITYA_ID=	7974
 
-TPNO=			60093
+TPNO=			64338
 
 
 COMPONENT_NAME_OLD=		$(COMPONENT_NAME)

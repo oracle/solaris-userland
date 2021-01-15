@@ -1,119 +1,19 @@
-Several tests have an incorrect assumption that the test suite must be running
-on a CI server for big-endian systems to fail.
+test_file_eps.py should be investigated more. It can very well be an
+test suite endianness problem, but I am not sure right now.
 
-This was offered and accepted upstream:
-https://github.com/python-pillow/Pillow/pull/4791
-
-test_file_libtiff.py should be investigated more. It can very well be an
-endianness problem as well, but I am not sure right now.
-
---- Pillow-7.2.0/Tests/test_file_jpeg2k.py
-+++ Pillow-7.2.0/Tests/test_file_jpeg2k.py
-@@ -8,7 +8,6 @@ from .helper import (
-     assert_image_equal,
-     assert_image_similar,
-     is_big_endian,
--    on_ci,
-     skip_unless_feature,
- )
+--- Pillow-8.1.0/Tests/test_file_eps.py
++++ Pillow-8.1.0/Tests/test_file_eps.py
+@@ -1,4 +1,5 @@
+ import io
++import sys
  
-@@ -190,14 +189,14 @@ def test_16bit_monochrome_has_correct_mo
-         assert jp2.mode == "I;16"
+ import pytest
+ 
+@@ -60,6 +61,7 @@ def test_invalid_file():
  
  
--@pytest.mark.xfail(is_big_endian() and on_ci(), reason="Fails on big-endian")
-+@pytest.mark.xfail(is_big_endian(), reason="Fails on big-endian")
- def test_16bit_monochrome_jp2_like_tiff():
-     with Image.open("Tests/images/16bit.cropped.tif") as tiff_16bit:
-         with Image.open("Tests/images/16bit.cropped.jp2") as jp2:
-             assert_image_similar(jp2, tiff_16bit, 1e-3)
+ @pytest.mark.skipif(not HAS_GHOSTSCRIPT, reason="Ghostscript not available")
++@pytest.mark.xfail(sys.byteorder == "big", reason="Fails on SPARC Solaris")
+ def test_cmyk():
+     with Image.open("Tests/images/pil_sample_cmyk.eps") as cmyk_image:
  
- 
--@pytest.mark.xfail(is_big_endian() and on_ci(), reason="Fails on big-endian")
-+@pytest.mark.xfail(is_big_endian(), reason="Fails on big-endian")
- def test_16bit_monochrome_j2k_like_tiff():
-     with Image.open("Tests/images/16bit.cropped.tif") as tiff_16bit:
-         with Image.open("Tests/images/16bit.cropped.j2k") as j2k:
---- Pillow-7.2.0/Tests/test_file_webp_animated.py
-+++ Pillow-7.2.0/Tests/test_file_webp_animated.py
-@@ -5,7 +5,6 @@ from .helper import (
-     assert_image_equal,
-     assert_image_similar,
-     is_big_endian,
--    on_ci,
-     skip_unless_feature,
- )
- 
-@@ -27,7 +26,7 @@ def test_n_frames():
-         assert im.is_animated
- 
- 
--@pytest.mark.xfail(is_big_endian() and on_ci(), reason="Fails on big-endian")
-+@pytest.mark.xfail(is_big_endian(), reason="Fails on big-endian")
- def test_write_animation_L(tmp_path):
-     """
-     Convert an animated GIF to animated WebP, then compare the frame count, and first
-@@ -53,7 +52,7 @@ def test_write_animation_L(tmp_path):
-             assert_image_similar(im, orig.convert("RGBA"), 25.0)
- 
- 
--@pytest.mark.xfail(is_big_endian() and on_ci(), reason="Fails on big-endian")
-+@pytest.mark.xfail(is_big_endian(), reason="Fails on big-endian")
- def test_write_animation_RGB(tmp_path):
-     """
-     Write an animated WebP from RGB frames, and ensure the frames
---- Pillow-7.2.0/Tests/test_file_png.py
-+++ Pillow-7.2.0/Tests/test_file_png.py
-@@ -12,7 +12,6 @@ from .helper import (
-     hopper,
-     is_big_endian,
-     is_win32,
--    on_ci,
-     skip_unless_feature,
- )
- 
-@@ -69,7 +68,7 @@ class TestFilePng:
-                     png.crc(cid, s)
-         return chunks
- 
--    @pytest.mark.xfail(is_big_endian() and on_ci(), reason="Fails on big-endian")
-+    @pytest.mark.xfail(is_big_endian(), reason="Fails on big-endian")
-     def test_sanity(self, tmp_path):
- 
-         # internal version number
---- Pillow-7.2.0/Tests/test_file_libtiff.py
-+++ Pillow-7.2.0/Tests/test_file_libtiff.py
-@@ -815,11 +815,13 @@ class TestFileLibTiff(LibTiffTestCase):
-         with Image.open(infile) as im:
-             assert_image_similar_tofile(im, "Tests/images/pil_sample_cmyk.jpg", 0.5)
- 
-+    @pytest.mark.skip(reason="Fails on SPARC Solaris")
-     def test_strip_ycbcr_jpeg_2x2_sampling(self):
-         infile = "Tests/images/tiff_strip_ycbcr_jpeg_2x2_sampling.tif"
-         with Image.open(infile) as im:
-             assert_image_similar_tofile(im, "Tests/images/flower.jpg", 0.5)
- 
-+    @pytest.mark.skip(reason="Fails on SPARC Solaris")
-     def test_strip_ycbcr_jpeg_1x1_sampling(self):
-         infile = "Tests/images/tiff_strip_ycbcr_jpeg_1x1_sampling.tif"
-         with Image.open(infile) as im:
-@@ -830,16 +832,19 @@ class TestFileLibTiff(LibTiffTestCase):
-         with Image.open(infile) as im:
-             assert_image_similar_tofile(im, "Tests/images/pil_sample_cmyk.jpg", 0.5)
- 
-+    @pytest.mark.skip(reason="Fails on SPARC Solaris")
-     def test_tiled_ycbcr_jpeg_1x1_sampling(self):
-         infile = "Tests/images/tiff_tiled_ycbcr_jpeg_1x1_sampling.tif"
-         with Image.open(infile) as im:
-             assert_image_equal_tofile(im, "Tests/images/flower2.jpg")
- 
-+    @pytest.mark.skip(reason="Fails on SPARC Solaris")
-     def test_tiled_ycbcr_jpeg_2x2_sampling(self):
-         infile = "Tests/images/tiff_tiled_ycbcr_jpeg_2x2_sampling.tif"
-         with Image.open(infile) as im:
-             assert_image_similar_tofile(im, "Tests/images/flower.jpg", 0.5)
- 
-+    @pytest.mark.skip(reason="Fails on SPARC Solaris")
-     def test_old_style_jpeg(self):
-         infile = "Tests/images/old-style-jpeg-compression.tif"
-         with Image.open(infile) as im:

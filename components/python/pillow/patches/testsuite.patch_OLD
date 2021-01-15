@@ -1,6 +1,8 @@
 Several tests are not working correctly on big-endian systems. This code
 is from newer Pillow releases.
 
+Also, freetype 2.10 is not accounted for.
+
 --- Pillow-5.1.0/Tests/test_file_jpeg2k.py
 +++ Pillow-5.1.0/Tests/test_file_jpeg2k.py
 @@ -3,6 +3,9 @@ from helper import unittest, PillowTestC
@@ -58,17 +60,16 @@ is from newer Pillow releases.
          Write an animated WebP from RGB frames, and ensure the frames
 --- Pillow-5.1.0/Tests/test_file_png.py
 +++ Pillow-5.1.0/Tests/test_file_png.py
-@@ -5,6 +5,9 @@ from io import BytesIO
+@@ -5,6 +5,8 @@ from io import BytesIO
  import zlib
  import sys
  
-+import sys
 +import pytest
 +
  codecs = dir(Image.core)
  
  
-@@ -273,6 +276,7 @@ class TestFilePng(PillowTestCase):
+@@ -273,6 +275,7 @@ class TestFilePng(PillowTestCase):
          # image has 876 transparent pixels
          self.assertEqual(im.getchannel('A').getcolors()[0][0], 876)
  
@@ -76,3 +77,35 @@ is from newer Pillow releases.
      def test_save_p_transparent_black(self):
          # check if solid black image with full transparency
          # is supported (check for #1838)
+--- Pillow-5.1.0/Tests/test_file_eps.py
++++ Pillow-5.1.0/Tests/test_file_eps.py
+@@ -3,6 +3,9 @@ from helper import unittest, PillowTestC
+ from PIL import Image, EpsImagePlugin
+ import io
+ 
++import sys
++import pytest
++
+ # Our two EPS test files (they are identical except for their bounding boxes)
+ file1 = "Tests/images/zero_bb.eps"
+ file2 = "Tests/images/non_zero_bb.eps"
+@@ -57,6 +60,7 @@ class TestFileEps(PillowTestCase):
+         self.assertRaises(SyntaxError,
+                           EpsImagePlugin.EpsImageFile, invalid_file)
+ 
++    @pytest.mark.xfail(sys.byteorder == "big", reason="Fails on SPARC Solaris")
+     def test_cmyk(self):
+         cmyk_image = Image.open("Tests/images/pil_sample_cmyk.eps")
+ 
+--- Pillow-5.1.0/Tests/test_imagefont.py
++++ Pillow-5.1.0/Tests/test_imagefont.py
+@@ -61,6 +61,9 @@ class TestImageFont(PillowTestCase):
+                 ('2', '9'): {'multiline': 6.2,
+                              'textsize': 2.5,
+                              'getters': (12, 16)},
++                ('2', '10'): {'multiline': 6.2,
++                             'textsize': 2.5,
++                             'getters': (12, 16)},
+                 'Default': {'multiline': 0.5,
+                             'textsize': 0.5,
+                             'getters': (12, 16)},
