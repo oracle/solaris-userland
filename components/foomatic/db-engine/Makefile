@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS=	64
 COMPILER=	gcc
@@ -60,18 +60,17 @@ COMPONENT_PRE_CONFIGURE_ACTION = $(CLONEY) $(SOURCE_DIR) $(@D) ;
 # setup perl build
 COMPONENT_PRE_CONFIGURE_ACTION += cd $(@D)/lib ; $(PERL) Makefile.PL
 
-# install perl modules
-COMPONENT_PRE_INSTALL_ACTION = \
- ( cd $(@D)/lib ; $(GMAKE) install_vendor DESTDIR=$(PROTO_DIR) )
-
 # publish for only one version of perl
 PERL_VERSIONS = $(PERL_VERSION)
 
+# install perl modules including Foomatic::Defaults
 # the perl .packlist contains the path to the file as built rather than
 # as installed. Fix to be installed path, ie remove PROTO_DIR.
 VENDORARCH= $(shell $(PERL) -e 'use Config; print $$Config{vendorarch}')
 PACKLIST=   $(VENDORARCH)/auto/Foomatic/.packlist
 COMPONENT_POST_INSTALL_ACTION = \
+ ( cd $(@D)/lib ; $(GMAKE) install_vendor DESTDIR=$(PROTO_DIR) ) ; \
+ $(INSTALL) -m 0644 -t $(PROTO_DIR)/usr/perl5/vendor_perl/$(PERL_VERSION)/Foomatic/ $(@D)/lib/Foomatic/Defaults.pm ; \
  sed -e "s/$(subst /,\\/,$(PROTO_DIR))//g" $(PROTO_DIR)/$(PACKLIST) \
      >> $(PROTO_DIR)/$(PACKLIST).fixed ; \
  $(MV) $(PROTO_DIR)/$(PACKLIST).fixed $(PROTO_DIR)/$(PACKLIST)
