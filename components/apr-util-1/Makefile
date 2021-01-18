@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 
 # Prefer 32-bit over 64-bit as apr-util has its own custom package layout.
@@ -70,6 +70,9 @@ else
 PATH=$(SPRO_VROOT)/bin:$(USRBINDIR):$(GNUBIN)
 endif
 
+# Avoid RPATH to Studio compiler for apr_dbd_mysql-1.so.
+COMPONENT_PRE_BUILD_ACTION += (cd $(@D); gsed -i 's/-latomic//g' Makefile);
+
 COMPONENT_TEST_TARGETS= test
 
 COMPONENT_TEST_TRANSFORMS += \
@@ -91,8 +94,6 @@ REQUIRED_PACKAGES += database/mysql-57/library
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += library/apr-1
-# to be removed after apr-1 gets into repo
-REQUIRED_PACKAGES += library/apr-16
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/math

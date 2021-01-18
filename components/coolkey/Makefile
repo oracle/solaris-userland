@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 # TESTING:
@@ -66,9 +66,7 @@ COMPONENT_PREP_ACTION += (cd $(@D); autoconf);
 CXX	:= $(CXX) -std=sun03
 
 # Do not add the SUNWspro area to the RUNPATH. Follow exactly what CC does.
-LD_UNSET.32.i386	= -R$(SPRO_VROOT)/lib
-LD_UNSET.32.sparc	= -R$(SPRO_VROOT)/lib/$(MACH):$(SPRO_VROOT)/lib
-LD_UNSET.32		= $(LD_UNSET.32.$(MACH))
+LD_UNSET.32		= -R$(SPRO_VROOT)/lib
 LD_UNSET.64		= -R$(SPRO_VROOT)/lib/$(MACH64)
 LD_UNSET		+= $(LD_UNSET.$(BITS))
 COMPONENT_BUILD_ENV	+= LD_UNSET="$(LD_UNSET)"
