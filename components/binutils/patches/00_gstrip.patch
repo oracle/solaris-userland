@@ -1,0 +1,68 @@
+The patch adds a missing elf64_sparc_copy_solaris_special_section_fields
+function that enables to fill sh_link and sh_info fields in .SUNW_* sections.
+Currently, the default handling is sufficient for GNU strip command.
+
+Note that we also unconditionally remove .SUNW_sym.*sort sections since
+they point to .symtab section that is removed from a stripped binary.
+
+This is a followup patch of the following upstream commits:
+
+commit 5522f910cb539905d6adfdceab208ddfa5e84557
+Author: Nick Clifton <nickc@redhat.com>
+Date:   Fri Apr 29 09:24:42 2016 +0100
+
+    Enhance support for copying and stripping Solaris and ARM binaries.
+
+commit 84865015459b4e9e8ac67f9b91617fbd856d5119
+Author: Nick Clifton <nickc@redhat.com>
+Date:   Thu Apr 14 12:04:09 2016 +0100
+
+    Fix copying Solaris binaries with objcopy.
+
+The first part of this patch is suitable for upstream
+since it is a followup fix for the upstream commit.
+The hardcoded removal of .SUNW_sym*sort sections is
+a Solaris specific workaround not suitable for upstream.
+
+--- binutils-2.35.1/bfd/elf64-sparc.c	2021-01-29 09:40:12.440883570 +0000
++++ binutils-2.35.1/bfd/elf64-sparc.c	2021-01-29 09:37:27.117508685 +0000
+@@ -1004,4 +1004,24 @@ const struct elf_size_info elf64_sparc_s
+ #undef elf_backend_static_tls_alignment
+ #define elf_backend_static_tls_alignment	16
+ 
++#undef  elf_backend_strtab_flags
++#define elf_backend_strtab_flags       SHF_STRINGS
++
++static bfd_boolean
++elf64_sparc_copy_solaris_special_section_fields (const bfd *ibfd ATTRIBUTE_UNUSED,
++                                  bfd *obfd ATTRIBUTE_UNUSED,
++                                  const Elf_Internal_Shdr *isection ATTRIBUTE_UNUSED,
++                                  Elf_Internal_Shdr *osection ATTRIBUTE_UNUSED)
++{
++  /* PR 19938: FIXME: Need to add code for setting the sh_info
++     and sh_link fields of Solaris specific section types.  */
++  return FALSE;
++}
++
++#undef  elf_backend_copy_special_section_fields
++#define elf_backend_copy_special_section_fields elf64_sparc_copy_solaris_special_section_fields
++
+ #include "elf64-target.h"
++
++#undef  elf_backend_strtab_flags
++#undef  elf_backend_copy_special_section_fields
+--- binutils-2.35.1/binutils/objcopy.c	2021-01-29 15:13:12.464152915 +0000
++++ binutils-2.35.1/binutils/objcopy.c	2021-01-29 15:12:55.533627345 +0000
+@@ -4748,6 +4748,12 @@ strip_main (int argc, char *argv[])
+ 	}
+     }
+ 
++  #if defined(sun) || defined(__sun) || defined(__sun__)
++  handle_remove_section_option(".SUNW_symtabsort");
++  handle_remove_section_option(".SUNW_symtabnsort");
++  handle_remove_section_option(".SUNW_symtlssort");
++  #endif
++
+   /* If the user has not expressly chosen to merge/not-merge ELF notes
+      then enable the merging unless we are stripping debug or dwo info.  */
+   if (! merge_notes_set
