@@ -1,13 +1,15 @@
 Solaris specific patch to add information about rsync not supporting NFSv4 ACLs.
 
---- rsync-3.1.3/rsync.1.orig	2018-07-13 07:22:25.488664760 -0700
-+++ rsync-3.1.3/rsync.1	2018-07-13 07:25:27.604592732 -0700
-@@ -1274,6 +1274,8 @@
- The source and destination systems must have compatible ACL entries for this
- option to work properly.  See the \fB\-\-fake\-super\fP option for a way to backup
- and restore ACLs that are not compatible.
+diff --git a/rsync.1 b/rsync.1
+index a7a3c41..6b5f81b 100644
+--- a/rsync.1
++++ b/rsync.1
+@@ -1305,6 +1305,8 @@ the source ACLs.  The option also implies \fB\-\-perms\fP.
+ The source and destination systems must have compatible ACL entries for
+ this option to work properly.  See the \fB\-\-fake-super\fP option for a way to
+ backup and restore ACLs that are not compatible.
 +.IP
 +Note, that rsync does not support NFSv4 ACLs.
- .IP 
- .IP "\fB\-X, \-\-xattrs\fP"
- This option causes rsync to update the destination
+ .IP "\fB\-\-xattrs\fP, \fB\-X\fP"
+ This option causes rsync to update the destination extended attributes to
+ be the same as the source ones.

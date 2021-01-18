@@ -20,36 +20,45 @@
 #
 
 #
-# Copyright (c) 2009, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2009, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		rsync
-COMPONENT_VERSION=	3.1.3
+COMPONENT_VERSION=	3.2.3
 COMPONENT_PROJECT_URL=	http://rsync.samba.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:55cc554efec5fdaad70de921cd5a5eeb6c29a95524c715f3bbf849235b0800c0
+    sha256:becc3c504ceea499f4167a260040ccf4d9f2ef9499ad5683c179a697146ce50e
 COMPONENT_ARCHIVE_URL=	http://rsync.samba.org/ftp/rsync/src/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	4217
 
-TPNO=			45432
+# Use GNU compiler to automatically remove the build path from macros and debug information.
+COMPILER=	gcc
+
+TPNO=			64394
 
 include $(WS_MAKE_RULES)/common.mk
 
-# The .1 refers to version 3.1.3-1 to distinguish between community version
+# The .1 refers to version 3.2.3-1 to distinguish between community version
 # of rsync and this package, which contains all known fixes. A similar approach
 # is adopted by some Linux distros.
-IPS_COMPONENT_VERSION=	3.1.3
+IPS_COMPONENT_VERSION=	3.2.3
 HUMAN_VERSION=		$(COMPONENT_VERSION)-1
 
 CONFIGURE_OPTIONS  +=		SHELL_PATH=$(BINDIR)/sh
 CONFIGURE_OPTIONS  +=		--with-included-popt
 CONFIGURE_OPTIONS  +=		--enable-xattr-support
+CONFIGURE_OPTIONS  +=		--disable-xxhash
+CONFIGURE_OPTIONS  +=		--disable-zstd
+CONFIGURE_OPTIONS  +=		--disable-openssl
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
 	'-e "/passed$$/p" ' \
 	'-e "/skipped$$/p" '
+
+REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += compress/lz4
