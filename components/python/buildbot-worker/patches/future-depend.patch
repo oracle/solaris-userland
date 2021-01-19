@@ -1,0 +1,237 @@
+buildbot-worker depends on future package, which is there only for Python 2
+backward compatibility. Since we are not building it for Python 2 and bringing in
+another soon-to-be-obsolete dependency is not feasible, we are patching it out.
+
+Not suitable for upstream (although they will most likely do the same thing soon).
+
+--- buildbot-worker-2.10.0/buildbot_worker/compat.py
++++ buildbot-worker-2.10.0/buildbot_worker/compat.py
+@@ -21,7 +21,6 @@ between Python 2 and Python 3.
+ 
+ from __future__ import absolute_import
+ from __future__ import print_function
+-from future.utils import text_type
+ 
+ if str != bytes:
+     # On Python 3 and higher, str and bytes
+@@ -66,7 +65,7 @@ def unicode2bytes(x, encoding='utf-8', e
+     @param errors: error handling scheme, default 'strict'
+     @return: a string of type C{bytes}
+     """
+-    if isinstance(x, text_type):
++    if isinstance(x, str):
+         x = x.encode(encoding, errors)
+     return x
+ 
+@@ -82,9 +81,9 @@ def bytes2unicode(x, encoding='utf-8', e
+     @return: a unicode string of type C{unicode} on Python 2, or
+              C{str} on Python 3.
+     """
+-    if isinstance(x, (text_type, type(None))):
++    if isinstance(x, (str, type(None))):
+         return x
+-    return text_type(x, encoding, errors)
++    return str(x, encoding, errors)
+ 
+ 
+ __all__ = [
+--- buildbot-worker-2.10.0/buildbot_worker/commands/utils.py
++++ buildbot-worker-2.10.0/buildbot_worker/commands/utils.py
+@@ -15,7 +15,6 @@
+ 
+ from __future__ import absolute_import
+ from __future__ import print_function
+-from future.utils import text_type
+ 
+ import os
+ 
+@@ -67,9 +66,9 @@ if runtime.platformType == 'win32':  # p
+         # Thus, if a non-unicode-named dir contains a unicode filename, that filename will get
+         # garbled.
+         # So force dir to be unicode.
+-        if not isinstance(dir, text_type):
++        if not isinstance(dir, str):
+             try:
+-                dir = text_type(dir, "utf-8")
++                dir = str(dir, "utf-8")
+             except UnicodeDecodeError:
+                 log.err("rmdirRecursive: decoding from UTF-8 failed (ignoring)")
+ 
+--- buildbot-worker-2.10.0/buildbot_worker/monkeypatches/testcase_assert.py
++++ buildbot-worker-2.10.0/buildbot_worker/monkeypatches/testcase_assert.py
+@@ -15,7 +15,6 @@
+ 
+ from __future__ import absolute_import
+ from __future__ import print_function
+-from future.utils import string_types
+ 
+ import re
+ import unittest
+@@ -39,7 +38,7 @@ def _assertRaisesRegexp(self, expected_e
+     if exception is None:
+         self.fail("{0} not raised".format(str(expected_exception.__name__)))
+ 
+-    if isinstance(expected_regexp, string_types):
++    if isinstance(expected_regexp, str):
+         expected_regexp = re.compile(expected_regexp)
+ 
+     if not expected_regexp.search(str(exception)):
+--- buildbot-worker-2.10.0/buildbot_worker/pbutil.py
++++ buildbot-worker-2.10.0/buildbot_worker/pbutil.py
+@@ -19,7 +19,6 @@
+ 
+ from __future__ import absolute_import
+ from __future__ import print_function
+-from future.utils import iteritems
+ 
+ from twisted.cred import error
+ from twisted.internet import reactor
+@@ -114,6 +113,6 @@ def decode(data, encoding='utf-8', error
+         return bytes2unicode(data, encoding, errors)
+     if data_type in (dict, list, tuple):
+         if data_type == dict:
+-            data = iteritems(data)
++            data = data.items()
+         return data_type(map(decode, data))
+     return data
+--- buildbot-worker-2.10.0/buildbot_worker/runprocess.py
++++ buildbot-worker-2.10.0/buildbot_worker/runprocess.py
+@@ -19,11 +19,6 @@ Support for running 'shell commands'
+ 
+ from __future__ import absolute_import
+ from __future__ import print_function
+-from future.builtins import range
+-from future.utils import PY3
+-from future.utils import iteritems
+-from future.utils import string_types
+-from future.utils import text_type
+ 
+ import os
+ import pprint
+@@ -56,6 +51,8 @@ from buildbot_worker.exceptions import A
+ if runtime.platformType == 'posix':
+     from twisted.internet.process import Process
+ 
++PY3 = True
++
+ 
+ def win32_batch_quote(cmd_list, unicode_encoding='utf-8'):
+     # Quote cmd_list to a string that is suitable for inclusion in a
+@@ -330,9 +327,9 @@ class RunProcess(object):
+         def to_bytes(cmd):
+             if isinstance(cmd, (tuple, list)):
+                 for i, a in enumerate(cmd):
+-                    if isinstance(a, text_type):
++                    if isinstance(a, str):
+                         cmd[i] = a.encode(self.builder.unicode_encoding)
+-            elif isinstance(cmd, text_type):
++            elif isinstance(cmd, str):
+                 cmd = cmd.encode(self.builder.unicode_encoding)
+             return cmd
+ 
+@@ -348,7 +345,7 @@ class RunProcess(object):
+         if not os.path.exists(workdir):
+             os.makedirs(workdir)
+         if environ:
+-            for key, v in iteritems(environ):
++            for key, v in environ.items():
+                 if isinstance(v, list):
+                     # Need to do os.pathsep translation.  We could either do that
+                     # by replacing all incoming ':'s with os.pathsep, or by
+@@ -371,9 +368,9 @@ class RunProcess(object):
+                 # environment
+                 if key not in environ or environ[key] is not None:
+                     newenv[key] = os.environ[key]
+-            for key, v in iteritems(environ):
++            for key, v in environ.items():
+                 if v is not None:
+-                    if not isinstance(v, string_types):
++                    if not isinstance(v, str):
+                         raise RuntimeError("'env' values must be strings or "
+                                            "lists; key '{0}' is incorrect".format(key))
+                     newenv[key] = p.sub(subst, v)
+@@ -630,7 +627,7 @@ class RunProcess(object):
+ 
+         # echo off hides this cheat from the log files.
+         tf.write(u"@echo off\n")
+-        if isinstance(self.command, (string_types, bytes)):
++        if isinstance(self.command, (str, bytes)):
+             tf.write(bytes2NativeString(self.command, self.builder.unicode_encoding))
+         else:
+             tf.write(win32_batch_quote(self.command, self.builder.unicode_encoding))
+--- buildbot-worker-2.10.0/buildbot_worker/scripts/windows_service.py
++++ buildbot-worker-2.10.0/buildbot_worker/scripts/windows_service.py
+@@ -67,7 +67,6 @@
+ from __future__ import absolute_import
+ from __future__ import division
+ from __future__ import print_function
+-from future.builtins import range
+ 
+ import os
+ import sys
+--- buildbot-worker-2.10.0/buildbot_worker/test/unit/test_bot.py
++++ buildbot-worker-2.10.0/buildbot_worker/test/unit/test_bot.py
+@@ -15,7 +15,6 @@
+ 
+ from __future__ import absolute_import
+ from __future__ import print_function
+-from future.builtins import range
+ 
+ import multiprocessing
+ import os
+--- buildbot-worker-2.10.0/buildbot_worker/test/util/misc.py
++++ buildbot-worker-2.10.0/buildbot_worker/test/util/misc.py
+@@ -20,8 +20,6 @@
+ 
+ from __future__ import absolute_import
+ from __future__ import print_function
+-from future.utils import PY3
+-from future.utils import string_types
+ 
+ import errno
+ import os
+@@ -44,12 +42,13 @@ except ImportError:
+     # Python 3
+     import builtins
+ 
++PY3 = True
+ 
+ def nl(s):
+     """Convert the given string to the native newline format, assuming it is
+     already in normal UNIX newline format (\n).  Use this to create the
+     appropriate expectation in an assertEqual"""
+-    if not isinstance(s, string_types):
++    if not isinstance(s, str):
+         return s
+     return s.replace('\n', os.linesep)
+ 
+--- buildbot-worker-2.10.0/buildbot_worker/util/__init__.py
++++ buildbot-worker-2.10.0/buildbot_worker/util/__init__.py
+@@ -13,8 +13,6 @@
+ #
+ # Copyright Buildbot Team Members
+ 
+-from future.utils import text_type
+-
+ import itertools
+ import textwrap
+ import time
+@@ -72,7 +70,7 @@ class Obfuscated(object):
+ 
+     @staticmethod
+     def to_text(s):
+-        if isinstance(s, (text_type, bytes)):
++        if isinstance(s, (str, bytes)):
+             return s
+         return str(s)
+ 
+--- buildbot-worker-2.10.0/setup.py
++++ buildbot-worker-2.10.0/setup.py
+@@ -122,7 +122,6 @@ twisted_ver = ">= 17.9.0"
+ if setuptools is not None:
+     setup_args['install_requires'] = [
+         'twisted ' + twisted_ver,
+-        'future',
+     ]
+ 
+     # Unit test hard dependencies.
