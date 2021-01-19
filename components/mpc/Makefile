@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -80,7 +80,6 @@ TEST_TARGET= install $(TEST_32_and_64)
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS  +=	--infodir=$(CONFIGURE_INFODIR)
-CONFIGURE_OPTIONS  +=	--with-gmp-include=$(shell pkg-config --variable=includedir libgmp)
 CONFIGURE_OPTIONS  +=	--with-mpfr-include=$(shell pkg-config --variable=includedir libmpfr)
 CONFIGURE_OPTIONS  +=	--disable-static
 

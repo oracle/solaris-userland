@@ -1,0 +1,40 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+
+# We only deliver libgmp.so.3 file (ON gate), so we need to drop a link and emit a file.
+<transform link path=usr/lib/libgmp.so.3 -> drop>
+<transform file path=usr/lib/libgmp.so.3.5.2 -> emit file path=usr/lib/libgmp.so.3>
+<transform file path=usr/lib/libgmp.so.3.5.2 -> drop>
+<transform link path=usr/lib/\$\(MACH64\)/libgmp.so.3 -> drop>
+<transform file path=usr/lib/\$\(MACH64\)/libgmp.so.3.5.2 -> emit file path=usr/lib/$(MACH64)/libgmp.so.3>
+<transform file path=usr/lib/\$\(MACH64\)/libgmp.so.3.5.2 -> drop>
+
+# Deliver a static library required for x86 WanBoot.
+<transform file path=usr/lib/grub/wanboot/libgmp.a -> set variant.arch i386>
+
+# Drop extra stuff...
+<transform dir -> drop>
+<transform file path=mangled -> drop>
+<transform file path=usr/lib/(\$\(MACH64\)/)?libgmp.a -> drop>

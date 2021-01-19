@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 COMPILER=	gcc
 BUILD_BITS= 64_and_32
@@ -41,9 +41,6 @@ TPNO=			33315
 include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_PREP_ACTION = (cd $(@D) ; $(AUTORECONF) -fiv)
-
-# When gmp.h is installed in the default path, this can be removed.
-CFLAGS +=	$(shell pkg-config --cflags libgmp)
 
 CONFIGURE_OPTIONS  +=		--localstatedir=$(VARDIR)
 CONFIGURE_OPTIONS  +=		--infodir=$(CONFIGURE_INFODIR)

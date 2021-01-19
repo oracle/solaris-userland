@@ -19,7 +19,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=	gcc
@@ -54,10 +54,6 @@ COMPONENT_SIG_URL_1=	$(COMPONENT_ARCHIVE_URL_1).sig
 $(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
-
-# When gmp.h is installed in the default path, this can be removed.
-CFLAGS +=	$(shell pkg-config --cflags libgmp)
-LINT_FLAGS +=	$(shell pkg-config --cflags libgmp)
 
 # Macros to configure, build, and install the old version so we can contiune
 # to deliver runtime support for GCC until a newer build of GCC built against
@@ -98,7 +94,6 @@ CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += --disable-libtool-lock
 CONFIGURE_OPTIONS += --enable-thread-safe
 CONFIGURE_OPTIONS += --enable-tests-timeout=0
-CONFIGURE_OPTIONS += --with-gmp-include=$(shell pkg-config --variable=includedir libgmp)
 CONFIGURE_OPTIONS += --with-mulhigh-size=$(MPFRMULHIGH)
 CONFIGURE_OPTIONS += --with-pic
 

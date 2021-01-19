@@ -19,7 +19,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=gcc
@@ -28,17 +28,17 @@ include ../../make-rules/shared-macros.mk
 PATH=$(dir $(CC)):$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=		gmp
-COMPONENT_VERSION=      6.1.2
+COMPONENT_VERSION=      6.2.1
 COMPONENT_PROJECT_URL=	https://gmplib.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:87b565e89a9a684fe4ebeeddb8399dce2599f9c9049854ca8c0dfbdea0e21912
+    sha256:fd4829912cddd12f84181c3451cc752be224643e87fac497b69edddadc49b4f2
 COMPONENT_ARCHIVE_URL=  https://gmplib.org/download/gmp/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=	library/gnump
 COMPONENT_ANITYA_ID=	1186
 
-TPNO=			33317
+TPNO=			64413
 TPNO_4.3.2=		16955
 
 COMPONENT_VERSION_1=      4.3.2
@@ -48,9 +48,6 @@ COMPONENT_ARCHIVE_HASH_1= \
     sha256:7be3ad1641b99b17f6a8be6a976f1f954e997c41e919ad7e0c418fe848c13c97
 COMPONENT_ARCHIVE_URL_1=  http://ftp.gnu.org/gnu/gmp/$(COMPONENT_ARCHIVE_1)
 COMPONENT_SIG_URL_1=	  $(COMPONENT_ARCHIVE_URL_1).sig
-
-# Skipping this during automated tests since it hangs sometimes
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 COMPONENT_PREP_ACTION = (cd $(@D) ; $(AUTORECONF) -fiv)
 
@@ -67,8 +64,7 @@ INSTALL_32_and_64 += $(WANBOOT_INSTALL.$(MACH64))
 
 $(BUILD_DIR_64)/.installed:	$(WANBOOT_INSTALL.$(MACH64))
 
-
-# Macros to configure, build, and install the old version so we can contiune
+# Macros to configure, build, and install the old version so we can continue
 # to deliver runtime support for GCC until a newer build of GCC built against
 # the new GNU MP is part of the CBE.  Once the newer GCC packages are
 # on the build systems, we can stop building and delivering the old version.
@@ -115,11 +111,16 @@ CFLAGS.wanboot += -fno-common
 CFLAGS.wanboot += -mcmodel=large
 CFLAGS.wanboot += -fno-stack-protector
 CFLAGS.wanboot += -mno-stack-arg-probe
+CFLAGS.wanboot += -fno-tree-vectorize
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 # We want to run tests in a stripped environment so nothing interferes
 COMPONENT_TEST_ENV += -i
+
+# Reduce the number of test iterations otherwise tests run almost forever...
+COMPONENT_TEST_ENV += GMP_CHECK_REPFACTOR=0.25
+
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-e "s/^make\[[0-9]\{1,\}\]/make/g"' \
@@ -190,6 +191,9 @@ install: $(INSTALL_32_and_64)
 $(BUILD_DIR)/$(MACH32)/.installed: COMPONENT_POST_INSTALL_ACTION = $(COMPONENT_POST_INSTALL_ACTION.shared)
 $(BUILD_DIR)/$(MACH64)/.installed: COMPONENT_POST_INSTALL_ACTION = $(COMPONENT_POST_INSTALL_ACTION.shared)
 $(BUILD_DIR)/wanboot-amd64/.installed: COMPONENT_POST_INSTALL_ACTION = $(COMPONENT_POST_INSTALL_ACTION.wanboot)
+
+# Some static libraries are delivered, avoid manifest cleanup.
+MANIFEST_CLEANUP_TRANSFORM=
 
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

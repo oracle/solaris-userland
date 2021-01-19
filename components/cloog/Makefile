@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -76,7 +76,6 @@ CXXFLAGS += $(CLOOG_GCC_ARCH)
 CXXFLAGS += -Wall -Wextra -Wcast-qual -Wcast-align
 
 CPPFLAGS += $(CPP_LARGEFILES)
-CPPFLAGS += `pkg-config --cflags libgmp`
 CPPFLAGS += `pkg-config --cflags libmpfr`
 CPPFLAGS += `pkg-config --cflags isl`
 
