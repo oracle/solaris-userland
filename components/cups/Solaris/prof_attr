@@ -1,1 +1,12 @@
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+# DO NOT MODIFY THIS FILE any changes will be lost on pkg update.
+#
+# CUPS and General printing profiles
 CUPS Administration:RO:::auths=solaris.smf.manage.cups
+Printer Management:RO::Manage printers, daemons, spooling:auths=solaris.print.*;profiles=CUPS Administration
+
+# Add the Printer Management profile to the Operator and System Administrator profiles
+Operator:RO:::profiles=Printer Management
+System Administrator:RO::profiles=Printer Management
