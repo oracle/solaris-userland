@@ -13,17 +13,17 @@ Not suitable for upstream
              'PYTHONDONTWRITEBYTECODE')
  
          try:
---- a/js/src/gc/Memory.cpp	2019-09-03 12:13:28.359033687 -0700
-+++ b/js/src/gc/Memory.cpp	2019-09-03 12:13:38.667197092 -0700
-@@ -84,7 +84,7 @@
-     return uintptr_t(p) % alignment;
+--- a/js/src/gc/Memory.cpp	2021-01-21 07:39:51.031912920 -0800
++++ b/js/src/gc/Memory.cpp	2021-01-21 07:40:06.317075808 -0800
+@@ -75,7 +75,7 @@
+   return uintptr_t(p) % alignment;
  }
  
--void*
-+static void*
- TestMapAlignedPagesLastDitch(size_t size, size_t alignment)
- {
-     return MapAlignedPagesLastDitch(size, alignment);
+-void* TestMapAlignedPagesLastDitch(size_t size, size_t alignment) {
++static void* TestMapAlignedPagesLastDitch(size_t size, size_t alignment) {
+   return MapAlignedPagesLastDitch(size, alignment);
+ }
+ 
 --- a/js/src/gc/Memory.h	2019-09-03 12:13:54.329641951 -0700
 +++ b/js/src/gc/Memory.h	2019-09-03 12:14:02.775208969 -0700
 @@ -41,7 +41,7 @@
@@ -77,16 +77,16 @@ Not suitable for upstream
  
          # Run the execution queue
          for func, args in self._execution_queue:
---- a/js/src/wasm/WasmSignalHandlers.cpp	2019-09-03 15:22:24.726463282 -0700
-+++ b/js/src/wasm/WasmSignalHandlers.cpp	2019-09-03 15:23:53.256407038 -0700
-@@ -137,8 +137,8 @@
- # else
- #  define XMM_sig(p,i) ((p)->uc_mcontext.fpregs.fp_reg_set.fpchip_state.xmm[i])
- #  define EIP_sig(p) ((p)->uc_mcontext.gregs[REG_PC])
--#  define EBP_sig(p) ((p)->uc_mcontext.gregs[REG_EBP])
--#  define ESP_sig(p) ((p)->uc_mcontext.gregs[REG_ESP])
-+#  define EBP_sig(p) ((p)->uc_mcontext.gregs[REG_FP])
-+#  define ESP_sig(p) ((p)->uc_mcontext.gregs[REG_SP])
- # endif
- # define RIP_sig(p) ((p)->uc_mcontext.gregs[REG_RIP])
- # define RAX_sig(p) ((p)->uc_mcontext.gregs[REG_RAX])
+--- a/js/src/wasm/WasmSignalHandlers.cpp	2021-01-21 07:40:58.082551277 -0800
++++ b/js/src/wasm/WasmSignalHandlers.cpp	2021-01-21 07:41:42.318048886 -0800
+@@ -140,8 +140,8 @@
+ #else
+ #define XMM_sig(p, i) ((p)->uc_mcontext.fpregs.fp_reg_set.fpchip_state.xmm[i])
+ #define EIP_sig(p) ((p)->uc_mcontext.gregs[REG_PC])
+-#define EBP_sig(p) ((p)->uc_mcontext.gregs[REG_EBP])
+-#define ESP_sig(p) ((p)->uc_mcontext.gregs[REG_ESP])
++#define EBP_sig(p) ((p)->uc_mcontext.gregs[REG_FP])
++#define ESP_sig(p) ((p)->uc_mcontext.gregs[REG_SP])
+ #endif
+ #define RIP_sig(p) ((p)->uc_mcontext.gregs[REG_RIP])
+ #define RAX_sig(p) ((p)->uc_mcontext.gregs[REG_RAX])

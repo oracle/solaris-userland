@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 # parfait is a bit unhappy (24796622)
@@ -29,17 +29,17 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mozjs
-COMPONENT_VERSION=	60.2.3
+COMPONENT_VERSION=	60.8.0
 COMPONENT_PROJECT_URL=	https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey
-COMPONENT_SRC=          mozjs-60.2.3
-COMPONENT_ARCHIVE=    	mozjs60_60.2.3.orig.tar.xz
+COMPONENT_SRC=          mozjs-60.8.0
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-	sha256:4163add2c4c25499fb45d7cca7cab9ecbede0cb054b9bcfc9abaee84733c4d04
-COMPONENT_ARCHIVE_URL=  https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/mozjs60/60.2.3-1ubuntu1/$(COMPONENT_ARCHIVE)
+	sha256:697331336c3d65b80ded9ca87b4a8ceb804e5342b476eaa133ac638102a9dc5d
+COMPONENT_ARCHIVE_URL=  http://ftp.gnome.org/pub/gnome/teams/releng/tarballs-needing-help/mozjs/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libmozjs
 COMPONENT_ANITYA_ID=	11754
 
-TPNO=			53743
+TPNO=			57457
 
 CXXFLAGS += -std=c++11
 
