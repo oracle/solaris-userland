@@ -1,0 +1,208 @@
+These fixes ensure that mpc 1.0.3 and its unit
+tests are compilable with MPFR 4.1.0 library.
+
+It is a simplified version of the following upstream commits.
+-----------------------------------------------------
+commit 36a84f43f326de14db888ba07936cc9621c23f19
+Author: Paul Zimmermann <Paul.Zimmermann@inria.fr>
+Date:   Sun Jan 10 23:19:37 2016 +0100
+
+    use mpfr_fmma and mpfr_fmms if provided by mpfr
+-----------------------------------------------------
+commit 6d0a3a4dcfc866ef46e8ab30a00cd59daf3dccb9
+Author: Paul Zimmermann <Paul.Zimmermann@inria.fr>
+Date:   Sun Mar 1 19:34:14 2020 +0100
+
+    fixed MPFR_ADD_ONE_ULP and MPFR_SUB_ONE_ULP
+-----------------------------------------------------
+
+--- mpc-1.0.3/src/mul.c	2021-01-21 07:08:09.891465722 +0000
++++ mpc-1.0.3/src/mul.c	2021-01-21 07:07:14.726796477 +0000
+@@ -170,157 +170,6 @@ mul_imag (mpc_ptr z, mpc_srcptr x, mpc_s
+    return MPC_INEX (inex_re, inex_im);
+ }
+ 
+-
+-static int
+-mpfr_fmma (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
+-           mpfr_srcptr d, int sign, mpfr_rnd_t rnd)
+-{
+-   /* Computes z = ab+cd if sign >= 0, or z = ab-cd if sign < 0.
+-      Assumes that a, b, c, d are finite and non-zero; so any multiplication
+-      of two of them yielding an infinity is an overflow, and a
+-      multiplication yielding 0 is an underflow.
+-      Assumes further that z is distinct from a, b, c, d. */
+-
+-   int inex;
+-   mpfr_t u, v;
+-
+-   /* u=a*b, v=sign*c*d exactly */
+-   mpfr_init2 (u, mpfr_get_prec (a) + mpfr_get_prec (b));
+-   mpfr_init2 (v, mpfr_get_prec (c) + mpfr_get_prec (d));
+-   mpfr_mul (u, a, b, GMP_RNDN);
+-   mpfr_mul (v, c, d, GMP_RNDN);
+-   if (sign < 0)
+-      mpfr_neg (v, v, GMP_RNDN);
+-
+-   /* tentatively compute z as u+v; here we need z to be distinct
+-      from a, b, c, d to not lose the latter */
+-   inex = mpfr_add (z, u, v, rnd);
+-
+-   if (mpfr_inf_p (z)) {
+-      /* replace by "correctly rounded overflow" */
+-      mpfr_set_si (z, (mpfr_signbit (z) ? -1 : 1), GMP_RNDN);
+-      inex = mpfr_mul_2ui (z, z, mpfr_get_emax (), rnd);
+-   }
+-   else if (mpfr_zero_p (u) && !mpfr_zero_p (v)) {
+-      /* exactly u underflowed, determine inexact flag */
+-      inex = (mpfr_signbit (u) ? 1 : -1);
+-   }
+-   else if (mpfr_zero_p (v) && !mpfr_zero_p (u)) {
+-      /* exactly v underflowed, determine inexact flag */
+-      inex = (mpfr_signbit (v) ? 1 : -1);
+-   }
+-   else if (mpfr_nan_p (z) || (mpfr_zero_p (u) && mpfr_zero_p (v))) {
+-      /* In the first case, u and v are infinities with opposite signs.
+-         In the second case, u and v are zeroes; their sum may be 0 or the
+-         least representable number, with a sign to be determined.
+-         Redo the computations with mpz_t exponents */
+-      mpfr_exp_t ea, eb, ec, ed;
+-      mpz_t eu, ev;
+-         /* cheat to work around the const qualifiers */
+-
+-      /* Normalise the input by shifting and keep track of the shifts in
+-         the exponents of u and v */
+-      ea = mpfr_get_exp (a);
+-      eb = mpfr_get_exp (b);
+-      ec = mpfr_get_exp (c);
+-      ed = mpfr_get_exp (d);
+-
+-      mpfr_set_exp ((mpfr_ptr) a, (mpfr_prec_t) 0);
+-      mpfr_set_exp ((mpfr_ptr) b, (mpfr_prec_t) 0);
+-      mpfr_set_exp ((mpfr_ptr) c, (mpfr_prec_t) 0);
+-      mpfr_set_exp ((mpfr_ptr) d, (mpfr_prec_t) 0);
+-
+-      mpz_init (eu);
+-      mpz_init (ev);
+-      mpz_set_si (eu, (long int) ea);
+-      mpz_add_si (eu, eu, (long int) eb);
+-      mpz_set_si (ev, (long int) ec);
+-      mpz_add_si (ev, ev, (long int) ed);
+-
+-      /* recompute u and v and move exponents to eu and ev */
+-      mpfr_mul (u, a, b, GMP_RNDN);
+-      /* exponent of u is non-positive */
+-      mpz_sub_ui (eu, eu, (unsigned long int) (-mpfr_get_exp (u)));
+-      mpfr_set_exp (u, (mpfr_prec_t) 0);
+-      mpfr_mul (v, c, d, GMP_RNDN);
+-      if (sign < 0)
+-         mpfr_neg (v, v, GMP_RNDN);
+-      mpz_sub_ui (ev, ev, (unsigned long int) (-mpfr_get_exp (v)));
+-      mpfr_set_exp (v, (mpfr_prec_t) 0);
+-
+-      if (mpfr_nan_p (z)) {
+-         mpfr_exp_t emax = mpfr_get_emax ();
+-         int overflow;
+-         /* We have a = ma * 2^ea with 1/2 <= |ma| < 1 and ea <= emax, and
+-            analogously for b. So eu <= 2*emax, and eu > emax since we have
+-            an overflow. The same holds for ev. Shift u and v by as much as
+-            possible so that one of them has exponent emax and the
+-            remaining exponents in eu and ev are the same. Then carry out
+-            the addition. Shifting u and v prevents an underflow. */
+-         if (mpz_cmp (eu, ev) >= 0) {
+-            mpfr_set_exp (u, emax);
+-            mpz_sub_ui (eu, eu, (long int) emax);
+-            mpz_sub (ev, ev, eu);
+-            mpfr_set_exp (v, (mpfr_exp_t) mpz_get_ui (ev));
+-               /* remaining common exponent is now in eu */
+-         }
+-         else {
+-            mpfr_set_exp (v, emax);
+-            mpz_sub_ui (ev, ev, (long int) emax);
+-            mpz_sub (eu, eu, ev);
+-            mpfr_set_exp (u, (mpfr_exp_t) mpz_get_ui (eu));
+-            mpz_set (eu, ev);
+-               /* remaining common exponent is now also in eu */
+-         }
+-         inex = mpfr_add (z, u, v, rnd);
+-            /* Result is finite since u and v have different signs. */
+-         overflow = mpfr_mul_2ui (z, z, mpz_get_ui (eu), rnd);
+-         if (overflow)
+-            inex = overflow;
+-      }
+-      else {
+-         int underflow;
+-         /* Addition of two zeroes with same sign. We have a = ma * 2^ea
+-            with 1/2 <= |ma| < 1 and ea >= emin and similarly for b.
+-            So 2*emin < 2*emin+1 <= eu < emin < 0, and analogously for v. */
+-         mpfr_exp_t emin = mpfr_get_emin ();
+-         if (mpz_cmp (eu, ev) <= 0) {
+-            mpfr_set_exp (u, emin);
+-            mpz_add_ui (eu, eu, (unsigned long int) (-emin));
+-            mpz_sub (ev, ev, eu);
+-            mpfr_set_exp (v, (mpfr_exp_t) mpz_get_si (ev));
+-         }
+-         else {
+-            mpfr_set_exp (v, emin);
+-            mpz_add_ui (ev, ev, (unsigned long int) (-emin));
+-            mpz_sub (eu, eu, ev);
+-            mpfr_set_exp (u, (mpfr_exp_t) mpz_get_si (eu));
+-            mpz_set (eu, ev);
+-         }
+-         inex = mpfr_add (z, u, v, rnd);
+-         mpz_neg (eu, eu);
+-         underflow = mpfr_div_2ui (z, z, mpz_get_ui (eu), rnd);
+-         if (underflow)
+-            inex = underflow;
+-      }
+-
+-      mpz_clear (eu);
+-      mpz_clear (ev);
+-
+-      mpfr_set_exp ((mpfr_ptr) a, ea);
+-      mpfr_set_exp ((mpfr_ptr) b, eb);
+-      mpfr_set_exp ((mpfr_ptr) c, ec);
+-      mpfr_set_exp ((mpfr_ptr) d, ed);
+-         /* works also when some of a, b, c, d are not all distinct */
+-   }
+-
+-   mpfr_clear (u);
+-   mpfr_clear (v);
+-
+-   return inex;
+-}
+-
+-
+ int
+ mpc_mul_naive (mpc_ptr z, mpc_srcptr x, mpc_srcptr y, mpc_rnd_t rnd)
+ {
+@@ -337,10 +186,10 @@ mpc_mul_naive (mpc_ptr z, mpc_srcptr x,
+    else
+       rop [0] = z [0];
+ 
+-   inex = MPC_INEX (mpfr_fmma (mpc_realref (rop), mpc_realref (x), mpc_realref (y), mpc_imagref (x),
+-                               mpc_imagref (y), -1, MPC_RND_RE (rnd)),
++   inex = MPC_INEX (mpfr_fmms (mpc_realref (rop), mpc_realref (x), mpc_realref (y), mpc_imagref (x),
++                               mpc_imagref (y), MPC_RND_RE (rnd)),
+                     mpfr_fmma (mpc_imagref (rop), mpc_realref (x), mpc_imagref (y), mpc_imagref (x),
+-                               mpc_realref (y), +1, MPC_RND_IM (rnd)));
++                               mpc_realref (y), MPC_RND_IM (rnd)));
+ 
+    mpc_set (z, rop, MPC_RNDNN);
+    if (overlap)
+--- mpc-1.0.3/src/mpc-impl.h	2021-01-21 07:22:54.047262765 +0000
++++ mpc-1.0.3/src/mpc-impl.h	2021-01-21 07:22:29.621210029 +0000
+@@ -60,8 +60,11 @@ along with this program. If not, see htt
+    mpfr_setsign (x, y, 0, rnd) : \
+    mpfr_copysign (x, y, z, rnd))
+    /* work around spurious signs in nan */
+-#define MPFR_ADD_ONE_ULP(x) mpfr_add_one_ulp (x, GMP_RNDN)
+-#define MPFR_SUB_ONE_ULP(x) mpfr_sub_one_ulp (x, GMP_RNDN)
++#define MPFR_ADD_ONE_ULP(x) \
++  (MPFR_SIGN (x) > 0 ? mpfr_nextabove (x) : mpfr_nextbelow (x))
++#define MPFR_SUB_ONE_ULP(x) \
++  (MPFR_SIGN (x) > 0 ? mpfr_nextbelow (x) : mpfr_nextabove (x))
++
+    /* drop unused rounding mode from macroes */
+ #define MPFR_SWAP(a,b) do { mpfr_srcptr tmp; tmp = a; a = b; b = tmp; } while (0)
+ 
