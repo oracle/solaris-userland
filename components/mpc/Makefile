@@ -80,7 +80,6 @@ TEST_TARGET= install $(TEST_32_and_64)
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS  +=	--infodir=$(CONFIGURE_INFODIR)
-CONFIGURE_OPTIONS  +=	--with-mpfr-include=$(shell pkg-config --variable=includedir libmpfr)
 CONFIGURE_OPTIONS  +=	--disable-static
 
 COMPONENT_TEST_DIR =	$(BUILD_DIR)/$(MACH$(BITS))/tests

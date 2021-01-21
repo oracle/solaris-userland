@@ -76,7 +76,6 @@ CXXFLAGS += $(CLOOG_GCC_ARCH)
 CXXFLAGS += -Wall -Wextra -Wcast-qual -Wcast-align
 
 CPPFLAGS += $(CPP_LARGEFILES)
-CPPFLAGS += `pkg-config --cflags libmpfr`
 CPPFLAGS += `pkg-config --cflags isl`
 
 CONFIGURE_ENV +=	LD_OPTIONS="$(LD_OPTIONS)"

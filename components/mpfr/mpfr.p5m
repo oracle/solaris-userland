@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
 set name=pkg.fmri \
@@ -34,41 +34,40 @@ set name=org.opensolaris.arc-caseid value=LSARC/2008/655
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/include/mpf2mpfr.h
 file path=usr/include/mpfr.h
-link path=usr/lib/$(MACH64)/libmpfr.so target=libmpfr.so.4.1.5
-file path=usr/lib/$(MACH64)/libmpfr.so.1
+link path=usr/lib/$(MACH64)/libmpfr.so target=libmpfr.so.6.1.0
 link path=usr/lib/$(MACH64)/libmpfr.so.4 target=libmpfr.so.4.1.5
 file path=usr/lib/$(MACH64)/libmpfr.so.4.1.5
+link path=usr/lib/$(MACH64)/libmpfr.so.6 target=libmpfr.so.6.1.0
+file path=usr/lib/$(MACH64)/libmpfr.so.6.1.0
 file path=usr/lib/$(MACH64)/llib-lmpfr.ln
-file path=usr/lib/$(MACH64)/pkgconfig/libmpfr.pc
-link path=usr/lib/libmpfr.so target=libmpfr.so.4.1.5
-file path=usr/lib/libmpfr.so.1
+file path=usr/lib/$(MACH64)/pkgconfig/mpfr.pc
+link path=usr/lib/libmpfr.so target=libmpfr.so.6.1.0
 link path=usr/lib/libmpfr.so.4 target=libmpfr.so.4.1.5
 file path=usr/lib/libmpfr.so.4.1.5
+link path=usr/lib/libmpfr.so.6 target=libmpfr.so.6.1.0
+file path=usr/lib/libmpfr.so.6.1.0
 file path=usr/lib/llib-lmpfr
 file path=usr/lib/llib-lmpfr.ln
-file path=usr/lib/pkgconfig/libmpfr.pc
+file path=usr/lib/pkgconfig/mpfr.pc
 file path=usr/share/doc/mpfr/AUTHORS
 file path=usr/share/doc/mpfr/BUGS
 file path=usr/share/doc/mpfr/COPYING
 file path=usr/share/doc/mpfr/COPYING.LESSER
-file path=usr/share/doc/mpfr/COPYING.LIB
 file path=usr/share/doc/mpfr/FAQ.html
 file path=usr/share/doc/mpfr/NEWS
 file path=usr/share/doc/mpfr/TODO
 file path=usr/share/doc/mpfr/examples/ReadMe
+file path=usr/share/doc/mpfr/examples/can_round.c
 file path=usr/share/doc/mpfr/examples/divworst.c
 file path=usr/share/doc/mpfr/examples/rndo-add.c
 file path=usr/share/doc/mpfr/examples/sample.c
+file path=usr/share/doc/mpfr/examples/threads.c
 file path=usr/share/doc/mpfr/examples/version.c
 file path=usr/share/info/mpfr.info
 file Solaris/libmpfr.3 path=usr/share/man/man3/libmpfr.3
 license FDLv1.2 license=FDLv1.2 \
     com.oracle.info.description="The GNU Multiple Precision with IEEE Rounding Floating-Point Library" \
     com.oracle.info.name=MPFR com.oracle.info.tpno=$(TPNO)
-# this is required until the old version is removed see Makefile for details.
-license mpfr-2.4.2/COPYING.LIB license=LGPLv2.1 \
-    com.oracle.info.description="The GNU Multiple Precision with IEEE Rounding Floating-Point Library" \
-    com.oracle.info.name=MPFR com.oracle.info.tpno=$(TPNO_2.4.2)
 license COPYING.LESSER license=LGPLv3 \
     com.oracle.info.description="The GNU Multiple Precision with IEEE Rounding Floating-Point Library" \
     com.oracle.info.name=MPFR com.oracle.info.tpno=$(TPNO)
