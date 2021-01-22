@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mutt
-COMPONENT_VERSION=	2.0.2
+COMPONENT_VERSION=	2.0.5
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:471218babe97968a45704f1e1e17523c4620ad1f92bae4143a4c9749ab1411c8
+    sha256:e21d5aec0d3110f89d390929e56a38794a94f5843120d9ff59b21da78fd0004d
 COMPONENT_ARCHIVE_URL=	ftp://ftp.mutt.org/pub/mutt/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://www.mutt.org/
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	2035
 
-TPNO=			63572
+TPNO=			64495
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -44,10 +44,12 @@ TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS  +=		--sysconfdir="$(ETCDIR)/$(COMPONENT_NAME)"
+CONFIGURE_OPTIONS  +=		--enable-debug
 CONFIGURE_OPTIONS  +=		--enable-pop
 CONFIGURE_OPTIONS  +=		--enable-imap
 CONFIGURE_OPTIONS  +=		--enable-smtp
 CONFIGURE_OPTIONS  +=		--enable-hcache
+CONFIGURE_OPTIONS  +=		--enable-sidebar
 CONFIGURE_OPTIONS  +=		--with-gdbm
 CONFIGURE_OPTIONS  +=		--with-regex
 CONFIGURE_OPTIONS  +=		--with-curses
