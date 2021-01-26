@@ -9,7 +9,7 @@ This patch was developed in-house. Since it is Solaris-specific it is not
 suitable for upstream.
 
 diff --git a/Makefile b/Makefile
-index 78e25f0..ca6ee4f 100644
+index e4c3f5c..53f224a 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -19,6 +19,7 @@
@@ -28,16 +28,16 @@ index 78e25f0..ca6ee4f 100644
  
  #################################################################
  
-@@ -79,6 +81,8 @@ objs = cache.o rfc1035.o util.o option.o forward.o network.o \
-        domain.o dnssec.o blockdata.o tables.o loop.o inotify.o \
-        poll.o rrfilter.o edns0.o arp.o crypto.o dump.o ubus.o metrics.o
+@@ -84,6 +86,8 @@ objs = cache.o rfc1035.o util.o option.o forward.o network.o \
+        poll.o rrfilter.o edns0.o arp.o crypto.o dump.o ubus.o \
+        metrics.o hash_questions.o
  
 +dhcp_release_objs = dhcp_release.o
 +
  hdrs = dnsmasq.h config.h dhcp-protocol.h dhcp6-protocol.h \
         dns-protocol.h radv-protocol.h ip6addr.h metrics.h
  
-@@ -87,11 +91,12 @@ all : $(BUILDDIR)
+@@ -92,11 +96,12 @@ all : $(BUILDDIR)
   top="$(top)" \
   build_cflags="$(version) $(dbus_cflags) $(idn2_cflags) $(idn_cflags) $(ct_cflags) $(lua_cflags) $(nettle_cflags)" \
   build_libs="$(dbus_libs) $(idn2_libs) $(idn_libs) $(ct_libs) $(lua_libs) $(sunos_libs) $(nettle_libs) $(gmp_libs) $(ubus_libs)" \
@@ -52,7 +52,7 @@ index 78e25f0..ca6ee4f 100644
  
  clean : mostly_clean
  	rm -f $(BUILDDIR)/dnsmasq_baseline
-@@ -103,8 +108,10 @@ install : all install-common
+@@ -108,8 +113,10 @@ install : all install-common
  install-common :
  	$(INSTALL) -d $(DESTDIR)$(BINDIR)
  	$(INSTALL) -d $(DESTDIR)$(MANDIR)/man8
@@ -63,7 +63,7 @@ index 78e25f0..ca6ee4f 100644
  
  all-i18n : $(BUILDDIR)
  	@cd $(BUILDDIR) && $(MAKE) \
-@@ -112,7 +119,7 @@ all-i18n : $(BUILDDIR)
+@@ -117,7 +124,7 @@ all-i18n : $(BUILDDIR)
   i18n=-DLOCALEDIR=\'\"$(LOCALEDIR)\"\' \
   build_cflags="$(version) $(dbus_cflags) $(idn2_cflags) $(idn_cflags) $(ct_cflags) $(lua_cflags) $(nettle_cflags)" \
   build_libs="$(dbus_libs) $(idn2_libs) $(idn_libs) $(ct_libs) $(lua_libs) $(sunos_libs) $(nettle_libs) $(gmp_libs) $(ubus_libs)"  \
@@ -72,7 +72,7 @@ index 78e25f0..ca6ee4f 100644
  	for f in `cd $(PO); echo *.po`; do \
  		cd $(top) && cd $(BUILDDIR) && $(MAKE) top="$(top)" -f $(top)/Makefile $${f%.po}.mo; \
  	done
-@@ -155,6 +162,9 @@ $(copts_conf): $(hdrs)
+@@ -160,6 +167,9 @@ $(copts_conf): $(hdrs)
  $(objs:.o=.c) $(hdrs):
  	ln -s $(top)/$(SRC)/$@ .
  
@@ -82,7 +82,7 @@ index 78e25f0..ca6ee4f 100644
  $(objs): $(copts_conf) $(hdrs)
  
  .c.o:
-@@ -163,6 +173,9 @@ $(objs): $(copts_conf) $(hdrs)
+@@ -168,6 +178,9 @@ $(objs): $(copts_conf) $(hdrs)
  dnsmasq : $(objs)
  	$(CC) $(LDFLAGS) -o $@ $(objs) $(build_libs) $(LIBS) 
  

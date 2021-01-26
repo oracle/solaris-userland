@@ -5,10 +5,10 @@ This patch was developed in-house. Since it is Solaris-specific, it is not
 suitable for upstream.
 
 diff --git a/src/dhcp-common.c b/src/dhcp-common.c
-index ea449cb..0de7335 100644
+index befd8a0..4573730 100644
 --- a/src/dhcp-common.c
 +++ b/src/dhcp-common.c
-@@ -541,6 +541,58 @@ void  bindtodevice(char *device, int fd)
+@@ -550,6 +550,58 @@ void  bindtodevice(char *device, int fd)
        errno != EPERM)
      die(_("failed to set SO_BINDTODEVICE on DHCP socket: %s"), NULL, EC_BADNET);
  }
@@ -68,12 +68,12 @@ index ea449cb..0de7335 100644
  
  static const struct opttab_t {
 diff --git a/src/dnsmasq.c b/src/dnsmasq.c
-index 878167c..3def630 100644
+index a2e1796..ef85eb2 100644
 --- a/src/dnsmasq.c
 +++ b/src/dnsmasq.c
-@@ -59,6 +59,10 @@ int main (int argc, char **argv)
-   int did_bind = 0;
+@@ -60,6 +60,10 @@ int main (int argc, char **argv)
    struct server *serv;
+   char *netlink_warn;
  #endif 
 +#if defined(HAVE_SOLARIS_NETWORK)
 +  int bound_ifindex = -1;
@@ -82,7 +82,7 @@ index 878167c..3def630 100644
  #if defined(HAVE_DHCP) || defined(HAVE_DHCP6)
    struct dhcp_context *context;
    struct dhcp_relay *relay;
-@@ -364,6 +368,23 @@ int main (int argc, char **argv)
+@@ -365,6 +369,23 @@ int main (int argc, char **argv)
  	      did_bind = 1;
  	    }
  	}
@@ -106,7 +106,7 @@ index 878167c..3def630 100644
  #endif
  
  #if defined(HAVE_LINUX_NETWORK) && defined(HAVE_DHCP6)
-@@ -372,6 +393,12 @@ int main (int argc, char **argv)
+@@ -373,6 +394,12 @@ int main (int argc, char **argv)
  	  bindtodevice(bound_device, daemon->dhcp6fd);
  	  did_bind = 1;
  	}
@@ -119,10 +119,10 @@ index 878167c..3def630 100644
  #endif
      }
    else 
-@@ -946,6 +973,9 @@ int main (int argc, char **argv)
- #  ifdef HAVE_LINUX_NETWORK
-   if (did_bind)
-     my_syslog(MS_DHCP | LOG_INFO, _("DHCP, sockets bound exclusively to interface %s"), bound_device);
+@@ -950,6 +977,9 @@ int main (int argc, char **argv)
+ 
+   if (netlink_warn)
+     my_syslog(LOG_WARNING, netlink_warn);
 +#  elif defined(HAVE_SOLARIS_NETWORK)
 +  if (did_bind)
 +    my_syslog(MS_DHCP | LOG_INFO, _("DHCP, sockets bound exclusively to interface index %d"), bound_ifindex);
@@ -130,10 +130,10 @@ index 878167c..3def630 100644
  
    /* after dhcp_construct_contexts */
 diff --git a/src/dnsmasq.h b/src/dnsmasq.h
-index 7efa29e..650c021 100644
+index 2a22bdd..897dcf5 100644
 --- a/src/dnsmasq.h
 +++ b/src/dnsmasq.h
-@@ -1575,6 +1575,9 @@ int config_has_mac(struct dhcp_config *config, unsigned char *hwaddr, int len, i
+@@ -1597,6 +1597,9 @@ int config_has_mac(struct dhcp_config *config, unsigned char *hwaddr, int len, i
  #ifdef HAVE_LINUX_NETWORK
  char *whichdevice(void);
  void bindtodevice(char *device, int fd);
