@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
 <transform file path=usr/share/doc/ntp/(.+$) -> set action.hash html/%<1> >
@@ -40,6 +40,7 @@ file Solaris/ntp.client path=etc/inet/ntp.client group=sys
 file Solaris/ntp.server path=etc/inet/ntp.server group=sys
 file Solaris/auth_attr path=etc/security/auth_attr.d/ntp
 file Solaris/prof_attr path=etc/security/prof_attr.d/ntp
+file Solaris/user_attr path=etc/user_attr.d/_ntp
 file Solaris/ntp.xml path=lib/svc/manifest/network/ntp.xml
 file Solaris/ntp.sh path=lib/svc/method/ntp
 file path=usr/lib/inet/ntp-wait
@@ -292,6 +293,9 @@ file manpages/ntptime.8 path=usr/share/man/man8/ntptime.8 \
 file manpages/ntptrace.8 path=usr/share/man/man8/ntptrace.8 \
     mangler.man.stability=volatile
 file scripts/lib/NTP/Util.pm path=usr/share/ntp/lib/NTP/Util.pm
-dir  path=var/ntp owner=daemon group=daemon
-dir  path=var/ntp/ntpstats owner=daemon group=daemon
+dir  path=var/ntp owner=_ntp group=_ntp
+dir  path=var/ntp/ntpstats owner=_ntp group=_ntp
+group groupname=_ntp gid=73
+user username=_ntp ftpuser=false gcos-field="NTP Daemon" group=_ntp \
+    home-dir=/var/ntp password=*LK* uid=73
 license ntp.license license="ntp license"
