@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 
@@ -100,6 +100,7 @@ TEST_TARGET= build $(TEST_64)
 include $(WS_MAKE_RULES)/common.mk
 
 CFLAGS +=	 -D_XOPEN_SOURCE=600 -D__EXTENSIONS__
+CFLAGS +=	 -DHAVE_CLOSEFROM
 
 studio_C99MODE= $(studio_C99_ENABLE)
 CFLAGS.studio.i386 =	-preserve_argvalues=complete
