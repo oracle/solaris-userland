@@ -2,26 +2,34 @@ Workaround for:
 
 https://bugzilla.mozilla.org/show_bug.cgi?id=1450912
 
-Should be more investigated and reopen bug.
+GCC libstdc++ should be fixed to support locales on Solaris so that
+std::regex functionality works.
 
-diff -r c56ef1c14a55 gfx/gl/GLContext.cpp
---- a/gfx/gl/GLContext.cpp	Wed Mar 14 00:40:07 2018 +0200
-+++ b/gfx/gl/GLContext.cpp	Wed Apr 04 14:51:13 2018 +0000
-@@ -204,12 +204,11 @@
+diff --git a/browser/app/nsBrowserApp.cpp b/browser/app/nsBrowserApp.cpp
+index 6bab1ad..1abdf6d 100644
+--- a/browser/app/nsBrowserApp.cpp
++++ b/browser/app/nsBrowserApp.cpp
+@@ -246,6 +246,9 @@ uint32_t gBlocklistInitFlags = eDllBlocklistInitFlagDefault;
+ #endif
  
- static bool ParseVersion(const std::string& versionStr,
-                          uint32_t* const out_major, uint32_t* const out_minor) {
--  static const std::regex kVersionRegex("([0-9]+)\\.([0-9]+)");
--  std::smatch match;
--  if (!std::regex_search(versionStr, match, kVersionRegex)) return false;
--
--  const auto& majorStr = match.str(1);
--  const auto& minorStr = match.str(2);
-+    size_t dot_index = versionStr.find('.', 0);
-+    if (dot_index == -1)
-+      return false;
-+    const auto& majorStr = versionStr.substr(0, dot_index);
-+    const auto& minorStr = versionStr.substr(dot_index+1, 2);
-   *out_major = atoi(majorStr.c_str());
-   *out_minor = atoi(minorStr.c_str());
-   return true;
+ int main(int argc, char* argv[], char* envp[]) {
++
++  setenv("LC_ALL", "C", 1);
++
+ #if defined(MOZ_ENABLE_FORKSERVER)
+   if (strcmp(argv[argc - 1], "forkserver") == 0) {
+     nsresult rv = InitXPCOMGlue(LibLoadingStrategy::NoReadAhead);
+diff --git a/js/xpconnect/shell/xpcshell.cpp b/js/xpconnect/shell/xpcshell.cpp
+index fe65bef..829a772 100644
+--- a/js/xpconnect/shell/xpcshell.cpp
++++ b/js/xpconnect/shell/xpcshell.cpp
+@@ -33,6 +33,9 @@
+ #endif
+ 
+ int main(int argc, char** argv, char** envp) {
++
++  setenv("LC_ALL", "C", 1);
++
+ #ifdef MOZ_WIDGET_GTK
+   // A default display may or may not be required for xpcshell tests, and so
+   // is not created here. Instead we set the command line args, which is a
