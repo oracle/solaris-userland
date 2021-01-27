@@ -53,7 +53,7 @@ cd /var/audit
 sudo /usr/sbin/audit -t
 sudo rm *
 sudo /usr/sbin/audit -s
-sudo auditreduce * | praudit -s
+sudo /usr/sbin/auditreduce * | /usr/sbin/praudit -s
 > file,1970-01-01 00:00:00.000 +00:00,
 > file,2014-03-27 10:34:23.000 +00:00,
 
@@ -73,28 +73,28 @@ sudo auditreduce * | praudit -s
 # PAM credentials
 
 # Make sure that 'root' is a role
-sudo usermod -K type=role root
+sudo /usr/sbin/usermod -K type=role root
 
 # Note the preselection mask, it should probably be 'sstore(0x200031000,0x200031000)'
-sudo bash -c 'auditconfig -getpinfo $$'
+sudo bash -c '/usr/sbin/auditconfig -getpinfo $$'
 
 # Add audit flags to root
-sudo rolemod -K audit_flags=ex:no root
+sudo /usr/sbin/rolemod -K audit_flags=ex:no root
 
 # Make sure that the preselection mask now shows new entries (lo,ex)
-sudo bash -c 'auditconfig -getpinfo $$'
+sudo bash -c '/usr/sbin/auditconfig -getpinfo $$'
 
 # Disable PAM credentials in sudo by adding this line to sudoers:
 Defaults !pam_setcred
 
 # Make sure that the preselection mask now shows only previous entry
-sudo bash -c 'auditconfig -getpinfo $$'
+sudo bash -c '/usr/sbin/auditconfig -getpinfo $$'
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Solaris privileges
 
-# Add this to the end sudoers keeping the 'ALL ALL=(ALL:ALL) NOPASSWD: ALL' above
+# Add this to the end of /etc/sudoers keeping the 'ALL ALL=(ALL:ALL) NOPASSWD: ALL' above
 <UID> ALL = () PRIVS="basic,dtrace_kernel,dtrace_proc,dtrace_user" NOPASSWD: /usr/sbin/dtrace, /usr/bin/bash
 
 # Just your regular id
@@ -116,7 +116,7 @@ uid=157888(vmarek) gid=10(staff)
 >         L: basic,dtrace_kernel,dtrace_proc,dtrace_user
 
 # dtrace functionality
-sudo dtrace -l -n 'syscall::b*:entry'
+sudo /usr/sbin/dtrace -l -n 'syscall::b*:entry'
 >    ID   PROVIDER            MODULE                          FUNCTION NAME
 > 11282    syscall                                                 brk entry
 > 11550    syscall                                            brandsys entry
@@ -162,11 +162,12 @@ Thu Nov 10 08:24:57 UTC 2016
 # Verify that root role is able to run commands.
 
 # make sure root is a role
-usermod -K type=role root
+$ sudo /usr/sbin/usermod -K type=role root
+UX: /usr/sbin/usermod: ERROR: Roles must be modified with 'rolemod'.
 # and has no pam_policy
-rolemod -K pam_policy= root
+sudo /usr/sbin/rolemod -K pam_policy= root
 # and there is no PAM_POLICY set in /etc/security/policy.conf
-gsed -ibackup 's/^PAM_POLICY=/##PAM_POLICY=/' /etc/security/policy.conf
+sudo gsed -ibackup 's/^PAM_POLICY=/##PAM_POLICY=/' /etc/security/policy.conf
 # assume the root role
 su - root
 # run commands as different user
@@ -174,5 +175,5 @@ sudo -u webservd /sbin/uname
 sudo -i -u webservd /sbin/uname
 
 # Now retest with various pam_policy values (unix, ldap, ...)
-rolemod -K pam_policy=unix root
+/usr/sbin/rolemod -K pam_policy=unix root
 # goto begin
