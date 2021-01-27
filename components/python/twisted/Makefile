@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
@@ -48,6 +48,9 @@ include $(WS_MAKE_RULES)/ips.mk
 
 # Disable the unit tests since the test results are outdated.
 $(SKIP_TEST_AT_TOP_LEVEL)
+
+# Move executables into demo directory.
+COMPONENT_INSTALL_ARGS +=	--install-scripts=usr/demo/twisted-python$(PYTHON_VERSION)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/src/twisted/test
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
