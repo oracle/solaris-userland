@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,14 +30,15 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gcr
-COMPONENT_VERSION=	3.33.4
+COMPONENT_VERSION=	3.38.0
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/gcr/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:d562993f1f0b7a923765f49db1b21e3376ac4cb6da9331ccb2dc7b87c935c0c1
+	sha256:a64cc7b65757fc2cd16de1708d132a16d05cd1f62c6eba436d56fe45d4ba27e1
 COMPONENT_BUGDB=        gnome/security
 COMPONENT_ANITYA_ID=	11801
 
-TPNO=			54022
+TPNO=			63946
+BUILD_STYLE=            meson
 
 # The unit tests failed to start.
 $(SKIP_TEST_AT_TOP_LEVEL)
@@ -46,34 +47,24 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU xgettext in PATH.
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
-
-# Requires a reconf due to patch to autoconf and automake-related files.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
+COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 
 # Uses GNU extension for void function returns.
 CFLAGS.studio += $(studio_FEATURES_EXTENSIONS)
 
-# Not available on Solaris.
-CONFIGURE_OPTIONS += --disable-valgrind
-# Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-introspection
-CONFIGURE_OPTIONS.64 += --enable-introspection
-# Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-vala
-CONFIGURE_OPTIONS.64 += --enable-vala
+CONFIGURE_OPTIONS.32 += -Dintrospection=false
 # Fix 64-bit builds.
-CONFIGURE_OPTIONS.64 += ac_cv_path_LIBGCRYPT_CONFIG=$(USRBINDIR64)/libgcrypt-config
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_ARGS =   -k -i
+
+# get rid of the timestamps from the test results
+COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9].[0-9][0-9]s//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/ TOTAL:/p" ' \
-        '-e "/ SKIP:/p" ' \
-        '-e "/ PASS:/p" ' \
-        '-e "/ FAIL:/p" ' \
-        '-e "/ ERROR:/p" '
+        '-e "/OK/p" ' \
+        '-e "/ok/p" '
 
 REQUIRED_PACKAGES += crypto/gnupg
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen

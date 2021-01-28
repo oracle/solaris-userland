@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -39,7 +39,7 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2016/311
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file path=usr/bin/gcr-viewer
+file path=usr/bin/gcr-viewer pkg.linted.userland.action001.2=true
 file path=usr/include/gck-1/gck/gck-deprecated.h
 file path=usr/include/gck-1/gck/gck-enum-types.h
 file path=usr/include/gck-1/gck/gck-version.h
@@ -103,34 +103,28 @@ file path=usr/include/gcr-3/ui/gcr-viewer.h
 file path=usr/lib/$(MACH64)/girepository-1.0/Gck-1.typelib
 file path=usr/lib/$(MACH64)/girepository-1.0/Gcr-3.typelib
 file path=usr/lib/$(MACH64)/girepository-1.0/GcrUi-3.typelib
-link path=usr/lib/$(MACH64)/libgck-1.so target=libgck-1.so.0.0.0
+link path=usr/lib/$(MACH64)/libgck-1.so target=libgck-1.so.0
 link path=usr/lib/$(MACH64)/libgck-1.so.0 target=libgck-1.so.0.0.0
 file path=usr/lib/$(MACH64)/libgck-1.so.0.0.0
-link path=usr/lib/$(MACH64)/libgcr-3.so target=libgcr-ui-3.so.1.0.0
-link path=usr/lib/$(MACH64)/libgcr-3.so.1 target=libgcr-ui-3.so.1.0.0
-link path=usr/lib/$(MACH64)/libgcr-3.so.1.0.0 target=libgcr-ui-3.so.1.0.0
-link path=usr/lib/$(MACH64)/libgcr-base-3.so target=libgcr-base-3.so.1.0.0
+link path=usr/lib/$(MACH64)/libgcr-base-3.so target=libgcr-base-3.so.1
 link path=usr/lib/$(MACH64)/libgcr-base-3.so.1 target=libgcr-base-3.so.1.0.0
 file path=usr/lib/$(MACH64)/libgcr-base-3.so.1.0.0
-link path=usr/lib/$(MACH64)/libgcr-ui-3.so target=libgcr-ui-3.so.1.0.0
+link path=usr/lib/$(MACH64)/libgcr-ui-3.so target=libgcr-ui-3.so.1
 link path=usr/lib/$(MACH64)/libgcr-ui-3.so.1 target=libgcr-ui-3.so.1.0.0
 file path=usr/lib/$(MACH64)/libgcr-ui-3.so.1.0.0
 file path=usr/lib/$(MACH64)/pkgconfig/gck-1.pc
 file path=usr/lib/$(MACH64)/pkgconfig/gcr-3.pc
 file path=usr/lib/$(MACH64)/pkgconfig/gcr-base-3.pc
 file path=usr/lib/$(MACH64)/pkgconfig/gcr-ui-3.pc
-file path=usr/lib/gcr-prompter mode=0555
-file path=usr/lib/gcr-ssh-askpass mode=0555
-link path=usr/lib/libgck-1.so target=libgck-1.so.0.0.0
+file path=usr/lib/gcr-prompter mode=0555 pkg.linted.userland.action001.2=true
+file path=usr/lib/gcr-ssh-askpass mode=0555 pkg.linted.userland.action001.2=true
+link path=usr/lib/libgck-1.so target=libgck-1.so.0
 link path=usr/lib/libgck-1.so.0 target=libgck-1.so.0.0.0
 file path=usr/lib/libgck-1.so.0.0.0
-link path=usr/lib/libgcr-3.so target=libgcr-ui-3.so.1.0.0
-link path=usr/lib/libgcr-3.so.1 target=libgcr-ui-3.so.1.0.0
-link path=usr/lib/libgcr-3.so.1.0.0 target=libgcr-ui-3.so.1.0.0
-link path=usr/lib/libgcr-base-3.so target=libgcr-base-3.so.1.0.0
+link path=usr/lib/libgcr-base-3.so target=libgcr-base-3.so.1
 link path=usr/lib/libgcr-base-3.so.1 target=libgcr-base-3.so.1.0.0
 file path=usr/lib/libgcr-base-3.so.1.0.0
-link path=usr/lib/libgcr-ui-3.so target=libgcr-ui-3.so.1.0.0
+link path=usr/lib/libgcr-ui-3.so target=libgcr-ui-3.so.1
 link path=usr/lib/libgcr-ui-3.so.1 target=libgcr-ui-3.so.1.0.0
 file path=usr/lib/libgcr-ui-3.so.1.0.0
 file path=usr/lib/pkgconfig/gck-1.pc
@@ -147,6 +141,91 @@ file path=usr/share/gir-1.0/Gck-1.gir
 file path=usr/share/gir-1.0/Gcr-3.gir
 file path=usr/share/gir-1.0/GcrUi-3.gir
 file path=usr/share/glib-2.0/schemas/org.gnome.crypto.pgp.gschema.xml
+file path=usr/share/gtk-doc/html/gck/GckAttribute.html
+file path=usr/share/gtk-doc/html/gck/GckAttributes.html
+file path=usr/share/gtk-doc/html/gck/GckEnumerator.html
+file path=usr/share/gtk-doc/html/gck/GckModule.html
+file path=usr/share/gtk-doc/html/gck/GckObject.html
+file path=usr/share/gtk-doc/html/gck/GckObjectCache.html
+file path=usr/share/gtk-doc/html/gck/GckSession.html
+file path=usr/share/gtk-doc/html/gck/GckSlot.html
+file path=usr/share/gtk-doc/html/gck/annotation-glossary.html
+file path=usr/share/gtk-doc/html/gck/gck-Errors.html
+file path=usr/share/gtk-doc/html/gck/gck-GckModule-lists.html
+file path=usr/share/gtk-doc/html/gck/gck-Library-Utilities.html
+file path=usr/share/gtk-doc/html/gck/gck-Miscellaneous-Functions.html
+file path=usr/share/gtk-doc/html/gck/gck-PKCS11-URIs.html
+file path=usr/share/gtk-doc/html/gck/gck.devhelp2
+file path=usr/share/gtk-doc/html/gck/home.png
+file path=usr/share/gtk-doc/html/gck/index.html
+file path=usr/share/gtk-doc/html/gck/left-insensitive.png
+file path=usr/share/gtk-doc/html/gck/left.png
+file path=usr/share/gtk-doc/html/gck/pkcs11-links.html
+file path=usr/share/gtk-doc/html/gck/reference.html
+file path=usr/share/gtk-doc/html/gck/right-insensitive.png
+file path=usr/share/gtk-doc/html/gck/right.png
+file path=usr/share/gtk-doc/html/gck/style.css
+file path=usr/share/gtk-doc/html/gck/up-insensitive.png
+file path=usr/share/gtk-doc/html/gck/up.png
+file path=usr/share/gtk-doc/html/gcr/GcrCertificate.html
+file path=usr/share/gtk-doc/html/gcr/GcrCertificateChain.html
+file path=usr/share/gtk-doc/html/gcr/GcrCertificateRequest.html
+file path=usr/share/gtk-doc/html/gcr/GcrCertificateWidget.html
+file path=usr/share/gtk-doc/html/gcr/GcrCollection.html
+file path=usr/share/gtk-doc/html/gcr/GcrCollectionModel.html
+file path=usr/share/gtk-doc/html/gcr/GcrComboSelector.html
+file path=usr/share/gtk-doc/html/gcr/GcrComparable.html
+file path=usr/share/gtk-doc/html/gcr/GcrImportButton.html
+file path=usr/share/gtk-doc/html/gcr/GcrImportInteraction.html
+file path=usr/share/gtk-doc/html/gcr/GcrImporter.html
+file path=usr/share/gtk-doc/html/gcr/GcrKeyWidget.html
+file path=usr/share/gtk-doc/html/gcr/GcrListSelector.html
+file path=usr/share/gtk-doc/html/gcr/GcrParser.html
+file path=usr/share/gtk-doc/html/gcr/GcrPkcs11Certificate.html
+file path=usr/share/gtk-doc/html/gcr/GcrPrompt.html
+file path=usr/share/gtk-doc/html/gcr/GcrPromptDialog.html
+file path=usr/share/gtk-doc/html/gcr/GcrRenderer.html
+file path=usr/share/gtk-doc/html/gcr/GcrSecretExchange.html
+file path=usr/share/gtk-doc/html/gcr/GcrSecureEntryBuffer.html
+file path=usr/share/gtk-doc/html/gcr/GcrSimpleCertificate.html
+file path=usr/share/gtk-doc/html/gcr/GcrSimpleCollection.html
+file path=usr/share/gtk-doc/html/gcr/GcrSshAskpass.html
+file path=usr/share/gtk-doc/html/gcr/GcrSystemPrompt.html
+file path=usr/share/gtk-doc/html/gcr/GcrSystemPrompter.html
+file path=usr/share/gtk-doc/html/gcr/GcrTreeSelector.html
+file path=usr/share/gtk-doc/html/gcr/GcrViewer.html
+file path=usr/share/gtk-doc/html/gcr/GcrViewerWidget.html
+file path=usr/share/gtk-doc/html/gcr/annotation-glossary.html
+file path=usr/share/gtk-doc/html/gcr/certificate-widget.png
+file path=usr/share/gtk-doc/html/gcr/certificates.html
+file path=usr/share/gtk-doc/html/gcr/ch01.html
+file path=usr/share/gtk-doc/html/gcr/collections.html
+file path=usr/share/gtk-doc/html/gcr/combo-selector.png
+file path=usr/share/gtk-doc/html/gcr/gcr-GcrColumn.html
+file path=usr/share/gtk-doc/html/gcr/gcr-Key-Fingerprints.html
+file path=usr/share/gtk-doc/html/gcr/gcr-Library-PKCS#11.html
+file path=usr/share/gtk-doc/html/gcr/gcr-Library-Utilities.html
+file path=usr/share/gtk-doc/html/gcr/gcr-Non-pageable-Memory.html
+file path=usr/share/gtk-doc/html/gcr/gcr-Trust-Storage-and-Lookups.html
+file path=usr/share/gtk-doc/html/gcr/gcr.devhelp2
+file path=usr/share/gtk-doc/html/gcr/home.png
+file path=usr/share/gtk-doc/html/gcr/import-button.png
+file path=usr/share/gtk-doc/html/gcr/index.html
+file path=usr/share/gtk-doc/html/gcr/key-widget.png
+file path=usr/share/gtk-doc/html/gcr/left-insensitive.png
+file path=usr/share/gtk-doc/html/gcr/left.png
+file path=usr/share/gtk-doc/html/gcr/list-selector.png
+file path=usr/share/gtk-doc/html/gcr/misc.html
+file path=usr/share/gtk-doc/html/gcr/prompts.html
+file path=usr/share/gtk-doc/html/gcr/right-insensitive.png
+file path=usr/share/gtk-doc/html/gcr/right.png
+file path=usr/share/gtk-doc/html/gcr/storage.html
+file path=usr/share/gtk-doc/html/gcr/style.css
+file path=usr/share/gtk-doc/html/gcr/tree-selector.png
+file path=usr/share/gtk-doc/html/gcr/up-insensitive.png
+file path=usr/share/gtk-doc/html/gcr/up.png
+file path=usr/share/gtk-doc/html/gcr/viewer-widget.png
+file path=usr/share/gtk-doc/html/gcr/widgets.html
 file path=usr/share/icons/hicolor/16x16/apps/gcr-gnupg.png
 file path=usr/share/icons/hicolor/16x16/apps/gcr-key-pair.png
 file path=usr/share/icons/hicolor/16x16/apps/gcr-key.png
@@ -188,6 +267,7 @@ file path=usr/share/locale/bn_IN/LC_MESSAGES/gcr.mo
 file path=usr/share/locale/bs/LC_MESSAGES/gcr.mo
 file path=usr/share/locale/ca/LC_MESSAGES/gcr.mo
 file path=usr/share/locale/ca@valencia/LC_MESSAGES/gcr.mo
+file path=usr/share/locale/ckb/LC_MESSAGES/gcr.mo
 file path=usr/share/locale/cs/LC_MESSAGES/gcr.mo
 file path=usr/share/locale/cy/LC_MESSAGES/gcr.mo
 file path=usr/share/locale/da/LC_MESSAGES/gcr.mo

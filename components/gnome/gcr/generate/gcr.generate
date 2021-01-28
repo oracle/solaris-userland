@@ -18,7 +18,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 # Set perms on daemons
@@ -27,4 +27,9 @@
 
 # Drop 32-bit binary
 <transform file path=usr/bin/\$\(MACH32\)/gcr-viewer -> drop>
+
+# This action is needed without which "gmake publish" fails with error
+<transform file path=usr/bin/gcr-viewer -> set pkg.linted.userland.action001.2 true>
+<transform file path=usr/lib/gcr-prompter -> set pkg.linted.userland.action001.2 true>
+<transform file path=usr/lib/gcr-ssh-askpass -> set pkg.linted.userland.action001.2 true>
 
