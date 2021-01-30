@@ -1,0 +1,17 @@
+Fixes 'RuntimeError: dictionary changed size during iteration'
+which can occur during gmake install.
+
+This was submitted upstream:
+https://bugs.python.org/issue43498
+
+--- Python-3.9.4/Lib/concurrent/futures/process.py
++++ Python-3.9.4/Lib/concurrent/futures/process.py
+@@ -373,7 +373,7 @@ class _ExecutorManagerThread(threading.T
+         assert not self.thread_wakeup._closed
+         wakeup_reader = self.thread_wakeup._reader
+         readers = [result_reader, wakeup_reader]
+-        worker_sentinels = [p.sentinel for p in self.processes.values()]
++        worker_sentinels = [p.sentinel for p in self.processes.copy().values()]
+         ready = mp.connection.wait(readers + worker_sentinels)
+ 
+         cause = None
