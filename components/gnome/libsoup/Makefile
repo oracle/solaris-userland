@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 32_and_64
@@ -30,14 +30,15 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libsoup
-COMPONENT_VERSION=	2.58.2
+COMPONENT_VERSION=	2.72.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/libsoup
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:442300ca1b1bf8a3bbf2f788203287ff862542d4fc048f19a92a068a27d17b72
+    sha256:170c3f8446b0f65f8e4b93603349172b1085fb8917c181d10962f02bb85f5387
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	11483
 
-TPNO=			37521
+TPNO=			64827
+BUILD_STYLE=		meson
 
 # Disable tests since there are some regressions.
 $(SKIP_TEST_AT_TOP_LEVEL)
@@ -46,11 +47,12 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU xgettext in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 
-CONFIGURE_OPTIONS += --disable-static
-# Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-introspection
-CONFIGURE_OPTIONS.64 += --enable-introspection
+CONFIGURE_OPTIONS += -Dsysprof=disabled
+CONFIGURE_OPTIONS += -Dgtk_doc=true
+CONFIGURE_OPTIONS.32 += -Dintrospection=disabled
 
 COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libsoup-2.4.3lib \
@@ -58,16 +60,19 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 
 # for the tests
 unexport SHELLOPTS
-COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR) $(@D));
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
-COMPONENT_TEST_ARGS =   -k -i
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/ERROR:/p" '
+        '-e "s|\s\+[0-9]\+\.[0-9]\+s||p" ' \
+        '-e "/Ok:/p" ' \
+        '-e "/Fail:/p" ' \
+        '-e "/Pass:/p" ' \
+        '-e "/Skipped:/p" ' \
+        '-e "/Timeout:/p" ' \
+        '-e "/The output from the failed tests:/q" '
+
+# ssl-test fails due to new glib-networking with slightly different behavior
+# and this know issue: https://gitlab.gnome.org/GNOME/libsoup/-/issues/120.
 
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
@@ -76,6 +81,8 @@ REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/glib-networking
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-common
+REQUIRED_PACKAGES += library/libpsl
 REQUIRED_PACKAGES += library/libxml2
+REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += text/gnu-gettext
