@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,17 +30,23 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gom
-COMPONENT_VERSION=	0.3.3
+COMPONENT_VERSION=	0.4
+# Below line containing COMPONENT_MAJOR_MINOR is added 
+# so that gmake download does not fail during tarball download.
+COMPONENT_MAJOR_MINOR=  $(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Gom
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:ac57e34b5fe273ed306efaeabb346712c264e341502913044a782cdf8c1036d8
+	sha256:68d08006aaa3b58169ce7cf1839498f45686fba8115f09acecb89d77e1018a9d
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13230
 
-TPNO=			54071
+TPNO=			62437
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+
+# Use explicit Python version rather than the default one
+CONFIGURE_ENV +=	PYTHON=$(PYTHON.3.7)
 
 # Assumes GNU xgettext in PATH.
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
@@ -51,8 +57,7 @@ CONFIGURE_OPTIONS.32 += -Denable-introspection=false
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 # get rid of the timestamps from the test results
-COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9].[0-9][0-9]s//" '
-COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9][0-9]//" '
+COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9]*[0-9].[0-9][0-9]s//" '
 
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
