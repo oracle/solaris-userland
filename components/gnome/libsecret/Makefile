@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            64_and_32
@@ -30,14 +30,14 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libsecret
-COMPONENT_VERSION=	0.18.5
+COMPONENT_VERSION=	0.20.4
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Libsecret
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9ce7bd8dd5831f2786c935d82638ac428fa085057cc6780aba0e39375887ccb3
+    sha256:325a4c54db320c406711bf2b55e5cb5b6c29823426aa82596a907595abb39d28
 COMPONENT_BUGDB=        gnome/security
 COMPONENT_ANITYA_ID=	13150
 
-TPNO=			34658
+TPNO=			64739
 
 # The unit tests failed to start.
 $(SKIP_TEST_AT_TOP_LEVEL)
