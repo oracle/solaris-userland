@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 # Build requirements, needed before inclusion of shared-macros.
 BUILD_BITS= 64_and_32
@@ -32,28 +32,35 @@ include ../../make-rules/shared-macros.mk
 #   openLDAP <x>.<y>.<z>        =>   IPS <x>.<y>.<z>.0.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		openldap
-COMPONENT_VERSION=	2.4.55
+COMPONENT_VERSION=	2.4.57
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_PROJECT_URL=	http://www.openldap.org/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:97357bd6ba8ff73d204c1f8208c5e6ab97d60c9e779f989057aa1229bbe98434
+	sha256:c7ba47e1e6ecb5b436f3d43281df57abeffa99262141aec822628bc220f6b45a
 COMPONENT_ARCHIVE_URL=	\
 	ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/openldap
 # For check_anitya target, see 'gmake print-ANITYA_API_URL'
 COMPONENT_ANITYA_ID=	2551
 
-TPNO=			63657
+TPNO=			64486
 
-# Set DEBUG=yes in environment to make this a debug build.
+# Set DEBUG=yes in environment to make this a debug build, inc. LDAP_DEBUG
 ifeq ($(DEBUG), yes)
-# Override optimization setting from ../../make-rules/shared-macros.mk
-studio_OPT= -g
-# Define LDAP_DEBUG
+# Append to Studio optimization level (see ../../make-rules/shared-macros.mk)
+# -xO4 with -g : best-effort symbolic information with full optimization.
+studio_OPT.sparc.64 +=	-g
+studio_OPT.sparc.32 +=	-g
+studio_OPT.i386.32 +=	-g
+studio_OPT.i386.64 +=	-g
 CFLAGS += -DLDAP_DEBUG
 endif
+
+# Preserve all function argument values on AMD64.
+studio_OPT.i386.64 +=	-preserve_argvalues=complete
+
 # Threading debug, set THREAD_DEBUG=yes
 ifeq ($(THREAD_DEBUG), yes)
 CFLAGS += -DLDAP_THREAD_DEBUG
@@ -130,6 +137,11 @@ COMPONENT_TEST_TRANSFORMER =	$(GNU_GREP)
 COMPONENT_TEST_TRANSFORMS =	'">>>>>"'
 COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
+# This is a handy test target for developer.  Please leave functional.
+test-slapd-version:
+	-LD_LIBRARY_PATH=$(PROTO_DIR)$(CONFIGURE_LIBDIR.64) \
+		$(PROTO_DIR)$(CONFIGURE_LIBDIR.64)/slapd -VVV; \
+
 #
 # Cyrus-sasl is a requirement.
 # OpenLDAP must be built with cyrus-sasl out of the gate instead of the
@@ -187,8 +199,8 @@ COMPONENT_POST_INSTALL_ACTION.32 +=	\
 		fi; \
 	    done;
 
-# slapd is stripped by install, so copy non-stripped version to proto
-# area before publish.
+# Install of slapd is stripped by OpenLDAP INSTALL_STRIP_PROGRAM; for
+# debug build copy non-stripped version to proto area before publish.
 ifeq ($(DEBUG), yes)
 COMPONENT_POST_INSTALL_ACTION.64 +=	\
 	cp $(BUILD_DIR_64)/servers/slapd/.libs/slapd $(PROTO_DIR)/$(USRLIB)/slapd
