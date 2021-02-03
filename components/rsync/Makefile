@@ -22,7 +22,8 @@
 #
 # Copyright (c) 2009, 2021, Oracle and/or its affiliates.
 #
-BUILD_BITS= 64
+COMPILER=	gcc
+BUILD_BITS=	64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		rsync
@@ -47,12 +48,19 @@ include $(WS_MAKE_RULES)/common.mk
 IPS_COMPONENT_VERSION=	3.2.3
 HUMAN_VERSION=		$(COMPONENT_VERSION)-1
 
+ifeq ($(DEBUG), yes)
+gcc_OPT= -Og -g
+endif
+
 CONFIGURE_OPTIONS  +=		SHELL_PATH=$(BINDIR)/sh
 CONFIGURE_OPTIONS  +=		--with-included-popt
 CONFIGURE_OPTIONS  +=		--enable-xattr-support
 CONFIGURE_OPTIONS  +=		--disable-xxhash
 CONFIGURE_OPTIONS  +=		--disable-zstd
 CONFIGURE_OPTIONS  +=		--disable-openssl
+CONFIGURE_OPTIONS  +=		--disable-iconv-open
+CONFIGURE_OPTIONS  +=		--enable-iconv
+CONFIGURE_ENV +=		CFLAGS="$(CFLAGS)"
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \
@@ -60,5 +68,5 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/passed$$/p" ' \
 	'-e "/skipped$$/p" '
 
-REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += compress/lz4
+REQUIRED_PACKAGES += system/library/libc
