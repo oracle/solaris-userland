@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -28,10 +28,10 @@ gcc_OPT= -O2
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cups-filters
-COMPONENT_VERSION=	1.28.5
+COMPONENT_VERSION=	1.28.7
 COMPONENT_TAG=		release-1-27-4
-TPNO=			62501
-COMPONENT_ARCHIVE_HASH=	sha256:a8425fc7bcbf50794264ab30239003936f88c38a2d6bf08e1eb14bc8c928f60f
+TPNO=			64783
+COMPONENT_ARCHIVE_HASH=	sha256:e4150902809c58dfff7089c9345f196ecd88e38bce2be4800fa4811a0902057d
 COMPONENT_PROJECT_URL=	http://www.openprinting.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
