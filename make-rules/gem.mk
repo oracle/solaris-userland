@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 GEM = /usr/ruby/$(RUBY_VERSION)/bin/gem
 
@@ -38,11 +38,12 @@ GEM_INSTALL_ARGS += --install-dir $(PROTO_DIR)/$(VENDOR_GEM_DIR)
 GEM_INSTALL_ARGS += --bindir $(PROTO_DIR)/$(VENDOR_GEM_DIR)/bin
 
 # cd into build directory
-GEM_INSTALL_ACTION= (cd $(@D); $(GEM) install $(GEM_INSTALL_ARGS) $(COMPONENT_NAME))
+GEM_INSTALL_ACTION= (cd $(@D); $(ENV) $(GEM_INSTALL_ENV) \
+	$(GEM) install $(GEM_INSTALL_ARGS) $(COMPONENT_NAME) $(FFI_SPECIFIC_INSTALL_ARGS))
 
 # Always copy files instead making symlinks. GEM does not handle symlinks.
 CLONEY = true
-COMPONENT_PRE_BUILD_ACTION += $(CP) -rp $(SOURCE_DIR)/* $(@D);
+COMPONENT_PRE_BUILD_ACTION += $(CP) -rp $(SOURCE_DIR)/. $(@D);
 
 
 $(BUILD_DIR)/%/.built:  $(SOURCE_DIR)/.prep
