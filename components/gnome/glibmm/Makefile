@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -29,14 +29,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		glibmm
-COMPONENT_VERSION=	2.60.0
+COMPONENT_VERSION=	2.64.2
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/glibmm/stable/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:a3a1b1c9805479a16c0018acd84b3bfff23a122aee9e3c5013bb81231aeef2bc
+    sha256:a75282e58d556d9b2bb44262b6f5fb76c824ac46a25a06f527108bec86b8d4ec
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	7960
 
-TPNO=			56397
+TPNO=			64825
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
