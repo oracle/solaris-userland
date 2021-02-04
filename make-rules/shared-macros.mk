@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
 #
 
 .PHONY: void
@@ -702,8 +702,8 @@ endif
 CC =		$(CC.$(COMPILER).$(BITS))
 CXX =		$(CXX.$(COMPILER).$(BITS))
 
-RUBY_VERSION =	2.5
-RUBY_PUPPET_VERSION = 2.5
+RUBY_VERSION =	2.6
+RUBY_PUPPET_VERSION = 2.6
 
 # The default version should go last.
 RUBY_VERSIONS = 2.5 2.6

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -29,17 +29,17 @@ include ../../../make-rules/shared-macros.mk
 RUBY_VERSIONS = $(RUBY_PUPPET_VERSION)
 
 COMPONENT_NAME=		facter
-COMPONENT_VERSION=	2.5.1
+COMPONENT_VERSION=	4.0.43
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).gem
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6108a6178ee727088915984d161c2006e5bf991134fd37f29417ec5fbdfee51c
+    sha256:debfcf9eb136b76a65579fa05ce849ad0c7a1ea839ae881da37267ba6189d76a
 COMPONENT_ARCHIVE_URL=	http://rubygems.org/gems/$(COMPONENT_SRC).gem
 COMPONENT_PROJECT_URL=  http://puppetlabs.com/facter
 COMPONENT_BUGDB=	utility/puppet
-COMPONENT_ANITYA_ID=	778
+COMPONENT_ANITYA_ID=	67127
 
-TPNO=                   42024
+TPNO=                   63482
 
 # No gemspec is shipped with the gem. Create one
 COMPONENT_POST_UNPACK_ACTION= \
@@ -52,9 +52,29 @@ include $(WS_MAKE_RULES)/ruby.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
+# Facter4.x requires hocon, thor and ffi as part of the install phase
+HOCON_LIB=$(WS_TOP)/components/ruby/hocon/build/$(MACH)-$(RUBY_PUPPET_VERSION)/lib
+THOR_LIB=$(WS_TOP)/components/ruby/thor/build/$(MACH)-$(RUBY_PUPPET_VERSION)/lib
+FFI_LIB=$(WS_TOP)/components/ruby/ffi/build/$(MACH)-$(RUBY_PUPPET_VERSION)/lib
+FFI_C_LIB=$(PROTO_DIR)/$(VENDOR_GEM_DIR)/gems/ffi-1.13.1/lib
+COMPONENT_INSTALL_ENV   += RUBYLIB="$(FFI_C_LIB):$(HOCON_LIB):$(FFI_LIB):$(THOR_LIB)"
+
+
+../hocon/build/%/.installed:
+	cd ../hocon ; $(GMAKE) install
+
+../thor/build/%/.installed:
+	cd ../thor ; $(GMAKE) install
+
+../ffi/build/%/.installed:
+	cd ../ffi ; $(GMAKE) install
+
 build:		$(BUILD_NO_ARCH)
 
-install:	$(INSTALL_NO_ARCH)
+install:	../thor/build/$(MACH)-$(RUBY_PUPPET_VERSION)/.installed \
+                        ../hocon/build/$(MACH)-$(RUBY_PUPPET_VERSION)/.installed \
+                        ../ffi/build/$(MACH)-$(RUBY_PUPPET_VERSION)/.installed \
+                        $(INSTALL_NO_ARCH)
 
 # facter requires the installation of the following rubygems to run
 # the unittests:  rspec rspec-expectations mocha rake rack hiera
@@ -66,3 +86,6 @@ system-test:    $(NO_TESTS)
 
 REQUIRED_PACKAGES += runtime/ruby-$(RUBY_PUPPET_NODOT_VERSION)
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += library/ruby/thor
+REQUIRED_PACKAGES += library/ruby/hocon
+REQUIRED_PACKAGES += library/ruby/ffi
