@@ -123,9 +123,9 @@ PASS: test-hkdf 5 /hkdf/test-case-5
 PASS: test-hkdf 6 /hkdf/test-case-6
 PASS: test-hkdf 7 /hkdf/test-case-7
 PASS: test-oid 1 /oid/tests
-ERROR:./gnome-keyring-3.34.0/egg/test-secmem.c:74:test_alloc_free: assertion failed: (p != NULL)
-SKIP: test-secmem Bail out! ERROR:./gnome-keyring-3.34.0/egg/test-secmem.c:74:test_alloc_free: assertion failed: (p != NULL)
-SKIP: test-secmem Bail out! ERROR:./gnome-keyring-3.34.0/egg/test-secmem.c:74:test_alloc_free: assertion failed: (p != NULL)
+SKIP: test-secmem Bail out! ERROR:./gnome-keyring-3.36.0/egg/test-secmem.c:74:test_alloc_free: assertion failed: (p != NULL)
+SKIP: test-secmem Bail out! ERROR:./gnome-keyring-3.36.0/egg/test-secmem.c:74:test_alloc_free: assertion failed: (p != NULL)
+ERROR:./gnome-keyring-3.36.0/egg/test-secmem.c:74:test_alloc_free: assertion failed: (p != NULL)
 ERROR: test-secmem process failed: -6
 PASS: test-padding 1 /padding/zero_padding
 PASS: test-padding 2 /padding/zero_padding_no_data
@@ -183,13 +183,13 @@ PASS: test-dh 8 /dh/default_bad
 PASS: test-file-tracker 1 /egg/file-tracker/file_watch
 PASS: test-file-tracker 2 /egg/file-tracker/watch_file
 PASS: test-file-tracker 3 /egg/file-tracker/nomatch
-GLib-GIO:ERROR:../../glib-2.62.5/gio/gtestdbus.c:619:start_daemon: assertion failed (error == NULL): Failed to execute child process ?dbus-daemon? (No such file or directory) (g-exec-error-quark, 8)
-SKIP: test-startup Bail out! GLib-GIO:ERROR:../../glib-2.62.5/gio/gtestdbus.c:619:start_daemon: assertion failed (error == NULL): Failed to execute child process ?dbus-daemon? (No such file or directory) (g-exec-error-quark, 8)
-SKIP: test-startup Bail out! GLib-GIO:ERROR:../../glib-2.62.5/gio/gtestdbus.c:619:start_daemon: assertion failed (error == NULL): Failed to execute child process ?dbus-daemon? (No such file or directory) (g-exec-error-quark, 8)
+GLib-GIO:ERROR:../../glib-2.66.2/gio/gtestdbus.c:622:start_daemon: assertion failed (error == NULL): Failed to spawn child process ?dbus-daemon? (No such file or directory) (g-exec-error-quark, 19)
+SKIP: test-startup Bail out! GLib-GIO:ERROR:../../glib-2.66.2/gio/gtestdbus.c:622:start_daemon: assertion failed (error == NULL): Failed to spawn child process ?dbus-daemon? (No such file or directory) (g-exec-error-quark, 19)
+SKIP: test-startup Bail out! GLib-GIO:ERROR:../../glib-2.66.2/gio/gtestdbus.c:622:start_daemon: assertion failed (error == NULL): Failed to spawn child process ?dbus-daemon? (No such file or directory) (g-exec-error-quark, 19)
 ERROR: test-startup process failed: -6
-GLib-GIO:ERROR:../../glib-2.62.5/gio/gtestdbus.c:619:start_daemon: assertion failed (error == NULL): Failed to execute child process ?dbus-daemon? (No such file or directory) (g-exec-error-quark, 8)
-SKIP: test-shutdown Bail out! GLib-GIO:ERROR:../../glib-2.62.5/gio/gtestdbus.c:619:start_daemon: assertion failed (error == NULL): Failed to execute child process ?dbus-daemon? (No such file or directory) (g-exec-error-quark, 8)
-SKIP: test-shutdown Bail out! GLib-GIO:ERROR:../../glib-2.62.5/gio/gtestdbus.c:619:start_daemon: assertion failed (error == NULL): Failed to execute child process ?dbus-daemon? (No such file or directory) (g-exec-error-quark, 8)
+GLib-GIO:ERROR:../../glib-2.66.2/gio/gtestdbus.c:622:start_daemon: assertion failed (error == NULL): Failed to spawn child process ?dbus-daemon? (No such file or directory) (g-exec-error-quark, 19)
+SKIP: test-shutdown Bail out! GLib-GIO:ERROR:../../glib-2.66.2/gio/gtestdbus.c:622:start_daemon: assertion failed (error == NULL): Failed to spawn child process ?dbus-daemon? (No such file or directory) (g-exec-error-quark, 19)
+SKIP: test-shutdown Bail out! GLib-GIO:ERROR:../../glib-2.66.2/gio/gtestdbus.c:622:start_daemon: assertion failed (error == NULL): Failed to spawn child process ?dbus-daemon? (No such file or directory) (g-exec-error-quark, 19)
 ERROR: test-shutdown process failed: -6
 SKIP: test-gkd-ssh-agent-interaction Bail out! Gcr-FATAL-CRITICAL: mock prompter couldn't get session bus address: Cannot autolaunch D-Bus without X11 $DISPLAY
 ERROR: test-gkd-ssh-agent-interaction process failed: -5
@@ -204,7 +204,21 @@ PASS: test-gkd-ssh-agent-process 4 /ssh-agent/process/remove
 PASS: test-gkd-ssh-agent-process 5 /ssh-agent/process/remove_all
 PASS: test-gkd-ssh-agent-process 6 /ssh-agent/process/sign
 PASS: test-gkd-ssh-agent-process 7 /ssh-agent/process/restart
-ERROR: test-gkd-ssh-agent-service process failed: -11
+PASS: test-gkd-ssh-agent-service 1 /ssh-agent/service/startup_shutdown
+PASS: test-gkd-ssh-agent-service 2 /ssh-agent/service/list
+PASS: test-gkd-ssh-agent-service 3 /ssh-agent/service/add
+PASS: test-gkd-ssh-agent-service 4 /ssh-agent/service/remove
+PASS: test-gkd-ssh-agent-service 5 /ssh-agent/service/remove_all
+PASS: test-gkd-ssh-agent-service 6 /ssh-agent/service/sign_loaded
+PASS: test-gkd-ssh-agent-service 7 /ssh-agent/service/sign
+PASS: test-gkd-ssh-agent-service 8 /ssh-agent/service/sign_unknown
+PASS: test-gkd-ssh-agent-service 9 /ssh-agent/service/empty
+PASS: test-gkd-ssh-agent-service 10 /ssh-agent/service/unknown
+PASS: test-gkd-ssh-agent-service 11 /ssh-agent/service/unparseable_add
+PASS: test-gkd-ssh-agent-service 12 /ssh-agent/service/unparseable_remove
+PASS: test-gkd-ssh-agent-service 13 /ssh-agent/service/unparseable_sign
+PASS: test-gkd-ssh-agent-service 14 /ssh-agent/service/restart
+PASS: test-gkd-ssh-agent-service 15 /ssh-agent/service/lock
 PASS: test-gkd-ssh-agent-util 1 /ssh-agent/util/parse_public
 PASS: test-gkd-ssh-agent-util 2 /ssh-agent/util/canon_error
 PASS: test-attributes 1 /gkm/attributes/attribute_equal_zero_len_null_ptr
@@ -383,9 +397,9 @@ PASS: test-gnome2-storage 4 /gnome2-store/storage/relock
 PASS: test-gnome2-private-key 1 /gnome2-store/private-key/load
 PASS: test-gnome2-private-key 2 /gnome2-store/private-key/save
 PASS: test-import 1 /gnome2-store/import/pkcs12
-GLib-GIO:ERROR:../../glib-2.62.5/gio/gtestdbus.c:619:start_daemon: assertion failed (error == NULL): Failed to execute child process ?dbus-daemon? (No such file or directory) (g-exec-error-quark, 8)
-SKIP: test-initialize Bail out! GLib-GIO:ERROR:../../glib-2.62.5/gio/gtestdbus.c:619:start_daemon: assertion failed (error == NULL): Failed to execute child process ?dbus-daemon? (No such file or directory) (g-exec-error-quark, 8)
-SKIP: test-initialize Bail out! GLib-GIO:ERROR:../../glib-2.62.5/gio/gtestdbus.c:619:start_daemon: assertion failed (error == NULL): Failed to execute child process ?dbus-daemon? (No such file or directory) (g-exec-error-quark, 8)
+GLib-GIO:ERROR:../../glib-2.66.2/gio/gtestdbus.c:622:start_daemon: assertion failed (error == NULL): Failed to spawn child process ?dbus-daemon? (No such file or directory) (g-exec-error-quark, 19)
+SKIP: test-initialize Bail out! GLib-GIO:ERROR:../../glib-2.66.2/gio/gtestdbus.c:622:start_daemon: assertion failed (error == NULL): Failed to spawn child process ?dbus-daemon? (No such file or directory) (g-exec-error-quark, 19)
+SKIP: test-initialize Bail out! GLib-GIO:ERROR:../../glib-2.66.2/gio/gtestdbus.c:622:start_daemon: assertion failed (error == NULL): Failed to spawn child process ?dbus-daemon? (No such file or directory) (g-exec-error-quark, 19)
 ERROR: test-initialize process failed: -6
 PASS: test-secret-compat 1 /secret-store/compat/access_free
 PASS: test-secret-compat 2 /secret-store/compat/acl_free
@@ -581,10 +595,10 @@ SKIP: test-pam 7 /pam/auth-running-unlocks-existing
 SKIP: test-pam 8 /pam/password-changes-running 
 SKIP: test-pam 9 /pam/password-changes-starts 
 SKIP: test-pam 10 /pam/password-change-start-in-session 
-# TOTAL: 575
-# PASS:  540
+# TOTAL: 589
+# PASS:  555
 # SKIP:  22
 # XFAIL: 0
 # FAIL:  0
 # XPASS: 0
-# ERROR: 13
+# ERROR: 12

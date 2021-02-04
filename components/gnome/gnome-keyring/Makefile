@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             64_and_32
@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-keyring
-COMPONENT_VERSION=	3.34.0
+COMPONENT_VERSION=	3.36.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GnomeKeyring
 COMPONENT_ARCHIVE_HASH= \
-sha256:e9cda9542a3e37c61636145e7e9e2513c569092ea8020752a834e1f40ad41943
+sha256:a264b57a8d1a71fdf0d66e8cd6033d013fb828be279c35766545eb9bb3734f87
 COMPONENT_BUGDB=	gnome/security
 COMPONENT_ANITYA_ID=	13133
 
-TPNO=			56357
+TPNO=			64826
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
