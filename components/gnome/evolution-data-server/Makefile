@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -39,14 +39,14 @@ include ../../../make-rules/shared-macros.mk
 # GNOME stores and various components now expect it to be present.
 
 COMPONENT_NAME=		evolution-data-server
-COMPONENT_VERSION=	3.34.0
+COMPONENT_VERSION=	3.38.3
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Evolution
 COMPONENT_ARCHIVE_HASH= \
-	sha256:fb9db0a824ae01ecc63c82cf8e503fecdcba7118b919f04bda7d8d91f3e486cf
+	sha256:9732f690b252aa7c0932c761740b5098a19705d1b6e4a5de2fad3a16e57e3ca7
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	10935
 
-TPNO=			54018
+TPNO=			64858
 
 BUILD_STYLE= cmake
 
