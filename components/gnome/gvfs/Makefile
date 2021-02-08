@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -28,14 +28,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gvfs
-COMPONENT_VERSION=	1.42.0
+COMPONENT_VERSION=	1.46.2
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/gvfs
 COMPONENT_ARCHIVE_HASH= \
-	sha256:d0958d9ceefb54bb8ddda74ef51e10fe03dff93f74634784bd309ea434066cf1
+	sha256:d83fa160286670c03eb890240606d8afa7ea6a3a818e8ad17eeed8d976487bd7
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	5496
 
-TPNO=			54079
+TPNO=			64889
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -54,7 +54,8 @@ CONFIGURE_OPTIONS += -Dnfs=false
 # google backend requires goa which is only 64-bit in Solaris
 CONFIGURE_OPTIONS.32 += -Dgoogle=false
 CONFIGURE_OPTIONS += -Dman=true
-CONFIGURE_OPTIONS += -Ddevel_utils=true
+# requires libgdata which we only deliver 64-bit
+CONFIGURE_OPTIONS.64 += -Ddevel_utils=true
 # admin requires libcap
 CONFIGURE_OPTIONS += -Dadmin=false
 CONFIGURE_OPTIONS += -Dbluray=false
