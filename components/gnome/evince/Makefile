@@ -20,23 +20,25 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		evince
-COMPONENT_VERSION=	3.25.4
+COMPONENT_VERSION=	3.38.1
 COMPONENT_MINOR_VERSION= $(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\([0-9]\+\)\.\([0-9]\+\)\.[0-9]\+/\1.\2/')
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Evince
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:ddbf76c69a6aed1af3f2363b7e7e526797fa9e4a2455814e45f1d4ca6b3c95ab
+    sha256:00f6d6689cc22de3c005bd87d4c2ebf720064cb8dc6a1887816f8b7e082b2e63
 COMPONENT_ARCHIVE_URL=	http://ftp.gnome.org/pub/GNOME/sources/$(COMPONENT_NAME)/$(COMPONENT_MINOR_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/evince
-TPNO=			37070
 COMPONENT_ANITYA_ID=	8178
+
+TPNO=			64947
+BUILD_STYLE=		meson
 
 TEST_TARGET= $(NO_TESTS)
 
@@ -44,15 +46,6 @@ include $(WS_MAKE_RULES)/common.mk
 
 # Need to pick up the GNU version of xgettext.
 PATH=$(GNUBIN):$(USRBINDIR)
-
-COMPONENT_PREP_ACTION = \
-	(cd $(@D) ; \
-	libtoolize --force --copy ; \
-	intltoolize --force --copy --automake ; \
-	aclocal -I . ; \
-	autoheader ; \
-	automake -a -c -f ; \
-	autoconf )
 
 # For now, all things built for C++11 require gcc.
 # Also, all components using gobject-introspection must be built with gcc as
@@ -66,33 +59,14 @@ LDFLAGS +=	$(CC_BITS) -lgmodule-2.0 -lm
 CONFIGURE_OPTIONS +=	--libexecdir="$(USRLIB)"
 CONFIGURE_OPTIONS +=	--sysconfdir="$(ETCDIR)"
 
-# Browser plugins of any form are obsolete at this point.
-CONFIGURE_OPTIONS +=	--disable-browser-plugin
 # Requires djvulibre library.
-CONFIGURE_OPTIONS +=	--disable-djvu
+CONFIGURE_OPTIONS +=	-Ddjvu=disabled
 # Requires LaTeX libraries.
-CONFIGURE_OPTIONS +=	--disable-dvi
-CONFIGURE_OPTIONS +=	--disable-static
-CONFIGURE_OPTIONS +=	--enable-comics
-CONFIGURE_OPTIONS +=	--enable-dbus
+CONFIGURE_OPTIONS +=	-Ddvi=disabled
 # Required for other components.
-CONFIGURE_OPTIONS.32 +=	--disable-introspection
-CONFIGURE_OPTIONS.64 +=	--enable-introspection
-CONFIGURE_OPTIONS +=	--enable-libgnome-desktop
-CONFIGURE_OPTIONS.32 +=	--disable-nautilus
-CONFIGURE_OPTIONS.64 +=	--enable-nautilus
-CONFIGURE_OPTIONS +=	--enable-pdf
-CONFIGURE_OPTIONS +=	--enable-previewer
-CONFIGURE_OPTIONS +=	--enable-ps
-CONFIGURE_OPTIONS +=	--enable-shared
-CONFIGURE_OPTIONS +=	--enable-t1lib
-CONFIGURE_OPTIONS +=	--enable-thumbnailer
-CONFIGURE_OPTIONS +=	--enable-tiff
-CONFIGURE_OPTIONS +=	--enable-viewer
-CONFIGURE_OPTIONS +=	--enable-xps
-
-# Always show the build and link lines for easier debugging.
-COMPONENT_BUILD_ARGS += V=1
+CONFIGURE_OPTIONS.32 +=	-Dintrospection=false
+CONFIGURE_OPTIONS.32 +=	-Dnautilus=false
+CONFIGURE_OPTIONS +=	-Dps=enabled
 
 # Needed to find GNU msgfmt.
 COMPONENT_BUILD_ENV += PATH="/usr/gnu/bin:$(PATH)"
