@@ -1,8 +1,7 @@
-Disable 32-bit Perl bindings.
-Solaris-specific, not for upstream.
+Modify rules with Solaris specific changes, not for upstream.
 
---- subversion-1.10.6/Makefile.in.orig	2019-09-03 10:14:11.021758106 +0200
-+++ subversion-1.10.6/Makefile.in	2019-09-03 10:56:38.910040673 +0200
+--- subversion-1.14.1/Makefile.in.orig	2021-02-11 17:20:05.731873350 +0100
++++ subversion-1.14.1/Makefile.in	2021-02-11 17:53:31.009403329 +0100
 @@ -21,6 +21,14 @@
  # ====================================================================
  #
@@ -18,41 +17,37 @@ Solaris-specific, not for upstream.
  top_builddir = .
  top_srcdir = @top_srcdir@
  abs_builddir = @abs_builddir@
-@@ -84,14 +92,14 @@
+@@ -89,15 +97,14 @@
  swig_rb_libdir = @libdir@
  
  ### these possibly need further discussion
 -swig_pydir = @libdir@/svn-python/libsvn
 -swig_pydir_extra = @libdir@/svn-python/svn
-+swig_pydir = /usr/lib/python2.7/vendor-packages/libsvn
-+swig_pydir_extra = /usr/lib/python2.7/vendor-packages/svn
++swig_pydir = /usr/lib/python3.7/vendor-packages/libsvn
++swig_pydir_extra = /usr/lib/python3.7/vendor-packages/svn
  swig_pldir = @libdir@/svn-perl
  swig_rbdir = $(SWIG_RB_SITE_ARCH_DIR)/svn/ext
  toolsdir = @bindir@/svn-tools
  
  # where to install pkg-config files
 -pkgconfig_dir = $(datadir)/pkgconfig
+-
 +pkgconfig_dir = @libdir@/pkgconfig
- 
  javahl_javadir = @libdir@/svn-javahl
  javahl_javahdir = @libdir@/svn-javahl/include
-@@ -146,9 +154,13 @@
+ javahl_libdir = @libdir@
+@@ -150,8 +157,8 @@
  SWIG = @SWIG@
- SWIG_PY_INCLUDES = @SWIG_PY_INCLUDES@ -I$(SWIG_SRC_DIR)/python/libsvn_swig_py
+ SWIG_PY_INCLUDES = @SWIG_PY_INCLUDES@ @SVN_PY3C_INCLUDES@ -I$(SWIG_SRC_DIR)/python/libsvn_swig_py
  SWIG_PY_COMPILE = @SWIG_PY_COMPILE@
 -SWIG_PY_LINK = @SWIG_PY_LINK@
 -SWIG_PY_LIBS = @SWIG_PY_LIBS@
 +SWIG_PY_LINK = @SWIG_PY_LINK@ $(CFLAGS) $(EXTRA_CFLAGS)
 +SWIG_PY_LIBS = @SWIG_PY_LIBS@ $(SVN_APR_LIBS) $(SVN_APRUTIL_LIBS)
-+
-+ifneq (,$(findstring m64,$(CXXFLAGS)))
+ SWIG_PY_ERRMSG = @SWIG_PY_ERRMSG@
  SWIG_PL_INCLUDES = @SWIG_PL_INCLUDES@
-+endif
-+
- SWIG_RB_INCLUDES = @SWIG_RB_INCLUDES@ -I$(SWIG_SRC_DIR)/ruby/libsvn_swig_ruby
- SWIG_RB_COMPILE = @SWIG_RB_COMPILE@
- SWIG_RB_LINK = @SWIG_RB_LINK@
-@@ -189,6 +201,7 @@
+ SWIG_PL_ERRMSG = @SWIG_PL_ERRMSG@
+@@ -198,6 +205,7 @@
  ### suppressed (but they may come from httpd or APR).
  CPPFLAGS = @CPPFLAGS@ $(EXTRA_CPPFLAGS)
  LDFLAGS = @LDFLAGS@ $(EXTRA_LDFLAGS)
@@ -60,35 +55,17 @@ Solaris-specific, not for upstream.
  SWIG_LDFLAGS = @SWIG_LDFLAGS@ $(EXTRA_SWIG_LDFLAGS)
  SWIG_FEATURES = @SWIG_FEATURES@
  SWIG_PY_FEATURES = @SWIG_PY_FEATURES@
-@@ -195,6 +208,13 @@
- SWIG_PL_FEATURES = @SWIG_PL_FEATURES@
+@@ -205,6 +213,8 @@
  SWIG_RB_FEATURES = @SWIG_RB_FEATURES@
+ SWIG_PY_OPTS = @SWIG_PY_OPTS@
  
-+SVN_RUNPATH=
-+ifneq (,$(findstring m32,$(CXXFLAGS)))
-+  SVN_RUNPATH=/usr/lib/svn
-+else
-+  SVN_RUNPATH=/usr/lib/svn/$(MACH64)
-+endif
++SVN_RUNPATH=/usr/lib/svn/$(MACH64)
 +
  COMPILE = $(CC) $(CMODEFLAGS) $(CPPFLAGS) $(CMAINTAINERFLAGS) $(CFLAGS) $(INCLUDES)
  COMPILE_NOWARN = $(CC) $(CMODEFLAGS) $(CPPFLAGS) $(CNOWARNFLAGS) $(CFLAGS) $(INCLUDES)
  COMPILE_CXX = $(CXX) $(CXXMODEFLAGS) $(CPPFLAGS) $(CXXMAINTAINERFLAGS) $(CXXFLAGS) $(INCLUDES)
-@@ -212,7 +232,12 @@
- 
- # special compilation for files destined for libsvn_swig_* (e.g. swigutil_*.c)
- COMPILE_SWIG_PY = $(LIBTOOL) $(LTFLAGS) --mode=compile $(SWIG_PY_COMPILE) $(CPPFLAGS) $(LT_CFLAGS) -DSWIGPYTHON $(SWIG_PY_INCLUDES) $(INCLUDES) -o $@ -c
-+
-+COMPILE_SWIG_PL := /bin/true
-+ifneq (,$(findstring m64,$(CXXFLAGS)))
- COMPILE_SWIG_PL = $(LIBTOOL) $(LTFLAGS) --mode=compile $(CC) $(CPPFLAGS) $(CFLAGS) $(LT_CFLAGS) $(SWIG_PL_INCLUDES) $(INCLUDES) -o $@ -c
-+endif
-+
- COMPILE_SWIG_RB = $(LIBTOOL) $(LTFLAGS) --mode=compile $(SWIG_RB_COMPILE) $(CPPFLAGS) $(LT_CFLAGS) $(SWIG_RB_INCLUDES) $(INCLUDES) -o $@ -c
- 
- # special compilation for files destined for javahl (i.e. C++)
-@@ -270,7 +295,7 @@
- LINK_CXX_LIB = $(LINK_CXX) $(LT_SO_VERSION)
+@@ -279,7 +289,7 @@
+ LINK_SVNXX_TEST = $(LINK_CXX) $(BOOST_TEST_LDFLAGS)
  
  # special link rule for mod_dav_svn
 -LINK_APACHE_MOD = $(LIBTOOL) $(LTFLAGS) --mode=link $(CC) $(LT_LDFLAGS) $(CFLAGS) $(LDFLAGS) -rpath $(APACHE_LIBEXECDIR) -avoid-version -module $(APACHE_LDFLAGS) -shared
@@ -96,7 +73,7 @@ Solaris-specific, not for upstream.
  
  # Special LDFLAGS for some libraries
  libsvn_client_LDFLAGS = @libsvn_client_LDFLAGS@
-@@ -297,7 +322,7 @@
+@@ -306,7 +316,7 @@
  COMPILE_RB_WRAPPER = $(LIBTOOL) $(LTFLAGS) --mode=compile $(SWIG_RB_COMPILE) $(LT_CFLAGS) $(CPPFLAGS) $(SWIG_RB_INCLUDES) -prefer-pic -c -o $@
  
  # these commands link the wrapper objects into an extension library/module
@@ -105,120 +82,34 @@ Solaris-specific, not for upstream.
  LINK_RB_WRAPPER = $(LIBTOOL) $(LTFLAGS) --mode=link $(SWIG_RB_LINK) $(SWIG_LDFLAGS) -rpath $(swig_rbdir) -avoid-version -module
  
  LINK_JAVAHL_CXX = $(LIBTOOL) $(LTCXXFLAGS) --mode=link $(CXX) $(LT_LDFLAGS) $(CXXFLAGS) $(LDFLAGS) $(LT_CXX_LIBADD) -rpath $(libdir)
-@@ -324,7 +349,12 @@
- ### this isn't correct yet
- INSTALL_SWIG_PY = $(INSTALL_LIB)
- INSTALL_SWIG_PY_LIB = $(INSTALL_LIB)
-+
-+INSTALL_SWIG_PL_LIB :=
-+ifneq (,$(findstring m64,$(CXXFLAGS)))
- INSTALL_SWIG_PL_LIB = $(INSTALL_LIB)
-+endif
-+
- INSTALL_SWIG_RB = $(INSTALL_LIB)
- INSTALL_SWIG_RB_LIB = $(INSTALL_LIB)
- 
-@@ -352,7 +382,10 @@
- 
- # The path to generated and complementary source files for the SWIG
- # bindings.
-+ifneq (,$(findstring m64,$(CXXFLAGS)))
- SWIG_PL_DIR = $(abs_builddir)/subversion/bindings/swig/perl
-+endif
-+
- SWIG_PY_DIR = $(abs_builddir)/subversion/bindings/swig/python
- SWIG_RB_DIR = $(abs_builddir)/subversion/bindings/swig/ruby
- 
-@@ -861,18 +894,41 @@
- 	$(EXTRACLEAN_SWIG_HEADERS)
- 
- $(SWIG_PL_DIR)/native/Makefile.PL: $(SWIG_SRC_DIR)/perl/native/Makefile.PL.in
--	./config.status subversion/bindings/swig/perl/native/Makefile.PL
-+	if test "`echo $(CXXFLAGS) | ggrep 'm64'`" != "" ; then \
-+	  ./config.status subversion/bindings/swig/perl/native/Makefile.PL ; \
-+	fi
+@@ -882,6 +892,14 @@
  
  $(SWIG_PL_DIR)/native/Makefile: libsvn_swig_perl $(SWIG_PL_DIR)/native/Makefile.PL
--	cd $(SWIG_PL_DIR)/native; $(PERL) Makefile.PL PREFIX=$(prefix)
-+	if test "`echo $(CXXFLAGS) | ggrep 'm64'`" != "" ; then \
-+	  cd $(SWIG_PL_DIR)/native; $(PERL) Makefile.PL PREFIX=$(prefix) ; \
-+	fi
-+	( if test "`echo $(CXXFLAGS) | ggrep 'm64'`" != "" ; then \
-+	  cd $(SWIG_PL_DIR)/native; $(PERL) Makefile.PL ; fi )
-+	( if test "`echo $(CXXFLAGS) | ggrep 'm64'`" != "" ; then \
-+	  cd $(SWIG_PL_DIR)/native; \
-+	  for file in Makefile Makefile.client Makefile.delta \
-+	  Makefile.fs Makefile.ra Makefile.repos Makefile.wc ; do \
-+	  cp -f $$file $$file.orig ; \
-+	  sed -e 's;^LD_RUN_PATH.*$$;LD_RUN_PATH=$(SVN_RUNPATH);g' $$file.orig >$$file ; \
-+	  rm -f $$file.orig ; \
-+	  done ; fi )
+ 	cd $(SWIG_PL_DIR)/native; $(PERL) Makefile.PL PREFIX=$(prefix)
++	( cd $(SWIG_PL_DIR)/native; $(PERL) Makefile.PL )
++	(	cd $(SWIG_PL_DIR)/native; \
++		for file in Makefile Makefile.client Makefile.delta \
++			Makefile.fs Makefile.ra Makefile.repos Makefile.wc ; do \
++				cp -f $$file $$file.orig ; \
++			 	sed -e 's;^LD_RUN_PATH.*$$;LD_RUN_PATH=$(SVN_RUNPATH);g' $$file.orig >$$file ; \
++				rm -f $$file.orig ; \
++			done )
  
  # There is a "readlink -f" command on some systems for the same purpose,
  # but it's not as portable (e.g. Mac OS X doesn't have it).  These should
- # only be used where Python/Perl are known to be available.
- READLINK_PY=$(PYTHON) -c 'import sys,os; print(os.path.realpath(sys.argv[1]))'
-+READLINK_PL :=
-+ifneq (,$(findstring m64,$(CXXFLAGS)))
- READLINK_PL=$(PERL) -e 'use Cwd; print Cwd::realpath(shift)'
-+endif
- 
--swig-pl: autogen-swig-pl $(SWIG_PL_DIR)/native/Makefile
-+swig-pl_DEPS :=
-+ifneq (,$(findstring m64,$(CXXFLAGS)))
-+  swig-pl_DEPS = autogen-swig-pl $(SWIG_PL_DIR)/native/Makefile
-+endif
-+
-+swig-pl: $(swig-pl_DEPS)
-+	if test "`echo $(CXXFLAGS) | ggrep 'm64'`" != "" ; then \
- 	if test "`$(READLINK_PL) $(SWIG_PL_DIR)`" != "`$(READLINK_PL) $(SWIG_PL_SRC_DIR)`"; then \
- 	  for f in $(SWIG_PL_SRC_DIR)/native/*.c ; do \
- 	     if [ -e "$$f" ] ; then \
-@@ -879,17 +935,29 @@
- 	       ln -sf "$$f" $(SWIG_PL_DIR)/native; \
+@@ -897,13 +915,13 @@
  	    fi; \
  	  done; \
-+	fi; \
  	fi
 -	cd $(SWIG_PL_DIR)/native; $(MAKE) OPTIMIZE="" OTHERLDFLAGS="$(SWIG_LDFLAGS)"
-+	if test "`echo $(CXXFLAGS) | ggrep 'm64'`" != "" ; then \
-+		cd $(SWIG_PL_DIR)/native; $(MAKE) OPTIMIZE="" OTHERLDFLAGS="$(SWIG_LDFLAGS)" LD_RUN_PATH="$(SVN_RUNPATH)" ; \
-+	fi	
++	cd $(SWIG_PL_DIR)/native; $(MAKE) OPTIMIZE="" OTHERLDFLAGS="$(SWIG_LDFLAGS)" LD_RUN_PATH="$(SVN_RUNPATH)"
  
-+install-swig-pl-lib:
-+
  check-swig-pl: swig-pl swig-pl-lib
--	cd $(SWIG_PL_DIR)/native; $(MAKE) test
-+	if test "`echo $(CXXFLAGS) | ggrep 'm64'`" != "" ; then \
-+		cd $(SWIG_PL_DIR)/native; $(MAKE) test ; \
-+	fi
+ 	cd $(SWIG_PL_DIR)/native; $(MAKE) test
  
  install-swig-pl: swig-pl install-swig-pl-lib
 -	cd $(SWIG_PL_DIR)/native; $(MAKE) install
-+	if test "`echo $(CXXFLAGS) | ggrep 'm64'`" != "" ; then \
-+		cd $(SWIG_PL_DIR)/native; $(MAKE) install_vendor DESTDIR=$(DESTDIR) LD_RUN_PATH="" ; \
-+	fi	
++	cd $(SWIG_PL_DIR)/native; $(MAKE) install_vendor DESTDIR=$(DESTDIR) LD_RUN_PATH=""
  
-+EXTRACLEAN_SWIG_PL :=
-+ifneq (,$(findstring m64,$(CXXFLAGS)))
  EXTRACLEAN_SWIG_PL=rm -f $(SWIG_PL_SRC_DIR)/native/svn_*.c \
                           $(SWIG_PL_SRC_DIR)/native/core.c
-+endif
- 
- # Running Makefile.PL at this point *fails* (cannot find ..../.libs) so if the
- # Makefile does not exist, DO NOT try to make it. But, if it doesn't exist,
-@@ -898,11 +966,13 @@
- 	if test -z "$(RELEASE_MODE)"; then \
- 	  $(EXTRACLEAN_SWIG_PL); \
- 	fi
-+	if test "`echo $(CXXFLAGS) | ggrep 'm64'`" != "" ; then \
- 	for d in $(SWIG_PL_DIR)/libsvn_swig_perl; \
- 	do \
- 	  cd $$d; \
- 	  rm -rf *.lo *.la *.o .libs; \
--	done
-+	done; \
-+	fi
- 	if [ -f "$(SWIG_PL_DIR)/native/Makefile" ]; then \
- 	  cd $(SWIG_PL_DIR)/native; $(MAKE) clean; \
- 	fi

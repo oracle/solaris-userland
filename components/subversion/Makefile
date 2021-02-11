@@ -20,10 +20,11 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
-BUILD_BITS=64_and_32
+BUILD_BITS=64
+COMPILER= gcc
 
 # The Makefile of this component does not support multiple build jobs.
 COMPONENT_MAKE_JOBS=1
@@ -32,22 +33,20 @@ include ../../make-rules/shared-macros.mk
 PATH=$(dir $(CC)):$(SPRO_VROOT)/bin:$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=		subversion
-COMPONENT_VERSION=	1.10.6
+COMPONENT_VERSION=	1.14.1
 COMPONENT_PROJECT_URL=	https://subversion.apache.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2ab75c61a62d96defc954b599585b79f627e4e235094a17da94dc55b564727c1
+    sha256:dee2796abaa1f5351e6cc2a60b1917beb8238af548b20d3e1ec22760ab2f0cad
 COMPONENT_ARCHIVE_URL=	https://www.apache.org/dist/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
+COMPONENT_PUBLIC_KEY_URL= https://www.apache.org/dist/subversion/subversion-1.14.1.KEYS
 COMPONENT_BUGDB=	utility/svn
 COMPONENT_ANITYA_ID=	4905
 
-TPNO=			53704
+TPNO=			65159
 
-PYTHON_VERSIONS=	$(PYTHON2_VERSIONS)
-PYTHON_VERSION =	2.7
-
-# Disable tests since there are regressions and the test results are outdated.
-$(SKIP_TEST_AT_TOP_LEVEL)
+PYTHON_VERSIONS=	3.7
+PYTHON_VERSION =	3.7
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -56,30 +55,23 @@ GNUCP = $(GNUBIN)/cp
 
 # Because we can't seem to get -norunpath to the java bindings build any
 # other way.
-CXX += $(studio_NORUNPATH) -std=sun03
-CFLAGS += -features=extensions
 CFLAGS += -D_REENTRANT -DNDEBUG -DSOLARIS
-CXXFLAGS += -features=nestedaccess,tmplife,tmplrefstatic
-CXXFLAGS += -template=geninlinefuncs
+CFLAGS += -D__EXTENSIONS__
 CXXFLAGS += $(CC_PIC)
 CXXFLAGS += -D_REENTRANT -DNDEBUG -DSOLARIS
+CXXFLAGS += -D__EXTENSIONS__
 CXXFLAGS += $(CPP_LARGEFILES)
 CFLAGS += `pkg-config --cflags serf-1`
 CFLAGS += $(CPP_LARGEFILES)
 
 PYMODS := client core delta fs ra repos wc
-PLMODS :=
-
-ifneq (,$(findstring m64,$(CXXFLAGS)))
-  PLMODS = Fs Core Wc Client Repos Ra Delta
-endif
+PLMODS := Fs Core Wc Client Repos Ra Delta
 
 COMPONENT_TEST_MASTER = \
 	$(COMPONENT_TEST_RESULTS_DIR)/results-subversion.master
 
 COMPONENT_TEST_TRANSFORMS += \
      '-e "/libtool/d"' \
-     '-e "/-m32/d"' \
      '-e "/-m64/d"' \
      '-e "/Entering/d"' \
      '-e "/Leaving/d"' \
@@ -91,20 +83,16 @@ COMPONENT_TEST_TRANSFORMS += \
      '-e "/exists from a previous run/d"' \
      '-e "s/\.//g"'
 
-PERL_VERSION.32 = none
-PERL_VERSION.64 = 5.22
-PERL_VERSION=$(PERL_VERSION.$(BITS))
-PERL.32 = none
-PERL.64 = $(USRDIR)/perl5/$(PERL_VERSION)/bin/perl
-PERL=$(PERL.$(BITS))
+# There is only one version of Perl supported and Perl is only 64-bit
+PERL_VERSION = 5.32
+PERL = $(USRDIR)/perl5/$(PERL_VERSION)/bin/perl
 
-PERL_VERSION_22 = 5.22
-PERL_ARCH_22_i386 = i86pc-solaris-thread-multi-64
-PERL_ARCH_22_sparc = sun4-solaris-thread-multi-64
-PERL_ARCH_22 = $(PERL_ARCH_22_$(MACH))
+PERL_ARCH_i386 = i86pc-solaris-thread-multi-64
+PERL_ARCH_sparc = sun4-solaris-thread-multi-64
+PERL_ARCH = $(PERL_ARCH_$(MACH))
 
-APR_VERSION = 1.6
-APR_UTIL_VERSION = 1.6
+APR_VERSION = 1
+APR_UTIL_VERSION = 1
 
 # Use the libraries just built plus the svn test harness library.
 LD_TEST_PATH_32 := \
@@ -227,9 +215,7 @@ COMPONENT_POST_INSTALL_ACTION += \
 	if test -d vendor-packages-64 ; then \
 	    $(GNUCP) -rpd vendor-packages-64/libsvn vendor-packages/64/ ; \
 	    $(GNUCP) -rpd vendor-packages-64/svn vendor-packages/64/ ; \
-	    $(GNUCP) -rpd vendor-packages-32/libsvn vendor-packages/ ; \
-	    $(GNUCP) -rpd vendor-packages-32/svn vendor-packages/ ; \
-	fi ; )
+	fi ; ) 
 
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/build/scons
@@ -237,16 +223,16 @@ REQUIRED_PACKAGES += developer/swig
 REQUIRED_PACKAGES += developer/versioning/subversion
 REQUIRED_PACKAGES += library/apr-1
 REQUIRED_PACKAGES += library/apr-util-1
-# to be removed after apr-1 gets into repo
-REQUIRED_PACKAGES += library/apr-16
-REQUIRED_PACKAGES += library/apr-util-16
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libserf
+REQUIRED_PACKAGES += library/py3c
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += runtime/perl-522
-REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/perl-532
 REQUIRED_PACKAGES += security/kerberos-5
-REQUIRED_PACKAGES += system/library/c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/security/libsasl2
 REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += web/server/apache-24
