@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            64
@@ -28,14 +28,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-settings-daemon
-COMPONENT_VERSION=	3.34.2
+COMPONENT_VERSION=	3.38.0
 COMPONENT_PROJECT_URL=	http://wiki.gnome.org
 COMPONENT_ARCHIVE_HASH= \
-	sha256:9fbae67e217e53b99e4f9e7d392c91ffbe31253941c9b136ef09c2d9db7ad7ed
+	sha256:b7ed5b5fab9aad192ceed6a95be2805124e3c63c46891bbae076f7ec3fd6792e
 COMPONENT_BUGDB=	gnome/session
 COMPONENT_ANITYA_ID=	12860
 
-TPNO=			59728
+TPNO=			65002
 BUILD_STYLE=		meson
 
 # Tests are disabled since they require a running desktop.
