@@ -133,7 +133,6 @@ REQUIRED_PACKAGES += library/libsoup
 REQUIRED_PACKAGES += library/python/pygobject-3-37
 REQUIRED_PACKAGES += library/python/simplejson-37
 REQUIRED_PACKAGES += library/telepathy-glib
-REQUIRED_PACKAGES += library/telepathy-logger
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/display-manager/gdm
 REQUIRED_PACKAGES += system/input-method/ibus
