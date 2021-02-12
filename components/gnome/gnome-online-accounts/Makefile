@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-online-accounts
-COMPONENT_VERSION=	3.34.0
+COMPONENT_VERSION=	3.38.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GnomeOnlineAccounts
 COMPONENT_ARCHIVE_HASH= \
-	sha256:c44fbce4eeb54703a2ab4954d54f11eb29666f9cf61b5275b9fe0fc033377f57
+	sha256:3760ea78729b3038dda0c416b57bc2cbaafcc619eec6c5109654d747fad2418c
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	10943
 
-TPNO=			54061
+TPNO=			64983
 
 TEST_TARGET = $(NO_TESTS)
 
