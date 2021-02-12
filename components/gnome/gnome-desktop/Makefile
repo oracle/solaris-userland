@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-desktop
-COMPONENT_VERSION=	3.34.0
+COMPONENT_VERSION=	3.38.3
 COMPONENT_PROJECT_URL= 	https://developer.gnome.org/gnome-desktop/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:8d331ee655c1d56b2b97562a07c7a7598ff6706a11ff1cdce97423ebc6b62426
+	sha256:bfe00257b2bb59fff04ac1c144804084d1c253e66f9d7408f6060bbf7ad1d831
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13127
 
-TPNO=			54037
+TPNO=			64982
 BUILD_STYLE=		meson
 
 # Tests do not pass because of insufficient gsed filtering.
