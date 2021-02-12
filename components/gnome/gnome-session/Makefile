@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS=             64
@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-session
-COMPONENT_VERSION=	3.34.2
+COMPONENT_VERSION=	3.38.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/SessionManagement
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8bb77381650a03ae4be7260751363bd27da93f09bac1ddbc885f4ce44ebaf8e1
+	sha256:7bcc0eb2cdba4b3f6d1b459b3a30873b7bb65b383c1f6a5f63c3e3b5c7943d67
 COMPONENT_BUGDB=	gnome/session
 COMPONENT_ANITYA_ID=	13136
 
-TPNO=			59727
+TPNO=			64999
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
