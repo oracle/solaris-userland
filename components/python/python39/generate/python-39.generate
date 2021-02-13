@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
@@ -64,10 +64,10 @@
 <transform file path=usr/lib/python3.9/test/bad_coding.*.py -> set pkg.tmp.autopyc false>
 <transform file path=usr/lib/python3.9/test/badsyntax_.* -> set pkg.tmp.autopyc false>
 
-# For some unknown reason, llib-lpython39m can be sometimes found in the proto
+# For some unknown reason, llib-lpython39 can be sometimes found in the proto
 # area and sometimes not.  This fixes this inconsistency by always removing the
 # file and by adding it via .static file
-<transform file path=llib-lpython39m$ -> drop>
+<transform file path=llib-lpython39$ -> drop>
 
 # Emit some additional links
 <transform file path=(.*)/libpython3.9_db.so.1.0 \
@@ -89,8 +89,8 @@
        -> emit link path=usr/lib/$(MACH64)/libpython3.so target=libpython3-39.so mediator=python3 mediator-version=3.9>
 
 # move and rename ln lib
-<transform file path=.*/llib-lpython39m.ln -> set action.hash \$\(MACH64\)/llib-lpython39m.ln>
-<transform file path=(.*)/llib-lpython39m.ln -> set path %<1>/llib-lpython3.9m.ln>
+<transform file path=.*/llib-lpython39.ln -> set action.hash \$\(MACH64\)/llib-lpython39.ln>
+<transform file path=(.*)/llib-lpython39.ln -> set path %<1>/llib-lpython3.9.ln>
 
 # remove incorrect conditional dependency on tkinter
 <transform file path=.*/idlelib/pyshell.py -> set pkg.depend.bypass-generate .*>
