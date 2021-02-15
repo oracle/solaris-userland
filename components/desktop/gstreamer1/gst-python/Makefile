@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64
@@ -42,8 +42,24 @@ COMPONENT_ANITYA_ID=	3881
 
 TPNO=			55778
 
-PYTHON_VERSIONS= 3.7
-PYTHON_VERSION = 3.7
+PYTHON_VERSIONS= $(PYTHON3_VERSIONS)
+
+# replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses configure.mk
+CONFIGURE_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
+$(BUILD_DIR)/%-3.7/.configured:		PYTHON_VERSION=3.7
+$(BUILD_DIR)/%-3.9/.configured:		PYTHON_VERSION=3.9
+
+BUILD_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
+$(BUILD_DIR)/%-3.7/.built:		PYTHON_VERSION=3.7
+$(BUILD_DIR)/%-3.9/.built:		PYTHON_VERSION=3.9
+
+INSTALL_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
+$(BUILD_DIR)/%-3.7/.installed:		PYTHON_VERSION=3.7
+$(BUILD_DIR)/%-3.9/.installed:		PYTHON_VERSION=3.9
+
+TEST_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.tested-and-compared)
+$(BUILD_DIR)/%-3.7/.tested-and-compared:		PYTHON_VERSION=3.7
+$(BUILD_DIR)/%-3.9/.tested-and-compared:		PYTHON_VERSION=3.9
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -56,13 +72,13 @@ CONFIGURE_OPTIONS += --disable-static
 # The build process modifies the shebang line to use the version of Python
 # automatically found; to avoid using the current system default, one is
 # explicitly specified here.
-CONFIGURE_ENV += PYTHON=/usr/bin/python3.7m
+CONFIGURE_ENV += PYTHON=$(PYTHON)
 
 # Ensure Python modules are installed into vendor package directories.
 CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
 CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
 
-CONFIGURE_OPTIONS.64 += --with-pygi-overrides-dir=$(PYTHON_VENDOR_PACKAGES_BASE)/gi/overrides/64
+CONFIGURE_OPTIONS += --with-pygi-overrides-dir=$(PYTHON_VENDOR_PACKAGES_BASE)/gi/overrides/64
 
 # for the tests
 unexport SHELLOPTS
@@ -70,8 +86,12 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/^Ran 39 tests/d" '
+        '-e "/OK/p" ' \
+        '-e "/FAIL/p" ' \
+        '-e "s/^\(Ran [0-9]\+ tests\).*/\1/p" '
+
 REQUIRED_PACKAGES += library/desktop/gstreamer-1
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/python/pygobject-3-37
+REQUIRED_PACKAGES += library/python/pygobject-3
 REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-39
