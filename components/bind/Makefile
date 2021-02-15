@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 # Build requirements, needed before inclusion of shared-macros.
 BUILD_BITS=		64
@@ -34,23 +34,23 @@ include ../../make-rules/shared-macros.mk
 #   BIND <x>.<y>.<z>-P<n>   =>   IPS <x>.<y>.<z>.<n>.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		bind
-COMPONENT_VERSION=	9.11.26
+COMPONENT_VERSION=	9.11.28
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	service/dns-server
-TPNO=			63911
+TPNO=			65024
 COMPONENT_PROJECT_URL=	http://www.isc.org/software/bind/
 
 # hash from: sha256sum $(COMPONENT_ARCHIVE) | sed 's/\(.[^ ]*\).*/sha256:\1/'
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:c93a7be0ff76027ab799f030aafe8b4eede8bd2fa2c40a83858c2c43c5bee8b3
+	sha256:1090cbe6caba37c404d1075887da7e5282ae9a2bc6172d722df15cd480975e74
 
 COMPONENT_ARCHIVE_URL=	\
 	http://ftp.isc.org/isc/bind9/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 
 # ISC OpenPGP Key obtained from https://ftp.isc.org/isc/pgpkeys
 # Added to repository using command:
-#   gpg2 --homedir "$(hg root)/tools/.gnupg" --import codesign2019.txt
+#   gpg2 --homedir "$(hg root)/tools/.gnupg" --import codesign2021.txt
 # Care must be taken if mercurial merge required!
 #   see ../../doc/makefile-variables.txt
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sha512.asc
