@@ -20,27 +20,29 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
-BUILD_BITS =		64_and_32
+BUILD_BITS =		64
 COMPILER =		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dbus-python
-COMPONENT_VERSION=	1.2.8
+COMPONENT_VERSION=	1.2.16
 COMPONENT_PROJECT_URL=	http://dbus.freedesktop.org
 COMPONENT_ARCHIVE_HASH= \
-    sha256:abf12bbb765e300bf8e2a1b2f32f85949eab06998dbda127952c31cb63957b6f
+    sha256:2039b50e8072c78b81ba77d29608bc4dec89302cbe9b4762cd29cb66536d342b
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/dbus
 COMPONENT_ANITYA_ID=	402
 
-TPNO=			52290
+TPNO=			65103
 
-# This component is not yet built for Python 3.9
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.9)
+PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
+
+# Do not transform .so files to include standard Python 3 ABI version tag.
+PY3_CPYTHON_NAMING = \#
 
 PKG_PROTO_DIRS += $(SOURCE_DIR)/doc/
 
@@ -50,9 +52,6 @@ BUILD_64     = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
 INSTALL_64   = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
 TEST_64	     = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.tested-and-compared)
 
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 $(foreach pyver, $(PYTHON_VERSIONS), \
   $(eval $(BUILD_DIR)/%-$(pyver)/.configured:          PYTHON_VERSION=$(pyver)) \
   $(eval $(BUILD_DIR)/%-$(pyver)/.built:               PYTHON_VERSION=$(pyver)) \
@@ -60,16 +59,8 @@ $(foreach pyver, $(PYTHON_VERSIONS), \
   $(eval $(BUILD_DIR)/%-$(pyver)/.tested-and-compared: PYTHON_VERSION=$(pyver)) \
 )
 
-# This is needed for 32 bit variant of dbus-python
-PYTHON_VERSION = 2.7
-
-$(BUILD_DIR)/$(MACH64)-%/.configured:		BITS=64
-$(BUILD_DIR)/$(MACH64)-%/.built:		BITS=64
-$(BUILD_DIR)/$(MACH64)-%/.installed:		BITS=64
-$(BUILD_DIR)/$(MACH64)-%/.tested-and-compared:	BITS=64
-
-PYTHON_MAJOR = $(basename $(PYTHON_VERSION))
-
+COMPONENT_TEST_BUILD_DIR = \
+    $(BUILD_DIR)/test/$(MACH$(BITS))-$(PYTHON_VERSION)
 COMPONENT_TEST_OUTPUT = \
     $(COMPONENT_TEST_BUILD_DIR)/test-$(PYTHON_VERSION)-$(BITS)-results
 COMPONENT_TEST_DIFFS = \
@@ -79,23 +70,20 @@ COMPONENT_TEST_SNAPSHOT = \
 COMPONENT_TEST_TRANSFORM_CMD = \
     $(COMPONENT_TEST_BUILD_DIR)/transform-$(PYTHON_VERSION)-$(BITS)-results
 COMPONENT_TEST_MASTER = \
-    $(COMPONENT_TEST_RESULTS_DIR)/results-py$(PYTHON_MAJOR).master
+    $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 include $(WS_MAKE_RULES)/common.mk
-
-# Need to replace the py-compile in the 1.2.0 tarball with the one from a
-# newer version of automake in order to output *pyc to the right paths for
-# Python 3.7
-COMPONENT_PREP_ACTION += (cd $(@D); rm -f py-compile ; autoreconf -fiv);
 
 CONFIGURE_OPTIONS += PYTHON="$(PYTHON)"
 CONFIGURE_OPTIONS += --disable-dependency-tracking
 
 # Ensure Python modules are installed into vendor package directories.
 CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES_BASE)
-CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON.$(PYTHON_VERSION).VENDOR_PACKAGES)
+CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES_BASE)
 
 COMPONENT_TEST_ENV +=   PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)
+# necessary due to 'dbus-daemon' executable
+COMPONENT_TEST_ENV +=   PATH=$(PATH):$(USRLIB.32)
 
 # Needed for "gmake test" to work successfully.
 unexport SHELLOPTS
@@ -110,7 +98,5 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/ERROR/p" '
 
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += runtime/python-27
-REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/libdbus-glib

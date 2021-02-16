@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -34,14 +34,8 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=LSARC/2006/368 value=LSARC/2007/063
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file usr/lib/python$(PYVER)/vendor-packages/64/_dbus_bindings.so \
-    path=usr/lib/python$(PYVER)/vendor-packages/64/_dbus_bindings.so
-file usr/lib/python$(PYVER)/vendor-packages/64/_dbus_glib_bindings.so \
-    path=usr/lib/python$(PYVER)/vendor-packages/64/_dbus_glib_bindings.so
-file usr/lib/python$(PYVER)/vendor-packages/_dbus_bindings.so \
-    path=usr/lib/python$(PYVER)/vendor-packages/_dbus_bindings.so
-file usr/lib/python$(PYVER)/vendor-packages/_dbus_glib_bindings.so \
-    path=usr/lib/python$(PYVER)/vendor-packages/_dbus_glib_bindings.so
+file path=usr/lib/python$(PYVER)/vendor-packages/_dbus_bindings.so
+file path=usr/lib/python$(PYVER)/vendor-packages/_dbus_glib_bindings.so
 file path=usr/lib/python$(PYVER)/vendor-packages/dbus/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/dbus/_compat.py
 file path=usr/lib/python$(PYVER)/vendor-packages/dbus/_dbus.py
@@ -52,7 +46,6 @@ file path=usr/lib/python$(PYVER)/vendor-packages/dbus/decorators.py
 file path=usr/lib/python$(PYVER)/vendor-packages/dbus/exceptions.py
 file path=usr/lib/python$(PYVER)/vendor-packages/dbus/gi_service.py
 file path=usr/lib/python$(PYVER)/vendor-packages/dbus/glib.py
-$(PYTHON_2.7_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/dbus/gobject_service.py
 file path=usr/lib/python$(PYVER)/vendor-packages/dbus/lowlevel.py
 file path=usr/lib/python$(PYVER)/vendor-packages/dbus/mainloop/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/dbus/mainloop/glib.py
@@ -61,10 +54,6 @@ file path=usr/lib/python$(PYVER)/vendor-packages/dbus/server.py
 file path=usr/lib/python$(PYVER)/vendor-packages/dbus/service.py
 file path=usr/lib/python$(PYVER)/vendor-packages/dbus/types.py
 license dbus-python.license license=MIT
-
-# force the rename with an optional dependency on the old name
-$(PYTHON_2.7_ONLY)depend type=optional \
-    fmri=library/python/python-dbus-27@1.2.0,5.12-5.12.0.0.0.113.0
 
 # force a dependency on the dbus-python package
 depend type=require \
