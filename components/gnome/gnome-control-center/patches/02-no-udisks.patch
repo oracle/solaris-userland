@@ -1,0 +1,65 @@
+No UDISKS support in Solaris
+
+Instead of displaying 'Unknown' till we rework this to what was being
+done pre-udisks using the glib API, don't display 'Disk Capacity'.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=639376 documents bug in the 
+version using the glib API because of which upstream moved to udisks.
+
+--- a/panels/info-overview/cc-info-overview-panel.ui	2021-02-22 08:32:50.533986210 -0800
++++ b/panels/info-overview/cc-info-overview-panel.ui	2021-02-22 08:33:01.768169794 -0800
+@@ -93,16 +93,6 @@
+                       </object>
+                     </child>
+ 
+-                    <!-- Disk Capacity -->
+-                    <child>
+-                      <object class="CcListRow" id="disk_row">
+-                        <property name="visible">True</property>
+-                        <property name="activatable">False</property>
+-                        <property name="title" translatable="yes">Disk Capacity</property>
+-                        <property name="secondary-label" translatable="yes">Calculating…</property>
+-                      </object>
+-                    </child>
+-
+                   </object>
+                 </child>
+ 
+--- a/panels/info-overview/cc-info-overview-panel.c	2021-02-22 08:32:42.658023136 -0800
++++ b/panels/info-overview/cc-info-overview-panel.c	2021-02-22 08:34:05.489774044 -0800
+@@ -38,7 +38,9 @@
+ #include <glibtop/mountlist.h>
+ #include <glibtop/mem.h>
+ #include <glibtop/sysinfo.h>
++#ifndef __sun
+ #include <udisks/udisks.h>
++#endif
+ 
+ #include <gdk/gdk.h>
+ 
+@@ -472,6 +474,7 @@
+ static void
+ get_primary_disc_info (CcInfoOverviewPanel *self)
+ {
++#ifndef __sun
+   g_autoptr(UDisksClient) client = NULL;
+   GDBusObjectManager *manager;
+   g_autolist(GDBusObject) objects = NULL;
+@@ -518,6 +521,7 @@
+     {
+       cc_list_row_set_secondary_label (self->disk_row,  _("Unknown"));
+     }
++#endif
+ }
+ 
+ static char *
+@@ -740,7 +744,9 @@
+   os_name_text = get_os_name ();
+   cc_list_row_set_secondary_label (self->os_name_row, os_name_text);
+ 
++#ifndef __sun
+   get_primary_disc_info (self);
++#endif
+ 
+   graphics_hardware_string = get_graphics_hardware_string ();
+   cc_list_row_set_secondary_markup (self->graphics_row, graphics_hardware_string);

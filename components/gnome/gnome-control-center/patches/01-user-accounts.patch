@@ -10,33 +10,33 @@ from the Linux passwd command, instead of using PAM or similar for Solaris.
 If this panel is ever restored, then you will also need to remove
 ../gnome-shell/patches/07-account-settings.patch to restore its menu entry.
 
---- a/panels/meson.build	2019-11-15 17:12:29.455910001 -0800
-+++ b/panels/meson.build	2019-11-15 17:12:53.695928226 -0800
-@@ -19,7 +19,6 @@
-   'sharing',
+--- a/panels/meson.build	2021-02-16 11:08:02.172213995 -0800
++++ b/panels/meson.build	2021-02-16 11:08:12.289298530 -0800
+@@ -26,7 +26,6 @@
    'sound',
    'universal-access',
+   'usage',
 -  'user-accounts'
  ]
  
  if host_is_linux
---- a/shell/cc-panel-loader.c	2019-11-15 17:13:55.157377877 -0800
-+++ b/shell/cc-panel-loader.c	2019-11-15 17:14:18.286585614 -0800
-@@ -114,7 +114,6 @@
-   PANEL_TYPE("thunderbolt",      cc_bolt_panel_get_type,                 NULL),
+--- a/shell/cc-panel-loader.c	2021-02-16 11:08:35.549234870 -0800
++++ b/shell/cc-panel-loader.c	2021-02-16 11:08:46.717511790 -0800
+@@ -125,7 +125,6 @@
  #endif
    PANEL_TYPE("universal-access", cc_ua_panel_get_type,                   NULL),
+   PANEL_TYPE("usage",            cc_usage_panel_get_type,                NULL),
 -  PANEL_TYPE("user-accounts",    cc_user_panel_get_type,                 NULL),
  #ifdef BUILD_WACOM
    PANEL_TYPE("wacom",            cc_wacom_panel_get_type,                cc_wacom_panel_static_init_func),
  #endif
---- a/shell/cc-panel-list.c	2019-11-15 19:43:02.726448565 -0800
-+++ b/shell/cc-panel-list.c	2019-11-15 19:43:24.282017484 -0800
-@@ -403,7 +403,6 @@
+--- a/shell/cc-panel-list.c	2021-02-16 11:09:11.093480385 -0800
++++ b/shell/cc-panel-list.c	2021-02-16 11:09:18.712882235 -0800
+@@ -420,7 +420,6 @@
    /* Details page */
-   "info-overview",
-   "datetime",
+   "region",
+   "universal-access",
 -  "user-accounts",
    "default-apps",
-   "reset-settings"
- };
+   "reset-settings",
+   "datetime",

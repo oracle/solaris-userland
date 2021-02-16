@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-control-center
-COMPONENT_VERSION=	3.34.4
+COMPONENT_VERSION=	3.38.3
 COMPONENT_PROJECT_URL=  https://git.gnome.org/browse/gnome-control-center
 COMPONENT_ARCHIVE_HASH= \
-	sha256:17ea6db4b9cee75e99e77f0161a0e5209a3b86444ae775c2068ec192aba6272e
+	sha256:3b4a4b18ba91803dce133f443f9d1d1f5a1b6c26b7727876e0a699349f5696e3
 COMPONENT_BUGDB=	gnome/preferences
 COMPONENT_ANITYA_ID=	5408
 
-TPNO=			57223
+TPNO=			65003
 BUILD_STYLE=		meson
 
 # Tests do not pass because of insufficient gsed filtering.
@@ -82,12 +82,14 @@ REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/grilo
 REQUIRED_PACKAGES += library/desktop/gsound
 REQUIRED_PACKAGES += library/desktop/gtk3
+REQUIRED_PACKAGES += library/desktop/libhandy
 REQUIRED_PACKAGES += library/desktop/libgweather
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/desktop/xdg/libcanberra
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
 REQUIRED_PACKAGES += library/gnome/gnome-online-accounts
+REQUIRED_PACKAGES += library/gnome/libsecret
 REQUIRED_PACKAGES += library/libgtop
 REQUIRED_PACKAGES += library/libsoup
 REQUIRED_PACKAGES += library/libxml2
@@ -101,6 +103,7 @@ REQUIRED_PACKAGES += system/library/libv12n
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/polkit
 REQUIRED_PACKAGES += system/library/upower
+REQUIRED_PACKAGES += x11/library/libepoxy
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxi
 REQUIRED_PACKAGES += x11/library/mesa

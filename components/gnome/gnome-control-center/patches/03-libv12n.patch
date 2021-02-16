@@ -2,9 +2,9 @@ Use libv12n to find virtualization environment instead of asking systemd
 
 Need to submit upstream
  
---- a/panels/info/cc-info-overview-panel.c	2019-11-15 20:07:15.695967441 -0800
-+++ b/panels/info/cc-info-overview-panel.c	2019-11-15 20:10:07.107834371 -0800
-@@ -657,6 +657,10 @@
+--- a/panels/info-overview/cc-info-overview-panel.c	2021-02-16 11:16:05.088156140 -0800
++++ b/panels/info-overview/cc-info-overview-panel.c	2021-02-16 11:21:42.867008725 -0800
+@@ -579,6 +579,10 @@
    const char *id;
    const char *display;
  } const virt_tech[] = {
@@ -15,7 +15,7 @@ Need to submit upstream
    { "kvm", "KVM" },
    { "qemu", "QEmu" },
    { "vmware", "VMware" },
-@@ -704,6 +708,28 @@
+@@ -624,6 +628,28 @@
  static void
  info_overview_panel_setup_virt (CcInfoOverviewPanel *self)
  {
@@ -44,11 +44,10 @@ Need to submit upstream
    g_autoptr(GError) error = NULL;
    g_autoptr(GDBusProxy) systemd_proxy = NULL;
    g_autoptr(GVariant) variant = NULL;
-@@ -738,7 +764,7 @@
-       set_virtualization_label (self, NULL);
+@@ -659,6 +685,7 @@
        return;
      }
--
+ 
 +#endif
    g_variant_get (variant, "(v)", &inner);
    set_virtualization_label (self, g_variant_get_string (inner, NULL));

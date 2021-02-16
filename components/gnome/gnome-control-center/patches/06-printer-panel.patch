@@ -6,36 +6,36 @@ further patching and testing, we are currently disabling it in the interim.
 
 Not suitable for upstream
 
---- a/panels/meson.build	2020-03-04 13:43:59.666181650 -0800
-+++ b/panels/meson.build	2020-03-04 13:44:06.549973748 -0800
-@@ -11,7 +11,6 @@
+--- a/panels/meson.build	2021-02-16 11:31:26.363914160 -0800
++++ b/panels/meson.build	2021-02-16 11:31:32.667763690 -0800
+@@ -17,7 +17,6 @@
    'mouse',
    'notifications',
    'online-accounts',
 -  'printers',
-   'privacy',
    'region',
+   'removable-media',
    'search',
---- a/shell/cc-panel-loader.c	2020-03-04 13:44:30.506159781 -0800
-+++ b/shell/cc-panel-loader.c	2020-03-04 13:44:48.819595259 -0800
-@@ -50,7 +50,6 @@
+--- a/shell/cc-panel-loader.c	2021-02-16 11:31:46.928468840 -0800
++++ b/shell/cc-panel-loader.c	2021-02-16 11:32:03.043121400 -0800
+@@ -49,7 +49,6 @@
  #endif /* BUILD_NETWORK */
  extern GType cc_notifications_panel_get_type (void);
  extern GType cc_goa_panel_get_type (void);
 -extern GType cc_printers_panel_get_type (void);
- extern GType cc_privacy_panel_get_type (void);
  extern GType cc_region_panel_get_type (void);
+ extern GType cc_removable_media_panel_get_type (void);
  extern GType cc_search_panel_get_type (void);
-@@ -102,7 +101,6 @@
+@@ -112,7 +111,6 @@
  #endif
    PANEL_TYPE("notifications",    cc_notifications_panel_get_type,        NULL),
    PANEL_TYPE("online-accounts",  cc_goa_panel_get_type,                  NULL),
 -  PANEL_TYPE("printers",         cc_printers_panel_get_type,             NULL),
-   PANEL_TYPE("privacy",          cc_privacy_panel_get_type,              NULL),
    PANEL_TYPE("region",           cc_region_panel_get_type,               NULL),
+   PANEL_TYPE("removable-media",  cc_removable_media_panel_get_type,      NULL),
    PANEL_TYPE("search",           cc_search_panel_get_type,               NULL),
---- a/tests/meson.build	2020-03-04 13:47:49.460971175 -0800
-+++ b/tests/meson.build	2020-03-04 13:47:54.360846681 -0800
+--- a/tests/meson.build	2021-02-16 11:32:26.049651060 -0800
++++ b/tests/meson.build	2021-02-16 11:32:31.662229290 -0800
 @@ -6,5 +6,4 @@
  
  subdir('interactive-panels')
