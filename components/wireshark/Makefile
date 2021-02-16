@@ -20,25 +20,25 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 MAJOR_VERSION=3.4
-MICRO_VERSION=1
+MICRO_VERSION=3
 
 COMPONENT_NAME=		wireshark
 COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
 COMPONENT_PROJECT_URL=	http://www.wireshark.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f8165211f5b4a4f6708df73ef9be51df917927f2da78348b32d3a6eb5fc458a3
+    sha256:f467cc77f0fc73fce0b854cdbc292f132d4879fca69d417eccad5f967fbf262b
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/src/all-versions/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	5137
 
-TPNO=			63871
+TPNO=			65054
 
 BUILD_STYLE=	cmake
 
