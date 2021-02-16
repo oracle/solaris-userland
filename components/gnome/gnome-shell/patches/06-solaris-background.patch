@@ -1,26 +1,56 @@
 Solaris-specific patch to change the default background to our branded image
 
---- a/data/theme/gnome-shell-sass/_common.scss	2019-11-09 08:33:57.219290671 -0800
-+++ b/data/theme/gnome-shell-sass/_common.scss	2019-11-09 08:34:49.088482009 -0800
-@@ -2130,8 +2130,8 @@
+--- a/data/theme/gnome-shell-sass/widgets/_screen-shield.scss	2021-02-16 16:06:26.108970840 -0800
++++ b/data/theme/gnome-shell-sass/widgets/_screen-shield.scss	2021-02-16 16:09:07.662121270 -0800
+@@ -66,7 +66,8 @@
  }
  
  #lockDialogGroup {
--  background: lighten(#2e3436, 8%) url(resource:///org/gnome/shell/theme/noise-texture.png);
--  background-repeat: repeat;
+-  background-color: lighten(#2e3436, 8%);
 +  background: lighten(#2e3436, 8%) url(file:///usr/share/backgrounds/solaris/Polygons_Color.png);
-+  background-repeat: no-repeat; background-size: cover; 
++  background-repeat: no-repeat; background-size: cover;
  }
  
- #screenShieldNotifications {
---- a/js/ui/background.js	2019-11-09 08:35:10.682500380 -0800
-+++ b/js/ui/background.js	2019-11-09 08:35:30.205330702 -0800
-@@ -499,7 +499,7 @@
- 
- var SystemBackground = class SystemBackground {
-     constructor() {
--        let file = Gio.File.new_for_uri('resource:///org/gnome/shell/theme/noise-texture.png');
-+        let file = Gio.File.new_for_uri('file:///usr/share/backgrounds/solaris/Polygons_Color.png');
- 
+ #unlockDialogNotifications {
+--- a/js/ui/background.js	2021-02-16 16:10:01.450906315 -0800
++++ b/js/ui/background.js	2021-02-16 16:14:40.808827070 -0800
+@@ -506,9 +506,11 @@
+     Signals: { 'loaded': {} },
+ }, class SystemBackground extends Meta.BackgroundActor {
+     _init() {
++	let file = Gio.File.new_for_uri('file:///usr/share/backgrounds/solaris/Polygons_Color.png');
          if (_systemBackground == null) {
              _systemBackground = new Meta.Background({ meta_display: global.display });
+             _systemBackground.set_color(DEFAULT_BACKGROUND_COLOR);
++	    _systemBackground.set_file(file, GDesktopEnums.BackgroundStyle.WALLPAPER);
+         }
+ 
+         super._init({
+@@ -517,11 +519,22 @@
+         });
+         this.content.background = _systemBackground;
+ 
+-        let id = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+-            this.emit('loaded');
+-            return GLib.SOURCE_REMOVE;
+-        });
+-        GLib.Source.set_name_by_id(id, '[gnome-shell] SystemBackground.loaded');
++        let cache = Meta.BackgroundImageCache.get_default();
++        let image = cache.load(file);
++        if (image.is_loaded()) {
++            image = null;
++            let id = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
++                this.emit('loaded');
++                return GLib.SOURCE_REMOVE;
++            });
++            GLib.Source.set_name_by_id(id, '[gnome-shell] SystemBackground.loaded');
++        } else {
++            let id = image.connect('loaded', () => {
++                this.emit('loaded');
++                image.disconnect(id);
++                image = null;
++            });
++        }
+     }
+ });
+ 

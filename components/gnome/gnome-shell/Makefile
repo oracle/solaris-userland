@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-shell
-COMPONENT_VERSION=	3.34.5
+COMPONENT_VERSION=	3.38.3
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/GnomeShell
 COMPONENT_ARCHIVE_HASH= \
-	sha256:d296f318a74a6d7883358a6ce1c4d8808b7903dbbb4f9c61ab4230f18e6d7550
+	sha256:5345b418cb12a972955ce5cceaed6662480027336b5c51daea5730575b621ced
 COMPONENT_BUGDB=        gnome/gnome-shell
 COMPONENT_ANITYA_ID=	5409
 
-TPNO=			58002
+TPNO=			65058
 BUILD_STYLE=            meson
 
 # Workaround the mozjs issue described in 24935318
@@ -109,6 +109,7 @@ REQUIRED_PACKAGES += library/desktop/geocode-glib
 REQUIRED_PACKAGES += library/desktop/gjs
 REQUIRED_PACKAGES += library/desktop/gnome-autoar
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
+REQUIRED_PACKAGES += library/desktop/graphene
 REQUIRED_PACKAGES += library/desktop/gstreamer-1
 REQUIRED_PACKAGES += library/desktop/gstreamer-1/gst-plugins-base
 REQUIRED_PACKAGES += library/desktop/gtk3
