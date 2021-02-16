@@ -4,12 +4,14 @@ from webkitgtk-2.24.2
 webkitgtk-2.26.3/Source/ThirdParty/ANGLE/src/common/third_party/smhasher/src/PMurHash.cpp:95:51: error: operator '&&' has no right operand
          defined(_LITTLE_ENDIAN) && _LITTLE_ENDIAN == 1
                                                    ^~
---- a/Source/ThirdParty/ANGLE/src/common/third_party/smhasher/src/PMurHash.cpp  2020-02-02 09:45:53.657772989 -0800
-+++ b/Source/ThirdParty/ANGLE/src/common/third_party/smhasher/src/PMurHash.cpp  2020-02-02 09:46:20.194830119 -0800
-@@ -74,6 +74,12 @@
+diff --git a/Source/ThirdParty/ANGLE/src/common/third_party/smhasher/src/PMurHash.cpp b/Source/ThirdParty/ANGLE/src/common/third_party/smhasher/src/PMurHash.cpp
+index 379e5ce..6288eea 100644
+--- a/Source/ThirdParty/ANGLE/src/common/third_party/smhasher/src/PMurHash.cpp
++++ b/Source/ThirdParty/ANGLE/src/common/third_party/smhasher/src/PMurHash.cpp
+@@ -74,6 +74,12 @@ on big endian machines, or a byte-by-byte read if the endianess is unknown.
   * ROTL32(x,r)      Rotate x left by r bits
   */
-
+ 
 +#if !defined(__BYTE_ORDER) && defined(__GNUC__)
 +  #define __BIG_ENDIAN __ORDER_BIG_ENDIAN__
 +  #define __LITTLE_ENDIAN __ORDER_LITTLE_ENDIAN__
@@ -19,17 +21,12 @@ webkitgtk-2.26.3/Source/ThirdParty/ANGLE/src/common/third_party/smhasher/src/PMu
  /* Convention is to define __BYTE_ORDER == to one of these values */
  #if !defined(__BIG_ENDIAN)
  #    define __BIG_ENDIAN 4321
-
-----
-Added to fix the following issue
-
-webkitgtk-2.26.3/Source/WTF/wtf/Assertions.h:438:35: error: there are no arguments to '_Static_assert' that depend on a template parameter, so a declaration of '_Static_assert' must be available [-fpermissive]
- #define COMPILE_ASSERT(exp, name) _Static_assert((exp), #name)
-                                   ^
---- a/Source/WTF/wtf/Assertions.h       2020-02-06 10:21:56.737287616 -0800
-+++ b/Source/WTF/wtf/Assertions.h       2020-02-06 10:22:17.566830526 -0800
-@@ -433,7 +433,7 @@
-
+diff --git a/Source/WTF/wtf/Assertions.h b/Source/WTF/wtf/Assertions.h
+index c6d44d0..b50b813 100644
+--- a/Source/WTF/wtf/Assertions.h
++++ b/Source/WTF/wtf/Assertions.h
+@@ -452,7 +452,7 @@ constexpr bool assertionFailureDueToUnreachableCode = false;
+ 
  /* COMPILE_ASSERT */
  #ifndef COMPILE_ASSERT
 -#if COMPILER_SUPPORTS(C_STATIC_ASSERT)
@@ -37,9 +34,10 @@ webkitgtk-2.26.3/Source/WTF/wtf/Assertions.h:438:35: error: there are no argumen
  /* Unlike static_assert below, this also works in plain C code. */
  #define COMPILE_ASSERT(exp, name) _Static_assert((exp), #name)
  #else
-
---- webkitgtk-2.30.3/Source/WebCore/platform/graphics/x11/PlatformDisplayX11.cpp	2020-11-24 08:18:12.262272055 +0000
-+++ webkitgtk-2.30.3/Source/WebCore/platform/graphics/x11/PlatformDisplayX11.cpp	2020-11-24 08:16:21.147847085 +0000
+diff --git a/Source/WebCore/platform/graphics/x11/PlatformDisplayX11.cpp b/Source/WebCore/platform/graphics/x11/PlatformDisplayX11.cpp
+index 8fe3d3e..2b28054 100644
+--- a/Source/WebCore/platform/graphics/x11/PlatformDisplayX11.cpp
++++ b/Source/WebCore/platform/graphics/x11/PlatformDisplayX11.cpp
 @@ -30,6 +30,7 @@
  
  #if PLATFORM(X11)
@@ -48,8 +46,10 @@ webkitgtk-2.26.3/Source/WTF/wtf/Assertions.h:438:35: error: there are no argumen
  #include <X11/extensions/Xcomposite.h>
  #if PLATFORM(GTK)
  #include <X11/extensions/Xdamage.h>
---- webkitgtk-2.30.3/Source/WebCore/platform/network/DNS.h	2020-11-24 08:56:39.793872970 +0000
-+++ webkitgtk-2.30.3/Source/WebCore/platform/network/DNS.h	2020-11-24 08:55:12.049846595 +0000
+diff --git a/Source/WebCore/platform/network/DNS.h b/Source/WebCore/platform/network/DNS.h
+index e63a7b0..9880c7d 100644
+--- a/Source/WebCore/platform/network/DNS.h
++++ b/Source/WebCore/platform/network/DNS.h
 @@ -32,6 +32,10 @@
  #include <netinet/in.h>
  #endif

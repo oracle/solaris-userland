@@ -5,9 +5,11 @@ compiler bug.
 
 file upstream bug to determine correct fix
 
---- a/Source/JavaScriptCore/dfg/DFGOperations.cpp	2020-01-28 11:44:32.082790621 -0800
-+++ b/Source/JavaScriptCore/dfg/DFGOperations.cpp	2020-01-28 11:44:50.981534484 -0800
-@@ -2677,7 +2677,7 @@
+diff --git a/Source/JavaScriptCore/dfg/DFGOperations.cpp b/Source/JavaScriptCore/dfg/DFGOperations.cpp
+index e431039..5ad6f48 100644
+--- a/Source/JavaScriptCore/dfg/DFGOperations.cpp
++++ b/Source/JavaScriptCore/dfg/DFGOperations.cpp
+@@ -2860,7 +2860,7 @@ void JIT_OPERATION operationLoadVarargs(JSGlobalObject* globalObject, int32_t fi
  
  double JIT_OPERATION operationFModOnInts(int32_t a, int32_t b)
  {
@@ -16,20 +18,11 @@ file upstream bug to determine correct fix
  }
  
  #if USE(JSVALUE32_64)
---- a/Source/WebCore/rendering/shapes/RasterShape.cpp	2020-01-28 11:45:15.079639404 -0800
-+++ b/Source/WebCore/rendering/shapes/RasterShape.cpp	2020-01-28 11:45:45.572829747 -0800
-@@ -142,7 +142,7 @@
-         return *m_intervals;
- 
-     int shapeMarginInt = clampToPositiveInteger(ceil(shapeMargin()));
--    int maxShapeMarginInt = std::max(m_marginRectSize.width(), m_marginRectSize.height()) * sqrt(2);
-+    int maxShapeMarginInt = std::max(m_marginRectSize.width(), m_marginRectSize.height()) * sqrt(static_cast<float>(2));
-     if (!m_marginIntervals)
-         m_marginIntervals = m_intervals->computeShapeMarginIntervals(std::min(shapeMarginInt, maxShapeMarginInt));
- 
---- a/Source/WebCore/rendering/shapes/BoxShape.cpp	2020-01-28 11:46:09.490057546 -0800
-+++ b/Source/WebCore/rendering/shapes/BoxShape.cpp	2020-01-28 11:46:25.148227681 -0800
-@@ -43,7 +43,7 @@
+diff --git a/Source/WebCore/rendering/shapes/BoxShape.cpp b/Source/WebCore/rendering/shapes/BoxShape.cpp
+index c2e53dd..8f3068b 100644
+--- a/Source/WebCore/rendering/shapes/BoxShape.cpp
++++ b/Source/WebCore/rendering/shapes/BoxShape.cpp
+@@ -43,7 +43,7 @@ static inline LayoutUnit adjustRadiusForMarginBoxShape(LayoutUnit radius, Layout
  
      LayoutUnit ratio = radius / margin;
      if (ratio < 1)
@@ -38,3 +31,16 @@ file upstream bug to determine correct fix
  
      return radius + margin;
  }
+diff --git a/Source/WebCore/rendering/shapes/RasterShape.cpp b/Source/WebCore/rendering/shapes/RasterShape.cpp
+index d52092b..10b22e3 100644
+--- a/Source/WebCore/rendering/shapes/RasterShape.cpp
++++ b/Source/WebCore/rendering/shapes/RasterShape.cpp
+@@ -142,7 +142,7 @@ const RasterShapeIntervals& RasterShape::marginIntervals() const
+         return *m_intervals;
+ 
+     int shapeMarginInt = clampToPositiveInteger(ceil(shapeMargin()));
+-    int maxShapeMarginInt = std::max(m_marginRectSize.width(), m_marginRectSize.height()) * sqrt(2);
++    int maxShapeMarginInt = std::max(m_marginRectSize.width(), m_marginRectSize.height()) * sqrt(static_cast<float>(2));
+     if (!m_marginIntervals)
+         m_marginIntervals = m_intervals->computeShapeMarginIntervals(std::min(shapeMarginInt, maxShapeMarginInt));
+ 

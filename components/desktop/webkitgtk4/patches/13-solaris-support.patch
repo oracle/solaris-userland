@@ -2,8 +2,58 @@ Changes for the build to work on Solaris
 
 Potentially suitable to send upstream
 
---- webkitgtk-2.28.2/Source/WTF/wtf/PlatformCPU.h	2020-05-04 15:11:26.079688193 +0000
-+++ webkitgtk-2.28.2/Source/WTF/wtf/PlatformCPU.h	2020-05-04 15:10:37.429983685 +0000
+diff --git a/Source/WTF/wtf/CurrentTime.cpp b/Source/WTF/wtf/CurrentTime.cpp
+index 46e55d4..815118d 100644
+--- a/Source/WTF/wtf/CurrentTime.cpp
++++ b/Source/WTF/wtf/CurrentTime.cpp
+@@ -267,7 +267,7 @@ MonotonicTime MonotonicTime::now()
+     return fromRawSeconds((mach_absolute_time() * timebaseInfo.numer) / (1.0e9 * timebaseInfo.denom));
+ #elif OS(FUCHSIA)
+     return fromRawSeconds(zx_clock_get_monotonic() / static_cast<double>(ZX_SEC(1)));
+-#elif OS(LINUX) || OS(FREEBSD) || OS(OPENBSD) || OS(NETBSD)
++#elif OS(LINUX) || OS(FREEBSD) || OS(OPENBSD) || OS(SOLARIS) || OS(NETBSD)
+     struct timespec ts { };
+     clock_gettime(CLOCK_MONOTONIC, &ts);
+     return fromRawSeconds(static_cast<double>(ts.tv_sec) + ts.tv_nsec / 1.0e9);
+diff --git a/Source/WTF/wtf/NumberOfCores.cpp b/Source/WTF/wtf/NumberOfCores.cpp
+index 7636865..59fd2f7 100644
+--- a/Source/WTF/wtf/NumberOfCores.cpp
++++ b/Source/WTF/wtf/NumberOfCores.cpp
+@@ -30,7 +30,7 @@
+ 
+ #if OS(DARWIN)
+ #include <sys/sysctl.h>
+-#elif OS(LINUX) || OS(AIX) || OS(OPENBSD) || OS(NETBSD) || OS(FREEBSD)
++#elif OS(LINUX) || OS(AIX) || OS(SOLARIS) || OS(OPENBSD) || OS(NETBSD) || OS(FREEBSD)
+ #include <unistd.h>
+ #elif OS(WINDOWS)
+ #include <windows.h>
+@@ -65,7 +65,7 @@ int numberOfProcessorCores()
+     int sysctlResult = sysctl(name, sizeof(name) / sizeof(int), &result, &length, 0, 0);
+ 
+     s_numberOfCores = sysctlResult < 0 ? defaultIfUnavailable : result;
+-#elif OS(LINUX) || OS(AIX) || OS(OPENBSD) || OS(NETBSD) || OS(FREEBSD)
++#elif OS(LINUX) || OS(AIX) || OS(SOLARIS) || OS(OPENBSD) || OS(NETBSD) || OS(FREEBSD)
+     long sysconfResult = sysconf(_SC_NPROCESSORS_ONLN);
+ 
+     s_numberOfCores = sysconfResult < 0 ? defaultIfUnavailable : static_cast<int>(sysconfResult);
+diff --git a/Source/WTF/wtf/PageBlock.h b/Source/WTF/wtf/PageBlock.h
+index c655a50..be6f1a4 100644
+--- a/Source/WTF/wtf/PageBlock.h
++++ b/Source/WTF/wtf/PageBlock.h
+@@ -49,7 +49,7 @@ namespace WTF {
+ // Use 64 KiB for any unknown CPUs to be conservative.
+ #if OS(DARWIN) || PLATFORM(PLAYSTATION)
+ constexpr size_t CeilingOnPageSize = 16 * KB;
+-#elif USE(64KB_PAGE_BLOCK) || CPU(PPC) || CPU(PPC64) || CPU(PPC64LE) || CPU(UNKNOWN)
++#elif USE(64KB_PAGE_BLOCK) || CPU(PPC) || CPU(PPC64) || CPU(PPC64LE) || CPU(SPARC) || CPU(UNKNOWN)
+ constexpr size_t CeilingOnPageSize = 64 * KB;
+ #elif OS(WINDOWS) || CPU(MIPS) || CPU(MIPS64) || CPU(X86) || CPU(X86_64) || CPU(ARM) || CPU(ARM64)
+ constexpr size_t CeilingOnPageSize = 4 * KB;
+diff --git a/Source/WTF/wtf/PlatformCPU.h b/Source/WTF/wtf/PlatformCPU.h
+index 0e711de..62864ea 100644
+--- a/Source/WTF/wtf/PlatformCPU.h
++++ b/Source/WTF/wtf/PlatformCPU.h
 @@ -89,6 +89,26 @@
  #define WTF_CPU_KNOWN 1
  #endif
@@ -40,8 +90,23 @@ Potentially suitable to send upstream
  #define WTF_CPU_NEEDS_ALIGNED_ACCESS 1
  #endif
  
---- webkitgtk-2.28.2/Source/WTF/wtf/PlatformOS.h	2020-05-04 15:16:13.700197611 +0000
-+++ webkitgtk-2.28.2/Source/WTF/wtf/PlatformOS.h	2020-05-04 15:13:50.446849339 +0000
+diff --git a/Source/WTF/wtf/PlatformHave.h b/Source/WTF/wtf/PlatformHave.h
+index 4ec77e7..6b91c44 100644
+--- a/Source/WTF/wtf/PlatformHave.h
++++ b/Source/WTF/wtf/PlatformHave.h
+@@ -306,7 +306,7 @@
+ #define HAVE_URL_FORMATTING 1
+ #endif
+ 
+-#if !OS(WINDOWS)
++#if !OS(WINDOWS) && !OS(SOLARIS)
+ #define HAVE_STACK_BOUNDS_FOR_NEW_THREAD 1
+ #endif
+ 
+diff --git a/Source/WTF/wtf/PlatformOS.h b/Source/WTF/wtf/PlatformOS.h
+index be27911..a5216ba 100644
+--- a/Source/WTF/wtf/PlatformOS.h
++++ b/Source/WTF/wtf/PlatformOS.h
 @@ -114,6 +114,11 @@
  #define WTF_OS_OPENBSD 1
  #endif
@@ -62,103 +127,10 @@ Potentially suitable to send upstream
      || defined(unix)        \
      || defined(__unix)      \
      || defined(__unix__)
---- webkitgtk-2.28.2/Source/WTF/wtf/PlatformHave.h	2020-05-04 15:16:32.512420774 +0000
-+++ webkitgtk-2.28.2/Source/WTF/wtf/PlatformHave.h	2020-05-04 15:15:36.240964050 +0000
-@@ -347,7 +347,7 @@
- #define HAVE_URL_FORMATTING 1
- #endif
- 
--#if !OS(WINDOWS)
-+#if !OS(WINDOWS) && !OS(SOLARIS)
- #define HAVE_STACK_BOUNDS_FOR_NEW_THREAD 1
- #endif
- 
---- a/Source/WTF/wtf/NumberOfCores.cpp	2019-05-17 09:40:04.686265040 -0700
-+++ b/Source/WTF/wtf/NumberOfCores.cpp	2019-05-17 09:40:42.200543875 -0700
-@@ -34,7 +34,7 @@
- // data types defined in the former. See sysctl(3) and style(9).
- #include <sys/types.h>
- #include <sys/sysctl.h>
--#elif OS(LINUX) || OS(AIX) || OS(OPENBSD) || OS(NETBSD) || OS(FREEBSD)
-+#elif OS(LINUX) || OS(AIX) || OS(SOLARIS) || OS(OPENBSD) || OS(NETBSD) || OS(FREEBSD)
- #include <unistd.h>
- #elif OS(WINDOWS)
- #include <windows.h>
-@@ -69,7 +69,7 @@
-     int sysctlResult = sysctl(name, sizeof(name) / sizeof(int), &result, &length, 0, 0);
- 
-     s_numberOfCores = sysctlResult < 0 ? defaultIfUnavailable : result;
--#elif OS(LINUX) || OS(AIX) || OS(OPENBSD) || OS(NETBSD) || OS(FREEBSD)
-+#elif OS(LINUX) || OS(AIX) || OS(SOLARIS) || OS(OPENBSD) || OS(NETBSD) || OS(FREEBSD)
-     long sysconfResult = sysconf(_SC_NPROCESSORS_ONLN);
- 
-     s_numberOfCores = sysconfResult < 0 ? defaultIfUnavailable : static_cast<int>(sysconfResult);
---- a/Source/WTF/wtf/StackBounds.cpp	2019-05-17 09:40:57.235341831 -0700
-+++ b/Source/WTF/wtf/StackBounds.cpp	2019-05-17 09:41:49.997962267 -0700
-@@ -33,6 +33,10 @@
- 
- #include <windows.h>
- 
-+#elif OS(SOLARIS)
-+
-+#include <thread.h>
-+
- #elif OS(UNIX)
- 
- #include <pthread.h>
-@@ -102,6 +106,17 @@
-     return newThreadStackBounds(pthread_self());
- }
- 
-+#elif OS(SOLARIS)
-+
-+StackBounds StackBounds::currentThreadStackBoundsInternal()
-+{
-+    stack_t s;
-+    thr_stksegment(&s);
-+    void* origin = s.ss_sp;
-+    void* bound = static_cast<char*>(origin) - s.ss_size;
-+    return StackBounds { origin, bound };
-+}
-+
- #elif OS(UNIX)
- 
- #if OS(OPENBSD)
---- webkitgtk-2.28.2/Source/WTF/wtf/CurrentTime.cpp	2020-05-04 15:33:00.151316952 +0000
-+++ webkitgtk-2.28.2/Source/WTF/wtf/CurrentTime.cpp	2020-05-04 15:32:30.860465903 +0000
-@@ -266,7 +266,7 @@ MonotonicTime MonotonicTime::now()
-     return fromRawSeconds((mach_absolute_time() * timebaseInfo.numer) / (1.0e9 * timebaseInfo.denom));
- #elif OS(FUCHSIA)
-     return fromRawSeconds(zx_clock_get_monotonic() / static_cast<double>(ZX_SEC(1)));
--#elif OS(LINUX) || OS(FREEBSD) || OS(OPENBSD) || OS(NETBSD)
-+#elif OS(LINUX) || OS(FREEBSD) || OS(OPENBSD) || OS(SOLARIS) || OS(NETBSD)
-     struct timespec ts { };
-     clock_gettime(CLOCK_MONOTONIC, &ts);
-     return fromRawSeconds(static_cast<double>(ts.tv_sec) + ts.tv_nsec / 1.0e9);
---- webkitgtk-2.28.2/Source/WebCore/inspector/InspectorFrontendHost.cpp	2020-05-04 15:34:43.528901116 +0000
-+++ webkitgtk-2.28.2/Source/WebCore/inspector/InspectorFrontendHost.cpp	2020-05-04 15:34:14.749894025 +0000
-@@ -333,6 +333,8 @@ String InspectorFrontendHost::platform()
-     return "freebsd"_s;
- #elif OS(OPENBSD)
-     return "openbsd"_s;
-+#elif OS(SOLARIS)
-+    return "solaris"_s;
- #else
-     return "unknown"_s;
- #endif
---- webkitgtk-2.30.3/Source/WTF/wtf/PageBlock.h	2020-11-23 10:55:09.483546245 +0000
-+++ webkitgtk-2.30.3/Source/WTF/wtf/PageBlock.h	2020-11-23 10:54:32.089522375 +0000
-@@ -49,7 +49,7 @@ namespace WTF {
- // Use 64 KiB for any unknown CPUs to be conservative.
- #if OS(DARWIN) || PLATFORM(PLAYSTATION)
- constexpr size_t CeilingOnPageSize = 16 * KB;
--#elif USE(64KB_PAGE_BLOCK) || CPU(PPC) || CPU(PPC64) || CPU(PPC64LE) || CPU(UNKNOWN)
-+#elif USE(64KB_PAGE_BLOCK) || CPU(PPC) || CPU(PPC64) || CPU(PPC64LE) || CPU(SPARC) || CPU(UNKNOWN)
- constexpr size_t CeilingOnPageSize = 64 * KB;
- #elif OS(WINDOWS) || CPU(MIPS) || CPU(MIPS64) || CPU(X86) || CPU(X86_64) || CPU(ARM) || CPU(ARM64)
- constexpr size_t CeilingOnPageSize = 4 * KB;
---- webkitgtk-2.30.3/Source/WTF/wtf/RAMSize.cpp	2020-11-25 10:54:48.421646735 +0000
-+++ webkitgtk-2.30.3/Source/WTF/wtf/RAMSize.cpp	2020-11-25 10:53:53.995563075 +0000
+diff --git a/Source/WTF/wtf/RAMSize.cpp b/Source/WTF/wtf/RAMSize.cpp
+index 349998f..1f76336 100644
+--- a/Source/WTF/wtf/RAMSize.cpp
++++ b/Source/WTF/wtf/RAMSize.cpp
 @@ -34,6 +34,9 @@
  #if OS(LINUX)
  #include <sys/sysinfo.h>
@@ -183,3 +155,49 @@ Potentially suitable to send upstream
  #else
  #error "Missing a platform specific way of determining the available RAM"
  #endif // OS(LINUX) || OS(FREEBSD)
+diff --git a/Source/WTF/wtf/StackBounds.cpp b/Source/WTF/wtf/StackBounds.cpp
+index e6f7095..8fb3955 100644
+--- a/Source/WTF/wtf/StackBounds.cpp
++++ b/Source/WTF/wtf/StackBounds.cpp
+@@ -29,6 +29,10 @@
+ 
+ #include <windows.h>
+ 
++#elif OS(SOLARIS)
++
++#include <thread.h>
++
+ #elif OS(UNIX)
+ 
+ #include <pthread.h>
+@@ -65,6 +69,17 @@ StackBounds StackBounds::currentThreadStackBoundsInternal()
+     return newThreadStackBounds(pthread_self());
+ }
+ 
++#elif OS(SOLARIS)
++
++StackBounds StackBounds::currentThreadStackBoundsInternal()
++{
++    stack_t s;
++    thr_stksegment(&s);
++    void* origin = s.ss_sp;
++    void* bound = static_cast<char*>(origin) - s.ss_size;
++    return StackBounds { origin, bound };
++}
++
+ #elif OS(UNIX)
+ 
+ #if OS(OPENBSD)
+diff --git a/Source/WebCore/inspector/InspectorFrontendHost.cpp b/Source/WebCore/inspector/InspectorFrontendHost.cpp
+index f1a72ad..0bff8ca 100644
+--- a/Source/WebCore/inspector/InspectorFrontendHost.cpp
++++ b/Source/WebCore/inspector/InspectorFrontendHost.cpp
+@@ -383,6 +383,8 @@ String InspectorFrontendHost::platform() const
+     return "freebsd"_s;
+ #elif OS(OPENBSD)
+     return "openbsd"_s;
++#elif OS(SOLARIS)
++    return "solaris"_s;
+ #else
+     return "unknown"_s;
+ #endif

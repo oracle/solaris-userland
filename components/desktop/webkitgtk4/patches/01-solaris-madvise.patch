@@ -3,18 +3,20 @@ The cast is safe as void and unsigned char have same alignment.
 
 file upstream bug
 
---- a/Source/bmalloc/bmalloc/VMAllocate.h	2018-08-06 13:08:15.791977958 -0700
-+++ b/Source/bmalloc/bmalloc/VMAllocate.h	2018-08-06 13:09:11.064187008 -0700
-@@ -202,7 +202,7 @@
- #if BOS(DARWIN)
-     SYSCALL(madvise(p, vmSize, MADV_FREE_REUSABLE));
+diff --git a/Source/bmalloc/bmalloc/VMAllocate.h b/Source/bmalloc/bmalloc/VMAllocate.h
+index 580251e..a3e3be3 100644
+--- a/Source/bmalloc/bmalloc/VMAllocate.h
++++ b/Source/bmalloc/bmalloc/VMAllocate.h
+@@ -204,7 +204,7 @@ inline void vmDeallocatePhysicalPages(void* p, size_t vmSize)
+ #elif BOS(FREEBSD)
+     SYSCALL(madvise(p, vmSize, MADV_FREE));
  #else
 -    SYSCALL(madvise(p, vmSize, MADV_DONTNEED));
 +    SYSCALL(madvise(reinterpret_cast<char*>(p), vmSize, MADV_DONTNEED));
  #if BOS(LINUX)
      SYSCALL(madvise(p, vmSize, MADV_DONTDUMP));
  #endif
-@@ -215,7 +215,7 @@
+@@ -217,7 +217,7 @@ inline void vmAllocatePhysicalPages(void* p, size_t vmSize)
  #if BOS(DARWIN)
      SYSCALL(madvise(p, vmSize, MADV_FREE_REUSE));
  #else
