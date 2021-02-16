@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # Must use gcc because of 21090206
@@ -29,7 +29,7 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 MAJOR_VERSION=7.4
-MICRO_VERSION=11
+MICRO_VERSION=15
 
 COMPONENT_NAME=		php
 COMPONENT_VERSION=	$(MAJOR_VERSION).$(MICRO_VERSION)
@@ -37,11 +37,11 @@ UL_PHP_MINOR_VERSION=	$(MAJOR_VERSION)
 COMPONENT_PROJECT_URL=	http://php.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=\
-    sha256:5d31675a9b9c21b5bd03389418218c30b26558246870caba8eb54f5856e2d6ce
+    sha256:9b859c65f0cf7b3eff9d4a28cfab719fb3d36a1db3c20d874a79b5ec44d43cb8
 COMPONENT_ARCHIVE_URL=	http://php.net/get/$(COMPONENT_ARCHIVE)/from/this/mirror
 COMPONENT_ANITYA_ID=	57896
 
-TPNO=			62252
+TPNO=			65084
 TPNO_IMAP=		32942
 
 include $(WS_MAKE_RULES)/common.mk

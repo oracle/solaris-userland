@@ -7,6 +7,19 @@ It might be some general problem (need to be investigated). Similar but
 not the same issue:
 http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
 
+diff --git a/Zend/tests/arginfo_zpp_mismatch.phpt b/Zend/tests/arginfo_zpp_mismatch.phpt
+index f5df299..6eac10e 100644
+--- a/Zend/tests/arginfo_zpp_mismatch.phpt
++++ b/Zend/tests/arginfo_zpp_mismatch.phpt
+@@ -3,6 +3,8 @@ Test that there is no arginfo/zpp mismatch
+ --SKIPIF--
+ <?php
+ if (getenv('SKIP_MSAN')) die("skip msan misses interceptors for some functions");
++/* on SunOS it sends message via syslog to every logged user (which disturbs them :-) */
++if (PHP_OS == 'SunOS') die('skip.. Not valid for SunOS');
+ ?>
+ --FILE--
+ <?php
 diff --git a/ext/date/tests/bug33532.phpt b/ext/date/tests/bug33532.phpt
 index 80b87f7..d76cb93 100644
 --- a/ext/date/tests/bug33532.phpt
