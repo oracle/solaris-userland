@@ -63,19 +63,6 @@ index cad3ad8dc..abc8cf234 100755
      end
    end
  
-diff --git a/lib/puppet/defaults.rb b/lib/puppet/defaults.rb
-index 2af113634..609950841 100644
---- a/lib/puppet/defaults.rb
-+++ b/lib/puppet/defaults.rb
-@@ -1256,7 +1256,7 @@ EOT
-       :desc       => "File that provides mapping between custom SSL oids and user-friendly names"
-     },
-     :basemodulepath => {
--      :default => "$codedir/modules#{File::PATH_SEPARATOR}/opt/puppetlabs/puppet/modules",
-+      :default => "$codedir/modules#{File::PATH_SEPARATOR}/usr/puppetlabs/puppet/modules",
-       :type => :path,
-       :desc => "The search path for **global** modules. Should be specified as a
-         list of directories separated by the system path separator character. (The
 diff --git a/lib/puppet/face/config.rb b/lib/puppet/face/config.rb
 index 19f8791b9..8707d5ec7 100644
 --- a/lib/puppet/face/config.rb
@@ -302,19 +289,6 @@ index cf6c4613a..21968cea8 100644
  .
  .P
  Uninstall a module from a specific environment:
-diff --git a/spec/unit/provider/package/puppet_gem_spec.rb b/spec/unit/provider/package/puppet_gem_spec.rb
-index 017e0c408..2817701dd 100644
---- a/spec/unit/provider/package/puppet_gem_spec.rb
-+++ b/spec/unit/provider/package/puppet_gem_spec.rb
-@@ -20,7 +20,7 @@ describe provider_class do
-   if Puppet.features.microsoft_windows?
-     let(:puppet_gem) { 'gem' }
-   else
--    let(:puppet_gem) { '/opt/puppetlabs/puppet/bin/gem' }
-+    let(:puppet_gem) { '/usr/bin/gem' }
-   end
- 
-   before :each do
 diff --git a/spec/unit/util/run_mode_spec.rb b/spec/unit/util/run_mode_spec.rb
 index bd7759a4e..657d40c80 100644
 --- a/spec/unit/util/run_mode_spec.rb
@@ -333,3 +307,25 @@ index bd7759a4e..657d40c80 100644
 -- 
 2.14.1
 
+--- a/spec/unit/provider/package/puppet_gem_spec.rb.orig	2020-10-16 04:46:35.285569892 +0000
++++ b/spec/unit/provider/package/puppet_gem_spec.rb	2020-10-16 04:50:03.665556981 +0000
+@@ -17,7 +17,7 @@
+   if Puppet.features.microsoft_windows?
+     let(:provider_gem_cmd) { 'gem' }
+   else
+-    let(:provider_gem_cmd) { '/opt/puppetlabs/puppet/bin/gem' }
++    let(:provider_gem_cmd) { '/usr/bin/gem' }
+   end
+ 
+   let(:execute_options) { {:failonfail => true, :combine => true, :custom_environment => {"HOME"=>ENV["HOME"]}} }
+--- a/lib/puppet/defaults.rb.orig	2020-10-16 04:58:28.250739435 +0000
++++ b/lib/puppet/defaults.rb	2020-10-16 05:02:48.554331012 +0000
+@@ -1356,7 +1356,7 @@
+         if Puppet::Util::Platform.windows?
+           '$codedir/modules'
+         else
+-          '$codedir/modules:/opt/puppetlabs/puppet/modules'
++          '$codedir/modules:/usr/puppetlabs/puppet/modules'
+         end
+       end,
+       :type => :path,

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 
 # do not look for .pyc files as the install.rb script does not compile
@@ -95,6 +95,7 @@ file path=$(VENDOR_RUBY)/puppet/configurer/fact_handler.rb
 file path=$(VENDOR_RUBY)/puppet/configurer/plugin_handler.rb
 file path=$(VENDOR_RUBY)/puppet/confine.rb
 file path=$(VENDOR_RUBY)/puppet/confine/any.rb
+file path=$(VENDOR_RUBY)/puppet/confine/boolean.rb
 file path=$(VENDOR_RUBY)/puppet/confine/exists.rb
 file path=$(VENDOR_RUBY)/puppet/confine/false.rb
 file path=$(VENDOR_RUBY)/puppet/confine/feature.rb
@@ -599,7 +600,6 @@ file path=$(VENDOR_RUBY)/puppet/pops/loader/gem_support.rb
 file path=$(VENDOR_RUBY)/puppet/pops/loader/loader.rb
 file path=$(VENDOR_RUBY)/puppet/pops/loader/loader_paths.rb
 file path=$(VENDOR_RUBY)/puppet/pops/loader/module_loaders.rb
-file path=$(VENDOR_RUBY)/puppet/pops/loader/null_loader.rb
 file path=$(VENDOR_RUBY)/puppet/pops/loader/predefined_loader.rb
 file path=$(VENDOR_RUBY)/puppet/pops/loader/puppet_function_instantiator.rb
 file path=$(VENDOR_RUBY)/puppet/pops/loader/puppet_plan_instantiator.rb
@@ -734,7 +734,7 @@ file path=$(VENDOR_RUBY)/puppet/property/keyvalue.rb
 file path=$(VENDOR_RUBY)/puppet/property/list.rb
 file path=$(VENDOR_RUBY)/puppet/property/ordered_list.rb
 file path=$(VENDOR_RUBY)/puppet/provider.rb
-file path=$(VENDOR_RUBY)/puppet/provider/aixobject.rb
+file path=$(VENDOR_RUBY)/puppet/provider/aix_object.rb
 file path=$(VENDOR_RUBY)/puppet/provider/augeas/augeas.rb
 file path=$(VENDOR_RUBY)/puppet/provider/cisco.rb
 file path=$(VENDOR_RUBY)/puppet/provider/command.rb
@@ -777,6 +777,7 @@ file path=$(VENDOR_RUBY)/puppet/provider/package/aptitude.rb
 file path=$(VENDOR_RUBY)/puppet/provider/package/aptrpm.rb
 file path=$(VENDOR_RUBY)/puppet/provider/package/blastwave.rb
 file path=$(VENDOR_RUBY)/puppet/provider/package/dnf.rb
+file path=$(VENDOR_RUBY)/puppet/provider/package/dnfmodule.rb
 file path=$(VENDOR_RUBY)/puppet/provider/package/dpkg.rb
 file path=$(VENDOR_RUBY)/puppet/provider/package/fink.rb
 file path=$(VENDOR_RUBY)/puppet/provider/package/freebsd.rb
@@ -811,6 +812,7 @@ file path=$(VENDOR_RUBY)/puppet/provider/package/windows/msi_package.rb
 file path=$(VENDOR_RUBY)/puppet/provider/package/windows/package.rb
 file path=$(VENDOR_RUBY)/puppet/provider/package/yum.rb
 file path=$(VENDOR_RUBY)/puppet/provider/package/zypper.rb
+file path=$(VENDOR_RUBY)/puppet/provider/package_targetable.rb
 file path=$(VENDOR_RUBY)/puppet/provider/parsedfile.rb
 file path=$(VENDOR_RUBY)/puppet/provider/scheduled_task/win32_taskscheduler.rb
 file path=$(VENDOR_RUBY)/puppet/provider/selboolean/getsetsebool.rb
@@ -1109,6 +1111,7 @@ file path=$(VENDOR_RUBY)/puppet/util/windows/registry.rb
 file path=$(VENDOR_RUBY)/puppet/util/windows/root_certs.rb
 file path=$(VENDOR_RUBY)/puppet/util/windows/security.rb
 file path=$(VENDOR_RUBY)/puppet/util/windows/security_descriptor.rb
+file path=$(VENDOR_RUBY)/puppet/util/windows/service.rb
 file path=$(VENDOR_RUBY)/puppet/util/windows/sid.rb
 file path=$(VENDOR_RUBY)/puppet/util/windows/string.rb
 file path=$(VENDOR_RUBY)/puppet/util/windows/taskscheduler.rb
@@ -1182,7 +1185,6 @@ dir  path=usr/puppetlabs/puppet/modules owner=puppet group=bin mode=755 \
     salvage-from=/etc/puppet/modules
 file path=usr/puppetlabs/puppet/share/locale/config.yaml
 file path=usr/puppetlabs/puppet/share/locale/en/puppet.po
-file path=usr/puppetlabs/puppet/share/locale/ja/puppet.po
 file path=usr/puppetlabs/puppet/share/locale/puppet.pot
 file path=usr/sbin/puppet
 file path=usr/share/man/man5/puppet.conf.5

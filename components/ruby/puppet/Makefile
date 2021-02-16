@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -29,8 +29,8 @@ include ../../../make-rules/shared-macros.mk
 RUBY_VERSIONS = $(RUBY_PUPPET_VERSION)
 
 GIT_REPO= https://github.com/puppetlabs/puppet
-GIT_COMMIT_ID=  5.5.0
-GIT_HASH=sha256:15d172ef6a8a109df58ace8f0cbfb1bfe57617ec0c78e25d2f08cc88deb09a22
+GIT_COMMIT_ID=  5.5.21
+GIT_HASH=sha256:14b0c33e5aab00cc0bd7a0e6481b987238421162a6039b2450549b86f4a66b18
 
 COMPONENT_NAME=		puppet
 COMPONENT_VERSION=	$(GIT_COMMIT_ID)
@@ -40,7 +40,7 @@ COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	7018
 
-TPNO=			42683
+TPNO=			62522
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/install.rb.mk
@@ -50,7 +50,14 @@ include $(WS_MAKE_RULES)/ruby.mk
 # puppet requires facter and hiera as part of the install phase
 FACTER_LIB=$(WS_TOP)/components/ruby/facter/build/$(MACH)-$(RUBY_PUPPET_VERSION)/lib
 HIERA_LIB=$(WS_TOP)/components/ruby/hiera/build/$(MACH)-$(RUBY_PUPPET_VERSION)/lib
-COMPONENT_INSTALL_ENV	+= RUBYLIB="$(FACTER_LIB):$(HIERA_LIB)"
+
+# Puppet invokes facter methods during install phase. facter 4.x has run-time dependencies on hocon, thor and ffi.
+HOCON_LIB=$(WS_TOP)/components/ruby/hocon/build/$(MACH)-$(RUBY_PUPPET_VERSION)/lib
+THOR_LIB=$(WS_TOP)/components/ruby/thor/build/$(MACH)-$(RUBY_PUPPET_VERSION)/lib
+FFI_C_LIB=$(WS_TOP)/components/ruby/ffi/build/prototype/$(MACH)/$(VENDOR_GEM_DIR)/gems/ffi-1.13.1/lib
+FFI_LIB=$(WS_TOP)/components/ruby/ffi/build/$(MACH)-$(RUBY_PUPPET_VERSION)/lib
+
+COMPONENT_INSTALL_ENV	+= RUBYLIB="$(FFI_C_LIB):$(FFI_LIB):$(HOCON_LIB):$(FACTER_LIB):$(HIERA_LIB):$(THOR_LIB)"
 
 ../facter/build/%/.installed:
 	cd ../facter ; $(GMAKE) install
