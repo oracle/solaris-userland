@@ -20,27 +20,29 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		background-logo-extension
-COMPONENT_VERSION=	3.34.0
+COMPONENT_VERSION=	3.37.3
 COMPONENT_PROJECT_URL=  https://extensions.gnome.org/extension/889/background-logo
 COMPONENT_ARCHIVE_HASH= \
-	sha256:0fd78087cfec985ab1f2e6b70c560ecac42aab7549fbb0a73760ace3433d9d98
+	sha256:480b889c179bb790dce7dd9f7aed888265c99e344404fb1ab00ff836297b065d
 COMPONENT_ARCHIVE_URL=	http://releases.pagure.org/background-logo-extension/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/gnome-shell
 COMPONENT_ANITYA_ID=	13118
 
-TPNO=			53989
+TPNO=			63387
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
+# With changes in gnome-shell, the Oracle logo size appears too large 
+# in the gdm login screen - resized the image to fit properly
 COMPONENT_POST_INSTALL_ACTION += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/solaris/Oracle_Solaris_Logo.png \
                 $(PROTO_DIR)/usr/share/pixmaps/Oracle_Solaris_Logo.png;
