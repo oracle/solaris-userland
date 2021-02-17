@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS = 64
 COMPILER = gcc
@@ -28,17 +28,17 @@ COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME        = Python
-COMPONENT_VERSION     = 3.7.9
+COMPONENT_VERSION     = 3.7.10
 COMPONENT_PROJECT_URL = https://python.org/
 COMPONENT_SRC         = $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE     = $(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:91923007b05005b5f9bd46f3b9172248aea5abc1543e8a636d59e629c3331b01
+    sha256:f8d82e7572c86ec9d55c8627aae5040124fd2203af400c383c821b980306ee6b
 COMPONENT_ARCHIVE_URL = $(COMPONENT_PROJECT_URL)ftp/python/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB       = utility/python
 COMPONENT_ANITYA_ID   = 19543
 
-TPNO = 61330
+TPNO = 65094
 
 # Disable tests since there are some regressions.
 $(SKIP_TEST_AT_TOP_LEVEL)
