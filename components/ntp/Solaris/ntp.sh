@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2009, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2009, 2021, Oracle and/or its affiliates.
 #
 
 # Standard prolog
@@ -36,8 +36,9 @@ fi
 #
 # Is NTP configured?
 #
-if [ ! -f /etc/inet/ntp.conf ]; then
-	echo "Error: Configuration file '/etc/inet/ntp.conf' not found." \
+conffile=`svcprop -c -p config/configfile $SMF_FMRI`
+if [ ! -f $conffile ]; then
+	echo "Error: Configuration file $conffile not found." \
 	    "  See ntpd(1M)."
 	exit $SMF_EXIT_ERR_CONFIG
 fi
@@ -65,7 +66,8 @@ fi
 # Build the command line flags
 #
 shift $#
-set -- --pidfile /var/run/ntp.pid
+set -- -c $conffile
+set -- "$@" --pidfile /var/run/ntp.pid
 # We allow a step larger than the panic value of 17 minutes only 
 # once when ntpd starts up. If always_allow_large_step is true, 
 # then we allow this each time ntpd starts. Otherwise, we allow
@@ -85,7 +87,7 @@ if [ ! "$val" = "true" ]; then
         val=`/usr/bin/nawk '/^[ \t]*#/{next}
             /^[ \t]*authentication[ \t]+no/ {
                 printf("true", $2)
-                next } ' /etc/inet/ntp.conf`
+                next } ' $conffile`
 fi
 [ "$val" = "true" ] && set -- "$@" --authnoreq
 
@@ -106,7 +108,7 @@ if [ ! "$slew_always" = "true" ]; then
 	slew_always=`/usr/bin/nawk '/^[ \t]*#/{next}
 	    /^[ \t]*slewalways[ \t]+yes/ {
         	printf("true", $2)
-        	next } ' /etc/inet/ntp.conf`
+        	next } ' $conffile`
 fi
 [ "$slew_always" = "true" ] && set -- "$@" --slew
 
