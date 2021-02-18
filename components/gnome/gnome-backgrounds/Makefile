@@ -20,20 +20,20 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-backgrounds
-COMPONENT_VERSION=	3.34.0
+COMPONENT_VERSION=	3.38.0
 COMPONENT_ARCHIVE_HASH= \
-	sha256:c2b7fb6db98c05e205053daaa7f58c7f06ff91b45c4006052af17c578ae7b47f
+	sha256:f7712a873a80c9a9fcf3952611effeb2d9aed23a3e8abfcda8afb15c427d1ee3
 COMPONENT_BUGDB=        gnome/branding
 COMPONENT_ANITYA_ID=	13125
 
-TPNO=			54031
+TPNO=			65130
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
