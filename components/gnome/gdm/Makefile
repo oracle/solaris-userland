@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates. 
 #
 BUILD_BITS= 		64
 # All components using gobject-introspection must be built with gcc as
@@ -29,14 +29,17 @@ COMPILER= 		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gdm
-COMPONENT_VERSION=	3.34.1
+COMPONENT_VERSION=	3.38.2.1
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/GDM
+COMPONENT_ARCHIVE_URL=  \
+	https://download.gnome.org/sources/gdm/3.38/gdm-3.38.2.1.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e85df657aa8d9361af4fb122014d8f123a93bfe45a7662fba2b373d839dbd8d3
+	sha256:ca58a205d5ebfcbdab56a11716b898e16ae5dff21aee79d076046444628ec4da
 COMPONENT_BUGDB=        gnome/gdm
 COMPONENT_ANITYA_ID=	13122
 
-TPNO=			59855
+TPNO=			65076
+BUILD_STYLE=		meson
 
 # Make sure we haven't broken the SMF manifest formatting
 SMF_MANIFESTS= files/gdm.xml
@@ -46,35 +49,26 @@ $(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# Regenerate configure after patches modify configure.ac
-COMPONENT_PREP_ACTION += ( cd $(@D); autoreconf -fiv);
-
 # Assumes GNU msgfmt in PATH.
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 
 # intltool may or may not be run depending on previous state of build dir
 COMPONENT_TEST_TRANSFORMS += "-e '/\/usr\/bin\/intltool-update/d'"
 
-CONFIGURE_OPTIONS += --enable-debug
-CONFIGURE_OPTIONS += --enable-authentication-scheme=pam
-CONFIGURE_OPTIONS += --enable-gdm-xsession
-CONFIGURE_OPTIONS += --enable-ipv6
-CONFIGURE_OPTIONS += --enable-rbac-shutdown=solaris.system.shutdown
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --disable-systemd-journal
-CONFIGURE_OPTIONS += --disable-wayland-support
-CONFIGURE_OPTIONS += --with-console-kit
-CONFIGURE_OPTIONS += --with-pic
-CONFIGURE_OPTIONS += --without-plymouth
-CONFIGURE_OPTIONS += --without-systemd
-CONFIGURE_OPTIONS += --without-systemdsystemunitdir
-CONFIGURE_OPTIONS += --without-udevdir
-CONFIGURE_OPTIONS += --with-user=gdm --with-group=gdm
-CONFIGURE_OPTIONS += --with-default-path='$(USRBINDIR):$(USRSBINDIR)'
-CONFIGURE_OPTIONS += --with-xauth-dir=/tmp
-CONFIGURE_OPTIONS += --with-initial-vt=7
+CONFIGURE_OPTIONS += -Dsolaris=true
+CONFIGURE_OPTIONS += -Dselinux=disabled
+CONFIGURE_OPTIONS += -Dipv6=true
+CONFIGURE_OPTIONS += -Dgdm-xsession=true
+CONFIGURE_OPTIONS += -Dlibaudit=disabled
+CONFIGURE_OPTIONS += -Dsystemd-journal=false
+CONFIGURE_OPTIONS += -Dwayland-support=false
+CONFIGURE_OPTIONS += -Dplymouth=disabled
+CONFIGURE_OPTIONS += -Dgroup=gdm
+CONFIGURE_OPTIONS += -Ddefault-path='$(USRBINDIR):$(USRSBINDIR)'
+CONFIGURE_OPTIONS += -Dxauth-dir=/tmp
+CONFIGURE_OPTIONS += -Dinitial-vt=7
 CONFIGURE_OPTIONS += --libexecdir="$(USRLIBDIR)/gdm"
 
 COMPONENT_POST_INSTALL_ACTION.64 += \

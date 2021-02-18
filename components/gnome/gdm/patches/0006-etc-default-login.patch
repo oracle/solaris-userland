@@ -9,9 +9,9 @@ Original date:2009-03-31 owner:yippi type:feature
  daemon/gdm-session-worker.c | 83 +++++++++++++++++++++++++++++++++++++++++----
  1 file changed, 76 insertions(+), 7 deletions(-)
 
---- a/daemon/gdm-session-worker.c	2020-03-26 08:50:59.808310780 -0700
-+++ b/daemon/gdm-session-worker.c	2020-03-26 08:55:19.870225847 -0700
-@@ -230,6 +230,34 @@
+--- a/daemon/gdm-session-worker.c	2021-02-17 12:54:09.818979840 -0800
++++ b/daemon/gdm-session-worker.c	2021-02-17 12:59:39.594593695 -0800
+@@ -230,6 +230,33 @@
                                                  worker_interface_init)
                           G_ADD_PRIVATE (GdmSessionWorker))
  
@@ -38,15 +38,14 @@ Original date:2009-03-31 owner:yippi type:feature
 +       retval = g_strdup (defread (key));
 +       (void) defopen ((char *)NULL);
 +    }
-+    return retval;
++   return retval;
 +}
 +#endif
-+
 +
  #ifdef WITH_CONSOLE_KIT
  static gboolean
  open_ck_session (GdmSessionWorker  *worker)
-@@ -1545,6 +1573,28 @@
+@@ -1510,6 +1537,28 @@
          g_debug ("GdmSessionWorker: determining if authenticated user (password required:%d) is authorized to session",
                   password_is_required);
  
@@ -75,15 +74,15 @@ Original date:2009-03-31 owner:yippi type:feature
          authentication_flags = 0;
  
          if (password_is_required) {
-@@ -1909,6 +1959,7 @@
+@@ -1874,6 +1923,7 @@
          gid_t    gid;
          char    *shell;
          char    *home;
-+	char	*path_str;
++        char	*path_str;
          int      error_code;
  
          ret = FALSE;
-@@ -1949,18 +2000,26 @@
+@@ -1914,18 +1964,26 @@
                                                                  home,
                                                                  shell);
  
@@ -117,7 +116,7 @@ Original date:2009-03-31 owner:yippi type:feature
          if (! _change_user (worker, uid, gid)) {
                  g_debug ("GdmSessionWorker: Unable to change to user");
                  error_code = PAM_SYSTEM_ERR;
-@@ -2997,6 +3056,17 @@
+@@ -3046,6 +3104,17 @@
          GError  *error;
          gboolean res;
  

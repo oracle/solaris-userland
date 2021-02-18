@@ -104,14 +104,3 @@ index 3b10940..291caad 100644
                  } else if (g_strcmp0 (key, "username") == 0) {
                          worker->priv->username = g_variant_dup_string (value, NULL);
                  } else if (g_strcmp0 (key, "is-program-session") == 0) {
---- a/configure.ac	2020-06-19 20:57:43.462733480 -0700
-+++ b/configure.ac	2020-06-19 20:58:05.666108321 -0700
-@@ -540,6 +540,8 @@
- if test "x$supports_pam_extensions" = "xyes" ; then
- 	AM_CONDITIONAL(SUPPORTS_PAM_EXTENSIONS, true)
- 	AC_DEFINE(SUPPORTS_PAM_EXTENSIONS, 1, [Define if PAM supports GDMs custom extensions])
-+else
-+	AM_CONDITIONAL(SUPPORTS_PAM_EXTENSIONS, false)
- fi
- 
- AC_CHECK_LIB(keyutils, keyctl_read, [

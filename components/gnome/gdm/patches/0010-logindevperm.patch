@@ -12,21 +12,8 @@ This revision is based on that patch, but moves the calls from the
 launch-environment to the session-worker, where they can be run as
 root so that they actually work in gdm 3.18.
 
---- a/configure.ac	2020-03-26 13:34:19.174873361 -0700
-+++ b/configure.ac	2020-03-26 13:41:36.035607065 -0700
-@@ -1103,6 +1103,10 @@
- AC_SUBST(EXTRA_SETUP_LIBS)
- AC_SUBST(EXTRA_TEST_LIBS)
- 
-+AC_CHECK_LIB(devinfo, di_devperm_login, [
-+                         AC_DEFINE(HAVE_LOGINDEVPERM)
-+                            EXTRA_DAEMON_LIBS="$EXTRA_DAEMON_LIBS -ldevinfo" ])
-+
- dnl ---------------------------------------------------------------------------
- dnl - Check for X Server location
- dnl ---------------------------------------------------------------------------
---- a/daemon/gdm-session-worker.c	2020-03-26 13:41:52.824386827 -0700
-+++ b/daemon/gdm-session-worker.c	2020-03-26 13:45:31.476131087 -0700
+--- a/daemon/gdm-session-worker.c	2021-02-17 13:01:37.137622620 -0800
++++ b/daemon/gdm-session-worker.c	2021-02-17 13:08:05.128897515 -0800
 @@ -46,6 +46,10 @@
  
  #include <security/pam_appl.h>
@@ -38,8 +25,8 @@ root so that they actually work in gdm 3.18.
  #ifdef HAVE_LOGINCAP
  #include <login_cap.h>
  #endif
-@@ -2111,6 +2115,10 @@
-                                worker->priv->x11_authority_file);
+@@ -2121,6 +2125,10 @@
+ #endif
  }
  
 +#ifdef HAVE_LOGINDEVPERM
@@ -49,18 +36,46 @@ root so that they actually work in gdm 3.18.
  static void
  session_worker_child_watch (GPid              pid,
                              int               status,
-@@ -2141,6 +2149,10 @@
-         worker->priv->child_pid = -1;
-         worker->priv->child_watch_id = 0;
-         run_script (worker, GDMCONFDIR "/PostSession");
+@@ -2141,10 +2149,6 @@
+ 
+         gdm_session_worker_uninitialize_pam (worker, PAM_SUCCESS);
+ 
+-        worker->priv->child_pid = -1;
+-        worker->priv->child_watch_id = 0;
+-        run_script (worker, GDMCONFDIR "/PostSession");
+-
+         gdm_dbus_worker_emit_session_exited (GDM_DBUS_WORKER (worker),
+                                              worker->priv->service,
+                                              status);
+@@ -2153,6 +2157,10 @@
+         killpg (pid, SIGHUP);
+ #endif
+ 
++        worker->priv->child_pid = -1;
++        worker->priv->child_watch_id = 0;
++        run_script (worker, GDMCONFDIR "/PostSession");
++
+         /* FIXME: It's important to give the manager an opportunity to process the
+          * session-exited emission above before switching VTs.
+          *
+@@ -2172,9 +2180,16 @@
+          * for some ideas and more discussion.
+          *
+          */
 +
 +#ifdef HAVE_LOGINDEVPERM
 +        gdm_session_worker_revoke_console_permissions (worker);
 +#endif
++
++#ifdef WITH_SYSTEMD
+         wait_until_dbus_signal_emission_to_manager_finishes (worker);
+ 
+         jump_back_to_initial_vt (worker);
++#endif
  }
  
  static void
-@@ -2300,6 +2312,66 @@
+@@ -2334,6 +2349,67 @@
          return fd;
  }
  
@@ -124,10 +139,11 @@ root so that they actually work in gdm 3.18.
 +}
 +#endif  /* HAVE_LOGINDEVPERM */
 +
++
  #ifdef __sun
  static void
  solaris_xserver_cred (const char *username, struct passwd *passwd_entry,
-@@ -2429,6 +2501,10 @@
+@@ -2463,6 +2539,10 @@
                           worker->priv->arguments[0]);
          }
  

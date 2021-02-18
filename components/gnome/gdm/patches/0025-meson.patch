@@ -1,0 +1,43 @@
+--- a/meson.build	2021-02-21 18:47:19.706148252 -0800
++++ b/meson.build	2021-02-21 18:55:52.833454682 -0800
+@@ -231,6 +231,11 @@
+ conf.set('HAVE_UT_UT_TV', utmp_has_tv_field)
+ conf.set('HAVE_UT_UT_SYSLEN', utmp_has_syslen_field)
+ conf.set('ENABLE_IPV6', get_option('ipv6'))
++conf.set('HAVE_LOGINDEVPERM', '1')
++conf.set('HAVE_SMF_CONTRACTS', '1')
++conf.set('HAVE_SYS_SOCKIO_H', cc.has_header('sys/sockio.h'))
++conf.set('WITH_CONSOLE_KIT', '1')
++conf.set('HOST_NAME_MAX', '_POSIX_HOST_NAME_MAX')
+ configure_file(output: 'config.h', configuration: conf)
+ 
+ # Subdirs
+--- a/libgdm/meson.build	2021-02-17 19:01:25.105280065 -0800
++++ b/libgdm/meson.build	2021-02-17 19:01:40.689864935 -0800
+@@ -60,7 +60,6 @@
+ ]
+ 
+ libgdm_link_flags = [
+-  '-Wl,--version-script,@0@/libgdm.map'.format(meson.current_source_dir()),
+ ]
+ 
+ libgdm = library('gdm',
+--- a/daemon/meson.build	2021-02-17 19:02:31.489780610 -0800
++++ b/daemon/meson.build	2021-02-17 19:02:49.766815480 -0800
+@@ -129,6 +129,7 @@
+   gdm_session_worker_src,
+   dependencies: gdm_session_worker_deps,
+   include_directories: gdm_session_worker_includes,
++  link_args: ['-lcontract', '-lbsm', '-ldevinfo'],
+   install: true,
+   install_dir: get_option('libexecdir'),
+ )
+@@ -209,6 +209,7 @@
+   [ gdm_daemon_sources, gdm_daemon_gen_sources ],
+   dependencies: gdm_daemon_deps,
+   include_directories: config_h_dir,
++  link_args: ['-lcontract'],
+   install: true,
+   install_dir: get_option('sbindir')
+ )
+ 

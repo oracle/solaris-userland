@@ -244,21 +244,3 @@ Original date:2010-02-19 owner:yippi type:feature bugster:6923733
          g_main_loop_unref (main_loop);
  
          return EXIT_SUCCESS;
---- a/data/Makefile.am	2020-03-26 16:23:04.390469112 -0700
-+++ b/data/Makefile.am	2020-03-26 16:27:26.442458308 -0700
-@@ -242,7 +242,15 @@
- 	$(DESTDIR)$(screenshotdir) \
- 	$(DESTDIR)$(xauthdir) \
- 	$(DESTDIR)$(PAM_PREFIX)/pam.d
-+	if test "x$(xauthdir)" -ne "x/tmp"; then \
-+		rm -rf $(DESTDIR)$(xauthdir) \
-+	fi
- 
-+	if test -n "$(systemdsystemunit)"; then \
-+		rm -f $(DESTDIR)$(SYSTEMD_SYSTEM_UNIT_DIR)/$(systemdsystemunit); \
-+		rmdir $(DESTDIR)$(SYSTEMD_SYSTEM_UNIT_DIR) || : ; \
-+	fi
-+
- install-data-hook: gdm.conf-custom $(Xsession_files) Init PostSession PreSession
- 	if test '!' -d $(DESTDIR)$(gdmconfdir); then \
- 		$(mkinstalldirs) $(DESTDIR)$(gdmconfdir); \

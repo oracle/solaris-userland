@@ -465,163 +465,6 @@ Subject: [PATCH 02/19] disable systemd
  }
  
  void
---- a/configure.ac	2020-06-19 13:43:34.033026091 -0700
-+++ b/configure.ac	2020-06-19 13:57:21.858712985 -0700
-@@ -255,6 +255,16 @@
-                            [Use TCP Wrappers @<:@default=auto@:>@]),,
-             with_tcp_wrappers=auto)
- 
-+AC_ARG_WITH(console-kit,
-+            AS_HELP_STRING([--with-console-kit],
-+                           [Add ConsoleKit support @<:@default=auto@:>@]),,
-+            with_console_kit=no)
-+
-+AC_ARG_WITH(systemd,
-+            AS_HELP_STRING([--with-systemd],
-+                           [Add systemd support @<:@default=auto@:>@]),
-+            [with_systemd=$withval], [with_systemd=auto])
-+
- AC_ARG_WITH([udevdir],
-             AS_HELP_STRING([--with-udevdir=DIR],
-                            [Directory for udev files]),
-@@ -613,14 +623,8 @@
- dnl - Check for utmp stuff
- dnl ---------------------------------------------------------------------------
- 
--AC_CHECK_HEADERS(utmp.h utmpx.h libutil.h sys/param.h)
--AC_CHECK_FUNCS([getutxent updwtmpx updwtmp])
--AC_CHECK_LIB(util, login, [
--		   AC_DEFINE(HAVE_LOGIN, 1, [Define if have login])
--		       EXTRA_DAEMON_LIBS="$EXTRA_DAEMON_LIBS -lutil" ])
--AC_CHECK_LIB(util, logout, [
--		   AC_DEFINE(HAVE_LOGOUT, 1, [Define if have logout])
--		       EXTRA_DAEMON_LIBS="$EXTRA_DAEMON_LIBS -lutil" ])
-+AC_CHECK_HEADERS(utmp.h utmpx.h util.h sys/param.h)
-+AC_CHECK_FUNCS([getutxent getttyent updwtmpx updwtmp])
- AC_CHECK_LIB(util, logwtmp, [
- 	  	   AC_DEFINE(HAVE_LOGWTMP, 1, [Define if have logwtmp])
- 		       EXTRA_DAEMON_LIBS="$EXTRA_DAEMON_LIBS -lutil" ])
-@@ -829,48 +833,17 @@
- CPPFLAGS="$xinerama_save_cppflags"
- 
- dnl ---------------------------------------------------------------------------
--dnl - Check for systemd support
-+dnl - Check for ConsoleKit  support
- dnl ---------------------------------------------------------------------------
- 
--PKG_CHECK_MODULES(SYSTEMD,
--                  [libsystemd])
--
--AC_SUBST(SYSTEMD_CFLAGS)
--AC_SUBST(SYSTEMD_LIBS)
--
--PKG_CHECK_MODULES(JOURNALD,
--                  [libsystemd],
--                  [have_journald=yes], [have_journald=no])
--
--if test "x$enable_systemd_journal" = "xauto" ; then
--        if test x$have_journald = xno ; then
--                use_journald=no
--        else
--                use_journald=yes
--        fi
--
--else
--        use_journald="$enable_systemd_journal"
-+use_console_kit=no
-+if test "x$with_console_kit" != "xno" ; then
-+       use_console_kit=yes
-+       AC_DEFINE(WITH_CONSOLE_KIT, 1, [Define to enable ConsoleKit support])
- fi
-+AM_CONDITIONAL(WITH_CONSOLE_KIT, test x$use_console_kit = xyes)
-+AC_SUBST(WITH_CONSOLE_KIT)
- 
--if test "x$use_journald" != "xno" ; then
--        if test "x$have_journald" = "xno"; then
--                AC_MSG_ERROR([journald support explicitly required, but journald not found])
--        fi
--
--        AC_DEFINE(ENABLE_SYSTEMD_JOURNAL, 1, [Define to enable systemd journal support])
--fi
--AC_SUBST(JOURNALD_CFLAGS)
--AC_SUBST(JOURNALD_LIBS)
--
--if test "x$enable_wayland_support" != "xno" ; then
--        AC_DEFINE(ENABLE_WAYLAND_SUPPORT, 1, [Define to enable wayland support])
--fi
--
--AC_PATH_PROG(SYSTEMD_X_SERVER, systemd-multi-seat-x, [/lib/systemd/systemd-multi-seat-x], [/lib/systemd:/usr/lib/systemd:$PATH])
--AC_SUBST(SYSTEMD_X_SERVER)
--AC_DEFINE_UNQUOTED(SYSTEMD_X_SERVER,"$SYSTEMD_X_SERVER",[Path to systemd X server wrapper])
--
- if test "x$with_udevdir" != xno; then
-         AC_SUBST(UDEV_DIR, [$with_udevdir])
- fi
-@@ -1027,6 +1000,14 @@
- AC_SUBST(GDM_CUSTOM_CONF)
- AC_SUBST(GDM_OLD_CONF, '${gdmconfdir}/gdm.conf')
- 
-+AC_ARG_WITH(consolekit-directory,
-+              [AC_HELP_STRING([--with-consolekit-directory],
-+                              [Specify the directory of ck-get-x11-display-device @<:@default=libexecdir@:>@])],,
-+                              [with_consolekit_directory="\${libexecdir}"])
-+
-+CONSOLEKIT_DIR=$with_consolekit_directory
-+AC_SUBST(CONSOLEKIT_DIR)
-+
- AC_ARG_WITH(gnome-settings-daemon-directory,
-               [AC_HELP_STRING([--with-gnome-settings-daemon-directory],
-                               [Specify the directory of gnome-settings-daemon used by the chooser @<:@default=libexecdir@:>@])],,
-@@ -1490,6 +1471,7 @@
-         dmconfdir:                ${dmconfdir}
-         localstatedir:            ${localstatedir}
-         datadir:                  ${datadir}
-+        consolekit location:      ${with_consolekit_directory}
- 	gnome-settings-daemon location: ${with_gnome_settings_daemon_directory}
- 	gnome-session-check-accel location: ${with_check_accelerated_directory}
- 	source code location:	  ${srcdir}
-@@ -1520,6 +1502,8 @@
- "        Xinerama support:         ${XINERAMA_SUPPORT}
-         XDMCP support:            ${XDMCP_SUPPORT}
-         SELinux support:          ${use_selinux}
-+	ConsoleKit support:       ${use_console_kit}
-+	systemd support:          ${use_systemd}
-         systemd unit dir:         ${with_systemdsystemunitdir}
-         udev dir:                 ${with_udevdir}
-         plymouth support:         ${use_plymouth}
---- a/daemon/Makefile.am	2020-06-19 13:58:08.062175052 -0700
-+++ b/daemon/Makefile.am	2020-06-19 13:59:15.142507712 -0700
-@@ -21,6 +21,7 @@
- 	-DGDM_SCREENSHOT_DIR=\"$(GDM_SCREENSHOT_DIR)\"		\
- 	-DGDM_CACHE_DIR=\""$(localstatedir)/cache/gdm"\"	\
- 	-DGDM_SESSION_DEFAULT_PATH=\"$(GDM_SESSION_DEFAULT_PATH)\" \
-+	-DCONSOLEKIT_DIR=\"$(CONSOLEKIT_DIR)\"          \
- 	$(DISABLE_DEPRECATED_CFLAGS)			\
- 	$(DAEMON_CFLAGS)				\
- 	$(XLIB_CFLAGS)					\
-@@ -278,6 +279,11 @@
- 	$(XDMCP_SOURCES)	\
- 	$(NULL)
- 
-+CONSOLE_KIT_SOURCES =          \
-+       $(NULL)
-+
-+EXTRA_gdm_SOURCES += $(CONSOLE_KIT_SOURCES)
-+
- gdm_LDADD = \
- 	$(top_builddir)/common/libgdmcommon.la	\
- 	$(XLIB_LIBS)				\
-@@ -289,6 +295,10 @@
- 	$(EXTRA_DAEMON_LIBS)			\
- 	$(NULL)
- 
-+if WITH_CONSOLE_KIT
-+gdm_SOURCES += $(CONSOLE_KIT_SOURCES)
-+endif
-+
- CLEANFILES =					\
- 	gdm-display-glue.c			\
- 	gdm-local-display-factory-glue.c	\
 --- a/daemon/gdm-launch-environment.c   2020-03-25 21:38:30.425402761 -0700
 +++ b/daemon/gdm-launch-environment.c   2020-03-25 21:40:05.195748224 -0700
 @@ -213,6 +213,10 @@
@@ -673,7 +516,7 @@ Subject: [PATCH 02/19] disable systemd
 +
 +
 +        error = NULL;
-+        command = g_strdup_printf (CONSOLEKIT_DIR "/ck-get-x11-display-device --display %s",
++        command = g_strdup_printf ("/usr/lib/ck-get-x11-display-device --display %s",
 +                                   server->display_name);
 +        g_debug ("GdmServer: Running helper %s", command);
 +        out = NULL;
@@ -940,492 +783,6 @@ Subject: [PATCH 02/19] disable systemd
  
  #ifdef ENABLE_SYSTEMD_JOURNAL
  #include <systemd/sd-journal.h>
---- a/daemon/gdm-session-worker.c	2020-06-19 16:49:38.689445554 -0700
-+++ b/daemon/gdm-session-worker.c	2020-06-19 17:12:07.241827195 -0700
-@@ -28,9 +28,11 @@
- #include <string.h>
- #include <sys/types.h>
- #include <sys/wait.h>
-+#ifdef WITH_SYSTEMD
- #include <sys/ioctl.h>
- #include <sys/vt.h>
- #include <sys/kd.h>
-+#endif
- #include <errno.h>
- #include <grp.h>
- #include <pwd.h>
-@@ -49,7 +51,9 @@
- 
- #include <X11/Xauth.h>
- 
-+#ifdef WITH_SYSTEMD
- #include <systemd/sd-daemon.h>
-+#endif
- 
- #ifdef ENABLE_SYSTEMD_JOURNAL
- #include <systemd/sd-journal.h>
-@@ -124,6 +128,9 @@
-         GdmSessionWorkerState state;
- 
-         int               exit_code;
-+#ifdef WITH_CONSOLE_KIT
-+        char             *session_cookie;
-+#endif
- 
-         pam_handle_t     *pam_handle;
- 
-@@ -139,6 +146,7 @@
-         char             *hostname;
-         char             *username;
-         char             *log_file;
-+        char             *session_type;
-         char             *session_id;
-         uid_t             uid;
-         gid_t             gid;
-@@ -213,6 +221,205 @@
-                                                 worker_interface_init)
-                          G_ADD_PRIVATE (GdmSessionWorker))
- 
-+#ifdef WITH_CONSOLE_KIT
-+static gboolean
-+open_ck_session (GdmSessionWorker  *worker)
-+{
-+        GDBusConnection  *system_bus;
-+        GVariantBuilder   builder;
-+        GVariant         *parameters;
-+        GVariant         *in_args;
-+        struct passwd    *pwent;
-+        GVariant         *reply;
-+        GError           *error = NULL;
-+        const char       *display_name;
-+        const char       *display_device;
-+        const char       *display_hostname;
-+        const char       *session_type;
-+        gint32            uid;
-+
-+        g_assert (worker->priv->session_cookie == NULL);
-+
-+        if (worker->priv->x11_display_name != NULL) {
-+                display_name = worker->priv->x11_display_name;
-+        } else {
-+                display_name = "";
-+        }
-+        if (worker->priv->hostname != NULL) {
-+                display_hostname = worker->priv->hostname;
-+        } else {
-+                display_hostname = "";
-+        }
-+        if (worker->priv->display_device != NULL) {
-+                display_device = worker->priv->display_device;
-+        } else {
-+                display_device = "";
-+        }
-+
-+        if (worker->priv->session_type != NULL) {
-+                session_type = worker->priv->session_type;
-+        } else {
-+                session_type = "";
-+        }
-+ 
-+        g_assert (worker->priv->username != NULL);
-+ 
-+ 
-+        gdm_get_pwent_for_name (worker->priv->username, &pwent);
-+        if (pwent == NULL) {
-+                goto out;
-+        }
-+
-+        uid = (gint32) pwent->pw_uid;
-+        error = NULL;
-+        system_bus = g_bus_get_sync (G_BUS_TYPE_SYSTEM, NULL, &error);
-+
-+        if (system_bus == NULL) {
-+                g_warning ("Couldn't create connection to system bus: %s",
-+                           error->message);
-+
-+                g_error_free (error);
-+                goto out;
-+        }
-+
-+        g_variant_builder_init (&builder, G_VARIANT_TYPE ("a(sv)"));
-+        g_variant_builder_add_parsed (&builder, "('unix-user', <%i>)", uid);
-+        g_variant_builder_add_parsed (&builder, "('x11-display-device', <%s>)", display_device);
-+        g_variant_builder_add_parsed (&builder, "('x11-display', <%s>)", display_name);
-+        g_variant_builder_add_parsed (&builder, "('remote-host-name', <%s>)", display_hostname);
-+        g_variant_builder_add_parsed (&builder, "('is-local', <%b>)", worker->priv->display_is_local);
-+        g_variant_builder_add_parsed (&builder, "('session-type', <%s>)", session_type);
-+
-+        parameters = g_variant_builder_end (&builder);
-+        in_args = g_variant_new_tuple (&parameters, 1);
-+
-+        reply = g_dbus_connection_call_sync (system_bus,
-+                                             "org.freedesktop.ConsoleKit",
-+                                             "/org/freedesktop/ConsoleKit/Manager",
-+                                             "org.freedesktop.ConsoleKit.Manager",
-+                                             "OpenSessionWithParameters",
-+                                             in_args,
-+                                             G_VARIANT_TYPE ("(s)"),
-+                                             G_DBUS_CALL_FLAGS_NONE,
-+                                             -1,
-+                                             NULL,
-+                                             &error);
-+
-+        if (! reply) {
-+                g_warning ("%s\n", error->message);
-+                g_clear_error (&error);
-+                goto out;
-+        }
-+
-+        g_variant_get (reply, "(s)", &worker->priv->session_cookie);
-+
-+        g_variant_unref (reply);
-+
-+out:
-+        return worker->priv->session_cookie != NULL;
-+}
-+
-+static void
-+close_ck_session (GdmSessionWorker *worker)
-+{
-+        GDBusConnection  *system_bus;
-+        GVariant         *reply;
-+        GError           *error = NULL;
-+        gboolean          was_closed;
-+
-+        if (worker->priv->session_cookie == NULL) {
-+                return;
-+        }
-+
-+        error = NULL;
-+        system_bus = g_bus_get_sync (G_BUS_TYPE_SYSTEM, NULL, &error);
-+
-+
-+        if (system_bus == NULL) {
-+                g_warning ("Couldn't create connection to system bus: %s",
-+                           error->message);
-+
-+                g_error_free (error);
-+                goto out;
-+        }
-+
-+        reply = g_dbus_connection_call_sync (system_bus,
-+                                             "org.freedesktop.ConsoleKit",
-+                                             "/org/freedesktop/ConsoleKit/Manager",
-+                                             "org.freedesktop.ConsoleKit.Manager",
-+                                             "CloseSession",
-+                                             g_variant_new ("(s)", worker->priv->session_cookie),
-+                                             G_VARIANT_TYPE ("(b)"),
-+                                             G_DBUS_CALL_FLAGS_NONE,
-+                                             -1,
-+                                             NULL,
-+                                             &error);
-+
-+        if (! reply) {
-+                g_warning ("%s", error->message);
-+                g_clear_error (&error);
-+                goto out;
-+        }
-+
-+        g_variant_get (reply, "(b)", &was_closed);
-+
-+        if (!was_closed) {
-+                g_warning ("Unable to close ConsoleKit session");
-+        }
-+
-+        g_variant_unref (reply);
-+
-+out:
-+        g_clear_pointer (&worker->priv->session_cookie,
-+                         (GDestroyNotify) g_free);
-+}
-+
-+static char *
-+get_ck_session_id (GdmSessionWorker *worker)
-+{
-+        GDBusConnection  *system_bus;
-+        GVariant         *reply;
-+        GError           *error = NULL;
-+        char             *session_id = NULL;
-+
-+        error = NULL;
-+        system_bus = g_bus_get_sync (G_BUS_TYPE_SYSTEM, NULL, &error);
-+
-+        if (system_bus == NULL) {
-+                g_warning ("Couldn't create connection to system bus: %s",
-+                           error->message);
-+
-+                g_error_free (error);
-+                goto out;
-+        }
-+
-+        reply = g_dbus_connection_call_sync (system_bus,
-+                                             "org.freedesktop.ConsoleKit",
-+                                             "/org/freedesktop/ConsoleKit/Manager",
-+                                             "org.freedesktop.ConsoleKit.Manager",
-+                                             "GetSessionForCookie",
-+                                             g_variant_new ("(s)", worker->priv->session_cookie),
-+                                             G_VARIANT_TYPE ("(o)"),
-+                                             G_DBUS_CALL_FLAGS_NONE,
-+                                             -1,
-+                                             NULL,
-+                                             &error);
-+
-+        if (reply == NULL) {
-+                g_warning ("%s", error->message);
-+                g_clear_error (&error);
-+                goto out;
-+        }
-+
-+        g_variant_get (reply, "(o)", &session_id);
-+
-+        g_variant_unref (reply);
-+
-+out:
-+        return session_id;
-+}
-+#endif /* WITH_CONSOLE_KIT */
-+
- /* adapted from glib script_execute */
- static void
- script_execute (const gchar *file,
-@@ -868,6 +1075,7 @@
-         worker->priv->auditor = NULL;
- }
- 
-+#ifdef WITH_SYSTEMD
- static void
- on_release_display (int signal)
- {
-@@ -1010,6 +1218,7 @@
- 
-         close (active_vt_tty_fd);
- }
-+#endif /* WITH_SYSTEMD */
- 
- static void
- gdm_session_worker_set_state (GdmSessionWorker      *worker,
-@@ -1054,7 +1263,7 @@
-         /* If user-display-server is not enabled the login_vt is always
-          * identical to the session_vt. So in that case we never need to
-          * do a VT switch. */
--#ifdef ENABLE_USER_DISPLAY_SERVER
-+#ifdef WITH_SYSTEMD && ENABLE_USER_DISPLAY_SERVER
-         if (g_strcmp0 (worker->priv->display_seat_id, "seat0") == 0) {
-                 /* Switch to the login VT if we are not the login screen. */
-                 if (worker->priv->session_vt != GDM_INITIAL_VT) {
-@@ -1063,6 +1272,7 @@
-         }
- #endif
- 
-+	
-         worker->priv->session_vt = 0;
- 
-         g_debug ("GdmSessionWorker: state NONE");
-@@ -1193,10 +1403,12 @@
-                 }
-         }
- 
-+#ifdef WITH_SYSTEMD
-         /* set seat ID */
--        if (seat_id != NULL && seat_id[0] != '\0') {
-+        if (seat_id != NULL && seat_id[0] != '\0' && LOGIND_RUNNING()) {
-                 gdm_session_worker_set_environment_variable (worker, "XDG_SEAT", seat_id);
-         }
-+#endif
- 
-         if (strcmp (service, "gdm-launch-environment") == 0) {
-                 gdm_session_worker_set_environment_variable (worker, "XDG_SESSION_CLASS", "greeter");
-@@ -1205,6 +1417,7 @@
-         g_debug ("GdmSessionWorker: state SETUP_COMPLETE");
-         gdm_session_worker_set_state (worker, GDM_SESSION_WORKER_STATE_SETUP_COMPLETE);
- 
-+#ifdef WITH_SYSTEMD
-         /* Temporarily set PAM_TTY with the login VT,
-            PAM_TTY will be reset with the users VT right before the user session is opened */
-         g_snprintf (tty_string, 256, "/dev/tty%d", GDM_INITIAL_VT);
-@@ -1211,6 +1424,7 @@
-         pam_set_item (worker->priv->pam_handle, PAM_TTY, tty_string);
-         if (!display_is_local)
-                 worker->priv->password_is_required = TRUE;
-+#endif
- 
-  out:
-         if (error_code != PAM_SUCCESS) {
-@@ -1759,6 +1973,26 @@
-         return (const char * const *) pam_getenvlist (worker->priv->pam_handle);
- }
- 
-+#ifdef WITH_CONSOLE_KIT
-+static void
-+register_ck_session (GdmSessionWorker *worker)
-+{
-+#ifdef WITH_SYSTEMD
-+        if (LOGIND_RUNNING()) {
-+                return;
-+        }
-+#endif
-+
-+        open_ck_session (worker);
-+
-+        if (worker->priv->session_cookie != NULL) {
-+                gdm_session_worker_set_environment_variable (worker,
-+                                                             "XDG_SESSION_COOKIE",
-+                                                             worker->priv->session_cookie);
-+        }
-+}
-+#endif /* WITH_CONSOLE_KIT */
-+
- static gboolean
- run_script (GdmSessionWorker *worker,
-             const char       *dir)
-@@ -1789,6 +2023,9 @@
-                  : WIFSIGNALED (status) ? WTERMSIG (status)
-                  : -1);
- 
-+#ifdef WITH_CONSOLE_KIT
-+        close_ck_session (worker);
-+#endif
- 
-         gdm_session_worker_uninitialize_pam (worker, PAM_SUCCESS);
- 
-@@ -1796,7 +2033,9 @@
-                                              worker->priv->service,
-                                              status);
- 
-+#ifdef WITH_SYSTEMD
-         killpg (pid, SIGHUP);
-+#endif
- 
-         worker->priv->child_pid = -1;
-         worker->priv->child_watch_id = 0;
-@@ -1979,6 +2218,8 @@
- 
-         error_code = PAM_SUCCESS;
- 
-+#ifdef WITH_SYSTEMD
-+
-         /* If we're in new vt mode, jump to the new vt now. There's no need to jump for
-          * the other two modes: in the logind case, the session will activate itself when
-          * ready, and in the reuse server case, we're already on the correct VT. */
-@@ -1987,6 +2228,7 @@
-                         jump_to_vt (worker, worker->priv->session_vt);
-                 }
-         }
-+#endif
- 
-         if (!worker->priv->is_program_session && !run_script (worker, GDMCONFDIR "/PostLogin")) {
-                 g_set_error (error,
-@@ -2049,6 +2291,7 @@
-                         _exit (EXIT_FAILURE);
-                 }
- 
-+#ifdef WITH_SYSTEMD
-                 /* Take control of the tty
-                  */
-                 if (needs_controlling_terminal) {
-@@ -2056,6 +2299,7 @@
-                                 g_debug ("GdmSessionWorker: could not take control of tty: %m");
-                         }
-                 }
-+#endif
- 
- #ifdef HAVE_LOGINCAP
-                 if (setusercontext (NULL, passwd_entry, passwd_entry->pw_uid, LOGIN_SETALL) < 0) {
-@@ -2187,6 +2431,7 @@
-         return TRUE;
- }
- 
-+#ifdef WITH_SYSTEMD
- static gboolean
- set_up_for_new_vt (GdmSessionWorker *worker)
- {
-@@ -2272,6 +2517,7 @@
-         close (fd);
-         return FALSE;
- }
-+#endif /* WITH_SYSTEMD */
- 
- static gboolean
- set_up_for_current_vt (GdmSessionWorker  *worker,
-@@ -2339,6 +2585,7 @@
-          }
- #endif
- 
-+#ifdef WITH_SYSTEMD
-         if (g_strcmp0 (worker->priv->display_seat_id, "seat0") == 0) {
-                 g_debug ("GdmSessionWorker: setting XDG_VTNR to current vt");
-                 set_xdg_vtnr_to_current_vt (worker);
-@@ -2345,6 +2592,7 @@
-         } else {
-                 g_debug ("GdmSessionWorker: not setting XDG_VTNR since not seat0");
-         }
-+#endif
- 
-         return TRUE;
- out:
-@@ -2368,6 +2616,7 @@
-                         return FALSE;
-                 }
-                 break;
-+#ifdef WITH_SYSTEMD
-         case GDM_SESSION_DISPLAY_MODE_NEW_VT:
-         case GDM_SESSION_DISPLAY_MODE_LOGIND_MANAGED:
-                 if (!set_up_for_new_vt (worker)) {
-@@ -2378,6 +2627,7 @@
-                         return FALSE;
-                 }
-                 break;
-+#endif
-         }
- 
-         flags = 0;
-@@ -2399,8 +2649,18 @@
-         g_debug ("GdmSessionWorker: state SESSION_OPENED");
-         gdm_session_worker_set_state (worker, GDM_SESSION_WORKER_STATE_SESSION_OPENED);
- 
-+#ifdef WITH_SYSTEMD
-         session_id = gdm_session_worker_get_environment_variable (worker, "XDG_SESSION_ID");
-+#endif
- 
-+#ifdef WITH_CONSOLE_KIT
-+        register_ck_session (worker);
-+
-+        if (session_id == NULL) {
-+                session_id = get_ck_session_id (worker);
-+        }
-+#endif
-+
-         if (session_id != NULL) {
-                 g_free (worker->priv->session_id);
-                 worker->priv->session_id = session_id;
-@@ -2508,6 +2768,19 @@
- }
- 
- static gboolean
-+gdm_session_worker_handle_set_session_type (GdmDBusWorker         *object,
-+                                            GDBusMethodInvocation *invocation,
-+                                            const char            *session_type)
-+{
-+        GdmSessionWorker *worker = GDM_SESSION_WORKER (object);
-+        g_debug ("GdmSessionWorker: session type set to %s", session_type);
-+        g_free (worker->priv->session_type);
-+        worker->priv->session_type = g_strdup (session_type);
-+        gdm_dbus_worker_complete_set_session_type (object, invocation);
-+        return TRUE;
-+}
-+
-+static gboolean
- gdm_session_worker_handle_set_session_display_mode (GdmDBusWorker         *object,
-                                                     GDBusMethodInvocation *invocation,
-                                                     const char            *str)
-@@ -3419,6 +3692,7 @@
-         interface->handle_open = gdm_session_worker_handle_open;
-         interface->handle_set_language_name = gdm_session_worker_handle_set_language_name;
-         interface->handle_set_session_name = gdm_session_worker_handle_set_session_name;
-+	interface->handle_set_session_type = gdm_session_worker_handle_set_session_type;
-         interface->handle_set_session_display_mode = gdm_session_worker_handle_set_session_display_mode;
-         interface->handle_set_environment_variable = gdm_session_worker_handle_set_environment_variable;
-         interface->handle_start_program = gdm_session_worker_handle_start_program;
 --- a/daemon/gdm-session-worker.xml	2020-06-19 17:35:15.020804547 -0700
 +++ b/daemon/gdm-session-worker.xml	2020-06-19 17:35:42.184445075 -0700
 @@ -13,6 +13,9 @@
@@ -1438,36 +795,6 @@ Subject: [PATCH 02/19] disable systemd
      <method name="SetSessionDisplayMode">
        <arg name="mode" direction="in" type="s"/>
      </method>
---- a/daemon/gdm-session.c	2020-06-19 17:36:55.472863638 -0700
-+++ b/daemon/gdm-session.c	2020-06-19 17:39:04.958756220 -0700
-@@ -3323,6 +3323,27 @@
- }
- 
- void
-+gdm_session_select_session_type (GdmSession *self,
-+                                 const char *text)
-+{
-+        GHashTableIter iter;
-+        gpointer key, value;
-+
-+        g_debug ("GdmSession: selecting session type '%s'", text);
-+
-+        g_hash_table_iter_init (&iter, self->conversations);
-+        while (g_hash_table_iter_next (&iter, &key, &value)) {
-+                GdmSessionConversation *conversation;
-+
-+                conversation = (GdmSessionConversation *) value;
-+
-+                gdm_dbus_worker_call_set_session_type (conversation->worker_proxy,
-+                                                       text,
-+                                                       NULL, NULL, NULL);
-+        }
-+}
-+
-+void
- gdm_session_select_session (GdmSession *self,
-                             const char *text)
- {
 --- a/daemon/gdm-session.h	2020-06-19 17:39:51.038979495 -0700
 +++ b/daemon/gdm-session.h	2020-06-19 17:40:21.330457006 -0700
 @@ -122,6 +122,8 @@
@@ -1871,23 +1198,682 @@ Subject: [PATCH 02/19] disable systemd
  };
  
  enum {
---- a/daemon/gdm-session.c	2020-06-19 23:02:22.964049830 -0700
-+++ b/daemon/gdm-session.c	2020-06-19 23:03:09.675523661 -0700
-@@ -2911,12 +2911,7 @@
-                                                            self->selected_program);
-                         }
-                 } else {
--                        if (g_strcmp0 (self->display_seat_id, "seat0") != 0) {
--                                program = g_strdup_printf ("dbus-run-session -- %s",
--                                                           self->selected_program);
--                        } else {
-                                 program = g_strdup (self->selected_program);
--                        }
+--- a/daemon/gdm-local-display-factory.c	2020-06-20 08:53:35.627115043 -0700
++++ b/daemon/gdm-local-display-factory.c	2020-06-20 09:12:47.096735951 -0700
+@@ -28,7 +28,9 @@
+ #include <glib-object.h>
+ #include <gio/gio.h>
+ 
++#ifdef WITH_SYSTEMD
+ #include <systemd/sd-login.h>
++#endif
+ 
+ #include "gdm-common.h"
+ #include "gdm-manager.h"
+@@ -42,6 +44,8 @@
+ #include "gdm-local-display.h"
+ #include "gdm-legacy-display.h"
+ 
++#define CK_SEAT1_PATH                       "/org/freedesktop/ConsoleKit/Seat1"
++
+ #define GDM_DBUS_PATH                       "/org/gnome/DisplayManager"
+ #define GDM_LOCAL_DISPLAY_FACTORY_DBUS_PATH GDM_DBUS_PATH "/LocalDisplayFactory"
+ #define GDM_MANAGER_DBUS_NAME               "org.gnome.DisplayManager.LocalDisplayFactory"
+@@ -60,8 +64,10 @@
+         /* FIXME: this needs to be per seat? */
+         guint            num_failures;
+ 
++#ifdef WITH_SYSTEMD
+         guint            seat_new_id;
+         guint            seat_removed_id;
++#endif
+ 
+ #if defined(ENABLE_WAYLAND_SUPPORT) && defined(ENABLE_USER_DISPLAY_SERVER)
+         unsigned int     active_vt;
+@@ -87,7 +93,9 @@
+                                                          GParamSpec                  *arg1,
+                                                          GdmLocalDisplayFactory      *factory);
+ 
++#ifdef WITH_SYSTEMD
+ static gboolean gdm_local_display_factory_sync_seats    (GdmLocalDisplayFactory *factory);
++#endif
+ static gpointer local_display_factory_object = NULL;
+ static gboolean lookup_by_session_id (const char *id,
+                                       GdmDisplay *display,
+@@ -231,7 +239,7 @@
+ 
+         g_debug ("GdmLocalDisplayFactory: Creating transient display");
+ 
+-#ifdef ENABLE_USER_DISPLAY_SERVER
++#ifdef WITH_SYSTEMD && ENABLE_USER_DISPLAY_SERVER
+         display = gdm_local_display_new ();
+         if (gdm_local_display_factory_use_wayland ())
+                 g_object_set (G_OBJECT (display), "session-type", "wayland", NULL);
+@@ -370,7 +378,7 @@
+                         /* reset num failures */
+                         factory->num_failures = 0;
+ 
+-                        gdm_local_display_factory_sync_seats (factory);
++                        create_display (factory, seat_id, session_type, is_initial);
+                 }
+                 break;
+         case GDM_DISPLAY_FAILED:
+@@ -464,15 +472,19 @@
+ {
+         GdmDisplayStore *store;
+         GdmDisplay      *display = NULL;
++#ifdef WITH_SYSTEMD
+         g_autofree char *login_session_id = NULL;
++#endif
+ 
+         g_debug ("GdmLocalDisplayFactory: %s login display for seat %s requested",
+                  session_type? : "X11", seat_id);
+         store = gdm_display_factory_get_display_store (GDM_DISPLAY_FACTORY (factory));
+ 
++#ifdef WITH_SYSTEMD
+         if (sd_seat_can_multi_session (seat_id))
+                 display = gdm_display_store_find (store, lookup_prepared_display_by_seat_id, (gpointer) seat_id);
+         else
++#endif
+                 display = gdm_display_store_find (store, lookup_by_seat_id, (gpointer) seat_id);
+ 
+         /* Ensure we don't create the same display more than once */
+@@ -481,6 +493,7 @@
+                 return NULL;
+         }
+ 
++#ifdef WITH_SYSTEMD
+         /* If we already have a login window, switch to it */
+         if (gdm_get_login_window_session_id (seat_id, &login_session_id)) {
+                 GdmDisplay *display;
+@@ -498,10 +511,11 @@
+                         return NULL;
+                 }
+         }
++#endif
+ 
+         g_debug ("GdmLocalDisplayFactory: Adding display on seat %s", seat_id);
+ 
+-#ifdef ENABLE_USER_DISPLAY_SERVER
++#ifdef WITH_SYSTEMD && ENABLE_USER_DISPLAY_SERVER
+         if (g_strcmp0 (seat_id, "seat0") == 0) {
+                 display = gdm_local_display_new ();
+                 if (session_type != NULL) {
+@@ -533,6 +547,7 @@
+         return display;
+ }
+ 
++#ifdef WITH_SYSTEMD
+ static void
+ delete_display (GdmLocalDisplayFactory *factory,
+                 const char             *seat_id) {
+@@ -911,6 +926,7 @@
+         }
+ #endif
+ }
++#endif
+ 
+ static void
+ on_display_added (GdmDisplayStore        *display_store,
+@@ -945,6 +961,7 @@
+ {
+         GdmLocalDisplayFactory *factory = GDM_LOCAL_DISPLAY_FACTORY (base_factory);
+         GdmDisplayStore *store;
++	GdmDisplay *display;
+ 
+         g_return_val_if_fail (GDM_IS_LOCAL_DISPLAY_FACTORY (factory), FALSE);
+ 
+@@ -962,8 +979,17 @@
+                                  factory,
+                                  0);
+ 
++#ifdef WITH_SYSTEMD
++        if (LOGIND_RUNNING()) {
+         gdm_local_display_factory_start_monitor (factory);
+         return gdm_local_display_factory_sync_seats (factory);
++        }
++#endif
++
++        /* On ConsoleKit just create Seat1, and that's it. */
++        display = create_display (factory, CK_SEAT1_PATH, NULL, TRUE);
++
++        return display != NULL;
+ }
+ 
+ static gboolean
+@@ -974,7 +1000,9 @@
+ 
+         g_return_val_if_fail (GDM_IS_LOCAL_DISPLAY_FACTORY (factory), FALSE);
+ 
++#ifdef WITH_SYSTEMD
+         gdm_local_display_factory_stop_monitor (factory);
++#endif
+ 
+         store = gdm_display_factory_get_display_store (GDM_DISPLAY_FACTORY (factory));
+ 
+@@ -1126,7 +1154,9 @@
+ 
+         g_hash_table_destroy (factory->used_display_numbers);
+ 
++#ifdef WITH_SYSTEMD
+         gdm_local_display_factory_stop_monitor (factory);
++#endif
+ 
+         G_OBJECT_CLASS (gdm_local_display_factory_parent_class)->finalize (object);
+ }
+--- a/daemon/gdm-session-worker.c	2021-02-17 11:45:48.309908025 -0800
++++ b/daemon/gdm-session-worker.c	2021-02-17 12:01:24.341059210 -0800
+@@ -28,9 +28,11 @@
+ #include <string.h>
+ #include <sys/types.h>
+ #include <sys/wait.h>
++#ifdef WITH_SYSTEMD
+ #include <sys/ioctl.h>
+ #include <sys/vt.h>
+ #include <sys/kd.h>
++#endif
+ #include <errno.h>
+ #include <grp.h>
+ #include <pwd.h>
+@@ -56,7 +58,9 @@
+ 
+ #include <X11/Xauth.h>
+ 
++#ifdef WITH_SYSTEMD
+ #include <systemd/sd-daemon.h>
++#endif
+ 
+ #ifdef ENABLE_SYSTEMD_JOURNAL
+ #include <systemd/sd-journal.h>
+@@ -133,6 +137,10 @@
+ 
+         int               exit_code;
+ 
++#ifdef WITH_CONSOLE_KIT
++        char             *session_cookie;
++#endif
++
+         pam_handle_t     *pam_handle;
+ 
+         GPid              child_pid;
+@@ -147,6 +155,7 @@
+         char             *hostname;
+         char             *username;
+         char             *log_file;
++        char             *session_type;
+         char             *session_id;
+         uid_t             uid;
+         gid_t             gid;
+@@ -221,6 +230,205 @@
+                                                 worker_interface_init)
+                          G_ADD_PRIVATE (GdmSessionWorker))
+ 
++#ifdef WITH_CONSOLE_KIT
++static gboolean
++open_ck_session (GdmSessionWorker  *worker)
++{
++        GDBusConnection  *system_bus;
++        GVariantBuilder   builder;
++        GVariant         *parameters;
++        GVariant         *in_args;
++        struct passwd    *pwent;
++        GVariant         *reply;
++        GError           *error = NULL;
++        const char       *display_name;
++        const char       *display_device;
++        const char       *display_hostname;
++        const char       *session_type;
++        gint32            uid;
++
++        g_assert (worker->priv->session_cookie == NULL);
++
++        if (worker->priv->x11_display_name != NULL) {
++                display_name = worker->priv->x11_display_name;
++        } else {
++                display_name = "";
++        }
++        if (worker->priv->hostname != NULL) {
++
++                display_hostname = worker->priv->hostname;
++        } else {
++                display_hostname = "";
++        }
++        if (worker->priv->display_device != NULL) {
++                display_device = worker->priv->display_device;
++        } else {
++                display_device = "";
++        }
++
++        if (worker->priv->session_type != NULL) {
++                session_type = worker->priv->session_type;
++        } else {
++                session_type = "";
++        }
++
++        g_assert (worker->priv->username != NULL);
++
++
++        gdm_get_pwent_for_name (worker->priv->username, &pwent);
++        if (pwent == NULL) {
++                goto out;
++        }
++
++        uid = (gint32) pwent->pw_uid;
++        error = NULL;
++        system_bus = g_bus_get_sync (G_BUS_TYPE_SYSTEM, NULL, &error);
++
++        if (system_bus == NULL) {
++                g_warning ("Couldn't create connection to system bus: %s",
++                           error->message);
++
++                g_error_free (error);
++                goto out;
++        }
++
++        g_variant_builder_init (&builder, G_VARIANT_TYPE ("a(sv)"));
++        g_variant_builder_add_parsed (&builder, "('unix-user', <%i>)", uid);
++        g_variant_builder_add_parsed (&builder, "('x11-display-device', <%s>)", display_device);
++        g_variant_builder_add_parsed (&builder, "('x11-display', <%s>)", display_name);
++        g_variant_builder_add_parsed (&builder, "('remote-host-name', <%s>)", display_hostname);
++        g_variant_builder_add_parsed (&builder, "('is-local', <%b>)", worker->priv->display_is_local);
++        g_variant_builder_add_parsed (&builder, "('session-type', <%s>)", session_type);
++
++        parameters = g_variant_builder_end (&builder);
++        in_args = g_variant_new_tuple (&parameters, 1);
++        reply = g_dbus_connection_call_sync (system_bus,
++                                             "org.freedesktop.ConsoleKit",
++                                             "/org/freedesktop/ConsoleKit/Manager",
++                                             "org.freedesktop.ConsoleKit.Manager",
++                                             "OpenSessionWithParameters",
++                                             in_args,
++                                             G_VARIANT_TYPE ("(s)"),
++                                             G_DBUS_CALL_FLAGS_NONE,
++                                             -1,
++                                             NULL,
++                                             &error);
++
++        if (! reply) {
++                g_warning ("%s\n", error->message);
++                g_clear_error (&error);
++                goto out;
++        }
++
++        g_variant_get (reply, "(s)", &worker->priv->session_cookie);
++
++        g_variant_unref (reply);
++
++out:
++        return worker->priv->session_cookie != NULL;
++}
++
++static void
++close_ck_session (GdmSessionWorker *worker)
++{
++        GDBusConnection  *system_bus;
++        GVariant         *reply;
++        GError           *error = NULL;
++        gboolean          was_closed;
++
++        if (worker->priv->session_cookie == NULL) {
++                return;
++        }
++
++        error = NULL;
++        system_bus = g_bus_get_sync (G_BUS_TYPE_SYSTEM, NULL, &error);
++
++
++        if (system_bus == NULL) {
++                g_warning ("Couldn't create connection to system bus: %s",
++                           error->message);
++
++                g_error_free (error);
++                goto out;
++        }
++
++        reply = g_dbus_connection_call_sync (system_bus,
++                                             "org.freedesktop.ConsoleKit",
++                                             "/org/freedesktop/ConsoleKit/Manager",
++                                             "org.freedesktop.ConsoleKit.Manager",
++                                             "CloseSession",
++                                             g_variant_new ("(s)", worker->priv->session_cookie),
++                                             G_VARIANT_TYPE ("(b)"),
++                                             G_DBUS_CALL_FLAGS_NONE,
++                                             -1,
++                                             NULL,
++                                             &error);
++
++        if (! reply) {
++                g_warning ("%s", error->message);
++                g_clear_error (&error);
++                goto out;
++        }
++
++        g_variant_get (reply, "(b)", &was_closed);
++
++        if (!was_closed) {
++                g_warning ("Unable to close ConsoleKit session");
++        }
++
++        g_variant_unref (reply);
++
++out:
++        g_clear_pointer (&worker->priv->session_cookie,
++                         (GDestroyNotify) g_free);
++}
++
++static char *
++get_ck_session_id (GdmSessionWorker *worker)
++{
++        GDBusConnection  *system_bus;
++        GVariant         *reply;
++        GError           *error = NULL;
++        char             *session_id = NULL;
++
++        error = NULL;
++        system_bus = g_bus_get_sync (G_BUS_TYPE_SYSTEM, NULL, &error);
++
++        if (system_bus == NULL) {
++                g_warning ("Couldn't create connection to system bus: %s",
++                           error->message);
++
++                g_error_free (error);
++                goto out;
++        }
++
++        reply = g_dbus_connection_call_sync (system_bus,
++                                             "org.freedesktop.ConsoleKit",
++                                             "/org/freedesktop/ConsoleKit/Manager",
++                                             "org.freedesktop.ConsoleKit.Manager",
++                                             "GetSessionForCookie",
++                                             g_variant_new ("(s)", worker->priv->session_cookie),
++                                             G_VARIANT_TYPE ("(o)"),
++                                             G_DBUS_CALL_FLAGS_NONE,
++                                             -1,
++                                             NULL,
++                                             &error);
++
++        if (reply == NULL) {
++                g_warning ("%s", error->message);
++                g_clear_error (&error);
++                goto out;
++        }
++
++        g_variant_get (reply, "(o)", &session_id);
++
++        g_variant_unref (reply);
++
++out:
++        return session_id;
++}
++#endif /* WITH_CONSOLE_KIT */
++
+ /* adapted from glib script_execute */
+ static void
+ script_execute (const gchar *file,
+@@ -887,6 +1095,7 @@
+         worker->priv->auditor = NULL;
+ }
+ 
++#ifdef WITH_SYSTEMD
+ static void
+ on_release_display (int signal)
+ {
+@@ -1029,6 +1238,7 @@
+ 
+         close (active_vt_tty_fd);
+ }
++#endif /* WITH_SYSTEMD */
+ 
+ static void
+ gdm_session_worker_set_state (GdmSessionWorker      *worker,
+@@ -1200,10 +1410,12 @@
                  }
          }
  
---- a/daemon/gdm-manager.c	2020-06-20 07:08:24.361469105 -0700
-+++ b/daemon/gdm-manager.c	2020-06-20 07:55:26.646918976 -0700
++#ifdef WITH_SYSTEMD
+         /* set seat ID */
+-        if (seat_id != NULL && seat_id[0] != '\0') {
++        if (seat_id != NULL && seat_id[0] != '\0' && LOGIND_RUNNING()) {
+                 gdm_session_worker_set_environment_variable (worker, "XDG_SEAT", seat_id);
+         }
++#endif
+ 
+         if (strcmp (service, "gdm-launch-environment") == 0) {
+                 gdm_session_worker_set_environment_variable (worker, "XDG_SESSION_CLASS", "greeter");
+@@ -1212,6 +1424,7 @@
+         g_debug ("GdmSessionWorker: state SETUP_COMPLETE");
+         gdm_session_worker_set_state (worker, GDM_SESSION_WORKER_STATE_SETUP_COMPLETE);
+ 
++#ifdef WITH_SYSTEMD
+         /* Temporarily set PAM_TTY with the login VT,
+            PAM_TTY will be reset with the users VT right before the user session is opened */
+         g_snprintf (tty_string, 256, "/dev/tty%d", GDM_INITIAL_VT);
+@@ -1218,6 +1431,7 @@
+         pam_set_item (worker->priv->pam_handle, PAM_TTY, tty_string);
+         if (!display_is_local)
+                 worker->priv->password_is_required = TRUE;
++#endif
+ 
+  out:
+         if (error_code != PAM_SUCCESS) {
+@@ -1766,6 +1980,26 @@
+         return (const char * const *) pam_getenvlist (worker->priv->pam_handle);
+ }
+ 
++#ifdef WITH_CONSOLE_KIT
++static void
++register_ck_session (GdmSessionWorker *worker)
++{
++#ifdef WITH_SYSTEMD
++        if (LOGIND_RUNNING()) {
++                return;
++        }
++#endif
++
++        open_ck_session (worker);
++
++        if (worker->priv->session_cookie != NULL) {
++                gdm_session_worker_set_environment_variable (worker,
++                                                             "XDG_SESSION_COOKIE",
++                                                             worker->priv->session_cookie);
++        }
++}
++#endif /* WITH_CONSOLE_KIT */
++
+ static gboolean
+ run_script (GdmSessionWorker *worker,
+             const char       *dir)
+@@ -1843,6 +2077,10 @@
+                  : WIFSIGNALED (status) ? WTERMSIG (status)
+                  : -1);
+ 
++#ifdef WITH_CONSOLE_KIT
++        close_ck_session (worker);
++#endif
++
+         gdm_session_worker_uninitialize_pam (worker, PAM_SUCCESS);
+ 
+         worker->priv->child_pid = -1;
+@@ -1853,7 +2091,9 @@
+                                              worker->priv->service,
+                                              status);
+ 
++#ifdef WITH_SYSTEMD
+         killpg (pid, SIGHUP);
++#endif
+ 
+         /* FIXME: It's important to give the manager an opportunity to process the
+          * session-exited emission above before switching VTs.
+@@ -2173,6 +2413,7 @@
+ 
+         error_code = PAM_SUCCESS;
+ 
++#ifdef WITH_SYSTEMD
+         /* If we're in new vt mode, jump to the new vt now. There's no need to jump for
+          * the other two modes: in the logind case, the session will activate itself when
+          * ready, and in the reuse server case, we're already on the correct VT. */
+@@ -2181,6 +2422,7 @@
+                         jump_to_vt (worker, worker->priv->session_vt);
+                 }
+         }
++#endif
+ 
+         if (!worker->priv->is_program_session && !run_script (worker, GDMCONFDIR "/PostLogin")) {
+                 g_set_error (error,
+@@ -2243,6 +2485,7 @@
+                         _exit (EXIT_FAILURE);
+                 }
+ 
++#ifdef WITH_SYSTEMD
+                 /* Take control of the tty
+                  */
+                 if (needs_controlling_terminal) {
+@@ -2250,6 +2493,7 @@
+                                 g_debug ("GdmSessionWorker: could not take control of tty: %m");
+                         }
+                 }
++#endif
+ 
+ #ifdef HAVE_LOGINCAP
+                 if (setusercontext (NULL, passwd_entry, passwd_entry->pw_uid, LOGIN_SETALL) < 0) {
+@@ -2381,6 +2625,7 @@
+         return TRUE;
+ }
+ 
++#ifdef WITH_SYSTEMD
+ static gboolean
+ set_up_for_new_vt (GdmSessionWorker *worker)
+ {
+@@ -2481,6 +2726,7 @@
+         close (fd);
+         return FALSE;
+ }
++#endif /* WITH_SYSTEMD */
+ 
+ static gboolean
+ set_up_for_current_vt (GdmSessionWorker  *worker,
+@@ -2548,6 +2794,7 @@
+          }
+ #endif
+ 
++#ifdef WITH_SYSTEMD
+         if (g_strcmp0 (worker->priv->display_seat_id, "seat0") == 0) {
+                 g_debug ("GdmSessionWorker: setting XDG_VTNR to current vt");
+                 set_xdg_vtnr_to_current_vt (worker);
+@@ -2554,7 +2801,7 @@
+         } else {
+                 g_debug ("GdmSessionWorker: not setting XDG_VTNR since not seat0");
+         }
+-
++#endif
+         return TRUE;
+ out:
+         return FALSE;
+@@ -2577,6 +2824,7 @@
+                         return FALSE;
+                 }
+                 break;
++#ifdef WITH_SYSTEMD
+         case GDM_SESSION_DISPLAY_MODE_NEW_VT:
+         case GDM_SESSION_DISPLAY_MODE_LOGIND_MANAGED:
+                 if (!set_up_for_new_vt (worker)) {
+@@ -2587,6 +2835,7 @@
+                         return FALSE;
+                 }
+                 break;
++#endif
+         }
+ 
+         flags = 0;
+@@ -2608,8 +2857,18 @@
+         g_debug ("GdmSessionWorker: state SESSION_OPENED");
+         gdm_session_worker_set_state (worker, GDM_SESSION_WORKER_STATE_SESSION_OPENED);
+ 
++#ifdef WITH_SYSTEMD
+         session_id = gdm_session_worker_get_environment_variable (worker, "XDG_SESSION_ID");
++#endif
+ 
++#ifdef WITH_CONSOLE_KIT
++        register_ck_session (worker);
++
++        if (session_id == NULL) {
++                session_id = get_ck_session_id (worker);
++        }
++#endif
++
+         if (session_id != NULL) {
+                 g_free (worker->priv->session_id);
+                 worker->priv->session_id = session_id;
+@@ -2718,6 +2977,19 @@
+ }
+ 
+ static gboolean
++gdm_session_worker_handle_set_session_type (GdmDBusWorker         *object,
++                                            GDBusMethodInvocation *invocation,
++                                            const char            *session_type)
++{
++        GdmSessionWorker *worker = GDM_SESSION_WORKER (object);
++        g_debug ("GdmSessionWorker: session type set to %s", session_type);
++        g_free (worker->priv->session_type);
++        worker->priv->session_type = g_strdup (session_type);
++        gdm_dbus_worker_complete_set_session_type (object, invocation);
++        return TRUE;
++}
++
++static gboolean
+ gdm_session_worker_handle_set_session_display_mode (GdmDBusWorker         *object,
+                                                     GDBusMethodInvocation *invocation,
+                                                     const char            *str)
+@@ -3633,6 +3905,7 @@
+         interface->handle_open = gdm_session_worker_handle_open;
+         interface->handle_set_language_name = gdm_session_worker_handle_set_language_name;
+         interface->handle_set_session_name = gdm_session_worker_handle_set_session_name;
++	interface->handle_set_session_type = gdm_session_worker_handle_set_session_type;
+         interface->handle_set_session_display_mode = gdm_session_worker_handle_set_session_display_mode;
+         interface->handle_set_environment_variable = gdm_session_worker_handle_set_environment_variable;
+         interface->handle_start_program = gdm_session_worker_handle_start_program;
+--- a/daemon/gdm-session.c	2021-02-17 12:03:16.577276890 -0800
++++ b/daemon/gdm-session.c	2021-02-17 12:08:40.460553795 -0800
+@@ -2925,8 +2925,7 @@
+                                                            self->selected_program);
+                         }
+                 } else {
+-                        program = g_strdup_printf ("dbus-run-session -- %s",
+-                                                   self->selected_program);
++                        program = g_strdup_printf (self->selected_program);
+                 }
+         }
+ 
+@@ -3332,6 +3331,27 @@
+         self->selected_program = g_strdup (text);
+ }
+ 
++void
++gdm_session_select_session_type (GdmSession *self,
++                                 const char *text)
++{
++        GHashTableIter iter;
++        gpointer key, value;
++
++        g_debug ("GdmSession: selecting session type '%s'", text);
++
++        g_hash_table_iter_init (&iter, self->conversations);
++        while (g_hash_table_iter_next (&iter, &key, &value)) {
++                GdmSessionConversation *conversation;
++
++                conversation = (GdmSessionConversation *) value;
++
++                gdm_dbus_worker_call_set_session_type (conversation->worker_proxy,
++                                                       text,
++                                                       NULL, NULL, NULL);
++        }
++}
++
+ void
+ gdm_session_select_session (GdmSession *self,
+                             const char *text)
+--- a/daemon/gdm-manager.c	2021-02-17 12:09:37.923735940 -0800
++++ b/daemon/gdm-manager.c	2021-02-17 12:44:19.963612300 -0800
 @@ -41,7 +41,9 @@
  
  #include <act/act-user-manager.h>
@@ -2060,10 +2046,10 @@ Subject: [PATCH 02/19] disable systemd
 +                             GDBusConnection  *connection,
 +                             const char       *session_id,
 +                             GError          **error)
-+{
++{       
 +        GVariant *reply;
 +        char *session_type = NULL;
-+
++        
 +        reply = g_dbus_connection_call_sync (connection,
 +                                             "org.freedesktop.ConsoleKit",
 +                                             session_id,
@@ -2078,16 +2064,16 @@ Subject: [PATCH 02/19] disable systemd
 +        if (reply == NULL) {
 +                return FALSE;
 +        }
-+
++        
 +        g_variant_get (reply, "(s)", &session_type);
 +        g_variant_unref (reply);
-+
++        
 +        if (g_strcmp0 (session_type, "LoginWindow") != 0) {
 +                g_free (session_type);
-+
++                
 +                return FALSE;
 +        }
-+
++        
 +        g_free (session_type);
 +        return TRUE;
 +}
@@ -2130,10 +2116,10 @@ Subject: [PATCH 02/19] disable systemd
 +activate_session_id_for_systemd (GdmManager   *manager,
 +                                 const char *seat_id,
 +                                 const char *session_id)
-+{
++{       
 +        GError *error = NULL;
 +        GVariant *reply;
-+
++        
 +        reply = g_dbus_connection_call_sync (manager->priv->connection,
 +                                             "org.freedesktop.login1",
 +                                             "/org/freedesktop/login1",
@@ -2151,9 +2137,9 @@ Subject: [PATCH 02/19] disable systemd
 +                g_error_free (error);
 +                return FALSE;
 +        }
-+
++        
 +        g_variant_unref (reply);
-+
++        
 +        return TRUE;
 +}
 +#endif
@@ -2163,10 +2149,10 @@ Subject: [PATCH 02/19] disable systemd
 +activate_session_id_for_ck (GdmManager *manager,
 +                            const char *seat_id,
 +                            const char *session_id)
-+{
++{       
 +        GError *error = NULL;
 +        GVariant *reply;
-+
++        
 +        reply = g_dbus_connection_call_sync (manager->priv->connection,
 +                                             CK_NAME,
 +                                             seat_id,
@@ -2182,18 +2168,18 @@ Subject: [PATCH 02/19] disable systemd
 +                g_debug ("GdmManager: ConsoleKit %s raised:\n %s\n\n",
 +                         g_dbus_error_get_remote_error (error), error->message);
 +                g_error_free (error);
-+
++                
 +                /* It is very likely that the "error" just reported is
 +                 * that the session is already active.  Unfortunately,
-+                 * ConsoleKit doesn't use proper error codes and it
++                 * ConsoleKit doesn't use proper error codes and it 
 +                 * translates the error message, so we have no real way
 +                 * to detect this case...
 +                 */
 +                return TRUE;
 +        }
-+
++        
 +        g_variant_unref (reply);
-+
++        
 +        return TRUE;
 +}
 +#endif
@@ -2212,7 +2198,7 @@ Subject: [PATCH 02/19] disable systemd
 +
 +#ifdef WITH_CONSOLE_KIT
 +        return activate_session_id_for_ck (manager, seat_id, session_id);
-+#else
++#else   
 +        return FALSE;
 +#endif
 +}
@@ -2265,7 +2251,7 @@ Subject: [PATCH 02/19] disable systemd
 +session_unlock (GdmManager *manager,
 +                const char *ssid)
 +{
-+
++        
 +        g_debug ("Unlocking session %s", ssid);
 +
 +#ifdef WITH_SYSTEMD
@@ -2276,7 +2262,7 @@ Subject: [PATCH 02/19] disable systemd
 +
 +#ifdef WITH_CONSOLE_KIT
 +        return session_unlock_for_ck (manager, ssid);
-+#else
++#else   
 +        return TRUE;
 +#endif
 +}
@@ -2371,10 +2357,10 @@ Subject: [PATCH 02/19] disable systemd
 +get_seat_id_for_consolekit_session_id (GDBusConnection  *connection,
 +                                       const char       *session_id,
 +                                       GError          **error)
-+{
++{       
 +        GVariant *reply;
 +        char *retval;
-+
++        
 +        reply = g_dbus_connection_call_sync (connection,
 +                                             "org.freedesktop.ConsoleKit",
 +                                             session_id,
@@ -2389,10 +2375,10 @@ Subject: [PATCH 02/19] disable systemd
 +        if (reply == NULL) {
 +                return NULL;
 +        }
-+
++        
 +        g_variant_get (reply, "(o)", &retval);
 +        g_variant_unref (reply);
-+
++        
 +        return retval;
 +}
 +#endif
@@ -2447,13 +2433,13 @@ Subject: [PATCH 02/19] disable systemd
                  goto out;
          }
  
--        ret = gdm_find_display_session_for_uid (caller_uid, &session_id, &error);
+-        ret = gdm_find_display_session (pid, caller_uid, &session_id, &error);
 +        session_id = get_session_id_for_pid (connection, pid, &error);
  
 -        if (!ret) {
 -                g_debug ("GdmManager: Unable to find display session for uid %d: %s",
 -                         (int) caller_uid,
-+        if (session_id == NULL) {
++	if (session_id == NULL) {
 +                g_debug ("GdmManager: Error while retrieving session id for sender: %s",
                           error->message);
                  g_error_free (error);
@@ -2494,7 +2480,7 @@ Subject: [PATCH 02/19] disable systemd
  
                  if (error != NULL) {
                          g_debug ("GdmManager: Error while retrieving remoteness for session: %s",
-@@ -614,7 +1054,7 @@
+@@ -615,7 +1055,7 @@
          if (existing_session != NULL) {
                  ssid_to_activate = gdm_session_get_session_id (existing_session);
                  if (seat_id != NULL) {
@@ -2503,7 +2489,7 @@ Subject: [PATCH 02/19] disable systemd
                          if (! res) {
                                  g_debug ("GdmManager: unable to activate session: %s", ssid_to_activate);
                                  goto out;
-@@ -985,7 +1425,7 @@
+@@ -986,7 +1426,7 @@
                   * same audit session, ignore it since it doesn't "own" the
                   * reauthentication session
                   */
@@ -2512,7 +2498,7 @@ Subject: [PATCH 02/19] disable systemd
                                                              NULL);
                  session_id = g_object_get_data (G_OBJECT (session), "caller-session-id");
  
-@@ -1204,16 +1644,20 @@
+@@ -1205,16 +1645,20 @@
  display_is_on_seat0 (GdmDisplay *display)
  {
          gboolean is_on_seat0 = TRUE;
@@ -2539,7 +2525,7 @@ Subject: [PATCH 02/19] disable systemd
          return is_on_seat0;
  }
  
-@@ -2036,11 +2480,57 @@
+@@ -2021,11 +2465,57 @@
  }
  
  static char *
@@ -2558,7 +2544,7 @@ Subject: [PATCH 02/19] disable systemd
 +                      NULL);
 +
 +        error = NULL;
-+        command = g_strdup_printf (CONSOLEKIT_DIR "/ck-get-x11-display-device --display %s",
++        command = g_strdup_printf ("/usr/lib/ck-get-x11-display-device --display %s",
 +                                   display_name);
 +        g_free (display_name);
 +
@@ -2599,7 +2585,7 @@ Subject: [PATCH 02/19] disable systemd
  }
  
  static void
-@@ -2050,6 +2540,7 @@
+@@ -2035,6 +2525,7 @@
  {
          gboolean fail_if_already_switched = FALSE;
  
@@ -2607,7 +2593,7 @@ Subject: [PATCH 02/19] disable systemd
          if (gdm_session_get_display_mode (session) == GDM_SESSION_DISPLAY_MODE_REUSE_VT) {
                  const char *seat_id;
                  char *session_id;
-@@ -2068,6 +2559,7 @@
+@@ -2053,6 +2544,7 @@
                          g_free (session_id);
                  }
          }
@@ -2615,166 +2601,147 @@ Subject: [PATCH 02/19] disable systemd
  
          /* There should already be a session running, so jump to its
           * VT. In the event we're already on the right VT, (i.e. user
---- a/daemon/gdm-local-display-factory.c	2020-06-20 08:53:35.627115043 -0700
-+++ b/daemon/gdm-local-display-factory.c	2020-06-20 09:12:47.096735951 -0700
-@@ -28,7 +28,9 @@
- #include <glib-object.h>
- #include <gio/gio.h>
+--- a/meson.build	2021-02-17 13:57:25.110646225 -0800
++++ b/meson.build	2021-02-17 14:02:55.999363735 -0800
+@@ -38,7 +38,6 @@
+ config_h_dir = include_directories('.')
  
-+#ifdef WITH_SYSTEMD
- #include <systemd/sd-login.h>
-+#endif
+ # Dependencies
+-udev_dep = dependency('udev')
  
- #include "gdm-common.h"
- #include "gdm-manager.h"
-@@ -42,6 +44,8 @@
- #include "gdm-local-display.h"
- #include "gdm-legacy-display.h"
+ glib_min_version = '2.44.0'
  
-+#define CK_SEAT1_PATH                       "/org/freedesktop/ConsoleKit/Seat1"
-+
- #define GDM_DBUS_PATH                       "/org/gnome/DisplayManager"
- #define GDM_LOCAL_DISPLAY_FACTORY_DBUS_PATH GDM_DBUS_PATH "/LocalDisplayFactory"
- #define GDM_MANAGER_DBUS_NAME               "org.gnome.DisplayManager.LocalDisplayFactory"
-@@ -60,8 +64,10 @@
-         /* FIXME: this needs to be per seat? */
-         guint            num_failures;
+@@ -53,16 +52,6 @@
+ keyutils_dep = dependency('libkeyutils', required: false)
+ libselinux_dep = dependency('libselinux', required: get_option('selinux'))
  
-+#ifdef WITH_SYSTEMD
-         guint            seat_new_id;
-         guint            seat_removed_id;
-+#endif
+-# udev
+-if udev_dir == ''
+-  if udev_dep.found()
+-    udev_prefix = udev_dep.get_pkgconfig_variable('udevdir')
+-  else
+-    udev_prefix = gdm_prefix / 'lib' / 'udev'
+-  endif
+-  udev_dir = udev_prefix / 'rules.d'
+-endif
+-
+ # X11
+ x_deps = declare_dependency(
+   dependencies: [
+@@ -93,20 +82,9 @@
+ if xdmcp_dep.found() and get_option('tcp-wrappers')
+   libwrap_dep = cc.find_library('libwrap')
+ endif
+-# systemd
+-systemd_dep = dependency('systemd')
+-libsystemd_dep = dependency('libsystemd')
+-if meson.version().version_compare('>= 0.53')
+-  systemd_multiseat_x = find_program('systemd-multi-seat-x',
+-    required: false,
+-    dirs: [
+-      systemd_dep.get_pkgconfig_variable('systemdutildir'),
+-      '/lib/systemd',
+-      '/usr/lib/systemd',
+-    ])
+-else
+-  systemd_multiseat_x = find_program('systemd-multi-seat-x', required: false)
+-endif
++systemd_dep = ''
++libsystemd_dep = ''
++systemd_multiseat_x = find_program('systemd-multi-seat-x', required: false)
+ systemd_x_server = systemd_multiseat_x.found()? systemd_multiseat_x.path() : '/lib/systemd/systemd-multi-seat-x'
+ # Plymouth
+ plymouth_dep = dependency('ply-boot-client', required: get_option('plymouth'))
+--- a/data/meson.build	2021-02-17 14:03:23.817061385 -0800
++++ b/data/meson.build	2021-02-17 14:04:59.735229290 -0800
+@@ -170,42 +170,11 @@
+   service_config.set('PLYMOUTH_QUIT_SERVICE', '')
+ endif
  
- #if defined(ENABLE_WAYLAND_SUPPORT) && defined(ENABLE_USER_DISPLAY_SERVER)
-         unsigned int     active_vt;
-@@ -87,7 +93,9 @@
-                                                          GParamSpec                  *arg1,
-                                                          GdmLocalDisplayFactory      *factory);
+-if get_option('systemdsystemunitdir') != ''
+-  systemd_systemunitdir = get_option('systemdsystemunitdir')
+-else
+-  systemd_systemunitdir = systemd_dep.get_pkgconfig_variable('systemdsystemunitdir')
+-endif
+-
+-if get_option('systemduserunitdir') != ''
+-  systemd_userunitdir = get_option('systemduserunitdir')
+-else
+-  systemd_userunitdir = systemd_dep.get_pkgconfig_variable('systemduserunitdir',
+-                                                           define_variable: ['prefix', get_option('prefix')])
+-endif
+-
+-configure_file(
+-  input: 'gdm.service.in',
+-  output: '@BASENAME@',
+-  configuration: service_config,
+-  install_dir: systemd_systemunitdir,
+-  format: 'cmake'
+-)
+-
+ gdm_gnome_session_wanted_targets = []
+ foreach component: gdm_gnome_user_session_wanted_components
+   gdm_gnome_session_wanted_targets += 'Wants=@0@.target'.format(component)
+ endforeach
  
-+#ifdef WITH_SYSTEMD
- static gboolean gdm_local_display_factory_sync_seats    (GdmLocalDisplayFactory *factory);
-+#endif
- static gpointer local_display_factory_object = NULL;
- static gboolean lookup_by_session_id (const char *id,
-                                       GdmDisplay *display,
-@@ -231,7 +239,7 @@
+-configure_file(
+-  input: 'session.conf.in',
+-  output: 'session.conf',
+-  configuration: {
+-    'requires_component': gdm_gnome_shell_component,
+-    'wants_required_components': '\n'.join(gdm_gnome_session_wanted_targets),
+-  },
+-  install_dir: systemd_userunitdir / 'gnome-session@gnome-login.target.d',
+-)
+-
+ # XSession
+ if get_option('gdm-xsession')
+   configure_file(
+--- a/common/meson.build	2021-02-17 14:05:56.090882930 -0800
++++ b/common/meson.build	2021-02-17 14:06:38.849459510 -0800
+@@ -11,7 +11,6 @@
+ )
  
-         g_debug ("GdmLocalDisplayFactory: Creating transient display");
+ libgdmcommon_deps = [
+-  libsystemd_dep,
+   gobject_dep,
+   gio_dep,
+   gio_unix_dep,
+--- a/libgdm/meson.build	2021-02-17 14:08:52.428602065 -0800
++++ b/libgdm/meson.build	2021-02-17 14:08:58.956652925 -0800
+@@ -56,7 +56,6 @@
+   glib_dep,
+   gio_dep,
+   gio_unix_dep,
+-  libsystemd_dep,
+   libgdmcommon_dep,
+ ]
  
--#ifdef ENABLE_USER_DISPLAY_SERVER
-+#ifdef WITH_SYSTEMD && ENABLE_USER_DISPLAY_SERVER
-         display = gdm_local_display_new ();
-         if (gdm_local_display_factory_use_wayland ())
-                 g_object_set (G_OBJECT (display), "session-type", "wayland", NULL);
-@@ -370,7 +378,7 @@
-                         /* reset num failures */
-                         factory->num_failures = 0;
- 
--                        gdm_local_display_factory_sync_seats (factory);
-+                        create_display (factory, seat_id, session_type, is_initial);
-                 }
-                 break;
-         case GDM_DISPLAY_FAILED:
-@@ -464,15 +472,19 @@
- {
-         GdmDisplayStore *store;
-         GdmDisplay      *display = NULL;
-+#ifdef WITH_SYSTEMD
-         g_autofree char *login_session_id = NULL;
-+#endif
- 
-         g_debug ("GdmLocalDisplayFactory: %s login display for seat %s requested",
-                  session_type? : "X11", seat_id);
-         store = gdm_display_factory_get_display_store (GDM_DISPLAY_FACTORY (factory));
- 
-+#ifdef WITH_SYSTEMD
-         if (sd_seat_can_multi_session (seat_id))
-                 display = gdm_display_store_find (store, lookup_prepared_display_by_seat_id, (gpointer) seat_id);
-         else
-+#endif
-                 display = gdm_display_store_find (store, lookup_by_seat_id, (gpointer) seat_id);
- 
-         /* Ensure we don't create the same display more than once */
-@@ -481,6 +493,7 @@
-                 return NULL;
-         }
- 
-+#ifdef WITH_SYSTEMD
-         /* If we already have a login window, switch to it */
-         if (gdm_get_login_window_session_id (seat_id, &login_session_id)) {
-                 GdmDisplay *display;
-@@ -498,10 +511,11 @@
-                         return NULL;
-                 }
-         }
-+#endif
- 
-         g_debug ("GdmLocalDisplayFactory: Adding display on seat %s", seat_id);
- 
--#ifdef ENABLE_USER_DISPLAY_SERVER
-+#ifdef WITH_SYSTEMD && ENABLE_USER_DISPLAY_SERVER
-         if (g_strcmp0 (seat_id, "seat0") == 0) {
-                 display = gdm_local_display_new ();
-                 if (session_type != NULL) {
-@@ -533,6 +547,7 @@
-         return display;
+--- a/daemon/gdm-session-worker.c	2021-02-17 18:01:10.847005350 -0800
++++ b/daemon/gdm-session-worker.c	2021-02-17 18:02:51.593766710 -0800
+@@ -2078,6 +2078,7 @@
+                                worker->priv->x11_authority_file);
  }
  
 +#ifdef WITH_SYSTEMD
  static void
- delete_display (GdmLocalDisplayFactory *factory,
-                 const char             *seat_id) {
-@@ -911,6 +926,7 @@
-         }
+ wait_until_dbus_signal_emission_to_manager_finishes (GdmSessionWorker *worker)
+ {
+@@ -2124,6 +2125,7 @@
+         worker->priv->session_vt = 0;
  #endif
  }
 +#endif
  
- static void
- on_display_added (GdmDisplayStore        *display_store,
-@@ -945,6 +961,7 @@
- {
-         GdmLocalDisplayFactory *factory = GDM_LOCAL_DISPLAY_FACTORY (base_factory);
-         GdmDisplayStore *store;
-+	GdmDisplay *display;
- 
-         g_return_val_if_fail (GDM_IS_LOCAL_DISPLAY_FACTORY (factory), FALSE);
- 
-@@ -962,8 +979,17 @@
-                                  factory,
-                                  0);
+ #ifdef HAVE_LOGINDEVPERM
+ static void gdm_session_worker_revoke_console_permissions (GdmSessionWorker *);
+@@ -4172,7 +4172,9 @@
+                 gdm_session_worker_uninitialize_pam (worker, PAM_SUCCESS);
+         }
  
 +#ifdef WITH_SYSTEMD
-+        if (LOGIND_RUNNING()) {
-         gdm_local_display_factory_start_monitor (factory);
-         return gdm_local_display_factory_sync_seats (factory);
-+        }
-+#endif
-+
-+        /* On ConsoleKit just create Seat1, and that's it. */
-+        display = create_display (factory, CK_SEAT1_PATH, NULL, TRUE);
-+
-+        return display != NULL;
- }
- 
- static gboolean
-@@ -974,7 +1000,9 @@
- 
-         g_return_val_if_fail (GDM_IS_LOCAL_DISPLAY_FACTORY (factory), FALSE);
- 
-+#ifdef WITH_SYSTEMD
-         gdm_local_display_factory_stop_monitor (factory);
+         jump_back_to_initial_vt (worker);
 +#endif
  
-         store = gdm_display_factory_get_display_store (GDM_DISPLAY_FACTORY (factory));
- 
-@@ -1126,7 +1154,9 @@
- 
-         g_hash_table_destroy (factory->used_display_numbers);
- 
-+#ifdef WITH_SYSTEMD
-         gdm_local_display_factory_stop_monitor (factory);
-+#endif
- 
-         G_OBJECT_CLASS (gdm_local_display_factory_parent_class)->finalize (object);
- }
+         g_object_unref (worker->priv->user_settings);
+         g_free (worker->priv->service);

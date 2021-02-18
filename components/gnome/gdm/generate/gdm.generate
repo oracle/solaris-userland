@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates. 
 #
 
 <include generate/common.transform>
@@ -56,5 +56,20 @@
 # Drop since Solaris doesn't support wayland
 <transform file path=usr/lib/gdm/gdm-wayland-session -> drop>
 
-
-
+# pkglint transforms
+<transform file path=usr/bin/gdm-screenshot -> \
+    set pkg.linted.userland.action001.2 true>
+<transform file path=usr/bin/gdmflexiserver -> \
+    set pkg.linted.userland.action001.2 true>
+<transform file path=usr/lib/gdm/gdm-disable-wayland -> \
+    add pkg.linted.userland.action001.2 true>
+<transform file path=usr/lib/gdm/gdm-host-chooser -> \
+    add pkg.linted.userland.action001.2 true>
+<transform file path=usr/lib/gdm/gdm-session-worker -> \
+    add pkg.linted.userland.action001.2 true>
+<transform file path=usr/lib/gdm/gdm-simple-chooser -> \
+    add pkg.linted.userland.action001.2 true>
+<transform file path=usr/lib/gdm/gdm-x-session -> \
+    add pkg.linted.userland.action001.2 true>
+<transform file path=usr/sbin/gdm -> \
+    set pkg.linted.userland.action001.2 true>

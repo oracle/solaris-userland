@@ -11,34 +11,6 @@ Original date:2008-05-05 owner:yippi type:feature doo:14007
  daemon/gdm-session-worker-job.c | 151 ++++++++++++++++++++++++++++++++++++++++
  3 files changed, 160 insertions(+)
 
---- a/acconfig.h	2020-03-26 08:42:42.976370285 -0700
-+++ b/acconfig.h	2020-03-26 08:42:58.133495135 -0700
-@@ -28,6 +28,7 @@
- #undef HAVE_SETENV
- #undef HAVE_SETRESUID
- #undef HAVE_SHADOW
-+#undef HAVE_SMF_CONTRACTS
- #undef HAVE_SOLARIS_XINERAMA
- #undef HAVE_STPCPY
- #undef HAVE_SYS_SOCKIO_H
---- a/configure.ac	2020-03-26 08:43:10.993043110 -0700
-+++ b/configure.ac	2020-03-26 08:43:41.140987687 -0700
-@@ -930,7 +930,15 @@
- fi
- AC_SUBST(RBAC_LIBS)
- 
-+dnl ---------------------------------------------------------------------------
-+dnl check for Solaris SMF contract support
-+dnl ---------------------------------------------------------------------------
- 
-+AC_MSG_CHECKING(for Solaris SMF contract support)
-+AC_CHECK_LIB(contract, ct_tmpl_activate, [
-+                       AC_DEFINE(HAVE_SMF_CONTRACTS)
-+                            EXTRA_DAEMON_LIBS="$EXTRA_DAEMON_LIBS -lcontract" ])
-+
- dnl ---------------------------------------------------------------------------
- dnl check for process control
- dnl ---------------------------------------------------------------------------
 --- a/daemon/gdm-session-worker-job.c	2020-03-26 08:44:00.852232622 -0700
 +++ b/daemon/gdm-session-worker-job.c	2020-03-26 08:47:47.948244229 -0700
 @@ -45,6 +45,13 @@
