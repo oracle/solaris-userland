@@ -20,25 +20,25 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Django
-COMPONENT_VERSION=	2.2.16
+COMPONENT_VERSION=	2.2.19
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2a1c4656a3709002776c3c325a674b6a750cab8517ac80814f881aa1c7deb634
+    sha256:7b574e3c21d0f3cf2c20066a4f3f80537b93f21067985ffe07cf854ea6685f7a
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.djangoproject.com/
 COMPONENT_BUGDB=	python-mod/django
-COMPONENT_ANITYA_ID=	21282
+COMPONENT_ANITYA_ID=	155462
 
-TPNO=			61853
+TPNO=			65157
 
-PYTHON_VERSIONS=	3.7 3.9
+PYTHON_VERSIONS=	$(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
