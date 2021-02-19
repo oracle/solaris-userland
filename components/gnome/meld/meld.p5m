@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
@@ -26,7 +26,7 @@ set name=pkg.fmri \
     value=pkg:/developer/meld@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="meld - graphical diff and merge tool"
 set name=pkg.description \
-    value="Meld is a visual diff and merge tool. You can compare two or three files and edit them in place (diffs update dynamically). You can compare two or three folders and launch file comparisons. You can browse and view a working copy from popular version control systems such such as CVS, Subversion, Bazaar-ng and Mercurial."
+    value="Meld is a visual diff and merge tool. You can compare two or three files and edit them in place (diffs update dynamically). You can compare two or three folders and launch file comparisons. You can browse and view a working copy from popular version control systems such such as Git, Subversion, Bazaar-ng and Mercurial."
 set name=com.oracle.info.description \
     value="the meld graphical diff and merge tool"
 set name=com.oracle.info.tpno value=$(TPNO)
@@ -36,8 +36,9 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2008/189
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+# Bypass Tk dependencies, since they're only used to display an error dialog
+# if GTK is not found
 file path=usr/bin/meld pkg.depend.bypass-generate=.*/Tkinter.* \
-    pkg.depend.bypass-generate=.*/gi.* \
     pkg.depend.bypass-generate=.*/messagebox.* \
     pkg.depend.bypass-generate=.*/tkMessageBox.* \
     pkg.depend.bypass-generate=.*/tkinter.*
@@ -320,5 +321,13 @@ file path=usr/share/mime/packages/org.gnome.meld.xml
 license meld.license license="GPLv2, CC BY-SA 3.0"
 depend type=require fmri=__TBD pkg.debug.depend.reason=meld/settings.py \
     pkg.tmp.gsettings-schema=org.gnome.desktop.interface
-depend type=require fmri=library/desktop/gtksourceview3
-depend type=require fmri=library/python/pycairo-37
+# pkgdepend can't autodetect "from gi.repository import ..." dependencies
+depend type=require fmri=__TBD pkg.tmp.gi-typelib=GLib-2.0
+depend type=require fmri=__TBD pkg.tmp.gi-typelib=Gdk-3.0
+depend type=require fmri=__TBD pkg.tmp.gi-typelib=Gio-2.0
+depend type=require fmri=__TBD pkg.tmp.gi-typelib=Gtk-3.0
+depend type=require fmri=__TBD pkg.tmp.gi-typelib=GtkSource-3.0
+depend type=require fmri=__TBD pkg.tmp.gi-typelib=Pango-1.0
+# pkgdepend doesn't autodetect this dependency from the "import cairo" lines
+# in various *.py files without #! lines due to bug 15724943
+depend type=require fmri=library/python/pycairo-$(PYV)

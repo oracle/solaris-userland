@@ -20,20 +20,16 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
-include ../../make-rules/shared-macros.mk
+include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		meld
 COMPONENT_VERSION=	3.20.1
-COMPONENT_MINOR_VERSION= $(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\([0-9]\+\)\.\([0-9]\+\)\.[0-9]\+/\1.\2/')
-COMPONENT_PROJECT_URL=	http://meldmerge.org/
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
+COMPONENT_PROJECT_URL=	https://meldmerge.org/
 COMPONENT_ARCHIVE_HASH=	\
     sha256:a54843bc4d6cb1d31d0a58aa725091622194d50c32ef67026b35c86dda3cb249
-COMPONENT_ARCHIVE_URL=	\
-    https://download.gnome.org/sources/$(COMPONENT_NAME)/$(COMPONENT_MINOR_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	5520
 
 TPNO=			53163
@@ -47,13 +43,13 @@ TEST_TARGET=	$(TEST_64)
 # There are some test failures, the master test file is missing.
 $(SKIP_TEST_AT_TOP_LEVEL)
 
-include $(WS_MAKE_RULES)/common.mk
+include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Needed to find GNU xgettext.
 PATH =			$(GNUBIN):$(USRBINDIR)
 
 PYTHON_VERSION =	3.7
-PKG_MACROS +=		PYVER=$(PYTHON_VERSION)
+PKG_MACROS +=		PYVER="$(PYTHON_VERSION)" PYV="$(PYTHON_VERSION:3.%=3%)"
 
 PYTHON_DATA =		/usr
 
@@ -76,9 +72,13 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
+REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
+REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/gtksourceview3
+REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/gnome/gnome-common
 REQUIRED_PACKAGES += library/python/pycairo-37
+REQUIRED_PACKAGES += library/python/pygobject-3-37
 REQUIRED_PACKAGES += library/python/tkinter-37
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += text/gnu-gettext
