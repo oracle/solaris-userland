@@ -4287,7 +4287,7 @@ diff -r 3f1e7d35d0ab -r 821e8eadeaff src/dep/sfxge_ioctl.h
 +	struct sfxge_timespec rx_ts;
 +	struct sfxge_timespec rx_ts_hw;
 +	uint8_t uuid [6];
-+	uint8_t seqid [2];
++	uint16_t seqid;
 +};
 +
 +struct sfxge_ts_settime {
@@ -7794,8 +7794,8 @@ diff -r 3f1e7d35d0ab -r 821e8eadeaff src/dep/time.c
 +        lastRecvTimes[newIndex].recvTimeStamp.seconds = req.u.ts_read.rx_ts.tv_sec;
 +        lastRecvTimes[newIndex].recvTimeStamp.nanoseconds = req.u.ts_read.rx_ts.tv_nsec;
 +      }
-+      lastRecvTimes[newIndex].sequenceId = ((uint16_t)req.u.ts_read.seqid[0] << 8)
-+                                         | (uint16_t)req.u.ts_read.seqid[1];
++      lastRecvTimes[newIndex].sequenceId = req.u.ts_read.seqid;
++
 +
 +      /* Section 18.3.7 IEEE1588. Version 1 UUIDs are mapped into octets 2-7 of the clock
 +       * ID. We don't compare the first two octets.

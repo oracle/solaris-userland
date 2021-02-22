@@ -20,7 +20,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 
 # Standard prolog
@@ -121,6 +121,10 @@ do
 	DEBUGLEVEL=`expr $DEBUGLEVEL - 1`
 done
 
+STRICT_RSP="`get_prop strict_rsp`"
+if [ "$STRICT_RSP" = "false" ]; then
+	CMD_LINE_ARGS="$CMD_LINE_ARGS -k"
+fi
 
 OTHER_OPTIONS="`get_prop other_options`"
 if [ -n "$OTHER_OPTIONS" ]; then
@@ -132,7 +136,7 @@ if [ "$STARTUPSTEP" -gt 0 ]; then
 fi
 
 # Delay starting the daemon by the specified amount.
-# If delay is conditional check the conditions. 
+# If delay is conditional check the conditions.
 # We care if the configured interfaceis an aggr
 # and we care if this is the first time running since boot.
 DELAY=`get_prop startup_delay`

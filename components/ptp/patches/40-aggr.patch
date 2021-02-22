@@ -1,0 +1,922 @@
+This patch adds support for Link level aggregations. It changes the previous
+API used by the kernel for PTP hardware assist. This API is private to Solaris
+and thus these changes will not be submitted upstream.
+
+--- ptpd-2.2.0/./src/Makefile
++++ NEWFILES/ptpd-2.2.0/./src/Makefile
+@@ -47,6 +47,7 @@
+ 
+ LDFLAGS+= -lm -lrt
+ LDFLAGS += -lnsl -lsocket -lv12n -m64
++LDFLAGS += -ldladm
+ 
+ PROG = ptpd
+ SRCS = ptpd.c arith.c bmc.c protocol.c display.c\
+@@ -55,8 +56,7 @@
+ OBJS = $(SRCS:.c=.o)
+ 
+ HDRS = ptpd.h constants.h datatypes.h \
+-	dep/ptpd_dep.h dep/constants_dep.h dep/datatypes_dep.h \
+-        dep/sfxge_ioctl.h
++	dep/ptpd_dep.h dep/constants_dep.h dep/datatypes_dep.h
+ 
+ CSCOPE = cscope
+ GTAGS = gtags
+--- ptpd-2.2.0/./src/dep/datatypes_dep.h
++++ NEWFILES/ptpd-2.2.0/./src/dep/datatypes_dep.h
+@@ -33,6 +33,9 @@
+ 
+ #include <sys/ioctl.h>
+ #include <net/if.h>
++#if defined(__sun)
++#include <libdladm.h>
++#endif
+ 
+ /**
+ *\file
+@@ -119,7 +122,8 @@
+   /** for further ioctl() calls on eventSock */
+   struct ifreq eventSockIFR;
+ #elif defined(__sun)
+-  Integer32 devFd;
++  dladm_handle_t handle;
++  datalink_id_t linkid;
+   struct lifreq eventSockIFR;
+   void	*ioctl_req;
+ #endif
+--- ptpd-2.2.0/./src/dep/net.c
++++ NEWFILES/ptpd-2.2.0/./src/dep/net.c
+@@ -1,5 +1,5 @@
+ /*-
+- * Copyright (c) 2013, Oracle and/or its affiliates. All rights reserved.
++ * Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+  * Copyright (c) 2011-2012 Solarflare Communications Inc
+  * Copyright (c) 2009-2011 George V. Neville-Neil, Steven Kreuzer, 
+  *                         Martin Burnicki, Gael Mace, Alexandre Van Kempen,
+@@ -42,8 +42,10 @@
+ #ifdef __sun
+ #include <net/if_arp.h>
+ #include <signal.h>
+-#include "sfxge_ioctl.h"
+ #include <string.h>
++#include <libdllink.h>
++#include <sys/sockio.h>
++#include <libnetcfg.h>
+ extern void catch_alarm(int sig);
+ #endif /* __sun */
+ 
+@@ -789,7 +790,6 @@
+   int temp;
+ #ifdef __sun
+   uchar_t temp_char;
+-  char devpath[MAXLINKNAMELEN];
+ #endif
+ 
+   struct in_addr interfaceAddr, netAddr;
+@@ -955,15 +955,22 @@
+         * not pass unknown ioctl down. So, we create a new fd to be
+         * used for ioctls to NIC.
+         */
+-       snprintf(devpath, sizeof(devpath), "/dev/net/%s", rtOpts->ifaceName); 
+-       if ((netPath->devFd = open(devpath, O_RDWR)) < 0) {
+-               PERROR("failed to open device %s\n", devpath);
++       if (dladm_open(&netPath->handle) != DLADM_STATUS_OK) {
++            PERROR("failed to open device /dev/dld\n");
+                return FALSE;
+        } else {
+-               DBG("open()ed %s\n", devpath);
++               DBG("open()ed /dev/dld\n");
++       }
++	
++       if (dladm_name2info(netPath->handle, rtOpts->ifaceName,
++            &netPath->linkid, NULL, NULL, NULL) != DLADM_STATUS_OK) {
++               PERROR("failed to open device /dev/dld\n");
++               dladm_close(netPath->handle);
++               return FALSE;
++       } else {
++               DBG("%s linkid %d\n", rtOpts->ifaceName, netPath->linkid);
+        }
+   }
+-
+ #endif
+ 
+ 	/* make timestamps available through recvmsg() */
+--- ptpd-2.2.0/src/protocol.c
++++ ptpd-2.2.0/src/protocol.c
+@@ -1269,6 +1269,7 @@ handleDelayResp(MsgHeader *header, Octet
+ {
+ 	if (ptpClock->delayMechanism == E2E) {
+ 		Boolean isFromCurrentParent = FALSE;
++		Boolean handleDelayResp = FALSE;
+ 		TimeInternal requestReceiptTimestamp;
+ 		TimeInternal correctionField;
+ 
+@@ -1300,14 +1301,21 @@ handleDelayResp(MsgHeader *header, Octet
+ 			     header->sourcePortIdentity.portNumber))
+ 				isFromCurrentParent = TRUE;
+ 
+-			if ((memcmp(ptpClock->portIdentity.clockIdentity,
++			if (rtOpts->strictRespCheck) {
++				handleDelayResp = ((memcmp(ptpClock->portIdentity.clockIdentity,
+ 				    ptpClock->msgTmp.resp.requestingPortIdentity.clockIdentity,
+ 				    CLOCK_IDENTITY_LENGTH) == 0) &&
+-			    ((UInteger16)(ptpClock->sentDelayReqSequenceId - 1)==
+-			     header->sequenceId) &&
+-			    (ptpClock->portIdentity.portNumber ==
+-			     ptpClock->msgTmp.resp.requestingPortIdentity.portNumber)
+-			    && isFromCurrentParent) {
++				    ((UInteger16)(ptpClock->sentDelayReqSequenceId - 1)==
++				    header->sequenceId) &&
++				    (ptpClock->portIdentity.portNumber ==
++				    ptpClock->msgTmp.resp.requestingPortIdentity.portNumber)
++				    && isFromCurrentParent);
++			} else {
++				handleDelayResp = 
++				    ((UInteger16)(ptpClock->sentDelayReqSequenceId - 1)==
++				    header->sequenceId);
++			}
++			if (handleDelayResp) {
+ 				DBG("==> Handle DelayResp (%d)\n",
+ 					 header->sequenceId);
+ 
+--- ptpd-2.2.0/src/dep/ptpd_dep.h
++++ ptpd-2.2.0/src/dep/ptpd_dep.h
+@@ -395,6 +395,8 @@ Boolean getReceiveTime(TimeInternal *rec
+ 
+ long get_current_tickrate(void);
+ 
++void adjTime_wrapper(RunTimeOpts * rtOpts, PtpClock * ptpClock, LongDouble adj);
++
+ 
+ #if defined(__APPLE__)
+ void 	adjTime(Integer32);
+--- ptpd-2.2.0/src/dep/servo.c
++++ ptpd-2.2.0/src/dep/servo.c
+@@ -191,8 +191,6 @@ updateDelay(one_way_delay_filter * owd_f
+ 		/* Compute one-way delay */
+ 		div2Time(&ptpClock->meanPathDelay);
+ 
+-
+-		
+ 		if (ptpClock->meanPathDelay.seconds) {
+ 			DBG(" update delay: cannot filter with large OFM, clearing filter \n");
+ 			INFO("Servo: Ignoring delayResp because of large OFM\n");
+--- ptpd-2.2.0/src/dep/time.c
++++ ptpd-2.2.0/src/dep/time.c
+@@ -1,5 +1,5 @@
+ /*-
+- * Copyright (c) 2013, Oracle and/or its affiliates. All rights reserved.
++ * Copyright (c) 2013, 2021 Oracle and/or its affiliates.
+  * Copyright (c) 2011-2012 Solarflare Communications Inc
+  *
+  * All Rights Reserved
+@@ -80,7 +80,19 @@ enum {
+ };
+ 
+ #ifdef __sun
+-#include "sfxge_ioctl.h"
++#include "dld_ptp.h"
++union dld_ptp_data {
++	dld_ptp_config_t	ts_init;
++	dld_ptp_read_t		ts_read;
++	dld_ptp_settime_t	ts_settime;
++	dld_ptp_adjtime_t	ts_adjtime;
++	dld_ptp_sync_t		ts_sync;
++};
++struct dld_ioc_ptp_req {
++	uint32_t		cmd;
++	union dld_ptp_data	u;
++};
++#define	DLDIOC(cmdid)	(((uint_t)(0x0D1D) << 16) | (cmdid))
+ #else 
+ #include "efx_ioctl.h"
+ #endif
+@@ -119,6 +131,10 @@ static struct {
+   UInteger16 sequenceId;
+   ClockIdentity clockId;
+ } lastRecvTimes[RECV_ARRAY_SIZE];
++#ifdef __sun
++# define PSTR "master-nic"
++# define BSTR "nic-system"
++#endif
+ 
+ /**
+  * Oldest valid and next free entry in lastRecvTimes.
+@@ -133,41 +149,93 @@ int ptp_ioctl(NetPath *netPath, void *dr
+ 	netPath.eventSockIFR.ifr_data = drv_ioctl;
+ 	return(ioctl(netPath->eventSock, SIOCEFX, &netPath->eventSockIFR));
+ #else	/* __sun */
+-	struct strioctl ioc;
+-	struct sfxge_sock_ioctl *req = (struct sfxge_sock_ioctl *)drv_ioctl;
+-	int len;
++	struct dld_ioc_ptp_req *req = (struct dld_ioc_ptp_req *)drv_ioctl;
++	int err;
+ 
+ 	switch(req->cmd) {
+-		case SFXGE_TS_INIT:
+-			len = sizeof (struct sfxge_hwtstamp_config);
+-			DBGV("SFXGE_TS_INIT issued\n");
++		case DLDIOC_PTP_ENABLE: {
++        		dld_ioc_ptp_config_t ptp_config;
++			ptp_config.pi_linkid = netPath->linkid;
++			memcpy(&ptp_config.pi_config, &req->u.ts_init,
++				sizeof(dld_ptp_config_t));
++			err = ioctl(dladm_dld_fd(netPath->handle), req->cmd,
++				&ptp_config);
++			DBGV("DLDIOC_PTP_ENABLE ret %d\n", err);
+ 			break;
+-		case SFXGE_TS_READ:
+-			len = sizeof (struct sfxge_ts_read);
+-			DBGV("SFXGE_TS_READ issued\n");
++		}
++
++		case DLDIOC_PTP_DISABLE: {
++        		dld_ioc_ptp_config_t ptp_config;
++			ptp_config.pi_linkid = netPath->linkid;
++			memcpy(&ptp_config.pi_config, &req->u.ts_init,
++				sizeof(dld_ptp_config_t));
++			err = ioctl(dladm_dld_fd(netPath->handle), req->cmd,
++				&ptp_config);
++			DBGV("DLDIOC_PTP_DISABLE ret %d\n", err);
+ 			break;
+-		case SFXGE_TS_ADJTIME:
+-			len = sizeof (struct sfxge_ts_adjtime);
+-			DBGV("SFXGE_TS_ADJTIME issued\n");
++		}
++
++		case DLDIOC_PTP_READ: {
++        		dld_ioc_ptp_read_t ptp_read;
++			ptp_read.pr_linkid = netPath->linkid;
++			DBGV("DLDIOC_PTP_READ linkid %d\n", ptp_read.pr_linkid);
++			err = ioctl(dladm_dld_fd(netPath->handle), req->cmd,
++				&ptp_read);
++			if (err == 0){
++				DBGV("DLDIOC_PTP_READ rx_vld %d tx_vld %d\n", 
++				ptp_read.pr_read.pr_rx_valid,
++				ptp_read.pr_read.pr_tx_valid);
++				memcpy(&req->u.ts_read, &ptp_read.pr_read, 
++				    sizeof(dld_ptp_read_t));
++			}
+ 			break;
+-		case SFXGE_TS_SETTIME:
+-			len = sizeof (struct sfxge_ts_settime);
+-			DBGV("SFXGE_TS_SETTIME issued\n");
++		}
++
++		case DLDIOC_PTP_ADJTIME: {
++        		dld_ioc_ptp_adjtime_t ptp_adjtime;
++			ptp_adjtime.pa_linkid = netPath->linkid;
++			memcpy(&ptp_adjtime.pa_adjtime, &req->u.ts_adjtime,
++				sizeof(dld_ptp_adjtime_t));
++			err = ioctl(dladm_dld_fd(netPath->handle), req->cmd,
++				&ptp_adjtime);
++			DBGV("DLDIOC_PTP_ADJTIME issued\n");
+ 			break;
+-		case SFXGE_TS_SYNC:
+-			len = sizeof (struct sfxge_ts_sync);
+-			DBGV("SFXGE_TS_SYNC issued\n");
++		}
++
++		case DLDIOC_PTP_SETTIME: {
++        		dld_ioc_ptp_settime_t ptp_settime;
++			ptp_settime.ps_linkid = netPath->linkid;
++			memcpy(&ptp_settime.ps_settime, &req->u.ts_settime,
++				sizeof(dld_ptp_settime_t));
++			if ((err = ioctl(dladm_dld_fd(netPath->handle), req->cmd,
++				&ptp_settime)) == 0) {
++				memcpy(&req->u.ts_settime,
++				    &ptp_settime.ps_settime, 
++				    sizeof(dld_ptp_settime_t));
++			}
++			DBGV("DLDIOC_PTP_SETTIME issued\n");
++			break;
++		}
++
++		case DLDIOC_PTP_SYNC: {
++        		dld_ioc_ptp_sync_t ptp_sync;
++			ptp_sync.py_linkid = netPath->linkid;
++			memcpy(&ptp_sync.py_sync, &req->u.ts_sync,
++				sizeof(dld_ptp_sync_t));
++			if ((err = ioctl(dladm_dld_fd(netPath->handle), req->cmd,
++				&ptp_sync)) == 0) {
++				memcpy(&req->u.ts_sync, &ptp_sync.py_sync, 
++				    sizeof(dld_ptp_sync_t));
++			}
++			DBGV("DLDIOC_PTP_SYNC issued\n");
+ 			break;
++		}
++
+ 		default:
+ 			printf("Unknown ioctl number %x ... exiting\n", req->cmd);
+ 			exit (1);
+ 	}
+-	(void) memset(&ioc, 0, sizeof (ioc));
+-	ioc.ic_cmd = req->cmd;
+-	ioc.ic_timout = 0;
+-	ioc.ic_len = len;
+-	ioc.ic_dp = (char *)&req->u;
+-	return (ioctl(netPath->devFd, I_STR, (char *)&ioc));
++	return (err);
+ #endif	/* __sun */
+ }
+ /**
+@@ -182,7 +250,7 @@ void syncSystemWithNIC(RunTimeOpts *rtOp
+   TimeInternal delay;
+   static TimeInternal zero;
+ #ifdef __sun
+-  struct sfxge_sock_ioctl req;
++  struct dld_ioc_ptp_req req;
+ #else
+   struct efx_sock_ioctl req;
+ #endif
+@@ -204,13 +272,13 @@ void syncSystemWithNIC(RunTimeOpts *rtOp
+ 
+   memset(&req, 0, sizeof(req));
+ #if  defined(__sun)
+-  req.cmd = SFXGE_TS_SYNC;
++  req.cmd = DLDIOC_PTP_SYNC;
+ #else
+   req.cmd = EFX_TS_SYNC;
+ #endif
+   if (ptp_ioctl(&ptpClock->netPath, &req) < 0) {
+     ptpClock->statistics.ts_sync_failures++;
+-    ERROR("failed to correlate SFC NIC and system clock %d times (if %s, error %s)\n",
++    ERROR("failed to correlate NIC and system clock %d times (if %s, error %s)\n",
+           ptpClock->statistics.ts_sync_failures,
+           ptpClock->netPath.eventSockIFR.lifr_name, strerror(errno));
+     return;
+@@ -248,10 +316,10 @@ void syncSystemWithNIC(RunTimeOpts *rtOp
+   // TODO Possibly the delay req time needs to be inverted or doubled
+   // We don't really support a measurement of the one way delay at present.
+ 
+-  DBGV("sync value %lld.%09d\n", req.u.ts_sync.ts.tv_sec, req.u.ts_sync.ts.tv_nsec);
+-  delay.seconds = req.u.ts_sync.ts.tv_sec;
+-  delay.nanoseconds = req.u.ts_sync.ts.tv_nsec;
+-  DBGV("system to NIC delay %ld.%09d\n", delay.seconds, delay.nanoseconds);
++  DBGV("sync value %ld.%09d\n", req.u.ts_sync.py_ts.tv_sec, req.u.ts_sync.py_ts.tv_nsec);
++  delay.seconds = req.u.ts_sync.py_ts.tv_sec;
++  delay.nanoseconds = req.u.ts_sync.py_ts.tv_nsec;
++  DBGV("system to NIC delay %d.%09d\n", delay.seconds, delay.nanoseconds);
+ 
+   timeBothClock.delay_req_receive_time = delay;
+   timeBothClock.delay_req_send_time = zero;
+@@ -259,7 +327,7 @@ void syncSystemWithNIC(RunTimeOpts *rtOp
+   updateDelay(&timeBothClock.owd_filt, &timeBothRtOpts, &timeBothClock, &zero);
+ 
+   /* Note that the NIC to system delay and system to NIC delay are the same */
+-  DBGV("NIC to system delay %ld.%09d\n", delay.seconds, delay.nanoseconds);
++  DBGV("NIC to system delay %d.%09d\n", delay.seconds, delay.nanoseconds);
+   /* Note that we don't use the correction factor - zero */
+   updateOffset(&delay, &zero, &timeBothClock.ofm_filt, &timeBothRtOpts, &timeBothClock, &zero);
+ 
+@@ -347,25 +415,22 @@ static Boolean selectNICTimeMode(TimeMod
+ 
+   {
+ #ifdef __sun
+-  struct sfxge_sock_ioctl req;
++  struct dld_ioc_ptp_req req;
+ #else
+   struct efx_sock_ioctl req;
+ #endif
+-    req.u.ts_init.flags = 0;
+-    req.u.ts_init.tx_type = HWTSTAMP_TX_ON;
+-    req.u.ts_init.rx_filter = HWTSTAMP_FILTER_PTP_V2_L4_EVENT;
+ 
+ #ifdef __sun
+-    req.cmd = SFXGE_TS_INIT;
++    req.cmd = DLDIOC_PTP_ENABLE;
+ #else
+     req.cmd = EFX_TS_INIT;
+ #endif
+ 
+     if(ptp_ioctl(netPath, &req) < 0) {
+-      NOTIFY("could not activate SFC hardware rx/tx time stamping on %s, %s\n",
++      NOTIFY("could not activate hardware rx/tx time stamping on %s, %s\n",
+               netPath->eventSockIFR.lifr_name, strerror(errno));
+     } else {
+-      NOTIFY("SFC IOCTL timestamping enabled\n");
++      NOTIFY("IOCTL timestamping enabled\n");
+       ptpClock->tsMethod = TS_METHOD_DRIVER_IOCTL;
+       return TRUE;
+     }
+@@ -435,9 +500,9 @@ Boolean initTime(RunTimeOpts *rtOpts, Pt
+         return FALSE;
+     }
+ 
+-    initClock(&timeBothRtOpts, &timeBothClock);
+     G_timeBothClock = &timeBothClock;
+     G_timeBothRtOpts = &timeBothRtOpts;
++    initClock(&timeBothRtOpts, &timeBothClock);
+ 
+     rc = selectNICTimeMode(rtOpts->time_mode, ptpClock);
+     if (rc && ((rtOpts->master_slave_mode != PTP_MODE_SLAVE) || rtOpts->noResetClock)) {
+@@ -509,15 +574,12 @@ void shutdownTime(PtpClock *ptpClock)
+     case TS_METHOD_DRIVER_IOCTL:
+     {
+ #ifdef __sun
+-      struct sfxge_sock_ioctl req;
+-      req.cmd = SFXGE_TS_INIT;
++      struct dld_ioc_ptp_req req;
++      req.cmd = DLDIOC_PTP_DISABLE;
+ #else
+       struct efx_sock_ioctl req;
+       req.cmd = EFX_TS_INIT;
+ #endif
+-      req.u.ts_init.flags = 0;
+-      req.u.ts_init.tx_type = HWTSTAMP_TX_OFF;
+-      req.u.ts_init.rx_filter = HWTSTAMP_FILTER_NONE;
+       (void)ptp_ioctl(netPath, &req);
+     }
+       break;
+@@ -557,7 +619,7 @@ void getTime(TimeInternal *time, TimeMod
+   case TIME_NIC: {
+     NetPath *netPath = &ptpClock->netPath;
+ #ifdef __sun
+-    struct sfxge_sock_ioctl req;
++    struct dld_ioc_ptp_req req; 
+ #else
+     struct efx_sock_ioctl req;
+ #endif
+@@ -565,18 +627,18 @@ void getTime(TimeInternal *time, TimeMod
+     memset(&req, 0, sizeof(req));
+ 
+ #ifdef __sun
+-    req.cmd = SFXGE_TS_SETTIME;
++    req.cmd = DLDIOC_PTP_SETTIME;
+ #else
+     req.cmd = EFX_TS_SETTIME;
+ #endif
+-    req.u.ts_settime.iswrite = 0;
++    req.u.ts_settime.ps_iswrite = 0;
+     if (ptp_ioctl(netPath, &req) < 0) {
+-      ERROR("could not read SFC hardware time on %s: %s\n",
++      ERROR("could not read hardware time on %s: %s\n",
+             netPath->eventSockIFR.lifr_name, strerror(errno));
+       return;
+     }
+-    time->seconds = req.u.ts_settime.ts.tv_sec;
+-    time->nanoseconds = req.u.ts_settime.ts.tv_nsec;
++    time->seconds = req.u.ts_settime.ps_ts.tv_sec;
++    time->nanoseconds = req.u.ts_settime.ps_ts.tv_nsec;
+     break;
+   }
+   default:
+@@ -617,7 +679,7 @@ void setTime(TimeInternal *time, TimeMod
+   case TIME_NIC: {
+     NetPath *netPath = &ptpClock->netPath;
+ #ifdef __sun
+-    struct sfxge_sock_ioctl req;
++    struct dld_ioc_ptp_req req;
+ #else
+     struct efx_sock_ioctl req;
+ #endif
+@@ -630,27 +692,27 @@ void setTime(TimeInternal *time, TimeMod
+     getTime(&currentTime, timeMode, ptpClock);
+     subTime(&offset, time, &currentTime);
+ 
+-    req.u.ts_settime.iswrite = 1;
+-    req.u.ts_settime.ts.tv_sec = offset.seconds;
+-    req.u.ts_settime.ts.tv_nsec = offset.nanoseconds;
++    req.u.ts_settime.ps_iswrite = 1;
++    req.u.ts_settime.ps_ts.tv_sec = offset.seconds;
++    req.u.ts_settime.ps_ts.tv_nsec = offset.nanoseconds;
+ #ifdef __sun
+-    req.cmd = SFXGE_TS_SETTIME;
++    req.cmd = DLDIOC_PTP_SETTIME;
+ #else
+     req.cmd = EFX_TS_SETTIME;
+ #endif
+ 
+     NOTIFY("adding NIC offset %ld.%09d (%ld/%p)\n",
+-           req.u.ts_settime.ts.tv_sec, req.u.ts_settime.ts.tv_nsec,
++           req.u.ts_settime.ps_ts.tv_sec, req.u.ts_settime.ps_ts.tv_nsec,
+            sizeof(req), &req);
+     if (ptp_ioctl(netPath, &req) < 0) {
+-      ERROR("could not set SFC hardware time on %s: %s\n",
++      ERROR("could not set hardware time on %s: %s\n",
+             netPath->eventSockIFR.lifr_name, strerror(errno));
+     }
+     else
+     {
+       DBGV("new NIC time %ld.%09d\n",
+-           req.u.ts_settime.ts.tv_sec,
+-           req.u.ts_settime.ts.tv_nsec);
++           req.u.ts_settime.ps_ts.tv_sec,
++           req.u.ts_settime.ps_ts.tv_nsec);
+     }
+     break;
+   }
+@@ -824,29 +886,29 @@ void adjTime(LongDouble adj, TimeMode ti
+     /* adjust NIC frequency */
+     NetPath *netPath = &ptpClock->netPath;
+ #ifdef __sun
+-    struct sfxge_sock_ioctl req;
++    struct dld_ioc_ptp_req req;
+ #else
+     struct efx_sock_ioctl req;
+ #endif
+ 
+     memset(&req, 0, sizeof(req));
+     if (ptpClock->nic_instead_of_system) {
+-      req.u.ts_adjtime.adjustment = (long long)round(-adj);
++      req.u.ts_adjtime.pa_adjustment = (long long)round(-adj);
+       ptpClock->frequency_adjustment = -adj;
+     } else {
+-      req.u.ts_adjtime.adjustment = (long long)round(adj);
++      req.u.ts_adjtime.pa_adjustment = (long long)round(adj);
+       ptpClock->frequency_adjustment = adj;
+     }
+-    req.u.ts_adjtime.iswrite = 1;
++    req.u.ts_adjtime.pa_iswrite = 1;
+ #ifdef __sun
+-    req.cmd = SFXGE_TS_ADJTIME;
++    req.cmd = DLDIOC_PTP_ADJTIME;
+ #else
+     req.cmd = EFX_TS_ADJTIME;
+ #endif
+     DBGV("adjust NIC frequency by %lld (%Lf) ppb\n",
+-          req.u.ts_adjtime.adjustment, ptpClock->frequency_adjustment);
++          req.u.ts_adjtime.pa_adjustment, ptpClock->frequency_adjustment);
+     if (ptp_ioctl(netPath, &req) < 0) {
+-      ERROR("could not modify SFC hardware frequency on %s: %s\n",
++      ERROR("could not modify hardware frequency on %s: %s\n",
+             netPath->eventSockIFR.lifr_name, strerror(errno));
+     }
+     break;
+@@ -865,17 +927,17 @@ void adjTimeOffset(TimeInternal *offset,
+     case TIME_NIC: {
+       NetPath *netPath = &ptpClock->netPath;
+ #ifdef __sun
+-      struct sfxge_sock_ioctl req;
++      struct dld_ioc_ptp_req req;
+ #else
+       struct efx_sock_ioctl req;
+ #endif
+ 
+       memset(&req, 0, sizeof(req));
+-      req.u.ts_settime.iswrite = 1;
+-      req.u.ts_settime.ts.tv_sec = offset->seconds;
+-      req.u.ts_settime.ts.tv_nsec = offset->nanoseconds;
++      req.u.ts_settime.ps_iswrite = 1;
++      req.u.ts_settime.ps_ts.tv_sec = offset->seconds;
++      req.u.ts_settime.ps_ts.tv_nsec = offset->nanoseconds;
+ #ifdef __sun
+-      req.cmd = SFXGE_TS_SETTIME;
++      req.cmd = DLDIOC_PTP_SETTIME;
+ #else
+       req.cmd = EFX_TS_SETTIME;
+ #endif
+@@ -885,14 +947,14 @@ void adjTimeOffset(TimeInternal *offset,
+        */
+       // TODO check that time is normalised at this point / use arith fns for all time ops
+       if (!ptpClock->nic_instead_of_system) {
+-        req.u.ts_settime.ts.tv_sec *= -1;
+-        req.u.ts_settime.ts.tv_nsec *= -1;
++        req.u.ts_settime.ps_ts.tv_sec *= -1;
++        req.u.ts_settime.ps_ts.tv_nsec *= -1;
+       }
+ 
+       DBGV("adjust NIC time by offset %ld.%09d\n",
+-          (UInteger32)req.u.ts_settime.ts.tv_sec, req.u.ts_settime.ts.tv_nsec);
++          (UInteger32)req.u.ts_settime.ps_ts.tv_sec, req.u.ts_settime.ps_ts.tv_nsec);
+       if (ptp_ioctl(netPath, &req) < 0) {
+-        ERROR("could not modify SFC hardware time on %s: %s\n",
++        ERROR("could not modify hardware time on %s: %s\n",
+               ptpClock->netPath.eventSockIFR.lifr_name,
+               strerror(errno));
+       }
+@@ -932,24 +994,24 @@ void adjTimeInsertLeapSecond(TimeMode ti
+ 		NetPath *netPath = &ptpClock->netPath;
+ 		LongDouble adj;
+ #ifdef __sun
+-		struct sfxge_sock_ioctl req;
++		struct dld_ioc_ptp_req req;
+ #else
+ 		struct efx_sock_ioctl req;
+ #endif
+ 		memset(&req, 0, sizeof(req));
+ #if defined(__sun)
+-		req.cmd = SFXGE_TS_SETTIME;
++		req.cmd = DLDIOC_PTP_SETTIME;
+ #else
+ 		req.cmd = EFX_TS_SETTIME;
+ #endif 
+ 
+-		req.u.ts_settime.iswrite = 1;
+-		req.u.ts_settime.ts.tv_sec = -1;
+-		req.u.ts_settime.ts.tv_nsec = 0;
++		req.u.ts_settime.ps_iswrite = 1;
++		req.u.ts_settime.ps_ts.tv_sec = -1;
++		req.u.ts_settime.ps_ts.tv_nsec = 0;
+ 
+ 		DBGV("insert leap second in NIC time\n");
+ 		if (ptp_ioctl(netPath, &req) < 0) {
+-			ERROR("could not modify SFC hardware time on %s: %s\n",
++			ERROR("could not modify hardware time on %s: %s\n",
+ 			      ptpClock->netPath.eventSockIFR.lifr_name,
+ 			      strerror(errno));
+ 		}
+@@ -987,10 +1049,10 @@ void adjTimeDeleteLeapSecond(TimeMode ti
+ 		LongDouble adj;
+ 
+ #ifdef __sun
+-		struct sfxge_sock_ioctl req;
++		struct dld_ioc_ptp_req req;
+ 
+ 		memset(&req, 0, sizeof(req));
+-		req.cmd = SFXGE_TS_SETTIME;
++		req.cmd = DLDIOC_PTP_SETTIME;
+ #else
+ 		struct efx_sock_ioctl req;
+ 
+@@ -998,13 +1060,13 @@ void adjTimeDeleteLeapSecond(TimeMode ti
+ 		req.cmd = EFX_TS_SETTIME;
+ #endif
+ 
+-		req.u.ts_settime.iswrite = 1;
+-		req.u.ts_settime.ts.tv_sec = 1;
+-		req.u.ts_settime.ts.tv_nsec = 0;
++		req.u.ts_settime.ps_iswrite = 1;
++		req.u.ts_settime.ps_ts.tv_sec = 1;
++		req.u.ts_settime.ps_ts.tv_nsec = 0;
+ 
+ 		DBGV("delete leap second from NIC time\n");
+ 		if (ptp_ioctl(netPath, &req) < 0) {
+-			ERROR("could not modify SFC hardware time on %s: %s\n",
++			ERROR("could not modify hardware time on %s: %s\n",
+ 			      ptpClock->netPath.eventSockIFR.lifr_name,
+ 			      strerror(errno));
+ 		}
+@@ -1031,7 +1093,7 @@ void adjTimeDeleteLeapSecond(TimeMode ti
+ static void getTimeStamps(TimeMode timeMode, NetPath *netPath)
+ {
+ #ifdef __sun
+-  struct sfxge_sock_ioctl req;
++  struct dld_ioc_ptp_req req;
+ #else
+   struct efx_sock_ioctl req;
+ #endif
+@@ -1042,21 +1104,21 @@ static void getTimeStamps(TimeMode timeM
+   do {
+     memset(&req, 0, sizeof(req));
+ #ifdef __sun
+-    req.cmd = SFXGE_TS_READ;
++    req.cmd = DLDIOC_PTP_READ;
+ #else
+     req.cmd = EFX_TS_READ;
+ #endif
+     if(ptp_ioctl(netPath, &req) < 0) {
+-      ERROR("could not read SFC hardware time stamps on %s: %s\n",
++      ERROR("could not read hardware time stamps on %s: %s\n",
+             netPath->eventSockIFR.lifr_name, strerror(errno));
+       return;
+     }
+ 
+     DBGV("rx %s, tx %s\n",
+-         req.u.ts_read.rx_valid ? "valid" : "invalid",
+-         req.u.ts_read.tx_valid ? "valid" : "invalid");
++         req.u.ts_read.pr_rx_valid ? "valid" : "invalid",
++         req.u.ts_read.pr_tx_valid ? "valid" : "invalid");
+ 
+-    if(req.u.ts_read.rx_valid)
++    if(req.u.ts_read.pr_rx_valid)
+     {
+       int newIndex;
+ 
+@@ -1080,13 +1142,13 @@ static void getTimeStamps(TimeMode timeM
+       DBGV("new entry %d, oldest %d, next free %d\n", newIndex, oldestRecv, nextFreeRecv);
+ 
+       if (rawTime) {
+-        lastRecvTimes[newIndex].recvTimeStamp.seconds = req.u.ts_read.rx_ts_hw.tv_sec;
+-        lastRecvTimes[newIndex].recvTimeStamp.nanoseconds = req.u.ts_read.rx_ts_hw.tv_nsec;
++        lastRecvTimes[newIndex].recvTimeStamp.seconds = req.u.ts_read.pr_rx_ts_hw.tv_sec;
++        lastRecvTimes[newIndex].recvTimeStamp.nanoseconds = req.u.ts_read.pr_rx_ts_hw.tv_nsec;
+       } else {
+-        lastRecvTimes[newIndex].recvTimeStamp.seconds = req.u.ts_read.rx_ts.tv_sec;
+-        lastRecvTimes[newIndex].recvTimeStamp.nanoseconds = req.u.ts_read.rx_ts.tv_nsec;
++        lastRecvTimes[newIndex].recvTimeStamp.seconds = req.u.ts_read.pr_rx_ts.tv_sec;
++        lastRecvTimes[newIndex].recvTimeStamp.nanoseconds = req.u.ts_read.pr_rx_ts.tv_nsec;
+       }
+-      lastRecvTimes[newIndex].sequenceId = req.u.ts_read.seqid;
++      lastRecvTimes[newIndex].sequenceId = req.u.ts_read.pr_seqid;
+ 
+ 
+       /* Section 18.3.7 IEEE1588. Version 1 UUIDs are mapped into octets 2-7 of the clock
+@@ -1094,34 +1156,34 @@ static void getTimeStamps(TimeMode timeM
+        */
+       lastRecvTimes[newIndex].clockId[0] = 0;
+       lastRecvTimes[newIndex].clockId[1] = 0;
+-      memcpy(lastRecvTimes[newIndex].clockId + sizeof(lastRecvTimes[newIndex].clockId) - sizeof(req.u.ts_read.uuid),
+-             req.u.ts_read.uuid,
+-             sizeof(req.u.ts_read.uuid));
++      memcpy(lastRecvTimes[newIndex].clockId + sizeof(lastRecvTimes[newIndex].clockId) - sizeof(req.u.ts_read.pr_uuid),
++             req.u.ts_read.pr_uuid,
++             sizeof(req.u.ts_read.pr_uuid));
+ 
+       DBGV("rx %d: time %d.%09u, sequence %u, uuid %02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx\n",
+            newIndex,
+            lastRecvTimes[newIndex].recvTimeStamp.seconds,
+            lastRecvTimes[newIndex].recvTimeStamp.nanoseconds,
+            lastRecvTimes[newIndex].sequenceId,
+-           req.u.ts_read.uuid[0], req.u.ts_read.uuid[1], req.u.ts_read.uuid[2],
+-           req.u.ts_read.uuid[3], req.u.ts_read.uuid[4], req.u.ts_read.uuid[5]);
++           req.u.ts_read.pr_uuid[0], req.u.ts_read.pr_uuid[1], req.u.ts_read.pr_uuid[2],
++           req.u.ts_read.pr_uuid[3], req.u.ts_read.pr_uuid[4], req.u.ts_read.pr_uuid[5]);
+     }
+ 
+-    if(req.u.ts_read.tx_valid)
++    if(req.u.ts_read.pr_tx_valid)
+     {
+       if (rawTime) {
+-        lastSendTime.seconds = req.u.ts_read.tx_ts_hw.tv_sec;
+-        lastSendTime.nanoseconds = req.u.ts_read.tx_ts_hw.tv_nsec;
++        lastSendTime.seconds = req.u.ts_read.pr_tx_ts_hw.tv_sec;
++        lastSendTime.nanoseconds = req.u.ts_read.pr_tx_ts_hw.tv_nsec;
+       } else {
+-        lastSendTime.seconds = req.u.ts_read.tx_ts.tv_sec;
+-        lastSendTime.nanoseconds = req.u.ts_read.tx_ts.tv_nsec;
++        lastSendTime.seconds = req.u.ts_read.pr_tx_ts.tv_sec;
++        lastSendTime.nanoseconds = req.u.ts_read.pr_tx_ts.tv_nsec;
+       }
+ 
+       DBGV("tx time %d.%09d (%d.%09d)\n",
+            lastSendTime.seconds, lastSendTime.nanoseconds,
+-           req.u.ts_read.tx_ts.tv_sec, req.u.ts_read.tx_ts.tv_nsec);
++           req.u.ts_read.pr_tx_ts.tv_sec, req.u.ts_read.pr_tx_ts.tv_nsec);
+     }
+-  } while (req.u.ts_read.tx_valid || req.u.ts_read.rx_valid);
++  } while (req.u.ts_read.pr_tx_valid || req.u.ts_read.pr_rx_valid);
+ }
+ 
+ Boolean getSendTime(TimeInternal *sendTimeStamp,
+--- ptpd-2.2.0/src/ptpd.c
++++ ptpd-2.2.0/src/ptpd.c
+@@ -133,6 +133,7 @@ main(int argc, char **argv)
+ 	rtOpts.subsequent_delayreq = DEFAULT_DELAYREQ_INTERVAL;      // this will be updated if -g is given
+ 
+  	rtOpts.nsStepThreshold = 100000000;
++	rtOpts.strictRespCheck = TRUE;
+     	rtOpts.driftDir[0] = '\0';
+ 
+     /* Initialize run time options with command line arguments */
+--- ptpd-2.2.0/src/datatypes.h
++++ ptpd-2.2.0/src/datatypes.h
+@@ -618,6 +618,7 @@ typedef struct {
+   int do_unicast_mode;
+ 
+ #ifdef __sun
++  Boolean strictRespCheck;
+   char driftDir[PATH_MAX - 12];
+   Integer32 nsStepThreshold;
+ #endif
+--- ptpd-2.2.0/src/dep/startup.c
++++ ptpd-2.2.0/src/dep/startup.c
+@@ -615,10 +615,12 @@ display_short_help(char *msg, Boolean er
+ 	printf(
+ 			"ptpd:\n"
+ 			"   -gW          Protocol mode (slave/master)\n"
+-			"   -b <dev>      Interface to use\n"
++			"   -b <dev>     Interface to use\n"
++			"   -K           Use PTP hardware in network interface\n"
+ 			"\n"
+ 			"   -cC  -DVfS    Console / verbose console;     Dump stats / Interval / Output file / no Syslog\n"
+ 			"   -uU           Unicast/Hybrid mode\n"
++			"   -k            Disable strict delay response checking\n"
+ 			"   -J <driftDir> Drift file directory\n"
+ 			"\n"
+ 			"\n"
+@@ -674,7 +676,7 @@ ptpdStartup(int argc, char **argv, Integ
+ #endif
+ */
+ 
+-   const char *getopt_string = "?HgGWb:cCf:ST:dDPR:xO:tM:a:w:u:ehzl:o:i:n:N:y:m:v:r:s:p:q:Y:BjLV:XZKFUJ:Q:";
++   const char *getopt_string = "?HgGWb:cCf:ST:dDPR:xO:tM:a:w:u:ehzl:o:i:n:N:y:m:v:r:s:p:q:Y:BjLV:XZKFUkJ:Q:";
+ 
+   /* parse command line arguments */
+   while ((c = getopt(argc, argv, getopt_string)) != -1) {
+@@ -759,6 +761,7 @@ ptpdStartup(int argc, char **argv, Integ
+ 	"-L                Allow multiple instances (ignore lock and other daemons)\n"
+ 	"-V 0              Seconds between log messages (0: all messages)\n"
+ 	"-Z                ignore delayReq interval given by Master\n"
++	"-k                accept delayResp from different ports or Masters\n"
+ 	"-J FILE           store observed drift in drift file\n"
+ 
+ #define GETOPT_END_OF_OPTIONS
+@@ -1165,6 +1168,10 @@ ptpdStartup(int argc, char **argv, Integ
+ 	rtOpts->do_IGMP_refresh = FALSE;
+ 	break;
+ 
++      case 'k':
++         /* do not perform clock/port checks for delay responses */
++	 rtOpts->strictRespCheck = FALSE;
++	 break;
+       case 'J':
+          /* safe drift files to driftDir */
+          strncpy(rtOpts->driftDir, optarg, PATH_MAX - 13);
+--- ptpd-2.2.0/./src/dep/dld_ptp.h
++++ NEWFILES/ptpd-2.2.0/./src/dep/dld.h
+@@ -0,0 +1,78 @@
++/*
++ * Data-Link Driver ioctl interfaces for PTP.
++ *
++ * This file may be removed once the definitions of these ioctls and
++ * structures are delivered in in the /usr/include/sys/dld.h file on
++ * the internal build servers, and the include in the time.c file
++ * renamed from dld_ptp.g to dld.h
++ */
++
++#include <sys/types.h>
++#include <sys/stream.h>
++#include <sys/mac_flow.h>
++#include <sys/conf.h>
++#include <sys/sad.h>
++#include <sys/mac.h>
++
++#if _LONG_LONG_ALIGNMENT == 8 && _LONG_LONG_ALIGNMENT_32 == 4
++#pragma pack(4)
++#endif
++
++#define	DLDIOC_PTP_ENABLE	DLDIOC(0x2b)
++#define	DLDIOC_PTP_DISABLE	DLDIOC(0x2c)
++typedef struct dld_ptp_config {
++	uint32_t	pi_drv_version;
++} dld_ptp_config_t;
++typedef struct dld_ioc_ptp_config {
++	datalink_id_t		pi_linkid;
++	dld_ptp_config_t	pi_config;
++} dld_ioc_ptp_config_t;
++
++#define	DLDIOC_PTP_READ		DLDIOC(0x2d)
++typedef struct dld_ptp_read {
++	uint32_t	pr_tx_valid;
++	timespec_t	pr_tx_ts;
++	timespec_t	pr_tx_ts_hw;
++	uint32_t	pr_rx_valid;
++	timespec_t	pr_rx_ts;
++	timespec_t	pr_rx_ts_hw;
++	uint16_t	pr_seqid;
++	uint8_t		pr_uuid[6];
++} dld_ptp_read_t;
++typedef struct dld_ioc_ptp_read {
++	datalink_id_t		pr_linkid;
++	dld_ptp_read_t		pr_read;
++} dld_ioc_ptp_read_t;
++
++#define	DLDIOC_PTP_SETTIME	DLDIOC(0x2e)
++typedef struct dld_ptp_settime {
++	timespec_t	ps_ts;
++	uint32_t	ps_iswrite;
++} dld_ptp_settime_t;
++typedef struct dld_ioc_ptp_settime {
++	datalink_id_t		ps_linkid;
++	dld_ptp_settime_t	ps_settime;
++} dld_ioc_ptp_settime_t;
++
++#define	DLDIOC_PTP_ADJTIME	DLDIOC(0x2f)
++typedef struct dld_ptp_adjtime {
++	int64_t		pa_adjustment;
++	uint32_t	pa_iswrite;
++} dld_ptp_adjtime_t;
++typedef struct dld_ioc_ptp_adjtime {
++	datalink_id_t		pa_linkid;
++	dld_ptp_adjtime_t	pa_adjtime;
++} dld_ioc_ptp_adjtime_t;
++
++#define	DLDIOC_PTP_SYNC		DLDIOC(0x30)
++typedef struct dld_ptp_sync {
++	timespec_t	py_ts;
++} dld_ptp_sync_t;
++typedef struct dld_ioc_ptp_sync {
++	datalink_id_t		py_linkid;
++	dld_ptp_sync_t		py_sync;
++} dld_ioc_ptp_sync_t;
++
++#if _LONG_LONG_ALIGNMENT == 8 && _LONG_LONG_ALIGNMENT_32 == 4
++#pragma pack()
++#endif
+--- ptpd-2.2.0/src/ptpd2.8
++++ ptpd-2.2.0/src/ptpd2.8
+@@ -166,6 +166,12 @@ Set the debug level. The default is zero
+ .TP
+ .BR  config/send_debug_to_stderr
+ Send debug messages to stderr if true, to the syslog if false. Default is true.
++.TP
++.BR  config/strict_rsp
++Allows ptpd to use the delay response from any clock for any other clock that
++has not received a response. This should only be used if link aggregations are
++being used and the ports in the aggregation are connected to PTP boundary
++clocks.
+ .SH OPTIONS
+ .TP
+ .B \-?
+@@ -226,6 +232,10 @@ bind PTP to network interface NAME
+ use PTP hardware in network interface. Exit if
+ PTP hardware is not usable or available.
+ .TP
++.B \-k
++Allows ptpd to use the delay response from any clock for any other clock that has
++not received a response.
++.TP
+ .B \-u ADDRESS
+ also send uni-cast to ADDRESS
+ .TP

@@ -78,9 +78,9 @@ Enable a command line option for step at startup only.
 +steps will be allowed. The default value is zero, which allows the clock to
 +be stepped at any time.
 +number
- .SH OPTIONS
  .TP
- .B \-?
+ .BR  config/send_debug_to_stderr
+ Send debug messages to stderr if true, to the syslog if false. Default is true.
 @@ -198,6 +207,10 @@ display stats in .csv format
  .B \-x
  do not reset the clock if off by more than one second
@@ -94,7 +94,7 @@ Enable a command line option for step at startup only.
  .TP
 --- ptpd-2.2.0/src/dep/startup.c
 +++ ptpd-2.2.0/src/dep/startup.c
-@@ -665,15 +665,8 @@ ptpdStartup(int argc, char **argv, Integ
+@@ -667,15 +667,8 @@ ptpdStartup(int argc, char **argv, Integ
    Boolean is_error;
  
    dump_command_line_parameters(argc, argv);
@@ -106,12 +106,12 @@ Enable a command line option for step at startup only.
 -#endif
 -*/
  
--   const char *getopt_string = "?HgGWb:cCf:ST:dDPR:xO:tM:a:w:u:ehzl:o:i:n:N:y:m:v:r:s:p:q:Y:BjLV:XZKFUJ:Q:";
-+   const char *getopt_string = "?HgGWb:cCf:ST:dDPR:xO:tM:a:w:u:ehzl:o:i:n:N:y:m:v:r:s:p:q:Y:BjLV:XZKFUJ:Q:A:";
+-   const char *getopt_string = "?HgGWb:cCf:ST:dDPR:xO:tM:a:w:u:ehzl:o:i:n:N:y:m:v:r:s:p:q:Y:BjLV:X:ZKFUkJ:Q:";
++   const char *getopt_string = "?HgGWb:cCf:ST:dDPR:xO:tM:a:w:u:ehzl:o:i:n:N:y:m:v:r:s:p:q:Y:BjLV:X:ZKFUkJ:Q:A:";
  
    /* parse command line arguments */
    while ((c = getopt(argc, argv, getopt_string)) != -1) {
-@@ -716,6 +709,7 @@ ptpdStartup(int argc, char **argv, Integ
+@@ -718,6 +711,7 @@ ptpdStartup(int argc, char **argv, Integ
  	"-P                display each received packet in detail\n"
  	"-R FILE           record data about sync packets in a seperate file\n"
  	"-x                do not reset the clock if off by more than one second\n"
@@ -119,7 +119,7 @@ Enable a command line option for step at startup only.
  	"-O NUMBER         do not reset the clock if offset is more than NUMBER nanoseconds\n"
  	"-t                do not make any changes to the system clock\n"
  	"-M NUMBER         do not accept delay values of more than NUMBER nanoseconds\n"
-@@ -1178,6 +1172,18 @@ ptpdStartup(int argc, char **argv, Integ
+@@ -1185,6 +1179,18 @@ ptpdStartup(int argc, char **argv, Integ
          	return (0);
        	 }
           break;
