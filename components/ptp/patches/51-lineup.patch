@@ -1,0 +1,27 @@
+This path causes the field width of clock identity field to remain constant.
+The output is in CSV format, but this field is at the beginning of the line
+and varies wildly, it means that the columns do not line up and it is nearly
+impossible to just look at the output and determine what it means without
+importing it into a spread sheet. Since the field itself has internal
+delimiters the overall format of the output is maintained.
+
+The upstream project is moribund and this patch will not be submitted upstream.
+
+--- ptpd-2.2.0/src/dep/sys.c
++++ ptpd-2.2.0/src/dep/sys.c
+@@ -579,15 +579,11 @@ displayStats(RunTimeOpts * rtOpts, PtpCl
+        * if grandmaster ID differs from parent port ID then
+        * also print GM ID
+        */
+-      if (memcmp(ptpClock->grandmasterIdentity,
+-                 ptpClock->parentPortIdentity.clockIdentity,
+-                 CLOCK_IDENTITY_LENGTH)) {
+         len += snprint_ClockIdentity(sbuf + len, 
+ 					sizeof(sbuf) - len,
+                                      ptpClock->grandmasterIdentity, 
+ 				     " GM:");
+         if (len > sizeof(sbuf)) len = sizeof(sbuf);
+-      }
+ 
+       len += snprintf(sbuf + len, sizeof(sbuf) - len, ", ");
+       if (len > sizeof(sbuf)) len = sizeof(sbuf);
