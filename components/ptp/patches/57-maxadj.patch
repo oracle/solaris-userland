@@ -1,0 +1,58 @@
+This patch caps the maximum adjustment frequency to the lower of both
+individual adjustment frequencies when time mode "both" is in use or the NIC
+max adjustment frequecy when time mode "NIC" is in use. Prior to this the
+system maximum adjustment was always used. 
+
+This patch will not be submitted to the community as this fork of ptpd is now
+moribund.
+
+--- ptpd-2.2.0/src/dep/servo.c
++++ ptpd-2.2.0/src/dep/servo.c
+@@ -456,11 +456,13 @@ void servo_perform_clock_step(RunTimeOpt
+ void warn_operator_fast_slewing(RunTimeOpts * rtOpts, PtpClock * ptpClock, LongDouble adj)
+ {
+ 	LongDouble max_adj;
+-	if ((rtOpts->time_mode == TIME_NIC) || (rtOpts->time_mode == TIME_BOTH))
++	max_adj = (ADJ_FREQ_MAX_NIC < ADJ_FREQ_MAX_SYSTEM) ?
++	    ADJ_FREQ_MAX_NIC : ADJ_FREQ_MAX_SYSTEM;
++	if (rtOpts->time_mode == TIME_NIC)
+ 		max_adj = ADJ_FREQ_MAX_NIC;
+-	else
++	else if (rtOpts->time_mode == TIME_SYSTEM)
+ 		max_adj = ADJ_FREQ_MAX_SYSTEM;
+-	
++
+ 	if ((adj >= max_adj) || (adj <= -max_adj)) {
+ 		if(ptpClock->warned_operator_fast_slewing == 0) {
+ 			ptpClock->warned_operator_fast_slewing = 1;
+@@ -585,11 +587,13 @@ updateClock(RunTimeOpts * rtOpts, PtpClo
+ 				 */
+ #if !defined(__APPLE__)
+ 				LongDouble max_adj;
+-				if ((rtOpts->time_mode == TIME_NIC) || (rtOpts->time_mode == TIME_BOTH))
++				max_adj = (ADJ_FREQ_MAX_NIC < ADJ_FREQ_MAX_SYSTEM) ?
++				    ADJ_FREQ_MAX_NIC : ADJ_FREQ_MAX_SYSTEM;
++				if (rtOpts->time_mode == TIME_NIC)
+ 					max_adj = ADJ_FREQ_MAX_NIC;
+-				else
++				else if (rtOpts->time_mode == TIME_SYSTEM)
+ 					max_adj = ADJ_FREQ_MAX_SYSTEM;
+-				
++
+ 				adj = (ptpClock->offsetFromMaster.nanoseconds > 0.0)?
+ 					max_adj : -max_adj;
+ 
+@@ -637,9 +641,11 @@ updateClock(RunTimeOpts * rtOpts, PtpClo
+ 		ptpClock->observed_drift += 
+ 			(LongDouble)ptpClock->offsetFromMaster.nanoseconds / (LongDouble)ai;
+ 
+-		if ((rtOpts->time_mode == TIME_NIC) || (rtOpts->time_mode == TIME_BOTH))
++		max_adj = (ADJ_FREQ_MAX_NIC < ADJ_FREQ_MAX_SYSTEM) ?
++		    ADJ_FREQ_MAX_NIC : ADJ_FREQ_MAX_SYSTEM;
++		if (rtOpts->time_mode == TIME_NIC)
+ 			max_adj = ADJ_FREQ_MAX_NIC;
+-		else
++		else if (rtOpts->time_mode == TIME_SYSTEM)
+ 			max_adj = ADJ_FREQ_MAX_SYSTEM;
+ 		
+ 		/* clamp the accumulator to ADJ_FREQ_MAX for sanity */
