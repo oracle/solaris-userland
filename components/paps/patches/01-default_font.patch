@@ -1,10 +1,11 @@
 Solaris specific: modify default font to Courier to match mp(1) output
 
 diff --git a/src/paps.1 b/src/paps.1
+index b804db3..b997556 100644
 --- a/src/paps.1
 +++ b/src/paps.1
-@@ -48,7 +48,7 @@
- Format output into \fIcl\fR columns. Default is 1.
+@@ -50,7 +50,7 @@ Format output into \fIcl\fR columns. Default is 1.
+ Please notice this option isn't related to the terminal length as in a "80 columns terminal".
  .TP
  .B \-\-font=desc
 -Use font based on description \fIdesc\fR. Default is \fB"Monospace 12"\fR.
@@ -13,9 +14,10 @@ diff --git a/src/paps.1 b/src/paps.1
  .IP
  "[family-list] [style-options] [size]"
 diff --git a/src/paps.c b/src/paps.c
+index d7315d7..4e28d45 100644
 --- a/src/paps.c
 +++ b/src/paps.c
-@@ -54,10 +54,15 @@
+@@ -57,10 +57,15 @@ int wcwidth(wchar_t c);
  #endif
  
  #define BUFSIZE 1024
@@ -35,7 +37,7 @@ diff --git a/src/paps.c b/src/paps.c
  #define MAKE_FONT_NAME(f,s)     f " " s
  
  /*
-@@ -464,7 +469,7 @@
+@@ -551,7 +556,7 @@ int main(int argc, char *argv[])
      {"columns", 0, 0, G_OPTION_ARG_INT, &num_columns,
       N_("Number of columns output. (Default: 1)"), "NUM"},
      {"font", 0, 0, G_OPTION_ARG_STRING, &font,

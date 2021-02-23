@@ -1,33 +1,36 @@
-Solaris specific: modify margin default values to match mp(1) output
+Solaris specific: modify margin default values to match mp(1) output.
+mp was EOLed, but we don't want to change behavior.
 
 diff --git a/src/paps.1 b/src/paps.1
+index b997556..7c2bc81 100644
 --- a/src/paps.1
 +++ b/src/paps.1
-@@ -251,16 +251,16 @@
- .RE
+@@ -256,16 +256,16 @@ Scalable Vector Graphics
+ Each postscript point equals to 1/72 of an inch. 36 points are 1/2 of an inch.
  .TP
  .B \-\-bottom-margin=bm
--Set bottom margin in postscript points (1/72 inch). Default is 36.
-+Set bottom margin in postscript points (1/72 inch). Default is 55.
+-Set bottom margin. Default is 36 postscript points.
++Set bottom margin. Default is 55 postscript points.
  .TP
  .B \-\-top-margin=tm
--Set top margin. Default is 36.
-+Set top margin. Default is 55.
+-Set top margin. Default is 36 postscript points.
++Set top margin. Default is 55 postscript points.
  .TP
  .B \-\-left-margin=lm
--Set left margin. Default is 36.
-+Set left margin. Default is 55.
+-Set left margin. Default is 36 postscript points.
++Set left margin. Default is 55 postscript points.
  .TP
  .B \-\-right-margin=rm
--Set right margin. Default is 36.
-+Set right margin. Default is 55.
+-Set right margin. Default is 36 postscript points.
++Set right margin. Default is 55 postscript points.
  .TP
- .B \-\-header
- Draw page header with document name, date and page number for each page. Header
+ .B \-\-gutter-width=gw
+ Set gutter width. Default is 40 postscript points.
 diff --git a/src/paps.c b/src/paps.c
+index 4e28d45..77db5c8 100644
 --- a/src/paps.c
 +++ b/src/paps.c
-@@ -71,10 +71,10 @@
+@@ -74,10 +74,10 @@ int wcwidth(wchar_t c);
   */
  #define	CAIRO_COMMENT_MAX       255
  
@@ -42,7 +45,7 @@ diff --git a/src/paps.c b/src/paps.c
  
  
  typedef enum {
-@@ -489,13 +489,13 @@
+@@ -578,13 +578,13 @@ int main(int argc, char *argv[])
      {"format", 0, 0, G_OPTION_ARG_CALLBACK, _paps_arg_format_cb,
       N_("Set output format [pdf, svg, ps]. (Default: ps)"), "FORMAT"},
      {"bottom-margin", 0, 0, G_OPTION_ARG_INT, &bottom_margin,
@@ -57,6 +60,6 @@ diff --git a/src/paps.c b/src/paps.c
      {"left-margin", 0, 0, G_OPTION_ARG_INT, &left_margin,
 -     N_("Set left margin. (Default: 36)"), "NUM"},
 +     N_("Set left margin. (Default: 55)"), "NUM"},
+     {"gutter-width", 0, 0, G_OPTION_ARG_INT, &gutter_width,
+      N_("Set gutter width. (Default: 40)"), "NUM"},
      {"header", 0, 0, G_OPTION_ARG_NONE, &do_draw_header,
-      N_("Draw page header for each page."), NULL},
-     {"footer", 0, 0, G_OPTION_ARG_NONE, &do_draw_footer,

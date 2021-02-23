@@ -20,14 +20,14 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
-BUILD_BITS= 64
-COMPILER=gcc
+BUILD_BITS= 		64
+COMPILER=		gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		paps
-COMPONENT_VERSION=	0.20160729
+COMPONENT_VERSION=	0.20201219
 
 # due to 27244651 the IPS version should be the solaris version
 IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
@@ -37,30 +37,20 @@ COMPONENT_ARCHIVE_SRC=	git
 COMPONENT_BUGDB=	utility/paps
 COMPONENT_ANITYA_ID=	2592
 
-GIT_REPO=	https://github.com/dov/paps
-GIT_COMMIT_ID=	37e6ca1
-GIT_HASH=	sha256:e34445a564718dd1e680b931fc96c88cbeb911c86e2ba28c7ce38eb770768e3a
+GIT_REPO=		https://github.com/dov/paps
+GIT_COMMIT_ID=		c2151c65632404463176b3ae2e2b666d706b25f0
 
-TPNO=			40378
+TPNO=			67111
+
+BUILD_STYLE=		meson
 
 TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk
 
-COMPONENT_PREP_ACTION += ( cd $(@D) ; intltoolize --copy --force --automake; autoreconf -fiv );
-
-
-#CONFIGURE_OPTIONS += --with-xgettext=$(USRBINDIR)/gxgettext
-
-# Makefile.am files of this component are not compatible with Solaris make.
-# Use GNU make to avoid the configuration error when makefile fragments are processed.
-CONFIGURE_OPTIONS += MAKE=$(GMAKE)
-
-CONFIGURE_ENV += MSGFMT="/usr/bin/gmsgfmt"
-CONFIGURE_ENV += XGETTEXT="/usr/bin/gxgettext"
-#CONFIGURE_ENV += ac_cv_path_XGETTEXT="/usr/bin/gxgettext"
-
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += text/gnu-gettext
