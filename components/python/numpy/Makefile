@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 COMPILER =		gcc
@@ -50,9 +50,6 @@ COMPONENT_ARCHIVE_HASH_OLD= \
 COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
 
 TPNO_OLD=		42611
-
-# This component is not yet built for Python 3.9
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.9)
 
 # This component is delivered in two different versions because
 # the newer one is no longer Python 2.7 compatible.
