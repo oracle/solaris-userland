@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 <include ../generate/common.transform>
@@ -28,6 +28,21 @@
 # We are not shipping .po locale files
 <transform file path=.+/LC_MESSAGES/django(|js).po -> drop>
 
-# Handle django-admin file/link
-<transform file path=usr/bin/django-admin$ -> emit link path=usr/bin/django-admin target=django-admin-$(PYVER) mediator=python mediator-version=$(PYVER)>
-<transform file path=usr/bin/django-admin$ -> drop>
+# Drop now deprecated django-admin.py
+<transform file path=usr/bin/django-admin.py$ -> drop>
+
+# Drop files handled via the .static file
+<transform file path=.*/django/contrib/admin/static/admin/js/actions.min.js$ -> drop>
+<transform file path=.*/django/contrib/admin/static/admin/js/collapse.min.js$ -> drop>
+<transform file path=.*/django/contrib/admin/static/admin/js/inlines.min.js$ -> drop>
+<transform file path=.*/django/contrib/admin/static/admin/js/prepopulate.min.js$ -> drop>
+<transform file path=.*/django/contrib/admin/static/admin/js/timeparse.js$ -> drop>
+
+<transform file path=.*/django/contrib/admin/templatetags/admin_static.py$ -> drop>
+<transform file path=.*/django/contrib/postgres/fields/mixins.py$ -> drop>
+<transform file path=.*/django/contrib/staticfiles/templatetags/.*$ -> drop>
+<transform file path=.*/django/db/backends/oracle/compiler.py$ -> drop>
+<transform file path=.*/django/db/backends/postgresql/utils.py$ -> drop>
+<transform file path=.*/django/db/backends/postgresql_psycopg2/.*$ -> drop>
+<transform file path=.*/django/utils/lru_cache.py$ -> drop>
+<transform file path=.*/django/utils/six.py$ -> drop>

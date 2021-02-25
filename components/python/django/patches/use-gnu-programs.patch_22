@@ -3,20 +3,20 @@ suitable for upstream contribution.
 
 It also addresses similar problem with xgettext.
 
---- Django-3.2/django/core/management/commands/compilemessages.py
-+++ Django-3.2/django/core/management/commands/compilemessages.py
-@@ -32,7 +32,7 @@ class Command(BaseCommand):
+--- Django-2.2.9/django/core/management/commands/compilemessages.py
++++ Django-2.2.9/django/core/management/commands/compilemessages.py
+@@ -29,7 +29,7 @@ class Command(BaseCommand):
  
-     requires_system_checks = []
+     requires_system_checks = False
  
 -    program = 'msgfmt'
 +    program = '/usr/gnu/bin/msgfmt'
      program_options = ['--check-format']
  
      def add_arguments(self, parser):
---- Django-3.2/django/core/management/commands/makemessages.py
-+++ Django-3.2/django/core/management/commands/makemessages.py
-@@ -376,7 +376,7 @@ class Command(BaseCommand):
+--- Django-2.2.9/django/core/management/commands/makemessages.py
++++ Django-2.2.9/django/core/management/commands/makemessages.py
+@@ -378,7 +378,7 @@ class Command(BaseCommand):
          if locales:
              check_programs('msguniq', 'msgmerge', 'msgattrib')
  
@@ -25,7 +25,7 @@ It also addresses similar problem with xgettext.
  
          try:
              potfiles = self.build_potfiles()
-@@ -404,7 +404,7 @@ class Command(BaseCommand):
+@@ -398,7 +398,7 @@ class Command(BaseCommand):
          # Gettext tools will output system-encoded bytestrings instead of UTF-8,
          # when looking up the version. It's especially a problem on Windows.
          out, err, status = popen_wrapper(
@@ -34,7 +34,7 @@ It also addresses similar problem with xgettext.
              stdout_encoding=DEFAULT_LOCALE_ENCODING,
          )
          m = re.search(r'(\d+)\.(\d+)\.?(\d+)?', out)
-@@ -532,7 +532,7 @@ class Command(BaseCommand):
+@@ -548,7 +548,7 @@ class Command(BaseCommand):
          if self.domain == 'djangojs':
              is_templatized = build_file.is_templatized
              args = [
@@ -43,7 +43,7 @@ It also addresses similar problem with xgettext.
                  '-d', self.domain,
                  '--language=%s' % ('C' if is_templatized else 'JavaScript',),
                  '--keyword=gettext_noop',
-@@ -544,7 +544,7 @@ class Command(BaseCommand):
+@@ -560,7 +560,7 @@ class Command(BaseCommand):
              ]
          elif self.domain == 'django':
              args = [

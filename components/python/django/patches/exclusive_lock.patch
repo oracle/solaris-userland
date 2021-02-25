@@ -3,9 +3,9 @@ on non-writable file.
 
 This is a Solaris specific patch.
 
---- Django-2.2.11/django/test/testcases.py
-+++ Django-2.2.11/django/test/testcases.py
-@@ -1506,7 +1506,7 @@ class SerializeMixin:
+--- Django-3.2/django/test/testcases.py
++++ Django-3.2/django/test/testcases.py
+@@ -1593,7 +1593,7 @@ class SerializeMixin:
              raise ValueError(
                  "{}.lockfile isn't set. Set it to a unique value "
                  "in the base class.".format(cls.__name__))
@@ -14,3 +14,13 @@ This is a Solaris specific patch.
          locks.lock(cls._lockfile, locks.LOCK_EX)
          super().setUpClass()
  
+--- Django-3.2/tests/files/tests.py
++++ Django-3.2/tests/files/tests.py
+@@ -171,6 +171,7 @@ class FileTests(unittest.TestCase):
+             test_file.seek(0)
+             self.assertEqual(test_file.read(), (content * 2).encode())
+ 
++    @unittest.skip("Case assumptions are not correct on Solaris")
+     def test_exclusive_lock(self):
+         file_path = Path(__file__).parent / 'test.png'
+         with open(file_path) as f1, open(file_path) as f2:
