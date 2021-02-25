@@ -125,6 +125,7 @@ COMPONENT_TEST_ENV += F90="$(GCC_ROOT)/bin/gfortran -m$(BITS)"
 COMPONENT_TEST_TRANSFORMS = '-n -e "s/, [0-9]* warnings//" -e "s/\(in \).*\(seconds\)/\1x \2/p"'
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(PYTHON_VERSION)-$(BITS).$(MACH).master
 
+REQUIRED_PACKAGES += library/python/cython
 REQUIRED_PACKAGES += library/python/nose
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/math
