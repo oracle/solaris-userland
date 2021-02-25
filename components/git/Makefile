@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # Studio compiler failed to build ref-filter.c:
@@ -29,15 +29,15 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		git
-COMPONENT_VERSION=	2.19.5
+COMPONENT_VERSION=	2.30.1
 COMPONENT_PROJECT_URL=	http://git-scm.com/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:eb27f94b9460e3bdccbd2c31bf700a2a9e275a1b4d7491269503881954aa74d8
+    sha256:f988a8a095089978dab2932af4edb22b4d7d67d67b81aaa1986fa29ef45d9467
 COMPONENT_ARCHIVE_URL=	https://www.kernel.org/pub/software/scm/git/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	5350
 
-TPNO=			58530
+TPNO=			67233
 
 #
 # man pages are a separate archive
@@ -45,7 +45,7 @@ TPNO=			58530
 COMPONENT_SRC_1 =	$(COMPONENT_NAME)-manpages-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_1 =	$(COMPONENT_SRC_1).tar.xz
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:e6c144d234ff644a5716485cf1aaf64e48103bfdb20a3e0c6d2dc939b4a173d1
+    sha256:30fc7ecbd964bb19a2ca1a695fe7af430740e09bd1c134cd3730783abec5b904
 COMPONENT_ARCHIVE_URL_1 = https://www.kernel.org/pub/software/scm/git/$(COMPONENT_ARCHIVE_1)
 UNPACK_ARGS_1 =		-r $(COMPONENT_SRC_1)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_1)
