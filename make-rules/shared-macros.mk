@@ -766,9 +766,9 @@ PYTHON.3.9.32 =	$(USRBIN.32)/python3.9
 PYTHON.3.9.64 =	$(USRBIN.32)/python3.9
 PYTHON.3.9 =	$(USRBIN.32)/python3.9
 
-PYTHON.32 =	$(PYTHON.$(PYTHON_VERSION).32)
-PYTHON.64 =	$(PYTHON.$(PYTHON_VERSION).64)
-PYTHON =	$(PYTHON.$(PYTHON_VERSION).$(BITS))
+PYTHON.32 ?=	$(PYTHON.$(PYTHON_VERSION).32)
+PYTHON.64 ?=	$(PYTHON.$(PYTHON_VERSION).64)
+PYTHON ?=	$(PYTHON.$(PYTHON_VERSION).$(BITS))
 
 # The default is site-packages, but that directory belongs to the end-user.
 # Modules which are shipped by the OS but not with the core Python distribution
@@ -895,7 +895,7 @@ TCLSH =		$(TCLSH.$(TCL_VERSION).$(MACH).$(BITS))
 CCSMAKE =	/usr/ccs/bin/make
 DOXYGEN =	/usr/bin/doxygen
 ELFEDIT =	/usr/bin/elfedit
-GMAKE =		/usr/gnu/bin/make
+GMAKE ?=	/usr/gnu/bin/make
 GPATCH =	/usr/bin/patch
 PATCH_LEVEL =	1
 GPATCH_BACKUP =	--backup --version-control=numbered

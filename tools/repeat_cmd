@@ -1,0 +1,100 @@
+#!/bin/bash
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+
+
+print_help() {
+cat << REPEAT_CMD_HELP
+Utility runs a command multiple times until it
+successes or fails in a given number of attempts.
+
+Usage: $0 <NUMBER-OF-ATTEMPTS> <EXEC-TIMEOUT> <CMD>
+
+<NUMBER-OF-ATTEMPTS> is a number of attempts the command
+is executed until it definitively fails with an error.
+<EXEC-TIMEOUT> determines the time allocation for each attempt.
+When the time is exceeced, the executed command is killed.
+Append s, m, or h suffix to specify seconds, minutes, or hours.
+<CMD> is a program with arguments to run.
+REPEAT_CMD_CLEANUP is an environment variable that
+contains a cleanup program to run after the failure.
+
+Note that it returns 0 if the command successfully finished,
+otherwise, the last error code is returned.
+REPEAT_CMD_HELP
+}
+
+for arg in "$@"; do
+	if [ "$arg" = "-h" ] || [ "$arg" = "--help" ]; then
+		print_help
+		exit 0
+	fi
+done
+
+if [ "$#" -lt 3 ]; then
+	echo "Insufficient number of arguments!\n" 1>&2
+	print_help
+	exit 1
+fi
+
+n="$1"; shift
+timeout="$1"; shift
+cmd=("${@}")
+
+if ! [[ $n =~ ^[1-9][0-9]*$ ]]; then
+  echo "The number of attempts has to be a positive number!\n" 1>&2
+  print_help
+  exit 1
+fi
+
+if ! [[ ${timeout} =~ ^[1-9][0-9]*[smh]?$ ]]; then
+  echo "Please specify a valid time limit (possible suffixes are s, m, and h).\n" 1>&2
+  print_help
+  exit 1
+fi
+
+for i in $(seq 1 $n); do
+  echo "Started attempt $i to run '${cmd[@]}'."
+  timeout --kill-after=30s ${timeout} "${cmd[@]}"
+  return_code=$?
+  if [ "${return_code}" -eq 0 ]; then
+    # Program successfully finished in a given time limit.
+    break
+  else
+    # Program failed with an error code or the time limit exceeded.
+    echo "'${cmd[@]}' failed with error code ${return_code}!" 1>&2
+    if [ -n "${REPEAT_CMD_CLEANUP}" ]; then
+      echo "Running a cleanup program to restore the state." 1>&2
+      ${REPEAT_CMD_CLEANUP}
+      if [ $? -ne 0 ]; then
+        echo "Failed to run cleanup program, terminating prematurely..." 1>&2
+        exit 2
+      fi
+    fi
+    echo ""
+  fi
+done
+
+exit "${return_code}"

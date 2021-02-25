@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 # Only executable scripts and bytecode files.
@@ -48,12 +48,16 @@ ifeq ($(MACH),sparc)
 $(SKIP_TEST_AT_TOP_LEVEL)
 endif
 
-# This is just a workaround to a problem we occasionally see on sparc. The
-# build stops and never finishes. The process erl_child_setup seems to be
-# stuck. Elixir normally builds under five minutes, so 15 minutes timeout
-# should be more than enough. This change makes sure that the automated builds
-# are not halted but rather fail quickly.
-ENV=timeout --kill-after=30s 15m /usr/bin/env
+# This is just a workaround to a problem we mostly see on sparc.
+# The build stops and never finishes in about 8 % of cases. The process
+# erl_child_setup seems to be stuck. Elixir normally builds under five
+# minutes, so 15 minutes timeout should be more than enough. This change
+# makes sure that elixir is built in 4 attempts and if all attempts fail,
+# then there is about 99.995 % probability that there is a problem in
+# code or Common Build Environment...
+GMAKE := $(WS_TOOLS)/repeat_cmd 4 15m $(GMAKE)
+COMPONENT_BUILD_ENV += REPEAT_CMD_CLEANUP="gmake clean"
+
 include $(WS_MAKE_RULES)/common.mk
 
 # Elixir does not like cloney, so a simple copy is used instead.
@@ -69,7 +73,7 @@ COMPONENT_INSTALL_ENV +=	DESTDIR=$(PROTO_DIR)
 COMPONENT_INSTALL_ENV +=	MANDIR=/usr/share/man
 COMPONENT_INSTALL_ENV +=	PREFIX=$(USRDIR)
 
-COMPONENT_TEST_TARGETS = test
+COMPONENT_TEST_CMD = /usr/bin/gmake test
 COMPONENT_TEST_ENV += LC_ALL=en_US.UTF-8
 # Remove progress dots, make output, all empty lines, and git lines.
 COMPONENT_TEST_TRANSFORMS += '-e "/\.\./d" -e "/^make/d" -e "/^$$/d" -e "/git_repo/d"'

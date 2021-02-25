@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =	64
@@ -51,6 +51,14 @@ endif
 
 # The unit tests failed to start.
 $(SKIP_TEST_AT_TOP_LEVEL)
+
+# Rust spuriously fails to build from time to time. To avoid the full build
+# failure, rust is built in three attempts and each is assigned 5 hours
+# (sequential build takes 2.5 hours). Note that rust typically fails in the
+# first 10 minutes, therefore, the longer time limit does not significantly
+# accumulate to the total build time of Userland gate.
+GMAKE := $(WS_TOOLS)/repeat_cmd 3 5h $(GMAKE)
+COMPONENT_BUILD_ENV += REPEAT_CMD_CLEANUP="gmake clean"
 
 include $(WS_MAKE_RULES)/common.mk
 

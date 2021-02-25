@@ -567,3 +567,56 @@ PARFAIT_VER version of the parfait to use. Should be used during the setup, e.g.
 
 PARFAIT_ROOT directory where the parfait is installed, e.g.,
  gmake setup PARFAIT_ROOT=/ws/on-tools/parfait PARFAIT_VER=parfait-tools-2.3.0
+
+How to handle spurious build failures or hangs
+==============================================
+
+Unfortunately, Userland gate contains components that might spuriously fail or
+hang during their build. It is not realistic to fix them all, therefore, a hack
+to enable multiple build attempts with a time limit was added. The idea is to
+prepend a build command with repeat_cmd script that handles all the procedure.
+
+For example, consider the following simple uses.
+
+$ $(hg root)/tools/repeat_cmd 3 5s sleep 4
+> Started attempt 1 to run 'sleep 4'.
+
+$ REPEAT_CMD_CLEANUP="echo Recovering from failure..." \
+	$(hg root)/tools/repeat_cmd 3 5s sleep 6
+> Started attempt 1 to run 'sleep 6'.
+> 'sleep 6' failed with error code 124!
+> Running a cleanup program to restore the state.
+> Recovering from failure...
+>
+> Started attempt 2 to run 'sleep 6'.
+> 'sleep 6' failed with error code 124!
+> Running a cleanup program to restore the state.
+> Recovering from failure...
+>
+> Started attempt 3 to run 'sleep 6'.
+> 'sleep 6' failed with error code 124!
+> Running a cleanup program to restore the state.
+> Recovering from failure...
+>
+
+You can see that we specified 3 attempts with 5 seconds time limit.
+If a command fails, the script calls a cleanup function specified
+in REPEAT_CMD_CLEANUP environment variable. To use this trick in
+a component, the following modifications are required.
+
+- Prepend 'repeat_cmd <n> <t>' to GMAKE, NINJA, ANT, WAF, ...
+- Optionally setup a cleanup function, e.g., 'gmake clean'.
+- Explicitly specify a test command to avoid inadvertent repeated runs.
+
+As an example, consider a fragment from elixir's Makefile.
+GMAKE := $(WS_TOOLS)/repeat_cmd 4 15m $(GMAKE)
+COMPONENT_BUILD_ENV += REPEAT_CMD_CLEANUP="gmake clean"
+...
+COMPONENT_TEST_CMD = /usr/bin/gmake test
+
+We have overwritten GMAKE variable to enable multiple build attempts.
+When a build fails, the cleanup function removes the generated files.
+Note that the modification of GMAKE variable is global, therefore,
+it influences all the Makefile targets including 'gmake test'.
+As it is probably not intended to run unit tests multiple times, we
+have to state a path to gmake in COMPONENT_TEST_CMD variable explicitly.

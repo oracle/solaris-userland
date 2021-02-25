@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
 # Built in SFW with gcc and builds cleanly now only with gcc
@@ -74,6 +74,15 @@ SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 
 # The unit tests failed to start.
 $(SKIP_TEST_AT_TOP_LEVEL)
+
+# This is just a workaround to a problem we occasionally see on sparc.
+# The build stops and never finishes. The process erl_child_setup seems to be
+# stuck. Erlang normally builds in about 75 minutes (one job), so 180 minutes
+# timeout should be more than enough. This change makes sure that Erlang is built
+# in 3 attempts and if all attempts fail, then it is almost sure that there
+# is a problem in Erlang code or Common Build Environment.
+GMAKE := $(WS_TOOLS)/repeat_cmd 3 3h $(GMAKE)
+COMPONENT_BUILD_ENV += REPEAT_CMD_CLEANUP="gmake clean"
 
 include $(WS_MAKE_RULES)/common.mk
 

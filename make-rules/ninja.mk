@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2021, Oracle and/or its affiliates.
 #
 #
 # Rules and Macros for building open source software that builds with
@@ -42,7 +42,7 @@
 #	COMPONENT_BUILD_TARGETS, COMPONENT_INSTALL_TARGETS
 #
 
-NINJA =		/usr/bin/ninja
+NINJA ?=		/usr/bin/ninja
 
 COMPONENT_INSTALL_ENV += DESTDIR=$(PROTO_DIR)
 COMPONENT_INSTALL_ARGS += $(COMPONENT_INSTALL_ARGS.$(BITS))

@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 #
 # Rules and Macros for building opens source software that uses the waf
@@ -45,7 +45,7 @@
 #
 
 # Defaults to looking for waf script in top level of cloned source
-WAF = $(PYTHON) waf
+WAF ?= $(PYTHON) waf
 
 CONFIGURE_PREFIX =	/usr
 
