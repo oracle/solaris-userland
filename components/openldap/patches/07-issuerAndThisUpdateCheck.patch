@@ -1,0 +1,21 @@
+Patch provided by upstream, should be able to remove at next release.
+
+commit 9badb73425a67768c09bcaed1a9c26c684af6c30
+Author: Howard Chu <hyc@openldap.org>
+Date:   Sat Feb 6 20:52:06 2021 +0000
+
+    ITS#9454 fix issuerAndThisUpdateCheck
+
+diff --git a/servers/slapd/schema_init.c b/servers/slapd/schema_init.c
+index 31be1154e..8b1e25539 100644
+--- a/servers/slapd/schema_init.c
++++ b/servers/slapd/schema_init.c
+@@ -3900,6 +3900,8 @@ issuerAndThisUpdateCheck(
+ 					break;
+ 				}
+ 			}
++			if ( tu->bv_len < STRLENOF("YYYYmmddHHmmssZ") ) return LDAP_INVALID_SYNTAX;
++
+ 			x.bv_val += tu->bv_len + 1;
+ 			x.bv_len -= tu->bv_len + 1;
+ 
