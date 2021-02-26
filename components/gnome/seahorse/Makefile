@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		seahorse
-COMPONENT_VERSION=	3.32.2
+COMPONENT_VERSION=	3.38.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Seahorse
 COMPONENT_ARCHIVE_HASH= \
-	sha256:9de021088fc9233087ef7759d9762d86b8162723f403417bdad29d4feb6f1f35
+	sha256:242b1e7e5971dd5727ccd25d51537102f5bad143f2366a82437bf0bbda9ebcef
 COMPONENT_BUGDB=	gnome/security
 COMPONENT_ANITYA_ID=	9548
 
-TPNO=			54131
+TPNO=			65155
 
 BUILD_STYLE=            meson
 
@@ -55,6 +55,7 @@ REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
+REQUIRED_PACKAGES += library/desktop/libhandy
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gcr
 REQUIRED_PACKAGES += library/gnome/libsecret

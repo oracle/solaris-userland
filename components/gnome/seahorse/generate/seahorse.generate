@@ -18,7 +18,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 # Transform to get rid of pkglint errors like 64-bit object in 32-bit path
@@ -34,3 +34,7 @@
     set mode 0555>
 # so we can have relative symlinks (see seahorse.static)
 <transform link path=usr/share/help/.*/seahorse.png -> drop>
+
+# Transform the target path in the links
+<transform link path=usr/share/help/([^/]+)/(.*) \
+    target=/usr/share/help/([^/]+)/.* -> set target ../../../%<3>/%<2>>
