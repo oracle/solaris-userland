@@ -72,6 +72,7 @@ CONFIGURE_OPTIONS += --enable-ogg
 CONFIGURE_OPTIONS += --enable-theora
 CONFIGURE_OPTIONS += --enable-vorbis
 CONFIGURE_OPTIONS += --with-x
+CONFIGURE_OPTIONS += --disable-examples
 
 # Makefile.am files of this component are not compatible with Solaris make.
 # Use GNU make to avoid the configuration error when makefile fragments are processed.
@@ -115,6 +116,7 @@ REQUIRED_PACKAGES += library/desktop/libvisual
 REQUIRED_PACKAGES += library/desktop/orc
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += library/sdl
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += service/opengl/ogl-select
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

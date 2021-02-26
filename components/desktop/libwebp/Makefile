@@ -51,6 +51,8 @@ COMPONENT_PREP_ACTION += ( cd $(@D); autoreconf -fiv);
 
 # needs libgif, so disabling for now
 CONFIGURE_OPTIONS += --disable-gif
+# build of extras is failing on SDL2
+CONFIGURE_OPTIONS += --disable-sdl
 CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += --enable-gl
 CONFIGURE_OPTIONS += --enable-threading

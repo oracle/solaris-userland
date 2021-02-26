@@ -50,6 +50,7 @@ include $(WS_MAKE_RULES)/common.mk
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
 CONFIGURE_OPTIONS += --disable-static
+CONFIGURE_OPTIONS += --disable-examples
 LDFLAGS += -lm
 
 # for the tests
@@ -66,4 +67,5 @@ COMPONENT_TEST_TRANSFORMS += \
 
 REQUIRED_PACKAGES += codec/libogg
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
+REQUIRED_PACKAGES += library/sdl
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
