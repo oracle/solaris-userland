@@ -1,0 +1,15 @@
+Direct Rendering Infrastructure (DRI)
+
+The DRI subsystem, the i915 kernel driver for Intel graphics, and associated
+modules for the Xorg server and Mesa library might not be available in a
+future update of Oracle Solaris 11.4.
+
+Users of Intel graphics from the 910 chipset up through, and including, the
+Intel Core 4th Generation ("Haswell") CPU will need to use the Xorg VESA
+driver and Mesa swrast driver instead. If their system has not had manual
+configuration applied, this change will happen automatically. If an Xorg
+configuration file exists, then it may need to be edited it to remove the
+usage of the intel or modesetting drivers for Xorg, as both rely on the
+i915 kernel drivers.
+
+Users of other graphics devices will not be affected. 
