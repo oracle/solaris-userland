@@ -8,18 +8,10 @@ SAAJ API should not be needed as we still build with JDK 8
 (and not with JDK 11 or above).
 
 diff --git a/build.xml b/build.xml
-index 5db4081..10c97bd 100644
+index 1738091..8d123d8 100644
 --- a/build.xml
 +++ b/build.xml
-@@ -219,7 +219,6 @@
-   <!-- Classpaths -->
-   <path id="compile.classpath">
-     <pathelement location="${jdt.jar}"/>
--    <pathelement location="${saaj-api.jar}"/>
-   </path>
- 
-   <path id="tomcat.classpath">
-@@ -1078,8 +1077,6 @@
+@@ -1090,8 +1090,6 @@
    <target name="deploy" depends="package,build-docs,build-tomcat-jdbc,compile-webapp-examples"
            description="Default. Builds a working Tomcat instance">
  
@@ -28,7 +20,7 @@ index 5db4081..10c97bd 100644
      <!-- Copy scripts -->
      <copy todir="${tomcat.build}/bin">
        <fileset dir="bin">
-@@ -1851,12 +1848,6 @@
+@@ -1865,12 +1863,6 @@
        </fileset>
      </copy>
  
@@ -41,7 +33,7 @@ index 5db4081..10c97bd 100644
      <!-- platform README files -->
      <echo append="false" file="${tomcat.dist}/bin/x64/README">
  Apache Tomcat ${version} native binaries for Win64 AMD64/EMT64 platform.
-@@ -2753,16 +2744,6 @@ skip.installer property in build.properties" />
+@@ -2759,16 +2751,6 @@ skip.installer property in build.properties" />
    <target name="download-compile"
            description="Download components necessary to compile" >
  
@@ -58,24 +50,7 @@ index 5db4081..10c97bd 100644
      <!-- Download JDT (Eclipse compiler) -->
      <antcall target="downloadfile-2">
        <param name="sourcefile.1" value="${jdt.loc.1}"/>
-@@ -2774,16 +2755,6 @@ skip.installer property in build.properties" />
-       <param name="checksum.value" value="${jdt.checksum.value}"/>
-     </antcall>
- 
--    <!-- Download SAAJ API -->
--    <antcall target="downloadfile">
--      <param name="sourcefile" value="${saaj-api.loc}"/>
--      <param name="destfile" value="${saaj-api.jar}"/>
--      <param name="destdir" value="${saaj-api.home}"/>
--      <param name="checksum.enabled" value="${saaj-api.checksum.enabled}"/>
--      <param name="checksum.algorithm" value="${saaj-api.checksum.algorithm}"/>
--      <param name="checksum.value" value="${saaj-api.checksum.value}"/>
--    </antcall>
--
-   </target>
- 
-   <target name="download-test-compile"
-@@ -2867,16 +2838,6 @@ skip.installer property in build.properties" />
+@@ -2863,16 +2845,6 @@ skip.installer property in build.properties" />
    <target name="download-dist"
            description="Download additional components for a distribution" >
  
@@ -92,7 +67,7 @@ index 5db4081..10c97bd 100644
      <antcall target="downloadzip-2">
        <param name="sourcefile.1" value="${tomcat-native.win.1}"/>
        <param name="sourcefile.2" value="${tomcat-native.win.2}"/>
-@@ -2887,16 +2848,6 @@ skip.installer property in build.properties" />
+@@ -2883,16 +2855,6 @@ skip.installer property in build.properties" />
        <param name="checksum.value" value="${tomcat-native.win.checksum.value}"/>
      </antcall>
  

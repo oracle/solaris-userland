@@ -20,18 +20,18 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tomcat
-COMPONENT_VERSION=	8.5.60
+COMPONENT_VERSION=	8.5.64
 COMPONENT_PROJECT_URL=	https://tomcat.apache.org/
 COMPONENT_SRC_NAME=	apache-tomcat
 COMPONENT_SRC=		$(COMPONENT_SRC_NAME)-$(COMPONENT_VERSION)-src
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:945477c381d2ddd541ef81b2879b00344c080fad150cdd45334776f344f2c475
+    sha256:c75ab11a408557b20ceb887746431bb0440eb0f4126d33cc486238f4a8f0e180
 COMPONENT_ARCHIVE_URL=	https://archive.apache.org/dist/tomcat/tomcat-8/v$(COMPONENT_VERSION)/src/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	4987
@@ -42,7 +42,7 @@ COMPONENT_ARCHIVE_HASH_1= \
     sha256:f4be12aeaa50d54e883e75ee524c69ec9ed6a7c74bce4ef70d4adaff9a7e8e85
 COMPONENT_ARCHIVE_URL_1= http://archive.eclipse.org/eclipse/downloads/drops4/R-4.6.3-201703010400/$(COMPONENT_ARCHIVE_1)
 
-TPNO=			63585
+TPNO=			67706
 
 BUILD_STYLE= ant
 SMF_MANIFESTS= $(COMPONENT_DIR)/Solaris/http-tomcat.xml
