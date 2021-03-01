@@ -27,27 +27,74 @@ COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Twisted
-COMPONENT_VERSION=	18.9.0
+COMPONENT_VERSION=	21.2.0
 COMPONENT_PROJECT_URL=	http://twistedmatrix.com/trac/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:ab2d9e3c9cad99340d45a26d1432a695c7e2e804b95d5d907cf549509936ade8
+    sha256:15cff97b63a244e14170d3caaeebd61a3d141fa5c9a97f229127f0d583543960
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/twisted
 COMPONENT_ANITYA_ID=	4071
 
-TPNO=			54420
+TPNO=			67313
 
-# This component is not Python 3.9 ready yet
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.9)
+
+COMPONENT_NAME_OLD=		$(COMPONENT_NAME)
+COMPONENT_VERSION_OLD=	18.9.0
+COMPONENT_SRC_OLD=		$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
+COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.bz2
+COMPONENT_ARCHIVE_HASH_OLD=	\
+	sha256:ab2d9e3c9cad99340d45a26d1432a695c7e2e804b95d5d907cf549509936ade8
+COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
+
+TPNO_OLD=		54420
+
+
+# This component is delivered in two different versions because
+# the newer one is no longer Python 2.7 compatible.
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-# Disable the unit tests since the test results are outdated.
-$(SKIP_TEST_AT_TOP_LEVEL)
+# Convenience variables
+TARGET_27.32 = $(BUILD_DIR)/$(MACH32)-2.7/
+TARGET_27.64 = $(BUILD_DIR)/$(MACH64)-2.7/
+SOURCE_DIR_OLD = $(COMPONENT_DIR)/$(COMPONENT_SRC_OLD)
+
+# Targets updated for older version build
+$(TARGET_27.32).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
+$(TARGET_27.64).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
+
+$(TARGET_27.32).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
+$(TARGET_27.64).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
+
+$(TARGET_27.32).tested-and-compared: SOURCE_DIR = $(SOURCE_DIR_OLD)
+$(TARGET_27.64).tested-and-compared: SOURCE_DIR = $(SOURCE_DIR_OLD)
+$(TARGET_27.32).system-tested-and-compared: SOURCE_DIR = $(SOURCE_DIR_OLD)
+$(TARGET_27.64).system-tested-and-compared: SOURCE_DIR = $(SOURCE_DIR_OLD)
+
+$(MANIFEST_BASE)-twisted-27.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
+
+# Manifest convenience variables.
+$(MANIFEST_BASE)-twisted-27.mogrified: NEW_ONLY = \#
+$(MANIFEST_BASE)-twisted-37.mogrified: OLD_ONLY = \#
+$(MANIFEST_BASE)-twisted-39.mogrified: OLD_ONLY = \#
+
+PKG_MACROS += OLD_ONLY="$(OLD_ONLY)"
+PKG_MACROS += NEW_ONLY="$(NEW_ONLY)"
+
+# Meta package must have versions of older runtimes fixed
+FIX_MANIFEST_VERSIONS:
+	echo "<transform depend fmri=(.*)twisted-27@(.*) \
+		-> edit fmri $(COMPONENT_VERSION) $(COMPONENT_VERSION_OLD)>" | \
+	$(PKGMOGRIFY) /dev/fd/0 $(MANIFEST_BASE)-twisted.mogrified \
+		> $(MANIFEST_BASE)-twisted.mogrified-fixed ;
+	$(MV) $(MANIFEST_BASE)-twisted.mogrified-fixed \
+		$(MANIFEST_BASE)-twisted.mogrified
+
+$(MANIFEST_BASE)-twisted.mangled: FIX_MANIFEST_VERSIONS
 
 # Move executables into demo directory.
 COMPONENT_INSTALL_ARGS +=	--install-scripts=usr/demo/twisted-python$(PYTHON_VERSION)
@@ -62,14 +109,14 @@ COMPONENT_TEST_ARGS =	--verbose
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(PYTHON_VERSION)-$(BITS).$(MACH).master
 
 COMPONENT_TEST_TRANSFORMS += \
+	'-e "s/, [0-9]* warnings//" ' \
 	'-n -e "s/in .* seconds //p"' \
 	'-e "/::.*FAILED/p"' \
 	'-e "/::.*ERROR/p"'
 
-COMPONENT_SYSTEM_TEST_DIR=	$(COMPONENT_SRC)
-COMPONENT_SYSTEM_TEST_ENV=
-COMPONENT_SYSTEM_TEST_CMD=	/usr/demo/twisted-python$(PYTHON_VERSION)/trial
-COMPONENT_SYSTEM_TEST_ARGS=	twisted
+COMPONENT_SYSTEM_TEST_DIR=	$(SOURCE_DIR)/src/twisted/test
+COMPONENT_SYSTEM_TEST_CMD=	$(PYTHON) -m pytest
+COMPONENT_SYSTEM_TEST_ARGS=	--verbose
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -81,5 +128,8 @@ test:		$(TEST_32_and_64)
 
 system-test:    $(SYSTEM_TEST_32_and_64)
 
+REQUIRED_PACKAGES += library/python/automat
+REQUIRED_PACKAGES += library/python/constantly
 REQUIRED_PACKAGES += library/python/incremental
+REQUIRED_PACKAGES += library/python/python-hamcrest
 REQUIRED_PACKAGES += system/library

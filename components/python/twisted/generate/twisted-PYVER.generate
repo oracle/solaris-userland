@@ -31,3 +31,21 @@
 # change mode of several demo files
 <transform file path=usr/demo/twisted-python\$\(PYVER\)/.*$ -> set mode 0555>
 <transform file path=usr/demo/twisted-python[23]\.[0-9]/.+ -> drop>
+
+# drop dropin.cache that might be present if 'gmake test' was executed
+<transform file path=.*/dropin.cache -> drop>
+
+# the following files are not available in all shipped
+# variants and hence are handled in the .static file
+<transform file path=.*/twisted/internet/iocpreactor/iocpsupport.py -> drop>
+<transform file path=.*/twisted/internet/test/test_defer_await.py -> drop>
+<transform file path=.*/twisted/internet/test/test_defer_yieldfrom.py -> drop>
+<transform file path=.*/twisted/internet/test/test_error.py -> drop>
+<transform file path=.*/twisted/internet/test/test_testing.py -> drop>
+<transform file path=.*/twisted/internet/testing.py -> drop>
+<transform file path=.*/twisted/logger/_capture.py -> drop>
+<transform file path=.*/twisted/logger/_interfaces.py -> drop>
+<transform file path=.*/twisted/logger/test/test_capture.py -> drop>
+<transform file path=.*/twisted/mail/_pop3client.py -> drop>
+<transform file path=.*/twisted/py.typed -> drop>
+<transform file path=.*/twisted/trial/test/test_skip.py -> drop>
