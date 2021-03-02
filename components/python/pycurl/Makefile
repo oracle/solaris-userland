@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -45,6 +45,9 @@ include $(WS_MAKE_RULES)/ips.mk
 
 # to make sure that the docs get installed in the right place.
 PYTHON_DATA = /usr
+
+# make sure that correct SSL backend is used (see 32568507)
+COMPONENT_SETUP_ARGS += --with-openssl
 
 # Testing environment must be clean
 test: ENV += -i
