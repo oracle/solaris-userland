@@ -20,29 +20,29 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		PyYAML
-COMPONENT_VERSION=	5.3.1
+COMPONENT_VERSION=	5.4.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b8eac752c5e14d3eca0e6dd9199cd627518cb5ec06add0de9d32baeee6fe645d
+    sha256:c07ab3e6de1e303096b57a3fef386f2e933a242da101608066e8e7a83ff9c0f2
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://pyyaml.org/wiki/PyYAML
 COMPONENT_BUGDB=	python-mod/pyyaml
 COMPONENT_ANITYA_ID=	4123
 
-TPNO=			57919
+TPNO=			67288
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-# Library libyaml is not available in Solaris.
+# Library libyaml is not available on Solaris.
 COMPONENT_SETUP_ARGS += --without-libyaml
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
