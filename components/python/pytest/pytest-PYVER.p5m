@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -34,12 +34,15 @@ set name=info.classification \
     value=org.opensolaris.category.2008:Development/Python
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2013/352
+set name=org.opensolaris.arc-caseid value=PSARC/2013/352 value=PSARC/2021/028
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 link path=usr/bin/py.test target=py.test-$(PYVER) mediator=python \
     mediator-version=$(PYVER)
 file path=usr/bin/py.test-$(PYVER)
+link path=usr/bin/pytest target=pytest-$(PYVER) mediator=python \
+    mediator-version=$(PYVER)
+file path=usr/bin/pytest-$(PYVER)
 file path=usr/lib/python$(PYVER)/vendor-packages/_pytest/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/_pytest/_argcomplete.py
 file path=usr/lib/python$(PYVER)/vendor-packages/_pytest/_code/__init__.py

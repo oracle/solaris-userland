@@ -1,0 +1,96 @@
+Fix warnings with attrs 19.2 and fix object assertions.
+
+Patch from upstream:
+https://github.com/pytest-dev/pytest/pull/5944
+
+--- pytest-4.4.0/src/_pytest/assertion/util.py
++++ pytest-4.4.0/src/_pytest/assertion/util.py
+@@ -11,6 +11,7 @@ import _pytest._code
+ from ..compat import Sequence
+ from _pytest import outcomes
+ from _pytest._io.saferepr import saferepr
++from _pytest.compat import ATTRS_EQ_FIELD
+ 
+ # The _reprcompare attribute on the util module is used by the new assertion
+ # interpretation code and assertion rewriter to detect this plugin was
+@@ -353,7 +354,9 @@ def _compare_eq_cls(left, right, verbose
+         fields_to_check = [field for field, info in all_fields.items() if info.compare]
+     elif isattrs(left):
+         all_fields = left.__attrs_attrs__
+-        fields_to_check = [field.name for field in all_fields if field.cmp]
++        fields_to_check = [
++            field.name for field in all_fields if getattr(field, ATTRS_EQ_FIELD)
++        ]
+ 
+     same = []
+     diff = []
+--- pytest-4.4.0/src/_pytest/compat.py
++++ pytest-4.4.0/src/_pytest/compat.py
+@@ -12,6 +12,7 @@ import re
+ import sys
+ from contextlib import contextmanager
+ 
++import attr
+ import py
+ import six
+ from six import text_type
+@@ -406,8 +407,8 @@ def _setup_collect_fakemodule():
+ 
+     pytest.collect = ModuleType("pytest.collect")
+     pytest.collect.__all__ = []  # used for setns
+-    for attr in COLLECT_FAKEMODULE_ATTRIBUTES:
+-        setattr(pytest.collect, attr, getattr(pytest, attr))
++    for attribute in COLLECT_FAKEMODULE_ATTRIBUTES:
++        setattr(pytest.collect, attribute, getattr(pytest, attribute))
+ 
+ 
+ if _PY2:
+@@ -455,3 +456,9 @@ if six.PY2:
+ 
+ else:
+     from functools import lru_cache  # noqa: F401
++
++
++if getattr(attr, "__version_info__", ()) >= (19, 2):
++    ATTRS_EQ_FIELD = "eq"
++else:
++    ATTRS_EQ_FIELD = "cmp"
+--- pytest-4.4.0/src/_pytest/mark/structures.py
++++ pytest-4.4.0/src/_pytest/mark/structures.py
+@@ -7,6 +7,7 @@ import attr
+ import six
+ 
+ from ..compat import ascii_escaped
++from ..compat import ATTRS_EQ_FIELD
+ from ..compat import getfslineno
+ from ..compat import MappingMixin
+ from ..compat import NOTSET
+@@ -347,7 +348,8 @@ class NodeKeywords(MappingMixin):
+         return "<NodeKeywords for node %s>" % (self.node,)
+ 
+ 
+-@attr.s(cmp=False, hash=False)
++# mypy cannot find this overload, remove when on attrs>=19.2
++@attr.s(hash=False, **{ATTRS_EQ_FIELD: False})  # type: ignore
+ class NodeMarkers(object):
+     """
+     internal structure for storing marks belonging to a node
+--- pytest-4.4.0/testing/test_assertion.py
++++ pytest-4.4.0/testing/test_assertion.py
+@@ -14,6 +14,7 @@ import pytest
+ from _pytest import outcomes
+ from _pytest.assertion import truncate
+ from _pytest.assertion import util
++from _pytest.compat import ATTRS_EQ_FIELD
+ 
+ PY3 = sys.version_info >= (3, 0)
+ 
+@@ -656,7 +657,7 @@ class TestAssert_reprcompare_attrsclass(
+         @attr.s
+         class SimpleDataObject(object):
+             field_a = attr.ib()
+-            field_b = attr.ib(cmp=False)
++            field_b = attr.ib(**{ATTRS_EQ_FIELD: False})
+ 
+         left = SimpleDataObject(1, "b")
+         right = SimpleDataObject(1, "b")

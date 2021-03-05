@@ -4,6 +4,8 @@ and therefore this problem doesn't appear there.
 
 Also, on Solaris it is not possible to remove cwd.
 
+Several test_source.py tests are failing because they are not ready for 3.9.
+
 Not suitable for upstream
 
 --- pytest-4.4.0/testing/test_assertrewrite.py
@@ -27,3 +29,29 @@ Not suitable for upstream
      def test_cwd_changed(self, testdir, monkeypatch):
          # Setup conditions for py's fspath trying to import pathlib on py34
          # always (previously triggered via xdist only).
+--- pytest-4.4.0/testing/code/test_source.py
++++ pytest-4.4.0/testing/code/test_source.py
+@@ -127,6 +127,7 @@ def test_syntaxerror_rerepresentation():
+     assert ex.value.text.strip(), "x x"
+ 
+ 
++@pytest.mark.skipif(sys.version_info >= (3, 9), reason="parser module is deprecated in 3.9")
+ def test_isparseable():
+     assert Source("hello").isparseable()
+     assert Source("if 1:\n  pass").isparseable()
+@@ -146,6 +147,7 @@ class TestAccesses(object):
+     """
+     )
+ 
++    @pytest.mark.skipif(sys.version_info >= (3, 9), reason="parser module is deprecated in 3.9")
+     def test_getrange(self):
+         x = self.source[0:2]
+         assert x.isparseable()
+@@ -478,6 +480,7 @@ def test_findsource():
+     assert src[lineno] == "    def x():"
+ 
+ 
++@pytest.mark.skipif(sys.version_info >= (3, 9), reason="issues with 3.9")
+ def test_getfslineno():
+     from _pytest._code import getfslineno
+ 

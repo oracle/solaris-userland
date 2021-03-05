@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -42,12 +42,10 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-# There are some test failures, the master test file is missing.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 # New version of pytest no longer generates -$(PYVER) script for
 # each version.  Generate them now for backward compatibility.
 COMPONENT_POST_INSTALL_ACTION += \
+	$(MV) $(PROTOUSRBINDIR)/pytest $(PROTOUSRBINDIR)/pytest-$(PYTHON_VERSION); \
 	$(MV) $(PROTOUSRBINDIR)/py.test $(PROTOUSRBINDIR)/py.test-$(PYTHON_VERSION)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/testing
