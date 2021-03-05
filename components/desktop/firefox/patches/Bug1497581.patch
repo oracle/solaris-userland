@@ -1,0 +1,35 @@
+
+# HG changeset patch
+# User Petr Sumbera <petr.sumbera@oracle.com>
+# Date 1613033839 0
+# Node ID 8edb010df11ba151179bed0e6acfcd4f23162205
+# Parent  c138550a43f9e6558fb087b293012d930a35d3c1
+Bug 1497581 - Avoid debug assertion with --disable-updater r=zbraniecki DONTBUILD
+
+Differential Revision: https://phabricator.services.mozilla.com/D104655
+
+diff --git a/intl/locale/LocaleService.cpp b/intl/locale/LocaleService.cpp
+--- a/intl/locale/LocaleService.cpp
++++ b/intl/locale/LocaleService.cpp
+@@ -373,18 +373,20 @@ LocaleService::GetDefaultLocale(nsACStri
+   // time), so we cache the result the first time we're called.
+   if (mDefaultLocale.IsEmpty()) {
+     nsAutoCString locale;
+     // Try to get the package locale from update.locale in omnijar. If the
+     // update.locale file is not found, item.len will remain 0 and we'll
+     // just use our hard-coded default below.
+     GetGREFileContents("update.locale", &locale);
+     locale.Trim(" \t\n\r");
++#ifdef MOZ_UPDATER
+     // This should never be empty.
+     MOZ_ASSERT(!locale.IsEmpty());
++#endif
+     if (CanonicalizeLanguageId(locale)) {
+       mDefaultLocale.Assign(locale);
+     }
+ 
+     // Hard-coded fallback to allow us to survive even if update.locale was
+     // missing/broken in some way.
+     if (mDefaultLocale.IsEmpty()) {
+       GetLastFallbackLocale(mDefaultLocale);
+
