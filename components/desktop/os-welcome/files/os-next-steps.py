@@ -1,7 +1,7 @@
 #!/usr/bin/python3.7
 
 #
-# Copyright (c) 2008, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2008, 2021, Oracle and/or its affiliates.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ def get_solaris_dashboard_url():
 help_link = {
     'header': N_("Learn More about Oracle Solaris"),
     'icon': "resources.png",
-    'url_links': [["https://docs.oracle.com/cd/E37838_01/html/E60974/index.html", N_("##What's new## with <b>Oracle Solaris 11.4</b>")], ["https://www.oracle.com/us/support/systems/index.html", N_("##Get world class support## with <b>Oracle Premier Support</b>")], [get_solaris_dashboard_url(), N_("##Explore## the <b>Oracle Solaris Dashboard</b> with system analytics and more")], ["https://www.oracle.com/technical-resources/articles/solaris11/solaris-labs.html", N_("##Try out## technologies in <b>Hands-On Labs for Oracle Solaris</b>")]],
+    'url_links': [["https://docs.oracle.com/cd/E37838_01/html/E60974/index.html", N_("##What's new## with <b>Oracle Solaris 11.4</b>")], ["https://www.oracle.com/support/premier/systems/", N_("##Get world class support## with <b>Oracle Premier Support</b>")], ["https://blogs.oracle.com/solaris/", N_("##Catch the latest## from the <b>Oracle Solaris Blog</b>")], [get_solaris_dashboard_url(), N_("##Explore## the <b>Oracle Solaris Dashboard</b> with system analytics and more")]],
 }
 
 personalize_link = {
@@ -68,7 +68,7 @@ personalize_link = {
 participate_link = {
     'header': N_("Participate"),
     'icon': "participate.png",
-    'url_links': [["https://community.oracle.com/community/groundbreakers/server_%26_storage_systems/solaris/places", N_("##Join the discussion## in the <b>Oracle Solaris Forums</b>")], ["https://blogs.oracle.com/solaris/", N_("##Catch the latest## from the <b>Oracle Solaris Blog</b>")]],
+    'url_links': [["https://community.oracle.com/mosc/categories/oracle_sun_technologies", N_("##Join the discussion## in the <b>Oracle Solaris Forums</b>")], ["https://github.com/oracle/oraclesolaris-contrib", N_("##Share and learn from other users## in the <b>oraclesolaris-contrib</b> github repo")]],
 }
 
 ICON_PATH = "/usr/share/os-about/"
