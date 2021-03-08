@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gjs
-COMPONENT_VERSION=	1.66.1
+COMPONENT_VERSION=	1.66.2
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Gjs
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8d4240455eff642c8bf6d9805077e33e0a60cb2ea13f77a55f7f30c29668344c
+	sha256:bd7f5f8b171277cc0bb9ee1754b0240b62f06a76b8b18c968cf471b34ab34e59
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	9532
 
-TPNO=			63540
+TPNO=			67612
 BUILD_STYLE=		meson
 
 # Tests do not work in Solaris yet
