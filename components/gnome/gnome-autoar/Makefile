@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 		64_and_32
@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-autoar
-COMPONENT_VERSION=	0.2.4
+COMPONENT_VERSION=	0.3.0
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/gnome-autoar/ 
 COMPONENT_ARCHIVE_HASH= \
-    sha256:0a34c377f8841abbf4c29bc848b301fbd8e4e20c03d7318c777c58432033657a
+    sha256:f2c112c0120cca2bf5a82c5b0ac8cba90ce10d21fec78f50a3bc513fdd64586b
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	15236
 
-TPNO=			54030
+TPNO=			67603
 
 # Test directory exists, but gmake test doesn't provide anything useful
 TEST_TARGET= $(SKIP_TEST)
