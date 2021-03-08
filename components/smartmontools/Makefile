@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2017, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -36,6 +36,14 @@ TPNO=			33534
 
 TEST_TARGET=	$(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
+
+#
+# This utility reads specific hardware pages, so it would be hard to
+# ensure aligned access to them in all cases. Therefore ask the compiler, to
+# do the dirty stuff instead of us.
+# 
+studio_ALIGN.sparc.32 = -xmemalign=8i
+studio_ALIGN.sparc.64 = -xmemalign=16i
 
 # Run automake to pickup man page normalization changes.
 COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv; automake)
