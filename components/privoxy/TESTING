@@ -1,0 +1,36 @@
+# A quick instructions how to setup privoxy server
+# to block advertisements during internet browsing.
+# Derived from: http://www.privoxy.org/user-manual/quickstart.html
+
+# Privoxy configuration is located at /etc/privoxy/config.
+# 1) Enable a privoxy management in a browser (testing purposes).
+# 2) Modify privoxy configuration to chain with Oracle's proxy.
+$ sudo vim /etc/privoxy/config
+ad 1) enable-edit-actions 1
+ad 2) forward / <oracle_proxy>:80
+
+# Start privoxy service and verify it is running.
+$ sudo svcadm enable svc:/network/http:privoxy
+$ svcs -xv svc:/network/http:privoxy
+svc:/network/http:privoxy (Privoxy Web Proxy)
+ State: online since March  9, 2021 at  2:23:48 PM UTC
+   See: http://www.privoxy.org/
+   See: man -M /usr/share/man -s 1 privoxy
+   See: /var/svc/log/network-http:privoxy.log
+Impact: None.
+$ ps -ef | grep privoxy
+webservd  1897     1   0 14:23:47 ?           0:00 /usr/lib/privoxy --pidfile /var/log/privoxy/privoxy.pid --user webservd.webservd /etc/privoxy/config
+
+# Web proxy is running on 127.0.0.1:8118 by default.
+# We need to setup Firefox's proxy to verify privoxy functionality:
+# 1) "Edit" -> "Preferences" -> Network Settings "Settings" -> Connection Settings;
+# 2) use "Manual proxy configuration";
+# 3) set HTTP Proxy to 127.0.0.1 and port to 8118;
+# 4) check "Also use this proxy for FTP and HTTPS".
+
+# It is time to visit your favourite websites in Firefox.
+# When you have enough :-), you can check some statistics:
+$ firefox http://config.privoxy.org/show-status
+
+# For example, you can see the percentage of blocked requests (Blocking Statistics),
+# verify that there are no configuration warnings, or view action and filter files.
