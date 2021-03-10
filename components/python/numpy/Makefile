@@ -102,6 +102,12 @@ PYTHON_SCRIPTS += $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES_BASE)/numpy/*.py
 PYTHON_SCRIPTS += $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES_BASE)/numpy/*/*.py
 PYTHON_SCRIPTS += $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES_BASE)/numpy/*/*/*.py
 
+# Our PYTHON_SCRIPTS processing modifies some files after they have been
+# compiled, making the previously created pyc files stale. Because of that,
+# we have to recompile them all.
+COMPONENT_POST_INSTALL_ACTION += \
+	$(PYTHON) -m compileall $(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)
+
 # Merge 32-bit & 64-bit versions of header with different SIZEOF values
 install: $(BUILD_DIR)/.merged-header
 $(BUILD_DIR)/.merged-header:	PYTHON_VERSION=2.7

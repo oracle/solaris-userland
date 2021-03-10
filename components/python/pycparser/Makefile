@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -52,6 +52,11 @@ $(SOURCE_DIR)/pycparser/ply/lex.py: $(SOURCE_DIR)/.prep
 
 $(BUILD_DIR)/license.ply: $(SOURCE_DIR)/pycparser/ply/lex.py
 	nawk '/^# Copyright / {p=1} /^# ---/ {p=0} p == 1 {print substr($$0, 3)}' $< > $@
+
+# Due to a packaging oversight, pycparser modifies c_ast.py after
+# the compilation is done, resulting in a stale pyc file.
+COMPONENT_POST_INSTALL_ACTION += \
+	$(PYTHON) -m compileall $(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)/pycparser/c_ast.py
 
 # common targets
 build:		$(BUILD_NO_ARCH)
