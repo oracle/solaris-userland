@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 #
 # Rules and Macros for building open source software written in Rust and using
@@ -51,7 +51,7 @@ $(BUILD_DIR)/%/.built:	$(SOURCE_DIR)/.prep
 	($(COMPONENT_BUILD_ACTION))
 	$(COMPONENT_POST_BUILD_ACTION)
 ifeq   ($(strip $(PARFAIT_BUILD)),yes)
-	-$(PARFAIT) $(@D)
+	-$(PARFAIT) -e all -W --baseline-out=$(@D)/parfait.baseline -z $(SOURCE_DIR) -o $(@D)/parfait.report $(@D)
 endif
 	$(TOUCH) $@
 

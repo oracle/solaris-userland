@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
 #
 
 GPATCH =	/usr/bin/patch
@@ -53,12 +53,8 @@ GPATCH_FLAGS =	--strip=$(PATCH_LEVEL) $(GPATCH_BACKUP)
 PATCH_PATTERN ?=	*.patch*
 
 PATCH_DIR ?=		patches
-# patches specific to parfait builds.
-ifeq   ($(strip $(PARFAIT_BUILD)),yes)
-PARFAIT_PATCH_DIR =	parfait
-endif
 
-ALL_PATCHES =	$(shell find $(PATCH_DIR) $(PARFAIT_PATCH_DIR) -type f \
+ALL_PATCHES =	$(shell find $(PATCH_DIR) -type f \
 			 -name '$(PATCH_PATTERN)' 2>/dev/null | \
 				LC_COLLATE=C sort)
 
@@ -84,9 +80,6 @@ endif
 
 ifneq ($$(PATCHES$(1)),)
 PATCH_STAMPS$(1) += $$(PATCHES$(1):$(PATCH_DIR)/%=$$(SOURCE_DIR$(1))/.patched-%)
-ifeq   ($(strip $(PARFAIT_BUILD)),yes)
-PATCH_STAMPS$(1) += $$(PATCHES$(1):$(PARFAIT_PATCH_DIR)/%=$$(SOURCE_DIR$(1))/.patched-%)
-endif 
 endif
 endef
 
@@ -116,10 +109,6 @@ ifeq ($(strip $$(SOURCE_DIR$(1))),)
 $$(error SOURCE_DIR$(1) is empty, I can not apply these patches: $$(PATCHES$(1))$$(newline)Please define COMPONENT_SRC$(1) in the Makefile)
 endif
 $$(SOURCE_DIR$(1))/.patched-%:	$(PATCH_DIR)/% $(MAKEFILE_PREREQ)
-	$(GPATCH) -d $$(@D) $$(GPATCH_FLAGS) < $$<
-	$(TOUCH) $$(@)
-
-$$(SOURCE_DIR$(1))/.patched-%:	$(PARFAIT_PATCH_DIR)/% $(MAKEFILE_PREREQ)
 	$(GPATCH) -d $$(@D) $$(GPATCH_FLAGS) < $$<
 	$(TOUCH) $$(@)
 

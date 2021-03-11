@@ -122,7 +122,7 @@ $(BUILD_DIR)/%/.built:	$(BUILD_DIR)/%/.configured
 		$(WAF) $(COMPONENT_BUILD_TARGETS) $(COMPONENT_BUILD_ARGS))
 	$(COMPONENT_POST_BUILD_ACTION)
 ifeq   ($(strip $(PARFAIT_BUILD)),yes)
-	-$(PARFAIT) $(@D)
+	-$(PARFAIT) -e all -W --baseline-out=$(@D)/parfait.baseline -z $(SOURCE_DIR) -o $(@D)/parfait.report $(@D)
 endif
 	$(TOUCH) $@
 

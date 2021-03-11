@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
 #
 
 include ../make-rules/shared-macros.mk
@@ -57,7 +57,11 @@ links:
 		echo "export PARFAIT_NATIVEGCC=$(GCC_ROOT)/bin/gcc" >> $(PARFAIT_TOOLS)/$$i ; \
 		echo "export PARFAIT_NATIVEGXX=$(GCC_ROOT)/bin/g++" >> $(PARFAIT_TOOLS)/$$i ; \
 		echo "export PARFAIT_NATIVELD=/usr/bin/ld" >> $(PARFAIT_TOOLS)/$$i ; \
-		echo "exec" $(PARFAIT_VROOT)/$$MACH/parfait-$$i -D_Noreturn= '$$*' >> $(PARFAIT_TOOLS)/$$i ; \
+		echo "if  [[ \"\$$1\" == \"-print-prog-name=ld\" ]]; then" >> $(PARFAIT_TOOLS)/$$i ; \
+		echo "    echo \$$(dirname \$$0)/ld" >> $(PARFAIT_TOOLS)/$$i ; \
+		echo "else" >> $(PARFAIT_TOOLS)/$$i ; \
+		echo "    exec" $(PARFAIT_VROOT)/$$MACH/parfait-$$i -D_Noreturn= '$$*' >> $(PARFAIT_TOOLS)/$$i ; \
+		echo "fi" >> $(PARFAIT_TOOLS)/$$i ; \
 		chmod +x $(PARFAIT_TOOLS)/$$i ; \
 	done
 

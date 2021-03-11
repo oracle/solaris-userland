@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -51,6 +51,10 @@ include $(WS_MAKE_RULES)/common.mk
 # Fix 64-bit linking via compiler.
 LDFLAGS += $(CC_BITS)
 LDFLAGS += -lldap_r-2.4
+# Workaround Parfait bug 32543342
+ifeq   ($(strip $(PARFAIT_BUILD)),yes)
+CFLAGS+=-D__STDC_VERSION__=201112L
+endif
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
