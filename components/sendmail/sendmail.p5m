@@ -20,9 +20,13 @@
 #
 
 #
-# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
 #
 
+# This manifest contains several files with a preserve attribute that are not
+# writable. While the corresponding pkglint check is bypassed now, those files
+# should be investigated and fixed in the future.
+<transform file path=etc/mail/.* -> set pkg.linted.userland.action001.4 true>
 # The man pages are all at the top of a "files" directory; set the hash to
 # point to the files therein.
 <transform file path=usr/share/man/man.+/(.+)$ -> set action.hash %<1> >

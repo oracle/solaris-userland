@@ -18,9 +18,13 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 
+# This manifest contains several files with a preserve attribute that are not
+# writable. While the corresponding pkglint check is bypassed now, those files
+# should be investigated and fixed in the future.
+<transform file path=etc/ksh.kshrc$ -> set pkg.linted.userland.action001.4 true>
 # The man pages are all at the top of a "files" directory; setting the hash to
 # point to the files therein.
 <transform file path=usr/share/man/man.+/(.+)$ -> set action.hash %<1> >

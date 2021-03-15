@@ -20,9 +20,13 @@
 #
 
 #
-# Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
+# This manifest contains several files with a preserve attribute that are not
+# writable. While the corresponding pkglint check is bypassed now, those files
+# should be investigated and fixed in the future.
+<transform file path=etc/sgml/.* -> set pkg.linted.userland.action001.4 true>
 <transform file path=usr.*/man/.+ -> \
     default mangler.man.stability "pass-through volatile">
 # XML/SGML catalog update.

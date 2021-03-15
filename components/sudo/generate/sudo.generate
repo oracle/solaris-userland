@@ -18,7 +18,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 
 # The file should not be viewable by anyone by root
@@ -30,6 +30,9 @@
 <transform file path=etc/sudoers$ -> set overlay allow>
 # Do not overwrite customer's setup
 <transform file path=etc/sudoers$ -> set preserve true>
+# All files with the preserve attribute should
+# be writable; this one is an exception.
+<transform file path=etc/sudoers$ -> set pkg.linted.userland.action001.4 true>
 
 # Both 'sudoers' and 'sudoers.dist' deliver the same content. I believe that
 # the intention is to deliver both, but don't overwrite 'sudoers' if it exists.
