@@ -28,6 +28,9 @@ set name=pkg.fmri \
 set name=pkg.summary value="Python crytographic recipes and primitives"
 set name=pkg.description \
     value="The cryptography package provides cryptographic recipes and primitives to Python developers. It includes both high level recipes, and low level interfaces to common cryptographic algorithms such as symmetric ciphers, message digests and key derivation functions."
+# Due to a version downgrade, we have to suppress pkglint
+# reporting that duplicates are being delivered.
+set name=pkg.linted.pkglint.dupaction001.1 value=true
 set name=com.oracle.info.description value="the Python cryptography module"
 set name=com.oracle.info.tpno value=$(TPNO)
 set name=info.classification \
@@ -51,7 +54,6 @@ file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/exceptions.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/fernet.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/_der.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/_oid.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/interfaces.py
@@ -64,21 +66,20 @@ file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/op
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/dh.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/dsa.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/ec.py
-file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/ed25519.py
-file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/ed448.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/encode_asn1.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/hashes.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/hmac.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/ocsp.py
-file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/poly1305.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/rsa.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/utils.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/x25519.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/x448.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/backends/openssl/x509.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/bindings/64/_constant_time.so
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/bindings/64/_openssl.so
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/bindings/64/_padding.so
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/bindings/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/bindings/_constant_time.so
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/bindings/_openssl.so
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/bindings/_padding.so
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/bindings/openssl/__init__.py
@@ -89,8 +90,6 @@ file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/asymmetric/dh.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/asymmetric/dsa.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/asymmetric/ec.py
-file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/asymmetric/ed25519.py
-file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/asymmetric/ed448.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/asymmetric/padding.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/asymmetric/rsa.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/asymmetric/utils.py
@@ -113,12 +112,11 @@ file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/kdf/scrypt.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/kdf/x963kdf.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/keywrap.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/mac.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/padding.py
-file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/poly1305.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/serialization/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/serialization/base.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/serialization/pkcs12.py
-file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/serialization/pkcs7.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/serialization/ssh.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/twofactor/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cryptography/hazmat/primitives/twofactor/hotp.py
@@ -138,6 +136,9 @@ license cryptography.license license=BSD-like
 
 # Dependencies on cffi must be incorporated.
 depend type=incorporate fmri=library/python/cffi-$(PYV)@1.14.0
+
+# force a dependency on asn1crypto; pkgdepend work is needed to flush this out.
+depend type=require fmri=library/python/asn1crypto-$(PYV)
 
 # force a dependency on cffi; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/cffi-$(PYV)

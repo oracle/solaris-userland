@@ -28,6 +28,9 @@ set name=pkg.fmri \
 set name=pkg.summary value="Python interface to the OpenSSL library"
 set name=pkg.description \
     value="The pyOpenSSL package provides a high-level, Python interface to the functions in the OpenSSL library. It includes a generic cryptographic module, an interface to the OpenSSL pseudo random number generator, and an interface to the SSL-specific parts of OpenSSL. The latter defines SSL Context objects and SSL Connection objects, using Python sockets as a transport layer. The Connection object wraps all the socket methods and can therefore be used interchangeably."
+# Due to a version downgrade, we have to suppress pkglint
+# reporting that duplicates are being delivered.
+set name=pkg.linted.pkglint.dupaction001.1 value=true
 set name=com.oracle.info.description value="Python bindings for OpenSSL"
 set name=com.oracle.info.tpno value=$(TPNO)
 set name=info.classification \
@@ -44,6 +47,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/OpenSSL/_util.py
 file path=usr/lib/python$(PYVER)/vendor-packages/OpenSSL/crypto.py
 file path=usr/lib/python$(PYVER)/vendor-packages/OpenSSL/debug.py
 file path=usr/lib/python$(PYVER)/vendor-packages/OpenSSL/rand.py
+file path=usr/lib/python$(PYVER)/vendor-packages/OpenSSL/tsafe.py
 file path=usr/lib/python$(PYVER)/vendor-packages/OpenSSL/version.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pyOpenSSL-$(COMPONENT_VERSION)-py$(PYVER).egg-info/PKG-INFO
 file path=usr/lib/python$(PYVER)/vendor-packages/pyOpenSSL-$(COMPONENT_VERSION)-py$(PYVER).egg-info/SOURCES.txt

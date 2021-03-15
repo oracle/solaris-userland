@@ -1,0 +1,62 @@
+Make several tests future proof.
+
+Backported from upstream:
+https://github.com/pyca/pyopenssl/pull/888
+
+=======
+
+Skip NPN tests if NPN is not available.
+
+Backported from upstream:
+https://github.com/pyca/pyopenssl/pull/822
+
+--- a/tests/test_ssl.py
++++ b/tests/test_ssl.py
+@@ -192,6 +192,8 @@ def _create_certificate_chain():
+         3. A new server certificate signed by icert (scert)
+     """
+     caext = X509Extension(b'basicConstraints', False, b'CA:true')
++    not_after_date = (datetime.date.today() + datetime.timedelta(days=365))
++    not_after = not_after_date.strftime("%Y%m%d%H%M%SZ").encode("ascii")
+ 
+     # Step 1
+     cakey = PKey()
+@@ -201,7 +203,7 @@ def _create_certificate_chain():
+     cacert.set_issuer(cacert.get_subject())
+     cacert.set_pubkey(cakey)
+     cacert.set_notBefore(b"20000101000000Z")
+-    cacert.set_notAfter(b"20200101000000Z")
++    cacert.set_notAfter(not_after)
+     cacert.add_extensions([caext])
+     cacert.set_serial_number(0)
+     cacert.sign(cakey, "sha1")
+@@ -214,7 +216,7 @@ def _create_certificate_chain():
+     icert.set_issuer(cacert.get_subject())
+     icert.set_pubkey(ikey)
+     icert.set_notBefore(b"20000101000000Z")
+-    icert.set_notAfter(b"20200101000000Z")
++    icert.set_notAfter(not_after)
+     icert.add_extensions([caext])
+     icert.set_serial_number(0)
+     icert.sign(cakey, "sha1")
+@@ -227,7 +229,7 @@ def _create_certificate_chain():
+     scert.set_issuer(icert.get_subject())
+     scert.set_pubkey(skey)
+     scert.set_notBefore(b"20000101000000Z")
+-    scert.set_notAfter(b"20200101000000Z")
++    scert.set_notAfter(not_after)
+     scert.add_extensions([
+         X509Extension(b'basicConstraints', True, b'CA:false')])
+     scert.set_serial_number(0)
+--- a/tests/test_ssl.py
++++ b/tests/test_ssl.py
+@@ -1737,6 +1737,9 @@ def servername(conn):
+         assert args == [(server, b"foo1.example.com")]
+ 
+ 
++@pytest.mark.skipif(
++    not _lib.Cryptography_HAS_NEXTPROTONEG, reason="NPN is not available"
++)
+ class TestNextProtoNegotiation(object):
+     """
+     Test for Next Protocol Negotiation in PyOpenSSL.

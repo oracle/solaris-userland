@@ -26,17 +26,17 @@ include ../../../make-rules/shared-macros.mk
 COMPILER=	gcc
 
 COMPONENT_NAME=		pyOpenSSL
-COMPONENT_VERSION=	20.0.1
+COMPONENT_VERSION=	19.0.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:f3ed460ce7ce3de3394fc50d054118a36410e89279b5a710fcc3ffba8455d0af
+	sha256:aeca66338f6de19d1aa46ed634c3b9ae519a64b458f8468aec688e7e3c20f200
 COMPONENT_ARCHIVE_URL=  $(call pypi_url)
 COMPONENT_PROJECT_URL=  https://pyopenssl.org/
 COMPONENT_BUGDB=	python-mod/pyopenssl
 COMPONENT_ANITYA_ID=	5535
 
-TPNO=			64251
+TPNO=			49036
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -54,7 +54,7 @@ COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =	--disable-warnings
 
 # Some tests require unicode characters, otherwise ~17 tests will fail
-COMPONENT_TEST_ENV += LC_ALL=en_US.UTF-8
+COMPONENT_TEST_ENV += TZ=UTC LC_ALL=en_US.UTF-8
 
 # common targets
 build:		$(BUILD_32_and_64)
@@ -65,5 +65,5 @@ test:		$(TEST_32_and_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += library/security/openssl-11
+REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += system/library
