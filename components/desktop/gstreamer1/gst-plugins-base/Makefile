@@ -44,8 +44,10 @@ TPNO=			55664
 
 PYTHON_VERSION = 3.7
 
-# Disable tests since there are some regressions.
+ifeq ($(MACH),sparc)
+# Disable tests since they run very long and still many of them fail with timeout.
 $(SKIP_TEST_AT_TOP_LEVEL)
+endif
 
 include $(WS_MAKE_RULES)/common.mk
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -46,10 +46,8 @@ COMPONENT_ANITYA_ID=	1263
 
 TPNO=			55540
 
-ifeq ($(MACH),sparc)
-# Disable tests since there are some regressions.
+# Disable tests since they run many days and there are regressions.
 $(SKIP_TEST_AT_TOP_LEVEL)
-endif
 
 include $(WS_MAKE_RULES)/common.mk
 

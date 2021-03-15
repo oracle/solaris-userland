@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -52,6 +52,8 @@ CONFIGURE_ENV += PYTHON="$(PYTHON)"
 # Ensure Python modules are installed into vendor package directories.
 CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
 CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 # intltool may or may not be run depending on previous state of build dir
 COMPONENT_TEST_TRANSFORMS += "-e '/\/usr\/bin\/intltool-update/d'"

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 COMPILER=	gcc
 BUILD_BITS=	64_and_32
@@ -37,8 +37,8 @@ COMPONENT_PROJECT_URL=	http://www.avahi.org/
 COMPONENT_BUGDB=	library/avahi
 COMPONENT_ANITYA_ID=	147
 
-# There are some test failures, the master test file is missing.
-$(SKIP_TEST_AT_TOP_LEVEL)
+# Needed to avoid test failures (unbounded variables in libtool).
+unexport SHELLOPTS
 
 SMF_MANIFESTS = $(COMPONENT_DIR)/files/avahi-bridge-dsd.xml
 

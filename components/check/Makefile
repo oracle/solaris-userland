@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -37,7 +37,7 @@ TPNO=			33944
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_32_and_64)
 
-# Disable tests since there are some regressions.
+# Disable tests since they are crashing.
 $(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk

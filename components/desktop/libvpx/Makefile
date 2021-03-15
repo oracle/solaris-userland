@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 # parfait is a bit unhappy (24796432)
@@ -46,8 +46,10 @@ COMPONENT_ANITYA_ID=	11083
 LDFLAGS += $(CC_BITS)
 LDFLAGS += -Wl,-zgnu-version-script-compat
 
-# The unit tests require about 40 hours to finish...
-$(SKIP_TEST_AT_TOP_LEVEL)
+ifeq ($(MACH),sparc)
+# The unit tests require dozens of hours to finish on 32-bit sparc...
+TEST_32 = $(SKIP_TESTS)
+endif
 
 include $(WS_MAKE_RULES)/common.mk
 

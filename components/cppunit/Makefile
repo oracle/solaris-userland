@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 COMPILER= gcc
@@ -38,11 +38,10 @@ COMPONENT_ANITYA_ID=	9543
 
 TPNO=			20676
 
-# Tests do not pass because of insufficient gsed filtering.
-$(SKIP_TEST_AT_TOP_LEVEL)
+# Do not print deprecation warnings in test results.
+CXXFLAGS += -Wno-deprecated-declarations
 
 include $(WS_MAKE_RULES)/common.mk
-
 
 export PATH=$(GCC_ROOT)/bin:$(GNUBIN):$(USRBINDIR)
 

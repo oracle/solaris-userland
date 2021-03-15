@@ -72,7 +72,7 @@ SMF_MANIFESTS= $(COMPONENT_DIR)/files/portmap.xml
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 
-# The unit tests failed to start.
+# Unreproducible test results, many hours to finish.
 $(SKIP_TEST_AT_TOP_LEVEL)
 
 # This is just a workaround to a problem we occasionally see on sparc.

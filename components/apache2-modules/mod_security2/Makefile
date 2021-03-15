@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
@@ -39,14 +39,6 @@ TPNO=			48627
 
 MODULES_INSTALL=
 MODULES_TEST= $(TEST_AND_COMPARE_64)
-
-ifeq ($(MACH),sparc)
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
-ifeq ($(TOP_LEVEL_TEST),yes)
-MODULES_TEST=$(NO_TESTS)
-endif
-endif
 
 include ../modules.mk
 

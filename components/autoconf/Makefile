@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
@@ -35,9 +35,6 @@ COMPONENT_ANITYA_ID=	141
 TPNO=			22294
 
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_NO_ARCH)
-
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
@@ -58,6 +55,7 @@ COMPONENT_SYSTEM_TEST_TARGETS =	installcheck
 COMPONENT_SYSTEM_TEST_DIR =	$(@D)/tests
 COMPONENT_SYSTEM_TEST_ENV +=	F77=/usr/bin/gfortran
 
+# Note that "38: autotools and whitespace in file names" test fails.
 COMPONENT_TEST_TRANSFORMS += \
         '-e "/check-local/d"' \
         '-e "/ksh93/d"' \

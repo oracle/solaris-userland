@@ -69,7 +69,7 @@ COMPONENT_ANITYA_ID=	14923
 TEST_TARGET=		$(TEST_64)
 SYSTEM_TEST_TARGET=	$(SYSTEM_TEST_64)
 
-# Disable tests since it requires packages that are not available in CBE.
+# Disable tests since it requires itself in CBE.
 $(SKIP_TEST_AT_TOP_LEVEL)
 
 # For validate-smf target

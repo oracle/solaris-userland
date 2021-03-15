@@ -44,7 +44,7 @@ TPNO=			57086
 BUILD_STYLE= justmake
 
 ifeq ($(MACH),sparc)
-# Disable tests since there are some regressions.
+# Disable tests on SPARC since they are unreproducible with regressions.
 $(SKIP_TEST_AT_TOP_LEVEL)
 endif
 
@@ -80,7 +80,7 @@ COMPONENT_TEST_TRANSFORMS += '-e "/\.\./d" -e "/^make/d" -e "/^$$/d" -e "/git_re
 # Ignore runtime statistics and random seeds used for the elixir testing.
 COMPONENT_TEST_TRANSFORMS += '-e "/^Finished in/d" -e "/^Randomized with seed/d"'
 # Ignore the spurious error message (see issue #8183 on elixir github).
-COMPONENT_TEST_TRANSFORMS += '-e "/resides in sticky dir/d"'
+COMPONENT_TEST_TRANSFORMS += '-e "/resides in sticky dir/d" -e "/^gmake/d"'
 
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += shell/bash

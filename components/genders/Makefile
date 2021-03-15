@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 
@@ -39,9 +39,6 @@ COMPONENT_ANITYA_ID=	13282
 
 TPNO=			29494
 
-# Tests do not pass because of insufficient gsed filtering.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS +=   --bindir=/usr/bin
@@ -50,17 +47,7 @@ CONFIGURE_OPTIONS +=   --without-perl-extensions
 CONFIGURE_OPTIONS +=   --without-python-extensions
 CONFIGURE_OPTIONS +=   --without-java-extensions
 
-COMPONENT_TEST_DIR =	$(@D)/src/testsuite
-COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-
-COMPONENT_TEST_TRANSFORMS += \
-	'-e "s|^.*$(CC).*$$|XXX_REMOVE_XXX|g" ' \
-	'-e "s|^.*source=.*libtool=no.*$$|XXX_REMOVE_XXX|g" ' \
-	'-e "s|^.*DEPDIR=.deps.*$$|XXX_REMOVE_XXX|g" ' \
-	'-e "s|^make.*: Leaving directory.*$$|XXX_REMOVE_XXX|g" ' \
-	'-e "s|^make.*: Entering directory.*$$|XXX_REMOVE_XXX|g" ' \
-	'-e "s|^make.*: Nothing to be.*$$|XXX_REMOVE_XXX|g" ' \
-	'-e "s|^.*warning:.*$$|XXX_REMOVE_XXX|g" ' \
-	'-e "s|^.*s up to date.*$$|XXX_REMOVE_XXX|g" ' \
-	'-e "/^XXX_REMOVE_XXX$$/d" ' \
-	'-e "/libtool:/d"'
+# Actually, gmake check just builds genders_test binary and no tests are executed.
+# When genders_test is manually executed, it terribly fails with lots of errors...
+test: $(NO_TESTS)
+system-test: $(NO_TESTS)

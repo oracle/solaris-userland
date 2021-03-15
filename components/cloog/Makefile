@@ -37,9 +37,6 @@ COMPONENT_ANITYA_ID=	13279
 
 TPNO=			33342
 
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/common.mk
 
 PATCH_LEVEL := 0

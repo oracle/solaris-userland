@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -44,8 +44,10 @@ TPNO=			55665
 
 PYTHON_VERSION = 3.7
 
-# Disable the unit tests since the test results are outdated.
+ifeq ($(MACH),sparc)
+# Disable the unit tests since they timeout and crash on SPARC.
 $(SKIP_TEST_AT_TOP_LEVEL)
+endif
 
 include $(WS_MAKE_RULES)/common.mk
 

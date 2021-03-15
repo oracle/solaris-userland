@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -50,7 +50,7 @@ $(BUILD_DIR)/test-$(MACH32)/.installed:    BITS=32
 $(BUILD_DIR)/test-$(MACH64)/.installed:    BITS=64
 TEST_TARGET= $(BUILD_DIR)/test-$(MACH32)/.tested $(BUILD_DIR)/test-$(MACH64)/.tested
 
-# Tests failed to execute.
+# Tests run dozens of hours and fail (wrong ELF class)...
 $(SKIP_TEST_AT_TOP_LEVEL)
 
 PATH=$(SPRO_VROOT)/bin:/usr/bin

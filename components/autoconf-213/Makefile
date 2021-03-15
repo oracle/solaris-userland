@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
@@ -48,6 +48,7 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/Making/d"' \
         '-e "/Test/d"' \
         '-e "/Entering directory/d"' \
+        '-e "/Native configuration is/d"' \
         '-e "/Leaving directory/d"'
 
 REQUIRED_PACKAGES += developer/macro/gnu-m4

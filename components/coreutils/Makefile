@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=gcc
@@ -38,9 +38,6 @@ TPNO=			46210
 
 TEST_TARGET= install $(TEST_64)
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
-
-# The unit tests failed to start.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 

@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 # parfait fails to compile us (22221056)
@@ -48,7 +48,7 @@ PYTHON_VERSIONS =	$(PYTHON2_VERSIONS)
 SMF_MANIFESTS += $(COMPONENT_DIR)/files/ovsdb.xml
 SMF_MANIFESTS += $(COMPONENT_DIR)/files/vswitch.xml
 
-# There are some test regressions and gsed filtering is insufficient.
+# Lots of regressions and unreproducible test results.
 $(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk

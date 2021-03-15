@@ -49,7 +49,7 @@ ifeq ($(MACH), sparc)
 ADDITIONAL_PATCHES += patches/Bug74551.patch-SPARC
 endif
 
-# The unit tests failed to start.
+# The unit tests hang and never finish.
 $(SKIP_TEST_AT_TOP_LEVEL)
 
 # Rust spuriously fails to build from time to time. To avoid the full build
