@@ -175,7 +175,7 @@ and thus these changes will not be submitted upstream.
  
  #ifdef __sun
 -#include "sfxge_ioctl.h"
-+#include "dld_ptp.h"
++#include <sys/dld.h>
 +union dld_ptp_data {
 +	dld_ptp_config_t	ts_init;
 +	dld_ptp_read_t		ts_read;
@@ -813,87 +813,6 @@ and thus these changes will not be submitted upstream.
        case 'J':
           /* safe drift files to driftDir */
           strncpy(rtOpts->driftDir, optarg, PATH_MAX - 13);
---- ptpd-2.2.0/./src/dep/dld_ptp.h
-+++ NEWFILES/ptpd-2.2.0/./src/dep/dld.h
-@@ -0,0 +1,78 @@
-+/*
-+ * Data-Link Driver ioctl interfaces for PTP.
-+ *
-+ * This file may be removed once the definitions of these ioctls and
-+ * structures are delivered in in the /usr/include/sys/dld.h file on
-+ * the internal build servers, and the include in the time.c file
-+ * renamed from dld_ptp.g to dld.h
-+ */
-+
-+#include <sys/types.h>
-+#include <sys/stream.h>
-+#include <sys/mac_flow.h>
-+#include <sys/conf.h>
-+#include <sys/sad.h>
-+#include <sys/mac.h>
-+
-+#if _LONG_LONG_ALIGNMENT == 8 && _LONG_LONG_ALIGNMENT_32 == 4
-+#pragma pack(4)
-+#endif
-+
-+#define	DLDIOC_PTP_ENABLE	DLDIOC(0x2b)
-+#define	DLDIOC_PTP_DISABLE	DLDIOC(0x2c)
-+typedef struct dld_ptp_config {
-+	uint32_t	pi_drv_version;
-+} dld_ptp_config_t;
-+typedef struct dld_ioc_ptp_config {
-+	datalink_id_t		pi_linkid;
-+	dld_ptp_config_t	pi_config;
-+} dld_ioc_ptp_config_t;
-+
-+#define	DLDIOC_PTP_READ		DLDIOC(0x2d)
-+typedef struct dld_ptp_read {
-+	uint32_t	pr_tx_valid;
-+	timespec_t	pr_tx_ts;
-+	timespec_t	pr_tx_ts_hw;
-+	uint32_t	pr_rx_valid;
-+	timespec_t	pr_rx_ts;
-+	timespec_t	pr_rx_ts_hw;
-+	uint16_t	pr_seqid;
-+	uint8_t		pr_uuid[6];
-+} dld_ptp_read_t;
-+typedef struct dld_ioc_ptp_read {
-+	datalink_id_t		pr_linkid;
-+	dld_ptp_read_t		pr_read;
-+} dld_ioc_ptp_read_t;
-+
-+#define	DLDIOC_PTP_SETTIME	DLDIOC(0x2e)
-+typedef struct dld_ptp_settime {
-+	timespec_t	ps_ts;
-+	uint32_t	ps_iswrite;
-+} dld_ptp_settime_t;
-+typedef struct dld_ioc_ptp_settime {
-+	datalink_id_t		ps_linkid;
-+	dld_ptp_settime_t	ps_settime;
-+} dld_ioc_ptp_settime_t;
-+
-+#define	DLDIOC_PTP_ADJTIME	DLDIOC(0x2f)
-+typedef struct dld_ptp_adjtime {
-+	int64_t		pa_adjustment;
-+	uint32_t	pa_iswrite;
-+} dld_ptp_adjtime_t;
-+typedef struct dld_ioc_ptp_adjtime {
-+	datalink_id_t		pa_linkid;
-+	dld_ptp_adjtime_t	pa_adjtime;
-+} dld_ioc_ptp_adjtime_t;
-+
-+#define	DLDIOC_PTP_SYNC		DLDIOC(0x30)
-+typedef struct dld_ptp_sync {
-+	timespec_t	py_ts;
-+} dld_ptp_sync_t;
-+typedef struct dld_ioc_ptp_sync {
-+	datalink_id_t		py_linkid;
-+	dld_ptp_sync_t		py_sync;
-+} dld_ioc_ptp_sync_t;
-+
-+#if _LONG_LONG_ALIGNMENT == 8 && _LONG_LONG_ALIGNMENT_32 == 4
-+#pragma pack()
-+#endif
 --- ptpd-2.2.0/src/ptpd2.8
 +++ ptpd-2.2.0/src/ptpd2.8
 @@ -166,6 +166,12 @@ Set the debug level. The default is zero
