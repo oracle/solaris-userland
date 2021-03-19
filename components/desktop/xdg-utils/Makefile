@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -56,7 +56,6 @@ COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 REQUIRED_PACKAGES += data/docbook/docbook-dtds
 REQUIRED_PACKAGES += developer/documentation-tool/xmlto
 REQUIRED_PACKAGES += file/gnu-coreutils
-REQUIRED_PACKAGES += gnome/config/gconf
 REQUIRED_PACKAGES += gnome/zenity
 REQUIRED_PACKAGES += library/gnome/gvfs
 REQUIRED_PACKAGES += library/libxslt

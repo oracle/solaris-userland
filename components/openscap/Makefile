@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -109,7 +109,6 @@ COMPONENT_POST_INSTALL_ACTION += \
 
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += developer/swig
-REQUIRED_PACKAGES += gnome/config/gconf
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/libxslt
