@@ -28,14 +28,14 @@ BUILD_BITS =            32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		glib
-COMPONENT_VERSION=	2.66.7
+COMPONENT_VERSION=	2.66.8
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GLib/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:09f158769f6f26b31074e15b1ac80ec39b13b53102dfae66cfe826fb2cc65502
+    sha256:97bc87dd91365589af5cbbfea2574833aea7a1b71840fd365ecd2852c76b9c8b
 COMPONENT_BUGDB=	gnome/glib
 COMPONENT_ANITYA_ID=	10024
 
-TPNO=			67312
+TPNO=			67934
 BUILD_STYLE=		meson
 
 # No need to build for older versions.
