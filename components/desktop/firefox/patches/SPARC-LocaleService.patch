@@ -1,6 +1,7 @@
 Firefox 78ESR on SPARC dumps core early during start.
 
 https://bugzilla.mozilla.org/show_bug.cgi?id=1691384
+(Original upstream fix for ESR didn't go well and it still needs to be patched.)
 
 # HG changeset patch
 # User Alexis Beingessner <a.beingessner@gmail.com>
@@ -11,29 +12,10 @@ Bug 1654807 - update thin-vec to 0.2.1 for potential endianess fix. r=froydnj
 
 Differential Revision: https://phabricator.services.mozilla.com/D87019
 
-diff --git a/third_party/rust/thin-vec/src/heap.rs b/third_party/rust/thin-vec/src/heap.rs
---- a/third_party/rust/thin-vec/src/heap.rs
-+++ /dev/null
-@@ -1,15 +0,0 @@
--extern crate libc;
--
--pub unsafe fn allocate(size: usize, align: usize) -> *mut u8 {
--    assert!(align <= 16);
--    libc::malloc(size) as *mut _
--}
--
--pub unsafe fn deallocate(ptr: *mut u8, _size: usize, _align: usize) {
--    libc::free(ptr as *mut _);
--}
--
--pub unsafe fn reallocate(ptr: *mut u8, _old_size: usize, size: usize, align: usize) -> *mut u8 {
--    assert!(align <= 16);
--    libc::realloc(ptr as *mut _, size) as *mut _
--}
 diff --git a/third_party/rust/thin-vec/src/lib.rs b/third_party/rust/thin-vec/src/lib.rs
 --- a/third_party/rust/thin-vec/src/lib.rs
 +++ b/third_party/rust/thin-vec/src/lib.rs
-@@ -1,98 +1,272 @@
+@@ -1,47 +1,252 @@
 -mod range;
 +//! ThinVec is exactly the same as Vec, except that it stores its `len` and `capacity` in the buffer
 +//! it allocates.
@@ -183,23 +165,19 @@ diff --git a/third_party/rust/thin-vec/src/lib.rs b/third_party/rust/thin-vec/sr
 -use std::ops::{Deref, DerefMut};
 +use std::ops::{Deref, DerefMut, RangeBounds};
  use std::marker::PhantomData;
-+use std::alloc::*;
+ use std::alloc::*;
  use std::cmp::*;
  use std::hash::*;
  use std::borrow::*;
 -use range::RangeArgument;
  use std::ptr::NonNull;
  
--// Heap shimming because reasons. This doesn't unfortunately match the heap api
--// right now because reasons.
--mod heap;
-+use impl_details::*;
- 
 -#[cfg(not(feature = "gecko-ffi"))]
 -type SizeType = usize;
 -#[cfg(feature = "gecko-ffi")]
 -type SizeType = u32;
--
++use impl_details::*;
+ 
 -#[cfg(feature = "gecko-ffi")]
 -const AUTO_MASK: u32 = 1 << 31;
 -#[cfg(feature = "gecko-ffi")]
@@ -269,8 +247,7 @@ diff --git a/third_party/rust/thin-vec/src/lib.rs b/third_party/rust/thin-vec/sr
 +    #[cfg(target_endian = "little")]
 +    pub fn pack_capacity(cap: SizeType) -> SizeType {
 +        cap as SizeType
-     }
--    x as SizeType
++    }
 +    #[cfg(target_endian = "little")]
 +    pub fn unpack_capacity(cap: SizeType) -> usize {
 +        (cap as usize) & !(1 << 31)
@@ -294,7 +271,8 @@ diff --git a/third_party/rust/thin-vec/src/lib.rs b/third_party/rust/thin-vec/sr
 +    #[cfg(target_endian = "big")]
 +    pub fn is_auto(cap: SizeType) -> bool {
 +        (cap & 1) != 0
-+    }
+     }
+-    x as SizeType
 +
 +    #[inline]
 +    pub fn assert_size(x: usize) -> SizeType {
@@ -313,11 +291,7 @@ diff --git a/third_party/rust/thin-vec/src/lib.rs b/third_party/rust/thin-vec/sr
  #[repr(C)]
  struct Header {
      _len: SizeType,
-     _cap: SizeType,
- }
- 
- impl Header {
-     fn len(&self) -> usize {
+@@ -53,38 +258,10 @@
          self._len as usize
      }
  
@@ -356,17 +330,7 @@ diff --git a/third_party/rust/thin-vec/src/lib.rs b/third_party/rust/thin-vec/sr
      fn data<T>(&self) -> *mut T {
          let header_size = mem::size_of::<Header>();
          let padding = padding::<T>();
- 
-         let ptr = self as *const Header as *mut Header as *mut u8;
- 
-         unsafe {
-             if padding > 0 && self.len() == 0 {
-@@ -100,35 +274,68 @@ impl Header {
-                 NonNull::dangling().as_ptr()
-             } else {
-                 ptr.offset(header_size as isize) as *mut T
-             }
-         }
+@@ -102,6 +279,41 @@
      }
  }
  
@@ -408,16 +372,7 @@ diff --git a/third_party/rust/thin-vec/src/lib.rs b/third_party/rust/thin-vec/sr
  /// Singleton that all empty collections share.
  /// Note: can't store non-zero ZSTs, we allocate in that case. We could
  /// optimize everything to not do that (basically, make ptr == len and branch
- /// on size == 0 in every method), but it's a bunch of work for something that
- /// doesn't matter much.
- #[cfg(any(not(feature = "gecko-ffi"), test))]
- static EMPTY_HEADER: Header = Header { _len: 0, _cap: 0 };
- 
- #[cfg(all(feature = "gecko-ffi", not(test)))]
- extern {
-     #[link_name = "sEmptyTArrayHeader"]
-     static EMPTY_HEADER: Header;
- }
+@@ -118,9 +330,7 @@
  
  // TODO: overflow checks everywhere
  
@@ -428,36 +383,11 @@ diff --git a/third_party/rust/thin-vec/src/lib.rs b/third_party/rust/thin-vec/sr
  
  fn alloc_size<T>(cap: usize) -> usize {
      // Compute "real" header size with pointer math
-     let header_size = mem::size_of::<Header>();
-     let elem_size = mem::size_of::<T>();
-     let padding = padding::<T>();
- 
-     // TODO: care about isize::MAX overflow?
-@@ -151,58 +358,45 @@ fn padding<T>() -> usize {
-         0
-     }
- }
- 
- fn alloc_align<T>() -> usize {
-     max(mem::align_of::<T>(), mem::align_of::<Header>())
- }
- 
-+fn layout<T>(cap: usize) -> Layout {
-+    unsafe {
-+        Layout::from_size_align_unchecked(
-+            alloc_size::<T>(cap),
-+            alloc_align::<T>(),
-+        )
-+    }
-+}
-+
+@@ -165,9 +375,10 @@
  fn header_with_capacity<T>(cap: usize) -> NonNull<Header> {
      debug_assert!(cap > 0);
      unsafe {
--        let header = heap::allocate(
--            alloc_size::<T>(cap),
--            alloc_align::<T>(),
--        ) as *mut Header;
+-        let header = alloc(layout::<T>(cap)) as *mut Header;
 +        let layout = layout::<T>(cap);
 +        let header = alloc(layout) as *mut Header;
  
@@ -466,11 +396,7 @@ diff --git a/third_party/rust/thin-vec/src/lib.rs b/third_party/rust/thin-vec/sr
  
          // "Infinite" capacity for zero-sized types:
          (*header).set_cap(if mem::size_of::<T>() == 0 { MAX_CAP } else { cap });
-         (*header).set_len(0);
- 
-         NonNull::new_unchecked(header)
-     }
- }
+@@ -179,28 +390,8 @@
  
  
  
@@ -501,17 +427,7 @@ diff --git a/third_party/rust/thin-vec/src/lib.rs b/third_party/rust/thin-vec/sr
  pub struct ThinVec<T> {
      ptr: NonNull<Header>,
      boo: PhantomData<T>,
- }
- 
- 
- /// Creates a `ThinVec` containing the arguments.
- ///
-@@ -622,25 +816,25 @@ impl<T> ThinVec<T> {
-         }
-     }
- 
-     pub fn append(&mut self, other: &mut ThinVec<T>) {
-         self.extend(other.drain(..))
+@@ -630,15 +821,15 @@
      }
  
      pub fn drain<R>(&mut self, range: R) -> Drain<T>
@@ -530,47 +446,11 @@ diff --git a/third_party/rust/thin-vec/src/lib.rs b/third_party/rust/thin-vec/sr
              Bound::Included(&n) => n + 1,
              Bound::Excluded(&n) => n,
              Bound::Unbounded => len,
-         };
-         assert!(start <= end);
-         assert!(end <= len);
+@@ -688,11 +879,30 @@
+                 alloc_size::<T>(new_cap),
+             ) as *mut Header;
  
-         unsafe {
-@@ -661,37 +855,59 @@ impl<T> ThinVec<T> {
-                 end: end,
-                 tail: len - end,
-             }
-         }
-     }
- 
-     unsafe fn deallocate(&mut self) {
-         if self.has_allocation() {
--            heap::deallocate(self.ptr() as *mut u8,
--                alloc_size::<T>(self.capacity()),
--                alloc_align::<T>());
-+            dealloc(
-+                self.ptr() as *mut u8,
-+                layout::<T>(self.capacity()),
-+            )
-         }
-     }
- 
-     /// Resize the buffer and update its capacity, without changing the length.
-     /// Unsafe because it can cause length to be greater than capacity.
-     unsafe fn reallocate(&mut self, new_cap: usize) {
-         debug_assert!(new_cap > 0);
-         if self.has_allocation() {
-             let old_cap = self.capacity();
--            let ptr = heap::reallocate(self.ptr() as *mut u8,
--                                       alloc_size::<T>(old_cap),
--                                       alloc_size::<T>(new_cap),
--                                       alloc_align::<T>()) as *mut Header;
 -            if ptr.is_null() { oom() }
-+            let ptr = realloc(
-+                self.ptr() as *mut u8,
-+                layout::<T>(old_cap),
-+                alloc_size::<T>(new_cap),
-+            ) as *mut Header;
-+
 +            if ptr.is_null() { handle_alloc_error(layout::<T>(new_cap)) }
              (*ptr).set_cap(new_cap);
              self.ptr = NonNull::new_unchecked(ptr);
@@ -599,17 +479,7 @@ diff --git a/third_party/rust/thin-vec/src/lib.rs b/third_party/rust/thin-vec/sr
          }
      }
  
-     #[cfg(feature = "gecko-ffi")]
-     #[inline]
-     fn has_allocation(&self) -> bool {
-         unsafe {
-             self.ptr.as_ptr() as *const Header != &EMPTY_HEADER &&
-@@ -1082,20 +1298,17 @@ impl io::Write for ThinVec<u8> {
- mod tests {
-     use super::{ThinVec, MAX_CAP};
- 
-     #[test]
-     fn test_size_of() {
+@@ -1093,10 +1303,7 @@
          use std::mem::size_of;
          assert_eq!(size_of::<ThinVec<u8>>(), size_of::<&u8>());
  
@@ -621,17 +491,7 @@ diff --git a/third_party/rust/thin-vec/src/lib.rs b/third_party/rust/thin-vec/sr
      }
  
      #[test]
-     fn test_drop_empty() {
-         ThinVec::<u8>::new();
-     }
- 
-     #[test]
-@@ -1720,17 +1933,16 @@ mod std_tests {
-         assert_eq!(v, &[1.to_string(), 5.to_string()]);
- 
-         let mut v: ThinVec<_> = thin_vec![(); 5];
-         for _ in v.drain(1..4).rev() {
-         }
+@@ -1731,7 +1938,6 @@
          assert_eq!(v, &[(), ()]);
      }
  
@@ -639,17 +499,7 @@ diff --git a/third_party/rust/thin-vec/src/lib.rs b/third_party/rust/thin-vec/sr
      #[test]
      fn test_drain_inclusive_range() {
          let mut v = thin_vec!['a', 'b', 'c', 'd', 'e'];
-         for _ in v.drain(1..=3) {
-         }
-         assert_eq!(v, &['a', 'e']);
- 
-         let mut v: ThinVec<_> = (0..=5).map(|x| x.to_string()).collect();
-@@ -1750,16 +1962,17 @@ mod std_tests {
- 
-         let mut v: ThinVec<_> = (0..=1).map(|x| x.to_string()).collect();
-         for _ in v.drain(..=0) {
-         }
-         assert_eq!(v, &["1".to_string()]);
+@@ -1761,6 +1967,7 @@
      }
  
      #[test]
@@ -657,17 +507,7 @@ diff --git a/third_party/rust/thin-vec/src/lib.rs b/third_party/rust/thin-vec/sr
      fn test_drain_max_vec_size() {
          let mut v = ThinVec::<()>::with_capacity(usize::max_value());
          unsafe { v.set_len(usize::max_value()); }
-         for _ in v.drain(usize::max_value() - 1..) {
-         }
-         assert_eq!(v.len(), usize::max_value() - 1);
- 
-         let mut v = ThinVec::<()>::with_capacity(usize::max_value());
-@@ -1770,17 +1983,16 @@ mod std_tests {
-     }
- 
-     #[test]
-     #[should_panic]
-     fn test_drain_inclusive_out_of_bounds() {
+@@ -1781,7 +1988,6 @@
          let mut v = thin_vec![1, 2, 3, 4, 5];
          v.drain(5..=5);
      }
@@ -675,17 +515,7 @@ diff --git a/third_party/rust/thin-vec/src/lib.rs b/third_party/rust/thin-vec/sr
  
  /* TODO: implement splice?
      #[test]
-     fn test_splice() {
-         let mut v = thin_vec![1, 2, 3, 4, 5];
-         let a = [10, 11, 12];
-         v.splice(2..4, a.iter().cloned());
-         assert_eq!(v, &[1, 2, 10, 11, 12, 5]);
-@@ -2176,17 +2388,17 @@ mod std_tests {
-         assert!(v.capacity() >= 32);
- 
-         v.push(16);
- 
-         v.reserve_exact(16);
+@@ -2187,7 +2393,7 @@
          assert!(v.capacity() >= 33)
      }
  
@@ -694,11 +524,6 @@ diff --git a/third_party/rust/thin-vec/src/lib.rs b/third_party/rust/thin-vec/sr
      #[test]
      fn test_try_reserve() {
  
-         // These are the interesting cases:
-         // * exactly isize::MAX should never trigger a CapacityOverflow (can be OOM)
-         // * > isize::MAX should always fail
-         //    * On 16/32-bit should CapacityOverflow
-         //    * On 64-bit should OOM
 diff --git a/third_party/rust/thin-vec/src/range.rs b/third_party/rust/thin-vec/src/range.rs
 deleted file mode 100644
 --- a/third_party/rust/thin-vec/src/range.rs
@@ -810,6 +635,6 @@ diff --git a/third_party/rust/thin-vec/.cargo-checksum.json b/third_party/rust/t
 --- a/third_party/rust/thin-vec/.cargo-checksum.json
 +++ b/third_party/rust/thin-vec/.cargo-checksum.json
 @@ -1 +1 @@
--{"files":{"Cargo.toml":"fb96cad605ae48215811808c1cc1b9a50248f2b14542058094b23983e2f8d8a0","README.md":"c26d7101e3031e7dd8890ce938e50cad7a1e6adf7fc2f2b0d3c36b03afe68c0b","src/heap.rs":"fe84a4ff433568d5713685456d87597ac5dcdb9d5190061a3da8074240ba1bc3","src/lib.rs":"ce36db8e3464dddade7c1ddbe3ee1f5e525af5be492ea51a0d8a0776c1adfc28","src/range.rs":"bac59bcb6230367a39c7e28ac15263e4526f966cd8c72015873017f17c115aaa"},"package":"73fdf4b84c65a85168477b7fb6c498e0716bc9487fba24623389ea7f51708044"}
+-{"files":{"Cargo.toml":"7b164cc8a702a204a4732cb4da2940711b8e3be915c258e2a972d4874d767b4c","README.md":"c26d7101e3031e7dd8890ce938e50cad7a1e6adf7fc2f2b0d3c36b03afe68c0b","src/lib.rs":"9f2a087cabfe0b6f83818323bb9004b45fe7548c51376816fd8d4572256bd0e8","src/range.rs":"bac59bcb6230367a39c7e28ac15263e4526f966cd8c72015873017f17c115aaa"},"package":"3a93c9ade36a827a69257925808463db46ffcf193442fad01eb9bdc1d31aed81"}
 \ No newline at end of file
-+{"files":{"Cargo.toml":"fb96cad605ae48215811808c1cc1b9a50248f2b14542058094b23983e2f8d8a0","README.md":"c26d7101e3031e7dd8890ce938e50cad7a1e6adf7fc2f2b0d3c36b03afe68c0b","src/lib.rs":"627c6094c3f0286dba25bc73f5672c06c5061c25b01c513d213cbdda100673a2"},"package":"73fdf4b84c65a85168477b7fb6c498e0716bc9487fba24623389ea7f51708044"}
++{"files":{"Cargo.toml":"7b164cc8a702a204a4732cb4da2940711b8e3be915c258e2a972d4874d767b4c","README.md":"c26d7101e3031e7dd8890ce938e50cad7a1e6adf7fc2f2b0d3c36b03afe68c0b","src/lib.rs":"627c6094c3f0286dba25bc73f5672c06c5061c25b01c513d213cbdda100673a2"},"package":"3a93c9ade36a827a69257925808463db46ffcf193442fad01eb9bdc1d31aed81"}
