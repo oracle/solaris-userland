@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-autoar
-COMPONENT_VERSION=	0.3.0
+COMPONENT_VERSION=	0.3.1
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/gnome-autoar/ 
 COMPONENT_ARCHIVE_HASH= \
-    sha256:f2c112c0120cca2bf5a82c5b0ac8cba90ce10d21fec78f50a3bc513fdd64586b
+    sha256:0e78713e6f0de339fdee16bab82753ae290fe80fa7b4ba6e3db8c1465b81d0f8
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	15236
 
-TPNO=			67603
+TPNO=			67998
 
 # Test directory exists, but gmake test doesn't provide anything useful
 TEST_TARGET= $(SKIP_TEST)
