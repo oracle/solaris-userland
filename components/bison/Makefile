@@ -102,6 +102,7 @@ COMPONENT_TEST_TRANSFORMS += \
     '-e "s|^.*javacomp\.sh.*$$|XXX_CC_XXX|g" ' \
     '-e "s|^warning:.*bootstrap class path not set in conjunction with.*$$|XXX_CC_XXX|g" ' \
     '-e "s|^1 warning$$|XXX_CC_XXX|g" ' \
+    '-e "s|.*/tests/testsuite -C tests.*|XXX_CC_XXX|g" ' \
     '-e "/^XXX_CC_XXX$$/d" ' \
 
 REQUIRED_PACKAGES += developer/macro/gnu-m4
