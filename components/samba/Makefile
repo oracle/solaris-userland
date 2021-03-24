@@ -86,10 +86,6 @@ $(BUILD_DIR_64)/%:	MACHLIBDIR=/$(MACH64)
 #override WAFOPTS	=	-v -j1
 WAF= $(PYTHON) ./buildtools/bin/waf
 
-PKG_VARS += COMPONENT_SRC_URL
-# Set the pkg... path to search files in ./Solaris/ dir (mainly the SMF manifests are there)
-PKG_PROTO_DIRS += $(COMPONENT_DIR)
-
 # pkg-config files
 PKGCONFIG_AUX_DIR = $(BUILD_DIR)/lib$(MACHLIBDIR)/pkgconfig
 
