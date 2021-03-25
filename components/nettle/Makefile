@@ -20,20 +20,22 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nettle
-COMPONENT_VERSION=	3.5.1
+COMPONENT_VERSION=	3.7.2
 COMPONENT_PROJECT_URL=	http://www.lysator.liu.se/~nisse/nettle/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:75cca1998761b02e16f2db56da52992aef622bf55a3b45ec538bc2eedadc9419
+    sha256:8d2a604ef1cde4cd5fb77e422531ea25ad064679ff0adf956e78b3352e0ef162
 COMPONENT_BUGDB=	library/nettle
 COMPONENT_ANITYA_ID=	2073
 
-TPNO=	55302
+COMPILER=	gcc
+
+TPNO=	68075
 
 ifeq ($(MACH),i386)
 
@@ -135,17 +137,17 @@ $(BUILD_DIR)/wanboot-amd64/.installed: \
 	COMPONENT_POST_INSTALL_ACTION += \
 	$(AR) ts $(PROTO_DIR)/usr/lib/grub/wanboot/libhogweed.a;
 
-# Install nettle 3.4.0 and copy the shared libraries.
+# Install nettle 3.5.1 and copy the shared libraries.
 COMPONENT_POST_INSTALL_ACTION += ( \
-	cd ../nettle34; \
+	cd ../nettle35; \
 	$(GMAKE) install; \
 	$(MKDIR) $(PROTO_DIR)/usr/lib/$(MACH64)/; \
-	gcp -av build/prototype/$(MACH)/usr/lib/libhogweed.so.4* $(PROTO_DIR)/usr/lib/; \
-	gcp -av build/prototype/$(MACH)/usr/lib/libnettle.so.6* $(PROTO_DIR)/usr/lib/; \
-	gcp -av build/prototype/$(MACH)/usr/lib/$(MACH64)/libhogweed.so.4* $(PROTO_DIR)/usr/lib/$(MACH64)/; \
-	gcp -av build/prototype/$(MACH)/usr/lib/$(MACH64)/libnettle.so.6* $(PROTO_DIR)/usr/lib/$(MACH64)/; \
+	gcp -av build/prototype/$(MACH)/usr/lib/libhogweed.so.5* $(PROTO_DIR)/usr/lib/; \
+	gcp -av build/prototype/$(MACH)/usr/lib/libnettle.so.7* $(PROTO_DIR)/usr/lib/; \
+	gcp -av build/prototype/$(MACH)/usr/lib/$(MACH64)/libhogweed.so.5* $(PROTO_DIR)/usr/lib/$(MACH64)/; \
+	gcp -av build/prototype/$(MACH)/usr/lib/$(MACH64)/libnettle.so.7* $(PROTO_DIR)/usr/lib/$(MACH64)/; \
 );
 
-PRE_CLEAN_ACTION += cd ../nettle34 && $(GMAKE) clean;
+PRE_CLEAN_ACTION += cd ../nettle35 && $(GMAKE) clean;
 
 REQUIRED_PACKAGES += library/gmp

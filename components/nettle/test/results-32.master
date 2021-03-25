@@ -2,6 +2,7 @@ PASS: aes
 PASS: arcfour
 PASS: arctwo
 PASS: blowfish
+PASS: bcrypt
 PASS: cast128
 PASS: base16
 PASS: base64
@@ -32,6 +33,8 @@ PASS: sha3-224
 PASS: sha3-256
 PASS: sha3-384
 PASS: sha3-512
+PASS: shake256
+PASS: streebog
 PASS: serpent
 PASS: twofish
 PASS: version
@@ -43,6 +46,7 @@ PASS: gcm
 PASS: eax
 PASS: ccm
 PASS: cmac
+PASS: siv
 PASS: poly1305
 PASS: chacha-poly1305
 PASS: hmac
@@ -51,10 +55,12 @@ PASS: meta-hash
 PASS: meta-cipher
 PASS: meta-aead
 PASS: meta-armor
+PASS: meta-mac
 PASS: buffer
 PASS: yarrow
 PASS: xts
 PASS: pbkdf2
+SKIP: x86-ibt
 PASS: sexp
 PASS: sexp-format
 PASS: rsa2sexp
@@ -75,6 +81,7 @@ PASS: rsa-compute-root
 PASS: dsa
 PASS: dsa-keygen
 PASS: curve25519-dh
+PASS: curve448-dh
 PASS: ecc-mod
 PASS: ecc-modinv
 PASS: ecc-redc
@@ -91,19 +98,24 @@ PASS: eddsa-compress
 PASS: eddsa-sign
 PASS: eddsa-verify
 PASS: ed25519
+PASS: ed448
+PASS: gostdsa-sign
+PASS: gostdsa-verify
+PASS: gostdsa-keygen
+PASS: gostdsa-vko
 PASS: cxx
 PASS: sexp-conv
 PASS: pkcs1-conv
 PASS: nettle-pbkdf2
 PASS: symbols
 PASS: dlopen
-===================
-All 99 tests passed
-===================
+====================
+All 110 tests passed
+====================
 make[2]: Leaving directory '$(@D)/testsuite'
 Making check in examples
 make[2]: Entering directory '$(@D)/examples'
-LD_LIBRARY_PATH=../.lib PATH="../.lib:$PATH" DYLD_LIBRARY_PATH=../.lib \
+TEST_SHLIB_DIR="$(@D)/.lib" \
   srcdir="$(SOURCE_DIR)/examples" EMULATOR="" EXEEXT="" \
           "$(SOURCE_DIR)"/run-tests rsa-sign-test rsa-verify-test rsa-encrypt-test
 xxxxxx
