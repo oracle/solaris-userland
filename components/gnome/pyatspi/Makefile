@@ -20,68 +20,57 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64
+COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pyatspi
-COMPONENT_VERSION=	2.34.0
+COMPONENT_VERSION=	2.38.1
 COMPONENT_PROJECT_URL=	\
 	https://wiki.linuxfoundation.org/accessibility/atk/at-spi/at-spi_on_d-bus
 COMPONENT_ARCHIVE_HASH= \
-       sha256:97bc5248cc376348ad5cf8a2e9929d3847a7710ad99fa72b52ccb40f64396e48
+       sha256:e49f27e9e29c24ac3ccb837a7f221952532940da0344e7e8c0899924aeb98151
 COMPONENT_BUGDB=	gnome/a11y-libs-core
 COMPONENT_ANITYA_ID=	13157
 
-TPNO=		        56714
+TPNO=			68132
 
-# This component is not yet built for Python 3.9
-PYTHON_VERSIONS = $(WITHOUT_PYTHON3.9)
-
-# This is needed for 32 bit variant of pyatspi
-PYTHON_VERSION = 2.7
+PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 # replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses configure.mk
-CONFIGURE_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
-$(BUILD_DIR)/%-2.7/.configured:		PYTHON_VERSION=2.7 PYTHON_VENDOR_PACKAGES_BASE=$(PYTHON_VENDOR_PACKAGES.32)
+CONFIGURE_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
 $(BUILD_DIR)/%-3.7/.configured:		PYTHON_VERSION=3.7
-$(BUILD_DIR)/$(MACH64)-%/.configured:	BITS=64
+$(BUILD_DIR)/%-3.9/.configured:		PYTHON_VERSION=3.9
 
-BUILD_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
-$(BUILD_DIR)/%-2.7/.built:		PYTHON_VERSION=2.7
+BUILD_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.built)
 $(BUILD_DIR)/%-3.7/.built:		PYTHON_VERSION=3.7
-$(BUILD_DIR)/$(MACH64)-%/.built:	BITS=64
+$(BUILD_DIR)/%-3.9/.built:		PYTHON_VERSION=3.9
 
-INSTALL_64 += $(PYTHON3_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
-$(BUILD_DIR)/%-2.7/.installed:		PYTHON_VERSION=2.7
+INSTALL_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
 $(BUILD_DIR)/%-3.7/.installed:		PYTHON_VERSION=3.7
-$(BUILD_DIR)/$(MACH64)-%/.installed:	BITS=64
+$(BUILD_DIR)/%-3.9/.installed:		PYTHON_VERSION=3.9
 
-# Tests require dbus python module, which we don't have for python3 yet
-TEST_TARGET= $(SKIP_TEST)
+TEST_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.tested)
+$(BUILD_DIR)/%-3.7/.tested:		PYTHON_VERSION=3.7
+$(BUILD_DIR)/%-3.9/.tested:		PYTHON_VERSION=3.9
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+include $(WS_MAKE_RULES)/test-x11.mk
 
 CONFIGURE_OPTIONS += --disable-static
-# Tests require dbus python module, which we don't have for python3 yet
-CONFIGURE_OPTIONS += --disable-tests
+CONFIGURE_OPTIONS += --enable-tests
 CONFIGURE_OPTIONS += --with-python=$(PYTHON)
 
 # Ensure Python modules are installed into vendor package directories.
 CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES_BASE)
 CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES_BASE)
 
-# Make install path match what autopyc transforms look for
-COMPONENT_POST_INSTALL_ACTION += \
-     case "$(PYTHON_VERSION)" in \
-	3.*) $(SYMLINK) 64/pyatspi $(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)/pyatspi ;; \
-     esac ;
-
 REQUIRED_PACKAGES += library/python/pygobject-3
-REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-39
 
 # These are needed to build & run tests, but not for distributed packages
 REQUIRED_PACKAGES += library/desktop/atk
