@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		lxml
-COMPONENT_VERSION=	4.6.2
+COMPONENT_VERSION=	4.6.3
 COMPONENT_PROJECT_URL=	http://lxml.de/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c747048240b5ee7bc1c51396d18285687ed7adc1df68efd1ed2d8c7dd3dd82f5
+    sha256:7fe7be44b06810c29524f721c95b3262c53fdc75d34b8a5fb12b7171e89446ed
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/lxml
 COMPONENT_ANITYA_ID=	48378
 
-TPNO=			63747
+TPNO=			68183
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
