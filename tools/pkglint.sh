@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 IFS=
 
@@ -36,7 +36,7 @@ while ! mkdir "$LOCKDIR" ; do
 	sleep $SLEEPTIME
 done
 
-/usr/bin/python3.7 /usr/bin/pkglint $*
+/usr/bin/pkglint $*
 
 pls=$?
 

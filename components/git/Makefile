@@ -22,6 +22,7 @@
 #
 # Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
+
 BUILD_BITS= 64
 # Studio compiler failed to build ref-filter.c:
 # "ref-filter.c", line 223: void function cannot return value
@@ -154,6 +155,8 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
 COMPONENT_PRE_CONFIGURE_ACTION += ; (cd $(@D); $(GMAKE) configure)
 
+# Allow manigest-generate see man pages from the second archive
+GENERATE_PROTO_DIRS += $(COMPONENT_SRC_1)
 
 REQUIRED_PACKAGES += crypto/gnupg
 REQUIRED_PACKAGES += library/expat

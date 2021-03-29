@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
@@ -32,9 +32,7 @@
 # fix file mode of several files
 <transform file path=.*/pxgsettings$ -> set mode 0555>
 
-# move libproxy.3lib and Findlibproxy.cmake to a correct location
-<transform file path=files/libproxy.3lib$ -> set action.hash %(path)>
-<transform file path=files/libproxy.3lib$ -> edit path files usr/share/man/man3lib>
+# move Findlibproxy.cmake to a correct location
 <transform file path=.*/Findlibproxy.cmake$ -> set action.hash %(path)>
 <transform file path=.*/Findlibproxy.cmake$ -> edit path /cmake/ /cmake-3.15/>
 

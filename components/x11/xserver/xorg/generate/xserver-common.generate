@@ -1,3 +1,4 @@
+#
 # CDDL HEADER START
 #
 # The contents of this file are subject to the terms of the
@@ -17,8 +18,9 @@
 #
 # CDDL HEADER END
 #
+
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
@@ -31,11 +33,6 @@
 
 # Make scripts executable in unusual directory
 <transform file path=usr/demo/Xserver/mdb/list.* -> set mode 0555>
-
-# Move files into expected delivery location
-<transform file path=files/x11-server.8s -> set action.hash %(path)>
-<transform file path=files/x11-server.8s -> \
-    edit path ^files usr/share/man/man8s/application/x11 >
 
 # Links for compatibility with Solaris 10 paths - placed here instead of
 # in the static file so that the next rule will drop it on SPARC platforms

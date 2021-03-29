@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 
 # Use this trick to revert $(MACH32) expansions.
@@ -33,11 +33,6 @@
 <transform file path=usr/bin/\$\(MACH32\)/xslt-config -> set action.hash %(path)>
 <transform file path=usr/bin/\$\(MACH32\)/xslt-config -> edit path ^.*$ usr/bin/xslt-config>
 
-# Set the installation path for the xslt-config.1 manual page.
-<transform file path=xslt-config.1 -> set action.hash %(path)>
-<transform file path=xslt-config.1 -> edit path ^.*$ \
-  usr/share/man/man1/xslt-config.1>
-
 # The configuration script and its documentation are installed only if the devel facet is set.
 <transform file path=usr/bin/\$\(MACH64\)/xslt-config -> set facet.devel true>
 <transform file path=usr/bin/xslt-config -> set facet.devel true>
@@ -46,11 +41,6 @@
 # Remove duplicate lines.
 <transform file path=usr/lib/llib-lxslt$ -> drop>
 <transform file path=usr/lib/llib-lexslt$ -> drop>
-# Prepend 'usr/lib/' path to llib-l(e)xslt files.
-<transform file path=llib-lxslt$ -> set action.hash %(path)>
-<transform file path=llib-lxslt$ -> edit path ^.*$ usr/lib/llib-lxslt>
-<transform file path=llib-lexslt$ -> set action.hash %(path)>
-<transform file path=llib-lexslt$ -> edit path ^.*$ usr/lib/llib-lexslt>
 
 # 32-bit binary of xsltproc is not delivered.
 <transform file path=usr/bin/\$\(MACH32\)/xsltproc -> drop>

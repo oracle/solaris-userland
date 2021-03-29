@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
 #
 
 #
@@ -147,7 +147,7 @@ PKG_OPTIONS +=		$(PKG_MACROS:%=-D %)
 # 11.3 doesn't include CWD in pkgmogrify search path
 PKG_OPTIONS +=		-I$(COMPONENT_DIR)
 
-MANGLED_DIR =	$(PROTO_DIR)/mangled
+MANGLED_DIR =	$(BUILD_DIR)/mangled
 
 # We use += below so anyone wishing to put other directories at the beginning
 # of the list can do so, by setting PKG_PROTO_DIRS before including this file.
@@ -453,16 +453,16 @@ $(MANIFEST_BASE)-%.mogrified:	$(MANIFEST_BASE)-%.p5m $(BUILD_DIR)
 		sed -e '/^$$/d' -e '/^#.*$$/d' | uniq >$@
 
 # mangle the file contents
-$(BUILD_DIR) $(MANGLED_DIR):
+$(BUILD_DIR) $(MANGLED_DIR) $(PROTO_DIR):
 	$(MKDIR) $@
 
 PKGMANGLE_OPTIONS = -D $(MANGLED_DIR) $(PKG_PROTO_DIRS:%=-d %)
-$(MANIFEST_BASE)-%.mangled:	$(MANIFEST_BASE)-%.mogrified $(MANGLED_DIR)
+$(MANIFEST_BASE)-%.mangled:	$(MANIFEST_BASE)-%.mogrified $(MANGLED_DIR) $(PROTO_DIR)
 	$(PKGMANGLE) $(PKGMANGLE_OPTIONS) -m $< >$@
 
 # generate dependencies
 PKGDEPEND_GENERATE_OPTIONS = -m $(PKG_PROTO_DIRS:%=-d %)
-$(MANIFEST_BASE)-%.depend:	$(MANIFEST_BASE)-%.mangled
+$(MANIFEST_BASE)-%.depend:	$(MANIFEST_BASE)-%.mangled $(PROTO_DIR)
 	$(ENV) $(COMPONENT_PUBLISH_ENV) $(PKGDEPEND) generate \
 	    $(PKGDEPEND_GENERATE_OPTIONS) $< >$@
 
