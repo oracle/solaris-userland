@@ -1,0 +1,30 @@
+Revert the changes being made upstream for multi-seat and autologin 
+detection which causes a regression in Solaris, and switch to the check
+we did prior to the 3.34 update
+
+Not suitable for upstream
+
+--- a/daemon/gdm-manager.c	2021-03-19 10:20:34.641885706 -0700
++++ b/daemon/gdm-manager.c	2021-03-19 11:24:21.095146102 -0700
+@@ -1888,20 +1888,11 @@
+         ActUserManager *user_manager;
+         ActUser *user;
+         gboolean loaded;
+-        gboolean seat_can_autologin = FALSE, seat_did_autologin = FALSE;
+         gboolean autologin_enabled = FALSE;
+         g_autofree char *seat_id = NULL;
+         char *username = NULL;
+ 
+-        g_object_get (G_OBJECT (display), "seat-id", &seat_id, NULL);
+-
+-        if (g_strcmp0 (seat_id, "seat0") == 0)
+-                seat_can_autologin = TRUE;
+-
+-        if (manager->priv->did_automatic_login || manager->priv->automatic_login_display != NULL)
+-                seat_did_autologin = TRUE;
+-
+-        if (seat_can_autologin && !seat_did_autologin)
++        if (!manager->priv->did_automatic_login && display_is_on_seat0 (display))
+                 autologin_enabled = get_automatic_login_details (manager, &username);
+ 
+         if (!autologin_enabled) {
