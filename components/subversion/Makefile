@@ -81,7 +81,8 @@ COMPONENT_TEST_TRANSFORMS += \
      '-e "/ld: warning/d"' \
      '-e "/warning/d"' \
      '-e "/exists from a previous run/d"' \
-     '-e "s/\.//g"'
+     '-e "s/\.//g"' \
+     '-e "/^Python version.*/d"'
 
 # There is only one version of Perl supported and Perl is only 64-bit
 PERL_VERSION = 5.32
