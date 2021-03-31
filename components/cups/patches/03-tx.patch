@@ -5,10 +5,10 @@ job. Security checks are done to enforce the rules of Trusted environment.
 Index: Makedefs.in
 ===================================================================
 diff --git a/Makedefs.in b/Makedefs.in
-index 9ee7585..adee07e 100644
+index 9ee7585..fa96547 100644
 --- a/Makedefs.in
 +++ b/Makedefs.in
-@@ -161,7 +161,7 @@
+@@ -161,7 +161,7 @@ ARFLAGS		=	@ARFLAGS@
  BACKLIBS	=	@BACKLIBS@
  BUILDDIRS	=	@BUILDDIRS@
  CFLAGS		=	@CPPFLAGS@ @CFLAGS@
@@ -54,7 +54,7 @@ index 9c4aa11..7eeab82 100644
      if (argv[i][0] == '+')
 diff --git a/config-scripts/cups-labeling.m4 b/config-scripts/cups-labeling.m4
 new file mode 100644
-index 0000000..4f21de2
+index 0000000..5b71457
 --- /dev/null
 +++ b/config-scripts/cups-labeling.m4
 @@ -0,0 +1,7 @@
@@ -66,10 +66,10 @@ index 0000000..4f21de2
 +		AC_DEFINE(HAVE_TSOL, 1, [Define if Trusted Solaris is enabled.])])
 +fi
 diff --git a/config.h.in b/config.h.in
-index 5e93a9d..49ed7a4 100644
+index 1c2d7a8..5fdd576 100644
 --- a/config.h.in
 +++ b/config.h.in
-@@ -684,4 +684,10 @@ static __inline int _cups_abs(int i) { return (i < 0 ? -i : i); }
+@@ -677,4 +677,10 @@ static __inline int _cups_abs(int i) { return (i < 0 ? -i : i); }
  #  endif /* __GNUC__ || __STDC_VERSION__ */
  #endif /* !HAVE_ABS && !abs */
  
@@ -81,7 +81,7 @@ index 5e93a9d..49ed7a4 100644
 +
  #endif /* !_CUPS_CONFIG_H_ */
 diff --git a/configure.ac b/configure.ac
-index 7eca9e3..3e3bf30 100644
+index dbf3bda..117ef45 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -33,6 +33,7 @@ sinclude(config-scripts/cups-largefile.m4)
@@ -93,7 +93,7 @@ index 7eca9e3..3e3bf30 100644
  INSTALL_LANGUAGES=""
  UNINSTALL_LANGUAGES=""
 diff --git a/scheduler/auth.c b/scheduler/auth.c
-index 5bb80ed..ecf28f2 100644
+index 4fbad6e..a4fea83 100644
 --- a/scheduler/auth.c
 +++ b/scheduler/auth.c
 @@ -1691,8 +1691,38 @@ cupsdIsAuthorized(cupsd_client_t *con,	/* I - Connection */
@@ -137,7 +137,7 @@ index 5bb80ed..ecf28f2 100644
      }
  
 diff --git a/scheduler/client.c b/scheduler/client.c
-index f693e7c..4a34367 100644
+index c2ee8f1..6c20609 100644
 --- a/scheduler/client.c
 +++ b/scheduler/client.c
 @@ -26,6 +26,11 @@
@@ -152,7 +152,7 @@ index f693e7c..4a34367 100644
  
  /*
   * Local functions...
-@@ -52,7 +57,66 @@
+@@ -52,6 +57,65 @@ static int		write_file(cupsd_client_t *con, http_status_t code,
  				   struct stat *filestats);
  static void		write_pipe(cupsd_client_t *con);
  
@@ -167,7 +167,7 @@ index f693e7c..4a34367 100644
 +    errno = EINVAL;
 +    return (-1);
 +  }
- 
++
 +  *label = NULL; /* default to unlabeled */
 +
 +  if (is_system_labeled()) {
@@ -215,11 +215,10 @@ index f693e7c..4a34367 100644
 +}
 +#endif /* HAVE_TSOL */
 +
-+
+ 
  /*
   * 'cupsdAcceptClient()' - Accept a new client.
-  */
-@@ -265,6 +328,21 @@ cupsdAcceptClient(cupsd_listener_t *lis)/* I - Listener socket */
+@@ -265,6 +329,21 @@ cupsdAcceptClient(cupsd_listener_t *lis)/* I - Listener socket */
    }
  #endif /* HAVE_TCPD_H */
  
@@ -241,7 +240,7 @@ index f693e7c..4a34367 100644
  #ifdef AF_LOCAL
    if (httpAddrFamily(httpGetAddress(con->http)) == AF_LOCAL)
    {
-@@ -473,6 +551,12 @@ cupsdCloseClient(cupsd_client_t *con)	/* I - Client to close */
+@@ -473,6 +552,12 @@ cupsdCloseClient(cupsd_client_t *con)	/* I - Client to close */
      }
    }
  
@@ -267,6 +266,8 @@ index fc7af54..32806ce 100644
  };
  
  #define HTTP(con) ((con)->http)
+diff --git a/scheduler/cupsd.h b/scheduler/cupsd.h
+index bc1350e..cfeacc8 100644
 --- a/scheduler/cupsd.h
 +++ b/scheduler/cupsd.h
 @@ -39,6 +39,9 @@
@@ -279,149 +280,11 @@ index fc7af54..32806ce 100644
  
  /*
   * Some OS's don't have hstrerror(), most notably Solaris...
-diff --git a/scheduler/job.c b/scheduler/job.c
---- a/scheduler/job.c
-+++ b/scheduler/job.c
-@@ -1062,8 +1062,14 @@
-   if (final_content_type[0])
-     envp[envc ++] = final_content_type;
- 
--  if (Classification && !banner_page)
-+  if (job->slabel != NULL)
-   {
-+    snprintf(classification, sizeof(classification), "CLASSIFICATION=%s",
-+             job->slabel);
-+    envp[envc ++] = classification;
-+  }
-+  else if (Classification && !banner_page)
-+  {
-     if ((attr = ippFindAttribute(job->attrs, "job-sheets",
-                                  IPP_TAG_NAME)) == NULL)
-       snprintf(classification, sizeof(classification), "CLASSIFICATION=%s",
-@@ -1412,6 +1418,12 @@
-     job->num_files = 0;
-   }
- 
-+  if (job->slabel)
-+  {
-+    free(job->slabel);
-+    job->slabel = NULL;
-+  }
-+
-   if (job->history)
-     free_job_history(job);
- 
-@@ -1840,6 +1852,10 @@
-       ippSetString(job->attrs, &job->reasons, 0, "none");
-   }
- 
-+  if ((attr = ippFindAttribute(job->attrs, "security-label",
-+                                IPP_TAG_NAME)) != NULL)
-+    cupsdSetString(&job->slabel, attr->values[0].string.text);
-+
-   job->impressions = ippFindAttribute(job->attrs, "job-impressions-completed", IPP_TAG_INTEGER);
-   job->sheets      = ippFindAttribute(job->attrs, "job-media-sheets-completed", IPP_TAG_INTEGER);
-   job->job_sheets  = ippFindAttribute(job->attrs, "job-sheets", IPP_TAG_NAME);
-@@ -3871,6 +3887,25 @@
-   for (i = num_pwgppds, pwgppd = pwgppds; i > 0; i --, pwgppd ++)
-     newlength += 1 + strlen(pwgppd->name) + 1 + strlen(pwgppd->value);
- 
-+#if defined(HAVE_TSOL)
-+  if (is_system_labeled()) {
-+    if(job->current_file == 0)
-+      /*
-+       * Increase length to add option ' banner=true' to options string
-+       * in case of banner page.
-+       */
-+      newlength += strlen(" banner=true");
-+    else if (job->job_sheets->num_values > 1 &&
-+             job->current_file == (job->num_files - 1))
-+      /*
-+       * Increase length to add option ' trailer=true' to options string
-+       * in case of trailer page.
-+       */
-+      newlength += strlen(" trailer=true");
-+  }
-+
-+#endif /* HAVE_TSOL */
-+
-  /*
-   * Then allocate/reallocate the option buffer as needed...
-   */
-@@ -4111,6 +4146,25 @@
- 
-   cupsFreeOptions(num_pwgppds, pwgppds);
- 
-+#if defined(HAVE_TSOL)
-+  if (is_system_labeled()) {
-+    if(job->current_file == 0)
-+      /*
-+       * Add option ' banner=true' to options string
-+       * in case of banner page.
-+       */
-+      strlcat(optptr, " banner=true", 13);
-+    else if (/*job->job_sheets->num_values > 1 && */
-+             job->current_file == (job->num_files - 1)) 
-+      /*
-+       * Add option ' trailer=true' to options string
-+       * in case of trailer page.
-+       */
-+      strlcat(optptr, " trailer=true", 14);
-+  }
-+
-+#endif /* HAVE_TSOL */
-+
-  /*
-   * Return the options string...
-   */
-@@ -4815,6 +4869,18 @@
-   if (!cupsdLoadJob(job))
-     return;
- 
-+  /*
-+   * Verify that the job sensitivity label is in range of the printer.
-+   */
-+  if (cupsdInPrinterLabelRange(job->slabel, printer) == 0) {
-+    cupsdLogMessage(CUPSD_LOG_ERROR,
-+                    "start_job(): job label outside of printer label range");
-+    cupsdSetJobState(job, IPP_JOB_CANCELED, CUPSD_JOB_DEFAULT,
-+                     "job label is outside of printer label range");
-+    cupsdCheckJobs();
-+    return;
-+  }
-+
-   if (!job->printer_message)
-     job->printer_message = ippFindAttribute(job->attrs,
-                                             "job-printer-state-message",
-diff --git a/scheduler/job.h b/scheduler/job.h
-index 2400ea9..d69c812 100644
---- a/scheduler/job.h
-+++ b/scheduler/job.h
-@@ -84,6 +84,8 @@ struct cupsd_job_s			/**** Job request ****/
-   int			progress;	/* Printing progress */
-   int			num_keywords;	/* Number of PPD keywords */
-   cups_option_t		*keywords;	/* PPD keywords */
-+  char                  *slabel;	/* security context for security
-+					   labeled environments */
- };
- 
- typedef struct cupsd_joblog_s		/**** Job log message ****/
-diff --git a/scheduler/printers.h b/scheduler/printers.h
-index 4959bf2..71751e1 100644
---- a/scheduler/printers.h
-+++ b/scheduler/printers.h
-@@ -162,6 +162,8 @@ extern cupsd_printer_t	*cupsdFindPrinter(const char *name);
- extern cupsd_quota_t	*cupsdFindQuota(cupsd_printer_t *p,
- 			                const char *username);
- extern void		cupsdFreeQuotas(cupsd_printer_t *p);
-+extern int              cupsdInPrinterLabelRange(char *slabel,
-+						 cupsd_printer_t *p);
- extern void		cupsdLoadAllPrinters(void);
- extern void		cupsdRenamePrinter(cupsd_printer_t *p,
- 			                   const char *name);
+diff --git a/scheduler/ipp.c b/scheduler/ipp.c
+index 2fe3bf2..16b870b 100644
 --- a/scheduler/ipp.c
 +++ b/scheduler/ipp.c
-@@ -27,6 +27,11 @@
+@@ -27,6 +27,11 @@ extern int mbr_group_name_to_uuid(const char* name, uuid_t uu);
  extern int mbr_check_membership_by_id(uuid_t user, gid_t group, int* ismember);
  #endif /* __APPLE__ */
  
@@ -433,7 +296,7 @@ index 4959bf2..71751e1 100644
  
  /*
   * Local functions...
-@@ -712,17 +717,37 @@
+@@ -712,17 +717,37 @@ cupsdTimeoutJob(cupsd_job_t *job)	/* I - Job to timeout */
    printer = cupsdFindDest(job->dest);
    attr    = ippFindAttribute(job->attrs, "job-sheets", IPP_TAG_NAME);
  
@@ -462,13 +325,13 @@ index 4959bf2..71751e1 100644
 +       * should not be printed.
 +       */
 +      job_sheets_banner = attr->values[0].string.text;
- 
++
 +      if ((strcmp(job_sheets_banner, "none") != 0) ||
 +	  (!chkauthattr("solaris.print.nobanner", job->username)))
 +	  job_sheets_banner = "labeled";
 +    }
 +#endif /* HAVE_TSOL */
-+
+ 
      cupsdLogJob(job, CUPSD_LOG_INFO, "Adding end banner page \"%s\".",
 -                attr->values[1].string.text);
 +                job_sheets_banner);
@@ -478,7 +341,7 @@ index 4959bf2..71751e1 100644
        return (-1);
  
      cupsdUpdateQuota(printer, job->username, 0, kbytes);
-@@ -731,7 +756,51 @@
+@@ -731,6 +756,50 @@ cupsdTimeoutJob(cupsd_job_t *job)	/* I - Job to timeout */
    return (0);
  }
  
@@ -486,7 +349,7 @@ index 4959bf2..71751e1 100644
 +compare_labels(char *label1, char *label2)
 +{
 +  int result = 0;
- 
++
 +  if ((label1 != NULL) && (label2 != NULL))
 +  {
 +#if defined(HAVE_TSOL)
@@ -526,11 +389,10 @@ index 4959bf2..71751e1 100644
 +
 +  return (result);
 +}
-+
+ 
  /*
   * 'accept_jobs()' - Accept print jobs to a printer.
-  */
-@@ -1247,6 +1316,17 @@
+@@ -1247,6 +1316,17 @@ add_job(cupsd_client_t  *con,		/* I - Client connection */
  		  filetype, filetype ? filetype->super : "none",
  		  filetype ? filetype->type : "none");
  
@@ -548,7 +410,7 @@ index 4959bf2..71751e1 100644
   /*
    * Check remote printing to non-shared printer...
    */
-@@ -1576,6 +1656,19 @@
+@@ -1576,6 +1656,19 @@ add_job(cupsd_client_t  *con,		/* I - Client connection */
      return (NULL);
    }
  
@@ -568,7 +430,7 @@ index 4959bf2..71751e1 100644
    job->dtype   = printer->type & (CUPS_PRINTER_CLASS | CUPS_PRINTER_REMOTE);
    job->attrs   = con->request;
    job->dirty   = 1;
-@@ -1637,7 +1730,7 @@
+@@ -1637,7 +1730,7 @@ add_job(cupsd_client_t  *con,		/* I - Client connection */
  
      if (attr->value_tag != IPP_TAG_NAME ||
          attr->num_values != 1 ||
@@ -577,7 +439,7 @@ index 4959bf2..71751e1 100644
      {
       /*
        * Can't override the value if we aren't connected via localhost.
-@@ -1880,10 +1973,24 @@
+@@ -1880,10 +1973,24 @@ add_job(cupsd_client_t  *con,		/* I - Client connection */
  
      if (!(printer->type & CUPS_PRINTER_REMOTE))
      {
@@ -604,7 +466,7 @@ index 4959bf2..71751e1 100644
        {
          cupsdSetJobState(job, IPP_JOB_ABORTED, CUPSD_JOB_PURGE,
  	                 "Aborting job because the start banner could not be "
-@@ -3025,6 +3132,15 @@
+@@ -3025,6 +3132,15 @@ authenticate_job(cupsd_client_t  *con,	/* I - Client connection */
      return;
    }
  
@@ -620,7 +482,7 @@ index 4959bf2..71751e1 100644
   /*
    * See if the job has been completed...
    */
-@@ -3497,6 +3613,16 @@
+@@ -3497,6 +3613,16 @@ cancel_job(cupsd_client_t  *con,	/* I - Client connection */
      return;
    }
  
@@ -637,7 +499,7 @@ index 4959bf2..71751e1 100644
   /*
    * See if the job is owned by the requesting user...
    */
-@@ -5891,6 +6017,16 @@
+@@ -5891,6 +6017,16 @@ create_subscriptions(
  	                jobid);
  	return;
        }
@@ -654,7 +516,7 @@ index 4959bf2..71751e1 100644
      }
      else
        job = NULL;
-@@ -6439,6 +6575,15 @@
+@@ -6439,6 +6575,15 @@ get_job_attrs(cupsd_client_t  *con,	/* I - Client connection */
  
    exclude = cupsdGetPrivateAttrs(policy, con, printer, job->username);
  
@@ -670,27 +532,29 @@ index 4959bf2..71751e1 100644
   /*
    * Copy attributes...
    */
-@@ -6698,6 +6843,19 @@
+@@ -6698,6 +6843,21 @@ get_jobs(cupsd_client_t  *con,		/* I - Client connection */
    else
      username[0] = '\0';
  
 +#if defined(HAVE_TSOL)
-+ /*
-+  * By default, see jobs for a specific user in case of
-+  * Trusted Extensions environment.
-+  * List all jobs if the user is authorized.
-+  */
-+
-+  if (!chkauthattr("solaris.print.list", get_username(con)))
-+    strlcpy(username, get_username(con), sizeof(username));
-+  else
-+    username[0] = '\0';
++  if (is_system_labeled()) {
++   /*
++    * By default, see jobs for a specific user in case of
++    * Trusted Extensions environment.
++    * List all jobs if the user is authorized.
++    */
++  
++    if (!chkauthattr("solaris.print.list", get_username(con)))
++      strlcpy(username, get_username(con), sizeof(username));
++    else
++      username[0] = '\0';
++  }
 +#endif /* HAVE_TSOL */
 +
    ra = create_requested_array(con->request);
    for (job_attr = (char *)cupsArrayFirst(ra); job_attr; job_attr = (char *)cupsArrayNext(ra))
      if (strcmp(job_attr, "job-id") &&
-@@ -6826,6 +6984,14 @@
+@@ -6765,6 +6925,14 @@ get_jobs(cupsd_client_t  *con,		/* I - Client connection */
        {
          cupsdLoadJob(job);
  
@@ -705,7 +569,7 @@ index 4959bf2..71751e1 100644
  	if (!job->attrs)
  	{
  	  cupsdLogMessage(CUPSD_LOG_DEBUG2, "get_jobs: No attributes for job %d", job->id);
-@@ -7931,6 +8097,15 @@
+@@ -7931,6 +8099,15 @@ hold_job(cupsd_client_t  *con,		/* I - Client connection */
      return;
    }
  
@@ -721,7 +585,7 @@ index 4959bf2..71751e1 100644
   /*
    * See if the job is owned by the requesting user...
    */
-@@ -8201,6 +8376,14 @@
+@@ -8201,6 +8378,14 @@ move_job(cupsd_client_t  *con,		/* I - Client connection */
        send_ipp_status(con, IPP_NOT_FOUND, _("Job #%d does not exist."), jobid);
        return;
      }
@@ -736,7 +600,7 @@ index 4959bf2..71751e1 100644
      else
      {
       /*
-@@ -8223,6 +8406,27 @@
+@@ -8223,6 +8408,27 @@ move_job(cupsd_client_t  *con,		/* I - Client connection */
      return;
    }
  
@@ -764,7 +628,7 @@ index 4959bf2..71751e1 100644
   /*
    * Now move the job or jobs...
    */
-@@ -9069,6 +9273,16 @@
+@@ -9069,6 +9275,16 @@ release_job(cupsd_client_t  *con,	/* I - Client connection */
      return;
    }
  
@@ -781,7 +645,7 @@ index 4959bf2..71751e1 100644
   /*
    * See if job is "held"...
    */
-@@ -9293,6 +9507,15 @@
+@@ -9293,6 +9509,15 @@ restart_job(cupsd_client_t  *con,	/* I - Client connection */
      return;
    }
  
@@ -797,7 +661,7 @@ index 4959bf2..71751e1 100644
   /*
    * See if job is in any of the "completed" states...
    */
-@@ -9645,6 +9868,15 @@
+@@ -9645,6 +9870,15 @@ send_document(cupsd_client_t  *con,	/* I - Client connection */
      return;
    }
  
@@ -813,7 +677,7 @@ index 4959bf2..71751e1 100644
    printer = cupsdFindDest(job->dest);
  
   /*
-@@ -10254,6 +10486,15 @@
+@@ -10254,6 +10488,15 @@ set_job_attrs(cupsd_client_t  *con,	/* I - Client connection */
      return;
    }
  
@@ -829,7 +693,7 @@ index 4959bf2..71751e1 100644
   /*
    * See if the job has been completed...
    */
-@@ -10598,7 +10839,6 @@
+@@ -10598,7 +10841,6 @@ set_printer_attrs(cupsd_client_t  *con,	/* I - Client connection */
   /*
    * Return a list of attributes that can be set via Set-Printer-Attributes.
    */
@@ -837,7 +701,7 @@ index 4959bf2..71751e1 100644
    if ((attr = ippFindAttribute(con->request, "printer-location",
                                 IPP_TAG_TEXT)) != NULL)
    {
-@@ -11445,6 +11685,11 @@
+@@ -11445,6 +11687,11 @@ validate_user(cupsd_job_t    *job,	/* I - Job */
  
    strlcpy(username, get_username(con), userlen);
  
@@ -849,9 +713,138 @@ index 4959bf2..71751e1 100644
   /*
    * Check the username against the owner...
    */
+diff --git a/scheduler/job.c b/scheduler/job.c
+index e20e7c5..d5a39f5 100644
+--- a/scheduler/job.c
++++ b/scheduler/job.c
+@@ -1062,7 +1062,13 @@ cupsdContinueJob(cupsd_job_t *job)	/* I - Job */
+   if (final_content_type[0])
+     envp[envc ++] = final_content_type;
+ 
+-  if (Classification && !banner_page)
++  if (job->slabel != NULL)
++  {
++    snprintf(classification, sizeof(classification), "CLASSIFICATION=%s",
++             job->slabel);
++    envp[envc ++] = classification;
++  }
++  else if (Classification && !banner_page)
+   {
+     if ((attr = ippFindAttribute(job->attrs, "job-sheets",
+                                  IPP_TAG_NAME)) == NULL)
+@@ -1412,6 +1418,12 @@ cupsdDeleteJob(cupsd_job_t       *job,	/* I - Job */
+     job->num_files = 0;
+   }
+ 
++  if (job->slabel)
++  {
++    free(job->slabel);
++    job->slabel = NULL;
++  }
++
+   if (job->history)
+     free_job_history(job);
+ 
+@@ -1840,6 +1852,10 @@ cupsdLoadJob(cupsd_job_t *job)		/* I - Job */
+       ippSetString(job->attrs, &job->reasons, 0, "none");
+   }
+ 
++  if ((attr = ippFindAttribute(job->attrs, "security-label",
++                                IPP_TAG_NAME)) != NULL)
++    cupsdSetString(&job->slabel, attr->values[0].string.text);
++
+   job->impressions = ippFindAttribute(job->attrs, "job-impressions-completed", IPP_TAG_INTEGER);
+   job->sheets      = ippFindAttribute(job->attrs, "job-media-sheets-completed", IPP_TAG_INTEGER);
+   job->job_sheets  = ippFindAttribute(job->attrs, "job-sheets", IPP_TAG_NAME);
+@@ -3871,6 +3887,25 @@ get_options(cupsd_job_t *job,		/* I - Job */
+   for (i = num_pwgppds, pwgppd = pwgppds; i > 0; i --, pwgppd ++)
+     newlength += 1 + strlen(pwgppd->name) + 1 + strlen(pwgppd->value);
+ 
++#if defined(HAVE_TSOL)
++  if (is_system_labeled()) {
++    if(job->current_file == 0)
++      /*
++       * Increase length to add option ' banner=true' to options string
++       * in case of banner page.
++       */
++      newlength += strlen(" banner=true");
++    else if (job->job_sheets->num_values > 1 &&
++             job->current_file == (job->num_files - 1))
++      /*
++       * Increase length to add option ' trailer=true' to options string
++       * in case of trailer page.
++       */
++      newlength += strlen(" trailer=true");
++  }
++
++#endif /* HAVE_TSOL */
++
+  /*
+   * Then allocate/reallocate the option buffer as needed...
+   */
+@@ -4111,6 +4146,25 @@ get_options(cupsd_job_t *job,		/* I - Job */
+ 
+   cupsFreeOptions(num_pwgppds, pwgppds);
+ 
++#if defined(HAVE_TSOL)
++  if (is_system_labeled()) {
++    if(job->current_file == 0)
++      /*
++       * Add option ' banner=true' to options string
++       * in case of banner page.
++       */
++      strlcat(optptr, " banner=true", 13);
++    else if (/*job->job_sheets->num_values > 1 && */
++             job->current_file == (job->num_files - 1)) 
++      /*
++       * Add option ' trailer=true' to options string
++       * in case of trailer page.
++       */
++      strlcat(optptr, " trailer=true", 14);
++  }
++
++#endif /* HAVE_TSOL */
++
+  /*
+   * Return the options string...
+   */
+@@ -4815,6 +4869,18 @@ start_job(cupsd_job_t     *job,		/* I - Job ID */
+   if (!cupsdLoadJob(job))
+     return;
+ 
++  /*
++   * Verify that the job sensitivity label is in range of the printer.
++   */
++  if (cupsdInPrinterLabelRange(job->slabel, printer) == 0) {
++    cupsdLogMessage(CUPSD_LOG_ERROR,
++                    "start_job(): job label outside of printer label range");
++    cupsdSetJobState(job, IPP_JOB_CANCELED, CUPSD_JOB_DEFAULT,
++                     "job label is outside of printer label range");
++    cupsdCheckJobs();
++    return;
++  }
++
+   if (!job->printer_message)
+     job->printer_message = ippFindAttribute(job->attrs,
+                                             "job-printer-state-message",
+diff --git a/scheduler/job.h b/scheduler/job.h
+index 2400ea9..d69c812 100644
+--- a/scheduler/job.h
++++ b/scheduler/job.h
+@@ -84,6 +84,8 @@ struct cupsd_job_s			/**** Job request ****/
+   int			progress;	/* Printing progress */
+   int			num_keywords;	/* Number of PPD keywords */
+   cups_option_t		*keywords;	/* PPD keywords */
++  char                  *slabel;	/* security context for security
++					   labeled environments */
+ };
+ 
+ typedef struct cupsd_joblog_s		/**** Job log message ****/
+diff --git a/scheduler/printers.c b/scheduler/printers.c
+index e341bdb..d08e38e 100644
 --- a/scheduler/printers.c
 +++ b/scheduler/printers.c
-@@ -925,7 +925,92 @@
+@@ -925,6 +925,91 @@ cupsdFindPrinter(const char *name)	/* I - Name of printer to find */
      return (p);
  }
  
@@ -860,7 +853,7 @@ index 4959bf2..71751e1 100644
 +log_tsol_str_to_label_error(int e)
 +{
 +  char *mesg = strerror(errno);
- 
++
 +  if (errno == EINVAL)
 +  {
 +    switch (e) {
@@ -940,11 +933,10 @@ index 4959bf2..71751e1 100644
 +  /* we should probably never get here */
 +  return (0);
 +}
-+
+ 
  /*
   * 'cupsdLoadAllPrinters()' - Load printers from the printers.conf file.
-  */
-@@ -2571,13 +2656,23 @@
+@@ -2571,12 +2656,22 @@ cupsdSetPrinterAttrs(cupsd_printer_t *p)/* I - Printer to setup */
      ippDelete(oldattrs);
    }
  
@@ -963,11 +955,23 @@ index 4959bf2..71751e1 100644
 +  /*
 +   * Force sharing off for remote queues...
 +   */
- 
++
 +   if (p->type & (CUPS_PRINTER_REMOTE | CUPS_PRINTER_IMPLICIT))
 +#endif /* HAVE_TSOL */
 +    p->shared = 0; 
-+
+ 
   /*
    * Populate the document-format-supported attribute...
-   */
+diff --git a/scheduler/printers.h b/scheduler/printers.h
+index 4959bf2..71751e1 100644
+--- a/scheduler/printers.h
++++ b/scheduler/printers.h
+@@ -162,6 +162,8 @@ extern cupsd_printer_t	*cupsdFindPrinter(const char *name);
+ extern cupsd_quota_t	*cupsdFindQuota(cupsd_printer_t *p,
+ 			                const char *username);
+ extern void		cupsdFreeQuotas(cupsd_printer_t *p);
++extern int              cupsdInPrinterLabelRange(char *slabel,
++						 cupsd_printer_t *p);
+ extern void		cupsdLoadAllPrinters(void);
+ extern void		cupsdRenamePrinter(cupsd_printer_t *p,
+ 			                   const char *name);
