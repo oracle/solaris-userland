@@ -1,0 +1,158 @@
+This patch fixes an issue with the ksh93 typeset builtin crashing
+for left/right justified strings.
+Upstream bug details at
+https://github.com/ksh93/ksh/issues/142
+https://github.com/ksh93/ksh/issues/181
+The patch was created by combining the following 2 upstream commits.
+https://github.com/ksh93/ksh/commit/8520f5195879117eab9054151c616336b70d80bb
+https://github.com/ksh93/ksh/pull/190
+
+--- INIT.2012-08-01.old/src/cmd/ksh93/sh/name.c	2021-02-24 01:53:11.684459174 +0000
++++ INIT.2012-08-01/src/cmd/ksh93/sh/name.c	2021-02-24 01:42:54.302343789 +0000
+@@ -1610,9 +1610,7 @@
+ 	Shell_t	*shp = sh_getinterp();
+ 	register const char *sp=string;
+ 	register union Value *up;
+-	register char *cp;
+-	register int size = 0;
+-	register int dot;
++	register unsigned int size = 0;
+ 	int	was_local = nv_local;
+ 	union Value u;
+ #if SHOPT_FIXEDARRAY
+@@ -1823,7 +1821,7 @@
+ 	else
+ 	{
+ 		const char *tofree=0;
+-		int offset,append;
++		int offset = 0;
+ #if _lib_pathnative
+ 		char buff[PATH_MAX];
+ #endif /* _lib_pathnative */
+@@ -1892,9 +1890,13 @@
+ 			tofree = 0;
+ 		if(nv_isattr(np,NV_LJUST|NV_RJUST) && nv_isattr(np,NV_LJUST|NV_RJUST)!=(NV_LJUST|NV_RJUST))
+ 			tofree = 0;
+-       	 	if (sp)
++		if(!sp)
++			up->cp = NIL(char*);
++		else
+ 		{
+-			append=0;
++			char	*cp = NIL(char*);	/* pointer to new string */
++			unsigned int dot;		/* attribute or type length; defaults to string length */
++			unsigned int append = 0;	/* offset for appending */
+ 			if(sp==up->cp && !(flags&NV_APPEND))
+ 				return;
+ 			dot = strlen(sp);
+@@ -1976,25 +1978,22 @@
+ 				{
+ 					if(tofree && tofree!=Empty && tofree!=Null)
+ 					{
+-						cp = (char*)realloc((void*)tofree,((unsigned)dot+append+8));
++						cp = (char*)realloc((void*)tofree, dot+append+1);
+ 						tofree = 0;
+ 					}
+ 					else
+-						cp = (char*)malloc(((unsigned)dot+8));
++						cp = (char*)malloc(dot+append+1);
+ 					cp[dot+append] = 0;
+ 					nv_offattr(np,NV_NOFREE);
+ 				}
+ 			}
+-			
+-		}
+-		else
+-			cp = 0;
+-		up->cp = cp;
+-		if(sp)
+-		{
+-			int c = cp[dot+append];
+-			memmove(cp+append,sp,dot);
+-			cp[dot+append] = c;
++			if(dot)
++			{
++				char c = cp[dot+append];
++				strncpy(cp+append, sp, dot+1);
++				cp[dot+append] = c;
++			}
++			up->cp = cp;
+ 			if(nv_isattr(np, NV_RJUST) && nv_isattr(np, NV_ZFILL))
+ 				rightjust(cp,size,'0');
+ 			else if(nv_isattr(np, NV_LJUST|NV_RJUST)==NV_RJUST)
+@@ -3072,9 +3071,41 @@
+ 		if (sp = nv_getval(np))
+  		{
+ 			if(nv_isattr(np,NV_ZFILL))
+-				while(*sp=='0') sp++;
+-			cp = (char*)malloc((n=strlen (sp)) + 8);
+-			strcpy(cp, sp);
++			{
++				while(*sp=='0') sp++;	/* skip initial zeros */
++				if(!*sp) sp--;		/* if number was 0, leave one zero */
++			}
++			n = strlen(sp);
++			if(size==0 || (newatts&(NV_INTEGER|NV_BINARY)))
++			{
++				/* allocate to match existing value for numerics and auto length assignment for -L/R/Z */
++				cp = (char*)malloc((size_t)n + 1);
++				strcpy(cp, sp);
++			}
++			else if(size>=n)
++			{
++				/* growing string */
++				cp = (char*)malloc((size_t)size + 1);
++				strcpy(cp, sp);
++			}
++			else
++			{
++				/* shrinking string */
++				cp = (char*)malloc((size_t)size + 1);
++				if(newatts&NV_RJUST)
++					strncpy(cp, n - size + sp, size);
++				else
++				{
++					/* NV_LJUST and the rest */
++					if(newatts&NV_ZFILL)
++					{
++						while(*sp=='0') sp++;	/* skip initial zeros */
++						if(!*sp) sp--;		/* if number was 0, leave one zero */
++					}
++					strncpy(cp, sp, size);
++				}
++				cp[size] = '\0';
++			}
+ 			if(sp && (mp=nv_opensub(np)))
+ 			{
+ 				if(trans)
+--- INIT.2012-08-01.old/src/cmd/ksh93/tests/attributes.sh	2021-02-24 01:53:09.848283082 +0000
++++ INIT.2012-08-01/src/cmd/ksh93/tests/attributes.sh	2021-02-24 01:51:09.770039423 +0000
+@@ -469,4 +469,28 @@
+ export foo
+ [[ $(typeset -p foo) == 'typeset -x -Z 2 -R 2 foo=03' ]] || err_exit '-Z2  not working after export'
+ 
++# ======
++# Bug introduced in 0e4c4d61: could not alter the size of an existing justified string attribute
++# https://github.com/ksh93/ksh/issues/142#issuecomment-780931533
++got=$(unset s; typeset -L 100 s=h; typeset +p s; typeset -L 5 s; typeset +p s)
++exp=$'typeset -L 100 s\ntypeset -L 5 s'
++[[ $got == "$exp" ]] || err_exit 'cannot alter size of existing justified string attribute' \
++	"(expected $(printf %q "$exp"), got $(printf %q "$got"))"
++got=$(unset s; typeset -L 100 s=h; typeset +p s; typeset -R 5 s; typeset +p s)
++exp=$'typeset -L 100 s\ntypeset -R 5 s'
++[[ $got == "$exp" ]] || err_exit 'cannot set -R after setting -L' \
++	"(expected $(printf %q "$exp"), got $(printf %q "$got"))"
++got=$(unset s; typeset -L 100 s=h; typeset +p s; typeset -Z 5 s; typeset +p s)
++exp=$'typeset -L 100 s\ntypeset -Z 5 -R 5 s'
++[[ $got == "$exp" ]] || err_exit 'cannot set -Z after setting -L' \
++	"(expected $(printf %q "$exp"), got $(printf %q "$got"))"
++
++# Old bug: zero-filling zero would cause the zero number to disappear
++# https://github.com/ksh93/ksh/issues/142#issuecomment-782013674
++got=$(typeset -i x=0; typeset -Z5 x; echo $x; typeset -Z3 x; echo $x; typeset -Z7 x; echo $x)
++exp=$'00000\n000\n0000000'
++[[ $got == "$exp" ]] || err_exit 'failed to zero-fill zero' \
++	"(expected $(printf %q "$exp"), got $(printf %q "$got"))"
++
++# ======
+ exit $((Errors<125?Errors:125))
