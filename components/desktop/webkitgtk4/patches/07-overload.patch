@@ -6,12 +6,12 @@ compiler bug.
 file upstream bug to determine correct fix
 
 diff --git a/Source/JavaScriptCore/dfg/DFGOperations.cpp b/Source/JavaScriptCore/dfg/DFGOperations.cpp
-index e431039..5ad6f48 100644
+index b211ed6..13b6945 100644
 --- a/Source/JavaScriptCore/dfg/DFGOperations.cpp
 +++ b/Source/JavaScriptCore/dfg/DFGOperations.cpp
-@@ -2860,7 +2860,7 @@ void JIT_OPERATION operationLoadVarargs(JSGlobalObject* globalObject, int32_t fi
+@@ -2921,7 +2921,7 @@ JSC_DEFINE_JIT_OPERATION(operationLoadVarargs, void, (JSGlobalObject* globalObje
  
- double JIT_OPERATION operationFModOnInts(int32_t a, int32_t b)
+ JSC_DEFINE_JIT_OPERATION(operationFModOnInts, double, (int32_t a, int32_t b))
  {
 -    return fmod(a, b);
 +    return fmod(float(a), float(b));

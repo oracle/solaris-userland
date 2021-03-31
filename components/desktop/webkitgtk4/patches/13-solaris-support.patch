@@ -3,11 +3,11 @@ Changes for the build to work on Solaris
 Potentially suitable to send upstream
 
 diff --git a/Source/WTF/wtf/CurrentTime.cpp b/Source/WTF/wtf/CurrentTime.cpp
-index 46e55d4..815118d 100644
+index d7fb93f..aa9c14d 100644
 --- a/Source/WTF/wtf/CurrentTime.cpp
 +++ b/Source/WTF/wtf/CurrentTime.cpp
-@@ -267,7 +267,7 @@ MonotonicTime MonotonicTime::now()
-     return fromRawSeconds((mach_absolute_time() * timebaseInfo.numer) / (1.0e9 * timebaseInfo.denom));
+@@ -273,7 +273,7 @@ MonotonicTime MonotonicTime::now()
+     return fromMachAbsoluteTime(mach_absolute_time());
  #elif OS(FUCHSIA)
      return fromRawSeconds(zx_clock_get_monotonic() / static_cast<double>(ZX_SEC(1)));
 -#elif OS(LINUX) || OS(FREEBSD) || OS(OPENBSD) || OS(NETBSD)
@@ -91,10 +91,10 @@ index 0e711de..62864ea 100644
  #endif
  
 diff --git a/Source/WTF/wtf/PlatformHave.h b/Source/WTF/wtf/PlatformHave.h
-index 4ec77e7..6b91c44 100644
+index 41afbb4..9e5d453 100644
 --- a/Source/WTF/wtf/PlatformHave.h
 +++ b/Source/WTF/wtf/PlatformHave.h
-@@ -306,7 +306,7 @@
+@@ -328,7 +328,7 @@
  #define HAVE_URL_FORMATTING 1
  #endif
  
@@ -127,34 +127,6 @@ index be27911..a5216ba 100644
      || defined(unix)        \
      || defined(__unix)      \
      || defined(__unix__)
-diff --git a/Source/WTF/wtf/RAMSize.cpp b/Source/WTF/wtf/RAMSize.cpp
-index 349998f..1f76336 100644
---- a/Source/WTF/wtf/RAMSize.cpp
-+++ b/Source/WTF/wtf/RAMSize.cpp
-@@ -34,6 +34,9 @@
- #if OS(LINUX)
- #include <sys/sysinfo.h>
- #endif // OS(LINUX)
-+#if OS(SOLARIS)
-+#include <unistd.h>
-+#endif // OS(SOLARIS)
- #else
- #include <bmalloc/bmalloc.h>
- #endif
-@@ -58,6 +61,13 @@ static size_t computeRAMSize()
-     struct sysinfo si;
-     sysinfo(&si);
-     return si.totalram * si.mem_unit;
-+#elif OS(SOLARIS)
-+    size_t ramsize = 512 * MB;
-+    long pagesize = sysconf(_SC_PAGESIZE);
-+    long npages = sysconf(_SC_PHYS_PAGES);
-+    if (pagesize != -1 && npages != -1)
-+      ramsize = pagesize*npages;
-+    return ramsize;
- #else
- #error "Missing a platform specific way of determining the available RAM"
- #endif // OS(LINUX) || OS(FREEBSD)
 diff --git a/Source/WTF/wtf/StackBounds.cpp b/Source/WTF/wtf/StackBounds.cpp
 index e6f7095..8fb3955 100644
 --- a/Source/WTF/wtf/StackBounds.cpp
@@ -189,10 +161,10 @@ index e6f7095..8fb3955 100644
  
  #if OS(OPENBSD)
 diff --git a/Source/WebCore/inspector/InspectorFrontendHost.cpp b/Source/WebCore/inspector/InspectorFrontendHost.cpp
-index f1a72ad..0bff8ca 100644
+index 6577423..b882b9e 100644
 --- a/Source/WebCore/inspector/InspectorFrontendHost.cpp
 +++ b/Source/WebCore/inspector/InspectorFrontendHost.cpp
-@@ -383,6 +383,8 @@ String InspectorFrontendHost::platform() const
+@@ -386,6 +386,8 @@ String InspectorFrontendHost::platform() const
      return "freebsd"_s;
  #elif OS(OPENBSD)
      return "openbsd"_s;

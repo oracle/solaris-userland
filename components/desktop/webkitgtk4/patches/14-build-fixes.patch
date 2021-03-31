@@ -22,7 +22,7 @@ index 379e5ce..6288eea 100644
  #if !defined(__BIG_ENDIAN)
  #    define __BIG_ENDIAN 4321
 diff --git a/Source/WTF/wtf/Assertions.h b/Source/WTF/wtf/Assertions.h
-index c6d44d0..b50b813 100644
+index 315f3e6..31b36db 100644
 --- a/Source/WTF/wtf/Assertions.h
 +++ b/Source/WTF/wtf/Assertions.h
 @@ -452,7 +452,7 @@ constexpr bool assertionFailureDueToUnreachableCode = false;
@@ -34,18 +34,6 @@ index c6d44d0..b50b813 100644
  /* Unlike static_assert below, this also works in plain C code. */
  #define COMPILE_ASSERT(exp, name) _Static_assert((exp), #name)
  #else
-diff --git a/Source/WebCore/platform/graphics/x11/PlatformDisplayX11.cpp b/Source/WebCore/platform/graphics/x11/PlatformDisplayX11.cpp
-index 8fe3d3e..2b28054 100644
---- a/Source/WebCore/platform/graphics/x11/PlatformDisplayX11.cpp
-+++ b/Source/WebCore/platform/graphics/x11/PlatformDisplayX11.cpp
-@@ -30,6 +30,7 @@
- 
- #if PLATFORM(X11)
- #include <X11/Xlib.h>
-+#include <X11/Xutil.h>
- #include <X11/extensions/Xcomposite.h>
- #if PLATFORM(GTK)
- #include <X11/extensions/Xdamage.h>
 diff --git a/Source/WebCore/platform/network/DNS.h b/Source/WebCore/platform/network/DNS.h
 index e63a7b0..9880c7d 100644
 --- a/Source/WebCore/platform/network/DNS.h
@@ -61,3 +49,14 @@ index e63a7b0..9880c7d 100644
  #include <wtf/Forward.h>
  #include <wtf/Optional.h>
  #include <wtf/Variant.h>
+--- webkitgtk-2.32.0/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/LayerTreeHost.h	2021-04-01 13:59:18.854884308 +0000
++++ webkitgtk-2.32.0/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/LayerTreeHost.h	2021-04-01 13:49:17.635277030 +0000
+@@ -213,7 +213,7 @@ inline void LayerTreeHost::setRootCompos
+ inline void LayerTreeHost::setViewOverlayRootLayer(WebCore::GraphicsLayer*) { }
+ inline void LayerTreeHost::scrollNonCompositedContents(const WebCore::IntRect&) { }
+ inline void LayerTreeHost::forceRepaint() { }
+-inline bool LayerTreeHost::forceRepaintAsync(CompletionHandler<void()>&) { return false; }
++inline void LayerTreeHost::forceRepaintAsync(CompletionHandler<void()>&&) { }
+ inline void LayerTreeHost::sizeDidChange(const WebCore::IntSize&) { }
+ inline void LayerTreeHost::pauseRendering() { }
+ inline void LayerTreeHost::resumeRendering() { }
