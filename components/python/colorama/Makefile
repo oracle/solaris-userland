@@ -20,27 +20,33 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		colorama
-COMPONENT_VERSION=	0.4.1
+COMPONENT_VERSION=	0.4.4
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:05eed71e2e327246ad6b38c540c4a3117230b19679b875190486ddd2d721422d
-COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/tartley/colorama
 COMPONENT_BUGDB=	python-mod/colorama
 COMPONENT_ANITYA_ID=	3807
 
-TPNO=			47775
+# pypi archive doesn't include the test suite
+GIT_REPO=	$(COMPONENT_PROJECT_URL)
+GIT_COMMIT_ID=	$(COMPONENT_VERSION)
+GIT_HASH=	sha256:78215866046cdc2cc00bf283e3dbff18b09840604534137f300a402afedf28e2
+
+TPNO=			62583
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/colorama/tests
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -49,6 +55,6 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-test:		$(NO_TESTS)
+test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:    $(SYSTEM_TEST_NO_ARCH)

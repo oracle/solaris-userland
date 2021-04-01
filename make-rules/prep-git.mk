@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
 #
 
 GIT =		/usr/bin/git
@@ -94,7 +94,8 @@ $$(USERLAND_ARCHIVES)$$(COMPONENT_ARCHIVE$(1)):	$(MAKEFILE_PREREQ)
 	( GIT_HASH=$$$$(digest -a sha256 $$@) && \
 	$(GSED) -i \
 		-e "s/\(GIT_HASH$(1)[[:space:]]*=[[:space:]]*\).*/\1sha256:$$$${GIT_HASH}/" \
-		Makefile ))
+		Makefile )) && \
+	$(TOUCH) $$@
 
 
 REQUIRED_PACKAGES += developer/versioning/git
