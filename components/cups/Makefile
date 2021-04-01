@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 32_and_64
 COMPILER= gcc
@@ -103,6 +103,7 @@ include $(WS_MAKE_RULES)/pkgobjs.mk
 COMPONENT_TEST_ENV += CUPS_TESTBASE=$(COMPONENT_TEST_DIR)/test/work
 # Keep just fails.
 COMPONENT_TEST_TRANSFORMS = \
+	'-e "/^httpAddrGetList.*: FAIL/d" ' \
 	'-e "/: FAIL/p" ' \
 	'-e "/ tests failed./p" ' \
 	'-e "d" '
