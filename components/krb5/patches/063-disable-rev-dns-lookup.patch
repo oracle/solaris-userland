@@ -17,31 +17,34 @@
  /*
 --- a/src/man/krb5.conf.man
 +++ b/src/man/krb5.conf.man
-@@ -484,7 +484,7 @@ default, if allowed by the KDC.  The default value is false.
+@@ -432,7 +432,7 @@ with \fBqualify_shortname = ""\fP\&.  (New in release 1.18.)
  If this flag is true, reverse name lookup will be used in addition
  to forward name lookup to canonicalizing hostnames for use in
  service principal names.  If \fBdns_canonicalize_hostname\fP is set
 -to false, this flag has no effect.  The default value is true.
 +to false, this flag has no effect.  The default value is false.
  .TP
- .B \fBrealm_try_domains\fP
+ \fBrealm_try_domains\fP
  Indicate whether a host\(aqs domain components should be used to
 --- a/src/tests/t_sn2princ.py
 +++ b/src/tests/t_sn2princ.py
-@@ -6,10 +6,12 @@ offline = (len(args) > 0 and args[0] != "no")
+@@ -5,6 +5,7 @@ offline = (len(args) > 0 and args[0] != "no")
  conf = {'domain_realm': {'kerberos.org': 'R1',
                           'example.com': 'R2',
                           'mit.edu': 'R3'}}
 +rdns_conf = {'libdefaults': {'rdns': 'true'}}
  no_rdns_conf = {'libdefaults': {'rdns': 'false'}}
- no_canon_conf = {'libdefaults': {'dns_canonicalize_hostname': 'false'}}
+ no_canon_conf = {'libdefaults': {'dns_canonicalize_hostname': 'false',
+                                  'qualify_shortname': 'example.com'}}
+@@ -13,6 +14,7 @@ fallback_canon_conf = {'libdefaults':
+                         'dns_canonicalize_hostname': 'fallback'}}
  
- realm = K5Realm(create_kdb=False, krb5_conf=conf)
+ realm = K5Realm(realm='R1', create_host=False, krb5_conf=conf)
 +rdns = realm.special_env('rdns', False, krb5_conf=rdns_conf)
  no_rdns = realm.special_env('no_rdns', False, krb5_conf=no_rdns_conf)
  no_canon = realm.special_env('no_canon', False, krb5_conf=no_canon_conf)
- 
-@@ -30,6 +32,10 @@ def testnc(host, princhost, princrealm):
+ fallback_canon = realm.special_env('fallback_canon', False,
+@@ -35,6 +37,10 @@ def testnc(host, princhost, princrealm):
      # Test with the host-based name type with canonicalization disabled.
      testbase(host, 'srv-hst', princhost, princrealm, env=no_canon)
  
@@ -52,11 +55,12 @@
  def testnr(host, princhost, princrealm):
      # Test with the host-based name type with reverse lookup disabled.
      testbase(host, 'srv-hst', princhost, princrealm, env=no_rdns)
-@@ -95,9 +101,14 @@ if rname == fname:
+@@ -134,10 +140,14 @@ if rname == fname:
                '%s reverse resolves to %s '
                'which should be different from %s' % (oname, rname, fname))
  
 -# Test default canonicalization (forward and reverse lookup).
+-mark('default')
 -test(oname, rname, 'R3')
 -test(oname + ':123', rname + ':123', 'R3')
 -test(oname + ':xyZ', rname + ':xyZ', 'R3')

@@ -33,10 +33,13 @@
  #include "k5-platform.h"
  #include <krb5.h>
  #include <com_err.h>
-@@ -40,6 +46,13 @@
- extern int optind;
- extern char *optarg;
+@@ -37,6 +43,16 @@
+ #define BELL_CHAR '\007'
+ #endif
  
++extern int optind;
++extern char *optarg;
++
 +/*
 + * We add _rpcsys extern declariation because that ON build suppresses warning
 + * of implicit declarition, while MIT kerberos build treats the warning
@@ -47,8 +50,8 @@
  #ifndef _WIN32
  #define GET_PROGNAME(x) (strrchr((x), '/') ? strrchr((x), '/') + 1 : (x))
  #else
-@@ -93,6 +106,13 @@ main(int argc, char *argv[])
-     char *cache_name = NULL;
+@@ -94,6 +110,13 @@ main(int argc, char *argv[])
+     const char *princ_name = NULL;
      int code = 0, errflg = 0, quiet = 0, all = 0, c;
  
 +    /* Solaris Kerberos */
@@ -61,7 +64,7 @@
      setlocale(LC_ALL, "");
      progname = GET_PROGNAME(argv[0]);
  
-@@ -170,12 +190,41 @@ main(int argc, char *argv[])
+@@ -184,6 +207,20 @@ main(int argc, char *argv[])
          return 0;
      }
  
@@ -79,10 +82,11 @@
 +            progname, code);
 +    }
 +
-     code = krb5_cc_default(context, &cache);
-     if (code) {
-         com_err(progname, code, _("while resolving ccache"));
-         exit(1);
+     if (princ_name != NULL) {
+         code = krb5_parse_name(context, princ_name, &princ);
+         if (code) {
+@@ -206,6 +243,21 @@ main(int argc, char *argv[])
+         }
      }
  
 +    /*
@@ -103,14 +107,14 @@
      code = krb5_cc_destroy(context, cache);
      if (code != 0) {
          com_err(progname, code, _("while destroying cache"));
-@@ -190,10 +239,20 @@ main(int argc, char *argv[])
+@@ -220,10 +272,20 @@ main(int argc, char *argv[])
          }
      }
  
--    if (!quiet && !errflg)
+-    if (!quiet && !errflg && princ_name == NULL)
 -        print_remaining_cc_warning(context);
 +    if (!errflg) {
-+        if (!quiet)
++        if (!quiet && princ_name == NULL)
 +            print_remaining_cc_warning(context);
 +        /* Solaris Kerberos - Delete ktkt_warnd(1M) entry. */
 +        if (client_name)
@@ -158,7 +162,7 @@
  typedef enum { INIT_PW, INIT_KT, RENEW, VALIDATE } action_type;
  
  struct k_opts
-@@ -835,6 +839,15 @@ k5_kinit(struct k_opts *opts, struct k5_data *k5)
+@@ -836,6 +840,15 @@ k5_kinit(struct k_opts *opts, struct k5_data *k5)
          if (opts->verbose)
              fprintf(stderr, _("Stored credentials\n"));
      }
@@ -174,7 +178,7 @@
      notix = 0;
      if (k5->switch_to_cache) {
          ret = krb5_cc_switch(k5->ctx, k5->out_cc);
-@@ -902,3 +915,25 @@ main(int argc, char *argv[])
+@@ -903,3 +916,25 @@ main(int argc, char *argv[])
          exit(1);
      return 0;
  }

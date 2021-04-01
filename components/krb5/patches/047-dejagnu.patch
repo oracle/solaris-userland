@@ -7,17 +7,6 @@
 # donated.
 # Patch source: in-house
 #
---- a/src/kadmin/testing/scripts/init_db
-+++ b/src/kadmin/testing/scripts/init_db
-@@ -218,7 +218,7 @@ changepw/kerberos@$REALM	cil
- 
- EOF
- 
--eval $LOCAL_MAKE_KEYTAB -princ kadmin/admin -princ kadmin/changepw -princ ovsec_adm/admin -princ ovsec_adm/changepw $K5ROOT/ovsec_adm.srvtab $REDIRECT
-+eval $LOCAL_MAKE_KEYTAB -princ kadmin/$qualname -princ changepw/$qualname -princ ovsec_adm/admin -princ ovsec_adm/changepw $K5ROOT/ovsec_adm.srvtab $REDIRECT
- 
- # Create $K5ROOT/setup.csh to make it easy to run other programs against
- # the test db
 --- a/src/kadmin/testing/util/tcl_kadm5.c
 +++ b/src/kadmin/testing/util/tcl_kadm5.c
 @@ -13,8 +13,11 @@
@@ -32,7 +21,7 @@
  struct flagval {
      char *name;
      krb5_flags val;
-@@ -2510,12 +2513,14 @@ static int tcl_kadm5_get_privs(ClientData clientData, Tcl_Interp *interp,
+@@ -2508,12 +2511,14 @@ static int tcl_kadm5_get_privs(ClientData clientData, Tcl_Interp *interp,
  
  void Tcl_kadm5_init(Tcl_Interp *interp)
  {
@@ -54,13 +43,13 @@
      (void) sprintf(buf, "%d", KADM5_API_VERSION_2);
 --- a/src/lib/kadm5/unit-test/Makefile.in
 +++ b/src/lib/kadm5/unit-test/Makefile.in
-@@ -106,7 +106,7 @@ unit-test-server-setup:
+@@ -110,7 +110,7 @@ unit-test-server-setup: runenv.sh
  unit-test-server-cleanup:
  	$(ENV_SETUP) $(STOP_SERVERS_LOCAL)
  
 -unit-test-client-body: site.exp test-noauth test-destroy test-handle-client \
 +unit-test-client-body: site.exp test-destroy test-handle-client \
- 	test-setkey-client
+ 	test-setkey-client runenv.exp
  	$(ENV_SETUP) $(RUNTEST) --tool api RPC=1 API=$(CLNTTCL) \
  		KINIT=$(BUILDTOP)/clients/kinit/kinit \
 --- a/src/lib/kadm5/unit-test/api.current/init-v2.exp
@@ -122,14 +111,18 @@
  		null $KADM5_STRUCT_VERSION $KADM5_API_VERSION_3 \
 --- a/src/lib/kadm5/unit-test/api.current/init.exp
 +++ b/src/lib/kadm5/unit-test/api.current/init.exp
-@@ -697,8 +697,8 @@ if {$RPC} {
-     # re-extract the keytab so it is right
-     exec rm $env(K5ROOT)/ovsec_adm.srvtab
-     exec $env(MAKE_KEYTAB) -princ ovsec_adm/admin -princ ovsec_adm/changepw \
--	    -princ kadmin/admin -princ kadmin/changepw \
--	    $env(K5ROOT)/ovsec_adm.srvtab
-+	    -princ kadmin/[exec $env(QUALNAME)] \
-+	    -princ changepw/[exec $env(QUALNAME)] $env(K5ROOT)/ovsec_adm.srvtab
+@@ -688,11 +688,12 @@ proc test45_46 {service} {
+ if {$RPC} {
+     test "init 45"
+ 
+-    test45_46 kadmin/admin
++    test45_46 kadmin/changepw
+ 
+     test "init 46"
+ 
+-    test45_46 kadmin/changepw
++    test45_46 kadmin/history
++
  }
  
  return ""
@@ -179,7 +172,7 @@
      if(ret != KADM5_OK) {
 --- a/src/lib/kadm5/unit-test/setkey-test.c
 +++ b/src/lib/kadm5/unit-test/setkey-test.c
-@@ -113,7 +113,7 @@ main(int argc, char **argv)
+@@ -104,7 +104,7 @@ main(int argc, char **argv)
          exit(1);
      }
  
@@ -190,7 +183,7 @@
      if (ret) {
 --- a/src/tests/dejagnu/krb-standalone/kadmin.exp
 +++ b/src/tests/dejagnu/krb-standalone/kadmin.exp
-@@ -1144,13 +1144,16 @@ proc kadmin_test { } {
+@@ -1098,13 +1098,16 @@ proc kadmin_test { } {
  	return
      }
  

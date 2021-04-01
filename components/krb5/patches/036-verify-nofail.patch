@@ -21,12 +21,9 @@
          check(krb5_parse_name(context, *argv, &princ));
 --- a/src/lib/krb5/krb/t_vfy_increds.py
 +++ b/src/lib/krb5/krb/t_vfy_increds.py
-@@ -53,29 +53,31 @@ realm.run(['./t_vfy_increds'])
- realm.run(['./t_vfy_increds', '-n'])
- 
- # Remove the keytab and verify again.  This should succeed if nofail
--# is not set, and fail if it is set.
-+# is set to false and fail otherwise.
+@@ -58,29 +58,31 @@ realm.run(['./t_vfy_increds', '-n'])
+ # is not set, and fail if it is set.
+ mark('no keytab')
  os.remove(realm.keytab)
 -realm.run(['./t_vfy_increds'])
 +realm.run(['./t_vfy_increds'], expected_code=1)
@@ -42,6 +39,7 @@
 +# set to false.  (An empty keytab file appears as corrupt to keytab calls,
  # causing a KRB5_KEYTAB_BADVNO error, so any tightening of the
  # krb5_verify_init_creds semantics needs to take this into account.)
+ mark('empty keytab')
  open(realm.keytab, 'w').close()
 -realm.run(['./t_vfy_increds'])
 +realm.run(['./t_vfy_increds'], expected_code=1)
@@ -53,6 +51,7 @@
 -# default (succeeding unless nofail is set), but should verify with it
 +# default (succeeding only when nofail is unset), but should verify with it
  # when it is specifically requested.
+ mark('keytab with NFS principal')
  realm.run([kadminl, 'addprinc', '-randkey', realm.nfs_princ])
  realm.run([kadminl, 'ktadd', realm.nfs_princ])
 -realm.run(['./t_vfy_increds'])
@@ -60,9 +59,9 @@
  realm.run(['./t_vfy_increds', '-n'], expected_code=1)
  realm.run(['./t_vfy_increds', realm.nfs_princ])
  realm.run(['./t_vfy_increds', '-n', realm.nfs_princ])
-@@ -84,7 +86,7 @@ realm.run(['./t_vfy_increds', '-n', realm.nfs_princ])
- # results with the default principal argument, but verification should
+@@ -90,7 +92,7 @@ realm.run(['./t_vfy_increds', '-n', realm.nfs_princ])
  # now fail if we request it specifically.
+ mark('keytab with outdated NFS principal')
  realm.run([kadminl, 'change_password', '-randkey', realm.nfs_princ])
 -realm.run(['./t_vfy_increds'])
 +realm.run(['./t_vfy_increds'], expected_code=1)

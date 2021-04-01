@@ -19,7 +19,7 @@
 #
 --- a/src/kadmin/cli/kadmin.c
 +++ b/src/kadmin/cli/kadmin.c
-@@ -311,7 +311,7 @@ kadmin_startup(int argc, char *argv[], char **request_out, char ***args_out)
+@@ -313,7 +313,7 @@ kadmin_startup(int argc, char *argv[], char **request_out, char ***args_out)
      }
  
      while ((optchar = getopt(argc, argv,
@@ -39,15 +39,14 @@
  [\fB\-w\fP \fIpassword\fP]
  [\fB\-s\fP \fIadmin_server\fP[:\fIport\fP]]
  [command args...]
-@@ -99,21 +99,6 @@ a password.  In this case, the default principal will be
- Use \fIkeytab\fP to decrypt the KDC response.  This can only be used
+@@ -100,21 +100,7 @@ Use \fIkeytab\fP to decrypt the KDC response.  This can only be used
  with the \fB\-k\fP option.
  .TP
--.B \fB\-n\fP
+ \fB\-n\fP
 -Requests anonymous processing.  Two types of anonymous principals
 -are supported.  For fully anonymous Kerberos, configure PKINIT on
 -the KDC and configure \fBpkinit_anchors\fP in the client\(aqs
--\fIkrb5.conf(5)\fP\&.  Then use the \fB\-n\fP option with a principal
+-krb5.conf(5)\&.  Then use the \fB\-n\fP option with a principal
 -of the form \fB@REALM\fP (an empty principal name followed by the
 -at\-sign and a realm name).  If permitted by the KDC, an anonymous
 -ticket will be returned.  A second form of anonymous tickets is
@@ -58,15 +57,18 @@
 -principal.  As of release 1.8, the MIT Kerberos KDC only supports
 -fully anonymous operation.
 -.TP
- .B \fB\-c\fP \fIcredentials_cache\fP
+-\fB\-c\fP \fIcredentials_cache\fP
++.B \fB\-c\fP \fIcredentials_cache\fP
  Use \fIcredentials_cache\fP as the credentials cache.  The
  cache should contain a service ticket for the \fBkadmin/ADMINHOST\fP
+ (where \fIADMINHOST\fP is the fully\-qualified hostname of the admin
 --- a/src/tests/t_pkinit.py
 +++ b/src/tests/t_pkinit.py
-@@ -130,14 +130,15 @@ if '97:' in out:
+@@ -132,15 +132,16 @@ if '97:' in out:
      fail('auth indicators seen in anonymous PKINIT ticket')
  
  # Test anonymous kadmin.
+-mark('anonymous kadmin')
 -f = open(os.path.join(realm.testdir, 'acl'), 'a')
 -f.write('WELLKNOWN/ANONYMOUS@WELLKNOWN:ANONYMOUS a *')
 -f.close()
@@ -75,6 +77,7 @@
 -realm.run([kadmin, '-n', 'getprinc', 'testadd'], expected_code=1,
 -          expected_msg="Operation requires ``get'' privilege")
 -realm.stop_kadmind()
++#mark('anonymous kadmin')
 +#f = open(os.path.join(realm.testdir, 'acl'), 'a')
 +#f.write('WELLKNOWN/ANONYMOUS@WELLKNOWN:ANONYMOUS a *')
 +#f.close()
@@ -86,4 +89,4 @@
 +sys.stderr.write("Anonymous pkinit support in kadmin disabled, skipping...\n");
  
  # Test with anonymous restricted; FAST should work but kvno should fail.
- r_env = realm.special_env('restrict', True, kdc_conf=restrictive_kdc_conf)
+ mark('anonymous restricted')

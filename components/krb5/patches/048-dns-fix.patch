@@ -70,21 +70,10 @@
 +
      test "init 45"
  
-     test45_46 ovsec_adm/admin
-@@ -697,8 +734,8 @@ if {$RPC} {
-     # re-extract the keytab so it is right
-     exec rm $env(K5ROOT)/ovsec_adm.srvtab
-     exec $env(MAKE_KEYTAB) -princ ovsec_adm/admin -princ ovsec_adm/changepw \
--	    -princ kadmin/[exec $env(QUALNAME)] \
--	    -princ changepw/[exec $env(QUALNAME)] $env(K5ROOT)/ovsec_adm.srvtab
-+	    -princ kadmin/$hostname -princ changepw/$hostname \
-+	    $env(K5ROOT)/ovsec_adm.srvtab
- }
- 
- return ""
+     test45_46 kadmin/changepw
 --- a/src/tests/dejagnu/config/default.exp
 +++ b/src/tests/dejagnu/config/default.exp
-@@ -706,7 +706,7 @@ proc get_hostname { } {
+@@ -507,7 +507,7 @@ proc get_hostname { } {
  
      envstack_push
      setup_runtime_env
@@ -99,17 +88,32 @@
  all: resolve addrinfo-test fake-addrinfo-test
  
  resolve: resolve.o
--	$(CC_LINK) -o $@ resolve.o $(LIBS)
-+	$(CC_LINK) -o $@ resolve.o -lresolv $(LIBS)
+-	$(CC_LINK) -o $@ resolve.o $(SUPPORT_LIB) $(LIBS)
++	$(CC_LINK) -o $@ resolve.o -lresolv $(SUPPORT_LIB) $(LIBS)
  
  addrinfo-test: addrinfo-test.o
  	$(CC_LINK) -o $@ addrinfo-test.o $(SUPPORT_LIB) $(LIBS)
 --- a/src/tests/resolve/resolve.c
 +++ b/src/tests/resolve/resolve.c
-@@ -73,6 +73,94 @@ char *strchr();
- #include <netinet/in.h>
- #include <netdb.h>
+@@ -51,20 +51,126 @@
+ #include <sys/param.h>
+ #endif
  
++#ifdef HAVE_SYS_SOCKET_H
++#include <sys/socket.h>
++#endif
++
++#ifdef HAVE_STDLIB_H
++#include <stdlib.h>
++#endif
++
++#ifdef HAVE_UNISTD_H
++#include <unistd.h>
++#endif
++
++#include <netinet/in.h>
++#include <netdb.h>
++
 +#include <sys/types.h>
 +#include <arpa/nameser.h>
 +#include <resolv.h>
@@ -199,14 +203,14 @@
 +}
 +
  int
- main(argc, argv)
-     int argc;
-@@ -82,14 +170,16 @@ main(argc, argv)
-     char *ptr, *fqdn;
-     struct in_addr addrcopy;
-     struct hostent *host;
--    int quiet = 0;
-+    int ret, quiet = 0, dns = 0;
+ main(int argc, char **argv)
+ {
+     struct addrinfo *ai = NULL, hint;
+     char myname[MAXHOSTNAMELEN + 1], namebuf[NI_MAXHOST], abuf[256];
+     const char *addrstr;
+-    int err, quiet = 0;
++    int err, quiet = 0, dns = 0;
++    char *ptr, *fqdn;
  
      argc--; argv++;
      while (argc) {
@@ -220,15 +224,15 @@
              break;
          argc--; argv++;
      }
-@@ -105,6 +195,16 @@ main(argc, argv)
+@@ -80,6 +186,16 @@ main(int argc, char **argv)
  
      myname[MAXHOSTNAMELEN] = '\0';  /* for safety */
  
 +    if (dns) {
-+	if (ret = resolve_dns(myname)) {
++	if (err = resolve_dns(myname)) {
 +	    fprintf(stderr,
 +		"Could not resolve hostname ('%s') through DNS - fatal: %d\n",
-+                myname, ret);
++                myname, err);
 +	    exit(2);
 +	}
 +        exit(0);

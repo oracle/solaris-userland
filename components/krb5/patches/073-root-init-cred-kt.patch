@@ -28,7 +28,7 @@
  #ifndef LEAN_CLIENT
  k5_mutex_t gssint_krb5_keytab_lock = K5_MUTEX_PARTIAL_INITIALIZER;
  static char *krb5_gss_keytab = NULL;
-@@ -592,6 +596,151 @@ kg_cred_set_initial_refresh(krb5_context context, krb5_gss_cred_id_rec *cred,
+@@ -587,6 +591,151 @@ kg_cred_set_initial_refresh(krb5_context context, krb5_gss_cred_id_rec *cred,
      set_refresh_time(context, cred->ccache, refresh);
  }
  
@@ -180,7 +180,7 @@
  /* Get initial credentials using the supplied password or client keytab. */
  static krb5_error_code
  get_initial_cred(krb5_context context, krb5_gss_cred_id_rec *cred)
-@@ -611,8 +760,41 @@ get_initial_cred(krb5_context context, krb5_gss_cred_id_rec *cred)
+@@ -606,8 +755,41 @@ get_initial_cred(krb5_context context, krb5_gss_cred_id_rec *cred)
                                              cred->password, NULL, NULL, 0,
                                              NULL, opt);
      } else if (cred->client_keytab != NULL) {
@@ -224,7 +224,7 @@
      } else {
          code = KRB5_KT_NOTFOUND;
      }
-@@ -702,6 +884,23 @@ acquire_init_cred(krb5_context context,
+@@ -697,6 +879,23 @@ acquire_init_cred(krb5_context context,
              krb5_clear_error_message(context);
              code = 0;
          }
@@ -256,21 +256,21 @@
  	kt_file.o	\
 +	kt_findrealm.o	\
  	kt_memory.o	\
- 	kt_srvtab.o	\
  	read_servi.o	\
-@@ -26,6 +27,7 @@ OBJS=	\
+ 	kt_solaris.o
+@@ -25,6 +26,7 @@ OBJS=	\
  	$(OUTPRE)ktremove.$(OBJEXT)	\
  	$(OUTPRE)ktfns.$(OBJEXT)	\
  	$(OUTPRE)kt_file.$(OBJEXT)	\
 +	$(OUTPRE)kt_findrealm.$(OBJEXT)	\
  	$(OUTPRE)kt_memory.$(OBJEXT)	\
- 	$(OUTPRE)kt_srvtab.$(OBJEXT)	\
  	$(OUTPRE)read_servi.$(OBJEXT)	\
-@@ -39,6 +41,7 @@ SRCS=	\
+ 	$(OUTPRE)kt_solaris.$(OBJEXT)
+@@ -37,6 +39,7 @@ SRCS=	\
  	$(srcdir)/ktremove.c	\
  	$(srcdir)/ktfns.c	\
  	$(srcdir)/kt_file.c	\
 +	$(srcdir)/kt_findrealm.c	\
  	$(srcdir)/kt_memory.c	\
- 	$(srcdir)/kt_srvtab.c	\
  	$(srcdir)/read_servi.c	\
+ 	$(srcdir)/kt_solaris.c

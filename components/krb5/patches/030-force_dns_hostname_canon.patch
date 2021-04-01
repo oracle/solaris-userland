@@ -25,7 +25,7 @@
  static krb5_boolean
  use_reverse_dns(krb5_context context)
  {
-@@ -53,6 +61,26 @@ use_reverse_dns(krb5_context context)
+@@ -54,6 +62,26 @@ use_reverse_dns(krb5_context context)
      return value;
  }
  
@@ -49,23 +49,24 @@
 +    }
 +}
 +
- krb5_error_code KRB5_CALLCONV
- krb5_expand_hostname(krb5_context context, const char *host,
-                      char **canonhost_out)
-@@ -61,6 +89,9 @@ krb5_expand_hostname(krb5_context context, const char *host,
-     char namebuf[NI_MAXHOST], *copy, *p;
+ /* Append a domain suffix to host and return the result in allocated memory.
+  * Return NULL if no suffix is configured or on failure. */
+ static char *
+@@ -94,6 +122,9 @@ k5_expand_hostname(krb5_context context, const char *host,
      int err;
      const char *canonhost;
+     krb5_boolean use_dns;
 +    struct hostent *hp = NULL;
 +    struct hostent *hp2 = NULL;
 +    int addr_family;
  
      *canonhost_out = NULL;
  
-@@ -85,6 +116,31 @@ krb5_expand_hostname(krb5_context context, const char *host,
+@@ -121,7 +152,31 @@ k5_expand_hostname(krb5_context context, const char *host,
              if (!err)
                  canonhost = namebuf;
          }
+-#endif 0
 +#endif
 +        /* using res_getipnodebyname to force dns name resolution*/
 +        addr_family = AF_INET;
@@ -93,14 +94,15 @@
 +        }
      }
  
-     copy = strdup(canonhost);
-@@ -107,9 +163,12 @@ krb5_expand_hostname(krb5_context context, const char *host,
+     /* If we didn't use DNS and the name is just one component, try to add a
+@@ -152,10 +207,13 @@ k5_expand_hostname(krb5_context context, const char *host,
      *canonhost_out = copy;
  
  cleanup:
 -    /* We only return success or ENOMEM. */
      if (ai != NULL)
          freeaddrinfo(ai);
+     free(qualified);
 +    if (hp != NULL)
 +        res_freehostent(hp);
 +    if (hp2 != NULL)
@@ -110,7 +112,7 @@
  
 --- a/src/tests/gssapi/t_ccselect.py
 +++ b/src/tests/gssapi/t_ccselect.py
-@@ -44,7 +44,14 @@ foobar = "foo.bar.krbtest.com"
+@@ -46,7 +46,14 @@ foobar = "foo.bar.krbtest.com"
  gssserver = 'h:host@' + foo
  gssserver2 = 'h:host@' + foo2
  gssserver_bar = 'h:host@' + foobar
@@ -128,7 +130,7 @@
  # The principal won't be treated as a host principal by the
 --- a/src/util/k5test.py
 +++ b/src/util/k5test.py
-@@ -367,6 +367,7 @@ import string
+@@ -383,6 +383,7 @@ import string
  import subprocess
  import sys
  import imp
@@ -136,7 +138,7 @@
  
  # Used when most things go wrong (other than programming errors) so
  # that the user sees an error message rather than a Python traceback,
-@@ -507,7 +508,19 @@ def _find_srctop():
+@@ -530,7 +531,20 @@ def _find_srctop():
  # because it explicitly prefers results containing periods and
  # krb5_sname_to_principal doesn't care.
  def _get_hostname():
@@ -144,15 +146,16 @@
      hostname = socket.gethostname()
 +    # dig for fqdn, only output answer section
 +    answer = subprocess.check_output(['/usr/sbin/dig', '+search', '+noall', '+answer', hostname]);
++    answer = str(answer, 'utf-8')
 +    for line in answer.split("\n"):
 +        # find A record
 +        if re.search(r"\bA\b", line):
 +            # only cut out the NAME part
 +            return re.sub(r'\.?[ \t].*','',line)
 +
-+    fail('Local hostname "%s" does not resolve: %s.' % (hostname, errstr))
++    fail('Local hostname "%s" does not resolve.' % (hostname))
 +
 +    # unreachable:
      try:
          ai = socket.getaddrinfo(hostname, None, 0, 0, 0, socket.AI_CANONNAME)
-     except socket.gaierror, (error, errstr):
+     except socket.gaierror as e:

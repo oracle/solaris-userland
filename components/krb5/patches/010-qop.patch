@@ -9,9 +9,9 @@
 #
 --- a/src/lib/gssapi/libgssapi_krb5.exports
 +++ b/src/lib/gssapi/libgssapi_krb5.exports
-@@ -39,6 +39,9 @@ GSS_C_MA_PFS
- GSS_C_MA_COMPRESS
+@@ -43,6 +43,9 @@ GSS_C_MA_COMPRESS
  GSS_C_MA_CTX_TRANS
+ GSS_C_MA_NEGOEX_AND_SPNEGO
  GSS_C_SEC_CONTEXT_SASL_SSF
 +gssint_qop_to_num
 +gssint_num_to_qop
@@ -21,7 +21,7 @@
  gss_acquire_cred_with_password
 --- a/src/lib/gssapi/mechglue/Makefile.in
 +++ b/src/lib/gssapi/mechglue/Makefile.in
-@@ -66,6 +66,7 @@ SRCS = \
+@@ -68,6 +68,7 @@ SRCS = \
  	$(srcdir)/g_sign.c \
  	$(srcdir)/g_store_cred.c \
  	$(srcdir)/g_unseal.c \
@@ -29,7 +29,7 @@
  	$(srcdir)/g_unwrap_aead.c \
  	$(srcdir)/g_unwrap_iov.c \
  	$(srcdir)/g_verify.c \
-@@ -130,6 +131,7 @@ OBJS = \
+@@ -133,6 +134,7 @@ OBJS = \
  	$(OUTPRE)g_sign.$(OBJEXT) \
  	$(OUTPRE)g_store_cred.$(OBJEXT) \
  	$(OUTPRE)g_unseal.$(OBJEXT) \
@@ -37,7 +37,7 @@
  	$(OUTPRE)g_unwrap_aead.$(OBJEXT) \
  	$(OUTPRE)g_unwrap_iov.$(OBJEXT) \
  	$(OUTPRE)g_verify.$(OBJEXT) \
-@@ -194,6 +196,7 @@ STLIBOBJS = \
+@@ -198,6 +200,7 @@ STLIBOBJS = \
  	g_sign.o \
  	g_store_cred.o \
  	g_unseal.o \
@@ -47,10 +47,11 @@
  	g_verify.o \
 --- a/src/lib/gssapi/mechglue/mglueP.h
 +++ b/src/lib/gssapi/mechglue/mglueP.h
-@@ -65,6 +65,38 @@ typedef struct gss_cred_id_struct {
+@@ -64,6 +64,38 @@ typedef struct gss_cred_id_struct {
+ 	gss_cred_id_t		*cred_array;
  } gss_union_cred_desc, *gss_union_cred_t;
  
- /*
++/*
 + * qop configuration file handling.
 + */
 +#define	MAX_QOP_NUM_PAIRS	128
@@ -82,7 +83,6 @@
 +	char		**qops		/* buffer for return qops */
 +);
 +
-+/*
+ /*
   * Rudimentary pointer validation macro to check whether the
   * "loopback" field of an opaque struct points back to itself.  This
-  * field also catches some programming errors where an opaque pointer

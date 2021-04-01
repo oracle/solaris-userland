@@ -10,7 +10,7 @@
 #
 --- a/src/kadmin/cli/kadmin.c
 +++ b/src/kadmin/cli/kadmin.c
-@@ -298,7 +298,7 @@ kadmin_startup(int argc, char *argv[], char **request_out, char ***args_out)
+@@ -300,7 +300,7 @@ kadmin_startup(int argc, char *argv[], char **request_out, char ***args_out)
      char **db_args = NULL;
      int db_args_size = 0;
      char *db_name = NULL;
@@ -19,7 +19,7 @@
  
      memset(&params, 0, sizeof(params));
  
-@@ -413,11 +413,6 @@ kadmin_startup(int argc, char *argv[], char **request_out, char ***args_out)
+@@ -415,11 +415,6 @@ kadmin_startup(int argc, char *argv[], char **request_out, char ***args_out)
      params.mask |= KADM5_CONFIG_REALM;
      params.realm = def_realm;
  
@@ -31,7 +31,7 @@
      /*
       * Set cc to an open credentials cache, either specified by the -c
       * argument or the default.
-@@ -546,13 +541,14 @@ kadmin_startup(int argc, char *argv[], char **request_out, char ***args_out)
+@@ -548,13 +543,14 @@ kadmin_startup(int argc, char *argv[], char **request_out, char ***args_out)
      if (ccache_name) {
          info(_("Authenticating as principal %s with existing "
                 "credentials.\n"), princstr);
@@ -48,7 +48,7 @@
                                        KADM5_STRUCT_VERSION,
                                        KADM5_API_VERSION_4, db_args, &handle);
      } else if (use_keytab) {
-@@ -563,17 +559,20 @@ kadmin_startup(int argc, char *argv[], char **request_out, char ***args_out)
+@@ -565,17 +561,20 @@ kadmin_startup(int argc, char *argv[], char **request_out, char ***args_out)
              info(_("Authenticating as principal %s with default keytab.\n"),
                   princstr);
          }
@@ -71,6 +71,66 @@
      if (retval) {
          com_err(whoami, retval, _("while initializing %s interface"), whoami);
          if (retval == KADM5_BAD_CLIENT_PARAMS ||
+--- a/src/kprop/kpropd.c
++++ b/src/kprop/kpropd.c
+@@ -635,7 +635,7 @@ do_iprop()
+     kadm5_ret_t retval;
+     krb5_principal iprop_svc_principal;
+     void *server_handle = NULL;
+-    char *iprop_svc_princstr = NULL, *master_svc_princstr = NULL;
++    char *iprop_svc_princstr = NULL, **master_svc_princstrs = NULL;
+     unsigned int pollin, backoff_time;
+     int backoff_cnt = 0, reinit_cnt = 0;
+     struct timeval iprop_start, iprop_end;
+@@ -654,9 +654,9 @@ do_iprop()
+     if (pollin == 0)
+         pollin = 10;
+ 
+-    if (master_svc_princstr == NULL) {
++    if (master_svc_princstrs == NULL) {
+         retval = kadm5_get_kiprop_host_srv_names(kpropd_context, realm,
+-						 &kiprop_srv_names);
++						 &master_svc_princstrs);
+         if (retval) {
+             com_err(progname, retval,
+                     _("%s: unable to get kiprop host based "
+@@ -664,15 +664,6 @@ do_iprop()
+                     progname, realm);
+             return retval;
+         }
+-        master_svc_princstr = strdup(kiprop_srv_names[0]);
+-	free_srv_names(kiprop_srv_names);
+-	if (master_svc_princstr == NULL) {
+-            com_err(progname, retval,
+-                    _("%s: unable to allocate memory for kiprop host based "
+-                      "service name for realm %s\n"),
+-                    progname, def_realm);
+-            return ENOMEM;
+-	}
+     }
+ 
+     retval = sn2princ_realm(kpropd_context, NULL, KIPROP_SVC_NAME, realm,
+@@ -701,9 +692,9 @@ reinit:
+         fprintf(stderr, _("Initializing kadm5 as client %s\n"),
+                 iprop_svc_princstr);
+     }
+-    retval = kadm5_init_with_skey(kpropd_context, iprop_svc_princstr,
++    retval = kadm5_init_with_skey_mm(kpropd_context, iprop_svc_princstr,
+                                   keytab_path,
+-                                  master_svc_princstr,
++                                  master_svc_princstrs,
+                                   &params,
+                                   KADM5_STRUCT_VERSION,
+                                   KADM5_API_VERSION_4,
+@@ -1001,7 +992,7 @@ error:
+     syslog(LOG_ERR, _("ERROR returned by master KDC, bailing.\n"));
+ done:
+     free(iprop_svc_princstr);
+-    free(master_svc_princstr);
++    free_srv_names(master_svc_princstrs);
+     krb5_free_default_realm(kpropd_context, def_realm);
+     kadm5_destroy(server_handle);
+     krb5_db_fini(kpropd_context);
 --- a/src/lib/kadm5/admin.h
 +++ b/src/lib/kadm5/admin.h
 @@ -352,6 +352,51 @@ kadm5_ret_t    kadm5_init_with_creds(krb5_context context,
@@ -267,7 +327,7 @@
                      server_handle);
  }
  
-@@ -504,9 +587,35 @@ cleanup:
+@@ -505,9 +588,35 @@ cleanup:
  	return (code);
  }
  
@@ -304,7 +364,7 @@
           kadm5_config_params *params_in, krb5_ui_4 struct_version,
           krb5_ui_4 api_version, char **db_args, void **server_handle)
  {
-@@ -524,6 +633,10 @@ init_any(krb5_context context, char *client_name, enum init_type init_type,
+@@ -525,6 +634,10 @@ init_any(krb5_context context, char *client_name, enum init_type init_type,
  
      int code = 0;
      generic_ret *r;
@@ -314,7 +374,7 @@
 +    int i;
  
      initialize_ovk_error_table();
- /*      initialize_adb_error_table(); */
+     initialize_ovku_error_table();
 @@ -591,34 +704,56 @@ init_any(krb5_context context, char *client_name, enum init_type init_type,
      if (code)
          goto error;
@@ -605,63 +665,3 @@
  kadm5_ret_t kadm5_init(krb5_context context, char *client_name, char *pass,
                         char *service_name,
                         kadm5_config_params *params_in,
---- a/src/slave/kpropd.c
-+++ b/src/slave/kpropd.c
-@@ -636,7 +636,7 @@ do_iprop()
-     kadm5_ret_t retval;
-     krb5_principal iprop_svc_principal;
-     void *server_handle = NULL;
--    char *iprop_svc_princstr = NULL, *master_svc_princstr = NULL;
-+    char *iprop_svc_princstr = NULL, **master_svc_princstrs = NULL;
-     unsigned int pollin, backoff_time;
-     int backoff_cnt = 0, reinit_cnt = 0;
-     struct timeval iprop_start, iprop_end;
-@@ -655,9 +655,9 @@ do_iprop()
-     if (pollin == 0)
-         pollin = 10;
- 
--    if (master_svc_princstr == NULL) {
-+    if (master_svc_princstrs == NULL) {
-         retval = kadm5_get_kiprop_host_srv_names(kpropd_context, realm,
--						 &kiprop_srv_names);
-+						 &master_svc_princstrs);
-         if (retval) {
-             com_err(progname, retval,
-                     _("%s: unable to get kiprop host based "
-@@ -665,15 +665,6 @@ do_iprop()
-                     progname, realm);
-             return retval;
-         }
--        master_svc_princstr = strdup(kiprop_srv_names[0]);
--	free_srv_names(kiprop_srv_names);
--	if (master_svc_princstr == NULL) {
--            com_err(progname, retval,
--                    _("%s: unable to allocate memory for kiprop host based "
--                      "service name for realm %s\n"),
--                    progname, def_realm);
--            return ENOMEM;
--	}
-     }
- 
-     retval = sn2princ_realm(kpropd_context, NULL, KIPROP_SVC_NAME, realm,
-@@ -702,9 +693,9 @@ reinit:
-         fprintf(stderr, _("Initializing kadm5 as client %s\n"),
-                 iprop_svc_princstr);
-     }
--    retval = kadm5_init_with_skey(kpropd_context, iprop_svc_princstr,
-+    retval = kadm5_init_with_skey_mm(kpropd_context, iprop_svc_princstr,
-                                   srvtab,
--                                  master_svc_princstr,
-+                                  master_svc_princstrs,
-                                   &params,
-                                   KADM5_STRUCT_VERSION,
-                                   KADM5_API_VERSION_4,
-@@ -1002,7 +993,7 @@ error:
-     syslog(LOG_ERR, _("ERROR returned by master KDC, bailing.\n"));
- done:
-     free(iprop_svc_princstr);
--    free(master_svc_princstr);
-+    free_srv_names(master_svc_princstrs);
-     krb5_free_default_realm(kpropd_context, def_realm);
-     kadm5_destroy(server_handle);
-     krb5_db_fini(kpropd_context);

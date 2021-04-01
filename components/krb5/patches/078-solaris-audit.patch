@@ -14,8 +14,8 @@
 #
 --- a/src/Makefile.in
 +++ b/src/Makefile.in
-@@ -66,7 +66,7 @@ INSTALLMKDIRS = $(KRB5ROOT) $(KRB5MANROOT) $(KRB5OTHERMKDIRS) \
- 		$(FILE_CATDIR) \
+@@ -69,7 +69,7 @@ INSTALLMKDIRS = $(KRB5ROOT) $(KRB5MANROOT) $(KRB5OTHERMKDIRS) \
+ 		$(FILE_CATDIR) $(OVERVIEW_CATDIR) \
  		$(KRB5_LIBDIR) $(KRB5_INCDIR) \
  		$(KRB5_DB_MODULE_DIR) $(KRB5_PA_MODULE_DIR) \
 -		$(KRB5_AD_MODULE_DIR) \
@@ -25,7 +25,7 @@
  		@runstatedir@ @runstatedir@/krb5kdc \
 --- a/src/config/pre.in
 +++ b/src/config/pre.in
-@@ -215,6 +215,7 @@ MODULE_DIR = @libdir@/krb5/plugins
+@@ -217,6 +217,7 @@ MODULE_DIR = @libdir@/krb5/plugins
  KRB5_DB_MODULE_DIR = $(MODULE_DIR)/kdb
  KRB5_PA_MODULE_DIR = $(MODULE_DIR)/preauth
  KRB5_AD_MODULE_DIR = $(MODULE_DIR)/authdata
@@ -33,9 +33,9 @@
  KRB5_LIBKRB5_MODULE_DIR = $(MODULE_DIR)/libkrb5
  KRB5_TLS_MODULE_DIR = $(MODULE_DIR)/tls
  KRB5_LOCALEDIR = @localedir@
---- a/src/configure.in
-+++ b/src/configure.in
-@@ -221,7 +221,7 @@ if test "$withval" = yes; then
+--- a/src/configure.ac
++++ b/src/configure.ac
+@@ -236,7 +236,7 @@ if test "$withval" = yes; then
  fi
  
  # Check which (if any) audit plugin to build
@@ -44,7 +44,7 @@
  AC_ARG_ENABLE([audit-plugin],
  AC_HELP_STRING([--enable-audit-plugin=IMPL],
                 [use audit plugin @<:@ do not use audit @:>@]), , enableval=no)
-@@ -236,6 +236,13 @@ if test "$enableval" != no; then
+@@ -251,6 +251,13 @@ if test "$enableval" != no; then
                       audit_plugin=plugins/audit/simple ],
                       AC_MSG_ERROR([libaudit not found or undefined symbol audit_log_user_message]))
          ;;
@@ -80,31 +80,11 @@
  	$(INSTALL_PROGRAM) $(PROG) ${DESTDIR}$(SERVER_BINDIR)/$(PROG)
 --- a/src/kadmin/server/deps
 +++ b/src/kadmin/server/deps
-@@ -169,4 +169,3 @@ $(OUTPRE)ipropd_svc.$(OBJEXT): $(BUILDTOP)/include/autoconf.h \
+@@ -168,4 +168,3 @@ $(OUTPRE)ipropd_svc.$(OBJEXT): $(BUILDTOP)/include/autoconf.h \
    $(top_srcdir)/include/kdb_log.h $(top_srcdir)/include/krb5.h \
    $(top_srcdir)/include/krb5/plugin.h $(top_srcdir)/include/net-server.h \
    $(top_srcdir)/lib/gssapi/krb5/gssapi_krb5.h auth.h \
 -  ipropd_svc.c misc.h
-+  ipropd_svc.c misc.h kadmind_audit.h
-+$(OUTPRE)kadmind_audit.$(OBJEXT): $(BUILDTOP)/include/autoconf.h \
-+  $(BUILDTOP)/include/gssapi/gssapi.h $(BUILDTOP)/include/gssapi/gssapi_ext.h \
-+  $(BUILDTOP)/include/gssrpc/types.h $(BUILDTOP)/include/kadm5/admin.h \
-+  $(BUILDTOP)/include/kadm5/admin_internal.h $(BUILDTOP)/include/kadm5/chpass_util_strings.h \
-+  $(BUILDTOP)/include/kadm5/kadm_err.h $(BUILDTOP)/include/kadm5/kadm_rpc.h \
-+  $(BUILDTOP)/include/kadm5/server_internal.h $(BUILDTOP)/include/krb5/krb5.h \
-+  $(BUILDTOP)/include/osconf.h $(COM_ERR_DEPS) $(VERTO_DEPS) \
-+  $(top_srcdir)/include/adm_proto.h $(top_srcdir)/include/gssrpc/auth.h \
-+  $(top_srcdir)/include/gssrpc/auth_gss.h $(top_srcdir)/include/gssrpc/auth_unix.h \
-+  $(top_srcdir)/include/gssrpc/clnt.h $(top_srcdir)/include/gssrpc/rename.h \
-+  $(top_srcdir)/include/gssrpc/rpc.h $(top_srcdir)/include/gssrpc/rpc_msg.h \
-+  $(top_srcdir)/include/gssrpc/svc.h $(top_srcdir)/include/gssrpc/svc_auth.h \
-+  $(top_srcdir)/include/gssrpc/xdr.h $(top_srcdir)/include/iprop.h \
-+  $(top_srcdir)/include/iprop_hdr.h $(top_srcdir)/include/k5-platform.h \
-+  $(top_srcdir)/include/k5-thread.h $(top_srcdir)/include/kdb.h \
-+  $(top_srcdir)/include/kdb_log.h $(top_srcdir)/include/krb5.h \
-+  $(top_srcdir)/include/krb5/plugin.h $(top_srcdir)/include/net-server.h \
-+  $(top_srcdir)/lib/gssapi/krb5/gssapi_krb5.h $(top_srcdir)/lib/kadm5/srv/server_acl.h \
-+  kadmind_audit.c kadmind_audit.h
 --- a/src/kadmin/server/ipropd_svc.c
 +++ b/src/kadmin/server/ipropd_svc.c
 @@ -203,6 +203,9 @@ iprop_get_updates_1_svc(kdb_last_t *arg, struct svc_req *rqstp)

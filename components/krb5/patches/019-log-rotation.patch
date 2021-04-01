@@ -31,7 +31,7 @@
          } log_file;
          struct log_syslog {
              int         ls_facility;
-@@ -126,6 +133,11 @@ struct log_entry {
+@@ -125,6 +132,11 @@ struct log_entry {
  };
  #define lfu_filep       log_union.log_file.lf_filep
  #define lfu_fname       log_union.log_file.lf_fname
@@ -41,12 +41,13 @@
 +#define lfu_last_rotated        log_union.log_file.lf_last_rotated
 +#define lfu_rotate_versions     log_union.log_file.lf_rotate_versions
  #define lsu_facility    log_union.log_syslog.ls_facility
- #define lsu_severity    log_union.log_syslog.ls_severity
  #define ldu_filep       log_union.log_device.ld_filep
-@@ -161,6 +173,132 @@ static struct log_entry def_log_entry;
+ #define ldu_devname     log_union.log_device.ld_devname
+@@ -158,6 +170,132 @@ static struct log_entry def_log_entry;
+                                  -1)
  #define DEVICE_CLOSE(d)         fclose(d)
  
- /*
++/*
 + * Solaris Kerberos
 + * klog_rotate() - roate a log file if we have specified rotation
 + * parameters in krb5.conf.
@@ -172,20 +173,10 @@
 +    }
 +}
 +
-+/*
+ /*
   * klog_com_err_proc()  - Handle com_err(3) messages as specified by the
   *                        profile.
-  */
-@@ -262,6 +400,8 @@ klog_com_err_proc(const char *whoami, long int code, const char *format, va_list
- 
-         switch (log_control.log_entries[lindex].log_type) {
-         case K_LOG_FILE:
-+            /* Solaris Kerberos */
-+            klog_rotate(&log_control.log_entries[lindex]);
-         case K_LOG_STDERR:
-             /*
-              * Files/standard error.
-@@ -344,6 +484,7 @@ krb5_klog_init(krb5_context kcontext, char *ename, char *whoami, krb5_boolean do
+@@ -239,6 +377,7 @@ krb5_klog_init(krb5_context kcontext, char *ename, char *whoami, krb5_boolean do
      int         error, debug;
      int         do_openlog, log_facility;
      FILE        *f = NULL;
@@ -193,7 +184,7 @@
  
      /* Initialize */
      do_openlog = 0;
-@@ -414,6 +555,7 @@ krb5_klog_init(krb5_context kcontext, char *ename, char *whoami, krb5_boolean do
+@@ -309,6 +448,7 @@ krb5_klog_init(krb5_context kcontext, char *ename, char *whoami, krb5_boolean do
                       */
                      append = (cp[4] == ':') ? O_APPEND : 0;
                      if (append || cp[4] == '=') {
@@ -201,7 +192,7 @@
                          fd = open(&cp[5], O_CREAT | O_WRONLY | append,
                                    S_IRUSR | S_IWUSR | S_IRGRP);
                          if (fd != -1)
-@@ -427,6 +569,56 @@ krb5_klog_init(krb5_context kcontext, char *ename, char *whoami, krb5_boolean do
+@@ -322,6 +462,56 @@ krb5_klog_init(krb5_context kcontext, char *ename, char *whoami, krb5_boolean do
                          log_control.log_entries[i].lfu_filep = f;
                          log_control.log_entries[i].log_type = K_LOG_FILE;
                          log_control.log_entries[i].lfu_fname = &cp[5];
@@ -258,7 +249,7 @@
                      }
                  }
                  /*
-@@ -841,6 +1033,8 @@ klog_vsyslog(int priority, const char *format, va_list arglist)
+@@ -699,6 +889,8 @@ klog_vsyslog(int priority, const char *format, va_list arglist)
  
          switch (log_control.log_entries[lindex].log_type) {
          case K_LOG_FILE:

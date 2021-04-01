@@ -9,14 +9,14 @@
 #
 --- a/src/include/k5-int.h
 +++ b/src/include/k5-int.h
-@@ -272,6 +272,7 @@ typedef unsigned char   u_char;
- #define KRB5_CONF_MASTER_KEY_TYPE              "master_key_type"
+@@ -275,6 +275,7 @@ typedef unsigned char   u_char;
  #define KRB5_CONF_MAX_LIFE                     "max_life"
+ #define KRB5_CONF_MAX_READERS                  "max_readers"
  #define KRB5_CONF_MAX_RENEWABLE_LIFE           "max_renewable_life"
 +#define KRB5_CONF_MAX_TCP_CONNECTIONS          "kdc_max_tcp_connections"
  #define KRB5_CONF_MODULE                       "module"
  #define KRB5_CONF_NOADDRESSES                  "noaddresses"
- #define KRB5_CONF_NO_HOST_REFERRAL             "no_host_referral"
+ #define KRB5_CONF_NOSYNC                       "nosync"
 --- a/src/include/net-server.h
 +++ b/src/include/net-server.h
 @@ -72,6 +72,7 @@ krb5_error_code loop_setup_network(verto_ctx *ctx, void *handle,
@@ -29,7 +29,7 @@
  
 --- a/src/include/osconf.hin
 +++ b/src/include/osconf.hin
-@@ -91,6 +91,10 @@
+@@ -102,6 +102,10 @@
  #define DEFAULT_KDC_TCP_PORTLIST "88"
  #define DEFAULT_TCP_LISTEN_BACKLOG 5
  
@@ -42,7 +42,7 @@
   */
 --- a/src/kdc/main.c
 +++ b/src/kdc/main.c
-@@ -206,7 +206,7 @@ init_realm(kdc_realm_t * rdp, krb5_pointer aprof, char *realm,
+@@ -202,7 +202,7 @@ init_realm(kdc_realm_t * rdp, krb5_pointer aprof, char *realm,
             char *def_mpname, krb5_enctype def_enctype, char *def_udp_listen,
             char *def_tcp_listen, krb5_boolean def_manual,
             krb5_boolean def_restrict_anon, char **db_args, char *no_referral,
@@ -51,7 +51,7 @@
  {
      krb5_error_code     kret;
      krb5_boolean        manual;
-@@ -273,6 +273,8 @@ init_realm(kdc_realm_t * rdp, krb5_pointer aprof, char *realm,
+@@ -281,6 +281,8 @@ init_realm(kdc_realm_t * rdp, krb5_pointer aprof, char *realm,
          kret = ENOMEM;
          goto whoops;
      }
@@ -60,7 +60,7 @@
      /* Handle stash file */
      hierarchy[2] = KRB5_CONF_KEY_STASH_FILE;
      if (krb5_aprof_get_string(aprof, hierarchy, TRUE, &rdp->realm_stash))
-@@ -635,6 +637,7 @@ initialize_realms(krb5_context kcontext, int argc, char **argv,
+@@ -638,6 +640,7 @@ initialize_realms(krb5_context kcontext, int argc, char **argv,
      char                *hostbased = NULL;
      int                  db_args_size = 0;
      char                **db_args = NULL;
@@ -68,7 +68,7 @@
  
      extern char *optarg;
  
-@@ -653,6 +656,13 @@ initialize_realms(krb5_context kcontext, int argc, char **argv,
+@@ -656,6 +659,13 @@ initialize_realms(krb5_context kcontext, int argc, char **argv,
              if (krb5_aprof_get_string(aprof, hierarchy, TRUE, &def_tcp_listen))
                  def_tcp_listen = NULL;
          }
@@ -82,7 +82,7 @@
          hierarchy[1] = KRB5_CONF_KDC_MAX_DGRAM_REPLY_SIZE;
          if (krb5_aprof_get_int32(aprof, hierarchy, TRUE, &max_dgram_reply_size))
              max_dgram_reply_size = MAX_DGRAM_SIZE;
-@@ -720,7 +730,8 @@ initialize_realms(krb5_context kcontext, int argc, char **argv,
+@@ -723,7 +733,8 @@ initialize_realms(krb5_context kcontext, int argc, char **argv,
                                          menctype, def_udp_listen,
                                          def_tcp_listen, manual,
                                          def_restrict_anon, db_args,
@@ -92,7 +92,7 @@
                      if (retval) {
                          fprintf(stderr, _("%s: cannot initialize realm %s - "
                                            "see log file for details\n"),
-@@ -837,7 +848,7 @@ initialize_realms(krb5_context kcontext, int argc, char **argv,
+@@ -836,7 +847,7 @@ initialize_realms(krb5_context kcontext, int argc, char **argv,
              retval = init_realm(rdatap, aprof, lrealm, mkey_name, menctype,
                                  def_udp_listen, def_tcp_listen, manual,
                                  def_restrict_anon, db_args, no_referral,
@@ -101,7 +101,7 @@
              if (retval) {
                  fprintf(stderr, _("%s: cannot initialize realm %s - see log "
                                    "file for details\n"), argv[0], lrealm);
-@@ -1001,6 +1012,8 @@ int main(int argc, char **argv)
+@@ -993,6 +1004,8 @@ int main(int argc, char **argv)
          return 1;
      }
  
@@ -122,7 +122,7 @@
       */
 --- a/src/lib/apputils/net-server.c
 +++ b/src/lib/apputils/net-server.c
-@@ -425,6 +425,12 @@ loop_add_tcp_address(int default_port, const char *addresses)
+@@ -435,6 +435,12 @@ loop_add_tcp_address(int default_port, const char *addresses)
      return loop_add_addresses(addresses, default_port, TCP, NULL);
  }
  

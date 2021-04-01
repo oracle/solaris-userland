@@ -40,20 +40,22 @@
                               ccselect_realm_initvt);
 --- a/src/man/krb5.conf.man
 +++ b/src/man/krb5.conf.man
-@@ -954,10 +954,6 @@ dynamic modules, the following built\-in modules exist (and may be
+@@ -941,11 +941,7 @@ dynamic modules, the following built\-in modules exist (and may be
  disabled with the disable tag):
  .INDENT 0.0
  .TP
--.B \fBk5identity\fP
+-\fBk5identity\fP
 -Uses a .k5identity file in the user\(aqs home directory to select a
 -client principal
 -.TP
- .B \fBrealm\fP
+-\fBrealm\fP
++.B \fBrealm\fP
  Uses the service realm to guess an appropriate cache from the
  collection
+ .TP
 --- a/src/tests/gssapi/t_ccselect.py
 +++ b/src/tests/gssapi/t_ccselect.py
-@@ -148,21 +148,23 @@ r1.run(['./t_ccselect', gssserver_bar], expected_msg=alice)
+@@ -151,21 +151,23 @@ r1.run(['./t_ccselect', gssserver_bar], expected_msg=alice)
  r1.kinit(bob, password('bob'))
  
  # Try some cache selections using .k5identity.
@@ -95,7 +97,7 @@
  success('GSSAPI credential selection tests')
 --- a/src/tests/gssapi/t_client_keytab.py
 +++ b/src/tests/gssapi/t_client_keytab.py
-@@ -19,13 +19,15 @@ realm.run(['./t_ccselect', phost], expected_msg=realm.user_princ)
+@@ -18,13 +18,15 @@ realm.run(['./t_ccselect', phost], expected_msg=realm.user_princ)
  realm.run([kdestroy])
  
  # Test 2: no name/cache specified, pick principal from k5identity
