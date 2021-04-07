@@ -21,7 +21,7 @@ TEST_PDF_FILE=$(ls /usr/share/ghostscript/*/examples/text_graphic_image.pdf)
 # library/desktop/search/tracker, and image/graphviz components.
 # The output of the following commands should be empty.
 find /usr/lib/ -name 'libpdfdocument.so' -exec ldd {} \; 2>/dev/null | grep "not found"
-find /usr/lib/ -name 'libextract-pdf.so' -exec ldd {} \; 2>/dev/null | grep "not found"
+find /usr/lib/ -name 'libextract-pdf.so' -exec ldd {} \; 2>/dev/null | grep poppler | grep "not found"
 find /usr/lib/ -name 'libgvplugin_poppler.so' -exec ldd {} \; 2>/dev/null | grep "not found"
 
 # Check that tracker is able to extract information from the provided pdf file.
