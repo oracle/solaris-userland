@@ -1,0 +1,228 @@
+This patch fixes an issue with the ksh93 typeset builtin crashing
+for -l or -u option on special variables like ENV, PATH and so on.
+Upstream bug details at
+https://github.com/ksh93/ksh/commit/3654ee73c03fb622dc878d6d2adb54dff13e0624
+
+diff --git a/src/cmd/ksh93/include/defs.h b/src/cmd/ksh93/include/defs.h
+index fe833506cdb9..7fc5160ff872 100644
+--- a/src/cmd/ksh93/include/defs.h
++++ b/src/cmd/ksh93/include/defs.h
+@@ -359,7 +359,6 @@ struct shared
+ #define SH_FUNEVAL		0x10000	/* for sh_eval for function load */
+ 
+ extern struct shared	*shgd;
+-extern Shell_t		*nv_shell(Namval_t*);
+ extern void		sh_applyopts(Shell_t*,Shopt_t);
+ extern char 		**sh_argbuild(Shell_t*,int*,const struct comnod*,int);
+ extern struct dolnod	*sh_argfree(Shell_t *, struct dolnod*,int);
+diff --git a/src/cmd/ksh93/sh/init.c b/src/cmd/ksh93/sh/init.c
+index 90bf2681decc..392860baffc2 100644
+--- a/src/cmd/ksh93/sh/init.c
++++ b/src/cmd/ksh93/sh/init.c
+@@ -227,7 +227,7 @@ static void put_ed(register Namval_t* np,const char *val,int flags,Namfun_t *fp)
+ {
+ 	register const char *cp, *name=nv_name(np);
+ 	register int	newopt=0;
+-	Shell_t *shp = nv_shell(np);
++	Shell_t *shp = sh_getinterp();
+ 	if(*name=='E' && nv_getval(sh_scoped(shp,VISINOD)))
+ 		goto done;
+ 	if(!(cp=val) && (*name=='E' || !(cp=nv_getval(sh_scoped(shp,EDITNOD)))))
+@@ -283,12 +283,9 @@
+ /* Trap for HISTFILE and HISTSIZE variables */
+ static void put_history(register Namval_t* np,const char *val,int flags,Namfun_t *fp)
+ {
+-	Shell_t *shp = nv_shell(np);
+-	void 	*histopen = NULL;
++	Shell_t *shp = sh_getinterp();
++	void 	*histopen = shp->gd->hist_ptr;
+ 	char	*cp;
+-	if( shp ) { 
+-	    histopen = shp->gd->hist_ptr; 
+-	}
+ 	if(val && histopen)
+ 	{
+ 		if(np==HISTFILE && (cp=nv_getval(np)) && strcmp(val,cp)==0) 
+@@ -278,7 +278,7 @@ static void put_history(register Namval_t* np,const char *val,int flags,Namfun_t
+ /* Trap for OPTINDEX */
+ static void put_optindex(Namval_t* np,const char *val,int flags,Namfun_t *fp)
+ {
+-	Shell_t *shp = nv_shell(np);
++	Shell_t *shp = sh_getinterp();
+ 	shp->st.opterror = shp->st.optchar = 0;
+ 	nv_putv(np, val, flags, fp);
+ 	if(!val)
+@@ -303,7 +303,7 @@ static Namfun_t *clone_optindex(Namval_t* np, Namval_t *mp, int flags, Namfun_t
+ /* Trap for restricted variables FPATH, PATH, SHELL, ENV */
+ static void put_restricted(register Namval_t* np,const char *val,int flags,Namfun_t *fp)
+ {
+-	Shell_t *shp = nv_shell(np);
++	Shell_t *shp = sh_getinterp();
+ 	int	path_scoped = 0, fpath_scoped=0;
+ 	Pathcomp_t *pp;
+ 	char *name = nv_name(np);
+@@ -345,7 +345,7 @@ static void put_restricted(register Namval_t* np,const char *val,int flags,Namfu
+ static void put_cdpath(register Namval_t* np,const char *val,int flags,Namfun_t *fp)
+ {
+ 	Pathcomp_t *pp;
+-	Shell_t *shp = nv_shell(np);
++	Shell_t *shp = sh_getinterp();
+ 	nv_putv(np, val, flags, fp);
+ 	if(!shp->cdpathlist)
+ 		return;
+@@ -369,7 +369,7 @@ static void put_cdpath(register Namval_t* np,const char *val,int flags,Namfun_t
+     /* Trap for LC_ALL, LC_CTYPE, LC_MESSAGES, LC_COLLATE and LANG */
+     static void put_lang(Namval_t* np,const char *val,int flags,Namfun_t *fp)
+     {
+-	Shell_t *shp = nv_shell(np);
++	Shell_t *shp = sh_getinterp();
+ 	int type;
+ 	char *name = nv_name(np);
+ 	if(name==(LCALLNOD)->nvname)
+@@ -494,7 +494,7 @@ static char* get_ifs(register Namval_t* np, Namfun_t *fp)
+ 	register struct ifs *ip = (struct ifs*)fp;
+ 	register char *cp, *value;
+ 	register int c,n;
+-	register Shell_t *shp = nv_shell(np);
++	register Shell_t *shp = sh_getinterp();
+ 	value = nv_getv(np,fp);
+ 	if(np!=ip->ifsnp)
+ 	{
+@@ -573,7 +573,7 @@ static void put_seconds(register Namval_t* np,const char *val,int flags,Namfun_t
+ 
+ static char* get_seconds(register Namval_t* np, Namfun_t *fp)
+ {
+-	Shell_t *shp = nv_shell(np);
++	Shell_t *shp = sh_getinterp();
+ 	register int places = nv_size(np);
+ 	struct tms tp;
+ 	double d, offset = (np->nvalue.dp?*np->nvalue.dp:0);
+@@ -657,7 +657,7 @@ static Sfdouble_t nget_lineno(Namval_t* np, Namfun_t *fp)
+ static void put_lineno(Namval_t* np,const char *val,int flags,Namfun_t *fp)
+ {
+ 	register long n;
+-	Shell_t *shp = nv_shell(np);
++	Shell_t *shp = sh_getinterp();
+ 	if(!val)
+ 	{
+ 		fp = nv_stack(np, NIL(Namfun_t*));
+@@ -681,7 +681,7 @@ static char* get_lineno(register Namval_t* np, Namfun_t *fp)
+ 
+ static char* get_lastarg(Namval_t* np, Namfun_t *fp)
+ {
+-	Shell_t	*shp = nv_shell(np);
++	Shell_t	*shp = sh_getinterp();
+ 	char	*cp;
+ 	int	pid;
+         if(sh_isstate(SH_INIT) && (cp=shp->lastarg) && *cp=='*' && (pid=strtol(cp+1,&cp,10)) && *cp=='*')
+@@ -691,7 +691,7 @@ static char* get_lastarg(Namval_t* np, Namfun_t *fp)
+ 
+ static void put_lastarg(Namval_t* np,const char *val,int flags,Namfun_t *fp)
+ {
+-	Shell_t *shp = nv_shell(np);
++	Shell_t *shp = sh_getinterp();
+ 	if(flags&NV_INTEGER)
+ 	{
+ 		sfprintf(shp->strbuf,"%.*g",12,*((double*)val));
+@@ -934,7 +934,7 @@ static void math_init(Shell_t *shp)
+ 
+ static Namval_t *create_math(Namval_t *np,const char *name,int flag,Namfun_t *fp)
+ {
+-	Shell_t		*shp = nv_shell(np);
++	Shell_t		*shp = sh_getinterp();
+ 	if(!name)
+ 		return(SH_MATHNOD);
+ 	if(name[0]!='a' || name[1]!='r' || name[2]!='g' || name[4] || !isdigit(name[3]) || (name[3]=='0' || (name[3]-'0')>MAX_MATH_ARGS))
+@@ -945,7 +945,7 @@ static Namval_t *create_math(Namval_t *np,const char *name,int flag,Namfun_t *fp
+ 
+ static char* get_math(register Namval_t* np, Namfun_t *fp)
+ {
+-	Shell_t		*shp = nv_shell(np);
++	Shell_t		*shp = sh_getinterp();
+ 	Namval_t	*mp,fake;
+ 	char		*val;
+ 	int		first=0;
+@@ -966,7 +966,7 @@ static char* get_math(register Namval_t* np, Namfun_t *fp)
+ 
+ static char *setdisc_any(Namval_t *np, const char *event, Namval_t *action, Namfun_t *fp)
+ {
+-	Shell_t		*shp=nv_shell(np);
++	Shell_t		*shp=sh_getinterp();
+ 	Namval_t	*mp,fake;
+ 	char		*name;
+ 	int		getname=0, off=staktell();
+diff --git a/src/cmd/ksh93/sh/name.c b/src/cmd/ksh93/sh/name.c
+index 2a0c2163da43..59ff09d8cb54 100644
+--- a/src/cmd/ksh93/sh/name.c
++++ b/src/cmd/ksh93/sh/name.c
+@@ -3624,17 +3624,6 @@ int nv_setsize(register Namval_t *np, int size)
+ 	return(oldsize);
+ }
+ 
+-Shell_t	*nv_shell(Namval_t *np)
+-{
+-	Namfun_t *fp;
+-	for(fp=np->nvfun;fp;fp=fp->next)
+-	{
+-		if(!fp->disc)
+-			return((Shell_t*)fp->last);
+-	}
+-	return(0);
+-}
+-
+ #undef nv_unset
+ 
+ void	nv_unset(register Namval_t *np)
+--- INIT.2012-08-01.old/src/cmd/ksh93/tests/attributes.sh	2021-03-09 04:45:27.241123147 +0000
++++ INIT.2012-08-01/src/cmd/ksh93/tests/attributes.sh	2021-03-11 04:01:31.846907290 +0000
+@@ -380,6 +380,7 @@
+ exp=100
+ ((got=$exp))
+ [[ $got == $exp ]] || err_exit "typeset -l fails on numeric value -- expected '$exp', got '$got'"
++unset got
+ 
+ unset s
+ typeset -a -u s=( hello world chicken )
+--- INIT.2012-08-01.old/src/cmd/ksh93/tests/variables.sh	2021-03-11 04:02:34.759179330 +0000
++++ INIT.2012-08-01/src/cmd/ksh93/tests/variables.sh	2021-03-14 00:35:31.738094969 +0000
+@@ -674,4 +674,40 @@
+ $SHELL -c 'unset .sh' 2> /dev/null
+ [[ $? == 1 ]] || err_exit 'unset .sh should return 1'
+
++# ... upper/lowercase test
++$SHELL -c '
++       typeset -u upper
++       typeset -l lower
++       errors=0
++       PS1=/dev/null/test_my_case_too
++       PS2=$PS1 PS3=$PS1 PS4=$PS1 OPTARG=$PS1 IFS=$PS1 FPATH=$PS1 FIGNORE=$PS1 CSWIDTH=$PS1
++       for var
++       do      case $var in
++               RANDOM | HISTCMD | _ | SECONDS | LINENO | JOBMAX | .sh.stats)
++                       # these are expected to fail below as their values change; just test against crashing
++                       typeset -u "$var"
++                       typeset -l "$var"
++                       continue ;;
++               esac
++               nameref val=$var
++               upper=$val
++               lower=$val
++               typeset -u "$var"
++               if      [[ $val != "$upper" ]]
++               then    echo "  $0: typeset -u does not work on special variable $var" \
++                               "(expected $(printf %q "$upper"), got $(printf %q "$val"))" >&2
++                       let errors++
++               fi
++               typeset -l "$var"
++               if      [[ $val != "$lower" ]]
++               then    echo "  $0: typeset -l does not work on special variable $var" \
++                               "(expected $(printf %q "$lower"), got $(printf %q "$val"))" >&2
++                       let errors++
++               fi
++       done
++       exit $((errors + 1))
++' changecase_test "$@" PATH    # do include PATH here as well
++(((e = $?) == 1)) || err_exit "typeset -l/-u doesn't work on special variables" \
++       "(exit status $e$( ((e>128)) && print -n / && kill -l "$e"))"
++
+ exit $((Errors<125?Errors:125))
