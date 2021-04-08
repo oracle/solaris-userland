@@ -43,6 +43,16 @@ COMPONENT_ANITYA_ID=	5532
 
 TPNO=			49366
 
+# cryptography_vectors package is being used for testing only
+# and is not delivered with cryptography
+COMPONENT_NAME_VECTORS=		cryptography_vectors
+COMPONENT_VERSION_VECTORS=	$(COMPONENT_VERSION)
+COMPONENT_SRC_VECTORS=		$(COMPONENT_NAME_VECTORS)-$(COMPONENT_VERSION_VECTORS)
+COMPONENT_ARCHIVE_VECTORS=	$(COMPONENT_SRC_VECTORS).tar.gz
+COMPONENT_ARCHIVE_HASH_VECTORS=	\
+	sha256:949f1fb3d1cf5430cab6aa24980347eade966a128d9bedf0b57af28bad8c0265
+COMPONENT_ARCHIVE_URL_VECTORS=	$(call pypi_url,VECTORS)
+
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -60,23 +70,24 @@ COMPONENT_INSTALL_ENV +=	PYTHONPATH=$(CFFI)
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
+COMPONENT_TEST_ENV += \
+	PYTHONPATH=$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE):$(SOURCE_DIR_VECTORS)
+COMPONENT_SYSTEM_TEST_ENV += \
+	PYTHONPATH=$(PYTHON_VENDOR_PACKAGES_BASE):$(SOURCE_DIR_VECTORS)
 
 # common targets
 build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)
 
-#
-# tests require cryptography_vectors, iso8601, pretend, pytest>= 2.8.7,
-# hypothesis>=1.11.4 and pyasn1_modules, some of which have not yet integrated.
-# On a i386 kernel zone with the test dependencies installed, test results are:
-# Python2.7: 96918 passed, 8972 skipped
-# Python3.7: 96914 passed, 8976 skipped
-#
-test:		$(NO_TESTS)
+test:		$(TEST_32_and_64)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:    $(SYSTEM_TEST_32_and_64)
 
 REQUIRED_PACKAGES += library/python/cffi
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += system/library
+
+# Testing related components
+REQUIRED_PACKAGES += library/python/iso8601
+REQUIRED_PACKAGES += library/python/pytz

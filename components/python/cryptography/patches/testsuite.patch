@@ -1,0 +1,56 @@
+Solaris doesn't have pretend python package, hence all tests
+depending on it are disabled.
+
+test_load_ecdsa_no_named_curve doesn't work as it makes an incorrect
+assumption about our comparatively new version of OpenSSL
+
+https://github.com/pyca/cryptography/issues/4998
+
+--- cryptography-2.5/tests/test_utils.py
++++ cryptography-2.5/tests/test_utils.py
+@@ -8,8 +8,6 @@ import binascii
+ import os
+ import textwrap
+ 
+-import pretend
+-
+ import pytest
+ 
+ import cryptography
+@@ -28,26 +26,6 @@ from .utils import (
+ )
+ 
+ 
+-def test_check_backend_support_skip():
+-    supported = pretend.stub(
+-        kwargs={"only_if": lambda backend: False, "skip_message": "Nope"}
+-    )
+-    node = pretend.stub(iter_markers=lambda x: [supported])
+-    item = pretend.stub(node=node)
+-    with pytest.raises(pytest.skip.Exception) as exc_info:
+-        check_backend_support(True, item)
+-    assert exc_info.value.args[0] == "Nope (True)"
+-
+-
+-def test_check_backend_support_no_skip():
+-    supported = pretend.stub(
+-        kwargs={"only_if": lambda backend: True, "skip_message": "Nope"}
+-    )
+-    node = pretend.stub(iter_markers=lambda x: [supported])
+-    item = pretend.stub(node=node)
+-    assert check_backend_support(None, item) is None
+-
+-
+ def test_load_nist_vectors():
+     vector_data = textwrap.dedent("""
+     # CAVS 11.1
+--- cryptography-2.5/tests/x509/test_x509.py
++++ cryptography-2.5/tests/x509/test_x509.py
+@@ -3732,6 +3732,7 @@ class TestECDSACertificate(object):
+             ec.ECDSA(cert.signature_hash_algorithm)
+         )
+ 
++    @pytest.mark.skip("Doesn't work with our version of OpenSSL")
+     def test_load_ecdsa_no_named_curve(self, backend):
+         _skip_curve_unsupported(backend, ec.SECP256R1())
+         cert = _load_cert(
