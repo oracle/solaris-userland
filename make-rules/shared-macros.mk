@@ -783,14 +783,16 @@ PYTHON_DATA= $(PYTHON_LIB)
 # to be edited.
 
 # Edit the leading #!/usr/bin/python line in python scripts to use the
-# BUILD's $(PYTHON).
+# BUILD's $(PYTHON). The source file must be recompiled after that, as
+# the corresponding .pyc file is outdated now.
 PYTHON_SCRIPT_SHEBANG_FIX_FUNC = \
 	$(GSED) -i \
 		-e '1s@/usr/bin/python$$@$(PYTHON)@' \
 		-e '1s@/usr/bin/python\ @$(PYTHON) @' \
 		-e '1s@/usr/bin/env\ $(PYTHON)@$(PYTHON)@' \
 		-e '1s@/usr/bin/env\ python[23]@$(PYTHON)@' \
-		-e '1s@/usr/bin/env\ python@$(PYTHON)@' $(1);
+		-e '1s@/usr/bin/env\ python@$(PYTHON)@' $(1); \
+	$(PYTHON) -m compileall $(1);
 
 # PYTHON_SCRIPTS is a list of files from the calling Makefile.
 PYTHON_SCRIPTS_PROCESS= \

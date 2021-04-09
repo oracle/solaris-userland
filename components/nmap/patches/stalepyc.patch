@@ -1,0 +1,18 @@
+zenmapCore/Paths.py is modified after it was compiled, resulting
+in a stale .pyc file. This simple fix forces recompilation.
+
+This was reported upstream:
+https://github.com/nmap/nmap/issues/2327
+
+--- nmap-7.80/zenmap/setup.py
++++ nmap-7.80/zenmap/setup.py
+@@ -437,6 +437,9 @@ for dir in dirs:
+         pf.write(pcontent)
+         pf.close()
+ 
++        import py_compile
++        py_compile.compile(paths_file)
++
+         # Rewrite the zenmap.desktop and zenmap-root.desktop files to point to
+         # the installed locations of the su-to-zenmap.sh script and application
+         # icon.

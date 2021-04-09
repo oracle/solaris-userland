@@ -30,7 +30,7 @@ proto/.prepared: Makefile source.c
 	$(MKDIR) proto
 
 	$(MKDIR) proto/usr/lib/pkglinttest
-	$(TOUCH) proto/usr/lib/pkglinttest/foo.py
+	$(TOUCH) proto/usr/lib/pkglinttest/foo.txt
 
 	$(CC) source.c $(ASLR_ENABLE) -m32 -o proto/32bin
 	$(CC) source.c $(ASLR_ENABLE) -m64 -o proto/64bin
@@ -64,6 +64,32 @@ proto/.prepared: Makefile source.c
 	$(CC) source.c $(ASLR_ENABLE) -o proto/usr/lib/aslr/enabled
 	$(CC) source.c $(ASLR_DISABLE) -o proto/usr/lib/aslr/disabled
 	$(CC) source.c -o proto/usr/lib/aslr/noflag
+
+
+	$(MKDIR) proto/usr/lib/python
+	$(TOUCH) proto/usr/lib/python/without.py
+	$(TOUCH) proto/usr/lib/python/orphan.py
+	$(PYTHON.2.7) -m compileall proto/usr/lib/python/orphan.py
+	$(RM) proto/usr/lib/python/orphan.py
+
+	$(TOUCH) proto/usr/lib/python/magicmismatch.py
+	$(PYTHON.3.9) -m compileall proto/usr/lib/python/magicmismatch.py
+	$(MV) proto/usr/lib/python/__pycache__/magicmismatch.cpython-39.pyc \
+		proto/usr/lib/python/__pycache__/magicmismatch.cpython-37.pyc
+
+	$(TOUCH) proto/usr/lib/python/correct2.py
+	$(TOUCH) proto/usr/lib/python/correct3.py
+	$(PYTHON.2.7) -m compileall proto/usr/lib/python/correct2.py
+	$(PYTHON.3.7) -m compileall proto/usr/lib/python/correct3.py
+
+	$(TOUCH) proto/usr/lib/python/stale2.py
+	$(TOUCH) proto/usr/lib/python/stale3.py
+	$(PYTHON.2.7) -m compileall proto/usr/lib/python/stale2.py
+	$(PYTHON.3.7) -m compileall proto/usr/lib/python/stale3.py
+	# wait, otherwise timestamp might be unchanged
+	sleep 1
+	$(TOUCH) proto/usr/lib/python/stale2.py
+	$(TOUCH) proto/usr/lib/python/stale3.py
 
 	$(TOUCH) $@
 

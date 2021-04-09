@@ -713,3 +713,134 @@ class UserlandManifestChecker(base.ManifestChecker):
                     msgid=f"{self.name}{pkglint_id}.2")
 
     check_package_arch.pkglint_desc = "Wrong architecture package."
+
+    def __validate_pyc(self, pypath, pycpath, engine, _pkglint_id):
+        # Magic values of all versions of Python can be found here:
+        # https://github.com/python/cpython/blob/master/Lib/importlib/_bootstrap_external.py
+        MAGIC_NUMBERS = {
+            "27": (62211).to_bytes(2, "little") + b"\r\n",
+            "37": (3394).to_bytes(2, "little") + b"\r\n",
+            "39": (3425).to_bytes(2, "little") + b"\r\n",
+        }
+
+        def locate_file(path):
+            for proto_path in os.getenv("PROTO_PATH").split():
+                fullpath = os.path.join(proto_path, path)
+                if os.path.exists(fullpath):
+                    return fullpath
+            return None
+
+        # Find both files in given proto areas. Both files can be in a different
+        # place (due to mangling), which is the reason this is done twice.
+        pyfull = locate_file(pypath)
+        pycfull = locate_file(pycpath)
+
+        if pyfull is None or pycfull is None:
+            # non-existent files are handled by another check
+            return
+
+        st = os.stat(pyfull)
+
+        # verify that pyc file is valid
+        with open(pycfull, "rb") as ifile:
+            data = ifile.read(16)
+
+        # we can get the header layout from the magic number (which
+        # changes with each each bytecode revision)
+        magic = data[:4]
+
+        # older Python 2 header
+        if magic == MAGIC_NUMBERS["27"]:
+            # validate a pyc against the source last-modified time
+            timestamp = int.from_bytes(data[4:8], "little")
+            if timestamp != int(st.st_mtime) & 0xFFFFFFFF:
+                engine.error(f"bytecode is stale in {pycpath}",
+                             msgid=f"{self.name}{_pkglint_id}.5")
+            return
+
+        # verify that .cpython-XX extension corresponds to the
+        # expected magic number
+        match = re.match(r".*cpython-(\d+)\.pyc", pycpath)
+        version = match.group(1) if match is not None else None
+        if version is None:
+            # some .pyc files are without the .cpython-XX extension. In that
+            # case at least validate that magic number is on of those known.
+            if magic not in MAGIC_NUMBERS.values():
+                engine.error(f"bad pyc magic number in {pycpath}",
+                             msgid=f"{self.name}{_pkglint_id}.1")
+        elif version in MAGIC_NUMBERS:
+            if magic != MAGIC_NUMBERS[version]:
+                engine.error(f"bad pyc magic number in {pycpath}",
+                             msgid=f"{self.name}{_pkglint_id}.1")
+        else:
+            engine.error(f"unknown pyc magic number {pycpath}",
+                         msgid=f"{self.name}{_pkglint_id}.2")
+
+        # perform basic validity checking of a pyc header
+        flags = int.from_bytes(data[4:8], "little")
+        if flags & ~0b11:
+            engine.error(f"bad pyc flags in {pycpath}",
+                         msgid=f"{self.name}{_pkglint_id}.3")
+
+        if flags & 0b1 != 0:
+            # we are not shipping hash-based pyc files
+            engine.warning(f"cannot validate hash based pyc file {pycpath}",
+                           msgid=f"{self.name}{_pkglint_id}.4")
+            return
+
+        # validate a pyc against the source last-modified time
+        timestamp = int.from_bytes(data[8:12], "little")
+        if timestamp != int(st.st_mtime) & 0xFFFFFFFF:
+            engine.error(f"bytecode is stale (timestamp) in {pycpath}",
+                         msgid=f"{self.name}{_pkglint_id}.5")
+            return
+
+        # validate a pyc against the source size
+        size = int.from_bytes(data[12:16], "little")
+        if size != st.st_size & 0xFFFFFFFF:
+            engine.error(f"bytecode is stale (source size) in {pycpath}",
+                         msgid=f"{self.name}{_pkglint_id}.5")
+
+    def pyc_check(self, manifest, engine, pkglint_id="006"):
+        """Make sure that all delivered .pyc files are up-to-date and usable
+        by the respective runtime."""
+
+        if not os.getenv("PROTO_PATH"):
+            # this check require physical files to look at
+            return
+
+        filemap = {}
+
+        # sort all files such that .py files are processed before .pyc files
+        for action in sorted(manifest.gen_actions_by_type("file"),
+                             key=lambda a: a.attrs["path"].endswith(".pyc")):
+            # get path within the proto area
+            path = action.hash
+            if path is None or path == "NOHASH":
+                path = action.attrs["path"]
+
+            if path.endswith(".py"):
+                filemap[path] = None
+
+            elif path.endswith(".pyc"):
+                # map each .pyc to corresponding .py source file
+                source = path.replace("__pycache__/", "")[:-1]
+                source = re.sub(r"\.cpython-[0-9]{2}", "", source)
+
+                if source in filemap:
+                    filemap[source] = path
+                else:
+                    engine.error(
+                        f"file {path} doesn't have corresponding .py source file",
+                        msgid=f"{self.name}{pkglint_id}.9")
+
+        for py, pyc in filemap.items():
+            if pyc is None:
+                # this file doesn't have a .pyc file
+                engine.warning(
+                    f"file {py} doesn't have corresponding .pyc file",
+                    msgid=f"{self.name}{pkglint_id}.0")
+            else:
+                self.__validate_pyc(py, pyc, engine, pkglint_id)
+
+    pyc_check.pkglint_desc = ".pyc files must be importable and up-to-date."

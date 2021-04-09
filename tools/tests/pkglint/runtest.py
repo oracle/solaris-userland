@@ -101,10 +101,10 @@ class TestUserlandPkglint(unittest.TestCase):
     def test_action001_protoarea(self, ret, stdout, stderr):
         """Missing files are detected."""
         self.assertEqual(ret, 0)
-        self.assertNotIn("usr/lib/pkglinttest/foo.py", stderr)
+        self.assertNotIn("usr/lib/pkglinttest/foo.txt", stderr)
         # missing file at this stage is INFO only (with return code 0)
         self.assertIn("INFO userland.action001.1         "
-            "usr/lib/pkglinttest/missing.py missing from proto area, skipping content checks\n", stderr)
+            "usr/lib/pkglinttest/missing.txt missing from proto area, skipping content checks\n", stderr)
 
 
     @with_manifest("userland.action001_4.in", proto=True)
@@ -345,6 +345,23 @@ class TestUserlandPkglint(unittest.TestCase):
             self.assertIn("ERROR userland.manifest005.2      "
                 f"The manifest {package} contains action with wrong architecture '['i386']' (instead of 'sparc'):\n"
                 "file NOHASH group=bin mode=0444 owner=root path=usr/lib/pkglinttest/bar.py variant.arch=i386", stderr)
+
+
+    @with_manifest("userland.manifest006.in", proto=True)
+    def test_manifest006(self, ret, stdout, stderr):
+        """Pyc files are present and not stale."""
+        self.assertNotIn("correct", stderr)
+        self.assertIn("WARNING userland.manifest006.0    "
+            "file usr/lib/python/without.py doesn't have corresponding .pyc file\n", stderr)
+        self.assertIn("ERROR userland.manifest006.9      "
+            "file usr/lib/python/orphan.pyc doesn't have corresponding .py source file\n", stderr)
+        self.assertIn("ERROR userland.manifest006.1      "
+            "bad pyc magic number in usr/lib/python/__pycache__/magicmismatch.cpython-37.pyc\n", stderr)
+
+        self.assertIn("ERROR userland.manifest006.5      "
+            "bytecode is stale in usr/lib/python/stale2.pyc\n", stderr)
+        self.assertIn("ERROR userland.manifest006.5      "
+            "bytecode is stale (timestamp) in usr/lib/python/__pycache__/stale3.cpython-37.pyc\n", stderr)
 
 
 if __name__ == '__main__':

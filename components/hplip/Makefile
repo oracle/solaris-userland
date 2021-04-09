@@ -66,16 +66,16 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 # Do not use transform to create standard ABI version tagged .so files from Python 3 ABI
 PY3_CPYTHON_NAMING=\#
 
-# Pre-compile python source code
-COMPONENT_POST_INSTALL_ACTION += \
-	$(PYTHON) -m compileall $(PROTO_DIR)/usr/share/hplip;
-
 # Fix python script shebang
 COMPONENT_POST_INSTALL_ACTION += \
 	echo "Fixing python shebang..."; \
 	ggrep -rlI -m1 '^\#!.*python' $(PROTO_DIR) | while read file; do \
 		$(call PYTHON_SCRIPT_SHEBANG_FIX_FUNC,"$$file") \
-	done
+	done;
+
+# Pre-compile python source code
+COMPONENT_POST_INSTALL_ACTION += \
+	$(PYTHON) -m compileall $(PROTO_DIR)/usr/share/hplip;
 
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += library/libusb-1

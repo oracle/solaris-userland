@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
 # Make sure that python 2.7 is default for now
@@ -32,6 +32,8 @@ set name=pkg.fmri \
 set name=pkg.summary value="The Mercurial Source Control Management System"
 set name=pkg.description \
     value="A fast, lightweight source control management system designed for efficient handling of very large distributed projects."
+# Ignore all .pyc checks as mercurial uses a custom bytecode with different rules.
+set name=pkg.linted.userland.manifest006 value=true
 set name=com.oracle.info.description \
     value="the Mercurial source control management system"
 set name=com.oracle.info.tpno value=$(TPNO)
