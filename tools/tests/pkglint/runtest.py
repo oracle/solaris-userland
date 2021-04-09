@@ -48,6 +48,16 @@ class TestUserlandPkglint(unittest.TestCase):
         self.manifests = here / "manifests"
         self.protoarea = here / "proto"
 
+    # override these for better debugging
+    def assertIn(self, member, container, msg=None):
+        if member not in container:
+            standardMsg = f"'{member}' not found in\n{container}"
+            self.fail(self._formatMessage(msg, standardMsg))
+
+    def assertNotIn(self, member, container, msg=None):
+        if member in container:
+            standardMsg = f"'{member}' unexpectedly found in\n{container}"
+            self.fail(self._formatMessage(msg, standardMsg))
 
     def with_manifest(manifest, proto=False):
         def decorator(function):
@@ -101,13 +111,13 @@ class TestUserlandPkglint(unittest.TestCase):
     def test_action001_bitscheck(self, ret, stdout, stderr):
         """checks for 32/64 elf locations work correctly."""
 
-        for val in ["sparcv7/64in32a", "sparcv7/64in32x"]:
+        for val in ["usr/bin/sparcv7/64in32a", "usr/bin/sparcv7/64in32x"]:
             self.assertIn("ERROR userland.action001.2        "
                 f"64-bit object '{val}' in 32-bit path\n", stderr)
 
-        for val in ["amd64/32in64a", "amd64/32in64x"]:
+        for val in ["usr/bin/amd64/32in64a", "usr/bin/amd64/32in64x"]:
             self.assertIn("ERROR userland.action001.2        "
-                f"32-bit object '{val}' in 64-bit path(['amd64'])\n", stderr)
+                f"32-bit object '{val}' in 64-bit path(['usr', 'bin', 'amd64'])\n", stderr)
 
         for val in ["32in32b", "32in64b", "64in32b", "64in64b",
                     "32in32a", "32in32x", "64in64a", "64in64x"]:
@@ -124,9 +134,9 @@ class TestUserlandPkglint(unittest.TestCase):
         ]
 
         for path in pathlist32:
-            self.assertNotIn(f"abc/{path}/32bin", stderr)
+            self.assertNotIn(f"usr/bin/{path}/32bin", stderr)
             self.assertIn("ERROR userland.action001.2        "
-                f"64-bit object 'abc/{path}/64bin' in 32-bit path", stderr)
+                f"64-bit object 'usr/bin/{path}/64bin' in 32-bit path", stderr)
 
         pathlist64 = [
             "amd64",
@@ -146,9 +156,9 @@ class TestUserlandPkglint(unittest.TestCase):
         ]
 
         for path in pathlist64:
-            self.assertNotIn(f"abc/{path}/64bin", stderr)
+            self.assertNotIn(f"usr/bin/{path}/64bin", stderr)
             self.assertIn("ERROR userland.action001.2        "
-                f"32-bit object 'abc/{path}/32bin' in 64-bit path(['abc', '{path}'])\n", stderr)
+                f"32-bit object 'usr/bin/{path}/32bin' in 64-bit path(['usr', 'bin', '{path}'])\n", stderr)
 
         self.assertNotIn("usr/lib/xorg/modules/64bin", stderr)
         self.assertNotIn("usr/lib/xorg/modules/dri", stderr)
@@ -164,25 +174,25 @@ class TestUserlandPkglint(unittest.TestCase):
         self.assertNotIn("good32", stderr)
         self.assertNotIn("good64", stderr)
         self.assertIn("ERROR userland.action001.3        "
-            f"bad RUNPATH, '{self.protoarea}/runpath/bad' includes '/wrong:/tmp'\n", stderr)
+            f"bad RUNPATH, '{self.protoarea}/usr/lib/runpath/bad' includes '/wrong:/tmp'\n", stderr)
 
         # 32/64 bit runpath checks
         self.assertNotIn("32with32", stderr)
         self.assertNotIn("64with64", stderr)
         self.assertIn("WARNING userland.action001.3      "
-            f"32-bit runpath in 64-bit binary, '{self.protoarea}/runpath/64with32' includes '/lib'\n", stderr)
+            f"32-bit runpath in 64-bit binary, '{self.protoarea}/usr/lib/runpath/64with32' includes '/lib'\n", stderr)
         self.assertIn("WARNING userland.action001.3      "
-            f"64-bit runpath in 32-bit binary, '{self.protoarea}/runpath/32with64' includes '/lib/amd64'\n", stderr)
+            f"64-bit runpath in 32-bit binary, '{self.protoarea}/usr/lib/runpath/32with64' includes '/lib/amd64'\n", stderr)
 
         # link checks
         self.assertIn("WARNING userland.action001.3      "
-            f"runpath '/usr/openwin/lib' in '{self.protoarea}/runpath/linka' not found "
+            f"runpath '/usr/openwin/lib' in '{self.protoarea}/usr/lib/runpath/linka' not found "
             "in reference paths but contains symlink at 'usr/openwin'\n", stderr)
         self.assertIn("WARNING userland.action001.3      "
-            f"runpath '/usr/openwin/bin' in '{self.protoarea}/runpath/linkb' not found "
+            f"runpath '/usr/openwin/bin' in '{self.protoarea}/usr/lib/runpath/linkb' not found "
             "in reference paths but contains symlink at 'usr/openwin'\n", stderr)
         self.assertIn("ERROR userland.action001.3        "
-            f"bad RUNPATH, '{self.protoarea}/runpath/linkc' includes '/usr/X11/bin'", stderr)
+            f"bad RUNPATH, '{self.protoarea}/usr/lib/runpath/linkc' includes '/usr/X11/bin'", stderr)
 
 
     @with_manifest("userland.action001_6.in", proto=True)
@@ -190,9 +200,9 @@ class TestUserlandPkglint(unittest.TestCase):
         """ASLR checks work correctly."""
         self.assertNotIn("aslr/enabled", stderr)
         self.assertIn("WARNING userland.action001.6      "
-            f"'{self.protoarea}/aslr/disabled' does not have aslr enabled\n", stderr)
+            f"'{self.protoarea}/usr/lib/aslr/disabled' does not have aslr enabled\n", stderr)
         self.assertIn("ERROR userland.action001.5        "
-            f"'{self.protoarea}/aslr/noflag' is not tagged for aslr\n", stderr)
+            f"'{self.protoarea}/usr/lib/aslr/noflag' is not tagged for aslr\n", stderr)
 
 
     @with_manifest("userland.action002_1.in")
@@ -231,6 +241,18 @@ class TestUserlandPkglint(unittest.TestCase):
             "SVR4 startup 'etc/rca.d/foo.py', deliver SMF service instead\n", stderr)
         self.assertIn("WARNING userland.action003.0      "
             "SVR4 startup 'etc/init.d/bar.py', deliver SMF service instead\n", stderr)
+
+
+    @with_manifest("userland.action004.in")
+    def test_action004(self, ret, stdout, stderr):
+        """Files are delivered in allowed locations only."""
+        self.assertNotIn("correct", stderr)
+        self.assertIn("ERROR userland.action004.0        "
+            "object delivered into non-standard location: Solaris/wrong", stderr)
+        self.assertIn("ERROR userland.action004.0        "
+            "object delivered into non-standard location: bin/wrong", stderr)
+        self.assertIn("ERROR userland.action004.0        "
+            "object delivered into non-standard location: var/share/wrong", stderr)
 
 
     @with_manifest("userland.manifest001_1.in")

@@ -101,6 +101,22 @@ class UserlandActionChecker(base.ActionChecker):
             "sparcv9-solaris-" + solaris_ver,  # ruby path
             "x86_64-pc-solaris" + solaris_ver,  # GCC path
         ]
+        #
+        # This list is used to check if all actions are installed
+        # in known locations only (Bug 32663975).
+        #
+        self.allowed_paths = [
+            re.compile(r"^boot/"),
+            re.compile(r"^etc/"),
+            re.compile(r"^usr/"),
+            re.compile(r"^lib/"),
+            re.compile(r"^kernel/"),
+            re.compile(r"^var/(?!share/)")
+        ]
+        #
+        # These lists are used to check if binary RUNPATH points
+        # to a proper 32/64-bit directory.
+        #
         self.runpath_re = [
             re.compile(r"^/lib(/.*)?$"),
             re.compile(r"^/usr/"),
@@ -513,6 +529,23 @@ class UserlandActionChecker(base.ActionChecker):
                 msgid=f"{self.name}{pkglint_id}.0")
 
     init_script.pkglint_desc = "SVR4 startup scripts should not be delivered."
+
+    def delivery_location(self, action, manifest, engine, pkglint_id="004"):
+        """Checks if all actions are installed in known locations only."""
+
+        if action.name not in ["file", "dir", "link", "hardlink"]:
+            return
+
+        # path to the delivered file
+        inspath = action.attrs["path"]
+
+        for expr in self.allowed_paths:
+            if expr.match(inspath):
+                return
+        else:
+            # we didn't match anything
+            engine.error(f"object delivered into non-standard location: {inspath}",
+                         msgid=f"{self.name}{pkglint_id}.0")
 
     def legacy_action(self, action, manifest, engine, pkglint_id="005"):
         """Checks for deprecated legacy actions."""

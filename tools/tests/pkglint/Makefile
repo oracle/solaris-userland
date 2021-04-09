@@ -35,35 +35,35 @@ proto/.prepared: Makefile source.c
 	$(CC) source.c $(ASLR_ENABLE) -m32 -o proto/32bin
 	$(CC) source.c $(ASLR_ENABLE) -m64 -o proto/64bin
 
-	$(MKDIR) proto/sparcv7 proto/amd64
-	$(CP) proto/32bin proto/sparcv7/32in32a
-	$(CP) proto/32bin proto/amd64/32in64a
-	$(CP) proto/32bin proto/sparcv7/32in32b
-	$(CP) proto/32bin proto/amd64/32in64b
+	$(MKDIR) proto/usr/bin/sparcv7 proto/usr/bin/amd64
+	$(CP) proto/32bin proto/usr/bin/sparcv7/32in32a
+	$(CP) proto/32bin proto/usr/bin/amd64/32in64a
+	$(CP) proto/32bin proto/usr/bin/sparcv7/32in32b
+	$(CP) proto/32bin proto/usr/bin/amd64/32in64b
 
-	$(CP) proto/64bin proto/sparcv7/64in32a
-	$(CP) proto/64bin proto/amd64/64in64a
-	$(CP) proto/64bin proto/sparcv7/64in32b
-	$(CP) proto/64bin proto/amd64/64in64b
+	$(CP) proto/64bin proto/usr/bin/sparcv7/64in32a
+	$(CP) proto/64bin proto/usr/bin/amd64/64in64a
+	$(CP) proto/64bin proto/usr/bin/sparcv7/64in32b
+	$(CP) proto/64bin proto/usr/bin/amd64/64in64b
 
-	$(MKDIR) proto/runpath
-	$(CC) source.c $(ASLR_ENABLE) -m32 -Wl,-rpath,/lib:/lib/python:/usr/lib:\$$ORIGIN/asdf -o proto/runpath/good32
-	$(CC) source.c $(ASLR_ENABLE) -m64 -Wl,-rpath,/usr/64:/lib/amd64:/lib/amd64-solaris2.11 -o proto/runpath/good64
-	$(CC) source.c $(ASLR_ENABLE) -m32 -Wl,-rpath,/wrong:/lib:/tmp -o proto/runpath/bad
+	$(MKDIR) proto/usr/lib/runpath
+	$(CC) source.c $(ASLR_ENABLE) -m32 -Wl,-rpath,/lib:/lib/python:/usr/lib:\$$ORIGIN/asdf -o proto/usr/lib/runpath/good32
+	$(CC) source.c $(ASLR_ENABLE) -m64 -Wl,-rpath,/usr/64:/lib/amd64:/lib/amd64-solaris2.11 -o proto/usr/lib/runpath/good64
+	$(CC) source.c $(ASLR_ENABLE) -m32 -Wl,-rpath,/wrong:/lib:/tmp -o proto/usr/lib/runpath/bad
 
-	$(CC) source.c $(ASLR_ENABLE) -m32 -Wl,-rpath,/lib -o proto/runpath/32with32
-	$(CC) source.c $(ASLR_ENABLE) -m64 -Wl,-rpath,/lib -o proto/runpath/64with32
-	$(CC) source.c $(ASLR_ENABLE) -m32 -Wl,-rpath,/lib/amd64 -o proto/runpath/32with64
-	$(CC) source.c $(ASLR_ENABLE) -m64 -Wl,-rpath,/lib/amd64 -o proto/runpath/64with64
+	$(CC) source.c $(ASLR_ENABLE) -m32 -Wl,-rpath,/lib -o proto/usr/lib/runpath/32with32
+	$(CC) source.c $(ASLR_ENABLE) -m64 -Wl,-rpath,/lib -o proto/usr/lib/runpath/64with32
+	$(CC) source.c $(ASLR_ENABLE) -m32 -Wl,-rpath,/lib/amd64 -o proto/usr/lib/runpath/32with64
+	$(CC) source.c $(ASLR_ENABLE) -m64 -Wl,-rpath,/lib/amd64 -o proto/usr/lib/runpath/64with64
 
-	$(CC) source.c $(ASLR_ENABLE) -m32 -Wl,-rpath,/usr/openwin/lib -o proto/runpath/linka
-	$(CC) source.c $(ASLR_ENABLE) -m32 -Wl,-rpath,/usr/openwin/bin -o proto/runpath/linkb
-	$(CC) source.c $(ASLR_ENABLE) -m32 -Wl,-rpath,/usr/X11/bin -o proto/runpath/linkc
+	$(CC) source.c $(ASLR_ENABLE) -m32 -Wl,-rpath,/usr/openwin/lib -o proto/usr/lib/runpath/linka
+	$(CC) source.c $(ASLR_ENABLE) -m32 -Wl,-rpath,/usr/openwin/bin -o proto/usr/lib/runpath/linkb
+	$(CC) source.c $(ASLR_ENABLE) -m32 -Wl,-rpath,/usr/X11/bin -o proto/usr/lib/runpath/linkc
 
-	$(MKDIR) proto/aslr
-	$(CC) source.c $(ASLR_ENABLE) -o proto/aslr/enabled
-	$(CC) source.c $(ASLR_DISABLE) -o proto/aslr/disabled
-	$(CC) source.c -o proto/aslr/noflag
+	$(MKDIR) proto/usr/lib/aslr
+	$(CC) source.c $(ASLR_ENABLE) -o proto/usr/lib/aslr/enabled
+	$(CC) source.c $(ASLR_DISABLE) -o proto/usr/lib/aslr/disabled
+	$(CC) source.c -o proto/usr/lib/aslr/noflag
 
 	$(TOUCH) $@
 
