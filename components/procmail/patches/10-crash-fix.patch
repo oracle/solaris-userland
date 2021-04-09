@@ -1,0 +1,60 @@
+Fixes buffer overflows and memory corruption.
+
+Taken from Fedora:
+https://src.fedoraproject.org/rpms/procmail/blob/rawhide/f/procmail-3.22-crash-fix.patch
+
+diff -Naur a/src/cstdio.c b/src/cstdio.c
+--- a/src/cstdio.c	2000-12-31 06:08:20.000000000 +0000
++++ b/src/cstdio.c	2018-02-09 03:01:55.445270475 +0000
+@@ -144,7 +144,7 @@
+       { case '\n':case EOF:*q='\0';
+ 	   return overflow?-1:p!=q;	     /* did we read anything at all? */
+       }
+-     if(q==end)	    /* check here so that a trailing backslash won't be lost */
++     if(q>=end)	    /* check here so that a trailing backslash won't be lost */
+ 	q=p,overflow=1;
+      *q++=i;
+    }
+@@ -199,7 +199,7 @@
+ 	   if(*(target=strchr(target,'\0')-1)=='\\')
+ 	    { if(chp2!=target)				  /* non-empty line? */
+ 		 target++;		      /* then preserve the backslash */
+-	      if(target>end-2)			  /* space enough for getbl? */
++	      if(target>=end-2)			  /* space enough for getbl? */
+ 		 target=end-linebuf,overflow=1;		/* toss what we have */
+ 	      continue;
+ 	    }
+diff -Naur a/src/formail.c b/src/formail.c
+--- a/src/formail.c	2001-09-11 05:57:32.000000000 +0100
++++ b/src/formail.c	2018-02-09 03:13:54.650374132 +0000
+@@ -219,7 +219,8 @@
+   if(i>=0&&(i!=maxindex(sest)||fldp==rdheader))		  /* found anything? */
+    { char*saddr;char*tmp;			     /* determine the weight */
+      nowm=areply&&headreply?headreply==1?sest[i].wrepl:sest[i].wrrepl:i;chp+=j;
+-     tmp=malloc(j=fldp->Tot_len-j);tmemmove(tmp,chp,j);(chp=tmp)[j-1]='\0';
++     tmp=malloc((j=fldp->Tot_len-j) + 1);tmemmove(tmp,chp,j);(chp=tmp)[j-1]='\0';
++     chp[j]='\0';
+      if(sest[i].head==From_)
+       { char*pastad;
+ 	if(strchr(saddr=chp,'\n'))		     /* multiple From_ lines */
+@@ -364,7 +365,7 @@
+ 
+ int main(lastm,argv)int lastm;const char*const argv[];
+ { int i,split=0,force=0,bogus=1,every=0,headreply=0,digest=0,nowait=0,keepb=0,
+-   minfields=(char*)progid-(char*)progid,conctenate=0,babyl=0,babylstart,
++   minfields=(char*)progid-(char*)progid,conctenate=0,babyl=0,babylstart=0,
+    berkeley=0,forgetclen;
+   long maxlen,ctlength;FILE*idcache=0;pid_t thepid;
+   size_t j,lnl,escaplen;char*chp,*namep,*escap=ESCAP;
+diff -Naur a/src/formisc.c b/src/formisc.c
+--- a/src/formisc.c	2001-06-29 03:20:45.000000000 +0100
++++ b/src/formisc.c	2018-02-09 03:03:48.643338792 +0000
+@@ -66,7 +66,7 @@
+ retz:	      *target='\0';
+ ret:	      return start;
+ 	    }
+-	   if(*start=='\\')
++	   if(*start=='\\' && *(start + 1))
+ 	      *target++='\\',start++;
+ 	   hitspc=2;
+ 	   goto normal;					      /* normal word */

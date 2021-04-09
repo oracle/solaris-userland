@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -38,6 +38,11 @@ COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 
 
 TPNO=			9003
+
+# Use libmapmalloc instead of libc malloc to avoid a huge heap
+# fragmentation caused by repeated reallocs with 16 kB increments.
+# See bugs 32741107 and 32825967 for more information.
+CFLAGS += -lmapmalloc
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
