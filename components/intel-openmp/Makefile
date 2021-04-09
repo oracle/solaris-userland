@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 export PARFAIT_BUILD=no
@@ -51,7 +51,7 @@ CMAKE_BUILD_TYPE = Release
 TEST_TARGET = $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
-export PATH=/usr/gnu/bin:$(GCC_ROOT)/bin:/usr/bin:/usr/perl5/5.22/bin
+export PATH=/usr/gnu/bin:$(GCC_ROOT)/bin:/usr/bin
 
 PATCH_LEVEL := 0
 DEBUG_BUILD := 0
@@ -87,13 +87,6 @@ CPPFLAGS += -D__EXTENSIONS__=1 -DKMP_GOMP_COMPAT=1
 CPPFLAGS += -DKMP_TDATA_GTID=1
 LDFLAGS += -z ignore -z relax=comdat
 
-LIBIOMP_RUNPATH_32	= /usr/gcc/7/lib
-LIBIOMP_RUNPATH_64	= /usr/gcc/7/lib/$(MACH64)
-LIBIOMP_RUNPATH	= $(LIBIOMP_RUNPATH_$(BITS))
-
-CFLAGS		+= -Wl,-R -Wl,$(LIBIOMP_RUNPATH)
-CXXFLAGS	+= -Wl,-R -Wl,$(LIBIOMP_RUNPATH)
-LDFLAGS		+= -R$(LIBIOMP_RUNPATH)
 LD_OPTIONS	= -z ignore -z relax=comdat
 
 CMAKE_OPTIONS += -DCMAKE_MAKE_PROGRAM=$(GMAKE)
@@ -118,14 +111,6 @@ COMPONENT_BUILD_ENV += LD_OPTIONS="$(LD_OPTIONS)"
 COMPONENT_POST_UNPACK_ACTION = \
       $(MV) libomp_oss $(COMPONENT_SRC)
 
-REQUIRED_PACKAGES += developer/build/cmake
-REQUIRED_PACKAGES += developer/build/pkg-config
-REQUIRED_PACKAGES += developer/gcc/gcc-c++-7
-REQUIRED_PACKAGES += developer/gcc/gcc-c-7
-REQUIRED_PACKAGES += developer/gcc/gcc-common-7
-REQUIRED_PACKAGES += developer/gnu-binutils
-REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/library/gcc/gcc-runtime-7
-REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime-7
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime-7
-REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
