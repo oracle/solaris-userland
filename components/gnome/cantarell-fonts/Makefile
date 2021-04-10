@@ -20,27 +20,31 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
+COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cantarell-fonts
-COMPONENT_VERSION=	0.0.25
+COMPONENT_VERSION=	0.301
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/CantarellFonts
+COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-    sha256:14a228aa0b516dfc367b434a850f955a00c57fc549cbb05348e2b150196a737f
+    sha256:3d35db0ac03f9e6b0d5a53577591b714238985f4cfc31a0aa17f26cd74675e83
 COMPONENT_BUGDB=        gnome/themes
 COMPONENT_ANITYA_ID=	10888
 
-TPNO=			34504
+TPNO=			68667
+BUILD_STYLE=		meson
 
 TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-CONFIGURE_OPTIONS += --with-fontdir=$(USRSHARETTFONTSDIR)/cantarell
+CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
 
-REQUIRED_PACKAGES += runtime/perl-522
-REQUIRED_PACKAGES += library/perl-5/xml-parser-522
+CONFIGURE_OPTIONS += -Dfontsdir=$(USRSHARETTFONTSDIR)/cantarell
