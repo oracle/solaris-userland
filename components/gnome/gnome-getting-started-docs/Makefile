@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-getting-started-docs
-COMPONENT_VERSION=	3.34.0
+COMPONENT_VERSION=	3.38.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/DocumentationProject/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:f70ce2ca23ad786215f3c92ec85783e3aabed07e4f78700fa27f9b2cf76e03db
+	sha256:10fbe23f2c3ce427539a4e307a461694d3870b23200464f705b7d81af993c859
 COMPONENT_BUGDB=	gnome/help
 COMPONENT_ANITYA_ID=	13131
 
-TPNO=			54041
+TPNO=			68673
 
 TEST_TARGET= $(NO_TESTS)
 
