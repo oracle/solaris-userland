@@ -3,9 +3,11 @@ GNU Ghostscript should not enable decryption of PDFs when shipped with Solaris
 
 Note : Not suitable for fixing upstream, as this Solaris specific.
 
---- a/Resource/Init/pdf_sec.ps	2020-09-15 09:58:29.594090948 +0200
-+++ b/Resource/Init/pdf_sec.ps	2020-09-15 09:59:22.813148097 +0200
-@@ -561,7 +561,13 @@
+diff --git a/Resource/Init/pdf_sec.ps b/Resource/Init/pdf_sec.ps
+index 9e6c1c0..2e8e3d3 100644
+--- a/Resource/Init/pdf_sec.ps
++++ b/Resource/Init/pdf_sec.ps
+@@ -579,6 +579,12 @@ systemdict /check_r6_password .forceundef
        /pdf_process_Encrypt cvx /invalidfileaccess signalerror
      } ifelse
    } ifelse
@@ -13,9 +15,8 @@ Note : Not suitable for fixing upstream, as this Solaris specific.
 +  { (   ****This owner of this file has requested you do not print it.\n)
 +    pdfformaterror printProducer
 +    /pdf_process_Encrypt cvx /invalidfileaccess signalerror
-   }
-+  if
 +  }
++  if
+   }
    {
        (   **** This file has an Encryption dictionary, but both the StmF and StrF entries\n) pdfformatwarning
-       (   **** are /Identity, and AuthEvent allows the document to be opened. It is possible\n) pdfformatwarning

@@ -3,20 +3,24 @@ references to use under the Aladdin Free Public License (which does not allow
 for commercial distribution) from Ghostscript.
 Bug # 15712747
 
---- a/configure.ac.orig	2020-09-15 10:03:40.219383618 +0200
-+++ b/configure.ac	2020-09-15 10:04:31.857906330 +0200
-@@ -2617,7 +2617,7 @@
+diff --git a/configure.ac b/configure.ac
+index 37cdeaf..6af0e92 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -2582,7 +2582,7 @@ APPLE_DEVS='appledmp iwhi iwlo iwlq'
  IBM_DEVS='ibmpro jetp3852'
  OKI_DEVS='oki182 okiibm oki4w'
  JAPAN_DEVS='lips4 lips4v ljet4pjl lj4dithp dj505j picty180 lips2p bjc880j pr201 pr150 pr1000 pr1000_4 jj100 bj10v bj10vh mj700v2c mj500c mj6000c mj8000c fmpr fmlbp ml600 lbp310 lbp320 md50Mono md50Eco md1xMono escpage lp2000 npdl rpdl'
 -MISC_PDEVS='uniprint ap3250 atx23 atx24 atx38 itk24i itk38 coslw2p coslwxl declj250 fs600 imagen lj250 m8510 necp6 oce9050 r4081 sj48 tek4696 t4693d2 t4693d4 t4693d8 dl2100 la50 la70 la75 la75plus ln03 xes md2k md5k gdi samsunggdi'
 +MISC_PDEVS='uniprint ap3250 atx23 atx24 atx38 itk24i itk38 coslw2p coslwxl declj250 fs600 imagen lj250 m8510 necp6 oce9050 r4081 sj48 tek4696 t4693d2 t4693d4 t4693d8 dl2100 la50 la70 la75 la75plus ln03 xes gdi samsunggdi'
+ OPVP_DEVS='opvp oprp'
  
- AC_ARG_WITH([openprinting],, OPVP_DEVS='opvp oprp', OPVP_DEVS='')
- 
---- a/contrib/contrib.mak.orig	2020-09-15 10:05:27.992677972 +0200
-+++ b/contrib/contrib.mak	2020-09-15 10:06:37.807813908 +0200
-@@ -105,10 +105,8 @@
+ ETS_HALFTONING_DEVS='rinkj'
+diff --git a/contrib/contrib.mak b/contrib/contrib.mak
+index d7965dc..2904092 100644
+--- a/contrib/contrib.mak
++++ b/contrib/contrib.mak
+@@ -104,10 +104,8 @@ CONTDEV=$(AK) $(ECHOGS_XE) $(GDEVH)
  #       ln03     DEC LN03
  #       lxm3200  Lexmark 3200, Z31, Z12
  #	md1xMono Alps MD-1000/1300/1500 (monochrome mode, japanese)
@@ -27,7 +31,7 @@ Bug # 15712747
  #	mj500c	 Epson Stylus Color IIs, 200, 1500 (japanese)
  #	mj700v2c Epson Stylus, Epson MachJet (japanese)
  #	mj6000c	 Epson Stylus Color 400, 800, 1520 (japanese)
-@@ -679,23 +677,6 @@
+@@ -678,23 +676,6 @@ $(DD)bjc880j.dev : $(lipsr_) $(DD)page.dev \
  	$(SETPDEV) $(DD)bjc880j $(lipsr_)
  
  
@@ -46,7 +50,7 @@ Bug # 15712747
 -$(DEVOBJ)gdevmd2k.$(OBJ) : $(CONTRIBSRC)gdevmd2k.c $(PDEVH) $(gsparam_h) \
 -                           $(CONTDEV) $(CONTRIB_MAK) $(MAKEDIRS)
 -	$(DEVCC) $(DEVO_)gdevmd2k.$(OBJ) $(C_) $(CONTRIBSRC)gdevmd2k.c
-- 
+-
 -
  ### ----------------- The Okidata OkiPage 4w+ device ------------------- ###
  

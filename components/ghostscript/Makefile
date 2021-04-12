@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -28,16 +28,20 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         ghostscript
-COMPONENT_VERSION=      9.53.3
+COMPONENT_VERSION=      9.54.0
 COMPONENT_PROJECT_URL=	http://ghostscript.com/
 COMPONENT_DOWNLOAD_URL= \
     https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download
 COMPONENT_ARCHIVE_HASH= \
-    sha256:6eaf422f26a81854a230b80fd18aaef7e8d94d661485bd2e97e695b9dce7bf7f
-COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/gs9533/$(COMPONENT_ARCHIVE)
+    sha256:0646bb97f6f4d10a763f4919c54fa28b4fbdd3dff8e7de3410431c81762cade0
+COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/gs9540/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1157
 
-TPNO=			62503
+COMPONENT_NAME_1=	tessdata_best
+GIT_REPO_1=		https://github.com/tesseract-ocr/$(COMPONENT_NAME_1)
+GIT_COMMIT_ID_1=	e2aad9b
+
+TPNO=			68553
 
 include $(WS_MAKE_RULES)/common.mk
 # some backup files are copied to proto
@@ -47,6 +51,9 @@ CONFIGURE_OPTIONS +=	--with-fontpath=/usr/share/fonts
 CONFIGURE_OPTIONS +=	--enable-dynamic
 CONFIGURE_OPTIONS +=	--disable-compile-inits
 CONFIGURE_OPTIONS +=	--without-libidn
+
+# Sparcv7 cores on test docxwrite
+gcc_OPT.sparc.32 = -O0 -munaligned-doubles
 
 # configure options to generate 32 bit binaries
 $(BUILD_DIR)/$(MACH32)/.configured: CONFIGURE_OPTIONS += CC="$(CC) -m32"
@@ -65,30 +72,33 @@ COMPONENT_INSTALL_TARGETS += \
 	install-exec install-so install-scripts install-data \
 	install-contrib-extras
 
-COMPONENT_TEST_RESULTS_DIR = $(COMPONENT_DIR)/test
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_CMD = 	sh $(COMPONENT_DIR)/test/run
-COMPONENT_TEST_TRANSFORMS += "-e '/^Using/d'"
+COMPONENT_TEST_RESULTS_DIR =	$(COMPONENT_DIR)/test
+COMPONENT_TEST_MASTER =		$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_CMD =		sh $(COMPONENT_DIR)/test/run
+COMPONENT_TEST_ENV +=		TESSDATA_PREFIX="$(SOURCE_DIR_1)"
+COMPONENT_TEST_TRANSFORMS +=	"-e '/^Using/d'"
 
-COMPONENT_SYSTEM_TEST_CMD = 	sh $(COMPONENT_DIR)/test/run
-COMPONENT_SYSTEM_TEST_TARGETS = system-check
+COMPONENT_SYSTEM_TEST_CMD =	sh $(COMPONENT_DIR)/test/run
+COMPONENT_SYSTEM_TEST_ENV +=	TESSDATA_PREFIX="$(SOURCE_DIR_1)"
+COMPONENT_SYSTEM_TEST_TARGETS =	system-check
 
-REQUIRED_PACKAGES += image/library/openjpeg2
-REQUIRED_PACKAGES += image/library/libtiff
+REQUIRED_PACKAGES += image/ghostscript
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
-REQUIRED_PACKAGES += library/desktop/gtk3
+REQUIRED_PACKAGES += image/library/libtiff
+REQUIRED_PACKAGES += image/library/openjpeg2
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
+REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += print/cups
-REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93
-REQUIRED_PACKAGES += system/font/truetype/ipafont
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/fontconfig
-REQUIRED_PACKAGES += system/library/freetype-2
+REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/toolkit/libxt
