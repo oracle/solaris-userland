@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -36,9 +36,6 @@ COMPONENT_BUGDB=	utility/lcms
 COMPONENT_ANITYA_ID=	9815
 
 TPNO=			33986
-
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -72,19 +69,9 @@ COMPONENT_POST_INSTALL_ACTION += \
 # is not the same as the top_builddir.
 COMPONENT_TEST_ARGS =	-k -i
 COMPONENT_TEST_DIR =	$(@D)/testbed
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
 
-COMPONENT_TEST_TRANSFORMS += \
-	'-e "s|^.*test bed.*$$|XXX_REMOVE_XXX|g" ' \
-	'-e "s|^.*MPixel.*$$|XXX_REMOVE_XXX|g" ' \
-	'-e "s|^.*Single block hit.*$$|XXX_REMOVE_XXX|g" ' \
-	'-e "s|^.*$(CC).*$$|XXX_REMOVE_XXX|g" ' \
-	'-e "s|^.*source=.*libtool=no.*$$|XXX_REMOVE_XXX|g" ' \
-	'-e "s|^.*DEPDIR=.deps.*$$|XXX_REMOVE_XXX|g" ' \
-	'-e "s|^make.*(ignored)*$$|XXX_REMOVE_XXX|g" ' \
-	'-e "s|^make.*: Leaving directory.*$$|XXX_REMOVE_XXX|g" ' \
-	'-e "s|^make.*: Entering directory.*$$|XXX_REMOVE_XXX|g" ' \
-	'-e "/^XXX_REMOVE_XXX$$/d" '
+COMPONENT_TEST_TRANSFORMS += '-n -e "/^Checking/p" '
 
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libtiff

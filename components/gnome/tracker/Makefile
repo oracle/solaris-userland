@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -38,9 +38,6 @@ COMPONENT_ANITYA_ID=	5578
 
 TPNO=			63651
 BUILD_STYLE=            meson
-
-# Disable the unit tests since the test results are outdated.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -39,16 +39,13 @@ COMPONENT_ANITYA_ID=	315
 
 TPNO=			62888
 
-# Tests are disabled since they require a running desktop.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/test-x11.mk
 
 COMPONENT_TEST_TRANSFORMS += '-e "/\(make\).*/d" '
 COMPONENT_TEST_TRANSFORMS += '-e "/\(Making check\).*/d" '
 # excluding this test since it gives different results at each run
 COMPONENT_TEST_TRANSFORMS += '-e "/\(test_premult\).*/d" '
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS).master
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

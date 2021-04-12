@@ -40,9 +40,6 @@ PYTHON_VERSIONS =       3.7
 BUILD_STYLE= setup.py
 TEST_TARGET=	$(TEST_64)
 
-# There are some test failures, the master test file is missing.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Needed to find GNU xgettext.
@@ -62,11 +59,13 @@ COMPONENT_TEST_ENV =	PYTHONPATH=$(PROTO_DIR)/$(PYTHON_LIB)
 COMPONENT_TEST_DIR =	$(COMPONENT_SRC)/test
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 COMPONENT_TEST_TRANSFORMS += \
-	'-e "s|\(in \).*\(seconds\).*|\1 x \2|"' \
+	'-e "s/in .* seconds //" ' \
 	'-n ' \
-	'-e "/^===/p" '
+	'-e "/^===/p" ' \
+	'-e "/^___/p" '
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 

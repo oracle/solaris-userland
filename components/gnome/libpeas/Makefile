@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -40,7 +40,7 @@ COMPONENT_ANITYA_ID=	6871
 
 TPNO=			62699
 
-# Disable the unit tests since the test results are outdated.
+# Disable the unit tests since they are broken (crashes, assertions).
 $(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/gnome-component.mk

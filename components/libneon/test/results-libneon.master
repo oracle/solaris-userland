@@ -10,12 +10,12 @@ echo "hello, world" >> trailing.gz
 dd of=badcsum.gz if=file1.gz bs=1 count=`perl -e 'printf "%d", (stat("file1.gz"))[7] - 8;'`
 23321+0 records in
 23321+0 records out
-23321 bytes (23 kB) copied
+23321 bytes (23 kB, 23 KiB) copied
 echo 'broken!' >> badcsum.gz
 dd if=file1.gz of=truncated.gz bs=2048 count=2
 2+0 records in
 2+0 records out
-4096 bytes (4.1 kB) copied
+4096 bytes (4.1 kB, 4.0 KiB) copied
 dd of=corrupt1.gz if=file1.gz bs=1 count=500
 500+0 records in
 500+0 records out
@@ -1026,10 +1026,12 @@ ssl................... 54/65
 ssl................... 54/65 
 ssl................... 54/65 
 ssl................... 55/65 
-ssl................... 55/65 
+ssl................... 55/65 FAIL - fail_nul_cn (verification flags were 22 not 4)
+
 ssl................... 55/65 
 ssl................... 56/65 
-ssl................... 56/65 
+ssl................... 56/65 FAIL - fail_nul_san (verification flags were 22 not 4)
+
 ssl................... 56/65 
 ssl................... 57/65 
 ssl................... 57/65 
@@ -1060,7 +1062,7 @@ ssl................... 65/65
 ssl................... 65/65 SKIPPED - pkcs11_dsa (pakchois library required for PKCS#11 support)
 
 ssl................... 65/65 
-ssl................... 63/65 passed (2 skipped) 
+ssl................... 61/65 passed, 2 failed (2 skipped) 
 
 compress..............  1/21 
 compress..............  1/21 
@@ -1249,5 +1251,5 @@ lock.................. 14/14
 lock.................. 14/14 
 lock.................. 14/14 
 lock.................. 14/14 passed 
-make[2]: *** [check] Error 1
-make[1]: *** [check] Error 2
+make[2]: *** [Makefile:78: check] Error 2
+make[1]: *** [Makefile:71: check] Error 2

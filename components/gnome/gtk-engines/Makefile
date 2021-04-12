@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=            	32_and_64
@@ -37,9 +37,6 @@ COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13141
 
 TPNO=			8678
-
-# Disable the unit tests since the test results are outdated.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

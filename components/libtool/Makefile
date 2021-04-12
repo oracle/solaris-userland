@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 # libtool only delivers scripts that embed paths, so prefer 32-bit.
 BUILD_BITS= 32_and_64
@@ -37,9 +37,6 @@ TPNO=			24542
 
 BUILD_TARGET=
 INSTALL_TARGET=
-
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 

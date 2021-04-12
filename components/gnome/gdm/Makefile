@@ -44,9 +44,6 @@ BUILD_STYLE=		meson
 # Make sure we haven't broken the SMF manifest formatting
 SMF_MANIFESTS= files/gdm.xml
 
-# Tests do not pass because of insufficient gsed filtering.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU msgfmt in PATH.
@@ -55,7 +52,9 @@ CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 
 # intltool may or may not be run depending on previous state of build dir
-COMPONENT_TEST_TRANSFORMS += "-e '/\/usr\/bin\/intltool-update/d'"
+COMPONENT_TEST_TRANSFORMS += \
+	"-e '/\/usr\/bin\/intltool-update/d'" \
+	"-e 's/\s\+[0-9\.]\+s//'"
 
 CONFIGURE_OPTIONS += -Dsolaris=true
 CONFIGURE_OPTIONS += -Dselinux=disabled
@@ -88,6 +87,8 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
                 $(PROTO_DIR)/lib/svc/method/svc-gdm; \
         $(INSTALL) -D $(COMPONENT_DIR)/files/org.gnome.login-screen.gschema.override \
                 $(PROTO_DIR)/usr/share/glib-2.0/schemas/org.gnome.login-screen.gschema.override;
+
+COMPONENT_TEST_TRANSFORMS += '-e "/^make/d"'
 
 REQUIRED_PACKAGES += data/iso-codes
 REQUIRED_PACKAGES += developer/documentation-tool/itstool

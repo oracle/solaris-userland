@@ -38,16 +38,9 @@ COMPONENT_ANITYA_ID=	12860
 TPNO=			65002
 BUILD_STYLE=		meson
 
-# Tests are disabled since they require a running desktop.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
-include $(WS_MAKE_RULES)/test-x11.mk
-
-# note many tests fail because they require python-dbusmock
-COMPONENT_TEST_TRANSFORMS += \
-	'-n ' \
-	'-e "s/[0-9][0-9]*\.[0-9][0-9]*s//g" ' \
-	'-e "/^..\/10 /p" ' \
+# Tests require python-dbusmock and umockdev packages
+# that are not available in Userland consolidation.
+TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

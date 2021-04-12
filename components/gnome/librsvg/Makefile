@@ -40,9 +40,6 @@ COMPONENT_ANITYA_ID=	5420
 
 TPNO=			64121
 
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CONFIGURE_OPTIONS += --disable-Bsymbolic

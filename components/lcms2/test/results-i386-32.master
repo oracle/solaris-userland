@@ -1,39 +1,3 @@
-/usr/gnu/bin/make  testcms
-depbase=`echo testcms2.o | sed 's|[^/]*$|.deps/&|;s|\.o$||'`;\
-mv -f $depbase.Tpo $depbase.Po
-depbase=`echo testplugin.o | sed 's|[^/]*$|.deps/&|;s|\.o$||'`;\
-mv -f $depbase.Tpo $depbase.Po
-depbase=`echo zoo_icc.o | sed 's|[^/]*$|.deps/&|;s|\.o$||'`;\
-mv -f $depbase.Tpo $depbase.Po
-if [ $(SOURCE_DIR) != .. ]; then \
-	cp $(SOURCE_DIR)/testbed/*.ic? ../testbed; \
-fi
-cp: $(SOURCE_DIR)/testbed/bad.icc and ../testbed/bad.icc are identical
-cp: $(SOURCE_DIR)/testbed/crayons.icc and ../testbed/crayons.icc are identical
-cp: $(SOURCE_DIR)/testbed/ibm-t61.icc and ../testbed/ibm-t61.icc are identical
-cp: $(SOURCE_DIR)/testbed/new.icc and ../testbed/new.icc are identical
-cp: $(SOURCE_DIR)/testbed/test1.icc and ../testbed/test1.icc are identical
-cp: $(SOURCE_DIR)/testbed/test2.icc and ../testbed/test2.icc are identical
-cp: $(SOURCE_DIR)/testbed/test3.icc and ../testbed/test3.icc are identical
-cp: $(SOURCE_DIR)/testbed/test4.icc and ../testbed/test4.icc are identical
-cp: $(SOURCE_DIR)/testbed/test5.icc and ../testbed/test5.icc are identical
-cp: $(SOURCE_DIR)/testbed/toosmall.icc and ../testbed/toosmall.icc are identical
-LD_LIBRARY_PATH=../src/.libs ./testcms
-
-Installing debug memory plug-in ... done.
-Installing error logger ... done.
-Supported intents:
-	0 - Perceptual
-	1 - Relative colorimetric
-	2 - Saturation
-	3 - Absolute colorimetric
-	10 - Perceptual preserving black ink
-	11 - Relative colorimetric preserving black ink
-	12 - Saturation preserving black ink
-	13 - Perceptual preserving black plane
-	14 - Relative colorimetric preserving black plane
-	15 - Saturation preserving black plane
-
 Checking Base types ...Ok.
 Checking endianess ...Ok.
 Checking quick floor ...Ok.
@@ -82,7 +46,7 @@ Checking Curve 3.0 (table) ...|Err|<0.049726 .Ok.
 Checking Curve 1.8 (word table) ...|Err|<0.990786 .Ok.
 Checking Curve 2.2 (word table) ...|Err|<0.972654 .Ok.
 Checking Curve 3.0 (word table) ...|Err|<0.986603 .Ok.
-Checking Parametric curves ...Ok.
+Checking Parametric curves ...FAIL!
 Checking Join curves ...Ok.
 Checking Join curves descending ...Ok.
 Checking Join curves degenerated ...Ok.
@@ -170,12 +134,3 @@ Checking Optimization plugin ...Ok.
 Checking Rendering intent plugin ...Ok.
 Checking Full transform plugin ...Ok.
 Checking Mutex plugin ...Ok.
-
-
-P E R F O R M A N C E   T E S T S
-=================================
-
-[Memory statistics]
-if [ $(SOURCE_DIR) != .. ]; then \
-	rm -f ../testbed/*.ic?; \
-fi

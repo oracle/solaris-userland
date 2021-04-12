@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../../make-rules/shared-macros.mk
@@ -35,8 +35,8 @@ COMPONENT_BUGDB=	library/libusb
 
 BUILD_STYLE= justmake
 
-# The unit tests failed to start.
-$(SKIP_TEST_AT_TOP_LEVEL)
+# No unit tests are currently available.
+TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk
 

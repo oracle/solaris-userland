@@ -42,9 +42,6 @@ COMPONENT_ANITYA_ID=	13124
 
 TPNO=			62449
 
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CONFIGURE_OPTIONS += --disable-static

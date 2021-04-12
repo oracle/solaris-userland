@@ -50,9 +50,6 @@ TPNO=			64858
 
 BUILD_STYLE= cmake
 
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # __EXTENSIONS__ required for timezone, altzone variables.
@@ -73,6 +70,8 @@ CMAKE_OPTIONS += -DENABLE_GTK_DOC=OFF
 # for the tests
 unexport SHELLOPTS
 
+include $(WS_MAKE_RULES)/test-x11.mk
+
 #
 # to locate dbus-daemon
 # NOTE: desktop must be running -> run
@@ -83,7 +82,8 @@ COMPONENT_TEST_ENV += PATH="$(PATH):/usr/lib"
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 COMPONENT_TEST_ARGS =   -k -i
 COMPONENT_TEST_TRANSFORMER =    $(NAWK)
-COMPONENT_TEST_TRANSFORMS =     "'/The following tests FAILED/ {results = 1}; /Errors while running CTest/ {results = 0}; {if (results) print $0 } ' "
+COMPONENT_TEST_TRANSFORMS = -F"'('" \
+	"'/The following tests FAILED/ {results = 1}; /Errors while running CTest/ {results = 0}; {if (results) print \$$1}'"
 
 REQUIRED_PACKAGES += database/berkeleydb-5
 REQUIRED_PACKAGES += database/sqlite-3

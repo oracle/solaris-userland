@@ -39,15 +39,13 @@ TPNO=			65155
 
 BUILD_STYLE=            meson
 
-# The unit tests failed to start.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU msgfmt in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
 CONFIGURE_OPTIONS += -Dhkp-support=false -Dmanpage=true
 
 

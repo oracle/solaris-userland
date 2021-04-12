@@ -53,7 +53,7 @@ SMF_MANIFESTS += $(COMPONENT_DIR)/Solaris/kadmin.xml
 SMF_MANIFESTS += $(COMPONENT_DIR)/Solaris/krb5_prop.xml
 SMF_MANIFESTS += $(COMPONENT_DIR)/Solaris/krb5kdc.xml
 
-# The unit tests failed to start.
+# The unit tests are not python 3 friendly.
 $(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk

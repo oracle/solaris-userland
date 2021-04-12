@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -38,9 +38,6 @@ COMPONENT_ANITYA_ID=	86776
 
 TPNO=			63652
 BUILD_STYLE=		meson
-
-# Tests do not pass because of insufficient gsed filtering.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -38,9 +38,6 @@ COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	13148
 
 TPNO=			54120
-
-# Tests do not pass because of insufficient gsed filtering.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -62,6 +59,7 @@ unexport SHELLOPTS
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_ARGS =   -k -i
 COMPONENT_TEST_TRANSFORMS += \
+        '-e "s/\# libmediaart-DEBUG:.*//" ' \
         '-n ' \
         '-e "/TOTAL:/p" ' \
         '-e "/SKIP:/p" ' \

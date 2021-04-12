@@ -40,9 +40,6 @@ COMPONENT_ANITYA_ID=	13127
 TPNO=			64982
 BUILD_STYLE=		meson
 
-# Tests do not pass because of insufficient gsed filtering.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CONFIGURE_OPTIONS += -Dgnome-distributor=Oracle
@@ -58,14 +55,8 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libgnome-desktop-3.3lib \
                 $(PROTO_DIR)/usr/share/man/man3lib/libgnome-desktop-3.3lib;
 
-# get rid of the timestamps from the test results
-COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9] s//" '
 COMPONENT_TEST_TARGETS += ; cd tests; ./wall-clock;
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/Ok:/p" ' \
-        '-e "/Fail:/p" ' \
-        '-e "/Pass:/p" '
+COMPONENT_TEST_TRANSFORMS += '-e "/^\#/d"'
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas

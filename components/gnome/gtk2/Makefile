@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 # All components using gobject-introspection must be built with gcc as
@@ -43,7 +43,7 @@ TPNO=			32698
 
 ETCDIR.64="$(ETCDIR)/$(MACH64)"
 
-# Tests do not pass because of insufficient gsed filtering.
+# Tests stop prematurely because "Property GdkPixbuf.rowstride: 1 != 3".
 $(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/gnome-component.mk

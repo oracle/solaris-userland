@@ -1,0 +1,35 @@
+/usr/gnu/bin/make  check-DEJAGNU
+srcdir='$(SOURCE_DIR)/testsuite'; export srcdir; \
+EXPECT=expect; export EXPECT; \
+if /bin/bash -c "runtest --version" > /dev/null 2>&1; then \
+  exit_status=0; l='libffi'; for tool in $l; do \
+    if runtest  --tool $tool --srcdir $srcdir ; \
+    then :; else exit_status=1; fi; \
+  done; \
+else echo "WARNING: could not find 'runtest'" 1>&2; :;\
+fi; \
+exit $exit_status
+WARNING: Couldn't find the global config file.
+
+		=== libffi tests ===
+
+Schedule of variations:
+    unix
+
+Running target unix
+Using /usr/share/dejagnu/baseboards/unix.exp as board description file for target.
+Using /usr/share/dejagnu/config/unix.exp as generic interface file for target.
+Using $(SOURCE_DIR)/testsuite/config/default.exp as tool-and-target-specific interface file.
+Running $(SOURCE_DIR)/testsuite/libffi.call/call.exp ...
+FAIL: libffi.call/cls_double_va.c -W -Wall -Wno-psabi -O0 output pattern test
+FAIL: libffi.call/cls_double_va.c -W -Wall -Wno-psabi -O2 output pattern test
+FAIL: libffi.call/cls_double_va.c -W -Wall -Wno-psabi -O3 output pattern test
+FAIL: libffi.call/cls_double_va.c -W -Wall -Wno-psabi -Os output pattern test
+FAIL: libffi.call/cls_double_va.c -W -Wall -Wno-psabi -O2 -fomit-frame-pointer output pattern test
+
+		=== libffi Summary ===
+
+# of expected passes		1865
+# of unexpected failures	5
+make[2]: *** [Makefile:397: check-DEJAGNU] Error 1
+make[1]: *** [Makefile:471: check-am] Error 2

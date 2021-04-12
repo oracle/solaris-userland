@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -34,7 +34,7 @@ COMPONENT_ANITYA_ID=	1722
 
 TPNO=			29089
 
-# There are some test failures, the master test file is missing.
+# Unit tests are not reproducible and generate core dumps.
 $(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/gnu-component.mk

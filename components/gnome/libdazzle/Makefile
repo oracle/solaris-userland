@@ -38,9 +38,6 @@ COMPONENT_ANITYA_ID=    73149
 TPNO=			63936
 BUILD_STYLE=		meson
 
-# Tests do not pass because of insufficient gsed filtering.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CFLAGS += -Wstack-protector -fdata-sections -fstack-protector-all

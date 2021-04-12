@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -37,9 +37,6 @@ COMPONENT_ANITYA_ID=	1611
 
 TPNO=		21649
 
-# Disable the unit tests since the test results are outdated.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_TEST_DIR =	$(@D)/testsuite
@@ -51,7 +48,10 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "s|^Native configuration is.*$$|XXX_REMOVE_XXX|g" ' \
 	'-e "s|^make.*: Leaving directory.*$$|XXX_REMOVE_XXX|g" ' \
 	'-e "s|^make.*: Entering directory.*$$|XXX_REMOVE_XXX|g" ' \
-	'-e "/^XXX_REMOVE_XXX$$/d" '
+	'-e "/^XXX_REMOVE_XXX$$/d" ' \
+	'-e "/^Test run by .* on /d" ' \
+	'-e "/^Making a new /d" '
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
 
 CFLAGS += -DFFI_MMAP_EXEC_WRIT=1
 
