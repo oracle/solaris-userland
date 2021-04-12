@@ -30,21 +30,21 @@ BUILD_BITS =		64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pango
-COMPONENT_VERSION=	1.46.2
+COMPONENT_VERSION=	1.48.4
 COMPONENT_PROJECT_URL=	http://www.pango.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:d89fab5f26767261b493279b65cfb9eb0955cd44c07c5628d36094609fc51841
+    sha256:418913fb062071a075846244989d4a67aa5c80bf0eae8ee4555a092fd566a37a
 COMPONENT_BUGDB=	gnome/pango
 COMPONENT_ANITYA_ID=	11783
 
-TPNO=			62890
+TPNO=			68708
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CONFIGURE_OPTIONS += -Denable_docs=true
 CONFIGURE_OPTIONS.32 += -Dgir=false
-CONFIGURE_OPTIONS.32 += -Dintrospection=false
+CONFIGURE_OPTIONS.32 += -Dintrospection=disabled
 CONFIGURE_OPTIONS += -Dinstall-tests=true
 
 # Workaround for build failures due to pango Makefiles not passing CFLAGS or
@@ -68,14 +68,15 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 COMPONENT_PRE_TEST_ACTION += cp $(SOURCE_DIR)/tests/boundaries.utf8 \
 	  $(BUILD_DIR_$(BITS))/tests/
 COMPONENT_TEST_TARGETS += ; cd tests; ./cxx-test; ./markup-parse; \
-        ./test-font ; ./test-ot-tags; ./testattributes; \
+        ./test-break; ./test-converage; ./test-font ; ./test-ot-tags; \
         ./testboundaries; ./testcolor; ./testiter; ./testscript; \
 	./test-ellipsize; ./test-harfbuzz; ./test-itemize; ./test-layout; \
-	./test-pangocairo-threads; ./test-shape; ./testmisc;
+	./test-pangocairo-threads; ./test-shape; ./testmisc; ./testattributes;
 COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9]s//" '
 COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9][0-9].[0-9][0-9]s//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
+	'-e "/Failures/d" ' \
         '-e "/OK/p" ' \
         '-e "/Ok/p" ' \
         '-e "/Fail/p" ' \
