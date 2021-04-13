@@ -1,5 +1,5 @@
 cat <<'EOF' |
-LAST_UPDATED: Obtained from git: releases/gcc-10.2.0 revision ee5c3db6c5b2c3332912fb4c9cfa2864569ebd9a
+LAST_UPDATED: Obtained from git: releases/gcc-10.3.0 revision f00b5710a30f22efc3171c393e56aeb335c3cd39
 
 Native configuration is sparcv9-sun-solaris2.11
 
@@ -23,20 +23,26 @@ FAIL: g++.dg/gcov/pr16855.C  -std=gnu++17  line 24: is #####:should be 1
 FAIL: g++.dg/gcov/pr16855.C  -std=gnu++17  gcov: 1 failures in line counts, 0 in branch percentages, 0 in return percentages, 0 in intermediate format
 FAIL: g++.dg/gcov/pr16855.C  -std=gnu++2a  line 24: is #####:should be 1
 FAIL: g++.dg/gcov/pr16855.C  -std=gnu++2a  gcov: 1 failures in line counts, 0 in branch percentages, 0 in return percentages, 0 in intermediate format
+FAIL: g++.dg/guality/redeclaration1.C   -O1  line 14 i == 42
+FAIL: g++.dg/guality/redeclaration1.C   -O2  line 14 i == 42
+FAIL: g++.dg/guality/redeclaration1.C   -O3 -g  line 14 i == 42
+FAIL: g++.dg/guality/redeclaration1.C   -Os  line 14 i == 42
+FAIL: g++.dg/guality/redeclaration1.C  -Og  line 14 i == 42
 FAIL: g++.dg/lto/pr89335 cp_lto_pr89335_0.o assemble, -O2 -flto -Wsuggest-final-methods
 
 		=== g++ Summary ===
 
-# of expected passes		185981
-# of unexpected failures	17
-# of expected failures		696
-# of unsupported tests		8629
-$(@D)/gcc/xg++  version 10.2.0 (GCC) 
+# of expected passes		188087
+# of unexpected failures	22
+# of expected failures		876
+# of unsupported tests		8796
+$(@D)/gcc/xg++  version 10.3.0 (GCC) 
 
 		=== gcc tests ===
 
 
 Running target unix
+FAIL: gcc.dg/debug/dwarf2/pr97060.c scan-assembler-times DW_AT_declaration 2
 XPASS: gcc.dg/guality/example.c   -O0  execution test
 XPASS: gcc.dg/guality/example.c  -Og -DPREVENT_OPTIMIZATION  execution test
 XPASS: gcc.dg/guality/guality.c   -O0  execution test
@@ -626,35 +632,37 @@ FAIL: gcc.dg/guality/vla-1.c   -O2 -flto -flto-partition=none  -DPREVENT_OPTIMIZ
 FAIL: gcc.dg/guality/vla-1.c   -O2 -flto  -DPREVENT_OPTIMIZATION line 17 sizeof (a) == 6
 FAIL: gcc.dg/guality/vla-1.c   -O2 -flto  -DPREVENT_OPTIMIZATION line 24 sizeof (a) == 17 * sizeof (short)
 FAIL: gcc.dg/ipa/ipa-icf-38.c scan-ltrans-tree-dump-not optimized "Function bar"
+FAIL: gcc.dg/vect/bb-slp-49.c scan-tree-dump slp1 "vectorizing stmts using SLP"
+FAIL: gcc.dg/vect/bb-slp-49.c -flto -ffat-lto-objects  scan-tree-dump slp1 "vectorizing stmts using SLP"
 
 		=== gcc Summary ===
 
-# of expected passes		125910
-# of unexpected failures	558
+# of expected passes		126615
+# of unexpected failures	561
 # of unexpected successes	31
-# of expected failures		849
-# of unsupported tests		3211
-$(@D)/gcc/xgcc  version 10.2.0 (GCC) 
+# of expected failures		890
+# of unsupported tests		3225
+$(@D)/gcc/xgcc  version 10.3.0 (GCC) 
 
 		=== gfortran tests ===
 
 
 Running target unix
 FAIL: gfortran.dg/analyzer/pr93993.f90   -O  (test for excess errors)
-FAIL: gfortran.dg/unlimited_polymorphic_30.f03   -O0  execution test
-FAIL: gfortran.dg/unlimited_polymorphic_30.f03   -O1  execution test
-FAIL: gfortran.dg/unlimited_polymorphic_30.f03   -O2  execution test
-FAIL: gfortran.dg/unlimited_polymorphic_30.f03   -O3 -fomit-frame-pointer -funroll-loops -fpeel-loops -ftracer -finline-functions  execution test
-FAIL: gfortran.dg/unlimited_polymorphic_30.f03   -O3 -g  execution test
-FAIL: gfortran.dg/unlimited_polymorphic_30.f03   -Os  execution test
+FAIL: gfortran.dg/class_assign_4.f90   -O0  execution test
+FAIL: gfortran.dg/class_assign_4.f90   -O1  execution test
+FAIL: gfortran.dg/class_assign_4.f90   -O2  execution test
+FAIL: gfortran.dg/class_assign_4.f90   -O3 -fomit-frame-pointer -funroll-loops -fpeel-loops -ftracer -finline-functions  execution test
+FAIL: gfortran.dg/class_assign_4.f90   -O3 -g  execution test
+FAIL: gfortran.dg/class_assign_4.f90   -Os  execution test
 
 		=== gfortran Summary ===
 
-# of expected passes		53990
+# of expected passes		54615
 # of unexpected failures	7
-# of expected failures		193
+# of expected failures		230
 # of unsupported tests		157
-$(@D)/gcc/gfortran  version 10.2.0 (GCC) 
+$(@D)/gcc/gfortran  version 10.3.0 (GCC) 
 
 		=== go tests ===
 
@@ -677,27 +685,28 @@ Running target unix
 
 		=== objc Summary ===
 
-# of expected passes		2784
+# of expected passes		2792
 # of unsupported tests		68
-$(@D)/gcc/xgcc  version 10.2.0 (GCC) 
+$(@D)/gcc/xgcc  version 10.3.0 (GCC) 
 
 		=== gotools tests ===
 
-FAIL: TestSymlinksVendor
 FAIL: go test cmd/go
 FAIL: TestAbort
 FAIL: TestArenaCollision
 FAIL: TestG0StackOverflow
 FAIL: TestLockOSThreadTemplateThreadRace
-FAIL: TestMemmoveAtomicity
 FAIL: TestPanicInlined
 FAIL: go test runtime
+FAIL: TestSigaltstack
+FAIL: go test misc/cgo/testcarchive
+FAIL: go test cmd/vet
 
 		=== gotools Summary ===
-# of expected passes		320
-# of unexpected failures	9
-# of untested testcases		168
-$(@D)/./gcc/gccgo version 10.2.0 (GCC)
+# of expected passes		317
+# of unexpected failures	10
+# of untested testcases		137
+$(@D)/./gcc/gccgo version 10.3.0 (GCC)
 
 		=== libatomic tests ===
 
@@ -719,7 +728,6 @@ Running target unix
 
 
 Running target unix
-FAIL: net/http
 FAIL: os/signal
 FAIL: runtime
 FAIL: runtime/pprof
@@ -727,8 +735,8 @@ FAIL: sync/atomic
 
 		=== libgo Summary for unix ===
 
-# of expected passes		168
-# of unexpected failures	5
+# of expected passes		169
+# of unexpected failures	4
 
 Running target unix/-m32
 FAIL: os/signal
@@ -743,9 +751,9 @@ FAIL: sync/atomic
 
 		=== libgo Summary ===
 
-# of expected passes		337
-# of unexpected failures	9
-$(@D)/./gcc/gccgo version 10.2.0 (GCC)
+# of expected passes		338
+# of unexpected failures	8
+$(@D)/./gcc/gccgo version 10.3.0 (GCC)
 
 		=== libgomp tests ===
 
@@ -755,10 +763,10 @@ FAIL: libgomp.c++/pr58706.C execution test
 
 		=== libgomp Summary ===
 
-# of expected passes		7636
+# of expected passes		7660
 # of unexpected failures	1
 # of expected failures		4
-# of unsupported tests		597
+# of unsupported tests		603
 		=== libitm tests ===
 
 
@@ -773,17 +781,19 @@ Running target unix
 
 
 Running target unix
+FAIL: 30_threads/future/members/poll.cc execution test
 
 		=== libstdc++ Summary ===
 
-# of expected passes		14026
+# of expected passes		14098
+# of unexpected failures	1
 # of expected failures		93
-# of unsupported tests		729
+# of unsupported tests		733
 
-Compiler version: 10.2.0 (GCC) 
+Compiler version: 10.3.0 (GCC) 
 Platform: sparcv9-sun-solaris2.11
-configure flags: --prefix=/usr/gcc/10 --mandir=/usr/gcc/10/share/man --bindir=/usr/gcc/10/bin --sbindir=/usr/gcc/10/sbin --libdir=/usr/gcc/10/lib --infodir=/usr/gcc/10/share/info --libexecdir=/usr/gcc/10/lib --enable-languages=c,c++,fortran,go,objc --enable-shared --enable-initfini-array --disable-rpath --with-system-zlib --with-build-config=no --with-gmp-include=/usr/include --with-mpfr-include=/usr/include --without-gnu-ld --with-ld=/usr/bin/ld --with-gnu-as --with-as=/usr/gnu/bin/as 'BOOT_CFLAGS=-g -O2' sparcv9-sun-solaris2.11
+configure flags: --prefix=/usr/gcc/10 --mandir=/usr/gcc/10/share/man --bindir=/usr/gcc/10/bin --sbindir=/usr/gcc/10/sbin --libdir=/usr/gcc/10/lib --infodir=/usr/gcc/10/share/info --libexecdir=/usr/gcc/10/lib --enable-languages=c,c++,fortran,go,objc --enable-shared --enable-initfini-array --disable-rpath --with-system-zlib --with-build-config=no --without-gnu-ld --with-ld=/usr/bin/ld --with-gnu-as --with-as=/usr/gnu/bin/as 'BOOT_CFLAGS=-g -O2' sparcv9-sun-solaris2.11
 BOOT_CFLAGS=-g -O2
 EOF
-Mail -s "Results for 10.2.0 (GCC) testsuite on sparcv9-sun-solaris2.11" gcc-testresults@gcc.gnu.org &&
+Mail -s "Results for 10.3.0 (GCC) testsuite on sparcv9-sun-solaris2.11" gcc-testresults@gcc.gnu.org &&
 true
