@@ -40,65 +40,67 @@ Not for upstream.
  if !HPLIP_CLASS_DRIVER
  #	   If scanner build, add hpaio entry to sane dll.conf.
  	if [ "$(scan_build)" = "yes" ]; then \
---- a/prnt/hpcups/HPCupsFilter.cpp	2019-06-21 16:55:47.316352258 +0200
-+++ b/prnt/hpcups/HPCupsFilter.cpp	2019-06-21 16:57:39.286063990 +0200
-@@ -31,7 +31,6 @@
- \*****************************************************************************/
- 
- #include "HPCupsFilter.h"
--#include "ImageProcessor.h"
- 
- #include <signal.h>
- #include <sys/wait.h>
-@@ -639,16 +638,10 @@
- 
+--- hplip-3.21.2/prnt/hpcups/HPCupsFilter.cpp	2021-04-13 06:32:14.149342852 -0700
++++ new/prnt/hpcups/HPCupsFilter.cpp	2021-04-13 06:30:47.842389678 -0700
+@@ -653,21 +653,11 @@
  
      sprintf(hpPreProcessedRasterFile, "%s/hp_%s_cups_SwapedPagesXXXXXX",CUPS_TMP_DIR, m_JA.user_name);
--    image_processor_t* imageProcessor = imageProcessorCreate();
- 
-     while (cupsRasterReadHeader2(cups_raster, &cups_header))
+  
+-    image_processor_t* imageProcessor=NULL;
+     IMAGE_PROCESSOR_ERROR result;
+     //added if condition to check if pinter language is "ljzjstream"
+     //If so, then bypass imageprocessing functions while running HPCUPS filter.
+-    if(strncmp(m_JA.printer_platform, "ljzjstream",10) == 0){
+-        imageProcessor = imageProcessorCreate();
+-    }
+-    while (cupsRasterReadHeader2(cups_raster, &cups_header))
++    while (cupsRasterReadHeader2(cups_raster, &cups_header)) 
      {
- 
--        IMAGE_PROCESSOR_ERROR result = imageProcessorStartPage(imageProcessor, &cups_header);
+-       if(strncmp(m_JA.printer_platform, "ljzjstream",10) == 0){
+-        result = imageProcessorStartPage(imageProcessor, &cups_header);
 -        if (result != IPE_SUCCESS){
 -            dbglog("DEBUG: imageProcessorStartPage failed result = %d\n", result);
 -        }
--
+-     }
          current_page_number++;
  
          if (current_page_number == 1) {
-@@ -747,12 +740,6 @@
+@@ -766,13 +756,6 @@
              color_raster = rgbRaster;
              black_raster = kRaster;
  
+-	if(strncmp(m_JA.printer_platform, "ljzjstream",10) == 0)
+-	{
 -            result = imageProcessorProcessLine(imageProcessor, m_pPrinterBuffer, cups_header.cupsBytesPerLine);
 -            if (result != IPE_SUCCESS){
 -                dbglog("DEBUG: imageProcessorProcessLine failed result = %d\n", result);
 -            }
--
--
+-	}
+ 
              if ((y == 0) && !is_ljmono) {
                  //For ljmono, make sure that first line is not a blankRaster line.Otherwise printer
-                 //may not skip blank lines before actual data
-@@ -782,12 +769,6 @@
+@@ -803,13 +786,6 @@
              }
          }  // for() loop end
  
+-	if(strncmp(m_JA.printer_platform, "ljzjstream",10) == 0)
+-	{
 -        result = imageProcessorEndPage(imageProcessor);
 -        if (result != IPE_SUCCESS){
 -                dbglog("DEBUG: imageProcessorEndPage failed result = %d\n", result);
 -        }
--
--
+-	}
+ 
          m_Job.NewPage();
          if (err != NO_ERROR) {
-             break;
-@@ -802,8 +783,6 @@
-         rgbRaster = NULL;
+@@ -826,10 +802,6 @@
      }
  
+  
+-   if(strncmp(m_JA.printer_platform, "ljzjstream",10) == 0)
+-   {
 -    imageProcessorDestroy(imageProcessor);
--
+-   }
      unlink(hpPreProcessedRasterFile);
      return ret_status;
  }
