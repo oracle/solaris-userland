@@ -1,0 +1,29 @@
+32669669 PTP internal timers stall if updated too quickly.
+
+The conversion of ptpd to Solaris moved from an interrupt driven model to
+an even driven model. This bug meant that if events came too fast the timer
+might never fire.
+
+The community for this fork is moribund, so this fix wil not be submitted 
+upstream.
+
+--- ptpd-2.2.0/src/dep/timer.c
++++ ptpd-2.2.0/src/dep/timer.c
+@@ -122,7 +122,6 @@ timerUpdate(IntervalTimer * itimer)
+ 	 * 'delta'.
+ 	 */
+ 	delta = (gethrtime() - timerInited)/(US_TIMER_INTERVAL * 1000);
+-	timerInited = gethrtime();
+ #else
+ 	delta = elapsed;
+ 	elapsed = 0;
+@@ -131,6 +130,9 @@ timerUpdate(IntervalTimer * itimer)
+ 	if (delta <= 0)
+ 		return;
+ 
++#ifdef __sun
++	timerInited = gethrtime();
++#endif
+ 	/*
+ 	 * if time actually passed, then decrease every timer left
+ 	 * the one(s) that went to zero or negative are:
