@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2007, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2007, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -49,6 +49,7 @@ COMPONENT_SRC_1=     	$(COMPONENT_NAME_1)-$(COMPONENT_VERSION_1)
 COMPONENT_ARCHIVE_1:=	$(shell $(call get-xorg-value,COMPONENT_ARCHIVE))
 COMPONENT_ARCHIVE_HASH_1:= $(shell $(call get-xorg-value,COMPONENT_ARCHIVE_HASH))
 COMPONENT_ARCHIVE_URL_1:= $(shell $(call get-xorg-value,COMPONENT_ARCHIVE_URL))
+COMPONENT_SIG_URL_1:=
 
 TEST_TARGET = $(NO_TESTS)
 
