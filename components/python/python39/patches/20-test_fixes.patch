@@ -22,6 +22,9 @@ differences. We can safely comment it out. [Not for upstream]
 
 test_tcl should be investigated more [Should be reported upstream]
 
+test_float is another locale related issue. [Should be reported upstream]
+https://github.com/python/cpython/commit/aa967ec4d4c2fc844f8f16b339140b050ae4d5e2
+
 --- Python-3.9.2/Lib/test/test_gdb.py
 +++ Python-3.9.2/Lib/test/test_gdb.py
 @@ -52,6 +52,9 @@ if gdb_major_version < 7:
@@ -157,3 +160,14 @@ test_tcl should be investigated more [Should be reported upstream]
      def test_evalfile_null_in_result(self):
          tcl = self.interp
          filename = support.TESTFN_ASCII
+--- Python-3.9.4/Lib/test/test_float.py
++++ Python-3.9.4/Lib/test/test_float.py
+@@ -144,7 +144,7 @@ class GeneralFloatCases(unittest.TestCas
+         # non-UTF-8 byte string
+         check(b'123\xa0')
+ 
+-    @support.run_with_locale('LC_NUMERIC', 'fr_FR', 'de_DE')
++    @support.run_with_locale('LC_NUMERIC', 'fr_FR.UTF-8', 'de_DE.UTF-8')
+     def test_float_with_comma(self):
+         # set locale to something that doesn't use '.' for the decimal point
+         # float must not accept the locale specific decimal point but
