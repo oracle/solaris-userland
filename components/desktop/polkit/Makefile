@@ -20,31 +20,31 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 # parfait is a bit unhappy (24796481)
 export PARFAIT_BUILD=no
 
-BUILD_BITS =            64_and_32
+BUILD_BITS =            64
 # Also, all components using gobject-introspection must be built with gcc as
 # gobject-introspection does not produce correct results when using Studio.
 COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		polkit
-COMPONENT_VERSION=	0.116
+COMPONENT_VERSION=	0.118
 COMPONENT_PROJECT_URL=	http://www.freedesktop.org/wiki/Software/polkit/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:88170c9e711e8db305a12fdb8234fac5706c61969b94e084d0f117d8ec5d34b1
+	sha256:bd1cc7cea8468e2978cb273fde94ee43a74e2737a4b6914708da6114ee7ed605
 COMPONENT_ARCHIVE_URL=	http://www.freedesktop.org/software/polkit/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sign
 COMPONENT_BUGDB=	gnome/security
 COMPONENT_ANITYA_ID=	3682
 COMPONENT_SIG_URL=
 
-TPNO=			55168
+TPNO=			68738
 
 # Tests don't work on Solaris
 TEST_TARGET = $(SKIP_TEST)
@@ -97,7 +97,7 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/libmozjs-60
+REQUIRED_PACKAGES += library/libmozjs-78
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/dbus
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

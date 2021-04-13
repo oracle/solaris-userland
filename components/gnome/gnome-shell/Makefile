@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates. 
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -126,7 +126,6 @@ REQUIRED_PACKAGES += library/graphics/cogl
 REQUIRED_PACKAGES += library/json-glib
 REQUIRED_PACKAGES += library/libcroco
 REQUIRED_PACKAGES += library/libical
-REQUIRED_PACKAGES += library/libmozjs-60
 REQUIRED_PACKAGES += library/libsoup
 REQUIRED_PACKAGES += library/python/pygobject-3-37
 REQUIRED_PACKAGES += library/python/simplejson-37

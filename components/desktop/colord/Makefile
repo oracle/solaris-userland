@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -60,7 +60,8 @@ COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv; intltoolize --force);
 CONFIGURE_OPTIONS += --disable-bash-completion
 # gusb appears to be an abandoned project.
 CONFIGURE_OPTIONS += --disable-gusb
-CONFIGURE_OPTIONS += --enable-polkit
+CONFIGURE_OPTIONS.32 += --disable-polkit
+CONFIGURE_OPTIONS.64 += --enable-polkit
 CONFIGURE_OPTIONS += --disable-static
 # Linux-specific.
 CONFIGURE_OPTIONS += --disable-systemd-login
