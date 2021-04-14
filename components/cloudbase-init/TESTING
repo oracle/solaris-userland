@@ -1,0 +1,68 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+
+# The configdrive plugin can be tested as follows:
+
+# Inside a virtual machine with Solaris 11 installed, do:
+
+pkg install system/management/cloudbase-init
+# Note, the service will immediately go to maintenance. This is expected.
+# Enable Config Drive
+svccfg -s cloudbase-init:default setprop config/config_drive = boolean: true
+# Only use Config Drive, do not use any web service
+svccfg -s cloudbase-init:default setprop config/metadata_services = astring: cloudbaseinit.metadata.services.configdrive.ConfigDriveService
+# set the path to CD device
+svccfg -s cloudbase-init:default setprop config/cd_device = astring: /dev/dsk/c1t1d0s2
+# the username for whom we set the .ssh/authorized_keys
+svccfg -s cloudbase-init:default setprop config/username = astring: root
+# We will set hostname, authorized_keys, and run a custom script
+svccfg -s cloudbase-init:default setprop config/plugins = astring: cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin,cloudbaseinit.plugins.common.sshpublickeys.SetUserSSHPublicKeysPlugin,cloudbaseinit.plugins.common.userdata.UserDataPlugin
+# Disable ssh so we can be sure changes to the service are done before it is started
+svcadm disable network/ssh
+# Disable CD automounting
+svcadm disable system/filesystem/rmvolmgr
+shutdown -y -i 5 -g 0
+
+# In the host, prepare the CD image with configuration:
+
+mkdir iso
+mkdir -p iso/openstack/latest/              
+vi iso/openstack/latest/meta_data.json
+cat iso/openstack/latest/meta_data.json 
+{
+    "availability_zone": "nova",
+    "hostname": "test.novalocal",
+    "launch_index": 0,
+    "name": "test",
+    "meta": {
+        "role": "webservers",
+        "essential": "false"
+    },
+    "public_keys": {
+        "mykey": "ssh-rsa AAAAB...qw== comment\n"
+    },
+    "uuid": "836...aa"
+}
+# Use e.g. dbus-uuidgen(1) to generate the uuid
+# Use your public key, e.g from ~/.ssh/id_rsa.pub
+
+vi iso/openstack/latest/user_data
+cat iso/openstack/latest/user_data      
+#!/bin/bash
+grep -q ^AllowUsers /etc/ssh/sshd_config || echo "AllowUsers root yourUIDhere" >> /etc/ssh/sshd_config
+grep -q '^PasswordAuthentication no' /etc/ssh/sshd_config || echo "PasswordAuthentication no" >> /etc/ssh/sshd_config
+/usr/sbin/svcadm enable network/ssh
+
+# generate the iso
+mkisofs -R -o configdrive.iso iso/
+
+# attach the iso to port and device that corresponds to the config/cd_device setting above, e.g.
+VBoxManage storageattach _yourVMname_ --storagectl "IDE Controller" --port 0 --device 1 --type dvddrive --medium /path/to/configdrive.iso
+
+# Boot the vm and try to ssh in as root using your own public key
+# Try to login as root and your username using password (shouldn't work)
+ssh -o IgnoreUnknown=\* -o IgnoreIfUnknown=\* -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=QUIET -p _machine_port_ _vm_hostname_ -l root -o KbdInteractiveAuthentication=yes -o PubkeyAuthentication=no
+# Try to login as root and your username using your key (should work)
+ssh -o IgnoreUnknown=\* -o IgnoreIfUnknown=\* -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=QUIET -p _machine_port_ _vm_hostname_ -l root -i ~/.ssh/id_rsa
+
+# Verify the hostname in the vm is set per the config drive
+hostname

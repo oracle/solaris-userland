@@ -1,0 +1,12 @@
+not suitable for upstream as the code was refactored in the latest version
+--- cloudbase-init-1.1.0/cloudbaseinit/metadata/services/configdrive.py	2020-02-26 21:09:46.000000000 +0100
++++ cloudbase-init-1.1.0/cloudbaseinit/metadata/services/configdrive.py	2021-04-07 17:57:02.860671392 +0200
+@@ -74,7 +74,7 @@
+             LOG.debug('Metadata copied to folder: %r', self._metadata_path)
+         return found
+ 
+-    def _get_data(self, path):
++    def _get_data(self, path, headers=None):
+         norm_path = os.path.normpath(os.path.join(self._metadata_path, path))
+         try:
+             with open(norm_path, 'rb') as stream:

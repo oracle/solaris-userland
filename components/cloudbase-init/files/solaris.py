@@ -1,4 +1,4 @@
-# Copyright (c) 2017, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -14,6 +14,7 @@
 
 import itertools
 import os
+import shlex
 import shutil
 import subprocess
 
@@ -25,6 +26,8 @@ opts = [
     cfg.StrOpt('tar', default='/usr/bin/tar',
                help='path to "tar", used to extract ISO ConfigDrive '
                     'files'),
+    cfg.StrOpt('cd_device', default='/dev/dsk/c1d1p0',
+               help='path to CD device'),
 ]
 CONF = cfg.CONF
 CONF.register_opts(opts)
@@ -48,15 +51,32 @@ class SolarisConfigDriveManager(base.BaseConfigDriveManager):
         LOG.debug("self.target_path = %s" % self.target_path)
         mountdir = '/root/cbi_cdrom'
         try:
-            # The device is currently hard coded to c1d1p0
+            #
+            # If the CD is already mounted, reuse the mount.
+            # This can happen if the system/filesystem/rmvolmgr service
+            # is enabled.
+            #
             mounted = False
-            if not os.path.exists(mountdir):
-                os.mkdir(mountdir, 0o500)
+            try:
+                for line in open('/etc/mnttab', 'r'):
+                    if shlex.split(line)[0] == CONF.cd_device:
+                        LOG.warn("CD already mounted. If the config drive "
+                                  "contained any secrets, they could have "
+                                  "been accessed by unauthorized users.")
+                        mountdir = shlex.split(line)[1]
+                        mounted = True
+            except Exception as ex:
+                LOG.error("Failure parsing /etc/mnttab: %s" % ex)
+                pass
 
-            subprocess.check_call(['/usr/sbin/mount', '-F', 'hsfs',
-                                   '/dev/dsk/c1d1p0', mountdir])
+            if not mounted:
+                if not os.path.exists(mountdir):
+                    os.mkdir(mountdir, 0o500)
 
-            mounted = True
+                subprocess.check_call(['/usr/sbin/mount', '-F', 'hsfs',
+                                       CONF.cd_device, mountdir])
+                mounted = True
+
             chkfile = os.path.join(mountdir, 'openstack/latest/meta_data.json')
             if os.path.exists(chkfile):
                 os.rmdir(self.target_path)
@@ -75,6 +95,7 @@ class SolarisConfigDriveManager(base.BaseConfigDriveManager):
         finally:
             if mounted:
                 subprocess.call(['/usr/sbin/umount', mountdir])
+            if os.path.exists(mountdir):
                 os.rmdir(mountdir)
             # Set the property to complete the mount/copy/umount process and
             # release the BUILD status in the controller.
