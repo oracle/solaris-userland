@@ -1,0 +1,17 @@
+If saveDrift is called too early, ptpClock or rtOpts may still be null.
+
+The saveDrift feature is a Solaris extension, so we will not be submitting 
+this patch upstream.
+
+--- ptpd-2.2.0/src/dep/time.c
++++ ptpd-2.2.0/src/dep/time.c
+@@ -1370,6 +1370,9 @@ saveDrift(PtpClock * ptpClock, RunTimeOp
+ 	char driftFile[PATH_MAX];
+ 
+ 
++	if (ptpClock == NULL || rtOpts == NULL)
++		return;
++
+ 	if (ptpClock == G_timeBothClock)
+ 		isBoth = TRUE;
+ 
