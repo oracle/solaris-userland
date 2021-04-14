@@ -4,16 +4,17 @@ of the community version of ptpd already have this capability.
 
 --- ptpd-2.2.0/src/dep/startup.c
 +++ ptpd-2.2.0/src/dep/startup.c
-@@ -974,7 +974,7 @@ ptpdStartup(int argc, char **argv, Integ
+@@ -974,8 +974,8 @@ ptpdStartup(int argc, char **argv, Integ
        break;
      case 'i':
        rtOpts->domainNumber = strtol(optarg, &optarg, 0);
 -      if (rtOpts->domainNumber > 3) {
+-	ERROR(" Please provide an integer between 0 to 3 with -i\n");
 +      if (rtOpts->domainNumber > 127) {
- 	ERROR(" Please provide an integer between 0 to 3 with -i\n");
++	ERROR(" Please provide an integer between 0 to 127 with -i\n");
  	*ret = 1;
  	return (0);
-*** ptpd-2.2.0/src/ptpd2.8
+       }
 --- ptpd-2.2.0/src/ptpd2.8
 *************** with PTP hardware assist.
 *** 118,124 ****
