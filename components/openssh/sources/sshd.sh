@@ -1,58 +1,26 @@
 #!/usr/sbin/sh
 #
-# Copyright (c) 2001, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2001, 2021, Oracle and/or its affiliates.
 #
 
 . /lib/svc/share/smf_include.sh
 
 SSHDIR=/etc/ssh
-KEYGEN="/usr/bin/ssh-keygen -q"
+KEYGEN="/usr/bin/ssh-keygen"
 PIDFILE=$SMF_SYSVOL_FS/sshd.pid
 
-# Checks to see if RSA, and DSA host keys are available
-# if any of these keys are not present, the respective keys are created.
-create_key()
+# Generate host keys for each of the key types
+# for which the host keys do not exist.
+create_host_keys()
 {
-	keypath=$1
-	keytype=$2
+	$KEYGEN -A
 
-	if [ ! -f $keypath ]; then
-		# 
-		# HostKey keywords in sshd_config may be preceded or
-		# followed by a mix of any number of space or tabs,
-		# and optionally have an = between keyword and
-		# argument.  We use two grep invocations such that we
-		# can match HostKey case insensitively but still have
-		# the case of the path name be significant, keeping
-		# the pattern somewhat more readable.
-		#
-		# The character classes below contain one literal
-		# space and one literal tab.
-		#
-		grep -i "^[ 	]*HostKey[ 	]*=\{0,1\}[ 	]*$keypath" \
-		    $SSHDIR/sshd_config | grep "$keypath" > /dev/null 2>&1
-
-		if [ $? -eq 0 ]; then
-			echo Creating new $keytype public/private host key pair
-			$KEYGEN -f $keypath -t $keytype -N ''
-			if [ $? -ne 0 ]; then
-				echo "Could not create $keytype key: $keypath"
-				exit $SMF_EXIT_ERR_CONFIG
-			fi
-		fi
-	fi
+	return $?
 }
 
-remove_key()
+remove_host_keys()
 {
-        keypath=$1
-        if [ -f $keypath ]; then
-                grep -i "^[     ]*HostKey[      ]*=\{0,1\}[     ]*$keypath" \
-                    $SSHDIR/sshd_config | grep "$keypath" > /dev/null 2>&1
-                if [ $? -eq 0 ]; then
-                        rm -f ${keypath} ${keypath}.pub
-                fi
-        fi
+	rm -f $SSHDIR/ssh_host_*_key*
 }
 
 #
@@ -133,36 +101,49 @@ been backed up to $fbackup"
 # arguments..
 
 case $1 in 
-	# sysidconfig/sys-unconfig arguments (-c and -u)
-'-c')
-	create_key $SSHDIR/ssh_host_rsa_key rsa
-	create_key $SSHDIR/ssh_host_ed25519_key ed25519
-	;;
-
-'-u')
+'unconfigure')
 	# sysconfig unconfigure to remove the sshd host keys
-	remove_key $SSHDIR/ssh_host_rsa_key
-	remove_key $SSHDIR/ssh_host_ed25519_key
+	remove_host_keys
 	;;
 
 	# SMF arguments (start and restart [really "refresh"])
 
 'start')
 	#
-	# If host keys don't exist when the service is started, create
-	# them; sysidconfig is not run in every situation (such as on
-	# the install media).
-	# 
-	create_key $SSHDIR/ssh_host_rsa_key rsa
-	create_key $SSHDIR/ssh_host_ed25519_key ed25519
+	# When the service is started, create host keys in case they don't exist
+	# and sysconfig/generate_hostkeys property is set (which is default).
+	#
+	ret1=0
+	gen_key=$(smf_get_prop sysconfig/generate_hostkeys $SMF_FMRI)
+	if [ $? -eq 0 -a "$gen_key" == "true" ]; then
+		create_host_keys
+		ret1=$?
+	fi
 
 	#
 	# Make sure, that /etc/ssh/sshd_config does not contain single line
 	# 'ListenAddress ::'.
 	#
 	fix_listenaddress
+	ret2=$?
 
 	/usr/lib/ssh/sshd
+
+	#
+	# Put the service into degraded mode in case some of previous
+	# configuration tasks failed.
+	# We do not let the service enter maintenance mode, since
+	# we want to keep the system as much operating as feasible.
+	#
+	if [ $ret1 -ne 0 ]; then
+		smf_method_exit $SMF_EXIT_DEGRADED "hostkey_configuration" \
+		    "Failed to generate missing host keys."
+	fi
+
+	if [ $ret2 -ne 0 ]; then
+		smf_method_exit $SMF_EXIT_DEGRADED "fix_listenaddress" \
+		    "Failed to fix sshd_config ListenAddress directive."
+	fi
 	;;
 
 'restart')
