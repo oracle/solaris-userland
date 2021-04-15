@@ -33,20 +33,20 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nss
-COMPONENT_VERSION=	3.60.1
+COMPONENT_VERSION=	3.63
 # NSS ips major version is incorrect for historical reasons.
-IPS_COMPONENT_VERSION=	4.60.1
+IPS_COMPONENT_VERSION=	4.63
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_UVERSION=	$(subst .,_,$(COMPONENT_VERSION))
 COMPONENT_PROJECT_URL=	https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2051c20b61112df24bad533ac37f6c66c1bc0d6ea70bb9d9cad102d20324279d
+    sha256:182d2fef629102ae9423aabf2c192242b565cf5098e82c5a26cf70c5e4ea2221
 COMPONENT_ARCHIVE_URL=	http://ftp.mozilla.org/pub/security/$(COMPONENT_NAME)/releases/NSS_$(COMPONENT_UVERSION)_RTM/src/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/nss
 COMPONENT_ANITYA_ID=	2503
 
-TPNO=			64189
+TPNO=			68618
 
 BUILD_STYLE= justmake
 
@@ -80,6 +80,8 @@ NSS_ENV += NSS_ENABLE_WERROR=0
 NSS_ENV += $(USE_64_FLAG.$(BITS))
 
 COMPONENT_BUILD_ENV += $(NSS_ENV)
+# we need GNU sed to process the nss.def file correctly
+COMPONENT_BUILD_ENV +=   PATH=$(GNUBIN):$(PATH)
 COMPONENT_BUILD_TARGETS =  all
 
 COMPONENT_INSTALL_ENV += $(NSS_ENV)
@@ -133,6 +135,8 @@ COMPONENT_TEST_ENV +=	CC=$(CC)
 COMPONENT_TEST_ENV +=	DOMSUF=$(shell /usr/sbin/check-hostname | sed 's@.* [^\.]*\.@@')
 COMPONENT_TEST_CMD =	./all.sh
 COMPONENT_TEST_TARGETS =
+# the order of individual results became unstable
+COMPONENT_POST_TEST_ACTION = gsed -i "s/ ([0-9][0-9]* ms)//g" $(COMPONENT_TEST_OUTPUT); gsort -u -o $(COMPONENT_TEST_OUTPUT) $(COMPONENT_TEST_OUTPUT)
 #
 # DatagramPre13/TlsConnectDatagramPre13.DropServer(First|Second)FlightOncetests are not stable
 #
@@ -148,7 +152,8 @@ COMPONENT_TEST_TRANSFORMS = \
 	'-e "/DatagramPre13\/TlsConnectDatagramPre13.DropAllFirstTransmissions\/1, where GetParam() = 771/d" ' \
 	'-e "/DatagramPre13\/TlsConnectDatagramPre13.DropServerFirstFlightThrice\/0, where GetParam() = 770/d" ' \
 	'-e "/DatagramPre13\/TlsConnectDatagramPre13.DropServerFirstFlightThrice\/1, where GetParam() = 771/d" ' \
-	'-e "s/([0-9][0-9]* ms)//g" ' \
+	'-e "s/ ([0-9][0-9]* ms)//g" ' \
+	'-e "s/ $$//g" ' \
         '-e "/  FAILED  /p" ' \
         '-e "/.*/d" '
 
@@ -158,3 +163,5 @@ REQUIRED_PACKAGES += system/rsyslog
 # for usr/bin/smime_gtest
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+# for the COMPONENT_POST_TEST_ACTION
+REQUIRED_PACKAGES += text/gnu-sed
