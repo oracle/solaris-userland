@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		fetchmail
-COMPONENT_VERSION=	6.3.26
+COMPONENT_VERSION=	6.4.18
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:79b4c54cdbaf02c1a9a691d9948fcb1a77a1591a813e904283a8b614b757e850
-COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/$(COMPONENT_NAME)/files/branch_6.3/$(COMPONENT_ARCHIVE)
+    sha256:302dc9bcdc6927dedf375d2baaead2347557faa70d98b1da83f2409fa6fb259f
+COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/$(COMPONENT_NAME)/files/branch_6.4/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://www.fetchmail.info/
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	801
 
-TPNO=			29615
+TPNO=			68878
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -43,7 +43,7 @@ ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
 include $(WS_MAKE_RULES)/common.mk
 
-CONFIGURE_OPTIONS  +=		PYTHON="$(PYTHON.2.7.32)"
+CONFIGURE_OPTIONS  +=		PYTHON="$(PYTHON.3.7.64)"
 CONFIGURE_OPTIONS  +=		--with-kerberos5
 CONFIGURE_OPTIONS  +=		--with-ssl
 CONFIGURE_OPTIONS  +=		--enable-NTLM
@@ -51,8 +51,8 @@ CONFIGURE_OPTIONS  +=		--enable-NTLM
 # Change the shebang line to use Python 2.7 explicitly, and drop the
 # fixed file into /usr/bin, where our package manifest expects it.
 COMPONENT_POST_INSTALL_ACTION = \
-    $(GSED) -e "s|/usr/bin/env python|$(PYTHON.2.7.32)|" \
-	$(PROTO_DIR)/usr/lib/python2.7/site-packages/fetchmailconf.py > \
+    $(GSED) -e "s|/usr/bin/env python|$(PYTHON.3.7.64)|" \
+	$(PROTO_DIR)/usr/lib/python3.7/site-packages/fetchmailconf.py > \
 	$(PROTO_DIR)$(USRBIN.32)/fetchmailconf
 
 COMPONENT_TEST_TRANSFORMS += \
@@ -64,9 +64,8 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/were not run/p" ' \
 	'-e "/passed/p" '
 
-REQUIRED_PACKAGES += library/python/tkinter-27
+REQUIRED_PACKAGES += library/python/tkinter-37
 REQUIRED_PACKAGES += library/security/openssl
-REQUIRED_PACKAGES += runtime/python-27
+REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += security/kerberos-5
-$(SOLARIS_11_3_ONLY)REQUIRED_PACKAGES += service/security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93

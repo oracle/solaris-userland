@@ -1,0 +1,37 @@
+Internal patch to remove Python 2.7 support.
+
+--- fetchmail-6.4.18/fetchmailconf.py.orig	2021-04-15 16:06:54.899606356 +0200
++++ fetchmail-6.4.18/fetchmailconf.py	2021-04-15 16:07:19.226945988 +0200
+@@ -9,14 +9,8 @@
+ # WARNING: this needs to be updated for fetchmail 6.4's SSL options,
+ # and other recent new options;
+ 
+-from __future__ import print_function
+-from __future__ import division
+-from past.builtins import execfile
+-from future import standard_library
+-standard_library.install_aliases()
+ from builtins import str
+ from builtins import range
+-from past.utils import old_div
+ from builtins import object
+ import sys
+ import time
+@@ -37,7 +31,7 @@
+ 
+ VERSION = "1.63.4"
+ 
+-MIN_PY = (2, 7, 13)
++MIN_PY = (3, 7, 0)
+ if sys.version_info < MIN_PY:
+     sys.exit("fetchmailconf: Python %s.%s.%s or later is required.\n" % MIN_PY)
+ 
+@@ -522,7 +516,7 @@
+ def ButtonBar(frame, legend, ref, alternatives, depth, command):
+ # array of radio buttons, caption to left, picking from a string list
+     bbar = Frame(frame)
+-    width = old_div((len(alternatives)+1), depth)
++    width = (len(alternatives)+1) // depth
+     Label(bbar, text=legend).pack(side=LEFT)
+     for column in range(width):
+         subframe = Frame(bbar)
