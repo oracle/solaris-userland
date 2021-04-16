@@ -1,0 +1,185 @@
+This fixes the signs around the display of timeInternal time values. The
+naive approach of printing the two values combined as a decimal number
+lead to the possibility of printing a number like -5.-200001002.
+
+The upstream community is moribund so this patch will not be sent upstream.
+
+--- ptpd-2.2.0/src/arith.c
++++ ptpd-2.2.0/src/arith.c
+@@ -233,6 +233,12 @@ void absTime(TimeInternal *time)
+ 	time->nanoseconds   = abs(time->nanoseconds);
+ }
+ 
++/* copy TimeInternl variable */
++void cpyTime(TimeInternal *src, TimeInternal *dst)
++{
++	dst->seconds       = src->seconds;
++	dst->nanoseconds   = src->nanoseconds;
++}
+ 
+ /* if 2 time values are close enough for X nanoseconds */
+ int is_Time_close(TimeInternal *x, TimeInternal *y, int nanos)
+--- ptpd-2.2.0/src/ptpd.h
++++ ptpd-2.2.0/src/ptpd.h
+@@ -191,6 +191,7 @@ void displayOthers (PtpClock*);
+ void displayBuffer (PtpClock*);
+ void displayPtpClock (PtpClock*);
+ void timeInternal_display(TimeInternal*);
++char *timeInternal_format(TimeInternal*);
+ void clockIdentity_display(ClockIdentity);
+ void netPath_display(NetPath*);
+ void intervalTimer_display(IntervalTimer*);
+@@ -225,6 +226,7 @@ int snprint_TimeInternal(char *s, int ma
+ void nano_to_Time(TimeInternal *time, int nano);
+ int gtTime(TimeInternal *x, TimeInternal *b);
+ void absTime(TimeInternal *time);
++void cpyTime(TimeInternal *src, TimeInternal *dst);
+ int is_Time_close(TimeInternal *x, TimeInternal *b, int nanos);
+ int isTimeInternalNegative(const TimeInternal * p);
+ 
+--- ptpd-2.2.0/src/display.c
++++ ptpd-2.2.0/src/display.c
+@@ -597,3 +597,32 @@ displayPtpClock(PtpClock * ptpClock)
+ 	displayOthers(ptpClock);
+ 
+ }
++
++/** \brief Format a TimeInternal Structure as decimal*/
++char *
++timeInternal_format(TimeInternal *timeInternal)
++{
++#define NUM_BUFFS 4
++#define SZ_BUFF 250
++	static char buf[NUM_BUFFS*SZ_BUFF];
++	static int  indx = 0;
++	char	*p;
++	int	c = SZ_BUFF;
++	TimeInternal	abtime;
++
++	/* point to the next buffer */
++	indx = (indx + 1) % NUM_BUFFS;
++	p = &buf[indx*SZ_BUFF];
++	/* Sometimes the value isn't normalized */
++	normalizeTime(timeInternal);
++	cpyTime(timeInternal, &abtime);
++	absTime(&abtime);
++	if (isTimeInternalNegative(timeInternal)) {
++		*p++ = '-';
++		c--;
++	}
++	(void) snprintf(p, c, "%d.%09d",abtime.seconds, abtime.nanoseconds);
++
++	return (&buf[indx*SZ_BUFF]);
++
++}
+--- ptpd-2.2.0/src/dep/servo.c
++++ ptpd-2.2.0/src/dep/servo.c
+@@ -147,12 +147,10 @@ updateDelay(one_way_delay_filter * owd_f
+ 		
+ 		if ((s_to_m_delay > max_delay) ||
+ 		    (s_to_m_delay < -max_delay)) {
+-			INFO("updateDelay aborted, s->m delay %d.%09d greater than "
+-			     "administratively set maximum %d.%09d\n",
+-			     slave_to_master_delay.seconds,
+-			     slave_to_master_delay.nanoseconds,
+-			     rtOpts->maxDelay.seconds,
+-			     rtOpts->maxDelay.nanoseconds);
++			INFO("updateDelay aborted, s->m delay %s greater than "
++			     "administratively set maximum %s\n",
++			     timeInternal_format(&slave_to_master_delay),
++			     timeInternal_format(&rtOpts->maxDelay));
+ 			msgDump(ptpClock);
+ 				goto display;
+ 		}
+@@ -350,12 +348,10 @@ updateOffset(TimeInternal * send_time, T
+ 		
+ 		if ((m_to_s_delay > max_delay) ||
+ 		    (m_to_s_delay < -max_delay)) {
+-			INFO("updateDelay aborted, m->s delay %d.%09d greater than "
+-			     "administratively set maximum %d.%09d\n",
+-			     master_to_slave_delay.seconds,
+-			     master_to_slave_delay.nanoseconds,
+-			     rtOpts->maxDelay.seconds,
+-			     rtOpts->maxDelay.nanoseconds);
++			INFO("updateDelay aborted, m->s delay %s greater than "
++			     "administratively set maximum %s\n",
++			     timeInternal_format(&master_to_slave_delay),
++			     timeInternal_format(&rtOpts->maxDelay));
+ 			msgDump(ptpClock);
+ 			return;
+ 		}
+@@ -365,12 +361,12 @@ updateOffset(TimeInternal * send_time, T
+ 	ptpClock->char_last_msg='S';
+ 	ptpClock->last_packet_was_sync = TRUE;
+ 
+-	DBGV("send_time = %d.%09d\n",
+-	     send_time->seconds, send_time->nanoseconds);
+-	DBGV("recv_time = %d.%09d\n",
+-             recv_time->seconds, recv_time->nanoseconds);
+-	DBGV("master_to_slave_delay = %d.%09d\n",
+-	     master_to_slave_delay.seconds, master_to_slave_delay.nanoseconds);
++	DBGV("send_time = %s\n",
++	     timeInternal_format(send_time));
++	DBGV("recv_time = %s\n",
++             timeInternal_format(recv_time));
++	DBGV("master_to_slave_delay = %s\n",
++	     timeInternal_format(&master_to_slave_delay));
+ 
+ 	/*
+ 	 * The packet has passed basic checks, so we'll:
+@@ -383,12 +379,12 @@ updateOffset(TimeInternal * send_time, T
+ 	/* Take care about correctionField */
+ 	subTime(&ptpClock->delayMS,
+ 		&ptpClock->delayMS, correctionField);
+-	DBGV("delayMS = %d.%09d\n",
+-	     ptpClock->delayMS.seconds, ptpClock->delayMS.nanoseconds);
+-	DBGV("correctionField = %d.%09d\n",
+-	     correctionField->seconds, correctionField->nanoseconds);
+-	DBGV("meanPathDelay = %d.%09d\n",
+-	     ptpClock->meanPathDelay.seconds, ptpClock->meanPathDelay.nanoseconds);
++	DBGV("delayMS = %s\n",
++	     timeInternal_format(&ptpClock->delayMS));
++	DBGV("correctionField = %s\n",
++	     timeInternal_format(correctionField));
++	DBGV("meanPathDelay = %s\n",
++	     timeInternal_format(&ptpClock->meanPathDelay));
+ 
+ 
+ 	DBGV("updateOffset: delayMechanism = %d\n", ptpClock->delayMechanism);
+@@ -484,9 +480,8 @@ void warn_operator_slow_slewing(RunTimeO
+ 		float estimated = (((abs(ptpClock->offsetFromMaster.seconds)) + 0.0) * 2.0 * 1000.0 / 3600.0);
+ 
+ 		// we don't want to arrive early 1s in an expiration opening, so all consoles get a message when the time is 1s off.
+-		ALERT("Servo: %d.%09d seconds offset detected, will take %.1f hours to slew\n",
+-			ptpClock->offsetFromMaster.seconds,
+-			ptpClock->offsetFromMaster.nanoseconds,
++		ALERT("Servo: %s seconds offset detected, will take %.1f hours to slew\n",
++			timeInternal_format(&ptpClock->offsetFromMaster),
+ 			estimated
+ 		);
+ 		
+--- ptpd-2.2.0/src/dep/net.c
++++ ptpd-2.2.0/src/dep/net.c
+@@ -496,9 +496,9 @@ static int txTimestamp(PtpClock *ptpCloc
+           subTime(&now, &now, &start);
+           /* 0.1 seconds is the maximum we wait... */
+           if(haveTs || now.seconds >= 1 || now.nanoseconds >= 100000000) {
+-            DBGV("%s send time stamp after %d.%09ds\n",
++            DBGV("%s send time stamp after %s\n",
+                  haveTs ? "got" : "failed to get",
+-                 now.seconds, now.nanoseconds);
++                 timeInternal_format(&now));
+             break;
+           }
+         }
+@@ -549,8 +549,8 @@ static int txTimestamp(PtpClock *ptpCloc
+           subTime(&now, &now, &start);
+           /* 0.1 second is the maximum we wait... */
+           if(now.seconds >= 1 || now.nanoseconds >= 100000000) {
+-            DBGV("Failed to get send time stamp after %d.%09ds\n",
+-                 now.seconds, now.nanoseconds);
++            DBGV("Failed to get send time stamp after %ss\n",
++                 timeInternal_format(now));
+             return -1;
+           }
+         } else {
