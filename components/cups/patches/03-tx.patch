@@ -281,7 +281,7 @@ index bc1350e..cfeacc8 100644
  /*
   * Some OS's don't have hstrerror(), most notably Solaris...
 diff --git a/scheduler/ipp.c b/scheduler/ipp.c
-index 2fe3bf2..16b870b 100644
+index 2fe3bf2..e866a1c 100644
 --- a/scheduler/ipp.c
 +++ b/scheduler/ipp.c
 @@ -27,6 +27,11 @@ extern int mbr_group_name_to_uuid(const char* name, uuid_t uu);
@@ -410,7 +410,58 @@ index 2fe3bf2..16b870b 100644
   /*
    * Check remote printing to non-shared printer...
    */
-@@ -1576,6 +1656,19 @@ add_job(cupsd_client_t  *con,		/* I - Client connection */
+@@ -1291,6 +1371,50 @@ add_job(cupsd_client_t  *con,		/* I - Client connection */
+   }
+ #endif /* HAVE_SSL */
+ 
++#if defined(HAVE_TSOL)
++  if (is_system_labeled() != 0) {
++    ipp_attribute_t *uattr;
++    uattr = ippFindAttribute(con->request, "requesting-user-name", IPP_TAG_NAME);
++    if (uattr) {
++      /* check for 'nolabels' in request */
++      if (ippFindAttribute(con->request, "labels", IPP_TAG_ZERO) != NULL) {
++        /* check if user is authorized */
++        if (chkauthattr("solaris.print.unlabeled", uattr->values[0].string.text) == 0) {
++          /*
++           * print request will fail since user
++           * does not have the required authorization.
++           */
++	  send_http_error(con, HTTP_UNAUTHORIZED, printer);
++	  return (NULL);
++        }
++      }
++
++      /*
++       * check for nobanner.
++       * '-o job-sheets=none,none' means
++       *  user does not want to print banner and trailer page.
++       */
++      if ((attr = ippFindAttribute(con->request, "job-sheets",
++          IPP_TAG_ZERO)) != NULL) {
++        if (strcmp(attr->values[0].string.text, "none") == 0) {
++          /*
++           * User wants no banner.
++           * Check if user is authorized.
++           */
++          if (chkauthattr("solaris.print.nobanner", uattr->values[0].string.text) == 0) {
++            /*
++             * print request will fail since user
++             * does not have the required authorization.
++             */
++            send_http_error(con, HTTP_UNAUTHORIZED, printer);
++            return (NULL);
++          }
++        }
++      }
++    }
++  }
++#endif /* HAVE_TSOL */
++
+  /*
+   * See if the printer is accepting jobs...
+   */
+@@ -1576,6 +1700,19 @@ add_job(cupsd_client_t  *con,		/* I - Client connection */
      return (NULL);
    }
  
@@ -430,7 +481,7 @@ index 2fe3bf2..16b870b 100644
    job->dtype   = printer->type & (CUPS_PRINTER_CLASS | CUPS_PRINTER_REMOTE);
    job->attrs   = con->request;
    job->dirty   = 1;
-@@ -1637,7 +1730,7 @@ add_job(cupsd_client_t  *con,		/* I - Client connection */
+@@ -1637,7 +1774,7 @@ add_job(cupsd_client_t  *con,		/* I - Client connection */
  
      if (attr->value_tag != IPP_TAG_NAME ||
          attr->num_values != 1 ||
@@ -439,7 +490,7 @@ index 2fe3bf2..16b870b 100644
      {
       /*
        * Can't override the value if we aren't connected via localhost.
-@@ -1880,10 +1973,24 @@ add_job(cupsd_client_t  *con,		/* I - Client connection */
+@@ -1880,10 +2017,24 @@ add_job(cupsd_client_t  *con,		/* I - Client connection */
  
      if (!(printer->type & CUPS_PRINTER_REMOTE))
      {
@@ -466,7 +517,7 @@ index 2fe3bf2..16b870b 100644
        {
          cupsdSetJobState(job, IPP_JOB_ABORTED, CUPSD_JOB_PURGE,
  	                 "Aborting job because the start banner could not be "
-@@ -3025,6 +3132,15 @@ authenticate_job(cupsd_client_t  *con,	/* I - Client connection */
+@@ -3025,6 +3176,15 @@ authenticate_job(cupsd_client_t  *con,	/* I - Client connection */
      return;
    }
  
@@ -482,7 +533,7 @@ index 2fe3bf2..16b870b 100644
   /*
    * See if the job has been completed...
    */
-@@ -3497,6 +3613,16 @@ cancel_job(cupsd_client_t  *con,	/* I - Client connection */
+@@ -3497,6 +3657,16 @@ cancel_job(cupsd_client_t  *con,	/* I - Client connection */
      return;
    }
  
@@ -499,7 +550,7 @@ index 2fe3bf2..16b870b 100644
   /*
    * See if the job is owned by the requesting user...
    */
-@@ -5891,6 +6017,16 @@ create_subscriptions(
+@@ -5891,6 +6061,16 @@ create_subscriptions(
  	                jobid);
  	return;
        }
@@ -516,7 +567,7 @@ index 2fe3bf2..16b870b 100644
      }
      else
        job = NULL;
-@@ -6439,6 +6575,15 @@ get_job_attrs(cupsd_client_t  *con,	/* I - Client connection */
+@@ -6439,6 +6619,15 @@ get_job_attrs(cupsd_client_t  *con,	/* I - Client connection */
  
    exclude = cupsdGetPrivateAttrs(policy, con, printer, job->username);
  
@@ -532,7 +583,7 @@ index 2fe3bf2..16b870b 100644
   /*
    * Copy attributes...
    */
-@@ -6698,6 +6843,21 @@ get_jobs(cupsd_client_t  *con,		/* I - Client connection */
+@@ -6698,6 +6887,21 @@ get_jobs(cupsd_client_t  *con,		/* I - Client connection */
    else
      username[0] = '\0';
  
@@ -554,7 +605,7 @@ index 2fe3bf2..16b870b 100644
    ra = create_requested_array(con->request);
    for (job_attr = (char *)cupsArrayFirst(ra); job_attr; job_attr = (char *)cupsArrayNext(ra))
      if (strcmp(job_attr, "job-id") &&
-@@ -6765,6 +6925,14 @@ get_jobs(cupsd_client_t  *con,		/* I - Client connection */
+@@ -6765,6 +6969,14 @@ get_jobs(cupsd_client_t  *con,		/* I - Client connection */
        {
          cupsdLoadJob(job);
  
@@ -569,7 +620,20 @@ index 2fe3bf2..16b870b 100644
  	if (!job->attrs)
  	{
  	  cupsdLogMessage(CUPSD_LOG_DEBUG2, "get_jobs: No attributes for job %d", job->id);
-@@ -7931,6 +8099,15 @@ hold_job(cupsd_client_t  *con,		/* I - Client connection */
+@@ -6833,7 +7045,11 @@ get_jobs(cupsd_client_t  *con,		/* I - Client connection */
+ 	}
+       }
+ 
+-      if (username[0] && _cups_strcasecmp(username, job->username))
++      /*
++       * If no username is given, then it might be set to 'anonymous'.
++       * In this case we don't compare with job->username.
++       */
++      if (username[0] && strcasecmp(username, "anonymous") && strcasecmp(username, job->username))
+ 	continue;
+ 
+       if (count > 0)
+@@ -7931,6 +8147,15 @@ hold_job(cupsd_client_t  *con,		/* I - Client connection */
      return;
    }
  
@@ -585,7 +649,7 @@ index 2fe3bf2..16b870b 100644
   /*
    * See if the job is owned by the requesting user...
    */
-@@ -8201,6 +8378,14 @@ move_job(cupsd_client_t  *con,		/* I - Client connection */
+@@ -8201,6 +8426,14 @@ move_job(cupsd_client_t  *con,		/* I - Client connection */
        send_ipp_status(con, IPP_NOT_FOUND, _("Job #%d does not exist."), jobid);
        return;
      }
@@ -600,7 +664,7 @@ index 2fe3bf2..16b870b 100644
      else
      {
       /*
-@@ -8223,6 +8408,27 @@ move_job(cupsd_client_t  *con,		/* I - Client connection */
+@@ -8223,6 +8456,27 @@ move_job(cupsd_client_t  *con,		/* I - Client connection */
      return;
    }
  
@@ -618,7 +682,7 @@ index 2fe3bf2..16b870b 100644
 +   * Validate that the label associated with the job is acceptable for
 +   * printing on the printer.
 +   */
-+  if (cupsdInPrinterLabelRange(job->slabel, dprinter) == 0)
++  if (job && cupsdInPrinterLabelRange(job->slabel, dprinter) == 0)
 +  {
 +    send_ipp_status(con, IPP_NOT_AUTHORIZED, _("label violation."));
 +    return;
@@ -628,7 +692,7 @@ index 2fe3bf2..16b870b 100644
   /*
    * Now move the job or jobs...
    */
-@@ -9069,6 +9275,16 @@ release_job(cupsd_client_t  *con,	/* I - Client connection */
+@@ -9069,6 +9323,16 @@ release_job(cupsd_client_t  *con,	/* I - Client connection */
      return;
    }
  
@@ -645,7 +709,7 @@ index 2fe3bf2..16b870b 100644
   /*
    * See if job is "held"...
    */
-@@ -9293,6 +9509,15 @@ restart_job(cupsd_client_t  *con,	/* I - Client connection */
+@@ -9293,6 +9557,15 @@ restart_job(cupsd_client_t  *con,	/* I - Client connection */
      return;
    }
  
@@ -661,7 +725,7 @@ index 2fe3bf2..16b870b 100644
   /*
    * See if job is in any of the "completed" states...
    */
-@@ -9645,6 +9870,15 @@ send_document(cupsd_client_t  *con,	/* I - Client connection */
+@@ -9645,6 +9918,15 @@ send_document(cupsd_client_t  *con,	/* I - Client connection */
      return;
    }
  
@@ -677,7 +741,7 @@ index 2fe3bf2..16b870b 100644
    printer = cupsdFindDest(job->dest);
  
   /*
-@@ -10254,6 +10488,15 @@ set_job_attrs(cupsd_client_t  *con,	/* I - Client connection */
+@@ -10254,6 +10536,15 @@ set_job_attrs(cupsd_client_t  *con,	/* I - Client connection */
      return;
    }
  
@@ -693,7 +757,7 @@ index 2fe3bf2..16b870b 100644
   /*
    * See if the job has been completed...
    */
-@@ -10598,7 +10841,6 @@ set_printer_attrs(cupsd_client_t  *con,	/* I - Client connection */
+@@ -10598,7 +10889,6 @@ set_printer_attrs(cupsd_client_t  *con,	/* I - Client connection */
   /*
    * Return a list of attributes that can be set via Set-Printer-Attributes.
    */
@@ -701,7 +765,7 @@ index 2fe3bf2..16b870b 100644
    if ((attr = ippFindAttribute(con->request, "printer-location",
                                 IPP_TAG_TEXT)) != NULL)
    {
-@@ -11445,6 +11687,11 @@ validate_user(cupsd_job_t    *job,	/* I - Job */
+@@ -11445,6 +11735,11 @@ validate_user(cupsd_job_t    *job,	/* I - Job */
  
    strlcpy(username, get_username(con), userlen);
  
