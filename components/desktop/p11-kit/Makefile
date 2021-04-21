@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -32,16 +32,16 @@ COMPONENT_MAKE_JOBS=1
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		p11-kit
-COMPONENT_VERSION=	0.23.20
+COMPONENT_VERSION=	0.23.22
 COMPONENT_PROJECT_URL=	https://p11-glue.github.io/p11-glue/p11-kit.html
 COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:8f6116f34735f6902e9db461c5dbe3e7e25b5cb8c38f42ea2a5aede1cf693749
+    sha256:e4bf1e374b3c0950a724cf367bd52201519f4b7025c8e9902a274123cc232560
 COMPONENT_ARCHIVE_URL=	https://github.com/p11-glue/p11-kit/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/security
 COMPONENT_ANITYA_ID=	2582
 
-TPNO=			56793
+TPNO=			64496
 
 include $(WS_MAKE_RULES)/common.mk
 
