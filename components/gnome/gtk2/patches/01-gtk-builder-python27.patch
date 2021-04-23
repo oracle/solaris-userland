@@ -1,14 +1,112 @@
-configure should detect Python version and allow builder to override
-detection via --with-python or a PYTHON environment variable, and then the
-build process should replace the first line of the script instead.
+Migrate everything python related we deliver to Python 3.
 
-Need to determine if we need to file an upstream bug.
+Changes are partially taken from the latest
+version of this script from the upstream:
+https://gitlab.gnome.org/GNOME/gtk/-/blob/gtk-2-24/gtk/gtk-builder-convert
 
---- gtk+-2.24.28/gtk/gtk-builder-convert	Thu May  7 22:49:42 2015
-+++ gtk+-2.24.28/gtk/gtk-builder-convert	Thu May  7 22:50:51 2015
+--- gtk+-2.24.31/gtk/gtk-builder-convert
++++ gtk+-2.24.31/gtk/gtk-builder-convert
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python
-+#!/usr/bin/python2.7
++#!/usr/bin/python3.7
  #
  # Copyright (C) 2006-2008 Async Open Source
  #                         Henrique Romano <henrique@async.com.br>
+@@ -47,12 +47,7 @@ DIALOGS = ['GtkDialog',
+            'GtkMessageDialog']
+ WINDOWS = ['GtkWindow'] + DIALOGS
+ 
+-# The subprocess is only available in Python 2.4+
+-try:
+-    import subprocess
+-    subprocess # pyflakes
+-except ImportError:
+-    subprocess = None
++import subprocess
+ 
+ def get_child_nodes(node):
+     assert node.tagName == 'object'
+@@ -259,7 +254,7 @@ class GtkBuilderConverter(object):
+         for node in objects:
+             self._convert(node.getAttribute("class"), node)
+             if self._get_object(node.getAttribute('id')) is not None:
+-		print "WARNING: duplicate id \"" + node.getAttribute('id') + "\""
++                print("WARNING: duplicate id \"" + node.getAttribute('id') + "\"")
+             self.objects[node.getAttribute('id')] = node
+ 
+         # Convert Gazpachos UI tag
+@@ -270,15 +265,8 @@ class GtkBuilderConverter(object):
+         for node in self._dom.getElementsByTagName("accessibility"):
+             self._convert_accessibility(node)
+ 
+-        # Output the newly created root objects and sort them
+-        # by attribute id
+-        # FIXME: Use sorted(self.root_objects,
+-        #                   key=lambda n: n.getAttribute('id'),
+-        #                   reverse=True):
+-        # when we can depend on python 2.4 or higher
+         root_objects = self.root_objects[:]
+-        root_objects.sort(lambda a, b: cmp(b.getAttribute('id'),
+-                                           a.getAttribute('id')))
++        root_objects.sort(key=lambda a: a.getAttribute('id'), reverse=True)
+         for obj in root_objects:
+             self._interface.childNodes.insert(0, obj)
+ 
+@@ -461,8 +449,8 @@ class GtkBuilderConverter(object):
+             if signal_name in ['activate', 'toggled']:
+                 action.appendChild(signal)
+             else:
+-                print 'Unhandled signal %s::%s' % (node.getAttribute('class'),
+-                                                   signal_name)
++                print('Unhandled signal %s::%s' % (node.getAttribute('class'),
++                                                   signal_name))
+ 
+         if not uimgr.childNodes:
+             child = self._dom.createElement('child')
+@@ -481,8 +469,8 @@ class GtkBuilderConverter(object):
+         for accelerator in get_accelerator_nodes(node):
+             signal_name = accelerator.getAttribute('signal')
+             if signal_name != 'activate':
+-                print 'Unhandled accelerator signal for %s::%s' % (
+-                    node.getAttribute('class'), signal_name)
++                print('Unhandled accelerator signal for %s::%s' % (
++                    node.getAttribute('class'), signal_name))
+                 continue
+             accelerator.removeAttribute('signal')
+             child.appendChild(accelerator)
+@@ -729,9 +717,6 @@ class GtkBuilderConverter(object):
+ 
+ 
+ def _indent(output):
+-    if not subprocess:
+-        return output
+-
+     for directory in os.environ['PATH'].split(os.pathsep):
+         filename = os.path.join(directory, 'xmllint')
+         if os.path.exists(filename):
+@@ -747,7 +732,7 @@ def _indent(output):
+     return s.stdout.read()
+ 
+ def usage():
+-    print __doc__
++    print(__doc__)
+ 
+ def main(args):
+     try:
+@@ -788,10 +773,13 @@ def main(args):
+ 
+     xml = _indent(conv.to_xml())
+     if output_filename == "-":
+-        print xml
++        if isinstance(xml, str):
++            print(xml)
++        else:
++            print(xml.decode(sys.stdout.encoding))
+     else:
+-        open(output_filename, 'w').write(xml)
+-        print "Wrote", output_filename
++        open(output_filename, 'wb').write(xml)
++        print("Wrote", output_filename)
+ 
+     return 0
+ 
