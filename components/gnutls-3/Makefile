@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2010, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnutls
-COMPONENT_VERSION=	3.6.15
+COMPONENT_VERSION=	3.7.1
 COMPONENT_PROJECT_URL=  https://www.gnutls.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:0ea8c3283de8d8335d7ae338ef27c53a916f15f382753b174c18b45ffd481558
-COMPONENT_ARCHIVE_URL=	https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/$(COMPONENT_ARCHIVE)
+    sha256:3777d7963eca5e06eb315686163b7b3f5045e2baac5e54e038ace9835e5cac6f
+COMPONENT_ARCHIVE_URL=	https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=	library/gnutls
 COMPONENT_ANITYA_ID=	1221
 
-TPNO=			61630
+TPNO=			69204
 
 COMPONENT_BUILD_TARGETS = all info
 COMPONENT_PREP_ACTION += (cd $(@D); $(AUTORECONF_ENV) $(AUTORECONF) -fiv);

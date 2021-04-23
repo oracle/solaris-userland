@@ -105,31 +105,3 @@ index 02684ce..ab9c2a4 100644
  
  struct timespec current_timespec (void);
  void gettime (struct timespec *) _GL_ARG_NONNULL ((1));
---- gnutls-3.6.14/lib/nettle/Makefile.am	2020-06-09 02:19:19.590111860 +0000
-+++ gnutls-3.6.14/lib/nettle/Makefile.am	2020-06-09 02:19:00.096271759 +0000
-@@ -103,7 +103,9 @@ noinst_PROGRAMS = ecc/eccdata$(EXEEXT)
- 
- ecc_eccdata_SOURCES = ecc/eccdata.c
- ecc_eccdata_CFLAGS = $(GMP_CFLAGS)
--ecc_eccdata_LDADD = $(GMP_LIBS) ../../gl/libgnu.la
-+# Force to use '-lgmp' instead of GMP_LIBS since
-+# the variable is empty if the mini nettle option is enabled.
-+ecc_eccdata_LDADD = -lgmp ../../gl/libgnu.la
- 
- ecc/eccdata.stamp: $(ecc_eccdata_SOURCES)
- 	$(AM_V_GEN)$(MAKE) $(AM_MAKEFLAGS) ecc/eccdata$(EXEEXT) && touch $@
---- gnutls-3.6.14/lib/nettle/ecc/ecc-random.c	2020-06-10 03:42:03.773281304 +0000
-+++ gnutls-3.6.14/lib/nettle/ecc/ecc-random.c	2020-06-10 03:41:04.072879630 +0000
-@@ -84,6 +84,7 @@ ecc_mod_random (const struct ecc_modulo
-   while (!ecdsa_in_range (m, xp, scratch));
- }
- 
-+#ifndef _BOOT
- void
- ecc_scalar_random (struct ecc_scalar *x,
- 		   void *random_ctx, nettle_random_func *random)
-@@ -93,3 +94,4 @@ ecc_scalar_random (struct ecc_scalar *x,
- 
-   ecc_mod_random (&x->ecc->q, x->p, random_ctx, random, scratch);
- }
-+#endif

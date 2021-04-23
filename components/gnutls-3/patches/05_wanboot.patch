@@ -30,13 +30,13 @@ Date:   Wed Feb 6 20:35:11 2019 +0100
 
 diff --git a/configure.ac b/configure.ac
 index d59553b..521ddea 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -354,24 +354,7 @@ AC_C_BIGENDIAN
+--- a/configure.ac	Wed Apr 14 17:57:57 2021 +0200
++++ b/configure.ac	Wed Apr 14 18:01:30 2021 +0200
+@@ -355,24 +355,7 @@
  
  dnl No fork on MinGW, disable some self-tests until we fix them.
  dnl Check clock_gettime and pthread_mutex_lock in libc (avoid linking to other libs)
--AC_CHECK_FUNCS([fork setitimer getrusage getpwuid_r nanosleep daemon getpid localtime mmap explicit_bzero],,)
+-AC_CHECK_FUNCS([fork setitimer getrusage getpwuid_r nanosleep daemon getpid localtime mmap],,)
 -dnl Manually check some functions by including headers first. On macOS, you
 -dnl normally only have the latest SDK available, containing all existing
 -dnl functions, but having them restricted according to target version in
@@ -54,7 +54,7 @@ index d59553b..521ddea 100644
 -  [AC_MSG_RESULT(yes); ac_cv_func_fmemopen=yes
 -  AC_DEFINE([HAVE_FMEMOPEN], 1, [Define to 1 if you have the `fmemopen' function.])],
 -  [AC_MSG_RESULT(no); ac_cv_func_fmemopen=no])
-+AC_CHECK_FUNCS([fork setitimer getrusage getpwuid_r inet_ntop nanosleep daemon getpid clock_gettime localtime fmemopen mmap explicit_bzero],,)
++AC_CHECK_FUNCS([fork setitimer getrusage getpwuid_r inet_ntop nanosleep daemon getpid clock_gettime localtime fmemopen mmap],,)
  
  AM_CONDITIONAL(HAVE_FORK, test "$ac_cv_func_fork" != "no")
  
