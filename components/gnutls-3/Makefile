@@ -110,7 +110,7 @@ CONFIGURE_OPTIONS.wanboot += --enable-largefile
 CONFIGURE_OPTIONS.wanboot += --disable-doc
 CONFIGURE_OPTIONS.wanboot += --disable-tools
 CONFIGURE_OPTIONS.wanboot += --disable-cxx
-CONFIGURE_OPTIONS.wanboot += --disable-hardware-acceleration
+CONFIGURE_OPTIONS.wanboot += --enable-hardware-acceleration
 CONFIGURE_OPTIONS.wanboot += --disable-padlock
 CONFIGURE_OPTIONS.wanboot += --with-nettle-mini
 CONFIGURE_OPTIONS.wanboot += --with-included-libtasn1
@@ -275,6 +275,7 @@ CONFIGURE_OPTIONS += --without-p11-kit
 CONFIGURE_OPTIONS += --disable-openssl-compatibility
 CONFIGURE_OPTIONS += --disable-tests
 CONFIGURE_OPTIONS += --with-default-trust-store-file=/etc/certs/ca-certificates.crt
+CONFIGURE_OPTIONS += --enable-hardware-acceleration
 
 include ../../make-rules/shared-targets.mk
 
