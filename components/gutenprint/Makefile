@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gutenprint
-COMPONENT_VERSION=	5.3.3
+COMPONENT_VERSION=	5.3.4
 COMPONENT_PROJECT_URL=	http://gimp-print.sourceforge.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
- sha256:7279ecbc8e67d1858c53cb24e423ea1be98e214872006b79e6e03650dd54a072
+ sha256:db44a701d2b8e6a8931c83cec06c91226be266d23e5c189d20a39dd175f2023b
 COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/gimp-print/files/gutenprint-5.3/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1285
 
-TPNO=			62340
+TPNO=		 	69504	
 
 # the tests mostly pass, but it can't find several drivers for ppd files
 $(SKIP_TEST_AT_TOP_LEVEL)
@@ -61,7 +61,7 @@ COMPONENT_BUILD_TARGETS = all
 # diffs failing due to script tracing in output files.
 unexport SHELLOPTS
 
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/ TOTAL:/p" ' \
