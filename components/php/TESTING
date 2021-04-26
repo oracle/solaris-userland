@@ -49,10 +49,25 @@ cd /var/apache2/2.4/htdocs/
 mkdir joomla; bash -c 'cd joomla/; unzip /var/tmp/joomla.zip'
 chown -R webservd:webservd joomla
 
+# Test also PHP-FPM - PHP FastCGI implementation
+gsed -i '/LoadModule proxy_module/s/^#//' /etc/apache2/2.4/httpd.conf
+gsed -i '/LoadModule proxy_fcgi_module/s/^#//' /etc/apache2/2.4/httpd.conf
+echo 'ProxyPassMatch ^/fpm/(.*\.php(/.*)?)$ fcgi://127.0.0.1:9000/var/www/example.com/public/$1' > /etc/apache2/2.4/conf.d/php-fpm.conf
+cp /etc/php/$VERS/php-fpm.conf.default /etc/php/$VERS/php-fpm.conf
+cp /etc/php/$VERS/php-fpm.d/www.conf.default /etc/php/$VERS/php-fpm.d/www.conf
+gsed -i 's/;events.mechanism = epoll/events.mechanism = port/' /etc/php/$VERS/php-fpm.conf
+mkdir -p /var/www/example.com/public
+cp /var/apache2/2.4/htdocs/phpinfo.php /var/www/example.com/public
+svcadm restart apache24
+# To start php-fpm (there is no SMF service):
+/usr/php/$VERS/sbin/php-fpm
+# To stop php-fpm:
+#pkill -HUP php-fpm
 
 PHPinfo:
 ========
 http://{testing machine}/phpinfo.php
+http://{testing machine}/fpm/phpinfo.php
 
 Wordpress:
 ==========
