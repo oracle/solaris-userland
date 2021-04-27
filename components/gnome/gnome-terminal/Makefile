@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-terminal
-COMPONENT_VERSION=	3.34.2
+COMPONENT_VERSION=	3.38.3
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Terminal
 COMPONENT_ARCHIVE_HASH= \
-	sha256:3bd723f4058ec014da4715db4181b7d73eccc797b85ad5e6236996951c01803d
+	sha256:11a5b0d635f15fdce7508351a510fbf4e92aa533152a50ff0c7845e3102e4764
 COMPONENT_BUGDB=        gnome/terminal
 COMPONENT_ANITYA_ID=	10896
 
-TPNO=			61162
+TPNO=			69601
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

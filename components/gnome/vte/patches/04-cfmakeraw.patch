@@ -1,0 +1,58 @@
+This implementation of cfmakeraw for Solaris is taken from
+http://www.perkin.org.uk/posts/solaris-portability-cfmakeraw.html.
+
+--- a/src/dumpkeys.c	2021-04-23 16:02:00.115740987 -0700
++++ b/src/dumpkeys.c	2021-04-23 16:02:25.077108877 -0700
+@@ -167,7 +167,15 @@
+ 	}
+ 	original = tcattr;
+ 	signal(SIGINT, sigint_handler);
++#ifdef __sun
++	tcattr.c_iflag &= ~(IMAXBEL|IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL|IXON);
++	tcattr.c_oflag &= ~OPOST;
++	tcattr.c_lflag &= ~(ECHO|ECHONL|ICANON|ISIG|IEXTEN);
++	tcattr.c_cflag &= ~(CSIZE|PARENB);
++	tcattr.c_cflag |= CS8;
++#else
+ 	cfmakeraw(&tcattr);
++#endif
+ 	if (tcsetattr(STDIN_FILENO, TCSANOW, &tcattr) != 0) {
+ 		perror("tcsetattr");
+ 		return 1;
+--- a/src/mev.c	2021-04-23 16:02:03.286240080 -0700
++++ b/src/mev.c	2021-04-23 16:02:43.913726976 -0700
+@@ -364,7 +364,15 @@
+ 
+ 	original = tcattr;
+ 	signal(SIGINT, sigint_handler);
++#ifdef __sun
++	tcattr.c_iflag &= ~(IMAXBEL|IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL|IXON);
++	tcattr.c_oflag &= ~OPOST;
++	tcattr.c_lflag &= ~(ECHO|ECHONL|ICANON|ISIG|IEXTEN);
++	tcattr.c_cflag &= ~(CSIZE|PARENB);
++	tcattr.c_cflag |= CS8;
++#else
+ 	cfmakeraw(&tcattr);
++#endif
+ 	if (tcsetattr(STDIN_FILENO, TCSANOW, &tcattr) != 0) {
+ 		perror("tcsetattr");
+ 		return 1;
+--- a/src/app/app.cc	2021-04-24 06:27:53.441187549 -0700
++++ b/src/app/app.cc	2021-04-24 06:29:55.798547962 -0700
+@@ -2476,7 +2476,15 @@
+                struct termios tcattr;
+                if (tcgetattr(STDIN_FILENO, &tcattr) == 0) {
+                        saved_tcattr = tcattr;
+-                       cfmakeraw(&tcattr);
++#ifdef __sun
++		       tcattr.c_iflag &= ~(IMAXBEL|IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL|IXON);
++		       tcattr.c_oflag &= ~OPOST;
++       		       tcattr.c_lflag &= ~(ECHO|ECHONL|ICANON|ISIG|IEXTEN);
++       	       	       tcattr.c_cflag &= ~(CSIZE|PARENB);
++       		       tcattr.c_cflag |= CS8;
++#else
++        	       cfmakeraw(&tcattr);
++#endif
+                        if (tcsetattr(STDIN_FILENO, TCSANOW, &tcattr) == 0)
+                                reset_termios = true;
+                }
