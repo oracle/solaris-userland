@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2003, 2011, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2003, 2021, Oracle and/or its affiliates.
 #
 # U.S. Government Rights - Commercial software. Government users are subject
 # to the Sun Microsystems, Inc. standard license agreement and applicable
@@ -25,15 +25,15 @@
 
 MARCH=$(ARCH)
 LDFLAGS_sparcv9=-m64 -I$(ROOT)$(CFGPREFIX)/include -I.
-LDFLAGS_32=-I$(ROOT)$(CFGPREFIX)/include -I.
+LDFLAGS_32=-I$(ROOT)$(CFGPREFIX)/include -I. -m32
 LDFLAGS_amd64=-m64 -I$(ROOT)$(CFGPREFIX)/include -I.
 LDFLAGS=$(LDFLAGS_$(MARCH))
 
 LDLIBS=
 
-CFLAGS_32=-Kpic
-CFLAGS_sparcv9=-Kpic
-CFLAGS_amd64=-Kpic
+CFLAGS_32=-m32 -fpic
+CFLAGS_sparcv9=-fpic
+CFLAGS_amd64=-fpic
 CFLAGS=$(CFLAGS_$(MARCH))
 
 PROG= libentity.so

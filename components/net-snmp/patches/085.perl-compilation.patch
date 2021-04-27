@@ -1,0 +1,49 @@
+Net-snmp complains that it is compiled by different compiler to perl for which
+we build module. It says that --disable-perl-cc-checks option should be used.
+But the option is not taken into account.
+
+Ideally the fix should be applied to config_project_perl_python and re-generate
+configure script. Unfortunatelly there is so many patches directly agains the
+configure. So I have to play along and patch both.
+
+The patch should be submitted upstream
+--- net-snmp-5.8/configure.d/config_project_perl_python
++++ net-snmp-5.8/configure.d/config_project_perl_python
+@@ -117,7 +117,7 @@ if test "x$install_perl" != "xno" ; then
+ 
+         #       Check compatability:  Gnu Net-SNMP vs Non-Gnu perl
+         #
+-        if test "x$GCC" = "xyes" -a "x$perlcc_is_gnu" = "xno" ; then
++        if test "x$GCC" = "xyes" -a "x$perlcc_is_gnu" = "xno" -a "x$enable_perl_cc_checks" != "xno"; then
+             if test "x$install_perl" = "xtry" ; then
+       	        install_perl="no"
+       	    else
+@@ -129,7 +129,7 @@ if test "x$install_perl" != "xno" ; then
+     #       Check compatability:  Non-Gnu Net-SNMP vs Gnu perl
+     #
+     if test "x$install_perl" != "xno" ; then
+-        if test "x$GCC" != "xyes" -a "x$perlcc_is_gnu" = "xyes" ; then
++        if test "x$GCC" != "xyes" -a "x$perlcc_is_gnu" = "xyes" -a "x$enable_perl_cc_checks" != "xno"; then
+       	    if test "x$install_perl" = "xtry" ; then
+       	        install_perl="no"
+       	    else
+--- net-snmp-5.8/configure
++++ net-snmp-5.8/configure
+@@ -25752,7 +25752,7 @@ $as_echo "$perlcc_is_gnu" >&6; }
+ 
+         #       Check compatability:  Gnu Net-SNMP vs Non-Gnu perl
+         #
+-        if test "x$GCC" = "xyes" -a "x$perlcc_is_gnu" = "xno" ; then
++        if test "x$GCC" = "xyes" -a "x$perlcc_is_gnu" = "xno" -a "x$enable_perl_cc_checks" != "xno"; then
+             if test "x$install_perl" = "xtry" ; then
+       	        install_perl="no"
+       	    else
+@@ -25764,7 +25764,7 @@ $as_echo "$perlcc_is_gnu" >&6; }
+     #       Check compatability:  Non-Gnu Net-SNMP vs Gnu perl
+     #
+     if test "x$install_perl" != "xno" ; then
+-        if test "x$GCC" != "xyes" -a "x$perlcc_is_gnu" = "xyes" ; then
++        if test "x$GCC" != "xyes" -a "x$perlcc_is_gnu" = "xyes" -a "x$enable_perl_cc_checks" != "xno"; then
+       	    if test "x$install_perl" = "xtry" ; then
+       	        install_perl="no"
+       	    else

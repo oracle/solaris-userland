@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021. Oracle and/or its affiliates.
 #
 # U.S. Government Rights - Commercial software. Government users are subject
 # to the Sun Microsystems, Inc. standard license agreement and applicable
@@ -26,7 +26,7 @@
 
 ARCH=64
 LDFLAGS_64=-g -m64 -I.
-LDFLAGS_32=-g -I.
+LDFLAGS_32=-g -m32 -I.
 LDFLAGS=$(LDFLAGS_$(ARCH))
 
 LDLIBS=

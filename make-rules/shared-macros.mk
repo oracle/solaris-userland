@@ -808,7 +808,7 @@ JAVA_HOME = $(JAVA8_HOME)
 
 # This is the default BUILD version of perl
 # Not necessarily the system's default version, i.e. /usr/bin/perl
-PERL_VERSION ?= 5.22
+PERL_VERSION ?= 5.32
 PERL_VERSION_NODOT = $(subst .,,$(PERL_VERSION))
 
 # Used for versionless perl packages.  Processed by ips.mk to stamp out

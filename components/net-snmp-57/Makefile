@@ -23,6 +23,7 @@
 # Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
+COMPILER=gcc
 
 # The Makefile of this component does not support multiple build jobs.
 COMPONENT_MAKE_JOBS=1

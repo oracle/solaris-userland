@@ -20,9 +20,10 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
+COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         irssi
@@ -40,9 +41,6 @@ TPNO=		58895
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
-# Part of the build just runs "cc" (not the path that configure finds).
-COMPONENT_BUILD_ENV +=  PATH=$(dir $(CC)):$(PATH)
-
 CONFIGURE_ENV += "ac_cv_path_perlpath=$(PERL)"
 
 CONFIGURE_OPTIONS +=    --sysconfdir=$(ETCDIR)
@@ -54,3 +52,4 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

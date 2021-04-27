@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -64,10 +64,8 @@ COMPONENT_PREP_ACTION = \
 LIBS += -lresolv
 CONFIGURE_ENV +=	LIBS="$(LIBS)"
 
-# Use perlgcc to use -fPIC (not -KPIC), -O4/-O3 (not -xO4/-xO3) and gcc
-# (not cc) in the two plugins/perl/common/Makefile's that are created from
-# Makefile.PL "templates".
-CONFIGURE_ENV += "ac_cv_path_perlpath=/usr/perl5/$(PERL_VERSION)/bin/perlgcc"
+CONFIGURE_ENV += "ac_cv_path_perlpath=$(PERL)"
+CONFIGURE_ENV +=	PERL="$(PERL)"
 
 CONFIGURE_OPTIONS +=	--enable-cyrus-sasl
 CONFIGURE_OPTIONS +=	--enable-nss
@@ -137,6 +135,7 @@ REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += runtime/tcl-8
 REQUIRED_PACKAGES += runtime/tk-8
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/libdbus-glib
 REQUIRED_PACKAGES += system/library/math

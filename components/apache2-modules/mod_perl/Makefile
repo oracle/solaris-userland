@@ -26,6 +26,9 @@ BUILD_BITS= 64
 
 # Parallel build jobs are supported only if GNU make is used.
 COMPONENT_MAKE_JOBS=1
+
+# mod_perl does not seem to be working with perl 5.32
+PERL_VERSION = 5.22
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mod_perl

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -51,6 +51,10 @@ CONFIGURE_SCRIPT       = $(SOURCE_DIR)/Configure
 COMPONENT_BUILD_ENV   += MAKE=$(GMAKE)
 COMPONENT_INSTALL_ENV += DESTDIR="$(PROTO_DIR)"
 
+# Perl remembers the compile options used and suggests them later to any perl
+# modules which need compilation too. We do not want a -ffile-prefix-map pointing
+# to the perl component directory to be remembered by perl we ship.
+gcc_FIX_PATH =
 
 # -Dperl_static_inline="static" turns OFF "static inline".
 # This was added because Configure probes

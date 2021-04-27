@@ -29,7 +29,8 @@ COMPONENT_MAKE_JOBS=1
 
 include ../../make-rules/shared-macros.mk
 
-PATH=$(SPRO_VROOT)/bin:$(GNUBIN):$(USRBINDIR)
+PATH=$(GNUBIN):$(USRBINDIR)
+COMPILER=gcc
 
 COMPONENT_NAME=		net-snmp
 COMPONENT_VERSION=	5.8
@@ -165,6 +166,7 @@ REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/datalink
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libpcap
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/linker
