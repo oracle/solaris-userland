@@ -231,26 +231,6 @@ Revert c2c4f749
                          CoglContext       *cogl_context,
                          int                width,
                          int                height,
-@@ -415,18 +349,8 @@
-   height = cogl_framebuffer_get_height (priv->framebuffer);
-   cogl_context = cogl_framebuffer_get_context (priv->framebuffer);
- 
--  if (init_dma_buf_shadowfbs (view, cogl_context, width, height, &error))
-+  if (!init_offscreen_shadowfb (view, cogl_context, width, height, &error))
-     {
--      g_message ("Initialized double buffered shadow fb for %s", priv->name);
--      return;
--    }
--
--  g_warning ("Failed to initialize double buffered shadow fb for %s: %s",
--             priv->name, error->message);
--  g_clear_error (&error);
--
--  if (!init_fallback_shadowfb (view, cogl_context, width, height, &error))
--    {
-       g_warning ("Failed to initialize single buffered shadow fb for %s: %s",
-                  priv->name, error->message);
-     }
 @@ -469,290 +393,59 @@
      }
  }
@@ -696,3 +676,30 @@ Revert c2c4f749
  
    g_clear_pointer (&priv->offscreen, cogl_object_unref);
    g_clear_pointer (&priv->offscreen_pipeline, cogl_object_unref);
+--- a/clutter/clutter/clutter-stage-view.c	2021-04-28 12:07:27.827291344 -0700
++++ b/clutter/clutter/clutter-stage-view.c	2021-04-28 12:11:16.887346119 -0700
+@@ -351,22 +351,11 @@
+ 
+   if (g_strcmp0 (g_getenv ("MUTTER_DEBUG_ENABLE_DOUBLE_SHADOWFB"), "1") == 0)
+     {
+-      if (init_dma_buf_shadowfbs (view, cogl_context, width, height, &error))
++      if (!init_offscreen_shadowfb (view, cogl_context, width, height, &error))
+         {
+-          g_message ("Initialized double buffered shadow fb for %s",
+-                     priv->name);
+-          return;
+-        }
+-
+-      g_warning ("Failed to initialize double buffered shadow fb for %s: %s",
+-                 priv->name, error->message);
+-      g_clear_error (&error);
+-    }
+-
+-  if (!init_fallback_shadowfb (view, cogl_context, width, height, &error))
+-    {
+       g_warning ("Failed to initialize single buffered shadow fb for %s: %s",
+                  priv->name, error->message);
++	}
+     }
+   else
+     {
