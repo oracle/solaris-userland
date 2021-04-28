@@ -1,0 +1,48 @@
+#commit aa0938c9681a498943e0b5dc83a02a746a1ae2ac
+#Author: Jiri Sasek <Jiri.Sasek@Oracle.COM>
+#Date:   Fri Mar 13 19:02:58 2020 +0100
+#
+#    Add finalization safety check to com_err
+#    
+#    If the linker erroneously runs the libkrb5 finalizer after the
+#    libcom_err finalizer, the consequent remove_error_table() calls could
+#    crash due to accessing a destroyed mutex or an invalid et_list
+#    pointer.  Add an unsynchronized check on finalized in
+#    remove_error_table(), and set et_list to null in com_err_terminate()
+#    after destroying the list.
+#    
+#    [ghudson@mit.edu: minimized code hanges; rewrote comment and commit
+#    message]
+#    
+#    ticket: 8890 (new)
+
+--- a/src/util/et/error_message.c
++++ b/src/util/et/error_message.c
+@@ -26,7 +26,7 @@
+ 
+ static struct et_list *et_list;
+ static k5_mutex_t et_list_lock = K5_MUTEX_PARTIAL_INITIALIZER;
+-static int terminated = 0;      /* for debugging shlib fini sequence errors */
++static int terminated = 0;      /* for safety and finalization debugging */
+ 
+ MAKE_INIT_FUNCTION(com_err_initialize);
+ MAKE_FINI_FUNCTION(com_err_terminate);
+@@ -69,6 +69,7 @@ void com_err_terminate(void)
+         enext = e->next;
+         free(e);
+     }
++    et_list = NULL;
+     k5_mutex_unlock(&et_list_lock);
+     k5_mutex_destroy(&et_list_lock);
+     terminated = 1;
+@@ -280,6 +281,10 @@ remove_error_table(const struct error_table *et)
+ {
+     struct et_list **ep, *e;
+ 
++    /* Safety check in case libraries are finalized in the wrong order. */
++    if (terminated)
++        return ENOENT;
++
+     if (CALL_INIT_FUNCTION(com_err_initialize))
+         return 0;
+     k5_mutex_lock(&et_list_lock);
