@@ -34,16 +34,16 @@ include ../../make-rules/shared-macros.mk
 #   BIND <x>.<y>.<z>-P<n>   =>   IPS <x>.<y>.<z>.<n>.<s>
 # <s> is for Solaris specific modifications as necessary.
 COMPONENT_NAME=		bind
-COMPONENT_VERSION=	9.11.28
+COMPONENT_VERSION=	9.11.31
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).0.0
 HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	service/dns-server
-TPNO=			65024
+TPNO=			69624
 COMPONENT_PROJECT_URL=	http://www.isc.org/software/bind/
 
 # hash from: sha256sum $(COMPONENT_ARCHIVE) | sed 's/\(.[^ ]*\).*/sha256:\1/'
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:1090cbe6caba37c404d1075887da7e5282ae9a2bc6172d722df15cd480975e74
+	sha256:f5f24457f42b2e86870d887596e47500e4d40521a098dcb96f3a06f18adfa36a
 
 COMPONENT_ARCHIVE_URL=	\
 	http://ftp.isc.org/isc/bind9/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
@@ -61,8 +61,10 @@ studio_OPT.sparc.64 +=	-g
 # And preserve all argument values on AMD64.
 studio_OPT.i386.64 +=	-g -preserve_argvalues=complete
 
-# For check_anitya target, see 'gmake print-ANITYA_API_URL'
-COMPONENT_ANITYA_ID=	14923
+# ID is for 9.11 LTS. BIND 9 development ID: 14923
+# For check_anitya target, see 'gmake print-ANITYA_API_URL'.  Broken! Use:
+# https://release-monitoring.org/project/18830/
+COMPONENT_ANITYA_ID=	18830
 
 # Test Targets.
 # -------------
@@ -120,10 +122,6 @@ CONFIGURE_OPTIONS +=	--with-gssapi=krb5-config
 CONFIGURE_OPTIONS +=	--with-docbook-xsl=/usr/share/sgml/docbook
 # - Python modules in vendor directory
 CONFIGURE_OPTIONS +=	--with-python-install-dir=$(PYTHON_VENDOR_PACKAGES_BASE)
-
-# Compiler and compiler options:
-# - configure will add "-mt" to CC which is already set in CFLAGS, so override.
-CONFIGURE_OPTIONS +=	CC="$(CC)"
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =		$(ADIHEAP_ENABLE)

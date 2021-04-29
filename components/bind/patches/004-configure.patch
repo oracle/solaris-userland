@@ -1,0 +1,112 @@
+Addresses several issues with configuration for Solaris build.
+
+  * krb5-config was not providing correct arguments, instead
+    it was printing the krb5 options!
+
+  * When using Studio compiler the summary did not report the version.
+
+  * The '-mt' option to Studio compiler was only ever for CFLAGS, not libs.
+    Either-way it has not been needed for some time now.
+
+Issue and patch logged with ISC
+ https://gitlab.isc.org/isc-projects/bind9/-/issues/2667
+--- a/configure.ac	2021-04-19 07:10:40.000000000 -0700
++++ b/configure.ac	2021-04-28 09:41:01.159252398 -0700
+@@ -921,8 +921,16 @@
+     else
+ 	KRB5_CONFIG="$use_gssapi"
+     fi
+-    gssapi_cflags=`$KRB5_CONFIG --cflags gssapi krb5`
+-    gssapi_libs=`$KRB5_CONFIG --libs gssapi krb5`
++    case "$host_os" in
++	solaris*)
++	    gssapi_cflags=`$KRB5_CONFIG --cflags gssapi`
++	    gssapi_libs=`$KRB5_CONFIG --libs gssapi`
++	    ;;
++	*)
++	    gssapi_cflags=`$KRB5_CONFIG --cflags gssapi krb5`
++	    gssapi_libs=`$KRB5_CONFIG --libs gssapi krb5`
++	    ;;
++    esac
+     saved_cppflags="$CPPFLAGS"
+     CPPFLAGS="$gssapi_cflags $CPPFLAGS"
+     AC_CHECK_HEADERS(gssapi.h gssapi/gssapi.h,
+@@ -1282,7 +1290,7 @@
+ 			CCNOOPT="$CCNOOPT -pthread"
+ 			;;
+ 		*-solaris*)
+-			CC="$CC -mt"
++			CC="$CC"
+ 			CCOPT="$CCOPT -mt"
+ 			CCNOOPT="$CCNOOPT -mt"
+ 			;;
+@@ -5726,8 +5734,17 @@
+     echo "    localstatedir: $localstatedir"
+     echo "-------------------------------------------------------------------------------"
+     echo "Compiler: $CC"
+-    $CC --version 2>&1 | sed 's/^/    /'
+-
++    if test "yes" == "$GCC"; then
++	$CC --version 2>&1 | sed 's/^/    /'
++    else
++	case "$host_os" in
++	    solaris*)
++		$CC -V 2>&1 | sed 's/^/    /'
++		;;
++	    *)
++		$CC --version 2>&1 | sed 's/^/    /'
++	esac
++    fi
+     if test "X$ac_unrecognized_opts" != "X"; then
+ 	echo "Unrecognized options:"
+ 	echo "    $ac_unrecognized_opts"
+--- a/configure	2021-04-19 07:10:40.000000000 -0700
++++ b/configure	2021-04-28 09:42:49.673122817 -0700
+@@ -15455,8 +15455,16 @@
+     else
+ 	KRB5_CONFIG="$use_gssapi"
+     fi
+-    gssapi_cflags=`$KRB5_CONFIG --cflags gssapi krb5`
+-    gssapi_libs=`$KRB5_CONFIG --libs gssapi krb5`
++    case "$host_os" in
++	solaris*)
++	    gssapi_cflags=`$KRB5_CONFIG --cflags gssapi`
++	    gssapi_libs=`$KRB5_CONFIG --libs gssapi`
++	    ;;
++	*)
++	    gssapi_cflags=`$KRB5_CONFIG --cflags gssapi krb5`
++	    gssapi_libs=`$KRB5_CONFIG --libs gssapi krb5`
++	    ;;
++    esac
+     saved_cppflags="$CPPFLAGS"
+     CPPFLAGS="$gssapi_cflags $CPPFLAGS"
+     for ac_header in gssapi.h gssapi/gssapi.h
+@@ -16540,7 +16548,7 @@
+ 			CCNOOPT="$CCNOOPT -pthread"
+ 			;;
+ 		*-solaris*)
+-			CC="$CC -mt"
++			CC="$CC"
+ 			CCOPT="$CCOPT -mt"
+ 			CCNOOPT="$CCNOOPT -mt"
+ 			;;
+@@ -28056,8 +28064,17 @@
+     echo "    localstatedir: $localstatedir"
+     echo "-------------------------------------------------------------------------------"
+     echo "Compiler: $CC"
+-    $CC --version 2>&1 | sed 's/^/    /'
+-
++    if test "yes" == "$GCC"; then
++	$CC --version 2>&1 | sed 's/^/    /'
++    else
++	case "$host_os" in
++	    solaris*)
++		$CC -V 2>&1 | sed 's/^/    /'
++		;;
++	    *)
++		$CC --version 2>&1 | sed 's/^/    /'
++	esac
++    fi
+     if test "X$ac_unrecognized_opts" != "X"; then
+ 	echo "Unrecognized options:"
+ 	echo "    $ac_unrecognized_opts"
