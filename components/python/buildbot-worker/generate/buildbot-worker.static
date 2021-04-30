@@ -1,0 +1,40 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+
+# add SMF service and security profile
+file files/auth_attr \
+    path=etc/security/auth_attr.d/developer:test:buildbot-worker
+file files/prof_attr \
+    path=etc/security/prof_attr.d/developer:test:buildbot-worker
+file files/user_attr path=etc/user_attr.d/developer:test:buildbot-worker
+file files/buildbot-worker.xml \
+    path=lib/svc/manifest/application/buildbot-worker.xml
+file files/svc-buildbot-worker path=lib/svc/method/svc-buildbot-worker
+file files/buildbot.tac path=usr/lib/buildbot-worker/template/buildbot.tac
+file files/info.admin path=usr/lib/buildbot-worker/template/info/admin
+file files/info.host path=usr/lib/buildbot-worker/template/info/host
+group groupname=_buildbot gid=74
+user username=_buildbot ftpuser=false gcos-field="Buildbot Reserved UID" \
+    group=_buildbot home-dir=/var/share/buildbot-worker uid=74

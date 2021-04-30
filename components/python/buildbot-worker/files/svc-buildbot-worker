@@ -1,0 +1,42 @@
+#!/bin/ksh
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+
+# Load SMF constants and functions
+. /lib/svc/share/smf_include.sh
+
+basedir="/var/share/buildbot-worker"
+template="/usr/lib/buildbot-worker/template"
+worker_name="$2"
+
+case "$1" in
+
+"start")
+	[[ -d "$basedir" ]] || \
+		mkdir --mode 0755 "$basedir"
+	[[ -f "$basedir/$worker_name/buildbot.tac" ]] || {
+		cp -r "$template/info" "$basedir/$worker_name/"
+		ln -s "$template/buildbot.tac" "$basedir/$worker_name/"
+	}
+
+	/usr/bin/buildbot-worker start "$basedir/$worker_name" || {
+		#
+		# even if start fails, the daemon maybe runs
+		#
+		[[ -f $basedir/$worker_name/twistd.pid ]] || exit $SMF_EXIT_ERR_CONFIG
+	}
+
+	exit $SMF_EXIT_OK
+	;;
+
+"stop")
+	/usr/bin/buildbot-worker stop "$basedir/$worker_name"
+	exit $SMF_EXIT_OK
+	;;
+
+*)
+	echo "Usage: $0 {start|stop}"
+	exit $SMF_EXIT_ERR_CONFIG
+	;;
+esac

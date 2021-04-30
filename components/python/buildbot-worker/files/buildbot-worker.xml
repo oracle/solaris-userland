@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
+<!--
+Copyright (c) 2021, Oracle and/or its affiliates.
+-->
+
+<service_bundle
+    type='manifest'
+    name='test/oracle-database'>
+
+<service
+    name='application/buildbot-worker'
+    type='service'
+    version='1'>
+
+    <create_default_instance enabled='false' />
+
+    <!--
+        Wait for network interfaces to be initialized.
+    -->
+    <dependency name='network'
+        grouping='require_all'
+        restart_on='error'
+        type='service'>
+        <service_fmri value='svc:/milestone/network:default'/>
+    </dependency>
+
+    <!--
+        Wait for all local filesystems to be mounted.
+    -->
+    <dependency name='filesystem-local'
+        grouping='require_all'
+        restart_on='none'
+        type='service'>
+        <service_fmri
+            value='svc:/system/filesystem/local:default'/>
+    </dependency>
+
+    <exec_method
+        name='start'
+        type='method'
+        exec='/lib/svc/method/svc-buildbot-worker %m %i'
+        timeout_seconds='60'>
+
+        <!--
+            we need to set working_directory to an existing directory, because _buildbot's
+            home directory may not exist and will be created by this service.
+        -->
+        <method_context working_directory='/'>
+            <method_credential user='_buildbot' group='_buildbot'
+                privileges='basic,{zone}:/var/share/buildbot-worker' />
+        </method_context>
+    </exec_method>
+
+    <exec_method
+        name='stop'
+        type='method'
+        exec='/lib/svc/method/svc-buildbot-worker %m %i'
+        timeout_seconds='60'>
+
+        <!--
+            we need to set working_directory to an existing directory, because _buildbot's
+            home directory may not exist and will be created by this service.
+        -->
+        <method_context working_directory='/'>
+            <method_credential user='_buildbot' group='_buildbot' />
+        </method_context>
+    </exec_method>
+
+    <property_group name='general' type='framework'>
+        <propval name='action_authorization' type='astring' value='solaris.smf.manage.buildbot' />
+        <propval name='value_authorization' type='astring' value='solaris.smf.manage.buildbot' />
+    </property_group>
+
+    <property_group name='config' type='application'>
+        <property name='master' type='astring'/>
+        <property name='port' type='integer'/>
+        <property name='keepalive' type='integer'/>
+        <property name='maxdelay' type='integer'/>
+        <property name='use_tls' type='integer'/>
+        <property name='maxretries' type='integer'/>
+        <property name='connection_string' type='astring'/>
+        <property name='log_rotate_length' type='integer'/>
+        <property name='log_max_rotated_files' type='integer'/>
+
+        <propval name='value_authorization' type='astring' value='solaris.smf.value.buildbot'/>
+
+        <property_group name='credentials' type='application'>
+            <property name='worker_name' type='astring'/>
+            <property name='worker_password' type='astring'/>
+
+            <propval name='value_authorization' type='astring' value='solaris.smf.value.buildbot'/>
+            <propval name='read_authorization' type='astring' value='solaris.smf.value.buildbot'/>
+        </property_group>
+    </property_group>
+
+    <stability value='Evolving'/>
+
+    <template>
+        <common_name>
+            <loctext xml:lang='C'>Buildbot Worker</loctext>
+        </common_name>
+        <description>
+            <loctext xml:lang='C'>run a buildbot worker service</loctext>
+        </description>
+
+        <pg_pattern name='config' type='application' target='this' required='true'>
+            <description> <loctext xml:lang='C'>
+                worker service configuration data.
+            </loctext> </description>
+        </pg_pattern>
+
+        <pg_pattern name='config/credentials' type='application' target='this' required='true'>
+            <description> <loctext xml:lang='C'>
+                the name and password assigned to your worker.
+            </loctext> </description>
+        </pg_pattern>
+    </template>
+</service>
+</service_bundle>

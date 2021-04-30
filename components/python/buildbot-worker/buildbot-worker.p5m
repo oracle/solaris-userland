@@ -37,8 +37,18 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2021/011
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-#
+file files/auth_attr \
+    path=etc/security/auth_attr.d/developer:test:buildbot-worker
+file files/prof_attr \
+    path=etc/security/prof_attr.d/developer:test:buildbot-worker
+file files/user_attr path=etc/user_attr.d/developer:test:buildbot-worker
+file files/buildbot-worker.xml \
+    path=lib/svc/manifest/application/buildbot-worker.xml
+file files/svc-buildbot-worker path=lib/svc/method/svc-buildbot-worker
 file path=usr/bin/buildbot-worker
+file files/buildbot.tac path=usr/lib/buildbot-worker/template/buildbot.tac
+file files/info.admin path=usr/lib/buildbot-worker/template/info/admin
+file files/info.host path=usr/lib/buildbot-worker/template/info/host
 file path=usr/lib/python$(PYVER)/vendor-packages/buildbot_worker-$(COMPONENT_VERSION)-py$(PYVER).egg-info/PKG-INFO
 file path=usr/lib/python$(PYVER)/vendor-packages/buildbot_worker-$(COMPONENT_VERSION)-py$(PYVER).egg-info/SOURCES.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/buildbot_worker-$(COMPONENT_VERSION)-py$(PYVER).egg-info/dependency_links.txt
@@ -78,7 +88,9 @@ file path=usr/lib/python$(PYVER)/vendor-packages/buildbot_worker/tunnel.py
 file path=usr/lib/python$(PYVER)/vendor-packages/buildbot_worker/util/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/buildbot_worker/util/_hangcheck.py
 file path=usr/lib/python$(PYVER)/vendor-packages/buildbot_worker/util/_notifier.py
-#
+group groupname=_buildbot gid=74
+user username=_buildbot ftpuser=false gcos-field="Buildbot Reserved UID" \
+    group=_buildbot home-dir=/var/share/buildbot-worker uid=74
 license COPYING license=GPLv2
 
 # force a dependency on the Python runtime
