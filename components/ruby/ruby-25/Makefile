@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS = 64
 COMPILER = gcc
@@ -28,14 +28,14 @@ COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME         = ruby
-COMPONENT_VERSION      = 2.5.8
+COMPONENT_VERSION      = 2.5.9
 COMPONENT_PROJECT_URL  = http://www.ruby-lang.org/
 COMPONENT_ARCHIVE_HASH = \
-    sha256:3df7dfdf901d575db1425208dd51f6e498c3b451e290765d51191727d49ab4bf
+    sha256:d7c0fa821dff0ddaa2ceb9abbf5c51c3174f087a6ad2128af5f3ff0ff5f16ced
 COMPONENT_ARCHIVE_URL  = http://cache.ruby-lang.org/pub/ruby/2.5/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID    = 21280
 
-TPNO = 58667
+TPNO = 69760
 
 CFLAGS += "-std=gnu99"
 
@@ -168,16 +168,17 @@ COMPONENT_PRE_TEST_ACTION += \
         $(MV) $(SOURCE_DIR)/test/etc/test_etc.rb \
         $(SOURCE_DIR)/test/etc/test_etc.rb-save ; fi )
 
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 COMPONENT_TEST_TRANSFORMS += \
     '-n' \
     '-e "s/Finished tests in .*s, .* tests\/s, .* assertions/Finished tests in Xs, X tests\/s, X assertions/"' \
-    '-e "s/\(.*\) tests, .* assertions, \(.*\) failures, \(.*\) errors, .* skips/\1 tests, X assertions, \2 failures, \3 errors, X skips/"' \
+    '-e "s/.* tests, .* assertions, \(.*\) failures, \(.*\) errors, .* skips/X tests, X assertions, \1 failures, \2 errors, X skips/"' \
     '-e "/^make/d"' \
     '-e "/fatal/Ip"' \
     '-e "/test succeeded/p"' \
     '-e "/Running tests/p"' \
     '-e "/Finished tests in Xs, X tests\/s, X assertions/p"' \
-    '-e "/.* tests, X assertions, .* failures, .* errors, X skips/p"'
+    '-e "/X tests, X assertions, .* failures, .* errors, X skips/p"'
 
 REQUIRED_PACKAGES += library/database/gdbm
 REQUIRED_PACKAGES += library/gmp
