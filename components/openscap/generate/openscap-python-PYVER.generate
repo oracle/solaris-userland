@@ -1,0 +1,20 @@
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+
+<include ../python/generate/common.transform>
+
+# Drop all non-python files
+<transform file link -> set _drop_me_ true>
+<transform file path=usr/lib/python\$\(PYVER\)/.+ -> delete _drop_me_ .*>
+<transform file link _drop_me_=true -> drop>
+
+# Use $(PYVER)
+<transform dir file link hardlink -> edit path "/lib/python2.7/" "/lib/python$!(PYVER)/">
+<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
+<transform file path=usr/lib/python\$\(PYVER\)/vendor-packages/oscap_docker_python/__init__.py -> drop>
+<transform file path=usr/lib/python\$\(PYVER\)/vendor-packages/oscap_docker_python/get_cve_input.py -> drop>
+<transform file path=usr/lib/python\$\(PYVER\)/vendor-packages/oscap_docker_python/oscap_docker_common.py -> drop>
+<transform file path=usr/lib/python\$\(PYVER\)/vendor-packages/oscap_docker_python/oscap_docker_util.py -> drop>
+<transform file path=usr/lib/python\$\(PYVER\)/vendor-packages/oscap_docker_python/oscap_docker_util_noatomic.py -> drop>
+

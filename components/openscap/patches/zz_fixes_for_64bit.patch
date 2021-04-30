@@ -1,21 +1,7 @@
-This patch is required to build 64-bit versions of openscap on solaris.
-It has been submitted to upstream, parts of it were accepted, but the
-remainder have not been accepted.
-
---- openscap-1.2.0/configure.ac.~3~	2014-08-08 10:58:39.160398757 -0700
-+++ openscap-1.2.0/configure.ac	2014-08-08 10:58:15.703200526 -0700
-@@ -877,7 +877,7 @@
- #check for atomic functions
- case $host_cpu in
- 	i386 | i486 | i586 | i686)
--		CFLAGS="$CFLAGS  -march=i686"
-+#		CFLAGS="$CFLAGS  -march=i686"
- 		;;
- esac
- 
---- openscap-1.2.0/src/OVAL/probes/SEAP/_sexp-value.h.~1~	2014-12-19 09:53:15.178129356 -0800
-+++ openscap-1.2.0/src/OVAL/probes/SEAP/_sexp-value.h	2014-12-19 09:55:26.268851025 -0800
-@@ -95,6 +95,9 @@
+diff -ruN openscap-1.3.4.org/src/OVAL/probes/SEAP/_sexp-value.h openscap-1.3.4/src/OVAL/probes/SEAP/_sexp-value.h
+--- openscap-1.3.4.org/src/OVAL/probes/SEAP/_sexp-value.h	2021-03-02 04:06:49.015882794 +0000
++++ openscap-1.3.4/src/OVAL/probes/SEAP/_sexp-value.h	2021-03-02 04:21:11.340652568 +0000
+@@ -94,6 +94,9 @@
          uintptr_t nxsz;
          uint16_t  real;
          uint16_t  refs;
@@ -23,16 +9,17 @@ remainder have not been accepted.
 +	 uint32_t pad_gcc_align_hack;
 +#endif
          SEXP_t    memb[];
- } __attribute__ ((packed));
-
---- openscap-1.2.3/src/OVAL/probes/SEAP/sexp-value.c.~1~	2015-09-10 15:14:06.694228778 -0700
-+++ openscap-1.2.3/src/OVAL/probes/SEAP/sexp-value.c	2015-09-10 15:15:53.755827733 -0700
-@@ -119,7 +119,7 @@
+ };
+ 
+diff -ruN openscap-1.3.4.org/src/OVAL/probes/SEAP/sexp-value.c openscap-1.3.4/src/OVAL/probes/SEAP/sexp-value.c
+--- openscap-1.3.4.org/src/OVAL/probes/SEAP/sexp-value.c	2021-03-02 04:06:49.023768985 +0000
++++ openscap-1.3.4/src/OVAL/probes/SEAP/sexp-value.c	2021-03-02 04:21:11.341092398 +0000
+@@ -107,7 +107,7 @@
          _A(sz < 16);
  
-         if (sm_memalign ((void **)(void *)&lblk, SEXP_LBLK_ALIGN,
--                         sizeof (uintptr_t) + (2 * sizeof (uint16_t)) + (sizeof (SEXP_t) * (1 << sz))) != 0) {
-+                         sizeof (struct SEXP_val_lblk) + (sizeof (SEXP_t) * (1 << sz))) != 0) {
-                 /* TODO: handle this */
-                 abort ();
-                 return ((uintptr_t) NULL);
+ 	struct SEXP_val_lblk *lblk = oscap_aligned_malloc(
+-		sizeof(uintptr_t) + (2 * sizeof(uint16_t)) + (sizeof(SEXP_t) * (1 << sz)),
++		sizeof(struct SEXP_val_lblk) + (sizeof(SEXP_t) * (1 << sz)),
+ 		SEXP_LBLK_ALIGN
+ 	);
+ 

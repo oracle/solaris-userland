@@ -1,0 +1,18 @@
+diff -ruN openscap-1.3.4.org/tests/API/probes/CMakeLists.txt openscap-1.3.4/tests/API/probes/CMakeLists.txt
+--- openscap-1.3.4.org/tests/API/probes/CMakeLists.txt	2021-03-01 23:05:20.060570607 +0000
++++ openscap-1.3.4/tests/API/probes/CMakeLists.txt	2021-03-02 02:30:02.392514077 +0000
+@@ -10,14 +10,6 @@
+ )
+ add_oscap_test("test_api_probes_smoke.sh")
+ 
+-add_oscap_test_executable(test_fsdev_is_local_fs
+-	"test_fsdev_is_local_fs.c"
+-)
+-target_include_directories(test_fsdev_is_local_fs PUBLIC
+-	"${CMAKE_SOURCE_DIR}/src/OVAL/probes"
+-)
+-add_oscap_test("test_fsdev_is_local_fs.sh")
+-
+ file(GLOB_RECURSE OVAL_RESULTS_SOURCES "${CMAKE_SOURCE_DIR}/src/OVAL/results/oval_cmp*.c")
+ add_oscap_test_executable(oval_fts_list
+ 	"oval_fts_list.c"

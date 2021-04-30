@@ -1,93 +1,88 @@
-This patch implements the package_511 schema probe
-for solaris.
-This patch has not been submitted upstream but will
-be by 2016-Jul-15.
---- openscap-1.2.6/src/OVAL/oval_enumerations.c.~3~	2016-02-23 12:20:08.398905458 -0800
-+++ openscap-1.2.6/src/OVAL/oval_enumerations.c	2016-02-23 12:21:52.263496707 -0800
-@@ -516,6 +516,7 @@
- 	{OVAL_SOLARIS_PACKAGECHECK, "packagecheck"},
+diff -ruN openscap-1.3.4.org/CMakeLists.txt openscap-1.3.4/CMakeLists.txt
+--- openscap-1.3.4.org/CMakeLists.txt	2021-03-02 04:27:46.093026236 +0000
++++ openscap-1.3.4/CMakeLists.txt	2021-03-02 04:28:08.012552687 +0000
+@@ -293,6 +293,7 @@
+ cmake_dependent_option(OPENSCAP_PROBE_SOLARIS_SMF "Solaris smf probe" ON "ENABLE_PROBES_SOLARIS" OFF)
+ cmake_dependent_option(OPENSCAP_PROBE_SOLARIS_SMFPROPERTY "Solaris smf probe" ON "ENABLE_PROBES_SOLARIS" OFF)
+ cmake_dependent_option(OPENSCAP_PROBE_SOLARIS_VIRTUALIZATIONINFO "Solaris virtualizationinfo probe" ON "ENABLE_PROBES_SOLARIS" OFF)
++cmake_dependent_option(OPENSCAP_PROBE_SOLARIS_PACKAGE511 "Solaris package511 probe" ON "ENABLE_PROBES_SOLARIS" OFF)
+ 
+ # WINDOWS PROBES
+ cmake_dependent_option(OPENSCAP_PROBE_WINDOWS_ACCESSTOKEN "Windows accesstoken probe" ON "ENABLE_PROBES_WINDOWS" OFF)
+@@ -425,6 +426,7 @@
+ message(STATUS "  Solaris smf probe: ${OPENSCAP_PROBE_SOLARIS_SMF}")
+ message(STATUS "  Solaris smfproperty probe: ${OPENSCAP_PROBE_SOLARIS_SMFPROPERTY}")
+ message(STATUS "  Solaris virtualizationinfo probe: ${OPENSCAP_PROBE_SOLARIS_VIRTUALIZATIONINFO}")
++message(STATUS "  Solaris package511 probe: ${OPENSCAP_PROBE_SOLARIS_PACKAGE511}")
+ message(STATUS " ")
+ 
+ 
+diff -ruN openscap-1.3.4.org/config.h.in openscap-1.3.4/config.h.in
+--- openscap-1.3.4.org/config.h.in	2021-03-02 04:27:45.657325258 +0000
++++ openscap-1.3.4/config.h.in	2021-03-02 04:28:08.013236563 +0000
+@@ -113,6 +113,7 @@
+ #cmakedefine OPENSCAP_PROBE_SOLARIS_SMF
+ #cmakedefine OPENSCAP_PROBE_SOLARIS_SMFPROPERTY
+ #cmakedefine OPENSCAP_PROBE_SOLARIS_VIRTUALIZATIONINFO
++#cmakedefine OPENSCAP_PROBE_SOLARIS_PACKAGE511
+ #cmakedefine OPENSCAP_PROBE_UNIX_DNSCACHE
+ #cmakedefine OPENSCAP_PROBE_UNIX_FILE
+ #cmakedefine OPENSCAP_PROBE_UNIX_FILEEXTENDEDATTRIBUTE
+diff -ruN openscap-1.3.4.org/src/OVAL/oval_enumerations.c openscap-1.3.4/src/OVAL/oval_enumerations.c
+--- openscap-1.3.4.org/src/OVAL/oval_enumerations.c	2021-03-02 04:27:45.129100983 +0000
++++ openscap-1.3.4/src/OVAL/oval_enumerations.c	2021-03-02 04:28:08.014077879 +0000
+@@ -549,6 +549,7 @@
+ 	{OVAL_SOLARIS_SMF, "smf"},
  	{OVAL_SOLARIS_SMFPROPERTY, "smfproperty"},
  	{OVAL_SOLARIS_VIRTUALIZATIONINFO, "virtualizationinfo"},
 +	{OVAL_SOLARIS_PACKAGE511, "package511"},
+ 	{OVAL_SOLARIS_NDD, "ndd"},
+ 	{OVAL_SOLARIS_PACKAGECHECK, "packagecheck"},
  	{OVAL_SUBTYPE_UNKNOWN, NULL}
- };
+diff -ruN openscap-1.3.4.org/src/OVAL/probes/probe-table.c openscap-1.3.4/src/OVAL/probes/probe-table.c
+--- openscap-1.3.4.org/src/OVAL/probes/probe-table.c	2021-03-02 04:27:45.161975070 +0000
++++ openscap-1.3.4/src/OVAL/probes/probe-table.c	2021-03-02 04:28:08.014800103 +0000
+@@ -143,6 +143,10 @@
+ #include "unix/solaris/virtualizationinfo.h"
+ #endif
  
---- openscap-1.2.6/src/OVAL/probes/Makefile.am.~3~	2016-02-23 12:24:40.391851036 -0800
-+++ openscap-1.2.6/src/OVAL/probes/Makefile.am	2016-02-23 12:24:03.718455915 -0800
-@@ -218,6 +218,11 @@
- probe_virtualizationinfo_SOURCES= unix/solaris/virtualizationinfo.c
- endif
- 
-+if probe_package511_enabled
-+pkglibexec_PROGRAMS += probe_package511
-+probe_package511_SOURCES =unix/solaris/package511.c
-+endif
-+
- endif
- 
- #
---- openscap-1.2.6/src/OVAL/public/oval_types.h.~2~	2016-02-23 13:06:40.621110617 -0800
-+++ openscap-1.2.6/src/OVAL/public/oval_types.h	2016-02-23 13:07:12.072800278 -0800
-@@ -240,7 +240,8 @@
- 	OVAL_SOLARIS_NDD = OVAL_FAMILY_SOLARIS + 6,
- 	OVAL_SOLARIS_PACKAGECHECK = OVAL_FAMILY_SOLARIS + 7,
- 	OVAL_SOLARIS_SMFPROPERTY = OVAL_FAMILY_SOLARIS + 8,
--	OVAL_SOLARIS_VIRTUALIZATIONINFO = OVAL_FAMILY_SOLARIS + 9
-+	OVAL_SOLARIS_VIRTUALIZATIONINFO = OVAL_FAMILY_SOLARIS + 9,
-+	OVAL_SOLARIS_PACKAGE511 = OVAL_FAMILY_SOLARIS + 10
- } oval_solaris_subtype_t;
- 
- /// Unix subtypes
---- openscap-1.2.6/configure.ac.~5~	2016-02-23 12:45:30.591588060 -0800
-+++ openscap-1.2.6/configure.ac	2016-02-23 12:47:23.889508750 -0800
-@@ -269,6 +269,10 @@
- probe_virtualizationinfo_req_deps_missing=
- probe_virtualizationinfo_opt_deps_ok=yes
- probe_virtualizationinfo_opt_deps_missing=
-+probe_package511_req_deps_ok=yes
-+probe_package511_req_deps_missing=
-+probe_package511_opt_deps_ok=yes
-+probe_package511_opt_deps_missing=
- 
- #
- # env
-@@ -1365,6 +1369,8 @@
- probe_smfproperty_enabled=$probe_smfproperty_req_deps_ok
- AM_CONDITIONAL([probe_virtualizationinfo_enabled], test "$probe_virtualizationinfo_req_deps_ok" = yes)
- probe_virtualizationinfo_enabled=$probe_virtualizationinfo_req_deps_ok
-+AM_CONDITIONAL([probe_package511_enabled], test "$probe_package511_req_deps_ok" = yes)
-+probe_package511_enabled=$probe_package511_req_deps_ok
- 
- AM_CONDITIONAL([WANT_CCE],  test "$cce"  = yes)
- 
-@@ -1803,6 +1809,12 @@
-   probe_virtualizationinfo_table_result="NO (missing: $probe_virtualizationinfo_req_deps_missing)"
- fi
- printf "  %-28s %s\n" "virtualizationinfo:" "$probe_virtualizationinfo_table_result"
-+if test "$probe_package511_req_deps_ok" = "yes"; then
-+  probe_package511_table_result="yes"
-+else
-+  probe_package511_table_result="NO (missing: $probe_package511_req_deps_missing)"
-+fi
-+printf "  %-28s %s\n" "package511:" "$probe_package511_table_result"
- echo
- echo "  === configuration ==="
- echo "  probe directory set to:      $probe_dir"
---- openscap-1.2.6/src/OVAL/oval_probe.c.~2~	2016-02-25 13:35:49.511778373 -0800
-+++ openscap-1.2.6/src/OVAL/oval_probe.c	2016-02-25 13:36:30.685802320 -0800
-@@ -94,7 +94,8 @@
-         OVAL_PROBE_EXTERNAL(OVAL_UNIX_SYMLINK, "symlink"),
-         OVAL_PROBE_EXTERNAL(OVAL_SOLARIS_SMF, "smf"),
-         OVAL_PROBE_EXTERNAL(OVAL_SOLARIS_SMFPROPERTY,"smfproperty"),
--        OVAL_PROBE_EXTERNAL(OVAL_SOLARIS_VIRTUALIZATIONINFO, "virtualizationinfo")
-+        OVAL_PROBE_EXTERNAL(OVAL_SOLARIS_VIRTUALIZATIONINFO, "virtualizationinfo"),
-+        OVAL_PROBE_EXTERNAL(OVAL_SOLARIS_PACKAGE511, "package511")
- };
- 
- #define __PROBE_META_COUNT (sizeof OSCAP_GSYM(__probe_meta)/sizeof OSCAP_GSYM(__probe_meta)[0])
++#ifdef OPENSCAP_PROBE_SOLARIS_PACKAGE511
++#include "unix/solaris/package511.h"
 +#endif
---- openscap-1.2.6/src/OVAL/probes/unix/solaris/package511.c.~1~	2016-04-19 09:54:58.291212479 -0700
-+++ openscap-1.2.6/src/OVAL/probes/unix/solaris/package511.c	2016-04-19 09:58:06.575618974 -0700
++
+ #ifdef OPENSCAP_PROBE_UNIX_DNSCACHE
+ #include "unix/dnscache_probe.h"
+ #endif
+@@ -312,6 +316,9 @@
+ #ifdef OPENSCAP_PROBE_SOLARIS_VIRTUALIZATIONINFO
+ 	{OVAL_SOLARIS_VIRTUALIZATIONINFO, NULL, virtualizationinfo_probe_main, NULL, NULL},
+ #endif
++#ifdef OPENSCAP_PROBE_SOLARIS_PACKAGE511
++	{OVAL_SOLARIS_PACKAGE511, NULL, package511_probe_main, NULL, NULL},
++#endif
+ #ifdef OPENSCAP_PROBE_UNIX_DNSCACHE
+ 	{OVAL_UNIX_DNSCACHE, NULL, dnscache_probe_main, NULL, NULL},
+ #endif
+diff -ruN openscap-1.3.4.org/src/OVAL/probes/unix/solaris/CMakeLists.txt openscap-1.3.4/src/OVAL/probes/unix/solaris/CMakeLists.txt
+--- openscap-1.3.4.org/src/OVAL/probes/unix/solaris/CMakeLists.txt	2021-03-02 04:27:45.137503230 +0000
++++ openscap-1.3.4/src/OVAL/probes/unix/solaris/CMakeLists.txt	2021-03-02 04:28:08.015392215 +0000
+@@ -26,6 +26,13 @@
+ 	)
+ endif()
+ 
++if(OPENSCAP_PROBE_SOLARIS_PACKAGE511)
++	list(APPEND SOLARIS_PROBES_SOURCES
++		"package511.c"
++		"package511.h"
++	)
++endif()
++
+ add_library(solaris_probes_object OBJECT ${SOLARIS_PROBES_SOURCES})
+ set_oscap_generic_properties(solaris_probes_object)
+ target_include_directories(solaris_probes_object PRIVATE ${SOLARIS_PROBES_INCLUDE_DIRECTORIES})
+diff -ruN openscap-1.3.4.org/src/OVAL/probes/unix/solaris/package511.c openscap-1.3.4/src/OVAL/probes/unix/solaris/package511.c
+--- openscap-1.3.4.org/src/OVAL/probes/unix/solaris/package511.c	1969-12-31 16:00:00.000000000 +0000
++++ openscap-1.3.4/src/OVAL/probes/unix/solaris/package511.c	2021-03-02 04:28:08.016087632 +0000
 @@ -0,0 +1,344 @@
 +/**
 + * @file package511.c
@@ -115,9 +110,9 @@ be by 2016-Jul-15.
 +#include <unistd.h>
 +#include <sys/types.h>
 +#include <rad/client/1/ips.h>
-+#include "seap.h"
++#include "_seap.h"
 +#include "probe/entcmp.h"
-+#include "alloc.h"
++#include <stdlib.h>
 +#include "common/debug_priv.h"
 +
 +/* Convenience structure for the results being reported */
@@ -352,7 +347,7 @@ be by 2016-Jul-15.
 +}
 +
 +int
-+probe_main(probe_ctx *ctx, void *arg)
++package511_probe_main(probe_ctx *ctx, void *arg)
 +{
 +	SEXP_t *probe_in, *publisher = NULL, *pkgname = NULL, *version = NULL;
 +	SEXP_t *timestamp = NULL;
@@ -428,8 +423,38 @@ be by 2016-Jul-15.
 +#else
 +
 +int
-+probe_main(probe_ctx *ctx, void *probe_arg)
++package511_probe_main(probe_ctx *ctx, void *probe_arg)
 +{
 +	return PROBE_EOPNOTSUPP;
 +}
 +#endif
+diff -ruN openscap-1.3.4.org/src/OVAL/probes/unix/solaris/package511.h openscap-1.3.4/src/OVAL/probes/unix/solaris/package511.h
+--- openscap-1.3.4.org/src/OVAL/probes/unix/solaris/package511.h	1969-12-31 16:00:00.000000000 +0000
++++ openscap-1.3.4/src/OVAL/probes/unix/solaris/package511.h	2021-03-02 04:28:08.016575073 +0000
+@@ -0,0 +1,15 @@
++/**
++ * @file package511.h
++ * @brief package511 probe
++ * This is a include file for package511.c.
++ */
++
++
++#ifndef OPENSCAP_PACKAGE511_PROBE_H
++#define OPENSCAP_PACKAGE511_PROBE_H
++
++#include "probe-api.h"
++
++int package511_probe_main(probe_ctx *ctx, void *arg);
++
++#endif
+diff -ruN openscap-1.3.4.org/src/OVAL/public/oval_types.h openscap-1.3.4/src/OVAL/public/oval_types.h
+--- openscap-1.3.4.org/src/OVAL/public/oval_types.h	2021-03-02 04:27:45.206520645 +0000
++++ openscap-1.3.4/src/OVAL/public/oval_types.h	2021-03-02 04:29:53.605057340 +0000
+@@ -219,6 +219,7 @@
+ 	OVAL_SOLARIS_PACKAGECHECK = OVAL_FAMILY_SOLARIS + 7,
+ 	OVAL_SOLARIS_SMFPROPERTY = OVAL_FAMILY_SOLARIS + 8,
+ 	OVAL_SOLARIS_VIRTUALIZATIONINFO = OVAL_FAMILY_SOLARIS + 9,
++	OVAL_SOLARIS_PACKAGE511 = OVAL_FAMILY_SOLARIS + 10,
+ 
+ /// Unix subtypes
+ 	OVAL_UNIX_FILE = OVAL_FAMILY_UNIX + 1,

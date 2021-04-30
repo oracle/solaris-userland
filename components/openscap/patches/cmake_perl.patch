@@ -1,0 +1,15 @@
+Hardcode our preferred path for perl library directory.
+Not intended for upstream.
+
+diff -ruN openscap-1.3.2.orig/swig/perl/CMakeLists.txt openscap-1.3.2/swig/perl/CMakeLists.txt
+--- openscap-1.3.2.orig/swig/perl/CMakeLists.txt	2020-07-21 16:45:14.371784452 +0000
++++ openscap-1.3.2/swig/perl/CMakeLists.txt	2020-07-22 10:14:12.685223638 +0000
+@@ -13,6 +13,6 @@
+ endif()
+ 
+ install(TARGETS ${SWIG_MODULE_openscap_pm_REAL_NAME}
+-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/perl5/vendor_perl)
++	DESTINATION ${PERL_ARCHLIB})
+ install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/openscap_pm.pm
+-	DESTINATION ${CMAKE_INSTALL_DATADIR}/perl5/vendor_perl)
++	DESTINATION ${PERL_VENDORLIB})

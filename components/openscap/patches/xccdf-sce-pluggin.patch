@@ -1,0 +1,10 @@
+--- openscap-1.3.2/src/XCCDF_POLICY/check_engine_plugin.c.~1~	2020-01-14 02:47:44.000000000 -0800
++++ openscap-1.3.2/src/XCCDF_POLICY/check_engine_plugin.c	2021-02-08 04:36:05.780647476 -0800
+@@ -74,6 +74,7 @@
+ 	}
+ 
+ 	check_engine_plugin_entry_fn entry_fn = NULL;
++	(void) dlerror();
+ 	*(void **)(&entry_fn) = dlsym(ret->module_handle, STRINGIZE(OPENSCAP_CHECK_ENGINE_PLUGIN_ENTRY));
+ 
+ 	if ((error = dlerror()) != NULL) {

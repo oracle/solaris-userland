@@ -1,0 +1,51 @@
+diff -ruN openscap-1.3.4.org/CMakeLists.txt openscap-1.3.4/CMakeLists.txt
+--- openscap-1.3.4.org/CMakeLists.txt	2021-04-30 08:45:30.234147294 +0000
++++ openscap-1.3.4/CMakeLists.txt	2021-04-30 08:48:53.899308815 +0000
+@@ -234,7 +234,7 @@
+ cmake_dependent_option(ENABLE_PROBES_UNIX "build OVAL probes for the UNIX OVAL tests" ${IS_UNIX} "ENABLE_PROBES" OFF)
+ string(COMPARE EQUAL ${CMAKE_SYSTEM_NAME} "Linux" IS_LINUX)
+ cmake_dependent_option(ENABLE_PROBES_LINUX "build OVAL probes for the Linux OVAL tests" ${IS_LINUX} "ENABLE_PROBES" OFF)
+-string(COMPARE EQUAL ${CMAKE_SYSTEM_NAME} "Solaris" IS_SOLARIS)
++string(COMPARE EQUAL ${CMAKE_SYSTEM_NAME} "SunOS" IS_SOLARIS)
+ cmake_dependent_option(ENABLE_PROBES_SOLARIS "build OVAL probes for the Solaris OVAL tests" ${IS_SOLARIS} "ENABLE_PROBES" OFF)
+ set(IS_WIN32 FALSE)
+ if (WIN32)
+@@ -261,12 +261,12 @@
+ cmake_dependent_option(OPENSCAP_PROBE_UNIX_DNSCACHE "Unix dnscache probe" ON "ENABLE_PROBES_UNIX" OFF)
+ cmake_dependent_option(OPENSCAP_PROBE_UNIX_FILE "Unix file probe" ON "ENABLE_PROBES_UNIX" OFF)
+ cmake_dependent_option(OPENSCAP_PROBE_UNIX_FILEEXTENDEDATTRIBUTE "Unix fileextendedattribute probe" ON "ENABLE_PROBES_UNIX; HAVE_SYS_XATTR_H OR HAVE_ATTR_XATTR_H OR HAVE_SYS_EXTATTR_H" OFF)
+-cmake_dependent_option(OPENSCAP_PROBE_UNIX_GCONF "Unix gconf probe" ON "ENABLE_PROBES_UNIX; GCONF_FOUND" OFF)
++cmake_dependent_option(OPENSCAP_PROBE_UNIX_GCONF "Unix gconf probe" OFF "ENABLE_PROBES_UNIX; GCONF_FOUND" OFF)
+ cmake_dependent_option(OPENSCAP_PROBE_UNIX_INTERFACE "Unix interface probe" ON "ENABLE_PROBES_UNIX" OFF)
+ cmake_dependent_option(OPENSCAP_PROBE_UNIX_PASSWORD "Unix password probe" ON "ENABLE_PROBES_UNIX" OFF)
+ cmake_dependent_option(OPENSCAP_PROBE_UNIX_PROCESS "Unix process probe" ON "ENABLE_PROBES_UNIX" OFF)
+ cmake_dependent_option(OPENSCAP_PROBE_UNIX_PROCESS58 "Unix process58 probe" ON "ENABLE_PROBES_UNIX; CAP_FOUND" OFF)
+-cmake_dependent_option(OPENSCAP_PROBE_UNIX_ROUTINGTABLE "Unix routingtable probe" ON "ENABLE_PROBES_UNIX" OFF)
++cmake_dependent_option(OPENSCAP_PROBE_UNIX_ROUTINGTABLE "Unix routingtable probe" OFF "ENABLE_PROBES_UNIX" OFF)
+ cmake_dependent_option(OPENSCAP_PROBE_UNIX_RUNLEVEL "Unix runlevel probe" ON "ENABLE_PROBES_UNIX" OFF)
+ cmake_dependent_option(OPENSCAP_PROBE_UNIX_SHADOW "Unix shadow probe" ON "ENABLE_PROBES_UNIX" OFF)
+ cmake_dependent_option(OPENSCAP_PROBE_UNIX_SYMLINK "Unix symlink probe" ON "ENABLE_PROBES_UNIX" OFF)
+@@ -523,7 +523,7 @@
+ 	# We do not define this on FreeBSD as it causes required functionality to not be exposed, e.g. getprogname() and u_<types>
+ 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_POSIX_C_SOURCE=200112L")
+ endif()
+-if(${CMAKE_SYSTEM_NAME} EQUAL "Solaris")
++if(${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
+ 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__EXTENSIONS__")
+ endif()
+ if(WIN32)
+diff -ruN openscap-1.3.4.org/src/CMakeLists.txt openscap-1.3.4/src/CMakeLists.txt
+--- openscap-1.3.4.org/src/CMakeLists.txt	2021-04-30 08:45:30.144651550 +0000
++++ openscap-1.3.4/src/CMakeLists.txt	2021-04-30 08:46:25.572687701 +0000
+@@ -82,6 +82,11 @@
+ )
+ 
+ target_link_libraries(openscap ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES} ${PCRE_LIBRARIES} ${CURL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
++
++if(${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
++	target_link_libraries(openscap -L/usr/lib/rad/client/c/64 -lradclient -ladr -lips_client -lzonemgr_client -ldlpi -lsec)
++endif()
++
+ if (BZIP2_FOUND)
+ 	target_link_libraries(openscap ${BZIP2_LIBRARIES})
+ endif()

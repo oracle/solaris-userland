@@ -1,8 +1,7 @@
-This patch is specific to Oracle branding and will not be submitted upstream.
-
---- openscap-1.2.9.orig/xsl/xccdf-branding.xsl	2017-11-24 08:36:00.403933598 +0000
-+++ openscap-1.2.9/xsl/xccdf-branding.xsl	2017-11-24 08:36:48.584155625 +0000
-@@ -43,24 +43,76 @@
+diff -ruN openscap-1.3.4.org/xsl/xccdf-branding.xsl openscap-1.3.4/xsl/xccdf-branding.xsl
+--- openscap-1.3.4.org/xsl/xccdf-branding.xsl	2021-03-04 01:23:52.895766216 +0000
++++ openscap-1.3.4/xsl/xccdf-branding.xsl	2021-03-04 01:26:45.458876916 +0000
+@@ -43,23 +43,75 @@
      1) Round all positions to 1 decimal place
      2) Remove inkscape, RDF, DC and other metadata
      -->
@@ -15,8 +14,8 @@ This patch is specific to Oracle branding and will not be submitted upstream.
 +     width="100px" height="45px"
 +     viewBox="0 0 100 45" preserveAspectRatio="none">
 +   <g>
-+<image alt="Oracle Solaris" width="100" height="45"
-+ xlink:href="data:image/png;base64,
++   <image alt="Oracle Solaris" width="100" height="45"
++    xlink:href="data:image/png;base64,
 +iVBORw0KGgoAAAANSUhEUgAAAGQAAAAtCAIAAADX11mnAAAABGdBTUEAALGPC/xhBQAAACBjSFJN
 +AAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QA/wD/AP+gvaeTAAAA
 +CXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4QsYBywfQsdcOAAACHpJREFUaN7tmX1MU9cbx597
@@ -64,50 +63,48 @@ This patch is specific to Oracle branding and will not be submitted upstream.
  </xsl:template>
  
  <xsl:template name="xccdf-report-header">
-     <nav class="navbar navbar-default" role="navigation">
+     <nav class="navbar navbar-default">
 -        <div class="navbar-header" style="float: none">
-+	 <div class="navbar-header" style="width:100%; height:100%; padding-bottom:5px; float:none">
++	<div class="navbar-header" style="width:100%; height:100%; padding-bottom:5px; float:none">
              <a class="navbar-brand" href="#">
                  <xsl:call-template name="xccdf-branding-logo"/>
              </a>
 -            <div><h1>OpenSCAP Evaluation Report</h1></div>
-+	<div style="padding-left:30px; text-align:left;"><h2>Compliance Report</h2></div>
++	    <div style="padding-left:30px; text-align:left;"><h2>Compliance Report</h2></div>	
          </div>
      </nav>
  </xsl:template>
  
  <xsl:template name="xccdf-report-footer">
      <footer id="footer">
--        <div class="container">
-+        <!--
-+	 <div class="container">
++	<!--
+         <div class="container">
              <p class="muted credit">
                  Generated using <a href="http://open-scap.org">OpenSCAP</a>
-                 <xsl:if test="$oscap-version">
 @@ -68,22 +120,24 @@
                  </xsl:if>
              </p>
          </div>
-+	 -->
++	-->
      </footer>
  </xsl:template>
  
  <xsl:template name="xccdf-guide-header">
-     <nav class="navbar navbar-default" role="navigation">
+     <nav class="navbar navbar-default">
 -        <div class="navbar-header" style="float: none">
-+	 <div class="navbar-header" style="width:100%; height:100%; padding-bottom:5px;float:none">
++	<div class="navbar-header" style="width:100%; height:100%; padding-bottom:5px;float:none">
              <a class="navbar-brand" href="#">
                  <xsl:call-template name="xccdf-branding-logo"/>
              </a>
 -            <div><h1>OpenSCAP Security Guide</h1></div>
-+	<div style="padding-left:30px; text-align:left;"><h2>Security Guide</h2></div>
++	    <div style="padding-left:30px; text-align:left;"><h2>Security Guide</h2></div>
          </div>
      </nav>
  </xsl:template>
  
  <xsl:template name="xccdf-guide-footer">
      <footer id="footer">
-+	<!--
++        <!--
          <div class="container">
              <p class="muted credit">
                  Generated using <a href="http://open-scap.org">OpenSCAP</a>
@@ -115,7 +112,7 @@ This patch is specific to Oracle branding and will not be submitted upstream.
                  </xsl:if>
              </p>
          </div>
-+	 -->
++	-->
      </footer>
  </xsl:template>
  

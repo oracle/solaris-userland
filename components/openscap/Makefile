@@ -27,14 +27,20 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		openscap
-COMPONENT_VERSION=	1.2.9
+COMPONENT_VERSION=	1.3.4
 COMPONENT_PROJECT_URL=  http://www.open-scap.org
 COMPONENT_DOWNLOAD_URL= https://github.com/OpenSCAP/openscap/releases/download
-COMPONENT_ARCHIVE_HASH= sha256:20ae67ffabf90865fb2033d5c5e49bfb5fb485ffa6ff37910e8d7084c2236c74
+COMPONENT_ARCHIVE_HASH= \
+    sha256:6daadb7765739ee2c98ab83500ecb7f17219f66a4a76318a6125906e7fa03d7e
 COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	15641
 
 TPNO =			28398
+
+BUILD_STYLE= cmake
+CMAKE_OPTIONS += -DPCRE_INCLUDE_DIR=/usr/include/pcre \
+    -DPYTHON_SITE_PACKAGES_INSTALL_DIR=/usr/lib/python$(PYTHON_VERSION)/vendor-packages/
+CMAKE_MAKE_PROGRAM=$(GMAKE)
 
 CFLAGS+=		-std=c99
 CFLAGS+=		-DNDEBUG
@@ -44,14 +50,17 @@ CFLAGS+=		-D__$(MACH64)
 PYTHON_VERSION =	3.7
 PYTHON_VERSIONS=	$(PYTHON_VERSION)
 
-# publish for only one version of perl
-PERL_VERSIONS = $(PERL_VERSION)
+# this version must match with perl mediator because cmake uses FindPerl macro.
+# (if this is not desired, a deeper diving to cmake and
+# patches/cmake_perl.patch update is needed)
+PERL_VERSION =		5.26
+PERL_VERSIONS =		$(PERL_VERSION)
+
+# Tests require xpath tool that is not available on Solaris.
+TEST_TARGET = $(NO_TESTS)
 
 # openscap is not adding cpython-37m string to shared libraries
 PY3_CPYTHON_NAMING = \#
-
-# There are some test failures, the master test file is missing.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -59,7 +68,8 @@ CONFIGURE_BINDIR.64 =	$(CONFIGURE_PREFIX)/bin
 CPPFLAGS +=	-I$(USRINCDIR)/openldap
 RAD_CLIENT_LIB_PATH =   /usr/lib/rad/client/c/$(MACH64)
 
-LDFLAGS += -L$(RAD_CLIENT_LIB_PATH) -R$(RAD_CLIENT_LIB_PATH) -lradclient -ladr -lips_client -lzonemgr_client
+LDFLAGS += -L$(RAD_CLIENT_LIB_PATH) -R$(RAD_CLIENT_LIB_PATH) \
+    -lradclient -ladr -lips_client -lzonemgr_client
 
 # XXX This shouldn't be necessary, but is; investigate why.
 CFLAGS += -D_FILE_OFFSET_BITS=64
@@ -68,16 +78,17 @@ CFLAGS += -D_FILE_OFFSET_BITS=64
 ADIHEAP_MODE = $(ADIHEAP_ENABLE)
 ADISTACK_MODE = $(ADISTACK_ENABLE)
 
-# Perl related patch needs configure script recreation.
-COMPONENT_PREP_ACTION +=(cd $(@D); autoreconf);
-
 # Need to do cloney, so that the schema files can get packaged.
 COMPONENT_PRE_CONFIGURE_ACTION = \
     ($(CLONEY) $(SOURCE_DIR) $(@D))
 
-COMPONENT_POST_INSTALL_ACTION =	\
+COMPONENT_POST_INSTALL_ACTION = \
 	$(RM) $(PROTO_DIR)/usr/share/openscap/cpe/* && \
 	$(CP) files/cpe/* $(PROTO_DIR)/usr/share/openscap/cpe;
+
+# Pre-compile python source code
+COMPONENT_POST_INSTALL_ACTION += \
+	$(PYTHON) -m compileall $(PROTO_DIR)/usr/lib;
 
 
 # Needed to make "gmake test" work.
@@ -101,14 +112,15 @@ EXTRA_LIBS +=		$(LIBNSL) $(LIBSOCKET)
 EXTRA_LIBS +=		-lscf -ldlpi -lsec -lv12n
 CONFIGURE_OPTIONS +=	LDFLAGS="$(LDFLAGS) $(EXTRA_LIBS)"
 
-DOCS_DIR = $(PROTO_DIR)/usr/share/doc/openscap/html/
+DOCS_DIR = $(PROTO_DIR)/usr/share/doc/openscap/
 
 COMPONENT_POST_INSTALL_ACTION += \
 	$(MKDIR) $(DOCS_DIR); \
-	$(CP) -r $(SOURCE_DIR)/docs/html/* $(DOCS_DIR);
+	$(CP) -r $(SOURCE_DIR)/docs/* $(DOCS_DIR);
 
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += developer/swig
+#REQUIRED_PACKAGES += gnome/config/gconf
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/libxslt

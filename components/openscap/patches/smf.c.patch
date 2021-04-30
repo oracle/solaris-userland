@@ -1,17 +1,84 @@
-This patch implements the smf probe on solaris, which gathers service_name,
-service_state, exec_as_user from the smf repository for the fmri that is
-provided.
-This patch has not been contributed upstream, but is planned to be done by
- 2015-Mar-01.
---- openscap-1.2.0/src/OVAL/probes/unix/solaris/smf.c.~1~	2013-03-21 08:27:20.051583517 -0700
-+++ openscap-1.2.0/src/OVAL/probes/unix/solaris/smf.c	2015-02-18 10:06:03.709601923 -0800
-@@ -33,9 +33,240 @@
+diff -ruN openscap-1.3.4.org/CMakeLists.txt openscap-1.3.4/CMakeLists.txt
+--- openscap-1.3.4.org/CMakeLists.txt	2021-04-19 21:59:34.225082992 +0000
++++ openscap-1.3.4/CMakeLists.txt	2021-04-19 22:01:04.917892811 +0000
+@@ -290,6 +290,7 @@
+ 
+ # SOLARIS PROBES
+ cmake_dependent_option(OPENSCAP_PROBE_SOLARIS_ISAINFO "Solaris isainfo probe" ON "ENABLE_PROBES_SOLARIS" OFF)
++cmake_dependent_option(OPENSCAP_PROBE_SOLARIS_SMF "Solaris smf probe" ON "ENABLE_PROBES_SOLARIS" OFF)
+ 
+ # WINDOWS PROBES
+ cmake_dependent_option(OPENSCAP_PROBE_WINDOWS_ACCESSTOKEN "Windows accesstoken probe" ON "ENABLE_PROBES_WINDOWS" OFF)
+@@ -419,6 +420,7 @@
+ 
+ message(STATUS "Solaris probes: ${ENABLE_PROBES_SOLARIS}")
+ message(STATUS "  Solaris isainfo probe: ${OPENSCAP_PROBE_SOLARIS_ISAINFO}")
++message(STATUS "  Solaris smf probe: ${OPENSCAP_PROBE_SOLARIS_SMF}")
+ message(STATUS " ")
+ 
+ 
+diff -ruN openscap-1.3.4.org/config.h.in openscap-1.3.4/config.h.in
+--- openscap-1.3.4.org/config.h.in	2021-04-19 21:59:34.248015540 +0000
++++ openscap-1.3.4/config.h.in	2021-04-19 22:01:04.918371207 +0000
+@@ -110,6 +110,7 @@
+ #cmakedefine OPENSCAP_PROBE_LINUX_SYSTEMDUNITDEPENDENCY
+ #cmakedefine OPENSCAP_PROBE_LINUX_SYSTEMDUNITPROPERTY
+ #cmakedefine OPENSCAP_PROBE_SOLARIS_ISAINFO
++#cmakedefine OPENSCAP_PROBE_SOLARIS_SMF
+ #cmakedefine OPENSCAP_PROBE_UNIX_DNSCACHE
+ #cmakedefine OPENSCAP_PROBE_UNIX_FILE
+ #cmakedefine OPENSCAP_PROBE_UNIX_FILEEXTENDEDATTRIBUTE
+diff -ruN openscap-1.3.4.org/src/OVAL/probes/probe-table.c openscap-1.3.4/src/OVAL/probes/probe-table.c
+--- openscap-1.3.4.org/src/OVAL/probes/probe-table.c	2021-04-19 21:59:33.847887070 +0000
++++ openscap-1.3.4/src/OVAL/probes/probe-table.c	2021-04-19 22:01:04.919295214 +0000
+@@ -131,6 +131,10 @@
+ #include "unix/solaris/isainfo_probe.h"
  #endif
  
- #include "probe-api.h"
++#ifdef OPENSCAP_PROBE_SOLARIS_SMF
++#include "unix/solaris/smf.h"
++#endif
++
+ #ifdef OPENSCAP_PROBE_UNIX_DNSCACHE
+ #include "unix/dnscache_probe.h"
+ #endif
+@@ -291,6 +295,9 @@
+ #ifdef OPENSCAP_PROBE_SOLARIS_ISAINFO
+ 	{OVAL_SOLARIS_ISAINFO, NULL, isainfo_probe_main, NULL, NULL},
+ #endif
++#ifdef OPENSCAP_PROBE_SOLARIS_SMF
++	{OVAL_SOLARIS_SMF, NULL, smf_probe_main, NULL, NULL},
++#endif
+ #ifdef OPENSCAP_PROBE_UNIX_DNSCACHE
+ 	{OVAL_UNIX_DNSCACHE, NULL, dnscache_probe_main, NULL, NULL},
+ #endif
+diff -ruN openscap-1.3.4.org/src/OVAL/probes/unix/solaris/CMakeLists.txt openscap-1.3.4/src/OVAL/probes/unix/solaris/CMakeLists.txt
+--- openscap-1.3.4.org/src/OVAL/probes/unix/solaris/CMakeLists.txt	2021-04-19 21:59:33.857029686 +0000
++++ openscap-1.3.4/src/OVAL/probes/unix/solaris/CMakeLists.txt	2021-04-19 22:01:04.919786324 +0000
+@@ -5,6 +5,12 @@
+ 	)
+ endif()
+ 
++if(OPENSCAP_PROBE_SOLARIS_SMF)
++	list(APPEND SOLARIS_PROBES_SOURCES
++		"smf.c"
++		"smf.h"
++	)
++endif()
+ add_library(solaris_probes_object OBJECT ${SOLARIS_PROBES_SOURCES})
+ set_oscap_generic_properties(solaris_probes_object)
+-target_include_directories(solaris_probes_object PRIVATE ${SOLARIS_PROBES_INCLUDE_DIRECTORIES})
+\ No newline at end of file
++target_include_directories(solaris_probes_object PRIVATE ${SOLARIS_PROBES_INCLUDE_DIRECTORIES})
+diff -ruN openscap-1.3.4.org/src/OVAL/probes/unix/solaris/smf.c openscap-1.3.4/src/OVAL/probes/unix/solaris/smf.c
+--- openscap-1.3.4.org/src/OVAL/probes/unix/solaris/smf.c	1969-12-31 16:00:00.000000000 +0000
++++ openscap-1.3.4/src/OVAL/probes/unix/solaris/smf.c	2021-04-19 22:03:11.303556397 +0000
+@@ -0,0 +1,238 @@
 +#ifdef HAVE_CONFIG_H
 +#include <config.h>
 +#endif
++
++#include "probe-api.h"
 +
 +#if	defined(__SVR4) && defined(__sun)
 +/*
@@ -26,7 +93,7 @@ This patch has not been contributed upstream, but is planned to be done by
 + * exec_as_user
 + */
 +
- 
++
 +#include <stdlib.h>
 +#include <string.h>
 +#include <stdio.h>
@@ -38,9 +105,9 @@ This patch has not been contributed upstream, but is planned to be done by
 +#include <unistd.h>
 +#include <libscf.h>
 +#include <libscf_priv.h>
-+#include "seap.h"
++#include "_seap.h"
 +#include "probe/entcmp.h"
-+#include "alloc.h"
++#include <stdlib.h>
 +#include "common/debug_priv.h"
 +
 +#ifndef SCF_PG_START
@@ -57,7 +124,6 @@ This patch has not been contributed upstream, but is planned to be done by
 +	char *server_arguments;
 +	char *exec_as_user;
 +};
-+
 +
 +static void
 +toUpperCase(char *str)
@@ -214,7 +280,7 @@ This patch has not been contributed upstream, but is planned to be done by
 +}
 +
 +int
-+probe_main(probe_ctx *ctx, void *arg)
++smf_probe_main(probe_ctx *ctx, void *arg)
 +{
 +	SEXP_t *fmri, *fmri_val, *probe_in;
 +	char *fmri_str;
@@ -240,9 +306,33 @@ This patch has not been contributed upstream, but is planned to be done by
 +	return (rc);
 +} 
 +#else
- 
- int probe_main(probe_ctx *ctx, void *probe_arg)
- {
-         return(PROBE_EOPNOTSUPP);
- }
++
++int smf_probe_main(probe_ctx *ctx, void *probe_arg)
++{
++        return(PROBE_EOPNOTSUPP);
++}
 +#endif
+diff -ruN openscap-1.3.4.org/src/OVAL/probes/unix/solaris/smf.h openscap-1.3.4/src/OVAL/probes/unix/solaris/smf.h
+--- openscap-1.3.4.org/src/OVAL/probes/unix/solaris/smf.h	1969-12-31 16:00:00.000000000 +0000
++++ openscap-1.3.4/src/OVAL/probes/unix/solaris/smf.h	2021-04-19 22:01:04.921287499 +0000
+@@ -0,0 +1,20 @@
++/**
++ * @file smf.h
++ * @brief smf probe
++ * This is a include file for smf.c.
++ */
++
++
++#ifndef OPENSCAP_SMF_PROBE_H
++#define OPENSCAP_SMF_PROBE_H
++
++#include "probe-api.h"
++
++int smf_probe_main(probe_ctx *ctx, void *probe_arg);
++
++#endif /* OPENSCAP_ISAINFO_PROBE_H */
++
++
++
++
++
