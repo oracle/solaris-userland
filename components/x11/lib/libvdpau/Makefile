@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -29,14 +29,14 @@ BUILD_STYLE=		meson
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libvdpau
-COMPONENT_VERSION=	1.3
+COMPONENT_VERSION=	1.4
 COMPONENT_PROJECT_URL=  http://freedesktop.org/wiki/Software/VDPAU/
 COMPONENT_ARCHIVE_URL=	https://gitlab.freedesktop.org/vdpau/libvdpau/-/archive/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:b5a52eeac9417edbc396f26c40591ba5df0cd18285f68d84614ef8f06196e50e
+	sha256:4258824c5a4555ef31de0a7d82b3caf19e75a16a13949f1edafc5f6fb2d33f30
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1755
-TPNO=			55670
+TPNO=			70110
 
 # Tests do not pass because of insufficient gsed filtering.
 $(SKIP_TEST_AT_TOP_LEVEL)

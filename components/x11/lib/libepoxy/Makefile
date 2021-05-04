@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            64_and_32
@@ -28,23 +28,21 @@ COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libepoxy
-COMPONENT_VERSION=	1.5.4
+COMPONENT_VERSION=	1.5.7
 COMPONENT_PROJECT_URL=  https://github.com/anholt/libepoxy
 COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:c926fcc606901f3e03e371027056fd478da43e01ce2da7ffc48b5a0de0ca107c
+	sha256:b9e22ba707d0e723e9665c67a2b2974a86f4c4c27e3009dde24a988d1aadf643
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	6090
-TPNO=			61936
+TPNO=			69914
+
+BUILD_STYLE=		meson
 
 # Tests need work to compile
 TEST_TARGET = $(SKIP_TEST)
 
-FIX_PC_FILES=epoxy.pc.in
-
 include $(WS_MAKE_RULES)/x11-component.mk
-
-COMPONENT_PREP_ACTION +=(cd $(@D); NOCONFIGURE=1 $(CONFIG_SHELL) autogen.sh );
 
 REQUIRED_PACKAGES += x11/library/mesa

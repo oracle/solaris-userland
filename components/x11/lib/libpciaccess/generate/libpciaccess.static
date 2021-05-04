@@ -20,30 +20,11 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, Oracle and/or its affiliates.
 #
 
-BUILD_BITS =            64_and_32
-include ../../../../make-rules/shared-macros.mk
+file exec_attr path=etc/security/exec_attr.d/scanpci group=sys
+link path=usr/X11/bin/scanpci target=../../bin/scanpci
+file scanpci path=usr/bin/scanpci
+file scanpci.1 path=usr/share/man/man1/scanpci.1
 
-COMPONENT_NAME=		libXres
-COMPONENT_VERSION=	1.2.1
-COMPONENT_ARCHIVE_HASH= \
-	sha256:b6e6fb1ebb61610e56017edd928fb89a5f53b3f4f990078309877468663b2b11
-COMPONENT_BUGDB=        x11/libraries
-COMPONENT_ANITYA_ID=	1790
-TPNO=			69911
-
-TEST_TARGET = $(NO_TESTS)
-
-FIX_PC_FILES=xres.pc.in
-
-include $(WS_MAKE_RULES)/x11-component.mk
-
-CONFIGURE_ENV += LIB_MAN_SUFFIX=3xres
-
-LD_OPTIONS += -M$(COMPONENT_DIR)/mapfile
-
-REQUIRED_PACKAGES += x11/header/x11-protocols
-REQUIRED_PACKAGES += x11/library/libx11
-REQUIRED_PACKAGES += x11/library/libxext
