@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -43,8 +43,7 @@ TEST_TARGET = $(NO_TESTS)
 CONFIGURE_LIBDIR.32 = $(USRLIBDIR)/xorg
 CONFIGURE_LIBDIR.64 = $(USRLIBDIR)/xorg/$(MACH64)
 
-FIX_PC_FILES=libdrm.pc.in intel/libdrm_intel.pc.in libkms/libkms.pc.in \
-	radeon/libdrm_radeon.pc.in
+FIX_PC_FILES=libdrm.pc.in libkms/libkms.pc.in
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
@@ -54,7 +53,10 @@ COMPONENT_PREP_ACTION = (cd $(@D); autoreconf -fiv)
 
 CONFIGURE_OPTIONS += --enable-libkms
 CONFIGURE_OPTIONS += --disable-amdgpu
+CONFIGURE_OPTIONS += --disable-intel
 CONFIGURE_OPTIONS += --disable-nouveau
+CONFIGURE_OPTIONS += --disable-radeon
+CONFIGURE_OPTIONS += --disable-udev
 
 # Makefile.am files of this component are not compatible with Solaris make.
 # Use GNU make to avoid the configuration error when makefile fragments are processed.

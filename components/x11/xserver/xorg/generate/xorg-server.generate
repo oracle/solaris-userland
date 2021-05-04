@@ -18,7 +18,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
@@ -29,9 +29,9 @@
 # Remove the mark
 <transform dir file link hardlink -> delete pkg.type .*>
 
-# modesetting driver requires KMS drivers in the kernel, which we only
-# deliver on x86 platforms in Solaris 11.4
-<transform file path=.*modesetting.* -> set variant.arch i386>
+# modesetting driver requires KMS drivers in the kernel, which we no
+# longer deliver in Solaris 11.4
+<transform file path=.*modesetting.* -> drop>
 
 # Inline assembly files used to build drivers with Studio compilers
 <transform file path=usr/include/xorg/solaris-.*\.il$ -> \

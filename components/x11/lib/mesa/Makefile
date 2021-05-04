@@ -69,14 +69,9 @@ CONFIGURE_OPTIONS += -Dglvnd=false
 CONFIGURE_OPTIONS += -Dplatforms='x11, drm'
 CONFIGURE_OPTIONS += -Dllvm=true
 CONFIGURE_OPTIONS += -Dglx='auto'
-ifeq ($(MACH), i386)
 # Note that only one swrast provider can be built.
-CONFIGURE_OPTIONS.32 += -Ddri-drivers='i915,i965,r200,swrast'
-CONFIGURE_OPTIONS.64 += -Ddri-drivers='i915,i965,r200'
-else
 CONFIGURE_OPTIONS.32 += -Ddri-drivers='swrast'
 CONFIGURE_OPTIONS.64 += -Ddri-drivers=''
-endif
 
 CFLAGS += -D__EXTENSIONS__ -Wno-incompatible-pointer-types
 CPPFLAGS += -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS
@@ -92,25 +87,6 @@ LD_OPTIONS += $(LD_OPTIONS.$(BITS))
 LD_OPTIONS += -z discard-unused=dependencies
 LD_OPTIONS += -M $(COMPONENT_DIR)/mapfile.externs
 
-# Use symlinks as Userland generate cannot treat hardlinks well.
-
-COMPONENT_POST_INSTALL_ACTION.64 += \
-	cd $(PROTOUSRLIBDIR)/xorg/modules/dri/$(MACH64) ; \
-	$(RM) kms_swrast_dri.so ; $(SYMLINK) swrast_dri.so kms_swrast_dri.so ;
-
-ifeq ($(MACH), i386)
-COMPONENT_POST_INSTALL_ACTION.64 += \
-	cd $(PROTOUSRLIBDIR)/xorg/modules/dri/$(MACH64) ; \
-	$(RM) i965_dri.so ; $(SYMLINK) i915_dri.so i965_dri.so ; \
-	$(RM) r200_dri.so ; $(SYMLINK) i915_dri.so r200_dri.so ;
-
-COMPONENT_POST_INSTALL_ACTION.32 += \
-	cd $(PROTOUSRLIBDIR)/xorg/modules/dri ; \
-	$(RM) i915_dri.so ; $(SYMLINK) swrast_dri.so i915_dri.so ; \
-	$(RM) i965_dri.so ; $(SYMLINK) swrast_dri.so i965_dri.so ; \
-	$(RM) r200_dri.so ; $(SYMLINK) swrast_dri.so r200_dri.so ;
-endif
-
 # Add RPATH to xorg lib directory where is libdrm.
 
 COMPONENT_POST_INSTALL_ACTION += \
@@ -122,11 +98,7 @@ COMPONENT_POST_INSTALL_ACTION += \
 	$(ELFEDIT) -e "dyn:runpath /usr/lib/xorg$$dir64" \
 	  $(PROTOUSRLIBDIR)/xorg/modules/dri$$dir64/swrast_dri.so ;
 
-ifeq ($(MACH), i386)
-COMPONENT_POST_INSTALL_ACTION.64 += \
-	$(ELFEDIT) -e "dyn:runpath /usr/lib/xorg/amd64" \
-	  $(PROTOUSRLIBDIR)/xorg/modules/dri/amd64/i915_dri.so ;
-endif
+PKG_AUTO_HARDLINKS=1
 
 REQUIRED_PACKAGES += developer/gnu-indent
 REQUIRED_PACKAGES += developer/lexer/flex

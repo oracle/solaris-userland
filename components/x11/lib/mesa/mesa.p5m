@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -210,20 +210,9 @@ file path=usr/lib/pkgconfig/gbm.pc
 file path=usr/lib/pkgconfig/gl.pc
 file path=usr/lib/pkgconfig/glesv1_cm.pc
 file path=usr/lib/pkgconfig/glesv2.pc
-file path=usr/lib/xorg/modules/dri/$(MACH64)/i915_dri.so variant.arch=i386
-link path=usr/lib/xorg/modules/dri/$(MACH64)/i965_dri.so target=i915_dri.so \
-    variant.arch=i386
-link path=usr/lib/xorg/modules/dri/$(MACH64)/kms_swrast_dri.so \
+hardlink path=usr/lib/xorg/modules/dri/$(MACH64)/kms_swrast_dri.so \
     target=swrast_dri.so
-link path=usr/lib/xorg/modules/dri/$(MACH64)/r200_dri.so target=i915_dri.so \
-    variant.arch=i386
 file path=usr/lib/xorg/modules/dri/$(MACH64)/swrast_dri.so
-link path=usr/lib/xorg/modules/dri/i915_dri.so target=swrast_dri.so \
-    variant.arch=i386
-link path=usr/lib/xorg/modules/dri/i965_dri.so target=swrast_dri.so \
-    variant.arch=i386
-link path=usr/lib/xorg/modules/dri/r200_dri.so target=swrast_dri.so \
-    variant.arch=i386
 file path=usr/lib/xorg/modules/dri/swrast_dri.so
 license mesa.license license=MIT,Other
 depend type=require fmri=pkg:/service/opengl/ogl-select

@@ -1,0 +1,18 @@
+Since we no longer ship the xf86-video-ati driver, try r128 & mach64 here
+instead of relying on the ati module to redirect to them for us.
+
+Should be offered upstream.
+
+diff --git a/hw/xfree86/common/xf86pciBus.c b/hw/xfree86/common/xf86pciBus.c
+index 6e625d7..210c05d 100644
+--- a/hw/xfree86/common/xf86pciBus.c
++++ b/hw/xfree86/common/xf86pciBus.c
+@@ -1107,6 +1107,8 @@ xf86VideoPtrToDriverList(struct pci_device *dev, XF86MatchedDrivers *md)
+         break;
+     case 0x1002:
+         driverList[0] = "ati";
++        driverList[1] = "r128";
++        driverList[2] = "mach64";
+         break;
+     case 0x102c:
+         driverList[0] = "chips";
