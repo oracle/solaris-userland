@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -89,13 +89,13 @@ COMPONENT_ANITYA_ID_6=	14960
 TPNO_6=			50511
 
 COMPONENT_NAME_7=       xprop
-COMPONENT_VERSION_7=    1.2.4
+COMPONENT_VERSION_7=    1.2.5
 COMPONENT_SRC_7=        $(COMPONENT_NAME_7)-$(COMPONENT_VERSION_7)
 COMPONENT_ARCHIVE_7=    $(COMPONENT_SRC_7).tar.bz2
 COMPONENT_ARCHIVE_HASH_7=       \
-    sha256:8c77fb096e46c60032b7e2bde9492c3ffcc18734f50b395085a5f10bfd3cf753
+    sha256:9b92ed0316bf2486121d8bac88bd1878f16b43bd335f18009b1f941f1eca93a1
 COMPONENT_ANITYA_ID_7=	14958
-TPNO_7=			50353
+TPNO_7=			69906
 
 COMPONENT_NAME_8=       xgamma
 COMPONENT_VERSION_8=    1.0.6
