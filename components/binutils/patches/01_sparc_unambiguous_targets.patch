@@ -1,0 +1,20 @@
+Revert a part of commit 3677b7296185e6abfe8327c00c460712151ade15
+that introduced regressions in objcopy and strip binaries.
+
+The problem is that there are multiple bfd format matches:
+"Unable to recognise the format of file: file format is ambiguous"
+
+Upstream bug:
+https://sourceware.org/bugzilla/show_bug.cgi?id=27666
+
+--- binutils-2.36.1/bfd/config.bfd	2021-05-06 09:56:37.188571993 +0000
++++ binutils-2.36.1/bfd/config.bfd	2021-05-06 09:54:40.315872388 +0000
+@@ -1290,7 +1290,7 @@ case "${targ}" in
+ #ifdef BFD64
+   sparc-*-solaris2* | sparcv9-*-solaris2* | sparc64-*-solaris2*)
+     targ_defvec=sparc_elf32_sol2_vec
+-    targ_selvecs="sparc_elf64_sol2_vec sparc_elf32_vec sparc_elf64_vec"
++    targ_selvecs="sparc_elf64_sol2_vec"
+     want64=true
+     ;;
+   sparc64-*-freebsd* | sparc64-*-kfreebsd*-gnu)
