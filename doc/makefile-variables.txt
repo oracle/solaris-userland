@@ -53,22 +53,41 @@ have defaults, but can be overridden.
   not verify the signature, setting COMPONENT_SIG_URL empty disables this
   check.
 
-  Userland keyring is in $(hg root)/tools/.gnupg/pubring.gpg . If it does not
-  contain the public key to verify the signature it tries to download the
-  signature from hkp://keys.gnupg.net (as configured in
+  Userland tries to verify archive signature whenever we download the archive
+  from internet (as opposed to downloading from our cache specified by
+  INTERNAL_ARCHIVE_MIRROR where the archive is verified by
+  COMPONENT_ARCHIVE_HASH only). Signature is not checked when downloading from
+  the cache, because the public key can expire in which case signature would be
+  invalid and we would not be able to download the archive. The public key to
+  verify the archive must be stored either automatically or by hand in our
+  keyring at $(hg root)/tools/.gnupg/pubring.gpg .
+
+  If our keyring does not contain the correct key then the infrastructure tries
+  to download it from from hkp://keys.gnupg.net (as configured in
   $(hg root)/tools/.gnupg/gpg.conf). If it can't get the appropriate key from
-  there, you can set COMPONENT_PUBLIC_KEY_URL to download and import the public
-  key from a custom location. The Userland keyring will be modified.
+  there, you can set COMPONENT_PUBLIC_KEY_URL to have it downloaded from
+  elsewhere. The infrastructure will import whole keyring into our pubring.gpg
+  (and so you must commit it alongside your change).
 
-  The difference between COMPONENT_SIG_URL and COMPONENT_ARCHIVE_HASH is that
-  the former protects us while downloading sources from internet while the
-  later makes sure that the sources from our source cache were downloaded
-  correctly. Signature is not checked when downloading from the cache, because
-  the public key can expire in which case signature would be invalid and we
-  would not be able to download the archive.
+  We can also manually import the key into our keyring via
+  gpg2 --homedir "$(hg root)/tools/.gnupg" --import <public keyring>
 
-  We can manually import the key into our keyring via
-  gpg2 --homedir "$(hg root)/tools/.gnupg" --import <key file>
+  Manual key import has the advantage that we don't have to import whole
+  keyring, but can import only the single key we need. For that you need to know
+  the key ID, which is printed in validation error message:
+
+  > gpg: Warning: using insecure memory!
+  > gpg: Signature made March 25, 2021 at  5:53:10 AM MDT
+  > gpg:                using RSA key 91C1262F01EB8D39
+
+  In this case I know that the key is contained in official gnu keyring, which
+  is unnecessarily big to be imported whole.
+
+  cd $(hg root)/tools/.gnupg
+  wget https://ftp.gnu.org/gnu/gnu-keyring.gpg
+  gpg --no-default-keyring --keyring ./gnu-keyring.gpg --export 91C1262F01EB8D39 > single-key.gpg
+  gpg2 --homedir "$(hg root)/tools/.gnupg" --import single-key.gpg
+  rm gnu-keyring.gpg single-key.gpg
 
   To see diff of your change to the keyring you can define listkeys shell
   function:
