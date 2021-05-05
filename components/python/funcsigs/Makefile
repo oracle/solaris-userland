@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -43,9 +43,6 @@ PYTHON_VERSIONS=    $(PYTHON2_VERSIONS)
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest

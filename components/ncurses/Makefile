@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -38,13 +38,15 @@ COMPONENT_ANITYA_ID=	2057
 
 TPNO=			48516
 
-$(SKIP_TEST_AT_TOP_LEVEL)
+# Tests are interactive and require ncurses to be installed in CBE.
+# You can compile and run them from ncurses' test directory.
+TEST_TARGET = $(NO_TESTS)
+SYSTEM_TEST_TARGET = $(NO_TESTS)
+
+# Required to deliver ncurses manual page.
+COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR) $(@D))
 
 include $(WS_MAKE_RULES)/common.mk
-
-# Needed to make "gmake test" work.
-COMPONENT_PRE_CONFIGURE_ACTION += \
-	($(CLONEY) $(SOURCE_DIR) $(@D))
 
 CONFIGURE_PREFIX =	/usr/gnu
 
@@ -69,10 +71,5 @@ CONFIGURE_OPTIONS +=	--with-default-terminfo-dir=$(GNUSHARE)/terminfo
 COMPONENT_POST_INSTALL_ACTION.32 += \
 	$(GSED) -i -e 's|$(GNUBIN)/i86|$(GNUBIN)|' \
 		$(PROTOGNUBIN)/$(MACH32)/ncursesw5-config;
-
-# There is no master test file because tests are interactive and not
-# tied to the build.
-COMPONENT_TEST_DIR =		$(BUILD_DIR)/$(MACH$(BITS))/test
-COMPONENT_TEST_TARGETS =
 
 REQUIRED_PACKAGES += shell/bash

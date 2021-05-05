@@ -17,7 +17,13 @@ PASS: check-whitespace
 PASS: check-cmd-options
 PASS: check-version
 PASS: check-requires-version
-PASS: check-print-options
+../pkg-config --list-all :
+'sub1   Subdirectory package 1 - Test package 1 for subdirectory
+broken Broken package - Module with broken .pc file
+sub2   Subdirectory package 2 - Test package 2 for subdirectory' != 'sub1   Subdirectory package 1 - Test package 1 for subdirectory
+sub2   Subdirectory package 2 - Test package 2 for subdirectory
+broken Broken package - Module with broken .pc file'
+FAIL: check-print-options
 PASS: check-path
 PASS: check-sysroot
 PASS: check-uninstalled
@@ -25,6 +31,7 @@ PASS: check-debug
 PASS: check-gtk
 PASS: check-tilde
 PASS: check-relocatable
-===================
-All 26 tests passed
-===================
+==============================================================================
+1 of 26 tests failed
+Please report to https://bugs.freedesktop.org/enter_bug.cgi?product=pkg-config
+==============================================================================

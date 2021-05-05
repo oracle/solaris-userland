@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -39,9 +39,6 @@ COMPONENT_ARCHIVE_URL=	https://github.com/chaos/$(COMPONENT_NAME)/releases/downl
 COMPONENT_ANITYA_ID=	13274
 
 TPNO=			37401
-
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

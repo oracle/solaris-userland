@@ -69,11 +69,6 @@ CMAKE_BUILD_TYPE = Release
 TEST_TARGET=
 SYSTEM_TEST_TARGET=
 
-ifeq ($(MACH),sparc)
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
-endif
-
 include $(WS_MAKE_RULES)/common.mk
 
 PATCH_LEVEL := 0

@@ -45,9 +45,6 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-# Disable tests since it requires packages that are not available in CBE.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 # test core/test_properties is broken, we do not deliver bandit-baseline

@@ -1544,7 +1544,16 @@ cpan/Time-HiRes/t/time ........................................ ok
 cpan/Time-HiRes/t/tv_interval ................................. ok
 cpan/Time-HiRes/t/ualarm ...................................... ok
 cpan/Time-HiRes/t/usleep ...................................... ok
-cpan/Time-Local/t/Local ....................................... ok
+cpan/Time-Local/t/Local ....................................... #   Failed test 'timelocal year for 1970 1 2 0 0 0'
+#   at t/Local.t line 104.
+#          got: '170'
+#     expected: '70'
+#   Failed test 'timegm year for 1970 1 2 0 0 0'
+#   at t/Local.t line 120.
+#          got: '170'
+#     expected: '70'
+# Looks like you failed 2 tests of 187.
+FAILED at test 6
 cpan/Time-Piece/t/01base ...................................... ok
 cpan/Time-Piece/t/02core ...................................... ok
 cpan/Time-Piece/t/03compare ................................... ok
@@ -2461,7 +2470,8 @@ GOT:
 Unmatched '[' in POSIX class in regex; marked by <-- HERE in m/(?[[:digit: <-- HERE  ])/ at - line 2.
 # Failed test 693 - qr/(?[ [:digit: ])/ at lib/warnings/regcomp line 54
 FAILED at test 691
-Failed 2 tests out of 2295, 99.91% okay.
+Failed 3 tests out of 2294, 99.87% okay.
+	../cpan/Time-Local/t/Local.t
 	../lib/warnings.t
 	re/reg_mesg.t
 ### Since not all tests were successful, you may want to run some of
@@ -2477,5 +2487,4 @@ Failed 2 tests out of 2295, 99.91% okay.
 ###   export LD_LIBRARY_PATH=`pwd`:$LD_LIBRARY_PATH; cd t; ./perl harness
 ### for csh-style shells, like tcsh; or for traditional/modern
 ### Bourne-style shells, like bash, ksh, and zsh, respectively.
-make[1]: *** [makefile:805: check] Error 1
-make[1]: Leaving directory '$(@D)'
+make: *** [makefile:805: check] Error 1

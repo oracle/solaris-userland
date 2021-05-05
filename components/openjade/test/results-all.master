@@ -1,19 +1,39 @@
 ../jade/openjade -c ../dsssl/catalog -t sgml -d expr-lang.dsl null.sgml > expr-lang.actual
 diff expr-lang.actual expr-lang.expected
-7c7
-< (char<? #\a #\A --> #t
----
+0a1,35
+> Character Primitives
+> (char=? #\a #\b --> #f
+> (char=? #\a #\a --> #t
+> (char=? #\a #\A --> #f
+> (char<? #\a #\b --> #t
+> (char<? #\a #\a --> #f
 > (char<? #\a #\A --> #f
-10c10
-< (char<=? #\a #\A --> #t
----
+> (char<=? #\a #\b --> #t
+> (char<=? #\a #\a --> #t
 > (char<=? #\a #\A --> #f
-13c13
-< (char>? #\a #\A --> #f
----
+> (char>? #\a #\b --> #f
+> (char>? #\a #\a --> #f
 > (char>? #\a #\A --> #t
-16c16
-< (char>=? #\a #\A --> #f
----
+> (char>=? #\a #\b --> #f
+> (char>=? #\a #\a --> #t
 > (char>=? #\a #\A --> #t
+> (char-ci=? #\a #\b --> #f
+> (char-ci=? #\a #\a --> #t
+> (char-ci=? #\a #\A --> #t
+> (char-ci<? #\a #\b --> #t
+> (char-ci<? #\a #\a --> #f
+> (char-ci<? #\a #\A --> #f
+> (char-ci<=? #\a #\b --> #t
+> (char-ci<=? #\a #\a --> #t
+> (char-ci<=? #\a #\A --> #t
+> (char-ci>? #\a #\b --> #f
+> (char-ci>? #\a #\a --> #f
+> (char-ci>? #\a #\A --> #f
+> (char-ci>=? #\a #\b --> #f
+> (char-ci>=? #\a #\a --> #t
+> (char-ci>=? #\a #\A --> #t
+> 
+> String Primitives
+> (string=? "abc" "abc" --> #t
+> 
 All tests passed.

@@ -61,9 +61,6 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-# Disable tests since it requires packages that are not available in CBE.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 # Convenience variables
 TARGET_27.32 = $(BUILD_DIR)/$(MACH32)-2.7/
 TARGET_27.64 = $(BUILD_DIR)/$(MACH64)-2.7/

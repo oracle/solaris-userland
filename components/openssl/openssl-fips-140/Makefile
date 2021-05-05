@@ -63,7 +63,6 @@ OPENSSL_FIPS_DIR = $(COMPONENT_DIR)/$(FIPSCANISTER_DIR)
 # There are also separate STC test suites 'openssl' and 'openssl-engine'
 # for regression testing. These internal tests are unit tests do not work
 # with libraries built in FIPS mode.
-$(SKIP_TEST_AT_TOP_LEVEL)
 TEST_TARGET = $(SKIP_TEST)
 SYSTEM_TEST_TARGET = $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 

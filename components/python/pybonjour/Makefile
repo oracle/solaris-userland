@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates. All rights reserved.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -50,14 +50,14 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 # Use nawk to extract just the sections that summarizes the test results.
 COMPONENT_TEST_TRANSFORMER = $(NAWK)
-COMPONENT_TEST_TRANSFORMS = "'/^Ran .+ / { sub(\" tests in .+s\", \" tests in\"); print }; /!NF/ { print }; /^OK/ { print };'"
+COMPONENT_TEST_TRANSFORMS = "'/^Ran .+ / { sub(\" tests in .+s\", \" tests in\"); print }; /!NF/ { print }; /^OK/ { print }; /^FAILED/ { print }'"
 
 # common targets
 build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-# svc:/network/dns/multicast:default needs to be online for tests to run
+# Tests require a connected printer to work.
 $(SKIP_TEST_AT_TOP_LEVEL)
 
 # test_enumerate_domains is skipped

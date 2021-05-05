@@ -1,9 +1,5 @@
 make[1]: Entering directory '$(@D)'
 make[2]: Entering directory '$(@D)/ncat'
-Compiling liblua
-make[3]: Entering directory '$(@D)/liblua'
-make[3]: 'liblua.a' is up to date.
-make[3]: Leaving directory '$(@D)/liblua'
 cd test && (./test-addrset.sh&& ./test-cmdline-split&& ./test-uri&& ./test-wildcard&& echo "All tests passed.")
 PASS 
 PASS 192.168.0.0
@@ -359,12 +355,28 @@ NSE: Starting runlevel 1 (of 1) scan.
 Read from .: nmap-services.
 WARNING: No targets were specified, so 0 hosts scanned.
 Nmap done: 0 IP addresses (0 hosts up) scanned in TIME seconds
-.........................................................
+......FF.................................................
+======================================================================
+FAIL: test_exit_equal (__main__.exit_code_test)
+Test that the exit code is 0 when the diff is empty.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "ndifftest.py", line 781, in test_exit_equal
+    self.assertEqual(code, 0)
+AssertionError: 1 != 0
+
+======================================================================
+FAIL: test_exit_error (__main__.exit_code_test)
+Test that the exit code is 2 when there is an error.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "ndifftest.py", line 798, in test_exit_error
+    self.assertEqual(code, 2)
+AssertionError: 1 != 2
+
 ----------------------------------------------------------------------
 Ran 57 tests
 
-OK
-tests/check_dns
-Testing nmap_dns
-Testing nmap_dns finished without errors
+FAILED (failures=2)
+make[1]: *** [Makefile:464: check-ndiff] Error 1
 make[1]: Leaving directory '$(@D)'

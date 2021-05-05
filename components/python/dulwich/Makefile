@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -44,9 +44,6 @@ TPNO=			61974
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-
-# The unit tests failed to start.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 # make executables for each Python version
 COMPONENT_POST_INSTALL_ACTION += \

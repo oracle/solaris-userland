@@ -46,8 +46,11 @@ COMPONENT_ANITYA_ID=	8251
 
 CONFIGURE_DEFAULT_DIRS=	no
 
-TEST_TARGET=		$(TEST_64)
-$(SKIP_TEST_AT_TOP_LEVEL)
+ifeq ($(MACH),i386)
+TEST_TARGET=           $(TEST_64)
+else
+TEST_TARGET=           $(NO_TESTS)
+endif
 
 include	$(WS_MAKE_RULES)/common.mk
 

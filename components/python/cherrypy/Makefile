@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -69,9 +69,6 @@ COMPONENT_TEST_TRANSFORMS += \
 build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
-
-# test are not clean, so not appropriate to run at top level
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 test:		$(TEST_NO_ARCH)
 

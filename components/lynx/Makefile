@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -41,9 +41,6 @@ TPNO=			21553
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TEST_64)
 
-# The unit tests failed to start.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/common.mk
 
 # Needed to successfully find lynx.pot.
@@ -61,22 +58,22 @@ CONFIGURE_OPTIONS +=	--with-ssl
 CONFIGURE_OPTIONS +=	--with-screen=ncurses
 
 # Use the HTML and CSS styling external test suite as referenced at
-# http://www.w3.org/2005/MWI/Tests/
+# http://www.w3.org/2005/MWI/Tests/. Use the US proxy to avoid HTTP 401 errors.
 COMPONENT_TEST_CMD = $(@D)/src/lynx
 COMPONENT_TEST_ARGS = -dump \
-	http://www.cameronmoll.com/mobile/mkp/pg1.html \
-	http://www.cameronmoll.com/mobile/mkp/pg2.html \
-	http://www.cameronmoll.com/mobile/mkp/pg3.html \
-	http://www.cameronmoll.com/mobile/mkp/pg4.html
+	http://www.cameronmoll.com/articles/mobile/mkp/pg1.html \
+	http://www.cameronmoll.com/articles/mobile/mkp/pg2.html \
+	http://www.cameronmoll.com/articles/mobile/mkp/pg3.html \
+	http://www.cameronmoll.com/articles/mobile/mkp/pg4.html
 COMPONENT_TEST_TARGETS =
 
 COMPONENT_SYSTEM_TEST_DIR =
 COMPONENT_SYSTEM_TEST_CMD =		$(USRBINDIR)/lynx
 COMPONENT_SYSTEM_TEST_ARGS =		-dump \
-	http://www.cameronmoll.com/mobile/mkp/pg1.html \
-	http://www.cameronmoll.com/mobile/mkp/pg2.html \
-	http://www.cameronmoll.com/mobile/mkp/pg3.html \
-	http://www.cameronmoll.com/mobile/mkp/pg4.html
+	http://www.cameronmoll.com/articles/mobile/mkp/pg1.html \
+	http://www.cameronmoll.com/articles/mobile/mkp/pg2.html \
+	http://www.cameronmoll.com/articles/mobile/mkp/pg3.html \
+	http://www.cameronmoll.com/articles/mobile/mkp/pg4.html
 COMPONENT_SYSTEM_TEST_TARGETS =
 
 REQUIRED_PACKAGES += library/libidn

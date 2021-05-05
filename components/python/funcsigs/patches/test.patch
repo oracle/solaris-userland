@@ -1,0 +1,26 @@
+Fix a test failure. Not suitable for upstream
+since this component is python 2.7 only.
+
+--- funcsigs-0.4/tests/test_funcsigs.py	2021-05-04 13:33:30.851381330 +0000
++++ funcsigs-0.4/tests/test_funcsigs.py	2021-05-04 13:33:00.395234247 +0000
+@@ -72,10 +72,7 @@ class TestFunctionSignatures(unittest.Te
+         doctest.testfile('../README.rst')
+ 
+     def test_unbound_method(self):
+-        if sys.version_info < (3,):
+-            self_kind = "positional_only"
+-        else:
+-            self_kind = "positional_or_keyword"
++        self_kind = "positional_or_keyword"
+         class Test(object):
+             def method(self):
+                 pass
+@@ -85,7 +82,7 @@ class TestFunctionSignatures(unittest.Te
+                 (((('self', Ellipsis, Ellipsis, self_kind)),), Ellipsis))
+         self.assertEqual(self.signature(Test.method_with_args), ((
+                 ('self', Ellipsis, Ellipsis, self_kind),
+-                ('a', Ellipsis, Ellipsis, "positional_or_keyword"),
++                ('a', Ellipsis, Ellipsis, self_kind),
+                 ), Ellipsis))
+ 
+ 

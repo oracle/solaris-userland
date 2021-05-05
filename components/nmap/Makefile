@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # Can't use the Studio compilers as they don't support the GNU 
@@ -38,9 +38,6 @@ COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)dist/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	2096
 
 TPNO=			53513
-
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

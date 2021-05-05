@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 COMPILER= gcc
 BUILD_BITS= 64_and_32
@@ -39,9 +39,6 @@ COMPONENT_ARCHIVE_URL=	http://prdownloads.sourceforge.net/openjade/$(COMPONENT_A
 COMPONENT_ANITYA_ID=	13231
 
 TPNO=			9621
-
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -66,6 +63,7 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/PASS:/p" ' \
         '-e "/FAIL:/p" ' \
         '-e "/ERROR:/p" '
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
 
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

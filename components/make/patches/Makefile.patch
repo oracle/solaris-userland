@@ -1,8 +1,22 @@
---- make-4.1.orig/Makefile.in	Sun Oct  5 09:25:22 2014
-+++ make-4.1/Makefile.in	Sat Oct 31 13:56:50 2015
-@@ -1265,6 +1265,26 @@
+Add system tests and append '.' as a perl
+include path to find test_driver.pl file.
+
+--- make-4.2.1/Makefile.in	2021-04-22 14:59:47.866523007 +0000
++++ make-4.2.1/Makefile.in	2021-04-22 14:59:28.536138362 +0000
+@@ -1290,8 +1290,8 @@ check-regression: tests/config-flags.pm
+ 		     rm -f tests/$$f; ln -s ../srctests/$$f tests; \
+ 		   done; fi ;; \
+ 	    esac; \
+-	    echo "cd tests && $(PERL) ./run_make_tests.pl -srcdir $(abs_srcdir) -make ../make$(EXEEXT) $(MAKETESTFLAGS)"; \
+-	    cd tests && $(PERL) ./run_make_tests.pl -srcdir '$(abs_srcdir)' -make '../make$(EXEEXT)' $(MAKETESTFLAGS); \
++	    echo "cd tests && $(PERL) -I. ./run_make_tests.pl -srcdir $(abs_srcdir) -make ../make$(EXEEXT) $(MAKETESTFLAGS)"; \
++	    cd tests && $(PERL) -I. ./run_make_tests.pl -srcdir '$(abs_srcdir)' -make '../make$(EXEEXT)' $(MAKETESTFLAGS); \
+ 	  else \
+ 	    echo "Can't find a working Perl ($(PERL)); the test suite requires Perl."; \
+ 	  fi; \
+@@ -1299,6 +1299,26 @@ check-regression: tests/config-flags.pm
  	  echo "Can't find the GNU Make test suite ($(srcdir)/tests)."; \
- 	 fi
+ 	fi
  
 +system-test:
 +	@if test -f "$(srcdir)/tests/run_make_tests"; then \
@@ -15,8 +29,8 @@
 +		     rm -f tests/$$f; ln -s ../srctests/$$f tests; \
 +		   done; fi ;; \
 +	    esac; \
-+	    echo "cd tests && $(PERL) ./run_make_tests.pl -make /usr/bin/gmake $(MAKETESTFLAGS)"; \
-+	    cd tests && $(PERL) ./run_make_tests.pl -make /usr/bin/gmake $(MAKETESTFLAGS); \
++	    echo "cd tests && $(PERL) -I. ./run_make_tests.pl -make /usr/bin/gmake $(MAKETESTFLAGS)"; \
++	    cd tests && $(PERL) -I. ./run_make_tests.pl -make /usr/bin/gmake $(MAKETESTFLAGS); \
 +	  else \
 +	    echo "Can't find a working Perl ($(PERL)); the test suite requires Perl."; \
 +	  fi; \

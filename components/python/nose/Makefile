@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -42,9 +42,6 @@ TPNO=			31169
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -87,7 +84,7 @@ COMPONENT_PRE_TEST_ACTION = \
 # OK
 # stripping out the random portions (like time to complete the tests).
 COMPONENT_TEST_TRANSFORMER =	$(NAWK)
-COMPONENT_TEST_TRANSFORMS = "'/^ERROR: / { print }; /^Ran / { sub(\" tests in .+s\", \" tests in\"); print }; /^FAILED / { print }; /^OK / { print };'"
+COMPONENT_TEST_TRANSFORMS = "'/^ERROR: / { print }; /^Ran / { sub(\" test.+in .+s\", \" tests in\"); print }; /^FAILED / { print }; /^OK / { print };'"
 
 COMPONENT_SYSTEM_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_SYSTEM_TEST_ENV =
