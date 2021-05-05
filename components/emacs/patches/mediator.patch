@@ -1,0 +1,168 @@
+# Enhance emacs to use the basename(realpath(argv[0])) when looking for
+# the pdmp file in PATH_EXEC, rather than the basename(argv[0]). This
+# avoids looking for the pdmp file based on the name of a symlink pointing
+# at emacs. Emacs is typically run via the mediated /usr/bin/emacs symlink,
+# which points at one of the emacs variants (emacs-gtk, emacs-x, emacs-nox).
+# This change allows the actual emacs binary to find its pdump file.
+#
+# This is an unresolved issue for the upstream emacs community:
+#
+#	https://lists.gnu.org/archive/html/emacs-devel/2021-04/msg00875.html
+#
+# We will therefore reevaluate it with each update, hoping that future
+# changes will handle it without a patch.
+#
+--- emacs-27.2.orig/src/emacs.c	2021-01-28 10:52:38.000000000 +0000
++++ emacs-27.2/src/emacs.c	2021-04-19 14:52:44.389402608 +0000
+@@ -766,6 +766,55 @@
+ #endif	/* !WINDOWSNT */
+ }
+ 
++/*
++ * basename() for pdump paths
++ */
++static char *
++load_pdump_basename(char *path)
++{
++  char *p, *last_sep = NULL;
++
++  for (p = path; *p; p++)
++    {
++      if (IS_DIRECTORY_SEP (*p))
++	 last_sep = p;
++    }
++
++    return last_sep ? last_sep + 1 : path;
++}
++
++/*
++ * Given a basename for the running emacs, attempt to open
++ * the corresponding pdump file in the directory given by path.
++ */
++static int
++load_pdump_from_path(const char *path, const char *name, const char *suffix,
++		     char **dump_file, ptrdiff_t *bufsize)
++{
++  ptrdiff_t needed = (strlen (path)
++		      + 1
++		      + strlen (name)
++		      + strlen (suffix)
++		      + 1);
++  if (*bufsize < needed)
++    {
++      xfree (*dump_file);
++      *dump_file = xmalloc (needed);
++      *bufsize = needed;
++    }
++#ifdef DOS_NT
++  ptrdiff_t name_len = strlen (name);
++  if (name_len >= 4
++      && c_strcasecmp (name + name_len - 4, ".exe") == 0)
++    sprintf (*dump_file, "%s%c%.*s%s", path, DIRECTORY_SEP,
++	     (int)(name_len - 4), name, suffix);
++  else
++#endif
++    sprintf (*dump_file, "%s%c%s%s",
++	     path, DIRECTORY_SEP, name, suffix);
++  return pdumper_load (*dump_file);
++}
++
+ static void
+ load_pdump (int argc, char **argv)
+ {
+@@ -817,6 +866,7 @@
+      encoding the system natively uses for filesystem access, so
+      there's no need for character set conversion.  */
+   ptrdiff_t bufsize;
++  char *argv0_realbase = NULL;
+   dump_file = load_pdump_find_executable (argv[0], &bufsize);
+ 
+   /* If we couldn't find our executable, go straight to looking for
+@@ -838,6 +888,9 @@
+ #ifndef WINDOWSNT
+       bufsize = exenamelen + 1;
+ #endif
++      /* Save the realpath basename for possible use below */
++      argv0_realbase = xstrdup (load_pdump_basename (real_exename));
++
+       if (strip_suffix)
+         {
+ 	  ptrdiff_t strip_suffix_length = strlen (strip_suffix);
+@@ -869,55 +922,22 @@
+   /* Look for "emacs.pdmp" in PATH_EXEC.  We hardcode "emacs" in
+      "emacs.pdmp" so that the Emacs binary still works if the user
+      copies and renames it.  */
+-  const char *argv0_base = "emacs";
+-  ptrdiff_t needed = (strlen (path_exec)
+-                      + 1
+-                      + strlen (argv0_base)
+-                      + strlen (suffix)
+-                      + 1);
+-  if (bufsize < needed)
+-    {
+-      xfree (dump_file);
+-      dump_file = xpalloc (NULL, &bufsize, needed - bufsize, -1, 1);
+-    }
+-  sprintf (dump_file, "%s%c%s%s",
+-           path_exec, DIRECTORY_SEP, argv0_base, suffix);
+-  result = pdumper_load (dump_file);
++  result = load_pdump_from_path (path_exec, "emacs", suffix,
++				 &dump_file, &bufsize);
+ 
++  /* Finally, look for basename(argv0)+".pdmp" in PATH_EXEC. Use the absolute
++     (realpath) version in preference to the given argv[0], as with the
++     executable directory check above, as we don't look up pdmp files based
++     on symlink names. This way, they can rename both the executable and
++     its pdump file in PATH_EXEC, and have several Emacs configurations
++     in the same versioned libexec subdirectory.  */
+   if (result == PDUMPER_LOAD_FILE_NOT_FOUND)
+     {
+-      /* Finally, look for basename(argv0)+".pdmp" in PATH_EXEC.
+-	 This way, they can rename both the executable and its pdump
+-	 file in PATH_EXEC, and have several Emacs configurations in
+-	 the same versioned libexec subdirectory.  */
+-      char *p, *last_sep = NULL;
+-      for (p = argv[0]; *p; p++)
+-	{
+-	  if (IS_DIRECTORY_SEP (*p))
+-	    last_sep = p;
+-	}
+-      argv0_base = last_sep ? last_sep + 1 : argv[0];
+-      ptrdiff_t needed = (strlen (path_exec)
+-			  + 1
+-			  + strlen (argv0_base)
+-			  + strlen (suffix)
+-			  + 1);
+-      if (bufsize < needed)
+-	{
+-	  xfree (dump_file);
+-	  dump_file = xmalloc (needed);
+-	}
+-#ifdef DOS_NT
+-      ptrdiff_t argv0_len = strlen (argv0_base);
+-      if (argv0_len >= 4
+-	  && c_strcasecmp (argv0_base + argv0_len - 4, ".exe") == 0)
+-	sprintf (dump_file, "%s%c%.*s%s", path_exec, DIRECTORY_SEP,
+-		 (int)(argv0_len - 4), argv0_base, suffix);
+-      else
+-#endif
+-      sprintf (dump_file, "%s%c%s%s",
+-	       path_exec, DIRECTORY_SEP, argv0_base, suffix);
+-      result = pdumper_load (dump_file);
++      char *bname = argv0_realbase ? argv0_realbase :
++	      load_pdump_basename (argv[0]);
++
++      result = load_pdump_from_path (path_exec, bname, suffix,
++				     &dump_file, &bufsize);
+     }
+ 
+   if (result != PDUMPER_LOAD_SUCCESS)
+@@ -929,6 +949,8 @@
+ 
+  out:
+   xfree (dump_file);
++  if (argv0_realbase)
++	  xfree (argv0_realbase);
+ }
+ #endif /* HAVE_PDUMPER */
+ 

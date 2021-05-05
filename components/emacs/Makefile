@@ -32,12 +32,12 @@ BUILD_BITS=	64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		emacs
-COMPONENT_VERSION=	26.3
+COMPONENT_VERSION=	27.2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:09c747e048137c99ed35747b012910b704e0974dde4db6696fde7054ce387591
+    sha256:80ff6118fb730a6d8c704dccd6915a6c0e0a166ab1daeef9fe68afa9073ddb73
 COMPONENT_ANITYA_ID=	675
 
-TPNO=			55359
+TPNO=			69656
 
 INSTALL_TARGET=
 # The upstream emacs distribution does not have tests to be run
@@ -60,11 +60,6 @@ include $(WS_MAKE_RULES)/gnu-component.mk
 EMACS_ULEV_PFX = $(MACH:sparc=sparc-sun)
 EMACS_ULEVDIR =	 $(EMACS_ULEV_PFX:i386=x86_64-pc)-solaris$(SOLARIS_VERSION)
 PKG_MACROS +=	EMACS_ULEVDIR=$(EMACS_ULEVDIR)
-
-# LD_OPTIONS is defined to apply desirable link-editor options to Userland
-# components. Non-executable stack and data break sparc emacs.
-#
-LD_MAP_NOEXDATA.sparc=
 
 # Uncomment this for debugging only. It configures emacs to run from the
 # local proto instead of from its final installed location. This is useful
@@ -118,16 +113,13 @@ endif
 # 
 CONFIGURE_OPTIONS +=	--without-dbus --without-gconf --without-gsettings
 
-# ASLR should remain disabled for emacs. ASLR undermines emacs's dumping
-# code, which requires every execution to have the same mappings. Since
-# emacs is not network facing, or run with elevated privileges, this is
-# not a security concern.
-#
-# Similarly, emacs cannot cope with a non-executable stack and with a protected
-# and non-executable heap.
-ASLR_MODE =	$(ASLR_DISABLE)
-NXHEAP_MODE =	$(NXHEAP_DISABLE)
-NXSTACK_MODE =	$(NXSTACK_DISABLE)
+# Starting with Emacs 27, the traditional dumped emacs, created with
+# dldump(), is no longer used. This allows us to build Emacs as
+# a Position Independent Executable (PIE), and it also means that ASLR
+# can now be used, and need not be disabled.
+CC_PIC_MODE =	$(CC_PIC_ENABLE)
+LD_Z_PIE_MODE =	$(LD_Z_PIE_ENABLE)
+
 ADIHEAP_MODE =	$(ADIHEAP_DISABLE)
 
 # variant specific configure options
@@ -149,32 +141,65 @@ PETC=		$(PROTO_DIR)/usr/share/emacs/$(COMPONENT_VERSION)/etc
 PGBIN=		$(PROTO_DIR)/usr/gnu/bin
 PGSHAREMAN1=	$(PROTO_DIR)/usr/gnu/share/man/man1
 PSHAREMAN1=	$(PROTO_DIR)/usr/share/man/man1
+PULEVDIR=	$(PROTO_DIR)/usr/lib/emacs/$(COMPONENT_VERSION)/$(EMACS_ULEVDIR)
 PVAR=		$(PROTO_DIR)/var
 
-# Remove existing emacs executable from usr/bin. We install the binaries
-# under their variant names. /usr/bin/emacs ends up as an IPS mediated link.
-COMPONENT_POST_INSTALL_ACTION += $(RM) $(PBIN)/emacs $(PBIN)/emacs-* ;
+# Remove things 'install' delivers to the proto that we don't want. Doing
+# this keeps them from showing up in the generated manifest, and reduces
+# the chance of missing one and accidentally packaging it:
+#
+#  -	The systemd support, which is only applicable to Linux.
+#
+#  -	The emacs executable from /usr/bin. We install the binaries
+#	under their variant names (emacs-nox, etc). /usr/bin/emacs ends
+#	up as an IPS mediated link.
+#
+#  -	The pdumper (.pdmp) files corresponding to the emacs executable.
+#	These are also installed under their matching variant names.
+#
+COMPONENT_POST_INSTALL_ACTION += $(RM) -rf $(PROTO_DIR)/usr/lib/systemd
+COMPONENT_POST_INSTALL_ACTION += $(RM) \
+	$(PBIN)/emacs		$(PBIN)/emacs-* \
+	$(PULEVDIR)/emacs.pdmp	$(PULEVDIR)/emacs-*.pdmp ;
 
-# GTK binaries
+# GTK binaries and pdmp files
 COMPONENT_POST_INSTALL_ACTION += \
 	$(CP) $(BUILD_DIR)/$(MACH64)-gtk/src/emacs-$(COMPONENT_VERSION).1 \
 		$(PBIN)/emacs-gtk ;
 COMPONENT_POST_INSTALL_ACTION += \
 	$(LN) $(PBIN)/emacs-gtk $(PBIN)/emacs-gtk-$(COMPONENT_VERSION) ;
+COMPONENT_POST_INSTALL_ACTION += \
+	$(CP) $(BUILD_DIR)/$(MACH64)-gtk/src/emacs-$(COMPONENT_VERSION).1.pdmp \
+		$(PULEVDIR)/emacs-gtk.pdmp ;
+COMPONENT_POST_INSTALL_ACTION += \
+	$(LN) $(PULEVDIR)/emacs-gtk.pdmp \
+		$(PULEVDIR)/emacs-gtk-$(COMPONENT_VERSION).pdmp ;
 
-# Non-X11 binaries
+# Non-X11 binaries and pdmp files
 COMPONENT_POST_INSTALL_ACTION += \
 	$(CP) $(BUILD_DIR)/$(MACH64)-nox/src/emacs-$(COMPONENT_VERSION).1 \
 		$(PBIN)/emacs-nox ;
 COMPONENT_POST_INSTALL_ACTION += \
 	$(LN) $(PBIN)/emacs-nox $(PBIN)/emacs-nox-$(COMPONENT_VERSION) ;
+COMPONENT_POST_INSTALL_ACTION += \
+	$(CP) $(BUILD_DIR)/$(MACH64)-nox/src/emacs-$(COMPONENT_VERSION).1.pdmp \
+		$(PULEVDIR)/emacs-nox.pdmp ;
+COMPONENT_POST_INSTALL_ACTION += \
+	$(LN) $(PULEVDIR)/emacs-nox.pdmp \
+		$(PULEVDIR)/emacs-nox-$(COMPONENT_VERSION).pdmp ;
 
-# X11 (Athena) binaries
+# X11 (Athena) binaries and pdmp files
 COMPONENT_POST_INSTALL_ACTION += \
 	$(CP) $(BUILD_DIR)/$(MACH64)-x/src/emacs-$(COMPONENT_VERSION).1 \
 		$(PBIN)/emacs-x ;
 COMPONENT_POST_INSTALL_ACTION += \
 	$(LN) $(PBIN)/emacs-x $(PBIN)/emacs-x-$(COMPONENT_VERSION) ;
+COMPONENT_POST_INSTALL_ACTION += \
+	$(CP) $(BUILD_DIR)/$(MACH64)-x/src/emacs-$(COMPONENT_VERSION).1.pdmp \
+		$(PULEVDIR)/emacs-x.pdmp ;
+COMPONENT_POST_INSTALL_ACTION += \
+	$(LN) $(PULEVDIR)/emacs-x.pdmp \
+		$(PULEVDIR)/emacs-x-$(COMPONENT_VERSION).pdmp ;
 
 # ctags and etags go in /usr/gnu/bin instead of /usr/bin. At this time,
 # etags could arguably go into /usr/bin, but we'd like to preserve the
@@ -201,9 +226,9 @@ COMPONENT_POST_INSTALL_ACTION += \
 
 COMPONENT_POST_INSTALL_ACTION += $(MKDIR) $(PGSHAREMAN1) ;
 COMPONENT_POST_INSTALL_ACTION += \
-	$(CP) $(COMPONENT_SRC)/doc/man/ctags.1 $(PGSHAREMAN1)/ctags.1 ;
+	$(MV) $(COMPONENT_SRC)/doc/man/ctags.1 $(PGSHAREMAN1)/ctags.1 ;
 COMPONENT_POST_INSTALL_ACTION += \
-	$(CP) $(COMPONENT_SRC)/doc/man/etags.1 $(PGSHAREMAN1)/etags.1 ;
+	$(MV) $(COMPONENT_SRC)/doc/man/etags.1 $(PGSHAREMAN1)/etags.1 ;
 
 # Throw away usr/share/info/dir and usr/share/info/info.info. These files
 # live at the topmost node of the Info hierarchy. Emacs builds them, as
@@ -234,9 +259,12 @@ REQUIRED_PACKAGES += image/library/libtiff
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
+REQUIRED_PACKAGES += library/desktop/harfbuzz
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
+REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/gnutls-3
+REQUIRED_PACKAGES += library/jansson
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/zlib
@@ -244,6 +272,7 @@ REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/fontconfig
 REQUIRED_PACKAGES += system/library/freetype-2
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libice
 REQUIRED_PACKAGES += x11/library/libsm

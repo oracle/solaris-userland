@@ -1,0 +1,29 @@
+# emacsclient, as delivered with emacs 27.2, fails with an error about
+# ownership. The code creates a socket, and attaches to the emacs server
+# socket with connect(). It then calls fstat(), and does a comparison of the
+# process uid with st_uid. The upstream bug for this change was:
+#    https://debbugs.gnu.org/cgi/bugreport.cgi?bug=33366
+# It fails on Solaris because the uid/gid of the socket file are not
+# propagated to the socket, leaving st_uid set to 0:
+#    32775696 sockfs hardcodes uid/gid to 0
+# This patch restores the original behavior, pending a fix for 32775696.
+#
+--- emacs-27.2.orig/lib-src/emacsclient.c	2021-04-14 18:33:37.967846502 +0000
++++ emacs-27.2/lib-src/emacsclient.c	2021-04-15 08:32:41.882046704 +0000
+@@ -1478,10 +1478,16 @@
+       struct stat connect_stat;
+       if (fstat (s, &connect_stat) != 0)
+ 	sock_status = errno;
++#ifdef SOLARIS2
++      /* Solaris returns 0 for st_uid/st_gid */
++      else
++	return s;
++#else
+       else if (connect_stat.st_uid == uid)
+ 	return s;
+       else
+ 	sock_status = -1;
++#endif
+ 
+       CLOSE_SOCKET (s);
+     }
