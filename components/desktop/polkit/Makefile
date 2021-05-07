@@ -62,10 +62,6 @@ CFLAGS += -ggdb
 CFLAGS.gcc += -std=gnu11
 CFLAGS.studio += -std=c11 -xlang=c11
 
-# Solaris doesn't have a defined authpriv facility in syslog, so map it to
-# an unused one for now
-CPPFLAGS += -DLOG_AUTHPRIV='(10<<3)'
-
 CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += --enable-gtk-doc
 CONFIGURE_OPTIONS += --enable-man-pages

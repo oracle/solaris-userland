@@ -56,10 +56,6 @@ CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_PREP_ACTION += \
     ( cd $(@D) ; autoreconf -fiv );
 
-# Solaris doesn't have a defined authpriv facility in syslog, so map it to
-# an unused one for now
-CPPFLAGS += -DLOG_AUTHPRIV='(10<<3)'
-
 CONFIGURE_OPTIONS += --enable-docbook-docs 
 CONFIGURE_OPTIONS += --enable-gtk-doc
 CONFIGURE_OPTIONS += --enable-shared
