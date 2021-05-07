@@ -104,6 +104,7 @@ REQUIRED_PACKAGES += developer/gnu-indent
 REQUIRED_PACKAGES += developer/lexer/flex
 REQUIRED_PACKAGES += developer/parser/bison
 REQUIRED_PACKAGES += developer/llvm/llvm
+REQUIRED_PACKAGES += developer/llvm/llvm-libs
 REQUIRED_PACKAGES += developer/llvm/llvm-build
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/graphics/libvdpau

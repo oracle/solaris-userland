@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 # These are normally in transforms/manifest-check-cleanup which we don't use
@@ -37,11 +37,11 @@
 <transform file path=usr/lib/.*/libclang.*\.a$ -> set pkg.type build-clang>
 
 <transform file link path=usr/(bin|share/man/man1)/ -> set pkg.type llvm>
-<transform file link path=usr/lib/.*/(libLLVM|libLTO|libOptRemarks).*\.so -> set pkg.type llvm>
+<transform file link path=usr/lib/.*/(libLLVM|libLTO).*\.so -> set pkg.type libs-llvm>
 
 <transform file link path=usr/(bin|share/man/man1)/(arcmt-test|c-|clang|scan|diagtool|git-clang-format) -> set pkg.type clang>
 <transform file path=usr/libexec -> set pkg.type clang>
-<transform file link path=usr/lib/.*/libclang.*\.so -> set pkg.type clang>
+<transform file link path=usr/lib/.*/libclang.*\.so -> set pkg.type libs-clang>
 <transform file path=usr/lib/.*/clang/.*/include -> set pkg.type clang>
 <transform file path=usr/lib/clang -> set pkg.type clang>
 <transform file path=usr/lib/python3.7/vendor-packages -> set pkg.type clang>
