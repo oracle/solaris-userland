@@ -42,7 +42,6 @@ COMMON_PERL_ENV += MAKE=$(GMAKE)
 COMMON_PERL_ENV += PATH=$(dir $(CC)):$(SPRO_VROOT)/bin:$(PATH)
 COMMON_PERL_ENV += LANG=""
 COMMON_PERL_ENV += CC="$(CC)"
-COMMON_PERL_ENV += CFLAGS="$(PERL_OPTIMIZE)"
 
 # These are filled later by calling define-perl-targets
 BUILD_64 =

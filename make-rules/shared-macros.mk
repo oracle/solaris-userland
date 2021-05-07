@@ -838,12 +838,6 @@ PERL_PKG =	$(PERL_VERSION:5.%=runtime/perl-5%)
 # PERL_ARCH is perl's architecture string.  Use in ips manifests.
 PERL_ARCH :=	$(shell $(PERL) -e 'use Config; print $$Config{archname}')
 PERL_ARCH_FUNC=	$(shell $(1) -e 'use Config; print $$Config{archname}')
-# Optimally we should ask perl which C compiler was used but it doesn't
-# result in a full path name.  Only "c" is being recorded
-# inside perl builds while we actually need a full path to
-# the studio compiler.
-#PERL_CC :=	$(shell $(PERL) -e 'use Config; print $$Config{cc}')
-PERL_OPTIMIZE :=$(shell $(PERL) -e 'use Config; print $$Config{optimize}')
 
 PKG_MACROS +=   PERL_ARCH=$(PERL_ARCH)
 PKG_MACROS +=   PERL_VERSION=$(PERL_VERSION)
