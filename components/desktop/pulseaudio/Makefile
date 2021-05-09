@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS = 		64_and_32
@@ -28,16 +28,16 @@ COMPILER = 		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pulseaudio
-COMPONENT_VERSION=	13.99.1
+COMPONENT_VERSION=	14.2
 COMPONENT_PROJECT_URL=	http://freedesktop.org/software/pulseaudio
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:e6a111cc078e6039bf657a3fd1f73dc804c8ee362ca03a0732dc5c38c13e0a0c
+    sha256:75d3f7742c1ae449049a4c88900e454b8b350ecaa8c544f3488a2562a9ff66f1
 COMPONENT_ARCHIVE_URL=	http://freedesktop.org/software/$(COMPONENT_NAME)/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	3729
 
-TPNO=			61903
+TPNO=			70294
 
 # Build for python 3.7
 PYTHON_VERSION = 3.7
