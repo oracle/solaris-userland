@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,15 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-system-monitor
-COMPONENT_VERSION=	3.24.0
+COMPONENT_VERSION=	3.38.0
 COMPONENT_PROJECT_URL=  https://help.gnome.org/users/gnome-system-monitor/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:c32b45062411aaef06681e5e28fd2c24ea8b362168bae83992944ec8e02063f4
+	sha256:73bf7ab4d5503c2567d76f831c9ae3fe27c31495761889ad3b351ef4c068aff4
 COMPONENT_BUGDB=        gnome/applications
 COMPONENT_ANITYA_ID=	13137
 
-TPNO=			34566
+TPNO=			70335
+BUILD_STYLE=            meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
@@ -46,27 +47,14 @@ CXXFLAGS += -std=c++11
 # Uses gcc-specific language extensions.
 CXXFLAGS.studio += -features=extensions
 
-CONFIGURE_OPTIONS += --disable-static
-# Linux-specific.
-CONFIGURE_OPTIONS += --disable-systemd
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --enable-wnck
-CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += --libexecdir="$(USRLIBDIR)"
+CONFIGURE_OPTIONS += -Dsystemd=false
+CONFIGURE_OPTIONS += -Dwnck=true
 
 # Assumes GNU msgfmt is in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
-
-# GNU Build System files have to be regenerated for automake 1.16.
-# It can be removed when the upstream starts to use a newer automake version.
-COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
-
-# Added for compiling gsm-resources.c in src
-COMPONENT_PRE_CONFIGURE_ACTION = ($(CLONEY) $(SOURCE_DIR) $(@D))
-COMPONENT_POST_CONFIGURE_ACTION = \
-	($(LN) -fs $(@D)/src/legacy/gsm-resources.c \
-	$(@D)/src/gsm-resources.c)
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 REQUIRED_PACKAGES += image/library/librsvg
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
