@@ -1,0 +1,13 @@
+https://gitlab.freedesktop.org/xorg/xserver/-/issues/1127
+
+--- a/glx/vndcmds.c	2021-05-11 07:41:37.306643295 -0700
++++ b/glx/vndcmds.c	2021-05-11 12:39:29.334113418 -0700
+@@ -91,7 +91,7 @@
+ {
+     xGenericReply *rep = (xGenericReply *) replyPtr;
+     rep->type = X_Reply;
+-    rep->sequenceNumber = client->sequence;
++    rep->sequenceNumber = client->swapped ? bswap_16(client->sequence) : client->sequence;
+     rep->length = 0;
+ }
+ 
