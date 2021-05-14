@@ -4,8 +4,8 @@ another soon-to-be-obsolete dependency is not feasible, we are patching it out.
 
 Not suitable for upstream (although they will most likely do the same thing soon).
 
---- buildbot-worker-2.10.0/buildbot_worker/compat.py
-+++ buildbot-worker-2.10.0/buildbot_worker/compat.py
+--- buildbot-worker-3.1.1/buildbot_worker/compat.py
++++ buildbot-worker-3.1.1/buildbot_worker/compat.py
 @@ -21,7 +21,6 @@ between Python 2 and Python 3.
  
  from __future__ import absolute_import
@@ -35,8 +35,8 @@ Not suitable for upstream (although they will most likely do the same thing soon
  
  
  __all__ = [
---- buildbot-worker-2.10.0/buildbot_worker/commands/utils.py
-+++ buildbot-worker-2.10.0/buildbot_worker/commands/utils.py
+--- buildbot-worker-3.1.1/buildbot_worker/commands/utils.py
++++ buildbot-worker-3.1.1/buildbot_worker/commands/utils.py
 @@ -15,7 +15,6 @@
  
  from __future__ import absolute_import
@@ -57,8 +57,8 @@ Not suitable for upstream (although they will most likely do the same thing soon
              except UnicodeDecodeError:
                  log.err("rmdirRecursive: decoding from UTF-8 failed (ignoring)")
  
---- buildbot-worker-2.10.0/buildbot_worker/monkeypatches/testcase_assert.py
-+++ buildbot-worker-2.10.0/buildbot_worker/monkeypatches/testcase_assert.py
+--- buildbot-worker-3.1.1/buildbot_worker/monkeypatches/testcase_assert.py
++++ buildbot-worker-3.1.1/buildbot_worker/monkeypatches/testcase_assert.py
 @@ -15,7 +15,6 @@
  
  from __future__ import absolute_import
@@ -76,8 +76,8 @@ Not suitable for upstream (although they will most likely do the same thing soon
          expected_regexp = re.compile(expected_regexp)
  
      if not expected_regexp.search(str(exception)):
---- buildbot-worker-2.10.0/buildbot_worker/pbutil.py
-+++ buildbot-worker-2.10.0/buildbot_worker/pbutil.py
+--- buildbot-worker-3.1.1/buildbot_worker/pbutil.py
++++ buildbot-worker-3.1.1/buildbot_worker/pbutil.py
 @@ -19,7 +19,6 @@
  
  from __future__ import absolute_import
@@ -94,8 +94,8 @@ Not suitable for upstream (although they will most likely do the same thing soon
 +            data = data.items()
          return data_type(map(decode, data))
      return data
---- buildbot-worker-2.10.0/buildbot_worker/runprocess.py
-+++ buildbot-worker-2.10.0/buildbot_worker/runprocess.py
+--- buildbot-worker-3.1.1/buildbot_worker/runprocess.py
++++ buildbot-worker-3.1.1/buildbot_worker/runprocess.py
 @@ -19,11 +19,6 @@ Support for running 'shell commands'
  
  from __future__ import absolute_import
@@ -159,8 +159,8 @@ Not suitable for upstream (although they will most likely do the same thing soon
              tf.write(bytes2NativeString(self.command, self.builder.unicode_encoding))
          else:
              tf.write(win32_batch_quote(self.command, self.builder.unicode_encoding))
---- buildbot-worker-2.10.0/buildbot_worker/scripts/windows_service.py
-+++ buildbot-worker-2.10.0/buildbot_worker/scripts/windows_service.py
+--- buildbot-worker-3.1.1/buildbot_worker/scripts/windows_service.py
++++ buildbot-worker-3.1.1/buildbot_worker/scripts/windows_service.py
 @@ -67,7 +67,6 @@
  from __future__ import absolute_import
  from __future__ import division
@@ -169,8 +169,8 @@ Not suitable for upstream (although they will most likely do the same thing soon
  
  import os
  import sys
---- buildbot-worker-2.10.0/buildbot_worker/test/unit/test_bot.py
-+++ buildbot-worker-2.10.0/buildbot_worker/test/unit/test_bot.py
+--- buildbot-worker-3.1.1/buildbot_worker/test/unit/test_bot.py
++++ buildbot-worker-3.1.1/buildbot_worker/test/unit/test_bot.py
 @@ -15,7 +15,6 @@
  
  from __future__ import absolute_import
@@ -179,8 +179,8 @@ Not suitable for upstream (although they will most likely do the same thing soon
  
  import multiprocessing
  import os
---- buildbot-worker-2.10.0/buildbot_worker/test/util/misc.py
-+++ buildbot-worker-2.10.0/buildbot_worker/test/util/misc.py
+--- buildbot-worker-3.1.1/buildbot_worker/test/util/misc.py
++++ buildbot-worker-3.1.1/buildbot_worker/test/util/misc.py
 @@ -20,8 +20,6 @@
  
  from __future__ import absolute_import
@@ -205,8 +205,8 @@ Not suitable for upstream (although they will most likely do the same thing soon
          return s
      return s.replace('\n', os.linesep)
  
---- buildbot-worker-2.10.0/buildbot_worker/util/__init__.py
-+++ buildbot-worker-2.10.0/buildbot_worker/util/__init__.py
+--- buildbot-worker-3.1.1/buildbot_worker/util/__init__.py
++++ buildbot-worker-3.1.1/buildbot_worker/util/__init__.py
 @@ -13,8 +13,6 @@
  #
  # Copyright Buildbot Team Members
@@ -225,9 +225,9 @@ Not suitable for upstream (although they will most likely do the same thing soon
              return s
          return str(s)
  
---- buildbot-worker-2.10.0/setup.py
-+++ buildbot-worker-2.10.0/setup.py
-@@ -122,7 +122,6 @@ twisted_ver = ">= 17.9.0"
+--- buildbot-worker-3.1.1/setup.py
++++ buildbot-worker-3.1.1/setup.py
+@@ -146,7 +146,6 @@ twisted_ver = ">= 17.9.0"
  if setuptools is not None:
      setup_args['install_requires'] = [
          'twisted ' + twisted_ver,
