@@ -28,17 +28,17 @@ COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME        = graphviz
-COMPONENT_VERSION     = 2.44.1
+COMPONENT_VERSION     = 2.47.1
 COMPONENT_PROJECT_URL = http://www.graphviz.org/
 COMPONENT_SRC         = $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE     = $(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:3aac783a15341c2808141cc38ead408bf3d6ad203e0ed3946c9df595b760edda
+    sha256:513765332d45c3e4ddc539aed4bbaf536e86bd87946d3fea25201c3cb7afc31a
 COMPONENT_ARCHIVE_URL = \
     http://gitlab.com/graphviz/graphviz/-/archive/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID   = 1249
 
-TPNO = 62678
+TPNO = 70555
 
 COMPONENT_PREP_ACTION += \
 	( cd $(@D) ; PATH="$(PATH)" $(CONFIG_SHELL) autogen.sh NOCONFIG)
@@ -76,6 +76,7 @@ CONFIGURE_OPTIONS +=	--enable-python2=yes
 CONFIGURE_OPTIONS +=	--enable-python3=yes
 CONFIGURE_OPTIONS +=	--x-libraries=$(CONFIGURE_LIBDIR.$(BITS))
 CONFIGURE_OPTIONS +=	--with-gdincludedir=$(USRINCDIR)/gd2
+CONFIGURE_OPTIONS +=	--enable-man-pdfs
 
 # Makefile.am files of this component are not compatible with Solaris make.
 # Use GNU make to avoid the configuration error when makefile fragments are processed.
@@ -172,9 +173,9 @@ PKG_MACROS += PERL_VERSION_NODOT=$(PERL_VERSION_NODOT)
 COMPONENT_PRE_TEST_ACTION = \
     (cd $(@D)/rtest; \
     if ! test -L rtest.sh ; then \
-        ln -s $(SOURCE_DIR)/rtest/* . ; \
-        ln -s $(SOURCE_DIR)/rtest/graphs/* graphs ; \
-        ln -s $(SOURCE_DIR)/rtest/linux.x86/* linux.x86 ; \
+        $(LN) -fs $(SOURCE_DIR)/rtest/* . ; \
+        $(LN) -fs $(SOURCE_DIR)/rtest/graphs/* graphs ; \
+        $(LN) -fs $(SOURCE_DIR)/rtest/linux.x86/* linux.x86 ; \
     fi )
 COMPONENT_TEST_DIR = $(@D)/rtest
 COMPONENT_TEST_ENV = PATH=$(BUILD_DIR_$(BITS)):$(GNUBIN):$(PATH)

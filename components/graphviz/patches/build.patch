@@ -1,0 +1,37 @@
+Fix graphviz out-of-source build.
+
+This issue was reported upstream:
+https://gitlab.com/graphviz/graphviz/issues/2073
+
+--- graphviz-2.47.1/lib/expr/Makefile.am
++++ graphviz-2.47.1/lib/expr/Makefile.am
+@@ -7,6 +7,7 @@ pkgconfigdir = $(libdir)/pkgconfig
+ 
+ AM_CPPFLAGS = \
+ 	-I$(top_srcdir)/lib \
++	-I$(top_builddir)/lib \
+ 	-I$(top_srcdir)/lib/cdt
+ 
+ noinst_HEADERS = exgram.h exlib.h exop.h expr.h
+--- graphviz-2.47.1/lib/common/Makefile.am
++++ graphviz-2.47.1/lib/common/Makefile.am
+@@ -2,7 +2,8 @@
+ 
+ AM_CPPFLAGS = \
+ 	-I$(top_srcdir)/lib \
+-        -I$(top_srcdir)/libltdl \
++	-I$(top_builddir)/lib \
++	-I$(top_srcdir)/libltdl \
+ 	-I$(top_srcdir)/lib/gvc \
+ 	-I$(top_srcdir)/lib/pack \
+ 	-I$(top_srcdir)/lib/xdot \
+--- graphviz-2.47.1/lib/gvpr/Makefile.am
++++ graphviz-2.47.1/lib/gvpr/Makefile.am
+@@ -7,6 +7,7 @@ GVPR_VERSION="2:0:0"
+ 
+ AM_CPPFLAGS = \
+ 	-I$(top_srcdir)/lib \
++	-I$(top_builddir)/lib \
+ 	-I$(top_srcdir)/lib/common \
+ 	-I$(top_builddir)/lib/common \
+ 	-I$(top_srcdir)/lib/cgraph \
