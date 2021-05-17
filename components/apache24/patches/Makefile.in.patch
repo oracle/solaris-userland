@@ -1,9 +1,11 @@
 Patch origin: in-house
 Patch status: Solaris-specific; not suitable for upstream
 
---- Makefile.in
-+++ Makefile.in
-@@ -50,6 +50,9 @@
+diff --git a/Makefile.in b/Makefile.in
+index 9ae3c97..6bd25d6 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -50,6 +50,9 @@ install-conf:
  	    				-e 's#@@Port@@#$(PORT)#g' \
  	    				-e 's#@@SSLPort@@#$(SSLPORT)#g' \
  	    				-e '/@@LoadModule@@/d' \
@@ -13,7 +15,7 @@ Patch status: Solaris-specific; not suitable for upstream
  	    				< $$i; \
  	    		else \
  	    			sed -n -e '/@@LoadModule@@/q' \
-@@ -116,6 +119,19 @@
+@@ -126,6 +129,19 @@ install-conf:
  	        cp -p envvars-std $(DESTDIR)$(sbindir)/envvars ; \
  	    fi ; \
  	fi
@@ -33,7 +35,7 @@ Patch status: Solaris-specific; not suitable for upstream
  
  # Create a sanitized config_vars.mk
  build/config_vars.out: build/config_vars.mk
-@@ -202,7 +218,6 @@
+@@ -232,7 +248,6 @@ install-cgi:
  
  install-other:
  	@test -d $(DESTDIR)$(logfiledir) || $(MKINSTALLDIRS) $(DESTDIR)$(logfiledir)

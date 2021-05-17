@@ -3,9 +3,45 @@ Patch status: unclear; so far they disable it just in configuration file
 
 https://bz.apache.org/bugzilla/show_bug.cgi?id=57120
 
---- modules/ssl/ssl_private.h
-+++ modules/ssl/ssl_private.h
-@@ -378,12 +378,10 @@
+diff --git a/docs/manual/mod/mod_ssl.html.en b/docs/manual/mod/mod_ssl.html.en
+index 5b253b0..926f00b 100644
+--- a/docs/manual/mod/mod_ssl.html.en
++++ b/docs/manual/mod/mod_ssl.html.en
+@@ -1538,11 +1538,7 @@ The available (case-insensitive) <em>protocol</em>s are:</p>
+ 
+ <li><code>all</code>
+     <p>
+-    This is a shortcut for ``<code>+SSLv3 +TLSv1</code>'' or
+-    - when using OpenSSL 1.0.1 and later -
+-    ``<code>+SSLv3 +TLSv1 +TLSv1.1 +TLSv1.2</code>'', respectively
+-    (except for OpenSSL versions compiled with the ``no-ssl3'' configuration
+-    option, where <code>all</code> does not include <code>+SSLv3</code>).</p></li>
++    This is a shortcut for ``<code>+TLSv1.2</code>''.</p></li>
+ </ul>
+ <div class="example"><h3>Example</h3><pre class="prettyprint lang-config">SSLProtocol TLSv1</pre>
+ </div>
+diff --git a/docs/manual/mod/mod_ssl.html.fr.utf8 b/docs/manual/mod/mod_ssl.html.fr.utf8
+index d1874a4..cedfcc0 100644
+--- a/docs/manual/mod/mod_ssl.html.fr.utf8
++++ b/docs/manual/mod/mod_ssl.html.fr.utf8
+@@ -1728,11 +1728,7 @@ casse) :</p>
+ 
+ <li><code>all</code>
+     <p>
+-    C'est un raccourci pour ``<code>+SSLv3 +TLSv1</code>'' ou - à partir
+-    de la version 1.0.1 d'OpenSSL - ``<code>+SSLv3 +TLSv1 +TLSv1.1
+-    +TLSv1.2</code>'' (sauf si OpenSSL a été compilé avec l'option
+-    ``no-ssl3'', auquel cas <code>all</code> n'inclura pas
+-    <code>+SSLv3</code>).</p></li>
++    C'est un raccourci pour ``<code>+TLSv1.2</code>''.</p></li>
+ </ul>
+ <div class="example"><h3>Exemple</h3><pre class="prettyprint lang-config">SSLProtocol TLSv1</pre>
+ </div>
+diff --git a/modules/ssl/ssl_private.h b/modules/ssl/ssl_private.h
+index 560c2fa..ed33cc6 100644
+--- a/modules/ssl/ssl_private.h
++++ b/modules/ssl/ssl_private.h
+@@ -379,12 +379,10 @@ typedef int ssl_opt_t;
  
  #ifdef SSL_OP_NO_TLSv1_3
  #define SSL_HAVE_PROTOCOL_TLSV1_3   (1)
@@ -20,33 +56,3 @@ https://bz.apache.org/bugzilla/show_bug.cgi?id=57120
  #endif
  #else
  #define SSL_PROTOCOL_ALL   (SSL_PROTOCOL_BASIC)
---- docs/manual/mod/mod_ssl.html.en
-+++ docs/manual/mod/mod_ssl.html.en
-@@ -1454,11 +1454,7 @@
- 
- <li><code>all</code>
-     <p>
--    This is a shortcut for ``<code>+SSLv3 +TLSv1</code>'' or
--    - when using OpenSSL 1.0.1 and later -
--    ``<code>+SSLv3 +TLSv1 +TLSv1.1 +TLSv1.2</code>'', respectively
--    (except for OpenSSL versions compiled with the ``no-ssl3'' configuration
--    option, where <code>all</code> does not include <code>+SSLv3</code>).</p></li>
-+    This is a shortcut for ``<code>+TLSv1.2</code>''.</p></li>
- </ul>
- <div class="example"><h3>Example</h3><pre class="prettyprint lang-config">SSLProtocol TLSv1</pre>
- </div>
---- docs/manual/mod/mod_ssl.html.fr.utf8
-+++ docs/manual/mod/mod_ssl.html.fr.utf8
-@@ -1702,11 +1702,7 @@
- 
- <li><code>all</code>
-     <p>
--    C'est un raccourci pour ``<code>+SSLv3 +TLSv1</code>'' ou - à partir
--    de la version 1.0.1 d'OpenSSL - ``<code>+SSLv3 +TLSv1 +TLSv1.1
--    +TLSv1.2</code>'' (sauf si OpenSSL a été compilé avec l'option
--    ``no-ssl3'', auquel cas <code>all</code> n'inclura pas
--    <code>+SSLv3</code>).</p></li>
-+    C'est un raccourci pour ``<code>+TLSv1.2</code>''.</p></li>
- </ul>
- <div class="example"><h3>Exemple</h3><pre class="prettyprint lang-config">SSLProtocol TLSv1</pre>
- </div>

@@ -1,8 +1,10 @@
 Patch origin: in-house
 Patch status: Solaris-specific; not suitable for upstream
 
---- docs/conf/httpd.conf.in
-+++ docs/conf/httpd.conf.in
+diff --git a/docs/conf/httpd.conf.in b/docs/conf/httpd.conf.in
+index 37d7c0b..a023fd2 100644
+--- a/docs/conf/httpd.conf.in
++++ b/docs/conf/httpd.conf.in
 @@ -6,6 +6,12 @@
  # <URL:http://httpd.apache.org/docs/2.4/mod/directives.html>
  # for a discussion of each configuration directive.
@@ -16,7 +18,7 @@ Patch status: Solaris-specific; not suitable for upstream
  # Do NOT simply read the instructions in here without understanding
  # what they do.  They're here only as hints or reminders.  If you are unsure
  # consult the online docs. You have been warned.  
-@@ -63,6 +69,15 @@
+@@ -63,6 +69,15 @@ Listen @@Port@@
  # Example:
  # LoadModule foo_module modules/mod_foo.so
  #
@@ -32,7 +34,7 @@ Patch status: Solaris-specific; not suitable for upstream
  @@LoadModule@@
  
  <IfModule unixd_module>
-@@ -74,8 +89,8 @@
+@@ -74,8 +89,8 @@ Listen @@Port@@
  # It is usually good practice to create a dedicated user and group for
  # running httpd, as with most system services.
  #
@@ -43,7 +45,7 @@ Patch status: Solaris-specific; not suitable for upstream
  
  </IfModule>
  
-@@ -96,7 +111,7 @@
+@@ -96,7 +111,7 @@ Group daemon
  # e-mailed.  This address appears on some server-generated pages, such
  # as error documents.  e.g. admin@your-domain.com
  #
@@ -52,7 +54,7 @@ Patch status: Solaris-specific; not suitable for upstream
  
  #
  # ServerName gives the name and port that the server uses to identify itself.
-@@ -105,7 +120,7 @@
+@@ -105,7 +120,7 @@ ServerAdmin you@example.com
  #
  # If your host doesn't have a registered DNS name, enter its IP address here.
  #
@@ -61,7 +63,7 @@ Patch status: Solaris-specific; not suitable for upstream
  
  #
  # Deny access to the entirety of your server's filesystem. You must
-@@ -314,6 +329,10 @@
+@@ -323,6 +338,10 @@ LogLevel warn
      #
      #AddType text/html .shtml
      #AddOutputFilter INCLUDES .shtml
@@ -72,7 +74,7 @@ Patch status: Solaris-specific; not suitable for upstream
  </IfModule>
  
  #
-@@ -355,48 +374,22 @@
+@@ -364,48 +383,22 @@ LogLevel warn
  
  # Supplemental configuration
  #

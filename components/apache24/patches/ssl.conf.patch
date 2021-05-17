@@ -4,8 +4,10 @@ Patch status: SSLProtocol part submitted to upstream
 
 https://bz.apache.org/bugzilla/show_bug.cgi?id=57120
 
---- docs/conf/extra/httpd-ssl.conf.in
-+++ docs/conf/extra/httpd-ssl.conf.in
+diff --git a/docs/conf/extra/httpd-ssl.conf.in b/docs/conf/extra/httpd-ssl.conf.in
+index 6a3c67a..6ef4daf 100644
+--- a/docs/conf/extra/httpd-ssl.conf.in
++++ b/docs/conf/extra/httpd-ssl.conf.in
 @@ -24,9 +24,9 @@
  # Manual for more details.
  #
@@ -18,7 +20,7 @@ https://bz.apache.org/bugzilla/show_bug.cgi?id=57120
  
  
  #
-@@ -42,6 +42,10 @@
+@@ -42,6 +42,10 @@ Listen @@SSLPort@@
  ##  the main server and all SSL-enabled virtual hosts.
  ##
  
@@ -29,7 +31,7 @@ https://bz.apache.org/bugzilla/show_bug.cgi?id=57120
  #   SSL Cipher Suite:
  #   List the ciphers that the client is permitted to negotiate,
  #   and that httpd will negotiate as the client of a proxied server.
-@@ -73,11 +77,11 @@
+@@ -73,11 +77,11 @@ SSLHonorCipherOrder on
  
  #   SSL Protocol support:
  #   List the protocol versions which clients are allowed to connect with.
@@ -44,7 +46,7 @@ https://bz.apache.org/bugzilla/show_bug.cgi?id=57120
  
  #   Pass Phrase Dialog:
  #   Configure the pass phrase gathering process.
-@@ -122,7 +126,7 @@
+@@ -122,7 +126,7 @@ SSLSessionCacheTimeout  300
  
  #   General setup for the virtual host
  DocumentRoot "@exp_htdocsdir@"
@@ -53,7 +55,7 @@ https://bz.apache.org/bugzilla/show_bug.cgi?id=57120
  ServerAdmin you@example.com
  ErrorLog "@exp_logfiledir@/error_log"
  TransferLog "@exp_logfiledir@/access_log"
-@@ -141,7 +145,8 @@
+@@ -141,7 +145,8 @@ SSLEngine on
  #   Some ECC cipher suites (http://www.ietf.org/rfc/rfc4492.txt)
  #   require an ECC certificate which can also be configured in
  #   parallel.
@@ -63,7 +65,7 @@ https://bz.apache.org/bugzilla/show_bug.cgi?id=57120
  #SSLCertificateFile "@exp_sysconfdir@/server-dsa.crt"
  #SSLCertificateFile "@exp_sysconfdir@/server-ecc.crt"
  
-@@ -151,7 +156,8 @@
+@@ -151,7 +156,8 @@ SSLCertificateFile "@exp_sysconfdir@/server.crt"
  #   you've both a RSA and a DSA private key you can configure
  #   both in parallel (to also allow the use of DSA ciphers, etc.)
  #   ECC keys, when in use, can also be configured in parallel
@@ -73,7 +75,7 @@ https://bz.apache.org/bugzilla/show_bug.cgi?id=57120
  #SSLCertificateKeyFile "@exp_sysconfdir@/server-dsa.key"
  #SSLCertificateKeyFile "@exp_sysconfdir@/server-ecc.key"
  
-@@ -172,6 +178,7 @@
+@@ -172,6 +178,7 @@ SSLCertificateKeyFile "@exp_sysconfdir@/server.key"
  #         to point to the certificate files. Use the provided
  #         Makefile to update the hash symlinks after changes.
  #SSLCACertificatePath "@exp_sysconfdir@/ssl.crt"

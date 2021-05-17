@@ -5,9 +5,11 @@ Will build SSL FIPS version of mod_ssl. Note that modules/ssl-fips-140
 need to be copied from modules/ssl before it can be applied.
 It also makes sure that both mod_ssl versions contains right RPATH.
 
---- modules/ssl/config.m4
-+++ modules/ssl/config.m4
-@@ -44,6 +44,7 @@
+diff --git a/modules/ssl/config.m4 b/modules/ssl/config.m4
+index 45eeb43..a18a815 100644
+--- a/modules/ssl/config.m4
++++ b/modules/ssl/config.m4
+@@ -44,6 +44,7 @@ APACHE_MODULE(ssl, [SSL/TLS support (mod_ssl)], $ssl_objs, , most, [
             # structure, so ask libtool to hide everything else:
             APR_ADDTO(MOD_SSL_LDADD, [-export-symbols-regex ssl_module])
          fi
@@ -15,9 +17,11 @@ It also makes sure that both mod_ssl versions contains right RPATH.
      else
          enable_ssl=no
      fi
---- modules/ssl-fips-140/config.m4
-+++ modules/ssl-fips-140/config.m4
-@@ -14,7 +14,7 @@
+diff --git a/modules/ssl-fips-140/config.m4 b/modules/ssl-fips-140/config.m4
+index 45eeb43..2d69088 100644
+--- a/modules/ssl-fips-140/config.m4
++++ b/modules/ssl-fips-140/config.m4
+@@ -14,7 +14,7 @@ dnl See the License for the specific language governing permissions and
  dnl limitations under the License.
  
  dnl #  start of module specific part
@@ -26,7 +30,7 @@ It also makes sure that both mod_ssl versions contains right RPATH.
  
  dnl #  list of module object files
  ssl_objs="dnl
-@@ -36,7 +36,7 @@
+@@ -36,7 +36,7 @@ ssl_engine_ocsp.lo dnl
  ssl_util_ocsp.lo dnl
  "
  dnl #  hook module into the Autoconf mechanism (--enable-ssl option)
@@ -35,7 +39,7 @@ It also makes sure that both mod_ssl versions contains right RPATH.
      APACHE_CHECK_OPENSSL
      if test "$ac_cv_openssl" = "yes" ; then
          if test "x$enable_ssl" = "xshared"; then
-@@ -44,14 +44,13 @@
+@@ -44,14 +44,13 @@ APACHE_MODULE(ssl, [SSL/TLS support (mod_ssl)], $ssl_objs, , most, [
             # structure, so ask libtool to hide everything else:
             APR_ADDTO(MOD_SSL_LDADD, [-export-symbols-regex ssl_module])
          fi

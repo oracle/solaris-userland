@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		apache2
-COMPONENT_VERSION=	2.4.46
+COMPONENT_VERSION=	2.4.47
 COMPONENT_PROJECT_URL=	https://httpd.apache.org/
 COMPONENT_SRC_NAME=	httpd
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:44b759ce932dc090c0e75c0210b4485ebf6983466fb8ca1b446c8168e1a1aec2
+    sha256:567d5ac72ea643e3828e8e54f32e06f1fad10095d33ae4071eeaec3c78b70a34
 COMPONENT_ARCHIVE_URL=	https://archive.apache.org/dist/httpd/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	utility/apache
 COMPONENT_ANITYA_ID=	1335
 
-TPNO=	61013
+TPNO=	70561
 
 CONFIGURE_DEFAULT_DIRS=no
 SMF_MANIFESTS= $(COMPONENT_DIR)/Solaris/http-apache24.xml
@@ -52,8 +52,6 @@ LDFLAGS += $(CC_BITS)
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE = $(ADIHEAP_ENABLE)
 ADISTACK_MODE = $(ADISTACK_ENABLE)
-
-PATCH_LEVEL=0
 
 # We will build two separate mod_ssl versions.
 COMPONENT_POST_UNPACK_ACTION = (cd $(SOURCE_DIR)/modules; $(CP) -r ssl ssl-fips-140)

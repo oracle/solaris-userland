@@ -3,10 +3,12 @@ Patch status: submitted to community
 
 https://bz.apache.org/bugzilla/show_bug.cgi?id=59615
 
---- modules/ssl/mod_ssl.c
-+++ modules/ssl/mod_ssl.c
-@@ -353,6 +353,7 @@
-     OPENSSL_load_builtin_modules();
+diff --git a/modules/ssl/mod_ssl.c b/modules/ssl/mod_ssl.c
+index 12617b2..3eec4e7 100644
+--- a/modules/ssl/mod_ssl.c
++++ b/modules/ssl/mod_ssl.c
+@@ -428,6 +428,7 @@ static int ssl_hook_pre_config(apr_pool_t *pconf,
+ #endif
  
      if (OBJ_txt2nid("id-on-dnsSRV") == NID_undef) {
 +        ERR_clear_error();
