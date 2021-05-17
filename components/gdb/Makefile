@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # There are a large number of macros in the GCB code written
@@ -32,12 +32,12 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gdb
-COMPONENT_VERSION=	10.1
+COMPONENT_VERSION=	10.2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f12f388b99e1408c01308c3f753313fafa45517740c81ab7ed0d511b13e2cf55
+    sha256:b33ad58d687487a821ec8d878daab0f716be60d0936f2e3ac5cf08419ce70350
 COMPONENT_ANITYA_ID=	11798
 
-TPNO=			62915
+TPNO=			70567
 
 # The traditional output from gmake test omits some
 # test results information that is contained in the 
@@ -52,6 +52,9 @@ COMPONENT_POST_TEST_ACTION += \
 # are not clean since results will still vary.
 COMPONENT_TEST_MASTER = \
         $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
+
+# Run only GDB unit tests.
+COMPONENT_TEST_DIR = $(BUILD_DIR)/$(MACH64)/gdb
 
 # Test transforms retain only relevant results output.
 COMPONENT_TEST_TRANSFORMS += \
