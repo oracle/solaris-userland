@@ -2,12 +2,22 @@ diff --git a/xml2-config.in b/xml2-config.in
 index 1957486..d8944cc 100644
 --- a/xml2-config.in
 +++ b/xml2-config.in
-@@ -91,7 +91,7 @@ while test $# -gt 0; do
- 		echo @XML_LIBDIR@ @XML_LIBS@ @MODULE_PLATFORM_LIBS@
- 	    fi
- 	else
--	    echo @XML_LIBDIR@ @XML_LIBS@ @MODULE_PLATFORM_LIBS@ @WIN32_EXTRA_LIBADD@
-+	    echo -lxml2
- 	fi
+@@ -82,17 +82,7 @@
         	;;
+ 
+     --libs)
+-        if [ "$2" = "--dynamic" ]; then
+-            shift
+-            libs="@XML_LIBS@"
+-        else
+-            libs="@XML_LIBS@ @XML_PRIVATE_LIBS@ @MODULE_PLATFORM_LIBS@"
+-        fi
+-
+-        if [ "@XML_LIBDIR@" != "-L/usr/lib" -a "@XML_LIBDIR@" != "-L/usr/lib64" ]; then
+-            libs="@XML_LIBDIR@ $libs"
+-        fi
+-
++        libs="@XML_LIBS@"
+         libs="$libs @WIN32_EXTRA_LIBADD@"
+         ;;
  
