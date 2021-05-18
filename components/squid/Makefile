@@ -30,15 +30,18 @@ include ../../make-rules/shared-macros.mk
 PATH=$(USRBINDIR):$(GNUBIN):$(USRSBINDIR):$(USRDIR)/perl5/bin
 
 COMPONENT_NAME=         squid
-COMPONENT_VERSION=      4.13
-TPNO=			61443
 COMPONENT_PROJECT_URL=  http://www.squid-cache.org/
+COMPONENT_VERSION=      4.15
+TPNO=			70506
+COMPONENT_ARCHIVE_HASH= sha256:b693a4e5ab2811a8a854f60de0a62afbbf3a952bb1d047952c9ae01321f84a25
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.xz
-COMPONENT_ARCHIVE_HASH= SHA256:6891a0f540e60779b4f24f1802a302f813c6f473ec7336a474ed68c3e2e53ee0
 COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)Versions/v4/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	4880
 COMPONENT_PUBLIC_KEY_URL=	http://www.squid-cache.org/pgp.asc
+
+# Use Perl better than default one
+PERL_VERSION = 5.32
 
 # Enable adiheap security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -131,11 +134,10 @@ REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/libtool/libltdl
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/security/nettle
-REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += runtime/perl-532
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
-REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libc
