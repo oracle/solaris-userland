@@ -20,9 +20,8 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
-
 set name=pkg.fmri \
     value=pkg:/system/management/mcollective@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary \
@@ -276,6 +275,14 @@ file usr/sbin/mcollectived path=usr/ruby/$(RUBY_VERSION)/sbin/mcollectived
 
 # Make mcollectived available in /usr/sbin
 link path=usr/sbin/mcollectived target=../ruby/$(RUBY_VERSION)/sbin/mcollectived
+
+# Release Note
+file release-notes/legacy-mcollective.txt \
+    path=usr/share/doc/release-notes/mcollective-install.txt mode=0444 \
+    must-display=true release-note=feature/pkg/self@0
+file release-notes/legacy-mcollective.txt \
+    path=usr/share/doc/release-notes/mcollective-update.txt mode=0444 \
+    must-display=true release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)
 
 # License & TPNOs
 license mcollective.license license="Apache v2.0" \
