@@ -20,27 +20,33 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sortedcontainers
-COMPONENT_VERSION=	2.2.2
+COMPONENT_VERSION=	2.4.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:7c35fe5d808537e9d8ff7126c985fc743fd5797c23c61c7cd07ec23916884a58
-COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.grantjenks.com/docs/sortedcontainers/
 COMPONENT_BUGDB=	python-mod/sortedconts
 COMPONENT_ANITYA_ID=	15939
 
-TPNO=			61031
+# pypi archive doesn't include the test suite
+GIT_REPO=	https://github.com/grantjenks/python-sortedcontainers/
+GIT_COMMIT_ID=	v$(COMPONENT_VERSION)
+GIT_HASH=	sha256:7dc9da0af7229be0b6b4b7b7ef3d666de7aa3b46510b7125e7ce6993db5eed98
+
+TPNO=			70616
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =	tests
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -49,6 +55,6 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-test:		$(NO_TESTS)
+test:		$(TEST_NO_ARCH)
 
-system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:	$(SYSTEM_TEST_NO_ARCH)
