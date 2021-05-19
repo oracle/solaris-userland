@@ -69,9 +69,6 @@ CONFIGURE_OPTIONS += --with-database=gdbm
 CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS += --with-zsh-completion-dir=/usr/share/zsh/vendor-functions/Completion
 CONFIGURE_OPTIONS += --disable-tests
-#gsetting was introduced in version 12, enabled by default. This causes pseudo errors about the configuration files.
-#Disabling it now.
-CONFIGURE_OPTIONS += --disable-gsettings
 
 # To avoid using the current system default, one is explicitly specified here.
 CONFIGURE_ENV += PYTHON=$(PYTHON)
