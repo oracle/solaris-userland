@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -49,9 +49,6 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/gem.mk
 include $(WS_MAKE_RULES)/ruby.mk
-
-# The unit tests failed to start.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 COMPONENT_TEST_CMD = /usr/bin/rake
 COMPONENT_TEST_DIR = $(SOURCE_DIR)

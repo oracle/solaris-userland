@@ -37,9 +37,6 @@ COMPONENT_ANITYA_ID=	1285
 
 TPNO=		 	69504	
 
-# the tests mostly pass, but it can't find several drivers for ppd files
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS +=	 --infodir=$(CONFIGURE_INFODIR)

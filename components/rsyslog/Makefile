@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -57,9 +57,6 @@ COMPONENT_ANITYA_ID_LIB   = 12043
 TPNO_LIB = 46846
 
 SMF_MANIFESTS= $(COMPONENT_DIR)/files/rsyslog.xml
-
-# Disable tests since there are some regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

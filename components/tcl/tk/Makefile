@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../../make-rules/shared-macros.mk
@@ -38,9 +38,6 @@ COMPONENT_BUGDB=	library/libtk
 COMPONENT_ANITYA_ID=	11426
 
 TPNO=			37431
-
-# Tests are disabled since they require a running desktop.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

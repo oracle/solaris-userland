@@ -1,8 +1,8 @@
-(echo 'if {![package vsatisfies [package provide Tcl] 8.5]} {return}' ; \
+(echo 'if {![package vsatisfies [package provide Tcl] 8.6]} {return}' ; \
  echo 'package ifneeded Expect 5.45 \
     [list load [file join $dir libexpect5.45.so]]'\
 ) > pkgIndex.tcl
-TCL_LIBRARY=`echo $(WS_TOP)/components/tcl/tcl/tcl8.5.12/library` LD_LIBRARY_PATH=".:$(WS_TOP)/components/tcl/$(TCLBUILD):" PATH=".:$(WS_TOP)/components/tcl/$(TCLBUILD):/usr/bin:/usr/gnu/bin" TCLLIBPATH="." $(WS_TOP)/components/tcl/$(TCLBUILD)/tclsh `echo $(SOURCE_DIR)/tests/all.tcl` 
+TCL_LIBRARY=`echo $(WS_TOP)/components/tcl/tcl/tcl8.6.7/library` LD_LIBRARY_PATH=".:$(WS_TOP)/components/tcl/$(TCLBUILD):" PATH=".:$(WS_TOP)/components/tcl/$(TCLBUILD):/usr/bin:/usr/gnu/bin" TCLLIBPATH="." $(WS_TOP)/components/tcl/$(TCLBUILD)/tclsh `echo $(SOURCE_DIR)/tests/all.tcl` 
 cat.test
 expect.test
 logfile.test

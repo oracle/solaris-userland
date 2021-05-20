@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 
@@ -51,9 +51,6 @@ CLEAN_PATHS += install.sh
 
 INSTALL_TARGET=
 
-# There are crashes during the unit tests execution.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/common.mk
 
 SUNPRO_VERSION	:= $(shell $(CXX) -V 2>&1 | head -n1 \
@@ -67,7 +64,7 @@ ifeq ($(shell expr $(SUNPRO_MAJOR_VERSION) = 5 \& \
       $(SUNPRO_MINOR_VERSION) \> 12),1)
   TEMPLATE_FLAGS := -template=geninlinefuncs,extdef
   COMPONENT_TEST_MASTER = \
-    $(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS).master.SS12.4
+    $(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS)-$(MACH).master.SS12.4
 endif
 
 ISA_PATCH_DIR_32 = $(WS_TOP)/components/stdcxx/isa_patches/$(MACH)
@@ -253,9 +250,10 @@ COMPONENT_TEST_DIR = $(BUILD_DIR)/$(MACH$(BITS))/build/tests
 COMPONENT_TEST_CMD = \
 	$(CP) -p $(COMPONENT_DIR)/Solaris/run_tests.sh . ; \
 	$(CHMOD) 0755 run_tests.sh ; \
-	$(SHELL) ./run_tests.sh
+	$(SHELL) ./run_tests.sh 2>&1 | $(PERL) -pe "s/\d+ (Segmentation Fault|Abort).*\./PID \1 ./"
 
 COMPONENT_TEST_TARGETS =
+COMPONENT_TEST_COMPARE_CMD =  $(GDIFF) -uN --ignore-space-change
 
 install: $(BUILD_DIR_32)/.built $(BUILD_DIR_64)/.built
 	$(CP) $(COMPONENT_DIR)/Solaris/install.sh $(COMPONENT_DIR)/

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -52,9 +52,6 @@ BUILD_64 = 	$(VARIANTS:%=%/.built)
 INSTALL_64 = 	$(VARIANTS:%=%/.installed)
 # Test only the terminal variant.
 TEST_64 = 	$(NOX_VARIANT)/.tested-and-compared
-
-# The unit tests failed to start.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

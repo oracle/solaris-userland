@@ -1,7 +1,7 @@
-Tests running in interp:  /builds2/richb/update-tcl-tk/components/tcl/tk/build/sparcv9/tktest
-Tests located in:  /builds2/richb/update-tcl-tk/components/tcl/tk/tk8.6.7/tests
-Tests running in:  /builds2/richb/update-tcl-tk/components/tcl/tk/build/sparcv9
-Temporary files stored in /builds2/richb/update-tcl-tk/components/tcl/tk/build/sparcv9
+Tests running in interp:  $(@D)/tktest
+Tests located in:  $(SOURCE_DIR)/tests
+Tests running in:  $(@D)
+Temporary files stored in $(@D)
 Test files sourced into current interpreter
 Running tests that match:  *
 Skipping test files that match:  l.*.test
@@ -34,7 +34,7 @@ canvText.test
     set bb3 [.c bbox t]
     list [expr {$bb0 eq $bb2 ? "ok" : "$bb0,$bb2"}]  [expr {$bb1 eq $bb3 ? "ok" : "$bb1,$bb3"}]  [expr {$bb0 eq [transpose $bb1] ? "ok" : "$bb0,$bb1"}]  
 ---- Result was:
-{-8 -17 12 22,-8 -18 12 21} {-17 -8 22 12,-18 -8 21 12} ok
+{-8 -15 12 20,-8 -16 12 19} {-15 -8 20 12,-16 -8 19 12} ok
 ---- Result should have been (exact matching):
 ok ok ok
 ==== canvText-20.1 FAILED
@@ -44,56 +44,72 @@ canvas.test
 choosedir.test
 clipboard.test
 clrpick.test
-
-
-==== clrpick-2.3 tk_chooseColor command FAILED
-==== Contents of test case:
-
-    ToPressButton . ok
-    tk_chooseColor -parent . -title "Press OK"
-
----- Result was:
-#d9d9d9
----- Result should have been (exact matching):
-#808040
-==== clrpick-2.3 FAILED
-
 cmds.test
 color.test
-
-
-==== color-4.1 FreeColorObjProc FAILED
-==== Contents of test case:
-
-    destroy .b
-    set x [format purple]
-    button .b -foreground $x -text .b1
-    set y [format purple]
-    .b configure -foreground $y
-    set z [format purple]
-    .b configure -foreground $z
-    set result {}
-    lappend result [testcolor purple]
-    set x red
-    lappend result [testcolor purple]
-    set z 32
-    lappend result [testcolor purple]
-    destroy .b
-    lappend result [testcolor purple]
-    set y bogus
-    set result
-
----- Result was:
-{{1 1}} {{1 1}} {{1 1}} {}
----- Result should have been (exact matching):
-{{1 3}} {{1 2}} {{1 1}} {}
-==== color-4.1 FAILED
-
 config.test
 cursor.test
 dialog.test
 embed.test
 entry.test
+
+
+==== entry-3.6 EntryWidgetCmd procedure, "bbox" widget command FAILED
+==== Contents of test case:
+
+# Tcl_UtfAtIndex(): no utf chars
+    .e insert 0 "abc"
+    list [.e bbox 3] [.e bbox end]
+
+---- Result was:
+{19 5 7 15} {19 5 7 15}
+---- Result should have been (exact matching):
+{19 5 7 13} {19 5 7 13}
+==== entry-3.6 FAILED
+
+
+
+==== entry-3.7 EntryWidgetCmd procedure, "bbox" widget command FAILED
+==== Contents of test case:
+
+# Tcl_UtfAtIndex(): utf at end
+    .e insert 0 "ab\u4e4e"
+    .e bbox end
+
+---- Result was:
+19 5 12 15
+---- Result should have been (exact matching):
+19 5 12 13
+==== entry-3.7 FAILED
+
+
+
+==== entry-3.8 EntryWidgetCmd procedure, "bbox" widget command FAILED
+==== Contents of test case:
+
+# Tcl_UtfAtIndex(): utf before index
+    .e insert 0 "ab\u4e4ec"
+    .e bbox 3
+
+---- Result was:
+31 5 7 15
+---- Result should have been (exact matching):
+31 5 7 13
+==== entry-3.8 FAILED
+
+
+
+==== entry-3.10 EntryWidgetCmd procedure, "bbox" widget command FAILED
+==== Contents of test case:
+
+    .e insert 0 "abcdefghij\u4e4eklmnop"
+    list [.e bbox 0] [.e bbox 1] [.e bbox 10] [.e bbox end]
+
+---- Result was:
+{5 5 7 15} {12 5 7 15} {75 5 12 15} {122 5 7 15}
+---- Result should have been (exact matching):
+{5 5 7 13} {12 5 7 13} {75 5 12 13} {122 5 7 13}
+==== entry-3.10 FAILED
+
 event.test
 filebox.test
 focus.test
@@ -180,20 +196,6 @@ focusTcl.test
 font.test
 
 
-==== font-4.9 font command: actual FAILED
-==== Contents of test case:
-
-    # (objc > 3) so objPtr = objv[3 + skip]
-    string tolower [font actual {-family times} -family]
-
----- Result was:
-times new roman
----- Result should have been (exact matching):
-times
-==== font-4.9 FAILED
-
-
-
 ==== font-24.5 Tk_ComputeTextLayout: break line FAILED
 ==== Contents of test case:
 
@@ -221,6 +223,34 @@ times
 24
 ==== font-44.1 FAILED
 
+
+
+==== font-44.2 TkFontGetPoints: size >= 0 FAILED
+==== Contents of test case:
+
+	tk scaling 0.5
+    font actual {times 12} -size
+
+---- Result was:
+16
+---- Result should have been (exact matching):
+12
+==== font-44.2 FAILED
+
+
+
+==== font-45.3 TkFontGetAliasList: match FAILED
+==== Contents of test case:
+
+    # can fail on Unix systems that have a real "times new roman" font
+    font actual {{times new roman} 10} -family
+
+---- Result was:
+Tinos
+---- Result should have been (exact matching):
+Times
+==== font-45.3 FAILED
+
 fontchooser.test
 frame.test
 geometry.test
@@ -233,6 +263,129 @@ imgPNG.test
 imgPPM.test
 imgPhoto.test
 listbox.test
+
+
+==== listbox-4.6 ConfigureListbox procedure FAILED
+==== Contents of test case:
+
+
+    # The following code (reset geometry, withdraw, etc.) is necessary
+    # to reset the state of some window managers like olvwm under
+    # SunOS 4.1.3.
+
+    wm geom . 300x300
+    update
+    wm geom . {}
+    wm withdraw .
+    listbox .l2 -font $fixed -width 15 -height 20
+    pack .l2
+    update
+    wm deiconify .
+    set x [getsize .]
+    .l2 configure -setgrid 1
+    update
+    list $x [getsize .]
+
+---- Result was:
+115x368 15x20
+---- Result should have been (exact matching):
+115x328 15x20
+==== listbox-4.6 FAILED
+
+
+
+==== listbox-5.1 ListboxComputeGeometry procedure FAILED
+==== Contents of test case:
+
+    listbox .l -font $fixed -width 15 -height 20
+    pack .l
+    list [winfo reqwidth .l] [winfo reqheight .l]
+
+---- Result was:
+115 368
+---- Result should have been (exact matching):
+115 328
+==== listbox-5.1 FAILED
+
+
+
+==== listbox-5.2 ListboxComputeGeometry procedure FAILED
+==== Contents of test case:
+
+    listbox .l -font $fixed -width 0 -height 10
+    pack .l
+    update
+    list [winfo reqwidth .l] [winfo reqheight .l]
+
+---- Result was:
+17 188
+---- Result should have been (exact matching):
+17 168
+==== listbox-5.2 FAILED
+
+
+
+==== listbox-5.3 ListboxComputeGeometry procedure FAILED
+==== Contents of test case:
+
+    listbox .l -font $fixed -width 0 -height 10 -bd 3
+    .l insert 0 Short "Really much longer" Longer
+    pack .l
+    update
+    list [winfo reqwidth .l] [winfo reqheight .l]
+
+---- Result was:
+138 190
+---- Result should have been (exact matching):
+138 170
+==== listbox-5.3 FAILED
+
+
+
+==== listbox-5.4 ListboxComputeGeometry procedure FAILED
+==== Contents of test case:
+
+    listbox .l -font $fixed -width 10 -height 0
+    pack .l
+    update
+    list [winfo reqwidth .l] [winfo reqheight .l]
+
+---- Result was:
+80 26
+---- Result should have been (exact matching):
+80 24
+==== listbox-5.4 FAILED
+
+
+
+==== listbox-5.5 ListboxComputeGeometry procedure FAILED
+==== Contents of test case:
+
+    listbox .l -font $fixed -width 10 -height 0 -highlightthickness 0
+    .l insert 0 Short "Really much longer" Longer
+    pack .l
+    update
+    list [winfo reqwidth .l] [winfo reqheight .l]
+
+---- Result was:
+76 58
+---- Result should have been (exact matching):
+76 52
+==== listbox-5.5 FAILED
+
+
+
+==== listbox-14.3 NearestListboxElement procedure FAILED
+==== Contents of test case:
+
+    list [.l index @50,35] [.l index @50,36]
+
+---- Result was:
+5 5
+---- Result should have been (exact matching):
+5 6
+==== listbox-14.3 FAILED
+
 main.test
 menu.test
 menuDraw.test
@@ -449,10 +602,207 @@ trough2
 
 select.test
 send.test
+
+
+==== send-8.16 Tk_SendCmd procedure, bogusCommWindow FAILED
+==== Contents of test case:
+
+    testsend prop root InterpRegistry "10234 bogus\n"
+    set result [list [catch {send bogus bogus command} msg] $msg]
+    winfo interps
+    tk appname tktest
+    set result
+
+---- Result was:
+1 {target application died}
+---- Result should have been (exact matching):
+1 {no application named "bogus"}
+==== send-8.16 FAILED
+
+
+
+==== send-11.1 AppendPropCarefully and AppendErrorProc procedures FAILED
+==== Contents of test case:
+
+    testsend prop root InterpRegistry "0x21447 dummy\n"
+    list [catch {send dummy foo} msg] $msg
+
+---- Result was:
+1 {target application died}
+---- Result should have been (exact matching):
+1 {no application named "dummy"}
+==== send-11.1 FAILED
+
 spinbox.test
+
+
+==== spinbox-3.6 SpinboxWidgetCmd procedure, "bbox" widget command FAILED
+==== Contents of test case:
+
+# Tcl_UtfAtIndex(): no utf chars
+    .e insert 0 "abc"
+    list [.e bbox 3] [.e bbox end]
+
+---- Result was:
+{19 5 7 15} {19 5 7 15}
+---- Result should have been (exact matching):
+{19 5 7 13} {19 5 7 13}
+==== spinbox-3.6 FAILED
+
+
+
+==== spinbox-3.7 SpinboxWidgetCmd procedure, "bbox" widget command FAILED
+==== Contents of test case:
+
+# Tcl_UtfAtIndex(): utf at end
+    .e insert 0 "ab\u4e4e"
+    .e bbox end
+
+---- Result was:
+19 5 12 15
+---- Result should have been (exact matching):
+19 5 12 13
+==== spinbox-3.7 FAILED
+
+
+
+==== spinbox-3.8 SpinboxWidgetCmd procedure, "bbox" widget command FAILED
+==== Contents of test case:
+
+# Tcl_UtfAtIndex(): utf before index
+    .e insert 0 "ab\u4e4ec"
+    .e bbox 3
+
+---- Result was:
+31 5 7 15
+---- Result should have been (exact matching):
+31 5 7 13
+==== spinbox-3.8 FAILED
+
+
+
+==== spinbox-3.10 SpinboxWidgetCmd procedure, "bbox" widget command FAILED
+==== Contents of test case:
+
+    .e insert 0 "abcdefghij\u4e4eklmnop"
+    list [.e bbox 0] [.e bbox 1] [.e bbox 10] [.e bbox end]
+
+---- Result was:
+{5 5 7 15} {12 5 7 15} {75 5 12 15} {122 5 7 15}
+---- Result should have been (exact matching):
+{5 5 7 13} {12 5 7 13} {75 5 12 13} {122 5 7 13}
+==== spinbox-3.10 FAILED
+
 text.test
+
+
+==== text-14.18 ConfigureText procedure FAILED
+==== Contents of test case:
+
+    .top.t configure -width 20 -height 10 
+    pack .top.t
+    update
+    set geom [wm geometry .top]
+    set x [string range $geom 0 [string first + $geom]]
+
+---- Result was:
+150x160+
+---- Result should have been (exact matching):
+150x140+
+==== text-14.18 FAILED
+
+
+
+==== text-15.1 TextWorldChanged procedure, spacing options FAILED
+==== Contents of test case:
+
+    text .t -width 20 -height 10 -font {Courier -12} -borderwidth 2 -highlightthickness 2
+    set result [winfo reqheight .t]
+    .t configure -spacing1 2
+    lappend result [winfo reqheight .t]
+    .t  configure -spacing3 1
+    lappend result [winfo reqheight .t]
+    .t configure -spacing1 0
+    lappend result [winfo reqheight .t]
+
+---- Result was:
+160 180 190 170
+---- Result should have been (exact matching):
+140 160 170 150
+==== text-15.1 FAILED
+
+
+
+==== text-17.2 TextCmdDeletedProc procedure, disabling -setgrid FAILED
+==== Contents of test case:
+
+   toplevel .top 
+   text .top.t -borderwidth 2 -highlightthickness 2 -font {Courier -12 bold}  -setgrid 1 -width 20 -height 10
+   pack .top.t
+   update
+   set geom [wm geometry .top]
+   set x [string range $geom 0 [string first + $geom]]
+   rename .top.t {}
+   update
+   set geom [wm geometry .top]
+   lappend x [string range $geom 0 [string first + $geom]]
+   return $x
+
+---- Result was:
+20x10+ 150x160+
+---- Result should have been (exact matching):
+20x10+ 150x140+
+==== text-17.2 FAILED
+
 textBTree.test
 textDisp.test
+
+
+==== textDisp-3.1 different character sizes FAILED
+==== Contents of test case:
+
+    .t configure -wrap word
+    .t delete 1.0 end
+    .t insert end "Some sample text, including both large\n"
+    .t insert end "characters and\nsmall\n"
+    .t insert end "abc\nd\ne\nfghij"
+    .t tag add big 1.5 1.10
+    .t tag add big 2.11 2.14
+    list [.t bbox 1.1] [.t bbox 1.6] [.t dlineinfo 1.0] [.t dlineinfo 3.0]
+
+---- Result was:
+{12 16 7 15} {52 5 13 27} {5 5 114 27 22} {5 89 35 15 11}
+---- Result should have been (exact matching):
+{12 16 7 15} {52 5 13 27} {5 5 114 27 22} {5 89 35 15 12}
+==== textDisp-3.1 FAILED
+
+
+
+==== textDisp-5.1 DisplayDLine, handling of spacing FAILED
+==== Contents of test case:
+
+    .t configure -wrap char
+    .t delete 1.0 end
+    .t insert 1.0 "abcdefghijkl\nmnopqrstuvwzyz"
+    .t tag configure spacing -spacing1 8 -spacing3 2
+    .t tag add spacing 1.0 end
+    frame .t.f1 -width 10 -height 4 -bg black
+    frame .t.f2 -width 10 -height 4 -bg black
+    frame .t.f3 -width 10 -height 4 -bg black
+    frame .t.f4 -width 10 -height 4 -bg black
+    .t window create 1.3 -window .t.f1 -align top
+    .t window create 1.7 -window .t.f2 -align center
+    .t window create 2.1 -window .t.f3 -align bottom
+    .t window create 2.10 -window .t.f4 -align baseline
+    update
+    list [winfo geometry .t.f1] [winfo geometry .t.f2]  [winfo geometry .t.f3] [winfo geometry .t.f4]
+
+---- Result was:
+10x4+24+11 10x4+55+16 10x4+10+47 10x4+76+43
+---- Result should have been (exact matching):
+10x4+24+11 10x4+55+16 10x4+10+47 10x4+76+44
+==== textDisp-5.1 FAILED
+
 
 
 ==== textDisp-20.1 FindDLine FAILED
@@ -462,9 +812,9 @@ textDisp.test
     list [.t dlineinfo 46.0] [.t dlineinfo 47.0] [.t dlineinfo 49.0]  [.t dlineinfo 58.0]
 
 ---- Result was:
-{} {} {3 17 49 14 10} {}
+{} {} {3 18 49 15 11} {}
 ---- Result should have been (exact matching):
-{} {} {3 17 49 14 11} {}
+{} {} {3 18 49 15 12} {}
 ==== textDisp-20.1 FAILED
 
 
@@ -477,9 +827,9 @@ textDisp.test
     list [.t dlineinfo 50.0] [.t dlineinfo 50.14] [.t dlineinfo 50.21]
 
 ---- Result was:
-{3 -1 140 14 10} {3 -1 140 14 10} {3 13 133 14 10}
+{3 -2 140 15 11} {3 -2 140 15 11} {3 13 133 15 11}
 ---- Result should have been (exact matching):
-{3 -1 140 14 11} {3 -1 140 14 11} {3 12 133 14 11}
+{3 -2 140 15 12} {3 -2 140 15 12} {3 13 133 15 12}
 ==== textDisp-20.2 FAILED
 
 
@@ -492,9 +842,9 @@ textDisp.test
     list [.t dlineinfo 50.0] [.t dlineinfo 50.24] [.t dlineinfo 57.0]
 
 ---- Result was:
-{3 17 140 14 10} {3 31 133 14 10} {}
+{3 18 140 15 11} {3 33 133 15 11} {}
 ---- Result should have been (exact matching):
-{3 17 140 14 11} {3 31 133 14 11} {}
+{3 18 140 15 12} {3 33 133 15 12} {}
 ==== textDisp-20.3 FAILED
 
 
@@ -507,9 +857,9 @@ textDisp.test
     list [.t dlineinfo 50.0] [.t dlineinfo 50.24] [.t dlineinfo 50.40]
 
 ---- Result was:
-{3 115 140 14 10} {3 129 133 14 10} {}
+{3 123 140 15 11} {3 138 133 15 11} {}
 ---- Result should have been (exact matching):
-{3 115 140 14 11} {3 129 133 14 11} {}
+{3 123 140 15 12} {3 138 133 15 12} {}
 ==== textDisp-20.4 FAILED
 
 
@@ -522,38 +872,827 @@ textDisp.test
     list [.t dlineinfo 50.0] [.t dlineinfo 50.20] [.t dlineinfo 50.40]
 
 ---- Result was:
-{3 31 371 14 10} {3 31 371 14 10} {3 31 371 14 10}
+{3 33 371 15 11} {3 33 371 15 11} {3 33 371 15 11}
 ---- Result should have been (exact matching):
-{3 31 371 14 11} {3 31 371 14 11} {3 31 371 14 11}
+{3 33 371 15 12} {3 33 371 15 12} {3 33 371 15 12}
 ==== textDisp-20.5 FAILED
 
+
+
+==== textDisp-22.9 TkTextCharBbox, handling of spacing FAILED
+==== Contents of test case:
+
+    .t configure -wrap char
+    .t delete 1.0 end
+    .t insert 1.0 "abcdefghijkl\nmnopqrstuvwzyz"
+    .t tag configure spacing -spacing1 8 -spacing3 2
+    .t tag add spacing 1.0 end
+    frame .t.f1 -width 10 -height 4 -bg black
+    frame .t.f2 -width 10 -height 4 -bg black
+    frame .t.f3 -width 10 -height 4 -bg black
+    frame .t.f4 -width 10 -height 4 -bg black
+    .t window create 1.3 -window .t.f1 -align top
+    .t window create 1.7 -window .t.f2 -align center
+    .t window create 2.1 -window .t.f3 -align bottom
+    .t window create 2.10 -window .t.f4 -align baseline
+    update
+    list [.t bbox .t.f1] [.t bbox .t.f2] [.t bbox .t.f3] [.t bbox .t.f4]  [.t bbox 1.1] [.t bbox 2.9]
+
+---- Result was:
+{24 11 10 4} {55 16 10 4} {10 47 10 4} {76 43 10 4} {10 11 7 15} {69 36 7 15}
+---- Result should have been (exact matching):
+{24 11 10 4} {55 16 10 4} {10 47 10 4} {76 44 10 4} {10 11 7 15} {69 36 7 15}
+==== textDisp-22.9 FAILED
+
+
+
+==== textDisp-23.1 TkTextDLineInfo FAILED
+==== Contents of test case:
+
+    .t config -wrap word
+    .t yview 48.0
+    list [.t dlineinfo 47.3] [.t dlineinfo 48.0] [.t dlineinfo 50.40]  [.t dlineinfo 56.0]
+
+---- Result was:
+{} {3 3 49 15 11} {3 63 91 15 11} {}
+---- Result should have been (exact matching):
+{} {3 3 49 15 12} {3 63 91 15 12} {}
+==== textDisp-23.1 FAILED
+
+
+
+==== textDisp-23.2 TkTextDLineInfo FAILED
+==== Contents of test case:
+
+    .t config -bd 4 -wrap word
+    update
+    .t yview 48.0
+    .t dlineinfo 50.40
+
+---- Result was:
+7 67 91 15 11
+---- Result should have been (exact matching):
+7 67 91 15 12
+==== textDisp-23.2 FAILED
+
+
+
+==== textDisp-23.3 TkTextDLineInfo FAILED
+==== Contents of test case:
+
+    .t config -wrap none
+    update
+    .t yview 48.0
+    list [.t dlineinfo 50.40] [.t dlineinfo 57.3]
+
+---- Result was:
+{3 33 371 15 11} {3 138 49 15 11}
+---- Result should have been (exact matching):
+{3 33 371 15 12} {3 138 49 15 12}
+==== textDisp-23.3 FAILED
+
+
+
+==== textDisp-23.4 TkTextDLineInfo, cut-off lines FAILED
+==== Contents of test case:
+
+    .t config -wrap char
+    .t yview 10.0
+    wm geom . ${width}x[expr $height-1]
+    update
+    list [.t dlineinfo 19.0] [.t dlineinfo 20.0]
+
+---- Result was:
+{3 138 49 15 11} {3 153 49 3 11}
+---- Result should have been (exact matching):
+{3 138 49 15 12} {3 153 49 3 12}
+==== textDisp-23.4 FAILED
+
+
+
+==== textDisp-23.5 TkTextDLineInfo, cut-off lines FAILED
+==== Contents of test case:
+
+    .t config -wrap char
+    .t yview 10.0
+    wm geom . ${width}x[expr $height+1]
+    update
+    list [.t dlineinfo 19.0] [.t dlineinfo 20.0]
+
+---- Result was:
+{3 138 49 15 11} {3 153 49 5 11}
+---- Result should have been (exact matching):
+{3 138 49 15 12} {3 153 49 5 12}
+==== textDisp-23.5 FAILED
+
+
+
+==== textDisp-23.6 TkTextDLineInfo, horizontal scrolling FAILED
+==== Contents of test case:
+
+    .t config -wrap none
+    .t delete 1.0 end
+    .t insert end "First line\n"
+    .t insert end "Second line is a very long one that doesn't all fit.\n"
+    .t insert end "Third"
+    .t xview scroll 6 units
+    update
+    list [.t dlineinfo 1.0] [.t dlineinfo 2.0] [.t dlineinfo 3.0]
+
+---- Result was:
+{-39 3 70 15 11} {-39 18 364 15 11} {-39 33 35 15 11}
+---- Result should have been (exact matching):
+{-39 3 70 15 12} {-39 18 364 15 12} {-39 33 35 15 12}
+==== textDisp-23.6 FAILED
+
+
+
+==== textDisp-23.7 TkTextDLineInfo, centering FAILED
+==== Contents of test case:
+
+    .t config -wrap word
+    .t delete 1.0 end
+    .t insert end "First line\n"
+    .t insert end "Second line is a very long one that doesn't all fit.\n"
+    .t insert end "Third"
+    .t tag configure x -justify center
+    .t tag configure y -justify right
+    .t tag add x 1.0
+    .t tag add y 3.0
+    list [.t dlineinfo 1.0] [.t dlineinfo 2.0] [.t dlineinfo 3.0]
+
+---- Result was:
+{38 3 70 15 11} {3 18 119 15 11} {108 63 35 15 11}
+---- Result should have been (exact matching):
+{38 3 70 15 12} {3 18 119 15 12} {108 63 35 15 12}
+==== textDisp-23.7 FAILED
+
+
+
+==== textDisp-24.20 TkTextCharLayoutProc, vertical offset FAILED
+==== Contents of test case:
+
+    .t configure -wrap none
+    .t delete 1.0 end
+    .t insert 1.0 "Line 1\nLine 2\nLine 3"
+    set result {}
+    lappend result [.t bbox 2.1] [.t dlineinfo 2.1]
+    .t tag configure up -offset 6
+    .t tag add up 2.1
+    lappend result [.t bbox 2.1] [.t dlineinfo 2.1]
+    .t tag configure  up -offset -2
+    lappend result [.t bbox 2.1] [.t dlineinfo 2.1]
+    .t tag delete up
+    set result
+
+---- Result was:
+{10 18 7 15} {3 18 42 15 11} {10 18 7 15} {3 18 42 21 17} {10 20 7 15} {3 18 42 17 11}
+---- Result should have been (exact matching):
+{10 18 7 15} {3 18 42 15 12} {10 18 7 15} {3 18 42 21 18} {10 20 7 15} {3 18 42 17 12}
+==== textDisp-24.20 FAILED
+
+
+
+==== textDisp-27.7 SizeOfTab procedure, center alignment, wrap -none (potential numerical problems) FAILED
+==== Contents of test case:
+
+    .t delete 1.0 end
+    set cm [winfo fpixels .t 1c]
+    .t configure -tabs {1c 2c center 3c 4c 5c 6c 7c 8c} -wrap none -width 40
+    .t insert 1.0 a\tb\tc\td\te\n012345678934567890a\tbb\tcc\tdd
+    set width [expr {$fixedWidth * 19}]
+    set tab $cm
+    while {$tab < $width} {
+	set tab [expr {$tab + $cm}]
+    }
+    # Now we've calculated to the end of the tab after 'a', add one
+    # more for 'bb\t' and we're there, with 4 for the border.  Since
+    # Tk_GetPixelsFromObj uses the standard 'int(0.5 + float)' rounding,
+    # so must we.
+    set tab [expr {4 + int(0.5 + $tab + $cm)}]
+    update
+    set res [.t bbox 2.23]
+    lset res 0 [expr {[lindex $res 0] - $tab}]
+    set res
+
+---- Result was:
+-36 20 7 15
+---- Result should have been (exact matching):
+-28 20 7 15
+==== textDisp-27.7 FAILED
+
 textImage.test
+
+
+==== textImage-4.3 alignment and padding checking FAILED
+==== Contents of test case:
+
+    catch {
+        image create photo small -width 5 -height 5
+        small put red -to 0 0 4 4
+        image create photo large -width 50 -height 50
+        large put green -to 0 0 50 50
+    }
+    text .t -font test_font -bd 0 -highlightthickness 0 -padx 0 -pady 0
+    pack .t
+    .t image create end -image large
+    .t image create end -image small -padx 5 -pady 10
+    .t insert end test
+    update
+    lappend result default:[.t bbox small]
+    foreach i {top bottom center baseline} {
+        .t image configure small -align $i
+        update
+        lappend result $i:[.t bbox small]
+    }
+    return $result
+
+---- Result was:
+{default:55 22 5 5} {top:55 10 5 5} {bottom:55 35 5 5} {center:55 22 5 5} {baseline:55 23 5 5}
+---- Result should have been (exact matching):
+{default:55 22 5 5} {top:55 10 5 5} {bottom:55 35 5 5} {center:55 22 5 5} {baseline:55 22 5 5}
+==== textImage-4.3 FAILED
+
 textIndex.test
 textMark.test
 textTag.test
 textWind.test
 
 
-==== textWind-10.8 EmbWinLayoutProc procedure, error in creating window FAILED
+==== textWind-1.1 basic tests of options FAILED
+==== Contents of test case:
+
+    .t insert end "This is the first line"
+    .t insert end "\nAnd this is a second line, which wraps around"
+    frame .f -width 3 -height 3 -bg $color
+    .t window create 2.2 -window .f
+    update
+    list [winfo ismapped .f] [winfo geom .f] [.t bbox .f]  [.t window configure .f -window]
+
+---- Result was:
+1 3x3+19+26 {19 26 3 3} {-window {} {} {} .f}
+---- Result should have been (exact matching):
+1 3x3+19+23 {19 23 3 3} {-window {} {} {} .f}
+==== textWind-1.1 FAILED
+
+
+
+==== textWind-1.2 basic tests of options FAILED
+==== Contents of test case:
+
+    .t insert end "This is the first line"
+    .t insert end "\nAnd this is a second line, which wraps around"
+    frame .f -width 3 -height 3 -bg $color
+    .t window create 2.2 -window .f -align top
+    update
+    list [winfo ismapped .f] [winfo geom .f] [.t bbox .f]  [.t window configure .f -align]
+
+---- Result was:
+1 3x3+19+20 {19 20 3 3} {-align {} {} center top}
+---- Result should have been (exact matching):
+1 3x3+19+18 {19 18 3 3} {-align {} {} center top}
+==== textWind-1.2 FAILED
+
+
+
+==== textWind-1.4 basic tests of options FAILED
+==== Contents of test case:
+
+    .t insert end "This is the first line"
+    .t insert end "\nAnd this is a second line, which wraps around"
+    frame .f -width 10 -height 20 -bg $color
+    .t window create 2.2 -window .f -padx 5
+    update
+    list [winfo geom .f] [.t window configure .f -padx] [.t bbox 2.3]
+
+---- Result was:
+10x20+24+20 {-padx {} {} 0 5} {39 22 7 15}
+---- Result should have been (exact matching):
+10x20+24+18 {-padx {} {} 0 5} {39 21 7 13}
+==== textWind-1.4 FAILED
+
+
+
+==== textWind-1.5 basic tests of options FAILED
+==== Contents of test case:
+
+    .t insert end "This is the first line"
+    .t insert end "\nAnd this is a second line, which wraps around"
+    frame .f -width 10 -height 20 -bg $color
+    .t window create 2.2 -window .f -pady 4
+    update
+    list [winfo geom .f] [.t window configure .f -pady] [.t bbox 2.31]
+
+---- Result was:
+10x20+19+24 {-pady {} {} 0 4} {19 48 7 15}
+---- Result should have been (exact matching):
+10x20+19+22 {-pady {} {} 0 4} {19 46 7 13}
+==== textWind-1.5 FAILED
+
+
+
+==== textWind-1.6 basic tests of options FAILED
+==== Contents of test case:
+
+    .t insert end "This is the first line"
+    .t insert end "\nAnd this is a second line, which wraps around"
+    frame .f -width 5 -height 5 -bg $color
+    .t window create 2.2 -window .f -stretch 1
+    update
+    list [winfo geom .f] [.t window configure .f -stretch]
+
+---- Result was:
+5x15+19+20 {-stretch {} {} 0 1}
+---- Result should have been (exact matching):
+5x13+19+18 {-stretch {} {} 0 1}
+==== textWind-1.6 FAILED
+
+
+
+==== textWind-3.3 EmbWinConfigure procedure FAILED
+==== Contents of test case:
+
+    .t insert 1.0 "Some sample text"
+    frame .f -width 10 -height 20 -bg $color
+    .t window create 1.3 -window .f
+    update
+    .t window configure 1.3 -window {}
+    update
+    catch {.t index .f}
+    list [winfo ismapped .f] [.t bbox 1.4]
+
+---- Result was:
+0 {26 5 7 15}
+---- Result should have been (exact matching):
+0 {26 5 7 13}
+==== textWind-3.3 FAILED
+
+
+
+==== textWind-3.5 EmbWinConfigure procedure FAILED
+==== Contents of test case:
+
+    .t insert 1.0 "Some sample text"
+    frame .t.f -width 10 -height 20 -bg $color
+    .t window create 1.3 -window .t.f
+    update
+    .t window configure 1.3 -window {}
+    update
+    catch {.t index .t.f}
+    list [winfo ismapped .t.f] [.t bbox 1.4]
+
+---- Result was:
+0 {26 5 7 15}
+---- Result should have been (exact matching):
+0 {26 5 7 13}
+==== textWind-3.5 FAILED
+
+
+
+==== textWind-3.6 EmbWinConfigure procedure FAILED
+==== Contents of test case:
+
+    .t insert 1.0 "Some sample text"
+    frame .f -width 10 -height 20 -bg $color
+    .t window create 1.3
+    update
+    .t window configure 1.3 -window .f
+    update
+    list [catch {.t index .f} msg] $msg [winfo ismapped .f] [.t bbox 1.4]
+
+---- Result was:
+0 1.3 1 {36 7 7 15}
+---- Result should have been (exact matching):
+0 1.3 1 {36 8 7 13}
+==== textWind-3.6 FAILED
+
+
+
+==== textWind-5.2 EmbWinStructureProc procedure FAILED
+==== Contents of test case:
+
+    .t insert 1.0 "Some sample text"
+    frame .f -width 10 -height 20 -bg $color
+    .t window create 1.2 -window .f
+    update
+    destroy .f
+    catch {.t index .f}
+    list [.t bbox 1.2] [.t bbox 1.3]
+
+---- Result was:
+{19 12 0 0} {19 5 7 15}
+---- Result should have been (exact matching):
+{19 11 0 0} {19 5 7 13}
+==== textWind-5.2 FAILED
+
+
+
+==== textWind-5.4 EmbWinStructureProc procedure FAILED
+==== Contents of test case:
+
+    .t insert 1.0 "Some sample text"
+    frame .f -width 10 -height 20 -bg $color
+    .t window create 1.2 -align bottom
+    .t window configure 1.2 -window .f
+    update
+    destroy .f
+    catch {.t index .f}
+    list [.t bbox 1.2] [.t bbox 1.3]
+
+---- Result was:
+{19 20 0 0} {19 5 7 15}
+---- Result should have been (exact matching):
+{19 18 0 0} {19 5 7 13}
+==== textWind-5.4 FAILED
+
+
+
+==== textWind-5.5 EmbWinStructureProc procedure FAILED
+==== Contents of test case:
+
+    .t insert 1.0 "Some sample text"
+    .t window create 1.2 -create {frame .f -width 10 -height 20 -bg $color}
+    update
+    .t window configure 1.2 -create {frame .f -width 20 -height 10 -bg $color}
+    destroy .f
+    update
+    list [catch {.t index .f} msg] $msg [.t bbox 1.2] [.t bbox 1.3]
+
+---- Result was:
+0 1.2 {19 7 20 10} {39 5 7 15}
+---- Result should have been (exact matching):
+0 1.2 {19 6 20 10} {39 5 7 13}
+==== textWind-5.5 FAILED
+
+
+
+==== textWind-6.1 EmbWinRequestProc procedure FAILED
+==== Contents of test case:
+
+    .t insert 1.0 "Some sample text"
+    frame .f -width 10 -height 20 -bg $color
+    .t window create 1.2 -window .f
+    lappend result [.t bbox 1.2] [.t bbox 1.3]
+    .f configure -width 25 -height 30
+    lappend result [.t bbox 1.2] [.t bbox 1.3]
+
+---- Result was:
+{19 5 10 20} {29 7 7 15} {19 5 25 30} {44 12 7 15}
+---- Result should have been (exact matching):
+{19 5 10 20} {29 8 7 13} {19 5 25 30} {44 13 7 13}
+==== textWind-6.1 FAILED
+
+
+
+==== textWind-8.1 EmbWinDeleteProc procedure FAILED
+==== Contents of test case:
+
+    .t insert 1.0 "Some sample text"
+    frame .f -width 10 -height 20 -bg $color
+    .t window create 1.2 -window .f
+    bind .f <Destroy> {set x destroyed}
+    set x XXX
+    .t delete 1.2
+    list $x [.t bbox 1.2] [.t bbox 1.3] [winfo exists .f]
+
+---- Result was:
+destroyed {19 5 7 15} {26 5 7 15} 0
+---- Result should have been (exact matching):
+destroyed {19 5 7 13} {26 5 7 13} 0
+==== textWind-8.1 FAILED
+
+
+
+==== textWind-10.2 EmbWinLayoutProc procedure, error in creating window FAILED
+==== Contents of test case:
+
+    .t insert 1.0 "Some sample text"
+        .t window create 1.5 -create {
+        error "couldn't create window"
+    }
+    set msg xyzzy
+    update
+    list $msg [.t bbox 1.5]
+
+---- Result was:
+{{couldn't create window}} {40 12 0 0}
+---- Result should have been (exact matching):
+{{couldn't create window}} {40 11 0 0}
+==== textWind-10.2 FAILED
+
+
+
+==== textWind-10.3 EmbWinLayoutProc procedure, error in creating window FAILED
 ==== Contents of test case:
 
     .t insert 1.0 "Some sample text"
     .t window create 1.5 -create {
-        toplevel .t2 -width 100 -height 150
-        wm geom .t2 +0+0
-        concat .t2
+        concat gorp
     }
-    set msg {}
+    set msg xyzzy
     update
-    set i 0
-    while {[llength $msg] == 1 && [incr i] < 200} { update }
-    return $msg
+    list $msg [.t bbox 1.5]
 
 ---- Result was:
-{{can't embed .t2 relative to .t}}
+{{bad window path name "gorp"}} {40 12 0 0}
 ---- Result should have been (exact matching):
-{{can't embed .t2 relative to .t}} {{window name "t2" already exists in parent}}
-==== textWind-10.8 FAILED
+{{bad window path name "gorp"}} {40 11 0 0}
+==== textWind-10.3 FAILED
+
+
+
+==== textWind-10.10 EmbWinLayoutProc procedure, doesn't fit on line FAILED
+==== Contents of test case:
+
+    .t configure -wrap char
+    .t insert 1.0 "Some sample text"
+    frame .f -width 125 -height 20 -bg $color -bd 2 -relief raised
+    .t window create 1.12 -window .f
+    list [.t bbox .f] [.t bbox 1.13]
+
+---- Result was:
+{89 5 126 20} {5 25 7 15}
+---- Result should have been (exact matching):
+{89 5 126 20} {5 25 7 13}
+==== textWind-10.10 FAILED
+
+
+
+==== textWind-10.11 EmbWinLayoutProc procedure, doesn't fit on line FAILED
+==== Contents of test case:
+
+    .t configure -wrap char
+    .t insert 1.0 "Some sample text"
+    frame .f -width 126 -height 20 -bg $color -bd 2 -relief raised
+    .t window create 1.12 -window .f
+    update
+    list [.t bbox .f] [.t bbox 1.13]
+
+---- Result was:
+{89 5 126 20} {5 25 7 15}
+---- Result should have been (exact matching):
+{89 5 126 20} {5 25 7 13}
+==== textWind-10.11 FAILED
+
+
+
+==== textWind-10.12 EmbWinLayoutProc procedure, doesn't fit on line FAILED
+==== Contents of test case:
+
+    .t configure -wrap char
+    .t insert 1.0 "Some sample text"
+    frame .f -width 127 -height 20 -bg $color -bd 2 -relief raised
+    .t window create 1.12 -window .f
+    update
+    list [.t bbox .f] [.t bbox 1.13]
+
+---- Result was:
+{5 20 127 20} {132 22 7 15}
+---- Result should have been (exact matching):
+{5 18 127 20} {132 21 7 13}
+==== textWind-10.12 FAILED
+
+
+
+==== textWind-10.14 EmbWinLayoutProc procedure, doesn't fit on line FAILED
+==== Contents of test case:
+
+    .t configure -wrap none
+    .t insert 1.0 "Some sample text"
+    frame .f -width 130 -height 220 -bg $color -bd 2 -relief raised
+    .t window create 1.12 -window .f
+    update
+    list [.t bbox .f] [.t bbox 1.13]
+
+---- Result was:
+{89 5 126 90} {}
+---- Result should have been (exact matching):
+{89 5 126 78} {}
+==== textWind-10.14 FAILED
+
+
+
+==== textWind-10.15 EmbWinLayoutProc procedure, doesn't fit on line FAILED
+==== Contents of test case:
+
+    .t configure -wrap char
+    .t insert 1.0 "Some sample text"
+    frame .f -width 250 -height 220 -bg $color -bd 2 -relief raised
+    .t window create 1.12 -window .f
+    update
+    list [.t bbox .f] [.t bbox 1.13]
+
+---- Result was:
+{5 20 210 75} {}
+---- Result should have been (exact matching):
+{5 18 210 65} {}
+==== textWind-10.15 FAILED
+
+
+
+==== textWind-11.4 EmbWinDisplayProc procedure, horizontal scrolling FAILED
+==== Contents of test case:
+
+    .t insert 1.0 "xyzzy\nFirst window here: "
+    .t configure -wrap none
+    frame .f -width 30 -height 20 -bg $color
+    .t window create end -window .f
+    .t insert end " and second here: "
+    frame .f2 -width 40 -height 10 -bg $color
+    .t window create end -window .f2
+    .t insert end " with junk after it."
+    .t xview moveto 0
+    .t xview scroll 5 units
+    update
+    list [winfo ismapped .f] [winfo geom .f] [.t bbox .f] [winfo ismapped .f2]
+
+---- Result was:
+1 30x20+103+20 {103 20 30 20} 0
+---- Result should have been (exact matching):
+1 30x20+103+18 {103 18 30 20} 0
+==== textWind-11.4 FAILED
+
+
+
+==== textWind-11.5 EmbWinDisplayProc procedure, horizontal scrolling FAILED
+==== Contents of test case:
+
+    .t insert 1.0 "xyzzy\nFirst window here: "
+    .t configure -wrap none
+    frame .f -width 30 -height 20 -bg $color
+    .t window create end -window .f
+    .t insert end " and second here: "
+    frame .f2 -width 40 -height 10 -bg $color
+    .t window create end -window .f2
+    .t insert end " with junk after it."
+    update
+    .t xview moveto 0
+    .t xview scroll 25 units
+    update
+    list [winfo ismapped .f] [winfo ismapped .f2] [winfo geom .f2] [.t bbox .f2]
+
+---- Result was:
+0 1 40x10+119+25 {119 25 40 10}
+---- Result should have been (exact matching):
+0 1 40x10+119+23 {119 23 40 10}
+==== textWind-11.5 FAILED
+
+
+
+==== textWind-13.2 EmbWinBboxProc procedure FAILED
+==== Contents of test case:
+
+    .t insert 1.0 "Some sample text"
+    frame .f -width 5 -height 5 -bg $color
+    .t window create 1.2 -window .f -align center -padx 2 -pady 1
+    update
+    list [winfo geom .f] [.t bbox .f]
+
+---- Result was:
+5x5+21+10 {21 10 5 5}
+---- Result should have been (exact matching):
+5x5+21+9 {21 9 5 5}
+==== textWind-13.2 FAILED
+
+
+
+==== textWind-13.3 EmbWinBboxProc procedure FAILED
+==== Contents of test case:
+
+    .t insert 1.0 "Some sample text"
+    frame .f -width 5 -height 5 -bg $color
+    .t window create 1.2 -window .f -align baseline -padx 2 -pady 1
+    update
+    list [winfo geom .f] [.t bbox .f]
+
+---- Result was:
+5x5+21+11 {21 11 5 5}
+---- Result should have been (exact matching):
+5x5+21+10 {21 10 5 5}
+==== textWind-13.3 FAILED
+
+
+
+==== textWind-13.4 EmbWinBboxProc procedure FAILED
+==== Contents of test case:
+
+    .t insert 1.0 "Some sample text"
+    frame .f -width 5 -height 5 -bg $color
+    .t window create 1.2 -window .f -align bottom -padx 2 -pady 1
+    update
+    list [winfo geom .f] [.t bbox .f]
+
+---- Result was:
+5x5+21+14 {21 14 5 5}
+---- Result should have been (exact matching):
+5x5+21+12 {21 12 5 5}
+==== textWind-13.4 FAILED
+
+
+
+==== textWind-13.5 EmbWinBboxProc procedure FAILED
+==== Contents of test case:
+
+    .t insert 1.0 "Some sample text"
+    frame .f -width 5 -height 5 -bg $color
+    .t window create 1.2 -window .f -align top -padx 2 -pady 1 -stretch 1
+    update
+    list [winfo geom .f] [.t bbox .f]
+
+---- Result was:
+5x13+21+6 {21 6 5 13}
+---- Result should have been (exact matching):
+5x11+21+6 {21 6 5 11}
+==== textWind-13.5 FAILED
+
+
+
+==== textWind-13.6 EmbWinBboxProc procedure FAILED
+==== Contents of test case:
+
+    .t insert 1.0 "Some sample text"
+    frame .f -width 5 -height 5 -bg $color
+    .t window create 1.2 -window .f -align center -padx 2 -pady 1 -stretch 1
+    update
+    list [winfo geom .f] [.t bbox .f]
+
+---- Result was:
+5x13+21+6 {21 6 5 13}
+---- Result should have been (exact matching):
+5x11+21+6 {21 6 5 11}
+==== textWind-13.6 FAILED
+
+
+
+==== textWind-13.7 EmbWinBboxProc procedure FAILED
+==== Contents of test case:
+
+    .t insert 1.0 "Some sample text"
+    frame .f -width 5 -height 5 -bg $color
+    .t window create 1.2 -window .f -align baseline -padx 2 -pady 1 -stretch 1
+    update
+    list [winfo geom .f] [.t bbox .f]
+
+---- Result was:
+5x10+21+6 {21 6 5 10}
+---- Result should have been (exact matching):
+5x9+21+6 {21 6 5 9}
+==== textWind-13.7 FAILED
+
+
+
+==== textWind-13.8 EmbWinBboxProc procedure FAILED
+==== Contents of test case:
+
+    .t insert 1.0 "Some sample text"
+    frame .f -width 5 -height 5 -bg $color
+    .t window create 1.2 -window .f -align bottom -padx 2 -pady 1 -stretch 1
+    update
+    list [winfo geom .f] [.t bbox .f]
+
+---- Result was:
+5x13+21+6 {21 6 5 13}
+---- Result should have been (exact matching):
+5x11+21+6 {21 6 5 11}
+==== textWind-13.8 FAILED
+
+
+
+==== textWind-13.9 EmbWinBboxProc procedure, spacing options FAILED
+==== Contents of test case:
+
+    .t configure -spacing1 5 -spacing3 2
+    .t delete 1.0 end
+    .t insert 1.0 "Some sample text"
+    frame .f -width 5 -height 5 -bg $color
+    .t window create 1.2 -window .f -align center -padx 2 -pady 1
+    update
+    list [winfo geom .f] [.t bbox .f]
+
+---- Result was:
+5x5+21+15 {21 15 5 5}
+---- Result should have been (exact matching):
+5x5+21+14 {21 14 5 5}
+==== textWind-13.9 FAILED
+
+
+
+==== textWind-15.2 TkTextWindowIndex procedure FAILED
+==== Contents of test case:
+
+    .t configure -spacing1 0 -spacing2 0 -spacing3 0  -wrap none
+    .t insert 1.0 "Some sample text"
+    frame .f -width 30 -height 20 -bg $color
+    .t window create 1.6 -window .f
+    .t tag add a 1.1
+    .t tag add a 1.3
+    list [.t index .f] [.t bbox 1.7]
+
+---- Result was:
+1.6 {77 7 7 15}
+---- Result should have been (exact matching):
+1.6 {77 8 7 13}
+==== textWind-15.2 FAILED
 
 tk.test
 unixButton.test
@@ -571,6 +1710,54 @@ unixFont.test
 ---- Result should have been (exact matching):
 6
 ==== unixfont-1.2 FAILED
+
+
+
+==== unixfont-2.2 TkpGetFontFromAttributes procedure: Times relatives FAILED
+==== Contents of test case:
+
+    set x {}
+    lappend x [lindex [font actual {-family "Times New Roman"}] 1]
+    lappend x [lindex [font actual {-family "New York"}] 1]
+    lappend x [lindex [font actual {-family "Times"}] 1]
+
+---- Result was:
+Tinos {DejaVu Sans} Times
+---- Result should have been (exact matching):
+times times times
+==== unixfont-2.2 FAILED
+
+
+
+==== unixfont-2.3 TkpGetFontFromAttributes procedure: Courier relatives FAILED
+==== Contents of test case:
+
+    set x {}
+    lappend x [lindex [font actual {-family "Courier New"}] 1]
+    lappend x [lindex [font actual {-family "Monaco"}] 1]
+    lappend x [lindex [font actual {-family "Courier"}] 1]
+
+---- Result was:
+Cousine {DejaVu Sans} Courier
+---- Result should have been (exact matching):
+courier courier courier
+==== unixfont-2.3 FAILED
+
+
+
+==== unixfont-2.4 TkpGetFontFromAttributes procedure: Helvetica relatives FAILED
+==== Contents of test case:
+
+    set x {}
+    lappend x [lindex [font actual {-family "Arial"}] 1]
+    lappend x [lindex [font actual {-family "Geneva"}] 1]
+    lappend x [lindex [font actual {-family "Helvetica"}] 1]
+
+---- Result was:
+Arimo {DejaVu Sans} Helvetica
+---- Result should have been (exact matching):
+helvetica helvetica helvetica
+==== unixfont-2.4 FAILED
 
 
 
@@ -606,7 +1793,7 @@ fixed
     lindex [font actual {-family courier}] 1
 
 ---- Result was:
-Courier New
+Courier
 ---- Result should have been (exact matching):
 courier
 ==== unixfont-2.9 FAILED
@@ -639,7 +1826,7 @@ courier
     set x
 
 ---- Result was:
-29
+24
 ---- Result should have been (exact matching):
 78
 ==== unixfont-8.4 FAILED
@@ -656,7 +1843,7 @@ courier
     set x
 
 ---- Result was:
-21
+18
 ---- Result should have been (exact matching):
 60
 ==== unixfont-8.6 FAILED
@@ -1179,39 +2366,35 @@ iconic
 
 xmfbox.test
 
-all.tcl:	Total	9411	Passed	8394	Skipped	960	Failed	57
+all.tcl:	Total	9411	Passed	8606	Skipped	683	Failed	122
 Sourced 91 Test Files.
-Files with failing tests: canvText.test clrpick.test color.test focus.test font.test pack.test place.test scrollbar.test textDisp.test textWind.test unixFont.test unixWm.test winWm.test winfo.test wm.test
+Files with failing tests: canvText.test entry.test focus.test font.test listbox.test pack.test place.test scrollbar.test send.test spinbox.test text.test textDisp.test textImage.test textWind.test unixFont.test unixWm.test winWm.test winfo.test wm.test
 Number of tests skipped for each constraint:
-	1	
-    !havePseudocolorVisual
-
 	14	altDisplay
 	2	aqua
 	1	aquaOrWin32
 	4	base64PackageNeeded
+	16	colorsFree
+	4	colorsLeftover
+	21	defaultPseudocolor8
 	10	emptyTest
-	161	fonts
-	1	hasArial
-	1	hasCourierNew
-	1	hasTimesNew
-	2	haveTruecolor24
+	1	havePseudocolorVisual
 	11	knownBug
 	3	macOrWin
 	1	memory
-	133	nonPortable
+	114	nonPortable
 	63	nt
+	5	pseudocolor8
 	11	testmetrics
 	7	testwinevent
-	138	textfonts
 	2	userInteraction
 	342	win
 	51	winSend
 
-Tests running in interp:  /builds2/richb/update-tcl-tk/components/tcl/tk/build/sparcv9/tktest
-Tests located in:  /builds2/richb/update-tcl-tk/components/tcl/tk/tk8.6.7/tests/ttk
-Tests running in:  /builds2/richb/update-tcl-tk/components/tcl/tk/build/sparcv9
-Temporary files stored in /builds2/richb/update-tcl-tk/components/tcl/tk/build/sparcv9
+Tests running in interp:  $(@D)/tktest
+Tests located in:  $(SOURCE_DIR)/tests/ttk
+Tests running in:  $(@D)
+Temporary files stored in $(@D)
 Test files sourced into current interpreter
 Running tests that match:  *
 Skipping test files that match:  l.*.test

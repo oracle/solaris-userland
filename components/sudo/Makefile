@@ -43,9 +43,6 @@ COMPONENT_ANITYA_ID=	4906
 
 TPNO=			59484
 
-# Tests do not pass because of insufficient gsed filtering.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/common.mk
 
 # Fix 64-bit linking via compiler.

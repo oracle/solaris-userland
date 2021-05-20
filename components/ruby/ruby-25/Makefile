@@ -39,12 +39,6 @@ TPNO = 69760
 
 CFLAGS += "-std=gnu99"
 
-ifeq ($(MACH),sparc)
-# master test results are not entirely clean, so not
-# appropriate to run at top level
-$(SKIP_TEST_AT_TOP_LEVEL)
-endif
-
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_PREFIX = $(USRDIR)/$(COMPONENT_NAME)/$(RUBY_VER)

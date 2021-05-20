@@ -40,8 +40,7 @@ TPNO_TEXI2HTML=		9089
 
 SMF_MANIFESTS= $(COMPONENT_DIR)/texinfo-update.xml
 
-# Disable the unit tests since the test results are outdated.
-$(SKIP_TEST_AT_TOP_LEVEL)
+COMPONENT_PREP_ACTION += (cd $(@D); $(AUTORECONF_ENV) $(AUTORECONF) -fiv);
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 

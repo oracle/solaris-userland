@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 # Parallel build jobs are supported only if GNU make is used.
@@ -40,9 +40,6 @@ COMPONENT_BUGDB=	library/libserf
 COMPONENT_ANITYA_ID=	1720
 
 TPNO=			34114
-
-# Unit tests fail because of the invalid python syntax.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/prep.mk
 # Needed by the test: target. We override build and install.
@@ -79,6 +76,8 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^cc /d" ' \
 	'-e "/warning:/d"' \
 	'-e "/prototype:/d"' \
+	'-e "/developerstudio/d"' \
+	'-e "/\.\.\.\.\.\.\.\.\./d"' \
 	'-e "/argument/d"'
 
 $(BUILD_DIR)/%/.built:  $(SOURCE_DIR)/.prep

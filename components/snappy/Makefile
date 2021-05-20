@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -38,11 +38,12 @@ COMPONENT_ANITYA_ID=	4844
 
 TPNO = 31969
 
+# Reduce the compiler optimization to avoid unit tests failures.
+CXXFLAGS += -O2
 CONFIGURE_OPTIONS.64 +=    --prefix=$(USRLIBDIR64)
 CONFIGURE_OPTIONS    +=    --prefix=$(USRLIBDIR)
 
-# There are some test failures, the master test file is missing.
-$(SKIP_TEST_AT_TOP_LEVEL)
+unexport SHELLOPTS
 
 include $(WS_MAKE_RULES)/common.mk
 

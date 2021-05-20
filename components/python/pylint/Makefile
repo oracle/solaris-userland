@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../../make-rules/shared-macros.mk
@@ -56,9 +56,6 @@ TPNO_OLD=		31351
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-
-# Disable the unit tests since the test results are outdated.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 # There are several pylint documentation files that setup.py isn't installing
 # but are present in the pylint package on other distributions. Copy them into
@@ -136,7 +133,7 @@ $(MANIFEST_BASE)-pylint.mangled: FIX_MANIFEST_VERSIONS
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
-COMPONENT_TEST_TRANSFORMS += '-n -e "s/\(in \).*\(seconds\)/\1x \2/p"'
+COMPONENT_TEST_TRANSFORMS += '-nE -e "s/ ?=+ ?//g" -e "s/ in .* seconds//p"'
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 

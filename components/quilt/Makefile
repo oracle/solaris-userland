@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -39,9 +39,6 @@ COMPONENT_ANITYA_ID=	4143
 TPNO=			59643
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
-
-# The unit tests failed to start.
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

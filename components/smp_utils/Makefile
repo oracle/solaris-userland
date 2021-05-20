@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -38,9 +38,6 @@ COMPONENT_ANITYA_ID=	4840
 
 TPNO=			39251
 
-# The unit tests failed to start.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/common.mk
 
 CPPFLAGS += -I$(COMPONENT_DIR)/$(COMPONENT_SRC)/include
@@ -56,6 +53,9 @@ COMPONENT_INSTALL_ARGS += INSTALL=$(INSTALL)
 COMPONENT_INSTALL_ARGS += INSTALL_TOP=$(PROTOUSRDIR) 
 $(INSTALL_64):  COMPONENT_INSTALL_ARGS += INSTALL_LIB=$(PROTOUSRLIBDIR64)
 $(INSTALL_64):  COMPONENT_INSTALL_ARGS += INSTALL_SBIN=$(PROTOUSRBINDIR)
+
+# Unit tests require the files from proto area.
+test: install
 
 COMPONENT_TEST_ENV +=	LD_LIBRARY_PATH=$(PROTOUSRLIBDIR64)
 COMPONENT_TEST_CMD =	\
