@@ -20,23 +20,24 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		monotonic
-COMPONENT_VERSION=	1.5
+COMPONENT_VERSION=	1.6
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
+COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d401d82b7e5c0a37d249b633bae5f0d30e1186aa122e3b55a6cf69e07ae7146a
-COMPONENT_ARCHIVE_URL=	$(call pypi_url)
+    sha256:84e58a656561e8e2c523b5b6bdfd28dbff01b60003e73db3aa2c81e44603d7b1
+COMPONENT_ARCHIVE_URL=  \
+    $(COMPONENT_PROJECT_URL)/archive/refs/tags/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://github.com/atdt/monotonic
 COMPONENT_BUGDB=	python-mod/monotonic
 COMPONENT_ANITYA_ID=	6809
 
-TPNO=			56280
+TPNO=			70899
 
 # Python 3.3 and later includes time.monotonic in the standard library
 PYTHON_VERSIONS=    $(PYTHON2_VERSIONS)
