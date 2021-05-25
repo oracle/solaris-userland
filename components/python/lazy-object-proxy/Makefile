@@ -20,28 +20,37 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		lazy-object-proxy
-COMPONENT_VERSION=	1.4.1
+COMPONENT_VERSION=	1.6.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:4ba73f6089cd9b9478bc0a4fa807b47dbdb8fad1d8f31a0f0a5dbf26a4527a71
+    sha256:69a515c20c1ae723a39aa42165b5d78a4b016dd914c090015d4e72666b1bec67
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/lazy-object-proxy
 COMPONENT_BUGDB=	python-mod/lazy-obj-proxy
 COMPONENT_ANITYA_ID=	8265
 
-TPNO=			51775
+TPNO=			70819
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+COMPONENT_TEST_DIR =    $(SOURCE_DIR)/tests
+COMPONENT_TEST_CMD =    $(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
+
+# Several files are available only in 3.x packages
+$(MANIFEST_BASE)-lazy-object-proxy-27.mogrified: PYTHON_3_ONLY = \#
+
+PKG_MACROS += PYTHON_3_ONLY="$(PYTHON_3_ONLY)"
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -50,6 +59,6 @@ build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)
 
-# see $(COMPONENT_SRC)/tox.ini for the python modules required to execute
-# unittests.
-test:		$(NO_TESTS)
+test:		$(TEST_32_and_64)
+
+system-test:    $(SYSTEM_TEST_32_and_64)
