@@ -4,10 +4,11 @@ in-house. ISC did not express any interest in incorporating this patch
 into their code since they consider the limit to be a mitigating
 solution.
 
-diff -r 1680283c6725 includes/omapip/omapip.h
---- a/includes/omapip/omapip.h	Tue Jan 16 13:35:26 2018 -0800
-+++ b/includes/omapip/omapip.h	Tue Jan 16 18:01:14 2018 -0800
-@@ -467,6 +467,9 @@
+diff --git a/includes/omapip/omapip.h b/includes/omapip/omapip.h
+index f8db15c..74bde9b 100644
+--- a/includes/omapip/omapip.h
++++ b/includes/omapip/omapip.h
+@@ -466,6 +466,9 @@ extern omapi_object_type_t *omapi_type_auth_key;
  
  extern omapi_object_type_t *omapi_object_types;
  
@@ -17,10 +18,11 @@ diff -r 1680283c6725 includes/omapip/omapip.h
  void omapi_type_relinquish (void);
  isc_result_t omapi_init (void);
  isc_result_t omapi_object_type_register (omapi_object_type_t **,
-diff -r 1680283c6725 omapip/listener.c
---- a/omapip/listener.c	Tue Jan 16 13:35:26 2018 -0800
-+++ b/omapip/listener.c	Tue Jan 16 18:01:14 2018 -0800
-@@ -40,6 +40,10 @@
+diff --git a/omapip/listener.c b/omapip/listener.c
+index 20ec6f3..728fda2 100644
+--- a/omapip/listener.c
++++ b/omapip/listener.c
+@@ -40,6 +40,10 @@ static void trace_listener_accept_stop (trace_type_t *);
  trace_type_t *trace_listener_accept;
  #endif
  
@@ -31,7 +33,7 @@ diff -r 1680283c6725 omapip/listener.c
  OMAPI_OBJECT_ALLOC (omapi_listener,
  		    omapi_listener_object_t, omapi_type_listener)
  
-@@ -209,6 +213,35 @@
+@@ -209,6 +213,35 @@ int omapi_listener_readfd (omapi_object_t *h)
  	return l -> socket;
  }
  
@@ -67,7 +69,7 @@ diff -r 1680283c6725 omapip/listener.c
  /* Reader callback for a listener object.   Accept an incoming connection. */
  isc_result_t omapi_accept (omapi_object_t *h)
  {
-@@ -233,7 +266,13 @@
+@@ -233,7 +266,13 @@ isc_result_t omapi_accept (omapi_object_t *h)
  		return ISC_R_UNEXPECTED;
  	}
  
@@ -81,10 +83,11 @@ diff -r 1680283c6725 omapip/listener.c
  		close(socket);
  		return (ISC_R_NORESOURCES);
  	}
-diff -r 1680283c6725 server/dhcpd.c
---- a/server/dhcpd.c	Tue Jan 16 13:35:26 2018 -0800
-+++ b/server/dhcpd.c	Tue Jan 16 18:01:14 2018 -0800
-@@ -452,6 +452,10 @@
+diff --git a/server/dhcpd.c b/server/dhcpd.c
+index 6c2ceed..b965dfa 100644
+--- a/server/dhcpd.c
++++ b/server/dhcpd.c
+@@ -574,6 +574,10 @@ main(int argc, char **argv) {
  		path_dhcpd_conf = s;
  	}
  

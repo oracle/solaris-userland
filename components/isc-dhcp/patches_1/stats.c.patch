@@ -1,0 +1,16 @@
+An additional patch to be applied after DHCP has unpacked
+BIND and before BIND is compiled.
+
+Will provide upstream.
+
+--- ./build/amd64/bind/bind-9.11.14/lib/isc/stats.c	2019-12-12 03:36:39.000000000 -0800
++++ ./build/amd64/bind/bind-9.11.14/lib/isc/stats.c.fix	2021-05-25 03:49:03.369653878 -0700
+@@ -297,7 +297,7 @@
+ 	isc_atomic_store((int32_t *)&stats->counters[counter].lo,
+ 			 (uint32_t)(value & 0xffffffff));
+ # else
+-	stats->counters[counter] = val;
++	stats->counters[counter] = value;
+ # endif
+ #endif
+ }

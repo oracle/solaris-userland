@@ -3,10 +3,11 @@ working with upstream, but it is unclear at this point whether or not they are
 going to accept it. This is a highly visible bug which many customers have
 encountered.
 
-diff -r 1680283c6725 common/socket.c
---- a/common/socket.c	Tue Jan 16 13:35:26 2018 -0800
-+++ b/common/socket.c	Tue Jan 16 17:55:37 2018 -0800
-@@ -39,6 +39,9 @@
+diff --git a/common/socket.c b/common/socket.c
+index 31c99b3..1672a95 100644
+--- a/common/socket.c
++++ b/common/socket.c
+@@ -40,6 +40,9 @@
  #include <sys/ioctl.h>
  #include <sys/uio.h>
  #include <sys/uio.h>
@@ -16,7 +17,7 @@ diff -r 1680283c6725 common/socket.c
  
  #if defined(sun) && defined(USE_V4_PKTINFO)
  #include <sys/sysmacros.h>
-@@ -87,6 +90,33 @@
+@@ -92,6 +95,33 @@ static int global_v4_socket = -1;
  static int once = 0;
  #endif /* !defined(SO_BINDTODEVICE) && !defined(USE_FALLBACK) */
  
@@ -50,17 +51,17 @@ diff -r 1680283c6725 common/socket.c
  /* Reinitializes the specified interface after an address change.   This
     is not required for packet-filter APIs. */
  
-@@ -340,6 +370,9 @@
+@@ -366,6 +396,9 @@ void if_register_send (info)
+ #endif
  #else
  	info->wfdesc = info->rfdesc;
- #endif
++#endif
 +#if defined(sun)
 +	info->set_arp_socket = socket(AF_INET, SOCK_DGRAM, 0);
-+#endif
+ #endif
  	if (!quiet_interface_discovery)
  		log_info ("Sending on   Socket/%s%s%s",
- 		      info->name,
-@@ -356,6 +389,9 @@
+@@ -383,6 +416,9 @@ void if_deregister_send (info)
  	close (info -> wfdesc);
  #endif
  	info -> wfdesc = -1;
@@ -70,7 +71,7 @@ diff -r 1680283c6725 common/socket.c
  
  	if (!quiet_interface_discovery)
  		log_info ("Disabling output on Socket/%s%s%s",
-@@ -1091,7 +1127,11 @@
+@@ -1189,7 +1225,11 @@ isc_result_t fallback_discard (object)
  int can_unicast_without_arp (ip)
  	struct interface_info *ip;
  {
@@ -82,10 +83,11 @@ diff -r 1680283c6725 common/socket.c
  }
  
  int can_receive_unicast_unconfigured (ip)
-diff -r 1680283c6725 includes/dhcpd.h
---- a/includes/dhcpd.h	Tue Jan 16 13:35:26 2018 -0800
-+++ b/includes/dhcpd.h	Tue Jan 16 17:55:37 2018 -0800
-@@ -1378,6 +1378,9 @@
+diff --git a/includes/dhcpd.h b/includes/dhcpd.h
+index b20dd24..dd2cd02 100644
+--- a/includes/dhcpd.h
++++ b/includes/dhcpd.h
+@@ -1407,6 +1407,9 @@ struct interface_info {
  	int configured;			/* If set to 1, interface has at least
  					 * one valid IP address.
  					 */
@@ -95,7 +97,7 @@ diff -r 1680283c6725 includes/dhcpd.h
  	u_int32_t flags;		/* Control flags... */
  #define INTERFACE_REQUESTED 1
  #define INTERFACE_AUTOMATIC 2
-@@ -2608,6 +2611,10 @@
+@@ -2667,6 +2670,10 @@ ssize_t send_fallback6(struct interface_info *, struct packet *,
  		       struct sockaddr_in6 *, struct hardware *);
  #endif
  
@@ -106,10 +108,11 @@ diff -r 1680283c6725 includes/dhcpd.h
  #ifdef USE_SOCKET_SEND
  void if_reinitialize_send (struct interface_info *);
  void if_register_send (struct interface_info *);
-diff -r 1680283c6725 relay/dhcrelay.c
---- a/relay/dhcrelay.c	Tue Jan 16 13:35:26 2018 -0800
-+++ b/relay/dhcrelay.c	Tue Jan 16 17:55:37 2018 -0800
-@@ -759,6 +759,13 @@
+diff --git a/relay/dhcrelay.c b/relay/dhcrelay.c
+index 883d505..4a84350 100644
+--- a/relay/dhcrelay.c
++++ b/relay/dhcrelay.c
+@@ -883,6 +883,13 @@ do_relay4(struct interface_info *ip, struct dhcp_packet *packet,
  			to.sin_addr = packet->yiaddr;
  			to.sin_port = remote_port;
  
@@ -123,10 +126,11 @@ diff -r 1680283c6725 relay/dhcrelay.c
  			/* and hardware address is not broadcast */
  			htop = &hto;
  		} else {
-diff -r 1680283c6725 server/bootp.c
---- a/server/bootp.c	Tue Jan 16 13:35:26 2018 -0800
-+++ b/server/bootp.c	Tue Jan 16 17:55:37 2018 -0800
-@@ -437,7 +437,12 @@
+diff --git a/server/bootp.c b/server/bootp.c
+index 26a7607..e027431 100644
+--- a/server/bootp.c
++++ b/server/bootp.c
+@@ -437,7 +437,12 @@ void bootp (packet)
  		   can_unicast_without_arp (packet -> interface)) {
  		to.sin_addr = raw.yiaddr;
  		to.sin_port = remote_port;
@@ -140,9 +144,10 @@ diff -r 1680283c6725 server/bootp.c
  	/* Otherwise, broadcast it on the local network. */
  	} else {
  		to.sin_addr = limited_broadcast;
-diff -r 1680283c6725 server/dhcp.c
---- a/server/dhcp.c	Tue Jan 16 13:35:26 2018 -0800
-+++ b/server/dhcp.c	Tue Jan 16 17:55:37 2018 -0800
+diff --git a/server/dhcp.c b/server/dhcp.c
+index 16a4f92..207b29b 100644
+--- a/server/dhcp.c
++++ b/server/dhcp.c
 @@ -30,6 +30,8 @@
  #include <errno.h>
  #include <limits.h>
@@ -152,7 +157,7 @@ diff -r 1680283c6725 server/dhcp.c
  
  static void maybe_return_agent_options(struct packet *packet,
  				       struct option_state *options);
-@@ -3991,7 +3993,12 @@
+@@ -4146,7 +4148,12 @@ void dhcp_reply (lease)
  		   can_unicast_without_arp (state -> ip)) {
  		to.sin_addr = raw.yiaddr;
  		to.sin_port = remote_port;
@@ -166,7 +171,7 @@ diff -r 1680283c6725 server/dhcp.c
  	/* Otherwise, broadcast it on the local network. */
  	} else {
  		to.sin_addr = limited_broadcast;
-@@ -4013,7 +4020,9 @@
+@@ -4168,7 +4175,9 @@ void dhcp_reply (lease)
  
  	/* Free all of the entries in the option_state structure
  	   now that we're done with them. */
