@@ -20,10 +20,13 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 # drop files we are not using
 <transform file path=usr/bin/netaddr.* -> drop>
+
+# bypass optional pkg.depend IPython import
+<transform file path=.*/netaddr/cli.py$ -> set pkg.depend.bypass-generate .*IPython.*>
 
 <include ../generate/common.transform>

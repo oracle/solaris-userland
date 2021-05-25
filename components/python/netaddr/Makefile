@@ -20,25 +20,23 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		netaddr
-COMPONENT_VERSION=	0.7.18
+COMPONENT_VERSION=	0.8.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a1f5c9fcf75ac2579b9995c843dade33009543c04f218ff7c007b3c81695bd19
+    sha256:ab70df0d957d294a83abb006565e81768618f24c4b00c3dc208809608ec741fa
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/drkjam/netaddr/
 COMPONENT_BUGDB=	python-mod/netaddr
 COMPONENT_ANITYA_ID=	12487
 
-TPNO=			31322
-
-PYTHON_VERSIONS=	2.7 3.7 3.9
+TPNO=			62195
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -66,4 +64,4 @@ COMPONENT_TEST_TRANSFORMS += \
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:    $(SYSTEM_TEST_NO_ARCH)

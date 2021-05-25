@@ -1,0 +1,36 @@
+Because Solaris doesn't ship importlib_resources, we replace it with
+minimal and very basic implementation of necessary functionality.
+
+Not suitable for upstream.
+
+--- netaddr-0.8.0/netaddr.egg-info/requires.txt
++++ /dev/null
+@@ -1,3 +0,0 @@
+-
+-[:python_version < "3.7"]
+-importlib-resources
+--- netaddr-0.8.0/setup.py
++++ netaddr-0.8.0/setup.py
+@@ -136,7 +136,6 @@ def main():
+             .strip()
+             .strip('\'"')
+         ),
+-        install_requires=['importlib-resources;python_version<"3.7"'],
+     )
+ 
+     setup(**setup_options)
+--- netaddr-0.8.0/netaddr/compat.py
++++ netaddr-0.8.0/netaddr/compat.py
+@@ -90,4 +90,11 @@ else:
+ try:
+     from importlib import resources as _importlib_resources
+ except ImportError:
+-    import importlib_resources as _importlib_resources
++    # Because Solaris doesn't ship importlib_resources, we replace it with
++    # minimal and very basic implementation of necessary functionality.
++    import os.path as _path
++    class _importlib_resources:
++        @staticmethod
++        def open_binary(package, resource):
++            base = _path.dirname(_path.dirname(__file__))
++            return open(_path.join(base, package.replace(".", "/"), resource))
