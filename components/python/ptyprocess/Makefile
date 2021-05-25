@@ -20,26 +20,26 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ptyprocess
-COMPONENT_VERSION=	0.6.0
+COMPONENT_VERSION=	0.7.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:4fa2fdbd3fdb47c7f54d1cae17a9cd65069d2b5e7c469f610c7724efb3f717b8
+    sha256:ac1e844600e94f9980fd3b8e1da3c9933b6a873486e661f224bb81f302d110bb
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/pexpect/ptyprocess
 COMPONENT_BUGDB=	python-mod/ptyprocess
 COMPONENT_ANITYA_ID=	6446
 
-TPNO=			47959
+TPNO=			70849
 
 # Not necessary to build this for older Python versions
-PYTHON_VERSIONS = 3.7 3.9
+PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -58,4 +58,4 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:    $(SYSTEM_TEST_NO_ARCH)
