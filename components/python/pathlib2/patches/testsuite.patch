@@ -1,0 +1,25 @@
+Listing all passwords with `pwd.getpwall` takes a tremendous amount of time,
+hence we skip this part and choose root as the other user as we never run
+this test suite as root.
+
+Not suitable for upstream.
+
+--- pathlib2-2.3.5/tests/test_pathlib2.py
++++ pathlib2-2.3.5/tests/test_pathlib2.py
+@@ -2286,12 +2286,10 @@ class PosixPathTest(_BasePathTest, unitt
+         pwdent = pwd.getpwuid(os.getuid())
+         username = pwdent.pw_name
+         userhome = pwdent.pw_dir.rstrip('/') or '/'
+-        # find arbitrary different user (if exists)
+-        for pwdent in pwd.getpwall():
+-            othername = pwdent.pw_name
+-            otherhome = pwdent.pw_dir.rstrip('/')
+-            if othername != username and otherhome:
+-                break
++
++        pwdent = pwd.getpwnam('root')
++        othername = pwdent.pw_name
++        otherhome = pwdent.pw_dir.rstrip('/')
+ 
+         p1 = P('~/Documents')
+         p2 = P('~' + username + '/Documents')

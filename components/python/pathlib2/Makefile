@@ -26,17 +26,17 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pathlib2
-COMPONENT_VERSION=	2.3.3
+COMPONENT_VERSION=	2.3.5
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:25199318e8cc3c25dcb45cbe084cc061051336d5a9ea2a12448d3d8cb748f742
+    sha256:971ef2493ac36c8ce58dfce88e7e4e660a345f8fde66214c4b67bd0212085886
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.org/project/pathlib2/
 COMPONENT_BUGDB=	python-mod/pathlib2
 COMPONENT_ANITYA_ID=	12723
 
-TPNO=			50836
+TPNO=			63323
 
 # Pathlib2 provides no additional functionality in Python 3.7 and later
 PYTHON_VERSIONS = $(PYTHON2_VERSIONS)
@@ -58,7 +58,8 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/mock
+REQUIRED_PACKAGES += runtime/python-27/tests
