@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		jsonrpclib
-COMPONENT_VERSION=	0.4.0
+COMPONENT_VERSION=	0.4.2
 COMPONENT_PROJECT_URL=	https://github.com/tcalmant/jsonrpclib
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	v$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:dfe491c11ede2d2177625c1938aea91b36d01831d0676aa031d7131311fe51d5
+    sha256:9c47a0536a1249843fb59121c4bfdb716662b46841784967b4006b468f341e7b
 COMPONENT_ARCHIVE_URL=https://github.com/tcalmant/jsonrpclib/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	python-mod/jsonrpclib
 COMPONENT_ANITYA_ID=	19644
 
-TPNO=			49450
+TPNO=			70889
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -52,7 +52,7 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 COMPONENT_TEST_TRANSFORMS += \
     '-e "s|\(127.0.0.1\).*|\1|" ' \
-    '-e "s|\(^Ran 59 tests in\).*|\1|" '
+    '-e "s|\(^Ran [0-9]* tests\).*|\1|" '
 
 # common targets
 build:		$(BUILD_NO_ARCH)
@@ -62,4 +62,3 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
-
