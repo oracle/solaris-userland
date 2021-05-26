@@ -1,0 +1,1144 @@
+Only in mutt-2.0.5: .patched-mutt_oauth2.py.patch
+diff -ru mutt-2.0.5.orig/contrib/mutt_oauth2.py mutt-2.0.5/contrib/mutt_oauth2.py
+--- mutt-2.0.5.orig/contrib/mutt_oauth2.py	2020-11-07 21:30:03.000000000 +0000
++++ mutt-2.0.5/contrib/mutt_oauth2.py	2021-05-25 13:27:12.498015561 +0000
+@@ -1,6 +1,6 @@
+ #!/usr/bin/env python3
+ #
+-# Mutt OAuth2 token management script, version 2020-08-07
++# Mutt OAuth2 token management script, version 2021-05-12
+ # Written against python 3.7.3, not tried with earlier python versions.
+ #
+ #   Copyright (C) 2020 Alexander Perlis
+@@ -22,30 +22,24 @@
+ '''Mutt OAuth2 token management'''
+ 
+ import sys
++import signal
+ import json
+-import argparse
+ import urllib.parse
+ import urllib.request
+-import imaplib
+-import poplib
+-import smtplib
+ import base64
+ import secrets
+ import hashlib
+ import time
+ from datetime import timedelta, datetime
+-from pathlib import Path
+ import socket
+ import http.server
+-import subprocess
+-
+-# The token file must be encrypted because it contains multi-use bearer tokens
+-# whose usage does not require additional verification. Specify whichever
+-# encryption and decryption pipes you prefer. They should read from standard
+-# input and write to standard output. The example values here invoke GPG,
+-# although won't work until an appropriate identity appears in the first line.
+-ENCRYPTION_PIPE = ['gpg', '--encrypt', '--recipient', 'YOUR_GPG_IDENTITY']
+-DECRYPTION_PIPE = ['gpg', '--decrypt']
++from os.path import expanduser
++from shlex import quote
++import socketserver
++import os
++# for line > 255 characters on Solaris
++import readline
++from urllib.parse import urlparse, parse_qs
+ 
+ registrations = {
+     'google': {
+@@ -58,154 +52,178 @@
+         'smtp_endpoint': 'smtp.gmail.com',
+         'sasl_method': 'OAUTHBEARER',
+         'scope': 'https://mail.google.com/',
+-        'client_id': '',
+-        'client_secret': '',
+     },
+     'microsoft': {
+-        'authorize_endpoint': 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
+-        'devicecode_endpoint': 'https://login.microsoftonline.com/common/oauth2/v2.0/devicecode',
+-        'token_endpoint': 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
+-        'redirect_uri': 'https://login.microsoftonline.com/common/oauth2/nativeclient',
++        'authorize_endpoint':
++            'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
++        'devicecode_endpoint':
++            'https://login.microsoftonline.com/common/oauth2/v2.0/devicecode',
++        'token_endpoint':
++            'https://login.microsoftonline.com/common/oauth2/v2.0/token',
++        'redirect_uri':
++            'https://login.microsoftonline.com/common/oauth2/nativeclient',
+         'tenant': 'common',
+         'imap_endpoint': 'outlook.office365.com',
+         'pop_endpoint': 'outlook.office365.com',
+         'smtp_endpoint': 'smtp.office365.com',
+         'sasl_method': 'XOAUTH2',
+-        'scope': ('offline_access https://outlook.office.com/IMAP.AccessAsUser.All '
+-                  'https://outlook.office.com/POP.AccessAsUser.All '
+-                  'https://outlook.office.com/SMTP.Send'),
+-        'client_id': '',
+-        'client_secret': '',
++        'scope': (
++            'offline_access https://outlook.office.com/IMAP.AccessAsUser.All '
++            'https://outlook.office.com/POP.AccessAsUser.All '
++            'https://outlook.office.com/SMTP.Send'),
+     },
+ }
+ 
+-ap = argparse.ArgumentParser(epilog='''
+-This script obtains and prints a valid OAuth2 access token.  State is maintained in an
+-encrypted TOKENFILE.  Run with "--verbose --authorize" to get started or whenever all
+-tokens have expired, optionally with "--authflow" to override the default authorization
+-flow.  To truly start over from scratch, first delete TOKENFILE.  Use "--verbose --test"
+-to test the IMAP/POP/SMTP endpoints.
+-''')
+-ap.add_argument('-v', '--verbose', action='store_true', help='increase verbosity')
+-ap.add_argument('-d', '--debug', action='store_true', help='enable debug output')
+-ap.add_argument('tokenfile', help='persistent token storage')
+-ap.add_argument('-a', '--authorize', action='store_true', help='manually authorize new tokens')
+-ap.add_argument('--authflow', help='authcode | localhostauthcode | devicecode')
+-ap.add_argument('-t', '--test', action='store_true', help='test IMAP/POP/SMTP endpoints')
+-args = ap.parse_args()
+-
+-token = {}
+-path = Path(args.tokenfile)
+-if path.exists():
+-    if 0o777 & path.stat().st_mode != 0o600:
+-        sys.exit('Token file has unsafe mode. Suggest deleting and starting over.')
+-    try:
+-        sub = subprocess.run(DECRYPTION_PIPE, check=True, input=path.read_bytes(),
+-                             capture_output=True)
+-        token = json.loads(sub.stdout)
+-    except subprocess.CalledProcessError:
+-        sys.exit('Difficulty decrypting token file. Is your decryption agent primed for '
+-                 'non-interactive usage, or an appropriate environment variable such as '
+-                 'GPG_TTY set to allow interactive agent usage from inside a pipe?')
+-
+-
+-def writetokenfile():
+-    '''Writes global token dictionary into token file.'''
+-    if not path.exists():
+-        path.touch(mode=0o600)
+-    if 0o777 & path.stat().st_mode != 0o600:
+-        sys.exit('Token file has unsafe mode. Suggest deleting and starting over.')
+-    sub2 = subprocess.run(ENCRYPTION_PIPE, check=True, input=json.dumps(token).encode(),
+-                          capture_output=True)
+-    path.write_bytes(sub2.stdout)
+-
+-
+-if args.debug:
+-    print('Obtained from token file:', json.dumps(token))
+-if not token:
+-    if not args.authorize:
+-        sys.exit('You must run script with "--authorize" at least once.')
+-    print('Available app and endpoint registrations:', *registrations)
+-    token['registration'] = input('OAuth2 registration: ')
+-    token['authflow'] = input('Preferred OAuth2 flow ("authcode" or "localhostauthcode" '
+-                              'or "devicecode"): ')
+-    token['email'] = input('Account e-mail address: ')
+-    token['access_token'] = ''
+-    token['access_token_expiration'] = ''
+-    token['refresh_token'] = ''
+-    writetokenfile()
+-
+-if token['registration'] not in registrations:
+-    sys.exit(f'ERROR: Unknown registration "{token["registration"]}". Delete token file '
+-             f'and start over.')
+-registration = registrations[token['registration']]
+-
+-authflow = token['authflow']
+-if args.authflow:
+-    authflow = args.authflow
+-
+-baseparams = {'client_id': registration['client_id']}
+-# Microsoft uses 'tenant' but Google does not
+-if 'tenant' in registration:
+-    baseparams['tenant'] = registration['tenant']
+-
+-
+-def access_token_valid():
+-    '''Returns True when stored access token exists and is still valid at this time.'''
+-    token_exp = token['access_token_expiration']
+-    return token_exp and datetime.now() < datetime.fromisoformat(token_exp)
+-
+-
+-def update_tokens(r):
+-    '''Takes a response dictionary, extracts tokens out of it, and updates token file.'''
+-    token['access_token'] = r['access_token']
+-    token['access_token_expiration'] = (datetime.now() +
+-                                        timedelta(seconds=int(r['expires_in']))).isoformat()
+-    if 'refresh_token' in r:
+-        token['refresh_token'] = r['refresh_token']
+-    writetokenfile()
+-    if args.verbose:
+-        print(f'NOTICE: Obtained new access token, expires {token["access_token_expiration"]}.')
+-
+-
+-if args.authorize:
+-    p = baseparams.copy()
+-    p['scope'] = registration['scope']
+-
+-    if authflow in ('authcode', 'localhostauthcode'):
+-        verifier = secrets.token_urlsafe(90)
+-        challenge = base64.urlsafe_b64encode(hashlib.sha256(verifier.encode()).digest())[:-1]
+-        redirect_uri = registration['redirect_uri']
+-        listen_port = 0
+-        if authflow == 'localhostauthcode':
++
++def closure(name, functions):
++    return type(name, (object, ), {f.__name__: f for f in functions})
++
++
++def config(cfgfile):
++    verbose("reading config file", cfgfile)
++    cfg = json.load(open(expanduser(cfgfile)))
++
++    # check config
++    def require(p, allowed_values=None):
++        if not p in cfg:
++            error(f"required parameter '{p}' not found in configuration file")
++        if allowed_values and not cfg[p] in allowed_values:
++            error(f"invalid value '{cfg[p]}' of parameter '{p}' in the "
++                  "configuration file, should be one of: "
++                  f"{', '.join(allowed_values)}")
++        return cfg[p]
++
++    require("client_id")
++    require("client_secret")
++    require("registration", ['google', 'microsoft'])
++    require("authflow", ['devicecode', 'localhostauthcode', 'authcode'])
++    require("email")
++    if 'timeout' in cfg:
++        t = cfg["timeout"]
++        if not isinstance(t, int):
++            error(f"parameter 'timeout' in configuration file has invalid "
++                  f"numeric value '{cfg['timeout']}'")
++    return cfg
++
++def Verifier():
++    return secrets.token_urlsafe(90)
++
++def Token(config, registrations):
++    registration = registrations[config["registration"]]
++    access_token = ''
++    access_token_expiration = ''
++    refresh_token = ''
++
++    baseparams = {'client_id': config['client_id']}
++
++    # Microsoft uses 'tenant' but Google does not
++    if 'tenant' in registration:
++        baseparams['tenant'] = registration['tenant']
++
++    def access_token_valid():
++        '''Returns True when stored access token exists and is still valid
++           at this time.'''
++        token_exp = access_token_expiration
++        return token_exp and datetime.now() < datetime.fromisoformat(token_exp)
++
++    def update_token(r):
++        '''Takes a response dictionary, extracts tokens out of it, and updates
++           token file.'''
++        nonlocal access_token
++        nonlocal access_token_expiration
++        nonlocal refresh_token
++        access_token = r['access_token']
++        access_token_expiration = (datetime.now() +
++                                   timedelta(seconds=int(r['expires_in']))).isoformat()
++        if 'refresh_token' in r:
++            refresh_token = r['refresh_token']
++        verbose(
++            f'Obtained new access token, expires {access_token_expiration}.')
++
++    def check_error_response(response):
++        if 'error' in response:
++            if 'error_description' in response:
++                error(f"{response['error']}: {response['error_description']}")
++            else:
++                error(f"{response['error']}")
++
++    def devicecode():
++        p = baseparams.copy()
++        p['scope'] = registration['scope']
++        try:
++            response = urllib.request.urlopen(
++                registration['devicecode_endpoint'],
++                urllib.parse.urlencode(p).encode())
++        except urllib.error.HTTPError as err:
++            print(err.code, err.reason)
++            response = err
++        response = response.read()
++        debug(response)
++        response = json.loads(response)
++        check_error_response(response)
++
++        print(response['message'])
++
++        del p['scope']
++        p.update({'grant_type': 'urn:ietf:params:oauth:grant-type:device_code',
++                  'client_secret': config['client_secret'],
++                  'device_code': response['device_code']})
++        interval = int(response['interval'])
++        verbose('Polling...', end='', flush=True)
++        while True:
++            time.sleep(interval)
++            verbose('.', end='', flush=True)
++            try:
++                response = urllib.request.urlopen(
++                    registration['token_endpoint'],
++                    urllib.parse.urlencode(p).encode())
++            except urllib.error.HTTPError as err:
++                # Not actually always an error, might just mean "keep
++                # trying..."
++                response = err
++            response = response.read()
++            debug(response)
++            response = json.loads(response)
++            if 'error' not in response:
++                break
++            if response['error'] == 'authorization_declined':
++                error(' user declined authorization.')
++            if response['error'] == 'expired_token':
++                error(' too much time has elapsed.')
++            if response['error'] != 'authorization_pending':
++                check_error_response(response)
++        print()
++        update_token(response)
++
++    def localhostauthcode():
++
++        listen_port = config.get("redirect_port")
++        if not listen_port:
+             # Find an available port to listen on
+             s = socket.socket()
+             s.bind(('127.0.0.1', 0))
+             listen_port = s.getsockname()[1]
+             s.close()
+-            redirect_uri = 'http://localhost:'+str(listen_port)+'/'
+-            # Probably should edit the port number into the actual redirect URL.
+-
+-        p.update({'login_hint': token['email'],
+-                  'response_type': 'code',
+-                  'redirect_uri': redirect_uri,
+-                  'code_challenge': challenge,
+-                  'code_challenge_method': 'S256'})
+-        print(registration["authorize_endpoint"] + '?' +
+-              urllib.parse.urlencode(p, quote_via=urllib.parse.quote))
++        redirect_uri = f'http://localhost:{listen_port}/'
++        code = None
+ 
+-        authcode = ''
+-        if authflow == 'authcode':
+-            authcode = input('Visit displayed URL to retrieve authorization code. Enter '
+-                             'code from server (might be in browser address bar): ')
+-        else:
+-            print('Visit displayed URL to authorize this application. Waiting...',
+-                  end='', flush=True)
++        def prompt(visit_url, redirect_uri, verifier):
++            url_cmd_template = config.get("url_cmd")
++            if url_cmd_template:
++                url_cmd = url_cmd_template.format(quote(visit_url))
++                debug(visit_url)
++                verbose('running', url_cmd,
++                        'and waiting for redirect....', end='', flush=True)
++                os.system(url_cmd)
++            else:
++                print(visit_url)
++                print('Visit displayed URL to authorize this application. Waiting...',
++                      end='', flush=True)
+ 
+             class MyHandler(http.server.BaseHTTPRequestHandler):
+-                '''Handles the browser query resulting from redirect to redirect_uri.'''
++                '''Handles the browser query resulting from redirect to
++                   redirect_uri.'''
+ 
+-                # pylint: disable=C0103
+                 def do_HEAD(self):
+                     '''Response to a HEAD requests.'''
+                     self.send_response(200)
+@@ -214,206 +232,334 @@
+ 
+                 def do_GET(self):
+                     '''For GET request, extract code parameter from URL.'''
+-                    # pylint: disable=W0603
+-                    global authcode
++                    nonlocal code
+                     querystring = urllib.parse.urlparse(self.path).query
+                     querydict = urllib.parse.parse_qs(querystring)
+                     if 'code' in querydict:
+-                        authcode = querydict['code'][0]
++                        code = querydict['code'][0]
+                     self.do_HEAD()
+-                    self.wfile.write(b'<html><head><title>Authorizaton result</title></head>')
+-                    self.wfile.write(b'<body><p>Authorization redirect completed. You may '
+-                                     b'close this window.</p></body></html>')
++                    self.wfile.write(b'''
++                        <html><head><title>Authorizaton result
++                        </title><script>
++                        function clipboard() {
++                            var elem = document.getElementById("token");
++                            elem.select();
++                            elem.setSelectionRange(0, 99999); /* mobile */
++                            document.execCommand("copy");
++                        }
++                        </script></head>''')
++
++                    try:
++                        t = obtain_token(code, redirect_uri, verifier)
++                        if config.get("show_token_web"):
++                            self.wfile.write(
++                                b'<body>'
++                                b'<p>Authorization redirect completed.</p>'
++                                b'<div>'
++                                b'<h2>Token:  '
++                                b'<button onclick="clipboard()">Copy</button>'
++                                b'</h2></div>'
++                                b'<textarea id="token" rows=25 cols=80>' +
++                                t.encode('utf-8') +
++                                b'</textarea>'
++                                b'</body></html>')
++                        else:
++                            self.wfile.write(
++                                b'<body>'
++                                b'<p>Authorization redirect completed.</p>'
++                                b'You may close this window.</p></body></html>')
++
++                    except Exception as exc:
++                        self.wfile.write(str(exc).encode('utf-8'))
++
++                def log_request(self, code='-', size='-'):
++                    if debug == logf:
++                        super().log_request(code, size)
++
+             with http.server.HTTPServer(('127.0.0.1', listen_port), MyHandler) as httpd:
+                 try:
+                     httpd.handle_request()
+                 except KeyboardInterrupt:
+                     pass
+ 
+-        if not authcode:
+-            sys.exit('Did not obtain an authcode.')
++            return code
+ 
+-        for k in 'response_type', 'login_hint', 'code_challenge', 'code_challenge_method':
+-            del p[k]
++        authcode_cmn(redirect_uri, prompt)
++
++    def authcode():
++        redirect_uri = config.get('redirect_uri')
++        if not redirect_uri:
++            redirect_uri = registration['redirect_uri']
++
++        def prompt(visit_url, redirect_uri, verifier):
++            print(visit_url)
++            print()
++            try:
++                url = input('Visit displayed URL to retrieve authorization '
++                            'code. Copy & paste code or redirect url '
++                            f'from browser\'s address bar:\n\n')
++                try:
++                    if url.startswith("http://") or url.startswith("https://"):
++                        parsed_url = urlparse(url)
++                        params = parse_qs(parsed_url.query)
++                        code = params.get('code', [])[0]
++                    else:
++                        code = url
++                except KeyboardInterrupt:
++                    pass
++                debug(f"Code: {code}")
++                print()
++                obtain_token(code, redirect_uri, verifier)
++            except Exception as err:
++                error(str(err))
++
++        authcode_cmn(redirect_uri, prompt)
++
++    def obtain_token(code, redirect_uri, verifier):
++        if not code:
++            error('Invalid authcode.')
++
++        verbose("... done")
++        verbose(code, redirect_uri, verifier)
++        verbose("Received redirected request")
++        p = baseparams.copy()
++        p['scope'] = registration['scope']
+         p.update({'grant_type': 'authorization_code',
+-                  'code': authcode,
+-                  'client_secret': registration['client_secret'],
++                  'code': code,
++                  'redirect_uri': redirect_uri,
++                  'client_secret': config['client_secret'],
+                   'code_verifier': verifier})
+         try:
++            verbose("Trying to reach", registration['token_endpoint'])
+             response = urllib.request.urlopen(registration['token_endpoint'],
+-                                              urllib.parse.urlencode(p).encode())
++                                              urllib.parse.urlencode(
++                                                  p).encode(),
++                                              timeout=config.get("timeout", None))
+         except urllib.error.HTTPError as err:
+-            print(err.code, err.reason)
+-            response = err
++            raise Exception(f"error accessing {registration['token_endpoint']}: {err.code} {err.reason}")
++        except urllib.error.URLError as err:
++            raise Exception(f"cannot load url {registration['token_endpoint']}: {err.reason}")
+         response = response.read()
+-        if args.debug:
+-            print(response)
++        debug(response)
+         response = json.loads(response)
+-        if 'error' in response:
+-            print(response['error'])
+-            if 'error_description' in response:
+-                print(response['error_description'])
+-            sys.exit(1)
++        check_error_response(response)
++        update_token(response)
++        return response['access_token']
++
++    def challenge(verifier):
++        return base64.urlsafe_b64encode(
++            hashlib.sha256(verifier.encode()).digest())[:-1]
++
++    def authcode_cmn(redirect_uri, prompt_func):
++        p = baseparams.copy()
++        p['scope'] = registration['scope']
++        verifier = Verifier()
++        p.update({'login_hint': config["email"],
++                  'response_type': 'code',
++                  'redirect_uri': redirect_uri,
++                  'code_challenge': challenge(verifier),
++                  'code_challenge_method': 'S256'})
++        visit_url = (registration["authorize_endpoint"] + '?' +
++                     urllib.parse.urlencode(p, quote_via=urllib.parse.quote))
+ 
+-    elif authflow == 'devicecode':
+-        try:
+-            response = urllib.request.urlopen(registration['devicecode_endpoint'],
+-                                              urllib.parse.urlencode(p).encode())
+-        except urllib.error.HTTPError as err:
+-            print(err.code, err.reason)
+-            response = err
+-        response = response.read()
+-        if args.debug:
+-            print(response)
+-        response = json.loads(response)
+-        if 'error' in response:
+-            print(response['error'])
+-            if 'error_description' in response:
+-                print(response['error_description'])
+-            sys.exit(1)
+-        print(response['message'])
+-        del p['scope']
+-        p.update({'grant_type': 'urn:ietf:params:oauth:grant-type:device_code',
+-                  'client_secret': registration['client_secret'],
+-                  'device_code': response['device_code']})
+-        interval = int(response['interval'])
+-        print('Polling...', end='', flush=True)
+-        while True:
+-            time.sleep(interval)
+-            print('.', end='', flush=True)
++        prompt_func(visit_url, redirect_uri, verifier)
++        if not access_token:
++            error("unable to retrive access token")
++
++    def authorize():
++        flow_handlers = {
++            'devicecode': devicecode,
++            'localhostauthcode': localhostauthcode,
++            'authcode': authcode
++        }
++        flow_handlers[config["authflow"]]()
++
++    def refresh():
++        if not access_token_valid():
++            verbose('Invalid or expired access token; using refresh token '
++                    'to obtain new access token.')
++            if not refresh_token:
++                error('No refresh token. Run script again.')
++            p = baseparams.copy()
++            p.update({'client_secret': config['client_secret'],
++                      'refresh_token': refresh_token,
++                      'grant_type': 'refresh_token'})
+             try:
+                 response = urllib.request.urlopen(registration['token_endpoint'],
+                                                   urllib.parse.urlencode(p).encode())
+             except urllib.error.HTTPError as err:
+-                # Not actually always an error, might just mean "keep trying..."
++                print(err.code, err.reason)
+                 response = err
+             response = response.read()
+-            if args.debug:
+-                print(response)
++            debug(response)
+             response = json.loads(response)
+-            if 'error' not in response:
+-                break
+-            if response['error'] == 'authorization_declined':
+-                print(' user declined authorization.')
+-                sys.exit(1)
+-            if response['error'] == 'expired_token':
+-                print(' too much time has elapsed.')
+-                sys.exit(1)
+-            if response['error'] != 'authorization_pending':
+-                print(response['error'])
+-                if 'error_description' in response:
+-                    print(response['error_description'])
+-                sys.exit(1)
+-        print()
++            check_error_response(response)
++            update_token(response)
+ 
+-    else:
+-        sys.exit(f'ERROR: Unknown OAuth2 flow "{token["authflow"]}. Delete token file and '
+-                 f'start over.')
++        if not access_token_valid():
++            error('No valid access token. This should not be able to happen.')
+ 
+-    update_tokens(response)
++        debug('Access Token: ', access_token, end='')
++        return access_token
+ 
++    def token():
++        return access_token
++
++    return closure("Token", [refresh, authorize, token])
++
++
++def unix_socket_server(uds_path, func):
++    # Prevent anyone else but the owner to access the UNIX socket.
++    os.umask(0o077)
+ 
+-if not access_token_valid():
+-    if args.verbose:
+-        print('NOTICE: Invalid or expired access token; using refresh token '
+-              'to obtain new access token.')
+-    if not token['refresh_token']:
+-        sys.exit('ERROR: No refresh token. Run script with "--authorize".')
+-    p = baseparams.copy()
+-    p.update({'client_secret': registration['client_secret'],
+-              'refresh_token': token['refresh_token'],
+-              'grant_type': 'refresh_token'})
+-    try:
+-        response = urllib.request.urlopen(registration['token_endpoint'],
+-                                          urllib.parse.urlencode(p).encode())
+-    except urllib.error.HTTPError as err:
+-        print(err.code, err.reason)
+-        response = err
+-    response = response.read()
+-    if args.debug:
+-        print(response)
+-    response = json.loads(response)
+-    if 'error' in response:
+-        print(response['error'])
+-        if 'error_description' in response:
+-            print(response['error_description'])
+-        print('Perhaps refresh token invalid. Try running once with "--authorize"')
+-        sys.exit(1)
+-    update_tokens(response)
+-
+-
+-if not access_token_valid():
+-    sys.exit('ERROR: No valid access token. This should not be able to happen.')
+-
+-
+-if args.verbose:
+-    print('Access Token: ', end='')
+-print(token['access_token'])
+-
+-
+-def build_sasl_string(user, host, port, bearer_token):
+-    '''Build appropriate SASL string, which depends on cloud server's supported SASL method.'''
+-    if registration['sasl_method'] == 'OAUTHBEARER':
+-        return f'n,a={user},\1host={host}\1port={port}\1auth=Bearer {bearer_token}\1\1'
+-    if registration['sasl_method'] == 'XOAUTH2':
+-        return f'user={user}\1auth=Bearer {bearer_token}\1\1'
+-    sys.exit(f'Unknown SASL method {registration["sasl_method"]}.')
+-
+-
+-if args.test:
+-    errors = False
+-
+-    imap_conn = imaplib.IMAP4_SSL(registration['imap_endpoint'])
+-    sasl_string = build_sasl_string(token['email'], registration['imap_endpoint'], 993,
+-                                    token['access_token'])
+-    if args.debug:
+-        imap_conn.debug = 4
+-    try:
+-        imap_conn.authenticate(registration['sasl_method'], lambda _: sasl_string.encode())
+-        # Microsoft has a bug wherein a mismatch between username and token can still report a
+-        # successful login... (Try a consumer login with the token from a work/school account.)
+-        # Fortunately subsequent commands fail with an error. Thus we follow AUTH with another
+-        # IMAP command before reporting success.
+-        imap_conn.list()
+-        if args.verbose:
+-            print('IMAP authentication succeeded')
+-    except imaplib.IMAP4.error as e:
+-        print('IMAP authentication FAILED (does your account allow IMAP?):', e)
+-        errors = True
+-
+-    pop_conn = poplib.POP3_SSL(registration['pop_endpoint'])
+-    sasl_string = build_sasl_string(token['email'], registration['pop_endpoint'], 995,
+-                                    token['access_token'])
+-    if args.debug:
+-        pop_conn.set_debuglevel(2)
+-    try:
+-        # poplib doesn't have an auth command taking an authenticator object
+-        # Microsoft requires a two-line SASL for POP
+-        # pylint: disable=W0212
+-        pop_conn._shortcmd('AUTH ' + registration['sasl_method'])
+-        pop_conn._shortcmd(base64.standard_b64encode(sasl_string.encode()).decode())
+-        if args.verbose:
+-            print('POP authentication succeeded')
+-    except poplib.error_proto as e:
+-        print('POP authentication FAILED (does your account allow POP?):', e.args[0].decode())
+-        errors = True
+-
+-    # SMTP_SSL would be simpler but Microsoft does not answer on port 465.
+-    smtp_conn = smtplib.SMTP(registration['smtp_endpoint'], 587)
+-    sasl_string = build_sasl_string(token['email'], registration['smtp_endpoint'], 587,
+-                                    token['access_token'])
+-    smtp_conn.ehlo('test')
+-    smtp_conn.starttls()
+-    smtp_conn.ehlo('test')
+-    if args.debug:
+-        smtp_conn.set_debuglevel(2)
+     try:
+-        smtp_conn.auth(registration['sasl_method'], lambda _=None: sasl_string)
+-        if args.verbose:
+-            print('SMTP authentication succeeded')
+-    except smtplib.SMTPAuthenticationError as e:
+-        print('SMTP authentication FAILED:', e)
+-        errors = True
++        os.remove(expanduser(uds_path))
++    except FileNotFoundError:
++        pass
++
++    class UDSHandler(http.server.BaseHTTPRequestHandler):
++        def log_request(self, code='-', size='-'):
++            if debug == logf:
++                super().log_request(code, size)
++
++        def do_POST(s):
++            s.client_address = ('',)
++            s.send_response(200)
++            s.send_header("Content-type", "text/plain")
++            s.end_headers()
++            s.wfile.write(b"exiting\n")
++            sys.exit(0)
++
++        def do_GET(s):
++            s.client_address = ('',)
++            s.send_response(200)
++            s.send_header("Content-type", "text/plain")
++            s.end_headers()
++
++            s.wfile.write(func())
++
++    class UnixHTTPServer(http.server.HTTPServer):
++        address_family = socket.AF_UNIX
++
++        def server_bind(self):
++            socketserver.TCPServer.server_bind(self)
++            self.server_name = "localhost"
++            self.server_port = 0
++
++    def serve():
++        try:
++            # Serve token in loop and refresh it if needed.
++            server = UnixHTTPServer(expanduser(uds_path), UDSHandler)
++            server.serve_forever()
++        except KeyboardInterrupt:
++            os.remove(expanduser(uds_path))
++
++    return closure("Unix_socket_server", [serve])
++
++def stop_daemon(uds_path):
++    # stop daemon if it is already running
++    rv = os.system(f"curl -s -X POST --unix-socket '{uds_path}' "
++        "http://now/quit") >> 8
++    if not rv in [0, 7]:
++        error(f"failed to stop earlier server instance, curl returns {rv}")
++
++def main(cfgfile):
++
++    cfg = config(cfgfile)
++
++    t = Token(cfg, registrations)
++
++    # Authorize and obtain token.
++    t.authorize()
++
++    if cfg.get("show_token_stdout"):
++        print(t.token())
++
++    uds_path = cfg.get("unix_socket", None)
++    if uds_path:
++        stop_daemon(uds_path)
++        server = unix_socket_server(uds_path, lambda: t.refresh().encode())
++    else:
++        sys.exit(0)
++
++    if "mutt_cmd" in cfg:
++        mutt_cmd = cfg["mutt_cmd"]
++        verbose('Running', mutt_cmd)
++
++        #
++        # Use unix pipe as IPC between python and mutt so that python
++        # (children) of mutt can detect mutt exited by noticing EOF in pipe
++        # read end.
++        #
++        (piper, pipew) = os.pipe2(0)
++
++        pid = os.fork()
++        if pid == 0:
++            os.close(pipew)
++            pid2 = os.fork()
++
++            #
++            # ignore SIGINT in both UDS server and pipe reader because mutt
++            # intercepts ^C and shows quit prompt. SIGINT is sent to all
++            # processes in process group, so mask it here and let mutt to
++            # handle it. If it decides to exit, pipe reader detects that and
++            # cleans up. It kills UDS server, then exits.
++            #
++            signal.signal(signal.SIGINT, signal.SIG_IGN)
++
++            if pid2 == 0:
++                server.serve()
++                sys.exit(0)
++
++            verbose("reading pipe", piper)
++            while os.read(piper, 100):
++                pass
++            os.kill(pid2, signal.SIGTERM)
++            verbose("exiting after pipe")
++            sys.exit(0)
++
++        #
++        # Exec mutt in the parent process don't let mutt be children of python
++        # to not break job control in terminal. This is matter of precaution to
++        # potentially save a day debugging terminal line discipline modules and
++        # ttys when it comes to corner case. Mutt handles SIGTSTP and makes
++        # ioctls to save ncurses screen, then stops itself by kill(0, SIGSTOP).
++        # It even doesn't mask SIGCONT during SIGTSTP handling. Who cares as
++        # long as it works?
++        #
++        os.close(piper)
++        os.execv("/bin/sh", [ "sh", "-c", cfg["mutt_cmd"]])
++        error("execv failed")
++
++    else:
++        server.serve()
++
++def logf(*x, **kw):
++    print(*x, **kw)
++
++def nologf(*_x, **_kw):
++    pass
++
++verbose = debug = nologf
++
++def error(x):
++    return sys.exit(f"ERROR: {x}")
++
++args = sys.argv[1:]
++while len(args) > 0:
++    if args[0] == "-d":
++        debug = logf
++    elif args[0] == "-v":
++        verbose = logf
++    else:
++        break
++    args.pop(0)
++
++if len(args) > 1:
++    error("usage: mutt_oauth2.py [-d] [-v] [config_file]")
++
++cfgfile = args[0] if len(args) == 1 else "~/.mutt/oauthrc"
++if not os.path.exists(expanduser(cfgfile)):
++    error(f"config file {cfgfile} doesn't exist")
+ 
+-    if errors:
+-        sys.exit(1)
++main(cfgfile)
+Only in mutt-2.0.5/contrib: mutt_oauth2.py.~1~
+diff -ru mutt-2.0.5.orig/contrib/mutt_oauth2.py.README mutt-2.0.5/contrib/mutt_oauth2.py.README
+--- mutt-2.0.5.orig/contrib/mutt_oauth2.py.README	2020-11-07 21:30:03.000000000 +0000
++++ mutt-2.0.5/contrib/mutt_oauth2.py.README	2021-05-25 13:27:12.498258717 +0000
+@@ -1,7 +1,6 @@
+ mutt_oauth.py README by Alexander Perlis, 2020-07-15
+ ====================================================
+ 
+-
+ Background on plain passwords, app passwords, OAuth2 bearer tokens
+ ------------------------------------------------------------------
+ 
+@@ -113,29 +112,6 @@
+    "OAuth2". In that terminology, mutt indeed supports "Modern Auth".)
+ 
+ 
+-Configure script's token file encryption
+-----------------------------------------
+-
+-The script remembers tokens between invocations by keeping them in a
+-token file. This file is encrypted. Inside the script are two lines
+-  ENCRYPTION_PIPE
+-  DECRYPTION_PIPE
+-that must be edited to specify your choice of encryption system. A
+-popular choice is gpg. To use this:
+-
+- - Install gpg. For example, "sudo apt install gpg".
+- - "gpg --gen-key". Answer the questions. Instead of your email
+-   address you could choose say "My mutt_oauth2 token store", then
+-   choose a passphrase. You will need to produce that same passphrase
+-   whenever mutt_oauth2 needs to unlock the token store.
+- - Edit mutt_oauth2.py and put your GPG identity (your email address or
+-   whatever you picked above) in the ENCRYPTION_PIPE line.
+- - For the gpg-agent to be able to ask you the unlock passphrase,
+-   the environment variable GPG_TTY must be set to the current tty.
+-   Typically you would put the following inside your .bashrc or equivalent:
+-     export GPG_TTY=$(tty)
+-
+-
+ Create an app registration
+ --------------------------
+ 
+@@ -154,7 +130,7 @@
+ 
+ What you ultimately need is the "client_id" (and "client_secret" if
+ one was set) for this registration. Those values must be edited into
+-the mutt_oauth2.py script.  If your work or school environment has a
++the oauthrc configuration file.  If your work or school environment has a
+ knowledge base that provides the client_id, then someone already took
+ care of the app registration, and you can skip the step of creating
+ your own registration.
+@@ -177,9 +153,6 @@
+  - At top, choose Create Credentials / OAuth2 client iD
+    - Application type is "Desktop app"
+ 
+-Edit the client_id (and client_secret if there is one) into the
+-mutt_oauth2.py script.
+-
+ 
+ -- How to create a Microsoft registration --
+ 
+@@ -212,26 +185,128 @@
+ incognito browser window to create a free outlook.com account and use that
+ to create the app registration.
+ 
+-Edit the client_id (and client_secret if there is one) into the
+-mutt_oauth2.py script.
++Requirements
++------------
++* python 3.8
++* mutt 2.0+
++* unix domain socket API
++* curl (with unix domain socket support)
++
++Installation
++============
++The instalation has several manual steps:
++
++* copy the script, make it executable
++* create script's configuration file
++* edit mutt's configuration file
++
++Assume following file layout:
++
++.mutt/muttrc   <-- main mutt configuration file
++.mutt/oauthrc  <-- configuration file for oauth script
++.mutt/oauth    <-- python oauth script
++
++1. Copy oauth python script to .mutt/oauth
++2. Create .mutt/oauthrc file in JSON format.
++3. Modify .mutt/muttrc to OAuth2 authentication
+ 
++Configuration files
++-------------------
+ 
+-Running the script manually to authorize tokens
+------------------------------------------------
++Create .mutt/oauthrc file in JSON format
++----------------------------------------
++Supported parameters:
+ 
+-Run "mutt_oauth2.py --help" to learn script usage. To obtain the
+-initial set of tokens, run the script specifying a name for a
+-disposable token storage file, as well as "--authorize", for example
+-using this naming scheme:
++* email		- email address for OAuth2 authentication purposes
++* registration  - OAuth2 provider either "microsoft" or "google"
++* authflow      - either "devicecode", "localhostauthcode" or "authcode"
++		- see "Authflow explained" section
++* url_cmd	- command to visit url to obtain authcode, {} expands to url
++		  (only for "localhostauthcode")
++* client_id     - client identification string obtained during app registration
++* client_secret - client secret string obtained during app registration
++* redirect_uri  - redirect uri registered for an application
++                  (only for "authcode" authflow and optional)
++* unix_socket	- Unix domain socket name that serves the token to consumers
++* mutt_cmd	- oauth script runs this command after authentication
++                  used e.g. to pass -F alternate muttrc associated with oauthrc
++* timeout	- timeout for obtaining token from OAuth2 provider (seconds)
++* show_token_stdout - once token is obtained, print it to the standard output
++* show_token_web    - once token is obtained, show it in the browser
++		  (only for "localhostauthcode" authflow)
++
++An example of .mutt/oauthrc file:
++
++{
++        "email": "your.email@domain.com",
++        "url_cmd": "firefox {} &",
++        "registration": "microsoft",
++        "authflow": "localhostauthcode",
++        "client_id": "client identification string",
++        "client_secret": "client secret string",
++        "unix_socket": "~/.mutt/oauth.socket",
++        "mutt_cmd": "mutt",
++        "timeout": 2
++}
++
++Note: On MacOS "url_cmd" could be e.g.: "open {}" or "open -a firefox -g {}"
++
++Modify .mutt/muttrc to OAuth2 authentication
++--------------------------------------------
++Configuration file for mutt needs to be updated to use right IMAP / SMTP
++authenticator either "oauthbearer" (Gmail) or xoauth2 (Office 365) and IMAP /
++SMTP oauth refresh command needs to be set to curl over unix domain socket that
++is specified in the .mutt/oauthrc file.
+ 
+- mutt_oauth2.py userid@myschool.edu.tokens --verbose --authorize
++Muttrc example for O365 (Office 365 / Exchange Online - Microsoft)
++------------------------------------------------------------------
++# You
++set from="your.email@domain.com"
++set realname="Your Name"
++set imap_user="${from}"
++
++# Folders
++set smtp_url="smtp://${imap_user}@smtp.office365.com:587"
++set folder="imaps://outlook.office365.com"
++set spoolfile="+INBOX"
++set postponed="+postponed-msgs"
++set record="" # no FCC
++
++# OAuth2
++set imap_authenticators="xoauth2"
++set imap_oauth_refresh_command="curl -s --unix-socket ~/.mutt/oauth.socket http:
++//localhost/token"
++set smtp_authenticators=${imap_authenticators}
++set smtp_oauth_refresh_command=${imap_oauth_refresh_command}
++...
++
++Muttrc example for Gmail (Google)
++---------------------------------
++# You
++set from="your.email@domain.com"
++set realname="Your Name"
++set imap_user="${from}"
++
++# Folders
++set smtp_url="smtp://${imap_user}@smtp.gmail.com:587"
++set folder="imaps://imap.gmail.com:993"
++set spoolfile="+INBOX"
++set postponed="+postponed-msgs"
++set record="" # no FCC
++
++# OAuth2
++set imap_authenticators="oauthbearer"
++set imap_oauth_refresh_command="curl -s --unix-socket ~/.mutt_gmail/oauth.socket http://localhost/token"
++set smtp_authenticators=${imap_authenticators}
++set smtp_oauth_refresh_command=${imap_oauth_refresh_command}
+ 
+-The script will ask questions and provide some instructions. For the
+-flow question:
++Authflow explained
++------------------
+ 
+  - "authcode": you paste a complicated URL into a browser, then
+ manually extract a "code" parameter from a subsequent URL in the
+ browser address bar and paste that back to the script.
++Pasting whole subsequent URL works too.
+ 
+ - "localhostauthcode": you again paste the complicated URL into a browser
+ but that's it --- the code is automatically extracted from the response
+@@ -243,17 +318,12 @@
+ 
+  - "devicecode": you go to a simple URL and just enter a short code.
+ 
+-Your answer here determines the default flow, but on any invocation of
+-the script you can override the default with the optional "--authflow"
+-parameter. To change the default, delete your token file and start over.
+-
+-To figure out which flow to use, I suggest trying all three.
++To figure out which authflow to use, I suggest trying all three.
+ Depending on the OAuth2 provider and how the app registration was
+ configured, some flows might not work, so simply trying them is the
+ best way to figure out what works and which one you prefer. Personally
+ I prefer the "localhostauthcode" flow when I can use it.
+ 
+-
+ Once you attempt an actual authorization, you might get stuck because
+ the web browser step might indicate your institution admins must grant
+ approval.  Indeed engage them in a conversation about approving the
+@@ -268,23 +338,40 @@
+ to be used by other people. Engaging your institution admins to create
+ a mutt registration is the better way to go.
+ 
+-Once you've succeeded authorizing mutt_oauth2.py to obtain tokens, try
+-one of the following to see whether IMAP/POP/SMTP are working:
++Multiple email accounts
++-----------------------
++Use separate config file / directory:
++
++.mutt_<email>/muttrc
++.mutt_<email>/oauthrc
++
++or put everything under:
++
++.mutt/oauthrc_<email>
++
++and run "oauth <path to oauthrc file>". Update oauthrc file to automatically
++run mutt after authentication passing correct muttrc file to it.
++
++Running the script
++------------------
++
++Run "oauth" script, the synopis is:
++
++oauth [-v] [-d] oauthrc_file
++
++Options:
++	-v - verbose
++	-d - debug
+ 
+- mutt_oauth2.py userid@myschool.edu.tokens --verbose --test
+- mutt_oauth2.py userid@myschool.edu.tokens --verbose --debug --test
++For convenience when using multiple email accounts requiring OAuth2, I suggest to create shell alias e.g.:
+ 
+-Without optional parameters, the script simply returns an access token
+-(possibly first conducting a behind-the-scenes URL retrieval using a
+-stored refresh token to obtain an updated access token). Calling the
+-script without optional parameters is how it will be used by
+-mutt. Your .muttrc would look something like:
+-
+- set imap_user="userid@myschool.edu"
+- set folder="imap://outlook.office365.com/"
+- set smtp_url="smtp://${imap_user}@smtp.office365.com:587/"
+- set imap_authenticators="oauthbearer:xoauth2"
+- set imap_oauth_refresh_command="/path/to/script/mutt_oauth2.py ${imap_user}.tokens"
+- set smtp_authenticators=${imap_authenticators}
+- set smtp_oauth_refresh_command=${imap_oauth_refresh_command}
++alias oauth='/path/to/oauth_script $HOME/.mutt/oauthrc"
++alias oauth.alternate='/path/to/oauth_script $HOME/.mutt_alternate/oauthrc"
+ 
++If the authflow is set to the most convenient "localhostauthcode" and
++"mutt_cmd" and "url_cmd" are provided in oauthrc file, then just type oauth and
++if everything is set correctly, the command will open browser, authenticate and
++launch mutt in the same terminal so there's no need to run open multiple
++terminals and run multiple commands to open the mailbox. Even no need to type
++password if the OAuth2 provider has long timeouts to re-enter the password and
++trusts cookies in your browser.
+Only in mutt-2.0.5/contrib: mutt_oauth2.py.README.~1~
