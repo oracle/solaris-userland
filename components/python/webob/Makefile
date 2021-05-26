@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		WebOb
-COMPONENT_VERSION=	1.8.5
+COMPONENT_VERSION=	1.8.7
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:3d40893acc3e61e920219c3b052b7fa68559c648af2f20d1f87080083b015207
+    sha256:528e741a7ff60d0d93e48b057830c7a65ac859987b7242389b7969403d76966d
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://webob.org/
 COMPONENT_BUGDB=	python-mod/webob
 COMPONENT_ANITYA_ID=	6181
 
-TPNO=			50949
+TPNO=			70897
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -55,4 +55,4 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:    $(SYSTEM_TEST_NO_ARCH)

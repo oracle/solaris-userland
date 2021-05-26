@@ -1,0 +1,35 @@
+FieldStorage issues reported in https://bugs.python.org/issue27777 were
+fixed internally with Bug 31936635. Their workarounds are therefore no
+longer necessary.
+
+Not intended for upstream.
+
+--- WebOb-1.8.7/src/webob/compat.py
++++ WebOb-1.8.7/src/webob/compat.py
+@@ -148,16 +148,6 @@ if PY3:
+     # Various different FieldStorage work-arounds required on Python 3.x
+     class cgi_FieldStorage(_cgi_FieldStorage): # pragma: no cover
+ 
+-        # Work around https://bugs.python.org/issue27777
+-        def make_file(self):
+-            if self._binary_file or self.length >= 0:
+-                return tempfile.TemporaryFile("wb+")
+-            else:
+-                return tempfile.TemporaryFile(
+-                    "w+",
+-                    encoding=self.encoding, newline='\n'
+-                )
+-
+         # Work around http://bugs.python.org/issue23801
+         # This is taken exactly from Python 3.5's cgi.py module
+         def read_multi(self, environ, keep_blank_values, strict_parsing):
+--- WebOb-1.8.7/tests/test_compat.py
++++ WebOb-1.8.7/tests/test_compat.py
+@@ -53,6 +53,7 @@ class bytes_Tests(unittest.TestCase):
+ 
+ class Test_cgi_FieldStorage_Py3_tests(object):
+ 
++    @pytest.mark.skip("Test assumptions are not correct")
+     def test_fieldstorage_not_multipart(self):
+         from webob.compat import cgi_FieldStorage
+ 
