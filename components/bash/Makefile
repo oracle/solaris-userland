@@ -20,18 +20,18 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		bash
-COMPONENT_VERSION=	5.0
+COMPONENT_VERSION=	5.1
 COMPONENT_ARCHIVE_HASH = \
-    sha256:b4a80f2ac66170b2913efbfb9f2594f1f76c7b1afd11f799e22035d63077fb4d
+    sha256:b108ea9944ab9eb2d6feaf8f6202d1886d47efd5a354e6f4185fea49691c0a52
 COMPONENT_ANITYA_ID=	166
 
-TPNO=			49197
+TPNO=			70960
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
@@ -65,19 +65,8 @@ CFLAGS += $(XPG6MODE)
 CFLAGS += $(CPP_C99_EXTENDED_MATH)
 CFLAGS += -I$(USRINCDIR)/ncurses
 
-# configure checks for some functions, but doesn't seem to want to link in
-# the required libraries for them. We avoid linking with libthread.so.1
-# just because we pass -mt, by explicitly passing -lc.
-LIBS =	-lc -lgen
-LIBS +=	$(LIBSOCKET)
-
 # -z redlocsym -- let's shrink the SHT_SYMTAB as much as we can
 LDFLAGS =	$(LD_Z_REDLOCSYM)
-
-# This avoids the need to patch configure or other files for these dependencies.
-CONFIGURE_ENV += LD_OPTIONS="-lc -lm -lgen $(LIBSOCKET) $(LIBNSL) -lresolv $(LD_Z_IGNORE)"
-
-CONFIGURE_ENV +=	LIBS="$(LIBS)"
 
 # Ignore tgetent() checks in configure and use libncurses on Solaris.
 CONFIGURE_ENV += ac_cv_func_tgetent=yes

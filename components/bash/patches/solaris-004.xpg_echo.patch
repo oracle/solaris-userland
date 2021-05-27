@@ -1,21 +1,67 @@
 # Solaris is compiled with --enable-xpg-echo-default=yes. Some tests expect
-# this option disabled.
+# this option disabled. And adding some lines will offset the results where
+# bash reports on which line problem was (correctly) observed. So we have to
+# offset the expected results too
 #
 # Not for upstream.
 
---- tests/exp5.sub	2019-02-13 13:01:34.943608493 +0100
-+++ tests/exp5.sub	2019-02-13 13:01:28.540680227 +0100
-@@ -1,3 +1,5 @@
+--- tests/exp5.sub
++++ tests/exp5.sub
+@@ -12,6 +12,8 @@ #   You should have received a copy of t
+ #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ #
+ # expansions involving patterns
 +shopt -u xpg_echo
 +
- # expansions involving patterns
  var='[hello'
  echo "${var//[/}"
---- tests/varenv12.sub	2019-02-13 13:01:44.772928022 +0100
-+++ tests/varenv12.sub	2019-02-13 12:53:33.681319698 +0100
-@@ -1,4 +1,5 @@
+ 
+--- tests/varenv12.sub
++++ tests/varenv12.sub
+@@ -12,6 +12,7 @@ #   You should have received a copy of t
+ #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ #
  set -o posix
 +shopt -u xpg_echo
  
  fn() { foo=abc : ; typeset +x foo; printenv|grep ^foo=; }
  
+--- tests/assoc11.sub
++++ tests/assoc11.sub
+@@ -13,6 +13,8 @@
+ #
+ # these tests were previously in array19.sub, but they are acceptable syntax now
+ 
++shopt -u xpg_echo
++
+ declare -A a
+ declare a='(1 2 3)'
+ declare -p a
+--- tests/assoc.right
++++ tests/assoc.right
+@@ -237,7 +237,7 @@ declare -A foo=([d]="4" [c]="3" [b]="2"
+ foo=( d "4" c "3" b "2" a "1" )
+ declare -A foo=(["\\"]="5" ["@"]="3" ["holy hell this works"]="4" ["a b"]="1" ["spa ces"]="2" )
+ foo=( echo "\\" "5" "@" "3" "holy hell this works" "4" "a b" "1" "spa ces" "2" )
+-./assoc11.sub: line 34: "": bad array subscript
++./assoc11.sub: line 36: "": bad array subscript
+ declare -A foo=([";"]="semicolon" ["]"]="def" [a=b]="assignment" ["a]a"]="abc" ["foo[bar"]="bleh" )
+ foo=( ";" "semicolon" "]" "def" a=b "assignment" "a]a" "abc" "foo[bar" "bleh" )
+ declare -A foo=(["'"]="squote" ["\""]="dquote" ["\\"]="bslash" ["\`"]="backquote" )
+@@ -257,4 +257,4 @@ declare -A a=([")"]="rparen" ["\""]="dqu
+ declare -A a=([")"]="rparen" ["\""]="dquote" ["]"]="rbrace" ["\\"]="bs" )
+ declare -A a=([")"]="rparen" ["\""]="dquote" ["]"]="rbrace" ["\\"]="bs" )
+ declare -Arx foo=([two]="2" [three]="3" [one]="1" )
+-./assoc11.sub: line 90: foo: readonly variable
++./assoc11.sub: line 92: foo: readonly variable
+--- tests/varenv16.sub
++++ tests/varenv16.sub
+@@ -14,6 +14,8 @@
+ # test whether or not temporary environment assignments are exported
+ # in posix mode. works now, posix says it will not work in the future
+ 
++shopt -u xpg_echo
++
+ show2()
+ {
+         printf %s "foo=${foo-<unset>}"

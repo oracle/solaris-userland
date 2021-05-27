@@ -1,0 +1,15 @@
+gen-helpfiles has some troubles while linking while using bash malloc.
+gen-helpfiles is just a tool used for generating documentation during
+compilation so the workaround of not using bash malloc has no side effects on
+the shipped binaries.
+
+--- builtins/gen-helpfiles.c
++++ builtins/gen-helpfiles.c
+@@ -24,6 +24,7 @@ the file named by the `handle' member of
+ 
+ #if !defined (CROSS_COMPILING) 
+ #  include <config.h>
++#  undef USING_BASH_MALLOC
+ #else	/* CROSS_COMPILING */
+ /* A conservative set of defines based on POSIX/SUS3/XPG6 */
+ #  define HAVE_UNISTD_H
