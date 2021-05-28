@@ -49,7 +49,7 @@ COMPONENT_BUGDB=	utility/samba
 COMPONENT_ANITYA_ID=	4758
 
 COMPONENT_VERSION=	4.13.4
-TPNO=			64705
+TPNO=			64706
 # Samba pre-releases are available on git only.
 # if you want to build Samba from git uncomment next 4 lines
 #GIT_REPO=		https://git.samba.org/samba.git
