@@ -1,0 +1,232 @@
+This fixes several issues with the tests:
+Solaris ifconfig needs to be called with '-a'.
+Some of the scripts use bash syntax, so bash should be used for them, not /bin/sh.
+Solaris netcat is sensitive to order of parameters.
+There are some unnecessary errors/warnings that make it difficult to investigate
+failed tests.
+The test results embed current date which complicates comparison with golden data.
+
+reported as
+https://www.stunnel.org/mailman3/hyperkitty/list/stunnel-users@stunnel.org/thread/LLU4QUMYCDN4JONA5OAGK4AYYXALARDE/
+
+diff -r e42ab76af798 tests/make_test
+--- tests/make_test	Thu May 13 13:45:35 2021 +0200
++++ tests/make_test	Thu May 13 13:56:55 2021 +0200
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ 
+ result=0
+ count=0
+@@ -78,11 +78,9 @@
+       fi
+     printf "\n%s\n" "Testing..." >> "results.log"
+     head -n5 "results.log"
+-    if ! grep -q "solaris" "results.log"
+-      then
+         for plik in ${script_path}/recipes/*
+           do
+-            /bin/sh $plik "$mynetcat" "$mynetstat" "$mybuffer" "$mypython"
++            /bin/bash $plik "$mynetcat" "$mynetstat" "$mybuffer" "$mypython"
+             state=$?
+             if [ "$state" -eq 0 ]
+               then # $state=0
+@@ -103,11 +101,6 @@
+         printf "%s\n" "summary: success $count, skip $skip, fail $fail" >> "results.log"
+         printf "%s\n" "./make_test finished"
+         cd ..
+-      else # skip make test for solaris
+-        printf "%s\n" "./make_test skipped"
+-        printf "%s\n" "./make_test skipped" >> "results.log"
+-        #result=125
+-      fi
+   else # netcat not found
+     printf "%s\n" "./make_test skipped"
+     #result=125
+diff -r e42ab76af798 tests/test_library
+--- tests/test_library	Thu May 13 13:45:35 2021 +0200
++++ tests/test_library	Thu May 13 13:56:55 2021 +0200
+@@ -300,14 +301,14 @@
+     then # nc
+       if man "$mynetcat" | grep -q  "error to use this option in conjunction"
+         then # BSD nc
+-              cat "nodata" | $mybuffer $opt_buf $mynetcat -l "$http_nc" -vvv > "temp.log" 2>> "stderr_nc.log" &
++              cat "nodata" | $mybuffer $opt_buf $mynetcat -vvv -l "$http_nc" > "temp.log" 2>> "stderr_nc.log" &
+         else # traditional nc
+               cat "nodata" | $mybuffer $opt_buf $mynetcat -l -p "$http_nc" -s 127.0.0.1 -vvv > "temp.log" 2>> "stderr_nc.log" &
+         fi
+       pid_nc=$!
+       if check_listening "$http_nc"
+         then
+-          printf "%-35s\t%s\n" "test $1" "$2" | $mynetcat 127.0.0.1 "$http1" -vv 1>&2 2>> "stderr_nc.log" &
++          printf "%-35s\t%s\n" "test $1" "$2" | $mynetcat -vv 127.0.0.1 "$http1" 1>&2 2>> "stderr_nc.log" &
+           pid_nce=$!
+           if [ "$2" = "shouldn't work" ]
+             then
+@@ -353,7 +354,7 @@
+   # $1 = test name
+ 
+   mkfifo "nodata" 2>> "stderr_nc.log"
+-  cat "nodata" | $mybuffer $opt_buf $mynetcat 127.0.0.1 "$http1" -vv >"temp.log" 2>> "stderr_nc.log" &
++  cat "nodata" | $mybuffer $opt_buf $mynetcat -vv 127.0.0.1 "$http1" >"temp.log" 2>> "stderr_nc.log" &
+   pid_nce=$(pgrep -P $!)
+   waiting_for "temp" "test $1"
+   kill -TERM ${pid_nce} 2>> "stderr_nc.log"
+diff -r 6ec9667b5480 tests/test_library
+--- tests/test_library	Thu May 13 14:26:39 2021 +0200
++++ tests/test_library	Thu May 13 16:12:39 2021 +0200
+@@ -71,7 +71,12 @@
+   # $4 = file 2
+ 
+   local result=0
+-  if grep -q "$2" "$3" "$4"
++  if [ -z "$4" ]; then
++    grep -q "$2" "$3"
++  else
++    grep -q "$2" "$3" "$4"
++  fi 
++  if [ $? = "0" ]
+     then
+       if [ $1 = "yes" ]
+         then # to find
+@@ -230,7 +235,7 @@
+   # $1 = file name
+   # $2 = process pid
+ 
+-  wait $2
++  /usr/bin/wait $2
+   local result=$?
+   case $result in
+     "0") ;; # expected exit status of the stunnel process
+@@ -299,7 +304,7 @@
+   printf "\n%s\n" "test $1 - netcat connection" >> "stderr_nc.log"
+   if [ "$mynetcat" = "nc" ]
+     then # nc
+-      if man "$mynetcat" | grep -q  "error to use this option in conjunction"
++      if man "$mynetcat" 2>/dev/null | grep -q  "error to use this option in conjunction"
+         then # BSD nc
+               cat "nodata" | $mybuffer $opt_buf $mynetcat -vvv -l "$http_nc" > "temp.log" 2>> "stderr_nc.log" &
+         else # traditional nc
+@@ -357,7 +362,7 @@
+   cat "nodata" | $mybuffer $opt_buf $mynetcat -vv 127.0.0.1 "$http1" >"temp.log" 2>> "stderr_nc.log" &
+   pid_nce=$(pgrep -P $!)
+   waiting_for "temp" "test $1"
+-  kill -TERM ${pid_nce} 2>> "stderr_nc.log"
++  [ -z "${pid_nce}" ] || kill -TERM ${pid_nce} 2>> "stderr_nc.log"
+   echo "somedata" > "nodata" 2>> "stderr_nc.log"
+   rm -f "nodata"
+   return 0
+@@ -377,7 +382,7 @@
+     then
+       if connecting_ncat "$1" "success"
+         then
+-          finding_text "yes" "test $1.*success" "temp.log" "UNUSED PATTERN"
++          finding_text "yes" "test $1.*success" "temp.log" ""
+           result=$?
+         else # ncat (nc) failed
+           result=1
+@@ -407,7 +412,7 @@
+     then
+       if connecting_ncat "$1" "shouldn't work"
+         then
+-          if ! finding_text "no" "test $1.*shouldn't work" "temp.log" "UNUSED PATTERN"
++          if ! finding_text "no" "test $1.*shouldn't work" "temp.log" ""
+             then # ops...stunnel works
+               exit_code="shouldn't work"
+               result=1
+@@ -447,9 +452,9 @@
+         fi
+       if [ $result -eq 0 ]
+         then
+-          if finding_text "yes" "test $1.*success" "temp.log" "UNUSED PATTERN"
++          if finding_text "yes" "test $1.*success" "temp.log" ""
+             then
+-              finding_text "no" "$1_error" "temp.log" "UNUSED PATTERN"
++              finding_text "no" "$1_error" "temp.log" ""
+               result=$?
+             else
+               result=1
+@@ -516,9 +521,9 @@
+         do
+           if connecting_ncat "$1" "success"
+             then
+-              finding_text "yes" "test $1.*success" "temp.log" "UNUSED PATTERN"
++              finding_text "yes" "test $1.*success" "temp.log" ""
+               result=$?
+-              if [ $result -eq 0 ] && ! finding_text "no" "$serv" "stunnel.log" "UNUSED PATTERN"
++              if [ $result -eq 0 ] && ! finding_text "no" "$serv" "stunnel.log" ""
+                 then # error - second server accepts a client
+                   result=1
+                 fi
+@@ -577,7 +582,7 @@
+         do
+           if connecting_ncat "$1" "success"
+             then
+-              finding_text "yes" "test $1.*success" "temp.log" "UNUSED PATTERN"
++              finding_text "yes" "test $1.*success" "temp.log" ""
+               result=$?
+             else # ncat (nc) failed
+               result=1
+@@ -652,7 +657,7 @@
+         fi
+       if [ $result -eq 0 ]
+         then
+-          finding_text "yes" "test $1.*success" "temp.log" "UNUSED PATTERN"
++          finding_text "yes" "test $1.*success" "temp.log" ""
+           result=$?
+         fi
+       j=$(grep -c "accepted: new session negotiated" "stunnel.log")
+@@ -711,7 +716,7 @@
+           rm -f "stunnel_all.log"
+           if [ $result -eq 0 ]
+             then
+-              finding_text "yes" "test $1.*success" "temp.log" "UNUSED PATTERN"
++              finding_text "yes" "test $1.*success" "temp.log" ""
+               result=$?
+             fi
+           j=$(grep -c "accepted: new session negotiated" "stunnel.log")
+@@ -761,7 +766,7 @@
+         fi
+       if [ $result -eq 0 ]
+         then
+-          finding_text "yes" "test $1.*success" "temp.log" "UNUSED PATTERN"
++          finding_text "yes" "test $1.*success" "temp.log" ""
+           result=$?
+         fi
+       j=$(grep -c "accepted: new session negotiated" "stunnel.log")
+diff -r 24e78f84fe68 tests/recipes/020_IPv6
+--- tests/recipes/020_IPv6	Thu May 13 16:21:18 2021 +0200
++++ tests/recipes/020_IPv6	Thu May 13 16:21:53 2021 +0200
+@@ -26,7 +26,7 @@
+ # nc does not support IPv6
+ if grep -q "IPv6" "results.log" && \
+    (([ -n "$(command -v ip)" ] && PATH="${PATH}:/sbin:/usr/sbin" ip address | grep -q "inet6") || \
+-   ([ -n "$(command -v ifconfig)" ] && PATH="${PATH}:/sbin:/usr/sbin" ifconfig | grep -q "inet6"))
++   ([ -n "$(command -v ifconfig)" ] && PATH="${PATH}:/sbin:/usr/sbin" ifconfig -a | grep -q "inet6"))
+   then
+     test_log_for "020_IPv6" "success" "0" "$1" "$2" "$3" 2>> "stderr.log"
+     exit $?
+diff -r 253a54bda515 tests/make_test
+--- tests/make_test	Thu May 13 16:44:22 2021 +0200
++++ tests/make_test	Thu May 13 16:49:24 2021 +0200
+@@ -78,7 +78,8 @@
+       fi
+     printf "\n%s\n" "Testing..." >> "results.log"
+     head -n5 "results.log"
+-        for plik in ${script_path}/recipes/*
++	# ignore patch backup suffixes
++        for plik in $(find ${script_path}/recipes/ -type f | sort | grep -v '\.~.~$')
+           do
+             /bin/bash $plik "$mynetcat" "$mynetstat" "$mybuffer" "$mypython"
+             state=$?
+diff -r 6e177249e34c tests/make_test
+--- tests/make_test	Thu May 13 18:04:39 2021 +0200
++++ tests/make_test	Thu May 13 18:05:18 2021 +0200
+@@ -69,7 +69,6 @@
+     rm -rf "${result_path}"
+     mkdir "${result_path}"
+     cd "${result_path}"
+-    date > "results.log"
+     ../../src/stunnel -version 2>> "results.log"
+     if [ -n "$(command -v fips-mode-setup)" ]
+       then

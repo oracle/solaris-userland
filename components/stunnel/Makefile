@@ -20,27 +20,26 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		stunnel
-COMPONENT_VERSION=	5.35
-COMPONENT_PROJECT_URL=	http://www.stunnel.org/
+COMPONENT_VERSION=	5.59
+COMPONENT_PROJECT_URL=	https://www.stunnel.org/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:ffa386ae4c825f35f35157c285e7402a6d58779ad8c3822f74a9d355b54aba1d
+	sha256:137776df6be8f1701f1cd590b7779932e123479fb91e5192171c16798815ce9f
 COMPONENT_ANITYA_ID=	4901
 
-COMPONENT_ARCHIVE_URL=	http://pkgs.fedoraproject.org/repo/pkgs/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)/9079f5fafbccaf88b7d92b227d78249a/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL=	https://www.stunnel.org/downloads/$(COMPONENT_ARCHIVE)
 
-COMPONENT_PREP_ACTION += (cd $(@D) ; autoreconf -f)
+#COMPONENT_PREP_ACTION += (cd $(@D) ; autoreconf -f)
 
-TPNO=                   31069
+TPNO=                   70511
 
 SMF_MANIFESTS= $(COMPONENT_DIR)/files/stunnel.xml
-TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 PATCH_LEVEL = 0
@@ -57,6 +56,7 @@ CPPFLAGS += -DMACH64='\"$(MACH64)\"'
 CONFIGURE_OPTIONS +=	--disable-fips
 CONFIGURE_OPTIONS +=	--enable-ipv6
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
+CONFIGURE_OPTIONS +=	--with-ssl=/usr/openssl/1.1
 
 # used to generate LD_PRELOAD_* interposer pathnames
 COMPONENT_BUILD_ARGS += pkglibdir=$(USRLIBDIR)/stunnel
@@ -65,7 +65,20 @@ COMPONENT_PRE_INSTALL_ACTION = \
 	$(MKDIR) $(PROTOETCDIR)/stunnel ; \
 	$(TOUCH) $(PROTOETCDIR)/stunnel/stunnel.pem
 
-REQUIRED_PACKAGES += library/security/openssl
+# need GNU utilities. /usr/sbin so ifconfig can be found
+COMPONENT_TEST_ENV +=       PATH="$(GNUBIN):/usr/sbin:$(PATH)"
+# test 051 is for OpenSSL 1.0
+COMPONENT_TEST_TRANSFORMS += \
+	'-e "/Entering directory/d" ' \
+	'-e "/^Making/d" ' \
+	'-e "/^make/d" ' \
+	'-e "/^Compiled\/running with OpenSSL/d" ' \
+	'-e "/^stunnel/d" ' \
+	'-e "/Leaving directory/d" '
+
+REQUIRED_PACKAGES += library/security/openssl-11
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/library
+# any Perl will do, use the default one
+REQUIRED_PACKAGES += $(PERL_PKG)
