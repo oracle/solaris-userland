@@ -38,8 +38,8 @@ COMPONENT_ANITYA_ID=	7319
 
 TPNO=			59998
 
-# we only need to build for a single version, not all of them.
-PYTHON_VERSIONS:=	$(PYTHON_VERSION)
+# we do not plan deliver Python 2.7 version
+PYTHON_VERSIONS:=	$(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -57,6 +57,11 @@ COMPONENT_TEST_ENV += \
 	PATH=$(PROTOUSRBINDIR):$(PATH)
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+
+COMPONENT_POST_INSTALL_ACTION = \
+	(cd $(PROTO_DIR)/usr/bin ; \
+	$(MV) -f bandit bandit-$(PYTHON_VERSION); \
+	$(MV) -f bandit-config-generator bandit-config-generator-$(PYTHON_VERSION))
 
 # common targets
 build:		$(BUILD_NO_ARCH)
