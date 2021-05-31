@@ -20,41 +20,33 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
-BUILD_BITS =            32_and_64
+BUILD_BITS =  32_and_64
+COMPILER =    gcc
+
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		orc
-COMPONENT_VERSION=	0.4.27
+COMPONENT_VERSION=	0.4.32
 COMPONENT_PROJECT_URL=	https://gstreamer.freedesktop.org/projects/orc.html
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:51e53e58fc8158e5986a1f1a49a6d970c5b16493841cf7b9de2c2bde7ce36b93
+	sha256:a66e3d8f2b7e65178d786a01ef61f2a0a0b4d0b8370de7ce134ba73da4af18f0
 COMPONENT_ARCHIVE_URL=	https://gstreamer.freedesktop.org/src/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	2573
 
-TPNO=			39069
+TPNO=			71095
+
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/common.mk
 
-CONFIGURE_OPTIONS += --disable-static
-
-# for the tests
-unexport SHELLOPTS
-COMPONENT_TEST_ENV +=   libtool_install_magic='%%%MAGIC variable%%%'
-COMPONENT_TEST_ENV +=   libtool_execute_magic='%%%MAGIC variable%%%'
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_ARGS =   -k -i
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/ERROR:/p" '
+COMPONENT_TEST_ARGS =   -k 0
+COMPONENT_TEST_TRANSFORMS += '-e "s/\s*[0-9]\+\.[0-9]\+s//"'
 
 REQUIRED_PACKAGES += system/library/math
