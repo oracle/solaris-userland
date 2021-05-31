@@ -30,21 +30,22 @@ COMPILER =		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gst-python
-COMPONENT_VERSION=	1.16.2
+COMPONENT_VERSION=	1.18.4
 COMPONENT_PROJECT_URL=	https://gstreamer.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:208df3148d73d9f416d016564737585d8ea763d91201732d44b5fe688c6288a8
+	sha256:cb68e08a7e825e08b83a12a22dcd6e4f1b328a7b02a7ac84f42f68f4ddc7098e
 COMPONENT_ARCHIVE_URL=	https://gstreamer.freedesktop.org/src/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	3881
 
-TPNO=			55778
+TPNO=			71121
 
+BUILD_STYLE=		meson
 PYTHON_VERSIONS= $(PYTHON3_VERSIONS)
 
-# replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses configure.mk
+# Replicated from $(WS_MAKE_RULES)/setup.py.mk since this uses meson.
 CONFIGURE_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.configured)
 $(BUILD_DIR)/%-3.7/.configured:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/%-3.9/.configured:		PYTHON_VERSION=3.9
@@ -63,32 +64,15 @@ $(BUILD_DIR)/%-3.9/.tested-and-compared:		PYTHON_VERSION=3.9
 
 include $(WS_MAKE_RULES)/common.mk
 
-# Use the build area of gstreamer
-GST_BASE = $(WS_COMPONENTS)/desktop/gstreamer1/gstreamer/build/prototype/$(MACH)
-PKG_CONFIG_PATHS += $(GST_BASE)$(USRLIB)/pkgconfig/
+CONFIGURE_OPTIONS += -Dpython=$(PYTHON)
+CONFIGURE_OPTIONS += -Dpygi-overrides-dir=$(PYTHON_VENDOR_PACKAGES_BASE)/gi/overrides/64
 
-CONFIGURE_OPTIONS += --disable-static
+# Generate python's bytecode manually since Meson does not support it.
+COMPONENT_POST_INSTALL_ACTION += \
+	$(PYTHON) -m compileall $(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)
 
-# The build process modifies the shebang line to use the version of Python
-# automatically found; to avoid using the current system default, one is
-# explicitly specified here.
-CONFIGURE_ENV += PYTHON=$(PYTHON)
-
-# Ensure Python modules are installed into vendor package directories.
-CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
-CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
-
-CONFIGURE_OPTIONS += --with-pygi-overrides-dir=$(PYTHON_VENDOR_PACKAGES_BASE)/gi/overrides/64
-
-# for the tests
-unexport SHELLOPTS
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/OK/p" ' \
-        '-e "/FAIL/p" ' \
-        '-e "s/^\(Ran [0-9]\+ tests\).*/\1/p" '
+COMPONENT_TEST_TRANSFORMS += '-e "s/\s*[0-9]\+\.[0-9]\+s//" '
 
 REQUIRED_PACKAGES += library/desktop/gstreamer-1
 REQUIRED_PACKAGES += library/glib2
