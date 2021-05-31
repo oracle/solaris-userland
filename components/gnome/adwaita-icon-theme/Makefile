@@ -44,5 +44,5 @@ CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 # Required so that configure can find and use 64-bit version
 CONFIGURE_ENV += ac_cv_path_GTK_ENCODE_SYMBOLIC_SVG=$(USRBINDIR64)/gtk-encode-symbolic-svg
 
-REQUIRED_PACKAGES += runtime/perl-526
-REQUIRED_PACKAGES += library/perl-5/xml-parser-526
+REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += library/perl-5/xml-parser

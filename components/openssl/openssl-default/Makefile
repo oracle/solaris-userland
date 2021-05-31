@@ -428,4 +428,4 @@ REQUIRED_PACKAGES += network/rsync
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/linker
 REQUIRED_PACKAGES += system/library/security/crypto
-REQUIRED_PACKAGES += runtime/perl-522
+REQUIRED_PACKAGES += $(PERL_PKG)

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -71,6 +71,6 @@ COMPONENT_TEST_TRANSFORMS += \
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += image/graphviz
 REQUIRED_PACKAGES += library/security/nss
-REQUIRED_PACKAGES += runtime/perl-522
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += web/curl

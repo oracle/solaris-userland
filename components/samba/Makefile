@@ -70,7 +70,6 @@ TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 PYTHON_VERSION = 3.7
-PERL_VERSION = 5.26
 
 # yapp (yet another parser) is not propagated publicly
 PATH= :/usr/bin:/usr/gnu/bin:/usr/perl5/$(PERL_VERSION)/bin:
@@ -250,7 +249,7 @@ REQUIRED_PACKAGES += library/perl-5/parse-yapp
 REQUIRED_PACKAGES += library/python/iso8601
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += runtime/perl-526
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93

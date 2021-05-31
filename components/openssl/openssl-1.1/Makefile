@@ -203,5 +203,5 @@ system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += developer/build/makedepend
 # Perl is needed for Configure, tests and the distributed CA.pl script.
-REQUIRED_PACKAGES += runtime/perl-$(PERL_VERSION_NODOT)
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += system/core-os

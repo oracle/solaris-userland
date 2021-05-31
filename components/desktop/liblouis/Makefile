@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 		64
@@ -87,7 +87,7 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/expected/p" '
 
 REQUIRED_PACKAGES += developer/documentation-tool/help2man
-REQUIRED_PACKAGES += runtime/perl-522
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += system/core-os
 

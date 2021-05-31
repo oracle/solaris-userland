@@ -76,5 +76,5 @@ COMPONENT_TEST_TRANSFORMS += \
 REQUIRED_PACKAGES += library/libgenders
 REQUIRED_PACKAGES += library/ncurses
 REQUIRED_PACKAGES += library/readline
-REQUIRED_PACKAGES += runtime/perl-522
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += system/library

@@ -53,7 +53,7 @@ PYTHON_VERSIONS=	$(PYTHON_VERSION)
 # this version must match with perl mediator because cmake uses FindPerl macro.
 # (if this is not desired, a deeper diving to cmake and
 # patches/cmake_perl.patch update is needed)
-PERL_VERSION =		5.26
+PERL_VERSION =		5.32
 PERL_VERSIONS =		$(PERL_VERSION)
 
 # Tests require xpath tool that is not available on Solaris.

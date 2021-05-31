@@ -73,6 +73,6 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libusb-1
 REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += runtime/perl-522
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math

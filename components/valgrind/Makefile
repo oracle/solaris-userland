@@ -72,6 +72,6 @@ COMPONENT_TEST_TARGETS = regtest
 # check just overal test results
 COMPONENT_TEST_TRANSFORMS += '-n -e "/^== /p"'
 
-REQUIRED_PACKAGES += runtime/perl-526
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/libc

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -39,9 +39,6 @@ COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)Versions/v4/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	4880
 COMPONENT_PUBLIC_KEY_URL=	http://www.squid-cache.org/pgp.asc
-
-# Use Perl better than default one
-PERL_VERSION = 5.26
 
 # Enable adiheap security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
@@ -135,7 +132,7 @@ REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/libtool/libltdl
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/security/nettle
-REQUIRED_PACKAGES += runtime/perl-526
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
