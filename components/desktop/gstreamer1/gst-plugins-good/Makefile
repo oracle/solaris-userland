@@ -30,90 +30,54 @@ COMPILER =              gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gst-plugins-good
-COMPONENT_VERSION=	1.16.2
+COMPONENT_VERSION=	1.18.4
 COMPONENT_PROJECT_URL=	https://gstreamer.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:40bb3bafda25c0b739c8fc36e48380fccf61c4d3f83747e97ac3f9b0171b1319
+	sha256:b6e50e3a9bbcd56ee6ec71c33aa8332cc9c926b0c1fae995aac8b3040ebe39b0
 COMPONENT_ARCHIVE_URL=	https://gstreamer.freedesktop.org/src/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	1263
 
-TPNO=			55665
+TPNO=			71120
 
+BUILD_STYLE=		meson
 PYTHON_VERSION = 3.7
-
-ifeq ($(MACH),sparc)
-# Disable the unit tests since they timeout and crash on SPARC.
-$(SKIP_TEST_AT_TOP_LEVEL)
-endif
 
 include $(WS_MAKE_RULES)/common.mk
 
-# Use the build area of gstreamer and gst-plugins-base
-GST_BASE = $(WS_COMPONENTS)/desktop/gstreamer1/gstreamer/build/prototype/$(MACH)
-GST_PL_BASE = $(WS_COMPONENTS)/desktop/gstreamer1/gst-plugins-base/build/prototype/$(MACH)
-PKG_CONFIG_PATHS += $(GST_BASE)$(USRLIB)/pkgconfig:$(GST_PL_BASE)$(USRLIB)/pkgconfig
- 
-CPPFLAGS += -I$(GST_BASE)/usr/include/gstreamer-1.0 -I$(GST_PL_BASE)/usr/include/gstreamer-1.0/
-LD_OPTIONS += -L $(GST_BASE)$(USRLIB) -L $(GST_PL_BASE)$(USRLIB)
-
-CXXFLAGS += -std=c++11
-
-# configure script uses AC_CHECK_PROG erroneously; AC_CHECK_PROG looks for a
-# program in $PATH by default, and fails even if you provide an absolute path
-# to the command (no idea why); override the failed check.
-CONFIGURE_ENV += ac_cv_prog_HAVE_CXX=yes
+CXXFLAGS += -std=c++14
 
 # No need for firewire support.
-CONFIGURE_OPTIONS += --disable-dv1394
+CONFIGURE_OPTIONS += -Ddv1394=disabled
 # Linux only; requires ALSA.
-CONFIGURE_OPTIONS += --disable-monoscope
-CONFIGURE_OPTIONS += --disable-static
-# sunaudio no longer builds; interfaces used in gstreamer are gone (mixer.h).
-CONFIGURE_OPTIONS += --disable-sunaudio
-CONFIGURE_OPTIONS += --enable-bz2
-CONFIGURE_OPTIONS += --enable-cairo
-CONFIGURE_OPTIONS += --enable-jpeg
-CONFIGURE_OPTIONS += --enable-libpng
-CONFIGURE_OPTIONS += --enable-oss
-CONFIGURE_OPTIONS += --enable-oss4
-CONFIGURE_OPTIONS += --enable-pulse
-CONFIGURE_OPTIONS += --enable-soup
-CONFIGURE_OPTIONS += --enable-speex
-CONFIGURE_OPTIONS += --enable-taglib
-CONFIGURE_OPTIONS += --enable-vpx
-CONFIGURE_OPTIONS += --enable-x
-CONFIGURE_OPTIONS += --enable-xshm
-CONFIGURE_OPTIONS += --enable-zlib
-# missing header to build it
-CONFIGURE_OPTIONS += --disable-gst_v4l2
-CONFIGURE_OPTIONS += --with-x
+CONFIGURE_OPTIONS += -Dmonoscope=disabled
 
-# Makefile.am files of this component are not compatible with Solaris make.
-# Use GNU make to avoid the configuration error when makefile fragments are processed.
-CONFIGURE_OPTIONS += MAKE=$(GMAKE)
+CONFIGURE_OPTIONS += -Dbz2=enabled
+CONFIGURE_OPTIONS += -Dcairo=enabled
+CONFIGURE_OPTIONS += -Djpeg=enabled
+CONFIGURE_OPTIONS += -Dlibpng=enabled
+CONFIGURE_OPTIONS += -Doss=enabled
+CONFIGURE_OPTIONS += -Doss4=enabled
+CONFIGURE_OPTIONS += -Dpulse=enabled
+CONFIGURE_OPTIONS += -Dsoup=enabled
+CONFIGURE_OPTIONS += -Dspeex=enabled
+CONFIGURE_OPTIONS += -Dtaglib=enabled
+CONFIGURE_OPTIONS += -Dvpx=enabled
 
-# Ensure system-default python is not used.
-CONFIGURE_ENV += PYTHON="$(PYTHON.3.7)"
+# Missing header to build it...
+CONFIGURE_OPTIONS += -Dv4l2=disabled
 
-# Ensure Python modules are installed into vendor package directories.
-CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
-CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
-
-# Required due to patches.
-COMPONENT_PREP_ACTION += ( cd $(@D) ; NOCONFIGURE=1 $(CONFIG_SHELL) autogen.sh );
+# Requires GNU version of msgfmt...
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS)-$(MACH).master
-COMPONENT_TEST_ARGS =   -k -i
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/ERROR:/p" '
+COMPONENT_TEST_ENV += -i
+COMPONENT_TEST_ARGS =   -k 0
+COMPONENT_TEST_TRANSFORMS += '-e "s/\s*[0-9]\+\.[0-9]\+s//" '
+COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/TIME/" '
+COMPONENT_TEST_TRANSFORMS += '-e "s/TIME.*\$$(@D)/TIME GST_ENV \$$(@D)/"'
 
 REQUIRED_PACKAGES += codec/flac
 REQUIRED_PACKAGES += codec/libogg

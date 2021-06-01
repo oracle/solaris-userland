@@ -1,0 +1,27 @@
+Meson can generate the output of unit tests in json or xml format,
+however, parsing these formats is overkill given the purpose.
+This patch ensures that each failed command is listed on one line,
+and in that way, we can transform the output and make it reproducible.
+
+Not suitable for upstream.
+
+diff --git a/tests/check/meson.build b/tests/check/meson.build
+index 91efc62..0056bad 100644
+--- a/tests/check/meson.build
++++ b/tests/check/meson.build
+@@ -173,10 +173,11 @@ gst_plugin_scanner_path = join_paths(gst_plugin_scanner_dir, 'gst-plugin-scanner
+ #   gst-launch fakesrc ! alsasink device="hw:2"
+ #
+ # need a way to figure out value for the device property
+-state_ignore_elements = '''aasink autoaudiosrc autoaudiosink autovideosrc
+- autovideosink cacasink cairotextoverlay gtkglsink gtksink jackaudiosrc
+- jackaudiosink osssrc osssink osxaudiosink osxaudiosrc osxvideosrc osxvideosink
+- pulsesink pulsesrc pulsemixer v4l2src'''
++state_ignore_elements  = 'aasink autoaudiosrc autoaudiosink autovideosrc '
++state_ignore_elements += 'autovideosink cacasink cairotextoverlay gtkglsink '
++state_ignore_elements += 'gtksink jackaudiosrc jackaudiosink osssrc osssink '
++state_ignore_elements += 'osxaudiosink osxaudiosrc osxvideosrc osxvideosink '
++state_ignore_elements += 'pulsesink pulsesrc pulsemixer v4l2src'
+ 
+ # FIXME: check, also + PTHREAD_CFLAGS
+ test_deps = [gst_dep, gstbase_dep, gstnet_dep, gstcheck_dep, gstaudio_dep,

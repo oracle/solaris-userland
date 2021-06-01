@@ -1,0 +1,95 @@
+Big endianess fixes from upstream:
+
+commit b289cc6788c2f545e15e54196cbdad1874b0e175
+Author: Doug Nazar <nazard@nazar.ca>
+Date:   Mon Apr 12 23:15:17 2021 -0400
+
+    rtp: fix test_twcc_header_and_run to support big endian.
+
+    Part-of: <https://gitlab.freedesktop.org/gstreamer/gst-plugins-good/-/merge_requests/942>
+
+commit b5deff7b640c62f2084ca919f1309b58c9018313
+Author: Doug Nazar <nazard@nazar.ca>
+Date:   Mon Apr 12 23:13:15 2021 -0400
+
+    rtp: fix rtptwcc to support big endian.
+
+    Part-of: <https://gitlab.freedesktop.org/gstreamer/gst-plugins-good/-/merge_requests/942>
+
+commit f5f94695f262559ecbe4eea01f90a156752ffb5a
+Author: Doug Nazar <nazard@nazar.ca>
+Date:   Mon Apr 12 21:36:58 2021 -0400
+
+    tests: Fix alpha test on big endian machines.
+
+    Part-of: <https://gitlab.freedesktop.org/gstreamer/gst-plugins-good/-/merge_requests/943>
+
+diff --git a/gst/rtpmanager/rtptwcc.c b/gst/rtpmanager/rtptwcc.c
+index f5b5351..2a8782d 100644
+--- a/gst/rtpmanager/rtptwcc.c
++++ b/gst/rtpmanager/rtptwcc.c
+@@ -696,14 +696,14 @@ static guint
+ _parse_run_length_chunk (GstBitReader * reader, GArray * twcc_packets,
+     guint16 seqnum_offset, guint remaining_packets)
+ {
+-  guint run_length;
++  guint16 run_length;
+   guint8 status_code;
+   guint i;
+ 
+   gst_bit_reader_get_bits_uint8 (reader, &status_code, 2);
++  gst_bit_reader_get_bits_uint16 (reader, &run_length, 13);
+ 
+-  run_length = *(guint16 *) reader->data & ~0xE0;       /* mask out the 3 last bits */
+-  run_length = MIN (remaining_packets, GST_READ_UINT16_BE (&run_length));
++  run_length = MIN (remaining_packets, run_length);
+ 
+   for (i = 0; i < run_length; i++) {
+     _add_twcc_packet (twcc_packets, seqnum_offset + i, status_code);
+diff --git a/tests/check/elements/alpha.c b/tests/check/elements/alpha.c
+index 7c03bc1..b2f21fa 100644
+--- a/tests/check/elements/alpha.c
++++ b/tests/check/elements/alpha.c
+@@ -87,6 +87,13 @@ create_caps_rgba32 (void)
+   return caps;
+ }
+ 
++#if G_BYTE_ORDER == G_BIG_ENDIAN
++#define RGBA(r,g,b,a) (guint32)(((r&0xff)<<24)|((g&0xff)<<16)|((b&0xff)<<8)|(a&0xff))
++#else
++#define RGBA(r,g,b,a) (guint32)(((a&0xff)<<24)|((b&0xff)<<16)|((g&0xff)<<8)|(r&0xff))
++#endif
++#define RGB(r,g,b) RGBA(r,g,b,0xff)
++
+ static GstBuffer *
+ create_buffer_rgba32 (FillColor color)
+ {
+@@ -99,9 +106,9 @@ create_buffer_rgba32 (FillColor color)
+   int i;
+ 
+   if (color == FILL_GREEN)
+-    rgba_col = 0xff00ff00;      /* GREEN */
++    rgba_col = RGB (0, 255, 0); /* GREEN */
+   else
+-    rgba_col = 0xffff0000;      /* BLUE */
++    rgba_col = RGB (0, 0, 255); /* BLUE */
+ 
+   for (i = 0; i < HEIGHT * WIDTH; i++)
+     rgba32[i] = rgba_col;
+diff --git a/tests/check/elements/rtpsession.c b/tests/check/elements/rtpsession.c
+index 5c3c48c..93813d6 100644
+--- a/tests/check/elements/rtpsession.c
++++ b/tests/check/elements/rtpsession.c
+@@ -2685,9 +2685,9 @@ GST_START_TEST (test_twcc_header_and_run_length)
+   fail_unless_equals_int (0x20, fci_data[8] & 0x60);
+ 
+   /* packets in run_length */
+-  run_length = *((guint16 *) & fci_data[8]);
+-  run_length = run_length & ~0xE0;      /* mask out the 3 last bits */
+-  fail_unless_equals_int (td->num_packets, GST_READ_UINT16_BE (&run_length));
++  run_length = GST_READ_UINT16_BE (&fci_data[8]);
++  run_length = run_length & ~0xE000;    /* mask out the upper 3 status bits */
++  fail_unless_equals_int (td->num_packets, run_length);
+ 
+   /* first recv-delta always 0 */
+   fail_unless_equals_int (0, fci_data[10]);
