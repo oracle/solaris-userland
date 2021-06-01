@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -45,10 +45,12 @@ file files/exec_attr path=etc/security/exec_attr.d/library:desktop:gstreamer-1
 file path=usr/bin/$(MACH64)/gst-inspect-1.0
 file path=usr/bin/$(MACH64)/gst-launch-1.0
 file path=usr/bin/$(MACH64)/gst-stats-1.0
+file path=usr/bin/$(MACH64)/gst-tester-1.0
 file path=usr/bin/$(MACH64)/gst-typefind-1.0
 file path=usr/bin/gst-inspect-1.0
 file path=usr/bin/gst-launch-1.0
 file path=usr/bin/gst-stats-1.0
+file path=usr/bin/gst-tester-1.0
 file path=usr/bin/gst-typefind-1.0
 file path=usr/include/gstreamer-1.0/gst/base/base-prelude.h
 file path=usr/include/gstreamer-1.0/gst/base/base.h
@@ -168,6 +170,7 @@ file path=usr/include/gstreamer-1.0/gst/net/gstnetclientclock.h
 file path=usr/include/gstreamer-1.0/gst/net/gstnetcontrolmessagemeta.h
 file path=usr/include/gstreamer-1.0/gst/net/gstnettimepacket.h
 file path=usr/include/gstreamer-1.0/gst/net/gstnettimeprovider.h
+file path=usr/include/gstreamer-1.0/gst/net/gstnetutils.h
 file path=usr/include/gstreamer-1.0/gst/net/gstptpclock.h
 file path=usr/include/gstreamer-1.0/gst/net/net-prelude.h
 file path=usr/include/gstreamer-1.0/gst/net/net.h
@@ -177,67 +180,69 @@ file path=usr/lib/$(MACH64)/girepository-1.0/GstCheck-1.0.typelib
 file path=usr/lib/$(MACH64)/girepository-1.0/GstController-1.0.typelib
 file path=usr/lib/$(MACH64)/girepository-1.0/GstNet-1.0.typelib
 file path=usr/lib/$(MACH64)/gstreamer-1.0/gst-completion-helper mode=0555
+file path=usr/lib/$(MACH64)/gstreamer-1.0/gst-hotdoc-plugins-scanner mode=0555
 file path=usr/lib/$(MACH64)/gstreamer-1.0/gst-plugin-scanner mode=0555
+file path=usr/lib/$(MACH64)/gstreamer-1.0/gst-plugins-doc-cache-generator \
+    mode=0555
 file path=usr/lib/$(MACH64)/gstreamer-1.0/gst-ptp-helper mode=4555
 file path=usr/lib/$(MACH64)/gstreamer-1.0/libgstcoreelements.so
 file path=usr/lib/$(MACH64)/gstreamer-1.0/libgstcoretracers.so
-link path=usr/lib/$(MACH64)/libgstbase-1.0.so target=libgstbase-1.0.so.0.1602.0
+link path=usr/lib/$(MACH64)/libgstbase-1.0.so target=libgstbase-1.0.so.0
 link path=usr/lib/$(MACH64)/libgstbase-1.0.so.0 \
-    target=libgstbase-1.0.so.0.1602.0
-file path=usr/lib/$(MACH64)/libgstbase-1.0.so.0.1602.0
-link path=usr/lib/$(MACH64)/libgstcheck-1.0.so \
-    target=libgstcheck-1.0.so.0.1602.0
+    target=libgstbase-1.0.so.0.1804.0
+file path=usr/lib/$(MACH64)/libgstbase-1.0.so.0.1804.0
+link path=usr/lib/$(MACH64)/libgstcheck-1.0.so target=libgstcheck-1.0.so.0
 link path=usr/lib/$(MACH64)/libgstcheck-1.0.so.0 \
-    target=libgstcheck-1.0.so.0.1602.0
-file path=usr/lib/$(MACH64)/libgstcheck-1.0.so.0.1602.0
+    target=libgstcheck-1.0.so.0.1804.0
+file path=usr/lib/$(MACH64)/libgstcheck-1.0.so.0.1804.0
 link path=usr/lib/$(MACH64)/libgstcontroller-1.0.so \
-    target=libgstcontroller-1.0.so.0.1602.0
+    target=libgstcontroller-1.0.so.0
 link path=usr/lib/$(MACH64)/libgstcontroller-1.0.so.0 \
-    target=libgstcontroller-1.0.so.0.1602.0
-file path=usr/lib/$(MACH64)/libgstcontroller-1.0.so.0.1602.0
-link path=usr/lib/$(MACH64)/libgstnet-1.0.so target=libgstnet-1.0.so.0.1602.0
-link path=usr/lib/$(MACH64)/libgstnet-1.0.so.0 target=libgstnet-1.0.so.0.1602.0
-file path=usr/lib/$(MACH64)/libgstnet-1.0.so.0.1602.0
-link path=usr/lib/$(MACH64)/libgstreamer-1.0.so \
-    target=libgstreamer-1.0.so.0.1602.0
+    target=libgstcontroller-1.0.so.0.1804.0
+file path=usr/lib/$(MACH64)/libgstcontroller-1.0.so.0.1804.0
+link path=usr/lib/$(MACH64)/libgstnet-1.0.so target=libgstnet-1.0.so.0
+link path=usr/lib/$(MACH64)/libgstnet-1.0.so.0 target=libgstnet-1.0.so.0.1804.0
+file path=usr/lib/$(MACH64)/libgstnet-1.0.so.0.1804.0
+link path=usr/lib/$(MACH64)/libgstreamer-1.0.so target=libgstreamer-1.0.so.0
 link path=usr/lib/$(MACH64)/libgstreamer-1.0.so.0 \
-    target=libgstreamer-1.0.so.0.1602.0
-file path=usr/lib/$(MACH64)/libgstreamer-1.0.so.0.1602.0
+    target=libgstreamer-1.0.so.0.1804.0
+file path=usr/lib/$(MACH64)/libgstreamer-1.0.so.0.1804.0
 file path=usr/lib/$(MACH64)/pkgconfig/gstreamer-1.0.pc
 file path=usr/lib/$(MACH64)/pkgconfig/gstreamer-base-1.0.pc
 file path=usr/lib/$(MACH64)/pkgconfig/gstreamer-check-1.0.pc
 file path=usr/lib/$(MACH64)/pkgconfig/gstreamer-controller-1.0.pc
 file path=usr/lib/$(MACH64)/pkgconfig/gstreamer-net-1.0.pc
 file path=usr/lib/gstreamer-1.0/gst-completion-helper mode=0555
+file path=usr/lib/gstreamer-1.0/gst-hotdoc-plugins-scanner mode=0555
 file path=usr/lib/gstreamer-1.0/gst-plugin-scanner mode=0555
+file path=usr/lib/gstreamer-1.0/gst-plugins-doc-cache-generator mode=0555
 file path=usr/lib/gstreamer-1.0/gst-ptp-helper mode=0555
 file path=usr/lib/gstreamer-1.0/libgstcoreelements.so
 file path=usr/lib/gstreamer-1.0/libgstcoretracers.so
-link path=usr/lib/libgstbase-1.0.so target=libgstbase-1.0.so.0.1602.0
-link path=usr/lib/libgstbase-1.0.so.0 target=libgstbase-1.0.so.0.1602.0
-file path=usr/lib/libgstbase-1.0.so.0.1602.0
-link path=usr/lib/libgstcheck-1.0.so target=libgstcheck-1.0.so.0.1602.0
-link path=usr/lib/libgstcheck-1.0.so.0 target=libgstcheck-1.0.so.0.1602.0
-file path=usr/lib/libgstcheck-1.0.so.0.1602.0
-link path=usr/lib/libgstcontroller-1.0.so \
-    target=libgstcontroller-1.0.so.0.1602.0
+link path=usr/lib/libgstbase-1.0.so target=libgstbase-1.0.so.0
+link path=usr/lib/libgstbase-1.0.so.0 target=libgstbase-1.0.so.0.1804.0
+file path=usr/lib/libgstbase-1.0.so.0.1804.0
+link path=usr/lib/libgstcheck-1.0.so target=libgstcheck-1.0.so.0
+link path=usr/lib/libgstcheck-1.0.so.0 target=libgstcheck-1.0.so.0.1804.0
+file path=usr/lib/libgstcheck-1.0.so.0.1804.0
+link path=usr/lib/libgstcontroller-1.0.so target=libgstcontroller-1.0.so.0
 link path=usr/lib/libgstcontroller-1.0.so.0 \
-    target=libgstcontroller-1.0.so.0.1602.0
-file path=usr/lib/libgstcontroller-1.0.so.0.1602.0
-link path=usr/lib/libgstnet-1.0.so target=libgstnet-1.0.so.0.1602.0
-link path=usr/lib/libgstnet-1.0.so.0 target=libgstnet-1.0.so.0.1602.0
-file path=usr/lib/libgstnet-1.0.so.0.1602.0
-link path=usr/lib/libgstreamer-1.0.so target=libgstreamer-1.0.so.0.1602.0
-link path=usr/lib/libgstreamer-1.0.so.0 target=libgstreamer-1.0.so.0.1602.0
-file path=usr/lib/libgstreamer-1.0.so.0.1602.0
+    target=libgstcontroller-1.0.so.0.1804.0
+file path=usr/lib/libgstcontroller-1.0.so.0.1804.0
+link path=usr/lib/libgstnet-1.0.so target=libgstnet-1.0.so.0
+link path=usr/lib/libgstnet-1.0.so.0 target=libgstnet-1.0.so.0.1804.0
+file path=usr/lib/libgstnet-1.0.so.0.1804.0
+link path=usr/lib/libgstreamer-1.0.so target=libgstreamer-1.0.so.0
+link path=usr/lib/libgstreamer-1.0.so.0 target=libgstreamer-1.0.so.0.1804.0
+file path=usr/lib/libgstreamer-1.0.so.0.1804.0
 file path=usr/lib/pkgconfig/gstreamer-1.0.pc
 file path=usr/lib/pkgconfig/gstreamer-base-1.0.pc
 file path=usr/lib/pkgconfig/gstreamer-check-1.0.pc
 file path=usr/lib/pkgconfig/gstreamer-controller-1.0.pc
 file path=usr/lib/pkgconfig/gstreamer-net-1.0.pc
 file path=usr/share/aclocal/gst-element-check-1.0.m4
-file path=usr/share/gdb/auto-load/usr/lib/$(MACH64)/libgstreamer-1.0.so.0.1602.0-gdb.py
-file path=usr/share/gdb/auto-load/usr/lib/libgstreamer-1.0.so.0.1602.0-gdb.py
+file path=usr/share/gdb/auto-load/usr/lib/$(MACH64)/libgstreamer-1.0.so.0.1804.0-gdb.py
+file path=usr/share/gdb/auto-load/usr/lib/libgstreamer-1.0.so.0.1804.0-gdb.py
 file path=usr/share/gir-1.0/Gst-1.0.gir
 file path=usr/share/gir-1.0/GstBase-1.0.gir
 file path=usr/share/gir-1.0/GstCheck-1.0.gir
@@ -290,4 +295,4 @@ file path=usr/share/man/man1/gst-inspect-1.0.1
 file path=usr/share/man/man1/gst-launch-1.0.1
 file path=usr/share/man/man1/gst-stats-1.0.1
 file path=usr/share/man/man1/gst-typefind-1.0.1
-license COPYING license=LGPLv2
+license gstreamer-1.license license=LGPLv2

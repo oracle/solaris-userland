@@ -1,34 +1,11 @@
 two of the tests need longer timeout to pass
 https://gitlab.freedesktop.org/gstreamer/gstreamer/issues/478
 
-diff -r e877f5828384 common/check.mak
---- a/common/check.mak	Fri Dec 06 22:37:13 2019 +0100
-+++ b/common/check.mak	Fri Dec 06 22:39:33 2019 +0100
-@@ -12,7 +12,7 @@
- endif
- 
- LOOPS ?= 10
--AM_TESTS_ENVIRONMENT = CK_DEFAULT_TIMEOUT=20
-+AM_TESTS_ENVIRONMENT = CK_DEFAULT_TIMEOUT=60
- 
- # run any given test by running make test.check
- # if the test fails, run it again at at least debug level 2
-diff -r e877f5828384 tests/check/Makefile.in
---- a/tests/check/Makefile.in	Fri Dec 06 22:37:13 2019 +0100
-+++ b/tests/check/Makefile.in	Fri Dec 06 22:39:33 2019 +0100
-@@ -1578,7 +1578,7 @@
- top_build_prefix = @top_build_prefix@
- top_builddir = @top_builddir@
- top_srcdir = @top_srcdir@
--AM_TESTS_ENVIRONMENT = CK_DEFAULT_TIMEOUT=20 \
-+AM_TESTS_ENVIRONMENT = CK_DEFAULT_TIMEOUT=60 \
- 	GST_STATE_IGNORE_ELEMENTS="$(STATE_IGNORE_ELEMENTS)" \
- 	$(REGISTRY_ENVIRONMENT) \
- 	GST_PLUGIN_SCANNER_1_0=$(top_builddir)/libs/gst/helpers/gst-plugin-scanner \
-diff -r e877f5828384 tests/check/meson.build
---- a/tests/check/meson.build	Fri Dec 06 22:37:13 2019 +0100
-+++ b/tests/check/meson.build	Fri Dec 06 22:39:33 2019 +0100
-@@ -156,7 +156,7 @@
+diff --git a/tests/check/meson.build b/tests/check/meson.build
+index a617cf1..883b34c 100644
+--- a/tests/check/meson.build
++++ b/tests/check/meson.build
+@@ -157,7 +157,7 @@ foreach t : core_tests
      env.set('GST_PLUGIN_PATH_1_0', meson.build_root())
      env.set('GST_PLUGIN_SYSTEM_PATH_1_0', '')
      env.set('GST_STATE_IGNORE_ELEMENTS', '')

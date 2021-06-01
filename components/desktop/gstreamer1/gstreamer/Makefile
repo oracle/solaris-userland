@@ -29,65 +29,46 @@ BUILD_BITS =            32_and_64
 COMPILER=gcc
 include ../../../../make-rules/shared-macros.mk
 
-# gstreamer has an ancient 0.10 version supported by many applications and the
-# newest version which has no backwards API compatibility and we likely need to
-# ship both, hence the odd name.
 COMPONENT_NAME=		gstreamer
-COMPONENT_VERSION=	1.16.2
+COMPONENT_VERSION=	1.18.4
 COMPONENT_PROJECT_URL=	https://gstreamer.freedesktop.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e3f044246783fd685439647373fa13ba14f7ab0b346eadd06437092f8419e94e
+	sha256:9aeec99b38e310817012aa2d1d76573b787af47f8a725a65b833880a094dfbc5
 COMPONENT_ARCHIVE_URL=	https://gstreamer.freedesktop.org/src/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	1263
 
-TPNO=			55540
+TPNO=			71090
 
-# Disable tests since they run many days and there are regressions.
-$(SKIP_TEST_AT_TOP_LEVEL)
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/common.mk
 
-CONFIGURE_OPTIONS += --disable-static
-# Build documentation (man pages). 
-CONFIGURE_OPTIONS += --enable-docbook
 # Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-introspection
-CONFIGURE_OPTIONS.64 += --enable-introspection
-CONFIGURE_OPTIONS += --libexecdir=$(CONFIGURE_LIBDIR.$(BITS))
-CONFIGURE_OPTIONS += --with-bash-completion-dir=/etc/bash_completion.d
-CONFIGURE_OPTIONS += --with-ptp-helper-permissions=solaris-privileges
+CONFIGURE_OPTIONS.32 += -Dintrospection=disabled
+CONFIGURE_OPTIONS.64 += -Dintrospection=enabled
+CONFIGURE_OPTIONS += -Dptp-helper-permissions=solaris-privileges
+CONFIGURE_OPTIONS += --libexecdir="$(CONFIGURE_LIBDIR.$(BITS))"
 
-# Makefile.am files of this component are not compatible with Solaris make.
-# Use GNU make to avoid the configuration error when makefile fragments are processed.
-CONFIGURE_OPTIONS += MAKE=$(GMAKE)
+# Requires GNU version of msgfmt...
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
-# The build process modifies the shebang line to use the version of Python
-# automatically found; to avoid using the current system default, one is
-# explicitly specified here.
-CONFIGURE_ENV += PYTHON="$(PYTHON.3.7)"
+# The shebang line is hardcoded to python scripts; to avoid using
+# the current system default, one is explicitly specified here.
+COMPONENT_POST_INSTALL_ACTION += ( \
+		$(PERL) -i -pe 's|\#!/usr/bin/env python3|\#!$(PYTHON)|' $(PROTOUSRLIBDIR)/gstreamer-1.0/gst-plugins-doc-cache-generator; \
+		$(PERL) -i -pe 's|\#!/usr/bin/env python3|\#!$(PYTHON)|' $(PROTOUSRLIBDIR64)/gstreamer-1.0/gst-plugins-doc-cache-generator \
+	);
 
-# Required due to patches.
-COMPONENT_PREP_ACTION += (cd $(@D) ; NOCONFIGURE=1 $(CONFIG_SHELL) autogen.sh; autoreconf -fiv);
 
-# for the tests
-unexport SHELLOPTS
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_ARGS =   -k -i
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/ERROR:/p" '
+COMPONENT_TEST_ENV = -i
+COMPONENT_TEST_ARGS = -k 0
+COMPONENT_TEST_TRANSFORMS += '-e "s/\s*[0-9]\+\.[0-9]\+s//"'
 
-REQUIRED_PACKAGES += data/docbook/docbook-dtds
-REQUIRED_PACKAGES += data/docbook/docbook-style-dsssl
-REQUIRED_PACKAGES += data/docbook/docbook-style-xsl
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxslt
 REQUIRED_PACKAGES += runtime/python-37

@@ -1,0 +1,135 @@
+Patches cherry picked from upstream:
+
+commit d323942999008689007e13fd406091e5f4a307b9
+Author: Doug Nazar <nazard@nazar.ca>
+Date:   Sun Apr 11 10:24:01 2021 -0400
+
+    leaks: Fix SIGSEGV detecting object type.
+
+    G_IS_OBJECT & GST_IS_OBJECT work by following pointers which is unsafe
+    on certain architectures. GstMiniObject detection however does a lookup
+    to see if it's a valid type derived from G_TYPE_BOXED.
+
+    Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/791>
+
+commit b500ac31ab67b206815e564009afd7c547c00b45
+Author: Doug Nazar <nazard@nazar.ca>
+Date:   Sun Apr 11 08:23:27 2021 -0400
+
+    tests: Remove invalid buffer test in test_get_allowed_caps.
+
+    Passing a non-GObject pointer causes SIGSEGV on certain architectures.
+
+    Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/790>
+
+See the following upstream issue for the problem description:
+https://gitlab.freedesktop.org/gstreamer/gstreamer/-/issues/703
+
+diff --git a/plugins/tracers/gstleaks.c b/plugins/tracers/gstleaks.c
+index 30bdc2d..b32c7d5 100644
+--- a/plugins/tracers/gstleaks.c
++++ b/plugins/tracers/gstleaks.c
+@@ -315,6 +315,13 @@ typedef struct
+   const gchar *type_name;
+ } ObjectLog;
+ 
++static inline gboolean
++object_is_gst_mini_object (gpointer obj)
++{
++  return (G_TYPE_IS_DERIVED (GST_MINI_OBJECT_TYPE (obj)) &&
++      G_TYPE_FUNDAMENTAL (GST_MINI_OBJECT_TYPE (obj)) == G_TYPE_BOXED);
++}
++
+ static ObjectLog *
+ object_log_new (gpointer obj)
+ {
+@@ -322,10 +329,10 @@ object_log_new (gpointer obj)
+ 
+   o->object = obj;
+ 
+-  if (G_IS_OBJECT (obj))
+-    o->type_name = G_OBJECT_TYPE_NAME (obj);
+-  else
++  if (object_is_gst_mini_object (obj))
+     o->type_name = g_type_name (GST_MINI_OBJECT_TYPE (obj));
++  else
++    o->type_name = G_OBJECT_TYPE_NAME (obj);
+ 
+   return o;
+ }
+@@ -594,18 +601,18 @@ create_leaks_list (GstLeaksTracer * self)
+     GType type;
+     guint ref_count;
+ 
+-    if (GST_IS_OBJECT (obj)) {
+-      if (GST_OBJECT_FLAG_IS_SET (obj, GST_OBJECT_FLAG_MAY_BE_LEAKED))
+-        continue;
+-
+-      type = G_OBJECT_TYPE (obj);
+-      ref_count = ((GObject *) obj)->ref_count;
+-    } else {
++    if (object_is_gst_mini_object (obj)) {
+       if (GST_MINI_OBJECT_FLAG_IS_SET (obj, GST_MINI_OBJECT_FLAG_MAY_BE_LEAKED))
+         continue;
+ 
+       type = GST_MINI_OBJECT_TYPE (obj);
+       ref_count = ((GstMiniObject *) obj)->refcount;
++    } else {
++      if (GST_OBJECT_FLAG_IS_SET (obj, GST_OBJECT_FLAG_MAY_BE_LEAKED))
++        continue;
++
++      type = G_OBJECT_TYPE (obj);
++      ref_count = ((GObject *) obj)->ref_count;
+     }
+ 
+     l = g_list_prepend (l, leak_new (obj, type, ref_count, infos));
+@@ -639,11 +646,10 @@ process_leak (Leak * leak, GValue * ret_leaks)
+     /* for leaked objects, we take ownership of the object instead of
+      * reffing ("collecting") it to avoid deadlocks */
+     g_value_init (&obj_value, leak->type);
+-    if (GST_IS_OBJECT (leak->obj))
+-      g_value_take_object (&obj_value, leak->obj);
+-    else
+-      /* mini objects */
++    if (object_is_gst_mini_object (leak->obj))
+       g_value_take_boxed (&obj_value, leak->obj);
++    else
++      g_value_take_object (&obj_value, leak->obj);
+     s = gst_structure_new_empty ("object-alive");
+     gst_structure_take_value (s, "object", &obj_value);
+     gst_structure_set (s, "ref-count", G_TYPE_UINT, leak->ref_count,
+@@ -734,11 +740,11 @@ gst_leaks_tracer_finalize (GObject * object)
+   /* Remove weak references */
+   g_hash_table_iter_init (&iter, self->objects);
+   while (g_hash_table_iter_next (&iter, &obj, NULL)) {
+-    if (GST_IS_OBJECT (obj))
+-      g_object_weak_unref (obj, object_weak_cb, self);
+-    else
++    if (object_is_gst_mini_object (obj))
+       gst_mini_object_weak_unref (GST_MINI_OBJECT_CAST (obj),
+           mini_object_weak_cb, self);
++    else
++      g_object_weak_unref (obj, object_weak_cb, self);
+   }
+ 
+   g_clear_pointer (&self->objects, g_hash_table_unref);
+diff --git a/tests/check/gst/gstpad.c b/tests/check/gst/gstpad.c
+index 004ff1e..99ba05c 100644
+--- a/tests/check/gst/gstpad.c
++++ b/tests/check/gst/gstpad.c
+@@ -169,15 +169,10 @@ GST_START_TEST (test_get_allowed_caps)
+ {
+   GstPad *src, *sink;
+   GstCaps *caps, *gotcaps;
+-  GstBuffer *buffer;
+   GstPadLinkReturn plr;
+ 
+   ASSERT_CRITICAL (gst_pad_get_allowed_caps (NULL));
+ 
+-  buffer = gst_buffer_new ();
+-  ASSERT_CRITICAL (gst_pad_get_allowed_caps ((GstPad *) buffer));
+-  gst_buffer_unref (buffer);
+-
+   src = gst_pad_new ("src", GST_PAD_SRC);
+   fail_if (src == NULL);
+   caps = gst_pad_get_allowed_caps (src);

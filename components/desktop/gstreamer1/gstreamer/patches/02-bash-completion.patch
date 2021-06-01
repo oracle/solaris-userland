@@ -1,0 +1,49 @@
+Solaris does not have pkg-config files for bash-completion
+package. To workaround the issue, the paths are hardcoded.
+
+Not suitable for upstream.
+
+--- gstreamer-1.18.4/meson.build	2021-06-01 12:06:42.405852000 +0000
++++ gstreamer-1.18.4/meson.build	2021-06-01 12:04:29.825571235 +0000
+@@ -524,37 +524,10 @@ endif
+ # Used in gst/parse/meson.build and below
+ python3 = import('python').find_installation()
+ 
+-bashcomp_option = get_option('bash-completion')
+-bashcomp_dep = dependency('bash-completion', version : '>= 2.0', required : bashcomp_option)
+-bash_completions_dir = ''
+-bash_helpers_dir = ''
+-
+-bashcomp_found = false
+-if bashcomp_dep.found()
+-  bashcomp_found = true
+-  bashcomp_dir_override = bashcomp_dep.version().version_compare('>= 2.10') ? ['datadir', datadir] : ['prefix', prefix]
+-  bash_completions_dir = bashcomp_dep.get_pkgconfig_variable('completionsdir', define_variable: bashcomp_dir_override)
+-  if bash_completions_dir == ''
+-    msg = 'Found bash-completion but the .pc file did not set \'completionsdir\'.'
+-    if bashcomp_option.enabled()
+-      error(msg)
+-    else
+-      message(msg)
+-    endif
+-    bashcomp_found = false
+-  endif
+-
+-  bash_helpers_dir = bashcomp_dep.get_pkgconfig_variable('helpersdir', define_variable: bashcomp_dir_override)
+-  if bash_helpers_dir == ''
+-    msg = 'Found bash-completion, but the .pc file did not set \'helpersdir\'.'
+-    if bashcomp_option.enabled()
+-      error(msg)
+-    else
+-      message(msg)
+-    endif
+-    bashcomp_found = false
+-  endif
+-endif
++# Hardcoded values for Solaris where pkg-config files for bash-completion are not available.
++bashcomp_found = true
++bash_completions_dir = '/etc/bash_completion.d/completions'
++bash_helpers_dir = '/etc/bash_completion.d/helpers'
+ 
+ plugins_install_dir = join_paths(get_option('libdir'), 'gstreamer-1.0')
+ 

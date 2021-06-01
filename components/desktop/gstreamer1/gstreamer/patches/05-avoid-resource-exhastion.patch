@@ -1,0 +1,41 @@
+This patch limits the number of threads in gst_gstsystemclock stress test
+to avoid memory exhaustion especially on SPARC platform where thousands
+of threads could be created...
+
+Error output:
+------------------------------------------------------------------------------------------------------------------------------------------------------
+../../gstreamer-1.18.4/tests/check/gst/gstsystemclock.c:263:E:waiting:test_stress_cleanup_unschedule:0: (after this point) Test timeout expired
+../../gstreamer-1.18.4/tests/check/gst/gstsystemclock.c:263:E:waiting:test_stress_reschedule:0: (after this point) Test timeout expired
+Check suite gst_systemclock ran in 133.826s (tests failed: 2)
+--- stderr ---
+
+***MEMORY-ERROR***: gst_gstsystemclock[12155]: GSlice: failed to allocate 2040 bytes (alignment: 2048): Cannot allocate memory
+
+
+***MEMORY-ERROR***: gst_gstsystemclock[12162]: GSlice: failed to allocate 2040 bytes (alignment: 2048): Cannot allocate memory
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+The patch not suitable for upstream.
+
+diff --git a/tests/check/gst/gstsystemclock.c b/tests/check/gst/gstsystemclock.c
+index c1ae6bd..53d0863 100644
+--- a/tests/check/gst/gstsystemclock.c
++++ b/tests/check/gst/gstsystemclock.c
+@@ -298,7 +298,7 @@ GST_START_TEST (test_stress_cleanup_unschedule)
+   WaitUnscheduleData *data;
+   gint i, num;
+ 
+-  num = g_get_num_processors () * 6;
++  num = g_get_num_processors ();
+   data = g_newa (WaitUnscheduleData, num);
+ 
+   for (i = 0; i < num; i++) {
+@@ -342,7 +342,7 @@ GST_START_TEST (test_stress_reschedule)
+   WaitUnscheduleData *data;
+   gint i, num;
+ 
+-  num = g_get_num_processors () * 6;
++  num = g_get_num_processors ();
+   data = g_newa (WaitUnscheduleData, num);
+ 
+   for (i = 0; i < num; i++) {

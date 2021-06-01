@@ -4,50 +4,6 @@ we modify it to use privileges.
 Reported upstream as
 https://gitlab.freedesktop.org/gstreamer/gstreamer/issues/511
 
-diff --git a/configure.ac b/configure.ac
-index d9ab882..dae7b5d 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -313,7 +313,7 @@ AC_ARG_WITH(
-   ptp-helper-permissions,
-   AC_HELP_STRING(
-     [--with-ptp-helper-permissions],
--    [how to gain PTP permissions (none, setuid-root, capabilities, auto)]),
-+    [how to gain PTP permissions (none, setuid-root, capabilities, solaris-privileges, auto)]),
-     [],
-     [with_ptp_helper_permissions=auto])
- 
-@@ -373,7 +373,10 @@ if test "x$with_ptp_helper_permissions" = "xauto"; then
-     if test "x$gst_ptp_have_cap" = "xyes" -a "x$SETCAP" != "xno"; then
-         with_ptp_helper_permissions="capabilities"
-     else
--        with_ptp_helper_permissions="setuid-root"
-+        case $host_os in
-+          solaris*) with_ptp_helper_permissions="solaris-privileges" ;;
-+          *) with_ptp_helper_permissions="setuid-root" ;;
-+        esac
-     fi
- fi
- AC_MSG_RESULT([$with_ptp_helper_permissions])
-@@ -389,6 +392,10 @@ case "$with_ptp_helper_permissions" in
-      AC_DEFINE(HAVE_PTP_HELPER_CAPABILITIES, 1,
-         [Use capabilities for permissions in PTP helper])
-     ;;
-+  solaris-privileges)
-+     AC_DEFINE(HAVE_PTP_HELPER_PRIVS, 1,
-+        [Use Solaris privileges for permissions in PTP helper])
-+    ;;
-   *)
-     AC_MSG_ERROR(Invalid parameter [$with_ptp_helper_permissions])
-     ;;
-@@ -399,6 +406,7 @@ fi
- AM_CONDITIONAL(HAVE_PTP, test "x$HAVE_PTP" = "xyes")
- AM_CONDITIONAL(HAVE_PTP_HELPER_SETUID, test "x$with_ptp_helper_permissions" = "xsetuid-root")
- AM_CONDITIONAL(HAVE_PTP_HELPER_CAPABILITIES, test "x$with_ptp_helper_permissions" = "xcapabilities")
-+AM_CONDITIONAL(HAVE_PTP_HELPER_PRIVS, test "x$with_ptp_helper_permissions" = "xsolaris-privileges")
- 
- dnl *** checks for platform ***
- 
 diff --git a/libs/gst/helpers/gst-ptp-helper.c b/libs/gst/helpers/gst-ptp-helper.c
 index 91a2570..a88e417 100644
 --- a/libs/gst/helpers/gst-ptp-helper.c
@@ -86,8 +42,35 @@ index 91a2570..a88e417 100644
    opt_ctx = g_option_context_new ("- GStreamer PTP helper process");
    g_option_context_add_main_entries (opt_ctx, opt_entries, NULL);
    if (!g_option_context_parse (opt_ctx, &argc, &argv, &err))
+diff --git a/libs/gst/helpers/meson.build b/libs/gst/helpers/meson.build
+index b34423f..4dc53f6 100644
+--- a/libs/gst/helpers/meson.build
++++ b/libs/gst/helpers/meson.build
+@@ -105,6 +105,9 @@ if have_ptp
+     endif
+     cdata.set('HAVE_PTP_HELPER_CAPABILITIES', 1,
+         description : 'Use capabilities for permissions in PTP helper')
++  elif with_ptp_helper_permissions == 'solaris-privileges'
++    cdata.set('HAVE_PTP_HELPER_PRIVS', 1,
++      description : 'Use Solaris privileges for permissions in PTP helper')
+   else
+     error('Unexpected ptp helper permissions value: ' + with_ptp_helper_permissions)
+   endif
+diff --git a/libs/gst/helpers/ptp_helper_post_install.sh b/libs/gst/helpers/ptp_helper_post_install.sh
+index 4370acd..d5d58b3 100755
+--- a/libs/gst/helpers/ptp_helper_post_install.sh
++++ b/libs/gst/helpers/ptp_helper_post_install.sh
+@@ -20,7 +20,7 @@ case "$with_ptp_helper_permissions" in
+     echo "Calling $setcap cap_net_bind_service,cap_net_admin+ep $ptp_helper"
+     $setcap cap_net_bind_service,cap_net_admin+ep "$ptp_helper" || true
+     ;;
+-  none)
++  none|solaris-privileges)
+     echo "No perms/caps to set for $ptp_helper"
+     ;;
+   *)
 diff --git a/meson_options.txt b/meson_options.txt
-index e7ff7ba..9cf841c 100644
+index 72c3997..c5572ec 100644
 --- a/meson_options.txt
 +++ b/meson_options.txt
 @@ -8,7 +8,7 @@ option('ptp-helper-setuid-user', type : 'string',
@@ -96,6 +79,6 @@ index e7ff7ba..9cf841c 100644
  option('ptp-helper-permissions', type : 'combo',
 -       choices : ['none', 'setuid-root', 'capabilities', 'auto'], value : 'auto')
 +       choices : ['none', 'setuid-root', 'capabilities', 'solaris-privileges', 'auto'], value : 'auto')
- option('extra-checks', type : 'boolean', value : true, description : 'Enable extra runtime checks')
  option('option-parsing', type : 'boolean', value : true,
         description: 'Enable command line option parsing')
+ option('poisoning', type : 'boolean', value : false, description : 'Enable poisoning of deallocated objects')
