@@ -1,0 +1,42 @@
+Fix unaligned accesses to memory on SPARC architecture.
+
+Suitable for upstream.
+
+diff --git a/gst/rtp/rtpulpfeccommon.c b/gst/rtp/rtpulpfeccommon.c
+index 7c6bf58..640cfdb 100644
+--- a/gst/rtp/rtpulpfeccommon.c
++++ b/gst/rtp/rtpulpfeccommon.c
+@@ -123,7 +123,15 @@ _xor_mem (guint8 * restrict dst, const guint8 * restrict src, gsize length)
+   guint i;
+ 
+   for (i = 0; i < (length / sizeof (guint64)); ++i) {
++    #ifndef __sparc
++    // Fast path for x86 platform.
+     *((guint64 *) dst) ^= *((const guint64 *) src);
++    #else
++    guint j = 0;
++    // Avoid unaligned reads and writes...
++    for (j = 0; j < sizeof(guint64); ++j)
++      dst[j] ^= src[j];
++    #endif
+     dst += sizeof (guint64);
+     src += sizeof (guint64);
+   }
+diff --git a/tests/check/elements/rtpbin_buffer_list.c b/tests/check/elements/rtpbin_buffer_list.c
+index b804744..f7ba3e3 100644
+--- a/tests/check/elements/rtpbin_buffer_list.c
++++ b/tests/check/elements/rtpbin_buffer_list.c
+@@ -236,8 +236,11 @@ check_header (GstBuffer * buffer, guint index)
+    * most likely be changed in gstrtpbin.
+    */
+   fail_unless (info.data != NULL);
+-  fail_unless_equals_uint64 (*(guint64 *) info.data,
+-      *(guint64 *) rtp_header[index]);
++
++  guint64 info_data, rtp_val;
++  memcpy(&info_data, info.data, sizeof(guint64));
++  memcpy(&rtp_val, rtp_header[index], sizeof(guint64));
++  fail_unless_equals_uint64 (info_data, rtp_val);
+   fail_unless (*(guint16 *) (info.data + 12) ==
+       *(guint16 *) (rtp_header[index] + 12));
+ 
