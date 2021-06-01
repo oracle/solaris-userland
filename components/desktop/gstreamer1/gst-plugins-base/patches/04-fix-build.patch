@@ -1,0 +1,40 @@
+Add a missing filio.h header to gstmultifdsink.c file.
+Do not use external gl-headers subproject...
+
+The first part might be suitable for upstream.
+
+diff --git a/gst/tcp/gstmultifdsink.c b/gst/tcp/gstmultifdsink.c
+index e151dfc..c4dc2c1 100644
+--- a/gst/tcp/gstmultifdsink.c
++++ b/gst/tcp/gstmultifdsink.c
+@@ -118,6 +118,7 @@
+ #include <sys/socket.h>
+ #include <sys/stat.h>
+ #include <netinet/in.h>
++#include <sys/filio.h>
+ 
+ #include "gstmultifdsink.h"
+ 
+diff --git a/gst-libs/gst/gl/meson.build b/gst-libs/gst/gl/meson.build
+index db11c5e..ab286d9 100644
+--- a/gst-libs/gst/gl/meson.build
++++ b/gst-libs/gst/gl/meson.build
+@@ -293,16 +293,8 @@ gl_include_header = '''
+ #endif
+ '''
+ 
+-# convoluted way of getting at the subproject taking into account the wrap-mode
+-# so we don't download a subproject unless allowed
+-gl_header_dep = dependency('', fallback : ['gl-headers', 'gl_headers_dummy_dep'],
+-    required : false)
+-if gl_header_dep.type_name() == 'internal'
+-  # this will only contain the includes of headers that are not found
+-  compat_includes = subproject('gl-headers').get_variable('compatibility_includes')
+-else
+-  compat_includes = []
+-endif
++# Avoid to download gl-headers subproject during the configure.
++compat_includes = []
+ 
+ # Desktop OpenGL checks
+ gl_dep = unneeded_dep

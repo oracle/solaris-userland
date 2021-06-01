@@ -30,80 +30,41 @@ COMPILER =              gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gst-plugins-base
-COMPONENT_VERSION=	1.16.2
+COMPONENT_VERSION=	1.18.4
 COMPONENT_PROJECT_URL=	https://gstreamer.freedesktop.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:b13e73e2fe74a4166552f9577c3dcb24bed077021b9c7fa600d910ec6987816a
+	sha256:29e53229a84d01d722f6f6db13087231cdf6113dd85c25746b9b58c3d68e8323
 COMPONENT_ARCHIVE_URL=	https://gstreamer.freedesktop.org/src/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	1263
 
-TPNO=			55664
+TPNO=			71116
 
-PYTHON_VERSION = 3.7
-
-ifeq ($(MACH),sparc)
-# Disable tests since they run very long and still many of them fail with timeout.
-$(SKIP_TEST_AT_TOP_LEVEL)
-endif
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/common.mk
 
-# Use the build area of gstreamer
-GST_BASE = $(WS_COMPONENTS)/desktop/gstreamer1/gstreamer/build/prototype/$(MACH)
-PKG_CONFIG_PATHS += $(GST_BASE)$(USRLIB)/pkgconfig/ 
-
-CPPFLAGS += -I$(GST_BASE)/usr/include/gstreamer-1.0
-LD_OPTIONS += -L $(GST_BASE)$(USRLIB)
-
-$(CONFIGURE_32):	LDFLAGS += -m32
-
-COMPONENT_BUILD_ENV += LD_LIBRARY_PATH_32="$(GST_BASE)$(USRLIB.$(BITS)):$(BUILD_DIR_32)/gst-libs/gst/audio/.libs:$(BUILD_DIR_32)/gst-libs/gst/video/.libs:$(BUILD_DIR_32)/gst-libs/gst/rtp/.libs:$(BUILD_DIR_32)/gst-libs/gst/rtsp/.libs:$(BUILD_DIR_32)/gst-libs/gst/pbutils/.libs:$(BUILD_DIR_32)/gst-libs/gst/allocators/.libs:$(BUILD_DIR_32)/gst-libs/gst/tag/.libs:$(BUILD_DIR_32)/gst-libs/gst/app/.libs:$(BUILD_DIR_32)/gst-libs/gst/sdp/.libs:$(BUILD_DIR_32)/gst-libs/gst/gl/.libs"
-COMPONENT_BUILD_ENV += LD_LIBRARY_PATH_64="$(GST_BASE)$(USRLIB.$(BITS)):$(BUILD_DIR_64)/gst-libs/gst/audio/.libs:$(BUILD_DIR_64)/gst-libs/gst/video/.libs:$(BUILD_DIR_64)/gst-libs/gst/rtp/.libs:$(BUILD_DIR_64)/gst-libs/gst/rtsp/.libs:$(BUILD_DIR_64)/gst-libs/gst/pbutils/.libs:$(BUILD_DIR_64)/gst-libs/gst/allocators/.libs:$(BUILD_DIR_64)/gst-libs/gst/tag/.libs:$(BUILD_DIR_64)/gst-libs/gst/app/.libs:$(BUILD_DIR_64)/gst-libs/gst/sdp/.libs:$(BUILD_DIR_64)/gst-libs/gst/gl/.libs"
-
 # needed for clutter-gst
-CONFIGURE_OPTIONS.32 += --enable-introspection=no
-CONFIGURE_OPTIONS.64 += --enable-introspection=yes
+CONFIGURE_OPTIONS.32 += -Dintrospection=disabled
+CONFIGURE_OPTIONS.64 += -Dintrospection=enabled
 
-CFLAGS += -DHAVE_FIONREAD_IN_SYS_FILIO
+CONFIGURE_OPTIONS += -Dogg=enabled
+CONFIGURE_OPTIONS += -Dtheora=enabled
+CONFIGURE_OPTIONS += -Dvorbis=enabled
+CONFIGURE_OPTIONS += -Dx11=enabled
+CONFIGURE_OPTIONS += -Dexamples=disabled
 
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --enable-ogg
-CONFIGURE_OPTIONS += --enable-theora
-CONFIGURE_OPTIONS += --enable-vorbis
-CONFIGURE_OPTIONS += --with-x
-CONFIGURE_OPTIONS += --disable-examples
+# Requires GNU version of msgfmt...
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
-# Makefile.am files of this component are not compatible with Solaris make.
-# Use GNU make to avoid the configuration error when makefile fragments are processed.
-CONFIGURE_OPTIONS += MAKE=$(GMAKE)
-
-# The build process modifies the shebang line to use the version of Python
-# automatically found; to avoid using the current system default, one is
-# explicitly specified here.
-CONFIGURE_ENV += PYTHON="$(PYTHON.3.7)"
-
-# Ensure Python modules are installed into vendor package directories.
-CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
-CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
-
-# Required due to patches.
-COMPONENT_PREP_ACTION += ( cd $(@D) ; NOCONFIGURE=1 $(CONFIG_SHELL) autogen.sh );
-
-# for the tests
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS)-$(MACH).master
-COMPONENT_TEST_ARGS =   -k -i
-COMPONENT_TEST_TRANSFORMS += \
-        '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/ERROR:/p" '
-# To prevent "libtool_install_magic: unbound variable"
-unexport SHELLOPTS
+COMPONENT_TEST_ARGS = -k 0
+COMPONENT_TEST_ENV = -i
+COMPONENT_TEST_TRANSFORMS += '-e "s/\s*[0-9]\+\.[0-9]\+s//" '
+COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/TIME/" '
+COMPONENT_TEST_TRANSFORMS += '-e "s/TIME.*\$$(@D)/TIME GST_ENV \$$(@D)/"'
 
 REQUIRED_PACKAGES += codec/libtheora
 REQUIRED_PACKAGES += codec/libogg
