@@ -20,30 +20,30 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		readline
-COMPONENT_VERSION=	7.0
+COMPONENT_VERSION=	8.1
 COMPONENT_PROJECT_URL=	https://tiswww.cwru.edu/php/chet/readline/rltop.html
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:750d437185286f40a369e1e4f4764eda932b9459b5ec9a731628393dd3d32334
+    sha256:232422a8d83958670b8e4112dc57379bef55ab9ff764c5686a1b2b4a9bb10b79
 COMPONENT_BUGDB=	library/readline
 COMPONENT_ANITYA_ID=	4173
 
+TPNO_V8=		71122
 TPNO_V7=		33803
-TPNO_V6=		22356
 
 # For now, we want to continue to provide the libreadline and libhistory so's
-# (and their links) from readline 6.3.
+# (and their links) from readline 7.0.
 #
-COMPONENT_VERSION_1 =   6.3
+COMPONENT_VERSION_1 =   7.0
 COMPONENT_SRC_1 =       $(COMPONENT_NAME)-$(COMPONENT_VERSION_1)
 COMPONENT_ARCHIVE_1 =   $(COMPONENT_SRC_1).tar.gz
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:56ba6071b9462f980c5a72ab0023893b65ba6debb4eeb475d7a563dc65cafd43
+    sha256:750d437185286f40a369e1e4f4764eda932b9459b5ec9a731628393dd3d32334
 COMPONENT_ARCHIVE_URL_1 = https://ftp.gnu.org/gnu/readline/$(COMPONENT_ARCHIVE_1)
 COMPONENT_SIG_URL_1=	$(COMPONENT_ARCHIVE_URL_1).sig
 SOURCE_DIR_1 =          $(COMPONENT_DIR)/$(COMPONENT_SRC_1)
@@ -74,6 +74,14 @@ COMPONENT_TEST_TARGETS =
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 # Needed to build the test program.
+COMPONENT_PRE_TEST_ACTION += \
+	(cd $(@D) ; $(GMAKE) libreadline.a ) ;
+
+# Build the test program.
+COMPONENT_PRE_TEST_ACTION += \
+	(cd $(@D)/examples ; $(GMAKE) rlcat ) ;
+
+# Needed to build the test program.
 COMPONENT_PRE_SYSTEM_TEST_ACTION += \
 	(cd $(@D) ; $(GMAKE) libreadline.a ) ;
 
@@ -81,7 +89,7 @@ COMPONENT_PRE_SYSTEM_TEST_ACTION += \
 COMPONENT_PRE_SYSTEM_TEST_ACTION += \
 	(cd $(@D)/examples ; $(GMAKE) rlcat ) ;
 
-# Get correct libreadline.so.7 from the proto area.
+# Get correct libreadline.so.8 from the proto area.
 TEST_LIBPATH.32 =       $(PROTOUSRLIBDIR)
 TEST_LIBPATH.64 =       $(PROTOUSRLIBDIR64)
 COMPONENT_TEST_ENV +=   LD_LIBRARY_PATH=$(TEST_LIBPATH.$(BITS))
