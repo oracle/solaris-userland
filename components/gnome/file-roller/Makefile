@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		file-roller
-COMPONENT_VERSION=	3.38.0
+COMPONENT_VERSION=	3.38.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/FileRoller
 COMPONENT_ARCHIVE_HASH= \
-	sha256:723d1c6e567d35dad5eeeaeb86b8d18705658ee73e0b3b97ea16adc7a4dc331a
+	sha256:94a0130e12d321aa119793a14d09716523e2e4a61f29570cee53fd88dd6abc57
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	5392
 
-TPNO=			62430
+TPNO=			70365
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
