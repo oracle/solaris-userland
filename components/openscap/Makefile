@@ -39,7 +39,8 @@ TPNO =			28398
 
 BUILD_STYLE= cmake
 CMAKE_OPTIONS += -DPCRE_INCLUDE_DIR=/usr/include/pcre \
-    -DPYTHON_SITE_PACKAGES_INSTALL_DIR=/usr/lib/python$(PYTHON_VERSION)/vendor-packages/
+    -DPYTHON_SITE_PACKAGES_INSTALL_DIR=/usr/lib/python$(PYTHON_VERSION)/vendor-packages/ \
+    -DCMAKE_PREFIX_PATH=/usr/perl5/$(PERL_VERSION)/bin
 CMAKE_MAKE_PROGRAM=$(GMAKE)
 
 CFLAGS+=		-std=c99
@@ -50,10 +51,7 @@ CFLAGS+=		-D__$(MACH64)
 PYTHON_VERSION =	3.7
 PYTHON_VERSIONS=	$(PYTHON_VERSION)
 
-# this version must match with perl mediator because cmake uses FindPerl macro.
-# (if this is not desired, a deeper diving to cmake and
-# patches/cmake_perl.patch update is needed)
-PERL_VERSION =		5.32
+# Compile only for single perl version
 PERL_VERSIONS =		$(PERL_VERSION)
 
 # Tests require xpath tool that is not available on Solaris.
