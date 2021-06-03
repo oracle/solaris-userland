@@ -738,9 +738,8 @@ file path=usr/share/openscap/xsl/xccdf-share.xsl
 file path=usr/share/openscap/xsl/xccdf_1.1_remove_dangling_sub.xsl
 file path=usr/share/openscap/xsl/xccdf_1.1_to_1.2.xsl
 license openscap.license license="LGPLv2.1, LGPLv3, OVAL"
-depend type=conditional \
-    fmri=library/perl-5/openscap-526@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION) \
-    predicate=runtime/perl-526
+depend type=conditional fmri=library/perl-5/openscap-$(PERL_VERSION_NODOT) \
+    predicate=$(PERL_PKG)
 depend type=conditional \
     fmri=library/python/openscap-37@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION) \
     predicate=runtime/python-37
