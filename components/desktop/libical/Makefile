@@ -29,15 +29,15 @@ COMPILER= 		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libical
-COMPONENT_VERSION=	3.0.8
+COMPONENT_VERSION=	3.0.10
 COMPONENT_PROJECT_URL=	http://libical.github.io/libical/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:09fecacaf75ba5a242159e3a9758a5446b5ce4d0ab684f98a7040864e1d1286f
+	sha256:f933b3e6cf9d56a35bb5625e8e4a9c3a50239a85aea05ed842932c1a1dc336b4
 COMPONENT_ARCHIVE_URL=	https://github.com/$(COMPONENT_NAME)/$(COMPONENT_NAME)/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	1637
 
-TPNO=			62897
+TPNO=			71338
 
 BUILD_STYLE= cmake
 
@@ -113,6 +113,7 @@ REQUIRED_PACKAGES += database/berkeleydb-5
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/icu
+REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/math

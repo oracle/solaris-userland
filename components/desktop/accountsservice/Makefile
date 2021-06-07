@@ -30,17 +30,18 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		accountsservice
-COMPONENT_VERSION=	0.6.43
+COMPONENT_VERSION=	0.6.55
 COMPONENT_PROJECT_URL=	http://freedesktop.org/wiki/Software/AccountsService/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:ed3ba94aa38ceb822a0e1a1ac71bf1a8123babf90be049397b3a00900e48d6cc
+	sha256:ff2b2419a7e06bd9cb335ffe391c7409b49a0f0130b890bd54692a3986699c9b
 COMPONENT_ARCHIVE_URL=	http://freedesktop.org/software/accountsservice/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13107
 
-TPNO=			34437
+TPNO=			53864
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -50,28 +51,23 @@ include $(WS_MAKE_RULES)/common.mk
 
 # Assumes GNU xgettext in PATH
 COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 
-# GNU Build System files have to be regenerated for automake 1.16.
-COMPONENT_PREP_ACTION += \
-    ( cd $(@D) ; autoreconf -fiv );
-
-CONFIGURE_OPTIONS += --enable-docbook-docs 
-CONFIGURE_OPTIONS += --enable-gtk-doc
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --disable-systemd
-CONFIGURE_OPTIONS += --with-pic
+CONFIGURE_OPTIONS += -Dsystemd=false
+CONFIGURE_OPTIONS += -Dsystemdsystemunitdir='no'
+CONFIGURE_OPTIONS += -Delogind=false
+CONFIGURE_OPTIONS += -Dgtk_doc=true
 CONFIGURE_OPTIONS += --libexecdir="$(USRLIBDIR)"
 CONFIGURE_OPTIONS += --localstatedir="$(VARDIR)"
 CONFIGURE_OPTIONS += --sysconfdir="$(ETCDIR)"
 
 # Solaris reserves uids < 100 for system accounts
-CONFIGURE_OPTIONS += --with-minimum-uid=100
+CONFIGURE_OPTIONS += -Dminimum_uid=100
 
 # Solaris does not have a wheel group, so we use the "sysadmin" group to
 # determine which accounts should be ACT_USER_ACCOUNT_TYPE_ADMINISTRATOR
-CONFIGURE_OPTIONS += --enable-admin-group=sysadmin
+CONFIGURE_OPTIONS += -Dadmin-group=sysadmin
 
 # Only need to install library from 32-bit builds, everything else overlaps
 # with 64-bit builds
