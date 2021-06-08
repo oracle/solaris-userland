@@ -40,6 +40,8 @@
 <transform file path=etc/cups/.+\.conf$ -> default mode 640 >
 <transform file path=etc/cups/.+\.conf.default -> default mode 440 >
 <transform file path=etc/cups/.+\.conf$ -> default preserve yes >
+# following backends must be installed with mode 0500 to be run as root
+<transform file path=usr/lib/cups/backend/usb -> default mode 0500>
 # filters/backends and .so's should be executable files
 <transform file path=usr/lib/cups/.+ -> default mode 0555 >
 # /var
