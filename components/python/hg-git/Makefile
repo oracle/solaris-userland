@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		hg-git
-COMPONENT_VERSION=	0.9.0
+COMPONENT_VERSION=	0.10.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8a3596474283558ff838c5d85bace43f9cd0aca863a706d99d052a3e28f08653
+    sha256:42bf55686ac172cc7c1507f5a5d167c6bc2786921d94c2067e864e312f928fe2
 COMPONENT_ARCHIVE_URL= \
     https://foss.heptapod.net/mercurial/$(COMPONENT_NAME)/-/archive/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://hg-git.github.io/
 COMPONENT_BUGDB=	python-mod/hg-git
 COMPONENT_ANITYA_ID=	1314
 
-TPNO=			61973
+TPNO=			71350
 
 # Mirror versions for Mercurial
 PYTHON_VERSIONS = 2.7 3.7
@@ -62,6 +62,8 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
+# system-test target is not enabled because it needs 'hg-python'
+# mediator switch for each Python variant.
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += library/python/dulwich
