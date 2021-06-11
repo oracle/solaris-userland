@@ -19,7 +19,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 #
 
@@ -62,6 +62,8 @@ TPNO_UNICODE=		21647
 BUILD_STYLE=		archive
 TEST_TARGET=		$(NO_TESTS)
 INSTALL_TARGET=		$(BUILD_DIR)/.installed
+
+HASH := \#
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -143,8 +145,8 @@ $(LOCALES:%=$(BUILD_DIR)/%/.compiled): $(BUILD_DIR)/%/.compiled: $(BUILD_DIR)/co
 	$(TOUCH) $@
 
 $(BUILD_DIR)/common/.compiled: $(BUILD_DIR)/common.list $(BUILD_DIR)/UTF-8.charmap
-	cd $(@D); for a in data.*.localedef; do \
-		$(LOCALEDEF) -x ../../UTF-8.x -f ../UTF-8.charmap -i $$a $$(basename $$a .localedef); \
+	cd $(@D); grep "^$(HASH)" < '$<' | while read h fn; do \
+		$(LOCALEDEF) -x ../../UTF-8.x -f ../UTF-8.charmap -i $$fn.localedef $$fn; \
 	done
 	$(TOUCH) $@
 
@@ -181,9 +183,14 @@ $(BUILD_DIR)/common.list: $(COMPONENT_DIR)/prepare_localedef.py $(LOCALES:%=$(BU
 	$(PYTHON.3.7) $(COMPONENT_DIR)/prepare_localedef.py $(BUILD_DIR) $(LOCALES) >$@
 	touch $@
 
-$(BUILD_DIR)/.installed: $(LOCALES:%=$(BUILD_DIR)/%/.compiled) $(BUILD_DIR)/common/.compiled $(BUILD_DIR)/.ldesc $(BUILD_DIR)/.utf-8
-	cat $(BUILD_DIR)/common.list | while read fn lc misc; do \
-		$(INSTALL) -D $(BUILD_DIR)/common/$$fn $(PROTOLOCALE)/common/$$lc/$$fn; \
+#
+# common.list is included in generate/locale.generate
+#
+$(MANIFEST_BASE)-locale.constructed: $(BUILD_DIR)/common.list
+
+$(BUILD_DIR)/.installed: $(BUILD_DIR)/common.list $(BUILD_DIR)/common/.compiled $(LOCALES:%=$(BUILD_DIR)/%/.compiled) $(BUILD_DIR)/.ldesc $(BUILD_DIR)/.utf-8
+	grep '^$(HASH)' < '$<' | while read h fn; do \
+		$(INSTALL) -D $(BUILD_DIR)/common/$$fn $(PROTOLOCALE)/common/$$fn; \
 	done
 	echo -n $(LOCALES) | gxargs -I{} -d' ' $(INSTALL) -D $(BUILD_DIR)/{}/{} $(PROTOLOCALE)/{}/{}
 	echo -n $(LOCALES) | gxargs -I{} -d' ' $(INSTALL) -D $(BUILD_DIR)/{}/locale_description $(PROTOLOCALE)/{}/locale_description

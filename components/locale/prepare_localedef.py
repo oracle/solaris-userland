@@ -1,6 +1,6 @@
 #!/usr/bin/python3.7
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 # this script finds common parts in <loc>.src files
 # the common parts are saved to 'common/<lc_type>/data.<hash>'
@@ -17,7 +17,7 @@ hash_prefix = 6
 
 hdr = """
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 # The following content could be generated from following sources:
 #
@@ -136,7 +136,7 @@ for l, loc in locs.items():
     with open(f"{build_dir}/{l}/posix.localedef", "w") as ofile:
         for lc in lcc:
             h = loc[lc]
-            cname = f"data.{h}"
+            cname = f"{lc[3:].lower()}.{h}"
 
             is_point = data[h]['n']
 
@@ -151,8 +151,15 @@ for l, loc in locs.items():
             is_point = is_point and l != 'en_US.UTF-8'
 
             ofile.write(f"\n\n{lc}\n\n")
-            ofile.write(f'point "common/{lc}/{cname}"' if h not in data or is_point else data[h]['val'])
+
+            if h not in data or is_point:
+                print(f"<transform file path=usr/lib/locale/common/{cname} -> default facet.locale.{l.split('.')[0]} true>")
+                ofile.write(f'point "common/{cname}"')
+            else:
+                ofile.write(data[h]['val'])
+
             ofile.write(f"\n\nEND {lc}\n")
+
 
             if is_point and h not in common_done:
                 with open(f"{build_dir}/common/{cname}.localedef", "w") as ofile2:
@@ -161,5 +168,5 @@ for l, loc in locs.items():
                     ofile2.write(data[h]['val'])
                     ofile2.write(f"\nEND {lc}\n")
 
-                print("{}\t{}\t{}\t{}".format(cname, lc, l, "\t".join([x for x in locs if locs[x][lc] == h and l != x])))
+                print(f"# {cname}")
                 common_done.append(h)

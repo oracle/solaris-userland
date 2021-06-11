@@ -246,7 +246,7 @@ IPS_COMPONENT_VERSION ?=	$(COMPONENT_VERSION)
 # a package is for one architecture only.
 PUBLISH_STAMP ?= $(BUILD_DIR)/.published-$(MACH)
 
-$(MANIFEST_BASE)-%.constructed:
+$(MANIFEST_BASE)-%.constructed: install
 	@env $(call prepare_env_args,\
 	    GENERATE_TRANSFORMS PROTO_DIR PKG_HARDLINKS PKG_AUTO_HARDLINKS \
 	    MANIFEST_BASE COMPONENT_DIR MANIFEST_CLEANUP_TRANSFORM \
@@ -462,7 +462,7 @@ $(MANIFEST_BASE)-%.mangled:	$(MANIFEST_BASE)-%.mogrified $(MANGLED_DIR) $(PROTO_
 
 # generate dependencies
 PKGDEPEND_GENERATE_OPTIONS = -m $(PKG_PROTO_DIRS:%=-d %)
-$(MANIFEST_BASE)-%.depend:	$(MANIFEST_BASE)-%.mangled $(PROTO_DIR)
+$(MANIFEST_BASE)-%.depend:	$(MANIFEST_BASE)-%.mangled $(PROTO_DIR) install
 	$(ENV) $(COMPONENT_PUBLISH_ENV) $(PKGDEPEND) generate \
 	    $(PKGDEPEND_GENERATE_OPTIONS) $< >$@
 
