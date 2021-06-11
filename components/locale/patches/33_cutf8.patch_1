@@ -1,0 +1,142 @@
+The C.UTF-8 is based on CLDR en_US_POSIX locale, but except for LC_CTYPE and
+LC_COLLATION all other categories of the locale will be defined identically to
+C locale (see PSARC/2021/086 for more details).
+
+This patch encodes the required locale values in the CLDR tools that we use to
+generate localedef files so that C.UTF-8 is compatible with the Solaris C
+locale.  If we modified the C locale (unlikely), we need to update this patch.
+
+This is internal patch only, it is not suitable for submit to upstream.
+
+
+--- a/tools/java/org/unicode/cldr/posix/POSIX_LCCollate.java
++++ b/tools/java/org/unicode/cldr/posix/POSIX_LCCollate.java
+@@ -77,6 +77,9 @@
+         else
+             col = (RuleBasedCollator) RuleBasedCollator.getInstance();
+ 
++        if (variant.collation_type.equals("identical"))
++            return;
++
+         // Add all the tailored characters if we are using the default collation set
+         if (codeset.equals("UTF-8") && UsingDefaultCollateSet)
+         {
+@@ -135,7 +138,15 @@
+         out.println("*************");
+         out.println();
+ 
++        if (contractions == null) {
++            out.println("order_start forward;forward;forward;forward");
++            UnicodeSet us = new UnicodeSet("[^[:Noncharacter_Code_Point:][:Cn:][:Cs:]]");
++            for (String o : us) {
++                out.println(POSIXUtilities.POSIXCharFullName(o));
++            }
++        } else {
+         writeDefinitions(out);
++
+         out.println();
+         writeList(out);
+         out.println();
+@@ -151,6 +161,7 @@
+         out.print(" ");
+         out.println("IGNORE;IGNORE;IGNORE;...");
+         out.println();
++        }
+         out.println("order_end");
+         out.println();
+         out.println("END LC_COLLATE");--- tools.orig/tools/java/org/unicode/cldr/posix/POSIX_LCMonetary.java
++++ tools/tools/java/org/unicode/cldr/posix/POSIX_LCMonetary.java
+@@ -44,6 +44,31 @@
+     private static final int NEGATIVE = 1;
+ 
+     public POSIX_LCMonetary(CLDRFile doc, SupplementalDataInfo supp, POSIXVariant variant) {
++        if (variant.currency.equals("posix")) {
++            int_curr_symbol = "";
++            currency_symbol = "";
++            mon_decimal_point = "";
++            mon_thousands_sep = "";
++            mon_grouping = "-1";
++            positive_sign = "";
++            negative_sign = "";
++            int_frac_digits = "-1";
++            frac_digits = "-1";
++            p_cs_precedes = "-1";
++            p_sep_by_space = "-1";
++            n_cs_precedes = "-1";
++            n_sep_by_space = "-1";
++            p_sign_posn = "-1";
++            n_sign_posn = "-1";
++            int_p_cs_precedes = "-1";
++            int_p_sep_by_space = "-1";
++            int_n_cs_precedes = "-1";
++            int_n_sep_by_space = "-1";
++            int_p_sign_posn = "-1";
++            int_n_sign_posn = "-1";
++
++            return;
++        }
+ 
+         String grouping_pattern = doc
+             .getWinningValue("//ldml/numbers/currencyFormats/currencyFormatLength/currencyFormat[@type='standard']/pattern[@type='standard']");
+@@ -298,6 +323,7 @@
+         }
+ 
+         int_n_sep_by_space = n_sep_by_space;
++        int_curr_symbol = POSIXUtilities.POSIXCharName(int_curr_symbol + " ");
+ 
+     } // end POSIX_LCMonetary( doc, supp );
+ 
+@@ -308,8 +334,7 @@
+         out.println("*************");
+         out.println();
+ 
+-        out.print("int_curr_symbol       \"");
+-        out.println(POSIXUtilities.POSIXCharName(int_curr_symbol + " ") + "\"");
++        out.println("int_curr_symbol       \"" + int_curr_symbol + "\"");
+         out.println("currency_symbol       \"" + currency_symbol + "\"");
+         out.println("mon_decimal_point     \"" + mon_decimal_point + "\"");
+         out.println("mon_thousands_sep     \"" + mon_thousands_sep + "\"");
+--- tools.orig/tools/java/org/unicode/cldr/posix/POSIX_LCNumeric.java
++++ tools/tools/java/org/unicode/cldr/posix/POSIX_LCNumeric.java
+@@ -18,7 +18,14 @@
+     String numsys;
+     String grouping;
+ 
+-    public POSIX_LCNumeric(CLDRFile doc) {
++    public POSIX_LCNumeric(CLDRFile doc, POSIXVariant variant) {
++        if (variant.currency.equals("posix")) {
++            decimal_point = ".";
++            thousands_sep = "";
++            grouping = "-1";
++
++            return;
++        }
+ 
+         numsys = doc.getWinningValue("//ldml/numbers/defaultNumberingSystem");
+         decimal_point = POSIXUtilities.POSIXCharName(POSIXUtilities.POSIXSingleByteSeparator(doc.getWinningValue("//ldml/numbers/symbols[@numberSystem='"
+--- tools.orig/tools/java/org/unicode/cldr/posix/POSIX_LCTime.java
++++ tools/tools/java/org/unicode/cldr/posix/POSIX_LCTime.java
+@@ -200,6 +200,12 @@
+             }
+         }
+ 
++        if (variant.currency.equals("posix")) {
++            d_t_fmt = date_fmt = "%a %b %e %H:%M:%S %Y";
++            d_fmt = "%m/%d/%y";
++            t_fmt = "%H:%M:%S";
++            t_fmt_ampm = "%I:%M:%S %p";
++        }
+     }
+ 
+     public void write(PrintWriter out, POSIXVariant variant) {
+--- tools.orig/tools/java/org/unicode/cldr/posix/POSIXLocale.java
++++ tools/tools/java/org/unicode/cldr/posix/POSIXLocale.java
+@@ -157,7 +157,7 @@
+         if (codeset.equals("UTF-8"))
+             repertoire.addAll(new UnicodeSet("[:Co:]"));
+         lc_ctype = new POSIX_LCCtype(doc, repertoire);
+-        lc_numeric = new POSIX_LCNumeric(doc);
++        lc_numeric = new POSIX_LCNumeric(doc, variant);
+         lc_monetary = new POSIX_LCMonetary(doc, supp, variant);
+         lc_time = new POSIX_LCTime(doc, variant);
+         lc_messages = new POSIX_LCMessages(doc, locale_name, variant);

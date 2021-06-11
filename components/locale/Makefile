@@ -155,7 +155,7 @@ $(BUILD_DIR)/common/.compiled: $(BUILD_DIR)/common.list $(BUILD_DIR)/UTF-8.charm
 # The files use UTF-8 regardless of the locale encoding.
 #
 $(BUILD_DIR)/.ldesc: $(COMPONENT_DIR)/locale.list $(BUILD_DIR)/core/.prep $(BUILD_DIR)/.tools.prep
-	$(PERL) -anle 'next if /^#/ || /^\s*$$/; print "$$F[0]:$$F[3]"' <$< | LC_ALL=en_US.UTF-8 gxargs $(GEN_DESCRIPTION) $(BUILD_DIR)
+	$(PERL) -anle 'next if /^#/ or /^C.UTF-8/ || /^\s*$$/; print "$$F[0]:$$F[3]"' <$< | LC_ALL=en_US.UTF-8 gxargs $(GEN_DESCRIPTION) $(BUILD_DIR)
 	echo "ja_JP.PCK:ja_JP@platform=solaris \
 		ja_JP.UTF-8:ja_JP@platform=solaris \
 		ja_JP.eucJP:ja_JP@platform=solaris \
@@ -170,6 +170,7 @@ $(BUILD_DIR)/.ldesc: $(COMPONENT_DIR)/locale.list $(BUILD_DIR)/core/.prep $(BUIL
 		zh_TW.BIG5@zhuyin:zh_Hant_TW@platform=solaris \
 		zh_TW.EUC@zhuyin:zh_Hant_TW@platform=solaris \
 		zh_TW.UTF-8@zhuyin:zh_Hant_TW@platform=solaris" | LC_ALL=en_US.UTF-8 gxargs $(GEN_DESCRIPTION) $(BUILD_DIR)
+	echo "codeset: UTF-8" > $(BUILD_DIR)/C.UTF-8/locale_description
 	$(TOUCH) $@
 
 #

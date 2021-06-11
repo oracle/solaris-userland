@@ -148,7 +148,9 @@ for l, loc in locs.items():
 
             # if en_US.UTF-8 changed, the ON *.sort files need to be changed,
             # see 22014135 for details. To avoid it, en_US.UTF-8 is generated "standalone"
-            is_point = is_point and l != 'en_US.UTF-8'
+            #
+            # make C.UTF-8 locale standalone too.
+            is_point = is_point and l not in ['en_US.UTF-8', 'C.UTF-8']
 
             ofile.write(f"\n\n{lc}\n\n")
 
