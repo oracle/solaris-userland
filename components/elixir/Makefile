@@ -78,7 +78,7 @@ COMPONENT_TEST_ENV += LC_ALL=en_US.UTF-8
 # Remove progress dots, make output, all empty lines, and git lines.
 COMPONENT_TEST_TRANSFORMS += '-e "/\.\./d" -e "/^make/d" -e "/^$$/d" -e "/git_repo/d"'
 # Ignore runtime statistics and random seeds used for the elixir testing.
-COMPONENT_TEST_TRANSFORMS += '-e "/^Finished in/d" -e "/^Randomized with seed/d"'
+COMPONENT_TEST_TRANSFORMS += '-e "/^Finished in/d" -e "/^Randomized with seed/d" -e "/^hint:/d" '
 # Ignore the spurious error message (see issue #8183 on elixir github).
 COMPONENT_TEST_TRANSFORMS += '-e "/resides in sticky dir/d" -e "/^gmake/d"'
 

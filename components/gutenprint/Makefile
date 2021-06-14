@@ -37,6 +37,9 @@ COMPONENT_ANITYA_ID=	1285
 
 TPNO=		 	69504	
 
+# Disable unit tests of gutenprint since they run extremely long (about a day).
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS +=	 --infodir=$(CONFIGURE_INFODIR)

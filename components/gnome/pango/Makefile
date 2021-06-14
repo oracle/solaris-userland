@@ -82,7 +82,7 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/Fail/p" ' \
         '-e "/Pass/p" ' \
         '-e "/Skipped/p" '
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
 
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/fribidi

@@ -48,8 +48,12 @@ CONFIGURE_LIBDIR.64 =   $(GNULIB)/$(MACH64)
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
 
-# Sparcv9 cores on test 316 because of wrong compiler optimization with -O3
-gcc_OPT.sparc.64 = -O2
+# Sparcv9 cores on test 316 because setjmp and longjmp calls clobber the value
+# of i3 register where the base address of executable is preloaded. The offset
+# is used to calculate the address of yydebug variable in .bss section.
+# To fix the problem, we disable the optimization that merges constants in
+# order to force the full calculation of yydebug address...
+gcc_OPT.sparc.64 = -fno-merge-constants
 
 CONFIGURE_OPTIONS  +=		M4="/usr/gnu/bin/m4"
 CONFIGURE_OPTIONS  += 		--disable-silent-rules

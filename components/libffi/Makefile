@@ -50,7 +50,9 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "s|^make.*: Entering directory.*$$|XXX_REMOVE_XXX|g" ' \
 	'-e "/^XXX_REMOVE_XXX$$/d" ' \
 	'-e "/^Test run by .* on /d" ' \
-	'-e "/^Making a new /d" '
+	'-e "/^Making a new /d" ' \
+	'-e "/^Using.*as tool init file/d" '
+
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
 
 CFLAGS += -DFFI_MMAP_EXEC_WRIT=1

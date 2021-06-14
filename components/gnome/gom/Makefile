@@ -56,6 +56,7 @@ CONFIGURE_OPTIONS += -Denable-gtk-doc=true
 CONFIGURE_OPTIONS.32 += -Denable-introspection=false
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_COMPARE_CMD =  $(GDIFF) -uN --ignore-space-change --ignore-blanks-lines
 # get rid of the timestamps from the test results
 COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9]*[0-9].[0-9][0-9]s//" '
 

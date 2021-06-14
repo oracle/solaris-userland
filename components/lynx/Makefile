@@ -41,6 +41,9 @@ TPNO=			21553
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TEST_64)
 
+# Unit tests require a network access to download test webpages.
+$(SKIP_TEST_AT_TOP_LEVEL)
+
 include $(WS_MAKE_RULES)/common.mk
 
 # Needed to successfully find lynx.pot.

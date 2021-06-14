@@ -30,6 +30,7 @@ export PARFAIT_BUILD=no
 BUILD_BITS=32_and_64
 # For now, all things built for C++11 require gcc.
 COMPILER= gcc
+
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libvpx
@@ -50,6 +51,9 @@ ifeq ($(MACH),sparc)
 # The unit tests require dozens of hours to finish on 32-bit sparc...
 TEST_32 = $(SKIP_TESTS)
 endif
+
+# Unit tests require a network access to download videos.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 

@@ -1,0 +1,23 @@
+commit d05c25f9f0ddb1d8911d96f75101ecdb6cd95d4d
+Author: Daiki Ueno <ueno@gnu.org>
+Date:   Thu Feb 25 17:43:23 2021 +0100
+
+    tests: adjust Test_parser error message to Bison 3.6+
+
+    Bison 3.6 refers YYEOF as "end of file" instead of "$end".
+
+    Signed-off-by: Daiki Ueno <ueno@gnu.org>
+
+diff --git a/tests/Test_parser.c b/tests/Test_parser.c
+index 178f111..ff01311 100644
+--- a/tests/Test_parser.c
++++ b/tests/Test_parser.c
+@@ -49,7 +49,7 @@ test_type test_array[] = {
+    "TEST_PARSER2 { } DEFINITIONS IMPLICIT TAGS ::= BEGIN int1 ::= INTEGER END",
+    ASN1_SYNTAX_ERROR,
+    _FILE_
+-   ":6: Error: syntax error, unexpected IDENTIFIER, expecting $end near 'TEST_PARSER'"},
++   ":6: Error: syntax error, unexpected IDENTIFIER, expecting end of file near 'TEST_PARSER'"},
+   {6, "TEST_PARSER { }", ASN1_SUCCESS, ""},
+ 
+   /* Test ASN1_MAX_NAME_SIZE (128) */

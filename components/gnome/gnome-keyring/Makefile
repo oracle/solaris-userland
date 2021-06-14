@@ -61,6 +61,7 @@ CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS).master
 COMPONENT_TEST_ARGS =   -k -i
 COMPONENT_TEST_TRANSFORMS += \
+       '-e "s/glib.*\//GLIB2\//" ' \
        '-n ' \
        '-e "/TOTAL:/p" ' \
        '-e "/SKIP:/p" ' \

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -46,6 +46,10 @@ CONFIGURE_OPTIONS  +=	--infodir=$(CONFIGURE_INFODIR)
 
 COMPONENT_TEST_DIR =		$(@D)/checks
 COMPONENT_TEST_TARGETS =	check-local
+
+# Note that stackovf.test may fail on SPARC platform.
+# The update of libsigsegv library might resolve this failure.
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
 
 COMPONENT_SYSTEM_TEST_DIR =	$(@D)/checks
 COMPONENT_SYSTEM_TEST_TARGETS =	installcheck
