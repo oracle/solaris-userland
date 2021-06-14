@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 BUILD_ARCH= i386
 BUILD_BITS= 64_and_32
@@ -66,6 +66,9 @@ CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
 
 CONFIGURE_OPTIONS += --enable-python
 CONFIGURE_OPTIONS += --disable-python-bindings
+
+# need to use the regenerated one
+CONFIGURE_SCRIPT =  $(@D)/configure
 
 # Needed for "gmake test" to work successfully.
 # If SHELLOPTS is exported (as it is by the userland makefiles),

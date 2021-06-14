@@ -1,0 +1,94 @@
+remove obsolete macros to work better with autoconf 2.70+
+diff -r 4688db8fd74b configure.ac
+--- a/configure.ac	Mon May 31 16:01:51 2021 +0000
++++ b/configure.ac	Mon May 31 16:04:37 2021 +0000
+@@ -103,14 +103,8 @@
+ #
+ # Checks for header files.
+ #
+-AC_HEADER_STDC
+ AC_CHECK_HEADERS([strings.h libgen.h unistd.h direct.h sys/stat.h])
+ 
+-# REQUIRE standard C headers
+-if test "$ac_cv_header_stdc" != yes; then
+-	AC_MSG_ERROR([Standard (ANSI/ISO C89) header files are required.])
+-fi
+-
+ #
+ # Checks for typedefs, structures, and compiler characteristics.
+ #
+diff -r 563ec3bad297 configure.ac
+--- a/configure.ac	Mon May 31 16:21:27 2021 +0000
++++ b/configure.ac	Mon May 31 16:22:33 2021 +0000
+@@ -9,7 +9,7 @@
+         [bug-yasm@tortall.net])
+ #AC_CONFIG_SRCDIR([src/main.c])
+ AC_CONFIG_AUX_DIR(config)
+-AC_CONFIG_HEADER([config.h])
++AC_CONFIG_HEADERS([config.h])
+ 
+ AM_INIT_AUTOMAKE([1.9.6 foreign subdir-objects])
+ AM_MAINTAINER_MODE
+@@ -18,7 +18,7 @@
+ # autoconf command-line options
+ #
+ AC_ARG_ENABLE(debug,
+-AC_HELP_STRING([--enable-debug],
++AS_HELP_STRING([--enable-debug],
+ 	       [Turn on debugging and compile time warnings]),
+ [case "${enableval}" in
+   yes) debugging="yes" ;;
+@@ -27,7 +27,7 @@
+ esac])
+ 
+ AC_ARG_ENABLE(warnerror,
+-AC_HELP_STRING([--enable-warnerror],[Treat GCC warnings as errors]),
++AS_HELP_STRING([--enable-warnerror],[Treat GCC warnings as errors]),
+ [case "${enableval}" in
+   yes) warnerror="yes" ;;
+   no)  warnerror="no" ;;
+@@ -35,7 +35,7 @@
+ esac])
+ 
+ AC_ARG_ENABLE(profiling,
+-AC_HELP_STRING([--enable-profiling],[Enable profiling (requires GCC)]),
++AS_HELP_STRING([--enable-profiling],[Enable profiling (requires GCC)]),
+ [case "${enableval}" in
+   yes) profiling="yes" ;;
+   no)  profiling="no" ;;
+@@ -43,7 +43,7 @@
+ esac])
+ 
+ AC_ARG_ENABLE(gcov,
+-AC_HELP_STRING([--enable-gcov],[Enable gcov code coverage (requires GCC)]),
++AS_HELP_STRING([--enable-gcov],[Enable gcov code coverage (requires GCC)]),
+ [case "${enableval}" in
+   yes) gcov="yes" ;;
+   no)  gcov="no" ;;
+@@ -51,7 +51,7 @@
+ esac])
+ 
+ AC_ARG_ENABLE(python,
+-AC_HELP_STRING([--enable-python],[Enable Python-requiring portions of build]),
++AS_HELP_STRING([--enable-python],[Enable Python-requiring portions of build]),
+ [case "${enableval}" in
+   yes) enable_python="yes" ;;
+   no)  enable_python="no" ;;
+@@ -59,7 +59,7 @@
+ esac], enable_python="auto")
+ 
+ AC_ARG_ENABLE(python-bindings,
+-AC_HELP_STRING([--enable-python-bindings],[Build Python bindings]),
++AS_HELP_STRING([--enable-python-bindings],[Build Python bindings]),
+ [case "${enableval}" in
+   yes) enable_python_bindings="yes" ;;
+   no)  enable_python_bindings="no" ;;
+@@ -70,7 +70,7 @@
+ # Checks for programs.
+ #
+ AC_PROG_CPP
+-AC_PROG_CC_STDC
++AC_PROG_CC
+ AC_PROG_INSTALL
+ AC_PROG_LN_S
+ 
