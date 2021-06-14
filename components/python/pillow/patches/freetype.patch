@@ -5,15 +5,15 @@ to add it just to check something we already know.
 Our current FreeType version is high enough to pass all Pillow tests, hence it
 is safe to remove all of these checks.
 
---- Pillow-8.1.0/Tests/test_imagefontctl.py
-+++ Pillow-8.1.0/Tests/test_imagefontctl.py
+--- Pillow-8.2.0/Tests/test_imagefontctl.py
++++ Pillow-8.2.0/Tests/test_imagefontctl.py
 @@ -1,5 +1,4 @@
  import pytest
 -from packaging.version import parse as parse_version
  
  from PIL import Image, ImageDraw, ImageFont, features
  
-@@ -330,14 +329,6 @@ combine_tests = (
+@@ -315,14 +314,6 @@ combine_tests = (
      "name, text, anchor, dir, epsilon", combine_tests, ids=[r[0] for r in combine_tests]
  )
  def test_combine(name, text, dir, anchor, epsilon):
@@ -28,8 +28,8 @@ is safe to remove all of these checks.
      path = f"Tests/images/test_combine_{name}.png"
      f = ImageFont.truetype("Tests/fonts/NotoSans-Regular.ttf", 48)
  
---- Pillow-8.1.0/Tests/test_imagefont.py
-+++ Pillow-8.1.0/Tests/test_imagefont.py
+--- Pillow-8.2.0/Tests/test_imagefont.py
++++ Pillow-8.2.0/Tests/test_imagefont.py
 @@ -6,7 +6,6 @@ import sys
  from io import BytesIO
  
@@ -38,7 +38,7 @@ is safe to remove all of these checks.
  
  from PIL import Image, ImageDraw, ImageFont, features
  
-@@ -621,14 +620,6 @@ class TestImageFont:
+@@ -605,14 +604,6 @@ class TestImageFont:
      def test_variation_get(self):
          font = self.get_font()
  
@@ -53,7 +53,7 @@ is safe to remove all of these checks.
          with pytest.raises(OSError):
              font.get_variation_names()
          with pytest.raises(OSError):
-@@ -693,12 +684,6 @@ class TestImageFont:
+@@ -675,12 +666,6 @@ class TestImageFont:
      def test_variation_set_by_name(self):
          font = self.get_font()
  
@@ -66,7 +66,7 @@ is safe to remove all of these checks.
          with pytest.raises(OSError):
              font.set_variation_by_name("Bold")
  
-@@ -717,12 +702,6 @@ class TestImageFont:
+@@ -699,12 +684,6 @@ class TestImageFont:
      def test_variation_set_by_axes(self):
          font = self.get_font()
  
@@ -79,7 +79,7 @@ is safe to remove all of these checks.
          with pytest.raises(OSError):
              font.set_variation_by_axes([500, 50])
  
-@@ -754,11 +733,7 @@ class TestImageFont:
+@@ -736,11 +715,7 @@ class TestImageFont:
          name, text = "quick", "Quick"
          path = f"Tests/images/test_anchor_{name}_{anchor}.png"
  
@@ -92,12 +92,10 @@ is safe to remove all of these checks.
              width, height = (129, 44)
          else:
              width, height = (128, 44)
-@@ -968,15 +943,3 @@ def test_render_mono_size():
- 
-     draw.text((10, 10), "r" * 10, "black", ttf)
+@@ -987,18 +962,6 @@ def test_render_mono_size():
      assert_image_equal_tofile(im, "Tests/images/text_mono.gif")
--
--
+ 
+ 
 -def test_freetype_deprecation(monkeypatch):
 -    # Arrange: mock features.version_module to return fake FreeType version
 -    def fake_version_module(module):
@@ -108,8 +106,13 @@ is safe to remove all of these checks.
 -    # Act / Assert
 -    with pytest.warns(DeprecationWarning):
 -        ImageFont.truetype(FONT_PATH, FONT_SIZE)
---- Pillow-8.1.0/Tests/helper.py
-+++ Pillow-8.1.0/Tests/helper.py
+-
+-
+ @pytest.mark.parametrize(
+     "test_file",
+     [
+--- Pillow-8.2.0/Tests/helper.py
++++ Pillow-8.2.0/Tests/helper.py
 @@ -11,7 +11,6 @@ import tempfile
  from io import BytesIO
  
