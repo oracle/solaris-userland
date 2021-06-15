@@ -24,11 +24,6 @@
 #
 BUILD_BITS= 64
 
-# Parallel build jobs are supported only if GNU make is used.
-COMPONENT_MAKE_JOBS=1
-
-# mod_perl does not seem to be working with perl 5.32
-PERL_VERSION = 5.22
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mod_perl
@@ -55,7 +50,7 @@ AP_PERL5LIB=$(APACHE_USR_PREFIX)/lib/perl
 AP_PERL5BIN=$(APACHE_USR_PREFIX)/bin
 PERLMAN=$(APACHE_USR_PREFIX)/man
 
-COMPONENT_PRE_BUILD_ACTION= ( \
+COMPONENT_PRE_BUILD_ACTION += ( \
 	cd $(@D); $(PERL) Makefile.PL \
 	INSTALLDIRS=perl \
 	INSTALLSITELIB=$(AP_PERL5LIB) \
@@ -67,16 +62,18 @@ COMPONENT_PRE_BUILD_ACTION= ( \
 	INSTALLMAN1DIR=$(PERLMAN)/man1 \
 	INSTALLMAN3DIR=$(PERLMAN)/man3 \
 	INSTALLSCRIPT=$(AP_PERL5BIN) \
-	MP_APXS=$(APACHE_USR_PREFIX)/bin/apxs)
+	MP_APXS=$(APACHE_USR_PREFIX)/bin/apxs; \
+	);
+
+# I haven't find a way to make MakeMaker write 'gmake' as a make program into
+# the generated Makefile files. This is hack, but it makes the thing to compile.
+COMPONENT_PRE_BUILD_ACTION += ( \
+	cd $(@D); \
+        find . -name Makefile | xargs perl -pi -e 's/^MAKE = make/MAKE = gmake/' \
+	);
 
 COMPONENT_TEST_TARGETS=	test
 COMPONENT_SYSTEM_TEST_TARGETS=	system_test
-
-ifeq   ($(strip $(PARFAIT_BUILD)),yes)
-PATH=$(PARFAIT_TOOLS):$(SPRO_VROOT)/bin:$(USRBINDIR)
-else
-PATH=$(SPRO_VROOT)/bin:$(USRBINDIR):$(GNUBIN)
-endif
 
 COMPONENT_PRE_TEST_ACTION= ( \
 	$(MKDIR) $(@D)/Solaris ; \
@@ -94,28 +91,17 @@ COMPONENT_PRE_TEST_ACTION= ( \
 		-i $(@D)/Solaris/httpd.conf )
 
 COMPONENT_TEST_TRANSFORMS += \
-	'-e "s/\[pid [0-9][0-9]*:tid [0-9][0-9]*\] //" ' \
-	'-e "s/\[pid [0-9][0-9]*\] //" ' \
-	'-e "/\[.* 20[0-9][0-9]\] \[/s/\[.* 20[0-9][0-9]\]/[date]/" ' \
-	'-e "/^server localhost/s/ (.*)//" ' \
-	'-e "/base server + [0-9][0-9] vhosts ready to run tests/d" ' \
-	'-e "/^Files=/s/, Tests=[0-9][0-9]*,  *[0-9][0-9]* wallclock secs (.*)//" ' \
-	'-e "/^waiting .* to start: ok/s/ (waited [0-9][0-9]* secs)//" ' \
-	'-e "/^waiting .* to start: \./s/\.\.*//" ' \
-	'-e "/^\.\.*$$/d" ' \
-	'-e "/^\[warning\] port 8529 still in use\.\.\.$$/d" ' \
-	'-e "/^\.*done$$/d" ' \
-	'-e "s/ -I.*blib\/arch -I.*blib\/lib//" ' \
-	'-e "s/ -I\/usr\/apache2\/2\.[0-9]\/lib\/perl//" ' \
-	'-e "s/ -libmodperl .*mod_perl\.so//" ' \
-	'-e "s/ make system_test APACHEINSTALLSITELIB=.*/ make test/" ' \
-	'-e "s/using Apache\/2.[0-9].[0-9][0-9]* (/using Apache\/2.x.x (/" '
+	-n \
+	'-e "/^Result:/p"' \
+	'-e "/Fail/p"' \
+	'-e "/^cd /p"'
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += library/apr-1
 REQUIRED_PACKAGES += library/apr-util-1
-REQUIRED_PACKAGES += library/perl-5/CGI-522
+REQUIRED_PACKAGES += library/perl-5/CGI-532
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += web/server/apache-24
