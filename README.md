@@ -20,12 +20,8 @@ you need to clone it.  Since you are reading this, you may already have.
 ## Getting the Bits
 The canonical repository internal to Oracle is stored in Mercurial, and
 is mirrored to an external Git repository on GitHub.  In order to build
-or develop in the gate, you will need to clone it.  You can do so with one
-of the following commands.  Internal:
-
-    $ hg clone ssh://ulhg@userland.us.oracle.com//gates/gate /scratch/clone
-
-External:
+or develop in the gate, you will need to clone it.  For the external Git
+repository you can do so with the following command:
 
     $ git clone https://github.com/oracle/solaris-userland /scratch/clone
 
@@ -76,4 +72,4 @@ That is generally wrapper around
 
   
 # Copyright
-Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2010, 2021, Oracle and/or its affiliates.
