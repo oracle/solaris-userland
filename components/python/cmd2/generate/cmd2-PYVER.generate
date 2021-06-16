@@ -20,10 +20,10 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2021, Oracle and/or its affiliates.
 #
 
-$(OLD_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/PIL/OleFileIO.py
-$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/PIL/__main__.py
-$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/PIL/_version.py
-$(OLD_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/PIL/version.py
+<include ../generate/common.transform>
+
+# suppress pkgdepend on this file
+<transform file path=.*/cmd2/cmd2.py$ -> set pkg.depend.bypass-generate .*>

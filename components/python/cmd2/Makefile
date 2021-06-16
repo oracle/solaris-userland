@@ -37,56 +37,11 @@ COMPONENT_ANITYA_ID=	13187
 
 TPNO=			52381
 
-
-COMPONENT_NAME_OLD=		$(COMPONENT_NAME)
-COMPONENT_VERSION_OLD=	0.6.8
-COMPONENT_SRC_OLD=		$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
-COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
-COMPONENT_ARCHIVE_HASH_OLD=	\
-	sha256:ac780d8c31fc107bf6b4edcbcea711de4ff776d59d89bb167f8819d2d83764a8
-COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
-
-TPNO_OLD=		28756
-
-
-# This component is delivered in two different versions because
-# the newer one is no longer Python 2.7 compatible
+PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-
-# Convenience variables
-TARGET_27 = $(BUILD_DIR)/$(MACH)-2.7/
-TARGET_37 = $(BUILD_DIR)/$(MACH)-3.7/
-TARGET_39 = $(BUILD_DIR)/$(MACH)-3.9/
-SOURCE_DIR_OLD = $(COMPONENT_DIR)/$(COMPONENT_SRC_OLD)
-
-# Targets updated for older version build
-$(TARGET_27).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
-
-$(TARGET_27).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
-
-$(MANIFEST_BASE)-cmd2-27.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
-
-# Manifest convenience variables.
-$(MANIFEST_BASE)-cmd2-27.mogrified: NEW_ONLY = \#
-$(MANIFEST_BASE)-cmd2-37.mogrified: OLD_ONLY = \#
-$(MANIFEST_BASE)-cmd2-39.mogrified: OLD_ONLY = \#
-
-PKG_MACROS += OLD_ONLY="$(OLD_ONLY)"
-PKG_MACROS += NEW_ONLY="$(NEW_ONLY)"
-
-# Meta package must have versions of older runtimes fixed
-FIX_MANIFEST_VERSIONS:
-	echo "<transform depend fmri=(.*)cmd2-27@(.*) \
-		-> edit fmri $(COMPONENT_VERSION) $(COMPONENT_VERSION_OLD)>" | \
-	$(PKGMOGRIFY) /dev/fd/0 $(MANIFEST_BASE)-cmd2.mogrified \
-		> $(MANIFEST_BASE)-cmd2.mogrified-fixed ;
-	$(MV) $(MANIFEST_BASE)-cmd2.mogrified-fixed \
-		$(MANIFEST_BASE)-cmd2.mogrified
-
-$(MANIFEST_BASE)-cmd2.mangled: FIX_MANIFEST_VERSIONS
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
@@ -99,7 +54,7 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-test:		$(TARGET_37).tested $(TARGET_39).tested
+test:		$(TEST_NO_ARCH)
 
 system-test:    $(NO_TESTS)
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
@@ -38,6 +38,8 @@ COMPONENT_BUGDB=	python-mod/netifaces
 COMPONENT_ANITYA_ID=	5644
 
 TPNO=			51157
+
+PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

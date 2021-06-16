@@ -41,68 +41,15 @@ COMPONENT_ANITYA_ID=	7974
 
 TPNO=			71743
 
-
-COMPONENT_NAME_OLD=		$(COMPONENT_NAME)
-COMPONENT_VERSION_OLD=	5.1.0
-COMPONENT_SRC_OLD=		$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
-COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
-COMPONENT_ARCHIVE_HASH_OLD=	\
-	sha256:9b9f161664978d8b1d5c5f103935cc00aea88daf5230fbc29593d83e8e7104ca
-COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
-
-TPNO_OLD=		42560
-
-
-# This component is delivered in two different versions.
-# The newer one does no longer support Python 2.7; the older one does
-# but we don't want to fall behind until those are EOLed.
+PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-# Convenience variables
-TARGET_27.32 = $(BUILD_DIR)/$(MACH32)-2.7/
-TARGET_27.64 = $(BUILD_DIR)/$(MACH64)-2.7/
-SOURCE_DIR_OLD = $(COMPONENT_DIR)/$(COMPONENT_SRC_OLD)
-
-# Targets updated for older version build
-$(TARGET_27.32).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
-$(TARGET_27.64).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
-
-$(TARGET_27.32).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
-$(TARGET_27.64).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
-
-$(TARGET_27.32).tested: COMPONENT_TEST_DIR = $(COMPONENT_SRC_OLD)
-$(TARGET_27.64).tested: COMPONENT_TEST_DIR = $(COMPONENT_SRC_OLD)
-$(TARGET_27.32).system-tested: COMPONENT_TEST_DIR = $(COMPONENT_SRC_OLD)
-$(TARGET_27.64).system-tested: COMPONENT_TEST_DIR = $(COMPONENT_SRC_OLD)
-
-$(MANIFEST_BASE)-pillow-27.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
-
-# Manifest convenience variables.
-$(MANIFEST_BASE)-pillow-27.mogrified: NEW_ONLY = \#
-$(MANIFEST_BASE)-pillow-37.mogrified: OLD_ONLY = \#
-$(MANIFEST_BASE)-pillow-39.mogrified: OLD_ONLY = \#
-
-PKG_MACROS += OLD_ONLY="$(OLD_ONLY)"
-PKG_MACROS += NEW_ONLY="$(NEW_ONLY)"
-
-# Meta package must have versions of older runtimes fixed
-FIX_MANIFEST_VERSIONS:
-	echo "<transform depend fmri=(.*)pillow-27@(.*) \
-		-> edit fmri $(COMPONENT_VERSION) $(COMPONENT_VERSION_OLD)>" | \
-	$(PKGMOGRIFY) /dev/fd/0 $(MANIFEST_BASE)-pillow.mogrified \
-		> $(MANIFEST_BASE)-pillow.mogrified-fixed ;
-	$(MV) $(MANIFEST_BASE)-pillow.mogrified-fixed \
-		$(MANIFEST_BASE)-pillow.mogrified
-
-$(MANIFEST_BASE)-pillow.mangled: FIX_MANIFEST_VERSIONS
-
 COMPONENT_TEST_DIR =	$(COMPONENT_SRC)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
-
 
 # common targets
 build:		$(BUILD_32_and_64)

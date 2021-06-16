@@ -38,6 +38,8 @@ COMPONENT_ANITYA_ID=	12487
 
 TPNO=			62195
 
+PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk

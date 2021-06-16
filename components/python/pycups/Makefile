@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
@@ -39,7 +39,7 @@ COMPONENT_ANITYA_ID=	7975
 
 TPNO=			49647
 
-PYTHON_VERSIONS=	$(PYTHON2_VERSIONS) 3.7 3.9
+PYTHON_VERSIONS=	$(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

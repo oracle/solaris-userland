@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 # gobject-introspection bindings are only built correctly for gtk when building
@@ -55,6 +55,7 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv -I m4);
 
 CONFIGURE_OPTIONS += --disable-static
+CONFIGURE_OPTIONS += --disable-numpy
 CONFIGURE_OPTIONS += --without-glade
 CONFIGURE_OPTIONS += PYTHON=$(PYTHON)
 
@@ -74,7 +75,4 @@ REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk2
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
-REQUIRED_PACKAGES += library/python/numpy-27
 REQUIRED_PACKAGES += runtime/python-27
-
-

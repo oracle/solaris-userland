@@ -38,6 +38,8 @@ COMPONENT_ANITYA_ID=	6719
 
 TPNO=			57870
 
+PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
@@ -58,6 +60,3 @@ test:		$(TEST_NO_ARCH)
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += library/python/six
-
-# Testing related components
-REQUIRED_PACKAGES += library/python/monotonic
