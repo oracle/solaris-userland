@@ -47,9 +47,9 @@ COMPONENT_POST_TEST_ACTION += \
 	( $(MV) $(COMPONENT_TEST_OUTPUT) $(COMPONENT_TEST_OUTPUT)-orig ; \
 	$(CP) $(BUILD_DIR_64)/gdb/testsuite/gdb.sum $(COMPONENT_TEST_OUTPUT) )
 
-# Results output is different on Intel vs. SPARC.
-# Note that comparisons against master results 
-# are not clean since results will still vary.
+# Test results vary from run to run and machine to machine,
+# so master test results will not match (+- 50 passes).
+# Results output is also different on Intel vs. SPARC.
 COMPONENT_TEST_MASTER = \
         $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
 
@@ -67,11 +67,6 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/^UNTESTED/p" ' \
         '-e "/^XFAIL/p" ' \
         '-e "/^\# of /p" '
-
-# Test results vary from run to run and machine to machine,
-# so master test results will not match, and are not
-# appropriate for a full Userland test run
-$(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
