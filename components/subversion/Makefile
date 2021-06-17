@@ -152,7 +152,7 @@ LD_OPTIONS += -R$(CONFIGURE_LIBDIR.$(BITS)) -R$(APR-CONFIG-RPATH.$(BITS)) \
 
 CONFIGURE_ENV += PYTHON="$(PYTHON.$(BITS))"
 CONFIGURE_ENV += PYMODS="$(PYMODS)"
-CONFIGURE_ENV += PYTHONPATH="$(PYTHON_VENDOR_PACKAGES.$(BITS))"
+CONFIGURE_ENV += PYTHONPATH="$(PYTHON_VENDOR_PACKAGES)"
 CONFIGURE_ENV += JAVA_ROOT="$(JAVA_ROOT)"
 CONFIGURE_ENV += PERL="$(PERL)"
 CONFIGURE_ENV += ac_cv_path_PERL="$(PERL)"
@@ -189,7 +189,7 @@ COMPONENT_BUILD_ENV += CFLAGS="$(CFLAGS)"
 COMPONENT_BUILD_ENV += CXXFLAGS="$(CXXFLAGS)"
 COMPONENT_BUILD_ENV += PYTHON="$(PYTHON.$(BITS))"
 COMPONENT_BUILD_ENV += PYMODS="$(PYMODS)"
-COMPONENT_BUILD_ENV += PYTHONPATH="$(PYTHON_VENDOR_PACKAGES.$(BITS))"
+COMPONENT_BUILD_ENV += PYTHONPATH="$(PYTHON_VENDOR_PACKAGES)"
 COMPONENT_BUILD_ENV += JAVA_ROOT="$(JAVA_ROOT)"
 COMPONENT_BUILD_ENV += PERL="$(PERL)"
 COMPONENT_BUILD_ENV += ac_cv_path_PERL="$(PERL)"
@@ -204,22 +204,12 @@ COMPONENT_TEST_ENV += LD_LIBRARY_PATH_64="$(LD_TEST_PATH_64)"
 COMPONENT_TEST_ENV += LC_ALL=C
 COMPONENT_TEST_ENV += LANG=C
 
+# Do not transform .so files to include standard Python 3 ABI version tag.
+PY3_CPYTHON_NAMING = \#
+
 PKG_MACROS += PERL_ARCH_22="$(PERL_ARCH_22)"
 PKG_MACROS += PYVER=$(PYTHON_VERSION)
 PKG_MACROS += PYV=$(shell echo $(PYTHON_VERSION) | tr -d .)
-
-# Swig overwrites the 32-bit directory with 64-bit objects.
-# So we work around that.
-COMPONENT_POST_INSTALL_ACTION += \
-    ( cd $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION) ; \
-	$(RM) -rf vendor-packages-$(BITS) ; \
-	$(MV) vendor-packages vendor-packages-$(BITS) ; \
-	$(MKDIR) -p vendor-packages ; \
-	$(MKDIR) -p vendor-packages/64 ; \
-	if test -d vendor-packages-64 ; then \
-	    $(GNUCP) -rpd vendor-packages-64/libsvn vendor-packages/64/ ; \
-	    $(GNUCP) -rpd vendor-packages-64/svn vendor-packages/64/ ; \
-	fi ; ) 
 
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += developer/build/scons
