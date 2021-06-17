@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 
@@ -36,16 +36,16 @@ gcc_OPT.i386.64 = -O2
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgcrypt
-COMPONENT_VERSION=	1.8.5
+COMPONENT_VERSION=	1.8.8
 COMPONENT_PROJECT_URL=  https://gnupg.org/software/libgcrypt/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-    sha256:3b4a2a94cb637eff5bdebbcaf46f4d95c4f25206f459809339cdada0eb577ac3
+    sha256:895de2bb981dd127f0821d1ce13fadf7d760f9fa7737648b15f2c1fe13cc5af5
 COMPONENT_ARCHIVE_URL=  https://gnupg.org/ftp/gcrypt/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libgcrypt
 COMPONENT_ANITYA_ID=	1623
 
-TPNO= 			53981
+TPNO= 			71859
 
 COMPONENT_BUILD_TARGETS = all info
 
