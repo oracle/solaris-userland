@@ -1,4 +1,4 @@
-.TH SIGSEGV 3 "28 May 2021" "Solaris 11.4"
+.TH SIGSEGV 3 "17 June 2021" "Solaris 11.4"
 .SH NAME
 sigsegv  \-  Handling page faults in user mode
 .sp
@@ -9,7 +9,7 @@ sigsegv  \-  Handling page faults in user mode
 .SH DESCRIPTION
 .sp
 .LP
-Sigsegv is a set of functions for handling page faults in user mode. Multithreading is used to improve the performance of a program.A page fault occurs when a program tries to access to a region of memory that is currently not available. Catching and handling a page fault is a useful technique for implementing:
+Sigsegv is a set of functions for handling page faults in user mode. A page fault occurs when a program tries to access to a region of memory that is currently not available. Catching and handling a page fault is a useful technique for implementing:
 .RS +4
 .TP
 .ie t \(bu
@@ -44,12 +44,11 @@ distributed shared memory
 .TP
 .ie t \(bu
 .el o
- ...
+\[char46]..
 .RE
 .sp
 .LP  
-The sigsegv functions are summarized in this section in the following
-groups:
+The sigsegv functions are summarized in this section in the following groups:
 .sp
 .RS +4
 .TP
@@ -91,6 +90,12 @@ HAVE_STACK_OVERFLOW_RECOVERY
 .el o
 LIBSIGSEGV_VERSION
 .RE
+.RS +4
+.TP
+.ie t \(bu
+.el o
+SIGSEGV_FAULT_ADDRESS_ALIGNMENT
+.RE
 .sp
 .LP
 The types listed below are defined as described in <sigsegv.h>:
@@ -104,19 +109,19 @@ sigsegv_handler_t
 .TP
 .ie t \(bu
 .el o
-sigsegv_handler_t
+sigsegv_area_handler_t
+.RE
+.RS +4
+.TP
+.ie t \(bu
+.el o
+stackoverflow_handler_t
 .RE
 .RS +4
 .TP
 .ie t \(bu
 .el o
 stackoverflow_context_t
-.RE
-.RS +4
-.TP
-.ie t \(bu
-.el o
-sigsegv_area_handler_t
 .RE
 .sp
 .SH GLOBAL SIGSEGV HANDLERS
@@ -131,7 +136,7 @@ void \fBsigsegv_init\fR (sigsegv_dispatcher* dispatcher);
 .sp
 void* \fBsigsegv_register\fR (sigsegv_dispatcher* dispatcher,
 .RS +24
-void* address, unsigned long len, 
+void* address, size_t len, 
 sigsegv_area_handler_t handler,
 void* handler_arg);
 .RE
@@ -151,17 +156,19 @@ void* fault_address);
 int \fBstackoverflow_install_handler\fR (stackoverflow_handler_t
 .RS +27
 handler, void* extra_stack,
-unsigned long extra_stack_size);
+size_t extra_stack_size);
 .RE
 .sp
 void \fBstackoverflow_deinstall_handler\fR (void);
 .sp
 .SH COPYRIGHT
-Copyright 1998-1999, 2002-2011  Bruno Haible <bruno@clisp.org>
+Copyright 1998-1999, 2002-2012, 2016-2021  Bruno Haible <bruno@clisp.org>
 .br
 Copyright 2002-2005, 2009  Paolo Bonzini <bonzini@gnu.org>
 .br
 Copyright 2008-2010  Eric Blake <ebb9@byu.net>
+.br
+Copyright 2002-2021  Free Software Foundation, Inc.
 
 
 GNU libsigsegv library and manual pages are licensed under GNU GPL version 2
@@ -171,4 +178,4 @@ extent permitted by law.
 .SH SEE ALSO
 .sp
 .LP
-\fBattributes\fR(7), \fBsigsegv\fR(3), \fBstandards\fR(7), \fBsigsegv_install_handler, \fBsigsegv_deinstall_handler\fR(3), \fBsigsegv_init\fR(3), \fBsigsegv_register\fR(3), \fBsigsegv_unregister\fR(3), \fBsigsegv_dispatch\fR(3), \fBstackoverflow_install_handler\fR(3), \fBstackoverflow_deinstall_handler\fR(3)
+\fBattributes\fR(7), \fBsigsegv\fR(3), \fBstandards\fR(7), \fBsigsegv_install_handler\fR(3), \fBsigsegv_deinstall_handler\fR(3), \fBsigsegv_init\fR(3), \fBsigsegv_register\fR(3), \fBsigsegv_unregister\fR(3), \fBsigsegv_dispatch\fR(3), \fBstackoverflow_install_handler\fR(3), \fBstackoverflow_deinstall_handler\fR(3)

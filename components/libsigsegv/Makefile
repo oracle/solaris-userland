@@ -23,22 +23,29 @@
 # Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
+COMPILER= gcc
+
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libsigsegv
-COMPONENT_VERSION=	2.10
+COMPONENT_VERSION=	2.13
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8460a4a3dd4954c3d96d7a4f5dd5bc4d9b76f5754196aa245287553b26d2199a    
+    sha256:be78ee4176b05f7c75ff03298d84874db90f4b6c9d5503f0da1226b3a3c48119
 COMPONENT_BUGDB=	library/libsigsegv
 COMPONENT_ANITYA_ID=	1722
 
-TPNO=			29089
+TPNO=			71884
 
-# Unit tests are not reproducible and generate core dumps.
-$(SKIP_TEST_AT_TOP_LEVEL)
+GENERATE_PROTO_DIRS += man3
 
 include $(WS_MAKE_RULES)/gnu-component.mk
+
+# Disable Address Space Layout Randomization
+# since it breaks the detection of stack overflows.
+ASLR_MODE= $(ASLR_DISABLE)
 
 CONFIGURE_OPTIONS  +=		--disable-static
 CONFIGURE_OPTIONS  +=		--enable-shared
 
+# Avoid libtool errors during the unit tests.
+unexport SHELLOPTS

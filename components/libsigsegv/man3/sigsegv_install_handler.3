@@ -1,4 +1,4 @@
-.TH sigsegv_install_handler 3 "28 May 2021" "Solaris 11.4"
+.TH sigsegv_install_handler 3 "17 June 2021" "Solaris 11.4"
 .SH NAME
 sigsegv_install_handler, sigsegv_deinstall_handler - Install and deinstall a global SIGSEGV handler
 .sp
@@ -35,7 +35,7 @@ typedef int (*\fBsigsegv_handler_t\fR) (\fIvoid* fault_address\fR,
 \fIint serious\fR);
 .RE
 .sp
-\fISigsegv_handler_t\fR is the type of a global SIGSEGV handler.The fault address is passed as argument. The access type (read access or write access) is not passed; your handler has to know itself how to distinguish these two cases. The second argument is 0, meaning it could also be a stack overflow, or 1, meaning the handler should seriously try to fix the fault. The return value should be nonzero if the handler has done its job and no other handler should be called, or 0 if the handler declines responsibility for the given address.
+\fISigsegv_handler_t\fR is the type of a global SIGSEGV handler. The fault address is passed as an argument. The access type (read access or write access) is not passed; your handler has to know itself how to distinguish these two cases. If the second argument is 0, it means that it could also be a stack overflow, or 1, meaning the handler should seriously try to fix the fault. The return value should be nonzero if the handler has done its job and no other handler should be called, or 0 if the handler declines responsibility for the given address.
 .sp
 .LP
 The handler is run at a moment when nothing about the global state of the program is known. Therefore it cannot use facilities that manipulate global variables or locks. In particular, it cannot use malloc(); use mmap() instead. It cannot use fopen(); use open() instead. Etc. All global variables that are accessed by the handler should be marked 'volatile'.
@@ -46,11 +46,13 @@ The handler is run at a moment when nothing about the global state of the progra
 If success, sigsegv_install_handler returns 0, or -1 if the system doesn't support catching SIGSEGV.
 .sp
 .SH COPYRIGHT
-Copyright 1998-1999, 2002-2011  Bruno Haible <bruno@clisp.org>
+Copyright 1998-1999, 2002-2012, 2016-2021  Bruno Haible <bruno@clisp.org>
 .br
 Copyright 2002-2005, 2009  Paolo Bonzini <bonzini@gnu.org>
 .br
 Copyright 2008-2010  Eric Blake <ebb9@byu.net>
+.br
+Copyright 2002-2021  Free Software Foundation, Inc.
 
 
 GNU libsigsegv library and manual pages are licensed under GNU GPL version 2

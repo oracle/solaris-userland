@@ -1,6 +1,6 @@
-.TH stackoverflow_install_handler 3 "28 May 2021" "Solaris 11.4"
+.TH stackoverflow_install_handler 3 "17 June 2021" "Solaris 11.4"
 .SH NAME
-stackoverflow_install_handler, stackoverflow_deinstall_handler \- Installs and deinstall a stack overflow handler
+stackoverflow_install_handler, stackoverflow_deinstall_handler \- Installs and deinstalls a stack overflow handler
 .sp
 .SH SYNOPSIS
 .sp
@@ -11,7 +11,7 @@ int \fBstackoverflow_install_handler\fR (\fIstackoverflow_handler_t\fR
 \fIhandler\fR, \fIvoid* extra_stack\fR,
 .RE
 .RS +26
-\fIunsigned long extra_stack_size\fR);
+\fIsize_t extra_stack_size\fR);
 .RE
 .sp
 void \fBstackoverflow_deinstall_handler\fR (\fIvoid\fR);
@@ -22,8 +22,7 @@ void \fBstackoverflow_deinstall_handler\fR (\fIvoid\fR);
 In some applications, the \fBstack\fR \fBoverflow\fR \fBhandler\fR performs some cleanup or notifies the user and then immediately terminates the application.  In other applications, the \fBstack\fR \fBoverflow\fR \fBhandler\fR longjmps back to a central point in the application.  This library supports both uses.  In the second case, the handler must ensure to restore the normal signal mask (because many signals are blocked while the handler is executed), and must also call \fBsigsegv_leave_handler()\fR to transfer control; then only it can longjmp away.
 .sp
 .LP
-The handler is run at a moment when nothing about the global state of the program is known. Therefore it cannot use facilities that manipulate global variables or locks. In particular, it cannot use malloc(); use mmap() Instead. It cannot use fopen(); use open() instead. Etc. All global variables that are accessed by the handler should be mark
-'volatile'.
+The handler is run at a moment when nothing about the global state of the program is known. Therefore it cannot use facilities that manipulate global variables or locks. In particular, it cannot use malloc(); use mmap() instead. It cannot use fopen(); use open() instead. Etc. All global variables that are accessed by the handler should be marked 'volatile'.
 .sp
 .SH OPERANDS
 .sp
@@ -33,25 +32,27 @@ typedef void (*\fBstackoverflow_handler_t\fR) (\fIint emergency\fR,
 \fIstackoverflow_context_t scp\fR);
 .RE
 .sp
-\fIStackoverflow_handler_t\fR is the type of a stack overflow handler. Such a handler should perform a longjmp call in order to reduce the amount of stack needed. It must not return.The \fIemergency\fR argument is 0 when the stack could be repared, or 1 if the application should better save its state and exit now.
+\fIStackoverflow_handler_t\fR is the type of a stack overflow handler. Such a handler should perform a longjmp call in order to reduce the amount of stack needed. It must not return. The \fIemergency\fR argument is 0 when the stack could be repaired, or 1 if the application should better save its state and exit now.
 .sp
 .LP
-The \fIextra_stack\fR argument is a pointer to a preallocated area used as a stack for executing the handler. It is typically allocated by use of `alloca' during `main'. Its size should be sufficiently large.
+The \fIextra_stack\fR argument is a pointer to a preallocated area used as a stack for executing the handler. It typically comes from a static variable or from heap-allocated memoty; placing it on the main stack may fail on some operating systems.
 .sp
 .LP
-The \fIextra_stack_size\fR is the size of the extra_stack argument.
+The \fIextra_stack_size\fR is the size of the extra_stack argument. On most platforms, 16 kB are sufficient.
 .sp
 .SH EXIT STATUS
 .sp
 .LP
-If success, \fBstackoverflow_install_handler()\fR returns 0 on success, or -1 if the system doesn't support catching stack overflow.
+On success, \fBstackoverflow_install_handler()\fR returns 0. If the system doesn't support catching stack overflow it returns -1.
 .sp
 .SH COPYRIGHT
-Copyright 1998-1999, 2002-2011  Bruno Haible <bruno@clisp.org>
+Copyright 1998-1999, 2002-2012, 2016-2021  Bruno Haible <bruno@clisp.org>
 .br
 Copyright 2002-2005, 2009  Paolo Bonzini <bonzini@gnu.org>
 .br
 Copyright 2008-2010  Eric Blake <ebb9@byu.net>
+.br
+Copyright 2002-2021  Free Software Foundation, Inc.
 
 
 GNU libsigsegv library and manual pages are licensed under GNU GPL version 2

@@ -1,4 +1,4 @@
-.TH sigsegv_register 3 "28 May 2021" "Solaris 11.4"
+.TH sigsegv_register 3 "17 June 2021" "Solaris 11.4"
 .SH NAME
 sigsegv_init, sigsegv_register, sigsegv_unregister, sigsegv_dispatch \- LOCAL SIGSEGV HANDLERS
 .SH SYNOPSIS
@@ -8,7 +8,7 @@ void \fBsigsegv_init\fR (\fIsigsegv_dispatcher* dispatcher\fR);
 .sp
 void* \fBsigsegv_register\fR (\fIsigsegv_dispatcher* dispatcher\fR,
 .RS +24
-\fIvoid* address\fR, \fIunsigned long len\fR,
+\fIvoid* address\fR, \fIsize_t len\fR,
 \fIsigsegv_area_handler_t handler\fR,
 \fIvoid* handler_arg\fR);
 .RE
@@ -38,7 +38,7 @@ The set of functions permit to define different \fBSIGSEGV\fR policies on differ
 \fBSigsegv_unregister\fR removes a local SIGSEGV handler.
 .sp
 .LP
-\fBSigsegv_dispatch\fR call the local SIGSEGV handler responsible for the given fault address. Return the handler's return value. 0 means that no handler has been found, or that a handler was found but declined responsibility.
+\fBSigsegv_dispatch\fR calls the local SIGSEGV handler responsible for the given fault address. Return the handler's return value. 0 means that no handler has been found, or that a handler was found but declined responsibility.
 .sp
 
 .SH OPERANDS
@@ -48,13 +48,13 @@ typedef struct \fBsigsegv_dispatcher\fR {
 .RS +5
 void* tree;
 .RE
-}sigsegv_dispatcher;
+} sigsegv_dispatcher;
 .sp
 .LP
 \fISigsegv_dispatcher\fR represents a table of memory areas (address range intervals), with an local SIGSEGV handler for each.
 .sp
 .LP
-The \fIaddress\fR represents the address of the memory area, and the \fIlen\fR represents the length of the memory area.
+The \fIaddress\fR represents the address of the memory area, and the \fIlen\fR represents the length of the memory area. Both must be a multiple of SIGSEGV_FAULT_ADDRESS_ALIGNMENT.
 .sp
 .LP
 typedef int (*\fBsigsegv_area_handler_t\fR) (\fIvoid* fault_address,\fR
@@ -62,7 +62,7 @@ typedef int (*\fBsigsegv_area_handler_t\fR) (\fIvoid* fault_address,\fR
 \fIvoid* user_arg\fR);
 .RE
 .sp
-\fIsigsegv_area_handler_t\fR is the type of a local SIGSEGV handler. The fault address is passed as argument. The second argument is fixed arbitrary user data. The return value should be nonzero if the handler has done its job and no other handler should be called, or 0 if the handler declines responsibility for the given address.
+\fIsigsegv_area_handler_t\fR is the type of a local SIGSEGV handler. The fault address is passed as the first argument. The second argument are arbitrary user data. The return value should be nonzero if the handler has done its job and no other handler should be called, or 0 if the handler declines responsibility for the given address.
 .sp
 .LP
 The \fIhandler_arg\fR is the second argument of the \fBsigsegv_area_handler_t\fR.
@@ -73,11 +73,13 @@ The \fIhandler_arg\fR is the second argument of the \fBsigsegv_area_handler_t\fR
 Sigsegv_dispatcher returns the handler's return value. 0 means that no handler has been found, or that a handler was found but declined responsibility.
 .sp
 .SH COPYRIGHT
-Copyright 1998-1999, 2002-2011  Bruno Haible <bruno@clisp.org>
+Copyright 1998-1999, 2002-2012, 2016-2021  Bruno Haible <bruno@clisp.org>
 .br
 Copyright 2002-2005, 2009  Paolo Bonzini <bonzini@gnu.org>
 .br
 Copyright 2008-2010  Eric Blake <ebb9@byu.net>
+.br
+Copyright 2002-2021  Free Software Foundation, Inc.
 
 
 GNU libsigsegv library and manual pages are licensed under GNU GPL version 2
