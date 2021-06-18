@@ -1,0 +1,33 @@
+Packages jaraco.itertools and func_timeout are not available on Solaris.
+
+--- zipp-3.4.1/test_zipp.py
++++ zipp-3.4.1/test_zipp.py
+@@ -8,9 +8,6 @@ import shutil
+ import string
+ import functools
+ 
+-import jaraco.itertools
+-import func_timeout
+-
+ import zipp
+ 
+ consume = tuple
+@@ -283,18 +280,6 @@ class TestPath(unittest.TestCase):
+         zf.mode = 'r'
+         return zf
+ 
+-    def test_joinpath_constant_time(self):
+-        """
+-        Ensure joinpath on items in zipfile is linear time.
+-        """
+-        root = zipp.Path(self.huge_zipfile())
+-        entries = jaraco.itertools.Counter(root.iterdir())
+-        for entry in entries:
+-            entry.joinpath('suffix')
+-        # Check the file iterated all items
+-        assert entries.count == self.HUGE_ZIPFILE_NUM_ENTRIES
+-
+-    @func_timeout.func_set_timeout(3)
+     def test_implied_dirs_performance(self):
+         data = ['/'.join(string.ascii_lowercase + str(n)) for n in range(10000)]
+         zipp.CompleteDirs._implied_dirs(data)
