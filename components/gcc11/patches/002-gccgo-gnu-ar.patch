@@ -1,0 +1,44 @@
+Fix following error message:
+
+$ /usr/gcc/9/bin/go build main.go
+# command-line-arguments
+ar: bad option: -D
+usage:
+    ar -d [-SvV] archive [file...]
+    ar -m [-SvV] [-{a|b|i} posname] archive [file...]
+    ar -p [-sSvV] archive [file ...]
+    ar -q [-cSvV] archive [file...]
+    ar -r [-cSuvV] [-{a|b|i} posname] archive [file...]
+    ar -t [-sSvV] archive [file...]
+    ar -x [-CsSTvV] archive [file...]
+    ar [-sSvV] archive
+
+The error is harmless, no functionality issue, GCCGO runs Solaris "ar" which
+doesn't know -D option, after failure, GCCGO runs it again without -D.
+
+diff --git a/libgo/go/cmd/go/internal/work/gccgo.go b/libgo/go/cmd/go/internal/work/gccgo.go
+index 36b3f4b..9315dbf 100644
+--- a/libgo/go/cmd/go/internal/work/gccgo.go
++++ b/libgo/go/cmd/go/internal/work/gccgo.go
+@@ -48,7 +48,7 @@ func (gccgoToolchain) linker() string {
+ func (gccgoToolchain) ar() string {
+ 	ar := cfg.Getenv("AR")
+ 	if ar == "" {
+-		ar = "ar"
++		ar = "/usr/gnu/bin/ar"
+ 	}
+ 	return ar
+ }
+diff --git a/libgo/go/go/internal/gccgoimporter/importer_test.go b/libgo/go/go/internal/gccgoimporter/importer_test.go
+index 35240c8..8e077d5 100644
+--- a/libgo/go/go/internal/gccgoimporter/importer_test.go
++++ b/libgo/go/go/internal/gccgoimporter/importer_test.go
+@@ -190,7 +190,7 @@ func TestObjImporter(t *testing.T) {
+ 
+ 		runImporterTest(t, imp, initmap, &test)
+ 
+-		cmd = exec.Command("ar", "cr", afile, ofile)
++		cmd = exec.Command("/usr/gnu/bin/ar", "cr", afile, ofile)
+ 		out, err = cmd.CombinedOutput()
+ 		if err != nil {
+ 			t.Logf("%s", out)

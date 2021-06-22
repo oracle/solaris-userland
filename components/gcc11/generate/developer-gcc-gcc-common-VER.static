@@ -1,0 +1,57 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+#
+
+link path=$(GCC_BASEDIR)/share/info/dir \
+    target=../../../../../var/info/usr_gcc_$(GCC_VERSION)_share_info_dir
+link path=usr/bin/gcov target=../gcc/$(GCC_MAJOR_VERSION)/bin/gcov \
+    mediator=gcc mediator-version=$(GCC_MAJOR_VERSION)
+link path=usr/bin/gcpp target=../gcc/$(GCC_MAJOR_VERSION)/bin/cpp mediator=gcc \
+    mediator-version=$(GCC_MAJOR_VERSION)
+link path=usr/share/man/man1/gccgo.1 \
+    target=../../../gcc/$(GCC_MAJOR_VERSION)/share/man/man1/gccgo.1 \
+    mediator=gcc mediator-version=$(GCC_MAJOR_VERSION)
+link path=usr/share/man/man1/gcov.1 \
+    target=../../../gcc/$(GCC_MAJOR_VERSION)/share/man/man1/gcov.1 \
+    mediator=gcc mediator-version=$(GCC_MAJOR_VERSION)
+link path=usr/share/man/man1/gcpp.1 \
+    target=../../../gcc/$(GCC_MAJOR_VERSION)/share/man/man1/cpp.1 \
+    mediator=gcc mediator-version=$(GCC_MAJOR_VERSION)
+link path=usr/share/man/man1/go-gcc.1 \
+    target=../../../gcc/$(GCC_MAJOR_VERSION)/share/man/man1/go.1 mediator=gcc \
+    mediator-version=$(GCC_MAJOR_VERSION)
+link path=usr/share/man/man1/gofmt.1 \
+    target=../../../gcc/$(GCC_MAJOR_VERSION)/share/man/man1/gofmt.1 \
+    mediator=gcc mediator-version=$(GCC_MAJOR_VERSION)
+link path=usr/share/man/man7/fsf-funding.7 \
+    target=../../../gcc/$(GCC_MAJOR_VERSION)/share/man/man7/fsf-funding.7 \
+    mediator=gcc mediator-version=$(GCC_MAJOR_VERSION)
+link path=usr/share/man/man7/gfdl.7 \
+    target=../../../gcc/$(GCC_MAJOR_VERSION)/share/man/man7/gfdl.7 \
+    mediator=gcc mediator-version=$(GCC_MAJOR_VERSION)
+link path=usr/share/man/man7/gpl.7 \
+    target=../../../gcc/$(GCC_MAJOR_VERSION)/share/man/man7/gpl.7 \
+    mediator=gcc mediator-version=$(GCC_MAJOR_VERSION)
+file $(GCC_BASEDIR)/share/info/dir \
+    path=var/info/usr_gcc_$(GCC_VERSION)_share_info_dir mode=0644 preserve=true
