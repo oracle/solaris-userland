@@ -1,6 +1,6 @@
 '\" te
-.\" Copyright (c) 2008, 2017, Oracle and/or its affiliates. All rights reserved.
-.TH kerberos 5 "2008 年 10 月 1 日" "Solaris 11.4" "标准、环境和宏"
+.\" Copyright (c) 2008, 2021, Oracle and/or its affiliates.
+.TH kerberos 7 "2021 年 6 月 21 日" "Solaris 11.4" "标准、环境和宏"
 .SH 名称
 kerberos \- Solaris Kerberos 实现概述
 .SH 描述
@@ -12,7 +12,7 @@ Solaris Kerberos 实现（后文有时简称为 "Kerberos"）会验证网络环�
 Kerberos 通过授予客户机\fI票证\fR发挥作用，票证可唯一地标识客户机并具有有限生命周期。将针对票证所属网络服务自动验证拥有票证的客户机；例如，具有有效 Kerberos 票证的用户可登录运行 Kerberos 的其他计算机，而无需标识自身。由于每个客户机均具有唯一的票证，因此可保证其身份。
 .sp
 .LP
-要获得票证，客户机必须首先使用 \fBkinit\fR(1) 命令或 \fBPAM\fR 模块初始化 Kerberos 会话。（请参见 \fBpam_krb5\fR(5)）。\fBkinit\fR 提示输入口令，然后与密钥分发中心 (\fIKey Distribution Center\fR, \fBKDC\fR) 通信。\fBKDC\fR 返回票证授予票证 (\fITicket-Granting Ticket\fR, \fBTGT\fR) 并提示输入确认口令。如果客户机确认口令，则它可以使用票证授予票证来获得特定网络服务的票证。因为以透明方式授予票证，所以用户无需担心票证管理。可使用 \fBklist\fR(1) 命令查看当前票证。
+要获得票证，客户机必须首先使用 \fBkinit\fR(1) 命令或 \fBPAM\fR 模块初始化 Kerberos 会话。（请参见 \fBpam_krb5\fR(7)）。\fBkinit\fR 提示输入口令，然后与密钥分发中心 (\fIKey Distribution Center\fR, \fBKDC\fR) 通信。\fBKDC\fR 返回票证授予票证 (\fITicket-Granting Ticket\fR, \fBTGT\fR) 并提示输入确认口令。如果客户机确认口令，则它可以使用票证授予票证来获得特定网络服务的票证。因为以透明方式授予票证，所以用户无需担心票证管理。可使用 \fBklist\fR(1) 命令查看当前票证。
 .sp
 .LP
 票证的有效性取决于安装时设置的系统\fI策略\fR。例如，票证具有缺省的有效生命周期。策略可以进一步指示特权票证（如属于 root 的票证）具有很短的生命周期。策略还可以允许覆盖某些缺省值；例如，客户机可以请求生命周期大于或小于缺省值的票证。
@@ -78,10 +78,10 @@ primary/instance@REALM
 .nf
 	joe
 	joe/admin
-	joe@ENG.ACME.COM
-	joe/admin@ENG.ACME.COM
-	rlogin/bigmachine.eng.acme.com@ENG.ACME.COM
-	host/bigmachine.eng.acme.com@ENG.ACME.COM
+	joe@ENG.EXAMPLE.COM
+	joe/admin@ENG.EXAMPLE.COM
+	rlogin/bigmachine.eng.example.com@ENG.EXAMPLE.COM
+	host/bigmachine.eng.example.com@ENG.EXAMPLE.COM
 .fi
 .in -2
 .sp
@@ -93,7 +93,7 @@ primary/instance@REALM
 .SH 另请参见
 .sp
 .LP
-\fBkdestroy\fR(1)、\fBkinit\fR(1)、\fBklist\fR(1)、\fBkpasswd\fR(1)、\fBkrb5.conf\fR(4)、\fBkrb5envvar\fR(5)
+\fBkdestroy\fR(1)、 \fBkinit\fR(1)、 \fBklist\fR(1)、 \fBkpasswd\fR(1)、 \fBkrb5.conf\fR(5)、 \fBkrb5envvar\fR(7)
 .sp
 .LP
 《\fI《系统管理指南：安全服务》\fR》

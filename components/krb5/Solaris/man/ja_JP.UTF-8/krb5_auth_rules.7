@@ -1,6 +1,6 @@
 '\" te
-.\" Copyright (c) 2006, 2017, Oracle and/or its affiliates. All rights reserved.
-.TH krb5_auth_rules 5 "2012 年 1 月 5 日" "Solaris 11.4" "標準、環境、マクロ"
+.\" Copyright (c) 2006, 2021, Oracle and/or its affiliates.
+.TH krb5_auth_rules 7 "2021 年 6 月 21 日" "Solaris 11.4" "標準、環境、マクロ"
 .SH 名前
 krb5_auth_rules \- Kerberos V5 承認の概要
 .SH 機能説明
@@ -9,10 +9,10 @@ krb5_auth_rules \- Kerberos V5 承認の概要
 Kerberos 化されたバージョンの \fBftp\fR、\fBrcp\fR、\fBrlogin\fR、\fBrsh\fR、\fBssh\fR、\fBtelnet\fR、または \fBSSH\fR クライアントを使用してサーバーに接続すると、元のユーザーの識別情報は Kerberos V5 認証システムに対する認証を受ける必要があります。その後、\fB~/.k5login\fR ファイルと \fBgsscred\fR テーブルに適切なエントリが存在する場合や、デフォルトの GSS/Kerberos 認証ルールが正常に Kerberos 主体名を UNIX ログイン名にマップしている場合、アカウントアクセスの認証が可能になります。
 .sp
 .LP
-セキュリティーの問題を回避するには、クライアントがアクセスを試みているサーバー上のリモートユーザーが \fB~/.k5login\fR ファイルを所有している必要があります。ファイルには、\fIprincipal/instance\fR@\fIrealm\fR 形式の Kerberos 主体名で構成される非公開の承認リストが含まれている必要があります。Kerberos 主体名の \fI/instance\fR 変数はオプションです。たとえば、\fBjdb@ENG.ACME.COM\fR や \fBjdb/happy.eng.acme.com@ENG.ACME.COM\fR などのさまざまな主体名は同等ではありませんが、正当な Kerberos 主体です。\fB~/.k5login\fR ファイルがリモートユーザーアカウントのログインディレクトリに配置され、元のユーザーがファイルに指定された主体のいずれかに対する認証を受けることができる場合、クライアントにアクセス権が付与されます。Kerberos 主体名の詳細は、\fBkadm5.acl\fR(4) を参照してください。
+セキュリティーの問題を回避するには、クライアントがアクセスを試みているサーバー上のリモートユーザーが \fB~/.k5login\fR ファイルを所有している必要があります。ファイルには、\fIprincipal/instance\fR@\fIrealm\fR 形式の Kerberos 主体名で構成される非公開の承認リストが含まれている必要があります。Kerberos 主体名の \fI/instance\fR 変数はオプションです。たとえば、\fBjdb@ENG.ACME.COM\fR や \fBjdb/happy.eng.acme.com@ENG.ACME.COM\fR などのさまざまな主体名は同等ではありませんが、正当な Kerberos 主体です。\fB~/.k5login\fR ファイルがリモートユーザーアカウントのログインディレクトリに配置され、元のユーザーがファイルに指定された主体のいずれかに対する認証を受けることができる場合、クライアントにアクセス権が付与されます。Kerberos 主体名の詳細は、\fBkadm5.acl\fR(5) を参照してください。
 .sp
 .LP
-\fB~/.k5login\fR ファイルがリモートユーザーのログインアカウントに見つからなかった場合は、元のユーザーに関連付けられた Kerberos V5 主体名が \fBgsscred\fR テーブルと比較してチェックされます。\fBgsscred\fR テーブルが存在し、そのテーブルで主体名が一致している場合、テーブルにリストされている Unix ユーザー ID がクライアントがアクセスを試みているユーザーアカウントに対応していれば、アクセス権が付与されます。Unix ユーザー ID が一致しない場合、アクセスは拒否されます。\fBgsscred\fR(1M) を参照してください。
+\fB~/.k5login\fR ファイルがリモートユーザーのログインアカウントに見つからなかった場合は、元のユーザーに関連付けられた Kerberos V5 主体名が \fBgsscred\fR テーブルと比較してチェックされます。\fBgsscred\fR テーブルが存在し、そのテーブルで主体名が一致している場合、テーブルにリストされている Unix ユーザー ID がクライアントがアクセスを試みているユーザーアカウントに対応していれば、アクセス権が付与されます。Unix ユーザー ID が一致しない場合、アクセスは拒否されます。\fBgsscred\fR(8) を参照してください。
 .sp
 .LP
 たとえば、\fBgsscred\fR テーブルにリストされている元のユーザーの主体名が \fBjdb@ENG.ACME.COM\fR、\fBuid\fR が \fB23154\fR の場合、\fB23154\fR がユーザーアカウントデータベースにリストされている \fBjdb-user\fR の \fBuid\fR でもあれば、\fBjdb-user\fR アカウントへのアクセス権が付与されます。\fBpasswd\fR(5) を参照してください。
@@ -30,7 +30,7 @@ Kerberos 化されたバージョンの \fBftp\fR、\fBrcp\fR、\fBrlogin\fR、\
 .TP
 .ie t \(bu
 .el o
-\fBkrb5.conf\fR(4)  \fIauth_to_local_realm\fR パラメータを使用してレルムを作成しない場合を除いて、クライアントとサーバーのレルム部分は同じである。
+\fBkrb5.conf\fR(5)  \fIauth_to_local_realm\fR パラメータを使用してレルムを作成しない場合を除いて、クライアントとサーバーのレルム部分は同じである。
 
 .RE
 .RS +4
@@ -45,7 +45,7 @@ Unix アカウント名がサーバーに存在する。
 たとえば、元のユーザーの主体名が \fBjdb@ENG.ACME.COM\fR で、サーバーのレルムが \fBSALES.ACME.COM\fR の場合、\fBjdb\fR がサーバー上の有効なアカウント名であっても、クライアントのアクセスは拒否されます。これは、レルム \fBSALES.ACME.COM\fR と \fBENG.ACME.COM\fR が異なるためです。
 .sp
 .LP
-\fBkrb5.conf\fR(4)  \fIauth_to_local_realm\fR パラメータによっても承認は影響を受けます。デフォルト以外のレルムは、認証済みの \fBname-to-local name\fR マッピングのデフォルトレルムと同等とみなすことができます。
+\fBkrb5.conf\fR(5)  \fIauth_to_local_realm\fR パラメータによっても承認は影響を受けます。デフォルト以外のレルムは、認証済みの \fBname-to-local name\fR マッピングのデフォルトレルムと同等とみなすことができます。
 .SH ファイル
 .sp
 .ne 2
@@ -87,4 +87,4 @@ _
 .SH 関連項目
 .sp
 .LP
-\fBftp\fR(1), \fBrcp\fR(1), \fBrsh\fR(1), \fBtelnet\fR(1), \fBgsscred\fR(1M), \fBkadm5.acl\fR(4), \fBkrb5.conf\fR(4), \fBpasswd\fR(5), \fBattributes\fR(7), \fBgss_auth_rules\fR(5)
+\fBftp\fR(1), \fBrcp\fR(1), \fBrsh\fR(1), \fBtelnet\fR(1), \fBkadm5.acl\fR(5), \fBkrb5.conf\fR(5), \fBpasswd\fR(5), \fBattributes\fR(7), \fBgss_auth_rules\fR(7), \fBgsscred\fR(8)
