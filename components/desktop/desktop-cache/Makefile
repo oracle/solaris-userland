@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= NO_ARCH
@@ -35,13 +35,6 @@ COMPONENT_ANITYA_ID=	N/A
 
 # nothing to download or build; just package
 BUILD_STYLE= pkg
-
-SMF_MANIFESTS += $(COMPONENT_DIR)/files/desktop-mime-cache.xml
-SMF_MANIFESTS += $(COMPONENT_DIR)/files/gconf-cache.xml
-SMF_MANIFESTS += $(COMPONENT_DIR)/files/icon-cache.xml
-SMF_MANIFESTS += $(COMPONENT_DIR)/files/input-method-cache.xml
-SMF_MANIFESTS += $(COMPONENT_DIR)/files/mime-types-cache.xml
-SMF_MANIFESTS += $(COMPONENT_DIR)/files/pixbuf-loaders-installer.xml
 
 include $(WS_MAKE_RULES)/common.mk
 

@@ -42,7 +42,6 @@ TPNO=			64560
 
 BUILD_STYLE= justmake
 TEST_TARGET= $(NO_TESTS)
-SMF_MANIFESTS= $(COMPONENT_DIR)/files/dnsmasq.xml
 
 include $(WS_MAKE_RULES)/common.mk
 

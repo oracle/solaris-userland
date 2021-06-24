@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 #
@@ -117,23 +117,6 @@ ifneq ($(strip $(LINT_LIBRARIES)),)
 include $(WS_MAKE_RULES)/lint-libraries.mk
 endif
 
-# Make sure SMF manifests are valid, otherwise SMF won't import them when
-# packages are installed.  Since the following if statement is evaluated
-# when common.mk is included, SMF_MANIFESTS must be set *before* the line
-# in the component makefile to include common.mk or another file that
-# includes common.mk, such as gnu-component.mk or gnome-component.mk.
-ifneq ($(strip $(SMF_MANIFESTS)),)
-VALIDATE_SMF_TARGET ?= $(BUILD_DIR)/.validated-smf-manifests-$(MACH)
-$(VALIDATE_SMF_TARGET): $(BUILD_DIR) $(SMF_MANIFESTS)
-	@for f in $(SMF_MANIFESTS) ; do \
-		(set -ex ; /usr/sbin/svccfg validate "$$f") || exit 1; \
-	done
-	$(TOUCH) $@
-
-validate-smf:	$(VALIDATE_SMF_TARGET)
-.PHONY:		validate-smf
-endif
-
 # Always needed; every component builds packages.
 include $(WS_MAKE_RULES)/ips.mk
 
@@ -165,7 +148,7 @@ BUILD_TARGET=
 INSTALL_TARGET=
 TEST_TARGET=
 SYSTEM_TEST_TARGET=
-build install:		$(VALIDATE_SMF_TARGET)
+build install:
 test system-test:	$(NO_TESTS)
 endif
 
@@ -186,7 +169,6 @@ build:          $(BUILD_TARGET)
 endif
 
 INSTALL_TARGET ?= $(INSTALL_$(MK_BITS))
-INSTALL_TARGET += $(VALIDATE_SMF_TARGET)
 INSTALL_TARGET += $(MANGLED)
 ifneq ($(strip $(INSTALL_TARGET)),)
 install:        $(INSTALL_TARGET)

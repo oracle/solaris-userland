@@ -50,9 +50,6 @@ COMPONENT_ANITYA_ID=	5584
 
 TPNO=			68275
 
-SMF_MANIFESTS += $(COMPONENT_DIR)/Solaris/isc-dhcp-relay.xml
-SMF_MANIFESTS += $(COMPONENT_DIR)/Solaris/isc-dhcp-server.xml
-
 INSTALL_TARGET=
 include $(WS_MAKE_RULES)/common.mk
 
@@ -84,7 +81,7 @@ CONFIGURE_OPTIONS  +=	--srcdir=$(BUILD_DIR_$(BITS))
 
 COMPONENT_TEST_DIR =	$(@D)
 
-install:	build $(INSTALL_32_and_64) $(PROTO_DIR)/dhcpd.leases $(VALIDATE_SMF_TARGET)
+install:	build $(INSTALL_32_and_64) $(PROTO_DIR)/dhcpd.leases
 
 $(PROTO_DIR)/dhcpd.leases:	$(INSTALL_32_and_64)
 	$(TOUCH) $@

@@ -39,7 +39,6 @@ COMPONENT_ARCHIVE_URL=	https://www.stunnel.org/downloads/$(COMPONENT_ARCHIVE)
 
 TPNO=                   70511
 
-SMF_MANIFESTS= $(COMPONENT_DIR)/files/stunnel.xml
 include $(WS_MAKE_RULES)/common.mk
 
 PATCH_LEVEL = 0

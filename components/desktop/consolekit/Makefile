@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64_and_32
@@ -38,8 +38,6 @@ COMPONENT_ANITYA_ID=	340
 TPNO=			7882
 
 TEST_TARGET = $(NO_TESTS)
-
-SMF_MANIFESTS= $(COMPONENT_DIR)/files/consolekit.xml
 
 include $(WS_MAKE_RULES)/common.mk
 

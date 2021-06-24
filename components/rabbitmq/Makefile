@@ -41,7 +41,6 @@ COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 TPNO=			57486
 
 BUILD_STYLE= justmake
-SMF_MANIFESTS= $(COMPONENT_DIR)/files/rabbitmq.xml
 
 # This is just a workaround to a problem we occasionally see. The build stops
 # and never finishes. The process erl_child_setup seems to be stuck. Rabbitmq

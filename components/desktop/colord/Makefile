@@ -45,8 +45,6 @@ TPNO=			34440
 
 TEST_TARGET = $(NO_TESTS)
 
-SMF_MANIFESTS= $(COMPONENT_DIR)/files/colord.xml
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Requires fpclassify (c99).

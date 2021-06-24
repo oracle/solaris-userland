@@ -74,9 +74,6 @@ SYSTEM_TEST_TARGET=	$(SYSTEM_TEST_64)
 # Disable tests since it requires itself in CBE.
 $(SKIP_TEST_AT_TOP_LEVEL)
 
-# For validate-smf target
-SMF_MANIFESTS = $(COMPONENT_DIR)/Solaris/server.xml
-
 include $(WS_MAKE_RULES)/common.mk
 
 # Component Configuration.

@@ -49,10 +49,6 @@ COMPONENT_BUGDB=	utility/kerberos
 
 TPNO=		63357
 
-SMF_MANIFESTS += $(COMPONENT_DIR)/Solaris/kadmin.xml
-SMF_MANIFESTS += $(COMPONENT_DIR)/Solaris/krb5_prop.xml
-SMF_MANIFESTS += $(COMPONENT_DIR)/Solaris/krb5kdc.xml
-
 # The unit tests are not python 3 friendly.
 $(SKIP_TEST_AT_TOP_LEVEL)
 

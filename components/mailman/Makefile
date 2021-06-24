@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -38,8 +38,6 @@ COMPONENT_ARCHIVE_HASH=	sha256:6d7e81753c78120f479a275ea623194cac188a3daf301eb76
 COMPONENT_ANITYA_ID=	1875
 
 TPNO=			59127
-
-SMF_MANIFESTS= $(COMPONENT_DIR)/files/mailman.xml
 
 # There are no tests that can be executed automatically,
 # the unit tests require some setup as described in file TESTING.

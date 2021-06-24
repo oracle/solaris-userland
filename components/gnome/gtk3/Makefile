@@ -44,8 +44,6 @@ TPNO=			62928
 
 ETCDIR.64="$(ETCDIR)/$(MACH64)"
 
-SMF_MANIFESTS= $(COMPONENT_DIR)/files/gtk3-input-method-cache.xml
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Uses isinf, etc. only available in c99 and newer.  The GNU variant is chosen

@@ -45,8 +45,6 @@ BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
-SMF_MANIFESTS= $(COMPONENT_DIR)/files/accountsservice.xml
-
 include $(WS_MAKE_RULES)/common.mk
 
 # Assumes GNU xgettext in PATH

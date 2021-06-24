@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -93,8 +93,6 @@ TPNO_4=            26723
 
 BUILD_STYLE= install.rb
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
-SMF_MANIFESTS= $(COMPONENT_DIR)/files/mcollective.xml
-BUILD_TARGET += $(VALIDATE_SMF_TARGET)
 TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/common.mk

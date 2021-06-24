@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -37,7 +37,6 @@ COMPONENT_ANITYA_ID=	13263
 
 TPNO=			63013
 
-SMF_MANIFESTS= $(COMPONENT_DIR)/Solaris/snort.xml
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 

@@ -57,8 +57,6 @@ TEST_TARGET = $(NO_TESTS)
 # with cmake, but the inner unix/xserver code uses configure.
 BUILD_STYLE= cmake
 
-SMF_MANIFESTS= $(COMPONENT_DIR)/files/xvnc-inetd.xml
-
 include $(WS_MAKE_RULES)/configure.mk
 include $(WS_MAKE_RULES)/x11-component.mk
 

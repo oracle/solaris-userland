@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= NO_ARCH
@@ -35,8 +35,6 @@ COMPONENT_ANITYA_ID=	N/A
 
 # nothing to download ; just package
 BUILD_STYLE= pkg
-
-SMF_MANIFESTS= $(COMPONENT_DIR)/files/ogl-select.xml
 
 TEST_TARGET= $(NO_TESTS)
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -45,9 +45,6 @@ TPNO=			23958
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
 ADISTACK_MODE =	$(ADISTACK_ENABLE)
-
-SMF_MANIFESTS += $(COMPONENT_DIR)/files/sendmail-client.xml
-SMF_MANIFESTS += $(COMPONENT_DIR)/files/smtp-sendmail.xml
 
 BUILD_STYLE= justmake
 INSTALL_TARGET=
@@ -209,7 +206,7 @@ COMPONENT_TEST_TRANSFORMS += \
 INSTALL_64=
 
 # common targets
-install:	$(INSTALL_32_and_64) $(VALIDATE_SMF_TARGET)
+install:	$(INSTALL_32_and_64)
 
 REQUIRED_PACKAGES += database/berkeleydb-5
 REQUIRED_PACKAGES += library/libmilter

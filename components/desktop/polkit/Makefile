@@ -49,9 +49,6 @@ TPNO=			68738
 # Tests don't work on Solaris
 TEST_TARGET = $(SKIP_TEST)
 
-# Make sure we haven't broken the SMF manifest formatting
-SMF_MANIFESTS= $(COMPONENT_DIR)/files/polkit.xml
-
 include $(WS_MAKE_RULES)/common.mk
 
 # Regenerate configure after applying patches that modify configure.ac

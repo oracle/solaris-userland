@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= NO_ARCH
@@ -49,7 +49,6 @@ TEST_TARGET= $(NO_TESTS)
 BUILD_STYLE= setup.py
 
 ASLR_MODE= $(ASLR_NOT_APPLICABLE)
-SMF_MANIFESTS= $(COMPONENT_DIR)/files/cloudbase-init.xml
 
 include $(WS_MAKE_RULES)/common.mk
 

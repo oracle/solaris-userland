@@ -255,6 +255,13 @@ class TestUserlandPkglint(unittest.TestCase):
             "object delivered into non-standard location: var/share/wrong", stderr)
 
 
+    @with_manifest("userland.action008.in", proto=True)
+    def test_action008(self, ret, stdout, stderr):
+        """SMF manifests are validated."""
+        self.assertIn("ERROR userland.action008.0        "
+            "SMF manifest manifest.xml is not valid:\n", stderr)
+
+
     @with_manifest("userland.manifest001_1.in")
     def test_manifest001_empty(self, ret, stdout, stderr):
         """Packages without license and files are ok."""

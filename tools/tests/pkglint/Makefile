@@ -91,6 +91,8 @@ proto/.prepared: Makefile source.c
 	$(TOUCH) proto/usr/lib/python/stale2.py
 	$(TOUCH) proto/usr/lib/python/stale3.py
 
+	$(TOUCH) proto/manifest.xml
+
 	$(TOUCH) $@
 
 build: proto/.prepared

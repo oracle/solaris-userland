@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		NO_ARCH
@@ -41,8 +41,7 @@ SOURCE_DIR=		$(COMPONENT_DIR)
 CLEAN_PATHS +=		$(COMPONENT_DIR)/.patched*
 
 BUILD_STYLE=		archive
-BUILD_TARGET +=		prep $(VALIDATE_SMF_TARGET)
-SMF_MANIFESTS=		$(COMPONENT_DIR)/files/docbook-dtds-update.xml
+BUILD_TARGET +=		prep
 TEST_TARGET= 		$(NO_TESTS)
 
 DTDS_INC_FILE = 	$(BUILD_DIR)/manifest-$(MACH)-docbook-dtds.inc

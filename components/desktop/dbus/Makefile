@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 # Static assertions fail when building with Studio
@@ -42,8 +42,6 @@ COMPONENT_ANITYA_ID=	5356
 TPNO=			60493
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-
-SMF_MANIFESTS= $(COMPONENT_DIR)/files/dbus.xml
 
 include $(WS_MAKE_RULES)/common.mk
 

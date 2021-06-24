@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -34,7 +34,6 @@ COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	5256
 TPNO=			49528
 
-SMF_MANIFESTS= $(COMPONENT_DIR)/files/xfs.xml
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/x11-component.mk

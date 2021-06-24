@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -42,7 +42,6 @@ COMPONENT_BUGDB=	service/ftp-proxy
 TPNO=	24255
 
 BUILD_STYLE= justmake
-SMF_MANIFESTS= $(COMPONENT_DIR)/ftp-proxy.Solaris/firewall-ftp-proxy.xml
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 

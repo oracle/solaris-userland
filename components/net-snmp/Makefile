@@ -46,7 +46,6 @@ TPNO=			47655
 BUILD_32_and_64 += $(BUILD_DIR_32)/.docs
 INSTALL_TARGET= build $(INSTALL_32_and_64)
 TEST_TARGET= $(TEST_32_and_64)
-SMF_MANIFESTS= $(COMPONENT_DIR)/net-snmp.xml
 
 include $(WS_MAKE_RULES)/common.mk
 

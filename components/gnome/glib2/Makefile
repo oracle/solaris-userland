@@ -41,9 +41,6 @@ BUILD_STYLE=		meson
 # No need to build for older versions.
 PYTHON_VERSIONS= 3.7
 
-SMF_MANIFESTS += $(COMPONENT_DIR)/files/gio-module-cache.xml
-SMF_MANIFESTS += $(COMPONENT_DIR)/files/glib-compile-schemas.xml
-
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CFLAGS += $(CPP_XPG6MODE)

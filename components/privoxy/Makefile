@@ -40,7 +40,6 @@ COMPILER= gcc
 
 TPNO=		 	67639
 
-SMF_MANIFESTS= $(COMPONENT_DIR)/files/http-privoxy.xml
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 

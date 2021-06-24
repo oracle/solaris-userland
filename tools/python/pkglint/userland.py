@@ -148,6 +148,7 @@ class UserlandActionChecker(base.ActionChecker):
             # Xorg path
         ]
         self.initscript_re = re.compile(r"^etc/(rc.|init)\.d")
+        self.smf_manifest_re = re.compile(r"^lib/svc/manifest/.*\.xml$")
 
         self.lint_paths = {}
         self.ref_paths = {}
@@ -557,6 +558,44 @@ class UserlandActionChecker(base.ActionChecker):
                      msgid=f"{self.name}{pkglint_id}.0")
 
     legacy_action.pkglint_desc = "Legacy actions are deprecated."
+
+    def smf_manifest(self, action, manifest, engine, pkglint_id="008"):
+        """Checks if SMF manifests are valid, otherwise SMF won't import
+        them when packages are installed."""
+
+        if action.name not in ["file", "link", "hardlink"]:
+            return
+
+        # this check requires a physical file to look at
+        if self.proto_path is None:
+            return
+
+        # path to the delivered file
+        inspath = action.attrs["path"]
+        if self.smf_manifest_re.match(inspath):
+
+            # path to the file within the prototype area
+            path = action.hash
+            if path is None or path == "NOHASH":
+                path = inspath
+
+            fullpath = None
+            for proto_path in self.proto_path:
+                check = os.path.join(proto_path, path)
+                if os.path.exists(check):
+                    fullpath = check
+
+            if fullpath is None:
+                # missing files are handled in another check
+                return
+
+            res = subprocess.run(["/usr/sbin/svccfg", "validate", fullpath],
+                                 capture_output=True, text=True)
+            if res.returncode != 0:
+                engine.error(f"SMF manifest {path} is not valid:\n{res.stderr}",
+                             msgid=f"{self.name}{pkglint_id}.0")
+
+    smf_manifest.pkglint_desc = "SMF manifests must be valid."
 
 
 class UserlandManifestChecker(base.ManifestChecker):

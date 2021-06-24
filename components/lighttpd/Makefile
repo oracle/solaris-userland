@@ -38,8 +38,6 @@ TPNO=			63334
 
 LIGHTTPD_INSTALLDIR=$(USRDIR)/lighttpd/1.4
 
-SMF_MANIFESTS= $(COMPONENT_DIR)/Solaris/http-lighttpd14.xml
-
 include $(WS_MAKE_RULES)/common.mk
 
 # lighttpd is logging using __FILE__ macro. Cloning will make this happen

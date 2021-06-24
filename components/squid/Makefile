@@ -46,7 +46,6 @@ ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
 # Disable adistack security extension due to C++ exception handling issues
 ADISTACK_MODE =	$(ADISTACK_DISABLE)
 
-SMF_MANIFESTS= $(COMPONENT_DIR)/files/http-squid.xml
 TEST_TARGET= $(TEST_64)
 include $(WS_MAKE_RULES)/common.mk
 

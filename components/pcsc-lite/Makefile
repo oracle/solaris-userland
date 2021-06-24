@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS=64_and_32
 include ../../make-rules/shared-macros.mk
@@ -35,8 +35,6 @@ COMPONENT_BUGDB=        library/smartcard
 COMPONENT_ANITYA_ID=	2611
 
 TPNO =                  25484
-
-SMF_MANIFESTS= $(COMPONENT_DIR)/Solaris/pcscd.xml
 
 include $(WS_MAKE_RULES)/common.mk
 

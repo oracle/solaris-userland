@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # using gcc makes parfait happy.
@@ -37,8 +37,6 @@ COMPONENT_ANITYA_ID=	4958
 
 TPNO_TEXINFO=		27244
 TPNO_TEXI2HTML=		9089
-
-SMF_MANIFESTS= $(COMPONENT_DIR)/texinfo-update.xml
 
 COMPONENT_PREP_ACTION += (cd $(@D); $(AUTORECONF_ENV) $(AUTORECONF) -fiv);
 

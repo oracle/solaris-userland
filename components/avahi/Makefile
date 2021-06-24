@@ -40,8 +40,6 @@ COMPONENT_ANITYA_ID=	147
 # Needed to avoid test failures (unbounded variables in libtool).
 unexport SHELLOPTS
 
-SMF_MANIFESTS = $(COMPONENT_DIR)/files/avahi-bridge-dsd.xml
-
 include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_SBINDIR.64 =	$(CONFIGURE_BINDIR.64)

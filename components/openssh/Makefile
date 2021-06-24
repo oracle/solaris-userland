@@ -53,8 +53,6 @@ COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 TPNO_OPENSSH=		64060
 TPNO_GSSKEX=		20377
 
-SMF_MANIFESTS= $(COMPONENT_DIR)/sources/ssh.xml
-
 # Because of set up requirements, test suite is in stc gate.
 # When upgrading OpenSSH, remember to also refresh the tests there.
 TEST_TARGET= $(SKIP_TEST)

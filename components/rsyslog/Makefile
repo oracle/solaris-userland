@@ -56,8 +56,6 @@ COMPONENT_ANITYA_ID_LIB   = 12043
 
 TPNO_LIB = 71045
 
-SMF_MANIFESTS= $(COMPONENT_DIR)/files/rsyslog.xml
-
 include $(WS_MAKE_RULES)/common.mk
 
 # Prepare target specific CONFIGURE_OPTIONS

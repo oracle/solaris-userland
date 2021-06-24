@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 		64
 # All components using gobject-introspection must be built with gcc as
@@ -40,9 +40,6 @@ COMPONENT_ANITYA_ID=	13122
 
 TPNO=			65076
 BUILD_STYLE=		meson
-
-# Make sure we haven't broken the SMF manifest formatting
-SMF_MANIFESTS= files/gdm.xml
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
