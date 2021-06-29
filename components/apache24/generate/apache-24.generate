@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
@@ -34,6 +34,7 @@
 # decorate some files
 <transform file path=etc/.*/(envvars$|magic$|mime.types$) -> set mode 0644>
 <transform file path=etc/.*/(envvars$|magic$|mime.types$) -> set preserve renamenew>
+<transform file path=etc/.*/(envvars$|magic$|mime.types$) -> set overlay allow>
 <transform file path=.*/bin/apxs$ -> set facet.devel true>
 <transform file path=.*/build/(config.nice$|instdso.sh$|mkdir.sh$) -> set mode 0555>
 <transform file path=.*/cgi-bin/printenv($|\.vbs$|\.wsf$) -> set mode 0444>
