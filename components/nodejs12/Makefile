@@ -82,7 +82,10 @@ COMPONENT_PRE_CONFIGURE_ACTION= \
 
 COMPONENT_POST_INSTALL_ACTION= \
     $(MKDIR) -p $(PROTO_DIR)/usr/share/doc/release-notes/; \
-    $(CP) runtime-nodejs-nodejs-12.txt $(PROTO_DIR)/usr/share/doc/release-notes/
+    $(CP) runtime-nodejs-nodejs-12.txt \
+    $(PROTO_DIR)/usr/share/doc/release-notes/; \
+    $(CP) legacy-runtime-nodejs-nodejs-12.txt \
+    $(PROTO_DIR)/usr/share/doc/release-notes/; \
 
 #
 # OpenSSL 1.1 temporarily lives in non-standard directory. This is a workaround
