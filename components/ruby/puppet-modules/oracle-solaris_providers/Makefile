@@ -20,14 +20,14 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 include ../../../../make-rules/shared-macros.mk
 
 
 GIT_REPO= https://github.com/oracle/puppet-solaris_providers
-GIT_COMMIT_ID= v2.0.1
-GIT_HASH=  sha256:b858d0615642a6eff3215ecdee32dace3988bb296c6b02894b89eabbb907f4fc
+GIT_COMMIT_ID= v2.0.3
+GIT_HASH=  sha256:ef7e48fe152598e27ba6577940198678aed39ac2928c6eed5ef1a89af34b2d88
 
 COMPONENT_NAME=		puppet-solaris_providers
 COMPONENT_VERSION=	$(GIT_COMMIT_ID:v%=%)
