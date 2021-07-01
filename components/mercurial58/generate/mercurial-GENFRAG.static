@@ -1,0 +1,52 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+#
+
+# Our modified man pages
+file hg.1 path=usr/share/man/man1/hg-58.1
+link path=usr/share/man/man1/hg.1 target=./hg-58.1 mediator=hg-python \
+    mediator-version=3.9 pkg.linted.pkglint.dupaction010.1=true
+file hgignore.5 path=usr/share/man/man5/hgignore-58.5
+link path=usr/share/man/man5/hgignore.5 target=./hgignore-58.5 \
+    mediator=hg-python mediator-version=3.9 \
+    pkg.linted.pkglint.dupaction010.1=true
+file hgrc.5 path=usr/share/man/man5/hgrc-58.5
+link path=usr/share/man/man5/hgrc.5 target=./hgrc-58.5 mediator=hg-python \
+    mediator-version=3.9 pkg.linted.pkglint.dupaction010.1=true
+
+# Install zsh completion
+file zsh_completion path=usr/share/zsh/vendor-functions/Completion/_hg-58
+link path=usr/share/zsh/vendor-functions/Completion/_hg \
+    target=./_hg-58 mediator=hg-python mediator-version=3.9 \
+    pkg.linted.pkglint.dupaction010.1=true
+
+# Mediated Mercurial binary (Mercurial 5.1 or 5.8 based on python version).
+link path=usr/bin/hg \
+    target=../lib/python3.9/vendor-packages/mercurial/hg \
+    mediator=hg-python mediator-version=3.9
+
+# Mediated mercurial demos...
+link path=usr/demo/mercurial mediator=hg-python \
+    target=mercurial58 mediator-version=3.9 \
+    pkg.linted.pkglint.dupaction010.1=true

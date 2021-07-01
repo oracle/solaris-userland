@@ -65,7 +65,7 @@ PKG_PROTO_DIRS +=	$(COMPONENT_SRC)/contrib
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC)/doc
 PKG_MACROS     +=	COMPONENT_SRC=$(COMPONENT_SRC)
 
-GENERATE_PROTO_DIRS += $(COMPONENT_SRC)/contrib^usr/demo/mercurial
+GENERATE_PROTO_DIRS += $(COMPONENT_SRC)/contrib^usr/demo/mercurial51
 
 # The mercurial sources contain top level 'relnotes' directory and also
 # 'contrib/relnotes' file. We deliver the 'contrib/relnotes' but the top level

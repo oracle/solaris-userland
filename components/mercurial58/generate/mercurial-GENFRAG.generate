@@ -1,0 +1,69 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+#
+
+<include generate/common.transform>
+
+# Some directories are not interesting to us completely
+<transform file path=usr/demo/mercurial58/(benchmarks|debian|docker|fuzz)/ -> drop>
+<transform file path=usr/demo/mercurial58/(plan9|python-zstandard|win32|wix)/ -> drop>
+<transform file path=usr/demo/mercurial58/(macosx|vagrant|packaging)/ -> drop>
+<transform file path=usr/demo/mercurial58/(editmergeps|docker).* -> drop>
+
+# Build infrastructure
+<transform file path=usr/demo/mercurial58/Makefile.python$ -> drop>
+<transform file path=usr/demo/mercurial58/asv.conf.json$ -> drop>
+<transform file path=usr/demo/mercurial58/byteify-strings.py$ -> drop>
+<transform file path=usr/demo/mercurial58/(all|base)-revsets.txt -> drop>
+<transform file path=usr/demo/mercurial58/check-code.py -> drop>
+<transform file path=usr/demo/mercurial58/check-config.py$ -> drop>
+<transform file path=usr/demo/mercurial58/check-py3-compat.py$ -> drop>
+<transform file path=usr/demo/mercurial58/clang-format-ignorelist$ -> drop>
+<transform file path=usr/demo/mercurial58/genosxversion.py$ -> drop>
+<transform file path=usr/demo/mercurial58/hg-test-mode.el$ -> drop>
+<transform file path=usr/demo/mercurial58/hgperf$ -> drop>
+<transform file path=usr/demo/mercurial58/import-checker.py$ -> drop>
+<transform file path=usr/demo/mercurial58/phabricator.py$ -> drop>
+<transform file path=usr/demo/mercurial58/python3-ratchet.py$ -> drop>
+<transform file path=usr/demo/mercurial58/python3-whitelist$ -> drop>
+<transform file path=usr/demo/mercurial58/revsetbenchmarks.py$ -> drop>
+
+# The completion is installed in a special way in the
+# generate/mercurial-GENFRAG.static file
+<transform file path=.*/zsh_completion$ -> drop>
+
+# Remove the mangled man pages so that we don't have duplicates in the output
+<transform file path=^[^/]*\.\d$ -> drop>
+
+<transform file path=usr/demo/mercurial58/(dumprevlog|editmerge|hg-ssh|hgk)$ -> set mode 555>
+<transform file path=usr/demo/mercurial58/(debugcmdserver.py|hgweb.fcgi|simplemerge)$ -> set mode 555>
+<transform file path=usr/demo/mercurial58/(tcsh_completion_build.sh|undumprevlog)$ -> set mode 555>
+
+# pkgdepend complains about a "__main__" import: bug 15710704
+<transform file path=.*/statprof.py$ -> set pkg.depend.bypass-generate .*>
+
+<transform file path=.*/vendor-packages/mercurial/hg$ -> set mode 0555>
+
+<transform link path=usr/bin/hg target=hg-(\d.\d) -> set target hg-3.9>
+<transform link path=usr/bin/hg -> edit target "\$!\((.*)\)" "$(\1)">

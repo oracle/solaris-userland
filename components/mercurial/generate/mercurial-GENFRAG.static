@@ -20,13 +20,45 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2021, Oracle and/or its affiliates.
 #
 
 # Our modified man pages
-file hg.1 path=usr/share/man/man1/hg.1
-file hgignore.5 path=usr/share/man/man5/hgignore.5
-file hgrc.5 path=usr/share/man/man5/hgrc.5
+file hg.1 path=usr/share/man/man1/hg-51.1
+link path=usr/share/man/man1/hg.1 target=./hg-51.1 mediator=hg-python \
+    mediator-version=2.7 pkg.linted.pkglint.dupaction010.1=true
+link path=usr/share/man/man1/hg.1 target=./hg-51.1 mediator=hg-python \
+    mediator-version=3.7 pkg.linted.pkglint.dupaction010.1=true
+
+file hgignore.5 path=usr/share/man/man5/hgignore-51.5
+link path=usr/share/man/man5/hgignore.5 target=./hgignore-51.5 \
+    mediator=hg-python mediator-version=2.7 \
+    pkg.linted.pkglint.dupaction010.1=true
+link path=usr/share/man/man5/hgignore.5 target=./hgignore-51.5 \
+    mediator=hg-python mediator-version=3.7 \
+    pkg.linted.pkglint.dupaction010.1=true
+
+file hgrc.5 path=usr/share/man/man5/hgrc-51.5
+link path=usr/share/man/man5/hgrc.5 target=./hgrc-51.5 mediator=hg-python \
+    mediator-version=2.7 pkg.linted.pkglint.dupaction010.1=true
+link path=usr/share/man/man5/hgrc.5 target=./hgrc-51.5 mediator=hg-python \
+    mediator-version=3.7 pkg.linted.pkglint.dupaction010.1=true
 
 # Install zsh completion
-file zsh_completion path=usr/share/zsh/vendor-functions/Completion/_hg
+file zsh_completion path=usr/share/zsh/vendor-functions/Completion/_hg-51
+link path=usr/share/zsh/vendor-functions/Completion/_hg \
+    target=./_hg-51 mediator=hg-python mediator-version=2.7 \
+    pkg.linted.pkglint.dupaction010.1=true
+link path=usr/share/zsh/vendor-functions/Completion/_hg \
+    target=./_hg-51 mediator=hg-python mediator-version=3.7 \
+    pkg.linted.pkglint.dupaction010.1=true
+
+# Mediated mercurial demos...
+link path=usr/demo/mercurial/ mediator=hg-python \
+    target=mercurial51 mediator-version=2.7 \
+    pkg.linted.pkglint.dupaction010.1=true \
+    pkg.linted.userland.action002.0=true
+link path=usr/demo/mercurial/ mediator=hg-python \
+    target=mercurial51 mediator-version=3.7 \
+    pkg.linted.pkglint.dupaction010.1=true \
+    pkg.linted.userland.action002.0=true

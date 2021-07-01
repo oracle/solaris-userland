@@ -1,0 +1,15 @@
+Make the hgk extension find the GUI bits as installed on Solaris without
+making the user do any extra configuration.  Because this is patch is
+specific to Solaris, it's not appropriate for sending upstream, and because
+it's so simple, it's effectively a zero maintenance burden.
+
+--- mercurial-5.7.1/hgext/hgk.py	2021-03-25 08:48:55.133531529 +0000
++++ mercurial-5.7.1/hgext/hgk.py	2021-03-25 08:48:40.784584259 +0000
+@@ -384,6 +384,6 @@ def view(ui, repo, *etc, **opts):
+     if repo.filtername is None:
+         optstr += b'--hidden'
+ 
+-    cmd = ui.config(b"hgk", b"path") + b" %s %s" % (optstr, b" ".join(etc))
++    cmd = ui.config(b"hgk", b"path", b"/usr/demo/mercurial/hgk") + b" %s %s" % (optstr, b" ".join(etc))
+     ui.debug(b"running %s\n" % cmd)
+     ui.system(cmd, blockedtag=b'hgk_view')
