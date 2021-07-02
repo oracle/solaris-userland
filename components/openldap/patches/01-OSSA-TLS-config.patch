@@ -1,0 +1,34 @@
+Set the TLS client protocol version and cipher suite to Oracle
+requirements.  Note that the configuration files may be modified at
+the install destination, for comparison the package settings are
+packaged in corresponding .default suffixed files.
+
+Patch was developed in-house; it is Solaris specific and will not be
+contributed upstream.
+
+diff --git a/libraries/libldap/ldap.conf b/libraries/libldap/ldap.conf
+index a94cfaa..e48757b 100644
+--- a/libraries/libldap/ldap.conf
++++ b/libraries/libldap/ldap.conf
+@@ -11,3 +11,7 @@
+ #SIZELIMIT	12
+ #TIMELIMIT	15
+ #DEREF		never
++
++TLS_PROTOCOL_MIN	3.2
++TLS_CIPHER_SUITE	ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:TLSv1.2:!aNULL:!eNULL:DHE-RSA-AES256-SHA:DHE-DSS-AES256-SHA:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA
++TLSECName	secp384r1
+diff --git a/servers/slapd/slapd.conf b/servers/slapd/slapd.conf
+index b225fe5..06e50f0 100644
+--- a/servers/slapd/slapd.conf
++++ b/servers/slapd/slapd.conf
+@@ -23,6 +23,9 @@ argsfile	%LOCALSTATEDIR%/run/slapd.args
+ #	Require 112-bit (3DES or better) encryption for updates
+ #	Require 63-bit encryption for simple bind
+ # security ssf=1 update_ssf=112 simple_bind=64
++TLSProtocolMin	3.2
++TLSCipherSuite	ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:TLSv1.2:!aNULL:!eNULL:DHE-RSA-AES256-SHA:DHE-DSS-AES256-SHA:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA
++TLSECName	secp384r1
+ 
+ # Sample access control policy:
+ #	Root DSE: allow anyone to read it
