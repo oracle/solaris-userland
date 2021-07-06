@@ -29,20 +29,21 @@ COMPILER =		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mozjs
-COMPONENT_VERSION=	78.4.0
+COMPONENT_VERSION=	78.11.0
 COMPONENT_PROJECT_URL=	https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-	sha256:1e91b74e40ad3330258f196041becab40ddb96116e17a98f3a43a1816119f0d0
+	sha256:5ad54ac2b0368b9748e08756658eb988d65e5bb088d91baf43267486bcbf1d26
 # Upstream no longer delivers mozjs archives; it needs to be extracted from
 # the firefox archive instead. Archives are hence only available directly in
 # the Userland package cache, and no online alternative is available.
-COMPONENT_ARCHIVE_URL=	none
+# Check the gnome releng location for tarballs if available
+COMPONENT_ARCHIVE_URL=	http://ftp.cse.buffalo.edu/pub/Gnome/teams/releng/tarballs-needing-help/mozjs/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libmozjs
 COMPONENT_ANITYA_ID=	11754
 
-TPNO=			63534
+TPNO=			72349
 
 CXXFLAGS += -std=c++17
 
