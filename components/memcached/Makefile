@@ -24,18 +24,21 @@
 #
 BUILD_BITS= 64
 
+# Build does not start reliably when multiple jobs are allowed
+COMPONENT_MAKE_JOBS=1
+
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		memcached
-COMPONENT_VERSION=	1.5.17
+COMPONENT_VERSION=	1.6.9
 COMPONENT_PROJECT_URL=	http://memcached.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:ac7c5af6e8b1acf5d5c644d162e046d8acf9302174af9f24c3f18e5481ce3a0d
+    sha256:d5a62ce377314dbffdb37c4467e7763e3abae376a16171e613cbe69956f092d1
 COMPONENT_ARCHIVE_URL=	http://memcached.org/files/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	database/memcached
 COMPONENT_ANITYA_ID=	1965
 
-TPNO=			53729
+TPNO=			64643
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -71,6 +74,7 @@ CONFIGURE_OPTIONS.64 +=	--with-libevent=$(USRLIBDIR64)
 CONFIGURE_OPTIONS.64 +=	"ac_cv_libevent_dir=/usr/lib/$(MACH64)"
 CONFIGURE_OPTIONS +=	--enable-dtrace --disable-docs --disable-coverage
 CONFIGURE_OPTIONS +=	--localstatedir=$(VARDIR)
+CONFIGURE_OPTIONS +=	--disable-extstore
 
 # GNU Build System files have to be regenerated for automake 1.16.
 # It can be removed when the upstream starts to use a newer automake version.
@@ -81,7 +85,10 @@ COMPONENT_POST_INSTALL_ACTION = ( \
 	$(MKDIR) $(PROTOLIBDIR)/svc/manifest/application/database/; \
 	$(CP) Solaris/memcached.xml $(PROTOLIBDIR)/svc/manifest/application/database/; \
 	$(PERL) -i -pe 's/%%%VERSION%%%/$(COMPONENT_VERSION)/' \
-		$(PROTOLIBDIR)/svc/manifest/application/database/memcached.xml)
+		$(PROTOLIBDIR)/svc/manifest/application/database/memcached.xml; \
+	$(MKDIR) $(PROTOUSRSHAREMAN8DIR); \
+	$(MV) $(PROTOUSRSHAREMAN1DIR)/memcached.1 $(PROTOUSRSHAREMAN8DIR)/memcached.8; \
+ 	$(RM) -r $(PROTOUSRSHAREMAN1DIR)	)	
 
 COMPONENT_TEST_TARGETS=	test
 

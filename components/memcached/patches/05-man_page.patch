@@ -1,0 +1,147 @@
+Added Solaris specific information.
+Not suitable for upstream.
+
+--- memcached-1.6.9/doc/memcached.1.orig	2021-08-25 19:18:43.398405472 +0200
++++ memcached-1.6.9/doc/memcached.1	2021-08-25 20:24:43.975438766 +0200
+@@ -161,6 +161,131 @@
+ .B \-V, --version
+ print version and exit
+ .br
++.SH SERVICE MANAGEMENT FACILITY
++.sp
++.LP
++\fBmemcached\fR package for Solaris (\fBservice/memcached\fR)
++includes files necessary to register with the Service Management Facility
++described in \fISMF(7)\fR. The following procedure describes the steps to automate
++the service management using memcached.
++.RS +4
++.TP
++1.
++Add other parameters to be passed to the memcached service instance.
++.sp
++example: specify the server to use 1024 MB of memory
++.sp
++.in +2
++.nf
++example% svccfg
++svc:> select memcached
++svc:/application/database/memcached> setprop memcached/options=("-m" "1024")
++svc:/application/database/memcached> quit
++example% svcadm refresh memcached
++.fi
++.in -2
++
++.LP
++Note - 
++.sp
++.RS 2
++The arguments cannot be passed as a single string because of a limitation in \fIsvccfg\fR.
++.RE
++.RE
++.RS +4
++.TP
++2.
++Enable memcached .
++.sp
++.in +2
++.nf
++example% svcadm enable memcached 
++.fi
++.in -2
++
++The state of the service instance changes to \fBonline\fR,
++and the memcached service instance must be started:
++.sp
++.in +2
++.nf
++example% svcs memcached
++STATE          STIME    FMRI
++online          1:19:15 svc:/application/database/memcached:default
++.fi
++.in -2
++.sp
++
++.RE
++.RS +4
++.TP
++3.
++To disable shutdown and automatic restart of memcached service instance,
++.sp
++.in +2
++.nf
++example% svcadm disable memcached
++.fi
++.in -2
++
++.RE
++.SH USER AUTHORIZATIONS
++.sp
++.LP
++You can use \fBRBAC(7)\fR to authorize otherwise non-privileged users to manage
++\fBmemcached\fR services.
++To let a user named \fBmyuser\fR change \fBmemcached\fR value properties and
++manage \fBmemcached\fR service states, add the following line to
++\fB/etc/user_attr\fR:
++.sp
++.in +2
++.nf
++myuser::::type=role;profiles=Memcached Administration,All
++.fi
++.in -2
++.sp
++.RE
++.SH PACKAGE CONTENTS
++.sp
++.LP
++The \fBmemcached\fR package consists of the memcached server and
++man pages for the server. 
++.sp
++.LP
++Client libraries can be made available by installing other packages.
++.sp
++.LP
++The memcached server is based on the memcached open-source software
++available from http://www.danga.com/memcached/\&.
++.SH SECURITY
++.sp
++.LP
++When the memcached server is started, it listens for network requests
++on a TCP port and/or a UDP port. It is important for the security of the network
++that you protect this port, for example, by blocking access to this port in
++a firewall. 
++.sp
++.LP
++The default TCP port number to use is 11211. 
++.sp
++.LP
++You may use the \fB-p\fR option to set another TCP port number.
++There is no default UDP port number. You can use the \fB-U\fR option
++to set a UDP port number.
++.sp
++.LP
++If you are running memcached on a server with multiple network interfaces,
++you can restrict vulnerability by binding memcached to a single interface
++by using the \fB-l\fR option.
++.LP
++Caution - 
++.sp
++.RS 2
++Note that \fBmemcached\fR was designed for speed
++and not for security. There is no authentication of requests that go in to
++the memcached servers, and communication is not encrypted. The network that
++your memcached servers and clients run within should be safe-guarded against
++network attacks.
++.RE
+ .SH LICENSE
+ The memcached daemon is copyright Danga Interactive and is distributed under
+ the BSD license. Note that daemon clients are licensed separately.
+@@ -167,6 +292,9 @@
+ .br
+ .SH SEE ALSO
+ The README file that comes with memcached
++.LP
++\fBlibmemcached(3libmemcached)\fR
++.LP
+ .br
+ .B https://www.memcached.org
+ .SH AUTHOR

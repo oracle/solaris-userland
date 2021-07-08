@@ -1,35 +1,21 @@
 Adjustments needed to get memcached to build
 with the Studio compiler on Solaris.
 
-These changes will be passed upstream.
+--- memcached-1.6.9/logger.c.orig       2021-08-12 16:09:49.053797616 +0200
++++ memcached-1.6.9/logger.c    2021-08-12 16:10:46.394325275 +0200
+@@ -106,7 +106,7 @@
+ #ifdef HAVE_GCC_64ATOMICS
+     __sync_add_and_fetch(&logger_gid, gid);
+ #elif defined(__sun)
+-    atomic_add_64(&logger_gid);
++    atomic_swap_64(&logger_gid, gid);
+ #else
+     mutex_lock(&logger_atomics_mutex);
+     logger_gid = gid;
 
---- memcached-1.5.11/logger.c	2018-11-23 04:17:26.756616464 +0000
-+++ memcached-1.5.11/logger.c	2018-11-23 04:15:28.096760772 +0000
-@@ -11,6 +11,10 @@
- #include <atomic.h>
- #endif
- 
-+#if !defined(HAVE_GCC_64ATOMICS) && defined(__sun)
-+#include <atomic.h>
-+#endif
-+
- #include "memcached.h"
- #include "bipbuffer.h"
- 
---- memcached-1.5.11/memcached.c	2018-11-23 04:17:37.915325545 +0000
-+++ memcached-1.5.11/memcached.c	2018-11-23 04:15:28.100019217 +0000
-@@ -387,8 +387,6 @@ static void *conn_timeout_thread(void *a
-                     sleep_time);
-         usleep((useconds_t) sleep_time * 1000000);
-     }
--
--    return NULL;
- }
- 
- static int start_conn_timeout_thread() {
---- memcached-1.5.11/slabs.c	2018-11-23 04:17:56.257603438 +0000
-+++ memcached-1.5.11/slabs.c	2018-11-23 04:15:28.101234689 +0000
-@@ -162,7 +162,7 @@ void slabs_init(const size_t limit, cons
+--- memcached-1.6.9/slabs.c.orig	2021-07-08 16:13:55.872498511 +0200
++++ memcached-1.6.9/slabs.c	2021-07-08 16:16:22.555513301 +0200
+@@ -213,7 +213,7 @@
       * the initial allocation fails, the required settings do not persist
       * for remaining allocations. As such it makes little sense to do slab
       * preallocation. */
@@ -38,9 +24,9 @@ These changes will be passed upstream.
  
      mem_limit = limit;
  
---- memcached-1.5.11/slab_automove.c	2018-11-23 04:18:23.065241167 +0000
-+++ memcached-1.5.11/slab_automove.c	2018-11-23 04:15:28.101967638 +0000
-@@ -76,7 +76,7 @@ void slab_automove_run(void *arg, int *s
+--- memcached-1.6.9/slab_automove.c.orig	2021-07-08 17:34:28.509693014 +0200
++++ memcached-1.6.9/slab_automove.c	2021-07-08 17:35:23.873249259 +0200
+@@ -78,7 +78,7 @@
      int oldest = -1;
      uint64_t oldest_age = 0;
      int youngest = -1;
@@ -49,3 +35,50 @@ These changes will be passed upstream.
      bool youngest_evicting = false;
      *src = -1;
      *dst = -1;
+--- memcached-1.6.9/extstore.c.orig	2021-07-08 17:54:46.410231310 +0200
++++ memcached-1.6.9/extstore.c	2021-07-08 17:55:19.740415621 +0200
+@@ -837,7 +837,6 @@
+         }
+     }
+ 
+-    return NULL;
+ }
+ 
+ // call with *p locked.
+@@ -982,5 +981,4 @@
+         STAT_UL(e);
+     }
+ 
+-    return NULL;
+ }
+--- memcached-1.6.9/slab_automove_extstore.c.orig	2021-07-08 17:58:00.191438842 +0200
++++ memcached-1.6.9/slab_automove_extstore.c	2021-07-08 17:58:28.504921660 +0200
+@@ -167,7 +167,7 @@
+     int oldest = -1;
+     uint64_t oldest_age = 0;
+     int youngest = -1;
+-    uint64_t youngest_age = ~0;
++    uint64_t youngest_age = (uint64_t) ~0;
+     bool too_free = false;
+     *src = -1;
+     *dst = -1;
+--- memcached-1.6.9/storage.c.orig	2021-07-08 18:25:04.896242075 +0200
++++ memcached-1.6.9/storage.c	2021-07-08 18:25:43.081642255 +0200
+@@ -639,7 +639,6 @@
+         }
+         pthread_mutex_lock(&storage_write_plock);
+     }
+-    return NULL;
+ }
+ 
+ // TODO
+@@ -972,9 +971,6 @@
+                 to_sleep += MIN_STORAGE_COMPACT_SLEEP;
+         }
+     }
+-    free(readback_buf);
+-
+-    return NULL;
+ }
+ 
+ // TODO
