@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 # parfait is a bit unhappy (24796395)
@@ -45,6 +45,13 @@ TPNO=			55365
 
 # tests work but take hours to run and use a lot of disk space
 TEST_TARGET = $(SKIP_TEST)
+
+# The doxygen configuration expects to be built in the source directory
+COMPONENT_POST_CONFIGURE_ACTION += ( \
+       perl -pi -e 's!^(STRIP_FROM_PATH.*=).*!$$1 $(SOURCE_DIR)!' "$(SOURCE_DIR)/doc/Doxyfile.in"; \
+);
+
+
 
 include $(WS_MAKE_RULES)/common.mk
 
