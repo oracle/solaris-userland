@@ -7,11 +7,9 @@ Don't install unnecessary stuff.
 SAAJ API should not be needed as we still build with JDK 8
 (and not with JDK 11 or above).
 
-diff --git a/build.xml b/build.xml
-index 1738091..8d123d8 100644
---- a/build.xml
-+++ b/build.xml
-@@ -1090,8 +1090,6 @@
+--- apache-tomcat-8.5.69-src/build.xml
++++ apache-tomcat-8.5.69-src/build.xml
+@@ -1108,8 +1108,6 @@ </target>
    <target name="deploy" depends="package,build-docs,build-tomcat-jdbc,compile-webapp-examples"
            description="Default. Builds a working Tomcat instance">
  
@@ -20,7 +18,7 @@ index 1738091..8d123d8 100644
      <!-- Copy scripts -->
      <copy todir="${tomcat.build}/bin">
        <fileset dir="bin">
-@@ -1865,12 +1863,6 @@
+@@ -1893,12 +1891,6 @@ <include name="**/*.dll"/>
        </fileset>
      </copy>
  
@@ -33,7 +31,7 @@ index 1738091..8d123d8 100644
      <!-- platform README files -->
      <echo append="false" file="${tomcat.dist}/bin/x64/README">
  Apache Tomcat ${version} native binaries for Win64 AMD64/EMT64 platform.
-@@ -2759,16 +2751,6 @@ skip.installer property in build.properties" />
+@@ -2832,16 +2824,6 @@ </target>
    <target name="download-compile"
            description="Download components necessary to compile" >
  
@@ -50,7 +48,7 @@ index 1738091..8d123d8 100644
      <!-- Download JDT (Eclipse compiler) -->
      <antcall target="downloadfile-2">
        <param name="sourcefile.1" value="${jdt.loc.1}"/>
-@@ -2863,16 +2845,6 @@ skip.installer property in build.properties" />
+@@ -2945,16 +2927,6 @@ </target>
    <target name="download-dist"
            description="Download additional components for a distribution" >
  
@@ -67,7 +65,7 @@ index 1738091..8d123d8 100644
      <antcall target="downloadzip-2">
        <param name="sourcefile.1" value="${tomcat-native.win.1}"/>
        <param name="sourcefile.2" value="${tomcat-native.win.2}"/>
-@@ -2883,16 +2855,6 @@ skip.installer property in build.properties" />
+@@ -2965,16 +2937,6 @@ <param name="checksum.algorithm" value="
        <param name="checksum.value" value="${tomcat-native.win.checksum.value}"/>
      </antcall>
  
