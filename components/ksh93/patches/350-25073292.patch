@@ -1,0 +1,170 @@
+This fix addresses an issue with ksh93 quoting for
+UTF-8 locales, causing unnecessary quoting of printable
+characters, for example during the usage of xtrace(set -x) option. 
+This patch has been created by merging the following upstream commits
+https://github.com/ksh93/ksh/commit/f9d28935bb93fe7336ba8c5eab4231050de2e11e
+https://github.com/ksh93/ksh/commit/ac8991e5257978a6359c001b7fa227c334fd9e18
+
+--- INIT.2012-08-01.old/src/cmd/ksh93/sh/string.c	2021-06-29 04:18:30.089814021 +0000
++++ INIT.2012-08-01/src/cmd/ksh93/sh/string.c	2021-06-29 04:16:00.903477952 +0000
+@@ -40,6 +40,10 @@
+ #   define iswprint(c)		(((c)&~0377) || isprint(c))
+ #endif
+ 
++#ifndef isxdigit
++#   define isxdigit(c)		((c)>='0'&&(c)<='9'||(c)>='a'&&(c)<='f'||(c)>='A'&&(c)<='F')
++#endif
++
+ 
+ /*
+  *  Table lookup routine
+@@ -325,6 +329,34 @@
+ 	return(stakptr(offset));
+ }
+ 
++#if SHOPT_MULTIBYTE
++/*
++ * Returns true if c is an invisible Unicode character, excluding ASCII space.
++ * Use iswgraph(3) if possible. In the ksh-specific C.UTF-8 locale, this is
++ * generally not possible as the OS-provided iswgraph(3) doesn't support that
++ * locale. So do a quick test and do our best with a fallback if necessary.
++ */
++static int	is_invisible(int c)
++{
++	if(!mbwide())					/* not in multibyte locale? */
++		return(c != ' ' && !isgraph(c));	/* use plain isgraph(3) */
++	else if(iswgraph(0x5E38) && !iswgraph(0xFEFF))	/* can we use iswgraph(3)? */
++		return(c != ' ' && !iswgraph(c));	/* use iswgraph(3) */
++	else						/* fallback: */
++		return(	c <= 0x001F ||			/* control characters */
++			c >= 0x007F && c <= 0x009F ||	/* control characters */
++			c == 0x00A0 ||			/* non-breaking space */
++			c == 0x061C ||			/* arabic letter mark */
++			c == 0x1680 ||			/* ogham space mark */
++			c == 0x180E ||			/* mongolian vowel separator */
++			c >= 0x2000 && c <= 0x200F ||	/* spaces and format characters */
++			c >= 0x2028 && c <= 0x202F ||	/* separators and format characters */
++			c >= 0x205F && c <= 0x206F ||	/* various format characters */
++			c == 0x3000 ||			/* ideographic space */
++			c == 0xFEFF );			/* zero-width non-breaking space */
++}
++#endif /* SHOPT_MULTIBYTE */
++
+ /*
+  * print <str> quoting chars so that it can be read by the shell
+  * puts null terminated result on stack, but doesn't freeze it
+@@ -363,7 +395,7 @@
+ 	for(;c;c= mbchar(cp))
+ 	{
+ #if SHOPT_MULTIBYTE
+-		if(c=='\'' || c>=128 || c<0 || !iswprint(c)) 
++		if(c=='\'' || is_invisible(c))
+ #else
+ 		if(c=='\'' || !isprint(c))
+ #endif /* SHOPT_MULTIBYTE */
+@@ -382,7 +414,6 @@
+ 	}
+ 	else
+ 	{
+-		int isbyte=0;
+ 		stakwrite("$'",2);
+ 		cp = string;
+ #if SHOPT_MULTIBYTE
+@@ -419,24 +450,29 @@
+ 				break;
+ 			    default:
+ #if SHOPT_MULTIBYTE
+-				isbyte = 0;
+-				if(c<0)
+-				{
+-					c = *((unsigned char *)op);
+-					cp = op+1;
+-					isbyte = 1;
+-				}
+-				if(mbwide() && ((cp-op)>1))
++				if(mbwide())
+ 				{
+-					sfprintf(staksp,"\\u[%x]",c);
+-					continue;
++					/* We're in a multibyte locale */
++					if(c<0 || c<128 && !isprint(c))
++					{
++						/* Invalid multibyte char, or unprintable ASCII char: quote as hex byte */
++						c = *((unsigned char *)op);
++						cp = op+1;
++						goto quote_one_byte;
++					}
++					if(is_invisible(c))
++					{
++						/* Unicode hex code */
++						sfprintf(staksp,"\\u[%x]",c);
++						continue;
++					}
+ 				}
+-				else if(!iswprint(c) || isbyte)
+-#else
++				else
++#endif /* SHOPT_MULTIBYTE */
+ 				if(!isprint(c))
+-#endif
+ 				{
+-					sfprintf(staksp,"\\x%.2x",c);
++				quote_one_byte:
++					sfprintf(staksp, isxdigit(*cp) ? "\\x[%.2x]" : "\\x%.2x", c);
+ 					continue;
+ 				}
+ 				state=0;
+
+diff --git a/src/cmd/ksh93/tests/quoting2.sh b/src/cmd/ksh93/tests/quoting2.sh
+index 0ffcb4fae630..a2b808af8e2e 100755
+--- a/src/cmd/ksh93/tests/quoting2.sh
++++ b/src/cmd/ksh93/tests/quoting2.sh
+@@ -215,4 +215,48 @@ exp='ac'
+ got=$'a\0b'c
+ [[ $got == "$exp" ]] || err_exit "\$'a\\0b'c expansion failed -- expected '$exp', got '$got'"
+ 
++# ======
++# generating shell-quoted strings using printf %q (same algorithm used for xtrace and output of 'set', 'trap', ...)
++
++[[ $(printf '%q\n') == '' ]] || err_exit 'printf "%q" with missing arguments yields non-empty result'
++
++# the following fails on 2012-08-01 in UTF-8 locales
++expect="'shell-quoted string'"
++actual=$(
++       print -nr $'\303\274' | read -n1 foo  # interrupt processing of 2-byte UTF-8 char after reading 1 byte
++       printf '%q\n' "shell-quoted string"
++)
++LC_CTYPE=POSIX true        # on buggy ksh, a locale re-init via temp assignment restores correct shellquoting
++[[ $actual == "$expect" ]] || err_exit 'shell-quoting corrupted after interrupted processing of UTF-8 char' \
++                               "(expected $expect; got $actual)"
++
++# shell-quoting UTF-8 characters: check for unnecessary encoding
++case ${LC_ALL:-${LC_CTYPE:-${LANG:-}}} in
++( *[Uu][Tt][Ff]8* | *[Uu][Tt][Ff]-8* )
++       expect=$'$\'عندما يريد العالم أن \\u[202a]يتكلّم \\u[202c] ، فهو يتحدّث بلغة يونيكود.\''
++       actual=$(printf %q 'عندما يريد العالم أن ‪يتكلّم ‬ ، فهو يتحدّث بلغة يونيكود.')
++       [[ $actual == "$expect" ]] || err_exit 'shell-quoting: Arabic UTF-8 characters' \
++                               "(expected $expect; got $actual)"
++       expect="'正常終了 正常終了'"
++       actual=$(printf %q '正常終了 正常終了')
++       [[ $actual == "$expect" ]] || err_exit 'shell-quoting: Japanese UTF-8 characters' \
++                               "(expected $expect; got $actual)"
++       expect="'aeu aéu'"
++       actual=$(printf %q 'aeu aéu')
++       [[ $actual == "$expect" ]] || err_exit 'shell-quoting: Latin UTF-8 characters' \
++                               "(expected $expect; got $actual)"
++       expect=$'$\'\\x86\\u[86]\\xf0\\x96v\\xa7\\xb5\''
++       actual=$(printf %q $'\x86\u86\xF0\x96\x76\xA7\xB5')
++       [[ $actual == "$expect" ]] || err_exit 'shell-quoting: invalid UTF-8 characters not encoded with \xNN' \
++                               "(expected $expect; got $actual)"
++       ;;
++esac
++
++# check that hex bytes are protected with square braces if needed
++expect=$'$\'1\\x[11]1\''
++actual=$(printf %q $'1\x[11]1')
++[[ $actual == "$expect" ]] || err_exit 'shell-quoting: hex bytes not protected from subsequent hex-like chars' \
++                               "(expected $expect; got $actual)"
++
++# ======
+ exit $((Errors<125?Errors:125))
