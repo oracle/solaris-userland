@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -51,6 +51,8 @@ COMPONENT_PREP_ACTION = \
 	autoheader ; \
 	automake -a -c -f ; \
 	autoconf )
+
+CONFIGURE_OPTIONS += --disable-gtk-doc
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += library/desktop/gtk2

@@ -24,30 +24,31 @@
 #
 
 BUILD_BITS=             NO_ARCH
+COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gtk-doc
-COMPONENT_VERSION=	1.25
+COMPONENT_VERSION=	1.33.2
 COMPONENT_MAJOR_MINOR=	$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/DocumentationProject/GtkDoc
 COMPONENT_ARCHIVE_HASH= \
-    sha256:1ea46ed400e6501f975acaafea31479cea8f32f911dca4dff036f59e6464fd42
+    sha256:cc1b709a20eb030a278a1f9842a362e00402b7f834ae1df4c1998a723152bf43
+COMPONENT_ARCHIVE_URL=  https://download-fallback.gnome.org/sources/gtk-doc/1.33/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/dev-tools
 COMPONENT_ANITYA_ID=	13140
 
-TPNO=			34485
+TPNO=			72790
+BUILD_STYLE=		meson
 
 PYTHON_VERSIONS= 3.7
 
-include $(WS_MAKE_RULES)/gnome-component.mk
+TEST_TARGET= $(SKIP_TEST)
 
-# The build process modifies the shebang line to use the version of Python
-# automatically found; to avoid using the current system default, one is
-# explicitly specified here.
-CONFIGURE_ENV += PYTHON="$(PYTHON.3.7)"
+include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU msgfmt in PATH.
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_ARGS =   -k -i
@@ -59,6 +60,15 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/PASS:/p" ' \
         '-e "/FAIL:/p" ' \
         '-e "/ERROR:/p" '
+
+# Fix python scripts #! python line 
+COMPONENT_POST_INSTALL_ACTION += \
+        $(GSED) -i -e 's?python3?python$(PYTHON_VERSION)?' \
+                $(PROTOUSRBINDIR)/gtkdoc-*;
+
+# Compile all python sources to .pyc files
+COMPONENT_POST_INSTALL_ACTION += \
+        $(PYTHON) -m compileall $(PROTO_DIR)$(USRSHAREDIR)/gtk-doc/python;
 
 REQUIRED_PACKAGES += data/docbook/docbook-dtds
 REQUIRED_PACKAGES += data/docbook/docbook-style-dsssl

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -60,7 +60,7 @@ COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 CONFIGURE_OPTIONS += --libexecdir="$(USRLIBDIR)"
 CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --enable-gtk-doc
+CONFIGURE_OPTIONS += --disable-gtk-doc
 CONFIGURE_OPTIONS += --enable-man-pages
 CONFIGURE_OPTIONS += --enable-shared
 CONFIGURE_OPTIONS += --with-pic

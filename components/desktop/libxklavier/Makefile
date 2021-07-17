@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		32_and_64
@@ -50,7 +50,7 @@ CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 
 CONFIGURE_OPTIONS += --disable-static
 CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --enable-gtk-doc
+CONFIGURE_OPTIONS += --disable-gtk-doc
 CONFIGURE_OPTIONS += --enable-xkb-support
 CONFIGURE_OPTIONS += --with-xkb-base=/usr/share/X11/xkb
 CONFIGURE_OPTIONS += --x-includes=""
