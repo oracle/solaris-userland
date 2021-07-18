@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2010, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
 #
 
 include ../make-rules/shared-macros.mk
@@ -205,6 +205,8 @@ incorporation:
 			--version $(PKG_SOLARIS_VERSION),$(BUILD_VERSION) \
 			--publisher $(PUBLISHER) \
 			--destdir $(WS_MACH) \
+			--repository-changeset $(CONSOLIDATION_CHANGESET) \
+			--repository-url $(CONSOLIDATION_REPOSITORY_URL) \
 			--static-content-file $(WS_COMPONENTS)/meta-packages/incorporation-cache \
 			$(INCORPORATE_WERROR) && \
 		$(RM) $(WS_MACH)/smcc-incorporation.p5m && \
