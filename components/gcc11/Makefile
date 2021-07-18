@@ -202,6 +202,7 @@ PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gccgo
 PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gfortran
 
 
+REQUIRED_PACKAGES += developer/gcc/gcc-gnat
 REQUIRED_PACKAGES += developer/test/dejagnu
 REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/isl
