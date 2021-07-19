@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 # This variable has no impact on perl build, it is here merely to satisfy
@@ -45,8 +45,6 @@ TPNO=			44527
 BUILD_STYLE= makemaker
 LICENSE=DBD-SQLite.license
 BUILD_TARGET= $(BUILD_$(MK_BITS)) $(LICENSE)
-
-PERL_VERSIONS=5.22 5.26
 
 CLONEY=echo
 COMPONENT_PRE_CONFIGURE_ACTION = $(CP) -r $(SOURCE_DIR)/* $(@D);
@@ -80,3 +78,4 @@ $(LICENSE): $(LICENSE).template
 
 REQUIRED_PACKAGES += database/sqlite-3
 REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/database-5%)
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
