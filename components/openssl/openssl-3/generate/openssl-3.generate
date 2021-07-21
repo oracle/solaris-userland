@@ -1,0 +1,51 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+
+# Do not deliver the html version of the delivered manpages.
+<transform file path=usr/openssl/3/share/doc/openssl/html/man./.+ -> drop>
+
+# Do not deliver header files for disallowed ciphers
+<transform file path=usr/openssl/3/include/openssl/rc2.h -> drop>
+<transform file path=usr/openssl/3/include/openssl/rc4.h -> drop>
+<transform file path=usr/openssl/3/include/openssl/rc5.h -> drop>
+<transform file path=usr/openssl/3/include/openssl/md2.h -> drop>
+<transform file path=usr/openssl/3/include/openssl/md4.h -> drop>
+<transform file path=usr/openssl/3/include/openssl/mdc2.h -> drop>
+<transform file path=usr/openssl/3/include/openssl/idea.h -> drop>
+<transform file path=usr/openssl/3/include/openssl/whirlpool.h -> drop>
+<transform file path=usr/openssl/3/include/openssl/whrlpool.h -> drop>
+<transform file path=usr/openssl/3/include/openssl/seed.h -> drop>
+
+# these files are delivered by openssl-3/provider/*
+<transform file path=etc/openssl/3/fipsmodule.cnf -> drop>
+<transform file path=usr/openssl/3/lib/64/ossl-modules/.+.so$ -> drop>
+
+# these files are handled in openssl-3.static
+<transform file path=etc/openssl/3/openssl.cnf$ -> drop>
+<transform file path=etc/openssl/3/misc/.+ -> drop>
+<transform link path=etc/openssl/3/misc/.+ -> drop>
+
+# misc
+<transform file path=etc/openssl/3/.*.dist$ -> drop>

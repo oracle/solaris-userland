@@ -133,7 +133,7 @@ COMPONENT_POST_BUILD_ACTION.64 += \
 # Alsways be super careful when appending to POST/PRE actions.
 # We need to make sure that if any sub-action fails, the whole recipe fails,
 # hence explicit exit is added to each append.
-COMPONENT_POST_BUILD_ACTION += files/verify_build.sh $(@D) $(CC) $(BITS) || exit 1;
+COMPONENT_POST_BUILD_ACTION += ../common/verify_build.sh $(@D) $(CC) $(BITS) openssl-1.1.p5m || exit 1;
 
 # OpenSSL has its own configure system which must be run from the fully
 # populated source code directory. However, the Userland configuration phase is

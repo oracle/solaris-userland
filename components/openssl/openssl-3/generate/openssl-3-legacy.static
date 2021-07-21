@@ -20,14 +20,8 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, Oracle and/or its affiliates.
 #
 
-TOPTARGETS := prep build install publish test clean clobber
-SUBDIRS=openssl-3 openssl-1.1 openssl-default openssl-fips-140
-
-$(TOPTARGETS): $(SUBDIRS)
-$(SUBDIRS):
-	$(MAKE) -C $@ $(MAKECMDGOALS)
-
-.PHONY: $(TOPTARGETS) $(SUBDIRS)
+file files/legacymodule.cnf path=etc/openssl/3/conf.d/legacymodule.cnf group=sys mode=0644 preserve=true
+file path=usr/openssl/3/lib/64/ossl-modules/legacy.so

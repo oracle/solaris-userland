@@ -1,0 +1,29 @@
+improve shared libraries link flags:
+
+ - link to socket, nsl and dl libraries is not needed in s11.4 -zdefs allow to
+   detect missing symbols during compilation is not needed in s11.4
+
+ - -Bsymbolic removed, we do not need the option, and the result is fragile code
+
+We plan to submit the changes to upstream (issue 16123) later.
+
+--- openssl-3.0.0.orig/Configurations/10-main.conf	2021-09-15 11:19:43.996122666 +0000
++++ openssl-3.0.0.new/Configurations/10-main.conf	2021-09-15 11:48:10.044411054 +0000
+@@ -210,7 +210,7 @@
+         inherit_from     => [ "BASE_unix" ],
+         template         => 1,
+         lib_cppflags     => "-DFILIO_H",
+-        ex_libs          => add("-lsocket -lnsl -ldl"),
++        ex_libs          => add("-lc"),
+         dso_scheme       => "dlfcn",
+         thread_scheme    => "pthreads",
+     },
+@@ -227,7 +227,7 @@
+         lflags           => add(threads("-mt")),
+         shared_cflag     => "-KPIC",
+         shared_target    => "solaris",
+-        shared_ldflag    => "-G -dy -z text -Wl,-Bsymbolic",
++        shared_ldflag    => "-G -dy -ztext -zdefs",
+         shared_defflag   => "-Wl,-M,",
+         shared_sonameflag=> "-Wl,-h,",
+     },

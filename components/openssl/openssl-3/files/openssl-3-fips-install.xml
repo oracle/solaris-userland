@@ -1,0 +1,85 @@
+<?xml version="1.0" ?>
+<!DOCTYPE service_bundle
+  SYSTEM '/usr/share/lib/xml/dtd/service_bundle.dtd.1'>
+<!--
+  Copyright (c) 2021, Oracle and/or its affiliates.
+
+  Service manifest for the OpenSSL FIPS module install service
+
+  Purpose of this service instance is to run post-installation steps for fips
+  provider.  The service instance runs the fipsinstall command.  This runs the
+  FIPS module self tests and generates FIPS module config file output containing
+  information about the module such as the self test status, and the module
+  checksum.
+
+  These post-install steps must be performed before using the fips provider.
+
+  For more information see 
+    MANPATH=/usr/openssl/3/share/man man fips_config
+-->
+
+<service_bundle type="manifest" name="fips-140-provider:install">
+<service
+	name="system/cryptosvc/openssl"
+	type="service"
+	version="1">
+
+	<single_instance />
+
+	<instance name='fips-140' enabled='true'>
+
+	<!-- Filesystem required for fipsmodule.conf-->
+	<dependency
+		name="fs"
+		grouping="require_all"
+		restart_on="none"
+		type="service">
+		<service_fmri value="svc:/system/filesystem/local" />
+	</dependency>
+
+	<!-- 
+	If the final state of the root filesystem will be read-only, letting
+	milestone/self-assembly-complete depend on this service will ensure,
+	that it is run soon enough to be able to create files under /etc/openssl/3/conf.d.
+	-->
+	<dependent
+		name="openssl-3-install-self-assembly-complete"
+		grouping="optional_all"
+		restart_on="none">
+		<service_fmri value="svc:/milestone/self-assembly-complete" />
+	</dependent>
+
+	<exec_method
+		type="method"
+		name="start"
+		exec="/lib/svc/method/svc-openssl-3-fips-install %m"
+		timeout_seconds="30"/>
+
+	<exec_method
+		type="method"
+		name="stop"
+		exec=":true"
+		timeout_seconds="3"/>
+
+	<exec_method
+		type="method"
+		name="refresh"
+		exec="/lib/svc/method/svc-openssl-3-fips-install %m"
+		timeout_seconds="30"/>
+
+	<property_group type="framework" name="startd">
+		<propval name="duration" type="astring" value="transient"/>
+	</property_group>
+	</instance>
+
+	<stability value="Unstable" />
+
+	<template>
+		<common_name>
+			<loctext xml:lang="C">
+				OpenSSL 3 FIPS-140 module install service
+			</loctext>
+		</common_name>
+	</template>
+</service>
+</service_bundle>

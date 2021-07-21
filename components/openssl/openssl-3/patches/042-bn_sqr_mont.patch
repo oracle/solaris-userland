@@ -1,0 +1,13 @@
+See ../../common/patches/042-bn_sqr_mont.patch for details.
+
+--- openssl-3.0.0/crypto/bn/asm/sparcv9-mont.pl
++++ openssl-3.0.0/crypto/bn/asm/sparcv9-mont.pl
+@@ -117,7 +117,7 @@ and	%o7,-1024,%o7
+ 	ld	[$np],$car1		! np[0]
+ 	sub	%o7,$bias,%sp		! alloca
+ 	ld	[$np+4],$npj		! np[1]
+-	be,pt	SIZE_T_CC,.Lbn_sqr_mont
++	nop				! disable bn_sqr_mont for now
+ 	mov	12,$j
+ 
+ 	mulx	$car0,$mul0,$car0	! ap[0]*bp[0]

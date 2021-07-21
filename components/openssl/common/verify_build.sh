@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
 function fail()
@@ -10,8 +10,8 @@ function fail()
 }
 
 # Verify that the build has certain properties.
-if (( $# != 3 )); then
-	print "usage: $0 <build_dir> <cc_path> <arch>"
+if (( $# != 4 )); then
+	print "usage: $0 <build_dir> <cc_path> <arch> <pkg_manifest>"
 	exit 1
 fi
 
@@ -28,12 +28,13 @@ echo "Using CC: ${CC}"
 
 BITS="$3"
 
+PKG_MANIFEST_FILE="$4"
+
 function disallowed_check()
 {
 	disallowed=(rc2 rc4 rc5 md2 md4 mdc2 idea whirlpool seed)
 	cipher_regexp=$( echo ${disallowed_ciphers[*]} | \
 	    tr '[a-z]' '[A-Z]' | sed 's/ /|/g' )
-	pkg_manifest_file="openssl-1.1.p5m"
 
 	echo "Checking libcrypto.so for symbols of disallowed ciphers"
 	if elfdump $BUILD_DIR/libcrypto.so | \
@@ -41,8 +42,8 @@ function disallowed_check()
 		fail "libcrypto.so contains disallowed ciphers"
 	fi
 
-	if [[ ! -r $pkg_manifest_file ]]; then
-		fail "Cannot read package manifest file $pkg_manifest_file"
+	if [[ ! -r $PKG_MANIFEST_FILE ]]; then
+		fail "Cannot read package manifest file $PKG_MANIFEST_FILE"
 	fi
 
 	# Make sure the header files are not delivered. This is necesssary
@@ -52,7 +53,7 @@ function disallowed_check()
 		header_file="${item}.h"
 		echo "Checking header file $header_file in pkg manifest file"
 		if grep $( echo $header_file | sed 's/\./\\./' ) \
-		    $pkg_manifest_file >/dev/null; then
+		    $PKG_MANIFEST_FILE >/dev/null; then
 			fail "Header file $header_file should not be delivered"
 		fi
 

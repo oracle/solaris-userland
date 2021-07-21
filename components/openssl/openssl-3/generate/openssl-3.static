@@ -1,0 +1,40 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+
+# Solaris specific actions
+file files/audit_tags path=etc/security/audit_tags.d/library:security:openssl-3 group=sys
+file files/exec_attr path=etc/security/exec_attr.d/library:security:openssl-3 group=sys
+file files/openssl.7 path=usr/openssl/3/share/man/man7openssl/openssl.7openssl mangler.bypass=true
+link path=etc/openssl/3/private target=../private
+link path=etc/openssl/3/certs target=../certs
+file files/openssl.cnf path=etc/openssl/3/openssl.cnf group=sys mode=0644 preserve=true
+link path=lib/$(MACH64)/libcrypto.so.3 target=../../usr/openssl/3/lib/64/libcrypto.so.3
+link path=lib/$(MACH64)/libssl.so.3 target=../../usr/openssl/3/lib/64/libssl.so.3
+dir path=etc/openssl/3/conf.d
+
+# move scripts from etc/openssl/3/misc to usr/openssl/3/misc/
+file etc/openssl/3/misc/CA.pl path=usr/openssl/3/misc/CA.pl
+link path=usr/openssl/3/misc/tsget target=tsget.pl
+file etc/openssl/3/misc/tsget.pl path=usr/openssl/3/misc/tsget.pl

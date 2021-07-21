@@ -1,0 +1,37 @@
+#! /usr/bin/bash
+
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+# This script runs fips provider self tests and generate
+# fipsmodule.conf file.
+#
+
+. /lib/svc/share/smf_include.sh
+
+OPENSSL_HOME=/usr/openssl/3
+OPENSSL="$OPENSSL_HOME/bin/openssl"
+FIPS_MODULE="$OPENSSL_HOME/lib/64/ossl-modules/fips.so"
+FIPS_CONF=/etc/openssl/3/conf.d/fipsmodule.cnf
+
+case "$1" in
+	"start"|"refresh")
+		(
+			cat <<-EOF
+			#
+			# fips-140 module configuration file
+			# Automatically generated file, do not edit
+			# Created by $SMF_FMRI
+			#
+			EOF
+
+			$OPENSSL fipsinstall --module "$FIPS_MODULE"
+		) 2>&1 1>"$FIPS_CONF" || exit $SMF_EXIT_ERR_FATAL
+		;;
+
+	*)
+		echo "usage: svc-openssl3-fips-install start|refresh"
+		exit $SMF_EXIT_ERR_FATAL
+		;;
+esac
+

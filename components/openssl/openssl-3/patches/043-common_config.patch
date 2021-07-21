@@ -1,0 +1,160 @@
+consolidate config options for solaris platforms - moves common parts to
+"common" sections. This fix does not change the build flags in any way.
+
+https://github.com/openssl/openssl/issues/16759
+
+Test case:
+ - run the script on original and patched sources:
+
+   openssl.orig/Configure ? 2>&1| tr ' ' '\n' | grep solaris | while read c; do \
+       echo $c; gdiff -uN <(cd openssl.orig; ./Configure $c; perl configdata.pm --dump) <(cd openssl.patched; ./Configure $c; perl configdata.pm --dump); \
+   done
+
+ - check the output that contains just unimportant reorder changes
+
+--- openssl-3.0.0.orig.old/Configurations/10-main.conf	2021-09-14 14:44:08.486085993 +0000
++++ openssl-3.0.0.new/Configurations/10-main.conf	2021-09-15 11:12:40.006613108 +0000
+@@ -218,8 +218,16 @@
+     "solaris-common-cc" => {
+         inherit_from     => [ "solaris-common" ],
+         template         => 1,
++        CC               => "cc",
++        CFLAGS           => add_before(picker(debug   => "-g",
++                                              release => "-xO5 -xdepend")),
++        ex_libs          => add(threads("-lpthread")),
++        cflags           => add_before("-xstrconst -Xa"),
++        cppflags         => add(threads("-D_REENTRANT")),
++        lflags           => add(threads("-mt")),
++        shared_cflag     => "-KPIC",
+         shared_target    => "solaris",
+-        shared_ldflag    => "-Wl,-Bsymbolic",
++        shared_ldflag    => "-G -dy -z text -Wl,-Bsymbolic",
+         shared_defflag   => "-Wl,-M,",
+         shared_sonameflag=> "-Wl,-h,",
+     },
+@@ -227,7 +235,15 @@
+     "solaris-common-gcc" => {
+         inherit_from     => [ "solaris-common" ],
+         template         => 1,
++        CC               => "gcc",
++        CFLAGS           => add_before(picker(default => "-Wall",
++                                              debug   => "-O0 -g",
++                                              release => "-O3")),
++        cflags           => add(threads("-pthread")),
++        ex_libs          => add(threads("-pthread")),
++        shared_cflag     => "-fPIC",
+         shared_target    => "solaris-gcc-shared", # The rest is on shared_info.pl
++        shared_ldflag    => add_before("-shared"),
+     },
+ #### Solaris x86 with GNU C setups
+     "solaris-x86-gcc" => {
+@@ -235,16 +251,10 @@
+         # /usr/ccs/bin/as. Failure to comply will result in compile
+         # failures [at least] in 32-bit build.
+         inherit_from     => [ "solaris-common-gcc" ],
+-        CC               => "gcc",
+-        CFLAGS           => add_before(picker(default => "-Wall",
+-                                              debug   => "-O0 -g",
+-                                              release => "-O3 -fomit-frame-pointer")),
+-        cflags           => add(threads("-pthread")),
++        CFLAGS           => add(picker(release => "-fomit-frame-pointer")),
+         lib_cppflags     => add("-DL_ENDIAN"),
+-        ex_libs          => add(threads("-pthread")),
+         bn_ops           => "BN_LLONG",
+-        shared_cflag     => "-fPIC",
+-        shared_ldflag    => add_before("-shared -static-libgcc"),
++        shared_ldflag    => add_before("-static-libgcc"),
+         asm_arch         => 'x86',
+         perlasm_scheme   => 'elf',
+     },
+@@ -258,18 +268,12 @@
+         # to consider using gcc shared build even with vendor compiler:-)
+         #                        -- <appro@openssl.org>
+         inherit_from     => [ "solaris-common-gcc" ],
+-        CC               => "gcc",
+-        CFLAGS           => add_before(picker(default => "-Wall",
+-                                              debug   => "-O0 -g",
+-                                              release => "-O3")),
+-        cflags           => add_before("-m64", threads("-pthread")),
++        cflags           => add_before("-m64"),
+         lib_cppflags     => add("-DL_ENDIAN"),
+-        ex_libs          => add(threads("-pthread")),
+         bn_ops           => "SIXTY_FOUR_BIT_LONG",
+         asm_arch         => 'x86_64',
+         perlasm_scheme   => "elf",
+-        shared_cflag     => "-fPIC",
+-        shared_ldflag    => add_before("-shared -static-libgcc"),
++        shared_ldflag    => add_before("-static-libgcc"),
+         multilib         => "/64",
+     },
+ 
+@@ -288,36 +292,20 @@
+     #
+     "solaris64-x86_64-cc" => {
+         inherit_from     => [ "solaris-common-cc" ],
+-        CC               => "cc",
+-        CFLAGS           => add_before(picker(debug   => "-g",
+-                                              release => "-xO5 -xdepend -xbuiltin")),
+-        cflags           => add_before("-xarch=generic64 -xstrconst -Xa"),
+-        cppflags         => add(threads("-D_REENTRANT")),
++        CFLAGS           => add(picker(release => "-xbuiltin")),
++        cflags           => add_before("-xarch=generic64"),
+         lib_cppflags     => add("-DL_ENDIAN"),
+-        thread_scheme    => "pthreads",
+-        lflags           => add(threads("-mt")),
+-        ex_libs          => add(threads("-lpthread")),
+         bn_ops           => "SIXTY_FOUR_BIT_LONG",
+         asm_arch         => 'x86_64',
+         perlasm_scheme   => "elf",
+-        shared_cflag     => "-KPIC",
+-        shared_ldflag    => add_before("-G -dy -z text"),
+         multilib         => "/64",
+     },
+ 
+ #### SPARC Solaris with GNU C setups
+     "solaris-sparcv7-gcc" => {
+         inherit_from     => [ "solaris-common-gcc" ],
+-        CC               => "gcc",
+-        CFLAGS           => add_before(picker(default => "-Wall",
+-                                              debug   => "-O0 -g",
+-                                              release => "-O3")),
+-        cflags           => add(threads("-pthread")),
+         lib_cppflags     => add("-DB_ENDIAN -DBN_DIV2W"),
+-        ex_libs          => add(threads("-pthread")),
+         bn_ops           => "BN_LLONG RC4_CHAR",
+-        shared_cflag     => "-fPIC",
+-        shared_ldflag    => add_before("-shared"),
+     },
+     "solaris-sparcv8-gcc" => {
+         inherit_from     => [ "solaris-sparcv7-gcc" ],
+@@ -334,8 +322,10 @@
+         perlasm_scheme   => 'void',
+     },
+     "solaris64-sparcv9-gcc" => {
+-        inherit_from     => [ "solaris-sparcv9-gcc" ],
+-        cflags           => sub { my $f=join(" ",@_); $f =~ s/\-m32/-m64/; $f; },
++        inherit_from     => [ "solaris-sparcv7-gcc" ],
++        cflags           => add_before("-m64 -mcpu=ultrasparc"),
++        asm_arch         => 'sparcv9',
++        perlasm_scheme   => 'void',
+         bn_ops           => "BN_LLONG RC4_CHAR",
+         multilib         => "/64",
+     },
+@@ -346,17 +336,8 @@
+ # SC5.0 note: Compiler common patch 107357-01 or later is required!
+     "solaris-sparcv7-cc" => {
+         inherit_from     => [ "solaris-common-cc" ],
+-        CC               => "cc",
+-        CFLAGS           => add_before(picker(debug   => "-g",
+-                                              release => "-xO5 -xdepend")),
+-        cflags           => add_before("-xstrconst -Xa"),
+-        cppflags         => add(threads("-D_REENTRANT")),
+         lib_cppflags     => add("-DB_ENDIAN -DBN_DIV2W"),
+-        lflags           => add(threads("-mt")),
+-        ex_libs          => add(threads("-lpthread")),
+         bn_ops           => "BN_LLONG RC4_CHAR",
+-        shared_cflag     => "-KPIC",
+-        shared_ldflag    => add_before("-G -dy -z text"),
+     },
+ ####
+     "solaris-sparcv8-cc" => {
