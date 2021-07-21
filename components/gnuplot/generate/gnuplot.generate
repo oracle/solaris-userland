@@ -1,0 +1,50 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+
+# Reintroduce $(GNUPLOT_VERSION) in generated p5m file.
+<transform file link -> edit path "$(GNUPLOT_VERSION)" "$(GV)">
+<transform file link -> edit path "GV" "GNUPLOT_VERSION">
+
+# Make gnuplot executable...
+<transform file path=usr/bin/gnuplot -> set mode 555>
+<transform file path=usr/lib/\$\(MACH64\)/gnuplot/\$\(GNUPLOT_VERSION\)/gnuplot_x11 -> set mode 555>
+
+# Setup manual page stability, see attributes(7).
+<transform file path=usr/share/man/man1/gnuplot.1 -> set mangler.man.stability uncommitted>
+
+# Do not deliver build system files and object files...
+<transform file path=usr/demo/gnuplot.*Makefile -> drop>
+<transform file path=usr/demo/gnuplot/plugin/\.deps -> drop>
+<transform file path=usr/demo/gnuplot/plugin/demo_plugin_so-demo_plugin.o -> drop>
+
+# Setup executable mode on demo's binaries and scripts.
+<transform file path=usr/demo/gnuplot/rundemo -> set mode 555>
+<transform file path=usr/demo/gnuplot/runtcldemo -> set mode 555>
+<transform file path=usr/demo/gnuplot/.*\.tcl$ -> set mode 555>
+<transform file path=usr/demo/gnuplot/.*\.pl$ -> set mode 555>
+<transform file path=usr/demo/gnuplot/binary[1-9]$ -> set mode 555>
+
+# Ignore 64-bit object in 32-bit path error for demo plugin.
+<transform file path=usr/demo/gnuplot/plugin/demo_plugin.so -> set pkg.linted.userland.action001.2 true>

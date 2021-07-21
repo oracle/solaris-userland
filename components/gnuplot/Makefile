@@ -29,18 +29,28 @@ include ../../make-rules/shared-macros.mk
 LD_Z_IGNORE=
 
 COMPONENT_NAME=		gnuplot
-COMPONENT_VERSION=	5.2.2
+COMPONENT_VERSION=	5.4.2
 COMPONENT_PROJECT_URL=  http://gnuplot.info/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:a416d22f02bdf3873ef82c5eb7f8e94146795811ef808e12b035ada88ef7b1a1
+    sha256:e57c75e1318133951d32a83bcdc4aff17fed28722c4e71f2305cfc2ae1cae7ba
 COMPONENT_ARCHIVE_URL=  https://sourceforge.net/projects/$(COMPONENT_NAME)/files/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)/download
 COMPONENT_ANITYA_ID=	1216
 
-TPNO=			40395
+TPNO=			72831
 
-CXXFLAGS += -std=c++11
+CXXFLAGS += -std=c++14
 
 COMPONENT_BUILD_TARGETS = all info
+PKG_MACROS +=	GNUPLOT_VERSION=$(shell echo $(COMPONENT_VERSION) | cut -d. -f1-2)
+
+# Copy info file and demos to proto area.
+COMPONENT_POST_INSTALL_ACTION += ( \
+	$(MKDIR) $(PROTO_DIR)/usr/share/info $(PROTO_DIR)/usr/demo; \
+	$(CP) $(BUILD_DIR)/$(MACH64)/docs/gnuplot.info $(PROTO_DIR)/usr/share/info/; \
+	$(CP) -r $(COMPONENT_SRC)/demo $(PROTO_DIR)/usr/demo/gnuplot; \
+	$(CP) -r $(BUILD_DIR)/$(MACH64)/demo/* $(PROTO_DIR)/usr/demo/gnuplot/; \
+	$(CP) $(COMPONENT_DIR)/rundemo $(COMPONENT_DIR)/runtcldemo $(PROTO_DIR)/usr/demo/gnuplot/ \
+);
 
 # Tests are disabled since they require a running desktop.
 $(SKIP_TEST_AT_TOP_LEVEL)
@@ -74,6 +84,7 @@ REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += print/filter/ghostscript/fonts/gnu-gs-fonts-other
 REQUIRED_PACKAGES += print/filter/ghostscript/fonts/gnu-gs-fonts-std
 REQUIRED_PACKAGES += runtime/lua
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/font/truetype/liberation
 REQUIRED_PACKAGES += system/font/xorg/xorg-core
