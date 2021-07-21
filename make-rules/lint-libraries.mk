@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
 #
@@ -51,13 +51,13 @@ $$(BUILD_DIR)/%/$(1).ln:	$(1) $(BUILD_DIR)/%/.installed
 	(cd $$(@D) ; $$(LINT) $$(LINT_FLAGS) -o $$(@F:llib-l%.ln=%) ../../$$<)
 
 $$(PROTOUSRLIBDIR)/$(1):	$(1)
-	$(INSTALL) -c $$< $$@
+	$(INSTALL) -D $$< $$@
 
 $$(PROTOUSRLIBDIR)/$(1).ln:	$$(BUILD_DIR)/$(MACH32)/$(1).ln
-	$(INSTALL) -c $$< $$@
+	$(INSTALL) -D $$< $$@
 
 $$(PROTOUSRLIBDIR64)/$(1).ln:	$$(BUILD_DIR)/$(MACH64)/$(1).ln
-	$(INSTALL) -c $$< $$@
+	$(INSTALL) -D $$< $$@
 
 BUILD_32 += $(BUILD_DIR_32)/$(1).ln
 BUILD_64 += $(BUILD_DIR_64)/$(1).ln
