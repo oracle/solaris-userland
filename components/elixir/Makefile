@@ -31,15 +31,15 @@ include ../../make-rules/shared-macros.mk
 PATH=/usr/gnu/bin:/usr/bin:/usr/sbin
 
 COMPONENT_NAME=		elixir
-COMPONENT_VERSION=	1.10.2
+COMPONENT_VERSION=	1.12.1
 COMPONENT_PROJECT_URL=	https://elixir-lang.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5adffcf4389aa82fcfbc84324ebbfa095fc657a0e15b2b055fc05184f96b2d50
+    sha256:96167d614b9c483efc54bd7898c3eea4768569a77dd8892ada85d7800d5e3ea4
 COMPONENT_ARCHIVE_URL=	https://github.com/elixir-lang/$(COMPONENT_NAME)/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/elixir
 COMPONENT_ANITYA_ID=	673
 
-TPNO=			57086
+TPNO=			71797
 
 BUILD_STYLE= justmake
 
@@ -81,6 +81,10 @@ COMPONENT_TEST_TRANSFORMS += '-e "/\.\./d" -e "/^make/d" -e "/^$$/d" -e "/git_re
 COMPONENT_TEST_TRANSFORMS += '-e "/^Finished in/d" -e "/^Randomized with seed/d" -e "/^hint:/d" '
 # Ignore the spurious error message (see issue #8183 on elixir github).
 COMPONENT_TEST_TRANSFORMS += '-e "/resides in sticky dir/d" -e "/^gmake/d"'
+# the hint isn't printed when gmake test is run the second time
+COMPONENT_TEST_TRANSFORMS += '-e "/^hint/d"'
+# there's a difference between i386 and sparc
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += shell/bash
