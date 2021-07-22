@@ -1,0 +1,60 @@
+avoid duplicate plugin messages
+
+From d0ad77f10df70919d085cde7d799e0a966ff1810 Mon Sep 17 00:00:00 2001
+From: Michael Klishin <michael@clojurewerkz.org>
+Date: Mon, 28 Jun 2021 17:45:13 +0300
+Subject: [PATCH] Deduplicate parsed list of plugin directories
+
+See #3155 for context. It is also possible that someone might
+override the path with duplicate values.
+
+Note that the list of directories will lose its original
+ordering. That should be fine as we expect unique plugin
+paths: it is not a "preference list" (ordering should
+not matter).
+
+Closes #3155
+---
+ .../apps/rabbitmq_prelaunch/src/rabbit_prelaunch_conf.erl     | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/deps/rabbit/apps/rabbitmq_prelaunch/src/rabbit_prelaunch_conf.erl b/deps/rabbit/apps/rabbitmq_prelaunch/src/rabbit_prelaunch_conf.erl
+index 7db63e892c4..46a3971521a 100644
+--- a/deps/rabbit/apps/rabbitmq_prelaunch/src/rabbit_prelaunch_conf.erl
++++ b/deps/rabbit/apps/rabbitmq_prelaunch/src/rabbit_prelaunch_conf.erl
+@@ -285,10 +285,10 @@ find_cuttlefish_schemas([], AllSchemas) ->
+     lists:sort(fun(A,B) -> A < B end, AllSchemas).
+ 
+ list_apps(#{os_type := {win32, _}, plugins_path := PluginsPath}) ->
+-    PluginsDirs = string:lexemes(PluginsPath, ";"),
++    PluginsDirs = lists:usort(string:lexemes(PluginsPath, ";")),
+     list_apps1(PluginsDirs, []);
+ list_apps(#{plugins_path := PluginsPath}) ->
+-    PluginsDirs = string:lexemes(PluginsPath, ":"),
++    PluginsDirs = lists:usort(string:lexemes(PluginsPath, ":")),
+     list_apps1(PluginsDirs, []).
+ 
+ 
+From 17a1f4fa3ebf6d93fc1b116ce0d10597829a7c3b Mon Sep 17 00:00:00 2001
+From: Michael Klishin <michael@clojurewerkz.org>
+Date: Mon, 28 Jun 2021 18:38:22 +0300
+Subject: [PATCH] Deduplicate parsed plugin directory list in one more place
+
+References #3155
+---
+ deps/rabbit/src/rabbit_plugins.erl | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/deps/rabbit/src/rabbit_plugins.erl b/deps/rabbit/src/rabbit_plugins.erl
+index e4b8182361b..a631f07884d 100644
+--- a/deps/rabbit/src/rabbit_plugins.erl
++++ b/deps/rabbit/src/rabbit_plugins.erl
+@@ -548,7 +548,7 @@ split_path(PathString) ->
+                      {unix, _} -> ":";
+                      {win32, _} -> ";"
+                  end,
+-    string:tokens(PathString, Delimiters).
++    lists:usort(string:tokens(PathString, Delimiters)).
+ 
+ %% Search for files using glob in a given dir. Returns full filenames of those files.
+ full_path_wildcard(Glob, Dir) ->

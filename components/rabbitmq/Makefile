@@ -28,17 +28,17 @@ include ../../make-rules/shared-macros.mk
 PATH=/usr/gnu/bin:/usr/bin:/usr/sbin
 
 COMPONENT_NAME=		rabbitmq-server
-COMPONENT_VERSION=	3.8.3
+COMPONENT_VERSION=	3.8.18
 COMPONENT_SRC_NAME=	rabbitmq-server
 COMPONENT_PROJECT_URL=	https://www.rabbitmq.com/
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.xz
 COMPONENT_BUGDB=	service/rabbitmq
 COMPONENT_ANITYA_ID=	5585
-COMPONENT_ARCHIVE_HASH= sha256:aedc8458701a80167b35958c10090d468c3de11984510b49ec02e777c51b1aba
+COMPONENT_ARCHIVE_HASH= sha256:75372b483f141cb938b6ef8a6064f10ff7c1ea2ab0649f056992b6eaa0670471
 COMPONENT_ARCHIVE_URL= https://github.com/rabbitmq/rabbitmq-server/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 
-TPNO=			57486
+TPNO=			72148
 
 BUILD_STYLE= justmake
 
@@ -88,6 +88,7 @@ COMPONENT_TEST_DIR =		$(COMPONENT_DIR)
 COMPONENT_TEST_CMD =		$(SHELL)
 COMPONENT_TEST_ENV =		LC_ALL=en_US.UTF-8
 COMPONENT_TEST_TARGETS =	test.sh $(BUILD_DIR_64) $(BUILD_DIR_64)/test-rabbit
+COMPONENT_TEST_TRANSFORMS +=	'-e "/is updated to a safe effective value of/d"'
 
 # Deliver hardlinks as they appear in the proto area
 PKG_AUTO_HARDLINKS=1

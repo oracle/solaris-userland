@@ -1,50 +1,246 @@
 In-house patch to change script shebangs from /bin/sh to /bin/bash.
-
---- rabbitmq-server-3.7.8/deps/rabbit/scripts/rabbitmq-diagnostics	2018-09-05 05:25:14.646498897 +0000
-+++ rabbitmq-server-3.7.8/deps/rabbit/scripts/rabbitmq-diagnostics	2018-09-05 05:24:26.279293684 +0000
+diff -r 73997a5a6848 deps/accept/bin/checks.sh
+--- a/deps/accept/bin/checks.sh	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/accept/bin/checks.sh	Tue Jun 15 08:36:18 2021 +0000
+@@ -1,3 +1,3 @@
+-#!/bin/sh
++#!/bin/bash
+ 
+ rebar3 as test do xref, dialyzer, eunit
+diff -r 73997a5a6848 deps/accept/bin/pre-commit.sh
+--- a/deps/accept/bin/pre-commit.sh	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/accept/bin/pre-commit.sh	Tue Jun 15 08:36:18 2021 +0000
 @@ -1,4 +1,4 @@
 -#!/bin/sh
 +#!/bin/bash
- ##  The contents of this file are subject to the Mozilla Public License
- ##  Version 1.1 (the "License"); you may not use this file except in
- ##  compliance with the License. You may obtain a copy of the License
---- rabbitmq-server-3.7.8/deps/rabbit/scripts/rabbitmq-defaults	2018-09-05 05:26:01.045167810 +0000
-+++ rabbitmq-server-3.7.8/deps/rabbit/scripts/rabbitmq-defaults	2018-09-05 05:25:45.591236142 +0000
+ 
+ if [ $1 = "install" ]; then
+    ln -s `pwd`/bin/pre-commit.sh .git/hooks/pre-commit
+diff -r 73997a5a6848 deps/cowboy/erlang.mk
+--- a/deps/cowboy/erlang.mk	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/cowboy/erlang.mk	Tue Jun 15 08:36:18 2021 +0000
+@@ -7527,7 +7527,7 @@
+ # Plugin-specific targets.
+ 
+ define sfx_stub
+-#!/bin/sh
++#!/bin/bash
+ 
+ TMPDIR=`mktemp -d`
+ ARCHIVE=`awk '/^__ARCHIVE_BELOW__$$/ {print NR + 1; exit 0;}' $$0`
+diff -r 73997a5a6848 deps/cowlib/erlang.mk
+--- a/deps/cowlib/erlang.mk	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/cowlib/erlang.mk	Tue Jun 15 08:36:18 2021 +0000
+@@ -7143,7 +7143,7 @@
+ # Plugin-specific targets.
+ 
+ define sfx_stub
+-#!/bin/sh
++#!/bin/bash
+ 
+ TMPDIR=`mktemp -d`
+ ARCHIVE=`awk '/^__ARCHIVE_BELOW__$$/ {print NR + 1; exit 0;}' $$0`
+diff -r 73997a5a6848 deps/gun/erlang.mk
+--- a/deps/gun/erlang.mk	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/gun/erlang.mk	Tue Jun 15 08:36:18 2021 +0000
+@@ -7622,7 +7622,7 @@
+ # Plugin-specific targets.
+ 
+ define sfx_stub
+-#!/bin/sh
++#!/bin/bash
+ 
+ TMPDIR=`mktemp -d`
+ ARCHIVE=`awk '/^__ARCHIVE_BELOW__$$/ {print NR + 1; exit 0;}' $$0`
+diff -r 73997a5a6848 deps/prometheus/bin/checks.sh
+--- a/deps/prometheus/bin/checks.sh	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/prometheus/bin/checks.sh	Tue Jun 15 08:36:18 2021 +0000
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ mkdir _build
+ curl -L -o ./_build/rebar3 https://s3.amazonaws.com/rebar3/rebar3
+ chmod +x ./_build/rebar3
+diff -r 73997a5a6848 deps/prometheus/bin/pre-commit.sh
+--- a/deps/prometheus/bin/pre-commit.sh	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/prometheus/bin/pre-commit.sh	Tue Jun 15 08:36:18 2021 +0000
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ if [ $# -eq 0 ]; then
+     git stash -q --keep-index
+     ./bin/checks.sh
+diff -r 73997a5a6848 deps/rabbit/scripts/rabbitmq-defaults
+--- a/deps/rabbit/scripts/rabbitmq-defaults	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/rabbit/scripts/rabbitmq-defaults	Tue Jun 15 08:36:18 2021 +0000
 @@ -1,4 +1,4 @@
 -#!/bin/sh -e
 +#!/bin/bash -e
- ##  The contents of this file are subject to the Mozilla Public License
- ##  Version 1.1 (the "License"); you may not use this file except in
- ##  compliance with the License. You may obtain a copy of the License
---- rabbitmq-server-3.7.8/deps/rabbit/scripts/rabbitmq-env	2018-09-05 05:26:46.826091977 +0000
-+++ rabbitmq-server-3.7.8/deps/rabbit/scripts/rabbitmq-env	2018-09-05 05:26:30.711692967 +0000
+ ## This Source Code Form is subject to the terms of the Mozilla Public
+ ## License, v. 2.0. If a copy of the MPL was not distributed with this
+ ## file, You can obtain one at https://mozilla.org/MPL/2.0/.
+diff -r 73997a5a6848 deps/rabbit/scripts/rabbitmq-diagnostics
+--- a/deps/rabbit/scripts/rabbitmq-diagnostics	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/rabbit/scripts/rabbitmq-diagnostics	Tue Jun 15 08:36:18 2021 +0000
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ ## This Source Code Form is subject to the terms of the Mozilla Public
+ ## License, v. 2.0. If a copy of the MPL was not distributed with this
+ ## file, You can obtain one at https://mozilla.org/MPL/2.0/.
+diff -r 73997a5a6848 deps/rabbit/scripts/rabbitmq-env
+--- a/deps/rabbit/scripts/rabbitmq-env	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/rabbit/scripts/rabbitmq-env	Tue Jun 15 08:36:18 2021 +0000
 @@ -1,4 +1,4 @@
 -#!/bin/sh -e
 +#!/bin/bash -e
- ##  The contents of this file are subject to the Mozilla Public License
- ##  Version 1.1 (the "License"); you may not use this file except in
- ##  compliance with the License. You may obtain a copy of the License
---- rabbitmq-server-3.7.8/deps/rabbit/scripts/rabbitmqctl	2018-09-05 05:27:29.282871633 +0000
-+++ rabbitmq-server-3.7.8/deps/rabbit/scripts/rabbitmqctl	2018-09-05 05:27:13.928757278 +0000
+ ## This Source Code Form is subject to the terms of the Mozilla Public
+ ## License, v. 2.0. If a copy of the MPL was not distributed with this
+ ## file, You can obtain one at https://mozilla.org/MPL/2.0/.
+diff -r 73997a5a6848 deps/rabbit/scripts/rabbitmq-plugins
+--- a/deps/rabbit/scripts/rabbitmq-plugins	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/rabbit/scripts/rabbitmq-plugins	Tue Jun 15 08:36:18 2021 +0000
 @@ -1,4 +1,4 @@
 -#!/bin/sh
 +#!/bin/bash
- ##  The contents of this file are subject to the Mozilla Public License
- ##  Version 1.1 (the "License"); you may not use this file except in
- ##  compliance with the License. You may obtain a copy of the License
---- rabbitmq-server-3.7.8/deps/rabbit/scripts/rabbitmq-plugins	2018-09-05 05:28:11.887095882 +0000
-+++ rabbitmq-server-3.7.8/deps/rabbit/scripts/rabbitmq-plugins	2018-09-05 05:27:56.679254488 +0000
+ ## This Source Code Form is subject to the terms of the Mozilla Public
+ ## License, v. 2.0. If a copy of the MPL was not distributed with this
+ ## file, You can obtain one at https://mozilla.org/MPL/2.0/.
+diff -r 73997a5a6848 deps/rabbit/scripts/rabbitmq-queues
+--- a/deps/rabbit/scripts/rabbitmq-queues	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/rabbit/scripts/rabbitmq-queues	Tue Jun 15 08:36:18 2021 +0000
 @@ -1,4 +1,4 @@
 -#!/bin/sh
 +#!/bin/bash
- ##  The contents of this file are subject to the Mozilla Public License
- ##  Version 1.1 (the "License"); you may not use this file except in
- ##  compliance with the License. You may obtain a copy of the License
---- rabbitmq-server-3.7.8/deps/rabbit/scripts/rabbitmq-server	2018-09-05 05:29:09.523260195 +0000
-+++ rabbitmq-server-3.7.8/deps/rabbit/scripts/rabbitmq-server	2018-09-05 05:28:42.778217820 +0000
+ ## This Source Code Form is subject to the terms of the Mozilla Public
+ ## License, v. 2.0. If a copy of the MPL was not distributed with this
+ ## file, You can obtain one at https://mozilla.org/MPL/2.0/.
+diff -r 73997a5a6848 deps/rabbit/scripts/rabbitmq-server
+--- a/deps/rabbit/scripts/rabbitmq-server	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/rabbit/scripts/rabbitmq-server	Tue Jun 15 08:36:18 2021 +0000
 @@ -1,4 +1,4 @@
 -#!/bin/sh
 +#!/bin/bash
- ##  The contents of this file are subject to the Mozilla Public License
- ##  Version 1.1 (the "License"); you may not use this file except in
- ##  compliance with the License. You may obtain a copy of the License
+ # vim:sw=4:et:
+ ## This Source Code Form is subject to the terms of the Mozilla Public
+ ## License, v. 2.0. If a copy of the MPL was not distributed with this
+diff -r 73997a5a6848 deps/rabbit/scripts/rabbitmq-upgrade
+--- a/deps/rabbit/scripts/rabbitmq-upgrade	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/rabbit/scripts/rabbitmq-upgrade	Tue Jun 15 08:36:18 2021 +0000
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ ## This Source Code Form is subject to the terms of the Mozilla Public
+ ## License, v. 2.0. If a copy of the MPL was not distributed with this
+ ## file, You can obtain one at https://mozilla.org/MPL/2.0/.
+diff -r 73997a5a6848 deps/rabbit/scripts/rabbitmqctl
+--- a/deps/rabbit/scripts/rabbitmqctl	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/rabbit/scripts/rabbitmqctl	Tue Jun 15 08:36:18 2021 +0000
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ ## This Source Code Form is subject to the terms of the Mozilla Public
+ ## License, v. 2.0. If a copy of the MPL was not distributed with this
+ ## file, You can obtain one at https://mozilla.org/MPL/2.0/.
+diff -r 73997a5a6848 deps/rabbitmq_auth_backend_http/examples/rabbitmq_auth_backend_django/start.sh
+--- a/deps/rabbitmq_auth_backend_http/examples/rabbitmq_auth_backend_django/start.sh	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/rabbitmq_auth_backend_http/examples/rabbitmq_auth_backend_django/start.sh	Tue Jun 15 08:36:18 2021 +0000
+@@ -1,3 +1,3 @@
+-#!/bin/sh
++#!/bin/bash
+ python manage.py migrate
+ python manage.py runserver 0.0.0.0:8000
+diff -r 73997a5a6848 deps/rabbitmq_auth_backend_http/examples/rabbitmq_auth_backend_spring_boot/mvnw
+--- a/deps/rabbitmq_auth_backend_http/examples/rabbitmq_auth_backend_spring_boot/mvnw	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/rabbitmq_auth_backend_http/examples/rabbitmq_auth_backend_spring_boot/mvnw	Tue Jun 15 08:36:18 2021 +0000
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ # ----------------------------------------------------------------------------
+ # Licensed to the Apache Software Foundation (ASF) under one
+ # or more contributor license agreements.  See the NOTICE file
+diff -r 73997a5a6848 deps/rabbitmq_auth_backend_http/examples/rabbitmq_auth_backend_spring_boot_kotlin/mvnw
+--- a/deps/rabbitmq_auth_backend_http/examples/rabbitmq_auth_backend_spring_boot_kotlin/mvnw	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/rabbitmq_auth_backend_http/examples/rabbitmq_auth_backend_spring_boot_kotlin/mvnw	Tue Jun 15 08:36:18 2021 +0000
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ # ----------------------------------------------------------------------------
+ # Licensed to the Apache Software Foundation (ASF) under one
+ # or more contributor license agreements.  See the NOTICE file
+diff -r 73997a5a6848 deps/rabbitmq_federation/etc/rabbit-test.sh
+--- a/deps/rabbitmq_federation/etc/rabbit-test.sh	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/rabbitmq_federation/etc/rabbit-test.sh	Tue Jun 15 08:36:18 2021 +0000
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ CTL=$1
+ 
+ # Test direct connections
+diff -r 73997a5a6848 deps/rabbitmq_federation/etc/setup-rabbit-test.sh
+--- a/deps/rabbitmq_federation/etc/setup-rabbit-test.sh	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/rabbitmq_federation/etc/setup-rabbit-test.sh	Tue Jun 15 08:36:18 2021 +0000
+@@ -1,2 +1,2 @@
+-#!/bin/sh -e
++#!/bin/bash -e
+ sh -e `dirname $0`/rabbit-test.sh "$DEPS_DIR/rabbit/scripts/rabbitmqctl -n $RABBITMQ_NODENAME"
+diff -r 73997a5a6848 deps/rabbitmq_sharding/etc/rkey.sh
+--- a/deps/rabbitmq_sharding/etc/rkey.sh	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/rabbitmq_sharding/etc/rkey.sh	Tue Jun 15 08:36:18 2021 +0000
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ CTL=$1
+ 
+ curl -i -u guest:guest -H "content-type:application/json" \
+diff -r 73997a5a6848 deps/ranch/erlang.mk
+--- a/deps/ranch/erlang.mk	Tue Jun 15 08:28:53 2021 +0000
++++ b/deps/ranch/erlang.mk	Tue Jun 15 08:36:18 2021 +0000
+@@ -7622,7 +7622,7 @@
+ # Plugin-specific targets.
+ 
+ define sfx_stub
+-#!/bin/sh
++#!/bin/bash
+ 
+ TMPDIR=`mktemp -d`
+ ARCHIVE=`awk '/^__ARCHIVE_BELOW__$$/ {print NR + 1; exit 0;}' $$0`
+diff -r 73997a5a6848 erlang.mk
+--- a/erlang.mk	Tue Jun 15 08:28:53 2021 +0000
++++ b/erlang.mk	Tue Jun 15 08:36:18 2021 +0000
+@@ -7622,7 +7622,7 @@
+ # Plugin-specific targets.
+ 
+ define sfx_stub
+-#!/bin/sh
++#!/bin/bash
+ 
+ TMPDIR=`mktemp -d`
+ ARCHIVE=`awk '/^__ARCHIVE_BELOW__$$/ {print NR + 1; exit 0;}' $$0`
+diff -r 73997a5a6848 scripts/rabbitmq-script-wrapper
+--- a/scripts/rabbitmq-script-wrapper	Tue Jun 15 08:28:53 2021 +0000
++++ b/scripts/rabbitmq-script-wrapper	Tue Jun 15 08:36:18 2021 +0000
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ 
+ ## This Source Code Form is subject to the terms of the Mozilla Public
+ ## License, v. 2.0. If a copy of the MPL was not distributed with this
+diff -r 73997a5a6848 scripts/rabbitmq-server-ha.ocf
+--- a/scripts/rabbitmq-server-ha.ocf	Tue Jun 15 08:28:53 2021 +0000
++++ b/scripts/rabbitmq-server-ha.ocf	Tue Jun 15 08:36:18 2021 +0000
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ # Licensed under the Apache License, Version 2.0 (the "License");
+ # you may not use this file except in compliance with the License.
+ # You may obtain a copy of the License at
+diff -r 73997a5a6848 scripts/rabbitmq-server.ocf
+--- a/scripts/rabbitmq-server.ocf	Tue Jun 15 08:28:53 2021 +0000
++++ b/scripts/rabbitmq-server.ocf	Tue Jun 15 08:36:18 2021 +0000
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ 
+ ## This Source Code Form is subject to the terms of the Mozilla Public
+ ## License, v. 2.0. If a copy of the MPL was not distributed with this

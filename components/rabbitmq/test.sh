@@ -19,7 +19,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 # Script rabbitmq-server requires GNU version of grep.
@@ -49,9 +49,9 @@ fi
 ########################### START RABBITMQ SERVER ###########################
 
 # We use RabbitMQ bash scripts from the current build tree.
-RABBITMQ_SERVER_BIN="${RABBITMQ_SOURCE_DIR}/deps/rabbit/scripts/rabbitmq-server"
-RABBITMQ_CTL_BIN="${RABBITMQ_SOURCE_DIR}/deps/rabbit/scripts/rabbitmqctl"
-RABBITMQ_PLUGINS_BIN="${RABBITMQ_SOURCE_DIR}/deps/rabbit/scripts/rabbitmq-plugins"
+RABBITMQ_SERVER_BIN="${RABBITMQ_SOURCE_DIR}/sbin/rabbitmq-server"
+RABBITMQ_CTL_BIN="${RABBITMQ_SOURCE_DIR}/sbin/rabbitmqctl"
+RABBITMQ_PLUGINS_BIN="${RABBITMQ_SOURCE_DIR}/sbin/rabbitmq-plugins"
 
 # Path to RabbitMQ plugins.
 export RABBITMQ_PLUGINS_DIR="${RABBITMQ_SOURCE_DIR}/plugins"

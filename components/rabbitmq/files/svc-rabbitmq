@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 
 . /lib/svc/share/smf_include.sh
@@ -60,6 +60,10 @@ if [[ -z $RABBITMQ_NODENAME ]]; then
 	INSTANCE=${SMF_FMRI##*:}
 	if [[ $INSTANCE == default ]]; then
 		INSTANCE=$(getenv NODENAME)
+		# newer rabbitmq doesn't set NODENAME
+		if [[ -z $INSTANCE ]]; then
+			INSTANCE=rabbit@$(hostname)
+		fi
 	fi
 	if [[ $INSTANCE != *@* ]]; then
 		INSTANCE=$INSTANCE@$(hostname)
