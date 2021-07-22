@@ -6,16 +6,15 @@ ERROR userland.action001.3        bad RUNPATH, 'usr/lib/amd64/erlang/lib/crypto-
 
 This change will not be sent upstream.
 
-diff --git a/lib/crypto/configure.in b/lib/crypto/configure.in
-index a3b6673..ba9643e 100644
---- a/lib/crypto/configure.in
-+++ b/lib/crypto/configure.in
-@@ -66,7 +66,7 @@ dnl use "PATH/include" and "PATH/lib".
+diff -r 395866bff381 lib/crypto/configure.in
+--- a/lib/crypto/configure.in	Fri May 28 15:48:39 2021 +0000
++++ b/lib/crypto/configure.in	Fri May 28 15:51:09 2021 +0000
+@@ -77,7 +77,7 @@
  
  AC_CHECK_SIZEOF(void *)
  
--std_ssl_locations="/usr/local /usr/sfw /usr /opt/local /usr/pkg /usr/local/openssl /usr/lib/openssl /usr/openssl /usr/local/ssl /usr/lib/ssl /usr/ssl /"
+-std_ssl_locations="/usr/local /usr/sfw /usr /opt/local /usr/pkg /usr/local/openssl /usr/local/opt/openssl /usr/lib/openssl /usr/openssl /usr/local/ssl /usr/lib/ssl /usr/ssl /"
 +std_ssl_locations="/usr"
- 
- AC_ARG_WITH(ssl-zlib,
- AS_HELP_STRING([--with-ssl-zlib=PATH],
+ 			
+ AC_ARG_WITH(ssl,
+ AS_HELP_STRING([--with-ssl=PATH], [base location of OpenSSL include and lib directories])

@@ -31,17 +31,17 @@ include ../../make-rules/shared-macros.mk
 PATH=$(JAVA_HOME)/bin:$(USRBINDIR)
 
 COMPONENT_NAME=			erlang
-COMPONENT_VERSION=		22.2.8
-COMPONENT_PROJECT_URL=	http://www.erlang.org/
+COMPONENT_VERSION=		24.0.2
+COMPONENT_PROJECT_URL=	https://erlang.org/
 COMPONENT_SRC_NAME=	otp_src
 COMPONENT_SRC=		$(COMPONENT_SRC_NAME)_$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:71f73ddd59db521928a0f6c8d4354d6f4e9f4bfbd0b40d321cd5253a6c79b095
+    sha256:4abca2cda7fc962ad65575e5ed834dd69c745e7e637f92cfd49f384a281d0f18
 COMPONENT_ARCHIVE_URL=  https://github.com/erlang/otp/archive/OTP-${COMPONENT_VERSION}.tar.gz
 COMPONENT_BUGDB=	utility/erlang
 COMPONENT_ANITYA_ID=	707
 COMPONENT_POST_UNPACK_ACTION= ( $(MV) otp-OTP-$(COMPONENT_VERSION) $(COMPONENT_SRC))
-COMPONENT_PREP_ACTION = (cd $(@D); ./otp_build autoconf)
+COMPONENT_PREP_ACTION = (cd $(@D); ./otp_build update_configure)
 COMPONENT_VERSION_SHORT= $(shell echo $(COMPONENT_VERSION) | cut -d'.' -f1-2)
 
 # manpages
@@ -49,7 +49,7 @@ COMPONENT_NAME_1=	otp_doc_man
 COMPONENT_SRC_1=	$(COMPONENT_NAME_1)_$(COMPONENT_VERSION_SHORT)
 COMPONENT_ARCHIVE_1=	$(COMPONENT_SRC_1).tar.gz
 COMPONENT_ARCHIVE_HASH_1=	\
-    sha256:aad7e3795a44091aa33a460e3fdc94efe8757639caeba0b5ba7d79bd91c972b3
+    sha256:4ff3f98b49f1a40984d89d30605408f802b091acd9c7bb6b25a5d63bd2652cb1
 COMPONENT_ARCHIVE_URL_1=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE_1)
 UNPACK_ARGS_1=	-r $(COMPONENT_SRC_1)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_1)
@@ -60,13 +60,13 @@ COMPONENT_NAME_2=	otp_doc_html
 COMPONENT_SRC_2=	$(COMPONENT_NAME_2)_$(COMPONENT_VERSION_SHORT)
 COMPONENT_ARCHIVE_2=	$(COMPONENT_SRC_2).tar.gz
 COMPONENT_ARCHIVE_HASH_2=	\
-    sha256:09d41810d79fafde293feb48ebb249940eca6f9f5733abb235e37d06b8f482e3
+    sha256:6ceaa2cec97fa5a631779544a3c59afe9e146084e560725b823c476035716e73
 COMPONENT_ARCHIVE_URL_2=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE_2)
 UNPACK_ARGS_2=	-r $(COMPONENT_SRC_2)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_2)
 COMPONENT_ANITYA_ID_2=	707
 
-TPNO=			57244
+TPNO=			71959
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 
@@ -95,11 +95,6 @@ CONFIGURE_OPTIONS += --with-ssl
 CONFIGURE_OPTIONS += --enable-fips
 CONFIGURE_OPTIONS += --enable-dynamic-ssl-lib
 
-# The HiPE portion is a bit sensitive, and only seems to work 64-bit on
-# amd64 (thus the variant.arch tagging in erlang.p5m). erts/config.log
-# can be very interesting if issues occur.
-CONFIGURE_OPTIONS.i386  = --enable-hipe
-CONFIGURE_OPTIONS.sparc = --disable-hipe
 # Disable kernel poll on sparc to avoid hangs in erl_child_setup (bug 31443512).
 CONFIGURE_OPTIONS.sparc += --disable-kernel-poll
 
@@ -121,6 +116,7 @@ CONFIGURE_SCRIPT =		$(@D)/configure
 # that it will properly detect wxWidgets support by adding -std=c++11 to $(CXX)
 # (workaround for the configure script ignoring CXXFLAGS) and with ERL_TOP set
 # so that the wx component knows we're building inside the erlang source tree.
+# run autoconf in lib/crypto to propagate the configure.in patch
 COMPONENT_POST_CONFIGURE_ACTION = \
 	(cd $(@D)/lib/wx; $(ENV) $(CONFIGURE_ENV) \
 		CXX="$(CXX) -std=c++11" \
@@ -144,13 +140,16 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 GENERATE_TRANSFORMS := generate/pretrans $(GENERATE_TRANSFORMS)
 
 # Extra directories with documentation for 'gmake manifest-check'.
-GENERATE_PROTO_DIRS += otp_doc_man_22.2/man/ otp_doc_html_22.2/ files^files
+GENERATE_PROTO_DIRS += otp_doc_man_$(COMPONENT_VERSION_SHORT)/man/ otp_doc_html_$(COMPONENT_VERSION_SHORT)/ files^files
 
 # remove INSTALL_PREFIX from path
 COMPONENT_POST_INSTALL_ACTION += \
 	$(PERL) -pi -e "s|$(PROTO_DIR)||g" \
 		$(PROTOUSRLIBDIR64)/erlang/bin/erl \
 		$(PROTOUSRLIBDIR64)/erlang/releases/RELEASES
+
+COMPONENT_TEST_TRANSFORMS += \
+        '-e "/^run_erlang_tests.sh/d" '
 
 REQUIRED_PACKAGES += developer/java/jdk-8
 REQUIRED_PACKAGES += developer/lexer/flex
