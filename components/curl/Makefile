@@ -26,9 +26,9 @@ BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		curl
-COMPONENT_VERSION=	$(COMPONENT_NAME)-7_76_0
-IPS_COMPONENT_VERSION=	7.76.0
-TPNO=			68544
+COMPONENT_VERSION=	$(COMPONENT_NAME)-7_78_0
+IPS_COMPONENT_VERSION=	7.78.0
+TPNO=			72921
 COMPONENT_PROJECT_URL=	http://curl.haxx.se/
 
 #GIT_REPO=	https://github.com/curl/curl.git
@@ -38,7 +38,7 @@ COMPONENT_PROJECT_URL=	http://curl.haxx.se/
 
 # git clone is fine but download of the archive is much faster
 COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).zip
-COMPONENT_ARCHIVE_HASH=	sha256:31d1464937384ef0c0c235dafc2932f943d41d62a005c1e33184e70c10636d28
+COMPONENT_ARCHIVE_HASH=	sha256:1fbc499be37248aee430e8ff6448cabcc2d7cbf7b40dd0aa00cd66de3b5a7c11
 COMPONENT_ARCHIVE_URL=	https://github.com/curl/curl/archive/$(COMPONENT_ARCHIVE)
 
 COMPONENT_BUGDB=	library/curl
@@ -131,6 +131,7 @@ REQUIRED_PACKAGES += library/libssh2
 REQUIRED_PACKAGES += library/nghttp2
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/security/openssl-11
+REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
