@@ -19,7 +19,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
 set name=pkg.fmri \
@@ -29,12 +29,15 @@ set name=com.oracle.info.description value="the Rust package manager"
 set name=com.oracle.info.tpno value=$(TPNO)
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2018/120
+set name=org.opensolaris.arc-caseid value=PSARC/2018/120 value=PSARC/2021/094
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 file etc/bash_completion.d/cargo \
     path=etc/bash/bash_completion.d/cargo.bashcomp.sh
 file path=usr/bin/cargo
+file path=usr/bin/cargo-fmt
+file usr/libexec/cargo-credential-1password \
+    path=usr/lib/cargo-credential-1password mode=0555
 file path=usr/share/man/man1/cargo-bench.1
 file path=usr/share/man/man1/cargo-build.1
 file path=usr/share/man/man1/cargo-check.1

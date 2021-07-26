@@ -20,14 +20,18 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
 
+<transform file path=.*/cargo-credential-1password -> set mode 0555>
+
 # inistall some files into different location
 <transform file path=etc/bash_completion.d/cargo -> set action.hash %(path)>
 <transform file path=etc/bash_completion.d/cargo -> edit path bash_completion.d/cargo bash/bash_completion.d/cargo.bashcomp.sh>
+<transform file path=usr/libexec/cargo-credential-1password -> set action.hash %(path)>
+<transform file path=usr/libexec/cargo-credential-1password -> edit path libexec lib>
 <transform file path=usr/share/zsh/site-functions/_cargo -> set action.hash %(path)>
 <transform file path=usr/share/zsh/site-functions/_cargo -> edit path site-functions vendor-functions/Completion>
 

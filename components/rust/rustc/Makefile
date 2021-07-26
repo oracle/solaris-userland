@@ -28,26 +28,21 @@ COMPILER =	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	rustc
-COMPONENT_VERSION =	1.44.1
+COMPONENT_VERSION =	1.53.0
 COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-src
 COMPONENT_PROJECT_URL =	http://www.rust-lang.org/
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:e0386295dd5f2c7842835a509e4c57989eec6c29f989a1c85478b0e06f9d38ea
+    sha256:e53a2df2c2c26f8929d551852eeae242b9a6167fba34481f92010b30def32dec
 COMPONENT_ARCHIVE_URL =	https://static.rust-lang.org/dist/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL =	$(COMPONENT_ARCHIVE_URL).asc
 
 COMPONENT_BUGDB =	utility/rust
 COMPONENT_ANITYA_ID =	7635
 
-TPNO =			59999
+TPNO =			72466
 
 PKG_VARS += RUST_PLATFORM
-
-# Workaround for https://github.com/rust-lang/rust/issues/74551
-ifeq ($(MACH), sparc)
-ADDITIONAL_PATCHES += patches/Bug74551.patch-SPARC
-endif
 
 # The unit tests hang and never finish.
 $(SKIP_TEST_AT_TOP_LEVEL)
@@ -70,7 +65,11 @@ PATH =			$(COMPONENT_DIR)/epoll:/usr/gnu/bin:/usr/bin
 # LD_B_DIRECT breaks the build.
 LD_B_DIRECT =
 
-$(MANIFEST_BASE)-%.mogrified: RUST_PLATFORM = $(MACH64:amd64=x86_64)-sun-solaris
+ifeq ($(MACH64),amd64)
+	RUST_PLATFORM = x86_64-pc-solaris
+else
+	RUST_PLATFORM = sparcv9-sun-solaris
+endif
 
 # The configure Rust uses isn't autoconf; it's hand-rolled, and doesn't
 # recognize all the autoconf options, so we start from scratch.
@@ -109,8 +108,7 @@ COMPONENT_TEST_ENV +=	CARGO_HOME=$(BUILD_DIR)/.cargo
 COMPONENT_POST_INSTALL_ACTION += \
 	(cd $(PROTO_DIR); \
 	ls -1 usr/lib/lib* \
-	  usr/lib/rustlib/$(MACH64:amd64=x86_64)-sun-solaris/codegen-backends/lib* \
-	  usr/lib/rustlib/$(MACH64:amd64=x86_64)-sun-solaris/lib/lib* | \
+	  usr/lib/rustlib/$(RUST_PLATFORM)/lib/lib* | \
 	  awk '{ print "file path="$$1 " variant.arch=$(MACH)" }' > ../../libraries-hashed.$(MACH64); )
 
 # pkg-report requires *.p5m files to be processed by pkgmogrify. Since the
