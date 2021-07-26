@@ -1,0 +1,126 @@
+This patch addresses an issue with the ksh93 internal stack restoration
+and resizing logic which was causing random coredumps, mainly in nested shell scripts. 
+The upstream fix details can be found at
+https://github.com/ksh93/ksh/commit/4604df9ada906e0a6537157a63b6ce7c0509f34d 
+
+diff --git a/src/cmd/ksh93/sh/xec.c b/src/cmd/ksh93/sh/xec.c
+index 23526098ec20..ca3876394d63 100644
+--- a/src/cmd/ksh93/sh/xec.c
++++ b/src/cmd/ksh93/sh/xec.c
+@@ -646,8 +646,8 @@ int sh_debug(Shell_t *shp, const char *trap, const char *name, const char *subsc
+ 	Stk_t			*stkp=shp->stk;
+ 	struct sh_scoped	savst;
+ 	Namval_t		*np = SH_COMMANDNOD;
+-	char			*sav = stkptr(stkp,0);
+ 	int			n=4, offset=stktell(stkp);
++	char			*sav = stkfreeze(stkp,0);
+ 	const char		*cp = "+=( ";
+ 	Sfio_t			*iop = stkstd;
+ 	short			level;
+@@ -702,7 +702,7 @@ int sh_debug(Shell_t *shp, const char *trap, const char *name, const char *subsc
+ 	nv_putval(SH_FUNNAMENOD,shp->st.funname,NV_NOFREE);
+ 	shp->st = savst;
+ 	if(sav != stkptr(stkp,0))
+-		stkset(stkp,sav,0);
++		stkset(stkp,sav,offset);
+ 	else
+ 		stkseek(stkp,offset);
+ 	return(n);
+@@ -962,7 +962,7 @@ int sh_exec(register const Shnode_t *t, int flags)
+ 		int		ntflag = 0;
+ #endif
+ 		int		topfd = shp->topfd;
+-		char 		*sav=stkptr(stkp,0);
++		char 		*sav=stkfreeze(stkp,0);
+ 		char		*cp=0, **com=0, *comn;
+ 		int		argn;
+ 		int 		skipexitset = 0;
+diff --git a/src/lib/libast/man/stak.3 b/src/lib/libast/man/stak.3
+index 04c1e89ca8c5..21c0cf9d13f1 100644
+--- a/src/lib/libast/man/stak.3
++++ b/src/lib/libast/man/stak.3
+@@ -109,8 +109,9 @@ the given \fIaddress\fP, and sets the current object to the given
+ \fIaddress\fP.
+ The top of the current object is set to \fIoffset\fP bytes from
+ current object.
+-If \fIaddress\fP is not the address of an object on the
+-stack the result is undefined.
++If \fIaddress\fP is null, the stack is reset to the beginning.
++If it is non-null, but is not the address of an object on the
++stack, the program aborts and dumps core.
+ .PP
+ The remaining functions are used to build the current object incrementally.
+ An object that is built incrementally on the stack will
+diff --git a/src/lib/libast/man/stk.3 b/src/lib/libast/man/stk.3
+index 20dfdbefa44c..dd5705cf1188 100644
+--- a/src/lib/libast/man/stk.3
++++ b/src/lib/libast/man/stk.3
+@@ -110,8 +110,9 @@ the given \fIaddress\fP, and sets the current object to the given
+ \fIaddress\fP.
+ The top of the current object is set to \fIoffset\fP bytes from
+ current object.
+-If \fIaddress\fP is not the address of an object on the
+-stack the result is undefined.
++If \fIaddress\fP is null, the stack is reset to the beginning.
++If it is non-null, but is not the address of an object on the
++stack, the program aborts and dumps core.
+ .PP
+ The \f5sfio\fP(3) output functions can be used to build
+ current object incrementally.
+diff --git a/src/lib/libast/misc/stk.c b/src/lib/libast/misc/stk.c
+index 31cd0911dd29..f147ae4fec8c 100644
+--- a/src/lib/libast/misc/stk.c
++++ b/src/lib/libast/misc/stk.c
+@@ -331,9 +331,9 @@ int stkon(register Sfio_t * stream, register char* loc)
+ }
+ /*
+  * reset the bottom of the current stack back to <loc>
+- * if <loc> is not in this stack, then the stack is reset to the beginning
++ * if <loc> is null, then the stack is reset to the beginning
++ * if <loc> is not in this stack, the program dumps core
+  * otherwise, the top of the stack is set to stkbot+<offset>
+- *
+  */
+ char *stkset(register Sfio_t * stream, register char* loc, size_t offset)
+ {
+@@ -377,6 +377,9 @@ char *stkset(register Sfio_t * stream, register char* loc, size_t offset)
+ 			break;
+ 		frames++;
+ 	}
++	/* not found: produce a useful stack trace now instead of a useless one later */
++	if(loc)
++		abort();
+ 	/* set stack back to the beginning */
+ 	cp = (char*)(fp+1);
+ 	if(frames)
+@@ -503,7 +506,7 @@ static char *stkgrow(register Sfio_t *stream, size_t size)
+ 	register char *cp, *dp=0;
+ 	register size_t m = stktell(stream);
+ 	size_t endoff;
+-	char *end=0;
++	char *end=0, *oldbase=0;
+ 	int nn=0,add=1;
+ 	n += (m + sizeof(struct frame)+1);
+ 	if(sp->stkflags&STK_SMALL)
+@@ -519,6 +522,7 @@ static char *stkgrow(register Sfio_t *stream, size_t size)
+ 		dp=sp->stkbase;
+ 		sp->stkbase = ((struct frame*)dp)->prev;
+ 		end = fp->end;
++		oldbase = dp;
+ 	}
+ 	endoff = end - dp;
+ 	cp = newof(dp, char, n, nn*sizeof(char*));
+@@ -545,10 +549,10 @@ static char *stkgrow(register Sfio_t *stream, size_t size)
+ 	if(fp->nalias=nn)
+ 	{
+ 		fp->aliases = (char**)fp->end;
+-		if(end && nn>1)
+-			memmove(fp->aliases,end,(nn-1)*sizeof(char*));
++		if(end && nn>add)
++			memmove(fp->aliases,end,(nn-add)*sizeof(char*));
+ 		if(add)
+-			fp->aliases[nn-1] = dp + roundof(sizeof(struct frame),STK_ALIGN);
++			fp->aliases[nn-1] = oldbase + roundof(sizeof(struct frame),STK_ALIGN);
+ 	}
+ 	if(m && !dp)
+ 	{
