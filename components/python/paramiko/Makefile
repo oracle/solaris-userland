@@ -62,5 +62,8 @@ test:		$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TEST_NO_ARCH)
 
+REQUIRED_PACKAGES += library/python/bcrypt
+REQUIRED_PACKAGES += library/python/cryptography
+REQUIRED_PACKAGES += library/python/pyasn1
 # locale required for unicode sftp tests
 REQUIRED_PACKAGES += system/locale

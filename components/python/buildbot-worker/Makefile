@@ -64,5 +64,6 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
+REQUIRED_PACKAGES += library/python/python-twisted
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/network

@@ -58,3 +58,10 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
+
+REQUIRED_PACKAGES += library/python/attrs
+REQUIRED_PACKAGES += library/python/cryptography
+REQUIRED_PACKAGES += library/python/ipaddress
+REQUIRED_PACKAGES += library/python/pyasn1
+REQUIRED_PACKAGES += library/python/pyasn1-modules
+REQUIRED_PACKAGES += library/python/six

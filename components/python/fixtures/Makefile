@@ -58,4 +58,7 @@ test:		$(TEST_NO_ARCH)
 
 system-test:	$(NO_TESTS)
 
+REQUIRED_PACKAGES += library/python/extras
+REQUIRED_PACKAGES += library/python/pbr
+REQUIRED_PACKAGES += library/python/six
 REQUIRED_PACKAGES += library/python/testtools

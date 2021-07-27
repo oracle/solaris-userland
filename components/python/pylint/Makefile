@@ -145,3 +145,10 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
+
+REQUIRED_PACKAGES += library/python/astroid
+REQUIRED_PACKAGES += library/python/backports.functools_lru_cache
+REQUIRED_PACKAGES += library/python/isort
+REQUIRED_PACKAGES += library/python/mccabe
+REQUIRED_PACKAGES += library/python/six
+REQUIRED_PACKAGES += library/python/toml

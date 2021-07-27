@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -61,3 +61,6 @@ install:	$(INSTALL_32_and_64)
 test:		$(TEST_32_and_64)
 
 system-test:    $(SYSTEM_TEST_32_and_64)
+
+REQUIRED_PACKAGES += library/python/cffi
+REQUIRED_PACKAGES += library/python/six

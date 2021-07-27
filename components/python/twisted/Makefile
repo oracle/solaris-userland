@@ -128,8 +128,13 @@ test:		$(TEST_32_and_64)
 
 system-test:    $(SYSTEM_TEST_32_and_64)
 
+REQUIRED_PACKAGES += library/python/attrs
 REQUIRED_PACKAGES += library/python/automat
 REQUIRED_PACKAGES += library/python/constantly
+REQUIRED_PACKAGES += library/python/hyperlink
 REQUIRED_PACKAGES += library/python/incremental
+REQUIRED_PACKAGES += library/python/pyasn1
+REQUIRED_PACKAGES += library/python/pyopenssl
 REQUIRED_PACKAGES += library/python/python-hamcrest
+REQUIRED_PACKAGES += library/python/python-zope-interface
 REQUIRED_PACKAGES += system/library

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -103,3 +103,8 @@ test:		$(TARGET_37).tested $(TARGET_39).tested
 
 system-test:    $(NO_TESTS)
 
+REQUIRED_PACKAGES += library/python/attrs
+REQUIRED_PACKAGES += library/python/colorama
+REQUIRED_PACKAGES += library/python/pyparsing
+REQUIRED_PACKAGES += library/python/pyperclip
+REQUIRED_PACKAGES += library/python/wcwidth

@@ -160,7 +160,10 @@ COMPONENT_TEST_TRANSFORMS += \
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
+REQUIRED_PACKAGES += library/python/asgiref
 REQUIRED_PACKAGES += library/python/mock
+REQUIRED_PACKAGES += library/python/pillow
+REQUIRED_PACKAGES += library/python/pyyaml
 REQUIRED_PACKAGES += library/python/setuptools
 REQUIRED_PACKAGES += library/python/sqlparse
 REQUIRED_PACKAGES += text/gnu-gettext

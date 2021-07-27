@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -60,6 +60,11 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
+
+REQUIRED_PACKAGES += library/python/attrs
+REQUIRED_PACKAGES += library/python/backports.functools_lru_cache
+REQUIRED_PACKAGES += library/python/pyrsistent
+REQUIRED_PACKAGES += library/python/six
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/mock

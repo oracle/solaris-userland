@@ -75,6 +75,9 @@ test:		$(TEST_NO_ARCH)
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += library/python/cheroot
+REQUIRED_PACKAGES += library/python/portend
+REQUIRED_PACKAGES += library/python/six
 
 # Setup related components
 REQUIRED_PACKAGES += library/python/setuptools_scm

@@ -72,8 +72,11 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
+REQUIRED_PACKAGES += library/python/pyyaml
+REQUIRED_PACKAGES += library/python/six
+REQUIRED_PACKAGES += library/python/stevedore
+
 # Testing related components
 REQUIRED_PACKAGES += library/python/beautifulsoup4
 REQUIRED_PACKAGES += library/python/mock
-REQUIRED_PACKAGES += library/python/stevedore
 REQUIRED_PACKAGES += library/python/testtools

@@ -84,7 +84,11 @@ test:		$(TEST_32_and_64)
 
 system-test:    $(SYSTEM_TEST_32_and_64)
 
+REQUIRED_PACKAGES += library/python/asn1crypto
 REQUIRED_PACKAGES += library/python/cffi
+REQUIRED_PACKAGES += library/python/enum
+REQUIRED_PACKAGES += library/python/ipaddress
+REQUIRED_PACKAGES += library/python/six
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += system/library
 

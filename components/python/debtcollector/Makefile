@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -56,3 +56,8 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+
+REQUIRED_PACKAGES += library/python/funcsigs
+REQUIRED_PACKAGES += library/python/pbr
+REQUIRED_PACKAGES += library/python/six
+REQUIRED_PACKAGES += library/python/wrapt

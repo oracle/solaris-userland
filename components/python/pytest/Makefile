@@ -71,6 +71,15 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
+REQUIRED_PACKAGES += library/python/atomicwrites
+REQUIRED_PACKAGES += library/python/attrs
+REQUIRED_PACKAGES += library/python/funcsigs
+REQUIRED_PACKAGES += library/python/more_itertools
+REQUIRED_PACKAGES += library/python/pathlib2
+REQUIRED_PACKAGES += library/python/pluggy
+REQUIRED_PACKAGES += library/python/py
+REQUIRED_PACKAGES += library/python/six
+
 # Testing related components
 REQUIRED_PACKAGES += library/python/hypothesis
 REQUIRED_PACKAGES += library/python/mock
