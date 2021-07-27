@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS=64
 # Currently only builds with gcc
@@ -29,15 +29,15 @@ export PARFAIT_BUILD=no
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cmake
-CMAKE_MAJOR_VERSION=	3.15
-COMPONENT_VERSION=	$(CMAKE_MAJOR_VERSION).2
+CMAKE_MAJOR_VERSION=	3.21
+COMPONENT_VERSION=	$(CMAKE_MAJOR_VERSION).0
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:539088cb29a68e6d6a8fba5c00951e5e5b1a92c68fa38a83e1ed2f355933f768
+    sha256:4a42d56449a51f4d3809ab4d3b61fd4a96a469e56266e896ce1009b5768bd2ab
 COMPONENT_ARCHIVE_URL=	http://www.cmake.org/files/v$(CMAKE_MAJOR_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=  http://www.cmake.org/
 COMPONENT_ANITYA_ID=	306
 
-TPNO=			53325
+TPNO=			72993
 
 # configure in cmake does not accept many of the options set in
 # configure.mk (CC=, CXX=, --bindir, --libdir, --sbindir).
@@ -58,9 +58,6 @@ COMPONENT_PREP_ACTION += \
 # generates for itself. The Userland default Language Standard flags
 # contradict cmake.
 gcc_OPT = -O2
-
-HTTP_PROXY = http://www-proxy.us.oracle.com:80/
-HTTPS_PROXY = https://www-proxy.us.oracle.com:80/
 
 # Need to remove this option from LD_OPTIONS (only affects sparc build);
 # it causes a SegFault failure in kwsys/testSystemInformation
@@ -104,21 +101,12 @@ COMPONENT_BUILD_TARGETS =	all
 # the amount of change needed between each update.
 PKG_MACROS+= CMAKE_MAJOR_VERSION=$(CMAKE_MAJOR_VERSION)
 
-# Need C and C++ compiler locations for cmake tests
-COMPONENT_TEST_ENV += CC="$(CC)"
-COMPONENT_TEST_ENV += CXX="$(CXX)"
-COMPONENT_TEST_ENV += CFLAGS="$(CFLAGS)"
-COMPONENT_TEST_ENV += CXXFLAGS="$(CXXFLAGS)"
-COMPONENT_TEST_ENV += LDFLAGS="$(LDFLAGS)"
-COMPONENT_TEST_ENV += http_proxy="$(HTTP_PROXY)"
-COMPONENT_TEST_ENV += https_proxy="$(HTTPS_PROXY)"
-COMPONENT_TEST_ENV += HTTP_PROXY="$(HTTP_PROXY)"
-COMPONENT_TEST_ENV += HTTPS_PROXY="$(HTTPS_PROXY)"
 # The default version of gfortran compiler should correspond to gcc and g++ versions.
 COMPONENT_TEST_ENV += FC="$(GCC_ROOT)/bin/gfortran"
+# Disable term colors to avoid test failures (actual and expected output mismatch).
+COMPONENT_TEST_ENV += CLICOLOR=0
 
-COMPONENT_TEST_TARGETS =	test
-
+COMPONENT_TEST_CMD = $(BUILD_DIR)/$(MACH64)/bin/ctest --output-on-failure
 COMPONENT_TEST_TRANSFORMS += \
 	'-e "s/\s\s*[0-9][0-9]*\.[0-9][0-9]* sec/ SEC sec/"' \
 	'-e "s/\][0-9][0-9]*\.[0-9][0-9]* sec/\]SEC sec/"' \
@@ -128,16 +116,6 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "s|^make.*: Leaving directory.*$$|XXX_REMOVE_XXX|g" ' \
 	'-e "s|^make.*: Entering directory.*$$|XXX_REMOVE_XXX|g" ' \
 	'-e "/^XXX_REMOVE_XXX$$/d" '
-
-COMPONENT_SYSTEM_TEST_ENV += CC="$(CC)"
-COMPONENT_SYSTEM_TEST_ENV += CXX="$(CXX)"
-COMPONENT_SYSTEM_TEST_ENV += CFLAGS="$(CFLAGS)"
-COMPONENT_SYSTEM_TEST_ENV += CXXFLAGS="$(CXXFLAGS)"
-COMPONENT_SYSTEM_TEST_ENV += LDFLAGS="$(LDFLAGS)"
-COMPONENT_SYSTEM_TEST_ENV += http_proxy="$(HTTP_PROXY)"
-COMPONENT_SYSTEM_TEST_ENV += https_proxy="$(HTTPS_PROXY)"
-COMPONENT_SYSTEM_TEST_ENV += HTTP_PROXY="$(HTTP_PROXY)"
-COMPONENT_SYSTEM_TEST_ENV += HTTPS_PROXY="$(HTTPS_PROXY)"
 
 # Add path to libgfortran.so.[0-9] library to avoid Fortran test failures.
 # The library preload can be removed after bug 30144732 is fixed.

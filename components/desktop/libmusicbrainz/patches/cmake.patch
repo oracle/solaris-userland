@@ -1,0 +1,22 @@
+Newer CMake versions do not support
+file globbing in ADD_CUSTOM_COMMAND.
+
+Already fixed in the current upstream version.
+
+--- libmusicbrainz-5.1.0/src/CMakeLists.txt	2021-07-30 02:46:16.070579705 +0000
++++ libmusicbrainz-5.1.0/src/CMakeLists.txt	2021-07-30 02:46:07.709972911 +0000
+@@ -32,11 +32,13 @@ IF(NOT CMAKE_CROSSCOMPILING)
+   EXPORT(TARGETS make-c-interface FILE ${CMAKE_BINARY_DIR}/ImportExecutables.cmake )
+ ENDIF(NOT CMAKE_CROSSCOMPILING)
+ 
++file(GLOB INC_FILES *.inc)
++
+ ADD_CUSTOM_COMMAND(
+ 	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/mb5_c.cc ${CMAKE_CURRENT_BINARY_DIR}/mb5_c.h ${CMAKE_CURRENT_BINARY_DIR}/../include/musicbrainz5/mb5_c.h
+ 	COMMAND make-c-interface ${CMAKE_CURRENT_SOURCE_DIR} cinterface.xml ${CMAKE_CURRENT_BINARY_DIR} mb5_c.cc mb5_c.h
+ 	COMMAND ${CMAKE_COMMAND} -E copy_if_different 	${CMAKE_CURRENT_BINARY_DIR}/mb5_c.h ${CMAKE_CURRENT_BINARY_DIR}/../include/musicbrainz5/mb5_c.h
+-	DEPENDS make-c-interface cinterface.xml *.inc
++	DEPENDS make-c-interface cinterface.xml ${INC_FILES}
+ )
+ 
+ ADD_CUSTOM_TARGET(src_gen DEPENDS mb5_c.h)

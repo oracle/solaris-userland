@@ -2,9 +2,9 @@
 #
 # Patch is Solaris specific and not appropriate for upstream.
 
---- cmake-3.15.1/Modules/CMakeDetermineJavaCompiler.cmake	2019-08-05 08:03:55.237996665 +0000
-+++ cmake-3.15.1/Modules/CMakeDetermineJavaCompiler.cmake	2019-08-05 08:03:33.474339038 +0000
-@@ -45,16 +45,11 @@ if(NOT CMAKE_Java_COMPILER)
+--- cmake-3.21.0/Modules/CMakeDetermineJavaCompiler.cmake
++++ cmake-3.21.0/Modules/CMakeDetermineJavaCompiler.cmake
+@@ -45,16 +45,11 @@ $ENV{JAVA_HOME}/bin
      /usr/bin
      /usr/lib/java/bin
      /usr/share/java/bin
@@ -21,9 +21,9 @@
      )
    # if no compiler has been specified yet, then look for one
    if(CMAKE_Java_COMPILER_INIT)
---- cmake-3.15.1/Modules/CMakeDetermineSystem.cmake	2019-08-05 08:19:47.965602231 +0000
-+++ cmake-3.15.1/Modules/CMakeDetermineSystem.cmake	2019-08-05 08:19:26.918018875 +0000
-@@ -32,7 +32,7 @@
+--- cmake-3.21.0/Modules/CMakeDetermineSystem.cmake
++++ cmake-3.21.0/Modules/CMakeDetermineSystem.cmake
+@@ -33,7 +33,7 @@ # MacOSX                        Darwin
  
  # find out on which system cmake runs
  if(CMAKE_HOST_UNIX)
@@ -32,9 +32,9 @@
    if(CMAKE_UNAME)
      if(CMAKE_HOST_SYSTEM_NAME STREQUAL "AIX")
        exec_program(${CMAKE_UNAME} ARGS -v OUTPUT_VARIABLE _CMAKE_HOST_SYSTEM_MAJOR_VERSION)
---- cmake-3.15.1/Modules/FindGTK2.cmake	2019-08-05 07:58:51.295499742 +0000
-+++ cmake-3.15.1/Modules/FindGTK2.cmake	2019-08-05 07:58:41.491290362 +0000
-@@ -291,9 +291,6 @@ function(_GTK2_FIND_INCLUDE_DIR _var _hd
+--- cmake-3.21.0/Modules/FindGTK2.cmake
++++ cmake-3.21.0/Modules/FindGTK2.cmake
+@@ -301,9 +301,6 @@ endif()
      find_path(GTK2_${_var}_INCLUDE_DIR ${_hdr}
          PATHS
              ${_gtk2_arch_dir}
@@ -44,9 +44,9 @@
              /usr/libx32
              /usr/lib64
              /usr/lib
---- cmake-3.15.1/Modules/FindIce.cmake	2019-08-05 08:21:58.083350396 +0000
-+++ cmake-3.15.1/Modules/FindIce.cmake	2019-08-05 08:21:35.466538327 +0000
-@@ -407,7 +407,7 @@ function(_Ice_FIND)
+--- cmake-3.21.0/Modules/FindIce.cmake
++++ cmake-3.21.0/Modules/FindIce.cmake
+@@ -421,7 +421,7 @@ set(Freeze_INCLUDE_DIR "${Freeze_INCLUDE
    # In common use on Linux, MacOS X (homebrew) and FreeBSD; prefer
    # version-specific dir
    list(APPEND ice_slice_paths
@@ -55,9 +55,40 @@
    list(APPEND ice_slice_suffixes
         "Ice-${Ice_VERSION_SLICE2CPP_FULL}/slice"
         "Ice-${Ice_VERSION_SLICE2CPP_SHORT}/slice"
---- cmake-3.15.1/Modules/FindJava.cmake	2019-08-05 08:35:33.096519115 +0000
-+++ cmake-3.15.1/Modules/FindJava.cmake	2019-08-05 08:35:18.488913133 +0000
-@@ -136,15 +136,11 @@ endif()
+--- cmake-3.21.0/Modules/FindJNI.cmake
++++ cmake-3.21.0/Modules/FindJNI.cmake
+@@ -191,8 +191,6 @@ set(_JNI_JAVA_DIRECTORIES_BASE
+   /usr/lib/jvm/java
+   /usr/lib/java
+   /usr/lib/jvm
+-  /usr/local/lib/java
+-  /usr/local/share/java
+   /usr/lib/j2sdk1.4-sun
+   /usr/lib/j2sdk1.5-sun
+   /opt/sun-jdk-1.5.0.04
+@@ -210,19 +208,6 @@ /usr/lib/jvm/java-11-openjdk-{libarch}
+   /usr/lib/jvm/java-8-openjdk-{libarch}     # Ubuntu 15.10
+   /usr/lib/jvm/java-7-openjdk-{libarch}     # Ubuntu 15.10
+   /usr/lib/jvm/java-6-openjdk-{libarch}     # Ubuntu 15.10
+-  # OpenBSD specific paths for default JVM
+-  /usr/local/jdk-1.7.0
+-  /usr/local/jre-1.7.0
+-  /usr/local/jdk-1.6.0
+-  /usr/local/jre-1.6.0
+-  # FreeBSD specific paths for default JVM
+-  /usr/local/openjdk15
+-  /usr/local/openjdk14
+-  /usr/local/openjdk13
+-  /usr/local/openjdk12
+-  /usr/local/openjdk11
+-  /usr/local/openjdk8
+-  /usr/local/openjdk7
+   # SuSE specific paths for default JVM
+   /usr/lib64/jvm/java
+   /usr/lib64/jvm/jre
+--- cmake-3.21.0/Modules/FindJava.cmake
++++ cmake-3.21.0/Modules/FindJava.cmake
+@@ -141,15 +141,11 @@ # environment can always override hard g
  set(_JAVA_PATHS
    /usr/lib/java/bin
    /usr/share/java/bin
@@ -73,32 +104,9 @@
    )
  find_program(Java_JAVA_EXECUTABLE
    NAMES java
---- cmake-3.15.1/Modules/FindJNI.cmake	2019-08-05 07:50:40.051875756 +0000
-+++ cmake-3.15.1/Modules/FindJNI.cmake	2019-08-05 07:50:28.955082031 +0000
-@@ -189,8 +189,6 @@ set(_JNI_JAVA_DIRECTORIES_BASE
-   /usr/lib/jvm/java
-   /usr/lib/java
-   /usr/lib/jvm
--  /usr/local/lib/java
--  /usr/local/share/java
-   /usr/lib/j2sdk1.4-sun
-   /usr/lib/j2sdk1.5-sun
-   /opt/sun-jdk-1.5.0.04
-@@ -208,11 +206,6 @@ set(_JNI_JAVA_DIRECTORIES_BASE
-   /usr/lib/jvm/java-8-openjdk-{libarch}     # Ubuntu 15.10
-   /usr/lib/jvm/java-7-openjdk-{libarch}     # Ubuntu 15.10
-   /usr/lib/jvm/java-6-openjdk-{libarch}     # Ubuntu 15.10
--  # OpenBSD specific paths for default JVM
--  /usr/local/jdk-1.7.0
--  /usr/local/jre-1.7.0
--  /usr/local/jdk-1.6.0
--  /usr/local/jre-1.6.0
-   # SuSE specific paths for default JVM
-   /usr/lib64/jvm/java
-   /usr/lib64/jvm/jre
---- cmake-3.15.1/Modules/FindPHP4.cmake	2019-08-05 07:56:30.510850802 +0000
-+++ cmake-3.15.1/Modules/FindPHP4.cmake	2019-08-05 07:56:05.840344462 +0000
-@@ -19,10 +19,7 @@ the library is.  This code sets the foll
+--- cmake-3.21.0/Modules/FindPHP4.cmake
++++ cmake-3.21.0/Modules/FindPHP4.cmake
+@@ -19,10 +19,7 @@ #]======================================
  
  set(PHP4_POSSIBLE_INCLUDE_PATHS
    /usr/include/php4
@@ -109,9 +117,9 @@
    )
  
  set(PHP4_POSSIBLE_LIB_PATHS
---- cmake-3.15.1/Modules/FindQt.cmake	2019-08-05 08:59:44.492246008 +0000
-+++ cmake-3.15.1/Modules/FindQt.cmake	2019-08-05 08:58:46.702315765 +0000
-@@ -49,37 +49,6 @@ if(GLOB_TEMP_VAR)
+--- cmake-3.21.0/Modules/FindQt.cmake
++++ cmake-3.21.0/Modules/FindQt.cmake
+@@ -49,37 +49,6 @@ set(QT3_INSTALLED TRUE)
  endif()
  set(GLOB_TEMP_VAR)
  
@@ -149,7 +157,7 @@
  if (Qt_FIND_VERSION)
    if (Qt_FIND_VERSION MATCHES "^([34])(\\.[0-9]+.*)?$")
      set(DESIRED_QT_VERSION ${CMAKE_MATCH_1})
-@@ -116,7 +85,6 @@ find_file( QT4_QGLOBAL_H_FILE qglobal.h
+@@ -116,7 +85,6 @@ ${qt_headers}/Qt
    $ENV{QTDIR}/include/Qt
    /usr/lib/qt/include/Qt
    /usr/share/qt4/include/Qt
@@ -157,7 +165,7 @@
    C:/Progra~1/qt/include/Qt
    PATH_SUFFIXES qt/include/Qt include/Qt)
  
-@@ -133,7 +101,6 @@ find_file( QT3_QGLOBAL_H_FILE qglobal.h
+@@ -133,7 +101,6 @@ C:/Qt/3.3.3Educational/include
    $ENV{QTDIR}/include
    /usr/include/qt3/Qt
    /usr/share/qt3/include
@@ -165,9 +173,9 @@
    C:/Progra~1/qt/include
    PATH_SUFFIXES qt/include include/qt3)
  
---- cmake-3.15.1/Modules/FindQt3.cmake	2019-08-05 08:37:03.771444240 +0000
-+++ cmake-3.15.1/Modules/FindQt3.cmake	2019-08-05 08:36:51.682607941 +0000
-@@ -64,7 +64,6 @@ find_path(QT_INCLUDE_DIR qt.h
+--- cmake-3.21.0/Modules/FindQt3.cmake
++++ cmake-3.21.0/Modules/FindQt3.cmake
+@@ -66,7 +66,6 @@ $ENV{QTDIR}/include
    ${GLOB_PATHS}
    /usr/share/qt3/include
    C:/Progra~1/qt/include
@@ -175,20 +183,10 @@
    PATH_SUFFIXES lib/qt/include lib/qt3/include include/qt include/qt3 qt/include qt3/include
    )
  
---- cmake-3.15.1/Modules/UseJava.cmake	2019-08-05 07:52:14.721888922 +0000
-+++ cmake-3.15.1/Modules/UseJava.cmake	2019-08-05 07:51:30.562717534 +0000
-@@ -833,7 +833,6 @@ function (find_jar VARIABLE)
-     set(_jar_versions)
-     set(_jar_paths
-         /usr/share/java/
--        /usr/local/share/java/
-         ${Java_JAR_PATHS})
-     set(_jar_doc "NOTSET")
- 
---- cmake-3.15.1/Modules/Platform/UnixPaths.cmake	2019-08-05 08:50:15.805010356 +0000
-+++ cmake-3.15.1/Modules/Platform/UnixPaths.cmake	2019-08-05 08:49:36.798403057 +0000
-@@ -23,7 +23,7 @@ get_filename_component(_CMAKE_INSTALL_DI
- # search types.
+--- cmake-3.21.0/Modules/Platform/UnixPaths.cmake
++++ cmake-3.21.0/Modules/Platform/UnixPaths.cmake
+@@ -27,7 +27,7 @@ # please make sure to keep Help/variable
+ # synchronized
  list(APPEND CMAKE_SYSTEM_PREFIX_PATH
    # Standard
 -  /usr/local /usr /
@@ -196,3 +194,13 @@
  
    # CMake install location
    "${_CMAKE_INSTALL_DIR}"
+--- cmake-3.21.0/Modules/UseJava.cmake
++++ cmake-3.21.0/Modules/UseJava.cmake
+@@ -1108,7 +1108,6 @@ set(_jar_files)
+     set(_jar_versions)
+     set(_jar_paths
+         /usr/share/java/
+-        /usr/local/share/java/
+         ${Java_JAR_PATHS})
+     set(_jar_doc "NOTSET")
+ 
