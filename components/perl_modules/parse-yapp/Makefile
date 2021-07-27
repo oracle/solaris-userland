@@ -54,5 +54,4 @@ test:		$(TEST_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += runtime/perl-522
-REQUIRED_PACKAGES += runtime/perl-526
+REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/database-5%)
