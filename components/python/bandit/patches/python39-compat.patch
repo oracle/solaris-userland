@@ -1,0 +1,23 @@
+Add support for Python 3.9.
+
+Partially backported from upstream:
+https://github.com/PyCQA/bandit/pull/650
+
+--- bandit-1.7.0/bandit/plugins/general_hardcoded_password.py
++++ bandit-1.7.0/bandit/plugins/general_hardcoded_password.py
+@@ -81,6 +81,15 @@ def hardcoded_password_string(context):
+             if isinstance(targ, ast.Name) and RE_CANDIDATES.search(targ.id):
+                 return _report(node.s)
+ 
++    elif (isinstance(node._bandit_parent, ast.Subscript)
++          and RE_CANDIDATES.search(node.s)):
++        # Py39+: looks for "dict[candidate]='some_string'"
++        # subscript -> index -> string
++        assign = node._bandit_parent._bandit_parent
++        if isinstance(assign, ast.Assign) and isinstance(assign.value,
++                                                         ast.Str):
++            return _report(assign.value.s)
++
+     elif (isinstance(node._bandit_parent, ast.Index)
+           and RE_CANDIDATES.search(node.s)):
+         # looks for "dict[candidate]='some_string'"
