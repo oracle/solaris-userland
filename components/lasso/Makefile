@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS=		64_and_32
 COMPILER=		gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		lasso
-COMPONENT_VERSION=	2.6.0
+COMPONENT_VERSION=	2.7.0
 BASEURL=		https://dev.entrouvert.org
 COMPONENT_PROJECT_URL=	$(BASEURL)/projects/lasso
 COMPONENT_ARCHIVE_HASH= \
-    sha256:146bff7a25166467d960003346cbc3291f3f29067e305cb82ebb12354c7d0acf
+    sha256:9282f2a546ee84b6d3a8236970fea3a47bea51cb247c31a05a374c22eb451d8d
 COMPONENT_ARCHIVE_URL=	\
 	$(BASEURL)/releases/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/lasso
 COMPONENT_ANITYA_ID=	96894
 
-TPNO=			50795
+TPNO=			71746
 
 PKG_CONFIG_PATH.64=	/usr/lib/64/pkgconfig
 
