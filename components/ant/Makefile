@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 
@@ -30,17 +30,17 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ant
-COMPONENT_VERSION=	1.10.9
+COMPONENT_VERSION=	1.10.11
 COMPONENT_PROJECT_URL=	https://ant.apache.org/
 COMPONENT_SRC_NAME=	apache-ant
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-src.tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:cac5cf44906fceae4604fb6a641d67ab1703b45e3dc941d2dd6108edf89fca71
+    sha256:fee49208ba798be2e4302917a64a89f6756da542a0c2a2673e727182618f79ac
 COMPONENT_ARCHIVE_URL=	https://archive.apache.org/dist/ant/source/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	50
 
-TPNO=			62196
+TPNO=			73027
 
 BUILD_STYLE= justmake
 include $(WS_MAKE_RULES)/common.mk
@@ -78,7 +78,7 @@ COMPONENT_TEST_TARGETS =	test
 COMPONENT_TEST_ENV +=		$(ANT_ENV)
 # Userland default LC_ALL=C doesn't do good for tests
 # (Malformed input or input contains unmappable characters).
-COMPONENT_TEST_ENV +=		LC_ALL=
+COMPONENT_TEST_ENV +=		LC_ALL=en_US.UTF-8
 
 COMPONENT_TEST_TRANSFORMS +=  \
 	'-e "/=/d" ' \
