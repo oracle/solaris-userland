@@ -1,0 +1,16 @@
+Solaris 11.4 doesn't support Whirlpool hashing algorithm
+
+diff -ru node-16.3.0.orig/test/parallel/test-crypto-hkdf.js node-16.3.0/test/parallel/test-crypto-hkdf.js
+--- node-16.3.0.orig/test/parallel/test-crypto-hkdf.js	2021-07-27 12:45:08.056372006 +0000
++++ node-16.3.0/test/parallel/test-crypto-hkdf.js	2021-07-28 09:23:24.914556375 +0000
+@@ -117,7 +117,9 @@
+   ['sha256', 'secret', 'salt', 'info', 10],
+   ['sha512', 'secret', 'salt', '', 15],
+ ];
+-if (!common.hasOpenSSL3)
++
++// Whirlpool is legacy algorithm nowadays and Solaris 11.4 does not support it.
++if (!common.hasOpenSSL3 && getHashes().includes("whirlpool"))
+   algorithms.push(['whirlpool', 'secret', '', 'info', 20]);
+ 
+ algorithms.forEach(([ hash, secret, salt, info, length ]) => {

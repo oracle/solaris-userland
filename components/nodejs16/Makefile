@@ -30,18 +30,18 @@ BUILD_ARCH=		i386
 include			../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		node
-COMPONENT_VERSION=	14.17.3
+COMPONENT_VERSION=	16.5.0
 COMPONENT_SUBVERSION=
 HUMAN_VERSION=		$(COMPONENT_VERSION)$(COMPONENT_SUBVERSION)
 COMPONENT_PROJECT_URL=	https://github.com/nodejs/node
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(HUMAN_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_ARCHIVE_HASH= \
-    sha256:c6ce308591e37246ee7a989b21d14d569d7abb46a99fc569144daf7a08953bc6
+    sha256:93bdda6707c09b75dc11649d2fd486edebcd193f0697ba7074bfce8a1a823f5d
 COMPONENT_ARCHIVE_URL=	\
     $(COMPONENT_PROJECT_URL)/archive/v$(COMPONENT_VERSION).zip
 COMPONENT_BUGDB=	utility/nodejs
-TPNO=			72865
+TPNO=			72989
 COMPONENT_ANITYA_ID=	8251
 
 CONFIGURE_DEFAULT_DIRS=	no
@@ -66,6 +66,7 @@ CONFIGURE_OPTIONS+=	--shared-nghttp2
 CONFIGURE_OPTIONS+=	--shared-openssl
 CONFIGURE_OPTIONS+=	--shared-zlib
 CONFIGURE_OPTIONS+=	--with-intl=system-icu
+CONFIGURE_OPTIONS+=	--shared-cares
 
 # Read NPM_CONFIG_REGISTRY from local configuration file.
 $(call read-config,NPM_CONFIG_REGISTRY,https://registry.npmjs.org/)
@@ -82,7 +83,7 @@ COMPONENT_PRE_CONFIGURE_ACTION= \
 
 COMPONENT_POST_INSTALL_ACTION= \
     $(MKDIR) -p $(PROTO_DIR)/usr/share/doc/release-notes/; \
-    $(CP) runtime-nodejs-nodejs-14.txt $(PROTO_DIR)/usr/share/doc/release-notes/
+    $(CP) runtime-nodejs-nodejs-16.txt $(PROTO_DIR)/usr/share/doc/release-notes/
 
 #
 # OpenSSL 1.1 temporarily lives in non-standard directory. This is a workaround
@@ -112,3 +113,4 @@ REQUIRED_PACKAGES+=	library/icu
 REQUIRED_PACKAGES+=	library/nghttp2
 REQUIRED_PACKAGES+=	library/security/openssl-11
 REQUIRED_PACKAGES+=	library/zlib
+REQUIRED_PACKAGES+=	library/libcares

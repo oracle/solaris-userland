@@ -1,0 +1,37 @@
+gmake test reports that poll() using WASI fails on Solaris 11.4:
+
+=== release test-wasi ===
+Path: wasi/test-wasi
+...
+executing poll
+(node:7530) ExperimentalWarning: WASI is an experimental feature. This feature could change at any time
+fd_prestat_get(3, 69896)
+fd_prestat_dir_name(3, 131088, 9)
+fd_prestat_get(4, 69896)
+fd_prestat_dir_name(4, 131152, 5)
+fd_prestat_get(5, 69896)
+environ_sizes_get(69900, 69896)
+environ_get(132688, 131168)
+clock_time_get(0, 1000000000, 69752)
+poll_oneoff(69696, 69656, 1, 69692)
+clock_time_get(0, 1000000000, 69752)
+clock_time_get(0, 1000000000, 69752)
+poll_oneoff(69584, 69552, 1, 69756)
+clock_time_get(0, 1000000000, 69752)
+poll_oneoff(69488, 69424, 2, 69756)
+poll_oneoff(69488, 69424, 2, 69756)
+poll_oneoff(69584, 69520, 2, 69756)
+fd_write(2, 69504, 2, 69500)
+Assertion failed: fds[0].revents == (POLLHUP | POLLIN) (c/poll.c: main: 70)
+
+diff -ru node-16.3.0.orig/test/wasi/wasi.status node-16.3.0/test/wasi/wasi.status
+--- node-16.3.0.orig/test/wasi/wasi.status	2021-07-27 12:45:09.670791383 +0000
++++ node-16.3.0/test/wasi/wasi.status	2021-07-27 12:46:31.119606261 +0000
+@@ -4,4 +4,7 @@
+ # below, without ".js", followed by ": PASS,FLAKY". Example:
+ # sample-test                        : PASS,FLAKY
+ 
++[$system==solaris]
++test-wasi: SKIP
++
+ [true] # This section applies to all platforms

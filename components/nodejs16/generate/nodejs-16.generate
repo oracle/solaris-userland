@@ -18,18 +18,11 @@
 #
 # CDDL HEADER END
 #
+
+#
 # Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
-
-set name=pkg.fmri \
-    value=pkg:/runtime/nodejs@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
-set name=pkg.summary value=Node.js
-set name=com.oracle.info.description \
-    value="JavaScript runtime built on Chrome's V8 JavaScript engine"
-set name=info.classification value=org.opensolaris.category.2008:Development/C \
-    value="org.opensolaris.category.2008:Development/Other Languages"
-set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
-set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2020/024
-set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-depend type=require fmri=pkg:/runtime/nodejs/nodejs-$(NODE_MAJOR_VERSION)
+<transform file path=usr/share/doc/release-notes/runtime-nodejs-nodejs-16.txt -> set must-display true>
+<transform file path=usr/share/doc/release-notes/runtime-nodejs-nodejs-16.txt -> set release-note feature/pkg/self@0>
+<transform path=usr/nodejs/16 -> edit path ^usr/nodejs/16 usr/nodejs/\$\(NODE_MAJOR_VERSION\)>
+<transform file path=usr/nodejs/\$\(NODE_MAJOR_VERSION\)/bin/node -> default pkg.linted.userland.action001.3 true>
