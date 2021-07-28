@@ -31,9 +31,9 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         hplip
-COMPONENT_VERSION=      3.21.2
-TPNO=			68688
-COMPONENT_ARCHIVE_HASH= sha256:4583489be1a85ff4c0f2314ac22aa145d032d79fd4ab1939e41fa89153437072
+COMPONENT_VERSION=      3.21.4
+TPNO=			73036
+COMPONENT_ARCHIVE_HASH= sha256:950841c3fc2c17fe8ebfdb61706e29dfbdb23620cf826e8dfc2a6e531cb4c446
 COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/project/$(COMPONENT_NAME)/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://hplipopensource.com/
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
@@ -47,6 +47,7 @@ CONFIGURE_OPTIONS +=	--with-hpppddir=$(USRSHAREDIR)/cups/model/hplip
 CONFIGURE_OPTIONS +=	--enable-new-hpcups
 CONFIGURE_OPTIONS +=	--enable-cups-ppd-install
 CONFIGURE_OPTIONS +=	--disable-gui-build
+CONFIGURE_OPTIONS +=    --disable-imageProcessor-build
 CONFIGURE_OPTIONS +=	PYTHON=$(PYTHON)
 CONFIGURE_OPTIONS +=	am_cv_python_pythondir="$(PYTHON_VENDOR_PACKAGES)"
 CONFIGURE_OPTIONS +=	am_cv_python_pyexecdir="$(PYTHON_VENDOR_PACKAGES)"
