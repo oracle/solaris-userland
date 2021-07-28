@@ -38,8 +38,32 @@ COMPONENT_ANITYA_ID=	2048
 
 TPNO= 67240
 
+COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC)-test-results.tar.bz2
+COMPONENT_ARCHIVE_HASH_1 = \
+    sha256:9e64ddbeea27a416970277513923a4071674ccdcca2a937d208f5a225bd20f78
+COMPONENT_ARCHIVE_URL_1 =  make://golden-test-results/$(COMPONENT_ARCHIVE_1)
+
 include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_PRE_CONFIGURE_ACTION = ($(CLONEY) $(SOURCE_DIR) $(@D))
 
 COMPONENT_TEST_TARGETS = test
+
+COMPONENT_PRE_TEST_ACTION += \
+	(cd $(@D); gtar  --transform 's,$(COMPONENT_SRC)/,,' -xf $(COMPONENT_DIR)/$(COMPONENT_ARCHIVE_1));
+
+COMPONENT_TEST_TRANSFORMS = \
+        '-e "/^Test /p" ' \
+	'-e "/.*/d" '
+
+# Build nasm so that 'golden' test resutls can be created and stored.
+golden-test-results:
+	$(RM) -r $(COMPONENT_SRC); gtar xf $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE); \
+	cd $(COMPONENT_SRC); \
+	  for i in `find $(COMPONENT_DIR)/patches -name '*.patch'` ; do gpatch -p1 < $$i; done ; \
+	  $(ENV) $(CONFIGURE_ENV) $(CONFIG_SHELL) $(CONFIGURE_SCRIPT) $(CONFIGURE_OPTIONS) ; \
+	  $(ENV) $(COMPONENT_BUILD_ENV) $(GMAKE) $(COMPONENT_BUILD_ARGS) $(COMPONENT_BUILD_TARGETS) ; \
+	  cd test; $(ENV) $(COMPONENT_BUILD_ENV) $(GMAKE) golden
+	TZ=UTC gtar cjvf $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1) --sort=name \
+	  --mtime='1970-01-01' --owner=root --group=root $(COMPONENT_SRC)/test/golden
+	/usr/bin/sha256sum $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1)

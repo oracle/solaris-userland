@@ -1,0 +1,13 @@
+https://bugzilla.nasm.us/show_bug.cgi?id=3392745
+
+--- nasm-2.15.05/output/outelf.c
++++ nasm-2.15.05/output/outelf.c
+@@ -1925,7 +1925,7 @@ ehdr.com.e_ident[EI_OSABI]      = elf_os
+     ehdr.com.e_ident[EI_ABIVERSION] = elf_abiver;
+     ehdr.com.e_type                 = cpu_to_le16(ET_REL);
+     ehdr.com.e_machine              = cpu_to_le16(efmt->e_machine);
+-    ehdr.com.e_version              = cpu_to_le16(EV_CURRENT);
++    ehdr.com.e_version              = cpu_to_le32(EV_CURRENT);
+ 
+     if (!efmt->elf64) {
+         ehdr.ehdr32.e_shoff         = cpu_to_le32(sizeof ehdr);
