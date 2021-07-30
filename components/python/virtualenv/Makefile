@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -41,6 +41,9 @@ TPNO=			57880
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+# Tests require a network access.
+$(SKIP_TEST_AT_TOP_LEVEL)
 
 COMPONENT_TEST_ENV +=	PATH=$(GNUBIN):$(PATH)
 COMPONENT_SYSTEM_TEST_ENV +=	PATH=$(GNUBIN):$(PATH)

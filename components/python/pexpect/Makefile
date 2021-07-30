@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -48,7 +48,13 @@ include $(WS_MAKE_RULES)/ips.mk
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =	--verbose
-COMPONENT_TEST_ENV +=	PATH=$(GNUBIN):$(PATH)
+COMPONENT_TEST_ENV +=	PATH=$(GNUBIN):$(PATH) INPUTRC=$(BUILD_DIR)/.inputrc
+
+# In Bash 5.1, bracketed paste mode is enabled by default, which is not
+# anticipated by the pexpect test suite. There is no fix yet, but
+# workaround is available:
+# https://github.com/pexpect/pexpect/issues/669
+COMPONENT_PRE_TEST_ACTION += echo "set enable-bracketed-paste off" > $(BUILD_DIR)/.inputrc
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 COMPONENT_TEST_TRANSFORMS += \
