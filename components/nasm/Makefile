@@ -40,7 +40,7 @@ TPNO= 67240
 
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC)-test-results.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:9e64ddbeea27a416970277513923a4071674ccdcca2a937d208f5a225bd20f78
+    sha256:446ea009ff2dcbec8a55ade7a87eda37d25c708cce92d8912c26a06679b9fad1
 COMPONENT_ARCHIVE_URL_1 =  make://golden-test-results/$(COMPONENT_ARCHIVE_1)
 
 include $(WS_MAKE_RULES)/common.mk
@@ -63,7 +63,7 @@ golden-test-results:
 	  for i in `find $(COMPONENT_DIR)/patches -name '*.patch'` ; do gpatch -p1 < $$i; done ; \
 	  $(ENV) $(CONFIGURE_ENV) $(CONFIG_SHELL) $(CONFIGURE_SCRIPT) $(CONFIGURE_OPTIONS) ; \
 	  $(ENV) $(COMPONENT_BUILD_ENV) $(GMAKE) $(COMPONENT_BUILD_ARGS) $(COMPONENT_BUILD_TARGETS) ; \
-	  cd test; $(ENV) $(COMPONENT_BUILD_ENV) $(GMAKE) golden
+	  cd test; $(ENV) $(COMPONENT_BUILD_ENV) $(GMAKE) golden; $(RM) -r golden/_version
 	TZ=UTC gtar cjvf $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1) --sort=name \
 	  --mtime='1970-01-01' --owner=root --group=root $(COMPONENT_SRC)/test/golden
 	/usr/bin/sha256sum $(USERLAND_ARCHIVES)$(COMPONENT_ARCHIVE_1)
