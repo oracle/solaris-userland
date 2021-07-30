@@ -74,6 +74,7 @@ CONFIGURE_OPTIONS +=	--enable-ocaml=no
 CONFIGURE_OPTIONS +=	--enable-python=no
 CONFIGURE_OPTIONS +=	--enable-python2=yes
 CONFIGURE_OPTIONS +=	--enable-python3=yes
+CONFIGURE_OPTIONS +=	--enable-tcl=yes
 CONFIGURE_OPTIONS +=	--x-libraries=$(CONFIGURE_LIBDIR.$(BITS))
 CONFIGURE_OPTIONS +=	--with-gdincludedir=$(USRINCDIR)/gd2
 CONFIGURE_OPTIONS +=	--enable-man-pdfs
@@ -95,9 +96,10 @@ $(INSTALL_64): COMPONENT_INSTALL_ARGS += PHP_INSTALL_DIR=$(shell PATH=$(PATH) ph
 # tcl ships both 32 and 64 bit, but even though /usr/bin/tclsh is 64-bit, there
 # is no place to stick 64-bit modules, so skip it.  On the other hand, make
 # sure to find the right tcl bits when building 32-bit.
-$(CONFIGURE_64): CONFIGURE_OPTIONS +=	--enable-tcl=no
 $(CONFIGURE_32): CONFIGURE_OPTIONS +=	--with-tclsh=$(USRBINDIR)/$(MACH32)/tclsh
 $(CONFIGURE_32): CONFIGURE_ENV += 	TCLCONFIG=$(USRLIBDIR)/tclConfig.sh
+$(CONFIGURE_64): CONFIGURE_OPTIONS +=	--with-tclsh=$(USRBINDIR)/tclsh
+$(CONFIGURE_64): CONFIGURE_ENV += 	TCLCONFIG=$(USRLIBDIR)/$(MACH64)/tclConfig.sh
 # Put the 64-bit lua module in a 64-bit directory.
 $(INSTALL_32): COMPONENT_INSTALL_ARGS += LUA_INSTALL_DIR=$(USRLIBDIR)/lua/5.4
 $(INSTALL_64): COMPONENT_INSTALL_ARGS += LUA_INSTALL_DIR=$(USRLIBDIR)/lua/5.4/64
