@@ -1,0 +1,39 @@
+
+For compatibility with simplejson, output lower case hex digits for dump[s]()
+with ensure_ascii=True
+
+--- python-rapidjson-1.0/rapidjson/include/rapidjson/writer.h
++++ python-rapidjson-1.0/rapidjson/include/rapidjson/writer.h
+@@ -375,7 +375,7 @@ protected:
+     }
+ 
+     bool WriteString(const Ch* str, SizeType length)  {
+-        static const typename OutputStream::Ch hexDigits[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
++        static const typename OutputStream::Ch hexDigits[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+         static const char escape[256] = {
+ #define Z16 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+             //0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
+--- python-rapidjson-1.0/tests/test_params.py
++++ python-rapidjson-1.0/tests/test_params.py
+@@ -52,8 +52,8 @@ def test_skip_invalid_keys():
+ 
+ def test_ensure_ascii(dumps):
+     s = '\N{GREEK SMALL LETTER ALPHA}\N{GREEK CAPITAL LETTER OMEGA}'
+-    assert dumps(s) == '"\\u03B1\\u03A9"'
+-    assert dumps(s, ensure_ascii=True) == '"\\u03B1\\u03A9"'
++    assert dumps(s) == '"\\u03b1\\u03a9"'
++    assert dumps(s, ensure_ascii=True) == '"\\u03b1\\u03a9"'
+     assert dumps(s, ensure_ascii=False) == '"%s"' % s
+ 
+ 
+--- python-rapidjson-1.0/tests/test_streams.py
++++ python-rapidjson-1.0/tests/test_streams.py
+@@ -49,7 +49,7 @@ def test_chunked_stream():
+     stream = ChunkedStream()
+     rj.dump('~𓆙~', stream, chunk_size=4)
+     assert len(stream.chunks) == 4
+-    assert stream.chunks == ['"~\\u', 'D80C', '\\uDD', '99~"']
++    assert stream.chunks == ['"~\\u', 'd80c', '\\udd', '99~"']
+ 
+ 
+ class CattyError(RuntimeError):
