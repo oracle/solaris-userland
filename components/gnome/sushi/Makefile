@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,15 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sushi
-COMPONENT_VERSION=	3.23.91
+COMPONENT_VERSION=	3.38.1
 COMPONENT_PROJECT_URL=  https://github.com/GNOME/sushi
 COMPONENT_ARCHIVE_HASH= \
-	sha256:ed822ef5b989da61830af6d23e4e5e42b1fd405e098221794f70857bfa558e2a
+	sha256:f3e6d10c815528d03a665fafd15c0719e017a813975b3af32076199e378888e9
 COMPONENT_BUGDB=        gnome/nautilus
 COMPONENT_ANITYA_ID=	10897
 
-TPNO=			34524
+TPNO=			73261
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -47,23 +48,16 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 # which is compiled as C++11.
 CXXFLAGS += -std=c++11
 
-CONFIGURE_OPTIONS += --disable-schemas-compile
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --with-pic
-CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
-
 # Workaround the mozjs issue described in 24935318
 # without with sushi has issues described in 28062328
 LD_EXEC_OPTIONS += -M $(COMPONENT_DIR)/mapfile
 ADIHEAP_MODE = $(ADIHEAP_DISABLE)
 ADISTACK_MODE = $(ADISTACK_DISABLE)
 
-# Required due to patches.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
-
 # Requires GNU sed (our sed truncates last line); assumes sed is in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 REQUIRED_PACKAGES += desktop/pdf-viewer/evince
 REQUIRED_PACKAGES += library/audio/libmusicbrainz5
@@ -78,10 +72,11 @@ REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gstreamer-1
 REQUIRED_PACKAGES += library/desktop/gstreamer-1/gst-plugins-base
 REQUIRED_PACKAGES += library/desktop/gtk3
-REQUIRED_PACKAGES += library/desktop/gtksourceview3
+REQUIRED_PACKAGES += library/desktop/gtksourceview
 REQUIRED_PACKAGES += library/desktop/harfbuzz
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/desktop/webkitgtk4
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += system/library/freetype-2
+REQUIRED_PACKAGES += x11/library/libepoxy
 REQUIRED_PACKAGES += x11/library/libx11

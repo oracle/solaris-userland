@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,15 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gedit-plugins
-COMPONENT_VERSION=	3.18.0
+COMPONENT_VERSION=	3.34.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Gedit
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:e25249c0c2a057827bb4d4755a2359e1f9b4de288e0c4e201c6ef4f0e0e8c580
+    sha256:c37fec89debcab15ed765f4d24d75e993691886ae942400c828098e7b8f2d1c9
 COMPONENT_BUGDB=        gnome/applications
 COMPONENT_ANITYA_ID=	5758
 
-TPNO=			26843
+TPNO=			54026
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -45,9 +46,19 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+
+# Requires zeitgeist
+CONFIGURE_OPTIONS += -Dplugin_zeitgeist=false
+
+# Compile all python sources to .pyc files
+PLUGINS_DIR = charmap; coloschemer; commander; git; multiedit;\
+	sessionsaver; testsize; translate
+COMPONENT_POST_INSTALL_ACTION += $(foreach i,$(PLUGINS_DIR),\
+        $(PYTHON) -m compileall $(PROTO_DIR)$(USRLIBDIR64)/gedit/plugins/$(i));
 
 REQUIRED_PACKAGES += editor/gedit
 REQUIRED_PACKAGES += library/desktop/gtk3
-REQUIRED_PACKAGES += library/desktop/gtksourceview3
+REQUIRED_PACKAGES += library/desktop/gtksourceview
 REQUIRED_PACKAGES += library/desktop/libpeas
 REQUIRED_PACKAGES += library/glib2

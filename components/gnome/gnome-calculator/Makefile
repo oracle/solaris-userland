@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -29,44 +29,43 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-calculator
-COMPONENT_VERSION=	3.24.0
+COMPONENT_VERSION=	3.34.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Calculator
 COMPONENT_ARCHIVE_HASH= \
-        sha256:44758ac719edd20067381073de3c643f842308f26da039412b1978a415202d10
+        sha256:6b90d2b1409c6048ddbef42e59ce54bcb7b49bc086339ab510f10ebf5a6bf23f
 COMPONENT_BUGDB=        gnome/applications
 COMPONENT_ANITYA_ID=	13126
 
-TPNO=			36159
+TPNO=			54032
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
-
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --enable-shared
-
-# Required due to patches.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 
 # Assumes GNU msgfmt in PATH.
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
-unexport SHELLOPTS
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_ARGS =   -k -i
+CONFIGURE_OPTIONS += -Dvala-version=0.50.2
+
+COMPONENT_TEST_TRANSFORMS += '-e "s/            [0-9].[0-9][0-9]s//"'
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/ERROR:/p" '
+        '-e "/OK/p" ' \
+        '-e "/Fail:/p" ' \
+        '-e "/Ok:/p" ' \
+        '-e "/Pass:/p" ' \
+        '-e "/Skipped:/p" ' \
+        '-e "/Timeout:/p" '
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/gtk3
-REQUIRED_PACKAGES += library/desktop/gtksourceview3
+REQUIRED_PACKAGES += library/desktop/gtksourceview
+REQUIRED_PACKAGES += library/desktop/libgee 
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gmp

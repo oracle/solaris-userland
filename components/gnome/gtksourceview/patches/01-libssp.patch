@@ -1,0 +1,13 @@
+Fix undefined symbol errors for __stack_chk_fail and __stack_chk_guard
+
+--- a/gtksourceview/meson.build	2021-08-04 13:14:49.724019320 -0700
++++ b/gtksourceview/meson.build	2021-08-04 13:15:23.574450890 -0700
+@@ -271,7 +271,7 @@
+         install_dir_gir: girdir,
+     install_dir_typelib: typelibdir,
+              extra_args: [ '--c-include=gtksourceview/gtksource.h',
+-	                   '--warn-all' ],
++	                   '--warn-all', '-lssp'],
+   )
+ 
+   gtksource_dep_sources += [

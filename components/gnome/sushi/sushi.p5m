@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -28,6 +28,7 @@
 set name=pkg.fmri \
     value=pkg:/library/gnome/sushi@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="The GNOME file previewer for Nautilus"
+set name=pkg.linted.pkglint.action005 value=true
 set name=com.oracle.info.description value=$(COMPONENT_NAME)
 set name=com.oracle.info.tpno value=$(TPNO)
 set name=info.classification \
@@ -39,8 +40,9 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/bin/sushi
 file path=usr/lib/$(MACH64)/sushi/girepository-1.0/Sushi-1.0.typelib
 file path=usr/lib/$(MACH64)/sushi/libsushi-1.0.so
-file path=usr/lib/sushi-start mode=0555
-file path=usr/share/dbus-1/services/org.gnome.Sushi.service
+file path=usr/lib/org.gnome.NautilusPreviewer
+file path=usr/share/dbus-1/services/org.gnome.NautilusPreviewer.service
+file path=usr/share/locale/af/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/an/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/ar/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/as/LC_MESSAGES/sushi.mo
@@ -51,6 +53,7 @@ file path=usr/share/locale/bn_IN/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/bs/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/ca/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/ca@valencia/LC_MESSAGES/sushi.mo
+file path=usr/share/locale/ckb/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/cs/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/da/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/de/LC_MESSAGES/sushi.mo
@@ -69,6 +72,7 @@ file path=usr/share/locale/gl/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/gu/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/he/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/hi/LC_MESSAGES/sushi.mo
+file path=usr/share/locale/hr/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/hu/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/id/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/is/LC_MESSAGES/sushi.mo
@@ -79,9 +83,12 @@ file path=usr/share/locale/kn/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/ko/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/lt/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/lv/LC_MESSAGES/sushi.mo
+file path=usr/share/locale/mjw/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/ml/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/mr/LC_MESSAGES/sushi.mo
+file path=usr/share/locale/ms/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/nb/LC_MESSAGES/sushi.mo
+file path=usr/share/locale/ne/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/nl/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/oc/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/or/LC_MESSAGES/sushi.mo
@@ -108,106 +115,9 @@ file path=usr/share/locale/vi/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/zh_CN/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/zh_HK/LC_MESSAGES/sushi.mo
 file path=usr/share/locale/zh_TW/LC_MESSAGES/sushi.mo
+file path=usr/share/metainfo/org.gnome.NautilusPreviewer.appdata.xml
 file path=usr/share/sushi/gir-1.0/Sushi-1.0.gir
-file path=usr/share/sushi/js/ui/application.js
-file path=usr/share/sushi/js/ui/fallbackRenderer.js
-file path=usr/share/sushi/js/ui/main.js
-file path=usr/share/sushi/js/ui/mainWindow.js
-file path=usr/share/sushi/js/ui/mimeHandler.js
-file path=usr/share/sushi/js/ui/spinnerBox.js
-file path=usr/share/sushi/js/ui/tweener.js
-file path=usr/share/sushi/js/ui/utils.js
-file path=usr/share/sushi/js/util/constants.js
-file path=usr/share/sushi/js/util/path.js
-file path=usr/share/sushi/js/util/totemMimeTypes.js
-file path=usr/share/sushi/js/viewers/audio.js
-file path=usr/share/sushi/js/viewers/evince.js
-file path=usr/share/sushi/js/viewers/font.js
-file path=usr/share/sushi/js/viewers/gst.js
-file path=usr/share/sushi/js/viewers/html.js
-file path=usr/share/sushi/js/viewers/image.js
-file path=usr/share/sushi/js/viewers/text.js
+file path=usr/share/sushi/gtksourceview-4/styles/builder-dark.style-scheme.xml
+file path=usr/share/sushi/org.gnome.NautilusPreviewer.data.gresource
+file path=usr/share/sushi/org.gnome.NautilusPreviewer.src.gresource
 license COPYING license=GPLv2+exceptions
-depend type=require fmri=__TBD \
-    pkg.debug.depend.path=usr/lib/$(MACH64)/sushi/girepository-1.0 \
-    pkg.tmp.gi-typelib=Sushi-1.0 \
-    pkg.debug.depend.reason=src/js/ui/fallbackRenderer.js \
-    pkg.debug.depend.reason=src/js/ui/mainWindow.js \
-    pkg.debug.depend.reason=src/js/viewers/audio.js \
-    pkg.debug.depend.reason=src/js/viewers/evince.js \
-    pkg.debug.depend.reason=src/js/viewers/font.js \
-    pkg.debug.depend.reason=src/js/viewers/html.js \
-    pkg.debug.depend.reason=src/js/viewers/text.js
-depend type=require fmri=__TBD pkg.tmp.gi-typelib=Gio-2.0 \
-    pkg.debug.depend.reason=src/js/ui/application.js \
-    pkg.debug.depend.reason=src/js/ui/fallbackRenderer.js \
-    pkg.debug.depend.reason=src/js/ui/mainWindow.js \
-    pkg.debug.depend.reason=src/js/ui/mimeHandler.js \
-    pkg.debug.depend.reason=src/js/viewers/audio.js \
-    pkg.debug.depend.reason=src/js/viewers/text.js
-depend type=require fmri=__TBD pkg.tmp.gi-typelib=Gtk-3.0 \
-    pkg.debug.depend.reason=src/js/ui/application.js \
-    pkg.debug.depend.reason=src/js/ui/fallbackRenderer.js \
-    pkg.debug.depend.reason=src/js/ui/mainWindow.js \
-    pkg.debug.depend.reason=src/js/ui/spinnerBox.js \
-    pkg.debug.depend.reason=src/js/ui/utils.js \
-    pkg.debug.depend.reason=src/js/viewers/audio.js \
-    pkg.debug.depend.reason=src/js/viewers/evince.js \
-    pkg.debug.depend.reason=src/js/viewers/font.js \
-    pkg.debug.depend.reason=src/js/viewers/gst.js \
-    pkg.debug.depend.reason=src/js/viewers/html.js \
-    pkg.debug.depend.reason=src/js/viewers/image.js \
-    pkg.debug.depend.reason=src/js/viewers/text.js
-depend type=require fmri=__TBD pkg.tmp.gi-typelib=GLib-2.0 \
-    pkg.debug.depend.reason=src/js/ui/application.js \
-    pkg.debug.depend.reason=src/js/ui/main.js \
-    pkg.debug.depend.reason=src/js/ui/mainWindow.js \
-    pkg.debug.depend.reason=src/js/viewers/font.js \
-    pkg.debug.depend.reason=src/js/viewers/html.js \
-    pkg.debug.depend.reason=src/js/viewers/image.js \
-    pkg.debug.depend.reason=src/js/viewers/text.js
-depend type=require fmri=__TBD pkg.tmp.gi-typelib=Gdk-3.0 \
-    pkg.debug.depend.reason=src/js/ui/application.js \
-    pkg.debug.depend.reason=src/js/ui/mainWindow.js \
-    pkg.debug.depend.reason=src/js/ui/utils.js \
-    pkg.debug.depend.reason=src/js/viewers/gst.js \
-    pkg.debug.depend.reason=src/js/viewers/text.js
-depend type=require fmri=__TBD pkg.tmp.gi-typelib=GtkClutter-1.0 \
-    pkg.debug.depend.reason=src/js/ui/fallbackRenderer.js \
-    pkg.debug.depend.reason=src/js/ui/mainWindow.js \
-    pkg.debug.depend.reason=src/js/ui/spinnerBox.js \
-    pkg.debug.depend.reason=src/js/viewers/audio.js \
-    pkg.debug.depend.reason=src/js/viewers/evince.js \
-    pkg.debug.depend.reason=src/js/viewers/font.js \
-    pkg.debug.depend.reason=src/js/viewers/gst.js \
-    pkg.debug.depend.reason=src/js/viewers/html.js \
-    pkg.debug.depend.reason=src/js/viewers/image.js \
-    pkg.debug.depend.reason=src/js/viewers/text.js
-depend type=require fmri=__TBD pkg.tmp.gi-typelib=Clutter-1.0 \
-    pkg.debug.depend.reason=src/js/ui/mainWindow.js \
-    pkg.debug.depend.reason=src/js/ui/tweener.js \
-    pkg.debug.depend.reason=src/js/viewers/gst.js
-depend type=require fmri=__TBD pkg.debug.depend.reason=src/js/ui/mainWindow.js \
-    pkg.tmp.gi-typelib=ClutterGdk-1.0
-depend type=require fmri=__TBD pkg.debug.depend.reason=src/js/ui/mainWindow.js \
-    pkg.tmp.gi-typelib=GdkX11-3.0
-depend type=require fmri=__TBD pkg.debug.depend.reason=src/js/ui/mainWindow.js \
-    pkg.tmp.gi-typelib=Pango-1.0
-depend type=require fmri=__TBD pkg.debug.depend.reason=src/js/viewers/audio.js \
-    pkg.tmp.gi-typelib=Gst-1.0
-depend type=require fmri=__TBD \
-    pkg.debug.depend.reason=src/js/viewers/evince.js \
-    pkg.tmp.gi-typelib=EvinceDocument-3.0
-depend type=require fmri=__TBD \
-    pkg.debug.depend.reason=src/js/viewers/evince.js \
-    pkg.tmp.gi-typelib=EvinceView-3.0
-depend type=require fmri=__TBD pkg.debug.depend.reason=src/js/viewers/gst.js \
-    pkg.tmp.gi-typelib=ClutterGst-2.0
-depend type=require fmri=__TBD pkg.debug.depend.reason=src/js/viewers/gst.js \
-    pkg.tmp.gi-typelib=GObject-2.0
-depend type=require fmri=__TBD pkg.debug.depend.reason=src/js/viewers/html.js \
-    pkg.tmp.gi-typelib=WebKit2-4.0
-depend type=require fmri=__TBD pkg.debug.depend.reason=src/js/viewers/image.js \
-    pkg.tmp.gi-typelib=GdkPixbuf-2.0
-depend type=require fmri=__TBD pkg.debug.depend.reason=src/js/viewers/text.js \
-    pkg.tmp.gi-typelib=GtkSource-3.0

@@ -26,18 +26,19 @@ BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		meld
-COMPONENT_VERSION=	3.20.1
+COMPONENT_VERSION=	3.21.0
 COMPONENT_PROJECT_URL=	https://meldmerge.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a54843bc4d6cb1d31d0a58aa725091622194d50c32ef67026b35c86dda3cb249
+    sha256:b680114d5ab793324549fd58f4eb202d8e280c0633a0b765ede6dfb34160a81b
+COMPONENT_BUGDB=        utility/meld
 COMPONENT_ANITYA_ID=	5520
 
-TPNO=			53163
+TPNO=			73475
 
 # We just need to build one version.
 PYTHON_VERSIONS =       3.7
 
-BUILD_STYLE= setup.py
+BUILD_STYLE= meson
 TEST_TARGET=	$(TEST_64)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -55,17 +56,25 @@ PYTHON_DATA =		/usr
 COMPONENT_SETUP_ARGS += --no-compile-schemas
 COMPONENT_SETUP_ARGS += --no-update-icon-cache
 
-COMPONENT_TEST_ENV =	PYTHONPATH=$(PROTO_DIR)/$(PYTHON_LIB)
-COMPONENT_TEST_DIR =	$(COMPONENT_SRC)/test
-COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_POST_INSTALL_ACTION += \
+	$(MKDIR) $(PROTOUSRLIBDIR)/python3.7/vendor-packages; \
+        $(MV) $(PROTOUSRLIBDIR)/python3.7/site-packages/* $(PROTOUSRLIBDIR)/python3.7/vendor-packages/; \
+	$(PYTHON) -m compileall $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages;
 
+PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/meld
+
+# To find py3cairo
+PKG_CONFIG_PATHS += /usr/lib/python3.7/vendor-packages/lib/pkgconfig
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9]*[0-9].[0-9][0-9]s//" '
+COMPONENT_TEST_TRANSFORMS += '-e "s/OK      [0-9]//" '
 COMPONENT_TEST_TRANSFORMS += \
-	'-e "s/in .* seconds //" ' \
-	'-n ' \
-	'-e "/^===/p" ' \
-	'-e "/^___/p" '
+        '-n ' \
+        '-e "/OK/p" ' \
+        '-e "/Ok/p" ' \
+        '-e "/Pass/p" ' \
+        '-e "/Fail/p" '
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -73,7 +82,7 @@ REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
-REQUIRED_PACKAGES += library/desktop/gtksourceview3
+REQUIRED_PACKAGES += library/desktop/gtksourceview
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/gnome/gnome-common
 REQUIRED_PACKAGES += library/python/pycairo-37

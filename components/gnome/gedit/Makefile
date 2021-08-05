@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,15 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gedit
-COMPONENT_VERSION=	3.18.2
+COMPONENT_VERSION=	3.34.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Gedit
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:856e451aec29ee45980011de57cadfe89c3cbc53968f6cc865f8efe0bd0d49b1
+    sha256:3e95e51d3ccb495a9ac95aa3ed7fe8fe37ccde7c678f37fa3cea684bc71d507e
 COMPONENT_BUGDB=        gnome/applications
 COMPONENT_ANITYA_ID=	5758
 
-TPNO=			25490
+TPNO=			54024
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -45,9 +46,14 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
-CONFIGURE_OPTIONS += --enable-introspection
-CONFIGURE_OPTIONS += --disable-python
+# Compile all python sources to .pyc files
+COMPONENT_POST_INSTALL_ACTION += \
+        $(PYTHON) -m compileall $(PROTO_DIR)/usr/lib/python3.7/site-packages/gi/overrides;
+PLUGINS_DIR = snippets; quickopen; externaltools
+COMPONENT_POST_INSTALL_ACTION += $(foreach i,$(PLUGINS_DIR),\
+        $(PYTHON) -m compileall $(PROTO_DIR)$(USRLIBDIR64)/gedit/plugins/$(i));
 
 REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/desktop/atk
@@ -55,7 +61,7 @@ REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
-REQUIRED_PACKAGES += library/desktop/gtksourceview3
+REQUIRED_PACKAGES += library/desktop/gtksourceview
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            64_and_32
@@ -30,50 +30,44 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gtksourceview
-COMPONENT_VERSION=	3.24.10
-COMPONENT_PROJECT_URL=	https://developer.gnome.org/gtkmm/stable/
+COMPONENT_VERSION=	4.8.1
+COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GtkSourceView
 COMPONENT_ARCHIVE_HASH= \
-    sha256:ab5406cdd0bdcf66afcd52b1e048a2f43c0f3ab391644ee30d9ac419b93cd59b
+    sha256:d163d71b5fcafbc5b1eec6dd841edbdbcddd3a7511cd5fdcffd86b8bbfe69ac1
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	7724
 
-TPNO=			54077
+TPNO=			73862
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+include $(WS_MAKE_RULES)/test-x11.mk
 
-# Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-introspection
-CONFIGURE_OPTIONS.64 += --enable-introspection
-# Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-vala
-CONFIGURE_OPTIONS.64 += --enable-vala
+CONFIGURE_OPTIONS.32 += -Dgir=false
+CONFIGURE_OPTIONS += -Dgtk_doc=true
 
 # Uses gcc extensions for zero-sized struct/union.
 CFLAGS.studio += $(studio_FEATURES_EXTENSIONS)
 
+CFLAGS += -Wstack-protector -fdata-sections -fstack-protector-all
+
 # Assumes GNU xgettext in PATH.
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
+COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 
-COMPONENT_POST_INSTALL_ACTION.64 += \
-        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libgtksourceview-3.0.3lib \
-                $(PROTO_DIR)/usr/share/man/man3lib/libgtksourceview-3.0.3lib;
-
-# for the tests
-unexport SHELLOPTS
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_ARGS =   -k -i
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/ERROR:/p" '
+        '-e "/Ok:/p" ' \
+        '-e "/Pass:/p" ' \
+        '-e "/Fail:/p" '
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
+REQUIRED_PACKAGES += library/desktop/fribidi
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
