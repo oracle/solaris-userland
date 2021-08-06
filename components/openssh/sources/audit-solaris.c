@@ -20,7 +20,7 @@
  */
 
 /*
- * Copyright (c) 2014, 2020, Oracle and/or its affiliates.
+ * Copyright (c) 2014, 2021, Oracle and/or its affiliates.
  */
 
 #include "includes.h"
@@ -180,21 +180,27 @@ audit_connection_from(const char *host, int port)
 	if (adt_load_termid(peer, &tid) != 0) {
 		error("adt audit_connection_from: unable to load tid for %d:%s",
 		    peer, strerror(errno));
+		return;
 	}
 	if (adt_start_session(&ah, NULL, 0) != 0) {
 		error("adt audit_connection_from: unable to start session "
 		    "for %s:%d:%s", host, port, strerror(errno));
+		return;
 	}
 	if (adt_set_user(ah, ADT_NO_AUDIT, ADT_NO_AUDIT, 0,
 	    ADT_NO_AUDIT, tid, ADT_SETTID) != 0) {
 		error("adt audit_connection_from: unable to set user "
 		    "for %s:%d:%s", host, port, strerror(errno));
 		(void) adt_end_session(ah);
-		ah = NULL;
+
+		return;
 	}
 	if (adt_set_proc(ah) != 0) {
 		error("adt audit_connection_from: unable to set proc "
 		    "for %s:%d:%s", host, port, strerror(errno));
+		(void) adt_end_session(ah);
+
+		return;
 	}
 	(void) adt_end_session(ah);
 	debug("adt audit_connection_from(%s, %d): peerfd=%d", host, port,
