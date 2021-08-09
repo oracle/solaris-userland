@@ -26,16 +26,15 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		fetchmail
-COMPONENT_VERSION=	6.4.18
+COMPONENT_VERSION=	6.4.21
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:302dc9bcdc6927dedf375d2baaead2347557faa70d98b1da83f2409fa6fb259f
+    sha256:6a459c1cafd7a1daa5cd137140da60c18c84b5699cd8e7249a79c33342c99d1d
 COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/$(COMPONENT_NAME)/files/branch_6.4/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://www.fetchmail.info/
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	801
 
-TPNO=			68878
+TPNO=			73360
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
