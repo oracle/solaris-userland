@@ -27,15 +27,15 @@ COMPILER = gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		c-ares
-COMPONENT_VERSION=	1.17.1
+COMPONENT_VERSION=	1.17.2
 COMPONENT_PROJECT_URL=	https://c-ares.haxx.se/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:d73dd0f6de824afd407ce10750ea081af47eba52b8a6cb307d220131ad93fc40
+    sha256:4803c844ce20ce510ef0eb83f8ea41fa24ecaae9d280c468c582d2bb25b3913d
 COMPONENT_ARCHIVE_URL=	https://c-ares.haxx.se/download/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/c-ares
 COMPONENT_ANITYA_ID=	5840
 
-TPNO = 71079
+TPNO = 73352
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
