@@ -25,6 +25,9 @@
 export PARFAIT_BUILD=no
 BUILD_BITS= 64
 COMPILER= gcc
+# For now we have to bootstrap with GCC 10.
+# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=87858#c4
+GCC_ROOT=/usr/gcc/10
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gcc
@@ -178,6 +181,7 @@ PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gccgo
 PKG_HARDLINKS += usr/gcc/$(GCC_MAJOR_VERSION)/bin/gfortran
 
 
+REQUIRED_PACKAGES += developer/gcc-10
 REQUIRED_PACKAGES += developer/test/dejagnu
 REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/isl

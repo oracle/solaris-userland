@@ -25,6 +25,9 @@
 export PARFAIT_BUILD=no
 BUILD_BITS= 64
 COMPILER= gcc
+# For now we have to bootstrap with GCC 10.
+# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=87858#c4
+GCC_ROOT=/usr/gcc/10
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gcc
@@ -163,6 +166,7 @@ COMPONENT_TEST_TARGETS = mail-report.log
 COMPONENT_TEST_MASTER = \
 	$(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 
+REQUIRED_PACKAGES += developer/gcc-10
 REQUIRED_PACKAGES += developer/test/dejagnu
 REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/isl

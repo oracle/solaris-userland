@@ -665,7 +665,7 @@ export PARFAIT_NATIVEGXX=$(GCC_ROOT)/bin/g++
 ONBLD_ROOT ?=	$(BUILD_TOOLS)/onbld
 ONBLD_BIN ?=	$(ONBLD_ROOT)/bin
 
-GCC_ROOT ?=	/usr/gcc/10
+GCC_ROOT ?=	/usr/gcc/11
 
 CC.studio.32 =	$(SPRO_VROOT)/bin/cc
 CXX.studio.32 =	$(SPRO_VROOT)/bin/CC
@@ -1476,7 +1476,7 @@ ifneq ($(strip $(BUILD_BITS)),NO_ARCH)
 # Only a default dependency if component being built produces binaries.
 
 ifeq ($(COMPILER),gcc)
-REQUIRED_PACKAGES += developer/gcc-9
+REQUIRED_PACKAGES += developer/gcc-11
 endif
 
 # We do not add studio compiler to required packages as it is not part of

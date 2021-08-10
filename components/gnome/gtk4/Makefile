@@ -46,6 +46,10 @@ include $(WS_MAKE_RULES)/test-x11.mk
 CONFIGURE_OPTIONS += -Dwayland-backend=false
 CONFIGURE_OPTIONS += -Dman-pages=true
 
+# GCC 11 compiles F16C meson intrinsics test. But later fp16.c build fails
+# with: 'ifunc' is not supported on this target.
+CONFIGURE_OPTIONS += -Df16c=disabled
+
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"

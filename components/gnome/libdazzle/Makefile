@@ -42,6 +42,9 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 
 CFLAGS += -Wstack-protector -fdata-sections -fstack-protector-all
 
+# Version 3.38.0 requires following for GCC 11 build.
+CFLAGS += -Wno-error=incompatible-pointer-types
+
 CONFIGURE_OPTIONS.32 += -Dwith_introspection=false
 CONFIGURE_OPTIONS.64 += -Dwith_introspection=true
 

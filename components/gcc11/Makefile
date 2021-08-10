@@ -25,7 +25,6 @@
 export PARFAIT_BUILD=no
 BUILD_BITS= 64
 COMPILER= gcc
-GCC_ROOT= /usr/gcc/11
 
 include ../../make-rules/shared-macros.mk
 

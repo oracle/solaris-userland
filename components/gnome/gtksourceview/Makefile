@@ -51,6 +51,9 @@ CFLAGS.studio += $(studio_FEATURES_EXTENSIONS)
 
 CFLAGS += -Wstack-protector -fdata-sections -fstack-protector-all
 
+# Version 4.8.1 requires following for GCC 11 build.
+CFLAGS += -Wno-error=incompatible-pointer-types
+
 # Assumes GNU xgettext in PATH.
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)

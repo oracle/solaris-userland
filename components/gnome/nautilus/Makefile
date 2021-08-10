@@ -45,6 +45,9 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 # Uses c99 language types (bool, etc.).
 CFLAGS += -std=gnu99
 
+# Version 3.34.0 requires following for GCC 11 build.
+CFLAGS += -Wno-error=incompatible-pointer-types
+
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_BUILD_ENV += PATH=$(GNUBIN):$(PATH)
