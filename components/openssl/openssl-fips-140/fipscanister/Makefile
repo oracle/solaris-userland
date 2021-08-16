@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
 #
@@ -31,11 +31,11 @@
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	OpenSSL_2.0.13_OracleFIPS
-COMPONENT_VERSION =	1.0
+COMPONENT_VERSION =	1.0.1
 COMPONENT_SRC =		OracleFIPS_$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE =	$(COMPONENT_NAME)_$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8658626c8fe9ef4602e91973b8785a9e690a7e3d55132624c9ecc51a8c58ce99
+    sha256:6c841320fe71ad5a7f614e1e5667ce80e863b0d0f194d83f61160c6a0620e15a
 COMPONENT_ARCHIVE_URL =	https://github.com/oracle/solaris-openssl-fips/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/openssl
 COMPONENT_ANITYA_ID=	13290
@@ -50,7 +50,7 @@ PATH=$(SPRO_VROOT)/bin:/usr/bin:/usr/gnu/bin:/usr/perl5/bin
 # Note: COMPONENT_ARCHIVE_HASH is a SHA256 digest used by the Userland
 # Consolidation to check the file integrity.
 OPENSSL_FIPS_HMAC_KEY = etaonrishdlcupfm
-OPENSSL_FIPS_HMAC = ef8f7a91979cad14d033d8803a89fdf925102a30
+OPENSSL_FIPS_HMAC = 9f1340b228d031eb33e9c12be0a594b75813ddae
 
 # There is a broken link in the tarball which causes cp(1) to fail which would
 # fail the whole configure process. It's safer to get rid of the link than

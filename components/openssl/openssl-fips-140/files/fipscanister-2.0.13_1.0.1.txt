@@ -1,0 +1,11 @@
+
+This pkg delivers an updated OpenSSL FIPS 140-2 based on the Oracle OpenSSL FOM 1.0
+that includes a workaround for https://github.com/openssl/openssl/issues/15587
+This disables a SPARC specific optimisation for Montgomery multiplication that
+could in some cases result in an incorrect result for ECDSA_sign()/ECDSA_verify()
+and possibly other algorithms.
+To reiterate, this bug is not present in X86 systems, only SPARC.
+
+Source and documentation for the Oracle OpenSSL FOM can be found at:
+https://github.com/oracle/solaris-openssl-fips/releases/
+

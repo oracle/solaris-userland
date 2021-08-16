@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
 #
@@ -52,6 +52,14 @@ PATH=$(SPRO_VROOT)/bin:/usr/bin:/usr/gnu/bin:/usr/perl5/bin
 # Consolidation to check the file integrity.
 OPENSSL_FIPS_HMAC_KEY = etaonrishdlcupfm
 OPENSSL_FIPS_HMAC = 26f923491458df77a1f4c6ce39fef2f5bea88cd5
+
+# We do not want to put backup files to the resulting archive.
+GPATCH_BACKUP=
+
+# COPY_COMMON_FILES is there so that cp is called as soon as
+# the Makefile is parsed.
+COPY_COMMON_FILES:= $(cp -p ../../common/patches/042-bn_sqr_mont.patch \
+	$(PATCH_DIR))
 
 # There is a broken link in the tarball which causes cp(1) to fail which would
 # fail the whole configure process. It's safer to get rid of the link than
