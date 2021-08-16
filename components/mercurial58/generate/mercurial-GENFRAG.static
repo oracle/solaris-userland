@@ -47,6 +47,13 @@ link path=usr/bin/hg \
     mediator=hg-python mediator-version=3.9
 
 # Mediated mercurial demos...
-link path=usr/demo/mercurial mediator=hg-python \
-    target=mercurial58 mediator-version=3.9 \
-    pkg.linted.pkglint.dupaction010.1=true
+# For unknown reason during full build pkglint shows an error
+# ERROR pkglint.dupaction011        Expecting a dir action for usr/demo/mercurial, but pkg:/developer/versioning/mercurial58@5.8,11.4-11.4.39.0.0.104.0
+#         delivers it as a link. usr/demo/mercurial/ is delivered by pkg:/developer/versioning/mercurial@5.1.1,11.4-11.4.39.0.0.104.0
+#
+# For now the easiest solution is to not mediate the directory, but it should
+# be properly investigated what is going on
+#
+# link path=usr/demo/mercurial mediator=hg-python \
+#     target=mercurial58 mediator-version=3.9 \
+#     pkg.linted.pkglint.dupaction010.1=true
