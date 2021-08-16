@@ -1,0 +1,19 @@
+Enable posix_spawn() support on Solaris.
+
+This patch was offered and merged upstream into 3.10 and later:
+https://github.com/python/cpython/pull/27795
+
+--- Python-3.9.4/Lib/subprocess.py
++++ Python-3.9.4/Lib/subprocess.py
+@@ -664,8 +664,9 @@ def _use_posix_spawn():
+         # os.posix_spawn() is not available
+         return False
+ 
+-    if sys.platform == 'darwin':
+-        # posix_spawn() is a syscall on macOS and properly reports errors
++    if sys.platform in ('darwin', 'sunos5'):
++        # posix_spawn() is a syscall on both macOS and Solaris,
++        # and properly reports errors
+         return True
+ 
+     # Check libc name and runtime libc version
