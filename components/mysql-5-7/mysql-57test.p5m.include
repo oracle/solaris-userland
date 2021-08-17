@@ -13,7 +13,6 @@
 # fields enclosed by brackets "[]" replaced with your own identifying
 # information: Portions Copyright [yyyy] [name of copyright owner]
 #
-# CDDL HEADER END
 #
 # Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
@@ -231,7 +230,7 @@ file path=usr/mysql/5.7/mysql-test/extra/rpl_tests/rpl_variables_stm.test
 file path=usr/mysql/5.7/mysql-test/extra/rpl_tests/rpl_xa_gtid_next.inc
 file path=usr/mysql/5.7/mysql-test/extra/rpl_tests/rpl_xa_mixed_engines.inc
 file path=usr/mysql/5.7/mysql-test/extra/rpl_tests/type_conversions.test
-dir  path=usr/mysql/5.7/mysql-test/include
+dir  path=usr/mysql/5.7/mysql-test/include/only_with_option.inc
 file path=usr/mysql/5.7/mysql-test/include/stop_mysqld.inc
 file path=usr/mysql/5.7/mysql-test/include/disconnect_connections.inc
 file path=usr/mysql/5.7/mysql-test/include/if_encrypted.inc
@@ -913,6 +912,8 @@ file path=usr/mysql/5.7/mysql-test/mysql-stress-test.pl mode=0555
 link path=usr/mysql/5.7/mysql-test/mysql-test-run target=./mysql-test-run.pl
 file path=usr/mysql/5.7/mysql-test/mysql-test-run.pl mode=0555
 dir  path=usr/mysql/5.7/mysql-test/r
+file path=usr/mysql/5.7/mysql-test/r/ssl_deprecated_tls_versions.result
+file path=usr/mysql/5.7/mysql-test/r/xa_deadlock_binlog.result
 file path=usr/mysql/5.7/mysql-test/r/mysql_batch_mode.result
 file path=usr/mysql/5.7/mysql-test/r/mysqlbinlog_base64_flag.result
 file path=usr/mysql/5.7/mysql-test/r/mysqlbinlog_hexdump.result
@@ -2317,6 +2318,11 @@ file path=usr/mysql/5.7/mysql-test/suite/binlog/combinations
 dir  path=usr/mysql/5.7/mysql-test/suite/binlog/include
 file path=usr/mysql/5.7/mysql-test/suite/binlog/include/binlog_gtid_mix_response_packet.inc
 dir  path=usr/mysql/5.7/mysql-test/suite/binlog/r
+file path=usr/mysql/5.7/mysql-test/suite/binlog/r/binlog_gtid_ps_reprepare.result
+file path=usr/mysql/5.7/mysql-test/suite/binlog/r/binlog_rotate_deadlock.result
+file path=usr/mysql/5.7/mysql-test/suite/binlog/t/binlog_gtid_ps_reprepare.test
+file path=usr/mysql/5.7/mysql-test/suite/binlog/t/binlog_rotate_deadlock-master.opt
+file path=usr/mysql/5.7/mysql-test/suite/binlog/t/binlog_rotate_deadlock.test
 file path=usr/mysql/5.7/mysql-test/suite/binlog/r/binlog_gtid_purge_binlog_at_startup.result
 file path=usr/mysql/5.7/mysql-test/suite/binlog/t/binlog_gtid_purge_binlog_at_startup.test
 file path=usr/mysql/5.7/mysql-test/suite/binlog/r/binlog_anonymous_ownership.result
@@ -4165,6 +4171,8 @@ file path=usr/mysql/5.7/mysql-test/suite/group_replication/inc/start_and_bootstr
 file path=usr/mysql/5.7/mysql-test/suite/group_replication/inc/uninstall_group_replication_plugin.inc
 file path=usr/mysql/5.7/mysql-test/suite/group_replication/my.cnf
 dir  path=usr/mysql/5.7/mysql-test/suite/group_replication/r
+file path=usr/mysql/5.7/mysql-test/suite/group_replication/r/gr_stop_with_running_channel.result
+file path=usr/mysql/5.7/mysql-test/suite/group_replication/t/gr_stop_with_running_channel.test
 file path=usr/mysql/5.7/mysql-test/suite/group_replication/r/gr_stop_during_pfs.result
 file path=usr/mysql/5.7/mysql-test/suite/group_replication/t/gr_stop_during_pfs.test
 file path=usr/mysql/5.7/mysql-test/suite/group_replication/r/gr_DML_error.result
@@ -5021,6 +5029,18 @@ file path=usr/mysql/5.7/mysql-test/suite/group_replication/t/gr_xplugin_global_v
 file path=usr/mysql/5.7/mysql-test/suite/group_replication/t/group_replication.test
 file path=usr/mysql/5.7/mysql-test/suite/group_replication/t/suite.opt
 dir  path=usr/mysql/5.7/mysql-test/suite/innodb
+file path=usr/mysql/5.7/mysql-test/suite/innodb/r/alter_row_format.result
+file path=usr/mysql/5.7/mysql-test/suite/innodb/t/alter_row_format.test
+file path=usr/mysql/5.7/mysql-test/suite/rpl/r/rpl_mta_rows_query_event_double_free.result
+file path=usr/mysql/5.7/mysql-test/suite/rpl/r/rpl_shutdown_with_optimize_for_static_plugin_config.result
+file path=usr/mysql/5.7/mysql-test/suite/rpl/r/rpl_writeset_add_unique_key.result
+file path=usr/mysql/5.7/mysql-test/suite/rpl/t/rpl_mta_rows_query_event_double_free.test
+file path=usr/mysql/5.7/mysql-test/suite/rpl/t/rpl_shutdown_with_optimize_for_static_plugin_config-master.opt
+file path=usr/mysql/5.7/mysql-test/suite/rpl/t/rpl_writeset_add_unique_key.test
+file path=usr/mysql/5.7/mysql-test/suite/rpl/t/rpl_shutdown_with_optimize_for_static_plugin_config.test
+file path=usr/mysql/5.7/mysql-test/t/ssl_deprecated_tls_versions-master.opt
+file path=usr/mysql/5.7/mysql-test/t/ssl_deprecated_tls_versions.test
+file path=usr/mysql/5.7/mysql-test/t/xa_deadlock_binlog.test
 dir  path=usr/mysql/5.7/mysql-test/suite/innodb/include
 file path=usr/mysql/5.7/mysql-test/suite/innodb/r/analyze_index.result
 file path=usr/mysql/5.7/mysql-test/suite/innodb/r/innodb_row_log_read.result
