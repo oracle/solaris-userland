@@ -1,0 +1,30 @@
+Due to the non-standard bootstrapping process of setuptools (in which
+setuptools.egg-info files are dynamically generated), new setuptools_scm
+breaks the build. This patch adds minimal necessary information into the
+PKG-INFO file such that the build can proceed.
+
+This issue is known in upstream:
+https://github.com/pypa/setuptools/issues/2462
+
+This should be fixed in later versions of setuptools.
+
+--- setuptools-44.1.1/bootstrap.py
++++ setuptools-44.1.1/bootstrap.py
+@@ -34,7 +34,7 @@ minimal_egg_info = textwrap.dedent("""
+ def ensure_egg_info():
+     if os.path.exists('setuptools.egg-info'):
+         return
+-    print("adding minimal entry_points")
++    print("adding minimal entry_points and PKG-INFO")
+     build_egg_info()
+ 
+ 
+@@ -46,6 +46,8 @@ def build_egg_info():
+     os.mkdir('setuptools.egg-info')
+     with io.open('setuptools.egg-info/entry_points.txt', 'w') as ep:
+         ep.write(minimal_egg_info)
++    with io.open('setuptools.egg-info/PKG-INFO', 'w') as pi:
++        pi.write("Version: 44.1.1")
+ 
+ 
+ def run_egg_info():
