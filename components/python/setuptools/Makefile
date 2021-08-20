@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2012, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		setuptools
-COMPONENT_VERSION=	43.0.0
+COMPONENT_VERSION=	44.1.1
 IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION)
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	v$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9429061b903a39c0070fbb83181ca169c49ef3298342de6cbac898ab531640fe
+    sha256:d8203b2425014dd7b15b95c69a41454a98c90e5383c6a23d518f61c2e3e86bfd
 COMPONENT_ARCHIVE_URL=	https://github.com/pypa/setuptools/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://github.com/pypa/setuptools
 COMPONENT_BUGDB=	python-mod/setuptools
 COMPONENT_ANITYA_ID=	4021
 
-TPNO=			57826
+TPNO=			62128
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
