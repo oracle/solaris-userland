@@ -27,19 +27,19 @@ BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		icu4c
-COMPONENT_VERSION=	68_2
-IPS_COMPONENT_VERSION=	68.2
+COMPONENT_VERSION=	69_1
+IPS_COMPONENT_VERSION=	69.1
 HUMAN_VERSION=		$(COMPONENT_VERSION)-1
 COMPONENT_PROJECT_URL=  http://site.icu-project.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-src.tgz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:c79193dee3907a2199b8296a93b52c5cb74332c26f3d167269487680d479d625
-COMPONENT_ARCHIVE_URL=  https://github.com/unicode-org/icu/releases/download/release-68-2/$(COMPONENT_ARCHIVE)
+	sha256:4cba7b7acd1d3c42c44bb0c14be6637098c7faf2b330ce876bc5f3b915d09745
+COMPONENT_ARCHIVE_URL=  https://github.com/unicode-org/icu/releases/download/release-69-1/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/icu
 COMPONENT_ANITYA_ID=	16134
 
-TPNO=			71312
+TPNO=			73454
 
 # OpenPGP Key obtained from https://ssl.icu-project.org/KEYS
 
