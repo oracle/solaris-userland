@@ -38,8 +38,8 @@ COMPONENT_ANITYA_ID=	12725
 
 TPNO=			63909
 
-
-COMPONENT_NAME_OLD=		$(COMPONENT_NAME)
+# This component is delivered in two different versions because
+# the newer one is no longer Python 2.7 compatible.
 COMPONENT_VERSION_OLD=	1.4.8
 COMPONENT_SRC_OLD=		$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
 COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
@@ -49,46 +49,13 @@ COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
 
 TPNO_OLD=		31346
 
-
-# This component is delivered in two different versions because
-# the newer one is no longer Python 2.7 compatible.
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-multiver.mk
 
-# Convenience variables
-TARGET_27 = $(BUILD_DIR)/$(MACH)-2.7/
-SOURCE_DIR_OLD = $(COMPONENT_DIR)/$(COMPONENT_SRC_OLD)
-
-# Targets updated for older version build
-$(TARGET_27).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
-
-$(TARGET_27).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
-
-$(TARGET_27).tested: COMPONENT_TEST_DIR = $(SOURCE_DIR_OLD)/astroid/tests
-$(TARGET_27).tested: COMPONENT_TEST_ARGS += unittest_*
-
-$(MANIFEST_BASE)-astroid-27.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
-
-# Manifest convenience variables.
-$(MANIFEST_BASE)-astroid-27.mogrified: NEW_ONLY = \#
-$(MANIFEST_BASE)-astroid-37.mogrified: OLD_ONLY = \#
-$(MANIFEST_BASE)-astroid-39.mogrified: OLD_ONLY = \#
-
-PKG_MACROS += OLD_ONLY="$(OLD_ONLY)"
-PKG_MACROS += NEW_ONLY="$(NEW_ONLY)"
-
-# Meta package must have versions of older runtimes fixed
-FIX_MANIFEST_VERSIONS:
-	echo "<transform depend fmri=(.*)astroid-27@(.*) \
-		-> edit fmri $(COMPONENT_VERSION) $(COMPONENT_VERSION_OLD)>" | \
-	$(PKGMOGRIFY) /dev/fd/0 $(MANIFEST_BASE)-astroid.mogrified \
-		> $(MANIFEST_BASE)-astroid.mogrified-fixed ;
-	$(MV) $(MANIFEST_BASE)-astroid.mogrified-fixed \
-		$(MANIFEST_BASE)-astroid.mogrified
-
-$(MANIFEST_BASE)-astroid.mangled: FIX_MANIFEST_VERSIONS
+$(BUILD_DIR)/%-2.7/.tested: COMPONENT_TEST_DIR = $(SOURCE_DIR_OLD)/astroid/tests
+$(BUILD_DIR)/%-2.7/.tested: COMPONENT_TEST_ARGS += unittest_*
 
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)

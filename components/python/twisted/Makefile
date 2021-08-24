@@ -39,8 +39,8 @@ COMPONENT_ANITYA_ID=	4071
 
 TPNO=			67313
 
-
-COMPONENT_NAME_OLD=		$(COMPONENT_NAME)
+# This component is delivered in two different versions because
+# the newer one is no longer Python 2.7 compatible.
 COMPONENT_VERSION_OLD=	18.9.0
 COMPONENT_SRC_OLD=		$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
 COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.bz2
@@ -50,51 +50,11 @@ COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
 
 TPNO_OLD=		54420
 
-
-# This component is delivered in two different versions because
-# the newer one is no longer Python 2.7 compatible.
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-multiver.mk
 
-# Convenience variables
-TARGET_27.32 = $(BUILD_DIR)/$(MACH32)-2.7/
-TARGET_27.64 = $(BUILD_DIR)/$(MACH64)-2.7/
-SOURCE_DIR_OLD = $(COMPONENT_DIR)/$(COMPONENT_SRC_OLD)
-
-# Targets updated for older version build
-$(TARGET_27.32).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
-$(TARGET_27.64).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
-
-$(TARGET_27.32).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
-$(TARGET_27.64).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
-
-$(TARGET_27.32).tested-and-compared: SOURCE_DIR = $(SOURCE_DIR_OLD)
-$(TARGET_27.64).tested-and-compared: SOURCE_DIR = $(SOURCE_DIR_OLD)
-$(TARGET_27.32).system-tested-and-compared: SOURCE_DIR = $(SOURCE_DIR_OLD)
-$(TARGET_27.64).system-tested-and-compared: SOURCE_DIR = $(SOURCE_DIR_OLD)
-
-$(MANIFEST_BASE)-twisted-27.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
-
-# Manifest convenience variables.
-$(MANIFEST_BASE)-twisted-27.mogrified: NEW_ONLY = \#
-$(MANIFEST_BASE)-twisted-37.mogrified: OLD_ONLY = \#
-$(MANIFEST_BASE)-twisted-39.mogrified: OLD_ONLY = \#
-
-PKG_MACROS += OLD_ONLY="$(OLD_ONLY)"
-PKG_MACROS += NEW_ONLY="$(NEW_ONLY)"
-
-# Meta package must have versions of older runtimes fixed
-FIX_MANIFEST_VERSIONS:
-	echo "<transform depend fmri=(.*)twisted-27@(.*) \
-		-> edit fmri $(COMPONENT_VERSION) $(COMPONENT_VERSION_OLD)>" | \
-	$(PKGMOGRIFY) /dev/fd/0 $(MANIFEST_BASE)-twisted.mogrified \
-		> $(MANIFEST_BASE)-twisted.mogrified-fixed ;
-	$(MV) $(MANIFEST_BASE)-twisted.mogrified-fixed \
-		$(MANIFEST_BASE)-twisted.mogrified
-
-$(MANIFEST_BASE)-twisted.mangled: FIX_MANIFEST_VERSIONS
 
 # Move executables into demo directory.
 COMPONENT_INSTALL_ARGS +=	--install-scripts=usr/demo/twisted-python$(PYTHON_VERSION)

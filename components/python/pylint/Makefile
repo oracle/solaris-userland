@@ -38,8 +38,8 @@ COMPONENT_ANITYA_ID=	5344
 
 TPNO=			63907
 
-
-COMPONENT_NAME_OLD=		$(COMPONENT_NAME)
+# This component is delivered in two different versions because
+# the newer one is no longer Python 2.7 compatible.
 COMPONENT_VERSION_OLD=	1.6.4
 COMPONENT_SRC_OLD=		$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
 COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
@@ -49,13 +49,10 @@ COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
 
 TPNO_OLD=		31351
 
-
-# This component is delivered in two different versions because
-# the newer one is no longer Python 2.7 compatible.
-
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-multiver.mk
 
 # There are several pylint documentation files that setup.py isn't installing
 # but are present in the pylint package on other distributions. Copy them into
@@ -93,41 +90,9 @@ COMPONENT_POST_INSTALL_ACTION += \
 	($(PYTHON) -m py_compile $(PROTOUSRLIBDIR)/python$(PYTHON_VERSION)/vendor-packages/pylint/testutils.py) ;
 
 
-# Convenience variables
-TARGET_27 = $(BUILD_DIR)/$(MACH)-2.7/
-SOURCE_DIR_OLD = $(COMPONENT_DIR)/$(COMPONENT_SRC_OLD)
-
 # pylint-gui is no longer delivered in newer version
-$(TARGET_27).installed: COMPONENT_POST_INSTALL_ACTION += \
+$(BUILD_DIR)/%-2.7/.installed: COMPONENT_POST_INSTALL_ACTION += \
 	(cd $(PROTO_DIR)/usr/bin; $(MV) pylint-gui pylint-gui-$(PYTHON_VERSION)) ;
-
-# Targets updated for older version build
-$(TARGET_27).built: SOURCE_DIR = $(SOURCE_DIR_OLD)
-
-$(TARGET_27).installed: SOURCE_DIR = $(SOURCE_DIR_OLD)
-
-$(TARGET_27).tested-and-compared: COMPONENT_TEST_DIR = $(SOURCE_DIR_OLD)
-
-$(MANIFEST_BASE)-pylint-27.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_OLD)
-
-# Manifest convenience variables.
-$(MANIFEST_BASE)-pylint-27.mogrified: NEW_ONLY = \#
-$(MANIFEST_BASE)-pylint-37.mogrified: OLD_ONLY = \#
-$(MANIFEST_BASE)-pylint-39.mogrified: OLD_ONLY = \#
-
-PKG_MACROS += OLD_ONLY="$(OLD_ONLY)"
-PKG_MACROS += NEW_ONLY="$(NEW_ONLY)"
-
-# Meta package must have versions of older runtimes fixed
-FIX_MANIFEST_VERSIONS:
-	echo "<transform depend fmri=(.*)pylint-27@(.*) \
-		-> edit fmri $(COMPONENT_VERSION) $(COMPONENT_VERSION_OLD)>" | \
-	$(PKGMOGRIFY) /dev/fd/0 $(MANIFEST_BASE)-pylint.mogrified \
-		> $(MANIFEST_BASE)-pylint.mogrified-fixed ;
-	$(MV) $(MANIFEST_BASE)-pylint.mogrified-fixed \
-		$(MANIFEST_BASE)-pylint.mogrified
-
-$(MANIFEST_BASE)-pylint.mangled: FIX_MANIFEST_VERSIONS
 
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
