@@ -4,12 +4,12 @@ Exts skipped    :   14
 Exts tested     :   58
 ---------------------------------------------------------------------
 
-Number of tests : 16182             13736
-Tests skipped   : 2446 ( 15.1%) --------
+Number of tests : 16315             13830
+Tests skipped   : 2485 ( 15.2%) --------
 Tests warned    :    2 (  0.0%) (  0.0%)
-Tests failed    :  185 (  1.1%) (  1.3%)
+Tests failed    :  179 (  1.1%) (  1.3%)
 Expected fail   :   30 (  0.2%) (  0.2%)
-Tests passed    : 13519 ( 83.5%) ( 98.4%)
+Tests passed    : 13619 ( 83.5%) ( 98.5%)
 ---------------------------------------------------------------------
 =====================================================================
 
@@ -105,6 +105,7 @@ Bug #61367: open_basedir bypass in libxml RSHUTDOWN: write test [ext/libxml/test
 #46127 php_openssl_tcp_sockop_accept forgets to set context on accepted stream [ext/openssl/tests/bug46127.phpt]
 Bug #48182: ssl handshake fails during asynchronous socket connection [ext/openssl/tests/bug48182.phpt]
 Bug #54992: Stream not closed and error not returned when SSL CN_match fails [ext/openssl/tests/bug54992.phpt]
+Bug #62890 (default_socket_timeout=-1 causes connection to timeout) [ext/openssl/tests/bug62890.phpt]
 Bug #65538: SSL context "cafile" supports stream wrappers [ext/openssl/tests/bug65538_001.phpt]
 Bug #65538: SSL context "cafile" supports phar wrapper [ext/openssl/tests/bug65538_003.phpt]
 Bug #65729: CN_match gives false positive when wildcard is used [ext/openssl/tests/bug65729.phpt]
@@ -181,11 +182,10 @@ Test fwrite() function : usage variations - r, rb & rt modes [ext/standard/tests
 Test glob() function: basic functions [ext/standard/tests/file/glob_basic.phpt]
 Test lstat() and stat() functions: usage variations - dir/file names in array [ext/standard/tests/file/lstat_stat_variation19.phpt]
 Test lstat() and stat() functions: usage variations - link names stored in array/object [ext/standard/tests/file/lstat_stat_variation20.phpt]
+CWD on open_basedir should not imply that everything is accessible [ext/standard/tests/file/open_basedir_cwd_resolve.phpt]
 Test popen() and pclose function: error conditions [ext/standard/tests/file/popen_pclose_error-sunos.phpt]
 Bug #35916 (Duplicate calls to stream_bucket_append() lead to a crash) [ext/standard/tests/filters/bug35916.phpt]
 Test function getservbyname() [ext/standard/tests/general_functions/getservbyname_basic.phpt]
-Test function getservbyname() by substituting argument 2 with emptyUnsetUndefNull values. [ext/standard/tests/general_functions/getservbyname_variation10.phpt]
-Test function getservbyname() by substituting argument 2 with boolean values. [ext/standard/tests/general_functions/getservbyname_variation9.phpt]
 Test function proc_nice() by substituting argument 1 with int values. [ext/standard/tests/general_functions/proc_nice_variation5.phpt]
 Test ip2long() function : usage variation 2, 64 bit [ext/standard/tests/network/ip2long_variation2_x64.phpt]
 Bug#54946 stream_get_contents infinite loop [ext/standard/tests/streams/bug54946.phpt]
@@ -205,13 +205,9 @@ CLI -a and readline [sapi/cli/tests/016.phpt]
 Check cli_process_title support on Unix [sapi/cli/tests/cli_process_title_unix.phpt]
 Testing ftell() on std streams [sapi/cli/tests/std_streams.phpt]
 FPM: bug68391 - Configuration inclusion in alphabetical order [sapi/fpm/tests/bug68391-conf-include-order.phpt]
-FPM: bug68420 - IPv4 all addresses [sapi/fpm/tests/bug68420-ipv4-all-addresses.phpt]
 FPM: bug68423 - Multiple pools with different PMs (dynamic + ondemand + static) [sapi/fpm/tests/bug68423-multi-pool-all-pms.phpt]
-FPM: bug69625 - 404 should be returned on missing SCRIPT_FILENAME [sapi/fpm/tests/bug69625-no-script-filename.phpt]
-FPM: bug72573 - HTTP_PROXY - CVE-2016-5385 [sapi/fpm/tests/bug72573-http-proxy.phpt]
-FPM: bug73342 - Non-blocking stdin [sapi/fpm/tests/bug73342-nonblocking-stdio.phpt]
-FPM: bug75212 - php_value acts like php_admin_value [sapi/fpm/tests/bug75212-php-value-in-user-ini.phpt]
 FPM: bug78599 - env_path_info underflow - CVE-2019-11043 [sapi/fpm/tests/bug78599-path-info-underflow.phpt]
+Bug #80849 (HTTP Status header truncation) [sapi/fpm/tests/bug80849-fpm.phpt]
 FPM: Function fastcgi_finish_request basic test [sapi/fpm/tests/fastcgi_finish_request_basic.phpt]
 FPM: Function fpm_get_status basic test [sapi/fpm/tests/fpm_get_status_basic.phpt]
 FPM: Function getallheaders basic test [sapi/fpm/tests/getallheaders.phpt]
@@ -234,8 +230,6 @@ FPM: Pool prefix [sapi/fpm/tests/pool-prefix.phpt]
 FPM: Process manager config option pm.start_servers missing [sapi/fpm/tests/proc-no-start-server.phpt]
 FPM: Process user setting ignored when FPM is not running as root [sapi/fpm/tests/proc-user-ignored.phpt]
 FPM: Socket for IPv4 connection [sapi/fpm/tests/socket-ipv4-basic.phpt]
-FPM: Unix Domain Socket connection [sapi/fpm/tests/socket-uds-basic.phpt]
-FPM: UNIX socket owner and group settings can be numeric [sapi/fpm/tests/socket-uds-numeric-ugid-nonroot.phpt]
 FPM: Status basic test [sapi/fpm/tests/status-basic.phpt]
 FPM: Status listen test [sapi/fpm/tests/status-listen.phpt]
 =====================================================================

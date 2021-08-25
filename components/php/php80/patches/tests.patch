@@ -7,11 +7,9 @@ It might be some general problem (need to be investigated). Similar but
 not the same issue:
 http://www.programmersparadox.com/2011/04/20/randomly-failing-php-tests/
 
-diff --git a/Zend/tests/arginfo_zpp_mismatch.phpt b/Zend/tests/arginfo_zpp_mismatch.phpt
-index f5df299..6eac10e 100644
---- a/Zend/tests/arginfo_zpp_mismatch.phpt
-+++ b/Zend/tests/arginfo_zpp_mismatch.phpt
-@@ -3,6 +3,8 @@ Test that there is no arginfo/zpp mismatch
+--- php-8.0.9/Zend/tests/arginfo_zpp_mismatch.phpt
++++ php-8.0.9/Zend/tests/arginfo_zpp_mismatch.phpt
+@@ -3,6 +3,8 @@ Test that there is no arginfo/zpp mismat
  --SKIPIF--
  <?php
  if (getenv('SKIP_MSAN')) die("skip msan misses interceptors for some functions");
@@ -20,10 +18,8 @@ index f5df299..6eac10e 100644
  ?>
  --FILE--
  <?php
-diff --git a/ext/date/tests/bug33532.phpt b/ext/date/tests/bug33532.phpt
-index 80b87f7..d76cb93 100644
---- a/ext/date/tests/bug33532.phpt
-+++ b/ext/date/tests/bug33532.phpt
+--- php-8.0.9/ext/date/tests/bug33532.phpt
++++ php-8.0.9/ext/date/tests/bug33532.phpt
 @@ -5,7 +5,7 @@ error_reporting=2047
  date.timezone=UTC
  --SKIPIF--
@@ -33,11 +29,9 @@ index 80b87f7..d76cb93 100644
  if (!strftime('%Z')) die('skip strftime does not support %Z');
  ?>
  --FILE--
-diff --git a/ext/openssl/tests/bug77390.phpt b/ext/openssl/tests/bug77390.phpt
-index 99ba43e..a8993fe 100644
---- a/ext/openssl/tests/bug77390.phpt
-+++ b/ext/openssl/tests/bug77390.phpt
-@@ -4,6 +4,8 @@ Bug #76705: feof might hang on TLS streams in case of fragmented TLS records
+--- php-8.0.9/ext/openssl/tests/bug77390.phpt
++++ php-8.0.9/ext/openssl/tests/bug77390.phpt
+@@ -4,6 +4,8 @@ --SKIPIF--
  <?php
  if (!extension_loaded("openssl")) die("skip openssl not loaded");
  if (!function_exists("proc_open")) die("skip no proc_open");
@@ -46,11 +40,9 @@ index 99ba43e..a8993fe 100644
  ?>
  --FILE--
  <?php
-diff --git a/ext/standard/tests/file/lstat_stat_variation10.phpt b/ext/standard/tests/file/lstat_stat_variation10.phpt
-index d4d1424..f7c5ffe 100644
---- a/ext/standard/tests/file/lstat_stat_variation10.phpt
-+++ b/ext/standard/tests/file/lstat_stat_variation10.phpt
-@@ -3,6 +3,8 @@ Test lstat() and stat() functions: usage variations - effects of is_dir()
+--- php-8.0.9/ext/standard/tests/file/lstat_stat_variation10.phpt
++++ php-8.0.9/ext/standard/tests/file/lstat_stat_variation10.phpt
+@@ -3,6 +3,8 @@ Test lstat() and stat() functions: usage
  --SKIPIF--
  <?php
  if (getenv("SKIP_SLOW_TESTS")) die("skip slow test");
@@ -59,10 +51,8 @@ index d4d1424..f7c5ffe 100644
  ?>
  --FILE--
  <?php
-diff --git a/ext/standard/tests/file/lstat_stat_variation18.phpt b/ext/standard/tests/file/lstat_stat_variation18.phpt
-index d68fdb6..0f364fc 100644
---- a/ext/standard/tests/file/lstat_stat_variation18.phpt
-+++ b/ext/standard/tests/file/lstat_stat_variation18.phpt
+--- php-8.0.9/ext/standard/tests/file/lstat_stat_variation18.phpt
++++ php-8.0.9/ext/standard/tests/file/lstat_stat_variation18.phpt
 @@ -1,5 +1,10 @@
  --TEST--
  Test lstat() and stat() functions: usage variations - dir/file name stored in object
@@ -74,10 +64,8 @@ index d68fdb6..0f364fc 100644
  --FILE--
  <?php
  /* test for stats of dir/file when their names are stored in objects */
-diff --git a/ext/standard/tests/file/touch_basic.phpt b/ext/standard/tests/file/touch_basic.phpt
-index ffe4b3e..de50059 100644
---- a/ext/standard/tests/file/touch_basic.phpt
-+++ b/ext/standard/tests/file/touch_basic.phpt
+--- php-8.0.9/ext/standard/tests/file/touch_basic.phpt
++++ php-8.0.9/ext/standard/tests/file/touch_basic.phpt
 @@ -5,8 +5,8 @@ Dave Kelsey <d_kelsey@uk.ibm.com>
  --SKIPIF--
  <?php
@@ -89,10 +77,8 @@ index ffe4b3e..de50059 100644
  }
  ?>
  --FILE--
-diff --git a/ext/standard/tests/streams/proc_open_bug60120.phpt b/ext/standard/tests/streams/proc_open_bug60120.phpt
-index 4e5190c..43af2ed 100644
---- a/ext/standard/tests/streams/proc_open_bug60120.phpt
-+++ b/ext/standard/tests/streams/proc_open_bug60120.phpt
+--- php-8.0.9/ext/standard/tests/streams/proc_open_bug60120.phpt
++++ php-8.0.9/ext/standard/tests/streams/proc_open_bug60120.phpt
 @@ -1,5 +1,12 @@
  --TEST--
  Bug #60120 proc_open hangs with stdin/out with >2048 bytes
@@ -106,10 +92,8 @@ index 4e5190c..43af2ed 100644
  --FILE--
  <?php
  error_reporting(E_ALL);
-diff --git a/ext/standard/tests/streams/proc_open_bug64438.phpt b/ext/standard/tests/streams/proc_open_bug64438.phpt
-index 8e4320c..17e9990 100644
---- a/ext/standard/tests/streams/proc_open_bug64438.phpt
-+++ b/ext/standard/tests/streams/proc_open_bug64438.phpt
+--- php-8.0.9/ext/standard/tests/streams/proc_open_bug64438.phpt
++++ php-8.0.9/ext/standard/tests/streams/proc_open_bug64438.phpt
 @@ -1,8 +1,14 @@
  --TEST--
  Bug #64438 proc_open hangs with stdin/out with 4097+ bytes
@@ -126,10 +110,32 @@ index 8e4320c..17e9990 100644
  error_reporting(E_ALL);
  
  if (substr(PHP_OS, 0, 3) == 'WIN') {
-diff --git a/sapi/fpm/tests/bug68442-signal-reload.phpt b/sapi/fpm/tests/bug68442-signal-reload.phpt
-index d15c8e1..edd20fc 100644
---- a/sapi/fpm/tests/bug68442-signal-reload.phpt
-+++ b/sapi/fpm/tests/bug68442-signal-reload.phpt
+--- php-8.0.9/sapi/fpm/tests/bug68381-log-level-warning.phpt
++++ php-8.0.9/sapi/fpm/tests/bug68381-log-level-warning.phpt
+@@ -4,6 +4,8 @@ --SKIPIF--
+ <?php
+ include "skipif.inc";
+ if (getenv("SKIP_ASAN")) die("skip Often fails on azure with asan for unknown reason");
++/* on SunOS it newer ends. */
++if (PHP_OS == 'SunOS') die('skip.. Not valid for SunOS');
+ ?>
+ --FILE--
+ <?php
+--- php-8.0.9/sapi/fpm/tests/bug68420-ipv4-all-addresses.phpt
++++ php-8.0.9/sapi/fpm/tests/bug68420-ipv4-all-addresses.phpt
+@@ -3,6 +3,10 @@ FPM: bug68420 - IPv4 all addresses
+ --SKIPIF--
+ <?php
+ include "skipif.inc";
++if (substr(PHP_OS, 0, 5) == 'SunOS') {
++    /* on SunOS it newer ends */
++    die('skip.. Not valid for SunOS');
++}
+ ?>
+ --FILE--
+ <?php
+--- php-8.0.9/sapi/fpm/tests/bug68442-signal-reload.phpt
++++ php-8.0.9/sapi/fpm/tests/bug68442-signal-reload.phpt
 @@ -1,7 +1,12 @@
  --TEST--
  FPM: bug68442 - Signal reload
@@ -144,11 +150,68 @@ index d15c8e1..edd20fc 100644
  --FILE--
  <?php
  
-diff --git a/sapi/fpm/tests/bug74083-concurrent-reload.phpt b/sapi/fpm/tests/bug74083-concurrent-reload.phpt
-index 8b4b690..8cafcd3 100644
---- a/sapi/fpm/tests/bug74083-concurrent-reload.phpt
-+++ b/sapi/fpm/tests/bug74083-concurrent-reload.phpt
-@@ -2,8 +2,10 @@
+--- php-8.0.9/sapi/fpm/tests/bug68458-pm-no-start-server.phpt
++++ php-8.0.9/sapi/fpm/tests/bug68458-pm-no-start-server.phpt
+@@ -3,6 +3,10 @@ FPM: bug68458 - Missing pm.start_servers
+ --SKIPIF--
+ <?php
+ include "skipif.inc";
++if (substr(PHP_OS, 0, 5) == 'SunOS') {
++    /* on SunOS it newer ends */
++    die('skip.. Not valid for SunOS');
++}
+ ?>
+ --FILE--
+ <?php
+--- php-8.0.9/sapi/fpm/tests/bug69625-no-script-filename.phpt
++++ php-8.0.9/sapi/fpm/tests/bug69625-no-script-filename.phpt
+@@ -1,7 +1,12 @@
+ --TEST--
+ FPM: bug69625 - 404 should be returned on missing SCRIPT_FILENAME
+ --SKIPIF--
+-<?php include "skipif.inc"; ?>
++<?php include "skipif.inc";
++if (substr(PHP_OS, 0, 5) == 'SunOS') {
++    /* on SunOS it newer ends */
++    die('skip.. Not valid for SunOS');
++}
++?>
+ --FILE--
+ <?php
+ 
+--- php-8.0.9/sapi/fpm/tests/bug72573-http-proxy.phpt
++++ php-8.0.9/sapi/fpm/tests/bug72573-http-proxy.phpt
+@@ -1,7 +1,12 @@
+ --TEST--
+ FPM: bug72573 - HTTP_PROXY - CVE-2016-5385
+ --SKIPIF--
+-<?php include "skipif.inc"; ?>
++<?php include "skipif.inc";
++if (substr(PHP_OS, 0, 5) == 'SunOS') {
++    /* on SunOS it hangs and never ends */
++    die('skip.. Not valid for SunOS');
++}
++?>
+ --FILE--
+ <?php
+ 
+--- php-8.0.9/sapi/fpm/tests/bug73342-nonblocking-stdio.phpt
++++ php-8.0.9/sapi/fpm/tests/bug73342-nonblocking-stdio.phpt
+@@ -1,7 +1,10 @@
+ --TEST--
+ FPM: bug73342 - Non-blocking stdin
+ --SKIPIF--
+-<?php include "skipif.inc"; ?>
++<?php include "skipif.inc";
++/* on SunOS it hangs and never ends */
++if (PHP_OS == 'SunOS') die('skip.. Not valid for SunOS');
++?>
+ --FILE--
+ <?php
+ 
+--- php-8.0.9/sapi/fpm/tests/bug74083-concurrent-reload.phpt
++++ php-8.0.9/sapi/fpm/tests/bug74083-concurrent-reload.phpt
+@@ -2,8 +2,10 @@ --TEST--
  Concurrent reload signals should not kill PHP-FPM master process. (Bug: #74083)
  --SKIPIF--
  <?php
@@ -161,11 +224,25 @@ index 8b4b690..8cafcd3 100644
  ?>
  --FILE--
  <?php
-diff --git a/sapi/fpm/tests/bug76601-reload-child-signals.phpt b/sapi/fpm/tests/bug76601-reload-child-signals.phpt
-index f095ed6..319f05e 100644
---- a/sapi/fpm/tests/bug76601-reload-child-signals.phpt
-+++ b/sapi/fpm/tests/bug76601-reload-child-signals.phpt
-@@ -2,9 +2,10 @@
+--- php-8.0.9/sapi/fpm/tests/bug75212-php-value-in-user-ini.phpt
++++ php-8.0.9/sapi/fpm/tests/bug75212-php-value-in-user-ini.phpt
+@@ -1,7 +1,12 @@
+ --TEST--
+ FPM: bug75212 - php_value acts like php_admin_value
+ --SKIPIF--
+-<?php include "skipif.inc"; ?>
++<?php include "skipif.inc";
++if (substr(PHP_OS, 0, 5) == 'SunOS') {
++    /* on SunOS it newer ends */
++    die('skip.. Not valid for SunOS');
++}
++?>
+ --FILE--
+ <?php
+ 
+--- php-8.0.9/sapi/fpm/tests/bug76601-reload-child-signals.phpt
++++ php-8.0.9/sapi/fpm/tests/bug76601-reload-child-signals.phpt
+@@ -2,9 +2,10 @@ --TEST--
  FPM: bug76601 children should not ignore signals during concurrent reloads
  --SKIPIF--
  <?php
@@ -179,10 +256,8 @@ index f095ed6..319f05e 100644
  --FILE--
  <?php
  
-diff --git a/sapi/fpm/tests/bug77934-reload-process-control.phpt b/sapi/fpm/tests/bug77934-reload-process-control.phpt
-index e7da044..c4b1654 100644
---- a/sapi/fpm/tests/bug77934-reload-process-control.phpt
-+++ b/sapi/fpm/tests/bug77934-reload-process-control.phpt
+--- php-8.0.9/sapi/fpm/tests/bug77934-reload-process-control.phpt
++++ php-8.0.9/sapi/fpm/tests/bug77934-reload-process-control.phpt
 @@ -1,7 +1,12 @@
  --TEST--
  FPM: bug77934 - php-fpm kill -USR2 not working
@@ -197,10 +272,24 @@ index e7da044..c4b1654 100644
  --FILE--
  <?php
  
-diff --git a/sapi/fpm/tests/log-bwd-msg-with-nl.phpt b/sapi/fpm/tests/log-bwd-msg-with-nl.phpt
-index 0fdaf10..44135a7 100644
---- a/sapi/fpm/tests/log-bwd-msg-with-nl.phpt
-+++ b/sapi/fpm/tests/log-bwd-msg-with-nl.phpt
+--- php-8.0.9/sapi/fpm/tests/bug80024-socket-reduced-inherit.phpt
++++ php-8.0.9/sapi/fpm/tests/bug80024-socket-reduced-inherit.phpt
+@@ -1,7 +1,12 @@
+ --TEST--
+ FPM: bug80024 - Duplication of info about inherited socket after pool removing
+ --SKIPIF--
+-<?php include "skipif.inc"; ?>
++<?php
++if (substr(PHP_OS, 0, 5) == 'SunOS') {
++    /* on SunOS it kills all tests by the signal */
++    die('skip.. Not valid for SunOS');
++}
++?>
+ --FILE--
+ <?php
+ 
+--- php-8.0.9/sapi/fpm/tests/log-bwd-msg-with-nl.phpt
++++ php-8.0.9/sapi/fpm/tests/log-bwd-msg-with-nl.phpt
 @@ -1,7 +1,12 @@
  --TEST--
  FPM: Buffered worker output decorated log with msg containing new lines
@@ -215,10 +304,8 @@ index 0fdaf10..44135a7 100644
  --FILE--
  <?php
  
-diff --git a/sapi/fpm/tests/log-bwd-multiple-msgs-stdout-stderr.phpt b/sapi/fpm/tests/log-bwd-multiple-msgs-stdout-stderr.phpt
-index 4a8fbf3..7d11c24 100644
---- a/sapi/fpm/tests/log-bwd-multiple-msgs-stdout-stderr.phpt
-+++ b/sapi/fpm/tests/log-bwd-multiple-msgs-stdout-stderr.phpt
+--- php-8.0.9/sapi/fpm/tests/log-bwd-multiple-msgs-stdout-stderr.phpt
++++ php-8.0.9/sapi/fpm/tests/log-bwd-multiple-msgs-stdout-stderr.phpt
 @@ -1,7 +1,10 @@
  --TEST--
  FPM: Buffered worker output decorated log with multiple continuous messages (stdout/stderr mixed)
@@ -231,10 +318,8 @@ index 4a8fbf3..7d11c24 100644
  --XFAIL--
  Fails intermittently
  --FILE--
-diff --git a/sapi/fpm/tests/log-bwd-multiple-msgs.phpt b/sapi/fpm/tests/log-bwd-multiple-msgs.phpt
-index d328aff..0c26a59 100644
---- a/sapi/fpm/tests/log-bwd-multiple-msgs.phpt
-+++ b/sapi/fpm/tests/log-bwd-multiple-msgs.phpt
+--- php-8.0.9/sapi/fpm/tests/log-bwd-multiple-msgs.phpt
++++ php-8.0.9/sapi/fpm/tests/log-bwd-multiple-msgs.phpt
 @@ -1,7 +1,12 @@
  --TEST--
  FPM: Buffered worker output decorated log with multiple continuous messages
@@ -249,11 +334,9 @@ index d328aff..0c26a59 100644
  --FILE--
  <?php
  
-diff --git a/sapi/fpm/tests/reload-uses-sigkill-as-last-measure.phpt b/sapi/fpm/tests/reload-uses-sigkill-as-last-measure.phpt
-index 4e2da76..4c50364 100644
---- a/sapi/fpm/tests/reload-uses-sigkill-as-last-measure.phpt
-+++ b/sapi/fpm/tests/reload-uses-sigkill-as-last-measure.phpt
-@@ -2,9 +2,10 @@
+--- php-8.0.9/sapi/fpm/tests/reload-uses-sigkill-as-last-measure.phpt
++++ php-8.0.9/sapi/fpm/tests/reload-uses-sigkill-as-last-measure.phpt
+@@ -2,9 +2,10 @@ --TEST--
  If SIGQUIT and SIGTERM during reloading fail, SIGKILL should be sent
  --SKIPIF--
  <?php
@@ -267,17 +350,44 @@ index 4e2da76..4c50364 100644
  ?>
  --FILE--
  <?php
-diff --git a/sapi/fpm/tests/socket-invalid-allowed-clients.phpt b/sapi/fpm/tests/socket-invalid-allowed-clients.phpt
-index b224068..04f0ec8 100644
---- a/sapi/fpm/tests/socket-invalid-allowed-clients.phpt
-+++ b/sapi/fpm/tests/socket-invalid-allowed-clients.phpt
-@@ -2,7 +2,10 @@
+--- php-8.0.9/sapi/fpm/tests/socket-invalid-allowed-clients.phpt
++++ php-8.0.9/sapi/fpm/tests/socket-invalid-allowed-clients.phpt
+@@ -2,7 +2,10 @@ --TEST--
  FPM: Socket for invalid allowed client only
  --SKIPIF--
  <?php
 -include "skipif.inc";
 +if (substr(PHP_OS, 0, 5) == 'SunOS') {
 +    /* on SunOS it hangs and never ends */
++    die('skip.. Not valid for SunOS');
++}
+ ?>
+ --FILE--
+ <?php
+--- php-8.0.9/sapi/fpm/tests/socket-uds-basic.phpt
++++ php-8.0.9/sapi/fpm/tests/socket-uds-basic.phpt
+@@ -1,7 +1,12 @@
+ --TEST--
+ FPM: Unix Domain Socket connection
+ --SKIPIF--
+-<?php include "skipif.inc"; ?>
++<?php
++if (substr(PHP_OS, 0, 5) == 'SunOS') {
++    /* on SunOS it newer ends */
++    die('skip.. Not valid for SunOS');
++}
++?>
+ --FILE--
+ <?php
+ 
+--- php-8.0.9/sapi/fpm/tests/socket-uds-numeric-ugid-nonroot.phpt
++++ php-8.0.9/sapi/fpm/tests/socket-uds-numeric-ugid-nonroot.phpt
+@@ -5,6 +5,10 @@ <?php
+ include "skipif.inc";
+ FPM\Tester::skipIfRoot();
+ FPM\Tester::skipIfPosixNotLoaded();
++if (substr(PHP_OS, 0, 5) == 'SunOS') {
++    /* on SunOS it newer ends */
 +    die('skip.. Not valid for SunOS');
 +}
  ?>
