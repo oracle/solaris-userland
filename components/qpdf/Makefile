@@ -27,14 +27,14 @@ COMPILER=	gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		qpdf
-COMPONENT_VERSION=	10.3.1
-TPNO=			68642
+COMPONENT_VERSION=	10.3.2
+TPNO=			73823
 COMPONENT_PROJECT_URL=	http://qpdf.sourceforge.net/
 #GIT_REPO=	https://github.com/qpdf/qpdf
 # GitHub can also provide .zip files which is much faster variant
 COMPONENT_SRC=	$(COMPONENT_NAME)-release-$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	release-$(COMPONENT_NAME)-$(COMPONENT_VERSION).zip
-COMPONENT_ARCHIVE_HASH=	sha256:466ab5e4002150ec549363bff428465909ef5c5a38be9d2239d5cf5919aa1b90
+COMPONENT_ARCHIVE_HASH=	sha256:4280f24e0df0241be976adc30b999bc7c913794f75c6b5265836c738ca53ed0e
 COMPONENT_ARCHIVE_URL=	https://github.com/qpdf/qpdf/archive/$(COMPONENT_ARCHIVE)
 
 COMPONENT_BUGDB=	utility/qpdf
