@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
 <!--
-    Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 
     NOTE:  This service manifest is not editable; its contents will
     be overwritten by package or patch operations, including
@@ -83,13 +83,13 @@
 	<exec_method
 		type='method'
 		name='stop'
-		exec='/lib/svc/method/rsyslog stop'
+		exec=':kill'
 		timeout_seconds='60' />
 
 	<exec_method
 		type='method'
 		name='refresh'
-		exec='/lib/svc/method/rsyslog refresh'
+		exec=':kill -HUP'
 		timeout_seconds='60' />
 
 	<property_group name='general' type='framework'>
