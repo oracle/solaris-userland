@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -47,6 +47,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/stevedore-$(COMPONENT_VERSION)-
 file path=usr/lib/python$(PYVER)/vendor-packages/stevedore-$(COMPONENT_VERSION)-py$(PYVER).egg-info/requires.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/stevedore-$(COMPONENT_VERSION)-py$(PYVER).egg-info/top_level.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/stevedore/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/stevedore/_cache.py
 file path=usr/lib/python$(PYVER)/vendor-packages/stevedore/dispatch.py
 file path=usr/lib/python$(PYVER)/vendor-packages/stevedore/driver.py
 file path=usr/lib/python$(PYVER)/vendor-packages/stevedore/enabled.py
@@ -75,11 +76,12 @@ depend type=optional \
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
 
+# force a dependency on importlib-metadata; pkgdepend work is needed to flush
+# this out.
+depend type=require fmri=library/python/importlib-metadata-$(PYV)
+
 # force a dependency on setuptools; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/setuptools-$(PYV)
-
-# force a dependency on six; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/six-$(PYV)
 
 # force a dependency on the stevedore package
 depend type=require \

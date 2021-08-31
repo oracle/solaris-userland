@@ -26,17 +26,17 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		stevedore
-COMPONENT_VERSION=	1.31.0
+COMPONENT_VERSION=	3.4.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:77fc7d31558883531a244879c98c2467da89d3b792fe600ba2481f6cfa44f9d0
+    sha256:67e7bd9392ce778a61060b85713b1c3d01c208067fd44191fc9df2ad2a72f2f5
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/dreamhost/stevedore
 COMPONENT_BUGDB=	python-mod/stevedore
 COMPONENT_ANITYA_ID=	4040
 
-TPNO=			56276
+TPNO=			74394
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
@@ -57,7 +57,7 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += library/python/setuptools
 REQUIRED_PACKAGES += library/python/six
