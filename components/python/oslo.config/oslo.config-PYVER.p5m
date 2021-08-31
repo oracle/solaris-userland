@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 
 # As an earlier Python 3 version of oslo.config was published, we
@@ -61,7 +61,6 @@ file path=usr/lib/python$(PYVER)/vendor-packages/oslo_config/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_config/_i18n.py
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_config/_list_opts.py
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_config/cfg.py
-file path=usr/lib/python$(PYVER)/vendor-packages/oslo_config/cfgfilter.py
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_config/fixture.py
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_config/generator.py
 file path=usr/lib/python$(PYVER)/vendor-packages/oslo_config/iniparser.py
@@ -85,8 +84,9 @@ depend type=optional \
 # out.
 depend type=require fmri=library/python/debtcollector-$(PYV)
 
-# force a dependency on enum; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/enum-$(PYV)
+# force a dependency on importlib-metadata; pkgdepend work is needed to flush
+# this out.
+depend type=require fmri=library/python/importlib-metadata-$(PYV)
 
 # force a dependency on netaddr; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/netaddr-$(PYV)
@@ -109,9 +109,6 @@ depend type=require fmri=library/python/requests-$(PYV)
 
 # force a dependency on rfc3986; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/rfc3986-$(PYV)
-
-# force a dependency on six; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/six-$(PYV)
 
 # force a dependency on stevedore; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/stevedore-$(PYV)

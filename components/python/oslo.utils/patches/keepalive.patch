@@ -1,17 +1,17 @@
 In-house patch to allow the TCP keepalive parameters to be used on Solaris.
 Patch has not yet been submitted upstream.
 
---- oslo.utils-3.42.1/oslo_utils/netutils.py
-+++ oslo.utils-3.42.1/oslo_utils/netutils.py
+--- oslo.utils-4.10.0/oslo_utils/netutils.py
++++ oslo.utils-4.10.0/oslo_utils/netutils.py
 @@ -21,6 +21,7 @@ import logging
  import os
  import re
  import socket
 +import sys
+ from urllib import parse
  
  import netaddr
- import netifaces
-@@ -442,26 +443,44 @@ def set_tcp_keepalive(sock, tcp_keepaliv
+@@ -496,26 +497,44 @@ def set_tcp_keepalive(sock, tcp_keepaliv
      if not tcp_keepalive:
          return
  
