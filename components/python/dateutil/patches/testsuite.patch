@@ -1,8 +1,8 @@
 freezegun module is not in Solaris, hence remove tests which depend on it.
 
---- python-dateutil-2.8.1/dateutil/test/test_utils.py
-+++ python-dateutil-2.8.1/dateutil/test/test_utils.py
-@@ -9,26 +9,12 @@ from dateutil import utils
+--- python-dateutil-2.8.2/dateutil/test/test_utils.py
++++ python-dateutil-2.8.2/dateutil/test/test_utils.py
+@@ -7,26 +7,11 @@ from dateutil import utils
  from dateutil.tz import UTC
  from dateutil.utils import within_delta
  
@@ -12,26 +12,26 @@ freezegun module is not in Solaris, hence remove tests which depend on it.
  NYC = tz.gettz("America/New_York")
  
  
- class UtilsTest(unittest.TestCase):
--    @freeze_time(datetime(2014, 12, 15, 1, 21, 33, 4003))
--    def testToday(self):
--        self.assertEqual(utils.today(), datetime(2014, 12, 15, 0, 0, 0))
+-@freeze_time(datetime(2014, 12, 15, 1, 21, 33, 4003))
+-def test_utils_today():
+-    assert utils.today() == datetime(2014, 12, 15, 0, 0, 0)
 -
--    @freeze_time(datetime(2014, 12, 15, 12), tz_offset=5)
--    def testTodayTzInfo(self):
--        self.assertEqual(utils.today(NYC),
--                         datetime(2014, 12, 15, 0, 0, 0, tzinfo=NYC))
 -
--    @freeze_time(datetime(2014, 12, 15, 23), tz_offset=5)
--    def testTodayTzInfoDifferentDay(self):
--        self.assertEqual(utils.today(UTC),
--                         datetime(2014, 12, 16, 0, 0, 0, tzinfo=UTC))
+-@freeze_time(datetime(2014, 12, 15, 12), tz_offset=5)
+-def test_utils_today_tz_info():
+-    assert utils.today(NYC) == datetime(2014, 12, 15, 0, 0, 0, tzinfo=NYC)
 -
-     def testDefaultTZInfoNaive(self):
-         dt = datetime(2014, 9, 14, 9, 30)
-         self.assertIs(utils.default_tzinfo(dt, NYC).tzinfo,
---- python-dateutil-2.8.1/dateutil/test/test_rrule.py
-+++ python-dateutil-2.8.1/dateutil/test/test_rrule.py
+-
+-@freeze_time(datetime(2014, 12, 15, 23), tz_offset=5)
+-def test_utils_today_tz_info_different_day():
+-    assert utils.today(UTC) == datetime(2014, 12, 16, 0, 0, 0, tzinfo=UTC)
+-
+-
+ def test_utils_default_tz_info_naive():
+     dt = datetime(2014, 9, 14, 9, 30)
+     assert utils.default_tzinfo(dt, NYC).tzinfo is NYC
+--- python-dateutil-2.8.2/dateutil/test/test_rrule.py
++++ python-dateutil-2.8.2/dateutil/test/test_rrule.py
 @@ -13,7 +13,7 @@ from dateutil.rrule import (
      MO, TU, WE, TH, FR, SA, SU
  )

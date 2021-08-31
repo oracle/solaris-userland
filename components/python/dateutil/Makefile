@@ -26,17 +26,17 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		python-dateutil
-COMPONENT_VERSION=	2.8.1
+COMPONENT_VERSION=	2.8.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5a4b362949477a91c41d002f8310a615c82482940fba548ea84e992314d2600f
+    sha256:7015acdfc7d02dae96f410c7824eba437fa63ee516bb01ea885aa62e40f7f2b4
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://dateutil.readthedocs.org
 COMPONENT_BUGDB=	python-mod/dateutil
 COMPONENT_ANITYA_ID=	5621
 
-TPNO=			55914
+TPNO=			74350
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
@@ -58,6 +58,6 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(NO_TESTS)
+system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += library/python/six
