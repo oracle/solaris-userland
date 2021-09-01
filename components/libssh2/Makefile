@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libssh2
-COMPONENT_VERSION=	1.9.0
+COMPONENT_VERSION=	1.10.0
 COMPONENT_PROJECT_URL=	https://www.libssh2.org/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:d5fb8bd563305fd1074dda90bd053fb2d29fc4bce048d182f96eaa466dfadafd
+	sha256:2066bfa8bddb614b9170bcd40dc4f3b8c8ca2c9fb2e57c7f70571c600ce5bf57
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/libssh2
 COMPONENT_ANITYA_ID=	1730
 
-TPNO=			52548
+TPNO=			73909
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_32_and_64)
 include $(WS_MAKE_RULES)/common.mk

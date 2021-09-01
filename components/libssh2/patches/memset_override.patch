@@ -1,9 +1,9 @@
 #
 # This patch is created in-house & not yet submitted upstream
 #
---- libssh2-1.9.0/src/misc.c.orig	2020-03-22 22:46:50.631196469 +0000
-+++ libssh2-1.9.0/src/misc.c	2020-03-22 22:49:43.144694022 +0000
-@@ -701,6 +701,9 @@
+--- libssh2-1.10.0/src/misc.c
++++ libssh2-1.10.0/src/misc.c
+@@ -699,6 +699,9 @@ void _libssh2_explicit_zero(void *buf, s
  #if defined(HAVE_DECL_SECUREZEROMEMORY) && HAVE_DECL_SECUREZEROMEMORY
      SecureZeroMemory(buf, size);
      (void)memset_libssh; /* Silence unused variable warning */
@@ -13,9 +13,9 @@
  #elif defined(HAVE_MEMSET_S)
      (void)memset_s(buf, size, 0, size);
      (void)memset_libssh; /* Silence unused variable warning */
---- libssh2-1.9.0/src/misc.h.orig	2020-03-26 22:09:28.455390231 +0000
-+++ libssh2-1.9.0/src/misc.h	2020-03-26 22:16:24.763260000 +0000
-@@ -115,6 +115,9 @@
+--- libssh2-1.10.0/src/misc.h
++++ libssh2-1.10.0/src/misc.h
+@@ -115,6 +115,9 @@ int __cdecl _libssh2_gettimeofday(struct
  #endif
  #endif
  
