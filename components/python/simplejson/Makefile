@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 COMPILER=	gcc
 
 COMPONENT_NAME=		simplejson
-COMPONENT_VERSION=	3.17.0
+COMPONENT_VERSION=	3.17.5
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:0cb9561b36bbf431222d2260bc39343dadcda66db273e338ebd72baa6d0061f0
+    sha256:d929a64a7b4cbadfc14f8fa5de106628e94b72a415dd7548baece46b74935721
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/simplejson/simplejson
 COMPONENT_BUGDB=	python-mod/simplejson
 COMPONENT_ANITYA_ID=	4026
 
-TPNO=			57860
+TPNO=			74393
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
