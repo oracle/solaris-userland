@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2012, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pytz
-COMPONENT_VERSION=	2019.3
+COMPONENT_VERSION=	2021.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5783df1f72d3fef52959dc5fece34dcacbcb45b7d128382f0100995372580a48
+    sha256:1954e8ffb0efce76a183399392481c8e41bddb814d198a969ad2b666dec28415
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://pytz.sourceforge.net/
 COMPONENT_BUGDB=	python-mod/pytz
 COMPONENT_ANITYA_ID=	6537
 
-TPNO=			55329
+TPNO=			69985
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
