@@ -26,17 +26,17 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		debtcollector
-COMPONENT_VERSION=	1.22.0
+COMPONENT_VERSION=	2.3.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c31bab1966e0c065d26e51951c0eabea160332beff8c7fd335b1adca78c428c4
+    sha256:dfc9bea99a35cca454e2bb79a75db5d435b24e4388c0a513837ec3d8edd47499
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/debtcollector/
 COMPONENT_BUGDB=	python-mod/debtcollector
 COMPONENT_ANITYA_ID=	6107
 
-TPNO=			56281
+TPNO=			74351
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
@@ -57,9 +57,8 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:	$(SYSTEM_TEST_NO_ARCH)
 
-REQUIRED_PACKAGES += library/python/funcsigs
 REQUIRED_PACKAGES += library/python/pbr
 REQUIRED_PACKAGES += library/python/six
 REQUIRED_PACKAGES += library/python/wrapt
