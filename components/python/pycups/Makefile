@@ -27,17 +27,17 @@ COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pycups
-COMPONENT_VERSION=	1.9.74
+COMPONENT_VERSION=	2.0.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d5b5e4058757d1c090c85ed2ee7e5c2c1785976dc934a6144dbf425398304850
-COMPONENT_ARCHIVE_URL= https://github.com/zdohnal/pycups/archive/$(COMPONENT_VERSION).tar.gz
-COMPONENT_PROJECT_URL= http://cyberelk.net/tim/software/pycups/
+    sha256:21a7b64e4c4a5cd1b2d598fec49f8f6e8fdb56f1e658bb0b7359875988a75c5f
+COMPONENT_ARCHIVE_URL=	$(call pypi_url)
+COMPONENT_PROJECT_URL=	http://cyberelk.net/tim/software/pycups/
 COMPONENT_BUGDB=	python-mod/pycups
 COMPONENT_ANITYA_ID=	7975
 
-TPNO=			49647
+TPNO=			73927
 
 PYTHON_VERSIONS=	$(PYTHON3_VERSIONS)
 
