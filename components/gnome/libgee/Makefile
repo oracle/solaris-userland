@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            64_and_32
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgee
-COMPONENT_VERSION=	0.20.3
+COMPONENT_VERSION=	0.20.4
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Libgee
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:d0b5edefc88cbca5f1709d19fa62aef490922c6577a14ac4e7b085507911a5de
+	sha256:524c1bf390f9cdda4fbd9a47b269980dc64ab5280f0801b53bc69d782c72de0e
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	1625
 
-TPNO=			62683
+TPNO=			73847
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
