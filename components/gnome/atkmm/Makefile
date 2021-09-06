@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -29,20 +29,23 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		atkmm
-COMPONENT_VERSION=	2.28.0
+COMPONENT_VERSION=	2.28.2
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/atkmm/stable/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:4c4cfc917fd42d3879ce997b463428d6982affa0fb660cafcc0bc2d9afcedd3a
+    sha256:a0bb49765ceccc293ab2c6735ba100431807d384ffa14c2ebd30e07993fd2fa4
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	7962
 
-TPNO=			55821
+TPNO=			73813
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CXXFLAGS += -std=c++11
+
+CONFIGURE_OPTIONS += -Dbuild-documentation=true
 
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += image/graphviz
