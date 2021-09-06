@@ -26,14 +26,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gtk-vnc
-COMPONENT_VERSION=	1.0.0
+COMPONENT_VERSION=	1.2.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/$(COMPONENT_NAME)
 COMPONENT_ARCHIVE_HASH= \
-    sha256:a81a1f1a79ad4618027628ffac27d3391524c063d9411c7a36a5ec3380e6c080
+    sha256:7aaf80040d47134a963742fb6c94e970fcb6bf52dc975d7ae542b2ef5f34b94a
 COMPONENT_BUGDB=	gnome/remote-desktop
 COMPONENT_ANITYA_ID=	13142
 
-TPNO=			57513
+TPNO=			73845
 
 BUILD_STYLE=            meson
 TEST_TARGET= $(NO_TESTS)
@@ -59,6 +59,7 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += $(PERL_PKG)
+REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/security/libgcrypt
 REQUIRED_PACKAGES += system/library/security/libsasl2
 REQUIRED_PACKAGES += x11/library/libx11
