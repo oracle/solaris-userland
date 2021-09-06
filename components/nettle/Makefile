@@ -26,16 +26,16 @@ BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		nettle
-COMPONENT_VERSION=	3.7.2
+COMPONENT_VERSION=	3.7.3
 COMPONENT_PROJECT_URL=	http://www.lysator.liu.se/~nisse/nettle/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8d2a604ef1cde4cd5fb77e422531ea25ad064679ff0adf956e78b3352e0ef162
+    sha256:661f5eb03f048a3b924c3a8ad2515d4068e40f67e774e8a26827658007e3bcf0
 COMPONENT_BUGDB=	library/nettle
 COMPONENT_ANITYA_ID=	2073
 
 COMPILER=	gcc
 
-TPNO=	68075
+TPNO=	74061
 
 ifeq ($(MACH),i386)
 
