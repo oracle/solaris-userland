@@ -18,10 +18,10 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
-<transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
+<transform file path=usr.*/man/.+ -> default mangler.man.stability "obsolete volatile">
 set name=pkg.fmri \
     value=pkg:/diagnostic/nmap/zenmap@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Network exploration and security / port scanner GUI"
@@ -30,6 +30,7 @@ set name=pkg.description \
 # Several python modules have an optional "import hildon" for Maemo OS support
 # Also skip looking for a gdk module, since pygtk implements it in the gtk module
 set name=pkg.depend.bypass-generate value=.*gdk.* value=.*hildon.*
+set name=pkg.legacy value=true
 set name=com.oracle.info.description \
     value="the nmap network exploration tool and security / port scanner GUI"
 set name=com.oracle.info.tpno value=$(TPNO)
@@ -154,6 +155,9 @@ file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/higwidgets/higwindows
 file path=usr/lib/python$(PYVER)/vendor-packages/zenmapGUI/higwidgets/utils.py
 file path=usr/share/applications/zenmap-root.desktop
 file path=usr/share/applications/zenmap.desktop
+file release-notes/legacy-diagnostic-nmap-zenmap.txt \
+    path=usr/share/doc/release-notes/legacy-diagnostic-nmap-zenmap.txt \
+    mode=0444 must-display=true release-note=feature/pkg/self@0
 link path=usr/share/man/man1/nmapfe.1 target=zenmap.1
 link path=usr/share/man/man1/xnmap.1 target=zenmap.1
 file path=usr/share/man/man1/zenmap.1
