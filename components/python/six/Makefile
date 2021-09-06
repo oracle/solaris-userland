@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		six
-COMPONENT_VERSION=	1.14.0
+COMPONENT_VERSION=	1.16.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:1e3a65b6e2a5e0a0dbf2357ecdb319490b04dd29bede81ed432c7058a9aa9931
+	sha256:180cb129c71c98324797a52ace042bd76da3b3cb2427b2471b77c69b3ddc856b
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/benjaminp/six
 COMPONENT_BUGDB=	python-mod/six
 COMPONENT_ANITYA_ID=	4027
 
-TPNO=			57850
+TPNO=			71336
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
