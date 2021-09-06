@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 
 <transform file path=usr/lib/mailman/tests/.* -> \
@@ -56,6 +56,7 @@ set name=pkg.description \
 # Mailman tweaks sys.path in ways pkgdepend doesn't know about.
 set name=pkg.depend.runpath \
     value=/usr/lib/mailman:/usr/lib/mailman/Mailman:$PKGDEPEND_RUNPATH
+set name=pkg.legacy value=true
 #
 set name=com.oracle.info.description value="the GNU Mailing List Manager"
 set name=com.oracle.info.tpno value=$(TPNO)
@@ -2410,6 +2411,9 @@ file path=usr/share/doc/mailman/mailman-member/node9.html
 file path=usr/share/doc/mailman/mailman-member/previous.png
 file path=usr/share/doc/mailman/mailman-member/pyfav.png
 file path=usr/share/doc/mailman/mailman-member/up.png
+file release-notes/legacy-mail-mailman.txt \
+    path=usr/share/doc/release-notes/legacy-mail-mailman.txt mode=0444 \
+    must-display=true release-note=feature/pkg/self@0
 link path=var/mailman/archives target=../../var/share/mailman/archives
 dir  path=var/mailman/data owner=mailman group=mailman mode=02775
 file path=var/mailman/data/sitelist.cfg
