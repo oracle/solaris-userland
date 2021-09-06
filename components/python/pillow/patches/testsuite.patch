@@ -1,17 +1,17 @@
 test_file_eps.py should be investigated more. It can very well be an
 test suite endianness problem, but I am not sure right now.
 
---- Pillow-8.2.0/Tests/test_file_eps.py
-+++ Pillow-8.2.0/Tests/test_file_eps.py
+--- Pillow-8.3.2/Tests/test_file_eps.py
++++ Pillow-8.3.2/Tests/test_file_eps.py
 @@ -1,4 +1,5 @@
  import io
 +import sys
  
  import pytest
  
-@@ -66,6 +67,7 @@ def test_invalid_file():
- 
- @pytest.mark.valgrind_known_error(reason="Known Failing")
+@@ -69,6 +70,7 @@ def test_invalid_file():
+     pytest.mark.valgrind_known_error, "libjpeg_turbo", "2.0", reason="Known Failing"
+ )
  @pytest.mark.skipif(not HAS_GHOSTSCRIPT, reason="Ghostscript not available")
 +@pytest.mark.xfail(sys.byteorder == "big", reason="Fails on SPARC Solaris")
  def test_cmyk():

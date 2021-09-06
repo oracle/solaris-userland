@@ -1,12 +1,11 @@
 Pillow test suite uses 'packaging' module to check whether the FreeType version
-is sufficient. We don't have Python packaging, and it doesn't seem worthwhile
-to add it just to check something we already know.
+is sufficient. We don't have Python packaging yet.
 
 Our current FreeType version is high enough to pass all Pillow tests, hence it
 is safe to remove all of these checks.
 
---- Pillow-8.2.0/Tests/test_imagefontctl.py
-+++ Pillow-8.2.0/Tests/test_imagefontctl.py
+--- Pillow-8.3.2/Tests/test_imagefontctl.py
++++ Pillow-8.3.2/Tests/test_imagefontctl.py
 @@ -1,5 +1,4 @@
  import pytest
 -from packaging.version import parse as parse_version
@@ -28,8 +27,8 @@ is safe to remove all of these checks.
      path = f"Tests/images/test_combine_{name}.png"
      f = ImageFont.truetype("Tests/fonts/NotoSans-Regular.ttf", 48)
  
---- Pillow-8.2.0/Tests/test_imagefont.py
-+++ Pillow-8.2.0/Tests/test_imagefont.py
+--- Pillow-8.3.2/Tests/test_imagefont.py
++++ Pillow-8.3.2/Tests/test_imagefont.py
 @@ -6,7 +6,6 @@ import sys
  from io import BytesIO
  
@@ -38,7 +37,7 @@ is safe to remove all of these checks.
  
  from PIL import Image, ImageDraw, ImageFont, features
  
-@@ -605,14 +604,6 @@ class TestImageFont:
+@@ -608,14 +607,6 @@ class TestImageFont:
      def test_variation_get(self):
          font = self.get_font()
  
@@ -53,7 +52,7 @@ is safe to remove all of these checks.
          with pytest.raises(OSError):
              font.get_variation_names()
          with pytest.raises(OSError):
-@@ -675,12 +666,6 @@ class TestImageFont:
+@@ -678,12 +669,6 @@ class TestImageFont:
      def test_variation_set_by_name(self):
          font = self.get_font()
  
@@ -66,7 +65,7 @@ is safe to remove all of these checks.
          with pytest.raises(OSError):
              font.set_variation_by_name("Bold")
  
-@@ -699,12 +684,6 @@ class TestImageFont:
+@@ -702,12 +687,6 @@ class TestImageFont:
      def test_variation_set_by_axes(self):
          font = self.get_font()
  
@@ -79,7 +78,7 @@ is safe to remove all of these checks.
          with pytest.raises(OSError):
              font.set_variation_by_axes([500, 50])
  
-@@ -736,11 +715,7 @@ class TestImageFont:
+@@ -746,11 +725,7 @@ class TestImageFont:
          name, text = "quick", "Quick"
          path = f"Tests/images/test_anchor_{name}_{anchor}.png"
  
@@ -92,7 +91,7 @@ is safe to remove all of these checks.
              width, height = (129, 44)
          else:
              width, height = (128, 44)
-@@ -987,18 +962,6 @@ def test_render_mono_size():
+@@ -997,18 +972,6 @@ def test_render_mono_size():
      assert_image_equal_tofile(im, "Tests/images/text_mono.gif")
  
  
@@ -111,8 +110,8 @@ is safe to remove all of these checks.
  @pytest.mark.parametrize(
      "test_file",
      [
---- Pillow-8.2.0/Tests/helper.py
-+++ Pillow-8.2.0/Tests/helper.py
+--- Pillow-8.3.2/Tests/helper.py
++++ Pillow-8.3.2/Tests/helper.py
 @@ -11,7 +11,6 @@ import tempfile
  from io import BytesIO
  
@@ -131,4 +130,26 @@ is safe to remove all of these checks.
 +    return pytest.mark.skipif(False, reason=reason)
  
  
- @pytest.mark.skipif(sys.platform.startswith("win32"), reason="Requires Unix or macOS")
+ def mark_if_feature_version(mark, feature, version_blacklist, reason=None):
+--- Pillow-8.3.2/Tests/oss-fuzz/test_fuzzers.py
++++ Pillow-8.3.2/Tests/oss-fuzz/test_fuzzers.py
+@@ -2,19 +2,12 @@ import subprocess
+ import sys
+ 
+ import fuzzers
+-import packaging
+ import pytest
+ 
+ from PIL import Image, features
+ 
+ if sys.platform.startswith("win32"):
+     pytest.skip("Fuzzer is linux only", allow_module_level=True)
+-if features.check("libjpeg_turbo"):
+-    version = packaging.version.parse(features.version("libjpeg_turbo"))
+-    if version.major == 2 and version.minor == 0:
+-        pytestmark = pytest.mark.valgrind_known_error(
+-            reason="Known failing with libjpeg_turbo 2.0"
+-        )
+ 
+ 
+ @pytest.mark.parametrize(
