@@ -1,0 +1,15 @@
+This line is no longer present in newer versions of OpenSSH.
+Removed with commit a35d3e911e193a652bd09eed40907e3e165b0a7b
+
+
+--- old/sshd.c	Tue Sep  7 00:55:34 2021
++++ new/sshd.c	Tue Sep  7 01:03:53 2021
+@@ -353,8 +353,6 @@
+ 	pid_t pid;
+ 	int status;
+ 
+-	debug("main_sigchld_handler: %s", strsignal(sig));
+-
+ 	while ((pid = waitpid(-1, &status, WNOHANG)) > 0 ||
+ 	    (pid == -1 && errno == EINTR))
+ 		;
