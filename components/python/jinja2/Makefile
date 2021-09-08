@@ -26,17 +26,17 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Jinja2
-COMPONENT_VERSION=	2.11.3
+COMPONENT_VERSION=	3.0.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:64412e4fe14a0d69e2d423e8b99b007ac804b3cd7902fab7f2a64a56b2e7826a
+    sha256:4a03ce63e871d7df9d19b67e82a8393a0d88a843efdb304177e6fdbaeef31c29
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://jinja.pocoo.org/
 COMPONENT_BUGDB=	python-mod/jinja2
 COMPONENT_ANITYA_ID=	3894
 
-TPNO=			64951
+TPNO=			74352
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
@@ -57,7 +57,7 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += library/python/markupsafe
 REQUIRED_PACKAGES += library/python/setuptools
