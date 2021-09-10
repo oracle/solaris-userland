@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -102,8 +102,10 @@ $(foreach n, $(LIST), \
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
+# Disable support for DMX in xdpyinfo, since it's being EOF'ed
+CONFIGURE_OPTIONS += --without-dmx
+
 REQUIRED_PACKAGES += x11/header/x11-protocols
-REQUIRED_PACKAGES += x11/library/libdmx
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxcb
 REQUIRED_PACKAGES += x11/library/libxcomposite
