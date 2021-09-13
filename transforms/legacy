@@ -25,7 +25,9 @@
 
 #
 # Specify which packages are to be moved to 'legacy' namespace. Please see
-# doc/packaging.txt section "Component EOF (End Of Feature)"
+# doc/packaging.txt section "Component EOF (End Of Feature)". This file is
+# needed only for special cases, usually you just want to add 'set
+# name=pkg.legacy value=true' to your packages.
 #
 
 #
@@ -38,31 +40,8 @@
 # <transform set name=pkg.fmri value=(pkg:/+)?.*(library/perl-5/.*-522.*) -> set mark_legacy true>
 #
 
-# GCC 7
-<transform set name=pkg.fmri value=(pkg:/+)developer/gcc-7 -> set mark_legacy true>
-<transform set name=pkg.fmri value=(pkg:/+)developer/gcc/gcc-c-7 -> set mark_legacy true>
-<transform set name=pkg.fmri value=(pkg:/+)developer/gcc/gcc-c\+\+-7 -> set mark_legacy true>
-<transform set name=pkg.fmri value=(pkg:/+)developer/gcc/gcc-common-7 -> set mark_legacy true>
-<transform set name=pkg.fmri value=(pkg:/+)developer/gcc/gcc-gfortran-7 -> set mark_legacy true>
-<transform set name=pkg.fmri value=(pkg:/+)developer/gcc/gcc-gobjc-7 -> set mark_legacy true>
-<transform set name=pkg.fmri value=(pkg:/+)system/library/gcc/gcc-c-runtime-7 -> set mark_legacy true>
-<transform set name=pkg.fmri value=(pkg:/+)system/library/gcc/gcc-c\+\+-runtime-7 -> set mark_legacy true>
-<transform set name=pkg.fmri value=(pkg:/+)system/library/gcc/gcc-gfortran-runtime-7 -> set mark_legacy true>
-<transform set name=pkg.fmri value=(pkg:/+)system/library/gcc/gcc-gobjc-runtime-7 -> set mark_legacy true>
-<transform set name=pkg.fmri value=(pkg:/+)system/library/gcc/gcc-runtime-7 -> set mark_legacy true>
-
 # Python 2.7 and all related packages
 <transform set name=pkg.fmri value=(pkg:/+)?.*(-27).* -> set mark_legacy true>
-
-# Node.js 12
-<transform set name=pkg.fmri value=^(pkg:/+)?.*runtime/nodejs/nodejs-12$ -> set mark_legacy true>
-
-# Mark packages which are unnecessary in newer runtimes
-<transform set name=pkg.fmri value=(pkg:/+)?.*(library/python/backports.functools_lru_cache).* -> set mark_legacy true>
-<transform set name=pkg.fmri value=(pkg:/+)?.*(library/python/enum).* -> set mark_legacy true>
-<transform set name=pkg.fmri value=(pkg:/+)?.*(library/python/funcsigs).* -> set mark_legacy true>
-<transform set name=pkg.fmri value=(pkg:/+)?.*(library/python/ipaddress).* -> set mark_legacy true>
-<transform set name=pkg.fmri value=(pkg:/+)?.*(library/python/scandir).* -> set mark_legacy true>
 
 # The following packages should not be marked
 <transform set name=pkg.fmri value=(pkg:/+)?.*(developer/build/scons-27) -> delete mark_legacy true>
