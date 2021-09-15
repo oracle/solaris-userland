@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64_and_32
@@ -28,14 +28,14 @@ COMPILER =		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libhandy
-COMPONENT_VERSION=	1.0.2
+COMPONENT_VERSION=	1.4.0
 COMPONENT_PROJECT_URL=	https://gitlab.gnome.org/GNOME/libhandy
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:3ad78d0594165c7e8150f662506d386552825e693aa3679744af96bd94dc1c2d
+	sha256:2676d51fa1fa40fdee7497d3e763fefa18b0338bffcd2ee32e7f7e633c885446
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	114486
 
-TPNO=			63450
+TPNO=			74386
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -60,6 +60,7 @@ COMPONENT_TEST_TRANSFORMS += \
 REQUIRED_PACKAGES += developer/ui-designer/glade
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
+REQUIRED_PACKAGES += library/desktop/fribidi
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/pango
