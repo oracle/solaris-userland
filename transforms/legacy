@@ -43,6 +43,27 @@
 # Python 2.7 and all related packages
 <transform set name=pkg.fmri value=(pkg:/+)?.*(-27).* -> set mark_legacy true>
 
+# Node.js 12
+<transform set name=pkg.fmri value=^(pkg:/+)?.*runtime/nodejs/nodejs-12$ -> set mark_legacy true>
+
+
+# Beware that it's not easy to put python (or perl/ruby) module to legacy if
+# you are at the same time putting to legacy one python (perl/ruby) version.
+# For example if you put 'set name=pkg.legacy value=true' into
+# components/python/enum/enum-PYVER.p5m and you are having python 27 runtime in
+# legacy, then library/python/enum-27 will obtain the line twice. Once from
+# *.p5m and once from this transform for every python 2.7 module. And the full
+# build fails as pkglint throws an error on that duplicate line. So it's
+# probably easier for such modules to list them here instead of putting the
+# legacy to *.p5m.
+
+# Mark packages which are unnecessary in newer runtimes.
+<transform set name=pkg.fmri value=(pkg:/+)?.*(library/python/backports.functools_lru_cache).* -> set mark_legacy true>
+<transform set name=pkg.fmri value=(pkg:/+)?.*(library/python/enum).* -> set mark_legacy true>
+<transform set name=pkg.fmri value=(pkg:/+)?.*(library/python/funcsigs).* -> set mark_legacy true>
+<transform set name=pkg.fmri value=(pkg:/+)?.*(library/python/ipaddress).* -> set mark_legacy true>
+<transform set name=pkg.fmri value=(pkg:/+)?.*(library/python/scandir).* -> set mark_legacy true>
+
 # The following packages should not be marked
 <transform set name=pkg.fmri value=(pkg:/+)?.*(developer/build/scons-27) -> delete mark_legacy true>
 
