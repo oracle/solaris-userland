@@ -20,24 +20,18 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 
 # change python version string to $(PYVER)
 <transform file link -> edit path $(PYVER) \$\(PYVER\)>
 
-# link to version specific executables (with correct shebang)
-<transform file path=usr/bin/(scons|sconsign|scons-time|scons-configure-cache)$ \
-	-> emit link path=usr/bin/%<1> target=%<1>-$(COMPONENT_VERSION)>
-<transform file path=usr/bin/(scons|sconsign|scons-time|scons-configure-cache)$ -> drop>
-
 # move manual pages to correct location
-<transform file path=.*/man/man1/.*  -> set action.hash %(path)>
-<transform file path=.*/man/man1/.*  -> edit path .*man/ usr/share/man/>
+<transform file path=.*/vendor-packages/scons.*\.1$ -> set action.hash %(path)>
+<transform file path=.*/vendor-packages/scons.*\.1$ \
+	-> edit path .*vendor-packages/ usr/share/man/man1/>
 
-# add incorrectly detected missing dependency suppression
-<transform file path=usr/bin/sconsign-\$\(COMPONENT_VERSION\) \
-	-> set pkg.depend.bypass-generate .*whichdb.*>
-
-# drop windows .bat files
-<transform file path=.*\.bat -> drop>
+<transform file path=.*/docbook-xsl-1.76.1/extensions/xslt.py \
+	-> set pkg.depend.bypass-generate .*>
+<transform file path=.*/docbook-xsl-1.76.1/epub/bin/dbtoepub \
+	-> set pkg.depend.bypass-generate .*>

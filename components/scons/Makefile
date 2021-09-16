@@ -20,21 +20,23 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		scons
-COMPONENT_VERSION=	3.1.1
+COMPONENT_VERSION=	4.2.0
 COMPONENT_PROJECT_URL=	http://www.scons.org/
+COMPONENT_SRC=		SCons-$(COMPONENT_VERSION)
+COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:32beeb908ef34d172e2121a39dae8680ed4033ece212cd31253e4ce118996ad1
+    sha256:c24838d5efabb69ef43a4f3a28a1e847ec1960c583d9a2261cbb202784110fb7
 COMPONENT_ARCHIVE_URL=	\
     https://sourceforge.net/projects/$(COMPONENT_NAME)/files/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)/download
 COMPONENT_ANITYA_ID=	4770
 
-TPNO=			54196
+TPNO=			74455
 
 # we only need a single version of SCons
 PYTHON_VERSIONS = 3.7
@@ -44,11 +46,5 @@ TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
 PKG_MACROS += PYVER=$(PYTHON_VERSION)
-
-# pkgdepend doesn't like the first line of a Python script to be:
-# '#!/usr/bin/env python' so turn it into '#!/usr/bin/python$(PYTHON_VERSION)'
-COMPONENT_POST_INSTALL_ACTION += \
-	$(GSED) -i -e 's?env python?python$(PYTHON_VERSION)?' \
-		$(PROTOUSRBINDIR)/*-$(COMPONENT_VERSION);
 
 PKG_PROTO_DIRS += $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES)
