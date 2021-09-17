@@ -1,0 +1,14 @@
+This is Solaris specific patch to use acceptable OpenSSL options by
+default. It may need to be modified once OpenSSL 3.0 is available on Solaris.
+
+--- fetchmail-6.4.22/socket.c.orig	2021-09-17 16:41:40.631900222 +0200
++++ fetchmail-6.4.22/socket.c	2021-09-17 16:43:09.918101504 +0200
+@@ -926,7 +926,7 @@
+ static int OSSL10X_proto_version_logic(int sock, const char **myproto, int *avoid_ssl_versions)
+ {
+ 	if (!*myproto) {
+-	    *myproto = "auto";
++	    *myproto = "TLS1.2+";
+ 	}
+ 
+ 	if (!strcasecmp("ssl3", *myproto)) {
