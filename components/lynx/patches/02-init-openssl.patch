@@ -1,4 +1,4 @@
-Disable SSLv2 and SSLv3 in lynx to "mitigate POODLE vulnerability".
+Disable unacceptable protocols (< TLS1.2)
 
 This change has been passed upstream.
 
@@ -9,8 +9,8 @@ This change has been passed upstream.
  	SSLeay_add_ssl_algorithms();
  	ssl_ctx = SSL_CTX_new(SSLv23_client_method());
 -	SSL_CTX_set_options(ssl_ctx, SSL_OP_ALL | SSL_OP_NO_SSLv2);
-+	/* Always disable SSLv2 & SSLv3 to "mitigate POODLE vulnerability". */
-+	SSL_CTX_set_options(ssl_ctx, SSL_OP_ALL | SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3);
++	/* Always disable unacceptable protocols. */
++	SSL_CTX_set_options(ssl_ctx, SSL_OP_ALL | SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | SSL_OP_NO_TLSv1 | SSL_OP_NO_TLSv1_1);
  #ifdef SSL_OP_NO_COMPRESSION
  	SSL_CTX_set_options(ssl_ctx, SSL_OP_NO_COMPRESSION);
  #endif
