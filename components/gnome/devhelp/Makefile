@@ -20,21 +20,22 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		devhelp
-COMPONENT_VERSION=	3.18.0
+COMPONENT_VERSION=	41.1
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Devhelp
 COMPONENT_ARCHIVE_HASH= \
-	sha256:2494af16fedc311d7bb50bc47c32a69035f7b95fd7995d9db4fe497926087fb5
+	sha256:46ea4f8752c22442e0f14be10387a4e8a3872680c3f04882aabeac7daea22e4b
 COMPONENT_BUGDB=        gnome/help
 COMPONENT_ANITYA_ID=	13119
 
-TPNO=			25069
+TPNO=			74698
+BUILD_STYLE=		meson
 
 COMPILER= gcc
 
@@ -51,8 +52,12 @@ ifeq ($(MACH),sparc)
 LD_EXEC_OPTIONS += -M $(WS_COMPONENTS)/desktop/webkitgtk4/mapfile_sparc_48bits
 endif
 
+LDFLAGS += -z gnu-version-script-compat
+
 # need to use gnu-gettext
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/pango

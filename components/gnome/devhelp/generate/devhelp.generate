@@ -20,6 +20,13 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
+
+# Transform the target path in the links
+<transform link path=usr/share/help/([^/]+)/(.*) \
+    target=/usr/share/help/([^/]+)/.* -> set target ../../../%<3>/%<2>>
+
+<transform file path=usr/bin/devhelp -> \
+    set pkg.linted.userland.action001.2 true>
 
