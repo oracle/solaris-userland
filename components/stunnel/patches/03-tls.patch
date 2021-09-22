@@ -1,0 +1,20 @@
+Disable unacceptable protocols and ciphers according to Oracle standards.
+Not suitable for upstream.
+
+diff -r 1914c6eb126e tools/stunnel.conf-sample.in
+--- tools/stunnel.conf-sample.in	Wed Sep 22 13:53:17 2021 +0200
++++ tools/stunnel.conf-sample.in	Wed Sep 22 14:17:52 2021 +0200
+@@ -52,6 +52,13 @@
+ ; * Service definitions (remove all services for inetd mode)               *
+ ; **************************************************************************
+ 
++; **************************************************************************
++; * Oracle TLS settings                                                    *
++; **************************************************************************
++
++sslVersionMin = TLSv1.2
++ciphers = ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_CCM_SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-CCM:ECDHE-ECDSA-AES128-CCM:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-CCM:DHE-RSA-AES128-CCM:DHE-DSS-AES256-GCM-SHA384:DHE-DSS-AES128-GCM-SHA256:DHE-RSA-CHACHA20-POLY1305
++
+ ; ***************************************** Example TLS client mode services
+ 
+ ; The following examples use /etc/openssl/certs, which is the location
