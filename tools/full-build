@@ -330,8 +330,8 @@ else
 	function killer {
 		local PGID="$1"
 		# Wait for the parent to disappear
-		pwait $PPID
-		# If it does, kill whole process group
+		pwait $PGID
+		# If it does, kill whole process group (process group ID == the leading process)
 		pkill -15 -g $PGID
 		# Not reached, pkill also killed us
 		exit 0
