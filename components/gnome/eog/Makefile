@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		eog
-COMPONENT_VERSION=	3.38.0
+COMPONENT_VERSION=	41.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/EyeOfGnome
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e1a3a47c38688cd538deda627c0eff113d05c316b1dde6243150437259d2d963
+	sha256:917de086fd97fd3ec930fa07c88badd2be1f5d0ae6b9e569c986004e0359a9ac
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	5393
 
-TPNO=			62735
+TPNO=			74702
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)

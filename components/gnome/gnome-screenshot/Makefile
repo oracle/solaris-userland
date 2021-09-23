@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64
@@ -28,14 +28,14 @@ COMPILER =		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-screenshot
-COMPONENT_VERSION=	3.38.0
+COMPONENT_VERSION=	40.0
 COMPONENT_PROJECT_URL=	https://en.wikipedia.org/wiki/GNOME_Screenshot
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e556d3dd134d91344d2857c066434bfb64f7c85bdec7bc33739366b9bcd29fc0
+	sha256:368ca95a39e39dc2406c849e8c4205e3f574acdd874c30741873455e3d21a5e2
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	13135
 
-TPNO=			63594
+TPNO=			74704
 BUILD_STYLE=		meson
 
 TEST_TARGET= $(NO_TESTS)

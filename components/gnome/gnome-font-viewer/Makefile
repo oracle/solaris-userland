@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-font-viewer
-COMPONENT_VERSION=	3.34.0
+COMPONENT_VERSION=	41.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:aa6f0583e5f93aec095e537f0638b29de3d02491f0131ef584a7c55d39d6b98b
+	sha256:5dd410331be070e4e034397f2754980e073851d50a2119f2fbf96adc6fe2e876
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	13130
 
-TPNO=			54040
+TPNO=			74705
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
@@ -55,6 +55,7 @@ REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/harfbuzz
+REQUIRED_PACKAGES += library/desktop/libhandy
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop

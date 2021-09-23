@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,15 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		baobab
-COMPONENT_VERSION=	3.38.0
+COMPONENT_VERSION=	41.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Baobab
 COMPONENT_ARCHIVE_HASH= \
-	sha256:048468147860816b97f15d50b3c84e9acf0539c1441cfeb63703d112e8728329
-COMPONENT_ARCHIVE_URL=	http://ftp.gnome.org/pub/GNOME/sources/$(COMPONENT_NAME)/3.38/$(COMPONENT_ARCHIVE)
+	sha256:cad6278d2dcc80c84b57105aa5bb58d8a30ce98d6fabd767519ddb86c857e855
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	10907
 
-TPNO=			63378
+TPNO=			74701
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
@@ -53,6 +52,7 @@ REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
+REQUIRED_PACKAGES += library/desktop/libhandy
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += system/library/math
