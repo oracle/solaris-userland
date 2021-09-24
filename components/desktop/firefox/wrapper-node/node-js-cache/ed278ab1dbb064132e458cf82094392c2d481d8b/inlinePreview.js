@@ -84,16 +84,16 @@ function generateInlinePreview(cx, frame) {
         // We want to show values of properties of objects only and not
         // function calls on other data types like someArr.forEach etc..
         let properties = null;
-        const objectFront = bindings[name].value;
+        const objectGrip = bindings[name].value;
 
-        if (objectFront.actorID && objectFront.class === "Object") {
+        if (objectGrip.actor && objectGrip.class === "Object") {
           properties = await client.loadObjectProperties({
             name,
             path: name,
             contents: {
-              value: objectFront
+              value: objectGrip
             }
-          });
+          }, cx.thread);
         }
 
         const previewsFromBindings = getBindingValues(originalAstScopes, pausedOnLine, name, bindings[name].value, curLevel, properties);

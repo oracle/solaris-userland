@@ -7,8 +7,7 @@ exports.default = exports.Outline = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
-var _devtoolsContextmenu = require("devtools/client/debugger/dist/vendors").vendored["devtools-contextmenu"];
-
+loader.lazyRequireGetter(this, "_menu", "devtools/client/debugger/src/context-menu/menu");
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
 
 var _fuzzaldrinPlus = require("devtools/client/debugger/dist/vendors").vendored["fuzzaldrin-plus"];
@@ -185,7 +184,7 @@ class Outline extends _react.Component {
       }
     };
     const menuOptions = [copyFunctionItem];
-    (0, _devtoolsContextmenu.showMenu)(event, menuOptions);
+    (0, _menu.showMenu)(event, menuOptions);
   }
 
   renderPlaceholder() {

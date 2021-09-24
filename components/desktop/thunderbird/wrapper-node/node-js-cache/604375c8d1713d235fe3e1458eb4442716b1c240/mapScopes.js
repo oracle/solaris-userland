@@ -45,8 +45,7 @@ async function buildOriginalScopes(frame, client, cx, frameId, generatedScopes) 
   }
 
   const results = await client.evaluateExpressions(inputs, {
-    frameId,
-    thread: cx.thread
+    frameId
   });
   const variables = {};
 

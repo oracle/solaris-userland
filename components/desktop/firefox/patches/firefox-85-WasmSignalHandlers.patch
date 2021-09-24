@@ -3,10 +3,9 @@ Avoids recursion during panic!?
 Similar to (but not the same):
 https://bugzilla.mozilla.org/show_bug.cgi?id=1435219
 
-diff -r 95fd9deac911 js/src/wasm/WasmSignalHandlers.cpp
---- a/js/src/wasm/WasmSignalHandlers.cpp	Mon Feb 05 12:14:22 2018 +0100
-+++ b/js/src/wasm/WasmSignalHandlers.cpp	Mon Feb 05 05:22:59 2018 -0800
-@@ -154,6 +154,11 @@
+--- firefox-91.1.0/js/src/wasm/WasmSignalHandlers.cpp
++++ firefox-91.1.0/js/src/wasm/WasmSignalHandlers.cpp
+@@ -154,6 +154,11 @@ defined(__ppc64le__) || defined(__PPC64L
  #    define R01_sig(p) ((p)->uc_mcontext.gp_regs[1])
  #    define R32_sig(p) ((p)->uc_mcontext.gp_regs[32])
  #  endif

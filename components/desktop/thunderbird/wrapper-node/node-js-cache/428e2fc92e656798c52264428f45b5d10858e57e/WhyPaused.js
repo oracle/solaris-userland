@@ -13,7 +13,7 @@ var _AccessibleImage = _interopRequireDefault(require("../shared/AccessibleImage
 
 var _actions = _interopRequireDefault(require("../../actions/index"));
 
-var _devtoolsReps = _interopRequireDefault(require("devtools/client/shared/components/reps/reps.js"));
+var _index = _interopRequireDefault(require("devtools/client/shared/components/reps/index"));
 
 loader.lazyRequireGetter(this, "_pause", "devtools/client/debugger/src/utils/pause/index");
 loader.lazyRequireGetter(this, "_selectors", "devtools/client/debugger/src/selectors/index");
@@ -32,7 +32,7 @@ const {
     Rep
   },
   MODE
-} = _devtoolsReps.default;
+} = _index.default;
 
 class WhyPaused extends _react.PureComponent {
   constructor(props) {
@@ -153,12 +153,12 @@ class WhyPaused extends _react.PureComponent {
     return _react.default.createElement("div", {
       className: "pane why-paused"
     }, _react.default.createElement("div", null, _react.default.createElement("div", {
-      className: "pause reason"
-    }, L10N.getStr(reason), this.renderMessage(why)), _react.default.createElement("div", {
       className: "info icon"
     }, _react.default.createElement(_AccessibleImage.default, {
       className: "info"
-    }))));
+    })), _react.default.createElement("div", {
+      className: "pause reason"
+    }, L10N.getStr(reason), this.renderMessage(why))));
   }
 
 }

@@ -99,6 +99,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * Redux actions for breakpoints
  * @module actions/breakpoints
  */
+// this will need to be changed so that addCLientBreakpoint is removed
 function addHiddenBreakpoint(cx, location) {
   return ({
     dispatch

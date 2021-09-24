@@ -7,18 +7,16 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
-var _devtoolsContextmenu = require("devtools/client/debugger/dist/vendors").vendored["devtools-contextmenu"];
-
+loader.lazyRequireGetter(this, "_menu", "devtools/client/debugger/src/context-menu/menu");
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
 
 var _actions = _interopRequireDefault(require("../../actions/index"));
 
-loader.lazyRequireGetter(this, "_prefs", "devtools/client/debugger/src/utils/prefs");
 loader.lazyRequireGetter(this, "_selectors", "devtools/client/debugger/src/selectors/index");
 loader.lazyRequireGetter(this, "_scopes", "devtools/client/debugger/src/utils/pause/scopes/index");
 loader.lazyRequireGetter(this, "_utils", "devtools/client/debugger/src/utils/pause/scopes/utils");
 
-var _devtoolsReps = require("devtools/client/shared/components/reps/reps.js");
+var _index = require("devtools/client/shared/components/reps/index");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -30,7 +28,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 const {
   ObjectInspector
-} = _devtoolsReps.objectInspector;
+} = _index.objectInspector;
 
 class Scopes extends _react.PureComponent {
   constructor(props) {
@@ -52,7 +50,7 @@ class Scopes extends _react.PureComponent {
         removeWatchpoint
       } = this.props;
 
-      if (!_prefs.features.watchpoints || !item.parent || !item.contents.configurable) {
+      if (!item.parent || !item.contents.configurable) {
         return;
       }
 
@@ -65,7 +63,7 @@ class Scopes extends _react.PureComponent {
           click: () => removeWatchpoint(item)
         };
         const menuItems = [removeWatchpointItem];
-        return (0, _devtoolsContextmenu.showMenu)(event, menuItems);
+        return (0, _menu.showMenu)(event, menuItems);
       }
 
       const addSetWatchpointLabel = L10N.getStr("watchpoints.setWatchpoint");
@@ -98,7 +96,7 @@ class Scopes extends _react.PureComponent {
         submenu: [addSetWatchpointItem, addGetWatchpointItem, addGetOrSetWatchpointItem]
       };
       const menuItems = [watchpointsSubmenuItem];
-      (0, _devtoolsContextmenu.showMenu)(event, menuItems);
+      (0, _menu.showMenu)(event, menuItems);
     });
 
     _defineProperty(this, "renderWatchpointButton", item => {
@@ -132,12 +130,12 @@ class Scopes extends _react.PureComponent {
 
   componentWillReceiveProps(nextProps) {
     const {
-      cx,
       selectedFrame,
       originalFrameScopes,
-      generatedFrameScopes
+      generatedFrameScopes,
+      isPaused
     } = this.props;
-    const isPausedChanged = cx.isPaused !== nextProps.cx.isPaused;
+    const isPausedChanged = isPaused !== nextProps.isPaused;
     const selectedFrameChanged = selectedFrame !== nextProps.selectedFrame;
     const originalFrameScopesChanged = originalFrameScopes !== nextProps.originalFrameScopes;
     const generatedFrameScopesChanged = generatedFrameScopes !== nextProps.generatedFrameScopes;
@@ -190,13 +188,14 @@ class Scopes extends _react.PureComponent {
         onContextMenu: this.onContextMenu,
         setExpanded: (path, expand) => setExpandedScope(cx, path, expand),
         initiallyExpanded: initiallyExpanded,
-        renderItemActions: this.renderWatchpointButton
+        renderItemActions: this.renderWatchpointButton,
+        shouldRenderTooltip: true
       }));
     }
 
     let stateText = L10N.getStr("scopes.notPaused");
 
-    if (cx.isPaused) {
+    if (this.props.isPaused) {
       if (isLoading) {
         stateText = L10N.getStr("loadingText");
       } else {
@@ -245,7 +244,8 @@ const mapStateToProps = state => {
     why: (0, _selectors.getPauseReason)(state, cx.thread),
     originalFrameScopes,
     generatedFrameScopes,
-    expandedScopes: (0, _selectors.getLastExpandedScopes)(state, cx.thread)
+    expandedScopes: (0, _selectors.getLastExpandedScopes)(state, cx.thread),
+    isPaused: (0, _selectors.getIsCurrentThreadPaused)(state)
   };
 };
 

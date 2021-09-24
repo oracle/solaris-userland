@@ -4,6 +4,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.buildMappedScopes = buildMappedScopes;
+
+require("../../../workers/parser/index");
+
 loader.lazyRequireGetter(this, "_locColumn", "devtools/client/debugger/src/utils/pause/mapScopes/locColumn");
 loader.lazyRequireGetter(this, "_rangeMetadata", "devtools/client/debugger/src/utils/pause/mapScopes/rangeMetadata");
 loader.lazyRequireGetter(this, "_findGeneratedBindingFromPosition", "devtools/client/debugger/src/utils/pause/mapScopes/findGeneratedBindingFromPosition");
@@ -226,7 +229,6 @@ function getGlobalFromScope(scopes) {
   let globalLexicalScope = null;
 
   for (let s = scopes; s.parent; s = s.parent) {
-    // $FlowIgnore - Flow doesn't like casting 'parent'.
     globalLexicalScope = s;
   }
 
@@ -252,7 +254,6 @@ function generateGlobalFromAst(generatedScopes) {
       arguments: [],
       variables: Object.fromEntries(Object.keys(globalLexicalAst).map(key => [key, (0, _optimizedOut.getOptimizedOutGrip)()]))
     },
-    // $FlowIgnore - Flow doesn't like casting 'parent'.
     parent: {
       actor: "generatedActor0",
       object: (0, _optimizedOut.getOptimizedOutGrip)(),

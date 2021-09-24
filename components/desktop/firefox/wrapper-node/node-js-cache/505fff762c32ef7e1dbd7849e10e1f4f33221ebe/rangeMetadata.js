@@ -12,6 +12,10 @@ loader.lazyRequireGetter(this, "_filtering", "devtools/client/debugger/src/utils
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+// * match - Range contains a single identifier with matching start location
+// * contains - Range contains a single identifier with non-matching start
+// * multiple - Range contains multiple identifiers
+// * empty - Range contains no identifiers
 async function loadRangeMetadata(location, originalAstScopes, sourceMaps) {
   const originalRanges = await sourceMaps.getOriginalRanges(location.sourceId);
   const sortedOriginalAstBindings = [];

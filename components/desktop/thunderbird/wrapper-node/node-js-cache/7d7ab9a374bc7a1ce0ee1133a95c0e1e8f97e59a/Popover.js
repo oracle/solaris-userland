@@ -102,8 +102,7 @@ class Popover extends _react.Component {
   componentDidMount() {
     const {
       type
-    } = this.props; // $FlowIgnore
-
+    } = this.props;
     this.gapHeight = this.$gap.getBoundingClientRect().height;
     const coords = type == "popover" ? this.getPopoverCoords() : this.getTooltipCoords();
 
@@ -248,8 +247,7 @@ class Popover extends _react.Component {
       preview: this.$tooltip || this.$popover,
       type: this.props.type,
       gapHeight: this.gapHeight,
-      coords: this.state.coords // $FlowIgnore
-      ,
+      coords: this.state.coords,
       offset: this.$gap.getBoundingClientRect().left
     }));
   }

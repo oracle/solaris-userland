@@ -1,0 +1,39 @@
+Tries to workaround Rust SPARC issue (passing structures with floats).
+https://github.com/rust-lang/rust/issues/86163#
+
+Therefore it disables Webrender and avoids calling problematical PNG code.
+
+https://bugzilla.mozilla.org/show_bug.cgi?id=1714064
+https://bugzilla.mozilla.org/show_bug.cgi?id=1731549
+
+--- firefox-91.1.0/gfx/config/gfxConfigManager.cpp
++++ firefox-91.1.0/gfx/config/gfxConfigManager.cpp
+@@ -51,7 +51,11 @@ Preferences::GetBool("gfx.webrender.dcom
+ #endif
+ 
+   mWrEnvForceEnabled = gfxPlatform::WebRenderEnvvarEnabled();
++#if __sparc__
++  mWrEnvForceDisabled = 1;
++#else
+   mWrEnvForceDisabled = gfxPlatform::WebRenderEnvvarDisabled();
++#endif
+ 
+ #ifdef XP_WIN
+   DeviceManagerDx::Get()->CheckHardwareStretchingSupport(mHwStretchingSupport);
+--- firefox-91.1.0/image/decoders/nsPNGDecoder.cpp
++++ firefox-91.1.0/image/decoders/nsPNGDecoder.cpp
+@@ -493,12 +493,14 @@ double gammaOfFile;
+ 
+     png_get_gAMA(png_ptr, info_ptr, &gammaOfFile);
+ 
++#ifndef __sparc__
+     mInProfile = qcms_profile_create_rgb_with_gamma(whitePoint, primaries,
+                                                     1.0 / gammaOfFile);
+ 
+     if (mInProfile) {
+       png_set_gray_to_rgb(png_ptr);
+     }
++#endif
+   }
+ 
+   return QCMS_INTENT_PERCEPTUAL;  // Our default

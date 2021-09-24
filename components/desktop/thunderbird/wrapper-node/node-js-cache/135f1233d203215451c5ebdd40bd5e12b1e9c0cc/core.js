@@ -39,7 +39,7 @@ function insertResources(state, resources) {
     } = resource;
 
     if (state.identity[id]) {
-      throw new Error(`Resource "${id}" already exists, cannot insert`);
+      throw new Error(`Resource "${id}" already exists, cannot insert ${JSON.stringify(resource)}`);
     }
 
     if (state.values[id]) {

@@ -38,12 +38,7 @@ function paused(pauseInfo) {
       thread,
       frame,
       why
-    } = pauseInfo; // prevents redundant pauses, which is possible when we call checkIfAlreadyPaused. This can likely go away in the next set of patches , which exclusively use targetList
-
-    if ((0, _selectors.getIsPaused)(getState(), thread)) {
-      return;
-    }
-
+    } = pauseInfo;
     dispatch({
       type: "PAUSED",
       thread,

@@ -13,7 +13,7 @@ var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/
 
 loader.lazyRequireGetter(this, "_prefs", "devtools/client/debugger/src/utils/prefs");
 
-var _devtoolsReps = require("devtools/client/shared/components/reps/reps.js");
+var _index = require("devtools/client/shared/components/reps/index");
 
 var _actions = _interopRequireDefault(require("../../actions/index"));
 
@@ -36,7 +36,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 const {
   ObjectInspector
-} = _devtoolsReps.objectInspector;
+} = _index.objectInspector;
 
 class Expressions extends _react.Component {
   constructor(props) {
@@ -99,7 +99,6 @@ class Expressions extends _react.Component {
       e.preventDefault();
       e.stopPropagation();
       this.props.updateExpression(this.props.cx, this.state.inputValue, expression);
-      this.hideInput();
     });
 
     _defineProperty(this, "handleNewSubmit", async e => {
@@ -115,11 +114,6 @@ class Expressions extends _react.Component {
         editIndex: -1,
         inputValue: this.props.expressionError ? inputValue : ""
       });
-
-      if (!this.props.expressionError) {
-        this.hideInput();
-      }
-
       this.props.clearAutocomplete();
     });
 
@@ -186,7 +180,8 @@ class Expressions extends _react.Component {
         onDOMNodeClick: grip => openElementInInspector(grip),
         onInspectIconClick: grip => openElementInInspector(grip),
         onDOMNodeMouseOver: grip => highlightDomElement(grip),
-        onDOMNodeMouseOut: grip => unHighlightDomElement(grip)
+        onDOMNodeMouseOut: grip => unHighlightDomElement(grip),
+        shouldRenderTooltip: true
       }), _react.default.createElement("div", {
         className: "expression-container__close-btn"
       }, _react.default.createElement(_Button.CloseButton, {
@@ -217,6 +212,12 @@ class Expressions extends _react.Component {
   componentWillReceiveProps(nextProps) {
     if (this.state.editing && !nextProps.expressionError) {
       this.clear();
+    } // Ensures that the add watch expression input
+    // is no longer visible when the new watch expression is rendered
+
+
+    if (this.props.expressions.length < nextProps.expressions.length) {
+      this.hideInput();
     }
   }
 
@@ -271,6 +272,16 @@ class Expressions extends _react.Component {
     this.hideInput();
   }
 
+  renderExpressions() {
+    const {
+      expressions,
+      showInput
+    } = this.props;
+    return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement("ul", {
+      className: "pane expressions-list"
+    }, expressions.map(this.renderExpression)), showInput && this.renderNewExpressionInput());
+  }
+
   renderAutoCompleteMatches() {
     if (!_prefs.features.autocompleteExpression) {
       return null;
@@ -307,13 +318,11 @@ class Expressions extends _react.Component {
     } = this.state;
     const error = editing === false && expressionError === true;
     const placeholder = error ? L10N.getStr("expressions.errorMsg") : L10N.getStr("expressions.placeholder");
-    return _react.default.createElement("li", {
-      className: (0, _classnames.default)("expression-input-container", {
+    return _react.default.createElement("form", {
+      className: (0, _classnames.default)("expression-input-container expression-input-form", {
         focused,
         error
-      })
-    }, _react.default.createElement("form", {
-      className: "expression-input-form",
+      }),
       onSubmit: this.handleNewSubmit
     }, _react.default.createElement("input", _extends({
       className: "input-expression",
@@ -332,7 +341,7 @@ class Expressions extends _react.Component {
       style: {
         display: "none"
       }
-    })));
+    }));
   }
 
   renderExpressionEditInput(expression) {
@@ -345,14 +354,12 @@ class Expressions extends _react.Component {
       focused
     } = this.state;
     const error = editing === true && expressionError === true;
-    return _react.default.createElement("span", {
-      className: (0, _classnames.default)("expression-input-container", {
+    return _react.default.createElement("form", {
+      key: expression.input,
+      className: (0, _classnames.default)("expression-input-container expression-input-form", {
         focused,
         error
       }),
-      key: expression.input
-    }, _react.default.createElement("form", {
-      className: "expression-input-form",
       onSubmit: e => this.handleExistingSubmit(e, expression)
     }, _react.default.createElement("input", _extends({
       className: (0, _classnames.default)("input-expression", {
@@ -372,17 +379,19 @@ class Expressions extends _react.Component {
       style: {
         display: "none"
       }
-    })));
+    }));
   }
 
   render() {
     const {
-      expressions,
-      showInput
+      expressions
     } = this.props;
-    return _react.default.createElement("ul", {
-      className: "pane expressions-list"
-    }, expressions.map(this.renderExpression), (showInput || !expressions.length) && this.renderNewExpressionInput());
+
+    if (expressions.length === 0) {
+      return this.renderNewExpressionInput();
+    }
+
+    return this.renderExpressions();
   }
 
 }

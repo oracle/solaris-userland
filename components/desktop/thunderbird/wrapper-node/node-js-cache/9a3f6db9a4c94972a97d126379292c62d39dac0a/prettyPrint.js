@@ -7,7 +7,7 @@ exports.prettyPrintSource = prettyPrintSource;
 exports.createPrettySource = createPrettySource;
 exports.togglePrettyPrint = togglePrettyPrint;
 
-var _devtoolsSourceMap = _interopRequireWildcard(require("devtools/client/shared/source-map/index.js"));
+var _devtoolsSourceMap = require("devtools/client/shared/source-map/index.js");
 
 var _assert = _interopRequireDefault(require("../../utils/assert"));
 
@@ -24,19 +24,19 @@ loader.lazyRequireGetter(this, "_select", "devtools/client/debugger/src/actions/
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+function getPrettyOriginalSourceURL(generatedSource) {
+  return (0, _source.getPrettySourceURL)(generatedSource.url || generatedSource.id);
+}
+
 async function prettyPrintSource(sourceMaps, generatedSource, content, actors) {
   if (!(0, _source.isJavaScript)(generatedSource, content) || content.type !== "text") {
     throw new Error("Can't prettify non-javascript files.");
   }
 
-  const url = (0, _source.getPrettySourceURL)(generatedSource.url);
+  const url = getPrettyOriginalSourceURL(generatedSource);
   const {
     code,
     mappings
@@ -66,7 +66,7 @@ function createPrettySource(cx, sourceId) {
     sourceMaps
   }) => {
     const source = (0, _selectors.getSourceFromId)(getState(), sourceId);
-    const url = (0, _source.getPrettySourceURL)(source.url || source.id);
+    const url = getPrettyOriginalSourceURL(source);
     const id = (0, _devtoolsSourceMap.generatedToOriginalId)(sourceId, url);
     const prettySource = {
       id,

@@ -4,17 +4,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = showContextMenu;
-
-var _devtoolsContextmenu = require("devtools/client/debugger/dist/vendors").vendored["devtools-contextmenu"];
-
+loader.lazyRequireGetter(this, "_menu", "devtools/client/debugger/src/context-menu/menu");
 loader.lazyRequireGetter(this, "_selectedLocation", "devtools/client/debugger/src/utils/selected-location");
-
-var _actions = _interopRequireDefault(require("../../../actions/index"));
-
 loader.lazyRequireGetter(this, "_prefs", "devtools/client/debugger/src/utils/prefs");
 loader.lazyRequireGetter(this, "_text", "devtools/client/debugger/src/utils/text");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -282,6 +275,6 @@ function showContextMenu(props) {
     item: removeLogPointItem,
     hidden: () => !_prefs.features.logPoints || !breakpoint.options.logValue
   }];
-  (0, _devtoolsContextmenu.showMenu)(contextMenuEvent, (0, _devtoolsContextmenu.buildMenu)(items));
+  (0, _menu.showMenu)(contextMenuEvent, (0, _menu.buildMenu)(items));
   return null;
 }

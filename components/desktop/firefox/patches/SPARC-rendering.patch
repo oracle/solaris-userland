@@ -4,9 +4,9 @@ Plus SVG gradient-issues.
 
 Fixes by Martin Sirringhaus.
 
---- a/gfx/2d/DrawTargetSkia.cpp
-+++ b/gfx/2d/DrawTargetSkia.cpp
-@@ -68,15 +68,28 @@
+--- firefox-91.1.0/gfx/2d/DrawTargetSkia.cpp
++++ firefox-91.1.0/gfx/2d/DrawTargetSkia.cpp
+@@ -68,15 +68,28 @@ }
      mColors.resize(mCount);
      mPositions.resize(mCount);
      if (aStops[0].offset != 0) {
@@ -35,7 +35,7 @@ Fixes by Martin Sirringhaus.
        mPositions[mCount - 1] = SK_Scalar1;
      }
    }
-@@ -155,7 +168,7 @@
+@@ -163,7 +176,7 @@ int width = aSize.width * 4;
    for (int row = 0; row < height; ++row) {
      for (int column = 0; column < width; column += 4) {
        if (aData[column + kARGBAlphaOffset] != 0xFF) {
@@ -44,7 +44,7 @@ Fixes by Martin Sirringhaus.
                             << ") in " << width << "x" << height
                             << " surface is not opaque: " << int(aData[column])
                             << "," << int(aData[column + 1]) << ","
-@@ -205,7 +218,7 @@
+@@ -213,7 +226,7 @@ for (int offset : offsets) {
      if (aData[offset + kARGBAlphaOffset] != 0xFF) {
        int row = offset / aStride;
        int column = (offset % aStride) / pixelSize;
@@ -53,10 +53,9 @@ Fixes by Martin Sirringhaus.
                           << ") in " << aSize.width << "x" << aSize.height
                           << " surface, bounded by "
                           << "(" << bounds.X() << "," << bounds.Y() << ","
-diff -r 49ddb3c45fbc -r 13bdca7081de gfx/2d/FilterProcessing.h
---- a/gfx/2d/FilterProcessing.h	Wed Jun 17 11:32:00 2020 +0200
-+++ b/gfx/2d/FilterProcessing.h	Fri Jun 19 15:20:16 2020 +0200
-@@ -13,10 +13,17 @@
+--- firefox-91.1.0/gfx/2d/FilterProcessing.h
++++ firefox-91.1.0/gfx/2d/FilterProcessing.h
+@@ -13,10 +13,17 @@ #include "Filters.h"
  namespace mozilla {
  namespace gfx {
  
@@ -74,10 +73,9 @@ diff -r 49ddb3c45fbc -r 13bdca7081de gfx/2d/FilterProcessing.h
  
  class FilterProcessing {
   public:
-diff -r 49ddb3c45fbc -r 13bdca7081de gfx/layers/composite/CompositableHost.cpp
---- a/gfx/layers/composite/CompositableHost.cpp	Wed Jun 17 11:32:00 2020 +0200
-+++ b/gfx/layers/composite/CompositableHost.cpp	Fri Jun 19 15:20:16 2020 +0200
-@@ -92,9 +92,11 @@
+--- firefox-91.1.0/gfx/layers/composite/CompositableHost.cpp
++++ firefox-91.1.0/gfx/layers/composite/CompositableHost.cpp
+@@ -92,9 +92,11 @@ return false;
    }
    MOZ_ASSERT(source);
  
@@ -92,10 +90,9 @@ diff -r 49ddb3c45fbc -r 13bdca7081de gfx/layers/composite/CompositableHost.cpp
    return true;
  }
  
-diff -r 49ddb3c45fbc -r 13bdca7081de gfx/skia/skia/src/shaders/gradients/Sk4fLinearGradient.cpp
---- a/gfx/skia/skia/src/shaders/gradients/Sk4fLinearGradient.cpp	Wed Jun 17 11:32:00 2020 +0200
-+++ b/gfx/skia/skia/src/shaders/gradients/Sk4fLinearGradient.cpp	Fri Jun 19 15:20:16 2020 +0200
-@@ -7,7 +7,7 @@
+--- firefox-91.1.0/gfx/skia/skia/src/shaders/gradients/Sk4fLinearGradient.cpp
++++ firefox-91.1.0/gfx/skia/skia/src/shaders/gradients/Sk4fLinearGradient.cpp
+@@ -7,7 +7,7 @@ */
  
  #include "include/core/SkPaint.h"
  #include "src/shaders/gradients/Sk4fLinearGradient.h"
@@ -104,7 +101,7 @@ diff -r 49ddb3c45fbc -r 13bdca7081de gfx/skia/skia/src/shaders/gradients/Sk4fLin
  #include <cmath>
  #include <utility>
  
-@@ -28,6 +28,9 @@
+@@ -28,6 +28,9 @@ c3 = c1 + dc2;
  
      while (n >= 4) {
          DstTraits<premul>::store4x(c0, c1, c2, c3, dst, bias0, bias1);
@@ -114,7 +111,7 @@ diff -r 49ddb3c45fbc -r 13bdca7081de gfx/skia/skia/src/shaders/gradients/Sk4fLin
          dst += 4;
  
          c0 = c0 + dc4;
-@@ -37,12 +40,23 @@
+@@ -37,12 +40,23 @@ c3 = c3 + dc4;
          n -= 4;
      }
      if (n & 2) {
@@ -140,10 +137,9 @@ diff -r 49ddb3c45fbc -r 13bdca7081de gfx/skia/skia/src/shaders/gradients/Sk4fLin
      }
  }
  
-diff -r 49ddb3c45fbc -r 13bdca7081de image/decoders/nsJPEGDecoder.cpp
---- a/image/decoders/nsJPEGDecoder.cpp	Wed Jun 17 11:32:00 2020 +0200
-+++ b/image/decoders/nsJPEGDecoder.cpp	Fri Jun 19 15:20:16 2020 +0200
-@@ -256,6 +256,9 @@
+--- firefox-91.1.0/image/decoders/nsJPEGDecoder.cpp
++++ firefox-91.1.0/image/decoders/nsJPEGDecoder.cpp
+@@ -257,6 +257,9 @@ case JCS_RGB:
          case JCS_YCbCr:
            // By default, we will output directly to BGRA. If we need to apply
            // special color transforms, this may change.
@@ -153,7 +149,7 @@ diff -r 49ddb3c45fbc -r 13bdca7081de image/decoders/nsJPEGDecoder.cpp
            switch (SurfaceFormat::OS_RGBX) {
              case SurfaceFormat::B8G8R8X8:
                mInfo.out_color_space = JCS_EXT_BGRX;
-@@ -270,6 +273,7 @@
+@@ -271,6 +274,7 @@ default:
                mState = JPEG_ERROR;
                return Transition::TerminateFailure();
            }
@@ -161,10 +157,9 @@ diff -r 49ddb3c45fbc -r 13bdca7081de image/decoders/nsJPEGDecoder.cpp
            break;
          case JCS_CMYK:
          case JCS_YCCK:
-diff -r 49ddb3c45fbc -r 13bdca7081de image/decoders/nsWebPDecoder.cpp
---- a/image/decoders/nsWebPDecoder.cpp	Wed Jun 17 11:32:00 2020 +0200
-+++ b/image/decoders/nsWebPDecoder.cpp	Fri Jun 19 15:20:16 2020 +0200
-@@ -245,7 +245,12 @@
+--- firefox-91.1.0/image/decoders/nsWebPDecoder.cpp
++++ firefox-91.1.0/image/decoders/nsWebPDecoder.cpp
+@@ -247,7 +247,12 @@ }
    // WebP doesn't guarantee that the alpha generated matches the hint in the
    // header, so we always need to claim the input is BGRA. If the output is
    // BGRX, swizzling will mask off the alpha channel.

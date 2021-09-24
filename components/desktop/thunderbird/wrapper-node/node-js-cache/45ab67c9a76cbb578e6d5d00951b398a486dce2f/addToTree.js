@@ -60,24 +60,12 @@ function findOrCreateNode(parts, subTree, path, part, index, url, debuggeeHost, 
 
 
 function traverseTree(url, tree, debuggeeHost, source, thread) {
-  const parts = url.path.replace(/\/$/, "").split("/");
-  parts[0] = url.group;
-
-  if (thread) {
-    parts.unshift(thread);
-  }
-
-  let path = "";
-  return parts.reduce((subTree, part, index) => {
-    if (index == 0 && thread) {
-      path = thread;
-    } else {
-      path = `${path}/${part}`;
-    }
-
-    const debuggeeHostIfRoot = index === 1 ? debuggeeHost : null;
-    return findOrCreateNode(parts, subTree, path, part, index, url, debuggeeHostIfRoot, source);
-  }, tree);
+  const parts = (0, _utils.getPathParts)(url, thread, debuggeeHost);
+  return parts.reduce((subTree, {
+    part,
+    path,
+    debuggeeHostIfRoot
+  }, index) => findOrCreateNode(parts, subTree, path, part, index, url, debuggeeHostIfRoot, source), tree);
 }
 /*
  * Add a source file to a directory node in the tree
@@ -94,14 +82,20 @@ function addSourceToNode(node, url, source) {
 
 
   if (isFile) {
-    // $FlowIgnore
     node.type = "source";
     return source;
   }
 
-  const {
+  let {
     filename
   } = url;
+
+  if (filename === "(index)" && url.search) {
+    filename = url.search;
+  } else {
+    filename += url.search;
+  }
+
   const {
     found: childFound,
     index: childIndex
@@ -131,13 +125,12 @@ function addSourceToNode(node, url, source) {
 
 
 function addToTree(tree, source, debuggeeHost, thread) {
-  const url = (0, _getURL.getURL)(source, debuggeeHost);
+  const url = (0, _getURL.getDisplayURL)(source, debuggeeHost);
 
   if ((0, _utils.isInvalidUrl)(url, source)) {
     return;
   }
 
-  const finalNode = traverseTree(url, tree, debuggeeHost, source, thread); // $FlowIgnore
-
+  const finalNode = traverseTree(url, tree, debuggeeHost, source, thread);
   finalNode.contents = addSourceToNode(finalNode, url, source);
 }

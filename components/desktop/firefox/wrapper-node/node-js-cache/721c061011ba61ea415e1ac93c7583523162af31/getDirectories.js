@@ -43,8 +43,7 @@ function findSourceTreeNodes(sourceTree, path) {
     }
   }
 
-  const result = _traverse(sourceTree); // $FlowIgnore
-
+  const result = _traverse(sourceTree);
 
   return Array.isArray(result) ? (0, _flattenDeep.default)(result) : result;
 }

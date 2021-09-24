@@ -21,8 +21,6 @@ var _A11yIntention = _interopRequireDefault(require("./A11yIntention"));
 loader.lazyRequireGetter(this, "_ShortcutsModal", "devtools/client/debugger/src/components/ShortcutsModal");
 loader.lazyRequireGetter(this, "_selectors", "devtools/client/debugger/src/selectors/index");
 
-var _devtoolsModules = require("devtools/client/debugger/dist/vendors").vendored["devtools-modules"];
-
 var _devtoolsServices = _interopRequireDefault(require("Services"));
 
 var _devtoolsSplitter = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["devtools-splitter"]);
@@ -43,8 +41,6 @@ var _Footer = _interopRequireDefault(require("./Editor/Footer"));
 
 var _QuickOpenModal = _interopRequireDefault(require("./QuickOpenModal"));
 
-var _WhyPaused = _interopRequireDefault(require("./SecondaryPanes/WhyPaused"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
@@ -53,7 +49,9 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-const shortcuts = new _devtoolsModules.KeyShortcuts({
+const KeyShortcuts = require("devtools/client/shared/key-shortcuts");
+
+const shortcuts = new KeyShortcuts({
   window
 });
 const {
@@ -67,7 +65,7 @@ class App extends _react.Component {
   constructor(props) {
     super(props);
 
-    _defineProperty(this, "onEscape", (_, e) => {
+    _defineProperty(this, "onEscape", e => {
       const {
         activeSearch,
         closeActiveSearch,
@@ -98,7 +96,7 @@ class App extends _react.Component {
       this.toggleShortcutsModal();
     });
 
-    _defineProperty(this, "toggleQuickOpenModal", (_, e, query) => {
+    _defineProperty(this, "toggleQuickOpenModal", (e, query) => {
       const {
         quickOpenEnabled,
         openQuickOpen,
@@ -145,7 +143,7 @@ class App extends _react.Component {
       }), _react.default.createElement(_Editor.default, {
         startPanelSize: startPanelSize,
         endPanelSize: endPanelSize
-      }), this.props.endPanelCollapsed ? _react.default.createElement(_WhyPaused.default, null) : null, !this.props.selectedSource ? _react.default.createElement(_WelcomeBox.default, {
+      }), !this.props.selectedSource ? _react.default.createElement(_WelcomeBox.default, {
         horizontal: horizontal,
         toggleShortcutsModal: () => this.toggleShortcutsModal()
       }) : null, _react.default.createElement(_Footer.default, {
@@ -216,10 +214,10 @@ class App extends _react.Component {
     horizontalLayoutBreakpoint.addListener(this.onLayoutChange);
     verticalLayoutBreakpoint.addListener(this.onLayoutChange);
     this.setOrientation();
-    shortcuts.on(L10N.getStr("symbolSearch.search.key2"), (_, e) => this.toggleQuickOpenModal(_, e, "@"));
+    shortcuts.on(L10N.getStr("symbolSearch.search.key2"), e => this.toggleQuickOpenModal(e, "@"));
     const searchKeys = [L10N.getStr("sources.search.key2"), L10N.getStr("sources.search.alt.key")];
     searchKeys.forEach(key => shortcuts.on(key, this.toggleQuickOpenModal));
-    shortcuts.on(L10N.getStr("gotoLineModal.key3"), (_, e) => this.toggleQuickOpenModal(_, e, ":"));
+    shortcuts.on(L10N.getStr("gotoLineModal.key3"), e => this.toggleQuickOpenModal(e, ":"));
     shortcuts.on("Escape", this.onEscape);
     shortcuts.on("Cmd+/", this.onCommandSlash);
   }

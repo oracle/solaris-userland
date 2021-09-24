@@ -49,8 +49,7 @@ class XHRBreakpoints extends _react.Component {
       // before setting XHR breakpoint
 
 
-      this.setState( // $FlowIgnore
-      {
+      this.setState({
         inputMethod: e.target.children[1].value
       }, setXHRBreakpoint);
     });
@@ -219,24 +218,20 @@ class XHRBreakpoints extends _react.Component {
       }))));
     });
 
-    _defineProperty(this, "renderBreakpoints", () => {
+    _defineProperty(this, "renderBreakpoints", explicitXhrBreakpoints => {
       const {
-        showInput,
-        xhrBreakpoints
+        showInput
       } = this.props;
-      const explicitXhrBreakpoints = getExplicitXHRBreakpoints(xhrBreakpoints);
-      return _react.default.createElement("ul", {
+      return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement("ul", {
         className: "pane expressions-list"
-      }, explicitXhrBreakpoints.map(this.renderBreakpoint), (showInput || explicitXhrBreakpoints.length === 0) && this.renderXHRInput(this.handleNewSubmit));
+      }, explicitXhrBreakpoints.map(this.renderBreakpoint)), showInput && this.renderXHRInput(this.handleNewSubmit));
     });
 
-    _defineProperty(this, "renderCheckbox", () => {
+    _defineProperty(this, "renderCheckbox", explicitXhrBreakpoints => {
       const {
         shouldPauseOnAny,
-        togglePauseOnAny,
-        xhrBreakpoints
+        togglePauseOnAny
       } = this.props;
-      const explicitXhrBreakpoints = getExplicitXHRBreakpoints(xhrBreakpoints);
       return _react.default.createElement("div", {
         className: (0, _classnames.default)("breakpoints-exceptions-options", {
           empty: explicitXhrBreakpoints.length === 0
@@ -311,13 +306,11 @@ class XHRBreakpoints extends _react.Component {
       inputValue
     } = this.state;
     const placeholder = L10N.getStr("xhrBreakpoints.placeholder");
-    return _react.default.createElement("li", {
-      className: (0, _classnames.default)("xhr-input-container", {
+    return _react.default.createElement("form", {
+      key: "xhr-input-container",
+      className: (0, _classnames.default)("xhr-input-container xhr-input-form", {
         focused
       }),
-      key: "xhr-input-container"
-    }, _react.default.createElement("form", {
-      className: "xhr-input-form",
       onSubmit: onSubmit
     }, _react.default.createElement("input", {
       className: "xhr-input-url",
@@ -334,11 +327,15 @@ class XHRBreakpoints extends _react.Component {
       style: {
         display: "none"
       }
-    })));
+    }));
   }
 
   render() {
-    return _react.default.createElement("div", null, this.renderCheckbox(), this.renderBreakpoints());
+    const {
+      xhrBreakpoints
+    } = this.props;
+    const explicitXhrBreakpoints = getExplicitXHRBreakpoints(xhrBreakpoints);
+    return _react.default.createElement(_react.default.Fragment, null, this.renderCheckbox(explicitXhrBreakpoints), explicitXhrBreakpoints.length === 0 ? this.renderXHRInput(this.handleNewSubmit) : this.renderBreakpoints(explicitXhrBreakpoints));
   }
 
 }

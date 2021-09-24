@@ -105,12 +105,13 @@ class Frames extends _react.Component {
       displayFullUrl,
       getFrameTitle,
       disableContextMenu,
-      panel
+      panel,
+      restart
     } = this.props;
-    const framesOrGroups = this.truncateFrames(this.collapseFrames(frames));
-    // We're not using a <ul> because it adds new lines before and after when
+    const framesOrGroups = this.truncateFrames(this.collapseFrames(frames)); // We're not using a <ul> because it adds new lines before and after when
     // the user copies the trace. Needed for the console which has several
     // places where we don't want to have those new lines.
+
     return _react.default.createElement("div", {
       role: "list"
     }, framesOrGroups.map(frameOrGroup => frameOrGroup.id ? _react.default.createElement(_Frame.default, {
@@ -127,7 +128,8 @@ class Frames extends _react.Component {
       displayFullUrl: displayFullUrl,
       getFrameTitle: getFrameTitle,
       disableContextMenu: disableContextMenu,
-      panel: panel
+      panel: panel,
+      restart: restart
     }) : _react.default.createElement(_Group.default, {
       cx: cx,
       group: frameOrGroup,
@@ -142,7 +144,8 @@ class Frames extends _react.Component {
       displayFullUrl: displayFullUrl,
       getFrameTitle: getFrameTitle,
       disableContextMenu: disableContextMenu,
-      panel: panel
+      panel: panel,
+      restart: restart
     })));
   }
 
@@ -205,7 +208,8 @@ var _default = (0, _connect.connect)(mapStateToProps, {
   selectFrame: _actions.default.selectFrame,
   selectLocation: _actions.default.selectLocation,
   toggleBlackBox: _actions.default.toggleBlackBox,
-  toggleFrameworkGrouping: _actions.default.toggleFrameworkGrouping
+  toggleFrameworkGrouping: _actions.default.toggleFrameworkGrouping,
+  restart: _actions.default.restart
 })(Frames); // Export the non-connected component in order to use it outside of the debugger
 // panel (e.g. console, netmonitor, …).
 

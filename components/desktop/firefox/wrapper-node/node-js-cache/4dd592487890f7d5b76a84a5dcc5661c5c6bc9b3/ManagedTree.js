@@ -15,9 +15,7 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-const {
-  Tree
-} = require("devtools/client/debugger/dist/vendors").vendored["devtools-components"];
+const Tree = require("devtools/client/shared/components/Tree");
 
 class ManagedTree extends _react.Component {
   constructor(props) {

@@ -14,7 +14,6 @@ var _tabs = require("devtools/client/debugger/dist/vendors").vendored["react-ari
 var _actions = _interopRequireDefault(require("../../actions/index"));
 
 loader.lazyRequireGetter(this, "_selectors", "devtools/client/debugger/src/selectors/index");
-loader.lazyRequireGetter(this, "_source", "devtools/client/debugger/src/utils/source");
 loader.lazyRequireGetter(this, "_prefs", "devtools/client/debugger/src/utils/prefs");
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
 loader.lazyRequireGetter(this, "_text", "devtools/client/debugger/src/utils/text");
@@ -57,30 +56,6 @@ class PrimaryPanes extends _react.Component {
       }
     });
 
-    _defineProperty(this, "getRootLabel", projectRoot => {
-      const {
-        threads,
-        rootExtensionName
-      } = this.props;
-      const targetThread = threads.find(thread => thread.actor === projectRoot);
-
-      if (targetThread) {
-        return targetThread.name;
-      } else if (rootExtensionName) {
-        return rootExtensionName;
-      } else if (projectRoot.endsWith("://")) {
-        if (projectRoot === "ng://") {
-          return "Angular";
-        } else if (projectRoot === "webpack://") {
-          return "Webpack";
-        }
-
-        return `${unescape(projectRoot)}`;
-      }
-
-      return projectRoot.split("/").pop();
-    });
-
     this.state = {
       alphabetizeOutline: _prefs.prefs.alphabetizeOutline
     };
@@ -115,14 +90,13 @@ class PrimaryPanes extends _react.Component {
   renderProjectRootHeader() {
     const {
       cx,
-      projectRoot
+      projectRootName
     } = this.props;
 
-    if (!projectRoot) {
+    if (!projectRootName) {
       return null;
     }
 
-    const rootLabel = this.getRootLabel(projectRoot);
     return _react.default.createElement("div", {
       key: "root",
       className: "sources-clear-root-container"
@@ -136,7 +110,7 @@ class PrimaryPanes extends _react.Component {
       className: "breadcrumb"
     }), _react.default.createElement("span", {
       className: "sources-clear-root-label"
-    }, rootLabel)));
+    }, projectRootName)));
   }
 
   renderThreadSources() {
@@ -148,7 +122,7 @@ class PrimaryPanes extends _react.Component {
   render() {
     const {
       selectedTab,
-      projectRoot
+      projectRootName
     } = this.props;
     const activeIndex = selectedTab === "sources" ? 0 : 1;
     return _react.default.createElement(_tabs.Tabs, {
@@ -159,7 +133,7 @@ class PrimaryPanes extends _react.Component {
       className: "source-outline-tabs"
     }, this.renderOutlineTabs()), _react.default.createElement(_tabs.TabPanels, {
       className: (0, _classnames.default)("source-outline-panel", {
-        "has-root": projectRoot
+        "has-root": projectRootName
       }),
       hasFocusableContent: true
     }, _react.default.createElement("div", {
@@ -173,15 +147,12 @@ class PrimaryPanes extends _react.Component {
 }
 
 const mapStateToProps = state => {
-  const newProjectRoot = (0, _selectors.getProjectDirectoryRoot)(state);
-  const extensionAsRoot = (0, _source.isExtensionDirectoryPath)(newProjectRoot);
   return {
     cx: (0, _selectors.getContext)(state),
     selectedTab: (0, _selectors.getSelectedPrimaryPaneTab)(state),
     sourceSearchOn: (0, _selectors.getActiveSearch)(state) === "source",
     threads: (0, _selectors.getAllThreads)(state),
-    projectRoot: newProjectRoot,
-    rootExtensionName: extensionAsRoot ? (0, _selectors.getExtensionNameBySourceUrl)(state, newProjectRoot) : null
+    projectRootName: (0, _selectors.getProjectDirectoryRootName)(state)
   };
 };
 

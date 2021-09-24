@@ -13,8 +13,6 @@ var _devtoolsSourceMap = require("devtools/client/shared/source-map/index.js");
 
 loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/connect");
 
-var _immutable = require("devtools/client/shared/vendor/immutable");
-
 var _actions = _interopRequireDefault(require("../../actions/index"));
 
 loader.lazyRequireGetter(this, "_selectors", "devtools/client/debugger/src/selectors/index");

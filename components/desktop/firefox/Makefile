@@ -33,13 +33,13 @@ include ../../../make-rules/shared-macros.mk
 ESR = esr
 
 COMPONENT_NAME =	firefox
-COMPONENT_VERSION =	78.15.0
+COMPONENT_VERSION =	91.3.0
 COMPONENT_PROJECT_URL =	http://www.mozilla.com/firefox
 COMPONENT_SRC_NAME =	$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_SRC = 	$(COMPONENT_SRC_NAME)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC_NAME)$(ESR).source.tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:a4438d84d95171a6d4fea9c9f02c2edbf0475a9c614d968ebe2eedc25a672151
+    sha256:128b5349f112d8a0fd8698f3645ed43ea29d4b95047b7c4fd770b95d0661e96c
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP =		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)$(ESR)
 else
@@ -49,7 +49,7 @@ COMPONENT_ARCHIVE_URL =	$(MOZILLA_FTP)/source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB =	firefox/browser
 COMPONENT_ANITYA_ID =	16838
 
-TPNO=			75159
+TPNO=			75842
 
 # There are a set of .xpi files (as given in the LANG_LIST definition
 # below) that we need. We could download and unpack them individually, but
@@ -58,7 +58,7 @@ TPNO=			75159
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC_NAME)$(ESR)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:2c80487f68e694a5436fde86f0f2ac1ca40e99331dc5cca7c29f125a5087488b
+    sha256:bd027be3f1987149352fb4bf04e8899c95965f87c27d58adc2b9636f2e82555c
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ach af an ar ast az be bg bn br bs ca cak cs cy \
@@ -142,8 +142,8 @@ LD_B_DIRECT=
 # SPARC build seems to require more open files for "Reticulating splines" phase
 ENV := ulimit -n 16384; $(ENV)
 
-# because we touched old-configure.in and js/src/old-configure.in
-COMPONENT_PRE_CONFIGURE_ACTION += (cd $(COMPONENT_NAME)-$(COMPONENT_VERSION); autoreconf; touch configure; cd js/src; autoreconf; touch configure);
+# UL works better with configure script (instead mach script)
+COMPONENT_PRE_CONFIGURE_ACTION += $(CP) $(SOURCE_DIR)/configure.in $(SOURCE_DIR)/configure ;
 
 # make sure that node wrapper is executable
 COMPONENT_PRE_CONFIGURE_ACTION += (chmod 555 $(COMPONENT_DIR)/wrapper-node/node);
@@ -184,7 +184,7 @@ download-xpis:
 license: install
 	@echo "regenerating license text"
 	unzip -c $(PROTOUSRLIBDIR)/$(COMPONENT_NAME)/omni.ja chrome/toolkit/content/global/license.html \
-	    | lynx  -stdin --dump -nolist > $(COMPONENT_NAME).license
+	    | LC_ALL=en_US.UTF-8 lynx --display_charset=utf-8 -stdin --dump -nolist > $(COMPONENT_NAME).license
 
 SIGNED_LIST.i386 = libsoftokn3.so libnssdbm3.so libfreebl3.so
 SIGNED_LIST.sparc = libsoftokn3.so libnssdbm3.so libfreebl_64fpu_3.so libfreebl_64int_3.so
@@ -211,17 +211,13 @@ REQUIRED_PACKAGES += codec/libvpx
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += compress/unzip
 REQUIRED_PACKAGES += database/sqlite-3
-REQUIRED_PACKAGES += desktop/xdg/desktop-file-utils
-REQUIRED_PACKAGES += developer/build/autoconf-213
 REQUIRED_PACKAGES += developer/rust/cbindgen
 ifneq ($(MACH), sparc)
 REQUIRED_PACKAGES += developer/nasm
-REQUIRED_PACKAGES += developer/yasm
 endif
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
-REQUIRED_PACKAGES += library/desktop/gtk2
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/harfbuzz
 REQUIRED_PACKAGES += library/desktop/pango

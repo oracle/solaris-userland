@@ -9,6 +9,7 @@ exports.stepIn = stepIn;
 exports.stepOver = stepOver;
 exports.stepOut = stepOut;
 exports.resume = resume;
+exports.restart = restart;
 loader.lazyRequireGetter(this, "_selectors", "devtools/client/debugger/src/selectors/index");
 loader.lazyRequireGetter(this, "_promise", "devtools/client/debugger/src/actions/utils/middleware/promise");
 loader.lazyRequireGetter(this, "_expressions", "devtools/client/debugger/src/actions/expressions");
@@ -65,7 +66,7 @@ function selectThread(cx, thread) {
  */
 
 
-function command(cx, type) {
+function command(type) {
   return async ({
     dispatch,
     getState,
@@ -73,15 +74,16 @@ function command(cx, type) {
   }) => {
     if (!type) {
       return;
-    }
+    } // For now, all commands are by default against the currently selected thread
 
-    const frame = _prefs.features.frameStep && (0, _selectors.getSelectedFrame)(getState(), cx.thread);
+
+    const thread = (0, _selectors.getCurrentThread)(getState());
+    const frame = _prefs.features.frameStep && (0, _selectors.getSelectedFrame)(getState(), thread);
     return dispatch({
       type: "COMMAND",
       command: type,
-      cx,
-      thread: cx.thread,
-      [_promise.PROMISE]: client[type](cx.thread, frame === null || frame === void 0 ? void 0 : frame.id)
+      thread,
+      [_promise.PROMISE]: client[type](thread, frame === null || frame === void 0 ? void 0 : frame.id)
     });
   };
 }
@@ -93,13 +95,13 @@ function command(cx, type) {
  */
 
 
-function stepIn(cx) {
+function stepIn() {
   return ({
     dispatch,
     getState
   }) => {
-    if (cx.isPaused) {
-      return dispatch(command(cx, "stepIn"));
+    if ((0, _selectors.getIsCurrentThreadPaused)(getState())) {
+      return dispatch(command("stepIn"));
     }
   };
 }
@@ -111,13 +113,13 @@ function stepIn(cx) {
  */
 
 
-function stepOver(cx) {
+function stepOver() {
   return ({
     dispatch,
     getState
   }) => {
-    if (cx.isPaused) {
-      return dispatch(command(cx, "stepOver"));
+    if ((0, _selectors.getIsCurrentThreadPaused)(getState())) {
+      return dispatch(command("stepOver"));
     }
   };
 }
@@ -129,13 +131,13 @@ function stepOver(cx) {
  */
 
 
-function stepOut(cx) {
+function stepOut() {
   return ({
     dispatch,
     getState
   }) => {
-    if (cx.isPaused) {
-      return dispatch(command(cx, "stepOut"));
+    if ((0, _selectors.getIsCurrentThreadPaused)(getState())) {
+      return dispatch(command("stepOut"));
     }
   };
 }
@@ -147,14 +149,37 @@ function stepOut(cx) {
  */
 
 
-function resume(cx) {
+function resume() {
   return ({
     dispatch,
     getState
   }) => {
-    if (cx.isPaused) {
+    if ((0, _selectors.getIsCurrentThreadPaused)(getState())) {
       (0, _telemetry.recordEvent)("continue");
-      return dispatch(command(cx, "resume"));
+      return dispatch(command("resume"));
+    }
+  };
+}
+/**
+ * restart frame
+ * @memberof actions/pause
+ * @static
+ */
+
+
+function restart(cx, frame) {
+  return async ({
+    dispatch,
+    getState,
+    client
+  }) => {
+    if ((0, _selectors.getIsCurrentThreadPaused)(getState())) {
+      return dispatch({
+        type: "COMMAND",
+        command: "restart",
+        thread: cx.thread,
+        [_promise.PROMISE]: client.restart(cx.thread, frame.id)
+      });
     }
   };
 }

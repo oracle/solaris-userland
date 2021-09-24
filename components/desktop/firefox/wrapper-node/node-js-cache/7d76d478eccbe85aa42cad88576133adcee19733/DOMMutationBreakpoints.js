@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("devtools/client/shared/vendor/react"));
 
-var _devtoolsReps = _interopRequireDefault(require("devtools/client/shared/components/reps/reps.js"));
+var _index = _interopRequireDefault(require("devtools/client/shared/components/reps/index"));
 
 var _inspectorSharedUtils = require("devtools/client/inspector/shared/utils");
 
@@ -32,7 +32,7 @@ const {
     Rep
   },
   MODE
-} = _devtoolsReps.default;
+} = _index.default;
 const localizationTerms = {
   subtree: L10N.getStr("domMutationTypes.subtree"),
   attribute: L10N.getStr("domMutationTypes.attribute"),

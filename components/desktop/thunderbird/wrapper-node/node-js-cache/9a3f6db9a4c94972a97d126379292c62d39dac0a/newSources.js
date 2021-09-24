@@ -8,12 +8,10 @@ exports.newOriginalSource = newOriginalSource;
 exports.newOriginalSources = newOriginalSources;
 exports.newGeneratedSource = newGeneratedSource;
 exports.newGeneratedSources = newGeneratedSources;
-exports.ensureSourceActor = ensureSourceActor;
 
 var _lodash = require("devtools/client/shared/vendor/lodash");
 
 loader.lazyRequireGetter(this, "_sourceActors", "devtools/client/debugger/src/reducers/source-actors");
-loader.lazyRequireGetter(this, "_threads", "devtools/client/debugger/src/reducers/threads");
 loader.lazyRequireGetter(this, "_sourceActors2", "devtools/client/debugger/src/actions/source-actors");
 loader.lazyRequireGetter(this, "_create", "devtools/client/debugger/src/client/firefox/create");
 loader.lazyRequireGetter(this, "_blackbox", "devtools/client/debugger/src/actions/sources/blackbox");
@@ -296,7 +294,6 @@ function newGeneratedSources(sourceInfo) {
     getState,
     client
   }) => {
-    // bails early for unnecessary calls to newGeneratedSources. This simplifies the reducers which still create a new state, but don't need to.
     if (sourceInfo.length == 0) {
       return [];
     }
@@ -307,11 +304,10 @@ function newGeneratedSources(sourceInfo) {
 
     for (const {
       thread,
-      isServiceWorker,
       source,
       id
     } of sourceInfo) {
-      const newId = id || (0, _create.makeSourceId)(source, isServiceWorker);
+      const newId = id || (0, _create.makeSourceId)(source, thread);
 
       if (!(0, _selectors.getSource)(getState(), newId) && !newSourcesObj[newId]) {
         newSourcesObj[newId] = {
@@ -321,7 +317,7 @@ function newGeneratedSources(sourceInfo) {
           isPrettyPrinted: false,
           extensionName: source.extensionName,
           isBlackBoxed: false,
-          isWasm: !!(0, _threads.supportsWasm)(getState()) && source.introductionType === "wasm",
+          isWasm: !!_prefs.features.wasm && source.introductionType === "wasm",
           isExtension: source.url && (0, _source.isUrlExtension)(source.url) || false,
           isOriginal: false
         };
@@ -406,22 +402,5 @@ function checkNewSources(cx, sources) {
 
     dispatch(restoreBlackBoxedSources(cx, sources));
     return sources;
-  };
-}
-
-function ensureSourceActor(thread, sourceActor) {
-  return async function ({
-    dispatch,
-    getState,
-    client
-  }) {
-    await _sourceQueue.default.flush();
-
-    if ((0, _selectors.hasSourceActor)(getState(), sourceActor)) {
-      return Promise.resolve();
-    }
-
-    const sources = await client.fetchThreadSources(thread);
-    await dispatch(newGeneratedSources(sources));
   };
 }

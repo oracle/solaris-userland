@@ -11,13 +11,12 @@ loader.lazyRequireGetter(this, "_connect", "devtools/client/debugger/src/utils/c
 
 var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/vendors").vendored["classnames"]);
 
-var _devtoolsContextmenu = require("devtools/client/debugger/dist/vendors").vendored["devtools-contextmenu"];
+loader.lazyRequireGetter(this, "_menu", "devtools/client/debugger/src/context-menu/menu");
 
 var _SourceIcon = _interopRequireDefault(require("../shared/SourceIcon"));
 
 var _AccessibleImage = _interopRequireDefault(require("../shared/AccessibleImage"));
 
-loader.lazyRequireGetter(this, "_threads", "devtools/client/debugger/src/utils/threads");
 loader.lazyRequireGetter(this, "_selectors", "devtools/client/debugger/src/selectors/index");
 
 var _actions = _interopRequireDefault(require("../../actions/index"));
@@ -86,8 +85,8 @@ class SourceTreeItem extends _react.Component {
           if (source) {
             const blackBoxMenuItem = {
               id: "node-menu-blackbox",
-              label: source.isBlackBoxed ? L10N.getStr("blackboxContextItem.unblackbox") : L10N.getStr("blackboxContextItem.blackbox"),
-              accesskey: source.isBlackBoxed ? L10N.getStr("blackboxContextItem.unblackbox.accesskey") : L10N.getStr("blackboxContextItem.blackbox.accesskey"),
+              label: source.isBlackBoxed ? L10N.getStr("ignoreContextItem.unignore") : L10N.getStr("ignoreContextItem.ignore"),
+              accesskey: source.isBlackBoxed ? L10N.getStr("ignoreContextItem.unignore.accesskey") : L10N.getStr("ignoreContextItem.ignore.accesskey"),
               disabled: !(0, _source.shouldBlackbox)(source),
               click: () => this.props.toggleBlackBox(cx, source)
             };
@@ -112,6 +111,7 @@ class SourceTreeItem extends _react.Component {
           } = item;
           const {
             cx,
+            depth,
             projectRoot
           } = this.props;
 
@@ -128,7 +128,7 @@ class SourceTreeItem extends _react.Component {
               label: setDirectoryRootLabel,
               accesskey: setDirectoryRootKey,
               disabled: false,
-              click: () => this.props.setProjectDirectoryRoot(cx, path)
+              click: () => this.props.setProjectDirectoryRoot(cx, path, this.renderItemName(depth))
             });
           }
         }
@@ -136,7 +136,7 @@ class SourceTreeItem extends _react.Component {
         this.addBlackboxAllOption(menuOptions, item);
       }
 
-      (0, _devtoolsContextmenu.showMenu)(event, menuOptions);
+      (0, _menu.showMenu)(event, menuOptions);
     });
 
     _defineProperty(this, "handleDownloadFile", async (cx, source, item) => {
@@ -176,16 +176,16 @@ class SourceTreeItem extends _react.Component {
       let blackBoxOutsideMenuItemLabel;
 
       if (depth === 0 || depth === 1 && projectRoot === "") {
-        blackBoxInsideMenuItemLabel = allInsideBlackBoxed ? L10N.getStr("unblackBoxAllInGroup.label") : L10N.getStr("blackBoxAllInGroup.label");
+        blackBoxInsideMenuItemLabel = allInsideBlackBoxed ? L10N.getStr("unignoreAllInGroup.label") : L10N.getStr("ignoreAllInGroup.label");
 
         if (sourcesOuside.length > 0) {
-          blackBoxOutsideMenuItemLabel = allOusideBlackBoxed ? L10N.getStr("unblackBoxAllOutsideGroup.label") : L10N.getStr("blackBoxAllOutsideGroup.label");
+          blackBoxOutsideMenuItemLabel = allOusideBlackBoxed ? L10N.getStr("unignoreAllOutsideGroup.label") : L10N.getStr("ignoreAllOutsideGroup.label");
         }
       } else {
-        blackBoxInsideMenuItemLabel = allInsideBlackBoxed ? L10N.getStr("unblackBoxAllInDir.label") : L10N.getStr("blackBoxAllInDir.label");
+        blackBoxInsideMenuItemLabel = allInsideBlackBoxed ? L10N.getStr("unignoreAllInDir.label") : L10N.getStr("ignoreAllInDir.label");
 
         if (sourcesOuside.length > 0) {
-          blackBoxOutsideMenuItemLabel = allOusideBlackBoxed ? L10N.getStr("unblackBoxAllOutsideDir.label") : L10N.getStr("blackBoxAllOutsideDir.label");
+          blackBoxOutsideMenuItemLabel = allOusideBlackBoxed ? L10N.getStr("unignoreAllOutsideDir.label") : L10N.getStr("ignoreAllOutsideDir.label");
         }
       }
 
@@ -199,7 +199,7 @@ class SourceTreeItem extends _react.Component {
       if (sourcesOuside.length > 0) {
         menuOptions.push({
           id: "node-blackbox-all",
-          label: L10N.getStr("blackBoxAll.label"),
+          label: L10N.getStr("ignoreAll.label"),
           submenu: [blackBoxInsideMenuItem, {
             id: allOusideBlackBoxed ? "node-unblackbox-all-outside" : "node-blackbox-all-outside",
             label: blackBoxOutsideMenuItemLabel,
@@ -284,7 +284,7 @@ class SourceTreeItem extends _react.Component {
       const thread = threads.find(thrd => thrd.actor == item.name);
 
       if (thread) {
-        const icon = (0, _threads.isWorker)(thread) ? "worker" : "window";
+        const icon = thread.targetType.includes("worker") ? "worker" : "window";
         return _react.default.createElement(_AccessibleImage.default, {
           className: (0, _classnames.default)(icon, {
             debuggee: debuggeeUrl && debuggeeUrl.includes(item.name)
@@ -321,7 +321,9 @@ class SourceTreeItem extends _react.Component {
     if (source) {
       return _react.default.createElement(_SourceIcon.default, {
         source: source,
-        modifier: icon => icon === "extension" ? "javascript" : icon
+        modifier: icon => // In the SourceTree, extension files should use the file-extension based icon,
+        // whereas we use the extension icon in other Components (eg. source tabs and breakpoints pane).
+        icon === "extension" ? _source.sourceTypes[(0, _sourcesTree.getFileExtension)(source)] || "javascript" : icon
       });
     }
 
@@ -379,23 +381,12 @@ class SourceTreeItem extends _react.Component {
     const {
       item,
       depth,
-      source,
       focused,
-      hasMatchingGeneratedSource,
-      hasSiblingOfSameName
+      hasMatchingGeneratedSource
     } = this.props;
     const suffix = hasMatchingGeneratedSource ? _react.default.createElement("span", {
       className: "suffix"
     }, L10N.getStr("sourceFooter.mappedSuffix")) : null;
-    let querystring;
-
-    if (hasSiblingOfSameName) {
-      querystring = (0, _source.getSourceQueryString)(source);
-    }
-
-    const query = hasSiblingOfSameName && querystring ? _react.default.createElement("span", {
-      className: "query"
-    }, querystring) : null;
     return _react.default.createElement("div", {
       className: (0, _classnames.default)("node", {
         focused
@@ -406,7 +397,7 @@ class SourceTreeItem extends _react.Component {
       title: this.renderItemTooltip()
     }, this.renderItemArrow(), this.renderIcon(item, depth), _react.default.createElement("span", {
       className: "label"
-    }, this.renderItemName(depth), query, " ", suffix));
+    }, this.renderItemName(depth), suffix));
   }
 
 }
@@ -435,7 +426,6 @@ const mapStateToProps = (state, props) => {
   } = props;
   return {
     cx: (0, _selectors.getContext)(state),
-    mainThread: (0, _selectors.getMainThread)(state),
     hasMatchingGeneratedSource: getHasMatchingGeneratedSource(state, source),
     hasSiblingOfSameName: (0, _selectors.getHasSiblingOfSameName)(state, source),
     hasPrettyTab: source ? (0, _selectors.hasPrettyTab)(state, source.url) : false,

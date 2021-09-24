@@ -31,11 +31,11 @@ COMPILER = gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	thunderbird
-COMPONENT_VERSION =	78.14.0
+COMPONENT_VERSION =	91.3.0
 COMPONENT_PROJECT_URL =	https://www.thunderbird.net/
 COMPONENT_ARCHIVE = 	$(COMPONENT_SRC).source.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:63916611e28de0a2107ca882f56eb97ac44fd2967a3d75c082ffa5e3d58459e1
+    sha256:d3abcf55637fb21bd9d68a19c01780edd82e6e72b5e850b31de186dddc2708ad
 ifndef CANDIDATE_BUILD
 MOZILLA_FTP = 		http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/$(COMPONENT_VERSION)
 else
@@ -45,7 +45,7 @@ COMPONENT_ARCHIVE_URL =	$(MOZILLA_FTP)/source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB =	tbird/mailer
 COMPONENT_ANITYA_ID =	4967
 
-TPNO =			74134
+TPNO =			75905
 
 # There are a set of .xpi files (as given in the LANG_LIST definition
 # below) that we need. We could download and unpack them individually, but
@@ -54,14 +54,14 @@ TPNO =			74134
 # one file with version number.
 COMPONENT_ARCHIVE_1 = $(COMPONENT_SRC)-xpi.tar.bz2
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:82e8960ba9c7d3873a4c27e83b70edbe988837667d1dc14b0e10844290eec53b
+    sha256:1b66bfd70d2cbcf521cc4297cef42a21794d6b5325107ca43c2023d12bfb8ead
 COMPONENT_ARCHIVE_URL_1 =       make://download-xpis/$(COMPONENT_ARCHIVE_1)
 
 LANG_LIST = ar ast be bg br ca cak cs cy \
        da de dsb el en-GB en-US es-AR es-ES et \
        eu fi fr fy-NL ga-IE gd gl he hr hsb hu \
        hy-AM id is it ja ka kab kk ko lt ms \
-       nb-NO nl nn-NO pl pt-BR pt-PT rm ro ru si sk sl \
+       nb-NO nl nn-NO pl pt-BR pt-PT rm ro ru sk sl \
        sq sr sv-SE tr uk uz vi zh-CN zh-TW
 
 CLEAN_PATHS += $(COMPONENT_DIR)/xpi
@@ -117,7 +117,6 @@ COMPONENT_PRE_CONFIGURE_ACTION += \
 	echo "ac_add_options --disable-tests" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --disable-updater" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-application=comm/mail" >> $(MOZCONFIG) ; \
-	echo "ac_add_options --enable-calendar" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-debug" >> $(MOZCONFIG_DEBUG) ; \
 	echo "ac_add_options --enable-jemalloc" >> $(MOZCONFIG) ; \
 	echo "ac_add_options --enable-js-shell" >> $(MOZCONFIG) ; \
@@ -146,8 +145,8 @@ LD_B_DIRECT=
 # SPARC build seems to require more open files for "Reticulating splines" phase
 ENV := ulimit -n 16384; $(ENV)
 
-# because we touched old-configure.in and js/src/old-configure.in
-COMPONENT_PRE_CONFIGURE_ACTION += (cd $(COMPONENT_NAME)-$(COMPONENT_VERSION); autoreconf; touch configure; cd js/src; autoreconf; touch configure);
+# UL works better with configure script (instead mach script)
+COMPONENT_PRE_CONFIGURE_ACTION += $(CP) $(SOURCE_DIR)/configure.in $(SOURCE_DIR)/configure ;
 
 # make sure that node wrapper is executable
 COMPONENT_PRE_CONFIGURE_ACTION += (chmod 555 $(COMPONENT_DIR)/wrapper-node/node);
@@ -189,7 +188,7 @@ download-xpis:
 license: install
 	@echo "regenerating license text"
 	unzip -c $(PROTOUSRLIBDIR)/$(COMPONENT_NAME)/omni.ja chrome/messenger/content/messenger/license.html \
-	    | lynx  -stdin --dump -nolist > $(COMPONENT_NAME).license
+	    | LC_ALL=en_US.UTF-8 lynx --display_charset=utf-8 -stdin --dump -nolist > $(COMPONENT_NAME).license
 
 SIGNED_LIST.i386 = libsoftokn3.so libnssdbm3.so libfreebl3.so
 SIGNED_LIST.sparc = libsoftokn3.so libnssdbm3.so libfreebl_64fpu_3.so libfreebl_64int_3.so
@@ -214,16 +213,13 @@ REQUIRED_PACKAGES += codec/libvpx
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += compress/unzip
 REQUIRED_PACKAGES += database/sqlite-3
-REQUIRED_PACKAGES += desktop/xdg/desktop-file-utils
-REQUIRED_PACKAGES += developer/build/autoconf-213
 REQUIRED_PACKAGES += developer/rust/cbindgen
 ifneq ($(MACH), sparc)
-REQUIRED_PACKAGES += developer/yasm
+REQUIRED_PACKAGES += developer/nasm
 endif
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
-REQUIRED_PACKAGES += library/desktop/gtk2
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/harfbuzz
 REQUIRED_PACKAGES += library/desktop/pango

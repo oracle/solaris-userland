@@ -27,8 +27,6 @@ var _SearchInput = _interopRequireDefault(require("./shared/SearchInput"));
 
 var _AccessibleImage = _interopRequireDefault(require("./shared/AccessibleImage"));
 
-var _pluralForm = _interopRequireDefault(require("devtools/shared/plural-form"));
-
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
@@ -36,6 +34,10 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+const {
+  PluralForm
+} = require("devtools/shared/plural-form");
 
 function getFilePath(item, index) {
   return item.type === "RESULT" ? `${item.sourceId}-${index || "$"}` : `${item.sourceId}-${item.line}-${item.column}-${index || "$"}`;
@@ -50,7 +52,7 @@ class ProjectSearch extends _react.Component {
   constructor(props) {
     super(props);
 
-    _defineProperty(this, "toggleProjectTextSearch", (key, e) => {
+    _defineProperty(this, "toggleProjectTextSearch", e => {
       const {
         cx,
         closeProjectSearch,
@@ -218,7 +220,7 @@ class ProjectSearch extends _react.Component {
       if (this.props.query !== "") {
         const resultsSummaryString = L10N.getStr("sourceSearch.resultsSummary2");
         const count = this.getResultCount();
-        return _pluralForm.default.get(count, resultsSummaryString).replace("#1", count);
+        return PluralForm.get(count, resultsSummaryString).replace("#1", count);
       }
 
       return "";

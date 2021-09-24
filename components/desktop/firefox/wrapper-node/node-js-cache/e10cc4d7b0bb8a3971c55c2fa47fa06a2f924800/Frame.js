@@ -20,8 +20,6 @@ var _FrameMenu = _interopRequireDefault(require("./FrameMenu"));
 
 var _FrameIndent = _interopRequireDefault(require("./FrameIndent"));
 
-var _actions = _interopRequireDefault(require("../../../actions/index"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
@@ -89,12 +87,14 @@ class FrameComponent extends _react.Component {
       toggleFrameworkGrouping,
       toggleBlackBox,
       frameworkGroupingOn,
-      cx
+      cx,
+      restart
     } = this.props;
     (0, _FrameMenu.default)(frame, frameworkGroupingOn, {
       copyStackTrace,
       toggleFrameworkGrouping,
-      toggleBlackBox
+      toggleBlackBox,
+      restart
     }, event, cx);
   }
 

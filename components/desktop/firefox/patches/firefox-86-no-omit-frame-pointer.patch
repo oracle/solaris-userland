@@ -1,12 +1,12 @@
 Firefox should not be compiled with -fomit-frame-pointer to allow better core file debugging.
 
---- firefox-78.15.0/build/moz.configure/toolchain.configure
-+++ firefox-78.15.0/build/moz.configure/toolchain.configure
-@@ -1699,6 +1699,7 @@ '--enable-memory-sanitizer', '--enable-a
-          '--enable-undefined-sanitizer')
- def frame_pointer_default(optimize, debug, target, msan, asan, ubsan):
-     return bool(not optimize or debug or msan or asan or ubsan or \
-+        (target.os == 'SunOS') or \
-         (target.os == 'WINNT' and target.cpu in ('x86', 'aarch64')))
- 
+--- firefox-91.1.0/build/moz.configure/toolchain.configure
++++ firefox-91.1.0/build/moz.configure/toolchain.configure
+@@ -1929,6 +1929,7 @@ or debug
+         or msan
+         or asan
+         or ubsan
++        or (target.os == 'SunOS')
+         or (target.os == "WINNT" and target.cpu in ("x86", "aarch64"))
+     )
  

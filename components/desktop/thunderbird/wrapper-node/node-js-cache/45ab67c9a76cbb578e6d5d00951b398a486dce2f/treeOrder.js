@@ -54,7 +54,6 @@ function isIndexName(part, ...rest) {
  * in sorting order, or zero if the node is found.
  */
 
-
 /*
  * Performs a binary search to insert a node into contents. Returns positive
  * number, index of the found child, or negative number, which can be used
@@ -62,6 +61,8 @@ function isIndexName(part, ...rest) {
  * The matcher is a function that returns result of comparision of a node with
  * lookup value.
  */
+
+
 function findNodeInContents(tree, matcher) {
   if (tree.type === "source" || tree.contents.length === 0) {
     return {

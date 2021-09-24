@@ -5,6 +5,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
@@ -13,10 +15,9 @@ exports.default = void 0;
  * CodeMirror source editor utils
  * @module utils/source-editor
  */
-const CodeMirror = require("codemirror/index"); // $FlowIgnore
+const CodeMirror = require("codemirror/index");
 
-
-require("codemirror/lib/codemirror.css/index");
+require("raw!chrome://devtools/content/shared/sourceeditor/codemirror/lib/codemirror.css/index");
 
 require("codemirror/mode/javascript/javascript/index");
 
@@ -54,15 +55,19 @@ require("codemirror/mode/clike/clike/index");
 
 require("codemirror/mode/rust/rust/index");
 
-require("./source-editor.css/index"); // NOTE: we should eventually use debugger-html context type mode
-
-
+require("raw!chrome://devtools/content/debugger/src/utils/editor/source-editor.css/index"); // NOTE: we should eventually use debugger-html context type mode
 // Maximum allowed margin (in number of lines) from top or bottom of the editor
 // while shifting to a line which was initially out of view.
+
+
 const MAX_VERTICAL_OFFSET = 3;
 
 class SourceEditor {
   constructor(opts) {
+    _defineProperty(this, "opts", void 0);
+
+    _defineProperty(this, "editor", void 0);
+
     this.opts = opts;
   }
 

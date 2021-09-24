@@ -33,6 +33,12 @@ Object.defineProperty(exports, "resume", {
     return _commands.resume;
   }
 });
+Object.defineProperty(exports, "restart", {
+  enumerable: true,
+  get: function () {
+    return _commands.restart;
+  }
+});
 Object.defineProperty(exports, "fetchFrames", {
   enumerable: true,
   get: function () {

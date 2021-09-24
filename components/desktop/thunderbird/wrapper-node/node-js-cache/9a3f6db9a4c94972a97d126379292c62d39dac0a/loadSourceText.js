@@ -13,16 +13,14 @@ loader.lazyRequireGetter(this, "_asyncValue", "devtools/client/debugger/src/util
 loader.lazyRequireGetter(this, "_source", "devtools/client/debugger/src/utils/source");
 loader.lazyRequireGetter(this, "_memoizableAction", "devtools/client/debugger/src/utils/memoizableAction");
 
-var _telemetry = _interopRequireDefault(require("devtools/client/shared/telemetry"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
-// Measures the time it takes for a source to load
+const Telemetry = require("devtools/client/shared/telemetry"); // Measures the time it takes for a source to load
+
+
 const loadSourceHistogram = "DEVTOOLS_DEBUGGER_LOAD_SOURCE_MS";
-const telemetry = new _telemetry.default();
+const telemetry = new Telemetry();
 
 async function loadSource(state, source, {
   sourceMaps,

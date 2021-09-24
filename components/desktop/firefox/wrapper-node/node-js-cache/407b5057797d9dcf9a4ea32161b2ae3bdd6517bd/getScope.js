@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.getScope = getScope;
 exports.mergeScopes = mergeScopes;
 
-var _devtoolsReps = require("devtools/client/shared/components/reps/reps.js");
+var _index = require("devtools/client/shared/components/reps/index");
 
 loader.lazyRequireGetter(this, "_getVariables", "devtools/client/debugger/src/utils/pause/scopes/getVariables");
 loader.lazyRequireGetter(this, "_utils", "devtools/client/debugger/src/utils/pause/scopes/utils");
@@ -15,14 +15,13 @@ loader.lazyRequireGetter(this, "_frames", "devtools/client/debugger/src/utils/pa
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
-// eslint-disable-next-line import/named
 const {
   utils: {
     node: {
       NODE_TYPES
     }
   }
-} = _devtoolsReps.objectInspector;
+} = _index.objectInspector;
 
 function getScopeTitle(type, scope) {
   if (type === "block" && scope.block && scope.block.displayName) {

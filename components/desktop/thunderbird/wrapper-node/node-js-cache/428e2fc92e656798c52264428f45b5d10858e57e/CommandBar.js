@@ -34,12 +34,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
-// $FlowIgnore
-const MenuButton = require("devtools/client/shared/components/menu/MenuButton"); // $FlowIgnore
+const MenuButton = require("devtools/client/shared/components/menu/MenuButton");
 
-
-const MenuItem = require("devtools/client/shared/components/menu/MenuItem"); // $FlowIgnore
-
+const MenuItem = require("devtools/client/shared/components/menu/MenuItem");
 
 const MenuList = require("devtools/client/shared/components/menu/MenuList");
 
@@ -106,12 +103,12 @@ class CommandBar extends _react.Component {
     const {
       shortcuts
     } = this.context;
-    COMMANDS.forEach(action => shortcuts.on(getKey(action), (_, e) => this.handleEvent(e, action)));
+    COMMANDS.forEach(action => shortcuts.on(getKey(action), e => this.handleEvent(e, action)));
 
     if (isMacOS) {
       // The Mac supports both the Windows Function keys
       // as well as the Mac non-Function keys
-      COMMANDS.forEach(action => shortcuts.on(getKeyForOS("WINNT", action), (_, e) => this.handleEvent(e, action)));
+      COMMANDS.forEach(action => shortcuts.on(getKeyForOS("WINNT", action), e => this.handleEvent(e, action)));
     }
   }
 
@@ -123,7 +120,7 @@ class CommandBar extends _react.Component {
     e.stopPropagation();
 
     if (action === "resume") {
-      this.props.cx.isPaused ? this.props.resume(cx) : this.props.breakOnNext(cx);
+      this.props.isPaused ? this.props.resume() : this.props.breakOnNext(cx);
     } else {
       this.props[action](cx);
     }
@@ -131,16 +128,16 @@ class CommandBar extends _react.Component {
 
   renderStepButtons() {
     const {
-      cx,
+      isPaused,
       topFrameSelected
     } = this.props;
-    const className = cx.isPaused ? "active" : "disabled";
-    const isDisabled = !cx.isPaused;
-    return [this.renderPauseButton(), (0, _CommandBarButton.debugBtn)(() => this.props.stepOver(cx), "stepOver", className, L10N.getFormatStr("stepOverTooltip", formatKey("stepOver")), isDisabled), (0, _CommandBarButton.debugBtn)(() => this.props.stepIn(cx), "stepIn", className, L10N.getFormatStr("stepInTooltip", formatKey("stepIn")), isDisabled || _prefs.features.frameStep && !topFrameSelected), (0, _CommandBarButton.debugBtn)(() => this.props.stepOut(cx), "stepOut", className, L10N.getFormatStr("stepOutTooltip", formatKey("stepOut")), isDisabled)];
+    const className = isPaused ? "active" : "disabled";
+    const isDisabled = !isPaused;
+    return [this.renderPauseButton(), (0, _CommandBarButton.debugBtn)(() => this.props.stepOver(), "stepOver", className, L10N.getFormatStr("stepOverTooltip", formatKey("stepOver")), isDisabled), (0, _CommandBarButton.debugBtn)(() => this.props.stepIn(), "stepIn", className, L10N.getFormatStr("stepInTooltip", formatKey("stepIn")), isDisabled || _prefs.features.frameStep && !topFrameSelected), (0, _CommandBarButton.debugBtn)(() => this.props.stepOut(), "stepOut", className, L10N.getFormatStr("stepOutTooltip", formatKey("stepOut")), isDisabled)];
   }
 
   resume() {
-    this.props.resume(this.props.cx);
+    this.props.resume();
   }
 
   renderPauseButton() {
@@ -150,7 +147,7 @@ class CommandBar extends _react.Component {
       isWaitingOnBreak
     } = this.props;
 
-    if (cx.isPaused) {
+    if (this.props.isPaused) {
       return (0, _CommandBarButton.debugBtn)(() => this.resume(), "resume", "active", L10N.getFormatStr("resumeButtonTooltip", formatKey("resume")));
     }
 
@@ -178,7 +175,7 @@ class CommandBar extends _react.Component {
       title: skipPausing ? L10N.getStr("undoSkipPausingTooltip.label") : L10N.getStr("skipPausingTooltip.label"),
       onClick: toggleSkipPausing
     }, _react.default.createElement(_AccessibleImage.default, {
-      className: "disable-pausing"
+      className: skipPausing ? "enable-pausing" : "disable-pausing"
     }));
   }
 
@@ -213,6 +210,12 @@ class CommandBar extends _react.Component {
       tooltip: L10N.getStr("inlinePreview.toggle.tooltip"),
       onClick: () => this.props.toggleInlinePreview(!_prefs.features.inlinePreview)
     }), _react.default.createElement(MenuItem, {
+      key: "debugger-settings-menu-item-disable-wrap-lines",
+      checked: _prefs.prefs.editorWrapping,
+      label: L10N.getStr("editorWrapping.toggle.label"),
+      tooltip: L10N.getStr("editorWrapping.toggle.tooltip"),
+      onClick: () => this.props.toggleEditorWrapping(!_prefs.prefs.editorWrapping)
+    }), _react.default.createElement(MenuItem, {
       key: "debugger-settings-menu-item-disable-sourcemaps",
       checked: _prefs.prefs.clientSourceMapsEnabled,
       label: L10N.getStr("settings.toggleSourceMaps.label"),
@@ -245,7 +248,8 @@ const mapStateToProps = state => ({
   isWaitingOnBreak: (0, _selectors.getIsWaitingOnBreak)(state, (0, _selectors.getCurrentThread)(state)),
   skipPausing: (0, _selectors.getSkipPausing)(state),
   topFrameSelected: (0, _selectors.isTopFrameSelected)(state, (0, _selectors.getCurrentThread)(state)),
-  javascriptEnabled: state.ui.javascriptEnabled
+  javascriptEnabled: state.ui.javascriptEnabled,
+  isPaused: (0, _selectors.getIsCurrentThreadPaused)(state)
 });
 
 var _default = (0, _connect.connect)(mapStateToProps, {
@@ -257,6 +261,7 @@ var _default = (0, _connect.connect)(mapStateToProps, {
   pauseOnExceptions: _actions.default.pauseOnExceptions,
   toggleSkipPausing: _actions.default.toggleSkipPausing,
   toggleInlinePreview: _actions.default.toggleInlinePreview,
+  toggleEditorWrapping: _actions.default.toggleEditorWrapping,
   toggleSourceMapsEnabled: _actions.default.toggleSourceMapsEnabled,
   toggleJavaScriptEnabled: _actions.default.toggleJavaScriptEnabled
 })(CommandBar);

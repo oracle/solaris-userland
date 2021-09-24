@@ -64,8 +64,7 @@ function SmartGap({
   coords,
   offset
 }) {
-  const tokenRect = token.getBoundingClientRect(); // $FlowIgnore
-
+  const tokenRect = token.getBoundingClientRect();
   const previewRect = preview.getBoundingClientRect();
   const {
     orientation

@@ -14,7 +14,6 @@ var _classnames = _interopRequireDefault(require("devtools/client/debugger/dist/
 var _actions = _interopRequireDefault(require("../../actions/index"));
 
 loader.lazyRequireGetter(this, "_selectors", "devtools/client/debugger/src/selectors/index");
-loader.lazyRequireGetter(this, "_threads", "devtools/client/debugger/src/utils/threads");
 
 var _AccessibleImage = _interopRequireDefault(require("../shared/AccessibleImage"));
 
@@ -44,7 +43,7 @@ class Thread extends _react.Component {
       isPaused,
       thread
     } = this.props;
-    const worker = (0, _threads.isWorker)(thread);
+    const isWorker = thread.targetType.includes("worker");
     let label = thread.name;
 
     if (thread.serviceWorkerStatus) {
@@ -60,7 +59,7 @@ class Thread extends _react.Component {
     }, _react.default.createElement("div", {
       className: "icon"
     }, _react.default.createElement(_AccessibleImage.default, {
-      className: worker ? "worker" : "window"
+      className: isWorker ? "worker" : "window"
     })), _react.default.createElement("div", {
       className: "label"
     }, label), isPaused ? _react.default.createElement("div", {

@@ -12,6 +12,7 @@ loader.lazyRequireGetter(this, "_getFrameUrl", "devtools/client/debugger/src/uti
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+// eslint-disable-next-line max-len
 function collapseLastFrames(frames) {
   const index = (0, _lodash.findIndex)(frames, frame => (0, _getFrameUrl.getFrameUrl)(frame).match(/webpack\/bootstrap/i));
 

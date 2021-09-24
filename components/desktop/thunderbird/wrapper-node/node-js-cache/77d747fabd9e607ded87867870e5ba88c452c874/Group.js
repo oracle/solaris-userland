@@ -19,8 +19,6 @@ var _AccessibleImage = _interopRequireDefault(require("../../shared/AccessibleIm
 
 var _Frame = _interopRequireDefault(require("./Frame"));
 
-var _actions = _interopRequireDefault(require("../../../actions/index"));
-
 var _Badge = _interopRequireDefault(require("../../shared/Badge"));
 
 var _FrameIndent = _interopRequireDefault(require("./FrameIndent"));
@@ -110,7 +108,8 @@ class Group extends _react.Component {
       displayFullUrl,
       getFrameTitle,
       disableContextMenu,
-      panel
+      panel,
+      restart
     } = this.props;
     const {
       expanded
@@ -145,7 +144,8 @@ class Group extends _react.Component {
         displayFullUrl: displayFullUrl,
         getFrameTitle: getFrameTitle,
         disableContextMenu: disableContextMenu,
-        panel: panel
+        panel: panel,
+        restart: restart
       }));
     }, []));
   }

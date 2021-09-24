@@ -320,6 +320,17 @@ Object.keys(_preview).forEach(function (key) {
     }
   });
 });
+loader.lazyRequireGetter(this, "_exceptions", "devtools/client/debugger/src/reducers/exceptions");
+Object.keys(_exceptions).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _exceptions[key];
+    }
+  });
+});
 loader.lazyRequireGetter(this, "_sourceActors", "devtools/client/debugger/src/reducers/source-actors");
 loader.lazyRequireGetter(this, "_quickOpen", "devtools/client/debugger/src/reducers/quick-open");
 loader.lazyRequireGetter(this, "_breakpointAtLocation", "devtools/client/debugger/src/selectors/breakpointAtLocation");
@@ -343,15 +354,14 @@ Object.keys(_visibleColumnBreakpoints).forEach(function (key) {
 });
 loader.lazyRequireGetter(this, "_pause2", "devtools/client/debugger/src/selectors/pause");
 
-var _devtoolsReps = require("devtools/client/shared/components/reps/reps.js");
+var _index = require("devtools/client/shared/components/reps/index");
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
-// eslint-disable-next-line import/named
 const {
   reducer
-} = _devtoolsReps.objectInspector;
+} = _index.objectInspector;
 Object.keys(reducer).forEach(function (key) {
   if (key === "default" || key === "__esModule") {
     return;

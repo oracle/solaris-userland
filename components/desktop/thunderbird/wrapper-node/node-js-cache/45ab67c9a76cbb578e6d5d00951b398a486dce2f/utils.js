@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.getPathParts = getPathParts;
 exports.nodeHasChildren = nodeHasChildren;
 exports.isExactUrlMatch = isExactUrlMatch;
 exports.isPathDirectory = isPathDirectory;
@@ -31,6 +32,42 @@ loader.lazyRequireGetter(this, "_getURL", "devtools/client/debugger/src/utils/so
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 const IGNORED_URLS = ["debugger eval code", "XStringBundle"];
+
+function getPathParts(url, thread, debuggeeHost) {
+  const parts = url.path.split("/");
+
+  if (parts.length > 1 && parts[parts.length - 1] === "") {
+    parts.pop();
+
+    if (url.search) {
+      parts.push(url.search);
+    }
+  } else {
+    parts[parts.length - 1] += url.search;
+  }
+
+  parts[0] = url.group;
+
+  if (thread) {
+    parts.unshift(thread);
+  }
+
+  let path = "";
+  return parts.map((part, index) => {
+    if (index == 0 && thread) {
+      path = thread;
+    } else {
+      path = `${path}/${part}`;
+    }
+
+    const debuggeeHostIfRoot = index === 1 ? debuggeeHost : null;
+    return {
+      part,
+      path,
+      debuggeeHostIfRoot
+    };
+  });
+}
 
 function nodeHasChildren(item) {
   return item.type == "directory" && Array.isArray(item.contents);
@@ -169,6 +206,14 @@ function createParentMap(tree) {
 
   return map;
 }
+/**
+ * Get the relative path of the url
+ * Does not include any query parameters or fragment parts
+ *
+ * @param string url
+ * @returns string path
+ */
+
 
 function getRelativePath(url) {
   const {
@@ -180,7 +225,19 @@ function getRelativePath(url) {
   }
 
   const index = pathname.indexOf("/");
-  return index !== -1 ? pathname.slice(index + 1) : "";
+
+  if (index !== -1) {
+    const path = pathname.slice(index + 1); // If the path is empty this is likely the index file.
+    // e.g http://foo.com/
+
+    if (path == "") {
+      return "(index)";
+    }
+
+    return path;
+  }
+
+  return "";
 }
 
 function getPathWithoutThread(path) {

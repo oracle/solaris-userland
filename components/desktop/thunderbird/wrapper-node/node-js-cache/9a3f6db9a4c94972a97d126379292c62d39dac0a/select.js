@@ -185,7 +185,7 @@ function selectLocation(cx, location, {
     }));
     dispatch((0, _ast.setInScopeLines)(cx));
 
-    if (cx.isPaused) {
+    if ((0, _selectors.getIsCurrentThreadPaused)(getState())) {
       await dispatch((0, _pause.mapDisplayNames)(cx));
     } // If a new source is selected update the file search results
 

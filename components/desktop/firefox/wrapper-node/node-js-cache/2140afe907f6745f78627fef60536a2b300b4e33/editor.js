@@ -22,31 +22,31 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+// Menu Items
 const continueToHereItem = (cx, location, isPaused, editorActions) => ({
   accesskey: L10N.getStr("editor.continueToHere.accesskey"),
   disabled: !isPaused,
   click: () => editorActions.continueToHere(cx, location),
   id: "node-menu-continue-to-here",
   label: L10N.getStr("editor.continueToHere.label")
-}); // menu items
-
+});
 
 exports.continueToHereItem = continueToHereItem;
 
-const copyToClipboardItem = (selectedContent, editorActions) => ({
+const copyToClipboardItem = (selectionText, editorActions) => ({
   id: "node-menu-copy-to-clipboard",
   label: L10N.getStr("copyToClipboard.label"),
   accesskey: L10N.getStr("copyToClipboard.accesskey"),
-  disabled: false,
-  click: () => selectedContent.type === "text" && (0, _clipboard.copyToTheClipboard)(selectedContent.value)
+  disabled: selectionText.length === 0,
+  click: () => (0, _clipboard.copyToTheClipboard)(selectionText)
 });
 
-const copySourceItem = (selectedSource, selectionText, editorActions) => ({
+const copySourceItem = (selectedContent, editorActions) => ({
   id: "node-menu-copy-source",
   label: L10N.getStr("copySource.label"),
   accesskey: L10N.getStr("copySource.accesskey"),
-  disabled: selectionText.length === 0,
-  click: () => (0, _clipboard.copyToTheClipboard)(selectionText)
+  disabled: false,
+  click: () => selectedContent.type === "text" && (0, _clipboard.copyToTheClipboard)(selectedContent.value)
 });
 
 const copySourceUri2Item = (selectedSource, editorActions) => ({
@@ -75,8 +75,8 @@ const showSourceMenuItem = (cx, selectedSource, editorActions) => ({
 
 const blackBoxMenuItem = (cx, selectedSource, editorActions) => ({
   id: "node-menu-blackbox",
-  label: selectedSource.isBlackBoxed ? L10N.getStr("blackboxContextItem.unblackbox") : L10N.getStr("blackboxContextItem.blackbox"),
-  accesskey: selectedSource.isBlackBoxed ? L10N.getStr("blackboxContextItem.unblackbox.accesskey") : L10N.getStr("blackboxContextItem.blackbox.accesskey"),
+  label: selectedSource.isBlackBoxed ? L10N.getStr("ignoreContextItem.unignore") : L10N.getStr("ignoreContextItem.ignore"),
+  accesskey: selectedSource.isBlackBoxed ? L10N.getStr("ignoreContextItem.unignore.accesskey") : L10N.getStr("ignoreContextItem.ignore.accesskey"),
   disabled: !(0, _source.shouldBlackbox)(selectedSource),
   click: () => editorActions.toggleBlackBox(cx, selectedSource)
 });
@@ -107,6 +107,12 @@ const inlinePreviewItem = editorActions => ({
   click: () => editorActions.toggleInlinePreview(!_prefs.features.inlinePreview)
 });
 
+const editorWrappingItem = (editorActions, editorWrappingEnabled) => ({
+  id: "node-menu-editor-wrapping",
+  label: editorWrappingEnabled ? L10N.getStr("editorWrapping.hide.label") : L10N.getStr("editorWrapping.show.label"),
+  click: () => editorActions.toggleEditorWrapping(!editorWrappingEnabled)
+});
+
 function editorMenuItems({
   cx,
   editorActions,
@@ -115,13 +121,14 @@ function editorMenuItems({
   selectionText,
   hasMappedLocation,
   isTextSelected,
-  isPaused
+  isPaused,
+  editorWrappingEnabled
 }) {
   const items = [];
   const content = selectedSource.content && (0, _asyncValue.isFulfilled)(selectedSource.content) ? selectedSource.content.value : null;
   items.push(jumpToMappedLocationItem(cx, selectedSource, location, hasMappedLocation, editorActions), continueToHereItem(cx, location, isPaused, editorActions), {
     type: "separator"
-  }, ...(content ? [copyToClipboardItem(content, editorActions)] : []), ...(!selectedSource.isWasm ? [copySourceItem(selectedSource, selectionText, editorActions), copySourceUri2Item(selectedSource, editorActions)] : []), ...(content ? [downloadFileItem(selectedSource, content, editorActions)] : []), {
+  }, copyToClipboardItem(selectionText, editorActions), ...(!selectedSource.isWasm ? [...(content ? [copySourceItem(content, editorActions)] : []), copySourceUri2Item(selectedSource, editorActions)] : []), ...(content ? [downloadFileItem(selectedSource, content, editorActions)] : []), {
     type: "separator"
   }, showSourceMenuItem(cx, selectedSource, editorActions), blackBoxMenuItem(cx, selectedSource, editorActions));
 
@@ -133,7 +140,7 @@ function editorMenuItems({
 
   items.push({
     type: "separator"
-  }, inlinePreviewItem(editorActions));
+  }, inlinePreviewItem(editorActions), editorWrappingItem(editorActions, editorWrappingEnabled));
   return items;
 }
 
@@ -146,6 +153,7 @@ function editorItemActions(dispatch) {
     jumpToMappedLocation: _actions.default.jumpToMappedLocation,
     showSource: _actions.default.showSource,
     toggleBlackBox: _actions.default.toggleBlackBox,
-    toggleInlinePreview: _actions.default.toggleInlinePreview
+    toggleInlinePreview: _actions.default.toggleInlinePreview,
+    toggleEditorWrapping: _actions.default.toggleEditorWrapping
   }, dispatch);
 }

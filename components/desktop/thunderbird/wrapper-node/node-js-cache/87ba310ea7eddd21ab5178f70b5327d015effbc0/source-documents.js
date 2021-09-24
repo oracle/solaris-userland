@@ -10,6 +10,7 @@ exports.removeDocument = removeDocument;
 exports.clearDocuments = clearDocuments;
 exports.updateLineNumberFormat = updateLineNumberFormat;
 exports.updateDocument = updateDocument;
+exports.updateDocuments = updateDocuments;
 exports.clearEditor = clearEditor;
 exports.showLoading = showLoading;
 exports.showErrorMessage = showErrorMessage;
@@ -18,10 +19,6 @@ loader.lazyRequireGetter(this, "_source", "devtools/client/debugger/src/utils/so
 loader.lazyRequireGetter(this, "_wasm", "devtools/client/debugger/src/utils/wasm");
 loader.lazyRequireGetter(this, "_isMinified", "devtools/client/debugger/src/utils/isMinified");
 loader.lazyRequireGetter(this, "_ui", "devtools/client/debugger/src/utils/ui");
-
-var _sourceEditor = _interopRequireDefault(require("devtools/client/shared/sourceeditor/editor"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -76,6 +73,18 @@ function updateDocument(editor, source) {
   const doc = getDocument(sourceId) || editor.createDocument();
   editor.replaceDocument(doc);
   updateLineNumberFormat(editor, sourceId);
+}
+/* used to apply the context menu wrap line option change to all the docs */
+
+
+function updateDocuments(updater) {
+  for (const key in sourceDocs) {
+    if (sourceDocs[key].cm == null) {
+      continue;
+    } else {
+      updater(sourceDocs[key]);
+    }
+  }
 }
 
 function clearEditor(editor) {

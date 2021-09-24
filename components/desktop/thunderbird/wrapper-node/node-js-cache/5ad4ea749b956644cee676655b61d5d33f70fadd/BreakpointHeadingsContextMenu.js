@@ -4,12 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = showContextMenu;
-
-var _devtoolsContextmenu = require("devtools/client/debugger/dist/vendors").vendored["devtools-contextmenu"];
-
-var _actions = _interopRequireDefault(require("../../../actions/index"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+loader.lazyRequireGetter(this, "_menu", "devtools/client/debugger/src/context-menu/menu");
 
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -64,5 +59,5 @@ function showContextMenu(props) {
     item: removeInSourceItem,
     hidden: () => false
   }];
-  (0, _devtoolsContextmenu.showMenu)(contextMenuEvent, (0, _devtoolsContextmenu.buildMenu)(items));
+  (0, _menu.showMenu)(contextMenuEvent, (0, _menu.buildMenu)(items));
 }
