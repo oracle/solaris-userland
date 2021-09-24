@@ -1,0 +1,18 @@
+Libvterm uses libtool to compile it's tests. Sadly the libtool we ship is
+configured for Studio compiler, while we are using gcc for vim compilation.
+Until we have gcc support in libtool it's easiest to switch of livterm tests
+completely.
+
+Not suitable for upstream.
+
+--- vim-8.2.3445/src/Makefile
++++ vim-8.2.3445/src/Makefile
+@@ -2310,7 +2310,7 @@ run_message_test: $(MESSAGE_TEST_TARGET)
+ # This works only on GNU make, not on BSD make.
+ # Libtool requires "gcc".
+ test_libvterm:
+-	@if $(MAKE) --version 2>/dev/null | grep -qs "GNU Make"; then \
++	@exit 0; if $(MAKE) --version 2>/dev/null | grep -qs "GNU Make"; then \
+ 	  if test -x "/usr/bin/gcc"; then \
+ 	    cd libvterm; $(MAKE) -f Makefile test CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)"; \
+ 	  fi \

@@ -2,23 +2,15 @@ This patch works around an issue with vim dumping core with SIGSEGV when
 handling a more benign signal (typically SIGHUP or SIGTERM). Vim tries to
 run all the exit-vim autocommands, which end up busting the alternate stack
 at its default size. Increasing the default seems to do the trick, but it
-continues to be just a guess.
+continues to be just a guess. The default stack size is not enough for vim.
 
-The second change (already in upstream) comes from Bram:
-https://groups.google.com/d/msg/vim_dev/GrLf2ePQWDk/Gf3AMnjIAQAJ
-
---- a/src/os_unix.c	2020-03-23 14:18:00.347447949 +0100
-+++ b/src/os_unix.c	2020-03-23 14:19:28.151278797 +0100
-@@ -773,9 +773,10 @@
-  * completely full.
+--- vim-8.2.3444/src/os_unix.c
++++ vim-8.2.3444/src/os_unix.c
+@@ -795,6 +795,7 @@ static struct sigstack sigstk;		// for s
   */
+ static long int get_signal_stack_size()
+ {
++    return 8*1024*1024;
+ # ifdef HAVE_SYSCONF_SIGSTKSZ
+     long int size = -1;
  
--#ifndef SIGSTKSZ
--# define SIGSTKSZ 8000    // just a guess of how much stack is needed...
-+#ifdef SIGSTKSZ
-+# undef SIGSTKSZ
- #endif
-+#define SIGSTKSZ 8*1024*1024  /* just a guess of how much stack is needed... */
- 
- # ifdef HAVE_SIGALTSTACK
- static stack_t sigstk;			// for sigaltstack()

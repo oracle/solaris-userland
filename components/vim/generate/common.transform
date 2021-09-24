@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 # convert vim8x -> $(VIMVER)
@@ -37,6 +37,9 @@
 
 # basic commands and man pages are in 'core' package
 <transform file link path=.*/(ex|vi|view|vim)(\.1$|$) -> set pkg.type core>
+# Also vim reads 'defaults.vim' upon startup even if we have only 'core'
+# package installed
+<transform file path=.*/defaults.vim$ -> set pkg.type core>
 
 # gvim with man pages is 'gvim'
 <transform file link path=.*/gvim(\.1$|$) -> set pkg.type gvim>
