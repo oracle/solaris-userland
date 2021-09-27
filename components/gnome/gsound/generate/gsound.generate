@@ -20,31 +20,10 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, Oracle and/or its affiliates.
 #
 
-BUILD_BITS= 		64
-COMPILER=            	gcc
-include ../../../make-rules/shared-macros.mk
+# Transform to get rid of pkglint errors like 64-bit object in 32-bit path
+<transform file path=usr/bin/gsound-play ->  \
+    set pkg.linted.userland.action001.2 true>
 
-COMPONENT_NAME=		gsound
-COMPONENT_VERSION=	1.0.3
-COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GSound
-COMPONENT_ARCHIVE_HASH= \
-	sha256:ca2d039e1ebd148647017a7f548862350bc9af01986d39f10cfdc8e95f07881a
-COMPONENT_BUGDB=	gnome/libraries
-COMPONENT_ANITYA_ID=	9681
-
-TPNO=			73825
-BUILD_STYLE=		meson
-
-TEST_TARGET = $(NO_TESTS)
-
-include $(WS_MAKE_RULES)/gnome-component.mk
-
-# Assumes GNU msgfmt in PATH.
-COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
-COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
-
-REQUIRED_PACKAGES += library/desktop/xdg/libcanberra
-REQUIRED_PACKAGES += library/glib2
