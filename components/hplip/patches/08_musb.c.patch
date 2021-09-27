@@ -1,0 +1,29 @@
+This is a temporary patch for
+
+33304150 - svc:/application/cups/scheduler:default goes to maintenance and coredumps when adding printer in 11.4
+
+The issue was reported upstream.
+
+--- a/io/hpmud/musb.c.orig	2021-09-27 10:07:58.637028636 +0200
++++ b/io/hpmud/musb.c	2021-09-27 10:08:26.393096345 +0200
+@@ -2057,8 +2057,11 @@
+     libusb_init(&ctx);
+     numdevs = libusb_get_device_list(ctx, &list);
+ 
++    if (numdevs < 0)
++        BUG("libusb_get_device_list() failed: %s\n", libusb_strerror(numdevs));
++
+     if (numdevs <= 0)
+-        goto bugout;
++        goto bugout1;
+ 
+     model[0] = serial[0] = rmodel[0] = rserial[0] = sz[0] = mfg[0] = 0;
+ 
+@@ -2160,6 +2163,7 @@
+     if (confptr)
+         libusb_free_config_descriptor(confptr);
+     libusb_free_device_list(list, 1);
++bugout1:
+     libusb_exit(ctx);
+ 
+     return size;
