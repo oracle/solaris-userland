@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -30,14 +30,14 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgxps
-COMPONENT_VERSION=	0.3.1
+COMPONENT_VERSION=	0.3.2
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/libgxps
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:1a939fc8fcea9471b7eca46b1ac90cff89a30d26f65c7c9a375a4bf91223fa94
+    sha256:6d27867256a35ccf9b69253eb2a88a32baca3b97d5f4ef7f82e3667fa435251c
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	1629
 
-TPNO=			53309
+TPNO=			73849
 BUILD_STYLE=		meson
 
 TEST_TARGET= $(SKIP_TEST)
