@@ -20,15 +20,9 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, Oracle and/or its affiliates.
 #
 
-# Use this trick to revert $(CMAKE_MAJOR_VERSION) expansions.
-<transform file -> edit path "$(CMAKE_MAJOR_VERSION)" "$(CMV)">
-<transform file -> edit path "CMV" "CMAKE_MAJOR_VERSION">
-
-# Ignore the temporary files after patching pages.
-<transform file path=.*\.\~1\~$ -> drop>
-
-# Replaced by 'pkg info --license cmake' command.
-<transform file path=usr/doc -> drop>
+file release-notes/sphinx-builders.txt \
+    path=usr/share/doc/release-notes/sphinx-builders.txt mode=0444 \
+    must-display=true release-note=feature/pkg/self@0

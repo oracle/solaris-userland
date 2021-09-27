@@ -81,7 +81,8 @@ CONFIGURE_ENV +=	LDFLAGS="$(LDFLAGS)"
 # copies in the cmake source.
 CONFIGURE_OPTIONS =
 CONFIGURE_OPTIONS +=	--prefix=$(CONFIGURE_PREFIX)
-CONFIGURE_OPTIONS +=	--mandir=$(CONFIGURE_MANDIR)
+CONFIGURE_OPTIONS +=	--mandir=/share/man
+CONFIGURE_OPTIONS +=	--sphinx-man
 CONFIGURE_OPTIONS +=	--system-curl
 CONFIGURE_OPTIONS +=	--system-expat
 CONFIGURE_OPTIONS +=	--system-zlib
@@ -125,12 +126,6 @@ COMPONENT_TEST_TRANSFORMS += \
 COMPONENT_TEST_ENV +=   LD_LIBRARY_PATH="$(GCC_ROOT)/lib/$(MACH64)/"
 
 COMPONENT_SYSTEM_TEST_TARGETS =	test
-
-# Install the man pages this way because we do not have Sphinx.
-COMPONENT_POST_INSTALL_ACTION += \
-	( $(MKDIR) -p $(PROTO_DIR)/usr/share/man/ ; \
-	  $(CP) -r $(COMPONENT_DIR)/files/man1 $(PROTO_DIR)/usr/share/man/ ; \
-	  $(CP) -r $(COMPONENT_DIR)/files/man7 $(PROTO_DIR)/usr/share/man/ )
 
 # Built binaries are moved aside and replaced with
 # symlinks to the system-installed binaries in /usr/bin,

@@ -20,15 +20,15 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, Oracle and/or its affiliates.
 #
 
-# Use this trick to revert $(CMAKE_MAJOR_VERSION) expansions.
-<transform file -> edit path "$(CMAKE_MAJOR_VERSION)" "$(CMV)">
-<transform file -> edit path "CMV" "CMAKE_MAJOR_VERSION">
+# Manifest contains only generic version with $(PYVER) variable. Choose one
+# python version and transform it to $(PYVER).
+<transform file link path=.+3\.9.* -> edit path 3\\.9 \$\(PYVER\)>
 
-# Ignore the temporary files after patching pages.
-<transform file path=.*\.\~1\~$ -> drop>
+# We are not shipping .po locale files
+<transform file path=.+/sphinx/locale/.*\.po -> drop>
 
-# Replaced by 'pkg info --license cmake' command.
-<transform file path=usr/doc -> drop>
+# Drop all patch backup files
+<transform file path=.+~$ -> drop>

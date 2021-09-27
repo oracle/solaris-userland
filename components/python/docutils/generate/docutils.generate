@@ -20,15 +20,15 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, Oracle and/or its affiliates.
 #
 
-# Use this trick to revert $(CMAKE_MAJOR_VERSION) expansions.
-<transform file -> edit path "$(CMAKE_MAJOR_VERSION)" "$(CMV)">
-<transform file -> edit path "CMV" "CMAKE_MAJOR_VERSION">
+# Manifest contains only generic version with $(PYVER) variable. Choose one
+# python version and transform it to $(PYVER).
+<transform file link path=.+3\.9.* -> edit path 3\\.9 \$\(PYVER\)>
 
-# Ignore the temporary files after patching pages.
-<transform file path=.*\.\~1\~$ -> drop>
-
-# Replaced by 'pkg info --license cmake' command.
-<transform file path=usr/doc -> drop>
+# bypass optional imports detected by pkgdepend
+<transform file path=.*/docutils/.*/_html_base.py$ -> set pkg.depend.bypass-generate .*>
+<transform file path=.*/docutils/.*/code_analyzer.py$ -> set pkg.depend.bypass-generate .*pygments.*>
+<transform file path=.*/docutils/.*/recommonmark_wrapper.py$ -> set pkg.depend.bypass-generate .*recommonmark.*>
+<transform file path=usr/bin/rst2odt_prepstyles.py$ -> set pkg.depend.bypass-generate .*lxml.*>

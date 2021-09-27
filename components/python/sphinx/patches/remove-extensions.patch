@@ -1,0 +1,119 @@
+This patch removes several 1st party extensions (documentation builders) that
+are currently not needed for our internal use.
+
+'sphinxcontrib.applehelp' - produces an Apple Help Book output.
+'sphinxcontrib.htmlhelp' - HTML Help support files for Microsoft HTML Help Workshop.
+'sphinxcontrib.serializinghtml' - implements the Python serialization API (pickle, simplejson, phpserialize, and others).
+'sphinxcontrib.qthelp' - support files for the Qt collection generator.
+'sphinxcontrib.devhelp' - GNOME Devhelp support.
+
+Additionally, there is a jsmath, which renders display math in HTML via JavaScript. I don't know if we need this...
+
+Each of these extensions is delivered as a separate component and removing them
+makes the Sphinx dependency tree much simpler.
+
+Details about builders here:
+https://www.sphinx-doc.org/en/master/usage/builders/index.html
+
+--- Sphinx-4.2.0/sphinx/application.py
++++ Sphinx-4.2.0/sphinx/application.py
+@@ -107,17 +107,20 @@ builtin_extensions = (
+     'sphinx.environment.collectors.metadata',
+     'sphinx.environment.collectors.title',
+     'sphinx.environment.collectors.toctree',
+-    # 1st party extensions
+-    'sphinxcontrib.applehelp',
+-    'sphinxcontrib.devhelp',
+-    'sphinxcontrib.htmlhelp',
+-    'sphinxcontrib.serializinghtml',
+-    'sphinxcontrib.qthelp',
+     # Strictly, alabaster theme is not a builtin extension,
+     # but it is loaded automatically to use it as default theme.
+     'alabaster',
+ )
+ 
++builtin_extensions_optional = (
++    # 1st party extensions
++    'sphinxcontrib.applehelp',
++    'sphinxcontrib.devhelp',
++    'sphinxcontrib.htmlhelp',
++    'sphinxcontrib.serializinghtml',
++    'sphinxcontrib.qthelp',
++)
++
+ ENV_PICKLE_FILENAME = 'environment.pickle'
+ 
+ logger = logging.getLogger(__name__)
+@@ -232,6 +235,13 @@ class Sphinx:
+         for extension in builtin_extensions:
+             self.setup_extension(extension)
+ 
++        # load all optional built-in extension modules
++        for extension in builtin_extensions_optional:
++            try:
++                self.setup_extension(extension)
++            except sphinx.errors.ExtensionError:
++                pass
++
+         # load all user-given extension modules
+         for extension in self.config.extensions:
+             self.setup_extension(extension)
+--- Sphinx-4.2.0/Sphinx.egg-info/requires.txt
++++ Sphinx-4.2.0/Sphinx.egg-info/requires.txt
+@@ -1,9 +1,3 @@
+-sphinxcontrib-applehelp
+-sphinxcontrib-devhelp
+-sphinxcontrib-jsmath
+-sphinxcontrib-htmlhelp>=2.0.0
+-sphinxcontrib-serializinghtml>=1.1.5
+-sphinxcontrib-qthelp
+ Jinja2>=2.3
+ Pygments>=2.0
+ docutils<0.18,>=0.14
+--- Sphinx-4.2.0/setup.py
++++ Sphinx-4.2.0/setup.py
+@@ -15,12 +15,6 @@ if sys.version_info < (3, 6):
+     sys.exit(1)
+ 
+ install_requires = [
+-    'sphinxcontrib-applehelp',
+-    'sphinxcontrib-devhelp',
+-    'sphinxcontrib-jsmath',
+-    'sphinxcontrib-htmlhelp>=2.0.0',
+-    'sphinxcontrib-serializinghtml>=1.1.5',
+-    'sphinxcontrib-qthelp',
+     'Jinja2>=2.3',
+     'Pygments>=2.0',
+     'docutils>=0.14,<0.18',
+--- Sphinx-4.2.0/sphinx/builders/html/__init__.py
++++ Sphinx-4.2.0/sphinx/builders/html/__init__.py
+@@ -1299,7 +1299,10 @@ def migrate_html_add_permalinks(app: Sph
+     )
+ 
+ # for compatibility
+-import sphinxcontrib.serializinghtml  # NOQA
++try:
++    import sphinxcontrib.serializinghtml  # NOQA
++except:
++    pass
+ 
+ import sphinx.builders.dirhtml  # NOQA
+ import sphinx.builders.singlehtml  # NOQA
+--- Sphinx-4.2.0/tests/test_api_translator.py
++++ Sphinx-4.2.0/tests/test_api_translator.py
+@@ -49,6 +49,7 @@ def test_singlehtml_set_translator_for_s
+     assert translator_class.__name__ == 'ConfSingleHTMLTranslator'
+ 
+ 
++@pytest.mark.skip(reason='sphinxcontrib.serializinghtml is not available on Solaris')
+ @pytest.mark.sphinx('pickle', testroot='api-set-translator')
+ def test_pickle_set_translator_for_pickle(app, status, warning):
+     translator_class = app.builder.get_translator_class()
+@@ -56,6 +57,7 @@ def test_pickle_set_translator_for_pickl
+     assert translator_class.__name__ == 'ConfPickleTranslator'
+ 
+ 
++@pytest.mark.skip(reason='sphinxcontrib.serializinghtml is not available on Solaris')
+ @pytest.mark.sphinx('json', testroot='api-set-translator')
+ def test_json_set_translator_for_json(app, status, warning):
+     translator_class = app.builder.get_translator_class()
