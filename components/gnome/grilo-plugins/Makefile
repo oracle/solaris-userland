@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		grilo-plugins
-COMPONENT_VERSION=	0.3.12
+COMPONENT_VERSION=	0.3.13
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Grilo
 COMPONENT_ARCHIVE_HASH= \
-	sha256:c6b6df086a164d65c206d70139ce80591f8feca3545612e45b823fb4fe4b2577
+	sha256:1c4305d67364a930543836cc1982f30e946973b8ff6af3efe31d87709ab520f8
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	10929
 
-TPNO=			63400
+TPNO=			73819
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
