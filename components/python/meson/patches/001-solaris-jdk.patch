@@ -1,0 +1,29 @@
+Submitted & accepted upstream for 0.60.0 release:
+https://github.com/mesonbuild/meson/pull/9297
+
+From d5d6ddc5f4476523f37d364ca54c2775e9c743cd Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Sat, 25 Sep 2021 10:08:38 -0700
+Subject: [PATCH] dependencies: Add JDK system dependency for Solaris
+
+Handle is_sunos() machines in __machine_info_to_platform_include_dir
+---
+ mesonbuild/dependencies/dev.py | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/mesonbuild/dependencies/dev.py b/mesonbuild/dependencies/dev.py
+index 9c2594fb1..229e6f36d 100644
+--- a/mesonbuild/dependencies/dev.py
++++ b/mesonbuild/dependencies/dev.py
+@@ -545,6 +545,8 @@ class JDKSystemDependency(SystemDependency):
+             return 'win32'
+         elif m.is_darwin():
+             return 'darwin'
++        elif m.is_sunos():
++            return 'solaris'
+ 
+         return None
+ 
+-- 
+2.31.1
+

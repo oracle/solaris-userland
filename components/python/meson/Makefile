@@ -29,19 +29,19 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		meson
-COMPONENT_VERSION=	0.56.1
+COMPONENT_VERSION=	0.59.2
 COMPONENT_PROJECT_URL=	http://mesonbuild.com/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5780725304eaa28aac5e7de99d2d8d045112fbc10cf9f4181498b877de0ecf28
+    sha256:13dee549a7ba758b7e33ce7719f28d1d337a98d10d378a4779ccc996f5a2fc49
 COMPONENT_ARCHIVE_URL=	https://github.com/mesonbuild/meson/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 
 COMPONENT_BUGDB=        utility/meson
 COMPONENT_ANITYA_ID=	6472
 
-TPNO=			64304
+TPNO=			74914
 
-# As of 0.51.0, meson requires Python 3.5 or newer, and we only need
+# As of 0.57.0, meson requires Python 3.6 or newer, and we only need
 # to build for a single version, not all of them.
 PYTHON_VERSIONS=	$(PYTHON_VERSION)
 
