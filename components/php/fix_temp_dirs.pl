@@ -22,7 +22,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 use strict;
@@ -49,8 +49,8 @@ $buffer =~ s,
 ,
 	# String to replace
 	"s:".
-	($1-length($2)+4).
-	':"/tmp'
+	($1-length($2)+10).
+	':"/var/share'
 ,xge;
 
 open F, ">$file" or die "Can't open $file for writing: $!\n";
