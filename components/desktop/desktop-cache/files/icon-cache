@@ -1,6 +1,6 @@
-#!/bin/ksh -p
+#! /bin/ksh93
 #
-# Copyright (c) 2008, 2011, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2008, 2021, Oracle and/or its affiliates.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the
@@ -35,17 +35,16 @@ PATH=/usr/bin:/usr/sbin
 . /lib/svc/share/smf_include.sh
 
 USAGE="Usage: $0 { start | refresh }"
-FIND_NEWER=/usr/share/desktop-cache/find_newer
 
-if [ $# -ne 1 ] ; then
-    echo $USAGE
+if [[ $# -ne 1 ]] ; then
+    print "$USAGE" >&2
     exit 2
 fi
 
 #
 # for each icon directory update the icon cache if:
-#  - a index.theme file exist 
-# AND 
+#  - a index.theme file exist
+# AND
 #  - icons in the directory tree are newer than the icon cache
 # OR
 #  - if no cache exist but subdirectories (hence icons) are present
@@ -54,20 +53,20 @@ ICONDIR="/usr/share/icons"
 
 start_icon_cache ()
 {
-test -x /usr/bin/gtk-update-icon-cache || {
+if [[ ! -x /usr/bin/gtk-update-icon-cache ]]  ; then
     echo "gtk-update-icon-cache not installed"
     return
-}
-test -w $ICONDIR || { 
-  echo "$ICONDIR is not writable, skipping."
-  return
-}
+fi
+if [[ ! -w $ICONDIR ]] ; then
+    echo "$ICONDIR is not writable, skipping."
+    return
+fi
 for DIR in /usr/share/icons/*; do
-     if [ -a "$DIR/index.theme" ] ; then
-      if [ -a "$DIR/icon-theme.cache" ] ; then
-	RESULT=`${FIND_NEWER} -f -m -c --newer $DIR/icon-theme.cache $DIR 2>/dev/null`
+    if [[ -a "$DIR/index.theme" ]] ; then
+      if [[ -a "$DIR/icon-theme.cache" ]] ; then
+	RESULT="$(/usr/bin/find $DIR -follow -newer $DIR/icon-theme.cache)"
       else
-	RESULT=`/usr/bin/find $DIR -type d`
+	RESULT="$(/usr/bin/find $DIR -type d)"
 	if [ ${#RESULT} == ${#DIR} ]; then
 	  echo "$DIR doesn't contain subdirectories.  No icon cache is needed"
 	  RESULT=""
@@ -75,82 +74,80 @@ for DIR in /usr/share/icons/*; do
 	  RESULT="nocache"
 	fi
       fi
-      if [ -n "$RESULT" ]; then
-	  if [ "$RESULT" == "nocache" ]; then 
+      if [[ -n "$RESULT" ]]; then
+	  if [[ "$RESULT" == "nocache" ]]; then
 	    echo "No icon cache found in $DIR.  Generating one."
 	  else
-	    echo "Icons newer than the cache found in $DIR.  Updating the cache." 
+	    echo "Icons newer than the cache found in $DIR.  Updating the cache."
 	  fi
 	  rm -f $DIR/.icon-theme.cache
-	  /usr/bin/gtk-update-icon-cache $DIR 
+	  /usr/bin/gtk-update-icon-cache $DIR
 	  if [ $? -ne 0 ]; then
 	    echo "/usr/bin/gtk-update-icon-cache exited with an error while \
-generating the icon cache for $DIR." 
+generating the icon cache for $DIR."
 	  else
 	    echo "Icon cache successfully generated in $DIR"
 	  fi
       fi
-     fi
+    fi
 done
 }
 
 refresh_icon_cache ()
 {
-test -x /usr/bin/gtk-update-icon-cache || {
+if [[ ! -x /usr/bin/gtk-update-icon-cache ]] ; then
     echo "gtk-update-icon-cache not installed"
     return
-}
-test -w $ICONDIR || { 
+fi
+if [[ ! -w $ICONDIR ]] ; then
   echo "$ICONDIR is not writable, skipping."
   return
-}
+fi
 for DIR in /usr/share/icons/*; do
-     if [ -a "$DIR/index.theme" ] ; then
-      if [ -a "$DIR/icon-theme.cache" ] ; then
+    if [[ -a "$DIR/index.theme" ]] ; then
+      if [[ -a "$DIR/icon-theme.cache" ]] ; then
 	rm -f $DIR/icon-theme.cache
-	RESULT=`/usr/bin/find $DIR ! -type d -follow 2>/dev/null`
+	RESULT="$(/usr/bin/find $DIR ! -type d -follow 2>/dev/null)"
       else
-	RESULT=`/usr/bin/find $DIR -type d`
-	if [ ${#RESULT} == ${#DIR} ]; then
+	RESULT="$(/usr/bin/find $DIR -type d)"
+	if [[ ${#RESULT} == ${#DIR} ]]; then
 	  echo "$DIR doesn't contain subdirectories.  No icon cache is needed"
 	  RESULT=""
 	else
 	  RESULT="nocache"
 	fi
       fi
-      if [ -n "$RESULT" ]; then
-	  if [ "$RESULT" == "nocache" ]; then 
+      if [[ -n "$RESULT" ]]; then
+	  if [[ "$RESULT" == "nocache" ]]; then
 	    echo "No icon cache found in $DIR.  Generating one."
 	  else
-	    echo "Icons newer than the cache found in $DIR.  Updating the cache." 
+	    echo "Icons newer than the cache found in $DIR.  Updating the cache."
 	  fi
 	  rm -f $DIR/.icon-theme.cache
-	  /usr/bin/gtk-update-icon-cache $DIR 
-	  if [ $? -ne 0 ]; then
+	  /usr/bin/gtk-update-icon-cache $DIR
+	  if [[ $? -ne 0 ]]; then
 	    echo "/usr/bin/gtk-update-icon-cache exited with an error while \
-generating the icon cache for $DIR." 
+generating the icon cache for $DIR."
 	  else
 	    echo "Icon cache successfully generated in $DIR"
 	  fi
       fi
-     fi
+    fi
 done
 }
 
 METHOD=$1
 
 case $METHOD in
-    'start')
+    start|refresh)
 	# Continue with rest of script
 	;;
-    'refresh')
-	;;
     -*)
-	echo $USAGE
+	print "$USAGE" >&2
 	exit 2
 	;;
     *)
-	echo "Invalid method $METHOD"
+	print "Invalid method $METHOD" >&2
 	exit 2
 	;;
 esac

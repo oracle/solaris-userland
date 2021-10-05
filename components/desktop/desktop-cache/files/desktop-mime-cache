@@ -1,6 +1,6 @@
-#!/bin/ksh -p
+#! /bin/ksh93
 #
-# Copyright (c) 2008, 2011, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2008, 2021, Oracle and/or its affiliates.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the
@@ -29,15 +29,15 @@
 #
 ###########################################################################
 #
+
 PATH=/usr/bin:/usr/sbin
 
 . /lib/svc/share/smf_include.sh
 
 USAGE="Usage: $0 { start | refresh }"
-FIND_NEWER=/usr/share/desktop-cache/find_newer
 
-if [ $# -ne 1 ] ; then
-    echo $USAGE
+if [[ $# -ne 1 ]] ; then
+    print "$USAGE" >&2
     exit 2
 fi
 
@@ -55,27 +55,25 @@ MIMEDIR="/usr/share/applications"
 
 start_desktop_mime_cache () {
 
-test -w $MIMEDIR || { 
+if [[ ! -w $MIMEDIR ]] ; then
   echo "$MIMEDIR is not writable, skipping."
   return
-}
+fi
 
-if [ -a $MIMEFILE ]; then
-  RESULT=`${FIND_NEWER} -f -c -m \
-      --newer $MIMEFILE \
-      /usr/share/applications 2>/dev/null`
+if [[ -a $MIMEFILE ]]; then
+  RESULT="$(find ${MIMEDIR} -newer ${MIMEFILE})"
 else
   RESULT="no cache found"
 fi
 
-if [ -n "$RESULT" ]; then 
-  test -x /usr/bin/update-desktop-database || {
+if [[ -n "$RESULT" ]]; then
+  if [[ ! -x /usr/bin/update-desktop-database ]] ; then
     echo "update-desktop-database not installed"
     return
-  }
-  echo "updating desktop file cache" 
+  fi
+  echo "updating desktop file cache"
   /usr/bin/update-desktop-database -q
-  if [ $? -ne 0 ]; then
+  if [[ $? -ne 0 ]]; then
     echo "update-mime-database exited with an error while generating the desktop file cache $MIMEFILE"
     exit $SMF_EXIT_ERR_FATAL
   else
@@ -86,25 +84,25 @@ fi
 
 refresh_desktop_mime_cache () {
 
-test -w $MIMEDIR || { 
+if [[ ! -w $MIMEDIR ]] ; then
   echo "$MIMEDIR is not writable, skipping."
   return
-}
+fi
 
-if [ -a $MIMEFILE ]; then
-  RESULT=`/usr/bin/find /usr/share/applications ! -type d -follow 2>/dev/null`
+if [[ -a $MIMEFILE ]]; then
+  RESULT="$(/usr/bin/find /usr/share/applications ! -type d -follow 2>/dev/null)"
 else
   RESULT="no cache found"
 fi
 
-if [ -n "$RESULT" ]; then 
-  test -x /usr/bin/update-desktop-database || {
+if [[ -n "$RESULT" ]]; then
+  if [[ ! -x /usr/bin/update-desktop-database ]] ; then
     echo "update-desktop-database not installed"
     return
-  }
-  echo "updating desktop file cache" 
+  fi
+  echo "updating desktop file cache"
   /usr/bin/update-desktop-database -q
-  if [ $? -ne 0 ]; then
+  if [[ $? -ne 0 ]]; then
     echo "update-mime-database exited with an error while generating the desktop file cache $MIMEFILE"
     exit $SMF_EXIT_ERR_FATAL
   else
@@ -115,18 +113,16 @@ fi
 
 METHOD="$1"
 
-case "$METHOD" in
-    'start')
+case $METHOD in
+    start|refresh)
 	# Continue with rest of script
 	;;
-    'refresh')
-	;;
     -*)
-	echo $USAGE
+	print "$USAGE" >&2
 	exit 2
 	;;
     *)
-	echo "Invalid method $METHOD"
+	print "Invalid method $METHOD" >&2
 	exit 2
 	;;
 esac
