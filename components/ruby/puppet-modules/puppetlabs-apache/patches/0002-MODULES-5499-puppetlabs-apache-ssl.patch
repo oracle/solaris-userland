@@ -1,0 +1,23 @@
+Fix deprecated ciphers and TLS protocols. This patch has not been submitted upstream yet.
+----------------------------------------------------------------------------------------------------------
+--- a/manifests/params.pp.orig	2021-10-04 23:52:55.533103954 +0000
++++ b/manifests/params.pp	2021-10-04 23:53:40.247852901 +0000
+@@ -860,6 +860,6 @@
+   if $::osfamily == 'RedHat' and versioncmp($::operatingsystemrelease, '8.0') >= 0 {
+     $ssl_protocol = ['all'] # Implementations of the SSLv2 and SSLv3 protocol versions have been removed from OpenSSL (and hence mod_ssl) because these are no longer considered secure. For additional documentation https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/deploying_different_types_of_servers/setting-apache-web-server_deploying-different-types-of-servers
+   } else {
+-    $ssl_protocol = ['all', '-SSLv2', '-SSLv3']
++    $ssl_protocol = ['all', '-SSLv2', '-SSLv3', '-TLSv1', '-TLSv1.1']
+   }
+ }
+--- a/manifests/mod/ssl.pp.orig	2021-10-05 00:10:33.952636130 +0000
++++ b/manifests/mod/ssl.pp	2021-10-05 00:11:40.539536685 +0000
+@@ -86,7 +86,7 @@
+   Optional[String] $ssl_cert                                = undef,
+   Optional[String] $ssl_key                                 = undef,
+   $ssl_ca                                                   = undef,
+-  $ssl_cipher                                               = 'HIGH:MEDIUM:!aNULL:!MD5:!RC4:!3DES',
++  $ssl_cipher                                               = 'HIGH:MEDIUM:!aNULL:!MD5:!RC4:!3DES:!LOW:!RC2:!EXPORT:!PSK:!eNULL',
+   Variant[Boolean, Enum['on', 'off']] $ssl_honorcipherorder = true,
+   $ssl_protocol                                             = $apache::params::ssl_protocol,
+   Array $ssl_proxy_protocol                                 = [],
