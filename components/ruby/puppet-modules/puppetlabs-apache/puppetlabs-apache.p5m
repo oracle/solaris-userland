@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 <transform file -> edit path ^ usr/puppetlabs/puppet/modules/>
@@ -67,8 +67,6 @@ file path=apache/examples/vhost_ssl.pp
 file path=apache/examples/vhosts_without_listen.pp
 file path=apache/files/httpd
 file path=apache/lib/facter/apache_version.rb
-file path=apache/lib/puppet/parser/functions/bool2httpd.rb
-file path=apache/lib/puppet/parser/functions/validate_apache_log_level.rb
 file path=apache/lib/puppet/provider/a2mod.rb
 file path=apache/lib/puppet/provider/a2mod/a2mod.rb
 file path=apache/lib/puppet/provider/a2mod/gentoo.rb
@@ -187,27 +185,9 @@ file path=apache/spec/acceptance/class_spec.rb
 file path=apache/spec/acceptance/custom_config_spec.rb
 file path=apache/spec/acceptance/default_mods_spec.rb
 file path=apache/spec/acceptance/itk_spec.rb
-file path=apache/spec/acceptance/mod_dav_svn_spec.rb
-file path=apache/spec/acceptance/mod_deflate_spec.rb
-file path=apache/spec/acceptance/mod_fcgid_spec.rb
-file path=apache/spec/acceptance/mod_mime_spec.rb
-file path=apache/spec/acceptance/mod_negotiation_spec.rb
-file path=apache/spec/acceptance/mod_pagespeed_spec.rb
-file path=apache/spec/acceptance/mod_passenger_spec.rb
 file path=apache/spec/acceptance/mod_php_spec.rb
-file path=apache/spec/acceptance/mod_proxy_html_spec.rb
-file path=apache/spec/acceptance/mod_security_spec.rb
-file path=apache/spec/acceptance/mod_suphp_spec.rb
-file path=apache/spec/acceptance/nodesets/centos-7-x64.yml
-file path=apache/spec/acceptance/nodesets/debian-8-x64.yml
-file path=apache/spec/acceptance/nodesets/default.yml
-file path=apache/spec/acceptance/nodesets/docker/centos-7.yml
-file path=apache/spec/acceptance/nodesets/docker/debian-8.yml
-file path=apache/spec/acceptance/nodesets/docker/ubuntu-14.04.yml
-file path=apache/spec/acceptance/nodesets/suse.yml
 file path=apache/spec/acceptance/prefork_worker_spec.rb
 file path=apache/spec/acceptance/service_spec.rb
-file path=apache/spec/acceptance/version.rb
 file path=apache/spec/acceptance/vhost_spec.rb
 file path=apache/spec/acceptance/vhosts_spec.rb
 file path=apache/spec/classes/apache_spec.rb
@@ -275,10 +255,7 @@ file path=apache/spec/fixtures/templates/negotiation.conf.erb
 file path=apache/spec/spec_helper.rb
 file path=apache/spec/spec_helper_acceptance.rb
 file path=apache/spec/spec_helper_local.rb
-file path=apache/spec/unit/apache_version_spec.rb
 file path=apache/spec/unit/provider/a2mod/gentoo_spec.rb
-file path=apache/spec/unit/puppet/parser/functions/bool2httpd_spec.rb
-file path=apache/spec/unit/puppet/parser/functions/validate_apache_log_level.rb
 file path=apache/templates/confd/no-accf.conf.erb
 file path=apache/templates/fastcgi/server.erb
 file path=apache/templates/httpd.conf.erb
@@ -319,7 +296,6 @@ file path=apache/templates/mod/prefork.conf.erb
 file path=apache/templates/mod/proxy.conf.erb
 file path=apache/templates/mod/proxy_balancer.conf.erb
 file path=apache/templates/mod/proxy_html.conf.erb
-file path=apache/templates/mod/remoteip.conf.erb
 file path=apache/templates/mod/reqtimeout.conf.erb
 file path=apache/templates/mod/rpaf.conf.erb
 file path=apache/templates/mod/security.conf.erb
@@ -357,11 +333,9 @@ file path=apache/templates/vhost/_jk_mounts.erb
 file path=apache/templates/vhost/_keepalive_options.erb
 file path=apache/templates/vhost/_logging.erb
 file path=apache/templates/vhost/_passenger.erb
-file path=apache/templates/vhost/_passenger_base_uris.erb
 file path=apache/templates/vhost/_php.erb
 file path=apache/templates/vhost/_php_admin.erb
 file path=apache/templates/vhost/_proxy.erb
-file path=apache/templates/vhost/_rack.erb
 file path=apache/templates/vhost/_redirect.erb
 file path=apache/templates/vhost/_requestheader.erb
 file path=apache/templates/vhost/_require.erb
@@ -382,11 +356,11 @@ license puppetlabs-apache.license license="Apache v2.0"
 # Renamed Package
 depend type=optional \
     fmri=system/management/puppet/puppet-apache@1.4.0-5.12.0.0.0.93.0
+# Require Puppet for module path changes
+depend type=require fmri=system/management/puppet
 
 # force a dependency on puppetlabs-concat
 depend type=require fmri=system/management/puppet/puppetlabs-concat
 
 # force a dependency on puppetlabs-stdlib
 depend type=require fmri=system/management/puppet/puppetlabs-stdlib
-# Require Puppet 4.x for module path changes
-depend type=require fmri=system/management/puppet@4
