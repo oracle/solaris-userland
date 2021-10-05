@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2009, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2009, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		NO_ARCH
@@ -47,6 +47,8 @@ COMPONENT_BUGDB=	x11/font
 TPNO=			12030
 
 include $(WS_MAKE_RULES)/font.mk
+
+$(MANIFEST_BASE)-%.mogrified: PUBLISH_TRANSFORMS += font-attributes.transform
 
 COMPONENT_FONT_FILES= 		NOTICE *.ttf
 COMPONENT_FONT_DEST_DIR= 	$(USRSHARETTFONTSDIR)/google-droid

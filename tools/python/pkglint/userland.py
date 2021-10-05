@@ -883,3 +883,13 @@ class UserlandManifestChecker(base.ManifestChecker):
                 self.__validate_pyc(py, pyc, engine, pkglint_id)
 
     pyc_check.pkglint_desc = ".pyc files must be importable and up-to-date."
+
+    def makefile_ascii_check(self, manifest, engine, pkglint_id="007"):
+        """Make sure that manifest is ASCII only."""
+        for action in manifest.actions:
+            if not str(action).isascii():
+                engine.error(
+                    f"Non ASCII value found in {manifest.fmri}:\n{action}",
+                    msgid=f"{self.name}{pkglint_id}.0")
+
+    makefile_ascii_check.pkglint_desc = "manifests are ASCII only."
