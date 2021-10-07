@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXi
-COMPONENT_VERSION=	1.7.10
+COMPONENT_VERSION=	1.8
 COMPONENT_ARCHIVE_HASH= \
-	sha256:36a30d8f6383a72e7ce060298b4b181fd298bc3a135c8e201b7ca847f5f81061
+	sha256:2ed181446a61c7337576467870bc5336fc9e222a281122d96c4d39a3298bba00
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1778
-TPNO=			53642
+TPNO=			75187
 
 TEST_TARGET = $(NO_TESTS)
 

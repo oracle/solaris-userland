@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -28,12 +28,12 @@ COMPILER = 		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libXfont2
-COMPONENT_VERSION=	2.0.4
+COMPONENT_VERSION=	2.0.5
 COMPONENT_ARCHIVE_HASH= \
-	sha256:6d151b3368e5035efede4b6264c0fdc6662c1c99dbc2de425e3480cababc69e6
+	sha256:aa7c6f211cf7215c0ab4819ed893dc98034363d7b930b844bb43603c2e10b53e
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	17165
-TPNO=			57682
+TPNO=			75185
 
 TEST_TARGET = $(NO_TESTS)
 

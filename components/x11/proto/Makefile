@@ -27,13 +27,13 @@ BUILD_BITS =            32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xorgproto
-COMPONENT_VERSION=	2021.4
+COMPONENT_VERSION=	2021.5
 COMPONENT_CATEGORY=	proto
 COMPONENT_ARCHIVE_HASH= \
-	sha256:0f5157030162844b398e7ce69b8bb967c2edb8064b0a9c9bb5517eb621459fbf
+	sha256:aa2f663b8dbd632960b24f7477aa07d901210057f6ab1a1db5158732569ca015
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	17190
-TPNO=			70025
+TPNO=			75189
 
 # sun-ext-protos just delivers headers and xcb-proto is part of libxcb
 
