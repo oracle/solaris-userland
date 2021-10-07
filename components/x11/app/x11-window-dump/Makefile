@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xwd
-COMPONENT_VERSION=	1.0.7
+COMPONENT_VERSION=	1.0.8
 COMPONENT_ARCHIVE_HASH= \
-    sha256:cd6815b8b9e0b98e284d3d732fb12162159cb9dcee4f45a7d4c0bd8b308a6794
+    sha256:fbaa2b34163714fe7be22b60920ea4683f63b355babb1781aec2e452a033031b
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	14950
-TPNO=			47001
+TPNO=			75181
 
 COMPONENT_NAME_1=       xpr
 COMPONENT_VERSION_1=    1.0.5

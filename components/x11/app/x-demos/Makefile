@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -35,11 +35,11 @@ COMPONENT_ANITYA_ID=	14991
 TPNO=			50390
 
 COMPONENT_NAME_1=       xeyes
-COMPONENT_VERSION_1=    1.1.2
+COMPONENT_VERSION_1=    1.2.0
 COMPONENT_ARCHIVE_HASH_1=       \
-    sha256:57bcec0d2d167af9e5d44d0dbd74c6d7c0f0591cd0608952b23c749fdd910553
+    sha256:f8a17e23146bef1ab345a1e303c6749e42aaa7bcf4f25428afad41770721b6db
 COMPONENT_ANITYA_ID_1=	15025
-TPNO_1=			49490
+TPNO_1=			75183
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -71,8 +71,10 @@ REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/data/xbitmaps
 REQUIRED_PACKAGES += x11/library/libsm
 REQUIRED_PACKAGES += x11/library/libx11
+REQUIRED_PACKAGES += x11/library/libxcb
 REQUIRED_PACKAGES += x11/library/libxext
 REQUIRED_PACKAGES += x11/library/libxft
+REQUIRED_PACKAGES += x11/library/libxi
 REQUIRED_PACKAGES += x11/library/libxmu
 REQUIRED_PACKAGES += x11/library/libxrender
 REQUIRED_PACKAGES += x11/library/toolkit/libxaw7
