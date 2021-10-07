@@ -192,7 +192,7 @@ CONFIG_SHELL=
 COMPONENT_BUILD_ENV += PATH="$(PATH)"
 %/.built: GMAKE= $(WAF) build $(WAFOPTS)
 $(SAMBA_FULL_CONF:.configured=.built): COMPONENT_BUILD_TARGETS=
-$(WB_ONLY_CONF:.configured=.built): COMPONENT_BUILD_TARGETS= --targets=nss_winbind,pamwinbind
+$(WB_ONLY_CONF:.configured=.built): COMPONENT_BUILD_TARGETS= --targets=nss_winbind,pamwinbind,winbind_nss_hook
 
 # install
 PERL_SCRIPTS   += $(PROTO_DIR)/usr/lib/samba/bin/findsmb
