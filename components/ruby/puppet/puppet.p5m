@@ -33,7 +33,8 @@
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
 set name=pkg.fmri \
     value=pkg:/system/management/puppet@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
-set name=pkg.summary value="Puppet - configuration management toolkit"
+set name=pkg.summary \
+    value="Puppet agent - The Puppet daemon that runs on the target system (node)."
 set name=pkg.description \
     value='Puppet is a flexible, customizable framework designed to help system administrators automate the many repetitive tasks they regularly perform. As a declarative, model-based approach to IT automation, it lets you define the desired state - or the "what" - of your infrastructure using the Puppet configuration language. Once these configurations are deployed, Puppet automatically installs the necessary packages and starts the related services, and then regularly enforces the desired state.'
 set name=com.oracle.info.description \
@@ -45,10 +46,10 @@ set name=info.source-url value=$(GIT_REPO)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2013/005 value=PSARC/2013/218 \
     value=PSARC/2013/221 value=PSARC/2013/288 value=PSARC/2013/426 \
-    value=PSARC/2016/016 value=PSARC/2016/607 value=PSARC/2017/092
+    value=PSARC/2016/016 value=PSARC/2016/607 value=PSARC/2017/092 \
+    value=PSARC/2021/107
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-set name=org.opensolaris.smf.fmri value=svc:/application/puppet:agent \
-    value=svc:/application/puppet:master
+set name=org.opensolaris.smf.fmri value=svc:/application/puppet:agent
 file ext/PuppetAudit.so \
     path=$(VENDOR_RUBY)/$(MACH64)-solaris$(SOLARIS_VERSION)/PuppetAudit.so
 file path=$(VENDOR_RUBY)/hiera/puppet_function.rb
@@ -1212,7 +1213,6 @@ file path=usr/share/man/man8/puppet-help.8
 file path=usr/share/man/man8/puppet-key.8
 file path=usr/share/man/man8/puppet-lookup.8
 file path=usr/share/man/man8/puppet-man.8
-file path=usr/share/man/man8/puppet-master.8
 file path=usr/share/man/man8/puppet-module.8
 file path=usr/share/man/man8/puppet-node.8
 file path=usr/share/man/man8/puppet-parser.8
@@ -1240,20 +1240,8 @@ depend type=group fmri=system/management/puppet/puppetlabs-ntp
 depend type=group fmri=system/management/puppet/puppetlabs-rsync
 depend type=group fmri=system/management/puppet/puppetlabs-stdlib
 
-# Depend on renamed/removed versions to pull them forward
-depend type=optional fmri=library/ruby/hiera@1.3.4-5.12.0.0.0.93.0
-depend type=optional fmri=system/management/facter@2.1.0-5.12.0.0.0.93.0
-
-# depend on renamed -19 versions to force an update to remove them
-depend type=optional fmri=system/management/puppet-19@3.6.2-5.12.0.0.0.93.0
-depend type=optional \
-    fmri=system/management/puppet/puppet-solaris@5.12-5.12.0.0.0.113.0
-
-# puppet-staging -> nanliu-staging -> puppet-staging
-depend type=optional \
-    fmri=system/management/puppet/puppet-staging@1.0.7-5.12.0.0.0.126.0
-
 # Puppet Dependencies
 depend type=require fmri=library/ruby/hiera
 depend type=require fmri=system/management/facter
+depend type=require fmri=system/management/puppet-master
 depend type=require fmri=system/management/puppet/oracle-solaris_providers
