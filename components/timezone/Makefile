@@ -21,19 +21,19 @@
 #
 
 #
-# Copyright (c) 2005, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2005, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME= 	timezone
-HUMAN_VERSION=		2020a
+HUMAN_VERSION=		2021c
 # The last digit of COMPONENT_VERSION corresponds to the last letter of the
 # upstream archive name. 'a' -> 1, 'b' -> 2, etc.
-COMPONENT_VERSION=    	2020.1
+COMPONENT_VERSION=    	2021.3
 COMPONENT_PROJECT_URL=	http://www.iana.org/time-zones
 COMPONENT_ARCHIVE_URL=	https://data.iana.org/time-zones/releases/tzdata$(HUMAN_VERSION).tar.gz
-COMPONENT_ARCHIVE_HASH= sha256:547161eca24d344e0b5f96aff6a76b454da295dc14ed4ca50c2355043fb899a2
+COMPONENT_ARCHIVE_HASH= sha256:b4f1d1c8cb11c3500276dac862d8c7e6f88c69b1e8ee4c5e9d1daad17fbe3542 
 
 TPNO=			58586	
 COMPONENT_ANITYA_ID=	5021
@@ -70,7 +70,7 @@ POFILE=zoneinfo.po
 # "etcetera" must be listed before "backward" because it sets up links that
 # "backward" needs.
 TZFILES= africa antarctica asia australasia etcetera europe \
-	 factory northamerica pacificnew \
+	 factory northamerica \
 	 southamerica backward
 
 ZONEINFO_TAB_DIR=$(PROTO_DIR)/usr/share/lib/zoneinfo/tab
