@@ -3,9 +3,9 @@ cmake.
 
 This is a Solaris specific patch.
 
---- poppler-21.01.0/cmake/modules/PopplerMacros.cmake	2021-01-12 09:19:12.861409922 +0000
-+++ poppler-21.01.0/cmake/modules/PopplerMacros.cmake	2021-01-12 09:18:44.129703787 +0000
-@@ -79,6 +79,14 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CO
+--- poppler-21.10.0/cmake/modules/PopplerMacros.cmake.orig	2021-10-13 14:22:10.726290108 +0200
++++ poppler-21.10.0/cmake/modules/PopplerMacros.cmake	2021-10-13 14:50:17.247654912 +0200
+@@ -79,6 +79,14 @@
    set(CMAKE_BUILD_TYPE RelWithDebInfo)
  endif(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
  
@@ -13,45 +13,44 @@ This is a Solaris specific patch.
 +set(DEFAULT_C_FLAGS     "-std=c99 -D_DEFAULT_SOURCE")
 +string(FIND "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS}" "-m32" SEARCH_IDX)
 +if("${SEARCH_IDX}" GREATER "-1")
-+  set(DEFAULT_CXX_FLAGS "${DEFAULT_CXX_FLAGS} -m32")
-+  set(DEFAULT_C_FLAGS "${DEFAULT_C_FLAGS} -m32")
++	set(DEFAULT_CXX_FLAGS "${DEFAULT_CXX_FLAGS} -m32")
++	set(DEFAULT_C_FLAGS "${DEFAULT_C_FLAGS} -m32")
 +endif()
 +
- if(CMAKE_COMPILER_IS_GNUCXX)
-   # set the default compile warnings
-   set(_warn "-Wall -Wextra -Wpedantic")
-@@ -104,14 +112,14 @@ if(CMAKE_COMPILER_IS_GNUCXX)
+ string(TOUPPER "${CMAKE_BUILD_TYPE}" _CMAKE_BUILD_TYPE_UPPER)
+ set(_known_build_types RELWITHDEBINFO;RELEASE;DEBUG;DEBUGFULL;PROFILE)
+ # We override CMAKE_CXX_FLAGS_${_CMAKE_BUILD_TYPE_UPPER} below. If the user
+@@ -117,13 +125,13 @@
+   set(DEFAULT_COMPILE_WARNINGS "${_warn}")
    set(DEFAULT_COMPILE_WARNINGS_EXTRA "${_warn} ${_warnx}")
  
-   set(_save_cxxflags "${CMAKE_CXX_FLAGS}")
 -  set(CMAKE_CXX_FLAGS                "-fno-exceptions -fno-check-new -fno-common -fno-operator-names -D_DEFAULT_SOURCE")
 +  set(CMAKE_CXX_FLAGS                "${DEFAULT_CXX_FLAGS}")
-   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g ${_save_cxxflags}")
-   set(CMAKE_CXX_FLAGS_RELEASE        "-O2 -DNDEBUG ${_save_cxxflags}")
-   set(CMAKE_CXX_FLAGS_DEBUG          "-g -O2 -fno-reorder-blocks -fno-schedule-insns -fno-inline ${_save_cxxflags}")
-   set(CMAKE_CXX_FLAGS_DEBUGFULL      "-g3 -fno-inline ${_save_cxxflags}")
-   set(CMAKE_CXX_FLAGS_PROFILE        "-g3 -fno-inline -ftest-coverage -fprofile-arcs ${_save_cxxflags}")
-   set(_save_cflags "${CMAKE_C_FLAGS}")
+   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
+   set(CMAKE_CXX_FLAGS_RELEASE        "-O2 -DNDEBUG")
+   set(CMAKE_CXX_FLAGS_DEBUG          "-g -O2 -fno-reorder-blocks -fno-schedule-insns -fno-inline")
+   set(CMAKE_CXX_FLAGS_DEBUGFULL      "-g3 -fno-inline")
+   set(CMAKE_CXX_FLAGS_PROFILE        "-g3 -fno-inline -ftest-coverage -fprofile-arcs")
 -  set(CMAKE_C_FLAGS                  "-std=c99 -D_DEFAULT_SOURCE")
 +  set(CMAKE_C_FLAGS                  "${DEFAULT_C_FLAGS}")
-   set(CMAKE_C_FLAGS_RELWITHDEBINFO   "-O2 -g ${_save_cflags}")
-   set(CMAKE_C_FLAGS_RELEASE          "-O2 -DNDEBUG ${_save_cflags}")
-   set(CMAKE_C_FLAGS_DEBUG            "-g -O2 -fno-reorder-blocks -fno-schedule-insns -fno-inline ${_save_cflags}")
-@@ -149,7 +157,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL
+   set(CMAKE_C_FLAGS_RELWITHDEBINFO   "-O2 -g")
+   set(CMAKE_C_FLAGS_RELEASE          "-O2 -DNDEBUG")
+   set(CMAKE_C_FLAGS_DEBUG            "-g -O2 -fno-reorder-blocks -fno-schedule-insns -fno-inline")
+@@ -161,7 +169,7 @@
+   set(DEFAULT_COMPILE_WARNINGS "${_warn}")
    set(DEFAULT_COMPILE_WARNINGS_EXTRA "${_warn} ${_warnx}")
  
-   set(_save_cxxflags "${CMAKE_CXX_FLAGS}")
 -  set(CMAKE_CXX_FLAGS                "-fno-exceptions -fno-check-new -fno-common -D_DEFAULT_SOURCE")
 +  set(CMAKE_CXX_FLAGS                "${DEFAULT_CXX_FLAGS}")
-   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g ${_save_cxxflags}")
-   set(CMAKE_CXX_FLAGS_RELEASE        "-O2 -DNDEBUG ${_save_cxxflags}")
+   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
+   set(CMAKE_CXX_FLAGS_RELEASE        "-O2 -DNDEBUG")
    # clang does not support -fno-reorder-blocks -fno-schedule-insns, so do not use -O2
-@@ -157,7 +165,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL
-   set(CMAKE_CXX_FLAGS_DEBUGFULL      "-g3 -fno-inline ${_save_cxxflags}")
-   set(CMAKE_CXX_FLAGS_PROFILE        "-g3 -fno-inline -ftest-coverage -fprofile-arcs ${_save_cxxflags}")
-   set(_save_cflags "${CMAKE_C_FLAGS}")
+@@ -168,7 +176,7 @@
+   set(CMAKE_CXX_FLAGS_DEBUG          "-g")
+   set(CMAKE_CXX_FLAGS_DEBUGFULL      "-g3 -fno-inline")
+   set(CMAKE_CXX_FLAGS_PROFILE        "-g3 -fno-inline -ftest-coverage -fprofile-arcs")
 -  set(CMAKE_C_FLAGS                  "-std=c99 -D_DEFAULT_SOURCE")
 +  set(CMAKE_C_FLAGS                  "${DEFAULT_C_FLAGS}")
-   set(CMAKE_C_FLAGS_RELWITHDEBINFO   "-O2 -g ${_save_cflags}")
-   set(CMAKE_C_FLAGS_RELEASE          "-O2 -DNDEBUG ${_save_cflags}")
+   set(CMAKE_C_FLAGS_RELWITHDEBINFO   "-O2 -g")
+   set(CMAKE_C_FLAGS_RELEASE          "-O2 -DNDEBUG")
    # clang does not support -fno-reorder-blocks -fno-schedule-insns, so do not use -O2
