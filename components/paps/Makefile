@@ -27,7 +27,7 @@ COMPILER=		gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		paps
-COMPONENT_VERSION=	0.20201219
+COMPONENT_VERSION=	0.20211014
 
 # due to 27244651 the IPS version should be the solaris version
 IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
@@ -38,9 +38,9 @@ COMPONENT_BUGDB=	utility/paps
 COMPONENT_ANITYA_ID=	2592
 
 GIT_REPO=		https://github.com/dov/paps
-GIT_COMMIT_ID=		c2151c65632404463176b3ae2e2b666d706b25f0
+GIT_COMMIT_ID=		a8579dfad2695d7c79bb4a4041e33908689f1542
 
-TPNO=			67111
+TPNO=			75346
 
 BUILD_STYLE=		meson
 
