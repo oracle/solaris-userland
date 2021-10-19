@@ -30,14 +30,14 @@ BUILD_BITS =		64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pango
-COMPONENT_VERSION=	1.48.4
+COMPONENT_VERSION=	1.48.10
 COMPONENT_PROJECT_URL=	http://www.pango.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:418913fb062071a075846244989d4a67aa5c80bf0eae8ee4555a092fd566a37a
+    sha256:21e1f5798bcdfda75eabc4280514b0896ab56f656d4e7e66030b9a2535ecdc98
 COMPONENT_BUGDB=	gnome/pango
 COMPONENT_ANITYA_ID=	11783
 
-TPNO=			68708
+TPNO=			75493
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -82,7 +82,7 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/Fail/p" ' \
         '-e "/Pass/p" ' \
         '-e "/Skipped/p" '
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH)-$(BITS).master
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/fribidi
