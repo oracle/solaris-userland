@@ -29,14 +29,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-calculator
-COMPONENT_VERSION=	3.34.0
+COMPONENT_VERSION=	41.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Calculator
 COMPONENT_ARCHIVE_HASH= \
-        sha256:6b90d2b1409c6048ddbef42e59ce54bcb7b49bc086339ab510f10ebf5a6bf23f
+        sha256:a66dc04bd8587e76d67375a6aefa79553b569c9bdf78ebdc2817f1c0ade3dc99
 COMPONENT_BUGDB=        gnome/applications
 COMPONENT_ANITYA_ID=	13126
 
-COMPONENT_BAID=		68664
+COMPONENT_BAID=		110559
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -51,7 +51,6 @@ CONFIGURE_OPTIONS += -Dvala-version=0.50.2
 COMPONENT_TEST_TRANSFORMS += '-e "s/            [0-9].[0-9][0-9]s//"'
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/OK/p" ' \
         '-e "/Fail:/p" ' \
         '-e "/Ok:/p" ' \
         '-e "/Pass:/p" ' \
@@ -65,6 +64,7 @@ REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += library/desktop/atk
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/gtksourceview
+REQUIRED_PACKAGES += library/desktop/libhandy
 REQUIRED_PACKAGES += library/desktop/libgee 
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
