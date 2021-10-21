@@ -4,15 +4,13 @@ upstream.  The right fix may be to get vim to stop using the "si_" prefix,
 since that appears to be "reserved for the implementation", per the
 OpenGroup specs.
 
-diff --git a/src/syntax.c b/src/syntax.c
-index 756d0ea..ff2838d 100644
---- a/src/syntax.c
-+++ b/src/syntax.c
-@@ -281,6 +281,7 @@ static char msg_no_items[] = N_("No Syntax items defined for this buffer");
+--- vim-8.2.3548/src/syntax.c
++++ vim-8.2.3548/src/syntax.c
+@@ -182,6 +182,7 @@ * For the current state we need to remem
   * When si_m_endpos.lnum is 0, the items other than si_idx are unknown.
   * (The end positions have the column number of the next char)
   */
 +#undef si_id
  typedef struct state_item
  {
-     int		si_idx;			/* index of syntax pattern or
+     int		si_idx;			// index of syntax pattern or
