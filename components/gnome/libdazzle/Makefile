@@ -28,14 +28,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libdazzle
-COMPONENT_VERSION=	3.38.0
+COMPONENT_VERSION=	3.42.0
 COMPONENT_PROJECT_URL=	https://gitlab.gnome.org/GNOME/libdazzle
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:e18af28217943bcec106585298a91ec3da48aa3ad62fd0992f23f0c70cd1678f
+	sha256:eae67a3b3d9cce408ee9ec0ab6adecb83e52eb53f9bc93713f4df1e84da16925
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=    73149
 
-TPNO=			63936
+TPNO=			75540
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -44,6 +44,8 @@ CFLAGS += -Wstack-protector -fdata-sections -fstack-protector-all
 
 # Version 3.38.0 requires following for GCC 11 build.
 CFLAGS += -Wno-error=incompatible-pointer-types
+
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 CONFIGURE_OPTIONS.32 += -Dwith_introspection=false
 CONFIGURE_OPTIONS.64 += -Dwith_introspection=true

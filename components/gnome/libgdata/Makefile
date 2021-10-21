@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,14 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgdata
-COMPONENT_VERSION=	0.17.13
+COMPONENT_VERSION=	0.18.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/libgdata
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:eab9ef792c3c2b9ece19d45aea15225aba8df2521bc12785b1b2d3318d8c472e
+    sha256:dd8592eeb6512ad0a8cf5c8be8c72e76f74bfe6b23e4dd93f0756ee0716804c7
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13145
 
-TPNO=			62899
+TPNO=			75539
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk

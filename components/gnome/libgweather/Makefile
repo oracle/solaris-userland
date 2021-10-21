@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgweather
-COMPONENT_VERSION=	3.36.1
+COMPONENT_VERSION=	40.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/LibGWeather
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:de2709f0ee233b20116d5fa9861d406071798c4aa37830ca25f5ef2c0083e450
+	sha256:ca4e8f2a4baaa9fc6d75d8856adb57056ef1cd6e55c775ba878ae141b6276ee6
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13147
 
-TPNO=			62675
+TPNO=			75537
 BUILD_STYLE=		meson
 
 TEST_TARGET= $(NO_TESTS)
