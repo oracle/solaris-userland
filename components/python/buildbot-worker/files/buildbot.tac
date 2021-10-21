@@ -62,6 +62,15 @@ logfile = LogFile.fromFullPath(
 
 application.setComponent(ILogObserver, FileLogObserver(logfile).emit)
 
+# Prepare admin and host files based on the corresponding svc props
+info_dir = os.path.join(basedir, "info")
+with open(os.path.join(info_dir, "admin"), "w") as ofile:
+    ofile.write(_get_prop_str("config/info", "admin",
+                              default="Your Name Here <admin@example.com>"))
+with open(os.path.join(info_dir, "host"), "w") as ofile:
+    ofile.write(_get_prop_str("config/info", "host",
+                              default="Description of this build host here"))
+
 buildmaster_host = _get_prop_str("config", "master")
 port = _get_prop_int("config", "port", 9989 if buildmaster_host else None)
 name = _get_prop_str("config/credentials", "worker_name")
@@ -72,7 +81,8 @@ s = Worker(buildmaster_host, port, name, passwd, basedir,
     maxdelay=_get_prop_int("config", "maxdelay"),
     useTls=_get_prop_int("config", "use_tls"),
     maxRetries=_get_prop_int("config", "maxretries"),
-    connection_string=_get_prop_str("config", "connection_string")
+    connection_string=_get_prop_str("config", "connection_string"),
+    proxy_connection_string=_get_prop_str("config", "proxy_connection_string")
 )
 
 s.setServiceParent(application)

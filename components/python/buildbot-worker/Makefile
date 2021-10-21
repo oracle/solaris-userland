@@ -26,17 +26,17 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		buildbot-worker
-COMPONENT_VERSION=	3.1.1
+COMPONENT_VERSION=	3.4.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5a7b39f8d6483c5b4cc63845223bc15de05d69411e23da5c8ec91bd165d696e3
+    sha256:e7f8adceb871e56d154713f834101804ed5894ab9d55d9f1c05fdeaa8bae1abe
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://buildbot.net/
 COMPONENT_BUGDB=	utility/buildbot
 COMPONENT_ANITYA_ID=	48000
 
-TPNO=			70522
+TPNO=			75565
 
 # all we need is a single variant
 PYTHON_VERSIONS = 3.7

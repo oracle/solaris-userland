@@ -15,8 +15,9 @@ case "$1" in
 "start")
 	[[ -d "$basedir" ]] || \
 		mkdir --mode 0755 "$basedir"
+	[[ -d "$basedir/$worker_name/info" ]] || \
+		mkdir -p --mode 0755 "$basedir/$worker_name/info"
 	[[ -f "$basedir/$worker_name/buildbot.tac" ]] || {
-		cp -r "$template/info" "$basedir/$worker_name/"
 		ln -s "$template/buildbot.tac" "$basedir/$worker_name/"
 	}
 

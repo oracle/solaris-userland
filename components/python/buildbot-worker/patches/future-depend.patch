@@ -4,8 +4,8 @@ another soon-to-be-obsolete dependency is not feasible, we are patching it out.
 
 Not suitable for upstream (although they will most likely do the same thing soon).
 
---- buildbot-worker-3.1.1/buildbot_worker/compat.py
-+++ buildbot-worker-3.1.1/buildbot_worker/compat.py
+--- buildbot-worker-3.4.0/buildbot_worker/compat.py
++++ buildbot-worker-3.4.0/buildbot_worker/compat.py
 @@ -21,7 +21,6 @@ between Python 2 and Python 3.
  
  from __future__ import absolute_import
@@ -35,8 +35,8 @@ Not suitable for upstream (although they will most likely do the same thing soon
  
  
  __all__ = [
---- buildbot-worker-3.1.1/buildbot_worker/commands/utils.py
-+++ buildbot-worker-3.1.1/buildbot_worker/commands/utils.py
+--- buildbot-worker-3.4.0/buildbot_worker/commands/utils.py
++++ buildbot-worker-3.4.0/buildbot_worker/commands/utils.py
 @@ -15,7 +15,6 @@
  
  from __future__ import absolute_import
@@ -57,8 +57,8 @@ Not suitable for upstream (although they will most likely do the same thing soon
              except UnicodeDecodeError:
                  log.err("rmdirRecursive: decoding from UTF-8 failed (ignoring)")
  
---- buildbot-worker-3.1.1/buildbot_worker/monkeypatches/testcase_assert.py
-+++ buildbot-worker-3.1.1/buildbot_worker/monkeypatches/testcase_assert.py
+--- buildbot-worker-3.4.0/buildbot_worker/monkeypatches/testcase_assert.py
++++ buildbot-worker-3.4.0/buildbot_worker/monkeypatches/testcase_assert.py
 @@ -15,7 +15,6 @@
  
  from __future__ import absolute_import
@@ -76,8 +76,8 @@ Not suitable for upstream (although they will most likely do the same thing soon
          expected_regexp = re.compile(expected_regexp)
  
      if not expected_regexp.search(str(exception)):
---- buildbot-worker-3.1.1/buildbot_worker/pbutil.py
-+++ buildbot-worker-3.1.1/buildbot_worker/pbutil.py
+--- buildbot-worker-3.4.0/buildbot_worker/pbutil.py
++++ buildbot-worker-3.4.0/buildbot_worker/pbutil.py
 @@ -19,7 +19,6 @@
  
  from __future__ import absolute_import
@@ -94,8 +94,8 @@ Not suitable for upstream (although they will most likely do the same thing soon
 +            data = data.items()
          return data_type(map(decode, data))
      return data
---- buildbot-worker-3.1.1/buildbot_worker/runprocess.py
-+++ buildbot-worker-3.1.1/buildbot_worker/runprocess.py
+--- buildbot-worker-3.4.0/buildbot_worker/runprocess.py
++++ buildbot-worker-3.4.0/buildbot_worker/runprocess.py
 @@ -19,11 +19,6 @@ Support for running 'shell commands'
  
  from __future__ import absolute_import
@@ -117,7 +117,7 @@ Not suitable for upstream (although they will most likely do the same thing soon
  
  def win32_batch_quote(cmd_list, unicode_encoding='utf-8'):
      # Quote cmd_list to a string that is suitable for inclusion in a
-@@ -330,9 +327,9 @@ class RunProcess(object):
+@@ -337,9 +334,9 @@ class RunProcess(object):
          def to_bytes(cmd):
              if isinstance(cmd, (tuple, list)):
                  for i, a in enumerate(cmd):
@@ -129,7 +129,7 @@ Not suitable for upstream (although they will most likely do the same thing soon
                  cmd = cmd.encode(self.builder.unicode_encoding)
              return cmd
  
-@@ -348,7 +345,7 @@ class RunProcess(object):
+@@ -355,7 +352,7 @@ class RunProcess(object):
          if not os.path.exists(workdir):
              os.makedirs(workdir)
          if environ:
@@ -138,7 +138,7 @@ Not suitable for upstream (although they will most likely do the same thing soon
                  if isinstance(v, list):
                      # Need to do os.pathsep translation.  We could either do that
                      # by replacing all incoming ':'s with os.pathsep, or by
-@@ -371,9 +368,9 @@ class RunProcess(object):
+@@ -378,9 +375,9 @@ class RunProcess(object):
                  # environment
                  if key not in environ or environ[key] is not None:
                      newenv[key] = os.environ[key]
@@ -150,7 +150,7 @@ Not suitable for upstream (although they will most likely do the same thing soon
                          raise RuntimeError("'env' values must be strings or "
                                             "lists; key '{0}' is incorrect".format(key))
                      newenv[key] = p.sub(subst, v)
-@@ -630,7 +627,7 @@ class RunProcess(object):
+@@ -637,7 +634,7 @@ class RunProcess(object):
  
          # echo off hides this cheat from the log files.
          tf.write(u"@echo off\n")
@@ -159,8 +159,8 @@ Not suitable for upstream (although they will most likely do the same thing soon
              tf.write(bytes2NativeString(self.command, self.builder.unicode_encoding))
          else:
              tf.write(win32_batch_quote(self.command, self.builder.unicode_encoding))
---- buildbot-worker-3.1.1/buildbot_worker/scripts/windows_service.py
-+++ buildbot-worker-3.1.1/buildbot_worker/scripts/windows_service.py
+--- buildbot-worker-3.4.0/buildbot_worker/scripts/windows_service.py
++++ buildbot-worker-3.4.0/buildbot_worker/scripts/windows_service.py
 @@ -67,7 +67,6 @@
  from __future__ import absolute_import
  from __future__ import division
@@ -169,8 +169,8 @@ Not suitable for upstream (although they will most likely do the same thing soon
  
  import os
  import sys
---- buildbot-worker-3.1.1/buildbot_worker/test/unit/test_bot.py
-+++ buildbot-worker-3.1.1/buildbot_worker/test/unit/test_bot.py
+--- buildbot-worker-3.4.0/buildbot_worker/test/unit/test_bot.py
++++ buildbot-worker-3.4.0/buildbot_worker/test/unit/test_bot.py
 @@ -15,7 +15,6 @@
  
  from __future__ import absolute_import
@@ -179,8 +179,8 @@ Not suitable for upstream (although they will most likely do the same thing soon
  
  import multiprocessing
  import os
---- buildbot-worker-3.1.1/buildbot_worker/test/util/misc.py
-+++ buildbot-worker-3.1.1/buildbot_worker/test/util/misc.py
+--- buildbot-worker-3.4.0/buildbot_worker/test/util/misc.py
++++ buildbot-worker-3.4.0/buildbot_worker/test/util/misc.py
 @@ -20,8 +20,6 @@
  
  from __future__ import absolute_import
@@ -205,8 +205,8 @@ Not suitable for upstream (although they will most likely do the same thing soon
          return s
      return s.replace('\n', os.linesep)
  
---- buildbot-worker-3.1.1/buildbot_worker/util/__init__.py
-+++ buildbot-worker-3.1.1/buildbot_worker/util/__init__.py
+--- buildbot-worker-3.4.0/buildbot_worker/util/__init__.py
++++ buildbot-worker-3.4.0/buildbot_worker/util/__init__.py
 @@ -13,8 +13,6 @@
  #
  # Copyright Buildbot Team Members
@@ -225,13 +225,13 @@ Not suitable for upstream (although they will most likely do the same thing soon
              return s
          return str(s)
  
---- buildbot-worker-3.1.1/setup.py
-+++ buildbot-worker-3.1.1/setup.py
-@@ -146,7 +146,6 @@ twisted_ver = ">= 17.9.0"
+--- buildbot-worker-3.4.0/setup.py
++++ buildbot-worker-3.4.0/setup.py
+@@ -150,7 +150,6 @@ twisted_ver = ">= 17.9.0"
  if setuptools is not None:
      setup_args['install_requires'] = [
          'twisted ' + twisted_ver,
 -        'future',
      ]
  
-     # Unit test hard dependencies.
+     # buildbot_worker_windows_service needs pywin32
