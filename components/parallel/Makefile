@@ -26,16 +26,16 @@ BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		parallel
-COMPONENT_VERSION=	20200322
+COMPONENT_VERSION=	20211122
 # A leading "0." is included to make it easier to upgrade the package, should
 # the maintainers decide to go to a more standard version numbering system.
-IPS_COMPONENT_VERSION=  0.2020.3.22
+IPS_COMPONENT_VERSION=  0.2021.11.22
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:1c265a52703d8bb4dec3e146d98f1961ac477f7b926980a9330b07a5fbf90f99
+    sha256:81234f1940d9693486bed7f4e3658a3b3435a6e82e944308c1483efd0df2b37c
 COMPONENT_ANITYA_ID=	5448
 
-COMPONENT_BAID=		78205
+COMPONENT_BAID=		112987
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/gnu-component.mk
