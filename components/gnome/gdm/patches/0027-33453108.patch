@@ -1,0 +1,38 @@
+Patch taken from 
+https://gitlab.gnome.org/GNOME/gdm/-/commit/cfb2a1b29689b52c7badaf73f5c21b0dbbe51b10 
+
+From cfb2a1b29689b52c7badaf73f5c21b0dbbe51b10 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Thu, 7 Oct 2021 18:22:11 -0700
+Subject: [PATCH] meson: Fix detection of Xorg versions that need -listen tcp
+
+Closes #704
+---
+ meson.build | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/meson.build b/meson.build
+index dde2a8158..e0c56225b 100644
+--- a/meson.build
++++ b/meson.build
+@@ -69,6 +69,9 @@ x_deps = declare_dependency(
+     dependency('xau'),
+   ],
+ )
++# Xserver 1.17 & later default to -nolisten and require -listen for remote access
++xserver_deps = dependency('xorg-server', version : '>=1.17', required : false)
++xserver_nolisten_default = xserver_deps.found()
+ find_x_server_script = find_program('build-aux/find-x-server.sh', native: true)
+ find_x_server_out = run_command(find_x_server_script).stdout().strip()
+ if find_x_server_out != ''
+@@ -224,6 +227,7 @@ conf.set('HAVE_PAM_SYSLOG', have_pam_syslog)
+ conf.set('HAVE_KEYUTILS', keyutils_dep.found())
+ conf.set('SUPPORTS_PAM_EXTENSIONS', pam_extensions_supported)
+ conf.set('HAVE_SELINUX', libselinux_dep.found())
++conf.set('HAVE_XSERVER_THAT_DEFAULTS_TO_LOCAL_ONLY', xserver_nolisten_default)
+ conf.set('ENABLE_USER_DISPLAY_SERVER', get_option('user-display-server'))
+ conf.set('ENABLE_SYSTEMD_JOURNAL', get_option('systemd-journal'))
+ conf.set('ENABLE_WAYLAND_SUPPORT', get_option('wayland-support'))
+-- 
+GitLab
+
