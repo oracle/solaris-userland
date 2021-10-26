@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -49,3 +49,5 @@ REQUIRED_PACKAGES += developer/build/automake
 REQUIRED_PACKAGES += developer/build/gnu-make
 REQUIRED_PACKAGES += developer/build/pkg-config
 REQUIRED_PACKAGES += library/glib2
+# Needed for minimal-fs dependency in desktop-mime-cache.xml SMF manifest:
+REQUIRED_PACKAGES += system/core-os

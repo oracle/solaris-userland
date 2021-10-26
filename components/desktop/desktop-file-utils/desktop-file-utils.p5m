@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -38,6 +38,9 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2016/478
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file files/desktop-mime-cache.xml \
+    path=lib/svc/manifest/application/desktop-cache/desktop-mime-cache.xml
+file files/desktop-mime-cache path=lib/svc/method/desktop-mime-cache
 link path=usr/bin/desktop-file-edit target=desktop-file-install
 file path=usr/bin/desktop-file-install
 file path=usr/bin/desktop-file-validate
@@ -52,3 +55,6 @@ license COPYING license=GPLv2
 # This package was split out of the GNOME 2 control-center package, so we
 # depend on the post-split GNOME 3 package to avoid conflicts.
 depend type=optional fmri=gnome/preferences/control-center@3.18.2
+# The desktop-mime-cache service was moved from the desktop-cache package,
+# so we depend on the post-split version to avoid conflicts
+depend type=optional fmri=service/gnome/desktop-cache@0.4.0

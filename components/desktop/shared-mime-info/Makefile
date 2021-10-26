@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -56,4 +56,6 @@ COMPONENT_TEST_ENV +=   PATH="$(GNUBIN):$(PATH)"
 REQUIRED_PACKAGES += developer/intltool
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libxml2
+# Needed for minimal-fs dependency in mime-types-cache.xml SMF manifest:
+REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += text/gnu-gettext

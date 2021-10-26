@@ -1,4 +1,3 @@
-#
 # CDDL HEADER START
 #
 # The contents of this file are subject to the terms of the
@@ -18,26 +17,14 @@
 #
 # CDDL HEADER END
 #
-
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, Oracle and/or its affiliates.
 #
 
-BUILD_BITS= NO_ARCH
-include ../../../make-rules/shared-macros.mk
+<include generate/common.transform>
 
-COMPONENT_NAME=         desktop-cache
-COMPONENT_VERSION=      0.3.0
-COMPONENT_SRC=          # all files under files/
-COMPONENT_BUGDB=	gnome/install
-COMPONENT_ARCHIVE_SRC=	none
-COMPONENT_ANITYA_ID=	N/A
+# Drop everything not belonging to "gtk2-backend-cups"
+<transform dir file link hardlink pkg.type=(?!gtk2-backend-cups) -> drop>
 
-# nothing to download or build; just package
-BUILD_STYLE= pkg
-
-include $(WS_MAKE_RULES)/common.mk
-
-REQUIRED_PACKAGES += runtime/python-27
-REQUIRED_PACKAGES += service/opengl/ogl-select
-REQUIRED_PACKAGES += system/core-os
+# Remove the mark
+<transform dir file link hardlink -> delete pkg.type .*>

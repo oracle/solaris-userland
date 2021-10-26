@@ -211,6 +211,7 @@ REQUIRED_PACKAGES += codec/libvpx
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += compress/unzip
 REQUIRED_PACKAGES += database/sqlite-3
+REQUIRED_PACKAGES += desktop/xdg/desktop-file-utils
 REQUIRED_PACKAGES += developer/build/autoconf-213
 REQUIRED_PACKAGES += developer/rust/cbindgen
 ifneq ($(MACH), sparc)

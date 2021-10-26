@@ -16,12 +16,22 @@
 # information: Portions Copyright [yyyy] [name of copyright owner]
 #
 # CDDL HEADER END
-
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
 #
 
-file files/mime-types-cache.xml \
-    path=lib/svc/manifest/application/desktop-cache/mime-types-cache.xml
-file files/mime-types-cache path=lib/svc/method/mime-types-cache
-file files/mimeapps.list path=usr/share/applications/mimeapps.list
+<include generate/common.transform>
+
+# Drop everything not belonging to "gtk2"
+<transform dir file link hardlink pkg.type=(?!gtk2$) -> drop>
+
+# Remove the mark
+<transform dir file link hardlink -> delete pkg.type .*>
+
+# File preservation
+<transform file path=.*/immodules\.cache$ -> set preserve true>
+<transform file path=.*/immodules\.cache$ -> set mode 0644>
+<transform file path=.*/immodules\.cache$ -> set group root>
+<transform file path=.*/im-multipress\.conf$ -> set preserve true>
+<transform file path=(.*/im-multipress\.conf)$ -> set original_name SUNWgtk2:%<1>>
