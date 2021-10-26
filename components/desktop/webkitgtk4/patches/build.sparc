@@ -1,0 +1,94 @@
+Change to build on sparc
+
+--- a/Source/cmake/OptionsGTK.cmake	2021-11-02 06:14:24.788344365 -0700
++++ b/Source/cmake/OptionsGTK.cmake	2021-11-02 06:15:26.204504623 -0700
+@@ -360,7 +360,9 @@
+         SET_AND_EXPOSE_TO_BUILD(USE_GLX TRUE)
+     endif ()
+ 
++if (NOT CPU(SPARC))
+     SET_AND_EXPOSE_TO_BUILD(USE_COORDINATED_GRAPHICS TRUE)
++endif ()
+     SET_AND_EXPOSE_TO_BUILD(USE_NICOSIA TRUE)
+ endif ()
+ 
+--- a/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/LayerTreeHost.h	2021-10-29 14:05:54.168988042 -0700
++++ b/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/LayerTreeHost.h	2021-10-29 14:16:05.809562814 -0700
+@@ -37,7 +37,7 @@
+ #include <wtf/Forward.h>
+ #include <wtf/OptionSet.h>
+ #include <wtf/RunLoop.h>
+-#if PLATFORM(GTK)
++#if PLATFORM(GTK) && !CPU(SPARC)
+ #include <WebCore/CoordinatedGraphicsLayer.h>
+ #endif
+ 
+@@ -126,7 +126,7 @@
+     void requestDisplayRefreshMonitorUpdate();
+     void handleDisplayRefreshMonitorUpdate(bool);
+ 
+-#if PLATFORM(GTK)
++#if PLATFORM(GTK) && !CPU(SPARC)
+     WebCore::FloatPoint constrainTransientZoomOrigin(double, WebCore::FloatPoint) const;
+     WebCore::CoordinatedGraphicsLayer* layerForTransientZoom() const;
+     void applyTransientZoomToLayers(double, WebCore::FloatPoint);
+--- a/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/LayerTreeHost.h	2021-10-29 16:25:16.431816368 -0700
++++ b/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/LayerTreeHost.h	2021-10-29 16:30:42.571436443 -0700
+@@ -100,7 +100,7 @@
+ 
+     WebCore::PlatformDisplayID displayID() const { return m_displayID; }
+ 
+-#if PLATFORM(GTK)
++#if PLATFORM(GTK) && !CPU(SPARC)
+     void adjustTransientZoom(double, WebCore::FloatPoint);
+     void commitTransientZoom(double, WebCore::FloatPoint);
+ #endif
+@@ -213,7 +213,7 @@
+ #endif // USE(COORDINATED_GRAPHICS)
+     WebCore::PlatformDisplayID m_displayID;
+ 
+-#if PLATFORM(GTK)
++#if PLATFORM(GTK) && !CPU(SPARC)
+     bool m_transientZoom { false };
+     double m_transientZoomScale { 1 };
+     WebCore::FloatPoint m_transientZoomOrigin;
+--- a/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/DrawingAreaCoordinatedGraphics.cpp/DrawingAreaCoordinatedGraphics.cpp	2021-10-30 02:15:27.951252117 -0700
++++ b/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/DrawingAreaCoordinatedGraphics.cpp	2021-10-30 02:16:19.929961338 -0700
+@@ -486,7 +486,7 @@
+     displayTimerFired();
+ }
+ 
+-#if PLATFORM(GTK)
++#if PLATFORM(GTK) && !CPU(SPARC)
+ void DrawingAreaCoordinatedGraphics::adjustTransientZoom(double scale, FloatPoint origin)
+ {
+     if (!m_transientZoom) {
+--- a/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/DrawingAreaCoordinatedGraphics.h	2021-11-01 08:22:54.005098675 -0700
++++ b/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/DrawingAreaCoordinatedGraphics.h	2021-11-01 10:55:09.473326307 -0700
+@@ -84,7 +84,7 @@
+     void updateBackingStoreState(uint64_t backingStoreStateID, bool respondImmediately, float deviceScaleFactor, const WebCore::IntSize&, const WebCore::IntSize& scrollOffset) override;
+     void didUpdate() override;
+ 
+-#if PLATFORM(GTK)
++#if PLATFORM(GTK) && !CPU(SPARC)
+     void adjustTransientZoom(double scale, WebCore::FloatPoint origin) override;
+     void commitTransientZoom(double scale, WebCore::FloatPoint origin) override;
+ #endif
+--- a/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/LayerTreeHost.cpp	2021-11-01 10:56:58.042971368 -0700
++++ b/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/LayerTreeHost.cpp	2021-11-01 10:58:00.542561173 -0700
+@@ -502,6 +502,7 @@
+     zoomLayer->setPosition(FloatPoint());
+ }
+ 
++#if PLATFORM(GTK) && !CPU(SPARC)
+ void LayerTreeHost::adjustTransientZoom(double scale, FloatPoint origin)
+ {
+     m_transientZoom = true;
+@@ -527,6 +528,7 @@
+     m_transientZoomOrigin = FloatPoint();
+ }
+ #endif
++#endif
+ 
+ } // namespace WebKit
+ 

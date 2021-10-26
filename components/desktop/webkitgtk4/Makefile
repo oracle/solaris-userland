@@ -34,17 +34,17 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		webkitgtk
-COMPONENT_VERSION=	2.32.4
+COMPONENT_VERSION=	2.34.1
 COMPONENT_PROJECT_URL=	https://webkitgtk.org
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:00ce2d3f798d7bc5e9039d9059f0c3c974d51de38c8b716f00e94452a177d3fd
+	sha256:443c1316705de024741748e85fe32324d299d9ee68e6feb340b89e4a04073dee
 COMPONENT_ARCHIVE_URL=	https://webkitgtk.org/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/webkitgtk
 COMPONENT_ANITYA_ID=	5355
 
-TPNO=			74534
+TPNO=			75738
 
 # Use project's own optimization flags instead.
 gcc_OPT=
@@ -57,6 +57,7 @@ BUILD_STYLE= cmake
 # Once 27639813 is figured out this can be removed along with the change
 # in prep-patch.mk for ADDITIONAL_PATCHES
 ifeq ($(MACH), sparc)
+ADDITIONAL_PATCHES += patches/build.sparc
 ADDITIONAL_PATCHES += patches/mapfile.$(MACH)
 LD_EXEC_OPTIONS += -M $(COMPONENT_DIR)/mapfile_sparc_48bits
 endif
@@ -84,6 +85,7 @@ LD_OPTIONS+=-zgnu-version-script-compat
 # Enable a release build and GTK port.
 CMAKE_OPTIONS += -DCMAKE_BUILD_TYPE=Release
 CMAKE_OPTIONS += -DPORT=GTK
+CMAKE_OPTIONS += -DUSE_SOUP2=ON
 
 ifeq ($(MACH),sparc)
 # Use system malloc to avoid crashes on SPARC (bugs 31513265 and 31433939).
@@ -160,6 +162,7 @@ REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/desktop/libnotify
+REQUIRED_PACKAGES += library/lcms2
 REQUIRED_PACKAGES += library/libsoup
 REQUIRED_PACKAGES += library/libtasn1
 REQUIRED_PACKAGES += library/libxml2
