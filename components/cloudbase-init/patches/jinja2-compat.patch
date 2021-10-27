@@ -1,0 +1,23 @@
+From 2f4f315e2007b48917ca9d8bf5f3eec43e47d280 Mon Sep 17 00:00:00 2001
+From: Adrian Vladu <avladu@cloudbasesolutions.com>
+Date: Wed, 7 Jul 2021 14:18:44 +0300
+Subject: [PATCH] jinja2: remove usage of runtime string decorator
+
+Taken from upstream:
+https://github.com/cloudbase/cloudbase-init/commit/2f4f315e2007b48917ca9d8bf5f3eec43e47d280
+
+--- cloudbase-init-1.1.0/cloudbaseinit/utils/template_engine/jinja2_template.py
++++ cloudbase-init-1.1.0/cloudbaseinit/utils/template_engine/jinja2_template.py
+@@ -14,12 +14,10 @@
+ import jinja2
+ 
+ from cloudbaseinit.utils.template_engine import base_template
+-from jinja2 import runtime
+ 
+ MISSING_JINJA_VARIABLE = u'CI_MISSING_JINJA_VAR/'
+ 
+ 
+-@runtime.implements_to_string
+ class MissingJinjaVariable(jinja2.DebugUndefined):
+     """Missing Jinja2 variable class."""
+ 
