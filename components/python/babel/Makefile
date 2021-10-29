@@ -25,17 +25,17 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Babel
-COMPONENT_VERSION=	2.8.0
+COMPONENT_VERSION=	2.9.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:86d2e228973a8fd4d12716ed2c5f5a26ebb0efeef810ee167546eea4c47d3a0d
+    sha256:b57bbdfdb906af22edff8c64063d1d74b06bf6363756885f0ba70bcf0d1118c8
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://babel.pocoo.org/
 COMPONENT_BUGDB=	python-mod/babel
 COMPONENT_ANITYA_ID=	11984
 
-TPNO=			57859
+TPNO=			70103
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
@@ -50,7 +50,8 @@ COMPONENT_POST_INSTALL_ACTION = \
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 # this file imports freezegun package, which we don't have
-COMPONENT_TEST_ARGS =	--ignore=tests/messages/test_frontend.py
+COMPONENT_TEST_ARGS =	--ignore=tests/messages/test_frontend.py \
+			--ignore=tests/test_dates.py
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
