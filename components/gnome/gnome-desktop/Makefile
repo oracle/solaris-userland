@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-desktop
-COMPONENT_VERSION=	3.38.3
+COMPONENT_VERSION=	41.0
 COMPONENT_PROJECT_URL= 	https://developer.gnome.org/gnome-desktop/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:bfe00257b2bb59fff04ac1c144804084d1c253e66f9d7408f6060bbf7ad1d831
+	sha256:69cb1d3d9a10700eb66348ef1c0e66a855fc5a97ae62902df97a499da11562d2
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13127
 
-TPNO=			64982
+TPNO=			75655
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -70,3 +70,4 @@ REQUIRED_PACKAGES += library/gnome/yelp-xsl
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11
+REQUIRED_PACKAGES += x11/library/libxkbcommon
