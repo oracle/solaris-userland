@@ -1,9 +1,9 @@
 In-House patch. 
 Making sure Perl-Tk does not build its own copy of libpng and libz, instead links against these libraries already present in Solaris in /usr/lib.
 
---- Tk-804.033/PNG/Makefile.PL.orig	2015-05-01 10:47:20.131896716 -0700
-+++ Tk-804.033/PNG/Makefile.PL	2015-05-01 10:52:57.599540636 -0700
-@@ -2,19 +2,6 @@
+--- Tk-804.036/PNG/Makefile.PL
++++ Tk-804.036/PNG/Makefile.PL
+@@ -2,199 +2,32 @@
  use strict;
  use Tk::MMutil;
  use Tk::Config ();
@@ -23,40 +23,69 @@ Making sure Perl-Tk does not build its own copy of libpng and libz, instead link
  
  my $all_cflags;
  my $all_libs;
-@@ -27,12 +14,6 @@
-    chomp($libpng_cflags = `pkg-config --cflags libpng`);
-    chomp($libpng_libs   = `pkg-config --libs libpng`);
-   }
+ {
+- my $libpng_cflags;
+- my $libpng_libs;
+- system('pkg-config --exists libpng');
+- if ($? == 0)
+-  {
+-   chomp($libpng_cflags = `pkg-config --cflags libpng`);
+-   chomp($libpng_libs   = `pkg-config --libs libpng`);
+-  }
 - else
 -  {
 -   warn "'pkg-config libpng' failed, continue with fallback values for cflags and libs...\n";
 -   $libpng_cflags = '-I/usr/local/include';
--   $libpng_libs   = '-lpng -lm';
+-   if ($^O eq 'freebsd')
+-    {
+-     my $real_libpng = readlink '/usr/local/lib/libpng.so';
+-     if (defined $real_libpng)
+-      {
+-       $real_libpng =~ s{^lib}{};
+-       $real_libpng =~ s{\.so$}{};
+-       $libpng_libs = "-l$real_libpng";
+-       warn "detected $libpng_libs on this system\n";
+-      }
+-     else
+-      {
+-       warn "No /usr/local/lib/libpng.so found, continue with default values (will probably fail)";
+-       $libpng_libs = '-lpng -lm';
+-      }
+-    }
+-   else
+-    {
+-     $libpng_libs   = '-lpng -lm';
+-    }
 -  }
- 
-  my $zlib_cflags;
-  my $zlib_libs;
-@@ -51,65 +32,18 @@
- 
-  $all_cflags = "$libpng_cflags $zlib_cflags";
-  $all_libs   = "$libpng_libs $zlib_libs";
-+
-+ Tk::MMutil::TkExtMakefile(
-+     NAME         => 'Tk::PNG',
-+     VERSION_FROM => 'PNG.pm',
-+     XS_VERSION   => $Tk::Config::VERSION,
-+     dist         => { COMPRESS => 'gzip -f9', SUFFIX => '.gz' },
-+     OBJECT       => '$(O_FILES)',
-+     INC          => $libpng_cflags,
-+     LIBS         => [$libpng_libs],
-+   );
- }
- 
+-
+- my $zlib_cflags;
+- my $zlib_libs;
+- system('pkg-config --exists zlib');
+- if ($? == 0)
+-  {
+-   chomp($zlib_cflags = `pkg-config --cflags zlib`);
+-   chomp($zlib_libs   = `pkg-config --libs zlib`);
+-  }
+- else
+-  {
+-   warn "'pkg-config zlib' failed, continue with fallback values for cflags and libs...\n";
+-   $zlib_cflags = '-I/usr/local/include';
+-   $zlib_libs   = '-lz';
+-  }
+-
+- $all_cflags = "$libpng_cflags $zlib_cflags";
+- $all_libs   = "$libpng_libs $zlib_libs";
+-}
+-
 -if ($Tk::MMtry::VERSION ge '4.007' &&
 -    try_run("config/has_png.c",[$all_cflags],[$all_libs]))
 - {
 -  warn "Using system's -lpng\n";
--  Tk::MMutil::TkExtMakefile(
++  my $libpng_cflags;
++  my $libpng_libs;
++  chomp($libpng_cflags = `pkg-config --cflags libpng`);
++  chomp($libpng_libs   = `pkg-config --libs libpng`);
+   Tk::MMutil::TkExtMakefile(
 -       NAME         => 'Tk::PNG',
 -       VERSION_FROM => 'PNG.pm',
 -       XS_VERSION   => $Tk::Config::VERSION,
@@ -109,13 +138,47 @@ Making sure Perl-Tk does not build its own copy of libpng and libz, instead link
 -     ExtUtils::MakeMaker::WriteEmptyMakefile();
 -    }
 - }
- 
- sub MY::test_via_harness
- {
-@@ -134,48 +68,3 @@
-     qq[PASTHRU="CC=$Config::Config{cc} $Config::Config{cccdlflags}" RANLIB=\"$Config::Config{ranlib}\"];
-    }
+-
+-sub MY::test_via_harness
+-{
+- my($self, $perl, $tests) = @_;
+- qq{\t$perl "-I../t" "-MTkTest" }.
+- qq{"-e" "checked_test_harness('\$(TKDIR)/xt', \$(TEST_VERBOSE), '\$(INST_LIB)', '\$(INST_ARCHLIB)')" $tests\n};
++    NAME         => 'Tk::PNG',
++    VERSION_FROM => 'PNG.pm',
++    XS_VERSION   => $Tk::Config::VERSION,
++    dist         => { COMPRESS => 'gzip -f9', SUFFIX => '.gz' },
++    OBJECT       => '$(O_FILES)',
++    INC          => $libpng_cflags,
++    LIBS         => [$libpng_libs],
++  );
++  Tk::MMutil::TkExtMakefile(
++    NAME         => 'Tk::PNG',
++    VERSION_FROM => 'PNG.pm',
++    XS_VERSION   => $Tk::Config::VERSION,
++    dist         => { COMPRESS => 'gzip -f9', SUFFIX => '.gz' },
++    OBJECT       => '$(O_FILES)',
++    INC          => $libpng_cflags,
++    LIBS         => [$libpng_libs],
++  );
  }
+ 
+ package MY;
+-
+-sub pasthru {
+-  if ($^O eq 'MSWin32' && $Config::Config{cc} =~ /gcc/)
+-   {
+-    # gcc usually has ranlib, also dmake does not understand "rem"
+-    # which is default setting for $Config::Config{ranlib} under
+-    # Windows, unless .USE_SHELL: is specified (see also special_targets
+-    # in ExtUtils::MM_Win32)
+-    qq[PASTHRU="CC=$Config::Config{cc} $Config::Config{cccdlflags}"];
+-   }
+-  else
+-   {
+-    qq[PASTHRU="CC=$Config::Config{cc} $Config::Config{cccdlflags}" RANLIB=\"$Config::Config{ranlib}\"];
+-   }
+-}
 -
 -sub postamble {
 -  my $s = '';

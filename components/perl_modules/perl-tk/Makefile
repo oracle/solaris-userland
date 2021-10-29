@@ -20,25 +20,25 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Tk
 # pkg does not like leading zeros, removed zero after dot.
-COMPONENT_VERSION=	804.33
-HUMAN_VERSION=		804.033
+COMPONENT_VERSION=	804.36
+HUMAN_VERSION=		804.036
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(HUMAN_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_PROJECT_URL=	http://search.cpan.org/~srezic/Tk
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:84756e9b07a2555c8eecf88e63d5cbbba9b1aa97b1e71a3d4aa524a7995a88ad
+    sha256:32aa7271a6bdfedc3330119b3825daddd0aa4b5c936f84ad74eabb932a200a5e
 COMPONENT_ARCHIVE_URL=	http://search.cpan.org/CPAN/authors/id/S/SR/SREZIC/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	perl-mod/tk
 COMPONENT_ANITYA_ID=	3471
 
-TPNO=			22548
+TPNO=			75823
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

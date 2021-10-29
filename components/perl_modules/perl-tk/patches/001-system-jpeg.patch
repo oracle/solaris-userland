@@ -1,7 +1,7 @@
 In-House patch. 
 Making sure Perl-Tk does not build its own copy of libjpeg, instead links against libjpeg library already present in Solaris in /usr/lib.
---- Tk-804.033/JPEG/Makefile.PL.orig	2014-01-03 22:04:39.788240812 -0800
-+++ Tk-804.033/JPEG/Makefile.PL	2014-01-03 21:57:20.929546011 -0800
+--- Tk-804.036/JPEG/Makefile.PL
++++ Tk-804.036/JPEG/Makefile.PL
 @@ -1,27 +1,6 @@
  # -*- cperl -*-
  use Tk::MMutil;
@@ -30,7 +30,7 @@ Making sure Perl-Tk does not build its own copy of libjpeg, instead links agains
  
  Tk::MMutil::TkExtMakefile(@args,
      'NAME'         => 'Tk::JPEG',
-@@ -32,9 +11,9 @@
+@@ -32,9 +11,9 @@ Tk::MMutil::TkExtMakefile(@args,
      'OBJECT'       => '$(O_FILES)',
      'VERSION_FROM' => 'JPEG.pm',
      'XS_VERSION'   => $Tk::Config::VERSION,
@@ -43,7 +43,7 @@ Making sure Perl-Tk does not build its own copy of libjpeg, instead links agains
     );
  
  sub MY::test_via_harness
-@@ -45,19 +24,3 @@
+@@ -45,19 +24,3 @@ sub MY::test_via_harness
  }
  
  package MY;
