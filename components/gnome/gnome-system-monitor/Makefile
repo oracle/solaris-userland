@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-system-monitor
-COMPONENT_VERSION=	3.38.0
+COMPONENT_VERSION=	41.0
 COMPONENT_PROJECT_URL=  https://help.gnome.org/users/gnome-system-monitor/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:73bf7ab4d5503c2567d76f831c9ae3fe27c31495761889ad3b351ef4c068aff4
+	sha256:c7fc44c61949b794b0289968ebbbcc0c15f8cfc3d9e45bfaa81ed45c12139e5f
 COMPONENT_BUGDB=        gnome/applications
 COMPONENT_ANITYA_ID=	13137
 
-TPNO=			70335
+TPNO=			75658
 BUILD_STYLE=            meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -68,6 +68,7 @@ REQUIRED_PACKAGES += library/desktop/c++/pangomm
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
 REQUIRED_PACKAGES += library/desktop/gtk3
+REQUIRED_PACKAGES += library/desktop/libhandy
 REQUIRED_PACKAGES += library/desktop/libwnck3
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
