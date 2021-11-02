@@ -20,22 +20,23 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		hexedit
-COMPONENT_VERSION=	1.2.13
+COMPONENT_VERSION=	1.5
 COMPONENT_PROJECT_URL=	http://merd.sourceforge.net/pixel/hexedit.html
-COMPONENT_SRC=		$(COMPONENT_NAME)
-COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).src.tgz
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:6a126da30a77f5c0b08038aa7a881d910e3b65d13767fb54c58c983963b88dd7
-COMPONENT_ARCHIVE_URL=	http://rigaux.org/$(COMPONENT_ARCHIVE)
+COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ANITYA_ID=	13305
 
-TPNO=			18059
+GIT_REPO=		https://github.com/pixel/hexedit.git
+GIT_COMMIT_ID=		$(COMPONENT_VERSION)
+GIT_HASH=		sha256:27a2349f659e995d7731ad672450f61a2e950330049a6fb59b77490c5e0015ac
+
+TPNO=			75888
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
@@ -44,7 +45,11 @@ include $(WS_MAKE_RULES)/common.mk
 LDFLAGS += $(CC_BITS)
 
 COMPONENT_PRE_CONFIGURE_ACTION =  \
-        ($(CLONEY) $(SOURCE_DIR) $(@D))
+        ($(CLONEY) $(SOURCE_DIR) $(@D)) && \
+        (cd $(SOURCE_DIR); ./autogen.sh)
+
+# Don't use the original curses library.
+CONFIGURE_OPTIONS += ac_cv_lib_curses_initscr=no
 
 # Without this, initscr32 and w32attrset are undefined at link time.
 # The usual Solaris curses.h vs ncurses/curses.h mess.
