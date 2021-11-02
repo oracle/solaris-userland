@@ -27,40 +27,29 @@ BUILD_BITS=		64
 COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=		gnome-tweak-tool
-COMPONENT_VERSION=	3.24.0
+COMPONENT_NAME=		gnome-tweaks
+COMPONENT_VERSION=	40.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Tweaks
 COMPONENT_ARCHIVE_HASH= \
-	sha256:930b248e40db4c10991978f28b46207d6d11aa938b67b36abc68dbc7d37f1e00
+	sha256:f95f3fe031b0b01c02f79a1659f889152d3772ae3e44df8403d1460ba5eec36a
 COMPONENT_BUGDB=	gnome/preferences
-COMPONENT_ANITYA_ID=	1198
+COMPONENT_ANITYA_ID=	16989
 
-COMPONENT_BAID=		38988
+COMPONENT_BAID=		111686
+BUILD_STYLE=		meson
+
+TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# gtweak/defs.py is accidentally included in the tarball - we remove it so
-# that it gets correctly rebuilt from gtweak/defs.py.in with the settings
-# passed via the configure script
-COMPONENT_POST_UNPACK_ACTION += $(RM) $(SOURCE_DIR)/gtweak/defs.py ;
-
-CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
-
 # Assumes GNU msgfmt & xgettext is first in $PATH.
-CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 # pkgdepend doesn't like the first line of a Python script to be:
-# '#!/usr/bin/env python' so turn it into '#!/usr/bin/python3'
-PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/gnome-tweak-tool
+# '#!/usr/bin/env python3' so turn it into '#!/usr/bin/python3.7'
+PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/gnome-tweaks
 PYTHON_SCRIPTS += $(PROTOUSRLIBDIR)/gnome-tweak-tool-lid-inhibitor
-
-# Ensure Python modules are installed into vendor package directories.
-CONFIGURE_ENV += am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES)
-CONFIGURE_ENV += am_cv_python_pyexecdir=$(PYTHON_VENDOR_PACKAGES)
-
-# build .pyc's
-COMPONENT_POST_INSTALL_ACTION += $(PYTHON) -m compileall \
-	$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES) ;
 
 REQUIRED_PACKAGES += gnome/file-manager/nautilus
 REQUIRED_PACKAGES += gnome/gnome-settings-daemon
@@ -69,10 +58,10 @@ REQUIRED_PACKAGES += gnome/gsettings-desktop-schemas
 REQUIRED_PACKAGES += gnome/window-manager/mutter
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
 REQUIRED_PACKAGES += library/desktop/gtk3
-REQUIRED_PACKAGES += library/desktop/libgweather
 REQUIRED_PACKAGES += library/desktop/libnotify
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
+REQUIRED_PACKAGES += library/desktop/libhandy
 REQUIRED_PACKAGES += library/libsoup
 REQUIRED_PACKAGES += library/python/pygobject-3-37
 REQUIRED_PACKAGES += runtime/python-37

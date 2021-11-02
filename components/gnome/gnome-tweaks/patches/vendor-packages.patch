@@ -1,0 +1,38 @@
+Meson cannot change the default library path for Python yet, but it
+should be able to do so since version 0.60.0.
+
+https://mesonbuild.com/Builtin-options.html#python-module
+
+--- gnome-tweaks-40.0/meson-postinstall.py
++++ gnome-tweaks-40.0/meson-postinstall.py
+@@ -1,5 +1,6 @@
+ #!/usr/bin/env python3
+ 
++import shutil
+ import sysconfig
+ from compileall import compile_dir
+ from os import environ, path
+@@ -16,6 +17,10 @@ if not destdir:
+     print('Updating icon cache...')
+     call(['gtk-update-icon-cache', '-qtf', path.join(datadir, 'icons', 'hicolor')])
+ 
++print("Moving python code into vendor-packages")
++oldmoduledir = destdir + sysconfig.get_path('purelib', vars={'base': str(prefix)})
++moduledir = oldmoduledir.replace("site-packages", "vendor-packages")
++shutil.move(oldmoduledir, moduledir)
++
+ print('Compiling python bytecode...')
+-moduledir = sysconfig.get_path('purelib', vars={'base': str(prefix)})
+-compile_dir(destdir + path.join(moduledir, 'gtweak'), optimize=2)
++compile_dir(path.join(moduledir, 'gtweak'))
+--- gnome-tweaks-40.0/gtweak/defs.py.in
++++ gnome-tweaks-40.0/gtweak/defs.py.in
+@@ -1,7 +1,7 @@
+ DATA_DIR = "@DATADIR@"
+ PKG_DATA_DIR = "@PKGDATADIR@"
+ GSETTINGS_SCHEMA_DIR = "@GSETTINGSSCHEMADIR@"
+-TWEAK_DIR = "@TWEAKDIR@"
++TWEAK_DIR = "/usr/lib/python3.7/vendor-packages/gtweak/tweaks"
+ VERSION = "@VERSION@"
+ LOCALE_DIR = "@LOCALEDIR@"
+ LIBEXEC_DIR = "@LIBEXECDIR@"
