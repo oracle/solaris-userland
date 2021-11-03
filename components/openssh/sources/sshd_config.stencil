@@ -1,5 +1,5 @@
 ;
-; Copyright (c) 2019, 2020, Oracle and/or its affiliates.
+; Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 ;
 ; String property with a default we prefer to always emit
 $%define PROP_def property default {$%{config/$%property:-#}$%property $%{config/$%property:-$%default}$%{config/$%property}}
@@ -16,7 +16,7 @@ $%define PROP_list_ws property {$%{config/%$property:+$%property $%{config/$%pro
 ; Multiple instance property, present only if set in SMF
 $%define PROP_multi property {$%{config/$%property:+$%property $%{config/$%property:,\n$%property }}}
 #
-# Copyright (c) 2001, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2001, 2021, Oracle and/or its affiliates.
 #
 #
 #
@@ -76,12 +76,7 @@ $%[PROP_def LogLevel info]
 
 #
 # Authentication configuration
-# 
-
-# Host private key files
-# Must be on a local disk and readable only by the root user (root:sys 600).
-HostKey /etc/ssh/ssh_host_rsa_key
-HostKey /etc/ssh/ssh_host_ed25519_key
+#
 
 # sshd regenerates the key every KeyRegenerationInterval seconds.
 # The key is never stored anywhere except the memory of sshd.

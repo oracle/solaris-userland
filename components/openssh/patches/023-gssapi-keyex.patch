@@ -2720,17 +2720,6 @@
  	kex->kex[KEX_C25519_SHA256] = kex_gen_server;
  	kex->kex[KEX_KEM_SNTRUP4591761X25519_SHA512] = kex_gen_server;
  	kex->load_host_public_key=&get_hostkey_public_by_type;
---- old/sshd_config	2020-11-19 14:09:15.953469463 +0000
-+++ new/sshd_config	2020-11-19 14:10:14.264962331 +0000
-@@ -69,6 +69,8 @@ AuthorizedKeysFile	.ssh/authorized_keys
- # GSSAPI options
- #GSSAPIAuthentication no
- #GSSAPICleanupCredentials yes
-+#GSSAPIStrictAcceptorCheck yes
-+#GSSAPIKeyExchange no
- 
- # Set this to 'yes' to enable PAM authentication, account processing,
- # and session processing. If this is enabled, PAM authentication will
 --- old/sshd_config.5	2020-11-19 14:09:15.958722741 +0000
 +++ new/sshd_config.5	2020-11-19 14:10:14.270176316 +0000
 @@ -644,6 +644,11 @@ Specifies whether to automatically destr
