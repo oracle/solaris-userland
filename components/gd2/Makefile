@@ -20,26 +20,27 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gd
-COMPONENT_VERSION=      2.2.5
+COMPONENT_VERSION=      2.3.3
 COMPONENT_SRC=		libgd-gd-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	gd-$(COMPONENT_VERSION).tar.gz
 COMPONENT_PROJECT_URL=  http://www.libgd.org/
+
 # this is the hash of the payload because it appears to be re-compressed
 # periodically causing it to have a new hash value.
 COMPONENT_ARCHIVE_HASH= \
-    sha256:199874fdb006de0911819234104ffa84338e98e82fefbac042a58a3f8272a7df
+    sha256:24429f9d0dbe0f865aaa4b1a63558242396ba9134e6cfd32ca5e486a84483350
 COMPONENT_ARCHIVE_URL=  https://github.com/libgd/libgd/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/gd2
 COMPONENT_ANITYA_ID=	880
 
-TPNO=			42776
+TPNO=			75922
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -62,23 +63,16 @@ CONFIGURE_OPTIONS  +=           --with-pic
 
 COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -if)
 
-# We only deliver 64-bit binaries and in /usr/bin.
-COMPONENT_POST_INSTALL_ACTION.32 += \
-	$(GSED) -i -e 's|$(USRBINDIR)/$(MACH32)|$(USRBINDIR)|' \
-		$(PROTOUSRBINDIR)/$(MACH32)/gdlib-config;
-
-# When we update to a version of libgd that has this test in the
-# tarball, this can be removed along with files/php_bug_75571.gif
-COMPONENT_PRE_TEST_ACTION = \
-	cp files/php_bug_75571.gif $(@D)/tests/gif/;
-# the below two files are needed for patches/009-CVE-2017-6363.patch
-COMPONENT_PRE_TEST_ACTION +=cp files/bug00383.gd $(@D)/tests/gd/;
-COMPONENT_PRE_TEST_ACTION +=cp files/bug00383.gd2 $(@D)/tests/gd2/
-
+# The tests do not recognise /tmp to be a valid directory (presumabely it being
+# a mount point), so we create it's own directory and supply it via TMPDIR
+# variable
 COMPONENT_TEST_CMD = \
 	cmake -DBUILD_TEST=1 .; \
 	(cd $(@D)/tests; gmake); \
+	export TMPDIR="$(COMPONENT_TEST_DIR)/tmpdir"; \
+	mkdir -p "$$TMPDIR"; \
 	ctest .
+
 COMPONENT_TEST_TARGETS =
 COMPONENT_TEST_MASTER =	$(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += \
@@ -93,6 +87,7 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/FAILED/p" ' \
 	'-e "/Errors/p" '
 
+REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
 REQUIRED_PACKAGES += image/library/libtiff

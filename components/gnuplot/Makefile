@@ -25,6 +25,8 @@
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
+# Tests do require X11
+include ../../make-rules/test-x11.mk
 #libreadline.so needs libcurses.so, but -z ignore will not leave a dependency.
 LD_Z_IGNORE=
 
@@ -43,6 +45,9 @@ CXXFLAGS += -std=c++14
 COMPONENT_BUILD_TARGETS = all info
 PKG_MACROS +=	GNUPLOT_VERSION=$(shell echo $(COMPONENT_VERSION) | cut -d. -f1-2)
 
+# We have a patch against configure.ac, we need to regenerate configure script
+COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
+
 # Copy info file and demos to proto area.
 COMPONENT_POST_INSTALL_ACTION += ( \
 	$(MKDIR) $(PROTO_DIR)/usr/share/info $(PROTO_DIR)/usr/demo; \
@@ -52,8 +57,7 @@ COMPONENT_POST_INSTALL_ACTION += ( \
 	$(CP) $(COMPONENT_DIR)/rundemo $(COMPONENT_DIR)/runtcldemo $(PROTO_DIR)/usr/demo/gnuplot/ \
 );
 
-# Tests are disabled since they require a running desktop.
-$(SKIP_TEST_AT_TOP_LEVEL)
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 include $(WS_MAKE_RULES)/common.mk
 
