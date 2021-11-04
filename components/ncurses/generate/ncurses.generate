@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 
 # Drop patch backup files
@@ -33,7 +33,9 @@
 <transform file link path=.+/man/man3/.+.3x$ -> edit path man3 man3x>
 
 # Move man1m pages to folder man8
-#<transform file path=(.+)/man/man1/(.+).1m$ -> set path %<1>/man/man8/%<2>.8>
+# ncurses-04-manpages.patch adjusts section 1m man pages to be in section 8.
+# If the upstream bug is ever fixed (and the patch is removed), this transform
+# should be updated or removed.
 <transform file path=.+.1m$ -> set action.hash %(path)>
 <transform file path=(.+)/man/man1/(.+).1m$ -> set path %<1>/man/man8/%<2>.8>
 

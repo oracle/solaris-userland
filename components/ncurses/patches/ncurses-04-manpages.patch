@@ -5,20 +5,20 @@ section 1.)
 This problem will be reported upstream as ncurses 6.0 (the latest released
 version) still has these five man pages in section 1m.
 
---- ncurses-6.1-20190105/man/captoinfo.1m	2019-01-07 06:31:53.508031459 +0000
-+++ ncurses-6.1-20190105/man/captoinfo.1m	2019-01-07 06:31:21.644281097 +0000
-@@ -27,8 +27,8 @@
+--- ncurses-6.3/man/captoinfo.1m
++++ ncurses-6.3/man/captoinfo.1m
+@@ -28,8 +28,8 @@
  .\" authorization.                                                           *
  .\"***************************************************************************
  .\"
--.\" $Id: captoinfo.1m,v 1.27 2018/07/28 21:34:06 tom Exp $
+-.\" $Id: captoinfo.1m,v 1.30 2020/02/02 23:34:34 tom Exp $
 -.TH @CAPTOINFO@ 1M ""
-+.\" $Id: captoinfo.8,v 1.27 2018/07/28 21:34:06 tom Exp $
++.\" $Id: captoinfo.8,v 1.30 2020/02/02 23:34:34 tom Exp $
 +.TH @CAPTOINFO@ 8 ""
  .ds n 5
  .ds d @TERMINFO@
  .SH NAME
-@@ -180,14 +180,14 @@ Hewlett-Packard's terminfo library suppo
+@@ -181,7 +181,7 @@ Hewlett-Packard's terminfo library suppo
  capabilities \fBmeml\fR (memory lock) and \fBmemu\fR (memory unlock).
  These will be discarded with a warning message.
  .SH NOTES
@@ -26,29 +26,30 @@ version) still has these five man pages in section 1m.
 +This utility is actually a link to \fB@TIC@\fR(8), running in \fI\-I\fR mode.
  You can use other \fB@TIC@\fR options such as \fB\-f\fR and  \fB\-x\fR.
  .PP
- The trace option is not identical to SVr4's.
- Under SVr4, instead of following
- the \fB\-v\fR with a trace level n, you repeat it n times.
+ The verbose option is not identical to SVr4's.
+@@ -194,7 +194,7 @@ SVr4 systems provide \fBcaptoinfo\fP as
+ .PP
+ NetBSD does not provide this application.
  .SH SEE ALSO
 -\fB@INFOCMP@\fR(1M),
 +\fB@INFOCMP@\fR(8),
  \fBcurses\fR(3X),
  \fBterminfo\fR(\*n)
  .PP
---- ncurses-6.1-20190105/man/infocmp.1m	2019-01-07 06:32:02.770113222 +0000
-+++ ncurses-6.1-20190105/man/infocmp.1m	2019-01-07 06:31:25.889281275 +0000
-@@ -27,8 +27,8 @@
+--- ncurses-6.3/man/infocmp.1m
++++ ncurses-6.3/man/infocmp.1m
+@@ -28,8 +28,8 @@
  .\" authorization.                                                           *
  .\"***************************************************************************
  .\"
--.\" $Id: infocmp.1m,v 1.73 2018/07/28 22:08:59 tom Exp $
+-.\" $Id: infocmp.1m,v 1.79 2021/08/15 20:01:31 tom Exp $
 -.TH @INFOCMP@ 1M ""
-+.\" $Id: infocmp.8,v 1.73 2018/07/28 22:08:59 tom Exp $
++.\" $Id: infocmp.8,v 1.79 2021/08/15 20:01:31 tom Exp $
 +.TH @INFOCMP@ 8 ""
  .ie \n(.g .ds `` \(lq
  .el       .ds `` ``
  .ie \n(.g .ds '' \(rq
-@@ -594,12 +594,12 @@ Actual BSD curses versions will have a m
+@@ -623,12 +623,12 @@ Actual BSD curses versions will have a m
  To see only the
  4.4BSD set, use \fB\-r\fR \fB\-RBSD\fR.
  .SH BUGS
@@ -65,45 +66,45 @@ version) still has these five man pages in section 1m.
 +\fB@TOE@\fR(8),
  \fBcurses\fR(3X),
  \fBterminfo\fR(\*n).
- .sp
---- ncurses-6.1-20190105/man/infotocap.1m	2019-01-07 06:29:34.805035297 +0000
-+++ ncurses-6.1-20190105/man/infotocap.1m	2019-01-07 06:28:06.373497914 +0000
-@@ -27,8 +27,8 @@
+ \fBuser_caps\fR(\*n).
+--- ncurses-6.3/man/infotocap.1m
++++ ncurses-6.3/man/infotocap.1m
+@@ -28,8 +28,8 @@
  .\" authorization.                                                           *
  .\"***************************************************************************
  .\"
--.\" $Id: infotocap.1m,v 1.13 2018/07/28 21:34:06 tom Exp $
+-.\" $Id: infotocap.1m,v 1.17 2020/12/19 21:49:52 tom Exp $
 -.TH @INFOTOCAP@ 1M ""
-+.\" $Id: infotocap.8,v 1.13 2018/07/28 21:34:06 tom Exp $
++.\" $Id: infotocap.8,v 1.17 2020/12/19 21:49:52 tom Exp $
 +.TH @INFOTOCAP@ 8 ""
  .ds n 5
  .ds d @TERMINFO@
  .SH NAME
-@@ -65,8 +65,8 @@ This utility is actually a link to \fB@T
- You can use other \fB@TIC@\fR options such as \fB\-f\fR and  \fB\-x\fR.
+@@ -67,8 +67,8 @@ You can use other \fB@TIC@\fR options su
+ .SH PORTABILITY
+ None of X/Open Curses, Issue 7 (2009), SVr4 or NetBSD document this application.
  .SH SEE ALSO
- \fBcurses\fR(3X),
--\fB@TIC@\fR(1M),
 -\fB@INFOCMP@\fR(1M),
-+\fB@TIC@\fR(8),
+-\fB@TIC@\fR(1M),
 +\fB@INFOCMP@\fR(8),
++\fB@TIC@\fR(8),
+ \fBcurses\fR(3X),
  \fBterminfo\fR(\*n)
  .PP
- This describes \fBncurses\fR
---- ncurses-6.1-20190105/man/tic.1m	2019-01-07 06:33:37.105137165 +0000
-+++ ncurses-6.1-20190105/man/tic.1m	2019-01-07 06:33:26.641849142 +0000
-@@ -26,8 +26,8 @@
+--- ncurses-6.3/man/tic.1m
++++ ncurses-6.3/man/tic.1m
+@@ -27,8 +27,8 @@
  .\" authorization.                                                           *
  .\"***************************************************************************
  .\"
--.\" $Id: tic.1m,v 1.67 2018/05/19 21:07:46 tom Exp $
+-.\" $Id: tic.1m,v 1.80 2021/08/15 20:01:19 tom Exp $
 -.TH @TIC@ 1M ""
-+.\" $Id: tic.8,v 1.67 2018/05/19 21:07:46 tom Exp $
++.\" $Id: tic.8,v 1.80 2021/08/15 20:01:19 tom Exp $
 +.TH @TIC@ 8 ""
  .ie \n(.g .ds `` \(lq
  .el       .ds `` ``
  .ie \n(.g .ds '' \(rq
-@@ -148,7 +148,7 @@ Otherwise these are ignored.
+@@ -157,7 +157,7 @@ Otherwise these are ignored.
  \fB\-C\fR
  Force source translation to termcap format.
  Note: this differs from the \fB\-C\fR
@@ -112,35 +113,35 @@ version) still has these five man pages in section 1m.
  names, but also translates terminfo strings to termcap format.
  Capabilities
  that are not translatable are left in the entry under their terminfo names
-@@ -460,10 +460,10 @@ System V does not compile entries to or
+@@ -573,10 +573,10 @@ System V does not compile entries to or
  \fB\*d/?/*\fR
  Compiled terminal description database.
  .SH SEE ALSO
--\fB@INFOCMP@\fR(1M),
 -\fB@CAPTOINFO@\fR(1M),
+-\fB@INFOCMP@\fR(1M),
 -\fB@INFOTOCAP@\fR(1M),
 -\fB@TOE@\fR(1M),
-+\fB@INFOCMP@\fR(8),
 +\fB@CAPTOINFO@\fR(8),
++\fB@INFOCMP@\fR(8),
 +\fB@INFOTOCAP@\fR(8),
 +\fB@TOE@\fR(8),
  \fBcurses\fR(3X),
  \fBterm\fR(\*n).
  \fBterminfo\fR(\*n).
---- ncurses-6.0-20170708/man/toe.1m.orig	2017-07-13 12:32:59.858374737 +0000
-+++ ncurses-6.0-20170708/man/toe.1m	2017-07-13 12:30:29.520498868 +0000
-@@ -26,8 +26,8 @@
+--- ncurses-6.3/man/toe.1m
++++ ncurses-6.3/man/toe.1m
+@@ -27,8 +27,8 @@
  .\" authorization.                                                           *
  .\"***************************************************************************
  .\"
--.\" $Id: toe.1m,v 1.29 2017/02/18 17:10:26 tom Exp $
+-.\" $Id: toe.1m,v 1.34 2021/06/17 21:26:02 tom Exp $
 -.TH @TOE@ 1M ""
-+.\" $Id: toe.8,v 1.29 2017/02/18 17:10:26 tom Exp $
++.\" $Id: toe.8,v 1.34 2021/06/17 21:26:02 tom Exp $
 +.TH @TOE@ 8 ""
- .ie \n(.g .ds `` \(lq
- .el       .ds `` ``
- .ie \n(.g .ds '' \(rq
-@@ -97,7 +97,7 @@
+ .de bP
+ .ie n  .IP \(bu 4
+ .el    .IP \(bu 2
+@@ -116,7 +116,7 @@ specifies that (verbose) output be writt
  showing \fB@TOE@\fR's progress.
  .IP
  The optional parameter \fIn\fR is a number from 1 to 10,
@@ -149,18 +150,18 @@ version) still has these five man pages in section 1m.
  If ncurses is built without tracing support, the optional parameter is ignored.
  .TP
  \fB\-V\fR
-@@ -108,10 +108,10 @@
- \fB\*d/?/*\fR
- Compiled terminal description database.
+@@ -183,10 +183,10 @@ the ncurses \fBinfocmp\fP utility in 199
+ The \fB\-a\fP and \fB\-s\fP options were added to
+ \fB@TOE@\fR several years later (2006 and 2011, respectively).
  .SH SEE ALSO
--\fB@TIC@\fR(1M),
--\fB@INFOCMP@\fR(1M),
 -\fB@CAPTOINFO@\fR(1M),
+-\fB@INFOCMP@\fR(1M),
 -\fB@INFOTOCAP@\fR(1M),
-+\fB@TIC@\fR(8),
-+\fB@INFOCMP@\fR(8),
+-\fB@TIC@\fR(1M),
 +\fB@CAPTOINFO@\fR(8),
++\fB@INFOCMP@\fR(8),
 +\fB@INFOTOCAP@\fR(8),
++\fB@TIC@\fR(8),
  \fBcurses\fR(3X),
  \fBterminfo\fR(\*n).
  .PP

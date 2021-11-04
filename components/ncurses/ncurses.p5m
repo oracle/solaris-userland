@@ -20,13 +20,11 @@
 #
 
 #
-# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
-# ncurses-04-manpages.patch adjusts section 1m man pages to be in section 8.
-# If the upstream bug is ever fixed (and the patch is removed), this transform
-# should be updated or removed.
+# Find all /man3x/ files in /man3/
 <transform file path=(.+)/man/man3x/(.+).3x$ -> \
     set action.hash %<1>/man/man3/%<2>.3x>
 set name=pkg.fmri \
@@ -154,7 +152,7 @@ link path=usr/gnu/share/man/man3x/can_change_color.3x target=curs_color.3x
 link path=usr/gnu/share/man/man3x/can_change_color_sp.3x target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/cbreak.3x target=curs_inopts.3x
 link path=usr/gnu/share/man/man3x/cbreak_sp.3x target=curs_sp_funcs.3x
-link path=usr/gnu/share/man/man3x/ceiling_panel.3x target=curs_sp_funcs.3x
+link path=usr/gnu/share/man/man3x/ceiling_panel.3x target=panel.3x
 link path=usr/gnu/share/man/man3x/chgat.3x target=curs_attr.3x
 link path=usr/gnu/share/man/man3x/clear.3x target=curs_clear.3x
 link path=usr/gnu/share/man/man3x/clearok.3x target=curs_outopts.3x
@@ -232,6 +230,7 @@ file path=usr/gnu/share/man/man3x/curs_variables.3x
 file path=usr/gnu/share/man/man3x/curs_window.3x
 link path=usr/gnu/share/man/man3x/curscr.3x target=curs_variables.3x
 link path=usr/gnu/share/man/man3x/curses.3x target=ncurses.3x
+link path=usr/gnu/share/man/man3x/curses_trace.3x target=curs_trace.3x
 link path=usr/gnu/share/man/man3x/curses_version.3x target=curs_extend.3x
 link path=usr/gnu/share/man/man3x/data_ahead.3x target=form_data.3x
 link path=usr/gnu/share/man/man3x/data_behind.3x target=form_data.3x
@@ -268,6 +267,9 @@ link path=usr/gnu/share/man/man3x/erase.3x target=curs_clear.3x
 link path=usr/gnu/share/man/man3x/erasechar.3x target=curs_termattrs.3x
 link path=usr/gnu/share/man/man3x/erasechar_sp.3x target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/erasewchar.3x target=curs_termattrs.3x
+link path=usr/gnu/share/man/man3x/erasewchar_sp.3x target=curs_sp_funcs.3x
+link path=usr/gnu/share/man/man3x/exit_curses.3x target=curs_memleaks.3x
+link path=usr/gnu/share/man/man3x/exit_terminfo.3x target=curs_memleaks.3x
 link path=usr/gnu/share/man/man3x/extended_color_content.3x target=curs_color.3x
 link path=usr/gnu/share/man/man3x/extended_color_content_sp.3x \
     target=curs_sp_funcs.3x
@@ -373,7 +375,7 @@ link path=usr/gnu/share/man/man3x/getsyx.3x target=curs_kernel.3x
 link path=usr/gnu/share/man/man3x/getwin.3x target=curs_util.3x
 link path=usr/gnu/share/man/man3x/getwin_sp.3x target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/getyx.3x target=curs_getyx.3x
-link path=usr/gnu/share/man/man3x/ground_panel.3x target=curs_sp_funcs.3x
+link path=usr/gnu/share/man/man3x/ground_panel.3x target=panel.3x
 link path=usr/gnu/share/man/man3x/halfdelay.3x target=curs_inopts.3x
 link path=usr/gnu/share/man/man3x/halfdelay_sp.3x target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/has_colors.3x target=curs_color.3x
@@ -466,6 +468,7 @@ link path=usr/gnu/share/man/man3x/keypad.3x target=curs_inopts.3x
 link path=usr/gnu/share/man/man3x/killchar.3x target=curs_termattrs.3x
 link path=usr/gnu/share/man/man3x/killchar_sp.3x target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/killwchar.3x target=curs_termattrs.3x
+link path=usr/gnu/share/man/man3x/killwchar_sp.3x target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/leaveok.3x target=curs_outopts.3x
 file path=usr/gnu/share/man/man3x/legacy_coding.3x
 link path=usr/gnu/share/man/man3x/link_field.3x target=form_field_new.3x
@@ -624,7 +627,7 @@ link path=usr/gnu/share/man/man3x/newterm.3x target=curs_initscr.3x
 link path=usr/gnu/share/man/man3x/newterm_sp.3x target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/newwin.3x target=curs_window.3x
 link path=usr/gnu/share/man/man3x/newwin_sp.3x target=curs_sp_funcs.3x
-link path=usr/gnu/share/man/man3x/nl.3x target=curs_outopts.3x
+link path=usr/gnu/share/man/man3x/nl.3x target=curs_inopts.3x
 link path=usr/gnu/share/man/man3x/nl_sp.3x target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/nocbreak.3x target=curs_inopts.3x
 link path=usr/gnu/share/man/man3x/nocbreak_sp.3x target=curs_sp_funcs.3x
@@ -633,7 +636,7 @@ link path=usr/gnu/share/man/man3x/noecho.3x target=curs_inopts.3x
 link path=usr/gnu/share/man/man3x/noecho_sp.3x target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/nofilter.3x target=curs_util.3x
 link path=usr/gnu/share/man/man3x/nofilter_sp.3x target=curs_sp_funcs.3x
-link path=usr/gnu/share/man/man3x/nonl.3x target=curs_outopts.3x
+link path=usr/gnu/share/man/man3x/nonl.3x target=curs_inopts.3x
 link path=usr/gnu/share/man/man3x/nonl_sp.3x target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/noqiflush.3x target=curs_inopts.3x
 link path=usr/gnu/share/man/man3x/noqiflush_sp.3x target=curs_sp_funcs.3x
@@ -674,6 +677,8 @@ link path=usr/gnu/share/man/man3x/redrawwin.3x target=curs_refresh.3x
 link path=usr/gnu/share/man/man3x/refresh.3x target=curs_refresh.3x
 link path=usr/gnu/share/man/man3x/replace_panel.3x target=panel.3x
 link path=usr/gnu/share/man/man3x/reset_color_pairs.3x target=curs_color.3x
+link path=usr/gnu/share/man/man3x/reset_color_pairs_sp.3x \
+    target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/reset_prog_mode.3x target=curs_kernel.3x
 link path=usr/gnu/share/man/man3x/reset_prog_mode_sp.3x target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/reset_shell_mode.3x target=curs_kernel.3x
@@ -768,7 +773,6 @@ link path=usr/gnu/share/man/man3x/set_top_row.3x target=mitem_current.3x
 link path=usr/gnu/share/man/man3x/setcchar.3x target=curs_getcchar.3x
 link path=usr/gnu/share/man/man3x/setscrreg.3x target=curs_outopts.3x
 link path=usr/gnu/share/man/man3x/setsyx.3x target=curs_kernel.3x
-link path=usr/gnu/share/man/man3x/setterm.3x target=curs_terminfo.3x
 link path=usr/gnu/share/man/man3x/setupterm.3x target=curs_terminfo.3x
 link path=usr/gnu/share/man/man3x/show_panel.3x target=panel.3x
 link path=usr/gnu/share/man/man3x/slk_attr.3x target=curs_slk.3x
@@ -829,6 +833,7 @@ link path=usr/gnu/share/man/man3x/tgetnum_sp.3x target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/tgetstr.3x target=curs_termcap.3x
 link path=usr/gnu/share/man/man3x/tgetstr_sp.3x target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/tgoto.3x target=curs_termcap.3x
+link path=usr/gnu/share/man/man3x/tgoto_sp.3x target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/tigetflag.3x target=curs_terminfo.3x
 link path=usr/gnu/share/man/man3x/tigetflag_sp.3x target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/tigetnum.3x target=curs_terminfo.3x
@@ -842,6 +847,7 @@ link path=usr/gnu/share/man/man3x/top_row.3x target=mitem_current.3x
 link path=usr/gnu/share/man/man3x/touchline.3x target=curs_touch.3x
 link path=usr/gnu/share/man/man3x/touchwin.3x target=curs_touch.3x
 link path=usr/gnu/share/man/man3x/tparm.3x target=curs_terminfo.3x
+link path=usr/gnu/share/man/man3x/tparm_sp.3x target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/tputs.3x target=curs_terminfo.3x
 link path=usr/gnu/share/man/man3x/tputs_sp.3x target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/trace.3x target=curs_trace.3x
@@ -873,6 +879,7 @@ link path=usr/gnu/share/man/man3x/use_legacy_coding_sp.3x \
     target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/use_screen.3x target=curs_threads.3x
 link path=usr/gnu/share/man/man3x/use_tioctl.3x target=curs_util.3x
+link path=usr/gnu/share/man/man3x/use_tioctl_sp.3x target=curs_sp_funcs.3x
 link path=usr/gnu/share/man/man3x/use_window.3x target=curs_threads.3x
 link path=usr/gnu/share/man/man3x/vid_attr.3x target=curs_terminfo.3x
 link path=usr/gnu/share/man/man3x/vid_attr_sp.3x target=curs_sp_funcs.3x
@@ -1053,6 +1060,7 @@ link path=usr/gnu/share/terminfo/Q/Q310-vip-Hw target=../v/vip-Hw
 link path=usr/gnu/share/terminfo/Q/Q310-vip-w target=../v/vip-w
 link path=usr/gnu/share/terminfo/Q/Q310-vip-w-am target=../v/vip-w
 link path=usr/gnu/share/terminfo/X/X-hpterm target=../h/hpterm
+link path=usr/gnu/share/terminfo/X/X-hpterm-color2 target=../h/hpterm-color2
 link path=usr/gnu/share/terminfo/a/a210 target=ampex210
 link path=usr/gnu/share/terminfo/a/a80 target=ampex80
 link path=usr/gnu/share/terminfo/a/a980 target=adds980
@@ -1104,6 +1112,7 @@ file path=usr/gnu/share/terminfo/a/abm85
 file path=usr/gnu/share/terminfo/a/abm85e
 file path=usr/gnu/share/terminfo/a/abm85h
 file path=usr/gnu/share/terminfo/a/abm85h-old
+file path=usr/gnu/share/terminfo/a/absolute
 file path=usr/gnu/share/terminfo/a/act4
 file path=usr/gnu/share/terminfo/a/act5
 file path=usr/gnu/share/terminfo/a/addrinfo
@@ -1197,6 +1206,7 @@ file path=usr/gnu/share/terminfo/a/ansi+local
 file path=usr/gnu/share/terminfo/a/ansi+local1
 file path=usr/gnu/share/terminfo/a/ansi+pp
 file path=usr/gnu/share/terminfo/a/ansi+rca
+file path=usr/gnu/share/terminfo/a/ansi+rca2
 file path=usr/gnu/share/terminfo/a/ansi+rep
 file path=usr/gnu/share/terminfo/a/ansi+sgr
 file path=usr/gnu/share/terminfo/a/ansi+sgrbold
@@ -1338,6 +1348,8 @@ file path=usr/gnu/share/terminfo/a/att605
 file path=usr/gnu/share/terminfo/a/att605-pc
 file path=usr/gnu/share/terminfo/a/att605-w
 file path=usr/gnu/share/terminfo/a/att610
+file path=usr/gnu/share/terminfo/a/att610+cvis
+file path=usr/gnu/share/terminfo/a/att610+cvis0
 file path=usr/gnu/share/terminfo/a/att610-103k
 file path=usr/gnu/share/terminfo/a/att610-103k-w
 file path=usr/gnu/share/terminfo/a/att610-w
@@ -1820,6 +1832,7 @@ link path=usr/gnu/share/terminfo/d/dmd1 target=../a/att5620-1
 link path=usr/gnu/share/terminfo/d/dmdt80 target=dm80
 link path=usr/gnu/share/terminfo/d/dmdt80w target=dm80w
 file path=usr/gnu/share/terminfo/d/dmterm
+file path=usr/gnu/share/terminfo/d/domterm
 file path=usr/gnu/share/terminfo/d/dp3360
 file path=usr/gnu/share/terminfo/d/dp8242
 link path=usr/gnu/share/terminfo/d/ds40 target=../t/tty40
@@ -1847,6 +1860,7 @@ file path=usr/gnu/share/terminfo/d/dw4
 file path=usr/gnu/share/terminfo/d/dwk
 link path=usr/gnu/share/terminfo/d/dwk-vt target=dwk
 file path=usr/gnu/share/terminfo/e/ecma+color
+file path=usr/gnu/share/terminfo/e/ecma+index
 file path=usr/gnu/share/terminfo/e/ecma+italics
 file path=usr/gnu/share/terminfo/e/ecma+sgr
 file path=usr/gnu/share/terminfo/e/ecma+strikeout
@@ -1895,6 +1909,9 @@ file path=usr/gnu/share/terminfo/f/fbterm
 link path=usr/gnu/share/terminfo/f/fenix target=../p/pt100
 link path=usr/gnu/share/terminfo/f/fenixw target=../p/pt100w
 link path=usr/gnu/share/terminfo/f/fixterm target=../c/cbblit
+file path=usr/gnu/share/terminfo/f/foot
+file path=usr/gnu/share/terminfo/f/foot+base
+file path=usr/gnu/share/terminfo/f/foot-direct
 link path=usr/gnu/share/terminfo/f/fortune target=fos
 file path=usr/gnu/share/terminfo/f/fos
 file path=usr/gnu/share/terminfo/f/fox
@@ -2076,7 +2093,9 @@ link path=usr/gnu/share/terminfo/h/hp70092a target=hp70092
 file path=usr/gnu/share/terminfo/h/hp9837
 file path=usr/gnu/share/terminfo/h/hp9845
 file path=usr/gnu/share/terminfo/h/hp98550
+file path=usr/gnu/share/terminfo/h/hp98550-color
 link path=usr/gnu/share/terminfo/h/hp98550a target=hp98550
+link path=usr/gnu/share/terminfo/h/hp98550a-color target=hp98550-color
 link path=usr/gnu/share/terminfo/h/hp98720 target=hp9837
 link path=usr/gnu/share/terminfo/h/hp98721 target=hp9837
 file path=usr/gnu/share/terminfo/h/hpansi
@@ -2086,6 +2105,9 @@ file path=usr/gnu/share/terminfo/h/hpgeneric
 file path=usr/gnu/share/terminfo/h/hpsub
 file path=usr/gnu/share/terminfo/h/hpterm
 file path=usr/gnu/share/terminfo/h/hpterm-color
+file path=usr/gnu/share/terminfo/h/hpterm-color2
+file path=usr/gnu/share/terminfo/h/hterm
+file path=usr/gnu/share/terminfo/h/hterm-256color
 link path=usr/gnu/share/terminfo/h/htx11 target=../z/ztx
 file path=usr/gnu/share/terminfo/h/hurd
 file path=usr/gnu/share/terminfo/h/hz1000
@@ -2162,6 +2184,7 @@ file path=usr/gnu/share/terminfo/i/ims950
 file path=usr/gnu/share/terminfo/i/ims950-b
 file path=usr/gnu/share/terminfo/i/ims950-rv
 file path=usr/gnu/share/terminfo/i/infoton
+file path=usr/gnu/share/terminfo/i/infoton2
 file path=usr/gnu/share/terminfo/i/interix
 file path=usr/gnu/share/terminfo/i/interix-nti
 link path=usr/gnu/share/terminfo/i/intertec target=intertube
@@ -2229,6 +2252,8 @@ link path=usr/gnu/share/terminfo/l/layer target=../a/att5620-s
 file path=usr/gnu/share/terminfo/l/lft
 link path=usr/gnu/share/terminfo/l/lft-pc850 target=lft
 file path=usr/gnu/share/terminfo/l/linux
+file path=usr/gnu/share/terminfo/l/linux+decid
+file path=usr/gnu/share/terminfo/l/linux+sfkeys
 file path=usr/gnu/share/terminfo/l/linux-16color
 file path=usr/gnu/share/terminfo/l/linux-basic
 file path=usr/gnu/share/terminfo/l/linux-c
@@ -2241,6 +2266,7 @@ file path=usr/gnu/share/terminfo/l/linux-m1
 file path=usr/gnu/share/terminfo/l/linux-m1b
 file path=usr/gnu/share/terminfo/l/linux-m2
 file path=usr/gnu/share/terminfo/l/linux-nic
+file path=usr/gnu/share/terminfo/l/linux-s
 file path=usr/gnu/share/terminfo/l/linux-vt
 file path=usr/gnu/share/terminfo/l/linux2.2
 file path=usr/gnu/share/terminfo/l/linux2.6
@@ -2312,6 +2338,9 @@ file path=usr/gnu/share/terminfo/m/minix-1.7
 file path=usr/gnu/share/terminfo/m/minix-3.0
 file path=usr/gnu/share/terminfo/m/minix-old
 file path=usr/gnu/share/terminfo/m/minix-old-am
+file path=usr/gnu/share/terminfo/m/mintty
+file path=usr/gnu/share/terminfo/m/mintty+common
+file path=usr/gnu/share/terminfo/m/mintty-direct
 file path=usr/gnu/share/terminfo/m/mlterm
 file path=usr/gnu/share/terminfo/m/mlterm+pcfkeys
 file path=usr/gnu/share/terminfo/m/mlterm-256color
@@ -2330,6 +2359,7 @@ file path=usr/gnu/share/terminfo/m/morphos
 link path=usr/gnu/share/terminfo/m/mouse-sun target=mterm
 file path=usr/gnu/share/terminfo/m/mrxvt
 file path=usr/gnu/share/terminfo/m/mrxvt-256color
+file path=usr/gnu/share/terminfo/m/ms-terminal
 file path=usr/gnu/share/terminfo/m/ms-vt-utf8
 file path=usr/gnu/share/terminfo/m/ms-vt100
 file path=usr/gnu/share/terminfo/m/ms-vt100+
@@ -2488,6 +2518,7 @@ file path=usr/gnu/share/terminfo/n/nsterm-c-acs
 file path=usr/gnu/share/terminfo/n/nsterm-c-s
 file path=usr/gnu/share/terminfo/n/nsterm-c-s-7
 file path=usr/gnu/share/terminfo/n/nsterm-c-s-acs
+file path=usr/gnu/share/terminfo/n/nsterm-direct
 file path=usr/gnu/share/terminfo/n/nsterm-m
 file path=usr/gnu/share/terminfo/n/nsterm-m-7
 file path=usr/gnu/share/terminfo/n/nsterm-m-acs
@@ -2721,12 +2752,15 @@ file path=usr/gnu/share/terminfo/p/putty+fnkeys+sco
 file path=usr/gnu/share/terminfo/p/putty+fnkeys+vt100
 file path=usr/gnu/share/terminfo/p/putty+fnkeys+vt400
 file path=usr/gnu/share/terminfo/p/putty+fnkeys+xterm
+file path=usr/gnu/share/terminfo/p/putty+keypad
+file path=usr/gnu/share/terminfo/p/putty+screen
 file path=usr/gnu/share/terminfo/p/putty-256color
 file path=usr/gnu/share/terminfo/p/putty-m1
 file path=usr/gnu/share/terminfo/p/putty-m1b
 file path=usr/gnu/share/terminfo/p/putty-m2
 file path=usr/gnu/share/terminfo/p/putty-noapp
 file path=usr/gnu/share/terminfo/p/putty-sco
+file path=usr/gnu/share/terminfo/p/putty-screen
 file path=usr/gnu/share/terminfo/p/putty-vt100
 file path=usr/gnu/share/terminfo/q/qansi
 file path=usr/gnu/share/terminfo/q/qansi-g
@@ -2838,6 +2872,7 @@ file path=usr/gnu/share/terminfo/s/screen.linux
 file path=usr/gnu/share/terminfo/s/screen.linux-m1
 file path=usr/gnu/share/terminfo/s/screen.linux-m1b
 file path=usr/gnu/share/terminfo/s/screen.linux-m2
+link path=usr/gnu/share/terminfo/s/screen.linux-s target=screen.linux
 file path=usr/gnu/share/terminfo/s/screen.minitel1
 file path=usr/gnu/share/terminfo/s/screen.minitel1-nb
 link path=usr/gnu/share/terminfo/s/screen.minitel12-80 \
@@ -2864,8 +2899,12 @@ file path=usr/gnu/share/terminfo/s/screen.xterm-r6
 file path=usr/gnu/share/terminfo/s/screen.xterm-xfree86
 file path=usr/gnu/share/terminfo/s/screen2
 file path=usr/gnu/share/terminfo/s/screen3
+file path=usr/gnu/share/terminfo/s/screen4
+file path=usr/gnu/share/terminfo/s/screen5
 file path=usr/gnu/share/terminfo/s/screwpoint
 file path=usr/gnu/share/terminfo/s/scrhp
+file path=usr/gnu/share/terminfo/s/scrt
+link path=usr/gnu/share/terminfo/s/securecrt target=scrt
 file path=usr/gnu/share/terminfo/s/sibo
 file path=usr/gnu/share/terminfo/s/simpleterm
 file path=usr/gnu/share/terminfo/s/simterm
@@ -2876,6 +2915,7 @@ link path=usr/gnu/share/terminfo/s/spinwriter target=../n/nec5520
 file path=usr/gnu/share/terminfo/s/st
 file path=usr/gnu/share/terminfo/s/st-0.6
 file path=usr/gnu/share/terminfo/s/st-0.7
+file path=usr/gnu/share/terminfo/s/st-0.8
 file path=usr/gnu/share/terminfo/s/st-16color
 file path=usr/gnu/share/terminfo/s/st-256color
 file path=usr/gnu/share/terminfo/s/st-direct
@@ -2989,9 +3029,14 @@ link path=usr/gnu/share/terminfo/t/terminet300 target=terminet1200
 file path=usr/gnu/share/terminfo/t/terminology
 file path=usr/gnu/share/terminfo/t/terminology-0.6.1
 file path=usr/gnu/share/terminfo/t/terminology-1.0.0
+file path=usr/gnu/share/terminfo/t/terminology-1.8.1
 file path=usr/gnu/share/terminfo/t/termite
 link path=usr/gnu/share/terminfo/t/tgtelnet target=../p/pilot
 file path=usr/gnu/share/terminfo/t/ti700
+file path=usr/gnu/share/terminfo/t/ti703
+file path=usr/gnu/share/terminfo/t/ti703-w
+link path=usr/gnu/share/terminfo/t/ti707 target=ti703
+link path=usr/gnu/share/terminfo/t/ti707-w target=ti703-w
 link path=usr/gnu/share/terminfo/t/ti733 target=ti700
 link path=usr/gnu/share/terminfo/t/ti735 target=ti700
 link path=usr/gnu/share/terminfo/t/ti745 target=ti700
@@ -3015,6 +3060,7 @@ file path=usr/gnu/share/terminfo/t/ti_ansi
 link path=usr/gnu/share/terminfo/t/tkterm target=tt
 file path=usr/gnu/share/terminfo/t/tmux
 file path=usr/gnu/share/terminfo/t/tmux-256color
+file path=usr/gnu/share/terminfo/t/tmux-direct
 link path=usr/gnu/share/terminfo/t/tn1200 target=terminet1200
 link path=usr/gnu/share/terminfo/t/tn300 target=terminet1200
 file path=usr/gnu/share/terminfo/t/trs16
@@ -3238,6 +3284,8 @@ file path=usr/gnu/share/terminfo/v/vremote
 link path=usr/gnu/share/terminfo/v/vs100 target=../x/xterm-24
 link path=usr/gnu/share/terminfo/v/vs100-x10 target=../x/x10term
 file path=usr/gnu/share/terminfo/v/vsc
+file path=usr/gnu/share/terminfo/v/vscode
+file path=usr/gnu/share/terminfo/v/vscode-direct
 link path=usr/gnu/share/terminfo/v/vt-61 target=vt61
 link path=usr/gnu/share/terminfo/v/vt-utf8 target=../m/ms-vt-utf8
 file path=usr/gnu/share/terminfo/v/vt100
@@ -3280,9 +3328,14 @@ file path=usr/gnu/share/terminfo/v/vt200-js
 link path=usr/gnu/share/terminfo/v/vt200-old target=vt220-old
 link path=usr/gnu/share/terminfo/v/vt200-w target=vt220-w
 file path=usr/gnu/share/terminfo/v/vt220
+file path=usr/gnu/share/terminfo/v/vt220+cvis
+file path=usr/gnu/share/terminfo/v/vt220+cvis8
 file path=usr/gnu/share/terminfo/v/vt220+keypad
+file path=usr/gnu/share/terminfo/v/vt220+pcedit
+file path=usr/gnu/share/terminfo/v/vt220+vtedit
 link path=usr/gnu/share/terminfo/v/vt220-8 target=vt220-8bit
 file path=usr/gnu/share/terminfo/v/vt220-8bit
+file path=usr/gnu/share/terminfo/v/vt220-base
 link path=usr/gnu/share/terminfo/v/vt220-js target=vt200-js
 file path=usr/gnu/share/terminfo/v/vt220-nam
 file path=usr/gnu/share/terminfo/v/vt220-old
@@ -3304,6 +3357,7 @@ file path=usr/gnu/share/terminfo/v/vt340
 file path=usr/gnu/share/terminfo/v/vt400
 link path=usr/gnu/share/terminfo/v/vt400-24 target=vt400
 file path=usr/gnu/share/terminfo/v/vt420
+file path=usr/gnu/share/terminfo/v/vt420+lrmm
 file path=usr/gnu/share/terminfo/v/vt420f
 file path=usr/gnu/share/terminfo/v/vt420pc
 file path=usr/gnu/share/terminfo/v/vt420pcdos
@@ -3313,6 +3367,8 @@ file path=usr/gnu/share/terminfo/v/vt510
 file path=usr/gnu/share/terminfo/v/vt510pc
 file path=usr/gnu/share/terminfo/v/vt510pcdos
 file path=usr/gnu/share/terminfo/v/vt52
+file path=usr/gnu/share/terminfo/v/vt52+keypad
+file path=usr/gnu/share/terminfo/v/vt52-basic
 file path=usr/gnu/share/terminfo/v/vt520
 file path=usr/gnu/share/terminfo/v/vt520ansi
 file path=usr/gnu/share/terminfo/v/vt525
@@ -3637,18 +3693,27 @@ file path=usr/gnu/share/terminfo/x/xnuppc-m-f2
 file path=usr/gnu/share/terminfo/x/xtalk
 file path=usr/gnu/share/terminfo/x/xterm
 file path=usr/gnu/share/terminfo/x/xterm+256color
+file path=usr/gnu/share/terminfo/x/xterm+256color2
 file path=usr/gnu/share/terminfo/x/xterm+256setaf
 file path=usr/gnu/share/terminfo/x/xterm+88color
+file path=usr/gnu/share/terminfo/x/xterm+88color2
 file path=usr/gnu/share/terminfo/x/xterm+alt+title
 file path=usr/gnu/share/terminfo/x/xterm+alt1049
 file path=usr/gnu/share/terminfo/x/xterm+app
 file path=usr/gnu/share/terminfo/x/xterm+direct
+file path=usr/gnu/share/terminfo/x/xterm+direct16
 file path=usr/gnu/share/terminfo/x/xterm+direct2
+file path=usr/gnu/share/terminfo/x/xterm+direct256
 file path=usr/gnu/share/terminfo/x/xterm+edit
 file path=usr/gnu/share/terminfo/x/xterm+indirect
 file path=usr/gnu/share/terminfo/x/xterm+kbs
+file path=usr/gnu/share/terminfo/x/xterm+keypad
+file path=usr/gnu/share/terminfo/x/xterm+meta
 file path=usr/gnu/share/terminfo/x/xterm+noalt
 file path=usr/gnu/share/terminfo/x/xterm+noapp
+file path=usr/gnu/share/terminfo/x/xterm+nofkeys
+file path=usr/gnu/share/terminfo/x/xterm+nopcfkeys
+file path=usr/gnu/share/terminfo/x/xterm+osc104
 file path=usr/gnu/share/terminfo/x/xterm+pc+edit
 file path=usr/gnu/share/terminfo/x/xterm+pcc0
 file path=usr/gnu/share/terminfo/x/xterm+pcc1
@@ -3667,6 +3732,7 @@ file path=usr/gnu/share/terminfo/x/xterm+sm+1005
 file path=usr/gnu/share/terminfo/x/xterm+sm+1006
 file path=usr/gnu/share/terminfo/x/xterm+titlestack
 file path=usr/gnu/share/terminfo/x/xterm+tmux
+file path=usr/gnu/share/terminfo/x/xterm+tmux2
 file path=usr/gnu/share/terminfo/x/xterm+vt+edit
 file path=usr/gnu/share/terminfo/x/xterm+x10mouse
 file path=usr/gnu/share/terminfo/x/xterm+x11hilite
@@ -3684,8 +3750,11 @@ file path=usr/gnu/share/terminfo/x/xterm-basic
 file path=usr/gnu/share/terminfo/x/xterm-bold
 file path=usr/gnu/share/terminfo/x/xterm-color
 file path=usr/gnu/share/terminfo/x/xterm-direct
+file path=usr/gnu/share/terminfo/x/xterm-direct16
 file path=usr/gnu/share/terminfo/x/xterm-direct2
+file path=usr/gnu/share/terminfo/x/xterm-direct256
 file path=usr/gnu/share/terminfo/x/xterm-hp
+file path=usr/gnu/share/terminfo/x/xterm-mono
 file path=usr/gnu/share/terminfo/x/xterm-new
 file path=usr/gnu/share/terminfo/x/xterm-nic
 file path=usr/gnu/share/terminfo/x/xterm-noapp
@@ -3709,6 +3778,7 @@ file path=usr/gnu/share/terminfo/x/xterm-xf86-v43
 file path=usr/gnu/share/terminfo/x/xterm-xf86-v44
 file path=usr/gnu/share/terminfo/x/xterm-xfree86
 file path=usr/gnu/share/terminfo/x/xterm-xi
+link path=usr/gnu/share/terminfo/x/xterm.js target=../v/vscode
 file path=usr/gnu/share/terminfo/x/xterm1
 file path=usr/gnu/share/terminfo/x/xtermc
 file path=usr/gnu/share/terminfo/x/xtermm
