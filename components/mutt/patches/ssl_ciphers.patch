@@ -1,0 +1,14 @@
+This change sets a default cipher selection that avoids ciphers marked as
+unacceptable by Oracle.
+
+--- mutt-2.1.3/init.h.orig	2021-11-08 13:44:02.434273653 +0100
++++ mutt-2.1.3/init.h	2021-11-08 13:44:25.605503726 +0100
+@@ -4294,7 +4294,7 @@
+   */
+ #  endif /* defined HAVE_SSL_PARTIAL_CHAIN */
+ # endif /* defined USE_SSL_OPENSSL */
+-  { "ssl_ciphers", DT_STR, R_NONE, {.p=&SslCiphers}, {.p=0} },
++	{ "ssl_ciphers", DT_STR, R_NONE, {.p=&SslCiphers}, {.p="ALL:!aNULL:!eNULL:!EXPORT:!LOW:!MD5:!DES:!3DES:!RC2:!RC4:!PSK:!kDH"} },
+   /*
+   ** .pp
+   ** Contains a colon-separated list of ciphers to use when using SSL.
