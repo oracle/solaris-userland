@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -38,6 +38,9 @@ COMPONENT_SIG_URL=
 FIX_PC_FILES=pixman-1.pc.in
 
 include $(WS_MAKE_RULES)/x11-component.mk
+
+# Regenerate configure script after patching in patches/0001-hwcap.patch
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv)
 
 CONFIGURE_OPTIONS += --disable-gtk
 
