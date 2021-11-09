@@ -30,19 +30,16 @@ BUILD_ARCH= i386
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=     valgrind
-COMPONENT_VERSION=  3.16.1
+COMPONENT_VERSION=  3.18.1
 COMPONENT_SRC=      $(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=  $(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-  sha256:c3d088249edf27b16bcbc797fad9a8b6bb49f3ece6bbffedfb8f68e337d0d8ec
+  sha256:609f388f4eb78288943751b257381d95157dbd2705df60018dd941f1240436bd
 COMPONENT_ARCHIVE_URL= ftp://sourceware.org/pub/valgrind/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL= http://valgrind.org
 COMPONENT_ANITYA_ID=  13639
 
-TPNO=           62213
-
-# There are some test differences related to different CPUs.
-$(SKIP_TEST_AT_TOP_LEVEL)
+TPNO=           76219
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -70,7 +67,8 @@ COMPONENT_POST_CONFIGURE_ACTION += ( cp $(@D)/config.h $(SOURCE_DIR) )
 
 COMPONENT_TEST_TARGETS = regtest
 # check just overal test results
-COMPONENT_TEST_TRANSFORMS += '-n -e "/^== /p"'
+COMPONENT_TEST_TRANSFORMS += \
+  '-e "/^\.\.\./d" -e "/^make\[/d" -e "1,/^== / d"'
 
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += system/library

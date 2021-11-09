@@ -28,8 +28,8 @@
 <transform file path=.*/valgrind/.*(x86|amd64)-solaris$ -> set mode 0555>
 <transform file path=.*/valgrind/.*(x86|amd64)-solaris$ -> set pkg.linted.userland.action001.5 true>
 
-# -x86-solaris libraries are placed in 64bit directories
-<transform file path=.*-x86-solaris(|.so)$ -> set pkg.linted.userland.action001.2 true>
+# -amd64-solaris libraries are placed in 32bit libexec directory
+<transform file path=.*-amd64-solaris(|.so)$ -> set pkg.linted.userland.action001.2 true>
 
-# don't deliver doc files, which were brought in due to initial symlink cloning
+# don't deliver doc files that were brought in due to initial symlink cloning
 <transform file link path=usr/share/doc/.* -> drop>
