@@ -4,9 +4,9 @@ that the help cannot be displayed without vim package installed.
 This patch ensures that help_minimized.txt file is printed
 instead of missing help files to inform the user.
 
---- vim-8.2.3445/src/help.c
-+++ vim-8.2.3445/src/help.c
-@@ -38,6 +38,8 @@ ex_help(exarg_T *eap)
+--- vim-8.2.3582/src/help.c
++++ vim-8.2.3582/src/help.c
+@@ -38,6 +38,8 @@ #endif
  #ifdef FEAT_FOLDING
      int		old_KeyTyped = KeyTyped;
  #endif
@@ -15,7 +15,7 @@ instead of missing help files to inform the user.
  
      if (ERROR_IF_ANY_POPUP_WINDOW)
  	return;
-@@ -88,6 +90,22 @@ ex_help(exarg_T *eap)
+@@ -88,6 +90,22 @@ // Check if there is a match for the arg
      n = find_help_tags(arg, &num_matches, &matches,
  						 eap != NULL && eap->forceit);
  
@@ -38,7 +38,7 @@ instead of missing help files to inform the user.
      i = 0;
  #ifdef FEAT_MULTI_LANG
      if (n != FAIL && lang != NULL)
-@@ -100,7 +118,7 @@ ex_help(exarg_T *eap)
+@@ -100,7 +118,7 @@ && STRICMP(matches[i] + len - 2, lang) =
  		break;
  	}
  #endif
@@ -47,7 +47,7 @@ instead of missing help files to inform the user.
      {
  #ifdef FEAT_MULTI_LANG
  	if (lang != NULL)
-@@ -113,9 +131,11 @@ ex_help(exarg_T *eap)
+@@ -113,9 +131,11 @@ FreeWild(num_matches, matches);
  	return;
      }
  
@@ -62,7 +62,7 @@ instead of missing help files to inform the user.
  
  #ifdef FEAT_GUI
      need_mouse_correct = TRUE;
-@@ -137,12 +157,14 @@ ex_help(exarg_T *eap)
+@@ -137,12 +157,14 @@ else
  	{
  	    // There is no help window yet.
  	    // Try to open the file specified by the "helpfile" option.
@@ -82,7 +82,7 @@ instead of missing help files to inform the user.
  
  	    // Split off help window; put it at far top if no position
  	    // specified, the current window is vertically split and
-@@ -161,7 +183,7 @@ ex_help(exarg_T *eap)
+@@ -161,7 +183,7 @@ // Open help file (do_ecmd() will set b_
  	    // set b_p_ro flag).
  	    // Set the alternate file to the previously edited file.
  	    alt_fnum = curbuf->b_fnum;
@@ -91,7 +91,7 @@ instead of missing help files to inform the user.
  			  ECMD_HIDE + ECMD_SET_HELP,
  			  NULL);  // buffer is still open, don't store info
  	    if ((cmdmod.cmod_flags & CMOD_KEEPALT) == 0)
-@@ -179,7 +201,7 @@ ex_help(exarg_T *eap)
+@@ -179,7 +201,7 @@ // It is needed for do_tag top open fold
      KeyTyped = old_KeyTyped;
  #endif
  
@@ -100,7 +100,7 @@ instead of missing help files to inform the user.
  	do_tag(tag, DT_HELP, 1, FALSE, TRUE);
  
      // Delete the empty buffer if we're not using it.  Careful: autocommands
-@@ -198,7 +220,8 @@ ex_help(exarg_T *eap)
+@@ -198,7 +220,8 @@ && (cmdmod.cmod_flags & CMOD_KEEPALT) ==
  	curwin->w_alt_fnum = alt_fnum;
  
  erret:
