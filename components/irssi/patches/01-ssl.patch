@@ -1,16 +1,22 @@
-# Disable SSLv2, SSLv3, and TLSv1.
-# Upstream has disabled SSLv2 and SSLv3. Disabling of TLSv1 will not go upstream
+Disable SSLv2, SSLv3, TLSv1, and TLSv1.1.
+Disable also additional unacceptable default ciphers.
+Not suitable for upstream
 
-diff --git a/src/core/network-openssl.c b/src/core/network-openssl.c
-index 9569713..ab279c4 100644
---- a/src/core/network-openssl.c
-+++ b/src/core/network-openssl.c
-@@ -470,7 +470,7 @@ static GIOChannel *irssi_ssl_get_iochannel(GIOChannel *handle, int port, SERVER_
- 		g_error("Could not allocate memory for SSL context");
+--- irssi-1.2.3/src/core/network-openssl.c.orig	2021-11-12 11:58:02.706791306 +0100
++++ irssi-1.2.3/src/core/network-openssl.c	2021-11-12 12:13:44.645048947 +0100
+@@ -471,9 +471,15 @@
  		return NULL;
  	}
--	SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3);
-+	SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | SSL_OP_NO_TLSv1);
+ 	SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3);
++	SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | SSL_OP_NO_TLSv1 | SSL_OP_NO_TLSv1_1);
  	SSL_CTX_set_default_passwd_cb(ctx, get_pem_password_callback);
  	SSL_CTX_set_default_passwd_cb_userdata(ctx, (void *)mypass);
  
++  if (ciphers == NULL)
++	{
++		ciphers = "ALL:!aNULL:!eNULL:!EXPORT:!LOW:!MD5:!DES:!3DES:!RC2:!RC4:!PSK:!kDH";
++	}	
++
+ 	if (ciphers != NULL && ciphers[0] != '\0') {
+ 		if (SSL_CTX_set_cipher_list(ctx, ciphers) != 1)
+ 			g_warning("No valid SSL cipher suite could be selected");
