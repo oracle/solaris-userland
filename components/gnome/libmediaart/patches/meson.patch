@@ -1,0 +1,53 @@
+add in option to disable introspection in 32-bit
+Suitable for upstream if accepted
+
+--- a/meson_options.txt	2021-11-12 19:19:13.790521786 -0800
++++ b/meson_options.txt	2021-11-12 19:33:35.272151316 -0800
+@@ -4,3 +4,6 @@
+   type: 'boolean',
+   value: 'false',
+   description: 'Build the API reference (requires gtk-doc)')
++option('introspection', type: 'boolean', value: 'true',
++  description : 'Generate GObject Introspection bindings')
++
+--- a/libmediaart/meson.build	2021-11-12 19:20:58.145368102 -0800
++++ b/libmediaart/meson.build	2021-11-12 19:35:21.002848888 -0800
+@@ -46,23 +46,26 @@
+   '-DLIBMEDIAART_COMPILATION',
+ ]
+ 
+-libmediaart_gir_and_typelib = gnome.generate_gir(libmediaart,
+-  sources: libmediaart_sources + libmediaart_introspection_sources + libmediaart_public_headers,
+-  nsversion: libmediaart_api_version,
+-  namespace: 'MediaArt',
+-  identifier_prefix: 'MediaArt',
+-  symbol_prefix: 'media_art',
+-  includes: ['Gio-2.0', 'GObject-2.0'],
+-  header: 'libmediaart/mediaart.h',
+-  export_packages: 'libmediaart-' + libmediaart_api_version,
+-  extra_args: gir_args,
+-  install: true
+-)
++# Introspection
++if get_option('introspection')
++  libmediaart_gir_and_typelib = gnome.generate_gir(libmediaart,
++    sources: libmediaart_sources + libmediaart_introspection_sources + libmediaart_public_headers,
++    nsversion: libmediaart_api_version,
++    namespace: 'MediaArt',
++    identifier_prefix: 'MediaArt',
++    symbol_prefix: 'media_art',
++    includes: ['Gio-2.0', 'GObject-2.0'],
++    header: 'libmediaart/mediaart.h',
++    export_packages: 'libmediaart-' + libmediaart_api_version,
++    extra_args: gir_args,
++    install: true
++  )
+ 
+ libmediaart_vapi = gnome.generate_vapi('libmediaart-' + libmediaart_api_version,
+   sources: libmediaart_gir_and_typelib[0],
+   packages: 'gio-2.0',
+   install: true)
++endif
+ 
+ libmediaart_dep = declare_dependency(
+   link_with: libmediaart,

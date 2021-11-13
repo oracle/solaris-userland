@@ -30,42 +30,33 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libmediaart
-COMPONENT_VERSION=	1.9.4
+COMPONENT_VERSION=	1.9.5
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/libmediaart/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:a57be017257e4815389afe4f58fdacb6a50e74fd185452b23a652ee56b04813d
+	sha256:07def5a42c482ae71d3e1f77a4d0fdc337f74226059a65284d6d5a241f0e9cd6
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	13148
 
-TPNO=			54120
+TPNO=			76351
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-CONFIGURE_OPTIONS += --disable-qt
-CONFIGURE_OPTIONS += --disable-static
 # Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-introspection
-CONFIGURE_OPTIONS.64 += --enable-introspection
-CONFIGURE_OPTIONS += --enable-shared
-# Required for other components.
-CONFIGURE_OPTIONS += --enable-gdkpixbuf
-# Required for other components.
-CONFIGURE_OPTIONS.32 += --disable-vala
-CONFIGURE_OPTIONS.64 += --enable-vala
-CONFIGURE_OPTIONS += --enable-gtk-doc
+CONFIGURE_OPTIONS.32 += -Dintrospection=false
+CONFIGURE_OPTIONS += -Dgtk_doc=true
 
 # for the tests
 unexport SHELLOPTS
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-COMPONENT_TEST_ARGS =   -k -i
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9]*.[0-9][0-9]s//" '
 COMPONENT_TEST_TRANSFORMS += \
-        '-e "s/\# libmediaart-DEBUG:.*//" ' \
         '-n ' \
-        '-e "/TOTAL:/p" ' \
-        '-e "/SKIP:/p" ' \
-        '-e "/PASS:/p" ' \
-        '-e "/FAIL:/p" ' \
-        '-e "/ERROR:/p" '
+        '-e "/OK/p" ' \
+        '-e "/Fail/p" ' \
+        '-e "/Pass/p" ' \
+        '-e "/Ok/p" ' \
+        '-e "/ok/p" '
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala
