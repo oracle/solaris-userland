@@ -28,22 +28,37 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-autoar
-COMPONENT_VERSION=	0.3.1
+COMPONENT_VERSION=	0.4.1
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/gnome-autoar/ 
 COMPONENT_ARCHIVE_HASH= \
-    sha256:0e78713e6f0de339fdee16bab82753ae290fe80fa7b4ba6e3db8c1465b81d0f8
+    sha256:646bd50ebad92d91c1be89097a15364156157442cac1471ded7ecb27d9a9150e
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	15236
 
-TPNO=			67998
-
-# Test directory exists, but gmake test doesn't provide anything useful
-TEST_TARGET= $(SKIP_TEST)
+TPNO=			76353
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --enable-gtk-doc
+CONFIGURE_OPTIONS += -Dgtk_doc=true
+CONFIGURE_OPTIONS += -Dtests=true
+CONFIGURE_OPTIONS.32 += -Dvapi=false
+CONFIGURE_OPTIONS.64 += -Dvapi=true
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9]*.[0-9][0-9]s//" '
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/OK/p" ' \
+        '-e "/Fail/p" ' \
+        '-e "/Pass/p" ' \
+        '-e "/Ok/p" ' \
+        '-e "/ok/p" '
+
+# added because of the read-only directory required for the test
+# without this gmake clobber will fail 
+COMPONENT_POST_TEST_ACTION.64 += \
+	$(CHMOD) 755 $(COMPONENT_SRC)/tests/files/extract/test-readonly-directory/output/arextract
 
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/glib2
