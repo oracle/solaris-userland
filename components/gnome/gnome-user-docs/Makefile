@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-user-docs
-COMPONENT_VERSION=	3.34.0
+COMPONENT_VERSION=	41.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/DocumentationProject/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:8f9907ff15fff97da75ece645cc86766703ac54d716d25563ba67ffed1af24ed
+	sha256:2ab88626919e84c3a25e180a6f74a3f89e940b9a2a94a1d6b008559e2392dd51
 COMPONENT_BUGDB=        gnome/help
 COMPONENT_ANITYA_ID=	13138
 
-TPNO=			54069
+TPNO=			76423
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
