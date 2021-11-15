@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 32
 
@@ -51,6 +51,11 @@ BUILD_STYLE= ant
 #
 # OK (22 tests)
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_32)
+# Your change is not tested unless you install the package onto current
+# machine. So technically it is not correct to have 'gmake test' available.
+# This allows the weekly whole-gate automated tests to be performed and results
+# recorded.
+TEST_TARGET= $(SYSTEM_TEST_TARGET)
 include $(WS_MAKE_RULES)/common.mk
 
 # These ARGS override what is set in build.xml
