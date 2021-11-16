@@ -23,24 +23,23 @@
 # Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
-BUILD_BITS=		64_and_32
+BUILD_BITS=		64
 COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		glade
-COMPONENT_VERSION=	3.22.1
+COMPONENT_VERSION=	3.38.2
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Glade
 COMPONENT_ARCHIVE_HASH= \
-	sha256:dff89a2ef2eaf000ff2a46979978d03cb9202cb04668e01d0ea5c5bb5547e39a
+	sha256:98fc87647d88505c97dd2f30f2db2d3e9527515b3af11694787d62a8d28fbab7
 COMPONENT_BUGDB=	gnome/libglade
 COMPONENT_ANITYA_ID=	1174
+COMPONENT_BAID=		112396
 
-COMPONENT_BAID=		68660
-
-# Requires a display
-TEST_TARGET = $(SKIP_TEST)
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+include $(WS_MAKE_RULES)/test-x11.mk
 
 ifeq ($(MACH),sparc)
 # Webkit expects that only 48 bits from the address are effectively used.
@@ -51,13 +50,14 @@ endif
 
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
-CONFIGURE_OPTIONS += --enable-gtk-doc
-CONFIGURE_OPTIONS += --enable-gtk-doc-html
-CONFIGURE_OPTIONS += --enable-gladeui
+CONFIGURE_OPTIONS += -Dgtk_doc=true
+CONFIGURE_OPTIONS += -Dgladeui=true
 
 REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/gdk-pixbuf
+REQUIRED_PACKAGES += library/desktop/gjs
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/desktop/webkitgtk4

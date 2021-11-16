@@ -17,13 +17,12 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
-# Drop the 32-bit binaries
-<transform file path=usr/bin/\$\(MACH32\)/glade -> drop>
-<transform file path=usr/bin/\$\(MACH32\)/glade-previewer -> drop>
+<transform file path=usr/bin/glade -> set pkg.linted.userland.action001.2 true>
+<transform file path=usr/bin/glade-previewer -> set pkg.linted.userland.action001.2 true>
 
-# Disable ASLR for glade binaries.
-<transform file path=usr/bin/glade -> set pkg.linted.userland.action001.5 true>
-<transform file path=usr/bin/glade-previewer -> set pkg.linted.userland.action001.5 true>
+# Transform the target path in the links
+<transform link path=usr/share/help/([^/]+)/(.*) \
+    target=/usr/share/help/([^/]+)/.* -> set target ../../../%<3>/%<2>>
