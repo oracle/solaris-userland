@@ -1,0 +1,44 @@
+changes to build with libgweather 40.0 when it hits the CBE 
+until we update gnome-calendar
+Not suitable for upstream 
+
+--- a/src/utils/gcal-utils.h	2021-11-17 11:25:45.901362930 -0800
++++ b/src/utils/gcal-utils.h	2021-11-17 11:26:28.212725661 -0800
+@@ -39,7 +39,9 @@
+ #endif
+ 
+ G_DEFINE_AUTOPTR_CLEANUP_FUNC (ECalComponent, g_object_unref)
++#if !GWEATHER_CHECK_VERSION (40, 0, 0)
+ G_DEFINE_AUTOPTR_CLEANUP_FUNC (GWeatherLocation, gweather_location_unref)
++#endif
+ G_DEFINE_AUTOPTR_CLEANUP_FUNC (ICalTime, g_object_unref)
+ 
+ gchar*               gcal_get_weekday                            (gint                i);
+--- a/src/weather/gcal-weather-service.c	2021-11-17 11:26:48.884458204 -0800
++++ b/src/weather/gcal-weather-service.c	2021-11-17 11:28:07.060674962 -0800
+@@ -644,7 +644,11 @@
+        * This combination works fine, though. We should open a bug / investigate
+        * what is going on.
+        */
++#if !GWEATHER_CHECK_VERSION (40, 0, 0)
+       gweather_info_set_enabled_providers (self->gweather_info, GWEATHER_PROVIDER_METAR | GWEATHER_PROVIDER_OWM | GWEATHER_PROVIDER_YR_NO);
++#else
++      gweather_info_set_enabled_providers (self->gweather_info, GWEATHER_PROVIDER_METAR | GWEATHER_PROVIDER_OWM | GWEATHER_PROVIDER_MET_NO);
++#endif
+       g_signal_connect_object (self->gweather_info, "updated", (GCallback) on_gweather_update_cb, self, 0);
+ 
+       /*
+
+--- a/src/utils/gcal-date-time-utils.c	2021-11-17 13:27:49.067934047 -0800
++++ b/src/utils/gcal-date-time-utils.c	2021-11-17 13:28:32.662790284 -0800
+@@ -246,7 +246,9 @@
+   tzid = g_time_zone_get_identifier (tz);
+   ical_tz = i_cal_timezone_get_builtin_timezone (tzid);
+ 
+-  g_assert (ical_tz != NULL);
++  if (!ical_tz)
++    ical_tz = i_cal_timezone_get_utc_timezone ();
++
+   return ical_tz;
+ }
+ 
