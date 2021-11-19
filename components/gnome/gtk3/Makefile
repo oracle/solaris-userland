@@ -30,17 +30,17 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gtk3
-COMPONENT_VERSION=	3.24.23
+COMPONENT_VERSION=	3.24.30
 COMPONENT_PROJECT_URL=	https://www.gtk.org/
 COMPONENT_SRC=		gtk+-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:5d864d248357a2251545b3387b35942de5f66e4c66013f0962eb5cb6f8dae2b1
+    sha256:ba75bfff320ad1f4cfbee92ba813ec336322cc3c660d406aad014b07087a3ba9
 COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/gtk+/3.24/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/gtk+
 COMPONENT_ANITYA_ID=	10018
 
-TPNO=			62928
+TPNO=			76519
 
 ETCDIR.64="$(ETCDIR)/$(MACH64)"
 
@@ -54,7 +54,6 @@ CFLAGS.gcc += -std=gnu11
 gcc_OPT.i386.32 = -O2
 
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
-CONFIGURE_OPTIONS += --enable-cloudprint
 # Required for other components.
 CONFIGURE_OPTIONS.32 += --disable-introspection
 CONFIGURE_OPTIONS.64 += --enable-introspection
