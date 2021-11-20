@@ -27,13 +27,13 @@ BUILD_BITS=             NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-backgrounds
-COMPONENT_VERSION=	3.38.0
+COMPONENT_VERSION=	41.0
 COMPONENT_ARCHIVE_HASH= \
-	sha256:f7712a873a80c9a9fcf3952611effeb2d9aed23a3e8abfcda8afb15c427d1ee3
+	sha256:1da1ac0d261bedf0fcd2c85b480bc65505e23cf51f1143126c0d37717e693145
 COMPONENT_BUGDB=        gnome/branding
 COMPONENT_ANITYA_ID=	13125
 
-TPNO=			65130
+TPNO=			75652
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
