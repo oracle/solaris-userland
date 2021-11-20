@@ -101,6 +101,7 @@ COMPONENT_PRE_TEST_ACTION = \
 	printf "%s\n" $(TEST_BLACKLIST) > blacklist);
 
 HGTEST_JOBS = 20
+HGTEST_TIMEOUT = 720
 
 # Mercurial build process needs to be told that it's being built with Python 3.x.
 $(BUILD_DIR)/$(MACH64)-$(PYTHON_VERSION)/.built:  COMPONENT_BUILD_ENV += HGPYTHON3=1
@@ -111,6 +112,7 @@ COMPONENT_TEST_DIR =	$(COMPONENT_SRC)/tests
 COMPONENT_TEST_ENV =	PYTHONPATH=$(PROTO_DIR)/$(PYTHON_LIB)
 COMPONENT_TEST_ENV +=	TERM=dumb
 COMPONENT_TEST_ENV +=	HGTEST_JOBS=$(or $(HGTEST_JOBS),1)
+COMPONENT_TEST_ENV +=	HGTEST_TIMEOUT=$(or $(HGTEST_TIMEOUT),360)
 # We need GNU false(1) and diff(1)
 COMPONENT_TEST_ENV += PATH=/usr/gnu/bin:/usr/bin
 COMPONENT_TEST_ARGS =	./run-tests.py \

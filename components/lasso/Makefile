@@ -58,3 +58,4 @@ REQUIRED_PACKAGES+=	library/libxml2
 REQUIRED_PACKAGES+=	library/xmlsec
 REQUIRED_PACKAGES+=	library/libxslt
 REQUIRED_PACKAGES+=	library/zlib
+REQUIRED_PACKAGES+=	web/php-74

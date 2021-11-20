@@ -78,6 +78,9 @@ CONFIGURE_OPTIONS += --with-system-icu
 CONFIGURE_OPTIONS += --with-system-zlib
 CONFIGURE_OPTIONS += --enable-strip
 CONFIGURE_OPTIONS += --with-system-nspr
+# We need to specify autoconf otherwise the configure system looks for
+# autoconf 2.13
+CONFIGURE_OPTIONS += AUTOCONF=/usr/bin/autoconf
 LDFLAGS += -z gnu-version-script-compat
 
 # js coredumps on sparc - see bug 24935318
@@ -87,6 +90,7 @@ COMPONENT_BUILD_ENV += LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS)"
 COMPONENT_INSTALL_ENV += LD_EXEC_OPTIONS="$(LD_EXEC_OPTIONS)"
 endif
 
+REQUIRED_PACKAGES += developer/build/autoconf
 REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += library/libffi
 REQUIRED_PACKAGES += library/nspr

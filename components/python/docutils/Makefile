@@ -34,6 +34,8 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://docutils.sourceforge.io/
 COMPONENT_ANITYA_ID=	3849
+COMPONENT_BUGDB=	python-mod/docutils
+
 
 TPNO=			68884
 

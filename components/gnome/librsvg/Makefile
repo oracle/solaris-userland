@@ -56,7 +56,9 @@ unexport SHELLOPTS
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/^[mM]ake/d" ' \
-        '-e "/test result/p" '
+        '-e "s/;[[:space:]]finished[[:space:]].*//" ' \
+        '-e "/test result/p" ' \
+
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc

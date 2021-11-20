@@ -71,4 +71,5 @@ COMPONENT_POST_INSTALL_ACTION.32 += \
 	$(GSED) -i -e 's|$(GNUBIN)/i86|$(GNUBIN)|' \
 		$(PROTOGNUBIN)/$(MACH32)/ncursesw5-config;
 
+REQUIRED_PACKAGES += developer/gcc-10
 REQUIRED_PACKAGES += shell/bash

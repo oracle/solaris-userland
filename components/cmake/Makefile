@@ -143,6 +143,7 @@ COMPONENT_POST_SYSTEM_TEST_ACTION += \
 
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += compress/xz
+REQUIRED_PACKAGES += developer/documentation-tool/sphinx
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/libarchive
 REQUIRED_PACKAGES += library/ncurses

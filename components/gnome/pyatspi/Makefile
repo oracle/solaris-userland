@@ -53,9 +53,21 @@ INSTALL_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.installed)
 $(BUILD_DIR)/%-3.7/.installed:		PYTHON_VERSION=3.7
 $(BUILD_DIR)/%-3.9/.installed:		PYTHON_VERSION=3.9
 
-TEST_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.tested)
-$(BUILD_DIR)/%-3.7/.tested:		PYTHON_VERSION=3.7
-$(BUILD_DIR)/%-3.9/.tested:		PYTHON_VERSION=3.9
+TEST_64 = $(PYTHON_VERSIONS:%=$(BUILD_DIR)/$(MACH64)-%/.tested-and-compared)
+$(BUILD_DIR)/%-3.7/.tested-and-compared:		PYTHON_VERSION=3.7
+$(BUILD_DIR)/%-3.9/.tested-and-compared:		PYTHON_VERSION=3.9
+
+# Test transforms retain only relevant results output.
+COMPONENT_TEST_TRANSFORMS += \
+       '-n ' \
+       '-e "/TOTAL: /p" ' \
+       '-e "/PASS: /p" ' \
+       '-e "/SKIP: /p" ' \
+       '-e "/FAIL: /p" ' \
+       '-e "/ERROR: /p" ' \
+
+COMPONENT_TEST_MASTER = \
+        $(COMPONENT_TEST_RESULTS_DIR)/results-$(BITS).master
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 include $(WS_MAKE_RULES)/test-x11.mk
