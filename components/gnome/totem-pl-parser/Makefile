@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates. 
 #
 
 BUILD_BITS =            32_and_64
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		totem-pl-parser
-COMPONENT_VERSION=	3.26.5
+COMPONENT_VERSION=	3.26.6
 COMPONENT_PROJECT_URL=  https://developer.gnome.org/totem-pl-parser/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:5370de46f2e848221779275479b96ac39115b1efd2b0293d4afa87e22c8c528c
+	sha256:c0df0f68d5cf9d7da43c81c7f13f11158358368f98c22d47722f3bd04bd3ac1c
 COMPONENT_BUGDB=        gnome/multimedia
 COMPONENT_ANITYA_ID=	13163
 
-TPNO=			63210
+TPNO=			75704
 
 BUILD_STYLE=         meson
 TEST_TARGET  = $(NO_TESTS)
