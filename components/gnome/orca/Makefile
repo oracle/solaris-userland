@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -28,13 +28,13 @@ include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		orca
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Orca
-COMPONENT_VERSION=	3.38.0
+COMPONENT_VERSION=	41.0
 COMPONENT_ARCHIVE_HASH= \
-       sha256:1c3279d79898db10a105bcb705b5a4042b1b51a9c057a6bd0ffd65dac2356fee
+       sha256:7697e51445e19fd774e68b160adaf6687b808172de0417602e169766b6b6d4bd
 COMPONENT_BUGDB= 	gnome/accessibility
 COMPONENT_ANITYA_ID=	13156
 
-TPNO=		        63157
+TPNO=		        75713
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

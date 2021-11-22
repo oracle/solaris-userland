@@ -213,7 +213,7 @@ make[3]: Leaving directory '$(@D)/src'
 make[2]: Leaving directory '$(@D)/src'
 Making check in help
 make[2]: Entering directory '$(@D)/help'
-for lc in C bg cs de el es fr gl hu pt_BR sl sv uk; do \
+for lc in C bg cs de el es fr gl hu id pt_BR sl sv uk; do \
   if test -d "$lc"; \
     then d=; \
     xmlpath="$lc"; \
@@ -221,7 +221,7 @@ for lc in C bg cs de el es fr gl hu pt_BR sl sv uk; do \
     d="$(SOURCE_DIR)/help/"; \
     xmlpath="$lc:$(SOURCE_DIR)/help/$lc"; \
   fi; \
-  for page in commands_bookmarks.page commands_braille.page commands_chat.page commands_controlling_orca.page commands_debugging.page commands_find.page commands_flat_review.page commands_live_regions.page commands_mouse.page commands.page commands_profiles.page commands_reading.page commands_speech_settings.page commands_structural_navigation.page commands_table.page commands_time_date_notifications.page commands_where_am_i.page howto_bookmarks.page howto_documents.page howto_flat_review.page howto_forms.page howto_key_bindings.page howto_keyboard_layout.page howto_learn_modes.page howto_live_regions.page howto_mouse_review.page howto_notifications.page howto_orca_find.page howto_profiles.page howto_setting_up_orca.page howto_structural_navigation.page howto_tables.page howto_text_attributes.page howto_the_orca_modifier.page howto_toggling_caps_lock.page howto_whereami.page index.page introduction.page preferences_braille.page preferences_chat.page preferences_gecko.page preferences_general.page preferences_introduction.page preferences_key_bindings.page preferences_key_echo.page preferences.page preferences_pronunciation.page preferences_speech.page preferences_spellcheck.page preferences_table_navigation.page preferences_text_attributes.page preferences_voice.page; do \
+  for page in commands_bookmarks.page commands_braille.page commands_chat.page commands_controlling_orca.page commands_debugging.page commands_find.page commands_flat_review.page commands_live_regions.page commands_mouse.page commands.page commands_profiles.page commands_reading.page commands_speech_settings.page commands_structural_navigation.page commands_table.page commands_time_date_notifications.page commands_where_am_i.page howto_bookmarks.page howto_documents.page howto_flat_review.page howto_forms.page howto_key_bindings.page howto_keyboard_layout.page howto_learn_modes.page howto_live_regions.page howto_mouse_review.page howto_notifications.page howto_orca_find.page howto_profiles.page howto_setting_up_orca.page howto_structural_navigation.page howto_tables.page howto_text_attributes.page howto_the_orca_modifier.page howto_toggling_caps_lock.page howto_whereami.page index.page introduction.page preferences_braille.page preferences_chat.page preferences_web.page preferences_general.page preferences_introduction.page preferences_key_bindings.page preferences_key_echo.page preferences.page preferences_pronunciation.page preferences_speech.page preferences_spellcheck.page preferences_table_navigation.page preferences_text_attributes.page preferences_voice.page; do \
     echo "xmllint --nonet --noout --noent --path $xmlpath --xinclude $d$lc/$page"; \
     xmllint --nonet --noout --noent --path "$xmlpath" --xinclude "$d$lc/$page"; \
   done; \
@@ -266,7 +266,7 @@ xmllint --nonet --noout --noent --path C:$(SOURCE_DIR)/help/C --xinclude $(SOURC
 xmllint --nonet --noout --noent --path C:$(SOURCE_DIR)/help/C --xinclude $(SOURCE_DIR)/help/C/introduction.page
 xmllint --nonet --noout --noent --path C:$(SOURCE_DIR)/help/C --xinclude $(SOURCE_DIR)/help/C/preferences_braille.page
 xmllint --nonet --noout --noent --path C:$(SOURCE_DIR)/help/C --xinclude $(SOURCE_DIR)/help/C/preferences_chat.page
-xmllint --nonet --noout --noent --path C:$(SOURCE_DIR)/help/C --xinclude $(SOURCE_DIR)/help/C/preferences_gecko.page
+xmllint --nonet --noout --noent --path C:$(SOURCE_DIR)/help/C --xinclude $(SOURCE_DIR)/help/C/preferences_web.page
 xmllint --nonet --noout --noent --path C:$(SOURCE_DIR)/help/C --xinclude $(SOURCE_DIR)/help/C/preferences_general.page
 xmllint --nonet --noout --noent --path C:$(SOURCE_DIR)/help/C --xinclude $(SOURCE_DIR)/help/C/preferences_introduction.page
 xmllint --nonet --noout --noent --path C:$(SOURCE_DIR)/help/C --xinclude $(SOURCE_DIR)/help/C/preferences_key_bindings.page
@@ -318,7 +318,7 @@ xmllint --nonet --noout --noent --path bg --xinclude bg/index.page
 xmllint --nonet --noout --noent --path bg --xinclude bg/introduction.page
 xmllint --nonet --noout --noent --path bg --xinclude bg/preferences_braille.page
 xmllint --nonet --noout --noent --path bg --xinclude bg/preferences_chat.page
-xmllint --nonet --noout --noent --path bg --xinclude bg/preferences_gecko.page
+xmllint --nonet --noout --noent --path bg --xinclude bg/preferences_web.page
 xmllint --nonet --noout --noent --path bg --xinclude bg/preferences_general.page
 xmllint --nonet --noout --noent --path bg --xinclude bg/preferences_introduction.page
 xmllint --nonet --noout --noent --path bg --xinclude bg/preferences_key_bindings.page
@@ -370,7 +370,7 @@ xmllint --nonet --noout --noent --path cs --xinclude cs/index.page
 xmllint --nonet --noout --noent --path cs --xinclude cs/introduction.page
 xmllint --nonet --noout --noent --path cs --xinclude cs/preferences_braille.page
 xmllint --nonet --noout --noent --path cs --xinclude cs/preferences_chat.page
-xmllint --nonet --noout --noent --path cs --xinclude cs/preferences_gecko.page
+xmllint --nonet --noout --noent --path cs --xinclude cs/preferences_web.page
 xmllint --nonet --noout --noent --path cs --xinclude cs/preferences_general.page
 xmllint --nonet --noout --noent --path cs --xinclude cs/preferences_introduction.page
 xmllint --nonet --noout --noent --path cs --xinclude cs/preferences_key_bindings.page
@@ -422,7 +422,7 @@ xmllint --nonet --noout --noent --path de --xinclude de/index.page
 xmllint --nonet --noout --noent --path de --xinclude de/introduction.page
 xmllint --nonet --noout --noent --path de --xinclude de/preferences_braille.page
 xmllint --nonet --noout --noent --path de --xinclude de/preferences_chat.page
-xmllint --nonet --noout --noent --path de --xinclude de/preferences_gecko.page
+xmllint --nonet --noout --noent --path de --xinclude de/preferences_web.page
 xmllint --nonet --noout --noent --path de --xinclude de/preferences_general.page
 xmllint --nonet --noout --noent --path de --xinclude de/preferences_introduction.page
 xmllint --nonet --noout --noent --path de --xinclude de/preferences_key_bindings.page
@@ -474,7 +474,7 @@ xmllint --nonet --noout --noent --path el --xinclude el/index.page
 xmllint --nonet --noout --noent --path el --xinclude el/introduction.page
 xmllint --nonet --noout --noent --path el --xinclude el/preferences_braille.page
 xmllint --nonet --noout --noent --path el --xinclude el/preferences_chat.page
-xmllint --nonet --noout --noent --path el --xinclude el/preferences_gecko.page
+xmllint --nonet --noout --noent --path el --xinclude el/preferences_web.page
 xmllint --nonet --noout --noent --path el --xinclude el/preferences_general.page
 xmllint --nonet --noout --noent --path el --xinclude el/preferences_introduction.page
 xmllint --nonet --noout --noent --path el --xinclude el/preferences_key_bindings.page
@@ -526,7 +526,7 @@ xmllint --nonet --noout --noent --path es --xinclude es/index.page
 xmllint --nonet --noout --noent --path es --xinclude es/introduction.page
 xmllint --nonet --noout --noent --path es --xinclude es/preferences_braille.page
 xmllint --nonet --noout --noent --path es --xinclude es/preferences_chat.page
-xmllint --nonet --noout --noent --path es --xinclude es/preferences_gecko.page
+xmllint --nonet --noout --noent --path es --xinclude es/preferences_web.page
 xmllint --nonet --noout --noent --path es --xinclude es/preferences_general.page
 xmllint --nonet --noout --noent --path es --xinclude es/preferences_introduction.page
 xmllint --nonet --noout --noent --path es --xinclude es/preferences_key_bindings.page
@@ -578,7 +578,7 @@ xmllint --nonet --noout --noent --path fr --xinclude fr/index.page
 xmllint --nonet --noout --noent --path fr --xinclude fr/introduction.page
 xmllint --nonet --noout --noent --path fr --xinclude fr/preferences_braille.page
 xmllint --nonet --noout --noent --path fr --xinclude fr/preferences_chat.page
-xmllint --nonet --noout --noent --path fr --xinclude fr/preferences_gecko.page
+xmllint --nonet --noout --noent --path fr --xinclude fr/preferences_web.page
 xmllint --nonet --noout --noent --path fr --xinclude fr/preferences_general.page
 xmllint --nonet --noout --noent --path fr --xinclude fr/preferences_introduction.page
 xmllint --nonet --noout --noent --path fr --xinclude fr/preferences_key_bindings.page
@@ -630,7 +630,7 @@ xmllint --nonet --noout --noent --path gl --xinclude gl/index.page
 xmllint --nonet --noout --noent --path gl --xinclude gl/introduction.page
 xmllint --nonet --noout --noent --path gl --xinclude gl/preferences_braille.page
 xmllint --nonet --noout --noent --path gl --xinclude gl/preferences_chat.page
-xmllint --nonet --noout --noent --path gl --xinclude gl/preferences_gecko.page
+xmllint --nonet --noout --noent --path gl --xinclude gl/preferences_web.page
 xmllint --nonet --noout --noent --path gl --xinclude gl/preferences_general.page
 xmllint --nonet --noout --noent --path gl --xinclude gl/preferences_introduction.page
 xmllint --nonet --noout --noent --path gl --xinclude gl/preferences_key_bindings.page
@@ -682,7 +682,7 @@ xmllint --nonet --noout --noent --path hu --xinclude hu/index.page
 xmllint --nonet --noout --noent --path hu --xinclude hu/introduction.page
 xmllint --nonet --noout --noent --path hu --xinclude hu/preferences_braille.page
 xmllint --nonet --noout --noent --path hu --xinclude hu/preferences_chat.page
-xmllint --nonet --noout --noent --path hu --xinclude hu/preferences_gecko.page
+xmllint --nonet --noout --noent --path hu --xinclude hu/preferences_web.page
 xmllint --nonet --noout --noent --path hu --xinclude hu/preferences_general.page
 xmllint --nonet --noout --noent --path hu --xinclude hu/preferences_introduction.page
 xmllint --nonet --noout --noent --path hu --xinclude hu/preferences_key_bindings.page
@@ -694,6 +694,58 @@ xmllint --nonet --noout --noent --path hu --xinclude hu/preferences_spellcheck.p
 xmllint --nonet --noout --noent --path hu --xinclude hu/preferences_table_navigation.page
 xmllint --nonet --noout --noent --path hu --xinclude hu/preferences_text_attributes.page
 xmllint --nonet --noout --noent --path hu --xinclude hu/preferences_voice.page
+xmllint --nonet --noout --noent --path id --xinclude id/commands_bookmarks.page
+xmllint --nonet --noout --noent --path id --xinclude id/commands_braille.page
+xmllint --nonet --noout --noent --path id --xinclude id/commands_chat.page
+xmllint --nonet --noout --noent --path id --xinclude id/commands_controlling_orca.page
+xmllint --nonet --noout --noent --path id --xinclude id/commands_debugging.page
+xmllint --nonet --noout --noent --path id --xinclude id/commands_find.page
+xmllint --nonet --noout --noent --path id --xinclude id/commands_flat_review.page
+xmllint --nonet --noout --noent --path id --xinclude id/commands_live_regions.page
+xmllint --nonet --noout --noent --path id --xinclude id/commands_mouse.page
+xmllint --nonet --noout --noent --path id --xinclude id/commands.page
+xmllint --nonet --noout --noent --path id --xinclude id/commands_profiles.page
+xmllint --nonet --noout --noent --path id --xinclude id/commands_reading.page
+xmllint --nonet --noout --noent --path id --xinclude id/commands_speech_settings.page
+xmllint --nonet --noout --noent --path id --xinclude id/commands_structural_navigation.page
+xmllint --nonet --noout --noent --path id --xinclude id/commands_table.page
+xmllint --nonet --noout --noent --path id --xinclude id/commands_time_date_notifications.page
+xmllint --nonet --noout --noent --path id --xinclude id/commands_where_am_i.page
+xmllint --nonet --noout --noent --path id --xinclude id/howto_bookmarks.page
+xmllint --nonet --noout --noent --path id --xinclude id/howto_documents.page
+xmllint --nonet --noout --noent --path id --xinclude id/howto_flat_review.page
+xmllint --nonet --noout --noent --path id --xinclude id/howto_forms.page
+xmllint --nonet --noout --noent --path id --xinclude id/howto_key_bindings.page
+xmllint --nonet --noout --noent --path id --xinclude id/howto_keyboard_layout.page
+xmllint --nonet --noout --noent --path id --xinclude id/howto_learn_modes.page
+xmllint --nonet --noout --noent --path id --xinclude id/howto_live_regions.page
+xmllint --nonet --noout --noent --path id --xinclude id/howto_mouse_review.page
+xmllint --nonet --noout --noent --path id --xinclude id/howto_notifications.page
+xmllint --nonet --noout --noent --path id --xinclude id/howto_orca_find.page
+xmllint --nonet --noout --noent --path id --xinclude id/howto_profiles.page
+xmllint --nonet --noout --noent --path id --xinclude id/howto_setting_up_orca.page
+xmllint --nonet --noout --noent --path id --xinclude id/howto_structural_navigation.page
+xmllint --nonet --noout --noent --path id --xinclude id/howto_tables.page
+xmllint --nonet --noout --noent --path id --xinclude id/howto_text_attributes.page
+xmllint --nonet --noout --noent --path id --xinclude id/howto_the_orca_modifier.page
+xmllint --nonet --noout --noent --path id --xinclude id/howto_toggling_caps_lock.page
+xmllint --nonet --noout --noent --path id --xinclude id/howto_whereami.page
+xmllint --nonet --noout --noent --path id --xinclude id/index.page
+xmllint --nonet --noout --noent --path id --xinclude id/introduction.page
+xmllint --nonet --noout --noent --path id --xinclude id/preferences_braille.page
+xmllint --nonet --noout --noent --path id --xinclude id/preferences_chat.page
+xmllint --nonet --noout --noent --path id --xinclude id/preferences_web.page
+xmllint --nonet --noout --noent --path id --xinclude id/preferences_general.page
+xmllint --nonet --noout --noent --path id --xinclude id/preferences_introduction.page
+xmllint --nonet --noout --noent --path id --xinclude id/preferences_key_bindings.page
+xmllint --nonet --noout --noent --path id --xinclude id/preferences_key_echo.page
+xmllint --nonet --noout --noent --path id --xinclude id/preferences.page
+xmllint --nonet --noout --noent --path id --xinclude id/preferences_pronunciation.page
+xmllint --nonet --noout --noent --path id --xinclude id/preferences_speech.page
+xmllint --nonet --noout --noent --path id --xinclude id/preferences_spellcheck.page
+xmllint --nonet --noout --noent --path id --xinclude id/preferences_table_navigation.page
+xmllint --nonet --noout --noent --path id --xinclude id/preferences_text_attributes.page
+xmllint --nonet --noout --noent --path id --xinclude id/preferences_voice.page
 xmllint --nonet --noout --noent --path pt_BR --xinclude pt_BR/commands_bookmarks.page
 xmllint --nonet --noout --noent --path pt_BR --xinclude pt_BR/commands_braille.page
 xmllint --nonet --noout --noent --path pt_BR --xinclude pt_BR/commands_chat.page
@@ -734,7 +786,7 @@ xmllint --nonet --noout --noent --path pt_BR --xinclude pt_BR/index.page
 xmllint --nonet --noout --noent --path pt_BR --xinclude pt_BR/introduction.page
 xmllint --nonet --noout --noent --path pt_BR --xinclude pt_BR/preferences_braille.page
 xmllint --nonet --noout --noent --path pt_BR --xinclude pt_BR/preferences_chat.page
-xmllint --nonet --noout --noent --path pt_BR --xinclude pt_BR/preferences_gecko.page
+xmllint --nonet --noout --noent --path pt_BR --xinclude pt_BR/preferences_web.page
 xmllint --nonet --noout --noent --path pt_BR --xinclude pt_BR/preferences_general.page
 xmllint --nonet --noout --noent --path pt_BR --xinclude pt_BR/preferences_introduction.page
 xmllint --nonet --noout --noent --path pt_BR --xinclude pt_BR/preferences_key_bindings.page
@@ -786,7 +838,7 @@ xmllint --nonet --noout --noent --path sl --xinclude sl/index.page
 xmllint --nonet --noout --noent --path sl --xinclude sl/introduction.page
 xmllint --nonet --noout --noent --path sl --xinclude sl/preferences_braille.page
 xmllint --nonet --noout --noent --path sl --xinclude sl/preferences_chat.page
-xmllint --nonet --noout --noent --path sl --xinclude sl/preferences_gecko.page
+xmllint --nonet --noout --noent --path sl --xinclude sl/preferences_web.page
 xmllint --nonet --noout --noent --path sl --xinclude sl/preferences_general.page
 xmllint --nonet --noout --noent --path sl --xinclude sl/preferences_introduction.page
 xmllint --nonet --noout --noent --path sl --xinclude sl/preferences_key_bindings.page
@@ -838,7 +890,7 @@ xmllint --nonet --noout --noent --path sv --xinclude sv/index.page
 xmllint --nonet --noout --noent --path sv --xinclude sv/introduction.page
 xmllint --nonet --noout --noent --path sv --xinclude sv/preferences_braille.page
 xmllint --nonet --noout --noent --path sv --xinclude sv/preferences_chat.page
-xmllint --nonet --noout --noent --path sv --xinclude sv/preferences_gecko.page
+xmllint --nonet --noout --noent --path sv --xinclude sv/preferences_web.page
 xmllint --nonet --noout --noent --path sv --xinclude sv/preferences_general.page
 xmllint --nonet --noout --noent --path sv --xinclude sv/preferences_introduction.page
 xmllint --nonet --noout --noent --path sv --xinclude sv/preferences_key_bindings.page
@@ -890,7 +942,7 @@ xmllint --nonet --noout --noent --path uk --xinclude uk/index.page
 xmllint --nonet --noout --noent --path uk --xinclude uk/introduction.page
 xmllint --nonet --noout --noent --path uk --xinclude uk/preferences_braille.page
 xmllint --nonet --noout --noent --path uk --xinclude uk/preferences_chat.page
-xmllint --nonet --noout --noent --path uk --xinclude uk/preferences_gecko.page
+xmllint --nonet --noout --noent --path uk --xinclude uk/preferences_web.page
 xmllint --nonet --noout --noent --path uk --xinclude uk/preferences_general.page
 xmllint --nonet --noout --noent --path uk --xinclude uk/preferences_introduction.page
 xmllint --nonet --noout --noent --path uk --xinclude uk/preferences_key_bindings.page
