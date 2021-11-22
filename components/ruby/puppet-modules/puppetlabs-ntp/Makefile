@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../../make-rules/shared-macros.mk
@@ -33,7 +33,7 @@ COMPONENT_NAME=		puppetlabs-ntp
 COMPONENT_VERSION=	$(GIT_COMMIT_ID)
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_BUGDB=	utility/puppet
-COMPONENT_ANITYA_ID=	13318
+COMPONENT_ANITYA_ID=	238622
 
 TPNO=			40671
 

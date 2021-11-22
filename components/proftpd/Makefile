@@ -53,6 +53,7 @@ COMPONENT_ARCHIVE_HASH_1= \
     sha256:5322b11901108f4a6f0009c4a67bf6e6980fa9c016b24fc64b986c8529d3e58b
 MOD_GSS_URL=https://sourceforge.net/projects/gssmod/files/mod_gss/Version%20
 COMPONENT_ARCHIVE_URL_1= $(MOD_GSS_URL)$(COMPONENT_VERSION_1)/$(COMPONENT_ARCHIVE_1)
+COMPONENT_ANITYA_ID_1=	17188
 TPNO_MOD_GSS=		42688
 
 # Enable adiheap and adistack security extensions

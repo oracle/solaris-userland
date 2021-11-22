@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL =	https://www.libsdl.org/
 COMPONENT_ARCHIVE_URL = $(COMPONENT_PROJECT_URL)release/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=	library/sdl
-COMPONENT_ANITYA_ID=	4777
+COMPONENT_ANITYA_ID=	4779
 
 # SDL do not supply target "check" but it offers testing utilities.
 # These utils will be found in build/$(MACH64)-tstutils/ and
@@ -49,7 +49,7 @@ BUILD_64 =      $(VARIANTS:%=%/.built)
 $(BUILD_DIR_64)-tstutils/%:	BITS=64
 $(BUILD_DIR_64)-tstutils/.configured: $(BUILD_DIR_64)/.installed
 $(BUILD_DIR_64)-tstutils/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR)/test/configure
-$(BUILD_DIR_64)-tstutils/.configured: CONFIGURE_ENV += "SDL_CFLAGS=-D_REENTRANT -I$(PROTOUSRDIR)/include/SDL2" 
+$(BUILD_DIR_64)-tstutils/.configured: CONFIGURE_ENV += "SDL_CFLAGS=-D_REENTRANT -I$(PROTOUSRDIR)/include/SDL2"
 $(BUILD_DIR_64)-tstutils/.configured: CONFIGURE_ENV += "SDL_LIBS=-L$(PROTOUSRLIBDIR64) -R$(USRLIBDIR64) -lSDL2"
 
 TEST_TARGET= $(SKIP_TEST)

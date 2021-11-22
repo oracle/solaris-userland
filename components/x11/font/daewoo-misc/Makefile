@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2008, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2008, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		NO_ARCH
@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ANITYA_ID=	17192
 COMPONENT_BUGDB=	x11/font
 
-TPNO=			11716
+TPNO=			45843
 
 include $(WS_MAKE_RULES)/x11-component.mk
 include $(WS_MAKE_RULES)/font.mk

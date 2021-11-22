@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2008, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2008, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		NO_ARCH
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	\
 COMPONENT_BUGDB=	x11/font
 COMPONENT_ANITYA_ID=	16833
 
-TPNO= 			9925
+TPNO= 			45957
 
 COMPONENT_FONT_FILES= 		License.txt *.ttf
 COMPONENT_FONT_DEST_DIR= 	$(USRSHARETTFONTSDIR)/liberation

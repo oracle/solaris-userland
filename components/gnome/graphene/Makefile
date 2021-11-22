@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64_and_32
@@ -33,7 +33,7 @@ COMPONENT_PROJECT_URL=	https://ebassi.github.io/graphene/
 COMPONENT_ARCHIVE_HASH=	\
 	sha256:e97de8208f1aac4f913d4fa71ab73a7034e807186feb2abe55876e51c425a7f6
 COMPONENT_BUGDB=	gnome/libraries
-COMPONENT_ANITYA_ID=	7305
+COMPONENT_ANITYA_ID=	12758
 
 TPNO=			63447
 BUILD_STYLE=		meson

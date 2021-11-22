@@ -42,7 +42,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL =	$(COMPONENT_PROJECT_URL)source/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/openssl
-COMPONENT_ANITYA_ID=	2566
+COMPONENT_ANITYA_ID=	17519
 
 TPNO=			73762
 
@@ -74,7 +74,7 @@ CONFIGURE_ENV += CC_FOR_BUILD=
 CONFIGURE_ENV += CC=
 CONFIGURE_ENV += CXX=
 
-# This is to force OpenSSL's Configure script to use gmake for 'make links'. 
+# This is to force OpenSSL's Configure script to use gmake for 'make links'.
 # Otherwise it fails with:
 #     mksh: Fatal error in reader: Unmatched `(' on line
 CONFIGURE_ENV += MAKE="$(GMAKE)"

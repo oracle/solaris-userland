@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64
@@ -33,6 +33,7 @@ COMPONENT_ARCHIVE_HASH= \
 	sha256:24b8677c3462c10465cf50d40576d76682acd5835526093a575865b2aa242c4b
 COMPONENT_ANITYA_ID=	5212
 COMPONENT_BUGDB=	x11/doc
+TPNO=			45824
 
 COMPONENT_NAME_1=	xorg-sgml-doctools
 COMPONENT_VERSION_1=	1.11
@@ -42,6 +43,7 @@ COMPONENT_ARCHIVE_URL_1= $(COMPONENT_PROJECT_URL)/releases/individual/$(COMPONEN
 COMPONENT_ARCHIVE_HASH_1= \
 	sha256:e71ce1df82dcc51eb14be6f42171dcc6bdd11ef46c0c605d6da8af12bd73b74c
 COMPONENT_ANITYA_ID_1=	5211
+TPNO_1=			45825
 
 TEST_TARGET = $(NO_TESTS)
 

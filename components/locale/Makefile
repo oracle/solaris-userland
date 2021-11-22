@@ -32,7 +32,7 @@ COMPONENT_VERSION=	28
 # use solaris version for system locales instead of CLDR version
 IPS_COMPONENT_VERSION=	$(PKG_SOLARIS_VERSION)
 
-COMPONENT_PROJECT_URL=	http://unicode.org/Public/cldr
+COMPONENT_PROJECT_URL=	https://unicode.org/Public/cldr
 
 COMPONENT_SRC=		core
 COMPONENT_ARCHIVE=	core.zip
@@ -53,6 +53,7 @@ COMPONENT_ARCHIVE_HASH_2=sha256:cd9253e6fa1cb0b60f526e9892648144d34a7dd096c7cf21
 UNPACK_ARGS_2=		-r $(COMPONENT_SRC_2)
 
 COMPONENT_BUGDB=	g11n/locale-data
+COMPONENT_ANITYA_ID=	17315
 
 TPNO_CLDR=		26725
 TPNO_IEEE=		11202

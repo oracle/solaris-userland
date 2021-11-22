@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -32,9 +32,9 @@ COMPONENT_PROJECT_URL=	http://www.w3.org/2003/entities/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_ARCHIVE_HASH=	\
     sha256:7dc418c1d361123ffc5e45d61f1b97257940a8eb35d0bfbbc493381cc5b1f959
-COMPONENT_ARCHIVE_URL= http://pkgs.fedoraproject.org/repo/pkgs/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)/103c9828f24820df86e55e7862e28974/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_URL= 	https://sourceware.org/ftp/docbook-tools/new-trials/SOURCES/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/docbook
-COMPONENT_ANITYA_ID=	13304
+COMPONENT_ANITYA_ID=	227355
 
 TPNO=			9459
 

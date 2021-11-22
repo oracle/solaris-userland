@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -29,10 +29,11 @@ include ../../../../make-rules/shared-macros.mk
 COMPONENT_NAME=         accessx
 COMPONENT_VERSION=      #
 COMPONENT_SRC=          sun-src
-COMPONENT_ARCHIVE=	
+COMPONENT_ARCHIVE=
 COMPONENT_ARCHIVE_SRC=	none
 COMPONENT_BUGDB=	x11/xclients
 COMPONENT_ANITYA_ID=	N/A
+TPNO=			39514
 
 # nothing to download ; just build & package
 BUILD_STYLE= justmake

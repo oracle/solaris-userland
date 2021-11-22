@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 COMPILER= gcc
 BUILD_ARCH= i386
@@ -35,7 +35,7 @@ COMPONENT_SRC_NAME=	pmtools
 COMPONENT_ARCHIVE_HASH=	\
     sha256:91751774976e39f6237efd0326eb35196a9346220b92ad35894a33283e872748
 COMPONENT_ARCHIVE_URL=	https://01.org/sites/default/files/page/$(COMPONENT_ARCHIVE)
-COMPONENT_ANITYA_ID=	13294
+COMPONENT_ANITYA_ID=	18
 
 TPNO=			8848
 

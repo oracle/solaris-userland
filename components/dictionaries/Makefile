@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -69,6 +69,7 @@ COMPONENT_ARCHIVE_HASH_5=sha256:4939ebbfadfec6eca89ef23dfabebea04b1a8d3aa021af3c
 UNPACK_ARGS_5=		-r $(COMPONENT_SRC_5)
 
 COMPONENT_BUGDB=	g11n/locale-other
+COMPONENT_ANITYA_ID=	N/A
 
 TPNO_DE=		11366
 TPNO_EN=		10696

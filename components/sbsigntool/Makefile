@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_ARCH= i386
@@ -37,11 +37,12 @@ COMPONENT_ARCHIVE_HASH= \
     sha256:84fb0c8f6fb1e79aa418a4f70a3139b38d5630043b28291c875f383e9b4294b8
 COMPONENT_ARCHIVE_URL=  https://launchpad.net/ubuntu/+archive/primary/+files/$(COMPONENT_ARCHIVE)
 
-TPNO=		        27912	
+COMPONENT_ANITYA_ID=	16340
+TPNO=		        27912
 
 include $(WS_MAKE_RULES)/common.mk
 
-studio_C99MODE= $(studio_C99_ENABLE) 
+studio_C99MODE= $(studio_C99_ENABLE)
 CFLAGS += -I. -I/usr/gnu/include -I/usr/include/ -I/usr/include/efi/x86_64 -I/usr/include/efi/
 PATH=/usr/gnu/bin:/usr/bin
 

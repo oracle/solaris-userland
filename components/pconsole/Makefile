@@ -20,18 +20,18 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pconsole
 COMPONENT_VERSION=	1.0
-COMPONENT_PROJECT_URL=	http://www.heiho.net/pconsole/
+COMPONENT_PROJECT_URL=	https://github.com/walterdejong/pconsole
 COMPONENT_ARCHIVE_HASH=	\
     sha256:94520bf65f726df9d7e686bb486e9a2828c29d09a20b9522f1da4f7d66700bb2
 COMPONENT_ARCHIVE_URL=	http://www.heiho.net/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
-COMPONENT_ANITYA_ID=	17144
+COMPONENT_ANITYA_ID=	235323
 
 TPNO=			9270
 

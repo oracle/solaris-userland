@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 #
@@ -60,8 +60,6 @@ $(foreach suffix, \
 PKGMOGRIFY_TRANSFORMS += $(WS_TOP)/transforms/X-incorporation
 
 include $(WS_MAKE_RULES)/common.mk
-
-TPNO ?=				39514
 
 # X.Org packages use a common set of autoconf macros
 UTIL_MACROS = $(WS_COMPONENTS)/x11/util/util-macros/build/prototype/$(MACH)

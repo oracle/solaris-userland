@@ -72,6 +72,7 @@ $(TARGET_37).installed: SOURCE_DIR = $(SOURCE_DIR_22)
 $(TARGET_37).tested-and-compared: COMPONENT_TEST_DIR = $(SOURCE_DIR_22)/tests
 
 $(MANIFEST_BASE)-django-37.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_22)
+$(MANIFEST_BASE)-django-37.mogrified: TPNO = $(TPNO_22)
 
 # Common generate transform for python uses files from the 3.7 variant as
 # a baseline; hence, to make it work as expected, we have to pass 3.7

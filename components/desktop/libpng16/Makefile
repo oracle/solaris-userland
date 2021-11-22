@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 COMPILER =		gcc
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:daeb2620d829575513e35fecc83f0d3791a620b9b93d800b763542ece9390fb4
 COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/libpng/files/libpng16/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libpng
-COMPONENT_ANITYA_ID=	1705
+COMPONENT_ANITYA_ID=	15294
 
 TPNO=			51101
 

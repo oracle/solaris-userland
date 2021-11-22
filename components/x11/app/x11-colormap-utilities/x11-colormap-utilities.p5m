@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -29,9 +29,6 @@ set name=pkg.fmri \
 set name=pkg.summary value="X Colormap utilities"
 set name=pkg.description \
     value="Utilities for viewing and manipulating entries in X colormaps, especially those associated with low bit-depth visuals."
-set name=com.oracle.info.description \
-    value=cmap_alloc,cmap_compact,xstdcmap,xcolor
-set name=com.oracle.info.tpno value=$(TPNO)
 set name=info.classification value=org.opensolaris.category.2008:System/X11
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
@@ -49,4 +46,6 @@ file path=usr/share/man/man1/cmap_alloc.1
 file path=usr/share/man/man1/cmap_compact.1
 file path=usr/share/man/man1/xcolor.1
 file path=usr/share/man/man1/xstdcmap.1
-license COPYING license=MIT
+license COPYING license=MIT com.oracle.info.description="the xstdcmap utility" \
+    com.oracle.info.name=$(COMPONENT_NAME) com.oracle.info.tpno=$(TPNO) \
+    com.oracle.info.version=$(COMPONENT_VERSION)

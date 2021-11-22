@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:b53bd6835c4ac35c245397004e3613a6c649ced019637a4414d762b20cf2a977
 COMPONENT_ARCHIVE_URL=	https://github.com/d3/d3/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB= 	javascript/d3
-COMPONENT_ANITYA_ID=	13484
+COMPONENT_ANITYA_ID=	235320
 
 TPNO=			33646
 
