@@ -1,0 +1,22 @@
+Since SOX is dead upstream, we have eol'd it.
+Bug 26046950 - espeak update due to eof of SOX 
+Bug 24824502 - sox EOF 
+
+--- espeak-ng-1.50/src/libespeak-ng/soundicon.c
++++ espeak-ng-1.50/src/libespeak-ng/soundicon.c
+@@ -69,6 +69,7 @@ static espeak_ng_STATUS LoadSoundFile(co
+ 	}
+ 
+ 	f = NULL;
++#if !defined(__sun) // no sox
+ 	if ((f = fopen(fname, "rb")) != NULL) {
+ 		int ix;
+ 		int fd_temp;
+@@ -102,6 +103,7 @@ static espeak_ng_STATUS LoadSoundFile(co
+ 				fname = fname_temp;
+ 		}
+ 	}
++#endif
+ 
+ 	if (f == NULL) {
+ 		f = fopen(fname, "rb");

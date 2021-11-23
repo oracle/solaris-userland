@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             64
@@ -47,7 +47,7 @@ COMPONENT_PRE_CONFIGURE_ACTION += ($(CLONEY) $(SOURCE_DIR) $(@D)) ;
 
 CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --with-espeak
+CONFIGURE_OPTIONS += --with-espeak-ng
 CONFIGURE_OPTIONS += --with-pulse
 
 # Assumes GNU xgettext & msgfmt are first in PATH.
@@ -69,5 +69,5 @@ REQUIRED_PACKAGES += library/audio/pulseaudio
 REQUIRED_PACKAGES += library/desktop/dotconf
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libsndfile
-REQUIRED_PACKAGES += library/speech/espeak
+REQUIRED_PACKAGES += library/speech/espeak-ng
 REQUIRED_PACKAGES += runtime/python-37
