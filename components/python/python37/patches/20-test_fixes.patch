@@ -26,8 +26,8 @@ test_pkgutil doesn't expect that pkg module exists. [Not for upstream]
 test_pyexpat exception output is slightly different most likely due to platform
 differences. We can safely comment it out. [Not for upstream]
 
---- Python-3.7.8/Lib/test/test_gdb.py
-+++ Python-3.7.8/Lib/test/test_gdb.py
+--- Python-3.7.12/Lib/test/test_gdb.py
++++ Python-3.7.12/Lib/test/test_gdb.py
 @@ -51,6 +51,8 @@ if gdb_major_version < 7:
                              "embedding. Saw %s.%s:\n%s"
                              % (gdb_major_version, gdb_minor_version,
@@ -37,8 +37,8 @@ differences. We can safely comment it out. [Not for upstream]
  
  if not sysconfig.is_python_build():
      raise unittest.SkipTest("test_gdb only works on source builds at the moment.")
---- Python-3.7.8/Lib/test/test_normalization.py
-+++ Python-3.7.8/Lib/test/test_normalization.py
+--- Python-3.7.12/Lib/test/test_normalization.py
++++ Python-3.7.12/Lib/test/test_normalization.py
 @@ -36,6 +36,8 @@ def unistr(data):
  
  class NormalizationTest(unittest.TestCase):
@@ -48,8 +48,8 @@ differences. We can safely comment it out. [Not for upstream]
          # Hit the exception early
          try:
              testdata = open_urlresource(TESTDATAURL, encoding="utf-8",
---- Python-3.7.8/Lib/test/test_time.py
-+++ Python-3.7.8/Lib/test/test_time.py
+--- Python-3.7.12/Lib/test/test_time.py
++++ Python-3.7.12/Lib/test/test_time.py
 @@ -626,7 +626,7 @@ class _TestStrftimeYear:
              self.test_year('%04d', func=year4d)
  
@@ -59,9 +59,9 @@ differences. We can safely comment it out. [Not for upstream]
          # Check that it doesn't crash for year > 9999
          try:
              time.strftime('%Y', (y,) + (0,) * 8)
---- Python-3.7.8/Lib/test/test_socket.py
-+++ Python-3.7.8/Lib/test/test_socket.py
-@@ -3011,7 +3013,7 @@ class CmsgMacroTests(unittest.TestCase):
+--- Python-3.7.12/Lib/test/test_socket.py
++++ Python-3.7.12/Lib/test/test_socket.py
+@@ -3013,7 +3013,7 @@ class CmsgMacroTests(unittest.TestCase):
          # Test CMSG_SPACE() with various valid and invalid values,
          # checking the assumptions used by sendmsg().
          toobig = self.socklen_t_limit - socket.CMSG_SPACE(1) + 1
@@ -70,7 +70,7 @@ differences. We can safely comment it out. [Not for upstream]
  
          last = socket.CMSG_SPACE(0)
          # struct cmsghdr has at least three members, two of which are ints
-@@ -3158,6 +3160,7 @@ class SCMRightsTest(SendrecvmsgServerTim
+@@ -3160,6 +3160,7 @@ class SCMRightsTest(SendrecvmsgServerTim
  
      @unittest.skipIf(sys.platform == "darwin", "skipping, see issue #12958")
      @unittest.skipIf(sys.platform.startswith("aix"), "skipping, see issue #22397")
@@ -78,7 +78,7 @@ differences. We can safely comment it out. [Not for upstream]
      @requireAttrs(socket, "CMSG_SPACE")
      def testFDPassSeparate(self):
          # Pass two FDs in two separate arrays.  Arrays may be combined
-@@ -3169,6 +3172,7 @@ class SCMRightsTest(SendrecvmsgServerTim
+@@ -3171,6 +3172,7 @@ class SCMRightsTest(SendrecvmsgServerTim
      @testFDPassSeparate.client_skip
      @unittest.skipIf(sys.platform == "darwin", "skipping, see issue #12958")
      @unittest.skipIf(sys.platform.startswith("aix"), "skipping, see issue #22397")
@@ -86,7 +86,7 @@ differences. We can safely comment it out. [Not for upstream]
      def _testFDPassSeparate(self):
          fd0, fd1 = self.newFDs(2)
          self.assertEqual(
-@@ -3182,6 +3186,7 @@ class SCMRightsTest(SendrecvmsgServerTim
+@@ -3184,6 +3186,7 @@ class SCMRightsTest(SendrecvmsgServerTim
  
      @unittest.skipIf(sys.platform == "darwin", "skipping, see issue #12958")
      @unittest.skipIf(sys.platform.startswith("aix"), "skipping, see issue #22397")
@@ -94,7 +94,7 @@ differences. We can safely comment it out. [Not for upstream]
      @requireAttrs(socket, "CMSG_SPACE")
      def testFDPassSeparateMinSpace(self):
          # Pass two FDs in two separate arrays, receiving them into the
-@@ -3196,6 +3201,7 @@ class SCMRightsTest(SendrecvmsgServerTim
+@@ -3198,6 +3201,7 @@ class SCMRightsTest(SendrecvmsgServerTim
      @testFDPassSeparateMinSpace.client_skip
      @unittest.skipIf(sys.platform == "darwin", "skipping, see issue #12958")
      @unittest.skipIf(sys.platform.startswith("aix"), "skipping, see issue #22397")
@@ -102,8 +102,8 @@ differences. We can safely comment it out. [Not for upstream]
      def _testFDPassSeparateMinSpace(self):
          fd0, fd1 = self.newFDs(2)
          self.assertEqual(
---- Python-3.7.8/Lib/ctypes/test/test_structures.py
-+++ Python-3.7.8/Lib/ctypes/test/test_structures.py
+--- Python-3.7.12/Lib/ctypes/test/test_structures.py
++++ Python-3.7.12/Lib/ctypes/test/test_structures.py
 @@ -397,6 +397,8 @@ class StructureTestCase(unittest.TestCas
                           (1, 0, 0, 0, 0, 0))
          self.assertRaises(TypeError, lambda: Z(1, 2, 3, 4, 5, 6, 7))
@@ -113,8 +113,8 @@ differences. We can safely comment it out. [Not for upstream]
      def test_pass_by_value(self):
          # This should mirror the structure in Modules/_ctypes/_ctypes_test.c
          class X(Structure):
---- Python-3.7.8/Lib/test/test_re.py
-+++ Python-3.7.8/Lib/test/test_re.py
+--- Python-3.7.12/Lib/test/test_re.py
++++ Python-3.7.12/Lib/test/test_re.py
 @@ -1,5 +1,6 @@
  from test.support import (gc_collect, bigmemtest, _2G,
                            cpython_only, captured_stdout)
@@ -140,8 +140,8 @@ differences. We can safely comment it out. [Not for upstream]
      def test_locale_compiled(self):
          oldlocale = locale.setlocale(locale.LC_CTYPE)
          self.addCleanup(locale.setlocale, locale.LC_CTYPE, oldlocale)
---- Python-3.7.8/Lib/test/test_site.py
-+++ Python-3.7.8/Lib/test/test_site.py
+--- Python-3.7.12/Lib/test/test_site.py
++++ Python-3.7.12/Lib/test/test_site.py
 @@ -504,6 +504,8 @@ class ImportSideEffectTests(unittest.Tes
  
  class StartupImportTests(unittest.TestCase):
@@ -151,8 +151,8 @@ differences. We can safely comment it out. [Not for upstream]
      def test_startup_imports(self):
          # Get sys.path in isolated mode (python3 -I)
          popen = subprocess.Popen([sys.executable, '-I', '-c',
---- Python-3.7.8/Lib/test/test_pkgutil.py
-+++ Python-3.7.8/Lib/test/test_pkgutil.py
+--- Python-3.7.12/Lib/test/test_pkgutil.py
++++ Python-3.7.12/Lib/test/test_pkgutil.py
 @@ -388,7 +388,7 @@ class NestedNamespacePackageTest(unittes
          sys.path.insert(0, os.path.join(self.basedir, 'b'))
          import pkg
@@ -162,8 +162,8 @@ differences. We can safely comment it out. [Not for upstream]
          import pkg.subpkg
          self.addCleanup(unload, 'pkg.subpkg')
          self.assertEqual(len(pkg.subpkg.__path__), 2)
---- Python-3.7.8/Lib/test/test_pyexpat.py
-+++ Python-3.7.8/Lib/test/test_pyexpat.py
+--- Python-3.7.12/Lib/test/test_pyexpat.py
++++ Python-3.7.12/Lib/test/test_pyexpat.py
 @@ -465,8 +465,8 @@ class HandlerExceptionTest(unittest.Test
                                         "pyexpat.c", "StartElement")
              self.check_traceback_entry(entries[2],
