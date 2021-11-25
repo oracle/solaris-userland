@@ -58,6 +58,10 @@ file path=usr/lib/python$(PYVER)/vendor-packages/hggit/util.py
 file path=usr/lib/python$(PYVER)/vendor-packages/hggit/verify.py
 #
 license COPYING license=GPLv2
+
+# force a dependency on the Python $(PYVER) runtime
+depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
+    pkg.debug.depend.path=usr/bin
 #
 # force a dependency on dulwich; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/dulwich-$(PYV)

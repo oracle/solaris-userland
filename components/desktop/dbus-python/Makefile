@@ -100,3 +100,5 @@ COMPONENT_TEST_TRANSFORMS += \
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/libdbus-glib
+REQUIRED_PACKAGES += runtime/python-37
+REQUIRED_PACKAGES += runtime/python-39

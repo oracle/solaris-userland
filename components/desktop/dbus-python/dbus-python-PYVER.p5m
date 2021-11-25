@@ -55,6 +55,10 @@ file path=usr/lib/python$(PYVER)/vendor-packages/dbus/service.py
 file path=usr/lib/python$(PYVER)/vendor-packages/dbus/types.py
 license dbus-python.license license=MIT
 
+# force a dependency on the Python $(PYVER) runtime
+depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
+    pkg.debug.depend.path=usr/bin
+
 # force a dependency on the dbus-python package
 depend type=require \
     fmri=library/python/dbus-python@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)

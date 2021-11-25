@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -66,3 +66,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/asn1crypto/util.py
 file path=usr/lib/python$(PYVER)/vendor-packages/asn1crypto/version.py
 file path=usr/lib/python$(PYVER)/vendor-packages/asn1crypto/x509.py
 license LICENSE license=MIT
+
+# force a dependency on the Python $(PYVER) runtime
+depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
+    pkg.debug.depend.path=usr/bin

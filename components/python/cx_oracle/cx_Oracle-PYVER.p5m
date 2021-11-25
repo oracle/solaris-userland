@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -44,3 +44,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/cx_Oracle-$(COMPONENT_VERSION)-
 file path=usr/lib/python$(PYVER)/vendor-packages/cx_Oracle.so
 #
 license cx_Oracle.license license=BSD
+
+# force a dependency on the Python $(PYVER) runtime
+depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
+    pkg.debug.depend.path=usr/bin

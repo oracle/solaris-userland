@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 # gobject-introspection bindings are only built correctly for gtk when building
@@ -69,6 +69,8 @@ PYTHON_ARCH_SUBDIR.64 = /64
 PYTHON_ARCH_SUBDIR = $(PYTHON_ARCH_SUBDIR.$(BITS))
 COMPONENT_BUILD_ARGS += pyexecsubdir=$(PYTHON_ARCH_SUBDIR)
 COMPONENT_INSTALL_ARGS += pyexecsubdir=$(PYTHON_ARCH_SUBDIR)
+
+PKG_MACROS += PYVER=$(PYTHON_VERSION)
 
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/libffi

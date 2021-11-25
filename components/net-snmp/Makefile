@@ -155,6 +155,8 @@ $(BUILD_DIR_32)/.docs:
 	    $(ENV) srcdir=$(@D) $(DOXYGEN) $(@D)/doxygen.conf)
 	$(TOUCH) $@
 
+PKG_MACROS += PYVER=$(PYTHON_VERSION)
+
 REQUIRED_PACKAGES += developer/build/make
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += library/security/openssl

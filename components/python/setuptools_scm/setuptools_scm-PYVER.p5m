@@ -57,5 +57,9 @@ file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm/utils.py
 file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm/version.py
 license LICENSE license=MIT
 
+# force a dependency on the Python $(PYVER) runtime
+depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
+    pkg.debug.depend.path=usr/bin
+
 # force a dependency on setuptools; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/setuptools-$(PYV)
