@@ -3,39 +3,35 @@ Patch status: Solaris-specific; not suitable for upstream
 
 Solaris specific documentation changes.
 
-diff --git a/doc/tshark.pod b/doc/tshark.pod
-index e31320a..779de79 100644
---- a/doc/tshark.pod
-+++ b/doc/tshark.pod
-@@ -524,9 +524,11 @@ capture.
+--- wireshark-3.6.0/doc/tshark.adoc
++++ wireshark-3.6.0/doc/tshark.adoc
+@@ -583,9 +583,11 @@ capture.
  
  Network interface names should match one of the names listed in
- "B<tshark -D>" (described above); a number, as reported by
--"B<tshark -D>", can also be used.  If you're using UNIX, "B<netstat
---i>", "B<ifconfig -a>" or "B<ip link>" might also work to list interface names,
--although not all versions of UNIX support the B<-a> option to B<ifconfig>.
-+"B<tshark -D>", can also be used.  On Solaris, all network interfaces
-+that are displayed with the command "dladm show-link" or "ipadm show-if"
-+can be used with the "-i" command line option. An interface argument of
-+"any" can be used to capture packets from all interfaces. Note that
-+captures using "any" will not be done in promiscuous mode.
+ "*tshark -D*" (described above); a number, as reported by
+-"*tshark -D*", can also be used.  If you're using UNIX, "*netstat
+- -i*", "*ifconfig -a*" or "*ip link*" might also work to list interface names,
+-although not all versions of UNIX support the *-a* option to *ifconfig*.
++"*tshark -D*", can also be used.  On Solaris, all network interfaces
++that are displayed with the command "*dladm show-link*" or "*ipadm show-if*"
++can be used with the *-i* command line option. An interface argument of
++"*any*" can be used to capture packets from all interfaces. Note that
++captures using "*any*" will not be done in promiscuous mode.
  
- If no interface is specified, B<TShark> searches the list of
+ If no interface is specified, *TShark* searches the list of
  interfaces, choosing the first non-loopback interface if there are any
-diff --git a/doc/wireshark.pod.template b/doc/wireshark.pod.template
-index b6278e9..0ab2bf4 100644
---- a/doc/wireshark.pod.template
-+++ b/doc/wireshark.pod.template
-@@ -387,9 +387,9 @@ capture.
+--- wireshark-3.6.0/doc/wireshark.adoc
++++ wireshark-3.6.0/doc/wireshark.adoc
+@@ -404,9 +404,9 @@ capture.
  
  Network interface names should match one of the names listed in
- "B<wireshark -D>" (described above); a number, as reported by
--"B<wireshark -D>", can also be used.  If you're using UNIX, "B<netstat
---i>", "B<ifconfig -a>" or "B<ip link>" might also work to list interface names,
--although not all versions of UNIX support the B<-a> flag to B<ifconfig>.
-+"B<wireshark -D>", can also be used.  On Solaris, all network interfaces
-+that are displayed with the command "dladm show-link" or "ipadm show-if"
-+can be used with the "-i" command line option.
+ "*wireshark -D*" (described above); a number, as reported by
+-"*wireshark -D*", can also be used.  If you're using UNIX, "*netstat
+- -i*", "*ifconfig -a*" or "*ip link*" might also work to list interface names,
+-although not all versions of UNIX support the *-a* flag to *ifconfig*.
++"*wireshark -D*", can also be used.  On Solaris, all network interfaces
++that are displayed with the command "*dladm show-link*" or "*ipadm show-if*"
++can be used with the *-i* command line option.
  
- If no interface is specified, B<Wireshark> searches the list of
+ If no interface is specified, *Wireshark* searches the list of
  interfaces, choosing the first non-loopback interface if there are any
