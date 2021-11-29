@@ -1,0 +1,21 @@
+Potential to send upstream
+
+--- a/src/util/disk_cache_os.c	2021-11-29 15:30:14.519568232 -0800
++++ b/src/util/disk_cache_os.c	2021-11-29 15:35:37.707800129 -0800
+@@ -167,9 +167,16 @@
+    /* First count the number of files in the directory */
+    unsigned total_file_count = 0;
+    while ((dir_ent = readdir(dir)) != NULL) {
++#ifndef DT_REG /* systems without d_type in dirent results */
++    struct stat st;
++
++    if ((lstat(dir_ent->d_name, &st) != 0) || (!S_ISREG(st.st_mode)))
++	 total_file_count++;
++#else
+       if (dir_ent->d_type == DT_REG) { /* If the entry is a regular file */
+          total_file_count++;
+       }
++#endif
+    }
+ 
+    /* Reset to the start of the directory */

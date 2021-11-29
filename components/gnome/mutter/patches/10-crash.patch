@@ -1,0 +1,86 @@
+mutter patch needed with the mesa 21.3.8 update that causes the crash
+        "thread-stacks": [
+                "stack[1] = meta_backend_get_cursor_tracker|st_entry_unmap|clutter_actor_update_map_state|clutter_actor_real_unmap|st_widget_unmap|clutter_actor_update_map_state|clutter_actor_real_unmap|st_widget_unmap|clutter_actor_update_map_state|clutter_actor_real_unmap|st_widget_unmap|clutter_actor_update_map_state|clutter_actor_real_unmap|st_widget_unmap|clutter_actor_update_map_state|clutter_actor_real_unmap|st_widget_unmap|clutter_actor_update_map_state|clutter_actor_real_unmap|st_widget_unmap|clutter_actor_update_map_state|clutter_actor_real_unmap|clutter_actor_update_map_state|meta_stage_x11_hide|_clutter_stage_window_hide|clutter_stage_hide|g_cclosure_marshal_VOID__VOIDv|g_type_class_meta_marshalv|_g_closure_invoke_va|g_signal_emit_valist|g_signal_emit|clutter_actor_hide|clutter_stage_dispose|g_object_run_dispose|clutter_actor_destroy|meta_backend_dispose|meta_backend_x11_dispose|g_object_run_dispose|meta_backend_destroy|meta_context_dispose|g_object_run_dispose|meta_context_destroy|main|_start",
+                "stack[2] = __pollsys|poll|g_main_context_iterate.constprop.0|g_main_context_iteration|glib_worker_main|g_thread_proxy|_lwp_start",
+                "stack[3] = __lwp_park|cond_wait_queue|cond_wait|pthread_cond_wait|g_cond_wait|g_async_queue_pop_unlocked|g_thread_pool_spawn_thread|g_thread_proxy|_lwp_start",
+
+-----
+
+From c64803770e742f3d1ddd0f51c4a520b6059ad7d0 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>
+Date: Wed, 16 Feb 2022 22:34:12 +0100
+Subject: [PATCH] clutter: Bail out and warn on reentry into mapping/unmapping
+ cycle
+
+There's a bunch of crashes right now where the assertions in
+clutter_actor_set_mapped() after calling the map/unmap() vfuncs are
+failing. The only way this can happen is by re-entering
+clutter_actor_set_mapped() during the map/unmap recursion.
+
+The reason for those crashes is that the shell hides/shows some actors
+in response to crossing events and key-focus changes. These in turn get
+triggered by the newly introduced ungrabbing of ClutterGrabs when an
+actor gets unmapped, which triggers GRAB_NOTIFY crossing events and
+key-focus changes.
+
+Since these situations are hardly avoidable (it's a valid use-case to
+hide/show something in response to a crossing/key-focus event), catch
+the set_mapped() call early while we reenter the mapping machinery and
+log a warning instead of crashing.
+
+Fixes: https://gitlab.gnome.org/GNOME/gnome-shell/-/issues/3165
+Part-of: <https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/2299>
+---
+ clutter/clutter/clutter-actor.c   | 6 ++++++
+ clutter/clutter/clutter-private.h | 3 +++
+ 2 files changed, 9 insertions(+)
+
+diff --git a/clutter/clutter/clutter-actor.c b/clutter/clutter/clutter-actor.c
+index 23ef03dc1f..4279d3476c 100644
+--- a/clutter/clutter/clutter-actor.c
++++ b/clutter/clutter/clutter-actor.c
+@@ -1264,6 +1264,10 @@ clutter_actor_set_mapped (ClutterActor *self,
+   if (CLUTTER_ACTOR_IS_MAPPED (self) == mapped)
+     return;
+ 
++  g_return_if_fail (!CLUTTER_ACTOR_IN_MAP_UNMAP (self));
++
++  CLUTTER_SET_PRIVATE_FLAGS (self, CLUTTER_IN_MAP_UNMAP);
++
+   if (mapped)
+     {
+       CLUTTER_ACTOR_GET_CLASS (self)->map (self);
+@@ -1274,6 +1278,8 @@ clutter_actor_set_mapped (ClutterActor *self,
+       CLUTTER_ACTOR_GET_CLASS (self)->unmap (self);
+       g_assert (!CLUTTER_ACTOR_IS_MAPPED (self));
+     }
++
++  CLUTTER_UNSET_PRIVATE_FLAGS (self, CLUTTER_IN_MAP_UNMAP);
+ }
+ 
+ /* this function updates the mapped and realized states according to
+diff --git a/clutter/clutter/clutter-private.h b/clutter/clutter/clutter-private.h
+index 377b318798..117902a35f 100644
+--- a/clutter/clutter/clutter-private.h
++++ b/clutter/clutter/clutter-private.h
+@@ -69,6 +69,7 @@ typedef struct _ClutterMainContext      ClutterMainContext;
+ #define CLUTTER_ACTOR_IN_PREF_WIDTH(a)          ((CLUTTER_PRIVATE_FLAGS (a) & CLUTTER_IN_PREF_WIDTH) != FALSE)
+ #define CLUTTER_ACTOR_IN_PREF_HEIGHT(a)         ((CLUTTER_PRIVATE_FLAGS (a) & CLUTTER_IN_PREF_HEIGHT) != FALSE)
+ #define CLUTTER_ACTOR_IN_PREF_SIZE(a)           ((CLUTTER_PRIVATE_FLAGS (a) & (CLUTTER_IN_PREF_HEIGHT|CLUTTER_IN_PREF_WIDTH)) != FALSE)
++#define CLUTTER_ACTOR_IN_MAP_UNMAP(a)           ((CLUTTER_PRIVATE_FLAGS (a) & CLUTTER_IN_MAP_UNMAP) != FALSE)
+ 
+ #define CLUTTER_PARAM_READABLE  (G_PARAM_READABLE | G_PARAM_STATIC_STRINGS)
+ #define CLUTTER_PARAM_WRITABLE  (G_PARAM_WRITABLE | G_PARAM_STATIC_STRINGS)
+@@ -105,6 +106,8 @@ typedef enum
+ 
+   /* Used to avoid recursion */
+   CLUTTER_IN_RELAYOUT    = 1 << 7,
++
++  CLUTTER_IN_MAP_UNMAP   = 1 << 8,
+ } ClutterPrivateFlags;
+ 
+ /*
+-- 
+GitLab
+
+

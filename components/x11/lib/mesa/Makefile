@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -28,16 +28,16 @@ COMPILER=		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mesa
-COMPONENT_VERSION=	20.0.2
+COMPONENT_VERSION=	21.3.8
 COMPONENT_PROJECT_URL=  https://www.mesa3d.org
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.xz
 COMPONENT_ARCHIVE_URL=  https://mesa.freedesktop.org/archive/$(COMPONENT_ARCHIVE)
-COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
+#COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ARCHIVE_HASH= \
-	sha256:aa54f1cb669550606aab8ceb475105d15aeb814fca5a778ce70d0fd10e98e86f
+	sha256:e70d273bdc53a4e931871bb5550ba3900e6a3deab2fff64184107c33e92d9da7
 COMPONENT_BUGDB=        x11/mesa
 COMPONENT_ANITYA_ID=	1970
-COMPONENT_BAID=		76724
+COMPONENT_BAID=		119111
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
@@ -66,12 +66,11 @@ CONFIGURE_OPTIONS.64 += -Dgallium-drivers='swrast'
 CONFIGURE_OPTIONS += -Dvulkan-drivers=''
 CONFIGURE_OPTIONS += -Dgbm=true
 CONFIGURE_OPTIONS += -Dglvnd=false
-CONFIGURE_OPTIONS += -Dplatforms='x11, drm'
+CONFIGURE_OPTIONS += -Dplatforms='x11'
 CONFIGURE_OPTIONS += -Dllvm=true
 CONFIGURE_OPTIONS += -Dglx='auto'
-# Note that only one swrast provider can be built.
-CONFIGURE_OPTIONS.32 += -Ddri-drivers='swrast'
-CONFIGURE_OPTIONS.64 += -Ddri-drivers=''
+CONFIGURE_OPTIONS += -Degl='true'
+CONFIGURE_OPTIONS += -Ddri-drivers=''
 
 CFLAGS += -D__EXTENSIONS__ -Wno-incompatible-pointer-types
 CPPFLAGS += -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS
@@ -89,7 +88,7 @@ LD_OPTIONS += -M $(COMPONENT_DIR)/mapfile.externs
 
 # Add RPATH to xorg lib directory where is libdrm.
 
-COMPONENT_POST_INSTALL_ACTION += \
+COMPONENT_POST_INSTALL_ACTION.64 += \
 	test $(BITS) -eq 64 && dir64=/$(MACH64) ; \
 	for f in libgbm.so.1.0.0 libEGL.so.1.0.0 libGL.so.1.2.0 ; do \
 	$(ELFEDIT) -e "dyn:runpath /usr/lib/xorg$$dir64" \

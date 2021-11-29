@@ -1,0 +1,65 @@
+This is regression between Mesa 19 and 20. On SPARC system glxgears
+won't show wheels but just random rectangles.
+
+This came in with:
+
+llvmpipe: switch to NIR by default
+
+https://github.com/mesa3d/mesa/commit/e6b2af56cb037e3174d049478e0ad7c7715780e4#diff-ca9de5cfd0347994dacc6eca9816d334
+
+Reported here:
+
+https://lists.freedesktop.org/archives/mesa-dev/2020-May/224479.html
+
+--
+
+Without this patch, we still crash and are unable to start the desktop on sparc:
+
+"stack[1] = try_update_scene_state|lp_setup_update_state|lp_setup_draw_arrays|draw_pt_emit_linear|llvm_pipeline_generic.constprop.0|llvm_middle_end_linear_run|vsplit_run_linear|draw_instances|draw_vbo|llvmpipe_draw_vbo|cso_multi_draw|_mesa_DrawArrays|shared_dispatch_stub_310|cogl_gl_framebuffer_draw_attributes|cogl_framebuffer_driver_draw_attributes|_cogl_journal_flush_modelview_and_entries|_cogl_journal_flush_texcoord_vbo_offsets_and_entries|_cogl_journal_flush_vbo_offsets_and_entries|_cogl_journal_flush_dither_and_entries|_cogl_journal_flush_viewport_and_entries|_cogl_journal_flush|cogl_onscreen_swap_region|swap_framebuffer|meta_stage_impl_redraw_view|meta_stage_x11_redraw_view|_clutter_stage_window_redraw_view|handle_frame_clock_frame|frame_clock_source_dispatch|g_main_context_dispatch|g_main_context_iterate.constprop.0|g_main_loop_run|meta_context_run_main_loop|main|_start
+
+--- a/src/gallium/drivers/llvmpipe/lp_screen.c	2021-11-29 09:52:16.126369920 -0800
++++ b/src/gallium/drivers/llvmpipe/lp_screen.c	2021-11-29 09:56:54.986367180 -0800
+@@ -362,8 +362,12 @@
+    case PIPE_CAP_GL_SPIRV:
+    case PIPE_CAP_POST_DEPTH_COVERAGE:
+    case PIPE_CAP_PACKED_UNIFORMS: {
++#if !defined(__sparc__)
+       struct llvmpipe_screen *lscreen = llvmpipe_screen(screen);
+       return !lscreen->use_tgsi;
++#else
++      return !!(LP_DEBUG & DEBUG_TGSI_IR);
++#endif
+    }
+    default:
+       return u_pipe_screen_get_param_defaults(screen, param);
+@@ -379,15 +383,19 @@
+    switch(shader)
+    {
+    case PIPE_SHADER_COMPUTE:
++#if !defined(__sparc__)
+       if ((lscreen->allow_cl) && param == PIPE_SHADER_CAP_SUPPORTED_IRS)
+          return (1 << PIPE_SHADER_IR_TGSI) | (1 << PIPE_SHADER_IR_NIR) | (1 << PIPE_SHADER_IR_NIR_SERIALIZED);
++#endif
+       FALLTHROUGH;
+    case PIPE_SHADER_FRAGMENT:
+       if (param == PIPE_SHADER_CAP_PREFERRED_IR) {
+          if (lscreen->use_tgsi)
+             return PIPE_SHADER_IR_TGSI;
++#if !defined(__sparc__)
+          else
+             return PIPE_SHADER_IR_NIR;
++#endif
+       }
+ 
+       return gallivm_get_shader_param(param);
+@@ -402,8 +410,10 @@
+       if (param == PIPE_SHADER_CAP_PREFERRED_IR) {
+          if (lscreen->use_tgsi)
+             return PIPE_SHADER_IR_TGSI;
++#if !defined(__sparc__)
+          else
+             return PIPE_SHADER_IR_NIR;
++#endif
+       }
+ 
+       switch (param) {
