@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 # All components using gobject-introspection must be built with gcc as
@@ -31,14 +31,26 @@ include ../../../make-rules/shared-macros.mk
 BUILD_STYLE=            meson
 
 COMPONENT_NAME=		gdk-pixbuf
-COMPONENT_VERSION=	2.40.0
+COMPONENT_VERSION=	2.42.6
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GdkPixbuf
 COMPONENT_ARCHIVE_HASH= \
-     sha256:1582595099537ca8ff3b99c6804350b4c058bb8ad67411bbaae024ee7cead4e6
+     sha256:c4a6b75b7ed8f58ca48da830b9fa00ed96d668d3ab4b1f723dcf902f78bde77f
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	9533
 
-COMPONENT_BAID=	        90460
+COMPONENT_BAID=		112779
+
+COMPONENT_NAME_1=	gdk-pixbuf-xlib
+COMPONENT_VERSION_1=	2.40.2
+COMPONENT_PROJECT_URL_1=https://wiki.gnome.org/Projects/GdkPixbuf
+COMPONENT_SRC_1=	$(COMPONENT_NAME_1)-$(COMPONENT_VERSION_1)
+COMPONENT_ARCHIVE_1=    $(COMPONENT_SRC_1).tar.xz
+COMPONENT_ARCHIVE_URL_1=https://download.gnome.org/sources/gdk-pixbuf-xlib/2.40/$(COMPONENT_ARCHIVE_1)
+COMPONENT_ARCHIVE_HASH_1= \
+     sha256:8b8e1c270ec16a06f665ea841f8e4e167eaa0118d0cbfeeade43745f09198ff7
+COMPONENT_BUGDB_1=	gnome/libraries
+COMPONENT_ANITYA_ID_1=	229509
+COMPONENT_BAID_1=	111708
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
@@ -49,7 +61,7 @@ include $(WS_MAKE_RULES)/gnome-component.mk
 COMPONENT_BUILD_ENV += CFLAGS="$(strip $(CFLAGS))"
 COMPONENT_BUILD_ENV += LDFLAGS="$(strip $(LDFLAGS))"
 
-CONFIGURE_OPTIONS.32 += -Dgir=false
+CONFIGURE_OPTIONS.32 += -Dintrospection=disabled
 
 # Assumes GNU xgettext in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
@@ -85,6 +97,24 @@ COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/libgdk_pixbuf_xlib-2.0.3lib \
                 $(PROTO_DIR)/usr/share/man/man3lib/libgdk_pixbuf_xlib-2.0.3lib;
 
+COMPONENT_POST_INSTALL_ACTION.32 += \
+        (cd $(COMPONENT_DIR)/$(COMPONENT_SRC_1); \
+	$(ENV) $(CONFIGURE_ENV) meson setup ../build_32 . $(CONFIGURE_OPTIONS);  \
+	$(COMPONENT_POST_CONFIGURE_ACTION) cd ../build_32; \
+	$(ENV) $(COMPONENT_BUILD_ENV) $(NINJA) $(COMPONENT_BUILD_ARGS) \
+		$(COMPONENT_BUILD_TARGETS); \
+	$(ENV) $(COMPONENT_INSTALL_ENV) $(NINJA) $(COMPONENT_INSTALL_ARGS) \
+		$(COMPONENT_INSTALL_TARGETS) install)
+
+COMPONENT_POST_INSTALL_ACTION.64 += \
+        (cd $(COMPONENT_DIR)/$(COMPONENT_SRC_1); \
+	$(ENV) $(CONFIGURE_ENV) meson setup ../build_64 . $(CONFIGURE_OPTIONS);  \
+	$(COMPONENT_POST_CONFIGURE_ACTION) cd ../build_64; \
+	$(ENV) $(COMPONENT_BUILD_ENV) $(NINJA) $(COMPONENT_BUILD_ARGS) \
+		$(COMPONENT_BUILD_TARGETS); \
+	$(ENV) $(COMPONENT_INSTALL_ENV) $(NINJA) $(COMPONENT_INSTALL_ARGS) \
+		$(COMPONENT_INSTALL_TARGETS) install)
+
 # Needed for "gmake test" to work successfully.
 unexport SHELLOPTS
 
@@ -99,8 +129,16 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 COMPONENT_TEST_TRANSFORMS += '-e "s/      [0-9].[0-9][0-9]s//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-        '-e "/OK/p" ' \
-        '-e "/ok/p" '
+        '-e "/Ok:/p" ' \
+        '-e "/Timeout:/p" ' \
+        '-e "/Skipped:/p" ' \
+        '-e "/Fail:/p" ' \
+        '-e "/Pass:/p" '
+
+clean:: $(SUBDIRS)
+	$(RM) -r build build_32 build_64
+
+clobber:: $(SUBDIRS) clean
 
 # Requires >= 2.69 autoconf
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
