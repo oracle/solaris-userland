@@ -57,10 +57,8 @@ index c131953..65c128f 100644
        ip.ip_p = IPPROTO_UDP;
        
        if (src)
-diff --git a/src/ip6addr.h b/src/ip6addr.h
-index c00dd08..77f0439 100644
---- a/src/ip6addr.h
-+++ b/src/ip6addr.h
+--- a/src/ip6addr.h	2021-09-08 22:21:22.000000000 +0000
++++ b/src/ip6addr.h	2021-11-30 07:27:25.197780519 +0000
 @@ -14,8 +14,41 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -103,9 +101,17 @@ index c00dd08..77f0439 100644
  #define IN6_IS_ADDR_ULA(a) \
          ((((__const uint32_t *) (a))[0] & htonl (0xff000000))                 \
           == htonl (0xfd000000))
-@@ -31,4 +64,4 @@
+@@ -31,3 +64,5 @@
           && ((__const uint32_t *) (a))[1] == 0                                \
           && ((__const uint32_t *) (a))[2] == 0                                \
           && ((__const uint32_t *) (a))[3] == 0)
--
++
 +#endif /* HAVE_SOLARIS_NETWORK */
+--- a/bld/pkg-wrapper	2021-09-08 22:21:22.000000000 +0000
++++ dnsmasq-2.86/bld/pkg-wrapper	2021-12-03 04:27:45.325925557 +0000
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ 
+ in=`cat`
+ 

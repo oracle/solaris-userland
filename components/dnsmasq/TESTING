@@ -1,0 +1,37 @@
+Login on the lab machine with installed dnsmasq pkg and follow these steps:
+
+# check dns resolver if not online enable it
+svcadm enable svc:/network/dns/client
+
+# check mutualy exclusive services
+svcs -H dns/server tftp/udp6 dns/server dhcp/server dhcp/bridge dhcp/relay
+
+# prepare conf
+cp /etc/resolv.conf /etc/resolv.conf.dnsmasq
+cat > /etc/dnsmasq.conf <<EOF
+interface=lo0
+resolv-file=/etc/resolv.conf.dnsmasq
+EOF
+
+# change resolver to localhost
+svccfg -s svc:/network/dns/client:default setprop config/nameserver = net_address: ::1
+svcadm refresh svc:/network/dns/client
+# ...and now you can obtain message from ldap_cachemgr falling in Degraded
+
+# enable dnsmasq as local resolver
+svcadm enable dnsmasq
+# ...and now you can obtain message from ldap_cachemgr Restored service to online
+
+# now you can check dns resolve again including IDN
+# note: vm sshroot turns ssh to 8 bit ASCII
+dig www.seznam.cz
+# Solaris dig do not support IDN unfortunately
+ # LC_ALL=utf8 dig háčkyčárky.cz +short +idnin
+;; IDN input support not enabled
+# so räksmörgås.josefsson.owe can only check as
+dig 'xn--rksmrgs-5wao1o.josefsson.org' +short
+
+# now you can check disable dnsmasq
+svcadm disable dnsmasq
+# ...and retest digs are not working
+# note: after reenable ldap_cachemgr definitely goes mad

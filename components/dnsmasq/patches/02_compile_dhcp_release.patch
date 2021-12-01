@@ -92,10 +92,8 @@ index e4c3f5c..53f224a 100644
  dnsmasq.pot : $(objs:.o=.c) $(hdrs)
  	$(XGETTEXT) -d dnsmasq --foreign-user --omit-header --keyword=_ -o $@ -i $(objs:.o=.c)
  
-diff --git a/contrib/lease-tools/dhcp_release.c b/contrib/lease-tools/dhcp_release.c
-index 30e77c6..64cc894 100644
---- a/contrib/lease-tools/dhcp_release.c
-+++ b/contrib/lease-tools/dhcp_release.c
+--- a/contrib/lease-tools/dhcp_release.c	2021-09-08 22:21:22.000000000 +0000
++++ b/contrib/lease-tools/dhcp_release.c	2021-11-30 10:04:51.507053902 +0000
 @@ -33,6 +33,10 @@
     The client-id is optional. If it is "*" then it treated as being missing.
  */
@@ -121,7 +119,7 @@ index 30e77c6..64cc894 100644
  #include <errno.h>
  
  #define DHCP_CHADDR_MAX          16
-@@ -73,6 +81,7 @@ struct dhcp_packet {
+@@ -73,6 +81,7 @@
    unsigned char options[308];
  };
  
@@ -129,7 +127,7 @@ index 30e77c6..64cc894 100644
  static struct iovec iov;
  
  static int expand_buf(struct iovec *iov, size_t size)
-@@ -139,6 +148,8 @@ static ssize_t netlink_recv(int fd)
+@@ -139,6 +148,8 @@
    return rc;
  }
  
@@ -138,7 +136,7 @@ index 30e77c6..64cc894 100644
  static int parse_hex(char *in, unsigned char *out, int maxlen, int *mac_type)
  {
    int i = 0;
-@@ -178,6 +189,7 @@ static int is_same_net(struct in_addr a, struct in_addr b, struct in_addr mask)
+@@ -178,6 +189,7 @@
    return (a.s_addr & mask.s_addr) == (b.s_addr & mask.s_addr);
  }
  
@@ -146,7 +144,7 @@ index 30e77c6..64cc894 100644
  static struct in_addr find_interface(struct in_addr client, int fd, unsigned int index, int ifrfd, struct ifreq *ifr)
  {
    struct sockaddr_nl addr;
-@@ -254,6 +266,7 @@ static struct in_addr find_interface(struct in_addr client, int fd, unsigned int
+@@ -254,6 +266,7 @@
   
    exit(0);
  }
@@ -154,19 +152,20 @@ index 30e77c6..64cc894 100644
  
  int main(int argc, char **argv)
  { 
-@@ -264,7 +277,11 @@ int main(int argc, char **argv)
+@@ -264,7 +277,12 @@
    struct sockaddr_in dest;
    struct ifreq ifr;
    int fd = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
 +#ifdef HAVE_SOLARIS_NETWORK
 +  int nl = 0;
++  struct ifaddrs *ifp_head, *ifp;
 +#else
    int nl = socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
 +#endif
  
    if (argc < 4 || argc > 5)
      { 
-@@ -277,7 +294,8 @@ int main(int argc, char **argv)
+@@ -277,7 +295,8 @@
        perror("cannot create socket");
        exit(1);
      }
@@ -176,21 +175,20 @@ index 30e77c6..64cc894 100644
    /* This voodoo fakes up a packet coming from the correct interface, which really matters for 
       a DHCP server */
    strncpy(ifr.ifr_name, argv[1], sizeof(ifr.ifr_name)-1);
-@@ -287,6 +305,7 @@ int main(int argc, char **argv)
+@@ -287,15 +306,46 @@
        perror("cannot setup interface");
        exit(1);
      }
 +#endif
    
-   if (inet_addr(argv[2]) == INADDR_NONE)
+   if (inet_pton(AF_INET, argv[2], &lease.s_addr) < 1)
      {
-@@ -295,7 +314,39 @@ int main(int argc, char **argv)
+       perror("invalid ip address");
+       exit(1);
      }
-   
-   lease.s_addr = inet_addr(argv[2]);
+-  
++ 
 +#ifdef HAVE_SOLARIS_NETWORK
-+  struct ifaddrs *ifp_head, *ifp;
-+
 +  if (getifaddrs(&ifp_head) < 0)
 +    {
 +      perror("could not retrieve IP addresses");
@@ -201,7 +199,7 @@ index 30e77c6..64cc894 100644
 +      continue;
 +    if (strcmp(ifp->ifa_name, argv[1]) == 0 &&
 +        is_same_net(lease, ((struct sockaddr_in *)ifp->ifa_addr)->sin_addr,
-+	((struct sockaddr_in *)ifp->ifa_netmask)->sin_addr))
++       ((struct sockaddr_in *)ifp->ifa_netmask)->sin_addr))
 +      break;
 +    }
 +  if (ifp == NULL) {
@@ -209,7 +207,7 @@ index 30e77c6..64cc894 100644
 +    exit(0);
 +  }
 +  memcpy(&server, &((struct sockaddr_in *)ifp->ifa_addr)->sin_addr,
-+	sizeof(server));
++       sizeof(server));
 +  /* bind to the socket */
 +  if (bind(fd, ifp->ifa_addr, sizeof(struct sockaddr_in)) == -1)
 +    {
@@ -218,9 +216,11 @@ index 30e77c6..64cc894 100644
 +      exit(1);
 +    }
 +  freeifaddrs(ifp_head);
-+#else
++#else /* HAVE_SOLARIS_NETWORK */
    server = find_interface(lease, nl, if_nametoindex(argv[1]), fd, &ifr);
-+#endif
-   
+-  
++#endif /* HAVE_SOLARIS_NETWORK */
++
    memset(&packet, 0, sizeof(packet));
   
+   packet.hlen = parse_hex(argv[3], packet.chaddr, DHCP_CHADDR_MAX, &mac_type);
