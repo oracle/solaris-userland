@@ -7,20 +7,14 @@ IGNORED_SYMBOLS variable to fix it.
 The patch is related Solaris internals, therefore,
 it is not suitable for upstream.
 
---- harfbuzz-2.3.1/src/check-symbols.sh	2019-03-07 01:23:20.035900619 +0000
-+++ harfbuzz-2.3.1/src/check-symbols.sh	2019-03-07 01:21:34.351401692 +0000
-@@ -1,4 +1,4 @@
--#!/bin/sh
-+#!/bin/bash
- 
- LC_ALL=C
- export LC_ALL
-@@ -8,6 +8,8 @@
- stat=0
- 
- IGNORED_SYMBOLS='_fini\|_init\|_fdata\|_ftext\|_fbss\|__bss_start\|__bss_start__\|__bss_end__\|_edata\|_end\|_bss_end__\|__end__\|__gcov_.*\|llvm_.*'
+--- a/src/check-symbols.py.orig	2021-12-01 17:18:34.610354693 +0100
++++ b/src/check-symbols.py	2021-12-01 17:21:05.352903702 +0100
+@@ -11,6 +11,8 @@
+ 	'__bss_start', '__bss_start__', '__bss_end__', '_edata', '_end', '_bss_end__',
+ 	'__end__', '__gcov_.*', 'llvm_.*', 'flush_fn_list', 'writeout_fn_list', 'mangle_path',
+ 	'lprofDirMode', 'reset_fn_list'])
 +# Ignore also Solaris specific symbols in .SUNW_ldynsym and .SUNW_dynsymsort sections.
-+IGNORED_SYMBOLS+='\|_DYNAMIC\|_GLOBAL_OFFSET_TABLE_\|_PROCEDURE_LINKAGE_TABLE_\|_etext\|_lib_version\|__xpg4\|__xpg6'
++IGNORED_SYMBOLS += '|_DYNAMIC|_GLOBAL_OFFSET_TABLE_|_PROCEDURE_LINKAGE_TABLE_|_etext|_lib_version|__xpg4|__xpg6'
  
- 
- if which nm 2>/dev/null >/dev/null; then
+ nm = os.getenv ('NM', shutil.which ('nm'))
+ if not nm:

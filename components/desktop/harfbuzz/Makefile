@@ -31,16 +31,16 @@ COMPILER= 		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		harfbuzz
-COMPONENT_VERSION=	2.6.4
-COMPONENT_PROJECT_URL=	https://www.freedesktop.org/wiki/Software/HarfBuzz/
+COMPONENT_VERSION=	3.1.2
+COMPONENT_PROJECT_URL=	https://github.com/harfbuzz/harfbuzz
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9413b8d96132d699687ef914ebb8c50440efc87b3f775d25856d7ec347c03c12
-COMPONENT_ARCHIVE_URL=	https://www.freedesktop.org/software/harfbuzz/release/$(COMPONENT_ARCHIVE)
+    sha256:4056b1541dd8bbd8ec29207fe30e568805c0705515632d7fec53a94399bc7945
+COMPONENT_ARCHIVE_URL=	https://github.com/harfbuzz/harfbuzz/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/harfbuzz
 COMPONENT_ANITYA_ID=	1299
 
-COMPONENT_BAID=		71612
+COMPONENT_BAID=		112988
 
 CXXFLAGS += -std=c++11
 
