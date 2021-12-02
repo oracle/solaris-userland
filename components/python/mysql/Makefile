@@ -150,6 +150,11 @@ COMPONENT_POST_TEST_ACTION = ( \
 	( $(SET_X) if [ -e "$(MYSQL_TEST_DATADIR)/test_link" ]; then rm -f `cat "$(MYSQL_TEST_DATADIR)/test_link"`; fi ); \
 )
 
+COMPONENT_PRE_SYSTEM_TEST_ACTION = $(COMPONENT_PRE_TEST_ACTION)
+COMPONENT_POST_SYSTEM_TEST_ACTION = $(COMPONENT_POST_TEST_ACTION)
+
+$(MANIFEST_BASE)-%-27.mogrified: PYTHON_3_ONLY = \#
+PKG_MACROS += PYTHON_3_ONLY="$(PYTHON_3_ONLY)"
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -160,7 +165,7 @@ install:	$(INSTALL_64)
 
 test:		$(TEST_64)
 
-system-test:    $(NO_TESTS)
+system-test:    $(SYSTEM_TEST_64)
 
 
 REQUIRED_PACKAGES += database/mysql-57
