@@ -26,8 +26,6 @@
     default mangler.man.stability "pass-through volatile">
 <transform file path=usr/(bin|share/mime)/.+ -> \
     set refresh_fmri svc:/application/desktop-cache/mime-types-cache:default>
-# Temporary workaround until desktop-cache pkg split (33499669) reaches WOS repo
-<transform file path=lib/svc/.* -> set pkg.linted.pkglint.dupaction001.1 true>
 set name=pkg.fmri \
     value=pkg:/data/shared-mime-info@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="shared-mime-info database"
