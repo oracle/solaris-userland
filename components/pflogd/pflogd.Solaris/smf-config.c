@@ -21,7 +21,7 @@
  */
 
 /*
- * Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021, Oracle and/or its affiliates.
  */
 
 #include <string.h>
@@ -656,7 +656,7 @@ smf_write_pflogcfg(const char *smf_instance, int create)
 		exit(1);
 	}
 
-	if (smf_refresh_instance_synchronous(fmri) != 0) {
+	if (smf_refresh_instance(fmri) != 0) {
 		fprintf(stderr, "Failed to do 'svcadm refresh %s':\n\t%s\n"
 		    "The service instance continues to run with old"
 		    "settings.\n",
