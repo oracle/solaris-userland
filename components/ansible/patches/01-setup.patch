@@ -1,0 +1,14 @@
+Solaris specific pach, will not be submitted upstream
+We prefer standard way to import modules (not relative path)
+
+--- ansible-stable-2.10/lib/ansible/modules/setup.py.orig	2021-04-15 07:40:11.019874820 +0000
++++ ansible-stable-2.10/lib/ansible/modules/setup.py	2021-04-15 07:40:36.310584860 +0000
+@@ -124,7 +124,7 @@
+ """
+ 
+ # import module snippets
+-from ..module_utils.basic import AnsibleModule
++from ansible.module_utils.basic import AnsibleModule
+ 
+ from ansible.module_utils._text import to_text
+ from ansible.module_utils.facts import ansible_collector, default_collectors

@@ -1,0 +1,46 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+
+<transform file link path=.+3\.7.* -> edit path 3\\.7 \$\(PYVER\)>
+
+# We do not ship files for testing the component
+<transform path=.*/ansible_test/.* -> drop>
+<transform path=.*/tests/.* -> drop>
+<transform path=usr/bin/ansible-test -> drop>
+
+# we do not plan to deliver ansible-connection utility in Solaris
+<transform path=usr/bin/ansible-connection -> drop>
+
+<transform path=.*/ansible_connection_cli_stub -> set pkg.depend.bypass-generate .*>
+<transform path=.*/apt.py  -> set pkg.depend.bypass-generate .*>
+<transform path=.*/apt_repository.py -> set pkg.depend.bypass-generate .*>
+<transform path=.*/cron.py -> set pkg.depend.bypass-generate .*>
+<transform path=.*/dnf.py -> set pkg.depend.bypass-generate .*>
+<transform path=.*/expect.p -> set pkg.depend.bypass-generate .*>
+<transform path=.*/get_url.py -> set pkg.depend.bypass-generate .*>
+<transform path=.*/uri.py -> set pkg.depend.bypass-generate .*>
+<transform path=.*/wait_for.py -> set pkg.depend.bypass-generate .*>
+<transform path=.*/yum.py -> set pkg.depend.bypass-generate .*>
+<transform path=.*/yum_repository.py -> set pkg.depend.bypass-generate .*>

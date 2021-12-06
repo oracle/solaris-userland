@@ -1,0 +1,131 @@
+'\" te
+.\" Copyright (c) 2021, Oracle and/or its affiliates.
+.TH ansible 1 "22 Oct 2021" "2.10" "User Commands"
+.SH NAME
+ansible \- run a task on target host(s)
+.SH SYNOPSIS
+.LP
+.nf
+ansible \fIhost-pattern\fR [-m \fImodule_name\fR] [-a \fIargs\fR] [\fIoptions\fR]
+.sp
+ansible --help
+.fi
+.SH DESCRIPTION
+.sp
+.LP
+Ansible is a simple tool/framework/API for performing tasks over SSH.
+.sp
+.LP
+See 'ansible --help'  for help on argument, options and usage.
+.SH OPERAND
+.sp
+.ne 2
+.mk
+.na
+\fIhost\-pattern\fR
+.ad
+.br
+.sp .6
+.RS 4n
+The name of a group in the inventory file, a shell-like glob selecting hosts in an inventory file, or any combination of the two separated by semicolons.
+.RE
+.sp
+\fBInventory\fR
+.sp
+Ansible stores the hosts it can potentially operate on in an inventory.
+This can be an ini-like file, a script, directory or a list. The ini
+syntax is one host per line. Groups headers are allowed and are included
+on their own line, enclosed in square brackets that start the line.
+.sp
+Ranges of hosts are also supported. For more information and additional
+options, see the documentation on http://docs.ansible.com.
+.RE
+.SH FILES
+.sp
+.ne 2
+.mk
+.na
+\fB/etc/ansible/hosts\fR
+.ad
+.br
+.sp .6
+.RS 4n
+Default inventory file.
+.RE
+.sp
+.ne 2
+.mk
+.na
+\fB/usr/share/ansible/\fR
+.ad
+.br
+.sp .6
+.RS 4n
+Default module library.
+.RE
+.sp
+.ne 2
+.mk
+.na
+\fB/etc/ansible/ansible.cfg\fR
+.ad
+.br
+.sp .6
+.RS 4n
+Config file, used if present.
+.RE
+.sp
+.ne 2
+.mk
+.na
+\fB~/.ansible.cfg\fR
+.ad
+.br
+.sp .6
+.RS 4n
+User config file. Overrides the default config if present.
+.RE
+.SH ENVIRONMENT VARIABLES
+.sp
+.LP
+The following environment variables can be specified:
+.sp
+.ne 2
+.mk
+.na
+\fBANSIBLE_INVENTORY\fR
+.ad
+.br
+.sp .6
+.RS 4n
+Override the default ansible inventory sources.
+.RE
+.sp
+.ne 2
+.mk
+.na
+\fBANSIBLE_LIBRARY\fR
+.ad
+.br
+.sp .6
+.RS 4n
+Override the default ansible module library path.
+.RE
+.sp
+.ne 2
+.mk
+.na
+\fBANSIBLE_CONFIG\fR
+.ad
+.br
+.sp .6
+.RS 4n
+Override the default ansible config file.
+.RE
+.SH AUTHOR
+Ansible was originally written by Michael DeHaan. See the AUTHORS file
+in the source code for a complete list of contributors.
+.sp
+.SH NOTES
+.sp
+For other Ansible Command Line tools, see https://docs.ansible.com/ansible/latest/user_guide/command_line_tools.html
