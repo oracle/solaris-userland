@@ -6,9 +6,8 @@
 #
 # This patch is not going to upstream, the changes are Solaris-specific.
 
-diff -Naur pflogd-OPENBSD_5_5.001/Makefile pflogd-OPENBSD_5_5.002/Makefile
---- pflogd-OPENBSD_5_5.001/Makefile	2019-03-14 02:51:33.265935591 +0000
-+++ pflogd-OPENBSD_5_5.002/Makefile	2019-03-14 03:32:40.645869672 +0000
+--- a/Makefile
++++ b/Makefile
 @@ -3,7 +3,7 @@
  CFLAGS+= -m64 -errwarn
  
@@ -18,9 +17,8 @@ diff -Naur pflogd-OPENBSD_5_5.001/Makefile pflogd-OPENBSD_5_5.002/Makefile
  OBJS=$(SRCS:.c=.o)
  MAN=pflogd.8
  
-diff -Naur pflogd-OPENBSD_5_5.001/pflogd.8 pflogd-OPENBSD_5_5.002/pflogd.8
---- pflogd-OPENBSD_5_5.001/pflogd.8	2019-03-14 02:51:33.268113004 +0000
-+++ pflogd-OPENBSD_5_5.002/pflogd.8	2019-03-14 03:32:40.647112404 +0000
+--- a/pflogd.8
++++ b/pflogd.8
 @@ -33,7 +33,7 @@
  .Sh SYNOPSIS
  .Nm pflogd
@@ -30,7 +28,7 @@ diff -Naur pflogd-OPENBSD_5_5.001/pflogd.8 pflogd-OPENBSD_5_5.002/pflogd.8
  .Op Fl d Ar delay
  .Op Fl f Ar filename
  .Op Fl i Ar interface
-@@ -60,6 +60,7 @@
+@@ -60,6 +60,7 @@ option of
  hopefully offline in case there are bugs in the packet parsing code of
  .Xr tcpdump 8 .
  .Pp
@@ -38,7 +36,7 @@ diff -Naur pflogd-OPENBSD_5_5.001/pflogd.8 pflogd-OPENBSD_5_5.002/pflogd.8
  .Nm
  closes and then re-opens the log file when it receives
  .Dv SIGHUP ,
-@@ -101,22 +102,52 @@
+@@ -101,22 +102,52 @@ is received.
  .Pp
  The options are as follows:
  .Bl -tag -width Ds
@@ -99,7 +97,7 @@ diff -Naur pflogd-OPENBSD_5_5.001/pflogd.8 pflogd-OPENBSD_5_5.002/pflogd.8
  .It Fl s Ar snaplen
  Analyze at most the first
  .Ar snaplen
-@@ -124,8 +155,6 @@
+@@ -124,8 +155,6 @@ bytes of data from each packet rather than the default of 160.
  The default of 160 is adequate for IP, ICMP, TCP, and UDP headers but may
  truncate protocol information for other protocols.
  Other file parsers may desire a higher snaplen.
@@ -108,7 +106,7 @@ diff -Naur pflogd-OPENBSD_5_5.001/pflogd.8 pflogd-OPENBSD_5_5.002/pflogd.8
  .It Ar expression
  Selects which packets will be dumped, using the regular language of
  .Xr tcpdump 8 .
-@@ -164,11 +193,59 @@
+@@ -164,11 +193,59 @@ The direction was inbound.
  The direction was outbound.
  .El
  .El
@@ -172,7 +170,7 @@ diff -Naur pflogd-OPENBSD_5_5.001/pflogd.8 pflogd-OPENBSD_5_5.002/pflogd.8
  .Sh EXAMPLES
  Log specific TCP packets to a different log file with a large snaplen
  (useful with a
-@@ -202,6 +279,32 @@
+@@ -202,6 +279,32 @@ the wi0 interface:
  .Bd -literal -offset indent
  # tcpdump -n -e -ttt -i pflog0 inbound and action block and on wi0
  .Ed
@@ -205,9 +203,8 @@ diff -Naur pflogd-OPENBSD_5_5.001/pflogd.8 pflogd-OPENBSD_5_5.002/pflogd.8
  .Sh SEE ALSO
  .Xr pcap 3 ,
  .Xr pf.conf 5 ,
-diff -Naur pflogd-OPENBSD_5_5.001/pflogd.c pflogd-OPENBSD_5_5.002/pflogd.c
---- pflogd-OPENBSD_5_5.001/pflogd.c	2019-03-14 02:51:33.265209927 +0000
-+++ pflogd-OPENBSD_5_5.002/pflogd.c	2019-03-14 03:32:40.642565924 +0000
+--- a/pflogd.c
++++ b/pflogd.c
 @@ -54,6 +54,7 @@
  #include <strings.h>
  #include <zone.h>
@@ -216,7 +213,7 @@ diff -Naur pflogd-OPENBSD_5_5.001/pflogd.c pflogd-OPENBSD_5_5.002/pflogd.c
  #else /* !_SOLARIS_ */
  #include <util.h>
  #endif	/* _SOLARIS_ */
-@@ -63,7 +64,7 @@
+@@ -63,7 +64,7 @@ pcap_t *hpcap;
  static FILE *dpcap;
  
  int Debug = 0;
@@ -225,7 +222,7 @@ diff -Naur pflogd-OPENBSD_5_5.001/pflogd.c pflogd-OPENBSD_5_5.002/pflogd.c
  static int cur_snaplen = DEF_SNAPLEN;
  
  volatile sig_atomic_t gotsig_close, gotsig_alrm, gotsig_hup, gotsig_usr1;
-@@ -75,7 +76,7 @@
+@@ -75,7 +76,7 @@ char *filter = NULL;
  char errbuf[PCAP_ERRBUF_SIZE];
  
  int log_debug = 0;
@@ -234,7 +231,7 @@ diff -Naur pflogd-OPENBSD_5_5.001/pflogd.c pflogd-OPENBSD_5_5.002/pflogd.c
  
  char *copy_argv(char * const *);
  void  dump_packet(u_char *, const struct pcap_pkthdr *, const u_char *);
-@@ -124,6 +125,15 @@
+@@ -124,6 +125,15 @@ typedef struct pcap_pkthdr_file {
  
  #endif	/* _SOLARIS_ */
  
@@ -250,7 +247,7 @@ diff -Naur pflogd-OPENBSD_5_5.001/pflogd.c pflogd-OPENBSD_5_5.002/pflogd.c
  static int try_reset_dump(int);
  
  /* buffer must always be greater than snaplen */
-@@ -291,6 +301,8 @@
+@@ -292,6 +302,8 @@ int
  init_pcap(void)
  {
  	hpcap = pcap_open_live(interface, snaplen, 1, PCAP_TO_MS, errbuf);
@@ -259,7 +256,7 @@ diff -Naur pflogd-OPENBSD_5_5.001/pflogd.c pflogd-OPENBSD_5_5.002/pflogd.c
  	if (hpcap == NULL) {
  		logmsg(LOG_ERR, "Failed to initialize: %s", errbuf);
  		return (-1);
-@@ -691,12 +703,20 @@
+@@ -692,12 +704,20 @@ main(int argc, char **argv)
  	int ch, np, ret, Xflag = 0;
  	pcap_handler phandler = dump_packet;
  	const char *errstr = NULL;
@@ -281,7 +278,7 @@ diff -Naur pflogd-OPENBSD_5_5.001/pflogd.c pflogd-OPENBSD_5_5.002/pflogd.c
  		switch (ch) {
  		case 'D':
  			Debug = 1;
-@@ -705,12 +725,15 @@
+@@ -706,12 +726,15 @@ main(int argc, char **argv)
  			delay = strtonum(optarg, 5, 60*60, &errstr);
  			if (errstr)
  				usage();
@@ -297,7 +294,7 @@ diff -Naur pflogd-OPENBSD_5_5.001/pflogd.c pflogd-OPENBSD_5_5.002/pflogd.c
  			break;
  		case 's':
  			snaplen = strtonum(optarg, 0, PFLOGD_MAXSNAPLEN,
-@@ -719,10 +742,27 @@
+@@ -720,10 +743,27 @@ main(int argc, char **argv)
  				snaplen = DEF_SNAPLEN;
  			if (errstr)
  				snaplen = PFLOGD_MAXSNAPLEN;
@@ -325,7 +322,7 @@ diff -Naur pflogd-OPENBSD_5_5.001/pflogd.c pflogd-OPENBSD_5_5.002/pflogd.c
  		default:
  			usage();
  		}
-@@ -733,14 +773,14 @@
+@@ -734,14 +774,14 @@ main(int argc, char **argv)
  	argv += optind;
  
  	/* does interface exist */
@@ -342,7 +339,7 @@ diff -Naur pflogd-OPENBSD_5_5.001/pflogd.c pflogd-OPENBSD_5_5.002/pflogd.c
  		openlog("pflogd", LOG_PID | LOG_CONS, LOG_DAEMON);
  		if (daemon(0, 0)) {
  			logmsg(LOG_WARNING, "Failed to become daemon: %s",
-@@ -758,6 +798,31 @@
+@@ -759,6 +799,31 @@ main(int argc, char **argv)
  			logmsg(LOG_NOTICE, "Failed to form filter expression");
  	}
  
@@ -374,7 +371,7 @@ diff -Naur pflogd-OPENBSD_5_5.001/pflogd.c pflogd-OPENBSD_5_5.002/pflogd.c
  	/* initialize pcap before dropping privileges */
  	if (init_pcap()) {
  		logmsg(LOG_ERR, "Exiting, init failure");
-@@ -769,7 +834,6 @@
+@@ -770,7 +835,6 @@ main(int argc, char **argv)
  		logmsg(LOG_ERR, "unable to privsep");
  		exit(1);
  	}
@@ -382,9 +379,8 @@ diff -Naur pflogd-OPENBSD_5_5.001/pflogd.c pflogd-OPENBSD_5_5.002/pflogd.c
  	setproctitle("[initializing]");
  	/* Process is now unprivileged and inside a chroot */
  #ifdef	_SOLARIS_
-diff -Naur pflogd-OPENBSD_5_5.001/pflogd.h pflogd-OPENBSD_5_5.002/pflogd.h
---- pflogd-OPENBSD_5_5.001/pflogd.h	2019-03-14 02:51:33.262957538 +0000
-+++ pflogd-OPENBSD_5_5.002/pflogd.h	2019-03-14 03:32:40.649199610 +0000
+--- a/pflogd.h
++++ b/pflogd.h
 @@ -18,6 +18,8 @@
  
  #ifdef	_SOLARIS_
@@ -394,7 +390,7 @@ diff -Naur pflogd-OPENBSD_5_5.001/pflogd.h pflogd-OPENBSD_5_5.002/pflogd.h
  #else /* !_SOLARIS_ */
  #include <sys/limits.h>
  #endif	/* _SOLARIS_ */
-@@ -55,3 +57,27 @@
+@@ -55,3 +57,27 @@ void send_fd(int, int);
  int  receive_fd(int);
  
  extern int Debug;
@@ -422,10 +418,9 @@ diff -Naur pflogd-OPENBSD_5_5.001/pflogd.h pflogd-OPENBSD_5_5.002/pflogd.h
 +#define DROP_PRIV(priv)
 +#define DROP_PFLAG(flag)
 +#endif /* _SOLARIS_ */
-diff -Naur pflogd-OPENBSD_5_5.001/privsep.c pflogd-OPENBSD_5_5.002/privsep.c
---- pflogd-OPENBSD_5_5.001/privsep.c	2019-03-14 02:51:33.264601881 +0000
-+++ pflogd-OPENBSD_5_5.002/privsep.c	2019-03-14 03:32:40.643216082 +0000
-@@ -112,6 +112,7 @@
+--- a/privsep.c
++++ b/privsep.c
+@@ -112,6 +112,7 @@ priv_init(void)
  #endif	/* !_SOLARIS_ */
  
  	child_pid = fork();
@@ -433,7 +428,7 @@ diff -Naur pflogd-OPENBSD_5_5.001/privsep.c pflogd-OPENBSD_5_5.002/privsep.c
  	if (child_pid < 0)
  		err(1, "fork() failed");
  
-@@ -133,6 +134,7 @@
+@@ -133,6 +134,7 @@ priv_init(void)
  		if (setresuid(pw->pw_uid, pw->pw_uid, pw->pw_uid) == -1)
  			err(1, "setresuid() failed");
  #endif	/* !_SOLARIS_ */
