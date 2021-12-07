@@ -27,10 +27,11 @@ COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		wget
-COMPONENT_VERSION=	1.20.3
-COMPONENT_BAID=		65063
+<<<<<<< dest
+COMPONENT_VERSION=	1.21.2
+COMPONENT_BAID=		113398
+COMPONENT_ARCHIVE_HASH= sha256:e6d4c76be82c676dd7e8c61a29b2ac8510ae108a810b5d1d18fc9a1d2c9a2497
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
-COMPONENT_ARCHIVE_HASH= sha256:31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e
 COMPONENT_ANITYA_ID=	5124
 
 # Enable adiheap and adistack security extensions
@@ -81,6 +82,5 @@ COMPONENT_TEST_ENV += "no_proxy="
 REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/pcre2
 REQUIRED_PACKAGES += library/security/openssl
+REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += runtime/python-37
-REQUIRED_PACKAGES += text/texinfo
