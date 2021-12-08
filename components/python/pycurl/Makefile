@@ -27,17 +27,17 @@ include ../../../make-rules/shared-macros.mk
 COMPILER=	gcc
 
 COMPONENT_NAME=		pycurl
-COMPONENT_VERSION=	7.43.0.5
+COMPONENT_VERSION=	7.44.1
 COMPONENT_PROJECT_URL=	http://pycurl.sourceforge.net/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c6ee5fda5f630cb13499d0fe95edd443174ccbfc0ff9fa71b1cd63bb2194c68b
+    sha256:5f3a334aca25380fd62ebd46ffaef95aab7ed3bafeda78723d3833c5966ccf04
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/pycurl
 COMPONENT_ANITYA_ID=	7973
 
-COMPONENT_BAID=		76727
+COMPONENT_BAID=		113403
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
@@ -70,7 +70,7 @@ build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)
 
-# test requires bottle and vsftpd which haven't been integrated yet.
+# test requires bottle and flaky which haven't been integrated yet.
 test:		$(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
