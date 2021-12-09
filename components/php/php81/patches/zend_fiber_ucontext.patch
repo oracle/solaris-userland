@@ -1,0 +1,23 @@
+https://github.com/php/php-src/pull/7773
+
+--- php-8.1.0/Zend/zend_fibers.c
++++ php-8.1.0/Zend/zend_fibers.c
+@@ -32,6 +32,10 @@ #ifdef HAVE_VALGRIND
+ # include <valgrind/valgrind.h>
+ #endif
+ 
++#ifdef ZEND_FIBER_UCONTEXT
++# include <ucontext.h>
++#endif
++
+ #ifndef ZEND_WIN32
+ # include <unistd.h>
+ # include <sys/mman.h>
+@@ -118,7 +122,6 @@ EG(active_fiber) = state->active_fiber;
+ }
+ 
+ #ifdef ZEND_FIBER_UCONTEXT
+-# include <ucontext.h>
+ ZEND_TLS zend_fiber_transfer *transfer_data;
+ #else
+ /* boost_context_data is our customized definition of struct transfer_t as
