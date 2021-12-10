@@ -4,9 +4,9 @@ run all the exit-vim autocommands, which end up busting the alternate stack
 at its default size. Increasing the default seems to do the trick, but it
 continues to be just a guess. The default stack size is not enough for vim.
 
---- vim-8.2.3444/src/os_unix.c
-+++ vim-8.2.3444/src/os_unix.c
-@@ -795,6 +795,7 @@ static struct sigstack sigstk;		// for s
+--- vim-8.2.3770/src/os_unix.c
++++ vim-8.2.3770/src/os_unix.c
+@@ -790,6 +790,7 @@ * Preference (if available): sysconf > S
   */
  static long int get_signal_stack_size()
  {
