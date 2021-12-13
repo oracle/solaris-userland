@@ -41,35 +41,27 @@ COMPONENT_BAID=		69000
 
 include $(WS_MAKE_RULES)/common.mk
 
-PYTHON_VERSION = 2.7
-
 # Installation relies on file types in the build directory,
-# avoid cloney to properly install nmap and zenmap components.
+# avoid cloney to properly install nmap.
 CLONEY = echo
 COMPONENT_PRE_CONFIGURE_ACTION = $(CP) -rp $(SOURCE_DIR)/. $(@D)
-
-PKG_MACROS +=		PYVER=$(PYTHON_VERSION)
 
 CONFIGURE_OPTIONS  +=   LIBS="$(LIBSOCKET) $(LIBNSL)"
 
 # Fix 64-bit linking via compiler.
 LDFLAGS += $(CC_BITS)
 
-CONFIGURE_OPTIONS  +=   PYTHON="$(PYTHON.$(PYTHON_VERSION))"
 CONFIGURE_OPTIONS  +=   --srcdir=$(BUILD_DIR_64)
 CONFIGURE_OPTIONS  +=   --localstatedir=$(VARDIR)
-CONFIGURE_OPTIONS  +=   --without-localdirs 
-CONFIGURE_OPTIONS  +=   --with-zenmap 
+CONFIGURE_OPTIONS  +=   --without-localdirs
+CONFIGURE_OPTIONS  +=   --without-zenmap
 CONFIGURE_OPTIONS  +=   --with-openssl
 CONFIGURE_OPTIONS  +=   --with-libpcap
 CONFIGURE_OPTIONS  +=   --with-libpcre
-CONFIGURE_OPTIONS  +=   --with-liblua 
-CONFIGURE_OPTIONS  +=   --with-ncat 
-CONFIGURE_OPTIONS  +=   --with-ndiff
+CONFIGURE_OPTIONS  +=   --with-liblua
+CONFIGURE_OPTIONS  +=   --with-ncat
+CONFIGURE_OPTIONS  +=   --without-ndiff
 CONFIGURE_OPTIONS  +=   --with-system-ssl-certs=/etc/certs
-
-# Python packages are delivered to vendor-packages instead of site-packages.
-CONFIGURE_OPTIONS  +=   am_cv_python_pythondir=$(PYTHON_VENDOR_PACKAGES.32)
 
 # Ensure that the test results are reproducible.
 COMPONENT_TEST_TRANSFORMS += -E \
@@ -83,12 +75,9 @@ COMPONENT_TEST_TRANSFORMS += -E \
 
 REQUIRED_PACKAGES += library/libssh2
 REQUIRED_PACKAGES += library/pcre
-REQUIRED_PACKAGES += library/python/pygobject-27
-REQUIRED_PACKAGES += library/python/pygtk2-27
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/lua
-REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/libpcap

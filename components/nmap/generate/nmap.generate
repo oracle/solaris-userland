@@ -20,22 +20,8 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
-
-<include generate/common.transform>
-
-# Delete everything not belonging to nmap package.
-<transform file link pkg.type=(?!nmap) -> drop>
-
-# Revert substitution of PYVER variable.
-<transform file -> edit path $(PYVER) \$\(PYVER\)>
-
-# Package should be uninstalled by 'pkg uninstall diagnostic/nmap' command.
-<transform file path=usr/bin/uninstall_ndiff -> drop>
 
 # Bundled certificates were obsoleted in nmap, see bug 28500746.
 <transform file path=usr/share/ncat/ca-bundle.crt -> drop>
-
-# Remove package tag.
-<transform file link -> delete pkg.type .*>
