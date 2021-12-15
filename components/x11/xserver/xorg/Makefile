@@ -32,8 +32,8 @@ COMPONENT_ARCHIVE_HASH= \
 	sha256:26f801f4d92216995f389873cf3b4e90069cf63e94bc5dd09ebbf7fd7e1ddcc2
 COMPONENT_BUGDB=        x11/xorg-server
 COMPONENT_ANITYA_ID=	5250
-COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.gz	
-COMPONENT_SIG_URL=	
+COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.gz
+COMPONENT_SIG_URL=
 
 COMPONENT_BAID=		109913
 
@@ -47,7 +47,7 @@ include $(WS_MAKE_RULES)/x11-component.mk
 CFLAGS.studio += $(studio_FEATURES_EXTENSIONS)
 
 CONFIGURE_OPTIONS += --docdir="$(USRSHAREDOCDIR)"
-CONFIGURE_OPTIONS += --enable-dmx
+CONFIGURE_OPTIONS += --disable-dmx
 CONFIGURE_OPTIONS += --enable-builddocs
 CONFIGURE_OPTIONS += --enable-kdrive
 CONFIGURE_OPTIONS += --enable-xephyr
@@ -93,7 +93,7 @@ COMPONENT_POST_UNPACK_ACTION = \
 LDFLAGS += -lm
 CFLAGS += -I/usr/include/pixman-1
 CFLAGS += -I/usr/include/X11/dri/
-CPPFLAGS += $(DPMS_DEFINES) -DSUNSOFT -DTSOL 
+CPPFLAGS += $(DPMS_DEFINES) -DSUNSOFT -DTSOL
 CONFIGURE_ENV += XSERVERCFLAGS_CFLAGS="-DHAS_FCHOWN -DHAS_STICKY_DIR_BIT -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS -DXTHREADS -DXUSE_MTSAFE_API"
 CONFIGURE_ENV += PTHREAD_LIBS="-lc"
 
@@ -129,7 +129,7 @@ COMPONENT_POST_INSTALL_ACTION += \
 	    $(PROTO_DIR)/usr/include/xorg/xf86Sbus.h
 
 ## Generate exec_attr files for each X server, except for Xorg
-EXEC_ATTR_SERVERS = Xdmx Xephyr Xvfb
+EXEC_ATTR_SERVERS = Xephyr Xvfb
 EXEC_ATTR_DIR = $(PROTO_DIR)/etc/security/exec_attr.d
 
 install: install_exec_attrs
@@ -152,7 +152,7 @@ MDB_SCRIPT_DIR=/usr/demo/Xserver/mdb
 MDB_SCRIPTS=list_Xserver_clients \
 	list_Xserver_devicegrab_client \
 	list_Xserver_servergrab_client
-MDB_MODULE_NAMES=Xephyr Xorg Xvfb Xvnc Xdmx
+MDB_MODULE_NAMES=Xephyr Xorg Xvfb Xvnc
 
 BUILT_MDB_MODULE=$(MDB_BUILD_DIR)/modules/Xserver.so
 
@@ -229,7 +229,6 @@ REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += system/library/security/crypto
 REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/font-utilities
-REQUIRED_PACKAGES += x11/library/libdmx
 REQUIRED_PACKAGES += x11/library/libdrm
 REQUIRED_PACKAGES += x11/library/libepoxy
 REQUIRED_PACKAGES += x11/library/libx11

@@ -19,22 +19,3 @@ not suitable for upstream
  #endif
  
  #include "xf86.h"
---- a/hw/dmx/config/xdmxconfig.c	2019-02-12 12:57:03.253116133 -0800
-+++ b/hw/dmx/config/xdmxconfig.c	2019-02-12 12:57:18.490982833 -0800
-@@ -56,6 +56,16 @@
- extern int yydebug;
- extern FILE *yyin;
- 
-+#if (defined(__sparc__) || defined(__sparc))
-+/* added to quieten undefined symbol error while compiling with Studio 12.4 */
-+#include "dixstruct.h"
-+_X_HIDDEN DevPrivateKey
-+_dixGetScreenPrivateKey(const DevScreenPrivateKey key, ScreenPtr pScreen)
-+{
-+    abort();
-+}
-+#endif
-+
- #define DMX_INFO "xdmxconfig v0.9\nCopyright 2002 Red Hat Inc.\n"
- 
- #define DMX_MAIN_WIDTH    800
