@@ -18,7 +18,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 
 # Drop 32-bit binary delivery
@@ -27,10 +27,10 @@
 # Set perms on daemon
 # Transform added to get rid of pkglint errors
 <transform file path=usr/lib/dconf-service -> set mode 0555>
-<transform file path=usr/lib/dconf-service -> set pkg.linted.userland.action001.2 true>
-<transform file path=usr/bin/dconf -> set pkg.linted.userland.action001.2 true>
+<transform file path=usr/lib/dconf-service -> \
+	set pkg.linted.userland.action001.2 true>
+<transform file path=usr/bin/dconf -> \
+	set pkg.linted.userland.action001.2 true>
 
-
-
-
-
+# Don't need to deliver systemd service
+<transform file path=usr/lib/systemd/user/dconf.service -> drop>
