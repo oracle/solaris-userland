@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -28,17 +28,15 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libtorrent
-COMPONENT_VERSION=	0.13.6
-COMPONENT_PROJECT_URL=	https://rakshasa.github.io/rtorrent/
+COMPONENT_VERSION=	0.13.8
+COMPONENT_PROJECT_URL=	https://github.com/rakshasa/libtorrent
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2838a08c96edfd936aff8fbf99ecbb930c2bfca3337dd1482eb5fccdb80d5a04
-COMPONENT_ARCHIVE_URL=	http://rtorrent.net/downloads/$(COMPONENT_ARCHIVE)
+    sha256:ed115a28f4ae8cfcd33b94a597c076ca74fd549867a26e4fac9505c27288e983
+COMPONENT_ARCHIVE_URL=	https://github.com/rakshasa/rtorrent-archive/raw/master/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/rtorrent
 COMPONENT_ANITYA_ID=	1742
 
-COMPONENT_BAID=		26017
-
-TEST_TARGET= $(NO_TESTS)
+COMPONENT_BAID=		113928
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -49,18 +47,16 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 # It can be removed when the upstream starts to use a newer automake version.
 COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 
-CONFIGURE_OPTIONS  +=	--enable-shared
 CONFIGURE_OPTIONS  +=	--disable-debug
-CONFIGURE_OPTIONS  +=	--disable-static
-CONFIGURE_OPTIONS  +=	--srcdir=$(BUILD_DIR_$(BITS))
 
-ASLR_MODE = $(ASLR_NOT_APPLICABLE)
+COMPONENT_PRE_TEST_ACTION = (cd $(COMPONENT_TEST_DIR) && /usr/gnu/bin/make LibTorrentTest)
+COMPONENT_TEST_DIR =  $(BUILD_DIR)/$(MACH$(BITS))/test
+COMPONENT_TEST_CMD = ./LibTorrentTest
+COMPONENT_TEST_ARGS =
+COMPONENT_TEST_TARGETS = 
 
-REQUIRED_PACKAGES += developer/c++/cppunit
-REQUIRED_PACKAGES += library/c++/sigcpp
 REQUIRED_PACKAGES += library/security/openssl
-REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
 REQUIRED_PACKAGES += library/zlib
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
-REQUIRED_PACKAGES += system/library/math
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

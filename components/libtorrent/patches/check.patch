@@ -1,0 +1,33 @@
+This patch enables 'gmake check' to run unit tests. Solaris specific. Submitted
+upstream.
+
+--- a/test/data/hash_check_queue_test.cc.orig	2021-12-15 12:17:06.045397596 +0100
++++ b/test/data/hash_check_queue_test.cc	2021-12-15 12:17:45.913163413 +0100
+@@ -1,6 +1,12 @@
+ #include "config.h"
+ 
+ #include <signal.h>
++#ifdef __sun__
++#ifndef HAVE_SIG_T
++typedef void (*sig_t)(int);
++#endif /* HAVE_SIG_T */
++#endif /* __sun__ */
++
+ #include lt_tr1_functional
+ 
+ #include "data/hash_queue_node.h"
+--- a/test/data/hash_queue_test.cc.orig	2021-12-15 12:17:23.484260162 +0100
++++ b/test/data/hash_queue_test.cc	2021-12-15 12:18:01.729330401 +0100
+@@ -1,6 +1,12 @@
+ #include "config.h"
+ 
+ #include <signal.h>
++#ifdef __sun__
++#ifndef HAVE_SIG_T
++typedef void (*sig_t)(int);
++#endif /* HAVE_SIG_T */
++#endif /* __sun__ */
++
+ #include lt_tr1_functional
+ 
+ #include "data/hash_queue_node.h"
