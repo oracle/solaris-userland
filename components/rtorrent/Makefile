@@ -20,35 +20,28 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
-export PARFAIT_BUILD=no
 
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		rtorrent
-COMPONENT_VERSION=	0.9.6
+COMPONENT_VERSION=	0.9.8
 COMPONENT_PROJECT_URL=	https://rakshasa.github.io/rtorrent/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:1e69c24f1f26f8f07d58d673480dc392bfc4317818c1115265b08a7813ff5b0e
-COMPONENT_ARCHIVE_URL=	http://rtorrent.net/downloads/$(COMPONENT_ARCHIVE)
+    sha256:9edf0304bf142215d3bc85a0771446b6a72d0ad8218efbe184b41e4c9c7542af
+COMPONENT_ARCHIVE_URL=	\
+	https://github.com/rakshasa/rtorrent/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	4221
 
-COMPONENT_BAID=		26023
-
-TEST_TARGET= $(NO_TESTS)
+COMPONENT_BAID=		114021
 
 include $(WS_MAKE_RULES)/common.mk
 
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
-
-CXXFLAGS += -std=c++11
-
-LDFLAGS += -L$(GNULIB64) -R$(GNULIB64)
-LDFLAGS += $(LIBNSL) $(LIBSOCKET)
 
 # Needed during configuration to correctly find ncurses.h
 CFLAGS +=		-I$(USRINCDIR)/ncurses
@@ -56,15 +49,19 @@ CFLAGS +=		-I$(USRINCDIR)/ncurses
 # Needed during the build stage.
 CXXFLAGS +=		-I$(USRINCDIR)/ncurses
 
-CONFIGURE_OPTIONS.64 +=	--srcdir=$(BUILD_DIR_64)
-CONFIGURE_OPTIONS +=	--enable-shared
-CONFIGURE_OPTIONS +=	--disable-static
 CONFIGURE_OPTIONS +=	--disable-debug
 
-REQUIRED_PACKAGES += library/c++/sigcpp
+COMPONENT_PRE_TEST_ACTION = (cd $(COMPONENT_TEST_DIR) && /usr/gnu/bin/make rtorrentTest)
+COMPONENT_TEST_DIR =  $(BUILD_DIR)/$(MACH$(BITS))/test
+COMPONENT_TEST_CMD = ./rtorrentTest
+COMPONENT_TEST_ARGS =
+COMPONENT_TEST_TARGETS =
+
 REQUIRED_PACKAGES += library/libtorrent
 REQUIRED_PACKAGES += library/ncurses
-REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += web/curl

@@ -1,0 +1,27 @@
+Compilation fails without following includes. Solaris specific. Submitted
+upstream.
+
+--- a/src/display/window_download_statusbar.cc.orig	2021-12-16 15:54:31.208664684 +0000
++++ b/src/display/window_download_statusbar.cc	2021-12-16 15:55:39.598932859 +0000
+@@ -36,6 +36,9 @@
+ 
+ #include "config.h"
+ 
++// libtorrent headers does not include this and compilation fails
++#include <sys/socket.h>
++
+ #include <torrent/rate.h>
+ #include <torrent/data/transfer_list.h>
+ #include <torrent/tracker_controller.h>
+--- a/src/command_ip.cc.orig	2021-12-16 16:04:42.179292690 +0000
++++ b/src/command_ip.cc	2021-12-16 16:05:13.062875977 +0000
+@@ -36,6 +36,9 @@
+ 
+ #include "config.h"
+ 
++// libtorrent headers does not include this and compilation fails
++#include <sys/socket.h>
++
+ #include <fstream>
+ #include <rak/path.h>
+ #include <torrent/peer/peer_list.h>
