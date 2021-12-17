@@ -163,7 +163,7 @@ class ExtractLicense(base.ManifestChecker):
     @staticmethod
     def _construct_license(ldict):
         license = {}
-        for key in ["baid", "name", "version", "description"]:
+        for key in ["baid", "name", "version", "description", "tpno"]:
             license[key] = ldict.get("com.oracle.info.%s" % key, "")
         return license
 
@@ -213,6 +213,13 @@ class ExtractLicense(base.ManifestChecker):
                     pkgvers = ""
 
         pkgpath = manifest.fmri.get_pkg_stem()
+
+        # tpno shouldn't be used any longer
+        pkglint_id = "005"
+        lint_id = "%s%s" % (self.name, pkglint_id)
+        if "com.oracle.info.tpno" in manifest:
+            engine.error(_("%s includes now obsoleted com.oracle.info.tpno"
+                           " attribute.") % pkgpath, msgid=lint_id)
 
         pkglint_id = "000"
         lint_id = "%s%s" % (self.name, pkglint_id)
@@ -273,6 +280,13 @@ class ExtractLicense(base.ManifestChecker):
                         "value of %(key)s") %
                         {"pkg": pkgpath, "key": baidstr},
                         msgid=lint_id)
+
+            # tpno shouldn't be used any longer
+            pkglint_id = "005"
+            lint_id = "%s%s" % (self.name, pkglint_id)
+            if license["tpno"] != "":
+                engine.error(_("%s includes now obsoleted com.oracle.info.tpno"
+                               " attribute.") % pkgpath, msgid=lint_id)
 
             # com.oracle.info.name, com.oracle.info.description cannot be
             # empty.
