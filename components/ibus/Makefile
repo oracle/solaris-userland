@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/download/$(COMPONENT_VE
 COMPONENT_BUGDB=	g11n/im-ibus
 COMPONENT_ANITYA_ID=	1352
 
-TPNO=			48784
+COMPONENT_BAID=		57928
 
 # disabled, upstream tests require DISPLAY and ibus daemon running.
 TEST_TARGET= $(NO_TESTS)

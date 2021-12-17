@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	https://github.com/uclouvain/$(COMPONENT_NAME)/archive/v$
 COMPONENT_BUGDB=	library/openjpeg
 COMPONENT_ANITYA_ID=	2550
 
-TPNO=			64100
+COMPONENT_BAID=		90884
 
 BUILD_STYLE = cmake
 

@@ -37,7 +37,7 @@ COMPONENT_ANITYA_ID=	3849
 COMPONENT_BUGDB=	python-mod/docutils
 
 
-TPNO=			68884
+COMPONENT_BAID=		99199
 
 # We need just a single version
 PYTHON_VERSION =	3.9

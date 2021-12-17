@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 # Cairo uses atomic intrinsics not supported in Studio 12.4 (ER 19201298)
@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_URL=	http://cairographics.org/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/cairo
 COMPONENT_ANITYA_ID=	247
 
-TPNO=			53377
+COMPONENT_BAID=		67362
 
 # Cairo tests currently require an X display & require more work to run properly
 TEST_TARGET= $(NO_TESTS)

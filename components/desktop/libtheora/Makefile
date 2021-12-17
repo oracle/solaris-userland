@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	http://downloads.xiph.org/releases/theora/$(COMPONENT_ARC
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	11793
 
-TPNO=			9578
+COMPONENT_BAID=		8535
 
 ifeq ($(MACH),i386)
 # Disable tests since there are some crashes.

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_ARCH= i386
@@ -39,7 +39,7 @@ COMPONENT_ARCHIVE_URL=  https://sourceforge.net/projects/$(COMPONENT_NAME)/files
 COMPONENT_BUGDB=        library/gnu-efi
 COMPONENT_ANITYA_ID=	1202
 
-TPNO=			26179
+COMPONENT_BAID=		28312
 
 BUILD_STYLE= justmake
 TEST_TARGET= $(NO_TESTS)

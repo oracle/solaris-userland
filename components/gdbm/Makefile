@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -32,7 +32,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=	library/libgdbm
 COMPONENT_ANITYA_ID=	882
 
-TPNO=			8440
+COMPONENT_BAID=		7526
 
 # The tests build but they are not run automatically.  You have to
 # manually run the tests (testdbm, testgdbm, etc) by hand and verify

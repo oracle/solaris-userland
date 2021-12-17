@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 COMPILER= gcc
 BUILD_BITS= 64_and_32
@@ -30,7 +30,7 @@ PATH=$(dir $(CC)):$(JAVA_HOME)/bin:$(USRBINDIR):$(GNUBIN)
 
 COMPONENT_NAME=		libidn
 COMPONENT_VERSION=	1.34
-TPNO=			43018
+COMPONENT_BAID=		49053
 COMPONENT_ARCHIVE_HASH=	sha256:3719e2975f2fb28605df3479c380af2cf4ab4e919e1506527e4c7670afff6e3c
 COMPONENT_BUGDB=	library/libidn
 COMPONENT_ANITYA_ID=	1639

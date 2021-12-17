@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://github.com/kjd/idna
 COMPONENT_BUGDB=	python-mod/idna
 COMPONENT_ANITYA_ID=	5487
 
-TPNO=			60326
+COMPONENT_BAID=		87542
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

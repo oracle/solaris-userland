@@ -39,7 +39,7 @@ COMPONENT_ARCHIVE_URL= ftp://sourceware.org/pub/valgrind/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL= http://valgrind.org
 COMPONENT_ANITYA_ID=  13639
 
-TPNO=           76219
+COMPONENT_BAID=           111809
 
 include $(WS_MAKE_RULES)/common.mk
 

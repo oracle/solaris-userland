@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates. 
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            NO_ARCH
@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=	gnome/help
 COMPONENT_ANITYA_ID=	13131
 
-TPNO=			68673
+COMPONENT_BAID=		98194
 
 TEST_TARGET= $(NO_TESTS)
 

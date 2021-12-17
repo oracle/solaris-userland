@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -44,7 +44,7 @@ COMPONENT_SIG_URL_1=	$(COMPONENT_ARCHIVE_URL_1).sig
 SOURCE_DIR_1=		$(COMPONENT_DIR)/$(COMPONENT_SRC_1)
 COMPONENT_ANITYA_ID_1=	7838
 
-TPNO=			54796
+COMPONENT_BAID=		74382
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/gnu-component.mk

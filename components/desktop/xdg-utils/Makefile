@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_URL=	https://github.com/freedesktop/xdg-utils/archive/v$(COMPO
 COMPONENT_BUGDB=	gnome/interop
 COMPONENT_ANITYA_ID=	5176
 
-TPNO=			53424
+COMPONENT_BAID=		67436
 
 # Tests require a window system to be up and running
 TEST_TARGET = $(SKIP_TEST)

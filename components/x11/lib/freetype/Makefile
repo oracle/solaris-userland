@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=        x11/font
 COMPONENT_ANITYA_ID=	854
-TPNO=			62650
+COMPONENT_BAID=		87789
 
 TEST_TARGET = $(NO_TESTS)
 

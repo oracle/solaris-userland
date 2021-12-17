@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_URL=	http://ftp.gnu.org/gnu/$(COMPONENT_NAME)/$(COMPONENT_ARCH
 COMPONENT_BUGDB=	utility/gnu-findutils
 COMPONENT_ANITYA_ID=	812
 
-TPNO=			27155
+COMPONENT_BAID=		29556
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 

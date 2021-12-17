@@ -35,7 +35,7 @@ COMPONENT_PROJECT_URL=	http://projectmallard.org
 COMPONENT_BUGDB=	python-mod/ducktype
 COMPONENT_ANITYA_ID=	7420
 
-TPNO=			55682
+COMPONENT_BAID=		72264
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://github.com/glyph/Automat
 COMPONENT_BUGDB=	python-mod/automat
 COMPONENT_ANITYA_ID=	15101
 
-TPNO=			57873
+COMPONENT_BAID=		76757
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://github.com/testing-cabal/extras
 COMPONENT_BUGDB=	python-mod/extras
 COMPONENT_ANITYA_ID=	13192
 
-TPNO=			64356
+COMPONENT_BAID=		91397
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

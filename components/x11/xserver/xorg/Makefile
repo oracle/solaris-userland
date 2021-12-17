@@ -35,7 +35,7 @@ COMPONENT_ANITYA_ID=	5250
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.gz	
 COMPONENT_SIG_URL=	
 
-TPNO=			75188
+COMPONENT_BAID=		109913
 
 # Remove compiler specific visibility flag that breaks builds of drivers
 # with other compilers

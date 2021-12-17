@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://github.com/untitaker/python-atomicwrites
 COMPONENT_BUGDB=	python-mod/atomicwrites
 COMPONENT_ANITYA_ID=	5626
 
-TPNO=			50833
+COMPONENT_BAID=		61978
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

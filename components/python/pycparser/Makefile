@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://github.com/eliben/pycparser
 COMPONENT_BUGDB=	python-mod/pycparser
 COMPONENT_ANITYA_ID=	8175
 
-TPNO=			57849
+COMPONENT_BAID=		76722
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

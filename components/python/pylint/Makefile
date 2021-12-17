@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=  https://www.pylint.org/
 COMPONENT_BUGDB=	utility/pylint
 COMPONENT_ANITYA_ID=	5344
 
-TPNO=			63907
+COMPONENT_BAID=		90461
 
 # This component is delivered in two different versions because
 # the newer one is no longer Python 2.7 compatible.
@@ -47,7 +47,7 @@ COMPONENT_ARCHIVE_HASH_OLD=	\
 	sha256:ef901a34b62ed7a734370ba5b162d890231ba8822abe88c6dda1268e2575f5f1
 COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
 
-TPNO_OLD=		31351
+COMPONENT_BAID_OLD=	34816
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

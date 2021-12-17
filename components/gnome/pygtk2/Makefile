@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=       gnome/libraries
 COMPONENT_ANITYA_ID=	13159
 
-TPNO=			19936
+COMPONENT_BAID=		20251
 
 # Only build for 2.7 as pygobject-3 will replace pygtk for python 3.x
 PYTHON_VERSION = 2.7

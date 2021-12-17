@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_URL=	https://invisible-mirror.net/archives/ncurses/$(COMPONENT
 COMPONENT_BUGDB=	library/ncurses
 COMPONENT_ANITYA_ID=	2057
 
-TPNO=			75979
+COMPONENT_BAID=		111447
 
 # Tests are interactive and require ncurses to be installed in CBE.
 # You can compile and run them from ncurses' test directory.

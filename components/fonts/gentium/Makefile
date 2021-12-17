@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -53,7 +53,7 @@ COMPONENT_SRC_1=	Gentium102
 
 COMPONENT_BUGDB=	g11n/font
 
-TPNO=			11259
+COMPONENT_BAID=		10465
 
 BUILD_STYLE=		justmake
 TEST_TARGET=		$(NO_TESTS)

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_URL=	http://www.aleksey.com/xmlsec/download/$(COMPONENT_ARCHIV
 COMPONENT_BUGDB=	library/xmlsec
 COMPONENT_ANITYA_ID=	5200
 
-TPNO=			52162
+COMPONENT_BAID=		64644
 
 PKG_CONFIG_PATH.64=	/usr/lib/64/pkgconfig
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=	utility/gnu-diffutils
 COMPONENT_ANITYA_ID=	436
 
-TPNO=			35625
+COMPONENT_BAID=		40351
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 

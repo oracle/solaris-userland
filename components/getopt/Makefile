@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_URL=	http://frodo.looijaard.name/system/files/software/$(COMPO
 COMPONENT_BUGDB=	utility/gnu-getopt
 COMPONENT_ANITYA_ID=	13265
 
-TPNO=			21550
+COMPONENT_BAID=		22179
 
 BUILD_STYLE= justmake
 SYSTEM_TEST_TARGET= $(SYSTEM_TEST_64)

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=        gnome/docviewer
 COMPONENT_ANITYA_ID=	8420
 
-TPNO=			63012
+COMPONENT_BAID=		88579
 
 TEST_TARGET= $(NO_TESTS)
 

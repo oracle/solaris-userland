@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	http://pytz.sourceforge.net/
 COMPONENT_BUGDB=	python-mod/pytz
 COMPONENT_ANITYA_ID=	6537
 
-TPNO=			69985
+COMPONENT_BAID=		108342
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

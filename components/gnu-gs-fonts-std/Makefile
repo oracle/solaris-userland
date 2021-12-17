@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_URL=  https://download.sourceforge.net/sourceforge/gs-fonts/$(
 COMPONENT_BUGDB=	utility/ghostscript
 COMPONENT_ANITYA_ID=	13283
 
-TPNO=			30610
+COMPONENT_BAID=		33992
 
 # set relocate_to option while unpacking the tar ball
 UNPACK_ARGS= -r $(COMPONENT_SRC)

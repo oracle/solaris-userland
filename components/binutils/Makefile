@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=	utility/gnu-binutils
 COMPONENT_ANITYA_ID=	7981
 
-TPNO=			70095
+COMPONENT_BAID=		100258
 
 #
 # for platform and cross platform support

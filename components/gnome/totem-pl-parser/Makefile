@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=        gnome/multimedia
 COMPONENT_ANITYA_ID=	13163
 
-TPNO=			75704
+COMPONENT_BAID=		110878
 
 BUILD_STYLE=         meson
 TEST_TARGET  = $(NO_TESTS)

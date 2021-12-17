@@ -37,7 +37,7 @@ COMPONENT_PROJECT_URL=	https://github.com/python-rapidjson/python-rapidjson
 COMPONENT_BUGDB=	python-mod/rapidjson
 COMPONENT_ANITYA_ID=	42927
 
-TPNO=			70710
+COMPONENT_BAID=		101190
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 

@@ -39,7 +39,7 @@ COMPONENT_PROJECT_URL=  https://github.com/erikhuda/thor/tree/v1.0.1
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	4425
 
-TPNO=                   63040
+COMPONENT_BAID=                   88654
 
 # Create gemspec.
 COMPONENT_POST_UNPACK_ACTION= \

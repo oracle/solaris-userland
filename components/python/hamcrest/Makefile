@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://github.com/hamcrest/PyHamcrest
 COMPONENT_BUGDB=	python-mod/pyhamcrest
 COMPONENT_ANITYA_ID=	11633
 
-TPNO=			62248
+COMPONENT_BAID=		86821
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

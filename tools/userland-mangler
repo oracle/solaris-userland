@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 #
 # userland-mangler - a file mangling utility
@@ -396,14 +396,14 @@ def mangle_paths(manifest, search_paths: str, destination: str, closedsrc: bool)
 def mangle_manifest(manifest) -> None:
     """Mangle manifest file itself."""
 
-    # Check for file content and remove tpno data and license actions if
+    # Check for file content and remove baid data and license actions if
     # there is no content in the package that can be licensed.
     if next(manifest.gen_actions_by_type("file"), None) is None:
 
-        # search for and remove 'set name=com.oracle.info.tpno ...'
+        # search for and remove 'set name=com.oracle.info.baid ...'
         # and all license actions
         for action in manifest.gen_actions_by_type("set"):
-            if action.attrs["name"] == "com.oracle.info.tpno":
+            if action.attrs["name"] == "com.oracle.info.baid":
                 manifest.actions.remove(action)
         for action in manifest.gen_actions_by_type("license"):
             manifest.actions.remove(action)

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -36,7 +36,7 @@ COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/libz
 COMPONENT_ANITYA_ID=	5303
 
-TPNO=			33488
+COMPONENT_BAID=		37637
 
 # Omit directory options that cause zlib's CMake-based build to fail.
 CONFIGURE_DEFAULT_DIRS=no

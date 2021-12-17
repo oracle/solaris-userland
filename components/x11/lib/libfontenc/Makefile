@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -32,7 +32,7 @@ COMPONENT_ARCHIVE_HASH= \
 	sha256:2cfcce810ddd48f2e5dc658d28c1808e86dcf303eaff16728b9aa3dbc0092079
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1613
-TPNO=			50537
+COMPONENT_BAID=		61312
 
 COMPONENT_NAME_1=	encodings
 COMPONENT_VERSION_1=	1.0.5
@@ -42,7 +42,7 @@ COMPONENT_ARCHIVE_URL_1= $(COMPONENT_PROJECT_URL)/releases/individual/font/$(COM
 COMPONENT_ARCHIVE_HASH_1= \
 	sha256:bd96e16143a044b19e87f217cf6a3763a70c561d1076aad6f6d862ec41774a31
 COMPONENT_ANITYA_ID_1=	15051
-TPNO_1=			53650
+COMPONENT_BAID_1=		67889
 
 TEST_TARGET = $(NO_TESTS)
 

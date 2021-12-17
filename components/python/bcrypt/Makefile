@@ -41,7 +41,7 @@ COMPONENT_PROJECT_URL=	hhttps://github.com/pyca/bcrypt/
 COMPONENT_BUGDB=	python-mod/bcrypt
 COMPONENT_ANITYA_ID=	9047
 
-TPNO=			58071
+COMPONENT_BAID=		77131
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

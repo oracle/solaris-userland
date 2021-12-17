@@ -39,7 +39,7 @@ COMPONENT_PROJECT_URL=	https://www.dulwich.io/
 COMPONENT_BUGDB=	python-mod/dulwich
 COMPONENT_ANITYA_ID=	6077
 
-TPNO=			61974
+COMPONENT_BAID=		86252
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

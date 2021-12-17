@@ -42,7 +42,7 @@ COMPONENT_ARCHIVE_URL = http://www.openmprtl.org/sites/default/files/$(COMPONENT
 COMPONENT_PROJECT_URL = http://www.openmprtl.org/
 COMPONENT_BUGDB       = library/intel-openmp
 
-TPNO = 27154
+COMPONENT_BAID = 29554
 
 # There are no tests for this version of the Intel OpenMP Library
 # OpenMP tests will be integrated in ${WS_TOP}/components/bots.

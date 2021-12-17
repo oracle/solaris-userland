@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL=	http://rtorrent.net/downloads/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/rtorrent
 COMPONENT_ANITYA_ID=	1742
 
-TPNO=			24572
+COMPONENT_BAID=		26017
 
 TEST_TARGET= $(NO_TESTS)
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)files/$(COMPONENT_ARCHIVE)/download
 COMPONENT_ANITYA_ID=	10373
 
-TPNO=			20669
+COMPONENT_BAID=		21105
 
 BUILD_STYLE= justmake
 # Makefile.Solaris is pretty useless for working in Userland.

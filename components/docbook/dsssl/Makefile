@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_URL=	http://prdownloads.sourceforge.net/docbook/$(COMPONENT_AR
 COMPONENT_BUGDB=	utility/docbook
 COMPONENT_ANITYA_ID=	N/A
 
-TPNO=			9655
+COMPONENT_BAID=		8612
 
 BUILD_STYLE=		archive
 BUILD_TARGET +=		prep

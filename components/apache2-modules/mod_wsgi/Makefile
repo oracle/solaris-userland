@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
@@ -33,7 +33,7 @@ COMPONENT_PROJECT_URL=  https://modwsgi.readthedocs.io/
 COMPONENT_BUGDB=	utility/apache
 COMPONENT_ANITYA_ID=	2001
 
-TPNO=			62529
+COMPONENT_BAID=		87486
 
 # Don't use default CPPFLAGS; it causes Apache's custom CPP to fail.
 CONFIGURE_CPPFLAGS=

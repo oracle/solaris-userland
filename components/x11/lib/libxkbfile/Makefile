@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -32,7 +32,7 @@ COMPONENT_ARCHIVE_HASH= \
 	sha256:758dbdaa20add2db4902df0b1b7c936564b7376c02a0acd1f2a331bd334b38c7
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1781
-TPNO=			50571
+COMPONENT_BAID=		61376
 
 # GNU Build System files have to be regenerated for automake 1.16.
 # It can be removed when the upstream starts to use a newer automake version.

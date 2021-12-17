@@ -40,7 +40,7 @@ GIT_REPO= https://github.com/openca/openca-ocspd
 GIT_COMMIT_ID= 0f16341
 GIT_HASH=  sha256:0f894c7f19d658bdbda88887a3d748e8a968c6fd5cfc5f7be8ace9399b2f878d
 
-TPNO =			28048
+COMPONENT_BAID =		30783
 
 # Skip test because of set up requirements.
 #

@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	http://freedesktop.org/software/$(COMPONENT_NAME)/release
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	3729
 
-TPNO=			70294
+COMPONENT_BAID=		100474
 
 # Build for python 3.7
 PYTHON_VERSION = 3.7

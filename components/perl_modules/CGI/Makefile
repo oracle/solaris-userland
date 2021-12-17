@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -35,7 +35,7 @@ COMPONENT_PROJECT_URL=	http://search.cpan.org/~leejo/CGI
 COMPONENT_BUGDB=	perl-mod/cgi
 COMPONENT_ANITYA_ID=	2687
 
-TPNO=			39158
+COMPONENT_BAID=		44111
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

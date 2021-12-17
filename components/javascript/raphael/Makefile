@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL=	https://github.com/DmitryBaranovskiy/$(COMPONENT_NAME)/ar
 COMPONENT_BUGDB= 	javascript/raphael
 COMPONENT_ANITYA_ID=	13485
 
-TPNO=			33645
+COMPONENT_BAID=		37898
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

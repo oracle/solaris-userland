@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	http://www.cpan.org/src/5.0/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/perl
 COMPONENT_ANITYA_ID=	13599
 
-TPNO=			60114
+COMPONENT_BAID=		81894
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/configure.mk

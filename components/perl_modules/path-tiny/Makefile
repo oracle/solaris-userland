@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -37,7 +37,7 @@ COMPONENT_PROJECT_URL=	http://search.cpan.org/dist/Path-Tiny/
 COMPONENT_BUGDB=	perl-mod/path-tiny
 COMPONENT_ANITYA_ID=	11962
 
-TPNO=			53408
+COMPONENT_BAID=		67410
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

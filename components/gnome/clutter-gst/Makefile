@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=        library/clutter
 COMPONENT_ANITYA_ID=	304
 
-TPNO=			25220
+COMPONENT_BAID=		27034
 
 # Requires cogl modules - disable till we get the fixed cogl on build servers
 TEST_TARGET = $(SKIP_TEST)

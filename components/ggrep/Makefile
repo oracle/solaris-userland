@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=	utility/ggrep
 COMPONENT_ANITYA_ID=	1251
 
-TPNO=			37024
+COMPONENT_BAID=		42177
 
 SYSTEM_TEST_TARGET= $(SOURCE_DIR)/.system-test-patched configure $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/gnu-component.mk

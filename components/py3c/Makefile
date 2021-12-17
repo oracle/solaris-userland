@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_URL=	https://github.com/encukou/py3c/archive/v$(COMPONENT_VERS
 COMPONENT_BUGDB=	library/py3c
 COMPONENT_ANITYA_ID=	104113
 
-TPNO=			63454
+COMPONENT_BAID=		89516
 
 BUILD_STYLE= justmake
 

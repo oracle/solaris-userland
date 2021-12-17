@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 COMPILER= gcc
@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_URL=	https://github.com/ninja-build/ninja/archive/v$(COMPONENT
 COMPONENT_BUGDB=        utility/ninja
 COMPONENT_ANITYA_ID=	2089
 
-TPNO=			53286
+COMPONENT_BAID=		67153
 
 BUILD_STYLE = justmake
 	

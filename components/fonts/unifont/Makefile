@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -41,7 +41,7 @@ COMPONENT_ARCHIVE_HASH= \
     sha256:4b20bfc6412bce9302cd321f39d7c0185c3c69f9deaf9ab7ea89c4e105fbcb9c
 COMPONENT_BUGDB=	g11n/font
 
-TPNO=			25965
+COMPONENT_BAID=		28016
 
 BUILD_STYLE=		justmake
 TEST_TARGET=		$(NO_TESTS)

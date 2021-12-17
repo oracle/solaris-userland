@@ -35,7 +35,7 @@ COMPONENT_PROJECT_URL=	https://github.com/untitaker/python-atomicwrites
 COMPONENT_BUGDB=	python-mod/chardet
 COMPONENT_ANITYA_ID=	3798
 
-TPNO=			64105
+COMPONENT_BAID=		92477
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

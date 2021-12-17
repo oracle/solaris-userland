@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=	http://www.ivarch.com/programs/sources/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	3736
 
-TPNO=			37030
+COMPONENT_BAID=		42182
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/common.mk

@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=  https://oracle.github.io/python-cx_Oracle
 COMPONENT_BUGDB=	python-mod/cx_oracle
 COMPONENT_ANITYA_ID=	13233
 
-#TPNO=                  NONE (included with Stack Approval rather than 3PLTA,
+#BAID=                  NONE (included with Stack Approval rather than 3PLTA,
 #                       for email trail of the approval please see
 #                       /shared/sac/PSARC/2015/294/approvals)
 

@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:b33ad58d687487a821ec8d878daab0f716be60d0936f2e3ac5cf08419ce70350
 COMPONENT_ANITYA_ID=	11798
 
-TPNO=			70567
+COMPONENT_BAID=		100947
 
 # The traditional output from gmake test omits some
 # test results information that is contained in the 

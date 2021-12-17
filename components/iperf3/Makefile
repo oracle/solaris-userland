@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_URL=	http://downloads.es.net/pub/$(COMPONENT_NAME)/$(COMPONENT
 COMPONENT_BUGDB=	utility/iperf
 COMPONENT_ANITYA_ID=	1389
 
-TPNO=			35765
+COMPONENT_BAID=		40559
 
 # See the TESTING file.
 TEST_TARGET= $(NO_TESTS)

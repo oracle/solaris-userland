@@ -39,7 +39,7 @@ COMPONENT_PROJECT_URL=  https://github.com/ruby-concurrency/concurrent-ruby
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	11037
 
-TPNO=                   68041
+COMPONENT_BAID=                   97064
 
 # Create gemspec.
 COMPONENT_POST_UNPACK_ACTION= \

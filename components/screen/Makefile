@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:6e11b13d8489925fde25dfb0935bf6ed71f9eb47eff233a181e078fde5655aa1
 COMPONENT_ANITYA_ID=	4772
 
-TPNO=			57215
+COMPONENT_BAID=		75557
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)

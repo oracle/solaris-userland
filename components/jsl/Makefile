@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 
 # Preferred compiler set to gcc and not Studio as on Sparc architecture
@@ -42,7 +42,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/download/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1476
 
-TPNO=			10774
+COMPONENT_BAID=		9920
 
 BUILD_STYLE= justmake
 include $(WS_MAKE_RULES)/common.mk

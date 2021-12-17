@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/coverage
 COMPONENT_ANITYA_ID=	3811
 
-TPNO=			70901
+COMPONENT_BAID=		101526
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -31,7 +31,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:588546b945bba4b70b6a3a616e80b4ab466e3f33024a352fc2198112cdbb3ae2
 COMPONENT_ANITYA_ID=	1237
 
-TPNO=			33985
+COMPONENT_BAID=		38303
 
 # must build tests before use
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_64)

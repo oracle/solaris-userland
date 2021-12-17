@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/enum34
 COMPONENT_BUGDB=	python-mod/enum34
 COMPONENT_ANITYA_ID=	8176
 
-TPNO=			57872
+COMPONENT_BAID=		77543
 
 # enum34 is superfluous in Python 3.4
 PYTHON_VERSIONS =	$(PYTHON2_VERSIONS)

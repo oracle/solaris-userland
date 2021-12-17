@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL=	http://sg.danny.cz/sg/p/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/sg3utils
 COMPONENT_ANITYA_ID=	4801
 
-TPNO=			75978
+COMPONENT_BAID=		111445
 
 # Even though "gmake check" goes to completion, it doesn't really do anything.
 TEST_TARGET= $(NO_TESTS)

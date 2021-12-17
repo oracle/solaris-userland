@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://pypi.org/project/backports.functools_lru_cache/
 COMPONENT_BUGDB=	python-mod/functools-lru
 COMPONENT_ANITYA_ID=	12085
 
-TPNO=			57863
+COMPONENT_BAID=		76743
 
 # This component is not necessary for Python 3.9
 PYTHON_VERSIONS = $(WITHOUT_PYTHON3.9)

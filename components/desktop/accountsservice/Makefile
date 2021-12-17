@@ -40,7 +40,7 @@ COMPONENT_ARCHIVE_URL=	http://freedesktop.org/software/accountsservice/$(COMPONE
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13107
 
-TPNO=			53864
+COMPONENT_BAID=		68303
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)

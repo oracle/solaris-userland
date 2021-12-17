@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/oslo.context/
 COMPONENT_BUGDB=	python-mod/oslo.context
 COMPONENT_ANITYA_ID=	6109
 
-TPNO=			74357
+COMPONENT_BAID=		108274
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 

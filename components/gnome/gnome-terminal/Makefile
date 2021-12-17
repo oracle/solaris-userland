@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=        gnome/terminal
 COMPONENT_ANITYA_ID=	10896
 
-TPNO=			69601
+COMPONENT_BAID=		99715
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

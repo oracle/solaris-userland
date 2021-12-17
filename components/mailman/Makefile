@@ -37,7 +37,7 @@ COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ARCHIVE_HASH=	sha256:6d7e81753c78120f479a275ea623194cac188a3daf301eb76aa9d39a942d5234
 COMPONENT_ANITYA_ID=	1875
 
-TPNO=			59127
+COMPONENT_BAID=		79491
 
 # There are no tests that can be executed automatically,
 # the unit tests require some setup as described in file TESTING.

@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=  https://sourceforge.net/projects/$(COMPONENT_NAME)/files
 COMPONENT_BUGDB=	library/liboauth
 COMPONENT_ANITYA_ID=	1686
 
-TPNO=			25840
+COMPONENT_BAID=		27849
 
 include $(WS_MAKE_RULES)/common.mk
 

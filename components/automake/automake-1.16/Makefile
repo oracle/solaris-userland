@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 
 # The component does not deliver any architecture specific files but
@@ -42,7 +42,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:ce010788b51f64511a1e9bb2a1ec626037c6d0e7ede32c1c103611b9d3cba65f
 COMPONENT_ANITYA_ID=	144
 
-TPNO=			63375
+COMPONENT_BAID=		89361
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 

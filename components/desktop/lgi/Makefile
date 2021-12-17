@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL=  https://github.com/pavouk/lgi/archive/$(COMPONENT_VERSIO
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	1851
 
-TPNO=                   55245
+COMPONENT_BAID=                   71222
 
 # Tests do not build on Solaris yet
 TEST_TARGET= $(SKIP_TEST)

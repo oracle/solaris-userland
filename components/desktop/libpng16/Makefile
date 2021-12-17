@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/libpng/files/libpng16/$(
 COMPONENT_BUGDB=	library/libpng
 COMPONENT_ANITYA_ID=	15294
 
-TPNO=			51101
+COMPONENT_BAID=		81074
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 include $(WS_MAKE_RULES)/common.mk

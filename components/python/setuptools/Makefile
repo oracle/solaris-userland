@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://github.com/pypa/setuptools
 COMPONENT_BUGDB=	python-mod/setuptools
 COMPONENT_ANITYA_ID=	4021
 
-TPNO=			62128
+COMPONENT_BAID=		106626
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

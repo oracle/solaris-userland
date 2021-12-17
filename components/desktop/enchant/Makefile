@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 		64_and_32
 # For now, all things built for C++11 require gcc.
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL=	https://www.abisource.com/downloads/enchant/$(COMPONENT_V
 COMPONENT_BUGDB=	library/enchant
 COMPONENT_ANITYA_ID=	6601
 
-TPNO=			9326
+COMPONENT_BAID=		8278
 
 TEST_TARGET = $(NO_TESTS)
 

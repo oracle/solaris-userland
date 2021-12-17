@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS = 		64_and_32
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	https://tecnocode.co.uk/downloads/$(COMPONENT_NAME)/$(COM
 COMPONENT_BUGDB=	library/uhttpmock
 COMPONENT_ANITYA_ID=	5036
 
-TPNO=			34660
+COMPONENT_BAID=		39094
 
 # Enable after libsoup is installed on the build servers
 TEST_TARGET= $(SKIP_TEST)

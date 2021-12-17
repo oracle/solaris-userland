@@ -42,7 +42,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=  https://sourceforge.net/projects/cdrtools/files/alpha/OLD/3.01aX/$(COMPONENT_ARCHIVE)/download
 COMPONENT_ANITYA_ID=	9153
 
-TPNO=			6305
+COMPONENT_BAID=		1576
 
 ifeq   ($(strip $(PARFAIT_BUILD)),yes)
 PATH=$(PARFAIT_TOOLS):$(SPRO_VROOT)/bin:$(USRBINDIR)

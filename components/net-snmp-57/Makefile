@@ -41,7 +41,7 @@ COMPONENT_ARCHIVE_URL=	http://ftp.ntua.gr/mirror/net-snmp/net-snmp/$(COMPONENT_V
 COMPONENT_BUGDB=	service/net-snmp utility/net-snmp library/net-snmp
 COMPONENT_ANITYA_ID=	2062
 
-TPNO=			22670
+COMPONENT_BAID=		23516
 
 BUILD_32_and_64 += $(BUILD_DIR_32)/.docs
 INSTALL_TARGET= build $(INSTALL_32_and_64)

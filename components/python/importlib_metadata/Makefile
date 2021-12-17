@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://github.com/python/importlib_metadata
 COMPONENT_BUGDB=	python-mod/importlib_meta
 COMPONENT_ANITYA_ID=	50323
 
-TPNO=			74213
+COMPONENT_BAID=		107901
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 

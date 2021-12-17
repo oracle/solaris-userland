@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:80ff6118fb730a6d8c704dccd6915a6c0e0a166ab1daeef9fe68afa9073ddb73
 COMPONENT_ANITYA_ID=	675
 
-TPNO=			69656
+COMPONENT_BAID=		99818
 
 INSTALL_TARGET=
 # The upstream emacs distribution does not have tests to be run

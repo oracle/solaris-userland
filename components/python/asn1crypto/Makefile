@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -37,7 +37,7 @@ COMPONENT_PROJECT_URL=	https://github.com/wbond/asn1crypto
 COMPONENT_BUGDB=	python-mod/asn1crypto
 COMPONENT_ANITYA_ID=	15550
 
-TPNO=			57856
+COMPONENT_BAID=		77541
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

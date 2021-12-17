@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -32,7 +32,7 @@ COMPONENT_ARCHIVE_HASH= \
 	sha256:6f86dce12cf4bcaf5c37dddd8b1b64ed2ddf1ef7b218f22b9942595fb747c348
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1638
-TPNO=			53649
+COMPONENT_BAID=		67888
 
 COMPONENT_NAME_1=       iceauth
 COMPONENT_VERSION_1=    1.0.8
@@ -43,7 +43,7 @@ COMPONENT_ARCHIVE_HASH_1= \
 COMPONENT_ARCHIVE_URL_1= $(COMPONENT_PROJECT_URL)/releases/individual/app/$(COMPONENT_ARCHIVE_1)
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID_1=  15048
-TPNO_1=                 49160
+COMPONENT_BAID_1=                 58636
 
 TEST_TARGET = $(NO_TESTS)
 

@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	9532
 
-TPNO=			67612
+COMPONENT_BAID=		96174
 BUILD_STYLE=		meson
 
 # Tests do not work in Solaris yet

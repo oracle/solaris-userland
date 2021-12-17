@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -41,7 +41,7 @@ HUMAN_VERSION=		$(COMPONENT_VERSION)
 # I made sure that the tarball is equal to the one present in SFW
 COMPONENT_ANITYA_ID=	12921
 
-TPNO=			9004
+COMPONENT_BAID=		7960
 
 BUILD_STYLE= justmake
 TEST_TARGET= $(NO_TESTS)

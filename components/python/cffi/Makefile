@@ -39,7 +39,7 @@ COMPONENT_PROJECT_URL=	http://cffi.readthedocs.org/
 COMPONENT_BUGDB=	python-mod/cffi
 COMPONENT_ANITYA_ID=	5536
 
-TPNO=			57851
+COMPONENT_BAID=		77538
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

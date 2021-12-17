@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64_and_32
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	https://github.com/$(COMPONENT_NAME)/$(COMPONENT_NAME)/re
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	1637
 
-TPNO=			71338
+COMPONENT_BAID=		102213
 
 BUILD_STYLE= cmake
 

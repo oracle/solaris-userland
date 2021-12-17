@@ -325,7 +325,7 @@ class TestUserlandPkglint(unittest.TestCase):
         package = "pkg:/library/foobar@1.0.0,11.4-11.4.33.0.0.92.0"
 
         self.assertIn("ERROR userland.manifest004.0      "
-            f"Unexpanded make variable in {package}:\nset name=com.oracle.info.tpno value=$(TPNO)", stderr)
+            f"Unexpanded make variable in {package}:\nset name=com.oracle.info.baid value=$(BAID)", stderr)
         self.assertIn("ERROR userland.manifest004.0      "
             f"Unexpanded make variable in {package}:\n"
             "file NOHASH group=bin mode=0444 owner=root path=usr/lib/$(VERSION)/foo.py", stderr)

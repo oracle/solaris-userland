@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 		NO_ARCH
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL=	 http://files.itstool.org/$(COMPONENT_NAME)/$(COMPONENT_A
 COMPONENT_ANITYA_ID=	13109
 COMPONENT_BUGDB=        utility/itstool
 
-TPNO=			55275
+COMPONENT_BAID=		71288
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk

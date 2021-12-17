@@ -40,7 +40,7 @@ COMPONENT_ARCHIVE_URL=	https://archive.apache.org/dist/ant/source/$(COMPONENT_AR
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	50
 
-TPNO=			73027
+COMPONENT_BAID=		105323
 
 BUILD_STYLE= justmake
 include $(WS_MAKE_RULES)/common.mk

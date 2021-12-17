@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://github.com/pypa/virtualenv
 COMPONENT_BUGDB=	python-mod/virtualenv
 COMPONENT_ANITYA_ID=	6904
 
-TPNO=			57880
+COMPONENT_BAID=		77545
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

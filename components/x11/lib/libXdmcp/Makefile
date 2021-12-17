@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -32,7 +32,7 @@ COMPONENT_ARCHIVE_HASH= \
 	sha256:20523b44aaa513e17c009e873ad7bbc301507a3224c232610ce2e099011c6529
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1772
-TPNO=			50567
+COMPONENT_BAID=		61371
 
 FIX_PC_FILES=xdmcp.pc.in
 

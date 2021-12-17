@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	http://search.cpan.org/~grantm/XML-SAX-0.99/SAX.pm
 COMPONENT_BUGDB=	perl-mod/xml-sax
 COMPONENT_ANITYA_ID=	3534
 
-TPNO=			12998
+COMPONENT_BAID=		12444
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

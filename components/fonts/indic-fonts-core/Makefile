@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -66,7 +66,7 @@ PKG_VARS+=	COMPONENT_PROJECT_URL_2
 PKG_VARS+=	COMPONENT_PROJECT_URL_3
 
 
-TPNO=			11254
+COMPONENT_BAID=		10460
 
 BUILD_STYLE=		justmake
 TEST_TARGET=		$(NO_TESTS)

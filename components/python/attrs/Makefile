@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://www.attrs.org/en/stable/
 COMPONENT_BUGDB=	python-mod/attrs
 COMPONENT_ANITYA_ID=	15099
 
-TPNO=			57854
+COMPONENT_BAID=		76728
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

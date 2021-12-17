@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://github.com/linsomniac/python-memcached
 COMPONENT_BUGDB=	python-mod/memcached
 COMPONENT_ANITYA_ID=	13210
 
-TPNO=			28112
+COMPONENT_BAID=		30867
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 

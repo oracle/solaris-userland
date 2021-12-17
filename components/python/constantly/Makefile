@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://github.com/twisted/constantly
 COMPONENT_BUGDB=	python-mod/constantly
 COMPONENT_ANITYA_ID=	19031
 
-TPNO=			47776
+COMPONENT_BAID=		70636
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

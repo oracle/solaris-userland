@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	http://tamentis.com/projects/rpdb
 COMPONENT_BUGDB=	python-mod/rpdb
 COMPONENT_ANITYA_ID=	8118
 
-TPNO=			31656
+COMPONENT_BAID=		35303
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

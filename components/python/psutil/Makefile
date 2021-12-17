@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -37,7 +37,7 @@ COMPONENT_PROJECT_URL=	http://pypi.python.org/pypi/psutil/
 COMPONENT_BUGDB=	python-mod/psutil
 COMPONENT_ANITYA_ID=	3978
 
-TPNO=			56316
+COMPONENT_BAID=		73218
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

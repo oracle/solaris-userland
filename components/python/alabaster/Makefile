@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://alabaster.readthedocs.io/en/latest/
 COMPONENT_BUGDB=	utility/sphinx
 COMPONENT_ANITYA_ID=	7274
 
-TPNO=			55184
+COMPONENT_BAID=		110153
 
 # We need to mirror the Sphinx package
 PYTHON_VERSION =	3.9

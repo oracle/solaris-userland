@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL=	https://github.com/libevent/libevent/releases/download/re
 COMPONENT_BUGDB=	library/libevent
 COMPONENT_ANITYA_ID=	1606
 
-TPNO=			61123
+COMPONENT_BAID=		86195
 
 TEST_TARGET= install $(TEST_32_and_64)
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_32_and_64)

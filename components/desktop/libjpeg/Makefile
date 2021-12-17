@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS = 	64_and_32
@@ -41,7 +41,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_ARCHIVE_URL=  http://jpegclub.org/support/files/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libjpeg
 
-TPNO=			34809
+COMPONENT_BAID=		39267
 
 include $(WS_MAKE_RULES)/common.mk
 

@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	http://webob.org/
 COMPONENT_BUGDB=	python-mod/webob
 COMPONENT_ANITYA_ID=	6181
 
-TPNO=			70897
+COMPONENT_BAID=		101519
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://pypi.org/project/more-itertools/
 COMPONENT_BUGDB=	python-mod/moreitertools
 COMPONENT_ANITYA_ID=	12201
 
-TPNO=			45198
+COMPONENT_BAID=		52319
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

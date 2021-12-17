@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=        library/librsvg
 COMPONENT_ANITYA_ID=	5420
 
-TPNO=			64121
+COMPONENT_BAID=		90922
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

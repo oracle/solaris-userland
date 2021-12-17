@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=        gnome/gnome-shell
 COMPONENT_ANITYA_ID=	5409
 
-TPNO=			76434
+COMPONENT_BAID=		112192
 BUILD_STYLE=            meson
 
 # Workaround the mozjs issue described in 24935318

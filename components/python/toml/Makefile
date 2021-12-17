@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://github.com/uiri/toml
 COMPONENT_BUGDB=	python-mod/toml
 COMPONENT_ANITYA_ID=	6883
 
-TPNO=			63908
+COMPONENT_BAID=		90462
 
 # No need to build this for Python 2.7
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)

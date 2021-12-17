@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/expect/files/Expect/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)/download
 COMPONENT_ANITYA_ID=	771
 
-TPNO=			29680
+COMPONENT_BAID=		32791
 
 include $(WS_MAKE_RULES)/common.mk
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -40,7 +40,7 @@ COMPONENT_ARCHIVE_URL=	https://gitlab.freedesktop.org/$(COMPONENT_NAME)/$(COMPON
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13108
 
-TPNO=			56436
+COMPONENT_BAID=		73454
 
 TEST_TARGET = $(NO_TESTS)
 

@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=	http://prdownloads.sourceforge.net/openjade/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	13231
 
-TPNO=			9621
+COMPONENT_BAID=		8583
 
 include $(WS_MAKE_RULES)/common.mk
 

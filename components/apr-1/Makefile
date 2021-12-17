@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 
 # Prefer 32-bit over 64-bit as apr has its own custom package layout.
@@ -41,7 +41,7 @@ COMPONENT_BUGDB=	utility/apache
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	95
 
-TPNO=			58639
+COMPONENT_BAID=		78390
 
 CONFIGURE_DEFAULT_DIRS=no
 include $(WS_MAKE_RULES)/common.mk

@@ -43,7 +43,7 @@ COMPONENT_ARCHIVE_URL=	https://download.gnome.org/pub/Gnome/teams/releng/tarball
 COMPONENT_BUGDB=	library/libmozjs
 COMPONENT_ANITYA_ID=	235328
 
-TPNO=			72349
+COMPONENT_BAID=		103941
 
 CXXFLAGS += -std=c++17
 

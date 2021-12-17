@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/gimp-print/files/gutenprint-5.3/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1285
 
-TPNO=		 	69504	
+COMPONENT_BAID=	 	99582
 
 # Disable unit tests of gutenprint since they run extremely long (about a day).
 $(SKIP_TEST_AT_TOP_LEVEL)

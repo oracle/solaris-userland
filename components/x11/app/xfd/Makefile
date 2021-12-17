@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -32,7 +32,7 @@ COMPONENT_ARCHIVE_HASH= \
 	sha256:192f938ba5830e84cc807d8ead2ad9655b43eaed6500c830f3e083aad10ed958
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	15024
-TPNO=			50531
+COMPONENT_BAID=		61305
 
 PKG_PROTO_DIRS += $(BUILD_DIR_64)
 

@@ -110,7 +110,7 @@ $(foreach var, $(filter PY3_%_NAMING,$(.VARIABLES)), \
 
 # For items defined as variables or that may contain whitespace, add
 # them to a list to be expanded into PKG_OPTIONS later.
-PKG_VARS += ARC_CASE TPNO
+PKG_VARS += ARC_CASE COMPONENT_BAID
 PKG_VARS += BUILD_VERSION OS_RELEASE SOLARIS_VERSION PKG_SOLARIS_VERSION
 PKG_VARS += CONSOLIDATION CONSOLIDATION_CHANGESET CONSOLIDATION_REPOSITORY_URL
 PKG_VARS += COMPONENT_VERSION IPS_COMPONENT_VERSION HUMAN_VERSION
@@ -120,8 +120,8 @@ PKG_VARS += GIT_COMMIT_ID GIT_REPO
 PKG_VARS += MACH MACH32 MACH64
 PKG_VARS += PUBLISHER PUBLISHER_LOCALIZABLE BRANCHID
 
-# Include TPNO_* Makefile variables in PKG_VARS.
-$(foreach macro, $(filter TPNO_%, $(.VARIABLES)), \
+# Include COMPONENT_BAID_* Makefile variables in PKG_VARS.
+$(foreach macro, $(filter COMPONENT_BAID_%, $(.VARIABLES)), \
     $(eval PKG_VARS += $(macro)) \
 )
 
@@ -595,15 +595,15 @@ $(foreach var, $(PKG_VARS), \
 )
 
 # Expand any variables ending in component _$(suffix) via PKG_OPTIONS excluding
-# variables known to always be irrelevant and TPNO_% variables as those have
-# already been processed.
+# variables known to always be irrelevant and COMPONENT_BAID_% variables as
+# those have already been processed.
 $(foreach suffix, $(COMP_SUFFIXES), \
     $(eval COMPONENT_RE_VERSION_$(suffix) ?= $(subst .,\\.,$$(COMPONENT_VERSION_$(suffix)))) \
     $(eval IPS_COMPONENT_VERSION_$(suffix) ?= $$(COMPONENT_VERSION_$(suffix))) \
     $(eval IPS_COMPONENT_RE_VERSION_$(suffix) ?= $(subst .,\\.,$$(IPS_COMPONENT_VERSION_$(suffix)))) \
     $(eval COMP_VARS=$(filter %_$(suffix), $(.VARIABLES))) \
     $(eval COMP_VARS=$(filter-out COMPONENT_POST_UNPACK_%, $(COMP_VARS))) \
-    $(eval COMP_VARS=$(filter-out TPNO_%, $(COMP_VARS))) \
+    $(eval COMP_VARS=$(filter-out COMPONENT_BAID_%, $(COMP_VARS))) \
     $(eval COMP_VARS=$(filter-out UNPACK_ARGS_%, $(COMP_VARS))) \
     $(eval COMP_VARS=$(filter-out OS_SUB_VERS_2, $(COMP_VARS))) \
     $(foreach macro, $(COMP_VARS), \

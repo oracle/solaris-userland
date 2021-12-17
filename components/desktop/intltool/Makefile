@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 		NO_ARCH
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_URL=	https://launchpad.net/$(COMPONENT_NAME)/trunk/$(COMPONENT
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	1385
 
-TPNO=			25211
+COMPONENT_BAID=		27024
 
 include $(WS_MAKE_RULES)/common.mk
 

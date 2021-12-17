@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=	http://dev-www.libreoffice.org/src/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	9543
 
-TPNO=			20676
+COMPONENT_BAID=		23513
 
 # Do not print deprecation warnings in test results.
 CXXFLAGS += -Wno-deprecated-declarations

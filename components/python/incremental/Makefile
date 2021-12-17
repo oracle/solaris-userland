@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://github.com/twisted/incremental
 COMPONENT_BUGDB=	python-mod/incremental
 COMPONENT_ANITYA_ID=	19663
 
-TPNO=			67923
+COMPONENT_BAID=		96848
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

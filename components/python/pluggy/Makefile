@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -37,7 +37,7 @@ COMPONENT_PROJECT_URL=	https://github.com/pytest-dev/pluggy
 COMPONENT_BUGDB=	python-mod/pluggy
 COMPONENT_ANITYA_ID=	7500
 
-TPNO=			52319
+COMPONENT_BAID=		65053
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

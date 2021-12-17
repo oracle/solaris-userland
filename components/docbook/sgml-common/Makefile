@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL= 	https://sourceware.org/ftp/docbook-tools/new-trials/SOUR
 COMPONENT_BUGDB=	utility/docbook
 COMPONENT_ANITYA_ID=	227355
 
-TPNO=			9459
+COMPONENT_BAID=		8404
 
 TEST_TARGET = $(NO_TESTS)
 

@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	15236
 
-TPNO=			76353
+COMPONENT_BAID=		112044
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk

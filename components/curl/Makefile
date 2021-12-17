@@ -27,7 +27,7 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		curl
 COMPONENT_VERSION=	7.79.0
-TPNO=			74605
+COMPONENT_BAID=		108749
 COMPONENT_PROJECT_URL=	http://curl.haxx.se/
 
 #GIT_REPO=	https://github.com/curl/curl.git

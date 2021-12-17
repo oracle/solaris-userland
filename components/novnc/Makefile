@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 include ../../make-rules/shared-macros.mk
 
@@ -35,7 +35,7 @@ COMPONENT_PROJECT_URL=  http://kanaka.github.io/noVNC
 COMPONENT_BUGDB=	utility/novnc
 COMPONENT_ANITYA_ID=	13226
 
-TPNO=			34413
+COMPONENT_BAID=		38801
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

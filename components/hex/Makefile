@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	https://github.com/hexpm/$(COMPONENT_NAME)/archive/v$(COM
 COMPONENT_BUGDB=	utility/elixir
 COMPONENT_ANITYA_ID=	132546
 
-TPNO=			71796
+COMPONENT_BAID=		102958
 
 BUILD_STYLE= justmake
 include $(WS_MAKE_RULES)/common.mk

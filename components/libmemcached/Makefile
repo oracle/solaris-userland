@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=gcc
@@ -35,7 +35,7 @@ COMPONENT_PROJECT_URL=  http://libmemcached.org/libMemcached.html
 COMPONENT_BUGDB=	database/memcached
 COMPONENT_ANITYA_ID=	5412
 
-TPNO=			31699
+COMPONENT_BAID=		35392
 
 include $(WS_MAKE_RULES)/common.mk
 

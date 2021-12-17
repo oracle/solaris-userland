@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2007, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2007, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		NO_ARCH
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/project/dejavu/dejavu/$(
 COMPONENT_BUGDB=	x11/font
 COMPONENT_ANITYA_ID=	418
 
-TPNO= 			30836
+COMPONENT_BAID= 			34239
 
 TEST_TARGET= $(NO_TESTS)
 

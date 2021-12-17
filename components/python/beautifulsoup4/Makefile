@@ -35,7 +35,7 @@ COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/beautifulsoup4
 COMPONENT_BUGDB=	python-mod/beautifulsoup4
 COMPONENT_ANITYA_ID=	3779
 
-TPNO=			62598
+COMPONENT_BAID=		107598
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

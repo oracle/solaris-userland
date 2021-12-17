@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=	gnome/glib
 COMPONENT_ANITYA_ID=	10024
 
-TPNO=			67934
+COMPONENT_BAID=		96862
 BUILD_STYLE=		meson
 
 # No need to build for older versions.

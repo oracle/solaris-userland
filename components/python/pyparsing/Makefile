@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/pyparsing/
 COMPONENT_BUGDB=	python-mod/pyparsing
 COMPONENT_ANITYA_ID=	3756
 
-TPNO=			64923
+COMPONENT_BAID=		107897
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

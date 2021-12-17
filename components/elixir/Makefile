@@ -39,7 +39,7 @@ COMPONENT_ARCHIVE_URL=	https://github.com/elixir-lang/$(COMPONENT_NAME)/archive/
 COMPONENT_BUGDB=	utility/elixir
 COMPONENT_ANITYA_ID=	673
 
-TPNO=			71797
+COMPONENT_BAID=		102960
 
 BUILD_STYLE= justmake
 

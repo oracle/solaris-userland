@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_URL=	https://github.com/rdesktop/$(COMPONENT_NAME)/archive/v$(
 COMPONENT_BUGDB=	gnome/remote-desktop
 COMPONENT_ANITYA_ID=	4172
 
-TPNO=			55854
+COMPONENT_BAID=		72612
 
 TEST_TARGET = $(NO_TESTS)
 

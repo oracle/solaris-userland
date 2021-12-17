@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/twisted
 COMPONENT_ANITYA_ID=	4071
 
-TPNO=			67313
+COMPONENT_BAID=		95677
 
 # This component is delivered in two different versions because
 # the newer one is no longer Python 2.7 compatible.
@@ -48,7 +48,7 @@ COMPONENT_ARCHIVE_HASH_OLD=	\
 	sha256:ab2d9e3c9cad99340d45a26d1432a695c7e2e804b95d5d907cf549509936ade8
 COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
 
-TPNO_OLD=		54420
+COMPONENT_BAID_OLD=	69507
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

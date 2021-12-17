@@ -39,7 +39,7 @@ COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/icu
 COMPONENT_ANITYA_ID=	16134
 
-TPNO=			73454
+COMPONENT_BAID=		106181
 
 # OpenPGP Key obtained from https://ssl.icu-project.org/KEYS
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://github.com/HypothesisWorks/hypothesis
 COMPONENT_BUGDB=	python-mod/hypothesis
 COMPONENT_ANITYA_ID=	7372
 
-TPNO=			61030
+COMPONENT_BAID=		84076
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

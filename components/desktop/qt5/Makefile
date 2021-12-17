@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS=64
 COMPILER=gcc
@@ -40,7 +40,7 @@ COMPONENT_ARCHIVE_URL=	http://download.qt.io/official_releases/qt/$(MAJOR_VERSIO
 COMPONENT_BUGDB=	library/qt
 COMPONENT_ANITYA_ID=	7927
 
-TPNO=			59792
+COMPONENT_BAID=		81183
 
 CONFIGURE_DEFAULT_DIRS=no
 

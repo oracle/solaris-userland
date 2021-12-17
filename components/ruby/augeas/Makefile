@@ -39,7 +39,7 @@ COMPONENT_PROJECT_URL=  https://github.com/hercules-team/ruby-augeas
 COMPONENT_BUGDB=	utility/augeas
 COMPONENT_ANITYA_ID=	17146
 
-TPNO=                   21871
+COMPONENT_BAID=                   22571
 
 # No gemspec is shipped with the gem. Create one
 COMPONENT_POST_UNPACK_ACTION= \

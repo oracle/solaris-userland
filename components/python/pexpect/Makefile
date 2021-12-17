@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://pexpect.readthedocs.io/en/stable/
 COMPONENT_BUGDB=	python-mod/pexpect
 COMPONENT_ANITYA_ID=	7654
 
-TPNO=			58128
+COMPONENT_BAID=		87679
 
 # Not necessary to build this for older Python versions
 PYTHON_VERSIONS = 3.7 3.9

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             32_and_64
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	http://www.freedesktop.org/software/$(COMPONENT_NAME)/rel
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	10089
 
-TPNO=			24899
+COMPONENT_BAID=		26493
 
 # gmake check works but produces no useful output
 TEST_TARGET = $(SKIP_TEST)

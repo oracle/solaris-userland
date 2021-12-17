@@ -65,7 +65,7 @@ COMPONENT_ARCHIVE_HASH = \
 COMPONENT_ARCHIVE_URL = http://www2.research.att.com/~astopen/download/tgz/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID_1=	1523
 
-TPNO=		16530
+COMPONENT_BAID=	16383
 
 # Patch only required if building ksh93 only and not ast-base
 # package-pax-suid.patch

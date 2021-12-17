@@ -32,7 +32,7 @@ COMPONENT_ARCHIVE_HASH= \
 	sha256:214c9d0d884fdd7375ec8da8dcb91a8d3169f263294c9a90c575bf1938b9f489
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1703
-TPNO=			53646
+COMPONENT_BAID=		67886
 
 # GNU Build System files have to be regenerated for automake 1.16.
 # It can be removed when the upstream starts to use a newer automake version.

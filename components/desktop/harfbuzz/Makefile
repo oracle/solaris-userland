@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64_and_32
@@ -40,7 +40,7 @@ COMPONENT_ARCHIVE_URL=	https://www.freedesktop.org/software/harfbuzz/release/$(C
 COMPONENT_BUGDB=	library/harfbuzz
 COMPONENT_ANITYA_ID=	1299
 
-TPNO=			55397
+COMPONENT_BAID=		71612
 
 CXXFLAGS += -std=c++11
 

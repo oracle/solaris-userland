@@ -41,7 +41,7 @@ COMPONENT_ARCHIVE_URL=	http://downloads.xiph.org/releases/flac/$(COMPONENT_ARCHI
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	817
 
-TPNO=			55365
+COMPONENT_BAID=		71520
 
 # tests work but take hours to run and use a lot of disk space
 TEST_TARGET = $(SKIP_TEST)

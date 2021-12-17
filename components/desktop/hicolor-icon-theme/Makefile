@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -35,6 +35,6 @@ COMPONENT_ARCHIVE_URL=	http://icon-theme.freedesktop.org/releases/$(COMPONENT_AR
 COMPONENT_BUGDB=        gnome/branding
 COMPONENT_ANITYA_ID=	1316
 
-TPNO=			39067
+COMPONENT_BAID=		43999
 
 include $(WS_MAKE_RULES)/gnome-component.mk

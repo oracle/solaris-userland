@@ -49,9 +49,9 @@ TEST_TARGET= $(NO_TESTS)
 SYSTEM_TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
-# MySQL being one of Oracle's own product doesn't require to have a TPNO
+# MySQL being one of Oracle's own product doesn't require to have a BAID
 # License number, but it uses Boost, which does have such a requirement.
-TPNO=24164
+COMPONENT_BAID=25367
 
 # This component uses cmake to generate Makefiles and thus does not
 # run any configure script

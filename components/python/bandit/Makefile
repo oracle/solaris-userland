@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://bandit.readthedocs.io/en/latest/
 COMPONENT_BUGDB=	utility/bandit
 COMPONENT_ANITYA_ID=	7319
 
-TPNO=			72994
+COMPONENT_BAID=		105266
 
 # we do not plan deliver Python 2.7 version
 PYTHON_VERSIONS:=	$(PYTHON3_VERSIONS)

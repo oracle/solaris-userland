@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)-/archive/v$(COMPONENT_VERSION)/$
 COMPONENT_BUGDB=	utility/watch
 COMPONENT_ANITYA_ID=	3708
 
-TPNO=			54100
+COMPONENT_BAID=		68781
 
 INSTALL_TARGET= build
 TEST_TARGET= $(NO_TESTS)

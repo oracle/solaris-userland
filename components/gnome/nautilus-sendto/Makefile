@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=	gnome/nautilus
 COMPONENT_ANITYA_ID=	13155
 
-TPNO=			26340
+COMPONENT_BAID=		28519
 
 TEST_TARGET = $(NO_TESTS)
 

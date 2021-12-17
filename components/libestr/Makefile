@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -31,7 +31,7 @@ COMPONENT_PROJECT_URL=	http://libestr.adiscon.com/
 COMPONENT_ARCHIVE_HASH=	sha256:bd655e126e750edd18544b88eb1568d200a424a0c23f665eb14bbece07ac703c
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)files/download/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/rsyslog
-TPNO=			27081
+COMPONENT_BAID=		29477
 COMPONENT_ANITYA_ID=	13288
 
 # No longer seems to have tests

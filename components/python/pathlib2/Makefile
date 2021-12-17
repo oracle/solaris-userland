@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://pypi.org/project/pathlib2/
 COMPONENT_BUGDB=	python-mod/pathlib2
 COMPONENT_ANITYA_ID=	12723
 
-TPNO=			63323
+COMPONENT_BAID=		89269
 
 # Pathlib2 provides no additional functionality in Python 3.7 and later
 PYTHON_VERSIONS = $(PYTHON2_VERSIONS)

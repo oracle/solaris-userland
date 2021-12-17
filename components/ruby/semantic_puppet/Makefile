@@ -39,7 +39,7 @@ COMPONENT_PROJECT_URL=  https://github.com/puppetlabs/semantic_puppet
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=    195770
 
-TPNO=                   68059
+COMPONENT_BAID=                   97091
 
 # Create gemspec.
 COMPONENT_POST_UNPACK_ACTION= \

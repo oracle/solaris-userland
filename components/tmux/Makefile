@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # Use GCC until Studio supports large enums (23058232)
@@ -38,7 +38,7 @@ COMPONENT_ANITYA_ID=	4980
 
 COMPONENT_ARCHIVE_URL=	https://github.com/tmux/tmux/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 
-TPNO=			63165
+COMPONENT_BAID=		88937
 
 
 TEST_TARGET= $(NO_TESTS)

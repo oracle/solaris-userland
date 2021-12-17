@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -32,7 +32,7 @@ COMPONENT_ARCHIVE_HASH= \
 	sha256:06898b3f1eaad0b205ff3c75bdefa3207868b889d4cb37b32b8267b2bbfe6f8b
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	17150
-TPNO=			50391
+COMPONENT_BAID=		61037
 
 # Additional Sun-created utilities
 COMPONENT_NAME_1=	cmap_alloc

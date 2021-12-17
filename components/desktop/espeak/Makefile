@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 # parfait doesn't like sketchy code (25158912)
@@ -43,7 +43,7 @@ COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/espeak/files/$(COMPONENT
 COMPONENT_BUGDB=	gnome/accessibility
 COMPONENT_ANITYA_ID=	759
 
-TPNO=	 		7478
+COMPONENT_BAID= 		1974
 
 BUILD_STYLE = justmake
 TEST_TARGET = $(NO_TESTS)

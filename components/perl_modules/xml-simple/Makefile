@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
 # Note that the use of this module itself is discouraged in new code.
@@ -40,7 +40,7 @@ COMPONENT_PROJECT_URL=	http://search.cpan.org/dist/XML-Simple/
 COMPONENT_BUGDB=	perl-mod/xml-parser
 COMPONENT_ANITYA_ID=	3537
 
-TPNO=			35762
+COMPONENT_BAID=		40556
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

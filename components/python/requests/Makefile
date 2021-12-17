@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	http://python-requests.org/
 COMPONENT_BUGDB=	python-mod/requests
 COMPONENT_ANITYA_ID=	4004
 
-TPNO=			73021
+COMPONENT_BAID=		105789
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 
 # Build requirements, needed before inclusion of shared-macros.
@@ -40,7 +40,7 @@ COMPONENT_PROJECT_URL=	http://www.python-ldap.org/
 COMPONENT_BUGDB=	python-mod/python-ldap
 COMPONENT_ANITYA_ID=	13261
 
-TPNO=			52715
+COMPONENT_BAID=		67339
 
 # Building for Python 2.7, 3.7 and 3.9 only. Ref ../../make-rules/shared-macros.mk
 PYTHON_VERSIONS=	3.7 3.9 2.7

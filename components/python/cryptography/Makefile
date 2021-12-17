@@ -41,7 +41,7 @@ COMPONENT_PROJECT_URL=	https://cryptography.io/
 COMPONENT_BUGDB=	python-mod/cryptography
 COMPONENT_ANITYA_ID=	5532
 
-TPNO=			49366
+COMPONENT_BAID=		59238
 
 # cryptography_vectors package is being used for testing only
 # and is not delivered with cryptography

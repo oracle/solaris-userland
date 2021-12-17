@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://www.sphinx-doc.org/en/master/
 COMPONENT_BUGDB=	utility/sphinx
 COMPONENT_ANITYA_ID=	4031
 
-TPNO=			75564
+COMPONENT_BAID=		110613
 
 # We need just a single version
 PYTHON_VERSION =	3.9

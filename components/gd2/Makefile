@@ -40,7 +40,7 @@ COMPONENT_ARCHIVE_URL=  https://github.com/libgd/libgd/archive/$(COMPONENT_ARCHI
 COMPONENT_BUGDB=	library/gd2
 COMPONENT_ANITYA_ID=	880
 
-TPNO=			75922
+COMPONENT_BAID=		111348
 
 include $(WS_MAKE_RULES)/common.mk
 

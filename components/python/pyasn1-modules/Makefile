@@ -35,7 +35,7 @@ COMPONENT_PROJECT_URL=	http://pyasn1.sourceforge.net/
 COMPONENT_BUGDB=	python-mod/pyasn1
 COMPONENT_ANITYA_ID=	11987
 
-TPNO=			56825
+COMPONENT_BAID=		74710
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

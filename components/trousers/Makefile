@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/trousers/files/trousers/
 COMPONENT_BUGDB=	utility/tss
 COMPONENT_ANITYA_ID=	5400
 
-TPNO=			27256
+COMPONENT_BAID=		29683
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk

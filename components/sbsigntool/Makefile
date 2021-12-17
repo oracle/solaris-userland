@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_ARCHIVE_URL=  https://launchpad.net/ubuntu/+archive/primary/+files/$(COMPONENT_ARCHIVE)
 
 COMPONENT_ANITYA_ID=	16340
-TPNO=		        27912
+COMPONENT_BAID=	        32807
 
 include $(WS_MAKE_RULES)/common.mk
 

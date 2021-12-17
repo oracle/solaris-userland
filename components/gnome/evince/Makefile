@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates. 
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	http://ftp.gnome.org/pub/GNOME/sources/$(COMPONENT_NAME)/
 COMPONENT_BUGDB=	gnome/evince
 COMPONENT_ANITYA_ID=	8178
 
-TPNO=			64947
+COMPONENT_BAID=		92510
 BUILD_STYLE=		meson
 
 TEST_TARGET= $(NO_TESTS)

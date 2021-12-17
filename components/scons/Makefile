@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL=	\
     https://sourceforge.net/projects/$(COMPONENT_NAME)/files/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)/download
 COMPONENT_ANITYA_ID=	4770
 
-TPNO=			74455
+COMPONENT_BAID=		108468
 
 # we only need a single version of SCons
 PYTHON_VERSIONS = 3.7

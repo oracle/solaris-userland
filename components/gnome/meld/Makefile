@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=        utility/meld
 COMPONENT_ANITYA_ID=	5520
 
-TPNO=			73475
+COMPONENT_BAID=		106234
 
 # We just need to build one version.
 PYTHON_VERSIONS =       3.7

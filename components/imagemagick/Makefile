@@ -41,7 +41,7 @@ COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	utility/imagemagick
 COMPONENT_ANITYA_ID=	1372
 
-TPNO=			74372
+COMPONENT_BAID=		108308
 
 # Enable adiheap security extension.
 # adistack fails with libgcc exception unwinding code.

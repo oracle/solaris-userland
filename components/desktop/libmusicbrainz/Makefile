@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 32_and_64
 # For now, all things built for C++11 require gcc.
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL=	https://github.com/metabrainz/$(COMPONENT_NAME)/releases/
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	1669
 
-TPNO=			24461
+COMPONENT_BAID=		25790
 
 BUILD_STYLE= cmake
 

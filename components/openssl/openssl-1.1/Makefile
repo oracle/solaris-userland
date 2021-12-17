@@ -41,7 +41,7 @@ COMPONENT_ARCHIVE_URL =	$(COMPONENT_PROJECT_URL)source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/openssl
 COMPONENT_ANITYA_ID=	20333
 
-TPNO=			73719
+COMPONENT_BAID=		106890
 
 # Clone the patch files to the patches-all dir.
 # COPY_COMMON_FILES is there so that the copy is called as soon as

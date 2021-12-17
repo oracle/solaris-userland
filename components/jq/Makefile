@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS = 64
 COMPILER = gcc
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL =	$(COMPONENT_PROJECT_URL)/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB =	utility/jq
 COMPONENT_ANITYA_ID=	13252
 
-TPNO =			39651
+COMPONENT_BAID =		49128
 
 include $(WS_MAKE_RULES)/common.mk
 

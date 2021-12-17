@@ -32,7 +32,7 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         hplip
 COMPONENT_VERSION=      3.21.8
-TPNO=			75344
+COMPONENT_BAID=		110198
 COMPONENT_ARCHIVE_HASH= sha256:f13e5295c1f0c2894f742bad44b2f40c80dbf8df010263d809081bc4df97ce1c
 COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/project/$(COMPONENT_NAME)/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://hplipopensource.com/

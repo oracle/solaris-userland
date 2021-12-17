@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=  https://github.com/phihag/ipaddress
 COMPONENT_BUGDB=	python-mod/ipaddress
 COMPONENT_ANITYA_ID=	6374
 
-TPNO=			55263
+COMPONENT_BAID=		76741
 
 # ipaddress is superfluous in Python 3.4
 PYTHON_VERSIONS =	$(PYTHON2_VERSIONS)

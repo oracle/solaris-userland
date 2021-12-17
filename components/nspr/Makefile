@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		32_and_64
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	http://ftp.mozilla.org/pub/$(COMPONENT_NAME)/releases/v$(
 COMPONENT_BUGDB=	library/nspr
 COMPONENT_ANITYA_ID=	7953
 
-TPNO=			62253
+COMPONENT_BAID=		86827
 
 LDFLAGS += $(CC_BITS)
 

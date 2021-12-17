@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_URL=	http://search.cpan.org/CPAN/authors/id/S/SM/SMCCAM/$(COMP
 COMPONENT_BUGDB=	perl-mod/x11-protocol
 COMPONENT_ANITYA_ID=	9804
 
-TPNO=			13258
+COMPONENT_BAID=		12758
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

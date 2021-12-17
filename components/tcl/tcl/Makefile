@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../../make-rules/shared-macros.mk
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=  http://prdownloads.sourceforge.net/tcl/$(COMPONENT_ARCHI
 COMPONENT_BUGDB=	library/libtcl
 COMPONENT_ANITYA_ID=	4941
 
-TPNO=			37430
+COMPONENT_BAID=		42697
 
 include $(WS_MAKE_RULES)/common.mk
 

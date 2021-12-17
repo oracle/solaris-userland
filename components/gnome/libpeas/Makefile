@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	6871
 
-TPNO=			62699
+COMPONENT_BAID=		87891
 
 # Disable the unit tests since they are broken (crashes, assertions).
 $(SKIP_TEST_AT_TOP_LEVEL)

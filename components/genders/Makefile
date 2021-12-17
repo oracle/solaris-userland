@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/project/$(COMPONENT_NAME
 COMPONENT_BUGDB=	library/libgenders
 COMPONENT_ANITYA_ID=	13282
 
-TPNO=			29494
+COMPONENT_BAID=		32549
 
 include $(WS_MAKE_RULES)/common.mk
 

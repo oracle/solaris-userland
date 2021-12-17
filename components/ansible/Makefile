@@ -39,7 +39,7 @@ COMPONENT_PROJECT_URL=	https://github.com/ansible/ansible
 COMPONENT_BUGDB=	utility/ansible
 COMPONENT_ANITYA_ID=	13227
 
-TPNO=			76187
+COMPONENT_BAID=		111760
 PKG_MACROS+= MICRO_VERSION=$(MICRO_VERSION)
 
 # We need just a single version

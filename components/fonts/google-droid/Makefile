@@ -44,7 +44,7 @@ COMPONENT_ARCHIVE_URL=	\
  https://github.com/oracle/solaris-xorg/releases/download/s12_25/$(COMPONENT_ARCHIVE)
 
 COMPONENT_BUGDB=	x11/font
-TPNO=			12030
+COMPONENT_BAID=		11324
 
 include $(WS_MAKE_RULES)/font.mk
 

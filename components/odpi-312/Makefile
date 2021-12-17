@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 BUILD_STYLE=justmake
@@ -31,7 +31,7 @@ COMPONENT_NAME=		odpi
 COMPONENT_VERSION=	3.1.2
 DOTLESS_VERSION=	312
 MAJOR=			3
-#TPNO=			NONE (included with Stack Approval rather than 3PLTA,
+#BAID=			NONE (included with Stack Approval rather than 3PLTA,
 #			for email trail of the approval please see
 #			/shared/sac/PSARC/2017/232/approvals)
 

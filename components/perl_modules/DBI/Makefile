@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -35,7 +35,7 @@ COMPONENT_PROJECT_URL=	http://search.cpan.org/~timb/DBI/
 COMPONENT_BUGDB=	perl-mod/dbi
 COMPONENT_ANITYA_ID=	2811
 
-TPNO=			57776
+COMPONENT_BAID=		86373
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

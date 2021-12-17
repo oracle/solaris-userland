@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE=
 COMPONENT_ARCHIVE_SRC=	none
 COMPONENT_BUGDB=	library/libusb
 
-TPNO=			9184
+COMPONENT_BAID=		8139
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/justmake.mk

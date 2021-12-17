@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -35,7 +35,7 @@ COMPONENT_PROJECT_URL=	https://github.com/smontanaro/pylockfile
 COMPONENT_BUGDB=	python-mod/lockfile
 COMPONENT_ANITYA_ID=	6854
 
-TPNO=			28727
+COMPONENT_BAID=		31609
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

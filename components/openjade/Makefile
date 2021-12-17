@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=	http://prdownloads.sourceforge.net/openjade/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	2564
 
-TPNO=			9620
+COMPONENT_BAID=		8582
 
 # Added to find the header files since they are not installed in build/*
 PKG_PROTO_DIRS += $(COMPONENT_SRC)/style

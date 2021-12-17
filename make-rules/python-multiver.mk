@@ -54,7 +54,7 @@ $(BUILD_DIR)/%-2.7/.system-tested: SOURCE_DIR=$(SOURCE_DIR_OLD)
 $(BUILD_DIR)/%-2.7/.system-tested-and-compared: SOURCE_DIR=$(SOURCE_DIR_OLD)
 
 $(MANIFEST_BASE)-%-27.mogrified: COMPONENT_VERSION=$(COMPONENT_VERSION_OLD)
-$(MANIFEST_BASE)-%-27.mogrified: TPNO=$(TPNO_OLD)
+$(MANIFEST_BASE)-%-27.mogrified: COMPONENT_BAID=$(COMPONENT_BAID_OLD)
 
 # The following two variables can be used within manifests to
 # distinguish files that are only available in a single version.

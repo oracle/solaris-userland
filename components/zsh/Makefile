@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -38,7 +38,7 @@ COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_PUBLIC_KEY_URL= https://raw.githubusercontent.com/clearlinux-pkgs/zsh/master/ACF8146CAE8CBBC4.pkey
 COMPONENT_ANITYA_ID=	5307
 
-TPNO = 58265
+COMPONENT_BAID = 77553
 
 BUILD_TARGET=
 INSTALL_TARGET=

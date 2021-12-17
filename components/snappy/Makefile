@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=  http://google.github.io/snappy/
 COMPONENT_BUGDB=	library/libsnappy
 COMPONENT_ANITYA_ID=	4844
 
-TPNO = 31969
+COMPONENT_BAID = 35662
 
 # Reduce the compiler optimization to avoid unit tests failures.
 CXXFLAGS += -O2

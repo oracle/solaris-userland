@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_HASH= \
 	sha256:47971924659e51666a757269ad941a059ef5afe7a47b5101c174a6022ac4066c
 COMPONENT_BUGDB=        x11/devices-x86
 COMPONENT_ANITYA_ID=	5245
-TPNO=			49216
+COMPONENT_BAID=		58739
 
 TEST_TARGET = $(NO_TESTS)
 

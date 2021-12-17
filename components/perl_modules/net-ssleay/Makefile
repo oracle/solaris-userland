@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:a541a66d59fc5f9bb7af09d3a0b68305e4c43ba9488b12915728fd282ea01b93
 COMPONENT_ARCHIVE_URL=	http://search.cpan.org/CPAN/authors/id/M/MI/MIKEM/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	perl-mod/net-ssleay
-TPNO=			34184
+COMPONENT_BAID=		38511
 COMPONENT_ANITYA_ID=	6575
 
 include $(WS_MAKE_RULES)/prep.mk

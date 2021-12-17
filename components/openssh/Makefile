@@ -50,8 +50,8 @@ COMPONENT_ARCHIVE_HASH=	sha256:5a01d22e407eb1c05ba8a8f7c654d388a13e9f226e4ed33bd
 COMPONENT_ARCHIVE_URL=	https://mirrors.sonic.net/pub/OpenBSD/OpenSSH/portable/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 
-TPNO_OPENSSH=		64060
-TPNO_GSSKEX=		20377
+COMPONENT_BAID_OPENSSH=	90793
+COMPONENT_BAID_GSSKEX=	20735
 
 # Because of set up requirements, test suite is in stc gate.
 # When upgrading OpenSSH, remember to also refresh the tests there.

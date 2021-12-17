@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_URL=	http://search.cpan.org/CPAN/authors/id/S/SR/SREZIC/$(COMP
 COMPONENT_BUGDB=	perl-mod/tk
 COMPONENT_ANITYA_ID=	3471
 
-TPNO=			75823
+COMPONENT_BAID=		111176
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_URL= \
 COMPONENT_BUGDB=	library/libexpat
 COMPONENT_ANITYA_ID=	770
 
-TPNO=			54424
+COMPONENT_BAID=		69508
 
 include $(WS_MAKE_RULES)/common.mk
 

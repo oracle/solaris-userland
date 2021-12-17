@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER=gcc
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/pwgen/pwgen/$(COMPONENT
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	3738
 
-TPNO=			39010
+COMPONENT_BAID=		43932
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk

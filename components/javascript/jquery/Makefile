@@ -35,7 +35,7 @@ COMPONENT_PROJECT_URL=	https://jquery.com/
 COMPONENT_BUGDB=	javascript/jquery
 COMPONENT_ANITYA_ID=	7363
 
-TPNO=			58838
+COMPONENT_BAID=		79563
 
 # There is nothing to build, just package the dist files
 BUILD_STYLE= pkg

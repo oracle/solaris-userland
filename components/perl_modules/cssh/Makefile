@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 
 # The Makefile of this component does not support multiple build jobs.
@@ -41,7 +41,7 @@ COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/project/clusterssh/2.%20
 COMPONENT_BUGDB=	utility/cssh
 COMPONENT_ANITYA_ID=	10596
 
-TPNO=			34436
+COMPONENT_BAID=		38823
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

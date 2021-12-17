@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	http://buildbot.net/
 COMPONENT_BUGDB=	utility/buildbot
 COMPONENT_ANITYA_ID=	48000
 
-TPNO=			75565
+COMPONENT_BAID=		110618
 
 # all we need is a single variant
 PYTHON_VERSIONS = 3.7

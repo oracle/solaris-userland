@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             64
@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=        gnome/themes
 COMPONENT_ANITYA_ID=	10894
 
-TPNO=			34514
+COMPONENT_BAID=		38913
 
 TEST_TARGET = $(NO_TESTS)
 

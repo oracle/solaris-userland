@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -32,7 +32,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=	utility/gnu-indent
 COMPONENT_ANITYA_ID=	1378
 
-TPNO=			28115
+COMPONENT_BAID=		30875
 
 TEST_TARGET= install $(TEST_64)
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)

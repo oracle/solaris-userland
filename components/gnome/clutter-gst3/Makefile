@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=        library/clutter
 COMPONENT_ANITYA_ID=	304
 
-TPNO=			55823
+COMPONENT_BAID=		72547
 
 # Requires a display
 TEST_TARGET = $(SKIP_TEST)

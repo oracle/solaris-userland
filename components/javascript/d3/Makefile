@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL=	https://github.com/d3/d3/releases/download/v$(COMPONENT_V
 COMPONENT_BUGDB= 	javascript/d3
 COMPONENT_ANITYA_ID=	235320
 
-TPNO=			33646
+COMPONENT_BAID=		37899
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

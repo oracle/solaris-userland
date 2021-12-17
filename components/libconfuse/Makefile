@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/download/v$(COMPONENT_V
 COMPONENT_BUGDB=	library/libconfuse
 COMPONENT_ANITYA_ID=	1581
 
-TPNO=			37084
+COMPONENT_BAID=		42239
 
 TEST_TARGET= install $(TEST_32_and_64)
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_32_and_64)

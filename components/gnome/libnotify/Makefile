@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS = 64_and_32
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13149
 
-TPNO=			62685
+COMPONENT_BAID=		87876
 
 # Tests do not work on Solaris yet
 TEST_TARGET= $(SKIP_TEST)

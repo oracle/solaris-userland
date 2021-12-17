@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 # This variable has no impact on perl build, it is here merely to satisfy
@@ -42,7 +42,7 @@ COMPONENT_PROJECT_URL=	https://github.com/perl5-dbi/DBD-mysql
 COMPONENT_BUGDB=	perl-mod/dbd-mysql
 COMPONENT_ANITYA_ID=	2807
 
-TPNO=			46641
+COMPONENT_BAID=		54309
 
 BUILD_STYLE= makemaker
 LICENSE=DBD-mysql.license

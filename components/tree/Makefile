@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -34,7 +34,7 @@ COMPONENT_PROJECT_URL=	http://mama.indstate.edu/users/ice/tree/
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)src/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	5006
 
-TPNO=			27186
+COMPONENT_BAID=		29610
 
 BUILD_STYLE= justmake
 TEST_TARGET= $(NO_TESTS)

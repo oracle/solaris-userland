@@ -37,7 +37,7 @@ COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/lazy-object-proxy
 COMPONENT_BUGDB=	python-mod/lazy-obj-proxy
 COMPONENT_ANITYA_ID=	8265
 
-TPNO=			70819
+COMPONENT_BAID=		101378
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

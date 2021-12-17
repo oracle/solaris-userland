@@ -19,7 +19,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2010, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -31,7 +31,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=	library/libtasn1
 COMPONENT_ANITYA_ID=	1734
 
-TPNO=			40971
+COMPONENT_BAID=		46328
 
 COMPONENT_BUILD_TARGETS = all info
 

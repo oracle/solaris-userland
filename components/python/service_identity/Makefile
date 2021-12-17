@@ -38,7 +38,7 @@ GIT_REPO=   https://github.com/pyca/service-identity.git
 GIT_COMMIT_ID=  $(COMPONENT_VERSION)
 GIT_HASH=   sha256:9fa32dbac6e6c5634559ca5158af284b7ab124de5fb212c04c59f7ecb0c2a9d5
 
-TPNO=			70900
+COMPONENT_BAID=		101523
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

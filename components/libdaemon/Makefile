@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_URL  = http://0pointer.de/lennart/projects/libdaemon/$(COMPONE
 COMPONENT_BUGDB        = library/daemon
 COMPONENT_ANITYA_ID=	13299
 
-TPNO                   = 9316
+COMPONENT_BAID                   = 8270
 
 include $(WS_MAKE_RULES)/common.mk
 

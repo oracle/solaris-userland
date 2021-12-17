@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/markupsafe/
 COMPONENT_BUGDB=	python-mod/markupsafe
 COMPONENT_ANITYA_ID=	3918
 
-TPNO=			72387
+COMPONENT_BAID=		108268
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 

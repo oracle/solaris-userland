@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_URL=	ftp://xmlsoft.org/libxslt/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libxslt
 COMPONENT_ANITYA_ID=	13301
 
-TPNO=			49261
+COMPONENT_BAID=		58821
 
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_32_and_64)
 

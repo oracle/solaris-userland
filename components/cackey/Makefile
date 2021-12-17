@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 # TESTING:
@@ -60,7 +60,7 @@ GIT_HASH=  sha256:72360f032b81923bb2cfcedea7e49ac50ac477e53872840e10ee08a2014ab7
 
 COMPONENT_BUGDB=        library/smartcard
 
-TPNO =                  25489
+COMPONENT_BAID =                  27387
 
 TEST_TARGET= $(NO_TESTS)
 

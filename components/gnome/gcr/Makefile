@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=        gnome/security
 COMPONENT_ANITYA_ID=	11801
 
-TPNO=			63946
+COMPONENT_BAID=		90534
 BUILD_STYLE=            meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk

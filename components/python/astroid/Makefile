@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://github.com/PyCQA/astroid
 COMPONENT_BUGDB=	python-mod/astroid
 COMPONENT_ANITYA_ID=	12725
 
-TPNO=			63909
+COMPONENT_BAID=		90463
 
 # This component is delivered in two different versions because
 # the newer one is no longer Python 2.7 compatible.
@@ -47,7 +47,7 @@ COMPONENT_ARCHIVE_HASH_OLD=	\
 	sha256:5f064785a7e45ed519285f2eb30b795e58a4932a0736b32030da6fef3394ddb3
 COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
 
-TPNO_OLD=		31346
+COMPONENT_BAID_OLD=	34811
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

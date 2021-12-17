@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=        gnome/docviewer
 COMPONENT_ANITYA_ID=	14867
 
-TPNO=			63011
+COMPONENT_BAID=		88578
 
 # gmake check works but produces no useful output
 TEST_TARGET = $(SKIP_TEST)

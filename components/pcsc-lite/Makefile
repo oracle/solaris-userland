@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_URL=  https://alioth.debian.org/frs/download.php/file/4138/$(C
 COMPONENT_BUGDB=        library/smartcard
 COMPONENT_ANITYA_ID=	2611
 
-TPNO =                  25484
+COMPONENT_BAID =                  27383
 
 include $(WS_MAKE_RULES)/common.mk
 

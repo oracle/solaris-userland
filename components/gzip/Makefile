@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -31,7 +31,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:c91f74430bf7bc20402e1f657d0b252cb80aa66ba333a25704512af346633c68
 COMPONENT_ANITYA_ID=	1290
 
-TPNO=			49597
+COMPONENT_BAID=		59495
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)

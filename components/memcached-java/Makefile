@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 32
 include ../../make-rules/shared-macros.mk
@@ -35,7 +35,7 @@ COMPONENT_PROJECT_URL=  https://github.com/gwhalin/Memcached-Java-Client
 COMPONENT_BUGDB=	database/memcached
 COMPONENT_ANITYA_ID=	13311
 
-TPNO=			5586
+COMPONENT_BAID=		1270
 
 BUILD_STYLE= ant
 include $(WS_MAKE_RULES)/common.mk

@@ -38,7 +38,7 @@ COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=        utility/gnu-compiler
 COMPONENT_ANITYA_ID=	6502
 
-TPNO=			73065
+COMPONENT_BAID=		105406
 
 # Use gcc's default flags instead of userland's.
 CFLAGS=

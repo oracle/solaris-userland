@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -37,7 +37,7 @@ COMPONENT_PROJECT_URL=	https://metacpan.org/pod/Test::Deep
 COMPONENT_BUGDB=	perl-mod/test-deep
 COMPONENT_ANITYA_ID=	11907
 
-TPNO=			55303
+COMPONENT_BAID=		71366
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

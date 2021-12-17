@@ -28,7 +28,7 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		qpdf
 COMPONENT_VERSION=	10.3.2
-TPNO=			73823
+COMPONENT_BAID=		106988
 COMPONENT_PROJECT_URL=	http://qpdf.sourceforge.net/
 #GIT_REPO=	https://github.com/qpdf/qpdf
 # GitHub can also provide .zip files which is much faster variant

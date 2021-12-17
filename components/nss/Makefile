@@ -46,7 +46,7 @@ COMPONENT_ARCHIVE_URL=	http://ftp.mozilla.org/pub/security/$(COMPONENT_NAME)/rel
 COMPONENT_BUGDB=	library/nss
 COMPONENT_ANITYA_ID=	2503
 
-TPNO=			74510
+COMPONENT_BAID=		108604
 
 BUILD_STYLE= justmake
 

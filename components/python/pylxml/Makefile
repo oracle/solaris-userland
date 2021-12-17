@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/lxml
 COMPONENT_ANITYA_ID=	48378
 
-TPNO=			68183
+COMPONENT_BAID=		97283
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

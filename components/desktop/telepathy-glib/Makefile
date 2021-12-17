@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -39,7 +39,7 @@ COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	6062
 
-TPNO=			25493
+COMPONENT_BAID=		27392
 
 include $(WS_MAKE_RULES)/common.mk
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64_and_32
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=	gnome/libglade
 COMPONENT_ANITYA_ID=	1174
 
-TPNO=			54028
+COMPONENT_BAID=		68660
 
 # Requires a display
 TEST_TARGET = $(SKIP_TEST)

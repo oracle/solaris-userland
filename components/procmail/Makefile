@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	ftp://ftp.fu-berlin.de/pub/unix/mail/$(COMPONENT_NAME)/$(
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 
 
-TPNO=			9003
+COMPONENT_BAID=		7959
 
 # Use libmapmalloc instead of libc malloc to avoid a huge heap
 # fragmentation caused by repeated reallocs with 16 kB increments.

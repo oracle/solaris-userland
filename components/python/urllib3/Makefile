@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://github.com/shazow/urllib3
 COMPONENT_BUGDB=	python-mod/urllib3
 COMPONENT_ANITYA_ID=	4078
 
-TPNO=			72277
+COMPONENT_BAID=		104068
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

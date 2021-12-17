@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/tcl/files/Tcl/$(COMPONEN
 COMPONENT_BUGDB=	library/libtk
 COMPONENT_ANITYA_ID=	11426
 
-TPNO=			37431
+COMPONENT_BAID=		42698
 
 include $(WS_MAKE_RULES)/common.mk
 

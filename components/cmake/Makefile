@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	http://www.cmake.org/files/v$(CMAKE_MAJOR_VERSION)/$(COMP
 COMPONENT_PROJECT_URL=  http://www.cmake.org/
 COMPONENT_ANITYA_ID=	306
 
-TPNO=			72993
+COMPONENT_BAID=		105264
 
 # configure in cmake does not accept many of the options set in
 # configure.mk (CC=, CXX=, --bindir, --libdir, --sbindir).

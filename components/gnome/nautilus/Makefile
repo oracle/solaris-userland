@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=        gnome/nautilus
 COMPONENT_ANITYA_ID=	2050
 
-TPNO=			54127
+COMPONENT_BAID=		68820
 BUILD_STYLE=            meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	http://search.cpan.org/~shlomif/XML-LibXML/
 COMPONENT_BUGDB=	perl-mod/xml-libxml
 COMPONENT_ANITYA_ID=	3527
 
-TPNO=			53418
+COMPONENT_BAID=		67423
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

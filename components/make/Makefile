@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=	utility/gnu-make
 COMPONENT_ANITYA_ID=	1877
 
-TPNO=			29463
+COMPONENT_BAID=		32517
 
 # the test suite needs to be configured first
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)

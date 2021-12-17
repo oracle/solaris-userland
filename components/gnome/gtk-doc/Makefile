@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=  https://download-fallback.gnome.org/sources/gtk-doc/1.33
 COMPONENT_BUGDB=	gnome/dev-tools
 COMPONENT_ANITYA_ID=	13140
 
-TPNO=			72790
+COMPONENT_BAID=		104791
 BUILD_STYLE=		meson
 
 PYTHON_VERSIONS= 3.7

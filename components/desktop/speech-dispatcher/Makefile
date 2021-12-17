@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             64
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	\
 COMPONENT_BUGDB=	gnome/accessibility
 COMPONENT_ANITYA_ID=    13411
 
-TPNO=			55314
+COMPONENT_BAID=		71390
 
 TEST_TARGET = $(NO_TESTS)
 

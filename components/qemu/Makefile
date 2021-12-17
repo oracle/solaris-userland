@@ -42,7 +42,7 @@ COMPONENT_SIG_URL=
 COMPONENT_PROJECT_URL=	https://www.qemu.org
 COMPONENT_BUGDB=    utility/qemu-img
 
-TPNO=			71130
+COMPONENT_BAID=		101894
 
 BUILD_STYLE= configure
 

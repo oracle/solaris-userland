@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB= 	gnome/accessibility
 COMPONENT_ANITYA_ID=	13156
 
-TPNO=		        75713
+COMPONENT_BAID=	        110888
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

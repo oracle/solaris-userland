@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -43,7 +43,7 @@ COMPONENT_ARCHIVE_HASH_TESTS=	\
 	sha256:a3a2b42c70cd830b39774101a224b65dbe40e093441fb015244ec9a3225d2b78
 COMPONENT_ARCHIVE_URL_TESTS=	$(COMPONENT_PROJECT_URL)tests/$(COMPONENT_ARCHIVE_TESTS)
 
-TPNO=			60064
+COMPONENT_BAID=		81799
 
 BUILD_STYLE= justmake
 INSTALL_32_and_64 += $(BUILD_DIR)/lua-64.pc

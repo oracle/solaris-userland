@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
 #
 COMPILER=gcc
 BUILD_BITS= 64_and_32
@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=	library/libdwarf
 COMPONENT_ANITYA_ID=	1597
 
-TPNO=			56047
+COMPONENT_BAID=		73000
 
 HUMAN_VERSION= $(shell echo $(COMPONENT_VERSION) | \
 	$(GSED) -e 's/\(.\{4\}\)\(.\{2\}\)/0.\1.\2./')

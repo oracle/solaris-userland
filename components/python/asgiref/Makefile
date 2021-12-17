@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://github.com/django/asgiref/
 COMPONENT_BUGDB=	python-mod/asgiref
 COMPONENT_ANITYA_ID=	18462
 
-TPNO=			69984
+COMPONENT_BAID=		100561
 
 PYTHON_VERSIONS = 3.9
 

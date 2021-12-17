@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 # For this component, prefer 32-bit over 64-bit for now until sufficient
 # testing has been performed.
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)files/$(COMPONENT_NAME)/$(COMPONE
 COMPONENT_BUGDB=	library/pam-pkcs11
 COMPONENT_ANITYA_ID=	13275
 
-TPNO=			28155
+COMPONENT_BAID=		30942
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk

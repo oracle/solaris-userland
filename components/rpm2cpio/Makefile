@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
@@ -38,7 +38,7 @@ COMPONENT_SRC=		src
 COMPONENT_ARCHIVE_SRC=	none
 COMPONENT_BUGDB=	utility/rpm
 
-TPNO=			17824
+COMPONENT_BAID=		17836
 
 BUILD_STYLE= archive
 COMMON_TARGETS= no

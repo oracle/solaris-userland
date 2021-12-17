@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:cf5fea4ac5665fd5171af4716baab2effc76306a9572988d5ba1078f196382bd
 COMPONENT_ANITYA_ID=	868
 
-TPNO=			64137
+COMPONENT_BAID=		90960
 
 # Adjust references to section 3am to be section 3 in the extensions man pages.
 COMPONENT_POST_CONFIGURE_ACTION = \

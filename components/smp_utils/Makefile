@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL=	http://sg.danny.cz/sg/p/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/smputils
 COMPONENT_ANITYA_ID=	4840
 
-TPNO=			39251
+COMPONENT_BAID=		44216
 
 include $(WS_MAKE_RULES)/common.mk
 

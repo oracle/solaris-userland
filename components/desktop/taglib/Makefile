@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 32_and_64
 # For now, all things built for C++11 require gcc.
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL=	https://taglib.github.io/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/taglib
 COMPONENT_ANITYA_ID=	1982
 
-TPNO=			32884	
+COMPONENT_BAID=		36927
 
 BUILD_STYLE= cmake
 

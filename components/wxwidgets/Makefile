@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 # 32-bit preferred as only *-config and source generation scripts delivered.
 BUILD_BITS= 32_and_64
@@ -37,7 +37,7 @@ COMPONENT_PROJECT_URL=  http://www.wxwidgets.org/
 COMPONENT_BUGDB=	library/wxwidgets
 COMPONENT_ANITYA_ID=	5150
 
-TPNO=			39170
+COMPONENT_BAID=		44124
 
 CXXFLAGS += -std=c++11
 

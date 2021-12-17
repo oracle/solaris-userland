@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_HASH= \
     sha256:3a48a9d6c97750bfbd535feeb5be0111db6406ddb7bb79fc680809cda6d828a5
 COMPONENT_ANITYA_ID=	1253
 
-TPNO=			28205
+COMPONENT_BAID=		30990
 
 TEST_TARGET= $(NO_TESTS)
 

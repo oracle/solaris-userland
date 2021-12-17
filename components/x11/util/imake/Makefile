@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_ARCHIVE_URL=  $(COMPONENT_PROJECT_URL)/releases/individual/util/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=        x11/builds
 COMPONENT_ANITYA_ID=	1373
-TPNO=			50400
+COMPONENT_BAID=		61049
 
 COMPONENT_NAME_1=       xorg-cf-files
 COMPONENT_VERSION_1=    1.0.6
@@ -45,7 +45,7 @@ COMPONENT_ARCHIVE_HASH_1= \
     sha256:4dcf5a9dbe3c6ecb9d2dd05e629b3d373eae9ba12d13942df87107fdc1b3934d
 COMPONENT_ARCHIVE_URL_1= $(COMPONENT_PROJECT_URL)/releases/individual/util/$(COMPONENT_ARCHIVE_1)
 COMPONENT_ANITYA_ID_1=	17168
-TPNO_1=			45946
+COMPONENT_BAID_1=		53115
 
 TEST_TARGET = $(NO_TESTS)
 SYSTEM_TEST_TARGET= $(SYSTEM_TEST_64)

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2005, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2005, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		NO_ARCH
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL=  https://download.gnome.org/sources/$(COMPONENT_NAME)/$(C
 COMPONENT_BUGDB=	x11/font
 COMPONENT_ANITYA_ID=	198
 
-TPNO= 			12112
+COMPONENT_BAID= 			11410
 
 TEST_TARGET= $(NO_TESTS)
 

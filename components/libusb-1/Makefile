@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64_and_32
@@ -35,7 +35,7 @@ COMPONENT_PROJECT_URL=  http://libusb.info/
 COMPONENT_BUGDB=	library/libusb
 COMPONENT_ANITYA_ID=	1749
 
-TPNO=			54416
+COMPONENT_BAID=		69485
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 include $(WS_MAKE_RULES)/common.mk

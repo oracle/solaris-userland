@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_URL=	http://ftp.gnome.org/pub/GNOME/sources/$(COMPONENT_NAME)/
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	13120
 
-TPNO=			62731
+COMPONENT_BAID=		87945
 
 TEST_TARGET = $(NO_TESTS)
 

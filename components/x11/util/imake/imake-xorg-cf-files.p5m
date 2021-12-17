@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -166,12 +166,13 @@ file path=usr/lib/X11/config/xorgversion.def
 file path=usr/share/man/man1/imake.1
 file path=usr/share/man/man1/mkdirhier.1
 file path=usr/share/man/man1/xmkmf.1
-license COPYING license="MIT (imake)" \
+license COPYING license="MIT (imake)" com.oracle.info.baid=$(COMPONENT_BAID) \
     com.oracle.info.description="imake utilities" com.oracle.info.name=imake \
-    com.oracle.info.tpno=$(TPNO) com.oracle.info.version=$(COMPONENT_VERSION)
+    com.oracle.info.version=$(COMPONENT_VERSION)
 license $(COMPONENT_SRC_1)/COPYING license="MIT (xorg-cf-files)" \
+    com.oracle.info.baid=$(COMPONENT_BAID_1) \
     com.oracle.info.description="Data files for imake utility" \
-    com.oracle.info.name=xorg-cf-files com.oracle.info.tpno=$(TPNO_1) \
+    com.oracle.info.name=xorg-cf-files \
     com.oracle.info.version=$(COMPONENT_VERSION_1)
 # imake uses GNU install from coreutils package in generated Makefiles
 depend type=require fmri=pkg:/file/gnu-coreutils

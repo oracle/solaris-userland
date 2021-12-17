@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_URL=	https://www.gnupg.org/ftp/gcrypt/gnupg/$(COMPONENT_ARCHIV
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	1215
 
-TPNO=			58864
+COMPONENT_BAID=		78940
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 

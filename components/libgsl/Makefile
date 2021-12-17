@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -32,7 +32,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=	library/libgsl
 COMPONENT_ANITYA_ID=	1267
 
-TPNO=			36249
+COMPONENT_BAID=		41177
 
 TEST_TARGET=
 SYSTEM_TEST_TARGET=

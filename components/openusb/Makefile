@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL= https://sourceforge.net/projects/openusb/files/libopenusb
 COMPONENT_BUGDB=	library/libopenusb
 COMPONENT_ANITYA_ID=	13276
 
-TPNO=			32726
+COMPONENT_BAID=		36698
 
 include $(WS_MAKE_RULES)/common.mk
 

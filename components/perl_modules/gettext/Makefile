@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	http://search.cpan.org/CPAN/authors/id/P/PV/PVANDRY/$(COM
 COMPONENT_BUGDB=	perl-mod/gettext
 COMPONENT_ANITYA_ID=	7523
 
-TPNO=			33099
+COMPONENT_BAID=		37200
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

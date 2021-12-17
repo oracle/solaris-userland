@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=  https://gnupg.org/ftp/gcrypt/$(COMPONENT_NAME)/$(COMPONE
 COMPONENT_BUGDB=	library/libgpg-error
 COMPONENT_ANITYA_ID=	1628
 
-TPNO=			50966
+COMPONENT_BAID=		62216
 
 COMPONENT_BUILD_TARGETS = all info
 

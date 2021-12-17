@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	http://www.voidspace.org.uk/python/mock/
 COMPONENT_BUGDB=	python-mod/mock
 COMPONENT_ANITYA_ID=	21272
 
-TPNO=			51961
+COMPONENT_BAID=		64190
 
 # mock has been subsumed into Python starting with 3.3. However, the community
 # is still using this package rather than the included one, mostly because it

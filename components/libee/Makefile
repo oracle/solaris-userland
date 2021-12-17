@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 
@@ -34,7 +34,7 @@ COMPONENT_PROJECT_URL=	http://www.libee.org/
 COMPONENT_ARCHIVE_HASH=	sha256:c0dac01938593deee06c3d161e4eda4ecc0fd7317e1321bd96e301aceb7fb027
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)files/download/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/rsyslog
-TPNO=			20532
+COMPONENT_BAID=		20906
 COMPONENT_ANITYA_ID=	13310
 
 # Tests are currently broken

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -39,7 +39,7 @@ COMPONENT_PROJECT_URL=  https://github.com/puppetlabs/hiera
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	1317
 
-TPNO=                   40663
+COMPONENT_BAID=                   45915
 
 # No gemspec is shipped with the gem. Create one
 COMPONENT_POST_UNPACK_ACTION= \

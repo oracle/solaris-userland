@@ -45,7 +45,7 @@ COMPONENT_BUGDB=	service/openldap
 # For check_anitya target, see 'gmake print-ANITYA_API_URL'
 COMPONENT_ANITYA_ID=	2551
 
-TPNO=			64486
+COMPONENT_BAID=		91982
 
 # Set DEBUG=yes in environment to make this a debug build, inc. LDAP_DEBUG
 ifeq ($(DEBUG), yes)

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
@@ -37,7 +37,7 @@ COMPONENT_PROJECT_URL=	https://github.com/GrahamDumpleton/wrapt
 COMPONENT_BUGDB=	python-mod/wrapt
 COMPONENT_ANITYA_ID=	6108
 
-TPNO=			57865
+COMPONENT_BAID=		77542
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	https://download.gnome.org/sources/gtk/4.3/$(COMPONENT_AR
 COMPONENT_BUGDB=	gnome/gtk+
 COMPONENT_ANITYA_ID=	13942
 
-TPNO=			71203
+COMPONENT_BAID=		102031
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk

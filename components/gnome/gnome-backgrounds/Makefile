@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=        gnome/branding
 COMPONENT_ANITYA_ID=	13125
 
-TPNO=			75652
+COMPONENT_BAID=		110757
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk

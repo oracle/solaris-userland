@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 COMPILER =		gcc
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_URL=	https://s3.amazonaws.com/json-c_releases/releases/$(COMPO
 COMPONENT_BUGDB=	library/json-c
 COMPONENT_ANITYA_ID=	1477
 
-TPNO=			20748
+COMPONENT_BAID=		22076
 
 include $(WS_MAKE_RULES)/common.mk
 

@@ -41,7 +41,7 @@ COMPONENT_ARCHIVE_URL=	https://github.com/p11-glue/p11-kit/archive/$(COMPONENT_A
 COMPONENT_BUGDB=	gnome/security
 COMPONENT_ANITYA_ID=	2582
 
-TPNO=			64496
+COMPONENT_BAID=		91639
 
 include $(WS_MAKE_RULES)/common.mk
 

@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=       gnome/libraries
 COMPONENT_ANITYA_ID=	13158
 
-TPNO=			19934
+COMPONENT_BAID=		20250
 
 # Only build for 2.7 as python 3.x support is provided by ../pygobject3 instead
 PYTHON_VERSION = 2.7

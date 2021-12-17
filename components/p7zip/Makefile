@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # When building with Studio, p7zip has many warnings about extra semicolons,
@@ -45,7 +45,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/p7zip/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	2583
 
-TPNO=			43040
+COMPONENT_BAID=		49096
 
 BUILD_STYLE= justmake
 INSTALL_TARGET=

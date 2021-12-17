@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_ARCH= i386
@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_URL=  https://github.com/rhinstaller/$(COMPONENT_NAME)/archive
 COMPONENT_BUGDB=	kernel/shim
 COMPONENT_ANITYA_ID=	10719
 
-TPNO=			25414
+COMPONENT_BAID=		27343
 
 BUILD_STYLE= justmake
 TEST_TARGET= $(NO_TESTS)

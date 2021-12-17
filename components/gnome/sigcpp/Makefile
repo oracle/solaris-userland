@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_URL= https://download.gnome.org/sources/libsigc++/2.10/$(COMPO
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	7961
 
-TPNO=			56447
+COMPONENT_BAID=		73484
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

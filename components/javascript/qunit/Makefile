@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL=	https://github.com/jquery/qunit/archive/$(COMPONENT_ARCHI
 COMPONENT_BUGDB= 	javascript/qunit
 COMPONENT_ANITYA_ID=	9709
 
-TPNO= 	27977
+COMPONENT_BAID= 	30677
 
 include ../../../make-rules/prep.mk
 include ../../../make-rules/ips.mk

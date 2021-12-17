@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	http://www.djangoproject.com/
 COMPONENT_BUGDB=	python-mod/django
 COMPONENT_ANITYA_ID=	3828
 
-TPNO=			76889
+COMPONENT_BAID=		113402
 
 
 COMPONENT_NAME_22=	$(COMPONENT_NAME)
@@ -48,7 +48,7 @@ COMPONENT_ARCHIVE_HASH_22= \
 COMPONENT_ARCHIVE_URL_22=	$(call pypi_url,22)
 COMPONENT_ANITYA_ID_22=	155462
 
-TPNO_22=		76888
+COMPONENT_BAID_22=	113401
 
 
 PYTHON_VERSIONS=	$(PYTHON3_VERSIONS)
@@ -72,7 +72,7 @@ $(TARGET_37).installed: SOURCE_DIR = $(SOURCE_DIR_22)
 $(TARGET_37).tested-and-compared: COMPONENT_TEST_DIR = $(SOURCE_DIR_22)/tests
 
 $(MANIFEST_BASE)-django-37.mogrified: COMPONENT_VERSION = $(COMPONENT_VERSION_22)
-$(MANIFEST_BASE)-django-37.mogrified: TPNO = $(TPNO_22)
+$(MANIFEST_BASE)-django-37.mogrified: COMPONENT_BAID = $(COMPONENT_BAID_22)
 
 # Common generate transform for python uses files from the 3.7 variant as
 # a baseline; hence, to make it work as expected, we have to pass 3.7

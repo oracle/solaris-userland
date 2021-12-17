@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
@@ -38,7 +38,7 @@ UNPACK_ARGS=		-r $(COMPONENT_SRC)
 
 COMPONENT_BUGDB=	g11n/font
 
-TPNO=			11208
+COMPONENT_BAID=		10410
 
 BUILD_STYLE=		justmake
 TEST_TARGET=		$(NO_TESTS)

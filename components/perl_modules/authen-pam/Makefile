@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -37,7 +37,7 @@ COMPONENT_PROJECT_URL=	http://search.cpan.org/~nikip/
 COMPONENT_BUGDB=	perl-mod/authen-pam
 COMPONENT_ANITYA_ID=	6628
 
-TPNO=			9303
+COMPONENT_BAID=		8255
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -40,7 +40,7 @@ COMPONENT_ARCHIVE_URL=	https://github.com/lz4/lz4/archive/v$(COMPONENT_VERSION)/
 COMPONENT_BUGDB=	utility/lz4
 COMPONENT_ANITYA_ID=	1865
 
-TPNO=			55170
+COMPONENT_BAID=		81190
 
 BUILD_STYLE= justmake
 include $(WS_MAKE_RULES)/common.mk

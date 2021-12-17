@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	http://pytest.org/latest/
 COMPONENT_BUGDB=	python-mod/pytest
 COMPONENT_ANITYA_ID=	3765
 
-TPNO=			50840
+COMPONENT_BAID=		61987
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

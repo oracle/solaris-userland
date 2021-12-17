@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_URL=	http://releases.pagure.org/background-logo-extension/$(CO
 COMPONENT_BUGDB=	gnome/gnome-shell
 COMPONENT_ANITYA_ID=	13118
 
-TPNO=			63387
+COMPONENT_BAID=		89401
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)

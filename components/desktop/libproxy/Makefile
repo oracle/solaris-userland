@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 		32_and_64
 COMPILER= 		gcc
@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=	library/libproxy
 COMPONENT_ANITYA_ID=	12742
 
-TPNO=			63709
+COMPONENT_BAID=		90007
 
 BUILD_STYLE= 		cmake
 include $(WS_MAKE_RULES)/common.mk

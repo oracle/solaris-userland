@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 # gnupth only delivers scripts that embed paths, so prefer 32-bit.
 BUILD_BITS= 32_and_64
@@ -38,7 +38,7 @@ COMPONENT_ANITYA_ID=	2505
 COMPONENT_ARCHIVE_URL=https://gnupg.org/ftp/gcrypt/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=$(COMPONENT_ARCHIVE_URL).sig
 
-TPNO=		42737
+COMPONENT_BAID=	48663
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 

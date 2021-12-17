@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	http://pyyaml.org/wiki/PyYAML
 COMPONENT_BUGDB=	python-mod/pyyaml
 COMPONENT_ANITYA_ID=	4123
 
-TPNO=			67288
+COMPONENT_BAID=		95764
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

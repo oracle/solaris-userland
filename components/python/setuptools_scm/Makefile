@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://pypi.org/project/setuptools_scm/
 COMPONENT_BUGDB=	python-mod/setuptools_scm
 COMPONENT_ANITYA_ID=	7874
 
-TPNO=			73615
+COMPONENT_BAID=		106627
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

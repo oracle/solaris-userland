@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -32,7 +32,7 @@ COMPONENT_ARCHIVE_HASH= \
 	sha256:b884300d26a14961a076fbebc762a39831cb75f92bed5ccf9836345b459220c7
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	1792
-TPNO=			49156
+COMPONENT_BAID=		58631
 
 FIX_PC_FILES=xshmfence.pc.in
 

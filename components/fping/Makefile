@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)dist/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	834
 
-TPNO=			50617
+COMPONENT_BAID=		80542
 
 # Deliver 'sbin' binaries to 'bin'.
 CONFIGURE_SBINDIR.64= $(CONFIGURE_BINDIR.64)

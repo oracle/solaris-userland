@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -35,7 +35,7 @@ COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/jansson
 COMPONENT_ANITYA_ID=	1417
 
-TPNO=			39240
+COMPONENT_BAID=		44203
 
 include $(WS_MAKE_RULES)/common.mk
 

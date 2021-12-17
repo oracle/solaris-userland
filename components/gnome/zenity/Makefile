@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	13165
 
-TPNO=			54143
+COMPONENT_BAID=		68843
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

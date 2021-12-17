@@ -37,7 +37,7 @@ COMPONENT_PROJECT_URL=	https://github.com/simplejson/simplejson
 COMPONENT_BUGDB=	python-mod/simplejson
 COMPONENT_ANITYA_ID=	4026
 
-TPNO=			74393
+COMPONENT_BAID=		108344
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

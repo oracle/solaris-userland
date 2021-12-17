@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -38,7 +38,7 @@ COMPONENT_PROJECT_URL=	http://search.cpan.org/dist/Alien-Libxml2/
 COMPONENT_BUGDB=	perl-mod/alien-libxml2
 COMPONENT_ANITYA_ID=	19537
 
-TPNO=			53417
+COMPONENT_BAID=		67422
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk

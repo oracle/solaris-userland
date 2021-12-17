@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates. 
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=	gnome/session
 COMPONENT_ANITYA_ID=	12860
 
-TPNO=			65002
+COMPONENT_BAID=		92612
 BUILD_STYLE=		meson
 
 # Tests require python-dbusmock and umockdev packages

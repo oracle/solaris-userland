@@ -33,8 +33,8 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=	library/readline
 COMPONENT_ANITYA_ID=	4173
 
-TPNO_V8=		71122
-TPNO_V7=		33803
+COMPONENT_BAID_V8=	101888
+COMPONENT_BAID_V7=	38098
 
 # For now, we want to continue to provide the libreadline and libhistory so's
 # (and their links) from readline 7.0.

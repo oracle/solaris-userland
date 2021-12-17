@@ -20,14 +20,14 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Parse-Yapp
 COMPONENT_VERSION=	1.21
-TPNO=			61648
+COMPONENT_BAID=		85590
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	sha256:3810e998308fba2e0f4f26043035032b027ce51ce5c8a52a8b8e340ca65f13e5

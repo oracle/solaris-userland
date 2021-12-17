@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 		32_and_64
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL=	http://downloads.xiph.org/releases/vorbis/$(COMPONENT_ARC
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	1758
 
-TPNO=			42388
+COMPONENT_BAID=		48211
 
 include $(WS_MAKE_RULES)/common.mk
 

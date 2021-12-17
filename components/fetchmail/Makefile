@@ -34,7 +34,7 @@ COMPONENT_PROJECT_URL=	http://www.fetchmail.info/
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	801
 
-TPNO=			74481
+COMPONENT_BAID=		108533
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)

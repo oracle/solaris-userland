@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	http://0pointer.de/lennart/projects/$(COMPONENT_NAME)/$(C
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13298
 
-TPNO=			24163
+COMPONENT_BAID=		25366
 
 TEST_TARGET= $(NO_TESTS)
 

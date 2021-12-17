@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -52,7 +52,7 @@ DONOTUSE= $(SOURCE_DIR)/mac  $(SOURCE_DIR)/dlcompat-20010505
 
 COMPONENT_BUGDB=	library/libsasl
 
-TPNO=			21351
+COMPONENT_BAID=		21953
 
 SASL2.32 = $(USRLIBDIR)/sasl2
 SASL2.64 = $(USRLIBDIR)/sasl2/$(MACH64)
@@ -117,7 +117,7 @@ COMPONENT_PREP_ACTION = ( cd $(@D) &&  \
 		-I $(SOURCE_DIR)/config ; \
 	    )
 
-# Remove some things we don't use and aren't in the TPNO
+# Remove some things we don't use and aren't in the BAID
 # Make an include/sasl directory to make llib-lsasl2 match llib-lsasl2.ln
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	-$(RM) -r $(DONOTUSE) ; \

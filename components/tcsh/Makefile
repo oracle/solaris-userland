@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_URL=	https://astron.com/pub/tcsh/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	4945
 
-TPNO=			63264
+COMPONENT_BAID=		89152
 
 # the testsuite needs to be configured first
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)

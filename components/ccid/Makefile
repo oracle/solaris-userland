@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=        library/smartcard
 COMPONENT_ANITYA_ID=	2612
 
-TPNO =                  25483
+COMPONENT_BAID =                  27382
 
 include $(WS_MAKE_RULES)/common.mk
 

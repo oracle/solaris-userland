@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 COMPILER =		gcc
@@ -37,7 +37,7 @@ COMPONENT_PROJECT_URL=  http://cython.org/
 COMPONENT_BUGDB=	python-mod/cython
 COMPONENT_ANITYA_ID=	12679
 
-TPNO=			55642
+COMPONENT_BAID=		72166
 
 # Avoid warnings about use of the deprecated NumPy API. Please see
 # http://docs.cython.org/en/latest/src/reference/compilation.html#configuring-the-c-build

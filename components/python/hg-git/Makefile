@@ -37,7 +37,7 @@ COMPONENT_PROJECT_URL=	http://hg-git.github.io/
 COMPONENT_BUGDB=	python-mod/hg-git
 COMPONENT_ANITYA_ID=	1314
 
-TPNO=			71350
+COMPONENT_BAID=		102239
 
 # Mirror versions for Mercurial
 PYTHON_VERSIONS = 2.7 3.7

@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_URL=	https://ftp.gnu.org/gnu/$(COMPONENT_NAME)/$(COMPONENT_ARC
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	1667
 
-TPNO=			64454
+COMPONENT_BAID=		91571
 
 #
 # Temporarily build the old version to transition GCC 4.9 & 5.  Once GCC has
@@ -52,7 +52,7 @@ COMPONENT_ARCHIVE_URL_1=$(COMPONENT_PROJECT_URL)downloads/$(COMPONENT_ARCHIVE_1)
 COMPONENT_SIG_URL_1=	$(COMPONENT_ARCHIVE_URL_1).asc
 COMPONENT_ANITYA_ID_1=	1667
 
-TPNO_1=			29500
+COMPONENT_BAID_1=		32598
 
 # Macros to configure, build, and install the old version for the time being.
 BUILD_OLD_DIR_32 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH32)

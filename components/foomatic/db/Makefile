@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS=	64
 COMPILER=	gcc
@@ -32,7 +32,7 @@ DAILY_VERSION=		20160721
 COMPONENT_VERSION=	$(DAILY_VERSION)
 FOO_VERSION=		4.0
 IPS_COMPONENT_VERSION=	$(FOO_VERSION).$(DAILY_VERSION)
-TPNO=			30222
+COMPONENT_BAID=		33517
 # version (4.0) is relative to foomatic-db-engine
 #  ...do not combine foomatic-db with foomatic-db-engine of the different versions
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(FOO_VERSION)-$(DAILY_VERSION).tar.gz

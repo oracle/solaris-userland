@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 
 ifneq ($(NO_PKG_REPORT),)
@@ -44,9 +44,9 @@ RESPONSIBLE_ENGINEER=$(if $(RE_RM_LINE),$(word 2,$(subst |, ,$(RE_RM_LINE))),Unk
 RESPONSIBLE_MANAGER=$(if $(RE_RM_LINE),$(word 3,$(subst |, ,$(RE_RM_LINE))),Unknown)
 TEAM=$(if $(RE_RM_LINE),$(word 4,$(subst |, ,$(RE_RM_LINE))),Unknown)
 
-# Add all the TPNO* Makefile macros together for further processing below.
-$(foreach macro, $(filter TPNO%, $(.VARIABLES)), \
-    $(eval ALL_TPNOS += $$($(macro))) \
+# Add all the COMPONENT_BAID* Makefile macros together for further processing below.
+$(foreach macro, $(filter COMPONENT_BAID%, $(.VARIABLES)), \
+    $(eval ALL_BAIDS += $$($(macro))) \
 )
 
 component-report:	$(BUILD_DIR)/component-report
@@ -83,8 +83,8 @@ $(BUILD_DIR)/component-report:	$(BUILD_DIR)/package-info
 	@echo "<td>" >>$@ ; for license in $(LICENSE) ; do \
 	     echo "$$license<br>" >>$@ ; \
 	 done ; echo "</td>" >>$@
-	@echo "<td>" >>$@ ; for tpno in $(ALL_TPNOS) ; do \
-	     echo "<a href='https://pls.us.oracle.com/PLS/faces/ThirdPartyHome?itemDetail=Y&aid=$$tpno'>$${tpno}</a><br>" >>$@ ; \
+	@echo "<td>" >>$@ ; for baid in $(ALL_BAIDS) ; do \
+	     echo "<a href='https://pls.appoci.oraclecorp.com/tplta/faces/ThirdPartyHome?wid=$$baid'>$${baid}</a><br>" >>$@ ; \
 	 done ; echo "</td>" >>$@
 	@echo "<td>" >>$@ ; for bugdb in $(COMPONENT_BUGDB) ; do \
 	     echo "<a href='$(BUGDB_URL)$$bugdb'>$$bugdb</a><br>" >>$@ ; \
@@ -103,7 +103,7 @@ $(BUILD_DIR)/component-info:	$(PKG_REPORTS)
 	@echo "COMPONENT_PROJECT_URL=\"$(COMPONENT_PROJECT_URL)\"" >>$@
 	@echo "COMPONENT_ARCHIVE_URL=\"$(COMPONENT_ARCHIVE_URL)\"" >>$@
 	@echo "COMPONENT_DIR=\"$(CDIR)\"" >>$@
-	@echo "TPNO=\"$(ALL_TPNOS)\"" >>$@
+	@echo "COMPONENT_BAID=\"$(ALL_BAIDS)\"" >>$@
 	@echo "COMPONENT_BUGDB=\"$(COMPONENT_BUGDB)\"" >>$@
 	@echo "RESPONSIBLE_ENGINEER=\"$(RESPONSIBLE_ENGINEER)\"" >>$@
 	@echo "RESPONSIBLE_MANAGER=\"$(RESPONSIBLE_MANAGER)\"" >>$@

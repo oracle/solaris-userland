@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 		32_and_64
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL=  https://sourceforge.net/projects/libvisual/files/$(COMPO
 COMPONENT_BUGDB=        gnome/multimedia
 COMPONENT_ANITYA_ID=	13114
 
-TPNO=			9462
+COMPONENT_BAID=		8407
 
 TEST_TARGET = $(NO_TESTS)
 

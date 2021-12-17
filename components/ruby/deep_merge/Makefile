@@ -39,7 +39,7 @@ COMPONENT_PROJECT_URL=  https://github.com/danielsdeleo/deep_merge
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	4334
 
-TPNO=                   61047
+COMPONENT_BAID=                   97271
 
 # Create gemspec.
 COMPONENT_POST_UNPACK_ACTION= \

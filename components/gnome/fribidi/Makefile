@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=        library/fribidi
 COMPONENT_ANITYA_ID=	857
 
-TPNO=			55762
+COMPONENT_BAID=		72444
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk

@@ -35,7 +35,7 @@ COMPONENT_PROJECT_URL=	https://mottie.github.io/tablesorter/
 COMPONENT_BUGDB=	javascript/jquery
 COMPONENT_ANITYA_ID=	141610
 
-TPNO=			64093
+COMPONENT_BAID=		91003
 
 # There is nothing to build, just package the dist files
 BUILD_STYLE= pkg

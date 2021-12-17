@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER = gcc
@@ -28,7 +28,7 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libidn2
 COMPONENT_VERSION=	2.3.0
-TPNO=			57906
+COMPONENT_BAID=		76833
 COMPONENT_ARCHIVE_HASH= \
     sha256:e1cb1db3d2e249a6a3eb6f0946777c2e892d5c5dc7bd91c74394fc3a01cab8b5
 COMPONENT_ARCHIVE_URL=	https://ftp.gnu.org/gnu/libidn/libidn2-2.3.0.tar.gz

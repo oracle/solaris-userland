@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/mccabe
 COMPONENT_BUGDB=	python-mod/mccabe
 COMPONENT_ANITYA_ID=	6902
 
-TPNO=			31984
+COMPONENT_BAID=		35686
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -40,7 +40,7 @@ COMPONENT_ARCHIVE_URL=  https://download.gnome.org/sources/libwnck/3.32/$(COMPON
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	11006
 
-TPNO=			54123
+COMPONENT_BAID=		68816
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)

@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	https://github.com/TigerVNC/tigervnc/archive/$(COMPONENT_
 COMPONENT_BUGDB=        x11/vnc
 COMPONENT_ANITYA_ID=	4970
 
-TPNO=			56638
+COMPONENT_BAID=		74126
 
 XORG_DIR=		$(COMPONENT_DIR:xvnc=xorg)
 get-xorg-value=		$(MAKE) --no-print-directory -C $(XORG_DIR) print-$(1) \

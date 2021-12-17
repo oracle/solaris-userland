@@ -38,7 +38,7 @@ COMPONENT_PROJECT_URL=	https://github.com/cloudbase/cloudbase-init
 COMPONENT_BUGDB=	service/cloudbase-init
 COMPONENT_ANITYA_ID=	13227
 
-TPNO=			57119
+COMPONENT_BAID=		75330
 
 # We need just a single version
 PYTHON_VERSIONS=	3.7

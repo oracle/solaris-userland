@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_URL=	http://memcached.org/files/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	database/memcached
 COMPONENT_ANITYA_ID=	1965
 
-TPNO=			64643
+COMPONENT_BAID=		104110
 
 include $(WS_MAKE_RULES)/common.mk
 

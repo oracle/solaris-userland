@@ -39,7 +39,7 @@ COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=        utility/meson
 COMPONENT_ANITYA_ID=	6472
 
-TPNO=			74914
+COMPONENT_BAID=		109353
 
 # As of 0.57.0, meson requires Python 3.6 or newer, and we only need
 # to build for a single version, not all of them.

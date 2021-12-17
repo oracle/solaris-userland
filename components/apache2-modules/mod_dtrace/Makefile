@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
@@ -34,7 +34,7 @@ COMPONENT_PROJECT_URL=	http://prefetch.net/projects/apache_modtrace/
 COMPONENT_BUGDB=	utility/apache
 COMPONENT_ANITYA_ID=	N/A
 
-TPNO=			8876
+COMPONENT_BAID=		7832
 
 BUILD_STYLE= justmake
 MODULES_INSTALL=

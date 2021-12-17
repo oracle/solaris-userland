@@ -36,7 +36,7 @@ COMPONENT_SIG_URL=
 COMPONENT_BUGDB=	utility/gnu-gettext
 COMPONENT_ANITYA_ID=	898
 
-TPNO=			56895
+COMPONENT_BAID=		74806
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 

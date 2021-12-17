@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_URL=	http://download.augeas.net/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	7017
 
-TPNO=	37422
+COMPONENT_BAID=	42689
 
 PKG_MACROS += LIBAUGEAS_VER=so.0.22.1
 PKG_MACROS += LIBFA_VER=so.1.4.4

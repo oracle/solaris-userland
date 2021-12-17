@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	https://www.stunnel.org/downloads/$(COMPONENT_ARCHIVE)
 
 #COMPONENT_PREP_ACTION += (cd $(@D) ; autoreconf -f)
 
-TPNO=                   70511
+COMPONENT_BAID=                   100850
 
 include $(WS_MAKE_RULES)/common.mk
 

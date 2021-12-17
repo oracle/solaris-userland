@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_URL  = https://people.gnome.org/~veillard/gamin/sources/gamin-
 COMPONENT_BUGDB        = library/gamin
 COMPONENT_ANITYA_ID=	13249
 
-TPNO                   = 9483
+COMPONENT_BAID                   = 8437
 
 include $(WS_MAKE_RULES)/common.mk
 

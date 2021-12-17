@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 COMPILER= gcc
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE_URL=	http://archive.ubuntu.com/ubuntu/pool/universe/p/$(COMPON
 COMPONENT_BUGDB=	utility/pidgin
 COMPONENT_ANITYA_ID=	13281
 
-TPNO=			29496
+COMPONENT_BAID=		32551
 
 BUILD_STYLE= justmake
 INSTALL_TARGET= build

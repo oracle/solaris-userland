@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/gswitchit/files/libxklav
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	1782
 
-TPNO=			3429
+COMPONENT_BAID=		4800
 
 # Tests do not work in userland framework yet
 TEST_TARGET = $(SKIP_TEST)

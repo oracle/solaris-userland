@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL=	https://storage.googleapis.com/google-code-archive-downlo
 COMPONENT_BUGDB=	python-mod/pybonjour
 COMPONENT_ANITYA_ID=	13251
 
-TPNO=			4453
+COMPONENT_BAID=		5379
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

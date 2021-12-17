@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -41,7 +41,7 @@ COMPONENT_ARCHIVE_HASH_1 =	\
     sha256:907a4176088797d5dc64983ba0e890c7b4f1ecbef8366cc3b8aa49ab63810041
 COMPONENT_ARCHIVE_URL_1 =	http://doxygen.nl/files/$(COMPONENT_ARCHIVE_1)
 
-TPNO=			50643
+COMPONENT_BAID=		64410
 
 BUILD_STYLE= cmake
 SYSTEM_TEST_TARGET= $(SYSTEM_TEST_64)

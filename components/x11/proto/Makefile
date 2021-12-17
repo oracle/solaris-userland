@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates. 
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32
@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH= \
 	sha256:aa2f663b8dbd632960b24f7477aa07d901210057f6ab1a1db5158732569ca015
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	17190
-TPNO=			75189
+COMPONENT_BAID=		109914
 
 # sun-ext-protos just delivers headers and xcb-proto is part of libxcb
 

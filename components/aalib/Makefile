@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 
 # Prefer 32-bit over 64-bit as we have to manually shuffle the resulting
@@ -40,7 +40,7 @@ COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/aa-project/$(COMPONENT_A
 COMPONENT_BUGDB=	library/aalib
 COMPONENT_ANITYA_ID=	7921
 
-TPNO=			6118
+COMPONENT_BAID=		1492
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TEST_32_and_64)
 include $(WS_MAKE_RULES)/common.mk

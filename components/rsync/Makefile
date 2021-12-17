@@ -30,7 +30,7 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		rsync
 COMPONENT_VERSION=	3.2.3
-TPNO=			64394
+COMPONENT_BAID=		91453
 COMPONENT_ARCHIVE_HASH=	sha256:becc3c504ceea499f4167a260040ccf4d9f2ef9499ad5683c179a697146ce50e
 COMPONENT_PROJECT_URL=	http://rsync.samba.org/
 COMPONENT_ARCHIVE_URL=	http://rsync.samba.org/ftp/rsync/src/$(COMPONENT_ARCHIVE)

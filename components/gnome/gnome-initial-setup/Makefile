@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. 
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=	gnome/session
 COMPONENT_ANITYA_ID=	13132
 
-TPNO=			59856
+COMPONENT_BAID=		81321
 BUILD_STYLE=		meson
 
 TEST_TARGET= $(NO_TESTS)

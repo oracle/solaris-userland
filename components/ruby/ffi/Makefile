@@ -39,7 +39,7 @@ COMPONENT_PROJECT_URL=  https://github.com/ffi/ffi/tree/1.13.1
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	4292
 
-TPNO=                   63041
+COMPONENT_BAID=                   88655
 
 GEM_INSTALL_ENV += PATH=$(GNUBIN):$(PATH)
 GEM_INSTALL_ENV += PKG_CONFIG_PATH=$(PKG_CONFIG_PATH.64)

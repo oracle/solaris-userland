@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64_and_32
@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=	library/libpsl
 COMPONENT_ANITYA_ID=	7305
 
-TPNO=			63453
+COMPONENT_BAID=		89514
 BUILD_STYLE=		meson
 
 # default libidn2 would need additional dependency 'libunistring'

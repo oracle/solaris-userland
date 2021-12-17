@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_URL=	ftp://sources.redhat.com/pub/$(COMPONENT_NAME)/$(COMPONEN
 COMPONENT_BUGDB=	library/libffi
 COMPONENT_ANITYA_ID=	1611
 
-TPNO=		21649
+COMPONENT_BAID=	22315
 
 include $(WS_MAKE_RULES)/common.mk
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	5277
 
-TPNO=			33885
+COMPONENT_BAID=		38203
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_32_and_64)
 include $(WS_MAKE_RULES)/common.mk

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_URL=	http://archive.apache.org/dist/httpd/mod_fcgid/$(COMPONEN
 COMPONENT_BUGDB=	utility/apache
 COMPONENT_ANITYA_ID=	13295
 
-TPNO=			8878
+COMPONENT_BAID=		7834
 
 BUILD_STYLE= justmake
 include ../modules.mk

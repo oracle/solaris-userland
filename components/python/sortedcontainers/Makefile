@@ -38,7 +38,7 @@ GIT_REPO=	https://github.com/grantjenks/python-sortedcontainers/
 GIT_COMMIT_ID=	v$(COMPONENT_VERSION)
 GIT_HASH=	sha256:7dc9da0af7229be0b6b4b7b7ef3d666de7aa3b46510b7125e7ce6993db5eed98
 
-TPNO=			70616
+COMPONENT_BAID=		101017
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

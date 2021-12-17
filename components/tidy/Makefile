@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_URL=	https://github.com/htacg/tidy-html5/archive/$(COMPONENT_V
 COMPONENT_BUGDB=	library/tidy
 COMPONENT_ANITYA_ID=	13267
 
-TPNO=			34235
+COMPONENT_BAID=		38574
 
 BUILD_STYLE= cmake
 

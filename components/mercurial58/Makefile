@@ -38,7 +38,7 @@ COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	utility/hg
 COMPONENT_ANITYA_ID=	1969
 
-TPNO=			72253
+COMPONENT_BAID=		103771
 
 # Newer Mercurial versions only support python 3+.
 # We intentionally use *only* python 3.9 (not older)

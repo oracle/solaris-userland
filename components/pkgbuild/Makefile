@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_URL=	http://prdownloads.sourceforge.net/pkgbuild/$(COMPONENT_A
 COMPONENT_PROJECT_URL=	http://pkgbuild.sourceforge.net/
 COMPONENT_ANITYA_ID=	13232
 
-TPNO=			13159
+COMPONENT_BAID=		12654
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk

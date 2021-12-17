@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 
 # Component uses ABI3 naming.
@@ -40,7 +40,7 @@ COMPONENT_PROJECT_URL=	https://github.com/xattr/xattr
 COMPONENT_BUGDB=	python-mod/xattr
 COMPONENT_ANITYA_ID=	21273
 
-TPNO=			56314
+COMPONENT_BAID=		73200
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

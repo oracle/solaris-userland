@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -37,7 +37,7 @@ COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/exempi
 COMPONENT_ANITYA_ID=	767
 
-TPNO=			56560
+COMPONENT_BAID=		73742
 
 # disable for now since it requires boost C++ libraries
 TEST_TARGET= $(SKIP_TEST)

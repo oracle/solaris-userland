@@ -32,7 +32,7 @@ COMPONENT_VERSION=	1.0
 COMPONENT_PROJECT_URL=	http://www.oasis-open.org/docbook/
 COMPONENT_BUGDB=	utility/docbook
 
-TPNO=			9654
+COMPONENT_BAID=		8611
 
 # see below for actual sources
 COMPONENT_ARCHIVE_SRC=	none

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates. 
+# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -36,7 +36,7 @@ COMPONENT_ARCHIVE_HASH= \
 	sha256:b9e22ba707d0e723e9665c67a2b2974a86f4c4c27e3009dde24a988d1aadf643
 COMPONENT_BUGDB=        x11/libraries
 COMPONENT_ANITYA_ID=	6090
-TPNO=			69914
+COMPONENT_BAID=		100128
 
 BUILD_STYLE=		meson
 

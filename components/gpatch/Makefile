@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER=gcc
@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=	utility/gpatch
 COMPONENT_ANITYA_ID=	2597
 
-TPNO=			42799
+COMPONENT_BAID=		48739
 
 # The .1 refers to version 2.7.6-1 to distinguish between community version
 # binutils and this package, which contains all known fixes.  A similar approach

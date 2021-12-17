@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=        gnome/dev-tools
 COMPONENT_ANITYA_ID=	5065
 
-TPNO=			64175
+COMPONENT_BAID=		91020
 
 # 23285126 - vala integrated tests should be hooked up
 TEST_TARGET= $(SKIP_TEST)

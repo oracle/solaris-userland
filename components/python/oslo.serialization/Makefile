@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/oslo.serialization/
 COMPONENT_BUGDB=	python-mod/oslo.serial
 COMPONENT_ANITYA_ID=	13181
 
-TPNO=			74361
+COMPONENT_BAID=		108281
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 

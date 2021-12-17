@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_URL= https://github.com/sass/libsass/archive/$(COMPONENT_ARCHI
 COMPONENT_BUGDB=	library/libsass
 COMPONENT_ANITYA_ID=	11766
 
-TPNO=			55137
+COMPONENT_BAID=		71031
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 

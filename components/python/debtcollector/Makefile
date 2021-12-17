@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/debtcollector/
 COMPONENT_BUGDB=	python-mod/debtcollector
 COMPONENT_ANITYA_ID=	6107
 
-TPNO=			74351
+COMPONENT_BAID=		108263
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 

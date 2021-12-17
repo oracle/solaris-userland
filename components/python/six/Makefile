@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://github.com/benjaminp/six
 COMPONENT_BUGDB=	python-mod/six
 COMPONENT_ANITYA_ID=	4027
 
-TPNO=			71336
+COMPONENT_BAID=		107593
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

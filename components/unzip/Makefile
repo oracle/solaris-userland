@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -28,7 +28,7 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		unzip
 COMPONENT_VERSION=	610c23
-TPNO=			41429
+COMPONENT_BAID=		46943
 IPS_COMPONENT_VERSION=	6.0.3.23
 COMPONENT_SRC=		$(COMPONENT_NAME)$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip

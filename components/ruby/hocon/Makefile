@@ -39,7 +39,7 @@ COMPONENT_PROJECT_URL=  https://github.com/puppetlabs/ruby-hocon
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	8369
 
-TPNO=                   62964
+COMPONENT_BAID=                   88491
 
 # Create gemspec.
 COMPONENT_POST_UNPACK_ACTION= \

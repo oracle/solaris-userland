@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64_and_32
@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH= \
 	sha256:6113262f6e92c5bd474f2875fa1b01054c4ad5040f6b0da7c03c98821d9ae303
 COMPONENT_ARCHIVE_URL=	http://fftw.org/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libfftw
-TPNO=			44280
+COMPONENT_BAID=		50762
 COMPONENT_ANITYA_ID=	803
 
 # Need to build regular, float, and long-double variants

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates. 
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 
 # gobject-introspection must be built with gcc as gobject-introspection does
@@ -38,7 +38,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	1223
 
-TPNO=			64098
+COMPONENT_BAID=		90880
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk

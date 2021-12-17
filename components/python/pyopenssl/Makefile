@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=  https://pyopenssl.org/
 COMPONENT_BUGDB=	python-mod/pyopenssl
 COMPONENT_ANITYA_ID=	5535
 
-TPNO=			49036
+COMPONENT_BAID=		61821
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

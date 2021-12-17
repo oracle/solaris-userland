@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB= 	gnome/accessibility
 COMPONENT_ANITYA_ID=	13116
 
-TPNO=			25184
+COMPONENT_BAID=		26967
 
 # The unit tests failed to start.
 $(SKIP_TEST_AT_TOP_LEVEL)

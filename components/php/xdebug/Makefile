@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	http://xdebug.org/
 COMPONENT_BUGDB=	utility/php
 COMPONENT_ANITYA_ID=	13302
 
-TPNO=			63720
+COMPONENT_BAID=		90057
 
 TEST_TARGET= $(NO_TESTS)
 include $(PHP_TOP_DIR)/phpize.mk

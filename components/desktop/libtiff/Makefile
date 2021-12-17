@@ -34,7 +34,7 @@ COMPONENT_ARCHIVE_URL=	http://download.osgeo.org/libtiff/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libtiff
 COMPONENT_ANITYA_ID=	1738
 
-TPNO=			67174
+COMPONENT_BAID=		96579
 
 # Added to find the *.3tiff that go into /usr/share/man/man3tiff
 PKG_PROTO_DIRS += $(COMPONENT_SRC)/man

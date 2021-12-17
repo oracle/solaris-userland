@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://github.com/pexpect/ptyprocess
 COMPONENT_BUGDB=	python-mod/ptyprocess
 COMPONENT_ANITYA_ID=	6446
 
-TPNO=			70849
+COMPONENT_BAID=		101439
 
 # Not necessary to build this for older Python versions
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)

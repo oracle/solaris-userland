@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -35,7 +35,7 @@ COMPONENT_PROJECT_URL=	https://pypi.org/project/iso8601/
 COMPONENT_BUGDB=	python-mod/iso8601
 COMPONENT_ANITYA_ID=	17228
 
-TPNO=			62336
+COMPONENT_BAID=		86984
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

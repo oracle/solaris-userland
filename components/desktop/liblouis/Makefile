@@ -39,7 +39,7 @@ COMPONENT_ARCHIVE_URL=	https://github.com/liblouis/liblouis/releases/download/v$
 COMPONENT_BUGDB=	gnome/accessibility
 COMPONENT_ANITYA_ID=	13112
 
-TPNO=			57203
+COMPONENT_BAID=		75527
 
 # Orca uses python 3.7, so we need to match
 PYTHON_VERSION=		3.7

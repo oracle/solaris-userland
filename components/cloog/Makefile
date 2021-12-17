@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_URL=	http://www.bastoul.net/cloog/pages/download/$(COMPONENT_A
 COMPONENT_BUGDB=	utility/gnu-compiler
 COMPONENT_ANITYA_ID=	13279
 
-TPNO=			33342
+COMPONENT_BAID=		37491
 
 include $(WS_MAKE_RULES)/common.mk
 

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:1c265a52703d8bb4dec3e146d98f1961ac477f7b926980a9330b07a5fbf90f99
 COMPONENT_ANITYA_ID=	5448
 
-TPNO=			58539
+COMPONENT_BAID=		78205
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/gnu-component.mk

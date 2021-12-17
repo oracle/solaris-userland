@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://github.com/testing-cabal/fixtures
 COMPONENT_BUGDB=	python-mod/fixtures
 COMPONENT_ANITYA_ID=	8047
 
-TPNO=			28000
+COMPONENT_BAID=		30719
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

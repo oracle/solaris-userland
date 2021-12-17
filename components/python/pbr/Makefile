@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/pbr/
 COMPONENT_BUGDB=	python-mod/pbr
 COMPONENT_ANITYA_ID=	3960
 
-TPNO=			74392
+COMPONENT_BAID=		108340
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

@@ -36,7 +36,7 @@ COMPONENT_PROJECT_URL=	https://github.com/paramiko/paramiko/
 COMPONENT_BUGDB=	python-mod/paramiko
 COMPONENT_ANITYA_ID=	3954
 
-TPNO=			62562
+COMPONENT_BAID=		91152
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

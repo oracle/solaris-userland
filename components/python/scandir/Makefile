@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
 #
 
 BUILD_BITS = 64
@@ -39,7 +39,7 @@ COMPONENT_PROJECT_URL=	https://pypi.org/project/scandir/
 COMPONENT_BUGDB=	python-mod/scandir
 COMPONENT_ANITYA_ID=	7185
 
-TPNO=			57867
+COMPONENT_BAID=		76750
 
 # Scandir has been included in the Python 3.5 standard library
 PYTHON_VERSIONS = $(PYTHON2_VERSIONS)

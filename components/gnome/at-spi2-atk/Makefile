@@ -35,7 +35,7 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_BUGDB=        gnome/a11y-libs-core
 COMPONENT_ANITYA_ID=	7840
 
-TPNO=			61951
+COMPONENT_BAID=		86207
 BUILD_STYLE=		meson
 
 # Tests do not work on Solaris yet

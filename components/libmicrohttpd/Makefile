@@ -32,7 +32,7 @@ COMPONENT_ARCHIVE_HASH = \
 COMPONENT_BUGDB=	library/libmicrohttpd
 COMPONENT_ANITYA_ID=	1658
 
-TPNO = 32330
+COMPONENT_BAID = 36142
 
 # Use the compiler default 'xc99=all,no_lib' (specifically we want to prevent
 # autoconf from finding and using C11 Annex K bounds checking interfaces because
