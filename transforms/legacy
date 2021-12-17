@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 
 #
@@ -68,120 +68,17 @@
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 #
-# If the package is marked by both old and new legacy flag (which we should
-# avoid but can happen), make sure only one of them is being used.
-#
-<transform set name=pkg.fmri mark_legacy=.* legacy_fmri=.* -> delete mark_legacy .*>
-
-#
 # Make sure that we don't modify packages created from the history files
 # (tools/generate-history adds do_not_move_to_legacy=true)
 #
-# First we remove (unmark) the package by removing legacy_fmri attribute
-<transform set name=pkg.fmri do_not_move_to_legacy=true legacy_fmri=.* -> delete legacy_fmri .*>
+# First we remove (unmark) the package by removing the mark_legacy attribute
 <transform set name=pkg.fmri do_not_move_to_legacy=true mark_legacy=.* -> delete mark_legacy .*>
 # Now we can get rid of do_not_move_to_legacy attribute as we don't need it anymore
 <transform set name=pkg.fmri do_not_move_to_legacy=.* -> delete do_not_move_to_legacy .*>
 
-
-# Provide some support for the packages manually set in the legacy namespace
-<transform set name=pkg.fmri value=^(pkg://[^/]+/|pkg:/|)legacy/(.*) -> \
-    emit set name=pkg.legacy value=true>
-# But do not apply any other automation
-<transform set name=pkg.fmri value=^(pkg://[^/]+/|pkg:/|)legacy/(.*) -> \
-    delete legacy_fmri .*>
-
-
-#
-# Force the rename with a dependency on the old name
-# Ex:
-#   set name=pkg.fmri value=pkg:/library/perl-5/CGI-522@4.37,5.11-11.4.21.0.0.61.0
-#   (the 'value' will be later changed to pkg:/legacy/library/...)
-#   Produces
-#   depend fmri=library/perl-5/CGI-522@4.37,11.4.21.0.0.61.0 type=optional
-#
-# This is like saying "if you are going to install this legacy package, make
-# sure that you also install the original package with at least the FMRI where
-# it was renamed.". This makes sure that you can't install the original package
-# in a version where it delivers some files. We also must protect the depend
-# action form further processing by setting do_not_remove_version.
-#
-<transform set name=pkg.fmri legacy_fmri=.* value=([^@]+[^,]+,) -> \
-    emit depend do_not_remove_version=yes type=optional fmri=%<1>%(legacy_fmri) >
-
-
-#
-# Add legacy metadata to a package being renamed to legacy
-#
-<transform set name=pkg.fmri legacy_fmri=.* -> \
-    emit set name=pkg.legacy value=true>
-
-
-#
-# Move the package into 'legacy' namespace
-#
-# value=a/b/c -> value=legacy/a/b/c
-# value=pkg:/a/b/c -> value=pkg:/legacy/a/b/c
-# value=pkg://publisher/a/b/c -> value=pkg://publisher/legacy/a/b/c
-#
-<transform set name=pkg.fmri legacy_fmri=.* value=^(pkg://[^/]+/|pkg:/|)(.*) -> set value %<1>legacy/%<2>>
-
-
-#
-# The legacy package content will clash with the regular package. We need to
-# add pkglint exceptions so that it can be published.
-#
-<transform set name=pkg.fmri legacy_fmri=.* -> \
-    emit set name=pkg.linted.pkglint.dupaction001.1 value=true>
-<transform set name=pkg.fmri legacy_fmri=.* -> \
-    emit set name=pkg.linted.pkglint.dupaction010.2 value=true>
-
-#
-# Remove our legacy_fmri help attribute
-#
-<transform set name=pkg.fmri legacy_fmri=.* -> delete legacy_fmri .*>
-
-
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# depend processing
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-#
-# If the dependency is already in legacy package then cancel any automation
-#
-<transform depend legacy_fmri=.* fmri=^(pkg://[^/]+/|pkg:/|)legacy/(.*) -> delete legacy_fmri .*>
-
-#
-# If the dependency is of type=incorporate, cancel any automation too. This
-# makes sure that userland-incorporation (and other incorporations) still lock
-# all the packages in correct FMRI version
-#
-<transform depend type=incorporate legacy_fmri=.* -> delete legacy_fmri .*>
-
-#
-# Also abandon any modification in actions which are marked by
-# do_not_remove_version keyword
-#
-<transform depend legacy_fmri=.* do_not_remove_version=.* -> delete legacy_fmri .*>
-<transform depend do_not_remove_version=.* -> delete do_not_remove_version .*>
-
-#
-# Add legacy metadata to packages handled by the newer legacy process
-#
+# Add legacy metadata
 <transform set name=pkg.fmri mark_legacy=true -> \
     emit set name=pkg.legacy value=true>
+
 # remove mark_legacy attribute as we don't need it anymore
 <transform set name=pkg.fmri mark_legacy=.* -> delete mark_legacy .*>
-
-#
-# Anything left is a depend action pointing to a package which was moved to
-# legacy. In other words pointing to the rename package. That rename package
-# FMRI version was set to the build in which we moved the package to legacy via
-# the AUTO_FMRI automation. That means that we should freeze all the depend
-# action targets to that specific FMRI too. That is not easy as the depend
-# actions are often created by some other automation. So instead we
-# remove the FMRI version at all and depend on userland-incorporation to hold
-# the correct package versions for given build.
-#
-<transform depend legacy_fmri=.* -> edit fmri @.* "">
-<transform depend legacy_fmri=.* -> delete legacy_fmri .*>
