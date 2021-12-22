@@ -7,11 +7,10 @@ penalty at startup.  Need to file upstream bug for that.
 
 --- a/gmodule/gmodule-dl.c	2019-09-25 15:16:54.477612239 -0700
 +++ b/gmodule/gmodule-dl.c	2019-09-25 15:18:01.146526372 -0700
-@@ -94,9 +94,17 @@
- 		gboolean     bind_local)
- {
+@@ -133,8 +133,17 @@
    gpointer handle;
--  
+   
+   lock_dlerror ();
 +
 +#if defined(sun) && defined(__SVR4)
 +  /*
@@ -25,5 +24,5 @@ penalty at startup.  Need to file upstream bug for that.
 -		   (bind_local ? 0 : RTLD_GLOBAL) | (bind_lazy ? RTLD_LAZY : RTLD_NOW));
 +		   (bind_local ? 0 : RTLD_GLOBAL) | (bind_lazy ? RTLD_LAZY | RTLD_FIRST : RTLD_NOW));
    if (!handle)
-     g_module_set_error (fetch_dlerror (TRUE));
-   
+     {
+       const gchar *message = fetch_dlerror (TRUE);

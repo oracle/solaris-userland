@@ -1,21 +1,24 @@
-Reverting https://gitlab.gnome.org/GNOME/glib/-/commit/5f38ae5f
-since it results in full UL build failures in several components
-that use studio to build.
+For components getting compiled with Studio, we get this error:
 
-"/usr/include/glib-2.0/glib/gmacros.h", line 562: unexpected "("
+"/usr/include/glib-2.0/glib/gmacros.h", line 243: unexpected "("
 
-Reverting to what we have with the existing version of glib
-
-Not suitable for upstream
-
---- a/glib/gmacros.h	2020-09-26 06:30:09.767195634 -0700
-+++ b/glib/gmacros.h	2020-09-26 06:31:03.323332828 -0700
-@@ -559,8 +559,6 @@
+--- a/glib/gmacros.h	2021-09-24 16:57:18.225175209 -0700
++++ b/glib/gmacros.h	2021-09-24 16:58:48.163283926 -0700
+@@ -118,6 +118,7 @@
+  * https://gcc.gnu.org/onlinedocs/cpp/_005f_005fhas_005fattribute.html
   */
- #if    __GNUC__ > 6
- #define G_GNUC_FALLTHROUGH __attribute__((fallthrough))
--#elif g_macro__has_attribute (fallthrough)
--#define G_GNUC_FALLTHROUGH __attribute__((fallthrough))
+ 
++#ifndef __SUNPRO_C
+ #ifdef __has_attribute
+ #define g_macro__has_attribute __has_attribute
  #else
- #define G_GNUC_FALLTHROUGH
- #endif /* __GNUC__ */
+@@ -144,6 +145,9 @@
+ #define g_macro__has_attribute_warn_unused_result G_GNUC_CHECK_VERSION (3, 4)
+ 
+ #endif
++#else
++#define g_macro__has_attribute(x) 0
++#endif
+ 
+ /* Provide macros to feature the GCC function attribute.
+  */

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 COMPILER =      	gcc
@@ -28,14 +28,14 @@ BUILD_BITS =            32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		glib
-COMPONENT_VERSION=	2.66.8
+COMPONENT_VERSION=	2.70.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GLib/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:97bc87dd91365589af5cbbfea2574833aea7a1b71840fd365ecd2852c76b9c8b
+    sha256:200d7df811c5ba634afbf109f14bb40ba7fde670e89389885da14e27c0840742
 COMPONENT_BUGDB=	gnome/glib
 COMPONENT_ANITYA_ID=	10024
 
-COMPONENT_BAID=		96862
+COMPONENT_BAID=		109046
 BUILD_STYLE=		meson
 
 # No need to build for older versions.
@@ -114,9 +114,10 @@ COMPONENT_TEST_TRANSFORMS += '-e "s/[0-9]*[0-9].[0-9][0-9]s//" '
 COMPONENT_TEST_TRANSFORMS += '-e "s/OK      [0-9]//" '
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
-	'-e "/DEBUG/d" ' \
-        '-e "/OK/p" ' \
-        '-e "/ok/p" '
+        '-e "/Ok:/p" ' \
+        '-e "/Skipped:/p" ' \
+        '-e "/Fail:/p" ' \
+        '-e "/Pass:/p" '
 
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += data/docbook/docbook-dtds
