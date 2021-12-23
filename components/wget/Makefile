@@ -27,7 +27,6 @@ COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		wget
-<<<<<<< dest
 COMPONENT_VERSION=	1.21.2
 COMPONENT_BAID=		113398
 COMPONENT_ARCHIVE_HASH= sha256:e6d4c76be82c676dd7e8c61a29b2ac8510ae108a810b5d1d18fc9a1d2c9a2497
