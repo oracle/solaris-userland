@@ -22,7 +22,7 @@
 #
 # Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
-BILD_BITS= 64_and_32
+BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		jansson
