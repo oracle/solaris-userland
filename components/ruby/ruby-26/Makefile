@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS = 64
 COMPILER = gcc
@@ -33,14 +33,13 @@ gcc_FIX_PATH=
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME         = ruby
-COMPONENT_VERSION      = 2.6.8
+COMPONENT_VERSION      = 2.6.9
 COMPONENT_PROJECT_URL  = http://www.ruby-lang.org/
 COMPONENT_ARCHIVE_HASH = \
-    sha256:18337d1527d1d9c46e990c4c8d6914dc7ceabf500c7802ff715d9f66aa9c9aae
+    sha256:a2bb1ca9f5c8d73ff295e63d730d471202be081f102da55824bfd8455596dfd4
 COMPONENT_ARCHIVE_URL  = http://cache.ruby-lang.org/pub/ruby/2.6/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID    = 21281
-
-COMPONENT_BAID = 104843
+COMPONENT_BAID         = 114560
 
 CFLAGS += "-std=gnu99"
 
