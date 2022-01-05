@@ -18,41 +18,45 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_VERSION=	3.0.0
+COMPONENT_VERSION=	3.0.1
 IPS_COMPONENT_VERSION=	3
 COMPONENT_NAME=		openssl-$(IPS_COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	https://www.openssl.org/
 COMPONENT_SRC=		openssl-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:59eedfcb46c25214c9bd37ed6078297b4df01d012267fe9e9eee31f61bc70536
+    sha256:c311ad853353bce796edad01a862c50a8a587f62e7e2100ef465ab53ec9b06d1
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)source/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/openssl
 COMPONENT_ANITYA_ID=	2566
-COMPONENT_BAID=		107792
+COMPONENT_BAID=		114107
 
-include $(WS_MAKE_RULES)/common.mk
 
-# OpenSSL does not use autoconf but its own configure system.
-CONFIGURE_SCRIPT= $(SOURCE_DIR)/config
-
+CONFIGURE_PREFIX = /usr/openssl/3
 CONFIGURE_OPTIONS = --openssldir=/etc/openssl/3
-CONFIGURE_OPTIONS += --prefix=/usr/openssl/3
-CONFIGURE_OPTIONS += -Wl,-rpath=/usr/openssl/3/lib/64
+
 # build FIPS capable library
 CONFIGURE_OPTIONS += enable-fips
 # disabled engines
 CONFIGURE_OPTIONS += no-afalgeng
 CONFIGURE_OPTIONS += no-capieng
 
-CONFIGURE_OPTIONS.64.i386  =	solaris64-x86_64-cc
-CONFIGURE_OPTIONS.64.sparc =	solaris64-sparcv9-cc
+CONFIGURE_OPTIONS.64 += --libdir=$(CONFIGURE_PREFIX)/lib/$(MACH64) -Wl,-rpath=$(CONFIGURE_PREFIX)/lib/$(MACH64)
+CONFIGURE_OPTIONS.i386.64  +=	solaris64-x86_64-cc
+CONFIGURE_OPTIONS.sparc.64 +=	solaris64-sparcv9-cc
+
+CONFIGURE_DEFAULT_DIRS = no
+
+include $(WS_MAKE_RULES)/common.mk
+
+# OpenSSL does not use autoconf but its own configure system.
+CONFIGURE_SCRIPT= $(SOURCE_DIR)/config
 
 # Alsways be super careful when appending to POST/PRE actions.
 # We need to make sure that if any sub-action fails, the whole recipe fails,

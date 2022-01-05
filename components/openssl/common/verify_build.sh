@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 function fail()
@@ -148,7 +148,7 @@ function pkgconfig_64bit_check()
 
 	for name in openssl.pc libssl.pc libcrypto.pc; do
 		file="$BUILD_DIR/$name"
-		if ! grep '^libdir=.*\/64' "$file" >/dev/null; then
+		if ! ggrep '^libdir=.*\/\(64\|amd64\|sparcv9\)' "$file" >/dev/null; then
 			fail "Missing 64-bit path component in $file"
 		fi
 	done

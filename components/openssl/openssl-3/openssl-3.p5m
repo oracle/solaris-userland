@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability "pass-through uncommitted">
@@ -48,9 +48,9 @@ file files/audit_tags \
 file files/exec_attr path=etc/security/exec_attr.d/library:security:openssl-3 \
     group=sys
 link path=lib/$(MACH64)/libcrypto.so.3 \
-    target=../../usr/openssl/3/lib/64/libcrypto.so.3
+    target=../../usr/openssl/3/lib/$(MACH64)/libcrypto.so.3
 link path=lib/$(MACH64)/libssl.so.3 \
-    target=../../usr/openssl/3/lib/64/libssl.so.3
+    target=../../usr/openssl/3/lib/$(MACH64)/libssl.so.3
 file path=usr/lib/$(MACH64)/llib-lcrypto.ln
 file path=usr/lib/$(MACH64)/llib-lssl.ln
 file path=usr/openssl/3/bin/c_rehash
@@ -181,15 +181,16 @@ file path=usr/openssl/3/include/openssl/x509_vfy.h
 file path=usr/openssl/3/include/openssl/x509err.h
 file path=usr/openssl/3/include/openssl/x509v3.h
 file path=usr/openssl/3/include/openssl/x509v3err.h
-file path=usr/openssl/3/lib/64/engines-3/loader_attic.so
-file path=usr/openssl/3/lib/64/engines-3/padlock.so
-link path=usr/openssl/3/lib/64/libcrypto.so target=libcrypto.so.3
-file path=usr/openssl/3/lib/64/libcrypto.so.3
-link path=usr/openssl/3/lib/64/libssl.so target=libssl.so.3
-file path=usr/openssl/3/lib/64/libssl.so.3
-file path=usr/openssl/3/lib/64/pkgconfig/libcrypto.pc
-file path=usr/openssl/3/lib/64/pkgconfig/libssl.pc
-file path=usr/openssl/3/lib/64/pkgconfig/openssl.pc
+file path=usr/openssl/3/lib/$(MACH64)/engines-3/loader_attic.so
+file path=usr/openssl/3/lib/$(MACH64)/engines-3/padlock.so
+link path=usr/openssl/3/lib/$(MACH64)/libcrypto.so target=libcrypto.so.3
+file path=usr/openssl/3/lib/$(MACH64)/libcrypto.so.3
+link path=usr/openssl/3/lib/$(MACH64)/libssl.so target=libssl.so.3
+file path=usr/openssl/3/lib/$(MACH64)/libssl.so.3
+file path=usr/openssl/3/lib/$(MACH64)/pkgconfig/libcrypto.pc
+file path=usr/openssl/3/lib/$(MACH64)/pkgconfig/libssl.pc
+file path=usr/openssl/3/lib/$(MACH64)/pkgconfig/openssl.pc
+link path=usr/openssl/3/lib/64 target=$(MACH64)
 file etc/openssl/3/misc/CA.pl path=usr/openssl/3/misc/CA.pl
 link path=usr/openssl/3/misc/tsget target=tsget.pl
 file etc/openssl/3/misc/tsget.pl path=usr/openssl/3/misc/tsget.pl
@@ -4017,29 +4018,31 @@ link path=usr/openssl/3/share/man/man3/EVP_RAND_verify_zeroization.3openssl \
     target=EVP_RAND.3openssl
 link path=usr/openssl/3/share/man/man3/EVP_RSA_gen.3openssl \
     target=RSA_generate_key.3openssl
+file path=usr/openssl/3/share/man/man3/EVP_SIGNATURE.3openssl
 link path=usr/openssl/3/share/man/man3/EVP_SIGNATURE_do_all_provided.3openssl \
-    target=EVP_SIGNATURE_free.3openssl
+    target=EVP_SIGNATURE.3openssl
 link path=usr/openssl/3/share/man/man3/EVP_SIGNATURE_fetch.3openssl \
-    target=EVP_SIGNATURE_free.3openssl
-file path=usr/openssl/3/share/man/man3/EVP_SIGNATURE_free.3openssl
+    target=EVP_SIGNATURE.3openssl
+link path=usr/openssl/3/share/man/man3/EVP_SIGNATURE_free.3openssl \
+    target=EVP_SIGNATURE.3openssl
 link path=usr/openssl/3/share/man/man3/EVP_SIGNATURE_get0_description.3openssl \
-    target=EVP_SIGNATURE_free.3openssl
+    target=EVP_SIGNATURE.3openssl
 link path=usr/openssl/3/share/man/man3/EVP_SIGNATURE_get0_name.3openssl \
-    target=EVP_SIGNATURE_free.3openssl
+    target=EVP_SIGNATURE.3openssl
 link path=usr/openssl/3/share/man/man3/EVP_SIGNATURE_get0_provider.3openssl \
-    target=EVP_SIGNATURE_free.3openssl
+    target=EVP_SIGNATURE.3openssl
 link \
     path=usr/openssl/3/share/man/man3/EVP_SIGNATURE_gettable_ctx_params.3openssl \
-    target=EVP_SIGNATURE_free.3openssl
+    target=EVP_SIGNATURE.3openssl
 link path=usr/openssl/3/share/man/man3/EVP_SIGNATURE_is_a.3openssl \
-    target=EVP_SIGNATURE_free.3openssl
+    target=EVP_SIGNATURE.3openssl
 link path=usr/openssl/3/share/man/man3/EVP_SIGNATURE_names_do_all.3openssl \
-    target=EVP_SIGNATURE_free.3openssl
+    target=EVP_SIGNATURE.3openssl
 link \
     path=usr/openssl/3/share/man/man3/EVP_SIGNATURE_settable_ctx_params.3openssl \
-    target=EVP_SIGNATURE_free.3openssl
+    target=EVP_SIGNATURE.3openssl
 link path=usr/openssl/3/share/man/man3/EVP_SIGNATURE_up_ref.3openssl \
-    target=EVP_SIGNATURE_free.3openssl
+    target=EVP_SIGNATURE.3openssl
 link path=usr/openssl/3/share/man/man3/EVP_SealFinal.3openssl \
     target=EVP_SealInit.3openssl
 file path=usr/openssl/3/share/man/man3/EVP_SealInit.3openssl
@@ -9906,6 +9909,10 @@ link path=usr/openssl/3/share/man/man3/d2i_X509_SIG.3openssl \
     target=d2i_X509.3openssl
 link path=usr/openssl/3/share/man/man3/d2i_X509_VAL.3openssl \
     target=d2i_X509.3openssl
+link path=usr/openssl/3/share/man/man3/d2i_X509_bio.3openssl \
+    target=d2i_X509.3openssl
+link path=usr/openssl/3/share/man/man3/d2i_X509_fp.3openssl \
+    target=d2i_X509.3openssl
 link path=usr/openssl/3/share/man/man3/i2b_PVK_bio.3openssl \
     target=b2i_PVK_bio_ex.3openssl
 link path=usr/openssl/3/share/man/man3/i2b_PVK_bio_ex.3openssl \
@@ -10342,6 +10349,10 @@ link path=usr/openssl/3/share/man/man3/i2d_X509_REVOKED.3openssl \
 link path=usr/openssl/3/share/man/man3/i2d_X509_SIG.3openssl \
     target=d2i_X509.3openssl
 link path=usr/openssl/3/share/man/man3/i2d_X509_VAL.3openssl \
+    target=d2i_X509.3openssl
+link path=usr/openssl/3/share/man/man3/i2d_X509_bio.3openssl \
+    target=d2i_X509.3openssl
+link path=usr/openssl/3/share/man/man3/i2d_X509_fp.3openssl \
     target=d2i_X509.3openssl
 link path=usr/openssl/3/share/man/man3/i2d_re_X509_CRL_tbs.3openssl \
     target=i2d_re_X509_tbs.3openssl
