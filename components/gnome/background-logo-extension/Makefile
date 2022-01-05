@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -40,12 +40,6 @@ BUILD_STYLE=		meson
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
-
-# With changes in gnome-shell, the Oracle logo size appears too large 
-# in the gdm login screen - resized the image to fit properly
-COMPONENT_POST_INSTALL_ACTION += \
-        $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/solaris/Oracle_Solaris_Logo.png \
-                $(PROTO_DIR)/usr/share/pixmaps/Oracle_Solaris_Logo.png;
 
 REQUIRED_PACKAGES += gnome/gnome-shell
 REQUIRED_PACKAGES += library/desktop/clutter

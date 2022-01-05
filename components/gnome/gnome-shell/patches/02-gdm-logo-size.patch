@@ -1,0 +1,25 @@
+Revert changes made with:
+https://gitlab.gnome.org/GNOME/gnome-shell/-/merge_requests/1101
+and force a fixed size for the login screen Solaris logo.
+
+Not for upstream.
+
+--- gnome-shell-3.38.6/js/gdm/loginDialog.js
++++ gnome-shell-3.38.6/js/gdm/loginDialog.js
+@@ -35,6 +35,7 @@ const UserWidget = imports.ui.userWidget
+ const _FADE_ANIMATION_TIME = 250;
+ const _SCROLL_ANIMATION_TIME = 500;
+ const _TIMED_LOGIN_IDLE_THRESHOLD = 5.0;
++const _LOGO_ICON_HEIGHT = 72;
+ 
+ var UserListItem = GObject.registerClass({
+     Signals: { 'activate': {} },
+@@ -814,7 +815,7 @@ var LoginDialog = GObject.registerClass(
+         if (this._logoFile) {
+             let scaleFactor = St.ThemeContext.get_for_stage(global.stage).scale_factor;
+             this._logoBin.add_child(this._textureCache.load_file_async(this._logoFile,
+-                                                                       -1, -1,
++                                                                       -1, _LOGO_ICON_HEIGHT,
+                                                                        scaleFactor,
+                                                                        resourceScale));
+         }
