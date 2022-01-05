@@ -1,0 +1,14 @@
+# developed in house, not yet fed back to upstream.
+
+--- zip30/fileio.c.old	2022-01-05 13:58:56.447186591 -0500
++++ zip30/fileio.c	2022-01-05 13:59:39.171546625 -0500
+@@ -2121,7 +2121,8 @@
+       }
+     }
+     fflush(mesg);
+-    fgets(buf, SPLIT_MAXPATH, stdin);
++    if (fgets(buf, SPLIT_MAXPATH, stdin) == NULL)
++	    return ZE_ABORT;
+     /* remove any newline */
+     for (i = 0; buf[i]; i++) {
+       if (buf[i] == '\n') {
