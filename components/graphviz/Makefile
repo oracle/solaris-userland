@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=gcc
@@ -106,13 +106,6 @@ $(INSTALL_64): COMPONENT_INSTALL_ARGS += LUA_INSTALL_DIR=$(USRLIBDIR)/lua/5.4/64
 # Use GNU ln, which supports the -r (--relative) option.
 COMPONENT_INSTALL_ARGS += LN_S="gln -s"
 
-# build php and python modules for older versions as well
-PHP_73_CONFIG = /usr/php/7.3/bin/php-config
-PHP_73_INCLUDES := $(shell $(PHP_73_CONFIG) --includes)
-PHP_73_INSTALL_DIR := $(shell $(PHP_73_CONFIG) --extension-dir)
-PHP_73_LDFLAGS := $(shell $(PHP_73_CONFIG) --ldflags)
-PHP_73_LIBS := $(shell $(PHP_73_CONFIG) --libs)
-
 PKG_CONFIG = /usr/bin/pkg-config
 PYTHON_37_INCLUDES := $(shell $(PKG_CONFIG) --cflags python-3.7)
 PYTHON_37_LIBS = $(shell $(PKG_CONFIG) --libs python-3.7)
@@ -120,16 +113,7 @@ PYTHON_37_INSTALL_DIR := /usr/lib/python3.7/vendor-packages
 
 $(CONFIGURE_64): COMPONENT_POST_CONFIGURE_ACTION += \
     (cd $(@D) ; cp -rp tclpkg/gv tclpkg/gv-additional ; \
-    $(GSED) -i '/^SUBDIRS =/s|$$| gv-additional|' tclpkg/Makefile ; \
-    $(GSED) -i \
-     -e '/^PHP_INCLUDES =/s|=.*$$|= $(PHP_73_INCLUDES)|' \
-     -e '/^PHP_INSTALL_DIR =/s|=.*$$|= $(PHP_73_INSTALL_DIR)|' \
-     -e '/^PHP_LIBS =/s|=.*$$|= $(PHP_73_LDFLAGS) $(PHP_73_LIBS)|' \
-     -e '/^PYTHON3 =/s|=.*$$|= $(PYTHON.3.7)|' \
-     -e '/^PYTHON3_INCLUDES =/s|=.*$$|= $(PYTHON_37_INCLUDES)|' \
-     -e '/^PYTHON3_INSTALL_DIR =/s|=.*$$|= $(PYTHON_37_INSTALL_DIR)|' \
-     -e '/^PYTHON3_LIBS =/s|=.*$$|= $(PYTHON_37_LIBS)|' \
-     `find tclpkg/gv-additional -name Makefile` ) ;
+    $(GSED) -i '/^SUBDIRS =/s|$$| gv-additional|' tclpkg/Makefile ; ) ;
 
 $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
     (cd $(@D)/tclpkg/gv-additional ; gmake V=1 libgv_php.la libgv_python3.la ) ;
@@ -217,7 +201,6 @@ REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
 REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/math
-REQUIRED_PACKAGES += web/php-73
 REQUIRED_PACKAGES += web/php-74
 REQUIRED_PACKAGES += x11/library/libx11
 REQUIRED_PACKAGES += x11/library/libxmu

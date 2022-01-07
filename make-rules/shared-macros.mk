@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2022, Oracle and/or its affiliates.
 #
 
 .PHONY: void
@@ -871,9 +871,8 @@ COMPONENT_POST_INSTALL_ACTION += $(PERL_SCRIPTS_PROCESS)
 PHP_TOP_DIR = $(WS_COMPONENTS)/php
 
 # All versions of PHP for building extension packages.
-PHP_VERSIONS = 7.3 7.4 8.0
+PHP_VERSIONS = 7.4 8.0
 
-PHP.7.3 = /usr/php/7.3/bin/php
 PHP.7.4 = /usr/php/7.4/bin/php
 PHP.8.0 = /usr/php/8.0/bin/php
 
