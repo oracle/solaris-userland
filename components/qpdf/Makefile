@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=	gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		qpdf
-COMPONENT_VERSION=	10.3.2
-COMPONENT_BAID=		106988
+COMPONENT_VERSION=	10.5.0
+COMPONENT_BAID=		115399
 COMPONENT_PROJECT_URL=	http://qpdf.sourceforge.net/
 #GIT_REPO=	https://github.com/qpdf/qpdf
 # GitHub can also provide .zip files which is much faster variant
 COMPONENT_SRC=	$(COMPONENT_NAME)-release-$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	release-$(COMPONENT_NAME)-$(COMPONENT_VERSION).zip
-COMPONENT_ARCHIVE_HASH=	sha256:4280f24e0df0241be976adc30b999bc7c913794f75c6b5265836c738ca53ed0e
+COMPONENT_ARCHIVE_HASH=	sha256:8148ecbec5bdf58d11a1d032d15affec6ae260bf6aa3dcb6e2bd7146ace079df
 COMPONENT_ARCHIVE_URL=	https://github.com/qpdf/qpdf/archive/$(COMPONENT_ARCHIVE)
 
 COMPONENT_BUGDB=	utility/qpdf
