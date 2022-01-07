@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -30,15 +30,15 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		git
-COMPONENT_VERSION=	2.31.1
+COMPONENT_VERSION=	2.35.1
 COMPONENT_PROJECT_URL=	http://git-scm.com/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9f61417a44d5b954a5012b6f34e526a3336dcf5dd720e2bb7ada92ad8b3d6680
+    sha256:d768528e6443f65a203036266f1ca50f9d127ba89751e32ead37117ed9191080
 COMPONENT_ARCHIVE_URL=	https://www.kernel.org/pub/software/scm/git/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	5350
 
-COMPONENT_BAID=		101197
+COMPONENT_BAID=		116118
 
 #
 # man pages are a separate archive
@@ -46,7 +46,7 @@ COMPONENT_BAID=		101197
 COMPONENT_SRC_1 =	$(COMPONENT_NAME)-manpages-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_1 =	$(COMPONENT_SRC_1).tar.xz
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:5d0d443c57155da2f201584d4c8c5ad10a0a24ff3af3a7a77cdc8f56dddac702
+    sha256:e4e3a751f2c05959222c3ea2f0f09481700eca8f915d1398bb270eb6846c3803
 COMPONENT_ARCHIVE_URL_1 = https://www.kernel.org/pub/software/scm/git/$(COMPONENT_ARCHIVE_1)
 UNPACK_ARGS_1 =		-r $(COMPONENT_SRC_1)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_1)
