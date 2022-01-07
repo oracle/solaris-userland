@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -65,6 +65,9 @@ CONFIGURE_OPTIONS +=	--enable-pc-files
 CONFIGURE_OPTIONS +=	--with-pkg-config-libdir=$(PKG_CONFIG_DEFAULT)
 CONFIGURE_OPTIONS +=	--includedir=$(USRINCDIR)/ncurses
 CONFIGURE_OPTIONS +=	--with-default-terminfo-dir=$(GNUSHARE)/terminfo
+# With gcc 11 ncurses suddenly try to build ada bindings and fail. So we just
+# disable it.
+CONFIGURE_OPTIONS +=	--with-ada=no
 
 # We only deliver 64-bit binaries and in /usr/bin.
 COMPONENT_POST_INSTALL_ACTION.32 += \
