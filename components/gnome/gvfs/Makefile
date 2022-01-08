@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -28,14 +28,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gvfs
-COMPONENT_VERSION=	1.46.2
+COMPONENT_VERSION=	1.48.1
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/gvfs
 COMPONENT_ARCHIVE_HASH= \
-	sha256:d83fa160286670c03eb890240606d8afa7ea6a3a818e8ad17eeed8d976487bd7
+	sha256:b2ea4f271aad2711f16b43c03151e2ec5a9874ff1a21142ef6d6406486a19dc2
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	5496
 
-COMPONENT_BAID=		92392
+COMPONENT_BAID=		114066
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
