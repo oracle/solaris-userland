@@ -20,35 +20,33 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Django
-COMPONENT_VERSION=	3.2.10
+COMPONENT_VERSION=	3.2.11
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:08056ea1fcc3f23d9bae8e342795cdac9aa5d50fcad3b4b75a3893ca97000d16
+    sha256:2b3b18565ad71ab4b87b41ef1cc425b697fda17ade1b9ad4feaae2e67439af91
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.djangoproject.com/
 COMPONENT_BUGDB=	python-mod/django
 COMPONENT_ANITYA_ID=	3828
-
-COMPONENT_BAID=		113402
+COMPONENT_BAID=		115120
 
 
 COMPONENT_NAME_22=	$(COMPONENT_NAME)
-COMPONENT_VERSION_22=	2.2.25
+COMPONENT_VERSION_22=	2.2.26
 COMPONENT_SRC_22=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_22)
 COMPONENT_ARCHIVE_22=	$(COMPONENT_SRC_22).tar.gz
 COMPONENT_ARCHIVE_HASH_22= \
-    sha256:67679e8915f0e9ad9a8314a5ca670f0497ab46ab66a414abfb58dd88b52b481a
+    sha256:96276afacdb3718cfdcbb79eedcc6349ec24aa3cf29d33f1795008c626ab2b30
 COMPONENT_ARCHIVE_URL_22=	$(call pypi_url,22)
 COMPONENT_ANITYA_ID_22=	155462
-
-COMPONENT_BAID_22=	113401
+COMPONENT_BAID_22=	115118
 
 
 PYTHON_VERSIONS=	$(PYTHON3_VERSIONS)
@@ -130,17 +128,6 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
-
-# SPARC version of Django 3.2 has several tests failing, most likely because
-# parts of the test suite are not independent and affect other parts. Failures
-# happen only when the entire test suite is executed, not when the affected
-# tests are called one by one. This was reported upstream:
-# https://code.djangoproject.com/ticket/32746
-# If you are updating this package, remove the following ifeq and make sure
-# that tests pass when run individually.
-ifeq ($(MACH), sparc)
-TEST_NO_ARCH = $(BUILD_DIR)/$(MACH)-3.7/.tested-and-compared
-endif
 
 test:		$(TEST_NO_ARCH)
 
