@@ -20,14 +20,14 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		curl
-COMPONENT_VERSION=	7.79.0
-COMPONENT_BAID=		108749
+COMPONENT_VERSION=	7.81.0
+COMPONENT_BAID=		115145
 COMPONENT_PROJECT_URL=	http://curl.haxx.se/
 
 #GIT_REPO=	https://github.com/curl/curl.git
@@ -37,7 +37,7 @@ COMPONENT_PROJECT_URL=	http://curl.haxx.se/
 
 # git clone is fine but download of the archive is much faster
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
-COMPONENT_ARCHIVE_HASH=	sha256:d607a677f473f79f96c964100327125a6204a39d835dc00dab7fc0129b959f42
+COMPONENT_ARCHIVE_HASH=	sha256:1e7a38d7018ec060f1f16df839854f0889e94e122c4cfa5d3a37c2dc56f1e258
 COMPONENT_ARCHIVE_URL=	https://curl.se/download/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 
@@ -103,7 +103,7 @@ LINT_FLAGS += -I$(SOURCE_DIR)/include
 
 # Generate configuration scripts form .am-files
 # GNU Build System files have to be regenerated for automake 1.16.
-COMPONENT_PREP_ACTION = (cd $(@D) ; $(SHELL) buildconf; autoreconf; )
+COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fi ; )
 
 COMPONENT_TEST_ENV += CC="$(CC)"
 COMPONENT_TEST_ENV += PATH="$(SPRO_VROOT)/bin:$(GNUBIN):$(PATH)"
@@ -130,8 +130,6 @@ REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/libssh2
 REQUIRED_PACKAGES += library/nghttp2
 REQUIRED_PACKAGES += library/security/openssl
-REQUIRED_PACKAGES += library/security/openssl-11
-REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
