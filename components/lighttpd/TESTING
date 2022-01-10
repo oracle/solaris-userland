@@ -11,6 +11,25 @@ ssl.pemfile = "$ETCDIR/server.pem"
 EOF
 gsed -i '/server.modules = (/a\ \ "mod_openssl",' $ETCDIR/modules.conf
 
+# Configure LDAP auth
+ldap_hostname=$(svcprop -p config/server_list ldap/client | gawk '{print $1}')
+ldap_base_dn=$(svcprop -p config/search_base ldap/client)
+cat >> $ETCDIR/lighttpd.conf <<EOF
+auth.backend = "ldap" 
+auth.backend.ldap.hostname = "$ldap_hostname"
+auth.backend.ldap.base-dn  = "$ldap_base_dn"
+auth.backend.ldap.filter   = "(uid=\$)" 
+auth.require = ( "" =>
+        (
+                "method" => "basic",
+                "realm" => "ldap auth",
+                "require" => "valid-user"
+        )
+)
+EOF
+gsed -i '/server.modules = (/a\ \ "mod_authn_ldap",' $ETCDIR/modules.conf
+gsed -i '/server.modules = (/a\ \ "mod_auth",' $ETCDIR/modules.conf
+
 # Prepare SSL certificate
 HOSTNAME=$(host `/usr/sbin/ifconfig -a | awk 'BEGIN { count=0; } { if ( $1 ~ /inet/ ) { count++; if( count==2 ) { print $2; } } }'` |   cut -d ' ' -f 5 | sed 's/\.$//') \
   openssl req -new -x509 -nodes -out $ETCDIR/server.crt -keyout $ETCDIR/server.key -subj "/C=CZ/ST=Czech/L=Prague/O=MyCompany/OU=MyDepartment/CN=$HOSTNAME"
@@ -22,7 +41,7 @@ svcadm enable lighttpd14
 # Basic testing
 svcs lighttpd14
 cat /var/lighttpd/1.4/logs/error.log
-curl http://localhost
-curl --insecure https://localhost
+curl -u mrehak --basic http://localhost # replace mrehak with your uid
+curl -u mrehak --basic --insecure https://localhost # replace mrehak with your uid
 
 # End

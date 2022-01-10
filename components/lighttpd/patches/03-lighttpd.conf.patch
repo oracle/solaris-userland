@@ -8,11 +8,9 @@ behaviour as in lighttpd 1.4.45 and older.
 See the following webpage to get more information.
 https://redmine.lighttpd.net/boards/2/topics/7720
 
-diff --git a/doc/config/conf.d/fastcgi.conf b/doc/config/conf.d/fastcgi.conf
-index 0760af0..01d9ba9 100644
 --- a/doc/config/conf.d/fastcgi.conf
 +++ b/doc/config/conf.d/fastcgi.conf
-@@ -22,8 +22,8 @@ server.modules += ( "mod_fastcgi" )
+@@ -22,8 +22,8 @@ ##
  #fastcgi.server = ( ".php" =>
  #                   ( "php-local" =>
  #                     (
@@ -23,17 +21,15 @@ index 0760af0..01d9ba9 100644
  #                       "max-procs" => 1,
  #                       "broken-scriptfilename" => "enable",
  #                     ),
-diff --git a/doc/config/lighttpd.conf b/doc/config/lighttpd.conf
-index 3e687c2..e8cf43a 100644
 --- a/doc/config/lighttpd.conf
 +++ b/doc/config/lighttpd.conf
-@@ -13,11 +13,11 @@
+@@ -13,11 +13,11 @@ ##
  ## if you add a variable here. Add the corresponding variable in the
- ## chroot example aswell.
+ ## chroot example as well.
  ##
 -var.log_root    = "/var/log/lighttpd"
 -var.server_root = "/srv/www"
--var.state_dir   = "/var/run"
+-var.state_dir   = "/run"
 -var.home_dir    = "/var/lib/lighttpd"
 -var.conf_dir    = "/etc/lighttpd"
 +var.log_root    = "/var/lighttpd/1.4/logs"
@@ -44,16 +40,16 @@ index 3e687c2..e8cf43a 100644
  
  ## 
  ## run the server chrooted.
-@@ -58,7 +58,7 @@ var.vhosts_dir  = server_root + "/vhosts"
+@@ -58,7 +58,7 @@ ##
  ## used in:
- ## conf.d/compress.conf
+ ## conf.d/deflate.conf
  ##
 -var.cache_dir   = "/var/cache/lighttpd"
 +var.cache_dir   = server_root + "/cache"
  
  ##
  ## Base directory for sockets.
-@@ -92,6 +92,9 @@ server.port = 80
+@@ -92,6 +92,9 @@ ## Use IPv6?
  ##
  server.use-ipv6 = "enable"
  
@@ -63,7 +59,7 @@ index 3e687c2..e8cf43a 100644
  ##
  ## bind to a specific IP
  ##
-@@ -101,8 +104,8 @@ server.use-ipv6 = "enable"
+@@ -101,8 +104,8 @@ ##
  ## Run as a different username/groupname.
  ## This requires root permissions during startup. 
  ##
@@ -74,7 +70,7 @@ index 3e687c2..e8cf43a 100644
  
  ##
  ## Enable lighttpd to serve requests on sockets received from systemd
-@@ -118,7 +121,7 @@ server.groupname = "lighttpd"
+@@ -118,7 +121,7 @@ #server.core-files = "disable"
  ##
  ## Document root
  ##
@@ -83,7 +79,7 @@ index 3e687c2..e8cf43a 100644
  
  ##
  ## The value for the "Server:" response field.
-@@ -130,7 +133,7 @@ server.document-root = server_root + "/htdocs"
+@@ -130,7 +133,7 @@ #server.tag = "lighttpd"
  ##
  ## store a pid file
  ##
@@ -92,16 +88,7 @@ index 3e687c2..e8cf43a 100644
  
  ##
  #######################################################################
-@@ -184,7 +187,7 @@ include "conf.d/debug.conf"
- ##
- ## linux-sysepoll is recommended on kernel 2.6.
- ##
--server.event-handler = "linux-sysepoll"
-+server.event-handler = "solaris-devpoll"
- 
- ##
- ## The basic network interface for all platforms at the syscalls read()
-@@ -331,7 +334,7 @@ server.max-connections = 1024
+@@ -329,7 +332,7 @@ ## index-file.names            = ( "inde
  ##                                 "index.htm", "default.htm" )
  ##
  index-file.names += (
@@ -110,7 +97,7 @@ index 3e687c2..e8cf43a 100644
  )
  
  ##
-@@ -386,7 +389,7 @@ static-file.exclude-extensions = ( ".php", ".pl", ".fcgi", ".scgi" )
+@@ -385,7 +388,7 @@ ##
  ## Format: <errorfile-prefix><status-code>.html
  ## -> ..../status-404.html for 'File not found'
  ##

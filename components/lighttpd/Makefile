@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		lighttpd
-COMPONENT_VERSION=	1.4.55
+COMPONENT_VERSION=	1.4.63
 COMPONENT_PROJECT_URL=	http://www.lighttpd.net/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:065259fb618774df516add13df22a52cac76a8f59e4561f143fe3ec810f4a03a
+    sha256:6d706d55d2e11de8d28a2044afae70b3847ec0b9688f84bc5362d4d7df1ad386
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1817
 
-COMPONENT_BAID=		89304
+COMPONENT_BAID=		116278
 
 LIGHTTPD_INSTALLDIR=$(USRDIR)/lighttpd/1.4
 
@@ -55,7 +55,8 @@ LDFLAGS += "-lldap_r-2.4"
 
 CONFIGURE_OPTIONS +=	--with-pic
 CONFIGURE_OPTIONS +=	--with-lua
-CONFIGURE_OPTIONS +=	--with-openssl
+CONFIGURE_OPTIONS +=	--with-openssl=/usr/openssl/3
+CONFIGURE_OPTIONS +=	--with-openssl-libs=/usr/openssl/3/lib/64/
 CONFIGURE_OPTIONS +=	--with-pcre
 CONFIGURE_OPTIONS +=	--with-ldap
 CONFIGURE_OPTIONS +=	--with-mysql=$(USRDIR)/mysql/5.7/bin/mysql_config
@@ -66,12 +67,9 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^preparing infrastructure/,/make\[4\]: Leaving directory/p" ' \
 	'-e "/.*/d" '
 
-REQUIRED_PACKAGES += compress/bzip2
-REQUIRED_PACKAGES += database/mysql-57
 REQUIRED_PACKAGES += database/mysql-57/library
 REQUIRED_PACKAGES += library/pcre
-REQUIRED_PACKAGES += library/security/openssl
-REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/lua
 REQUIRED_PACKAGES += $(PERL_PKG)
