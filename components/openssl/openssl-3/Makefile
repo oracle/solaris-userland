@@ -21,7 +21,8 @@
 # Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 #
 
-BUILD_BITS= 64
+BUILD_BITS= 64_and_32
+COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_VERSION=	3.0.1
@@ -46,10 +47,14 @@ CONFIGURE_OPTIONS += enable-fips
 # disabled engines
 CONFIGURE_OPTIONS += no-afalgeng
 CONFIGURE_OPTIONS += no-capieng
+CONFIGURE_OPTIONS += no-padlockeng
 
+CONFIGURE_OPTIONS.32 += --libdir=$(CONFIGURE_PREFIX)/lib -Wl,-rpath=$(CONFIGURE_PREFIX)/lib no-asm
 CONFIGURE_OPTIONS.64 += --libdir=$(CONFIGURE_PREFIX)/lib/$(MACH64) -Wl,-rpath=$(CONFIGURE_PREFIX)/lib/$(MACH64)
-CONFIGURE_OPTIONS.i386.64  +=	solaris64-x86_64-cc
-CONFIGURE_OPTIONS.sparc.64 +=	solaris64-sparcv9-cc
+CONFIGURE_OPTIONS.i386.32  +=	solaris-x86-gcc
+CONFIGURE_OPTIONS.sparc.32 +=	solaris-sparcv9-gcc
+CONFIGURE_OPTIONS.i386.64  +=	solaris64-x86_64-gcc
+CONFIGURE_OPTIONS.sparc.64 +=	solaris64-sparcv9-gcc
 
 CONFIGURE_DEFAULT_DIRS = no
 

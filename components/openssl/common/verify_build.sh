@@ -87,7 +87,7 @@ EOF
 
 	echo "Checking that compiler issues deprecated warning for obsolete ciphers"
 	${CC} -I $BUILD_DIR/include -o "$tmpdir/md5.o" -c "$tmpdir/md5.c" 2>&1 | \
-	    grep "warning:  \"MD5_Init\" is deprecated" >/dev/null
+	    grep "warning:.*MD5_Init. is deprecated" >/dev/null
 	ret=$?
 	rm -rf "$tmpdir"
 	if (( ret != 0 )); then
