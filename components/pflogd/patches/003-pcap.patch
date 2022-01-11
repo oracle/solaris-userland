@@ -1,0 +1,68 @@
+#
+# patch removes pflogd's dependency on pcap-int.h, which is a private header
+# file to libpcap. Rationale behind this change can be found here:
+#    https://github.com/the-tcpdump-group/libpcap/issues/560
+# This change is a pre-requisite to drop pcap-int.h.patch we keep
+# along libpcap library.
+#
+--- a/pflogd.c
++++ b/pflogd.c
+@@ -40,7 +40,6 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <unistd.h>
+-#include <pcap-int.h>
+ #include <pcap.h>
+ #include <syslog.h>
+ #include <signal.h>
+@@ -423,10 +422,10 @@
+ 		hdr.magic = TCPDUMP_MAGIC;
+ 		hdr.version_major = PCAP_VERSION_MAJOR;
+ 		hdr.version_minor = PCAP_VERSION_MINOR;
+-		hdr.thiszone = hpcap->tzoff;
+-		hdr.snaplen = hpcap->snapshot;
++		hdr.thiszone = 0;
++		hdr.snaplen = pcap_snapshot(hpcap);
+ 		hdr.sigfigs = 0;
+-		hdr.linktype = hpcap->linktype;
++		hdr.linktype = pcap_datalink(hpcap);
+ 
+ 		if (fwrite((char *)&hdr, sizeof(hdr), 1, fp) != 1) {
+ 			fclose(fp);
+@@ -479,7 +478,7 @@
+ 	if (hdr.magic != TCPDUMP_MAGIC ||
+ 	    hdr.version_major != PCAP_VERSION_MAJOR ||
+ 	    hdr.version_minor != PCAP_VERSION_MINOR ||
+-	    hdr.linktype != hpcap->linktype ||
++	    hdr.linktype != pcap_datalink(hpcap) ||
+ 	    hdr.snaplen > PFLOGD_MAXSNAPLEN) {
+ 		return (1);
+ 	}
+--- a/privsep.c
++++ b/privsep.c
+@@ -50,7 +50,6 @@
+  */
+ #define	HAVE_SNPRINTF	1
+ #include <pcap.h>
+-#include <pcap-int.h>
+ 
+ #ifdef	_SOLARIS_
+ #define	_NSIG	27
+@@ -228,7 +227,7 @@
+ 	if (hpcap == NULL)
+ 		return (1);
+ 
+-	hpcap->snapshot = snap;
++	pcap_set_snaplen(hpcap, snap);
+ 	set_pcap_filter();
+ 
+ 	return 0;
+@@ -307,7 +306,7 @@
+ 
+ 	/* also set hpcap->snapshot in child */
+ 	if (ret == 0)
+-		hpcap->snapshot = snaplen;
++		pcap_set_snaplen(hpcap, snaplen);
+ 
+ 	return (ret);
+ }
