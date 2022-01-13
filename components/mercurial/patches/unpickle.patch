@@ -1,0 +1,166 @@
+This patch should hopefully fix issues that can result in UnpicklingError when
+cloning workspace with Python 3. This is fixed in newer versions of Mercurial.
+
+Taken from upstream:
+https://phab.mercurial-scm.org/D8076
+https://phab.mercurial-scm.org/D8928
+
+--- mercurial-5.1.1/mercurial/worker.py
++++ mercurial-5.1.1/mercurial/worker.py
+@@ -61,6 +61,36 @@ def _numworkers(ui):
+             raise error.Abort(_('number of cpus must be an integer'))
+     return min(max(countcpus(), 4), 32)
+ 
++if pycompat.ispy3:
++    class _blockingreader(object):
++        def __init__(self, wrapped):
++            self._wrapped = wrapped
++
++        def __getattr__(self, attr):
++            return getattr(self._wrapped, attr)
++
++        # issue multiple reads until size is fulfilled
++        def read(self, size=-1):
++            if size < 0:
++                return self._wrapped.readall()
++
++            buf = bytearray(size)
++            view = memoryview(buf)
++            pos = 0
++
++            while pos < size:
++                ret = self._wrapped.readinto(view[pos:])
++                if not ret:
++                    break
++                pos += ret
++
++            del view
++            del buf[pos:]
++            return buf
++else:
++    def _blockingreader(wrapped):
++        return wrapped
++
+ if pycompat.isposix or pycompat.iswindows:
+     _STARTUP_COST = 0.01
+     # The Windows worker is thread based. If tasks are CPU bound, threads
+@@ -226,7 +256,7 @@ def _posixworker(ui, func, staticargs, a
+         while openpipes > 0:
+             for key, events in selector.select():
+                 try:
+-                    res = util.pickle.load(key.fileobj)
++                    res = util.pickle.load(_blockingreader(key.fileobj))
+                     if hasretval and res[0]:
+                         retval.update(res[1])
+                     else:
+--- mercurial-5.1.1/tests/test-worker.t
++++ mercurial-5.1.1/tests/test-worker.t
+@@ -128,3 +128,34 @@ Workers should not do cleanups in all ca
+   [255]
+ 
+ #endif
++
++Do not crash on partially read result
++
++  $ cat > $TESTTMP/detecttruncated.py <<EOF
++  > from __future__ import absolute_import
++  > import os
++  > import sys
++  > import time
++  > sys.unraisablehook = lambda x: None
++  > oldwrite = os.write
++  > def splitwrite(fd, string):
++  >     ret = oldwrite(fd, string[:9])
++  >     if ret == 9:
++  >         time.sleep(0.1)
++  >         ret += oldwrite(fd, string[9:])
++  >     return ret
++  > os.write = splitwrite
++  > EOF
++
++  $ hg --config "extensions.t=$abspath" --config worker.numcpus=8 --config \
++  > "extensions.d=$TESTTMP/detecttruncated.py" test 100000.0
++  start
++  run
++  run
++  run
++  run
++  run
++  run
++  run
++  run
++  done
+--- mercurial-5.1.1/mercurial/worker.py
++++ mercurial-5.1.1/mercurial/worker.py
+@@ -66,8 +66,12 @@
+         def __init__(self, wrapped):
+             self._wrapped = wrapped
+ 
+-        def __getattr__(self, attr):
+-            return getattr(self._wrapped, attr)
++        # Do NOT implement readinto() by making it delegate to
++        # _wrapped.readline(), since that is unbuffered. The unpickler is fine
++        # with just read() and readline(), so we don't need to implement it.
++
++        def readline(self):
++            return self._wrapped.readline()
+ 
+         # issue multiple reads until size is fulfilled
+         def read(self, size=-1):
+@@ -86,7 +90,7 @@
+ 
+             del view
+             del buf[pos:]
+-            return buf
++            return bytes(buf)
+ else:
+     def _blockingreader(wrapped):
+         return wrapped
+--- /dev/null
++++ mercurial-5.1.1/tests/test-fix-pickle.t
+@@ -0,0 +1,45 @@
++A script that implements uppercasing all letters in a file.
++
++  $ UPPERCASEPY="$TESTTMP/uppercase.py"
++  $ cat > $UPPERCASEPY <<EOF
++  > import sys
++  > from mercurial.utils.procutil import setbinary
++  > setbinary(sys.stdin)
++  > setbinary(sys.stdout)
++  > sys.stdout.write(sys.stdin.read().upper())
++  > EOF
++  $ TESTLINES="foo\nbar\nbaz\n"
++  $ printf $TESTLINES | "$PYTHON" $UPPERCASEPY
++  FOO
++  BAR
++  BAZ
++
++This file attempts to test our workarounds for pickle's lack of
++support for short reads.
++
++  $ cat >> $HGRCPATH <<EOF
++  > [extensions]
++  > fix =
++  > [fix]
++  > uppercase-whole-file:command="$PYTHON" $UPPERCASEPY
++  > uppercase-whole-file:pattern=set:**
++  > EOF
++
++  $ hg init repo
++  $ cd repo
++
++# Create a file that's large enough that it seems to not fit in
++# pickle's buffer, making it use the code path that expects our
++# _blockingreader's read() method to return bytes.
++  $ echo "some stuff" > file
++  $ for i in $($TESTDIR/seq.py 13); do
++  >   cat file file > tmp
++  >   mv -f tmp file
++  > done
++  $ hg commit -Am "add large file"
++  adding file
++
++Check that we don't get a crash
++
++  $ hg fix -r .
++  saved backup bundle to $TESTTMP/repo/.hg/strip-backup/*-fix.hg (glob)
