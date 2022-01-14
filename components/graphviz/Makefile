@@ -113,7 +113,13 @@ PYTHON_37_INSTALL_DIR := /usr/lib/python3.7/vendor-packages
 
 $(CONFIGURE_64): COMPONENT_POST_CONFIGURE_ACTION += \
     (cd $(@D) ; cp -rp tclpkg/gv tclpkg/gv-additional ; \
-    $(GSED) -i '/^SUBDIRS =/s|$$| gv-additional|' tclpkg/Makefile ; ) ;
+    $(GSED) -i '/^SUBDIRS =/s|$$| gv-additional|' tclpkg/Makefile ; \
+    $(GSED) -i \
+     -e '/^PYTHON3 =/s|=.*$$|= $(PYTHON.3.7)|' \
+     -e '/^PYTHON3_INCLUDES =/s|=.*$$|= $(PYTHON_37_INCLUDES)|' \
+     -e '/^PYTHON3_INSTALL_DIR =/s|=.*$$|= $(PYTHON_37_INSTALL_DIR)|' \
+     -e '/^PYTHON3_LIBS =/s|=.*$$|= $(PYTHON_37_LIBS)|' \
+     `find tclpkg/gv-additional -name Makefile` ) ;
 
 $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
     (cd $(@D)/tclpkg/gv-additional ; gmake V=1 libgv_php.la libgv_python3.la ) ;
