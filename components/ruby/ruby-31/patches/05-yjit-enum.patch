@@ -1,0 +1,18 @@
+REG_FP clashes with a symbol of the same name from one of the system headers.
+Thankfully, this value is not used anywhere throughout the Ruby code and hence
+can be safely renamed.
+
+This is not intended for upstream as this is already solved in Ruby master
+(they migrated the whole yjit to Rust).
+
+--- ruby-3.1.2/yjit_asm.h
++++ ruby-3.1.2/yjit_asm.h
+@@ -81,7 +81,7 @@ enum OpndType
+ enum RegType
+ {
+     REG_GP,
+-    REG_FP,
++    REG_FPx,
+     REG_XMM,
+     REG_IP
+ };

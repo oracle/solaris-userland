@@ -1,0 +1,18 @@
+Newly added yjit.o file includes DTrace probes but is left out of the list of
+objects that need to be rebuilt after being modified with 'dtrace -G'.
+
+This was reported upstream:
+https://bugs.ruby-lang.org/issues/18480
+
+--- ruby-3.1.2/template/Makefile.in
++++ ruby-3.1.2/template/Makefile.in
+@@ -193,7 +193,8 @@ DTRACE_DEPENDENT_OBJS = array.$(OBJEXT)
+ 			parse.$(OBJEXT) \
+ 			string.$(OBJEXT) \
+ 			symbol.$(OBJEXT) \
+-			vm.$(OBJEXT)
++			vm.$(OBJEXT) \
++			yjit.$(OBJEXT)
+ 
+ THREAD_MODEL  = @THREAD_MODEL@
+ 

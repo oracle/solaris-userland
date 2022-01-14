@@ -1,0 +1,343 @@
+Bundled gem (RBS, debug) extensions are not properly built.
+
+Backported from upstream (with change to .gemspec location):
+https://bugs.ruby-lang.org/issues/18373
+https://github.com/ruby/ruby/pull/5774
+
+From 111f8422427d78becc9183ae149b2105a16bf327 Mon Sep 17 00:00:00 2001
+From: Nobuyoshi Nakada <nobu@ruby-lang.org>
+Date: Tue, 5 Apr 2022 23:24:00 +0900
+Subject: [PATCH 1/5] Bundled gems are expanded under `.bundle/gems` now
+
+---
+ ext/extmk.rb          | 13 +++++++------
+ template/exts.mk.tmpl |  2 +-
+ 2 files changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/ext/extmk.rb b/ext/extmk.rb
+index 4a087f294ac9..1da9e2704521 100755
+--- a/ext/extmk.rb
++++ b/ext/extmk.rb
+@@ -146,7 +146,7 @@ def extmake(target, basedir = 'ext', maybestatic = true)
+     top_srcdir = $top_srcdir
+     topdir = $topdir
+     hdrdir = $hdrdir
+-    prefix = "../" * (target.count("/")+1)
++    prefix = "../" * (basedir.count("/")+target.count("/")+1)
+     $top_srcdir = relative_from(top_srcdir, prefix)
+     $hdrdir = relative_from(hdrdir, prefix)
+     $topdir = prefix + $topdir
+@@ -460,10 +460,11 @@ def $mflags.defined?(var)
+ end unless $extstatic
+ 
+ @gemname = nil
+-if ARGV[0]
+-  ext_prefix, exts = ARGV.shift.split('/', 2)
++if exts = ARGV.shift
++  ext_prefix = exts[%r[\A(?>\.bundle/)?[^/]+(?:/(?=(.+)?)|\z)]]
++  exts = $1
+   $extension = [exts] if exts
+-  if ext_prefix == 'gems'
++  if ext_prefix.start_with?('.')
+     @gemname = exts
+   elsif exts
+     $static_ext.delete_if {|t, *| !File.fnmatch(t, exts)}
+@@ -515,7 +516,7 @@ def $mflags.defined?(var)
+     exts.delete_if {|d| File.fnmatch?("-*", d)}
+   end
+ end
+-ext_prefix = File.basename(ext_prefix)
++ext_prefix = ext_prefix[$top_srcdir.size+1..-2]
+ 
+ extend Module.new {
+   def timestamp_file(name, target_prefix = nil)
+@@ -634,7 +635,7 @@ def initialize(src)
+   end
+ }
+ 
+-Dir.chdir ".."
++Dir.chdir dir
+ unless $destdir.to_s.empty?
+   $mflags.defined?("DESTDIR") or $mflags << "DESTDIR=#{$destdir}"
+ end
+diff --git a/template/exts.mk.tmpl b/template/exts.mk.tmpl
+index 2f37f4480ac5..964939e365a1 100644
+--- a/template/exts.mk.tmpl
++++ b/template/exts.mk.tmpl
+@@ -25,7 +25,7 @@ macros["old_extensions"] = []
+ 
+ contpat = /(?>(?>[^\\\n]|\\.)*\\\n)*(?>[^\\\n]|\\.)*/
+ Dir.glob("{ext,.bundle/gems}/*/exts.mk") do |e|
+-  gem = /\Agems(?=\/)/ =~ e
++  gem = e.start_with?(".bundle/gems/")
+   s = File.read(e)
+   s.scan(/^(extensions|SUBMAKEOPTS|EXT[A-Z]+|MFLAGS|NOTE_[A-Z]+)[ \t]*=[ \t]*(#{contpat})$/o) do |n, v|
+     v.gsub!(/\\\n[ \t]*/, ' ')
+
+From 6ea34cac22131d28a9cc50e7875e854aed9bdb88 Mon Sep 17 00:00:00 2001
+From: Nobuyoshi Nakada <nobu@ruby-lang.org>
+Date: Wed, 6 Apr 2022 20:25:53 +0900
+Subject: [PATCH 2/5] Retrieve configured gems info
+
+---
+ template/configure-ext.mk.tmpl | 2 +-
+ template/exts.mk.tmpl          | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/template/configure-ext.mk.tmpl b/template/configure-ext.mk.tmpl
+index 6636a7759c54..8ba6b963e3ec 100644
+--- a/template/configure-ext.mk.tmpl
++++ b/template/configure-ext.mk.tmpl
+@@ -27,7 +27,7 @@ SCRIPT_ARGS = <%=script_args.gsub("#", "\\#")%>
+ EXTMK_ARGS = $(SCRIPT_ARGS) --gnumake=$(gnumake) --extflags="$(EXTLDFLAGS)" \
+ 	   --make-flags="MINIRUBY='$(MINIRUBY)'"
+ 
+-all: exts # gems
++all: exts gems
+ exts:
+ gems:
+ 
+diff --git a/template/exts.mk.tmpl b/template/exts.mk.tmpl
+index 964939e365a1..e544c4c88bd7 100644
+--- a/template/exts.mk.tmpl
++++ b/template/exts.mk.tmpl
+@@ -19,7 +19,7 @@ opt = OptionParser.new do |o|
+   o.on('--configure-exts=FILE') {|v| confexts = v}
+   o.order!(ARGV)
+ end
+-confexts &&= File.read(confexts).scan(/^exts: (.*\.mk)/).flatten rescue nil
++confexts &&= File.read(confexts).scan(/^(?:ext|gem)s: (.*\.mk)/).flatten rescue nil
+ confexts ||= []
+ macros["old_extensions"] = []
+ 
+@@ -30,7 +30,7 @@ Dir.glob("{ext,.bundle/gems}/*/exts.mk") do |e|
+   s.scan(/^(extensions|SUBMAKEOPTS|EXT[A-Z]+|MFLAGS|NOTE_[A-Z]+)[ \t]*=[ \t]*(#{contpat})$/o) do |n, v|
+     v.gsub!(/\\\n[ \t]*/, ' ')
+     next if v.empty?
+-    next if gem and n != "extensions"
++    next if n != "extensions"
+     n = "old_extensions" if n == "extensions" and !confexts.include?(e)
+     v = v.split
+     m = macros[n] ||= []
+
+From be9d00ee7c72766551ba8c3530f1538034498a6a Mon Sep 17 00:00:00 2001
+From: Nobuyoshi Nakada <nobu@ruby-lang.org>
+Date: Wed, 6 Apr 2022 20:28:00 +0900
+Subject: [PATCH 3/5] Move the target directory of bundled gems like as
+ rubygems
+
+---
+ ext/extmk.rb | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/ext/extmk.rb b/ext/extmk.rb
+index 1da9e2704521..a440af27fc5d 100755
+--- a/ext/extmk.rb
++++ b/ext/extmk.rb
+@@ -2,6 +2,9 @@
+ # -*- mode: ruby; coding: us-ascii -*-
+ # frozen_string_literal: false
+ 
++module Gem; end # only needs Gem::Platform
++require 'rubygems/platform'
++
+ # :stopdoc:
+ $extension = nil
+ $extstatic = nil
+@@ -535,11 +538,12 @@ def create_makefile(*args, &block)
+     super(*args) do |conf|
+       conf.find do |s|
+         s.sub!(/^(TARGET_SO_DIR *= *)\$\(RUBYARCHDIR\)/) {
+-          "TARGET_GEM_DIR = $(extout)/gems/$(arch)/#{@gemname}\n"\
++          "TARGET_GEM_DIR = $(topdir)/.bundle/extensions/$(gem_platform)/$(ruby_version)/#{@gemname}\n"\
+           "#{$1}$(TARGET_GEM_DIR)$(target_prefix)"
+         }
+       end
+       conf.any? {|s| /^TARGET *= *\S/ =~ s} and conf << %{
++gem_platform = #{Gem::Platform.local}
+ 
+ # default target
+ all:
+
+From c4daf8e445925695c34bab8bf5135dcd1e8575a3 Mon Sep 17 00:00:00 2001
+From: Nobuyoshi Nakada <nobu@ruby-lang.org>
+Date: Wed, 6 Apr 2022 22:57:01 +0900
+Subject: [PATCH 4/5] Obey spec file locations to rubygems
+
+---
+ common.mk          | 3 ++-
+ defs/gmake.mk      | 2 +-
+ tool/gem-unpack.rb | 5 +++--
+ 3 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/common.mk b/common.mk
+index 7c552cba1e04..b4adb2729c0e 100644
+--- a/common.mk
++++ b/common.mk
+@@ -1366,10 +1366,11 @@ extract-gems$(gnumake:yes=-nongnumake): PHONY
+ 	$(Q) $(RUNRUBY) -C "$(srcdir)" \
+ 	    -Itool -rgem-unpack -answ \
+ 	    -e 'BEGIN {FileUtils.mkdir_p(d = ".bundle/gems")}' \
++	    -e 'BEGIN {FileUtils.mkdir_p(s = ".bundle/specifications")}' \
+ 	    -e 'gem, ver = *$$F' \
+ 	    -e 'next if !ver or /^#/=~gem' \
+ 	    -e 'g = "#{gem}-#{ver}"' \
+-	    -e 'File.directory?("#{d}/#{g}") or Gem.unpack("gems/#{g}.gem", d)' \
++	    -e 'File.directory?("#{d}/#{g}") or Gem.unpack("gems/#{g}.gem", d, s)' \
+ 	    gems/bundled_gems
+ 
+ update-bundled_gems: PHONY
+diff --git a/defs/gmake.mk b/defs/gmake.mk
+index a625379a6804..27e3e21cc4d6 100644
+--- a/defs/gmake.mk
++++ b/defs/gmake.mk
+@@ -290,7 +290,7 @@ extract-gems: | $(patsubst %,.bundle/gems/%,$(bundled-gems))
+ 	$(ECHO) Extracting bundle gem $*...
+ 	$(Q) $(BASERUBY) -C "$(srcdir)" \
+ 	    -Itool -rgem-unpack \
+-	    -e 'Gem.unpack("gems/$(@F).gem", ".bundle/gems")'
++	    -e 'Gem.unpack("gems/$(@F).gem", ".bundle/gems", ".bundle/specifications")'
+ 
+ $(srcdir)/.bundle/gems:
+ 	$(MAKEDIRS) $@
+diff --git a/tool/gem-unpack.rb b/tool/gem-unpack.rb
+index cb05719463f2..fe10b0e420fa 100644
+--- a/tool/gem-unpack.rb
++++ b/tool/gem-unpack.rb
+@@ -5,13 +5,14 @@
+ # This library is used by "make extract-gems" to
+ # unpack bundled gem files.
+ 
+-def Gem.unpack(file, dir = nil)
++def Gem.unpack(file, dir = nil, spec_dir = nil)
+   pkg = Gem::Package.new(file)
+   spec = pkg.spec
+   target = spec.full_name
+   target = File.join(dir, target) if dir
+   pkg.extract_files target
+-  spec_file = File.join(target, "#{spec.name}-#{spec.version}.gemspec")
++  FileUtils.mkdir_p(spec_dir ||= target)
++  spec_file = File.join(spec_dir, "#{spec.name}-#{spec.version}.gemspec")
+   open(spec_file, 'wb') do |f|
+     f.print spec.to_ruby
+   end
+
+From 3de652d8198be9cd2998c095903889a80e738275 Mon Sep 17 00:00:00 2001
+From: Nobuyoshi Nakada <nobu@ruby-lang.org>
+Date: Thu, 7 Apr 2022 01:44:43 +0900
+Subject: [PATCH 5/5] Install built gem extension binaries
+
+---
+ tool/rbinstall.rb | 56 ++++++++++++++---------------------------------
+ 1 file changed, 16 insertions(+), 40 deletions(-)
+
+diff --git a/tool/rbinstall.rb b/tool/rbinstall.rb
+index 9d9b672be472..624961b4eee6 100755
+--- a/tool/rbinstall.rb
++++ b/tool/rbinstall.rb
+@@ -848,6 +848,9 @@
+     def write_cache_file
+     end
+ 
++    def build_extensions
++    end
++
+     def shebang(bin_file_name)
+       path = File.join(gem_dir, spec.bindir, bin_file_name)
+       first_line = File.open(path, "rb") {|file| file.gets}
+@@ -930,13 +933,12 @@
+   install_default_gem('ext', srcdir, bindir)
+ end
+ 
+-def load_gemspec(file, expanded = false)
++def load_gemspec(file, base = nil)
+   file = File.realpath(file)
+   code = File.read(file, encoding: "utf-8:-")
+   code.gsub!(/(?:`git[^\`]*`|%x\[git[^\]]*\])\.split\([^\)]*\)/m) do
+     files = []
+-    if expanded
+-      base = File.dirname(file)
++    if base
+       Dir.glob("**/*", File::FNM_DOTMATCH, base: base) do |n|
+         case File.basename(n); when ".", ".."; next; end
+         next if File.directory?(File.join(base, n))
+@@ -949,7 +951,7 @@
+   unless Gem::Specification === spec
+     raise TypeError, "[#{file}] isn't a Gem::Specification (#{spec.class} instead)."
+   end
+-  spec.loaded_from = file
++  spec.loaded_from = base ? File.join(base, File.basename(file)) : file
+   spec.files.reject! {|n| n.end_with?(".gemspec") or n.start_with?(".git")}
+ 
+   spec
+@@ -1004,20 +1006,6 @@
+ end
+ 
+ install?(:ext, :comm, :gem, :'bundled-gems') do
+-  if CONFIG['CROSS_COMPILING'] == 'yes'
+-    # The following hacky steps set "$ruby = BASERUBY" in tool/fake.rb
+-    $hdrdir = ''
+-    $extmk = nil
+-    $ruby = nil  # ...
+-    ruby_path = $ruby + " -I#{Dir.pwd}" # $baseruby + " -I#{Dir.pwd}"
+-  else
+-    # ruby_path = File.expand_path(with_destdir(File.join(bindir, ruby_install_name)))
+-    ENV['RUBYLIB'] = nil
+-    ENV['RUBYOPT'] = nil
+-    ruby_path = File.expand_path(with_destdir(File.join(bindir, ruby_install_name))) + " --disable=gems -I#{with_destdir(archlibdir)}"
+-  end
+-  Gem.instance_variable_set(:@ruby, ruby_path) if Gem.ruby != ruby_path
+-
+   gem_dir = Gem.default_dir
+   install_dir = with_destdir(gem_dir)
+   prepare "bundled gems", gem_dir
+@@ -1037,40 +1025,28 @@
+     :wrappers => true,
+     :format_executable => true,
+   }
+-  gem_ext_dir = "#$extout/gems/#{CONFIG['arch']}"
+-  extensions_dir = with_destdir(Gem::StubSpecification.gemspec_stub("", gem_dir, gem_dir).extensions_dir)
++
++  extensions_dir = Gem::StubSpecification.gemspec_stub("", gem_dir, gem_dir).extensions_dir
++  specifications_dir = File.join(gem_dir, "specifications")
++  build_dir = Gem::StubSpecification.gemspec_stub("", ".bundle", ".bundle").extensions_dir
+ 
+   File.foreach("#{srcdir}/gems/bundled_gems") do |name|
+     next if /^\s*(?:#|$)/ =~ name
+     next unless /^(\S+)\s+(\S+).*/ =~ name
+     gem_name = "#$1-#$2"
+     path = "#{srcdir}/.bundle/gems/#{gem_name}/#{gem_name}.gemspec"
+-    if File.exist?(path)
+-      spec = load_gemspec(path)
+-    else
+-      path = "#{srcdir}/.bundle/gems/#{gem_name}/#$1.gemspec"
+-      next unless File.exist?(path)
+-      spec = load_gemspec(path, true)
+-    end
++    next unless File.exist?(path)
++    spec = load_gemspec(path, "#{srcdir}/.bundle/gems/#{gem_name}")
+     next unless spec.platform == Gem::Platform::RUBY
+     next unless spec.full_name == gem_name
+-    if !spec.extensions.empty? && CONFIG["EXTSTATIC"] == "static"
+-      puts "skip installation of #{spec.name} #{spec.version}; bundled gem with an extension library is not supported on --with-static-linked-ext"
+-      next
+-    end
+     spec.extension_dir = "#{extensions_dir}/#{spec.full_name}"
+-    if File.directory?(ext = "#{gem_ext_dir}/#{spec.full_name}")
+-      spec.extensions[0] ||= "-"
+-    end
+     package = RbInstall::DirPackage.new spec
+     ins = RbInstall::UnpackedInstaller.new(package, options)
+     puts "#{INDENT}#{spec.name} #{spec.version}"
+     ins.install
+-    unless $dryrun
+-      File.chmod($data_mode, File.join(install_dir, "specifications", "#{spec.full_name}.gemspec"))
+-    end
+-    unless spec.extensions.empty?
+-      install_recursive(ext, spec.extension_dir)
++    install_recursive("#{build_dir}/#{gem_name}", "#{extensions_dir}/#{gem_name}") do |src, dest|
++      # puts "#{INDENT}    #{dest[extensions_dir.size+gem_name.size+2..-1]}"
++      install src, dest, :mode => (File.executable?(src) ? $prog_mode : $data_mode)
+     end
+     installed_gems[spec.full_name] = true
+   end
