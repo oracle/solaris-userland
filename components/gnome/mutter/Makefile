@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mutter
-COMPONENT_VERSION=	3.38.4
+COMPONENT_VERSION=	41.3
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/Mutter
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:b99e28af92038223a1b5be879af526bc3fd9c7f1f980f402f45363e3fa82c037
+	sha256:719c5d1060eb605c1ba643b486fb57b1a3c7197e7df83bd6c3366fc4b68477e5
 COMPONENT_BUGDB=        gnome/window-manager
 COMPONENT_ANITYA_ID=	13154
 
-COMPONENT_BAID=		99884
+COMPONENT_BAID=		115300
 BUILD_STYLE=            meson
 
 TEST_TARGET = $(NO_TESTS)
@@ -52,6 +52,7 @@ CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 CFLAGS += -std=c99 -D__EXTENSIONS__
 
 CONFIGURE_OPTIONS += -Dnative_backend=false
+CONFIGURE_OPTIONS += -Dsystemd=false
 # Not supported on Solaris
 CONFIGURE_OPTIONS += -Dwayland=false
 CONFIGURE_OPTIONS += -Dwayland_eglstream=false
