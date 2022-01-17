@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 
 
@@ -53,6 +53,7 @@ function usage {
 
 # Command line parameters
 PARM_JOBS=              # Number of components to be built in parallel
+PARM_JOBS_PER_COMPONENT= # Number of parallel jobs in each component
 PARM_ALLOW_DIRTY=       # Allow local changes in the repo
 PARM_PURGE=1            # Remove any files _not_ tracked by the repo
 PARM_MASTER_REPO=       # Synchronize to this repo before running the build
@@ -109,6 +110,14 @@ while [ $# -gt 0 ]; do
 			fi
 			shift
 			PARM_JOBS="$1"
+			;;
+        -J)
+			if [ $# -eq 1 ]; then
+				echo "Option $1 requires a parameter."
+				exit 1
+			fi
+			shift
+			PARM_JOBS_PER_COMPONENT="$1"
 			;;
         --reexec)
 			RE_EXECUTED=1
@@ -194,6 +203,16 @@ if [ -z "$PARM_JOBS" ] && [ -e /etc/userland ]; then
 		. /etc/userland
 		echo "${DEFAULT_FULL_BUILD_JOBS:-}"
 	)
+fi
+# Number of jobs in component
+if [ -z "$PARM_JOBS_PER_COMPONENT" ] && [ -e /etc/userland ]; then
+	PARM_JOBS_PER_COMPONENT=$(
+		. /etc/userland
+		echo "${DEFAULT_FULL_BUILD_JOBS_PER_COMPONENT:-}"
+	)
+fi
+if [ -n "$PARM_JOBS_PER_COMPONENT" ]; then
+	GMAKE_PARAM+=( "JOBS_PER_COMPONENT=$PARM_JOBS_PER_COMPONENT" )
 fi
 
 # Set conservative default
