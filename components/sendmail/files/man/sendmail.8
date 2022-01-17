@@ -2,8 +2,8 @@
 .\" Copyright (c) 1998-2003 Sendmail, Inc. and its suppliers. All rights reserved.
 .\" Copyright (c) 1983, 1997 Eric P. Allman. All rights reserved.
 .\" Copyright (c) 1988, 1991, 1993 The Regents of the University of California. All rights reserved.
-.\" Portions Copyright (c) 1998, 2020, Oracle and/or its affiliates.
-.TH sendmail 8 "22 Dec 2020" "Solaris 11.4" "System Administration Commands"
+.\" Portions Copyright (c) 1998, 2022, Oracle and/or its affiliates.
+.TH sendmail 8 "17 Jan 2022" "Solaris 11.4" "System Administration Commands"
 .SH NAME
 sendmail \- send mail over the internet
 .SH SYNOPSIS
@@ -911,7 +911,16 @@ Checkpoints the queue every \fIN\fR (default \fB10\fR) addresses sent. If your s
 .br
 .sp .6
 .RS 4n
-Specify cipher list for \fBSTARTTLS\fR.
+Specify cipher list for \fBSTARTTLS\fR.  By default 
+\fBECDHE-ECDSA-AES256-GCM-SHA384\fR,
+\fBECDHE-RSA-AES128-GCM-SHA256\fR,
+\fBECDHE-ECDSA-AES128-GCM-SHA256\fR,
+\fBTLSv1.2:!aNULL:!eNULL\fR,
+\fBDHE-RSA-AES256-SHA\fR,
+\fBDHE-DSS-AES256-SHA\fR,
+\fBDHE-RSA-AES128-SHA\fR, and
+\fBDHE-DSS-AES128-SHA\fR.
+The CipherList is passed to SSL_set_cipher_list(3openssl).
 .RE
 
 .sp
@@ -1069,7 +1078,7 @@ If \fBh\fR is set, the name corresponding to the outgoing interface address (whe
 .br
 .sp .6
 .RS 4n
-A space separated list of SSL related options for client side. The values depend on the OpenSSL version against which sendmail is compiled. By default, \fBSSL_OP_ALL\fR, \fBSSL_OP_NO_SSLv2\fR, \fBSSL_OP_NO_TICKET\fR, and \fB-SSL_OP_TLSEXT_PADDING\fR are used, provided these options are available. Options can be cleared by preceding them with a minus (-) sign. It is also possible to specify numerical values, for example, \fB-0x0010\fR.
+A space separated list of SSL related options for client side. The values depend on the OpenSSL version against which sendmail is compiled. By default, \fBSSL_OP_ALL\fR, \fBSSL_OP_NO_TLSv1\fR, \fBSSL_OP_NO_TLSv1_1\fR, \fBSSL_OP_NO_SSLv2\fR, \fBSSL_OP_NO_SSLv3\fR, \fBSSL_OP_NO_TICKET\fR, and \fB-SSL_OP_TLSEXT_PADDING\fR are used, provided these options are available. Options can be cleared by preceding them with a minus (-) sign. It is also possible to specify numerical values, for example, \fB-0x0010\fR.
 .RE
 
 .sp
@@ -2746,7 +2755,7 @@ File containing the private key belonging to the server cert.
 .br
 .sp .6
 .RS 4n
-A space separated list of SSL related options for server side. The available values depend on the OpenSSL version against which sendmail is compiled. By default, \fBSSL_OP_ALL\fR and \fB-SSL_OP_TLSEXT_PADDING\fR are used, provided these options are available. Options can be cleared by preceding them with a minus (-) sign. It is also possible to specify numerical values, for example \fB-0x0010\fR.
+A space separated list of SSL related options for server side. The available values depend on the OpenSSL version against which sendmail is compiled. By default, \fBSSL_OP_ALL\fR, \fBSSL_OP_NO_TLSv1\fR, \fBSSL_OP_NO_TLSv1_1\fR, \fBSSL_OP_NO_SSLv2\fR, \fBSSL_OP_NO_SSLv3\fR,  and \fB-SSL_OP_TLSEXT_PADDING\fR are used, provided these options are available. Options can be cleared by preceding them with a minus (-) sign. It is also possible to specify numerical values, for example \fB-0x0010\fR.
 .RE
 
 .sp
@@ -3699,7 +3708,7 @@ Availabilityservice/network/smtp/sendmail
 .SH SEE ALSO
 .sp
 .LP
-\fBmail\fR(1), \fBmailq\fR(1), \fBmailx\fR(1), \fBnice\fR(1), \fBsvcs\fR(1), \fBfork\fR(2), \fBgetpwnam\fR(3C), \fBgetusershell\fR(3C), \fBresolver\fR(3RESOLV), \fBrandom\fR(4D), \fBaliases\fR(5), \fBhosts\fR(5), \fBsendmail\fR(5), \fBshells\fR(5), \fBattributes\fR(7), \fBsmf\fR(7), \fBcheck-hostname\fR(8), \fBcheck-permissions\fR(8), \fBetrn\fR(8), \fBnewaliases\fR(8), \fBsvcadm\fR(8), \fBsvccfg\fR(8)
+\fBmail\fR(1), \fBmailq\fR(1), \fBmailx\fR(1), \fBnice\fR(1), \fBsvcs\fR(1), \fBfork\fR(2), \fBgetpwnam\fR(3C), \fBgetusershell\fR(3C), \fBSSL_set_cipher_list(3openssl)\fR, \fBSSL_set_options(3openssl)\fR, \fBresolver\fR(3RESOLV), \fBrandom\fR(4D), \fBaliases\fR(5), \fBhosts\fR(5), \fBsendmail\fR(5), \fBshells\fR(5), \fBattributes\fR(7), \fBsmf\fR(7), \fBcheck-hostname\fR(8), \fBcheck-permissions\fR(8), \fBetrn\fR(8), \fBnewaliases\fR(8), \fBsvcadm\fR(8), \fBsvccfg\fR(8)
 .sp
 .LP
 \fBhosts_access\fR(5), \fBtcpd\fR(8) in the \fBsecurity/tcp-wrapper\fR package.

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2022, Oracle and/or its affiliates.
 #
 
 # This manifest contains several files with a preserve attribute that are not
@@ -191,6 +191,13 @@ link path=usr/sbin/newaliases target=../lib/inet/sendmail mediator=sendmail \
     mediator-implementation=sendmail mediator-priority=vendor
 link path=usr/sbin/sendmail target=../lib/inet/sendmail mediator=sendmail \
     mediator-implementation=sendmail mediator-priority=vendor
+file files/sendmail-notice.txt \
+    path=usr/share/doc/release-notes/sendmail-install.txt owner=root \
+    group=sys mode=0444 must-display=true release-note=feature/pkg/self@0
+# Only wanted once so specific version used and not $(IPS_COMPONENT_VERSION)
+file files/sendmail-notice.txt \
+    path=usr/share/doc/release-notes/sendmail-update.txt owner=root group=sys \
+    mode=0444 must-display=true release-note=feature/pkg/self@8.15.2.1
 link path=usr/share/man/man1/mailq.1 target=sendmail-mailq.1 mediator=sendmail \
     mediator-implementation=sendmail mediator-priority=vendor
 file path=usr/share/man/man1/mailstats.1

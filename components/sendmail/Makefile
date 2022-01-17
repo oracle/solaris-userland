@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -32,6 +32,9 @@ include ../../make-rules/shared-macros.mk
 COMPONENT_NAME=		sendmail
 COMPONENT_VERSION=	8.15.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
+# Appending ".1" to provoke IPS message at install.
+IPS_COMPONENT_VERSION=	$(COMPONENT_VERSION).1
+HUMAN_VERSION=		$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	ftp://ftp.sendmail.org/pub/sendmail/
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME).$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
