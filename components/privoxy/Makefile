@@ -20,25 +20,25 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		privoxy
-COMPONENT_VERSION=	3.0.32
+COMPONENT_VERSION=	3.0.33
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-stable
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-src.tar.gz
 COMPONENT_PROJECT_URL=	https://www.privoxy.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c61de4008c62445ec18f1f270407cbf2372eaba93beaccdc9e3238bb2defeed7
+    sha256:04b104e70dac61561b9dd110684b250fafc8c13dbe437a60fae18ddd9a881fae
 COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/ijbswa/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	3712
+COMPONENT_BAID=		115325
 
 COMPILER= gcc
 
-COMPONENT_BAID=	 	96234
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
