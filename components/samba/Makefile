@@ -48,18 +48,18 @@ COMPONENT_PROJECT_URL=	http://www.samba.org/
 COMPONENT_BUGDB=	utility/samba
 COMPONENT_ANITYA_ID=	4758
 
-COMPONENT_VERSION=	4.13.15
-COMPONENT_BAID=		114741
+COMPONENT_VERSION=	4.13.16
+COMPONENT_BAID=		115415
 # Samba pre-releases are available on git only.
 # if you want to build Samba from git uncomment next 4 lines
 #GIT_REPO=		https://git.samba.org/samba.git
 #GIT_COMMIT_ID=		master
-#GIT_HASH=		sha256:6f210b7757b6b55ae0fafff0c21a1704cc1a7621d81462d630c162097959d47d
+#GIT_HASH=		sha256:...
 #COMPONENT_SRC_URL=	$(GIT_REPO)
 # clone of git.samba.org takes a long
 # if you want to build Samba from archive uncomment next 3 lines
 COMPONENT_ARCHIVE_URL=	https://download.samba.org/pub/samba/stable/$(COMPONENT_ARCHIVE)
-COMPONENT_ARCHIVE_HASH=	sha256:bed34caa9e19d1f9d8bef6cf00c7484e840bd7cc324e3798758f941857372d66
+COMPONENT_ARCHIVE_HASH=	sha256:3fec748cd89961131959fca836d24bbc4843385ea7235a4295b5e129e250c041
 COMPONENT_SRC_URL=	$(COMPONENT_ARCHIVE_URL)
 
 TEST_TARGET= $(NO_TESTS)
