@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             64
@@ -28,14 +28,14 @@ COMPILER=               gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-shell-extensions
-COMPONENT_VERSION=	3.38.2
+COMPONENT_VERSION=	41.1
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/GnomeShell/Extensions
 COMPONENT_ARCHIVE_HASH= \
-	sha256:57a44279a750215af51ff29162b7b7a7b287f6afa0a28bb51d3b27b2cb49f643
+	sha256:d0e6f2273f08d52d925fc2bb66b47b28e5ef50d1b8a14020877c662423d507d3
 COMPONENT_BUGDB=	gnome/gnome-shell
 COMPONENT_ANITYA_ID=	1195
 
-COMPONENT_BAID=		92694
+COMPONENT_BAID=		115340
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)

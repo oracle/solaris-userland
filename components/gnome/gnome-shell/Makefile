@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-shell
-COMPONENT_VERSION=	3.38.6
+COMPONENT_VERSION=	41.3
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/GnomeShell
 COMPONENT_ARCHIVE_HASH= \
-	sha256:21559e1766fcce7ac0ba2a5910a7409c1d99bda71ddd9941825ad1d0983c156b
+	sha256:1e3dfa2a0be49454182b4ace77f11d10d3f5b988ef0fcb732b7313573949ded1
 COMPONENT_BUGDB=        gnome/gnome-shell
 COMPONENT_ANITYA_ID=	5409
 
-COMPONENT_BAID=		112192
+COMPONENT_BAID=		115327
 BUILD_STYLE=            meson
 
 # Workaround the mozjs issue described in 24935318
@@ -56,6 +56,8 @@ COMPONENT_POST_UNPACK_ACTION += $(CP) files/* $(SOURCE_DIR)/data/dbus-interfaces
 # Linux specific
 CONFIGURE_OPTIONS += -Dnetworkmanager=false
 CONFIGURE_OPTIONS += -Dsystemd=false
+# Requires mutter to enable tests - which in turn requires Wayland
+CONFIGURE_OPTIONS += -Dtests=false
 # Don't build subbprojects
 CONFIGURE_OPTIONS += --wrap-mode=nofallback
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIB.$(BITS))
@@ -110,6 +112,7 @@ REQUIRED_PACKAGES += library/desktop/graphene
 REQUIRED_PACKAGES += library/desktop/gstreamer-1
 REQUIRED_PACKAGES += library/desktop/gstreamer-1/gst-plugins-base
 REQUIRED_PACKAGES += library/desktop/gtk3
+REQUIRED_PACKAGES += library/desktop/gtk4
 REQUIRED_PACKAGES += library/desktop/libchamplain
 REQUIRED_PACKAGES += library/desktop/libgee
 REQUIRED_PACKAGES += library/desktop/libgweather

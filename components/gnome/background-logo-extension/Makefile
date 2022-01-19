@@ -26,15 +26,15 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		background-logo-extension
-COMPONENT_VERSION=	3.37.3
+COMPONENT_VERSION=	41.0
 COMPONENT_PROJECT_URL=  https://extensions.gnome.org/extension/889/background-logo
 COMPONENT_ARCHIVE_HASH= \
-	sha256:480b889c179bb790dce7dd9f7aed888265c99e344404fb1ab00ff836297b065d
+	sha256:7cd2f17166db747678c9347e44bced98050b24afba306a88f7148fdf6597dc9e
 COMPONENT_ARCHIVE_URL=	http://releases.pagure.org/background-logo-extension/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	gnome/gnome-shell
 COMPONENT_ANITYA_ID=	13118
 
-COMPONENT_BAID=		89401
+COMPONENT_BAID=		116235
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
