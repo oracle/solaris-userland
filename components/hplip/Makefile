@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=	64
@@ -31,9 +31,9 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         hplip
-COMPONENT_VERSION=      3.21.8
-COMPONENT_BAID=		110198
-COMPONENT_ARCHIVE_HASH= sha256:f13e5295c1f0c2894f742bad44b2f40c80dbf8df010263d809081bc4df97ce1c
+COMPONENT_VERSION=      3.21.12
+COMPONENT_BAID=		115994
+COMPONENT_ARCHIVE_HASH= sha256:7ef4523ef81bced71515e1c8840ef6c68c602638c159e6dd9a92691ceec64f9c
 COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/project/$(COMPONENT_NAME)/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://hplipopensource.com/
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
