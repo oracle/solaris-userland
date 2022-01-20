@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # Because the Studio compiler generates thousands of lines of warnings.
@@ -28,14 +28,14 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		links
-COMPONENT_VERSION=	2.21
+COMPONENT_VERSION=	2.25
 COMPONENT_PROJECT_URL=	http://links.twibright.com/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f0e1fd131b5e9ff943bcc667e0aa6331048749ad4b921b6fadd14e919d9f79ac
+    sha256:5c0b3b0b8fe1f3c8694f5fb7fbdb19c63278ac68ae4646da69b49640b20283b1
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1822
 
-COMPONENT_BAID=		90451
+COMPONENT_BAID=		115390
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
