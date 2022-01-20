@@ -1,8 +1,8 @@
 Patch to src/luaconf.h is to adjust lua's default path for where it 
 looks for .lua and lua related .so's
 
---- lua-5.4.0/src/lua.h
-+++ lua-5.4.0/src/lua.h
+--- lua-5.4.4/src/lua.h
++++ lua-5.4.4/src/lua.h
 @@ -9,6 +9,10 @@
  #ifndef lua_h
  #define lua_h
@@ -14,7 +14,7 @@ looks for .lua and lua related .so's
  #include <stdarg.h>
  #include <stddef.h>
  
-@@ -513,5 +517,8 @@ struct lua_Debug {
+@@ -514,5 +518,8 @@ struct lua_Debug {
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************/
  
@@ -23,8 +23,8 @@ looks for .lua and lua related .so's
 +#endif
  
  #endif
---- lua-5.4.0/src/lualib.h
-+++ lua-5.4.0/src/lualib.h
+--- lua-5.4.4/src/lualib.h
++++ lua-5.4.4/src/lualib.h
 @@ -8,6 +8,10 @@
  #ifndef lualib_h
  #define lualib_h
@@ -36,17 +36,17 @@ looks for .lua and lua related .so's
  #include "lua.h"
  
  
-@@ -54,5 +58,8 @@ LUALIB_API void (luaL_openlibs) (lua_Sta
- #define lua_assert(x)	((void)0)
- #endif
+@@ -48,5 +52,8 @@ LUAMOD_API int (luaopen_package) (lua_St
+ /* open all previous libraries */
+ LUALIB_API void (luaL_openlibs) (lua_State *L);
  
 +#ifdef __cplusplus
 +}
 +#endif
  
  #endif
---- lua-5.4.0/src/lauxlib.h
-+++ lua-5.4.0/src/lauxlib.h
+--- lua-5.4.4/src/lauxlib.h
++++ lua-5.4.4/src/lauxlib.h
 @@ -8,6 +8,9 @@
  #ifndef lauxlib_h
  #define lauxlib_h
@@ -57,7 +57,7 @@ looks for .lua and lua related .so's
  
  #include <stddef.h>
  #include <stdio.h>
-@@ -270,7 +273,9 @@ typedef struct luaL_Stream {
+@@ -295,7 +298,9 @@ typedef struct luaL_Stream {
  /* }============================================================ */
  
  
@@ -68,9 +68,9 @@ looks for .lua and lua related .so's
  
 +#endif
  
---- lua-5.4.0/src/luaconf.h
-+++ lua-5.4.0/src/luaconf.h
-@@ -227,7 +227,7 @@
+--- lua-5.4.4/src/luaconf.h
++++ lua-5.4.4/src/luaconf.h
+@@ -217,7 +217,7 @@
  
  #else			/* }{ */
  
@@ -79,7 +79,7 @@ looks for .lua and lua related .so's
  #define LUA_LDIR	LUA_ROOT "share/lua/" LUA_VDIR "/"
  #define LUA_CDIR	LUA_ROOT "lib/lua/" LUA_VDIR "/"
  
-@@ -239,10 +239,16 @@
+@@ -229,10 +229,16 @@
  #endif
  
  #if !defined(LUA_CPATH_DEFAULT)
@@ -96,7 +96,7 @@ looks for .lua and lua related .so's
  #endif			/* } */
  
  
-@@ -316,7 +322,7 @@
+@@ -306,7 +312,7 @@
  ** default definition.
  */
  #if defined(__GNUC__) && ((__GNUC__*100 + __GNUC_MINOR__) >= 302) && \

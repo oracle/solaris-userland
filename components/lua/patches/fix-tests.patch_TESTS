@@ -15,14 +15,14 @@ tpack.lua: Fix for test discrepancy between sparc and x86, not for upstream.
 
 This patch will not be sent upstream.
 
---- lua-5.4.0-tests/files.lua
-+++ lua-5.4.0-tests/files.lua
+--- lua-5.4.4-tests/files.lua
++++ lua-5.4.4-tests/files.lua
 @@ -370,7 +370,7 @@ do
    -- read
    local f = io.open(file, "w")
    local r, m, c = f:read()
 -  assert(not r and ismsg(m) and type(c) == "number")
-+--  assert(not r and ismsg(m) and type(c) == "number")
++  --assert(not r and ismsg(m) and type(c) == "number")
    assert(f:close())
    -- write
    f = io.open(file, "r")
@@ -31,21 +31,21 @@ This patch will not be sent upstream.
    f = io.open(file, "w")
    r, m = pcall(f:lines())
 -  assert(r == false and ismsg(m))
-+--  assert(r == false and ismsg(m))
++  --assert(r == false and ismsg(m))
    assert(f:close())
  end
  
---- lua-5.4.0-tests/all.lua
-+++ lua-5.4.0-tests/all.lua
-@@ -161,7 +161,7 @@ do
-   -- each time a table is collected, remark it for finalization
-   -- on next cycle
-   mt.__gc = function (o)
--     stderr:write'.'    -- mark progress
-+     -- stderr:write'.'    -- mark progress
-      local n = setmetatable(o, mt)   -- remark it
-    end
-    local n = setmetatable({}, mt)    -- create object
+--- lua-5.4.4-tests/tracegc.lua
++++ lua-5.4.4-tests/tracegc.lua
+@@ -15,7 +15,7 @@ local active = false
+ -- cycle
+ local mt = {}
+ function mt.__gc (o)
+-  stderr:write'.'    -- mark progress
++  -- stderr:write'.'    -- mark progress
+   if active then
+     setmetatable(o, mt)   -- remark object for finalization
+   end
 --- lua-5.4.0-tests/tpack.lua
 +++ lua-5.4.0-tests/tpack.lua
 @@ -30,7 +30,7 @@ print(string.format(
