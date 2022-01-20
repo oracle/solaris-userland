@@ -1,0 +1,24 @@
+Nmap compiled with OpenSSL 3 segfaults during the cleanup.
+
+This was reported and fixed upstream:
+https://github.com/nmap/nmap/issues/2482
+https://github.com/nmap/nmap/commit/5f88cbac30c438587de6d01c13327f9b7316c94f
+
+The upstream patch is different and more extensive; however, due to the way
+exit handlers work, the result is the same as this one - SSL_CTX_free
+is never called.
+
+--- nmap-7.92/nsock/src/nsock_pool.c
++++ nmap-7.92/nsock/src/nsock_pool.c
+@@ -288,11 +288,6 @@ void nsock_pool_delete(nsock_pool ms_poo
+ 
+   nsock_engine_destroy(nsp);
+ 
+-#if HAVE_OPENSSL
+-  if (nsp->sslctx != NULL)
+-    SSL_CTX_free(nsp->sslctx);
+-#endif
+-
+   free(nsp);
+ }
+ 

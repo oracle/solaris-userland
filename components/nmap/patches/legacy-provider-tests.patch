@@ -1,0 +1,175 @@
+Nmap test suite is not ready for the fact that OpenSSL 3 legacy provider might
+not be available. This patch adds that check, and if it's not available, tests
+that need it are skipped.
+
+Can be offered upstream.
+
+--- nmap-7.92/nse_openssl.cc
++++ nmap-7.92/nse_openssl.cc
+@@ -20,6 +20,9 @@
+ #endif
+ #include <openssl/ripemd.h>
+ #include <openssl/sha.h>
++#if OPENSSL_VERSION_NUMBER >= 0x30000000L
++#include <openssl/provider.h>
++#endif
+ 
+ #if (OPENSSL_VERSION_NUMBER >= 0x10100000L) && !defined LIBRESSL_VERSION_NUMBER
+ #define HAVE_OPAQUE_STRUCTS 1
+@@ -404,6 +407,17 @@ static int l_supported_ciphers(lua_State
+   return 1;
+ }
+ 
++static int l_legacy_available(lua_State *L) /** legacy_available() */
++{
++#if OPENSSL_VERSION_NUMBER < 0x30000000L
++  /* There is no legacy provider before OpenSSL 3 */
++  lua_pushboolean( L, 1 );
++#else
++  lua_pushboolean( L, OSSL_PROVIDER_available(NULL, "legacy") );
++#endif
++  return 1;
++}
++
+ static int l_encrypt(lua_State *L) /** encrypt( string algorithm, string key, string iv, string data, bool padding = false ) */
+ {
+   const char *algorithm = luaL_checkstring( L, 1 );
+@@ -624,6 +638,7 @@ static const struct luaL_Reg openssllib[
+   { "DES_string_to_key", l_DES_string_to_key },
+   { "supported_digests", l_supported_digests },
+   { "supported_ciphers", l_supported_ciphers },
++  { "legacy_available", l_legacy_available },
+ #ifndef OPENSSL_NO_RC4
+   { "rc4_options", l_rc4_options },
+   { "rc4", l_rc4 },
+--- nmap-7.92/nselib/unittest.lua
++++ nmap-7.92/nselib/unittest.lua
+@@ -27,19 +27,15 @@ _ENV = stdnse.module("unittest", stdnse.
+ 
+ local libs = {
+ "afp",
+-"ajp",
+ "amqp",
+-"anyconnect",
+ "asn1",
+ "base32",
+ "base64",
+ "bitcoin",
+ "bits",
+-"bittorrent",
+ "bjnp",
+ "brute",
+ "cassandra",
+-"citrixxml",
+ "coap",
+ "comm",
+ "creds",
+@@ -59,16 +55,12 @@ local libs = {
+ "geoip",
+ "giop",
+ "gps",
+-"http",
+-"httpspider",
+ "iax2",
+ "idna",
+ "ike",
+-"imap",
+ "informix",
+ "ipOps",
+ "ipmi",
+-"ipp",
+ "irc",
+ "iscsi",
+ "isns",
+@@ -84,14 +76,9 @@ local libs = {
+ "lpeg-utility",
+ "ls",
+ "match",
+-"membase",
+-"mobileme",
+ "mongodb",
+ "mqtt",
+-"msrpc",
+-"msrpcperformance",
+ "msrpctypes",
+-"mssql",
+ "multicast",
+ "mysql",
+ "natpmp",
+@@ -122,21 +109,15 @@ local libs = {
+ "rpcap",
+ "rsync",
+ "rtsp",
+-"sasl",
+ "shortport",
+ "sip",
+ "slaxml",
+-"smb",
+ "smb2",
+-"smbauth",
+-"smtp",
+ "snmp",
+ "socks",
+ "srvloc",
+ "ssh1",
+ "ssh2",
+-"sslcert",
+-"sslv2",
+ "stdnse",
+ "strbuf",
+ --"strict", -- behaves oddly
+@@ -152,18 +133,51 @@ local libs = {
+ "unicode",
+ "unittest",
+ "unpwdb",
+-"upnp",
+ "url",
+ "versant",
+-"vnc",
+ "vulns",
+ "vuzedht",
+ "wsdd",
+ "xdmcp",
++"zlib", 
++}
++
++-- The following tests work only if the legacy provider is available.
++local libs_legacy = {
++"ajp",
++"anyconnect",
++"bittorrent",
++"citrixxml",
++"http",
++"httpspider",
++"imap",
++"ipp",
++"membase",
++"mobileme",
++"msrpc",
++"msrpcperformance",
++"mssql",
++"sasl",
++"smb",
++"smbauth",
++"smtp",
++"sslcert",
++"sslv2",
++"upnp",
++"vnc",
+ "xmpp",
+-"zlib",
+ }
+ 
++local have_ssl, openssl = pcall(require, "openssl")
++if (have_ssl and openssl.legacy_available()) then
++  for _,lib in ipairs(libs_legacy) do
++    table.insert(libs, lib)
++  end
++else
++  stdnse.debug1("OpenSSL legacy provider is not available.")
++end
++table.sort(libs)
++
+ -- This script-arg is documented in the unittest script to avoid cluttering
+ -- NSEdoc of all the libraries which include this one.
+ local am_testing = stdnse.get_script_args('unittest.run')

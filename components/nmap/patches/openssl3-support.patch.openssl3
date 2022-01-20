@@ -1,0 +1,49 @@
+Due to the nonstandard location of our OpenSSL 3 library,
+link path needs to be adjusted.
+
+Not intended for upstream.
+
+--- nmap-7.92/configure
++++ nmap-7.92/configure
+@@ -5909,7 +5909,7 @@ if test "${with_openssl+set}" = set; the
+     specialssldir="$with_openssl"
+     ac_configure_args="$ac_configure_args '--with-libssl-prefix=$with_openssl'"
+     CPPFLAGS="$CPPFLAGS -I$with_openssl/include"
+-    LDFLAGS="$LDFLAGS -L$with_openssl/lib"
++    LDFLAGS="$LDFLAGS -L$with_openssl/lib/64"
+     ;;
+   esac
+ 
+--- nmap-7.92/ncat/configure
++++ nmap-7.92/ncat/configure
+@@ -2360,7 +2360,7 @@ if test "${with_openssl+set}" = set; the
+   ;;
+   *)
+     specialssldir="$with_openssl"
+-    LDFLAGS="$LDFLAGS -L$with_openssl/lib"
++    LDFLAGS="$LDFLAGS -L$with_openssl/lib/64"
+     CPPFLAGS="-I$with_openssl/include $CPPFLAGS"
+   ;;
+   esac
+--- nmap-7.92/nsock/src/configure
++++ nmap-7.92/nsock/src/configure
+@@ -4723,7 +4723,7 @@ if test "${with_openssl+set}" = set; the
+   *)
+     specialssldir="$with_openssl"
+     CPPFLAGS="$CPPFLAGS -I$with_openssl/include"
+-    LDFLAGS="$LDFLAGS -L$with_openssl/lib"
++    LDFLAGS="$LDFLAGS -L$with_openssl/lib/64"
+     ;;
+   esac
+ 
+--- nmap-7.92/nping/configure
++++ nmap-7.92/nping/configure
+@@ -4949,7 +4949,7 @@ if test "${with_openssl+set}" = set; the
+   *)
+     specialssldir="$with_openssl"
+     CPPFLAGS="$CPPFLAGS -I$with_openssl/include"
+-    LDFLAGS="$LDFLAGS -L$with_openssl/lib"
++    LDFLAGS="$LDFLAGS -L$with_openssl/lib/64"
+     ;;
+   esac
+ 
