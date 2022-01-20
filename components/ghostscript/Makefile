@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -28,20 +28,18 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         ghostscript
-COMPONENT_VERSION=      9.54.0
+COMPONENT_VERSION=      9.55.0
 COMPONENT_PROJECT_URL=	http://ghostscript.com/
-COMPONENT_DOWNLOAD_URL= \
-    https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download
-COMPONENT_ARCHIVE_HASH= \
-    sha256:0646bb97f6f4d10a763f4919c54fa28b4fbdd3dff8e7de3410431c81762cade0
-COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/gs9540/$(COMPONENT_ARCHIVE)
+COMPONENT_DOWNLOAD_URL= https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download
+COMPONENT_ARCHIVE_HASH= sha256:31e2064be67e15b478a8da007d96d6cd4d2bee253e5be220703a225f7f79a70b
+COMPONENT_ARCHIVE_URL=  $(COMPONENT_DOWNLOAD_URL)/gs9550/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1157
 
 COMPONENT_NAME_1=	tessdata_best
 GIT_REPO_1=		https://github.com/tesseract-ocr/$(COMPONENT_NAME_1)
 GIT_COMMIT_ID_1=	e2aad9b
 
-COMPONENT_BAID=		97960
+COMPONENT_BAID=		115995
 
 include $(WS_MAKE_RULES)/common.mk
 # some backup files are copied to proto
