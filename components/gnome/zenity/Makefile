@@ -20,30 +20,32 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
+COMPILER=		gcc
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		zenity
-COMPONENT_VERSION=	3.32.0
+COMPONENT_VERSION=	3.41.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Zenity
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e786e733569c97372c3ef1776e71be7e7599ebe87e11e8ad67dcc2e63a82cd95
+	sha256:19b676c3510e22badfcc3204062d432ba537402f5e0ae26128c0d90c954037e1
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	13165
 
-COMPONENT_BAID=		68843
+COMPONENT_BAID=		115221
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Ensures gdialog script specifies explicit version of perl.
 CONFIGURE_ENV += PERL="$(PERL)"
 
-CONFIGURE_OPTIONS += --enable-libnotify
-CONFIGURE_OPTIONS += --enable-webkitgtk
+CONFIGURE_OPTIONS += -Dlibnotify=true
+CONFIGURE_OPTIONS += -Dwebkitgtk=true
 
 ifeq ($(MACH),sparc)
 # Webkit expects that only 48 bits from the address are effectively used.
@@ -53,6 +55,7 @@ endif
 
 # Assumes GNU msgfmt in PATH.
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/gdialog.1 \
