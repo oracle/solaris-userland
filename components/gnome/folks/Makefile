@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		folks
-COMPONENT_VERSION=	0.13.1
+COMPONENT_VERSION=	0.15.3
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Folks
 COMPONENT_ARCHIVE_HASH= \
-	sha256:3df1c663b82fe211aead2b31cae1fc41d124e85436375762f6745c45ba46aa5d
+	sha256:21d737faf093f4be065473ee70ca20885b9a2c3685941dba24c2239fd3c544a5
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	13121
 
-COMPONENT_BAID=		68649
+COMPONENT_BAID=		110756
 BUILD_STYLE=            meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
@@ -49,18 +49,14 @@ CFLAGS += -D__EXTENSIONS__
 # correct fix is.
 CFLAGS += -U_POSIX_SOURCE
 
-# A pkg-config file isn't shipped in Solaris for nss/nspr 64-bit, so we
-# workaround this by using the one-off copy in the evolution-data-server
-# component directory
-PKG_CONFIG_PATHS.64 += $(WS_COMPONENTS)/gnome/evolution-data-server
-PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
-
 CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+COMPONENT_TEST_ENV += PATH="$(USRLIBDIR):$(PATH)"
+COMPONENT_TEST_ENV += PKG_CONFIG_PATH="$(PKG_CONFIG_PATH)"
 
 # bluetooth support (unnecessary)
-CONFIGURE_OPTIONS += -Dbluez-backend=false
+CONFIGURE_OPTIONS += -Dbluez_backend=false
 # GSM Telephony Support (unnecessary).
 CONFIGURE_OPTIONS += -Dofono-backend=false
 CONFIGURE_OPTIONS += -Dinspect_tool=false
@@ -68,6 +64,14 @@ CONFIGURE_OPTIONS += -Dinspect_tool=false
 # to avoid issues with the gir generation with the updated vala
 
 LDFLAGS += -z gnu-version-script-compat
+
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/Ok/p" ' \
+        '-e "/Fail/p" ' \
+        '-e "/Pass/p" ' \
+        '-e "/Skipped/p" ' \
+        '-e "/Timeout/p" '
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += developer/vala
