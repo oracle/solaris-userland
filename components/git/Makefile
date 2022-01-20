@@ -51,11 +51,6 @@ COMPONENT_ARCHIVE_URL_1 = https://www.kernel.org/pub/software/scm/git/$(COMPONEN
 UNPACK_ARGS_1 =		-r $(COMPONENT_SRC_1)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_1)
 
-ifeq ($(MACH),i386)
-# Disable the unit tests since the test results are outdated.
-$(SKIP_TEST_AT_TOP_LEVEL)
-endif
-
 include $(WS_MAKE_RULES)/common.mk
 
 PYTHON_VERSION = 3.7
@@ -82,6 +77,9 @@ CONFIGURE_OPTIONS  +=	--libexecdir=$(USRLIBDIR)
 CONFIGURE_OPTIONS  +=	--with-libpcre2
 CONFIGURE_OPTIONS  +=	--with-perl=$(PERL)
 CONFIGURE_OPTIONS  +=	--with-python=$(PYTHON)
+ifneq ($(strip $(OPENSSL3)),)
+CONFIGURE_OPTIONS  +=	--with-openssl=/usr/openssl/3
+endif
 
 # Build fails if environment variable PROFILE is set.
 COMPONENT_BUILD_ENV+=	PROFILE=
@@ -158,7 +156,11 @@ GENERATE_PROTO_DIRS += $(COMPONENT_SRC_1)
 REQUIRED_PACKAGES += crypto/gnupg
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += library/pcre2
+ifneq ($(strip $(OPENSSL3)),)
+REQUIRED_PACKAGES += library/security/openssl-3
+else
 REQUIRED_PACKAGES += library/security/openssl
+endif
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-37
