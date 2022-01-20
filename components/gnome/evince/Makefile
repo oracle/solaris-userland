@@ -20,29 +20,26 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		evince
-COMPONENT_VERSION=	3.38.1
-COMPONENT_MINOR_VERSION= $(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\([0-9]\+\)\.\([0-9]\+\)\.[0-9]\+/\1.\2/')
+COMPONENT_VERSION=	41.3
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Evince
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:00f6d6689cc22de3c005bd87d4c2ebf720064cb8dc6a1887816f8b7e082b2e63
-COMPONENT_ARCHIVE_URL=	http://ftp.gnome.org/pub/GNOME/sources/$(COMPONENT_NAME)/$(COMPONENT_MINOR_VERSION)/$(COMPONENT_ARCHIVE)
+    sha256:3346b01f9bdc8f2d5ffea92f110a090c64a3624942b5b543aad4592a9de33bb0
 COMPONENT_BUGDB=	gnome/evince
 COMPONENT_ANITYA_ID=	8178
 
-COMPONENT_BAID=		92510
+COMPONENT_BAID=		115222
 BUILD_STYLE=		meson
 
 TEST_TARGET= $(NO_TESTS)
 
-include $(WS_MAKE_RULES)/common.mk
+include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Need to pick up the GNU version of xgettext.
 PATH=$(GNUBIN):$(USRBINDIR)
@@ -82,6 +79,7 @@ REQUIRED_PACKAGES += library/desktop/gstreamer-1
 REQUIRED_PACKAGES += library/desktop/gstreamer-1/gst-plugins-base
 REQUIRED_PACKAGES += library/desktop/gtk3
 REQUIRED_PACKAGES += library/desktop/libgxps
+REQUIRED_PACKAGES += library/desktop/libhandy
 REQUIRED_PACKAGES += library/desktop/pango
 REQUIRED_PACKAGES += library/glib2
 REQUIRED_PACKAGES += library/gnome/gnome-desktop
