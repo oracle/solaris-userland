@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -29,17 +29,16 @@ BUILD_BITS=		32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Pillow
-COMPONENT_VERSION=	8.3.2
+COMPONENT_VERSION=	9.0.0
 COMPONENT_PROJECT_URL=	https://github.com/python-pillow/Pillow
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:57ba8b5585defa8ebe0e5f5cedc05de693023f3ea1cebfbdcab68cbfbaa3f6bc
+    sha256:208fcbf3332d868bf12c7d8e7060678657f1c9b9c4583a1947344de6547a65f7
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/pil
 COMPONENT_ANITYA_ID=	7974
-
-COMPONENT_BAID=		107583
+COMPONENT_BAID=		115553
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
@@ -72,3 +71,6 @@ REQUIRED_PACKAGES += runtime/tk-8
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += system/library/freetype-2
 REQUIRED_PACKAGES += x11/library/libxcb
+
+# testing dependencies
+REQUIRED_PACKAGES += library/python/packaging

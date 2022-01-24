@@ -1,0 +1,21 @@
+Correct overallocation introduced with the fix for CVE-2022-22815.
+
+Fix from upstream:
+https://github.com/python-pillow/Pillow/pull/5958
+
+From fe32501922ef5e1be9a7d307132719bd5d52ca35 Mon Sep 17 00:00:00 2001
+From: Andrew Murray <radarhere@users.noreply.github.com>
+Date: Fri, 14 Jan 2022 10:16:35 +1100
+Subject: [PATCH] Corrected allocation
+
+--- a/src/path.c
++++ b/src/path.c
+@@ -57,7 +57,7 @@ alloc_array(Py_ssize_t count) {
+     if ((unsigned long long)count > (SIZE_MAX / (2 * sizeof(double))) - 1) {
+         return ImagingError_MemoryError();
+     }
+-    xy = calloc(2 * count * sizeof(double) + 1, sizeof(double));
++    xy = calloc(2 * count + 1, sizeof(double));
+     if (!xy) {
+         ImagingError_MemoryError();
+     }
