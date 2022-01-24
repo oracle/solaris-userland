@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -28,36 +28,37 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-terminal
-COMPONENT_VERSION=	3.38.3
+COMPONENT_VERSION=	3.41.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Terminal
 COMPONENT_ARCHIVE_HASH= \
-	sha256:11a5b0d635f15fdce7508351a510fbf4e92aa533152a50ff0c7845e3102e4764
+	sha256:b016d89efc3fbc2a85a8ea664077a06158a462c03c222d82478ce01531d5390c
 COMPONENT_BUGDB=        gnome/terminal
 COMPONENT_ANITYA_ID=	10896
 
-COMPONENT_BAID=		99715
+COMPONENT_BAID=		115294
+BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
-# Need to regenerate configure after stack-protector.patch edits configure.ac
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
-
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
-
-CONFIGURE_OPTIONS += --libexecdir=$(USRLIBDIR)
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 PKG_CONFIG_PATHS += $(PKG_CONFIG_PATHS.$(BITS))
 LD_OPTIONS += $(LD_OPTIONS.$(BITS))
 
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --enable-introspection
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --disable-migration
-CONFIGURE_OPTIONS += --enable-nautilus-extension
-CONFIGURE_OPTIONS += --without-systemd
+LDFLAGS += -fstack-protector
+LDFLAGS += -z gnu-version-script-compat
 
 unexport SHELLOPTS
+
+COMPONENT_TEST_TRANSFORMS += \
+        '-n ' \
+        '-e "/Ok/p" ' \
+        '-e "/Fail/p" ' \
+        '-e "/Pass/p" ' \
+        '-e "/Skipped/p" ' \
+        '-e "/Timeout/p" '
 
 REQUIRED_PACKAGES += gnome/file-manager/nautilus
 REQUIRED_PACKAGES += gnome/gnome-shell
@@ -71,5 +72,6 @@ REQUIRED_PACKAGES += library/gnome/dconf
 REQUIRED_PACKAGES += library/gnome/vte3
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
+REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += x11/library/libx11

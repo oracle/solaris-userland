@@ -20,8 +20,14 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 
-# Set correct mode
+# Set correct mode and pkglint transforms
 <transform file path=usr/lib/gnome-terminal-server -> set mode 0555>
+<transform file path=usr/bin/gnome-terminal -> set pkg.linted.userland.action001.2 true>
+<transform file path=usr/lib/gnome-terminal-server -> set pkg.linted.userland.action001.2 true>
+
+# Transform the target path in the links
+<transform link path=usr/share/help/([^/]+)/(.*) \
+    target=/usr/share/help/([^/]+)/.* -> set target ../../../%<3>/%<2>>
