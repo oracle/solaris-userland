@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -61,6 +61,7 @@ file path=usr/include/evolution-data-server/camel/camel-folder-summary.h
 file path=usr/include/evolution-data-server/camel/camel-folder-thread.h
 file path=usr/include/evolution-data-server/camel/camel-folder.h
 file path=usr/include/evolution-data-server/camel/camel-gpg-context.h
+file path=usr/include/evolution-data-server/camel/camel-hostname-utils.h
 file path=usr/include/evolution-data-server/camel/camel-html-parser.h
 file path=usr/include/evolution-data-server/camel/camel-iconv.h
 file path=usr/include/evolution-data-server/camel/camel-index.h
@@ -127,6 +128,7 @@ file path=usr/include/evolution-data-server/camel/camel-sasl-plain.h
 file path=usr/include/evolution-data-server/camel/camel-sasl-popb4smtp.h
 file path=usr/include/evolution-data-server/camel/camel-sasl-xoauth2-google.h
 file path=usr/include/evolution-data-server/camel/camel-sasl-xoauth2-outlook.h
+file path=usr/include/evolution-data-server/camel/camel-sasl-xoauth2-yahoo.h
 file path=usr/include/evolution-data-server/camel/camel-sasl-xoauth2.h
 file path=usr/include/evolution-data-server/camel/camel-sasl.h
 file path=usr/include/evolution-data-server/camel/camel-search-private.h
@@ -294,6 +296,7 @@ file path=usr/include/evolution-data-server/libedataserver/e-network-monitor.h
 file path=usr/include/evolution-data-server/libedataserver/e-oauth2-service-base.h
 file path=usr/include/evolution-data-server/libedataserver/e-oauth2-service-google.h
 file path=usr/include/evolution-data-server/libedataserver/e-oauth2-service-outlook.h
+file path=usr/include/evolution-data-server/libedataserver/e-oauth2-service-yahoo.h
 file path=usr/include/evolution-data-server/libedataserver/e-oauth2-service.h
 file path=usr/include/evolution-data-server/libedataserver/e-oauth2-services.h
 file path=usr/include/evolution-data-server/libedataserver/e-operation-pool.h
@@ -370,7 +373,6 @@ file path=usr/include/evolution-data-server/libedataserverui/e-webdav-discover-w
 file path=usr/include/evolution-data-server/libedataserverui/libedataserverui.h
 file path=usr/lib/$(MACH64)/evolution-data-server/addressbook-backends/libebookbackendcarddav.so
 file path=usr/lib/$(MACH64)/evolution-data-server/addressbook-backends/libebookbackendfile.so
-file path=usr/lib/$(MACH64)/evolution-data-server/addressbook-backends/libebookbackendgoogle.so
 file path=usr/lib/$(MACH64)/evolution-data-server/addressbook-backends/libebookbackendldap.so
 file path=usr/lib/$(MACH64)/evolution-data-server/calendar-backends/libecalbackendcaldav.so
 file path=usr/lib/$(MACH64)/evolution-data-server/calendar-backends/libecalbackendcontacts.so
@@ -396,7 +398,6 @@ file path=usr/lib/$(MACH64)/evolution-data-server/libedbus-private.so
 file path=usr/lib/$(MACH64)/evolution-data-server/registry-modules/module-cache-reaper.so
 file path=usr/lib/$(MACH64)/evolution-data-server/registry-modules/module-gnome-online-accounts.so
 file path=usr/lib/$(MACH64)/evolution-data-server/registry-modules/module-google-backend.so
-file path=usr/lib/$(MACH64)/evolution-data-server/registry-modules/module-oauth2-services.so
 file path=usr/lib/$(MACH64)/evolution-data-server/registry-modules/module-outlook-backend.so
 file path=usr/lib/$(MACH64)/evolution-data-server/registry-modules/module-secret-monitor.so
 file path=usr/lib/$(MACH64)/evolution-data-server/registry-modules/module-trust-prompt.so
@@ -411,9 +412,9 @@ file path=usr/lib/$(MACH64)/girepository-1.0/EDataBook-1.2.typelib
 file path=usr/lib/$(MACH64)/girepository-1.0/EDataCal-2.0.typelib
 file path=usr/lib/$(MACH64)/girepository-1.0/EDataServer-1.2.typelib
 file path=usr/lib/$(MACH64)/girepository-1.0/EDataServerUI-1.2.typelib
-link path=usr/lib/$(MACH64)/libcamel-1.2.so target=libcamel-1.2.so.62
-link path=usr/lib/$(MACH64)/libcamel-1.2.so.62 target=libcamel-1.2.so.62.0.0
-file path=usr/lib/$(MACH64)/libcamel-1.2.so.62.0.0
+link path=usr/lib/$(MACH64)/libcamel-1.2.so target=libcamel-1.2.so.63
+link path=usr/lib/$(MACH64)/libcamel-1.2.so.63 target=libcamel-1.2.so.63.0.0
+file path=usr/lib/$(MACH64)/libcamel-1.2.so.63.0.0
 link path=usr/lib/$(MACH64)/libebackend-1.2.so target=libebackend-1.2.so.10
 link path=usr/lib/$(MACH64)/libebackend-1.2.so.10 \
     target=libebackend-1.2.so.10.0.0
@@ -438,15 +439,15 @@ link path=usr/lib/$(MACH64)/libedata-cal-2.0.so.1 \
     target=libedata-cal-2.0.so.1.0.0
 file path=usr/lib/$(MACH64)/libedata-cal-2.0.so.1.0.0
 link path=usr/lib/$(MACH64)/libedataserver-1.2.so \
-    target=libedataserver-1.2.so.25
-link path=usr/lib/$(MACH64)/libedataserver-1.2.so.25 \
-    target=libedataserver-1.2.so.25.0.0
-file path=usr/lib/$(MACH64)/libedataserver-1.2.so.25.0.0
+    target=libedataserver-1.2.so.26
+link path=usr/lib/$(MACH64)/libedataserver-1.2.so.26 \
+    target=libedataserver-1.2.so.26.0.0
+file path=usr/lib/$(MACH64)/libedataserver-1.2.so.26.0.0
 link path=usr/lib/$(MACH64)/libedataserverui-1.2.so \
-    target=libedataserverui-1.2.so.2
-link path=usr/lib/$(MACH64)/libedataserverui-1.2.so.2 \
-    target=libedataserverui-1.2.so.2.0.0
-file path=usr/lib/$(MACH64)/libedataserverui-1.2.so.2.0.0
+    target=libedataserverui-1.2.so.3
+link path=usr/lib/$(MACH64)/libedataserverui-1.2.so.3 \
+    target=libedataserverui-1.2.so.3.0.0
+file path=usr/lib/$(MACH64)/libedataserverui-1.2.so.3.0.0
 file path=usr/lib/$(MACH64)/pkgconfig/camel-1.2.pc
 file path=usr/lib/$(MACH64)/pkgconfig/evolution-data-server-1.2.pc
 file path=usr/lib/$(MACH64)/pkgconfig/libebackend-1.2.pc

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -39,14 +39,14 @@ include ../../../make-rules/shared-macros.mk
 # GNOME stores and various components now expect it to be present.
 
 COMPONENT_NAME=		evolution-data-server
-COMPONENT_VERSION=	3.38.3
+COMPONENT_VERSION=	3.42.3
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Evolution
 COMPONENT_ARCHIVE_HASH= \
-	sha256:9732f690b252aa7c0932c761740b5098a19705d1b6e4a5de2fad3a16e57e3ca7
+	sha256:6f5847a1234799073e9585db861c21381a09ed550dc0a2125f00ba5f90bd361d
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	10935
 
-COMPONENT_BAID=		92306
+COMPONENT_BAID=		115672
 
 BUILD_STYLE= cmake
 
@@ -59,6 +59,7 @@ CPPFLAGS += -I/usr/include/kerberosv5/
 CFLAGS += $(XPG6MODE)
 
 CMAKE_OPTIONS += -DENABLE_GOOGLE_AUTH=OFF
+CMAKE_OPTIONS += -DENABLE_OAUTH2=OFF
 CMAKE_OPTIONS += -DENABLE_UOA=OFF
 CMAKE_OPTIONS += -DENABLE_INTROSPECTION=ON
 CMAKE_OPTIONS += -DOPEN_LDAP=OFF
