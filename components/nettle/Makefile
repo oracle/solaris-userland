@@ -137,17 +137,4 @@ $(BUILD_DIR)/wanboot-amd64/.installed: \
 	COMPONENT_POST_INSTALL_ACTION += \
 	$(AR) ts $(PROTO_DIR)/usr/lib/grub/wanboot/libhogweed.a;
 
-# Install nettle 3.5.1 and copy the shared libraries.
-COMPONENT_POST_INSTALL_ACTION += ( \
-	cd ../nettle35; \
-	$(GMAKE) install; \
-	$(MKDIR) $(PROTO_DIR)/usr/lib/$(MACH64)/; \
-	gcp -av build/prototype/$(MACH)/usr/lib/libhogweed.so.5* $(PROTO_DIR)/usr/lib/; \
-	gcp -av build/prototype/$(MACH)/usr/lib/libnettle.so.7* $(PROTO_DIR)/usr/lib/; \
-	gcp -av build/prototype/$(MACH)/usr/lib/$(MACH64)/libhogweed.so.5* $(PROTO_DIR)/usr/lib/$(MACH64)/; \
-	gcp -av build/prototype/$(MACH)/usr/lib/$(MACH64)/libnettle.so.7* $(PROTO_DIR)/usr/lib/$(MACH64)/; \
-);
-
-PRE_CLEAN_ACTION += cd ../nettle35 && $(GMAKE) clean;
-
 REQUIRED_PACKAGES += library/gmp
