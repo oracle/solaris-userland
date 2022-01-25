@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -80,12 +80,12 @@ proto/.prepared: Makefile source.c
 	$(TOUCH) proto/usr/lib/python/correct2.py
 	$(TOUCH) proto/usr/lib/python/correct3.py
 	$(PYTHON.2.7) -m compileall proto/usr/lib/python/correct2.py
-	$(PYTHON.3.7) -m compileall proto/usr/lib/python/correct3.py
+	$(PYTHON.3.9) -m compileall proto/usr/lib/python/correct3.py
 
 	$(TOUCH) proto/usr/lib/python/stale2.py
 	$(TOUCH) proto/usr/lib/python/stale3.py
 	$(PYTHON.2.7) -m compileall proto/usr/lib/python/stale2.py
-	$(PYTHON.3.7) -m compileall proto/usr/lib/python/stale3.py
+	$(PYTHON.3.9) -m compileall proto/usr/lib/python/stale3.py
 	# wait, otherwise timestamp might be unchanged
 	sleep 1
 	$(TOUCH) proto/usr/lib/python/stale2.py

@@ -1,4 +1,4 @@
-#!/usr/bin/python3.7
+#!/usr/bin/python3.9
 #
 # CDDL HEADER START
 #
@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 #
 
 # Tests for Userland pkglint check extension (from userland.py)
@@ -368,7 +368,7 @@ class TestUserlandPkglint(unittest.TestCase):
         self.assertIn("ERROR userland.manifest006.5      "
             "bytecode is stale in usr/lib/python/stale2.pyc\n", stderr)
         self.assertIn("ERROR userland.manifest006.5      "
-            "bytecode is stale (timestamp) in usr/lib/python/__pycache__/stale3.cpython-37.pyc\n", stderr)
+            "bytecode is stale (timestamp) in usr/lib/python/__pycache__/stale3.cpython-39.pyc\n", stderr)
 
 
 if __name__ == '__main__':
