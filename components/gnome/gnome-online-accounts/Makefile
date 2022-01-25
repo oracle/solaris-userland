@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-online-accounts
-COMPONENT_VERSION=	3.38.0
+COMPONENT_VERSION=	3.40.1
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/GnomeOnlineAccounts
 COMPONENT_ARCHIVE_HASH= \
-	sha256:3760ea78729b3038dda0c416b57bc2cbaafcc619eec6c5109654d747fad2418c
+	sha256:955a03128d0e87855d34d7c534e088f6286ed7ac01baa4ef824ef42a2cb39aad
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	10943
 
-COMPONENT_BAID=		92572
+COMPONENT_BAID=		115243
 
 TEST_TARGET = $(NO_TESTS)
 
