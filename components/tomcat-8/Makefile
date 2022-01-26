@@ -20,18 +20,19 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		tomcat
-COMPONENT_VERSION=	8.5.72
+COMPONENT_VERSION=	8.5.75
+COMPONENT_BAID=		115683
 COMPONENT_PROJECT_URL=	https://tomcat.apache.org/
 COMPONENT_SRC_NAME=	apache-tomcat
 COMPONENT_SRC=		$(COMPONENT_SRC_NAME)-$(COMPONENT_VERSION)-src
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:cfca566d540f20eb164cc99adfbf7ef7dce6778ce778ff874b08840d4b8bd4ee
+    sha256:40ecb0dcf63ea2b4c62ee6a763dcb4647d396e9c8d4c484e48322a84d02a9951
 COMPONENT_ARCHIVE_URL=	https://archive.apache.org/dist/tomcat/tomcat-8/v$(COMPONENT_VERSION)/src/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	4987
@@ -41,8 +42,6 @@ COMPONENT_ARCHIVE_1= ecjsrc-4.6.3.jar
 COMPONENT_ARCHIVE_HASH_1= \
     sha256:f4be12aeaa50d54e883e75ee524c69ec9ed6a7c74bce4ef70d4adaff9a7e8e85
 COMPONENT_ARCHIVE_URL_1= http://archive.eclipse.org/eclipse/downloads/drops4/R-4.6.3-201703010400/$(COMPONENT_ARCHIVE_1)
-
-COMPONENT_BAID=		110209
 
 BUILD_STYLE= ant
 TEST_TARGET= $(SKIP_TEST)
