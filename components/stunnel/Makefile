@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		stunnel
-COMPONENT_VERSION=	5.59
+COMPONENT_VERSION=	5.62
 COMPONENT_PROJECT_URL=	https://www.stunnel.org/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:137776df6be8f1701f1cd590b7779932e123479fb91e5192171c16798815ce9f
+	sha256:9cf5bb949022aa66c736c1326554cca27d0641605a6370274edc4951eb5bd339
 COMPONENT_ANITYA_ID=	4901
 
 COMPONENT_ARCHIVE_URL=	https://www.stunnel.org/downloads/$(COMPONENT_ARCHIVE)
 
 #COMPONENT_PREP_ACTION += (cd $(@D) ; autoreconf -f)
 
-COMPONENT_BAID=                   100850
+COMPONENT_BAID=		115681
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -48,6 +48,7 @@ PATCH_LEVEL = 0
 COMPONENT_BUILD_ENV +=  PATH=$(USRDIR)/perl5/bin:$(PATH)
 
 CPPFLAGS +=	"-DPIDFILE='\"/var/run/stunnel.pid\"'"
+CPPFLAGS +=	-I/usr/openssl/3/include
 
 # used to generate the 64-bit interposer location
 CPPFLAGS += -DMACH64='\"$(MACH64)\"'
@@ -55,7 +56,7 @@ CPPFLAGS += -DMACH64='\"$(MACH64)\"'
 CONFIGURE_OPTIONS +=	--disable-fips
 CONFIGURE_OPTIONS +=	--enable-ipv6
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
-CONFIGURE_OPTIONS +=	--with-ssl=/usr/openssl/1.1
+CONFIGURE_OPTIONS +=	--with-ssl=/usr/openssl/3
 
 # used to generate LD_PRELOAD_* interposer pathnames
 COMPONENT_BUILD_ARGS += pkglibdir=$(USRLIBDIR)/stunnel
@@ -75,7 +76,7 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/^stunnel/d" ' \
 	'-e "/Leaving directory/d" '
 
-REQUIRED_PACKAGES += library/security/openssl-11
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += system/library
