@@ -1,0 +1,85 @@
+This patch replaces flock system call, which is not avaiable on Solaris by
+corresponding fcntl call. 
+
+The function readState opens and then closes the state file, which causes a
+lock obtained by the first call of lockState to be released (see close(2)).
+The behavior on Linux is different because flock(2) is used for locking the 
+state file. The man page (https://man7.org/linux/man-pages/man2/flock.2.html)
+says:
+
+"Furthermore, the lock is released either by an explicit LOCK_UN operation on
+ any of these duplicate file descriptors, or when all such file descriptors 
+ have been closed."
+
+In this case the first file descriptor obtained by the first call of lockState
+is still open.
+
+However, the behavior on Solaris is different. Man page for close(2) on Solaris 
+(https://docs.oracle.com/cd/E26505_01/html/816-5167/close-2.html)
+says:
+
+"All outstanding record locks owned by the process on the file associated with
+ the file descriptor will be removed (that is, unlocked)."
+
+The most simple solution seems to create a separate lock file to keep the lock
+and this makes test-0087.sh pass.  Test test-0089.sh specifically tests using
+/dev/null as a state file.  As the lock file name is derived from the state
+file name then /dev/null needs to be avoided to make this tests pass. 
+
+--- logrotate-3.19.0/logrotate.c.orig	2022-02-08 17:43:18.762772355 +0100
++++ logrotate-3.19.0/logrotate.c	2022-02-08 17:44:04.796067364 +0100
+@@ -3000,6 +3000,7 @@
+ 
+ static int lockState(const char *stateFilename, int skip_state_lock)
+ {
++    struct flock lock_data;
+     int lockFd = open(stateFilename, O_RDWR | O_CLOEXEC);
+     if (lockFd == -1) {
+         if (errno == ENOENT) {
+@@ -3028,7 +3029,14 @@
+         return 0;
+     }
+ 
+-    if (flock(lockFd, LOCK_EX | LOCK_NB) == -1) {
++    memset (&lock_data, 0, sizeof(lock_data));
++    lock_data.l_start = 0; 
++    lock_data.l_len = 0; 
++    lock_data.l_whence = SEEK_SET;
++    lock_data.l_type = F_WRLCK;
++
++    /* Non blocking call (F_SETLK), EWOULDBLOCK is equal to EAGAIN in Solaris */
++    if (fcntl(lockFd, F_SETLK, &lock_data) == -1) { 
+         if (errno == EWOULDBLOCK) {
+             message(MESS_ERROR, "state file %s is already locked\n"
+                     "logrotate does not support parallel execution on the"
+@@ -3051,6 +3059,7 @@
+     int skip_state_lock = 0;
+     const char *stateFile = STATEFILE;
+     const char *logFile = NULL;
++    char stateFileLock[PATH_MAX];
+     FILE *logFd = NULL;
+     int rc = 0;
+     int arg;
+@@ -3169,6 +3178,22 @@
+         exit(3);
+     }
+ 
++    /* Create a file name for a lock file and lock the lock file,
++     * /dev/null shall be avoided */
++
++    if (strcmp(stateFile, "/dev/null")) {
++        strncpy(stateFileLock, stateFile, PATH_MAX);
++        stateFileLock[PATH_MAX - 1] = 0;
++        if (strlcat(stateFileLock, ".lock", PATH_MAX) >= PATH_MAX) {
++            fprintf(stderr, "Resulting state lock file name is too long, use a shorter state file name\n");
++            exit(1);
++        }
++ 
++        if (!debug && lockState(stateFileLock, skip_state_lock)) {
++            exit(3);
++        }
++    }
++
+     if (readState(stateFile))
+         rc = 1;
+ 

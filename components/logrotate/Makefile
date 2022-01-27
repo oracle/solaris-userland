@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER = gcc
@@ -28,14 +28,14 @@ COMPILER = gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		logrotate
-COMPONENT_VERSION=	3.15.1
+COMPONENT_VERSION=	3.19.0
 COMPONENT_PROJECT_URL=	https://github.com/logrotate/logrotate/releases/download
 COMPONENT_ARCHIVE_HASH= \
-    sha256:9eed6d9254f3e2313e15a44b4d1e5f209d35a4483b2c563c823050ec91ac67b8
+    sha256:ecaac5c5e9c19fbc497d258da271ed6f3f2eb5f9e2e809053592cae4ffd4af91
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	10567
 
-COMPONENT_BAID=		74441
+COMPONENT_BAID=		116551
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -43,7 +43,7 @@ include $(WS_MAKE_RULES)/common.mk
 unexport SHELLOPTS
 
 # The tests need GNU variants of sed, egrep, etc.
-COMPONENT_TEST_ENV = PATH=/usr/gnu/bin:/usr/bin
+COMPONENT_TEST_ENV += PATH=$(GNUBIN):$(PATH)
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
 	'-e "/TOTAL:/p" ' \
@@ -55,4 +55,3 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/ERROR:/p" '	
 
 REQUIRED_PACKAGES += library/popt
-
