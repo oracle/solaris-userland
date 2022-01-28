@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-calendar
-COMPONENT_VERSION=	3.34.2
+COMPONENT_VERSION=	41.2
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Calendar
 COMPONENT_ARCHIVE_HASH= \
-	sha256:3ca32c2354461f1728e54a14f38fc3a9e052f579bb3893a7b09f10105268d5ae
+	sha256:956b2f190322651c67fe667223896f8aa5acf33b70ada5a3b05a5361bda6611a
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	10906
 
-COMPONENT_BAID=		81314
+COMPONENT_BAID=		115846
 BUILD_STYLE=		meson
 
 TEST_TARGET= $(NO_TESTS)
@@ -57,6 +57,7 @@ REQUIRED_PACKAGES += library/desktop/cairo
 REQUIRED_PACKAGES += library/desktop/evolution-data-server
 REQUIRED_PACKAGES += library/desktop/geoclue
 REQUIRED_PACKAGES += library/desktop/gtk3
+REQUIRED_PACKAGES += library/desktop/libhandy
 REQUIRED_PACKAGES += library/desktop/libdazzle
 REQUIRED_PACKAGES += library/desktop/libgweather
 REQUIRED_PACKAGES += library/desktop/pango
