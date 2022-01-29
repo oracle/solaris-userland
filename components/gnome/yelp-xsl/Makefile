@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		yelp-xsl
-COMPONENT_VERSION=	3.38.1
+COMPONENT_VERSION=	41.1
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Yelp
 COMPONENT_ARCHIVE_HASH= \
-	sha256:b321563da6ab7fa8b989adaf1a91262059696316b4ddca2288fddcfed8dcdf67
+	sha256:0d6db37ac2ef812483e0104703f1fa9cf032e9e0956a5f1c3afbcc23791f8a54
 COMPONENT_BUGDB=	gnome/docviewer
 COMPONENT_ANITYA_ID=	13164
 
-COMPONENT_BAID=		88584
+COMPONENT_BAID=		115907
 
 TEST_TARGET= $(NO_TESTS)
 

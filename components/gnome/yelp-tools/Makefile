@@ -20,26 +20,40 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=             NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		yelp-tools
-COMPONENT_VERSION=	3.38.0
+COMPONENT_VERSION=	41.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Yelp/Tools
 COMPONENT_ARCHIVE_HASH= \
-	sha256:607ce4b3ee8517c42db924a01a78660a03317595c75825731ea86a920e2b04b0
+	sha256:37f1acc02bcbe68a31b86e07c129a839bd3276e656dc89eb7fc0a92746eff272
 COMPONENT_BUGDB=        gnome/docviewer
 COMPONENT_ANITYA_ID=	8420
 
-COMPONENT_BAID=		88579
+COMPONENT_BAID=		115917
+BUILD_STYLE=		meson	
 
 TEST_TARGET= $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
+# pkgdepend doesn't like the first line of a Python script to be:
+# '#!/usr/bin/env python3' so turn it into '#!/usr/bin/python3.7'
+
+COMPONENT_POST_INSTALL_ACTION += \
+        $(GSED) -i -e 's?python3?python$(PYTHON_VERSION)?' \
+                $(PROTOUSRBINDIR)/yelp-new; \
+        $(GSED) -i -e 's?python3?python$(PYTHON_VERSION)?' \
+                $(PROTOUSRBINDIR)/yelp-check; \
+        $(GSED) -i -e 's?python3?python$(PYTHON_VERSION)?' \
+                $(PROTOUSRBINDIR)/yelp-build;
+
 REQUIRED_PACKAGES += data/docbook/docbook-dtds
 REQUIRED_PACKAGES += library/gnome/yelp-xsl
 REQUIRED_PACKAGES += library/libxslt
+REQUIRED_PACKAGES += library/python/lxml-37                            
+REQUIRED_PACKAGES += runtime/python-37

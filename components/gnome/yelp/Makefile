@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		yelp
-COMPONENT_VERSION=	3.38.1
+COMPONENT_VERSION=	41.2
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Yelp
 COMPONENT_ARCHIVE_HASH= \
-	sha256:74359e170be2bdc386d1bfb03b6f4fa887ca3b8406f9c144b86d0b24e1445f80
+	sha256:b00bf033f02dd79b6d3f255031c71df8d6ed38e552c870b8f391a374724c43c5
 COMPONENT_BUGDB=        gnome/docviewer
 COMPONENT_ANITYA_ID=	14867
 
-COMPONENT_BAID=		88578
+COMPONENT_BAID=		115919
 
 # gmake check works but produces no useful output
 TEST_TARGET = $(SKIP_TEST)
@@ -65,6 +65,7 @@ CONFIGURE_OPTIONS += --enable-bz2
 CONFIGURE_OPTIONS += --enable-lzma
 CONFIGURE_OPTIONS += --enable-shared
 CONFIGURE_OPTIONS += --with-pic
+CONFIGURE_OPTIONS += --with-webkit2gtk-4-0
 
 COMPONENT_POST_INSTALL_ACTION.64 += \
         $(INSTALL) -D -m 0444 $(COMPONENT_DIR)/files/gnome-help.1 \
