@@ -20,20 +20,20 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 COMPILER= gcc
 
 COMPONENT_NAME=		gawk
-COMPONENT_VERSION=	5.1.0
+COMPONENT_VERSION=	5.1.1
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:cf5fea4ac5665fd5171af4716baab2effc76306a9572988d5ba1078f196382bd
+    sha256:d87629386e894bbea11a5e00515fc909dc9b7249529dad9e6a3a2c77085f7ea2
 COMPONENT_ANITYA_ID=	868
 
-COMPONENT_BAID=		90960
+COMPONENT_BAID=		116178
 
 # Adjust references to section 3am to be section 3 in the extensions man pages.
 COMPONENT_POST_CONFIGURE_ACTION = \
@@ -64,6 +64,8 @@ CONFIGURE_OPTIONS	+=	--infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS	+=	--libexecdir=$(CONFIGURE_LIBDIR.$(BITS))
 
 COMPONENT_SYSTEM_TEST_ARGS = AWKPROG=$(USRBINDIR)/gawk
+
+COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
 
 REQUIRED_PACKAGES += library/gmp
 REQUIRED_PACKAGES += library/libsigsegv
