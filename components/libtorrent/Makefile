@@ -55,6 +55,9 @@ COMPONENT_TEST_CMD = ./LibTorrentTest
 COMPONENT_TEST_ARGS =
 COMPONENT_TEST_TARGETS = 
 
+# Following line must be there to make the tests pass. Refer to the bug
+# to get more info.
+REQUIRED_PACKAGES += developer/c++/cppunit
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library
