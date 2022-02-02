@@ -12,8 +12,8 @@ Original date:2010-02-19 owner:yippi type:feature bugster:6923733
  data/Makefile.am                 |  12 ++--
  4 files changed, 124 insertions(+), 20 deletions(-)
 
---- a/daemon/gdm-display-access-file.c	2020-03-26 13:11:46.257534641 -0700
-+++ b/daemon/gdm-display-access-file.c	2020-03-26 13:18:14.800172768 -0700
+--- a/daemon/gdm-display-access-file.c	2022-02-01 16:41:47.956966766 -0800
++++ b/daemon/gdm-display-access-file.c	2022-02-01 16:46:27.271713299 -0800
 @@ -41,6 +41,8 @@
  #include "gdm-display-access-file.h"
  #include "gdm-common.h"
@@ -23,46 +23,11 @@ Original date:2010-02-19 owner:yippi type:feature bugster:6923733
  struct _GdmDisplayAccessFile
  {
          GObject parent;
-@@ -219,13 +221,24 @@
-         return TRUE;
- }
- 
-+void
-+gdm_display_access_file_cleanup_xauth (void)
-+{
-+        /* Clean up any xauth_dir_name when shutting down */
-+        if (strcmp (GDM_XAUTH_DIR, "/tmp") == 0 && xauth_dir_name != NULL) {
-+                g_remove (xauth_dir_name);
-+                g_debug ("GdmDisplayAccessFile: Unlinking xauth directory %s", xauth_dir_name);
-+                xauth_dir_name = NULL;
-+        }
-+}
-+
- static void
--clean_up_stale_auth_subdirs (void)
-+clean_up_stale_auth_subdirs (const char * xauth_dir_name)
- {
-         GDir *dir;
-         const char *filename;
- 
--        dir = g_dir_open (GDM_XAUTH_DIR, 0, NULL);
-+        dir = g_dir_open (xauth_dir_name, 0, NULL);
- 
-         if (dir == NULL) {
-                 return;
-@@ -234,7 +247,7 @@
-         while ((filename = g_dir_read_name (dir)) != NULL) {
-                 char *path;
- 
--                path = g_build_filename (GDM_XAUTH_DIR, filename, NULL);
-+                path = g_build_filename (xauth_dir_name, filename, NULL);
- 
-                 /* Will only succeed if the directory is empty
-                  */
-@@ -249,10 +262,13 @@
+@@ -260,10 +262,14 @@
                               char       **filename,
                               GError     **error)
  {
++
 +	struct stat statbuf;
 +	gboolean dir_exists;
          char   *template;
@@ -73,7 +38,7 @@ Original date:2010-02-19 owner:yippi type:feature bugster:6923733
          FILE   *fp;
          uid_t   uid;
          gid_t   gid;
-@@ -266,10 +282,37 @@
+@@ -277,10 +283,37 @@
          fp = NULL;
          fd = -1;
  
@@ -111,9 +76,47 @@ Original date:2010-02-19 owner:yippi type:feature bugster:6923733
 +                dir_exists = FALSE;
 +                g_remove (xauth_dir_name);
 +                if (g_mkdir (xauth_dir_name, 0711) != 0) {
-                         g_set_error (error,
-                                      G_FILE_ERROR,
-                                      g_file_error_from_errno (errno),
+                         g_set_error_literal (error,
+                                              G_FILE_ERROR,
+                                              g_file_error_from_errno (errno),
+--- a/daemon/gdm-display-access-file.c	2020-03-26 13:11:46.257534641 -0700
++++ b/daemon/gdm-display-access-file.c	2020-03-26 13:18:14.800172768 -0700
+@@ -219,13 +221,24 @@
+         return TRUE;
+ }
+ 
++void
++gdm_display_access_file_cleanup_xauth (void)
++{
++        /* Clean up any xauth_dir_name when shutting down */
++        if (strcmp (GDM_XAUTH_DIR, "/tmp") == 0 && xauth_dir_name != NULL) {
++                g_remove (xauth_dir_name);
++                g_debug ("GdmDisplayAccessFile: Unlinking xauth directory %s", xauth_dir_name);
++                xauth_dir_name = NULL;
++        }
++}
++
+ static void
+-clean_up_stale_auth_subdirs (void)
++clean_up_stale_auth_subdirs (const char * xauth_dir_name)
+ {
+         GDir *dir;
+         const char *filename;
+ 
+-        dir = g_dir_open (GDM_XAUTH_DIR, 0, NULL);
++        dir = g_dir_open (xauth_dir_name, 0, NULL);
+ 
+         if (dir == NULL) {
+                 return;
+@@ -234,7 +247,7 @@
+         while ((filename = g_dir_read_name (dir)) != NULL) {
+                 char *path;
+ 
+-                path = g_build_filename (GDM_XAUTH_DIR, filename, NULL);
++                path = g_build_filename (xauth_dir_name, filename, NULL);
+ 
+                 /* Will only succeed if the directory is empty
+                  */
 @@ -277,18 +320,71 @@
                          goto out;
                  }

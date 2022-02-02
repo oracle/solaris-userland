@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 		64
 # All components using gobject-introspection must be built with gcc as
@@ -29,16 +29,14 @@ COMPILER= 		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gdm
-COMPONENT_VERSION=	3.38.2.1
+COMPONENT_VERSION=	41.3
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/GDM
-COMPONENT_ARCHIVE_URL=  \
-	https://download.gnome.org/sources/gdm/3.38/gdm-3.38.2.1.tar.xz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:ca58a205d5ebfcbdab56a11716b898e16ae5dff21aee79d076046444628ec4da
+	sha256:bb0b650a7cea90f09a33284fbd02975315407efc18e814009852d1bcad3437d4
 COMPONENT_BUGDB=        gnome/gdm
 COMPONENT_ANITYA_ID=	13122
 
-COMPONENT_BAID=		92720
+COMPONENT_BAID=		116233
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk

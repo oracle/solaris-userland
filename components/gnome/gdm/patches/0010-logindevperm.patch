@@ -25,56 +25,6 @@ root so that they actually work in gdm 3.18.
  #ifdef HAVE_LOGINCAP
  #include <login_cap.h>
  #endif
-@@ -2121,6 +2125,10 @@
- #endif
- }
- 
-+#ifdef HAVE_LOGINDEVPERM
-+static void gdm_session_worker_revoke_console_permissions (GdmSessionWorker *);
-+#endif
-+
- static void
- session_worker_child_watch (GPid              pid,
-                             int               status,
-@@ -2141,10 +2149,6 @@
- 
-         gdm_session_worker_uninitialize_pam (worker, PAM_SUCCESS);
- 
--        worker->priv->child_pid = -1;
--        worker->priv->child_watch_id = 0;
--        run_script (worker, GDMCONFDIR "/PostSession");
--
-         gdm_dbus_worker_emit_session_exited (GDM_DBUS_WORKER (worker),
-                                              worker->priv->service,
-                                              status);
-@@ -2153,6 +2157,10 @@
-         killpg (pid, SIGHUP);
- #endif
- 
-+        worker->priv->child_pid = -1;
-+        worker->priv->child_watch_id = 0;
-+        run_script (worker, GDMCONFDIR "/PostSession");
-+
-         /* FIXME: It's important to give the manager an opportunity to process the
-          * session-exited emission above before switching VTs.
-          *
-@@ -2172,9 +2180,16 @@
-          * for some ideas and more discussion.
-          *
-          */
-+
-+#ifdef HAVE_LOGINDEVPERM
-+        gdm_session_worker_revoke_console_permissions (worker);
-+#endif
-+
-+#ifdef WITH_SYSTEMD
-         wait_until_dbus_signal_emission_to_manager_finishes (worker);
- 
-         jump_back_to_initial_vt (worker);
-+#endif
- }
- 
- static void
 @@ -2334,6 +2349,67 @@
          return fd;
  }
@@ -143,10 +93,36 @@ root so that they actually work in gdm 3.18.
  #ifdef __sun
  static void
  solaris_xserver_cred (const char *username, struct passwd *passwd_entry,
-@@ -2463,6 +2539,10 @@
+--- a/daemon/gdm-session-worker.c	2022-02-01 16:49:13.666952656 -0800
++++ b/daemon/gdm-session-worker.c	2022-02-01 16:54:02.506068674 -0800
+@@ -2088,10 +2088,6 @@
+ 
+         gdm_session_worker_uninitialize_pam (worker, PAM_SUCCESS);
+ 
+-        worker->priv->child_pid = -1;
+-        worker->priv->child_watch_id = 0;
+-        run_script (worker, GDMCONFDIR "/PostSession");
+-
+         gdm_dbus_worker_emit_session_exited (GDM_DBUS_WORKER (worker),
+                                              worker->priv->service,
+                                              status);
+@@ -2100,6 +2096,10 @@
+         killpg (pid, SIGHUP);
+ #endif
+ 
++        worker->priv->child_pid = -1;
++        worker->priv->child_watch_id = 0;
++        run_script (worker, GDMCONFDIR "/PostSession");
++
+         /* FIXME: It's important to give the manager an opportunity to process the
+          * session-exited emission above before switching VTs.
+          *
+--- a/daemon/gdm-session-worker.c       2022-02-02 06:16:01.523535765 -0800
++++ b/daemon/gdm-session-worker.c       2022-02-02 06:17:14.305111167 -0800
+@@ -2471,6 +2471,10 @@
                           worker->priv->arguments[0]);
          }
- 
+
 +#ifdef HAVE_LOGINDEVPERM
 +        gdm_session_worker_grant_console_permissions (worker, passwd_entry);
 +#endif

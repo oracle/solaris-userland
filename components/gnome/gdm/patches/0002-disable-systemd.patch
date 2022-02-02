@@ -1219,17 +1219,6 @@ Subject: [PATCH 02/19] disable systemd
  #define GDM_DBUS_PATH                       "/org/gnome/DisplayManager"
  #define GDM_LOCAL_DISPLAY_FACTORY_DBUS_PATH GDM_DBUS_PATH "/LocalDisplayFactory"
  #define GDM_MANAGER_DBUS_NAME               "org.gnome.DisplayManager.LocalDisplayFactory"
-@@ -60,8 +64,10 @@
-         /* FIXME: this needs to be per seat? */
-         guint            num_failures;
- 
-+#ifdef WITH_SYSTEMD
-         guint            seat_new_id;
-         guint            seat_removed_id;
-+#endif
- 
- #if defined(ENABLE_WAYLAND_SUPPORT) && defined(ENABLE_USER_DISPLAY_SERVER)
-         unsigned int     active_vt;
 @@ -87,7 +93,9 @@
                                                           GParamSpec                  *arg1,
                                                           GdmLocalDisplayFactory      *factory);
@@ -1240,15 +1229,6 @@ Subject: [PATCH 02/19] disable systemd
  static gpointer local_display_factory_object = NULL;
  static gboolean lookup_by_session_id (const char *id,
                                        GdmDisplay *display,
-@@ -231,7 +239,7 @@
- 
-         g_debug ("GdmLocalDisplayFactory: Creating transient display");
- 
--#ifdef ENABLE_USER_DISPLAY_SERVER
-+#ifdef WITH_SYSTEMD && ENABLE_USER_DISPLAY_SERVER
-         display = gdm_local_display_new ();
-         if (gdm_local_display_factory_use_wayland ())
-                 g_object_set (G_OBJECT (display), "session-type", "wayland", NULL);
 @@ -370,7 +378,7 @@
                          /* reset num failures */
                          factory->num_failures = 0;
@@ -1258,47 +1238,6 @@ Subject: [PATCH 02/19] disable systemd
                  }
                  break;
          case GDM_DISPLAY_FAILED:
-@@ -464,15 +472,19 @@
- {
-         GdmDisplayStore *store;
-         GdmDisplay      *display = NULL;
-+#ifdef WITH_SYSTEMD
-         g_autofree char *login_session_id = NULL;
-+#endif
- 
-         g_debug ("GdmLocalDisplayFactory: %s login display for seat %s requested",
-                  session_type? : "X11", seat_id);
-         store = gdm_display_factory_get_display_store (GDM_DISPLAY_FACTORY (factory));
- 
-+#ifdef WITH_SYSTEMD
-         if (sd_seat_can_multi_session (seat_id))
-                 display = gdm_display_store_find (store, lookup_prepared_display_by_seat_id, (gpointer) seat_id);
-         else
-+#endif
-                 display = gdm_display_store_find (store, lookup_by_seat_id, (gpointer) seat_id);
- 
-         /* Ensure we don't create the same display more than once */
-@@ -481,6 +493,7 @@
-                 return NULL;
-         }
- 
-+#ifdef WITH_SYSTEMD
-         /* If we already have a login window, switch to it */
-         if (gdm_get_login_window_session_id (seat_id, &login_session_id)) {
-                 GdmDisplay *display;
-@@ -498,10 +511,11 @@
-                         return NULL;
-                 }
-         }
-+#endif
- 
-         g_debug ("GdmLocalDisplayFactory: Adding display on seat %s", seat_id);
- 
--#ifdef ENABLE_USER_DISPLAY_SERVER
-+#ifdef WITH_SYSTEMD && ENABLE_USER_DISPLAY_SERVER
-         if (g_strcmp0 (seat_id, "seat0") == 0) {
-                 display = gdm_local_display_new ();
-                 if (session_type != NULL) {
 @@ -533,6 +547,7 @@
          return display;
  }
@@ -2745,3 +2684,140 @@ Subject: [PATCH 02/19] disable systemd
  
          g_object_unref (worker->priv->user_settings);
          g_free (worker->priv->service);
+--- a/daemon/gdm-local-display-factory.c	2022-02-02 08:06:55.203548127 -0800
++++ b/daemon/gdm-local-display-factory.c	2022-02-02 08:17:19.779589462 -0800
+@@ -89,6 +89,11 @@
+ static void     gdm_local_display_factory_init          (GdmLocalDisplayFactory      *factory);
+ static void     gdm_local_display_factory_finalize      (GObject                     *object);
+ 
++static GdmDisplay *create_display                       (GdmLocalDisplayFactory      *factory,
++                                                         const char                  *seat_id,
++                                                         const char                  *session_type,
++                                                         gboolean                    initial_display);
++
+ static void     ensure_display_for_seat                 (GdmLocalDisplayFactory      *factory,
+                                                          const char                  *seat_id);
+ 
+@@ -630,6 +635,52 @@
+         return lookup_by_seat_id (id, display, user_data);
+ }
+ 
++static GdmDisplay *
++create_display (GdmLocalDisplayFactory *factory,
++                const char             *seat_id,
++                const char             *session_type,
++                gboolean                initial)
++{
++        GdmDisplayStore *store;
++        GdmDisplay      *display = NULL;
++
++        g_debug ("GdmLocalDisplayFactory: %s login display for seat %s requested",
++                 session_type? : "X11", seat_id);
++        store = gdm_display_factory_get_display_store (GDM_DISPLAY_FACTORY (factory));
++
++	display = gdm_display_store_find (store, lookup_by_seat_id, (gpointer) seat_id);
++
++        /* Ensure we don't create the same display more than once */
++        if (display != NULL) {
++                g_debug ("GdmLocalDisplayFactory: display already created");
++                return NULL;
++        }
++
++        g_debug ("GdmLocalDisplayFactory: Adding display on seat %s", seat_id);
++
++        if (display == NULL) {
++                guint32 num;
++
++                num = take_next_display_number (factory);
++
++                display = gdm_legacy_display_new (num);
++        }
++
++        g_object_set (display, "seat-id", seat_id, NULL);
++        g_object_set (display, "is-initial", initial, NULL);
++
++        store_display (factory, display);
++
++        /* let store own the ref */
++        g_object_unref (display);
++
++        if (! gdm_display_manage (display)) {
++                gdm_display_unmanage (display);
++        }
++
++        return display;
++}
++
+ static int
+ on_seat0_graphics_check_timeout (gpointer user_data)
+ {
+--- a/daemon/gdm-local-display-factory.c	2022-02-02 05:37:49.221720814 -0800
++++ b/daemon/gdm-local-display-factory.c	2022-02-02 05:58:44.109389605 -0800
+@@ -775,6 +780,7 @@
+                 return;
+         }
+ 
++#ifdef WITH_SYSTEMD
+         /* If we already have a login window, switch to it */
+         if (gdm_get_login_window_session_id (seat_id, &login_session_id)) {
+                 GdmDisplay *display;
+@@ -792,6 +798,7 @@
+                         return;
+                 }
+         }
++#endif
+ 
+         g_debug ("GdmLocalDisplayFactory: Adding display on seat %s", seat_id);
+ 
+--- a/common/gdm-common.c	2022-02-02 07:28:16.748008362 -0800
++++ b/common/gdm-common.c	2022-02-02 07:28:47.825841170 -0800
+@@ -653,7 +653,7 @@
+ }
+ #endif /* WITH_CONSOLE_KIT */
+ 
+-#ifdef WIHT_SYSTEMD
++#ifdef WITH_SYSTEMD
+ gboolean
+ activate_session_id_for_systemd (GDBusConnection *connection,
+                             const char      *seat_id,
+@@ -1270,6 +1270,7 @@
+ 
+         return TRUE;
+ }
++#endif /* WITH_SYSTEMD */
+ 
+ static void
+ load_env_file (GFile *file,
+@@ -1393,4 +1394,3 @@
+         gdm_load_env_dir (dir, load_env_func, expand_func, user_data);
+         g_object_unref (dir);
+ }
+-#endif /* WITH_SYSTEMD */
+--- a/daemon/gdm-local-display-factory.c	2022-02-02 10:28:54.643295552 -0800
++++ b/daemon/gdm-local-display-factory.c	2022-02-02 10:41:08.974668946 -0800
+@@ -574,7 +574,11 @@
+                         if (factory->num_failures > MAX_DISPLAY_FAILURES)
+                                 g_warning ("GdmLocalDisplayFactory: maximum number of X display failures reached: check X server log for errors");
+                         else
++#ifdef WITH_SYSTEMD
+                                 ensure_display_for_seat (factory, seat_id);
++#else
++				create_display (factory, seat_id, session_type, is_initial);
++#endif
+                 }
+                 break;
+         case GDM_DISPLAY_UNMANAGED:
+--- a/daemon/gdm-session-worker.c	2022-02-02 13:59:11.689328287 -0800
++++ b/daemon/gdm-session-worker.c	2022-02-02 14:00:10.674216124 -0800
+@@ -2119,9 +2119,11 @@
+          * for some ideas and more discussion.
+          *
+          */
++#ifdef WITH_SYSTEMD
+         wait_until_dbus_signal_emission_to_manager_finishes (worker);
+ 
+         jump_back_to_initial_vt (worker);
++#endif
+ }
+ 
+ static void
