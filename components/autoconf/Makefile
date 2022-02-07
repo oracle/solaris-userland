@@ -20,19 +20,19 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		autoconf
-COMPONENT_VERSION=	2.69
+COMPONENT_VERSION=	2.71
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:64ebcec9f8ac5b2487125a86a7760d2591ac9e1d3dbd59489633f9de62a57684
+    sha256:f14c83cfebcc9427f2c3cea7258bd90df972d92eb26752da4ddad81c87a0faa4
 COMPONENT_ANITYA_ID=	141
 
-COMPONENT_BAID=		23089
+COMPONENT_BAID=		101615
 
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_NO_ARCH)
 
@@ -45,17 +45,8 @@ CONFIGURE_OPTIONS += --infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS += PERL="$(PERL)"
 CONFIGURE_OPTIONS += M4="$(GNUBIN)/m4"
 
-# The Makefile has different targets for the equivalent of "gmake test" and
-# "gmake system-test".
-COMPONENT_TEST_TARGETS =	check-local
-COMPONENT_TEST_DIR =		$(@D)/tests
 COMPONENT_TEST_ENV +=		F77=/usr/bin/gfortran
 
-COMPONENT_SYSTEM_TEST_TARGETS =	installcheck
-COMPONENT_SYSTEM_TEST_DIR =	$(@D)/tests
-COMPONENT_SYSTEM_TEST_ENV +=	F77=/usr/bin/gfortran
-
-# Note that "38: autotools and whitespace in file names" test fails.
 COMPONENT_TEST_TRANSFORMS += \
         '-e "/check-local/d"' \
         '-e "/ksh93/d"' \

@@ -4,71 +4,72 @@ Further work (including patching against configure.ac instead of configure)
 needs to be done to determine if they are really essential and if they need
 to be sent upstream.
 
---- configure.orig	2016-12-19 13:45:11.806909920 +0000
-+++ configure	2016-12-19 13:51:48.756972474 +0000
-@@ -874,7 +874,7 @@
+diff -r aa432d5e40c9 configure
+--- configure	Tue Jan 25 15:15:15 2022 +0000
++++ configure	Tue Jan 25 15:33:54 2022 +0000
+@@ -936,7 +936,7 @@
  datadir='${datarootdir}'
  sysconfdir='${prefix}/etc'
  sharedstatedir='${prefix}/com'
 -localstatedir='${prefix}/var'
 +localstatedir='/var'
+ runstatedir='${localstatedir}/run'
  includedir='${prefix}/include'
  oldincludedir='/usr/include'
- docdir='${datarootdir}/doc/${PACKAGE_TARNAME}'
-@@ -15598,6 +15598,7 @@
+@@ -17759,6 +17759,7 @@
  int
- main ()
+ main (void)
  {
 +#error "We want to use libpthread and not libthread."
  mutex_lock()
    ;
    return 0;
-@@ -15687,7 +15688,7 @@
+@@ -17850,7 +17851,7 @@
  if test -z "`${CC-cc} -pthread -c conftest.c 2>&1`"; then
-   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
- $as_echo "yes" >&6; }
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+ printf "%s\n" "yes" >&6; }
 -  CFLAGS="$CFLAGS -pthread"
 +  CFLAGS="$CFLAGS"
  else
-   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
- $as_echo "no" >&6; }
-@@ -15760,7 +15761,7 @@
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+ printf "%s\n" "no" >&6; }
+@@ -17924,7 +17925,7 @@
  if test -z "`${CC-cc} -pthread -c conftest.c 2>&1`"; then
-   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
- $as_echo "yes" >&6; }
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+ printf "%s\n" "yes" >&6; }
 -  CFLAGS="$CFLAGS -pthread"
 +  CFLAGS="$CFLAGS"
  else
-   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
- $as_echo "no" >&6; }
-@@ -15798,7 +15799,7 @@
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+ printf "%s\n" "no" >&6; }
+@@ -17962,7 +17963,7 @@
  if test -z "`${CC-cc} -pthread -c conftest.c 2>&1`"; then
-   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
- $as_echo "yes" >&6; }
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+ printf "%s\n" "yes" >&6; }
 -  CFLAGS="$CFLAGS -pthread"
 +  CFLAGS="$CFLAGS"
  else
-   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
- $as_echo "no" >&6; }
-@@ -15838,7 +15839,7 @@
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+ printf "%s\n" "no" >&6; }
+@@ -18003,7 +18004,7 @@
  
-           $as_echo "#define HAVE_LIBPTHREAD 1" >>confdefs.h
+           printf "%s\n" "#define HAVE_LIBPTHREAD 1" >>confdefs.h
  
 -          THREADLIB="-pthread -lc_r"
 +          THREADLIB="-lpthread -lposix4"
            gotthread="yes";
  
  else
-@@ -15851,7 +15852,7 @@
+@@ -18016,7 +18017,7 @@
  
          if test "x$gotthread" = "xno"; then
        SAVECFLAGS="$CFLAGS"
 -      CFLAGS="$CFLAGS -D_THREAD_SAFE -D_ALL_SOURCE -D_LONG_LONG"
 +      CFLAGS="$CFLAGS -D_REENTRANT -D_THREAD_SAFE -D_ALL_SOURCE -D_LONG_LONG"
-       { $as_echo "$as_me:${as_lineno-$LINENO}: checking for pthread_mutex_lock in -lpthread" >&5
- $as_echo_n "checking for pthread_mutex_lock in -lpthread... " >&6; }
+       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for pthread_mutex_lock in -lpthread" >&5
+ printf %s "checking for pthread_mutex_lock in -lpthread... " >&6; }
  ac_save_LIBS="$LIBS"
-@@ -16048,6 +16049,8 @@
+@@ -18218,6 +18219,8 @@
  
  fi
  
@@ -76,22 +77,21 @@ to be sent upstream.
 +export driverc="true"
  
  # Check whether --with-msql-lib was given.
- if test "${with_msql_lib+set}" = set; then :
-@@ -16265,6 +16268,8 @@
+ if test ${with_msql_lib+y}
+@@ -18502,6 +18505,7 @@
    QNX_FALSE=
  fi
  
 +export use_builtin_libtool="no"
-+
   if test "x$use_builtin_libtool" = "xyes" ; then
    WITHLT_TRUE=
    WITHLT_FALSE='#'
-@@ -16815,6 +16820,8 @@
+@@ -19034,6 +19038,8 @@
  fi
- done
  
+ fi
 +export LIBS="${LIBS} -lsocket -lnsl -lgen -z ignore"
 +export LD_OPTIONS="-lsocket -lnsl -lgen -z ignore"
- 
- for ac_func in putenv socket strdup strstr setenv setlocale strchr
- do :
+ ac_fn_c_check_func "$LINENO" "putenv" "ac_cv_func_putenv"
+ if test "x$ac_cv_func_putenv" = xyes
+ then :
