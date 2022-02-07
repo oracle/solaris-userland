@@ -2,15 +2,12 @@
   All 131 tests passed.
 ==> elixir (ex_unit)
 Excluding tags: [windows: true]
-1722 doctests, 3687 tests, 0 failures, 11 excluded
-==> ex_unit (ex_unit)
-43 doctests, 330 tests, 0 failures
-==> logger (ex_unit)
-3 doctests, 134 tests, 0 failures
-==> mix (ex_unit)
-Excluding tags: [windows: true]
-9 doctests, 669 tests, 0 failures
-==> eex (ex_unit)
-6 doctests, 94 tests, 0 failures
-==> iex (ex_unit)
-235 tests, 0 failures
+  1) test blaming annotates undefined function error with suggestions (ExceptionTest)
+     test/elixir/exception_test.exs:456
+     Assertion with == failed
+     code:  assert blame_message(:erlang, &(&1.gt_cookie())) == "function :erlang.gt_cookie/0 is undefined or private. Did you mean one of:\n\n      * get_cookie/0\n      * set_cookie/2\n"
+     left:  "function :erlang.gt_cookie/0 is undefined or private. Did you mean one of:\n\n      * get_cookie/0\n      * get_cookie/1\n      * set_cookie/1\n      * set_cookie/2\n"
+     right: "function :erlang.gt_cookie/0 is undefined or private. Did you mean one of:\n\n      * get_cookie/0\n      * set_cookie/2\n"
+     stacktrace:
+       test/elixir/exception_test.exs:473: (test)
+1722 doctests, 3687 tests, 1 failure, 11 excluded
