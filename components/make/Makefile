@@ -20,20 +20,20 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		make
-COMPONENT_VERSION=	4.2.1
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
+COMPONENT_VERSION=	4.3
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d6e262bf3601b42d2b1e4ef8310029e1dcf20083c5446b4b7aa67081fdffc589
+    sha256:e05fdde47c5f7ca45cb697e973894ff4f5d79e13b750ed57d7b66d8defc78e19
 COMPONENT_BUGDB=	utility/gnu-make
 COMPONENT_ANITYA_ID=	1877
 
-COMPONENT_BAID=		32517
+COMPONENT_BAID=		116561
 
 # the test suite needs to be configured first
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)

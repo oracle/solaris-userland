@@ -69,8 +69,15 @@ have defaults, but can be overridden.
   elsewhere. The infrastructure will import whole keyring into our pubring.gpg
   (and so you must commit it alongside your change).
 
+  You can also try to obtain the key by downloading it from
+  https://keys.openpgp.org/
+
   We can also manually import the key into our keyring via
   gpg2 --homedir "$(hg root)/tools/.gnupg" --import <public keyring>
+
+  or try to locate the key on different key server:
+
+  gpg2 --keyserver keyserver.ubuntu.com --keyserver-options http-proxy=$http_proxy --homedir "$(hg root)/tools/.gnupg" --recv DEACCAAEDB78137A
 
   Manual key import has the advantage that we don't have to import whole
   keyring, but can import only the single key we need. For that you need to know
