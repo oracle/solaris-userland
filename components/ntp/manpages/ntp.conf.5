@@ -18,7 +18,7 @@
 .\"
 .\" CDDL HEADER END
 .\"
-.\" Copyright (c) 2009, 2020, Oracle and/or its affiliates.
+.\" Copyright (c) 2009, 2022, Oracle and/or its affiliates.
 .\"
 .TH "ntp.conf" "5" "" "" "File Formats"
 .SH NAME
@@ -41,60 +41,34 @@ configure itself.
 \fBmanycastclient \fIaddress\fP \fR[options ...]\fP\fR
 .br
 \fR\fBpool \fIaddress\fP \fR[options ...]\fP\fR
+.br
+\fR\fBunpeer [\fIaddress\fP | \fIassocid\fP ]
 .ad
 .sp .25
 .RS 4n
 These commands specify the time server name or address to be used and the mode in which to operate. The \fIaddress\fP can be either a DNS name or a IPv4 or IPv6 address in standard notation. In general, multiple commands of each type can be used for different server and peer addresses or multicast groups.
-.RE
 .sp .3
 .ne 2
 .mk
 .na
+.TP
 \fBserver\fR
-.ad
-.sp .25
-.RS 4n
 For type s and r addresses (only), this command mobilizes a persistent client mode association with the specified remote server or local reference clock. If the \fBpreempt\fR flag is specified, a preemptible client mode association is mobilized instead.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBpeer\fR
-.ad
-.sp .25
-.RS 4n
 For type s addresses (only), this command mobilizes a persistent symmetric-active mode association with the specified remote peer.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBbroadcast\fR
-.ad
-.sp .25
-.RS 4n
 For type b and m ddresses (only), this command mobilizes a persistent broadcast or multicast server mode association. Note that type b messages go only to the interface specified, but type m messages go to all interfaces.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBmanycastclient\fR
-.ad
-.sp .25
-.RS 4n
 For type m addresses (only), this command mobilizes a manycast client mode association for the multicast group address specified. In this mode the address must match the address specified on the \fBmanycastserver\fR command of one or more designated manycast servers.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBpool\fR
-.ad
-.sp .25
-.RS 4n
 For type s messages (only) this command mobilizes a client mode association for servers implementing the pool automatic server discovery scheme described on the Association Management page at file:///usr/share/doc/ntp/assoc.html. The address is a DNS name in the form \fB\fIarea\fP.pool.ntp.org\fR, where \fB\fIarea\fP\fR is a qualifier designating the server geographic area such as \fBus\fR or \fBeurope\fR.
+.TP
+\fBunpeer\fP
+This command removes a previously configured association. An address or association ID can be used to identify the association. Either an IP address or DNS name can be used. This command is most useful when supplied via \fBntpq\fP runtime configuration commands \fB:config\fP and \fBconfig-from-file\fP.
 .SS "Command Options"
 Each of the above configuration commands takes zero or more options from the list below:
 .sp .3
@@ -126,6 +100,16 @@ When the server is reachable, send a burst of six packets instead of the usual o
 .sp .25
 .RS 4n
 When the server is unreachable, send a burst of eight packets instead of the usual one. The packet spacing is normally 2 s; however, the spacing between the first and second packets can be changed with the \fBcalldelay\fR command to allow additional time for a modem or ISDN call to complete. This option is valid only with the \fBserver\fR command and type s addresses. It is a recommended option with this command.
+.RE
+.sp .3
+.ne 2
+.mk
+.na
+\fBident\fR \fIgroup\fP
+.ad
+.sp .25
+.RS 4n
+Specify the group name for the association.
 .RE
 .sp .3
 .ne 2
@@ -213,6 +197,16 @@ This option specifies the time-to-live \fIttl\fP for the \fBbroadcast\fR command
 .ne 2
 .mk
 .na
+\fBxmtnonce\fR
+.ad
+.sp .25
+.RS 4n
+Allowed in the server and pool modes, this flag causes the client to put a random number nonce in the transmit timestamp of its outgoing packet. Since the server will reply copying the incoming transmit timestamp to the outgoing origin timestamp, this flag provides extra security for the loopback test, at the expense of the server having no idea what time the client thinks it is.
+.RE
+.sp .3
+.ne 2
+.mk
+.na
 \fBversion \fIversion\fP\fR
 .ad
 .sp .25
@@ -234,6 +228,7 @@ Enable reception of broadcast server messages to any local interface (type b add
 .ne 2
 .mk
 .na
+.TP
 \fBmanycastserver \fIaddress\fP [...]\fR
 .ad
 .sp .25
@@ -244,11 +239,23 @@ Enable reception of manycast client messages (type m)to the multicast group addr
 .ne 2
 .mk
 .na
+.TP
 \fBmulticastclient \fIaddress\fP [...]\fR
 .ad
 .sp .25
 .RS 4n
 Enable reception of multicast server messages to the multicast group address(es) (type m) specified. Upon receiving a message for the first time, the multicast client measures the nominal server propagation delay using a brief client/server exchange with the server, then enters the broadcast client mode, in which it synchronizes to succeeding multicast messages. Note that, in order to avoid accidental or malicious disruption in this mode, both the server and client should operate using symmetric key or public key authentication as described in the Authentication Options page at file:///usr/share/doc/ntp/authopt.html.
+.RE
+.sp .3
+.ne 2
+.mk
+.na
+.TP
+\fBmdnstries \fInumber\fP
+.ad
+.sp .25
+.RS 4n
+If we are participating in mDNS, after we have synched for the first time we attempt to register with the mDNS system. If that registration attempt fails, we try again at one minute intervals for up to \fInumber\fP times. After all, \fBntpd\fP may be starting before mDNS. The default value for \fBmdnstries\fP is 5.
 .RE
 .SS "Reference Clock Commands"
 .sp .3
@@ -260,121 +267,74 @@ Enable reception of multicast server messages to the multicast group address(es)
 .sp .25
 .RS 4n
 This command can be used to configure reference clocks in special ways. The options are interpreted as follows:
-.RE
 .sp .3
 .ne 2
 .mk
 .na
+.TP
 \fBprefer\fR
-.ad
-.sp .25
-.RS 4n
 Marks the reference clock as preferred. All other things being equal, this host will be chosen for synchronization among a set of correctly operating hosts. See the Mitigation Rules page at file:///usr/share/doc/ntp/prefer.html for further information.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBmode \fIint\fP\fR
-.ad
-.sp .25
-.RS 4n
 Specifies a mode number which is interpreted in a device-specific fashion. For instance, it selects a dialing protocol in the ACTS driver and a device subtype in the \fBparse\fR drivers.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBminpoll \fIint\fP\fR
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBmaxpoll \fIint\fP\fR
-.ad
-.sp .25
-.RS 4n
 These options specify the minimum and maximum polling interval for reference clock messages in seconds, interpreted as dual logarithms (2 ^ x). For most directly connected reference clocks, both \fBminpoll\fR and \fBmaxpoll\fR default to 6 (2^16 = 64 s). For modem reference clocks, \fBminpoll\fR defaults to 10 (2^10 = 1024 s = 17.1 m) and \fBmaxpoll\fR defaults to 14 (2^14 = 16384 s = 4.25 h). The allowable range is 4 (16 s) to 17 (36.4 h) inclusive.
 .RE
 .sp .3
 .ne 2
 .mk
 .na
-\fBfudge 127.127.\fIt.u\fP [time1 \fIsec\fP] [time2 \fIsec\fP] [stratum \fIint\fP] [refid \fIstring\fP] [mode \fIint\fP] [flag1 0|1] [flag2 0|1] [flag3 0|1] [flag4 0|1]\fR
+.TP
+\fBfudge 127.127.\fIt.u\fP [time1 \fIsec\fP] [time2 \fIsec\fP] [stratum \fIint\fP] [refid \fIstring\fP] [mode \fIint\fP] [flag1 0|1] [flag2 0|1] [flag3 0|1] [flag4 0|1] [\fBminjitter\fP \fIsecs\fR]
 .ad
 .sp .25
 .RS 4n
-This command can be used to configure reference clocks in special ways. It must immediately follow the \fBserver\fR command which configures the driver. Note that the same capability is possible at run time using the \fBntpq\fR program. The options are interpreted as follows:
-.RE
+This command can be used to configure reference clocks in special ways. It must immediately follow the \fBserver\fR command which configures the driver. Note that the same capability is possible at runtime using the \fBntpq\fR program. The options are interpreted as follows:
 .sp .3
 .ne 2
 .mk
 .na
+.TP
 \fBtime1 \fIsec\fP\fR
-.ad
-.sp .25
-.RS 4n
 Specifies a constant to be added to the time offset produced by the driver, a fixed-point decimal number in seconds. This is used as a calibration constant to adjust the nominal time offset of a particular clock to agree with an external standard, such as a precision PPS signal. It also provides a way to correct a systematic error or bias due to serial port or operating system latencies, different cable lengths or receiver internal delay. The specified offset is in addition to the propagation delay provided by other means, such as internal DIPswitches. Where a calibration for an individual system and driver is available, an approximate correction is noted in the driver documentation pages.
 .LP
 Note: in order to facilitate calibration when more than one radio clock or PPS signal is supported, a special calibration feature is available. It takes the form of an argument to the \fBenable\fR command and operates as described in the Reference Clock Drivers page at file:///usr/share/doc/ntp/refclock.html.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBtime2 \fIsecs\fP\fR
-.ad
-.sp .25
-.RS 4n
 Specifies a fixed-point decimal number in seconds, which is interpreted in a driver-dependent way. See the descriptions of specific drivers in the Reference Clock Drivers page at file:///usr/share/doc/ntp/refclock.html.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBstratum \fIint\fP\fR
-.ad
-.sp .25
-.RS 4n
 Specifies the stratum number assigned to the driver, an integer between 0 and 15. This number overrides the default stratum number ordinarily assigned by the driver itself, usually zero.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBrefid \fIstring\fP\fR
-.ad
-.sp .25
-.RS 4n
 Specifies an ASCII string of from one to four characters which defines the reference identifier used by the driver. This string overrides the default identifier ordinarily assigned by the driver itself.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBmode \fIint\fP\fR
-.ad
-.sp .25
-.RS 4n
 Specifies a mode number which is interpreted in a device-specific fashion. For instance, it selects a dialing protocol in the ACTS driver and a device subtype in the \fBparse\fR drivers.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBflag1 flag2 flag3 flag4\fR
-.ad
-.sp .25
-.RS 4n
 These four flags are used for customizing the clock driver. The interpretation of these values, and whether they are used at all, is a function of the particular clock driver. However, by convention \fBflag4\fR is used to enable recording monitoring data to the \fBclockstats\fR file configured with the \fBfilegen\fR command. 
+.TP
+\fBminjitter\fP \fIsecs\fP
+If the source has a jitter that cannot be sensibly estimated, because it is not statistic jitter, the source will be detected as falseticker sooner or later.
+This has been observed e.g. with the serial data of certain GPS receivers. Enforcing a minimal jitter value avoids a too low estimation, keeping the
+clock in the zoo while still detecting higher jitter.
+
+Note: this changes the refclock samples and ends up in the clock dispersion, not the clock jitter, despite being called jitter. To see the modified
+values, check the NTP clock variable "filtdisp", not "jitter". 
+
+The falseticker problem can also be avoided by increasing tos mindist, which extends the intersection interval, but that affects the root dispersion
+and is intended for the case of multiple reference clocks with reliable jitter that do not intersect otherwise. 
 .RE
 .SS "Authentication Commands"
 .sp .3
 .ne 2
 .mk
 .na
-\fBautokey [\fIlogsec\fP]\fR
+\fBautomax [\fIlogsec\fP]\fR
 .ad
 .sp .25
 .RS 4n
@@ -384,6 +344,7 @@ Specifies the interval between regenerations of the session key list used with t
 .ne 2
 .mk
 .na
+.TP
 \fBcontrolkey \fIkey\fP\fR
 .ad
 .sp .25
@@ -394,6 +355,7 @@ Specifies the key identifier to use with the \fBntpq\fR utility, which uses the 
 .ne 2
 .mk
 .na
+.TP
 \fBcrypto [randfile \fIfile\fP] [host \fIname\fP] [ident \fIname\fP] [pw \fIpassword\fP]\fR
 .ad
 .sp .25
@@ -404,6 +366,7 @@ This command requires the OpenSSL library. It activates public key cryptography 
 .ne 2
 .mk
 .na
+.TP
 \fBhost \fIname\fP\fR
 .ad
 .sp .25
@@ -414,6 +377,7 @@ Specifies the host name used in the host key link \fBntpkey_host_\fIname\fP\fR, 
 .ne 2
 .mk
 .na
+.TP
 \fBident \fIname\fP\fR
 .ad
 .sp .25
@@ -424,6 +388,7 @@ Specifies the group name used in the identity key link \fBntpkey_\fIkey\fP_\fIna
 .ne 2
 .mk
 .na
+.TP
 \fBpw \fIpassword\fP\fR
 .ad
 .sp .25
@@ -434,6 +399,7 @@ Specifies the password to decrypt files previously encrypted by the \fBntp-keyge
 .ne 2
 .mk
 .na
+.TP
 \fBrandfile \fIfile\fP\fR
 .ad
 .sp .25
@@ -444,6 +410,7 @@ Specifies the location of the random seed file used by the OpenSSL library. The 
 .ne 2
 .mk
 .na
+.TP
 \fBkeys \fIkeyfile\fP\fR
 .ad
 .sp .25
@@ -454,6 +421,7 @@ Specifies the complete path to the MD5 key file containing the keys and key iden
 .ne 2
 .mk
 .na
+.TP
 \fBkeysdir \fIpath\fP\fR
 .ad
 .sp .25
@@ -464,6 +432,7 @@ This command specifies the default directory path for cryptographic keys, parame
 .ne 2
 .mk
 .na
+.TP
 \fBrequestkey \fIkey\fP\fR
 .ad
 .sp .25
@@ -474,6 +443,7 @@ Specifies the key identifier to use with the \fBntpdc\fR utility program, which 
 .ne 2
 .mk
 .na
+.TP
 \fBrevoke [\fIlogsec\fP]\fR
 .ad
 .sp .25
@@ -484,6 +454,7 @@ Specifies the interval between re-randomization of certain cryptographic values 
 .ne 2
 .mk
 .na
+.TP
 \fBtrustedkey \fIkey\fP [...]\fR
 .ad
 .sp .25
@@ -505,132 +476,49 @@ Set the parameters of the \fBlimited\fR facility which protects the server from 
 .ne 2
 .mk
 .na
+.TP
 \fBrestrict \fIaddress\fP [mask \fImask\fP] [\fIflag\fP][...]\fR
 .ad
 .sp .25
 .RS 4n
 The \fIaddress\fP argument expressed in dotted-quad form is the address of a host or network. Alternatively, the \fB\fIaddress\fP\fR argument can be a valid host DNS&nbsp;name. The \fImask\fP argument expressed in dotted-quad form defaults to \fB255.255.255.255\fR, meaning that the \fIaddress\fP is treated as the address of an individual host. A default entry (address \fB0.0.0.0\fR, mask \fB0.0.0.0\fR) is always included and is always the first entry in the list. Note that text string \fBdefault\fR, with no mask option, may be used to indicate the default entry.
 .LP
-In the current implementation, \fIflag\fP always restricts access, i.e., an entry with no flags indicates that free access to the server is to be given. The flags are not orthogonal, in that more restrictive flags will often make less restrictive ones redundant. The flags can generally be classed into two categories, those which restrict time service and those which restrict informational queries and attempts to do run-time reconfiguration of the server. One or more of the following flags may be specified:
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+In the current implementation, \fIflag\fP always restricts access, i.e., an entry with no flags indicates that free access to the server is to be given. The flags are not orthogonal, in that more restrictive flags will often make less restrictive ones redundant. The flags can generally be classed into two categories, those which restrict time service and those which restrict informational queries and attempts to do runtime reconfiguration of the server. One or more of the following flags may be specified:
+.TP
 \fBignore\fR
-.ad
-.sp .25
-.RS 4n
 Deny packets of all kinds, including \fBntpq\fR and \fBntpdc\fR queries.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBkod\fR
-.ad
-.sp .25
-.RS 4n
 If this flag is set when an access violation occurs, a kiss-o'-death (KoD) packet is sent. KoD packets are rate limited to no more than one per second. If another KoD packet occurs within one second after the last one, the packet is dropped
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBlimited\fR
-.ad
-.sp .25
-.RS 4n
 Deny service if the packet spacing violates the lower limits specified in the \fBdiscard\fR command. A history of clients is kept using the monitoring capability of \fBntpd\fR. Thus, monitoring is always active as long as there is a restriction entry with the \fBlimited\fR flag.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBlowpriotrap\fR
-.ad
-.sp .25
-.RS 4n
 Declare traps set by matching hosts to be low priority. The number of traps a server can maintain is limited (the current limit is 3). Traps are usually assigned on a first come, first served basis, with later trap requestors being denied service. This flag modifies the assignment algorithm by allowing low priority traps to be overridden by later requests for normal priority traps.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBnomodify\fR
-.ad
-.sp .25
-.RS 4n
-Deny \fBntpq\fR and \fBntpdc\fR queries which attempt to modify the state of the server (i.e., run time reconfiguration). Queries which return information are permitted.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+Deny \fBntpq\fR and \fBntpdc\fR queries which attempt to modify the state of the server (i.e., runtime reconfiguration). Queries which return information are permitted.
+.TP
 \fBnoquery\fR
-.ad
-.sp .25
-.RS 4n
 Deny \fBntpq\fR and \fBntpdc\fR queries. Time service is not affected.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBnopeer\fR
-.ad
-.sp .25
-.RS 4n
 Deny packets which would result in mobilizing a new association. &nbsp;This includes broadcast, symmetric-active and manycast client packets when a configured association does not exist.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBnoserve\fR
-.ad
-.sp .25
-.RS 4n
 Deny all packets except \fBntpq\fR and \fBntpdc\fR queries.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBnotrap\fR
-.ad
-.sp .25
-.RS 4n
 Decline to provide mode 6 control message trap service to matching hosts. The trap service is a subsystem of the \fBntpdq\fR control message protocol which is intended for use by remote event logging programs.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBnotrust\fR
-.ad
-.sp .25
-.RS 4n
 Deny packets unless the packet is cryptographically authenticated.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBntpport\fR
-.ad
-.sp .25
-.RS 4n
 This is actually a match algorithm modifier, rather than a restriction flag. Its presence causes the restriction entry to be matched only if the source port in the packet is the standard NTP UDP port (123). Both \fBntpport\fR and \fBnon-ntpport\fR may be specified. The \fBntpport\fR is considered more specific and is sorted later in the list.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBversion\fR
-.ad
-.sp .25
-.RS 4n
 Deny packets that do not match the current NTP version.
 .RE
 .SS "Monitoring Commands"
@@ -643,155 +531,86 @@ Deny packets that do not match the current NTP version.
 .sp .25
 .RS 4n
 Enables writing of statistics records. Currently, six kinds of \fIname\fPstatistics are supported.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBclockstats\fR
-.ad
-.sp .25
-.RS 4n
 Enables recording of clock driver statistics information. Each update received from a clock driver appends a line of the following form to the file generation set named \fBclockstats\fR:
 .LP
 \fB49213 525.624 127.127.4.1 93 226 00:08:29.606 D\fR
 .LP
 The first two fields show the date (Modified Julian Day) and time (seconds and fraction past UTC midnight). The next field shows the clock address in dotted-quad notation, The final field shows the last timecode received from the clock in decoded ASCII format, where meaningful. In some clock drivers a good deal of additional information can be gathered and displayed as well. See information specific to each clock for further details.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBcryptostats\fR
-.ad
-.sp .25
-.RS 4n
 This option requires the OpenSSL cryptographic software library. It enables recording of cryptographic public key protocol information. Each message received by the protocol module appends a line of the following form to the file generation set named \fBcryptostats\fR:
 .LP
 \fB49213 525.624 127.127.4.1 \fImessage\fP\fR
 .LP
 The first two fields show the date (Modified Julian Day) and time (seconds and fraction past UTC midnight). The next field shows the peer address in dotted-quad notation, The final \fB\fImessage\fP\fR field includes the message type and certain ancillary information. See the Authentication Options page at file:///usr/share/doc/ntp/authopt.html for further information.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBloopstats\fR
-.ad
-.sp .25
-.RS 4n
 Enables recording of loop filter statistics information. Each update of the local clock outputs a line of the following form to the file generation set named \fBloopstats\fR:
 .LP
 \fB50935 75440.031 0.000006019 13.778190 0.000351733 0.0133806	6\fR
 .LP
 The first two fields show the date (Modified Julian Day) and time (seconds and fraction past UTC midnight). The next five fields show time offset (seconds), frequency offset (parts per million - PPM), RMS jitter (seconds), Allan deviation (PPM) and clock discipline time constant.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBpeerstats\fR
-.ad
-.sp .25
-.RS 4n
 Enables recording of peer statistics information. This includes statistics records of all peers of a NTP server and of special signals, where present and configured. Each valid update appends a line of the following form to the current element of a file generation set named \fBpeerstats\fR:
 .LP
 \fB48773 10847.650 127.127.4.1 9714 -0.001605376 0.000000000 0.001424877 0.000958674\fR
 .LP
 The first two fields show the date (Modified Julian Day) and time (seconds and fraction past UTC midnight). The next two fields show the peer address in dotted-quad notation and status, respectively. The status field is encoded in hex in the format described in Appendix B of the NTP specification RFC 1305. The final four fields show the offset, delay, dispersion and RMS jitter, all in seconds.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBrawstats\fR
-.ad
-.sp .25
-.RS 4n
 Enables recording of raw-timestamp statistics information. This includes statistics records of all peers of a NTP server and of special signals, where present and configured. Each NTP message received from a peer or clock driver appends a line of the following form to the file generation set named \fBrawstats\fR:
 .LP
 \fB50928 2132.2543 128.4.1.1 128.4.1.20 3102453281.2584327000 3102453281.258622800031 02453332.2540806000 3102453332.2541458000\fR
 .LP
 The first two fields show the date (Modified Julian Day) and time (seconds and fraction past UTC midnight). The next two fields show the remote peer or clock address followed by the local address in dotted-quad notation, The final four fields show the originate, receive, transmit and final NTP timestamps in order. The timestamp values are as received and before processing by the various data smoothing and mitigation algorithms.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBsysstats\fR
-.ad
-.sp .25
-.RS 4n
 Enables recording of \fBntpd\fR statistics counters on a periodic basis. Each hour a line of the following form is appended to the file generation set named \fBsysstats\fR:
 .LP
 \fB50928 2132.2543 36000 81965 0 9546 56 71793 512 540 10 147\fR
 .LP
 The first two fields show the date (Modified Julian Day) and time (seconds and fraction past UTC midnight). The remaining ten fields show the statistics counter values accumulated since the last generated line.
-.sp .3
-.ne 2
-.mk
-.na
+.RS 6n
+.TP
 Time since restart \fB36000\fR:
 Time in hours since the system was last rebooted.
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 Packets received \fB81965\fR:
 Total number of packets received.
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 Packets processed \fB0\fR:
 Number of packets received in response to previous packets sent
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 Current version \fB9546\fR:
 Number of packets matching the current NTP version.
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 Previous version \fB56\fR:
 Number of packets matching the previous NTP version.
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 Bad version \fB71793\fR:
 Number of packets matching neither NTP version.
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 Access denied \fB512\fR:
 Number of packets denied access for any reason.
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 Bad length or format \fB540\fR:
 Number of packets with invalid length, format or port number.
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 Bad authentication \fB10\fR:
 Number of packets not verified as authentic.
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 Rate exceeded \fB147\fR:
 Number of packets discarded due to rate limitation.
+.RE
 .RE
 .sp .3
 .ne 2
 .mk
 .na
+.TP
 \fBstatsdir \fIdirectory_path\fP\fR
 .ad
 .sp .25
@@ -802,6 +621,7 @@ Indicates the full path of a directory where statistics files should be created 
 .ne 2
 .mk
 .na
+.TP
 \fBfilegen \fIname\fP [file \fIfilename\fP] [type \fItypename\fP] [link | nolink] [enable | disable]\fR
 .ad
 .sp .25
@@ -870,6 +690,7 @@ Enables or disables the recording function.
 .ne 2
 .mk
 .na
+.TP
 \fBbroadcastdelay \fIseconds\fP\fR
 .ad
 .sp .25
@@ -880,6 +701,7 @@ The broadcast and multicast modes require a special calibration to determine the
 .ne 2
 .mk
 .na
+.TP
 \fBcalldelay \fIdelay\fP\fR
 .ad
 .sp .25
@@ -890,6 +712,7 @@ This option controls the delay in seconds between the first and second packets s
 .ne 2
 .mk
 .na
+.TP
 \fBdriftfile \fIdriftfile\fP { \fItolerance\fP ]\fR
 .ad
 .sp .25
@@ -904,108 +727,53 @@ The parameter \fBtolerance\fR is the wander threshold to skip writing the new va
 .ne 2
 .mk
 .na
-\fBenable [ auth | bclient | calibrate | kernel | mode7 | monitor | ntp | pps | stats]\fR
-.br
-\fBdisable [ auth | bclient | calibrate | kernel | mode7 | monitor | ntp | pps | stats ]\fR
+.TP
+\fBenable | disable [ auth | bclient | calibrate | kernel | mode7 | monitor | ntp | stats | | unpeer_crypto_early | unpeer_crypto_nak_early | unpeer_digest_early ]\fR
 .ad
 .sp .25
-.RS 4n
+.RS 6n
+.TP
 Provides a way to enable or disable various system options. Flags not mentioned are unaffected. Note that all of these flags can be controlled remotely using the \fBntpq\fR utility program.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBauth\fR
-.ad
-.sp .25
-.RS 4n
 Enables the server to synchronize with unconfigured peers only if the peer has been correctly authenticated using either public key or private key cryptography. The default for this flag is enable.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBbclient\fR
-.ad
-.sp .25
-.RS 4n
 Enables the server to listen for a message from a broadcast or multicast server, as in the \fBmulticastclient\fR command with default address. The default for this flag is disable.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBcalibrate\fR
-.ad
-.sp .25
-.RS 4n
+.TP
 Enables the calibrate feature for reference clocks. The default for this flag is disable.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBkernel\fR
-.ad
-.sp .25
-.RS 4n
 Enables the kernel time discipline, if available. The default for this flag is enable if support is available, otherwise disable.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBmode7\fR
-.ad
-.sp .25
-.RS 4n
 Enables processing mode 7 private request packets from the \fBntpdc\fR utility program. The \fBntpdc\fR program is not delivered with Solaris but may still be used remotely from other systems. The default is to not accept these packets.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBmonitor\fR
-.ad
-.sp .25
-.RS 4n
 Enables the monitoring facility. See the \fBntpq\fR program and the \fBmrulist\fR command or further information. The default for this flag is enable.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBntp\fR
-.ad
-.sp .25
-.RS 4n
 Enables time and frequency discipline. In effect, this switch opens and closes the feedback loop, which is useful for testing. The default for this flag is enable.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
-\fBpps\fR
-.ad
-.sp .25
-.RS 4n
-Enables the pulse-per-second (PPS) signal when frequency and time is disciplined by the precision time kernel modifications. See the Kernel Model for Precision Timekeeping page at file:///usr/share/doc/ntp/kern.html for further information. The default for this flag is disable.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
+.TP
 \fBstats\fR
-.ad
-.sp .25
-.RS 4n
 Enables the statistics facility. The default for this flag is disable
+.TP
+\fBunpeer_crypto_early\fR
+Enables the early resetting of an association in case of a crypto failure. This is generally a feature, but it can be used in a DoS attack. If these packets being used as a DoS attack then disable this flag. The default for this flag is enabled. This flag is excluded from runtime configuration using \fBntpq\fR.
+.TP
+\fBunpeer_crypto_nak_early\fR
+Enables the early resetting of an association in case of a crypto_NAK message. This is generally a feature, but it can be used in a DoS attack. If these packets being used as a DoS attack then disable this flag. The default for this flag is enabled. This flag is excluded from runtime configuration using \fBntpq\fR.
+.TP
+\fBunpeer_digest_early\fR
+Enables the early resetting of an association in case of a autokey disgest failure. This is generally a feature, but it can be used in a DoS attack. If these packets being used as a DoS attack then disable this flag. The default for this flag is enabled. This flag is excluded from runtime configuration using \fBntpq\fR.
 .RE
 .sp .3
 .ne 2
 .mk
 .na
+.TP
 \fBincludefile \fIincludefile\fP\fR
 .ad
 .sp .25
@@ -1016,6 +784,35 @@ This command allows additional configuration commands to be included from a sepa
 .ne 2
 .mk
 .na
+.TP
+\fBinterface\fP [\fBlisten | ignore | drop\fP] [\fBall | ipv4 | ipv6 | wildcard | name | \fIaddress\fP[\fB/\fP\fIprefixlen\fP]]
+.ad
+.sp .25
+.RS 4n
+This command controls which network addresses \fBntpd\fP opens, and whether input is dropped without processing. The first parameter determines the action for addresses which match the second parameter. That parameter specifies a class of addresses, or a specific interface name, or an \fIaddress\fP. In the address case, \fIprefixlen\fP determines how many bits must match for this rule to apply. \fBignore\fP prevents opening matching addresses, \fBdrop\fP causes \fBntpd\fP to open the address and drop all received packets without examination. Multiple interface commands can be used. The last rule which matches a particular address determines the action for it. \fBinterface\fP commands are disabled if any \fB-I\fP, \fB--interface\fP, \fB-L\fP, or \fB--novirtualips\fP command-line options are used. If none of those options are used and no interface actions are specified in the configuration file, all available network addresses are opened.
+.RE
+.sp .3
+.ne 2
+.mk
+.na
+.TP
+\fBleapfile \fIleapfile\fP\fR [\fBcheckhash\fR | \fBignorehash\fR]
+.ad
+.sp .25
+.RS 4n
+This command loads the IERS leapseconds file and initializes the leapsecond values for the next leapsecond time, expiration time and TAI offset. The file can be
+obtained directly from the IERS at https://hpiers.obspm.fr/iers/bul/bulc/ntp/leap-seconds.list or ftp://hpiers.obspm.fr/iers/bul/bulc/ntp/leap-seconds.list.
+The \fIignorehash\fR keyword instructs \fBntpd\fP to ignore the hash signature on the file, \fIcheckhash\fR (which is the default when omitted) needs a hash line 
+in the file to be valid. Files without any hash signature are loaded in both cases.
+.LP
+The leapfile is scanned when \fBntpd\fP processes the leapfile directive or when \fBntpd\fP detects that leapfile has changed. \fBntpd\fP checks once a day to see if the leapfile has changed.
+.R
+.sp .3
+.ne 2
+.mk
+.na
+.RE
+.TP
 \fBlogconfig \fIconfigkeyword\fP\fR
 .ad
 .sp .25
@@ -1038,6 +835,7 @@ This configuration will list all clock information and synchronization informati
 .ne 2
 .mk
 .na
+.TP
 \fBlogfile \fIlogfile\fP\fR
 .ad
 .sp .25
@@ -1049,6 +847,41 @@ This command specifies the location of an alternate log file to be used instead 
 .ne 2
 .mk
 .na
+.TP
+\fBmru [ maxdepth \fIcount\fP | maxmem \fIkilobytes\fP | mindepth \fIcount\fP | maxage \fIseconds\fP | initalloc \fIcount\fP | initmem \fIkilobytes\fP | inalloc \fIcount\fP | incmem \fIkilobytes\fP]\fR
+.ad
+.sp .25
+.RS 4n
+.TP
+Controls size limits of the monitoring facility Most Recently Used (MRU) list of client addresses, which is also used by the rate control facility.
+.TP
+\fBmaxdepth\fR \fIcount\fR, \fBmaxmem\fR \fIkilobytes\fR
+Equivalent upper limits on the size of the MRU list, in terms of entries or kilobytes. The actual limit will be up to \fBincalloc\fP entries or \fBincmem\fP kilobytes larger. As with all of the mru options offered in units of entries or kilobytes, if both \fBmaxdepth\fP and \fBmaxmem\fP are used, the last one used controls. The default is 1024 kilobytes.
+.TP
+\fBmindepth\fR \fIcount\fR
+Lower limit on the MRU list size. When the MRU list has fewer than \fBmindepth\fP entries, existing entries are never removed to make room for newer ones, regardless of their age. The default is 600 entries.
+.TP
+\fBmaxage\fR \fIseconds\fR
+Once the MRU list has \fBmindepth\fP entries and an additional client address is to be added to the list, if the oldest entry was updated more than \fBmaxage\fP seconds ago, that entry is removed and its storage reused. If the oldest entry was updated more recently, the MRU list is grown, subject to \fBmaxdepth/maxmem\fP. The default is 64 seconds.
+.TP
+\fBinitalloc\fR \fIcount\fR, \fBinitmem\fR \fIkilobytes\fR
+Initial memory allocation at the time the monitoring facility is first enabled, in terms of entries or kilobytes. The default is 4 kilobytes.
+.TP
+\fBincalloc\fR \fIcount\fR, \fBincmem\fR \fIkilobytes\fR
+Size of additional memory allocations when growing the MRU list, in entries or kilobytes. The default is 4 kilobytes.
+.RE
+.sp .3
+.ne 2
+.mk
+.na
+.TP
+\fBnonvolatile\fR \fIthreshold\fR
+Specify the threshold in seconds to write the frequency file, with default of 1e-7 (0.1 PPM). The frequency file is inspected each hour. If the difference between the current frequency and the last value written exceeds the threshold, the file is written and the \fIthresholdfR becomes the new threshold value. If the threshold is not exceeded, it is reduced by half. This is intended to reduce the frequency of unnecessary file writes for embedded systems with nonvolatile memory.
+.sp .3
+.ne 2
+.mk
+.na
+.TP
 \fBphone \fIdial\fP1 \fIdial\fP2 ...\fR
 .ad
 .sp .25
@@ -1059,6 +892,57 @@ This command is used in conjunction with the ACTS modem driver (type 18). The ar
 .ne 2
 .mk
 .na
+.TP
+\fBpollskewlist\fR [\fIpoll early\R \fB|\fR \fIdelay\fR ] ... [ \fBdefault\fR \fIearly\fR \fB|\fR \fIdelay\fR]
+.ad
+.sp .25
+.RS 4n
+Enable skewing of our poll requests to our servers. \fIpoll\fR is a number between 3 and 17 inclusive, identifying a specific poll interval. A poll interval is 2^n seconds in duration, so a poll value of 3 corresponds to 8 seconds and a poll interval of 17 corresponds to 131,072 seconds, or about a day and a half. The next two numbers must be between 0 and one-half of the poll interval, inclusive. \fIearly\fR specifies how early the poll may start, while \fIdelay\Rspecifies how late the poll may be delayed. With no arguments, internally specified default values are chosen. Note that \fIearly\R and \fIdelay\fR are separated by the literal "|". 
+.RE
+.sp .3
+.ne 2
+.mk
+.na
+.TP
+\fBreset\fR [\fBallpeers\fR] [\fBauth\fR] [\fBctl\fR] [\fBio\fR] [\fBmem\fR] [\fBsys\fR] [\fBtimer\fR]
+.ad
+.sp .25
+.RS 4n
+Reset one or more groups of counters maintained by \fBntpd\fP and exposed by \fBntpq\fR and \fBntpdc\R.
+.RE
+.sp .3
+.ne 2
+.mk
+.na
+.TP
+\fBrlimit\fR [\fBmemlock\fR \fINmegabytes\fR | \fBstacksize\fR \fIN4kPages\fR | \fBfilenum\fR \fINfiledescriptors\fR] 
+.ad
+.sp .25
+.RS 4n
+This command alters certain process storage allocation limits, and is only available on some operating systems. Options are as follows:
+    \fBmemlock\fP \fINmegabytes\fP - Specify the number of megabytes of memory that should be allocated and locked. The default is 32 megabytes. 0 means "lock whatever memory the process wants into memory".
+
+    \fBstacksize\fP \fIN4kPages\fP - Specifies the maximum size of the process stack on systems with the mlockall() function. Defaults to 50 4k pages.
+
+    \fBfilenum\fP \fINfiledescriptors\fP
+        Specifies the maximum number of file descriptors ntp may have open at the same time. Defaults to system default.
+.RE
+.sp .3
+.ne 2
+.mk
+.na
+.TP
+\fBsaveconfigdir\fR \fIdirectorypath\fR
+.ad
+.sp .25
+.RS 4n
+Specify the directory in which to write configuration snapshots requested with \fBntpq\fP's saveconfig command. If saveconfigdir does not appear in the configuration file, saveconfig requests are rejected by \fBntpd\fP.
+.RE
+.sp .3
+.ne 2
+.mk
+.na
+.TP
 \fBsetvar \fIvariable\fP [default]\fR
 .ad
 .sp .25
@@ -1069,6 +953,7 @@ This command adds an additional system variable. These variables can be used to 
 .ne 2
 .mk
 .na
+.TP
 \fBtinker [ allan \fIallan\fP | dispersion \fIdispersion\fP | freq \fIfreq\fP | huffpuff \fIhuffpuff\fP | panic \fIpanic\fP | step \fIstep\fP | stepout \fIstepout\fP ]\fR
 .ad
 .sp .25
@@ -1151,11 +1036,41 @@ The argument is the stepout timeout, by default 900 s. It can be set to any posi
 .ne 2
 .mk
 .na
-\fBtos [ beacon \fIbeacon\fP | ceiling \fIceiling\fP | cohort {0 | 1} | floor \fIfloor\fP | orphan \fIorphan\fP | maxdistance \fImaxdistance\fP | minclock \fIminclock\fP | minsane \fIminsane\fP ]\fR
+\fBtos [ basedate \fIbasedate\fP |  bcpollstep \fIpoll-gate\fP | beacon \fIbeacon\fP | ceiling \fIceiling\fP | cohort {0 | 1} | floor \fIfloor\fP | maxclock \fImaxclock\fP |  maxdist \fImaxdist\fP | minclock \fIminclock\fP | minsdist \fImindist\fP | minsane \fIminsane\fP | orphan \fIstratum\fP | orphanwait \fIdelay\fP ]\fR
 .ad
 .sp .25
 .RS 4n
 This command affects the clock selection and clustering algorithms. It can be used to select the quality and quantity of peers used to synchronize the system clock and is most useful in manycast mode. The variables operate as follows:
+.sp .3
+.ne 2
+.mk
+.na
+\fBbasedate \fIbasedate\fP\fR
+.ad
+.sp .25
+.RS 6n
+Set NTP and GPS era anchor. \fIbasedate\fP is either a date in ISO8601 format (YYYY-MM-DD) or an integer giving the days since 1900-01-01, the start of the NTP epoch. \fBntpd\fP will clamp the system time to an era starting with the start of this this day (00:00:00Z), covering a range of 232 seconds or roughly 136 years. The lowest accepted value is effectively 1970-01-02.
+The GPS era base is the next Sunday on or following the base date, but obviously not before 1980-01-06. GPS time stamps are mapped into the 1024 weeks following the GPS base.
+The default value is derived from the repository or build time stamp, minus 11 days. 1970-01-02 was chosen as lower bound so the local time is always after 1970-01-01,00:00. Some systems get into trouble if this is not the case.
+
+Note: If the system clock is before the effective (implied or specific) basedate, the system clock will be set to the base date once and immediately when \fBntpd\fP starts. This helps systems that have lost time completely to recover. Though not noticeable under normal conditions, it can happen. Check the logs if starting \fBntpd\fP causes sudden clock moves.
+.RE
+.sp .3
+.ne 2
+.mk
+.na
+\fBbepollstep \fIpoll-gate\fP\fR
+.ad
+.sp .25
+.RS 6n
+This option will cause the client to delay applying backward time steps from a broadcast server for \fIbcpollbstep\fP poll intervals. NTP Broadcast networks
+are expected to be trusted, and if the server's time gets stepped backwards then it's desireable that the clients follow this change as soon as possible.
+However, in spite of various protections built-in to the broadcast protocol, it is possible that an attacker could perform a carefully-constructed
+replay attack and cause clients to erroneously step their clocks backward. If the risk of a successful broadcast replay attack is greater than
+the risk of the clients being out of sync in the event that there is a backward step on the broadcast time servers, this option may be used to
+cause the clients to delay beliveving backward time steps until poll-gate consecutive polls have been received. The default is 0, which means
+the client will accept these steps upon receipt. Any value from 0 to 4 can be specified.
+.RE
 .sp .3
 .ne 2
 .mk
@@ -1200,31 +1115,31 @@ Peers with strata below \fIfloor\fP will be discarded if there are at least \fIm
 .ne 2
 .mk
 .na
-\fBorphan \fIstratum\fP\fR
+\fBmaxclock \fImaxclock\fP\fR
 .ad
 .sp .25
 .RS 6n
-If \fB\fIstratum\fP\fR is set at some value less than 16 a special orphan mode is enterred when no outside source of synchronization is available. To use orphan mode a number of participants are identically configured both as broadcast client and as broadcast server. One or more participants are configured to use an outside source, either a reference clock or another Internet server. When the source or sources fail, the system stratum is set at \fB\fIstratum\fP\fR and a leader is elected to serve as the reference source. When an outside source of synchronization is again available, the orphan mode is disabled.
+Specify the maximum number of servers retained by the server discovery schemes. The default is 10.
 .RE
 .sp .3
 .ne 2
 .mk
 .na
-\fBmindist \fImindistance\fP\fR
-.ad
-.sp .25
-.RS 6n
-The selection algorithm normally pads each intersection a minimum of one millisecond to avoid needless classification. In some cases, such as reference clocks with high jitter and a PPS signal, it is useful to increase the padding. This command can be used for that purpose. As a general rule, set the mindistance to the maximum expected offset plus the maximum expected jitter, in seconds.
-.RE
-.sp .3
-.ne 2
-.mk
-.na
-\fBmaxdist \fImaxdistance\fP\fR
+\fBmaxdist \fImaxdist\fP\fR
 .ad
 .sp .25
 .RS 6n
 The selection algorithm accumulates a number of packets before setting the clock in order to use the best data available. The number is determined by the synchronization distance for each association and a limit called the distance threshold. The synchronization distance starts at 16, then drops by a factor of about two as each packet is received. The default distance threshold is 1.0, which usually results in four packets. Setting maxdistance to some value between 1 and 16 can be used to change the number of packets required. For instance, setting it to 16 will set the clock on the first packet received; however, setting it to this value essentially disables the mitigation and grooming algorithms.
+.RE
+.sp .3
+.ne 2
+.mk
+.na
+\fBmindist \fImindist\fP\fR
+.ad
+.sp .25
+.RS 6n
+The selection algorithm normally pads each intersection a minimum of one millisecond to avoid needless classification. In some cases, such as reference clocks with high jitter and a PPS signal, it is useful to increase the padding. This command can be used for that purpose. As a general rule, set the mindistance to the maximum expected offset plus the maximum expected jitter, in seconds.
 .RE
 .sp .3
 .ne 2
@@ -1246,21 +1161,34 @@ The clustering algorithm repeatedly casts out outlyer associations until no more
 .RS 6n
 This is the minimum number of candidates available to the clock selection algorithm in order to produce one or more truechimers for the clustering algorithm. If fewer than this number are available, the clock is undisciplined and allowed to run free. The default is 1 for legacy purposes. However, according to principles of Byzantine agreement, \fIminsane\fP should be at least 4 in order to detect and discard a single falseticker.
 .RE
-.RE
 .sp 1
 .ne 2
 .mk
 .na
-\fBttl \fIhop\fP ...\fR
+\fBorphan \fIstratum\fP\fR
 .ad
 .sp .25
-.RS 4n
-This command specifies a list of TTL values in increasing order. up to 8 values can be specified. In manycast mode these values are used in turn in an expanding-ring search. The default is eight multiples of 32 starting at 31.
+.RS 6n
+If \fB\fIstratum\fP\fR is set at some value less than 16 a special orphan mode is enterred when no outside source of synchronization is available. To use orphan mode a number of participants are identically configured both as broadcast client and as broadcast server. One or more participants are configured to use an outside source, either a reference clock or another Internet server. When the source or sources fail, the system stratum is set at \fB\fIstratum\fP\fR and a leader is elected to serve as the reference source. When an outside source of synchronization is again available, the orphan mode is disabled.
 .RE
 .sp .3
 .ne 2
 .mk
 .na
+\fBorphanwait \fIdelay\fP\fR
+.ad
+.sp .25
+.RS 6n
+Specify the delay in seconds from the time all sources are lost until orphan parent mode is enabled with default 300 s (five minutes). During this period, the
+local clock driver and the modem driver are not selectable, unless marked with the \fBprefer\fP keyword. This allows time for one or more primary sources
+to become reachable and selectable before using backup sources, and avoids transient use of the backup sources at startup.
+.RE
+.sp .3
+.ne 2
+.mk
+.na
+.RE
+.TP
 \fBtrap \fIhost_address\fP [port \fIport_number\fP] [interface \fIinterface_address\fP]\fR
 .ad
 .sp .25
@@ -1277,7 +1205,7 @@ The trap receiver will generally log event messages and other information from t
 .ad
 .sp .25
 .RS 4n
-This command specifies a list of TTL values in increasing order. up to 8 values can be specified. In manycast mode these values are used in turn in an expanding-ring search. The default is eight multiples of 32 starting at 31.
+This command specifies a list of TTL values in increasing order. Up to 8 values can be specified. In manycast mode these values are used in turn in an expanding-ring search. The default is eight multiples of 32 starting at 31.
 .RE
 .SH FILES
 .LP

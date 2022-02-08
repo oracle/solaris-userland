@@ -26,14 +26,15 @@ ntpd \- Network Time Protocol daemon Version 4
 .SH SYNOPSIS
 .LP
 .nf
-\fB/usr/lib/inet/ntpd\fR [\fB-46aAbdDgLmnNqvx\fR] [\fB-c\fR \fIconffile\fR]
-    [\fB-f\fR \fIdriftfile\fR] [\fB-k\fR \fIkeyfile\fR] [\fB-l\fR \fIlogfile\fR] [\fB-p\fR \fIpidfile\fR]
-    [\fB-P\fR \fIpriority\fR] [\fB-r\fR \fIbroadcastdelay\fR] [\fB-s\fR \fIstatsdir\fR]
-    [\fB-t\fR \fItrustedkey\fR] [\fB-U\fR \fIinterface_update_time\fR]
+\fB/usr/lib/inet/ntpd\fR [\fB-46aAbdDgiILmnNqvx\fR] [\fB-c\fR \fIconffile\fR]
+    [\fB-f\fR \fIdriftfile\fR] [\fB-i\fR \fIjaildir\fR] [\fB-k\fR \fIkeyfile\fR] [\fB-l\fR \fIlogfile\fR]
+    [\fB-p\fR \fIpidfile\fR] [\fB-P\fR \fIpriority\fR] [\fB-r\fR \fIbroadcastdelay\fR]
+    [\fB-s\fR \fIstatsdir\fR] [\fB-t\fR \fItrustedkey\fR] [\fB-u\fR \fIuser\fR[:\fIgroup\fR]]
+    [\fB-U\fR \fIinterface_update_time\fR] [\fB--var\fR \fInvar\fB] [\fB--dvar\fR \fIndvar\fR]
 .fi
 
 .SH DESCRIPTION
-The \fBntpd\fR program is an operating system daemon that synchronises the system clock with remote NTP time servers or local reference clocks. It is a complete implementation of the Network Time Protocol (\fBNTP\fR) version 4, but also retains compatibility with version 3, as defined by \fIRFC 1305\fR, and versions 1 and 2, as defined by \fIRFC 1059\fR and \fIRFC 1119\fR, respectively.
+The \fBntpd\fR program is an operating system daemon that synchronizes the system clock with remote NTP time servers or local reference clocks. It is a complete implementation of the Network Time Protocol (\fBNTP\fR) version 4, but also retains compatibility with version 3, as defined by \fIRFC 1305\fR, and versions 1 and 2, as defined by \fIRFC 1059\fR and \fIRFC 1119\fR, respectively.
 .SS How \fBNTP\fR Operates
 The \fBntpd\fR program operates by exchanging messages with one or more configured servers at designated intervals ranging from about one minute to about 17 minutes. When started, the program requires several exchanges while the algorithms accumulate and groom the data before setting the clock. The initial delay to set the clock can be reduced using options as described in the server options page  at file:///usr/share/doc/ntp/confopt.html.
 .LP
@@ -48,20 +49,20 @@ The frequency file, usually called ntp.drift, contains the latest estimate of cl
 .SS Operating Modes
 The \fBntpd\fR daemon can operate in any of several modes, including symmetric active/passive, client/server broadcast/multicast and manycast, as described in the Association Management page at file:///usr/share/doc/ntp/assoc.html. It normally operates continuously while monitoring for small changes in frequency and trimming the clock for the ultimate precision. However, it can operate in a one-time mode where the time is set from an external server and frequency is set from a previously recorded frequency file. A broadcast/multicast or manycast client can discover remote servers, compute server-client propagation delay correction factors and configure itself automatically. This makes it possible to deploy a fleet of workstations without specifying configuration details specific to the local environment.
 .LP
-By default, \fBntpd\fR runs in continuous mode where each of possibly several external servers is polled at intervals determined by an intricate phase/frequency-lock feedback loop. The feedback loop measures the incidental roundtrip delay jitter and oscillator frequency wander and determines the best poll interval using a heuristic algorithm. Ordinarily, and in most operating environments, the state machine will start with 64s intervals and eventually increase in steps to 1024s. A small amount of random variation is introduced in order to avoid bunching at the servers. In addition, should a server become unreachable for some time, the poll interval is increased in steps to 1024s in order to reduce network overhead. In general it is best not to force \fBntpd\fR to use specific poll intervals, allowing it to choose the best intervals based its current needs and the quality of the available servers and the clock.
+By default, \fBntpd\fR runs in continuous mode where each of possibly several external servers is polled at intervals determined by an intricate phase/frequency-lock feedback loop. The feedback loop measures the incidental round-trip delay jitter and oscillator frequency wander and determines the best poll interval using a heuristic algorithm. Ordinarily, and in most operating environments, the state machine will start with 64s intervals and eventually increase in steps to 1024s. A small amount of random variation is introduced in order to avoid bunching at the servers. In addition, should a server become unreachable for some time, the poll interval is increased in steps to 1024s in order to reduce network overhead. In general it is best not to force \fBntpd\fR to use specific poll intervals, allowing it to choose the best intervals based its current needs and the quality of the available servers and the clock.
 .LP
 In some cases it may not be practical for \fBntpd\fR to run continuously. In the past a common workaround has been to run the \fBntpdate\fR program from a cron job at designated times. However, \fBntpdate\fR does not have the crafted signal processing, error checking and mitigation algorithms of \fBntpd\fR. The \fBntpd\fR daemon with -q option is intended to replace \fBntpdate\fR when used in this manner. Setting this option will cause \fBntpd\fR to exit just after setting the clock for the first time. The procedure for initially setting the clock is the same as in continuous mode; most applications will probably want to specify the iburst keyword with the server configuration command. With this keyword a volley of messages are exchanged to groom the data and the clock is set in about 10s. If nothing is heard after a couple of minutes, the daemon times out and exits. Eventually the \fBntpdate\fR program may be retired.
 .SS Kernel Clock Discipline
 The kernel supports a method specific to \fBntpd\fR to discipline the clock frequency. First, \fBntpd\fR is run in continuous mode with selected servers in order to measure and record the intrinsic clock frequency offset in the frequency file. It may take some hours for the frequency and offset to settle down. Then \fBntpd\fR is run in normal mode as required. At each startup, the frequency is read from the file and initializes the kernel frequency, thus avoiding the settling period.
 When the kernel discipline is in use, the system's clock is adjusted at each system tick and thus the system clock is always as accurate as possible. When the kernel discipline is not used the clock is adjusted once each second. It is important to delete the ntp.drift file before starting \fBntpd\fR if the intrinsic frequency might have changed, such as by a motherboard swap.
 .SS Poll Interval Control
-The \fBntpd\fR program includes an intricate clock discipline to reduce the network 
-load while maintaining a quality of synchronization consistent with the observed 
-jitter and wander. There are a number of ways to tailor the operation in order to enhance 
-accuracy by reducing the interval or to reduce network overhead by increasing it. However, the user is advised to carefully consider the consequences of changing the poll adjustment range from the default. It is not the case that shorter poll intervals will necessarily 
+The \fBntpd\fR program includes an intricate clock discipline to reduce the network
+load while maintaining a quality of synchronization consistent with the observed
+jitter and wander. There are a number of ways to tailor the operation in order to enhance
+accuracy by reducing the interval or to reduce network overhead by increasing it. However, the user is advised to carefully consider the consequences of changing the poll adjustment range from the default. It is not the case that shorter poll intervals will necessarily
 lead to more accuracy. Most device drivers will not operate properly if the poll interval is less than 64 s and that the broadcast server and manycast client associations will also use the default, unless overridden. In general, it is best to let \fBntpd\fR determine the best polling interval.
 .LP
-In some cases involving dial up or toll services, it may be useful to increase the minimum interval to a few tens of minutes and maximum interval to a day or so. Under normal operation conditions, once the clock discipline loop has stabilized the interval will be increased in steps from the minimum to the maximum. However, this assumes the intrinsic clock frequency error is small enough for the discipline loop correct it. The capture range of the loop is 500 PPM at an interval of 64s decreasing by a factor of two for each doubling of interval. At a minimum of 1,024 s, for example, the capture range is only 31 PPM. 
+In some cases involving dial up or toll services, it may be useful to increase the minimum interval to a few tens of minutes and maximum interval to a day or so. Under normal operation conditions, once the clock discipline loop has stabilized the interval will be increased in steps from the minimum to the maximum. However, this assumes the intrinsic clock frequency error is small enough for the discipline loop correct it. The capture range of the loop is 500 PPM at an interval of 64s decreasing by a factor of two for each doubling of interval. At a minimum of 1,024 s, for example, the capture range is only 31 PPM.
 .SS The Huff-n'-Puff Filter
 In scenarios where a considerable amount of data are to be downloaded or uploaded over bandwidth limited links, timekeeping quality can be seriously degraded due to the different delays in the two directions. In many cases the apparent time errors are so large as to exceed the step threshold and a step correction can occur during and after the data transfer is in progress.
 .LP
@@ -69,7 +70,7 @@ The huff-n'-puff filter is designed to correct the apparent time offset in these
 .LP
 The filter is activated by the tinker command and huffpuff keyword, as described in the Miscellaneous Options page at file:///usr/share/doc/ntp/miscopt.html.
 .SS Leap Second Processing
-As provided by international agreement, an extra second is sometimes inserted in Coordinated Universal Time (UTC) at the end of a selected month, usually June or December. The National Institutes of Standards and Technology (NIST) provides an historic leapseconds file at time.nist.gov for retrieval via FTP. This file, usually called ntp-leapseconds.list, is copied into the /etc/inet directory and the leapfile configuration command then specifies the path to this file. At startup, ntpd reads it and initializes three leapsecond values: the NTP seconds at the next leap event, the offset of UTC relative to International Atomic Time (TAI) after the leap and the NTP seconds when the leapseconds file expires and should be retrieved again.
+As provided by international agreement, an extra second is sometimes inserted in Coordinated Universal Time (UTC) at the end of a selected month, usually June or December. The National Institutes of Standards and Technology (NIST) provides an historic leapseconds file at time.nist.gov for retrieval via FTP. This file, usually called ntp-leapseconds.list, is copied into the /etc/inet directory and the leapfile configuration command then specifies the path to this file. At startup, ntpd reads it and initializes three leapsecond values: the NTP timestamp at the next leap event, the offset of UTC relative to International Atomic Time (TAI) after the leap and the NTP timestamp when the leapseconds file expires and should be retrieved again.
 .LP
 If a host does not have the leapsecond values, they can be obtained over the net using the Autokey security protocol. Ordinarily, the leapseconds file is installed on the primary servers and the values flow from them via secondary servers to the clients. When multiple servers are involved, the values with the latest expiration time are used.
 .LP
@@ -141,6 +142,9 @@ See the
 tinker
 configuration file directive for other options.
 .TP
+.BR \-i " \fIjaildir\fP, " \--jaildir "=" \fIstring\fP
+Specify a directory where ntpd can be isolated with the chroot call.
+.TP
 .BR \-k " \fIstring\fP, " \--keyfile "=" \fIstring\fP
 Specify the name and path of the symmetric key file.
 /etc/inet/ntp.keys
@@ -196,10 +200,13 @@ Note: The kernel time discipline is disabled with this option.
 Specify the default propagation delay from the broadcast/multicast server to this client. This is necessary only if the delay cannot be computed automatically by the protocol.
 .TP
 .BR \-s " \fIstring\fP, " \--statsdir "=" \fIstring\fP
-Specify the directory path for files created by the statistics facility. This is the same operation as the statsdir statsdir command.
+Specify the directory path for files created by the statistics facility. This is the same operation as the statsdir command.
 .TP
 .BR \-t " \fInumber\fP, " \--trustedkey "=" \fInumber\fP
-Add a key number to the trusted key list. This option can occur more than once. This is the same operation as the trustedkey key command. 
+Add a key number to the trusted key list. This option can occur more than once. This is the same operation as the trustedkey key command.
+.TP
+.BR \-u " \fIuser[:group]\fP, " \--user "=" \fIstring\fP
+Specify a user, and optionally a group, to switch to.
 .TP
 .BR \-U " \fInumber\fP, " \--updateinterval "=" \fInumber\fP
 interval in seconds between scans for new or dropped interfaces.
@@ -244,7 +251,7 @@ Display usage information and exit.
 Extended usage information passed thru pager.
 .TP
 .BR " \--version"
-Output version of program and exit.  
+Output version of program and exit.
 .SH OPTION PRESETS
 All of the above options except the last three may be preset
 by loading values from environment variables named:
@@ -257,8 +264,8 @@ the configuration files. The option-name should be in all capital letters.
 For example, to set the --quit option, you would set the NTPD_QUIT environment
 variable.
 .SH AUTOMATIC SERVICE MANAGEMENT (SMF)
-\fBNTP\fR on Solaris is managed via the service management facility described in 
-\fBsmf\fR(7). There are several options controlled by services properties which 
+\fBNTP\fR on Solaris is managed via the service management facility described in
+\fBsmf\fR(7). There are several options controlled by services properties which
 can be set by the system administrator. The available options can be listed by
 executing the following command:
 .nf
@@ -281,15 +288,15 @@ An integer specifying the level of debugging requested. A zero means no debuggin
 .TP
 .BR config/logfile
 A string specifying the location of the file used for log output. The default is /var/ntp/ntp.log. The
-log file must be writable by the user "daemon" andmust be in a directory writeable by that user.
+log file must be writable by the user "daemon" and must be in a directory writeable by that user.
 .TP
 .BR config/no_auth_required
-A boolean which when true, specifies that anonymous servers such as broadcast, multicast and active peers 
+A boolean which when true, specifies that anonymous servers such as broadcast, multicast and active peers
 can be accepted without any pre-configured keys. This is very insecure and should only be used if
 the network is secure and all the systems on it are trusted. The default is false.
-.TP 
+.TP
 .BR config/slew_always
-A boolean which when true, instructs ntpd to slew the clock as much as possible, instead of stepping the clock. It 
+A boolean which when true, instructs ntpd to slew the clock as much as possible, instead of stepping the clock. It
 does not prevent all stepping, but increases the threshold above which stepping is used. It also disables the use
 of the kernel \fBNTP\fP facility, which is incompatible with long slew times. The default is false.
 .TP
@@ -301,8 +308,8 @@ as soon as the offset is determined. If slew_always is false or if the \fBNTP\fP
 this option has no effect. The default is true.
 .TP
 .BR config/wait_for_sync
-A boolean which when true, causes the \fBNTP\fP service to delay coming completely on-line until after the first 
-time the system clock is synchronized. This can potetially delay the system start up by a significant amount. The
+A boolean which when true, causes the \fBNTP\fP service to delay coming completely on-line until after the first
+time the system clock is synchronized. This can potentially delay the system start up by a significant amount. The
 default is false.
 .TP
 .BR config/disable_local_time_adjustment
@@ -317,7 +324,7 @@ A boolean which when true, cause the daemon to issue logging messages. The defau
 .TP
 .BR config/no_2038
 A boolean which when true will prevent the daemon from stepping the clock to any date in the year 2038 or later. Dates after
-the epoch rollover in Februrary 2038 can render the system unstable if 32-bit system processes are in use. In some configurations
+the epoch rollover in Feburary 2038 can render the system unstable if 32-bit system processes are in use. In some configurations
 the instability may persist after the problem is corrected. The default is true.
 .SH NOTES
 The system clock must be set to within 68 years of the actual time before \fBntpd\fR is started.
@@ -346,7 +353,7 @@ the software as provided in this particular distribution.
 The ntpd daemon now runs as the user "daemon". Care must be taken if it is
 configured to read or write files other than in the directories /etc/inet and
 /var/ntp. Any other locations will require that the user daemon have the proper
-permissions to access the files. 
+permissions to access the files.
 .LP
 There are two example configuration files provided, /etc/inet/ntp.client and
 /etc/inet/ntp.server. The first provides examples and some discussion around
@@ -367,8 +374,15 @@ echo 'server hostname iburst' > /etc/inet/ntp.conf
 .LP
 and then start the service. Replace 'hostname' with the actual hostname of an
 NTP server. You can add more lines like this one with the hostnames of more
-NTP servers, but do not configure exactly two. Four servers is optimal, but
-never use two.
+NTP servers.
+.PP
+.SH CAVEATS
+.LP
+You can add as many servers as you like but only \fImaxclock\fR (default 10) servers
+will actually be used. Do not configure exactly two. Four servers is optimal, but
+never use two. If for some reason you only have two and you must have redundancy
+put the \fBprefer\fR keyword on one of the server lines to mitigate most of the
+problems with using two servers.
 .PP
 .SH SEE ALSO
 .LP

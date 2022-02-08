@@ -18,7 +18,7 @@
 .\"
 .\" CDDL HEADER END
 .\"
-.\" Copyright (c) 2009, 2020, Oracle and/or its affiliates.
+.\" Copyright (c) 2009, 2022, Oracle and/or its affiliates.
 .\"
 .TH "ntpq" "8" "" "" "System Administration Commands"
 .SH NAME
@@ -131,22 +131,6 @@ individual commands may be sent to a file by appending a \fB>\fR, followed by a 
 A number of interactive commands are executed entirely within
 the \fBntpq\fR
 utility itself and do not result in requests being sent to a server. These commands are as follows:
-
-
-                                                                    
-                                                                    
-                                                                    
-cl                                                                  
-                                                                    
-clocklist                                                           
-                                                   timeout          
-                                                   version          
-                                  poll                              
-                                                                    
-                                                   
-                                           
-
-
 .TP
 .BR ? " [\fIcommand_keyword\fP]," "  help "[\fIcommand_keyword\fP]
 Prints a list of all the command keywords known to \fBntpq\fR. Followed by a command keyword will print function and usage
@@ -186,14 +170,6 @@ causes
 to display whether or not
 \fBntpq\fR
 is currently authenticating requests.
-.TP
-.BR ":config \fIconfig_command\fP"
-Sends the entire line after \fB:config\fP to the \fBntpd\fP daemon to be interpreted as a configuration file 
-command. Multiple commands may be separated by semi-colons.
-.TP
-.BR "config-from-file \fIconfig_file\fP"
-Sends the entire file \fIconfig_file\fP to the \fBntpd\fP daemon to be interpreted as configuration file 
-commands.
 .TP
 .BR cooked
 Causes output from query commands to be "cooked", so that
@@ -297,6 +273,22 @@ Read the values of the clock variables included in the variable list
 .BR "cv [\fIassocID\fP] [\fIvariable_name\fP [ = \fIvalue\fP [...] ][...]"
 Requests that a list of the server's clock variables be sent. Servers which have a radio clock or other external synchronization will respond positively to this. If the association identifier is omitted or zero the request is for the variables of the \fBsystem clock\fR and will generally get a positive response from all servers with a clock. If the server treats clocks as pseudo-peers, and hence can possibly have more than one clock connected at once, referencing the appropriate peer association ID will show the variables of a particular clock. Omitting the variable list will cause the server to return a default variable display.
 .TP
+.BR ":config \fIconfig_command\fP"
+Sends the entire line after \fB:config\fP to the \fBntpd\fP daemon to be interpreted as a configuration file 
+command. Multiple commands may be separated by semi-colons.
+.TP
+.BR "config-from-file \fIconfig_file\fP"
+Sends the entire file \fIconfig_file\fP to the \fBntpd\fP daemon to be interpreted as configuration file 
+commands.
+.TP
+.BR "ifstats"
+Display statistics for each local network address. Authentication is required.
+.TP
+.BR "iostats"
+Display network and reference clock I/O statistics.
+.TP
+.BR "kerninfo"
+Display kernel loop and PPS statistics. As with other ntpq output, times are in milliseconds. The precision value displayed is in milliseconds as well, unlike the precision system variable.
 .BR lassociations
 Obtains and prints a list of association identifiers and peer statuses for all associations for which the server is maintaining state. This command differs from the \fBassociations\fR command only for servers which retain state for out-of-spec client associations (i.e., fuzzballs). Such associations are normally omitted from the display when the \fBassociations\fR command is used, but are included in the output of \fBlassociations\fR. When used with the \fBntpd\fP in this distribution, this command is idenitical to \fBassociations\fP. 
 .TP
@@ -308,6 +300,12 @@ Same as \fBopeers\fP but from the internally cached data.
 .TP
 .BR lpeers
 Like \fBpeers\fP, except a summary of all associations for which the server is maintaining state is printed. This can produce a much longer list of peers from fuzzball servers, but for most servers this is identical with \fBpeers\fP.
+.TP
+.BR "monstats"
+    Display monitor facility statistics.
+.TP
+.BR "mrulist [\fBlimited | kod | mincount=\fIcount\fP | laddr=\fIlocaladdr\fP | sort=\fIsortorder\fP | resany=\fIhexmask\fP | resall=\fIhexmask\fP \fR]"
+Obtain and print traffic counts collected and maintained by the monitor facility. With the exception of \fBsort=\fIsortorder\fR, the options filter the list returned by \fBntpd\fP. The \fBlimited\fP and \fBkod\fP options return only entries representing client addresses from which the last packet received triggered either discarding or a KoD response. The \fBmincount=\fIcount\fR option filters entries representing less than \fIcount\fP packets. The \fBladdr=\fIlocaladdr\fR option filters entries for packets received on any local address other than \fIlocaladdr\fP. \fBresany=\fIhexmask\fR and \fBresall=\fIhexmask\fR filter entries containing none or less than all, respectively, of the bits in \fIhexmask\fP, which must begin with \fB0x\fP.
 .TP
 .BR "mreadlist \fIassocID\fP \fIassocID\fP"
 .TP
@@ -328,9 +326,6 @@ Displays association data concerning in-spec peers from the internally cached li
 .BR peers
 Obtains a current list peers of the server, along with a summary of each peer's state. Summary information includes the address of the remote peer, the reference ID (0.0.0.0 if this is unknown), the stratum of the remote peer, the type of the peer (local, unicast, multicast or broadcast), when the last packet was received, the polling interval, in seconds, the reachability register, in octal, and the current estimated delay, offset and dispersion of the peer, all in milliseconds. The character at the left margin of each line shows the synchronization status of the association and is a valuable diagnostic tool. The encoding and meaning of this character, called the tally code, is given later in this page.
 .TP
-.BR "pstatus \fIassocID\fP"
-Sends a read status request to the server for the given association. The names and values of the peer variables returned will be printed. Note that the status word from the header is displayed preceding the variables, both in hexadecimal and in pidgeon English.
-.TP
 .BR "readlist [ \fIassocID\fP ]
 .TP
 .BR "rl [ \fIassocID\fP ]"
@@ -341,11 +336,20 @@ Requests that the values of the variables in the internal variable list be retur
 .BR "rv \fIassocID\fP [ \fIvariable_name\fP [ = \fIvalue\fP ] [...]"
 Requests that the values of the specified variables be returned by the server by sending a read variables request. If the association ID is omitted or is given as zero the variables are system variables, otherwise they are peer variables and the values returned will be those of the corresponding peer. Omitting the variable list will send a request with no data which should induce the server to return a default display. The encoding and meaning of the variables derived from NTPv3 is given in RFC-1305; the encoding and meaning of the additional NTPv4 variables are given later in this page.
 .TP
+.BR "saveconfig \fIfilename\fP"
+Write the current configuration, including any runtime modifications given with \fB:config\fP or \fBconfig-from-file\fP, to the \fBntpd\fP host's file \fIfilename\fP. This command will be rejected by the server unless \fBsaveconfigdir\fP appears in the \fBntpd\fP configuration file. \fIfilename\fP can use \fBstrftime()\fP format which specifies to substitute the current date and time, for example, "saveconfig ntp-%Y%m%d-%H%M%S.conf". The filename used is stored in system variable \fBsavedconfig\fP. Authentication is required.
+.TP
 .BR "writevar \fIassocID\fP \fIvariable_name\fP [ = \fIvalue\fP [ ...]"
 Like the readvar request, except the specified variables are written instead of read.
 .TP
 .BR "writelist [ \fIassocID\fP ]"
 Like the readlist request, except the internal list variables are written instead of read.
+.TP 
+.BR "sysinfo"
+Display operational summary.
+.TP
+.BR "sysstats"
+Print statistics counters maintained in the protocol module.
 .SS "Tally Codes"
 .LP
 The character in the left margin in the \fBpeers\fR billboard, called the tally code, shows the fate of each association in the clock selection process. Following is a list of these characters, the pidgeon used in the \fBrv\fR command, and a short explanation of the condition revealed.
