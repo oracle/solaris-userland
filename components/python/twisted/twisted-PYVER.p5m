@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -530,8 +530,10 @@ file path=usr/lib/python$(PYVER)/vendor-packages/twisted/python/_inotify.py
 $(OLD_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/twisted/python/_oldstyle.py
 file path=usr/lib/python$(PYVER)/vendor-packages/twisted/python/_pydoctor.py
 file path=usr/lib/python$(PYVER)/vendor-packages/twisted/python/_pydoctortemplates/common.html
-file path=usr/lib/python$(PYVER)/vendor-packages/twisted/python/_pydoctortemplates/index.html
-file path=usr/lib/python$(PYVER)/vendor-packages/twisted/python/_pydoctortemplates/summary.html
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/twisted/python/_pydoctortemplates/footer.html
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/twisted/python/_pydoctortemplates/header.html
+$(OLD_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/twisted/python/_pydoctortemplates/index.html
+$(OLD_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/twisted/python/_pydoctortemplates/summary.html
 file path=usr/lib/python$(PYVER)/vendor-packages/twisted/python/_release.py
 $(PYTHON_2.7_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/twisted/python/_sendmsg.so
 $(OLD_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/twisted/python/_setup.py
@@ -828,6 +830,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/twisted/web/_http2.py
 file path=usr/lib/python$(PYVER)/vendor-packages/twisted/web/_newclient.py
 file path=usr/lib/python$(PYVER)/vendor-packages/twisted/web/_responses.py
 file path=usr/lib/python$(PYVER)/vendor-packages/twisted/web/_stan.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/twisted/web/_template_util.py
 file path=usr/lib/python$(PYVER)/vendor-packages/twisted/web/client.py
 file path=usr/lib/python$(PYVER)/vendor-packages/twisted/web/demo.py
 file path=usr/lib/python$(PYVER)/vendor-packages/twisted/web/distrib.py
@@ -995,3 +998,6 @@ depend type=require \
 # force a dependency on python-zope-interface; pkgdepend work is needed to flush
 # this out.
 depend type=require fmri=library/python/python-zope-interface-$(PYV)
+
+# force a dependency on typing-extensions; pkgdepend work is needed to flush this out.
+$(NEW_ONLY)depend type=require fmri=library/python/typing-extensions-$(PYV)

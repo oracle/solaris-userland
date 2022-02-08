@@ -20,34 +20,33 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Twisted
-COMPONENT_VERSION=	21.2.0
+COMPONENT_VERSION=	22.1.0
 COMPONENT_PROJECT_URL=	http://twistedmatrix.com/trac/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:15cff97b63a244e14170d3caaeebd61a3d141fa5c9a97f229127f0d583543960
+    sha256:c1b823a7c49623550604076c90a513fb7031dabc3a7486b44b04496411f41260
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/twisted
 COMPONENT_ANITYA_ID=	4071
+COMPONENT_BAID=		116782
 
-COMPONENT_BAID=		95677
 
 # This component is delivered in two different versions because
 # the newer one is no longer Python 2.7 compatible.
 COMPONENT_VERSION_OLD=	18.9.0
-COMPONENT_SRC_OLD=		$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
+COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
 COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.bz2
-COMPONENT_ARCHIVE_HASH_OLD=	\
-	sha256:ab2d9e3c9cad99340d45a26d1432a695c7e2e804b95d5d907cf549509936ade8
+COMPONENT_ARCHIVE_HASH_OLD= \
+    sha256:ab2d9e3c9cad99340d45a26d1432a695c7e2e804b95d5d907cf549509936ade8
 COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
-
 COMPONENT_BAID_OLD=	69507
 
 include $(WS_MAKE_RULES)/prep.mk
@@ -97,4 +96,5 @@ REQUIRED_PACKAGES += library/python/pyasn1
 REQUIRED_PACKAGES += library/python/pyopenssl
 REQUIRED_PACKAGES += library/python/python-hamcrest
 REQUIRED_PACKAGES += library/python/python-zope-interface
+REQUIRED_PACKAGES += library/python/typing-extensions
 REQUIRED_PACKAGES += system/library

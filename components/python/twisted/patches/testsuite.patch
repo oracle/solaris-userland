@@ -7,15 +7,15 @@ https://github.com/twisted/twisted/pull/1537
 
 --- Twisted-21.2.0rc1/src/twisted/test/test_failure.py
 +++ Twisted-21.2.0rc1/src/twisted/test/test_failure.py
-@@ -22,7 +22,10 @@ from twisted.python import failure
- from twisted.trial.unittest import SynchronousTestCase
+@@ -15,7 +15,10 @@ from twisted.python import failure
+ from traceback import FrameSummary
+ from unittest import skipIf
  
- 
--from cython_test_exception_raiser import raiser
+-from cython_test_exception_raiser import raiser  # type: ignore[import]
 +try:
-+    from cython_test_exception_raiser import raiser
++    from cython_test_exception_raiser import raiser  # type: ignore[import]
 +except ImportError:
 +    raiser = None
  
- 
- def getDivisionFailure(*args, **kwargs):
+ from twisted.python import failure, reflect
+ from twisted.trial.unittest import SynchronousTestCase
