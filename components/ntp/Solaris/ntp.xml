@@ -20,7 +20,7 @@
 
  CDDL HEADER END
 
- Copyright (c) 2009, 2021, Oracle and/or its affiliates.
+ Copyright (c) 2009, 2022, Oracle and/or its affiliates.
 
  NOTE:  This service manifest is not editable; its contents will
  be overwritten by package or patch operations, including
@@ -51,14 +51,6 @@
 		    <service_fmri value='svc:/system/filesystem/minimal' />
 	</dependency>
 
-	<dependency
-		name='ptp'
-		grouping='exclude_all'
-		restart_on='none'
-		type='service'>
-		<service_fmri value='svc:/network/ptp:default' />
-	</dependency>
-
 <!--	<dependent
 	    name='ntp_multi-user'
 	    grouping='optional_all'
@@ -77,7 +69,7 @@
 			    user='_ntp'
 			    group='_ntp'
 			    privileges=
-'basic,!file_link_any,!proc_info,!proc_session,!sys_ib_info,!dax_access,net_privaddr,proc_lock_memory,sys_time,{file_write}:/tmp/*,{zone}:/var/ntp/*,{zone}:/system/volatile/ntp.pid,{file_dac_read,file_dac_search}:/etc/inet/*'
+				'basic,!file_link_any,!proc_info,!proc_session,!sys_ib_info,!dax_access,net_privaddr,proc_lock_memory,sys_time,{file_write}:/tmp/*,{file_write}:/proc/*,{zone}:/var/ntp/*,{zone}:/system/volatile/ntp*,{file_dac_read,file_dac_search}:/etc/inet/*'
 			/>
 		</method_context>
 	</exec_method>
@@ -92,7 +84,7 @@
 			    user='_ntp'
 			    group='_ntp'
 			    privileges=
-'basic,!file_link_any,!proc_info,!proc_session,!sys_ib_info,!dax_access,net_privaddr,proc_lock_memory,sys_time,{file_write}:/tmp/*,{zone}:/var/ntp/*,{zone}:/system/volatile/ntp.pid,{file_dac_read,file_dac_search}:/etc/inet/*'
+				'basic,!file_link_any,!proc_info,!proc_session,!sys_ib_info,!dax_access,net_privaddr,proc_lock_memory,sys_time,{file_write}:/tmp/*,{file_write}:/proc/*,{zone}:/var/ntp/*,{zone}:/system/volatile/ntp*,{file_dac_read,file_dac_search}:/etc/inet/*'
 			/>
 		</method_context>
 	</exec_method>
@@ -111,78 +103,81 @@
 		value='solaris.smf.value.ntp' />
 	</property_group>
 
-	<instance name="default" enabled="false">
-		<property_group name='config' type='application' >
-			<!-- default property settings for ntpd(8). -->
+	<property_group name='config' type='application' >
+		<!-- default property settings for ntpd(8). -->
 
-			<propval
-			    name='wait_for_sync'
-			    type='boolean'
-			    value='false' />
+		<propval
+		    name='wait_for_sync'
+		    type='boolean'
+		    value='false' />
 
-			<propval
-			    name='no_auth_required'
-			    type='boolean'
-			    value='false' />
+		<propval
+		    name='no_auth_required'
+		    type='boolean'
+		    value='false' />
 
-			<propval
-			    name='verbose_logging'
-			    type='boolean'
-			    value='false' />
+		<propval
+		    name='verbose_logging'
+		    type='boolean'
+		    value='false' />
 
-			<propval
-			    name='slew_always'
-			    type='boolean'
-			    value='false' />
+		<propval
+		    name='slew_always'
+		    type='boolean'
+		    value='false' />
 
-			<propval
-			    name='allow_step_at_boot'
-			    type='boolean'
-			    value='true' />
+		<propval
+		    name='allow_step_at_boot'
+		    type='boolean'
+		    value='true' />
 
-			<propval
-			    name='always_allow_large_step'
-			    type='boolean'
-			    value='true' />
+		<propval
+		    name='always_allow_large_step'
+		    type='boolean'
+		    value='true' />
 
-			<propval
-			    name='disable_local_time_adjustment'
-			    type='boolean'
-			    value='false' />
+		<propval
+		    name='disable_local_time_adjustment'
+		    type='boolean'
+		    value='false' />
 
-			<propval
-			    name='logfile'
-			    type='astring'
-			    value='/var/ntp/ntp.log' />
+		<propval
+		    name='logfile'
+		    type='astring'
+		    value='/var/ntp/ntp.log' />
 
-			<propval
-			    name='configfile'
-			    type='astring'
-			    value='/etc/inet/ntp.conf' />
+		<propval
+		    name='configfile'
+		    type='astring'
+		    value='/etc/inet/ntp.conf' />
 
-			<propval
-			    name='debuglevel'
-			    type='integer'
-			    value='0' />
+		<propval
+		    name='debuglevel'
+		    type='integer'
+		    value='0' />
 
-			<propval
-			    name='mdnsregister'
-			    type='boolean'
-			    value='false' />
+		<propval
+		    name='mdnsregister'
+		    type='boolean'
+		    value='false' />
 
-			<propval
-			    name='no_2038'
-			    type='boolean'
-			    value='true' />
+		<propval
+		    name='no_2038'
+		    type='boolean'
+		    value='true' />
 
-			<!-- to change properties -->
-			<propval
-			    name='value_authorization'
-			    type='astring'
-			    value='solaris.smf.value.ntp' />
+		<!-- to change properties -->
+		<propval
+		    name='value_authorization'
+		    type='astring'
+		    value='solaris.smf.value.ntp' />
 
-		</property_group>
-	</instance>
+	</property_group>
+
+	<instance name="default" enabled="false" />
+
+	<instance name="monitor" enabled="false" />
+
 	<stability value='Unstable' />
 
 	<template>

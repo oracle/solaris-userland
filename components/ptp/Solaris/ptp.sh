@@ -20,7 +20,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 
 # Standard prolog
@@ -33,6 +33,20 @@ EXECFILE="/usr/lib/inet/ptpd"
 if [ -z $SMF_FMRI ]; then
         echo "SMF framework variables are not initialized."
         exit $SMF_EXIT_ERR_NOSMF
+fi
+
+FMRI_DEFAULT='svc:/network/ntp:default'
+FMRI_MONITOR='svc:/network/ntp:monitor'
+
+default_enabled=`svcprop -c -p general/enabled $FMRI_DEFAULT 2>/dev/null`
+if [ "$default_enabled" = "true" ]; then
+	echo "Error: Both $SMF_FMRI and $FMRI_DEFAULT may not be" \
+       	    " enabled at the same time."
+	exit $SMF_EXIT_ERR_CONFIG
+fi
+monitor_enabled=`svcprop -c -p general/enabled $FMRI_MONITOR 2>/dev/null`
+if [ "$monitor_enabled" = "true" ]; then
+	export NTP_MONITOR_ONLY=1
 fi
 
 #

@@ -18,7 +18,7 @@
 .\"
 .\" CDDL HEADER END
 .\"
-.\" Copyright (c) 2009, 2020, Oracle and/or its affiliates.
+.\" Copyright (c) 2009, 2022, Oracle and/or its affiliates.
 .\"
 .TH "ntpd" "8" "" "" "System Administration Commands"
 .SH NAME
@@ -75,7 +75,13 @@ If a host does not have the leapsecond values, they can be obtained over the net
 .LP
 If the latest leap is in the past, nothing further is done other than to install the TAI offset. If the leap is in the future less than 28 days, the leap warning bits are set. If in the future less than 23 hours, the kernel is armed to insert one second at the end of the current day. Additional details are in The NTP Timescale and Leap Seconds white paper at http://www.eecis.udel.edu/~mills/leap.html.
 .LP
-If none of the above provisions are available, dsependent servers and clients tally the leap warning bits of surviving servers and reference clocks. When a majority of the survivors show warning, a leap is programmed at the end of the current month. During the month and day of insertion, they operate as above. In this way the leap is is propagated at all dependent servers and clients.
+If none of the above provisions are available, dependent servers and clients tally the leap warning bits of surviving servers and reference clocks. When a majority of the survivors show warning, a leap is programmed at the end of the current month. During the month and day of insertion, they operate as above. In this way the leap is is propagated at all dependent servers and clients.
+.SS Monitor Mode
+In addition to the default instance of NTP (\fBsvc:/network/ntp:default\fR) which behaves normally,  there is second instance (\fBsvc:/network/ntp:monitor\fR) which can be used
+to monitor the system clock. It has the same effect as adding "disable ntp" to the configuration file, which disables ntpd's ability to
+adjust the system clock. It can then be used to monitor and record the system clock offsets but will not be able to correct them. When
+enabled it also disables the check in both the NTP and PTP services that prevent them from both running at the same time. Thus
+ntp:monitor can be used to measure the clock offsets being set by PTP.
 .LP
 .SH OPTIONS
 .TP

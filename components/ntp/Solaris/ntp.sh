@@ -21,7 +21,7 @@
 #
 
 #
-# Copyright (c) 2009, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2009, 2022, Oracle and/or its affiliates.
 #
 
 # Standard prolog
@@ -30,8 +30,48 @@
 
 if [ -z $SMF_FMRI ]; then
         echo "SMF framework variables are not initialized."
-        exit $SMF_EXIT_ERR
+        exit $SMF_EXIT_ERR_NOSMF
 fi
+
+FMRI_DEFAULT='svc:/network/ntp:default'
+FMRI_MONITOR='svc:/network/ntp:monitor'
+FMRI_PTP='svc:/network/ptp:default'
+# The redirect file must be in /sysem/volatile
+REDIRECT="/system/volatile/ntp_redirect.conf"
+
+if [ "$SMF_FMRI" = "$FMRI_DEFAULT" ]; then
+	monitor_enabled=`svcprop -c -p general/enabled $FMRI_MONITOR`
+	if [ "$monitor_enabled" = "true" ]; then
+		echo "Error: Both $SMF_FMRI and $FMRI_MONITOR may not be" \
+	       	    " enabled at the same time."
+		exit $SMF_EXIT_ERR_CONFIG
+	fi
+	ptp_enabled=`svcprop -c -p general/enabled $FMRI_PTP 2>&1`
+	if [ "$ptp_enabled" = "true" ]; then
+		echo "Error: Both $SMF_FMRI and $FMRI_PTP may not be" \
+	       	    " enabled at the same time."
+		exit $SMF_EXIT_ERR_CONFIG
+	fi
+fi
+if [ "$SMF_FMRI" = "$FMRI_MONITOR" ]; then
+	default_enabled=`svcprop -c -p general/enabled $FMRI_DEFAULT`
+	if [ "$default_enabled" = "true" ]; then
+		echo "Error: Both $SMF_FMRI and $FMRI_DEFAULT may not be" \
+	       	    " enabled at the same time."
+		exit $SMF_EXIT_ERR_CONFIG
+	fi
+fi
+
+# Because we sometimes want to specify configuration info, we put the
+# lines we want into a special file, and then add an includefile back to the
+# original file.
+
+# Get rid of stale redirect file.
+if [ -f $REDIRECT ]; then
+	rm -f $REDIRECT
+fi
+# Create empty redirect file
+(umask 077 ; echo '# NTP Configuration file' > $REDIRECT )
 
 #
 # Is NTP configured?
@@ -62,16 +102,28 @@ else
 		exit $SMF_EXIT_ERR_CONFIG
 	fi
 fi
+
+# If we are in monitor mode, don't try to adjust the clock
+if [ "$SMF_FMRI" = "$FMRI_MONITOR" ]; then
+	echo disable ntp >> $REDIRECT
+	# Take away the priv so they can not re-enable it
+       	export IGNORE_SYS_TIME_ERROR=1
+	ppriv -s EIP-sys_time $$
+fi
+
+# Redirect the configuration file
+echo includefile $conffile >> $REDIRECT
+
 #
 # Build the command line flags
 #
 shift $#
-set -- -c $conffile
+set -- -c $REDIRECT
 set -- "$@" --pidfile /var/run/ntp.pid
-# We allow a step larger than the panic value of 17 minutes only 
-# once when ntpd starts up. If always_allow_large_step is true, 
+# We allow a step larger than the panic value of 17 minutes only
+# once when ntpd starts up. If always_allow_large_step is true,
 # then we allow this each time ntpd starts. Otherwise, we allow
-# it only the very first time ntpd starts after a boot. We 
+# it only the very first time ntpd starts after a boot. We
 # check that by making ntpd write its pid to a file in /var/run.
 
 val=`svcprop -c -p config/always_allow_large_step $SMF_FMRI`
@@ -118,7 +170,7 @@ deb=`svcprop -c -p config/debuglevel $SMF_FMRI`
 # If slew_always is set to true, then the large offset after a reboot
 # might take a very long time to correct the clock. Optionally allow
 # a step once after a reboot if slew_always is set when allow_step_at_boot
-# is also set. 
+# is also set.
 val=`svcprop -c -p config/allow_step_at_boot $SMF_FMRI`
 if [ "$val" = "true" ] && [ "$slew_always" = "true" ] && \
     [ ! -f /var/run/ntp.pid ]; then
@@ -135,7 +187,7 @@ if [ "$val" = "true" ]; then
 	export NTP_NO_2038
 fi
 
-# Start the daemon. If debugging is requested, put it in the background, 
+# Start the daemon. If debugging is requested, put it in the background,
 # since it won't do it on it's own.
 if [ "$deb" -gt 0 ]; then
 	/usr/lib/inet/ntpd "$@" --set-debug-level=$deb >/var/ntp/ntp.debug &

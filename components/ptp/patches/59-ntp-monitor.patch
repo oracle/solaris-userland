@@ -1,0 +1,27 @@
+Add processing of NTP_MONITOR_ONLY environment variable to change the number of
+allowed NTP co-processes by adding one. Otherwise PTP will detect the NTP 
+process and complain about it.
+
+--- ptpd-2.2.0/src/dep/startup.c
++++ ptpd-2.2.0/src/dep/startup.c
+@@ -1331,6 +1331,20 @@ ptpdStartup(int argc, char **argv, Integ
+ 		ptp_daemons_strict=0;
+ 		ntp_daemons_strict=0;
+ 	}
++	/* Is NTP running in monitor mode? */
++	if (getenv("NTP_MONITOR_ONLY") != NULL) {
++		/*
++		 * In master with NTP mode, there can be only one NTP running
++		 * and it cannot be in monitor mode. In this mode NTP should
++		 * be adjusting the clock.
++		if (mode_selected == 2) {
++		      ERROR(" -G cannot be specified when svc:/network/ntp:monitor is enabled.\n");
++		      *ret = 3;
++		      return 0;
++		}
++		/* NTP is monitoring, so add one to the expected NTP daemons. */
++		ntp_daemons_expected++;
++	}
+ 
+ 
+   if(check_parallel_daemons("ptpd", ptp_daemons_expected, ptp_daemons_strict, rtOpts) &&
