@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
@@ -31,17 +31,16 @@ PYTHON3_SOABI=abi3
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cryptography
-COMPONENT_VERSION=	2.5
+COMPONENT_VERSION=	3.1.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:4946b67235b9d2ea7d31307be9d5ad5959d6c4a8f98f900157b47abddf698401
+    sha256:9d9fc6a16357965d282dd4ab6531013935425d0dc4950df2e0cf2a1b1ac1017d
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://cryptography.io/
 COMPONENT_BUGDB=	python-mod/cryptography
 COMPONENT_ANITYA_ID=	5532
-
-COMPONENT_BAID=		59238
+COMPONENT_BAID=		96619
 
 # cryptography_vectors package is being used for testing only
 # and is not delivered with cryptography
@@ -50,7 +49,7 @@ COMPONENT_VERSION_VECTORS=	$(COMPONENT_VERSION)
 COMPONENT_SRC_VECTORS=		$(COMPONENT_NAME_VECTORS)-$(COMPONENT_VERSION_VECTORS)
 COMPONENT_ARCHIVE_VECTORS=	$(COMPONENT_SRC_VECTORS).tar.gz
 COMPONENT_ARCHIVE_HASH_VECTORS=	\
-	sha256:949f1fb3d1cf5430cab6aa24980347eade966a128d9bedf0b57af28bad8c0265
+	sha256:3f1d119b716f3dae1c120804f947fa3fde222aa11cf049a1ee3b2302d760583b
 COMPONENT_ARCHIVE_URL_VECTORS=	$(call pypi_url,VECTORS)
 
 

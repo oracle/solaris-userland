@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2022, Oracle and/or its affiliates.
 #
 
 $(BUILD_DIR)/%-2.7/.built:		PYTHON_VERSION=2.7
@@ -258,7 +258,7 @@ endif
 # Make it easy to construct a URL for a pypi source download.  This
 # construct supports an optional call to a number from
 # NUM_EXTRA_ARCHIVES for multiple archive downloads.
-pypi_url_multi = pypi:///$(COMPONENT_NAME)==$(COMPONENT_VERSION_$(1))
+pypi_url_multi = pypi:///$(if $(COMPONENT_NAME_$(1)),$(COMPONENT_NAME_$(1)),$(COMPONENT_NAME))==$(COMPONENT_VERSION_$(1))
 pypi_url_single = pypi:///$(COMPONENT_NAME)==$(COMPONENT_VERSION)
 pypi_url = $(if $(COMPONENT_VERSION_$(1)),$(pypi_url_multi),$(pypi_url_single))
 
