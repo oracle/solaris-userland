@@ -100,10 +100,6 @@ CC.LD.RUNPATH=
 CC.LD.ORIGIN=
 CC.DLL.ORIGIN=
 
-# Default value for the "xcheck" compiler option changed in Studio 12.6.
-# Reverting to the previous value of "%none"
-studio_XBITS += -xcheck=%none
-
 # Fix up the permissions of the compiler wrapper scripts from the patch
 COMPONENT_PRE_BUILD_ACTION=($(CHMOD) +x $(@D)/src/cmd/INIT/cc.sol11.*)
 

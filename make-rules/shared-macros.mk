@@ -1083,6 +1083,21 @@ studio_ALIGN =		$(studio_ALIGN.$(MACH).$(BITS))
 # studio_MT to turn this off.
 studio_MT =		-mt
 
+# Security sensitive binaries should be built with -xcheck=stkovf, which
+# adds an extra check for stack overflows (not to be confused with stack
+# buffer overflows). A stack overflow happens when the entire process/thread
+# stack space is exhausted and the next stack dereference hits outside
+# of the stack boundaries.
+#
+# Note that with Studio 12.6, -xcheck=stkovf is on by default for sparc, so we
+# must explicitly disable it for the _DISABLE case here.
+# Note that in general it is not safe to enable STKOVF for shared libraries, so
+# the default needs to be disabled.
+studio_CHECK_STKOVF_ENABLE =	-xcheck=stkovf:detect
+studio_CHECK_STKOVF_DISABLE =	-xcheck=no%stkovf
+studio_CHECK_STKOVF = 		$(studio_CHECK_STKOVF_DISABLE)
+
+
 # See CPP_XPG6MODE comment above.
 studio_XPG6MODE =	$(studio_C99MODE) $(CPP_XPG6MODE)
 XPG6MODE =		$(studio_XPG6MODE)
@@ -1098,7 +1113,7 @@ XPG5MODE =		$(studio_XPG5MODE)
 # configure environment.
 CFLAGS.studio +=	$(studio_OPT) $(studio_XBITS) $(studio_XREGS) \
 			$(studio_IROPTS) $(studio_C99MODE) $(studio_ALIGN) \
-			$(studio_MT)
+			$(studio_MT) $(studio_CHECK_STKOVF)
 
 # Default Studio C++ compiler flags.  Add the required feature to your Makefile
 # with CXXFLAGS += $(FEATURE_MACRO) and add to the component build with
