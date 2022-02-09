@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -47,7 +47,7 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/testing
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
-COMPONENT_TEST_TRANSFORMS = '-nE -e "s/ ?=+ ?//g" -e "s/ in .* seconds//p"'
+COMPONENT_TEST_TRANSFORMS = '-nE -e "s/ ?=+ ?//g" -e "s/ in .*//" -e "/passed/p"'
 
 # common targets
 build:		$(BUILD_NO_ARCH)

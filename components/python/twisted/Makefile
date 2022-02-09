@@ -68,10 +68,12 @@ COMPONENT_TEST_ARGS =	--verbose
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(PYTHON_VERSION)-$(BITS).$(MACH).master
 
 COMPONENT_TEST_TRANSFORMS += \
-	'-e "s/, [0-9]* warnings//" ' \
-	'-n -e "s/in .* seconds //p"' \
-	'-e "/::.*FAILED/p"' \
-	'-e "/::.*ERROR/p"'
+	'-nE -e "s/ ?=+ ?//g" ' \
+	'-e "s/ in [0-9]+(\.[0-9]*)?(s| seconds).*//" ' \
+	'-e "s/[0-9]+ warnings/x warnings/g" ' \
+	'-e "/::.*FAILED/p" ' \
+	'-e "/::.*ERROR/p" ' \
+	'-e "\\$$p"'
 
 COMPONENT_SYSTEM_TEST_DIR=	$(SOURCE_DIR)/src/twisted/test
 COMPONENT_SYSTEM_TEST_CMD=	$(PYTHON) -m pytest

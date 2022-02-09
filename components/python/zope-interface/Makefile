@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -43,9 +43,12 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)/src
-COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_DIR =	$(PROTO_DIR)$(PYTHON_VENDOR_PACKAGES_BASE)
+COMPONENT_TEST_CMD =	$(PYTHON) -m unittest discover -s zope/interface -t .
 COMPONENT_TEST_ARGS =
+
+$(BUILD_DIR)/%-2.7/.tested: COMPONENT_TEST_DIR =   $(SOURCE_DIR)/src
+$(BUILD_DIR)/%-2.7/.tested: COMPONENT_TEST_CMD =   $(PYTHON) -m pytest
 
 COMPONENT_SYSTEM_TEST_DIR =	$(SOURCE_DIR)/src
 COMPONENT_SYSTEM_TEST_CMD =	$(PYTHON) -m pytest

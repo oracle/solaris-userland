@@ -1,0 +1,41 @@
+pytest.warns(None) was recently deprecated and thus a different way
+of ensuring that no warnings are emitted has to be used.
+
+This was offered and accepted upstream:
+https://github.com/dateutil/dateutil/pull/1192
+
+--- python-dateutil-2.8.2/dateutil/test/test_internals.py
++++ python-dateutil-2.8.2/dateutil/test/test_internals.py
+@@ -9,6 +9,7 @@ code that may be difficult to reach thro
+ 
+ import sys
+ import pytest
++import warnings
+ 
+ from dateutil.parser._parser import _ymd
+ from dateutil import tz
+@@ -65,18 +66,17 @@ def test_parser_parser_private_not_warns
+     from dateutil.parser._parser import _timelex, _tzparser
+     from dateutil.parser._parser import _parsetz
+ 
+-    with pytest.warns(None) as recorder:
++    with warnings.catch_warnings():
++        warnings.simplefilter("error")
+         _tzparser()
+-        assert len(recorder) == 0
+ 
+-    with pytest.warns(None) as recorder:
++    with warnings.catch_warnings():
++        warnings.simplefilter("error")
+         _timelex('2014-03-03')
+ 
+-        assert len(recorder) == 0
+-
+-    with pytest.warns(None) as recorder:
++    with warnings.catch_warnings():
++        warnings.simplefilter("error")
+         _parsetz('+05:00')
+-        assert len(recorder) == 0
+ 
+ 
+ @pytest.mark.tzstr

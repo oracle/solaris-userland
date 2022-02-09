@@ -1,0 +1,29 @@
+xmlschema is not available on Solaris.
+
+test_pdb_continue_with_recursive_debug breaks for yet unknown reasons and
+should be investigated more (though it's not a core functionality we are
+using Pytest for).
+
+--- pytest-7.0.0/testing/test_junitxml.py
++++ pytest-7.0.0/testing/test_junitxml.py
+@@ -10,9 +10,8 @@ from typing import TYPE_CHECKING
+ from typing import Union
+ from xml.dom import minidom
+ 
+-import xmlschema
+-
+ import pytest
++pytest.skip("Xmlschema is not available", allow_module_level=True)
+ from _pytest.config import Config
+ from _pytest.junitxml import bin_xml_escape
+ from _pytest.junitxml import LogXML
+--- pytest-7.0.0/testing/test_debugging.py
++++ pytest-7.0.0/testing/test_debugging.py
+@@ -655,6 +655,7 @@ class TestPDB:
+         child.expect("1 passed")
+         self.flush(child)
+ 
++    @pytest.mark.skip(reason="doesn't work on Solaris")
+     @pytest.mark.parametrize("capture_arg", ("", "-s", "-p no:capture"))
+     def test_pdb_continue_with_recursive_debug(
+         self, capture_arg, pytester: Pytester

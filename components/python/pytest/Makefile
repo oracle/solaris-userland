@@ -20,27 +20,38 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pytest
-COMPONENT_VERSION=	4.4.0
+COMPONENT_VERSION=	7.0.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f21d2f1fb8200830dcbb5d8ec466a9c9120e20d8b53c7585d180125cce1d297a
+    sha256:0217d9912052b44f4cf9337c98b735b94cecc870b52cb4bcdb2ac52d3755f9fd
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://pytest.org/latest/
 COMPONENT_BUGDB=	python-mod/pytest
 COMPONENT_ANITYA_ID=	3765
+COMPONENT_BAID=		116651
 
-COMPONENT_BAID=		61987
+# This component is delivered in two different versions because
+# the newer one is no longer Python 2.7 compatible.
+COMPONENT_VERSION_OLD=	4.4.0
+COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
+COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
+COMPONENT_ARCHIVE_HASH_OLD= \
+    sha256:f21d2f1fb8200830dcbb5d8ec466a9c9120e20d8b53c7585d180125cce1d297a
+COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
+COMPONENT_BAID_OLD=	61987
+
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-multiver.mk
 
 # New version of pytest no longer generates -$(PYVER) script for
 # each version.  Generate them now for backward compatibility.
@@ -48,17 +59,21 @@ COMPONENT_POST_INSTALL_ACTION += \
 	$(MV) $(PROTOUSRBINDIR)/pytest $(PROTOUSRBINDIR)/pytest-$(PYTHON_VERSION); \
 	$(MV) $(PROTOUSRBINDIR)/py.test $(PROTOUSRBINDIR)/py.test-$(PYTHON_VERSION)
 
-# Unit tests hang on x86 platform...
-ifeq ($(MACH),i386)
-$(SKIP_TEST_AT_TOP_LEVEL)
-endif
-
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/testing
 COMPONENT_TEST_CMD =	$(PROTOUSRBINDIR)/py.test-$(PYTHON_VERSION)
 COMPONENT_TEST_ARGS =
 
+COMPONENT_SYSTEM_TEST_CMD =	$(USRBINDIR)/py.test-$(PYTHON_VERSION)
+
 # Do not use tmp directory for tests to avoid persistent RAM usage.
 COMPONENT_TEST_ENV += PYTEST_DEBUG_TEMPROOT=$(BUILD_DIR)/$(MACH)-$(PYTHON_VERSION)/
+COMPONENT_TEST_ENV += INPUTRC=$(BUILD_DIR)/.inputrc
+
+# In Bash 5.1, bracketed paste mode is enabled by default, which is not
+# anticipated by the pexpect test suite. There is no fix yet, but
+# workaround is available:
+# https://github.com/pexpect/pexpect/issues/669
+COMPONENT_PRE_TEST_ACTION += echo "set enable-bracketed-paste off" > $(BUILD_DIR)/.inputrc
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -69,7 +84,7 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += library/python/atomicwrites
 REQUIRED_PACKAGES += library/python/attrs

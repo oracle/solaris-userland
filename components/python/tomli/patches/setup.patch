@@ -1,0 +1,51 @@
+I am sure that new ways of building python components without setup.py are
+awesome but let's not introduce new build systems just to copy a few files.
+Remember to correct this patch with each upgrade!
+
+Not intended for upstream.
+
+--- tomli-2.0.1/setup.py
++++ tomli-2.0.1/setup.py
+@@ -0,0 +1,4 @@
++from setuptools import setup
++
++if __name__ == "__main__":
++    setup()
+--- tomli-2.0.1/setup.cfg
++++ tomli-2.0.1/setup.cfg
+@@ -0,0 +1,35 @@
++[metadata]
++name = tomli
++version = 2.0.1
++description = A lil' TOML parser
++author = Taneli Hukkinen
++author_email = Taneli Hukkinen <hukkin@users.noreply.github.com>
++url = https://github.com/hukkin/tomli
++license = MIT
++license_files = LICENSE
++long_description = file: README.md
++long_description_content_type = text/markdown
++classifiers =
++	License :: OSI Approved :: MIT License
++	Operating System :: MacOS
++	Operating System :: Microsoft :: Windows
++	Operating System :: POSIX :: Linux
++	Programming Language :: Python :: 3 :: Only
++	Programming Language :: Python :: 3.7
++	Programming Language :: Python :: 3.8
++	Programming Language :: Python :: 3.9
++	Programming Language :: Python :: 3.10
++	Programming Language :: Python :: Implementation :: CPython
++	Programming Language :: Python :: Implementation :: PyPy
++	Topic :: Software Development :: Libraries :: Python Modules
++	Typing :: Typed
++keywords = toml
++project_urls =
++	Homepage=https://github.com/hukkin/tomli
++	Changelog=https://github.com/hukkin/tomli/blob/master/CHANGELOG.md
++
++[options]
++packages = tomli
++python_requires = >=3.7
++package_dir = 
++	=src
