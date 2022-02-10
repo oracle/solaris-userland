@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 # Only bytecode and text files.
@@ -29,15 +29,15 @@ BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		hex
-COMPONENT_VERSION=	0.21.2
+COMPONENT_VERSION=	1.0.1
 COMPONENT_PROJECT_URL=	https://hex.pm/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a3cf167ad1158bfd098f69735f97c5ae53a758e9a688aadfc2b2122202e7e765
+    sha256:cf19c8a11c7c306d9b6e00533e46326dd0d4e18d771ef3b457da2c9f69fa4b31
 COMPONENT_ARCHIVE_URL=	https://github.com/hexpm/$(COMPONENT_NAME)/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/elixir
 COMPONENT_ANITYA_ID=	132546
 
-COMPONENT_BAID=		102958
+COMPONENT_BAID=		116712
 
 BUILD_STYLE= justmake
 include $(WS_MAKE_RULES)/common.mk
