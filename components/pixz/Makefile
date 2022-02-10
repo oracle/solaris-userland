@@ -20,20 +20,20 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pixz
-COMPONENT_VERSION=	1.0.6
+COMPONENT_VERSION=	1.0.7
 COMPONENT_PROJECT_URL=	https://github.com/vasi/pixz/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c54a406dddc6c2226779aeb4b5d5b5649c1d3787b39794fbae218f7535a1af63
+    sha256:d1b6de1c0399e54cbd18321b8091bbffef6d209ec136d4466f398689f62c3b5f
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	7490
 
-COMPONENT_BAID=		29966
+COMPONENT_BAID=		116659
 
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_64)
 
