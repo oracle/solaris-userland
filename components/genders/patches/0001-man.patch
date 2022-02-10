@@ -1,0 +1,28 @@
+Submitted upstream: https://github.com/chaos/genders/pull/49
+
+From a81a90c1a61c76119c3e5643c8b6e1b0177945b1 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Wed, 9 Feb 2022 15:12:12 -0800
+Subject: [PATCH] Fix genders_nodelist_destroy.3 man page
+
+Prior to this it tried to recursively link to itself, leading to:
+/usr/share/man/man3/genders_nodelist_destroy.3:27: can't open `man3/genders_nodelist_destroy.3': No such file or directory
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+---
+ man/genders_nodelist_destroy.3 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/man/genders_nodelist_destroy.3 b/man/genders_nodelist_destroy.3
+index 0329a2b..7cbc3e1 100644
+--- a/man/genders_nodelist_destroy.3
++++ b/man/genders_nodelist_destroy.3
+@@ -23,4 +23,4 @@
+ .\"  You should have received a copy of the GNU General Public License along
+ .\"  with Genders.  If not, see <http://www.gnu.org/licenses/>.
+ .\"############################################################################
+-.so man3/genders_nodelist_destroy.3
++.so man3/genders_nodelist_create.3
+-- 
+2.31.1
+
