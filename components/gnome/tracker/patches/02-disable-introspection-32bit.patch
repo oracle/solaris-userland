@@ -1,0 +1,141 @@
+add introspection option to configure builds depending on BUILD_BITS
+
+--- a/meson_options.txt	2022-02-09 20:02:25.610812417 -0800
++++ b/meson_options.txt	2022-02-09 20:04:09.595806420 -0800
+@@ -4,6 +4,8 @@
+        description: 'Enable the Tracker full-text search feature')
+ option('functional_tests', type: 'boolean', value: true,
+        description: 'Enable the Tracker functional test suite')
++option('introspection', type: 'boolean', value: true,
++       description: 'Build GObject introspection data for extension library')
+ option('journal', type: 'boolean', value: true,
+        description: 'Enable database journal backup mechanism')
+ option('man', type: 'boolean', value: true,
+--- a/meson.build	2022-02-09 13:47:03.930963270 -0800
++++ b/meson.build	2022-02-09 13:57:12.472497750 -0800
+@@ -40,7 +40,9 @@
+ glib = dependency('glib-2.0', version: '>' + glib_required)
+ gmodule = dependency('gmodule-2.0', version: '>' + glib_required)
+ gobject = dependency('gobject-2.0', version: '>' + glib_required)
+-gobject_introspection = dependency('gobject-introspection-1.0')
++if get_option('introspection') 
++ gobject_introspection = dependency('gobject-introspection-1.0')
++endif
+ icu_i18n = dependency('icu-i18n', version: '> 4.8.1.1', required: false)
+ icu_uc = dependency('icu-uc', version: '> 4.8.1.1', required: false)
+ json_glib = dependency('json-glib-1.0', version: '>= 1.0', required: true)
+@@ -331,14 +333,18 @@
+ 
+ glib_compile_schemas = find_program('glib-compile-schemas')
+ glib_mkenums = find_program('glib-mkenums')
+-g_ir_compiler = find_program('g-ir-compiler', gobject_introspection.get_pkgconfig_variable('g_ir_compiler'))
+-g_ir_merge = find_program('g-ir-merge', join_paths(meson.current_source_dir(), 'utils', 'g-ir-merge', 'g-ir-merge'))
++if get_option('introspection')
++  g_ir_compiler = find_program('g-ir-compiler', gobject_introspection.get_pkgconfig_variable('g_ir_compiler'))
++  g_ir_merge = find_program('g-ir-merge', join_paths(meson.current_source_dir(), 'utils', 'g-ir-merge', 'g-ir-merge'))
++endif
+ dbus_run_session = find_program('dbus-run-session')
+ 
+-gir_dir = gobject_introspection.get_pkgconfig_variable('girdir',
++if get_option('introspection')
++  gir_dir = gobject_introspection.get_pkgconfig_variable('girdir',
+                                                        define_variable:  [ 'datadir', datadir ])
+-typelib_dir = gobject_introspection.get_pkgconfig_variable('typelibdir',
++  typelib_dir = gobject_introspection.get_pkgconfig_variable('typelibdir',
+                                                            define_variable:  [ 'libdir', libdir ])
++endif
+ 
+ subdir('src')
+ subdir('data')
+--- a/src/libtracker-sparql-backend/meson.build	2022-02-09 14:00:30.434286593 -0800
++++ b/src/libtracker-sparql-backend/meson.build	2022-02-09 14:01:48.227265457 -0800
+@@ -31,7 +31,8 @@
+ #
+ # See: <https://bugzilla.gnome.org/show_bug.cgi?id=782091>
+ 
+-tracker_sparql_c_gir = gnome.generate_gir(libtracker_sparql,
++if get_option('introspection')
++  tracker_sparql_c_gir = gnome.generate_gir(libtracker_sparql,
+     sources: libtracker_sparql_c_sources + libtracker_sparql_c_public_headers,
+     nsversion: tracker_api_version,
+     namespace: 'Tracker_C',
+@@ -45,10 +46,10 @@
+         '-DTRACKER_COMPILATION',
+     ])
+ 
+-tracker_sparql_c_gir = tracker_sparql_c_gir[0]  # Ignore this .typelib
+-tracker_sparql_vala_gir = join_paths(meson.current_build_dir(), '..', 'libtracker-sparql', 'Tracker_Vala-' + tracker_api_version + '.gir')
++  tracker_sparql_c_gir = tracker_sparql_c_gir[0]  # Ignore this .typelib
++  tracker_sparql_vala_gir = join_paths(meson.current_build_dir(), '..', 'libtracker-sparql', 'Tracker_Vala-' + tracker_api_version + '.gir')
+ 
+-tracker_sparql_gir = custom_target('tracker-sparql-gir',
++  tracker_sparql_gir = custom_target('tracker-sparql-gir',
+     command: [g_ir_merge, '--namespace', 'Tracker', '--nsversion', tracker_api_version, '@INPUT@', tracker_sparql_vala_gir],
+     input: [tracker_sparql_c_gir],
+     capture: true,
+@@ -56,9 +57,10 @@
+     install: true,
+     install_dir: gir_dir)
+ 
+-tracker_sparql_typelib = custom_target('tracker-sparql-typelib',
++  tracker_sparql_typelib = custom_target('tracker-sparql-typelib',
+     command: [g_ir_compiler, '--includedir', meson.current_build_dir(), '--output', '@OUTPUT@', '@INPUT@'],
+     input: tracker_sparql_gir,
+     output: 'Tracker-@0@.typelib'.format(tracker_api_version),
+     install: true,
+     install_dir: typelib_dir)
++endif
+--- a/src/libtracker-miner/meson.build	2022-02-09 14:05:04.606842435 -0800
++++ b/src/libtracker-miner/meson.build	2022-02-09 14:05:46.644618435 -0800
+@@ -79,7 +79,8 @@
+     include_directories: include_directories('.')
+ )
+ 
+-tracker_miner_gir = gnome.generate_gir(libtracker_miner,
++if get_option('introspection')
++  tracker_miner_gir = gnome.generate_gir(libtracker_miner,
+     sources: miner_sources + miner_headers,
+     nsversion: tracker_api_version,
+     namespace: 'TrackerMiner',
+@@ -94,12 +95,13 @@
+         '-DTRACKER_COMPILATION',
+     ])
+ 
+-gnome.generate_vapi(
++  gnome.generate_vapi(
+       'tracker-miner-' + tracker_api_version,
+       sources : tracker_miner_gir[0],
+       packages : 'gio-2.0',
+       install : true,
+     )
++endif
+ 
+ configure_file(
+     input: 'tracker-miner.pc.in',
+--- a/src/libtracker-control/meson.build	2022-02-09 14:06:28.893809356 -0800
++++ b/src/libtracker-control/meson.build	2022-02-09 14:07:03.895243065 -0800
+@@ -25,7 +25,8 @@
+     dependencies: tracker_miner_dep
+ )
+ 
+-tracker_control_gir = gnome.generate_gir(libtracker_control,
++if get_option('introspection')
++  tracker_control_gir = gnome.generate_gir(libtracker_control,
+     sources: sources + headers,
+     nsversion: tracker_api_version,
+     namespace: 'TrackerControl',
+@@ -35,12 +36,13 @@
+     install: true,
+     extra_args: '--c-include=libtracker-control/tracker-control.h')
+ 
+-gnome.generate_vapi(
++  gnome.generate_vapi(
+       'tracker-control-' + tracker_api_version,
+       sources : tracker_control_gir[0],
+       packages : 'gio-2.0',
+       install : true,
+     )
++endif
+ 
+ configure_file(
+     input: 'tracker-control.pc.in',

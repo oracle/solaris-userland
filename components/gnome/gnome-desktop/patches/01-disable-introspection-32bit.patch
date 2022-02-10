@@ -1,0 +1,40 @@
+add introspection option to configure builds depending on BUILD_BITS
+
+--- a/meson_options.txt	2021-09-20 11:21:50.140714000 -0700
++++ b/meson_options.txt	2022-02-09 19:42:09.094254952 -0800
+@@ -17,6 +17,13 @@
+   type: 'boolean', value: true, description: 'Build debug tools'
+ )
+ 
++option(
++  'introspection',
++  type: 'boolean',
++  value: true,
++  description: 'Build GObject introspection data for extension library',
++)
++
+ option('udev',
+   type: 'feature', description: 'Udev support'
+ )
+--- a/libgnome-desktop/meson.build	2022-02-09 19:43:16.297411095 -0800
++++ b/libgnome-dekstop/meson.build	2022-02-09 19:44:22.729876612 -0800
+@@ -108,7 +108,8 @@
+   link_with: libgnome_desktop
+ )
+ 
+-gnome.generate_gir(libgnome_desktop,
++if get_option('introspection')
++ gnome.generate_gir(libgnome_desktop,
+   sources: introspection_sources + libgnome_desktop_headers,
+   export_packages: 'gnome-desktop-3.0',
+   namespace: 'GnomeDesktop',
+@@ -118,7 +119,8 @@
+   identifier_prefix: 'Gnome',
+   symbol_prefix: 'gnome',
+   install: true
+-)
++ )
++endif
+ 
+ desktop_pc = pkg.generate(
+   libraries: libgnome_desktop,

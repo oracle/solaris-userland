@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -39,6 +39,7 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2016/408 value=PSARC/2020/109
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file path=usr/bin/$(MACH32)/tracker
 file path=usr/bin/tracker pkg.linted.userland.action001.2=true
 file path=usr/include/tracker-2.0/libtracker-control/tracker-control.h
 file path=usr/include/tracker-2.0/libtracker-control/tracker-miner-manager.h
@@ -86,6 +87,26 @@ file path=usr/lib/$(MACH64)/tracker-2.0/trackertestutils/__init__.py
 file path=usr/lib/$(MACH64)/tracker-2.0/trackertestutils/dconf.py
 file path=usr/lib/$(MACH64)/tracker-2.0/trackertestutils/helpers.py
 file path=usr/lib/$(MACH64)/tracker-2.0/trackertestutils/mainloop.py
+link path=usr/lib/libtracker-control-2.0.so target=libtracker-control-2.0.so.0
+link path=usr/lib/libtracker-control-2.0.so.0 \
+    target=libtracker-control-2.0.so.0.306.0
+file path=usr/lib/libtracker-control-2.0.so.0.306.0
+link path=usr/lib/libtracker-miner-2.0.so target=libtracker-miner-2.0.so.0
+link path=usr/lib/libtracker-miner-2.0.so.0 \
+    target=libtracker-miner-2.0.so.0.306.0
+file path=usr/lib/libtracker-miner-2.0.so.0.306.0
+link path=usr/lib/libtracker-sparql-2.0.so target=libtracker-sparql-2.0.so.0
+link path=usr/lib/libtracker-sparql-2.0.so.0 \
+    target=libtracker-sparql-2.0.so.0.306.0
+file path=usr/lib/libtracker-sparql-2.0.so.0.306.0
+file path=usr/lib/pkgconfig/tracker-control-2.0.pc
+file path=usr/lib/pkgconfig/tracker-miner-2.0.pc
+file path=usr/lib/pkgconfig/tracker-sparql-2.0.pc
+file path=usr/lib/tracker-2.0/libtracker-data.so
+file path=usr/lib/tracker-2.0/trackertestutils/__init__.py
+file path=usr/lib/tracker-2.0/trackertestutils/dconf.py
+file path=usr/lib/tracker-2.0/trackertestutils/helpers.py
+file path=usr/lib/tracker-2.0/trackertestutils/mainloop.py
 file path=usr/lib/tracker-store mode=0555 pkg.linted.userland.action001.2=true
 file path=usr/share/bash-completion/completions/tracker
 file path=usr/share/dbus-1/services/org.freedesktop.Tracker1.service

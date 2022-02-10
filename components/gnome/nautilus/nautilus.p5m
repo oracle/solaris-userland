@@ -18,11 +18,12 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
     default mangler.man.stability "pass-through volatile">
+<include nautilus.p5m.$(MACH)>
 set name=pkg.fmri \
     value=pkg:/gnome/file-manager/nautilus@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="The GNOME Desktop File Manager"
@@ -36,8 +37,6 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2016/375
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file path=usr/bin/nautilus pkg.linted.userland.action001.2=true
-file path=usr/bin/nautilus-autorun-software pkg.linted.userland.action001.2=true
 file path=usr/include/nautilus/libnautilus-extension/nautilus-column-provider.h
 file path=usr/include/nautilus/libnautilus-extension/nautilus-column.h
 file path=usr/include/nautilus/libnautilus-extension/nautilus-extension-enum-types.h
@@ -60,6 +59,13 @@ file path=usr/lib/$(MACH64)/libnautilus-extension.so.1.5.0
 file path=usr/lib/$(MACH64)/nautilus/extensions-3.0/libnautilus-sendto.so
 file path=usr/lib/$(MACH64)/nautilus/extensions-3.0/libtotem-properties-page.so
 file path=usr/lib/$(MACH64)/pkgconfig/libnautilus-extension.pc
+link path=usr/lib/libnautilus-extension.so target=libnautilus-extension.so.1
+link path=usr/lib/libnautilus-extension.so.1 \
+    target=libnautilus-extension.so.1.5.0
+file path=usr/lib/libnautilus-extension.so.1.5.0
+file path=usr/lib/nautilus/extensions-3.0/libnautilus-sendto.so
+file path=usr/lib/nautilus/extensions-3.0/libtotem-properties-page.so
+file path=usr/lib/pkgconfig/libnautilus-extension.pc
 file path=usr/share/applications/nautilus-autorun-software.desktop
 file path=usr/share/applications/org.gnome.Nautilus.desktop
 file path=usr/share/dbus-1/services/org.freedesktop.FileManager1.service
