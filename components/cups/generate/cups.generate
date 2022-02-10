@@ -1,0 +1,50 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2022, Oracle and/or its affiliates.
+#
+
+<include generate/common.transform>
+
+# delete everything not belonging to this package
+<transform file link pkg.type=(?!cups) -> drop>
+<transform file link -> delete pkg.type .*>
+
+# modes, ownership
+<transform file path=etc/cups.* -> default group lp>
+<transform file path=etc/cups/ssl$ -> default mode 0700>
+<transform file path=etc/cups/.+\.conf$ -> default mode 640>
+<transform file path=etc/cups/.+\.conf.default -> default mode 440>
+<transform file path=etc/cups/.+\.conf$ -> default preserve yes>
+# drop original pam.d configuration, deliver own from cups.static
+<transform file path=etc/pam.d -> drop>
+# following backends must be installed with mode 0500 to be run as root
+<transform file path=usr/lib/cups/backend/usb -> default mode 0500>
+<transform file path=usr/lib/cups/.+ -> default mode 0555>
+<transform dir path=var/.+/cups.* -> default group lp>
+<transform dir path=var/cache/cups$ -> default mode 0770>
+<transform dir path=var/cache/cups/rss -> default mode 0775>
+<transform dir path=var/spool/cups$ -> default mode 0710>
+<transform dir path=var/spool/cups/tmp -> default mode 01770>
+# manifest
+<transform file path=lib/svc/manifest/.+\.xml -> default mode 0444>
+<transform file path=lib/svc/manifest/.+\.xml -> default restart_fmri svc:/system/manifest-import:default>

@@ -3,9 +3,9 @@ methods are still supported, just use non-existent TLSCertFile/TLSKeyFile or
 comment them out of the config.
 
 Not for upstream.
---- a/conf/cups-files.conf.in	2020-04-27 20:04:29.000000000 +0200
-+++ b/conf/cups-files.conf.in	2022-04-27 15:39:50.897050122 +0200
-@@ -78,6 +78,10 @@
+--- a/conf/cups-files.conf.in
++++ b/conf/cups-files.conf.in
+@@ -72,6 +72,10 @@ #ServerBin @CUPS_SERVERBIN@
  # SSL/TLS keychain for the scheduler...
  #ServerKeychain @CUPS_SERVERKEYCHAIN@
  
@@ -16,9 +16,9 @@ Not for upstream.
  # Location of other configuration files...
  #ServerRoot @CUPS_SERVERROOT@
  
---- a/cups/cups.h	2022-04-27 15:47:22.082374655 +0200
-+++ b/cups/cups.h	2022-04-27 15:48:23.970584965 +0200
-@@ -588,7 +588,7 @@
+--- a/cups/cups.h
++++ b/cups/cups.h
+@@ -592,7 +592,7 @@ /* New in CUPS 2.0/macOS 10.10 */
  extern cups_dest_t	*cupsGetDestWithURI(const char *name, const char *uri) _CUPS_API_2_0;
  extern const char	*cupsLocalizeDestMedia(http_t *http, cups_dest_t *dest, cups_dinfo_t *info, unsigned flags, cups_size_t *size) _CUPS_API_2_0;
  extern int		cupsMakeServerCredentials(const char *path, const char *common_name, int num_alt_names, const char **alt_names, time_t expiration_date) _CUPS_API_2_0;
@@ -27,9 +27,9 @@ Not for upstream.
  
  /* New in CUPS 2.2/macOS 10.12 */
  extern ssize_t		cupsHashData(const char *algorithm, const void *data, size_t datalen, unsigned char *hash, size_t hashsize) _CUPS_API_2_2;
---- a/cups/tls-gnutls.c	2020-04-27 20:04:29.000000000 +0200
-+++ b/cups/tls-gnutls.c	2022-04-27 15:24:40.894281758 +0200
-@@ -34,6 +34,8 @@
+--- a/cups/tls-gnutls.c
++++ b/cups/tls-gnutls.c
+@@ -35,6 +35,8 @@ static int		tls_options = -1,/* Options
  			tls_min_version = _HTTP_TLS_1_0,
  			tls_max_version = _HTTP_TLS_MAX;
  
@@ -38,7 +38,7 @@ Not for upstream.
  
  /*
   * Local functions...
-@@ -257,12 +259,15 @@
+@@ -258,12 +260,15 @@ int					/* O - 1 on success, 0 on failur
  cupsSetServerCredentials(
      const char *path,			/* I - Path to keychain/directory */
      const char *common_name,		/* I - Default common name for server */
@@ -56,7 +56,7 @@ Not for upstream.
  
   /*
    * Use defaults as needed...
-@@ -293,6 +298,12 @@
+@@ -294,6 +299,12 @@ _cupsStrFree(tls_keypath);
    if (tls_common_name)
      _cupsStrFree(tls_common_name);
  
@@ -69,7 +69,7 @@ Not for upstream.
   /*
    * Save the new values...
    */
-@@ -300,6 +311,10 @@
+@@ -301,6 +312,10 @@ */
    tls_keypath     = _cupsStrAlloc(path);
    tls_auto_create = auto_create;
    tls_common_name = _cupsStrAlloc(common_name);
@@ -80,7 +80,7 @@ Not for upstream.
  
    _cupsMutexUnlock(&tls_mutex);
  
-@@ -1404,6 +1419,17 @@
+@@ -1405,6 +1420,17 @@ }
      if (isdigit(hostname[0] & 255) || hostname[0] == '[')
        hostname[0] = '\0';		/* Don't allow numeric addresses */
  
@@ -98,7 +98,7 @@ Not for upstream.
      if (hostname[0])
      {
       /*
-@@ -1498,7 +1524,8 @@
+@@ -1499,7 +1525,8 @@ }
  
        have_creds = !access(crtfile, R_OK) && !access(keyfile, R_OK);
      }
@@ -108,51 +108,51 @@ Not for upstream.
      if (!have_creds && tls_auto_create && (hostname[0] || tls_common_name))
      {
        DEBUG_printf(("4_httpTLSStart: Auto-create credentials for \"%s\".", hostname[0] ? hostname : tls_common_name));
---- a/scheduler/conf.h	2022-04-27 15:31:38.330858010 +0200
-+++ b/scheduler/conf.h	2022-04-27 15:30:54.679461524 +0200
-@@ -241,6 +241,8 @@
+--- a/scheduler/conf.h
++++ b/scheduler/conf.h
+@@ -240,6 +240,8 @@ VAR int			CreateSelfSignedCerts	VALUE(TR
  					/* Automatically create self-signed certs? */
  VAR char		*ServerKeychain		VALUE(NULL);
  					/* Keychain holding cert + key */
 +VAR char		*TLSCertFile		VALUE(NULL);
 +VAR char		*TLSKeyFile		VALUE(NULL);
- #endif /* HAVE_SSL */
+ #endif /* HAVE_TLS */
  
  #ifdef HAVE_ONDEMAND
---- a/scheduler/conf.c	2022-04-27 15:32:24.931974060 +0200
-+++ b/scheduler/conf.c	2022-04-27 15:36:58.811378284 +0200
-@@ -155,6 +155,8 @@
+--- a/scheduler/conf.c
++++ b/scheduler/conf.c
+@@ -151,6 +151,8 @@ { "RequestRoot",		&RequestRoot,		CUPSD_V
    { "ServerBin",		&ServerBin,		CUPSD_VARTYPE_PATHNAME },
- #ifdef HAVE_SSL
+ #ifdef HAVE_TLS
    { "ServerKeychain",		&ServerKeychain,	CUPSD_VARTYPE_PATHNAME },
 +  { "TLSCertFile",		&TLSCertFile,		CUPSD_VARTYPE_PATHNAME },
 +  { "TLSKeyFile",		&TLSKeyFile,		CUPSD_VARTYPE_PATHNAME },
- #endif /* HAVE_SSL */
+ #endif /* HAVE_TLS */
    { "ServerRoot",		&ServerRoot,		CUPSD_VARTYPE_PATHNAME },
-   { "SMBConfigFile",		&SMBConfigFile,		CUPSD_VARTYPE_STRING },
-@@ -1109,7 +1111,7 @@
+   { "StateDir",			&StateDir,		CUPSD_VARTYPE_STRING },
+@@ -1103,7 +1105,7 @@ cupsdSetStringf(&ServerKeychain, "%s/%s"
    cupsdLogMessage(CUPSD_LOG_DEBUG, "Using keychain \"%s\" for server name \"%s\".", ServerKeychain ? ServerKeychain : "internal", ServerName);
    if (!CreateSelfSignedCerts)
      cupsdLogMessage(CUPSD_LOG_DEBUG, "Self-signed TLS certificate generation is disabled.");
 -  cupsSetServerCredentials(ServerKeychain, ServerName, CreateSelfSignedCerts);
 +  cupsSetServerCredentials(ServerKeychain, ServerName, CreateSelfSignedCerts, TLSCertFile, TLSKeyFile);
- #endif /* HAVE_SSL */
+ #endif /* HAVE_TLS */
  
   /*
---- a/tools/ippeveprinter.c	2022-04-27 15:56:16.148688491 +0200
-+++ b/tools/ippeveprinter.c	2022-04-27 15:56:34.449709432 +0200
-@@ -710,7 +710,7 @@
+--- a/tools/ippeveprinter.c
++++ b/tools/ippeveprinter.c
+@@ -721,7 +721,7 @@ printer->ppdfile = strdup(ppdfile);
  #endif /* !CUPS_LITE */
  
- #ifdef HAVE_SSL
+ #ifdef HAVE_TLS
 -  cupsSetServerCredentials(keypath, printer->hostname, 1);
 +  cupsSetServerCredentials(keypath, printer->hostname, 1, NULL, NULL);
- #endif /* HAVE_SSL */
+ #endif /* HAVE_TLS */
  
   /*
---- a/man/cups-files.conf.5	2022-04-27 16:57:41.355804642 +0200
-+++ b/man/cups-files.conf.5	2022-04-27 16:57:47.207229308 +0200
-@@ -188,6 +188,14 @@
+--- a/man/cups-files.conf.5
++++ b/man/cups-files.conf.5
+@@ -195,6 +195,14 @@ \fBServerKeychain \fIpath\fR
  Specifies the location of TLS certificates and private keys.
  The default is "/Library/Keychains/System.keychain" on macOS and "/etc/cups/ssl" on all other operating systems.
  macOS uses its keychain database to store certificates and keys while other platforms use separate files in the specified directory, *.crt for PEM-encoded certificates and *.key for PEM-encoded private keys.
@@ -167,9 +167,9 @@ Not for upstream.
  .\"#ServerRoot
  .TP 5
  \fBServerRoot \fIdirectory\fR
---- a/doc/help/man-cups-files.conf.html	2022-04-27 17:00:27.602412292 +0200
-+++ b/doc/help/man-cups-files.conf.html	2022-04-27 17:02:40.487258973 +0200
-@@ -136,6 +136,10 @@
+--- a/doc/help/man-cups-files.conf.html
++++ b/doc/help/man-cups-files.conf.html
+@@ -137,6 +137,10 @@ <dt><a name="ServerKeychain"></a><b>Serv
  <dd style="margin-left: 5.0em">Specifies the location of TLS certificates and private keys.
  The default is "/Library/Keychains/System.keychain" on macOS and "/etc/cups/ssl" on all other operating systems.
  macOS uses its keychain database to store certificates and keys while other platforms use separate files in the specified directory, *.crt for PEM-encoded certificates and *.key for PEM-encoded private keys.
@@ -180,9 +180,9 @@ Not for upstream.
  <dt><a name="ServerRoot"></a><b>ServerRoot </b><i>directory</i>
  <dd style="margin-left: 5.0em">Specifies the directory containing the server configuration files.
  The default is "/etc/cups".
---- a/doc/help/encryption.html	2022-04-27 17:04:05.830676468 +0200
-+++ b/doc/help/encryption.html	2022-04-27 17:11:52.244263032 +0200
-@@ -40,10 +40,12 @@
+--- a/doc/help/encryption.html
++++ b/doc/help/encryption.html
+@@ -40,10 +40,12 @@ SSLOptions AllowRC4 AllowSSL3
  </pre>
  
      <h2 class="title" id="SERVER">Configuring Server TLS Policies</h2>

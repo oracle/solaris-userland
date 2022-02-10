@@ -20,10 +20,15 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2022, Oracle and/or its affiliates.
 #
 
-# add to heap: ^file|^link|^dir .*path=var.*/cups|^dir .*path=usr/lib/cups/
-<transform dir path=^(?!(usr/lib/cups/|var/.+/cups.*)) -> drop>
-# exclude: etc/pam.d/cups
-<transform file path=etc/pam.d/cups -> drop>
+# by default everything is in main package
+<transform file link -> default pkg.type cups>
+
+# includes and libs belong to cups-libs
+<transform file link path=usr/include/.* -> set pkg.type libs>
+<transform file link path=usr/lib/.* -> set pkg.type libs>
+
+# but usr/lib/cups belong to cups
+<transform file link path=usr/lib/cups/.* -> set pkg.type cups>

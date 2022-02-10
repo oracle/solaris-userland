@@ -4,11 +4,9 @@ job. Security checks are done to enforce the rules of Trusted environment.
 
 Index: Makedefs.in
 ===================================================================
-diff --git a/Makedefs.in b/Makedefs.in
-index 9ee7585..fa96547 100644
---- a/Makedefs.in
-+++ b/Makedefs.in
-@@ -161,7 +161,7 @@ ARFLAGS		=	@ARFLAGS@
+--- cups-2.4.1/Makedefs.in
++++ cups-2.4.1/Makedefs.in
+@@ -162,7 +162,7 @@ ARFLAGS		=	@ARFLAGS@
  BACKLIBS	=	@BACKLIBS@
  BUILDDIRS	=	@BUILDDIRS@
  CFLAGS		=	@CPPFLAGS@ @CFLAGS@
@@ -17,11 +15,9 @@ index 9ee7585..fa96547 100644
  CXXFLAGS	=	@CPPFLAGS@ @CXXFLAGS@
  CXXLIBS		=	@CXXLIBS@
  DBUS_NOTIFIER	=	@DBUS_NOTIFIER@
-diff --git a/berkeley/lpq.c b/berkeley/lpq.c
-index 9c4aa11..7eeab82 100644
---- a/berkeley/lpq.c
-+++ b/berkeley/lpq.c
-@@ -14,6 +14,10 @@
+--- cups-2.4.1/berkeley/lpq.c
++++ cups-2.4.1/berkeley/lpq.c
+@@ -15,6 +15,10 @@ */
  
  #include <cups/cups-private.h>
  
@@ -32,7 +28,7 @@ index 9c4aa11..7eeab82 100644
  
  /*
   * Local functions...
-@@ -56,12 +60,18 @@ main(int  argc,				/* I - Number of command-line arguments */
+@@ -57,12 +61,18 @@ */
  
    http       = NULL;
    dest       = NULL;
@@ -52,9 +48,6 @@ index 9c4aa11..7eeab82 100644
    for (i = 1; i < argc; i ++)
    {
      if (argv[i][0] == '+')
-diff --git a/config-scripts/cups-labeling.m4 b/config-scripts/cups-labeling.m4
-new file mode 100644
-index 0000000..5b71457
 --- /dev/null
 +++ b/config-scripts/cups-labeling.m4
 @@ -0,0 +1,7 @@
@@ -65,13 +58,11 @@ index 0000000..5b71457
 +		AC_CHECK_HEADER(tsol/label.h)
 +		AC_DEFINE(HAVE_TSOL, 1, [Define if Trusted Solaris is enabled.])])
 +fi
-diff --git a/config.h.in b/config.h.in
-index 1c2d7a8..5fdd576 100644
---- a/config.h.in
-+++ b/config.h.in
-@@ -677,4 +677,10 @@ static __inline int _cups_abs(int i) { return (i < 0 ? -i : i); }
- #  endif /* __GNUC__ || __STDC_VERSION__ */
- #endif /* !HAVE_ABS && !abs */
+--- cups-2.4.1/config.h.in
++++ cups-2.4.1/config.h.in
+@@ -711,4 +711,10 @@ */
+ #undef HAVE_SNAPD_CLIENT_RUN_SNAPCTL2_SYNC
+ 
  
 +/*
 + * Do we have Solaris Trusted Extensions support?
@@ -80,23 +71,29 @@ index 1c2d7a8..5fdd576 100644
 +#undef HAVE_TSOL
 +
  #endif /* !_CUPS_CONFIG_H_ */
-diff --git a/configure.ac b/configure.ac
-index dbf3bda..117ef45 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -33,6 +33,7 @@ sinclude(config-scripts/cups-largefile.m4)
- sinclude(config-scripts/cups-dnssd.m4)
+--- cups-2.4.1/configure.ac
++++ cups-2.4.1/configure.ac
+@@ -39,6 +39,7 @@ sinclude(config-scripts/cups-dnssd.m4)
+ sinclude(config-scripts/cups-container.m4)
  sinclude(config-scripts/cups-startup.m4)
  sinclude(config-scripts/cups-defaults.m4)
 +sinclude(config-scripts/cups-labeling.m4)
  
- INSTALL_LANGUAGES=""
- UNINSTALL_LANGUAGES=""
-diff --git a/scheduler/auth.c b/scheduler/auth.c
-index 4fbad6e..a4fea83 100644
---- a/scheduler/auth.c
-+++ b/scheduler/auth.c
-@@ -1691,8 +1691,38 @@ cupsdIsAuthorized(cupsd_client_t *con,	/* I - Connection */
+ dnl See what languages are available and make sure we generate the localization
+ dnl files as needed...
+--- cups-2.4.1/scheduler/auth.c
++++ cups-2.4.1/scheduler/auth.c
+@@ -60,6 +60,9 @@
+ #  include <snapd-glib/snapd-glib.h>
+ #endif /* HAVE_LIBSNAPDGLIB */
+ 
++#if defined(HAVE_TSOL)
++#include <auth_attr.h>
++#endif /* HAVE_TSOL */
+ 
+ /*
+  * Local functions...
+@@ -1698,8 +1698,38 @@ if (!con->username[0])
  #endif /* HAVE_AUTHORIZATION_H */
      {
        if (best->satisfy == CUPSD_AUTH_SATISFY_ALL || auth == CUPSD_AUTH_DENY)
@@ -136,11 +133,9 @@ index 4fbad6e..a4fea83 100644
  	return (HTTP_OK);		/* unless overridden with Satisfy */
      }
  
-diff --git a/scheduler/client.c b/scheduler/client.c
-index c2ee8f1..6c20609 100644
---- a/scheduler/client.c
-+++ b/scheduler/client.c
-@@ -26,6 +26,11 @@
+--- cups-2.4.1/scheduler/client.c
++++ cups-2.4.1/scheduler/client.c
+@@ -27,6 +27,11 @@ #ifdef HAVE_TCPD_H
  #  include <tcpd.h>
  #endif /* HAVE_TCPD_H */
  
@@ -152,7 +147,7 @@ index c2ee8f1..6c20609 100644
  
  /*
   * Local functions...
-@@ -52,6 +57,65 @@ static int		write_file(cupsd_client_t *con, http_status_t code,
+@@ -53,6 +58,65 @@ char *filename, char *type,
  				   struct stat *filestats);
  static void		write_pipe(cupsd_client_t *con);
  
@@ -218,7 +213,7 @@ index c2ee8f1..6c20609 100644
  
  /*
   * 'cupsdAcceptClient()' - Accept a new client.
-@@ -265,6 +329,21 @@ cupsdAcceptClient(cupsd_listener_t *lis)/* I - Listener socket */
+@@ -266,6 +330,21 @@ return;
    }
  #endif /* HAVE_TCPD_H */
  
@@ -240,7 +235,7 @@ index c2ee8f1..6c20609 100644
  #ifdef AF_LOCAL
    if (httpAddrFamily(httpGetAddress(con->http)) == AF_LOCAL)
    {
-@@ -473,6 +552,12 @@ cupsdCloseClient(cupsd_client_t *con)	/* I - Client to close */
+@@ -474,6 +553,12 @@ con->http = NULL;
      }
    }
  
@@ -253,11 +248,9 @@ index c2ee8f1..6c20609 100644
    if (!partial)
    {
     /*
-diff --git a/scheduler/client.h b/scheduler/client.h
-index fc7af54..32806ce 100644
---- a/scheduler/client.h
-+++ b/scheduler/client.h
-@@ -63,6 +63,8 @@ struct cupsd_client_s
+--- cups-2.4.1/scheduler/client.h
++++ cups-2.4.1/scheduler/client.h
+@@ -64,6 +64,8 @@ #endif /* HAVE_GSSAPI */
  #ifdef HAVE_AUTHORIZATION_H
    AuthorizationRef	authref;	/* Authorization ref */
  #endif /* HAVE_AUTHORIZATION_H */
@@ -266,11 +259,9 @@ index fc7af54..32806ce 100644
  };
  
  #define HTTP(con) ((con)->http)
-diff --git a/scheduler/cupsd.h b/scheduler/cupsd.h
-index bc1350e..cfeacc8 100644
---- a/scheduler/cupsd.h
-+++ b/scheduler/cupsd.h
-@@ -39,6 +39,9 @@
+--- cups-2.4.1/scheduler/cupsd.h
++++ cups-2.4.1/scheduler/cupsd.h
+@@ -39,6 +39,9 @@ #if defined(HAVE_CDSASSL)
  #  include <CoreFoundation/CoreFoundation.h>
  #endif /* HAVE_CDSASSL */
  
@@ -280,11 +271,9 @@ index bc1350e..cfeacc8 100644
  
  /*
   * Some OS's don't have hstrerror(), most notably Solaris...
-diff --git a/scheduler/ipp.c b/scheduler/ipp.c
-index 2fe3bf2..e866a1c 100644
---- a/scheduler/ipp.c
-+++ b/scheduler/ipp.c
-@@ -27,6 +27,11 @@ extern int mbr_group_name_to_uuid(const char* name, uuid_t uu);
+--- cups-2.4.1/scheduler/ipp.c
++++ cups-2.4.1/scheduler/ipp.c
+@@ -28,6 +28,11 @@ extern int mbr_group_name_to_uuid(const
  extern int mbr_check_membership_by_id(uuid_t user, gid_t group, int* ismember);
  #endif /* __APPLE__ */
  
@@ -296,7 +285,7 @@ index 2fe3bf2..e866a1c 100644
  
  /*
   * Local functions...
-@@ -712,17 +717,37 @@ cupsdTimeoutJob(cupsd_job_t *job)	/* I - Job to timeout */
+@@ -714,17 +719,37 @@ return (-1);
    printer = cupsdFindDest(job->dest);
    attr    = ippFindAttribute(job->attrs, "job-sheets", IPP_TAG_NAME);
  
@@ -341,7 +330,7 @@ index 2fe3bf2..e866a1c 100644
        return (-1);
  
      cupsdUpdateQuota(printer, job->username, 0, kbytes);
-@@ -731,6 +756,50 @@ cupsdTimeoutJob(cupsd_job_t *job)	/* I - Job to timeout */
+@@ -733,6 +758,50 @@ }
    return (0);
  }
  
@@ -392,7 +381,7 @@ index 2fe3bf2..e866a1c 100644
  
  /*
   * 'accept_jobs()' - Accept print jobs to a printer.
-@@ -1247,6 +1316,17 @@ add_job(cupsd_client_t  *con,		/* I - Client connection */
+@@ -1249,6 +1318,17 @@ con, con->number, printer, printer->name
  		  filetype, filetype ? filetype->super : "none",
  		  filetype ? filetype->type : "none");
  
@@ -410,9 +399,9 @@ index 2fe3bf2..e866a1c 100644
   /*
    * Check remote printing to non-shared printer...
    */
-@@ -1291,6 +1371,50 @@ add_job(cupsd_client_t  *con,		/* I - Client connection */
+@@ -1293,6 +1373,50 @@ return (NULL);
    }
- #endif /* HAVE_SSL */
+ #endif /* HAVE_TLS */
  
 +#if defined(HAVE_TSOL)
 +  if (is_system_labeled() != 0) {
@@ -461,7 +450,7 @@ index 2fe3bf2..e866a1c 100644
   /*
    * See if the printer is accepting jobs...
    */
-@@ -1576,6 +1700,19 @@ add_job(cupsd_client_t  *con,		/* I - Client connection */
+@@ -1578,6 +1702,19 @@ printer->name);
      return (NULL);
    }
  
@@ -481,7 +470,7 @@ index 2fe3bf2..e866a1c 100644
    job->dtype   = printer->type & (CUPS_PRINTER_CLASS | CUPS_PRINTER_REMOTE);
    job->attrs   = con->request;
    job->dirty   = 1;
-@@ -1637,7 +1774,7 @@ add_job(cupsd_client_t  *con,		/* I - Client connection */
+@@ -1639,7 +1776,7 @@ */
  
      if (attr->value_tag != IPP_TAG_NAME ||
          attr->num_values != 1 ||
@@ -490,7 +479,7 @@ index 2fe3bf2..e866a1c 100644
      {
       /*
        * Can't override the value if we aren't connected via localhost.
-@@ -1880,10 +2017,24 @@ add_job(cupsd_client_t  *con,		/* I - Client connection */
+@@ -1882,10 +2019,24 @@ */
  
      if (!(printer->type & CUPS_PRINTER_REMOTE))
      {
@@ -517,7 +506,7 @@ index 2fe3bf2..e866a1c 100644
        {
          cupsdSetJobState(job, IPP_JOB_ABORTED, CUPSD_JOB_PURGE,
  	                 "Aborting job because the start banner could not be "
-@@ -3025,6 +3176,15 @@ authenticate_job(cupsd_client_t  *con,	/* I - Client connection */
+@@ -3041,6 +3192,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -533,7 +522,7 @@ index 2fe3bf2..e866a1c 100644
   /*
    * See if the job has been completed...
    */
-@@ -3497,6 +3657,16 @@ cancel_job(cupsd_client_t  *con,	/* I - Client connection */
+@@ -3513,6 +3673,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -550,7 +539,7 @@ index 2fe3bf2..e866a1c 100644
   /*
    * See if the job is owned by the requesting user...
    */
-@@ -5891,6 +6061,16 @@ create_subscriptions(
+@@ -5927,6 +6097,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
  	                jobid);
  	return;
        }
@@ -567,7 +556,7 @@ index 2fe3bf2..e866a1c 100644
      }
      else
        job = NULL;
-@@ -6439,6 +6619,15 @@ get_job_attrs(cupsd_client_t  *con,	/* I - Client connection */
+@@ -6475,6 +6655,15 @@ }
  
    exclude = cupsdGetPrivateAttrs(policy, con, printer, job->username);
  
@@ -583,7 +572,7 @@ index 2fe3bf2..e866a1c 100644
   /*
    * Copy attributes...
    */
-@@ -6698,6 +6887,21 @@ get_jobs(cupsd_client_t  *con,		/* I - Client connection */
+@@ -6734,6 +6923,21 @@ strlcpy(username, get_username(con), siz
    else
      username[0] = '\0';
  
@@ -605,7 +594,7 @@ index 2fe3bf2..e866a1c 100644
    ra = create_requested_array(con->request);
    for (job_attr = (char *)cupsArrayFirst(ra); job_attr; job_attr = (char *)cupsArrayNext(ra))
      if (strcmp(job_attr, "job-id") &&
-@@ -6765,6 +6969,14 @@ get_jobs(cupsd_client_t  *con,		/* I - Client connection */
+@@ -6802,6 +7006,14 @@ if (need_load_job && !job->attrs)
        {
          cupsdLoadJob(job);
  
@@ -620,7 +609,7 @@ index 2fe3bf2..e866a1c 100644
  	if (!job->attrs)
  	{
  	  cupsdLogMessage(CUPSD_LOG_DEBUG2, "get_jobs: No attributes for job %d", job->id);
-@@ -6833,7 +7045,11 @@ get_jobs(cupsd_client_t  *con,		/* I - Client connection */
+@@ -6870,7 +7082,11 @@ continue;
  	}
        }
  
@@ -633,7 +622,7 @@ index 2fe3bf2..e866a1c 100644
  	continue;
  
        if (count > 0)
-@@ -7931,6 +8147,15 @@ hold_job(cupsd_client_t  *con,		/* I - Client connection */
+@@ -7968,6 +8184,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -649,7 +638,7 @@ index 2fe3bf2..e866a1c 100644
   /*
    * See if the job is owned by the requesting user...
    */
-@@ -8201,6 +8426,14 @@ move_job(cupsd_client_t  *con,		/* I - Client connection */
+@@ -8238,6 +8463,14 @@ */
        send_ipp_status(con, IPP_NOT_FOUND, _("Job #%d does not exist."), jobid);
        return;
      }
@@ -664,7 +653,7 @@ index 2fe3bf2..e866a1c 100644
      else
      {
       /*
-@@ -8223,6 +8456,27 @@ move_job(cupsd_client_t  *con,		/* I - Client connection */
+@@ -8260,6 +8493,27 @@ send_http_error(con, status, dprinter);
      return;
    }
  
@@ -692,7 +681,7 @@ index 2fe3bf2..e866a1c 100644
   /*
    * Now move the job or jobs...
    */
-@@ -9069,6 +9323,16 @@ release_job(cupsd_client_t  *con,	/* I - Client connection */
+@@ -9106,6 +9360,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -709,7 +698,7 @@ index 2fe3bf2..e866a1c 100644
   /*
    * See if job is "held"...
    */
-@@ -9293,6 +9557,15 @@ restart_job(cupsd_client_t  *con,	/* I - Client connection */
+@@ -9330,6 +9594,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -725,7 +714,7 @@ index 2fe3bf2..e866a1c 100644
   /*
    * See if job is in any of the "completed" states...
    */
-@@ -9645,6 +9918,15 @@ send_document(cupsd_client_t  *con,	/* I - Client connection */
+@@ -9681,6 +9954,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -741,7 +730,7 @@ index 2fe3bf2..e866a1c 100644
    printer = cupsdFindDest(job->dest);
  
   /*
-@@ -10254,6 +10536,15 @@ set_job_attrs(cupsd_client_t  *con,	/* I - Client connection */
+@@ -10290,6 +10572,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -757,7 +746,7 @@ index 2fe3bf2..e866a1c 100644
   /*
    * See if the job has been completed...
    */
-@@ -10598,7 +10889,6 @@ set_printer_attrs(cupsd_client_t  *con,	/* I - Client connection */
+@@ -10634,7 +10925,6 @@ }
   /*
    * Return a list of attributes that can be set via Set-Printer-Attributes.
    */
@@ -765,7 +754,7 @@ index 2fe3bf2..e866a1c 100644
    if ((attr = ippFindAttribute(con->request, "printer-location",
                                 IPP_TAG_TEXT)) != NULL)
    {
-@@ -11445,6 +11735,11 @@ validate_user(cupsd_job_t    *job,	/* I - Job */
+@@ -11474,6 +11764,11 @@ */
  
    strlcpy(username, get_username(con), userlen);
  
@@ -777,11 +766,9 @@ index 2fe3bf2..e866a1c 100644
   /*
    * Check the username against the owner...
    */
-diff --git a/scheduler/job.c b/scheduler/job.c
-index e20e7c5..d5a39f5 100644
---- a/scheduler/job.c
-+++ b/scheduler/job.c
-@@ -1062,7 +1062,13 @@ cupsdContinueJob(cupsd_job_t *job)	/* I - Job */
+--- cups-2.4.1/scheduler/job.c
++++ cups-2.4.1/scheduler/job.c
+@@ -1063,7 +1063,13 @@ "CUPS_FILETYPE=document";
    if (final_content_type[0])
      envp[envc ++] = final_content_type;
  
@@ -796,7 +783,7 @@ index e20e7c5..d5a39f5 100644
    {
      if ((attr = ippFindAttribute(job->attrs, "job-sheets",
                                   IPP_TAG_NAME)) == NULL)
-@@ -1412,6 +1418,12 @@ cupsdDeleteJob(cupsd_job_t       *job,	/* I - Job */
+@@ -1413,6 +1419,12 @@ free(job->filetypes);
      job->num_files = 0;
    }
  
@@ -809,7 +796,7 @@ index e20e7c5..d5a39f5 100644
    if (job->history)
      free_job_history(job);
  
-@@ -1840,6 +1852,10 @@ cupsdLoadJob(cupsd_job_t *job)		/* I - Job */
+@@ -1841,6 +1853,10 @@ else
        ippSetString(job->attrs, &job->reasons, 0, "none");
    }
  
@@ -820,7 +807,7 @@ index e20e7c5..d5a39f5 100644
    job->impressions = ippFindAttribute(job->attrs, "job-impressions-completed", IPP_TAG_INTEGER);
    job->sheets      = ippFindAttribute(job->attrs, "job-media-sheets-completed", IPP_TAG_INTEGER);
    job->job_sheets  = ippFindAttribute(job->attrs, "job-sheets", IPP_TAG_NAME);
-@@ -3871,6 +3887,25 @@ get_options(cupsd_job_t *job,		/* I - Job */
+@@ -3864,6 +3880,25 @@ newlength = ipp_length(job->attrs);
    for (i = num_pwgppds, pwgppd = pwgppds; i > 0; i --, pwgppd ++)
      newlength += 1 + strlen(pwgppd->name) + 1 + strlen(pwgppd->value);
  
@@ -846,7 +833,7 @@ index e20e7c5..d5a39f5 100644
   /*
    * Then allocate/reallocate the option buffer as needed...
    */
-@@ -4111,6 +4146,25 @@ get_options(cupsd_job_t *job,		/* I - Job */
+@@ -4104,6 +4139,25 @@ }
  
    cupsFreeOptions(num_pwgppds, pwgppds);
  
@@ -872,7 +859,7 @@ index e20e7c5..d5a39f5 100644
   /*
    * Return the options string...
    */
-@@ -4815,6 +4869,18 @@ start_job(cupsd_job_t     *job,		/* I - Job ID */
+@@ -4808,6 +4862,18 @@ */
    if (!cupsdLoadJob(job))
      return;
  
@@ -891,11 +878,9 @@ index e20e7c5..d5a39f5 100644
    if (!job->printer_message)
      job->printer_message = ippFindAttribute(job->attrs,
                                              "job-printer-state-message",
-diff --git a/scheduler/job.h b/scheduler/job.h
-index 2400ea9..d69c812 100644
---- a/scheduler/job.h
-+++ b/scheduler/job.h
-@@ -84,6 +84,8 @@ struct cupsd_job_s			/**** Job request ****/
+--- cups-2.4.1/scheduler/job.h
++++ cups-2.4.1/scheduler/job.h
+@@ -84,6 +84,8 @@ cups_array_t		*history;	/* Debug log his
    int			progress;	/* Printing progress */
    int			num_keywords;	/* Number of PPD keywords */
    cups_option_t		*keywords;	/* PPD keywords */
@@ -904,11 +889,9 @@ index 2400ea9..d69c812 100644
  };
  
  typedef struct cupsd_joblog_s		/**** Job log message ****/
-diff --git a/scheduler/printers.c b/scheduler/printers.c
-index e341bdb..d08e38e 100644
---- a/scheduler/printers.c
-+++ b/scheduler/printers.c
-@@ -925,6 +925,91 @@ cupsdFindPrinter(const char *name)	/* I - Name of printer to find */
+--- cups-2.4.1/scheduler/printers.c
++++ cups-2.4.1/scheduler/printers.c
+@@ -929,6 +929,91 @@ else
      return (p);
  }
  
@@ -1000,7 +983,7 @@ index e341bdb..d08e38e 100644
  
  /*
   * 'cupsdLoadAllPrinters()' - Load printers from the printers.conf file.
-@@ -2571,12 +2656,22 @@ cupsdSetPrinterAttrs(cupsd_printer_t *p)/* I - Printer to setup */
+@@ -2598,12 +2683,22 @@ }
      ippDelete(oldattrs);
    }
  
@@ -1026,11 +1009,9 @@ index e341bdb..d08e38e 100644
  
   /*
    * Populate the document-format-supported attribute...
-diff --git a/scheduler/printers.h b/scheduler/printers.h
-index 4959bf2..71751e1 100644
---- a/scheduler/printers.h
-+++ b/scheduler/printers.h
-@@ -162,6 +162,8 @@ extern cupsd_printer_t	*cupsdFindPrinter(const char *name);
+--- cups-2.4.1/scheduler/printers.h
++++ cups-2.4.1/scheduler/printers.h
+@@ -163,6 +163,8 @@ extern cupsd_printer_t	*cupsdFindPrinter
  extern cupsd_quota_t	*cupsdFindQuota(cupsd_printer_t *p,
  			                const char *username);
  extern void		cupsdFreeQuotas(cupsd_printer_t *p);

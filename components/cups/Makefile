@@ -20,27 +20,27 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
-BUILD_BITS= 32_and_64
-COMPILER= gcc
+
+BUILD_BITS=		32_and_64
+PREFERRED_BITS=		64
+COMPILER=		gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cups
 
-COMPONENT_VERSION=	2.3.3
-COMPONENT_ARCHIVE_HASH=	sha256:e7759f70df318814f96cd408d3677f4ebed796d505ad58d89936c97cb19dffe1
-COMPONENT_BAID=		87089
+COMPONENT_VERSION=	2.4.1
+COMPONENT_ARCHIVE_HASH=	sha256:c7339f75f8d4f2dec50c673341a45fc06b6885bb6d4366d6bf59a4e6c10ae178
+COMPONENT_BAID=		117001
 
 COMPONENT_PROJECT_URL=	http://www.cups.org/
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
-COMPONENT_ARCHIVE_URL=	https://github.com/apple/cups/archive/v$(COMPONENT_VERSION).zip
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-source.tar.gz
+COMPONENT_ARCHIVE_URL=	\
+	https://github.com/OpenPrinting/cups/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/cups
 COMPONENT_ANITYA_ID=	380
 
-$(PROTOSVCMANIFESTDIR)/application/cups.xml: $(INSTALL_$(MK_BITS))
-
-# Test just 64 bit as we are building just libcups in 32-bit mode. Disable system-test.
 TEST_32 =		$(SKIP_TEST)
 system-test:    	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
@@ -52,35 +52,18 @@ $(CONFIGURE_64):	LDFLAGS += -m64
 # Ensure dynamic shared objects are linked using same LDFLAGS as executables.
 CONFIGURE_ENV += DSOFLAGS="$(LDFLAGS)"
 
-# override MACH64
-CONFIGURE_OPTIONS.64 +=	--with-components=all
 CONFIGURE_OPTIONS.32 +=	--with-components=libcups
-CONFIGURE_OPTIONS.64 +=	--bindir=/usr/bin
-CONFIGURE_OPTIONS.32 +=	--bindir=/usr/bin/$(MACH32)
-CONFIGURE_OPTIONS.64 +=	--sbindir=/usr/sbin
 CONFIGURE_OPTIONS +=	--localedir=$(USRSHARELOCALEDIR)
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS +=	--localstatedir=$(VARDIR)
-CONFIGURE_OPTIONS +=	--with-cachedir=$(VARDIR)/cache/cups
-CONFIGURE_OPTIONS +=	--with-fontpath=$(USRSHAREFONTSDIR)
-CONFIGURE_OPTIONS +=	--with-logdir=$(VARDIR)/log/cups
 CONFIGURE_OPTIONS +=	--with-rundir=/system/volatile/cups
 CONFIGURE_OPTIONS +=	--with-smfmanifestdir=$(LIBDIR)/svc/manifest/application
-CONFIGURE_OPTIONS +=	--with-printcap=$(ETCDIR)/printers.conf
 CONFIGURE_OPTIONS +=	--without-rcdir
 CONFIGURE_OPTIONS +=	--with-cups-user=lp
-CONFIGURE_OPTIONS +=	--with-privateinclude=$(USRINCDIR)/cups/private
 CONFIGURE_OPTIONS +=	--with-cups-group=lp
-CONFIGURE_OPTIONS +=	--disable-static
-#CONFIGURE_OPTIONS +=	--with-optim=-g0 -g
-# CDSA is first choice GNU TLS is second openssl is not supported
-#CONFIGURE_OPTIONS +=	--enable-gnutls
-
-# cups do not use DESTDIR but DSTROOT
-COMPONENT_INSTALL_ARGS=	DSTROOT="$(PROTO_DIR)"
 
 COMPONENT_PREP_ACTION += (cd $(@D) ; \
-   PATH="/usr/gnu/bin:$(PATH)" autoconf -f )
+	PATH="/usr/gnu/bin:$(PATH)" autoconf -f )
 
 COMPONENT_PRE_CONFIGURE_ACTION += $(CLONEY) $(SOURCE_DIR) $(@D)
 
@@ -88,36 +71,27 @@ COMPONENT_PRE_CONFIGURE_ACTION += $(CLONEY) $(SOURCE_DIR) $(@D)
 # we want to remove debugging data but not the symbols.
 COMPONENT_INSTALL_ENV += STRIPPROG="strip -x"
 
-# cups scheduler
-PKG_OBJ =	cups
-# cups API
-SUBPKG_OBJ =	cups-libs
-
-# - exclude lib.+\.{so[.<ver>[.<subver>]]|h} from $(HEAP_OBJ) actions into sub-pkg
-EXCLUSION_CRITERIA = usr/include/.*\.h|usr/lib.*/lib.*\.so.*
-# pkgobjs is used because manifest check do not support trash-can check
-include $(WS_MAKE_RULES)/pkgobjs.mk
-
 # Work in our test dir, not /tmp.
 COMPONENT_TEST_ENV += CUPS_TESTBASE=$(COMPONENT_TEST_DIR)/test/work
 # Keep just fails.
 COMPONENT_TEST_TRANSFORMS = \
 	'-e "/^httpAddrGetList.*: FAIL/d" ' \
 	'-e "/: FAIL/p" ' \
+	'-e "/FAIL: /p" ' \
 	'-e "/ tests failed./p" ' \
 	'-e "d" '
 
+cups.license: $(SOURCE_DIR)/LICENSE $(SOURCE_DIR)/NOTICE
+	cat $? > $@
+
 REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/libusb-1
-REQUIRED_PACKAGES += library/print/cups-libs
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += $(PERL_PKG)
-REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
-REQUIRED_PACKAGES += system/library/iconv
 REQUIRED_PACKAGES += system/library/libc
 REQUIRED_PACKAGES += system/library/libdbus
 REQUIRED_PACKAGES += system/library/math
