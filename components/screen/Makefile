@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 
@@ -30,12 +30,13 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		screen
-COMPONENT_VERSION=	4.8.0
+COMPONENT_VERSION=	4.9.0
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6e11b13d8489925fde25dfb0935bf6ed71f9eb47eff233a181e078fde5655aa1
+    sha256:f9335281bb4d1538ed078df78a20c2f39d3af9a4e91c57d084271e0289c730f4
 COMPONENT_ANITYA_ID=	4772
+COMPONENT_BAID=		116780
 
-COMPONENT_BAID=		75557
+COMPONENT_PREP_ACTION += (cd $(@D); $(AUTORECONF_ENV) $(AUTORECONF) -fiv);
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
