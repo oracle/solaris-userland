@@ -1,11 +1,9 @@
 Changes implements the Trusted Extension functionality in labeledtops filter
 used to emit postscript banner and trailer pages.
 
-diff --git a/Makefile.am b/Makefile.am
-index 2a3902a..8f9f125 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -602,6 +602,10 @@ pkgfilter_PROGRAMS += \
+@@ -596,6 +596,10 @@ pkgfilter_PROGRAMS += \
  	imagetopdf \
  	imagetoraster
  endif
@@ -16,7 +14,7 @@ index 2a3902a..8f9f125 100644
  
  check_PROGRAMS += \
  	test_pdf1 \
-@@ -903,6 +907,15 @@ texttopdf_LDADD = \
+@@ -897,6 +901,15 @@ $(CUPS_LIBS) \
  	$(FONTCONFIG_LIBS) \
  	libfontembed.la
  
@@ -32,8 +30,6 @@ index 2a3902a..8f9f125 100644
  # =====
  # UTILS
  # =====
-diff --git a/configure.ac b/configure.ac
-index 877ac5f..9d24f80 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -18,6 +18,7 @@ AC_CONFIG_MACRO_DIR([m4])
@@ -44,9 +40,6 @@ index 877ac5f..9d24f80 100644
  AM_INIT_AUTOMAKE([1.11 gnu dist-xz dist-bzip2 subdir-objects])
  AM_SILENT_RULES([yes])
  AC_LANG([C++])
-diff --git a/filter/labeledtops.c b/filter/labeledtops.c
-new file mode 100644
-index 0000000..ac51be0
 --- /dev/null
 +++ b/filter/labeledtops.c
 @@ -0,0 +1,446 @@
@@ -496,9 +489,6 @@ index 0000000..ac51be0
 +
 +	return err;
 +}
-diff --git a/m4/labeling.m4 b/m4/labeling.m4
-new file mode 100644
-index 0000000..4a5b83f
 --- /dev/null
 +++ b/m4/labeling.m4
 @@ -0,0 +1,8 @@
@@ -510,11 +500,9 @@ index 0000000..4a5b83f
 +		AC_DEFINE(HAVE_TSOL, 1, [Define if Trusted Solaris is enabled.])])
 +fi
 +AM_CONDITIONAL([HAVE_TSOL], [test "x$enable_labeling" != "xno"])
-diff --git a/mime/cupsfilters.convs.in b/mime/cupsfilters.convs.in
-index 82a9403..e8b437e 100644
 --- a/mime/cupsfilters.convs.in
 +++ b/mime/cupsfilters.convs.in
-@@ -68,6 +68,7 @@ image/x-xpixmap		application/vnd.cups-pdf		65	imagetopdf
+@@ -68,6 +68,7 @@ image/x-xpixmap		application/vnd.cups-pd
  image/x-xwindowdump	application/vnd.cups-pdf		65	imagetopdf
  image/x-sun-raster	application/vnd.cups-pdf		65	imagetopdf
  application/vnd.cups-pdf-banner	application/pdf			32	bannertopdf
@@ -522,11 +510,9 @@ index 82a9403..e8b437e 100644
  image/urf		application/pdf				0	@APPLE_RASTER_FILTER@
  @QPDF_NO_PCLM@application/vnd.cups-raster application/PCLm			32	rastertopclm
  
-diff --git a/mime/cupsfilters.types b/mime/cupsfilters.types
-index ceb4563..c98979d 100644
 --- a/mime/cupsfilters.types
 +++ b/mime/cupsfilters.types
-@@ -101,5 +101,6 @@ image/urf			urf string(0,UNIRAST<00>)
+@@ -101,5 +101,6 @@ #
  
  application/vnd.cups-pdf
  application/vnd.cups-pdf-banner     string(0,'#PDF-BANNER')

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -28,10 +28,9 @@ gcc_OPT= -O2
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cups-filters
-COMPONENT_VERSION=	1.28.10
-COMPONENT_TAG=		release-1-28-10
-COMPONENT_BAID=		107235
-COMPONENT_ARCHIVE_HASH=	sha256:cf8c904694c44cf689b5724e46d23da9ae5125d54374b340c642077cc29ca837
+COMPONENT_VERSION=	1.28.15
+COMPONENT_BAID=		127285
+COMPONENT_ARCHIVE_HASH=	sha256:a907ec769fbb72efbfbf9b540b250a08e33b6e373a8a7c343f9840fba4d0478b
 COMPONENT_PROJECT_URL=	http://www.openprinting.org/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
@@ -93,14 +92,12 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/ FAIL:/p" ' \
 	'-e "/ ERROR:/p" '
 
-$(SOURCE_DIR)/cups-filters.license:
-	cat	$(@D)/COPYING \
-		$(COMPONENT_DIR)/GPL-2.txt \
-		$(COMPONENT_DIR)/GPL-3.txt \
-		$(COMPONENT_DIR)/LGPL-2.0.txt \
-		$(COMPONENT_DIR)/LGPL-2.1.txt > $@
-
-$(INSTALL_64):	$(SOURCE_DIR)/cups-filters.license
+cups-filters.license: $(SOURCE_DIR)/COPYING \
+	$(COMPONENT_DIR)/licenses/GPL-2.txt \
+	$(COMPONENT_DIR)/licenses/GPL-3.txt \
+	$(COMPONENT_DIR)/licenses/LGPL-2.0.txt \
+	$(COMPONENT_DIR)/licenses/LGPL-2.1.txt
+	cat $? > $@
 
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += image/library/libpng16
