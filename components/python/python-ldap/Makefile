@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 
 # Build requirements, needed before inclusion of shared-macros.
@@ -49,6 +49,19 @@ include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
+
+COMPONENT_TEST_ENV +=	PYTHONPATH=$(PROTO_DIR)/$(PYTHON_LIB)
+COMPONENT_TEST_ENV +=	PATH=$(PATH):/usr/lib
+COMPONENT_SYSTEM_TEST_ENV +=	PATH=$(PATH):/usr/lib
+
+# Slapd has a limit on how long the domain socket path can be; we thus need to
+# change the test directory path to a shorter one to get around this limitation.
+COMPONENT_TEST_ENV +=	TMP=/tmp
+COMPONENT_SYSTEM_TEST_ENV +=	TMP=/tmp
+
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # common targets
@@ -58,9 +71,11 @@ install:	$(INSTALL_32_and_64)
 
 # See README-TESTING.md for details on how to run provided tests and
 # a possible future addition to this Makefile.
-test:		$(NO_TESTS)
+test:		$(BUILD_DIR)/$(MACH64)-3.7/.tested \
+		$(BUILD_DIR)/$(MACH64)-3.9/.tested
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:	$(BUILD_DIR)/$(MACH64)-3.7/.system-tested \
+		$(BUILD_DIR)/$(MACH64)-3.9/.system-tested
 
 # Package dependencies.
 # ---------------------
