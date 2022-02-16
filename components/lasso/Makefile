@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS=		64_and_32
 COMPILER=		gcc
@@ -44,6 +44,8 @@ PKG_CONFIG_PATH.64=	/usr/lib/64/pkgconfig
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
+CONFIGURE_OPTIONS+=	--enable-php7
+CONFIGURE_OPTIONS+=	--with-php7-config=/usr/php/7.4/bin/php-config
 CONFIGURE_OPTIONS+=	--disable-perl
 CONFIGURE_OPTIONS+=	--disable-java
 CONFIGURE_OPTIONS+=	--disable-python
