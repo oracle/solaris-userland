@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -29,16 +29,16 @@ COMPILER =		gcc
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		freetype
-COMPONENT_VERSION=	2.10.4
+COMPONENT_VERSION=	2.11.1
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_PROJECT_URL=	https://www.freetype.org/
 COMPONENT_ARCHIVE_URL=	https://download.savannah.gnu.org/releases/freetype/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:86a854d8905b19698bbc8f23b860bc104246ce4854dcea8e3b0fb21284f75784
+	sha256:3333ae7cfda88429c97a7ae63b7d01ab398076c3b67182e960e5684050f2c5c8
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=        x11/font
 COMPONENT_ANITYA_ID=	854
-COMPONENT_BAID=		87789
+COMPONENT_BAID=		115729
 
 TEST_TARGET = $(NO_TESTS)
 
@@ -46,12 +46,11 @@ FIX_PC_FILES=builds/unix/freetype2.in
 
 # Set here so we only have to update this one line, instead of multiple lines
 # in the *.p5m file on every new version
-FREETYPE_SOVERSION =	6.17.4
+FREETYPE_SOVERSION =	6.18.1
 PKG_VARS += FREETYPE_SOVERSION
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
-CONFIGURE_OPTIONS += --enable-biarch-config
 CONFIGURE_OPTIONS += --enable-freetype-config
 CONFIGURE_OPTIONS += --with-zlib
 CONFIGURE_OPTIONS += --with-bzip2
