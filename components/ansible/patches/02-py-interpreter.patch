@@ -1,0 +1,25 @@
+In-house patch, yet not submitted upstream.
+Will work with community to push this upstream
+
+--- ansible-stable-2.10/lib/ansible/config/base.yml.orig
++++ ansible-stable-2.10/lib/ansible/config/base.yml
+@@ -1522,6 +1522,8 @@
+     ubuntu:
+       '14': /usr/bin/python
+       '16': /usr/bin/python3
++    solaris:
++      '11': /usr/bin/python
+   version_added: "2.8"
+   # FUTURE: add inventory override once we're sure it can't be abused by a rogue target
+   # FUTURE: add a platform layer to the map so we could use for, eg, freebsd/macos/etc?
+--- ansible-stable-2.10/lib/ansible/executor/interpreter_discovery.py.orig
++++ ansible-stable-2.10/lib/ansible/executor/interpreter_discovery.py
+@@ -86,7 +86,7 @@
+             # this is lame, but returning None or throwing an exception is uglier
+             return u'/usr/bin/python'
+ 
+-        if platform_type != 'linux':
++        if platform_type != 'linux' and platform_type != 'sunos':
+             raise NotImplementedError('unsupported platform for extended discovery: {0}'.format(to_native(platform_type)))
+ 
+         platform_script = pkgutil.get_data('ansible.executor.discovery', 'python_target.py')
