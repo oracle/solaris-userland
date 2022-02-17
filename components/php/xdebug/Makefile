@@ -27,16 +27,16 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xdebug
-COMPONENT_VERSION=	3.0.1
+COMPONENT_VERSION=	3.1.2
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_ARCHIVE_HASH= \
-	sha256:0b95317153a2254f3da1fc9010fdffc40c9eec232be3ede088ec4c9bd94049b5
+	sha256:083f6be1100df79ccbdf049dafc3930bab35f0eb80f9b19ac1ad84fa6779ccf3
 COMPONENT_ARCHIVE_URL=	http://xdebug.org/files/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://xdebug.org/
 COMPONENT_BUGDB=	utility/php
 COMPONENT_ANITYA_ID=	13302
 
-COMPONENT_BAID=		90057
+COMPONENT_BAID=		113954
 
 TEST_TARGET= $(NO_TESTS)
 include $(PHP_TOP_DIR)/phpize.mk
@@ -45,6 +45,8 @@ include $(PHP_TOP_DIR)/php.mk
 
 CONFIGURE_OPTIONS +=	--enable-xdebug
 
+REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += web/php-74
 REQUIRED_PACKAGES += web/php-80
+REQUIRED_PACKAGES += web/php-81
