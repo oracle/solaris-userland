@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		grep
-COMPONENT_VERSION=	3.1
+COMPONENT_VERSION=	3.7
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:db625c7ab3bb3ee757b3926a5cfa8d9e1c3991ad24707a83dde8a5ef2bf7a07e
+    sha256:5c10da312460aec721984d5d83246d24520ec438dd48d7ab5a05dbc0d6d6823c
 COMPONENT_BUGDB=	utility/ggrep
 COMPONENT_ANITYA_ID=	1251
 
-COMPONENT_BAID=		42177
+COMPONENT_BAID=		117126
 
 SYSTEM_TEST_TARGET= $(SOURCE_DIR)/.system-test-patched configure $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/gnu-component.mk
@@ -60,6 +60,9 @@ COMPONENT_TEST_TRANSFORMS += \
         '-e "/PASS/p" ' \
         '-e "/FAIL/p" ' \
         '-e "/ERROR/p" '
+
+# Test output differs for each architecture
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 
 # Putting GNU on path first prevents some tests from being skipped,
 # which also  keeps the test and system-test results consistent.
