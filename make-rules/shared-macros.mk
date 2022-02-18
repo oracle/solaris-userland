@@ -701,8 +701,8 @@ endif
 CC =		$(CC.$(COMPILER).$(BITS))
 CXX =		$(CXX.$(COMPILER).$(BITS))
 
-RUBY_VERSION =	2.6
-RUBY_PUPPET_VERSION = 2.6
+RUBY_VERSION =	3.1
+RUBY_PUPPET_VERSION = 3.1
 
 # The default version should go last.
 RUBY_VERSIONS = 3.1 2.6

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013, 2023, Oracle and/or its affiliates.
 #
 
 # Get VENDOR_RUBY etc
@@ -60,7 +60,7 @@ $(BUILD_DIR)/%/.built:  $(SOURCE_DIR)/.prep
 $(BUILD_DIR)/%/.installed:      $(BUILD_DIR)/%/.built
 	$(COMPONENT_PRE_INSTALL_ACTION)
 	(cd $(SOURCE_DIR) ; $(ENV) $(COMPONENT_INSTALL_ENV) \
-                ./install.rb $(INSTALL_RB_OPTIONS) )
+                $(RUBY) ./install.rb $(INSTALL_RB_OPTIONS) )
 	$(COMPONENT_POST_INSTALL_ACTION)
 	$(TOUCH) $@
 

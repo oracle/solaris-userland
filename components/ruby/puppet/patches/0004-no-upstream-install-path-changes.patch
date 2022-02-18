@@ -6,28 +6,10 @@ Subject: [PATCH 4/5] (no-upstream) install path changes
 Patches not suitable for upstream
 25232171 puppet hard codes new path locations
 25232111 puppet install.rb vardir argument has no impact
----
- install.rb                                    |  8 ++++----
- lib/puppet/defaults.rb                        |  2 +-
- lib/puppet/face/config.rb                     |  2 +-
- lib/puppet/face/module/install.rb             | 17 +++++++++--------
- lib/puppet/face/module/list.rb                | 10 +++++-----
- lib/puppet/face/module/uninstall.rb           |  4 ++--
- lib/puppet/provider/package/puppet_gem.rb     |  2 +-
- lib/puppet/reference/configuration.rb         |  2 +-
- lib/puppet/util/run_mode.rb                   |  2 +-
- man/man5/puppet.conf.5                        |  4 ++--
- man/man8/puppet-config.8                      |  2 +-
- man/man8/puppet-module.8                      | 14 +++++++-------
- spec/unit/provider/package/puppet_gem_spec.rb |  2 +-
- spec/unit/util/run_mode_spec.rb               |  4 ++--
- 14 files changed, 38 insertions(+), 37 deletions(-)
 
-diff --git a/install.rb b/install.rb
-index cad3ad8dc..abc8cf234 100755
---- a/install.rb
-+++ b/install.rb
-@@ -193,7 +193,7 @@ def prepare_installation
+--- puppet-7.21.0/install.rb
++++ puppet-7.21.0/install.rb
+@@ -171,10 +171,10 @@ def prepare_installation
      opts.on('--codedir[=OPTIONAL]', 'Installation directory for code files', 'Default /etc/puppetlabs/code') do |codedir|
        InstallOptions.codedir = codedir
      end
@@ -35,8 +17,12 @@ index cad3ad8dc..abc8cf234 100755
 +    opts.on('--vardir[=OPTIONAL]', 'Installation directory for var files', 'Default /var/puppetlabs/puppet/cache') do |vardir|
        InstallOptions.vardir = vardir
      end
+-    opts.on('--publicdir[=OPTIONAL]', 'Installation directory for public files such as the `last_run_summary.yaml` report', 'Default /opt/puppetlabs/puppet/public') do |publicdir|
++    opts.on('--publicdir[=OPTIONAL]', 'Installation directory for public files such as the `last_run_summary.yaml` report', 'Default /var/puppetlabs/puppet/public') do |publicdir|
+       InstallOptions.publicdir = publicdir
+     end
      opts.on('--rundir[=OPTIONAL]', 'Installation directory for state files', 'Default /var/run/puppetlabs') do |rundir|
-@@ -205,7 +205,7 @@ def prepare_installation
+@@ -186,7 +186,7 @@ def prepare_installation
      opts.on('--bindir[=OPTIONAL]', 'Installation directory for binaries', 'overrides RbConfig::CONFIG["bindir"]') do |bindir|
        InstallOptions.bindir = bindir
      end
@@ -45,29 +31,36 @@ index cad3ad8dc..abc8cf234 100755
        InstallOptions.localedir = localedir
      end
      opts.on('--ruby[=OPTIONAL]', 'Ruby interpreter to use with installation', 'overrides ruby used to call install.rb') do |ruby|
-@@ -291,7 +291,7 @@ def prepare_installation
+@@ -262,7 +262,7 @@ def prepare_installation
    elsif $operatingsystem == "windows"
-     vardir = File.join(Dir::COMMON_APPDATA, "PuppetLabs", "puppet", "cache")
+     vardir = File.join(ENV['ALLUSERSPROFILE'], "PuppetLabs", "puppet", "cache")
    else
 -    vardir = "/opt/puppetlabs/puppet/cache"
 +    vardir = "/var/puppetlabs/puppet/cache"
    end
  
+   if not InstallOptions.publicdir.nil?
+@@ -270,7 +270,7 @@ def prepare_installation
+   elsif $operatingsystem == "windows"
+     publicdir = File.join(ENV['ALLUSERSPROFILE'], "PuppetLabs", "puppet", "public")
+   else
+-    publicdir = "/opt/puppetlabs/puppet/public"
++    publicdir = "/var/puppetlabs/puppet/public"
+   end
+ 
    if not InstallOptions.rundir.nil?
-@@ -322,7 +322,7 @@ def prepare_installation
+@@ -301,7 +301,7 @@ def prepare_installation
      if $operatingsystem == "windows"
-       localedir = File.join(Dir::PROGRAM_FILES, "Puppet Labs", "Puppet", "puppet", "share", "locale")
+       localedir = File.join(ENV['PROGRAMFILES'], "Puppet Labs", "Puppet", "puppet", "share", "locale")
      else
 -      localedir = "/opt/puppetlabs/puppet/share/locale"
 +      localedir = "/usr/puppetlabs/puppet/share/locale"
      end
    end
  
-diff --git a/lib/puppet/face/config.rb b/lib/puppet/face/config.rb
-index 19f8791b9..8707d5ec7 100644
---- a/lib/puppet/face/config.rb
-+++ b/lib/puppet/face/config.rb
-@@ -102,7 +102,7 @@ Puppet::Face.define(:config, '0.0.1') do
+--- puppet-7.21.0/lib/puppet/face/config.rb
++++ puppet-7.21.0/lib/puppet/face/config.rb
+@@ -131,7 +131,7 @@ Puppet::Face.define(:config, '0.0.1') do
  
        Set the vardir for only the agent:
  
@@ -76,11 +69,9 @@ index 19f8791b9..8707d5ec7 100644
      EOT
  
      when_invoked do |name, value, options|
-diff --git a/lib/puppet/face/module/install.rb b/lib/puppet/face/module/install.rb
-index 1091df730..d67c621b5 100644
---- a/lib/puppet/face/module/install.rb
-+++ b/lib/puppet/face/module/install.rb
-@@ -46,20 +46,21 @@ Puppet::Face.define(:module, '1.0.0') do
+--- puppet-7.21.0/lib/puppet/face/module/install.rb
++++ puppet-7.21.0/lib/puppet/face/module/install.rb
+@@ -47,20 +47,21 @@ Puppet::Face.define(:module, '1.0.0') do
  
        Install a module into a specific directory:
  
@@ -110,10 +101,8 @@ index 1091df730..d67c621b5 100644
        └── puppetlabs-vcsrepo (v0.0.4)
  
        Install a module from a release archive:
-diff --git a/lib/puppet/face/module/list.rb b/lib/puppet/face/module/list.rb
-index cecaf5b20..df51df626 100644
---- a/lib/puppet/face/module/list.rb
-+++ b/lib/puppet/face/module/list.rb
+--- puppet-7.21.0/lib/puppet/face/module/list.rb
++++ puppet-7.21.0/lib/puppet/face/module/list.rb
 @@ -27,7 +27,7 @@ Puppet::Face.define(:module, '1.0.0') do
          ├── puppetlabs-mysql (v0.0.1)
          ├── puppetlabs-sqlite (v0.0.1)
@@ -148,11 +137,9 @@ index cecaf5b20..df51df626 100644
      EOT
  
      when_invoked do |options|
-diff --git a/lib/puppet/face/module/uninstall.rb b/lib/puppet/face/module/uninstall.rb
-index e3c74c53c..90c6ed4db 100644
---- a/lib/puppet/face/module/uninstall.rb
-+++ b/lib/puppet/face/module/uninstall.rb
-@@ -16,8 +16,8 @@ Puppet::Face.define(:module, '1.0.0') do
+--- puppet-7.21.0/lib/puppet/face/module/uninstall.rb
++++ puppet-7.21.0/lib/puppet/face/module/uninstall.rb
+@@ -17,8 +17,8 @@ Puppet::Face.define(:module, '1.0.0') do
  
        Uninstall a module from a specific directory:
  
@@ -163,36 +150,43 @@ index e3c74c53c..90c6ed4db 100644
  
        Uninstall a module from a specific environment:
  
-diff --git a/lib/puppet/provider/package/puppet_gem.rb b/lib/puppet/provider/package/puppet_gem.rb
-index 8d876a06a..86752b74a 100644
---- a/lib/puppet/provider/package/puppet_gem.rb
-+++ b/lib/puppet/provider/package/puppet_gem.rb
-@@ -12,6 +12,6 @@ Puppet::Type.type(:package).provide :puppet_gem, :parent => :gem do
-     # sort out the absolute path.
-     commands :gemcmd => "gem"
+--- puppet-7.21.0/lib/puppet/provider/package/puppet_gem.rb
++++ puppet-7.21.0/lib/puppet/provider/package/puppet_gem.rb
+@@ -18,7 +18,7 @@ Puppet::Type.type(:package).provide :pup
+   if Puppet::Util::Platform.windows?
+     commands :gemcmd => windows_gemcmd
    else
 -    commands :gemcmd => "/opt/puppetlabs/puppet/bin/gem"
 +    commands :gemcmd => "/usr/bin/gem"
    end
+ 
+   def uninstall
+@@ -28,7 +28,7 @@ Puppet::Type.type(:package).provide :pup
+   end
+ 
+   def self.execute_gem_command(command, command_options, custom_environment = {})
+-    custom_environment['PKG_CONFIG_PATH'] = '/opt/puppetlabs/puppet/lib/pkgconfig' unless Puppet::Util::Platform.windows?
++    custom_environment['PKG_CONFIG_PATH'] = '/var/puppetlabs/puppet/lib/pkgconfig' unless Puppet::Util::Platform.windows?
+     super(command, command_options, custom_environment)
+   end
  end
-diff --git a/lib/puppet/reference/configuration.rb b/lib/puppet/reference/configuration.rb
-index dcac2d0ff..5e7d25ce9 100644
---- a/lib/puppet/reference/configuration.rb
-+++ b/lib/puppet/reference/configuration.rb
-@@ -23,7 +23,7 @@ config = Puppet::Util::Reference.newreference(:configuration, :depth => 1, :doc
+--- puppet-7.21.0/lib/puppet/reference/configuration.rb
++++ puppet-7.21.0/lib/puppet/reference/configuration.rb
+@@ -23,9 +23,9 @@ config = Puppet::Util::Reference.newrefe
      # Now print the data about the item.
      val = object.default
      if name.to_s == 'vardir'
 -      val = 'Unix/Linux: /opt/puppetlabs/puppet/cache -- Windows: C:\ProgramData\PuppetLabs\puppet\cache -- Non-root user: ~/.puppetlabs/opt/puppet/cache'
 +      val = 'Unix/Linux: /var/puppetlabs/puppet/cache -- Windows: C:\ProgramData\PuppetLabs\puppet\cache -- Non-root user: ~/.puppetlabs/opt/puppet/cache'
+     elsif name.to_s == 'publicdir'
+-      val = 'Unix/Linux: /opt/puppetlabs/puppet/public -- Windows: C:\ProgramData\PuppetLabs\puppet\public -- Non-root user: ~/.puppetlabs/opt/puppet/public'
++      val = 'Unix/Linux: /var/puppetlabs/puppet/public -- Windows: C:\ProgramData\PuppetLabs\puppet\public -- Non-root user: ~/.puppetlabs/opt/puppet/public'
      elsif name.to_s == 'confdir'
        val = 'Unix/Linux: /etc/puppetlabs/puppet -- Windows: C:\ProgramData\PuppetLabs\puppet\etc -- Non-root user: ~/.puppetlabs/etc/puppet'
      elsif name.to_s == 'codedir'
-diff --git a/lib/puppet/util/run_mode.rb b/lib/puppet/util/run_mode.rb
-index cf6c4613a..21968cea8 100644
---- a/lib/puppet/util/run_mode.rb
-+++ b/lib/puppet/util/run_mode.rb
-@@ -67,7 +67,7 @@ module Puppet
+--- puppet-7.21.0/lib/puppet/util/run_mode.rb
++++ puppet-7.21.0/lib/puppet/util/run_mode.rb
+@@ -71,11 +71,11 @@ module Puppet
        end
  
        def var_dir
@@ -200,10 +194,15 @@ index cf6c4613a..21968cea8 100644
 +        which_dir("/var/puppetlabs/puppet/cache", "~/.puppetlabs/opt/puppet/cache")
        end
  
+       def public_dir
+-        which_dir("/opt/puppetlabs/puppet/public", "~/.puppetlabs/opt/puppet/public")
++        which_dir("/var/puppetlabs/puppet/public", "~/.puppetlabs/opt/puppet/public")
+       end
+ 
        def run_dir
---- puppet-5.3.3/man/man8/puppet-config.8.orig   2017-10-30 11:56:09.000000000 +0000
-+++ puppet-5.3.3/man/man8/puppet-config.8       2018-02-26 21:22:17.365163062 +0000
-@@ -111,7 +111,7 @@
+--- puppet-7.21.0/man/man8/puppet-config.8
++++ puppet-7.21.0/man/man8/puppet-config.8
+@@ -145,7 +145,7 @@
  Set the vardir for only the agent:
  .
  .P
@@ -212,9 +211,9 @@ index cf6c4613a..21968cea8 100644
  .
  .SH "COPYRIGHT AND LICENSE"
  Copyright 2011 by Puppet Inc\. Apache 2 license; see COPYING
---- puppet-5.3.3/man/man8/puppet-module.8.orig	2018-01-09 21:26:17.446002337 +0000
-+++ puppet-5.3.3/man/man8/puppet-module.8	2018-01-09 21:28:20.613430812 +0000
-@@ -352,13 +352,13 @@
+--- puppet-7.21.0/man/man8/puppet-module.8
++++ puppet-7.21.0/man/man8/puppet-module.8
+@@ -226,13 +226,13 @@
  Install a module into a specific directory:
  .
  .P
@@ -230,7 +229,7 @@ index cf6c4613a..21968cea8 100644
  .
  .P
  Install a module from a release archive:
-@@ -379,25 +379,25 @@
+@@ -253,25 +253,25 @@
  List installed modules:
  .
  .P
@@ -259,8 +258,8 @@ index cf6c4613a..21968cea8 100644
 +$ puppet module list \-\-modulepath /usr/puppetlabs/puppet/modules /usr/puppetlabs/puppet/modules (no modules installed)
  .
  .P
- \fBsearch\fR
-@@ -421,7 +421,7 @@
+ \fBuninstall\fR
+@@ -286,7 +286,7 @@
  Uninstall a module from a specific directory:
  .
  .P
@@ -269,11 +268,9 @@ index cf6c4613a..21968cea8 100644
  .
  .P
  Uninstall a module from a specific environment:
-diff --git a/spec/unit/util/run_mode_spec.rb b/spec/unit/util/run_mode_spec.rb
-index bd7759a4e..657d40c80 100644
---- a/spec/unit/util/run_mode_spec.rb
-+++ b/spec/unit/util/run_mode_spec.rb
-@@ -67,8 +67,8 @@ describe Puppet::Util::RunMode do
+--- puppet-7.21.0/spec/unit/util/run_mode_spec.rb
++++ puppet-7.21.0/spec/unit/util/run_mode_spec.rb
+@@ -51,8 +51,8 @@ describe Puppet::Util::RunMode do
      end
  
      describe "#var_dir" do
@@ -284,12 +281,20 @@ index bd7759a4e..657d40c80 100644
        end
  
        it "has vardir ~/.puppetlabs/opt/puppet/cache when run as non-root" do
--- 
-2.14.1
-
---- a/lib/puppet/defaults.rb.orig	2020-08-19 03:36:21.313398529 +0000
-+++ b/lib/puppet/defaults.rb	2020-08-19 04:15:22.215385430 +0000
-@@ -41,7 +41,7 @@
+@@ -61,8 +61,8 @@ describe Puppet::Util::RunMode do
+     end
+ 
+     describe "#public_dir" do
+-      it "has publicdir /opt/puppetlabs/puppet/public when run as root" do
+-        as_root { expect(@run_mode.public_dir).to eq(File.expand_path('/opt/puppetlabs/puppet/public')) }
++      it "has publicdir /var/puppetlabs/puppet/public when run as root" do
++        as_root { expect(@run_mode.public_dir).to eq(File.expand_path('/var/puppetlabs/puppet/public')) }
+       end
+ 
+       it "has publicdir ~/.puppetlabs/opt/puppet/public when run as non-root" do
+--- puppet-7.21.0/lib/puppet/defaults.rb
++++ puppet-7.21.0/lib/puppet/defaults.rb
+@@ -57,7 +57,7 @@
        end
        path.join(File::PATH_SEPARATOR)
      else
@@ -298,20 +303,29 @@ index bd7759a4e..657d40c80 100644
      end
    end
  
---- a/spec/unit/provider/package/puppet_gem_spec.rb.orig	2020-08-19 04:20:12.510473521 +0000
-+++ b/spec/unit/provider/package/puppet_gem_spec.rb	2020-08-19 04:21:37.297357356 +0000
+@@ -70,7 +70,7 @@ module Puppet
+         nil
+       end
+     else
+-      '/opt/puppetlabs/puppet/vendor_modules'
++      '/var/puppetlabs/puppet/vendor_modules'
+     end
+   end
+ 
+--- puppet-7.21.0/spec/unit/provider/package/puppet_gem_spec.rb
++++ puppet-7.21.0/spec/unit/provider/package/puppet_gem_spec.rb
 @@ -17,7 +17,7 @@
    if Puppet::Util::Platform.windows?
-     let(:provider_gem_cmd) { 'gem' }
+     let(:provider_gem_cmd) { 'C:\Program Files\Puppet Labs\Puppet\puppet\bin\gem.bat' }
    else
 -    let(:provider_gem_cmd) { '/opt/puppetlabs/puppet/bin/gem' }
 +    let(:provider_gem_cmd) { '/usr/bin/gem' }
    end
  
-   let(:execute_options) { {:failonfail => true, :combine => true, :custom_environment => {"HOME"=>ENV["HOME"]}} }
---- a/man/man5/puppet.conf.5.orig	2022-02-08 22:25:13.797209275 +0000
-+++ b/man/man5/puppet.conf.5	2022-02-08 22:29:30.074876874 +0000
-@@ -111,7 +111,7 @@
+   custom_environment = {"HOME"=>ENV["HOME"]}
+--- puppet-7.21.0/man/man5/puppet.conf.5
++++ puppet-7.21.0/man/man5/puppet.conf.5
+@@ -111,7 +111,7 @@ The search path for \fBglobal\fR modules
  These are the modules that will be used by \fIall\fR environments\. Note that the \fBmodules\fR directory of the active environment will have priority over any global directories\. For more info, see \fIhttps://puppet\.com/docs/puppet/latest/environments_about\.html\fR
  .
  .IP "\(bu" 4
@@ -320,7 +334,16 @@ index bd7759a4e..657d40c80 100644
  .
  .IP "" 0
  .
-@@ -2087,7 +2087,7 @@
+@@ -1557,7 +1557,7 @@ Whether to enable experimental performan
+ Where Puppet stores public files\.
+ .
+ .IP "\(bu" 4
+-\fIDefault\fR: \fBUnix/Linux: /opt/puppetlabs/puppet/public \-\- Windows: C:\eProgramData\ePuppetLabs\epuppet\epublic \-\- Non\-root user: ~/\.puppetlabs/opt/puppet/public\fR
++\fIDefault\fR: \fBUnix/Linux: /var/puppetlabs/puppet/public \-\- Windows: C:\eProgramData\ePuppetLabs\epuppet\epublic \-\- Non\-root user: ~/\.puppetlabs/opt/puppet/public\fR
+ .
+ .IP "" 0
+ .
+@@ -2108,7 +2108,7 @@ The user Puppet Server will run as\. Use
  Where Puppet stores dynamic and growing data\. The default for this setting is calculated specially, like \fBconfdir\fR_\.
  .
  .IP "\(bu" 4
@@ -329,3 +352,58 @@ index bd7759a4e..657d40c80 100644
  .
  .IP "" 0
  .
+@@ -2116,7 +2116,7 @@ Where Puppet stores dynamic and growing
+ The directory containing \fBvendored\fR modules\. These modules will be used by \fIall\fR environments like those in the \fBbasemodulepath\fR\. The only difference is that modules in the \fBbasemodulepath\fR are pluginsynced, while vendored modules are not
+ .
+ .IP "\(bu" 4
+-\fIDefault\fR: \fB/opt/puppetlabs/puppet/vendor_modules\fR
++\fIDefault\fR: \fB/var/puppetlabs/puppet/vendor_modules\fR
+ .
+ .IP "" 0
+ .
+--- puppet-7.21.0/lib/puppet/provider/package/puppetserver_gem.rb
++++ puppet-7.21.0/lib/puppet/provider/package/puppetserver_gem.rb
+@@ -30,7 +30,7 @@ Puppet::Type.type(:package).provide :pup
+   # The gem command uses HOME to locate a gemrc file.
+   # CommandDefiner in provider.rb will set failonfail, combine, and environment.
+ 
+-  has_command(:puppetservercmd, '/opt/puppetlabs/bin/puppetserver') do
++  has_command(:puppetservercmd, '/var/puppetlabs/bin/puppetserver') do
+     environment(HOME: ENV['HOME'])
+   end
+ 
+@@ -138,9 +138,9 @@ Puppet::Type.type(:package).provide :pup
+   # but java platform gems should not be managed by this (or any) provider.
+ 
+   def self.execute_rubygems_list_command(command_options)
+-    puppetserver_default_gem_home            = '/opt/puppetlabs/server/data/puppetserver/jruby-gems'
+-    puppetserver_default_vendored_jruby_gems = '/opt/puppetlabs/server/data/puppetserver/vendored-jruby-gems'
+-    puppet_default_vendor_gems               = '/opt/puppetlabs/puppet/lib/ruby/vendor_gems'
++    puppetserver_default_gem_home            = '/var/puppetlabs/server/data/puppetserver/jruby-gems'
++    puppetserver_default_vendored_jruby_gems = '/var/puppetlabs/server/data/puppetserver/vendored-jruby-gems'
++    puppet_default_vendor_gems               = '/var/puppetlabs/puppet/lib/ruby/vendor_gems'
+     puppetserver_default_gem_path = [puppetserver_default_gem_home, puppetserver_default_vendored_jruby_gems, puppet_default_vendor_gems].join(':')
+ 
+     pe_puppetserver_conf_file = '/etc/puppetlabs/puppetserver/conf.d/pe-puppet-server.conf'
+--- puppet-7.21.0/spec/unit/defaults_spec.rb
++++ puppet-7.21.0/spec/unit/defaults_spec.rb
+@@ -160,7 +160,7 @@ describe "Defaults" do
+     it 'includes the default vendormoduledir', :unless => Puppet::Util::Platform.windows? do
+       expect(
+         Puppet[:vendormoduledir]
+-      ).to eq('/opt/puppetlabs/puppet/vendor_modules')
++      ).to eq('/var/puppetlabs/puppet/vendor_modules')
+     end
+ 
+     describe 'on windows', :if => Puppet::Util::Platform.windows? do
+--- puppet-7.21.0/acceptance/tests/modulepath.rb
++++ puppet-7.21.0/acceptance/tests/modulepath.rb
+@@ -31,7 +31,7 @@ END
+       # escape spaces
+       "/cygdrive/c/Program\\ Files/Puppet\\ Labs/Puppet/puppet/vendor_modules"
+     else
+-      '/opt/puppetlabs/puppet/vendor_modules'
++      '/var/puppetlabs/puppet/vendor_modules'
+     end
+   end
+ 

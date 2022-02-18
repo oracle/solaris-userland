@@ -9,20 +9,12 @@ Subject: [PATCH 3/5] (no upstream) puppet SMF failure visibility
 
     Patch could be submitted but is unlikely to be accepted by upstream.
     The default behavior is as expected by Puppet.
----
- lib/puppet/defaults.rb             |  6 ++++++
- lib/puppet/util/log.rb             | 26 ++++++++++++++++++++++++++
- spec/unit/confine/variable_spec.rb |  1 +
- spec/unit/util/logging_spec.rb     |  1 +
- 4 files changed, 34 insertions(+)
 
-diff --git a/lib/puppet/defaults.rb b/lib/puppet/defaults.rb
-index 86699133b..2af113634 100644
---- a/lib/puppet/defaults.rb
-+++ b/lib/puppet/defaults.rb
-@@ -123,6 +123,12 @@ module Puppet
-         end
-       end
+--- puppet-7.21.0/lib/puppet/defaults.rb
++++ puppet-7.21.0/lib/puppet/defaults.rb
+@@ -187,6 +187,12 @@ module Puppet
+         into one message associated with the class.
+         ",
      },
 +    :degrade_smf_on_error => {
 +        :default  => true,
@@ -33,11 +25,9 @@ index 86699133b..2af113634 100644
      :strict => {
        :default    => :warning,
        :type       => :symbolic_enum,
-diff --git a/lib/puppet/util/log.rb b/lib/puppet/util/log.rb
-index 25fd4b548..c28fae332 100644
---- a/lib/puppet/util/log.rb
-+++ b/lib/puppet/util/log.rb
-@@ -16,6 +16,7 @@ class Puppet::Util::Log
+--- puppet-7.21.0/lib/puppet/util/log.rb
++++ puppet-7.21.0/lib/puppet/util/log.rb
+@@ -15,6 +15,7 @@ class Puppet::Util::Log
  
    @levels = [:debug,:info,:notice,:warning,:err,:alert,:emerg,:crit]
    @loglevel = 2
@@ -45,7 +35,7 @@ index 25fd4b548..c28fae332 100644
  
    @desttypes = {}
  
-@@ -52,6 +53,19 @@ class Puppet::Util::Log
+@@ -51,6 +52,19 @@ class Puppet::Util::Log
    # Reset log to basics.  Basically just flushes and closes files and
    # undefs other objects.
    def Log.close(destination)
@@ -65,7 +55,7 @@ index 25fd4b548..c28fae332 100644
      if @destinations.include?(destination)
        @destinations[destination].flush if @destinations[destination].respond_to?(:flush)
        @destinations[destination].close if @destinations[destination].respond_to?(:close)
-@@ -168,6 +182,18 @@ class Puppet::Util::Log
+@@ -189,6 +203,18 @@ class Puppet::Util::Log
    # a potential for a loop here, if the machine somehow gets the destination set as
    # itself.
    def Log.newmessage(msg)
@@ -83,12 +73,9 @@ index 25fd4b548..c28fae332 100644
 +
      return if @levels.index(msg.level) < @loglevel
  
-     queuemessage(msg) if @destinations.length == 0
--- 
-2.14.1
-
---- a/spec/unit/confine/variable_spec.rb.orig	2020-08-19 03:18:08.745252864 +0000
-+++ b/spec/unit/confine/variable_spec.rb	2020-08-19 03:20:55.120680495 +0000
+     msg.message = coerce_string(msg.message)
+--- puppet-7.21.0/spec/unit/confine/variable_spec.rb
++++ puppet-7.21.0/spec/unit/confine/variable_spec.rb
 @@ -26,6 +26,7 @@
      end
  
@@ -97,8 +84,8 @@ index 25fd4b548..c28fae332 100644
        expect(Puppet.settings).to receive(:valid?).with(:myvar).and_return(true)
        expect(Puppet.settings).to receive(:value).with(:myvar).and_return("foo")
        @confine.valid?
---- a/spec/unit/util/logging_spec.rb.orig	2020-08-19 03:26:14.240514751 +0000
-+++ b/spec/unit/util/logging_spec.rb	2020-08-19 03:29:09.908847340 +0000
+--- puppet-7.21.0/spec/unit/util/logging_spec.rb
++++ puppet-7.21.0/spec/unit/util/logging_spec.rb
 @@ -191,6 +191,7 @@
  
    describe "when sending a deprecation warning" do
