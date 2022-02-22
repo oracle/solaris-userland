@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -29,8 +29,8 @@ include ../../../make-rules/shared-macros.mk
 RUBY_VERSIONS = $(RUBY_PUPPET_VERSION)
 
 GIT_REPO= https://github.com/puppetlabs/puppet
-GIT_COMMIT_ID=  5.5.21
-GIT_HASH=sha256:14b0c33e5aab00cc0bd7a0e6481b987238421162a6039b2450549b86f4a66b18
+GIT_COMMIT_ID=  6.26.0
+GIT_HASH=sha256:074c31fe6e6dc437e58d4f2cbed3ceda6cd4485e8925212adb6a66ebb8f83c64
 
 COMPONENT_NAME=		puppet
 COMPONENT_VERSION=	$(GIT_COMMIT_ID)
@@ -40,7 +40,7 @@ COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	7018
 
-COMPONENT_BAID=		87466
+COMPONENT_BAID=		116693
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/install.rb.mk
@@ -126,6 +126,9 @@ system-test:    $(NO_TESTS)
 
 REQUIRED_PACKAGES += runtime/ruby-$(RUBY_PUPPET_NODOT_VERSION)
 REQUIRED_PACKAGES += library/ruby/hiera
+REQUIRED_PACKAGES += library/ruby/semantic_puppet
+REQUIRED_PACKAGES += library/ruby/concurrent-ruby
+REQUIRED_PACKAGES += library/ruby/deep_merge
 REQUIRED_PACKAGES += system/management/facter
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os

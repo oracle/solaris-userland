@@ -84,29 +84,26 @@ index 25fd4b548..c28fae332 100644
      return if @levels.index(msg.level) < @loglevel
  
      queuemessage(msg) if @destinations.length == 0
---- a/spec/unit/confine/variable_spec.rb.orig	2020-10-15 23:51:07.637537029 +0000
-+++ b/spec/unit/confine/variable_spec.rb	2020-10-16 04:12:19.969971617 +0000
-@@ -26,8 +26,9 @@
+-- 
+2.14.1
+
+--- a/spec/unit/confine/variable_spec.rb.orig	2020-08-19 03:18:08.745252864 +0000
++++ b/spec/unit/confine/variable_spec.rb	2020-08-19 03:20:55.120680495 +0000
+@@ -26,6 +26,7 @@
      end
  
      it "should use settings if the variable name is a valid setting" do
--      expect(Puppet.settings).to receive(:valid?).with(:myvar).and_return(true)
--      expect(Puppet.settings).to receive(:value).with(:myvar).and_return("foo")
-+      Puppet.settings.expects(:value).with(:degrade_smf_on_error).returns nil
-+      Puppet.settings.expects(:valid?).with(:myvar).returns true
-+      Puppet.settings.expects(:value).with(:myvar).returns "foo"
++      expect(Puppet.settings).to receive(:value?).with(:degrade_smf_on_error).and_return(nil)
+       expect(Puppet.settings).to receive(:valid?).with(:myvar).and_return(true)
+       expect(Puppet.settings).to receive(:value).with(:myvar).and_return("foo")
        @confine.valid?
-     end
- 
---- a/spec/unit/util/logging_spec.rb.orig	2020-10-16 04:27:34.364043658 +0000
-+++ b/spec/unit/util/logging_spec.rb	2020-10-16 04:30:01.859244408 +0000
-@@ -126,7 +126,8 @@
+--- a/spec/unit/util/logging_spec.rb.orig	2020-08-19 03:26:14.240514751 +0000
++++ b/spec/unit/util/logging_spec.rb	2020-08-19 03:29:09.908847340 +0000
+@@ -191,6 +191,7 @@
  
    describe "when sending a deprecation warning" do
      it "does not log a message when deprecation warnings are disabled" do
--      expect(Puppet).to receive(:[]).with(:disable_warnings).and_return(%w[deprecations])
-+      Puppet.expects(:[]).with(:degrade_smf_on_error).returns nil
-+      Puppet.expects(:[]).with(:disable_warnings).returns %w[deprecations]
++      expect(Puppet).to receive(:[]).with(:degrade_smf_on_error).and_return(nil)
+       expect(Puppet).to receive(:[]).with(:disable_warnings).and_return(%w[deprecations])
        expect(@logger).not_to receive(:warning)
        @logger.deprecation_warning 'foo'
-     end

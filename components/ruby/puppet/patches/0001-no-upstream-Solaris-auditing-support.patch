@@ -63,19 +63,6 @@ index 2e349c58c..856edc6ce 100644
  
  class Puppet::Application::Apply < Puppet::Application
    require 'puppet/util/splayer'
-@@ -182,6 +185,12 @@ Copyright (c) 2011 Puppet Inc., LLC Licensed under the Apache 2.0 License
-   end
- 
-   def main
-+    # configure auditing on Solaris
-+    if Facter.value(:osfamily) == "Solaris"
-+        audit_handle = PuppetAudit.new
-+        audit_handle.audit_start
-+    end
-+
-     # Set our code or file to use.
-     if options[:code] or command_line.args.length == 0
-       Puppet[:code] = options[:code] || STDIN.read
 @@ -287,6 +296,11 @@ Copyright (c) 2011 Puppet Inc., LLC Licensed under the Apache 2.0 License
      end
  
@@ -91,3 +78,18 @@ index 2e349c58c..856edc6ce 100644
 -- 
 2.14.1
 
+--- a/lib/puppet/application/apply.rb.orig	2020-08-19 02:26:38.367017553 +0000
++++ b/lib/puppet/application/apply.rb	2020-08-19 02:27:27.213107727 +0000
+@@ -205,6 +205,12 @@
+   end
+ 
+   def main
++    # configure auditing on Solaris
++    if Facter.value(:osfamily) == "Solaris"
++        audit_handle = PuppetAudit.new
++        audit_handle.audit_start
++    end
++
+     manifest          = get_manifest() # Get either a manifest or nil if apply should use content of Puppet[:code]
+     splay                              # splay if needed
+     facts             = get_facts()    # facts or nil

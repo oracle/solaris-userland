@@ -201,26 +201,6 @@ index cf6c4613a..21968cea8 100644
        end
  
        def run_dir
---- puppet-5.3.3/man/man5/puppet.conf.5.orig    2018-02-26 21:58:20.082761069 +0000
-+++ puppet-5.3.3/man/man5/puppet.conf.5 2018-02-26 21:58:51.479723264 +0000
-@@ -113,7 +113,7 @@
- These are the modules that will be used by \fIall\fR environments\. Note that the \fBmodules\fR directory of the active environment will have priority over any global directories\. For more info, see \fIhttps://docs\.puppet\.com/puppet/latest/reference/environments\.html\fR
- .
- .IP "\(bu" 4
--\fIDefault\fR: $codedir/modules:/opt/puppetlabs/puppet/modules
-+\fIDefault\fR: $codedir/modules:/usr/puppetlabs/puppet/modules
- .
- .IP "" 0
- .
-@@ -1878,7 +1878,7 @@
- Where Puppet stores dynamic and growing data\. The default for this setting is calculated specially, like \fBconfdir\fR_\.
- .
- .IP "\(bu" 4
--\fIDefault\fR: Unix/Linux: /opt/puppetlabs/puppet/cache \-\- Windows: C:\eProgramData\ePuppetLabs\epuppet\ecache \-\- Non\-root user: ~/\.puppetlabs/opt/puppet/cache
-+\fIDefault\fR: Unix/Linux: /usr/puppetlabs/puppet/cache \-\- Windows: C:\eProgramData\ePuppetLabs\epuppet\ecache \-\- Non\-root user: ~/\.puppetlabs/usr/puppet/cache
- .
- .IP "" 0
- .
 --- puppet-5.3.3/man/man8/puppet-config.8.orig   2017-10-30 11:56:09.000000000 +0000
 +++ puppet-5.3.3/man/man8/puppet-config.8       2018-02-26 21:22:17.365163062 +0000
 @@ -111,7 +111,7 @@
@@ -307,10 +287,21 @@ index bd7759a4e..657d40c80 100644
 -- 
 2.14.1
 
---- a/spec/unit/provider/package/puppet_gem_spec.rb.orig	2020-10-16 04:46:35.285569892 +0000
-+++ b/spec/unit/provider/package/puppet_gem_spec.rb	2020-10-16 04:50:03.665556981 +0000
+--- a/lib/puppet/defaults.rb.orig	2020-08-19 03:36:21.313398529 +0000
++++ b/lib/puppet/defaults.rb	2020-08-19 04:15:22.215385430 +0000
+@@ -41,7 +41,7 @@
+       end
+       path.join(File::PATH_SEPARATOR)
+     else
+-      '$codedir/modules:/opt/puppetlabs/puppet/modules'
++      '$codedir/modules:/usr/puppetlabs/puppet/modules'
+     end
+   end
+ 
+--- a/spec/unit/provider/package/puppet_gem_spec.rb.orig	2020-08-19 04:20:12.510473521 +0000
++++ b/spec/unit/provider/package/puppet_gem_spec.rb	2020-08-19 04:21:37.297357356 +0000
 @@ -17,7 +17,7 @@
-   if Puppet.features.microsoft_windows?
+   if Puppet::Util::Platform.windows?
      let(:provider_gem_cmd) { 'gem' }
    else
 -    let(:provider_gem_cmd) { '/opt/puppetlabs/puppet/bin/gem' }
@@ -318,14 +309,23 @@ index bd7759a4e..657d40c80 100644
    end
  
    let(:execute_options) { {:failonfail => true, :combine => true, :custom_environment => {"HOME"=>ENV["HOME"]}} }
---- a/lib/puppet/defaults.rb.orig	2020-10-16 04:58:28.250739435 +0000
-+++ b/lib/puppet/defaults.rb	2020-10-16 05:02:48.554331012 +0000
-@@ -1356,7 +1356,7 @@
-         if Puppet::Util::Platform.windows?
-           '$codedir/modules'
-         else
--          '$codedir/modules:/opt/puppetlabs/puppet/modules'
-+          '$codedir/modules:/usr/puppetlabs/puppet/modules'
-         end
-       end,
-       :type => :path,
+--- a/man/man5/puppet.conf.5.orig	2022-02-08 22:25:13.797209275 +0000
++++ b/man/man5/puppet.conf.5	2022-02-08 22:29:30.074876874 +0000
+@@ -111,7 +111,7 @@
+ These are the modules that will be used by \fIall\fR environments\. Note that the \fBmodules\fR directory of the active environment will have priority over any global directories\. For more info, see \fIhttps://puppet\.com/docs/puppet/latest/environments_about\.html\fR
+ .
+ .IP "\(bu" 4
+-\fIDefault\fR: \fB$codedir/modules:/opt/puppetlabs/puppet/modules\fR
++\fIDefault\fR: \fB$codedir/modules:/usr/puppetlabs/puppet/modules\fR
+ .
+ .IP "" 0
+ .
+@@ -2087,7 +2087,7 @@
+ Where Puppet stores dynamic and growing data\. The default for this setting is calculated specially, like \fBconfdir\fR_\.
+ .
+ .IP "\(bu" 4
+-\fIDefault\fR: \fBUnix/Linux: /opt/puppetlabs/puppet/cache \-\- Windows: C:\eProgramData\ePuppetLabs\epuppet\ecache \-\- Non\-root user: ~/\.puppetlabs/opt/puppet/cache\fR
++\fIDefault\fR: \fBUnix/Linux: /usr/puppetlabs/puppet/cache \-\- Windows: C:\eProgramData\ePuppetLabs\epuppet\ecache \-\- Non\-root user: ~/\.puppetlabs/opt/puppet/cache\fR
+ .
+ .IP "" 0
+ .
