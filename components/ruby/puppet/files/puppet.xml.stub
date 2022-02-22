@@ -19,7 +19,7 @@
 
  CDDL HEADER END
 
- Copyright (c) 2013, 2018, Oracle and/or its affiliates. All rights reserved.
+ Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 
  NOTE:  This service manifest is not editable; its contents will
  be overwritten by package or patch operations, including
@@ -94,12 +94,6 @@
         <propval name="confdir" type="astring" value="/etc/puppetlabs/puppet"/>
       </property_group>
     </instance>
-    <instance name="master" enabled="false">
-      <exec_method type="method" name="start" exec="/usr/sbin/puppet master --logdest %{config/logdest}" timeout_seconds="600"/>
-      <property_group name="config" type="application">
-        <propval name="logdest" type="astring" value="/var/log/puppetlabs/puppet/puppet-master.log"/>
-      </property_group>
-    </instance>
     <instance name="agent" enabled="false">
       <exec_method type="method" name="start" exec="/usr/sbin/puppet agent --logdest %{config/logdest}" timeout_seconds="600"/>
       <property_group name="config" type="application">
@@ -112,7 +106,6 @@
         <loctext xml:lang="C">Puppet</loctext>
       </common_name>
       <documentation>
-        <manpage title="puppet-master" section="8" manpath="/usr/share/man"/>
       </documentation>
     </template>
   </service>
