@@ -1,0 +1,35 @@
+Jansson detects whether the system is capable of atomic operations. Either
+__sync_* or __atomic_* . The problem is that this expects the library consumer
+to be able to use the atomic operations too. That might not be possible for
+various reasons like different compiler or C89 mode. To make the library usable
+in all situations this patch makes sure that jansson is built without any such
+feature.
+
+This is not suitable for upstream. There was issue submitted to upstream here:
+
+https://github.com/akheron/jansson/issues/603
+
+--- jansson-2.14/configure.ac
++++ jansson-2.14/configure.ac
+@@ -38,10 +38,6 @@ AC_CHECK_FUNCS([close getpid gettimeofda
+ 
+ AC_MSG_CHECKING([for gcc __sync builtins])
+ have_sync_builtins=no
+-AC_TRY_LINK(
+-  [], [unsigned long val; __sync_bool_compare_and_swap(&val, 0, 1); __sync_add_and_fetch(&val, 1); __sync_sub_and_fetch(&val, 1);],
+-  [have_sync_builtins=yes],
+-)
+ if test "x$have_sync_builtins" = "xyes"; then
+   AC_DEFINE([HAVE_SYNC_BUILTINS], [1],
+     [Define to 1 if gcc's __sync builtins are available])
+@@ -54,10 +50,6 @@ AC_MSG_RESULT([$have_sync_builtins])
+ 
+ AC_MSG_CHECKING([for gcc __atomic builtins])
+ have_atomic_builtins=no
+-AC_TRY_LINK(
+-  [], [char l; unsigned long v; __atomic_test_and_set(&l, __ATOMIC_RELAXED); __atomic_store_n(&v, 1, __ATOMIC_RELEASE); __atomic_load_n(&v, __ATOMIC_ACQUIRE); __atomic_add_fetch(&v, 1, __ATOMIC_ACQUIRE); __atomic_sub_fetch(&v, 1, __ATOMIC_RELEASE);],
+-  [have_atomic_builtins=yes],
+-)
+ if test "x$have_atomic_builtins" = "xyes"; then
+   AC_DEFINE([HAVE_ATOMIC_BUILTINS], [1],
+     [Define to 1 if gcc's __atomic builtins are available])

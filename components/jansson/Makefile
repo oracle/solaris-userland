@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -40,6 +40,8 @@ COMPONENT_BAID=			111867
 COMPONENT_BAID_1=		111936
 
 include $(WS_MAKE_RULES)/common.mk
+
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv);
 
 LINT_FLAGS += -I$(PROTOUSRINCDIR)
 
