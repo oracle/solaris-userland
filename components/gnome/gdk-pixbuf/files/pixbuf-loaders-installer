@@ -1,6 +1,6 @@
 #! /bin/ksh93
 #
-# Copyright (c) 2008, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2008, 2022, Oracle and/or its affiliates.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the
@@ -102,8 +102,8 @@ for DIR in "" $ARCH64; do
   fi
   if [[ -a "/usr/lib/$DIR/gdk-pixbuf-2.0/2.10.0/loaders.cache" ]]; then
     RESULT="$(find /usr/lib/$DIR/gdk-pixbuf-2.0/*/loaders -follow \
-	--name '*.so' \
-	--newer /usr/lib/$DIR/gdk-pixbuf-2.0/2.10.0/loaders.cache )"
+	-name '*.so' \
+	-newer /usr/lib/$DIR/gdk-pixbuf-2.0/2.10.0/loaders.cache )"
   else
     RESULT="no loaders cache file"
   fi
