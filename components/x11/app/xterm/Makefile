@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xterm
-COMPONENT_VERSION=	367
+COMPONENT_VERSION=	371
 COMPONENT_PROJECT_URL=	http://invisible-island.net/xterm/
 COMPONENT_ARCHIVE=      $(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_URL=  https://invisible-mirror.net/archives/xterm/$(COMPONENT_ARCHIVE:.tar.gz=.tgz)
-COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
+#COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ARCHIVE_HASH= \
-	sha256:27f1a8b1c756e269fd5684e60802b545f0be9b36b8b5d6bdbc840c6b000dc51f
+	sha256:32f888277b19e28ebc0a3112bff000607c07bed0679caa0beebb36f9cad484f5
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	5272
-COMPONENT_BAID=		100121
+COMPONENT_BAID=		117622
 
 PKG_PROTO_DIRS += $(SOURCE_DIR)
 
