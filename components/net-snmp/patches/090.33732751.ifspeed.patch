@@ -1,0 +1,78 @@
+This patch fixes an issue with net-snmp displaying incorrect
+values for the ifSpeed/ifHighSpeed parameters for high speed
+network interfaces. The fix was developed inhouse and has been 
+submitted and merged upstream. 
+Details at
+https://github.com/net-snmp/net-snmp/pull/409
+--- net-snmp-5.8.old/agent/mibgroup/kernel_sunos5.h	2018-07-16 07:33:40.000000000 +0000
++++ net-snmp-5.8/agent/mibgroup/kernel_sunos5.h	2022-02-10 03:11:51.664321230 +0000
+@@ -166,6 +166,8 @@
+      */
+     Counter         ifCollisions;
+     int             flags;           /* interface flags (IFF_*) */
++
++    Gauge ifHighSpeed;    
+ } mib2_ifEntry_t;
+ 
+ /*-
+--- net-snmp-5.8.old/agent/mibgroup/if-mib/data_access/interface_solaris2.c	2022-02-10 03:27:13.301327329 +0000
++++  net-snmp-5.8/agent/mibgroup/if-mib/data_access/interface_solaris2.c	2022-02-10 03:22:41.987559513 +0000
+@@ -132,7 +132,7 @@
+         entry->type = ife.ifType;
+         entry->mtu = ife.ifMtu;
+         entry->speed = ife.ifSpeed;
+-        entry->speed_high = entry->speed / 1000000;
++        entry->speed_high = ife.ifHighSpeed;
+         entry->ns_flags |= NETSNMP_INTERFACE_FLAGS_HAS_HIGH_SPEED;
+         entry->oper_status = ife.ifOperStatus;
+         entry->admin_status = ife.ifAdminStatus;
+--- net-snmp-5.8.old/agent/mibgroup/kernel_sunos5.c	2022-02-11 01:54:29.240413715 +0000
++++ net-snmp-5.8/agent/mibgroup/kernel_sunos5.c	2022-02-11 01:53:36.803221549 +0000
+@@ -1920,6 +1920,7 @@
+     char phydevname[100];
+     char devbasename[100];
+     int instance = -1;
++    uint64_t ifspeed = 0;
+ 
+     /*
+      * Set basic information 
+@@ -1936,27 +1937,33 @@
+     ifp->flags = flags;
+     ifp->ifMtu = mtu;
+     ifp->ifSpeed = 0;
++    ifp->ifHighSpeed = 0;
+ 
+     /*
+      * Get link speed
+      */
+-    if ((getKstatInt(NULL, name, "ifspeed", &ifp->ifSpeed) == 0)) {
++    if ((getKstat(name, "ifspeed", &ifspeed) == 0)) {
+         /*
+          * check for SunOS patch with half implemented ifSpeed 
+          */
+-        if (ifp->ifSpeed > 0 && ifp->ifSpeed < 10000) {
+-            ifp->ifSpeed *= 1000000;
++        if (ifspeed > 0 && ifspeed < 10000) {
++            ifspeed *= 1000000;
+         }
+ 	havespeed = B_TRUE;
+-    } else if (getKstatInt(NULL, name, "ifSpeed", &ifp->ifSpeed) == 0) {
++    } else if (getKstat(name, "ifSpeed", &ifspeed) == 0) {
+         /*
+          * this is good 
+          */
+ 	havespeed = B_TRUE;
+-    } else if (getKstatInt("link", name, "ifspeed", &ifp->ifSpeed) == 0) {
+-	havespeed = B_TRUE;
+     }
+ 
++    if (ifspeed > 0xffffffff) {
++        ifp->ifSpeed = 0xffffffff;
++    } else {
++        ifp->ifSpeed = ifspeed;
++    }
++    ifp->ifHighSpeed = ifspeed / 1000000;
++
+     /* make ifOperStatus depend on link status if available */
+     if (ifp->ifAdminStatus == 1) {
+         int i_tmp;
