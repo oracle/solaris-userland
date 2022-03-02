@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 COMPILER= gcc
@@ -29,14 +29,14 @@ BUILD_BITS= 32_and_64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cppunit
-COMPONENT_VERSION=	1.13.2
+COMPONENT_VERSION=	1.15.1
 COMPONENT_PROJECT_URL=	http://freedesktop.org/wiki/Software/cppunit/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:3f47d246e3346f2ba4d7c9e882db3ad9ebd3fcbd2e8b732f946e0e3eeb9f429f
+    sha256:89c5c6665337f56fd2db36bc3805a5619709d51fb136e51937072f63fcc717a7
 COMPONENT_ARCHIVE_URL=	http://dev-www.libreoffice.org/src/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	9543
 
-COMPONENT_BAID=		23513
+COMPONENT_BAID=		118085
 
 # Do not print deprecation warnings in test results.
 CXXFLAGS += -Wno-deprecated-declarations
@@ -48,6 +48,9 @@ export PATH=$(GCC_ROOT)/bin:$(GNUBIN):$(USRBINDIR)
 CONFIGURE_OPTIONS  +=	--disable-static
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+
+# Needed for "gmake test" to work successfully.
+unexport SHELLOPTS
 
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/gcc/gcc-c++-runtime
