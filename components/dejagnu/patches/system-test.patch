@@ -2,14 +2,14 @@ Patch to allow us to specify an alternate runtest script when running tests.
 
 This patch should be sent upstream.
 
---- dejagnu-1.6.2/Makefile.in	2021-02-15 16:42:28.624254725 +0000
-+++ dejagnu-1.6.2/Makefile.in	2021-02-15 16:42:11.311993275 +0000
-@@ -510,7 +510,7 @@ TESTSUITE_FILES = \
- 	testsuite/libdejagnu/tunit.exp
+--- dejagnu-1.6.3/Makefile.in	2021-02-15 16:42:28.624254725 +0000
++++ dejagnu-1.6.3/Makefile.in	2021-02-15 16:42:11.311993275 +0000
+@@ -563,7 +563,7 @@ DEJATOOL = launcher libdejagnu report-card runtest
  
- DEJATOOL = libdejagnu runtest
+ # We override runtest so that the testsuite is run with this version
+ # of DejaGnu instead of an installed version.
 -RUNTEST = ${top_srcdir}/runtest
 +RUNTEST="$${RUNTEST_SCRIPT:-${top_srcdir}/runtest}"
- RUNTESTDEFAULTFLAGS = --tool $${tool} --srcdir $${srcdir}/testsuite \
- 	RUNTEST=$(RUNTEST)
  AM_CXXFLAGS = -I$(top_srcdir) -g
+ unit_SOURCES = testsuite/libdejagnu/unit.cc
+ 
