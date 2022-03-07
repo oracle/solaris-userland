@@ -1,0 +1,43 @@
+Starting with following commit some tests stopped working as check for thread support doesn't work because:
+- our Perl complains that PATH might be insecure
+- when overriding PATH in code it needs cpp (only available in /usr/gcc/11/bin)
+
+For now we use old code like Windows does.
+
+https://github.com/apache/mod_perl/commit/9dac4cf5580660720bbc18b51bcef7c9be75d658
+
+-- 
+
+APACHE_TEST_APXS= APACHE_TEST_GROUP= APACHE_TEST_HTTPD= APACHE_TEST_PORT= APACHE_TEST_USER= "/usr/perl5/5.32/bin/perl" -Iblib/arch -Iblib/lib t/TEST t/apr-ext/threadmutex.t -bugreport -verbose=1
+..
+t/apr-ext/threadmutex.t .. Insecure $ENV{PATH} while running with -T switch at /builds/psumbera/userland-mod_perl-2.0.12/components/apache2-modules/mod_perl/build/sparcv9/blib/lib/Apache2/Build.pm line 1506.
+Dubious, test returned 255 (wstat 65280, 0xff00)
+No subtests run
+
+Test Summary Report
+-------------------
+t/apr-ext/threadmutex.t (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+Files=1, Tests=0, 10 wallclock secs ( 0.07 usr  0.07 sys +  1.49 cusr  0.59 csys =  2.22 CPU)
+Result: FAIL
+
+--- mod_perl-2.0.12/lib/Apache2/Build.pm
++++ mod_perl-2.0.12/lib/Apache2/Build.pm
+@@ -73,6 +73,7 @@ use constant CYGWIN  => $^O eq 'cygwin';
+ use constant IRIX    => $^O eq 'irix';
+ use constant HPUX    => $^O eq 'hpux';
+ use constant OPENBSD => $^O eq 'openbsd';
++use constant SOLARIS => $^O eq 'solaris';
+ use constant WIN32   => $^O eq 'MSWin32';
+ 
+ use constant MSVC => WIN32() && ($Config{cc} eq 'cl');
+@@ -1495,7 +1496,7 @@ return $self->{apr_config} if $self->{ap
+ 
+     my $fh;
+     my $header = catfile $self->apr_includedir, "apr.h";
+-    if (WIN32) {
++    if (WIN32 or SOLARIS) {
+         open $fh, $header or do {
+             error "Unable to open $header: $!";
+             return undef;
