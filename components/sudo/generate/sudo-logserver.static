@@ -21,13 +21,5 @@
 # Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 
-# Pam config
-file files/sudo path=etc/pam.d/sudo group=sys mode=0644 overlay=allow  preserve=renamenew
-file files/sudo-i path=etc/pam.d/sudo-i group=sys mode=0644 overlay=allow  preserve=renamenew
-
-# /etc/sudoers.d must not be world readable
-dir  path=etc/sudoers.d group=root mode=0750
-
-# the /var/share/sudo directory for logs
-dir  path=var/.migrate/sudo owner=root group=root mode=700 \
-    refresh_fmri=svc:/system/filesystem/minimal:default
+# sudo-logserver service
+file files/sudo-logserver.xml path=lib/svc/manifest/network/security/sudo-logserver.xml

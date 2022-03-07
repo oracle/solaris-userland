@@ -128,7 +128,7 @@ sudo /usr/sbin/dtrace -l -n 'syscall::b*:entry'
 
 # Verify the following works
 
-$ sudo /usr/perl5/5.26/bin/perl -e 'print "before\n"; system("id -a"); print "after\n"'
+sudo /usr/perl5/5.26/bin/perl -e 'print "before\n"; system("id -a"); print "after\n"'
 before
 uid=0(root) gid=0(root) groups=0(root),1(other),2(bin),3(sys),4(adm),6(mail),7(tty),8(lp),12(daemon)
 after
@@ -139,13 +139,13 @@ ALL     ALL = NOPASSWD: NOEXEC: /usr/perl5/5.26/bin/perl
 
 # Now Perl should be prevent to run further commands, so the output is
 
-$ sudo /usr/perl5/5.26/bin/perl -e 'print "before\n"; system("id -a"); print "after\n"'
+sudo /usr/perl5/5.26/bin/perl -e 'print "before\n"; system("id -a"); print "after\n"'
 before
 after
 
 # Perl itself works as expected
 
-$ /usr/perl5/5.26/bin/perl -e 'print "before\n"; system("id -a"); print "after\n"'
+/usr/perl5/5.26/bin/perl -e 'print "before\n"; system("id -a"); print "after\n"'
 before
 uid=101(rimmer) gid=10(staff) groups=10(staff)
 after
@@ -154,7 +154,7 @@ after
 
 # Verify that "Last login..." message does not appear
 
-$ sudo /bin/date
+sudo /bin/date
 Thu Nov 10 08:24:57 UTC 2016
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -162,7 +162,7 @@ Thu Nov 10 08:24:57 UTC 2016
 # Verify that root role is able to run commands.
 
 # make sure root is a role
-$ sudo /usr/sbin/usermod -K type=role root
+sudo /usr/sbin/usermod -K type=role root
 UX: /usr/sbin/usermod: ERROR: Roles must be modified with 'rolemod'.
 # and has no pam_policy
 sudo /usr/sbin/rolemod -K pam_policy= root
@@ -177,3 +177,48 @@ sudo -i -u webservd /sbin/uname
 # Now retest with various pam_policy values (unix, ldap, ...)
 /usr/sbin/rolemod -K pam_policy=unix root
 # goto begin
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Test sudo_logservd
+
+# Enable io logging by making sure the below three lines are present in /etc/sudoers:
+Defaults log_output
+Defaults log_input
+Defaults iolog_dir=/var/share/sudo/sudo-io
+
+# make sure your machine has the right hostname set up
+check-hostname
+# and regenerate the host CA and cert to capture the hostname change
+svccfg -s system/identity:cert delcust
+svcadm refresh system/identity:cert
+svcadm restart -s system/identity:cert
+
+# create some logs
+$ sudo bash
+# ls
+# exit
+
+# In one terminal run the server
+/usr/sbin/sudo_logsrvd -n
+
+# in another terminal run the client with TLS
+/usr/sbin/sudo_sendlog --host `hostname` --key /etc/certs/localhost/host.key --cert /etc/certs/localhost/host.crt --ca-bundle /etc/certs/localhost/host-ca/hostca.crt -p 30344 /var/share/sudo/sudo-io/00/00/01 -n
+Connected to sudocbe:30344
+Server ID: Sudo Audit Server 1.9.9
+Remote log ID: /var/share/sudo/sudo-io/00/00/0G
+1 I/O log transmitted successfully in 0.031067965 seconds
+
+# and again with verifying the server certificate
+/usr/sbin/sudo_sendlog --host `hostname` --key /etc/certs/localhost/host.key --cert /etc/certs/localhost/host.crt --ca-bundle /etc/certs/localhost/host-ca/hostca.crt -p 30344 /var/share/sudo/sudo-io/00/00/01
+Connected to sudocbe:30344
+Server ID: Sudo Audit Server 1.9.9
+Remote log ID: /var/share/sudo/sudo-io/00/00/0H
+1 I/O log transmitted successfully in 0.031471913 seconds
+
+# and without TLS
+/usr/sbin/sudo_sendlog --host `hostname`  -p 30343 /var/share/sudo/sudo-io/00/00/01
+Connected to sudocbe:30343
+Server ID: Sudo Audit Server 1.9.9
+Remote log ID: /var/share/sudo/sudo-io/00/00/0I
+1 I/O log transmitted successfully in 0.020557914 seconds

@@ -18,18 +18,30 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
+<include generate/common.transform>
+
+# Delete everything not belonging to this package
+<transform file link pkg.type=(?!sudo) -> drop>
+<transform file link -> delete pkg.type .*>
+
+# drop sample file
+<transform path=.*/sample_approval.so$ -> drop>
 
 # The file should not be viewable by anyone by root
 <transform file path=etc/sudoers$ -> set group root>
 <transform file path=etc/sudoers$ -> set mode 0440>
+<transform file path=etc/sudo\.conf$ -> set group root>
+<transform file path=etc/sudo\.conf$ -> set mode 0640>
 # This was used to help transition from SVR4 packaging
 <transform file path=etc/sudoers$ -> set original_name SUNWsudo:etc/sudoers>
 # Customer may create custom packages overriding the default sudo config
 <transform file path=etc/sudoers$ -> set overlay allow>
+<transform file path=etc/sudo\.conf$ -> set overlay allow>
 # Do not overwrite customer's setup
 <transform file path=etc/sudoers$ -> set preserve true>
+<transform file path=etc/sudo\.conf$ -> set preserve true>
 # All files with the preserve attribute should
 # be writable; this one is an exception.
 <transform file path=etc/sudoers$ -> set pkg.linted.userland.action001.4 true>

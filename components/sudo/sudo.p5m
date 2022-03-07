@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability "pass-through volatile">
@@ -33,12 +33,13 @@ set name=info.classification \
 set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2011/252 value=PSARC/2018/015 \
-    value=PSARC/2019/135
+    value=PSARC/2019/135 value=PSARC/2021/053
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file files/sudo path=etc/pam.d/sudo group=sys mode=0644 overlay=allow \
     preserve=renamenew
 file files/sudo-i path=etc/pam.d/sudo-i group=sys mode=0644 overlay=allow \
     preserve=renamenew
+file path=etc/sudo.conf group=root mode=0640 overlay=allow preserve=true
 file path=etc/sudoers group=root mode=0440 original_name=SUNWsudo:etc/sudoers \
     overlay=allow pkg.linted.userland.action001.4=true preserve=true
 dir  path=etc/sudoers.d group=root mode=0750
@@ -47,23 +48,28 @@ file path=usr/bin/sudo mode=4511
 link path=usr/bin/sudoedit target=sudo
 file path=usr/bin/sudoreplay mode=0511
 file path=usr/include/sudo_plugin.h
+file path=usr/lib/$(MACH64)/sudo/audit_json.so
 file path=usr/lib/$(MACH64)/sudo/group_file.so
 link path=usr/lib/$(MACH64)/sudo/libsudo_util.so target=libsudo_util.so.0.0.0
 link path=usr/lib/$(MACH64)/sudo/libsudo_util.so.0 target=libsudo_util.so.0.0.0
 file path=usr/lib/$(MACH64)/sudo/libsudo_util.so.0.0.0
+file path=usr/lib/$(MACH64)/sudo/sudo_intercept.so
 file path=usr/lib/$(MACH64)/sudo/sudo_noexec.so
 file path=usr/lib/$(MACH64)/sudo/sudoers.so
 file path=usr/lib/$(MACH64)/sudo/system_group.so
 file path=usr/sbin/visudo mode=0511
-file path=usr/share/doc/sudo/CONTRIBUTORS
+file path=usr/share/doc/sudo/CONTRIBUTING.md
+file path=usr/share/doc/sudo/CONTRIBUTORS.md
 file path=usr/share/doc/sudo/ChangeLog
-file path=usr/share/doc/sudo/HISTORY
-file path=usr/share/doc/sudo/LICENSE
+file path=usr/share/doc/sudo/HISTORY.md
+file path=usr/share/doc/sudo/LICENSE.md
 file path=usr/share/doc/sudo/NEWS
-file path=usr/share/doc/sudo/README
-file path=usr/share/doc/sudo/README.LDAP
-file path=usr/share/doc/sudo/TROUBLESHOOTING
-file path=usr/share/doc/sudo/UPGRADE
+file path=usr/share/doc/sudo/README.LDAP.md
+file path=usr/share/doc/sudo/README.md
+file path=usr/share/doc/sudo/SECURITY.md
+file path=usr/share/doc/sudo/TROUBLESHOOTING.md
+file path=usr/share/doc/sudo/UPGRADE.md
+file path=usr/share/doc/sudo/examples/cvtsudoers.conf
 file path=usr/share/doc/sudo/examples/pam.conf
 file path=usr/share/doc/sudo/examples/sudo.conf
 file path=usr/share/doc/sudo/examples/sudoers
@@ -86,8 +92,10 @@ file path=usr/share/locale/el/LC_MESSAGES/sudoers.mo
 file path=usr/share/locale/eo/LC_MESSAGES/sudo.mo
 file path=usr/share/locale/eo/LC_MESSAGES/sudoers.mo
 file path=usr/share/locale/es/LC_MESSAGES/sudo.mo
+file path=usr/share/locale/es/LC_MESSAGES/sudoers.mo
 file path=usr/share/locale/eu/LC_MESSAGES/sudo.mo
 file path=usr/share/locale/eu/LC_MESSAGES/sudoers.mo
+file path=usr/share/locale/fa/LC_MESSAGES/sudo.mo
 file path=usr/share/locale/fi/LC_MESSAGES/sudo.mo
 file path=usr/share/locale/fi/LC_MESSAGES/sudoers.mo
 file path=usr/share/locale/fr/LC_MESSAGES/sudo.mo
@@ -117,6 +125,8 @@ file path=usr/share/locale/pt/LC_MESSAGES/sudo.mo
 file path=usr/share/locale/pt/LC_MESSAGES/sudoers.mo
 file path=usr/share/locale/pt_BR/LC_MESSAGES/sudo.mo
 file path=usr/share/locale/pt_BR/LC_MESSAGES/sudoers.mo
+file path=usr/share/locale/ro/LC_MESSAGES/sudo.mo
+file path=usr/share/locale/ro/LC_MESSAGES/sudoers.mo
 file path=usr/share/locale/ru/LC_MESSAGES/sudo.mo
 file path=usr/share/locale/ru/LC_MESSAGES/sudoers.mo
 file path=usr/share/locale/sk/LC_MESSAGES/sudo.mo
@@ -147,4 +157,6 @@ file path=usr/share/man/man8/sudo_plugin.8
 link path=usr/share/man/man8/sudoedit.8 target=sudo.8
 file path=usr/share/man/man8/sudoreplay.8
 file path=usr/share/man/man8/visudo.8
+dir  path=var/.migrate/sudo owner=root group=root mode=700 \
+    refresh_fmri=svc:/system/filesystem/minimal:default
 license sudo.license license="ISC-like, BSD, zlib license"

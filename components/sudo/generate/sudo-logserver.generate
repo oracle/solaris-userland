@@ -18,16 +18,22 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, Oracle and/or its affiliates.
 #
+ 
+<include generate/common.transform>
 
-# Pam config
-file files/sudo path=etc/pam.d/sudo group=sys mode=0644 overlay=allow  preserve=renamenew
-file files/sudo-i path=etc/pam.d/sudo-i group=sys mode=0644 overlay=allow  preserve=renamenew
-
-# /etc/sudoers.d must not be world readable
-dir  path=etc/sudoers.d group=root mode=0750
-
-# the /var/share/sudo directory for logs
-dir  path=var/.migrate/sudo owner=root group=root mode=700 \
-    refresh_fmri=svc:/system/filesystem/minimal:default
+# Delete everything not belonging to this package
+<transform file link pkg.type=sudo -> drop>
+<transform file link -> delete pkg.type .*>
+ 
+# The file should not be viewable by anyone but root
+<transform file path=etc/sudo_logsrvd\.conf$ -> set group root>
+<transform file path=etc/sudo_logsrvd\.conf$ -> set mode 0640>
+# Customer may create custom packages overriding the default sudo config
+<transform file path=etc/sudo_logsrvd\.conf$ -> set overlay allow>
+# Do not overwrite customer's setup
+<transform file path=etc/sudo_logsrvd\.conf$ -> set preserve true>
+ 
+# remove misplaced files in /man/
+<transform file path=files/.* -> drop>

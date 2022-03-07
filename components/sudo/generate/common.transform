@@ -18,16 +18,13 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, Oracle and/or its affiliates.
 #
 
-# Pam config
-file files/sudo path=etc/pam.d/sudo group=sys mode=0644 overlay=allow  preserve=renamenew
-file files/sudo-i path=etc/pam.d/sudo-i group=sys mode=0644 overlay=allow  preserve=renamenew
-
-# /etc/sudoers.d must not be world readable
-dir  path=etc/sudoers.d group=root mode=0750
-
-# the /var/share/sudo directory for logs
-dir  path=var/.migrate/sudo owner=root group=root mode=700 \
-    refresh_fmri=svc:/system/filesystem/minimal:default
+# by default everything is in the sudo package
+<transform file link -> default pkg.type sudo>
+# only the logserver files go to sudo-logserver
+<transform file link path=.*logsrv.* -> set pkg.type logserver>
+<transform file link path=.*logserver.* -> set pkg.type logserver>
+<transform file link path=.*sendlog.* -> set pkg.type logserver>
+<transform file link path=etc/ssl.* -> set pkg.type logserver>

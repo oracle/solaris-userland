@@ -1,0 +1,121 @@
+'\" te
+.\" Copyright (c) 2022, Oracle and/or its affiliates.
+.TH sudo_logsrvd 8s "9 Feb 2022" "Solaris 11.4" "SMF Services"
+.SH NAME
+sudo-logserver \- sudo log server
+.SH DESCRIPTION
+.sp
+.LP
+The \fBsudo-logserver\fR service is a service management facility, under the service identifier:
+.sp
+.in +2
+.nf
+svc:/network/security/sudo-logserver:default
+.fi
+.in -2
+.sp
+.LP
+The service starts, monitors and manages an instance of \fBsudo_logsrvd\fR(8).
+Use \fBsvcprop\fR(1) to list the properties and
+\fBsvccfg\fR(8) to make changes.
+.sp
+.LP
+Administrative actions on this service, such as enabling, disabling,
+or requesting restart, can be performed using \fBsvcadm\fR(8). The
+service's status can be queried using the \fBsvcs\fR(1) command.
+.SH SERVICE
+.sp
+.LP
+The \fBsudo-logserver\fR SMF service supports the \fBstart\fR,
+\fBstop\fR, \fBrefresh\fR and \fBrestart\fR methods.  The methods are
+invoked using \fBsvcadm\fR(8).
+.sp
+.ne 2
+.mk
+.na
+\fB\fBstart\fR\fR
+.ad
+.RS 11n
+.rt
+Reads SMF properties and creates relevant command line, 
+starts \fBsudo_logsrvd(8)\fR with created options and monitors process.
+.RE
+
+.sp
+.ne 2
+.mk
+.na
+\fB\fBstop\fR\fR
+.ad
+.RS 11n
+.rt
+stops instance.
+.RE
+
+.sp
+.ne 2
+.mk
+.na
+\fB\fBrefresh\fR\fR
+.ad
+.RS 11n
+.rt
+Refreshes SMF options and sends \fBsudo_logsrvd\fR(8) instance a \fBSIGHUP\fR
+signal. Note, a running instance
+will not pickup any SMF option changes until a restart.
+.RE
+
+.sp
+.ne 2
+.mk
+.na
+\fB\fBrestart\fR\fR
+.ad
+.RS 11n
+.rt
+stops and the restarts instance.
+.RE
+
+.SH SMF PROPERTIES
+.sp
+.LP
+There are no application configuration properties available to administrators.
+.RE
+
+.SH FILES
+.sp
+.ne 2
+.mk
+.na
+\fB\fB/etc/sudo_logsrvd.conf\fR\fR
+.ad
+.sp .6
+.RS 4n
+default configuration file
+.RE
+
+.SH ATTRIBUTES
+.sp
+.LP
+See \fBattributes\fR(7) for descriptions of the following attributes:
+.sp
+
+.sp
+.TS
+tab() box;
+cw(2.75i) |cw(2.75i)
+lw(2.75i) |lw(2.75i)
+.
+ATTRIBUTE TYPEATTRIBUTE VALUE
+_
+Availabilityservice/network/security/sudo/sudo-logserver
+_
+Interface StabilityVolatile
+.TE
+
+.SH SEE ALSO
+.sp
+.LP
+\fBsudo_logsrvd\fR(8), \fBsudo_sendlog\fR(1),
+\fBsvcs\fR(1), \fBsvcadm\fR(8), \fBsvccfg\fR(8), \fBsvcprop\fR(1),
+\fBattributes\fR(7), \fBsmf\fR(7), \fBsmf_method\fR(7)
