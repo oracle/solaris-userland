@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		CGI
-COMPONENT_VERSION=	4.37
+COMPONENT_VERSION=	4.54
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:1548c25841565908314e4591eb16236067bda4cc72618f68b6975c3b84cb0c99
+    sha256:9608a044ae2e87cefae8e69b113e3828552ddaba0d596a02f9954c6ac17fa294
 COMPONENT_ARCHIVE_URL=	http://search.cpan.org/CPAN/authors/id/L/LE/LEEJO/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://search.cpan.org/~leejo/CGI
 COMPONENT_BUGDB=	perl-mod/cgi
 COMPONENT_ANITYA_ID=	2687
 
-COMPONENT_BAID=		44111
+COMPONENT_BAID=		119207
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/ips.mk
