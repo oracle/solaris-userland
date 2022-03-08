@@ -102,52 +102,6 @@
  	int alg;
  
  	for (alg = 0; digests[alg].id != -1; alg++) {
---- old/gss-genr.c	2021-02-23 13:02:36.326828535 +0000
-+++ new/gss-genr.c	2021-02-23 13:32:21.256492369 +0000
-@@ -44,6 +44,7 @@
- #include "cipher.h"
- #include "sshkey.h"
- #include "kex.h"
-+#include "misc.h"
- #include "digest.h"
- #include "packet.h"
- 
-@@ -132,6 +133,7 @@ ssh_gssapi_kex_mechs(gss_OID_set gss_sup
- 	char deroid[2];
- 	struct ssh_digest_ctx *md = NULL;
- 	char *s, *cp, *p;
-+	int fips_mode;
- 
- 	if (gss_enc2oid != NULL) {
- 		for (i = 0; gss_enc2oid[i].encoded != NULL; i++)
-@@ -145,6 +147,14 @@ ssh_gssapi_kex_mechs(gss_OID_set gss_sup
- 	if ((buf = sshbuf_new()) == NULL)
- 		fatal("%s: sshbuf_new failed", __func__);
- 
-+#ifdef ENABLE_OPENSSL_FIPS
-+	fips_mode = ssh_FIPS_mode();
-+	if (fips_mode) {
-+		debug3("Temporarily unsetting FIPS mode to compute MD5 for "
-+		    "GSS-API key exchange method names");
-+		FIPS_mode_set(0);
-+	}
-+#endif
- 	oidpos = 0;
- 	s = cp = xstrdup(kex);
- 	for (i = 0; i < gss_supported->count; i++) {
-@@ -190,6 +200,12 @@ ssh_gssapi_kex_mechs(gss_OID_set gss_sup
- 		}
- 	}
- 	free(s);
-+#ifdef ENABLE_OPENSSL_FIPS
-+	if (fips_mode) {
-+		ssh_FIPS_mode_set_if_capable();
-+		ssh_FIPS_check_status();
-+	}
-+#endif
- 	gss_enc2oid[oidpos].oid = NULL;
- 	gss_enc2oid[oidpos].encoded = NULL;
- 
 --- old/kex.c	2021-02-23 13:02:36.332060381 +0000
 +++ new/kex.c	2021-02-23 13:32:21.261344090 +0000
 @@ -90,7 +90,43 @@ struct kexalg {
@@ -702,7 +656,7 @@
  		called = 1;
  	}
 --- old/ssh_config.5	2021-02-23 13:02:36.409044991 +0000
-+++ new/ssh_config.5	2021-02-23 13:32:21.341678600 +0000
++++ new/ssh_config.5	2022-03-07 19:50:24.975132700 +0000
 @@ -471,6 +471,13 @@ aes128-ctr,aes192-ctr,aes256-ctr,
  aes128-gcm@openssh.com,aes256-gcm@openssh.com
  .Ed
@@ -726,7 +680,16 @@
  .It Cm ForwardAgent
  Specifies whether the connection to the authentication agent (if any)
  will be forwarded to the remote machine.
-@@ -1277,6 +1286,16 @@ umac-64@openssh.com,umac-128@openssh.com
+@@ -799,6 +808,8 @@ Specifies whether key exchange based on
+ GSSAPI key exchange the server need not have a host key.
+ The default is
+ .Dq no .
++.Pp
++GSSAPI key exchange is not available in FIPS-140 mode.
+ .It Cm GSSAPIRenewalForcesRekey
+ If set to
+ .Dq yes
+@@ -1277,6 +1288,16 @@ umac-64@openssh.com,umac-128@openssh.com
  hmac-sha2-256,hmac-sha2-512,hmac-sha1
  .Ed
  .Pp
@@ -756,7 +719,7 @@
  .Bl -tag -width Ds
  .It Fl 4
 --- old/sshd.c	2021-02-23 13:02:36.419333547 +0000
-+++ new/sshd.c	2021-02-23 13:32:21.352642537 +0000
++++ new/sshd.c	2022-03-03 09:49:05.904970314 +0000
 @@ -1568,6 +1568,10 @@ main(int ac, char **av)
  	/* Ensure that fds 0, 1 and 2 are open or directed to /dev/null */
  	sanitise_stdfd();
@@ -779,8 +742,28 @@
  	/*
  	 * Unset KRB5CCNAME, otherwise the user's session may inherit it from
  	 * root's environment
+@@ -2415,10 +2423,15 @@ do_ssh2_kex(struct ssh *ssh)
+ 	if (strlen(myproposal[PROPOSAL_SERVER_HOST_KEY_ALGS]) == 0)
+ 		orig = NULL;
+ 
+-	if (options.gss_keyex)
+-		gss = ssh_gssapi_server_mechanisms();
+-	else
+-		gss = NULL;
++	if (options.gss_keyex) {
++		if (ssh_FIPS_mode()) {
++			logit("Disabling GSSAPIKeyExchange. Not available"
++			    " in FIPS mode");
++			options.gss_keyex = 0;
++		} else {
++			gss = ssh_gssapi_server_mechanisms();
++		}
++	}
+ 
+ 	if (gss && orig)
+ 		xasprintf(&newstr, "%s,%s", gss, orig);
 --- old/sshd_config.5	2021-02-23 13:02:36.424581206 +0000
-+++ new/sshd_config.5	2021-02-23 13:32:21.358012937 +0000
++++ new/sshd_config.5	2022-03-07 19:50:24.971936634 +0000
 @@ -491,6 +491,13 @@ aes128-ctr,aes192-ctr,aes256-ctr,
  aes128-gcm@openssh.com,aes256-gcm@openssh.com
  .Ed
@@ -804,7 +787,16 @@
  .It Cm ForceCommand
  Forces the execution of the command specified by
  .Cm ForceCommand ,
-@@ -1123,6 +1132,16 @@ umac-64@openssh.com,umac-128@openssh.com
+@@ -649,6 +658,8 @@ Specifies whether key exchange based on
+ doesn't rely on ssh keys to verify host identity.
+ The default is
+ .Cm no .
++.Pp
++GSSAPI key exchange is not available in FIPS-140 mode.
+ .It Cm GSSAPIStrictAcceptorCheck
+ Determines whether to be strict about the identity of the GSSAPI acceptor
+ a client authenticates against.
+@@ -1123,6 +1134,16 @@ umac-64@openssh.com,umac-128@openssh.com
  hmac-sha2-256,hmac-sha2-512,hmac-sha1
  .Ed
  .Pp
@@ -878,3 +870,62 @@
  	{ "ssh-ed25519", "ED25519", NULL, KEY_ED25519, 0, 0, 0 },
  	{ "ssh-ed25519-cert-v01@openssh.com", "ED25519-CERT", NULL,
  	    KEY_ED25519_CERT, 0, 1, 0 },
+--- old/sshconnect2.c	2022-03-03 09:33:03.008517716 +0000
++++ new/sshconnect2.c	2022-03-03 09:38:52.082144688 +0000
+@@ -262,29 +262,36 @@ ssh_kex2(struct ssh *ssh, char *host, st
+ 
+ #if defined(GSSAPI) && defined(WITH_OPENSSL)
+ 	if (options.gss_keyex) {
+-		/* Add the GSSAPI mechanisms currently supported on this
+-		 * client to the key exchange algorithm proposal */
+-		orig = myproposal[PROPOSAL_KEX_ALGS];
++		if (ssh_FIPS_mode()) {
++			logit("Disabling GSSAPIKeyExchange. Not available"
++			    " in FIPS mode");
++			options.gss_keyex = 0;
++		} else {
++			/* Add the GSSAPI mechanisms currently supported on this
++			 * client to the key exchange algorithm proposal */
++			orig = myproposal[PROPOSAL_KEX_ALGS];
+ 
+-		if (options.gss_server_identity)
+-			gss_host = xstrdup(options.gss_server_identity);
+-		else if (options.gss_trust_dns)
+-			gss_host = remote_hostname(ssh);
+-		else
+-			gss_host = xstrdup(host);
++			if (options.gss_server_identity)
++				gss_host = xstrdup(options.gss_server_identity);
++			else if (options.gss_trust_dns)
++				gss_host = remote_hostname(ssh);
++			else
++				gss_host = xstrdup(host);
+ 
+-		gss = ssh_gssapi_client_mechanisms(gss_host,
+-		    options.gss_client_identity, options.gss_kex_algorithms);
+-		if (gss) {
+-			debug("Offering GSSAPI proposal: %s", gss);
+-			xasprintf(&myproposal[PROPOSAL_KEX_ALGS],
+-			    "%s,%s", gss, orig);
++			gss = ssh_gssapi_client_mechanisms(gss_host,
++			    options.gss_client_identity,
++			    options.gss_kex_algorithms);
++			if (gss) {
++				debug("Offering GSSAPI proposal: %s", gss);
++				xasprintf(&myproposal[PROPOSAL_KEX_ALGS],
++				    "%s,%s", gss, orig);
+ 
+-			/* If we've got GSSAPI algorithms, then we also support the
+-			 * 'null' hostkey, as a last resort */
+-			orig = myproposal[PROPOSAL_SERVER_HOST_KEY_ALGS];
+-			xasprintf(&myproposal[PROPOSAL_SERVER_HOST_KEY_ALGS],
+-			    "%s,null", orig);
++				/* If we've got GSSAPI algorithms, then we also
++				 * support the 'null' hostkey, as a last resort */
++				orig = myproposal[PROPOSAL_SERVER_HOST_KEY_ALGS];
++				xasprintf(&myproposal[PROPOSAL_SERVER_HOST_KEY_ALGS],
++				    "%s,null", orig);
++			}
+ 		}
+ 	}
+ #endif
