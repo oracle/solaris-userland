@@ -20,9 +20,10 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
-BUILD_BITS= 64
+COMPILER=		gcc
+BUILD_BITS=		64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mutt
