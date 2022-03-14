@@ -1,0 +1,54 @@
+As of Solaris 11.4 the link-editor, ld(1), rejects unknown options.
+As-is libtool is passing on -pthread, -pthreads and -mt, these must
+not be passed to the link-editor.
+
+This patch is applied post configure as our own libtoolize, executed
+as part of configure needs to be fixed; Reference bug 29178672.
+
+The -mt option is removed as it was being saved to libuv.la file
+(new_inherited_linker_flags) which prevented ../component/bind from
+linking as the option was being passed to ld(1) which no longer
+accepts unknown flags.  According to cc(1):
+
+     -mt=yes is the default behavior of the compiler.  If this
+     behavior is not desired use the option -mt=no.
+
+The -pthread and synonym -pthreads options are for gcc(1), which are
+also being passed to ld(1).
+
+libtool upstream have modified their version, this patch can be
+removed once it has trickled down stream.
+https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34076
+
+--- libuv-v1.41.0.orig/ltmain.sh	2021-02-04 03:35:16.000000000 -0800
++++ libuv-v1.41.0/ltmain.sh	2021-03-13 10:07:40.486207124 -0800
+@@ -7070,7 +7070,13 @@
+ 	continue
+ 	;;
+ 
+-      -mt|-mthreads|-kthread|-Kthread|-pthread|-pthreads|--thread-safe \
++      # Solaris ld rejects as of 11.4.  Refer to Oracle bug 22985199.
++      -mt|-pthread|-pthreads)
++	  case $host in
++              *solaris2*) continue;;
++	  esac
++	  ;&
++      -mthreads|-kthread|-Kthread|--thread-safe \
+       |-threads|-fopenmp|-openmp|-mp|-xopenmp|-omp|-qsmp=*)
+ 	func_append compiler_flags " $arg"
+ 	func_append compile_command " $arg"
+@@ -7604,7 +7610,13 @@
+ 	lib=
+ 	found=false
+ 	case $deplib in
+-	-mt|-mthreads|-kthread|-Kthread|-pthread|-pthreads|--thread-safe \
++	  # Solaris ld rejects as of 11.4.  Refer to Oracle bug 22985199.
++	  -mt|-pthread|-pthreads)
++	    case $host in
++              *solaris2*) continue;;
++	    esac
++	    ;&
++	-mthreads|-kthread|-Kthread|--thread-safe \
+         |-threads|-fopenmp|-openmp|-mp|-xopenmp|-omp|-qsmp=*)
+ 	  if test prog,link = "$linkmode,$pass"; then
+ 	    compile_deplibs="$deplib $compile_deplibs"
