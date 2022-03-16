@@ -20,11 +20,13 @@
 #
 
 #
-# Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 # header files
-<transform dir file link hardlink path=usr.*/include(/.+){0,1} -> \
+<transform dir link path=usr.*/include$ -> \
+    default facet.devel all>
+<transform dir file link hardlink path=usr.*/include(-fixed)?/ -> \
     default facet.devel all>
 
 # archive libraries (on rare occasion, we should be delivering these)
