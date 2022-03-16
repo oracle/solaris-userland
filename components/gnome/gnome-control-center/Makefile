@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-control-center
-COMPONENT_VERSION=	3.38.3
+COMPONENT_VERSION=	41.4
 COMPONENT_PROJECT_URL=  https://git.gnome.org/browse/gnome-control-center
 COMPONENT_ARCHIVE_HASH= \
-	sha256:3b4a4b18ba91803dce133f443f9d1d1f5a1b6c26b7727876e0a699349f5696e3
+	sha256:d6db0c4cb70857becf48ac5007f12b5f63b9d5d7e80ea7ee57d3be512669f7c9
 COMPONENT_BUGDB=	gnome/preferences
 COMPONENT_ANITYA_ID=	5408
 
-COMPONENT_BAID=		92613
+COMPONENT_BAID=		118673
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk

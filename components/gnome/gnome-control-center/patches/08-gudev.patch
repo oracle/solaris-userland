@@ -44,31 +44,31 @@ Not suitable for upstream
    dependency('libgtop-2.0')
  ]
  
---- a/panels/meson.build	2021-02-16 11:35:33.762508500 -0800
-+++ b/panels/meson.build	2021-02-16 11:35:40.850040105 -0800
+--- a/panels/meson.build.orig	2021-11-22 08:04:47.862836584 -0800
++++ b/panels/meson.build	2021-11-22 08:05:00.172606080 -0800
 @@ -14,7 +14,6 @@
    'location',
    'lock',
    'microphone',
 -  'mouse',
+   'multitasking',
    'notifications',
    'online-accounts',
-   'region',
---- a/shell/cc-panel-loader.c	2021-02-16 11:35:57.919169960 -0800
-+++ b/shell/cc-panel-loader.c	2021-02-16 11:36:13.810032735 -0800
+--- a/shell/cc-panel-loader.c.orig	2021-11-22 08:05:58.047761855 -0800
++++ b/shell/cc-panel-loader.c	2021-11-22 08:06:26.725253908 -0800
 @@ -42,7 +42,6 @@
  extern GType cc_display_panel_get_type (void);
  extern GType cc_info_overview_panel_get_type (void);
  extern GType cc_keyboard_panel_get_type (void);
 -extern GType cc_mouse_panel_get_type (void);
+ extern GType cc_multitasking_panel_get_type (void);
  #ifdef BUILD_NETWORK
  extern GType cc_network_panel_get_type (void);
- extern GType cc_wifi_panel_get_type (void);
-@@ -104,7 +103,6 @@
+@@ -111,7 +110,6 @@
    PANEL_TYPE("location",         cc_location_panel_get_type,             NULL),
    PANEL_TYPE("lock",             cc_lock_panel_get_type,                 NULL),
    PANEL_TYPE("microphone",       cc_microphone_panel_get_type,           NULL),
 -  PANEL_TYPE("mouse",            cc_mouse_panel_get_type,                NULL),
+   PANEL_TYPE("multitasking",     cc_multitasking_panel_get_type,         NULL),
  #ifdef BUILD_NETWORK
    PANEL_TYPE("network",          cc_network_panel_get_type,              NULL),
-   PANEL_TYPE("wifi",             cc_wifi_panel_get_type,                 cc_wifi_panel_static_init_func),

@@ -10,16 +10,16 @@ from the Linux passwd command, instead of using PAM or similar for Solaris.
 If this panel is ever restored, then you will also need to remove
 ../gnome-shell/patches/07-account-settings.patch to restore its menu entry.
 
---- a/panels/meson.build	2021-02-16 11:08:02.172213995 -0800
-+++ b/panels/meson.build	2021-02-16 11:08:12.289298530 -0800
-@@ -26,7 +26,6 @@
+--- a/panels/meson.build.orig   2021-11-22 07:57:58.567732431 -0800
++++ b/panels/meson.build        2021-11-22 07:58:16.180934333 -0800
+@@ -27,7 +27,6 @@
    'sound',
    'universal-access',
    'usage',
--  'user-accounts'
+-  'user-accounts',
+   'wwan',
  ]
- 
- if host_is_linux
+
 --- a/shell/cc-panel-loader.c	2021-02-16 11:08:35.549234870 -0800
 +++ b/shell/cc-panel-loader.c	2021-02-16 11:08:46.717511790 -0800
 @@ -125,7 +125,6 @@
