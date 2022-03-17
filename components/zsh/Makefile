@@ -20,25 +20,25 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 include $(WS_MAKE_RULES)/shared-targets.mk
 
 COMPONENT_NAME=		zsh
-COMPONENT_VERSION=	5.8
+COMPONENT_VERSION=	5.8.1
 COMPONENT_PROJECT_URL=	https://www.zsh.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:dcc4b54cc5565670a65581760261c163d720991f0d06486da61f8d839b52de27
+    sha256:b6973520bace600b4779200269b1e5d79e5f505ac4952058c11ad5bbf0dd9919
 COMPONENT_ARCHIVE_URL=	\
 	https://downloads.sourceforge.net/project/zsh/zsh/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_PUBLIC_KEY_URL= https://raw.githubusercontent.com/clearlinux-pkgs/zsh/master/ACF8146CAE8CBBC4.pkey
 COMPONENT_ANITYA_ID=	5307
 
-COMPONENT_BAID = 77553
+COMPONENT_BAID = 118759
 
 BUILD_TARGET=
 INSTALL_TARGET=
