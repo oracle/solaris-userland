@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pycparser
-COMPONENT_VERSION=	2.20
+COMPONENT_VERSION=	2.21
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:36df01e44c4350ae786feef1b8a5e4ac37792f97bc9d6c60793d4698dec60c78
+    sha256:d51a23b3b3e09395cf84680b46d4997ae5f479e3450291be1c427a3337161b21
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/eliben/pycparser
 COMPONENT_BUGDB=	python-mod/pycparser
 COMPONENT_ANITYA_ID=	8175
 
-COMPONENT_BAID=		76722
+COMPONENT_BAID=		118737
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

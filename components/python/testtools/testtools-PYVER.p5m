@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -46,9 +46,6 @@ file path=usr/lib/python$(PYVER)/vendor-packages/testtools-$(COMPONENT_VERSION)-
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools-$(COMPONENT_VERSION)-py$(PYVER).egg-info/requires.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools-$(COMPONENT_VERSION)-py$(PYVER).egg-info/top_level.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/__init__.py
-file path=usr/lib/python$(PYVER)/vendor-packages/testtools/_compat2x.py \
-    pkg.tmp.autopyc=false
-file path=usr/lib/python$(PYVER)/vendor-packages/testtools/_compat3x.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/assertions.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/compat.py
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools/content.py
@@ -98,9 +95,6 @@ depend type=require fmri=library/python/fixtures-$(PYV)
 
 # force a dependency on pbr; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/pbr-$(PYV)
-
-# force a dependency on six; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/six-$(PYV)
 
 # force a dependency on the testtools package
 depend type=require \

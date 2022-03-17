@@ -20,27 +20,37 @@
 #
 
 #
-# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		testtools
-COMPONENT_VERSION=	2.4.0
+COMPONENT_VERSION=	2.5.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:f5d6c29ae321e78249b33693b4eb08d2cdedb10c94417cf64eb56685963a8c61
+    sha256:ee09d3ac2a77e0199c1577f2d9b35caa796e353e23dde98ca8c7ff31d97cbc78
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/testing-cabal/testtools
 COMPONENT_BUGDB=	python-mod/testtools
 COMPONENT_ANITYA_ID=	4047
+COMPONENT_BAID=		118738
 
-COMPONENT_BAID=		91399
+# This component is delivered in two different versions because
+# the newer one is no longer Python 2.7 compatible.
+COMPONENT_VERSION_OLD=	2.4.0
+COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
+COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
+COMPONENT_ARCHIVE_HASH_OLD= \
+    sha256:f5d6c29ae321e78249b33693b4eb08d2cdedb10c94417cf64eb56685963a8c61
+COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
+COMPONENT_BAID_OLD=	91399
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-multiver.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
