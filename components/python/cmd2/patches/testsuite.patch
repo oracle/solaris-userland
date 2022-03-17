@@ -1,0 +1,158 @@
+Some tests must be disabled, most of them due to missing pytest-mock package.
+
+Not intended for upstream.
+
+--- cmd2-2.4.0/setup.cfg
++++ cmd2-2.4.0/setup.cfg
+@@ -1,11 +1,6 @@
+ [tool:pytest]
+ testpaths = 
+ 	tests
+-addopts = 
+-	--cov=cmd2
+-	--cov-append
+-	--cov-report=term
+-	--cov-report=html
+ 
+ [flake8]
+ count = True
+--- cmd2-2.4.0/tests/test_argparse.py
++++ cmd2-2.4.0/tests/test_argparse.py
+@@ -439,6 +439,7 @@ def test_unittest_mock():
+         app = ArgparseApp()
+ 
+ 
++@pytest.mark.skip(reason="We don't have pytest-mock on Solaris")
+ def test_pytest_mock_invalid(mocker):
+     from cmd2 import (
+         CommandSetRegistrationError,
+@@ -449,6 +450,7 @@ def test_pytest_mock_invalid(mocker):
+         app = ArgparseApp()
+ 
+ 
++@pytest.mark.skip(reason="We don't have pytest-mock on Solaris")
+ @pytest.mark.parametrize(
+     'spec_param',
+     [
+--- cmd2-2.4.0/tests/test_cmd2.py
++++ cmd2-2.4.0/tests/test_cmd2.py
+@@ -2542,6 +2542,7 @@ class AnsiApp(cmd2.Cmd):
+         self.perror(args)
+ 
+ 
++@pytest.mark.skip(reason="We don't have pytest-mock on Solaris")
+ @with_ansi_style(ansi.AllowStyle.ALWAYS)
+ def test_ansi_pouterr_always_tty(mocker, capsys):
+     app = AnsiApp()
+@@ -2565,6 +2566,7 @@ def test_ansi_pouterr_always_tty(mocker,
+     assert 'oopsie' in err
+ 
+ 
++@pytest.mark.skip(reason="We don't have pytest-mock on Solaris")
+ @with_ansi_style(ansi.AllowStyle.ALWAYS)
+ def test_ansi_pouterr_always_notty(mocker, capsys):
+     app = AnsiApp()
+@@ -2588,6 +2590,7 @@ def test_ansi_pouterr_always_notty(mocke
+     assert 'oopsie' in err
+ 
+ 
++@pytest.mark.skip(reason="We don't have pytest-mock on Solaris")
+ @with_ansi_style(ansi.AllowStyle.TERMINAL)
+ def test_ansi_terminal_tty(mocker, capsys):
+     app = AnsiApp()
+@@ -2610,6 +2613,7 @@ def test_ansi_terminal_tty(mocker, capsy
+     assert 'oopsie' in err
+ 
+ 
++@pytest.mark.skip(reason="We don't have pytest-mock on Solaris")
+ @with_ansi_style(ansi.AllowStyle.TERMINAL)
+ def test_ansi_terminal_notty(mocker, capsys):
+     app = AnsiApp()
+@@ -2625,6 +2629,7 @@ def test_ansi_terminal_notty(mocker, cap
+     assert out == err == 'oopsie\n'
+ 
+ 
++@pytest.mark.skip(reason="We don't have pytest-mock on Solaris")
+ @with_ansi_style(ansi.AllowStyle.NEVER)
+ def test_ansi_never_tty(mocker, capsys):
+     app = AnsiApp()
+@@ -2640,6 +2645,7 @@ def test_ansi_never_tty(mocker, capsys):
+     assert out == err == 'oopsie\n'
+ 
+ 
++@pytest.mark.skip(reason="We don't have pytest-mock on Solaris")
+ @with_ansi_style(ansi.AllowStyle.NEVER)
+ def test_ansi_never_notty(mocker, capsys):
+     app = AnsiApp()
+--- cmd2-2.4.0/tests/test_history.py
++++ cmd2-2.4.0/tests/test_history.py
+@@ -700,6 +700,7 @@ def test_history_run_one_command(base_ap
+     assert base_app.last_result is True
+ 
+ 
++@pytest.mark.skip(reason="We don't have pytest-mock on Solaris")
+ def test_history_clear(mocker, hist_file):
+     # Add commands to history
+     app = cmd2.Cmd(persistent_history_file=hist_file)
+@@ -864,6 +865,7 @@ def test_history_file_is_directory(capsy
+         assert 'is a directory' in err
+ 
+ 
++@pytest.mark.skip(reason="We don't have pytest-mock on Solaris")
+ def test_history_can_create_directory(mocker):
+     # Mock out atexit.register so the persistent file doesn't written when this function
+     # exists because we will be deleting the directory it needs to go to.
+@@ -886,6 +888,7 @@ def test_history_can_create_directory(mo
+     os.rmdir(hist_file_dir)
+ 
+ 
++@pytest.mark.skip(reason="We don't have pytest-mock on Solaris")
+ def test_history_cannot_create_directory(mocker, capsys):
+     mock_open = mocker.patch('os.makedirs')
+     mock_open.side_effect = OSError
+@@ -896,6 +899,7 @@ def test_history_cannot_create_directory
+     assert 'Error creating persistent history file directory' in err
+ 
+ 
++@pytest.mark.skip(reason="We don't have pytest-mock on Solaris")
+ def test_history_file_permission_error(mocker, capsys):
+     mock_open = mocker.patch('builtins.open')
+     mock_open.side_effect = PermissionError
+@@ -952,6 +956,7 @@ def test_persist_history_ensure_no_error
+     assert not err
+ 
+ 
++@pytest.mark.skip(reason="We don't have pytest-mock on Solaris")
+ def test_persist_history_permission_error(hist_file, mocker, capsys):
+     app = cmd2.Cmd(persistent_history_file=hist_file)
+     run_cmd(app, 'help')
+--- cmd2-2.4.0/tests/test_completion.py
++++ cmd2-2.4.0/tests/test_completion.py
+@@ -535,6 +535,7 @@ def test_path_completion_doesnt_match_wi
+     assert cmd2_app.path_complete(text, line, begidx, endidx) == []
+ 
+ 
++@pytest.mark.skip(reason="Home directory browsing does not work on our build machines")
+ def test_path_completion_complete_user(cmd2_app):
+     import getpass
+ 
+--- cmd2-2.4.0/tests/test_parsing.py
++++ cmd2-2.4.0/tests/test_parsing.py
+@@ -965,6 +965,7 @@ def test_statement_as_dict(parser):
+         Statement.from_dict(statement_dict)
+ 
+ 
++@pytest.mark.skip(reason="We don't have pytest-mock on Solaris")
+ def test_is_valid_command_invalid(mocker, parser):
+     # Non-string command
+     # noinspection PyTypeChecker
+--- cmd2-2.4.0/tests/test_transcript.py
++++ cmd2-2.4.0/tests/test_transcript.py
+@@ -183,6 +183,7 @@ this is a \/multiline\/ command
+     assert xscript == expected
+ 
+ 
++@pytest.mark.skip(reason="We don't have pytest-mock on Solaris")
+ def test_history_transcript_bad_path(mocker):
+     app = CmdLineApp()
+     app.stdout = StdSim(app.stdout)

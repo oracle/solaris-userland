@@ -20,22 +20,21 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cmd2
-COMPONENT_VERSION=	0.9.13
+COMPONENT_VERSION=	2.4.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:b873ade57ebf6c42a9d4e8c705fc2b16777e9d2e53fec5b113914dc65f2eae38
+	sha256:5d0b300df5a25219f81f537f4a42e08f276e2b70cf81119e231201cba2aac0e3
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://pypi.python.org/pypi/cmd2
 COMPONENT_BUGDB=	python-mod/cmd2
 COMPONENT_ANITYA_ID=	13187
-
-COMPONENT_BAID=		65222
+COMPONENT_BAID=		119518
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
@@ -56,7 +55,7 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(NO_TESTS)
+system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += library/python/attrs
 REQUIRED_PACKAGES += library/python/colorama

@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -41,16 +41,23 @@ file path=usr/lib/python$(PYVER)/vendor-packages/cmd2-$(COMPONENT_VERSION)-py$(P
 file path=usr/lib/python$(PYVER)/vendor-packages/cmd2-$(COMPONENT_VERSION)-py$(PYVER).egg-info/requires.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/cmd2-$(COMPONENT_VERSION)-py$(PYVER).egg-info/top_level.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/__init__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/ansi.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/argparse_completer.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/argparse_custom.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/clipboard.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/cmd2.py \
     pkg.depend.bypass-generate=.*
+file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/command_definition.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/constants.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/decorators.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/exceptions.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/history.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/parsing.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/plugin.py
-file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/pyscript_bridge.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/py.typed
+file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/py_bridge.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/rl_utils.py
+file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/table_creator.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/transcript.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cmd2/utils.py
 license cmd2.license license=MIT
@@ -69,9 +76,6 @@ depend type=require fmri=library/python/attrs-$(PYV)
 # force a dependency on the cmd2 package
 depend type=require \
     fmri=library/python/cmd2@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
-
-# force a dependency on colorama; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/colorama-$(PYV)
 
 # force a dependency on pyperclip; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/pyperclip-$(PYV)
