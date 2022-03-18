@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		trousers
-COMPONENT_VERSION=	0.3.13
+COMPONENT_VERSION=	0.3.15
 COMPONENT_PROJECT_URL=	http://trousers.sourceforge.net/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:bb908e4a3c88a17b247a4fc8e0fff3419d8a13170fe7bdfbe0e2c5c082a276d3
+	sha256:1e5be93e518372acf1d92d2f567d01a46fdb0b730487e544e6fb896c59cac77f
 COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/trousers/files/trousers/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/tss
 COMPONENT_ANITYA_ID=	5400
 
-COMPONENT_BAID=		29683
+COMPONENT_BAID=		109492
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
@@ -51,6 +51,7 @@ endif
 # Option "--add-missing" is needed to use default "compile" script.
 AUTOMAKE=/usr/bin/automake-1.16 --add-missing
 ACLOCAL=/usr/bin/aclocal-1.16
+COMPONENT_PREP_ACTION =     (cd $(@D); sh bootstrap.sh);
 
 LIBS += -lgen
 
