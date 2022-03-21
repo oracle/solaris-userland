@@ -18,15 +18,11 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 
 # Transform the target path in the links
 <transform link path=usr/share/help/([^/]+)/(.*) \
     target=/usr/share/help/([^/]+)/.* -> set target ../../../%<3>/%<2>>
-
-# Added to quieten pkglint error of delivering 64-bit binary in 32-bit path
-<transform file path=usr/bin/baobab -> \
-    set pkg.linted.userland.action001.2 true>
 
 

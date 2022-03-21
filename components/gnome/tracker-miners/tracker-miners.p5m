@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -33,8 +33,6 @@ set name=pkg.description \
     value="Tracker Miners contains the indexer daemon (tracker-miner-fs) and tools to extract metadata from many different filetypes."
 set name=pkg.depend.bypass-generate value=libtracker-extract.so \
     value=libtracker-miner-2.0.so.0 value=libtracker-sparql-2.0.so.0
-set name=pkg.linted.pkglint.dupaction001.1 value=true
-set name=pkg.linted.pkglint.dupaction010.2 value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value=$(COMPONENT_NAME)
 set name=info.classification \
@@ -70,11 +68,9 @@ file path=usr/lib/$(MACH64)/tracker-miners-2.0/extract-modules/libextract-xps.so
 file path=usr/lib/$(MACH64)/tracker-miners-2.0/libtracker-extract.so
 file path=usr/lib/$(MACH64)/tracker-miners-2.0/writeback-modules/libwriteback-gstreamer.so
 file path=usr/lib/$(MACH64)/tracker-miners-2.0/writeback-modules/libwriteback-xmp.so
-file path=usr/lib/tracker-extract mode=0555 pkg.linted.userland.action001.2=true
-file path=usr/lib/tracker-miner-fs mode=0555 \
-    pkg.linted.userland.action001.2=true
-file path=usr/lib/tracker-writeback mode=0555 \
-    pkg.linted.userland.action001.2=true
+file path=usr/lib/tracker-extract mode=0555
+file path=usr/lib/tracker-miner-fs mode=0555
+file path=usr/lib/tracker-writeback mode=0555
 file path=usr/share/dbus-1/services/org.freedesktop.Tracker1.Miner.Extract.service
 file path=usr/share/dbus-1/services/org.freedesktop.Tracker1.Miner.Files.service
 file path=usr/share/dbus-1/services/org.freedesktop.Tracker1.Writeback.service

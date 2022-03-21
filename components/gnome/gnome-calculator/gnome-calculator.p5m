@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> \
@@ -26,7 +26,6 @@
 set name=pkg.fmri \
     value=pkg:/gnome/gnome-calculator@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="The GNOME Desktop Calculator"
-set name=pkg.linted.pkglint.action005 value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value=gnome-calculator
 set name=info.classification \
@@ -35,8 +34,8 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2016/375
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file path=usr/bin/gcalccmd pkg.linted.userland.action001.2=true
-file path=usr/bin/gnome-calculator pkg.linted.userland.action001.2=true
+file path=usr/bin/gcalccmd
+file path=usr/bin/gnome-calculator
 file path=usr/include/gcalc-2/gcalc/gcalc.h
 file path=usr/include/gci-2/gci/gci.h
 file path=usr/lib/$(MACH64)/girepository-1.0/GCalc-2.typelib
@@ -49,8 +48,7 @@ file path=usr/lib/$(MACH64)/libgci-1.so.0
 link path=usr/lib/$(MACH64)/libgci-1.so.0.0.0 target=libgci-1.so.0
 file path=usr/lib/$(MACH64)/pkgconfig/gcalc-2.pc
 file path=usr/lib/$(MACH64)/pkgconfig/gci-1.pc
-file path=usr/lib/gnome-calculator-search-provider mode=0555 \
-    pkg.linted.userland.action001.2=true
+file path=usr/lib/gnome-calculator-search-provider mode=0555
 file path=usr/share/applications/org.gnome.Calculator.desktop
 file path=usr/share/dbus-1/services/org.gnome.Calculator.SearchProvider.service
 file path=usr/share/devhelp/books/GCalc-2/GCalc-2.devhelp2

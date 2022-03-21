@@ -45,40 +45,31 @@ file path=lib/svc/manifest/application/desktop-cache/glib-compile-schemas.xml
 file path=lib/svc/method/gio-module-cache
 file path=lib/svc/method/glib-compile-schemas
 file path=usr/bin/$(MACH64)/gio-querymodules
-file usr/bin/$(MACH64)/gapplication path=usr/bin/gapplication \
-    pkg.linted.userland.action001.2=true
-file usr/bin/$(MACH64)/gdbus path=usr/bin/gdbus \
-    pkg.linted.userland.action001.2=true
+file usr/bin/$(MACH64)/gapplication path=usr/bin/gapplication
+file usr/bin/$(MACH64)/gdbus path=usr/bin/gdbus
+file usr/bin/$(MACH64)/gdbus-codegen path=usr/bin/gdbus-codegen \
+    pkg.depend.bypass-generate=.*
 # The bypass is necessary as glib uses a non-standard location for its
 # Python modules (by design); the dependencies are on modules provided by
 # this packages, so this shouldn't be a concern.
-file usr/bin/$(MACH64)/gdbus-codegen path=usr/bin/gdbus-codegen \
-    pkg.depend.bypass-generate=.*
-file usr/bin/$(MACH64)/gio path=usr/bin/gio pkg.linted.userland.action001.2=true
+file usr/bin/$(MACH64)/gio path=usr/bin/gio
 file path=usr/bin/gio-querymodules
 file usr/bin/$(MACH64)/glib-compile-resources \
-    path=usr/bin/glib-compile-resources pkg.linted.userland.action001.2=true
-file usr/bin/$(MACH64)/glib-compile-schemas path=usr/bin/glib-compile-schemas \
-    pkg.linted.userland.action001.2=true
-file usr/bin/$(MACH64)/glib-genmarshal path=usr/bin/glib-genmarshal \
-    pkg.depend.bypass-generate=.*
+    path=usr/bin/glib-compile-resources
+file usr/bin/$(MACH64)/glib-compile-schemas path=usr/bin/glib-compile-schemas
+file usr/bin/$(MACH64)/glib-genmarshal path=usr/bin/glib-genmarshal
 file usr/bin/$(MACH64)/glib-gettextize path=usr/bin/glib-gettextize
-file usr/bin/$(MACH64)/glib-mkenums path=usr/bin/glib-mkenums \
-    pkg.depend.bypass-generate=.*
-file usr/bin/$(MACH64)/gobject-query path=usr/bin/gobject-query \
-    pkg.linted.userland.action001.2=true
-file usr/bin/$(MACH64)/gresource path=usr/bin/gresource \
-    pkg.linted.userland.action001.2=true
-file usr/bin/$(MACH64)/gsettings path=usr/bin/gsettings \
-    pkg.linted.userland.action001.2=true
-file usr/bin/$(MACH64)/gtester path=usr/bin/gtester \
-    pkg.depend.bypass-generate=.* pkg.linted.userland.action001.2=true
-# The bypass is necessary as glib supports optional Python modules that we
-# don't currently have available in Solaris (subunit and testtools).
+file usr/bin/$(MACH64)/glib-mkenums path=usr/bin/glib-mkenums
+file usr/bin/$(MACH64)/gobject-query path=usr/bin/gobject-query
+file usr/bin/$(MACH64)/gresource path=usr/bin/gresource
+file usr/bin/$(MACH64)/gsettings path=usr/bin/gsettings
+file usr/bin/$(MACH64)/gtester path=usr/bin/gtester
 file usr/bin/$(MACH64)/gtester-report path=usr/bin/gtester-report \
     pkg.depend.bypass-generate=.* pkg.depend.bypass-generate=.*content.* \
     pkg.depend.bypass-generate=.*subunit.* \
     pkg.depend.bypass-generate=.*testtools.*
+# The bypass is necessary as glib supports optional Python modules that we
+# don't currently have available in Solaris (subunit and testtools).
 file path=usr/include/gio-unix-2.0/gio/gdesktopappinfo.h
 file path=usr/include/gio-unix-2.0/gio/gfiledescriptorbased.h
 file path=usr/include/gio-unix-2.0/gio/gunixconnection.h

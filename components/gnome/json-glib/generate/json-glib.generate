@@ -18,7 +18,7 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 
 # Drop 32-bit binaries
@@ -27,11 +27,3 @@
 # We don't need to deliver installed-tests
 <transform file path=usr/lib/installed-tests/* -> drop>
 <transform file path=usr/share/installed-tests/* -> drop>
-
-# transform added to get rid of pkglint errors
-# ERROR userland.action001.2 64-bit object in 32-bit path
-<transform file path=usr/bin/json-glib-format -> \
-    set pkg.linted.userland.action001.2 true>
-<transform file path=usr/bin/json-glib-validate -> \
-    set pkg.linted.userland.action001.2 true>
-

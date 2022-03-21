@@ -18,21 +18,8 @@
 # CDDL HEADER END
 #
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 
 # Don't deliver 32-bit binaries
 <transform file path=usr/bin/\$\(MACH32\)/.+ -> drop>
-
-# Transform to get rid of pkglint errors like 64-bit object in 32-bit path
-<transform file path=usr/bin/xpstojpeg ->  \
-    set pkg.linted.userland.action001.2 true>
-<transform file path=usr/bin/xpstopdf  -> \
-    set pkg.linted.userland.action001.2 true>
-<transform file path=usr/bin/xpstopng  -> \
-    set pkg.linted.userland.action001.2 true>
-<transform file path=usr/bin/xpstops  -> \
-    set pkg.linted.userland.action001.2 true>
-<transform file path=usr/bin/xpstosvg  ->\ 
-    set pkg.linted.userland.action001.2 true>
-

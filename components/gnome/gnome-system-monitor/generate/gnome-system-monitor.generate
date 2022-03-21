@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 #
 
 # Set correct file permissions
@@ -31,13 +31,3 @@
 # Transform the target path in the links
 <transform link path=usr/share/help/([^/]+)/(.*) \
     target=/usr/share/help/([^/]+)/.* -> set target ../../../%<3>/%<2>>
-
-# Transform to get rid of pkglint errors like 64-bit object in 32-bit path
-<transform file path=usr/bin/gnome-system-monitor -> \
-    set pkg.linted.userland.action001.2 true>
-<transform file path=usr/lib/gnome-system-monitor/gsm-kill -> \
-    set pkg.linted.userland.action001.2 true>
-<transform file path=usr/lib/gnome-system-monitor/gsm-renice -> \
-    set pkg.linted.userland.action001.2 true>
-<transform file path=usr/lib/gnome-system-monitor/gsm-taskset -> \
-    set pkg.linted.userland.action001.2 true>

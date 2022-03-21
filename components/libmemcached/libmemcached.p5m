@@ -18,12 +18,10 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability uncommitted>
-# pie executables confuse this pkglint check due to bug 24457293
-<transform file path=usr/bin/.+ -> default pkg.linted.userland.action001.2 True>
 # Transform to map man3 man pages to be 3libmemcached ones
 <transform file path=(.+)/man/man3libmemcached/(.+).3libmemcached$ -> \
     set action.hash %<1>/man/man3/%<2>.3>

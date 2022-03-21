@@ -18,12 +18,9 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 #
-# temporary workaround till updated APR/APR-util get into repo
-#
-<transform file path=.*\.so.* -> \
-    add pkg.linted.userland.action001.3 true>
+
 <transform file path=usr/perl5/$(PERL_VERSION)/man.+ -> default mangler.man.stability uncommitted>
 <transform file path=(usr/perl5/vendor_perl/$(PERL_VERSION)/)(SVN/.+) -> set action.hash %<1>$(PERL_ARCH)/%<2> >
 set name=pkg.fmri \
