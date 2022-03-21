@@ -42,6 +42,9 @@ COMPONENT_BAID=		118978
 CONFIGURE_PREFIX = /usr/openssl/3
 CONFIGURE_OPTIONS = --openssldir=/etc/openssl/3
 
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+
 # build FIPS capable library
 CONFIGURE_OPTIONS += enable-fips
 # disabled engines

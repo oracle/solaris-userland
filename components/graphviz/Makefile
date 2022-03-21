@@ -158,6 +158,10 @@ $(PROTO_DIR)/$(PYTHON.3.9.VENDOR_PACKAGES)/gv.pyc: $(INSTALL_64)
 	$(PYTHON.3.9) -m compileall -l -d $(PYTHON.3.9.VENDOR_PACKAGES) \
 		$(PROTO_DIR)/$(PYTHON.3.9.VENDOR_PACKAGES)
 
+# 'gvpr' uses HOSTCC variable instead of our configured compiler and options so
+# PIE build fails. This is a workaround for that.
+COMPONENT_BUILD_ARGS += HOSTCC='$(CC) $(CC_PIC_ENABLE)'
+
 PKG_MACROS += PERL_PKG=$(PERL_PKG)
 PKG_MACROS += PERL_VERSION_NODOT=$(PERL_VERSION_NODOT)
 

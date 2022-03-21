@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 
 #
@@ -87,10 +87,10 @@ CONFIGURE_ENV += PKG_CONFIG_PATH="$(PKG_CONFIG_PATH)"
 CONFIGURE_ENV += CC="$(CC)"
 CONFIGURE_ENV += CXX="$(CXX)"
 ifneq ($(strip $(CFLAGS)),)
-CONFIGURE_ENV += CFLAGS="$(strip $(CFLAGS))"
+CONFIGURE_ENV += CFLAGS='$(strip $(CFLAGS))'
 endif
 ifneq ($(strip $(CXXFLAGS)),)
-CONFIGURE_ENV += CXXFLAGS="$(strip $(CXXFLAGS))"
+CONFIGURE_ENV += CXXFLAGS='$(strip $(CXXFLAGS))'
 endif
 CONFIGURE_CPPFLAGS ?= $(CC_BITS)
 ifneq  ($(strip $(CONFIGURE_CPPFLAGS) $(CPPFLAGS)),)
@@ -107,6 +107,14 @@ CONFIGURE_OPTIONS += --buildtype=$(MESON_BUILDTYPE)
 CONFIGURE_OPTIONS += --optimization=$(MESON_OPTIMIZATION)
 CONFIGURE_OPTIONS += -Ddefault_library=shared
 CONFIGURE_OPTIONS += -Db_pie=$(MESON_BUILDPIE)
+
+# The PIE mode is enabled by -Db_pie. If we force our PIE flags onto meson this
+# way it might break build because g-ir-scanner is not aware of PIE. Plus we
+# have a pklint check making sure that all binaries are PIE so if -Db_pie is
+# not enough then we would find out during publishing of the package.
+# Related to https://github.com/mesonbuild/meson/issues/1035 ?
+#CC_PIC_MODE = $(CC_PIC_DISABLE)
+#LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # Install paths
 CONFIGURE_OPTIONS += --prefix=$(CONFIGURE_PREFIX)

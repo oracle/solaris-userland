@@ -67,6 +67,9 @@ endif
 
 include $(WS_MAKE_RULES)/common.mk
 
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+
 # The sequential build is broken, use multiple build jobs to avoid the following error.
 # *** No rule to make target 'JavaScriptCore-4.0.gir', needed by 'WebKit2-4.0.gir'.  Stop.
 # See upstream bug: https://bugs.webkit.org/show_bug.cgi?id=195251

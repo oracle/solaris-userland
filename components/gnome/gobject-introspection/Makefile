@@ -43,6 +43,11 @@ BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
+# g-ir-scanner
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+
+
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/g-ir-scanner
 PYTHON_SCRIPTS += $(PROTOUSRBINDIR)/g-ir-annotation-tool
 

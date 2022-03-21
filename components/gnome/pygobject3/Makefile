@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 # gobject-introspection bindings are only built correctly for gtk when building
@@ -66,6 +66,10 @@ include $(WS_MAKE_RULES)/test-x11.mk
 COMPONENT_TEST_TRANSFORMS += '-n -e "/:/p"'
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+
+# g-ir-scanner
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # The build process modifies the shebang line to use the version of Python
 # automatically found; to avoid using the current system default, one is

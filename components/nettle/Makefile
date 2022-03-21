@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -96,6 +96,10 @@ CONFIGURE_OPTIONS.wanboot  += --disable-x86-aesni
 CONFIGURE_OPTIONS.wanboot  += --disable-mini-gmp
 CONFIGURE_OPTIONS.wanboot  += --disable-ld-version-script
 
+# Some binaries (like eccdata) are built by compiler in CC_FOR_BUILD. That
+# does not respect our PIE config so we need to work around it
+COMPONENT_BUILD_ARGS += CC_FOR_BUILD='$(CC) $(CONFIGURE_CPPFLAGS) $(CC_PIC_ENABLE)'
+
 # The additional set of transforms to be applied to the
 # test results to try to normalize them.
 COMPONENT_TEST_TRANSFORMS += \
@@ -108,6 +112,11 @@ $(BUILD_DIR)/wanboot-amd64/.configured: BITS=64
 $(BUILD_DIR)/wanboot-amd64/.configured: COMPILER=gcc
 $(BUILD_DIR)/wanboot-amd64/.configured: CFLAGS += $(CFLAGS.wanboot)
 $(BUILD_DIR)/wanboot-amd64/.configured: CONFIGURE_OPTIONS += $(CONFIGURE_OPTIONS.wanboot)
+# Wanboot can not be built in PIC mode
+$(BUILD_DIR)/wanboot-amd64/.configured: CC_PIC_MODE = $(CC_PIC_DISABLE)
+$(BUILD_DIR)/wanboot-amd64/.configured: LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+$(BUILD_DIR)/wanboot-amd64/.built: CC_PIC_MODE = $(CC_PIC_DISABLE)
+$(BUILD_DIR)/wanboot-amd64/.built: LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 $(BUILD_DIR)/wanboot-amd64/.installed: \
 	COMPONENT_POST_INSTALL_ACTION += \

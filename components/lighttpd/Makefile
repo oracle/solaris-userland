@@ -40,6 +40,10 @@ LIGHTTPD_INSTALLDIR=$(USRDIR)/lighttpd/1.4
 
 include $(WS_MAKE_RULES)/common.mk
 
+# Some binaries (like lemon) are built by compiler in CC_FOR_BUILD. That
+# does not respect our PIE config so we need to work around it
+COMPONENT_BUILD_ARGS += CC_FOR_BUILD='$(CC) $(CONFIGURE_CPPFLAGS) $(CC_PIC_ENABLE)'
+
 # lighttpd is logging using __FILE__ macro. Cloning will make this happen
 # using just source file names (without full absolute paths).
 COMPONENT_PRE_CONFIGURE_ACTION = ($(CLONEY) $(SOURCE_DIR) $(@D))

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 
@@ -49,6 +49,9 @@ PATH=$(PARFAIT_TOOLS):$(SPRO_VROOT)/bin:$(USRBINDIR)
 else
 PATH=$(SPRO_VROOT)/bin:$(USRBINDIR):$(GNUBIN)
 endif
+
+C_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 BUILD_STYLE= justmake
 TEST_TARGET= $(NO_TESTS)

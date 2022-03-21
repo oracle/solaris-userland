@@ -53,6 +53,9 @@ BUILD_STYLE= justmake
 INSTALL_TARGET=
 include $(WS_MAKE_RULES)/common.mk
 
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+
 # Although we build 32_and_64, everything except libmilter just wants 64,
 # which is why the macros just below only have values for 64.  libmilter
 # is dealt with further below.

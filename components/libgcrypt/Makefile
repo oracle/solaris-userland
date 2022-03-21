@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 
@@ -65,6 +65,10 @@ CONFIGURE_OPTIONS += --enable-maintainer-mode
 CONFIGURE_OPTIONS += --disable-asm
 
 include ../../make-rules/shared-targets.mk
+
+# Some binaries (like gost-s-box) are built by compiler in CC_FOR_BUILD. That
+# does not respect our PIE config so we need to work around it
+COMPONENT_BUILD_ARGS += CC_FOR_BUILD='$(CC) $(CONFIGURE_CPPFLAGS) $(CC_PIC_ENABLE)'
 
 # Note: Two test cases (t-secmem and t-sexp) fail with EPERM when executed as
 # a normal user. All tests should be successful when executed as a root user.

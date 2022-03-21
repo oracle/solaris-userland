@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -45,7 +45,7 @@ COMPONENT_PRE_CONFIGURE_ACTION = \
 # -I argument needed to find the generated config.h file.  Also, pconsole
 # configure.in forcibly overrides CFLAGS, so we override the compiler to
 # specify required flags.
-CONFIGURE_ENV += "CC=$(CC) -I. $(CC_BITS)"
+CONFIGURE_ENV += "CC=$(CC) -I. $(CC_BITS) $(CC_PIC_ENABLE)"
 
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93

@@ -46,6 +46,10 @@ BUILD_STYLE=		meson
 include $(WS_MAKE_RULES)/gnome-component.mk
 include $(WS_MAKE_RULES)/test-x11.mk
 
+# g-ir-scanner
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+
 CONFIGURE_OPTIONS.32 += -Dgir=false
 CONFIGURE_OPTIONS += -Dgtk_doc=true
 

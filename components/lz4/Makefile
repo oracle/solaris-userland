@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -44,6 +44,11 @@ COMPONENT_BAID=		81190
 
 BUILD_STYLE= justmake
 include $(WS_MAKE_RULES)/common.mk
+
+# Verbose compilation output
+COMPONENT_BUILD_ARGS += Q=
+
+COMPONENT_BUILD_ARGS += CFLAGS='$(CFLAGS)'
 
 # Tests require the full copy of source dir.
 CLONEY = echo

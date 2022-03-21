@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2010, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
@@ -53,6 +53,10 @@ CONFIGURE_OPTIONS += --enable-threads=posix
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 
 include ../../make-rules/shared-targets.mk
+
+# Some binaries (like mkerrcodes) are built by compiler in CC_FOR_BUILD. That
+# does not respect our PIE config so we need to work around it
+COMPONENT_BUILD_ARGS += CC_FOR_BUILD='$(CC) $(CONFIGURE_CPPFLAGS) $(CC_PIC_ENABLE)'
 
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime

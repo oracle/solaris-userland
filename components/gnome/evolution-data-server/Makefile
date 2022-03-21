@@ -68,6 +68,11 @@ CMAKE_OPTIONS += -DSYSCONF_INSTALL_DIR="/etc"
 # Avoid to generate documentation since it might crash on sparc (see bug 31473179).
 CMAKE_OPTIONS += -DENABLE_GTK_DOC=OFF
 
+# g-ir-scanner
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+
+
 # for the tests
 unexport SHELLOPTS
 

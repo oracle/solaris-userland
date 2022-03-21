@@ -60,6 +60,8 @@ CONFIGURE_OPTIONS += --with-pic
 # into poppler that links libfreetype library.
 CONFIGURE_OPTIONS += --without-harfbuzz
 
+COMPONENT_BUILD_ARGS += CCraw_build='$(CC) $(CC_PIC_ENABLE)'
+
 LDFLAGS += -lc
 
 PROTO_FREETYPE_DOCDIR = $(PROTOUSRSHAREDOCDIR)/$(COMPONENT_NAME)

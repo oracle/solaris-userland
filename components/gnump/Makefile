@@ -19,7 +19,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=gcc
@@ -149,6 +149,11 @@ CONFIGURE_OPTIONS += --enable-fft
 CONFIGURE_OPTIONS += --disable-fat
 CONFIGURE_OPTIONS.shared += --with-pic
 
+# At some places (for example compiling gen-fac.c) CC_FOR_BUILD is used as a
+# compiler. That does not respect our CFLAGS and CPPFLAGS so the PIC build
+# breaks. This is a way to overcome it.
+COMPONENT_BUILD_ARGS += CC_FOR_BUILD='$(CC) $(CONFIGURE_CPPFLAGS) $(CC_PIC_ENABLE)'
+
 # Set the wanboot configure options as needed for wanboot
 
 CONFIGURE_OPTIONS.wanboot += --disable-assert
@@ -183,6 +188,10 @@ $(BUILD_DIR)/wanboot-amd64/.configured: CPPFLAGS += $(CPPFLAGS.wanboot)
 $(BUILD_DIR)/wanboot-amd64/.configured: CFLAGS += $(CFLAGS.wanboot)
 $(BUILD_DIR)/wanboot-amd64/.configured: CXXFLAGS += $(CXXFLAGS.wanboot)
 $(BUILD_DIR)/wanboot-amd64/.configured: CONFIGURE_OPTIONS += $(CONFIGURE_OPTIONS.wanboot)
+# Wanboot can not be built in PIC mode
+$(BUILD_DIR)/wanboot-amd64/.configured: CC_PIC_MODE = $(CC_PIC_DISABLE)
+$(BUILD_DIR)/wanboot-amd64/.configured: LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+
 
 build: $(BUILD_32_and_64)
 

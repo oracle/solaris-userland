@@ -295,7 +295,7 @@ class UserlandActionChecker(base.ActionChecker):
     def __elf_aslr_check(self, path, engine, _pkglint_id):
         """Verify that given executable binary is ASLR tagged and enabled."""
         elfinfo = elf.get_info(path)
-        if elfinfo["type"] != "exe":
+        if elfinfo["type"] != "exe" and elfinfo["type"] != "pie":
             return
 
         # get the ASLR tag string for this binary
@@ -313,6 +313,10 @@ class UserlandActionChecker(base.ActionChecker):
         elif b"ENABLE" not in res.stdout:
             engine.warning(f"'{path}' does not have aslr enabled",
                            msgid=f"{self.name}{_pkglint_id}.6")
+
+        if elfinfo["type"] != "pie":
+            engine.error(f"'{path}' is not PIE compiled",
+                           msgid=f"{self.name}{_pkglint_id}.PIE")
 
     def __elf_runpath_check(self, path, engine, _pkglint_id):
         """Verify that RUNPATH of given binary is correct."""
@@ -417,7 +421,7 @@ class UserlandActionChecker(base.ActionChecker):
 
         # ignore 64-bit executables in normal (non-32-bit-specific)
         # locations, that's ok now.
-        if elftype == "exe" and bits == 64 and not path32 and not path64:
+        if (elftype == "exe" or elftype == "pie") and bits == 64 and not path32 and not path64:
             return
 
         if bits == 32 and path64:
@@ -611,12 +615,12 @@ class UserlandManifestChecker(base.ManifestChecker):
 
         # verify that manifest contains at least one license action
         if not next(manifest.gen_actions_by_type("license"), False):
-            engine.error("missing license action",
+            engine.error(f"missing license action in {manifest.fmri}",
                          msgid=f"{self.name}{pkglint_id}.0")
 
         # verify that ARC data are present
         if "org.opensolaris.arc-caseid" not in manifest:
-            engine.error("missing ARC data (org.opensolaris.arc-caseid)",
+            engine.error(f"missing ARC data (org.opensolaris.arc-caseid) in {manifest.fmri}",
                          msgid=f"{self.name}{pkglint_id}.0")
 
     component_check.pkglint_desc = (

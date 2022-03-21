@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -44,6 +44,10 @@ BUILD_STYLE=		meson
 TEST_TARGET= $(SKIP_TEST)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
+
+# g-ir-scanner
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 CONFIGURE_OPTIONS += -Ddbus_daemon=$(USRLIBDIR)/dbus-daemon

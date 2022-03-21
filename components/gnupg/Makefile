@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -116,6 +116,10 @@ CONFIGURE_OPTIONS  +=		--with-bzip2=$(CONFIGURE_PREFIX)
 CONFIGURE_OPTIONS  +=		--with-pic
 CONFIGURE_OPTIONS  +=		--with-readline=$(CONFIGURE_PREFIX)
 CONFIGURE_OPTIONS  +=		--enable-gpg-is-gpg2
+
+# The 'doc' directory uses CC_FOR_BUILD which does not respect our compilation
+# flags. This is a workaround to make gnupg use PIC build.
+COMPONENT_BUILD_ARGS += CC_FOR_BUILD='$(CC) $(CONFIGURE_CPPFLAGS) $(CC_PIC_ENABLE)'
 
 COMPONENT_POST_INSTALL_ACTION += \
 	( cd $(PROTOUSRSHARELOCALEDIR) ; \

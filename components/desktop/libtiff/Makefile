@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -51,6 +51,8 @@ CONFIGURE_OPTIONS       += --disable-cxx
 CONFIGURE_OPTIONS       += --enable-shared --disable-static
 # Don't build tiffgt utility which drags in a pile of OpenGL dependencies
 CONFIGURE_OPTIONS       += ax_cv_check_gl_libgl="no"
+CONFIGURE_OPTIONS       += CXXFLAGS='$(CXXFLAGS)'
+CONFIGURE_OPTIONS       += CFLAGS='$(CFLAGS)'
 
 # Tests need GNU version of diff to work correctly
 COMPONENT_TEST_ENV +=   PATH="$(GNUBIN):$(PATH)"

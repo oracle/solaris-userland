@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 # This code is built with gcc. See README.
 #
@@ -112,13 +112,6 @@ endif
 #	line 416: assertion 'source != NULL' failed
 # 
 CONFIGURE_OPTIONS +=	--without-dbus --without-gconf --without-gsettings
-
-# Starting with Emacs 27, the traditional dumped emacs, created with
-# dldump(), is no longer used. This allows us to build Emacs as
-# a Position Independent Executable (PIE), and it also means that ASLR
-# can now be used, and need not be disabled.
-CC_PIC_MODE =	$(CC_PIC_ENABLE)
-LD_Z_PIE_MODE =	$(LD_Z_PIE_ENABLE)
 
 ADIHEAP_MODE =	$(ADIHEAP_DISABLE)
 

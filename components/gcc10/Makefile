@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
 #
 export PARFAIT_BUILD=no
 BUILD_BITS= 64
@@ -51,6 +51,9 @@ CXXFLAGS=
 $(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
+
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 PYTHON_VERSION = 3.7
 
@@ -113,7 +116,7 @@ else
 COMPONENT_BUILD_TARGETS=bootstrap
 endif
 
-CONFIGURE_OPTIONS +=	BOOT_CFLAGS='-g -O2'
+CONFIGURE_OPTIONS +=	BOOT_CFLAGS='-g -O2 $(CC_PIC_ENABLE)'
 
 # This is the target and it must be last
 CONFIGURE_OPTIONS +=    $(GNU_ARCH)

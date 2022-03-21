@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 
 # parfait is a bit unhappy (24796622)
@@ -54,6 +54,9 @@ PYTHON_VERSIONS= 3.7
 TEST_TARGET = $(SKIP_TEST)
 
 include $(WS_MAKE_RULES)/common.mk
+
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # configure script is not at root of source tree.
 CONFIGURE_SCRIPT= $(SOURCE_DIR)/js/src/configure

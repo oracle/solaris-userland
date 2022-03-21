@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER=gcc
@@ -50,6 +50,10 @@ COMPONENT_BAID_POPPLER_DATA=	110157
 
 # Only cmake is currently supported to build libpoppler.
 BUILD_STYLE = cmake
+
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+
 
 TEST_TARGET= $(NO_TESTS)
 

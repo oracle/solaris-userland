@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # Must use gcc because of 21090206
@@ -46,6 +46,11 @@ COMPONENT_BAID_IMAP=	37002
 
 include $(WS_MAKE_RULES)/common.mk
 include $(PHP_TOP_DIR)/php.mk
+
+# The build would need some patching, minilua compilation fails as the correct
+# parameters are not passed
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 PKG_MACROS+= MAJOR_VERSION=$(MAJOR_VERSION)
 PKG_MACROS+= EXTENSIONS=no-debug-zts-20200930

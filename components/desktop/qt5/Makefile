@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS=64
 COMPILER=gcc
@@ -45,6 +45,9 @@ COMPONENT_BAID=		81183
 CONFIGURE_DEFAULT_DIRS=no
 
 include $(WS_MAKE_RULES)/common.mk
+
+C_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # X86: Optimize the instruction scheduling for Haswell (running on all x86-64 cpus).
 OPT_FLAGS.i386 = -mtune=haswell

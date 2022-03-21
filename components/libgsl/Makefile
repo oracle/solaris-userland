@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -36,7 +36,14 @@ COMPONENT_BAID=		41177
 
 TEST_TARGET=
 SYSTEM_TEST_TARGET=
+
+# This component is using static libraries .a internally and these are not
+# compatible with PIE building
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+
 include $(WS_MAKE_RULES)/gnu-component.mk
+
 
 # NOTE:
 # The libgsl package on Solaris is getting GSL CBLAS routines from

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -46,6 +46,10 @@ COMPONENT_BAID=		101836
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/common.mk
+
+# g-ir-scanner
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # Required for other components.
 CONFIGURE_OPTIONS.32 += -Dintrospection=disabled

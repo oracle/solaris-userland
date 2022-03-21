@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # There are a large number of macros in the GCB code written
@@ -70,6 +70,8 @@ COMPONENT_TEST_TRANSFORMS += \
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # GDB wants the GNU utilities
 PATH=/usr/gnu/bin:$(GCC_ROOT)/bin:/usr/bin:/usr/perl5/$(PERL_VERSION)/bin

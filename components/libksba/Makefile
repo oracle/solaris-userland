@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 # Prefer 32-bit as only "binary" delivered is a script with embedded paths.
 BUILD_BITS= 32_and_64
@@ -40,6 +40,10 @@ COMPONENT_ANITYA_ID=	1649
 COMPONENT_BAID=		35723
 
 include $(WS_MAKE_RULES)/common.mk
+
+# The compilation sometimes internally uses CC_FOR_BUILD which does not pass
+# our PIE flags. This is workaround for that
+COMPONENT_BUILD_ARGS += CC_FOR_BUILD='$(CC) $(CONFIGURE_CPPFLAGS) $(CC_PIC_ENABLE)'
 
 # Enable C99 mode + -Xc for its additional warnings.
 studio_C99MODE = -Xc $(studio_C99_ENABLE)

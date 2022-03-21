@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =	64
@@ -58,6 +58,9 @@ COMPONENT_BUILD_ENV += REPEAT_CMD_CLEANUP="gmake clean"
 include $(WS_MAKE_RULES)/common.mk
 
 $(SOURCE_DIR_crates)/.patched: PATCH_LEVEL=0
+
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # Everything expects GNU utilities, so make sure those are preferred.
 PATH =			$(COMPONENT_DIR)/epoll:/usr/gnu/bin:/usr/bin

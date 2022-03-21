@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../ofed-component-macros.mk
@@ -41,6 +41,9 @@ MAN3FILES =	ibv_alloc_shpd.3 \
 		ibv_share_pd.3 \
 		ibv_gid_reachable.3 \
 		ibv_register_sm_events.3
+
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 include $(WS_MAKE_RULES)/shared-targets.mk
 include $(WS_MAKE_RULES)/lint-libraries.mk

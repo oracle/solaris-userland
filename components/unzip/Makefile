@@ -43,6 +43,10 @@ TEST_TARGET= $(NO_TESTS)
 HUMAN_VERSION= $(COMPONENT_VERSION)
 include $(WS_MAKE_RULES)/common.mk
 
+# Would need patching the build system
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+
 # remove the unwanted file.
 COMPONENT_PREP_ACTION = $(RM) $(SOURCE_DIR)/crc_i386.S
 

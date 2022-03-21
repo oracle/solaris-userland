@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -42,6 +42,10 @@ COMPONENT_BAID=		40979
 BUILD_STYLE= justmake
 TEST_TARGET= $(NO_TESTS)
 include ../../make-rules/common.mk
+
+# The builds system would need patching in order to build with PIE
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # general
 CCARGS =	-DDEF_DAEMON_DIR=\\\"/usr/lib/postfix\\\"

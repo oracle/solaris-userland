@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 # When building with Studio, p7zip has many warnings about extra semicolons,
@@ -50,6 +50,10 @@ COMPONENT_BAID=		49096
 BUILD_STYLE= justmake
 INSTALL_TARGET=
 include $(WS_MAKE_RULES)/common.mk
+
+# The build system would have to be patched to compile PIE compatible binaries
+C_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # The .3 refers to version 16.02-3 to distinguish between community version
 # of p7zip and this package, which contains all known fixes. A similar approach

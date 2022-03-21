@@ -203,7 +203,8 @@ class TestUserlandPkglint(unittest.TestCase):
             f"'{self.protoarea}/usr/lib/aslr/disabled' does not have aslr enabled\n", stderr)
         self.assertIn("ERROR userland.action001.5        "
             f"'{self.protoarea}/usr/lib/aslr/noflag' is not tagged for aslr\n", stderr)
-
+        self.assertIn("ERROR userland.action001.PIE      "
+            f"'{self.protoarea}/usr/bin/no-pie' is not PIE compiled\n", stderr)
 
     @with_manifest("userland.action002_1.in")
     def test_action002_working_links(self, ret, stdout, stderr):
@@ -280,9 +281,9 @@ class TestUserlandPkglint(unittest.TestCase):
     def test_manifest001_missing_license(self, ret, stdout, stderr):
         """Packages with files missing license and ARC are reported."""
         self.assertIn("ERROR userland.manifest001.0      "
-            "missing license action\n", stderr)
+            "missing license action in pkg:/library/foobar@1.0.0", stderr)
         self.assertIn("ERROR userland.manifest001.0      "
-            "missing ARC data (org.opensolaris.arc-caseid)\n", stderr)
+            "missing ARC data (org.opensolaris.arc-caseid) in pkg:/library/foobar@1.0.0", stderr)
 
 
     @with_manifest("userland.manifest002_1.in")

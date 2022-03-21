@@ -39,6 +39,10 @@ COMPONENT_ANITYA_ID=	13122
 COMPONENT_BAID=		116233
 BUILD_STYLE=		meson
 
+# g-ir-scanner
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 # Assumes GNU msgfmt in PATH.

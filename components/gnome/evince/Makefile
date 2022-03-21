@@ -50,6 +50,11 @@ PATH=$(GNUBIN):$(USRBINDIR)
 COMPILER=gcc
 CXXFLAGS += -std=c++11
 
+# g-ir-scanner
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+
+
 CPPFLAGS +=	"-I$(USRINCDIR)/libxml2"
 LDFLAGS +=	$(CC_BITS) -lgmodule-2.0 -lm
 

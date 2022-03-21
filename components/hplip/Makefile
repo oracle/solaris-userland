@@ -54,6 +54,8 @@ CONFIGURE_OPTIONS +=	am_cv_python_pyexecdir="$(PYTHON_VENDOR_PACKAGES)"
 # bye, bye SANE backends
 CONFIGURE_OPTIONS +=	--disable-scan-build
 
+CONFIGURE_CPPFLAGS += $(CC_PIC_ENABLE)
+
 # Generate configuration scripts
 COMPONENT_PREP_ACTION = (cd $(@D) ; \
     libtoolize --force ; \

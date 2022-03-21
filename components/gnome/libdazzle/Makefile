@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -41,6 +41,9 @@ BUILD_STYLE=		meson
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CFLAGS += -Wstack-protector -fdata-sections -fstack-protector-all
+# g-ir-scanner
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # Version 3.38.0 requires following for GCC 11 build.
 CFLAGS += -Wno-error=incompatible-pointer-types

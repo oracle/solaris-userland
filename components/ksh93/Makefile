@@ -147,6 +147,9 @@ IPS_PKG_NAME= ksh93
 IPS_COMPONENT_VERSION= 93.21.1.20120801
 HUMAN_VERSION= 93u+ 2012-08-01
 
+# Does not work, will need more effort
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 BUILD_STYLE= attpackagemake
 include $(WS_MAKE_RULES)/common.mk

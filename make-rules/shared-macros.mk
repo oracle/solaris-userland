@@ -1156,7 +1156,7 @@ gcc_FIX_PATH ?= -ffile-prefix-map="$(COMPONENT_DIR)=."
 CC_PIC =		$($(COMPILER)_PIC)
 CC_PIC_ENABLE =		$(CC_PIC)
 CC_PIC_DISABLE =
-CC_PIC_MODE =		$(CC_PIC_DISABLE)
+CC_PIC_MODE ?=		$(CC_PIC_ENABLE)
 
 # Default GNU C compiler flags.  Add the required feature to your Makefile
 # with CFLAGS += $(FEATURE_MACRO) and add to the component build with
@@ -1219,6 +1219,7 @@ CXXFLAGS +=	$(CXXFLAGS.$(COMPILER))
 CXXFLAGS +=	$(CXXFLAGS.$(COMPILER).$(BITS))
 CXXFLAGS +=	$(CXXFLAGS.$(COMPILER).$(MACH))
 CXXFLAGS +=	$(CXXFLAGS.$(COMPILER).$(MACH).$(BITS))
+CXXFLAGS +=     $(CC_PIC_MODE)
 
 # Add mach-specific 'default' features
 CXXFLAGS +=	$(CXXFLAGS.$(MACH))
@@ -1267,7 +1268,7 @@ LD_B_DIRECT =		-Bdirect
 # to the component makefile, and ensure that it's built PIC (CC_PIC_ENABLE).
 LD_Z_PIE_ENABLE =	-ztype=pie
 LD_Z_PIE_DISABLE =
-LD_Z_PIE_MODE =		$(LD_Z_PIE_DISABLE)
+LD_Z_PIE_MODE ?=	$(LD_Z_PIE_ENABLE)
 
 # generic macro names for enabling/disabling security extensions
 # -z<extname> is deprecated, but supported, on S11.4 and later, in favor

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64
@@ -49,6 +49,10 @@ CFLAGS += -Wstack-protector -fdata-sections -fstack-protector-all
 
 # Version 1.0.2 requires following for GCC 11 build.
 CFLAGS += -Wno-error=incompatible-pointer-types
+
+# g-ir-scanner
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"

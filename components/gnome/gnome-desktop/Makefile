@@ -42,6 +42,10 @@ BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
+# g-ir-scanner
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+
 CONFIGURE_OPTIONS += -Dgnome-distributor=Oracle
 CONFIGURE_OPTIONS.32 += -Dintrospection=false
 CONFIGURE_OPTIONS += --libexecdir=$(USRLIB.$(BITS))

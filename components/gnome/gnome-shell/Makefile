@@ -47,6 +47,10 @@ endif
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
+# g-ir-scanner
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+
 CXXFLAGS += -std=c++11 -D__EXTENSIONS__
 
 PYTHON_VERSION= 3.7

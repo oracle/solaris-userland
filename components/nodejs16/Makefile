@@ -68,6 +68,9 @@ CONFIGURE_OPTIONS+=	--shared-zlib
 CONFIGURE_OPTIONS+=	--with-intl=system-icu
 CONFIGURE_OPTIONS+=	--shared-cares
 
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+
 # Read NPM_CONFIG_REGISTRY from local configuration file.
 $(call read-config,NPM_CONFIG_REGISTRY,https://registry.npmjs.org/)
 

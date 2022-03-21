@@ -23,6 +23,8 @@
 
 include ../../../make-rules/shared-macros.mk
 
+PIC_ENABLE = $(CC_PIC_ENABLE) $(LD_Z_PIE_ENABLE)
+
 source.c:
 	echo "int main(void){return 0;}" > $@
 
@@ -32,10 +34,13 @@ proto/.prepared: Makefile source.c
 	$(MKDIR) proto/usr/lib/pkglinttest
 	$(TOUCH) proto/usr/lib/pkglinttest/foo.txt
 
-	$(CC) source.c $(ASLR_ENABLE) -m32 -o proto/32bin
-	$(CC) source.c $(ASLR_ENABLE) -m64 -o proto/64bin
+	$(CC) source.c $(ASLR_ENABLE) $(PIC_ENABLE) -m32 -o proto/32bin
+	$(CC) source.c $(ASLR_ENABLE) $(PIC_ENABLE) -m64 -o proto/64bin
 
 	$(MKDIR) proto/usr/bin/sparcv7 proto/usr/bin/amd64
+
+	$(CC) source.c $(ASLR_ENABLE) -m64 -o proto/usr/bin/no-pie
+
 	$(CP) proto/32bin proto/usr/bin/sparcv7/32in32a
 	$(CP) proto/32bin proto/usr/bin/amd64/32in64a
 	$(CP) proto/32bin proto/usr/bin/sparcv7/32in32b
@@ -47,21 +52,21 @@ proto/.prepared: Makefile source.c
 	$(CP) proto/64bin proto/usr/bin/amd64/64in64b
 
 	$(MKDIR) proto/usr/lib/runpath
-	$(CC) source.c $(ASLR_ENABLE) -m32 -Wl,-rpath,/lib:/lib/python:/usr/lib:\$$ORIGIN/asdf -o proto/usr/lib/runpath/good32
-	$(CC) source.c $(ASLR_ENABLE) -m64 -Wl,-rpath,/usr/64:/lib/amd64:/lib/amd64-solaris2.11 -o proto/usr/lib/runpath/good64
-	$(CC) source.c $(ASLR_ENABLE) -m32 -Wl,-rpath,/wrong:/lib:/tmp -o proto/usr/lib/runpath/bad
+	$(CC) source.c $(ASLR_ENABLE) $(PIC_ENABLE) -m32 -Wl,-rpath,/lib:/lib/python:/usr/lib:\$$ORIGIN/asdf -o proto/usr/lib/runpath/good32
+	$(CC) source.c $(ASLR_ENABLE) $(PIC_ENABLE) -m64 -Wl,-rpath,/usr/64:/lib/amd64:/lib/amd64-solaris2.11 -o proto/usr/lib/runpath/good64
+	$(CC) source.c $(ASLR_ENABLE) $(PIC_ENABLE) -m32 -Wl,-rpath,/wrong:/lib:/tmp -o proto/usr/lib/runpath/bad
 
-	$(CC) source.c $(ASLR_ENABLE) -m32 -Wl,-rpath,/lib -o proto/usr/lib/runpath/32with32
-	$(CC) source.c $(ASLR_ENABLE) -m64 -Wl,-rpath,/lib -o proto/usr/lib/runpath/64with32
-	$(CC) source.c $(ASLR_ENABLE) -m32 -Wl,-rpath,/lib/amd64 -o proto/usr/lib/runpath/32with64
-	$(CC) source.c $(ASLR_ENABLE) -m64 -Wl,-rpath,/lib/amd64 -o proto/usr/lib/runpath/64with64
+	$(CC) source.c $(ASLR_ENABLE) $(PIC_ENABLE) -m32 -Wl,-rpath,/lib -o proto/usr/lib/runpath/32with32
+	$(CC) source.c $(ASLR_ENABLE) $(PIC_ENABLE) -m64 -Wl,-rpath,/lib -o proto/usr/lib/runpath/64with32
+	$(CC) source.c $(ASLR_ENABLE) $(PIC_ENABLE) -m32 -Wl,-rpath,/lib/amd64 -o proto/usr/lib/runpath/32with64
+	$(CC) source.c $(ASLR_ENABLE) $(PIC_ENABLE) -m64 -Wl,-rpath,/lib/amd64 -o proto/usr/lib/runpath/64with64
 
-	$(CC) source.c $(ASLR_ENABLE) -m32 -Wl,-rpath,/usr/openwin/lib -o proto/usr/lib/runpath/linka
-	$(CC) source.c $(ASLR_ENABLE) -m32 -Wl,-rpath,/usr/openwin/bin -o proto/usr/lib/runpath/linkb
-	$(CC) source.c $(ASLR_ENABLE) -m32 -Wl,-rpath,/usr/X11/bin -o proto/usr/lib/runpath/linkc
+	$(CC) source.c $(ASLR_ENABLE) $(PIC_ENABLE) -m32 -Wl,-rpath,/usr/openwin/lib -o proto/usr/lib/runpath/linka
+	$(CC) source.c $(ASLR_ENABLE) $(PIC_ENABLE) -m32 -Wl,-rpath,/usr/openwin/bin -o proto/usr/lib/runpath/linkb
+	$(CC) source.c $(ASLR_ENABLE) $(PIC_ENABLE) -m32 -Wl,-rpath,/usr/X11/bin -o proto/usr/lib/runpath/linkc
 
 	$(MKDIR) proto/usr/lib/aslr
-	$(CC) source.c $(ASLR_ENABLE) -o proto/usr/lib/aslr/enabled
+	$(CC) source.c $(ASLR_ENABLE) $(PIC_ENABLE) -o proto/usr/lib/aslr/enabled
 	$(CC) source.c $(ASLR_DISABLE) -o proto/usr/lib/aslr/disabled
 	$(CC) source.c -o proto/usr/lib/aslr/noflag
 
