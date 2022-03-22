@@ -20,27 +20,28 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		check
-COMPONENT_VERSION=	0.11.0
+COMPONENT_VERSION=	0.15.2
 COMPONENT_PROJECT_URL=	https://libcheck.github.io/check
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:24f7a48aae6b74755bcbe964ce8bc7240f6ced2141f8d9cf480bc3b3de0d5616
+    sha256:a8de4e0bacfb4d76dd1c618ded263523b53b85d92a146d8835eb1a52932fa20a
 COMPONENT_ARCHIVE_URL=	https://github.com/libcheck/$(COMPONENT_NAME)/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	7593
 
-COMPONENT_BAID=		38271
+COMPONENT_BAID=		118784
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_32_and_64)
 
-# Disable tests since they are crashing.
-$(SKIP_TEST_AT_TOP_LEVEL)
-
 include $(WS_MAKE_RULES)/common.mk
+
+# Check tests do not like cloney, so a simple copy is used instead.
+CLONEY = echo
+COMPONENT_PRE_BUILD_ACTION = $(CP) -rp $(SOURCE_DIR)/. $(@D)
 
 # Several tests fail when the Studio compiler is used.
 COMPILER =      gcc

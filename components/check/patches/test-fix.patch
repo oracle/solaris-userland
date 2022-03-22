@@ -1,0 +1,24 @@
+
+Paths to a tested files appears to be in same directory as the test suite.
+This is thanks to disabled CLONEY, so the patch does not have to be changed
+after every future update.
+
+--- a/tests/test_vars.in.original
++++ b/tests/test_vars.in
+@@ -6,15 +6,6 @@ export EXEEXT
+ HAVE_FORK=@HAVE_FORK@
+ export HAVE_FORK
+
+-# path of the tests directory
+-if [ x"@srcdir@" != x"." ]; then
+-    if [ -z "@IS_MSVC@" -o "@IS_MSVC@" != "1" ]; then
+-       SRCDIR="@srcdir@/"
+-    else
+-       SRCDIR="@srcdir@\\"
+-    fi
+-else
+-    SRCDIR=""
+-fi
++SRCDIR=""
+
+ export SRCDIR
