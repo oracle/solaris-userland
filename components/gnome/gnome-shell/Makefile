@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-shell
-COMPONENT_VERSION=	41.3
+COMPONENT_VERSION=	41.5
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/GnomeShell
 COMPONENT_ARCHIVE_HASH= \
-	sha256:1e3dfa2a0be49454182b4ace77f11d10d3f5b988ef0fcb732b7313573949ded1
+	sha256:efbe8d1179983d5c2e68b1035f073fefe01b15fbdaf68f48adff96fa355b0bc5
 COMPONENT_BUGDB=        gnome/gnome-shell
 COMPONENT_ANITYA_ID=	5409
 
-COMPONENT_BAID=		115327
+COMPONENT_BAID=		118902
 BUILD_STYLE=            meson
 
 # Workaround the mozjs issue described in 24935318

@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mutter
-COMPONENT_VERSION=	41.3
+COMPONENT_VERSION=	41.5
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/Mutter
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:719c5d1060eb605c1ba643b486fb57b1a3c7197e7df83bd6c3366fc4b68477e5
+	sha256:2233e52528451620be8578ea1dc7ff30d7eb6701eb316e9d17c219df57a08ea7
 COMPONENT_BUGDB=        gnome/window-manager
 COMPONENT_ANITYA_ID=	13154
 
-COMPONENT_BAID=		115300
+COMPONENT_BAID=		118903
 BUILD_STYLE=            meson
 
 TEST_TARGET = $(NO_TESTS)

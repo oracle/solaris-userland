@@ -28,14 +28,14 @@ COMPILER=               gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-shell-extensions
-COMPONENT_VERSION=	41.1
+COMPONENT_VERSION=	41.2
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Projects/GnomeShell/Extensions
 COMPONENT_ARCHIVE_HASH= \
-	sha256:d0e6f2273f08d52d925fc2bb66b47b28e5ef50d1b8a14020877c662423d507d3
+	sha256:ad9ba82f4cbd04726973b5e87afad18afdaa323860a0af3e7240f3a74d222f19
 COMPONENT_BUGDB=	gnome/gnome-shell
 COMPONENT_ANITYA_ID=	1195
 
-COMPONENT_BAID=		115340
+COMPONENT_BAID=		118901
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
