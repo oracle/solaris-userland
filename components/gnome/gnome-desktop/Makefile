@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-desktop
-COMPONENT_VERSION=	41.0
+COMPONENT_VERSION=	41.5
 COMPONENT_PROJECT_URL= 	https://developer.gnome.org/gnome-desktop/
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:69cb1d3d9a10700eb66348ef1c0e66a855fc5a97ae62902df97a499da11562d2
+	sha256:a85aa82f7fe2b18640475ba547fcf0314e6007e19bc58f6e74cb926021345c0c
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	13127
 
-COMPONENT_BAID=		110763
+COMPONENT_BAID=		118906
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
