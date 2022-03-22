@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -30,21 +30,21 @@ COMPONENT_NAME =	openssl
 # When upgrading OpenSSL, please, DON'T FORGET TO TEST WANBOOT too.
 # For more information about wanboot-openssl testing, please refer to
 # ../README.
-COMPONENT_VERSION =	1.0.2za
+COMPONENT_VERSION =	1.0.2zd
 # Version for IPS. It is easier to do it manually than convert the letter to a
 # number while taking into account that there might be no letter at all.
-IPS_COMPONENT_VERSION = 1.0.2.26
+IPS_COMPONENT_VERSION = 1.0.2.29
 COMPONENT_PROJECT_URL=	https://www.openssl.org/
 COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:86ec5d2ecb53839e9ec999db7f8715d0eb7e534d8a1d8688ef25280fbeee2ff8
+    sha256:111bab600856953236888042d75ab3aca1b9bf7001993477a88ba1ef21e31460
 COMPONENT_ARCHIVE_URL =	$(COMPONENT_PROJECT_URL)source/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/openssl
 COMPONENT_ANITYA_ID=	17519
 
-COMPONENT_BAID=		106876
+COMPONENT_BAID=		118960
 
 # Clone the patch files to the patches-all dir.
 # COPY_COMMON_FILES is there so that rsync is called as soon as

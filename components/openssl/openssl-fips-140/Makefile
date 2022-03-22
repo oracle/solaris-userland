@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -35,20 +35,20 @@ COMPONENT_NAME =	openssl-fips-140
 # is the FIPS module version. The COMPONENT_VERSION changes with the core
 # OpenSSL version, but the IPS_COMPONENT_VERSION is purposely only to change if
 # the FIPS module version changes.
-COMPONENT_VERSION =	1.0.2za
+COMPONENT_VERSION =	1.0.2zd
 IPS_COMPONENT_VERSION = 2.0.15
 COMPONENT_PROJECT_URL=	https://www.openssl.org/
 COMPONENT_SRC_NAME =	openssl
 COMPONENT_SRC =		$(COMPONENT_SRC_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:86ec5d2ecb53839e9ec999db7f8715d0eb7e534d8a1d8688ef25280fbeee2ff8
+    sha256:111bab600856953236888042d75ab3aca1b9bf7001993477a88ba1ef21e31460
 COMPONENT_ARCHIVE_URL =	$(COMPONENT_PROJECT_URL)source/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/openssl
 COMPONENT_ANITYA_ID=    2566
 
-COMPONENT_BAID=		106876
+COMPONENT_BAID=		118960
 
 # Clone the patch files to the patches-all dir.
 # COPY_COMMON_FILES is there so that rsync is called as soon as
