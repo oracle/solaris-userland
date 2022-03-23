@@ -1,0 +1,19 @@
+OpenSSL RNG before 1.1.1d is not fork-safe (and cannot be replaced with a
+different one in the FIPS mode), which is a known thing, and there is no
+need to emit warnings about that.
+
+--- cryptography-3.1.1/src/cryptography/hazmat/backends/openssl/backend.py
++++ cryptography-3.1.1/src/cryptography/hazmat/backends/openssl/backend.py
+@@ -230,10 +230,8 @@ class Backend(object):
+         self._register_x509_ext_parsers()
+         self._register_x509_encoders()
+         if self._fips_enabled and self._lib.CRYPTOGRAPHY_NEEDS_OSRANDOM_ENGINE:
+-            warnings.warn(
+-                "OpenSSL FIPS mode is enabled. Can't enable DRBG fork safety.",
+-                UserWarning,
+-            )
++            # This is a known thing and this warning is just breaking things
++            pass
+         else:
+             self.activate_osrandom_engine()
+         self._dh_types = [self._lib.EVP_PKEY_DH]
