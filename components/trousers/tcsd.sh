@@ -21,10 +21,29 @@
 #
 
 #
-# Copyright (c) 2008, 2016, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2008, 2022, Oracle and/or its affiliates.
 #
 
 . /lib/svc/share/smf_include.sh
+
+SYSTEM_DATA=/var/tpm/system/system.data
+SYSTEM_DATA_AUTH="${SYSTEM_DATA}.auth"
+
+# Fixing packaging issue when system.data is a symlink to system.data.auth which
+# causes that the template is overwritten with any updates to system.data. To
+# correct this state we need to remove the symlink (via pkg update) replace it
+# with real file containing the user data (script here) and then fix the
+# template (via pkg fix) which might be already modified.
+function check_and_fix_templ {
+	hash_orig="afa51c9ae39804d25703596f54856c0f2af70551a3dacfe9e79b552bfa2267c0"
+	hash=$( digest -asha512_t -t256 $SYSTEM_DATA_AUTH )
+
+	if [ $hash_orig != $hash ]; then
+		echo "fixing pkg:/library/security/trousers"
+		echo "system.data.auth hash = $hash"
+		pkg fix pkg:/library/security/trousers
+	fi
+}
 
 # SMF_FMRI is the name of the target service. This allows multiple instances 
 # to use the same script.
@@ -39,6 +58,21 @@ case "$1" in
 	if [ ! -r "/dev/tpm" ]; then
 		smf_method_exit $SMF_EXIT_TEMP_DISABLE no_supported_hardware \
 			"No TPM device /dev/tpm found"
+	fi
+
+	# check if system.data is symlink which is incorrect
+	if [ -L "$SYSTEM_DATA" ]; then
+		echo "Error: The $SYSTEM_DATA is symlink, it requires" \
+		    "manual intervention."
+		exit $SMF_EXIT_ERR_FATAL
+	fi
+
+	# is it first run, then create configuration
+	if [ ! -f "$SYSTEM_DATA" ]; then
+		echo "File $SYSTEM_DATA does not exist, creating default."
+		cp $SYSTEM_DATA_AUTH $SYSTEM_DATA
+		chmod 600 $SYSTEM_DATA
+		check_and_fix_templ
 	fi
 
 	echo /usr/lib/tcsd 
