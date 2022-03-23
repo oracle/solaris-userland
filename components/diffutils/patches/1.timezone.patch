@@ -1,0 +1,121 @@
+From 8318c748a9aae3d343f10ddb9f4018c85618a978 Mon Sep 17 00:00:00 2001
+From: Paul Eggert <eggert@cs.ucla.edu>
+Date: Fri, 15 Oct 2021 18:53:55 -0700
+Subject: [PATCH] diff: fix timezone bug on Solaris
+
+Problem reported by Vladimir Marek (bug#51228).
+* NEWS: Mention this.
+* src/context.c (print_context_label): Pass localtz to nstrftime,
+instead of always passing 0.
+* src/diff.c (main) [!HAVE_TM_GMTOFF]:
+Initialize localtz if time_format uses %z.
+* src/diff.h (localtz): New decl.
+* tests/Makefile.am (TESTS): Add timezone.
+* tests/timezone: New test.
+---
+ NEWS              |  6 ++++++
+ src/context.c     |  2 +-
+ src/diff.c        |  3 +++
+ src/diff.h        |  7 +++++++
+ tests/Makefile.am |  1 +
+ tests/timezone    | 14 ++++++++++++++
+ 6 files changed, 32 insertions(+), 1 deletion(-)
+ create mode 100755 tests/timezone
+
+diff --git a/NEWS b/NEWS
+index 3de0810..105a7df 100644
+--- a/NEWS
++++ b/NEWS
+@@ -2,6 +2,12 @@ GNU diffutils NEWS                                    -*- outline -*-
+ 
+ * Noteworthy changes in release ?.? (????-??-??) [?]
+ 
++** Bug fixes
++
++  diff -c and -u no longer output incorrect timezones in headers
++  on platforms like Solaris where struct tm lacks tm_gmtoff.
++  [bug#51228 introduced in 3.4]
++
+ 
+ * Noteworthy changes in release 3.8 (2021-08-01) [stable]
+ 
+diff --git a/src/context.c b/src/context.c
+index b3cfa7d..adcfdb3 100644
+--- a/src/context.c
++++ b/src/context.c
+@@ -52,7 +52,7 @@ print_context_label (char const *mark,
+                     INT_STRLEN_BOUND (time_t) + 11)];
+       struct tm const *tm = localtime (&inf->stat.st_mtime);
+       int nsec = get_stat_mtime_ns (&inf->stat);
+-      if (! (tm && nstrftime (buf, sizeof buf, time_format, tm, 0, nsec)))
++      if (! (tm && nstrftime (buf, sizeof buf, time_format, tm, localtz, nsec)))
+         {
+           verify (TYPE_IS_INTEGER (time_t));
+           if (LONG_MIN <= TYPE_MINIMUM (time_t)
+diff --git a/src/diff.c b/src/diff.c
+index fedc7df..0961afb 100644
+--- a/src/diff.c
++++ b/src/diff.c
+@@ -728,6 +728,9 @@ main (int argc, char **argv)
+       time_format = "%Y-%m-%d %H:%M:%S.%N %z";
+ #else
+       time_format = "%Y-%m-%d %H:%M:%S %z";
++#endif
++#if !HAVE_TM_GMTOFF
++      localtz = tzalloc (getenv ("TZ"));
+ #endif
+     }
+   else
+diff --git a/src/diff.h b/src/diff.h
+index d65c1da..34caa37 100644
+--- a/src/diff.h
++++ b/src/diff.h
+@@ -155,6 +155,13 @@ XTERN bool ignore_file_name_case;
+    (--no-dereference).  */
+ XTERN bool no_dereference_symlinks;
+ 
++/* Local timezone for 'c' output headers, if needed.  */
++#if HAVE_TM_GMTOFF
++# define localtz 0 /* Placeholder since localtz is never needed.  */
++#else
++XTERN timezone_t localtz;
++#endif
++
+ /* File labels for '-c' output headers (--label).  */
+ XTERN char *file_label[2];
+ 
+diff --git a/tests/Makefile.am b/tests/Makefile.am
+index 83a7c9d..d98df82 100644
+--- a/tests/Makefile.am
++++ b/tests/Makefile.am
+@@ -22,6 +22,7 @@ TESTS = \
+   strcoll-0-names \
+   filename-quoting \
+   strip-trailing-cr \
++  timezone \
+   colors
+ 
+ XFAIL_TESTS = large-subopt
+diff --git a/tests/timezone b/tests/timezone
+new file mode 100755
+index 0000000..52b9e18
+--- /dev/null
++++ b/tests/timezone
+@@ -0,0 +1,14 @@
++#!/bin/sh
++# In diff 3.4 through 3.8, this would output the wrong timezone on Solaris.
++
++. "${srcdir=.}/init.sh"; path_prepend_ ../src
++
++fail=0
++
++echo a >a || fail=1
++case $(LC_ALL=C TZ=EST5 diff -u /dev/null a) in
++  *' -0500'*) ;;
++  *) fail=1 ;;
++esac
++
++Exit $fail
+-- 
+2.30.2
+

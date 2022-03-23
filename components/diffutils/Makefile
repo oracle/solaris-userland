@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		diffutils
-COMPONENT_VERSION=	3.6
+COMPONENT_VERSION=	3.8
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d621e8bdd4b573918c8145f7ae61817d1be9deb4c8d2328a65cea8e11d783bd6
+    sha256:a6bdd7d1b31266d11c4f4de6c1b748d4607ab0231af5188fc2533d0ae2438fec
 COMPONENT_BUGDB=	utility/gnu-diffutils
 COMPONENT_ANITYA_ID=	436
 
-COMPONENT_BAID=		40351
+COMPONENT_BAID=		110266
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 
