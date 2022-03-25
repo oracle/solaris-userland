@@ -30,7 +30,7 @@ $(BUILD_DIR)/%/.built:	$(SOURCE_DIR)/.prep $(BUILD_DIR)/config-%/$(CFG)
 	$(RM) -r $(@D) ; $(MKDIR) $(@D)
 	$(COMPONENT_PRE_BUILD_ACTION)
 	(cd $(SOURCE_DIR) ; $(ENV) HOME=$(BUILD_DIR)/config-$* $(COMPONENT_BUILD_ENV) \
-		$(PYTHON.$(BITS)) ./setup.py $(COMPONENT_SETUP_ARGS) build)
+		$(PYTHON.$(BITS)) -m build -nw -o $(BUILD_DIR)/$*/dist)
 	$(COMPONENT_POST_BUILD_ACTION)
 ifeq   ($(strip $(PARFAIT_BUILD)),yes)
 	-$(PARFAIT) -e all -W --baseline-out=$(@D)/parfait.baseline -z $(SOURCE_DIR) -o $(@D)/parfait.report $(@D)
@@ -40,8 +40,6 @@ endif
 
 COMPONENT_INSTALL_ARGS +=	--root $(PROTO_DIR)
 COMPONENT_INSTALL_ARGS +=	--install-lib=$(PYTHON_LIB)
-COMPONENT_INSTALL_ARGS +=	--install-purelib=$(PYTHON_LIB)
-COMPONENT_INSTALL_ARGS +=	--install-platlib=$(PYTHON_LIB)
 COMPONENT_INSTALL_ARGS +=	--install-data=$(PYTHON_DATA)
 COMPONENT_INSTALL_ARGS +=	--force
 
@@ -49,7 +47,20 @@ COMPONENT_INSTALL_ARGS +=	--force
 $(BUILD_DIR)/%/.installed:	$(BUILD_DIR)/%/.built $(BUILD_DIR)/config-%/$(CFG)
 	$(COMPONENT_PRE_INSTALL_ACTION)
 	(cd $(SOURCE_DIR) ; $(ENV) HOME=$(BUILD_DIR)/config-$* $(COMPONENT_INSTALL_ENV) \
-		$(PYTHON.$(BITS)) ./setup.py $(COMPONENT_SETUP_ARGS) install \
-		$(COMPONENT_INSTALL_ARGS))
+		$(PYTHON.$(BITS)) $(WS_TOOLS)/pyinstaller $(COMPONENT_INSTALL_ARGS) $(BUILD_DIR)/$*/dist)
 	$(COMPONENT_POST_INSTALL_ACTION)
 	$(TOUCH) $@
+
+ifneq ($(findstring 2.7, $(PYTHON_VERSIONS)),)
+$(error pybuild cannot be used with Python 2.7)
+endif
+ifneq ($(findstring 3.7, $(PYTHON_VERSIONS)),)
+REQUIRED_PACKAGES += library/python/build-37
+REQUIRED_PACKAGES += library/python/installer-37
+REQUIRED_PACKAGES += library/python/wheel-37
+endif
+ifneq ($(findstring 3.9, $(PYTHON_VERSIONS)),)
+REQUIRED_PACKAGES += library/python/build-39
+REQUIRED_PACKAGES += library/python/installer-39
+REQUIRED_PACKAGES += library/python/wheel-39
+endif

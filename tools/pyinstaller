@@ -1,0 +1,114 @@
+#!/usr/bin/python3.9
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2022, Oracle and/or its affiliates.
+#
+
+#
+# pyinstaller - wheel installer
+#
+# A simple program used to install python wheels into the prototype area
+# extending the installer package with our specific needs like the inclusion
+# of additional metadata (INSTALLER) and the --force argument to mimic
+# 'setup.py install' functionality.
+#
+
+import argparse
+import os
+import sys
+import sysconfig
+
+from pathlib import PurePosixPath
+
+from installer import install
+from installer.destinations import SchemeDictionaryDestination
+from installer.sources import WheelFile
+
+from installer.records import RecordEntry
+from installer.utils import Scheme
+
+class UserlandDestination(SchemeDictionaryDestination):
+
+    def __init__(self, *args, force=False, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.force = force
+
+    def write_to_fs(self, scheme: Scheme, path: str, *args, **kwargs) -> RecordEntry:
+        # handle additional --force argument
+        target_path = self._path_with_destdir(scheme, path)
+        if os.path.exists(target_path) and self.force:
+            os.remove(target_path)
+        # call standard write_to_fs after that
+        return super().write_to_fs(scheme, path, *args, **kwargs)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    req = parser.add_argument_group("required arguments")
+    req.add_argument("--root", type=PurePosixPath, required=True)
+    parser.add_argument("--install-lib", type=PurePosixPath)
+    parser.add_argument("--install-data", type=PurePosixPath)
+    parser.add_argument("--force", action='store_true')
+    parser.add_argument("whldir")
+
+    args = parser.parse_args()
+
+    scheme_dict = sysconfig.get_paths()
+    if args.install_lib:
+        # no need to split those in two arguments
+        scheme_dict["platlib"] = args.install_lib
+        scheme_dict["purelib"] = args.install_lib
+    if args.install_data:
+        scheme_dict["data"] = args.install_data
+
+    # Handler for installation directories and writing into them.
+    destination = UserlandDestination(
+        scheme_dict=scheme_dict,
+        interpreter=sys.executable,
+        script_kind="posix",
+        bytecode_optimization_levels=(0,),
+        destdir=args.root,
+        force=args.force,
+    )
+
+    # we assume there is just a single .whl file in that directory
+    for file in os.listdir(args.whldir):
+        if not file.endswith(".whl"):
+            continue
+
+        fullpath = os.path.join(args.whldir, file)
+        print(f"Installing {fullpath}")
+        with WheelFile.open(fullpath) as source:
+            install(
+                source=source,
+                destination=destination,
+                additional_metadata={
+                    # Make pip aware of the fact that this package
+                    # was redistributed and installed by pkg.
+                    "INSTALLER": b"pkg",
+                },
+            )
+
+
+if __name__ == "__main__":
+    main()
