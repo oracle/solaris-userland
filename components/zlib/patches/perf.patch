@@ -1,88 +1,9 @@
 Patch origin: in-house
-Patch status: inffast.c part: accepted, will be in next version
 Patch status: deflate.c part: Solaris-specific; not suitable for upstream
 
-https://github.com/madler/zlib/commit/60a5ecc62b18d1e2391993b1fcfc10e100720642
-
---- zlib-1.2.8/inffast.c	2013-03-24 22:47:59.000000000 -0700
-+++ zlib-1.2.8/inffast.c	2014-02-28 01:57:57.075708259 -0800
-@@ -68,7 +68,7 @@
-     code const FAR *dcode;      /* local strm->distcode */
-     unsigned lmask;             /* mask for first level of length codes */
-     unsigned dmask;             /* mask for first level of distance codes */
--    code here;                  /* retrieved table entry */
-+    code *here;                 /* retrieved table entry */
-     unsigned op;                /* code bits, operation, extra bits, or */
-                                 /*  window position, window bytes to copy */
-     unsigned len;               /* match length, unused bytes */
-@@ -105,20 +105,20 @@
-             hold += (unsigned long)(*in++) << bits;
-             bits += 8;
-         }
--        here = lcode[hold & lmask];
-+        here = (code *)(&(lcode[hold & lmask]));
-       dolen:
--        op = (unsigned)(here.bits);
-+        op = (unsigned)(here->bits);
-         hold >>= op;
-         bits -= op;
--        op = (unsigned)(here.op);
-+        op = (unsigned)(here->op);
-         if (op == 0) {                          /* literal */
--            Tracevv((stderr, here.val >= 0x20 && here.val < 0x7f ?
-+            Tracevv((stderr, here->val >= 0x20 && here->val < 0x7f ?
-                     "inflate:         literal '%c'\n" :
--                    "inflate:         literal 0x%02x\n", here.val));
--            *out++ = (unsigned char)(here.val);
-+                    "inflate:         literal 0x%02x\n", here->val));
-+            *out++ = (unsigned char)(here->val);
-         }
-         else if (op & 16) {                     /* length base */
--            len = (unsigned)(here.val);
-+            len = (unsigned)(here->val);
-             op &= 15;                           /* number of extra bits */
-             if (op) {
-                 if (bits < op) {
-@@ -136,14 +136,14 @@
-                 hold += (unsigned long)(*in++) << bits;
-                 bits += 8;
-             }
--            here = dcode[hold & dmask];
-+            here = (code *)(&(dcode[hold & dmask]));
-           dodist:
--            op = (unsigned)(here.bits);
-+            op = (unsigned)(here->bits);
-             hold >>= op;
-             bits -= op;
--            op = (unsigned)(here.op);
-+            op = (unsigned)(here->op);
-             if (op & 16) {                      /* distance base */
--                dist = (unsigned)(here.val);
-+                dist = (unsigned)(here->val);
-                 op &= 15;                       /* number of extra bits */
-                 if (bits < op) {
-                     hold += (unsigned long)(*in++) << bits;
-@@ -262,7 +262,7 @@
-                 }
-             }
-             else if ((op & 64) == 0) {          /* 2nd level distance code */
--                here = dcode[here.val + (hold & ((1U << op) - 1))];
-+                here = (code *)(&(dcode[here->val + (hold & ((1U << op) - 1))]));
-                 goto dodist;
-             }
-             else {
-@@ -272,7 +272,7 @@
-             }
-         }
-         else if ((op & 64) == 0) {              /* 2nd level length code */
--            here = lcode[here.val + (hold & ((1U << op) - 1))];
-+            here = (code *)(&(lcode[here->val + (hold & ((1U << op) - 1))]));
-             goto dolen;
-         }
-         else if (op & 32) {                     /* end-of-block */
---- zlib-1.2.8/deflate.c	2013-04-28 15:57:10.000000000 -0700
-+++ zlib-1.2.8/deflate.c	2014-02-28 02:32:02.517988885 -0800
-@@ -60,6 +60,7 @@
+--- zlib-1.2.12/deflate.c
++++ zlib-1.2.12/deflate.c
+@@ -60,6 +60,7 @@ include such an acknowledgment, I would
    copyright string in the executable of your product.
   */
  
@@ -90,7 +11,7 @@ https://github.com/madler/zlib/commit/60a5ecc62b18d1e2391993b1fcfc10e100720642
  /* ===========================================================================
   *  Function prototypes.
   */
-@@ -91,13 +92,18 @@
+@@ -92,13 +93,18 @@ #  pragma message("Assembler code may ha
        void match_init OF((void)); /* asm code initialization */
        uInt longest_match  OF((deflate_state *s, IPos cur_match));
  #else
@@ -109,7 +30,7 @@ https://github.com/madler/zlib/commit/60a5ecc62b18d1e2391993b1fcfc10e100720642
  
  /* ===========================================================================
   * Local data
-@@ -106,6 +112,7 @@
+@@ -107,6 +113,7 @@ */
  #define NIL 0
  /* Tail of hash chains */
  
@@ -117,7 +38,7 @@ https://github.com/madler/zlib/commit/60a5ecc62b18d1e2391993b1fcfc10e100720642
  #ifndef TOO_FAR
  #  define TOO_FAR 4096
  #endif
-@@ -1217,7 +1224,9 @@
+@@ -1258,7 +1265,9 @@ match_init(); /* initialize the asm code
  #endif
  #endif
  }
@@ -127,7 +48,7 @@ https://github.com/madler/zlib/commit/60a5ecc62b18d1e2391993b1fcfc10e100720642
  #ifndef FASTEST
  /* ===========================================================================
   * Set match_start to the longest match starting at the given string and
-@@ -1232,7 +1241,11 @@
+@@ -1273,7 +1282,11 @@ #ifndef ASMV
  /* For 80x86 and 680x0, an optimized version will be provided in match.asm or
   * match.S. The code will be functionally equivalent.
   */
@@ -139,7 +60,7 @@ https://github.com/madler/zlib/commit/60a5ecc62b18d1e2391993b1fcfc10e100720642
      deflate_state *s;
      IPos cur_match;                             /* current match */
  {
-@@ -1375,6 +1388,7 @@
+@@ -1416,6 +1429,7 @@ if ((uInt)best_len <= s->lookahead) retu
      return s->lookahead;
  }
  #endif /* ASMV */
@@ -147,7 +68,7 @@ https://github.com/madler/zlib/commit/60a5ecc62b18d1e2391993b1fcfc10e100720642
  
  #else /* FASTEST */
  
-@@ -1436,6 +1450,7 @@
+@@ -1477,6 +1491,7 @@ }
  
  #endif /* FASTEST */
  
@@ -155,7 +76,7 @@ https://github.com/madler/zlib/commit/60a5ecc62b18d1e2391993b1fcfc10e100720642
  #ifdef ZLIB_DEBUG
  
  #define EQUAL 0
-@@ -2154,3 +2169,4 @@
+@@ -2209,3 +2224,4 @@ if (s->sym_next)
          FLUSH_BLOCK(s, 0);
      return block_done;
  }

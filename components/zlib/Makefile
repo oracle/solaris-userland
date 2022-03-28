@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		zlib
-COMPONENT_VERSION=	1.2.11
+COMPONENT_VERSION=	1.2.12
+COMPONENT_BAID=		119304
 COMPONENT_PROJECT_URL=	https://www.zlib.net/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1
-COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/project/libpng/zlib/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+    sha256:91844808532e5ce316b3c010929493c0244f3d37593afd6de04f71821d5136d9
+COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/libz
 COMPONENT_ANITYA_ID=	5303
 
-COMPONENT_BAID=		37637
 
 # Omit directory options that cause zlib's CMake-based build to fail.
 CONFIGURE_DEFAULT_DIRS=no
@@ -59,7 +59,7 @@ $(BUILD_DIR)/%/.built: CAP_OBJS=$(CAP_OBJS_$*)
 # Zlib won't build without cloning. We need also to get rid of default
 # Makefile and get our own version of zconf.h to avoid interactions
 # between 32 and 64 bit builds.
-# Also, the x86 architecture does not require alignment for multi-byte
+# Also, the x86 architecture does not require alignment for multibyte
 # loads, so we can define UNALIGNED_OK for x86
 ifeq ($(MACH), i386)
 COMPONENT_PRE_CONFIGURE_ACTION = ( \
