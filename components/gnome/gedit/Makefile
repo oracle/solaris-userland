@@ -54,7 +54,9 @@ COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
 # Compile all python sources to .pyc files
 COMPONENT_POST_INSTALL_ACTION += \
-        $(PYTHON) -m compileall $(PROTO_DIR)/usr/lib/python3.7/site-packages/gi/overrides;
+        $(MV) $(PROTO_DIR)/usr/lib/python3.7/site-packages \
+              $(PROTO_DIR)/usr/lib/python3.7/vendor-packages; \
+        $(PYTHON) -m compileall $(PROTO_DIR)/usr/lib/python3.7/vendor-packages/gi/overrides;
 PLUGINS_DIR = snippets; quickopen; externaltools
 COMPONENT_POST_INSTALL_ACTION += $(foreach i,$(PLUGINS_DIR),\
         $(PYTHON) -m compileall $(PROTO_DIR)$(USRLIBDIR64)/gedit/plugins/$(i));
