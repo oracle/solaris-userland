@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
 #
 
 # Prefer 32-bit over 64-bit as apr has its own custom package layout.
@@ -58,6 +58,11 @@ CONFIGURE_OPTIONS +=	--enable-other-child
 CONFIGURE_OPTIONS +=	--enable-nonportable-atomics
 CONFIGURE_OPTIONS +=	--enable-shared
 CONFIGURE_OPTIONS +=	--disable-static
+# Don't use compiler builtin atomic operations (available since Studio 12.6 on x86)
+# which are causing problems.
+ifneq ($(MACH), sparc)
+CONFIGURE_OPTIONS +=	ap_cv_atomic_builtins=no
+endif
 CONFIGURE_OPTIONS +=	LTFLAGS="--tag=CC --silent"
 CONFIGURE_OPTIONS.32 +=	--enable-layout=Solaris
 CONFIGURE_OPTIONS.64 +=	--enable-layout=Solaris-$(MACH64)
