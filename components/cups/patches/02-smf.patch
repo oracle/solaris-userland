@@ -4,8 +4,8 @@ to support anything non-Apple.
 It might worth to ask to remove the smf(5) support from
 cups upstream entirely then keep it on by own.
 
---- a/scheduler/cups.xml.in	Thu Jul  8 22:54:14 2010
-+++ b/scheduler/cups.xml.in	2018-10-18 16:19:20.394816426 +0000
+--- a/scheduler/cups.xml.in	2020-04-27 20:04:29.000000000 +0200
++++ b/scheduler/cups.xml.in	2022-04-04 17:26:22.648319116 +0200
 @@ -41,7 +41,6 @@
          <service_fmri value='svc:/network/loopback' />
      </dependency>
@@ -14,21 +14,23 @@ cups upstream entirely then keep it on by own.
      <dependency
          name='network'
          grouping='optional_all'
-@@ -50,21 +49,13 @@
-         <service_fmri value='svc:/milestone/network' />
+@@ -51,11 +50,11 @@
      </dependency>
  
--    <dependency
+     <dependency
 -        name='lpsched'
 -        grouping='exclude_all'
 -        restart_on='none'
--        type='service'>
++        name='identity-cert'
++        grouping='require_all'
++        restart_on='refresh'
+         type='service'>
 -        <service_fmri value='svc:/application/print/server' />
--    </dependency>
--
++        <service_fmri value='svc:/system/identity:cert'/>
+     </dependency>
+ 
      <exec_method
-         type='method'
-         name='stop'
+@@ -64,7 +63,7 @@
          exec=':kill'
          timeout_seconds='60' />
  
@@ -37,7 +39,7 @@ cups upstream entirely then keep it on by own.
  
          <dependency
              name='config_data'
-@@ -85,10 +76,14 @@
+@@ -85,10 +84,14 @@
          </exec_method>
  
          <property_group name='general' type='framework'>
@@ -53,7 +55,7 @@ cups upstream entirely then keep it on by own.
          </property_group>
  
          <template>
-@@ -142,21 +137,13 @@
+@@ -142,14 +145,6 @@
          <service_fmri value='svc:/milestone/network' />
      </dependency>
  
@@ -68,6 +70,7 @@ cups upstream entirely then keep it on by own.
      <exec_method
          type='method'
          name='stop'
+@@ -156,7 +151,7 @@
          exec=':kill'
          timeout_seconds='60' />
  
@@ -76,7 +79,7 @@ cups upstream entirely then keep it on by own.
          <dependency
              name='cupsd'
              grouping='require_all'
-@@ -188,7 +175,7 @@
+@@ -188,7 +183,7 @@
              <propval name='action_authorization' type='astring'
                  value='solaris.smf.manage.cups' />
              <propval name='value_authorization' type='astring'
