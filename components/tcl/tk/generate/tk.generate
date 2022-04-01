@@ -1,4 +1,3 @@
-#!/bin/bash
 #
 # CDDL HEADER START
 #
@@ -21,15 +20,15 @@
 #
 
 #
-# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2022, Oracle and/or its affiliates.
 #
 
-#
-# Script to stop the X virtual framebuffer used to run the tk tests and
-# remove the file containing the Xvfb pid #.
-#
-# $1 is the pathname of the directory containing the Xvfb pid file.
-#
-kill -9 `cat $1/Xvfb_pid`
-/usr/bin/rm $1/Xvfb_pid
-exit 0
+<transform file path=.*/tk8.6/.* -> edit path tk8.6 tk$!(COMPONENT_MINOR_VERSION)>
+<transform file path=.*/wish8.6$ -> set pkg.depend.bypass-generate .*libtcl.*>
+<transform file path=.*/wish8.6$ -> edit path wish8.6 wish$!(COMPONENT_MINOR_VERSION)>
+<transform file path=.*/libtk8.6.so -> edit path libtk8.6 libtk$!(COMPONENT_MINOR_VERSION)>
+<transform file path=.*/libtkstub8.6.so -> edit path libtkstub8.6 libtk$!(COMPONENT_MINOR_VERSION)>
+
+<transform file -> edit path "\$!\((.*)\)" "$(\1)">
+
+

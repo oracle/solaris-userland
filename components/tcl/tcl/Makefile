@@ -20,24 +20,24 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         tcl
-COMPONENT_VERSION=      8.6.7
+COMPONENT_VERSION=      8.6.12
 COMPONENT_MAJOR_VERSION= $(shell echo $(COMPONENT_VERSION) | $(GSED) -e 's/\([0-9]\+\)\.\([0-9]\+\)\.[0-9]\+/\1.\2/')
 COMPONENT_PROJECT_URL=	https://www.tcl.tk/
 COMPONENT_SRC=          $(COMPONENT_NAME)$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=      $(COMPONENT_NAME)-core$(COMPONENT_VERSION)-src.tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:8441fbbce7b7f94a0f53ecfbe5e0be58aa8bbb6eefeff7f43671d4e6d70289d1
+    sha256:186748f1131cef3d637421a18d70892f808e526a29c694bebfeb1c540f98727c
 COMPONENT_ARCHIVE_URL=  http://prdownloads.sourceforge.net/tcl/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libtcl
 COMPONENT_ANITYA_ID=	4941
 
-COMPONENT_BAID=		42697
+COMPONENT_BAID=		122140
 
 include $(WS_MAKE_RULES)/common.mk
 
