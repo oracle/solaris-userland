@@ -20,20 +20,20 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		fftw
-COMPONENT_VERSION=	3.3.8
+COMPONENT_VERSION=	3.3.10
 COMPONENT_PROJECT_URL=	http://fftw.org
 COMPONENT_ARCHIVE_HASH= \
-	sha256:6113262f6e92c5bd474f2875fa1b01054c4ad5040f6b0da7c03c98821d9ae303
+	sha256:56c932549852cddcfafdab3820b0200c7742675be92179e59e6215b340e26467
 COMPONENT_ARCHIVE_URL=	http://fftw.org/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libfftw
-COMPONENT_BAID=		50762
+COMPONENT_BAID=		119823
 COMPONENT_ANITYA_ID=	803
 
 # Need to build regular, float, and long-double variants
