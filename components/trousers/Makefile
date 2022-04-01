@@ -63,7 +63,10 @@ CONFIGURE_OPTIONS += --sbindir=$(USRLIBDIR)
 CONFIGURE_OPTIONS += --with-gui=openssl
 CONFIGURE_OPTIONS += LD="$(CC)"
 CONFIGURE_OPTIONS += LIBS="$(LIBS)"
-
+ifneq ($(strip $(OPENSSL3)),)
+CONFIGURE_OPTIONS.64 += OPENSSL_LIB_DIR="/usr/openssl/3/lib/64"
+CONFIGURE_OPTIONS += --with-openssl=/usr/openssl/3
+endif
 CONFIGURE_OPTIONS += MAKE="$(GMAKE)"
 
 COMPONENT_POST_CONFIGURE_ACTION = (cd $(COMPONENT_SRC); \
@@ -101,8 +104,12 @@ COMPONENT_BUILD_TARGETS = all
 # These are packages required for building, not for use:
 REQUIRED_PACKAGES += developer/build/automake-116
 REQUIRED_PACKAGES += developer/build/libtool
+ifneq ($(strip $(OPENSSL3)),)
+REQUIRED_PACKAGES += library/security/openssl-3
+else
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
+endif
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/smf

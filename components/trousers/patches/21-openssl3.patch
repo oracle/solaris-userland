@@ -1,0 +1,20 @@
+# Allow building and linking with OpenSSL 3 which is not in standard location.
+*** configure.ac.~3~	Fri Apr  1 13:11:34 2022
+--- configure.ac	Fri Apr  1 14:06:27 2022
+***************
+*** 57,63 ****
+  AC_ARG_WITH(openssl,
+  	AC_HELP_STRING([--with-openssl=PATH], [Location of openssl libs/includes]),
+  	[OPENSSL_INCLUDE_DIR="$withval/include"
+! 	 OPENSSL_LIB_DIR="$withval/lib"
+  	 if [[ ! -d $OPENSSL_INCLUDE_DIR -o ! -d $OPENSSL_LIB_DIR ]]; then
+  		AC_MSG_ERROR([$OPENSSL_INCLUDE_DIR or $OPENSSL_LIB_DIR doen't exist!])
+  	 else
+--- 57,63 ----
+  AC_ARG_WITH(openssl,
+  	AC_HELP_STRING([--with-openssl=PATH], [Location of openssl libs/includes]),
+  	[OPENSSL_INCLUDE_DIR="$withval/include"
+! 	 OPENSSL_LIB_DIR="${OPENSSL_LIB_DIR:-$withval/lib}"
+  	 if [[ ! -d $OPENSSL_INCLUDE_DIR -o ! -d $OPENSSL_LIB_DIR ]]; then
+  		AC_MSG_ERROR([$OPENSSL_INCLUDE_DIR or $OPENSSL_LIB_DIR doen't exist!])
+  	 else
