@@ -57,6 +57,7 @@ import pkg.fmri
 import pkg.lint.base as base
 
 from pkg.lint.engine import lint_fmri_successor
+from pathlib import PurePath
 
 
 class UserlandActionChecker(base.ActionChecker):
@@ -602,6 +603,40 @@ class UserlandActionChecker(base.ActionChecker):
     smf_manifest.pkglint_desc = "SMF manifests must be valid."
 
 
+    def symlink_check(self, action, manifest, engine, pkglint_id="009"):
+        """Make sure that symlink and hardlink relative paths do not have too many '..' parts"""
+
+        def countRelativePath(depth, path):
+            p = PurePath(path)
+            for i in p.parts:
+                if i == '..':
+                    depth-=1
+                elif i == '.':
+                    pass
+                else:
+                    depth+=1
+
+                if depth < 0:
+                    raise ValueError()
+
+            return depth
+
+        def checkLink(source, target, manifest):
+            try:
+                depth = countRelativePath(0, source)
+                countRelativePath(depth - 1, target)
+            except ValueError:
+                engine.error(f"Symlink or its target resolves to incorrect"
+                    f" relative path {source} -> {target} in {manifest.fmri}",
+                    msgid=f"{self.name}{pkglint_id}.RELPATH")
+
+        if action.name not in ["link", "hardlink"]:
+            return
+
+        checkLink(action.attrs["path"], action.attrs["target"], manifest)
+
+    symlink_check.pkglint_desc = "No extra '..' in linked files"
+
 class UserlandManifestChecker(base.ManifestChecker):
     """An opensolaris.org-specific class to check manifests."""
 
@@ -897,3 +932,5 @@ class UserlandManifestChecker(base.ManifestChecker):
                     msgid=f"{self.name}{pkglint_id}.0")
 
     makefile_ascii_check.pkglint_desc = "manifests are ASCII only."
+
+# vim: expandtab sw=4 ts=4

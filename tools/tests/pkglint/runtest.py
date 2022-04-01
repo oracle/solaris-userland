@@ -232,6 +232,11 @@ class TestUserlandPkglint(unittest.TestCase):
             "hardlink usr/bin/thirdx has unresolvable target '/usr/lib/'\n", stderr)
         self.assertIn("ERROR userland.action002.0        "
             "hardlink usr/bin/fouthx has unresolvable target '/home/'\n", stderr)
+        self.assertIn("ERROR userland.action009.RELPATH  "
+            "Symlink or its target resolves to incorrect relative path usr/bin/s-incorrect", stderr)
+        self.assertIn("ERROR userland.action009.RELPATH  "
+            "Symlink or its target resolves to incorrect relative path usr/bin/h-incorrect", stderr)
+        
 
 
     @with_manifest("userland.action003.in")
