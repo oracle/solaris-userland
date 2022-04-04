@@ -38,7 +38,7 @@ have defaults, but can be overridden.
 * COMPONENT_ARCHIVE_URL is where the archive can be downloaded from.  This is
   typically constructed from $(COMPONENT_PROJECT_URL) and $(COMPONENT_ARCHIVE).
 
-* COMPONENT_BUGDB is the lower-case rendering of the BugDB cat/subcat; it has
+* COMPONENT_BUGDB is the lowercase rendering of the BugDB cat/subcat; it has
   a default value of "utility/$(COMPONENT_NAME)".
 
 * COMPONENT_ANITYA_ID is the project id for this software at
@@ -120,22 +120,21 @@ have defaults, but can be overridden.
     <(hg cat --rev <OLDER REV> pubring.gpg | listkeys) \
     <(hg cat --rev <NEWER REV> pubring.gpg | listkeys)
 
-  Note that when merging, because
-  tools/.gnupg/pubring.gpg is a binary file, you will have to choose
-  the parent or child version.  Pick either one, then import keys from both
-  parents:
-	for cset in $(hg log -r 'parents()' -T '{node} '); do
-		hg cat -r $cset $(hg root)/tools/.gnupg/pubring.gpg | \
-			gpg2 --homedir=$(hg root)/tools/.gnupg --import;
-	done
-  before you 'hg commit' your merge.
 
-  If you are not using merging but rather rebase the process is very similar.
-  Once the rebase reports a conflict in pubring.gpg you need to import the keys
-  from both parents similarly as it is done for merging. Then
+  Merging changes to pubring.gpg
+  Because tools/.gnupg/pubring.gpg is a binary file it can't be merged by
+  standard diff algorithm. Instead of merging we have to import all keys both
+  from our change and the other change.
 
-  hg resolve --mark $(hg root)/tools/.gnupg/pubring.gpg
-  hg rebase --continue
+  If we are in the middle of hg merge, hg rebase or hg graft, (it reported conflict and
+  is waiting for us to resolve) we can do it by
+
+    hg cat --rev 'conflictlocal()' $(hg root)/tools/.gnupg/pubring.gpg | gpg2 --homedir=$(hg root)/tools/.gnupg --import
+    hg cat --rev 'conflictother()' $(hg root)/tools/.gnupg/pubring.gpg | gpg2 --homedir=$(hg root)/tools/.gnupg --import
+    hg resolve --mark $(hg root)/tools/.gnupg/pubring.gpg
+
+  And then commit the change
+
 
 * COMPONENT_PUBLIC_KEY_URL contains a custom url to the public key that is
   required to verify the validity of the signature. The most components do
