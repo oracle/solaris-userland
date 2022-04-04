@@ -1,0 +1,14 @@
+GHC_NO_DIRENT_D_TYPE should be defined on Solaris
+diff --git a/filesystem/filesystem.hpp b/filesystem/filesystem.hpp
+index c42a3833..6cbc8921 100644
+--- a/filesystem/filesystem.hpp
++++ b/filesystem/filesystem.hpp
+@@ -65,6 +65,8 @@
+ #elif defined(_WIN32)
+ #define GHC_OS_WINDOWS
+ #define GHC_OS_WIN32
++#elif defined(__sun) && defined(__SVR4)
++#define GHC_NO_DIRENT_D_TYPE
+ #elif defined(__CYGWIN__)
+ #define GHC_OS_CYGWIN
+ #elif defined(__svr4__)

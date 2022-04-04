@@ -20,28 +20,28 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		doxygen
-COMPONENT_VERSION=	1.8.15
+COMPONENT_VERSION=	1.9.3
 COMPONENT_PROJECT_URL=	http://www.doxygen.nl/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).src.tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:bd9c0ec462b6a9b5b41ede97bede5458e0d7bb40d4cfa27f6f622eb33c59245d
+    sha256:f352dbc3221af7012b7b00935f2dfdc9fb67a97d43287d2f6c81c50449d254e0
 COMPONENT_ARCHIVE_URL=	http://doxygen.nl/files/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	457
 
 # Download the manual so that we don't have to keep updating it in the gate.
 COMPONENT_ARCHIVE_1 =	$(COMPONENT_NAME)_manual-$(COMPONENT_VERSION).pdf.zip
 COMPONENT_ARCHIVE_HASH_1 =	\
-    sha256:907a4176088797d5dc64983ba0e890c7b4f1ecbef8366cc3b8aa49ab63810041
+    sha256:9435f7a028946b76951e5e39c1da52162944e0756caef34b2f6c2d16593423fa
 COMPONENT_ARCHIVE_URL_1 =	http://doxygen.nl/files/$(COMPONENT_ARCHIVE_1)
 
-COMPONENT_BAID=		64410
+COMPONENT_BAID=		119817
 
 BUILD_STYLE= cmake
 SYSTEM_TEST_TARGET= $(SYSTEM_TEST_64)
