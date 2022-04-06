@@ -20,10 +20,12 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 # The stability of manual pages is committed.
 <transform file path=usr.*/man/.+ -> default mangler.man.stability committed>
+# Make sure that python 3.9 is default
+<transform link path=usr/bin/hg target=.*/python3\.9/.* -> set mediator-priority vendor>
 # These are not installed, but can be found in the source contrib directory.
 <transform file path=usr/demo/mercurial58/(.+)$ -> set action.hash %<1> >
 # We also ignore all dependencies implied by the demos.
