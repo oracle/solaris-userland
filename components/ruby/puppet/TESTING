@@ -11,7 +11,7 @@ See Puppet Documentation for an overview of testing with rspec
 https://github.com/puppetlabs/puppet/blob/master/docs/rspec_tutorial.md
 
 Core puppet type and provider testing is performed by Puppet for a range of
-operating systems including Solaris 10 and 11.
+operating systems including Solaris 11.
 
 Adhoc individual module testing may be performed by reviewing the Setup and
 Usage portions of the README.md shipped with each module.
@@ -27,51 +27,48 @@ puppet apply -e "include '::mysql::server'"
 -- refer to
 https://docs.oracle.com/cd/E37838_01/html/E72062/index.html
 
--- Setting up Puppet Master and agent(s).
+-- Setting up Puppet Server
+-- The WEBrick/Ruby-based Puppet master is deprecated by
+-- the Puppet community and hence removed from Oracle Solaris.
+-- For suggestions of alternative ways of running Puppet Server,
+-- see https://puppet.com/docs/puppet/6/puppet_index.html
+-- For information on installing Puppet Server on a non-Solaris
+-- operating system, refer to
+https://puppet.com/docs/puppet/6/server/install_from_packages.html#install-puppet-server
+
+-- Setting up Puppet agent(s).
 -- Consider hosts
-    - puppet-master
     - puppet-agent
 
 -- Install the Puppet IPS package
 --    pkg:/system/management/puppet
--- on both the master and all nodes that will act as Puppet agent.
-
-
--- setting up master
-
-- set config parameters for puppet:master
-# svccfg -s puppet:master setprop config/server= host: <hostname-master>
-# svccfg -s puppet:master setprop config/bindaddressr= astring: 0.0.0.0
-
-# svcadm enable puppet:master
-# svcs puppet:master
-
+-- on all nodes that will act as Puppet agent.
 
 -- setting up agent
 
 - set config parameters for puppet:agent (on all agent nodes)
 
-# svccfg -s puppet:agent setprop config/server= host: <hostname-master>
+# svccfg -s puppet:agent setprop config/server= host: <hostname-server>
 # svccfg -s puppet:agent refresh
 
 NOTE : DO not enable this service yet!
 
 # puppet agent --test
-(this will creates a new SSL key and sets up a auth request to master)
+(this will create a new SSL key and sets up a auth request to Puppet Server)
 
-- On master node
-# puppet cert list
-# puppet cert sign <hostname-agent>
+- On Puppet Server node
+# puppetserver ca list
+# puppetserver ca sign <hostname-agent>
 
 - On agent node (again)
 # puppet agent --test
 # svcadm enable puppet:agent
 # svcs puppet:agent
 
--- testing master-client setup; using 'file' resource type create
--- a custom file on agent via configuration applied by master 
+-- testing server-client setup; using 'file' resource type create
+-- a custom file on agent via configuration applied by Puppet Server 
 
-- on master 
+- on Puppet Server node 
 # cat /etc/puppetlabs/code/environments/production/manifests/site.pp 
 $file_contents = $osfamily ? {
   'solaris' => "Hello Oracle Solaris",
