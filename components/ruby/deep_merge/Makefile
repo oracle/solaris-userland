@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -29,17 +29,17 @@ include ../../../make-rules/shared-macros.mk
 RUBY_VERSIONS = $(RUBY_PUPPET_VERSION)
 
 COMPONENT_NAME=		deep_merge
-COMPONENT_VERSION=      1.2.1
+COMPONENT_VERSION=      1.2.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).gem
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:4b57776cf10d241dfccaf8912d8152bf330fc5acd0e6bafc6c3df47f388b77e0
+    sha256:83ced3a3d7f95f67de958d2ce41b1874e83c8d94fe2ddbff50c8b4b82323563a
 COMPONENT_ARCHIVE_URL=	https://rubygems.org/downloads/$(COMPONENT_SRC).gem
 COMPONENT_PROJECT_URL=  https://github.com/danielsdeleo/deep_merge
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	4334
 
-COMPONENT_BAID=                   97271
+COMPONENT_BAID=                   118509
 
 # Create gemspec.
 COMPONENT_POST_UNPACK_ACTION= \
