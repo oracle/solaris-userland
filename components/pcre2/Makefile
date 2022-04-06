@@ -19,22 +19,22 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pcre2
-COMPONENT_VERSION=	10.34
+COMPONENT_VERSION=	10.39
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:da6aba7ba2509e918e41f4f744a59fa41a2425c59a298a232e7fe85691e00379
-COMPONENT_ARCHIVE_URL=	https://ftp.pcre.org/pub/pcre/$(COMPONENT_ARCHIVE)
+    sha256:0781bd2536ef5279b1943471fdcdbd9961a2845e1d2c9ad849b9bd98ba1a9bd4
+COMPONENT_ARCHIVE_URL=	https://github.com/PhilipHazel/pcre2/releases/download/pcre2-$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_PROJECT_URL=  http://pcre.org/
 COMPONENT_BUGDB=	library/pcre
 COMPONENT_ANITYA_ID=	5832
 
-COMPONENT_BAID=		75688
+COMPONENT_BAID=		120523
 
 TEST_TARGET= install $(TEST_32_and_64)
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_32_and_64)
