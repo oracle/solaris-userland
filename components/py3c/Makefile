@@ -20,22 +20,22 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= NO_ARCH
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		py3c
-COMPONENT_VERSION=	1.2
+COMPONENT_VERSION=	1.4
 COMPONENT_PROJECT_URL=	https://py3c.readthedocs.io/
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:0e28ea43f5f092967a344294194f55a81fb55adc3c17a0314545d606eb5f6267
+    sha256:abc745079ef906148817f4472c3fb4bc41d62a9ea51a746b53e09819494ac006
 COMPONENT_ARCHIVE_URL=	https://github.com/encukou/py3c/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/py3c
 COMPONENT_ANITYA_ID=	104113
 
-COMPONENT_BAID=		89516
+COMPONENT_BAID=		120133
 
 BUILD_STYLE= justmake
 
