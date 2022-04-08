@@ -20,21 +20,21 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pv
-COMPONENT_VERSION=	1.6.6
+COMPONENT_VERSION=	1.6.20
 COMPONENT_PROJECT_URL=	http://www.ivarch.com/programs/pv.shtml
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:94defb4183ae07c44219ba298d43c4991d6e203c29f74393d72ecad3b090508a
+    sha256:b5f1ee79a370c5287e092b6e8f1084f026521fe0aecf25c44b9460b870319a9e
 COMPONENT_ARCHIVE_URL=	http://www.ivarch.com/programs/sources/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	3736
 
-COMPONENT_BAID=		42182
+COMPONENT_BAID=		120265
 
 SYSTEM_TEST_TARGET= $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/common.mk
