@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -36,14 +36,22 @@ COMPONENT_ARCHIVE_HASH=	\
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/pycurl
 COMPONENT_ANITYA_ID=	7973
-
 COMPONENT_BAID=		113403
 
-PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
+# This component is delivered in two different versions because
+# the newer one is no longer Python 2.7 compatible.
+COMPONENT_VERSION_OLD=	7.43.0.5
+COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
+COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
+COMPONENT_ARCHIVE_HASH_OLD= \
+    sha256:c6ee5fda5f630cb13499d0fe95edd443174ccbfc0ff9fa71b1cd63bb2194c68b
+COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
+COMPONENT_BAID_OLD=	76727
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-multiver.mk
 
 # to make sure that the docs get installed in the right place.
 PYTHON_DATA = /usr
@@ -56,7 +64,7 @@ test: ENV += -i
 
 # Rebuild downloaded .so files for each Python version
 COMPONENT_PRE_TEST_ACTION = ( \
-	cd $(COMPONENT_SRC)/tests/fake-curl/libcurl ; \
+	cd $(SOURCE_DIR)/tests/fake-curl/libcurl ; \
 	$(RM) *.so ; $(ENV) $(COMPONENT_BUILD_ENV) $(GMAKE) )
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
