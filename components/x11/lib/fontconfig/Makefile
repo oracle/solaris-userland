@@ -20,38 +20,35 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		fontconfig
-COMPONENT_VERSION=	2.12.1
+COMPONENT_VERSION=	2.14.0
 COMPONENT_PROJECT_URL=	https://fontconfig.org/
+COMPONENT_ARCHIVE= 	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)release/$(COMPONENT_ARCHIVE)
 COMPONENT_ARCHIVE_HASH= \
-	sha256:b449a3e10c47e1d1c7a6ec6e2016cca73d3bd68fbbd4f0ae5cc6b573f7d6c7f3
+	sha256:dcbeb84c9c74bbfdb133d535fe1c7bedc9f2221a8daf3914b984c44c520e9bac
 COMPONENT_BUGDB=        x11/font
 COMPONENT_ANITYA_ID=	827
-COMPONENT_BAID=		34275
+COMPONENT_BAID=		120477
 
 CONFIGURE_BINDIR.32 =  $(CONFIGURE_PREFIX)/bin/$(MACH32)
 CONFIGURE_BINDIR.64 =  $(CONFIGURE_PREFIX)/bin/$(MACH64)
 
-FIX_PC_FILES=fontconfig.pc.in
-# Don't include path to freetype headers in our proto area in the *.pc files.
-# The 'Requires: freetype2' will handle the right -I flags for us.
-COMPONENT_FIX_PC_FLAGS += -e 's| \@FREETYPE_CFLAGS\@||g;'
+# Set here so we only have to update this one line, instead of multiple lines
+# in the *.p5m file on every new version
+FONTCONFIG_SOVERSION =    1.12.0
+PKG_VARS += FONTCONFIG_SOVERSION
 
 include $(WS_MAKE_RULES)/x11-component.mk
 
 # Python is used only to generate fcblanks.h, however downloaded
 # tarball already contains it. The detected version is irrelevant.
-
-# GNU Build System files have to be regenerated for automake 1.16.
-# It can be removed when the upstream starts to use a newer automake version.
-COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv)
 
 CONFIGURE_OPTIONS += --with-baseconfigdir='/etc/fonts'
 CONFIGURE_OPTIONS += --with-templatedir='/etc/fonts/conf.avail'
@@ -59,18 +56,40 @@ CONFIGURE_OPTIONS += --with-xmldir='/etc/fonts'
 CONFIGURE_OPTIONS += --with-default-fonts='/usr/share/fonts'
 CONFIGURE_OPTIONS += --with-add-fonts='/etc/X11/fontpath.d,/usr/share/ghostscript/fonts,/usr/X11/lib/X11/fonts'
 CONFIGURE_OPTIONS += --with-cache-dir=/var/cache/fontconfig
+# Don't run fc-cache during the build
+CONFIGURE_OPTIONS += --disable-cache-build
+CONFIGURE_OPTIONS += --enable-iconv
 
 # Makefile.am files of this component are not compatible with Solaris make.
 # Use GNU make to avoid the configuration error when makefile fragments are processed.
 CONFIGURE_OPTIONS += MAKE=$(GMAKE)
 
-COMPONENT_POST_INSTALL_ACTION = \
-	(cat files/sunman-notes-fc-cache >> $(PROTO_DIR)/usr/share/man/man1/fc-cache.1)
+# Add a note about the SMF service to the end of the man page
+COMPONENT_POST_INSTALL_ACTION += \
+    cat files/sunman-notes-fc-cache >> $(PROTOUSRSHAREMAN1DIR)/fc-cache.1 ;
+
+# Because both the 32-bit & 64-bit builds install the config files, whichever
+# runs second creates a backup of the first that we don't need in our packages.
+COMPONENT_POST_INSTALL_ACTION += $(RM) $(PROTOETCDIR)/fonts/fonts.conf.bak ;
+
+# Make links in conf.d be relative links to ../conf.avail instead of absolute
+COMPONENT_POST_INSTALL_ACTION += \
+    (cd $(PROTOETCDIR)/fonts/conf.d/ ; \
+    for f in *.conf ; do \
+	$(RM) $${f} ; \
+	$(SYMLINK) ../conf.avail/$${f} $${f} ; \
+    done) ;
 
 # for tests
 unexport SHELLOPTS
-COMPONENT_TEST_DIR =  $(BUILD_DIR)/$(MACH$(BITS))
-COMPONENT_TEST_CMD = cd $(COMPONENT_TEST_DIR); gmake check;
+# tests require GNU cp (support for -a) & date (support for -d)
+COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(USRBINDIR)"
+# prevent run-test.sh from downloading files from the internet
+COMPONENT_TEST_ENV += NO_PROXY='*'
+# disable test that tries to download fonts from Google so that run-test.sh
+# skips it instead of reporting the entire run failed
+COMPONENT_PRE_TEST_ACTION += \
+    $(CHMOD) a-x $(COMPONENT_TEST_DIR)/test/test-crbug1004254 ;
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/TOTAL:/p" ' \
@@ -83,3 +102,7 @@ COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
 REQUIRED_PACKAGES += library/expat
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/freetype-2
+
+# JSON-C is required to build and run tests, but is not used in the packaged
+# software
+REQUIRED_PACKAGES += library/json-c

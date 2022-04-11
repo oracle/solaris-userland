@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -45,6 +45,8 @@ set name=org.opensolaris.arc-caseid value=LSARC/2003/273 value=LSARC/2006/485 \
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 dir  path=etc/fonts group=sys
 dir  path=etc/fonts/conf.avail group=sys
+file path=etc/fonts/conf.avail/05-reset-dirs-sample.conf
+file path=etc/fonts/conf.avail/09-autohint-if-no-hinting.conf
 file path=etc/fonts/conf.avail/10-autohint.conf
 file path=etc/fonts/conf.avail/10-hinting-full.conf
 file path=etc/fonts/conf.avail/10-hinting-medium.conf
@@ -64,13 +66,16 @@ file files/20-indic.conf path=etc/fonts/conf.avail/20-indic.conf
 file path=etc/fonts/conf.avail/20-unhint-small-vera.conf
 file path=etc/fonts/conf.avail/25-unhint-nonlatin.conf
 file path=etc/fonts/conf.avail/30-metric-aliases.conf
-file path=etc/fonts/conf.avail/30-urw-aliases.conf
+file path=etc/fonts/conf.avail/35-lang-normalize.conf
 file path=etc/fonts/conf.avail/40-nonlatin.conf
+file path=etc/fonts/conf.avail/45-generic.conf
 file path=etc/fonts/conf.avail/45-latin.conf
+file path=etc/fonts/conf.avail/48-spacing.conf
 file path=etc/fonts/conf.avail/49-sansserif.conf
 file files/49-sun-preuser.conf path=etc/fonts/conf.avail/49-sun-preuser.conf
 file path=etc/fonts/conf.avail/50-user.conf
 file path=etc/fonts/conf.avail/51-local.conf
+file path=etc/fonts/conf.avail/60-generic.conf
 file path=etc/fonts/conf.avail/60-latin.conf
 file path=etc/fonts/conf.avail/65-fonts-persian.conf
 file path=etc/fonts/conf.avail/65-khmer.conf
@@ -87,22 +92,25 @@ link path=etc/fonts/conf.d/10-hinting-slight.conf \
     target=../conf.avail/10-hinting-slight.conf
 link path=etc/fonts/conf.d/10-scale-bitmap-fonts.conf \
     target=../conf.avail/10-scale-bitmap-fonts.conf
+link path=etc/fonts/conf.d/11-lcdfilter-default.conf \
+    target=../conf.avail/11-lcdfilter-default.conf
 link path=etc/fonts/conf.d/20-indic.conf target=../conf.avail/20-indic.conf
 link path=etc/fonts/conf.d/20-unhint-small-vera.conf \
     target=../conf.avail/20-unhint-small-vera.conf
 link path=etc/fonts/conf.d/30-metric-aliases.conf \
     target=../conf.avail/30-metric-aliases.conf
-link path=etc/fonts/conf.d/30-urw-aliases.conf \
-    target=../conf.avail/30-urw-aliases.conf
 link path=etc/fonts/conf.d/40-nonlatin.conf \
     target=../conf.avail/40-nonlatin.conf
+link path=etc/fonts/conf.d/45-generic.conf target=../conf.avail/45-generic.conf
 link path=etc/fonts/conf.d/45-latin.conf target=../conf.avail/45-latin.conf
+link path=etc/fonts/conf.d/48-spacing.conf target=../conf.avail/48-spacing.conf
 link path=etc/fonts/conf.d/49-sansserif.conf \
     target=../conf.avail/49-sansserif.conf
 link path=etc/fonts/conf.d/49-sun-preuser.conf \
     target=../conf.avail/49-sun-preuser.conf
 link path=etc/fonts/conf.d/50-user.conf target=../conf.avail/50-user.conf
 link path=etc/fonts/conf.d/51-local.conf target=../conf.avail/51-local.conf
+link path=etc/fonts/conf.d/60-generic.conf target=../conf.avail/60-generic.conf
 link path=etc/fonts/conf.d/60-latin.conf target=../conf.avail/60-latin.conf
 link path=etc/fonts/conf.d/65-fonts-persian.conf \
     target=../conf.avail/65-fonts-persian.conf
@@ -125,6 +133,7 @@ file files/fc-cache.xml path=lib/svc/manifest/application/font/fc-cache.xml \
 file files/fc-cache.sh path=lib/svc/method/fc-cache
 file path=usr/bin/$(MACH32)/fc-cache
 file path=usr/bin/$(MACH32)/fc-cat
+file path=usr/bin/$(MACH32)/fc-conflist
 file path=usr/bin/$(MACH32)/fc-list
 file path=usr/bin/$(MACH32)/fc-match
 file path=usr/bin/$(MACH32)/fc-pattern
@@ -133,6 +142,7 @@ file path=usr/bin/$(MACH32)/fc-scan
 file path=usr/bin/$(MACH32)/fc-validate
 file path=usr/bin/$(MACH64)/fc-cache
 file path=usr/bin/$(MACH64)/fc-cat
+file path=usr/bin/$(MACH64)/fc-conflist
 file path=usr/bin/$(MACH64)/fc-list
 file path=usr/bin/$(MACH64)/fc-match
 file path=usr/bin/$(MACH64)/fc-pattern
@@ -141,6 +151,7 @@ file path=usr/bin/$(MACH64)/fc-scan
 file path=usr/bin/$(MACH64)/fc-validate
 link path=usr/bin/fc-cache target=$(MACH64)/fc-cache
 link path=usr/bin/fc-cat target=$(MACH64)/fc-cat
+link path=usr/bin/fc-conflist target=$(MACH64)/fc-conflist
 link path=usr/bin/fc-list target=$(MACH64)/fc-list
 link path=usr/bin/fc-match target=$(MACH64)/fc-match
 link path=usr/bin/fc-pattern target=$(MACH64)/fc-pattern
@@ -150,13 +161,17 @@ link path=usr/bin/fc-validate target=$(MACH64)/fc-validate
 file path=usr/include/fontconfig/fcfreetype.h
 file path=usr/include/fontconfig/fcprivate.h
 file path=usr/include/fontconfig/fontconfig.h
-link path=usr/lib/$(MACH64)/libfontconfig.so target=libfontconfig.so.1
-link path=usr/lib/$(MACH64)/libfontconfig.so.1 target=libfontconfig.so.1.9.2
-file path=usr/lib/$(MACH64)/libfontconfig.so.1.9.2
+link path=usr/lib/$(MACH64)/libfontconfig.so \
+    target=libfontconfig.so.$(FONTCONFIG_SOVERSION)
+file path=usr/lib/$(MACH64)/libfontconfig.so.$(FONTCONFIG_SOVERSION)
+link path=usr/lib/$(MACH64)/libfontconfig.so.1 \
+    target=libfontconfig.so.$(FONTCONFIG_SOVERSION)
 file path=usr/lib/$(MACH64)/pkgconfig/fontconfig.pc
-link path=usr/lib/libfontconfig.so target=libfontconfig.so.1
-link path=usr/lib/libfontconfig.so.1 target=libfontconfig.so.1.9.2
-file path=usr/lib/libfontconfig.so.1.9.2
+link path=usr/lib/libfontconfig.so \
+    target=libfontconfig.so.$(FONTCONFIG_SOVERSION)
+file path=usr/lib/libfontconfig.so.$(FONTCONFIG_SOVERSION)
+link path=usr/lib/libfontconfig.so.1 \
+    target=libfontconfig.so.$(FONTCONFIG_SOVERSION)
 file path=usr/lib/pkgconfig/fontconfig.pc
 dir  path=usr/share/doc/fontconfig/fontconfig-devel facet.doc.html=all
 file path=usr/share/doc/fontconfig/fontconfig-devel.pdf
@@ -205,6 +220,9 @@ file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfigbuildfonts.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfigcreate.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfigdestroy.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfigenablehome.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfigfileinfoiterget.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfigfileinfoiterinit.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfigfileinfoiternext.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfigfilename.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfiggetblanks.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfiggetcache.html
@@ -212,12 +230,14 @@ file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfiggetcachedirs.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfiggetconfigdirs.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfiggetconfigfiles.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfiggetcurrent.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfiggetfilename.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfiggetfontdirs.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfiggetfonts.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfiggetrescaninterval.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfiggetsysroot.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfighome.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfigparseandload.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfigparseandloadfrommemory.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfigreference.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfigsetcurrent.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfigsetrescaninterval.html
@@ -227,6 +247,8 @@ file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfigsubstitutewithpat.ht
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcconfiguptodate.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcdefaultsubstitute.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcdircacheclean.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/fcdircachecreateuuid.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/fcdircachedeleteuuid.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcdircacheload.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcdircacheloadfile.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcdircacheread.html
@@ -255,6 +277,7 @@ file path=usr/share/doc/fontconfig/fontconfig-devel/fcfreetypecharindex.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcfreetypecharset.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcfreetypecharsetandspacing.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcfreetypequery.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/fcfreetypequeryall.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcfreetypequeryface.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcgetdefaultlangs.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcgetlangs.html
@@ -312,10 +335,20 @@ file path=usr/share/doc/fontconfig/fontconfig-devel/fcpatternduplicate.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcpatternequal.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcpatternequalsubset.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcpatternfilter.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/fcpatternfinditer.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcpatternformat.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcpatternget-type.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcpatternget.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/fcpatterngetwithbinding.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcpatternhash.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/fcpatterniterequal.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/fcpatternitergetobject.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/fcpatternitergetvalue.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/fcpatterniterisvalid.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/fcpatterniternext.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/fcpatterniterstart.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/fcpatternitervaluecount.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/fcpatternobjectcount.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcpatternprint.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcpatternreference.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcpatternremove.html
@@ -325,6 +358,7 @@ file path=usr/share/doc/fontconfig/fontconfig-devel/fcrangecreateinteger.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcrangedestroy.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcrangegetdouble.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcstrbasename.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/fcstrbuildfilename.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcstrcmp.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcstrcmpignorecase.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcstrcopy.html
@@ -357,17 +391,24 @@ file path=usr/share/doc/fontconfig/fontconfig-devel/fcvalueequal.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcvalueprint.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcvaluesave.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcweightfromopentype.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/fcweightfromopentypedouble.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/fcweighttoopentype.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/fcweighttoopentypedouble.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/ln12.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/t1.html
-file path=usr/share/doc/fontconfig/fontconfig-devel/x102.html
+file path=usr/share/doc/fontconfig/fontconfig-devel/x103.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/x19.html
 file path=usr/share/doc/fontconfig/fontconfig-devel/x31.html
 file path=usr/share/doc/fontconfig/fontconfig-user.html
 file path=usr/share/doc/fontconfig/fontconfig-user.pdf
 file path=usr/share/doc/fontconfig/fontconfig-user.txt
+file path=usr/share/gettext/its/fontconfig.its
+file path=usr/share/gettext/its/fontconfig.loc
+file path=usr/share/locale/zh_CN/LC_MESSAGES/fontconfig-conf.mo
+file path=usr/share/locale/zh_CN/LC_MESSAGES/fontconfig.mo
 file path=usr/share/man/man1/fc-cache.1
 file path=usr/share/man/man1/fc-cat.1
+file path=usr/share/man/man1/fc-conflist.1
 file path=usr/share/man/man1/fc-list.1
 file path=usr/share/man/man1/fc-match.1
 file path=usr/share/man/man1/fc-pattern.1
@@ -418,6 +459,9 @@ file path=usr/share/man/man3/FcConfigBuildFonts.3
 file path=usr/share/man/man3/FcConfigCreate.3
 file path=usr/share/man/man3/FcConfigDestroy.3
 file path=usr/share/man/man3/FcConfigEnableHome.3
+file path=usr/share/man/man3/FcConfigFileInfoIterGet.3
+file path=usr/share/man/man3/FcConfigFileInfoIterInit.3
+file path=usr/share/man/man3/FcConfigFileInfoIterNext.3
 file path=usr/share/man/man3/FcConfigFilename.3
 file path=usr/share/man/man3/FcConfigGetBlanks.3
 file path=usr/share/man/man3/FcConfigGetCache.3
@@ -425,12 +469,14 @@ file path=usr/share/man/man3/FcConfigGetCacheDirs.3
 file path=usr/share/man/man3/FcConfigGetConfigDirs.3
 file path=usr/share/man/man3/FcConfigGetConfigFiles.3
 file path=usr/share/man/man3/FcConfigGetCurrent.3
+file path=usr/share/man/man3/FcConfigGetFilename.3
 file path=usr/share/man/man3/FcConfigGetFontDirs.3
 file path=usr/share/man/man3/FcConfigGetFonts.3
 file path=usr/share/man/man3/FcConfigGetRescanInterval.3
 file path=usr/share/man/man3/FcConfigGetSysRoot.3
 file path=usr/share/man/man3/FcConfigHome.3
 file path=usr/share/man/man3/FcConfigParseAndLoad.3
+file path=usr/share/man/man3/FcConfigParseAndLoadFromMemory.3
 file path=usr/share/man/man3/FcConfigReference.3
 file path=usr/share/man/man3/FcConfigSetCurrent.3
 file path=usr/share/man/man3/FcConfigSetRescanInterval.3
@@ -440,6 +486,8 @@ file path=usr/share/man/man3/FcConfigSubstituteWithPat.3
 file path=usr/share/man/man3/FcConfigUptoDate.3
 file path=usr/share/man/man3/FcDefaultSubstitute.3
 file path=usr/share/man/man3/FcDirCacheClean.3
+file path=usr/share/man/man3/FcDirCacheCreateUUID.3
+file path=usr/share/man/man3/FcDirCacheDeleteUUID.3
 file path=usr/share/man/man3/FcDirCacheLoad.3
 file path=usr/share/man/man3/FcDirCacheLoadFile.3
 file path=usr/share/man/man3/FcDirCacheRead.3
@@ -468,6 +516,7 @@ file path=usr/share/man/man3/FcFreeTypeCharIndex.3
 file path=usr/share/man/man3/FcFreeTypeCharSet.3
 file path=usr/share/man/man3/FcFreeTypeCharSetAndSpacing.3
 file path=usr/share/man/man3/FcFreeTypeQuery.3
+file path=usr/share/man/man3/FcFreeTypeQueryAll.3
 file path=usr/share/man/man3/FcFreeTypeQueryFace.3
 file path=usr/share/man/man3/FcGetDefaultLangs.3
 file path=usr/share/man/man3/FcGetLangs.3
@@ -525,10 +574,20 @@ file path=usr/share/man/man3/FcPatternDuplicate.3
 file path=usr/share/man/man3/FcPatternEqual.3
 file path=usr/share/man/man3/FcPatternEqualSubset.3
 file path=usr/share/man/man3/FcPatternFilter.3
+file path=usr/share/man/man3/FcPatternFindIter.3
 file path=usr/share/man/man3/FcPatternFormat.3
 file path=usr/share/man/man3/FcPatternGet-Type.3
 file path=usr/share/man/man3/FcPatternGet.3
+file path=usr/share/man/man3/FcPatternGetWithBinding.3
 file path=usr/share/man/man3/FcPatternHash.3
+file path=usr/share/man/man3/FcPatternIterEqual.3
+file path=usr/share/man/man3/FcPatternIterGetObject.3
+file path=usr/share/man/man3/FcPatternIterGetValue.3
+file path=usr/share/man/man3/FcPatternIterIsValid.3
+file path=usr/share/man/man3/FcPatternIterNext.3
+file path=usr/share/man/man3/FcPatternIterStart.3
+file path=usr/share/man/man3/FcPatternIterValueCount.3
+file path=usr/share/man/man3/FcPatternObjectCount.3
 file path=usr/share/man/man3/FcPatternPrint.3
 file path=usr/share/man/man3/FcPatternReference.3
 file path=usr/share/man/man3/FcPatternRemove.3
@@ -538,6 +597,7 @@ file path=usr/share/man/man3/FcRangeCreateInteger.3
 file path=usr/share/man/man3/FcRangeDestroy.3
 file path=usr/share/man/man3/FcRangeGetDouble.3
 file path=usr/share/man/man3/FcStrBasename.3
+file path=usr/share/man/man3/FcStrBuildFilename.3
 file path=usr/share/man/man3/FcStrCmp.3
 file path=usr/share/man/man3/FcStrCmpIgnoreCase.3
 file path=usr/share/man/man3/FcStrCopy.3
@@ -570,7 +630,9 @@ file path=usr/share/man/man3/FcValueEqual.3
 file path=usr/share/man/man3/FcValuePrint.3
 file path=usr/share/man/man3/FcValueSave.3
 file path=usr/share/man/man3/FcWeightFromOpenType.3
+file path=usr/share/man/man3/FcWeightFromOpenTypeDouble.3
 file path=usr/share/man/man3/FcWeightToOpenType.3
+file path=usr/share/man/man3/FcWeightToOpenTypeDouble.3
 file files/libfontconfig.3lib path=usr/share/man/man3lib/libfontconfig.3lib
 file path=usr/share/man/man5/fonts-conf.5
 link path=usr/share/man/man5/fonts.conf.5 target=fonts-conf.5

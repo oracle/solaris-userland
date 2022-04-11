@@ -1,15 +1,15 @@
 Changes were originally part of Solaris bug fix for:
-5099951 Fonts (in particular Lucida Sans Typewriter) look terrible in JDS.
+15226832 Fonts (in particular Lucida Sans Typewriter) look terrible in JDS.
 
 Allows fontconfig to use bitmap fonts (which may be hand-tuned for the
 specific size) instead of scalable fonts when a close match is found and
 anti-aliasing is not requested.
 
---- a/src/fcmatch.c	Thu Jun 18 09:03:11 2015
-+++ b/src/fcmatch.c	Thu Jun 18 09:15:24 2015
-@@ -183,6 +183,15 @@
-     if (v2 == 0)
- 	return 0;
+--- fontconfig-2.14.0/src/fcmatch.c
++++ fontconfig-2.14.0/src/fcmatch.c
+@@ -50,6 +50,15 @@ default:
+ 	return -1.0;
+     }
      v = v2 - v1;
 +
 +    /*
@@ -22,8 +22,8 @@ anti-aliasing is not requested.
 +
      if (v < 0)
  	v = -v;
-     return v;
-@@ -623,6 +632,46 @@
+     *bestValue = FcValueCanonicalize (value2);
+@@ -855,6 +864,46 @@ FcConfigSubstituteWithPat (config, new,
      return new;
  }
  
@@ -70,18 +70,18 @@ anti-aliasing is not requested.
  static FcPattern *
  FcFontSetMatchInternal (FcFontSet   **sets,
  			int	    nsets,
-@@ -636,6 +685,8 @@
-     int		    i;
-     int		    set;
+@@ -870,6 +919,8 @@ int		    set;
+     FcCompareData   data;
+     const FcPatternElt *elt;
  
 +    FcChangeFormat ( p );
 +
      for (i = 0; i < PRI_END; i++)
  	bestscore[i] = 0;
      best = 0;
-@@ -876,6 +927,8 @@
-     FcBool    	    *patternLangSat;
-     FcValue	    patternLang;
+@@ -1035,6 +1086,8 @@ FcResult    *result)
+ {
+     FcPattern	    *best, *ret = NULL;
  
 +    FcChangeFormat ( p );
 +

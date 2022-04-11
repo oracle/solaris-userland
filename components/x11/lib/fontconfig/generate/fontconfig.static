@@ -1,0 +1,45 @@
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+#
+# Copyright (c) 2022, Oracle and/or its affiliates.
+#
+
+dir  path=etc/fonts group=sys
+dir  path=etc/fonts/conf.avail group=sys
+file files/20-indic.conf path=etc/fonts/conf.avail/20-indic.conf
+file files/49-sun-preuser.conf path=etc/fonts/conf.avail/49-sun-preuser.conf
+file files/90-sun-prefer-bitmap.conf \
+    path=etc/fonts/conf.avail/90-sun-prefer-bitmap.conf
+dir  path=etc/fonts/conf.d group=sys
+link path=etc/fonts/conf.d/20-indic.conf target=../conf.avail/20-indic.conf
+link path=etc/fonts/conf.d/49-sun-preuser.conf \
+    target=../conf.avail/49-sun-preuser.conf
+link path=etc/fonts/conf.d/90-sun-prefer-bitmap.conf \
+    target=../conf.avail/90-sun-prefer-bitmap.conf
+file files/auth_attr path=etc/security/auth_attr.d/fontconfig group=sys
+dir  path=lib/svc/manifest/application/font group=sys
+file files/fc-cache.xml path=lib/svc/manifest/application/font/fc-cache.xml \
+    group=sys
+file files/fc-cache.sh path=lib/svc/method/fc-cache
+dir  path=usr/share/doc/fontconfig/fontconfig-devel facet.doc.html=all
+file files/libfontconfig.3lib path=usr/share/man/man3lib/libfontconfig.3lib
+link path=usr/share/man/man5/fonts.conf.5 target=fonts-conf.5
+# Must create empty directory for fc-cache to put cache files in
+dir  path=var/cache/fontconfig
