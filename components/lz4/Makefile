@@ -32,15 +32,15 @@ include ../../make-rules/shared-macros.mk
 PATH=/usr/gnu/bin:/usr/bin:/usr/sbin
 
 COMPONENT_NAME=		lz4
-COMPONENT_VERSION=	1.9.2
+COMPONENT_VERSION=	1.9.3
 COMPONENT_PROJECT_URL=	https://lz4.github.io/lz4/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:658ba6191fa44c92280d4aa2c271b0f4fbc0e34d249578dd05e50e76d0e5efcc
+    sha256:030644df4611007ff7dc962d981f390361e6c97a34e5cbc393ddfbe019ffe2c1
 COMPONENT_ARCHIVE_URL=	https://github.com/lz4/lz4/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/lz4
 COMPONENT_ANITYA_ID=	1865
 
-COMPONENT_BAID=		81190
+COMPONENT_BAID=		120521
 
 BUILD_STYLE= justmake
 include $(WS_MAKE_RULES)/common.mk
@@ -73,3 +73,4 @@ COMPONENT_TEST_TRANSFORMS += '-e "/==>/d" -e "/decoded.*bytes/d" -e "/\-Syntheti
 COMPONENT_TEST_TRANSFORMS += '-e "/^Makefile:/d" -e "/^Writing [0-9]\+ bytes/d" -e "/creating pkgconfig/d" -e "/COPYING :/d" '
 COMPONENT_TEST_TRANSFORMS += '-e "/^test.*\-lt/d" -e "/^test.*\-eq/d" -e "s/\->.*MBs\$$/COMPRESS_RATE/" -e "/byte\(s\)\{0,1\}.*copied/d" '
 COMPONENT_TEST_TRANSFORMS += '-E -e "s/(Frame[[:blank:]]+(B7[DI]|\-)[[:blank:]]+(XXH32|\-)[[:blank:]]+)[0-9]+/\1 X/" '
+COMPONENT_TEST_TRANSFORMS += '-e "/^\*\*\*/d" '

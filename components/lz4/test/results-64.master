@@ -8,7 +8,6 @@
  ---- test lz4 basic compression/decompression ----
 ./datagen -g0       | ../programs/lz4 -v     | ../programs/lz4 -t
 
-*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
 ./datagen -g16KB    | ../programs/lz4 -9     | ../programs/lz4 -t
 
 ./datagen -g20KB > tmp-tlb-dg20k
@@ -22,7 +21,6 @@ gdiff -q tmp-tlb-dg20k tmp-tlb-dec
 ./datagen -g6M -P99 | ../programs/lz4 -9BD   | ../programs/lz4 -t
 
 ./datagen -g17M     | ../programs/lz4 -9v    | ../programs/lz4 -qt
-*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
 ./datagen -g33M     | ../programs/lz4 --no-frame-crc | ../programs/lz4 -t
 
 ./datagen -g256MB   | ../programs/lz4 -vqB4D | ../programs/lz4 -t
@@ -58,7 +56,6 @@ gdiff -q tmp-tlb-hw tmp-tlb4
 Warning : using stdout as default output. Do not rely on this behavior: use explicit `-c` instead ! 
 "Md@hello world
 R../programs/lz4 --list tmp-tlb-hw.lz4           # test --list on valid single-frame file
-Warning : using stdout as default output. Do not rely on this behavior: use explicit `-c` instead ! 
     Frames           Type Block  Compressed  Uncompressed     Ratio   Filename
          1       LZ4Frame   B4I       31.00             -         -   tmp-tlb-hw.lz4
 cat tmp-tlb-hw >> tmp-tlb-hw.lz4
@@ -66,7 +63,6 @@ cat tmp-tlb-hw >> tmp-tlb-hw.lz4
 Warning : using stdout as default output. Do not rely on this behavior: use explicit `-c` instead ! 
 hello world
 ../programs/lz4 -BX tmp-tlb-hw -c -q | ../programs/lz4 -tv  # test block checksum
-*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
 # ./datagen -g20KB generates the same file every single time
 # cannot save output of ./datagen -g20KB as input file to lz4 because the following shell commands are run before ./datagen -g20KB
 ! ../programs/lz4 -c --fast=0 tmp-tlb-dg20K # lz4 should fail when fast=0
@@ -103,6 +99,9 @@ Arguments :
  -k     : preserve source files(s)  (default) 
 --rm    : remove source file(s) after successful de/compression 
  -h/-H  : display help/long help and exit 
+# High --fast values can result in out-of-bound dereferences #876
+./datagen -g1M | ../programs/lz4 -c --fast=999999999 > /dev/null
+
 # Test for #596
 ../programs/lz4 -m tmp-tlb-test
 ../programs/lz4 tmp-tlb-test.lz4 tmp-tlb-test2
@@ -140,6 +139,41 @@ cmp tmp-tlm-concat1 tmp-tlm-concat2  # must be equivalent
 ! ../programs/lz4 -f -m tmp-tlm-concat1 notHere tmp-tlm-concat2  # must fail : notHere not present
 notHere: No such file or directory 
 
+ ---- test multiple files (Legacy format) ----
+# compress multiple files using legacy format: one .lz4 per source file
+../programs/lz4 -f -l -m tmp-tlm*
+test -f tmp-tlm1.lz4
+test -f tmp-tlm2.lz4
+test -f tmp-tlm3.lz4
+# decompress multiple files compressed using legacy format: one output file per .lz4
+mv tmp-tlm1 tmp-tlm1-orig
+mv tmp-tlm2 tmp-tlm2-orig
+mv tmp-tlm3 tmp-tlm3-orig
+../programs/lz4 -d -f -m tmp-tlm*.lz4
+../programs/lz4 -l -d -f -m tmp-tlm*.lz4 # -l mustn't impact -d option
+cmp tmp-tlm1 tmp-tlm1-orig   # must be identical
+cmp tmp-tlm2 tmp-tlm2-orig
+cmp tmp-tlm3 tmp-tlm3-orig
+# compress multiple files into stdout using legacy format
+cat tmp-tlm1.lz4 tmp-tlm2.lz4 tmp-tlm3.lz4 > tmp-tlm-concat1
+rm -f *.lz4
+../programs/lz4 -l -m tmp-tlm1 tmp-tlm2 tmp-tlm3 -c > tmp-tlm-concat2
+test ! -f tmp-tlm1.lz4  # must not create .lz4 artefact
+cmp tmp-tlm-concat1 tmp-tlm-concat2  # must be equivalent
+# # # decompress multiple files into stdout using legacy format
+rm -f tmp-tlm-concat1 tmp-tlm-concat2
+../programs/lz4 -l -f -m tmp-tlm1 tmp-tlm2 tmp-tlm3   # generate .lz4 to decompress
+cat tmp-tlm1 tmp-tlm2 tmp-tlm3 > tmp-tlm-concat1   # create concatenated reference
+rm -f tmp-tlm1 tmp-tlm2 tmp-tlm3
+../programs/lz4 -d -m tmp-tlm1.lz4 tmp-tlm2.lz4 tmp-tlm3.lz4 -c > tmp-tlm-concat2
+../programs/lz4 -d -l -m tmp-tlm1.lz4 tmp-tlm2.lz4 tmp-tlm3.lz4 -c > tmp-tlm-concat2 # -l mustn't impact option -d
+test ! -f tmp-tlm1  # must not create file artefact
+cmp tmp-tlm-concat1 tmp-tlm-concat2  # must be equivalent
+# # # compress multiple files, one of which is absent (must fail)
+! ../programs/lz4 -f -l -m tmp-tlm-concat1 notHere-legacy tmp-tlm-concat2  # must fail : notHere-legacy not present
+notHere-legacy: No such file or directory 
+Error 20 : notHere-legacy : open file error  
+
  ---- test frame concatenation ----
 cat tmp-lfc-nonempty tmp-lfc-empty tmp-lfc-nonempty > tmp-lfc-src
 ../programs/lz4 -zq tmp-lfc-empty -c > tmp-lfc-empty.lz4
@@ -150,7 +184,7 @@ cmp tmp-lfc-src tmp-lfc-result
 frame concatenation test completed
 
  ---- bench mode ----
-../programs/lz4 -bi1
+../programs/lz4 -bi0
 
  ---- test mode ----
 ! ./datagen | ../programs/lz4 -t
@@ -188,11 +222,18 @@ file1-dne: is not a regular file
 ./datagen -g15M > tmplc1
 
 ../programs/lz4 -v tmplc1 -c | ../programs/lz4 -t
-*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
 ../programs/lz4 -v --content-size tmplc1 -c | ../programs/lz4 -d > tmplc2
-*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
-gdiff -s tmplc1 tmplc2
-Files tmplc1 and tmplc2 are identical
+gdiff tmplc1 tmplc2
+../programs/lz4 -f tmplc1 -c > tmplc1.lz4
+../programs/lz4 --content-size tmplc1 -c > tmplc2.lz4
+! gdiff tmplc1.lz4 tmplc2.lz4  # must differ, due to content size
+Binary files tmplc1.lz4 and tmplc2.lz4 differ
+../programs/lz4 --content-size < tmplc1 > tmplc3.lz4
+gdiff tmplc2.lz4 tmplc3.lz4  # both must contain content size
+cat tmplc1 | ../programs/lz4 > tmplc4.lz4
+gdiff tmplc1.lz4 tmplc4.lz4  # both don't have content size
+cat tmplc1 | ../programs/lz4 --content-size > tmplc5.lz4 # can't determine content size
+gdiff tmplc1.lz4 tmplc5.lz4  # both don't have content size
 
  ---- test lz4 compression/decompression with dictionary ----
 ./datagen -g16KB > tmp-dict
@@ -326,7 +367,6 @@ gls -ls --block-size=1 tmpls* | awk '{print $6" "$NF}' | column -t
 5242880  tmplsdg5M
 5242880  tmplsnosparse
 ./datagen -s1 -g1200007 -P100 | ../programs/lz4 | ../programs/lz4 -dv --sparse > tmplsodd   # Odd size file (to generate non-full last block)
-*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
 
 ./datagen -s1 -g1200007 -P100 | gdiff -s - tmplsodd
 
@@ -348,11 +388,8 @@ Hello World 3 !
 cat tmplsdg1M tmplsdg1M > tmpls2M
 ../programs/lz4 -B5 -v tmplsdg1M tmplsc
 using blocks of size 256 KB 
-*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
 ../programs/lz4 -d -v tmplsc tmplsr
-*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
 ../programs/lz4 -d -v tmplsc -c >> tmplsr
-*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
 gls -ls --block-size=1 tmp* | awk '{print $6" "$1" "$NF}' | column -t
 2097152  512  tmpls2M
 4192     512  tmplsc
@@ -361,30 +398,27 @@ gls -ls --block-size=1 tmp* | awk '{print $6" "$1" "$NF}' | column -t
 gdiff tmpls2M tmplsr
 
  ---- test huge files compression/decompression ----
-./datagen -g6GB   | ../programs/lz4 -vB5D  | ../programs/lz4 -qt
+./datagen -g6GB    | ../programs/lz4 -vB5D  | ../programs/lz4 -qt
 using blocks of size 256 KB 
-*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
-./datagen -g5GB   | ../programs/lz4 -v4BD  | ../programs/lz4 -qt
-*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
+./datagen -g4500MB | ../programs/lz4 -v3BD | ../programs/lz4 -qt
 # test large file size [2-4] GB
-*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
 _POSIX_VERSION defined: 200809L
 PLATFORM_POSIX_VERSION defined: 200112L
 _FILE_OFFSET_BITS defined: 64L
 Using stdin for input
-Using stdout for output
-Sparse File Support is automatically disabled on stdout ; try --sparse 
-*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
+Using stdout for output 
+Sparse File Support automatically disabled on stdout ; to force-enable it, add --sparse command 
 gdiff -s tmphf1 tmphf2
 Files tmphf1 and tmphf2 are identical
 
  ---- test lz4c variant ----
 ./datagen -g256MB | ../programs/lz4c -l -v    | ../programs/lz4c   -t
-*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
 ! Generating LZ4 Legacy format (deprecated) ! 
 ./frametest -v -T90s
-Starting lz4frame tester (64-bits, 1.9.2)
+Starting lz4frame tester (64-bits, 1.9.3)
 LZ4F_compressBound(0) =  65551 
+LZ4F_compressBound(1 KB, autoFlush=1) =  1032 
+LZ4F_compressBound(1 KB, autoFlush=0) =  65544 
 LZ4F_compressFrame, compress null content : null content encoded into a 11 bytes frame 
 LZ4F_createDecompressionContext 
 LZ4F_getFrameInfo on null-content frame (#157) 
@@ -442,7 +476,6 @@ Skippable frame header complete in first call
 Skipped 10 bytes 
 Basic tests completed 
 ./fullbench --no-prompt -i1 COPYING
-*** LZ4 speed analyzer v1.9.2 64-bits, by Yann Collet ***
 - 1 iterations -
 Compression functions : 
  1-LZ4_compress_default               :     18092 COMPRESS_RATE
@@ -466,13 +499,15 @@ Decompression functions :
  2-LZ4_decompress_fast_usingDict(pref :     18092 COMPRESS_RATE
  3-LZ4_decompress_fast_using(Ext)Dict :     18092 COMPRESS_RATE
  4-LZ4_decompress_safe                :     18092 COMPRESS_RATE
+ 5-LZ4_decompress_safe_withPrefix64k  :     18092 COMPRESS_RATE
  6-LZ4_decompress_safe_usingDict      :     18092 COMPRESS_RATE
  7-LZ4_decompress_safe_partial        :     18092 COMPRESS_RATE
  8-LZ4_decompress_safe_forceExtDict   :     18092 COMPRESS_RATE
 10-LZ4F_decompress                    :     18092 COMPRESS_RATE
 11-LZ4F_decompress_followHint         :     18092 COMPRESS_RATE
+12-LZ4F_decompress_noHint             :     18092 COMPRESS_RATE
 ./fuzzer -T90s
-Starting LZ4 fuzzer (64-bits, v1.9.2)
+Starting LZ4 fuzzer (64-bits, v1.9.3)
 Overflow tests : 64 bits mode : no overflow 
 All unit tests completed successfully compressionLevel=9 
 Overflow tests : 64 bits mode : no overflow 
@@ -533,7 +568,6 @@ DATETIME - > $(@D)/tests/../lz4 --list -m /tmp/test_list_*.lz4
         16              -     -      49.33M             -         -   test_list_concat-all.lz4
 
 DATETIME - > $(@D)/tests/../lz4 --list -m -v /tmp/test_list_concat-all.lz4 /tmp/test_list_*M-lz4f-2f--content-size.lz4
-*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
 test_list_concat-all.lz4(1/2)
      Frame           Type Block Checksum           Compressed         Uncompressed     Ratio
          1       LZ4Frame   B7I    XXH32               X              3145728     50.39%
@@ -560,9 +594,13 @@ test_list_14M-lz4f-2f--content-size.lz4(2/2)
 
 
 
+ ---- test decompress-partial ----
+./decompress-partial
+test decompress-partial OK 
+
 === Print Version ===
 ./printVersion
-Hello World ! LZ4 Library version = 10902
+Hello World ! LZ4 Library version = 10903
 
 === Simple compression example ===
 ./simpleBuffer
@@ -632,4 +670,3 @@ decompress : done
 verify : Makefile <-> Makefile.lz4.dec
 verify : OK
 ../programs/lz4 -vt Makefile.lz4
-*** LZ4 command line interface 64-bits v1.9.2, by Yann Collet ***
