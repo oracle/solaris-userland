@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+# Copyright (c) 2022, Oracle and/or its affiliates.
+#
+
+# Freeze Python 2.7 and any Oracle Solaris delivered modules
+
+export PATH=/usr/bin:/usr/sbin
+
+# Find the list of packages that depend on Python 2.7, remembering to add in
+# the runtime itself.
+echo "# Gathering list of installed Python 2.7 packages...\c"
+py27_installed="$(pkg search -lHo pkg.shortfmri depend:require:runtime/python-27)\
+ runtime/python-27"
+
+echo "\n# Unlocking installed Python 2.7 packages"
+pkg change-facet $(for p in $py27_installed ; do
+	echo " version-lock.${p%%@*}=False" 
+done)
+
+echo "\n# Freezing installed Python 2.7 packages"
+pkg freeze -c "Legacy Python 2.7 Environment" $(for p in $py27_installed ; do
+	echo " ${p%%-11\.4.*}"
+done)
