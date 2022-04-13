@@ -135,16 +135,16 @@ https://github.com/paramiko/paramiko/pull/972/files
              self._test_connection(
 --- paramiko-2.7.2/tests/test_pkey.py
 +++ paramiko-2.7.2/tests/test_pkey.py
-@@ -26,7 +26,7 @@ import os
+@@ -27,7 +27,7 @@ import stat
  from binascii import hexlify
  from hashlib import md5
  
 -from paramiko import RSAKey, DSSKey, ECDSAKey, Ed25519Key, Message, util
 +from paramiko import RSAKey, DSSKey, ECDSAKey, Message, util
  from paramiko.py3compat import StringIO, byte_chr, b, bytes, PY2
+ from paramiko.common import o600
  
- from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateNumbers
-@@ -523,50 +523,6 @@ class KeyTest(unittest.TestCase):
+@@ -525,50 +525,6 @@ class KeyTest(unittest.TestCase):
          comparable = TEST_KEY_BYTESTR_2 if PY2 else TEST_KEY_BYTESTR_3
          self.assertEqual(str(key), comparable)
  
@@ -195,11 +195,10 @@ https://github.com/paramiko/paramiko/pull/972/files
      def test_keyfile_is_actually_encrypted(self):
          # Read an existing encrypted private key
          file_ = _support("test_rsa_password.key")
-@@ -609,12 +565,3 @@ class KeyTest(unittest.TestCase):
-         self.assertEqual(n, key.public_numbers.n)
+@@ -612,15 +568,6 @@ class KeyTest(unittest.TestCase):
          # Serial number
          self.assertEqual(msg.get_int64(), 1234)
--
+ 
 -        # Prevented from loading certificate that doesn't match
 -        key_path = _support(os.path.join("cert_support", "test_ed25519.key"))
 -        key1 = Ed25519Key.from_private_key_file(key_path)
@@ -208,6 +207,10 @@ https://github.com/paramiko/paramiko/pull/972/files
 -            key1.load_certificate,
 -            _support("test_rsa.key-cert.pub"),
 -        )
+-
+     @patch("paramiko.pkey.os")
+     def _test_keyfile_race(self, os_, exists):
+         # Re: CVE-2022-24302
 --- paramiko-2.7.2/setup.py
 +++ paramiko-2.7.2/setup.py
 @@ -88,6 +88,6 @@ setup(
