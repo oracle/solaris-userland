@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 		NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		itstool
-COMPONENT_VERSION=	2.0.6
+COMPONENT_VERSION=	2.0.7
 COMPONENT_PROJECT_URL=	http://itstool.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-    sha256:6233cc22726a9a5a83664bf67d1af79549a298c23185d926c3677afa917b92a9
+    sha256:6b9a7cd29a12bb95598f5750e8763cee78836a1a207f85b74d8b3275b27e87ca
 COMPONENT_ARCHIVE_URL=	 http://files.itstool.org/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	13109
 COMPONENT_BUGDB=        utility/itstool
 
-COMPONENT_BAID=		71288
+COMPONENT_BAID=		119393
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
