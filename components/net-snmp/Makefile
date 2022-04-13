@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 
@@ -120,12 +120,32 @@ TEST_LIBPATH.32 =       $(PROTOUSRLIBDIR)
 TEST_LIBPATH.64 =       $(BUILD_DIR)/prototype/$(MACH64)$(USRLIBDIR64)
 COMPONENT_TEST_ENV +=   LD_LIBRARY_PATH=$(TEST_LIBPATH.$(BITS))
 
-# perl man pages hiding here in 64-bit PROTO_DIR
+# Usually component installs both 32 and 64bit compilation into $(PROTO_DIR).
+# Here we install 32bit compilation into $(PROTO_DIR) and 64 bit into
+# $(BUILD_DIR)/prototype/$(MACH64). So we need to tell pkg to look for binaries
+# also here.
 PKG_PROTO_DIRS += $(BUILD_DIR)/prototype/$(MACH64)
 
-# The 5.7 version libraries need to be added from the net-snmp-57 proto path.  
+# Plus add paths to the 5.7 version libraries need to be added from the
+# net-snmp-57 proto path.
 PKG_PROTO_DIRS += $(WS_TOP)/components/net-snmp-57/build/prototype/$(MACH)
 PKG_PROTO_DIRS += $(WS_TOP)/components/net-snmp-57/build/prototype/$(MACH64)
+
+# Now we need to tell where 'gmake manifest-check' looks for binaries.
+# By default manifest-check takes binaries from build/prototype/$(uname -p). We
+# need to add more sources (see doc/manifest-check.txt for description):
+#
+# Add documentation
+GENERATE_PROTO_DIRS += build/$(MACH32)/docs^build/$$(MACH32)/docs
+# Add 64 bit libraries from build/prototype/$(MACH64) into usr/bin/$(MACH64)
+GENERATE_PROTO_DIRS += build/prototype/$(MACH64)/usr/lib/$(MACH64)/^usr/lib/$$!(MACH64)
+# Add 64 bit binaries from build/prototype/$(MACH64)
+GENERATE_PROTO_DIRS += build/prototype/$(MACH64)/usr/bin^usr/bin
+# Add net-snmp-57 both 32 and 64 bit locations
+GENERATE_PROTO_DIRS += $(WS_TOP)/components/net-snmp-57/build/prototype/$(MACH64)
+GENERATE_PROTO_DIRS += $(WS_TOP)/components/net-snmp-57/build/prototype/$(MACH)
+# Add demo files
+GENERATE_PROTO_DIRS += sun/sdk/demo^sun/sdk/demo
 
 $(BUILD_32): COMPONENT_POST_BUILD_ACTION= \
 	(cd $(BUILD_DIR)/$(MACH32)/sun ; ls agent; $(CCSMAKE) -e $(CCSMAKE_ARGS))
@@ -156,6 +176,7 @@ $(BUILD_DIR_32)/.docs:
 	$(TOUCH) $@
 
 PKG_MACROS += PYVER=$(PYTHON_VERSION)
+
 
 REQUIRED_PACKAGES += developer/build/make
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen

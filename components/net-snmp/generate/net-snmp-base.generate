@@ -1,0 +1,64 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2022, Oracle and/or its affiliates.
+#
+
+<include generate/common.transform>
+
+# Drop anything not belonging to us
+<transform file link pkg.type=(?!base) -> drop>
+<transform file link -> delete pkg.type .*>
+
+# The default path 'generate' looks into is 32 bit install. Drop the 32 bit binaries
+<transform link file path=usr/bin/\$\(MACH32\) -> drop>
+
+# See static file
+<transform file path=usr/bin/net-snmp-config -> drop>
+
+<transform file path=usr/include/net-snmp/library/README -> drop>
+# Strange file being built
+<transform file path=usr/lib/\$\(MACH64\)$ -> drop>
+
+
+# This works in tandem with GENERATE_PROTO_DIRS += build/$(MACH32)/docs^usr/share/doc/net-snmp
+
+<transform file path=build/\$\(MACH32\)/docs/latex -> drop>
+
+<transform file path=build/\$\(MACH32\)/docs/.* -> set action.hash %(path)>
+<transform file path=build/\$\(MACH32\)/docs/.* -> edit path build/\\$\\(MACH32\\)/docs usr/share/doc/net-snmp>
+
+<transform file path=.*/(snmp(trap)?d)$ -> set path usr/sbin/%<1>>
+
+
+#-file path=usr/perl5/vendor_perl/5.32/i86pc-solaris-thread-multi-64/NetSNMP/TrapReceiver.pm
+<transform file path=.*/vendor_perl/$(PERL_VERSION)/$(PERL_ARCH)/ -> edit path /$(PERL_ARCH)/ /$!(PERL_ARCH)/>
+<transform file path=.*/vendor_perl/$(PERL_VERSION)/ -> edit path /$(PERL_VERSION)/ /$!(PERL_VERSION)/>
+<transform file path=usr/perl5/$(PERL_VERSION)/ -> edit path /$(PERL_VERSION)/ /$!(PERL_VERSION)/>
+<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
+<transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
+
+# Since we are looking at both old and new net-snmp we we see dual dynamic library symlinks like
+# link path=usr/lib/$(MACH64)/libsnmp.so target=libsnmp.so.30.0.3
+# link path=usr/lib/$(MACH64)/libsnmp.so target=libsnmp.so.35.0.0
+# We need to drop the links to old libraries
+<transform link path=.*\.so$ target=.*\.30.*\.0.*\.3$ -> drop>

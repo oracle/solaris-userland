@@ -1,0 +1,64 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2022, Oracle and/or its affiliates.
+#
+
+# These are mib files which are not installed by net-snmp, but we were used to
+# deliver them in the past so just to stay safe we keep delivering them.
+file local/mib2c.emulation.conf path=etc/net-snmp/snmp/mib2c.emulation.conf
+file local/mib2c.row.conf path=etc/net-snmp/snmp/mib2c.row.conf
+file mibs/DISMAN-EXPRESSION-MIB.txt path=etc/net-snmp/snmp/mibs/DISMAN-EXPRESSION-MIB.txt
+file mibs/DISMAN-NSLOOKUP-MIB.txt path=etc/net-snmp/snmp/mibs/DISMAN-NSLOOKUP-MIB.txt
+file mibs/DISMAN-PING-MIB.txt path=etc/net-snmp/snmp/mibs/DISMAN-PING-MIB.txt
+file mibs/DISMAN-TRACEROUTE-MIB.txt path=etc/net-snmp/snmp/mibs/DISMAN-TRACEROUTE-MIB.txt
+file mibs/NET-SNMP-MONITOR-MIB.txt path=etc/net-snmp/snmp/mibs/NET-SNMP-MONITOR-MIB.txt
+file mibs/NET-SNMP-PERIODIC-NOTIFY-MIB.txt path=etc/net-snmp/snmp/mibs/NET-SNMP-PERIODIC-NOTIFY-MIB.txt
+file mibs/NET-SNMP-SYSTEM-MIB.txt path=etc/net-snmp/snmp/mibs/NET-SNMP-SYSTEM-MIB.txt
+file mibs/NETWORK-SERVICES-MIB.txt path=etc/net-snmp/snmp/mibs/NETWORK-SERVICES-MIB.txt
+file mibs/UCD-IPFILTER-MIB.txt path=etc/net-snmp/snmp/mibs/UCD-IPFILTER-MIB.txt
+file mibs/UCD-SNMP-MIB-OLD.txt path=etc/net-snmp/snmp/mibs/UCD-SNMP-MIB-OLD.txt
+file $(MACH32)/sun/agent/mibs/health-monitor-mib.mib path=etc/net-snmp/snmp/mibs/health-monitor-mib.mib
+
+# configuration file
+file local/net-snmp-cert.conf path=etc/net-snmp/snmp/net-snmp-cert.conf
+
+# SMF infrastructure
+file $(MACH32)/sun/snmpd.conf path=etc/net-snmp/snmp/snmpd.conf mode=0600 \
+    overlay=allow preserve=renamenew
+file net-snmp.xml path=lib/svc/manifest/application/management/net-snmp.xml \
+    restart_fmri=svc:/system/manifest-import:default
+file svc-net-snmp path=lib/svc/method/svc-net-snmp
+
+# net-snmp-config
+link path=usr/bin/net-snmp-config target=net-snmp-config-64
+file usr/bin/$(MACH32)/net-snmp-config path=usr/bin/net-snmp-config-32
+file usr/bin/net-snmp-config path=usr/bin/net-snmp-config-64
+
+# add 64 bit binaries into /usr/lib/$(MACH64)
+file usr/bin/net-snmp-cert path=usr/lib/$(MACH64)/net-snmp-cert mode=0555
+file usr/bin/snmp-bridge-mib path=usr/lib/$(MACH64)/snmp-bridge-mib mode=0555
+file usr/bin/agentxtrap path=usr/lib/$(MACH64)/agentxtrap mode=0555
+
+# 64 bit build is in non-standard location
+file $(MACH64)/sun/agent/modules/entityMib/libentity.so \
+    path=usr/lib/$(MACH64)/libentity.so
