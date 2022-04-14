@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -33,13 +33,6 @@ COMPONENT_ARCHIVE_HASH= \
 COMPONENT_BUGDB=        x11/xclients
 COMPONENT_ANITYA_ID=	15043
 COMPONENT_BAID=		61038
-
-COMPONENT_NAME_1=       mkfontdir
-COMPONENT_VERSION_1=    1.0.7
-COMPONENT_ARCHIVE_HASH_1=       \
-    sha256:56d52a482df130484e51fd066d1b6eda7c2c02ddbc91fe6e2be1b9c4e7306530
-COMPONENT_ANITYA_ID_1=	15044
-COMPONENT_BAID_1=		52936
 
 COMPONENT_NAME_2=       bdftopcf
 COMPONENT_VERSION_2=    1.1
@@ -67,7 +60,7 @@ TEST_TARGET = $(NO_TESTS)
 BUILD_TARGET = $(BUILD_$(MK_BITS))
 INSTALL_TARGET = $(INSTALL_$(MK_BITS))
 
-LIST = 1 2 3 4
+LIST = 2 3 4
 
 define extra-target-rules
 $(BUILD_DIR)/%_$(1)/.configured: SOURCE_DIR=$$(SOURCE_DIR_$(1))
