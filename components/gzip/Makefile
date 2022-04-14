@@ -20,29 +20,25 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gzip
-COMPONENT_VERSION=	1.10
+COMPONENT_VERSION=	1.12
+COMPONENT_BAID=		120790
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c91f74430bf7bc20402e1f657d0b252cb80aa66ba333a25704512af346633c68
+    sha256:5b4fb14d38314e09f2fc8a1c510e7cd540a3ea0e3eb9b0420046b82c3bf41085
 COMPONENT_ANITYA_ID=	1290
-
-COMPONENT_BAID=		59495
 
 # Enable adiheap and adistack security extensions
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
 ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
-INSTALL_TARGET=
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_64)
 include $(WS_MAKE_RULES)/gnu-component.mk
 
-# Prevent gzip assembly code usage; which segv's with Studio 12.3 and 12.4.
-CONFIGURE_OPTIONS +=	gzip_cv_assembler=no
 CONFIGURE_OPTIONS +=	--infodir=$(CONFIGURE_INFODIR)
 
 # Needed for "gmake test" to work successfully.
@@ -52,8 +48,6 @@ CONFIGURE_OPTIONS +=	--infodir=$(CONFIGURE_INFODIR)
 # set unexpectedly, and errors such as "$1: unbound variable" and
 # diffs failing due to script tracing in output files.
 unexport SHELLOPTS
-
-COMPONENT_PREP_ACTION = (cd $(SOURCE_DIR); $(AUTORECONF) -if)
 
 # Fix references to Solaris renamed programs (z*->gz*) in man pages, info
 # pages and in wrapper scripts.
@@ -72,14 +66,14 @@ COMPONENT_POST_INSTALL_ACTION = \
 	 	for zfile in `ls z*`; do \
 			mv $$zfile g$$zfile ; \
 		done ; \
-	 done)
+	 done);
 
 # Provide missing man pages.
-GZGREP_MAN_VARIANTS+=$(PROTOUSRSHAREMAN1DIR)/gzegrep.1
-GZGREP_MAN_VARIANTS+=$(PROTOUSRSHAREMAN1DIR)/gzfgrep.1
-
-$(GZGREP_MAN_VARIANTS):
-	$(RM) $@; echo ".so man1/gzgrep.1" > $@
+COMPONENT_POST_INSTALL_ACTION += \
+	(cd $(PROTOUSRSHAREMAN1DIR); \
+	 for man in gzegrep.1 gzfgrep.1 ; do \
+		$(RM) $$man; echo ".so man1/gzgrep.1" > $$man; \
+	 done);
 
 # Get the binaries to test from the component build area.
 COMPONENT_TEST_ENV +=	PATH=$(BUILD_DIR_$(BITS)):/usr/xpg4/bin:$(USRBINDIR)
@@ -91,8 +85,6 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
 	'-e "/PASS/p" ' \
 	'-e "/FAIL/p" '
-
-install:      $(INSTALL_64) $(GZGREP_MAN_VARIANTS)
 
 # We can't use auto hardlink processing because we don't ship 'uncompress'
 # (we drop it in generate file), so it does not appear in the p5m and so it
