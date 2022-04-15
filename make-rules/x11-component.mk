@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 #
@@ -61,29 +61,12 @@ PKGMOGRIFY_TRANSFORMS += $(WS_TOP)/transforms/X-incorporation
 
 include $(WS_MAKE_RULES)/common.mk
 
-# X.Org packages use a common set of autoconf macros
-UTIL_MACROS = $(WS_COMPONENTS)/x11/util/util-macros/build/prototype/$(MACH)
-ACLOCAL_INCLUDES = -I$(UTIL_MACROS)/usr/share/aclocal
-AUTORECONF_ENV = ACLOCAL="/usr/bin/aclocal $(ACLOCAL_INCLUDES)"
-PKG_CONFIG_PATHS += $(UTIL_MACROS)/usr/share/pkgconfig
-REQUIRED_PACKAGES += developer/build/autoconf/xorg-macros
-
 # X.Org packages use a common set of sgml entities to build documentation
-XORG_DOCS = $(WS_COMPONENTS)/x11/doc/build/prototype/$(MACH)
-PKG_CONFIG_PATHS += $(XORG_DOCS)/usr/share/pkgconfig
+REQUIRED_PACKAGES += x11/documentation/xorg-docs
 
 ifeq ($(strip $(BUILD_STYLE)),configure)
-# XORG_WITH_XMLTO check below makes sure we're using a version of that macro
-# compatible with xmlto 0.0.27 & later, as provided in util-macros > 0.19.0
-COMPONENT_PREP_ACTION += (cd $(@D) ; \
-	if [[ -f configure.ac ]] ; then \
-	    if grep -q XORG_WITH_XMLTO configure.ac ; then \
-		if ! grep -q 'xmlto 0\.0\.27' configure ; then \
-		    print '* Forcing autoreconf to apply xmlto macro fix' ; \
-		    $(AUTORECONF_ENV) $(AUTORECONF) -fiv ; \
-		fi ; \
-	    fi ; \
-	fi );
+# X.Org packages use a common set of autoconf macros
+REQUIRED_PACKAGES += developer/build/autoconf/xorg-macros
 
 # Common documentation options for X.Org components that use autoconf
 CONFIGURE_OPTIONS += --enable-specs

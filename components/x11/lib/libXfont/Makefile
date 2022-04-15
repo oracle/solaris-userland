@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -42,6 +42,9 @@ CONFIGURE_LIBDIR.64 = $(USRLIBDIR)/xorg/$(MACH64)
 FIX_PC_FILES=xfont.pc.in
 
 include $(WS_MAKE_RULES)/x11-component.mk
+
+# Regenerate autotools files after patching src/Makefile.am
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv) ;
 
 CONFIGURE_OPTIONS += --enable-freetype
 CONFIGURE_OPTIONS += --disable-type1

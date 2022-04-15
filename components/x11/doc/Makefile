@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		64
@@ -57,6 +57,12 @@ include $(WS_MAKE_RULES)/x11-component.mk
 
 # Have to install the doc tools before configuring the docs
 $(BUILD_DIR)/$(MACH64)-$(COMPONENT_NAME)/.configured: $(BUILD_DIR)/$(MACH64)-$(COMPONENT_NAME_1)/.installed
+
+# Regenerate configure script with util-macros > 0.19.0 to get fix to make
+# it work with xmlto 0.0.27 & later. It can be removed when we update to an
+# upstream version built with those macros.
+# Without this workaround, configure warns "xmlto cannot generate text format"
+COMPONENT_PREP_ACTION += (cd $(@D); autoreconf -fiv) ;
 
 # Fix entity paths in DocBook files so that gnome-help can resolve them
 COMPONENT_PREP_ACTION += \
