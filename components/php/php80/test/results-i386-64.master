@@ -4,12 +4,12 @@ Exts skipped    :   14
 Exts tested     :   58
 ---------------------------------------------------------------------
 
-Number of tests : 16433             13939
-Tests skipped   : 2494 ( 15.2%) --------
-Tests warned    :    2 (  0.0%) (  0.0%)
-Tests failed    :  179 (  1.1%) (  1.3%)
+Number of tests : 16556             14058
+Tests skipped   : 2498 ( 15.1%) --------
+Tests warned    :    3 (  0.0%) (  0.0%)
+Tests failed    :  168 (  1.0%) (  1.2%)
 Expected fail   :   30 (  0.2%) (  0.2%)
-Tests passed    : 13728 ( 83.5%) ( 98.5%)
+Tests passed    : 13857 ( 83.7%) ( 98.6%)
 ---------------------------------------------------------------------
 =====================================================================
 
@@ -74,7 +74,10 @@ enchant_dict_is_in_session() function [ext/enchant/tests/dict_is_in_session.phpt
 enchant_dict_quick_check() function [ext/enchant/tests/dict_quick_check_01.phpt]
 enchant_dict_store_replacement() function [ext/enchant/tests/dict_store_replacement.phpt]
 enchant_dict_suggest() function [ext/enchant/tests/dict_suggest.phpt]
+Bug #38212 (Seg Fault on invalid imagecreatefromgd2part() parameters) [ext/gd/tests/bug38212-mb.phpt]
+Bug #38212 (Seg Fault on invalid imagecreatefromgd2part() parameters) [ext/gd/tests/bug38212.phpt]
 Bug #39780 (PNG image with CRC/data error raises a fatal error) [ext/gd/tests/bug39780_extern.phpt]
+Bug #41442 (imagegd2() under output control) [ext/gd/tests/bug41442.phpt]
 Bug #43073 (TrueType bounding box is wrong for angle<>0) [ext/gd/tests/bug43073.phpt]
 Bug #45799 (imagepng() crashes on empty image). [ext/gd/tests/bug45799.phpt]
 Bug #48732 (TTF Bounding box wrong for letters below baseline) [ext/gd/tests/bug48732-mb.phpt]
@@ -84,14 +87,33 @@ Bug #48801 (Problem with imagettfbbox) [ext/gd/tests/bug48801.phpt]
 Bug #53504 imagettfbbox/imageftbbox gives incorrect values for bounding box [ext/gd/tests/bug53504.phpt]
 Bug #65148 (imagerotate may alter image dimensions) [ext/gd/tests/bug65148.phpt]
 Bug #66356 (Heap Overflow Vulnerability in imagecrop()) [ext/gd/tests/bug66356.phpt]
+Bug #71912 (libgd: signedness vulnerability) [ext/gd/tests/bug71912-mb.phpt]
+Bug #71912 (libgd: signedness vulnerability) [ext/gd/tests/bug71912.phpt]
 Bug #72339 Integer Overflow in _gd2GetHeader() resulting in heap overflow [ext/gd/tests/bug72339.phpt]
+Bug #73155 (imagegd2() writes wrong chunk sizes on boundaries) [ext/gd/tests/bug73155.phpt]
+Bug #73157 (imagegd2() ignores 3rd param if 4 are given) [ext/gd/tests/bug73157.phpt]
+Bug #73159 (imagegd2(): unrecognized formats may result in corrupted files) [ext/gd/tests/bug73159.phpt]
+Bug #73161 (imagecreatefromgd2() may leak memory) [ext/gd/tests/bug73161.phpt]
 Bug #73272 (imagescale() is not affected by, but affects imagesetinterpolation()) [ext/gd/tests/bug73272.phpt]
+Bug 73868 (DOS vulnerability in gdImageCreateFromGd2Ctx()) [ext/gd/tests/bug73868.phpt]
+Bug #73869 (Signed Integer Overflow gd_io.c) [ext/gd/tests/bug73869.phpt]
 Bug #77269 (Potential unsigned underflow in gdImageScale) [ext/gd/tests/bug77269.phpt]
+Bug #77272 (imagescale() may return image resource on failure) [ext/gd/tests/bug77272.phpt]
 Bug #77479 (imagewbmp() segfaults with very large image) [ext/gd/tests/bug77479.phpt]
 Bug #77973 (Uninitialized read in gdImageCreateFromXbm) [ext/gd/tests/bug77973.phpt]
-Bug #79067 (gdTransformAffineCopy() may use unitialized values) [ext/gd/tests/bug79067.phpt]
+Bug #79676 (imagescale adds black border with IMG_BICUBIC) [ext/gd/tests/bug79676.phpt]
+Test max colors for a gd image. [ext/gd/tests/crafted_gd2.phpt]
+imagecreatefromgd2 [ext/gd/tests/createfromgd2.phpt]
 imagecreatefromwbmp with invalid wbmp [ext/gd/tests/createfromwbmp2_extern.phpt]
+gif --> gd1/gd2 conversion test [ext/gd/tests/gif2gd.phpt]
+imagegd() writes truecolor images without palette conversion [ext/gd/tests/imagegd_truecolor.phpt]
+imagegetinterpolation() and imagesetinterpolation() basic test [ext/gd/tests/imageinterpolation_basic.phpt]
+Scale images and preserve aspect ratio [ext/gd/tests/imagescale_preserve_ratio.phpt]
+jpeg <--> gd1/gd2 conversion test [ext/gd/tests/jpg2gd-mb.phpt]
+jpeg <--> gd1/gd2 conversion test [ext/gd/tests/jpg2gd.phpt]
 libgd #86 (Possible infinite loop in imagecreatefrompng) [ext/gd/tests/libgd00086_extern.phpt]
+png <--> gd1/gd2 conversion test [ext/gd/tests/png2gd.phpt]
+xpm --> gd1/gd2 conversion test [ext/gd/tests/xpm2gd.phpt]
 Bug #37773 (iconv_substr() gives "Unknown error" when string length = 1") [ext/iconv/tests/bug37773.phpt]
 Bug #52211 (iconv() returns part of string on error) [ext/iconv/tests/bug52211.phpt]
 Bug #69840 (iconv_substr() doesn't work with UTF-16BE) [ext/iconv/tests/bug69840.phpt]
@@ -102,43 +124,9 @@ iconv_mime_encode() [ext/iconv/tests/iconv_mime_encode.phpt]
 iconv_strrpos() [ext/iconv/tests/iconv_strrpos.phpt]
 iconv_substr() with out of bounds offset [ext/iconv/tests/iconv_substr_out_of_bounds.phpt]
 Bug #61367: open_basedir bypass in libxml RSHUTDOWN: write test [ext/libxml/tests/bug61367-write.phpt]
-#46127 php_openssl_tcp_sockop_accept forgets to set context on accepted stream [ext/openssl/tests/bug46127.phpt]
-Bug #48182: ssl handshake fails during asynchronous socket connection [ext/openssl/tests/bug48182.phpt]
-Bug #54992: Stream not closed and error not returned when SSL CN_match fails [ext/openssl/tests/bug54992.phpt]
-Bug #62890 (default_socket_timeout=-1 causes connection to timeout) [ext/openssl/tests/bug62890.phpt]
-Bug #65538: SSL context "cafile" supports stream wrappers [ext/openssl/tests/bug65538_001.phpt]
-Bug #65538: SSL context "cafile" supports phar wrapper [ext/openssl/tests/bug65538_003.phpt]
-Bug #65729: CN_match gives false positive when wildcard is used [ext/openssl/tests/bug65729.phpt]
-Bug #68265: SAN match fails with trailing DNS dot [ext/openssl/tests/bug68265.phpt]
-Bug #68879: Match IP address fields in subjectAltName checks [ext/openssl/tests/bug68879.phpt]
-Bug #68920: peer_fingerprint input checks should be strict [ext/openssl/tests/bug68920.phpt]
-Bug #69215: Crypto servers should send client CA list [ext/openssl/tests/bug69215.phpt]
-Bug #72333: fwrite() on non-blocking SSL sockets doesn't work [ext/openssl/tests/bug72333.phpt]
-Bug #73072: Invalid path SNI_server_certs causes segfault [ext/openssl/tests/bug73072.phpt]
-Bug #74159: Writing a large buffer to non-blocking encrypted streams fails [ext/openssl/tests/bug74159.phpt]
-Bug #76705: unusable ssl => peer_fingerprint in stream_context_create() [ext/openssl/tests/bug76705.phpt]
-capture_peer_cert context captures on verify failure [ext/openssl/tests/capture_peer_cert_001.phpt]
-Testing peer fingerprint on connection [ext/openssl/tests/openssl_peer_fingerprint_basic.phpt]
 openssl_spki_export() tests for exporting public key [ext/openssl/tests/openssl_spki_export_basic.phpt]
 openssl_spki_export_challenge() tests for exporting challenge [ext/openssl/tests/openssl_spki_export_challenge_basic.phpt]
 openssl_spki_new() test for creating SPKI string [ext/openssl/tests/openssl_spki_new_basic.phpt]
-Peer verification enabled for client streams [ext/openssl/tests/peer_verification.phpt]
-Peer verification matches SAN names [ext/openssl/tests/san_peer_matching.phpt]
-Capture SSL session meta array in stream context [ext/openssl/tests/session_meta_capture.phpt]
-sni_server [ext/openssl/tests/sni_server.phpt]
-sni_server with separate pk and cert [ext/openssl/tests/sni_server_key_cert.phpt]
-Basic bitwise stream crypto context flag assignment [ext/openssl/tests/stream_crypto_flags_001.phpt]
-TLSv1.1 and TLSv1.2 bitwise stream crypto flag assignment [ext/openssl/tests/stream_crypto_flags_002.phpt]
-Server bitwise stream crypto flag assignment [ext/openssl/tests/stream_crypto_flags_003.phpt]
-Specific protocol method specification [ext/openssl/tests/stream_crypto_flags_004.phpt]
-Verify host name by default in client transfers [ext/openssl/tests/stream_verify_peer_name_001.phpt]
-Allow host name mismatch when "verify_host" disabled [ext/openssl/tests/stream_verify_peer_name_002.phpt]
-Host name mismatch triggers error [ext/openssl/tests/stream_verify_peer_name_003.phpt]
-Specific crypto method for ssl:// transports. [ext/openssl/tests/streams_crypto_method.phpt]
-tls stream wrapper with min version 1.0 and max version 1.1 [ext/openssl/tests/tls_min_v1.0_max_v1.1_wrapper.phpt]
-tlsv1.0 stream wrapper [ext/openssl/tests/tlsv1.0_wrapper.phpt]
-tlsv1.1 stream wrapper [ext/openssl/tests/tlsv1.1_wrapper.phpt]
-tlsv1.2 stream wrapper [ext/openssl/tests/tlsv1.2_wrapper.phpt]
 pcntl: pcntl_sigprocmask(), pcntl_sigwaitinfo(), pcntl_sigtimedwait() [ext/pcntl/tests/002.phpt]
 Bug #74183 - preg_last_error not returning error code after error [ext/pcre/tests/bug74183.phpt]
 Test posix_getgrgid() function : basic functionality [ext/posix/tests/posix_getgrgid_basic.phpt]
@@ -221,6 +209,7 @@ FPM: Buffered worker output plain log with limit 1024 and msg 120 [sapi/fpm/test
 FPM: Buffered worker output plain log with limit 1500 and msg 3300 [sapi/fpm/tests/log-bwp-limit-1500-msg-3300.phpt]
 FPM: Buffered worker output plain log with msg with flush split in buffer [sapi/fpm/tests/log-bwp-msg-flush-split-fallback.phpt]
 FPM: Buffered worker output plain log with msg with flush split in buffer [sapi/fpm/tests/log-bwp-msg-flush-split-real.phpt]
+FPM: bug81513 - Buffered worker output plain log stream reallocation [sapi/fpm/tests/log-bwp-realloc-buffer.phpt]
 FPM: Direct worker output decorated log with limit 1050 with 2048 msg [sapi/fpm/tests/log-dwd-limit-1050-msg-2048.phpt]
 FPM: Direct worker output decorated log with limit 1050 with 2900 msg [sapi/fpm/tests/log-dwd-limit-1050-msg-2900.phpt]
 FPM: Direct worker output decorated log with limit 8000 with 4096 msg [sapi/fpm/tests/log-dwd-limit-8000-msg-4096.phpt]
@@ -238,5 +227,6 @@ FPM: Status listen test [sapi/fpm/tests/status-listen.phpt]
 WARNED TEST SUMMARY
 ---------------------------------------------------------------------
 DBA DB4 with persistent connections [ext/dba/tests/dba_db4_018.phpt] (warn: XFAIL section but test passes)
+Bug #81577: (Exceptions in interrupt handlers: cleanup_live_vars) [ext/pcntl/tests/bug81577_3.phpt] (warn: XFAIL section but test passes)
 Phar: bug #69958: Segfault in Phar::convertToData on invalid file [ext/phar/tests/bug69958.phpt] (warn: XFAIL section but test passes)
 =====================================================================

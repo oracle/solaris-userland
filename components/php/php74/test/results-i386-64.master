@@ -4,12 +4,12 @@ Exts skipped    :   14
 Exts tested     :   59
 ---------------------------------------------------------------------
 
-Number of tests : 15939             13437
-Tests skipped   : 2502 ( 15.7%) --------
+Number of tests : 15944             13449
+Tests skipped   : 2495 ( 15.6%) --------
 Tests warned    :    1 (  0.0%) (  0.0%)
-Tests failed    :  174 (  1.1%) (  1.3%)
+Tests failed    :  195 (  1.2%) (  1.4%)
 Expected fail   :   35 (  0.2%) (  0.3%)
-Tests passed    : 13227 ( 83.0%) ( 98.4%)
+Tests passed    : 13218 ( 82.9%) ( 98.3%)
 ---------------------------------------------------------------------
 =====================================================================
 
@@ -68,7 +68,10 @@ Bug #53437 DateInterval unserialize bad data, 64 bit [ext/date/tests/bug53437_va
 Bug #53437 DateInterval unserialize bad data, 64 bit [ext/date/tests/bug53437_var6.phpt]
 Test gmstrftime() function : usage variation - Checking time related formats which are supported other than on Windows. [ext/date/tests/gmstrftime_variation16.phpt]
 Test strftime() function : usage variation - Checking time related formats which are supported other than on Windows. [ext/date/tests/strftime_variation16.phpt]
+Bug #38212 (Seg Fault on invalid imagecreatefromgd2part() parameters) [ext/gd/tests/bug38212-mb.phpt]
+Bug #38212 (Seg Fault on invalid imagecreatefromgd2part() parameters) [ext/gd/tests/bug38212.phpt]
 Bug #39780 (PNG image with CRC/data error raises a fatal error) [ext/gd/tests/bug39780_extern.phpt]
+Bug #41442 (imagegd2() under output control) [ext/gd/tests/bug41442.phpt]
 Bug #43073 (TrueType bounding box is wrong for angle<>0) [ext/gd/tests/bug43073.phpt]
 Bug #45799 (imagepng() crashes on empty image). [ext/gd/tests/bug45799.phpt]
 Bug #48732 (TTF Bounding box wrong for letters below baseline) [ext/gd/tests/bug48732-mb.phpt]
@@ -77,13 +80,30 @@ Bug #48801 (Problem with imagettfbbox) [ext/gd/tests/bug48801-mb.phpt]
 Bug #48801 (Problem with imagettfbbox) [ext/gd/tests/bug48801.phpt]
 Bug #53504 imagettfbbox/imageftbbox gives incorrect values for bounding box [ext/gd/tests/bug53504.phpt]
 Bug #65148 (imagerotate may alter image dimensions) [ext/gd/tests/bug65148.phpt]
+Bug #71912 (libgd: signedness vulnerability) [ext/gd/tests/bug71912-mb.phpt]
+Bug #71912 (libgd: signedness vulnerability) [ext/gd/tests/bug71912.phpt]
+Bug #72339 Integer Overflow in _gd2GetHeader() resulting in heap overflow [ext/gd/tests/bug72339.phpt]
+Bug #73155 (imagegd2() writes wrong chunk sizes on boundaries) [ext/gd/tests/bug73155.phpt]
+Bug #73157 (imagegd2() ignores 3rd param if 4 are given) [ext/gd/tests/bug73157.phpt]
+Bug #73159 (imagegd2(): unrecognized formats may result in corrupted files) [ext/gd/tests/bug73159.phpt]
+Bug #73161 (imagecreatefromgd2() may leak memory) [ext/gd/tests/bug73161.phpt]
 Bug #73272 (imagescale() is not affected by, but affects imagesetinterpolation()) [ext/gd/tests/bug73272.phpt]
-Bug #77269 (Potential unsigned underflow in gdImageScale) [ext/gd/tests/bug77269.phpt]
+Bug 73868 (DOS vulnerability in gdImageCreateFromGd2Ctx()) [ext/gd/tests/bug73868.phpt]
+Bug #73869 (Signed Integer Overflow gd_io.c) [ext/gd/tests/bug73869.phpt]
 Bug #77479 (imagewbmp() segfaults with very large image) [ext/gd/tests/bug77479.phpt]
-Bug #79067 (gdTransformAffineCopy() may use unitialized values) [ext/gd/tests/bug79067.phpt]
 Bug #79068 (gdTransformAffineCopy() changes interpolation method) [ext/gd/tests/bug79068.phpt]
+Bug #79676 (imagescale adds black border with IMG_BICUBIC) [ext/gd/tests/bug79676.phpt]
+Test max colors for a gd image. [ext/gd/tests/crafted_gd2.phpt]
+imagecreatefromgd2 [ext/gd/tests/createfromgd2.phpt]
 imagecreatefromwbmp with invalid wbmp [ext/gd/tests/createfromwbmp2_extern.phpt]
+gif --> gd1/gd2 conversion test [ext/gd/tests/gif2gd.phpt]
+imagegd() writes truecolor images without palette conversion [ext/gd/tests/imagegd_truecolor.phpt]
+Scale images and preserve aspect ratio [ext/gd/tests/imagescale_preserve_ratio.phpt]
+jpeg <--> gd1/gd2 conversion test [ext/gd/tests/jpg2gd-mb.phpt]
+jpeg <--> gd1/gd2 conversion test [ext/gd/tests/jpg2gd.phpt]
 libgd #86 (Possible infinite loop in imagecreatefrompng) [ext/gd/tests/libgd00086_extern.phpt]
+png <--> gd1/gd2 conversion test [ext/gd/tests/png2gd.phpt]
+xpm --> gd1/gd2 conversion test [ext/gd/tests/xpm2gd.phpt]
 Bug #37773 (iconv_substr() gives "Unknown error" when string length = 1") [ext/iconv/tests/bug37773.phpt]
 Bug #52211 (iconv() returns part of string on error) [ext/iconv/tests/bug52211.phpt]
 Bug #69840 (iconv_substr() doesn't work with UTF-16BE) [ext/iconv/tests/bug69840.phpt]
@@ -222,6 +242,7 @@ FPM: Buffered worker output plain log with limit 1024 and msg 120 [sapi/fpm/test
 FPM: Buffered worker output plain log with limit 1500 and msg 3300 [sapi/fpm/tests/log-bwp-limit-1500-msg-3300.phpt]
 FPM: Buffered worker output plain log with msg with flush split in buffer [sapi/fpm/tests/log-bwp-msg-flush-split-fallback.phpt]
 FPM: Buffered worker output plain log with msg with flush split in buffer [sapi/fpm/tests/log-bwp-msg-flush-split-real.phpt]
+FPM: bug81513 - Buffered worker output plain log stream reallocation [sapi/fpm/tests/log-bwp-realloc-buffer.phpt]
 FPM: Direct worker output decorated log with limit 1050 with 2048 msg [sapi/fpm/tests/log-dwd-limit-1050-msg-2048.phpt]
 FPM: Direct worker output decorated log with limit 1050 with 2900 msg [sapi/fpm/tests/log-dwd-limit-1050-msg-2900.phpt]
 FPM: Direct worker output decorated log with limit 8000 with 4096 msg [sapi/fpm/tests/log-dwd-limit-8000-msg-4096.phpt]
