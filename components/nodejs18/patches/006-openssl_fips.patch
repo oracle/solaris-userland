@@ -1,0 +1,18 @@
+Problem reported as:
+https://github.com/nodejs/node/issues/42827
+
+diff -ru node-18.0.0.orig/configure.py node-18.0.0/configure.py
+--- node-18.0.0.orig/configure.py	2022-04-18 04:29:22.000000000 +0000
++++ node-18.0.0/configure.py	2022-04-22 19:10:52.510174797 +0000
+@@ -1535,8 +1535,10 @@
+   if options.openssl_no_asm and options.shared_openssl:
+     error('--openssl-no-asm is incompatible with --shared-openssl')
+ 
+-  if options.openssl_is_fips and not options.shared_openssl:
++  if options.openssl_is_fips:
+     o['defines'] += ['OPENSSL_FIPS']
++
++  if options.openssl_is_fips and not options.shared_openssl:
+     variables['node_fipsinstall'] = b(True)
+ 
+   if options.shared_openssl:

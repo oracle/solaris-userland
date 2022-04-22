@@ -1,0 +1,22 @@
+Fix https://github.com/nodejs/node/issues/39747
+
+diff -ru node-16.6.2/src/cares_wrap.h node-16.6.2.new/src/cares_wrap.h
+--- node-16.6.2/src/cares_wrap.h	2021-08-11 03:13:20.000000000 +0000
++++ node-16.6.2.new/src/cares_wrap.h	2021-08-13 14:24:11.047028556 +0000
+@@ -22,7 +22,15 @@
+ # include <netdb.h>
+ #endif  // __POSIX__
+ 
+-# include <ares_nameser.h>
++#if defined(__ANDROID__) || \
++    defined(__MINGW32__) || \
++    defined(__OpenBSD__) || \
++    defined(_MSC_VER)
++
++# include <nameser.h>
++#else
++# include <arpa/nameser.h>
++#endif
+ 
+ namespace node {
+ namespace cares_wrap {
