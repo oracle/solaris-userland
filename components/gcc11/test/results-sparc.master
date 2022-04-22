@@ -1,5 +1,5 @@
 cat <<'EOF' |
-LAST_UPDATED: Obtained from git: releases/gcc-11.2.0 revision 7ca388565af176bd4efd4f8db1e5e9e11e98ef45
+LAST_UPDATED: Obtained from git: releases/gcc-11.3.0 revision 2d280e7eafc086e9df85f50ed1a6526d6a3a204d
 
 		=== acats tests ===
 
@@ -12,6 +12,8 @@ Native configuration is sparcv9-sun-solaris2.11
 
 
 Running target unix
+FAIL: g++.dg/gcov/gcov-17.C test-gcov-17.py::test_basics - FileNotFoundError: [Errno 2] No such file or directory: 'gcov-17.C.gcov.json.gz
+FAIL: g++.dg/gcov/gcov-17.C test-gcov-17.py::test_lines - FileNotFoundError: [Errno 2] No such file or directory: 'gcov-17.C.gcov.json.gz
 FAIL: g++.dg/gcov/pr16855-priority.C  -std=gnu++98  line 22: is #####:should be 1
 FAIL: g++.dg/gcov/pr16855-priority.C  -std=gnu++98  gcov: 1 failures in line counts, 0 in branch percentages, 0 in return percentages, 0 in intermediate format
 FAIL: g++.dg/gcov/pr16855-priority.C  -std=gnu++14  line 22: is #####:should be 1
@@ -28,6 +30,8 @@ FAIL: g++.dg/gcov/pr16855.C  -std=gnu++17  line 24: is #####:should be 1
 FAIL: g++.dg/gcov/pr16855.C  -std=gnu++17  gcov: 1 failures in line counts, 0 in branch percentages, 0 in return percentages, 0 in intermediate format
 FAIL: g++.dg/gcov/pr16855.C  -std=gnu++2a  line 24: is #####:should be 1
 FAIL: g++.dg/gcov/pr16855.C  -std=gnu++2a  gcov: 1 failures in line counts, 0 in branch percentages, 0 in return percentages, 0 in intermediate format
+FAIL: g++.dg/gcov/pr98273.C test-pr98273.py::test_basics - FileNotFoundError: [Errno 2] No such file or directory: 'pr98273.C.gcov.json.gz
+FAIL: g++.dg/gcov/pr98273.C test-pr98273.py::test_lines - FileNotFoundError: [Errno 2] No such file or directory: 'pr98273.C.gcov.json.gz
 FAIL: g++.dg/guality/redeclaration1.C   -O1  line 15 i == 42
 FAIL: g++.dg/guality/redeclaration1.C   -O2  line 15 i == 42
 FAIL: g++.dg/guality/redeclaration1.C   -O3 -g  line 15 i == 42
@@ -39,11 +43,11 @@ FAIL: g++.dg/modules/stdio-1_a.H -std=c++2b  scan-lang-dump module "Depset:0 dec
 
 		=== g++ Summary ===
 
-# of expected passes		201469
-# of unexpected failures	24
-# of expected failures		1060
-# of unsupported tests		9676
-$(@D)/gcc/xg++  version 11.2.0 (GCC) 
+# of expected passes		202294
+# of unexpected failures	28
+# of expected failures		1088
+# of unsupported tests		9874
+$(@D)/gcc/xg++  version 11.3.0 (GCC) 
 
 		=== gcc tests ===
 
@@ -667,12 +671,12 @@ XPASS: gcc.dg/vect/bb-slp-32.c -flto -ffat-lto-objects  scan-tree-dump slp2 "vec
 
 		=== gcc Summary ===
 
-# of expected passes		134710
+# of expected passes		135289
 # of unexpected failures	580
 # of unexpected successes	35
-# of expected failures		987
-# of unsupported tests		3505
-$(@D)/gcc/xgcc  version 11.2.0 (GCC) 
+# of expected failures		995
+# of unsupported tests		3511
+$(@D)/gcc/xgcc  version 11.3.0 (GCC) 
 
 		=== gfortran tests ===
 
@@ -681,10 +685,10 @@ Running target unix
 
 		=== gfortran Summary ===
 
-# of expected passes		56559
+# of expected passes		57016
 # of expected failures		232
-# of unsupported tests		199
-$(@D)/gcc/gfortran  version 11.2.0 (GCC) 
+# of unsupported tests		206
+$(@D)/gcc/gfortran  version 11.3.0 (GCC) 
 
 		=== gnat tests ===
 
@@ -693,10 +697,10 @@ Running target unix
 
 		=== gnat Summary ===
 
-# of expected passes		3305
+# of expected passes		3312
 # of expected failures		23
-# of unsupported tests		31
-$(@D)/gcc/gnatmake version 11.2.0
+# of unsupported tests		32
+$(@D)/gcc/gnatmake version 11.3.0
 
 		=== go tests ===
 
@@ -722,9 +726,9 @@ Running target unix
 
 		=== objc Summary ===
 
-# of expected passes		2826
+# of expected passes		2828
 # of unsupported tests		68
-$(@D)/gcc/xgcc  version 11.2.0 (GCC) 
+$(@D)/gcc/xgcc  version 11.3.0 (GCC) 
 
 		=== gotools tests ===
 
@@ -746,7 +750,7 @@ FAIL: go test embed/internal/embedtest
 # of expected passes		189
 # of unexpected failures	13
 # of untested testcases		54
-$(@D)/./gcc/gccgo version 11.2.0 (GCC)
+$(@D)/./gcc/gccgo version 11.3.0 (GCC)
 
 		=== libatomic tests ===
 
@@ -780,7 +784,6 @@ FAIL: sync/atomic
 # of unexpected failures	5
 
 Running target unix/-m32
-FAIL: encoding/json
 FAIL: net/http/pprof
 FAIL: os/signal
 FAIL: runtime
@@ -789,14 +792,14 @@ FAIL: sync/atomic
 
 		=== libgo Summary for unix/-m32 ===
 
-# of expected passes		178
-# of unexpected failures	6
+# of expected passes		179
+# of unexpected failures	5
 
 		=== libgo Summary ===
 
-# of expected passes		357
-# of unexpected failures	11
-$(@D)/./gcc/gccgo version 11.2.0 (GCC)
+# of expected passes		358
+# of unexpected failures	10
+$(@D)/./gcc/gccgo version 11.3.0 (GCC)
 
 		=== libgomp tests ===
 
@@ -806,7 +809,7 @@ FAIL: libgomp.c++/pr58706.C execution test
 
 		=== libgomp Summary ===
 
-# of expected passes		8302
+# of expected passes		8312
 # of unexpected failures	1
 # of expected failures		6
 # of unsupported tests		614
@@ -824,17 +827,20 @@ Running target unix
 
 
 Running target unix
+FAIL: 27_io/filesystem/iterators/error_reporting.cc (test for excess errors)
+FAIL: experimental/filesystem/iterators/error_reporting.cc (test for excess errors)
 
 		=== libstdc++ Summary ===
 
-# of expected passes		14674
-# of expected failures		105
+# of expected passes		14766
+# of unexpected failures	2
+# of expected failures		124
 # of unsupported tests		739
 
-Compiler version: 11.2.0 (GCC) 
+Compiler version: 11.3.0 (GCC) 
 Platform: sparcv9-sun-solaris2.11
 configure flags: --prefix=/usr/gcc/11 --mandir=/usr/gcc/11/share/man --bindir=/usr/gcc/11/bin --sbindir=/usr/gcc/11/sbin --libdir=/usr/gcc/11/lib --infodir=/usr/gcc/11/share/info --libexecdir=/usr/gcc/11/lib --enable-languages=ada,c,c++,fortran,go,objc --enable-shared --enable-initfini-array --disable-rpath --with-system-zlib --with-build-config=no --without-gnu-ld --with-ld=/usr/bin/ld --with-gnu-as --with-as=/usr/gnu/bin/as 'BOOT_CFLAGS=-g -O2' sparcv9-sun-solaris2.11
 BOOT_CFLAGS=-g -O2
 EOF
-Mail -s "Results for 11.2.0 (GCC) testsuite on sparcv9-sun-solaris2.11" gcc-testresults@gcc.gnu.org &&
+Mail -s "Results for 11.3.0 (GCC) testsuite on sparcv9-sun-solaris2.11" gcc-testresults@gcc.gnu.org &&
 true
