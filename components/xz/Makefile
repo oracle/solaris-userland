@@ -20,21 +20,25 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xz
-COMPONENT_VERSION=	5.2.3
+COMPONENT_VERSION=	5.2.5
+COMPONENT_BAID=		121288
 COMPONENT_PROJECT_URL=	https://tukaani.org/xz/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:71928b357d0a09a12a4b4c5fafca8c31c19b0e7d3b8ebb19622e96f26dbf28cb
+    sha256:f6f4910fd033078738bd82bfba4f49219d03b17eb0794eb91efbae419f4aba10
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_ANITYA_ID=	5277
 
-COMPONENT_BAID=		38203
+# The .1 refers to version 5.2.5-1 to distinguish between community version
+# and this package, which contain fix for CVE-2022-1271.
+IPS_COMPONENT_VERSION=	5.2.5.1
+HUMAN_VERSION=		$(COMPONENT_VERSION)-1
 
 SYSTEM_TEST_TARGET= configure $(SYSTEM_TEST_32_and_64)
 include $(WS_MAKE_RULES)/common.mk
@@ -65,5 +69,4 @@ COMPONENT_SYSTEM_TEST_ENV +=	XZGREP_SCRIPT=$(USRBINDIR)/xzgrep
 
 include $(WS_MAKE_RULES)/shared-targets.mk
 
-REQUIRED_PACKAGES += shell/bash
-REQUIRED_PACKAGES += system/library/security/crypto
+REQUIRED_PACKAGES += system/core-os
