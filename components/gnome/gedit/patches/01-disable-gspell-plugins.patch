@@ -1,31 +1,36 @@
-requires gspell which is not available in Solaris yet
-Revisit this for the Gnome 41 update of gedit and potentially pull in
-the new dependency
+Requires gspell which is not available in Solaris yet.
+Revisit this for a later version of GNOME update of gedit and 
+potentially pull in the new dependency
 
---- a/plugins/meson.build	2021-08-05 13:19:50.438698850 -0700
-+++ b/plugins/meson.build	2021-08-05 13:19:56.608626490 -0700
-@@ -21,5 +21,4 @@
- subdir('quickopen')
- subdir('snippets')
+--- gedit-41.0/meson.build.orig	2022-02-14 23:30:56.927119677 -0800
++++ gedit-41.0/meson.build	2022-02-14 23:31:36.241024477 -0800
+@@ -45,12 +45,10 @@
+ gtksourceview_req =  '>= 4.0'
+ libpeas_req = '>= 1.14.1'
+ libxml_req = '>= 2.5.0'
+-gspell_req = '>= 1.0'
+ pygobject_req = '>= 3.0.0'
+ 
+ gio_dep = dependency('gio-2.0', version: glib_req)
+ libxml_dep = dependency('libxml-2.0', version: libxml_req)
+-gspell_dep = dependency('gspell-1', version: gspell_req, required: get_option('spell'))
+ 
+ if get_option('python')
+   python3 = python.find_installation('python3')
+@@ -116,4 +114,3 @@
+ summary('API documentation', get_option('gtk_doc'))
+ summary('User documentation', get_option('user_documentation'))
+ summary('Require all tests', get_option('require_all_tests'))
+-summary('Spell checker plugin', get_option('spell').enabled().to_string())
+--- gedit-41.0/plugins/meson.build.orig	2022-02-14 23:35:37.601658693 -0800
++++ gedit-41.0/plugins/meson.build	2022-02-14 23:35:59.983040787 -0800
+@@ -21,9 +21,6 @@
+ subdir('openlinks')
+ subdir('quickhighlight')
  subdir('sort')
--subdir('spell')
+-if gspell_dep.found()
+-  subdir('spell')
+-endif
  subdir('time')
  
---- a/meson.build	2021-08-05 13:23:43.680861735 -0700
-+++ b/meson.build	2021-08-05 13:24:38.450865500 -0700
-@@ -86,7 +86,6 @@
- libgd_dep = libgd_sp.get_variable('libgd_dep')
- 
- libsoup_dep = dependency('libsoup-2.4', version: libsoup_req, required: true)
--gspell_dep = dependency('gspell-1', version: gspell_req, required: true)
- x11_dep = dependency('x11', required: false)
- 
- introspection_dep = dependency('gobject-introspection-1.0', version: introspection_req, required: false)
-@@ -169,7 +168,6 @@
-   'docinfo',
-   'modelines',
-   'filebrowser',
--  'spell',
-   'time',
- ]
- 
+ if get_option('python')

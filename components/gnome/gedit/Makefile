@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gedit
-COMPONENT_VERSION=	3.34.0
+COMPONENT_VERSION=	41.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Gedit
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:3e95e51d3ccb495a9ac95aa3ed7fe8fe37ccde7c678f37fa3cea684bc71d507e
+    sha256:7a9b18b158808d1892989165f3706c4f1a282979079ab7458a79d3c24ad4deb5
 COMPONENT_BUGDB=        gnome/applications
 COMPONENT_ANITYA_ID=	5758
 
-COMPONENT_BAID=		68655
+COMPONENT_BAID=		120411
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)

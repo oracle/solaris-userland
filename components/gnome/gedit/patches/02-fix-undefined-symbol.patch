@@ -1,0 +1,87 @@
+This patch is to fix the following error that occured 
+during the build process of gedit 41.0:
+Undefined                       first referenced
+ symbol                             in file
+gedit_dirs_get_user_cache_dir       gedit/libgedit-41.so.p/gedit-app.c.o
+ld: fatal: symbol referencing errors
+
+Patch taken from 
+https://gitlab.gnome.org/GNOME/gedit/-/commit/ba2662ff9ee99ef0d85023b06053792fd3eb9272
+
+From ba2662ff9ee99ef0d85023b06053792fd3eb9272 Mon Sep 17 00:00:00 2001
+From: Laurent Bigonville <bigon@bigon.be>
+Date: Mon, 22 Nov 2021 13:03:48 +0100
+Subject: [PATCH] Revert "gedit-dirs: remove get_user_cache_dir() (no longer
+ used)"
+
+This also revert the move of the metadata file ("gedit-metadata.xml")
+from user_data_dir to user_cache_dir when not using GVFS to store the
+metadata
+
+This reverts commit f641a246fbaff482e216197d21e2e51397b1cb26.
+
+Fixes: https://gitlab.gnome.org/GNOME/gedit/-/issues/467
+---
+ gedit/gedit-dirs.c | 11 +++++++++++
+ gedit/gedit-dirs.h |  2 ++
+ 2 files changed, 13 insertions(+)
+
+diff --git a/gedit/gedit-dirs.c b/gedit/gedit-dirs.c
+index 81f32c287..5e0a4f7be 100644
+--- a/gedit/gedit-dirs.c
++++ b/gedit/gedit-dirs.c
+@@ -26,6 +26,7 @@
+ #include <gtkosxapplication.h>
+ #endif
+ 
++static gchar *user_cache_dir         = NULL;
+ static gchar *user_config_dir        = NULL;
+ static gchar *user_data_dir          = NULL;
+ static gchar *user_styles_dir        = NULL;
+@@ -95,6 +96,9 @@ gedit_dirs_init ()
+ 							   NULL);
+ 	}
+ 
++	user_cache_dir = g_build_filename (g_get_user_cache_dir (),
++					   "gedit",
++					   NULL);
+ 	user_config_dir = g_build_filename (g_get_user_config_dir (),
+ 					    "gedit",
+ 					    NULL);
+@@ -115,6 +119,7 @@ gedit_dirs_init ()
+ void
+ gedit_dirs_shutdown ()
+ {
++	g_clear_pointer (&user_cache_dir, g_free);
+ 	g_clear_pointer (&user_config_dir, g_free);
+ 	g_clear_pointer (&user_data_dir, g_free);
+ 	g_clear_pointer (&user_styles_dir, g_free);
+@@ -125,6 +130,12 @@ gedit_dirs_shutdown ()
+ 	g_clear_pointer (&gedit_plugins_data_dir, g_free);
+ }
+ 
++const gchar *
++gedit_dirs_get_user_cache_dir (void)
++{
++	return user_cache_dir;
++}
++
+ const gchar *
+ gedit_dirs_get_user_config_dir (void)
+ {
+diff --git a/gedit/gedit-dirs.h b/gedit/gedit-dirs.h
+index 3fc7ab581..0df8b95fb 100644
+--- a/gedit/gedit-dirs.h
++++ b/gedit/gedit-dirs.h
+@@ -32,6 +32,8 @@ void		 gedit_dirs_init			(void);
+ void		 gedit_dirs_shutdown 			(void);
+ 
+ 
++const gchar	*gedit_dirs_get_user_cache_dir		(void);
++
+ const gchar	*gedit_dirs_get_user_config_dir		(void);
+ 
+ const gchar	*gedit_dirs_get_user_data_dir		(void);
+-- 
+GitLab
+
