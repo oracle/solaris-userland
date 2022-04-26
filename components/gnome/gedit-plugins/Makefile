@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gedit-plugins
-COMPONENT_VERSION=	3.34.0
+COMPONENT_VERSION=	41.0
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Gedit
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:c37fec89debcab15ed765f4d24d75e993691886ae942400c828098e7b8f2d1c9
+    sha256:a38f949460914f054063671bf0bb8e8a5184e6210be89f64bb304652d4520e87
 COMPONENT_BUGDB=        gnome/applications
 COMPONENT_ANITYA_ID=	5758
 
-COMPONENT_BAID=		68657
+COMPONENT_BAID=		120414
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
