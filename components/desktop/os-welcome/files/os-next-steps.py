@@ -1,7 +1,7 @@
 #!/usr/bin/python3.7
 
 #
-# Copyright (c) 2008, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2008, 2022, Oracle and/or its affiliates.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -80,8 +80,6 @@ class DialogOSNextSteps(Gtk.Dialog):
 
         self.connect('destroy', lambda *w: Gtk.main_quit())
         self.set_name('os_dialog')
-
-        Gtk.Window.set_default_icon_from_file("/usr/share/os-about/about-os-window-icon.png")
 
         self.set_title(_("Start here with Oracle Solaris"))
         self.set_border_width(5)

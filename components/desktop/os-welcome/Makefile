@@ -20,14 +20,14 @@
 #
 
 #
-# Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= NO_ARCH
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         os-welcome
-COMPONENT_VERSION=      1.3.0
+COMPONENT_VERSION=      1.3.1
 COMPONENT_SRC=          files
 COMPONENT_ARCHIVE_SRC=	none
 COMPONENT_BUGDB=	gnome/applications

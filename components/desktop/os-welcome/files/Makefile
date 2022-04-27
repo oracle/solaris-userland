@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2010, 2020, Oracle and/or its affiliates.
+# Copyright (c) 2010, 2022, Oracle and/or its affiliates.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 #
 
 PACKAGE=os-welcome
-VERSION=1.3.0
+VERSION=1.3.1
 
 top_builddir=.
 top_srcdir=.
@@ -58,18 +58,19 @@ DIST_FILES= $(ALL_FILES) \
 	os-about.desktop.in \
 	os-next-steps.py \
 	os-next-steps.desktop.in \
-	images/next-steps.png  \
 	images/about-os-logo.png  \
-	images/about-os-window-icon.png \
 	images/about-os-background.jpg \
-	images/personalize.png \
+	images/os-about-symbolic.svg \
+	images/os-about.svg \
+	images/os-next-steps-symbolic.svg  \
+	images/os-next-steps.svg  \
 	images/participate.png \
 	images/resources.png
 
 NEXT_STEPS_DIR = /usr/share/os-about
 WELCOME_DIR= /usr/share/doc/os-welcome
 DESKTOP_DIR= /usr/share/applications
-ICON_DIR= /usr/share/pixmaps
+ICON_DIR= /usr/share/icons/hicolor
 BIN_DIR = /usr/bin
 LIB_DIR = /usr/lib/os-welcome
 DESTDIR=
@@ -112,15 +113,16 @@ install: $(DATA)
 	$(INSTALL) -d -m 755 $(DESTDIR)$(BIN_DIR)
 	$(INSTALL) -m 755 -f $(DESTDIR)$(BIN_DIR)/$$dir os-about
 	$(INSTALL) -m 755 -f $(DESTDIR)$(BIN_DIR)/$$dir os-next-steps
-	$(INSTALL) -d -m 755 $(DESTDIR)$(ICON_DIR)
-	$(INSTALL) -m 644 -f $(DESTDIR)$(ICON_DIR)/$$dir images/next-steps.png
-	$(INSTALL) -m 644 -f $(DESTDIR)$(ICON_DIR)/$$dir images/about-os-window-icon.png
+	$(INSTALL) -d -m 755 $(DESTDIR)$(ICON_DIR)/scalable/apps
+	$(INSTALL) -m 644 -f $(DESTDIR)$(ICON_DIR)/scalable/apps/$$dir images/os-about.svg
+	$(INSTALL) -m 644 -f $(DESTDIR)$(ICON_DIR)/scalable/apps/$$dir images/os-next-steps.svg
+	$(INSTALL) -d -m 755 $(DESTDIR)$(ICON_DIR)/symbolic/apps
+	$(INSTALL) -m 644 -f $(DESTDIR)$(ICON_DIR)/symbolic/apps/$$dir images/os-about-symbolic.svg
+	$(INSTALL) -m 644 -f $(DESTDIR)$(ICON_DIR)/symbolic/apps/$$dir images/os-next-steps-symbolic.svg
 	$(INSTALL) -d -m 755 $(DESTDIR)$(NEXT_STEPS_DIR)
 	$(INSTALL) -m 644 -f $(DESTDIR)$(NEXT_STEPS_DIR)/$$dir images/about-os-logo.png
-	$(INSTALL) -m 644 -f $(DESTDIR)$(NEXT_STEPS_DIR)/$$dir images/about-os-window-icon.png
 	$(INSTALL) -m 644 -f $(DESTDIR)$(NEXT_STEPS_DIR)/$$dir images/about-os-background.jpg
 	$(INSTALL) -m 644 -f $(DESTDIR)$(NEXT_STEPS_DIR)/$$dir images/participate.png
-	$(INSTALL) -m 644 -f $(DESTDIR)$(NEXT_STEPS_DIR)/$$dir images/personalize.png
 	$(INSTALL) -m 644 -f $(DESTDIR)$(NEXT_STEPS_DIR)/$$dir images/resources.png
 
 uninstall:

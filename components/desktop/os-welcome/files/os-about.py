@@ -1,7 +1,7 @@
 #!/usr/bin/python3.7
 
 #
-# Copyright (c) 2010, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010, 2022, Oracle and/or its affiliates.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -129,8 +129,6 @@ class DialogOS(Gtk.Dialog):
         Gtk.Dialog.__init__(self, self.__class__.__name__, parent)
         self.connect('destroy', lambda *w: Gtk.main_quit())
         self.set_name('os_dialog')
-
-        Gtk.Window.set_default_icon_from_file("/usr/share/os-about/about-os-window-icon.png")
 
         self.set_title(_("Welcome to Oracle Solaris"))
         self.set_border_width(5)
