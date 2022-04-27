@@ -18,24 +18,20 @@ machines are needed:
 Here are the steps to setup:
 
 ### distro build box ###
-vm 123root --memory=8G ST_userland_build aitst
-pkg change-facet --no-backup-be version-lock.web/curl=false
- eventually:
-  version-lock.library/nghttp2=false
-
-pkg install --no-backup-be -g <your_workspace>/$(uname -p)/repo \
-  pkg://nightly/web/curl
- eventually:
-  pkg://nightly/library/nghttp2
-
-In case if only curl package has beed changed then it can be simplified using:
 vm install --memory=8G <your_workspace>/components/curl/ aitst
+# if also other related library like i.e. library/nghttp2 has been changed in this build
+# then build it also in place and install it also on the aitst machine
+vm install <your_workspace>/components/nghttp2/ aitst
+# if you want to be hyper-perfect you can start testing by building ON part first then
+# create machine from onu archives
+vm install --memory=8G <on ws>
+# then (vm) install the userland part(s)
 
 #-------------------------------------------------------------------------------
 Example of change of miniroot contents in:
   /usr/share/distro_const/boot_archive_contents_x86.xml
         (boot_archive_contents_sparc.xml for sparc)
-if libcurl release is changed (also the libnghttpd has been changed but not soaked):
+if both libcurl and libnghttpd have been changed in the same build:
 
 @@ -233,8 +233,8 @@
    <name>usr/lib/fm/libfmd_agent.so.1</name>
@@ -73,20 +69,27 @@ if libcurl release is changed (also the libnghttpd has been changed but not soak
    <name>usr/lib/64/liblofi.so.1</name>
    <name>usr/lib/libpkcs11.so.1</name>
 
-Example of the patch of the distro_const(8) manifest:
- /usr/share/distro_const/dc_ai_x86.xml
-is on the end of this file and can be directly applied by:
+#-------------------------------------------------------------------------------
+We will also need changes in distro_const(8) manifest located in:
+ /usr/share/distro_const/dc_ai_x86.xml (dc_ai_sparc.xml for sparc)
+where we need to change version-lock facet for web/curl (eventually for library/nghttp2)
+and also pkg-repo if we are testing trunk.
+Patch for direct application is at the end of this file so it can be used by:
   (cd /usr/share/distro_const/ ; gpatch -p0 ) < TESTING.txt
-please note: distro_const do not deal with python 3.9 so if:
- # python3 --version
+
+#-------------------------------------------------------------------------------
+#please note: distro_const doesn't work with python 3.9 so if:
+ python3 --version
  Python 3.9...
-then you should set python3 mediator to 3.7 :
+#then you should set python3 mediator to 3.7 :
   pkg set-mediator --no-backup-be -v -V 3.7 python3
-then run distro-constructor:
-  distro_const build -v /usr/share/distro_const/dc_ai_x86.xml
-when distro-constructor is finished (take couple of tenths minutes) we can check
+
+#-------------------------------------------------------------------------------
+#then run distro-constructor:
+  distro_const build -v /usr/share/distro_const/dc_ai_x86.xml # dc_ai_sparc.xml
+#when distro-constructor is finished (take couple of tenths minutes) we can check
   ls /rpool/dc/ai/media/
-Oracle_Solaris_AI_X86.iso has been built. Then we can stop machine to set netw.
+#Oracle_Solaris_AI_{platform}.iso has been built. Then we can stop machine to set netw.
   poweroff
 
 When fixes are tested on distro_const server then the changes should be placed
@@ -96,8 +99,12 @@ into related ON files:
 and committed/pushed.
 
 #-- Setup networking -----------------------------------------------------------
-  vm net aitst  1 vxlan
+  vm net aitst 1 vxlan ailan
+  # x86
   VBoxManage modifyvm aitst --macaddress2 02C0C0D0D0C0
+  # ldom
+  sudo ldm set-vnet mac-addr=02:C0:C0:D0:D0:C0 vswitch=vs_${USER}_ailan1 vnet1 ${USER}###_aitst
+  #
   vm start aitst
   vm sshroot aitst
 
@@ -107,36 +114,54 @@ and committed/pushed.
   ipadm create-ip net1
   ipadm create-addr -T static -a local=192.168.1.7/24 net1/v4
   ipadm create-addr -T addrconf net1/v6
-# export Oracle_Solaris_AI_X86.iso
+# export Oracle_Solaris_AI_{platform}.iso
   share -F nfs /rpool/dc/ai/media/
   exit
 
 #-- Create aisvr ---------------------------------------------------------------
   vm create S11.4_SRU aisvr
-  vm net aisvr 0 vxlan
+  vm net aisvr 0 vxlan ailan
+  # x86
   VBoxManage modifyvm aisvr --macaddress1 02C0C0D0D0D0
-# VBoxManage showvminfo aisvr --details | grep MAC: # to check
+ #VBoxManage showvminfo aisvr --details | grep MAC: # to check
+  # ldom
+  sudo ldm set-vnet mac-addr=02:C0:C0:D0:D0:D0 vswitch=vs_${USER}_ailan1 vnet0 ${USER}###_aisvr
+  #
   vm start aisvr
 
 #-- Setup aisvr ----------------------------------------------------------------
   vm sshroot aitst
-  ping -n -A inet6 -i net1 'fe80::c0:c0ff:fed0:d0d0'
+  ping -sn -A inet6 -i net1 'fe80::c0:c0ff:fed0:d0d0'
   ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -B net1 root@'fe80::c0:c0ff:fed0:d0d0'
 ### Setup AI server ###
   hostname aisvr
   echo '192.168.1.1 aisvr.local aisvr' >> /etc/inet/hosts
+  echo '192.168.1.16 nbb.local nbb' >> /etc/inet/hosts
+  echo '192.168.1.17 nbb2.local nbb2' >> /etc/inet/hosts
+  echo '192.168.1.18 nbb3.local nbb3' >> /etc/inet/hosts
+  echo '192.168.1.19 nbb4.local nbb4' >> /etc/inet/hosts
   ipadm delete-addr net0/v4
   ipadm create-addr -T static -a local=192.168.1.1/24 net0/v4
-  installadm set-server -m -i 192.168.1.16 -c 16
-# install service from .iso-image built by distro-constructor
-  installadm create-service -n s11x -s /net/[fe80::c0:c0ff:fed0:d0c0]/rpool/dc/ai/media/Oracle_Solaris_AI_X86.iso -d /ai/s11x
+  ( props=`svccfg -s svc:/system/name-service/switch listprop config/\* | nawk '{ if ( $1 != "config/value_authorization" ) print $1; }'` ; for p in $props ; do echo "deleting: $p" ; svccfg -s svc:/system/name-service/switch delprop $p ; done )
+  svccfg -s svc:/system/name-service/switch setprop config/default = astring: files
+  svcadm refresh svc:/system/name-service/switch
+  svcadm disable svc:/network/ldap/client
+  svcadm disable svc:/network/dns/client
+  installadm set-server -m -i 192.168.1.16 -c 4
+  ls /net/[fe80::c0:c0ff:fed0:d0c0]/rpool/dc/ai/media/
+  # x86
+  installadm create-service -n s11 -s /net/[fe80::c0:c0ff:fed0:d0c0]/rpool/dc/ai/media/Oracle_Solaris_AI_X86.iso -d /ai/s11
+  # sparc
+  installadm create-service -n s11 -s /net/[fe80::c0:c0ff:fed0:d0c0]/rpool/dc/ai/media/Oracle_Solaris_AI_SPARC.iso -d /ai/s11
+  #
   ln -s etc/netboot /tftpboot
   (cd /tftpboot ; ln -s . tftpboot)
-  installadm create-client -e 02:C0:C0:D0:D0:E0 -n s11x # MAC of nbb
+  installadm create-client -e 02:C0:C0:D0:D0:E0 -n s11 # MAC of nbb
 
 ### client ###
+# x86
   vm new -T Solaris11_64 -M 8G nbb
-  vm net nbb 0 vxlan
+  vm net nbb 0 vxlan ailan
   VBoxManage modifyvm nbb --macaddress1 02C0C0D0D0E0
   VBoxManage modifyvm nbb --boot1 net
   vm start nbb
@@ -146,7 +171,27 @@ and committed/pushed.
 # - to install OS the package repo is needed. http-proxy can be used instead
 # client can be reset by
   vm reset nbb
- 
+
+# ldom
+  vm new -M 8G nbb
+  vm net nbb 0 vxlan ailan
+  sudo ldm set-vnet mac-addr=02:C0:C0:D0:D0:E0 vswitch=vs_${USER}_ailan1 vnet0 ${USER}###_nbb
+  sudo ldm set-var 'auto-boot?=false' ${USER}###_nbb
+  vm start -ok nbb
+  vm console nbb
+# ~~~# ...send break to ok-prompt
+# dhcp boot
+  boot net:dhcp - install
+# direct wanboot
+  setenv network-boot-arguments host-ip=192.168.1.16,router-ip=192.168.1.1,subnet-mask=255.255.255.0,hostname=nbb,file=http://192.168.1.1:5555/cgi-bin/wanboot-cgi//?CONTENT=bootfile&IP=192.168.1.0&CID=0102C0C0D0D0E0
+  boot net - install
+
+# troubleshooting (on aisvr)
+  snoop ether 02:C0:C0:D0:D0:E0
+# or
+  dumpcap -i net0 -f 'ether host 02:C0:C0:D0:D0:E0' -w capfile
+  tshark -r capfile > capfile.txt
+# http://192.168.1.1:5555/cgi-bin/wanboot-cgi//?CONTENT=bootfile&IP=192.168.1.0&CID=0102C0C0D0D0E0
 
 --- Modify the AI manifest -----------------------------------------------------
 Goal is to set appropriate facets to use nightly components on distro build box
