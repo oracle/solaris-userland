@@ -1,0 +1,46 @@
+There was a naming conflict in exported structures of test modules a and b.
+
+diff --git a/tests/test-modules/b.c.original b/tests/test-modules/b.c
+index 23c9c74..f58458e 100644
+--- a/tests/test-modules/b.c.original
++++ b/tests/test-modules/b.c
+@@ -38,7 +38,7 @@ static int b_init (void);
+ /*
+  * Export pdsh module operations structure
+  */
+-struct pdsh_module_operations a_module_ops = {
++struct pdsh_module_operations b_module_ops = {
+     (ModInitF)       b_init,
+     (ModExitF)       NULL,
+     (ModReadWcollF)  NULL,
+@@ -48,7 +48,7 @@ struct pdsh_module_operations a_module_ops = {
+ /*
+  * Export rcmd module operations
+  */
+-struct pdsh_rcmd_operations a_rcmd_ops = {
++struct pdsh_rcmd_operations b_rcmd_ops = {
+     (RcmdInitF)  NULL,
+     (RcmdSigF)   NULL,
+     (RcmdF)      NULL,
+@@ -57,7 +57,7 @@ struct pdsh_rcmd_operations a_rcmd_ops = {
+ /*
+  * Export module options
+  */
+-struct pdsh_module_option a_module_options[] =
++struct pdsh_module_option b_module_options[] =
+  { { 'a', NULL, "the a option for Module B", DSH | PCP, (optFunc) opt_a },
+    PDSH_OPT_TABLE_END
+  };
+@@ -72,9 +72,9 @@ struct pdsh_module pdsh_module_info = {
+   "Module test A",
+   DSH,
+ 
+-  &a_module_ops,
+-  &a_rcmd_ops,
+-  &a_module_options[0],
++  &b_module_ops,
++  &b_rcmd_ops,
++  &b_module_options[0],
+ };
+ 
+ static int opt_a(opt_t *pdsh_opt, int opt, char *arg)

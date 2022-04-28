@@ -60,12 +60,11 @@ PASS: t0004-module-loading.sh 2 - module A takes precedence over B
 PASS: t0004-module-loading.sh 3 - pdsh -M B ativates module B
 PASS: t0004-module-loading.sh 4 - PDSH_MISC_MODULES option works
 PASS: t0004-module-loading.sh 5 - -M option overrides PDSH_MISC_MODULES environment var
-FAIL: t0004-module-loading.sh 6 - 6 pdsh help string correctly displays options of loaded modules
+PASS: t0004-module-loading.sh 6 - pdsh help string correctly displays options of loaded modules
 PASS: t0004-module-loading.sh 7 - Loading conflicting module with -M causes error
 PASS: t0004-module-loading.sh 8 - Conflicting modules dont run init()
-FAIL: t0004-module-loading.sh 9 - 9 Force loaded module runs init()
+PASS: t0004-module-loading.sh 9 - Force loaded module runs init()
 PASS: t0004-module-loading.sh 10 - New conflicting module does not run init() with -M
-ERROR: t0004-module-loading.sh - exited with status 1
 PASS: t0005-rcmd_type-and-user.sh 1 - pdsh -l sets username for all hosts
 PASS: t0005-rcmd_type-and-user.sh 2 - Can set remote username via user@hosts
 PASS: t0005-rcmd_type-and-user.sh 3 - user@hosts works for a subset of hosts
@@ -144,16 +143,24 @@ PASS: t5000-dshbak.sh 18 - dshbak -d fails gracefully for non-writable dir
 PASS: t5000-dshbak.sh 19 - Issue 70: dshbak fails on hostname of 0
 PASS: t6036-long-output-lines.sh 1 - pdsh does not truncate very long lines
 PASS: t6036-long-output-lines.sh 2 - pdsh does not truncate even longer lines
+PASS: t6114-no-newline-corruption.sh 1 - pdsh does not garble 1K with no newline
+PASS: t6114-no-newline-corruption.sh 2 - pdsh does not garble 8K with no newline
+PASS: t6114-no-newline-corruption.sh 3 - pdsh does not garble 8K+ with no newline
+PASS: t6114-no-newline-corruption.sh 4 - pdsh does not garble 10K with no newline
+PASS: t6114-no-newline-corruption.sh 5 - pdsh labels 1K with no newline only once
+PASS: t6114-no-newline-corruption.sh 6 - pdsh labels 8K with no newline only once
+PASS: t6114-no-newline-corruption.sh 7 - pdsh labels 8K+ with no newline only once
+PASS: t6114-no-newline-corruption.sh 8 - pdsh labels 10K with no newline only once
 ============================================================================
 ============================================================================
-# TOTAL: 144
-# PASS:  130
+# TOTAL: 151
+# PASS:  140
 # SKIP:  4
 # XFAIL: 2
 # XFAIL: 2
-# FAIL:  4
+# FAIL:  2
 # XPASS: 0
 # XPASS: 0
-# ERROR: 4
+# ERROR: 3
 ============================================================================
 ============================================================================
