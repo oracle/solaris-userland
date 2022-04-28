@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -38,20 +38,20 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 link path=usr/bin/epylint target=epylint-$(PYVER) mediator=python \
     mediator-version=$(PYVER)
-file path=usr/bin/epylint-$(PYVER)
+file path=usr/bin/epylint-$(PYVER) pkg.depend.bypass-generate=.*importlib.*
 link path=usr/bin/pylint target=pylint-$(PYVER) mediator=python \
     mediator-version=$(PYVER)
-file path=usr/bin/pylint-$(PYVER)
+file path=usr/bin/pylint-$(PYVER) pkg.depend.bypass-generate=.*importlib.*
 $(OLD_ONLY)link path=usr/bin/pylint-gui target=pylint-gui-$(PYVER) \
     mediator=python mediator-version=$(PYVER)
 $(OLD_ONLY)file path=usr/bin/pylint-gui-$(PYVER)
 link path=usr/bin/pyreverse target=pyreverse-$(PYVER) mediator=python \
     mediator-version=$(PYVER)
-file path=usr/bin/pyreverse-$(PYVER)
+file path=usr/bin/pyreverse-$(PYVER) pkg.depend.bypass-generate=.*importlib.*
 link path=usr/bin/symilar target=symilar-$(PYVER) mediator=python \
     mediator-version=$(PYVER)
+file path=usr/bin/symilar-$(PYVER) pkg.depend.bypass-generate=.*importlib.*
 #
-file path=usr/bin/symilar-$(PYVER)
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint-$(COMPONENT_VERSION)-py$(PYVER).egg-info/PKG-INFO
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint-$(COMPONENT_VERSION)-py$(PYVER).egg-info/SOURCES.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/pylint-$(COMPONENT_VERSION)-py$(PYVER).egg-info/dependency_links.txt

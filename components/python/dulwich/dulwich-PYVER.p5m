@@ -43,13 +43,15 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 link path=usr/bin/dul-receive-pack target=dul-receive-pack$(PYVER) \
     mediator=python mediator-version=$(PYVER)
-file path=usr/bin/dul-receive-pack$(PYVER)
+file path=usr/bin/dul-receive-pack$(PYVER) \
+    pkg.depend.bypass-generate=.*importlib.*
 link path=usr/bin/dul-upload-pack target=dul-upload-pack$(PYVER) \
     mediator=python mediator-version=$(PYVER)
-file path=usr/bin/dul-upload-pack$(PYVER)
+file path=usr/bin/dul-upload-pack$(PYVER) \
+    pkg.depend.bypass-generate=.*importlib.*
 link path=usr/bin/dulwich target=dulwich$(PYVER) mediator=python \
     mediator-version=$(PYVER)
-file path=usr/bin/dulwich$(PYVER)
+file path=usr/bin/dulwich$(PYVER) pkg.depend.bypass-generate=.*importlib.*
 file path=usr/lib/python$(PYVER)/vendor-packages/docs/tutorial/conclusion.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/docs/tutorial/encoding.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/docs/tutorial/file-format.txt

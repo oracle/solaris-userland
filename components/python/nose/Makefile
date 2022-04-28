@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -47,7 +47,7 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 # nose ships the tests in Python 2 syntax, and uses setup.py build_tests
 # to convert them to Python 3 syntax, but doing so requires running Python 3.
-$(UNPACK_STAMP):	PYTHON_VERSION=3.7
+$(SOURCE_DIR)/.prep:	PYTHON_VERSION=3.7
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_ARGS =	selftest.py
@@ -58,7 +58,7 @@ COMPONENT_TEST_ARGS +=	|| true
 
 # Save an original copy of the test script to be able to edit it correctly
 # for each version of Python and build the tests once.
-COMPONENT_POST_UNPACK_ACTION += \
+COMPONENT_PREP_ACTION += \
 	($(CP) $(SOURCE_DIR)/selftest.py $(SOURCE_DIR)/selftest.py.orig ; \
 	cd $(COMPONENT_TEST_DIR); $(COMPONENT_TEST_ENV_CMD) \
                 $(COMPONENT_TEST_ENV) \
@@ -70,6 +70,12 @@ COMPONENT_POST_UNPACK_ACTION += \
 COMPONENT_PRE_TEST_ACTION = \
 	$(GSED) -e "s|'build', 'lib\*'|'..', 'build', 'prototype', '$(MACH)', 'usr', 'lib', 'python$(PYTHON_VERSION)', 'vendor-packages\*'|" \
 		$(SOURCE_DIR)/selftest.py.orig > $(SOURCE_DIR)/selftest.py
+
+# Make all files Python 3 compatible
+COMPONENT_POST_BUILD_ACTION += \
+	if [[ "$(PYTHON_VERSION)" != "2.7" ]]; then \
+		2to3-$(PYTHON_VERSION) -nw --no-diffs $(@D)/lib/nose; \
+	fi;
 
 # The test output can contain non-deterministic results because "chances are
 # you will experience odd, intermittent and unexplainable failures and errors"

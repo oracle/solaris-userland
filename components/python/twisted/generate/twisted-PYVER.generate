@@ -29,5 +29,9 @@
 <transform file path=usr/demo/twisted-python\$\(PYVER\)/.*$ -> set mode 0555>
 <transform file path=usr/demo/twisted-python[23]\.[0-9]/.+ -> drop>
 
+# Bypass pkgdepend detection of importlib in executable entry scripts
+<transform file path=usr/demo/twisted-python.* \
+	-> set pkg.depend.bypass-generate .*importlib.*>
+
 # drop dropin.cache that might be present if 'gmake test' was executed
 <transform file path=.*/dropin.cache -> drop>

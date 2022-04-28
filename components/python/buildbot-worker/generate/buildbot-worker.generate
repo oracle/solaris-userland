@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 #
 
 # Manifest contains only generic version with $(PYVER) variable.
@@ -31,3 +31,6 @@
 
 # don't ship windows service related files
 <transform file path=.*windows_service(|.py)$ -> drop>
+
+# Bypass pkgdepend detection of importlib in executable entry scripts
+<transform file path=usr/bin/.* -> set pkg.depend.bypass-generate .*importlib.*>

@@ -1,0 +1,66 @@
+Make zope-interface build compatible with new setuptools.
+
+From 1de55506a33bedeb25051ac4cfa18f2e241a9212 Mon Sep 17 00:00:00 2001
+From: Marius Gedminas <marius@gedmin.as>
+Date: Mon, 20 Jan 2020 09:27:52 +0200
+Subject: [PATCH] Remove deprecated use of setuptools features
+
+The feature was used to optionally disable C extension modules used for
+speed optimizations.
+
+Nowadays we can disable this extension module by setting the PURE_PYTHON
+environment variable.
+
+--- zope.interface-4.6.0/setup.py
++++ zope.interface-4.6.0/setup.py
+@@ -23,7 +23,7 @@ import os
+ import platform
+ import sys
+ 
+-from setuptools import setup, Extension, Feature
++from setuptools import setup, Extension
+ from setuptools.command.build_ext import build_ext
+ from setuptools import find_packages
+ 
+@@ -61,15 +61,12 @@ class optional_build_ext(build_ext):
+ 
+ codeoptimization_c = os.path.join('src', 'zope', 'interface',
+                                   '_zope_interface_coptimizations.c')
+-codeoptimization = Feature(
+-        "Optional code optimizations",
+-        standard=True,
+-        ext_modules=[
+-            Extension(
+-                "zope.interface._zope_interface_coptimizations",
+-                [os.path.normcase(codeoptimization_c)]
+-            )
+-        ])
++codeoptimization = [
++    Extension(
++        "zope.interface._zope_interface_coptimizations",
++        [os.path.normcase(codeoptimization_c)]
++    ),
++]
+ py_impl = getattr(platform, 'python_implementation', lambda: None)
+ is_pypy = py_impl() == 'PyPy'
+ is_jython = 'java' in sys.platform
+@@ -79,9 +76,9 @@ is_pure = 'PURE_PYTHON' in os.environ
+ # anti-optimizations (the C extension compatibility layer is known-slow,
+ # and defeats JIT opportunities).
+ if is_pypy or is_jython or is_pure:
+-    features = {}
++    ext_modules = []
+ else:
+-    features = {'codeoptimization': codeoptimization}
++    ext_modules = codeoptimization
+ tests_require = ['zope.event']
+ testing_extras = tests_require + ['nose', 'coverage']
+ 
+@@ -145,6 +142,6 @@ setup(name='zope.interface',
+           'test': tests_require,
+           'testing': testing_extras,
+       },
+-      features=features,
++      ext_modules=ext_modules,
+       keywords=['interface', 'components', 'plugins'],
+ )

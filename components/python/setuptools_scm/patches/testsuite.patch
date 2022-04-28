@@ -1,0 +1,27 @@
+From 47bf9a3a5e7930fbe426377cb07259d6a815ed4b Mon Sep 17 00:00:00 2001
+From: Stanislav Levin <slev@altlinux.org>
+Date: Thu, 7 Apr 2022 16:14:22 +0300
+Subject: [PATCH] test_pyproject_support: Make correct PEP621 project definition
+
+--- a/testing/test_integration.py
++++ b/testing/test_integration.py
+@@ -21,7 +21,7 @@ def wd(wd):
+ 
+ 
+ def test_pyproject_support(tmpdir, monkeypatch):
+-    pytest.importorskip("toml")
++    pytest.importorskip("tomli")
+     monkeypatch.delenv("SETUPTOOLS_SCM_DEBUG")
+     pkg = tmpdir.ensure("package", dir=42)
+     pkg.join("pyproject.toml").write_text(
+@@ -30,8 +30,10 @@ def test_pyproject_support(tmpdir, monkeypatch):
+             [tool.setuptools_scm]
+             fallback_version = "12.34"
+             [project]
++            name = "foo"
+             description = "Factory ⸻ A code generator 🏭"
+             authors = [{name = "Łukasz Langa"}]
++            dynamic = ["version"]
+             """
+         ),
+         encoding="utf-8",

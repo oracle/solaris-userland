@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 <transform file \
@@ -54,7 +54,8 @@ set name=org.opensolaris.arc-caseid value=LSARC/2008/239 value=PSARC/2014/371
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 
 
-file path=usr/bin/f2py$(PYVER) pkg.depend.bypass-generate=.*/f2py2e.*
+file path=usr/bin/f2py$(PYVER) pkg.depend.bypass-generate=.*/f2py2e.* \
+    pkg.depend.bypass-generate=.*importlib.*
 file path=usr/lib/python$(PYVER)/vendor-packages/numpy-$(COMPONENT_VERSION)-py$(PYVER).egg-info/PKG-INFO
 file path=usr/lib/python$(PYVER)/vendor-packages/numpy-$(COMPONENT_VERSION)-py$(PYVER).egg-info/SOURCES.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/numpy-$(COMPONENT_VERSION)-py$(PYVER).egg-info/dependency_links.txt

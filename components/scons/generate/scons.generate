@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 
 # change python version string to $(PYVER)
@@ -35,3 +35,6 @@
 	-> set pkg.depend.bypass-generate .*>
 <transform file path=.*/docbook-xsl-1.76.1/epub/bin/dbtoepub \
 	-> set pkg.depend.bypass-generate .*>
+
+# Bypass pkgdepend detection of importlib in executable entry scripts
+<transform file path=usr/bin/.* -> set pkg.depend.bypass-generate .*importlib.*>

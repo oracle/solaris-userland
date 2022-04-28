@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 #
 
 # Manifest contains only generic version with $(PYVER) variable. Choose one
@@ -32,3 +32,6 @@
 
 # Drop all patch backup files
 <transform file path=.+~$ -> drop>
+
+# Bypass pkgdepend detection of importlib in executable entry scripts
+<transform file path=usr/bin/.* -> set pkg.depend.bypass-generate .*importlib.*>

@@ -1,0 +1,17 @@
+The latest version of setuptools we deliver changed how auto discovery works,
+breaking the chrome-gnome-shell build. This change fixes that:
+https://github.com/pypa/setuptools/issues/3197
+
+This was reported upstream:
+https://gitlab.gnome.org/GNOME/chrome-gnome-shell/-/issues/44
+
+--- chrome-gnome-shell-10.1/connector/setup.py
++++ chrome-gnome-shell-10.1/connector/setup.py
+@@ -17,5 +17,6 @@ setup(
+     description='Provides integration with GNOME Shell extensions repository for Chrome browser',
+     author='Yuri Konotopov',
+     url='https://wiki.gnome.org/Projects/GnomeShellIntegrationForChrome',
+-    scripts=[SCRIPT_PATH]
++    scripts=[SCRIPT_PATH],
++    py_modules=[]
+ )

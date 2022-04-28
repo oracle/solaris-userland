@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -45,7 +45,7 @@ file files/user_attr path=etc/user_attr.d/developer:test:buildbot-worker
 file files/buildbot-worker.xml \
     path=lib/svc/manifest/application/buildbot-worker.xml
 file files/svc-buildbot-worker path=lib/svc/method/svc-buildbot-worker
-file path=usr/bin/buildbot-worker
+file path=usr/bin/buildbot-worker pkg.depend.bypass-generate=.*importlib.*
 file files/buildbot.tac path=usr/lib/buildbot-worker/template/buildbot.tac
 file path=usr/lib/python$(PYVER)/vendor-packages/buildbot_worker-$(COMPONENT_VERSION)-py$(PYVER).egg-info/PKG-INFO
 file path=usr/lib/python$(PYVER)/vendor-packages/buildbot_worker-$(COMPONENT_VERSION)-py$(PYVER).egg-info/SOURCES.txt

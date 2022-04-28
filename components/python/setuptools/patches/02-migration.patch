@@ -1,0 +1,19 @@
+The new version of setuptools removed _finalize_feature_opts function and entry
+point. That results in errors during the build as metadata from the installed
+one makes it look like it's still available.
+
+This can be safely removed once new setuptools versions is available
+on our build machines.
+
+--- setuptools-62.1.0/setuptools/dist.py
++++ setuptools-62.1.0/setuptools/dist.py
+@@ -867,6 +867,9 @@ class Distribution(_Distribution):
+             pkg_resources.working_set.add(dist, replace=True)
+         return resolved_dists
+ 
++    def _finalize_feature_opts(self):
++        pass
++
+     def finalize_options(self):
+         """
+         Allow plugins to apply arbitrary operations to the

@@ -1,0 +1,61 @@
+use_2to3 command is no longer available in new setuptools;
+modify setup scripts to run 2to3 directly.
+
+Upstream is dead so no need to PR this...
+
+--- nose-1.3.7/setup.py
++++ nose-1.3.7/setup.py
+@@ -13,8 +13,7 @@ if sys.version_info >= (3,):
+         from distribute_setup import use_setuptools
+         use_setuptools()
+ 
+-    extra = {'use_2to3': True,
+-             'test_dirs': test_dirs,
++    extra = {'test_dirs': test_dirs,
+              'test_build_dir': 'build/tests',
+              'pyversion_patching': True,
+              }
+--- nose-1.3.7/setup3lib.py
++++ nose-1.3.7/setup3lib.py
+@@ -16,9 +16,9 @@ else:
+     import os
+     import re
+     import logging
++    import subprocess
+     from setuptools import Distribution as _Distribution
+     from distutils.core import Command
+-    from setuptools.command.build_py import Mixin2to3
+     from distutils import dir_util, file_util, log
+     import setuptools.command.test
+     from pkg_resources import normalize_path
+@@ -68,7 +68,7 @@ else:
+             self.pyversion_patching = False
+             _Distribution.__init__(self, attrs)
+ 
+-    class BuildTestsCommand (Command, Mixin2to3):
++    class BuildTestsCommand (Command):
+         # Create mirror copy of tests, convert all .py files using 2to3
+         user_options = []
+ 
+@@ -83,7 +83,6 @@ else:
+             self.test_base = test_base
+ 
+         def run(self):
+-            use_2to3 = getattr(self.distribution, 'use_2to3', False)
+             test_dirs = getattr(self.distribution, 'test_dirs', [])
+             test_base = self.test_base
+             bpy_cmd = self.get_finalized_command("build_py")
+@@ -112,9 +111,10 @@ else:
+                             if fn.endswith(ext):
+                                 doc_modified.append(dstfile)
+                                 break
+-            if use_2to3:
+-                self.run_2to3(py_modified)
+-                self.run_2to3(doc_modified, True)
++            if py_modified:
++                subprocess.run(["2to3", "-nw", "--no-diffs"] + py_modified, check=True)
++            if doc_modified:
++                subprocess.run(["2to3", "-nw", "--no-diffs", "--doctests_only"] + doc_modified, check=True)
+             if self.distribution.pyversion_patching:
+                 if patch is not None:
+                     for file in modified:

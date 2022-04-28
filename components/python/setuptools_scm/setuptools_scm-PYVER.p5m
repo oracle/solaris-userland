@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -44,6 +44,10 @@ file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm-$(COMPONENT_VERS
 file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm-$(COMPONENT_VERSION)-py$(PYVER).egg-info/zip-safe
 file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm/__main__.py
+file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm/_entrypoints.py
+file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm/_overrides.py
+file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm/_types.py
+file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm/_version_cls.py
 file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm/config.py
 file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm/discover.py
 file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm/file_finder.py
@@ -52,7 +56,9 @@ file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm/file_finder_hg.p
 file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm/git.py
 file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm/hacks.py
 file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm/hg.py
+file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm/hg_git.py
 file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm/integration.py
+file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm/scm_workdir.py
 file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm/utils.py
 file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_scm/version.py
 license LICENSE license=MIT
@@ -61,5 +67,11 @@ license LICENSE license=MIT
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
 
+# force a dependency on packaging; pkgdepend work is needed to flush this out.
+depend type=require fmri=library/python/packaging-$(PYV)
+
 # force a dependency on setuptools; pkgdepend work is needed to flush this out.
 depend type=require fmri=library/python/setuptools-$(PYV)
+
+# force a dependency on tomli; pkgdepend work is needed to flush this out.
+depend type=require fmri=library/python/tomli-$(PYV)
