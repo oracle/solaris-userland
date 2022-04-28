@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS=		64
@@ -28,14 +28,14 @@ COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-clocks
-COMPONENT_VERSION=	3.38.0
+COMPONENT_VERSION=	41.0
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Apps/Clocks
 COMPONENT_ARCHIVE_HASH= \
-	sha256:d956cb050f1ca46b443519e4f59ab204290d6270dec91c74b53895aecc794438
+	sha256:df8c8b04ab92fa618f5dee5118571ef9fc9e8a5b795ea00a35c6dc677cb02dac
 COMPONENT_BUGDB=	gnome/applications
 COMPONENT_ANITYA_ID=	10905
 
-COMPONENT_BAID=		89773
+COMPONENT_BAID=		110759
 BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
