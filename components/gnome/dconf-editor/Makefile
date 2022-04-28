@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		dconf-editor
-COMPONENT_VERSION=	3.38.0
+COMPONENT_VERSION=	3.38.3
 COMPONENT_PROJECT_URL=	http://wiki.gnome.org/dconf
 COMPONENT_ARCHIVE_HASH= \
-	sha256:6d89249a379082de6a8e95a2a202d0ca5fe1c9776bc0d5d3ef065567d8183eb4
+	sha256:571af4c7dad4f049b53e6cd728b79addf08c27ddab6bc57b396d211866ee79e3
 COMPONENT_BUGDB=        gnome/gconf
 COMPONENT_ANITYA_ID=	100776
 
-COMPONENT_BAID=		86244
+COMPONENT_BAID=		121353
 BUILD_STYLE=            meson
 
 TEST_TARGET= $(NO_TESTS)
