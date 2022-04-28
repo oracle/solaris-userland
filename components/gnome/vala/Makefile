@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS = 32_and_64
@@ -28,14 +28,14 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		vala
-COMPONENT_VERSION=	0.50.2
+COMPONENT_VERSION=	0.54.2
 COMPONENT_PROJECT_URL=	https://wiki.gnome.org/Projects/Vala
 COMPONENT_ARCHIVE_HASH= \
-	sha256:2c0d5dc6d65d070f724063075424c403765ab7935c9e6fbcb84981b94d07ceda
+	sha256:884de745317d4d56e4e8cede993dc8f04d50cfca36cf60d2f2f278c30c2b1311
 COMPONENT_BUGDB=        gnome/dev-tools
 COMPONENT_ANITYA_ID=	5065
 
-COMPONENT_BAID=		91020
+COMPONENT_BAID=		110824
 
 # 23285126 - vala integrated tests should be hooked up
 TEST_TARGET= $(SKIP_TEST)

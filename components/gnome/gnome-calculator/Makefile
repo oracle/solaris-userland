@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64
@@ -46,7 +46,7 @@ CONFIGURE_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
 
-CONFIGURE_OPTIONS += -Dvala-version=0.50.2
+CONFIGURE_OPTIONS += -Dvala-version=0.54.2
 
 COMPONENT_TEST_TRANSFORMS += '-e "s/            [0-9].[0-9][0-9]s//"'
 COMPONENT_TEST_TRANSFORMS += \
