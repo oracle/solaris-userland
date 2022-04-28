@@ -58,6 +58,9 @@ PYTHON_DATA = /usr
 
 # make sure that correct SSL backend is used (see 32568507)
 COMPONENT_SETUP_ARGS += --with-openssl
+ifneq ($(strip $(OPENSSL3)),)
+COMPONENT_SETUP_ARGS += --openssl-dir=/usr/openssl/3
+endif
 
 # Testing environment must be clean
 test: ENV += -i
@@ -84,6 +87,10 @@ test:		$(NO_TESTS)
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
 
+ifneq ($(strip $(OPENSSL3)),)
+REQUIRED_PACKAGES += library/security/openssl-3
+else
 REQUIRED_PACKAGES += library/security/openssl
+endif
 REQUIRED_PACKAGES += system/library
 REQUIRED_PACKAGES += web/curl
