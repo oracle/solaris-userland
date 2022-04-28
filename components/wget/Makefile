@@ -20,16 +20,16 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER=gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		wget
-COMPONENT_VERSION=	1.21.2
-COMPONENT_BAID=		113398
-COMPONENT_ARCHIVE_HASH= sha256:e6d4c76be82c676dd7e8c61a29b2ac8510ae108a810b5d1d18fc9a1d2c9a2497
+COMPONENT_VERSION=	1.21.3
+COMPONENT_BAID=		121547
+COMPONENT_ARCHIVE_HASH= sha256:5726bb8bc5ca0f6dc7110f6416e4bb7019e2d2ff5bf93d1ca2ffcc6656f220e5
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ANITYA_ID=	5124
 
