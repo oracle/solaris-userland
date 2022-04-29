@@ -112,9 +112,6 @@ COMPONENT_TEST_ENV += HTTPS_PROXY=
 # The test results differ for x86 and SPARC
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH$(BITS)).master
 
-# Some tests (like t9402-git-cvsserver-refs.sh) need GNU diff.
-COMPONENT_TEST_ENV += PATH="$(GNUBIN):$(PATH)"
-
 # many failures; keep going; later versions of git are much cleaner
 COMPONENT_TEST_ARGS += -k -i
 # If GITTEST_JOBS is set, then run the jobs in parallel (to that number)
