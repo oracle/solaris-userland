@@ -2,27 +2,47 @@ Several tests pass only if soupsieve package is installed.
 
 Can be offered upstream.
 
---- beautifulsoup4-4.9.3/bs4/tests/test_tree.py
-+++ beautifulsoup4-4.9.3/bs4/tests/test_tree.py
-@@ -37,7 +37,12 @@ from bs4.testing import (
-     SoupTest,
-     skipIf,
- )
+--- beautifulsoup4-4.11.1/bs4/tests/test_pageelement.py
++++ beautifulsoup4-4.11.1/bs4/tests/test_pageelement.py
+@@ -3,14 +3,21 @@ import copy
+ import pickle
+ import pytest
+ 
 -from soupsieve import SelectorSyntaxError
-+
 +try:
 +    import soupsieve
 +    from soupsieve import SelectorSyntaxError
 +except ImportError:
 +    soupsieve = None
  
- XML_BUILDER_PRESENT = (builder_registry.lookup("xml") is not None)
- LXML_PRESENT = (builder_registry.lookup("lxml") is not None)
-@@ -1919,6 +1924,7 @@ class TestNavigableStringSubclasses(Soup
-         assert isinstance(outside, NavigableString)
-         assert not isinstance(outside, TemplateString)
+ from bs4 import BeautifulSoup
+ from bs4.element import (
+     Comment,
+     SoupStrainer,
+ )
+-from . import SoupTest
++from . import (
++    SoupTest,
++    skipIf,
++) 
+ 
+ 
+ class TestEncoding(SoupTest):
+@@ -213,6 +220,7 @@ class TestFormatters(SoupTest):
+         assert soup.contents[0].name == 'pre'
+ 
  
 +@skipIf(soupsieve is None, "The soupsieve package is not installed.")
- class TestSoupSelector(TreeTest):
+ class TestCSSSelectors(SoupTest):
+     """Test basic CSS selector functionality.
  
-     HTML = """
+--- beautifulsoup4-4.11.1/bs4/tests/test_lxml.py
++++ beautifulsoup4-4.11.1/bs4/tests/test_lxml.py
+@@ -148,6 +148,7 @@ class TestLXMLXMLTreeBuilder(SoupTest, X
+         }
+ 
+ 
++    @skipIf(True, "The soupsieve package is not installed.")
+     def test_namespace_interaction_with_select_and_find(self):
+         # Demonstrate how namespaces interact with select* and
+         # find* methods.
