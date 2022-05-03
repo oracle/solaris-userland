@@ -20,22 +20,21 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Pygments
-COMPONENT_VERSION=	2.5.2
+COMPONENT_VERSION=	2.12.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:bbd336327e9cba483b284abe3344c0267799a646cfc0a4f5081d450b10c813df
+    sha256:06b4ff05de4891b771c84ac02997c42bf10c55b7bf150281ad409d7beb1ed5c4
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://pygments.org/
 COMPONENT_BUGDB=	python-mod/pygments
 COMPONENT_ANITYA_ID=	3986
-
-COMPONENT_BAID=		72641
+COMPONENT_BAID=		121810
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
@@ -47,7 +46,7 @@ ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =
+COMPONENT_TEST_ARGS =	--ignore=contrast/test_contrasts.py
 
 COMPONENT_POST_INSTALL_ACTION = \
 	(cd $(PROTO_DIR)/usr/bin ; \
@@ -60,4 +59,4 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:    $(SYSTEM_TEST_NO_ARCH)
