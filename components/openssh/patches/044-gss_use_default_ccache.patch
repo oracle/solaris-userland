@@ -9,8 +9,8 @@
 # Patch source: in-house
 # Solaris specific, upstream already has per-session ccache.
 #
---- old/gss-serv.c	2020-11-19 14:52:07.715831592 +0000
-+++ new/gss-serv.c	2020-11-19 14:52:49.451796226 +0000
+--- old/gss-serv.c	2022-05-04 08:18:59.640779541 +0000
++++ new/gss-serv.c	2022-05-04 08:19:45.233239807 +0000
 @@ -51,6 +51,8 @@
  #include "ssh-gss.h"
  #include "monitor_wrap.h"
@@ -104,8 +104,8 @@
  }
  
  /* This allows GSSAPI methods to do things to the child's environment based
---- old/servconf.c	2020-11-19 14:52:07.722117081 +0000
-+++ new/servconf.c	2020-11-19 14:52:49.457660367 +0000
+--- old/servconf.c	2022-05-04 08:18:59.646293359 +0000
++++ new/servconf.c	2022-05-04 08:19:45.238355050 +0000
 @@ -198,6 +198,7 @@ initialize_server_options(ServerOptions
  	 */
  	options->pam_service_per_authmethod = 1;
@@ -159,8 +159,8 @@
  
  	/* string arguments */
  	dump_cfg_string(sPidFile, o->pid_file);
---- old/servconf.h	2020-11-19 14:52:07.728489212 +0000
-+++ new/servconf.h	2020-11-19 14:52:49.463080356 +0000
+--- old/servconf.h	2022-05-04 08:18:59.651209158 +0000
++++ new/servconf.h	2022-05-04 08:19:45.243175525 +0000
 @@ -237,6 +237,7 @@ typedef struct {
  	int	expose_userauth_info;
  	u_int64_t timing_secret;
@@ -169,9 +169,9 @@
  }       ServerOptions;
  
  /* Information about the incoming connection as used by Match */
---- old/sshd_config.5	2020-11-19 14:52:07.734776319 +0000
-+++ new/sshd_config.5	2020-11-19 14:52:49.468603436 +0000
-@@ -653,6 +653,18 @@ Specifies whether to automatically destr
+--- old/sshd_config.5	2022-05-04 08:18:59.655845556 +0000
++++ new/sshd_config.5	2022-05-04 08:19:45.248208572 +0000
+@@ -657,6 +657,18 @@ Specifies whether to automatically destr
  on logout.
  The default is
  .Cm yes .
@@ -190,8 +190,8 @@
  .It Cm GSSAPIKeyExchange
  Specifies whether key exchange based on GSSAPI is allowed. GSSAPI key exchange
  doesn't rely on ssh keys to verify host identity.
---- old/sshd.c	2020-11-19 14:52:07.740354017 +0000
-+++ new/sshd.c	2020-11-19 14:52:49.474089599 +0000
+--- old/sshd.c	2022-05-04 08:18:59.660473995 +0000
++++ new/sshd.c	2022-05-04 08:19:45.253172910 +0000
 @@ -2285,9 +2285,19 @@ main(int ac, char **av)
  
  #ifdef GSSAPI
