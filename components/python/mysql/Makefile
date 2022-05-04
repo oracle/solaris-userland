@@ -20,34 +20,39 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mysqlclient
-COMPONENT_VERSION=	1.4.5
+COMPONENT_VERSION=	2.1.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:66b7024d50b82bf17ccaf783efb8140b537f0269c5591ec75db46398ff8b2a79
+    sha256:561ab15b6f18877a9bee653b385152ca1196c7d68fa37deaa68319689f2586c8
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/PyMySQL/mysqlclient-python
 COMPONENT_BUGDB=	python-mod/mysql
 COMPONENT_ANITYA_ID=	7972
+COMPONENT_BAID=		121815
 
-COMPONENT_BAID=		70776
+# This component is delivered in two different versions because
+# the newer one is no longer Python 2.7 compatible.
+COMPONENT_VERSION_OLD=	1.4.5
+COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
+COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
+COMPONENT_ARCHIVE_HASH_OLD= \
+    sha256:66b7024d50b82bf17ccaf783efb8140b537f0269c5591ec75db46398ff8b2a79
+COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
+COMPONENT_BAID_OLD=	70776
 
-PYTHON_VERSIONS=       $(PYTHON2_VERSIONS) 3.7 3.9
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
-
-# Remove trailing carriage returns, if present, in the files.
-COMPONENT_POST_UNPACK_ACTION = \
-    /usr/bin/find $(SOURCE_DIR) -type f -exec $(GSED) -i 's/\r//' '{}' \; ;
+include $(WS_MAKE_RULES)/python-multiver.mk
 
 PATH_64=		/usr/mysql/5.7/bin:/usr/bin:$(SPRO_VROOT)/bin
 COMPONENT_BUILD_ENV +=		PATH=$(PATH_$(BITS)):$(PATH)
@@ -152,9 +157,6 @@ COMPONENT_POST_TEST_ACTION = ( \
 
 COMPONENT_PRE_SYSTEM_TEST_ACTION = $(COMPONENT_PRE_TEST_ACTION)
 COMPONENT_POST_SYSTEM_TEST_ACTION = $(COMPONENT_POST_TEST_ACTION)
-
-$(MANIFEST_BASE)-%-27.mogrified: PYTHON_3_ONLY = \#
-PKG_MACROS += PYTHON_3_ONLY="$(PYTHON_3_ONLY)"
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
