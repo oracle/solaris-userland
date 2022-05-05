@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libarchive
-COMPONENT_VERSION=	3.4.3
+COMPONENT_VERSION=	3.6.1
 COMPONENT_PROJECT_URL=	http://www.libarchive.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:ee1e749213c108cb60d53147f18c31a73d6717d7e3d2481c157e1b34c881ea39
+    sha256:c676146577d989189940f1959d9e3980d28513d74eedfbc6b7f15ea45fe54ee2
 COMPONENT_ARCHIVE_URL= \
     https://github.com/libarchive/libarchive/releases/download/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libarchive
 COMPONENT_ANITYA_ID=	1558
 
 
-COMPONENT_BAID=		86198
+COMPONENT_BAID=		122943
 
 TEST_TARGET= install $(TEST_32_and_64)
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_32_and_64)
