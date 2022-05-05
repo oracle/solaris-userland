@@ -1,0 +1,97 @@
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+# Copyright (c) 2022, Oracle and/or its affiliates.
+#
+
+<transform file path=usr.*/man/.+ -> default mangler.man.stability "pass-through volatile">
+set name=pkg.fmri \
+    value=pkg:/service/network/unbound@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
+set name=pkg.summary value="Unbound - DNS resolver"
+set name=pkg.description \
+    value="Unbound - validating, recursive, caching DNS resolver"
+set name=com.oracle.info.baid value=$(COMPONENT_BAID)
+set name=com.oracle.info.description value=Unbound
+set name=info.classification \
+    value=org.opensolaris.category.2008:Applications/Internet
+set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
+set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
+set name=org.opensolaris.arc-caseid value=PSARC/2022/096
+set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file Solaris/server.auth_attr path=etc/security/auth_attr.d/network:dns:server \
+    group=sys
+file Solaris/server.prof_attr path=etc/security/prof_attr.d/network:dns:server \
+    group=sys
+file path=etc/unbound/unbound.conf mode=0644 overlay=allow preserve=renamenew
+file Solaris/server-unbound.xml \
+    path=lib/svc/manifest/network/dns/server-unbound.xml
+file path=usr/include/unbound.h
+link path=usr/lib/$(MACH64)/libunbound.so target=libunbound.so.8.1.18
+link path=usr/lib/$(MACH64)/libunbound.so.8 target=libunbound.so.8.1.18
+file path=usr/lib/$(MACH64)/libunbound.so.8.1.18
+file path=usr/lib/$(MACH64)/pkgconfig/libunbound.pc
+file path=usr/sbin/unbound
+file path=usr/sbin/unbound-anchor
+file path=usr/sbin/unbound-checkconf
+file path=usr/sbin/unbound-control
+file path=usr/sbin/unbound-control-setup
+file path=usr/sbin/unbound-host
+file path=usr/share/man/man1/unbound-host.1
+file path=usr/share/man/man3/libunbound.3
+file path=usr/share/man/man3/ub_cancel.3
+file path=usr/share/man/man3/ub_ctx.3
+file path=usr/share/man/man3/ub_ctx_add_ta.3
+file path=usr/share/man/man3/ub_ctx_add_ta_file.3
+file path=usr/share/man/man3/ub_ctx_async.3
+file path=usr/share/man/man3/ub_ctx_config.3
+file path=usr/share/man/man3/ub_ctx_create.3
+file path=usr/share/man/man3/ub_ctx_data_add.3
+file path=usr/share/man/man3/ub_ctx_data_remove.3
+file path=usr/share/man/man3/ub_ctx_debuglevel.3
+file path=usr/share/man/man3/ub_ctx_debugout.3
+file path=usr/share/man/man3/ub_ctx_delete.3
+file path=usr/share/man/man3/ub_ctx_get_option.3
+file path=usr/share/man/man3/ub_ctx_hosts.3
+file path=usr/share/man/man3/ub_ctx_print_local_zones.3
+file path=usr/share/man/man3/ub_ctx_resolvconf.3
+file path=usr/share/man/man3/ub_ctx_set_fwd.3
+file path=usr/share/man/man3/ub_ctx_set_option.3
+file path=usr/share/man/man3/ub_ctx_trustedkeys.3
+file path=usr/share/man/man3/ub_ctx_zone_add.3
+file path=usr/share/man/man3/ub_ctx_zone_remove.3
+file path=usr/share/man/man3/ub_fd.3
+file path=usr/share/man/man3/ub_poll.3
+file path=usr/share/man/man3/ub_process.3
+file path=usr/share/man/man3/ub_resolve.3
+file path=usr/share/man/man3/ub_resolve_async.3
+file path=usr/share/man/man3/ub_resolve_free.3
+file path=usr/share/man/man3/ub_result.3
+file path=usr/share/man/man3/ub_strerror.3
+file path=usr/share/man/man3/ub_wait.3
+file path=usr/share/man/man5/unbound.conf.5
+file path=usr/share/man/man8/unbound-anchor.8
+file path=usr/share/man/man8/unbound-checkconf.8
+file path=usr/share/man/man8/unbound-control-setup.8
+file path=usr/share/man/man8/unbound-control.8
+file path=usr/share/man/man8/unbound.8
+group groupname=_unbound gid=76
+user username=_unbound ftpuser=false gcos-field="Unbound Reserved UID" \
+    group=_unbound password=*LK* uid=76
+license unbound.license license=BSD

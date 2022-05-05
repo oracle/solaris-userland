@@ -1,0 +1,47 @@
+<?xml version='1.0'?>
+<!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
+<!--
+ Copyright (c) 2022, Oracle and/or its affiliates.
+-->
+
+<service_bundle type='manifest' name='unbound'>
+
+  <service name='network/dns/server' type='service' version='1'>
+
+    <instance name='unbound' enabled='false'>
+
+      <exec_method type='method' name='start'
+                   exec='/usr/sbin/unbound'
+                   timeout_seconds='60' >
+        <method_context>
+          <method_credential user='_unbound' group='_unbound'
+            privileges='basic,{net_privaddr}:53/udp,{net_privaddr}:53/tcp,{zone}:/etc/unbound/*,proc_chroot,proc_setid' />
+        </method_context>
+      </exec_method>
+
+      <exec_method type='method' name='stop' exec=':kill' timeout_seconds='60' />
+
+      <!-- to start/stop/refresh the service -->
+      <property_group name='general' type='framework'>
+      </property_group>
+
+      <template>
+        <common_name>
+          <loctext xml:lang='C'>unbound server</loctext>
+        </common_name>
+        <description>
+        <loctext xml:lang='C'>
+            unbound(8) is a validating, recursive, caching DNS resolver.
+            It is designed to be fast and lean and incorporates modern
+            features based on open standards.
+          </loctext>
+        </description>
+        <documentation>
+          <manpage title='unbound' section='8' manpath='/usr/share/man'/>
+        </documentation>
+      </template>
+
+    </instance>
+
+  </service>
+</service_bundle>
