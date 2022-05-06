@@ -4,11 +4,9 @@ correct location.
 This patch comes from in-house.  It has not been submitted upstream; plans
 unclear.
 
-diff --git a/common.shi.in b/common.shi.in
-index 67f3772..f08a1df 100644
---- a/common.shi.in
-+++ b/common.shi.in
-@@ -18,9 +18,9 @@ VALIDATE="@abs_top_builddir@/tests/validate"
+--- ImageMagick-6.9.12-47/common.shi.in.orig	2022-05-06 14:04:50.254385161 +0200
++++ ImageMagick-6.9.12-47/common.shi.in	2022-05-06 14:05:42.715651754 +0200
+@@ -18,9 +18,9 @@
  DRAWTEST="@abs_top_builddir@/tests/drawtest"
  WANDTEST="@abs_top_builddir@/tests/wandtest"
  LD_LIBRARY_PATH="@abs_top_builddir@/magick/.libs:@abs_top_builddir@/wand/.libs:${LD_LIBRARY_PATH}"
@@ -20,11 +18,9 @@ index 67f3772..f08a1df 100644
  MAGICK_FONT="@abs_top_srcdir@/PerlMagick/demo/Generic.ttf"
  PATH="@abs_top_builddir@/utilities:@abs_top_builddir@/tests:${PATH}"
  set +a
-diff --git a/magick/module.c b/magick/module.c
-index 50afbdd..8fc77bb 100644
---- a/magick/module.c
-+++ b/magick/module.c
-@@ -75,7 +75,7 @@ typedef void *ModuleHandle;
+--- ImageMagick-6.9.12-47/magick/module.c.orig	2022-05-06 14:06:08.171482208 +0200
++++ ImageMagick-6.9.12-47/magick/module.c	2022-05-06 14:09:33.493037997 +0200
+@@ -75,7 +75,7 @@
    Define declarations.
  */
  #if defined(MAGICKCORE_LTDL_DELEGATE)
@@ -33,16 +29,16 @@ index 50afbdd..8fc77bb 100644
  #else
  #  if defined(_DEBUG)
  #    define ModuleGlobExpression "IM_MOD_DB_*.dll"
-@@ -1496,7 +1496,7 @@ static void TagToCoderModuleName(const char *tag,char *name)
-   (void) LogMagickEvent(TraceEvent,GetMagickModule(),"%s",tag);
-   assert(name != (char *) NULL);
+@@ -1499,7 +1499,7 @@
+   if (IsEventLogging() != MagickFalse)
+     (void) LogMagickEvent(TraceEvent,GetMagickModule(),"%s",tag);
  #if defined(MAGICKCORE_LTDL_DELEGATE)
 -  (void) FormatLocaleString(name,MaxTextExtent,"%s.la",tag);
 +  (void) FormatLocaleString(name,MaxTextExtent,"%s.so",tag);
    (void) LocaleLower(name);
  #else
  #if defined(MAGICKCORE_WINDOWS_SUPPORT)
-@@ -1547,7 +1547,7 @@ static void TagToFilterModuleName(const char *tag,char *name)
+@@ -1551,7 +1551,7 @@
  #if !defined(MAGICKCORE_LTDL_DELEGATE)
    (void) FormatLocaleString(name,MaxTextExtent,"%s.dll",tag);
  #else
