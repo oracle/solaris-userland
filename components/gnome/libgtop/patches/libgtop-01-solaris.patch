@@ -1095,7 +1095,7 @@ diff -urN libgtop-2.25.91/sysdeps/solaris/proctime.c ../SUNWlibgtop-2.25.91.hack
 diff -urN libgtop-2.25.91/sysdeps/solaris/procwd.c ../SUNWlibgtop-2.25.91.hacked/libgtop-2.25.91/sysdeps/solaris/procwd.c
 --- libgtop-2.25.91/sysdeps/solaris/procwd.c	1970-01-01 00:00:00.000000000 +0000
 +++ ../SUNWlibgtop-2.25.91.hacked/libgtop-2.25.91/sysdeps/solaris/procwd.c	2009-02-25 17:16:38.062977000 +0000
-@@ -0,0 +1,98 @@
+@@ -0,0 +1,88 @@
 +/* Copyright (C) 2007 Benoît Dejean
 +   This file is part of LibGTop 2.
 +
@@ -1161,30 +1161,20 @@ diff -urN libgtop-2.25.91/sysdeps/solaris/procwd.c ../SUNWlibgtop-2.25.91.hacked
 +
 +	memset(buf, 0, sizeof(glibtop_proc_wd));
 +
-+	g_snprintf(path, sizeof path, "/proc/%u/root", pid);
++	/* Solaris has the symlinks in /proc/<pid>/path */
++	g_snprintf(path, sizeof path, "/proc/%u/path/root", pid);
 +	if (safe_readlink(path, buf->root, sizeof buf->root))
 +		buf->flags |= (1 << GLIBTOP_PROC_WD_ROOT);
 +
-+	g_snprintf(path, sizeof path, "/proc/%u/exe", pid);
++	g_snprintf(path, sizeof path, "/proc/%u/path/a.out", pid);
 +	if (safe_readlink(path, buf->exe, sizeof buf->exe))
 +		buf->flags |= (1 << GLIBTOP_PROC_WD_EXE);
 +
 +	dirs = g_ptr_array_sized_new(2);
 +
-+	g_snprintf(path, sizeof path, "/proc/%u/cwd", pid);
++	g_snprintf(path, sizeof path, "/proc/%u/path/cwd", pid);
 +	if (safe_readlink(path, dir, sizeof dir))
 +		g_ptr_array_add(dirs, g_strdup(dir));
-+
-+	g_snprintf(path, sizeof path, "/proc/%u/task", pid);
-+	if ((task = opendir(path)) != NULL) {
-+		struct dirent *sub;
-+		while ((sub = readdir(task)) != NULL) {
-+			g_snprintf(path, sizeof path, "/proc/%u/task/%s/cwd", pid, sub->d_name);
-+			if (safe_readlink(path, dir, sizeof dir) && !is_in(dirs, dir))
-+				g_ptr_array_add(dirs, g_strdup(dir));
-+		}
-+		closedir(task);
-+	}
 +
 +	buf->number = dirs->len;
 +	buf->flags |= (1 << GLIBTOP_PROC_WD_NUMBER);
