@@ -69,7 +69,7 @@ define patch-variables
 ifeq ($(1),_0)
 PATCH_PATTERN$(1) ?=	%.patch
 ifeq ($(strip $(OPENSSL3)),)
-PATCHES$(1) = $(filter %.patch %.ptach.openssl1,$(ALL_PATCHES))
+PATCHES$(1) = $(filter %.patch %.patch.openssl1,$(ALL_PATCHES))
 else
 PATCHES$(1) += $(filter %.patch %.patch.openssl3,$(ALL_PATCHES))
 endif
