@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -58,7 +58,7 @@ CC += $(CC_BITS)
 # to stay compatible with nevada settings, letter is default paper size
 CFLAGS += -DPAPER=\\\"letter\\\" -DUNIX
 
-COMPONENT_BUILD_ENV += INCLUDEDIR=$(PROTOUSRSHAREDIR)/psutils
+COMPONENT_BUILD_ENV += INCLUDEDIR=$(USRSHAREDIR)/psutils
 COMPONENT_BUILD_ENV += PERL=$(PERL)
 
 # slightly hacky, since COMPONENT_BUILD_TARGETS are just arguments passed to
