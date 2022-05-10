@@ -20,24 +20,23 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		psutil
-COMPONENT_VERSION=	5.6.7
+COMPONENT_VERSION=	5.9.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9beca25abfb15819c192b9d8c4bf9a516762a9d79eced95f6103797d450799a1
+    sha256:0e02d5bdfa303236742be5b4a8789e1a2d12b0ce271e3b68d9d37259384f1dae
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://pypi.python.org/pypi/psutil/
 COMPONENT_BUGDB=	python-mod/psutil
 COMPONENT_ANITYA_ID=	3978
-
-COMPONENT_BAID=		73218
+COMPONENT_BAID=		122406
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
