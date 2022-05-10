@@ -1,0 +1,55 @@
+Because Solaris doesn't ship importlib_resources, we replace it with
+reimplementation of the same functionality.
+
+Not suitable for upstream.
+
+--- jsonschema-4.5.1/setup.cfg
++++ jsonschema-4.5.1/setup.cfg
+@@ -33,7 +33,6 @@ python_requires = >=3.7
+ install_requires = 
+ 	attrs>=17.4.0
+ 	importlib_metadata;python_version<'3.8'
+-	importlib_resources>=1.4.0;python_version<'3.9'
+ 	pyrsistent>=0.14.0,!=0.17.0,!=0.17.1,!=0.17.2
+ 	typing_extensions;python_version<'3.8'
+ 
+--- jsonschema-4.5.1/jsonschema.egg-info/requires.txt
++++ jsonschema-4.5.1/jsonschema.egg-info/requires.txt
+@@ -5,9 +5,6 @@ pyrsistent!=0.17.0,!=0.17.1,!=0.17.2,>=0
+ importlib_metadata
+ typing_extensions
+ 
+-[:python_version < "3.9"]
+-importlib_resources>=1.4.0
+-
+ [format]
+ fqdn
+ idna
+--- jsonschema-4.5.1/jsonschema/_utils.py
++++ jsonschema-4.5.1/jsonschema/_utils.py
+@@ -2,15 +2,10 @@ from collections.abc import Mapping, Mut
+ from urllib.parse import urlsplit
+ import itertools
+ import json
++import pathlib
+ import re
+ import sys
+ 
+-# The files() API was added in Python 3.9.
+-if sys.version_info >= (3, 9):  # pragma: no cover
+-    from importlib import resources
+-else:  # pragma: no cover
+-    import importlib_resources as resources  # type: ignore
+-
+ 
+ class URIDict(MutableMapping):
+     """
+@@ -57,7 +52,7 @@ def load_schema(name):
+     Load a schema from ./schemas/``name``.json and return it.
+     """
+ 
+-    path = resources.files(__package__).joinpath(f"schemas/{name}.json")
++    path = pathlib.Path(__file__).parent.resolve() / "schemas" / f"{name}.json"
+     data = path.read_text(encoding="utf-8")
+     return json.loads(data)
+ 

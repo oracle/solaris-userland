@@ -20,27 +20,26 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		jsonschema
-COMPONENT_VERSION=	3.2.0
+COMPONENT_VERSION=	4.5.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:8ef4e2466ccdcfe6752e08d55c73aabe981dfe5d2b1d00e902d3d2a52a0ce07d
+    sha256:d47164ebfeb88a4db51ac4c89a8bf0455176fcfe4e9f75eaf7f1b637e66bcbec
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/Julian/jsonschema
 COMPONENT_BUGDB=	python-mod/jsonschema
 COMPONENT_ANITYA_ID=	3898
-
-COMPONENT_BAID=		77544
+COMPONENT_BAID=		127082
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 # Substitute package version in the __init__ script.
@@ -64,9 +63,9 @@ test:		$(TEST_NO_ARCH)
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += library/python/attrs
-REQUIRED_PACKAGES += library/python/backports.functools_lru_cache
+REQUIRED_PACKAGES += library/python/importlib-metadata
 REQUIRED_PACKAGES += library/python/pyrsistent
-REQUIRED_PACKAGES += library/python/six
+REQUIRED_PACKAGES += library/python/typing-extensions
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/mock
