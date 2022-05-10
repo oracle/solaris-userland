@@ -1,4 +1,4 @@
-# Copyright (c) 2008, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2008, 2022, Oracle and/or its affiliates.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -20,20 +20,14 @@
 # DEALINGS IN THE SOFTWARE.
 #
 
-Solaris ships some old Type1 fonts in files with *.ps file names instead of
-the usual *.pfa or *.pfb - we need to accept those as valid font names for
-mkfontdir/installalias to work properly.
+SRCS = installalias.c
+OBJS = $(SRCS:.c=.o)
+LIBS = -L../.libs -R$(libdir) -lXfont2
 
-diff --git a/src/FreeType/ftfuncs.c b/src/FreeType/ftfuncs.c
-index 44e5e02..9be01b0 100644
---- a/src/FreeType/ftfuncs.c
-+++ b/src/FreeType/ftfuncs.c
-@@ -3898,6 +3898,8 @@ static FontRendererRec renderers[] = {
-      FreeTypeGetInfoScalable, 0, CAPABILITIES},
-     {".pfb", 4, 0, FreeTypeOpenScalable, 0,
-      FreeTypeGetInfoScalable, 0, CAPABILITIES},
-+    {".ps", 3, 0, FreeTypeOpenScalable, 0,
-+     FreeTypeGetInfoScalable, 0, CAPABILITIES},
- };
- static int num_renderers = sizeof(renderers) / sizeof(renderers[0]);
- 
+installalias: $(OBJS)
+	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(OBJS) $(LIBS)
+
+build: installalias
+
+lint:
+	$(LINT) -b -h $(LINTFLAGS) $(CPPFLAGS) $(SRCS) $(LIBS)

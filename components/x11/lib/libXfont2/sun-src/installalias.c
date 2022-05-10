@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1993, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1993, 2022, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -386,7 +386,6 @@ OpenAndVerifyFont (
   FontEntryPtr	entry;
   FontScalableRec	vals;
   FontBitmapEntryPtr	bitmap;
-  FontBCEntryPtr	bc;
   int			ret = 0;
   Bool		isxlfd;
   Bool		scaleAlias;
@@ -428,10 +427,6 @@ OpenAndVerifyFont (
 	  } else {
 	      ret = EBadFontName;
 	  }
-	  break;
-	case FONT_ENTRY_BC:
-	  bc = &entry->u.bc;
-	  entry = bc->entry;
 	  break;
 	default:
 	  ret = EBadFontName;

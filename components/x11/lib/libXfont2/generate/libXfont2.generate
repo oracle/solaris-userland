@@ -20,6 +20,12 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 
+<transform file path=usr/lib/X11/installalias -> set mode 0555>
+
+# Temporary workaround until pkglint reference repo includes
+# the new x11/font-utilities package that removes installalias.
+<transform file path=usr/lib/X11/installalias -> \
+    set pkg.linted.pkglint.dupaction001.1 true>

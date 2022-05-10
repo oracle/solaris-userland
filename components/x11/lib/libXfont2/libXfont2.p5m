@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 <transform file path=usr.*/man/.+ -> default mangler.man.stability volatile>
@@ -41,12 +41,14 @@ dir  path=etc/X11 group=sys
 dir  path=etc/X11/fontpath.d group=sys
 file path=usr/include/X11/fonts/libxfont2.h
 file path=usr/lib/$(MACH64)/pkgconfig/xfont2.pc
-file path=usr/lib/pkgconfig/xfont2.pc
+file path=usr/lib/X11/installalias mode=0555 \
+    pkg.linted.pkglint.dupaction001.1=true
 link path=usr/lib/xorg/$(MACH64)/libXfont2.so target=libXfont2.so.2.0.0
 link path=usr/lib/xorg/$(MACH64)/libXfont2.so.2 target=libXfont2.so.2.0.0
 file path=usr/lib/xorg/$(MACH64)/libXfont2.so.2.0.0
-link path=usr/lib/xorg/libXfont2.so target=libXfont2.so.2.0.0
-link path=usr/lib/xorg/libXfont2.so.2 target=libXfont2.so.2.0.0
-file path=usr/lib/xorg/libXfont2.so.2.0.0
 license COPYING license=MIT,Other
+license sun-src/COPYING license=Oracle
+# The installalias utility was moved from the x11/font-utilities package,
+# so we depend on the post-split version to avoid conflicts
+depend type=optional fmri=pkg:/x11/font-utilities@7.7-AUTO_FMRI
 depend type=require fmri=pkg:/x11/header/x11-protocols facet.devel=true

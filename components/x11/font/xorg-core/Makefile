@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2009, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2009, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =		NO_ARCH
@@ -301,3 +301,5 @@ $(BUILD_DIR)/.postprocessed: $(PRIMARY_INSTALL) $(ALIASES_ALL_FILES)
 include $(WS_MAKE_RULES)/x11-component.mk
 include $(WS_MAKE_RULES)/font.mk
 
+# Needed at build time for installalias utility
+REQUIRED_PACKAGES += x11/library/libxfont2

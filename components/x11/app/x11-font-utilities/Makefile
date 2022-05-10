@@ -50,17 +50,12 @@ COMPONENT_ARCHIVE_URL_3= \
 COMPONENT_ANITYA_ID_3=	15055
 COMPONENT_BAID_3=		67912
 
-# installalias is a Sun-created addition to this toolset
-COMPONENT_NAME_4=	installalias
-COMPONENT_ARCHIVE_SRC_4=none
-COMPONENT_ANITYA_ID_4=	N/A
-
 TEST_TARGET = $(NO_TESTS)
 
 BUILD_TARGET = $(BUILD_$(MK_BITS))
 INSTALL_TARGET = $(INSTALL_$(MK_BITS))
 
-LIST = 2 3 4
+LIST = 2 3
 
 define extra-target-rules
 $(BUILD_DIR)/%_$(1)/.configured: SOURCE_DIR=$$(SOURCE_DIR_$(1))
@@ -79,41 +74,15 @@ $(foreach n, $(LIST), \
     $(eval $(call extra-target-rules,$(n))) \
 )
 
-undefine COMPONENT_ARCHIVE_URL_4
-
 include $(WS_MAKE_RULES)/x11-component.mk
 
 # Extra configure flag just for mkfontscale
 $(BUILD_DIR_$(MK_BITS))/.configured:	CONFIGURE_OPTIONS += --with-bzip2
 
-LIBXFONT_PATH=		/usr/lib/xorg/$(MACH64)
-LIBXFONT_LDFLAGS=	-L$(LIBXFONT_PATH) -R$(LIBXFONT_PATH)
-
-CONFIGURE_BUILD_ENV += MKFONTSCALE_LIBS="$(LIBXFONT_LDFLAGS)"
-CONFIGURE_BUILD_ENV += BDFTOPCF_LIBS="$(LIBXFONT_LDFLAGS) -lXfont"
-
 COMPONENT_INSTALL_ARGS += pkgconfigdir="$(DESTDIR)/usr/share/pkgconfig"
-
-# No configure script for installalias, just build & install
-SOURCE_DIR_4=	$(COMPONENT_DIR)/sun-src
-
-$(BUILD_DIR_4)/.built: LDFLAGS += $(LIBXFONT_LDFLAGS)
-
-$(BUILD_DIR_4)/.built:
-	$(RM) -r $(@D) ; $(MKDIR) $(@D)
-	cd $(@D); $(ENV) $(CONFIGURE_ENV) $(COMPONENT_BUILD_ENV) \
-	    $(GMAKE) VPATH=$(SOURCE_DIR_4) -f $(SOURCE_DIR_4)/Makefile \
-	    $(COMPONENT_BUILD_ARGS) build
-	touch $@
-
-$(BUILD_DIR_4)/.installed: $(BUILD_DIR_4)/.built
-	$(MKDIR) $(PROTO_DIR)/usr/lib/X11
-	$(INSTALL) -m 555 $(@D)/installalias $(PROTO_DIR)/usr/lib/X11
-	touch $@
 
 REQUIRED_PACKAGES += compress/bzip2
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += system/library/freetype-2
 REQUIRED_PACKAGES += x11/header/x11-protocols
 REQUIRED_PACKAGES += x11/library/libfontenc
-REQUIRED_PACKAGES += x11/library/libxfont
