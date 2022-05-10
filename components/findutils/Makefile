@@ -20,20 +20,21 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		findutils
-COMPONENT_VERSION=	4.6.0
+COMPONENT_VERSION=	4.9.0
+COMPONENT_ARCHIVE= $(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:ded4c9f73731cd48fec3b6bdaccce896473b6d8e337e9612e16cf1431bb1169d
+    sha256:a2bfb8c09d436770edc59f50fa483e785b161a3b7b9d547573cb08065fd462fe
 COMPONENT_ARCHIVE_URL=	http://ftp.gnu.org/gnu/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/gnu-findutils
 COMPONENT_ANITYA_ID=	812
 
-COMPONENT_BAID=		29556
+COMPONENT_BAID=		119388
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
@@ -67,7 +68,6 @@ unexport SHELLOPTS
 
 
 # test dependencies:
-REQUIRED_PACKAGES += developer/versioning/cvs
 REQUIRED_PACKAGES += developer/versioning/git
 REQUIRED_PACKAGES += runtime/python-37
 
