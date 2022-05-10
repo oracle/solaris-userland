@@ -20,21 +20,22 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
-BUILD_BITS= 64
+BUILD_BITS=		64
+COMPILER=		gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		iperf
-COMPONENT_VERSION=	3.1.7
+COMPONENT_VERSION=	3.11
 COMPONENT_PROJECT_URL=	http://software.es.net/iperf/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a4ef73406fe92250602b8da2ae89ec53211f805df97a1d1d629db5a14043734f
-COMPONENT_ARCHIVE_URL=	http://downloads.es.net/pub/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
+    sha256:de8cb409fad61a0574f4cb07eb19ce1159707403ac2dc01b5d175e91240b7e5f
+COMPONENT_ARCHIVE_URL=	https://downloads.es.net/pub/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/iperf
 COMPONENT_ANITYA_ID=	1389
 
-COMPONENT_BAID=		40559
+COMPONENT_BAID=		122405
 
 # See the TESTING file.
 TEST_TARGET= $(NO_TESTS)
@@ -44,5 +45,7 @@ include $(WS_MAKE_RULES)/common.mk
 # Needed to successfully run the test_commands.sh script in a built workspace.
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
+
+CONFIGURE_OPTIONS+=	--without-openssl
 
 REQUIRED_PACKAGES += system/library/math
