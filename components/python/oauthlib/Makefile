@@ -20,23 +20,22 @@
 #
 
 #
-# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		oauthlib
-COMPONENT_VERSION=	3.1.0
+COMPONENT_VERSION=	3.2.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:34a32e13734dcb04aa75195814136495c6495938d01a4a11d8c64f181473dbb3
+    sha256:de7ef53ccb6ed3502367b0ba0d06e0940f01c16cb5efffd7051773ea5286c7a1
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/idan/oauthlib
 COMPONENT_BUGDB=	python-mod/oauthlib
 COMPONENT_ANITYA_ID=	5377
-
-COMPONENT_BAID=		73196
+COMPONENT_BAID=		122485
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 

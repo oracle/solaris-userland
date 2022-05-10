@@ -3,32 +3,29 @@ tests which depend on those.
 
 Not for upstream
 
---- oauthlib-3.1.0/tests/oauth2/rfc6749/clients/test_service_application.py
-+++ oauthlib-3.1.0/tests/oauth2/rfc6749/clients/test_service_application.py
-@@ -4,7 +4,10 @@ from __future__ import absolute_import,
- import os
+--- oauthlib-3.2.0/tests/oauth2/rfc6749/clients/test_service_application.py
++++ oauthlib-3.2.0/tests/oauth2/rfc6749/clients/test_service_application.py
+@@ -3,7 +3,8 @@ import os
  from time import time
+ from unittest.mock import patch
  
 -import jwt
 +import pytest
 +pytestmark = pytest.mark.skip("We do not have jwt on Solaris")
-+
-+#import jwt
- from mock import patch
  
  from oauthlib.common import Request
---- oauthlib-3.1.0/tests/oauth1/rfc5849/test_client.py
-+++ oauthlib-3.1.0/tests/oauth1/rfc5849/test_client.py
-@@ -1,6 +1,8 @@
- # -*- coding: utf-8 -*-
- from __future__ import absolute_import, unicode_literals
+ from oauthlib.oauth2 import ServiceApplicationClient
+--- oauthlib-3.2.0/tests/oauth1/rfc5849/test_client.py
++++ oauthlib-3.2.0/tests/oauth1/rfc5849/test_client.py
+@@ -7,6 +7,7 @@ from oauthlib.oauth1 import (
+ from oauthlib.oauth1.rfc5849 import Client
  
+ from tests.unittest import TestCase
 +import pytest
-+
- from oauthlib.common import Request
- from oauthlib.oauth1 import (SIGNATURE_PLAINTEXT, SIGNATURE_HMAC_SHA1,
-                              SIGNATURE_HMAC_SHA256, SIGNATURE_RSA,
-@@ -105,6 +107,7 @@ class SignatureMethodTest(TestCase):
+ 
+ 
+ class ClientRealmTests(TestCase):
+@@ -104,6 +105,7 @@ class SignatureMethodTest(TestCase):
                     'oauth_signature="JzgJWBxX664OiMW3WE4MEjtYwOjI%2FpaUWHqtdHe68Es%3D"')
          self.assertEqual(h['Authorization'], correct)
  
@@ -36,44 +33,83 @@ Not for upstream
      def test_rsa_method(self):
          private_key = (
              "-----BEGIN RSA PRIVATE KEY-----\nMIICXgIBAAKBgQDk1/bxy"
---- oauthlib-3.1.0/tests/oauth1/rfc5849/test_signatures.py
-+++ oauthlib-3.1.0/tests/oauth1/rfc5849/test_signatures.py
-@@ -1,6 +1,8 @@
- # -*- coding: utf-8 -*-
- from __future__ import absolute_import, unicode_literals
- 
-+import pytest
-+
- from oauthlib.common import unicode_type
- from oauthlib.oauth1.rfc5849.signature import (collect_parameters,
-                                                signature_base_string,
-@@ -316,6 +318,7 @@ Ga6FHdjGPcfajt+nrpB1n8UQBEH9ZxniokR/IPvd
-         )
- 
+@@ -154,6 +156,7 @@ class SignatureMethodTest(TestCase):
+         client = Client('client_key', signature_method='invalid')
+         self.assertRaises(ValueError, client.sign, 'http://example.com')
  
 +    @pytest.mark.skip("Needs pyjwt, which is not available in Solaris")
-     def test_sign_rsa_sha1(self):
-         """Verify RSA-SHA1 signature against one created by OpenSSL."""
-         base_string = self.control_base_string_rsa_sha1
-@@ -330,6 +333,7 @@ Ga6FHdjGPcfajt+nrpB1n8UQBEH9ZxniokR/IPvd
-         self.assertEqual(sign, control_signature)
+     def test_rsa_no_key(self):
+         client = Client('client_key', signature_method=SIGNATURE_RSA)
+         self.assertRaises(ValueError, client.sign, 'http://example.com')
+--- oauthlib-3.2.0/tests/oauth1/rfc5849/test_signatures.py
++++ oauthlib-3.2.0/tests/oauth1/rfc5849/test_signatures.py
+@@ -20,6 +20,7 @@ from oauthlib.oauth1.rfc5849.signature i
+     verify_plaintext
+ )
+ from tests.unittest import TestCase
++import pytest
  
+ 
+ # ################################################################
+@@ -638,6 +639,7 @@ GLYT3Jw1Lfb1bbuck9Y0JsRJO7uydWUbxXyZ+8Ya
+         'DWdUh/79ZWNOrCirBFIP26cHLApjYdt4ZG7EVK0/GubS2v8wT1QPRsog8zyiMZkm' \
+         'g4JXdWCGXG8YRvRJTg+QKhXuXwS6TcMNakrgzgFIVhA='
  
 +    @pytest.mark.skip("Needs pyjwt, which is not available in Solaris")
      def test_sign_rsa_sha1_with_client(self):
-         base_string = self.control_base_string_rsa_sha1
+         """
+         Test sign and verify with RSA-SHA1.
+@@ -653,6 +655,7 @@ GLYT3Jw1Lfb1bbuck9Y0JsRJO7uydWUbxXyZ+8Ya
+                         self.expected_signature_rsa_sha1),
+             self.rsa_public_client.rsa_key))
  
---- oauthlib-3.1.0/tests/oauth1/rfc5849/endpoints/test_base.py
-+++ oauthlib-3.1.0/tests/oauth1/rfc5849/endpoints/test_base.py
-@@ -1,5 +1,7 @@
- from __future__ import absolute_import, unicode_literals
++    @pytest.mark.skip("Needs pyjwt, which is not available in Solaris")
+     def test_sign_rsa_sha256_with_client(self):
+         """
+         Test sign and verify with RSA-SHA256.
+@@ -668,6 +671,7 @@ GLYT3Jw1Lfb1bbuck9Y0JsRJO7uydWUbxXyZ+8Ya
+                         self.expected_signature_rsa_sha256),
+             self.rsa_public_client.rsa_key))
  
++    @pytest.mark.skip("Needs pyjwt, which is not available in Solaris")
+     def test_sign_rsa_sha512_with_client(self):
+         """
+         Test sign and verify with RSA-SHA512.
+@@ -683,6 +687,7 @@ GLYT3Jw1Lfb1bbuck9Y0JsRJO7uydWUbxXyZ+8Ya
+                         self.expected_signature_rsa_sha512),
+             self.rsa_public_client.rsa_key))
+ 
++    @pytest.mark.skip("Needs pyjwt, which is not available in Solaris")
+     def test_rsa_false_positives(self):
+         """
+         Test verify_rsa-* functions will correctly detect invalid signatures.
+@@ -745,6 +750,7 @@ MmgDHR2tt8KeYTSgfU+BAkBcaVF91EQ7VXhvyABN
+                                 bad_signature),
+                     self.rsa_public_client.rsa_key))
+ 
++    @pytest.mark.skip("Needs pyjwt, which is not available in Solaris")
+     def test_rsa_bad_keys(self):
+         """
+         Testing RSA sign and verify with bad key values produces errors.
+@@ -780,6 +786,7 @@ MmgDHR2tt8KeYTSgfU+BAkBcaVF91EQ7VXhvyABN
+         # For completeness, this text could repeat the above for RSA-SHA256 and
+         # RSA-SHA512 signing and verification functions.
+ 
++    @pytest.mark.skip("Needs pyjwt, which is not available in Solaris")
+     def test_rsa_jwt_algorithm_cache(self):
+         # Tests cache of RSAAlgorithm objects is implemented correctly.
+ 
+--- oauthlib-3.2.0/tests/oauth1/rfc5849/endpoints/test_base.py
++++ oauthlib-3.2.0/tests/oauth1/rfc5849/endpoints/test_base.py
+@@ -11,6 +11,7 @@ from oauthlib.oauth1.rfc5849.endpoints i
+ )
+ 
+ from tests.unittest import TestCase
 +import pytest
-+
- from re import sub
  
- from mock import MagicMock
-@@ -391,6 +393,7 @@ class SignatureVerificationTest(TestCase
+ URLENCODED = {"Content-Type": "application/x-www-form-urlencoded"}
+ 
+@@ -390,6 +391,7 @@ class SignatureVerificationTest(TestCase
          r = self.e._create_request(self.uri, 'GET', sig, URLENCODED)
          self.assertTrue(self.e._check_signature(r))
  
@@ -81,17 +117,17 @@ Not for upstream
      def test_rsa_signature(self):
          rsa_sig = ("fxFvCx33oKlR9wDquJ%2FPsndFzJphyBa3RFPPIKi3flqK%2BJ7yIrMVbH"
                     "YTM%2FLHPc7NChWz4F4%2FzRA%2BDN1k08xgYGSBoWJUOW6VvOQ6fbYhMA"
---- oauthlib-3.1.0/tests/oauth2/rfc6749/test_parameters.py
-+++ oauthlib-3.1.0/tests/oauth2/rfc6749/test_parameters.py
-@@ -1,5 +1,7 @@
- from __future__ import absolute_import, unicode_literals
+--- oauthlib-3.2.0/tests/oauth2/rfc6749/test_parameters.py
++++ oauthlib-3.2.0/tests/oauth2/rfc6749/test_parameters.py
+@@ -5,6 +5,7 @@ from oauthlib.oauth2.rfc6749.errors impo
+ from oauthlib.oauth2.rfc6749.parameters import *
  
+ from tests.unittest import TestCase
 +import pytest
-+
- from mock import patch
  
- from oauthlib import signals
-@@ -220,6 +222,7 @@ class ParameterTests(TestCase):
+ 
+ @patch('time.time', new=lambda: 1000)
+@@ -240,6 +241,7 @@ class ParameterTests(TestCase):
      def test_custom_json_error(self):
          self.assertRaises(CustomOAuth2Error, parse_token_response, self.json_custom_error)
  
@@ -99,7 +135,7 @@ Not for upstream
      def test_json_token_response(self):
          """Verify correct parameter parsing and validation for token responses. """
          self.assertEqual(parse_token_response(self.json_response), self.json_dict)
-@@ -259,6 +262,7 @@ class ParameterTests(TestCase):
+@@ -279,6 +281,7 @@ class ParameterTests(TestCase):
          finally:
              del os.environ['OAUTHLIB_STRICT_TOKEN_TYPE']
  
@@ -107,17 +143,18 @@ Not for upstream
      def test_url_encoded_token_response(self):
          """Verify fallback parameter parsing and validation for token responses. """
          self.assertEqual(parse_token_response(self.url_encoded_response), self.json_dict)
---- oauthlib-3.1.0/tests/oauth2/rfc6749/test_server.py
-+++ oauthlib-3.1.0/tests/oauth2/rfc6749/test_server.py
-@@ -1,6 +1,7 @@
- # -*- coding: utf-8 -*-
- from __future__ import absolute_import, unicode_literals
+--- oauthlib-3.2.0/tests/oauth2/rfc6749/test_server.py
++++ oauthlib-3.2.0/tests/oauth2/rfc6749/test_server.py
+@@ -16,7 +16,7 @@ from oauthlib.oauth2.rfc6749.grant_types
+ )
  
+ from tests.unittest import TestCase
+-
 +import pytest
- import json
  
- import mock
-@@ -279,6 +280,7 @@ twIDAQAB
+ class AuthorizationEndpointTest(TestCase):
+ 
+@@ -278,6 +278,7 @@ twIDAQAB
              refresh_token_generator=tokens.random_token_generator
          )
  
@@ -125,7 +162,7 @@ Not for upstream
      @mock.patch('oauthlib.common.generate_token', new=lambda: 'abc')
      def test_authorization_grant(self):
          body = 'client_id=me&redirect_uri=http%3A%2F%2Fback.to%2Fme&grant_type=authorization_code&code=abc&scope=all+of+them'
-@@ -319,6 +321,7 @@ twIDAQAB
+@@ -318,6 +319,7 @@ twIDAQAB
          }
          self.assertEqual(body, token)
  
@@ -133,7 +170,7 @@ Not for upstream
      @mock.patch('oauthlib.common.generate_token', new=lambda: 'abc')
      def test_password_grant(self):
          body = 'grant_type=password&username=a&password=hello&scope=all+of+them'
-@@ -334,6 +337,7 @@ twIDAQAB
+@@ -333,6 +335,7 @@ twIDAQAB
          }
          self.assertEqual(body, token)
  
@@ -141,7 +178,7 @@ Not for upstream
      @mock.patch('oauthlib.common.generate_token', new=lambda: 'abc')
      def test_scopes_and_user_id_stored_in_access_token(self):
          body = 'grant_type=password&username=a&password=hello&scope=all+of+them'
-@@ -347,6 +351,7 @@ twIDAQAB
+@@ -346,6 +349,7 @@ twIDAQAB
          self.assertEqual(claims['scope'], 'all of them')
          self.assertEqual(claims['user_id'], 123)
  
@@ -149,17 +186,17 @@ Not for upstream
      @mock.patch('oauthlib.common.generate_token', new=lambda: 'abc')
      def test_client_grant(self):
          body = 'grant_type=client_credentials&scope=all+of+them'
---- oauthlib-3.1.0/tests/oauth2/rfc6749/clients/test_backend_application.py
-+++ oauthlib-3.1.0/tests/oauth2/rfc6749/clients/test_backend_application.py
-@@ -1,6 +1,7 @@
- # -*- coding: utf-8 -*-
- from __future__ import absolute_import, unicode_literals
+--- oauthlib-3.2.0/tests/oauth2/rfc6749/clients/test_backend_application.py
++++ oauthlib-3.2.0/tests/oauth2/rfc6749/clients/test_backend_application.py
+@@ -6,6 +6,7 @@ from oauthlib import signals
+ from oauthlib.oauth2 import BackendApplicationClient
  
+ from tests.unittest import TestCase
 +import pytest
- import os
  
- from mock import patch
-@@ -56,6 +57,7 @@ class BackendApplicationClientTest(TestC
+ 
+ @patch('time.time', new=lambda: 1000)
+@@ -53,6 +54,7 @@ class BackendApplicationClientTest(TestC
          body = client.prepare_request_body(body=self.body, **self.kwargs)
          self.assertFormBodyEqual(body, self.body_kwargs)
  
@@ -167,17 +204,17 @@ Not for upstream
      def test_parse_token_response(self):
          client = BackendApplicationClient(self.client_id)
  
---- oauthlib-3.1.0/tests/oauth2/rfc6749/clients/test_legacy_application.py
-+++ oauthlib-3.1.0/tests/oauth2/rfc6749/clients/test_legacy_application.py
-@@ -1,6 +1,7 @@
- # -*- coding: utf-8 -*-
- from __future__ import absolute_import, unicode_literals
+--- oauthlib-3.2.0/tests/oauth2/rfc6749/clients/test_legacy_application.py
++++ oauthlib-3.2.0/tests/oauth2/rfc6749/clients/test_legacy_application.py
+@@ -7,6 +7,7 @@ from oauthlib import signals
+ from oauthlib.oauth2 import LegacyApplicationClient
  
+ from tests.unittest import TestCase
 +import pytest
- import os
  
- from mock import patch
-@@ -64,6 +65,7 @@ class LegacyApplicationClientTest(TestCa
+ 
+ @patch('time.time', new=lambda: 1000)
+@@ -56,6 +57,7 @@ class LegacyApplicationClientTest(TestCa
                  body=self.body, **self.kwargs)
          self.assertFormBodyEqual(body, self.body_kwargs)
  
@@ -185,17 +222,17 @@ Not for upstream
      def test_parse_token_response(self):
          client = LegacyApplicationClient(self.client_id)
  
---- oauthlib-3.1.0/tests/oauth2/rfc6749/clients/test_mobile_application.py
-+++ oauthlib-3.1.0/tests/oauth2/rfc6749/clients/test_mobile_application.py
-@@ -1,6 +1,7 @@
- # -*- coding: utf-8 -*-
- from __future__ import absolute_import, unicode_literals
+--- oauthlib-3.2.0/tests/oauth2/rfc6749/clients/test_mobile_application.py
++++ oauthlib-3.2.0/tests/oauth2/rfc6749/clients/test_mobile_application.py
+@@ -6,6 +6,7 @@ from oauthlib import signals
+ from oauthlib.oauth2 import MobileApplicationClient
  
+ from tests.unittest import TestCase
 +import pytest
- import os
  
- from mock import patch
-@@ -81,6 +82,7 @@ class MobileApplicationClientTest(TestCa
+ 
+ @patch('time.time', new=lambda: 1000)
+@@ -78,6 +79,7 @@ class MobileApplicationClientTest(TestCa
          # credentials at this point.
          self.assertIsNone(client.code)
  
@@ -203,17 +240,17 @@ Not for upstream
      def test_parse_token_response(self):
          client = MobileApplicationClient(self.client_id)
  
---- oauthlib-3.1.0/tests/oauth2/rfc6749/clients/test_web_application.py
-+++ oauthlib-3.1.0/tests/oauth2/rfc6749/clients/test_web_application.py
-@@ -1,6 +1,7 @@
- # -*- coding: utf-8 -*-
- from __future__ import absolute_import, unicode_literals
+--- oauthlib-3.2.0/tests/oauth2/rfc6749/clients/test_web_application.py
++++ oauthlib-3.2.0/tests/oauth2/rfc6749/clients/test_web_application.py
+@@ -13,6 +13,7 @@ from oauthlib.oauth2.rfc6749 import erro
+ from oauthlib.oauth2.rfc6749.clients import AUTH_HEADER, BODY, URI_QUERY
  
+ from tests.unittest import TestCase
 +import pytest
- import datetime
- import os
- import warnings
-@@ -144,6 +145,7 @@ class WebApplicationClientTest(TestCase)
+ 
+ 
+ @patch('time.time', new=lambda: 1000)
+@@ -154,6 +155,7 @@ class WebApplicationClientTest(TestCase)
          self.assertIsNone(client.refresh_token)
          self.assertIsNone(client.mac_key)
  
