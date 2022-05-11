@@ -1,0 +1,21 @@
+Patch origin: in-house
+Patch status: Solaris-specific; not suitable for upstream
+
+diff --git a/docs/conf/httpd.conf.in b/docs/conf/httpd.conf.in
+index 37d7c0b..a023fd2 100644
+--- a/docs/conf/httpd.conf.in
++++ b/docs/conf/httpd.conf.in
+@@ -69,6 +69,13 @@
+ # Example:
+ # LoadModule foo_module modules/mod_foo.so
+ #
++# Note that mod_authn_dbd.so, mod_authz_dbd.so, mod_dbd.so and
++# mod_session_dbd.so are bundled in separate package "apache-dbd".
++# Similarly mod_authnz_ldap.so and mod_ldap.so are bundled in
++# separate package "apache-ldap".
++# Also mod_ssl.so is bundled in separate package "apache-ssl" and
++# mod_lua.so is bundled in separate package "apache-lua".
++#
+ @@LoadModule@@
+ 
+ <IfModule unixd_module>

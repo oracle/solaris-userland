@@ -20,13 +20,12 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
 
-<transform file path=.*/libexec/mod_ssl.so$ -> set action.hash %(path)>
-<transform file path=.*/libexec/mod_ssl.so$ -> edit path mod_ssl.so mod_ssl-default.so>
+<transform file path=.*/libexec/mod_ssl.so$ -> drop>
 
 # delete everything not belonging to this package
 <transform file link pkg.type=(?!ssl) -> drop>

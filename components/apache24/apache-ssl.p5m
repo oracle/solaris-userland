@@ -18,7 +18,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 # prevents "64bit file in 32bit path" errors
@@ -37,10 +37,12 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2015/007
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file usr/apache2/2.4/libexec/mod_ssl.so \
+$(OPENSSL1_ONLY)file usr/apache2/2.4/libexec/mod_ssl.so \
     path=usr/apache2/2.4/libexec/mod_ssl-default.so
-link path=usr/apache2/2.4/libexec/mod_ssl.so target=mod_ssl-default.so \
-    mediator=openssl mediator-implementation=default mediator-priority=vendor
+$(OPENSSL3_ONLY)file path=usr/apache2/2.4/libexec/mod_ssl.so
+$(OPENSSL1_ONLY)link path=usr/apache2/2.4/libexec/mod_ssl.so \
+    target=mod_ssl-default.so mediator=openssl \
+    mediator-implementation=default mediator-priority=vendor
 license apache.license license="Apache v2.0"
 
 # Following dependency is not just to make sure that the main Apache

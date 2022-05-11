@@ -51,8 +51,15 @@ LDFLAGS += $(CC_BITS)
 ADIHEAP_MODE = $(ADIHEAP_ENABLE)
 ADISTACK_MODE = $(ADISTACK_ENABLE)
 
+ifeq ($(strip $(OPENSSL3)),)
 # We will build two separate mod_ssl versions.
 COMPONENT_POST_UNPACK_ACTION = (cd $(SOURCE_DIR)/modules; $(CP) -r ssl ssl-fips-140)
+PKG_MACROS +=	OPENSSL1_ONLY=
+PKG_MACROS +=	OPENSSL3_ONLY=\#
+else
+PKG_MACROS +=	OPENSSL1_ONLY=\#
+PKG_MACROS +=	OPENSSL3_ONLY=
+endif
 
 # Some patches need configure script re-creation.
 COMPONENT_PREP_ACTION +=($(CP) mod_auth_gss/mod_auth_gss.c $(@D)/modules/aaa);
@@ -69,8 +76,11 @@ CONFIGURE_OPTIONS +=	--enable-exception-hook
 CONFIGURE_OPTIONS +=	--enable-cgi
 CONFIGURE_OPTIONS +=	--enable-suexec
 CONFIGURE_OPTIONS +=	--with-suexec-caller=webservd
-CONFIGURE_OPTIONS +=	--with-apr=$(USRDIR)/apr/1.6/bin/$(MACH64)/apr-1-config
-CONFIGURE_OPTIONS +=	--with-apr-util=$(USRDIR)/apr-util/1.6/bin/$(MACH64)/apu-1-config
+CONFIGURE_OPTIONS +=	--with-apr=$(USRDIR)/apr/1/bin/$(MACH64)/apr-1-config
+CONFIGURE_OPTIONS +=	--with-apr-util=$(USRDIR)/apr-util/1/bin/$(MACH64)/apu-1-config
+ifneq ($(strip $(OPENSSL3)),)
+CONFIGURE_OPTIONS +=	--with-ssl=/usr/openssl/3
+endif
 CONFIGURE_OPTIONS +=	CFLAGS="$(CFLAGS)"
 CONFIGURE_OPTIONS +=	LTFLAGS="--silent --tag=CC"
 
@@ -96,8 +106,12 @@ REQUIRED_PACKAGES += library/apr-util-16/dbd-sqlite
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/nghttp2
 REQUIRED_PACKAGES += library/pcre2
+ifeq ($(strip $(OPENSSL3)),)
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
+else
+REQUIRED_PACKAGES += library/security/openssl-3
+endif
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/lua
 REQUIRED_PACKAGES += $(PERL_PKG)

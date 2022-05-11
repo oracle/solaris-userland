@@ -20,13 +20,12 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
 
-<transform file path=.*/libexec/mod_ssl_fips.so$ -> set action.hash %(path)>
-<transform file path=.*/libexec/mod_ssl_fips.so$ -> edit path mod_ssl_fips.so mod_ssl-fips-140.so>
+<transform file path=.*/libexec/mod_ssl_fips.so$ -> drop>
 
 # delete everything not belonging to this package
 <transform file link pkg.type=(?!fips-ssl) -> drop>

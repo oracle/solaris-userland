@@ -1,0 +1,48 @@
+First part is Solaris private (for nonstandard library path).
+
+Second part for FIPS support with OpenSSL3:
+https://bz.apache.org/bugzilla/show_bug.cgi?id=66063
+
+--- httpd-2.4.53/acinclude.m4
++++ httpd-2.4.53/acinclude.m4
+@@ -518,10 +518,10 @@ dnl Before doing anything else, load in
+     if test -n "$PKGCONFIG"; then
+       saved_PKG_CONFIG_PATH="$PKG_CONFIG_PATH"
+       if test "x$ap_openssl_base" != "x"; then
+-        if test -f "${ap_openssl_base}/lib/pkgconfig/openssl.pc"; then
++        if test -f "${ap_openssl_base}/lib/64/pkgconfig/openssl.pc"; then
+           dnl Ensure that the given path is used by pkg-config too, otherwise
+           dnl the system openssl.pc might be picked up instead.
+-          PKG_CONFIG_PATH="${ap_openssl_base}/lib/pkgconfig${PKG_CONFIG_PATH+:}${PKG_CONFIG_PATH}"
++          PKG_CONFIG_PATH="${ap_openssl_base}/lib/64/pkgconfig${PKG_CONFIG_PATH+:}${PKG_CONFIG_PATH}"
+           export PKG_CONFIG_PATH
+         elif test -f "${ap_openssl_base}/lib64/pkgconfig/openssl.pc"; then
+           dnl Ensure that the given path is used by pkg-config too, otherwise
+
+From 8b800c1457aee40d871e07470c1a962bf3e25de3 Mon Sep 17 00:00:00 2001
+From: Yann Ylavic <ylavic@apache.org>
+Date: Thu, 9 Jun 2022 09:53:12 +0000
+Subject: [PATCH] mod_ssl: Missing bit from r1901470 to handle OpenSSL-3+ FIPS.
+
+OPENSSL_FIPS is no longer defined with openssl-3, it always HAVE_FIPS.
+
+
+
+git-svn-id: https://svn.apache.org/repos/asf/httpd/httpd/trunk@1901772 13f79535-47bb-0310-9956-ffa450edef68
+---
+ modules/ssl/ssl_private.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/ssl/ssl_private.h b/modules/ssl/ssl_private.h
+index 2bebde1981f..77e893ad1a0 100644
+--- a/modules/ssl/ssl_private.h
++++ b/modules/ssl/ssl_private.h
+@@ -147,7 +147,7 @@
+ #define MODSSL_USE_OPENSSL_PRE_1_1_API (OPENSSL_VERSION_NUMBER < 0x10100000L)
+ #endif
+ 
+-#if defined(OPENSSL_FIPS)
++#if defined(OPENSSL_FIPS) || OPENSSL_VERSION_NUMBER >= 0x30000000L
+ #define HAVE_FIPS
+ #endif
+ 

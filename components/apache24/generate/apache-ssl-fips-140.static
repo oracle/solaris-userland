@@ -20,8 +20,13 @@
 #
 
 #
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
-link path=usr/apache2/2.4/libexec/mod_ssl.so target=mod_ssl-fips-140.so \
-    mediator=openssl mediator-implementation=fips-140
+$(OPENSSL1_ONLY)file usr/apache2/2.4/libexec/mod_ssl_fips.so \
+    path=usr/apache2/2.4/libexec/mod_ssl-fips-140.so
+$(OPENSSL1_ONLY)link path=usr/apache2/2.4/libexec/mod_ssl.so \
+    target=mod_ssl-fips-140.so mediator=openssl \
+    mediator-implementation=fips-140
+$(OPENSSL1_ONLY)depend type=require fmri=__TBD \
+    pkg.debug.depend.file=lib/openssl/fips-140/$(MACH64)/libssl.so.1.0.0
