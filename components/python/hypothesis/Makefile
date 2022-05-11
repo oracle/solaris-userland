@@ -20,27 +20,41 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		hypothesis
-COMPONENT_VERSION=	4.57.1
+COMPONENT_VERSION=	6.46.5
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:2f6e6e5dbc7b37187f76fe0ec936fbbb1038ddef2191993f9c3def4532586273
+    sha256:0fb4e84320e53b822d4f106331a5e4e816376b2e733890825452b606c9c64f79
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/HypothesisWorks/hypothesis
 COMPONENT_BUGDB=	python-mod/hypothesis
 COMPONENT_ANITYA_ID=	7372
+COMPONENT_BAID=		122795
 
-COMPONENT_BAID=		84076
+# This component is delivered in two different versions because
+# the newer one is no longer Python 2.7 compatible.
+COMPONENT_VERSION_OLD=	4.57.1
+COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
+COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
+COMPONENT_ARCHIVE_HASH_OLD= \
+    sha256:2f6e6e5dbc7b37187f76fe0ec936fbbb1038ddef2191993f9c3def4532586273
+COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
+COMPONENT_BAID_OLD=	84076
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-multiver.mk
+
+COMPONENT_POST_INSTALL_ACTION += \
+	[ -f $(PROTOUSRBINDIR)/hypothesis ] && \
+	$(MV) $(PROTOUSRBINDIR)/hypothesis $(PROTOUSRBINDIR)/hypothesis-$(PYTHON_VERSION) || true
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 

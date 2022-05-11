@@ -20,31 +20,34 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		attrs
-COMPONENT_VERSION=	19.3.0
+COMPONENT_VERSION=	21.4.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:20333997d8f245cc7cde85e93e0672a0df83425f6b29f9c1e7a177ce47fd8658
+    sha256:2bbbe66dabb2d2bdc08a0c01f7e0047480db1ac72cd06635361cb2fd6f440474
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://www.attrs.org/en/stable/
 COMPONENT_BUGDB=	python-mod/attrs
 COMPONENT_ANITYA_ID=	15099
-
-COMPONENT_BAID=		76728
+COMPONENT_BAID=		122501
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
-COMPONENT_TEST_CMD =	$(PYTHON)
-COMPONENT_TEST_ARGS =	main_runner.py
+COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
+
+# Some files are available for Python 3.x only
+$(MANIFEST_BASE)-%-27.mogrified: NEW_ONLY = \#
+PKG_MACROS += NEW_ONLY="$(NEW_ONLY)"
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
