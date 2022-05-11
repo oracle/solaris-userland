@@ -61,6 +61,8 @@ CONFIGURE_OPTIONS.sparc.64 +=	solaris64-sparcv9-gcc
 
 CONFIGURE_DEFAULT_DIRS = no
 
+PROTOUSRLIBDIR = $(PROTO_DIR)$(CONFIGURE_PREFIX)/lib
+PROTOUSRLIBDIR64 = $(PROTO_DIR)/$(CONFIGURE_PREFIX)/lib/$(MACH64)
 include $(WS_MAKE_RULES)/common.mk
 
 # OpenSSL does not use autoconf but its own configure system.
