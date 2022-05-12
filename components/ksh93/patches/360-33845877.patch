@@ -1,0 +1,51 @@
+This patch addresses issues with the ksh93 typeset builtin for
+the -L/-R/-Z options,ie left/right justification and zero fill
+for input strings with blank characters. This was developed
+inhouse and has been submitted upstream but hasn't been 
+merged as the community is working on some related changes
+which seem to be delayed. This reverts some of the changes
+from the upstream fix for CR 28907591.
+Upstream bug details at
+https://github.com/ksh93/ksh/issues/476
+
+--- INIT.2012-08-01.old/src/cmd/ksh93/sh/name.c	2022-05-09 03:42:28.542494140 +0000
++++ INIT.2012-08-01/src/cmd/ksh93/sh/name.c	2022-05-09 03:47:53.465892064 +0000
+@@ -3076,36 +3076,8 @@
+ 				if(!*sp) sp--;		/* if number was 0, leave one zero */
+ 			}
+ 			n = strlen(sp);
+-			if(size==0 || (newatts&(NV_INTEGER|NV_BINARY)))
+-			{
+-				/* allocate to match existing value for numerics and auto length assignment for -L/R/Z */
+-				cp = (char*)malloc((size_t)n + 1);
+-				strcpy(cp, sp);
+-			}
+-			else if(size>=n)
+-			{
+-				/* growing string */
+-				cp = (char*)malloc((size_t)size + 1);
+-				strcpy(cp, sp);
+-			}
+-			else
+-			{
+-				/* shrinking string */
+-				cp = (char*)malloc((size_t)size + 1);
+-				if(newatts&NV_RJUST)
+-					strncpy(cp, n - size + sp, size);
+-				else
+-				{
+-					/* NV_LJUST and the rest */
+-					if(newatts&NV_ZFILL)
+-					{
+-						while(*sp=='0') sp++;	/* skip initial zeros */
+-						if(!*sp) sp--;		/* if number was 0, leave one zero */
+-					}
+-					strncpy(cp, sp, size);
+-				}
+-				cp[size] = '\0';
+-			}
++			cp = (char*)malloc((n > size ? n : size) + 1);
++			strcpy(cp, sp);
+ 			if(sp && (mp=nv_opensub(np)))
+ 			{
+ 				if(trans)
