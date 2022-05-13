@@ -20,28 +20,27 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Jinja2
-COMPONENT_VERSION=	3.0.1
+COMPONENT_VERSION=	3.1.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:4a03ce63e871d7df9d19b67e82a8393a0d88a843efdb304177e6fdbaeef31c29
+    sha256:95ab65f26c2e4b046c56c87fc443443862a1acbd0a2151a0cebc14fe1f614c21
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://jinja.pocoo.org/
 COMPONENT_BUGDB=	python-mod/jinja2
 COMPONENT_ANITYA_ID=	3894
-
-COMPONENT_BAID=		108266
+COMPONENT_BAID=		122685
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
@@ -60,4 +59,3 @@ test:		$(TEST_NO_ARCH)
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += library/python/markupsafe
-REQUIRED_PACKAGES += library/python/setuptools
