@@ -20,22 +20,21 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		PrettyTable
-COMPONENT_VERSION=	1.0.0
+COMPONENT_VERSION=	3.3.0
 COMPONENT_SRC=		prettytable-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:d5f55531672b45271eb2473df1bf73323f9d109a9bb9f21029b817fe94554a90
+    sha256:57c3f434ad14cc8983a2072d860e5f1594215f1e516b1e4190427c56b44f8fd4
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://code.google.com/p/prettytable/
 COMPONENT_BUGDB=	python-mod/prettytable
 COMPONENT_ANITYA_ID=	19994
-
-COMPONENT_BAID=		86993
+COMPONENT_BAID=		122947
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
@@ -45,9 +44,9 @@ include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-COMPONENT_TEST_DIR =	$(SOURCE_DIR)
+COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =	prettytable_test.py
+COMPONENT_TEST_ARGS =
 
 # Non-ascii symbols can break the depthlimiter.py when ran with
 # Python 3.7+ unless UTF-8 locale is set (see bug 31983111):
@@ -60,6 +59,6 @@ install:	$(INSTALL_NO_ARCH)
 
 test:		$(TEST_NO_ARCH)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:    $(SYSTEM_TEST_NO_ARCH)
 
 REQUIRED_PACKAGES += library/python/wcwidth

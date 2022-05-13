@@ -20,11 +20,10 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 
 <include ../generate/common.transform>
 
-# Pkg.depend cannot handle different StringIO location and syntax for 'html'
-# imports in Python 2.x (lower case) and 3.x (upper case)
+# Pkg.depend incorrectly assumes that wcwidth is not available
 <transform file path=.*/prettytable.py$ -> set pkg.depend.bypass-generate .*>

@@ -1,0 +1,31 @@
+pytest-lazy-fixture plugin is not available on Solaris.
+
+Not suitable for upstream.
+
+--- prettytable-3.3.0/tests/test_prettytable.py
++++ prettytable-3.3.0/tests/test_prettytable.py
+@@ -29,6 +29,8 @@ from prettytable import (
+     from_json,
+ )
+ 
++pytest.lazy_fixture = lambda _: None
++
+ 
+ def helper_table(rows=3):
+     t = PrettyTable(["Field 1", "Field 2", "Field 3"])
+@@ -207,6 +209,7 @@ class TestNoneOption:
+         )
+ 
+ 
++@pytest.mark.skip(reason="pytest-lazy-fixture is not available on Solaris")
+ class TestBuildEquivalence:
+     """Make sure that building a table row-by-row and column-by-column yield the same
+     results"""
+@@ -1601,6 +1604,7 @@ def emoji_pretty_table():
+     return pt
+ 
+ 
++@pytest.mark.skip(reason="pytest-lazy-fixture is not available on Solaris")
+ class TestMultiPattern:
+     @pytest.mark.parametrize(
+         ["pt", "expected_output", "test_type"],
