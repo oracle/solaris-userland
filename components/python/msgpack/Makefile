@@ -20,24 +20,23 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		msgpack
-COMPONENT_VERSION=	1.0.2
+COMPONENT_VERSION=	1.0.3
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-	sha256:e2e7b46f7d53f4c6b4959f6077dc9ba81e5fa12386b01e8e14cf22ab59be5210
+	sha256:9cfa4b877c3d060ac1f2c6b0a90103423a9972e3a0c5b4446c89d738b629623e
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://pypi.python.org/pypi/msgpack/
 COMPONENT_BUGDB=	python-mod/msgpack
 COMPONENT_ANITYA_ID=	21831
-
-COMPONENT_BAID=		108269
+COMPONENT_BAID=		122693
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
