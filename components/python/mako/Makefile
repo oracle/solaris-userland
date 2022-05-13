@@ -20,33 +20,32 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Mako
-COMPONENT_VERSION=	1.1.5
+COMPONENT_VERSION=	1.2.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:169fa52af22a91900d852e937400e79f535496191c63712e3b9fda5a9bed6fc3
+    sha256:3705d9bf76219a3519ffbda568259d9a5f24236ee18fb8d1eba4fa8716e7c740
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.makotemplates.org/
 COMPONENT_BUGDB=	python-mod/mako
 COMPONENT_ANITYA_ID=	3915
-
-COMPONENT_BAID=		111159
+COMPONENT_BAID=		127076
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
-COMPONENT_TEST_ARGS =
+COMPONENT_TEST_ARGS =	--ignore test/ext/test_linguaplugin.py
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 

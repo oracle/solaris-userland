@@ -20,11 +20,8 @@
 #
 
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, Oracle and/or its affiliates.
 #
 
-<include ../generate/common.transform>
-
-# drop files we are not shipping
-<transform file path=usr/bin/mako-render$ -> drop>
-<transform file path=.*/mako/testing/.* -> drop>
+# Importlib-metadata is necessary only in the newer version for Python 3.7
+$(PYTHON_3.7_ONLY)depend type=require fmri=library/python/importlib-metadata-$(PYV)
