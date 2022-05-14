@@ -171,8 +171,10 @@ $(INSTALL_64): COMPONENT_INSTALL_ARGS += DESTDIR=$(BUILD_DIR)/prototype/$(MACH64
 
 # build the docs
 $(BUILD_DIR_32)/.docs:
-	(cd $(@D) ; $(ENV) srcdir=$(@D) $(DOXYGEN) -u $(@D)/doxygen.conf ; \
-	    $(ENV) srcdir=$(@D) $(DOXYGEN) $(@D)/doxygen.conf)
+	# We can not use srcdir=$(@D) because that path is platform specific
+	# and would produce differently named html files on x86 and sparc.
+	(cd $(@D) ; $(ENV) srcdir=../../$(COMPONENT_SRC) $(DOXYGEN) -u $(@D)/doxygen.conf ; \
+	    $(ENV) srcdir=../../$(COMPONENT_SRC) $(DOXYGEN) $(@D)/doxygen.conf)
 	$(TOUCH) $@
 
 PKG_MACROS += PYVER=$(PYTHON_VERSION)
