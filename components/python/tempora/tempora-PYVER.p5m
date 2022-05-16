@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -35,16 +35,15 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2018/100
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
-file path=usr/lib/python$(PYVER)/vendor-packages/tempora-$(COMPONENT_VERSION)-py$(PYVER).egg-info/PKG-INFO
-file path=usr/lib/python$(PYVER)/vendor-packages/tempora-$(COMPONENT_VERSION)-py$(PYVER).egg-info/SOURCES.txt
-file path=usr/lib/python$(PYVER)/vendor-packages/tempora-$(COMPONENT_VERSION)-py$(PYVER).egg-info/dependency_links.txt
-file path=usr/lib/python$(PYVER)/vendor-packages/tempora-$(COMPONENT_VERSION)-py$(PYVER).egg-info/entry_points.txt
-file path=usr/lib/python$(PYVER)/vendor-packages/tempora-$(COMPONENT_VERSION)-py$(PYVER).egg-info/namespace_packages.txt
-file path=usr/lib/python$(PYVER)/vendor-packages/tempora-$(COMPONENT_VERSION)-py$(PYVER).egg-info/requires.txt
-file path=usr/lib/python$(PYVER)/vendor-packages/tempora-$(COMPONENT_VERSION)-py$(PYVER).egg-info/top_level.txt
+file path=usr/lib/python$(PYVER)/vendor-packages/tempora-$(COMPONENT_VERSION).dist-info/INSTALLER
+file path=usr/lib/python$(PYVER)/vendor-packages/tempora-$(COMPONENT_VERSION).dist-info/LICENSE
+file path=usr/lib/python$(PYVER)/vendor-packages/tempora-$(COMPONENT_VERSION).dist-info/METADATA
+file path=usr/lib/python$(PYVER)/vendor-packages/tempora-$(COMPONENT_VERSION).dist-info/RECORD
+file path=usr/lib/python$(PYVER)/vendor-packages/tempora-$(COMPONENT_VERSION).dist-info/WHEEL
+file path=usr/lib/python$(PYVER)/vendor-packages/tempora-$(COMPONENT_VERSION).dist-info/entry_points.txt
+file path=usr/lib/python$(PYVER)/vendor-packages/tempora-$(COMPONENT_VERSION).dist-info/top_level.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/tempora/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/tempora/schedule.py
-file path=usr/lib/python$(PYVER)/vendor-packages/tempora/tests/test_schedule.py
 file path=usr/lib/python$(PYVER)/vendor-packages/tempora/timing.py
 file path=usr/lib/python$(PYVER)/vendor-packages/tempora/utc.py
 license LICENSE license=MIT
@@ -55,6 +54,3 @@ depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
 
 # force a dependency on pytz
 depend type=require fmri=library/python/pytz-$(PYV)
-
-# force a dependency on six
-depend type=require fmri=library/python/six-$(PYV)

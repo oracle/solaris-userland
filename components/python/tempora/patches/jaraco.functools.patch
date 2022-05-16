@@ -1,0 +1,55 @@
+Jaraco functools are not available on Solaris yet, but those two functions
+can be very easily moved directly into tempora.
+
+Not suitable for upstream.
+
+--- tempora-5.0.1/tempora/__init__.py
++++ tempora-5.0.1/tempora/__init__.py
+@@ -7,7 +7,15 @@ import numbers
+ import functools
+ import contextlib
+ 
+-from jaraco.functools import once
++def once(func):
++    @functools.wraps(func)
++    def wrapper(*args, **kwargs):
++        if not hasattr(wrapper, 'saved_result'):
++            wrapper.saved_result = func(*args, **kwargs)
++        return wrapper.saved_result
++
++    wrapper.reset = lambda: vars(wrapper).__delitem__('saved_result')
++    return wrapper
+ 
+ 
+ # some useful constants
+--- tempora-5.0.1/tempora/timing.py
++++ tempora-5.0.1/tempora/timing.py
+@@ -5,7 +5,18 @@ import time
+ import collections.abc
+ import contextlib
+ 
+-import jaraco.functools
++
++def save_method_args(method):
++    args_and_kwargs = collections.namedtuple('args_and_kwargs', 'args kwargs')
++
++    @functools.wraps(method)
++    def wrapper(self, *args, **kwargs):
++        attr_name = '_saved_' + method.__name__
++        attr = args_and_kwargs(args, kwargs)
++        setattr(self, attr_name, attr)
++        return method(self, *args, **kwargs)
++
++    return wrapper
+ 
+ 
+ class Stopwatch:
+@@ -228,7 +239,7 @@ class BackoffDelay(collections.abc.Itera
+     jitter = 0
+     "Number or callable returning extra seconds to add to delay"
+ 
+-    @jaraco.functools.save_method_args
++    @save_method_args
+     def __init__(self, delay=0, factor=1, limit=float('inf'), jitter=0):
+         self.delay = delay
+         self.factor = factor
