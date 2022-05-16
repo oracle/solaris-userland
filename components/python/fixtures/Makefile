@@ -26,21 +26,31 @@
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		fixtures
-COMPONENT_VERSION=	1.4.0
+COMPONENT_VERSION=	4.0.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:3e1c61753d0fafc1429591d33ad6b828a0673a200eae63dd6ac0685479db5d36
+    sha256:e0c4a36f6cb170ec973f10ad34442d58aad76eb83cd83b52a0da6435a16a6e28
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/testing-cabal/fixtures
 COMPONENT_BUGDB=	python-mod/fixtures
 COMPONENT_ANITYA_ID=	8047
+COMPONENT_BAID=		122787
 
-COMPONENT_BAID=		30719
+# This component is delivered in two different versions because
+# the newer one is no longer Python 2.7 compatible.
+COMPONENT_VERSION_OLD=	1.4.0
+COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
+COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
+COMPONENT_ARCHIVE_HASH_OLD= \
+    sha256:3e1c61753d0fafc1429591d33ad6b828a0673a200eae63dd6ac0685479db5d36
+COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
+COMPONENT_BAID_OLD=	30719
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-multiver.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/$(COMPONENT_NAME)/tests
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
