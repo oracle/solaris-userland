@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 
@@ -29,15 +29,17 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		genders
-COMPONENT_VERSION=	1.22
+COMPONENT_VERSION=	1-28-1
+IPS_COMPONENT_VERSION=	1.28.1
+COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_PROJECT_URL=	https://github.com/chaos/genders
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:0ff292825a29201106239c4d47d9ce4c6bda3f51c78c0463eb2634ecc337b774
-COMPONENT_ARCHIVE_URL=	http://downloads.sourceforge.net/project/$(COMPONENT_NAME)/$(COMPONENT_NAME)/$(COMPONENT_VERSION)-1/$(COMPONENT_ARCHIVE)
+    sha256:3ca8b4771b2bf39383a3c383d36d308fa113de5c481e16fdef9cabd643359d09
+COMPONENT_ARCHIVE_URL=	https://github.com/chaos/$(COMPONENT_NAME)/archive/refs/tags/$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.gz
 COMPONENT_BUGDB=	library/libgenders
 COMPONENT_ANITYA_ID=	13282
 
-COMPONENT_BAID=		32549
+COMPONENT_BAID=		123417
 
 include $(WS_MAKE_RULES)/common.mk
 
