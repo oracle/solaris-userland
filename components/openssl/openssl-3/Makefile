@@ -79,6 +79,13 @@ COMPONENT_POST_CONFIGURE_ACTION = \
 
 COMPONENT_INSTALL_ARGS += MANSUFFIX=openssl
 
+# 32 and 64 bits configuration.h headers need to be merged to the final one.
+OPENSSLH=include/openssl/configuration.h
+$(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
+	-diff -D _LP64 $(BUILD_DIR_32)/$(OPENSSLH) \
+	$(BUILD_DIR_64)/$(OPENSSLH) > \
+	$(PROTO_DIR)$(CONFIGURE_PREFIX)/$(OPENSSLH)
+
 LINT_FLAGS += -I$(@D)/include -erroff=E_STATIC_UNUSED
 
 #
