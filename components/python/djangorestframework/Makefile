@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:0c33407ce23acc68eca2a6e46424b008c9c02eceb8cf18581921d0092bc1f2ee
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/encode/django-rest-framework
-COMPONENT_BUGDB=	python-mod/django-rest-framework
+COMPONENT_BUGDB=	python-mod/djangorest
 COMPONENT_ANITYA_ID=	9175
 COMPONENT_BAID=		116272
 
