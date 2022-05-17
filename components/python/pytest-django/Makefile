@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:d9076f759bb7c36939dbdd5ae6633c18edfc2902d1a69fdbefd2426b970ce6c2
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/pytest-dev/pytest-django
-COMPONENT_BUGDB=	python-mod/pytest-django
+COMPONENT_BUGDB=	python-mod/pytestdjango
 COMPONENT_ANITYA_ID=	40846
 COMPONENT_BAID=		119433
 
