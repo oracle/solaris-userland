@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -28,17 +28,17 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libsass
-COMPONENT_VERSION=	3.6.3
+COMPONENT_VERSION=	3.6.5
 COMPONENT_PROJECT_URL=	https://sass-lang.com/libsass
 COMPONENT_SRC=		libsass-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_VERSION).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:dadb470bb9141e91b437119d367654427180ed2b3d04b8000eab5b0ca47cd5bb
+    sha256:89d8f2c46ae2b1b826b58ce7dde966a176bac41975b82e84ad46b01a55080582
 COMPONENT_ARCHIVE_URL= https://github.com/sass/libsass/archive/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/libsass
 COMPONENT_ANITYA_ID=	11766
 
-COMPONENT_BAID=		71031
+COMPONENT_BAID=		122389
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
