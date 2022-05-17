@@ -1,0 +1,26 @@
+Don't use the vendored tomli package - use our own package instead.
+
+--- flit_core-3.7.1/flit_core/config.py
++++ flit_core-3.7.1/flit_core/config.py
+@@ -7,7 +7,7 @@ import os.path as osp
+ from pathlib import Path
+ import re
+ 
+-from .vendor import tomli
++import tomli
+ from .versionno import normalise_version
+ 
+ log = logging.getLogger(__name__)
+--- flit_core-3.7.1/pyproject.toml
++++ flit_core-3.7.1/pyproject.toml
+@@ -9,7 +9,9 @@ authors=[
+     {name = "Thomas Kluyver & contributors", email = "thomas@kluyver.me.uk"},
+ ]
+ description = "Distribution-building parts of Flit. See flit package for more information"
+-dependencies = []
++dependencies = [
++    'tomli',
++]
+ requires-python = '>=3.6'
+ classifiers = [
+     "License :: OSI Approved :: BSD License",

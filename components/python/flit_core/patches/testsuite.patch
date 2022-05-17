@@ -1,0 +1,77 @@
+We don't have testpath on Solaris.
+
+--- flit_core-3.7.1/flit_core/tests/test_sdist.py
++++ flit_core-3.7.1/flit_core/tests/test_sdist.py
+@@ -2,10 +2,12 @@ from io import BytesIO
+ import os.path as osp
+ from pathlib import Path
+ import tarfile
+-from testpath import assert_isfile
+ 
+ from flit_core import sdist
+ 
++def assert_isfile(path):
++    assert osp.exists(path) and osp.isfile(path)
++
+ samples_dir = Path(__file__).parent / 'samples'
+ 
+ def test_make_sdist(tmp_path):
+--- flit_core-3.7.1/flit_core/tests/test_wheel.py
++++ flit_core-3.7.1/flit_core/tests/test_wheel.py
+@@ -1,10 +1,13 @@
+ from pathlib import Path
+ from zipfile import ZipFile
+ 
+-from testpath import assert_isfile
++import os
+ 
+ from flit_core.wheel import make_wheel_in, main
+ 
++def assert_isfile(path):
++    assert os.path.exists(path) and os.path.isfile(path)
++
+ samples_dir = Path(__file__).parent / 'samples'
+ 
+ def test_licenses_dir(tmp_path):
+--- flit_core-3.7.1/flit_core/tests/test_buildapi.py
++++ flit_core-3.7.1/flit_core/tests/test_buildapi.py
+@@ -2,12 +2,17 @@ from contextlib import contextmanager
+ import os
+ import os.path as osp
+ import tarfile
+-from testpath import assert_isfile, assert_isdir
+-from testpath.tempdir import TemporaryDirectory
++from tempfile import TemporaryDirectory
+ import zipfile
+ 
+ from flit_core import buildapi
+ 
++def assert_isfile(path):
++    assert os.path.exists(path) and os.path.isfile(path)
++
++def assert_isdir(path):
++    assert os.path.exists(path) and os.path.isdir(path)
++
+ samples_dir = osp.join(osp.dirname(__file__), 'samples')
+ 
+ @contextmanager
+--- flit_core-3.7.1/flit_core/tests/test_build_thyself.py
++++ flit_core-3.7.1/flit_core/tests/test_build_thyself.py
+@@ -3,11 +3,16 @@ import os
+ import os.path as osp
+ import pytest
+ import tarfile
+-from testpath import assert_isdir, assert_isfile
+ import zipfile
+ 
+ from flit_core import buildapi
+ 
++def assert_isfile(path):
++    assert os.path.exists(path) and os.path.isfile(path)
++
++def assert_isdir(path):
++    assert os.path.exists(path) and os.path.isdir(path)
++
+ @pytest.fixture()
+ def cwd_project():
+     proj_dir = osp.dirname(osp.dirname(osp.abspath(buildapi.__file__)))
