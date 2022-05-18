@@ -1,0 +1,31 @@
+# - Install xorriso both on x86 and SPARC
+# - Verify version and manpages
+# - Test basic functionality:
+
+# Expected output:
+# ...
+# Extracted from ISO image: file '/'='/my_iso_extracted'
+xorriso -osirrox on -indev my.iso -extract / my_iso_extracted
+
+# Expected output: List of local drives
+# Example:
+# $ xorriso -device_links
+# GNU xorriso 1.5.4.pl02 : RockRidge filesystem manipulator, libburnia project.
+#
+# Beginning to scan for devices ...
+# Full drive scan done
+# -----------------------------------------------------------------------------
+# 0  -dev '/dev/rdsk/c1t0d0s2' r----- :  'VBOX    ' 'CD-ROM'
+# -----------------------------------------------------------------------------
+xorriso -device_links
+
+# Expected result: create file /tmp/test.iso
+xorriso -outdev /tmp/test.iso -blank as_needed -joliet on -map /var/tmp/ /tmp
+
+# Expected output:
+# ...
+# Volume id    : 'ISOIMAGE'
+# 'tmp'
+xorriso -dev /tmp/test.iso -ls /
+
+# - More test examples can be found at https://www.gnu.org/software/xorriso/man_1_xorriso.html#EXAMPLES
