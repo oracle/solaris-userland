@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 # parfait is suddenly unhappy with us (21638460)
@@ -31,14 +31,14 @@ COMPILER=	gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		swig
-COMPONENT_VERSION=	4.0.1
+COMPONENT_VERSION=	4.0.2
 COMPONENT_PROJECT_URL=	http://www.swig.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:6e3c9901a2b2bbb807f4a29a457595ebdd4b0f436810aa7e4a6356a8f0534936
+    sha256:d53be9730d8d58a16bf0cbd1f8ac0c0c3e1090573168bfa151b01eb47fa906fc
 COMPONENT_ARCHIVE_URL=	http://prdownloads.sourceforge.net/swig/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	4919
 
-COMPONENT_BAID=		73145
+COMPONENT_BAID=		122390
 
 include $(WS_MAKE_RULES)/common.mk
 
