@@ -20,20 +20,19 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		meld
-COMPONENT_VERSION=	3.21.0
+COMPONENT_VERSION=	3.21.1
 COMPONENT_PROJECT_URL=	https://meldmerge.org/
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b680114d5ab793324549fd58f4eb202d8e280c0633a0b765ede6dfb34160a81b
+    sha256:70fe98eb932ce21d67170e3b0f6a7317e813e862de98933ea513982e9a033202
 COMPONENT_BUGDB=        utility/meld
 COMPONENT_ANITYA_ID=	5520
-
-COMPONENT_BAID=		106234
+COMPONENT_BAID=		123057
 
 # We just need to build one version.
 PYTHON_VERSIONS =       3.7
