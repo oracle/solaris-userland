@@ -1,0 +1,15 @@
+use_true_random keyword argument is not available in hypothesis
+delivered with Solaris.
+
+This can be removed once newer hypothesis is integrated.
+
+--- pycairo-1.21.0/tests/test_hypothesis.py
++++ pycairo-1.21.0/tests/test_hypothesis.py
+@@ -40,6 +40,7 @@ def cairo_ver():
+     return tuple(map(int, cairo.cairo_version_string().split(".")))
+ 
+ 
++@pytest.mark.skip("use_true_random keyword argument is not available.")
+ @pytest.mark.skipif(
+     platform.python_implementation() == "PyPy" and sys.pypy_version_info < (7, 3, 0),
+     reason="PyPy bugs")
