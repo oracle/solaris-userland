@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gettext
-COMPONENT_VERSION=	0.20.1
+COMPONENT_VERSION=	0.21
 IPS_PKG_NAME=		text/gnu-gettext
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:53f02fbbec9e798b0faaf7c73272f83608e835c6288dd58be6c9bb54624a3800
+    sha256:d20fcbb537e02dcf1383197ba05bd0734ef7bf5db06bdb241eb69b7d16b73192
 COMPONENT_SIG_URL=
 COMPONENT_BUGDB=	utility/gnu-gettext
 COMPONENT_ANITYA_ID=	898
 
-COMPONENT_BAID=		74806
+COMPONENT_BAID=		122392
 
 include $(WS_MAKE_RULES)/gnu-component.mk
 
