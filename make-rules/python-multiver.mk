@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 #
 
 #
@@ -55,6 +55,10 @@ $(BUILD_DIR)/%-2.7/.system-tested-and-compared: SOURCE_DIR=$(SOURCE_DIR_OLD)
 
 $(MANIFEST_BASE)-%-27.mogrified: COMPONENT_VERSION=$(COMPONENT_VERSION_OLD)
 $(MANIFEST_BASE)-%-27.mogrified: COMPONENT_BAID=$(COMPONENT_BAID_OLD)
+
+$(MANIFEST_BASE)-%-27.mangled: COMPONENT_SRC=$(COMPONENT_SRC_OLD)
+$(MANIFEST_BASE)-%-27.depend: COMPONENT_SRC=$(COMPONENT_SRC_OLD)
+$(MANIFEST_BASE)-%-27.published: COMPONENT_SRC=$(COMPONENT_SRC_OLD)
 
 # The following two variables can be used within manifests to
 # distinguish files that are only available in a single version.

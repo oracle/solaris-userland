@@ -20,27 +20,37 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		idna
-COMPONENT_VERSION=	2.10
+COMPONENT_VERSION=	3.3
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:9959f55a64271c24cc02f48eb752d0efa08bfd34469887dfe87d09bdb715c24e
+    sha256:675ad031684619ba9119d43b4583b81965ec2aa3a02e04dd288850e111ed9a4e
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/kjd/idna
 COMPONENT_BUGDB=	python-mod/idna
 COMPONENT_ANITYA_ID=	5487
+COMPONENT_BAID=		123239
 
-COMPONENT_BAID=		87542
+# This component is delivered in two different versions because
+# the newer one is no longer Python 2.7 compatible.
+COMPONENT_VERSION_OLD=	2.10
+COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
+COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
+COMPONENT_ARCHIVE_HASH_OLD= \
+    sha256:9959f55a64271c24cc02f48eb752d0efa08bfd34469887dfe87d09bdb715c24e
+COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
+COMPONENT_BAID_OLD=	87542
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-multiver.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
