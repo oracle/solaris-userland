@@ -20,24 +20,23 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 COMPILER=	gcc
 
 COMPONENT_NAME=		python-rapidjson
-COMPONENT_VERSION=	1.0
+COMPONENT_VERSION=	1.6
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:6ff5101af8a011cfa1d8f50c1df9a3c71f8f47b478aea237c8f9f07f1b78940c
+    sha256:7d76b94beac9aa58e2b1b36d7995a1501f9ee9fd7bf6088d58725b9de5d508c2
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/python-rapidjson/python-rapidjson
 COMPONENT_BUGDB=	python-mod/rapidjson
 COMPONENT_ANITYA_ID=	42927
-
-COMPONENT_BAID=		101190
+COMPONENT_BAID=		123151
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
