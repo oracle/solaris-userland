@@ -20,23 +20,22 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pbr
-COMPONENT_VERSION=	5.6.0
+COMPONENT_VERSION=	5.9.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b26e2e9c2c63ef50dcb7fd32237a7565e945a488197e724a747ee97e150a98bf
+    sha256:e8322e41753dba04f04801b8cf5d0e1ec5d4fbf7007c0ea1219f58b3ac4312d2
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://docs.openstack.org/developer/pbr/
 COMPONENT_BUGDB=	python-mod/pbr
 COMPONENT_ANITYA_ID=	3960
-
-COMPONENT_BAID=		108340
+COMPONENT_BAID=		122691
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
