@@ -27,16 +27,16 @@ COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Twisted
-COMPONENT_VERSION=	22.2.0
+COMPONENT_VERSION=	22.4.0
 COMPONENT_PROJECT_URL=	http://twistedmatrix.com/trac/
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:53102c55d6b8d1acd3badebe2e9f4d1f4ae5a69232e234cc6f871b8f7db74ca9
+    sha256:624dda287c097720d12e470f766770a1c7376c2a9b9f19c4828f411d9f9a6f3f
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_BUGDB=	python-mod/twisted
 COMPONENT_ANITYA_ID=	4071
-COMPONENT_BAID=		118552
+COMPONENT_BAID=		123313
 
 
 # This component is delivered in two different versions because
