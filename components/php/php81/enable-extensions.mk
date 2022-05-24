@@ -117,11 +117,6 @@ CONFIGURE_OPTIONS += --enable-intl=shared
 REQUIRED_PACKAGES += library/icu
 REQUIRED_PACKAGES += system/library/math
 CONFIGURE_ENV +=	CXXFLAGS="$(CXXFLAGS)"
-# For intl, libtool(?) insists on passing "-lCrun -lCstd". These are
-# legacy Solaris/Studio C++ runtime and standard libraries, which is wrong.
-# Remove these flags by editing the generated Makefile after configure runs.
-COMPONENT_POST_CONFIGURE_ACTION += \
-	$(GSED) -i -e 's/-lCrun//g' -e 's/-lCstd//g' $(BUILD_DIR_64)/Makefile
 
 CONFIGURE_OPTIONS += --with-ldap=shared
 
