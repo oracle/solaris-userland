@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64
@@ -29,13 +29,13 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-initial-setup
-COMPONENT_VERSION=	3.34.1
+COMPONENT_VERSION=	41.4
 COMPONENT_ARCHIVE_HASH= \
-	sha256:e71f10ef6b631cd92ffde774e4130b32b2494b4df5ef288375d8b1957eeabfa1
+	sha256:96ecd2db6e76c513b18c606dc262bb523228c4aaedbed6a07811e568fd5db642
 COMPONENT_BUGDB=	gnome/session
 COMPONENT_ANITYA_ID=	13132
 
-COMPONENT_BAID=		81321
+COMPONENT_BAID=		119381
 BUILD_STYLE=		meson
 
 TEST_TARGET= $(NO_TESTS)

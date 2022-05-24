@@ -1,0 +1,30 @@
+Undo the commit 
+https://gitlab.gnome.org/GNOME/gnome-initial-setup/-/commit/8a4fa6c518a588ae50bf81910b0008a3df4e7836 
+to bring in the initial setup UI as we do not yet 
+deliver GNOME Tour in Solaris.
+
+Revisit this patch when GNOME Tour is delivered in Solaris.
+
+--- gnome-initial-setup-41.4/gnome-initial-setup/gnome-initial-setup.c.orig	2022-05-23 07:00:07.305997996 -0700
++++ gnome-initial-setup-41.4/gnome-initial-setup/gnome-initial-setup.c	2022-05-23 07:00:27.870324557 -0700
+@@ -305,20 +305,6 @@
+ 
+   driver = gis_driver_new (mode);
+ 
+-  /* On first login, GNOME Shell offers to run a tour. If we also run Initial
+-   * Setup, the two immovable, centred windows will sit atop one another.
+-   * Until we have the ability to run Initial Setup in the "kiosk" mode, like
+-   * it does in new-user mode, disable Initial Setup for existing users.
+-   *
+-   * https://gitlab.gnome.org/GNOME/gnome-initial-setup/-/issues/120#note_1019004
+-   * https://gitlab.gnome.org/GNOME/gnome-initial-setup/-/issues/12
+-   */
+-  if (mode == GIS_DRIVER_MODE_EXISTING_USER) {
+-    g_message ("Skipping gnome-initial-setup for existing user");
+-    gis_ensure_stamp_files (driver);
+-    exit (EXIT_SUCCESS);
+-  }
+-
+   /* We only do this in existing-user mode, because if gdm launches us
+    * in new-user mode and we just exit, gdm's special g-i-s session
+    * never terminates. */

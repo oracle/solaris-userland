@@ -12,12 +12,13 @@ all other modules that gnome-initial-setup depends on are updated to the latest.
 
 Not appropriate for upstream.
 
---- a/gnome-initial-setup/gnome-initial-setup.c	2020-01-23 11:17:20.504774142 -0800
-+++ b/gnome-initial-setup/gnome-initial-setup.c	2020-01-23 11:17:34.227384566 -0800
-@@ -71,13 +71,9 @@
- #endif /* ENABLE_REGION_PAGE */
+diff -ur a/gnome-initial-setup/gnome-initial-setup.c b/gnome-initial-setup/gnome-initial-setup.c
+--- a/gnome-initial-setup/gnome-initial-setup.c	2022-03-16 00:35:45.100363894 -0700
++++ b/gnome-initial-setup/gnome-initial-setup.c	2022-03-16 00:38:17.663244931 -0700
+@@ -68,13 +68,9 @@
+   PAGE (welcome, FALSE),
+   PAGE (language, FALSE),
    PAGE (keyboard, FALSE),
-   PAGE (eula,     FALSE),
 -  PAGE (network,  FALSE),
    PAGE (privacy,  FALSE),
 -  PAGE (timezone, TRUE),
@@ -25,12 +26,13 @@ Not appropriate for upstream.
    PAGE (goa,      FALSE),
 -  PAGE (account,  TRUE),
 -  PAGE (password, TRUE),
-   PAGE (summary,  FALSE),
-   { NULL },
- };
---- a/gnome-initial-setup/meson.build	2020-01-23 11:18:09.111643769 -0800
-+++ b/gnome-initial-setup/meson.build	2020-01-23 11:18:28.599750508 -0800
-@@ -26,8 +26,6 @@
+ #ifdef HAVE_PARENTAL_CONTROLS
+   PAGE (parental_controls, TRUE),
+   PAGE (parent_password, TRUE),
+diff -ur a/gnome-initial-setup/meson.build b/gnome-initial-setup/meson.build
+--- a/gnome-initial-setup/meson.build	2022-03-16 00:35:45.102682449 -0700
++++ b/gnome-initial-setup/meson.build	2022-03-16 00:39:01.009337516 -0700
+@@ -28,8 +28,6 @@
  ]
  
  dependencies = [
@@ -39,27 +41,27 @@ Not appropriate for upstream.
      dependency ('polkit-gobject-1', version: '>= 0.103'),
      dependency ('accountsservice'),
      dependency ('gnome-desktop-3.0', version: '>= 3.7.5'),
-@@ -46,7 +44,6 @@
+@@ -50,7 +48,6 @@
      dependency ('json-glib-1.0'),
      dependency ('krb5'),
-     dependency ('libsecret-1'),
+     dependency ('libsecret-1', version: '>= 0.18.8'),
 -    dependency ('pwquality'),
-     dependency ('webkit2gtk-4.0'),
+     dependency ('webkit2gtk-4.0', version: '>= 2.26.0'),
      cheese_dep,
      cheese_gtk_dep,
---- a/gnome-initial-setup/pages/meson.build	2020-01-23 11:19:14.297898179 -0800
-+++ b/gnome-initial-setup/pages/meson.build	2020-01-23 11:19:55.526039092 -0800
-@@ -1,13 +1,9 @@
+diff -ur a/gnome-initial-setup/pages/meson.build b/gnome-initial-setup/pages/meson.build
+--- a/gnome-initial-setup/pages/meson.build	2022-03-16 00:35:45.122069310 -0700
++++ b/gnome-initial-setup/pages/meson.build	2022-03-16 00:39:25.761862860 -0700
+@@ -1,12 +1,8 @@
  pages = [
 -   'account',
     'language',
     'keyboard',
-    'eulas',
 -   'network',
 -   'timezone',
     'privacy',
     'goa',
 -   'password',
+    'software',
     'summary',
-    'software'
- ]
+    'welcome',
