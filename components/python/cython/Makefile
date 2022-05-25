@@ -27,17 +27,16 @@ BUILD_BITS =		32_and_64
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Cython
-COMPONENT_VERSION=	0.29.14
+COMPONENT_VERSION=	0.29.32
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=		\
-    sha256:6f91418bc9267d9d242fa0831f5afdd2b74224566f5fde3f1a808f24862a7c64
+    sha256:baafd0eea60b9c14d9fc023bff4ed297c9539421940c5d580683b87d2f437ebc
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=  http://cython.org/
 COMPONENT_BUGDB=	python-mod/cython
 COMPONENT_ANITYA_ID=	12679
-
-COMPONENT_BAID=		72166
+COMPONENT_BAID=		128741
 
 # Avoid warnings about use of the deprecated NumPy API. Please see
 # http://docs.cython.org/en/latest/src/reference/compilation.html#configuring-the-c-build
@@ -72,6 +71,13 @@ COMPONENT_TEST_ENV += CC=gcc CXX=g++ MAKE=gmake
 COMPONENT_TEST_DIR =    $(SOURCE_DIR)
 COMPONENT_TEST_CMD =    $(PYTHON) ./runtests.py
 COMPONENT_TEST_ARGS=    --no-cleanup-failures
+
+COMPONENT_TEST_TRANSFORMS += \
+'-n -e "/^FAIL:/p" ' \
+'-e "/^ERROR:/p" ' \
+'-e "/^FAILED/p"'
+
+COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(PYTHON_VERSION)-$(BITS).$(MACH).master
 
 # common targets
 build:		$(BUILD_32_and_64)
