@@ -27,11 +27,13 @@ have defaults, but can be overridden.
 * COMPONENT_ARCHIVE is the base name of the archive to be downloaded; it has
   a default value of "$(COMPONENT_SRC).tar.gz".
 
-* COMPONENT_ARCHIVE_HASH is typically "sha256:" followed by the first output
-  field of `sha256sum $(COMPONENT_ARCHIVE)`. Userland infrastructure recognizes
-  two checksums. `actual` is checksum of the whole archive (like source.tar.gz)
-  and `payload` is checksum of the unpacked archive (like source.tar). In
-  practice it does not matter which hash is used.
+* COMPONENT_ARCHIVE_HASH contains checksum of downloaded file. Typically it is
+  "sha256:" followed by the first output field of
+  `sha256sum $(COMPONENT_ARCHIVE)`, but any hash algorithm supported by python
+  hashlib can be used. Userland infrastructure recognizes two kinds of checksums.
+  `actual` is checksum of the whole archive (like source.tar.gz) and `payload` is
+  checksum of the unpacked archive (like source.tar). In practice it does not
+  matter which hash is used.
 
 * COMPONENT_ARCHIVE_SRC defines what kind of object delivers the source.  This
   can be "git", "hg", or "svn" if the source comes from an SCM repository, and
