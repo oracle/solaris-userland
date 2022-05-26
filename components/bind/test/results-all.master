@@ -29,7 +29,7 @@ RUNNING: /usr/bin/dig @0 -p 5353 -t A ipboth.example.com.
 ;; global options: +cmd
 ;; Got answer:
 ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: REDACTED
-;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 1
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
 
 ;; OPT PSEUDOSECTION:
 ; EDNS: version: 0, flags:; udp: 1232
@@ -39,9 +39,6 @@ RUNNING: /usr/bin/dig @0 -p 5353 -t A ipboth.example.com.
 
 ;; ANSWER SECTION:
 ipboth.example.com.	172800	IN	A	192.168.4.10
-
-;; AUTHORITY SECTION:
-example.com.		172800	IN	NS	$(HOSTNAME)
 
 ;; SERVER: 127.0.0.1#5353(0.0.0.0)
 ;; MSG SIZE  rcvd: REDACTED
@@ -56,7 +53,7 @@ RUNNING: /usr/bin/dig @0 -p 5353 -t AAAA ipboth.example.com.
 ;; global options: +cmd
 ;; Got answer:
 ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: REDACTED
-;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 1
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
 
 ;; OPT PSEUDOSECTION:
 ; EDNS: version: 0, flags:; udp: 1232
@@ -66,9 +63,6 @@ RUNNING: /usr/bin/dig @0 -p 5353 -t AAAA ipboth.example.com.
 
 ;; ANSWER SECTION:
 ipboth.example.com.	172800	IN	AAAA	fd10:45df:879f:661d::10
-
-;; AUTHORITY SECTION:
-example.com.		172800	IN	NS	$(HOSTNAME)
 
 ;; SERVER: 127.0.0.1#5353(0.0.0.0)
 ;; MSG SIZE  rcvd: REDACTED
@@ -83,7 +77,7 @@ RUNNING: /usr/bin/dig @0 -p 5353 -t ANY ipboth.example.com.
 ;; global options: +cmd
 ;; Got answer:
 ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: REDACTED
-;; flags: qr aa rd ra; QUERY: 1, ANSWER: 3, AUTHORITY: 1, ADDITIONAL: 1
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 1
 
 ;; OPT PSEUDOSECTION:
 ; EDNS: version: 0, flags:; udp: 1232
@@ -95,9 +89,6 @@ RUNNING: /usr/bin/dig @0 -p 5353 -t ANY ipboth.example.com.
 ipboth.example.com.	172800	IN	TXT	"Both IP address types"
 ipboth.example.com.	172800	IN	A	192.168.4.10
 ipboth.example.com.	172800	IN	AAAA	fd10:45df:879f:661d::10
-
-;; AUTHORITY SECTION:
-example.com.		172800	IN	NS	$(HOSTNAME)
 
 ;; SERVER: 0.0.0.0#5353(0.0.0.0)
 ;; MSG SIZE  rcvd: REDACTED
@@ -138,7 +129,7 @@ RUNNING: /usr/bin/dig @0 -p 5353 -t a jack.dname.example.com.
 ;; global options: +cmd
 ;; Got answer:
 ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: REDACTED
-;; flags: qr aa rd ra; QUERY: 1, ANSWER: 4, AUTHORITY: 1, ADDITIONAL: 1
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 4, AUTHORITY: 0, ADDITIONAL: 1
 
 ;; OPT PSEUDOSECTION:
 ; EDNS: version: 0, flags:; udp: 1232
@@ -151,9 +142,6 @@ dname.example.com.	172800	IN	DNAME	sub.example.com.
 jack.dname.example.com.	172800	IN	CNAME	jack.sub.example.com.
 jack.sub.example.com.	172800	IN	CNAME	manny.sub.example.com.
 manny.sub.example.com.	172800	IN	A	192.168.7.11
-
-;; AUTHORITY SECTION:
-example.com.		172800	IN	NS	$(HOSTNAME)
 
 ;; SERVER: 127.0.0.1#5353(0.0.0.0)
 ;; MSG SIZE  rcvd: REDACTED
@@ -172,5 +160,47 @@ RESULT: 0
 Requesting status - should fail as server has stopped.
 RUNNING: /usr/sbin/rndc -c $(BUILD_DIR)/test/config/rndc.conf status
 rndc: connect failed: 127.0.0.1#8953: connection refused
+RESULT: 1
+=====================================================================
+RUNNING: /usr/sbin/dnssec-keygen -K /tmp -a RSASHA1 -n ZONE -fk secure.example
+Generating key pair.
+Ksecure.example.+nnn.+nnn
+RESULT: 0
+=====================================================================
+RUNNING: /usr/sbin/dnssec-keygen -K /tmp -a NSEC3RSASHA1 -n ZONE -fk secure.example
+Generating key pair.
+Ksecure.example.+nnn.+nnn
+RESULT: 0
+=====================================================================
+RUNNING: /usr/sbin/dnssec-keygen -K /tmp -a RSASHA256 -n ZONE -fk secure.example
+Generating key pair.
+Ksecure.example.+nnn.+nnn
+RESULT: 0
+=====================================================================
+RUNNING: /usr/sbin/dnssec-keygen -K /tmp -a RSASHA512 -n ZONE -fk secure.example
+Generating key pair.
+Ksecure.example.+nnn.+nnn
+RESULT: 0
+=====================================================================
+RUNNING: /usr/sbin/dnssec-keygen -K /tmp -a ECDSAP256SHA256 -n ZONE -fk secure.example
+Generating key pair.
+Ksecure.example.+nnn.+nnn
+RESULT: 0
+=====================================================================
+RUNNING: /usr/sbin/dnssec-keygen -K /tmp -a ECDSAP384SHA384 -n ZONE -fk secure.example
+Generating key pair.
+Ksecure.example.+nnn.+nnn
+RESULT: 0
+=====================================================================
+RUNNING: /usr/sbin/dnssec-keygen -K /tmp -a ED25519 -n ZONE -fk secure.example
+dnssec-keygen: fatal: unsupported algorithm: ED25519
+RESULT: 1
+=====================================================================
+RUNNING: /usr/sbin/dnssec-keygen -K /tmp -a ED448 -n ZONE -fk secure.example
+dnssec-keygen: fatal: unsupported algorithm: ED448
+RESULT: 1
+=====================================================================
+RUNNING: /usr/sbin/dnssec-keygen -K /tmp -a DH -n ZONE -fk secure.example
+dnssec-keygen: fatal: key size not specified (-b option)
 RESULT: 1
 =====================================================================

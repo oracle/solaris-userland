@@ -19,7 +19,7 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 # Written to be compatible with ksh on Solaris 10.
 
@@ -334,7 +334,7 @@ while [[ $t -lt 5 ]]; do
     else
 	sleep 1
     fi
-    let 1=t+1
+    let t=t+1
 done
 if [[ -z $pid ]]; then
     e 'failed to read named.pid'
@@ -394,5 +394,14 @@ if [[ -n $pid && -f $directory/named.pid ]]; then
 	ps -lp $pid | grep named && kill $pid
     fi
 fi
+
+# basic dnssec-keygen test
+imps="RSASHA1 NSEC3RSASHA1 RSASHA256 RSASHA512 ECDSAP256SHA256 ECDSAP384SHA384"
+for i in $imps; do
+    run ${SBIN}/dnssec-keygen -K /tmp -a $i -n ZONE -fk secure.example
+done
+for i in ED25519 ED448 DH; do
+    run -e 1 ${SBIN}/dnssec-keygen -K /tmp -a $i -n ZONE -fk secure.example
+done
 
 exit $ret

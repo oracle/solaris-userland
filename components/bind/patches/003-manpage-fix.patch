@@ -6,50 +6,48 @@ and a future release of BIND should make this patch obsolete.
   2. "nsupdate" continues to be delivered in section 1, not 8.
   3. "mmencode" not provided with Solaris, use base64 for encoding secret.
 
---- bind-9.11.36/bin/rndc/rndc.8
-+++ bind-9.11.36/bin/rndc/rndc.8
-@@ -619,7 +619,6 @@ \fBrndc.conf\fR(5),
- \fBrndc-confgen\fR(8),
- \fBnamed\fR(8),
- \fBnamed.conf\fR(5),
--\fBndc\fR(8),
- BIND 9 Administrator Reference Manual\&.
- .SH "AUTHOR"
- .PP
---- bind-9.11.36/bin/rndc/rndc.conf.5
-+++ bind-9.11.36/bin/rndc/rndc.conf.5
-@@ -111,10 +111,9 @@ .PP
- There are two common ways to generate the base\-64 string for the secret\&. The BIND 9 program
- \fBrndc\-confgen\fR
- can be used to generate a random key, or the
--\fBmmencode\fR
--program, also known as
--\fBmimencode\fR, can be used to generate a base\-64 string from known input\&.
--\fBmmencode\fR
-+\fBbase64\fR
-+program can be used to generate a base\-64 string from known input\&.
-+\fBbase64\fR
- does not ship with BIND 9 but is available on many systems\&. See the EXAMPLE section for sample command lines for each\&.
- .SH "EXAMPLE"
- .PP
-@@ -208,9 +207,9 @@ named\&.conf
- are also printed\&.
- .PP
- To generate a base\-64 secret with
--\fBmmencode\fR:
-+\fBbase64\fR:
- .PP
--\fBecho "known plaintext for a secret" | mmencode\fR
-+\fBecho -n "known plaintext for a secret" | base64\fR
- .SH "NAME SERVER CONFIGURATION"
- .PP
- The name server must be configured to accept rndc connections and to recognize the key specified in the
-@@ -223,7 +222,7 @@ .SH "SEE ALSO"
- .PP
- \fBrndc\fR(8),
- \fBrndc-confgen\fR(8),
--\fBmmencode\fR(1),
-+\fBbase64\fR(1),
- BIND 9 Administrator Reference Manual\&.
- .SH "AUTHOR"
- .PP
+--- bind-9.16.29/doc/man/rndc.8in
++++ bind-9.16.29/doc/man/rndc.8in
+@@ -605,7 +605,7 @@ Several error messages could be clearer.
+ .SH SEE ALSO
+ .sp
+ \fBrndc.conf(5)\fP, \fBrndc\-confgen(8)\fP,
+-\fBnamed(8)\fP, \fBnamed.conf(5)\fP, \fBndc(8)\fP, BIND 9 Administrator
++\fBnamed(8)\fP, \fBnamed.conf(5)\fP, BIND 9 Administrator
+ Reference Manual.
+ .SH AUTHOR
+ Internet Systems Consortium
+--- bind-9.16.29/doc/man/rndc.conf.5in
++++ bind-9.16.29/doc/man/rndc.conf.5in
+@@ -86,8 +86,8 @@ authentication key. The base\-64 string
+ .sp
+ There are two common ways to generate the base\-64 string for the secret.
+ The BIND 9 program \fBrndc\-confgen\fP can be used to generate a random
+-key, or the \fBmmencode\fP program, also known as \fBmimencode\fP, can be
+-used to generate a base\-64 string from known input. \fBmmencode\fP does
++key, or the \fBbase64\fP program, can be
++used to generate a base\-64 string from known input. \fBbase64\fP does
+ not ship with BIND 9 but is available on many systems. See the Example
+ section for sample command lines for each.
+ .SH EXAMPLE
+@@ -175,9 +175,9 @@ A complete \fBrndc.conf\fP file, includi
+ is written to the standard output. Commented\-out \fBkey\fP and
+ \fBcontrols\fP statements for \fBnamed.conf\fP are also printed.
+ .sp
+-To generate a base\-64 secret with \fBmmencode\fP:
++To generate a base\-64 secret with \fBbase64\fP:
+ .sp
+-\fBecho "known plaintext for a secret" | mmencode\fP
++\fBecho "known plaintext for a secret" | base64\fP
+ .SH NAME SERVER CONFIGURATION
+ .sp
+ The name server must be configured to accept rndc connections and to
+@@ -187,7 +187,7 @@ \fBcontrols\fP statement in the BIND 9 A
+ details.
+ .SH SEE ALSO
+ .sp
+-\fBrndc(8)\fP, \fBrndc\-confgen(8)\fP, \fBmmencode(1)\fP, BIND 9 Administrator Reference Manual.
++\fBrndc(8)\fP, \fBrndc\-confgen(8)\fP, \fBbase64(1)\fP, BIND 9 Administrator Reference Manual.
+ .SH AUTHOR
+ Internet Systems Consortium
+ .SH COPYRIGHT

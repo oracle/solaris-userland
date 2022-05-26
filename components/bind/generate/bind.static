@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 
 # components/bind/generate/bind.static, Fixed set of package actions.
@@ -28,6 +28,16 @@
 # Manually add SMF files as they are not copied into proto area.
 file Solaris/server.xml path=lib/svc/manifest/network/dns/server.xml
 file Solaris/dns-server.sh path=lib/svc/method/dns-server mode=0555
+
+# Transition documentation referenced in notice.
+file Solaris/bind-transition.txt \
+    path=usr/share/doc/release-notes/bind-transition.txt owner=root \
+    group=sys mode=0444
+# Notice which is displayed on upgrade of BIND version.
+file Solaris/bind-notice.txt \
+    path=usr/share/doc/release-notes/bind-update.txt owner=root group=sys \
+    mode=0444 must-display=true \
+    release-note=feature/pkg/self@$(IPS_COMPONENT_VERSION)
 
 # Include backwards compatible link.
 link path=usr/sbin/named-rrchecker target=../bin/named-rrchecker

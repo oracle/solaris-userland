@@ -1,0 +1,17 @@
+Configure runs the gnu date command.  Putting GNUBIN in front of PATH
+causes other issues, hence simply patching path.
+
+Have not passed this to upstream, where a more intricate fix will be
+needed.
+
+--- bind-9.16.29/configure
++++ bind-9.16.29/configure
+@@ -21345,7 +21345,7 @@ #
+ # Pull release date from CHANGES file last modification date
+ # for reproducible builds
+ #
+-release_date=`date -u -r CHANGES +%Y-%m-%d`
++release_date=`/usr/gnu/bin/date -u -r CHANGES +%Y-%m-%d`
+ RELEASE_DATE=$release_date
+ 
+ 

@@ -1,0 +1,72 @@
+BIND version 9.16.29
+
+Solaris provides the Extended Support  Version (ESV) of BIND.  Solaris
+10,  and Solaris  11 (until  now) provided  BIND 9.11  ESV.  The  9.11
+branch has  been declared end-of-life  as of  March 2022 and  has been
+superseded by BIND 9.16 ESV.
+
+BIND versions  are for  the most part  compatible.  Some  features may
+however be deprecated.  Most configurable  features that are no longer
+applicable are ignored.   The update from 9.11 to  9.16 is significant
+and while no  major issues are expected it may  be necessary to modify
+your configuration following this update of BIND.
+
+Before rebooting into  the new Boot Environment (BE)  it is recomended
+that you  shutdown BIND using the  rndc(8) command as below  to quiese
+and flush any dynamic zone journal files.
+
+      # rndc stop -p
+
+Proceed once the named(8) process id, as displayed by rndc output, has
+stopped running.  If rndc is not configured then continue to reboot as
+normal. Note  that BIND  9.16 can  read BIND  9.11 journal  files, but
+beware that BIND 9.11 can not read BIND 9.16 journal files.
+
+Once booted  into the updated BE  check the SMF service  dns/server is
+enabled   and   online.    Then    check   the   configuration   using
+named-checkconf(8) command  and modify the  configuration accordingly,
+do  this if  the  service is  offline  or online  as  it may  indicate
+statements that are depricated.
+
+      # named-checkconf -z
+
+Significant work included in the 9.16 branch includes:
+
+    1. The new Key and Signing Policy (KASP) feature provides
+       simplified DNSSEC key and signing management using policies
+       defined by the "dnssec-policy" statement. This tool is intended
+       to significantly facilitate ongoing key and signing
+       maintenance.
+
+    2. The way that DNSSEC trust anchors are managed has been
+       improved. Please note the updated CLI for this.
+
+    3. DLV (Domain Look-aside Verification) has been deprecated since
+       BIND 9.12. dlv.isc.org (the main service used by those
+       previously relying on DLV, operated by ISC) was turned off
+       in 2017. Support for DLV has now been removed from BIND 9
+       completely. Removing this feature required a multi-year process
+       of notification, working with partners, and gradual deprecation
+       to avoid disruption in the DNS.
+
+Removal of pkcs11 commands:
+
+    The  following  commands and  associated  manual  pages have  been
+    removed with immediate effect.
+
+        /usr/sbin/pkcs11-destroy
+        /usr/sbin/pkcs11-keygen
+        /usr/sbin/pkcs11-list
+        /usr/sbin/pkcs11-tokens
+
+For additional information on changes between BIND 9.11 and 9.16 refer
+to the ISC Knowledge Base Document:
+
+  - https://kb.isc.org/docs/changes-to-be-aware-of-when-moving-from-911-to-916
+
+Read more details about BIND 9.16 in the BIND Adiministration
+Reference Manaual (ARM) at:
+
+  - https://downloads.isc.org/isc/bind9/9.16.29/doc/arm/html/
+  - https://downloads.isc.org/isc/bind9/9.16.29/doc/arm/Bv9ARM.pdf
+

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 
 # Assign all files and links to bind Client package; bindc.p5m.
@@ -40,17 +40,6 @@
 # Not delivering header files, we consider the libraries private.
 <transform file path=usr/include/.* -> drop>
 
-# Light Weight Resolver Daemon is not provided, the libraries are, but
-# they are considered private, and are being removed in 9.13, so no
-# documentation.
-<transform file link hardlink path=usr/sbin/lwresd -> drop>
-<transform file link hardlink path=usr/share/man/man./lwres.* -> drop>
-
 # Not providing sample keys file.
 <transform file path=etc/bind\.keys -> drop>
 
-# Not providing bind9-config (aka isc-config) at this time.
-<transform file link hardlink path=usr/bin/bind9-config -> drop>
-<transform file link hardlink path=usr/bin/isc-config.sh -> drop>
-<transform file link hardlink path=usr/share/man/man1/bind9-config.1 -> drop>
-<transform file link hardlink path=usr/share/man/man1/isc-config.sh.1 -> drop>
