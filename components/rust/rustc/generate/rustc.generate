@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 <include generate/common.transform>
@@ -42,20 +42,16 @@
 <transform path=usr/bin/rust-lldb -> drop>
 
 # i386 files only 
+<transform file path=usr/share/doc/rust/html/src/core/up/up/portable-simd/crates/core_simd/src/vendor/x86.rs.html -> set variant.arch i386>
 <transform file path=usr/share/doc/rust/html/src/std/up/stdarch/crates/std_detect/src/detect/.*/x86.rs.html -> set variant.arch i386>
-<transform file path=usr/share/doc/rust/html/core/arch/aarch64/fn.v(qt|t).*\.html -> set variant.arch i386>
-<transform file path=usr/share/doc/rust/html/core/arch/aarch64/v(qt|t).*\.html -> set variant.arch i386>
+<transform file path=usr/share/doc/rust/html/core/arch/aarch64/fn\.v(q)?tb.*\.html -> set variant.arch i386>
+<transform file path=usr/share/doc/rust/html/core/arch/arm/fn\.vtb.*\.html -> set variant.arch i386>
 <transform file path=usr/share/doc/rust/html/core/core_arch/aarch64/neon/(fn\.)?v(q|t).*\.html -> set variant.arch i386>
+<transform file path=usr/share/doc/rust/html/core/core_arch/arm/neon/(fn\.)?v(q|t).*\.html -> set variant.arch i386>
 
 # sparc files only 
 <transform file path=usr/share/doc/rust/html/std/os/linux/raw/arch/fn.stat.html -> set variant.arch sparc>
 <transform file path=usr/share/doc/rust/html/std/os/linux/raw/fn.stat.html -> set variant.arch sparc>
-<transform file path=usr/share/doc/rust/html/std/sys/unix/ext/raw/type.blkcnt_t.html -> set variant.arch sparc>
-<transform file path=usr/share/doc/rust/html/std/sys/unix/ext/raw/type.blksize_t.html -> set variant.arch sparc>
-<transform file path=usr/share/doc/rust/html/std/sys/unix/ext/raw/type.ino_t.html -> set variant.arch sparc>
-<transform file path=usr/share/doc/rust/html/std/sys/unix/ext/raw/type.nlink_t.html -> set variant.arch sparc>
-<transform file path=usr/share/doc/rust/html/std/sys/unix/ext/raw/type.off_t.html -> set variant.arch sparc>
-<transform file path=usr/share/doc/rust/html/std/sys/unix/ext/raw/type.time_t.html -> set variant.arch sparc>
 
 # delete everything not belonging to this package
 <transform file link pkg.type=(?!rustc) -> drop>

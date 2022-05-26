@@ -28,19 +28,18 @@ COMPILER =	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	rustc
-COMPONENT_VERSION =	1.53.0
+COMPONENT_VERSION =	1.61.0
+COMPONENT_BAID =	123743
 COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-src
 COMPONENT_PROJECT_URL =	http://www.rust-lang.org/
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:e53a2df2c2c26f8929d551852eeae242b9a6167fba34481f92010b30def32dec
+    sha256:a63305a3ad734f170746b337a5e3d07ccaa7aa8f253dc52336b44c0a3b549d7b
 COMPONENT_ARCHIVE_URL =	https://static.rust-lang.org/dist/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL =	$(COMPONENT_ARCHIVE_URL).asc
 
 COMPONENT_BUGDB =	utility/rust
 COMPONENT_ANITYA_ID =	7635
-
-COMPONENT_BAID =		104218
 
 PKG_VARS += RUST_PLATFORM
 
@@ -63,7 +62,8 @@ CC_PIC_MODE = $(CC_PIC_DISABLE)
 LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
 
 # Everything expects GNU utilities, so make sure those are preferred.
-PATH =			$(COMPONENT_DIR)/epoll:/usr/gnu/bin:/usr/bin
+# BOOTSTRAP_PATH is used during updates before new version is seeded.
+PATH = $(BOOTSTRAP_PATH):$(COMPONENT_DIR)/epoll:/usr/gnu/bin:/usr/bin
 
 # LD_B_DIRECT breaks the build.
 LD_B_DIRECT =

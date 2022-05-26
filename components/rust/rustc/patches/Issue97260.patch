@@ -1,0 +1,27 @@
+https://github.com/rust-lang/rust/issues/97260
+
+diff --git a/src/bootstrap/compile.rs b/src/bootstrap/compile.rs
+index afc333b50..ff5193f96 100644
+--- a/src/bootstrap/compile.rs
++++ b/src/bootstrap/compile.rs
+@@ -727,6 +727,7 @@ pub fn rustc_cargo_env(builder: &Builder<'_>, cargo: &mut Cargo, target: TargetS
+             && !target.contains("freebsd")
+             && !target.contains("msvc")
+             && !target.contains("apple")
++            && !target.contains("solaris")
+         {
+             let file = compiler_file(
+                 builder,
+diff --git a/src/bootstrap/native.rs b/src/bootstrap/native.rs
+index 6d7ca9a94..7ad1b4f3c 100644
+--- a/src/bootstrap/native.rs
++++ b/src/bootstrap/native.rs
+@@ -567,7 +567,7 @@ fn configure_cmake(
+     // For distribution we want the LLVM tools to be *statically* linked to libstdc++.
+     // We also do this if the user explicitly requested static libstdc++.
+     if builder.config.llvm_static_stdcpp {
+-        if !target.contains("msvc") && !target.contains("netbsd") {
++        if !target.contains("msvc") && !target.contains("netbsd") && !target.contains("solaris") {
+             if target.contains("apple") || target.contains("windows") {
+                 ldflags.push_all("-static-libstdc++");
+             } else {

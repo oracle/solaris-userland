@@ -1,0 +1,21 @@
+https://github.com/rust-lang/cmake-rs/issues/151
+
+--- rustc-1.61.0-src/vendor/cmake/.cargo-checksum.json
++++ rustc-1.61.0-src/vendor/cmake/.cargo-checksum.json
+@@ -1 +1 @@
+-{"files":{"Cargo.toml":"0ce2c3999bc31b6e8fc5356e19c32f950e6176638aa2834c5b0d00c6c58397a0","LICENSE-APACHE":"a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2","LICENSE-MIT":"378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397","README.md":"a4ad0b734acb4d50db72782207587552c5e33c52500318c202776cd32dbdea4a","src/lib.rs":"45127eb441cee715f4337cfac78c9ce8ec8feb167d2814ff11a6708a9533bde7"},"package":"0e56268c17a6248366d66d4a47a3381369d068cce8409bb1716ed77ea32163bb"}
+\ No newline at end of file
++{"files":{"Cargo.toml":"0ce2c3999bc31b6e8fc5356e19c32f950e6176638aa2834c5b0d00c6c58397a0","LICENSE-APACHE":"a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2","LICENSE-MIT":"378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397","README.md":"a4ad0b734acb4d50db72782207587552c5e33c52500318c202776cd32dbdea4a","src/lib.rs":"3ff3db213aaefa39aa28b3e4c7656d5cfc64b8f8d4042069f7770b6bb536f066"},"package":"0e56268c17a6248366d66d4a47a3381369d068cce8409bb1716ed77ea32163bb"}
+--- rustc-1.61.0-src/vendor/cmake/src/lib.rs
++++ rustc-1.61.0-src/vendor/cmake/src/lib.rs
+@@ -487,10 +487,6 @@ } else if target.contains("redox") {
+             if !self.defined("CMAKE_SYSTEM_NAME") {
+                 cmd.arg("-DCMAKE_SYSTEM_NAME=Generic");
+             }
+-        } else if target.contains("solaris") {
+-            if !self.defined("CMAKE_SYSTEM_NAME") {
+-                cmd.arg("-DCMAKE_SYSTEM_NAME=SunOS");
+-            }
+         }
+         if let Some(ref generator) = self.generator {
+             cmd.arg("-G").arg(generator);
