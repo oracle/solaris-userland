@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -28,6 +28,7 @@ set name=pkg.fmri \
 set name=pkg.summary value="Ruby client for the Stomp messaging protocol."
 set name=pkg.description \
     value="Ruby client for the Stomp messaging protocol. This plugin provides an interoperable wire format so that STOMP clients can communicate with any STOMP message broker to provide easy and widespread messaging interoperability among many languages, platforms and brokers."
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description \
     value="STOMP - Ruby client for the Stomp messaging protocol."
@@ -36,7 +37,7 @@ set name=info.classification \
     value="org.opensolaris.category.2008:System/Administration and Configuration"
 set name=info.source-url value=$(GIT_REPO)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
-set name=org.opensolaris.arc-caseid value=PSARC/2015/290
+set name=org.opensolaris.arc-caseid value=PSARC/2015/290 value=PSARC/2022/018
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=$(VENDOR_GEM_DIR)/bin/catstomp
 file path=$(VENDOR_GEM_DIR)/bin/stompcat
@@ -521,6 +522,9 @@ file path=$(VENDOR_GEM_DIR)/gems/stomp-$(COMPONENT_VERSION)/test/test_urlogin.rb
 file path=$(VENDOR_GEM_DIR)/gems/stomp-$(COMPONENT_VERSION)/test/tlogger.rb
 file path=$(VENDOR_GEM_DIR)/gems/stomp-$(COMPONENT_VERSION)/test/unitst.sh
 file path=$(VENDOR_GEM_DIR)/specifications/stomp-$(COMPONENT_VERSION).gemspec
+file release-notes/legacy-stomp.txt \
+    path=usr/share/doc/release-notes/legacy-stomp.txt mode=0444 \
+    must-display=true release-note=feature/pkg/self@1.4.4-11.4.48.0.0.120.0
 license stomp.license license="Apache v2.0"
 
 # force a dependency on ruby runtime
