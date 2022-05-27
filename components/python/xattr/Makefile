@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
 #
 
 # Component uses ABI3 naming.
@@ -30,27 +30,21 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		xattr
-COMPONENT_VERSION=	0.9.7
+COMPONENT_VERSION=	0.9.9
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:a7d83b64584314e4401f96ade71043fac5529d2a3196dc88fc3d98ac8dc309b6
+    sha256:94adfc8a74c0e2e1459ccc3f8a4cf6699d072b6a9165288781159f4b10268a93
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/xattr/xattr
 COMPONENT_BUGDB=	python-mod/xattr
 COMPONENT_ANITYA_ID=	21273
-
-COMPONENT_BAID=		73200
+COMPONENT_BAID=		122404
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
 
-CFFI = $(WS_COMPONENTS)/python/cffi/build/prototype/$(MACH)/$(PYTHON_LIB)
-
-COMPONENT_BUILD_ENV +=		PYTHONPATH=$(CFFI)
-COMPONENT_INSTALL_ENV +=	PYTHONPATH=$(CFFI):$(PROTO_DIR)/$(PYTHON_LIB)
-COMPONENT_TEST_ENV +=		PYTHONPATH=$(CFFI):$(PROTO_DIR)/$(PYTHON_LIB)
 # The test suite wants to use some unicode filenames, which don't work in the C
 # locale.
 COMPONENT_TEST_ENV +=	LC_ALL=en_US.UTF-8

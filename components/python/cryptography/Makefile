@@ -59,13 +59,6 @@ include $(WS_MAKE_RULES)/ips.mk
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
-# Use the CFFI version in the gate because if the CFFI version changes
-# everything using CFFI will break.
-CFFI = $(WS_COMPONENTS)/python/cffi/build/prototype/$(MACH)/$(PYTHON_LIB)
-
-COMPONENT_BUILD_ENV +=		PYTHONPATH=$(CFFI)
-COMPONENT_INSTALL_ENV +=	PYTHONPATH=$(CFFI)
-
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =

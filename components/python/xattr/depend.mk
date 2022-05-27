@@ -1,1 +1,0 @@
-python/xattr:	python/cffi
