@@ -64,11 +64,6 @@
 <transform file path=usr/lib/python3.7/test/bad_coding.*.py -> set pkg.tmp.autopyc false>
 <transform file path=usr/lib/python3.7/test/badsyntax_.* -> set pkg.tmp.autopyc false>
 
-# For some unknown reason, llib-lpython37m can be sometimes found in the proto
-# area and sometimes not.  This fixes this inconsistency by always removing the
-# file and by adding it via .static file
-<transform file path=llib-lpython37m$ -> drop>
-
 # Emit some additional links
 <transform file path=(.*)/libpython3.7m_db.so.1.0 \
 	-> emit link path=%<1>/libpython3.7m_db.so target=libpython3.7m_db.so.1.0>
