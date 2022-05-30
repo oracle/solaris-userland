@@ -1,0 +1,132 @@
+ed25519 is not supported on Solaris.
+
+Some DNS resolver related tests doesn't work within OWAN.
+
+--- dnspython-2.2.1/tests/test_dnssec.py
++++ dnspython-2.2.1/tests/test_dnssec.py
+@@ -326,12 +326,14 @@ class DNSSECValidatorTestCase(unittest.T
+                                 abs_ecdsa384_keys, None, when4)
+         self.assertRaises(dns.dnssec.ValidationFailure, bad)
+ 
++    @unittest.skip("ed25519 is not supported on Solaris")
+     def testAbsoluteED25519Good(self):  # type: () -> None
+         dns.dnssec.validate(abs_ed25519_mx, abs_ed25519_mx_rrsig_1,
+                             abs_ed25519_keys_1, None, when5)
+         dns.dnssec.validate(abs_ed25519_mx, abs_ed25519_mx_rrsig_2,
+                             abs_ed25519_keys_2, None, when5)
+ 
++    @unittest.skip("ed25519 is not supported on Solaris")
+     def testAbsoluteED25519Bad(self):  # type: () -> None
+         with self.assertRaises(dns.dnssec.ValidationFailure):
+             dns.dnssec.validate(abs_other_ed25519_mx, abs_ed25519_mx_rrsig_1,
+@@ -340,12 +342,14 @@ class DNSSECValidatorTestCase(unittest.T
+             dns.dnssec.validate(abs_other_ed25519_mx, abs_ed25519_mx_rrsig_2,
+                                 abs_ed25519_keys_2, None, when5)
+ 
++    @unittest.skip("ed448 is not supported on Solaris")
+     def testAbsoluteED448Good(self):  # type: () -> None
+         dns.dnssec.validate(abs_ed448_mx, abs_ed448_mx_rrsig_1,
+                             abs_ed448_keys_1, None, when5)
+         dns.dnssec.validate(abs_ed448_mx, abs_ed448_mx_rrsig_2,
+                             abs_ed448_keys_2, None, when5)
+ 
++    @unittest.skip("ed448 is not supported on Solaris")
+     def testAbsoluteED448Bad(self):  # type: () -> None
+         with self.assertRaises(dns.dnssec.ValidationFailure):
+             dns.dnssec.validate(abs_other_ed448_mx, abs_ed448_mx_rrsig_1,
+--- dnspython-2.2.1/tests/test_query.py
++++ dnspython-2.2.1/tests/test_query.py
+@@ -70,6 +70,7 @@ for (af, address) in ((socket.AF_INET, '
+ 
+ keyring = dns.tsigkeyring.from_text({'name': 'tDz6cfXXGtNivRpQ98hr6A=='})
+ 
++@unittest.skip("Doesn't work within OWAN")
+ @unittest.skipIf(not _network_available, "Internet not reachable")
+ class QueryTests(unittest.TestCase):
+ 
+--- dnspython-2.2.1/tests/test_async.py
++++ dnspython-2.2.1/tests/test_async.py
+@@ -256,6 +256,7 @@ class AsyncTests(unittest.TestCase):
+             self.async_run(run)
+         self.assertRaises(dns.resolver.NotAbsolute, bad)
+ 
++    @unittest.skip("Doesn't work within OWAN")
+     def testQueryUDP(self):
+         for address in query_addresses:
+             qname = dns.name.from_text('dns.google.')
+@@ -270,6 +271,7 @@ class AsyncTests(unittest.TestCase):
+             self.assertTrue('8.8.8.8' in seen)
+             self.assertTrue('8.8.4.4' in seen)
+ 
++    @unittest.skip("Doesn't work within OWAN")
+     def testQueryUDPWithSocket(self):
+         for address in query_addresses:
+             qname = dns.name.from_text('dns.google.')
+@@ -292,6 +294,7 @@ class AsyncTests(unittest.TestCase):
+             self.assertTrue('8.8.8.8' in seen)
+             self.assertTrue('8.8.4.4' in seen)
+ 
++    @unittest.skip("Doesn't work within OWAN")
+     def testQueryTCP(self):
+         for address in query_addresses:
+             qname = dns.name.from_text('dns.google.')
+@@ -306,6 +309,7 @@ class AsyncTests(unittest.TestCase):
+             self.assertTrue('8.8.8.8' in seen)
+             self.assertTrue('8.8.4.4' in seen)
+ 
++    @unittest.skip("Doesn't work within OWAN")
+     def testQueryTCPWithSocket(self):
+         for address in query_addresses:
+             qname = dns.name.from_text('dns.google.')
+@@ -328,6 +332,7 @@ class AsyncTests(unittest.TestCase):
+             self.assertTrue('8.8.8.8' in seen)
+             self.assertTrue('8.8.4.4' in seen)
+ 
++    @unittest.skip("Doesn't work within OWAN")
+     @unittest.skipIf(not _ssl_available, "SSL not available")
+     def testQueryTLS(self):
+         for address in query_addresses:
+@@ -343,6 +348,7 @@ class AsyncTests(unittest.TestCase):
+             self.assertTrue('8.8.8.8' in seen)
+             self.assertTrue('8.8.4.4' in seen)
+ 
++    @unittest.skip("Doesn't work within OWAN")
+     @unittest.skipIf(not _ssl_available, "SSL not available")
+     def testQueryTLSWithSocket(self):
+         for address in query_addresses:
+@@ -369,6 +375,7 @@ class AsyncTests(unittest.TestCase):
+             self.assertTrue('8.8.8.8' in seen)
+             self.assertTrue('8.8.4.4' in seen)
+ 
++    @unittest.skip("Doesn't work within OWAN")
+     def testQueryUDPFallback(self):
+         for address in query_addresses:
+             qname = dns.name.from_text('.')
+@@ -379,6 +386,7 @@ class AsyncTests(unittest.TestCase):
+             (_, tcp) = self.async_run(run)
+             self.assertTrue(tcp)
+ 
++    @unittest.skip("Doesn't work within OWAN")
+     def testQueryUDPFallbackNoFallback(self):
+         for address in query_addresses:
+             qname = dns.name.from_text('dns.google.')
+--- dnspython-2.2.1/tests/test_resolver_override.py
++++ dnspython-2.2.1/tests/test_resolver_override.py
+@@ -18,6 +18,7 @@ except socket.gaierror:
+     _network_available = False
+ 
+ 
++@unittest.skip("Doesn't work within OWAN")
+ @unittest.skipIf(not _network_available, "Internet not reachable")
+ class OverrideSystemResolverTestCase(unittest.TestCase):
+ 
+--- dnspython-2.2.1/tests/test_resolver.py
++++ dnspython-2.2.1/tests/test_resolver.py
+@@ -674,6 +674,7 @@ class LiveResolverTests(unittest.TestCas
+             self.assertIn(qname, nx.qnames())
+             self.assertGreaterEqual(len(nx.responses()), 1)
+ 
++    @unittest.skip("Doesn't work within OWAN")
+     def testResolveCacheHit(self):
+         res = dns.resolver.Resolver(configure=False)
+         res.nameservers = ['8.8.8.8']
