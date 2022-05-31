@@ -20,22 +20,21 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		Babel
-COMPONENT_VERSION=	2.9.1
+COMPONENT_VERSION=	2.10.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:b57bbdfdb906af22edff8c64063d1d74b06bf6363756885f0ba70bcf0d1118c8
+    sha256:3d9b904d064bfc103f528aa08954859cea75c5f57661b078c967d63626b3e1b5
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://babel.pocoo.org/
 COMPONENT_BUGDB=	python-mod/babel
 COMPONENT_ANITYA_ID=	11984
-
-COMPONENT_BAID=		111160
+COMPONENT_BAID=		123821
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
