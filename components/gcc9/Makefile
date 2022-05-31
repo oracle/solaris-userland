@@ -31,16 +31,16 @@ GCC_ROOT=/usr/gcc/10
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gcc
-COMPONENT_VERSION=	9.4.0
+COMPONENT_VERSION=	9.5.0
 COMPONENT_PROJECT_URL=	https://gcc.gnu.org/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:07ea650894cde75ab0f7cfbee0e69832c8a789b01efa2de3bfba7569338e24cb
+    sha256:15b34072105272a3eb37f6927409f7ce9aa0dd1498efebc35f851d6e6f029a4d
 COMPONENT_ARCHIVE_URL=	https://ftp.gnu.org/gnu/gcc/$(COMPONENT_SRC)/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).sig
 COMPONENT_BUGDB=        utility/gnu-compiler
 COMPONENT_ANITYA_ID=	6502
 
-COMPONENT_BAID=		102012
+COMPONENT_BAID=		123778
 
 # Use gcc's default flags instead of userland's.
 CFLAGS=
