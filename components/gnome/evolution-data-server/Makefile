@@ -39,14 +39,14 @@ include ../../../make-rules/shared-macros.mk
 # GNOME stores and various components now expect it to be present.
 
 COMPONENT_NAME=		evolution-data-server
-COMPONENT_VERSION=	3.42.3
+COMPONENT_VERSION=	3.42.5
 COMPONENT_PROJECT_URL=  https://wiki.gnome.org/Apps/Evolution
 COMPONENT_ARCHIVE_HASH= \
-	sha256:6f5847a1234799073e9585db861c21381a09ed550dc0a2125f00ba5f90bd361d
+	sha256:a23ee8ebdbf2efddaac05b291fec6d203ad2fce359f911607b682cdb0bc23f53
 COMPONENT_BUGDB=        gnome/libraries
 COMPONENT_ANITYA_ID=	10935
 
-COMPONENT_BAID=		115672
+COMPONENT_BAID=		123941
 
 BUILD_STYLE= cmake
 

@@ -30,14 +30,14 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libmediaart
-COMPONENT_VERSION=	1.9.5
+COMPONENT_VERSION=	1.9.6
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/libmediaart/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:07def5a42c482ae71d3e1f77a4d0fdc337f74226059a65284d6d5a241f0e9cd6
+	sha256:c3bc5025d7db380587f9c8eb800c611f6b5a16d6b4b78fcff93f62876a677f17
 COMPONENT_BUGDB=	gnome/multimedia
 COMPONENT_ANITYA_ID=	13148
 
-COMPONENT_BAID=		112040
+COMPONENT_BAID=		123940
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk

@@ -30,14 +30,14 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gnome-control-center
-COMPONENT_VERSION=	41.4
+COMPONENT_VERSION=	41.7
 COMPONENT_PROJECT_URL=  https://git.gnome.org/browse/gnome-control-center
 COMPONENT_ARCHIVE_HASH= \
-	sha256:d6db0c4cb70857becf48ac5007f12b5f63b9d5d7e80ea7ee57d3be512669f7c9
+	sha256:95f905248247c722d02e950ce55fb35ef3a9d25cad8a67c0012a71e5acf0cf08
 COMPONENT_BUGDB=	gnome/preferences
 COMPONENT_ANITYA_ID=	5408
 
-COMPONENT_BAID=		118673
+COMPONENT_BAID=		123934
 BUILD_STYLE=		meson
 
 include $(WS_MAKE_RULES)/gnome-component.mk
