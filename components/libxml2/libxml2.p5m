@@ -35,10 +35,11 @@ set name=org.opensolaris.arc-caseid value=PSARC/2009/630
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 link path=lib/$(MACH64)/libxml2.so target=libxml2.so.2
 file usr/lib/$(MACH64)/libxml2.so.2 path=lib/$(MACH64)/libxml2.so.2
-file $(MACH64)/llib-lxml2.ln path=lib/$(MACH64)/llib-lxml2.ln
+link path=lib/$(MACH64)/llib-lxml2.ln \
+    target=../../usr/lib/$(MACH64)/llib-lxml2.ln
 link path=lib/libxml2.so target=libxml2.so.2
 file usr/lib/libxml2.so.2 path=lib/libxml2.so.2
-file $(MACH32)/llib-lxml2.ln path=lib/llib-lxml2.ln
+link path=lib/llib-lxml2.ln target=../usr/lib/llib-lxml2.ln
 # xml2-config contains embedded paths, so swap these around.
 file usr/bin/xml2-config path=usr/bin/$(MACH64)/xml2-config facet.devel=true
 file usr/bin/$(MACH32)/xml2-config path=usr/bin/xml2-config facet.devel=true
@@ -94,12 +95,11 @@ file path=usr/include/libxml2/libxml/xpointer.h
 link path=usr/lib/$(MACH64)/libxml2.so target=libxml2.so.2
 link path=usr/lib/$(MACH64)/libxml2.so.2 \
     target=../../../lib/$(MACH64)/libxml2.so.2
-link path=usr/lib/$(MACH64)/llib-lxml2.ln \
-    target=../../../lib/$(MACH64)/llib-lxml2.ln
+file path=usr/lib/$(MACH64)/llib-lxml2.ln
 file path=usr/lib/$(MACH64)/pkgconfig/libxml-2.0.pc
 link path=usr/lib/libxml2.so target=./libxml2.so.2
 link path=usr/lib/libxml2.so.2 target=../../lib/libxml2.so.2
-link path=usr/lib/llib-lxml2.ln target=../../lib/llib-lxml2.ln
+file path=usr/lib/llib-lxml2.ln
 file path=usr/lib/pkgconfig/libxml-2.0.pc
 file path=usr/share/aclocal/libxml.m4
 file path=usr/share/man/man1/xml2-config.1 facet.devel=all
