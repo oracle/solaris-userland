@@ -94,6 +94,6 @@ system-test:	$(BUILD_DIR)/$(MACH32)-2.7/.system-tested \
 endif
 
 
+REQUIRED_PACKAGES += $(PYVS:%=library/python/pycparser-%)
 REQUIRED_PACKAGES += library/libffi
-REQUIRED_PACKAGES += library/python/pycparser
 REQUIRED_PACKAGES += system/library

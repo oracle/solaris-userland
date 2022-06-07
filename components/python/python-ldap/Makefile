@@ -91,6 +91,6 @@ system-test:	$(BUILD_DIR)/$(MACH64)-3.7/.system-tested \
 # Package dependencies.
 # ---------------------
 # Created by 'gmake REQUIRED_PACKAGES', manually verified.
-REQUIRED_PACKAGES += library/python/pyasn1
-REQUIRED_PACKAGES += library/python/pyasn1-modules
+REQUIRED_PACKAGES += $(PYVS:%=library/python/pyasn1-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/pyasn1-modules-%)
 REQUIRED_PACKAGES += system/network/ldap/openldap

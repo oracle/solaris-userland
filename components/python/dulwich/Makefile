@@ -77,4 +77,4 @@ test:		$(TEST_32_and_64)
 
 system-test:    $(SYSTEM_TEST_32_and_64)
 
-REQUIRED_PACKAGES += library/python/urllib3
+REQUIRED_PACKAGES += $(PYVS:%=library/python/urllib3-%)

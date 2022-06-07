@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -53,3 +53,7 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+
+REQUIRED_PACKAGES += $(PYVS:%=library/python/chardet-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/idna-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/urllib3-%)

@@ -58,4 +58,4 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
-REQUIRED_PACKAGES += library/python/markupsafe
+REQUIRED_PACKAGES += $(PYVS:%=library/python/markupsafe-%)

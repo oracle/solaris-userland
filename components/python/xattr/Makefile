@@ -74,5 +74,5 @@ test:		$(TEST_32_and_64)
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += library/python/cffi
+REQUIRED_PACKAGES += $(PYVS:%=library/python/cffi-%)
 REQUIRED_PACKAGES += system/library

@@ -1,0 +1,102 @@
+#!/usr/bin/python3.7
+#
+# CDDL HEADER START
+#
+# The contents of this file are subject to the terms of the
+# Common Development and Distribution License (the "License").
+# You may not use this file except in compliance with the License.
+#
+# You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+# or http://www.opensolaris.org/os/licensing.
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# When distributing Covered Code, include this CDDL HEADER in each
+# file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+# If applicable, add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your own identifying
+# information: Portions Copyright [yyyy] [name of copyright owner]
+#
+# CDDL HEADER END
+#
+
+#
+# Copyright (c) 2022, Oracle and/or its affiliates.
+#
+
+#
+# pydepend - python dependency generator
+#
+# A simple program that creates a file with all imports required by a given
+# component that can then be passed to pkgdepend to generate IPS dependencies.
+#
+
+import os
+import sys
+
+from pathlib import Path
+
+import importlib_metadata
+import packaging.requirements
+
+# Map for components with different component and import names.
+IMPORT_MAP = {}
+with open(Path(__file__).parent.resolve() / "pyimportmap" , "r") as ifile:
+    for line in ifile.readlines():
+        # skip empty or comment lines
+        if line.startswith("#") or not line.strip():
+            continue
+        key, val = line.split()
+        IMPORT_MAP[key] = val
+
+
+def main():
+    pyver = sys.argv[1]
+    # full path to proto install directory
+    fullpath = sys.argv[2]
+
+    # Find all .egg-info and .dist-info directories
+    found = False
+    for entry in os.listdir(fullpath):
+        if entry.endswith(".egg-info") or entry.endswith(".dist-info"):
+            found = True
+            path = os.path.join(fullpath, entry)
+            dist = importlib_metadata.PathDistribution(Path(path))
+
+            if os.path.isfile(path):
+                # packages with metadata file (rather than a directory)
+                # cannot have dependencies.
+                continue
+
+            with open(os.path.join(fullpath, entry, "_solaris_dep"), "w") as ofile:
+                ofile.write(f"#!/usr/bin/python{pyver}\n")
+
+                if not dist.requires:
+                    # there are no distribution dependencies in this metadata file
+                    continue
+
+                # go through each requirement for given distribution
+                for req in dist.requires:
+                    r = packaging.requirements.Requirement(req)
+                    # requirements can have conditions (markers)
+                    if r.marker:
+                        # Check if given marker is satisfied - we need to override python_version
+                        # because, by default, version of the currently running Python runtime is
+                        # used, but we want to check the version passed to this script.
+                        if not r.marker.evaluate(environment={'python_version': pyver, 'extra': ''}):
+                            # marker is not safisfied, requirement doesn't apply
+                            continue
+                    import_name = r.name
+                    import_name = IMPORT_MAP.get(import_name, import_name)
+                    # hyphens can be safely replaced with underscores
+                    import_name = import_name.replace("-", "_")
+
+                    ofile.write(f"import {import_name}\n")
+
+    if not found:
+        sys.stderr.write("No .egg-info or .dist-info was found.\n")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

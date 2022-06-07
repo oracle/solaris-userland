@@ -68,5 +68,7 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
+REQUIRED_PACKAGES += library/python/importlib-metadata-37
+
 # Setup related components
 REQUIRED_PACKAGES += library/python/setuptools_scm

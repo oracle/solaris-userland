@@ -39,6 +39,7 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_rust-$(COMPONENT_VERSION)-py$(PYVER).egg-info/PKG-INFO
 file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_rust-$(COMPONENT_VERSION)-py$(PYVER).egg-info/SOURCES.txt
+file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_rust-$(COMPONENT_VERSION)-py$(PYVER).egg-info/_solaris_dep
 file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_rust-$(COMPONENT_VERSION)-py$(PYVER).egg-info/dependency_links.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_rust-$(COMPONENT_VERSION)-py$(PYVER).egg-info/entry_points.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/setuptools_rust-$(COMPONENT_VERSION)-py$(PYVER).egg-info/requires.txt
@@ -58,12 +59,3 @@ license LICENSE license=MIT
 # force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
-
-# force a dependency on semantic_version; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/semantic_version-$(PYV)
-
-# force a dependency on setuptools; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/setuptools-$(PYV)
-
-# force a dependency on typing-extensions; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/typing-extensions-$(PYV)

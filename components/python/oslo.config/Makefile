@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -62,3 +62,12 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+
+REQUIRED_PACKAGES += $(PYVS:%=library/python/debtcollector-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/netaddr-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/oslo.i18n-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/pyyaml-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/requests-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/rfc3986-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/stevedore-%)
+REQUIRED_PACKAGES += library/python/importlib-metadata-37

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= NO_ARCH
@@ -69,6 +69,10 @@ COMPONENT_POST_INSTALL_ACTION += \
     $(INSTALL) --mode=644 $(COMPONENT_DIR)/files/man1/$(ANSIBLE_MAN) \
       $(PROTOUSRSHAREMAN1DIR)/
 
+REQUIRED_PACKAGES += $(PYVS:%=library/python/cryptography-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/jinja2-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/pyyaml-%)
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/network
 REQUIRED_PACKAGES += runtime/python-37

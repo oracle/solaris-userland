@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= NO_ARCH
@@ -42,6 +42,7 @@ COMPONENT_BAID=		75330
 
 # We need just a single version
 PYTHON_VERSIONS=	3.7
+PYV=$(shell echo $(PYTHON_VERSIONS) | tr -d .)
 
 # Tests requires ddt which is not integrated
 TEST_TARGET= $(NO_TESTS)
@@ -53,7 +54,7 @@ ASLR_MODE= $(ASLR_NOT_APPLICABLE)
 include $(WS_MAKE_RULES)/common.mk
 
 PKG_MACROS +=		PYVER=$(PYTHON_VERSIONS)
-PKG_MACROS +=		PYV=$(shell echo $(PYTHON_VERSIONS) | tr -d .)
+PKG_MACROS +=		PYV=$(PYV)
 
 # Copy the PKG-INFO file to the build root
 COMPONENT_PRE_BUILD_ACTION = \
@@ -71,7 +72,16 @@ COMPONENT_POST_INSTALL_ACTION += \
 	$(PROTO_DIR)$(PYTHON_LIB)/cloudbaseinit/metadata/services; \
     $(PYTHON) -m compileall $(PROTO_DIR)/$(PYTHON_VENDOR_PACKAGES)
 
+REQUIRED_PACKAGES += library/python/netaddr-$(PYV)
+REQUIRED_PACKAGES += library/python/netifaces-$(PYV)
+REQUIRED_PACKAGES += library/python/oauthlib-$(PYV)
+REQUIRED_PACKAGES += library/python/oslo.config-$(PYV)
+REQUIRED_PACKAGES += library/python/oslo.log-$(PYV)
+REQUIRED_PACKAGES += library/python/pbr-$(PYV)
+REQUIRED_PACKAGES += library/python/pyyaml-$(PYV)
+REQUIRED_PACKAGES += library/python/requests-$(PYV)
+REQUIRED_PACKAGES += library/python/six-$(PYV)
 REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/network
-REQUIRED_PACKAGES += runtime/python-37
-REQUIRED_PACKAGES += system/library/python/solaris-core-37
+REQUIRED_PACKAGES += runtime/python-$(PYV)
+REQUIRED_PACKAGES += system/library/python/solaris-core-$(PYV)

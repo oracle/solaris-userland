@@ -19,7 +19,7 @@
 # CDDL HEADER END
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 COMPILER=	gcc
@@ -43,8 +43,8 @@ COMPONENT_ANITYA_ID=	13233
 PYTHON_VERSIONS=	$(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/ips.mk
 
 
 ODPI312_BASE = $(WS_COMPONENTS)/odpi-312/build/prototype/$(MACH)

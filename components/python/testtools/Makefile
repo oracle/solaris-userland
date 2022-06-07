@@ -60,3 +60,8 @@ build:		$(BUILD_NO_ARCH)
 install:	$(INSTALL_NO_ARCH)
 
 test:		$(NO_TESTS)
+
+REQUIRED_PACKAGES += $(PYVS:%=library/python/pbr-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/extras-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/fixtures-%)
+REQUIRED_PACKAGES += library/python/six-27

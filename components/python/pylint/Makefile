@@ -117,9 +117,10 @@ test:		$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += library/python/astroid
-REQUIRED_PACKAGES += library/python/backports.functools_lru_cache
-REQUIRED_PACKAGES += library/python/isort
-REQUIRED_PACKAGES += library/python/mccabe
-REQUIRED_PACKAGES += library/python/six
-REQUIRED_PACKAGES += library/python/toml
+REQUIRED_PACKAGES += $(PYVS:%=library/python/astroid-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/isort-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/mccabe-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)
+REQUIRED_PACKAGES += library/python/backports.functools_lru_cache-27
+REQUIRED_PACKAGES += library/python/toml-37
+REQUIRED_PACKAGES += library/python/toml-39

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -60,3 +60,12 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(NO_TESTS)
 
 system-test:	$(SYSTEM_TESTS_NOT_IMPLEMENTED)
+
+REQUIRED_PACKAGES += $(PYVS:%=library/python/dateutil-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/debtcollector-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/oslo.config-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/oslo.context-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/oslo.i18n-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/oslo.serialization-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/oslo.utils-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/pbr-%)

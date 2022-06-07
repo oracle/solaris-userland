@@ -45,6 +45,8 @@ COMPONENT_INSTALL_ARGS +=	--install-platlib=$(PYTHON_LIB)
 COMPONENT_INSTALL_ARGS +=	--install-data=$(PYTHON_DATA)
 COMPONENT_INSTALL_ARGS +=	--force
 
+PYDEPEND = $(WS_TOOLS)/pydepend
+
 # install the built source into a prototype area
 $(BUILD_DIR)/%/.installed:	$(BUILD_DIR)/%/.built $(BUILD_DIR)/config-%/$(CFG)
 	$(COMPONENT_PRE_INSTALL_ACTION)
@@ -52,4 +54,5 @@ $(BUILD_DIR)/%/.installed:	$(BUILD_DIR)/%/.built $(BUILD_DIR)/config-%/$(CFG)
 		$(PYTHON.$(BITS)) ./setup.py $(COMPONENT_SETUP_ARGS) install \
 		$(COMPONENT_INSTALL_ARGS))
 	$(COMPONENT_POST_INSTALL_ACTION)
+	$(PYDEPEND) $(PYTHON_VERSION) $(PROTO_DIR)$(PYTHON_LIB)
 	$(TOUCH) $@

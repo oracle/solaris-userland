@@ -57,5 +57,8 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
+REQUIRED_PACKAGES += $(PYVS:%=library/python/django-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/pytz-%)
+
 # Testing related components
 REQUIRED_PACKAGES += library/python/pytest-django

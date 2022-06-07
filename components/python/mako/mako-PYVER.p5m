@@ -43,6 +43,7 @@ file path=usr/lib/python$(PYVER)/vendor-packages/Mako-$(COMPONENT_VERSION).dist-
 file path=usr/lib/python$(PYVER)/vendor-packages/Mako-$(COMPONENT_VERSION).dist-info/METADATA
 file path=usr/lib/python$(PYVER)/vendor-packages/Mako-$(COMPONENT_VERSION).dist-info/RECORD
 file path=usr/lib/python$(PYVER)/vendor-packages/Mako-$(COMPONENT_VERSION).dist-info/WHEEL
+file path=usr/lib/python$(PYVER)/vendor-packages/Mako-$(COMPONENT_VERSION).dist-info/_solaris_dep
 file path=usr/lib/python$(PYVER)/vendor-packages/Mako-$(COMPONENT_VERSION).dist-info/entry_points.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/Mako-$(COMPONENT_VERSION).dist-info/top_level.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/mako/__init__.py
@@ -74,22 +75,10 @@ file path=usr/lib/python$(PYVER)/vendor-packages/mako/util.py
 #
 license LICENSE license=MIT
 
-# force a group dependency on the optional babel; pkgdepend work is needed to
-# flush this out.
-depend type=group fmri=library/python/babel-$(PYV)
-
 # force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
 
-# force a dependency on importlib-metadata; pkgdepend work is needed to flush
-# this out.
-$(PYTHON_3.7_ONLY)depend type=require \
-    fmri=library/python/importlib-metadata-$(PYV)
-
 # force a dependency on the mako package
 depend type=require \
     fmri=library/python/mako@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
-
-# force a dependency on the markupsafe; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/markupsafe-$(PYV)

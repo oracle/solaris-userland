@@ -122,7 +122,7 @@ test:		$(TEST_32_and_64)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 
-REQUIRED_PACKAGES += library/python/cryptography
-REQUIRED_PACKAGES += library/python/six
+REQUIRED_PACKAGES += $(PYVS:%=library/python/cryptography-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += system/library

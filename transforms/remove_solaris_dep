@@ -18,10 +18,13 @@
 #
 # CDDL HEADER END
 #
-
-#
 # Copyright (c) 2022, Oracle and/or its affiliates.
 #
 
-# Importlib-metadata is necessary only in the newer version for Python 3.7
-$(PYTHON_3.7_ONLY)depend type=require fmri=library/python/importlib-metadata-$(PYV)
+#
+# Python packages use _solaris_dep files to determine dependencies. This file
+# is thus necessary during the resolve phase, but we can safely remove it from
+# shipped packages.
+#
+
+<transform file path=.*info/_solaris_dep$ -> drop>

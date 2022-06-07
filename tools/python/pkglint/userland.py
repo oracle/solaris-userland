@@ -564,6 +564,19 @@ class UserlandActionChecker(base.ActionChecker):
 
     legacy_action.pkglint_desc = "Legacy actions are deprecated."
 
+    def solaris_dep_file(self, action, manifest, engine, pkglint_id="006"):
+        """Checks that _solaris_dep file is not being delivered."""
+
+        if action.name != "file":
+            return
+
+        inspath = action.attrs["path"]
+        if inspath.endswith("_solaris_dep"):
+            engine.error("_solaris_dep should not be delivered.",
+                         msgid=f"{self.name}{pkglint_id}.0")
+
+    solaris_dep_file.pkglint_desc = "_solaris_dep should not be delivered."
+
     def smf_manifest(self, action, manifest, engine, pkglint_id="008"):
         """Checks if SMF manifests are valid, otherwise SMF won't import
         them when packages are installed."""

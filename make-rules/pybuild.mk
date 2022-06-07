@@ -43,12 +43,15 @@ COMPONENT_INSTALL_ARGS +=	--install-lib=$(PYTHON_LIB)
 COMPONENT_INSTALL_ARGS +=	--install-data=$(PYTHON_DATA)
 COMPONENT_INSTALL_ARGS +=	--force
 
+PYDEPEND = $(WS_TOOLS)/pydepend
+
 # install the built source into a prototype area
 $(BUILD_DIR)/%/.installed:	$(BUILD_DIR)/%/.built $(BUILD_DIR)/config-%/$(CFG)
 	$(COMPONENT_PRE_INSTALL_ACTION)
 	(cd $(SOURCE_DIR) ; $(ENV) HOME=$(BUILD_DIR)/config-$* $(COMPONENT_INSTALL_ENV) \
 		$(PYTHON.$(BITS)) $(WS_TOOLS)/pyinstaller $(COMPONENT_INSTALL_ARGS) $(BUILD_DIR)/$*/dist)
 	$(COMPONENT_POST_INSTALL_ACTION)
+	$(PYDEPEND) $(PYTHON_VERSION) $(PROTO_DIR)$(PYTHON_LIB)
 	$(TOUCH) $@
 
 ifneq ($(findstring 2.7, $(PYTHON_VERSIONS)),)

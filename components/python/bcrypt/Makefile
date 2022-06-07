@@ -73,5 +73,5 @@ test:		$(TEST_32_and_64)
 
 system-test:    $(SYSTEM_TEST_32_and_64)
 
-REQUIRED_PACKAGES += library/python/cffi
-REQUIRED_PACKAGES += library/python/six
+REQUIRED_PACKAGES += $(PYVS:%=library/python/cffi-%)
+REQUIRED_PACKAGES += library/python/six-27

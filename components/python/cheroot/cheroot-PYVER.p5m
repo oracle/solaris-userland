@@ -40,6 +40,7 @@ link path=usr/bin/cheroot target=cheroot-$(PYVER) mediator=python \
 file path=usr/bin/cheroot-$(PYVER) pkg.depend.bypass-generate=.*importlib.*
 file path=usr/lib/python$(PYVER)/vendor-packages/cheroot-$(COMPONENT_VERSION)-py$(PYVER).egg-info/PKG-INFO
 file path=usr/lib/python$(PYVER)/vendor-packages/cheroot-$(COMPONENT_VERSION)-py$(PYVER).egg-info/SOURCES.txt
+file path=usr/lib/python$(PYVER)/vendor-packages/cheroot-$(COMPONENT_VERSION)-py$(PYVER).egg-info/_solaris_dep
 file path=usr/lib/python$(PYVER)/vendor-packages/cheroot-$(COMPONENT_VERSION)-py$(PYVER).egg-info/dependency_links.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/cheroot-$(COMPONENT_VERSION)-py$(PYVER).egg-info/entry_points.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/cheroot-$(COMPONENT_VERSION)-py$(PYVER).egg-info/namespace_packages.txt
@@ -69,12 +70,3 @@ file path=usr/lib/python$(PYVER)/vendor-packages/cheroot/workers/__init__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cheroot/workers/threadpool.py
 file path=usr/lib/python$(PYVER)/vendor-packages/cheroot/wsgi.py
 license cheroot.license license=BSD
-
-# force a dependency on backports.functools_lru_cache; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/backports.functools_lru_cache-$(PYV)
-
-# force a dependency on more_itertools; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/more_itertools-$(PYV)
-
-# force a dependency on six; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/six-$(PYV)

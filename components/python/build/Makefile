@@ -57,3 +57,8 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+
+REQUIRED_PACKAGES += library/python/importlib-metadata-37
+REQUIRED_PACKAGES += $(PYVS:%=library/python/packaging-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/pep517-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/tomli-%)

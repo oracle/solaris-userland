@@ -43,6 +43,7 @@ link path=usr/bin/pygmentize target=pygmentize-$(PYVER) mediator=python \
 file path=usr/bin/pygmentize-$(PYVER) pkg.depend.bypass-generate=.*importlib.*
 file path=usr/lib/python$(PYVER)/vendor-packages/Pygments-$(COMPONENT_VERSION)-py$(PYVER).egg-info/PKG-INFO
 file path=usr/lib/python$(PYVER)/vendor-packages/Pygments-$(COMPONENT_VERSION)-py$(PYVER).egg-info/SOURCES.txt
+file path=usr/lib/python$(PYVER)/vendor-packages/Pygments-$(COMPONENT_VERSION)-py$(PYVER).egg-info/_solaris_dep
 file path=usr/lib/python$(PYVER)/vendor-packages/Pygments-$(COMPONENT_VERSION)-py$(PYVER).egg-info/dependency_links.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/Pygments-$(COMPONENT_VERSION)-py$(PYVER).egg-info/entry_points.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/Pygments-$(COMPONENT_VERSION)-py$(PYVER).egg-info/not-zip-safe
@@ -333,10 +334,6 @@ file path=usr/lib/python$(PYVER)/vendor-packages/pygments/token.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pygments/unistring.py
 file path=usr/lib/python$(PYVER)/vendor-packages/pygments/util.py
 license pygments.license license="BSD, GPLv2, GPLv3, LGPLv2.1, CPLv1.1"
-
-# force a group dependency on the optional pillow; pkgdepend work is
-# needed to flush this out.
-depend type=group fmri=library/python/pillow-$(PYV)
 
 # force a dependency on the pygments package
 depend type=require \

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -72,9 +72,10 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
-REQUIRED_PACKAGES += library/python/pyyaml
-REQUIRED_PACKAGES += library/python/six
-REQUIRED_PACKAGES += library/python/stevedore
+REQUIRED_PACKAGES += $(PYVS:%=library/python/pbr-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/pyyaml-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/stevedore-%)
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/beautifulsoup4

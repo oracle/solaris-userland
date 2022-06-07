@@ -57,3 +57,5 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(TEST_NO_ARCH)
 
 system-test:	$(SYSTEM_TEST_NO_ARCH)
+
+REQUIRED_PACKAGES += $(PYVS:%=library/python/tomli-%)

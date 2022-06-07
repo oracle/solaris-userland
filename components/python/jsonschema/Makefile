@@ -62,10 +62,10 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
-REQUIRED_PACKAGES += library/python/attrs
-REQUIRED_PACKAGES += library/python/importlib-metadata
-REQUIRED_PACKAGES += library/python/pyrsistent
-REQUIRED_PACKAGES += library/python/typing-extensions
+REQUIRED_PACKAGES += $(PYVS:%=library/python/attrs-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/pyrsistent-%)
+REQUIRED_PACKAGES += library/python/importlib-metadata-37
+REQUIRED_PACKAGES += library/python/typing-extensions-37
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/mock

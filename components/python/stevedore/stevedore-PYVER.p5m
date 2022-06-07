@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -40,6 +40,7 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 file path=usr/lib/python$(PYVER)/vendor-packages/stevedore-$(COMPONENT_VERSION)-py$(PYVER).egg-info/PKG-INFO
 file path=usr/lib/python$(PYVER)/vendor-packages/stevedore-$(COMPONENT_VERSION)-py$(PYVER).egg-info/SOURCES.txt
+file path=usr/lib/python$(PYVER)/vendor-packages/stevedore-$(COMPONENT_VERSION)-py$(PYVER).egg-info/_solaris_dep
 file path=usr/lib/python$(PYVER)/vendor-packages/stevedore-$(COMPONENT_VERSION)-py$(PYVER).egg-info/dependency_links.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/stevedore-$(COMPONENT_VERSION)-py$(PYVER).egg-info/entry_points.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/stevedore-$(COMPONENT_VERSION)-py$(PYVER).egg-info/not-zip-safe
@@ -68,20 +69,9 @@ file path=usr/lib/python$(PYVER)/vendor-packages/stevedore/sphinxext.py
 #
 license stevedore.license license="Apache v2.0"
 
-# force the rename with an optional dependency on the old name
-depend type=optional \
-    fmri=library/python-2/stevedore-$(PYV)@0.10,5.12-5.12.0.0.0.41.0
-
 # force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
-
-# force a dependency on importlib-metadata; pkgdepend work is needed to flush
-# this out.
-depend type=require fmri=library/python/importlib-metadata-$(PYV)
-
-# force a dependency on setuptools; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/setuptools-$(PYV)
 
 # force a dependency on the stevedore package
 depend type=require \

@@ -40,6 +40,7 @@ set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools-$(COMPONENT_VERSION)-py$(PYVER).egg-info/PKG-INFO
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools-$(COMPONENT_VERSION)-py$(PYVER).egg-info/SOURCES.txt
+file path=usr/lib/python$(PYVER)/vendor-packages/testtools-$(COMPONENT_VERSION)-py$(PYVER).egg-info/_solaris_dep
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools-$(COMPONENT_VERSION)-py$(PYVER).egg-info/dependency_links.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools-$(COMPONENT_VERSION)-py$(PYVER).egg-info/not-zip-safe
 file path=usr/lib/python$(PYVER)/vendor-packages/testtools-$(COMPONENT_VERSION)-py$(PYVER).egg-info/pbr.json
@@ -86,15 +87,6 @@ license testtools.license license=MIT
 # force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
-
-# force a dependency on extras; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/extras-$(PYV)
-
-# force a dependency on fixtures; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/fixtures-$(PYV)
-
-# force a dependency on pbr; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/pbr-$(PYV)
 
 # force a dependency on the testtools package
 depend type=require \

@@ -42,6 +42,7 @@ link path=usr/bin/isort target=isort-$(PYVER) mediator=python \
 file path=usr/bin/isort-$(PYVER) pkg.depend.bypass-generate=.*importlib.*
 file path=usr/lib/python$(PYVER)/vendor-packages/isort-$(COMPONENT_VERSION)-py$(PYVER).egg-info/PKG-INFO
 file path=usr/lib/python$(PYVER)/vendor-packages/isort-$(COMPONENT_VERSION)-py$(PYVER).egg-info/SOURCES.txt
+file path=usr/lib/python$(PYVER)/vendor-packages/isort-$(COMPONENT_VERSION)-py$(PYVER).egg-info/_solaris_dep
 file path=usr/lib/python$(PYVER)/vendor-packages/isort-$(COMPONENT_VERSION)-py$(PYVER).egg-info/dependency_links.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/isort-$(COMPONENT_VERSION)-py$(PYVER).egg-info/entry_points.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/isort-$(COMPONENT_VERSION)-py$(PYVER).egg-info/requires.txt
@@ -65,10 +66,6 @@ license isort.license license=MIT
 # force a dependency on the Python $(PYVER) runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
-
-# force a dependency on backports.functools_lru_cache; pkgdepend work is needed
-# to flush this out.
-depend type=require fmri=library/python/backports.functools_lru_cache-$(PYV)
 
 # force a dependency on the isort package
 depend type=require \

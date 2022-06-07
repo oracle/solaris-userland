@@ -69,3 +69,5 @@ test:		$(BUILD_DIR)/$(MACH)-3.7/.tested \
 
 system-test:	$(BUILD_DIR)/$(MACH)-3.7/.system-tested \
 		$(BUILD_DIR)/$(MACH)-3.9/.system-tested
+
+REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)

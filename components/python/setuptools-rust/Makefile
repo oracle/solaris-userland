@@ -53,3 +53,7 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+
+REQUIRED_PACKAGES += $(PYVS:%=library/python/semantic_version-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/setuptools-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/typing-extensions-%)

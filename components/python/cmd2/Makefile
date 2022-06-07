@@ -57,8 +57,8 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
-REQUIRED_PACKAGES += library/python/attrs
-REQUIRED_PACKAGES += library/python/colorama
-REQUIRED_PACKAGES += library/python/pyparsing
-REQUIRED_PACKAGES += library/python/pyperclip
-REQUIRED_PACKAGES += library/python/wcwidth
+REQUIRED_PACKAGES += $(PYVS:%=library/python/attrs-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/pyperclip-%)
+REQUIRED_PACKAGES += $(PYVS:%=library/python/wcwidth-%)
+REQUIRED_PACKAGES += library/python/importlib-metadata-37
+REQUIRED_PACKAGES += library/python/typing-extensions-37

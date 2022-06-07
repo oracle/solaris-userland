@@ -44,6 +44,7 @@ file path=usr/bin/pip-$(PYVER) pkg.depend.bypass-generate=.*importlib.*
 file path=usr/lib/python$(PYVER)/vendor-packages/pip-$(COMPONENT_VERSION)-py$(PYVER).egg-info/INSTALLER
 file path=usr/lib/python$(PYVER)/vendor-packages/pip-$(COMPONENT_VERSION)-py$(PYVER).egg-info/PKG-INFO
 file path=usr/lib/python$(PYVER)/vendor-packages/pip-$(COMPONENT_VERSION)-py$(PYVER).egg-info/SOURCES.txt
+file path=usr/lib/python$(PYVER)/vendor-packages/pip-$(COMPONENT_VERSION)-py$(PYVER).egg-info/_solaris_dep
 file path=usr/lib/python$(PYVER)/vendor-packages/pip-$(COMPONENT_VERSION)-py$(PYVER).egg-info/dependency_links.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/pip-$(COMPONENT_VERSION)-py$(PYVER).egg-info/entry_points.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/pip-$(COMPONENT_VERSION)-py$(PYVER).egg-info/not-zip-safe
@@ -429,15 +430,8 @@ file path=usr/lib/python$(PYVER)/vendor-packages/pip/_vendor/webencodings/x_user
 #
 license LICENSE.txt license=MIT
 
-# force a group dependency on the optional simplejson; pkgdepend work is needed
-# to flush this out.
-depend type=group fmri=library/python/simplejson-$(PYV)
-
 # force the rename with an optional dependency on the old name
 depend type=optional fmri=library/python-2/pip-$(PYV)@1.4.1,5.12-5.12.0.0.0.41.0
-
-# force a dependency on lxml; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/lxml-$(PYV)
 
 # force a dependency on the pip package
 depend type=require \

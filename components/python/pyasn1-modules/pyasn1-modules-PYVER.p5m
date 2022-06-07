@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 
 set name=pkg.fmri \
@@ -39,6 +39,7 @@ set name=org.opensolaris.arc-caseid value=PSARC/2013/182
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 file path=usr/lib/python$(PYVER)/vendor-packages/pyasn1_modules-$(COMPONENT_VERSION)-py$(PYVER).egg-info/PKG-INFO
 file path=usr/lib/python$(PYVER)/vendor-packages/pyasn1_modules-$(COMPONENT_VERSION)-py$(PYVER).egg-info/SOURCES.txt
+file path=usr/lib/python$(PYVER)/vendor-packages/pyasn1_modules-$(COMPONENT_VERSION)-py$(PYVER).egg-info/_solaris_dep
 file path=usr/lib/python$(PYVER)/vendor-packages/pyasn1_modules-$(COMPONENT_VERSION)-py$(PYVER).egg-info/dependency_links.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/pyasn1_modules-$(COMPONENT_VERSION)-py$(PYVER).egg-info/requires.txt
 file path=usr/lib/python$(PYVER)/vendor-packages/pyasn1_modules-$(COMPONENT_VERSION)-py$(PYVER).egg-info/top_level.txt
@@ -159,9 +160,6 @@ depend type=optional \
 # force a dependency on the Python runtime
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
-
-# force a dependency on pyasn1; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/pyasn1-$(PYV)
 
 # force a dependency on the pyasn1-modules package
 depend type=require \

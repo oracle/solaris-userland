@@ -58,3 +58,7 @@ install:	$(INSTALL_NO_ARCH)
 test:		$(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+
+REQUIRED_PACKAGES += $(PYVS:%=library/python/tomli-%)
+REQUIRED_PACKAGES += library/python/importlib-metadata-37
+REQUIRED_PACKAGES += library/python/zipp-37
