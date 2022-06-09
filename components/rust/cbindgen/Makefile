@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2018, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =	64
@@ -28,28 +28,29 @@ COMPILER =	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	cbindgen
-COMPONENT_VERSION =	0.19.0
+COMPONENT_VERSION =	0.24.3
+COMPONENT_BAID =	124793
 COMPONENT_PROJECT_URL =	https://github.com/eqrion/cbindgen
 COMPONENT_SRC =		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE =	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH = \
-    sha256:5a068b3d4cd0319b12844c83816d63e2e9ce8176bd2d78ca0ac03d4833bcbab7
+    sha256:5d693ab54acc085b9f2dbafbcf0a1f089737f7e0cb1686fa338c2aaa05dc7705
 COMPONENT_ARCHIVE_URL =	https://github.com/eqrion/cbindgen/archive/v$(COMPONENT_VERSION).tar.gz
 
 # hash for vendored sources
 COMPONENT_ARCHIVE_HASH_crates = \
-    sha256:576b1234aa0017829a24e21f04bc005da4a67d4343c149478fdcf889c30db816
+    sha256:91806554eb6d8207c7bceb097072cb2e427e93bb9de1f064e831bc33ff65b890
 
 COMPONENT_BUGDB =	utility/rust
 COMPONENT_ANITYA_ID =	16690
-COMPONENT_BAID = 104310
 
 BUILD_STYLE = cargo
 
 include $(WS_MAKE_RULES)/common.mk
 
 # Everything expects GNU utilities, so make sure those are preferred.
-PATH = /usr/gnu/bin:/usr/bin
+# RUST_ALT_PATH allows to use different Rust version.
+PATH = $(RUST_ALT_PATH):/usr/gnu/bin:/usr/bin
 
 REQUIRED_PACKAGES +=	library/libssh2
 REQUIRED_PACKAGES +=	library/security/openssl
