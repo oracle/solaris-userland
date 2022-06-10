@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
 #
 include ../../../make-rules/shared-macros.mk
 
@@ -29,17 +29,17 @@ include ../../../make-rules/shared-macros.mk
 RUBY_VERSIONS = $(RUBY_PUPPET_VERSION)
 
 COMPONENT_NAME=		hiera
-COMPONENT_VERSION=  3.4.2
+COMPONENT_VERSION=  3.9.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).gem
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:ff6bc8a27c9c0627790bc67dbedb8c3c5907f594f0ec798659c99bcd0ff2026d
+    sha256:9d5c33e67430e3e879670558cd2dc4dd5deed3e96a2bd199f0ada79b05427006
 COMPONENT_ARCHIVE_URL=	https://rubygems.org/gems/$(COMPONENT_SRC).gem
 COMPONENT_PROJECT_URL=  https://github.com/puppetlabs/hiera
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	1317
 
-COMPONENT_BAID=                   45915
+COMPONENT_BAID=                   123777
 
 # No gemspec is shipped with the gem. Create one
 COMPONENT_POST_UNPACK_ACTION= \
