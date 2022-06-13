@@ -91,9 +91,16 @@ CXXFLAGS += -std=c++11
 
 CONFIGURE_OPTIONS += --enable-smp-support
 CONFIGURE_OPTIONS += --enable-threads
-CONFIGURE_OPTIONS += --with-ssl
 CONFIGURE_OPTIONS += --enable-fips
 CONFIGURE_OPTIONS += --enable-dynamic-ssl-lib
+
+ifneq ($(strip $(OPENSSL3)),)
+CONFIGURE_OPTIONS += --with-ssl=/usr/openssl/3
+# Disable disallowed cyphers (headers are not available)
+CFLAGS += -DOPENSSL_NO_MD4 -DOPENSSL_NO_RC2 -DOPENSSL_NO_RC4
+else
+CONFIGURE_OPTIONS += --with-ssl
+endif
 
 # Disable kernel poll on sparc to avoid hangs in erl_child_setup (bug 31443512).
 CONFIGURE_OPTIONS.sparc += --disable-kernel-poll
@@ -155,8 +162,12 @@ REQUIRED_PACKAGES += developer/java/jdk-8
 REQUIRED_PACKAGES += developer/lexer/flex
 REQUIRED_PACKAGES += library/graphics/wxwidgets
 REQUIRED_PACKAGES += library/ncurses
+ifneq ($(strip $(OPENSSL3)),)
+REQUIRED_PACKAGES += library/security/openssl-3
+else
 REQUIRED_PACKAGES += library/security/openssl
 REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
+endif
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
