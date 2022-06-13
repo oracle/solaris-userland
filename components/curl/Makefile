@@ -26,8 +26,8 @@ BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		curl
-COMPONENT_VERSION=	7.83.0
-COMPONENT_BAID=		121546
+COMPONENT_VERSION=	7.83.1
+COMPONENT_BAID=		124440
 COMPONENT_PROJECT_URL=	http://curl.haxx.se/
 
 #GIT_REPO=	https://github.com/curl/curl.git
@@ -37,7 +37,7 @@ COMPONENT_PROJECT_URL=	http://curl.haxx.se/
 
 # git clone is fine but download of the archive is much faster
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
-COMPONENT_ARCHIVE_HASH=	sha256:247c7ec7521c4258e65634e529270d214fe32969971cccb72845e7aa46831f96
+COMPONENT_ARCHIVE_HASH=	sha256:f539a36fb44a8260ec5d977e4e0dbdd2eee29ed90fcedaa9bc3c9f78a113bff0
 COMPONENT_ARCHIVE_URL=	https://curl.se/download/$(COMPONENT_ARCHIVE)
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 
