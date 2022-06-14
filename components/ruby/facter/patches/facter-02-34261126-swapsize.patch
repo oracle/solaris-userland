@@ -1,0 +1,15 @@
+This patch is solaris specific change, not submitted upstream yet.
+The existing pattern for retrieving the swap information does not
+match the '/usr/sbin/swap -l' output.This patch fixes the regex pattern.
+------------------------------------------------------------------------
+--- a/lib/facter/resolvers/solaris/memory.rb.orig	2022-06-10 03:57:31.500607287 -0700
++++ b/lib/facter/resolvers/solaris/memory.rb	2022-06-10 03:58:45.015663984 -0700
+@@ -66,7 +66,7 @@
+             free = 0
+ 
+             output.each_line do |line|
+-              swap_sizes = line.match(/(\d+)\s+(\d+)$/)
++              swap_sizes = line.match(/(\d+)\s+(\d+)\s+\S+$/)
+               next if swap_sizes.nil?
+ 
+               total += swap_sizes[1].to_i
