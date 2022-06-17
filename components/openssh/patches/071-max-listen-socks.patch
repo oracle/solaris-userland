@@ -1,0 +1,52 @@
+#
+# Needed to address 24434442 on ZFSSA where a very large number of
+# admin interfaces can need distinct ListenAddress entries in sshd_config.
+# This is made dynamic since systems with > 500 vnics on ZFSSA are known
+# to exist.
+#
+# Plan to contribute upstream.
+#
+--- openssh-8.4p1/sshd.c	2022-06-17 14:23:33.827364815 +0100
++++ openssh-8.4p1-dynamic-listen/sshd.c	2022-06-17 14:23:00.892466234 +0100
+@@ -177,8 +177,7 @@
+  * The sockets that the server is listening; this is used in the SIGHUP
+  * signal handler.
+  */
+-#define	MAX_LISTEN_SOCKS	16
+-static int listen_socks[MAX_LISTEN_SOCKS];
++static int *listen_socks = NULL;
+ static int num_listen_socks = 0;
+ 
+ /* Daemon's agent connection */
+@@ -284,6 +283,8 @@
+ 
+ 	for (i = 0; i < num_listen_socks; i++)
+ 		close(listen_socks[i]);
++	free(listen_socks);
++	listen_socks = NULL;
+ 	num_listen_socks = -1;
+ }
+ 
+@@ -1160,11 +1161,19 @@
+ 	char ntop[NI_MAXHOST], strport[NI_MAXSERV];
+ 
+ 	for (ai = la->addrs; ai; ai = ai->ai_next) {
++		if (ai->ai_family == AF_INET || ai->ai_family == AF_INET6) {
++			num_listen_socks++;
++		}
++	}
++	debug("Needed listen socket count = %d", num_listen_socks);
++	if ((listen_socks = calloc(num_listen_socks, sizeof (int))) == NULL) {
++		fatal("Unable to allocate listen socket array");
++	}
++	num_listen_socks = 0;
++
++	for (ai = la->addrs; ai; ai = ai->ai_next) {
+ 		if (ai->ai_family != AF_INET && ai->ai_family != AF_INET6)
+ 			continue;
+-		if (num_listen_socks >= MAX_LISTEN_SOCKS)
+-			fatal("Too many listen sockets. "
+-			    "Enlarge MAX_LISTEN_SOCKS");
+ 		if ((ret = getnameinfo(ai->ai_addr, ai->ai_addrlen,
+ 		    ntop, sizeof(ntop), strport, sizeof(strport),
+ 		    NI_NUMERICHOST|NI_NUMERICSERV)) != 0) {
