@@ -1,0 +1,25 @@
+#
+# The linker flag needs to be adjusted in order to find OpenSSL 3.
+# This is Solaris specific patch, not intended for upstream.
+#
+--- old/configure	2022-02-23 17:50:09.047073493 +0000
++++ new/configure	2022-02-23 17:54:52.369603855 +0000
+@@ -10057,8 +10057,10 @@ printf "%s\n" "$lt_cv_cc_needs_belf" >&6
+   ac_status=$?
+   printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+   test $ac_status = 0; }; then
++    acl_libdirstem=lib
+     case `/usr/bin/file conftest.o` in
+     *64-bit*)
++	acl_libdirstem=lib/64
+       case $lt_cv_prog_gnu_ld in
+       yes*)
+         case $host in
+@@ -19264,7 +19266,6 @@ fi
+ 
+ 
+ 
+-                  acl_libdirstem=lib
+   searchpath=`(LC_ALL=C $CC -print-search-dirs) 2>/dev/null | sed -n -e 's,^libraries: ,,p' | sed -e 's,^=,,'`
+   if test -n "$searchpath"; then
+     acl_save_IFS="${IFS= 	}"; IFS=":"

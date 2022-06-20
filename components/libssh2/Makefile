@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2013, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
@@ -42,6 +42,10 @@ include $(WS_MAKE_RULES)/common.mk
 
 CONFIGURE_OPTIONS +=   --enable-shared
 CONFIGURE_OPTIONS +=   --disable-static
+
+ifneq ($(strip $(OPENSSL3)),)
+CONFIGURE_OPTIONS +=   --with-libssl-prefix=/usr/openssl/3
+endif
 
 # Adjust the .so line in the libssh2_sftp_fstatvfs man page to correctly find
 # the file it references (as we place it in the man3ssh2 section on Solaris).
@@ -88,5 +92,10 @@ COMPONENT_SYSTEM_TEST_ENV = \
 	AM_MAKEFLAGS="-f $(BUILD_DIR_$(BITS))/tests/Makefile-system-test"
 COMPONENT_SYSTEM_TEST_ARGS = -f $(BUILD_DIR_$(BITS))/tests/Makefile-system-test
 
+ifneq ($(strip $(OPENSSL3)),)
+REQUIRED_PACKAGES += library/security/openssl-3
+else
 REQUIRED_PACKAGES += library/security/openssl
+endif
+
 REQUIRED_PACKAGES += library/zlib
