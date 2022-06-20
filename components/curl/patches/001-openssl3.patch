@@ -1,0 +1,20 @@
+It is common mistake in linking to put flags for new library past to
+common flags so standard library is referenced first.
+
+Pull request
+https://github.com/curl/curl/pull/9045
+sent to community.
+
+--- a/m4/curl-openssl.m4	2022-06-21 09:57:36.168239589 +0200
++++ b/m4/curl-openssl.m4	2022-06-21 10:03:25.856824092 +0200
+@@ -136,8 +136,8 @@
+   fi
+ 
+   dnl finally, set flags to use SSL
+-  CPPFLAGS="$CPPFLAGS $SSL_CPPFLAGS"
+-  LDFLAGS="$LDFLAGS $SSL_LDFLAGS"
++  CPPFLAGS="$SSL_CPPFLAGS $CPPFLAGS"
++  LDFLAGS="$SSL_LDFLAGS $LDFLAGS"
+ 
+   AC_CHECK_LIB(crypto, HMAC_Update,[
+      HAVECRYPTO="yes"

@@ -66,6 +66,13 @@ LDFLAGS += -m$(BITS)
 ADIHEAP_MODE =	$(ADIHEAP_ENABLE)
 ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
+# Automatically detect OpenSSL 3 headers and libs.
+ifneq ($(strip $(OPENSSL3)),)
+SSL_PKG_CONFIG_PATH.64 = /usr/openssl/3/lib/64/pkgconfig
+SSL_PKG_CONFIG_PATH.32 = /usr/openssl/3/lib/pkgconfig
+PKG_CONFIG_PATHS += $(SSL_PKG_CONFIG_PATH.$(BITS))
+endif
+
 CONFIGURE_OPTIONS += --localstatedir=$(VARDIR) --enable-shared --disable-static
 CONFIGURE_OPTIONS += --enable-http --enable-ftp
 CONFIGURE_OPTIONS += --enable-file --enable-dict
@@ -79,10 +86,16 @@ CONFIGURE_OPTIONS += --disable-sspi --enable-crypto-auth
 CONFIGURE_OPTIONS += --enable-cookies --disable-hidden-symbols
 CONFIGURE_OPTIONS += --disable-soname-bump
 CONFIGURE_OPTIONS += --with-random=/dev/urandom
+CONFIGURE_OPTIONS += --with-zlib
 CONFIGURE_OPTIONS += --with-gssapi
-CONFIGURE_OPTIONS += --with-ssl=/usr --with-ca-path=$(ETCDIR)/openssl/certs
+ifneq ($(strip $(OPENSSL3)),)
+CONFIGURE_OPTIONS += --with-openssl=/usr/openssl/3
+else
+CONFIGURE_OPTIONS += --with-ssl
+endif
+CONFIGURE_OPTIONS += --with-ca-path=$(ETCDIR)/openssl/certs
 CONFIGURE_OPTIONS += --enable-ldap --with-ldap-lib=ldap_r --with-lber-lib=lber
-CONFIGURE_OPTIONS += --with-zlib=$(USRDIR) --with-libidn2=$(USRDIR)
+CONFIGURE_OPTIONS += --with-libidn2
 CONFIGURE_OPTIONS += --with-pic
 CONFIGURE_OPTIONS += --with-libssh2
 CONFIGURE_OPTIONS += --with-nghttp2
@@ -104,6 +117,11 @@ LINT_FLAGS += -I$(SOURCE_DIR)/include
 # Generate configuration scripts form .am-files
 # GNU Build System files have to be regenerated for automake 1.16.
 COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fi ; )
+
+# verbose gmake
+ifneq ($(strip $(GMAKE_VERBOSE_MAKEFILE)),)
+COMPONENT_BUILD_ARGS += V=1
+endif
 
 COMPONENT_TEST_ENV += CC="$(CC)"
 COMPONENT_TEST_ENV += PATH="$(SPRO_VROOT)/bin:$(GNUBIN):$(PATH)"
@@ -129,7 +147,11 @@ COMPONENT_TEST_TRANSFORMS += \
 REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/libssh2
 REQUIRED_PACKAGES += library/nghttp2
+ifneq ($(strip $(OPENSSL3)),)
+REQUIRED_PACKAGES += library/security/openssl-3
+else
 REQUIRED_PACKAGES += library/security/openssl
+endif
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
