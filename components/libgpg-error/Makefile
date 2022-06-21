@@ -27,17 +27,17 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libgpg-error
-COMPONENT_VERSION=	1.36
+COMPONENT_VERSION=	1.45
 COMPONENT_PROJECT_URL=  https://gnupg.org/software/libgpg-error/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-    sha256:babd98437208c163175c29453f8681094bcaf92968a15cafb1a276076b33c97c
+    sha256:570f8ee4fb4bff7b7495cff920c275002aea2147e9a1d220c068213267f80a26
 COMPONENT_ARCHIVE_URL=  https://gnupg.org/ftp/gcrypt/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 
 COMPONENT_BUGDB=	library/libgpg-error
 COMPONENT_ANITYA_ID=	1628
 
-COMPONENT_BAID=		62216
+COMPONENT_BAID=		124773
 
 COMPONENT_BUILD_TARGETS = all info
 
@@ -51,6 +51,11 @@ CONFIGURE_OPTIONS += --infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS += --enable-threads=posix
 
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
+COMPONENT_TEST_TRANSFORMS += \
+        '-n -e "/=====/p" ' \
+        '-n -e "/passed/p" ' \
+        '-e "/PASS/p" ' \
+        '-e "/FAIL/p" '
 
 include ../../make-rules/shared-targets.mk
 
@@ -59,4 +64,5 @@ include ../../make-rules/shared-targets.mk
 COMPONENT_BUILD_ARGS += CC_FOR_BUILD='$(CC) $(CONFIGURE_CPPFLAGS) $(CC_PIC_ENABLE)'
 
 REQUIRED_PACKAGES += shell/ksh93
+REQUIRED_PACKAGES += system/core-os
 REQUIRED_PACKAGES += system/library/gcc/gcc-c-runtime
