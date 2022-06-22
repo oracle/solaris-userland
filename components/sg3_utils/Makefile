@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		sg3_utils
-COMPONENT_VERSION=	1.46
+COMPONENT_VERSION=	1.47
 COMPONENT_PROJECT_URL=	http://sg.danny.cz/sg/sg3_utils.html
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:701dfa3c828867f97e904d25f280346d46da9e582a66e6afebe2b294ae4a6176
+    sha256:8673c7faca849b6b34764332d2aa91f72db05bff7382bb836d0688795199c3e1
 COMPONENT_ARCHIVE_URL=	http://sg.danny.cz/sg/p/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/sg3utils
 COMPONENT_ANITYA_ID=	4801
 
-COMPONENT_BAID=		111445
+COMPONENT_BAID=		125228
 
 # Even though "gmake check" goes to completion, it doesn't really do anything.
 TEST_TARGET= $(NO_TESTS)
