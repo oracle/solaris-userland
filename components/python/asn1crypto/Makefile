@@ -22,26 +22,31 @@
 #
 # Copyright (c) 2014, 2022, Oracle and/or its affiliates.
 #
-
 COMPILER=		gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		asn1crypto
-COMPONENT_VERSION=	1.4.0
+COMPONENT_VERSION=	1.5.1
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
-COMPONENT_ARCHIVE_HASH=	\
-    sha256:f4f6e119474e58e04a2b1af817eb585b4fd72bdd89b998624712b5c99be7641c
-COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/wbond/asn1crypto
 COMPONENT_BUGDB=	python-mod/asn1crypto
 COMPONENT_ANITYA_ID=	15550
+COMPONENT_BAID=		125137
 
-COMPONENT_BAID=		115240
+# pypi archive doesn't include the test suite
+GIT_REPO=   $(COMPONENT_PROJECT_URL)
+GIT_COMMIT_ID=  $(COMPONENT_VERSION)
+GIT_HASH=   sha256:c06e6827971891a7c42299eff3f0881d6fbf1ada53f11c5797240a9c0cec6a1c
+
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+
+COMPONENT_TEST_DIR =    $(SOURCE_DIR)/tests
+COMPONENT_TEST_CMD =    $(PYTHON) -m pytest
+COMPONENT_TEST_ARGS =
 
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
@@ -50,6 +55,6 @@ build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)
 
-test:		$(NO_TESTS)
+test:		$(TEST_32_and_64)
 
-system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
+system-test:    $(SYSTEM_TEST_32_and_64)
