@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2023, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../make-rules/shared-macros.mk
@@ -42,17 +42,22 @@ ADISTACK_MODE =	$(ADISTACK_ENABLE)
 
 include $(WS_MAKE_RULES)/common.mk
 
-CONFIGURE_OPTIONS  +=		PYTHON="$(PYTHON.3.7.64)"
-CONFIGURE_OPTIONS  +=		--with-kerberos5
-CONFIGURE_OPTIONS  +=		--with-ssl
-CONFIGURE_OPTIONS  +=		--enable-NTLM
+# python3.7 only delivers tkinter requested by fetchmailconf.py
+# one also requires python3.7 as a min.python version so we are
+# clipped on this version
+PYTHON_VERSION = 3.7
 
-# Change the shebang line to use Python 2.7 explicitly, and drop the
-# fixed file into /usr/bin, where our package manifest expects it.
+CONFIGURE_OPTIONS  +=		PYTHON="$(PYTHON)"
+CONFIGURE_OPTIONS  +=		--with-kerberos5
+CONFIGURE_OPTIONS  +=		--enable-NTLM
+CONFIGURE_OPTIONS  +=		--with-libssl-prefix=/usr/openssl/3
+CONFIGURE_ENV      +=	SSL_LIBS="-L/usr/openssl/3/lib/64 -lssl -lcrypto -R/lib/$(MACH64)"
+CONFIGURE_ENV      +=	SSL_CFLAGS="-I/usr/openssl/3/include"
+
 COMPONENT_POST_INSTALL_ACTION = \
-    $(GSED) -e "s|/usr/bin/env python|$(PYTHON.3.7.64)|" \
-	$(PROTO_DIR)/usr/lib/python3.7/site-packages/fetchmailconf.py > \
-	$(PROTO_DIR)$(USRBIN.32)/fetchmailconf
+    $(MV) $(PROTO_DIR)/usr/lib/python$(PYTHON_VERSION)/site-packages/fetchmailconf.py \
+          $(PROTO_DIR)/usr/bin/fetchmailconf ; \
+    $(call PYTHON_SCRIPT_SHEBANG_FIX_FUNC,"$(PROTO_DIR)/usr/bin/fetchmailconf")
 
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
@@ -64,7 +69,7 @@ COMPONENT_TEST_TRANSFORMS += \
 	'-e "/passed/p" '
 
 REQUIRED_PACKAGES += library/python/tkinter-37
-REQUIRED_PACKAGES += library/security/openssl
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
