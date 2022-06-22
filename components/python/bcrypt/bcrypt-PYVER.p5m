@@ -47,7 +47,9 @@ file path=usr/lib/python$(PYVER)/vendor-packages/bcrypt-$(COMPONENT_VERSION)-py$
 file path=usr/lib/python$(PYVER)/vendor-packages/bcrypt/64/_bcrypt.so
 file path=usr/lib/python$(PYVER)/vendor-packages/bcrypt/__about__.py
 file path=usr/lib/python$(PYVER)/vendor-packages/bcrypt/__init__.py
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/bcrypt/_bcrypt.pyi
 file path=usr/lib/python$(PYVER)/vendor-packages/bcrypt/_bcrypt.so
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/bcrypt/py.typed
 #
 license LICENSE license="Apache v2.0"
 
@@ -59,4 +61,4 @@ depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
 depend type=require fmri=library/python/cffi-$(PYV)
 
 # force a dependency on six; pkgdepend work is needed to flush this out.
-depend type=require fmri=library/python/six-$(PYV)
+$(OLD_ONLY)depend type=require fmri=library/python/six-$(PYV)

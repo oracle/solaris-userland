@@ -20,11 +20,12 @@
 #
 
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, Oracle and/or its affiliates.
 #
 
-<include ../generate/common.transform>
+# Several files are only available in the new version.
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/bcrypt/_bcrypt.pyi
+$(NEW_ONLY)file path=usr/lib/python$(PYVER)/vendor-packages/bcrypt/py.typed
 
-# Drop files handled via the .static file
-<transform file path=.*/bcrypt/_bcrypt.pyi -> drop>
-<transform file path=.*/bcrypt/py.typed -> drop>
+# six is no longer necessary in the new version.
+$(OLD_ONLY)depend type=require fmri=library/python/six-$(PYV)
