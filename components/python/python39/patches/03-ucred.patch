@@ -3,8 +3,8 @@ some point, but the suitability (or lack thereof) has not yet been determined.
 
 diff --git Python-2.6.4/Modules/ucred.c Python-2.6.4/Modules/ucred.c
 new file mode 100644
---- Python-3.9.9/Modules/ucred.c
-+++ Python-3.9.9/Modules/ucred.c
+--- Python-3.9.13/Modules/ucred.c
++++ Python-3.9.13/Modules/ucred.c
 @@ -0,0 +1,404 @@
 +/*
 + * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -410,9 +410,9 @@ new file mode 100644
 +
 +	return m;
 +}
---- Python-3.9.9/setup.py
-+++ Python-3.9.9/setup.py
-@@ -1821,6 +1821,13 @@ class PyBuildExt(build_ext):
+--- Python-3.9.13/setup.py
++++ Python-3.9.13/setup.py
+@@ -1826,6 +1826,13 @@ class PyBuildExt(build_ext):
          else:
              self.missing.append('_uuid')
  
@@ -424,9 +424,9 @@ new file mode 100644
 +            self.add(Extension('ucred', ['ucred.c'], libraries=['tsol']))
 +
      def detect_modules(self):
-         self.configure_compiler()
-         self.init_inc_lib_dirs()
-@@ -1841,6 +1848,7 @@ class PyBuildExt(build_ext):
+         self.detect_simple_extensions()
+         if TEST_EXTENSIONS:
+@@ -1843,6 +1850,7 @@ class PyBuildExt(build_ext):
          self.detect_expat_elementtree()
          self.detect_multibytecodecs()
          self.detect_decimal()
@@ -434,8 +434,8 @@ new file mode 100644
          self.detect_ctypes()
          self.detect_multiprocessing()
          if not self.detect_tkinter():
---- Python-3.9.9/Lib/test/ucredtest.py
-+++ Python-3.9.9/Lib/test/ucredtest.py
+--- Python-3.9.13/Lib/test/ucredtest.py
++++ Python-3.9.13/Lib/test/ucredtest.py
 @@ -0,0 +1,45 @@
 +#!/usr/bin/python3.9
 +

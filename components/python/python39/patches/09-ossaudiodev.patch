@@ -1,9 +1,9 @@
 This patch is needed to make Python understand it can build the OSS plugin.  
 Some OSS ioctls are not supported on Solaris, so they are ifdef'd out.  As
 the patch is Solaris-specific, it is not suitable for upstream.
---- Python-3.9.9/setup.py
-+++ Python-3.9.9/setup.py
-@@ -1606,7 +1606,7 @@ class PyBuildExt(build_ext):
+--- Python-3.9.13/setup.py
++++ Python-3.9.13/setup.py
+@@ -1611,7 +1611,7 @@ class PyBuildExt(build_ext):
              self.missing.extend(['resource', 'termios'])
  
          # Platform-specific libraries
@@ -12,8 +12,8 @@ the patch is Solaris-specific, it is not suitable for upstream.
              self.add(Extension('ossaudiodev', ['ossaudiodev.c']))
          elif not AIX:
              self.missing.append('ossaudiodev')
---- Python-3.9.9/Modules/ossaudiodev.c
-+++ Python-3.9.9/Modules/ossaudiodev.c
+--- Python-3.9.13/Modules/ossaudiodev.c
++++ Python-3.9.13/Modules/ossaudiodev.c
 @@ -1210,6 +1210,7 @@ PyInit_ossaudiodev(void)
      _EXPORT_INT(m, SOUND_MIXER_MONITOR);
  #endif
@@ -30,20 +30,7 @@ the patch is Solaris-specific, it is not suitable for upstream.
  #ifdef SNDCTL_DSP_BIND_CHANNEL
      _EXPORT_INT(m, SNDCTL_DSP_BIND_CHANNEL);
  #endif
-@@ -1243,8 +1245,12 @@ PyInit_ossaudiodev(void)
-     _EXPORT_INT(m, SNDCTL_DSP_GETSPDIF);
- #endif
-     _EXPORT_INT(m, SNDCTL_DSP_GETTRIGGER);
-+#ifdef SNDCTL_DSP_MAPINBUF
-     _EXPORT_INT(m, SNDCTL_DSP_MAPINBUF);
-+#endif
-+#ifdef SNDCTL_DSP_MAPOUTBUF
-     _EXPORT_INT(m, SNDCTL_DSP_MAPOUTBUF);
-+#endif
-     _EXPORT_INT(m, SNDCTL_DSP_NONBLOCK);
-     _EXPORT_INT(m, SNDCTL_DSP_POST);
- #ifdef SNDCTL_DSP_PROFILE
-@@ -1264,6 +1270,7 @@ PyInit_ossaudiodev(void)
+@@ -1268,6 +1270,7 @@ PyInit_ossaudiodev(void)
      _EXPORT_INT(m, SNDCTL_DSP_STEREO);
      _EXPORT_INT(m, SNDCTL_DSP_SUBDIVIDE);
      _EXPORT_INT(m, SNDCTL_DSP_SYNC);
@@ -51,7 +38,7 @@ the patch is Solaris-specific, it is not suitable for upstream.
      _EXPORT_INT(m, SNDCTL_FM_4OP_ENABLE);
      _EXPORT_INT(m, SNDCTL_FM_LOAD_INSTR);
      _EXPORT_INT(m, SNDCTL_MIDI_INFO);
-@@ -1305,5 +1312,6 @@ PyInit_ossaudiodev(void)
+@@ -1309,5 +1312,6 @@ PyInit_ossaudiodev(void)
      _EXPORT_INT(m, SNDCTL_TMR_STOP);
      _EXPORT_INT(m, SNDCTL_TMR_TEMPO);
      _EXPORT_INT(m, SNDCTL_TMR_TIMEBASE);

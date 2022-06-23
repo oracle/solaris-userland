@@ -13,8 +13,8 @@ For reference:
 [1] https://bugs.python.org/issue19930
 [2] https://bugs.python.org/issue42367
 
---- Python-3.9.2/Lib/os.py
-+++ Python-3.9.2/Lib/os.py
+--- Python-3.9.13/Lib/os.py
++++ Python-3.9.13/Lib/os.py
 @@ -212,7 +212,7 @@ def makedirs(name, mode=0o777, exist_ok=
          head, tail = path.split(head)
      if head and tail and not path.exists(head):
@@ -24,9 +24,9 @@ For reference:
          except FileExistsError:
              # Defeats race condition when another thread created the path
              pass
---- Python-3.9.2/Lib/test/test_os.py
-+++ Python-3.9.2/Lib/test/test_os.py
-@@ -1437,12 +1437,12 @@ class MakedirTests(unittest.TestCase):
+--- Python-3.9.13/Lib/test/test_os.py
++++ Python-3.9.13/Lib/test/test_os.py
+@@ -1435,12 +1435,12 @@ class MakedirTests(unittest.TestCase):
              base = support.TESTFN
              parent = os.path.join(base, 'dir1')
              path = os.path.join(parent, 'dir2')

@@ -27,8 +27,8 @@ https://github.com/python/cpython/commit/aa967ec4d4c2fc844f8f16b339140b050ae4d5e
 
 test_pkgutil doesn't expect that pkg module exists. [Not for upstream]
 
---- Python-3.9.9/Lib/test/test_gdb.py
-+++ Python-3.9.9/Lib/test/test_gdb.py
+--- Python-3.9.13/Lib/test/test_gdb.py
++++ Python-3.9.13/Lib/test/test_gdb.py
 @@ -52,6 +52,9 @@ if gdb_major_version < 7:
                              % (gdb_major_version, gdb_minor_version,
                                 gdb_version))
@@ -39,8 +39,8 @@ test_pkgutil doesn't expect that pkg module exists. [Not for upstream]
  if not sysconfig.is_python_build():
      raise unittest.SkipTest("test_gdb only works on source builds at the moment.")
  
---- Python-3.9.9/Lib/test/test_unicodedata.py
-+++ Python-3.9.9/Lib/test/test_unicodedata.py
+--- Python-3.9.13/Lib/test/test_unicodedata.py
++++ Python-3.9.13/Lib/test/test_unicodedata.py
 @@ -325,6 +325,8 @@ class NormalizationTest(unittest.TestCas
          TESTDATAFILE = "NormalizationTest.txt"
          TESTDATAURL = f"http://www.pythontest.net/unicode/{unicodedata.unidata_version}/{TESTDATAFILE}"
@@ -50,8 +50,8 @@ test_pkgutil doesn't expect that pkg module exists. [Not for upstream]
          # Hit the exception early
          try:
              testdata = open_urlresource(TESTDATAURL, encoding="utf-8",
---- Python-3.9.9/Lib/test/test_re.py
-+++ Python-3.9.9/Lib/test/test_re.py
+--- Python-3.9.13/Lib/test/test_re.py
++++ Python-3.9.13/Lib/test/test_re.py
 @@ -1,5 +1,6 @@
  from test.support import (gc_collect, bigmemtest, _2G,
                            cpython_only, captured_stdout)
@@ -59,7 +59,7 @@ test_pkgutil doesn't expect that pkg module exists. [Not for upstream]
  import locale
  import re
  import sre_compile
-@@ -1918,6 +1919,8 @@ ELSE
+@@ -2018,6 +2019,8 @@ ELSE
          self.assertTrue(re.match(b'(?Li)\xc5', b'\xe5'))
          self.assertTrue(re.match(b'(?Li)\xe5', b'\xc5'))
  
@@ -68,7 +68,7 @@ test_pkgutil doesn't expect that pkg module exists. [Not for upstream]
      def check_en_US_utf8(self):
          locale.setlocale(locale.LC_CTYPE, 'en_US.utf8')
          self.assertTrue(re.match(b'\xc5\xe5', b'\xc5\xe5', re.L|re.I))
-@@ -1927,6 +1930,8 @@ ELSE
+@@ -2027,6 +2030,8 @@ ELSE
          self.assertIsNone(re.match(b'(?Li)\xc5', b'\xe5'))
          self.assertIsNone(re.match(b'(?Li)\xe5', b'\xc5'))
  
@@ -77,9 +77,9 @@ test_pkgutil doesn't expect that pkg module exists. [Not for upstream]
      def test_locale_compiled(self):
          oldlocale = locale.setlocale(locale.LC_CTYPE)
          self.addCleanup(locale.setlocale, locale.LC_CTYPE, oldlocale)
---- Python-3.9.9/Lib/test/test_time.py
-+++ Python-3.9.9/Lib/test/test_time.py
-@@ -613,7 +613,7 @@ class _TestStrftimeYear:
+--- Python-3.9.13/Lib/test/test_time.py
++++ Python-3.9.13/Lib/test/test_time.py
+@@ -620,7 +620,7 @@ class _TestStrftimeYear:
              self.test_year('%04d', func=year4d)
  
      def skip_if_not_supported(y):
@@ -88,8 +88,8 @@ test_pkgutil doesn't expect that pkg module exists. [Not for upstream]
          # Check that it doesn't crash for year > 9999
          try:
              time.strftime('%Y', (y,) + (0,) * 8)
---- Python-3.9.9/Lib/test/test_socket.py
-+++ Python-3.9.9/Lib/test/test_socket.py
+--- Python-3.9.13/Lib/test/test_socket.py
++++ Python-3.9.13/Lib/test/test_socket.py
 @@ -3351,7 +3351,7 @@ class CmsgMacroTests(unittest.TestCase):
          # Test CMSG_SPACE() with various valid and invalid values,
          # checking the assumptions used by sendmsg().
@@ -131,8 +131,8 @@ test_pkgutil doesn't expect that pkg module exists. [Not for upstream]
      @unittest.skipIf(AIX, "skipping, see issue #22397")
      def _testFDPassSeparateMinSpace(self):
          fd0, fd1 = self.newFDs(2)
---- Python-3.9.9/Lib/test/test_pyexpat.py
-+++ Python-3.9.9/Lib/test/test_pyexpat.py
+--- Python-3.9.13/Lib/test/test_pyexpat.py
++++ Python-3.9.13/Lib/test/test_pyexpat.py
 @@ -466,8 +466,8 @@ class HandlerExceptionTest(unittest.Test
                                         "pyexpat.c", "StartElement")
              self.check_traceback_entry(entries[2],
@@ -144,8 +144,8 @@ test_pkgutil doesn't expect that pkg module exists. [Not for upstream]
  
  
  # Test Current* members:
---- Python-3.9.9/Lib/test/test_tcl.py
-+++ Python-3.9.9/Lib/test/test_tcl.py
+--- Python-3.9.13/Lib/test/test_tcl.py
++++ Python-3.9.13/Lib/test/test_tcl.py
 @@ -204,6 +204,7 @@ class TclTest(unittest.TestCase):
          self.assertRaises((UnicodeEncodeError, ValueError, TclError),
                            tcl.getboolean, 'on\ud800')
@@ -162,8 +162,8 @@ test_pkgutil doesn't expect that pkg module exists. [Not for upstream]
      def test_evalfile_null_in_result(self):
          tcl = self.interp
          filename = support.TESTFN_ASCII
---- Python-3.9.9/Lib/test/test_float.py
-+++ Python-3.9.9/Lib/test/test_float.py
+--- Python-3.9.13/Lib/test/test_float.py
++++ Python-3.9.13/Lib/test/test_float.py
 @@ -144,7 +144,7 @@ class GeneralFloatCases(unittest.TestCas
          # non-UTF-8 byte string
          check(b'123\xa0')
@@ -173,8 +173,8 @@ test_pkgutil doesn't expect that pkg module exists. [Not for upstream]
      def test_float_with_comma(self):
          # set locale to something that doesn't use '.' for the decimal point
          # float must not accept the locale specific decimal point but
---- Python-3.9.9/Lib/test/test_pkgutil.py
-+++ Python-3.9.9/Lib/test/test_pkgutil.py
+--- Python-3.9.13/Lib/test/test_pkgutil.py
++++ Python-3.9.13/Lib/test/test_pkgutil.py
 @@ -519,7 +519,11 @@ class NestedNamespacePackageTest(unittes
          sys.path.insert(0, os.path.join(self.basedir, 'b'))
          import pkg
