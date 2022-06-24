@@ -37,6 +37,7 @@
 set name=pkg.fmri \
     value=pkg:/web/php-80@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="PHP scripting language"
+set name=pkg.legacy value=true
 set name=pkg.linted.userland.action001.PIE value=true
 set name=com.oracle.info.description \
     value="A general-purpose scripting language originally designed for web development to produce dynamic web pages."
@@ -441,6 +442,9 @@ link path=usr/php/lib target=$(MAJOR_VERSION)/lib mediator=php \
     mediator-version=$(MAJOR_VERSION)
 link path=usr/php/sbin target=$(MAJOR_VERSION)/sbin mediator=php \
     mediator-version=$(MAJOR_VERSION)
+file release-notes/legacy-web-php-80.txt \
+    path=usr/share/doc/release-notes/legacy-web-php-80.txt mode=0444 \
+    must-display=true release-note=feature/pkg/self@0
 dir  path=var/php/$(MAJOR_VERSION)/log
 file path=var/php/$(MAJOR_VERSION)/pear/.channels/.alias/pear.txt
 file path=var/php/$(MAJOR_VERSION)/pear/.channels/.alias/pecl.txt
