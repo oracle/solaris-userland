@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -38,6 +38,9 @@ COMPONENT_BUGDB=	python-mod/coverage
 COMPONENT_ANITYA_ID=	3811
 
 COMPONENT_BAID=		101526
+
+# Coverage isn't compatible with Python 3.11 yet.
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.11)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

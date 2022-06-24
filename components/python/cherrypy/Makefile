@@ -41,7 +41,8 @@ COMPONENT_BAID=		49591
 
 PATCH_LEVEL=0
 
-PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
+# CherryPy isn't compatible with Python 3.11 yet.
+PYTHON_VERSIONS = 3.7 3.9
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

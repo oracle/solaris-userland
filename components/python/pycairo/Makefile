@@ -62,6 +62,7 @@ $(SKIP_TEST_AT_TOP_LEVEL)
 $(MANIFEST_BASE)-pycairo-27.mogrified: PYTHON3_ONLY = \#
 $(MANIFEST_BASE)-pycairo-37.mogrified: PYTHON2_ONLY = \#
 $(MANIFEST_BASE)-pycairo-39.mogrified: PYTHON2_ONLY = \#
+$(MANIFEST_BASE)-pycairo-311.mogrified: PYTHON2_ONLY = \#
 
 PKG_MACROS += PYTHON2_ONLY="$(PYTHON2_ONLY)"
 PKG_MACROS += PYTHON3_ONLY="$(PYTHON3_ONLY)"
@@ -86,7 +87,8 @@ install:	$(INSTALL_32_and_64)
 # We get spurious test failures with 64bit version of python 2.7
 test:		$(BUILD_DIR)/$(MACH32)-2.7/.tested \
 		$(BUILD_DIR)/$(MACH64)-3.7/.tested \
-		$(BUILD_DIR)/$(MACH64)-3.9/.tested
+		$(BUILD_DIR)/$(MACH64)-3.9/.tested \
+		$(BUILD_DIR)/$(MACH64)-3.11/.tested
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 

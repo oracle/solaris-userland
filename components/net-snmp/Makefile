@@ -100,8 +100,8 @@ CONFIGURE_OPTIONS.64  +=	--disable-perl-cc-checks
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D); $(CLONEY) $(COMPONENT_DIR)/sun $(@D)/sun);
 
-# Make a copy of the python bits so we can build separate python 3.9 support
-COMPONENT_PREP_ACTION += (cd $(@D) ; cp -rp python python3.9);
+# Make a copy of the python bits so we can build separate python 3.9 and 3.11 support
+COMPONENT_PREP_ACTION += (cd $(@D) ; cp -rp python python3.9; cp -rp python python3.11);
 
 # for the goofy definition of ARCH in the extra Makefiles
 ARCH=32
@@ -171,8 +171,11 @@ $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION= \
 	(cd $(@D)/python3.9 ; env PYTHON=$(PYTHON.3.9.$(BITS)) \
 	 $(PYTHON.3.9.$(BITS)) ./setup.py install \
 		--root $(PROTO_DIR) \
-		--install-lib=$(PYTHON.3.9.VENDOR_PACKAGES) \
-		--openssl_lib_dir=$(OPENSSL_LIB_PATH.$(BITS)))
+		--install-lib=$(PYTHON.3.9.VENDOR_PACKAGES)) ; \
+	(cd $(@D)/python3.11 ; env PYTHON=$(PYTHON.3.11.$(BITS)) \
+	 $(PYTHON.3.11.$(BITS)) ./setup.py install \
+		--root $(PROTO_DIR) \
+		--install-lib=$(PYTHON.3.11.VENDOR_PACKAGES))
 
 $(INSTALL_64): COMPONENT_INSTALL_ARGS += DESTDIR=$(BUILD_DIR)/prototype/$(MACH64)
 
@@ -197,6 +200,7 @@ endif
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += runtime/python-39
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += shell/bash
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os

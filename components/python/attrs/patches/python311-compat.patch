@@ -1,0 +1,211 @@
+From 0f28af64f28ac1f1d0184f58ee67881a37dd2fca Mon Sep 17 00:00:00 2001
+From: Hynek Schlawack <hs@ox.cx>
+Date: Thu, 9 Jun 2022 14:28:14 +0200
+Subject: [PATCH 1/2] Add support for Python 3.11
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Co-authored-by: Tin Tvrtković <tinchester@gmail.com>
+---
+ setup.py                   |  1 +
+ src/attr/_compat.py        | 28 +++++++++++++---------------
+ tox.ini                    |  3 ++-
+ 4 files changed, 17 insertions(+), 17 deletions(-)
+
+diff --git a/setup.py b/setup.py
+index 59ebc608..f9689444 100644
+--- a/setup.py
++++ b/setup.py
+@@ -39,6 +39,7 @@
+     "Programming Language :: Python :: 3.8",
+     "Programming Language :: Python :: 3.9",
+     "Programming Language :: Python :: 3.10",
++    "Programming Language :: Python :: 3.11",
+     "Programming Language :: Python :: Implementation :: CPython",
+     "Programming Language :: Python :: Implementation :: PyPy",
+     "Topic :: Software Development :: Libraries :: Python Modules",
+diff --git a/src/attr/_compat.py b/src/attr/_compat.py
+index 435e447d..58264932 100644
+--- a/src/attr/_compat.py
++++ b/src/attr/_compat.py
+@@ -111,12 +111,10 @@ def force_x_to_be_a_cell():  # pragma: no cover
+         # Convert this code object to a code object that sets the
+         # function's first _freevar_ (not cellvar) to the argument.
+         if sys.version_info >= (3, 8):
+-            # CPython 3.8+ has an incompatible CodeType signature
+-            # (added a posonlyargcount argument) but also added
+-            # CodeType.replace() to do this without counting parameters.
+-            set_first_freevar_code = co.replace(
+-                co_cellvars=co.co_freevars, co_freevars=co.co_cellvars
+-            )
++
++            def set_closure_cell(cell, value):
++                cell.cell_contents = value
++
+         else:
+             args = [co.co_argcount]
+             args.append(co.co_kwonlyargcount)
+@@ -140,15 +138,15 @@ def force_x_to_be_a_cell():  # pragma: no cover
+             )
+             set_first_freevar_code = types.CodeType(*args)
+ 
+-        def set_closure_cell(cell, value):
+-            # Create a function using the set_first_freevar_code,
+-            # whose first closure cell is `cell`. Calling it will
+-            # change the value of that cell.
+-            setter = types.FunctionType(
+-                set_first_freevar_code, {}, "setter", (), (cell,)
+-            )
+-            # And call it to set the cell.
+-            setter(value)
++            def set_closure_cell(cell, value):
++                # Create a function using the set_first_freevar_code,
++                # whose first closure cell is `cell`. Calling it will
++                # change the value of that cell.
++                setter = types.FunctionType(
++                    set_first_freevar_code, {}, "setter", (), (cell,)
++                )
++                # And call it to set the cell.
++                setter(value)
+ 
+         # Make sure it works on this interpreter:
+         def make_func_with_cell():
+
+From 951e0a320e404634ed9da79260a4956d86f9fe19 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Tin=20Tvrtkovi=C4=87?= <tinchester@gmail.com>
+Date: Fri, 24 Jun 2022 07:57:24 +0200
+Subject: [PATCH 2/2] Tin/py311 (#973)
+
+* Fix test_slots::TestPickle::test_no_getstate_setstate_for_dict_classes
+
+* Fix annotations
+
+* [pre-commit.ci] auto fixes from pre-commit.com hooks
+
+for more information, see https://pre-commit.ci
+
+* Tweak tests for 3.10
+
+* [pre-commit.ci] auto fixes from pre-commit.com hooks
+
+for more information, see https://pre-commit.ci
+
+* Tweak tests some more
+
+Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>
+---
+ tests/test_annotations.py | 13 +++++++++----
+ tests/test_make.py        |  8 ++++++--
+ tests/test_slots.py       | 20 ++++++++++++--------
+ 3 files changed, 27 insertions(+), 14 deletions(-)
+
+diff --git a/tests/test_annotations.py b/tests/test_annotations.py
+index 49c9b0d7..049f5e99 100644
+--- a/tests/test_annotations.py
++++ b/tests/test_annotations.py
+@@ -94,6 +94,10 @@ class C:
+         assert 1 == len(attr.fields(C))
+         assert_init_annotations(C, x=typing.List[int])
+ 
++    @pytest.mark.skipif(
++        sys.version_info[:2] < (3, 11),
++        reason="Incompatible behavior on older Pythons",
++    )
+     @pytest.mark.parametrize("slots", [True, False])
+     def test_auto_attribs(self, slots):
+         """
+@@ -149,7 +153,7 @@ class C:
+             x=typing.List[int],
+             y=int,
+             z=int,
+-            foo=typing.Optional[typing.Any],
++            foo=typing.Any,
+         )
+ 
+     @pytest.mark.parametrize("slots", [True, False])
+@@ -384,8 +388,9 @@ def noop():
+ 
+         assert attr.converters.optional(noop).__annotations__ == {}
+ 
+-    @pytest.mark.xfail(
+-        sys.version_info[:2] == (3, 6), reason="Does not work on 3.6."
++    @pytest.mark.skipif(
++        sys.version_info[:2] < (3, 11),
++        reason="Incompatible behavior on older Pythons",
+     )
+     @pytest.mark.parametrize("slots", [True, False])
+     def test_annotations_strings(self, slots):
+@@ -417,7 +422,7 @@ class C:
+             x=typing.List[int],
+             y=int,
+             z=int,
+-            foo=typing.Optional[typing.Any],
++            foo=typing.Any,
+         )
+ 
+     @pytest.mark.parametrize("slots", [True, False])
+diff --git a/tests/test_make.py b/tests/test_make.py
+index d4d8640c..96e07f33 100644
+--- a/tests/test_make.py
++++ b/tests/test_make.py
+@@ -2275,7 +2275,9 @@ class C:
+             def __getstate__(self):
+                 return ("hi",)
+ 
+-        assert None is getattr(C(), "__setstate__", None)
++        assert getattr(object, "__setstate__", None) is getattr(
++            C, "__setstate__", None
++        )
+ 
+         @attr.s(slots=slots, auto_detect=True)
+         class C:
+@@ -2291,7 +2293,9 @@ def __setstate__(self, state):
+         i.__setstate__(())
+ 
+         assert True is i.called
+-        assert None is getattr(C(), "__getstate__", None)
++        assert getattr(object, "__getstate__", None) is getattr(
++            C, "__getstate__", None
++        )
+ 
+     @pytest.mark.skipif(PY310, reason="Pre-3.10 only.")
+     def test_match_args_pre_310(self):
+diff --git a/tests/test_slots.py b/tests/test_slots.py
+index 5f08d4cd..de4e90e0 100644
+--- a/tests/test_slots.py
++++ b/tests/test_slots.py
+@@ -660,10 +660,12 @@ def test_no_getstate_setstate_for_dict_classes(self):
+         As long as getstate_setstate is None, nothing is done to dict
+         classes.
+         """
+-        i = C1(1, 2)
+-
+-        assert None is getattr(i, "__getstate__", None)
+-        assert None is getattr(i, "__setstate__", None)
++        assert getattr(object, "__getstate__", None) is getattr(
++            C1, "__getstate__", None
++        )
++        assert getattr(object, "__setstate__", None) is getattr(
++            C1, "__setstate__", None
++        )
+ 
+     def test_no_getstate_setstate_if_option_false(self):
+         """
+@@ -674,10 +676,12 @@ def test_no_getstate_setstate_if_option_false(self):
+         class C:
+             x = attr.ib()
+ 
+-        i = C(42)
+-
+-        assert None is getattr(i, "__getstate__", None)
+-        assert None is getattr(i, "__setstate__", None)
++        assert getattr(object, "__getstate__", None) is getattr(
++            C, "__getstate__", None
++        )
++        assert getattr(object, "__setstate__", None) is getattr(
++            C, "__setstate__", None
++        )
+ 
+     @pytest.mark.parametrize("cls", [C2(1), C2Slots(1)])
+     def test_getstate_set_state_force_true(self, cls):

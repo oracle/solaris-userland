@@ -1,0 +1,31 @@
+From 8462d7cc42f64c4584661188966b14f905aa3da1 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Robert-Andr=C3=A9=20Mauchin?= <zebob.m@gmail.com>
+Date: Mon, 14 Feb 2022 00:40:44 +0100
+Subject: [PATCH 1/2] Use CodeType.replace() in copycode for Python > 3.8
+
+Fix #135
+---
+ automat/_introspection.py | 34 ++++++++++++++++++----------------
+ 1 file changed, 18 insertions(+), 16 deletions(-)
+
+diff --git a/automat/_introspection.py b/automat/_introspection.py
+index 3f7307d..0ce9037 100644
+--- a/automat/_introspection.py
++++ b/automat/_introspection.py
+@@ -6,6 +6,8 @@
+ 
+ 
+ def copycode(template, changes):
++    if hasattr(code, "replace"):
++        return template.replace(**{"co_" + k : v for k, v in changes.items()})
+     names = [
+         "argcount", "nlocals", "stacksize", "flags", "code", "consts",
+         "names", "varnames", "filename", "name", "firstlineno", "lnotab",
+@@ -23,7 +25,6 @@
+     return code(*values)
+ 
+ 
+-
+ def copyfunction(template, funcchanges, codechanges):
+     names = [
+         "globals", "name", "defaults", "closure",

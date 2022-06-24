@@ -86,21 +86,18 @@ test:		$(TEST_NO_ARCH)
 
 system-test:    $(SYSTEM_TEST_NO_ARCH)
 
+REQUIRED_PACKAGES += $(PYVS3:%=library/python/iniconfig-%)
+REQUIRED_PACKAGES += $(PYVS3:%=library/python/packaging-%)
+REQUIRED_PACKAGES += $(PYVS3:%=library/python/tomli-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/attrs-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/pluggy-%)
 REQUIRED_PACKAGES += $(PYVS:%=library/python/py-%)
 REQUIRED_PACKAGES += library/python/atomicwrites-27
 REQUIRED_PACKAGES += library/python/funcsigs-27
 REQUIRED_PACKAGES += library/python/importlib-metadata-37
-REQUIRED_PACKAGES += library/python/iniconfig-37
-REQUIRED_PACKAGES += library/python/iniconfig-39
 REQUIRED_PACKAGES += library/python/more_itertools-27
-REQUIRED_PACKAGES += library/python/packaging-37
-REQUIRED_PACKAGES += library/python/packaging-39
 REQUIRED_PACKAGES += library/python/pathlib2-27
 REQUIRED_PACKAGES += library/python/six-27
-REQUIRED_PACKAGES += library/python/tomli-37
-REQUIRED_PACKAGES += library/python/tomli-39
 
 # Testing related components
 REQUIRED_PACKAGES += library/python/hypothesis

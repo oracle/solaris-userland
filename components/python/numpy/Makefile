@@ -40,7 +40,8 @@ COMPONENT_ANITYA_ID=	2509
 
 COMPONENT_BAID=		86306
 
-PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
+# Numpy isn't compatible with Python 3.11 yet.
+PYTHON_VERSIONS = 3.7 3.9
 
 BUILD_STYLE= setup.py
 include $(WS_MAKE_RULES)/common.mk

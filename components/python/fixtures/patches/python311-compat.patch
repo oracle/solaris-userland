@@ -1,0 +1,163 @@
+From 2adba3989fc3d1723eb6534ae0bc1aeaf1513cfa Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
+Date: Thu, 28 Apr 2022 12:14:55 +0200
+Subject: [PATCH] Revert to the previous classmethod expectations for PyPy3.9
+
+Commit fe83067 has changed TestMonkeyPatch to account for changes
+in classmethod handling in CPython 3.9.  Unfortunately, this broke
+the tests on PyPy3.9.  Revert to the old expectations when using PyPy.
+
+Fixes #64
+---
+ fixtures/tests/_fixtures/test_monkeypatch.py | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/fixtures/tests/_fixtures/test_monkeypatch.py b/fixtures/tests/_fixtures/test_monkeypatch.py
+index 746f6dd..08cd1c8 100644
+--- a/fixtures/tests/_fixtures/test_monkeypatch.py
++++ b/fixtures/tests/_fixtures/test_monkeypatch.py
+@@ -23,6 +23,9 @@
+ 
+ reference = 23
+ 
++NEW_PY39_CLASSMETHOD = (
++    sys.version_info >= (3, 9) and not hasattr(sys, "pypy_version_info"))
++
+ class C(object):
+     def foo(self, arg):
+         return arg
+@@ -196,7 +199,7 @@ def test_patch_classmethod_with_classmethod(self):
+             # with the class
+             #
+             # https://bugs.python.org/issue19072
+-            if sys.version_info >= (3, 9):
++            if NEW_PY39_CLASSMETHOD:
+                 cls, = C.foo_cls()
+                 self.expectThat(cls, Is(D))
+                 cls, = C().foo_cls()
+@@ -238,13 +241,13 @@ def test_patch_classmethod_with_boundmethod(self):
+             self.expectThat(slf, Is(d))
+             # See note in test_patch_classmethod_with_classmethod on changes in
+             # Python 3.9
+-            if sys.version_info >= (3, 9):
++            if NEW_PY39_CLASSMETHOD:
+                 self.expectThat(cls, Is(None))
+             else:
+                 self.expectThat(cls, Is(C))
+             slf, cls = C().foo_cls()
+             self.expectThat(slf, Is(d))
+-            if sys.version_info >= (3, 9):
++            if NEW_PY39_CLASSMETHOD:
+                 self.expectThat(cls, Is(None))
+             else:
+                 self.expectThat(cls, Is(C))
+From 54ef596952d459d605fcb40f13bed6d07ef93f4c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
+Date: Sat, 21 May 2022 12:15:21 +0200
+Subject: [PATCH] Update classmethod expectations (again) for Python 3.11
+
+It seems that the classmethod behavior in Python 3.11.0b1 is back
+to the one found in Python 3.8.  Adjust the test expectations again.
+This time around, we expect the "old-new" behavior in CPython 3.9
+and 3.10 only.
+---
+ fixtures/tests/_fixtures/test_monkeypatch.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/fixtures/tests/_fixtures/test_monkeypatch.py b/fixtures/tests/_fixtures/test_monkeypatch.py
+index 08cd1c8..fa08b24 100644
+--- a/fixtures/tests/_fixtures/test_monkeypatch.py
++++ b/fixtures/tests/_fixtures/test_monkeypatch.py
+@@ -24,7 +24,8 @@
+ reference = 23
+ 
+ NEW_PY39_CLASSMETHOD = (
+-    sys.version_info >= (3, 9) and not hasattr(sys, "pypy_version_info"))
++    sys.version_info[:2] in ((3, 9), (3,10))
++    and not hasattr(sys, "pypy_version_info"))
+ 
+ class C(object):
+     def foo(self, arg):
+From e1e26eccc2d868a8188f27d777d1145d5e7587a1 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
+Date: Sat, 21 May 2022 12:25:49 +0200
+Subject: [PATCH] Support Popen's process_group argument from Python 3.11
+
+---
+ fixtures/_fixtures/popen.py            |  9 +++++++--
+ fixtures/tests/_fixtures/test_popen.py | 14 ++++++++++++++
+ 2 files changed, 21 insertions(+), 2 deletions(-)
+
+diff --git a/fixtures/_fixtures/popen.py b/fixtures/_fixtures/popen.py
+index ffa9bf4..a099854 100644
+--- a/fixtures/_fixtures/popen.py
++++ b/fixtures/_fixtures/popen.py
+@@ -131,7 +131,8 @@ def __call__(self, args, bufsize=_unpassed, executable=_unpassed,
+         restore_signals=_unpassed, start_new_session=_unpassed,
+         pass_fds=_unpassed, *, group=_unpassed, extra_groups=_unpassed,
+         user=_unpassed, umask=_unpassed, encoding=_unpassed,
+-        errors=_unpassed, text=_unpassed, pipesize=_unpassed):
++        errors=_unpassed, text=_unpassed, pipesize=_unpassed,
++        process_group=_unpassed):
+         # Reject arguments introduced by newer versions of Python in older
+         # versions; this makes it harder to accidentally hide compatibility
+         # problems using test doubles.
+@@ -149,6 +150,10 @@ def __call__(self, args, bufsize=_unpassed, executable=_unpassed,
+             raise TypeError(
+                 "FakePopen.__call__() got an unexpected keyword argument "
+                 "'pipesize'")
++        if sys.version_info < (3, 11) and process_group is not FakePopen._unpassed:
++            raise TypeError(
++                "FakePopen.__call__() got an unexpected keyword argument "
++                "'process_group'")
+ 
+         proc_args = dict(args=args)
+         local = locals()
+@@ -158,7 +163,7 @@ def __call__(self, args, bufsize=_unpassed, executable=_unpassed,
+             "universal_newlines", "startupinfo", "creationflags",
+             "restore_signals", "start_new_session", "pass_fds", "group",
+             "extra_groups", "user", "umask", "encoding", "errors", "text",
+-            "pipesize"]:
++            "pipesize", "process_group"]:
+             if local[param] is not FakePopen._unpassed:
+                 proc_args[param] = local[param]
+         proc_info = self.get_info(proc_args)
+diff --git a/fixtures/tests/_fixtures/test_popen.py b/fixtures/tests/_fixtures/test_popen.py
+index c7bf1bd..e9ab074 100644
+--- a/fixtures/tests/_fixtures/test_popen.py
++++ b/fixtures/tests/_fixtures/test_popen.py
+@@ -74,6 +74,8 @@ def test_handles_all_Popen_args(self):
+             all_args["umask"] = "umask"
+         if sys.version_info >= (3, 10):
+             all_args["pipesize"] = "pipesize"
++        if sys.version_info >= (3, 11):
++            all_args["process_group"] = "process_group"
+ 
+         def get_info(proc_args):
+             self.assertEqual(all_args, proc_args)
+@@ -110,6 +112,15 @@ def test_rejects_3_10_args_on_older_versions(self):
+                 r".* got an unexpected keyword argument 'pipesize'"):
+             fixture(args="args", pipesize=1024)
+ 
++    @testtools.skipUnless(
++        sys.version_info < (3, 11), "only relevant on Python <3.11")
++    def test_rejects_3_11_args_on_older_versions(self):
++        fixture = self.useFixture(FakePopen(lambda proc_args: {}))
++        with testtools.ExpectedException(
++                TypeError,
++                r".* got an unexpected keyword argument 'process_group'"):
++            fixture(args="args", process_group=42)
++
+     def test_function_signature(self):
+         fake_signature = inspect.getfullargspec(FakePopen.__call__)
+         real_signature = inspect.getfullargspec(subprocess.Popen)
+@@ -130,6 +141,9 @@ def test_function_signature(self):
+         fake_kwargs = set(fake_signature.kwonlyargs)
+         real_kwargs = set(real_signature.kwonlyargs)
+ 
++        if sys.version_info < (3, 11):
++            fake_kwargs.remove('process_group')
++
+         if sys.version_info < (3, 10):
+             fake_kwargs.remove('pipesize')
+ 

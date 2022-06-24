@@ -52,9 +52,9 @@ COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
 COMPONENT_BAID_OLD=	67339
 
 
-# Building for Python 2.7, 3.7 and 3.9 only. (the default now)
+# Building for Python 2.7, 3.7, 3.9 and 3.11 only. (the default now)
 # Reference ../../../make-rules/shared-macros.mk
-# PYTHON_VERSIONS=	3.7 3.9 2.7
+# PYTHON_VERSIONS=	3.7 3.9 3.11 2.7
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
@@ -83,10 +83,12 @@ build:		$(BUILD_32_and_64)
 install:	$(INSTALL_32_and_64)
 
 test:		$(BUILD_DIR)/$(MACH64)-3.7/.tested \
-		$(BUILD_DIR)/$(MACH64)-3.9/.tested
+		$(BUILD_DIR)/$(MACH64)-3.9/.tested \
+		$(BUILD_DIR)/$(MACH64)-3.11/.tested
 
 system-test:	$(BUILD_DIR)/$(MACH64)-3.7/.system-tested \
-		$(BUILD_DIR)/$(MACH64)-3.9/.system-tested
+		$(BUILD_DIR)/$(MACH64)-3.9/.system-tested \
+		$(BUILD_DIR)/$(MACH64)-3.11/.system-tested
 
 # Package dependencies.
 # ---------------------

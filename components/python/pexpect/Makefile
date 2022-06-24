@@ -39,7 +39,7 @@ COMPONENT_ANITYA_ID=	7654
 COMPONENT_BAID=		87679
 
 # Not necessary to build this for older Python versions
-PYTHON_VERSIONS = 3.7 3.9
+PYTHON_VERSIONS = 3.7 3.9 3.11
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

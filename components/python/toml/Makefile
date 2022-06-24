@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -39,7 +39,7 @@ COMPONENT_ANITYA_ID=	6883
 COMPONENT_BAID=		90462
 
 # No need to build this for Python 2.7
-PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
+PYTHON_VERSIONS = 3.7 3.9
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

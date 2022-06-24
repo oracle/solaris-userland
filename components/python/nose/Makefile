@@ -36,8 +36,10 @@ COMPONENT_ARCHIVE_URL=	https://pypi.python.org/packages/source/n/$(COMPONENT_NAM
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	python-mod/nose
 COMPONENT_ANITYA_ID=	3938
-
 COMPONENT_BAID=		34611
+
+# Nose isn't (and won't be) compatible with Python 3.11
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.11)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

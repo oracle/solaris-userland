@@ -83,11 +83,19 @@ COMPONENT_POST_CONFIGURE_ACTION.64 += \
      -e 's|usr/include/python3[.]7m|usr/include/python3.9|' \
      -e 's/3[.]7/3.9/g' \
      `find python3.9 -name Makefile` ; \
+    cd $(@D) ; cp -rp python python3.11 ; \
+    $(GSED) -i -e 's|-lpython3[.]7m|-lpython3.11|' \
+     -e 's|usr/bin/$(MACH64)/python3[.]7|usr/bin/python3.11|' \
+     -e 's|usr/include/python3[.]7m|usr/include/python3.11|' \
+     -e 's/3[.]7/3.11/g' \
+     `find python3.11 -name Makefile` ; \
 )
 
 # It's also nice to test another python 3 modules (LC_ALL is set to avoid test failure).
 COMPONENT_POST_TEST_ACTION.64 += \
     ( cd $(@D)/python3.9 ; \
+	LC_ALL=en_US.utf8  $(GMAKE) $(COMPONENT_TEST_ARGS) check ; \
+    cd $(@D)/python3.11 ; \
 	LC_ALL=en_US.utf8  $(GMAKE) $(COMPONENT_TEST_ARGS) check ; ) ;
 
 COMPONENT_PRE_TEST_ACTION += \
@@ -103,11 +111,16 @@ COMPONENT_SYSTEM_TEST_TARGETS = system-test
 COMPONENT_PRE_SYSTEM_TEST_ACTION += $(COMPONENT_PRE_TEST_ACTION)
 
 # After we have built/installed libxml2, build/install the python
-# support for python 3.9.
+# support for python 3.9 and 3.11.
 COMPONENT_POST_INSTALL_ACTION.64 += \
 	cd $(@D)/python3.9 ; \
 	$(GMAKE) pythondir=$(PYTHON.3.9.VENDOR_PACKAGES) \
 	         pyexecdir=$(PYTHON.3.9.VENDOR_PACKAGES) \
+	         DESTDIR=$(PROTO_DIR) \
+	         install ; \
+	cd $(@D)/python3.11 ; \
+	$(GMAKE) pythondir=$(PYTHON.3.11.VENDOR_PACKAGES) \
+	         pyexecdir=$(PYTHON.3.11.VENDOR_PACKAGES) \
 	         DESTDIR=$(PROTO_DIR) \
 	         install ;
 
@@ -115,5 +128,6 @@ REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += runtime/python-39
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library/math

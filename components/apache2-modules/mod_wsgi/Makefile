@@ -39,6 +39,7 @@ CONFIGURE_CPPFLAGS=
 VARIANTS_64 += $(BUILD_DIR)/apache24-python27
 VARIANTS_64 += $(BUILD_DIR)/apache24-python37
 VARIANTS_64 += $(BUILD_DIR)/apache24-python39
+VARIANTS_64 += $(BUILD_DIR)/apache24-python311
 include ../modules.mk
 
 # Python is now built in C99 mode and we need it too (24743682).
@@ -51,6 +52,7 @@ $(BUILD_DIR)/apache24-%/$(MACH64)/.tested: BITS=64
 $(BUILD_DIR)/apache2%-python27/$(MACH64)/.configured: PYTHON=$(PYTHON.2.7.64)
 $(BUILD_DIR)/apache2%-python37/$(MACH64)/.configured: PYTHON=$(PYTHON.3.7.64)
 $(BUILD_DIR)/apache2%-python39/$(MACH64)/.configured: PYTHON=$(PYTHON.3.9.64)
+$(BUILD_DIR)/apache2%-python311/$(MACH64)/.configured: PYTHON=$(PYTHON.3.11.64)
 
 COMPONENT_PRE_CONFIGURE_ACTION = \
 	($(CLONEY) $(SOURCE_DIR) $(@D))
@@ -60,4 +62,5 @@ CONFIGURE_OPTIONS += --with-python=$(PYTHON)
 REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += runtime/python-39
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += system/library/math

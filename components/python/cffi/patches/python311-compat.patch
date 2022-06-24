@@ -1,0 +1,40 @@
+Make cffi test suite compatible with Python 3.11.
+
+Two combined patches from upstream:
+https://foss.heptapod.net/pypy/cffi/-/commit/871bae572cafc3afb81eb13705945f0a6f708d54
+https://foss.heptapod.net/pypy/cffi/-/commit/8a3c2c816d789639b49d3ae867213393ed7abdff
+
+--- cffi-1.15.0/c/test_c.py
++++ cffi-1.15.0/c/test_c.py
+@@ -1331,9 +1331,11 @@ def test_callback_exception():
+     except ImportError:
+         import io as cStringIO    # Python 3
+     import linecache
+-    def matches(istr, ipattern, ipattern38):
++    def matches(istr, ipattern, ipattern38, ipattern311=None):
+         if sys.version_info >= (3, 8):
+             ipattern = ipattern38
++        if sys.version_info >= (3, 11):
++            ipattern = ipattern311 or ipattern38
+         str, pattern = istr, ipattern
+         while '$' in pattern:
+             i = pattern.index('$')
+@@ -1478,6 +1480,18 @@ Traceback (most recent call last):
+   File "$", line $, in oops
+     $
+ AttributeError: 'str' object has no attribute 'append$
++""", """\
++Exception ignored from cffi callback <function$Zcb1 at 0x$>, trying to convert the result back to C:
++Traceback (most recent call last):
++  File "$", line $, in test_callback_exception
++    $
++OverflowError: integer 60000 does not fit 'short'
++Exception ignored during handling of the above exception by 'onerror':
++Traceback (most recent call last):
++  File "$", line $, in oops
++    $
++    $
++AttributeError: 'str' object has no attribute 'append$
+ """)
+     finally:
+         sys.stderr = orig_stderr

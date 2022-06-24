@@ -53,6 +53,7 @@ INSTALL_TARGET += $(PROTOUSRLIBDIR)/graphviz/config6
 INSTALL_TARGET += $(PROTO_DIR)/$(PYTHON.2.7.VENDOR_PACKAGES)/gv.pyc
 INSTALL_TARGET += $(PROTO_DIR)/$(PYTHON.3.7.VENDOR_PACKAGES)/gv.pyc
 INSTALL_TARGET += $(PROTO_DIR)/$(PYTHON.3.9.VENDOR_PACKAGES)/gv.pyc
+INSTALL_TARGET += $(PROTO_DIR)/$(PYTHON.3.11.VENDOR_PACKAGES)/gv.pyc
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -110,6 +111,9 @@ PKG_CONFIG = /usr/bin/pkg-config
 PYTHON_37_INCLUDES := $(shell $(PKG_CONFIG) --cflags python-3.7)
 PYTHON_37_LIBS = $(shell $(PKG_CONFIG) --libs python-3.7)
 PYTHON_37_INSTALL_DIR := /usr/lib/python3.7/vendor-packages
+PYTHON_311_INCLUDES := $(shell $(PKG_CONFIG) --cflags python-3.11)
+PYTHON_311_LIBS = $(shell $(PKG_CONFIG) --libs python-3.11)
+PYTHON_311_INSTALL_DIR := /usr/lib/python3.11/vendor-packages
 
 $(CONFIGURE_64): COMPONENT_POST_CONFIGURE_ACTION += \
     (cd $(@D) ; cp -rp tclpkg/gv tclpkg/gv-additional ; \
@@ -119,23 +123,37 @@ $(CONFIGURE_64): COMPONENT_POST_CONFIGURE_ACTION += \
      -e '/^PYTHON3_INCLUDES =/s|=.*$$|= $(PYTHON_37_INCLUDES)|' \
      -e '/^PYTHON3_INSTALL_DIR =/s|=.*$$|= $(PYTHON_37_INSTALL_DIR)|' \
      -e '/^PYTHON3_LIBS =/s|=.*$$|= $(PYTHON_37_LIBS)|' \
-     `find tclpkg/gv-additional -name Makefile` ) ;
+     `find tclpkg/gv-additional -name Makefile` ) ; \
+    (cd $(@D) ; cp -rp tclpkg/gv tclpkg/gv-additionalx ; \
+    $(GSED) -i '/^SUBDIRS =/s|$$| gv-additionalx|' tclpkg/Makefile ; \
+    $(GSED) -i \
+     -e '/^PYTHON3 =/s|=.*$$|= $(PYTHON.3.11)|' \
+     -e '/^PYTHON3_INCLUDES =/s|=.*$$|= $(PYTHON_311_INCLUDES)|' \
+     -e '/^PYTHON3_INSTALL_DIR =/s|=.*$$|= $(PYTHON_311_INSTALL_DIR)|' \
+     -e '/^PYTHON3_LIBS =/s|=.*$$|= $(PYTHON_311_LIBS)|' \
+     `find tclpkg/gv-additionalx -name Makefile` ) ;
+
 
 $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
-    (cd $(@D)/tclpkg/gv-additional ; gmake V=1 libgv_php.la libgv_python3.la ) ;
+    (cd $(@D)/tclpkg/gv-additional ; gmake V=1 libgv_python3.la ) ; \
+    (cd $(@D)/tclpkg/gv-additionalx ; gmake V=1 libgv_python3.la ) ;
 
 # correctly install multiple Python bindings into the corresponding
 # vendor-packages directories.
 37_VENDOR_PROTO := $(PROTO_DIR)$(PYTHON.3.7.VENDOR_PACKAGES)
 39_VENDOR_PROTO := $(PROTO_DIR)$(PYTHON.3.9.VENDOR_PACKAGES)
+311_VENDOR_PROTO := $(PROTO_DIR)$(PYTHON.3.11.VENDOR_PACKAGES)
 
 $(INSTALL_64): COMPONENT_POST_INSTALL_ACTION += \
 	($(RM) -r $(37_VENDOR_PROTO); $(MKDIR) $(37_VENDOR_PROTO); \
 	$(RM) -r $(39_VENDOR_PROTO); $(MKDIR) $(39_VENDOR_PROTO); \
+	$(RM) -r $(311_VENDOR_PROTO); $(MKDIR) $(311_VENDOR_PROTO); \
 	$(INSTALL) -m 644 $(@D)/tclpkg/gv-additional/gv.py $(37_VENDOR_PROTO)/gv.py ; \
 	$(INSTALL) $(@D)/tclpkg/gv-additional/.libs/libgv_python3.soT $(37_VENDOR_PROTO)/_gv.cpython-37m.so; \
 	$(INSTALL) -m 644 $(@D)/tclpkg/gv/gv.py $(39_VENDOR_PROTO)/gv.py ; \
-	$(INSTALL) $(@D)/tclpkg/gv/.libs/libgv_python3.soT $(39_VENDOR_PROTO)/_gv.cpython-39.so; ) ;
+	$(INSTALL) $(@D)/tclpkg/gv/.libs/libgv_python3.soT $(39_VENDOR_PROTO)/_gv.cpython-39.so; \
+	$(INSTALL) -m 644 $(@D)/tclpkg/gv-additionalx/gv.py $(311_VENDOR_PROTO)/gv.py ; \
+	$(INSTALL) $(@D)/tclpkg/gv-additionalx/.libs/libgv_python3.soT $(311_VENDOR_PROTO)/_gv.cpython-311.so; ) ;
 
 # Create the config file once the 32-bit build is complete.  This runs the bits
 # we just built, so we have to set a handful of variables to the right place.
@@ -157,6 +175,9 @@ $(PROTO_DIR)/$(PYTHON.3.7.VENDOR_PACKAGES)/gv.pyc: $(INSTALL_64)
 $(PROTO_DIR)/$(PYTHON.3.9.VENDOR_PACKAGES)/gv.pyc: $(INSTALL_64)
 	$(PYTHON.3.9) -m compileall -l -d $(PYTHON.3.9.VENDOR_PACKAGES) \
 		$(PROTO_DIR)/$(PYTHON.3.9.VENDOR_PACKAGES)
+$(PROTO_DIR)/$(PYTHON.3.11.VENDOR_PACKAGES)/gv.pyc: $(INSTALL_64)
+	$(PYTHON.3.11) -m compileall -l -d $(PYTHON.3.11.VENDOR_PACKAGES) \
+		$(PROTO_DIR)/$(PYTHON.3.11.VENDOR_PACKAGES)
 
 # 'gvpr' uses HOSTCC variable instead of our configured compiler and options so
 # PIE build fails. This is a workaround for that.
@@ -204,6 +225,7 @@ REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += runtime/python-27
 REQUIRED_PACKAGES += runtime/python-37
 REQUIRED_PACKAGES += runtime/python-39
+REQUIRED_PACKAGES += runtime/python-311
 REQUIRED_PACKAGES += runtime/ruby-26
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/library

@@ -1,0 +1,65 @@
+Based on upstream PR:
+https://github.com/pyparsing/pyparsing/pull/379
+
+From e362c56c95e0de4478585beabf245efa45a3b31d Mon Sep 17 00:00:00 2001
+From: Serhiy Storchaka <storchaka@gmail.com>
+Date: Tue, 29 Mar 2022 21:25:07 +0300
+Subject: [PATCH] No longer use undocumented module "sre_constants" Closes
+ #378.
+
+--- setuptools-62.1.0/setuptools/_vendor/pyparsing.py
++++ setuptools-62.1.0/setuptools/_vendor/pyparsing.py
+@@ -84,7 +84,6 @@ import copy
+ import sys
+ import warnings
+ import re
+-import sre_constants
+ import collections
+ import pprint
+ import traceback
+@@ -2791,7 +2790,7 @@ class Regex(Token):
+             try:
+                 self.re = re.compile(self.pattern, self.flags)
+                 self.reString = self.pattern
+-            except sre_constants.error:
++            except re.error:
+                 warnings.warn("invalid pattern (%s) passed to Regex" % pattern,
+                     SyntaxWarning, stacklevel=2)
+                 raise
+@@ -2915,7 +2914,7 @@ class QuotedString(Token):
+         try:
+             self.re = re.compile(self.pattern, self.flags)
+             self.reString = self.pattern
+-        except sre_constants.error:
++        except re.error:
+             warnings.warn("invalid pattern (%s) passed to Regex" % self.pattern,
+                 SyntaxWarning, stacklevel=2)
+             raise
+--- setuptools-62.1.0/pkg_resources/_vendor/pyparsing.py
++++ setuptools-62.1.0/pkg_resources/_vendor/pyparsing.py
+@@ -84,7 +84,6 @@ import copy
+ import sys
+ import warnings
+ import re
+-import sre_constants
+ import collections
+ import pprint
+ import traceback
+@@ -2791,7 +2790,7 @@ class Regex(Token):
+             try:
+                 self.re = re.compile(self.pattern, self.flags)
+                 self.reString = self.pattern
+-            except sre_constants.error:
++            except re.error:
+                 warnings.warn("invalid pattern (%s) passed to Regex" % pattern,
+                     SyntaxWarning, stacklevel=2)
+                 raise
+@@ -2915,7 +2914,7 @@ class QuotedString(Token):
+         try:
+             self.re = re.compile(self.pattern, self.flags)
+             self.reString = self.pattern
+-        except sre_constants.error:
++        except re.error:
+             warnings.warn("invalid pattern (%s) passed to Regex" % self.pattern,
+                 SyntaxWarning, stacklevel=2)
+             raise

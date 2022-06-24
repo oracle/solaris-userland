@@ -65,9 +65,11 @@ install:	$(INSTALL_NO_ARCH)
 
 # Tests are available only in the new version
 test:		$(BUILD_DIR)/$(MACH)-3.7/.tested \
-		$(BUILD_DIR)/$(MACH)-3.9/.tested
+		$(BUILD_DIR)/$(MACH)-3.9/.tested \
+		$(BUILD_DIR)/$(MACH)-3.11/.tested
 
 system-test:	$(BUILD_DIR)/$(MACH)-3.7/.system-tested \
-		$(BUILD_DIR)/$(MACH)-3.9/.system-tested
+		$(BUILD_DIR)/$(MACH)-3.9/.system-tested \
+		$(BUILD_DIR)/$(MACH)-3.11/.system-tested
 
 REQUIRED_PACKAGES += $(PYVS:%=library/python/six-%)

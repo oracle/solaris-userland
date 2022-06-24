@@ -20,12 +20,12 @@
 #
 
 #
-# Copyright (c) 2020, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 
 <include ../generate/common.transform>
 
 # Handle versioned usr/bin executables
-<transform file path=usr/bin/.*[23]\.[0-9]$ -> drop>
+<transform file path=usr/bin/.*[23]\.[0-9]+$ -> drop>
 <transform file path=usr/bin/(.*)\$\(PYVER\)$ -> \
 	emit link path=usr/bin/%<1> target=%<1>$(PYVER) mediator=python mediator-version=$(PYVER)>

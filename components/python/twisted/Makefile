@@ -49,6 +49,9 @@ COMPONENT_ARCHIVE_HASH_OLD= \
 COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
 COMPONENT_BAID_OLD=	69507
 
+# Twisted isn't compatible with Python 3.11 yet.
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.11)
+
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk

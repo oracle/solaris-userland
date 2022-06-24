@@ -38,6 +38,8 @@ COMPONENT_BUGDB=	python-mod/hg-git
 COMPONENT_ANITYA_ID=	1314
 COMPONENT_BAID=		128514
 
+# hg-git mirrors Mercurial versions.
+PYTHON_VERSIONS = $(WITHOUT_PYTHON3.11)
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk

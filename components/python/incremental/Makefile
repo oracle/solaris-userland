@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -53,9 +53,14 @@ build:		$(BUILD_NO_ARCH)
 
 install:	$(INSTALL_NO_ARCH)
 
-test:		$(TEST_NO_ARCH)
+# Twisted is not yet available for Python 3.11.
+test:		$(BUILD_DIR)/$(MACH)-2.7/.tested \
+		$(BUILD_DIR)/$(MACH)-3.7/.tested \
+		$(BUILD_DIR)/$(MACH)-3.9/.tested
 
-system-test:    $(SYSTEM_TEST_NO_ARCH)
+system-test:	$(BUILD_DIR)/$(MACH)-2.7/.system-tested \
+		$(BUILD_DIR)/$(MACH)-3.7/.system-tested \
+		$(BUILD_DIR)/$(MACH)-3.9/.system-tested
 
 # testing dependencies
 REQUIRED_PACKAGES += library/python/python-twisted

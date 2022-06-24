@@ -79,10 +79,8 @@ test:		$(TEST_64)
 
 system-test:	$(SYSTEM_TEST_64)
 
-REQUIRED_PACKAGES += library/python/distlib-37
-REQUIRED_PACKAGES += library/python/distlib-39
-REQUIRED_PACKAGES += library/python/filelock-37
-REQUIRED_PACKAGES += library/python/filelock-39
+REQUIRED_PACKAGES += $(PYVS3:%=library/python/distlib-%)
+REQUIRED_PACKAGES += $(PYVS3:%=library/python/filelock-%)
 REQUIRED_PACKAGES += library/python/importlib-metadata-37
 
 # Testing related components
