@@ -153,6 +153,12 @@ COMPONENT_PRE_CONFIGURE_ACTION += $(CP) $(SOURCE_DIR)/configure.in $(SOURCE_DIR)
 # make sure that node wrapper is executable
 COMPONENT_PRE_CONFIGURE_ACTION += (chmod 555 $(COMPONENT_DIR)/wrapper-node/node);
 
+# Old 91ESR version need special change when build with new cbindgen (bug 1773259).
+COMPONENT_PRE_CONFIGURE_ACTION += ( \
+	cbindgen --version | grep '0.19.0' || \
+	gsed -i 's/const uint64_t ROOT_CLIP_CHAIN = ~0;//' \
+	    $(SOURCE_DIR)/gfx/webrender_bindings/webrender_ffi.h);
+
 COMPONENT_POST_BUILD_ACTION = \
 	(cd $(@D)/mail/installer ; $(ENV) $(COMPONENT_BUILD_ENV) \
 		$(GMAKE) $(COMPONENT_BUILD_ARGS) $(COMPONENT_BUILD_TARGETS))
