@@ -1,0 +1,38 @@
+Developer Studio lint complains about the following function calls
+with ignored return values when Python.h is included.
+
+This can be offered upstream.
+
+--- Python-3.9.9/Include/cpython/objimpl.h
++++ Python-3.9.9/Include/cpython/objimpl.h
+@@ -81,7 +81,7 @@ _PyObject_INIT_VAR(PyVarObject *op, PyTy
+ {
+     assert(op != NULL);
+     Py_SET_SIZE(op, size);
+-    PyObject_INIT((PyObject *)op, typeobj);
++    (void)PyObject_INIT((PyObject *)op, typeobj);
+     return op;
+ }
+ 
+--- Python-3.9.9/Include/cpython/unicodeobject.h
++++ Python-3.9.9/Include/cpython/unicodeobject.h
+@@ -52,7 +52,7 @@ extern "C" {
+ 
+ Py_DEPRECATED(3.3) static inline void
+ Py_UNICODE_COPY(Py_UNICODE *target, const Py_UNICODE *source, Py_ssize_t length) {
+-    memcpy(target, source, (size_t)(length) * sizeof(Py_UNICODE));
++    (void)memcpy(target, source, (size_t)(length) * sizeof(Py_UNICODE));
+ }
+ 
+ Py_DEPRECATED(3.3) static inline void
+--- Python-3.9.9/Include/cpython/abstract.h
++++ Python-3.9.9/Include/cpython/abstract.h
+@@ -77,7 +77,7 @@ PyVectorcall_Function(PyObject *callable
+     assert(PyCallable_Check(callable));
+     offset = tp->tp_vectorcall_offset;
+     assert(offset > 0);
+-    memcpy(&ptr, (char *) callable + offset, sizeof(ptr));
++    (void)memcpy(&ptr, (char *) callable + offset, sizeof(ptr));
+     return ptr;
+ }
+ 
