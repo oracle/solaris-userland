@@ -1,0 +1,39 @@
+rdesktop enables the vulnerable TLS1.0 and TLS1.1 protocol by default unless
+overridden by the '-V' parameter, but our policy doesn't permit those protocols.
+
+This patch disables those by default.
+
+--- rdesktop-1.9.0/tcp.c
++++ rdesktop-1.9.0/tcp.c
+@@ -58,7 +58,7 @@
+ /* Windows' self signed certificates omit the required Digital
+    Signature key usage flag, and only %COMPAT makes GnuTLS ignore
+    that violation. */
+-#define GNUTLS_PRIORITY "NORMAL:%COMPAT"
++#define GNUTLS_PRIORITY "NORMAL:%COMPAT:-VERS-ALL:+VERS-TLS1.2"
+ 
+ #ifdef IPv6
+ static struct addrinfo *g_server_address = NULL;
+--- rdesktop-1.9.0/rdesktop.c
++++ rdesktop-1.9.0/rdesktop.c
+@@ -185,7 +185,7 @@ usage(char *program)
+ 	fprintf(stderr, "   -b: force bitmap updates\n");
+ 	fprintf(stderr, "   -L: local codepage\n");
+ 	fprintf(stderr, "   -A: path to SeamlessRDP shell, this enables SeamlessRDP mode\n");
+-	fprintf(stderr, "   -V: tls version (1.0, 1.1, 1.2, defaults to negotiation)\n");
++	fprintf(stderr, "   -V: tls version (1.0, 1.1, 1.2, defaults to 1.2)\n");
+ 	fprintf(stderr, "   -B: use BackingStore of X-server (if available)\n");
+ 	fprintf(stderr, "   -e: disable encryption (French TS)\n");
+ 	fprintf(stderr, "   -E: disable encryption from client to server\n");
+--- rdesktop-1.9.0/doc/rdesktop.1
++++ rdesktop-1.9.0/doc/rdesktop.1
+@@ -118,8 +118,7 @@ specified server and then exit.
+ .TP
+ .BR "-V <tls version>"
+ Set the Transport Level Security (also known as SSL) Version used.
+-Should be one of the following values: 1.0, 1.1, 1.2. By default all
+-versions are supported.
++Should be one of the following values: 1.0, 1.1, 1.2, defaults to 1.2.
+ .TP
+ .BR "-B"
+ Use the BackingStore of the Xserver instead of the integrated one in
