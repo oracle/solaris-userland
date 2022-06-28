@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 # Note that the use of this module itself is discouraged in new code.
@@ -70,3 +70,4 @@ system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
 # Needed for testing:
 REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/xml-namespacesupport-5%)
 REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/xml-sax-base-5%)
+REQUIRED_PACKAGES += $(PERL_VERSIONS:5.%=library/perl-5/xml-parser-5%)

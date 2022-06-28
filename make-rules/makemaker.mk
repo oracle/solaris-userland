@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 # makemaker.mk is used to build, install, test perl modules for
@@ -58,7 +58,7 @@ $(BUILD_DIR)/$(MACH64)-$(1)/.system-tested: PERL_VERSION=$(1)
 $(BUILD_DIR)/$(MACH64)-$(1)/.system-tested-and-compared: PERL_VERSION=$(1)
 BUILD_64 +=	$(BUILD_DIR)/$(MACH64)-$(1)/.built
 INSTALL_64 +=	$(BUILD_DIR)/$(MACH64)-$(1)/.installed
-ifeq ($$(strip $$(wildcard $(COMPONENT_TEST_RESULTS_DIR)/results-*.master)),)
+ifeq ($$(strip $$(wildcard $(COMPONENT_TEST_RESULTS_DIR)/results*.master)),)
 TEST_64 +=	$(BUILD_DIR)/$(MACH64)-$(1)/.tested
 SYSTEM_TEST_64 +=	$(BUILD_DIR)/$(MACH64)-$(1)/.system-tested
 else
@@ -73,9 +73,8 @@ $(foreach perlver, $(PERL_VERSIONS), \
 )
 
 # Map each $(PERL_VERSIONS) to REQUIRED_PACKAGES needed
-PERL_REQUIRED_PACKAGES_5.22 += runtime/perl-522
-PERL_REQUIRED_PACKAGES_5.26 += runtime/perl-526
 PERL_REQUIRED_PACKAGES_5.32 += runtime/perl-532
+PERL_REQUIRED_PACKAGES_5.36 += runtime/perl-536
 
 
 CONFIGURE_ENV += $(COMMON_PERL_ENV)

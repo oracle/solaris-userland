@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 # This variable has no impact on perl build, it is here merely to satisfy
@@ -51,6 +51,8 @@ BUILD_TARGET= $(BUILD_$(MK_BITS)) $(LICENSE)
 include $(WS_MAKE_RULES)/common.mk
 
 CLEAN_PATHS += $(LICENSE)
+
+COMPONENT_TEST_MASTER =		$(COMPONENT_TEST_RESULTS_DIR)/results.master
 
 COMPONENT_TEST_TARGETS = test
 COMPONENT_TEST_TRANSFORMS += '-n -e "/^Result:/p"'
@@ -116,7 +118,7 @@ COMPONENT_PRE_TEST_ACTION = ( \
 	\
 	: "Prepare the testing directory and create the symlink to it"; \
 	$(RM) -r "$(MYSQL_TEST_DATADIR)"; \
-	mkdir "$(MYSQL_TEST_DATADIR)"; \
+	mkdir -p "$(MYSQL_TEST_DATADIR)"; \
 	TEST_LINK=`mktemp -t dbd-mysql-test.XXXXXX`; \
 	$(RM) "$$TEST_LINK"; \
 	ln -s $(MYSQL_TEST_DATADIR) "$$TEST_LINK"; \

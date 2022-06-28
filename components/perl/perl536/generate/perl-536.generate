@@ -1,4 +1,3 @@
-
 #
 # CDDL HEADER START
 #
@@ -21,10 +20,25 @@
 #
 
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2018, 2022, Oracle and/or its affiliates.
 #
 
-<transform dir file link hardlink -> edit path "/5.(32|36)/" "/$!(PERLVER)/">
+# Create bin symlinks for perl executables
+<transform file link hardlink path=usr/perl5/$(PERL_VERSION)/bin/(.*) -> \
+    emit link path=/usr/bin/%<1> target=../perl5/$(PERL_VERSION)/bin/%<1> \
+	mediator=perl>
+
+# Create symlinks for perl man pages
+<transform file link hardlink path=usr/perl5/$(PERL_VERSION)/man/(man1/.*) -> \
+    emit link path=/usr/share/man/%<1> \
+	target=../../../perl5/$(PERL_VERSION)/man/%<1> mediator=perl>
+
+# Replace common values with variables
+<transform dir file link hardlink -> edit path "$(P_ARCH)" "$!(P_ARCH)">
 <transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
-<transform dir file link hardlink -> edit path "$(PERL_ARCH)" "$!(PERL_ARCH)">
+
+<transform dir file link hardlink -> edit path "perl5/$(PERL_VERSION)/" "perl5/$!(PERL_VERSION)/">
 <transform dir file link hardlink -> edit path "\$!\((.*)\)" "$(\1)">
+
+<transform link -> edit target "$(PERL_VERSION)/" "$!(PERL_VERSION)/">
+<transform link -> edit target "\$!\((.*)\)" "$(\1)">

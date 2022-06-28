@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
@@ -45,6 +45,9 @@ include $(WS_MAKE_RULES)/ips.mk
 include $(WS_MAKE_RULES)/makemaker.mk
 include $(WS_MAKE_RULES)/test-x11.mk
 
+CLONEY = echo
+COMPONENT_PRE_CONFIGURE_ACTION = $(CP) -rp $(SOURCE_DIR)/. $(@D)
+
 # This component loves openwin.
 CONFIGURE_OPTIONS += X11INC=/usr/X11/include
 CONFIGURE_OPTIONS += X11LIB=/usr/X11/lib/64
@@ -52,12 +55,8 @@ CONFIGURE_OPTIONS += X11LIB=/usr/X11/lib/64
 ASLR_MODE = $(ASLR_NOT_APPLICABLE)
 
 COMPONENT_TEST_TARGETS =	test
-
-COMPONENT_TEST_TRANSFORMS += \
-	'-n ' \
-	'-e "/ ok$$/p"' \
-	'-e "/Result:/p"' \
-	'-e "/Failed/p"'
+COMPONENT_TEST_TRANSFORMS += '-n -e "/^Result:/p"'
+COMPONENT_TEST_MASTER =         $(COMPONENT_TEST_RESULTS_DIR)/results.master
 
 build:		$(BUILD_64)
 

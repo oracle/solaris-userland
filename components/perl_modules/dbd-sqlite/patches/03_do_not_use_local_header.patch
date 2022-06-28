@@ -1,7 +1,7 @@
 Filed at https://rt.cpan.org/Public/Bug/Display.html?id=114138
 
---- DBD-SQLite-1.50/Makefile.PL	2016-05-02 13:32:35.562004677 -0700
-+++ DBD-SQLite-1.50/Makefile.PL	2016-05-02 13:31:31.215124807 -0700
+--- DBD-SQLite-1.70/Makefile.PL
++++ DBD-SQLite-1.70/Makefile.PL
 @@ -178,6 +178,7 @@ if ( 0 ) {
  				while ( defined($_ = <$fh>) ) {
  					if (/\#define\s+SQLITE_VERSION_NUMBER\s+(\d+)/) {
@@ -10,15 +10,24 @@ Filed at https://rt.cpan.org/Public/Bug/Display.html?id=114138
  						last;
  					}
  				}
-@@ -224,7 +225,7 @@ my @CC_INC = (
- 	'-I$(DBI_INSTARCH_DIR)',
- );
- if ( $sqlite_inc ) {
--	push @CC_INC, "-I$sqlite_inc";
-+	unshift @CC_INC, "-I$sqlite_inc";
+@@ -220,12 +221,12 @@ unless ( $sqlite_local ) {
  }
  
+ my @CC_INC = (
+-	'-I.',
+-	'-I$(DBI_INSTARCH_DIR)',
++# 	'-I.',
++ 	'-I$(DBI_INSTARCH_DIR)',
+ );
+-if ( $sqlite_inc ) {
+-	push @CC_INC, "-I$sqlite_inc";
+-}
++#if ( $sqlite_inc ) {
++#	unshift @CC_INC, "-I$sqlite_inc";
++#}
+ 
  my @CC_DEFINE = (
+ 	'-DSQLITE_ENABLE_FTS4',             # for sqlite >= 3.7.4
 --- DBD-SQLite-1.58/sqlite3ext.h	2018-07-26 02:41:45.384365075 +0000
 +++ DBD-SQLite-1.58/sqlite3ext.h	2018-07-26 02:41:28.422049360 +0000
 @@ -17,7 +17,7 @@

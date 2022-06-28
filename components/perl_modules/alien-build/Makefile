@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
@@ -52,7 +52,7 @@ build:		$(BUILD_64)
 
 install:	$(INSTALL_64)
 
-# too many obscure modules needed, some not available on Perl 5.22
+# We are missing Test2 framework
 test:		$(NO_TESTS)
 
 system-test:    $(SYSTEM_TESTS_NOT_IMPLEMENTED)
