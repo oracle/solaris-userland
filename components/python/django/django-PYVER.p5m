@@ -23,6 +23,8 @@
 # Copyright (c) 2013, 2022, Oracle and/or its affiliates.
 #
 
+# Python 3.7 variant of Django only is legacy
+<transform set name=pkg.fmri value=(pkg:/+)?.*(library/python/django-37).* -> set mark_legacy true>
 set name=pkg.fmri \
     value=pkg:/library/python/django-$(PYV)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value="Django Python web framework"
@@ -2396,6 +2398,9 @@ file path=usr/lib/python$(PYVER)/vendor-packages/django/views/templates/default_
 file path=usr/lib/python$(PYVER)/vendor-packages/django/views/templates/technical_404.html
 file path=usr/lib/python$(PYVER)/vendor-packages/django/views/templates/technical_500.html
 file path=usr/lib/python$(PYVER)/vendor-packages/django/views/templates/technical_500.txt
+$(22_ONLY)file release-notes/library-python-django22.txt \
+    path=usr/share/doc/release-notes/library-python-django22.txt mode=0444 \
+    must-display=true release-note=feature/pkg/self@0
 #
 $(22_ONLY)license django-22.license license="BSD, MIT, PSFv2"
 $(32_ONLY)license django.license license="BSD, MIT, PSFv2"
