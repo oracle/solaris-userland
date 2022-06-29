@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS=	64
 COMPILER=	gcc
@@ -32,13 +32,13 @@ COMPONENT_NAME=		foomatic-db-engine
 FOO_VERSION=		4.0
 # Latest foomatic-db-engine patchlevel where the snapshot is derived from.
 # Makes the IPS versioning monotonously growing.
-FOO_PATCHLEVEL=		12
-DAILY_VERSION=		20160721
+FOO_PATCHLEVEL=		13
+DAILY_VERSION=		20210824
 COMPONENT_VERSION=	$(FOO_VERSION)-$(DAILY_VERSION)
 IPS_COMPONENT_VERSION=	$(FOO_VERSION).$(FOO_PATCHLEVEL).$(DAILY_VERSION)
-COMPONENT_BAID=		33516
+COMPONENT_BAID=		125923
 COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.gz
-COMPONENT_ARCHIVE_HASH=	sha256:bb1836bb321298ddecf3a68e5e13db7b3d23c72c219c33c9b82df257b6b34f40
+COMPONENT_ARCHIVE_HASH=	sha256:0cbb4f7c77771593126a20521acc778c1f3f6ee0d10ad16b735f90286d7b5502
 COMPONENT_ARCHIVE_URL=	http://www.openprinting.org/download/foomatic/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	https://wiki.linuxfoundation.org/openprinting/database/foomatic
 COMPONENT_BUGDB=	utility/foomatic
@@ -74,6 +74,9 @@ COMPONENT_POST_INSTALL_ACTION = \
  sed -e "s/$(subst /,\\/,$(PROTO_DIR))//g" $(PROTO_DIR)/$(PACKLIST) \
      >> $(PROTO_DIR)/$(PACKLIST).fixed ; \
  $(MV) $(PROTO_DIR)/$(PACKLIST).fixed $(PROTO_DIR)/$(PACKLIST)
+
+foomatic-db-engine.license:
+	cat $(SOURCE_DIR)/COPYING foomatic-db-engine.copyright > $@
 
 REQUIRED_PACKAGES += library/libxml2
 REQUIRED_PACKAGES += $(PERL_PKG)
