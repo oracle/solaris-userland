@@ -59,44 +59,6 @@ index 0000000..c8f2e02
 +    }
 +  end
 +end
-diff --git a/manifests/params.pp b/manifests/params.pp
-index cb1e6b2..78af6bd 100644
---- a/manifests/params.pp
-+++ b/manifests/params.pp
-@@ -32,7 +32,6 @@ class mysql::params {
-   $daemon_dev_package_provider = undef
-   $xtrabackup_package_name     = 'percona-xtrabackup'
- 
--
-   case $::osfamily {
-     'RedHat': {
-       case $::operatingsystem {
-@@ -321,15 +320,17 @@ class mysql::params {
-     }
- 
-     'Solaris': {
--      $client_package_name = 'database/mysql-55/client'
--      $server_package_name = 'database/mysql-55'
--      $basedir             = undef
--      $config_file         = '/etc/mysql/5.5/my.cnf'
--      $datadir             = '/var/mysql/5.5/data'
--      $log_error           = "/var/mysql/5.5/data/${::hostname}.err"
--      $pidfile             = "/var/mysql/5.5/data/${::hostname}.pid"
-+      $server_service_name = "application/database/mysql:version_${::mysql_solaris[major_minor]}"
-+      $config_file         = "/etc/mysql/${::mysql_solaris[major_dot_minor]}/my.cnf"
-+      $datadir             = "/var/mysql/${::mysql_solaris[major_dot_minor]}/data"
-+      $log_error           = "/var/mysql/${::mysql_solaris[major_dot_minor]}/data/${::hostname}.err"
-+      $pidfile             = "/var/mysql/${::mysql_solaris[major_dot_minor]}/data/${::hostname}.pid"
-+      $client_package_name = "database/mysql-${::mysql_solaris[major_minor]}/client"
-+      $server_package_name = "database/mysql-${::mysql_solaris[major_minor]}"
-+      $basedir             = $::mysql_solaris['base_dir']
-+      $includedir          = undef
-       $root_group          = 'bin'
--      $server_service_name = 'application/database/mysql:version_55'
-+      $mysql_group         = 'mysql'
-       $socket              = '/tmp/mysql.sock'
-       $ssl_ca              = undef
-       $ssl_cert            = undef
 diff --git a/metadata.json b/metadata.json
 index 8b27054..a188277 100644
 --- a/metadata.json
@@ -115,19 +77,6 @@ index 8b27054..a188277 100644
      {
        "operatingsystem": "Debian",
        "operatingsystemrelease": [
---- puppetlabs-mysql-5.1.0/spec/classes/mycnf_template_spec.rb.orig     2018-01-22 01:03:50.568265110 +0000
-+++ puppetlabs-mysql-5.1.0/spec/classes/mycnf_template_spec.rb  2018-01-22 01:04:25.818196954 +0000
-@@ -4,9 +4,7 @@
-   context 'my.cnf template' do
-     on_supported_os.each do |os, facts|
-       context "on #{os}" do
--        let(:facts) do
--          facts.merge(root_home: '/root')
--        end
-+        let(:facts) { facts }
-
-         context 'normal entry' do
-           let(:params) { { override_options: { 'mysqld' => { 'socket' => '/var/lib/mysql/mysql.sock' } } } }
 --- puppetlabs-mysql-5.1.0/spec/classes/mysql_bindings_spec.rb.orig     2018-01-22 01:07:44.370207280 +0000
 +++ puppetlabs-mysql-5.1.0/spec/classes/mysql_bindings_spec.rb  2018-01-22 01:08:05.737121331 +0000
 @@ -3,9 +3,7 @@
@@ -167,31 +116,6 @@ index 8b27054..a188277 100644
 
        let(:default_params) do
          { 'backupuser'         => 'testuser',
---- puppetlabs-mysql-5.1.0/spec/classes/mysql_server_monitor_spec.rb.orig       2018-01-22 01:12:24.097935348 +0000
-+++ puppetlabs-mysql-5.1.0/spec/classes/mysql_server_monitor_spec.rb    2018-01-22 01:12:45.508721267 +0000
-@@ -2,9 +2,7 @@
- describe 'mysql::server::monitor' do
-   on_supported_os.each do |os, facts|
-     context "on #{os}" do
--      let(:facts) do
--        facts.merge(root_home: '/root')
--      end
-+      let(:facts) { facts }
-
-       let :pre_condition do
-         "include 'mysql::server'"
---- puppetlabs-mysql-5.1.0/spec/classes/mysql_server_mysqltuner_spec.rb.orig    2018-01-22 01:13:36.087969552 +0000
-+++ puppetlabs-mysql-5.1.0/spec/classes/mysql_server_mysqltuner_spec.rb 2018-01-22 01:14:03.889888284 +0000
-@@ -4,8 +4,7 @@
-   on_supported_os.each do |os, facts|
-     context "on #{os}" do
-       let(:facts) do
--        facts.merge(staging_http_get: 'curl',
--                    root_home: '/root')
-+        facts.merge(staging_http_get: 'curl')
-       end
-
-       context 'ensure => present' do
 --- puppetlabs-mysql-5.1.0/spec/classes/mysql_server_spec.rb.orig       2018-01-22 01:38:05.386630188 +0000
 +++ puppetlabs-mysql-5.1.0/spec/classes/mysql_server_spec.rb    2018-01-22 01:38:30.251640737 +0000
 @@ -3,9 +3,7 @@
@@ -219,28 +143,6 @@ index 8b27054..a188277 100644
 +    'major_minor' => '57',
 +    'basedir' => '/usr/mysql/5.7'
 +  }
-diff --git a/spec/unit/facter/mysql_server_id_spec.rb b/spec/unit/facter/mysql_server_id_spec.rb
-index a2e9fdf..e690246 100644
---- a/spec/unit/facter/mysql_server_id_spec.rb
-+++ b/spec/unit/facter/mysql_server_id_spec.rb
-@@ -11,7 +11,7 @@ describe Facter::Util::Fact do
-         Facter.fact(:macaddress).stubs(:value).returns('3c:97:0e:69:fb:e1')
-       end
-       it do
--        Facter.fact(:mysql_server_id).value.to_s.should == '4116385'
-+        expect(Facter.fact(:mysql_server_id).value.to_s).to eq('4116385')
-       end
-     end
- 
-@@ -20,7 +20,7 @@ describe Facter::Util::Fact do
-         Facter.fact(:macaddress).stubs(:value).returns('00:00:00:00:00:00')
-       end
-       it do
--        Facter.fact(:mysql_server_id).value.to_s.should == '0'
-+        expect(Facter.fact(:mysql_server_id).value.to_s).to eq('0')
-       end
-     end
-   end
 diff --git a/spec/unit/facter/mysql_solaris_spec.rb b/spec/unit/facter/mysql_solaris_spec.rb
 new file mode 100644
 index 0000000..811d810
@@ -312,34 +214,36 @@ index 0000000..811d810
 +    end
 +  end
 +end
---- puppetlabs-mysql-5.1.0/spec/unit/facter/mysqld_version_spec.rb.orig 2018-01-22 01:19:02.735751646 +0000
-+++ puppetlabs-mysql-5.1.0/spec/unit/facter/mysqld_version_spec.rb      2018-01-22 01:22:32.323897905 +0000
-@@ -1,18 +1,13 @@
- require 'spec_helper'
-
- describe Facter::Util::Fact do
--  before(:each) do
--    Facter.clear
--  end
-+  before { Facter.clear }
-
--  describe 'mysqld_version' do
--    context 'with value' do
--      before :each do
--        Facter::Util::Resolution.stubs(:exec).with('mysqld -V 2>/dev/null').returns('mysqld  Ver 5.5.49-37.9 for Linux on x86_64 (Percona Server (GPL), Release 37.9, Revision efa0073)')
+--- puppetlabs-mysql-12.0.2/spec/classes/mycnf_template_spec.rb.orig	2022-06-23 03:14:30.484963715 -0700
++++ puppetlabs-mysql-12.0.2/spec/classes/mycnf_template_spec.rb	2022-06-23 03:14:56.109812390 -0700
+@@ -5,9 +5,7 @@
+ describe 'mysql::server' do
+   on_supported_os.each do |os, facts|
+     context "my.cnf template - on #{os}" do
+-      let(:facts) do
+-        facts.merge(root_home: '/root')
 -      end
--      it {
--        expect(Facter.fact(:mysqld_version).value).to eq('mysqld  Ver 5.5.49-37.9 for Linux on x86_64 (Percona Server (GPL), Release 37.9, Revision efa0073)')
--      }
--    end
-+  context 'mysqld_version' do
-+    before do
-+    it {
-+      Facter::Util::Resolution.stubs(:exec).with('mysqld -V 2>/dev/null').returns('mysqld  Ver 5.5.49-37.9 for Linux on x86_64 (Percona Server (GPL), Release 37.9, Revision efa0073)')
-+      expect(Facter.fact(:mysqld_version).value).to eq('mysqld  Ver 5.5.49-37.9 for Linux on x86_64 (Percona Server (GPL), Release 37.9, Revision efa0073)')
-+    }
-   end
- end
--- 
-2.14.1
-
++      let(:facts) { facts }
+ 
+       context 'normal entry' do
+         let(:params) { { override_options: { 'mysqld' => { 'socket' => '/var/lib/mysql/mysql.sock' } } } }
+--- puppetlabs-mysql-12.0.2/spec/unit/facter/mysql_server_id_spec.rb.orig	2022-06-23 03:24:49.294857197 -0700
++++ puppetlabs-mysql-12.0.2/spec/unit/facter/mysql_server_id_spec.rb	2022-06-23 03:39:39.651897578 -0700
+@@ -13,7 +13,7 @@
+         allow(Facter.fact(:macaddress)).to receive(:value).and_return('3c:97:0e:69:fb:e1')
+       end
+       it do
+-        Facter.fact(:mysql_server_id).value.to_s.should == '241857808'
++        expect(Facter.fact(:mysql_server_id).value.to_s).to eq('241857808')
+       end
+     end
+ 
+@@ -22,7 +22,7 @@
+         allow(Facter.fact(:macaddress)).to receive(:value).and_return('00:00:00:00:00:00')
+       end
+       it do
+-        Facter.fact(:mysql_server_id).value.to_s.should == '1'
++        expect(Facter.fact(:mysql_server_id).value.to_s).to eq('1')
+       end
+     end
+ 
