@@ -9,6 +9,8 @@
 #
 # Remove everything before test execution,
 # which starts with a count summary.
+# `num` used as replacement for test number which have no relevance.
+BEGIN {num="#";}
 started==0 && /^[0-9]..[0-9]+$/ {started=1;p=1; print; next;}
 started==0 {next;} # Short cut
 # Ignore some warnings
@@ -33,12 +35,13 @@ src && $0 ~ src {gsub(src,"$(SOURCE_DIR)", $0);}
 # Remove platform specific information given out by test 1.
 /ok 1 - platform_output$/ {p=0; print; print "\# ELIDED"; next;}
 # Ignore some IPV6 tests which vary depending on machine configuration.
-/ - ip6_addr_link_local/ {p=0;print "\# ignore ip6_addr_link_local!"; next;}
-/ - udp_multicast_join6/ {p=0;print "\# ignore udp_multicast_join6!"; next;}
-# tty info explains it's skipped when run on proc with no tty device, remove.
-/ok [0-9]+ - tty / {print $1,$2,$3,$4; next;}
+/ - ip6_addr_link_local/ {p=0;print "# ignore ip6_addr_link_local!"; next;}
+/ - udp_multicast_join6/ {p=0;print "# ignore udp_multicast_join6!"; next;}
+# tty info explains it's skipped when tty device, remove info.
+/ok [0-9]+ - tty / {print $1,num,$3,$4; next;}
 # Remove the summary; exit.  As the IPv6 tests muddy the water.
-/^(FAIL|PASS): test\/run-tests/ {print "\# run-tests summary ELIDED."; exit;}
+/^(FAIL|PASS): test\/run-tests/ {print "# run-tests summary ELIDED."; exit;}
 # Reset `p` to display this result and further results.
-/^(not )?ok [0-9]+ - / {p=1;}
+/^ok [0-9]+ - / {p=1;$2=num;}
+/^not ok [0-9]+ - / {p=1;$3=num;}
 p==1 {print}

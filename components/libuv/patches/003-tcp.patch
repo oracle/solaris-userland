@@ -1,0 +1,33 @@
+Patch from upstream
+
+commit 2108309302ec66c71646b762ee32d8ef0ad9618e
+Date:   Wed Jun 29 05:42:52 2022 +0200
+
+    unix,tcp: fix errno handling in uv__tcp_bind() (#3652)
+
+    The errno value is only meaningful if bind() fails and returns -1.
+
+    Some bind() implementations may return success but modify errno value
+        internally, like the socket_wrapper library used by the Samba testsuite.
+
+diff -r 927cb36365b3 -r b6923ceac988 src/unix/tcp.c
+--- a/src/unix/tcp.c	Wed Jun 22 03:38:33 2022 -0700
++++ b/src/unix/tcp.c	Wed Jun 29 04:50:15 2022 -0700
+@@ -184,14 +184,15 @@
+ #endif
+ 
+   errno = 0;
+-  if (bind(tcp->io_watcher.fd, addr, addrlen) && errno != EADDRINUSE) {
++  err = bind(tcp->io_watcher.fd, addr, addrlen);
++  if (err == -1 && errno != EADDRINUSE) {
+     if (errno == EAFNOSUPPORT)
+       /* OSX, other BSDs and SunoS fail with EAFNOSUPPORT when binding a
+        * socket created with AF_INET to an AF_INET6 address or vice versa. */
+       return UV_EINVAL;
+     return UV__ERR(errno);
+   }
+-  tcp->delayed_error = UV__ERR(errno);
++  tcp->delayed_error = (err == -1) ? UV__ERR(errno) : 0;
+ 
+   tcp->flags |= UV_HANDLE_BOUND;
+   if (addr->sa_family == AF_INET6)
