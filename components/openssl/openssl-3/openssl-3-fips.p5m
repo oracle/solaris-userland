@@ -35,6 +35,10 @@ set name=info.source-url value=$(COMPONENT_ARCHIVE_URL)
 set name=info.upstream-url value=$(COMPONENT_PROJECT_URL)
 set name=org.opensolaris.arc-caseid value=PSARC/2021/120
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
+file files/fipsmodule.cnf path=etc/openssl/3/conf.d/fipsmodule.cnf mode=0444 \
+    pkg.linted.userland.action001.4=true preserve=true
+file files/fipsprovider.cnf path=etc/openssl/3/conf.d/fipsprovider.cnf \
+    group=sys mode=0644 preserve=true
 file files/openssl-3-fips-install.xml \
     path=lib/svc/manifest/system/openssl-3-fips-install.xml \
     restart_fmri=svc:/system/manifest-import:default
@@ -42,5 +46,6 @@ file files/svc-openssl-3-fips-install \
     path=lib/svc/method/svc-openssl-3-fips-install
 file path=usr/openssl/3/lib/$(MACH64)/ossl-modules/fips.so \
     restart_fmri=svc:/system/cryptosvc/openssl:fips-140
+file path=usr/openssl/3/lib/ossl-modules/fips.so \
+    restart_fmri=svc:/system/cryptosvc/openssl:fips-140
 license openssl-3.license license=Apache2.0
-depend type=optional fmri=library/security/openssl-3
