@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../../make-rules/shared-macros.mk
 
 GIT_REPO= https://github.com/puppetlabs/puppetlabs-stdlib
-GIT_COMMIT_ID=  4.23.0
-GIT_HASH=sha256:d079ff68f224e3dfe38033cedc010a99c02200d05209575067af814a2648b75c
+GIT_COMMIT_ID=  v8.2.0
+GIT_HASH=sha256:95e38da31f9c0a4a652cd201351d46318d4a95dea89884a142d32824629df68e
 
 COMPONENT_NAME=		puppetlabs-stdlib
-COMPONENT_VERSION=	$(GIT_COMMIT_ID)
+COMPONENT_VERSION=	$(GIT_COMMIT_ID:v%=%)
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	238625
 
-COMPONENT_BAID=		45926
+COMPONENT_BAID=		124694
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/puppetmodule.mk
