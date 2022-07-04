@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 <transform file -> edit path ^ usr/puppetlabs/puppet/modules/>
 #
@@ -29,6 +29,7 @@ set name=pkg.fmri \
 set name=pkg.summary value="Staging Puppet Module"
 set name=pkg.description \
     value="The staging module manages a staging directory, along with download/extraction of compressed files."
+set name=pkg.legacy value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description value="Staging Puppet Module"
 set name=info.classification \
@@ -38,7 +39,7 @@ set name=info.upstream \
     value="puppetlabs - https://forge.puppetlabs.com/puppetlabs"
 set name=info.upstream-url value=$(GIT_REPO)
 set name=org.opensolaris.arc-caseid value=PSARC/2015/368 value=PSARC/2016/016 \
-    value=PSARC/2016/607 value=PSARC/2017/092
+    value=PSARC/2016/607 value=PSARC/2017/092 value=PSARC/2022/077
 set name=org.opensolaris.consolidation value=$(CONSOLIDATION)
 #
 file path=staging/CHANGELOG.md
@@ -108,6 +109,9 @@ file path=staging/spec/fixtures/hiera.yaml
 file path=staging/spec/spec_helper.rb
 file path=staging/spec/unit/puppet/parser/functions/scope_defaults_spec.rb
 file path=staging/spec/unit/puppet/parser/functions/staging_parse_spec.rb
+file release-notes/legacy-puppet-staging.txt \
+    path=usr/share/doc/release-notes/legacy-puppet-staging.txt mode=0444 \
+    must-display=true release-note=feature/pkg/self@3.0.0-11.4.51.0.0.127.0
 #
 license puppet-staging.license license="Apache v2.0"
 depend type=optional \
