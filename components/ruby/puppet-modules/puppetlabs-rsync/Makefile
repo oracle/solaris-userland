@@ -20,14 +20,14 @@
 #
 
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../../make-rules/shared-macros.mk
 
 GIT_REPO= https://github.com/puppetlabs/puppetlabs-rsync
-GIT_COMMIT_ID= 1.0.0
-GIT_HASH=sha256:bee955b03cf0be5978a471c3e09c63e1d2b75f7dd02ba71147dfbe662607e286
+GIT_COMMIT_ID= 1.2.0
+GIT_HASH=sha256:d940deaa81e1fb25436f9b6a13dce0e55f10b53fe1274a50aec6218c87b67652
 
 
 COMPONENT_NAME=		puppetlabs-rsync
@@ -37,7 +37,7 @@ COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	13319
 
-COMPONENT_BAID=		45925
+COMPONENT_BAID=		124788
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/puppetmodule.mk
