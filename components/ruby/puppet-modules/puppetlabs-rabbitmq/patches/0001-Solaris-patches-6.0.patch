@@ -1,0 +1,94 @@
+--- puppet-rabbitmq-12.0.0/lib/puppet/provider/rabbitmq_cli.rb.orig	2022-06-14 01:57:52.684699081 -0700
++++ puppet-rabbitmq-12.0.0/lib/puppet/provider/rabbitmq_cli.rb	2022-06-14 01:03:59.765460304 -0700
+@@ -34,7 +34,7 @@
+   home_tmp_command :rabbitmqctl, 'rabbitmqctl'
+   home_tmp_command :rabbitmqplugins, 'rabbitmq-plugins'
+ 
+-  home_tmp_command :rabbitmqadmin, '/usr/local/bin/rabbitmqadmin'
++  home_tmp_command :rabbitmqadmin, 'rabbitmqadmin'
+ 
+   def self.rabbitmq_version
+     return @rabbitmq_version if defined? @rabbitmq_version
+--- puppet-rabbitmq-12.0.0/manifests/install/rabbitmqadmin.pp.orig	2022-06-14 01:04:13.498667204 -0700
++++ puppet-rabbitmq-12.0.0/manifests/install/rabbitmqadmin.pp	2022-06-14 01:05:07.612440091 -0700
+@@ -71,7 +71,7 @@
+       require          => $rabbitmqadmin_archive_require,
+     }
+ 
+-    file { '/usr/local/bin/rabbitmqadmin':
++    file { $rabbbitmq::admin_path:
+       owner   => 'root',
+       group   => '0',
+       source  => "${rabbitmq::rabbitmq_home}/rabbitmqadmin",
+--- puppet-rabbitmq-12.0.0/manifests/config.pp.orig	2022-06-14 02:01:10.307369445 -0700
++++ puppet-rabbitmq-12.0.0/manifests/config.pp	2022-06-14 02:02:25.853238982 -0700
+@@ -4,6 +4,9 @@
+ # @api private
+ class rabbitmq::config {
+   $admin_enable                        = $rabbitmq::admin_enable
++  $admin_owner                         = $rabbitmq::admin_owner
++  $admin_group                         = $rabbitmq::admin_group
++  $admin_path                          = $rabbitmq::admin_path
+   $management_enable                   = $rabbitmq::management_enable
+   $use_config_file_for_plugins         = $rabbitmq::use_config_file_for_plugins
+   $cluster_node_type                   = $rabbitmq::cluster_node_type
+--- puppet-rabbitmq-12.0.0/manifests/init.pp.orig	2022-06-14 02:03:32.365340957 -0700
++++ puppet-rabbitmq-12.0.0/manifests/init.pp	2022-06-14 02:06:53.221437050 -0700
+@@ -328,6 +328,9 @@
+ #
+ class rabbitmq (
+   Boolean $admin_enable                                                                            = true,
++  String $admin_owner                                                                              = $rabbitmq::params::admin_owner,
++  String $admin_group                                                                              = $rabbitmq::params::admin_group,
++  String $admin_path                                                                               = $rabbitmq::params::admin_path,
+   Boolean $management_enable                                                                       = false,
+   Boolean $use_config_file_for_plugins                                                             = false,
+   Hash $cluster                                                                                    = $rabbitmq::cluster,
+@@ -559,10 +562,27 @@
+     Class['rabbitmq::config'] ~> Class['rabbitmq::service']
+   }
+ 
+-  Class['rabbitmq::install']
+-  -> Class['rabbitmq::config']
+-  -> Class['rabbitmq::service']
+-  -> Class['rabbitmq::management']
++  case $::osfamily {
++    'Solaris': {
++      file { 'cookie_owner':
++        path  => '/var/lib/rabbitmq/.erlang.cookie',
++        owner => 'rabbitmq',
++        group => 'daemon',
++      }
++
++      Class['rabbitmq::install']
++        -> File['cookie_owner']
++        -> Class['rabbitmq::config']
++        ~> Class['rabbitmq::service']
++        -> Class['rabbitmq::management']
++    }
++    default: {
++      Class['rabbitmq::install']
++        -> Class['rabbitmq::config']
++        ~> Class['rabbitmq::service']
++        -> Class['rabbitmq::management']
++    }
++  }
+ 
+   # Make sure the various providers have their requirements in place.
+   Class['rabbitmq::install'] -> Rabbitmq_plugin<| |> -> Rabbitmq_cluster<| |>
+--- puppet-rabbitmq-12.0.0/metadata.json.orig	2022-06-14 02:26:03.290325323 -0700
++++ puppet-rabbitmq-12.0.0/metadata.json	2022-06-14 02:27:30.099624955 -0700
+@@ -47,6 +47,13 @@
+     },
+     {
+       "operatingsystem": "Archlinux"
++    },
++    {
++      "operatingsystem": "Solaris",
++      "operatingsystemrelease": [
++        "11.3",
++        "11.4"
++      ]
+     }
+   ],
+   "requirements": [
