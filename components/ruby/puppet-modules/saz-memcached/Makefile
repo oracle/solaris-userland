@@ -20,23 +20,23 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		saz-memcached
-COMPONENT_VERSION=	3.0.2
+COMPONENT_VERSION=	7.0.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:828388415542fcc7cab4f5444ad964c81ecca22394f51021b23218c299631603
+    sha256:12f02c3217c1a692c9283e97d28f0b0bb48b89326fc5d4a483c45407f880f31e
 COMPONENT_ARCHIVE_URL=	http://forgeapi.puppetlabs.com/v3/files/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://www.openstack.org/
 COMPONENT_BUGDB=	utility/puppet
 COMPONENT_ANITYA_ID=	13322
 
-COMPONENT_BAID=		45929
+COMPONENT_BAID=		124693
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/puppetmodule.mk
