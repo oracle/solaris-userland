@@ -30,32 +30,45 @@ COMPILER=	gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		python-ldap
-COMPONENT_VERSION=	3.2.0
+COMPONENT_VERSION=	3.4.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:7d1c4b15375a533564aad3d3deade789221e450052b21ebb9720fb822eccdb8e
+    sha256:b16470a0983aaf09a00ffb8f40b69a2446f3d0be639a229256bce381fcb268f7
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	http://www.python-ldap.org/
 COMPONENT_BUGDB=	python-mod/python-ldap
 COMPONENT_ANITYA_ID=	13261
+COMPONENT_BAID=		126501
 
-COMPONENT_BAID=		67339
+# This component is delivered in two different versions because
+# the newer one is no longer Python 2.7 compatible.
+COMPONENT_VERSION_OLD=	3.2.0
+COMPONENT_SRC_OLD=	$(COMPONENT_NAME)-$(COMPONENT_VERSION_OLD)
+COMPONENT_ARCHIVE_OLD=	$(COMPONENT_SRC_OLD).tar.gz
+COMPONENT_ARCHIVE_HASH_OLD= \
+    sha256:7d1c4b15375a533564aad3d3deade789221e450052b21ebb9720fb822eccdb8e
+COMPONENT_ARCHIVE_URL_OLD=	$(call pypi_url,OLD)
+COMPONENT_BAID_OLD=	67339
 
-# Building for Python 2.7, 3.7 and 3.9 only. Ref ../../make-rules/shared-macros.mk
-PYTHON_VERSIONS=	3.7 3.9 2.7
+
+# Building for Python 2.7, 3.7 and 3.9 only. (the default now)
+# Reference ../../../make-rules/shared-macros.mk
+# PYTHON_VERSIONS=	3.7 3.9 2.7
 
 include $(WS_MAKE_RULES)/prep.mk
 include $(WS_MAKE_RULES)/setup.py.mk
 include $(WS_MAKE_RULES)/ips.mk
+include $(WS_MAKE_RULES)/python-multiver.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)
 COMPONENT_TEST_CMD =	$(PYTHON) -m pytest
 COMPONENT_TEST_ARGS =
 
 COMPONENT_TEST_ENV +=	PYTHONPATH=$(PROTO_DIR)/$(PYTHON_LIB)
-COMPONENT_TEST_ENV +=	PATH=$(PATH):/usr/lib
-COMPONENT_SYSTEM_TEST_ENV +=	PATH=$(PATH):/usr/lib
+# Update test PATH for slapd (/usr/lib) and slapadd, etc. (/usr/sbin).
+COMPONENT_TEST_ENV +=	PATH=$(PATH):/usr/lib:/usr/sbin
+COMPONENT_SYSTEM_TEST_ENV +=	PATH=$(PATH):/usr/lib:/usr/sbin
 
 # Slapd has a limit on how long the domain socket path can be; we thus need to
 # change the test directory path to a shorter one to get around this limitation.
@@ -69,8 +82,6 @@ build:		$(BUILD_32_and_64)
 
 install:	$(INSTALL_32_and_64)
 
-# See README-TESTING.md for details on how to run provided tests and
-# a possible future addition to this Makefile.
 test:		$(BUILD_DIR)/$(MACH64)-3.7/.tested \
 		$(BUILD_DIR)/$(MACH64)-3.9/.tested
 

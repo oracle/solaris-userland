@@ -1,0 +1,19 @@
+Adapted from upstream commit faa011b41f7141121546045925d809d54e70f5fd
+Author: Kevin Backhouse
+Date:   Fri Oct 15 15:21:37 2021 +0100
+
+    Fix ReDoS in regex.
+
+diff --git a/Lib/ldap/schema/tokenizer.py b/Lib/ldap/schema/tokenizer.py
+index 69823f2..623b86d 100644
+--- a/Lib/ldap/schema/tokenizer.py
++++ b/Lib/ldap/schema/tokenizer.py
+     r"|"              # or
+     r"([^'$()\s]+)"   # string of length >= 1 without '$() or whitespace
+     r"|"              # or
+-    r"('.*?'(?!\w))"  # any string or empty string surrounded by single quotes
++    r"('(?:[^'\\]|\\.)*'(?!\w))"
++                      # any string or empty string surrounded by single quotes
+		       # except if right quote is succeeded by alphanumeric char
+     r"|"              # or
+     r"([^\s]+?)",     # residue, all non-whitespace strings
