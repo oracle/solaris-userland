@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            32_and_64
@@ -29,20 +29,23 @@ COMPILER =              gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		pangomm
-COMPONENT_VERSION=      2.42.0
+COMPONENT_VERSION=      2.46.2
 COMPONENT_PROJECT_URL=	https://developer.gnome.org/pangomm/stable/
 COMPONENT_ARCHIVE_HASH= \
-    sha256:ca6da067ff93a6445780c0b4b226eb84f484ab104b8391fb744a45cbc7edbf56
+    sha256:57442ab4dc043877bfe3839915731ab2d693fc6634a71614422fb530c9eaa6f4
 COMPONENT_BUGDB=	gnome/libraries
 COMPONENT_ANITYA_ID=	7958
 
-COMPONENT_BAID=		74061
+COMPONENT_BAID=		124133
+BUILD_STYLE=		meson
 
 TEST_TARGET = $(NO_TESTS)
 
 include $(WS_MAKE_RULES)/gnome-component.mk
 
 CXXFLAGS += -std=c++11
+
+CONFIGURE_OPTIONS += -Dbuild-documentation=true
 
 REQUIRED_PACKAGES += developer/documentation-tool/doxygen
 REQUIRED_PACKAGES += image/graphviz
