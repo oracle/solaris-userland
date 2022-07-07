@@ -1,0 +1,25 @@
+The index() function needs strings.h header on Solaris.
+
+This was reported upstream:
+https://github.com/rsyslog/rsyslog/pull/4900
+
+--- rsyslog-8.2206.0/runtime/nsd_ossl.c
++++ rsyslog-8.2206.0/runtime/nsd_ossl.c
+@@ -28,6 +28,7 @@
+ #include <stdlib.h>
+ #include <assert.h>
+ #include <string.h>
++#include <strings.h>
+ #include <openssl/ssl.h>
+ #include <openssl/x509v3.h>
+ #include <openssl/err.h>
+--- rsyslog-8.2206.0/tests/tcpflood.c
++++ rsyslog-8.2206.0/tests/tcpflood.c
+@@ -107,6 +107,7 @@
+ #include <assert.h>
+ #include <unistd.h>
+ #include <string.h>
++#include <strings.h>
+ #include <netinet/in.h>
+ #include <pthread.h>
+ #ifdef ENABLE_RELP

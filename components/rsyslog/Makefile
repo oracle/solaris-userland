@@ -20,26 +20,25 @@
 #
 
 #
-# Copyright (c) 2012, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2012, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		rsyslog
-COMPONENT_VERSION=	8.2104.0
+COMPONENT_VERSION=	8.2206.0
 COMPONENT_PROJECT_URL=	https://www.rsyslog.com/
-COMPONENT_ARCHIVE_HASH=	sha256:6ce8a9b74fa173da97c98a729d589ee36e7b1c37308f87682175f55e85910719
+COMPONENT_ARCHIVE_HASH=	sha256:01ef2491d507b3ecda9c53e5c4bc4156654129996c970f5719ec84af8381f93a
 COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)files/download/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	service/rsyslog
 COMPONENT_ANITYA_ID=	4218
-
-COMPONENT_BAID=                   101764
+COMPONENT_BAID=		124491
 
 # The documentation is in a separate download
 COMPONENT_SRC_DOC=		$(COMPONENT_NAME)-doc-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_DOC=		$(COMPONENT_SRC_DOC).tar.gz
-COMPONENT_ARCHIVE_HASH_DOC=	sha256:2cd7d2690009ebc4a9fb9e167ed367c235e0c485a4735991721c86af73561b99
+COMPONENT_ARCHIVE_HASH_DOC=	sha256:508e3f18996c8c2aa24d2cbbf369af3f108d18a988f59604b4f9858b54e49f2a
 COMPONENT_ARCHIVE_URL_DOC=	$(COMPONENT_PROJECT_URL)files/download/$(COMPONENT_NAME)/$(COMPONENT_ARCHIVE_DOC)
 
 UNPACK_ARGS_DOC=		-r $(COMPONENT_SRC_DOC)
@@ -53,8 +52,7 @@ COMPONENT_ARCHIVE_LIB     = v$(COMPONENT_VERSION_LIB).tar.gz
 COMPONENT_ARCHIVE_HASH_LIB = sha256:fd35315b231b60607cd97a11aec380fc30fe55677c35a95afb5437e54ce97d7a
 COMPONENT_ARCHIVE_URL_LIB = https://github.com/rsyslog/libfastjson/archive/$(COMPONENT_ARCHIVE_LIB)
 COMPONENT_ANITYA_ID_LIB   = 12043
-
-COMPONENT_BAID_LIB = 101759
+COMPONENT_BAID_LIB        = 101759
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -113,6 +111,7 @@ TS_CONFIGURE_OPTIONS += --enable-imsolaris
 TS_CONFIGURE_OPTIONS += --enable-mail
 TS_CONFIGURE_OPTIONS += --enable-gssapi_krb5
 TS_CONFIGURE_OPTIONS += --enable-gnutls
+TS_CONFIGURE_OPTIONS += --enable-openssl
 TS_CONFIGURE_OPTIONS += --disable-klog
 TS_CONFIGURE_OPTIONS += --sbindir=$(USRLIBDIR)/rsyslog
 
@@ -136,6 +135,8 @@ TS_CONFIGURE_OPTIONS += --disable-libgcrypt
 TS_CONFIGURE_OPTIONS += --disable-generate-man-pages
 
 CONFIGURE_ENV += "MYSQL_CONFIG=/usr/mysql/5.7/bin/mysql_config"
+
+PKG_CONFIG_PATHS += /usr/openssl/3/lib/64/pkgconfig
 
 # Make the build verbose, show executed commands
 COMPONENT_BUILD_ARGS += AM_DEFAULT_VERBOSITY=1
@@ -188,8 +189,10 @@ REQUIRED_PACKAGES += library/gnutls-3
 REQUIRED_PACKAGES += library/json-c
 REQUIRED_PACKAGES += library/libestr
 REQUIRED_PACKAGES += library/liblogging
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += security/kerberos-5
 REQUIRED_PACKAGES += shell/ksh93
 REQUIRED_PACKAGES += system/core-os
+REQUIRED_PACKAGES += system/library/math
 REQUIRED_PACKAGES += web/curl

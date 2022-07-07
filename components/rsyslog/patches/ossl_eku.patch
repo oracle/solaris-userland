@@ -1,0 +1,94 @@
+Adds Extended Key Usage support for OpenSSL based ossl NetStream driver.
+
+This was offered upstream:
+https://github.com/rsyslog/rsyslog/issues/4920
+
+--- rsyslog-8.2206.0/runtime/nsd_ossl.c
++++ rsyslog-8.2206.0/runtime/nsd_ossl.c
+@@ -849,6 +849,26 @@
+ 			X509_verify_cert_error_string(iVerErr));
+ 	}
+ 
++
++	if (pThis->dataTypeCheck == OSSL_PURPOSE) {
++		X509 *certpeer = SSL_get_peer_certificate(pThis->ssl);
++		uint32_t eku = X509_get_extended_key_usage(certpeer);
++		dbgprintf("osslChkPeerCertValidity: checking EKU\n");
++
++		if (eku == UINT32_MAX ||
++		    (pThis->sslState == osslServer && (eku & XKU_SSL_CLIENT) == 0) ||
++		    (pThis->sslState != osslServer && (eku & XKU_SSL_SERVER) == 0)) {
++			dbgprintf("osslChkPeerCertValidity: eku check failed %u\n", eku);
++			LogMsg(0, RS_RET_CERT_INVALID, LOG_INFO,
++				"nsd_ossl:TLS session terminated with remote syslog server '%s': "
++				"Extended Key Usage check failed",
++				fromHostIP);
++			ABORT_FINALIZE(RS_RET_CERT_INVALID);
++		} else {
++			dbgprintf("osslChkPeerCertValidity: eku check passed %u\n", eku);
++		}
++	}
++
+ finalize_it:
+ 	if (fromHostIP != NULL) {
+ 		free(fromHostIP);
+@@ -1556,6 +1576,7 @@
+ 	pNew->permitExpiredCerts = pThis->permitExpiredCerts;
+ 	pNew->pPermPeers = pThis->pPermPeers;
+ 	pNew->DrvrVerifyDepth = pThis->DrvrVerifyDepth;
++	pNew->dataTypeCheck = pThis->dataTypeCheck;
+ 	pNew->gnutlsPriorityString = pThis->gnutlsPriorityString;
+ 	pNew->ctx = pThis->ctx;
+ 	pNew->ctx_is_copy = 1; // do not free on pNew Destruction
+@@ -1936,19 +1957,25 @@
+ 	RETiRet;
+ }
+ 
+-/* Set the driver cert extended key usage check setting, for now it is empty wrapper.
+- * TODO: implement openSSL version
+- * jvymazal, 2019-08-16
++/* Set the driver cert extended key usage check setting
++ * 0 - ignore contents of extended key usage
++ * 1 - verify that cert contents is compatible with appropriate OID
+  */
+ static rsRetVal
+ SetCheckExtendedKeyUsage(nsd_t __attribute__((unused)) *pNsd, int ChkExtendedKeyUsage)
+ {
+ 	DEFiRet;
+-	if(ChkExtendedKeyUsage != 0) {
++	nsd_ossl_t *pThis = (nsd_ossl_t*) pNsd;
++
++	ISOBJ_TYPE_assert((pThis), nsd_ossl);
++	if(ChkExtendedKeyUsage != 0 && ChkExtendedKeyUsage != 1) {
+ 		LogError(0, RS_RET_VALUE_NOT_SUPPORTED, "error: driver ChkExtendedKeyUsage %d "
+ 				"not supported by ossl netstream driver", ChkExtendedKeyUsage);
+ 		ABORT_FINALIZE(RS_RET_VALUE_NOT_SUPPORTED);
+ 	}
++
++	pThis->dataTypeCheck = ChkExtendedKeyUsage;
++
+ finalize_it:
+ 	RETiRet;
+ }
+@@ -2077,7 +2104,7 @@
+ 	pIf->SetKeepAliveProbes = SetKeepAliveProbes;
+ 	pIf->SetKeepAliveTime = SetKeepAliveTime;
+ 	pIf->SetGnutlsPriorityString = SetGnutlsPriorityString; /* we don't NEED this interface! */
+-	pIf->SetCheckExtendedKeyUsage = SetCheckExtendedKeyUsage; /* we don't NEED this interface! */
++	pIf->SetCheckExtendedKeyUsage = SetCheckExtendedKeyUsage;
+ 	pIf->SetPrioritizeSAN = SetPrioritizeSAN; /* we don't NEED this interface! */
+ 	pIf->SetTlsVerifyDepth = SetTlsVerifyDepth;
+ 	pIf->SetTlsCAFile = SetTlsCAFile;
+--- rsyslog-8.2206.0/runtime/nsd_ossl.h
++++ rsyslog-8.2206.0/runtime/nsd_ossl.h
+@@ -63,6 +63,10 @@ struct nsd_ossl_s {
+ 		OSSL_EXPIRED_DENY = 1,
+ 		OSSL_EXPIRED_WARN = 2
+ 	} permitExpiredCerts;
++	enum {
++		OSSL_NONE = 0,
++		OSSL_PURPOSE = 1
++	} dataTypeCheck;
+ 	osslRtryCall_t rtryCall;/**< what must we retry? */
+ 	int rtryOsslErr;	/**< store ssl error code into like SSL_ERROR_WANT_READ or SSL_ERROR_WANT_WRITE */
+ 	int bIsInitiator;	/**< 0 if socket is the server end (listener), 1 if it is the initiator */

@@ -271,16 +271,17 @@ dmesg | tail # should show 'tcp log' message
 
 
 ========================= Modify /etc/rsyslog.d/server =========================
-$DefaultNetstreamDriver gtls
-$DefaultNetstreamDriverCAFile /etc/rsyslog.cert/ca-cert.pem
-$DefaultNetstreamDriverCertFile /etc/rsyslog.cert/server-cert.pem
-$DefaultNetstreamDriverKeyFile /etc/rsyslog.cert/server-key.pem
+global( defaultNetstreamDriverCAFile="/etc/rsyslog.cert/ca-cert.pem"
+        defaultNetstreamDriverCertFile="/etc/rsyslog.cert/server-cert.pem"
+        defaultNetstreamDriverKeyFile="/etc/rsyslog.cert/server-key.pem"
+        defaultNetstreamDriver="gtls" )
 
-$ModLoad imtcp
+module(load="imtcp"
+        StreamDriver.Name="gtls"
+        StreamDriver.Mode="1"
+        StreamDriver.AuthMode="anon" )
 
-$InputTCPServerStreamDriverMode 1
-$InputTCPServerStreamDriverAuthMode anon
-$InputTCPServerRun 5822
+input(type="imtcp" port="5822")
 ================================================================================
 mkdir -p /etc/rsyslog.cert
 cd /etc/rsyslog.cert
@@ -310,3 +311,7 @@ snoop -d net0 -x 0 port 5822
 
 # Make sure snoop SHOWS NO 'encrypted tcp log' message in plain
 dmesg | tail # should show 'encrypted tcp log' message
+
+
+# Currently, we deliver two crypto related stream drivers: gtls and ossl.
+# The test above should work with each of them and also when client and server uses different one.

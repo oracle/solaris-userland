@@ -1,0 +1,21 @@
+When tcpflood is being linked, GNUTLS_LIBS (am__append_117) preceeds
+OPENSSL_LIBS (am__append_120) and thus '-L/usr/lib/amd64' appears before
+'-L/usr/openssl/3/lib/amd64'. This results in OpenSSL bits being linked
+against OpenSSL 1.0.2 we have in the standard path.
+
+This patch flips those two *_LIBS variables such that OpenSSL 3 library
+dir is checked first.
+
+This is Solaris specific and not intended for upstream.
+
+--- rsyslog-8.2206.0/tests/Makefile.in
++++ rsyslog-8.2206.0/tests/Makefile.in
+@@ -3172,7 +3172,7 @@ tcpflood_CFLAGS = $(PTHREADS_CFLAGS) $(R
+ tcpflood_CPPFLAGS = $(PTHREADS_CFLAGS) $(RELP_CFLAGS) \
+ 	$(am__append_116) $(am__append_119)
+ tcpflood_LDADD = $(SOL_LIBS) $(PTHREADS_LIBS) $(RELP_LIBS) \
+-	$(am__append_117) $(am__append_120)
++	$(am__append_120) $(am__append_117)
+ minitcpsrv_SOURCES = minitcpsrvr.c
+ minitcpsrv_LDADD = $(SOL_LIBS)
+ syslog_caller_SOURCES = syslog_caller.c

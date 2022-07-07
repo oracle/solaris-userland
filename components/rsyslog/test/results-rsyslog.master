@@ -10,6 +10,7 @@ PASS: loadbalance.sh
 PASS: empty-hostname.sh
 PASS: timestamp-3164.sh
 PASS: timestamp-3339.sh
+PASS: timestamp-isoweek.sh
 PASS: timestamp-mysql.sh
 PASS: timestamp-pgsql.sh
 PASS: timestamp-subseconds.sh
@@ -58,10 +59,16 @@ PASS: omfile_hup.sh
 SKIP: msgvar-concurrency.sh
 SKIP: localvar-concurrency.sh
 SKIP: exec_tpl-concurrency.sh
+SKIP: rscript_privdropuser.sh
+SKIP: rscript_privdropuserid.sh
+SKIP: rscript_privdropgroup.sh
+SKIP: rscript_privdropgroupid.sh
 SKIP: privdropuser.sh
 SKIP: privdropuserid.sh
 SKIP: privdropgroup.sh
 PASS: privdropgroupid.sh
+SKIP: privdropabortonidfail.sh
+SKIP: privdropabortonidfaillegacy.sh
 PASS: json-nonstring.sh
 PASS: template-json.sh
 PASS: template-pure-json.sh
@@ -111,6 +118,7 @@ PASS: validation-run.sh
 SKIP: msgdup.sh
 PASS: msgdup_props.sh
 PASS: empty-ruleset.sh
+PASS: ruleset-direct-queue.sh
 PASS: imtcp-listen-port-file-2.sh
 PASS: allowed-sender-tcp-ok.sh
 PASS: allowed-sender-tcp-fail.sh
@@ -146,7 +154,9 @@ PASS: msg-deadlock-headerless-noappname.sh
 PASS: imtcp_conndrop.sh
 PASS: imtcp_addtlframedelim.sh
 PASS: imtcp_no_octet_counted.sh
+PASS: imtcp_addtlframedelim_on_input.sh
 PASS: imtcp_spframingfix.sh
+PASS: imtcp-connection-msg-recieved.sh
 PASS: sndrcv.sh
 PASS: sndrcv_failover.sh
 PASS: sndrcv_gzip.sh
@@ -199,6 +209,7 @@ PASS: dircreate_dflt.sh
 PASS: dircreate_off.sh
 SKIP: imuxsock_legacy.sh
 SKIP: imuxsock_logger.sh
+PASS: imuxsock_logger_ratelimit.sh
 SKIP: imuxsock_logger_ruleset.sh
 SKIP: imuxsock_logger_ruleset_ratelimit.sh
 SKIP: imuxsock_logger_err.sh
@@ -241,7 +252,9 @@ PASS: rscript_unaffected_reset.sh
 PASS: rscript_replace_complex.sh
 PASS: rscript_wrap2.sh
 PASS: rscript_wrap3.sh
+PASS: rscript_re_extract_i.sh
 PASS: rscript_re_extract.sh
+PASS: rscript_re_match_i.sh
 PASS: rscript_re_match.sh
 PASS: rscript_re_match-dbl_quotes.sh
 PASS: rscript_eq.sh
@@ -256,6 +269,17 @@ PASS: rscript_lt.sh
 PASS: rscript_lt_var.sh
 PASS: rscript_ne.sh
 PASS: rscript_ne_var.sh
+PASS: rscript_number_comparison_LE.sh
+PASS: rscript_number_comparison_LT.sh
+PASS: rscript_compare_str-numstr.sh
+PASS: rscript_compare_str-num.sh
+PASS: rscript_compare_numstr-str.sh
+PASS: rscript_compare_num-str.sh
+PASS: rscript_compare_numstr-numstr.sh
+PASS: rscript_compare_numstr-num.sh
+PASS: rscript_compare_num-numstr.sh
+PASS: rscript_compare_num-num.sh
+PASS: rscript_compare_str-str.sh
 PASS: rscript_num2ipv4.sh
 PASS: rscript_int2Hex.sh
 PASS: rscript_trim.sh
@@ -319,6 +343,7 @@ PASS: parsertest-snare_ccoff_udp2.sh
 PASS: ommail_errmsg_no_params.sh
 PASS: rscript_http_request.sh
 PASS: impstats-hup.sh
+PASS: perctile-simple.sh
 PASS: dynstats.sh
 PASS: dynstats_overflow.sh
 PASS: dynstats_reset.sh
@@ -332,10 +357,13 @@ PASS: stats-cee.sh
 PASS: stats-json-es.sh
 PASS: dynstats_reset_without_pstats_reset.sh
 PASS: dynstats_prevent_premature_eviction.sh
+SKIP: omfwd_fast_imuxsock.sh
 PASS: omfwd_impstats-udp.sh
 PASS: omfwd_impstats-tcp.sh
 PASS: omstdout-basic.sh
 PASS: imtcp-tls-basic.sh
+PASS: imtcp-tls-input-basic.sh
+PASS: imtcp-tls-input-2certs.sh
 PASS: imtcp-tls-basic-verifydepth.sh
 PASS: imtcp_conndrop_tls.sh
 PASS: sndrcv_tls_anon_rebind.sh
@@ -348,12 +376,47 @@ PASS: sndrcv_tls_gtls_servercert_gtls_clientanon_legacy.sh
 PASS: sndrcv_tls_gtls_serveranon_gtls_clientanon.sh
 PASS: sndrcv_tls_priorityString.sh
 PASS: sndrcv_tls_certvalid.sh
+PASS: sndrcv_tls_certvalid_action_level.sh
 PASS: sndrcv_tls_certvalid_expired.sh
 PASS: sndrcv_tls_certvalid_expired_defaultmode.sh
+PASS: imtcp-tls-no-lstn-startup.sh
 PASS: imtcp-tls-gtls-x509fingerprint-invld.sh
 PASS: imtcp-tls-gtls-x509fingerprint.sh
 PASS: imtcp-tls-gtls-x509name-invld.sh
 PASS: imtcp-tls-gtls-x509name.sh
+PASS: imtcp-tls-gtls-x509name-legacy.sh
+PASS: imtcp-drvr-in-input-basic.sh
+PASS: imtcp-multi-drvr-basic.sh
+PASS: imtcp-multi-drvr-basic-parallel.sh
+PASS: imtcp-multi-drvr-basic-ptcp_gtls_ossl.sh
+PASS: imtcp-tls-ossl-basic.sh
+PASS: imtcp-tls-ossl-input-basic.sh
+PASS: imtcp-tls-ossl-input-2certs.sh
+PASS: imtcp-tls-ossl-basic-tlscommands.sh
+PASS: imtcp-tls-ossl-basic-verifydepth.sh
+PASS: imtcp-tls-ossl-invalid-verifydepth.sh
+PASS: sndrcv_tls_ossl_anon_ipv4.sh
+SKIP: sndrcv_tls_ossl_anon_ipv6.sh
+PASS: sndrcv_tls_ossl_anon_rebind.sh
+PASS: sndrcv_tls_ossl_anon_ciphers.sh
+PASS: sndrcv_tls_ossl_serveranon_ossl_clientanon.sh
+PASS: sndrcv_tls_ossl_servercert_ossl_clientanon.sh
+PASS: sndrcv_tls_ossl_certvalid.sh
+PASS: sndrcv_tls_ossl_certvalid_action_level.sh
+PASS: sndrcv_tls_ossl_certvalid_expired.sh
+PASS: sndrcv_tls_ossl_certvalid_tlscommand.sh
+PASS: sndrcv_tls_ossl_certvalid_ciphers.sh
+PASS: imtcp-tls-ossl-x509valid.sh
+PASS: imtcp-tls-ossl-x509name.sh
+PASS: imtcp-tls-ossl-x509fingerprint.sh
+PASS: imtcp-tls-ossl-error-ca.sh
+PASS: imtcp-tls-ossl-error-cert.sh
+PASS: imtcp-tls-ossl-error-key.sh
+PASS: imtcp-tls-ossl-error-key2.sh
+PASS: sndrcv_tls_ossl_servercert_gtls_clientanon.sh
+PASS: sndrcv_tls_ossl_serveranon_gtls_clientanon.sh
+PASS: sndrcv_tls_gtls_servercert_ossl_clientanon.sh
+PASS: sndrcv_tls_gtls_serveranon_ossl_clientanon.sh
 PASS: uxsock_simple.sh
 PASS: imfile-basic-2GB-file.sh
 PASS: imfile-truncate-2GB-file.sh
@@ -385,6 +448,8 @@ PASS: imfile-escapelf.replacement-empty.sh
 PASS: imfile-statefile-no-file_id.sh
 PASS: imfile-statefile-no-file_id-TO-file_id.sh
 PASS: imfile-statefile-directory.sh
+PASS: imfile-statefile-delete.sh
+PASS: imfile-statefile-no-delete.sh
 PASS: imfile-persist-state-1.sh
 PASS: imfile-freshStartTail1.sh
 PASS: imfile-freshStartTail2.sh
@@ -408,15 +473,22 @@ SKIP: imfile-logrotate-multiple.sh
 SKIP: imfile-logrotate-copytruncate.sh
 SKIP: imfile-logrotate-nocopytruncate.sh
 SKIP: imfile-growing-file-id.sh
+PASS: imfile-ignore-old-file-1.sh
+PASS: imfile-ignore-old-file-2.sh
+PASS: imfile-ignore-old-file-3.sh
+PASS: imfile-ignore-old-file-4.sh
+PASS: imfile-ignore-old-file-5.sh
+PASS: imfile-ignore-old-file-6.sh
+PASS: imfile-ignore-old-file-7.sh
 SKIP: glbl-oversizeMsg-truncate-imfile.sh
 PASS: config_enabled-on.sh
 PASS: config_enabled-off.sh
 ============================================================================
-Testsuite summary for rsyslog 8.2104.0
+Testsuite summary for rsyslog 8.2206.0
 ============================================================================
-# TOTAL: 414
-# PASS:  369
-# SKIP:  45
+# TOTAL: 486
+# PASS:  433
+# SKIP:  53
 # XFAIL: 0
 # FAIL:  0
 # XPASS: 0
