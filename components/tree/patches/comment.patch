@@ -1,0 +1,91 @@
+struct comment used in tree clashes with a different one defined in our pwd.h.
+
+We are evaluating the best course of action; for now, let's just rename it
+to something nonclashing.
+
+--- tree-2.0.2/tree.h
++++ tree-2.0.2/tree.h
+@@ -173,15 +173,15 @@ struct ignorefile {
+ };
+ 
+ /* info.c */
+-struct comment {
++struct treecomment {
+   struct pattern *pattern;
+   char **desc;
+-  struct comment *next;
++  struct treecomment *next;
+ };
+ 
+ struct infofile {
+   char *path;
+-  struct comment *comments;
++  struct treecomment *comments;
+   struct infofile *next;
+ };
+ 
+@@ -298,7 +298,7 @@ struct ignorefile *pop_filterstack(void)
+ struct infofile *new_infofile(char *path);
+ void push_infostack(struct infofile *inf);
+ struct infofile *pop_infostack(void);
+-struct comment *infocheck(char *path, char *name, int top, int isdir);
++struct treecomment *infocheck(char *path, char *name, int top, int isdir);
+ void printcomment(int line, int lines, char *s);
+ 
+ /* list.c */
+--- tree-2.0.2/tree.c
++++ tree-2.0.2/tree.c
+@@ -782,7 +782,7 @@ struct _info *getinfo(char *name, char *
+ 
+ struct _info **read_dir(char *dir, int *n, int infotop)
+ {
+-  struct comment *com;
++  struct treecomment *com;
+   static char *path = NULL;
+   static long pathsize;
+   struct _info **dl, *info;
+--- tree-2.0.2/info.c
++++ tree-2.0.2/info.c
+@@ -32,9 +32,9 @@ extern const struct linedraw *linedraw;
+ 
+ struct infofile *infostack = NULL;
+ 
+-struct comment *new_comment(struct pattern *phead, char **line, int lines)
++struct treecomment *new_comment(struct pattern *phead, char **line, int lines)
+ {
+-  struct comment *com = xmalloc(sizeof(struct comment));
++  struct treecomment *com = xmalloc(sizeof(struct treecomment));
+   com->pattern = phead;
+   com->desc = xmalloc(sizeof(char *) * (lines+1));
+   int i;
+@@ -48,7 +48,7 @@ struct infofile *new_infofile(char *path
+ {
+   char buf[PATH_MAX];
+   struct infofile *inf;
+-  struct comment *chead = NULL, *cend = NULL, *com;
++  struct treecomment *chead = NULL, *cend = NULL, *com;
+   struct pattern *phead = NULL, *pend = NULL, *p;
+   char *line[PATH_MAX];
+   FILE *fp;
+@@ -116,7 +116,7 @@ void push_infostack(struct infofile *inf
+ struct infofile *pop_infostack(void)
+ {
+   struct infofile *inf = infostack;
+-  struct comment *cn, *cc;
++  struct treecomment *cn, *cc;
+   struct pattern *p, *c;
+   infostack = infostack->next;
+ 
+@@ -141,10 +141,10 @@ struct infofile *pop_infostack(void)
+  * Returns an info pointer if a path matches a pattern.
+  * top == 1 if called in a directory with a .info file.
+  */
+-struct comment *infocheck(char *path, char *name, int top, int isdir)
++struct treecomment *infocheck(char *path, char *name, int top, int isdir)
+ {
+   struct infofile *inf = infostack;
+-  struct comment *com;
++  struct treecomment *com;
+   struct pattern *p;
+ 
+   if (inf == NULL) return NULL;
