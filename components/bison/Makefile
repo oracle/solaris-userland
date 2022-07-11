@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 # for the tests
@@ -28,13 +28,13 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		bison
-COMPONENT_VERSION=	3.7.3
+COMPONENT_VERSION=	3.8.2
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-  sha256:88d9e36856b004c0887a12ba00ea3c47db388519629483dd8c3fce9694d4da6f
+  sha256:9bba0214ccf7f1079c5d59210045227bcf619519840ebfa80cd3849cff5a5bf2
 COMPONENT_ANITYA_ID=	193
 
-COMPONENT_BAID=		88926
+COMPONENT_BAID=		126735
 
 TEST_TARGET= $(TEST_64)
 # we need to first generate the test suite
