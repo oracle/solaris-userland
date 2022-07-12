@@ -27,15 +27,14 @@ BUILD_BITS=		64
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		mutt
-COMPONENT_VERSION=	2.2.3
+COMPONENT_VERSION=	2.2.6
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:978addcdab454f447ed7d1de84b5767e714c30714285bf82e4a1745071d18d89
+    sha256:ffa2d93517cfc606fe01daffc5f12e42062a1c134d3b9af78484ebc5430888d3
 COMPONENT_ARCHIVE_URL=	ftp://ftp.mutt.org/pub/mutt/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://www.mutt.org/
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_ANITYA_ID=	2035
-
-COMPONENT_BAID=		121210
+COMPONENT_BAID=		126902
 
 PROTOCONTRIBDIR =	$(PROTOUSRSHAREDOCDIR)/$(COMPONENT_NAME)/contrib
 
@@ -46,6 +45,8 @@ ADISTACK_MODE =		$(ADISTACK_ENABLE)
 TEST_TARGET= 		$(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
 
+# We have a patch against configure.ac, we need to regenerate configure script
+COMPONENT_PREP_ACTION = (cd $(@D) ; autoreconf -fiv)
 
 CONFIGURE_OPTIONS  +=		--sysconfdir="$(ETCDIR)/$(COMPONENT_NAME)"
 CONFIGURE_OPTIONS  +=		--enable-debug
@@ -57,7 +58,7 @@ CONFIGURE_OPTIONS  +=		--enable-sidebar
 CONFIGURE_OPTIONS  +=		--with-gdbm
 CONFIGURE_OPTIONS  +=		--with-regex
 CONFIGURE_OPTIONS  +=		--with-curses
-CONFIGURE_OPTIONS  +=		--with-ssl
+CONFIGURE_OPTIONS  +=		--with-ssl=/usr/openssl/3
 CONFIGURE_OPTIONS  +=		--with-idn
 CFLAGS +=			-I"$(USRINCDIR)/idn"
 CONFIGURE_OPTIONS  +=		--with-wc-funcs
@@ -75,7 +76,7 @@ REQUIRED_PACKAGES += data/xml-common
 REQUIRED_PACKAGES += library/database/gdbm
 REQUIRED_PACKAGES += library/libidn
 REQUIRED_PACKAGES += library/ncurses
-REQUIRED_PACKAGES += library/security/openssl
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
 REQUIRED_PACKAGES += $(PERL_PKG)
 REQUIRED_PACKAGES += shell/ksh93

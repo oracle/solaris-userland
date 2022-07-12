@@ -1,0 +1,14 @@
+The linker flag needs to be adjusted in order to find OpenSSL 3.
+Not intended for upstream.
+
+--- mutt-2.2.6/configure.ac.orig	2022-07-13 14:33:03.222036310 +0200
++++ mutt-2.2.6/configure.ac	2022-07-13 14:34:42.821191612 +0200
+@@ -746,7 +746,7 @@
+ 	  else
+             if test "$with_ssl" != "yes"
+             then
+-             LDFLAGS="$LDFLAGS -L$withval/lib"
++             LDFLAGS="$LDFLAGS -L$withval/lib/64"
+              CPPFLAGS="$CPPFLAGS -I$withval/include"
+             fi
+             saved_LIBS="$LIBS"
