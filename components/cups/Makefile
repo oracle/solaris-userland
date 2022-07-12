@@ -30,9 +30,9 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		cups
 
-COMPONENT_VERSION=	2.4.1
-COMPONENT_ARCHIVE_HASH=	sha256:c7339f75f8d4f2dec50c673341a45fc06b6885bb6d4366d6bf59a4e6c10ae178
-COMPONENT_BAID=		117001
+COMPONENT_VERSION=	2.4.2
+COMPONENT_ARCHIVE_HASH=	sha256:f03ccb40b087d1e30940a40e0141dcbba263f39974c20eb9f2521066c9c6c908
+COMPONENT_BAID=		126901
 
 COMPONENT_PROJECT_URL=	http://www.cups.org/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC)-source.tar.gz
@@ -61,6 +61,7 @@ CONFIGURE_OPTIONS +=	--with-smfmanifestdir=$(LIBDIR)/svc/manifest/application
 CONFIGURE_OPTIONS +=	--without-rcdir
 CONFIGURE_OPTIONS +=	--with-cups-user=lp
 CONFIGURE_OPTIONS +=	--with-cups-group=lp
+CONFIGURE_OPTIONS +=	--with-tls=gnutls
 
 COMPONENT_PREP_ACTION += (cd $(@D) ; \
 	PATH="/usr/gnu/bin:$(PATH)" autoconf -f )

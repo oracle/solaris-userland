@@ -60,7 +60,7 @@ Index: Makedefs.in
 +fi
 --- cups-2.4.1/config.h.in
 +++ cups-2.4.1/config.h.in
-@@ -711,4 +711,10 @@ */
+@@ -712,4 +712,10 @@ */
  #undef HAVE_SNAPD_CLIENT_RUN_SNAPCTL2_SYNC
  
  
@@ -539,7 +539,7 @@ Index: Makedefs.in
   /*
    * See if the job is owned by the requesting user...
    */
-@@ -5927,6 +6097,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -5942,6 +6112,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
  	                jobid);
  	return;
        }
@@ -556,7 +556,7 @@ Index: Makedefs.in
      }
      else
        job = NULL;
-@@ -6475,6 +6655,15 @@ }
+@@ -6490,6 +6670,15 @@ }
  
    exclude = cupsdGetPrivateAttrs(policy, con, printer, job->username);
  
@@ -572,7 +572,7 @@ Index: Makedefs.in
   /*
    * Copy attributes...
    */
-@@ -6734,6 +6923,21 @@ strlcpy(username, get_username(con), siz
+@@ -6749,6 +6938,21 @@ strlcpy(username, get_username(con), siz
    else
      username[0] = '\0';
  
@@ -594,7 +594,7 @@ Index: Makedefs.in
    ra = create_requested_array(con->request);
    for (job_attr = (char *)cupsArrayFirst(ra); job_attr; job_attr = (char *)cupsArrayNext(ra))
      if (strcmp(job_attr, "job-id") &&
-@@ -6802,6 +7006,14 @@ if (need_load_job && !job->attrs)
+@@ -6817,6 +7021,14 @@ if (need_load_job && !job->attrs)
        {
          cupsdLoadJob(job);
  
@@ -609,7 +609,7 @@ Index: Makedefs.in
  	if (!job->attrs)
  	{
  	  cupsdLogMessage(CUPSD_LOG_DEBUG2, "get_jobs: No attributes for job %d", job->id);
-@@ -6870,7 +7082,11 @@ continue;
+@@ -6885,7 +7097,11 @@ continue;
  	}
        }
  
@@ -622,7 +622,7 @@ Index: Makedefs.in
  	continue;
  
        if (count > 0)
-@@ -7968,6 +8184,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -7983,6 +8199,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -638,7 +638,7 @@ Index: Makedefs.in
   /*
    * See if the job is owned by the requesting user...
    */
-@@ -8238,6 +8463,14 @@ */
+@@ -8253,6 +8478,14 @@ */
        send_ipp_status(con, IPP_NOT_FOUND, _("Job #%d does not exist."), jobid);
        return;
      }
@@ -653,7 +653,7 @@ Index: Makedefs.in
      else
      {
       /*
-@@ -8260,6 +8493,27 @@ send_http_error(con, status, dprinter);
+@@ -8275,6 +8508,27 @@ send_http_error(con, status, dprinter);
      return;
    }
  
@@ -681,7 +681,7 @@ Index: Makedefs.in
   /*
    * Now move the job or jobs...
    */
-@@ -9106,6 +9360,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -9121,6 +9375,16 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -698,7 +698,7 @@ Index: Makedefs.in
   /*
    * See if job is "held"...
    */
-@@ -9330,6 +9594,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -9345,6 +9609,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -714,7 +714,7 @@ Index: Makedefs.in
   /*
    * See if job is in any of the "completed" states...
    */
-@@ -9681,6 +9954,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -9696,6 +9969,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -730,7 +730,7 @@ Index: Makedefs.in
    printer = cupsdFindDest(job->dest);
  
   /*
-@@ -10290,6 +10572,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
+@@ -10305,6 +10587,15 @@ send_ipp_status(con, IPP_NOT_FOUND, _("J
      return;
    }
  
@@ -746,7 +746,7 @@ Index: Makedefs.in
   /*
    * See if the job has been completed...
    */
-@@ -10634,7 +10925,6 @@ }
+@@ -10649,7 +10940,6 @@ }
   /*
    * Return a list of attributes that can be set via Set-Printer-Attributes.
    */
@@ -754,7 +754,7 @@ Index: Makedefs.in
    if ((attr = ippFindAttribute(con->request, "printer-location",
                                 IPP_TAG_TEXT)) != NULL)
    {
-@@ -11474,6 +11764,11 @@ */
+@@ -11489,6 +11779,11 @@ */
  
    strlcpy(username, get_username(con), userlen);
  
@@ -807,7 +807,7 @@ Index: Makedefs.in
    job->impressions = ippFindAttribute(job->attrs, "job-impressions-completed", IPP_TAG_INTEGER);
    job->sheets      = ippFindAttribute(job->attrs, "job-media-sheets-completed", IPP_TAG_INTEGER);
    job->job_sheets  = ippFindAttribute(job->attrs, "job-sheets", IPP_TAG_NAME);
-@@ -3864,6 +3880,25 @@ newlength = ipp_length(job->attrs);
+@@ -3870,6 +3886,25 @@ newlength = ipp_length(job->attrs);
    for (i = num_pwgppds, pwgppd = pwgppds; i > 0; i --, pwgppd ++)
      newlength += 1 + strlen(pwgppd->name) + 1 + strlen(pwgppd->value);
  
@@ -833,7 +833,7 @@ Index: Makedefs.in
   /*
    * Then allocate/reallocate the option buffer as needed...
    */
-@@ -4104,6 +4139,25 @@ }
+@@ -4110,6 +4145,25 @@ }
  
    cupsFreeOptions(num_pwgppds, pwgppds);
  
@@ -859,7 +859,7 @@ Index: Makedefs.in
   /*
    * Return the options string...
    */
-@@ -4808,6 +4862,18 @@ */
+@@ -4814,6 +4868,18 @@ */
    if (!cupsdLoadJob(job))
      return;
  
@@ -889,9 +889,9 @@ Index: Makedefs.in
  };
  
  typedef struct cupsd_joblog_s		/**** Job log message ****/
---- cups-2.4.1/scheduler/printers.c
-+++ cups-2.4.1/scheduler/printers.c
-@@ -929,6 +929,91 @@ else
+--- a/scheduler/printers.c
++++ b/scheduler/printers.c
+@@ -933,6 +933,91 @@ else
      return (p);
  }
  
@@ -983,7 +983,7 @@ Index: Makedefs.in
  
  /*
   * 'cupsdLoadAllPrinters()' - Load printers from the printers.conf file.
-@@ -2598,12 +2683,22 @@ }
+@@ -2602,12 +2687,22 @@ }
      ippDelete(oldattrs);
    }
  
