@@ -20,22 +20,21 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64_and_32
 COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME =	libzip
-COMPONENT_VERSION =	1.7.3
+COMPONENT_VERSION =	1.9.2
 COMPONENT_PROJECT_URL =	https://libzip.org/
 COMPONENT_ARCHIVE_HASH = \
-    sha256:0e2276c550c5a310d4ebf3a2c3dfc43fb3b4602a072ff625842ad4f3238cb9cc
+    sha256:d98d9dd49c2580314923c262a28c3f8a3e77e1b612da00b7fe220851ccd465ce
 COMPONENT_ARCHIVE_URL = $(COMPONENT_PROJECT_URL)download/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	utility/zip
 COMPONENT_ANITYA_ID=	10649
-
-COMPONENT_BAID = 83933
+COMPONENT_BAID =	126980
 
 BUILD_STYLE= cmake
 
@@ -44,7 +43,7 @@ include $(WS_MAKE_RULES)/common.mk
 # elfedit removes wrong RUNPATH/RPATH 
 COMPONENT_POST_INSTALL_ACTION.64 = ( \
 	for i in bin/zipcmp bin/zipmerge bin/ziptool \
-	         lib/libzip.so.5.3 lib/$(MACH64)/libzip.so.5.3; do \
+	         lib/libzip.so.5.5 lib/$(MACH64)/libzip.so.5.5; do \
  	$(ELFEDIT) -e "dyn:delete RUNPATH" -e "dyn:delete RPATH" \
  	  $(PROTOUSRDIR)/$$i ; done ) ;
 
