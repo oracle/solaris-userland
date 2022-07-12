@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS =            64_and_32
@@ -30,16 +30,18 @@ COMPILER=gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		upower
-COMPONENT_VERSION=	0.99.11
-COMPONENT_PROJECT_URL=	http://upower.freedesktop.org/
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
+COMPONENT_VERSION=	0.99.19
+COMPONENT_PROJECT_URL=	https://gitlab.freedesktop.org/upower/upower
+COMPONENT_SRC=		$(COMPONENT_NAME)-v$(COMPONENT_VERSION)
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.bz2
 COMPONENT_ARCHIVE_HASH= \
-	sha256:64b5ffbfccd5bdb15d925777979a4dbee1a957f9eaeb158dc76175267eddbdef
-COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/releases/$(COMPONENT_ARCHIVE)
+	sha256:e5bda2f5837ee311f5b7b6ec9549b029c88f4958011c6a8f5550b54408ee06ae
+COMPONENT_ARCHIVE_URL=	$(COMPONENT_PROJECT_URL)/-/archive/v$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/upower
 COMPONENT_ANITYA_ID=	5056
 
-COMPONENT_BAID=		70930
+COMPONENT_BAID=		126474
+BUILD_STYLE=		meson
 
 # Tests do not work on Solaris yet
 TEST_TARGET= $(SKIP_TEST)
@@ -49,21 +51,26 @@ $(SKIP_TEST_AT_TOP_LEVEL)
 
 include $(WS_MAKE_RULES)/common.mk
 
+CC_PIC_MODE = $(CC_PIC_DISABLE)
+LD_Z_PIE_MODE = $(LD_Z_PIE_DISABLE)
+
 # Assumes GNU xgettext in PATH
 CONFIGURE_ENV += PATH=$(GNUBIN):$(PATH)
 
 # Assumes GNU tail is first in PATH
 COMPONENT_BUILD_ENV += PATH="$(GNUBIN):$(PATH)"
 
+# Assumes GNU msgfmt is first in PATH
+COMPONENT_INSTALL_ENV += PATH="$(GNUBIN):$(PATH)"
+
 # XXX wants gudev for better backend support; alternatively, create solaris
 # native backend as was done for openbsd/freebsd.
 CONFIGURE_OPTIONS += --libexecdir="$(USRLIBDIR)"
 CONFIGURE_OPTIONS += --sysconfdir=$(ETCDIR)
-CONFIGURE_OPTIONS += --disable-static
-CONFIGURE_OPTIONS += --disable-gtk-doc
-CONFIGURE_OPTIONS += --enable-man-pages
-CONFIGURE_OPTIONS += --enable-shared
-CONFIGURE_OPTIONS += --with-pic
+CONFIGURE_OPTIONS += -Dgtk-doc=false
+CONFIGURE_OPTIONS += -Dsystemdsystemunitdir='no'
+CONFIGURE_OPTIONS += -Dudevrulesdir=''
+CONFIGURE_OPTIONS += -Dudevhwdbdir=''
 
 REQUIRED_PACKAGES += developer/documentation-tool/gtk-doc
 REQUIRED_PACKAGES += library/desktop/gobject/gobject-introspection
