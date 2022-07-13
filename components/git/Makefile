@@ -30,15 +30,14 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		git
-COMPONENT_VERSION=	2.36.0
+COMPONENT_VERSION=	2.37.1
 COMPONENT_PROJECT_URL=	http://git-scm.com/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:af5ebfc1658464f5d0d45a2bfd884c935fb607a10cc021d95bc80778861cc1d3
+    sha256:c8162c6b8b8f1c5db706ab01b4ee29e31061182135dc27c4860224aaec1b3500
 COMPONENT_ARCHIVE_URL=	https://www.kernel.org/pub/software/scm/git/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	5350
-
-COMPONENT_BAID=		121145 
+COMPONENT_BAID=		127041 
 
 #
 # man pages are a separate archive
@@ -46,7 +45,7 @@ COMPONENT_BAID=		121145
 COMPONENT_SRC_1 =	$(COMPONENT_NAME)-manpages-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE_1 =	$(COMPONENT_SRC_1).tar.xz
 COMPONENT_ARCHIVE_HASH_1 = \
-    sha256:c063c30e3d712865f1057c50f4b736b8ccab4bb542ca1c3b157d45e5ad61db5c
+    sha256:4dcece78fcb9c585f362d2607b05189afb6c8b4e47a21dfdccb5fefd27fa1e25
 COMPONENT_ARCHIVE_URL_1 = https://www.kernel.org/pub/software/scm/git/$(COMPONENT_ARCHIVE_1)
 UNPACK_ARGS_1 =		-r $(COMPONENT_SRC_1)
 PKG_PROTO_DIRS +=	$(COMPONENT_SRC_1)
@@ -136,7 +135,6 @@ COMPONENT_POST_TEST_ACTION = \
 COMPONENT_TEST_TRANSFORMS += \
 	'-n ' \
 	'-e "/^fixed/p" '\
-	'-e "/^success/p" '\
 	'-e "/^failed/p" '\
 	'-e "/^broken/p" '\
 	'-e "/^total/p" '
