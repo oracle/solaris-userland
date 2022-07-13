@@ -39,7 +39,12 @@ COMPONENT_ANITYA_ID=	96894
 
 COMPONENT_BAID=		102906
 
+ifeq ($(strip $(OPENSSL3)),)
 PKG_CONFIG_PATH.64=	/usr/lib/64/pkgconfig
+else
+PKG_CONFIG_PATH.32 = 	/usr/openssl/3/lib/pkgconfig:/usr/lib/pkgconfig
+PKG_CONFIG_PATH.64 = 	/usr/openssl/3/lib/64/pkgconfig:/usr/lib/64/pkgconfig
+endif
 
 TEST_TARGET= $(NO_TESTS)
 include $(WS_MAKE_RULES)/common.mk
@@ -52,8 +57,21 @@ CONFIGURE_OPTIONS+=	--disable-python
 CONFIGURE_OPTIONS+=	PATH="$(GNUBIN):$$PATH"
 CONFIGURE_OPTIONS.64+=	--with-pkg-config=$(PKG_CONFIG_PATH.64)
 
+ifneq ($(strip $(OPENSSL3)),)
+CONFIGURE_OPTIONS.32+=	--with-pkg-config=$(PKG_CONFIG_PATH.32)
+
+COMPONENT_POST_CONFIGURE_ACTION.32 += ( \
+	$(FIND) $(@D) -name Makefile | while read f; do $(GSED) -i '/^LASSO_LIBS/s;-L/usr/lib;;g' $$f; done ) ;
+COMPONENT_POST_CONFIGURE_ACTION.64 += ( \
+	$(FIND) $(@D) -name Makefile | while read f; do $(GSED) -i '/^LASSO_LIBS/s;-L/usr/lib/$(MACH64);;g' $$f; done ) ;
+endif
+
 REQUIRED_PACKAGES+=	system/library
+ifneq ($(strip $(OPENSSL3)),)
+REQUIRED_PACKAGES+=	library/security/openssl-3
+else
 REQUIRED_PACKAGES+=	library/security/openssl
+endif
 REQUIRED_PACKAGES+=	library/glib2
 REQUIRED_PACKAGES+=	system/library/math
 REQUIRED_PACKAGES+=	library/libxml2
