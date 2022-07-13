@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 include ../../../make-rules/shared-macros.mk
@@ -38,7 +38,11 @@ COMPONENT_ANITYA_ID=	1997
 
 COMPONENT_BAID=		111228
 
+ifeq ($(strip $(OPENSSL3)),)
 PKG_CONFIG_PATH.64=	/usr/lib/64/pkgconfig
+else
+PKG_CONFIG_PATHS=	/usr/openssl/3/lib/64/pkgconfig:/usr/lib/64/pkgconfig
+endif
 
 MODULES_INSTALL=
 include ../modules.mk
@@ -54,6 +58,10 @@ REQUIRED_PACKAGES+=	library/lasso
 REQUIRED_PACKAGES+=	library/glib2
 REQUIRED_PACKAGES+=	system/core-os
 REQUIRED_PACKAGES+=	system/library
+ifeq ($(strip $(OPENSSL3)),)
 REQUIRED_PACKAGES+=	library/security/openssl
+else
+REQUIRED_PACKAGES+=	library/security/openssl-3
+endif
 REQUIRED_PACKAGES+=	web/curl
 REQUIRED_PACKAGES+=	text/gnu-grep
