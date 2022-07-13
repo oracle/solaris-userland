@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS= 64_and_32
@@ -28,16 +28,17 @@ COMPILER= gcc
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		libsndfile
-COMPONENT_VERSION=	1.0.28
-COMPONENT_PROJECT_URL=	http://www.mega-nerd.com/libsndfile/
+COMPONENT_VERSION=	1.1.0
+COMPONENT_PROJECT_URL=	http://libsndfile.github.io/libsndfile/
+COMPONENT_ARCHIVE=	$(COMPONENT_NAME)-$(COMPONENT_VERSION).tar.xz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:1ff33929f042fa333aed1e8923aa628c3ee9e1eb85512686c55092d1e5a9dfa9
-COMPONENT_ARCHIVE_URL=	http://www.mega-nerd.com/libsndfile/files/$(COMPONENT_ARCHIVE)
-COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
+    sha256:0f98e101c0f7c850a71225fb5feaf33b106227b3d331333ddc9bacee190bcf41
+COMPONENT_ARCHIVE_URL=	\
+	https://github.com/libsndfile/libsndfile/releases/download/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+#COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
 COMPONENT_BUGDB=	library/libsndfile
 COMPONENT_ANITYA_ID=	13277
-
-COMPONENT_BAID=		39175
+COMPONENT_BAID=		127281
 
 TEST_TARGET= install $(TEST_32_and_64)
 SYSTEM_TEST_TARGET= build $(SYSTEM_TEST_32_and_64)
