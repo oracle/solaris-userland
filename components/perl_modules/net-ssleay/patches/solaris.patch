@@ -1,0 +1,22 @@
+Add support into Net::SSLeay
+
+Pull request is here https://github.com/radiator-software/p5-net-ssleay/pull/395
+
+--- Net-SSLeay-1.92/Makefile.PL
++++ Net-SSLeay-1.92/Makefile.PL
+@@ -225,6 +225,7 @@ sub ssleay_get_build_opts {
+     # phase fails.
+     my @try_lib_paths = (
+ 	["$prefix/lib64", "$prefix/lib", "$prefix/out32dll", $prefix] => sub {$OSNAME eq 'darwin' },
++	["$prefix/lib/64", $prefix] => sub {$OSNAME eq 'solaris' },
+ 	[$prefix, "$prefix/lib64", "$prefix/lib", "$prefix/out32dll"] => sub { 1 },
+ 	);
+ 
+@@ -341,6 +342,7 @@ sub find_openssl_prefix {
+ 	'/usr/local/opt/openssl/bin/openssl' => '/usr/local/opt/openssl', # OSX homebrew openssl
+ 	'/usr/local/bin/openssl'         => '/usr/local', # OSX homebrew openssl
+ 	'/opt/local/bin/openssl'         => '/opt/local', # Macports openssl
++	'/usr/openssl/3/bin/openssl'     => '/usr/openssl/3', # Solaris
+ 	'/usr/bin/openssl'               => '/usr',
+ 	'/usr/sbin/openssl'              => '/usr',
+ 	'/opt/ssl/bin/openssl'           => '/opt/ssl',
