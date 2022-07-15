@@ -1,0 +1,20 @@
+Reimplement missing cfmakeraw function as it works on systems where it's available.
+
+--- ncurses-6.3-20220709/test/test_mouse.c
++++ ncurses-6.3-20220709/test/test_mouse.c
+@@ -43,7 +43,15 @@ raw_loop(void)
+     char *xtermcap;
+ 
+     tcgetattr(0, &old);
++#ifdef __sun
++	tty.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL|IXON);
++	tty.c_oflag &= ~OPOST;
++	tty.c_lflag &= ~(ECHO|ECHONL|ICANON|ISIG|IEXTEN);
++	tty.c_cflag &= ~(CSIZE|PARENB);
++	tty.c_cflag |= CS8;
++#else
+     cfmakeraw(&tty);
++#endif
+ 
+     setupterm(NULL, 0, 0);
+     xtermcap = tigetstr("XM");

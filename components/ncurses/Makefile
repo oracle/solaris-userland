@@ -26,16 +26,16 @@ BUILD_BITS= 64_and_32
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		ncurses
-COMPONENT_VERSION=	6.3
+COMPONENT_VERSION=	6.3-20220709
+IPS_COMPONENT_VERSION=	6.3.0.20220709
 COMPONENT_PROJECT_URL=	https://invisible-island.net/ncurses/
-COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
+COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tgz
 COMPONENT_ARCHIVE_HASH= \
-    sha256:97fc51ac2b085d4cde31ef4d2c3122c21abc217e9090a43a30fc5ec21684e059
-COMPONENT_ARCHIVE_URL=	https://invisible-mirror.net/archives/ncurses/$(COMPONENT_ARCHIVE)
+    sha256:5f6ab62adf2f57e5a9098e0a8c32ffd5a0e0fffaeeb751f7a0b395ff70471c9c
+COMPONENT_ARCHIVE_URL=	https://invisible-mirror.net/archives/ncurses/current/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/ncurses
 COMPONENT_ANITYA_ID=	2057
-
-COMPONENT_BAID=		111447
+COMPONENT_BAID=		126978
 
 # Tests are interactive and require ncurses to be installed in CBE.
 # You can compile and run them from ncurses' test directory.
