@@ -20,23 +20,22 @@
 #
 
 #
-# Copyright (c) 2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		asgiref
-COMPONENT_VERSION=	3.3.4
+COMPONENT_VERSION=	3.5.2
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:166550e18ba160ad55aecc67f4fa83c8f0dff40ad9110af84df0d889be96248f
+    sha256:7b65b0ef4dd5682398449bd6b03c96697c8a73a1b416abf37818393580eef12c
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/django/asgiref/
 COMPONENT_BUGDB=	python-mod/asgiref
 COMPONENT_ANITYA_ID=	18462
-
-COMPONENT_BAID=		100561
+COMPONENT_BAID=		123831
 
 PYTHON_VERSIONS = 3.9
 
