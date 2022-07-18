@@ -20,28 +20,27 @@
 #
 
 #
-# Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		rfc3986
-COMPONENT_VERSION=	1.5.0
+COMPONENT_VERSION=	2.0.0
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.gz
 COMPONENT_ARCHIVE_HASH=	\
-    sha256:270aaf10d87d0d4e095063c65bf3ddbc6ee3d0b226328ce21e036f946e421835
+    sha256:7986252c0aa87e72a1653ec733be55fa309f00a433fed7d1e658fef7b3c9ee23
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://rfc3986.readthedocs.io/en/latest/
 COMPONENT_BUGDB=	python-mod/rfc3986
 COMPONENT_ANITYA_ID=	13218
-
-COMPONENT_BAID=		101701
+COMPONENT_BAID=		122686
 
 PYTHON_VERSIONS = $(PYTHON3_VERSIONS)
 
 include $(WS_MAKE_RULES)/prep.mk
-include $(WS_MAKE_RULES)/setup.py.mk
+include $(WS_MAKE_RULES)/pybuild.mk
 include $(WS_MAKE_RULES)/ips.mk
 
 COMPONENT_TEST_DIR =	$(SOURCE_DIR)/tests
