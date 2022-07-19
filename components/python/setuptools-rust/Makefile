@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:7366f8dbcbdee3ac0295919f08dcd845d0ec2ee2d35ace875b4b731ff62fd0fb
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/PyO3/setuptools-rust
-COMPONENT_BUGDB=	python-mod/setuptools-rust
+COMPONENT_BUGDB=	python-mod/setup-rust
 COMPONENT_ANITYA_ID=	122284
 COMPONENT_BAID=		121662
 

@@ -33,7 +33,7 @@ COMPONENT_ARCHIVE_HASH=	\
     sha256:2046c6a084723df18fc21899e2c9b12257fb4edc1ac42332d5fdad7701ccc65c
 COMPONENT_ARCHIVE_URL=	$(call pypi_url)
 COMPONENT_PROJECT_URL=	https://github.com/rbarrois/python-semanticversion
-COMPONENT_BUGDB=	python-mod/semantic_version
+COMPONENT_BUGDB=	python-mod/semantic_ver
 COMPONENT_ANITYA_ID=	46758
 COMPONENT_BAID=		124439
 
