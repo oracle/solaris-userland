@@ -58,6 +58,11 @@ COMPONENT_TEST_ENV += PATH="$$PATH:$(COMPONENT_TEST_BUILD_DIR)"
 # not even executed
 COMPONENT_TEST_ARGS += -k
 
+# detect OpenSSL 3 headers and libs.
+SSL_PKG_CONFIG_PATH.64 = /usr/openssl/3/lib/64/pkgconfig
+SSL_PKG_CONFIG_PATH.32 = /usr/openssl/3/lib/pkgconfig
+PKG_CONFIG_PATHS += $(SSL_PKG_CONFIG_PATH.$(BITS))
+
 # Enforce openssl (--with-ssl=openssl) instead of default gnutls
 # (--with-ssl) as wget doesn't work for secure connections with gnutls. 
 # Set PATH to find /usr/perl5/bin/pod2man, so that the man page wget.1
@@ -65,6 +70,11 @@ COMPONENT_TEST_ARGS += -k
 CONFIGURE_OPTIONS +=	--sysconfdir=$(ETCDIR)
 CONFIGURE_OPTIONS +=	--without-libpsl
 CONFIGURE_OPTIONS +=	--with-ssl=openssl
+# openssl3 paths
+CONFIGURE_OPTIONS +=	--with-libssl-prefix=/usr/openssl/3
+CONFIGURE_ENV.64  +=	OPENSSL_LIBS="-L/usr/openssl/3/lib/64 -lssl -R/lib/$(MACH64)"
+CONFIGURE_ENV.64  +=	OPENSSL_CFLAGS="-I/usr/openssl/3/include"
+
 CONFIGURE_OPTIONS +=	--infodir=$(CONFIGURE_INFODIR)
 CONFIGURE_OPTIONS +=	PATH="$(PATH):/usr/perl5/bin"
 CPPFLAGS +=	-I/usr/include/idn
@@ -80,6 +90,5 @@ COMPONENT_TEST_ENV += "no_proxy="
 
 REQUIRED_PACKAGES += library/libidn2
 REQUIRED_PACKAGES += library/pcre2
-REQUIRED_PACKAGES += library/security/openssl
-REQUIRED_PACKAGES += library/security/openssl/openssl-fips-140
+REQUIRED_PACKAGES += library/security/openssl-3
 REQUIRED_PACKAGES += library/zlib
