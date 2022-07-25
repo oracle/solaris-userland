@@ -2,9 +2,9 @@ createPPD.sh is a mess and and does not do what was intended on Solaris. I had t
 it and remove most of the code.
 
 This is an upstream bug.
---- hplip-3.19.5/createPPD.sh.~1~	2019-04-08 13:05:18.000000000 +0200
-+++ hplip-3.19.5/createPPD.sh	2019-06-26 14:10:40.379291780 +0200
-@@ -19,106 +19,33 @@
+--- a/createPPD.sh	2022-06-23 06:56:29.000000000 +0200
++++ b/createPPD.sh	2022-07-20 08:36:00.629920419 +0200
+@@ -19,108 +19,33 @@
  # Author: 
  #
  #echo "HP Linux Imaging and Printing System createPPD file"
@@ -40,6 +40,7 @@ This is an upstream bug.
 -	install -d ppd/classppd/hpcups 
 -	install -d ppd/classppd/ps
 -	ppdc -d ppd/classppd/hpcups prnt/drv/hpcups.drv
+-	#ppdc -d ppd/classppd/hpcups prnt/spd/hpcupsSPD.drv
 -    	if [ -f "prnt/ps/hp-postscript-inkjet.ppd.gz" ]
 -	then
 -		cp prnt/ps/hp-postscript*.ppd.gz ppd/classppd/ps
@@ -49,7 +50,8 @@ This is an upstream bug.
 -			gzip -c "$i" > "$i.gz"
 -		done
 -	fi
--        #cp prnt/ps/hp-postscript*.ppd.gz ppd/classppd/ps
+-	#cp prnt/spd/*.ppd ppd/classppd/hpcups/.
+-    #cp prnt/ps/hp-postscript*.ppd.gz ppd/classppd/ps
 -	for i in ppd/classppd/hpcups/*.ppd; do
 -		gzip -c "$i" > "$i.gz"
 -	done

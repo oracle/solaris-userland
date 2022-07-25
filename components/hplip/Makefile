@@ -31,9 +31,9 @@ COMPONENT_MAKE_JOBS=1
 include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=         hplip
-COMPONENT_VERSION=      3.21.12
-COMPONENT_BAID=		115994
-COMPONENT_ARCHIVE_HASH= sha256:7ef4523ef81bced71515e1c8840ef6c68c602638c159e6dd9a92691ceec64f9c
+COMPONENT_VERSION=      3.22.6
+COMPONENT_BAID=		127320
+COMPONENT_ARCHIVE_HASH= sha256:27ed0d492febb0b47c656234820d3ce573b24ff5b62e3bf4b2c47f82868d6bb4
 COMPONENT_ARCHIVE_URL=	https://downloads.sourceforge.net/project/$(COMPONENT_NAME)/$(COMPONENT_NAME)/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
 COMPONENT_PROJECT_URL=	http://hplipopensource.com/
 COMPONENT_SIG_URL=	$(COMPONENT_ARCHIVE_URL).asc
@@ -79,6 +79,9 @@ COMPONENT_POST_INSTALL_ACTION += \
 # Pre-compile python source code
 COMPONENT_POST_INSTALL_ACTION += \
 	$(PYTHON) -m compileall $(PROTO_DIR)/usr/share/hplip;
+
+hplip.license:
+	cat $(SOURCE_DIR)/copyright >$@
 
 REQUIRED_PACKAGES += image/library/libjpeg
 REQUIRED_PACKAGES += library/libusb-1
