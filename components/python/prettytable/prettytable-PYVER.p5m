@@ -51,6 +51,10 @@ license prettytable.license license=BSD
 depend type=require fmri=__TBD pkg.debug.depend.file=python$(PYVER) \
     pkg.debug.depend.path=usr/bin
 
+# force a dependency on importlib-metadata; pkgdepend work is needed to flush this out.
+$(PYTHON_3.7_ONLY)depend type=require \
+    fmri=library/python/importlib-metadata-$(PYV)
+
 # force a dependency on the prettytable package
 depend type=require \
     fmri=library/python/prettytable@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
