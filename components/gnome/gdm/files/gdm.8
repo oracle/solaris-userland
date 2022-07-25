@@ -22,9 +22,7 @@ greeter GUI program, the program that the user interacts with\&.  Refer to the
 "Login Greeter GUI" section below for more information about how the
 user interface works\&.
 .PP
-If Virtual Terminals are supported on your system, you can start a flexible
-display via the "User Switcher" panel applet\&.  You may need to add
-this applet to your panel to make use of it\&.  You can also use the 
+If Virtual Terminals are supported on your system, you can use the 
 \fBgdmflexiserver\fR(1)
 command to start flexible displays from the command line\&.
 .PP
@@ -163,71 +161,8 @@ is associated with their user\&.  If the user has an image file named
 If the user does not have such an image file, a default icon is displayed\&.
 Image files must be no larger than 64K in size, or they are ignored by GDM\&.
 .PP
-The login greeter GUI can be configured to provide "Shutdown",
-"Restart", and "Suspend" buttons which allow the user to
-shutdown, restart, or suspend the system if desired\&.  On Oracle Solaris, the buttons
-will only be available if the "solaris\&.system\&.shutdown" authorization name is
-specified for the "gdm" user in the
-\fB/etc/user_attr\fR file\&.  For example, the
-\fB/etc/user_attr\fR file should include the following line to
-make these buttons available from the GDM login GUI screen\&.
-.PP
-.nf
-gdm::::type=normal;auths=solaris\&.system\&.shutdown
-.fi
-.PP
-While the login greeter GUI is displayed, a panel is provided at the bottom
-of the screen which provides useful information, interfaces that allow the
-user to specify how their session should be started, and interfaces to help
-the user navigate the login screen\&.  These include:
-.sp
-.in +2
-\(bu
-.mk
-.in +3
-.rt
-A clock, showing the date and time\&.
-.in -3
-\(bu
-.mk
-.in +3
-.rt
-What type of session to run\&.
-.in -3
-\(bu
-.mk
-.in +3
-.rt
-An alternative language to use\&.
-.in -3
-\(bu
-.mk
-.in +3
-.rt
-An alternative keyboard layout (if supported)\&.
-.in -3
-\(bu
-.mk
-.in +3
-.rt
-The ability to launch assistive technology programs if desired\&.
-.in -3
-\(bu
-.mk
-.in +3
-.rt
-The ability to monitor the system battery (if using a system with a battery)\&.
-.sp
-.in -3
-.in -2
-.PP
-The login greeter GUI also allows the user to take a screenshot\&.  If the
-user presses the keybindng associated with printing the screen, then the
-\fBgdm-screenshot\fR is run to take the screenshot\&.
-.SS "Accessibility"
-.PP
 GDM supports accessibility\&.  Users can click on the accessibility icon on
-the panel to specify which assistive programs should be launched with the
+top right to specify which assistive programs should be launched with the
 login GUI programs\&.  It is also possible to configure a system so that 
 needed assistive programs should always be launched\&.
 .SS "Security"
@@ -302,11 +237,9 @@ scripting interfaces and other interfaces to configure how sessions are started
 which are described in the "GDM Login Scripts and Session Files"
 section of this manpage\&.
 .PP
-The default system configuration for the GDM daemon is stored in the file
-\fB/etc/gdm/gdm\&.schemas\fR, and accessed by GDM via GConf\&.
-Users are not recommended to modify this file since it may be overwritten on
-upgrade\&.  Instead users should override these settings by specifying values
-in the \fB/etc/gdm/custom\&.conf\fR file, which is in standard INI format\&.
+The GDM daemon is configured using the \fB/etc/gdm/custom\&.conf\fR file.  
+Note that older versions of GDM supported additional configuration options
+which are no longer supported in the latest versions of GDM.
 .PP
 The settings below are in "group/key=\fIdefault_value\fR \fItype\fR" format\&.
 The type can be \fIstring\fR, \fIinteger\fR, or \fIboolean\fR\&.  To override
@@ -468,18 +401,16 @@ user\&'s cached settings might become inconsistent across different servers\&.
 .sp
 .ne 2
 .mk
-\fBsecurity/DisallowTCP=false (boolean)\fR
+\fBsecurity/DisallowTCP=true (boolean)\fR
 If true, then always append "-\fBnolisten\fR tcp" to the
 Xserver command line when starting attached Xservers, thus disallowing TCP
 connection\&.  This is a more secure configuration if you are not using remote
 connections\&.  Note that on Oracle Solaris, the
 \fBoptions/tcp_listen\fR property of the 
 \fBx11-server\fR service also controls whether this option is
-appended to the Xserver command line\&.  The GDM configuration value is set to
-"false" by default on Oracle Solaris to defer control of this feature to
-this \fBx11-server\fR property\&.  Refer to the
-\fBXserver\fR(1)
-manpage for more information\&.
+appended to the Xserver command line\&.  
+The default is "-\fBnolisten\fR tcp" if nothing is specified in the gdm
+custom.conf file
 
 .sp
 .ne 2
@@ -574,23 +505,6 @@ first line of it\&'s output is sent (and only the first line)\&. It runs at
 most once every 3 seconds to prevent possible denial of service by flooding
 the machine with QUERY packets\&. 
 
-.PP
-The default system configuration for the GDM login greeter GUI is stored in
-the system GConf schemas directory in the file
-\fBgdm-simple-greeter\&.schemas\fR, and accessed by GDM via
-GConf\&.  Users are not recommended to modify this file file since it may be
-overwritten on upgrade\&.  Instead users should override these settings by
-modifying the GConf configuration for the GDM user (the user specified in the
-Daemon/User configuration key above), normally the "gdm" user\&.
-Users can use the 
-\fBgconftool-2\fR(1)
-or
-\fBgconf-editor\fR(1)
-programs to set these values, if desired\&.  Refer to the EXAMPLES section of
-this manpage for more information about how to use these tools to change
-common settings\&.
-.PP
-GDM will use the GCONF_DEFAULT_SOURCE_PATH environment variable to ensure that each display uses it\&'s own GConf configuration\&.  This way changes in GConf will only affect the greeter in a per-seat manner\&.
 .PP
  
 The following keys are supported for configuring the GDM login greeter GUI and
@@ -700,35 +614,7 @@ where XXXXXX are random characters\&.
 If you run a system with quotas set, consider using the PostSession script to
 delete the \fB~/\&.xsession-errors\fR file, so that this log file
 is not stored unnecessarily\&.
-.SH "EXAMPLES"
 .PP
-Note that the user should change user to the "gdm" user before
-running the following
-\fBgconftool-2\fR(1) commands\&.  For example, the
- \fBsu\fR(8)
-command could be used\&.  Configuration changes will only take effect if they
-apply to the "gdm" user\&.
-.PP
-\fBExample 1: To Enable Face Browser for all GDM login greeter GUI\fR
-.PP
-.PP
-.nf
-\fBexample% gconftool-2 --direct --config-source xml:readwrite:/var/lib/gdm/\&.gconf\&.mandatory -t bool -s /apps/gdm/simple-greeter/disable_user_list false\fR
-.fi
-.PP
-\fBExample 2: To Change the Background Image for the GDM login greeter GUI\fR
-.PP
-.PP
-.nf
-\fBexample% gconftool-2 --direct --config-source xml:readwrite:/var/lib/gdm/\&.gconf\&.mandatory -t string -s /desktop/gnome/background/picture_filename /usr/share/backgrounds/solaris/Hexagons_Dark\&.png
-.fi
-.PP
-\fBExample 3: To Disable Face Browser for StaticSeat1 GDM login greeter GUI\fR
-.PP
-.PP
-.nf
-\fBexample% gconftool-2 --direct --config-source xml:readwrite:/var/lib/gdm/StaticSeat1/\&.gconf -t bool -s /apps/gdm/simple-greeter/disable_user_list true\fR
-.fi
 .SH "EXIT STATUS"
 .PP
 The following exit values are returned:
@@ -970,31 +856,11 @@ GDM default daemon configuration\&.
 GDM daemon configuration customization\&.
 
 .TP 30
-.B /etc/gconf/schemas/gdm-simple-greeter\&.schemas\fR\fR
-GDM default login greeter GUI configuration\&.
-
-.TP 30
 .B /etc/default/login\fR\fR
 On Oracle Solaris, GDM supports the CONSOLE, PASSREQ, PATH, and SUPATH configuration
 options\&.  Refer to the
 \fBlogin\fR(1)
 manpage for details\&.
-
-.TP 30
-.B ~gdm/\&.gconf\&.mandatory\fR\fR
-The GDM user\&'s mandatory GConf settings\&.
-
-.TP 30
-.B ~gdm/\&.gconf\fR\fR
-The GDM user\&'s GConf settings\&.
-
-.TP 30
-.B ~gdm/\fIseat\fR/\&.gconf\fR\fR
-The per-seat GDM user\&'s GConf settings\&.
-
-.TP 30
-.B ~gdm/\&.gconf\&.path\fR\fR
-This file specifies the GDM user\&'s mandatory GConf settings directory\&.
 
 .SS "Logging"
 .TP 30
@@ -1048,8 +914,6 @@ platform\&.
 .PP
 \fBgdmflexiserver\fR(1),
 \fBgdm-screenshot\fR(1),
-\fBgconftool-2\fR(1),
-\fBgconf-editor\fR(1),
 \fBlogin\fR(1),
 \fBssh\fR(1),
 \fBXorg\fR(1),
