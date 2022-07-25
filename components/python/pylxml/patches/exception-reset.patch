@@ -10,9 +10,189 @@ restores it afterward.
 This was reported and accepted upstream:
 https://github.com/cython/cython/issues/4722
 
+--- lxml-4.7.1/src/lxml/html/clean.c
++++ lxml-4.7.1/src/lxml/html/clean.c
+@@ -20627,14 +20627,26 @@ static void __Pyx_AddTraceback(const cha
+     PyCodeObject *py_code = 0;
+     PyFrameObject *py_frame = 0;
+     PyThreadState *tstate = __Pyx_PyThreadState_Current;
++    PyObject *ptype, *pvalue, *ptraceback;
+     if (c_line) {
+         c_line = __Pyx_CLineForTraceback(tstate, c_line);
+     }
+     py_code = __pyx_find_code_object(c_line ? -c_line : py_line);
+     if (!py_code) {
++        /* __Pyx_CreateCodeObjectForTraceback can in some cases subsequently
++           call functions that cannot be called with set exceptions */
++        __Pyx_ErrFetchInState(tstate, &ptype, &pvalue, &ptraceback);
+         py_code = __Pyx_CreateCodeObjectForTraceback(
+             funcname, c_line, py_line, filename);
+-        if (!py_code) goto bad;
++        if (!py_code) {
++            /* If the code object creation fails, then we should clear the
++               fetched exception references and propagate the new exception */
++            Py_XDECREF(ptype);
++            Py_XDECREF(pvalue);
++            Py_XDECREF(ptraceback);
++            goto bad;
++        }
++        __Pyx_ErrRestoreInState(tstate, ptype, pvalue, ptraceback);
+         __pyx_insert_code_object(c_line ? -c_line : py_line, py_code);
+     }
+     py_frame = PyFrame_New(
+--- lxml-4.7.1/src/lxml/html/diff.c
++++ lxml-4.7.1/src/lxml/html/diff.c
+@@ -25262,14 +25262,26 @@ static void __Pyx_AddTraceback(const cha
+     PyCodeObject *py_code = 0;
+     PyFrameObject *py_frame = 0;
+     PyThreadState *tstate = __Pyx_PyThreadState_Current;
++    PyObject *ptype, *pvalue, *ptraceback;
+     if (c_line) {
+         c_line = __Pyx_CLineForTraceback(tstate, c_line);
+     }
+     py_code = __pyx_find_code_object(c_line ? -c_line : py_line);
+     if (!py_code) {
++        /* __Pyx_CreateCodeObjectForTraceback can in some cases subsequently
++           call functions that cannot be called with set exceptions */
++        __Pyx_ErrFetchInState(tstate, &ptype, &pvalue, &ptraceback);
+         py_code = __Pyx_CreateCodeObjectForTraceback(
+             funcname, c_line, py_line, filename);
+-        if (!py_code) goto bad;
++        if (!py_code) {
++            /* If the code object creation fails, then we should clear the
++               fetched exception references and propagate the new exception */
++            Py_XDECREF(ptype);
++            Py_XDECREF(pvalue);
++            Py_XDECREF(ptraceback);
++            goto bad;
++        }
++        __Pyx_ErrRestoreInState(tstate, ptype, pvalue, ptraceback);
+         __pyx_insert_code_object(c_line ? -c_line : py_line, py_code);
+     }
+     py_frame = PyFrame_New(
+--- lxml-4.7.1/src/lxml/builder.c
++++ lxml-4.7.1/src/lxml/builder.c
+@@ -8734,14 +8734,26 @@ static void __Pyx_AddTraceback(const cha
+     PyCodeObject *py_code = 0;
+     PyFrameObject *py_frame = 0;
+     PyThreadState *tstate = __Pyx_PyThreadState_Current;
++    PyObject *ptype, *pvalue, *ptraceback;
+     if (c_line) {
+         c_line = __Pyx_CLineForTraceback(tstate, c_line);
+     }
+     py_code = __pyx_find_code_object(c_line ? -c_line : py_line);
+     if (!py_code) {
++        /* __Pyx_CreateCodeObjectForTraceback can in some cases subsequently
++           call functions that cannot be called with set exceptions */
++        __Pyx_ErrFetchInState(tstate, &ptype, &pvalue, &ptraceback);
+         py_code = __Pyx_CreateCodeObjectForTraceback(
+             funcname, c_line, py_line, filename);
+-        if (!py_code) goto bad;
++        if (!py_code) {
++            /* If the code object creation fails, then we should clear the
++               fetched exception references and propagate the new exception */
++            Py_XDECREF(ptype);
++            Py_XDECREF(pvalue);
++            Py_XDECREF(ptraceback);
++            goto bad;
++        }
++        __Pyx_ErrRestoreInState(tstate, ptype, pvalue, ptraceback);
+         __pyx_insert_code_object(c_line ? -c_line : py_line, py_code);
+     }
+     py_frame = PyFrame_New(
 --- lxml-4.7.1/src/lxml/etree.c
 +++ lxml-4.7.1/src/lxml/etree.c
-@@ -267787,14 +267787,26 @@
+@@ -267787,14 +267787,26 @@ static void __Pyx_AddTraceback(const cha
+     PyCodeObject *py_code = 0;
+     PyFrameObject *py_frame = 0;
+     PyThreadState *tstate = __Pyx_PyThreadState_Current;
++    PyObject *ptype, *pvalue, *ptraceback;
+     if (c_line) {
+         c_line = __Pyx_CLineForTraceback(tstate, c_line);
+     }
+     py_code = __pyx_find_code_object(c_line ? -c_line : py_line);
+     if (!py_code) {
++        /* __Pyx_CreateCodeObjectForTraceback can in some cases subsequently
++           call functions that cannot be called with set exceptions */
++        __Pyx_ErrFetchInState(tstate, &ptype, &pvalue, &ptraceback);
+         py_code = __Pyx_CreateCodeObjectForTraceback(
+             funcname, c_line, py_line, filename);
+-        if (!py_code) goto bad;
++        if (!py_code) {
++            /* If the code object creation fails, then we should clear the
++               fetched exception references and propagate the new exception */
++            Py_XDECREF(ptype);
++            Py_XDECREF(pvalue);
++            Py_XDECREF(ptraceback);
++            goto bad;
++        }
++        __Pyx_ErrRestoreInState(tstate, ptype, pvalue, ptraceback);
+         __pyx_insert_code_object(c_line ? -c_line : py_line, py_code);
+     }
+     py_frame = PyFrame_New(
+--- lxml-4.7.1/src/lxml/_elementpath.c
++++ lxml-4.7.1/src/lxml/_elementpath.c
+@@ -16599,14 +16599,26 @@ static void __Pyx_AddTraceback(const cha
+     PyCodeObject *py_code = 0;
+     PyFrameObject *py_frame = 0;
+     PyThreadState *tstate = __Pyx_PyThreadState_Current;
++    PyObject *ptype, *pvalue, *ptraceback;
+     if (c_line) {
+         c_line = __Pyx_CLineForTraceback(tstate, c_line);
+     }
+     py_code = __pyx_find_code_object(c_line ? -c_line : py_line);
+     if (!py_code) {
++        /* __Pyx_CreateCodeObjectForTraceback can in some cases subsequently
++           call functions that cannot be called with set exceptions */
++        __Pyx_ErrFetchInState(tstate, &ptype, &pvalue, &ptraceback);
+         py_code = __Pyx_CreateCodeObjectForTraceback(
+             funcname, c_line, py_line, filename);
+-        if (!py_code) goto bad;
++        if (!py_code) {
++            /* If the code object creation fails, then we should clear the
++               fetched exception references and propagate the new exception */
++            Py_XDECREF(ptype);
++            Py_XDECREF(pvalue);
++            Py_XDECREF(ptraceback);
++            goto bad;
++        }
++        __Pyx_ErrRestoreInState(tstate, ptype, pvalue, ptraceback);
+         __pyx_insert_code_object(c_line ? -c_line : py_line, py_code);
+     }
+     py_frame = PyFrame_New(
+--- lxml-4.7.1/src/lxml/objectify.c
++++ lxml-4.7.1/src/lxml/objectify.c
+@@ -46610,14 +46610,26 @@ static void __Pyx_AddTraceback(const cha
+     PyCodeObject *py_code = 0;
+     PyFrameObject *py_frame = 0;
+     PyThreadState *tstate = __Pyx_PyThreadState_Current;
++    PyObject *ptype, *pvalue, *ptraceback;
+     if (c_line) {
+         c_line = __Pyx_CLineForTraceback(tstate, c_line);
+     }
+     py_code = __pyx_find_code_object(c_line ? -c_line : py_line);
+     if (!py_code) {
++        /* __Pyx_CreateCodeObjectForTraceback can in some cases subsequently
++           call functions that cannot be called with set exceptions */
++        __Pyx_ErrFetchInState(tstate, &ptype, &pvalue, &ptraceback);
+         py_code = __Pyx_CreateCodeObjectForTraceback(
+             funcname, c_line, py_line, filename);
+-        if (!py_code) goto bad;
++        if (!py_code) {
++            /* If the code object creation fails, then we should clear the
++               fetched exception references and propagate the new exception */
++            Py_XDECREF(ptype);
++            Py_XDECREF(pvalue);
++            Py_XDECREF(ptraceback);
++            goto bad;
++        }
++        __Pyx_ErrRestoreInState(tstate, ptype, pvalue, ptraceback);
+         __pyx_insert_code_object(c_line ? -c_line : py_line, py_code);
+     }
+     py_frame = PyFrame_New(
+--- lxml-4.7.1/src/lxml/sax.c
++++ lxml-4.7.1/src/lxml/sax.c
+@@ -13590,14 +13590,26 @@ static void __Pyx_AddTraceback(const cha
      PyCodeObject *py_code = 0;
      PyFrameObject *py_frame = 0;
      PyThreadState *tstate = __Pyx_PyThreadState_Current;
