@@ -30,18 +30,18 @@ BUILD_ARCH=		i386
 include			../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		node
-COMPONENT_VERSION=	18.1.0
+COMPONENT_VERSION=	18.6.0
 COMPONENT_SUBVERSION=
 HUMAN_VERSION=		$(COMPONENT_VERSION)$(COMPONENT_SUBVERSION)
 COMPONENT_PROJECT_URL=	https://github.com/nodejs/node
 COMPONENT_SRC=		$(COMPONENT_NAME)-$(HUMAN_VERSION)
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).zip
 COMPONENT_ARCHIVE_HASH= \
-    sha256:eec6465a457a8e612addfa7d10344c3aabfab2e9a77f56964efc019d7b552002
+    sha256:cf8958322928a3ea2e00b51acd28a7a6038200fedc8329e7eed99cf3bf89017f
 COMPONENT_ARCHIVE_URL=	\
     $(COMPONENT_PROJECT_URL)/archive/v$(COMPONENT_VERSION).zip
 COMPONENT_BUGDB=	utility/nodejs
-COMPONENT_BAID=		121871
+COMPONENT_BAID=		127499 
 COMPONENT_ANITYA_ID=	8251
 
 CONFIGURE_DEFAULT_DIRS=	no
@@ -82,13 +82,18 @@ NPM_ENV=		NPM_CONFIG_USERCONFIG=/dev/null \
 
 COMPONENT_BUILD_ENV+=	PATH=$(PATH):/usr/sbin $(NPM_ENV)
 
+#
+# Fix gmake test failure on systems behind proxy and using
+# local NPM repository.
+#
+COMPONENT_TEST_ENV+=	http_proxy=
+COMPONENT_TEST_ENV+=	https_proxy=
+COMPONENT_TEST_ENV+=	HTTP_PROXY=
+COMPONENT_TEST_ENV+=	HTTPS_PROXY=
+
 # Make test does not like cloney, so a simple copy is used instead.
 COMPONENT_PRE_CONFIGURE_ACTION= \
 	$(CP) -rpP $(SOURCE_DIR)/. $(@D)
-
-COMPONENT_POST_INSTALL_ACTION= \
-    $(MKDIR) -p $(PROTO_DIR)/usr/share/doc/release-notes/; \
-    $(CP) runtime-nodejs-nodejs-18.txt $(PROTO_DIR)/usr/share/doc/release-notes/
 
 #
 # OpenSSL 3 temporarily lives in non-standard directory. This is a workaround
