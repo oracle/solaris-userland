@@ -26,6 +26,7 @@
 set name=pkg.fmri \
     value=pkg:/runtime/nodejs/nodejs-$(NODE_MAJOR_VERSION)@$(IPS_COMPONENT_VERSION),$(BUILD_VERSION)
 set name=pkg.summary value=Node.js
+set name=pkg.legacy value=true
 set name=pkg.linted.userland.action001.PIE value=true
 set name=com.oracle.info.baid value=$(COMPONENT_BAID)
 set name=com.oracle.info.description \
@@ -3978,7 +3979,11 @@ file path=usr/nodejs/$(NODE_MAJOR_VERSION)/share/doc/node/gdbinit
 file path=usr/nodejs/$(NODE_MAJOR_VERSION)/share/doc/node/lldb_commands.py
 file path=usr/nodejs/$(NODE_MAJOR_VERSION)/share/man/man1/node.1
 file path=usr/nodejs/$(NODE_MAJOR_VERSION)/share/systemtap/tapset/node.stp
-file path=usr/share/doc/release-notes/runtime-nodejs-nodejs-14.txt \
+file runtime-nodejs-nodejs-14.txt \
+    path=usr/share/doc/release-notes/runtime-nodejs-nodejs-14.txt \
+    must-display=true release-note=feature/pkg/self@0
+file runtime-nodejs-nodejs-14_legacy.txt \
+    path=usr/share/doc/release-notes/runtime-nodejs-nodejs-14_legacy.txt \
     must-display=true release-note=feature/pkg/self@0
 link path=usr/share/man/man1/node.1 \
     target=../../../nodejs/$(NODE_MAJOR_VERSION)/share/man/man1/node.1 \

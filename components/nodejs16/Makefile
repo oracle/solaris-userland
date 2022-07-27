@@ -80,13 +80,18 @@ NPM_ENV=		NPM_CONFIG_USERCONFIG=/dev/null \
 
 COMPONENT_BUILD_ENV+=	PATH=$(PATH):/usr/sbin $(NPM_ENV)
 
+#
+# Fix gmake test failure on systems behind proxy and using
+# local NPM repository.
+#
+COMPONENT_TEST_ENV+=	http_proxy=
+COMPONENT_TEST_ENV+=	https_proxy=
+COMPONENT_TEST_ENV+=	HTTP_PROXY=
+COMPONENT_TEST_ENV+=	HTTPS_PROXY=
+
 # Make test does not like cloney, so a simple copy is used instead.
 COMPONENT_PRE_CONFIGURE_ACTION= \
 	$(CP) -rpP $(SOURCE_DIR)/. $(@D)
-
-COMPONENT_POST_INSTALL_ACTION= \
-    $(MKDIR) -p $(PROTO_DIR)/usr/share/doc/release-notes/; \
-    $(CP) runtime-nodejs-nodejs-16.txt $(PROTO_DIR)/usr/share/doc/release-notes/
 
 #
 # OpenSSL 1.1 temporarily lives in non-standard directory. This is a workaround
