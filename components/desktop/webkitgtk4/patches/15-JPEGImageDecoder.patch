@@ -1,0 +1,15 @@
+Fixes build issue since webkitgtk started to be build against libjpeg-9e.
+
+--- a/Source/WebCore/platform/image-decoders/jpeg/JPEGImageDecoder.h~	2022-08-15 15:23:37.816119775 +0200
++++ b/Source/WebCore/platform/image-decoders/jpeg/JPEGImageDecoder.h	2022-08-15 15:13:12.780723552 +0200
+@@ -30,8 +30,8 @@
+ #include <stdio.h> // Needed by jpeglib.h for FILE.
+ 
+ // ICU defines TRUE and FALSE macros, breaking libjpeg v9 headers
+-#undef TRUE
+-#undef FALSE
++//#undef TRUE
++//#undef FALSE
+ extern "C" {
+ #include "jpeglib.h"
+ }

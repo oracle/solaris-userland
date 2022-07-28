@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 
 BUILD_BITS = 	64_and_32
@@ -28,20 +28,48 @@ COMPILER =	gcc
 
 include ../../../make-rules/shared-macros.mk
 
-COMPONENT_NAME=         jpeg
-COMPONENT_VERSION=      6.0.2
-PROJECT_VERSION=	6b2
-HUMAN_VERSION=          v$(PROJECT_VERSION)
-COMPONENT_PROJECT_URL=  https://sourceforge.net/projects/libjpeg/
-COMPONENT_SRC=          jpeg-$(PROJECT_VERSION)
-COMPONENT_SRC_NAME=     jpegsrc.$(HUMAN_VERSION)
-COMPONENT_ARCHIVE=      $(COMPONENT_SRC_NAME).tar.gz
-COMPONENT_ARCHIVE_HASH= \
-    sha256:6d2be0db82dda2e50c908b72aa22ed8cf42cc5aa5ae5f2b081498be6ef16eabc
-COMPONENT_ARCHIVE_URL=  http://jpegclub.org/support/files/$(COMPONENT_ARCHIVE)
-COMPONENT_BUGDB=	library/libjpeg
+COMPONENT_NAME =	jpeg
+COMPONENT_VERSION =	9.5
+PROJECT_VERSION =	9e
+COMPONENT_PROJECT_URL =	https://www.ijg.org/
+COMPONENT_SRC =		jpeg-$(PROJECT_VERSION)
+COMPONENT_ARCHIVE =	jpegsrc.v$(PROJECT_VERSION).tar.gz
+COMPONENT_ARCHIVE_HASH =\
+	sha256:4077d6a6a75aeb01884f708919d25934c93305e49f7e3f36db9129320e6f4f3d
+COMPONENT_ARCHIVE_URL =	https://www.ijg.org/files/$(COMPONENT_ARCHIVE)
+COMPONENT_BUGDB =	library/libjpeg
 
-COMPONENT_BAID=		39267
+COMPONENT_BAID =	129210
+
+COMPONENT_VERSION_1 =	6.0.2
+PROJECT_VERSION_1 =	6b2
+HUMAN_VERSION_1 =	v$(PROJECT_VERSION_1)
+COMPONENT_PROJECT_URL_1=https://sourceforge.net/projects/libjpeg/
+COMPONENT_SRC_1 =	jpeg-$(PROJECT_VERSION_1)
+COMPONENT_SRC_NAME_1 =	jpegsrc.$(HUMAN_VERSION_1)
+COMPONENT_ARCHIVE_1 =	$(COMPONENT_SRC_NAME_1).tar.gz
+COMPONENT_ARCHIVE_HASH_1= \
+	sha256:6d2be0db82dda2e50c908b72aa22ed8cf42cc5aa5ae5f2b081498be6ef16eabc
+COMPONENT_ARCHIVE_URL_1=http://jpegclub.org/support/files/$(COMPONENT_ARCHIVE_1)
+
+COMPONENT_BAID_1 =	39267
+
+BUILD_OLD_DIR_32 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH32)
+BUILD_OLD_DIR_64 = $(COMPONENT_DIR)/build/$(COMPONENT_VERSION_1)-$(MACH64)
+
+$(BUILD_OLD_DIR_32)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
+$(BUILD_OLD_DIR_64)/.configured: CONFIGURE_SCRIPT = $(SOURCE_DIR_1)/configure
+$(BUILD_OLD_DIR_32)/.configured: BITS=32
+$(BUILD_OLD_DIR_64)/.configured: BITS=64
+
+BUILD_32 += $(BUILD_OLD_DIR_32)/.built
+BUILD_64 += $(BUILD_OLD_DIR_64)/.built
+
+INSTALL_32 += $(BUILD_OLD_DIR_32)/.installed
+INSTALL_64 += $(BUILD_OLD_DIR_64)/.installed
+
+$(BUILD_DIR_32)/.installed:     $(BUILD_OLD_DIR_32)/.installed
+$(BUILD_DIR_64)/.installed:     $(BUILD_OLD_DIR_64)/.installed
 
 include $(WS_MAKE_RULES)/common.mk
 
@@ -56,11 +84,4 @@ COMPONENT_POST_CONFIGURE_ACTION += \
 	$(GSED) -i -e 's/hardcode_into_libs=yes/hardcode_into_libs=no/' $(@D)/libtool; \
 	$(GSED) -i -e 's/hardcode_libdir_flag_spec=.*/hardcode_libdir_flag_spec=""/' $(@D)/libtool;
 
-COMPONENT_POST_INSTALL_ACTION += \
-	$(MKDIR) $(PROTOUSRLIBDIR64)/pkgconfig/ $(PROTOUSRLIBDIR)/pkgconfig/ ; \
-	sed -e 's/PROJECT_VERSION/$(PROJECT_VERSION)/' < $(COMPONENT_DIR)/files/libjpeg.pc \
-	 | $(TEE) $(PROTOUSRLIBDIR64)/pkgconfig/libjpeg.pc > $(PROTOUSRLIBDIR)/pkgconfig/libjpeg.pc ;
-
 COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-all.master
-
-REQUIRED_PACKAGES += shell/ksh93
