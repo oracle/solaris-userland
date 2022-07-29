@@ -1,0 +1,17 @@
+This is a temporary fix for
+
+32835684 - gutenprint 5.3.4 tests fails in SPARC
+
+The issue is reported upstream. Once we have a fix this patch will be removed.
+
+--- a/src/main/channel.c	2022-08-02 11:10:21.879991702 +0200
++++ b/src/main/channel.c	2022-08-02 11:12:39.690558070 +0200
+@@ -1136,7 +1136,7 @@
+ 	  output[1] += ck * cg->cyan_balance;
+ 	  output[2] += ck * cg->magenta_balance;
+ 	  output[3] += ck * cg->yellow_balance;
+-	  nzx.nzl |= *(unsigned long long *) output;
++	  nzx.nzl += ((unsigned long long) output[0]) + ((unsigned long long) output[1] << 16) + ((unsigned long long) output[2] << 32) + ((unsigned long long) output[3] << 48);
+ 	}
+       output += cg->gcr_channels;
+     }

@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2011, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2011, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 64
 COMPILER= gcc
@@ -28,14 +28,16 @@ include ../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		gutenprint
 COMPONENT_VERSION=	5.3.4
+COMPONENT_SNAPSHOT=	2022-06-24T01-00-8808d602
+IPS_COMPONENT_VERSION=	5.3.4.1
+COMPONENT_SRC=		$(COMPONENT_NAME)-$(COMPONENT_VERSION)-$(COMPONENT_SNAPSHOT)
 COMPONENT_PROJECT_URL=	http://gimp-print.sourceforge.net/
 COMPONENT_ARCHIVE=	$(COMPONENT_SRC).tar.xz
-COMPONENT_ARCHIVE_HASH=	\
- sha256:db44a701d2b8e6a8931c83cec06c91226be266d23e5c189d20a39dd175f2023b
-COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/gimp-print/files/gutenprint-5.3/$(COMPONENT_VERSION)/$(COMPONENT_ARCHIVE)
+COMPONENT_ARCHIVE_HASH=	sha256:ef514d4ca567b5871cfe7697127bee2c14d5d71d7fbc68d8fee96b0faaed90e7
+COMPONENT_ARCHIVE_URL=	https://sourceforge.net/projects/gimp-print/files/snapshots/$(COMPONENT_ARCHIVE)
 COMPONENT_ANITYA_ID=	1285
 
-COMPONENT_BAID=	 	99582
+COMPONENT_BAID=	 	127785
 
 # Disable unit tests of gutenprint since they run extremely long (about a day).
 $(SKIP_TEST_AT_TOP_LEVEL)
@@ -61,7 +63,6 @@ COMPONENT_BUILD_TARGETS = all
 # diffs failing due to script tracing in output files.
 unexport SHELLOPTS
 
-COMPONENT_TEST_MASTER = $(COMPONENT_TEST_RESULTS_DIR)/results-$(MACH).master
 COMPONENT_TEST_TRANSFORMS += \
         '-n ' \
         '-e "/ TOTAL:/p" ' \
