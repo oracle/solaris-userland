@@ -1,0 +1,23 @@
+Fix of bug: connect returns EADDRNOTAVAIL because of bogus value in curl get_localhost6 function local variable 
+
+Pull request will be sent to community on Github
+
+--- a/lib/hostip.c	2022-08-01 18:36:33.772749781 +0200
++++ b/lib/hostip.c	2022-08-01 18:40:19.203171157 +0200
+@@ -52,6 +52,7 @@
+ #include <process.h>
+ #endif
+
++#include <strings.h>
+ #include "urldata.h"
+ #include "sendf.h"
+ #include "hostip.h"
+@@ -476,6 +476,8 @@
+   if(!ca)
+     return NULL;
+ 
++  /* sa6 is automatic variable but not all members are initialized */
++  bzero((void *) &sa6, sizeof(sa6));
+   sa6.sin6_family = AF_INET6;
+   sa6.sin6_port = htons(port16);
+   sa6.sin6_flowinfo = 0;
