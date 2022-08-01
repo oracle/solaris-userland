@@ -77,6 +77,7 @@ endif
 # The configure Rust uses isn't autoconf; it's hand-rolled, and doesn't
 # recognize all the autoconf options, so we start from scratch.
 CONFIGURE_OPTIONS =	--prefix=$(CONFIGURE_PREFIX)
+CONFIGURE_OPTIONS +=	--libdir=$(USRLIBDIR64)
 CONFIGURE_OPTIONS +=	--default-linker=gcc
 CONFIGURE_OPTIONS +=	--enable-local-rust
 
@@ -110,8 +111,8 @@ COMPONENT_TEST_ENV +=	CARGO_HOME=$(BUILD_DIR)/.cargo
 # Therefore library list need to be created to be included into p5m file.
 COMPONENT_POST_INSTALL_ACTION += \
 	(cd $(PROTO_DIR); \
-	ls -1 usr/lib/lib* \
-	  usr/lib/rustlib/$(RUST_PLATFORM)/lib/lib* | \
+	ls -1 usr/lib/$(MACH64)/lib* \
+	  usr/lib/$(MACH64)/rustlib/$(RUST_PLATFORM)/lib/lib* | \
 	  awk '{ print "file path="$$1 " variant.arch=$(MACH)" }' > ../../libraries-hashed.$(MACH64); )
 
 # pkg-report requires *.p5m files to be processed by pkgmogrify. Since the

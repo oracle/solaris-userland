@@ -1,0 +1,24 @@
+Fixes RPATH in binaries so that it correspond to our --libdir configure
+option.
+
+Not suitable to upstream.
+
+--- rustc-1.61.0-src/src/bootstrap/builder.rs
++++ rustc-1.61.0-src/src/bootstrap/builder.rs
+@@ -1304,7 +1304,15 @@ rustflags.arg("-Zosx-rpath-install-name"
+                 Some("-Wl,-rpath,@loader_path/../lib")
+             } else if !target.contains("windows") {
+                 rustflags.arg("-Clink-args=-Wl,-z,origin");
+-                Some("-Wl,-rpath,$ORIGIN/../lib")
++                if target.contains("solaris") {
++                    if target.contains("sparcv9") {
++                        Some("-Wl,-rpath,$ORIGIN/../lib/sparcv9")
++                    } else {
++                        Some("-Wl,-rpath,$ORIGIN/../lib/amd64")
++                    }
++                } else {
++                    Some("-Wl,-rpath,$ORIGIN/../lib")
++                }
+             } else {
+                 None
+             };

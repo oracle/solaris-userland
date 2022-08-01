@@ -26,16 +26,18 @@
 <include generate/common.transform>
 
 # libraries contain hash in their names and thus are included automatically
-<transform path=usr/lib/lib.*\.so$ -> drop>
-<transform path=usr/lib/rustlib/(sparcv9-sun|x86_64-pc)-solaris/lib.* -> drop>
+<transform path=usr/lib/\$\(MACH64\)/lib.*\.so$ -> drop>
+<transform path=usr/lib/\$\(MACH64\)/rustlib/(sparcv9-sun|x86_64-pc)-solaris/lib.* -> drop>
 
-<transform path=usr/lib/rustlib/sparcv9-sun-solaris -> edit path sparcv9-sun-solaris \$\(RUST_PLATFORM\)>
-<transform path=usr/lib/rustlib/x86_64-pc-solaris -> edit path x86_64-pc-solaris \$\(RUST_PLATFORM\)>
+<transform path=usr/lib/\$\(MACH64\)/rustlib/sparcv9-sun-solaris -> edit path sparcv9-sun-solaris \$\(RUST_PLATFORM\)>
+<transform path=usr/lib/\$\(MACH64\)/rustlib/x86_64-pc-solaris -> edit path x86_64-pc-solaris \$\(RUST_PLATFORM\)>
 
 # no need to package these
-<transform path=usr/lib/rustlib/uninstall.sh -> drop>
-<transform path=usr/lib/rustlib/install.log -> drop>
-<transform path=usr/lib/rustlib/manifest-.* -> drop>
+<transform path=usr/lib/\$\(MACH64\)/rustlib/components -> drop>
+<transform path=usr/lib/\$\(MACH64\)/rustlib/uninstall.sh -> drop>
+<transform path=usr/lib/\$\(MACH64\)/rustlib/install.log -> drop>
+<transform path=usr/lib/\$\(MACH64\)/rustlib/manifest-.* -> drop>
+<transform path=usr/lib/\$\(MACH64\)/rustlib/rust-installer-version -> drop>
 <transform path=usr/share/doc/rust/html/(\.lock|\.stamp) -> drop>
 
 # lldb is not bundled with Solaris yet
