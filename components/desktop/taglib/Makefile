@@ -20,7 +20,7 @@
 #
 
 #
-# Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2015, 2022, Oracle and/or its affiliates.
 #
 BUILD_BITS= 32_and_64
 # For now, all things built for C++11 require gcc.
@@ -28,15 +28,15 @@ COMPILER= gcc
 include ../../../make-rules/shared-macros.mk
 
 COMPONENT_NAME=		taglib
-COMPONENT_VERSION=	1.11.1
+COMPONENT_VERSION=	1.12
 COMPONENT_PROJECT_URL=	https://taglib.github.io/
 COMPONENT_ARCHIVE_HASH= \
-	sha256:b6d1a5a610aae6ff39d93de5efd0fdc787aa9e9dc1e7026fa4c961b26563526b
+	sha256:7fccd07669a523b07a15bd24c8da1bbb92206cb19e9366c3692af3d79253b703
 COMPONENT_ARCHIVE_URL=	https://taglib.github.io/releases/$(COMPONENT_ARCHIVE)
 COMPONENT_BUGDB=	library/taglib
 COMPONENT_ANITYA_ID=	1982
 
-COMPONENT_BAID=		36927
+COMPONENT_BAID=		127398
 
 BUILD_STYLE= cmake
 
