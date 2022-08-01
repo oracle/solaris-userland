@@ -1,9 +1,9 @@
 # SPARC misalignment bug: 21492790
 # Internal patch.
 # Most likely not for upstream.
---- nmap-7.80/nping/ProbeMode.cc
-+++ nmap-7.80/nping/ProbeMode.cc
-@@ -1633,7 +1633,8 @@ void ProbeMode::probe_nping_event_handle
+--- nmap-7.92/nping/ProbeMode.cc
++++ nmap-7.92/nping/ProbeMode.cc
+@@ -1565,7 +1565,8 @@ void ProbeMode::probe_nping_event_handle
   char final_output[65535];
   nsock_event_id ev_id;
   struct timeval *t = (struct timeval *)nsock_gettimeofday();
@@ -13,7 +13,7 @@
   const unsigned char *link=NULL;
   size_t linklen=0;
   size_t packetlen=0;
-@@ -1645,8 +1646,11 @@ void ProbeMode::probe_nping_event_handle
+@@ -1577,8 +1578,11 @@ void ProbeMode::probe_nping_event_handle
   NpingTarget *trg=NULL;
   u16 *prt=NULL;
   u8 proto=0;
@@ -26,7 +26,7 @@
  
   nping_print(DBG_4, "nping_event_handler(): Received callback of type %s with status %s",
                    nse_type2str(type), nse_status2str(status));
-@@ -1699,7 +1703,18 @@ void ProbeMode::probe_nping_event_handle
+@@ -1631,7 +1635,18 @@ void ProbeMode::probe_nping_event_handle
         case NSE_TYPE_PCAP_READ:
  
              /* Read a packet */
@@ -46,7 +46,7 @@
  
              /* If we are on a Ethernet network, extract the next packet protocol
               * from the Ethernet frame. */
-@@ -1833,6 +1848,8 @@ void ProbeMode::probe_nping_event_handle
+@@ -1765,6 +1780,8 @@ void ProbeMode::probe_nping_event_handle
   } else{
      nping_warning(QT_2, "nping_event_handler(): Unknown status code %d\n", status);
   }

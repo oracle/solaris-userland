@@ -1,0 +1,81 @@
+Fixes alignment related Bus Error on SPARC.
+
+PR was offered upstream:
+https://github.com/nmap/nmap/pull/2508
+
+--- nmap-7.92/tcpip.cc
++++ nmap-7.92/tcpip.cc
+@@ -1492,13 +1492,13 @@ static bool accept_any (const unsigned c
+ }
+ 
+ static bool accept_ip (const unsigned char *p, const struct pcap_pkthdr *h, int datalink, size_t offset) {
+-  const struct ip *ip = NULL;
++  struct ip local;
+ 
+   if (h->caplen < offset + sizeof(struct ip)) {
+     return false;
+   }
+-  ip = (struct ip *) (p + offset);
+-  switch (ip->ip_v) {
++  memcpy(&local, (p + offset), sizeof(struct ip));
++  switch (local.ip_v) {
+     case 4:
+     case 6:
+       break;
+@@ -1510,9 +1510,11 @@ static bool accept_ip (const unsigned ch
+   return true;
+ }
+ 
+-const u8 *readip_pcap(pcap_t *pd, unsigned int *len, long to_usec,
++u8 *readip_pcap(pcap_t *pd, unsigned int *len, long to_usec,
+                   struct timeval *rcvdtime, struct link_header *linknfo, bool validate) {
+   int datalink;
++  static u8 *alignedbuf = NULL;
++  static unsigned int alignedbufsz = 0;
+   size_t offset = 0;
+   struct pcap_pkthdr *head;
+   const u8 *p;
+@@ -1537,8 +1539,14 @@ const u8 *readip_pcap(pcap_t *pd, unsign
+   *len = head->caplen - offset;
+   p += offset;
+ 
++  if (*len > alignedbufsz) {
++    alignedbuf = (u8 *) safe_realloc(alignedbuf, *len);
++    alignedbufsz = *len;
++  }
++  memcpy(alignedbuf, p, *len);
++
+   if (validate) {
+-    if (!validatepkt(p, len)) {
++    if (!validatepkt((u8 *) alignedbuf, len)) {
+       *len = 0;
+       return NULL;
+     }
+@@ -1550,13 +1558,13 @@ const u8 *readip_pcap(pcap_t *pd, unsign
+     memcpy(linknfo->header, p - offset, MIN(sizeof(linknfo->header), offset));
+   }
+   if (rcvdtime)
+-    PacketTrace::trace(PacketTrace::RCVD, (u8 *) p, *len,
++    PacketTrace::trace(PacketTrace::RCVD, (u8 *) alignedbuf, *len,
+         rcvdtime);
+   else
+-    PacketTrace::trace(PacketTrace::RCVD, (u8 *) p, *len);
++    PacketTrace::trace(PacketTrace::RCVD, (u8 *) alignedbuf, *len);
+ 
+   *len = head->caplen - offset;
+-  return p;
++  return alignedbuf;
+ }
+ 
+ // Returns whether the packet receive time value obtained from libpcap
+--- nmap-7.92/tcpip.h
++++ nmap-7.92/tcpip.h
+@@ -356,7 +356,7 @@ bool getNextHopMAC(const char *iface, co
+ const u8 *readipv4_pcap(pcap_t *pd, unsigned int *len, long to_usec,
+                     struct timeval *rcvdtime, struct link_header *linknfo, bool validate);
+ 
+-const u8 *readip_pcap(pcap_t *pd, unsigned int *len, long to_usec,
++u8 *readip_pcap(pcap_t *pd, unsigned int *len, long to_usec,
+                   struct timeval *rcvdtime, struct link_header *linknfo, bool validate);
+ 
+ /* Examines the given tcp packet and obtains the TCP timestamp option
